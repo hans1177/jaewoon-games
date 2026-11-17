@@ -1039,6 +1039,49 @@ function FieldScene.start(opts)
 		end)
 	end
 
+	-- [현장 단서 발견] 지형과 상호작용하면 지역 탐험 이야기가 열린다.
+	-- 기존 발견물·카드/보상 집계와 무관한 1회성 클라이언트 관찰이다.
+	do
+		local theme = folder:GetAttribute("FieldQuestTerrainTheme") or "plains"
+		local clueText = {
+			coast = "부두 말뚝에 거친 밧줄 자국이 남아 있다. 누군가 서둘러 떠난 듯하다.",
+			forest = "나뭇가지가 꺾인 방향과 발자국이 깊은 숲속으로 이어진다.",
+			highland = "돌계단 아래에 오래된 등반 흔적이 있다. 바람이 협곡을 울린다.",
+			mine = "갱도 주변에 최근 옮겨진 광석 흔적이 있다. 깊은 곳에서 울림이 들린다.",
+			ruins = "무너진 석주에 지워진 문양이 남아 있다. 이곳에 오래된 길이 있었다.",
+			fort = "성벽에 화살 자국과 오래된 수비 흔적이 남아 있다.",
+			desert = "모래에 반쯤 묻힌 길 표식이 오래된 대상로를 가리킨다.",
+			farm = "바람에 흔들리는 작물 사이로 낡은 수레바퀴 자국이 이어진다.",
+			lake = "물가의 돌이 닳은 흔적을 보면 오래전 누군가 이 길을 지나갔다.",
+			plains = "들판의 낡은 이정표가 지금은 사라진 길을 가리킨다.",
+		}
+		local clues = 0
+		folder:SetAttribute("FieldTerrainClues", 0)
+		for _, landmark in folder:GetChildren() do
+			if clues >= 2 then break end
+			if landmark:IsA("Model") and landmark.Name == "FieldTerrainLandmark" then
+				local anchorPart = landmark:FindFirstChildWhichIsA("BasePart", true)
+				if anchorPart then
+					clues += 1
+					local prompt = Instance.new("ProximityPrompt")
+					prompt.Name = "FieldTerrainClue"
+					prompt.ObjectText = "탐험 흔적"
+					prompt.ActionText = "현장 조사"
+					prompt.HoldDuration = 0.55
+					prompt.MaxActivationDistance = 12
+					prompt.RequiresLineOfSight = false
+					prompt.Parent = anchorPart
+					prompt.Triggered:Connect(function(activator)
+						if finished or activator ~= player or not prompt.Enabled then return end
+						prompt.Enabled = false
+						folder:SetAttribute("FieldTerrainClues", (folder:GetAttribute("FieldTerrainClues") or 0) + 1)
+						say(clueText[theme] or clueText.plains)
+					end)
+				end
+			end
+		end
+	end
+
 	-- [2~3연타 마무리] 숙련도는 5단계까지 유지하되 연타는 최대 3타, 시각 연출만 적용한다.
 	local killcamToken = 0
 	local killcamCamera = nil
