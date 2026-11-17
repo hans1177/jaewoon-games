@@ -474,15 +474,20 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("Head", -0.13 * prepare, -0.06 * prepare + 0.07 * follow, 0)
 			bend("ThighL", 0.10 * prepare, 0, -0.08 * prepare)
 		elseif crossbow then
-			-- [석궁] 양손 견착→짧은 방아쇠 반동→볼트 재장전 시 몸 앞으로 내려 잡기.
-			bend("UpperArmL", -0.36 * hold - 0.58 * prepare - 0.19 * strike + 0.42 * returnGrip, 0, -0.10)
-			bend("UpperArmR", -0.38 * hold - 0.64 * prepare + 0.25 * strike + 0.30 * returnGrip, 0, 0.10)
-			bend("ForearmL", -0.48 * prepare + 0.40 * returnGrip, 0, 0)
-			bend("ForearmR", -0.36 * prepare + 0.35 * strike - 0.38 * returnGrip, 0, 0)
-			bend("HandR", 0.18 * strike - 0.20 * returnGrip, 0, 0)
-			bend("Chest", -0.13 * prepare + 0.14 * strike + 0.16 * returnGrip, 0.08 * prepare, 0)
-			bend("Head", -0.10 * prepare + 0.08 * returnGrip, 0, 0)
-			bend("Spine", 0.12 * returnGrip, 0, 0)
+			-- [R15 석궁병] 왼팔 전방 지지, 오른팔 방아쇠 견착, 시선/몸통은 볼트 발사선에 수평 정렬.
+			-- 예고-격발-재장전 구간의 관절만 변경한다. AI 거리·피해·사격 횟수는 FieldScene 그대로.
+			local brace = math.clamp(hold * 0.70 + prepare + 0.52 * strike, 0, 1)
+			bend("UpperArmL", -0.58 * brace - 0.08 * strike + 0.38 * returnGrip, -0.08 * brace, -0.15)
+			bend("UpperArmR", -0.55 * brace + 0.26 * strike + 0.27 * returnGrip, 0.06 * brace, 0.12)
+			bend("ForearmL", -0.45 * brace + 0.35 * returnGrip, 0, 0)
+			bend("ForearmR", -0.42 * brace + 0.34 * strike - 0.32 * returnGrip, 0, 0)
+			bend("HandL", -0.10 * brace + 0.21 * returnGrip, 0, -0.04)
+			bend("HandR", 0.18 * strike - 0.16 * returnGrip, 0, 0)
+			bend("Chest", -0.10 * brace + 0.15 * strike + 0.12 * returnGrip, 0.06 * prepare, 0)
+			bend("Head", -0.12 * brace + 0.08 * returnGrip, -0.03 * brace, 0)
+			bend("Spine", 0.11 * returnGrip, 0, 0)
+			bend("ThighL", 0.10 * brace - 0.04 * strike, 0, -0.035)
+			bend("FootL", -0.08 * brace + 0.06 * strike, 0, 0)
 		elseif spear then
 			-- [창] 뒷다리에 힘을 저장→양손 축 정렬→앞발 내디딤 찌르기→창대 회수.
 			bend("UpperArmL", -0.35 * hold - 0.59 * prepare - 0.26 * strike - 0.22 * returnGrip, 0, -0.13)
