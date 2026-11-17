@@ -1392,3 +1392,44 @@ test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 
  assert.match(field,/peopleGroup\.ChildAdded:Connect\(function\(asset\)/);
  assert.doesNotMatch(pose,/rbxassetid:\/\/[0-9]+/);
 });
+
+
+// [가축 실물 비율·자연 품종색] 목장/동물원/왕궁 기마병/탐험 현장 공통 규격 회귀.
+test('성체 말과 주요 가축의 크기·품종색은 항구와 탐험이 공유하고 원본 텍스처를 보존한다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+ const config=read('ReplicatedStorage/Shared/PortBuildings.luau');
+ const assets=read('ReplicatedStorage/Shared/AssetIds.luau');
+ const species=['horse','cow','donkey','llama','sheep','pig','elephant','dog-pug','cat','chicken'];
+ for(const sp of species){
+  assert.ok(assets.includes('["Animals/'+sp+'"]'),'승인된 실물 동물 모델: '+sp);
+  assert.ok(config.includes(sp+' = { size = ')||config.includes('["'+sp+'"] = { size = '),'단일 실물 크기 규격: '+sp);
+ }
+ assert.match(config,/horse = \{ size = 8\.8,/);
+ assert.match(config,/cow = \{ size = 7\.3,/);
+ assert.match(config,/donkey = \{ size = 6\.5,/);
+ assert.match(config,/sheep = \{ size = 3\.8,/);
+ assert.match(config,/pig = \{ size = 4\.1,/);
+ assert.match(config,/elephant = \{ size = 13\.5,/);
+ assert.match(scene,/local animalVisual = PortBuildings\.AnimalVisual/);
+ assert.match(scene,/horse = \{ animalVisual\.horse\.size, "graze" \}/);
+ assert.match(scene,/local cavalryHorse = PortBuildings\.AnimalVisual\.horse/);
+ assert.match(scene,/cavalryHorse\.size, false, coat/);
+ assert.match(scene,/horse:SetAttribute\("AnimalVisualSize", cavalryHorse\.size\)/);
+ assert.match(scene,/if horse then mountedVisible \+= 1 end/);
+ assert.match(scene,/local coatIndex = if skin then 1 \+ math\.floor/);
+ assert.match(scene,/m:SetAttribute\("AnimalCoatIndex", coatIndex\)/);
+ assert.match(scene,/local textured = \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\) or \(sa and sa\.ColorMap ~= ""\)/);
+ assert.match(scene,/if not textured and not detail then/);
+ assert.match(scene,/local scale = if isAnimal then m:GetScale\(\) \* ratio else ratio/);
+ assert.match(scene,/if math\.abs\(actualAxis - desiredSize\) > desiredSize \* 0\.2 then/);
+ assert.match(field,/local PortBuildings = require\(script\.Parent:WaitForChild\("PortBuildings"\)\)/);
+ assert.match(field,/local sizes = PortBuildings\.AnimalVisual/);
+ assert.match(field,/placeModel\(folder, "Animals", species, pos, visual\.size, false, visual\.coats\[coatIndex\]\)/);
+ assert.match(field,/if not textured and not detail then/);
+ assert.match(field,/placed:SetAttribute\("ObservedSpecies", targetCard\.id\)/);
+ assert.match(scene,/for k = 1, grazeCount do/);
+ assert.match(scene,/for i = 1, lay\.pens do/);
+ assert.match(scene,/horse:SetAttribute\("ShowcaseOnly", true\)/);
+ assert.doesNotMatch(config,/DataStoreService/);
+});
