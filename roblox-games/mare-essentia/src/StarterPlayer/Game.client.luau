@@ -4352,6 +4352,24 @@ function H.walletBar(mode)
 			right.AnchorPoint = Vector2.new(1, 0)
 			right.Position = UDim2.new(1, -8, 0, 8)
 		end
+		-- [모바일] 재화와 선체 상태 위, 정비·납품 버튼 아래의 2단 배치.
+		local function fitWallet()
+			local compact = f.AbsoluteSize.X > 0 and f.AbsoluteSize.X < 460
+			f.Size = UDim2.new(1, -6, 0, if compact then 122 else 70)
+			coin.Size = if compact then UDim2.new(1, -24, 0, 30) else UDim2.fromOffset(220, 30)
+			coin.TextSize = if compact then 22 else 24
+			info.Size = if compact then UDim2.new(1, -20, 0, 22) else UDim2.fromOffset(300, 22)
+			info.Position = UDim2.new(0.5, 0, 0, if compact then 37 else 40)
+			fill.Position = if compact then UDim2.fromOffset(8, 68) else UDim2.fromOffset(8, 8)
+			fill.Size = if compact then UDim2.new(if right then 0.5 else 1, if right then -12 else -16, 0, 46) else UDim2.fromOffset(86, 54)
+			if right then
+				right.AnchorPoint = if compact then Vector2.new(0, 0) else Vector2.new(1, 0)
+				right.Position = if compact then UDim2.new(0.5, 4, 0, 68) else UDim2.new(1, -8, 0, 8)
+				right.Size = if compact then UDim2.new(0.5, -12, 0, 46) else UDim2.fromOffset(86, 54)
+			end
+		end
+		f:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitWallet)
+		task.defer(fitWallet)
 		return f
 	end)
 end
@@ -5735,6 +5753,30 @@ function RENDERERS.trade()
 		frame.Parent = content
 		return frame
 	end)
+	-- [교역 정렬] 실제 세계 평균시세·서버 판매견적·보유 수량으로 화면 순서만 바꾼다.
+	H.tradeSort = H.tradeSort or "price"
+	add(function()
+		local buttons = {}
+		for _, option in { { "싼 순", "price" }, { "판매이익", "profit" }, { "보유순", "owned" }, { "이름순", "name" } } do
+			local key = option[2]
+			table.insert(buttons, { text = option[1], color = if H.tradeSort == key then COLORS.gold else COLORS.blue,
+				onClick = function() H.tradeSort = key; render() end })
+		end
+		return mkRow(content, "교역품 정렬", "평균 대비 매입 할인과 내 보유분 세후손익은 다른 기준이야.", buttons, 72)
+	end)
+	local sortedGoods = table.clone(view.goods)
+	table.sort(sortedGoods, function(a, b)
+		local function score(g)
+			if H.tradeSort == "profit" then return H.tradeProfit(g, 1) or -math.huge end
+			if H.tradeSort == "owned" then return tonumber(g.owned) or 0 end
+			if H.tradeSort == "name" then return 0 end
+			local _, pct = H.marketPriceSignal(g)
+			return pct
+		end
+		local left, right = score(a), score(b)
+		if left ~= right then return if H.tradeSort == "price" then left < right else left > right end
+		return a.name < b.name
+	end)
 	-- 우편·거래소 (아래쪽에서 이어서 그린다)
 	-- 상품 카드 격자: 한눈에 보고 바로 사고판다 (대항해시대 온라인 교역소처럼)
 	add(function()
@@ -5743,11 +5785,11 @@ function RENDERERS.trade()
 		grid.Size = UDim2.new(1, -6, 0, 0)
 		grid.AutomaticSize = Enum.AutomaticSize.Y
 		local gl = Instance.new("UIGridLayout")
-		gl.CellSize = UDim2.new(1, -6, 0, 198)
+		gl.CellSize = UDim2.new(1, -6, 0, 228)
 		gl.CellPadding = UDim2.fromOffset(6, 6)
 		gl.SortOrder = Enum.SortOrder.LayoutOrder
 		gl.Parent = grid
-		for i, g in view.goods do
+		for i, g in sortedGoods do
 			local priceIcon, deviation = H.marketPriceSignal(g)
 			local cardF = Instance.new("Frame")
 			cardF.LayoutOrder = i
@@ -5823,9 +5865,37 @@ function RENDERERS.trade()
 				legend.AutomaticSize = Enum.AutomaticSize.None
 				legend.TextTruncate = Enum.TextTruncate.AtEnd
 			end
-			local buy = mkButton(cardF, "구매", COLORS.blue, UDim2.new(0.5, -10, 0, 36), function() call("Buy", { goodId = g.id, amount = amount() }) end, true)
+			-- [실거래 조건] 선택 수량·현재 재고·선창·자금·판매한도 안내.
+			local qty = amount()
+			local freeCargo = math.max(0, view.ship.cargoCapacity - view.ship.cargoUsed)
+			local buyCost = if g.buyTotals and g.buyTotals[qty] then g.buyTotals[qty] else (g.buy or 0) * qty
+			local canBuy = qty <= math.min(freeCargo, view.orderCap or qty, g.supply or qty) and buyCost <= view.player.coins
+			local canSell = qty <= math.min(g.owned or 0, view.orderCap or qty, g.absorb or qty)
+			local buyReason = if canBuy then "매입 가능" elseif freeCargo < qty then "화물칸 부족"
+				elseif (g.supply or qty) < qty then "항구 재고 부족"
+				elseif (view.orderCap or qty) < qty then "거래한도 초과" else "코인 부족"
+			local sellReason = if canSell then "판매 가능" elseif (g.owned or 0) < qty then "보유 수량 부족" else "판매한도 초과"
+			local observed = view.compare and view.compare[g.id]
+			local bestName, bestPrice, fromMemory = nil, -math.huge, false
+			for _, dest in observed or {} do
+				if dest.sell and dest.sell > bestPrice then
+					bestName, bestPrice, fromMemory = dest.name, dest.sell, dest.memory == true
+				end
+			end
+			local destination = mkLabel(cardF, if bestName then string.format("관측 최고 매각: %s %s%s", bestName, H.commas(bestPrice), if fromMemory then " (거래 기억)" else "")
+				else "다른 항구 시세: 장부에서 확인", 12, COLORS.muted, false)
+			destination.Position = UDim2.fromOffset(76, 147)
+			destination.Size = UDim2.new(1, -84, 0, 19)
+			destination.AutomaticSize = Enum.AutomaticSize.None
+			destination.TextTruncate = Enum.TextTruncate.AtEnd
+			local condition = mkLabel(cardF, "매입: " .. buyReason .. " · 매각: " .. sellReason, 12, if canBuy or canSell then COLORS.text else COLORS.red, true)
+			condition.Position = UDim2.fromOffset(10, 171)
+			condition.Size = UDim2.new(1, -20, 0, 19)
+			condition.AutomaticSize = Enum.AutomaticSize.None
+			condition.TextTruncate = Enum.TextTruncate.AtEnd
+			local buy = mkButton(cardF, "구매 " .. tostring(qty), COLORS.blue, UDim2.new(0.5, -10, 0, 36), function() call("Buy", { goodId = g.id, amount = amount() }) end, canBuy)
 			buy.Position = UDim2.new(0, 6, 1, -42)
-			local sell = mkButton(cardF, "판매", COLORS.green, UDim2.new(0.5, -10, 0, 36), function() call("Sell", { goodId = g.id, amount = amount() }) end, g.owned > 0)
+			local sell = mkButton(cardF, "판매 " .. tostring(qty), COLORS.green, UDim2.new(0.5, -10, 0, 36), function() call("Sell", { goodId = g.id, amount = amount() }) end, canSell)
 			sell.Position = UDim2.new(0.5, 4, 1, -42)
 			if g.owned > 0 then
 				local sm = mkButton(cardF, "암", COLORS.red, UDim2.fromOffset(34, 24), function() call("Smuggle", { goodId = g.id, amount = amount() }) end, true)
@@ -5838,7 +5908,7 @@ function RENDERERS.trade()
 			local width = grid.AbsoluteSize.X
 			if width <= 0 then return end
 			local columns = if width < 460 then 1 elseif width < 910 then 2 else 3
-			gl.CellSize = UDim2.new(1 / columns, -6 * (columns - 1) / columns, 0, 198)
+			gl.CellSize = UDim2.new(1 / columns, -6 * (columns - 1) / columns, 0, 228)
 		end
 		grid:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitGrid)
 		task.defer(fitGrid)
@@ -5993,19 +6063,18 @@ function RENDERERS.route()
 	end)
 	for _, r in sorted do
 		add(function()
-			local warn = ""
-			if r.supplies > ship.supplies then
-				warn = " 보급품 부족"
-			elseif ship.steam and r.coal == 0 then
-				warn = " 석탄 없음"
-			end
+			local supplyLeft = ship.supplies - r.supplies
+			local coalLeft = (ship.coal or 0) - (r.coal or 0)
+			local warn = if supplyLeft < 0 then string.format("🔴 보급 %d 부족", -supplyLeft)
+				elseif (r.coal or 0) > 0 and coalLeft < 0 then string.format("🔴 석탄 %d 부족", -coalLeft)
+				else string.format("🟢 도착 예상 보급 %d", supplyLeft)
 			if r.locked then
 				return mkRow(content, r.name, string.format("%s · 🔒 %s", r.region, r.locked), {
 					{ text = "잠김", color = COLORS.grey, onClick = function() message = r.region .. " 해역은 " .. r.locked; messageOk = false; render() end },
 				}, 56)
 			end
 			local tags = (if r.yard then " 🔧조선소" else "") .. (if r.quest then " 📜" .. r.quest else "")
-			return mkRow(content, r.name .. tags, string.format("%s · %d일 · %d km · 보급품 %d%s%s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
+			return mkRow(content, r.name .. tags, string.format("%s · %d일 · %d km\n필요 보급 %d%s · %s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
 				{ text = "출항", color = COLORS.blue, onClick = function() confirmSail(r) end },
 			}, 56)
 		end)
@@ -6286,8 +6355,10 @@ local function renderYard()
 	shipHeader.Name = "YardSectionShips"
 	add(function() return mkLabel(content, "막대 색=새 배 · 흰 선=현재 기함 · ▲ 향상 / ▼ 감소\n실결제는 기함 매각 보상을 뺀 금액이고, 교체하면 기존 대포·보강은 초기화돼.", 14, COLORS.muted, false) end)
 	local maxCargo, maxSpeed, maxHull = sh.cargoCapacity, sh.speed, sh.maxHull
+	local maxCannons, maxCrew = sh.cannons, sh.maxCrew
 	for _, s in yard.ships do
 		maxCargo, maxSpeed, maxHull = math.max(maxCargo, s.capacityAfter or s.cargo), math.max(maxSpeed, s.speed), math.max(maxHull, s.hull)
+		maxCannons, maxCrew = math.max(maxCannons, s.cannons), math.max(maxCrew, s.crew)
 	end
 	for _, s in yard.ships do
 		add(function()
@@ -6315,7 +6386,7 @@ local function renderYard()
 			if si then withIcon(row, si[1], si[2], si[3], 100) end
 			-- [선박 시각 비교] 실제 교체 후 화물칸·속도·선체를 표시한다.
 			-- 공통 카드의 본문 높이에 비교 영역을 예약해 모바일에서도 버튼·설명과 겹치지 않게 한다.
-			row:SetAttribute("FooterHeight", 76)
+			row:SetAttribute("FooterHeight", 118)
 			local chart = Instance.new("Frame")
 			chart.Name = "ShipComparisonBars"
 			chart.BackgroundTransparency = 1
@@ -6324,6 +6395,8 @@ local function renderYard()
 				{ "화물", s.capacityAfter or s.cargo, sh.cargoCapacity, maxCargo, COLORS.gold },
 				{ "속도", s.speed, sh.speed, maxSpeed, COLORS.blue },
 				{ "선체", s.hull, sh.maxHull, maxHull, COLORS.green },
+				{ "포문", s.cannons, sh.cannons, maxCannons, COLORS.red },
+				{ "승조", s.crew, sh.maxCrew, maxCrew, COLORS.grey },
 			}
 			for i, st in stats do
 				local y = (i - 1) * 20
@@ -6358,8 +6431,8 @@ local function renderYard()
 			end
 			local function fitChart()
 				local narrow = row.AbsoluteSize.X < 450
-				chart.Position = UDim2.new(0, if narrow then 12 else 118, 1, if narrow then -121 else -73)
-				chart.Size = UDim2.new(1, if narrow then -24 else -232, 0, 60)
+				chart.Position = UDim2.new(0, if narrow then 12 else 118, 1, if narrow then -161 else -112)
+				chart.Size = UDim2.new(1, if narrow then -24 else -232, 0, 100)
 			end
 			row:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitChart)
 			task.defer(fitChart)
@@ -8495,7 +8568,10 @@ function RENDERERS.quest()
 			if q.kind == "deliver" then
 				table.insert(buttons, { text = "납품", color = COLORS.blue, onClick = function() call("TurnIn", { questId = q.id }) end })
 			end
-			return mkRow(content, q.name, string.format("%s\n진행 %d/%d · 보상 %d코인", strandText(q), math.min(q.progress, q.amount), q.amount, q.rewardCoins), buttons, if q.story then 124 else 76)
+			local done, total = math.min(q.progress, q.amount), math.max(1, q.amount)
+			local filled = math.clamp(math.floor(done / total * 10 + 0.5), 0, 10)
+			local progress = string.rep("▰", filled) .. string.rep("▱", 10 - filled)
+			return mkRow(content, q.name, string.format("%s\n%s  %d/%d · 보상 %d코인", strandText(q), progress, done, q.amount, q.rewardCoins), buttons, if q.story then 136 else 92)
 		end)
 	end
 	-- 자동으로 기록되는 발견·방문·연구 목표 (진행도만 보여 준다)
@@ -8688,6 +8764,15 @@ end
 
 function RENDERERS.battle()
 	H.walletBar("battle")
+	H.statStrip({
+		{ "선체", string.format("%d/%d", view.ship.hull, view.ship.maxHull), tone = if view.ship.hull < view.ship.maxHull * 0.5 then "bad" else "good" },
+		{ "포문", tostring(view.ship.cannons), tone = "key" },
+		{ "승조원", string.format("%d/%d", view.ship.crew, view.ship.maxCrew), tone = "key" },
+		{ "속도", string.format("%.1f", view.ship.speed), tone = "key" },
+	})
+	if view.ship.hull < view.ship.maxHull * 0.5 then
+		add(function() return mkLabel(content, "🔴 내구도 절반 이하 · 출격 전 선체 수리를 권장해.", 15, COLORS.red, true) end)
+	end
 	local lo = view.loadout
 	if not equipped then
 		equipped = table.clone(lo.equipped)
@@ -9094,9 +9179,15 @@ function RENDERERS.map()
 								{ text = "잠김", color = COLORS.grey, onClick = function() message = r.region .. " 해역은 " .. r.locked; messageOk = false; render() end },
 							}, 56)
 						end
-						return mkRow(content, r.name, string.format("%s · %d일 · %d km · 보급품 %d%s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else ""), {
-							{ text = "출항", color = COLORS.blue, onClick = function() selectedPort = nil; confirmSail(r) end },
-						}, 56)
+						local supplyLeft = view.ship.supplies - r.supplies
+						local coalLeft = (view.ship.coal or 0) - (r.coal or 0)
+						local status = if supplyLeft < 0 then string.format("🔴 보급 %d 부족", -supplyLeft)
+							elseif coalLeft < 0 then string.format("🔴 석탄 %d 부족", -coalLeft)
+							else string.format("🟢 보급 여유 %d", supplyLeft)
+						return mkRow(content, r.name .. (if r.quest then " 📜의뢰" else "") .. (if r.yard then " 🔧조선소" else ""),
+							string.format("%s · 항해 %d일 · %d km\n필요 보급 %d%s · %s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", status), {
+							{ text = "출항 확인", color = if supplyLeft < 0 or coalLeft < 0 then COLORS.red else COLORS.blue, onClick = function() selectedPort = nil; confirmSail(r) end },
+						}, 82)
 					end)
 				end
 			end
