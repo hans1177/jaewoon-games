@@ -94,7 +94,7 @@ function FM.scale(canon, gain: number)
 end
 
 -- 사람형 적·동료: 상태(IDLE/RUN/ANTICIPATION/ATTACK/RECOVERY/HIT)와 위상(0~1)으로 자세를 만든다.
-function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?, rootRot: CFrame?, retreat: boolean?, skill: string?, weaponMotion: string?)
+function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?, rootRot: CFrame?, retreat: boolean?, skill: string?, weaponMotion: string?, moveEffort: number?)
 	-- [상태 전이] 이전 프레임의 실제 관절 자세를 보존해 급작스러운 팔·다리 교체를 방지한다.
 	if h.lastActorState and h.lastActorState ~= state then
 		h.transitionPose = table.clone(h.canon)
@@ -144,22 +144,24 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		bend("UpperArmL", (-0.13 - 0.025 * breathe) * stance, 0, -0.035)
 		bend("UpperArmR", (-0.13 + 0.025 * breathe) * stance, 0, 0.035)
 	elseif state == "RUN" then
-		local stride = if style == "heavy" then 0.76 elseif style == "nimble" then 1.12 elseif style == "scholar" then 0.84 else 1
+		-- [발 디딤 보정] 실제 이동 거리와 위상에 따른 골반·무릎·발목 순서. 발이 아닌 몸통만 움직이는 스케이팅 금지.
+		local stride = if style == "heavy" then 0.78 elseif style == "nimble" then 1.08 elseif style == "scholar" then 0.86 else 1
+		local effort = math.clamp(moveEffort or 1, 0.18, 1.25)
 		local plant = math.sin(phase * math.pi * 2)
-		bend("Chest", -0.05 * stride, -plant * 0.06, plant * 0.025)
-		bend("ThighL", plant * 0.12 * stride, 0, 0)
-		bend("ThighR", -plant * 0.12 * stride, 0, 0)
-		bend("ShinL", -math.max(0, plant) * 0.2 * stride, 0, 0)
-		bend("ShinR", -math.max(0, -plant) * 0.2 * stride, 0, 0)
-		-- [발 디딤] 착지한 쪽 발목은 눌러주고 반대쪽은 들어 주어 미끄러짐을 줄인다.
-		bend("FootL", -math.max(0, plant) * 0.13 * stride, 0, 0)
-		bend("FootR", -math.max(0, -plant) * 0.13 * stride, 0, 0)
-		bend("Spine", -0.04 * stride, -plant * 0.035, 0)
-		-- [달리기 반작용] 발의 보폭과 반대쪽 팔·팔꿈치가 자연스럽게 움직인다.
-		bend("UpperArmL", -plant * 0.23 * stride, 0, -0.04)
-		bend("UpperArmR", plant * 0.23 * stride, 0, 0.04)
-		bend("ForearmL", -0.13 - math.max(0, -plant) * 0.12, 0, 0)
-		bend("ForearmR", -0.13 - math.max(0, plant) * 0.12, 0, 0)
+		local liftL, liftR = math.max(0, -plant), math.max(0, plant)
+		bend("Chest", -0.11 * effort, -plant * 0.12 * effort, plant * 0.055 * effort)
+		bend("Spine", -0.055 * effort, plant * 0.095 * effort, -plant * 0.03)
+		bend("Head", 0.06 * effort, plant * 0.035, 0)
+		bend("ThighL", plant * 0.64 * stride * effort, 0, -0.035)
+		bend("ThighR", -plant * 0.64 * stride * effort, 0, 0.035)
+		bend("ShinL", -liftL * 0.52 * stride * effort, 0, 0)
+		bend("ShinR", -liftR * 0.52 * stride * effort, 0, 0)
+		bend("FootL", (-plant * 0.23 + liftL * 0.16) * stride * effort, 0, 0)
+		bend("FootR", (plant * 0.23 + liftR * 0.16) * stride * effort, 0, 0)
+		bend("UpperArmL", -plant * 0.42 * stride * effort, 0, -0.045)
+		bend("UpperArmR", plant * 0.42 * stride * effort, 0, 0.045)
+		bend("ForearmL", -0.17 - liftL * 0.25 * effort, 0, 0)
+		bend("ForearmR", -0.17 - liftR * 0.25 * effort, 0, 0)
 	elseif state == "EVADE" then
 		-- [정예 회피] 기존 R15 달리기 포즈에 측면 체중 이동과 가드·발 디딤을 더한다.
 		local side = if (h.model:GetAttribute("MotionVariant") or 1) % 2 == 0 then -1 else 1
@@ -198,6 +200,26 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		elseif state == "HIT" then
 			bend("UpperArmL", -0.55 * pulse, 0, -0.23 * pulse)
 			bend("Chest", -0.19 * pulse, 0, 0)
+		end
+	elseif role == "thrower" then
+		-- [투척 모션] 오른팔을 뒤로 당기고 앞발을 딛은 뒤 상체로 던진다. 명중 판정은 기존 사수 규칙.
+		if state == "ANTICIPATION" then
+			local load = math.sin(math.clamp(phase, 0, 1) * math.pi * 0.5)
+			bend("UpperArmR", -1.2 * load, 0.24 * load, 0.48 * load)
+			bend("ForearmR", -0.75 * load, 0, 0)
+			bend("UpperArmL", -0.3 * load, 0, -0.22 * load)
+			bend("Chest", 0.18 * load, -0.4 * load, 0)
+			bend("ThighR", 0.27 * load, 0, 0)
+			bend("ShinR", -0.24 * load, 0, 0)
+		elseif state == "ATTACK" then
+			local release = math.sin(math.clamp(phase, 0, 1) * math.pi)
+			bend("UpperArmR", -1.8 * release, -0.17 * release, -0.28 * release)
+			bend("ForearmR", 0.85 * release, 0, 0)
+			bend("Chest", -0.32 * release, 0.44 * release, 0)
+			bend("ThighL", -0.18 * release, 0, 0)
+		elseif state == "RECOVERY" then
+			bend("UpperArmR", -0.36 * (1 - phase), 0, 0)
+			bend("Chest", -0.14 * (1 - phase), 0, 0)
 		end
 	elseif role == "archer" then
 		-- 사수: 예고 단계에 두 손으로 조준하고 타격 후 팔을 낮춘다.
@@ -288,7 +310,7 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	end
 	-- [몹 액션 다양화] 직군별 기존 공격 타이밍을 보존하면서 준비/타격/회복의 몸짓을 3가지로 차별화한다.
 	local variant = h.model:GetAttribute("MotionVariant")
-	if variant and (role == "grunt" or role == "archer" or role == "shield" or role == "charger" or role == "boss") then
+	if variant and (role == "grunt" or role == "archer" or role == "shield" or role == "charger" or role == "boss" or role == "thrower") then
 		if state == "ANTICIPATION" or state == "ATTACK" then
 			local sign = if state == "ANTICIPATION" then 1 else -1
 			if variant == 1 then
@@ -317,7 +339,7 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	-- [전투 몹 모션] 몹이 공격 준비·공격·회복 중에도 실제 양다리와 허리로 무게를 싣도록 한다.
 	-- 기존 공용 R15 리그의 관절만 움직이고 공격 시각·사거리·피해량은 바꾸지 않는다.
 	-- 이전에는 일부 몹이 공격 상태에서 팔 두 관절만 움직여 정적 모델처럼 보였다.
-	if role == "grunt" or role == "archer" or role == "shield" or role == "charger" or role == "boss" then
+	if role == "grunt" or role == "archer" or role == "shield" or role == "charger" or role == "boss" or role == "thrower" then
 		local p = math.clamp(phase, 0, 1)
 		if state == "ANTICIPATION" then
 			local set = math.sin(p * math.pi * 0.5)

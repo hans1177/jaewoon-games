@@ -1181,6 +1181,8 @@ function FieldScene.start(opts)
 		archer = {
 			{ "궁수", "Rogue", Color3.fromRGB(98, 105, 70), "bow" },
 			{ "석궁병", "Knight", Color3.fromRGB(82, 101, 127), "crossbow" },
+			{ "돌 투척병", "Rogue_Hooded", Color3.fromRGB(107, 109, 93), "fist", nil, "stone" },
+			{ "도기 투척병", "Rogue", Color3.fromRGB(134, 91, 65), "fist", nil, "jar" },
 			{ "장총병", "Rogue_Hooded", Color3.fromRGB(66, 106, 90), "flintlock_musket" },
 			{ "권총병", "Rogue", Color3.fromRGB(112, 90, 72), "flintlock_pistol" },
 		},
@@ -1253,8 +1255,14 @@ function FieldScene.start(opts)
 			task.wait()
 		end
 		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % #kinds + 1])
-		local styleN = math.floor((i - 1) / 4) % 4 + 1
+		local styleN = math.floor((i - 1) / 4) % #looks[ac.kind] + 1
 		local style = looks[ac.kind][styleN]
+		-- [모든 시대 투척병] 시대별 실물을 재사용한다. 미등록 폭탄 메시로 대체하지 않는다.
+		local throwAsset = style[6]
+		if throwAsset == "jar" and (opts.year or 1517) >= 1600 then
+			style = table.clone(style)
+			style[1] = "폭탄병"
+		end
 		-- [시대 일치] 1680년 이전에는 수석식 총 대신 기존 활/석궁 실물 모델만 사용한다.
 		if (opts.year or 1517) < 1680 and (style[4] == "flintlock_musket" or style[4] == "flintlock_pistol") then
 			style = looks.archer[(styleN % 2) + 1]
@@ -1271,14 +1279,10 @@ function FieldScene.start(opts)
 		elseif weapon.family == "spear" then
 			if not isBoss then individualDef.range = math.max(individualDef.range, 8) end
 		elseif weapon.id == "crossbow" then
-			individualDef.range = math.min(individualDef.range, weapon.range)
 			individualDef.recover *= 1.28
 		elseif weapon.family == "firearm" then
 			individualDef.windup *= 1.17
 			individualDef.recover *= 1.50
-			individualDef.range = math.min(individualDef.range, weapon.range)
-		end
-		if weapon.family == "bow" then
 			individualDef.range = math.min(individualDef.range, weapon.range)
 		end
 		ac.def = individualDef
@@ -1327,14 +1331,15 @@ function FieldScene.start(opts)
 		bar.Parent = barBack
 		model:SetAttribute("EnemyWeaponId", weapon.id)
 		model:SetAttribute("EnemyShieldModel", style[5] or "")
-		model:SetAttribute("MotionRole", if isBoss then "boss" else ac.kind) -- 게임 규칙이 아닌 관절 동작 선택용
+		model:SetAttribute("MotionRole", if isBoss then "boss" elseif throwAsset then "thrower" else ac.kind) -- 게임 규칙이 아닌 관절 동작 선택용
+		if throwAsset then model:SetAttribute("ThrownAsset", throwAsset) end
 		model:SetAttribute("MotionVariant", styleN) -- 복식·전투 몸짓 전용(저장/피해와 무관)
 		local isElite = isBoss or ac.kind == "shield" or ac.kind == "charger"
 		tag.Text = (if isElite and not isBoss then "정예 " else "") .. def[1] .. " · " .. style[1]
 		tag.TextSize = if isBoss then 14 else 12
 		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil
-		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber() })
+		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber() })
 	end
 
 	end
@@ -1841,7 +1846,50 @@ function FieldScene.start(opts)
 	end))
 
 	-- 궁수 화살 궤적: 두 끝점 사이에 빔을 잠깐 그린다 (모양 파트 없이 보이지 않는 좌표만 쓴다)
-	local function arrowTrail(from: Vector3, to: Vector3)
+	local function arrowTrail(from: Vector3, to: Vector3, thrownAsset: string?)
+		if thrownAsset == "stone" or thrownAsset == "jar" then
+			-- [실물 포물선] 기존 등록된 CC0 메시만 복제한다. 임시 구체·폭탄 모델 금지.
+			local kind = if thrownAsset == "stone" then "Town" else "Relics"
+			local asset = if thrownAsset == "stone" then "rock-small" else "pot"
+			local lib = ReplicatedStorage:FindFirstChild("MareAssets")
+			local group = lib and lib:FindFirstChild(kind)
+			local original = AssetIds[kind .. "/" .. asset] and group and group:FindFirstChild(asset)
+			if not (original and original:IsA("Model")) then return end
+			local item = original:Clone()
+			local pieces = 0
+			for _, bp in item:GetDescendants() do
+				if bp:IsA("BasePart") then
+					bp.Anchored, bp.CanCollide, bp.CanTouch, bp.CanQuery = true, false, false, false
+					pieces += 1
+				end
+			end
+			if pieces == 0 then item:Destroy() return end
+			local _, ext = item:GetBoundingBox()
+			local length = math.max(ext.X, ext.Y, ext.Z)
+			if length < 0.01 then item:Destroy() return end
+			item:ScaleTo(math.clamp(1.3 / length, 0.08, 3))
+			item.Parent = folder
+			local started = os.clock()
+			local duration = math.clamp((to - from).Magnitude / 75, 0.2, 0.42)
+			local move
+			move = RunService.Heartbeat:Connect(function()
+				if finished or not item.Parent then
+					move:Disconnect()
+					item:Destroy()
+					return
+				end
+				local t = math.clamp((os.clock() - started) / duration, 0, 1)
+				local p = from:Lerp(to, t) + Vector3.new(0, math.sin(t * math.pi) * math.min((to - from).Magnitude * 0.18, 5), 0)
+				item:PivotTo(CFrame.new(p) * CFrame.Angles(t * 7, t * 4, t * 3))
+				if t >= 1 then
+					move:Disconnect()
+					item:Destroy()
+					burst(to, if thrownAsset == "jar" then 11 else 5, thrownAsset == "jar")
+					if thrownAsset == "jar" then sfx("sfx_card_chain", 0.28, 0.9) end
+				end
+			end)
+			return
+		end
 		local function anchorAt(pos: Vector3)
 			local a = Instance.new("Part")
 			a.Anchored, a.CanCollide, a.CanQuery, a.CanTouch = true, false, false, false
@@ -2309,13 +2357,7 @@ function FieldScene.start(opts)
 				end
 			end
 		end
-		-- [방패 방향] 실제 적 R15가 바라보는 전방에서만 기존 방패 방어율을 적용한다.
-		-- 측면/후방 공격, 경직 중 공격은 방패를 우회하되 기존 방어 수치 자체는 변경하지 않는다.
-		local towardPlayer = (hrpPos - e.root.Position) * Vector3.new(1, 0, 1)
-		local shieldFacing = e.ac.state ~= "stagger" and towardPlayer.Magnitude > 0.1
-			and e.root.CFrame.LookVector:Dot(towardPlayer.Unit) > 0.35
-		local shieldBlocked = shieldFacing and e.ac.def.frontGuard ~= nil
-		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power) * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, shieldFacing, stagger)
+		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power) * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, e.ac.state ~= "stagger", stagger)
 		e.hp = e.ac.hp
 		e.hurtAt = os.clock()
 		e.bar.Size = UDim2.fromScale(math.max(e.ac.hp, 0) / e.maxHp, 1)
@@ -2386,27 +2428,15 @@ function FieldScene.start(opts)
 				end
 			end
 		end
-		-- [무기별 실제 타격감] 판정 피해량은 불변. 무기 계열에 따라 충돌음·섬광·진동·스턴감만 차별화한다.
-		local family = wpn.family
-		local impact = e.root.Position + Vector3.new(0, 2, 0)
-		burst(impact, if visualMobile then math.min(12 + dealt, 18) else 12 + dealt, mult >= 1.5)
-		if shieldBlocked then
-			sfx("sfx_metal_clash", 0.8, 0.9)
-			pulseAt("BLOCK_IMPACT", CFrame.new(impact), Color3.fromRGB(160, 195, 228), Color3.fromRGB(255, 222, 150), 7, 5)
-		elseif family == "axe" or family == "blunt" then
-			sfx("sfx_workshop_chop", 0.72, if family == "axe" then 0.85 else 0.72)
-			if not visualMobile then shockRing(impact - Vector3.new(0, 2, 0), 7, Color3.fromRGB(252, 166, 91), 0.18) end
-		elseif family == "spear" then
-			sfx("sfx_card_blade", 0.55, 1.3)
-			pulseAt("IMPACT_FLASH", CFrame.new(impact), Color3.fromRGB(147, 230, 245), Color3.new(1, 1, 1), 5, 4)
-		elseif family == "dagger" then
-			sfx("sfx_card_blade", 0.48, 1.5)
-		elseif family == "bow" or family == "firearm" then
-			sfx(if family == "firearm" then "sfx_card_fire" else "sfx_card_volley", 0.52, 1.25)
+		burst(e.root.Position + Vector3.new(0, 2, 0), 12 + dealt, mult >= 1.5)
+		if not quiet then
+			sfx("sfx_hit", 0.7, 0.95 + math.random() * 0.2)
+			if mult >= 1.5 then
+				sfx("sfx_metal_clash", 0.6, 0.9)
+			end
 		else
-			sfx("sfx_hit", if quiet then 0.4 else 0.7, 0.95 + math.random() * 0.2)
+			sfx("sfx_hit", 0.4, 1.1)
 		end
-		if mult >= 1.5 and not shieldBlocked then sfx("sfx_metal_clash", 0.6, 0.9) end
 		flashHit(e.model)
 		popDamage(e.model, dealt, mult >= 1.5)
 		do
@@ -2416,7 +2446,7 @@ function FieldScene.start(opts)
 			if crit then shockRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 1.5, 0), 9, c, 0.35) end
 		end
 		-- 타격 멈춤(적이 잠깐 굳음)과 시야 펀치로 손맛을 준다
-		e.holdUntil = os.clock() + (if mult >= 1.5 then 0.12 elseif wpn.family == "axe" or wpn.family == "blunt" then 0.085 elseif wpn.family == "dagger" then 0.04 else 0.06)
+		e.holdUntil = os.clock() + (if mult >= 1.5 then 0.12 else 0.06)
 		local punchCam = workspace.CurrentCamera
 		if punchCam and not quiet then
 			punchCam.FieldOfView = 70 - (if mult >= 1.5 then 5 else 2)
@@ -3862,22 +3892,17 @@ function FieldScene.start(opts)
 						shards(ep + Vector3.new(0, 1.5, 0), 6, ered, 4)
 					end
 				end
-				-- [병종별 실제 발사] 총은 화약 발포·총구 섬광, 석궁은 한 발의 장전음, 활은 시위 소리.
 				if e.ac.def.keepAway then
-					if e.weapon and e.weapon.family == "firearm" and e.weapon.id ~= "crossbow" then
-						sfx("sfx_cannon", if e.weapon.motion == "PISTOL" then 0.32 else 0.45, 1.5)
-						pulseAt("IMPACT_FLASH", e.root.CFrame * CFrame.new(0, 1.35, -2), Color3.fromRGB(255, 210, 128), Color3.fromRGB(255, 251, 218), 8, 5)
-					elseif e.weapon and e.weapon.id == "crossbow" then
-						sfx("sfx_equipment_wear", 0.4, 1.55)
-						arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0))
+					if e.throwAsset then
+						arrowTrail(e.root.Position + Vector3.new(0, 2.6, 0), hrp.Position + Vector3.new(0, 0.6, 0), e.throwAsset)
+						sfx("sfx_card_swing", 0.34, if e.throwAsset == "stone" then 1.22 else 0.92)
+					elseif e.weapon and e.weapon.family == "firearm" then
+						-- [총병 발포] 원본 발포 소리·섬광 사용. 화살로 총알을 위장하지 않는다.
+						sfx("sfx_naval_cannon", 0.28, 1.45)
+						burst(e.root.Position + Vector3.new(0, 1.7, 0), 10, true)
 					else
-						sfx("sfx_card_volley", 0.5, 1.2)
 						arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0))
 					end
-				elseif e.shieldModel then
-					sfx("sfx_metal_clash", 0.35, 0.7)
-				elseif e.weapon and (e.weapon.family == "axe" or e.weapon.family == "blunt") then
-					shockRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 1.2, 0), 5, Color3.fromRGB(244, 163, 96), 0.2)
 				end
 				if e.warn then e.warn:Destroy() e.warn = nil end
 				if e.warnBb then e.warnBb:Destroy() e.warnBb = nil end
@@ -3901,13 +3926,8 @@ function FieldScene.start(opts)
 						lastCombatAt = now
 						endStreak("피격")
 						say("공격을 받았다!")
-						local weaponFamily = e.weapon and e.weapon.family or "blade"
-						hurtReact(if e.ac.def.boss then 2 else (if weaponFamily == "axe" or weaponFamily == "blunt" then 1.45 elseif weaponFamily == "dagger" then 0.65 else 1))
-						local hitColor = if weaponFamily == "axe" or weaponFamily == "blunt" then Color3.fromRGB(255, 178, 86)
-							elseif weaponFamily == "spear" then Color3.fromRGB(135, 230, 246)
-							elseif e.shieldModel then Color3.fromRGB(165, 195, 230) else Color3.fromRGB(255, 92, 73)
-						shards(hrp.Position + Vector3.new(0, 1.5, 0), if visualMobile then 5 else 9, hitColor, 4)
-						burst(hrp.Position + Vector3.new(0, 2, 0), if visualMobile then 9 else 16, false)
+						hurtReact(if e.ac.def.boss then 2 else 1)
+						burst(hrp.Position + Vector3.new(0, 2, 0), 16, false)
 						refresh()
 						if pl.hp <= 0 then
 							task.defer(function()
@@ -3952,7 +3972,12 @@ function FieldScene.start(opts)
 				desired = flat.Unit * wish * math.min(e.ac.def.speed * 0.8, flat.Magnitude / math.max(dtc, 0.016))
 			end
 			local response = if evading then 22 elseif charging then 17 elseif desired.Magnitude > 0 then 9 else 13
-			e.moveVel = (e.moveVel or Vector3.zero):Lerp(desired, 1 - math.exp(-response * dtc))
+			-- [스키 이동 방지] 공격 준비·타격·후딜에 잔여 속도를 끊고 발을 접지한다.
+			if not charging and not evading and (frozen or e.ac.state == "windup" or e.ac.state == "active" or e.ac.state == "recover") then
+				e.moveVel = Vector3.zero
+			else
+				e.moveVel = (e.moveVel or Vector3.zero):Lerp(desired, 1 - math.exp(-response * dtc))
+			end
 			if e.moveVel.Magnitude < 0.07 then e.moveVel = Vector3.zero end
 			local delta = e.moveVel * dtc
 			if charging and e.chargeTarget then
@@ -4052,7 +4077,8 @@ function FieldScene.start(opts)
 						bob, lean = 0.22 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.55
 					end
 				end
-				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll), kindId == "archer" and wish < 0, nil, e.weapon and e.weapon.motion)
+				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll), kindId == "archer" and wish < 0, nil, if e.throwAsset then nil else (e.weapon and e.weapon.motion),
+					math.clamp(traveled / math.max(dtc, 0.016) / math.max(e.ac.def.speed, 1), 0.18, 1.25))
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then

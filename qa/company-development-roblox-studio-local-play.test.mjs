@@ -3983,12 +3983,21 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
     && field.includes('castEffect(sid, a.name')
     && field.includes('if ally.healer then table.insert(activeHealers, ally) end'),
     'companion skills and out-of-combat healer assistance must remain automatic');
-  assert.ok(field.includes('streakCountedSeq ~= streakActionSeq')
-    && field.includes('if hits == 0 then endStreak("헛손질") end')
+  assert.ok(field.includes('not fieldStreakResult.credited[creditedSeq]')
+    && field.includes('if hits == 0 and hitActionSeq >= streakCountedSeq then endStreak("헛손질") end')
     && field.includes('now - lastCombatAt >= 8')
     && field.includes('0.12 + math.min(healers, 2) * 0.18'),
     'cumulative streak must be scored per attack and passive healing must remain tiny and non-combat only');
   assert.ok(allies.includes('function JobSkills.allySkills'));
+  // [투척병·접지 회귀] 기존 사수 체력/피해/재사용은 그대로, 승인된 메시만 궤도로 움직인다.
+  for(const type of ['stone','jar'])assert.ok(field.includes('nil, "'+type+'"'),'missing thrower '+type);
+  assert.ok(field.includes('#looks[ac.kind] + 1')&&field.includes('throwAsset = style[6]'));
+  assert.ok(field.includes('AssetIds[kind .. "/" .. asset]')&&field.includes('from:Lerp(to, t)'));
+  assert.ok(field.includes('e.throwAsset')&&field.includes('arrowTrail(e.root.Position'));
+  assert.ok(field.includes('e.moveVel = Vector3.zero')&&field.includes('math.clamp(traveled / math.max(dtc'));
+  assert.ok(motion.includes('local effort = math.clamp(moveEffort or 1')&&motion.includes('local liftL, liftR'));
+  assert.ok(motion.includes('elseif role == "thrower" then'));
+
   const steps=JSON.parse(fs.readFileSync(base+'tools/devloop/studio-scripts/mare-weapons.json','utf8'));
   const names=['fist','sword','dagger','axe','spear','mace','bow','crossbow','gun'];
   assert.equal(steps.filter(row=>row.type==='capture').length,27);
