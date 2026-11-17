@@ -492,7 +492,31 @@ function FieldScene.start(opts)
 		elseif biome.encounter == "ruins" then "ruins"
 		elseif biome.encounter == "highland" then "highland"
 		else "plains"
+	-- [특수 기후의 실제 바닥 재질] 색 보정만이 아니라 눈·진흙·화산암 지형을 구분한다.
+	if questTerrain == "glacier" then
+		winterScene = true
+		seasonName = "빙설기"
+		biome.mat = Enum.Material.Snow
+		biome.ground = Color3.fromRGB(214, 227, 235)
+		biome.fog = Color3.fromRGB(184, 205, 226)
+		biome.fogEnd = math.min(biome.fogEnd, 470)
+	elseif questTerrain == "volcanic" then
+		biome.mat = Enum.Material.Slate
+		biome.ground = Color3.fromRGB(77, 72, 75)
+		biome.fog = Color3.fromRGB(122, 109, 112)
+		biome.fogEnd = math.min(biome.fogEnd, 520)
+	elseif questTerrain == "swamp" then
+		biome.mat = Enum.Material.Mud
+		biome.ground = biome.ground:Lerp(Color3.fromRGB(65, 87, 76), 0.72)
+		biome.fog = Color3.fromRGB(137, 167, 154)
+		biome.fogEnd = math.min(biome.fogEnd, 390)
+	elseif questTerrain == "jungle" then
+		biome.mat = Enum.Material.Grass
+		biome.ground = biome.ground:Lerp(Color3.fromRGB(49, 103, 59), 0.55)
+		biome.fog = biome.fog:Lerp(Color3.fromRGB(123, 173, 146), 0.45)
+	end
 	folder:SetAttribute("FieldQuestTerrainTheme", questTerrain)
+	folder:SetAttribute("FieldSeasonLabel", seasonName)
 	-- 지역(바이옴)과 위험도에 따라 맵 크기가 다르다: 위험한 곳일수록 넓다
 	local SIZE = math.floor(biome.size * (1 + math.min(opts.danger or 1, 10) * 0.03))
 	local AREA = math.min((SIZE / 200) ^ 2, 2.5)
@@ -845,7 +869,7 @@ function FieldScene.start(opts)
 		},
 		swamp = {
 			{"Terrain","ground-riverbend",22,-0.68,-0.75,false,0}, {"Terrain","ground-riverstraight",21,-0.60,-0.46,false,70},
-			{"Terrain","bridge-wood",17,-0.58,-0.28,true,90}, {"Terrain","tree-crooked",18,-0.77,-0.62,true,0},
+			{"Terrain","bridge-wood",17,-0.58,-0.28,true,90}, {"Town","tree-crooked",18,-0.77,-0.62,true,0},
 			{"Terrain","forest-bush-detailed",11,0.59,-0.72,false,0}, {"Terrain","river-stone-bank",15,0.76,-0.43,false,0},
 			{"Terrain","tree-oak",20,0.80,-0.78,true,0}, {"Terrain","ground-rivercross",18,-0.71,-0.12,false,0},
 			{"Terrain","forest-bush-detailed",7,0.58,-0.15,false,0},
@@ -1929,7 +1953,7 @@ function FieldScene.start(opts)
 	do
 		local lighting = game:GetService("Lighting")
 		local climateRng = Random.new((opts.seed or 7) * 137 + 19)
-		local snowy = winterScene or (region == "nordic" and season ~= "여름")
+		local snowy = winterScene or questTerrain == "glacier" or (region == "nordic" and season ~= "여름")
 		local dry = arid or biome.kind == "mine"
 		-- [기후별 기상] 북방 설기·온대 봄비·열대 우기·사막 건기를 구별한다.
 		local weatherOptions = if snowy then { "맑음", "흐림", "눈", "옅은 안개" }
@@ -1973,6 +1997,7 @@ function FieldScene.start(opts)
 		-- [계절의 숨결] 기존 비·눈 발원점을 재사용해 봄 꽃가루·가을 낙엽·열대 수증기·사막 먼지를 띄운다.
 		local driftType = if questTerrain == "volcanic" then "화산재"
 			elseif questTerrain == "swamp" then "수면 안개"
+			elseif questTerrain == "glacier" then "설풍"
 			elseif arid then "모래바람" elseif season == "가을" and not tropical then "낙엽"
 			elseif season == "봄" and not tropical then "꽃가루" elseif monsoon then "수증기"
 			elseif snowy then "설풍" else "산들바람"
