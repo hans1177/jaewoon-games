@@ -188,3 +188,27 @@ test('원거리 공격은 무기 사거리로 조준·발사하며 석궁 R15 �
   assert.match(field,/if held >= 0\.5 and not wpn\.ranged then/);
   assert.match(field,/say\(if wpn\.ranged then "원거리 조준 중"/);
 });
+
+
+// [몹 상태이상 회귀] 정예 둔화/두목 독은 방어·회피한 공격에서 발동하지 않고 전투·저장 흐름에 섞이지 않는다.
+test('정예 감속과 두목 맹독은 명중에만 발동하고 중첩·이동속도 누출을 막는다',()=>{
+  assert.match(field,/local eliteSlowUntil, bossPoisonUntil, bossPoisonNextAt = 0, 0, math\.huge/);
+  assert.match(field,/local slowedHumanoid, originalFieldWalkSpeed = nil, nil/);
+  assert.match(field,/debuffLabel\.Name = "FieldHeroDebuff"/);
+  assert.match(field,/if hit and pl\.ward then[\s\S]*?elseif hit then[\s\S]*?if parried then[\s\S]*?elseif dealt > 0 then/);
+  assert.match(field,/if e\.elite and not e\.boss and now >= \(e\.nextSlowAt or 0\) then/);
+  assert.match(field,/e\.nextSlowAt = now \+ 8/);
+  assert.match(field,/eliteSlowUntil = math\.max\(eliteSlowUntil, now \+ 3\)/);
+  assert.match(field,/if os\.clock\(\) < eliteSlowUntil then/);
+  assert.match(field,/local targetSpeed = math\.max\(7, \(originalFieldWalkSpeed or 18\) \* 0\.65\)/);
+  assert.match(field,/if slowedHumanoid == h2 and originalFieldWalkSpeed then[\s\S]*?h2\.WalkSpeed = originalFieldWalkSpeed/);
+  assert.match(field,/elseif e\.boss and now >= \(e\.nextPoisonAt or 0\) and now >= bossPoisonUntil then/);
+  assert.match(field,/e\.nextPoisonAt = now \+ 10/);
+  assert.match(field,/bossPoisonUntil, bossPoisonNextAt = now \+ 4, now \+ 1/);
+  assert.match(field,/if pl\.hp > 0 and bossPoisonNextAt <= bossPoisonUntil and now >= bossPoisonNextAt then/);
+  assert.match(field,/bossPoisonNextAt \+= 1/);
+  assert.match(field,/pl\.hp = math\.max\(0, pl\.hp - 2\)/);
+  // 정상·비정상 철수에서 모두 속도를 원복해야 저장/항구 제어가 깨지지 않는다.
+  assert.equal((field.match(/slowedHumanoid\.WalkSpeed = originalFieldWalkSpeed/g)||[]).length, 3);
+  assert.match(field,/task\.defer\(function\(\) finish\("defeat"\) end\)/);
+});
