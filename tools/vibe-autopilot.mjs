@@ -123,6 +123,13 @@ export function findingsFrom(game, s) {
   if (s.err > 0) f.push({ id: 'console-errors', kind: 'error', task: 'health', text: `콘솔 오류 ${s.err}건. 첫 오류: ${s.errFirst}` });
   if (s.cardErr > 0) f.push({ id: 'card-console-errors', kind: 'error', task: 'cards', text: `카드 화면 점검 중 콘솔 오류 ${s.cardErr}건` });
   if (s.cardIssues.length) f.push({ id: 'card-ui-issues', kind: 'ui', task: 'cards', text: '카드 화면 글자 잘림/겹침: ' + s.cardIssues.slice(0, 3).join(' | ') });
+  // [무기 모션 품질] Studio 10타·프레임 검사에서 튐/무동작/숫자 오류가 나면 기존 무기 점검 지시서로 보낸다.
+  // 사진의 예술적 품질이나 외부 비전 AI 판정으로 간주하지 않는다.
+  if (game === 'mare-essentia') {
+    const motionError = s.studioErrors.find(error => /WEAPON_MOTION_(FRAME_JUMP|MANNEQUIN|NONFINITE)|WEAPON_R15_POSE_MISSING/.test(error));
+    if (motionError) f.push({ id: 'weapon-motion-continuity', kind: 'combat', task: 'weapons',
+      text: '공식 Studio 무기 모션 프레임 검사 실패: ' + motionError });
+  }
   if (s.assetFail > 0) f.push({ id: 'asset-fail', kind: 'asset_link', task: 'health', text: `화면 이미지 ${s.assetFail}/${s.assetTotal} 불러오기 실패. ID: ${s.failedIds.slice(0, 8).join(',')}`, ids: s.failedIds });
   if (s.ok && s.mobs === 0) f.push({ id: 'no-mobs', kind: 'combat', task: 'combat', text: '월드에 몹이 하나도 없음(전투 점검 필요)' });
   const ui = Object.entries(s.ui).filter(([, v]) => v === 0).map(([k]) => k);
