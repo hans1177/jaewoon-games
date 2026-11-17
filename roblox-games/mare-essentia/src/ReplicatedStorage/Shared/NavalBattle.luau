@@ -499,15 +499,15 @@ function NavalBattle.play(opts)
 		local pct = label(back, "100%", 14, Color3.fromRGB(255, 255, 255), true)
 		pct.Size = UDim2.fromScale(1, 1)
 		pct.ZIndex = 5
-		return fill, pct
+		return fill, pct, nm
 	end
-	local meFill, mePct = bar("L", "우리 배")
+	local meFill, mePct, meName = bar("L", "우리 배")
 	local foeFill, foePct = bar("R", opts.enemyName or "해적선")
 	-- [함선 버프 표시] 기함 내구 막대의 아래쪽 3픽셀을 실제 스킬 남은 시간 표시로 쓴다.
 	local buffFill = Instance.new("Frame")
 	buffFill.Name = "ShipSkillBuffProgress"
 	buffFill.Position = UDim2.new(0, 0, 1, -3)
-	buffFill.Size = UDim2.fromScale(0, 0)
+	buffFill.Size = UDim2.new(0, 0, 0, 3)
 	buffFill.BorderSizePixel = 0
 	buffFill.BackgroundColor3 = Color3.fromRGB(160, 226, 255)
 	buffFill.ZIndex = 6
@@ -905,10 +905,60 @@ function NavalBattle.play(opts)
 			{ id = "evade", text = "회피 기동", key = Enum.KeyCode.E, cd = 16, dur = 4, col = Color3.fromRGB(70, 168, 198) }
 			else
 			{ id = "rapid", text = "일제사격", key = Enum.KeyCode.E, cd = 20, dur = 6, col = Color3.fromRGB(198, 105, 70) }
+		-- [실제 함종별 조작감] 저장된 함선 이름·종류·행동 성향을 설명과 시청각 표현에 활용한다.
+		-- 기술 개수·쿨타임·지속시간과 서버 전투 수치는 모두 기존 값 그대로 둔다.
+		if special.id == "dash" then
+			if id == "geobukseon" then
+				special.text, special.cue = "철갑 돌진", "거북선 선수 돌격"
+			elseif shipDef and shipDef.rowed then
+				special.text, special.cue = "노선 돌진", "노잡이 일제 가속"
+			else
+				special.text, special.cue = "접현 돌진", "선수로 접근"
+			end
+		elseif special.id == "guard" then
+			if id == "ironclad_frigate" then
+				special.text, special.cue = "철갑 폐쇄", "장갑으로 포탄 방어"
+			elseif id == "panokseon" then
+				special.text, special.cue = "방패 갑판", "판옥선 방어 태세"
+			elseif (trait.cargoGuard or 0) >= 0.08 then
+				special.text, special.cue = "화물 격벽", "선창 피해 차단"
+			else
+				special.text, special.cue = "철벽 방어", "선체 피해 차단"
+			end
+		elseif special.id == "evade" then
+			if id == "mist_seeker" or id == "flying_dutchman" then
+				special.text, special.cue = "해무 기동", "안개를 타고 회피"
+			elseif shipDef and shipDef.rowed then
+				special.text, special.cue = "노선 회피", "빠른 노 방향 전환"
+			elseif (trait.wind or 0) >= 0.08 then
+				special.text, special.cue = "풍향 회피", "바람을 타고 선회"
+			else
+				special.cue = "측면 포격 회피"
+			end
+		elseif special.id == "rapid" then
+			if id == "ship_of_line" then
+				special.text, special.cue = "전열 일제", "양현 포문 개방"
+			elseif id == "galleon" then
+				special.text, special.cue = "갈레온 포격", "중포 연속 사격"
+			elseif id == "frigate" then
+				special.text, special.cue = "프리깃 포격", "장포 집중 사격"
+			elseif (trait.cannon or 0) >= 0.08 then
+				special.text, special.cue = "집중 일제", "화포 집중 사격"
+			else
+				special.cue = "포격 속도 증가"
+			end
+		end
 		SKILLS = {
-			{ id = "fire", text = "포 사격", key = Enum.KeyCode.Q, cd = 7, dur = 0.7, col = Color3.fromRGB(204, 163, 98) },
+			{ id = "fire", text = "포 사격", cue = cannon.name .. " 발사", key = Enum.KeyCode.Q, cd = 7, dur = 0.7, col = Color3.fromRGB(204, 163, 98) },
 			special,
 		}
+		if meName then
+			local role = if trait.role then trait.role elseif shipDef and shipDef.rowed then "노선"
+				elseif shipDef and shipDef.cannons >= 12 then "포격선" else "일반 함선"
+			meName.Text = string.format("%s · %s", opts.shipName or shipDef and shipDef.name or "기함", role)
+			meName.TextSize = if MOBILE_VFX then 12 else 14
+			meName.TextTruncate = Enum.TextTruncate.AtEnd
+		end
 	end
 	-- 스킬은 가속 버튼(오른쪽 아래) 둘레의 반원에 놓는다 (엄지로 닿기 쉽게)
 	for i, sk in SKILLS do
@@ -945,17 +995,22 @@ function NavalBattle.play(opts)
 		end
 		skillReady[sk.id] = now + sk.cd
 		skillUntil[sk.id] = now + sk.dur
-		skillPop(sk.text .. "!", sk.col)
+		skillPop(sk.text .. " · " .. (sk.cue or "발동") .. "!", sk.col)
 		skillFx(sk.id, sk.dur)
 		if sk.id == "rapid" or sk.id == "fire" then
 			Sfx.play("sfx_skill_rapid", 0.65, 1, "sfx_horn")
 			Sfx.play("sfx_naval_cannon", if sk.id == "fire" then 0.38 else 0.5, 0.82, "sfx_cannon")
 		elseif sk.id == "guard" then
-			Sfx.play("sfx_metal_clash", 0.75, 0.76, "sfx_hit")
-			Sfx.play("sfx_skill_evade", 0.4, 0.72, "sfx_horn")
+			Sfx.play("sfx_metal_clash", 0.75, if opts.shipId == "ironclad_frigate" then 0.62 else 0.82, "sfx_hit")
+			Sfx.play(if opts.shipId == "panokseon" then "sfx_naval_wood" else "sfx_skill_evade", 0.44, 0.73, "sfx_horn")
 		else
 			Sfx.play("sfx_skill_evade", 0.8, if sk.id == "dash" then 1.18 else 1, "sfx_sail")
 			Sfx.play("sfx_naval_splash", 0.45, 1.2, "sfx_splash")
+			if sk.id == "dash" then
+				Sfx.play(if shipDef and shipDef.rowed then "sfx_rope_pull" else "sfx_naval_ram", 0.46, 1.1, "sfx_creak")
+			elseif opts.shipId == "mist_seeker" or opts.shipId == "flying_dutchman" then
+				Sfx.play("sfx_wind", 0.38, 1.28, "sfx_sail")
+			end
 		end
 	end
 	for _, sk in SKILLS do
@@ -3051,16 +3106,23 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local at = Instance.new("Attachment")
 		at.Parent = anchorPart
 		local list, light, ringColor
+		local def = ShipDefs.Ships[sh.shipId or ""]
+		local role = if def then def.trait or {} else {}
+		local heavyGun = def and def.cannons >= 12
+		local cargoHull = (role.cargoGuard or 0) >= 0.08
+		local fogShip = sh.shipId == "mist_seeker" or sh.shipId == "flying_dutchman"
 		if id == "fire" or id == "rapid" then
-			ringColor = ORANGE
+			ringColor = if id == "rapid" and heavyGun then Color3.fromRGB(255, 214, 117) else ORANGE
 			list = {
 				{ tex = "fire", c0 = YELLOW, c1 = RED, s0 = 3.5, s1 = 0.5, life = 0.8, v0 = 6, v1 = 14, spread = 60, glow = 1, rate = 38, a0 = 0 },
 				{ tex = "spark", c0 = YELLOW, s0 = 0.8, s1 = 0.2, life = 0.9, v0 = 14, v1 = 30, glow = 1, rate = 30, acc = Vector3.new(0, -20, 0), a0 = 0 },
 			}
 			light = { color = ORANGE, bright = 3, range = 30 }
 		elseif id == "guard" then
-			-- [철벽] 기존 함선 메시 위로 차가운 금속 불티가 흐르는 2초 방어 피드백.
-			ringColor = Color3.fromRGB(112, 211, 255)
+			-- [선창 격벽/철갑/방패 갑판] 실제 선체 역할에 맞춰 불티와 방어 파문 색을 구분한다.
+			ringColor = if cargoHull then Color3.fromRGB(236, 190, 117)
+				elseif sh.shipId == "panokseon" then Color3.fromRGB(180, 236, 189)
+				else Color3.fromRGB(112, 211, 255)
 			list = {
 				{ tex = "spark", c0 = Color3.fromRGB(191, 233, 255), c1 = ringColor,
 					s0 = 1.2, s1 = 0.15, life = 0.8, v0 = 5, v1 = 16, spread = 120,
@@ -3068,8 +3130,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			}
 			light = { color = ringColor, bright = 2.6, range = 25 }
 		else
-			-- [접현 돌진·회피] 파도와 풍향을 가르는 입자. 기존 승인 텍스처만 사용.
-			ringColor = if id == "dash" then Color3.fromRGB(255, 184, 104) else Color3.fromRGB(150, 220, 255)
+			-- [접현 돌진·회피] 노선의 포말 / 해무 함선의 안개 / 항해선의 역풍 파문.
+			ringColor = if id == "dash" then Color3.fromRGB(255, 184, 104)
+				elseif fogShip then Color3.fromRGB(192, 190, 248)
+				elseif (role.wind or 0) >= 0.08 then Color3.fromRGB(147, 242, 204)
+				else Color3.fromRGB(150, 220, 255)
 			list = {
 				{ tex = "smoke", c0 = FOAM, c1 = SEA, s0 = 2.5, s1 = 6, life = 0.9, v0 = 22, v1 = 40, spread = 18, rate = if MOBILE_VFX then 18 else 44, a0 = 0.35, drag = 3 },
 				{ tex = "spark", c0 = ringColor, s0 = 0.9, s1 = 0.2, life = 0.7, v0 = 24, v1 = 50, spread = 25, glow = 1, rate = if MOBILE_VFX then 12 else 36, a0 = 0 },
@@ -3085,6 +3150,31 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		lt.Parent = anchorPart
 		FX.shockRing(ORIGIN + sh.pos, ringColor, 26, 0.8)
 		FX.shockRing(ORIGIN + sh.pos, ringColor, 16, 0.55)
+		-- [함종별 실제 선체 연출] 승인된 물/안개 입자를 재사용. 새 장식 Part·모형은 생성하지 않는다.
+		local fwd = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
+		local right = Vector3.new(-fwd.Z, 0, fwd.X)
+		if id == "dash" then
+			-- 노선은 양옆 노가 물을 젓는 듯한 좌우 포말, 거북선은 선수 수면 돌파.
+			local foamCount = if MOBILE_VFX then 3 else 7
+			for side = -1, 1, 2 do
+				local offset = ORIGIN + sh.pos - fwd * sh.length * 0.16 + right * side * sh.length * 0.18
+				FX.burst(offset, nil, {
+					{ tex = "smoke", c0 = FOAM, c1 = if sh.shipId == "geobukseon" then Color3.fromRGB(239, 220, 183) else SEA,
+						s0 = 1.2, s1 = 4.5, life = 0.8, v0 = 6, v1 = 15, spread = 65,
+						n = foamCount, a0 = 0.23, drag = 1.6 },
+				})
+			end
+		elseif id == "rapid" and heavyGun and not MOBILE_VFX then
+			-- 대구경 전열함의 양현 포문 충격. 실제 공격력/포탄 수치엔 변화가 없다.
+			FX.shockRing(ORIGIN + sh.pos + right * sh.length * 0.17, ringColor, 11, 0.4)
+			FX.shockRing(ORIGIN + sh.pos - right * sh.length * 0.17, ringColor, 11, 0.4)
+		elseif id == "evade" and fogShip then
+			FX.burst(ORIGIN + sh.pos - fwd * sh.length * 0.2, nil, {
+				{ tex = "smoke", c0 = Color3.fromRGB(188, 207, 220), c1 = Color3.fromRGB(133, 158, 186),
+					s0 = 3.2, s1 = 8.5, life = 1.3, v0 = 3, v1 = 9, spread = 100,
+					n = if MOBILE_VFX then 4 else 11, a0 = 0.43, drag = 1.8 },
+			})
+		end
 		-- [스킬 지역 문양] 원래 스킬 색은 보존하고 높은 단계에서 지역 색의 보조 파문을 표시한다.
 		local profile = sh.fx or DEFAULT_FX
 		if (profile.stage or 2) >= 3 then
@@ -3767,8 +3857,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					navalSay("range", "적이 사거리 밖이에요. 가까이 붙어요 (스틱을 위로).", now)
 				elseif wf < 0.88 then
 					navalSay("wind", "맞바람이에요. 바람을 등지게 뱃머리를 돌리면 빨라져요.", now)
+				elseif SKILLS[2].id == "dash" and dist < 135 and now >= skillReady.dash then
+					navalSay("dash", "접현 특화선이에요. 돌진(E)으로 선수를 적에게 맞추고 가까이 붙어요.", now)
+				elseif SKILLS[2].id == "guard" and meHp < 0.75 and dist < 110 and now >= skillReady.guard then
+					navalSay("guard", "방어 특화선이에요. 적 포탄이 닿기 직전 격벽(E)으로 선체를 지켜요.", now)
+				elseif SKILLS[2].id == "rapid" and dist < cannon.range and now >= skillReady.rapid then
+					navalSay("rapid", "포격 특화선이에요. 선측을 맞추고 일제사격(E)으로 포문을 열어요.", now)
+				elseif SKILLS[2].id == "evade" and dist < 95 and now >= skillReady.evade then
+					navalSay("evade", "기동 특화선이에요. 회피(E)로 포탄 낙하 지점을 벗어나요.", now)
 				elseif dist < cannon.range and now >= skillReady.fire then
-					navalSay("rapid", "사거리 안이에요. 선측을 맞춰 포 사격(Q)을 쓰면 좋아요.", now)
+					navalSay("fire", "사거리 안이에요. 선측을 맞춰 포 사격(Q)을 쓰면 좋아요.", now)
 				elseif dist < 60 then
 					navalSay("close", "너무 가까워요. 옆면을 맞춰 일제 사격하거나 거리를 벌려요.", now)
 				end
@@ -3874,7 +3972,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						local acc = math.clamp((side - 0.3) / 0.7, 0.35, 1) * (1 - 0.3 * d / cannon.range)
 						local base = opts.sim.me.cannons * 1.6 * opts.sim.me.cannonMult * (0.85 + 0.3 * math.random()) * Combat.SIM.volley
 						rt.shots += 1
-						local volley = if now < skillUntil.rapid then 3 else 2
+						-- 대형 포격선은 포문 수에 맞춰 추가 포탄 궤적 한 발만 표현한다. 피해 판정은 마지막 포탄 1회 그대로.
+						local volley = if now < skillUntil.rapid then (if shipDef and shipDef.cannons >= 14 and not MOBILE_VFX then 4 else 3) else 2
 						for k = 0, volley - 1 do
 							task.delay(k * 0.08, function()
 								if finished or rt.ended then
@@ -4237,7 +4336,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					tint = if inRange and aligned then Color3.fromRGB(114, 255, 177) else Color3.fromRGB(255, 155, 115)
 					alpha = math.min(alpha, 0.3 - pulse * 0.19)
 				end
-				if firing and sideArc then
+				if now < skillUntil.guard and sideArc then
+					tint, alpha = Color3.fromRGB(120, 220, 255), 0.12
+				elseif now < skillUntil.dash and sideArc then
+					tint, alpha = Color3.fromRGB(255, 190, 116), 0.22
+				elseif now < skillUntil.rapid and sideArc then
+					tint, alpha = Color3.fromRGB(255, 220, 116), 0.13
+				elseif firing and sideArc then
 					tint, alpha = Color3.fromRGB(255, 231, 136), 0.06
 				elseif hitFoe and onEnemy then
 					tint, alpha = Color3.fromRGB(255, 243, 192), 0.02
@@ -4267,6 +4372,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				status, tip, tone = "④ 접현 백병전", "선체 내구도와 승조원 피해를 확인해.", Color3.fromRGB(255, 174, 123)
 			elseif phase == "end" then
 				status, tip, tone = "전투 종료", "확정된 결과를 확인해.", Color3.fromRGB(248, 220, 163)
+			elseif now < skillUntil[SKILLS[2].id] then
+				local sk = SKILLS[2]
+				status = "특화 발동 · " .. sk.text
+				tip = string.format("%s · 남은 %.1f초", sk.cue or "전투 기술", skillUntil[sk.id] - now)
+				tone = sk.col
 			elseif not inRange then
 				status, tip, tone = "① 적선 접근", string.format("포 사거리까지 %d m · 바람과 조타를 확인해.", math.ceil(dd - cannon.range)), Color3.fromRGB(255, 205, 130)
 			elseif not aligned then
@@ -4361,7 +4471,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				mePct.Text = string.format("%s · %s %.1f초", mePct.Text, sk.text, remaining)
 				mePct.TextSize = if MOBILE_VFX then 10 else 12
 				buffFill.BackgroundColor3 = sk.col
-				buffFill.Size = UDim2.fromScale(math.clamp(remaining / sk.dur, 0, 1), 0)
+				buffFill.Size = UDim2.new(math.clamp(remaining / sk.dur, 0, 1), 0, 0, 3)
 				buffFill.Visible = true
 				break
 			end
