@@ -4038,6 +4038,38 @@ test('Mare enemies and companions have grounded speed responsive R15 locomotion'
     'original combat authority, attack/defense flows must remain');
 });
 
+// [무기별 모션 회귀] 적·동료는 동일한 공용 무기 원본+전신 모션을 통과하고 공격 차례별 자세를 순환한다.
+test('Mare enemy and companion weapon motions use grounded shared combo and recoil',()=>{
+  const root='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
+  const scene=fs.readFileSync(root+'FieldScene.luau','utf8');
+  const motion=fs.readFileSync(root+'FieldMotion.luau','utf8');
+  assert.ok(motion.includes('FM.weaponCombo(weaponMotion, h.weaponBeat or 1)'),
+    'shared authored weapon beat must be played for enemy and ally');
+  assert.ok(motion.includes('weaponMotion ~= nil or role == "ally-melee"'),
+    'unarmed companion must use canonical combat motion without changing bomb throw');
+  assert.ok(scene.includes('e.fm.weaponBeat = ((e.fm.weaponBeat or 0) % 3) + 1')&&
+    scene.includes('a.fm.weaponBeat = ((a.fm.weaponBeat or 0) % 3) + 1'),
+    'enemy and ally attacks must cycle 1-3 authored weapon beats');
+  assert.ok(scene.includes('FM.actor(a.fm, "ATTACK", 0.25 + math.min(ap * 1.6, 1) * 0.35')&&
+    !scene.includes('FM.sample(ac, math.min(ap * 1.6, 1)'),
+    'ally must no longer bypass planted feet, torso recoil and transition');
+  for(const marker of ['local gun = grip == "PISTOL" or grip == "RIFLE"',
+    'elseif bow then','elseif crossbow then','elseif spear then','elseif dagger then',
+    'elseif axe then','elseif blunt then','local point = grip == "RAPIER"',
+    'local curved = grip == "SABRE"','if role == "shield" then',
+    '폭탄·투척 무기','맨손 동료']){
+    assert.ok(motion.includes(marker),'missing weapon-specific motion: '+marker);
+  }
+  assert.ok(motion.includes('local attackT = math.clamp((t - 0.25) / 0.35')&&
+    motion.includes('local follow = if state == "ATTACK"')&&
+    motion.includes('local returnGrip = if state == "RECOVERY"'),
+    'weapon wind-up, strike, follow-through and recover must stay on original timing');
+  assert.ok(scene.includes('AC.stepEnemy(e.ac, dtc, dist')&&
+    scene.includes('strikeEnemy(tgt, 0.6 * aw.power')&&
+    scene.includes('a.nextAt = now + 1.3 / aw.speed'),
+    'original attack authority, ally power and cooldown remain intact');
+});
+
 test('Mare nine weapon families have distinct authored normal and skill R15 gameplay',()=>{
   const base='roblox-games/mare-essentia/';
   const source=fs.readFileSync(base+'src/ReplicatedStorage/Shared/Weapons.luau','utf8');

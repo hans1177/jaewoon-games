@@ -3926,6 +3926,8 @@ function FieldScene.start(opts)
 				event, hit = AC.stepEnemy(e.ac, dtc, dist, if e.ac.def.keepAway or e.ac.def.boss then true else not e.waiting)
 			end
 			if event == "telegraph" then
+				-- [적 무기 연속 동작] 공격 차례에 따라 기존 공용 무기 1~3타를 순환한다. 피해·판정은 동일.
+				if e.fm then e.fm.weaponBeat = ((e.fm.weaponBeat or 0) % 3) + 1 end
 				attackers += 1
 				e.warnUntil = now + e.ac.def.windup
 				burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
@@ -4518,6 +4520,8 @@ function FieldScene.start(opts)
 				if tgt and not moving and now >= a.nextAt then
 					a.nextAt = now + 1.3 / aw.speed
 					a.swingAt = now
+					-- [동료 무기 연속 동작] 공격 주기·피해를 바꾸지 않고 관절 동작 번호만 넘긴다.
+					if a.fm then a.fm.weaponBeat = ((a.fm.weaponBeat or 0) % 3) + 1 end
 					a.energy = math.max(0, a.energy - 10)
 					strikeEnemy(tgt, 0.6 * aw.power, a.root.Position, if aw.family == "axe" then 2 else 1.0, aw.family == "axe", true)
 					if aw.ranged then
@@ -4576,16 +4580,10 @@ function FieldScene.start(opts)
 					if a.castAt and now - a.castAt < 0.7 then
 						FM.actor(a.fm, "INTERACT", (now - a.castAt) / 0.7, dt, nil, 1.3, nil, false, a.castSkill)
 					elseif ap >= 0 and ap < 1 then
-						-- 동료의 실제 경력·지역·시대에 맞춰 검·활·총의 기존 모션을 재사용한다
-						local ac = FM.weaponCombo(a.weapon.motion, 1)
-						if ac then
-							table.clear(a.fm.canon)
-							FM.sample(ac, math.min(ap * 1.6, 1) * ac.duration, a.fm.canon)
-							FM.scale(a.fm.canon, 1.3)
-							FM.step(a.fm, dt)
-						else
-							FM.actor(a.fm, "ATTACK", ap * 0.9, dt, nil, 1.35, nil, false, nil, a.weapon.motion)
-						end
+						-- [동료 무기 공격 통합] 원본 1~3타의 재생 속도는 유지하면서 전신·축발·반동을 함께 적용한다.
+						-- 맨손도 공용 연타를 사용하며 기존 피해 발생 시각과 공격 주기는 그대로다.
+						FM.actor(a.fm, "ATTACK", 0.25 + math.min(ap * 1.6, 1) * 0.35,
+							dt, nil, 1.3, nil, false, nil, a.weapon.motion)
 					elseif ap >= 1 and ap < 1.7 then
 						-- [동료 무기 회수] 실제 공격 후 0.35초 자세를 정돈한다(기존 공격 판정·주기는 동일).
 						FM.actor(a.fm, "RECOVERY", math.clamp((ap - 1) / 0.7, 0, 1), dt, nil, 1.25, nil, false, nil, a.weapon.motion)

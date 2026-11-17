@@ -222,24 +222,34 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("Chest", -0.19 * pulse, 0, 0)
 		end
 	elseif role == "thrower" then
-		-- [투척 모션] 오른팔을 뒤로 당기고 앞발을 딛은 뒤 상체로 던진다. 명중 판정은 기존 사수 규칙.
+		-- [폭탄·투척 무기] 오른쪽 어깨 뒤로 무게 저장→앞발 고정→팔꿈치·손목 순차 이탈→자세 복귀.
+		-- 폭발 판정과 실제 투사체 시각은 FieldScene 기존 경로가 소유한다.
 		if state == "ANTICIPATION" then
 			local load = math.sin(math.clamp(phase, 0, 1) * math.pi * 0.5)
-			bend("UpperArmR", -1.2 * load, 0.24 * load, 0.48 * load)
-			bend("ForearmR", -0.75 * load, 0, 0)
-			bend("UpperArmL", -0.3 * load, 0, -0.22 * load)
-			bend("Chest", 0.18 * load, -0.4 * load, 0)
-			bend("ThighR", 0.27 * load, 0, 0)
-			bend("ShinR", -0.24 * load, 0, 0)
+			bend("UpperArmR", -1.30 * load, 0.24 * load, 0.48 * load)
+			bend("ForearmR", -0.80 * load, 0, 0)
+			bend("HandR", -0.24 * load, 0, 0)
+			bend("UpperArmL", -0.30 * load, 0, -0.22 * load)
+			bend("Chest", 0.20 * load, -0.45 * load, 0)
+			bend("Spine", 0.12 * load, -0.18 * load, 0)
+			bend("ThighR", 0.28 * load, 0, 0)
+			bend("ShinR", -0.25 * load, 0, 0)
+			bend("FootR", 0.16 * load, 0, 0)
 		elseif state == "ATTACK" then
-			local release = math.sin(math.clamp(phase, 0, 1) * math.pi)
-			bend("UpperArmR", -1.8 * release, -0.17 * release, -0.28 * release)
-			bend("ForearmR", 0.85 * release, 0, 0)
-			bend("Chest", -0.32 * release, 0.44 * release, 0)
-			bend("ThighL", -0.18 * release, 0, 0)
+			local release = math.sin(math.clamp((phase - 0.25) / 0.35, 0, 1) * math.pi)
+			bend("UpperArmR", -1.75 * release, -0.18 * release, -0.30 * release)
+			bend("ForearmR", 0.94 * release, 0, 0)
+			bend("HandR", 0.46 * release, 0, 0)
+			bend("Chest", -0.35 * release, 0.49 * release, 0)
+			bend("Spine", -0.22 * release, 0.22 * release, 0)
+			bend("ThighL", -0.23 * release, 0, 0)
+			bend("FootL", -0.18 * release, 0, 0)
 		elseif state == "RECOVERY" then
-			bend("UpperArmR", -0.36 * (1 - phase), 0, 0)
-			bend("Chest", -0.14 * (1 - phase), 0, 0)
+			local settle = 1 - math.clamp(phase, 0, 1)
+			bend("UpperArmR", -0.40 * settle, 0, 0)
+			bend("ForearmR", -0.25 * settle, 0, 0)
+			bend("Chest", -0.17 * settle, 0, 0)
+			bend("ThighL", 0.10 * settle, 0, 0)
 		end
 	elseif role == "archer" then
 		-- [화약 투척병] 승인된 실제 폭탄 모델을 오른손에서 던지는 독립 R15 모션.
@@ -389,21 +399,23 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("Chest", 0.08 + recoil * 0.13, 0, 0)
 		end
 	end
-	-- [몬스터 실무기 모션] 검/도끼/창/철퇴/활/석궁/총은 공용 무기 원본 관절 동작을 재생한다.
-	-- 공격 판정·타이밍·피해량은 기존 ActionCombat에 맡기고 시각 자세만 교체한다.
-	if state == "ATTACK" and weaponMotion then
-		local weaponCombo = FM.weaponCombo(weaponMotion, 1)
+	-- [적·동료 공용 무기 연속 공격] 실제 장착 무기의 원본 R15 동작을 공격 차례(1~3타)대로 재생한다.
+	-- 맨손 동료는 원본 잽/크로스를, 폭탄 투척병은 아래의 고유 투척 관절 동작을 유지한다.
+	if state == "ATTACK" and (weaponMotion ~= nil or role == "ally-melee" or role == "ally-ranged") then
+		local weaponCombo = FM.weaponCombo(weaponMotion, h.weaponBeat or 1) or FM.weaponCombo(weaponMotion, 1)
 		if weaponCombo then
 			FM.sample(weaponCombo, math.clamp((phase - 0.25) / 0.35, 0, 1) * weaponCombo.duration, h.canon)
 		end
 	end
-	-- [무기별 몸통-손목 연결] R15 원본 공격 포즈에 힘의 선행·반동·회수와 호흡을 얹는다.
-	-- 무기별 피해/사거리/공격 상태 시간은 건드리지 않으며 팔뿐 아니라 가슴·허리·축발을 함께 움직인다.
+	-- [무기별 전신 모션] 원본 공격 자세에 예고→발사/충격→후속 반동→손목 회수·재장전을 동기화한다.
+	-- 관절 전용: 기존 공격 이벤트/피해/쿨타임/사거리/저장값/루트 이동에는 관여하지 않는다.
 	local grip = weaponMotion or ""
 	if grip ~= "" and state ~= "INTERACT" and state ~= "HIT" then
 		local t = math.clamp(phase, 0, 1)
+		local attackT = math.clamp((t - 0.25) / 0.35, 0, 1)
 		local prepare = if state == "ANTICIPATION" then math.sin(t * math.pi * 0.5) else 0
-		local strike = if state == "ATTACK" then math.sin(t * math.pi) else 0
+		local strike = if state == "ATTACK" then math.sin(attackT * math.pi) else 0
+		local follow = if state == "ATTACK" then math.clamp((attackT - 0.42) / 0.58, 0, 1) else 0
 		local returnGrip = if state == "RECOVERY" then (1 - t) * (1 - t) else 0
 		local hold = if state == "IDLE" or state == "RUN" then 1 else 0
 		local gun = grip == "PISTOL" or grip == "RIFLE"
@@ -417,57 +429,115 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		local curved = grip == "SABRE" or grip == "SCIMITAR" or grip == "KATANA"
 		local pistol = grip == "PISTOL"
 		if gun then
-			-- 총구 조준 → 화약 점화 → 어깨 반동 → 장전. 권총은 한 손, 장총은 왼손 개머리판 지지.
-			bend("UpperArmR", -0.38 * hold - 0.58 * prepare + 0.28 * strike - 0.24 * returnGrip, -0.08 * prepare, 0.10)
-			bend("ForearmR", -0.30 * hold - 0.36 * prepare + 0.50 * strike - 0.48 * returnGrip, 0, 0)
-			bend("HandR", -0.12 * prepare + 0.22 * strike, 0, -0.08 * strike)
-			bend("UpperArmL", (if pistol then -0.18 else -0.46) * (hold + prepare) - 0.36 * returnGrip, 0, -0.12)
-			bend("Chest", -0.11 * prepare + 0.21 * strike - 0.09 * returnGrip, -0.09 * prepare, 0)
-			bend("Head", -0.08 * prepare + 0.15 * strike, 0, 0)
-			bend("ThighR", 0.12 * prepare + 0.07 * strike, 0, 0)
-		elseif bow or crossbow then
-			-- 활은 시위를 당기는 팔이 따로 움직이고, 석궁은 가슴에 견착한 뒤 방아쇠·재장전.
-			local draw = if bow then 1 else 0.55
-			bend("UpperArmL", -0.45 * hold - (0.76 + draw * 0.16) * prepare - 0.20 * strike, 0, -0.12)
-			bend("UpperArmR", -0.24 * hold - draw * 0.58 * prepare + 0.38 * strike - 0.35 * returnGrip, 0, 0.16)
-			bend("ForearmR", -draw * 0.68 * prepare + 0.55 * strike - 0.67 * returnGrip, 0, 0)
-			bend("HandR", -0.18 * prepare + 0.25 * strike, 0, 0)
-			bend("Chest", -0.08 * prepare + 0.09 * strike, 0.10 * prepare, 0)
-			bend("Head", -0.11 * prepare, 0.04 * strike, 0)
+			-- [총] 권총은 한 손 조준/손목 반동, 장총은 왼손 지지/양어깨 견착/탄환 후 장전.
+			local support = if pistol then 0.4 else 1
+			bend("UpperArmR", -0.34 * hold - 0.64 * prepare + 0.44 * strike + 0.20 * follow - 0.30 * returnGrip, 0.05 * prepare, 0.10)
+			bend("ForearmR", -0.30 * hold - 0.48 * prepare + 0.42 * strike + 0.30 * follow - 0.52 * returnGrip, 0, 0)
+			bend("HandR", -0.15 * prepare + 0.36 * strike + 0.16 * follow - 0.22 * returnGrip, 0, -0.12 * strike)
+			bend("UpperArmL", -0.12 * hold - support * (0.56 * prepare + 0.18 * strike + 0.42 * returnGrip), 0, -0.17 * support)
+			bend("ForearmL", -support * (0.32 * prepare - 0.16 * strike + 0.58 * returnGrip), 0, 0)
+			bend("Chest", -0.14 * prepare + 0.27 * strike + 0.16 * follow - 0.14 * returnGrip, -0.10 * prepare + 0.09 * follow, 0)
+			bend("Spine", -0.12 * prepare + 0.18 * strike + 0.10 * follow, 0, 0)
+			bend("Head", -0.12 * prepare + 0.11 * strike, 0.04 * follow, 0)
+			bend("ThighR", 0.19 * prepare + 0.08 * strike, 0, 0.06 * strike)
+			bend("FootR", -0.13 * strike + 0.08 * returnGrip, 0, 0)
+		elseif bow then
+			-- [활·장궁] 앞팔 고정→뒤팔로 시위 끝까지 당김→손가락 이탈→가슴 회전·팔 복귀.
+			local draw = if grip == "LONGBOW" then 1.16 else 1
+			bend("UpperArmL", -0.34 * hold - draw * (0.82 * prepare + 0.24 * strike), 0, -0.18 * prepare)
+			bend("UpperArmR", -0.18 * hold - draw * 0.80 * prepare + 0.46 * strike + 0.24 * follow - 0.32 * returnGrip, 0.17 * prepare, 0.17)
+			bend("ForearmR", -draw * 0.78 * prepare + 0.66 * strike + 0.15 * follow - 0.44 * returnGrip, 0, 0)
+			bend("HandR", -0.28 * prepare + 0.42 * strike + 0.20 * follow, 0, 0)
+			bend("HandL", -0.16 * prepare, 0, -0.09 * strike)
+			bend("Chest", -0.12 * prepare + 0.13 * strike, 0.18 * prepare - 0.16 * follow, 0)
+			bend("Head", -0.13 * prepare, -0.06 * prepare + 0.07 * follow, 0)
+			bend("ThighL", 0.10 * prepare, 0, -0.08 * prepare)
+		elseif crossbow then
+			-- [석궁] 양손 견착→짧은 방아쇠 반동→볼트 재장전 시 몸 앞으로 내려 잡기.
+			bend("UpperArmL", -0.36 * hold - 0.58 * prepare - 0.19 * strike + 0.42 * returnGrip, 0, -0.10)
+			bend("UpperArmR", -0.38 * hold - 0.64 * prepare + 0.25 * strike + 0.30 * returnGrip, 0, 0.10)
+			bend("ForearmL", -0.48 * prepare + 0.40 * returnGrip, 0, 0)
+			bend("ForearmR", -0.36 * prepare + 0.35 * strike - 0.38 * returnGrip, 0, 0)
+			bend("HandR", 0.18 * strike - 0.20 * returnGrip, 0, 0)
+			bend("Chest", -0.13 * prepare + 0.14 * strike + 0.16 * returnGrip, 0.08 * prepare, 0)
+			bend("Head", -0.10 * prepare + 0.08 * returnGrip, 0, 0)
+			bend("Spine", 0.12 * returnGrip, 0, 0)
 		elseif spear then
-			-- 창: 두 손으로 가늠하고 뒷발에서 앞발로 체중을 전해 찌른 뒤 창대를 다시 당긴다.
-			bend("UpperArmL", -0.38 * hold - 0.48 * prepare - 0.26 * strike, 0, -0.10)
-			bend("UpperArmR", -0.31 * hold - 0.46 * prepare - 0.55 * strike - 0.24 * returnGrip, 0, 0.08)
-			bend("ForearmR", -0.52 * prepare - 0.22 * strike - 0.40 * returnGrip, 0, 0)
-			bend("Chest", 0.15 * prepare - 0.29 * strike + 0.08 * returnGrip, -0.11 * prepare, 0)
-			bend("ThighL", 0.24 * prepare - 0.29 * strike, 0, 0)
-			bend("FootL", -0.16 * strike, 0, 0)
+			-- [창] 뒷다리에 힘을 저장→양손 축 정렬→앞발 내디딤 찌르기→창대 회수.
+			bend("UpperArmL", -0.35 * hold - 0.59 * prepare - 0.26 * strike - 0.22 * returnGrip, 0, -0.13)
+			bend("UpperArmR", -0.30 * hold - 0.57 * prepare - 0.79 * strike + 0.22 * follow - 0.29 * returnGrip, 0, 0.10)
+			bend("ForearmL", -0.44 * prepare - 0.22 * strike + 0.38 * returnGrip, 0, 0)
+			bend("ForearmR", -0.48 * prepare - 0.47 * strike + 0.30 * follow + 0.24 * returnGrip, 0, 0)
+			bend("HandR", -0.14 * strike + 0.19 * returnGrip, 0, 0)
+			bend("Chest", 0.17 * prepare - 0.38 * strike - 0.15 * follow + 0.13 * returnGrip, -0.14 * prepare + 0.10 * strike, 0)
+			bend("Spine", 0.12 * prepare - 0.25 * strike, 0, 0)
+			bend("ThighL", 0.27 * prepare - 0.37 * strike + 0.10 * returnGrip, 0, -0.06)
+			bend("ShinL", -0.29 * strike, 0, 0)
+			bend("FootL", -0.25 * strike + 0.12 * follow, 0, 0)
+			bend("FootR", 0.15 * strike, 0, 0)
 		elseif dagger then
-			-- 단검: 팔꿈치를 몸에 붙이고 짧고 날카롭게 찌른 후 역수로 회수한다.
-			bend("UpperArmR", -0.44 * hold - 0.60 * prepare - 0.51 * strike, 0.12, 0.14)
-			bend("ForearmR", -0.35 * prepare - 0.62 * strike - 0.29 * returnGrip, 0, 0)
-			bend("HandR", 0.28 * prepare - 0.34 * strike, 0, -0.15)
-			bend("Chest", 0.19 * prepare - 0.20 * strike, -0.19 * prepare + 0.11 * strike, 0)
+			-- [단검] 짧은 역수·횡찌르기, 어깨 선행→허리 비틀기→빠른 손목 복귀.
+			bend("UpperArmR", -0.38 * hold - 0.56 * prepare - 0.79 * strike + 0.22 * follow - 0.27 * returnGrip, 0.17, 0.17)
+			bend("ForearmR", -0.42 * prepare - 0.66 * strike + 0.36 * follow - 0.29 * returnGrip, 0, 0)
+			bend("HandR", 0.32 * prepare - 0.42 * strike + 0.13 * follow, 0, -0.18)
+			bend("UpperArmL", -0.24 * hold - 0.36 * prepare + 0.10 * strike, 0, -0.18)
+			bend("Chest", 0.19 * prepare - 0.27 * strike, -0.22 * prepare + 0.38 * strike - 0.22 * follow, 0)
+			bend("Spine", 0, -0.17 * prepare + 0.26 * strike, 0)
+			bend("ThighR", 0.23 * prepare - 0.27 * strike, 0, 0)
+			bend("FootR", -0.20 * strike, 0, 0)
+		elseif axe then
+			-- [도끼] 양손 머리 위로 들어 올림→뒷발 축 고정→체중 실은 내려찍기→긴 후속 흔들림.
+			bend("UpperArmR", -0.25 * hold - 1.09 * prepare - 0.46 * strike + 0.34 * follow - 0.35 * returnGrip, 0, -0.18)
+			bend("UpperArmL", -0.19 * hold - 0.90 * prepare - 0.34 * strike + 0.30 * follow - 0.22 * returnGrip, 0, 0.17)
+			bend("ForearmR", -0.65 * prepare + 0.58 * strike + 0.32 * follow - 0.52 * returnGrip, 0, 0)
+			bend("ForearmL", -0.48 * prepare + 0.46 * strike + 0.24 * follow, 0, 0)
+			bend("HandR", -0.20 * prepare + 0.42 * strike + 0.14 * follow, 0, 0)
+			bend("Chest", 0.27 * prepare - 0.51 * strike - 0.22 * follow + 0.20 * returnGrip, 0.16 * prepare - 0.13 * strike, 0)
+			bend("Spine", 0.19 * prepare - 0.36 * strike, 0, 0)
+			bend("ThighL", 0.26 * prepare - 0.31 * strike, 0, -0.05)
+			bend("ShinL", -0.27 * strike, 0, 0)
+			bend("FootL", 0.21 * strike, 0, 0)
+		elseif blunt then
+			-- [철퇴·망치] 옆으로 크게 감아치기→골반 회전→충격 후 팔꿈치가 늦게 되돌아온다.
+			bend("UpperArmR", -0.27 * hold - 0.72 * prepare - 0.48 * strike + 0.23 * follow - 0.35 * returnGrip, 0, -0.14)
+			bend("UpperArmL", -0.23 * hold - 0.44 * prepare - 0.22 * strike, 0, 0.14)
+			bend("ForearmR", -0.36 * prepare + 0.56 * strike + 0.43 * follow - 0.47 * returnGrip, 0, 0)
+			bend("HandR", -0.16 * prepare + 0.30 * strike, 0, 0)
+			bend("Chest", 0.12 * prepare - 0.43 * strike - 0.12 * follow + 0.14 * returnGrip, 0.28 * prepare - 0.38 * strike, 0)
+			bend("Spine", -0.07 * strike, 0.18 * prepare - 0.24 * strike, 0)
 			bend("ThighR", 0.20 * prepare - 0.19 * strike, 0, 0)
-		elseif axe or blunt then
-			-- 무거운 머리를 들어 올렸다가 내리치며, 멈춘 후 손목·어깨에 무게가 남는다.
-			local weight = if axe then 1 else 0.84
-			bend("UpperArmR", -0.25 * hold - weight * 0.91 * prepare - weight * 0.34 * strike - 0.30 * returnGrip, 0, -0.12)
-			bend("ForearmR", -weight * 0.52 * prepare + 0.47 * strike - 0.54 * returnGrip, 0, 0)
-			bend("HandR", -0.17 * prepare + 0.32 * strike + 0.10 * returnGrip, 0, 0)
-			bend("Chest", 0.23 * prepare - 0.38 * strike + 0.18 * returnGrip, 0.13 * prepare - 0.14 * strike, 0)
-			bend("ThighL", 0.21 * prepare - 0.23 * strike, 0, 0)
-			bend("ShinL", -0.17 * strike, 0, 0)
+			bend("ShinR", -0.20 * strike, 0, 0)
+			bend("FootR", 0.15 * strike, 0, 0)
 		else
-			-- 검: 레이피어는 찌르기, 곡도는 허리로 베기, 직검은 교차 베기.
+			-- [검] 레이피어는 곧은 찌르기, 곡도는 허리 회전 베기, 직검은 좌우 교차 베기.
 			local slice = if point then 0.45 elseif curved then 1.18 else 0.92
-			bend("UpperArmR", -0.31 * hold - 0.63 * prepare - (if point then 0.62 else 0.29) * strike, 0, 0.08)
-			bend("ForearmR", -0.27 * prepare - 0.34 * strike - 0.38 * returnGrip, 0, 0)
-			bend("HandR", -0.20 * prepare + 0.22 * strike, 0, 0.08 * slice)
-			bend("Chest", 0.13 * prepare - 0.21 * strike, -0.26 * slice * prepare + 0.31 * slice * strike, 0)
-			bend("Head", 0, 0.11 * slice * prepare - 0.08 * strike, 0)
-			bend("FootR", -0.12 * strike, 0, 0)
+			bend("UpperArmR", -0.31 * hold - 0.67 * prepare - (if point then 0.77 else 0.34) * strike + 0.23 * follow - 0.36 * returnGrip, 0, 0.08)
+			bend("ForearmR", -0.32 * prepare - (if point then 0.49 else 0.33) * strike + 0.34 * follow - 0.30 * returnGrip, 0, 0)
+			bend("HandR", -0.16 * prepare + 0.29 * strike, (if point then 0.02 else 0.19) * strike, 0.09 * slice)
+			bend("UpperArmL", -0.21 * hold - 0.30 * prepare + 0.08 * strike, 0, -0.17)
+			bend("Chest", 0.16 * prepare - (if point then 0.30 else 0.22) * strike, -0.28 * slice * prepare + 0.43 * slice * strike - 0.22 * slice * follow, 0)
+			bend("Spine", 0.05 * prepare - 0.12 * strike, -0.15 * slice * prepare + 0.20 * slice * strike, 0)
+			bend("Head", 0, 0.12 * slice * prepare - 0.09 * strike, 0)
+			bend("ThighL", 0.14 * prepare - 0.18 * strike, 0, 0)
+			bend("FootR", -0.18 * strike + 0.08 * follow, 0, 0)
 		end
+		-- [방패병] 무기 타격 전에도 왼팔 방패면을 유지하고 반격 후 충격을 무릎으로 흡수한다.
+		if role == "shield" then
+			local brace = math.clamp(hold + prepare + 0.6 * follow + returnGrip, 0, 1)
+			bend("UpperArmL", -0.25 * brace, 0, -0.18 * brace)
+			bend("ForearmL", -0.27 * brace, 0, 0)
+			bend("Chest", -0.09 * brace + 0.10 * strike, 0, 0)
+			bend("ThighL", 0.13 * brace, 0, -0.05 * brace)
+			bend("ShinL", -0.18 * brace, 0, 0)
+		end
+	elseif grip == "" and state == "ATTACK" and (role == "ally-melee" or role == "ally-ranged") then
+		-- [맨손 동료] 공용 잽/크로스와 함께 축발 반전·허리 회전을 넣는다.
+		local punch = math.sin(math.clamp((phase - 0.25) / 0.35, 0, 1) * math.pi)
+		bend("Chest", -0.18 * punch, 0.23 * punch, 0)
+		bend("Spine", 0, 0.15 * punch, 0)
+		bend("ThighL", 0.16 * punch, 0, 0)
+		bend("ThighR", -0.15 * punch, 0, 0)
+		bend("FootL", -0.14 * punch, 0, 0)
 	end
 	-- [실제 타격 발동작] 무기 상체 모션 뒤에도 디딤발은 고정하고 반대쪽 발을 앞으로 딛는다.
 	-- 공격 판정·거리·시간은 전혀 바꾸지 않는다. 서 있는 상태에서 뿌리째 미끄러지는 느낌만 줄인다.
