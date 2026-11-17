@@ -23,7 +23,7 @@ export type ShipDef = {
 	-- 선박의 역할별 고유 운용 성능. 기존 저장 키·기본 능력치는 변경하지 않는다.
 	trait: { role: string, weak: string, sail: number?, wind: number?, supplies: number?,
 		cargo: number?, cannon: number?, melee: number?, storm: number?, repair: number?,
-		tariff: number?, explore: number?, long: number? }?,
+		tariff: number?, explore: number?, long: number?, shallow: number?, evade: number?, cargoGuard: number? }?,
 	specialPort: string?, -- 미지 대륙 선박은 기존 태평양 외항의 비밀 조선소에서만 등장
 	minAdventure: number?, -- 기존 모험 경험/해역 해금 요구치
 	newRegional: boolean?, -- 지역 판매 신설 선박 여부: 모바일 진열에서 해당 조선소만 표시
@@ -166,7 +166,7 @@ local Blueprints = {
 -- [36척 역할 성능] 설계도 한 척당 고유 주특화·약점. 모든 보정은 기존 서버 책임 함수가 사용한다.
 -- 종전 선박의 기초 수치·가격·등급·저장 키는 바꾸지 않는다.
 local ShipPerformance = {
-	cog = { role = "북해 화물", weak = "기동·백병 약세", cargo = 0.1, sail = -0.05, storm = 0.05, melee = -0.04 },
+	cog = { role = "북해 화물", weak = "기동·백병 약세", cargo = 0.1, sail = -0.05, storm = 0.05, cargoGuard = 0.08, melee = -0.04 },
 	caravel = { role = "탐사·역풍", weak = "적재량 약세", wind = 0.08, explore = 0.08, cargo = -0.03 },
 	carrack = { role = "원양 장거리", weak = "선회·수리 부담", long = 0.08, supplies = -0.1, repair = 0.06, sail = -0.04 },
 	galleon = { role = "포격·호위", weak = "유지비 부담", cannon = 0.06, storm = 0.04, repair = 0.08 },
@@ -175,32 +175,32 @@ local ShipPerformance = {
 	sekibune = { role = "접현·노선", weak = "원양 보급 부담", melee = 0.08, wind = 0.05, supplies = 0.07 },
 	panokseon = { role = "화포·접현 방어", weak = "원양 속도 약세", cannon = 0.08, storm = 0.06, sail = -0.05 },
 	geobukseon = { role = "접현 돌격", weak = "원양·적재 약세", melee = 0.15, cannon = 0.05, sail = -0.08, cargo = -0.04 },
-	treasure_ship = { role = "대량 원양 운송", weak = "기동·함포 약세", cargo = 0.15, long = 0.05, cannon = -0.07, sail = -0.04 },
-	bermuda_sloop = { role = "순풍 고속 항해", weak = "적재·방어 약세", sail = 0.12, wind = 0.06, cargo = -0.05, storm = -0.04 },
+	treasure_ship = { role = "대량 원양 운송", weak = "기동·함포 약세", cargo = 0.15, long = 0.05, cannon = -0.07, sail = -0.04, cargoGuard = 0.12 },
+	bermuda_sloop = { role = "순풍 고속 항해", weak = "적재·방어 약세", sail = 0.12, wind = 0.06, cargo = -0.05, storm = -0.04, evade = 0.08 },
 	new_england_ketch = { role = "원양 안정·보급", weak = "함포 약세", long = 0.08, supplies = -0.06, cannon = -0.05 },
-	chesapeake_schooner = { role = "연안 경쾌 항해", weak = "대양 폭풍 약세", sail = 0.1, explore = 0.04, storm = -0.05 },
+	chesapeake_schooner = { role = "연안 경쾌 항해", weak = "대양 폭풍 약세", sail = 0.1, explore = 0.04, storm = -0.05, evade = 0.08 },
 	atlantic_brigantine = { role = "원양 기동 호위", weak = "적재 제한", long = 0.08, sail = 0.04, cargo = -0.05 },
-	manila_galleon = { role = "태평양 대량 교역", weak = "느린 기동·수리", cargo = 0.12, tariff = 0.08, sail = -0.08, repair = 0.08 },
-	zaruk = { role = "얕은 연안·소형 교역", weak = "외양 폭풍 약세", sail = 0.06, tariff = 0.06, storm = -0.12 },
+	manila_galleon = { role = "태평양 대량 교역", weak = "느린 기동·수리", cargo = 0.12, tariff = 0.08, sail = -0.08, repair = 0.08, cargoGuard = 0.12 },
+	zaruk = { role = "얕은 연안·소형 교역", weak = "외양 폭풍 약세", sail = 0.06, tariff = 0.06, storm = -0.12, shallow = 0.12 },
 	sambuk = { role = "계절풍 항해", weak = "낮은 내구", wind = 0.08, sail = 0.04, storm = -0.05 },
 	dhow = { role = "인도양 저비용 교역", weak = "화력 약세", long = 0.06, supplies = -0.1, cannon = -0.05 },
 	baghlah = { role = "향신료 대량 교역", weak = "느린 선회", cargo = 0.1, tariff = 0.08, sail = -0.05 },
 	oman_boom = { role = "원양 항속·보급", weak = "화력·기동 약세", long = 0.12, supplies = -0.1, cannon = -0.05, sail = -0.05 },
-	prau = { role = "열도 기동", weak = "외해·내구 약세", sail = 0.12, wind = 0.05, storm = -0.09 },
+	prau = { role = "열도 기동", weak = "외해·내구 약세", sail = 0.12, wind = 0.05, storm = -0.09, shallow = 0.10 },
 	pattamar = { role = "계절풍 쾌속 교역", weak = "포격 취약", wind = 0.08, tariff = 0.05, cannon = -0.06 },
 	coracora = { role = "연안 접현 기습", weak = "원양 보급 부담", melee = 0.1, sail = 0.06, supplies = 0.08 },
 	chola_warship = { role = "원정·백병전 호위", weak = "높은 보급 비용", melee = 0.1, storm = 0.04, supplies = 0.09 },
-	javanese_jong = { role = "대량 적재·화물 보호", weak = "느린 기동·수리", cargo = 0.15, storm = 0.07, sail = -0.08, repair = 0.08 },
-	nile_papyrus = { role = "강·얕은 연안", weak = "외해 폭풍 약세", sail = 0.05, storm = -0.15, cargo = -0.04 },
-	pirogue = { role = "연안 강어귀", weak = "대양 항해 약세", sail = 0.1, storm = -0.12 },
+	javanese_jong = { role = "대량 적재·화물 보호", weak = "느린 기동·수리", cargo = 0.15, storm = 0.07, sail = -0.08, repair = 0.08, cargoGuard = 0.12 },
+	nile_papyrus = { role = "강·얕은 연안", weak = "외해 폭풍 약세", sail = 0.05, storm = -0.15, cargo = -0.04, shallow = 0.14 },
+	pirogue = { role = "연안 강어귀", weak = "대양 항해 약세", sail = 0.1, storm = -0.12, shallow = 0.12 },
 	mtepe = { role = "연안 저비용 교역", weak = "포격 약세", tariff = 0.08, supplies = -0.04, cannon = -0.04 },
 	zanzibar_dhow = { role = "향신료 항로·풍향", weak = "접현 방어 약세", wind = 0.08, long = 0.05, tariff = 0.04, melee = -0.05 },
 	zanzibar_jahazi = { role = "원양 대량 보급", weak = "기동 약세", long = 0.1, supplies = -0.12, cargo = 0.06, sail = -0.05 },
 	mu_voyager = { role = "해류 탐사", weak = "적재 제한", explore = 0.06, sail = 0.04, cargo = -0.04 },
-	mist_seeker = { role = "안개 해도 탐사", weak = "함포 약세", explore = 0.08, storm = 0.04, cannon = -0.05 },
+	mist_seeker = { role = "안개 해도 탐사", weak = "함포 약세", explore = 0.08, storm = 0.04, cannon = -0.05, evade = 0.08 },
 	lemuria_scout = { role = "풍향·폭풍 대응", weak = "내구·적재 약세", wind = 0.1, storm = 0.08, sail = 0.04, cargo = -0.05 },
 	atlantis_carrier = { role = "유적·장거리 탐사", weak = "수리비 부담", long = 0.08, explore = 0.08, repair = 0.1 },
-	flying_dutchman = { role = "해무 전투·생존", weak = "교역 비효율", cannon = 0.08, storm = 0.1, tariff = -0.05 },
+	flying_dutchman = { role = "해무 전투·생존", weak = "교역 비효율", cannon = 0.08, storm = 0.1, tariff = -0.05, evade = 0.10 },
 	astheria_flagship = { role = "천문 원양 탐사", weak = "높은 유지비", long = 0.08, explore = 0.08, wind = 0.06, repair = 0.15 },
 }
 -- [신규 23척의 기준 함종값] 이미 등록·승인된 전용 3D 모델과 설계가 있는 함종만 확장한다.
