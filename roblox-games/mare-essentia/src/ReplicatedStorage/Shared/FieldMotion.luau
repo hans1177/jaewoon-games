@@ -173,31 +173,38 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		bend("FootR", 0.20 * onGround - 0.18 * brace, 0, 0)
 		bend("ShinR", -0.34 * brace, 0, 0)
 	elseif state == "BLOCK" then
-		-- 방패병: 왼손 방패를 눈높이로 세우고 양발을 벌려 실제 가드 판정을 표현.
-		bend("Spine", 0.19 + 0.08 * pulse, 0, 0)
-		bend("Chest", 0.14, 0.10 * fallSide, 0)
-		bend("Head", -0.14, 0, 0)
-		bend("UpperArmL", -1.36, -0.12, -0.45)
-		bend("ForearmL", -0.83, 0, 0)
-		bend("HandL", -0.16, 0, 0)
-		bend("UpperArmR", -0.42, 0.10, 0.20)
-		bend("ThighL", 0.32, 0, -0.15)
-		bend("ThighR", 0.25, 0, 0.16)
-		bend("ShinL", -0.52, 0, 0)
-		bend("ShinR", -0.44, 0, 0)
+		-- [충격을 받아내는 방패] 왼팔을 먼저 세우고 타격 순간 무릎·허리·손목이 뒤로 탄다.
+		-- 실제 방패의 70% 차단 판정은 Scene 소유, 여기서는 R15 관절만 변화한다.
+		local brace = math.sin(math.clamp(phase, 0, 1) * math.pi)
+		bend("Spine", 0.19 + 0.12 * brace, 0, 0)
+		bend("Chest", 0.14 + 0.10 * brace, 0.10 * fallSide, 0.07 * fallSide * brace)
+		bend("Head", -0.14 + 0.08 * brace, 0, 0)
+		bend("UpperArmL", -1.36 - 0.20 * brace, -0.12, -0.45)
+		bend("ForearmL", -0.83 + 0.16 * brace, 0, 0)
+		bend("HandL", -0.16 + 0.12 * brace, 0, 0)
+		bend("UpperArmR", -0.42 - 0.20 * brace, 0.10, 0.20)
+		bend("ThighL", 0.32 + 0.08 * brace, 0, -0.15)
+		bend("ThighR", 0.25 + 0.10 * brace, 0, 0.16)
+		bend("ShinL", -0.52 - 0.14 * brace, 0, 0)
+		bend("ShinR", -0.44 - 0.12 * brace, 0, 0)
+		bend("FootL", 0.20 * brace, 0, -0.06 * brace)
+		bend("FootR", -0.13 * brace, 0, 0.06 * brace)
 	elseif state == "PARRY" then
-		-- 검병/돌격병/두목: 오른손 무기를 비스듬히 세운 뒤 허리와 축발로 흘려낸다.
+		-- [받아치기 3박] 무기 들어 올림→날 비틀어 흘림→축발을 디뎌 반격 준비.
 		local deflect = math.sin(math.clamp(phase, 0, 1) * math.pi)
-		bend("Spine", -0.09 * deflect, 0.28 * fallSide * deflect, 0)
-		bend("Chest", -0.17 * deflect, 0.35 * fallSide * deflect, 0.17 * fallSide * deflect)
-		bend("Head", -0.10 * deflect, -0.22 * fallSide * deflect, 0)
-		bend("UpperArmR", -1.44 * deflect, 0, 0.49 * deflect)
-		bend("ForearmR", -0.88 * deflect, 0, 0)
-		bend("HandR", -0.35 * deflect, 0, 0)
+		local recoverEdge = math.sin(math.clamp((phase - 0.40) / 0.6, 0, 1) * math.pi)
+		local parrySide = if role == "boss" then -fallSide else fallSide
+		bend("Spine", -0.09 * deflect, 0.28 * parrySide * deflect, 0)
+		bend("Chest", -0.17 * deflect - 0.10 * recoverEdge, 0.35 * parrySide * deflect, 0.17 * parrySide * deflect)
+		bend("Head", -0.10 * deflect, -0.22 * parrySide * deflect, 0)
+		bend("UpperArmR", -1.44 * deflect + 0.34 * recoverEdge, 0, 0.49 * deflect)
+		bend("ForearmR", -0.88 * deflect + 0.27 * recoverEdge, 0, 0)
+		bend("HandR", -0.35 * deflect + 0.17 * recoverEdge, 0, 0)
 		bend("UpperArmL", -0.42 * deflect, 0, -0.18 * deflect)
-		bend("ThighL", 0.21 * deflect, 0, -0.10 * deflect)
+		bend("ThighL", 0.21 * deflect + 0.12 * recoverEdge, 0, -0.10 * deflect)
 		bend("ThighR", -0.12 * deflect, 0, 0.09 * deflect)
-		bend("FootL", -0.18 * deflect, 0, 0)
+		bend("FootL", -0.18 * deflect - 0.12 * recoverEdge, 0, 0)
+		bend("FootR", 0.14 * recoverEdge, 0, 0)
 	elseif state == "HIT" then
 		-- 3종 피격: 가슴 젖힘/옆구리 접힘/어깨 충격. 동일 연타가 반복 제스처처럼 보이지 않게 한다.
 		local hitStyle = h.model:GetAttribute("FieldHitVariant") or 1
@@ -329,7 +336,9 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		end
 	elseif state == "EVADE" then
 		-- [정예 회피] 기존 R15 달리기 포즈에 측면 체중 이동과 가드·발 디딤을 더한다.
-		local side = if (h.model:GetAttribute("MotionVariant") or 1) % 2 == 0 then -1 else 1
+		-- [회피 방향 일치] 지형·동료를 피하려고 AI가 선택한 실제 측보 방향을 발과 상체에 전달한다.
+		local side = h.model:GetAttribute("FieldEnemyDodgeSide")
+			or (if (h.model:GetAttribute("MotionVariant") or 1) % 2 == 0 then -1 else 1)
 		local slip = math.sin(math.clamp(phase, 0, 1) * math.pi)
 		bend("Spine", -0.19 * slip, 0.22 * side * slip, 0.16 * side * slip)
 		bend("Chest", -0.24 * slip, -0.19 * side * slip, 0.20 * side * slip)
@@ -388,6 +397,14 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		if state == "ANTICIPATION" then
 			bend("UpperArmR", -0.45 - pulse * 0.65, 0, -0.20)
 			bend("Chest", -0.12 * pulse, 0.16 * pulse, 0)
+			bend("ThighL", 0.19 * pulse, 0, -0.07 * pulse)
+		elseif state == "RECOVERY" then
+			-- 검병은 휘두른 무기의 손목을 뒤집어 받아치기 가드로 자연 복귀한다.
+			local settle = (1 - math.clamp(phase, 0, 1)) ^ 2
+			bend("UpperArmR", -0.23 * settle, 0.10 * settle, 0)
+			bend("ForearmR", 0.29 * settle, 0, 0)
+			bend("HandR", 0.14 * settle, 0, 0)
+			bend("Chest", 0, -0.14 * settle, 0)
 		elseif state == "HIT" then
 			bend("Head", 0.24 * pulse, 0, 0.10 * pulse)
 		end
@@ -402,6 +419,13 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("ThighR", 0.13, 0, 0.08)
 			bend("ShinL", -0.20, 0, 0)
 			bend("ShinR", -0.20, 0, 0)
+		elseif state == "ATTACK" then
+			-- 방패를 밀어 공간을 만들고 팔꿈치를 회수한다. 실제 충격·거리 수치는 그대로.
+			local shove = math.sin(math.clamp((phase - 0.25) / 0.35, 0, 1) * math.pi)
+			bend("UpperArmL", -0.54 * shove, 0, -0.18 * shove)
+			bend("ForearmL", 0.21 * shove, 0, 0)
+			bend("Chest", -0.30 * shove, 0.12 * shove, 0)
+			bend("FootL", -0.18 * shove, 0, 0)
 		elseif state == "HIT" then
 			bend("UpperArmL", -0.55 * pulse, 0, -0.23 * pulse)
 			bend("Chest", -0.19 * pulse, 0, 0)
@@ -457,6 +481,14 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("Chest", -0.18, 0, 0)
 			bend("UpperArmL", -0.58, 0, -0.18)
 			bend("UpperArmR", -0.30, 0, 0.15)
+		elseif state == "RECOVERY" then
+			-- 궁수·석궁병은 발사 후 시선을 유지하면서 오른손을 가슴으로 회수해 재장전한다.
+			local reload = math.sin(math.clamp(phase, 0, 1) * math.pi)
+			bend("UpperArmR", -0.30 * reload, 0, 0.16 * reload)
+			bend("ForearmR", -0.42 * reload, 0, 0)
+			bend("HandR", -0.19 * reload, 0, 0)
+			bend("Head", 0, -0.08 * reload, 0)
+			bend("ThighR", 0.10 * reload, 0, 0)
 		elseif state == "HIT" then
 			bend("Head", 0.18 * pulse, 0.17 * pulse, 0)
 		end
@@ -472,6 +504,10 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("ThighR", 0.20 * pulse, 0, 0.07)
 			bend("ShinL", -0.31 * pulse, 0, 0)
 			bend("ShinR", -0.31 * pulse, 0, 0)
+			-- 도끼병/돌격병: 뒤꿈치로 버티다가 전방으로 무게를 밀어 강타한다.
+			local drive = math.sin(math.clamp(phase, 0, 1) * math.pi)
+			bend("FootL", -0.24 * drive, 0, 0)
+			bend("FootR", 0.15 * drive, 0, 0)
 		elseif state == "RECOVERY" then
 			bend("Chest", -0.20 * (1 - phase), 0, 0)
 			bend("Head", 0.18 * (1 - phase), 0, 0)
@@ -485,6 +521,17 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("ThighL", 0.12 * pulse, 0, 0)
 			bend("ThighR", 0.10 * pulse, 0, 0)
 			bend("Spine", -0.10 * pulse, 0, 0)
+		elseif state == "IDLE" or state == "RUN" then
+			-- [두목 패턴 학습] 3연타를 읽었을 때 왼쪽 어깨를 세우고 측면을 주시한다.
+			-- 플레이어에게 반응할 시간을 주며 실제 가드 판정/무적 판정은 늘리지 않는다.
+			if h.model:GetAttribute("FieldBossStance") == "reading" then
+				bend("UpperArmR", -0.72, 0.11, 0.23)
+				bend("UpperArmL", -0.53, 0, -0.19)
+				bend("Chest", -0.12, 0.30, -0.08)
+				bend("Head", 0, -0.18, 0)
+				bend("ThighL", 0.20, 0, -0.07)
+				bend("FootR", 0, 0.12, 0)
+			end
 		elseif state == "HIT" or state == "RECOVERY" then
 			bend("Head", 0.18 * (1 - math.clamp(phase, 0, 1)), 0, 0)
 		end
@@ -527,6 +574,21 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 				bend("UpperArmL", -0.28, 0, -0.14)
 				bend("UpperArmR", -0.35, 0, 0.12)
 			end
+		end
+	end
+	-- [창병 거리 견제] 기존 승인된 창 모션을 유지하며 앞발 피벗과 양손의 조준선을 더 명확히 한다.
+	if role ~= "ally-melee" and role ~= "ally-ranged" and weaponMotion == "SPEAR" then
+		if state == "ANTICIPATION" then
+			local set = math.sin(math.clamp(phase, 0, 1) * math.pi * 0.5)
+			bend("Chest", -0.11 * set, 0.16 * set, 0)
+			bend("UpperArmL", -0.24 * set, 0, -0.10 * set)
+			bend("ThighR", 0.23 * set, 0, 0.06 * set)
+			bend("FootR", -0.16 * set, 0, 0)
+		elseif state == "RECOVERY" then
+			local withdraw = (1 - math.clamp(phase, 0, 1)) ^ 2
+			bend("ForearmR", 0.29 * withdraw, 0, 0)
+			bend("Chest", 0.11 * withdraw, -0.10 * withdraw, 0)
+			bend("FootL", 0.14 * withdraw, 0, 0)
 		end
 	end
 	-- [몹 액션 다양화] 직군별 기존 공격 타이밍을 보존하면서 준비/타격/회복의 몸짓을 3가지로 차별화한다.
