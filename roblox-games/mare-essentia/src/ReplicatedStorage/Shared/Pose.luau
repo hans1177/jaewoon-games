@@ -79,10 +79,9 @@ local function drawFace(head, role, skin, rng)
 	local decal = head:FindFirstChildWhichIsA("Decal")
 	local gui = Instance.new("SurfaceGui")
 	gui.Name = "MareFace"
-	-- [얼굴 정면] R15 머리의 기존 얼굴 데칼 면을 그대로 쓴다.
-	-- 몸통/루트 축으로 표면을 다시 고르면 머리와 몸의 상대 회전 때문에 얼굴이 뒤통수에 붙을 수 있다.
-	-- 원래 얼굴 데칼이 없는 표준 R15 머리의 정면은 -Z(Front)이다.
-	gui.Face = if decal then decal.Face else Enum.NormalId.Front
+	-- [주민 얼굴 정면] 기존 머리 데칼의 Face가 Back인 아바타에서도
+	-- 몸통 전면과 같은 로컬 -Z에만 얼굴을 그린다. 필요 시 목 관절의 180도 교정은 아래 한 곳에서 한다.
+	gui.Face = Enum.NormalId.Front
 	gui.SizingMode = Enum.SurfaceGuiSizingMode.FixedSize
 	gui.CanvasSize = Vector2.new(200, 200)
 	gui.LightInfluence = 0.6
@@ -468,6 +467,11 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	model:PivotTo(CFrame.new(bottomPosition - bottom) * model:GetPivot())
 	local placed = model:GetPivot()
 	model:PivotTo(CFrame.new(placed.Position) * CFrame.Angles(0, facing or 0, 0))
+	-- [R15 머리 전후 검사] 표준 Head/UpperTorso 실제 전방(-Z) 벡터로 뒤집힌 목 연결만 판별한다.
+	-- Motor6D.C1/AnimationConstraint.Attachment는 변경하지 않고 기존 목 Transform에 한 번 보정한다.
+	local faceHead, faceTorso = model:FindFirstChild("Head"), model:FindFirstChild("UpperTorso")
+	model:SetAttribute("NpcFaceReversed", faceHead ~= nil and faceTorso ~= nil
+		and faceHead.CFrame.LookVector:Dot(faceTorso.CFrame.LookVector) < -0.35)
 	model:SetAttribute("RigType", "R15")
 	rigMotors[model] = {
 		leftArm = model:FindFirstChild("LeftShoulder", true),
@@ -662,7 +666,16 @@ function Pose.work(model, kind, t, moving)
 	local m = rigMotors[model]
 	if not m then return end
 	local function set(motor, cf)
-		if motor then motor.Transform = cf end
+		if not motor then return end
+		if motor == m.leftArm or motor == m.rightArm then
+			-- [주민 팔 정상화] R15 어깨의 음수 X는 등 뒤 방향이다. 기존 작업 동작의
+			-- 큰 음수 전방 제스처만 앞쪽(+X)으로 바꿔 망치질·손짓·집기에서 팔 역관절을 막는다.
+			local pitch, yaw, roll = cf:ToEulerAnglesXYZ()
+			if pitch < -0.30 then cf = CFrame.Angles(-pitch, yaw, roll) end
+		elseif motor == m.neck and model:GetAttribute("NpcFaceReversed") then
+			cf = CFrame.Angles(0, math.pi, 0) * cf
+		end
+		motor.Transform = cf
 	end
 	local A = CFrame.Angles
 	-- [주민 동작 전환] 정지 자세만 초기화한다. 이동 중에는 보행의 반대 팔·접지 관절을 유지한다.
@@ -1038,6 +1051,15 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 	local wave = math.sin(p * math.pi)
 	local function set(joint, cf)
 		if joint and (joint:IsA("Motor6D") or joint:IsA("AnimationConstraint")) then
+			-- [R15 주민 공통 방향] 보행의 짧은 뒤팔 스윙은 보존하고
+			-- 공격·손짓 등 큰 전방 제스처가 등 뒤로 접히는 역부호만 바로잡는다.
+			if model.Name == "Villager" and state ~= "walk" and state ~= "run"
+				and (joint == m.leftArm or joint == m.rightArm) then
+				local pitch, yaw, roll = cf:ToEulerAnglesXYZ()
+				if pitch < -0.30 then cf = CFrame.Angles(-pitch, yaw, roll) end
+			elseif joint == m.neck and model:GetAttribute("NpcFaceReversed") then
+				cf = CFrame.Angles(0, math.pi, 0) * cf
+			end
 			joint.Transform = cf
 		end
 	end
