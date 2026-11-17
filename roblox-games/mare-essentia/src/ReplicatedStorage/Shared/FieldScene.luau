@@ -1937,28 +1937,68 @@ function FieldScene.start(opts)
 		})
 	end
 
-	-- [명중 연타 HUD] 무기 숙련 2~3타와 별개로 실제 연속 명중 수를 표시한다.
+	-- [누적 명중 연타 HUD] 숙련 2~3타와 분리한다. 실제 공격 속도·피해·3초 유지 규칙은 변경하지 않는다.
 	local comboLabel = label(gui, "", 30, Color3.fromRGB(255, 226, 120))
 	comboLabel.Name = "FieldHitStreak"
 	comboLabel.AnchorPoint = Vector2.new(0.5, 0.5)
 	comboLabel.Position = UDim2.fromScale(0.5, 0.29)
-	comboLabel.Size = UDim2.new(0.88, 0, 0, 62)
+	comboLabel.Size = UDim2.new(0.9, 0, 0, 62)
 	comboLabel.TextTransparency = 1
 	comboLabel.TextStrokeTransparency = 0.18
 	comboLabel.Font = Enum.Font.GothamBlack
 	comboLabel.ZIndex = 22
-	local comboToken, comboTween = 0, nil
-	local function showCombo(text: string, milestone: boolean?)
+	local comboInfo = label(gui, "", 14, Color3.fromRGB(202, 235, 255))
+	comboInfo.Name = "FieldStreakRecord"
+	comboInfo.AnchorPoint = Vector2.new(0.5, 0.5)
+	comboInfo.Position = UDim2.fromScale(0.5, 0.354)
+	comboInfo.Size = UDim2.new(0.86, 0, 0, 24)
+	comboInfo.TextStrokeTransparency = 0.28
+	comboInfo.Font = Enum.Font.GothamBold
+	comboInfo.ZIndex = 22
+	comboInfo.Visible = false
+	local comboGauge = Instance.new("Frame")
+	comboGauge.Name = "FieldStreakTimer"
+	comboGauge.AnchorPoint = Vector2.new(0.5, 0.5)
+	comboGauge.Position = UDim2.fromScale(0.5, 0.387)
+	comboGauge.Size = UDim2.new(0.38, 0, 0, 6)
+	comboGauge.BackgroundColor3 = Color3.fromRGB(23, 32, 45)
+	comboGauge.BackgroundTransparency = 0.2
+	comboGauge.BorderSizePixel = 0
+	comboGauge.ClipsDescendants = true
+	comboGauge.Visible = false
+	comboGauge.ZIndex = 22
+	comboGauge.Parent = gui
+	local comboGaugeCorner = Instance.new("UICorner")
+	comboGaugeCorner.CornerRadius = UDim.new(1, 0)
+	comboGaugeCorner.Parent = comboGauge
+	local comboGaugeFill = Instance.new("Frame")
+	comboGaugeFill.Name = "TimeRemaining"
+	comboGaugeFill.Size = UDim2.fromScale(1, 1)
+	comboGaugeFill.BackgroundColor3 = Color3.fromRGB(95, 226, 203)
+	comboGaugeFill.BorderSizePixel = 0
+	comboGaugeFill.ZIndex = 23
+	comboGaugeFill.Parent = comboGauge
+	local comboFillCorner = Instance.new("UICorner")
+	comboFillCorner.CornerRadius = UDim.new(1, 0)
+	comboFillCorner.Parent = comboGaugeFill
+	local comboToken, comboTween, comboPopTween = 0, nil, nil
+	local function showCombo(text: string, milestone: boolean?, accent: Color3?)
 		if finished or not comboLabel.Parent then return end
 		comboToken += 1
 		local token = comboToken
 		if comboTween then comboTween:Cancel() end
+		if comboPopTween then comboPopTween:Cancel() end
+		local targetSize = if milestone then 38 else 30
 		comboLabel.Text = text
-		comboLabel.TextSize = if milestone then 38 else 29
-		comboLabel.TextColor3 = if milestone then Color3.fromRGB(255, 226, 112) else Color3.fromRGB(232, 249, 255)
+		comboLabel.TextSize = targetSize + (if milestone then 8 else 5)
+		comboLabel.TextColor3 = accent or (if milestone then Color3.fromRGB(255, 226, 112) else Color3.fromRGB(232, 249, 255))
 		comboLabel.TextTransparency = 0
 		comboLabel.Position = UDim2.fromScale(0.5, if milestone then 0.27 else 0.29)
-		task.delay(if milestone then 0.65 else 0.4, function()
+		comboPopTween = TweenService:Create(comboLabel, TweenInfo.new(0.14, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+			TextSize = targetSize,
+		})
+		comboPopTween:Play()
+		task.delay(if milestone then 0.75 else 0.43, function()
 			if finished or comboToken ~= token or not comboLabel.Parent then return end
 			comboTween = TweenService:Create(comboLabel, TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 				TextTransparency = 1, Position = UDim2.fromScale(0.5, 0.24),
@@ -1998,13 +2038,43 @@ function FieldScene.start(opts)
 		lockBb.Enabled = best ~= nil
 	end))
 
-	-- 한 번의 타격: ActionCombat 규칙으로 피해를 계산하고 효과·처치를 처리한다
-	-- 연속 명중 연출: 5·10·15… 명중마다 화면 번쩍임·충격파·잠깐 멈춤(슬로모션 느낌)
-	local streakN, streakT, streakBest = 0, 0, 0 -- [이번 탐험 최고 기록] 저장 구조는 바꾸지 않는다.
+	-- [연타 기록·속도] 실제 명중을 1.5초 창에서 세고, 탐험 중 최고 연타·최고 속도를 표시한다.
+	-- 한 번의 타격 판정과 3초 연타 종료 규칙은 기존 ActionCombat 흐름 그대로 둔다.
+	local streakN, streakT, streakBest, streakSpeedBest = 0, 0, 0, 0
+	local streakRecent = {}
+	local streakRecordShown = false
+	local streakHudAt = 0
+	table.insert(conns, RunService.Heartbeat:Connect(function()
+		if finished or streakN == 0 then return end
+		local now = os.clock()
+		if now < streakHudAt then return end
+		streakHudAt = now + 0.05 -- 모바일에서 연타 게이지는 최대 초당 20회만 갱신한다.
+		local left = 3 - (now - streakT)
+		if left <= 0 then
+			local ended = streakN
+			streakN = 0
+			streakRecordShown = false
+			table.clear(streakRecent)
+			comboGauge.Visible = false
+			comboInfo.Text = string.format("이번 탐험 최고 %d연타 · 최고 속도 %.1f타/초", streakBest, streakSpeedBest)
+			if ended >= 10 then
+				showCombo(string.format("%d연타 종료 · 최고 %d연타", ended, streakBest), false, Color3.fromRGB(218, 226, 242))
+			end
+			return
+		end
+		comboGauge.Visible = true
+		comboGaugeFill.Size = UDim2.fromScale(math.clamp(left / 3, 0, 1), 1)
+		comboGaugeFill.BackgroundColor3 = if left < 0.8 then Color3.fromRGB(255, 114, 91)
+			elseif left < 1.6 then Color3.fromRGB(255, 211, 111)
+			else Color3.fromRGB(95, 226, 203)
+	end))
+	-- 5연타마다 축하, 25·50·100연타 이상의 이정표는 더 화려하게. 전투 수치는 바꾸지 않는다.
 	local function comboCinema(n: number, isRecord: boolean)
 		local _, h0 = char3()
 		local spectacular = n >= 50 and n % 25 == 0
-		showCombo(string.format("%d연타%s!", n, if isRecord then " · 신기록" else ""), true)
+		local title = if n >= 100 then "전설" elseif n >= 50 then "폭풍"
+			elseif n >= 25 then "질주" elseif n >= 10 then "가속" else "연결"
+		showCombo(string.format("%d연타 · %s%s!", n, title, if isRecord then " · 신기록" else ""), true)
 		screenFlash(Color3.fromRGB(255, 236, 170), if visualMobile then 0.84 else 0.62)
 		hitStopUntil = math.max(hitStopUntil, os.clock() + (if spectacular then 0.16 else 0.08))
 		shakeUntil, shakeAmp = os.clock() + 0.2, if visualMobile then 0.3 else 0.7
@@ -2152,14 +2222,43 @@ function FieldScene.start(opts)
 			e.kbT0 = os.clock()
 		end
 		if not quiet then
-			hitStopUntil = math.max(hitStopUntil, os.clock() + (if mult >= 1.5 then 0.09 else 0.045))
-			if os.clock() - streakT > 3 then streakN = 0 end
+			local hitAt = os.clock()
+			hitStopUntil = math.max(hitStopUntil, hitAt + (if mult >= 1.5 then 0.09 else 0.045))
+			if hitAt - streakT > 3 then
+				streakN = 0
+				streakRecordShown = false
+				table.clear(streakRecent)
+			end
 			streakN += 1
-			streakT = os.clock()
-			local isRecord = streakN >= 10 and streakN > streakBest
+			streakT = hitAt
+			-- 동시에 여러 적을 맞혀도 실제 명중 수를 유지하되 속도는 최근 1.5초 기준으로 제한한다.
+			for i = #streakRecent, 1, -1 do
+				if hitAt - streakRecent[i] > 1.5 then table.remove(streakRecent, i) end
+			end
+			table.insert(streakRecent, hitAt)
+			local pace = math.min(#streakRecent / 1.5, 12)
+			streakSpeedBest = math.max(streakSpeedBest, pace)
+			local grade = if pace >= 5 then "폭주" elseif pace >= 3 then "질주"
+				elseif pace >= 1.5 then "가속" else "연결"
+			local accent = if pace >= 5 then Color3.fromRGB(255, 194, 95)
+				elseif pace >= 3 then Color3.fromRGB(203, 166, 255)
+				elseif pace >= 1.5 then Color3.fromRGB(112, 229, 251)
+				else Color3.fromRGB(229, 244, 255)
+			-- 신기록은 같은 연타 안에서 최초 돌파 시 딱 한 번만 알린다.
+			local isRecord = streakN >= 10 and streakN > streakBest and not streakRecordShown
+			if isRecord then streakRecordShown = true end
 			streakBest = math.max(streakBest, streakN)
-			showCombo(string.format("%d연타%s", streakN, if isRecord then " · 신기록!" else ""), false)
-			if streakN % 5 == 0 then comboCinema(streakN, isRecord) end
+			comboInfo.Visible = true
+			comboInfo.TextColor3 = accent
+			comboInfo.Text = string.format("%s · 초당 %.1f타 · 최고 %d연타", grade, pace, streakBest)
+			comboGauge.Visible = true
+			comboGaugeFill.Size = UDim2.fromScale(1, 1)
+			if streakN % 5 == 0 then
+				comboCinema(streakN, isRecord)
+			else
+				showCombo(string.format("%d연타 · %s%s", streakN, grade, if isRecord then " · 신기록!" else ""), isRecord, accent)
+				if isRecord then sfx("sfx_card_ring", 0.45, 1.23) end
+			end
 		end
 		burst(e.root.Position + Vector3.new(0, 2, 0), 12 + dealt, mult >= 1.5)
 		if not quiet then
