@@ -454,9 +454,10 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	model:ScaleTo((height or 5.8) / currentHeight)
 	local bounds, size = model:GetBoundingBox()
 	local bottom = bounds.Position - Vector3.new(0, size.Y / 2, 0)
-	-- [동료 발바닥 접지] 리그 전체 외곽 상자(장식·루트 포함) 대신 실제 R15 양발의 밑면을 기준으로 위치시킨다.
-	-- 모델 높이·장비·관절 구조는 유지하고 동료의 초기 지면 간격만 정렬한다.
-	if outfit and outfit.companion then
+	-- [주민·동료 발바닥 접지] 머리/모자/루트 외곽 상자 대신 실제 R15 두 발의
+	-- 지면 접촉 높이를 쓴다. 지면에 파묻히거나 공중에 뜨는 초기 오프셋을 같이 없앤다.
+	-- 기존 키·신장·장비·부품 구성은 그대로 두고 최초 배치 Y만 교정한다.
+	if not parent:IsA("WorldModel") or (outfit and outfit.companion) then
 		local leftFoot = model:FindFirstChild("LeftFoot")
 		local rightFoot = model:FindFirstChild("RightFoot")
 		if leftFoot and rightFoot and leftFoot:IsA("BasePart") and rightFoot:IsA("BasePart") then
