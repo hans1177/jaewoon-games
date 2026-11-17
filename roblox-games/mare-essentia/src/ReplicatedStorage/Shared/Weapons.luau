@@ -82,6 +82,15 @@ for _, v in regionalDefs do
 	end
 end
 
+-- [화약 투척병] 해적용 CC0 실물 폭탄. 기존 플레이어 무기 순환·무기 숙련·저장 키에 추가하지 않는다.
+-- 모델은 원본 등록/로블록스 권한 확인 후에만 적 생성 명세에서 사용한다.
+local bomb: Weapon = {
+	id = "bomb", name = "화약 폭탄", family = "explosive", motion = nil, ranged = true,
+	range = 18, speed = 1, power = 1, model = "weapon-bomb",
+	note = "투척 위치가 예고되고, 착탄 지점에서만 피해를 준다", region = "sea",
+}
+byId[bomb.id] = bomb
+
 -- [직업 기본] 역사적으로 모든 학자·성직자·의사가 무장한 것은 아니다.
 -- 같은 직업이라도 출신지·과거 경력·시대가 있으면 아래 함수가 별도 무기를 골라 준다.
 Weapons.AllyByCategory = {
