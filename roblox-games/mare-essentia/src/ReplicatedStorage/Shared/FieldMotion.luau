@@ -420,7 +420,7 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			-- 총구 조준 → 화약 점화 → 어깨 반동 → 장전. 권총은 한 손, 장총은 왼손 개머리판 지지.
 			bend("UpperArmR", -0.38 * hold - 0.58 * prepare + 0.28 * strike - 0.24 * returnGrip, -0.08 * prepare, 0.10)
 			bend("ForearmR", -0.30 * hold - 0.36 * prepare + 0.50 * strike - 0.48 * returnGrip, 0, 0)
-			bend("RightWrist", -0.12 * prepare + 0.22 * strike, 0, -0.08 * strike)
+			bend("HandR", -0.12 * prepare + 0.22 * strike, 0, -0.08 * strike)
 			bend("UpperArmL", (if pistol then -0.18 else -0.46) * (hold + prepare) - 0.36 * returnGrip, 0, -0.12)
 			bend("Chest", -0.11 * prepare + 0.21 * strike - 0.09 * returnGrip, -0.09 * prepare, 0)
 			bend("Head", -0.08 * prepare + 0.15 * strike, 0, 0)
@@ -431,7 +431,7 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("UpperArmL", -0.45 * hold - (0.76 + draw * 0.16) * prepare - 0.20 * strike, 0, -0.12)
 			bend("UpperArmR", -0.24 * hold - draw * 0.58 * prepare + 0.38 * strike - 0.35 * returnGrip, 0, 0.16)
 			bend("ForearmR", -draw * 0.68 * prepare + 0.55 * strike - 0.67 * returnGrip, 0, 0)
-			bend("RightWrist", -0.18 * prepare + 0.25 * strike, 0, 0)
+			bend("HandR", -0.18 * prepare + 0.25 * strike, 0, 0)
 			bend("Chest", -0.08 * prepare + 0.09 * strike, 0.10 * prepare, 0)
 			bend("Head", -0.11 * prepare, 0.04 * strike, 0)
 		elseif spear then
@@ -446,7 +446,7 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			-- 단검: 팔꿈치를 몸에 붙이고 짧고 날카롭게 찌른 후 역수로 회수한다.
 			bend("UpperArmR", -0.44 * hold - 0.60 * prepare - 0.51 * strike, 0.12, 0.14)
 			bend("ForearmR", -0.35 * prepare - 0.62 * strike - 0.29 * returnGrip, 0, 0)
-			bend("RightWrist", 0.28 * prepare - 0.34 * strike, 0, -0.15)
+			bend("HandR", 0.28 * prepare - 0.34 * strike, 0, -0.15)
 			bend("Chest", 0.19 * prepare - 0.20 * strike, -0.19 * prepare + 0.11 * strike, 0)
 			bend("ThighR", 0.20 * prepare - 0.19 * strike, 0, 0)
 		elseif axe or blunt then
@@ -454,7 +454,7 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			local weight = if axe then 1 else 0.84
 			bend("UpperArmR", -0.25 * hold - weight * 0.91 * prepare - weight * 0.34 * strike - 0.30 * returnGrip, 0, -0.12)
 			bend("ForearmR", -weight * 0.52 * prepare + 0.47 * strike - 0.54 * returnGrip, 0, 0)
-			bend("RightWrist", -0.17 * prepare + 0.32 * strike + 0.10 * returnGrip, 0, 0)
+			bend("HandR", -0.17 * prepare + 0.32 * strike + 0.10 * returnGrip, 0, 0)
 			bend("Chest", 0.23 * prepare - 0.38 * strike + 0.18 * returnGrip, 0.13 * prepare - 0.14 * strike, 0)
 			bend("ThighL", 0.21 * prepare - 0.23 * strike, 0, 0)
 			bend("ShinL", -0.17 * strike, 0, 0)
@@ -463,7 +463,7 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			local slice = if point then 0.45 elseif curved then 1.18 else 0.92
 			bend("UpperArmR", -0.31 * hold - 0.63 * prepare - (if point then 0.62 else 0.29) * strike, 0, 0.08)
 			bend("ForearmR", -0.27 * prepare - 0.34 * strike - 0.38 * returnGrip, 0, 0)
-			bend("RightWrist", -0.20 * prepare + 0.22 * strike, 0, 0.08 * slice)
+			bend("HandR", -0.20 * prepare + 0.22 * strike, 0, 0.08 * slice)
 			bend("Chest", 0.13 * prepare - 0.21 * strike, -0.26 * slice * prepare + 0.31 * slice * strike, 0)
 			bend("Head", 0, 0.11 * slice * prepare - 0.08 * strike, 0)
 			bend("FootR", -0.12 * strike, 0, 0)

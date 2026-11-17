@@ -142,7 +142,7 @@ test('적과 동료는 무기별 준비·타격·회수 동작과 원본 PBR 맵
   for(const weapon of ['PISTOL','RIFLE','BOW','LONGBOW','CROSSBOW','SPEAR','DAGGER','WAR_AXE','MACE','RAPIER','SABRE','SCIMITAR','KATANA']){
     assert.ok(fieldMotion.includes('grip == "'+weapon+'"'),'무기 동작 구분 누락: '+weapon);
   }
-  for(const name of ['prepare','strike','returnGrip','hold','RightWrist','ForearmR','UpperArmL','ThighL','FootR']){
+  for(const name of ['prepare','strike','returnGrip','hold','HandR','ForearmR','UpperArmL','ThighL','FootR']){
     assert.ok(fieldMotion.includes(name),'R15 관절 단계 누락: '+name);
   }
   assert.match(field,/bp:FindFirstChildOfClass\("SurfaceAppearance"\)/);
