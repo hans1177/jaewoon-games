@@ -5042,13 +5042,45 @@ function FieldScene.start(opts)
 				if wpn.ranged then
 					local aimColor = if wpn.motion == "CROSSBOW" then Color3.fromRGB(181, 215, 240)
 						elseif wpn.family == "bow" then Color3.fromRGB(156, 225, 159)
-						else Color3.fromRGB(255, 200, 129)
+						elseif wpn.motion == "RIFLE" then Color3.fromRGB(255, 216, 158)
+						else Color3.fromRGB(255, 174, 128)
+					-- [원거리 무기별 10단 발사 섬광] 기존 0.14초 격발 순간에만 공용 승인 이펙트를 표시.
+					-- 추가 화살·탄환·공격·피해를 발생시키지 않으며 오래된 연출은 다음 공격에서 취소한다.
+					if kind == "slash" and moveId == "rush" then
+						local fxAt, fxWeapon, fxBeat = swingBridge.basicAt, wpn.id, basicBeat
+						task.delay(0.14, function()
+							if finished or not hrp.Parent or swingKind ~= "slash" or slashIdx ~= fxBeat
+								or swingBridge.basicAt ~= fxAt or wpn.id ~= fxWeapon then return end
+							if visualMobile and fxBeat < 10 and fxBeat % 2 == 0 then return end
+							local bow = wpn.family == "bow"
+							local crossbow = wpn.motion == "CROSSBOW"
+							local rifle = wpn.motion == "RIFLE"
+							local side = if fxBeat % 2 == 0 then -1 else 1
+							local muzzle = hrp.CFrame * CFrame.new(if bow then side * 0.53 elseif rifle then 0.15 else side * 0.42,
+								if bow then 1.68 elseif rifle then 1.28 else 1.38, if rifle then -3.0 else -2.4)
+							pulseAt(if bow then "DODGE_EVASION_PULSE" elseif crossbow then "IMPACT_FLASH"
+								elseif rifle then "CRITICAL_BURST" else "SHAPE_BURST", muzzle,
+								aimColor, aimColor:Lerp(Color3.new(1, 1, 1), 0.73),
+								(if bow then 3.7 elseif crossbow then 3.5 elseif rifle then 5.4 else 4.4)
+									+ (if fxBeat >= 7 then 0.8 else 0),
+								if visualMobile then 2 elseif fxBeat == 10 then 6 else 4)
+							-- [공중 연사 발구름] 기존 시각 발놀림에만 아주 짧은 보조 파동.
+							if not visualMobile and (fxBeat == 6 or fxBeat == 9) then
+								pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(side, -1.8, -0.5),
+									aimColor, Color3.fromRGB(243, 250, 255), 4.0, 2)
+							end
+						end)
+					end
 					-- [영화식 연속 사격] 기본 1발은 가벼운 총구 잔상, 2·3발은 다리 디딤과 전신 잔광.
 					local rapidPose = moveId == "rush" and basicBeat >= 2
-					trailsOn(ch0, if rapidPose then { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerArm", "RightLowerLeg" }
-						else { "RightHand", "RightLowerArm", "LeftHand" }, aimColor,
-						if rapidPose then 0.27 elseif kind == "heavy" then 0.34 else 0.18,
-						if rapidPose then 0.54 elseif kind == "heavy" then 0.74 else 0.40)
+					-- [원거리 손목별 잔광] 활 시위/석궁 지지대/장총 견착/권총 방아쇠가 서로 다른 위치에 나타난다.
+					local rangedTrail = if wpn.family == "bow" then { "LeftHand", "LeftLowerArm", "RightHand", "RightLowerArm" }
+						elseif wpn.motion == "CROSSBOW" then { "LeftHand", "RightHand", "RightLowerArm" }
+						elseif wpn.motion == "RIFLE" then { "LeftHand", "LeftLowerArm", "RightHand" }
+						else { "RightHand", "RightLowerArm", "RightLowerLeg" }
+					trailsOn(ch0, rangedTrail, aimColor,
+						if rapidPose then 0.26 elseif kind == "heavy" then 0.34 else 0.18,
+						if rapidPose then 0.44 elseif kind == "heavy" then 0.74 else 0.40)
 					if rapidPose then
 						local flank = if basicBeat % 2 == 0 then -1 else 1
 						local flashAt = hrp.CFrame * CFrame.new(flank * 1.1, if basicBeat == 3 then -1.0 else 0.6, -2.1)
@@ -5059,8 +5091,10 @@ function FieldScene.start(opts)
 							auraOn(ch0, aimColor, aimColor:Lerp(Color3.new(1, 1, 1), 0.65), 0.34)
 							if not visualMobile then afterimage(ch0, aimColor, 2, 0.06) end
 						elseif basicBeat >= 4 then
-							trailsOn(ch0, { "LeftHand", "LeftLowerArm", "RightHand", "LeftLowerLeg" }, aimColor,
-								if basicBeat == 10 then 0.47 else 0.27, 0.52)
+							trailsOn(ch0, if wpn.family == "bow" then { "LeftHand", "RightHand", "RightLowerArm", "LeftLowerLeg" }
+								elseif wpn.motion == "CROSSBOW" or wpn.motion == "RIFLE" then { "LeftHand", "RightHand", "RightLowerLeg" }
+								else { "RightHand", "RightLowerArm", "LeftLowerLeg" }, aimColor,
+								if basicBeat == 10 then 0.43 else 0.24, if basicBeat == 10 then 0.52 else 0.37)
 							-- [4·7박 교차 사격 섬광] 주인공 관절 단계만 강조하며 추가 탄환·피해를 생성하지 않는다.
 							if basicBeat == 4 or basicBeat == 7 then
 								pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(flank * 0.8, if basicBeat == 7 then 0.65 else 1.15, -2.1),
