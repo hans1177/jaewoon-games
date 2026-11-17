@@ -26,6 +26,7 @@ export type ShipDef = {
 		tariff: number?, explore: number?, long: number? }?,
 	specialPort: string?, -- 미지 대륙 선박은 기존 태평양 외항의 비밀 조선소에서만 등장
 	minAdventure: number?, -- 기존 모험 경험/해역 해금 요구치
+	newRegional: boolean?, -- 지역 판매 신설 선박 여부: 모바일 진열에서 해당 조선소만 표시
 }
 
 local Ships: { [string]: ShipDef } = {
@@ -250,8 +251,11 @@ for _, blueprint in Blueprints do
 			fuelPerDay = 0, class = stats.class,
 			rowed = stats.rowed,
 			-- 기존 지역 조선소만 판매. 미지대륙은 기존 호놀룰루 외항을 전용 거점으로 사용한다.
-			regions = BlueprintSaleRegions[blueprint.faction],
+			regions = if blueprint.id == "nile_papyrus" then { "red_sea" }
+				elseif blueprint.id == "zanzibar_dhow" or blueprint.id == "zanzibar_jahazi" then { "east_africa" }
+				else BlueprintSaleRegions[blueprint.faction],
 			specialPort = if blueprint.faction == "lost" then "honolulu" else nil,
+			newRegional = true,
 			minAdventure = if blueprint.faction == "lost" then 6 + blueprint.stage * 4 else nil,
 			summary = blueprint.hull .. " · " .. perf.role,
 		}
