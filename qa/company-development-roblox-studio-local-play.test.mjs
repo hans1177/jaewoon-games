@@ -4048,8 +4048,8 @@ test('Mare enemy and companion weapon motions use grounded shared combo and reco
   assert.ok(motion.includes('weaponMotion ~= nil or role == "ally-melee"'),
     'unarmed companion must use canonical combat motion without changing bomb throw');
   assert.ok(scene.includes('e.fm.weaponBeat = ((e.fm.weaponBeat or 0) % 3) + 1')&&
-    scene.includes('a.fm.weaponBeat = ((a.fm.weaponBeat or 0) % 3) + 1'),
-    'enemy and ally attacks must cycle 1-3 authored weapon beats');
+    !scene.includes('a.fm.weaponBeat = ((a.fm.weaponBeat or 0) % 3) + 1'),
+    'enemy can vary authored weapon poses but allies do not accrue three-hit combo beats');
   assert.ok(scene.includes('FM.actor(a.fm, "ATTACK", 0.25 + math.clamp(ap, 0, 1) * 0.35')&&
     !scene.includes('FM.sample(ac, math.min(ap * 1.6, 1)'),
     'ally must no longer bypass planted feet, torso recoil and transition');
@@ -4131,16 +4131,18 @@ test('Mare R15 enemy ally authored weapon impact matches strike event timing',()
 });
 
 // [무기 스킬·직업 회피] 무기별 스킬은 정확히 두 유형, 기본 회피/방어·카드·저장/게임 규칙은 독립적이다.
-test('Mare weapon two skill types, dagger basic speed and seven profession dodges',()=>{
+test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profession dodges',()=>{
   const base='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
   const scene=fs.readFileSync(base+'FieldScene.luau','utf8');
   const motion=fs.readFileSync(base+'FieldMotion.luau','utf8');
   const weapons=fs.readFileSync(base+'Weapons.luau','utf8');
   const jobs=fs.readFileSync(base+'JobSkills.luau','utf8');
-  assert.ok(scene.includes('attackBtn:SetAttribute("WeaponSkillCount", 2)')&&
+  assert.ok(scene.includes('attackBtn:SetAttribute("WeaponSkillCount", 1)')&&
     scene.includes('local available = { "heavy", "sweep" }')&&
-    scene.includes('mkSkill("dodge"')&&scene.includes('mkSkill("parry"'),
-    'two weapon-skill types with separate evade and guard');
+    scene.includes('b.Name = "FieldSkill_dodge"')&&
+    !scene.includes('mkSkill("parry"')&&!scene.includes('mkSkill("heavy"')&&
+    !scene.includes('mkSkill("sweep"')&&!scene.includes('local function slotPos('),
+    'only attack and evade combat buttons; preserve older weapon/card skill definitions and loadout');
   for(const family of ['fist','blade','dagger','axe','spear','blunt','bow','firearm']){
     const row=weapons.split('\n').find(x=>x.includes(family+' = { basic = '));
     assert.ok(row && row.includes('heavy = ') && row.includes('sweep = '),'missing 2 weapon skills '+family);
@@ -4175,18 +4177,31 @@ test('Mare weapon two skill types, dagger basic speed and seven profession dodge
   assert.ok(scene.includes('AC.tryMove(pl, moveId, now)')&&
     scene.includes('task.delay(if kind == "slash" then 0.14'),
     'original invulnerability authority and attack damage timing must be retained');
-  // [모바일 터치 HUD] 이동패드 방해 없이 큰 회피 버튼과 3개 스킬을 분리한다.
+  assert.ok(scene.includes('if creditedSeq == pl.basicAttackSeq then')&&
+    scene.includes('pl.basicAttackSeq = streakActionSeq')&&
+    scene.includes('pl.autoNormalHits = (pl.autoNormalHits or 0) + 1')&&
+    scene.includes('if pl.autoNormalHits % 5 == 0 then')&&
+    scene.includes('ch:SetAttribute("FieldAutoSkillPending", nil)')&&
+    scene.includes('useMove("heavy")')&&
+    scene.includes('pl.autoNormalHits = 0')&&
+    !scene.includes('FieldAutoCardPending'),
+    'only owner basic-hit streak can trigger a single heavy skill each five true hits');
+  assert.ok(scene.includes('(pl.cd.heavy or -100) <= os.clock()')&&
+    scene.includes('pl.stamina >= AC.Moves.heavy.stamina')&&
+    scene.includes('equipped.heavy, equipped.sweep = true, false')&&
+    scene.includes('aw.family == "axe", true, false, nil, aw'),
+    'automatic skill must use original cooldown stamina and keep ally damage outside owner streak');
+  // [모바일 2버튼] 공격 우하단, 회피는 엄지 측면. 별도 스킬/방어 버튼 없음.
   assert.ok(scene.includes('workspace.CurrentCamera.ViewportSize.X < 450')&&
-    scene.includes('local compactTouch = visualMobile and screenWidth < 450')&&
     scene.includes('attackBtn.Size = UDim2.fromOffset(104, 104)')&&
-    scene.includes('if compactTouch then 92 elseif visualMobile then 104 else 86')&&
-    scene.includes('slotPos(slotI)')&&
-    scene.includes('arcPos(math.clamp(outerSkillRadius * 0.82, 132, 164), 4)'),
-    'large mobile dodge must remain reachable without overlapping joystick or skill rows');
+    scene.includes('if compactTouch then 100 elseif visualMobile then 110 else 94')&&
+    scene.includes('if compactTouch then UDim2.new(1, -155, 1, -199)')&&
+    scene.includes('skillBtns.dodge = { btn = b, label = "회피" }'),
+    'large dodge and attack must be separated for thumb reach on portrait mobile');
   assert.ok(scene.includes('button.Name == "FieldAttack" or string.sub')&&
     scene.includes('attackBtn:SetAttribute("SkillFullName", "일반 공격")')&&
-    scene.includes('addIcon(skillBtns.dodge.btn, "Menu/chart_compass")')&&
-    scene.includes('addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")')&&
+    scene.includes('addIcon(b, "Menu/chart_compass")')&&
+    !scene.includes('addIcon(skillBtns.parry.btn,')&&
     scene.includes('attackBtn.Text = ""')&&
     scene.includes('b.Text = ""'),
     'mobile combat buttons must be icon-only and use existing registered icons');
