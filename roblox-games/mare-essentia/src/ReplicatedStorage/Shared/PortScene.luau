@@ -421,7 +421,14 @@ local function assetTint(kind, asset)
 	return nil
 end
 
+-- [중앙광장 영구 공터] 중심(-6, 0), 바닥 반경 24를 비워두고 여유 2스터드를 확보한다.
+-- 기존 승인된 건축·소품·생산물 모델만 이 구역 안에서 막는다. 인물/동물은 계속 출입할 수 있다.
+local CENTRAL_PLAZA_RADIUS = 26
 local function importedModel(parent, kind, asset, bottomPosition, desiredSize, solid, tint)
+	if parent.Name == "PortScene" and kind ~= "People" and kind ~= "Animals" then
+		local dx, dz = bottomPosition.X + 6, bottomPosition.Z
+		if dx * dx + dz * dz < CENTRAL_PLAZA_RADIUS * CENTRAL_PLAZA_RADIUS then return nil end
+	end
 	tint = tint or assetTint(kind, asset)
 	local library = ReplicatedStorage:FindFirstChild("MareAssets")
 	local group = library and library:FindFirstChild(kind)
@@ -602,6 +609,11 @@ end
 
 local vacancyRate = 0 -- 빈집 비율 (PortScene.build 가 정한다)
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
+	-- [광장 건축 금지] 향후 시설 추가에서도 중앙광장의 빈 보행 공간은 유지한다.
+	if parent.Name == "PortScene" then
+		local dx, dz = pos.X + 6, pos.Z
+		if dx * dx + dz * dz < CENTRAL_PLAZA_RADIUS * CENTRAL_PLAZA_RADIUS then return nil end
+	end
 	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
 	-- 마을 전체가 한 팔레트로 보이도록: 지역 대표색(첫 색)에 가깝게 모으고 집마다 아주 조금만 다르게 한다
 	local tintColor = wallColor or style.walls[1]:Lerp(style.walls[rng:NextInteger(1, #style.walls)], 0.3)
@@ -1212,6 +1224,14 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		t.model = fig
 		t.elder = fig:GetAttribute("Age") == "elder"
 		t.base = fig:GetPivot()
+		-- [마을 지면 오프셋] 일과형 경유지는 지면 Y, PivotTo는 허리 높이의 리그 중심 Y를 사용한다.
+		-- 출근·시장·휴식 좌표의 XZ는 보존하고 최초 발바닥 접지 높이만 전 경유지에 유지한다.
+		if t.mode == "schedule" and t.morning and t.market and t.evening then
+			local lift = Vector3.new(0, t.base.Position.Y - t.morning.Y, 0)
+			t.morning += lift
+			t.market += lift
+			t.evening += lift
+		end
 		t.phase = t.phase or rng:NextNumber(0, 10)
 		-- [NPC 직업 소품] 기존 승인된 모델을 손 관절에 연결한다. 가상 손동작이 아니라 실제 도구를 사용한다.
 		-- 짐·잔·망치·삽은 생성 시 단 한 번만 붙여 모바일 프레임당 소품 생성 비용이 없다.
@@ -1305,12 +1325,12 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		end
 	end
 
-	-- 요리: 광장 한쪽 모닥불 솥을 젓는 아낙 (1단계부터), 단계가 오르면 한 명 더
-	importedModel(folder, "Terrain", "campfire-stones", Vector3.new(-26, 0, -14), 3.6, false)
-	importedModel(folder, "Cargo", "pot-stew", Vector3.new(-26, 1.2, -14), 2.2, false)
-	stay(Vector3.new(-26, 0, -11.2), Vector3.new(-26, 0, -14), "stir", { female = true, role = "Rogue", hat = false })
+	-- [광장 바깥 조리터] 모닥불·솥·요리 주민을 같이 옮겨 기존 조리 모션과 생활 연출을 유지한다.
+	importedModel(folder, "Terrain", "campfire-stones", Vector3.new(-82, 0, -26), 3.6, false)
+	importedModel(folder, "Cargo", "pot-stew", Vector3.new(-82, 1.2, -26), 2.2, false)
+	stay(Vector3.new(-82, 0, -23.2), Vector3.new(-82, 0, -26), "stir", { female = true, role = "Rogue", hat = false })
 	if lvl >= 3 then
-		stay(Vector3.new(-29, 0, -12), Vector3.new(-26, 0, -14), "stir", { female = true, role = "Rogue", hat = false, age = "elder" })
+		stay(Vector3.new(-85, 0, -24), Vector3.new(-82, 0, -26), "stir", { female = true, role = "Rogue", hat = false, age = "elder" })
 	end
 	-- 경제 국면 연출: 호황·버블엔 상점 증축 비계와 활기, 불황·붕괴엔 문 닫은 가게(판자 울타리·빈 통)
 	do
@@ -1367,8 +1387,9 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			stay(Vector3.new(-14, 0, 6), Vector3.new(-26, 0, 0), "talk", { role = "Mage", hat = true })
 		end
 		if has.scholarly then
-			importedModel(folder, "Terrain", "pillar-obelisk", Vector3.new(-12, 0, 24), 16, true)
-			importedModel(folder, "Terrain", "statue-obelisk", Vector3.new(-12, 0, -24), 14, true)
+			-- [문화 기념비 이전] 중앙광장 외곽 기념구역으로 옮겨 학문 관련 실물 상징물은 유지한다.
+			importedModel(folder, "Terrain", "pillar-obelisk", Vector3.new(-190, 0, 128), 16, true)
+			importedModel(folder, "Terrain", "statue-obelisk", Vector3.new(-190, 0, -128), 14, true)
 		end
 		if has.fair then
 			for k = 0, 3 do
@@ -3038,23 +3059,22 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		end
 	end
 
-	-- 2) 광장 중심: 동상·기둥·깃발, 시장 가판대를 더 둘러 세운다
+	-- [중앙광장 비움] 기존 동상·석주·깃발은 서쪽 기념구역/시장거리로 옮겨 문화권 자산을 유지한다.
 	if lvl >= 2 then
-		importedModel(folder, "Terrain", "statue-column", Vector3.new(-26, 0, 0), 12, true)
-	end
-	if lvl >= 2 then
-		for _, c in { Vector3.new(-26, 0, 8), Vector3.new(-26, 0, -8), Vector3.new(-17, 0, 8), Vector3.new(-17, 0, -8) } do
+		importedModel(folder, "Terrain", "statue-column", Vector3.new(-124, 0, 126), 12, true)
+		for _, c in { Vector3.new(-134, 0, 134), Vector3.new(-114, 0, 134),
+			Vector3.new(-134, 0, 118), Vector3.new(-114, 0, 118) } do
 			importedModel(folder, "Town", "pillar-stone", c, 5, false)
 		end
 	end
 	if lvl >= 3 then
-		for _, z in { -24, 24 } do
-			for _, x in { -2, -22, -42, -62 } do
+		for _, z in { -32, 32 } do
+			for _, x in { -108, -128, -148, -168 } do
 				importedModel(folder, "Castle", "flag-banner-short", Vector3.new(x, 0, z), 7, false)
 			end
 		end
 	end
-	local extraStalls = { Vector3.new(-44, 0, 13), Vector3.new(-44, 0, -13), Vector3.new(-70, 0, 13), Vector3.new(-70, 0, -13), Vector3.new(-6, 0, -14), Vector3.new(-6, 0, 14) }
+	local extraStalls = { Vector3.new(-44, 0, 13), Vector3.new(-44, 0, -13), Vector3.new(-70, 0, 13), Vector3.new(-70, 0, -13), Vector3.new(-94, 0, -13), Vector3.new(-94, 0, 13) }
 	local stallMax = if lvl <= 1 then 2 elseif lvl == 2 then 4 else #extraStalls
 	if info.sim and info.sim.buildings then
 		stallMax = math.clamp(math.floor(1 + math.sqrt(math.max(0, info.sim.buildings.market or 0))), 1, #extraStalls)
@@ -3259,9 +3279,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		end
 	end
 
-	-- 6-b) 광장 중앙: 이 마을의 핵심 정체성 상징물 (길 축을 막지 않게 분수 반대편에 둔다)
+	-- [지역 상징물 이전] 중앙광장은 비우고 서쪽 문화구역으로 상징탑을 옮긴다.
 	do
-		local ax, az = -8, 11
+		local ax, az = -160, -128
 		local function big(kind, asset, size) return importedModel(folder, kind, asset, Vector3.new(ax, 0, az), size, true) end
 		if key == "med" or key == "iberia" or key == "italy" then
 			big("Terrain", "statue-column", 20)
@@ -3559,6 +3579,9 @@ function PortScene.build(info, onFacility)
 	end
 	local folder = Instance.new("Folder")
 	folder.Name = "PortScene"
+	-- [중앙광장 영구 예약] 시각 시설물은 외곽에, 광장 중앙에는 보행·집회만 허용한다.
+	folder:SetAttribute("CentralPlazaClearRadius", CENTRAL_PLAZA_RADIUS)
+	folder:SetAttribute("CentralPlazaReserved", true)
 	-- [왕궁/광장/작업장] 모든 NPC가 같은 기존 애니메이션 목록을 사용하도록 먼저 초기화한다.
 	local walkers = {}
 	-- [지역별 건축] 기존 항구 문화권을 따르되, 로도스·파마구스타는 점령 연도 이후 오스만 양식으로 전환한다.
@@ -3790,10 +3813,10 @@ function PortScene.build(info, onFacility)
 	for _, sx in (PROFILE[styleKeyOf(style)] or PROFILE.north).streets do
 		part(folder, Vector3.new(6 + (sceneLevel - 1), 0.25, 130), CFrame.new(sx, 0.12, 0), roadColor(style), roadMat())
 	end
-	-- 광장 분수도 CC0 수입 메쉬 우선
+	-- [분수 이전] 중앙광장은 포장 바닥만 남기고 분수 구조물은 서쪽 문화거리로 옮긴다.
 	if PortBuildings.StreetGrowth[sceneLevel].fountain then
-		part(folder, Vector3.new(2, 8, 8), CFrame.new(-8, 1, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(200, 196, 186), Enum.Material.Marble, Enum.PartType.Cylinder)
-		part(folder, Vector3.new(2.2, 6.5, 6.5), CFrame.new(-8, 1.2, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(80, 150, 200), Enum.Material.Glass, Enum.PartType.Cylinder)
+		part(folder, Vector3.new(2, 8, 8), CFrame.new(-106, 1, 122) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(200, 196, 186), Enum.Material.Marble, Enum.PartType.Cylinder)
+		part(folder, Vector3.new(2.2, 6.5, 6.5), CFrame.new(-106, 1.2, 122) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(80, 150, 200), Enum.Material.Glass, Enum.PartType.Cylinder)
 	end
 
 	-- 마을 광장: 중앙 분수를 둘러싼 원형 광장. 발전도가 오를수록 바닥이 흙 → 자갈 → 포석 → 화강암 → 대리석으로 고급스러워진다.
@@ -3815,9 +3838,9 @@ function PortScene.build(info, onFacility)
 		if sceneLevel >= 4 then disc(10, 0.29, plazaCol[sceneLevel], plazaMat[sceneLevel]) end
 		local plazaLamps = PortBuildings.StreetGrowth[sceneLevel].plazaLamps
 		if plazaLamps > 0 then
+			-- [광장 공터] 기존 조명 수는 유지하되 광장 안쪽 원형 배치를 서쪽 거리로 이전한다.
 			for i = 0, plazaLamps - 1 do
-				local a = i / plazaLamps * math.pi * 2
-				lantern(folder, Vector3.new(-6 + math.cos(a) * 22, 0, math.sin(a) * 22), 3)
+				lantern(folder, Vector3.new(-94 - math.floor(i / 2) * 18, 0, if i % 2 == 0 then 30 else -30), 3)
 			end
 		end
 	end
@@ -4266,7 +4289,10 @@ function PortScene.build(info, onFacility)
 					end
 					local delta = where - (w.lastPos or where)
 					local moving = delta.Magnitude > 0.025
-					local forward = if moving then delta.Unit else Vector3.new(0, 0, 1)
+					-- [마을 주민 정면] 멈춘 사람은 마지막 이동 방향을 유지한다.
+					-- 월드 +Z로 강제 회전하면 일부 주민이 앞서 바라보던 방향과 반대로 서게 된다.
+					local forward = if moving then delta.Unit else (w.lastFacing or w.base.LookVector)
+					if moving then w.lastFacing = forward end
 					w.model:PivotTo(CFrame.lookAt(where, where + forward))
 					w.lastPos = where
 					if w.lastRoutine ~= routine then
@@ -4409,10 +4435,12 @@ function PortScene.build(info, onFacility)
 			elseif w.mode == "circle" then
 				if w.model.Parent then
 					local a = (now + w.phase) * w.speed / w.r
-					local pos = Vector3.new(w.cx + math.cos(a) * w.r, 0, w.cz + math.sin(a) * w.r)
+					-- [아이 발 접지] 분수 주변 달리기의 중심 Y를 바닥(0)이 아닌 최초 R15 리그 중심으로 유지한다.
+					local floorY = w.base.Position.Y
+					local pos = Vector3.new(w.cx + math.cos(a) * w.r, floorY, w.cz + math.sin(a) * w.r)
 					local hop = 0
-					local ahead = Vector3.new(w.cx + math.cos(a + 0.1) * w.r, 0, w.cz + math.sin(a + 0.1) * w.r)
-					w.model:PivotTo(CFrame.lookAt(pos + Vector3.new(0, hop, 0), ahead + Vector3.new(0, hop, 0)) )
+					local ahead = Vector3.new(w.cx + math.cos(a + 0.1) * w.r, floorY, w.cz + math.sin(a + 0.1) * w.r)
+					w.model:PivotTo(CFrame.lookAt(pos + Vector3.new(0, hop, 0), ahead + Vector3.new(0, hop, 0)))
 					Pose.makeR15Action(w.model, "walk", 0, (now + w.phase) * w.speed * (2 * math.pi / 5.2))
 					-- [아이 생활동작] 걷기 관절은 유지하고 손짓·주변 시선만 드물게 얹는다.
 					local play = (now + w.phase * 1.9) % 21
@@ -4753,7 +4781,8 @@ function PortScene.build(info, onFacility)
 	end
 	-- 광장: 시장 가판대, 우물, 수레, 벤치
 	do
-		for i, spot in { Vector3.new(-18, 0, -13), Vector3.new(-18, 0, 13), Vector3.new(2, 0, 14) } do
+		-- [장터 이전] 중앙광장 가판대 3개를 기존 서쪽 상업거리로 이동한다.
+		for i, spot in { Vector3.new(-114, 0, -14), Vector3.new(-114, 0, 14), Vector3.new(-136, 0, 14) } do
 			local marketStyle = if i % 2 == 0 then "stall-red" else "stall-green"
 			if not importedModel(folder, "Town", marketStyle, spot, 6.5, false) then
 				importedModel(folder, "Town", "stall", spot, 6.5, false)
@@ -4765,7 +4794,7 @@ function PortScene.build(info, onFacility)
 		for i = 1, 12 do
 			showcase[i] = made[(i - 1) % math.max(1, #made) + 1] or "cheese"
 		end
-		local stalls = { Vector3.new(-18, 2.5, -13), Vector3.new(-18, 2.5, 13), Vector3.new(2, 2.5, 14) }
+		local stalls = { Vector3.new(-114, 2.5, -14), Vector3.new(-114, 2.5, 14), Vector3.new(-136, 2.5, 14) }
 		for index, good in showcase do
 			local stand = stalls[math.ceil(index / 4)]
 			local mesh = GOOD_MESH[good]
@@ -4779,10 +4808,10 @@ function PortScene.build(info, onFacility)
 			end
 		end
 		if PortBuildings.StreetGrowth[sceneLevel].fountain then
-			importedModel(folder, "Town", "fountain-square", Vector3.new(-10, 0, 0), 7, true)
+			importedModel(folder, "Town", "fountain-square", Vector3.new(-108, 0, 122), 7, true)
 		end
-		importedModel(folder, "Town", "stall-bench", Vector3.new(-6, 0, 13), 4, false)
-		importedModel(folder, "Town", "stall-stool", Vector3.new(-12, 0, 11), 2, false)
+		importedModel(folder, "Town", "stall-bench", Vector3.new(-122, 0, 28), 4, false)
+		importedModel(folder, "Town", "stall-stool", Vector3.new(-140, 0, 28), 2, false)
 		-- 4~5단계 조선항 전용 경비탑: 둘째 잔교와 겹치지 않는 육지 쪽 위치에 배치.
 		if PortData.Ports[info.portId] and PortData.Ports[info.portId].shipyard
 			and dockGrowth.sidePier and dockGrowth.tier >= 4 then
@@ -4795,14 +4824,15 @@ function PortScene.build(info, onFacility)
 				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(10, 0, 61), 5, false)
 			end
 		end
-		importedModel(folder, "Interior", "tablecrosscloth", Vector3.new(-30, 0, -13), 4.8, false)
-		importedModel(folder, "Interior", "coatrack", Vector3.new(-36, 0, -23), 3.4, false)
-		importedModel(folder, "Interior", "rugrounded", Vector3.new(-10, 0, -18), 4.8, false)
-		importedModel(folder, "Town", "village-well", Vector3.new(-30, 0, 15), 5.5, true)
-		importedModel(folder, "Town", "cart", Vector3.new(-24, 0, 19), 5.5, false)
-		importedModel(folder, "Town", "cart", Vector3.new(-26, 0, -19), 5.5, false)
-		importedModel(folder, "Town", "bench_A", Vector3.new(-8, 0, 9), 4.5, false)
-		importedModel(folder, "Town", "bench_B", Vector3.new(-8, 0, -9), 4.5, false)
+		-- [외곽 장터·우물] 중앙광장 소품도 전부 외곽 거리로 이동해 주민 이동 구역을 비운다.
+		importedModel(folder, "Interior", "tablecrosscloth", Vector3.new(-148, 0, -32), 4.8, false)
+		importedModel(folder, "Interior", "coatrack", Vector3.new(-36, 0, -45), 3.4, false)
+		importedModel(folder, "Interior", "rugrounded", Vector3.new(-152, 0, -38), 4.8, false)
+		importedModel(folder, "Town", "village-well", Vector3.new(-126, 0, 32), 5.5, true)
+		importedModel(folder, "Town", "cart", Vector3.new(-158, 0, 32), 5.5, false)
+		importedModel(folder, "Town", "cart", Vector3.new(-176, 0, -32), 5.5, false)
+		importedModel(folder, "Town", "bench_A", Vector3.new(-100, 0, 30), 4.5, false)
+		importedModel(folder, "Town", "bench_B", Vector3.new(-100, 0, -30), 4.5, false)
 		for _, x in { -52, -74, -96, -118, -138 } do
 			for side = -1, 1, 2 do
 				-- 사막·열대·지중해 마을에는 소나무 대신 야자나무
@@ -5162,18 +5192,34 @@ function PortScene.build(info, onFacility)
 		end
 		local relocated, stopped, inspected = 0, 0, 0
 		for _, walker in walkers do
-			if not walker.model.Parent or walker.mode == "sparring" or walker.mode == "animal" or walker.mode == "circle" then
+			if not walker.model.Parent or walker.mode == "sparring" or walker.mode == "animal" then
 				continue
 			end
 			inspected += 1
 			local original = walker.base
 			local moving = walker.len and walker.len > 0 and (walker.mode == "path" or walker.mode == nil)
 			local scheduled = walker.mode == "schedule" and walker.morning and walker.market and walker.evening
+			local circling = walker.mode == "circle" and walker.cx and walker.cz and walker.r
 			local safe
 			for _, offset in offsets do
 				-- [좌표 정합] 주민 위치와 일과형 경유지를 모두 세계 좌표로 평행 이동한다.
 				local candidate = original + offset
-				if scheduled then
+				if circling then
+					-- [아이·주민 원형 동선] 기존 8개 발걸음 위치를 한 번 검사해 분수·난간·가판대 안으로 들어가지 않는다.
+					local clear = true
+					for sample = 0, 7 do
+						local angle = sample * math.pi / 4
+						local point = CFrame.new(walker.cx + offset.X + math.cos(angle) * walker.r,
+							candidate.Position.Y, walker.cz + offset.Z + math.sin(angle) * walker.r)
+						if blocked(point, 0, walker.model) then clear = false; break end
+					end
+					if clear then
+						safe = candidate
+						walker.cx += offset.X
+						walker.cz += offset.Z
+						break
+					end
+				elseif scheduled then
 					local morning, market, evening = walker.morning + offset, walker.market + offset, walker.evening + offset
 					local function clearSegment(a, b)
 						local step = b - a
@@ -5208,7 +5254,12 @@ function PortScene.build(info, onFacility)
 			if safe then
 				if (safe.Position - original.Position).Magnitude > 0.1 then relocated += 1 end
 				walker.base = safe
-				walker.model:PivotTo(safe)
+				-- [원형 동선 시작점] 첫 프레임 전에 분수 중심이 아닌 검증된 원 바깥 첫 발판에 놓는다.
+				if walker.mode == "circle" then
+					walker.model:PivotTo(CFrame.new(walker.cx + walker.r, safe.Position.Y, walker.cz) * (safe - safe.Position))
+				else
+					walker.model:PivotTo(safe)
+				end
 				walker.lastPos = safe.Position
 			else
 				walker.model:Destroy()
