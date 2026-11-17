@@ -164,6 +164,9 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		local heel = math.cos(phase * math.pi * 2)
 		local liftL, liftR = math.max(0, -plant), math.max(0, plant)
 		local side = math.clamp(strafe or 0, -1, 1)
+		-- [측면 관성] 발 디딤과 몸 기울기만 감속 보간한다. 실제 이동 속도는 기존 AI 소유.
+		h.sideEffort = (h.sideEffort or side) + (side - (h.sideEffort or side)) * (1 - math.exp(-10 * math.clamp(dt, 0, 0.1)))
+		side = h.sideEffort
 		local sway = (if style == "heavy" then 0.055 else 0.08) * effort
 		bend("Chest", -0.11 * effort, -plant * 0.11 * effort - side * 0.09, plant * sway + side * 0.07)
 		bend("Spine", -0.05 * effort, plant * 0.085 * effort, -plant * sway * 0.5 - side * 0.06)
@@ -413,10 +416,15 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	if grip ~= "" and state ~= "INTERACT" and state ~= "HIT" then
 		local t = math.clamp(phase, 0, 1)
 		local attackT = math.clamp((t - 0.25) / 0.35, 0, 1)
-		local prepare = if state == "ANTICIPATION" then math.sin(t * math.pi * 0.5) else 0
+		-- [공격 연결] 예비 자세는 공격 첫 프레임까지 유지하고, 충격 뒤 관성은 회복 첫 프레임까지 연결한다.
+		local easeAttack = attackT * attackT * (3 - 2 * attackT)
+		local prepare = if state == "ANTICIPATION" then math.sin(t * math.pi * 0.5)
+			elseif state == "ATTACK" then 1 - easeAttack else 0
 		local strike = if state == "ATTACK" then math.sin(attackT * math.pi) else 0
-		local follow = if state == "ATTACK" then math.clamp((attackT - 0.42) / 0.58, 0, 1) else 0
-		local returnGrip = if state == "RECOVERY" then (1 - t) * (1 - t) else 0
+		local follow = if state == "ATTACK" then math.clamp((attackT - 0.42) / 0.58, 0, 1)
+			elseif state == "RECOVERY" then (1 - t) * (1 - t) else 0
+		-- [손목 회수] 회복 초입에서 갑자기 꺾이지 않도록 중간 구간에만 회수력을 준다.
+		local returnGrip = if state == "RECOVERY" then math.sin(t * math.pi) else 0
 		local hold = if state == "IDLE" or state == "RUN" then 1 else 0
 		local gun = grip == "PISTOL" or grip == "RIFLE"
 		local bow = grip == "BOW" or grip == "LONGBOW"
@@ -521,6 +529,15 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("ThighL", 0.14 * prepare - 0.18 * strike, 0, 0)
 			bend("FootR", -0.18 * strike + 0.08 * follow, 0, 0)
 		end
+		-- [무기 질량] 무거운 도끼·망치는 상체 관성이 길고 활·권총은 짧다. 관절 전용 연출.
+		if state == "ATTACK" or state == "RECOVERY" then
+			local inertia = if axe or blunt then 1 elseif spear or grip == "RIFLE" then 0.72
+				elseif bow or crossbow or pistol then 0.36 else 0.55
+			local settle = if state == "ATTACK" then follow else (1 - t) * (1 - t)
+			bend("Neck", 0.04 * inertia * settle, -0.05 * inertia * settle, 0)
+			bend("Spine", 0.09 * inertia * settle, -0.035 * inertia * settle, 0)
+			bend("ThighR", 0.055 * inertia * settle, 0, 0)
+		end
 		-- [방패병] 무기 타격 전에도 왼팔 방패면을 유지하고 반격 후 충격을 무릎으로 흡수한다.
 		if role == "shield" then
 			local brace = math.clamp(hold + prepare + 0.6 * follow + returnGrip, 0, 1)
@@ -542,23 +559,34 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	-- [실제 타격 발동작] 무기 상체 모션 뒤에도 디딤발은 고정하고 반대쪽 발을 앞으로 딛는다.
 	-- 공격 판정·거리·시간은 전혀 바꾸지 않는다. 서 있는 상태에서 뿌리째 미끄러지는 느낌만 줄인다.
 	if state == "ATTACK" and (role == "grunt" or role == "archer" or role == "shield"
-		or role == "charger" or role == "thrower" or role == "boss") then
+		or role == "charger" or role == "thrower" or role == "boss"
+		or role == "ally-melee" or role == "ally-ranged") then
 		local release = math.clamp((phase - 0.25) / 0.35, 0, 1)
 		-- 공격 Root 전진 거리를 앞발 들기·무릎 굽힘에 반영한다. 전진이 없는 공격은 기존 자세.
 		local advance = math.clamp((attackAdvance or 0) * 2, 0, 0.55)
 		local step = math.sin(release * math.pi) * (1 + advance) + advance * (1 - release) * 0.4
-		local weight = if role == "shield" or role == "boss" then 0.75 else 1
+		-- [착지 연속] 원거리 사수는 발을 작게, 근접 전투원은 크게 디딘다.
+		local rangedGrip = weaponMotion == "BOW" or weaponMotion == "LONGBOW"
+			or weaponMotion == "CROSSBOW" or weaponMotion == "RIFLE" or weaponMotion == "PISTOL"
+		local weight = if rangedGrip then 0.35 elseif role == "shield" or role == "boss" then 0.75
+			elseif role == "ally-melee" then 0.85 else 1
+		local landed = release * release * (3 - 2 * release)
 		bend("ThighL", (-0.22 + release * 0.28 - advance * 0.12) * weight, 0, -0.04)
 		bend("ThighR", (0.21 - release * 0.14) * weight, 0, 0.04)
-		bend("ShinL", -0.24 * step * weight, 0, 0)
-		bend("FootL", 0.20 * step * weight, 0, 0)
-		bend("FootR", -0.13 * step * weight, 0, 0)
+		bend("ShinL", -0.24 * step * weight - 0.13 * landed * weight, 0, 0)
+		bend("FootL", (0.20 * step + 0.16 * landed) * weight, 0, 0)
+		bend("FootR", (-0.13 * step - 0.07 * landed) * weight, 0, 0)
 	elseif state == "RECOVERY" and (role == "grunt" or role == "archer" or role == "shield"
-		or role == "charger" or role == "thrower" or role == "boss") then
+		or role == "charger" or role == "thrower" or role == "boss"
+		or role == "ally-melee" or role == "ally-ranged") then
 		local land = (1 - math.clamp(phase, 0, 1)) ^ 2
-		bend("ShinL", -0.13 * land, 0, 0)
-		bend("FootL", 0.16 * land, 0, 0)
-		bend("FootR", -0.07 * land, 0, 0)
+		local rangedGrip = weaponMotion == "BOW" or weaponMotion == "LONGBOW"
+			or weaponMotion == "CROSSBOW" or weaponMotion == "RIFLE" or weaponMotion == "PISTOL"
+		local weight = if rangedGrip then 0.35 elseif role == "shield" or role == "boss" then 0.75
+			elseif role == "ally-melee" then 0.85 else 1
+		bend("ShinL", -0.13 * land * weight, 0, 0)
+		bend("FootL", 0.16 * land * weight, 0, 0)
+		bend("FootR", -0.07 * land * weight, 0, 0)
 	end
 	-- [지연 회전] 공격 중에는 정확한 방향을 방해하지 않으며 이동/대기만 목·허리가 따라간다.
 	if state == "IDLE" or state == "RUN" then

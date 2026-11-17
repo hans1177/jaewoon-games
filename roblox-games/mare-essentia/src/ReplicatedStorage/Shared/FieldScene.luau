@@ -4616,7 +4616,7 @@ function FieldScene.start(opts)
 					elseif ap >= 0 and ap < 1 then
 						-- [동료 무기 공격 통합] 원본 1~3타의 재생 속도는 유지하면서 전신·축발·반동을 함께 적용한다.
 						-- 맨손도 공용 연타를 사용하며 기존 피해 발생 시각과 공격 주기는 그대로다.
-						FM.actor(a.fm, "ATTACK", 0.25 + math.min(ap * 1.6, 1) * 0.35,
+						FM.actor(a.fm, "ATTACK", 0.25 + math.clamp(ap, 0, 1) * 0.35,
 							dt, nil, 1.3, nil, false, nil, a.weapon.motion)
 					elseif ap >= 1 and ap < 1.7 then
 						-- [동료 무기 회수] 실제 공격 후 0.35초 자세를 정돈한다(기존 공격 판정·주기는 동일).

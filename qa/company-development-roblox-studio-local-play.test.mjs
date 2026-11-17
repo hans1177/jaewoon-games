@@ -4050,7 +4050,7 @@ test('Mare enemy and companion weapon motions use grounded shared combo and reco
   assert.ok(scene.includes('e.fm.weaponBeat = ((e.fm.weaponBeat or 0) % 3) + 1')&&
     scene.includes('a.fm.weaponBeat = ((a.fm.weaponBeat or 0) % 3) + 1'),
     'enemy and ally attacks must cycle 1-3 authored weapon beats');
-  assert.ok(scene.includes('FM.actor(a.fm, "ATTACK", 0.25 + math.min(ap * 1.6, 1) * 0.35')&&
+  assert.ok(scene.includes('FM.actor(a.fm, "ATTACK", 0.25 + math.clamp(ap, 0, 1) * 0.35')&&
     !scene.includes('FM.sample(ac, math.min(ap * 1.6, 1)'),
     'ally must no longer bypass planted feet, torso recoil and transition');
   for(const marker of ['local gun = grip == "PISTOL" or grip == "RIFLE"',
@@ -4068,6 +4068,33 @@ test('Mare enemy and companion weapon motions use grounded shared combo and reco
     scene.includes('strikeEnemy(tgt, 0.6 * aw.power')&&
     scene.includes('a.nextAt = now + 1.3 / aw.speed'),
     'original attack authority, ally power and cooldown remain intact');
+});
+
+// [무기 모션 연속성] 기존 공격 판정은 그대로 두고 준비·타격·착지·복귀 경계를 지킨다.
+test('Mare enemy and companion weapon motion transition and foot contact are continuous',()=>{
+  const root='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
+  const motion=fs.readFileSync(root+'FieldMotion.luau','utf8');
+  const scene=fs.readFileSync(root+'FieldScene.luau','utf8');
+  assert.ok(motion.includes('local easeAttack = attackT * attackT * (3 - 2 * attackT)')&&
+    motion.includes('elseif state == "ATTACK" then 1 - easeAttack'),
+    'windup pose must carry into attack rather than abruptly reset');
+  assert.ok(motion.includes('elseif state == "RECOVERY" then (1 - t) * (1 - t) else 0')&&
+    motion.includes('local returnGrip = if state == "RECOVERY" then math.sin(t * math.pi)'),
+    'attack end and recovery start must share follow-through');
+  assert.ok(motion.includes('local rangedGrip = weaponMotion == "BOW"')&&
+    motion.includes('local landed = release * release * (3 - 2 * release)')&&
+    motion.includes('bend("ShinL", -0.13 * land * weight'),
+    'melee, ranged, enemy and companion foot plant must persist through recovery');
+  assert.ok(motion.includes('h.sideEffort = (h.sideEffort or side)')&&
+    motion.includes('local inertia = if axe or blunt then 1'),
+    'side steps must ease and weapon mass must drive torso recoil');
+  assert.ok(scene.includes('FM.actor(a.fm, "ATTACK", 0.25 + math.clamp(ap, 0, 1) * 0.35')&&
+    !scene.includes('math.min(ap * 1.6, 1) * 0.35'),
+    'companion weapon animation must not freeze before the original attack finishes');
+  assert.ok(scene.includes('AC.stepEnemy(e.ac, dtc, dist')&&
+    scene.includes('a.nextAt = now + 1.3 / aw.speed')&&
+    scene.includes('strikeEnemy(tgt, 0.6 * aw.power'),
+    'enemy authority and companion cooldown, range and damage are unchanged');
 });
 
 test('Mare nine weapon families have distinct authored normal and skill R15 gameplay',()=>{
