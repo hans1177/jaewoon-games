@@ -232,6 +232,22 @@ return function(D, S)
 				view.goods = shown
 			end
 		end
+		-- [실제 세계 평균시세] 현재 세계 각 항구의 매입시세를 산술 평균한다.
+		-- 해당 항구의 특산·수요, 재고, 사건, 세계경제 보정을 포함하지만
+		-- 특정 선장의 개인 할인은 평균에서 제외한다(매입·판매 판정과 저장값 불변).
+		-- 화면에 노출한 상품만 계산하며 별도 캐시/저장 테이블은 만들지 않는다.
+		for _, g in view.goods do
+			local total, count = 0, 0
+			for otherId in D.Ports.Ports do
+				local marketMult = ctx.market:get(otherId, g.id)
+				local eventMult = ctx.market:eventMult(otherId, g.id) * S.History.mult(state, otherId, g.id)
+					* (if S.Econ and S.Econ.marketFactor then S.Econ.marketFactor(state, otherId, g.id) else 1)
+				total += D.TradeMath.getPrice(otherId, g.id, marketMult, eventMult)
+				count += 1
+			end
+			g.avgPrice = if count > 0 then math.max(1, math.floor(total / count + 0.5)) else g.basePrice
+		end
+
 		-- [수량별 거래 견적] 기존 서버의 단가 변화/관세·이월 흥정 할인 계산을 읽기 전용으로 반복한다.
 		-- 항구·원화·화폐 저장은 건드리지 않고 실제로 보여 주는 상품에 최대 20개 분량만 전송한다.
 		local tax = S.Trade.tariffRate(state)
