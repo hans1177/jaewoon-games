@@ -3058,6 +3058,10 @@ function FieldScene.start(opts)
 				if pfm then
 					FM.destroy(pfm)
 				end
+				-- [캐릭터 재생성] 이전 리그의 자세를 새 R15 관절로 넘기지 않는다.
+				swingBridge.from, swingBridge.rootFrom, swingBridge.rootLast = nil, nil, nil
+				table.clear(swingBridge.last)
+				swingBridge.lastAt = -100
 				pfm, pfmChar = FM.new(ch, true), ch
 			end
 			local canon = pfm.canon
@@ -3226,7 +3230,7 @@ function FieldScene.start(opts)
 			if swingKind and swingCombo then
 				local p = math.clamp((os.clock() - swingT0) / swingDur, 0, 1)
 				local impulse = math.sin(p * math.pi)
-				local settle = math.max(0, (p - 0.57) / 0.43)
+				local settle = math.sin(math.clamp((p - 0.57) / 0.43, 0, 1) * math.pi)
 				local id = CFrame.identity
 				local family = wpn.family
 				local thrust = family == "spear" or family == "dagger"
@@ -3563,29 +3567,23 @@ function FieldScene.start(opts)
 					end
 				end
 			end
-			-- [관절 교량] 2·3타 첫 0.08~0.14초 동안 직전 프레임 자세를 목표 자세까지 스무스스텝으로 잇는다.
+			-- [모션 일관성] 관절 배율은 교량과 캐시 이전에 한 번만 적용한다.
+			-- [거대한 회피] 성직자·학자 2.0배, 기타 직업 1.70배. 무기 공격 원래 자세는 1.45배 그대로.
+			FM.scale(canon, if swingKind == "dash" then
+				(if ch:GetAttribute("FieldDodgeStyle") == "clergy" or ch:GetAttribute("FieldDodgeStyle") == "scholar" then 2.0 else 1.70) else 1.45)
+			-- [관절 교량] 직전 화면 자세에서 다음 타로 바로 이어지는 감속 보간. 시작 박자 멈춤 없이 실제 배율을 맞춘다.
 			if swingKind and swingBridge.from then
 				local weight = math.clamp((os.clock() - swingBridge.at) / swingBridge.duration, 0, 1)
 				if weight >= 1 then
 					swingBridge.from = nil
 				else
-					weight = weight * weight * (3 - 2 * weight)
+					weight = weight * (2 - weight)
 					for joint, old in swingBridge.from do
 						if typeof(old) == "CFrame" then
 							canon[joint] = old:Lerp(canon[joint] or CFrame.identity, weight)
 						end
 					end
 				end
-			end
-			-- [프레임 캐시] 마지막 공격 프레임의 전신 관절을 다음 연타에 직접 연결한다.
-			if swingKind and (swingCombo or swingKind == "dash") then
-				table.clear(swingBridge.last)
-				for joint, cf in canon do
-					if typeof(cf) == "CFrame" then swingBridge.last[joint] = cf end
-				end
-				swingBridge.lastAt = os.clock()
-			elseif os.clock() - swingBridge.lastAt > 1.1 then
-				table.clear(swingBridge.last)
 			end
 			if swingKind then
 				rootRot = rootFor(swingKind, math.clamp((os.clock() - swingT0) / swingDur, 0, 1))
@@ -3595,7 +3593,7 @@ function FieldScene.start(opts)
 					if blend >= 1 then
 						swingBridge.rootFrom = nil
 					else
-						blend = blend * blend * (3 - 2 * blend)
+						blend = blend * (2 - blend)
 						rootRot = swingBridge.rootFrom:Lerp(rootRot or CFrame.identity, blend)
 					end
 				end
@@ -3604,9 +3602,18 @@ function FieldScene.start(opts)
 				swingBridge.rootLast = nil
 				swingBridge.rootFrom = nil
 			end
-			-- [거대한 회피] 성직자·학자 2.0배, 기타 직업 1.70배. 무기 공격 원래 자세는 1.45배 그대로.
-			FM.scale(canon, if swingKind == "dash" then
-				(if ch:GetAttribute("FieldDodgeStyle") == "clergy" or ch:GetAttribute("FieldDodgeStyle") == "scholar" then 2.0 else 1.70) else 1.45)
+			-- [프레임 캐시] 관절 배율과 보정까지 합친 이번 프레임의 최종 목표 자세를 저장한다.
+			if swingKind and (swingCombo or swingKind == "dash") then
+				table.clear(swingBridge.last)
+				for joint, cf in canon do
+					if typeof(cf) == "CFrame" then swingBridge.last[joint] = cf end
+				end
+				swingBridge.lastAt = os.clock()
+			else
+				-- 공격 종료 직후 오래된 자세로 다음 공격을 시작하지 않도록 즉시 캐시 폐기한다.
+				table.clear(swingBridge.last)
+				swingBridge.lastAt = -100
+			end
 			FM.step(pfm, dt, rootRot, if swingKind == "dash" then 1.85 else nil)
 		end))
 		table.insert(conns, { Disconnect = function()
