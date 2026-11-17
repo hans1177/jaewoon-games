@@ -1627,7 +1627,7 @@ function FieldScene.start(opts)
 	local function startSwing(kind: string, dur: number, stage: number?, visualOnly: boolean?)
 		local nextStage = math.clamp(math.floor(stage or 1), 1, 10)
 		-- [연타 교차 보간] 2·3타에서 현재 실제 관절을 남겨 끊기는 팔/허리/발목을 연결한다.
-		if FM and nextStage >= 2 and os.clock() - swingBridge.lastAt <= 0.32 and next(swingBridge.last) then
+		if FM and (nextStage >= 2 or kind == "slash") and os.clock() - swingBridge.lastAt <= 0.32 and next(swingBridge.last) then
 			swingBridge.from = table.clone(swingBridge.last)
 			swingBridge.at = os.clock()
 			swingBridge.duration = if wpn.family == "dagger" or wpn.family == "fist" then 0.075
@@ -2228,24 +2228,56 @@ function FieldScene.start(opts)
 				-- [10타 진폭] 여덟·아홉 타에서 선회가 커지고 열 번째에 공중 회전 마무리.
 				local flourish = if slashIdx == 10 then 1.90 elseif slashIdx >= 7 then 1.48 else 1
 				pulse *= flourish
-				if family == "dagger" then
-					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.24 * pulse, side * 0.38 * pulse, side * 0.16 * pulse)
-					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.18 * pulse, 0, side * 0.14 * pulse)
-					canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.06 * pulse, side * 0.10 * pulse, 0)
+				
+				-- [전신 연쇄] 골반·발은 먼저, 가슴·팔꿈치는 그다음, 손목·시선은 마지막에 움직인다.
+				-- 매 단계 방향과 리듬을 바꿔 같은 동작을 기계적으로 반복하지 않는다.
+				local step = math.sin(math.clamp(p / 0.56, 0, 1) * math.pi)
+				local shoulder = math.sin(math.clamp((p - 0.10) / 0.70, 0, 1) * math.pi)
+				local finish = math.sin(math.clamp((p - 0.29) / 0.54, 0, 1) * math.pi)
+								if family == "dagger" then
+					-- [단검] 골반을 낮추며 교차 역수 → 후속 손목 회수 → 빠른 공중 교차 마무리.
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.25 * step, -side * 0.31 * step, side * 0.18 * step)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.24 * shoulder, side * 0.38 * shoulder * flourish, side * 0.16 * shoulder)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.34 * shoulder, -side * 0.24 * shoulder, -side * 0.18 * shoulder)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.39 * shoulder + 0.21 * finish, side * 0.31 * shoulder, side * 0.15 * shoulder)
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.26 * shoulder + 0.25 * finish, 0, side * 0.20 * finish)
+					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.27 * step, 0, side * 0.13 * step)
+					canon.FootR = (canon.FootR or id) * CFrame.Angles(0.17 * finish, side * 0.12 * step, 0)
 				elseif family == "spear" then
-					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.09 * pulse, side * 0.10 * pulse, 0)
-					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.10 * pulse, 0, side * 0.06 * pulse)
-					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.12 * pulse, 0, -0.04 * pulse)
+					-- [창] 뒷발 밀기 → 창자루 회전 → 긴 찌르기·뒤로 훑는 마무리.
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.18 * step, -side * 0.19 * step, 0)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.16 * shoulder, side * 0.29 * shoulder * flourish, -side * 0.08 * shoulder)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.25 * shoulder, -side * 0.23 * shoulder, 0)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.24 * shoulder + 0.22 * finish, side * 0.24 * shoulder, 0)
+					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.19 * shoulder, 0, side * 0.13 * finish)
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.14 * shoulder + 0.21 * finish, 0, 0)
+					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.27 * step, 0, -0.11 * step)
 				elseif family == "axe" or family == "blunt" then
-					canon.Chest = (canon.Chest or id) * CFrame.Angles(0.12 * pulse, side * 0.23 * pulse, 0)
-					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.12 * pulse, 0, -side * 0.08 * pulse)
-					canon.FootL = (canon.FootL or id) * CFrame.Angles(0.12 * pulse, 0, side * 0.04 * pulse)
+					-- [도끼·철퇴] 느리지만 큰 관성: 발 밀기 → 몸통 역회전 → 묵직한 활강·상승 마무리.
+					local axe = family == "axe"
+					local swing = if axe then 0.38 else 0.33
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.18 * step, -side * 0.27 * step, 0)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(0.15 * shoulder, side * swing * shoulder * flourish, -side * 0.16 * shoulder)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.33 * shoulder + 0.23 * finish, side * 0.22 * shoulder, side * 0.18 * shoulder)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.27 * shoulder, -side * 0.18 * shoulder, -side * 0.12 * shoulder)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.22 * shoulder + 0.26 * finish, 0, 0)
+					canon.FootL = (canon.FootL or id) * CFrame.Angles(0.24 * finish, 0, side * 0.11 * step)
 				elseif family == "blade" then
-					canon.Chest = (canon.Chest or id) * CFrame.Angles(0, side * 0.16 * pulse, -side * 0.04 * pulse)
-					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.09 * pulse, side * 0.12 * pulse, 0)
+					-- [검] X자 교차 베기 → 낮은 역선회 → 10타 상승 회전 베기.
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.13 * step, -side * 0.28 * step, side * 0.11 * step)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.17 * shoulder, side * 0.36 * shoulder * flourish, -side * 0.15 * shoulder)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.29 * shoulder + 0.26 * finish, side * 0.26 * shoulder, -side * 0.19 * shoulder)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.24 * shoulder + 0.19 * finish, 0, side * 0.12 * shoulder)
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.20 * shoulder + 0.21 * finish, side * 0.22 * shoulder, 0)
 				elseif family == "fist" then
-					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.12 * pulse, side * 0.16 * pulse, 0)
-					canon.FootR = (canon.FootR or id) * CFrame.Angles(0.12 * pulse, 0, side * 0.06 * pulse)
+					-- [맨손] 반대발 디딤 → 회전 훅 → 팔꿈치·돌려차기 → 10타 공중 마무리.
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.19 * step, -side * 0.34 * step, side * 0.17 * step)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.24 * shoulder, side * 0.39 * shoulder * flourish, side * 0.15 * shoulder)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.40 * shoulder, -side * 0.24 * shoulder, 0)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.33 * shoulder + 0.20 * finish, side * 0.23 * shoulder, 0)
+					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.36 * step + 0.22 * finish, 0, side * 0.24 * step)
+					canon.ShinR = (canon.ShinR or id) * CFrame.Angles(0.55 * step - 0.24 * finish, 0, 0)
+					canon.FootR = (canon.FootR or id) * CFrame.Angles(0.28 * finish, 0, side * 0.15 * step)
 				elseif wpn.ranged then
 					-- [원거리 영화식 2·3연타] 팔·허리·무릎·발끝이 좌우로 번갈아 움직인다.
 					-- 실제 충돌체/서버 위치/명중 횟수는 바꾸지 않고 R15 관절만 넓게 흔든다.
