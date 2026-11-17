@@ -3861,7 +3861,11 @@ function FieldScene.start(opts)
 					width = width, axis = axis, length = length, color = color,
 				})
 				if ok and trail and ctl then
-					task.delay(dur, function() pcall(ctl.Destroy) end)
+					-- [날끝 서서히 소멸] 즉시 파괴하지 않고 발광을 끈 뒤 기존 Trail 수명만큼 잔흔을 부드럽게 지운다.
+					task.delay(dur, function()
+						if trail.Parent then trail.Enabled = false end
+						task.delay(trail.Lifetime + 0.04, function() pcall(ctl.Destroy) end)
+					end)
 				end
 			end
 		end
