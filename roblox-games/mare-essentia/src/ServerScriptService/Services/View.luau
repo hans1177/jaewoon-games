@@ -657,7 +657,7 @@ return function(D, S)
 			local dq = D.Quests.ById[id]
 			if dq then
 				local _, ending = S.Quest.storyOf(dq)
-				table.insert(view.quests.done, { name = dq.name, summary = dq.summary, strand = dq.strand, ending = ending })
+				table.insert(view.quests.done, { name = dq.name, summary = dq.summary, strand = dq.strand, grade = D.Quests.Grade(dq), ending = ending })
 			end
 		end
 		table.sort(view.quests.done, function(a, b) return a.name < b.name end)
@@ -670,6 +670,7 @@ return function(D, S)
 					story = (S.Quest.storyOf(q)),
 					strand = q.strand or (if q.companionId then "companion" else nil),
 					kind = q.kind,
+					grade = D.Quests.Grade(q),
 					progress = S.Quest.progress(state, q),
 					amount = q.amount,
 					rewardCoins = q.rewardCoins,
@@ -682,7 +683,7 @@ return function(D, S)
 				if q.kind == "deliver" then
 					shownDeliver += 1
 				end
-				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary .. (if q.rewardCardId and D.Cards.ById[q.rewardCardId] then " · 지식카드 보상: " .. D.Cards.ById[q.rewardCardId].name else ""), story = (S.Quest.storyOf(q)), strand = q.strand or (if q.companionId then "companion" else nil), rewardCoins = q.rewardCoins, rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
+				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary .. (if q.rewardCardId and D.Cards.ById[q.rewardCardId] then " · 지식카드 보상: " .. D.Cards.ById[q.rewardCardId].name else ""), story = (S.Quest.storyOf(q)), strand = q.strand or (if q.companionId then "companion" else nil), grade = D.Quests.Grade(q), rewardCoins = q.rewardCoins, rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
 			end
 		end
 

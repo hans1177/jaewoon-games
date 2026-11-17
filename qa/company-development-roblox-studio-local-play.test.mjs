@@ -3950,6 +3950,26 @@ test('Mare scheduled Studio expeditions cover all 22 cultural regions without si
 });
 
 // [실제 무기별 평타·스킬] 데이터, 공용 원본 R15 클립, 기존 동료 자동스킬 및 공식 Studio 입력을 함께 확인한다.
+// [퀘스트 등급·병종 회귀] 원래 목표/보상은 유지하고 1~5단의 UI·현장 조합을 구분한다.
+test('Mare quests and field encounters expose five meaningful difficulty grades',()=>{
+  const base='roblox-games/mare-essentia/src/';
+  const quests=fs.readFileSync(base+'ReplicatedStorage/Shared/Quests.luau','utf8');
+  const field=fs.readFileSync(base+'ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  const view=fs.readFileSync(base+'ServerScriptService/Services/View.luau','utf8');
+  const game=fs.readFileSync(base+'StarterPlayer/Game.client.luau','utf8');
+  assert.ok(quests.includes('local function Grade(q: Quest)')&&quests.includes('Grade = Grade'));
+  assert.ok(quests.includes('q.kind == "win"')&&quests.includes('q.kind == "deliver"')&&quests.includes('q.kind == "visit"'));
+  assert.ok(view.includes('grade = D.Quests.Grade(q)')&&view.includes('grade = D.Quests.Grade(dq)'));
+  assert.ok(game.includes('난이도 %d/5')&&game.includes('GRADE = { "입문", "일반", "숙련", "위험", "전설" }'));
+  for(const grade of ['danger0 <= 1','danger0 == 2','danger0 == 3','danger0 == 4']){
+    assert.ok(field.includes(grade),'missing difficulty composition '+grade);
+  }
+  assert.ok(field.includes('FieldDifficultyGrade')&&field.includes('stature = if isBoss'));
+  assert.ok(field.includes('trousers = trousers')&&field.includes('local nameColor = if isBoss'));
+  assert.ok(field.includes('local enemyCount = math.clamp(20 + (danger0 - 1) * 6'));
+  assert.ok(field.includes('local bossCount = if danger0 < 3 then 0'));
+});
+
 test('Mare nine weapon families have distinct authored normal and skill R15 gameplay',()=>{
   const base='roblox-games/mare-essentia/';
   const source=fs.readFileSync(base+'src/ReplicatedStorage/Shared/Weapons.luau','utf8');

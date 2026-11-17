@@ -413,6 +413,7 @@ function FieldScene.start(opts)
 	end
 	local biome = lookFor(opts.name or "", opts.portId)
 	local visualMobile = game:GetService("UserInputService").TouchEnabled
+	folder:SetAttribute("FieldDifficultyGrade", math.clamp(math.floor(tonumber(opts.danger) or 1), 1, 5))
 	folder:SetAttribute("FieldRegion", biome.region or "generic")
 	folder:SetAttribute("FieldEncounterPattern", biome.encounter or biome.kind)
 	-- 지역(바이옴)과 위험도에 따라 맵 크기가 다르다: 위험한 곳일수록 넓다
@@ -852,7 +853,7 @@ function FieldScene.start(opts)
 
 	local function refresh()
 		if workspace:GetAttribute("DevGod") then pl.hp = pl.maxHp end -- 개발 캡처 전용: 서 있기만 해도 죽지 않게
-		title.Text = string.format("%s  발견 %d/%d  적 %d", opts.name or "탐험", found, nodeCount, #enemies)
+		title.Text = string.format("%s · %d단  발견 %d/%d  적 %d", opts.name or "탐험", folder:GetAttribute("FieldDifficultyGrade") or 1, found, nodeCount, #enemies)
 		hpFill.Size = UDim2.fromScale(math.clamp(pl.hp / pl.maxHp, 0, 1), 1)
 		hpFill.BackgroundColor3 = if pl.hp / pl.maxHp < 0.35 then Color3.fromRGB(214, 82, 76) else Color3.fromRGB(91, 181, 120)
 		healthNumber.Text = string.format("체력 %d / %d", math.ceil(pl.hp), pl.maxHp)
@@ -1205,7 +1206,12 @@ function FieldScene.start(opts)
 			{ "전투망치 두목", "Barbarian", Color3.fromRGB(112, 67, 69), "warhammer" },
 		},
 	}
-	local kinds = { "grunt", "archer", "shield", "charger" }
+	-- [퀘스트 1~5단 적 편성] 기존 적 수·체력·공격력·드롭은 그대로, 상위 단계는 견제·정예 조합이 늘어난다.
+	local kinds = if danger0 <= 1 then { "grunt", "grunt", "archer", "grunt" }
+		elseif danger0 == 2 then { "grunt", "archer", "grunt", "shield" }
+		elseif danger0 == 3 then { "grunt", "archer", "shield", "charger" }
+		elseif danger0 == 4 then { "grunt", "archer", "shield", "charger", "archer" }
+		else { "archer", "shield", "charger", "grunt", "archer", "charger" }
 	-- [지역별 몬스터 배치] 숲길·유적·해안·산길·사막마다 무리 위치를 바꾼다.
 	-- 기존 적 수/역할/체력/공격력/드롭/보스 규칙은 변경하지 않는다.
 	local packCenters = {}
@@ -1287,13 +1293,21 @@ function FieldScene.start(opts)
 		end
 		ac.def = individualDef
 		-- [몹 역할별 실루엣] 기존 전투 능력은 유지하고 R15 비율·걸음 성격만 다르게 설정한다.
-		local bodyType = if ac.kind == "archer" then "slim" elseif ac.kind == "shield" or isBoss then "heavy"
+		-- [병종 실루엣] 기존 R15 리그·실제 손 장착 메시 재사용. 키/체형/바지색으로 원거리·투척·방패·돌격을 구분.
+		local bodyType = if isBoss or ac.kind == "shield" then "heavy" elseif throwAsset or ac.kind == "archer" then "slim"
 			elseif ac.kind == "charger" then "athletic" else "average"
 		local motionStyle = if ac.kind == "archer" then "nimble" elseif ac.kind == "shield" or isBoss then "heavy"
 			elseif ac.kind == "charger" then "disciplined" else "civilian"
+		local stature = if isBoss then 7.6 elseif ac.kind == "shield" then 6.2 elseif ac.kind == "charger" then 6
+			elseif throwAsset then 5.35 elseif ac.kind == "archer" then 5.55 else 5.7
+		local trousers = if throwAsset then Color3.fromRGB(92, 70, 52)
+			elseif ac.kind == "archer" then Color3.fromRGB(55, 76, 60)
+			elseif ac.kind == "shield" then Color3.fromRGB(50, 59, 73)
+			elseif ac.kind == "charger" then Color3.fromRGB(81, 48, 43)
+			elseif isBoss then Color3.fromRGB(53, 41, 41) else Color3.fromRGB(65, 58, 52)
 		-- [생성 중단 보호] 공식 R15 로딩이 지연되는 동안 철수해도 콜백 오류가 전파되지 않는다.
-		local created, model = pcall(Pose.createR15, folder, pos, 0, style[3], rng, if styleN == 1 then def[2] else style[2], if isBoss then 7.6 else 5.6,
-			{ bodyType = bodyType, motionStyle = motionStyle, persona = styleN, profession = ac.kind, year = opts.year })
+		local created, model = pcall(Pose.createR15, folder, pos, 0, style[3], rng, if styleN == 1 then def[2] else style[2], stature,
+			{ bodyType = bodyType, motionStyle = motionStyle, trousers = trousers, persona = styleN, profession = ac.kind, year = opts.year })
 		if not created and not finished then
 			warn("[MareEssentia] 탐험 적 리그 생성 오류", model)
 			model = nil
@@ -1316,7 +1330,13 @@ function FieldScene.start(opts)
 		bb.AlwaysOnTop = true
 		bb.MaxDistance = if isBoss then 90 else 52
 		bb.Parent = root
-		local tag = label(bb, def[1], if isBoss then 16 else 14, if isBoss then Color3.fromRGB(255, 190, 90) else Color3.fromRGB(255, 120, 110))
+		local nameColor = if isBoss then Color3.fromRGB(255, 204, 105)
+			elseif throwAsset then Color3.fromRGB(255, 178, 103)
+			elseif ac.kind == "archer" then Color3.fromRGB(138, 229, 172)
+			elseif ac.kind == "shield" then Color3.fromRGB(159, 191, 255)
+			elseif ac.kind == "charger" then Color3.fromRGB(255, 130, 118)
+			else Color3.fromRGB(240, 223, 194)
+		local tag = label(bb, def[1], if isBoss then 16 else 14, nameColor)
 		tag.Size = UDim2.new(1, 0, 0, 16)
 		local barBack = Instance.new("Frame")
 		barBack.Position = UDim2.new(0.15, 0, 0, 20)
@@ -1329,13 +1349,16 @@ function FieldScene.start(opts)
 		bar.BackgroundColor3 = Color3.fromRGB(214, 82, 76)
 		bar.BorderSizePixel = 0
 		bar.Parent = barBack
+		model:SetAttribute("FieldDifficultyGrade", math.clamp(danger0, 1, 5))
 		model:SetAttribute("EnemyWeaponId", weapon.id)
 		model:SetAttribute("EnemyShieldModel", style[5] or "")
 		model:SetAttribute("MotionRole", if isBoss then "boss" elseif throwAsset then "thrower" else ac.kind) -- 게임 규칙이 아닌 관절 동작 선택용
 		if throwAsset then model:SetAttribute("ThrownAsset", throwAsset) end
 		model:SetAttribute("MotionVariant", styleN) -- 복식·전투 몸짓 전용(저장/피해와 무관)
 		local isElite = isBoss or ac.kind == "shield" or ac.kind == "charger"
-		tag.Text = (if isElite and not isBoss then "정예 " else "") .. def[1] .. " · " .. style[1]
+		tag.Text = string.format("[%d단] ", math.clamp(danger0, 1, 5))
+			.. (if isBoss then "두목 " elseif isElite then "정예 " else "")
+			.. (if throwAsset then "투척 " else "") .. style[1]
 		tag.TextSize = if isBoss then 14 else 12
 		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil

@@ -541,6 +541,30 @@ for _, q in Quests do
 	ById[q.id] = q
 end
 
+-- [퀘스트 난이도 1~5단] 기존 완료 조건·보상·저장 키를 바꾸지 않고 실제 목표 규모를 기준으로 분류한다.
+-- 종류별 단위가 달라 납품량·방문 항구 수·전투 승수·발견 수를 각각 판정한다.
+local function Grade(q: Quest): number
+	local n = math.max(0, q.amount or 0)
+	local g = 1
+	if q.kind == "win" then
+		g = if n <= 3 then 1 elseif n <= 6 then 2 elseif n <= 10 then 3 elseif n <= 20 then 4 else 5
+	elseif q.kind == "visit" then
+		g = if n <= 3 then 1 elseif n <= 7 then 2 elseif n <= 15 then 3 elseif n <= 25 then 4 else 5
+	elseif q.kind == "discover" or q.kind == "field" or q.kind == "people" or q.kind == "history" or q.kind == "chronicle" then
+		g = if n <= 2 then 1 elseif n <= 6 then 2 elseif n <= 12 then 3 elseif n <= 25 then 4 else 5
+	elseif q.kind == "deliver" then
+		g = if q.rewardCoins < 400 then 1 elseif q.rewardCoins < 950 then 2 elseif q.rewardCoins < 1800 then 3 elseif q.rewardCoins < 3200 then 4 else 5
+		if n >= 20 then g = math.max(g, 4) elseif n >= 12 then g = math.max(g, 3) end
+	else
+		g = if q.rewardCoins < 400 then 1 elseif q.rewardCoins < 1000 then 2 elseif q.rewardCoins < 2200 then 3 elseif q.rewardCoins < 5000 then 4 else 5
+		if n >= 15 then g = math.max(g, 4) elseif n >= 6 then g = math.max(g, 3) end
+	end
+	if q.after then
+		g = math.max(g, 2) -- 연속 이야기의 두 번째 장부터는 초보 임무로 표시하지 않는다.
+	end
+	return math.clamp(g, 1, 5)
+end
+
 -- 동료 전용 퀘스트: 동료의 목소리로 쓴 사연(hook)과 결말(ending). 직접 쓴 것이라 틀 문장보다 우선한다.
 local HAND: { [string]: { string } } = {
 	cq_merian = { "메리안이 스케치북을 펼친다. \"애벌레가 나비가 되는 걸 아무도 믿지 않아요. 그림으로 보여 주면 믿겠죠. 살아 있는 걸 더 찾아 주세요.\"", "스케치북의 마지막 쪽에 나비가 날아올랐다. 메리안이 조용히 말했다. \"이제 아무도 이게 마법이라고 하지 못해요.\"" },
@@ -698,5 +722,6 @@ end
 return {
 	Quests = Quests,
 	ById = ById,
+	Grade = Grade,
 	Story = Story,
 }

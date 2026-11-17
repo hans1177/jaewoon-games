@@ -7094,7 +7094,7 @@ function RENDERERS.explore()
 		local tiles = {}
 		for _, s in view.sites do
 			table.insert(tiles, { icon = "explore", title = s.name,
-				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then s.locked or "연구 조건 필요" else string.format("발견 %d · %d일", s.left, s.days),
+				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then s.locked or "연구 조건 필요" else string.format("난이도 %d/5단 · 발견 %d · %d일", math.clamp(s.minLevel or 1, 1, 5), s.left, s.days),
 				-- [탐험 진입] 이용할 수 없는 버튼을 "지상맵 입장"으로 오인하지 않도록 실제 상태를 표시한다. 해금·발견 규칙은 그대로.
 				btn = if s.left == 0 then "조사 완료" elseif not s.unlocked then "연구 조건" else "지상맵 입장",
 				color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
@@ -8820,8 +8820,12 @@ function RENDERERS.quest()
 	H.walletBar("tavern")
 	-- 일지: 모든 퀘스트가 여기 기록된다. 소문을 듣거나 사람을 만나 이야기하면 저절로 올라오고, 조건을 채우면 저절로 보상이 들어온다.
 	local STRAND = { main = "서막", companion = "동료 이야기", history = "역사의 현장", person = "인물과 연구" }
+	local GRADE = { "입문", "일반", "숙련", "위험", "전설" }
 	local function strandText(q)
-		return (if q.strand then "[" .. STRAND[q.strand] .. "] " else "") .. q.summary .. (if q.story then "\n" .. q.story else "")
+		local grade = math.clamp(math.floor(tonumber(q.grade) or 1), 1, 5)
+		return string.format("[난이도 %d/5 · %s] ", grade, GRADE[grade])
+			.. (if q.strand then "[" .. (STRAND[q.strand] or "이야기") .. "] " else "")
+			.. q.summary .. (if q.story then "\n" .. q.story else "")
 	end
 	add(function() return mkHeader(content, string.format("일지 · 진행 중 %d", #view.quests.active)) end)
 	if #view.quests.active == 0 then
@@ -8861,7 +8865,7 @@ function RENDERERS.quest()
 		add(function() return mkHeader(content, string.format("완료한 기록 %d", #view.quests.done)) end)
 		for _, q in view.quests.done do
 			add(function()
-				return mkLabel(content, "(완료) " .. q.name .. " — " .. q.summary .. (if q.ending then "\n   " .. q.ending else ""), 12, COLORS.muted, true)
+				return mkLabel(content, string.format("(완료 · %d/5단) ", q.grade or 1) .. q.name .. " — " .. q.summary .. (if q.ending then "\n   " .. q.ending else ""), 12, COLORS.muted, true)
 			end)
 		end
 	end
