@@ -6917,6 +6917,7 @@ function H.startField(s)
 		battleLevel = battleLevel,
 		battleStats = view and view.battleStats,
 		weaponPractice = view and view.weaponPractice, -- 영구 저장된 무기별 숙련 복원
+		fieldStreakBest = view and view.fieldStreakBest or 0, -- 기존 서버 저장 최고 기록
 		heroName = view and view.captain and view.captain.name or player.DisplayName,
 		heroPortrait = heroPortrait,
 		allyPortraits = allyPortraits,
@@ -6934,14 +6935,15 @@ function H.startField(s)
 		nodes = math.clamp(s.days, 1, 3),
 		danger = s.minLevel,
 		seed = #s.id * 31 + s.days,
-		onFinish = function(result, observedCardId, gainedPractice)
+		onFinish = function(result, observedCardId, gainedPractice, streakRecord)
 			inField = false
 			applyView()
 			main.Visible = true
 			-- [귀환 저장] 클리어·패배·철수 모두 기존 저장 흐름에 숙련 경험치만 기록한다.
 			-- 기존 Explore 보상은 이 기록과 무관하게 원래 서버 판정으로만 지급한다.
 			if practiceAllowed then
-				call("FieldPracticeCommit", { siteId = s.id, hits = gainedPractice or {} })
+				call("FieldPracticeCommit", { siteId = s.id, hits = gainedPractice or {},
+					record = streakRecord and streakRecord.hits or 0 })
 			end
 			if result == "clear" then
 				-- [현장 관찰] 서버가 기존 탐험지 pool·시대·미발견 상태를 재검증한 뒤 카드 후보를 선택한다.

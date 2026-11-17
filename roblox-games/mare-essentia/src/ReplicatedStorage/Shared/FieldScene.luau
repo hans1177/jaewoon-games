@@ -691,6 +691,11 @@ function FieldScene.start(opts)
 	-- 상태
 	local pl = AC.newPlayer(100)
 	local BASE_DMG = 10
+	-- [휴식 회복] 자동 회복은 이번 지상 탐험의 체력에만 적용한다. 동료는 실제 영입·소환된 치료 직업만 인정한다.
+	local lastCombatAt = os.clock()
+	local activeHealers = {}
+	local passiveRegenHudAt, passiveRegenFxAt = 0, -100
+	local fieldStreakResult = { hits = 0, speed = 0 }
 	local found = 0
 	local nodeCount = math.max(1, opts.nodes or 1)
 	local observedCardId = nil -- [탐험] finish 콜백과 현장 조사에서 공유하는 이번 탐험 한정 값
@@ -909,7 +914,7 @@ function FieldScene.start(opts)
 		gui:Destroy()
 		folder:Destroy()
 		if opts.onFinish then
-			local ok, err = pcall(opts.onFinish, result, observedCardId, earnedPractice)
+			local ok, err = pcall(opts.onFinish, result, observedCardId, earnedPractice, fieldStreakResult)
 			if not ok then warn("[MareEssentia] 탐험 복귀 오류", err) end
 		end
 	end
@@ -967,6 +972,9 @@ function FieldScene.start(opts)
 	continueBtn.Activated:Connect(function() completePopup.Visible = false end)
 	local function showCompletion()
 		if completePopup.Visible then return end
+		popupSummary.Text = string.format("이번 최고 %d연타 · 초당 %.1f타\n역대 최고 %d연타 · 보상은 귀환 후 확정",
+			fieldStreakResult.hits, fieldStreakResult.speed,
+			math.max(math.floor(tonumber(opts.fieldStreakBest) or 0), fieldStreakResult.hits))
 		completeBtn.Visible, completeReopen.Visible = true, true
 		completePopup.Visible = true
 		local scale = Instance.new("UIScale")
@@ -2046,52 +2054,75 @@ function FieldScene.start(opts)
 		lockBb.Enabled = best ~= nil
 	end))
 
-	-- [연타 기록·속도] 실제 명중을 1.5초 창에서 세고, 탐험 중 최고 연타·최고 속도를 표시한다.
-	-- 한 번의 타격 판정과 3초 연타 종료 규칙은 기존 ActionCombat 흐름 그대로 둔다.
-	local streakN, streakT, streakBest, streakSpeedBest = 0, 0, 0, 0
-	local streakRecent = {}
-	local streakRecordShown = false
-	local streakHudAt = 0
+	-- [연타] 광역 공격은 한 번의 공격 행동당 1타만 기록한다. 저장 보상·무기 숙련은 기존 책임 함수에 남긴다.
+	local streakN, streakT, streakSpeedBest = 0, 0, 0
+	local streakBest = math.floor(math.clamp(tonumber(opts.fieldStreakBest) or 0, 0, 500))
+	local streakRecent, streakRecordShown, streakHudAt = {}, false, 0
+	local streakActionSeq, streakCountedSeq = 0, -1
+	local function streakLimit(): number
+		return if streakN >= 100 then 1.8 elseif streakN >= 50 then 2.25 else 3
+	end
+	local function endStreak(reason: string)
+		if streakN <= 0 then return end
+		local ended = streakN
+		streakN = 0
+		streakRecordShown = false
+		table.clear(streakRecent)
+		comboGauge.Visible = false
+		comboInfo.Visible = true
+		comboInfo.Text = string.format("역대 최고 %d연타 · 이번 최고 %d연타", streakBest, fieldStreakResult.hits)
+		if ended >= 5 and not finished then
+			showCombo(string.format("%d연타 종료 · %s", ended, reason), false, Color3.fromRGB(215, 229, 240))
+			if reason ~= "시간 만료" then sfx("sfx_card_swing", 0.26, 0.84) end
+		end
+	end
 	table.insert(conns, RunService.Heartbeat:Connect(function()
 		if finished or streakN == 0 then return end
 		local now = os.clock()
 		if now < streakHudAt then return end
-		streakHudAt = now + 0.05 -- 모바일에서 연타 게이지는 최대 초당 20회만 갱신한다.
-		local left = 3 - (now - streakT)
-		if left <= 0 then
-			local ended = streakN
-			streakN = 0
-			streakRecordShown = false
-			table.clear(streakRecent)
-			comboGauge.Visible = false
-			comboInfo.Text = string.format("이번 탐험 최고 %d연타 · 최고 속도 %.1f타/초", streakBest, streakSpeedBest)
-			if ended >= 10 then
-				showCombo(string.format("%d연타 종료 · 최고 %d연타", ended, streakBest), false, Color3.fromRGB(218, 226, 242))
-			end
-			return
-		end
+		streakHudAt = now + 0.05
+		local left = streakLimit() - (now - streakT)
+		if left <= 0 then endStreak("시간 만료") return end
 		comboGauge.Visible = true
-		comboGaugeFill.Size = UDim2.fromScale(math.clamp(left / 3, 0, 1), 1)
-		comboGaugeFill.BackgroundColor3 = if left < 0.8 then Color3.fromRGB(255, 114, 91)
-			elseif left < 1.6 then Color3.fromRGB(255, 211, 111)
+		comboGaugeFill.Size = UDim2.fromScale(math.clamp(left / streakLimit(), 0, 1), 1)
+		comboGaugeFill.BackgroundColor3 = if left < 0.6 then Color3.fromRGB(255, 114, 91)
+			elseif left < 1.2 then Color3.fromRGB(255, 211, 111)
 			else Color3.fromRGB(95, 226, 203)
+		local gap = streakBest - streakN
+		if streakBest >= 25 and gap >= 1 and gap <= 5 then
+			comboInfo.Text = string.format("기록 돌파까지 %d타 · 초당 %.1f타", gap + 1, fieldStreakResult.speed)
+		elseif streakBest >= 25 and gap == 0 and not streakRecordShown then
+			comboInfo.Text = string.format("타이기록 %d연타! · 다음 명중이 신기록", streakBest)
+		end
 	end))
-	-- 5연타마다 축하, 25·50·100연타 이상의 이정표는 더 화려하게. 전투 수치는 바꾸지 않는다.
+	-- [연타 축하] 화면 효과·소리는 5타 간격, 핵심 기록 10·25·50·100·200타만 강하게 강조한다.
 	local function comboCinema(n: number, isRecord: boolean)
 		local _, h0 = char3()
-		local spectacular = n >= 50 and n % 25 == 0
-		local title = if n >= 100 then "전설" elseif n >= 50 then "폭풍"
-			elseif n >= 25 then "질주" elseif n >= 10 then "가속" else "연결"
-		showCombo(string.format("%d연타 · %s%s!", n, title, if isRecord then " · 신기록" else ""), true)
-		screenFlash(Color3.fromRGB(255, 236, 170), if visualMobile then 0.84 else 0.62)
-		hitStopUntil = math.max(hitStopUntil, os.clock() + (if spectacular then 0.16 else 0.08))
-		shakeUntil, shakeAmp = os.clock() + 0.2, if visualMobile then 0.3 else 0.7
-		if n % 10 == 0 then sfx("sfx_card_ring", 0.48, 1 + math.min(n, 100) / 250)
-		else sfx("sfx_card_chain", 0.32, 1.05) end
-		if spectacular then sfx("sfx_fanfare", 0.45, 1.12) end
-		if h0 then
-			shockRing(h0.Position - Vector3.new(0, 2.5, 0), if spectacular then 24 else 14, Color3.fromRGB(255, 220, 120), 0.36)
-			if spectacular then afterimage(player.Character, Color3.fromRGB(255, 214, 120), if visualMobile then 1 else 2, 0.05) end
+		local spectacular = n == 25 or n == 50 or n == 100 or n == 200 or (n > 200 and n % 100 == 0)
+		local title = if n >= 200 then "신화" elseif n >= 100 then "전설"
+			elseif n >= 50 then "폭주" elseif n >= 25 then "질주" elseif n >= 10 then "가속" else "연결"
+		local color = if n >= 200 then Color3.fromRGB(255, 155, 231)
+			elseif n >= 100 then Color3.fromRGB(255, 115, 102)
+			elseif n >= 50 then Color3.fromRGB(255, 218, 107)
+			elseif n >= 25 then Color3.fromRGB(187, 150, 255)
+			else Color3.fromRGB(112, 214, 255)
+		showCombo(string.format("%d연타 · %s%s!", n, title, if isRecord then " · 역대 신기록" else ""), true, color)
+		if n >= 10 then screenFlash(color, if visualMobile then 0.90 else (if spectacular then 0.68 else 0.83)) end
+		hitStopUntil = math.max(hitStopUntil, os.clock() + (if spectacular then 0.12 else 0.055))
+		shakeUntil, shakeAmp = os.clock() + 0.15, if visualMobile then 0.22 else (if spectacular then 0.72 else 0.35)
+		if spectacular then
+			sfx("sfx_fanfare", if visualMobile then 0.35 else 0.48, 1 + math.min(n, 200) / 350)
+		elseif n % 10 == 0 then
+			sfx("sfx_card_ring", 0.43, 1 + math.min(n, 100) / 260)
+		else
+			sfx("sfx_card_chain", 0.22, 1.05)
+		end
+		if h0 and (n % 10 == 0 or spectacular) then
+			shockRing(h0.Position - Vector3.new(0, 2.5, 0), if spectacular then 22 else 12, color, 0.32)
+			if spectacular then
+				pulseAt("UPGRADE_BURST", h0.CFrame * CFrame.new(0, -1.5, 0), color, Color3.fromRGB(255, 245, 225), 11, if visualMobile then 8 else 16)
+				if not visualMobile then afterimage(player.Character, color, 2, 0.055) end
+			end
 		end
 	end
 	-- [무기별 2~3연타 막타] 2타는 짧게, 3타는 각 무기에 맞춘 순간 마무리로 차별화한다.
@@ -2193,7 +2224,7 @@ function FieldScene.start(opts)
 		end)
 	end
 
-	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?)
+	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?, ownerAttack: boolean?)
 		-- [정예 반응 회피] 공격 중·경직 중에는 발동하지 않으며, 7초 제한으로 무한 회피를 방지한다.
 		local evadeAt = os.clock()
 		if not quiet and e.elite and not e.ac.dead and (e.ac.state == "chase" or e.ac.state == "recover")
@@ -2232,40 +2263,41 @@ function FieldScene.start(opts)
 		if not quiet then
 			local hitAt = os.clock()
 			hitStopUntil = math.max(hitStopUntil, hitAt + (if mult >= 1.5 then 0.09 else 0.045))
-			if hitAt - streakT > 3 then
-				streakN = 0
-				streakRecordShown = false
-				table.clear(streakRecent)
-			end
-			streakN += 1
-			streakT = hitAt
-			-- 동시에 여러 적을 맞혀도 실제 명중 수를 유지하되 속도는 최근 1.5초 기준으로 제한한다.
-			for i = #streakRecent, 1, -1 do
-				if hitAt - streakRecent[i] > 1.5 then table.remove(streakRecent, i) end
-			end
-			table.insert(streakRecent, hitAt)
-			local pace = math.min(#streakRecent / 1.5, 12)
-			streakSpeedBest = math.max(streakSpeedBest, pace)
-			local grade = if pace >= 5 then "폭주" elseif pace >= 3 then "질주"
-				elseif pace >= 1.5 then "가속" else "연결"
-			local accent = if pace >= 5 then Color3.fromRGB(255, 194, 95)
-				elseif pace >= 3 then Color3.fromRGB(203, 166, 255)
-				elseif pace >= 1.5 then Color3.fromRGB(112, 229, 251)
-				else Color3.fromRGB(229, 244, 255)
-			-- 신기록은 같은 연타 안에서 최초 돌파 시 딱 한 번만 알린다.
-			local isRecord = streakN >= 10 and streakN > streakBest and not streakRecordShown
-			if isRecord then streakRecordShown = true end
-			streakBest = math.max(streakBest, streakN)
-			comboInfo.Visible = true
-			comboInfo.TextColor3 = accent
-			comboInfo.Text = string.format("%s · 초당 %.1f타 · 최고 %d연타", grade, pace, streakBest)
-			comboGauge.Visible = true
-			comboGaugeFill.Size = UDim2.fromScale(1, 1)
-			if streakN % 5 == 0 then
-				comboCinema(streakN, isRecord)
-			else
-				showCombo(string.format("%d연타 · %s%s", streakN, grade, if isRecord then " · 신기록!" else ""), isRecord, accent)
-				if isRecord then sfx("sfx_card_ring", 0.45, 1.23) end
+			lastCombatAt = hitAt
+			if ownerAttack ~= false and streakActionSeq > 0 and streakCountedSeq ~= streakActionSeq then
+				-- 같은 광역 베기·일제 사격으로 여러 적을 맞혀도 기록은 1타만 오른다.
+				streakCountedSeq = streakActionSeq
+				if hitAt - streakT > streakLimit() then endStreak("시간 만료") end
+				streakN += 1
+				streakT = hitAt
+				for i = #streakRecent, 1, -1 do
+					if hitAt - streakRecent[i] > 1.5 then table.remove(streakRecent, i) end
+				end
+				table.insert(streakRecent, hitAt)
+				local pace = math.min(#streakRecent / 1.5, 12)
+				streakSpeedBest = math.max(streakSpeedBest, pace)
+				fieldStreakResult.hits = math.max(fieldStreakResult.hits, streakN)
+				fieldStreakResult.speed = streakSpeedBest
+				local grade = if pace >= 5 then "폭주" elseif pace >= 3 then "질주"
+					elseif pace >= 1.5 then "가속" else "연결"
+				local accent = if pace >= 5 then Color3.fromRGB(255, 194, 95)
+					elseif pace >= 3 then Color3.fromRGB(203, 166, 255)
+					elseif pace >= 1.5 then Color3.fromRGB(112, 229, 251)
+					else Color3.fromRGB(229, 244, 255)
+				local isRecord = streakN >= 25 and streakN > streakBest and not streakRecordShown
+				if isRecord then streakRecordShown = true end
+				streakBest = math.max(streakBest, streakN)
+				comboInfo.Visible = true
+				comboInfo.TextColor3 = accent
+				comboInfo.Text = string.format("%s · 초당 %.1f타 · 역대 %d연타", grade, pace, streakBest)
+				comboGauge.Visible = true
+				comboGaugeFill.Size = UDim2.fromScale(1, 1)
+				if streakN % 5 == 0 then
+					comboCinema(streakN, isRecord)
+				else
+					showCombo(string.format("%d연타 · %s%s", streakN, grade, if isRecord then " · 역대 신기록!" else ""), isRecord, accent)
+					if isRecord then sfx("sfx_card_ring", 0.52, 1.24) end
+				end
 			end
 		end
 		burst(e.root.Position + Vector3.new(0, 2, 0), 12 + dealt, mult >= 1.5)
@@ -2580,6 +2612,8 @@ function FieldScene.start(opts)
 		if (hrp.Position - b.pos).Magnitude <= 8 then
 			local dealt = AC.takeHit(pl, 8, os.clock(), nil)
 			if dealt > 0 then
+				lastCombatAt = os.clock()
+				endStreak("피격")
 				hurtReact(1.5)
 				refresh()
 				if pl.hp <= 0 then
@@ -2639,6 +2673,9 @@ function FieldScene.start(opts)
 			say("회피! 잠깐 무적")
 			return
 		end
+		-- [공격 1회 = 연타 최대 1타] 대시 회피는 공격으로 집계하지 않는다.
+		streakActionSeq += 1
+		lastCombatAt = now
 		-- 조준 보조: 가까운 적(40스터드 안)을 바라보고, 닿지 않으면 몸을 날려 붙는다 (폰에서 헛손질 방지)
 		do
 			local near, nd = nil, 40
@@ -2785,6 +2822,7 @@ function FieldScene.start(opts)
 					breakCrate(c)
 				end
 			end
+			if hits == 0 then endStreak("헛손질") end
 			if moveId == "rush" and hits > 0 then
 				local practice = weaponPractice[wpn.id]
 				if not practice then
@@ -2879,6 +2917,8 @@ function FieldScene.start(opts)
 			return
 		end
 		look = look.Unit
+		streakActionSeq += 1
+		lastCombatAt = os.clock()
 		pl.stamina -= 25
 		dashCd = os.clock() + 3
 		pl.invulnUntil = math.max(pl.invulnUntil or -1, os.clock() + 0.35)
@@ -2887,16 +2927,17 @@ function FieldScene.start(opts)
 		trailsOn(player.Character, TRAIL_LIMBS, Color3.fromRGB(255, 214, 120), 0.4, 1)
 		startSwing(if wpn.family == "fist" then "elbow" else "heavy", 0.5, 1)
 		hrp.CFrame = hrp.CFrame + look * 22
-		local n = 0
+		local n, landed = 0, false
 		for _, e in table.clone(enemies) do
 			local rel = (e.root.Position - from) * Vector3.new(1, 0, 1)
 			local along = rel:Dot(look)
 			local side = (rel - look * along).Magnitude
 			if along > -2 and along < 26 and side < 6 then
-				strikeEnemy(e, 2.2, from, 4, true)
+				if strikeEnemy(e, 2.2, from, 4, true) then landed = true end
 				n += 1
 			end
 		end
+		if not landed then endStreak("헛손질") end
 		shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 12, Color3.fromRGB(255, 220, 120), 0.4)
 		shakeUntil, shakeAmp = os.clock() + 0.25, 1
 		say(if n > 0 then string.format("돌진 베기! %d명", n) else "돌진 베기!")
@@ -2907,6 +2948,8 @@ function FieldScene.start(opts)
 	local function hurtPlayerBy(dmg: number)
 		local dealt = AC.takeHit(pl, dmg, os.clock(), nil)
 		if dealt > 0 then
+			lastCombatAt = os.clock()
+			endStreak("피격")
 			hurtReact(1.4)
 			refresh()
 			if pl.hp <= 0 then
@@ -3252,15 +3295,18 @@ function FieldScene.start(opts)
 				return (a.root.Position - hp0.Position).Magnitude < (b.root.Position - hp0.Position).Magnitude
 			end)
 			local n = if sk == "snipe" then 1 else 3
-			local hitN = 0
+			local hitN, hitLanded = 0, 0
 			for _, e in list do
 				if hitN >= n or (e.root.Position - hp0.Position).Magnitude > 30 * STUD then
 					break
 				end
 				hitN += 1
 				arrowTrail(pos, e.root.Position + Vector3.new(0, 1.5, 0))
-				strikeEnemy(e, if sk == "snipe" then 3.0 else 1.2, hp0.Position, 1.5, sk == "snipe")
+				if strikeEnemy(e, if sk == "snipe" then 3.0 else 1.2, hp0.Position, 1.5, sk == "snipe", false, ch == player.Character) then
+					hitLanded += 1
+				end
 			end
+			if ch == player.Character and hitLanded == 0 then endStreak("헛손질") end
 			trailsOn(ch, { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerArm" }, Color3.fromRGB(255, 220, 130), 0.4, 0.9)
 			pulseAt("SHAPE_BURST", hp0.CFrame * CFrame.new(0, -1.5, 0), Color3.fromRGB(255, 210, 120), Color3.fromRGB(255, 245, 210), 9, 12)
 			say(name .. (if hitN > 0 then ": 원거리 공격!" else ": 맞힐 적이 없다"))
@@ -3286,7 +3332,9 @@ function FieldScene.start(opts)
 				local d = (e.root.Position - hp0.Position).Magnitude
 				if d < nd then near, nd = e, d end
 			end
-			if near then strikeEnemy(near, 1.8, hp0.Position, 5, true) end
+			if near then
+				if not strikeEnemy(near, 1.8, hp0.Position, 5, true, false, ch == player.Character) and ch == player.Character then endStreak("헛손질") end
+			elseif ch == player.Character then endStreak("헛손질") end
 			say(name .. (if near then ": 강타!" else ": 맞힐 적이 없다"))
 			sfx("sfx_card_blade", 0.7, 0.9)
 			burst(pos, 22, true)
@@ -3368,6 +3416,10 @@ function FieldScene.start(opts)
 				magicValue -= 20
 			end
 			pl.cd[key] = now + 8
+			if sk == "volley" or sk == "snipe" or sk == "bash" then
+				streakActionSeq += 1
+				lastCombatAt = now
+			end
 			startSwing("cast_" .. tostring(sk), if sk == "volley" or sk == "snipe" then 0.8 else 0.9)
 			castEffect(sk, card.name, ch, hp0)
 		end
@@ -3414,6 +3466,40 @@ function FieldScene.start(opts)
 	table.insert(conns, RunService.Heartbeat:Connect(function(dt)
 		local now = os.clock()
 		AC.regen(pl, math.min(dt, 0.1)) -- 느린 폰(30fps)에서도 기력이 같은 속도로 찬다
+		-- [비전투 극소량 체력 회복] 8초간 전투 행동이 없고 40스터드 이내 적이 없을 때만 작동한다.
+		-- 자연 초당 0.12, 실제 치료 동료가 28스터드 안에 있으면 동료당 +0.18(최대 2명).
+		if now - lastCombatAt >= 8 and pl.hp > 0 and pl.hp < pl.maxHp then
+			local ch = player.Character
+			local root = ch and ch:FindFirstChild("HumanoidRootPart")
+			local danger = root == nil
+			if root then
+				for _, e in enemies do
+					if not e.ac.dead and e.root.Parent and (e.root.Position - root.Position).Magnitude < 40 then
+						danger = true
+						break
+					end
+				end
+			end
+			if not danger then
+				local healers = 0
+				for _, a in activeHealers do
+					if a.root and a.root.Parent and (a.root.Position - root.Position).Magnitude <= 28 then
+						healers += 1
+					end
+				end
+				pl.hp = math.min(pl.maxHp, pl.hp + (0.12 + math.min(healers, 2) * 0.18) * math.min(dt, 0.1))
+				if now >= passiveRegenHudAt then
+					passiveRegenHudAt = now + 0.5
+					refresh()
+				end
+				if now - passiveRegenFxAt >= 12 then
+					passiveRegenFxAt = now
+					pulseAt("HEAL_PULSE", root.CFrame * CFrame.new(0, -2.1, 0), Color3.fromRGB(104, 207, 151),
+						Color3.fromRGB(215, 250, 227), 3.8, if visualMobile then 2 else 4)
+					sfx("sfx_card_magic", 0.16, if healers > 0 then 1.15 else 1.32)
+				end
+			end
+		end
 		staminaFill.Size = UDim2.fromScale(math.clamp(pl.stamina / AC.STAMINA_MAX, 0, 1), 1)
 		staminaNumber.Text = string.format("기력 %d", math.floor(pl.stamina + 0.5))
 		if magicFill then
@@ -3664,6 +3750,8 @@ function FieldScene.start(opts)
 						e.ac.state = "stagger"
 						pl.stamina = math.min(AC.STAMINA_MAX, pl.stamina + 25)
 					elseif dealt > 0 then
+						lastCombatAt = now
+						endStreak("피격")
 						say("공격을 받았다!")
 						hurtReact(if e.ac.def.boss then 2 else 1)
 						burst(hrp.Position + Vector3.new(0, 2, 0), 16, false)
@@ -4011,8 +4099,10 @@ function FieldScene.start(opts)
 						local ally = { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now,
 							fm = if FM then FM.new(m, false) else nil, name = ad.name, skills = ad.skills,
 							weapon = ad.weapon or Weapons.get("sword"), skillCd = {}, nextSkill = now + 4 + i * 2,
-							gait = (i - 1) * 0.45, energy = 100, energyFill = energyFill }
+							gait = (i - 1) * 0.45, energy = 100, energyFill = energyFill,
+							healer = table.find(ad.skills, "heal") ~= nil }
 						table.insert(allies, ally)
+						if ally.healer then table.insert(activeHealers, ally) end
 						table.insert(conns, { Disconnect = function()
 							m:Destroy()
 						end })
@@ -4078,7 +4168,7 @@ function FieldScene.start(opts)
 					end
 				end
 				-- 직업 스킬(최대 2개): 상황이 맞을 때 자동으로 쓴다 (치료=체력 낮을 때, 보호막=없을 때, 사격·강타·저격=적이 가까울 때, 사기=적 2명 이상)
-				if now >= a.nextSkill and #enemies > 0 then
+				if now >= a.nextSkill and (#enemies > 0 or (a.healer and pl.hp < pl.maxHp * 0.65)) then
 					for _, sid in a.skills do
 						local def = JobSkills.Skills[sid]
 						if def and (a.skillCd[sid] or 0) <= now then

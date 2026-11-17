@@ -187,8 +187,20 @@ return function(D, S)
 			total += earned
 			if total > limit then return false, "탐험 숙련 상한을 초과했어요" end
 		end
+		-- [기록] 전투는 클라이언트 시각 전용이다. 서버는 탐험 경과시간·수치 상한만 검증한다.
+		-- 보상/레벨/경쟁 순위에 연결하지 않으며, 전투 타격의 서버 입증을 주장하지 않는다.
+		local record = p.record
+		local elapsed = math.max(0, os.clock() - run.started)
+		local recordLimit = math.min(500, math.floor(elapsed / 0.15) + 1)
+		if record ~= nil and (type(record) ~= "number" or record ~= record or record < 0
+			or record ~= math.floor(record) or record > recordLimit) then
+			return false, "탐험 연타 기록이 유효하지 않아요"
+		end
 		for id, earned in p.hits do
 			state.weaponPractice[id] = math.min(10000, (state.weaponPractice[id] or 0) + earned)
+		end
+		if record and record > (state.stats.fieldStreakBest or 0) then
+			state.stats.fieldStreakBest = record
 		end
 		return true, ""
 	end

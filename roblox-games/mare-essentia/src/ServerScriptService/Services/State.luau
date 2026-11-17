@@ -48,7 +48,7 @@ return function(D)
 			careers = D.Careers.new(),
 			loadout = table.clone(D.Skills.DefaultLoadout),
 			quests = { active = {}, done = {} },
-			stats = { battlesWon = 0, battlesLost = 0, visited = { [D.PortEras.startPortFor(nation, startYear)] = true }, explored = 0 },
+			stats = { battlesWon = 0, battlesLost = 0, visited = { [D.PortEras.startPortFor(nation, startYear)] = true }, explored = 0, fieldStreakBest = 0 },
 			pace = { days = 0, window = 0, used = 0 }, -- 역사 앞당김(일): 발견·보고·연구·퀘스트로 쌓이고 한도가 있다
 			room = nil, -- 방 시계에 참여 중이면 { id }
 			order = {}, -- 항구 치안 (항구 id → {v, day, patrolDay})
@@ -623,6 +623,8 @@ return function(D)
 			s.stats.battlesWon = math.floor(num(saved.stats.battlesWon, 0, 0, 1e9))
 			s.stats.battlesLost = math.floor(num(saved.stats.battlesLost, 0, 0, 1e9))
 			s.stats.explored = math.floor(num(saved.stats.explored, 0, 0, 1e9))
+			-- [연타 기록 마이그레이션] 이전 저장은 0으로 복원하고, 개인 최고 기록은 보상과 독립해 보관한다.
+			s.stats.fieldStreakBest = math.floor(num(saved.stats.fieldStreakBest, 0, 0, 500))
 			if type(saved.stats.visited) == "table" then
 				for id, v in saved.stats.visited do
 					if v == true and D.Ports.Ports[id] then

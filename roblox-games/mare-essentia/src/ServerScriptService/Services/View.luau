@@ -111,6 +111,7 @@ return function(D, S)
 		view.careers = {}
 		view.battleStats = { battlesWon = state.stats.battlesWon or 0 }
 		view.weaponPractice = table.clone(state.weaponPractice or {}) -- 전투 수치와 분리된 시각 숙련
+		view.fieldStreakBest = math.floor(math.clamp(state.stats.fieldStreakBest or 0, 0, 500)) -- 서버 저장 개인 기록
 		for _, id in D.Careers.IDS do
 			local c = state.careers[id]
 			table.insert(view.careers, {
