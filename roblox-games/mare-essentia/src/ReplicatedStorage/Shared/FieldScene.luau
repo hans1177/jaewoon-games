@@ -739,6 +739,11 @@ function FieldScene.start(opts)
 				if group then
 					table.insert(modelConnections, group.ChildAdded:Connect(function(child)
 						if not child:IsA("Model") then return end
+						local needed = false
+						for _, entry in pending do
+							if entry[1] == groupName and entry[2] == child.Name then needed = true break end
+						end
+						if not needed then return end
 						-- 복제된 BasePart가 클라이언트에 도착할 시간을 준 뒤 2회까지 점검.
 						task.delay(0.25, function()
 							retryPending(groupName, child.Name)
