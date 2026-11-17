@@ -4113,39 +4113,7 @@ function FieldScene.start(opts)
 			slotOf[id] = i2
 		end
 		equipped.heavy, equipped.sweep = slotOf.heavy ~= nil, slotOf.sweep ~= nil
-		local function slotPos(id): UDim2
-			-- [전투 스킬] 공격 바로 위로 3칸을 계단형 배치. 회피·방어와 원형 터치 영역을 분리한다.
-			local i = if type(id) == "number" then id else (slotOf[id] or 1)
-			if compactTouch then
-				return UDim2.new(1, attackBtn.Position.X.Offset + (if i == 1 then -115 elseif i == 2 then -40 else 26),
-					1, attackBtn.Position.Y.Offset - (if i == 1 then 210 elseif i == 2 then 224 else 212))
-			end
-			return UDim2.new(1, attackBtn.Position.X.Offset + (if i == 1 then -outerSkillRadius
-				elseif i == 2 then -outerSkillRadius * 0.40 else outerSkillRadius * 0.14),
-				1, attackBtn.Position.Y.Offset - (if i == 1 then outerSkillRadius * 0.80
-				elseif i == 2 then outerSkillRadius * 0.98 else outerSkillRadius * 0.97))
-		end
-		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
-		for slotI = slotCount + 1, JobSkills.MAX_PLAYER_SKILLS do
-			local lb = btn(gui, "", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(skillSize, skillSize), slotPos(slotI), Vector2.new(0.5, 0.5))
-			lb.Name = "FieldLockedSkill" .. slotI
-			lb.Text = ""
-			lb:SetAttribute("SkillFullName", "잠긴 스킬")
-			lb.BackgroundTransparency = 0.35
-			lb:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
-			addIcon(lb, "Menu/cc0_no") -- 기존 등록 아이콘으로 잠금 상태를 그림만 표시
-			bindPress(lb, function()
-				say(JobSkills.unlockHint())
-			end)
-		end
-		if slotOf.heavy then
-			mkSkill("heavy", Weapons.actionDesign(wpn).heavy, Color3.fromRGB(169, 100, 54), slotPos("heavy"), skillSize)
-			addIcon(skillBtns.heavy.btn, "Menu/cc0_axe")
-		end
-		if slotOf.sweep then
-			mkSkill("sweep", Weapons.actionDesign(wpn).sweep, Color3.fromRGB(70, 108, 155), slotPos("sweep"), skillSize)
-			addIcon(skillBtns.sweep.btn, "Menu/cc0_sword")
-		end
+		-- [자동 스킬] 기존 장착 칸/해금 정보는 그대로 유지하고 공격·회피 외 버튼만 만들지 않는다.
 		local function useCard(key, card)
 			local now = os.clock()
 			if finished then
@@ -4177,39 +4145,37 @@ function FieldScene.start(opts)
 			startSwing("cast_" .. tostring(sk), if sk == "volley" or sk == "snipe" then 0.8 else 0.9)
 			castEffect(sk, card.name, ch, hp0)
 		end
-		for i, card in cs do
-			local key = "card" .. i
-			if i > 3 or not slotOf[key] then
-				continue
-			end
-			local shortName = if card.skill == "heal" then "회복" elseif card.skill == "volley" then "일제" elseif card.skill == "ward" or card.skill == "armor" then "보호"
-				elseif card.skill == "snipe" then "저격" elseif card.skill == "read" then "간파" elseif card.skill == "rally" then "격려" else "기술"
-			local b = btn(gui, "", Color3.fromRGB(135, 106, 61), UDim2.fromOffset(skillSize, skillSize), slotPos(key), Vector2.new(0.5, 0.5))
-			b.Name = "FieldSkill_" .. key
-			b.Text = ""
-			b:SetAttribute("SkillFullName", card.name)
-			b:SetAttribute("SkillShortName", shortName)
-			b:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
-			-- [도감 원화 연동] 등록된 카드 원화를 우선하고 미등록 카드는 기존 CC0 용도별 아이콘을 쓴다.
-			local paintedKey = if type(card.id) == "string" and AssetIds["CardArt/" .. card.id] then "CardArt/" .. card.id else nil
-			addIcon(b, paintedKey or (if card.skill == "heal" or card.skill == "read" then "Menu/cc0_book"
-				elseif card.skill == "armor" or card.skill == "ward" then "Menu/cc0_shield2"
-				elseif card.skill == "volley" or card.skill == "snipe" then "Menu/cc0_crossbow"
-				elseif card.skill == "rally" then "Menu/cc0_helmet"
-				elseif card.skill == "luck" then "Menu/cc0_goldcoins"
-				elseif card.skill == "bash" then "Menu/cc0_axe"
-				else "Menu/cc0_fireball"))
-			bindPress(b, function()
-				useCard(key, card)
-			end)
-			skillBtns[key] = { btn = b, label = shortName }
-			table.insert(conns, UserInputService.InputBegan:Connect(function(input, processed)
-				if not processed and not finished and input.KeyCode == (if i == 1 then Enum.KeyCode.One elseif i == 2 then Enum.KeyCode.Two else Enum.KeyCode.Three) then
-					useCard(key, card)
-				end
-			end))
-		end
+		-- [연타 직업 자동기] 15연타마다 장착·해금된 카드 중 실제 직업과 맞는 기술을 우선 사용한다.
+		-- 기존 useCard를 재사용해 8초 쿨타임/마력/피해 판정·동료 스킬과의 분리를 유지한다.
 		table.insert(conns, RunService.Heartbeat:Connect(function()
+			local ch = player.Character
+			local mark = ch and ch:GetAttribute("FieldAutoCardPending")
+			if mark and ch then
+				ch:SetAttribute("FieldAutoCardPending", nil)
+				if not finished and streakN == mark then
+					local style = JobSkills.Categories[ch:GetAttribute("FieldDodgeStyle") or "warrior"]
+					local choice = nil
+					for i, card in cs do
+						local key = "card" .. i
+						if i <= 3 and slotOf[key] and (pl.cd[key] or -100) <= os.clock() then
+							if not choice then choice = i end
+							if style and table.find(style.skills, card.skill) then choice = i break end
+						end
+					end
+					if choice then
+						showCombo(string.format("%d연타 · %s 자동!", mark, cs[choice].name), true,
+							Color3.fromRGB(157, 230, 255))
+						useCard("card" .. choice, cs[choice])
+					else
+						local fallback = if equipped.heavy then "heavy" elseif equipped.sweep then "sweep" else nil
+						if fallback and (pl.cd[fallback] or -100) <= os.clock()
+							and pl.stamina >= AC.Moves[fallback].stamina then
+							useMove(fallback)
+						end
+					end
+				end
+			end
+			-- [기존 개발 검증] 수동 스킬 버튼 삭제와 무관하게 테스트용 카드 발동은 보존.
 			local dev = workspace:GetAttribute("DevCardSkill")
 			if dev and cs[dev] then
 				workspace:SetAttribute("DevCardSkill", nil)
