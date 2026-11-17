@@ -10,7 +10,7 @@ on:
     - cron: '3-53/10 * * * *'
   # [이벤트] 자동 판단기가 Studio 보고서를 수집한 직후에도 실행한다(하루 수정 한도·재시도 제한 유지).
   workflow_run:
-    workflows: ['Vibe Autopilot']
+    workflows: ['Vibe Autopilot', 'Devloop Studio Capture']
     types: [completed]
   workflow_dispatch:
     inputs:
@@ -27,7 +27,15 @@ concurrency:
   cancel-in-progress: false
 jobs:
   think:
-    if: ${{ github.repository == 'hans1177/jaewoon-games' && vars.VIBE_BRAIN != 'off' }}
+    if: >-
+      github.repository == 'hans1177/jaewoon-games' &&
+      vars.VIBE_BRAIN != 'off' &&
+      (github.event_name != 'workflow_run' ||
+       (github.event.workflow_run.path == '.github/workflows/vibe-autopilot.yml' &&
+        github.event.workflow_run.conclusion == 'success') ||
+       (github.event.workflow_run.path == '.github/workflows/devloop-studio.yml' &&
+        (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure') &&
+        github.event.workflow_run.head_branch == 'main'))
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
