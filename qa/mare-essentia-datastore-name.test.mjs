@@ -357,6 +357,29 @@ test('근접·원거리 10단 전신 모션과 마무리 이펙트는 기존 피
   assert.match(field,/elseif os\.clock\(\) - swingBridge\.lastAt > 1\.1 then/);
   assert.doesNotMatch(field,/sfx\("sfx_cannon_reload", 0\.23, 1\.62\)/);
   assert.match(weapons,/cadence = "스냅사격·측면스텝·낮은선회/);
+  // [10타 피날레 검증] 시각 연출만 확장하고 평타·5타 강타 권한은 원본에 남겨둔다.
+  for(const marker of [
+    '[창술 실루엣]', '[무게 중심 반작용]', '[무기 개성]', '[격투술]',
+    '[10타 연속 사격 착지]', '[시각적 여운]', '[10타 무기별 2박 피날레]',
+    '[7직업 회피 궤적]', '[직업별 접지]'
+  ]){
+    assert.ok(field.includes(marker),'신규 모션 연출 누락: '+marker);
+  }
+  const finaleStart=field.indexOf('-- [10타 무기별 2박 피날레]');
+  const finaleEnd=field.indexOf('if not visualMobile and basicBeat >= 7 then afterimage',finaleStart);
+  assert.ok(finaleStart>0 && finaleEnd>finaleStart,'10타 시각 전용 피날레 영역 누락');
+  const finale=field.slice(finaleStart,finaleEnd);
+  for(const action of ['strikeEnemy(', 'AC.damageEnemy(', 'AC.tryMove(', 'pl.autoNormalHits +=']){
+    assert.ok(!finale.includes(action),'피날레에서 전투 권한 변경 금지: '+action);
+  }
+  assert.match(finale,/swingBridge\.basicAt ~= finishAt/);
+  assert.match(finale,/wpn\.id ~= finishWeapon/);
+  assert.match(field,/task\.delay\(0\.22, function\(\)/);
+  assert.match(field,/task\.delay\(0\.27, function\(\)/);
+  assert.match(field,/if visualMobile then 2 else 6/);
+  assert.match(field,/if not mobile and \(dodgeStyle == "warrior" or dodgeStyle == "gunner" or dodgeStyle == "navigator"\)/);
+  assert.match(field,/if basicAttack == true then[\s\S]*?pl\.autoNormalHits = \(pl\.autoNormalHits or 0\) \+ 1/);
+  assert.match(field,/if pl\.autoNormalHits % 5 == 0 then/);
   // [5타 강타 시네마] 기존 10박자/숙련 추가 동작이 강타와 겹치지 않는다.
   assert.match(field,/local function comboCinema\(n: number, isRecord: boolean, autoHeavy: boolean\?\)/);
   assert.match(field,/if moveId == "heavy" then[\s\S]{0,250}chainMotionSerial \+= 1/);
