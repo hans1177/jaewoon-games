@@ -1128,7 +1128,7 @@ test('Mare registered 36 ship models have seven regional battle signatures and s
   assert.match(battle,/local r2 = Combat\.board\(fa, fb, seed\)/,'boarding resolution remains unchanged');
   assert.match(client,/string\.format\("7대륙 선박 %d종 · 3D 원본 설계", #ShipsData\.Blueprints\)/);
   assert.doesNotMatch(client,/선박 35종|미지의 땅 2~6단계/);
-  assert.match(client,/if shop then \(if shop.locked then shop.locked else "이 조선소에서 구매 가능"\)/,'all formerly unavailable ships now use the existing regional shop rules');
+  assert.match(client,/if shop then \(if shop.owned then "현재 기함" elseif shop.locked then shop.locked else "이 조선소에서 구매 가능"\)/,'regional shop preserves owned and locked states');
   assert.match(client,/if hasFull and hasMobile then "원본·모바일 경량판 등록"/);
 });
 
@@ -1201,6 +1201,11 @@ test('Mare all 36 designed ships have 23 new region-locked purchases and server-
   assert.match(view,/view\.shipyard\.repairTotal = math\.floor/,'repair preview and server share the same cost multiplier');
   assert.match(ui,/36척 모두 3D 원본·개별 항해·교역·전투 성능 적용/);
   assert.match(ui,/고유 운용: %s · 약점: %s/);
+
+  assert.match(ui,/onClick = function\(\) call\("BuyShip", \{ shipId = shop\.id \}\) end/,'blueprint cards must call the existing server purchase route');
+  assert.match(ui,/not shop\.owned and not shop\.locked and shop\.canCarry and shop\.netCost <= view\.player\.coins/,'mobile direct purchase keeps funds, cargo and unlock gates');
+  assert.match(ui,/if not shop\.canCarry then info \.\.= "\\n화물을 먼저 내려야 구매 가능"/,'cargo overflow warning stays visible');
+
   assert.match(state,/ship = state\.ship,/,'existing persistence keeps the same ship keys');
   assert.match(ships,/caravel = \{[\s\S]*?cargo = 20, speed = 7, hull = 100, cannons = 4, crew = 20/,'starter caravel values unchanged');
 });
