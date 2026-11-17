@@ -427,6 +427,14 @@ function NavalBattle.play(opts)
 		if phase == "night" and sceneSeed % 5 == 0 then coastIndex = 16 end
 		if roughSeas and sceneSeed % 4 == 0 then coastIndex = 2 end
 		local coast = coasts[coastIndex]
+		-- [해역 고유 정체성] 지중해는 노을, 야간 해역은 달빛, 유령 해역은 해무를 반드시 유지한다.
+		if coast.id == "mediterranean" then phase = "sunset"
+		elseif coast.id == "moonlight" then phase = "night" end
+		if coast.id == "ghost" then mode = "fog"
+		elseif coast.id == "atlantic_storm" or coast.id == "cape" then mode = "storm" end
+		if mode == "storm" and not roughSeas then
+			Sfx.ambient({ "sfx_ambience_storm", "sfx_waves" }, 0.55)
+		end
 		sea.Color = coast.water
 		folder:SetAttribute("NavalEnvironment", coast.id)
 		folder:SetAttribute("NavalEnvironmentName", coast.name)
@@ -506,7 +514,8 @@ function NavalBattle.play(opts)
 			crest.CastShadow = false
 			table.insert(waves, { model=crest, at=base, yaw=i * 1.2, seed=i })
 		end
-		if mode == "rain" or mode == "storm" then
+		if mode == "rain" or mode == "storm" or coast.id == "north_sea" or coast.id == "arctic" then
+			local snowfall = coast.id == "north_sea" or coast.id == "arctic"
 			-- [기상 입자] 등록된 엔진 기본 입자만 사용. 터치 기기에서는 발생률 제한.
 			for i = 1, (if MOBILE_VFX then 2 else 4) do
 				local source = part(folder, Vector3.new(2, 2, 2),
@@ -519,12 +528,13 @@ function NavalBattle.play(opts)
 				rain.Texture = "rbxasset://textures/particles/sparkles_main.dds"
 				rain.EmissionDirection = Enum.NormalId.Bottom
 				rain.SpreadAngle = Vector2.new(73, 73)
-				rain.Speed = NumberRange.new(if mode == "storm" then 66 else 45, if mode == "storm" then 84 else 59)
-				rain.Lifetime = NumberRange.new(1.4, 1.9)
-				rain.Size = NumberSequence.new(0.22)
+				rain.Speed = if snowfall then NumberRange.new(7, 13)
+					else NumberRange.new(if mode == "storm" then 66 else 45, if mode == "storm" then 84 else 59)
+				rain.Lifetime = if snowfall then NumberRange.new(3, 5) else NumberRange.new(1.4, 1.9)
+				rain.Size = NumberSequence.new(if snowfall then 0.38 else 0.22)
 				rain.Transparency = NumberSequence.new(0.40, 0.90)
-				rain.Color = ColorSequence.new(Color3.fromRGB(176, 216, 231))
-				rain.Rate = if MOBILE_VFX then 26 else 72
+				rain.Color = ColorSequence.new(if snowfall then Color3.fromRGB(237, 246, 255) else Color3.fromRGB(176, 216, 231))
+				rain.Rate = if snowfall then (if MOBILE_VFX then 18 else 42) else (if MOBILE_VFX then 26 else 72)
 				rain.Parent = source
 			end
 		end
@@ -541,6 +551,7 @@ function NavalBattle.play(opts)
 			end
 		end
 		-- [지역 특화 원경] 얼음·화산·등대는 전장 외측 장식이며 능력치·충돌과 무관하다.
+		local beaconLight = nil
 		if coast.id == "arctic" then
 			for i = 1, (if MOBILE_VFX then 3 else 7) do
 				local ice = Instance.new("WedgePart")
@@ -557,6 +568,16 @@ function NavalBattle.play(opts)
 				CFrame.new(ORIGIN + Vector3.new(445, 96, -388)), Color3.fromRGB(250, 89, 47),
 				Enum.Material.Neon, Enum.PartType.Ball)
 			glow.Name, glow.Transparency = "NavalVolcanoGlow", 0.28
+			local ash = Instance.new("ParticleEmitter")
+			ash.Texture = "rbxasset://textures/particles/smoke_main.dds"
+			ash.Rate = if MOBILE_VFX then 6 else 18
+			ash.Speed = NumberRange.new(10, 20)
+			ash.Lifetime = NumberRange.new(4, 6)
+			ash.Size = NumberSequence.new(8, 20)
+			ash.Color = ColorSequence.new(Color3.fromRGB(85, 70, 66), Color3.fromRGB(134, 111, 100))
+			ash.Transparency = NumberSequence.new(0.30, 1)
+			ash.EmissionDirection = Enum.NormalId.Top
+			ash.Parent = glow
 		elseif coast.id == "harbor" or coast.id == "strait" then
 			local tower = part(folder, Vector3.new(11, 57, 11),
 				CFrame.new(ORIGIN + Vector3.new(-422, 29, 358)), Color3.fromRGB(201, 191, 170), Enum.Material.Slate)
@@ -566,8 +587,10 @@ function NavalBattle.play(opts)
 				Color3.fromRGB(255, 225, 145), Enum.Material.Neon, Enum.PartType.Ball)
 			beacon.Name = "NavalBeacon"
 			beacon.Transparency = 0.15
+			beaconLight = beacon
 		end
 		-- [승인된 실물 지형] 라이선스 등록·실제 로딩이 완료된 모델만 복제한다.
+		local distantShips = {}
 		task.delay(1.0, function()
 			if not folder.Parent then return end
 			local lib = ReplicatedStorage:FindFirstChild("MareAssets")
@@ -607,6 +630,7 @@ function NavalBattle.play(opts)
 						local distant = placeShip(folder, shipName,
 							ORIGIN + Vector3.new(-365 + i * 740, 0, -485 + i * 70), 23 + i * 5, i * 0.45)
 						distant.Name = "NavalDistantMerchant"
+						table.insert(distantShips, { model=distant, start=distant:GetPivot(), speed=i })
 					end
 				end
 			end
@@ -640,6 +664,13 @@ function NavalBattle.play(opts)
 			for _, band in mist do
 				band.model.CFrame = CFrame.new(band.at + Vector3.new(math.sin(elapsed * 0.13 + band.seed) * 26, 0, 0))
 			end
+			for _, merchant in distantShips do
+				if merchant.model.Parent then
+					merchant.model:PivotTo(merchant.start * CFrame.new(math.sin(elapsed * 0.055 + merchant.speed) * 50,
+						math.sin(elapsed * 1.2 + merchant.speed) * 0.27, 0))
+				end
+			end
+			if beaconLight then beaconLight.Transparency = 0.13 + (1 + math.sin(elapsed * 2.7)) * 0.19 end
 			sea.Color = coast.water:Lerp(foamColor, 0.023 + math.sin(elapsed * (if mode == "storm" then 1.8 else 0.7)) * 0.018)
 			if mode == "storm" then
 				local flash = math.sin(elapsed * 0.47 + sceneSeed) > 0.994
