@@ -1186,3 +1186,36 @@ test('발전도 해금 장식은 단계적으로 설치되고 기존 완공물�
  assert.match(scene,/local builderLimit = if touchDecor then 1 else 2/);
  assert.match(scene,/BuildAuthority", "VISUAL_ONLY"/);
 });
+
+// [마을 시설 건물 정체성] 학자·주점·서고 등 동일 주택 외형 회귀를 차단한다.
+test('마을 7개 시설은 승인된 건축물과 업종별 실물 구조로 구분한다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const ids=read('ReplicatedStorage/Shared/AssetIds.luau');
+ const start=scene.indexOf('-- 시설 건물: { 이름, 탭, 위치, 크기, 벽색 }');
+ const end=scene.indexOf('-- 조선소:', start);
+ assert.ok(start>=0&&end>start,'기존 시설 건물 배치 영역');
+ const facilities=scene.slice(start,end);
+ for(const [name,tab] of [
+  ['교역소','trade'],['주점','quest'],['항만청','route'],['은행','harbor'],
+  ['상인 길드','trade'],['학자의 서재','tech'],['도서관 (도감)','codex']
+ ]) {
+  assert.ok(facilities.includes('name = "'+name+'", tab = "'+tab+'"'),name+' 기존 시설 탭');
+  assert.ok(facilities.includes('f.name == "'+name+'"'),name+' 독립된 건축 외관');
+ }
+ assert.match(facilities,/signatureAsset = if localArchitecture then nil/);
+ assert.match(facilities,/signature:SetAttribute\("FacilityIdentity", f.tab\)/);
+ assert.match(facilities,/local body = \(signature and signature:FindFirstChildWhichIsA\("BasePart", true\)\)/);
+ assert.match(facilities,/or house\(folder, f.pos, f.w \* grow, f.d \* grow, f.floors, style, rng, tone\)/);
+ assert.match(facilities,/style.kit == "eastasia"/);
+ assert.match(facilities,/localArchitecture/);
+ for(const [group,asset] of [
+  ['Town','quaternius_large_square_tower'],['Town','temple-stone'],['Town','overhang'],
+  ['Town','chimney'],['Town','quaternius_watch_tower_wroof'],['Naval','flag-high'],
+  ['Town','kenney_grey_arch_01'],['Town','kenney_wood_arch_01'],
+  ['Town','quaternius_wall_entrance_bricks'],['Interior','bookcaseclosed'],
+  ['Interior','bookcaseopenlow'],['Relics','journal-open'],['Relics','magnifying-glass']
+ ])assert.ok(ids.includes('["'+group+'/'+asset+'"]'),group+'/'+asset+' 기존 등록 자산');
+ assert.match(facilities,/prompt\(folder, Vector3.new\(f.pos.X, 3, doorZ\), f.name, "들어가기", f.tab, onFacility\)/);
+ assert.match(facilities,/villager\(folder, Vector3.new\(f.pos.X \+ 3, 0, doorZ\)/);
+ assert.doesNotMatch(facilities,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/);
+});
