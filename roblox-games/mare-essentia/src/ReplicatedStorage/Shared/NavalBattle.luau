@@ -3922,10 +3922,29 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			navalHitStreak = 0
 		end
 	end
+	-- [맵 보급 안내] 실제 등록 부표/기뢰만 배의 선수 기준 방향·거리를 상단에 보여 준다.
+	local pickupCue = label(gui, "", if battleViewport.X < 480 then 13 else 15, Color3.fromRGB(156, 239, 247))
+	pickupCue.Name = "NavalPickupDirection"
+	pickupCue.AnchorPoint = Vector2.new(1, 0)
+	pickupCue.Position = UDim2.new(1, -12, 0, if battleViewport.X < 480 then 93 else 77)
+	pickupCue.Size = UDim2.fromOffset(if battleViewport.X < 480 then 158 else 200, 27)
+	pickupCue.TextXAlignment = Enum.TextXAlignment.Center
+	pickupCue.Font = Enum.Font.GothamBlack
+	pickupCue.TextStrokeColor3 = Color3.fromRGB(13, 24, 35)
+	pickupCue.TextStrokeTransparency = 0.36
+	pickupCue.BackgroundColor3 = Color3.fromRGB(18, 36, 48)
+	pickupCue.BackgroundTransparency = 0.28
+	pickupCue.ZIndex = 18
+	pickupCue.Visible = false
+	Instance.new("UICorner", pickupCue).CornerRadius = UDim.new(0, 8)
+
 	-- [실시간 해상전투 맵] 보급 부표·기뢰를 직접 조타해 회수한다.
 	-- 저장·카드 전투·자동 재현에는 적용하지 않고 기존 실제 등록 모델만 복제한다.
 	function FX.itemsStep(now)
-		if not RT or not rt or rt.ended or phase ~= "duel" or finished then return end
+		if not RT or not rt or rt.ended or phase ~= "duel" or finished then
+			pickupCue.Visible = false
+			return
+		end
 		if now >= FX.nextItemAt then
 			FX.nextItemAt = now + (if MOBILE_VFX then 13 else 11)
 			if #FX.items < 3 then
@@ -4030,6 +4049,31 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if item.marker.Parent then item.marker:Destroy() end
 				if item.model.Parent then item.model:Destroy() end
 				table.remove(FX.items, i)
+			end
+		end
+		-- [거리/방위] 매 프레임 연산·문구 갱신을 피하기 위해 0.2초에 한 번 가까운 아이템만 안내한다.
+		if now >= (FX.pickupCueAt or 0) then
+			FX.pickupCueAt = now + 0.20
+			local closest, nearestDist = nil, math.huge
+			for _, entry in FX.items do
+				if entry.model.Parent then
+					local dist = (entry.pos - me.pos).Magnitude
+					if dist < nearestDist then closest, nearestDist = entry, dist end
+				end
+			end
+			pickupCue.Visible = closest ~= nil
+			if closest then
+				local course = closest.pos - me.pos
+				local heading = Vector3.new(math.cos(me.theta), 0, math.sin(me.theta))
+				local right = Vector3.new(-heading.Z, 0, heading.X)
+				local front = if nearestDist > 0.1 then course.Unit:Dot(heading) else 1
+				local side = if nearestDist > 0.1 then course.Unit:Dot(right) else 0
+				local direction = if front > 0.55 then "앞" elseif front < -0.55 then "뒤"
+					elseif side >= 0 then "우현" else "좌현"
+				pickupCue.Text = string.format("%s · %s %dm", direction,
+					if closest.kind == "mine" then "기뢰" else "기력", math.floor(nearestDist + 0.5))
+				pickupCue.TextColor3 = if closest.kind == "mine" then Color3.fromRGB(255, 204, 137)
+					else Color3.fromRGB(146, 243, 247)
 			end
 		end
 	end
@@ -4377,6 +4421,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		rt.sunk = board == nil
 		boardStart = if board then now else now - 0.3
 		phase = "board"
+		pickupCue.Visible = false
 		hint.Text = ""
 		if board then
 			subtitle.Text = "두 배가 접현했다! 백병전!"
@@ -5086,6 +5131,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		FX.wake(foe, "foe", now)
 		for i, e in escorts do
 			FX.wake(e, "e" .. i, now)
+		end
+		-- [아군 함대 포말] 기함과 동일한 물살/선수 물보라를 호출하고 모바일은 교대로 경량화한다.
+		for i, al in allies do
+			if not MOBILE_VFX or (i + math.floor(now * 3)) % 2 == 0 then
+				FX.wake(al, "a" .. i, now)
+			end
 		end
 		FX.damage(me, "me", now)
 		FX.damage(foe, "foe", now)
