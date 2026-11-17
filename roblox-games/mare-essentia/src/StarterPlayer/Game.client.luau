@@ -6054,7 +6054,12 @@ function RENDERERS.route()
 				end
 				fc = "\n항해사의 예보: " .. table.concat(parts, " · ")
 			end
-			return mkLabel(content, string.format("오늘 날씨: %s (바람 x%.2f) — %s%s", view.weather.name, view.weather.wind, view.weather.hint, fc), 16, COLORS.gold, true)
+			local weatherAlert = if view.weather.id == "storm" then "🔴 폭풍 접근 · 항해 지연·사고 주의"
+				elseif view.weather.id == "rain" then "🟡 비 · 안개·암초 주의"
+				elseif view.weather.id == "head" or view.weather.id == "calm" then "🟡 역풍·무풍 · 항해 지연 주의"
+				else "🟢 현재 날씨에 큰 기상 경보 없음"
+			return mkLabel(content, string.format("오늘 날씨: %s (바람 x%.2f)\n%s\n%s%s", view.weather.name, view.weather.wind, weatherAlert, view.weather.hint, fc), 15,
+				if view.weather.id == "storm" then COLORS.red else COLORS.gold, true)
 		end)
 		add(function()
 			return H.tileGrid({
@@ -6077,6 +6082,9 @@ function RENDERERS.route()
 			{ text = "지도", color = COLORS.green, onClick = function() openTab("map", "chart") end },
 		}, 60)
 		return row
+	end)
+	add(function()
+		return mkLabel(content, "기상 경고는 현재 항구 날씨 기준이야. 해적·돌발 사건은 항해 중 발생하므로 미리 안전을 보장할 수 없어.", 12, COLORS.muted, false)
 	end)
 	local sorted = table.clone(view.routes)
 	local mode = H.routeSort
@@ -6102,7 +6110,10 @@ function RENDERERS.route()
 			local coalLeft = (ship.coal or 0) - (r.coal or 0)
 			local warn = if supplyLeft < 0 then string.format("🔴 보급 %d 부족", -supplyLeft)
 				elseif (r.coal or 0) > 0 and coalLeft < 0 then string.format("🔴 석탄 %d 부족", -coalLeft)
-				else string.format("🟢 도착 예상 보급 %d", supplyLeft)
+				else string.format("🟢 보급 충분 · 예상 잔량 %d", supplyLeft)
+			if view.weather and (view.weather.id == "storm" or view.weather.id == "rain") then
+				warn ..= if view.weather.id == "storm" then " · 🔴 현재 폭풍 주의" else " · 🟡 현재 비 주의"
+			end
 			if r.locked then
 				return mkRow(content, r.name, string.format("%s · 🔒 %s", r.region, r.locked), {
 					{ text = "잠김", color = COLORS.grey, onClick = function() message = r.region .. " 해역은 " .. r.locked; messageOk = false; render() end },
@@ -6444,6 +6455,47 @@ local function renderYard()
 	local shipHeader = add(function() return mkHeader(content, "새 배 비교 · 실제 구매 가격") end)
 	shipHeader.Name = "YardSectionShips"
 	add(function() return mkLabel(content, "막대 색=새 배 · 흰 선=현재 기함 · ▲ 향상 / ▼ 감소\n실결제는 기함 매각 보상을 뺀 금액이고, 교체하면 기존 대포·보강은 초기화돼.", 14, COLORS.muted, false) end)
+	-- [선박 원형 미리보기] 등록된 Naval 원본만 큰 회전 뷰에 표시한다.
+	-- 이용 가능한 선박 목록의 ID만 사용하며 게임 데이터와 구매 규칙은 그대로 둔다.
+	local previewShip = nil
+	for _, candidate in yard.ships do
+		if candidate.id == H.shipPreviewId then previewShip = candidate; break end
+	end
+	if not previewShip then previewShip = yard.ships[1] end
+	if previewShip then
+		H.shipPreviewId = previewShip.id
+		add(function()
+			local f = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 164), Color3.fromRGB(229, 208, 169))
+			f.Name = "YardSelectedShipPreview"
+			corner(f, 8)
+			local si = SHIP_ICON[previewShip.id]
+			if si then
+				local model = modelIcon(f, si[1], si[2], si[3], 144, previewShip.name)
+				model.Position = UDim2.fromOffset(8, 10)
+			else
+				local unavailable = mkLabel(f, "해당 함종\n검증된 모형 없음", 13, INK_SOFT, true)
+				unavailable.Position = UDim2.fromOffset(8, 40)
+				unavailable.Size = UDim2.fromOffset(144, 60)
+				unavailable.AutomaticSize = Enum.AutomaticSize.None
+				unavailable.TextWrapped = true
+			end
+			local title = mkLabel(f, "선택 함종 · " .. previewShip.name, 17, INK, true)
+			title.Position = UDim2.fromOffset(160, 9)
+			title.Size = UDim2.new(1, -168, 0, 27)
+			title.AutomaticSize = Enum.AutomaticSize.None
+			title.TextTruncate = Enum.TextTruncate.AtEnd
+			local detail = mkLabel(f, string.format("화물 %d · 속도 %.1f\n선체 %d · 포문 %d · 승조원 %d\n실결제 %s코인%s",
+				previewShip.capacityAfter or previewShip.cargo, previewShip.speed, previewShip.hull,
+				previewShip.cannons, previewShip.crew, H.commas(math.max(0, previewShip.netCost)),
+				if previewShip.locked then "\n잠김: " .. tostring(previewShip.locked) else ""), 13, INK_SOFT, false)
+			detail.Position = UDim2.fromOffset(160, 42)
+			detail.Size = UDim2.new(1, -168, 0, 112)
+			detail.AutomaticSize = Enum.AutomaticSize.None
+			detail.TextWrapped = true
+			detail.TextYAlignment = Enum.TextYAlignment.Top
+			return f
+		end)
+	end
 	local maxCargo, maxSpeed, maxHull = sh.cargoCapacity, sh.speed, sh.maxHull
 	local maxCannons, maxCrew = sh.cannons, sh.maxCrew
 	for _, s in yard.ships do
@@ -6468,10 +6520,17 @@ local function renderYard()
 			if s.locked then sub ..= "\n" .. s.locked end
 			if not s.owned and s.netCost > view.player.coins then sub ..= "\n자금 부족 " .. H.commas(s.netCost - view.player.coins) .. "코인" end
 			local row = mkRow(content, string.format("[등급%d] %s%s", s.class, s.name, if s.owned then " · 현재 기함" elseif s.steam then " · 증기" else ""),
-				sub, { { text = if s.owned then "현재 배" elseif s.locked then "잠김" else "교체\n" .. H.commas(pay),
-					color = if s.steam then COLORS.steam else COLORS.blue,
-					enabled = yard.available and not s.owned and not s.locked and s.canCarry and s.netCost <= view.player.coins,
-					onClick = function() call("BuyShip", { shipId = s.id }) end } }, if s.id == "galleon" and AssetIds["Naval/galleon-heritage"] then 236 else 210)
+				sub, {
+					{ text = if s.id == H.shipPreviewId then "미리보기 중" else "모형 보기", color = COLORS.gold,
+						onClick = function()
+							H.shipPreviewId = s.id
+							if tradeHallRefresh then tradeHallRefresh() else render() end
+						end },
+					{ text = if s.owned then "현재 배" elseif s.locked then "잠김" else "교체\n" .. H.commas(pay),
+						color = if s.steam then COLORS.steam else COLORS.blue,
+						enabled = yard.available and not s.owned and not s.locked and s.canCarry and s.netCost <= view.player.coins,
+						onClick = function() call("BuyShip", { shipId = s.id }) end },
+				}, if s.id == "galleon" and AssetIds["Naval/galleon-heritage"] then 236 else 210)
 			local si = SHIP_ICON[s.id]
 			if si then withIcon(row, si[1], si[2], si[3], 100) end
 			-- [선박 시각 비교] 실제 교체 후 화물칸·속도·선체를 표시한다.
@@ -9309,6 +9368,9 @@ function RENDERERS.map()
 						local status = if supplyLeft < 0 then string.format("🔴 보급 %d 부족", -supplyLeft)
 							elseif coalLeft < 0 then string.format("🔴 석탄 %d 부족", -coalLeft)
 							else string.format("🟢 보급 여유 %d", supplyLeft)
+						if view.weather and (view.weather.id == "storm" or view.weather.id == "rain") then
+							status ..= if view.weather.id == "storm" then " · 폭풍 주의" else " · 비 주의"
+						end
 						return mkRow(content, r.name .. (if r.quest then " 📜의뢰" else "") .. (if r.yard then " 🔧조선소" else ""),
 							string.format("%s · 항해 %d일 · %d km\n필요 보급 %d%s · %s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", status), {
 							{ text = "출항 확인", color = if supplyLeft < 0 or coalLeft < 0 then COLORS.red else COLORS.blue, onClick = function() selectedPort = nil; confirmSail(r) end },
