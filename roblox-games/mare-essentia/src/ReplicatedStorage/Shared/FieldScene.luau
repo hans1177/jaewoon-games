@@ -567,6 +567,12 @@ function FieldScene.start(opts)
 			or string.find(questName, "들판", 1, true) then "farm"
 		elseif string.find(questName, "호수", 1, true) or string.find(questName, "강", 1, true)
 			or string.find(questName, "습지", 1, true) then "lake"
+		elseif string.find(questName, "사막", 1, true) or string.find(questName, "모래", 1, true)
+			or string.find(questName, "오아시스", 1, true) then "desert"
+		elseif string.find(questName, "정글", 1, true) or string.find(questName, "밀림", 1, true)
+			or string.find(questName, "숲", 1, true) then "forest"
+		elseif string.find(questName, "해변", 1, true) or string.find(questName, "난파", 1, true)
+			or string.find(questName, "항만", 1, true) or string.find(questName, "포구", 1, true) then "coast"
 		elseif biome.kind == "forest" then "forest"
 		elseif biome.kind == "coast" then "coast"
 		elseif biome.kind == "mine" then "mine"
@@ -576,6 +582,64 @@ function FieldScene.start(opts)
 		else "plains"
 	folder:SetAttribute("FieldQuestTerrainTheme", questTerrain)
 	local mirror = if (math.floor(tonumber(opts.seed) or 7) % 2 == 0) then 1 else -1
+
+	-- [실물 배경 통합 배치] 나무·바위·문화권 소품·퀘스트 건축물 모두 기존 승인된 원본으로만 생성한다.
+	-- AssetLoader가 뒤늦게 등록한 모델도 같은 좌표에 한 번만 배치한다. 새 파츠 대체는 하지 않는다.
+	local pending = {}
+	local built = 0
+	local function placeFeature(entry)
+		if not folder.Parent then return nil end
+		local pos = entry.position or (ORIGIN + Vector3.new(entry[4] * half * mirror, 0, entry[5] * half))
+		local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6])
+		if not m then return nil end
+		if entry.landmark then
+			m.Name = "FieldTerrainLandmark"
+			m:SetAttribute("TerrainTheme", questTerrain)
+			m:SetAttribute("TerrainFeature", entry[2])
+			if entry.survey then m:SetAttribute("FieldTerrainSurvey", true) end
+			built += 1
+			folder:SetAttribute("FieldTerrainFeatureCount", built)
+		end
+		if entry[7] and entry[7] ~= 0 then
+			m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, math.rad(entry[7]), 0) * CFrame.new(-pos) * m:GetPivot())
+		end
+		-- 대표 건축물은 지연 로드돼도 지명 표지판을 놓친 채 끝나지 않게 한다.
+		if entry.title and not folder:GetAttribute("FieldNamedLandmarkTitle") then
+			local adorn = m:FindFirstChildWhichIsA("BasePart", true)
+			if adorn then
+				folder:SetAttribute("FieldNamedLandmarkTitle", true)
+				local bb = Instance.new("BillboardGui")
+				bb.Adornee = adorn
+				bb.Size = UDim2.fromOffset(300, 56)
+				bb.StudsOffset = Vector3.new(0, 34, 0)
+				bb.MaxDistance = 400
+				bb.AlwaysOnTop = true
+				local titleLabel = Instance.new("TextLabel")
+				titleLabel.Size = UDim2.fromScale(1, 1)
+				titleLabel.BackgroundColor3 = Color3.fromRGB(58, 40, 28)
+				titleLabel.TextColor3 = Color3.fromRGB(255, 244, 214)
+				titleLabel.Font = Enum.Font.GothamBlack
+				titleLabel.TextSize = 24
+				titleLabel.Text = "🏛️ " .. entry.title
+				local stroke = Instance.new("UIStroke")
+				stroke.Color = Color3.fromRGB(232, 190, 96)
+				stroke.Thickness = 2
+				stroke.Parent = titleLabel
+				local corner = Instance.new("UICorner")
+				corner.CornerRadius = UDim.new(0, 12)
+				corner.Parent = titleLabel
+				titleLabel.Parent = bb
+				bb.Parent = adorn
+			end
+		end
+		return m
+	end
+	local function stageFeature(entry)
+		if not AssetIds[entry[1] .. "/" .. entry[2]] then return nil end
+		local placed = placeFeature(entry)
+		if not placed then table.insert(pending, entry) end
+		return placed
+	end
 	-- 나무와 바위
 	local treeNames = biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
 	-- [모바일 안정화] 메시는 화면 자원만 줄이고 탐험 보상·몬스터 수·위험도는 유지한다.
@@ -593,12 +657,18 @@ function FieldScene.start(opts)
 			local side = if index % 2 == 0 then -1 else 1
 			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.62, 0.89), 0,
 				rng:NextNumber(-half * 0.83, half * 0.53))
+		else
+			-- 농경지·호숫가·해안·평원의 중앙 이동 동선을 비우고 외곽에 수목대를 만든다.
+			local side = if index % 2 == 0 then -1 else 1
+			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.52, 0.88), 0,
+				rng:NextNumber(-half * 0.81, half * 0.50))
 		end
 		local h = rng:NextNumber(9, 15)
-		-- 지역 나무는 기존 Town/Terrain의 실제 CC0 메시만 사용한다. 없는 종류는 도형 대체 없이 건너뛴다.
 		local name = treeNames[rng:NextInteger(1, #treeNames)]
 		local kind = if AssetIds["Terrain/" .. name] then "Terrain" else "Town"
-		placeModel(folder, kind, name, pos, h, false)
+		local entry = { kind, name, h, nil, nil, false }
+		entry.position = pos
+		stageFeature(entry)
 	end
 	-- [무료 실물 지형] 기존 바위 개수를 유지하면서 등록된 Quaternius 모델을 섞는다.
 	local rockNames = { { "Town", "rock-large" }, { "Town", "rock-small" }, { "Town", "rock-wide" }, { "Terrain", "Rock_2" } }
@@ -606,15 +676,20 @@ function FieldScene.start(opts)
 	local visualRockCount = if visualMobile then math.min(rockCount, 36) else rockCount
 	for index = 1, visualRockCount do
 		local pos = ORIGIN + scatter(10)
+		local side = if index % 2 == 0 then 1 else -1
 		if questTerrain == "highland" or questTerrain == "mine" or questTerrain == "coast" then
-			-- 협곡 양벽·해안 암초: 플레이어의 중앙 통로와 시작 지점은 비운다.
-			local side = if index % 2 == 0 then 1 else -1
-			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.62, 0.91), 0,
-				rng:NextNumber(-half * 0.86, half * 0.48))
+			-- 협곡 양벽·해안 암초는 외곽에 모아 벽면처럼 연결한다.
+			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.65, 0.90), 0,
+				rng:NextNumber(-half * 0.86, half * 0.44))
+		else
+			-- 일반 지형의 바위도 조사·전투·시작 통로와 충돌하지 않게 양쪽 가장자리에 둔다.
+			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.55, 0.90), 0,
+				rng:NextNumber(-half * 0.84, half * 0.48))
 		end
 		local rock = rockNames[rng:NextInteger(1, #rockNames)]
-		-- 실제 등록된 바위 메시만 배치한다. 파츠 박스 우회 금지.
-		placeModel(folder, rock[1], rock[2], pos, rng:NextNumber(2.5, 6), true)
+		local entry = { rock[1], rock[2], rng:NextNumber(2.5, 6), nil, nil, true }
+		entry.position = pos
+		stageFeature(entry)
 	end
 
 
@@ -693,79 +768,34 @@ function FieldScene.start(opts)
 		},
 	}
 
+	-- 조사 가능한 두 흔적은 높은 절벽·먼 성벽 대신 접근 가능한 기존 소품에 붙인다.
+	local surveyIndices = {
+		coast = { 7, 8, 9 }, forest = { 4, 8, 9 }, highland = { 8, 9, 10 },
+		mine = { 7, 9, 10 }, ruins = { 5, 7, 9 }, fort = { 7, 8 },
+		desert = { 5, 6, 9 }, farm = { 2, 3, 7 }, lake = { 3, 7, 8 },
+		plains = { 4, 6, 5 },
+	}
 	local featureList = landforms[questTerrain] or landforms.plains
-	local built = 0
-	-- [늦은 3D 자산 복구] AssetLoader가 Terrain/Castle 모델을 항구보다 늦게 불러온다.
-	-- 같은 퀘스트의 승인 원본이 로드되는 즉시 해당 배치만 완성한다.
-	local pending = {}
-	local function placeFeature(entry)
-		if not folder.Parent then return false end
-		local px = entry[4] * half * mirror
-		local pz = entry[5] * half
-		local pos = ORIGIN + Vector3.new(px, 0, pz)
-		local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6])
-		if not m then return false end
-		m.Name = "FieldTerrainLandmark"
-		m:SetAttribute("TerrainTheme", questTerrain)
-		m:SetAttribute("TerrainFeature", entry[2])
-		if entry[7] and entry[7] ~= 0 then
-			m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, math.rad(entry[7]), 0) * CFrame.new(-pos) * m:GetPivot())
-		end
-		built += 1
-		folder:SetAttribute("FieldTerrainFeatureCount", built)
-		return true
-	end
 	for index, entry in featureList do
-		if (not visualMobile or index <= 9) and AssetIds[entry[1] .. "/" .. entry[2]] then
-			if not placeFeature(entry) then table.insert(pending, entry) end
+		if not visualMobile or index <= 9 then
+			entry.landmark = true
+			entry.survey = table.find(surveyIndices[questTerrain] or surveyIndices.plains, index) ~= nil
+			stageFeature(entry)
 		end
 	end
 	folder:SetAttribute("FieldTerrainFeatureCount", built)
-	if #pending > 0 then
-		local library = ReplicatedStorage:FindFirstChild("MareAssets")
-		if library then
-			local modelConnections = {}
-			local function retryPending(groupName, modelName)
-				if not folder.Parent then return end
-				for index = #pending, 1, -1 do
-					local entry = pending[index]
-					if entry[1] == groupName and entry[2] == modelName and placeFeature(entry) then
-						table.remove(pending, index)
-					end
-				end
-			end
-			for _, groupName in { "Terrain", "Town", "Castle", "Naval" } do
-				local group = library:FindFirstChild(groupName)
-				if group then
-					table.insert(modelConnections, group.ChildAdded:Connect(function(child)
-						if not child:IsA("Model") then return end
-						local needed = false
-						for _, entry in pending do
-							if entry[1] == groupName and entry[2] == child.Name then needed = true break end
-						end
-						if not needed then return end
-						-- 복제된 BasePart가 클라이언트에 도착할 시간을 준 뒤 2회까지 점검.
-						task.delay(0.25, function()
-							retryPending(groupName, child.Name)
-							if not folder.Parent then return end
-							task.delay(1.5, function() retryPending(groupName, child.Name) end)
-						end)
-					end))
-				end
-			end
-			folder.Destroying:Connect(function()
-				for _, conn in modelConnections do conn:Disconnect() end
-				table.clear(pending)
-			end)
-		end
-	end
-	end
 
 	-- 문화권 소품(기둥·천막·카누 등): 등록된 모델만 놓고, 없으면 건너뛴다
-	for _, pr in (biome.props or {}) do
-		-- [모바일] 장식 메시만 종류당 4개로 제한한다. PC 배치와 전투·보상은 유지한다.
-		for _ = 1, math.min(if visualMobile then 4 else 8, math.max(1, math.floor(pr[3] * math.min(AREA, 1.25)))) do
-			placeModel(folder, pr[1], pr[2], ORIGIN + scatter(18), pr[4], pr[1] == "Terrain" and pr[2] == "cliff-rock")
+	for groupIndex, pr in (biome.props or {}) do
+		-- [문화권 군집] 나무·기둥·천막·카누를 길 한가운데 흩뿌리지 않고 각 문화권의 외곽 마을/해안대로 묶는다.
+		-- [모바일] 기존 종류당 4개 제한과 규모는 유지한다.
+		for index = 1, math.min(if visualMobile then 4 else 8, math.max(1, math.floor(pr[3] * math.min(AREA, 1.25)))) do
+			local side = if (groupIndex + index) % 2 == 0 then -1 else 1
+			local x = side * half * rng:NextNumber(0.54, 0.85)
+			local z = rng:NextNumber(-half * 0.78, half * 0.40)
+			local entry = { pr[1], pr[2], pr[4], nil, nil, pr[1] == "Terrain" and pr[2] == "cliff-rock" }
+			entry.position = ORIGIN + Vector3.new(x, 0, z)
+			stageFeature(entry)
 		end
 	end
 
@@ -775,11 +805,16 @@ function FieldScene.start(opts)
 		or string.find(opts.name or "", "들판", 1, true) then
 		local farmModels = { "crop-carrot", "crop-melon", "crop-turnip", "crops-cornstagec", "crops-wheatstagea" }
 		for index, crop in farmModels do
-			placeModel(folder, "Terrain", crop, ORIGIN + Vector3.new(-22 + index * 7, 0, -24), 3.8, false)
+			local entry = { "Terrain", crop, 3.8, nil, nil, false }
+			entry.position = ORIGIN + Vector3.new(-half * 0.48 + (index - 1) % 3 * 7, 0,
+				-half * 0.30 + math.floor((index - 1) / 3) * 9)
+			stageFeature(entry)
 		end
 	end
 	if string.find(opts.name or "", "숲", 1, true) or string.find(opts.name or "", "고지", 1, true) then
-		placeModel(folder, "Terrain", "campfire-logs", ORIGIN + Vector3.new(28, 0, -24), 3.4, false)
+		local entry = { "Terrain", "campfire-logs", 3.4, nil, nil, false }
+		entry.position = ORIGIN + Vector3.new(half * 0.50, 0, -half * 0.32)
+		stageFeature(entry)
 	end
 
 	-- 실제 도시·유적 랜드마크: 탐험 지점 이름에 맞는 건축물 군을 시작 지점 맞은편에 세운다.
@@ -839,43 +874,69 @@ function FieldScene.start(opts)
 				if string.find(nm, w, 1, true) then hit = true break end
 			end
 			if hit then
-				local c = ORIGIN + Vector3.new(0, 0, -10)
-				local first
+				-- 지명별 대표 건물은 맵 안쪽 목적지에 배치해 시작/전투 통로를 비운다.
+				local c = ORIGIN + Vector3.new(0, 0, -half * 0.61)
 				for index, e in lm[2] do
-					-- [모바일] 대표 랜드마크를 우선 유지하고 반복된 외곽 장식만 제한한다.
 					if not visualMobile or index <= 22 then
-						local m = placeModel(folder, e[1], e[2], c + Vector3.new(e[4], 0, e[5]), e[3], e[6] == true)
-						first = first or m
+						local entry = { e[1], e[2], e[3], nil, nil, e[6] == true }
+						entry.position = c + Vector3.new(e[4], 0, e[5])
+						if index == 1 then entry.title = nm end
+						stageFeature(entry)
 					end
-				end
-				local adorn = first and (first:IsA("BasePart") and first or first:FindFirstChildWhichIsA("BasePart", true))
-				if adorn then
-					local bb = Instance.new("BillboardGui")
-					bb.Adornee = adorn
-					bb.Size = UDim2.fromOffset(300, 56)
-					bb.StudsOffset = Vector3.new(0, 34, 0)
-					bb.MaxDistance = 400
-					bb.AlwaysOnTop = true
-					local l = Instance.new("TextLabel")
-					l.Size = UDim2.fromScale(1, 1)
-					l.BackgroundColor3 = Color3.fromRGB(58, 40, 28)
-					l.TextColor3 = Color3.fromRGB(255, 244, 214)
-					l.Font = Enum.Font.GothamBlack
-					l.TextSize = 24
-					l.Text = "🏛️ " .. nm
-					local st = Instance.new("UIStroke")
-					st.Color = Color3.fromRGB(232, 190, 96)
-					st.Thickness = 2
-					st.Parent = l
-					local cr = Instance.new("UICorner")
-					cr.CornerRadius = UDim.new(0, 12)
-					cr.Parent = l
-					l.Parent = bb
-					bb.Parent = adorn
 				end
 				break
 			end
 		end
+	end
+
+
+	-- [지연 자산 동기화] Terrain/Town/Naval/Castle/Cargo 원본을 항구 뒤에 불러와도 배경이 비지 않게 복구한다.
+	-- 하나의 기존 장면 배치 흐름에서만 재시도하며, 철수할 때 모든 이벤트를 해제한다.
+	if #pending > 0 then
+		local library = ReplicatedStorage:FindFirstChild("MareAssets")
+		if library then
+			local modelConnections = {}
+			local function retryPending(groupName, modelName)
+				if not folder.Parent then return end
+				for index = #pending, 1, -1 do
+					local entry = pending[index]
+					if entry[1] == groupName and entry[2] == modelName and placeFeature(entry) then
+						table.remove(pending, index)
+					end
+				end
+			end
+			for _, groupName in { "Terrain", "Town", "Castle", "Naval", "Cargo" } do
+				local group = library:FindFirstChild(groupName)
+				if group then
+					table.insert(modelConnections, group.ChildAdded:Connect(function(child)
+						if not child:IsA("Model") then return end
+						local needed = false
+						for _, entry in pending do
+							if entry[1] == groupName and entry[2] == child.Name then needed = true break end
+						end
+						if not needed then return end
+						task.delay(0.25, function()
+							retryPending(groupName, child.Name)
+							if not folder.Parent then return end
+							task.delay(1.5, function() retryPending(groupName, child.Name) end)
+						end)
+					end))
+				end
+			end
+			-- 이벤트 연결 사이에 모델이 이미 생겼다면 초기 목록도 검사한다.
+			for index = #pending, 1, -1 do
+				local entry = pending[index]
+				local group = library:FindFirstChild(entry[1])
+				if group and group:FindFirstChild(entry[2]) and placeFeature(entry) then
+					table.remove(pending, index)
+				end
+			end
+			folder.Destroying:Connect(function()
+				for _, conn in modelConnections do conn:Disconnect() end
+				table.clear(pending)
+			end)
+		end
+	end
 	end
 
 	-- 상태
@@ -1103,8 +1164,18 @@ function FieldScene.start(opts)
 		folder:SetAttribute("FieldTerrainClues", 0)
 		local function attachClue(landmark)
 			if clues >= 2 or finished or not landmark:IsA("Model") or landmark.Name ~= "FieldTerrainLandmark" then return end
+			if landmark:GetAttribute("FieldTerrainSurvey") ~= true then return end
 			local anchorPart = landmark:FindFirstChildWhichIsA("BasePart", true)
-			if not anchorPart or anchorPart:FindFirstChild("FieldTerrainClue") then return end
+			if not anchorPart or anchorPart:FindFirstChild("FieldTerrainSurveyPoint") then return end
+			local center, extent = landmark:GetBoundingBox()
+			-- 높은 메시 중심 대신 지면 가까운, 중앙 오솔길 방향 모서리에 조사 위치를 고정한다.
+			local surveyPoint = Instance.new("Attachment")
+			surveyPoint.Name = "FieldTerrainSurveyPoint"
+			surveyPoint.Parent = anchorPart
+			surveyPoint.WorldPosition = Vector3.new(
+				center.Position.X + math.sign(ORIGIN.X - center.Position.X) * math.min(extent.X * 0.30, 8),
+				ORIGIN.Y + 3,
+				center.Position.Z + math.sign(ORIGIN.Z - center.Position.Z) * math.min(extent.Z * 0.30, 8))
 			clues += 1
 			local prompt = Instance.new("ProximityPrompt")
 			prompt.Name = "FieldTerrainClue"
@@ -1113,7 +1184,7 @@ function FieldScene.start(opts)
 			prompt.HoldDuration = 0.55
 			prompt.MaxActivationDistance = 12
 			prompt.RequiresLineOfSight = false
-			prompt.Parent = anchorPart
+			prompt.Parent = surveyPoint
 			prompt.Triggered:Connect(function(activator)
 				if finished or activator ~= player or not prompt.Enabled then return end
 				prompt.Enabled = false
