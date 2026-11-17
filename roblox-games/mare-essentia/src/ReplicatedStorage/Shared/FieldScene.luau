@@ -1290,6 +1290,7 @@ function FieldScene.start(opts)
 		elseif weapon.family == "spear" then
 			if not isBoss then individualDef.range = math.max(individualDef.range, 8) end
 		elseif weapon.id == "crossbow" then
+			individualDef.range = math.min(individualDef.range, weapon.range)
 			individualDef.recover *= 1.28
 		elseif weapon.family == "explosive" then
 			individualDef.range = math.min(individualDef.range, weapon.range)
@@ -1301,6 +1302,7 @@ function FieldScene.start(opts)
 			individualDef.recover *= 1.50
 			individualDef.range = math.min(individualDef.range, weapon.range)
 		end
+		if weapon.family == "bow" then individualDef.range = math.min(individualDef.range, weapon.range) end
 		ac.def = individualDef
 		-- [몹 역할별 실루엣] 기존 전투 능력은 유지하고 R15 비율·걸음 성격만 다르게 설정한다.
 		-- [병종 실루엣] 기존 R15 리그·실제 손 장착 메시 재사용. 키/체형/바지색으로 원거리·투척·방패·돌격을 구분.
@@ -3972,11 +3974,16 @@ function FieldScene.start(opts)
 						arrowTrail(e.root.Position + Vector3.new(0, 2.6, 0), aim + Vector3.new(0, if e.throwAsset == "bomb" then -1.8 else 0.6, 0), e.throwAsset)
 						if e.throwAsset ~= "bomb" then sfx("sfx_card_swing", 0.34, if e.throwAsset == "stone" then 1.22 else 0.92) end
 						e.bombAim = nil
+					elseif e.weapon and e.weapon.id == "crossbow" then
+						-- [석궁] 쇠뇌 시위·볼트 궤적. 총기 발포음은 재생하지 않는다.
+						sfx("sfx_equipment_wear", 0.42, 1.55)
+						arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0))
 					elseif e.weapon and e.weapon.family == "firearm" then
-						-- [총병 발포] 원본 발포 소리·섬광 사용. 화살로 총알을 위장하지 않는다.
-						sfx("sfx_naval_cannon", 0.28, 1.45)
-						burst(e.root.Position + Vector3.new(0, 1.7, 0), 10, true)
+						-- [총병] 승인된 화약 사격 소리와 총구 섬광.
+						sfx("sfx_cannon", if e.weapon.motion == "PISTOL" then 0.3 else 0.45, 1.5)
+						pulseAt("IMPACT_FLASH", e.root.CFrame * CFrame.new(0, 1.3, -2), Color3.fromRGB(255, 207, 125), Color3.fromRGB(255, 248, 210), 8, 5)
 					else
+						sfx("sfx_card_volley", 0.45, 1.15)
 						arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0))
 					end
 				end
