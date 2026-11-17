@@ -420,7 +420,7 @@ test('탐험 단계별 검술 발놀림과 골반 회전의 부드러운 전환 
   const field=read('ReplicatedStorage/Shared/FieldScene.luau');
   const sword=field.slice(field.indexOf('local function rootFor('),field.indexOf('elseif kind == "heavy" then',field.indexOf('local function rootFor(')));
   for(const marker of [
-    '[쓰시마 1·2·3단]', '[1~3타 전신 포즈]', '[4타]', '[5타]', '[6타]', '[8타]', '[9타]',
+    '[쓰시마 1·2·3단]', '[쓰시마식 1~3타]', '[4타]', '[5타]', '[6타]', '[8타]', '[9타]',
     '[5단 축발 선회]', '[6단 중량 차별화]', '[9단 반대축]', '[전신 연속 보간]'
   ]) assert.ok(field.includes(marker),'단계별 검술 관절/회전 연결 누락: '+marker);
   for(let beat=1;beat<=10;beat++){
