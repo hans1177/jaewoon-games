@@ -1900,3 +1900,29 @@ test('Mare V5 original 38 material colors and wood cloth metal visuals survive R
   assert.match(ui,/local textHeight = layout\.AbsoluteContentSize\.Y \+ 12/,'descriptions grow with content to avoid mobile clipping');
   assert.match(ui,/if kind == "Naval" then Color3\.fromRGB\(135, 140, 145\)/,'neutral ship lighting reveals materials');
 });
+
+// [해상전투 버튼 원화] 승인된 투명 단독 PNG만 기존 Q/E/가속 조작에 연결한다.
+test('Mare naval battle uses three approved original circular HUD images without changing controls',()=>{
+  const pathBase='roblox-games/mare-essentia/';
+  const naval=fs.readFileSync(pathBase+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const approved=JSON.parse(fs.readFileSync(pathBase+'assets/APPROVED_IMAGES.json','utf8')).approved;
+  const upload=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  const originals=['naval_skill','naval_fire','naval_speed'];
+  for(const name of originals){
+    const png=fs.readFileSync(pathBase+'assets/icons/'+name+'.png');
+    assert.equal(png.subarray(0,8).toString('hex'),'89504e470d0a1a0a',name+':PNG');
+    assert.equal(png.readUInt32BE(16),512,name+':width');
+    assert.equal(png.readUInt32BE(20),512,name+':height');
+    assert.ok(png[25]===6 || png[25]===3 && png.includes(Buffer.from('tRNS')),name+':alpha');
+    assert.equal(createHash('sha256').update(png).digest('hex'),approved['Menu/'+name],name+':approval');
+    assert.ok(upload.includes("'"+name+".png'"),name+':original-license');
+    assert.ok(naval.includes('Menu/'+name),name+':image-binding');
+  }
+  assert.match(naval,/local speedBtn = mkBtn\("가속"[\s\S]*?"Menu\/naval_speed"\)/);
+  assert.match(naval,/if sk\.id == "fire" then "Menu\/naval_fire" else "Menu\/naval_skill"/);
+  assert.match(naval,/speedBtn\.Activated:Connect\(function\(\)/);
+  assert.match(naval,/throttle = if throttle >= 1 then 0\.45 elseif throttle > 0\.4 then 0 else 1/);
+  assert.match(naval,/b\.Interactable = ready and phase == "duel"/);
+  assert.match(naval,/if now < skillReady\[sk\.id\] or opts\.cardOnly/);
+  assert.match(naval,/local art = b:FindFirstChild\("NavalButtonArtwork"\)/);
+});

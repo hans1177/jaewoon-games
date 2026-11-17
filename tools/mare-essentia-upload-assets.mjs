@@ -1185,7 +1185,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       // 실패 원본을 재업로드하지 않고 승인된 기존 PNG/JPG로 Image 자산을 발급한다.
       assetType: image ? 'Image' : 'Model',
       license: (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics') && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
-        : kind === 'Menu' && ['parchment_grain.png', 'leather_grain.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
+        : kind === 'Menu' && ['parchment_grain.png', 'leather_grain.png', 'naval_skill.png', 'naval_fire.png', 'naval_speed.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && f.startsWith('vfx_') ? 'CC0-1.0'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
         : kind === 'Portraits' && f === 'heroes.jpg' ? 'PUBLIC_DOMAIN_AND_ORIGINAL'
@@ -1425,6 +1425,7 @@ for (const item of plan) {
           : item.kind === 'CardArt' ? 'Original illustrated discovery art for Mare Essentia; subject sources and atlas coordinates in assets/SOURCES.md and assets/cardart/world-catalog.json'
           : item.kind === 'Portraits' && item.name.startsWith('scholar_') ? 'Public-domain historical portrait from Wikimedia Commons (license verified by fetch_commons.py); see assets/portraits/portraits-report.json'
           : item.kind === 'Portraits' ? 'Original NPC dialogue portrait for Mare Essentia at owner request; see assets/SOURCES.md'
+          : item.kind === 'Menu' && ['naval_skill', 'naval_fire', 'naval_speed'].includes(item.name) ? 'Original transparent nautical combat control art for Mare Essentia; generated in ChatGPT, source and SHA-256 in assets/SOURCES.md' 
           : item.kind === 'Menu' && item.license === 'PROJECT_ORIGINAL_ART' ? 'Original aged parchment and embossed leather texture rendered for Mare Essentia book UI; approved hash in assets/APPROVED_IMAGES.json'
           : item.kind === 'Goods' && CHATGPT_ORIGINAL_GOODS.includes(item.name + '.png') ? 'Original ChatGPT 2.5D transparent commodity illustration for Mare Essentia; approved source hash in assets/APPROVED_IMAGES.json and provenance in assets/SOURCES.md'
           : item.license === 'PROJECT_ORIGINAL_ART' ? 'Original vector commodity art made for Mare Essentia at owner request; see assets/SOURCES.md'

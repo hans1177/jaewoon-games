@@ -1228,7 +1228,9 @@ function NavalBattle.play(opts)
 		end
 	end
 
-	local function mkBtn(text, pos, size, anchor)
+	-- [해전 원형 버튼] 기존 터치·키보드·쿨타임 함수는 유지하고 승인 원화만 교체한다.
+	-- AssetIds 등록 전에는 기존 글자 버튼을 표시하므로 원화 등록 실패 시에도 조작이 살아 있다.
+	local function mkBtn(text, pos, size, anchor, iconKey)
 		local b = Instance.new("TextButton")
 		b.Text = text
 		b.AnchorPoint = anchor or Vector2.new(0, 1)
@@ -1247,10 +1249,44 @@ function NavalBattle.play(opts)
 		st.Color = Color3.fromRGB(214, 170, 82)
 		st.Thickness = 2
 		st.Parent = b
+		local assetId = iconKey and AssetIds[iconKey]
+		if assetId then
+			b.BackgroundTransparency = 1
+			b.TextTransparency = 1
+			b.ClipsDescendants = false
+			b.AutoButtonColor = false
+			st.Transparency = 1
+			local art = Instance.new("ImageLabel")
+			art.Name = "NavalButtonArtwork"
+			art.AnchorPoint = Vector2.new(0.5, 0.5)
+			art.Position = UDim2.fromScale(0.5, 0.5)
+			art.Size = UDim2.fromScale(1, 1)
+			art.BackgroundTransparency = 1
+			art.Image = "rbxassetid://" .. tostring(assetId)
+			art.ScaleType = Enum.ScaleType.Fit
+			art.ZIndex = b.ZIndex + 1
+			art.Active = false
+			art.Parent = b
+			local caption = Instance.new("TextLabel")
+			caption.Name = "NavalButtonCaption"
+			caption.AnchorPoint = Vector2.new(0.5, 1)
+			caption.Position = UDim2.new(0.5, 0, 1, -4)
+			caption.Size = UDim2.new(1, -8, 0, 17)
+			caption.BackgroundTransparency = 1
+			caption.Text = text
+			caption.Font = Enum.Font.GothamBold
+			caption.TextSize = if size.X.Offset >= 90 then 13 else 10
+			caption.TextColor3 = Color3.fromRGB(255, 242, 211)
+			caption.TextStrokeColor3 = Color3.fromRGB(14, 26, 44)
+			caption.TextStrokeTransparency = 0.08
+			caption.TextTruncate = Enum.TextTruncate.AtEnd
+			caption.ZIndex = b.ZIndex + 2
+			caption.Parent = b
+		end
 		return b
 	end
 	local steerDir, throttle = 0, 1
-	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(96, 96), Vector2.new(1, 1))
+	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(96, 96), Vector2.new(1, 1), "Menu/naval_speed")
 	speedBtn.TextSize = 20
 	speedBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 	local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, 119),
@@ -1390,7 +1426,8 @@ function NavalBattle.play(opts)
 		end
 	end
 	for _, sk in SKILLS do
-		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, sk.y), UDim2.fromOffset(70, 70), Vector2.new(0.5, 0.5))
+		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, sk.y), UDim2.fromOffset(70, 70), Vector2.new(0.5, 0.5),
+			if sk.id == "fire" then "Menu/naval_fire" else "Menu/naval_skill")
 		b.TextSize = 14
 		b.TextWrapped = true
 		b:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
@@ -1520,6 +1557,12 @@ function NavalBattle.play(opts)
 	speedBtn.Activated:Connect(function()
 		throttle = if throttle >= 1 then 0.45 elseif throttle > 0.4 then 0 else 1
 		speedBtn.Text = if throttle >= 1 then "가속" elseif throttle > 0.4 then "순항" else "정지"
+		local caption = speedBtn:FindFirstChild("NavalButtonCaption")
+		if caption and caption:IsA("TextLabel") then caption.Text = speedBtn.Text end
+		local art = speedBtn:FindFirstChild("NavalButtonArtwork")
+		if art and art:IsA("ImageLabel") then
+			art.ImageTransparency = if throttle == 0 then 0.38 elseif throttle < 1 then 0.16 else 0
+		end
 	end)
 	-- 키보드(PC): A/D 또는 방향키
 	local UIS = game:GetService("UserInputService")
@@ -4918,13 +4961,21 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				b.Text = sk.text .. "\n준비"
 				b.BackgroundColor3 = sk.col
 			end
+			local art = b:FindFirstChild("NavalButtonArtwork")
+			if art and art:IsA("ImageLabel") then
+				art.ImageTransparency = if ready then 0 else 0.32
+				local caption = b:FindFirstChild("NavalButtonCaption")
+				if caption and caption:IsA("TextLabel") then
+					caption.Text = if active then "발동 중" elseif not ready then string.format("%d초", math.ceil(left)) else sk.text
+				end
+			end
 			b.Interactable = ready and phase == "duel" and not opts.cardOnly and not opts.card
 			b.Active = b.Interactable
 			b.AutoButtonColor = b.Interactable
 			local rim = b:FindFirstChildOfClass("UIStroke")
 			if rim then
 				rim.Color = if active then Color3.fromRGB(255, 234, 148) elseif ready then Color3.fromRGB(190, 244, 198) else Color3.fromRGB(92, 99, 109)
-				rim.Transparency = if active or ready then 0 else 0.35
+				rim.Transparency = if art then 1 elseif active or ready then 0 else 0.35
 			end
 		end
 		-- 배 카드: 기함은 전체 막대를, 선단 배는 피해의 절반만 받은 것으로 보여 준다

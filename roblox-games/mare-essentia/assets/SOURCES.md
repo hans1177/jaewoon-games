@@ -1682,3 +1682,16 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 | `timber` | `assets/goods/timber.png` | 349595 | `295f531df80159e7f56751b534a424a21742cb1308a9ef74640f15a9c0f2b487` | ChatGPT 2.5D original; transparent master in Library mare_goods_register_ready.zip |
 | `wool` | `assets/goods/wool.png` | 433722 | `29078ddc2686f85ec92356dcb47a29ee62483e216e7bd0ff92cf25d75b868b77` | ChatGPT original; transparent master in Library goods_wool_coal.zip |
 
+## 2026-11-18 해상전투 원형 버튼 3종 (프로젝트 자체 원화)
+
+- 원본: 사용자가 직접 선택한 ChatGPT 제작 항해 버튼 4종 시안 중 **배, 대포, 망원경** 3개. 검 아이콘은 사용하지 않음. 생성 시트 SHA-256: `4bc8c651846514490af7e38807f166f4f432225a0ea24a07d4684698ec80e24b`.
+- 처리: 각 아이콘을 독립 512×512 투명 PNG로 분리·최적화. 라이선스 `PROJECT_ORIGINAL_ART`. 원본 모서리 알파 0 확인. 기존 `assets/APPROVED_IMAGES.json` 해시 승인 및 `tools/mare-essentia-upload-assets.mjs` Image 등록만 사용.
+- 적용: `Menu/naval_skill`=함종 고유 스킬(E), `Menu/naval_fire`=포 사격(Q), `Menu/naval_speed`=가속/순항/정지. 등록 전에는 기존 문자 버튼이 표시되며 기존 전투 판정·쿨타임·가속 단계·저장키 변경 없음.
+
+| 자산 키 | 파일 | SHA-256 | 크기 |
+|---|---|---|---|
+| `Menu/naval_skill` | `assets/icons/naval_skill.png` | `1ac3baa8fc3d21676e62d2699142ac560d6f69f2cfa3f8c8b9069edc5e8616e2` | 512×512 |
+| `Menu/naval_fire` | `assets/icons/naval_fire.png` | `831f3e8eb98346071a141a1e46b7ae6418816b1a283135147896a8003481c811` | 512×512 |
+| `Menu/naval_speed` | `assets/icons/naval_speed.png` | `aecdf9d4f72b6ef98becbf9b04f326b97c861178a88c442397a354d577017e98` | 512×512 |
+
+실제 Roblox 자산 번호·Universe 사용 권한·Studio 화면 검증은 등록기 실행 결과와 별도로 확인한다.
