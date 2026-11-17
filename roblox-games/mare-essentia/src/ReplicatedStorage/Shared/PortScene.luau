@@ -1212,6 +1212,14 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		t.model = fig
 		t.elder = fig:GetAttribute("Age") == "elder"
 		t.base = fig:GetPivot()
+		-- [마을 지면 오프셋] 일과형 경유지는 지면 Y, PivotTo는 허리 높이의 리그 중심 Y를 사용한다.
+		-- 출근·시장·휴식 좌표의 XZ는 보존하고 최초 발바닥 접지 높이만 전 경유지에 유지한다.
+		if t.mode == "schedule" and t.morning and t.market and t.evening then
+			local lift = Vector3.new(0, t.base.Position.Y - t.morning.Y, 0)
+			t.morning += lift
+			t.market += lift
+			t.evening += lift
+		end
 		t.phase = t.phase or rng:NextNumber(0, 10)
 		-- [NPC 직업 소품] 기존 승인된 모델을 손 관절에 연결한다. 가상 손동작이 아니라 실제 도구를 사용한다.
 		-- 짐·잔·망치·삽은 생성 시 단 한 번만 붙여 모바일 프레임당 소품 생성 비용이 없다.
@@ -4412,10 +4420,12 @@ function PortScene.build(info, onFacility)
 			elseif w.mode == "circle" then
 				if w.model.Parent then
 					local a = (now + w.phase) * w.speed / w.r
-					local pos = Vector3.new(w.cx + math.cos(a) * w.r, 0, w.cz + math.sin(a) * w.r)
+					-- [아이 발 접지] 분수 주변 달리기의 중심 Y를 바닥(0)이 아닌 최초 R15 리그 중심으로 유지한다.
+					local floorY = w.base.Position.Y
+					local pos = Vector3.new(w.cx + math.cos(a) * w.r, floorY, w.cz + math.sin(a) * w.r)
 					local hop = 0
-					local ahead = Vector3.new(w.cx + math.cos(a + 0.1) * w.r, 0, w.cz + math.sin(a + 0.1) * w.r)
-					w.model:PivotTo(CFrame.lookAt(pos + Vector3.new(0, hop, 0), ahead + Vector3.new(0, hop, 0)) )
+					local ahead = Vector3.new(w.cx + math.cos(a + 0.1) * w.r, floorY, w.cz + math.sin(a + 0.1) * w.r)
+					w.model:PivotTo(CFrame.lookAt(pos + Vector3.new(0, hop, 0), ahead + Vector3.new(0, hop, 0)))
 					Pose.makeR15Action(w.model, "walk", 0, (now + w.phase) * w.speed * (2 * math.pi / 5.2))
 					-- [아이 생활동작] 걷기 관절은 유지하고 손짓·주변 시선만 드물게 얹는다.
 					local play = (now + w.phase * 1.9) % 21
