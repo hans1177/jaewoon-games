@@ -2716,17 +2716,15 @@ function FieldScene.start(opts)
 		shakeUntil = math.max(shakeUntil, now + (if strong then 0.14 else 0.07))
 		shakeAmp = (if visualMobile then (if strong then 0.14 else 0.06) else (if strong then 0.30 else 0.12))
 			* (if family == "axe" or family == "blunt" then 1.25 else 1)
-		-- [숙련 연타] 2·3단 추가 판정 없이 무기별 날카로운 마무리 소리만 재생한다.
-		sfx(if wpn.motion == "CROSSBOW" then "sfx_card_chain"
-			elseif family == "bow" then "sfx_rope_release"
-			elseif wpn.motion == "RIFLE" then "sfx_cannon_reload"
-			elseif family == "firearm" then "sfx_card_fire"
-			elseif family == "dagger" then "sfx_boarding_draw"
-			elseif family == "spear" then "sfx_card_blade"
-			elseif family == "axe" then "sfx_boarding_slash"
-			elseif family == "blunt" then "sfx_metal_clash"
-			elseif family == "blade" then "sfx_boarding_slash" else "sfx_card_swing",
-			if visualMobile then 0.21 else 0.32, if strong then 1.18 else 1.36)
+		-- [숙련 연타 마무리] 원거리 격발음은 startSwing에서 발마다 한 번만 재생한다.
+		if not wpn.ranged then
+			sfx(if family == "dagger" then "sfx_boarding_draw"
+				elseif family == "spear" then "sfx_card_blade"
+				elseif family == "axe" then "sfx_boarding_slash"
+				elseif family == "blunt" then "sfx_metal_clash"
+				elseif family == "blade" then "sfx_boarding_slash" else "sfx_card_swing",
+				if visualMobile then 0.21 else 0.32, if strong then 1.18 else 1.36)
+		end
 		if family == "fist" then
 			trailsOn(player.Character, { "RightHand", "LeftHand" }, color, 0.11, 0.22)
 			shockRing(front - Vector3.new(0, 1.6, 0), if strong then 9 else 5, color, 0.22)
@@ -2745,15 +2743,12 @@ function FieldScene.start(opts)
 		elseif family == "blunt" then
 			shockRing(front - Vector3.new(0, 1.8, 0), if strong then 12 else 7, color, 0.28)
 			if strong and not visualMobile then shards(front, 8, color, 4) end
-		elseif family == "bow" then
-			if strong then arrowTrail(hrp.Position + Vector3.new(0, 1.1, 0), target) end
-			pulseAt("IMPACT_FLASH", CFrame.new(target), color, Color3.new(1, 1, 1), if strong then 8 else 4, if strong then 7 else 3)
-		elseif wpn.id == "crossbow" then
-			if strong then arrowTrail(hrp.Position + Vector3.new(0, 1.1, 0), target) end
-			pulseAt("IMPACT_FLASH", CFrame.new(target), color, Color3.fromRGB(255, 234, 172), if strong then 9 else 5, if strong then 7 else 3)
-		elseif family == "firearm" then
-			pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1, -3), color, Color3.fromRGB(255, 245, 209), if strong then 9 else 5, if strong then 7 else 3)
-			if strong then pulseAt("IMPACT_FLASH", CFrame.new(target), color, Color3.new(1, 1, 1), 6, 4) end
+		elseif wpn.ranged then
+			-- [영화식 마무리] 다음 시각 탄도는 연타 함수가 1회만 그린다.
+			-- 허공 원거리 연출이 실제 적 명중으로 오인되지 않도록 적 위치에는 피해/피격 섬광을 만들지 않는다.
+			pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, 1.2, -3.1), color,
+				Color3.fromRGB(250, 249, 227), if strong then 6 else 4, if visualMobile then 3 else 6)
+			if strong and not visualMobile then afterimage(player.Character, color, 2, 0.045) end
 		end
 		-- 3타에서만 짧은 시점 펀치. 4·5타 킬캠과 긴 시간 감속은 제거한다.
 		if not strong then return end
@@ -3542,7 +3537,15 @@ function FieldScene.start(opts)
 		end
 		local combo0 = pl.combo
 		local kind = if moveId == "sweep" then "spin" elseif moveId == "heavy" then "heavy" else "slash"
-		startSwing(kind, if kind == "spin" then 0.6 elseif kind == "heavy" then 0.7 else 0.4, 1)
+		-- [평타 1→2→3] 원거리 무기는 빠르게 반복 터치할 때 매 발마다 다른 영화식 사격 자세로 이어진다.
+		-- 숙련 추가 타격이 아니며 원본 공격 수·피해·사거리·재사용시간은 그대로 유지한다.
+		local basicBeat = 1
+		if wpn.ranged and moveId == "rush" then
+			local pressedAt = os.clock()
+			basicBeat = if pressedAt - swingBridge.basicAt <= 1.1 then swingBridge.basicBeat % 3 + 1 else 1
+			swingBridge.basicBeat, swingBridge.basicAt = basicBeat, pressedAt
+		end
+		startSwing(kind, if kind == "spin" then 0.6 elseif kind == "heavy" then 0.7 else 0.4, basicBeat)
 		do
 			local reachV = (mv.range or 5) * STUD
 			do
@@ -3741,24 +3744,33 @@ function FieldScene.start(opts)
 						local stageDelay = if stage == 2 then 0.20
 							elseif wpn.family == "dagger" or wpn.family == "fist" then 0.45
 							elseif wpn.family == "axe" or wpn.family == "blunt" then 0.53
-							elseif wpn.ranged then 0.56 else 0.49
+							elseif wpn.ranged then 0.41 else 0.49
 						task.delay(stageDelay, function()
 							if finished or not hrp.Parent or wpn.id ~= activeWeapon or chainMotionSerial ~= activeSerial then return end
 							-- 추가 공격은 R15 무기 자세와 이펙트뿐이다. 실제 피해·드롭·보상은 최초 명중 1회 그대로.
 							local finishKind = if stage == chain and stage == 3 and wpn.family == "fist" then "elbow"
 								elseif stage == chain and stage == 3 and (wpn.family == "axe" or wpn.family == "blunt") then "heavy"
 								else "slash"
-							startSwing(finishKind, if stage == 3 then 0.34 else 0.26, stage)
+							startSwing(finishKind, if stage == 3 then 0.34 else 0.26, stage, true)
+							-- [실제 영화식 연타] 숙련 2·3타에서 각기 다른 견착·측면 사격·낮은 마무리 격발을 보여 준다.
+							-- 추가 탄도는 시각 연출만 담당하며 실제 피해/드롭/보상은 앞선 첫 공격 1회 그대로.
+							if wpn.ranged then
+								local shotColor = if wpn.motion == "CROSSBOW" then Color3.fromRGB(174, 218, 241)
+									elseif wpn.family == "bow" then Color3.fromRGB(150, 235, 174)
+									else Color3.fromRGB(255, 210, 134)
+								local shootFrom = hrp.Position + Vector3.new(0, 1.3, 0) + hrp.CFrame.LookVector * 2.2
+								local side = if stage == 2 then -1 else 1
+								local shootTo = shootFrom + hrp.CFrame.LookVector * (if wpn.family == "bow" then 30 else 34)
+									+ hrp.CFrame.RightVector * (side * (if stage == 2 then 4.5 else 2.5))
+								arrowTrail(shootFrom, shootTo, nil, nil, wpn.motion, stage == 3)
+								pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(side * 0.35, 1.2, -2.9),
+									shotColor, Color3.fromRGB(255, 247, 227), if stage == 3 then 6 else 4,
+									if visualMobile then 2 else 5)
+								trailsOn(player.Character, { "RightHand", "LeftHand" }, shotColor, 0.18, 0.32)
+							end
 							if stage == chain then
 								masteryCinema(hrp, stage, defeatedAt)
-							elseif wpn.ranged then
-								-- [시각 2타] 실제 추가 발사 없이 활의 시위·석궁 노리쇠·총의 약실 재장전을 짧게 밝힌다.
-								local reloadColor = if wpn.motion == "CROSSBOW" then Color3.fromRGB(173, 216, 234)
-									elseif wpn.family == "bow" then Color3.fromRGB(152, 227, 169)
-									else Color3.fromRGB(255, 204, 144)
-								pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, 1.2, -1.5),
-									reloadColor, Color3.fromRGB(246, 241, 216), 2.8, if visualMobile then 2 else 4)
-							else
+							elseif not wpn.ranged then
 								local reach = math.max(7, wpn.range * STUD)
 								local color = if wpn.family == "fist" then Color3.fromRGB(250, 209, 132)
 									elseif wpn.family == "axe" then Color3.fromRGB(255, 153, 109)
