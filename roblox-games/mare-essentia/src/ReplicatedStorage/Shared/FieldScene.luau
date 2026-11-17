@@ -4053,10 +4053,22 @@ function FieldScene.start(opts)
 					afterimage(ch0, Color3.fromRGB(130, 225, 255), 5, 0.06)
 					pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, -2.2, 0), Color3.fromRGB(130, 225, 255), Color3.fromRGB(240, 250, 255), reachV * 2.4, 16)
 				elseif kind == "heavy" then
-					trailsOn(ch0, { "RightHand", "RightLowerArm", "RightLowerLeg" }, Color3.fromRGB(255, 160, 70), 0.45, 0.9)
-					auraOn(ch0, Color3.fromRGB(255, 140, 60), Color3.fromRGB(255, 226, 150), 0.8)
-					afterimage(ch0, Color3.fromRGB(255, 170, 80), 3, 0.08)
-					pulseAt("CRITICAL_BURST", hrp.CFrame * CFrame.new(0, -1.5, -reachV * 0.6), Color3.fromRGB(255, 180, 90), Color3.fromRGB(255, 240, 200), reachV * 1.8, 14)
+					-- [무기별 5타 자동강타] 기존 강타 준비동작 위에 고유 색상만 얹는다.
+					-- 실제 고유 필살 궤적은 comboCinema가 1회 담당하여 중복 폭발을 방지한다.
+					local heavyColor = if wpn.family == "fist" then Color3.fromRGB(255, 218, 149)
+						elseif wpn.family == "dagger" then Color3.fromRGB(127, 244, 200)
+						elseif wpn.family == "axe" then Color3.fromRGB(255, 132, 93)
+						elseif wpn.family == "spear" then Color3.fromRGB(126, 218, 249)
+						elseif wpn.family == "blunt" then Color3.fromRGB(244, 198, 132)
+						elseif wpn.motion == "CROSSBOW" then Color3.fromRGB(181, 215, 248)
+						elseif wpn.family == "bow" then Color3.fromRGB(151, 230, 163)
+						elseif wpn.family == "firearm" then Color3.fromRGB(255, 203, 125)
+						else Color3.fromRGB(255, 211, 147)
+					trailsOn(ch0, { "RightHand", "RightLowerArm", "RightLowerLeg" }, heavyColor, 0.37, 0.68)
+					auraOn(ch0, heavyColor, heavyColor:Lerp(Color3.new(1, 1, 1), 0.6), 0.58)
+					afterimage(ch0, heavyColor, if visualMobile then 1 else 2, 0.075)
+					pulseAt("CRITICAL_BURST", hrp.CFrame * CFrame.new(0, -1.5, -reachV * 0.6),
+						heavyColor, Color3.fromRGB(255, 247, 222), reachV * 1.3, if visualMobile then 4 else 9)
 				else
 					trailsOn(ch0, { "RightHand", "RightLowerArm" }, Color3.fromRGB(225, 240, 255), 0.3, 0.6)
 				end
@@ -4075,13 +4087,28 @@ function FieldScene.start(opts)
 				shockRing(hrp.Position - Vector3.new(0, 2.5, 0), reachV + 4, Color3.fromRGB(120, 220, 255), 0.45)
 				slashArc(hrp, Color3.fromRGB(150, 230, 255), reachV, 330, 0)
 			elseif kind == "heavy" then
-				-- 착지(내려찍는 순간)에 맞춰 충격파·호를 낸다
+				-- [필살 착지 싱크] 예전 강타의 지연 연출이 새 평타·회피 위에 덮이지 않게
+				-- 현재 무기/시각 연타 식별값을 확인한다. 실제 피해 판정 예약은 변경하지 않는다.
+				local visualSerial, visualWeapon, rangedVisual = chainMotionSerial, wpn.id, wpn.ranged
+				local slamColor = if wpn.family == "dagger" then Color3.fromRGB(127, 244, 200)
+					elseif wpn.family == "spear" then Color3.fromRGB(126, 218, 249)
+					elseif wpn.family == "bow" then Color3.fromRGB(151, 230, 163)
+					elseif wpn.motion == "CROSSBOW" then Color3.fromRGB(181, 215, 248)
+					elseif wpn.family == "firearm" then Color3.fromRGB(255, 203, 125)
+					elseif wpn.family == "fist" then Color3.fromRGB(255, 218, 149)
+					elseif wpn.family == "axe" then Color3.fromRGB(255, 132, 93)
+					else Color3.fromRGB(255, 211, 147)
 				task.delay(0.42, function()
-					if finished or not hrp.Parent then return end
-					slashArc(hrp, Color3.fromRGB(255, 160, 70), reachV + 2, 150, -35)
-					shockRing(hrp.Position + hrp.CFrame.LookVector * (reachV * 0.6) - Vector3.new(0, 2.5, 0), 12, Color3.fromRGB(255, 150, 60), 0.5)
-					shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 7, Color3.fromRGB(255, 226, 150), 0.35)
-					shakeUntil, shakeAmp = os.clock() + 0.25, 1.1
+					if finished or not hrp.Parent or chainMotionSerial ~= visualSerial or wpn.id ~= visualWeapon then return end
+					if rangedVisual then
+						pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.4, -3),
+							slamColor, Color3.fromRGB(255, 245, 218), 5, if visualMobile then 2 else 5)
+					else
+						slashArc(hrp, slamColor, reachV + 2, if wpn.family == "spear" then 53 else 150, -35)
+						shockRing(hrp.Position + hrp.CFrame.LookVector * (reachV * 0.6) - Vector3.new(0, 2.5, 0),
+							if visualMobile then 8 else 12, slamColor, 0.4)
+					end
+					shakeUntil, shakeAmp = os.clock() + 0.18, if visualMobile then 0.35 else 0.75
 				end)
 			else
 				local colour = if wpn.family == "fist" then Color3.fromRGB(255, 214, 156)
