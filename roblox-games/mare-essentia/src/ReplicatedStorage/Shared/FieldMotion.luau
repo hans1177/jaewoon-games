@@ -451,7 +451,12 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	-- 예고 동안 준비, 공격 동안 충격과 반동, 회복 동안 동일 원본 가드를 자연스럽게 풀어 준다.
 	if (state == "ANTICIPATION" or state == "ATTACK" or state == "RECOVERY")
 		and (weaponMotion ~= nil or role == "ally-melee" or role == "ally-ranged") then
-		local weaponCombo = FM.weaponCombo(weaponMotion, h.weaponBeat or 1) or FM.weaponCombo(weaponMotion, 1)
+		-- [적·동료 사격 일치] 매 발 실제 공격 구간에는 격발 자세를 사용한다.
+		-- 연타 2·3단의 재장전/재조준은 주인공 숙련 시각 연계에만 적용한다.
+		local rangedActor = weaponMotion == "BOW" or weaponMotion == "LONGBOW" or weaponMotion == "CROSSBOW"
+			or weaponMotion == "PISTOL" or weaponMotion == "RIFLE"
+		local actorBeat = if rangedActor then 1 else (h.weaponBeat or 1)
+		local weaponCombo = FM.weaponCombo(weaponMotion, actorBeat) or FM.weaponCombo(weaponMotion, 1)
 		if weaponCombo then
 			local contact = math.clamp(weaponCombo.steps[1].contact / weaponCombo.duration, 0.1, 0.85)
 			local motionProgress = if state == "ANTICIPATION" then math.clamp(phase, 0, 1) * contact
@@ -728,7 +733,7 @@ local UNARMED_STYLES = {
 	UNARMED_ELBOW = { "U:ELBOW_RIGHT", "U:KNEE_LEFT", "U:ELBOW_LEFT", "U:KNEE_RIGHT", "U:DIAGONAL_KNEE_LEFT" },
 }
 -- [무기 숙련 4·5단] 각 무기 계열의 실제 공용 동작 원자를 사용한다.
--- 첫 1~3단은 지역형 무기를 포함하여 해당 무기 프로필의 원본 순서를 유지한다.
+-- 근접형 1~3단은 지역 무기 프로필의 원본 순서를 유지하고, 원거리·레이피어는 아래 시각 연계로 구분한다.
 local WEAPON_HIGH_BEATS = {
 	BLADE = { "W:BLADE_RISING", "W:BLADE_RIPOSTE" },
 	AXE = { "W:AXE_CLEAVE", "W:AXE_DIAGONAL" },
@@ -745,7 +750,7 @@ local WEAPON_CHAIN_STANCES = {
 	PISTOL = { "W:FIREARM_RECOIL", "W:FIREARM_CYCLE", "W:FIREARM_AIM" },
 	RIFLE = { "W:FIREARM_RECOIL", "W:FIREARM_RELOAD", "W:FIREARM_AIM" },
 	BOW = { "W:BOW_RELEASE", "W:BOW_RENOCK", "W:BOW_DRAW" },
-	LONGBOW = { "W:BOW_RELEASE", "W:BOW_DRAW", "W:BOW_RENOCK" },
+	LONGBOW = { "W:BOW_RELEASE", "W:BOW_RENOCK", "W:BOW_DRAW" },
 	RAPIER = { "W:BLADE_THRUST", "W:BLADE_RIPOSTE", "W:BLADE_SLASH_L" },
 }
 function FM.weaponCombo(motion: string?, idx: number)
