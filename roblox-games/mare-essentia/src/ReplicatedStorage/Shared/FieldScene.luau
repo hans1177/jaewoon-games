@@ -3414,26 +3414,41 @@ function FieldScene.start(opts)
 				local bow = wpn.family == "bow"
 				local longGun = wpn.motion == "RIFLE"
 				local pistol = wpn.motion == "PISTOL"
+				-- [기본 사격 팔 역전 보정] FM.sample이 이미 원거리 조준 팔을 만든 뒤 같은 어깨에
+				-- 음수 피치를 곱하던 중복 누적이 활/석궁의 팔을 등 뒤로 돌렸다.
+				-- 사격 중에는 공용 콤보 위에 더하지 않고 실제 R15 전방 견착 목표각으로 직접 수렴한다.
+				-- 이동/대기 중에는 기존 공용 포즈를 일부 보존해 어깨가 갑자기 고정되지 않는다.
 				if crossbow then
-					-- [석궁 수평 견착] 오른손 방아쇠·왼손 레일 받침·고개 조준을 같은 수평선으로 묶는다.
-					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.72 * poseWeight + 0.17 * recoil - 0.08 * recover, 0.04, 0.10)
-					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.81 * poseWeight, -0.11, -0.14)
-					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.47 * poseWeight + 0.25 * recoil, 0, 0)
-					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.58 * poseWeight + 0.09 * recover, 0, 0)
-					canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.13 * poseWeight, 0, -0.04)
-					canon.HandR = (canon.HandR or id) * CFrame.Angles(0.22 * recoil - 0.13 * recover, 0, 0)
-					canon.Head = (canon.Head or id) * CFrame.Angles(-0.06 * poseWeight, 0, 0)
+					local gripBlend = if firing then 1 else (if traveling then 0.38 else 0.68)
+					canon.UpperArmR = (canon.UpperArmR or id):Lerp(
+						CFrame.Angles(-0.79 * poseWeight + 0.16 * recoil - 0.06 * recover, 0.04, 0.10), gripBlend)
+					canon.UpperArmL = (canon.UpperArmL or id):Lerp(
+						CFrame.Angles(-0.88 * poseWeight, -0.11, -0.14), gripBlend)
+					canon.ForearmR = (canon.ForearmR or id):Lerp(
+						CFrame.Angles(-0.44 * poseWeight + 0.18 * recoil, 0, 0), gripBlend)
+					canon.ForearmL = (canon.ForearmL or id):Lerp(
+						CFrame.Angles(-0.54 * poseWeight + 0.07 * recover, 0, 0), gripBlend)
+					canon.HandL = (canon.HandL or id):Lerp(CFrame.Angles(-0.13 * poseWeight, 0, -0.04), gripBlend)
+					canon.HandR = (canon.HandR or id):Lerp(
+						CFrame.Angles(0.18 * recoil - 0.11 * recover, 0, 0), gripBlend)
+					canon.Head = (canon.Head or id) * CFrame.Angles(-0.04 * poseWeight, 0, 0)
 				elseif bow then
-					-- [활 진짜 조준] 왼손으로 수직 활대를 펴고, 오른손 시위는 턱 옆으로 당겼다가 놓는다.
-					-- 활대와 화살의 방향축은 equipFieldWeapon/arrowTrail에서 동일 목표 전방을 사용한다.
-					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-1.03 * poseWeight + 0.06 * recover, -0.12, -0.20)
-					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.16 * poseWeight, 0, 0)
-					canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.13 * poseWeight, 0, 0)
-					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.68 * poseWeight - 0.42 * press + 0.32 * recoil, 0.30 * poseWeight, 0.24)
-					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.86 * poseWeight - 0.32 * press + 0.52 * recoil + 0.12 * recover, 0.08, 0)
-					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.18 * press + 0.32 * recoil + 0.14 * recover, 0.08, 0)
-					canon.Chest = (canon.Chest or id) * CFrame.Angles(0, 0.12 * poseWeight, 0)
-					canon.Head = (canon.Head or id) * CFrame.Angles(-0.04 * poseWeight, -0.09 * poseWeight, 0)
+					-- [전방 활시위] 왼팔은 전방에 활대를 세우고 오른팔은 턱 옆에서 시위를 당긴다.
+					-- 공용 W:BOW_RELEASE 원자와 같은 전방 피치를 사용하되 두 번 회전시키지 않는다.
+					local gripBlend = if firing then 1 else (if traveling then 0.38 else 0.70)
+					canon.UpperArmL = (canon.UpperArmL or id):Lerp(
+						CFrame.Angles(-1.01 * poseWeight + 0.06 * recover, -0.12, -0.20), gripBlend)
+					canon.ForearmL = (canon.ForearmL or id):Lerp(
+						CFrame.Angles(-0.14 * poseWeight, 0, 0), gripBlend)
+					canon.HandL = (canon.HandL or id):Lerp(CFrame.Angles(-0.12 * poseWeight, 0, 0), gripBlend)
+					canon.UpperArmR = (canon.UpperArmR or id):Lerp(
+						CFrame.Angles(-0.70 * poseWeight - 0.19 * press + 0.22 * recoil, 0.27 * poseWeight, 0.24), gripBlend)
+					canon.ForearmR = (canon.ForearmR or id):Lerp(
+						CFrame.Angles(-0.66 * poseWeight - 0.14 * press + 0.33 * recoil + 0.08 * recover, 0.08, 0), gripBlend)
+					canon.HandR = (canon.HandR or id):Lerp(
+						CFrame.Angles(-0.12 * press + 0.26 * recoil + 0.11 * recover, 0.08, 0), gripBlend)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(0, 0.08 * poseWeight, 0)
+					canon.Head = (canon.Head or id) * CFrame.Angles(-0.04 * poseWeight, -0.07 * poseWeight, 0)
 				elseif longGun then
 					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.65 * poseWeight, 0, -0.18)
 					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.69 * poseWeight + 0.21 * recoil - 0.08 * recover, 0, 0.13)
