@@ -1839,17 +1839,33 @@ function FieldScene.start(opts)
 			if kind == "slash" then
 				-- [원거리 사격 자세] 실제 사격은 몸을 앞으로 날리지 않고 발을 고정한 채 견착·반동만 준다.
 				if wpn.ranged then
+					-- [촬영식 3컷 전신 동선] 1타 조준/짧은 반동 → 2타 측면 발 디딤 → 3타 낮은 회전 사격.
+					-- 실제 캐릭터의 서버 좌표나 사거리 변경 없이 R15 RootJoint의 시각 이동만 사용한다.
 					local kick = bell(p)
+					local release = math.sin(math.clamp((p - 0.18) / 0.64, 0, 1) * math.pi)
+					local bow = wpn.family == "bow"
+					local crossbow = wpn.motion == "CROSSBOW"
+					local longGun = wpn.motion == "RIFLE"
 					if slashIdx == 2 then
-						-- [원거리 2타] 발을 옆으로 딛으며 상체를 크게 틀고 측면 사격.
-						return CFrame.new(-0.68 * kick, -0.26 * kick, -0.12 * kick)
-							* CFrame.Angles(-0.24 * kick, 0.66 * kick, -0.29 * kick)
+						-- 두 번째 발: 발을 옆으로 밟으며 시선을 목표에 고정하고 총구/활만 방향을 꺾는다.
+						local sidestep = if bow then 0.76 elseif crossbow then 0.52 elseif longGun then 0.43 else 0.92
+						local twist = if bow then 0.73 elseif crossbow then 0.48 elseif longGun then 0.40 else 0.89
+						return CFrame.new(-sidestep * kick, -(if longGun then 0.24 else 0.34) * kick, -0.12 * release)
+							* CFrame.Angles(-0.22 * kick + (if longGun then 0.17 else 0.07) * release,
+								twist * kick, -(if crossbow then 0.17 else 0.30) * kick)
 					elseif slashIdx == 3 then
-						-- [원거리 3타] 낮은 무릎 슬라이드 후 반대 방향으로 꺾으며 마무리 사격.
-						return CFrame.new(0.84 * kick, -0.76 * kick, -0.20 * kick)
-							* CFrame.Angles(0.41 * kick, -0.78 * kick, 0.35 * kick)
+						-- 세 번째 발: 재장전 없이 빠른 낮은 자세로 역회전, 팔·어깨 반동 후 화면 중심 복귀.
+						local slide = if bow then 0.66 elseif crossbow then 0.57 elseif longGun then 0.47 else 0.90
+						local crouch = if bow then 0.66 elseif crossbow then 0.44 elseif longGun then 0.58 else 0.82
+						return CFrame.new(slide * kick, -crouch * kick, -0.18 * release)
+							* CFrame.Angles(0.38 * kick + 0.13 * release,
+								-(if longGun then 0.52 elseif crossbow then 0.58 else 0.82) * kick, 0.34 * kick)
 					end
-					return CFrame.new(0, -0.09 * kick, 0) * CFrame.Angles(0.07 * kick, 0, 0)
+					-- 첫 발도 무기마다 실루엣을 달리한다: 활 당김·석궁 수평 지지·장총 견착·권총 한손 스냅.
+					if bow then return CFrame.new(-0.10 * kick, -0.18 * kick, 0) * CFrame.Angles(-0.10 * kick, 0.19 * kick, -0.08 * kick) end
+					if crossbow then return CFrame.new(0, -0.20 * kick, 0) * CFrame.Angles(0.07 * release, -0.10 * kick, 0) end
+					if longGun then return CFrame.new(0, -0.29 * kick, 0) * CFrame.Angles(0.20 * release, -0.12 * kick, 0) end
+					return CFrame.new(0.12 * kick, -0.15 * kick, 0) * CFrame.Angles(0.15 * release, -0.24 * kick, 0.11 * kick)
 				end
 				-- 일반 공격: 몸을 크게 비틀며 한 걸음 내딛고 벤다(좌우 번갈아)
 				local side = if slashIdx % 2 == 0 then 1 else -1
