@@ -5454,6 +5454,8 @@ function FieldScene.start(opts)
 							local bow = wpn.family == "bow"
 							local crossbow = wpn.motion == "CROSSBOW"
 							local rifle = wpn.motion == "RIFLE"
+							-- [활·석궁 발사] 사각 포구 폭발 대신 실제 화살·볼트·손목 잔광만 사용한다.
+							if bow or crossbow then return end
 							local side = if fxBeat % 2 == 0 then -1 else 1
 							local muzzle = hrp.CFrame * CFrame.new(if bow then side * 0.53 elseif rifle then 0.15 else side * 0.42,
 								if bow then 1.68 elseif rifle then 1.28 else 1.38, if rifle then -3.0 else -2.4)
@@ -5483,8 +5485,10 @@ function FieldScene.start(opts)
 					if rapidPose then
 						local flank = if basicBeat % 2 == 0 then -1 else 1
 						local flashAt = hrp.CFrame * CFrame.new(flank * 1.1, if basicBeat == 3 then -1.0 else 0.6, -2.1)
-						pulseAt("SHAPE_BURST", flashAt, aimColor, aimColor:Lerp(Color3.new(1, 1, 1), 0.7),
-							if basicBeat == 3 then 7 else 4.6, if visualMobile then 2 else 6)
+						if wpn.family ~= "bow" and wpn.motion ~= "CROSSBOW" then
+							pulseAt("SHAPE_BURST", flashAt, aimColor, aimColor:Lerp(Color3.new(1, 1, 1), 0.7),
+								if basicBeat == 3 then 7 else 4.6, if visualMobile then 2 else 6)
+						end
 						if basicBeat == 3 then
 							-- 낮은 회전 사격 후 다음 연타에 연결.
 							auraOn(ch0, aimColor, aimColor:Lerp(Color3.new(1, 1, 1), 0.65), 0.34)
@@ -5711,7 +5715,7 @@ function FieldScene.start(opts)
 			end
 			local hits, shots = 0, 0 -- [회피 명중 분리] 사격 시도 수와 실제 적중 수를 혼동하지 않는다.
 			local defeatedAt = nil -- [킬캠] 기존 타격으로 쓰러진 적 위치만 읽는다.
-			-- [원거리 실제 판정] 일반 사격·집중 사격·견제 사격 모두 해당 무기의 등록 사거리에서 한 발만 명중한다.
+			-- [원거리 실제 판정] 일반 사격·집중 사격·견제 사격 모두 해당 무기의 등록 사거리에서 한 발만 시도하고 실제 적중은 거리·이동·회피로 결정한다.
 			-- 기본 공격·스킬의 피해 배수·기력·재사용시간은 그대로, 근접 스킬은 기존 범위를 유지한다.
 			local rangeR = if wpn.ranged or moveId == "rush" then wpn.range else mv.range
 			local arcR = if wpn.ranged then (if moveId == "sweep" then 70 else 36) else mv.arc
@@ -5722,9 +5726,12 @@ function FieldScene.start(opts)
 				local flashColor = if wpn.motion == "CROSSBOW" then Color3.fromRGB(186, 214, 234)
 					elseif wpn.family == "bow" then Color3.fromRGB(169, 230, 169)
 					else Color3.fromRGB(255, 210, 134)
-				pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.1, -2.6), flashColor,
-					Color3.fromRGB(255, 246, 225), if moveId == "heavy" then 5.5 else 3.2,
-					if visualMobile then 2 else 4)
+				-- [활/석궁 섬광 절제] 큰 사각 스프라이트를 숨기고 실물 화살·볼트의 짧은 꼬리만 남긴다.
+				if wpn.family ~= "bow" and wpn.motion ~= "CROSSBOW" then
+					pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.1, -2.6), flashColor,
+						Color3.fromRGB(255, 246, 225), if moveId == "heavy" then 5.5 else 3.2,
+						if visualMobile then 2 else 4)
+				end
 				if wpn.motion == "CROSSBOW" then
 					sfx("sfx_card_volley", 0.45, 1.46)
 				elseif wpn.family == "bow" then
