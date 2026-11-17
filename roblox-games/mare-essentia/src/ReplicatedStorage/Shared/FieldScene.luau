@@ -1360,7 +1360,7 @@ function FieldScene.start(opts)
 		local weatherHud = if narrowLandscape then gui:FindFirstChild("FieldWeatherClock") else nil
 		if questHud then questHud.Visible = not expanded end
 		if weatherHud then weatherHud.Visible = not expanded end
-		note.AnchorPoint = if visualMobile then Vector2.zero else Vector2.new(0.5, 0)
+		note.AnchorPoint = if compactTouch or (expanded and visualMobile) then Vector2.zero else Vector2.new(0.5, 0)
 		note.Position = if expanded then
 			(if compactTouch then UDim2.fromOffset(12, 398)
 				elseif narrowLandscape then UDim2.fromOffset(184, screen.Y - 108)
