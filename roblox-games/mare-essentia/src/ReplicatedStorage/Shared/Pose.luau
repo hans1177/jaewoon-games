@@ -68,7 +68,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local r15Template = nil
-local r15Unavailable = false
+local r15RetryAt = 0 -- 일시적인 아바타 생성 실패 후 재시도. 영구적으로 모든 동료를 숨기지 않는다.
 local rigMotors = setmetatable({}, { __mode = "k" })
 -- R15 모션 전환: 게임 데이터에 저장하지 않는 NPC별 관절 보간 상태.
 local r15ActionBlends = setmetatable({}, { __mode = "k" })
@@ -267,7 +267,7 @@ end
 -- outfit 추가 필드: age("child"|"adult"|"elder"), hair("short"|"bun"|"long"), hairColor, skirt(Color3), skirtLong
 function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height, outfit)
 	if not r15Template then
-		if r15Unavailable then return nil end
+		if os.clock() < r15RetryAt then return nil end
 		local description = Instance.new("HumanoidDescription")
 		local ok, result = pcall(function()
 			return Players:CreateHumanoidModelFromDescriptionAsync(description, Enum.HumanoidRigType.R15)
@@ -275,7 +275,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 		description:Destroy()
 		if not ok or not result then
 			warn("[MareEssentia] R15 모델 생성 실패", result)
-			r15Unavailable = true
+			r15RetryAt = os.clock() + 8
 			return nil
 		end
 		local humanoid = result:FindFirstChildOfClass("Humanoid")
@@ -314,7 +314,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 		if not humanoid or humanoid.RigType ~= Enum.HumanoidRigType.R15 or joints < 12 or not result:FindFirstChild("HumanoidRootPart") then
 			warn("[MareEssentia] 불완전한 R15 리그", joints)
 			result:Destroy()
-			r15Unavailable = true
+			r15RetryAt = os.clock() + 8
 			return nil
 		end
 		r15Template = result
@@ -1046,12 +1046,13 @@ function Pose.makeR15Action(model, state, progress, t)
 	elseif state == "walk" or state == "run" then
 		-- 걸음 주기: 발 앞으로(무릎 굽힘) → 딛기 → 뒤로 밀기. 반대 팔이 같이 흔들리고 몸이 위아래·좌우로 자연스럽게 흔들린다.
 		local run = state == "run"
+		local companionRun = run and model:GetAttribute("CompanionId") ~= nil
 		-- [발걸음] 걷기·달리기 모두 이동거리로 받은 위상을 사용한다.
 		local w = time
 		local s, c = math.sin(w), math.cos(w)
 		local stride = if motionStyle == "heavy" then 0.84 elseif motionStyle == "elder" then 0.7 elseif motionStyle == "nimble" then 1.1 else 1
-		local amp = (if run then 0.96 else 0.74) * stride
-		local kneeAmp = (if run then 1.22 else 0.91) * stride
+		local amp = (if run then 0.96 else 0.74) * stride * (if companionRun then 1.17 else 1)
+		local kneeAmp = (if run then 1.22 else 0.91) * stride * (if companionRun then 1.15 else 1)
 		set(m.leftLeg, A(s * amp, 0, 0)); set(m.rightLeg, A(-s * amp, 0, 0))
 		-- 무릎은 다리가 앞으로 나올 때 접힌다 (R15 무릎은 음수 방향이 접힘)
 		set(m.leftKnee, A(-(math.max(0, c) * kneeAmp + 0.08), 0, 0))
@@ -1063,8 +1064,8 @@ function Pose.makeR15Action(model, state, progress, t)
 		-- 뒤로 과하게 꺾이거나 등 뒤에 고정돼 보이지 않게 한다 (R15 전방 = 양의 X 회전).
 		-- [팔-다리 역위상] 짧은 후방 스윙 때문에 교차가 사라진 회귀 수정. 팔 전후 비대칭은 유지한다.
 		-- [실제 스튜디오 회귀] 노인·중갑병의 짧은 보폭에서도 팔·반대 다리 교차가 식별되도록 조절한다.
-		local armForward = (if run then 0.90 else 0.78) * stride
-		local armBack = (if run then 0.49 else 0.50) * stride
+		local armForward = (if run then 0.90 else 0.78) * stride * (if companionRun then 1.18 else 1)
+		local armBack = (if run then 0.49 else 0.50) * stride * (if companionRun then 1.1 else 1)
 		local leftForward, rightForward = math.max(0, -s), math.max(0, s)
 		local leftBack, rightBack = math.max(0, s), math.max(0, -s)
 		set(m.leftArm, A(leftForward * armForward - leftBack * armBack, 0, 0.06))
@@ -1075,7 +1076,7 @@ function Pose.makeR15Action(model, state, progress, t)
 		set(m.leftElbow, A(-(elbowBack + (elbowFront - elbowBack) * leftForward), 0, 0))
 		set(m.rightElbow, A(-(elbowBack + (elbowFront - elbowBack) * rightForward), 0, 0))
 		-- [지면 접지] 과도한 수직 바운스를 줄이고 하중 이동은 무릎·발목에 분산한다.
-		local bob = (math.cos(2 * w) * 0.5 + 0.5) * (if run then 0.12 else 0.075) * stride
+		local bob = (math.cos(2 * w) * 0.5 + 0.5) * (if companionRun then 0.16 elseif run then 0.12 else 0.075) * stride
 		local lean = if motionStyle == "elder" then 0.12 elseif motionStyle == "nimble" then -0.06 else 0
 		set(m.root, CFrame.new(0, bob, 0) * A((if run then -0.13 else -0.03) + lean, s * 0.08, s * 0.03))
 		set(m.waist, A((if run then -0.04 else 0) - lean * 0.4, -s * 0.13, 0))

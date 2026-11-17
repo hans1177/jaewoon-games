@@ -7189,7 +7189,8 @@ function FieldScene.start(opts)
 		end
 		local allyDefs = prepareAllyDefs()
 		local allies: { any } = {}
-		local spawned = false
+		local spawned = {} -- 영입 슬롯별 생성 성공만 기록. 실패 슬롯만 재시도한다.
+		local nextSpawnRetryAt = 0
 		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
 			if finished or #allyDefs == 0 then
 				return
@@ -7200,9 +7201,10 @@ function FieldScene.start(opts)
 				return
 			end
 			local now = os.clock()
-			if not spawned then
-				spawned = true
+			if #allies < #allyDefs and now >= nextSpawnRetryAt then
+				nextSpawnRetryAt = now + 5 -- 외부 R15 생성 실패 때 매 프레임 중복 요청하지 않는다.
 				for i, ad in allyDefs do
+					if not spawned[i] then
 					-- [동료 접지] Pose.createR15의 인자는 몸통 위치가 아닌 발바닥 좌표다.
 					-- 주인공 루트 높이(약 3스터드)를 더하던 기존 계산이 동료 공중부양의 원인이다.
 					local footX = root0.Position.X + i * 5 - 8
@@ -7234,6 +7236,7 @@ function FieldScene.start(opts)
 					end
 					local r = m and m:FindFirstChild("HumanoidRootPart")
 					if m and r then
+						spawned[i] = true
 						m.Name = "FieldAlly"
 						m:SetAttribute("CompanionId", ad.id)
 						m:SetAttribute("CompanionName", ad.name)
@@ -7332,6 +7335,9 @@ function FieldScene.start(opts)
 						table.insert(conns, { Disconnect = function()
 							m:Destroy()
 						end })
+					elseif m then
+						m:Destroy() -- 불완전한 동료는 남기지 않고 같은 슬롯으로 다시 생성한다.
+					end
 					end
 				end
 			end
@@ -7443,7 +7449,7 @@ function FieldScene.start(opts)
 					a.energyFill.Size = UDim2.fromScale(a.energy / 100, 1)
 				end
 				local ap = (now - a.swingAt) / 0.5
-				if a.fm then
+				if a.fm and a.fm.nj > 0 then
 					if a.castAt and now - a.castAt < 0.7 then
 						FM.actor(a.fm, "INTERACT", (now - a.castAt) / 0.7, dt, nil, 1.3, nil, false, a.castSkill)
 					elseif ap >= 0 and ap < 1 then

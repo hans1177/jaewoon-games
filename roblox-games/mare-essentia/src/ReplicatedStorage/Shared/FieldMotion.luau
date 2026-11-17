@@ -261,6 +261,25 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		bend("UpperArmR", plant * 0.38 * stride * effort, 0, 0.045 - side * 0.04)
 		bend("ForearmL", -0.17 - liftL * 0.25 * effort, 0, 0)
 		bend("ForearmR", -0.17 - liftR * 0.25 * effort, 0, 0)
+		-- [전투 동료 달리기] 실제 보폭과 동일한 위상으로 질주·뒤꿈치 밀기·팔꿈치 역스윙을 크게 표현.
+		-- 루트 이동속도/공격/스킬 판정은 FieldScene 원본 그대로. 허리와 발목은 부드럽게 회수한다.
+		if role == "ally-melee" or role == "ally-ranged" then
+			local sprint = math.clamp(effort, 0, 1.25)
+			local drive = if style == "heavy" then 0.75 else 1
+			bend("Spine", -0.15 * drive * sprint, plant * 0.075 * sprint, 0)
+			bend("Chest", -0.10 * drive * sprint, -plant * 0.09 * sprint, plant * 0.055 * sprint)
+			bend("ThighL", plant * 0.24 * drive * sprint, 0, 0)
+			bend("ThighR", -plant * 0.24 * drive * sprint, 0, 0)
+			bend("ShinL", -liftL * 0.22 * sprint, 0, 0)
+			bend("ShinR", -liftR * 0.22 * sprint, 0, 0)
+			bend("UpperArmL", -plant * 0.26 * sprint, 0, 0)
+			bend("UpperArmR", plant * 0.26 * sprint, 0, 0)
+			bend("ForearmL", -0.14 * sprint, 0, 0)
+			bend("ForearmR", -0.14 * sprint, 0, 0)
+			bend("FootL", liftL * 0.12 * sprint, 0, 0)
+			bend("FootR", liftR * 0.12 * sprint, 0, 0)
+			rootRot = (rootRot or id) * CFrame.new(0, (1 - math.abs(plant)) * 0.09 * sprint, 0)
+		end
 	elseif state == "EVADE" then
 		-- [정예 회피] 기존 R15 달리기 포즈에 측면 체중 이동과 가드·발 디딤을 더한다.
 		local side = if (h.model:GetAttribute("MotionVariant") or 1) % 2 == 0 then -1 else 1

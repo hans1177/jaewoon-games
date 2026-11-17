@@ -1017,7 +1017,8 @@ return function(D, S)
 			})
 		end
 		for _, c in D.Specialties.Companions do
-			if not c.nation or c.nation == state.nationId then
+			-- 영입 완료한 동료는 현재 국적과 무관하게 목록·항구·탐험 소환에 항상 포함한다.
+			if not c.nation or c.nation == state.nationId or table.find(state.companions, c.id) ~= nil then
 				local researchNames = {}
 				for _, id in c.disciplines or {} do
 					local d = D.KnowledgeTree.DisciplineById[id]

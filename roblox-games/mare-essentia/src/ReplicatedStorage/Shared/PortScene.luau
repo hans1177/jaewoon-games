@@ -573,7 +573,8 @@ local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 		outfit.hat = "wide"
 	end
 	if extra and extra.noHat then outfit.hat = nil end
-	local figure = Pose.createR15(parent, pos, facing, coat, rng, role, 5.8, outfit)
+	local figure = Pose.createR15(parent, pos, facing, coat, rng, role,
+		if extra and type(extra.height) == "number" then extra.height else 5.8, outfit)
 	if figure then figure.Name = "Villager" end
 	return figure
 end
@@ -4824,9 +4825,14 @@ function PortScene.build(info, onFacility)
 		importedModel(folder, "Town", "gate_double_right", Vector3.new(-46, 0, 5.5), 6, false)
 	end
 
-	-- 동료: R15 NPC로 플레이어 뒤를 따라다닌다 (보기용, 효과는 서버의 동료 시스템)
+	-- 동료: 영입한 인물은 주인공과 같은 실제 머리~발 크기로 표시한다(서버 능력·저장 불변).
 	local followers = {}
 	do
+		local hero = game:GetService("Players").LocalPlayer.Character
+		local head = hero and hero:FindFirstChild("Head")
+		local foot = hero and (hero:FindFirstChild("LeftFoot") or hero:FindFirstChild("RightFoot"))
+		local heroHeight = if head and foot then math.clamp(
+			(head.Position.Y + head.Size.Y * 0.5) - (foot.Position.Y - foot.Size.Y * 0.5), 5.3, 7.2) else 5.8
 		local looks = {
 			c_merian = { "Rogue", Color3.fromRGB(176, 96, 120), "inspect" }, c_halley = { "Knight", Color3.fromRGB(60, 80, 140), "point" },
 			c_leeuwenhoek = { "Mage", Color3.fromRGB(110, 90, 70), "write" }, c_linnaeus = { "Rogue_Hooded", Color3.fromRGB(70, 120, 84), "inspect" },
@@ -4838,9 +4844,11 @@ function PortScene.build(info, onFacility)
 		}
 		for i, c in info.companions or {} do
 			local look = looks[c.id] or { "Rogue", Color3.fromRGB(120, 100, 80) }
-			local v = villager(folder, Vector3.new(-6 - i * 3, 0, 8 + i * 2), math.pi / 2, look[2], rng, look[1])
+			local v = villager(folder, Vector3.new(-6 - i * 3, 0, 8 + i * 2), math.pi / 2,
+				look[2], rng, look[1], true, { height = heroHeight })
 			if v then
 				v.Name = "Companion_" .. c.id
+				v:SetAttribute("CompanionId", c.id) -- 항구에서만 동료 전용 달리기 관절을 강화한다.
 				local tag = v:FindFirstChild("Head") or v:FindFirstChildWhichIsA("BasePart", true)
 				-- [동료 이름표] 번호·직업 대신 영입 동료 이름을 표시한다.
 				if tag then sign(folder, tag, tostring(c.name or c.role or "동료"), if i % 2 == 1 then Color3.fromRGB(125, 224, 255) else Color3.fromRGB(245, 207, 110), 4, true) end
