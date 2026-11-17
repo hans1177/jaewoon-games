@@ -1912,8 +1912,14 @@ function FieldScene.start(opts)
 		ac.hp = individualDef.hp
 		-- [몹 역할별 실루엣] 기존 전투 능력은 유지하고 R15 비율·걸음 성격만 다르게 설정한다.
 		-- [병종 실루엣] 기존 R15 리그·실제 손 장착 메시 재사용. 키/체형/바지색으로 원거리·투척·방패·돌격을 구분.
+		-- [초급 적 실루엣] 1단은 검병·궁수만 나오므로 검병도 기존 복식 원형에 맞춰 체형을 나눈다.
+		-- 기존 병종 편성·HP·공격·속도·드롭은 유지하고 승인된 R15 체형 네 가지만 재사용한다.
 		local bodyType = if isBoss or ac.kind == "shield" then "heavy" elseif throwAsset or ac.kind == "archer" then "slim"
-			elseif ac.kind == "charger" then "athletic" else "average"
+			elseif ac.kind == "charger" then "athletic"
+			elseif ac.kind == "grunt" and style[2] == "Barbarian" then "heavy"
+			elseif ac.kind == "grunt" and style[2] == "Knight" then "athletic"
+			elseif ac.kind == "grunt" and style[2] == "Rogue_Hooded" then "slim"
+			else "average"
 		local motionStyle = if ac.kind == "archer" then "nimble" elseif ac.kind == "shield" or isBoss then "heavy"
 			elseif ac.kind == "charger" then "disciplined" else "civilian"
 		local stature = if isBoss then 7.6 elseif ac.kind == "shield" then 6.2 elseif ac.kind == "charger" then 6
