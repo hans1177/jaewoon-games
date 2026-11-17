@@ -1831,7 +1831,7 @@ function FieldScene.start(opts)
 		tag.TextSize = if isBoss then 14 else 12
 		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil
-		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0 })
+		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0, tacticAt = 0, tacticGoal = nil, tacticIntent = "approach", tacticSide = if rng:NextNumber() < 0.5 then -1 else 1 })
 	end
 
 	end
@@ -6394,7 +6394,46 @@ function FieldScene.start(opts)
 					shakeUntil, shakeAmp = now + 0.12, if visualMobile then 0.12 else 0.26
 				end
 			end
-			-- [적 가감속·선회] 기존 추적/후퇴/돌진 규칙은 유지하고 이동을 부드럽게 보간한다.
+			-- [고스트 오브 쓰시마식 병종 협동] 원본 AC 공격 토큰(동시 근접 2명)/공격 주기/데미지를 유지.
+			-- 프레임당 전체 적을 새로 탐색하지 않고 각 적만 0.65~0.9초마다 목표 포지션을 갱신한다.
+			-- 방패는 전면 압박, 검병은 좌우 측후방, 돌격병은 외측에서 합류, 사수는 거리 유지와 사선 확보.
+			if e.ac.state == "chase" and not frozen and now >= (e.tacticAt or 0)
+				and flat.Magnitude < 90 then
+				e.tacticAt = now + 0.65 + (e.motionPhase or 0) * 0.25
+				local looking = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
+				if looking.Magnitude < 0.01 then looking = Vector3.new(0, 0, -1) end
+				looking = looking.Unit
+				local right = Vector3.new(-looking.Z, 0, looking.X)
+				local side = e.tacticSide or 1
+				local intent = "approach"
+				local goal = hrp.Position
+				if e.ac.kind == "shield" then
+					intent, goal = "frontline", hrp.Position + looking * 7.2 + right * side * 2.8
+				elseif e.ac.kind == "grunt" then
+					intent, goal = "flank", hrp.Position - looking * 3.8 + right * side * 9.0
+				elseif e.ac.kind == "charger" then
+					intent, goal = "ambush", hrp.Position - looking * 5.5 + right * side * 10.5
+				elseif e.ac.kind == "archer" then
+					local away = (e.root.Position - hrp.Position) * Vector3.new(1, 0, 1)
+					if away.Magnitude > 0.1 then
+						local retreat = if e.ac.hp <= e.maxHp * 0.35 then 34 else 28
+						intent = if away.Magnitude < retreat then "retreat" else "strafe"
+						goal = hrp.Position + away.Unit * retreat + right * side * 7
+					end
+				elseif e.boss then
+					intent, goal = "pressure", hrp.Position + looking * 8 + right * side * 3
+				end
+				goal = Vector3.new(math.clamp(goal.X, ORIGIN.X - half + 9, ORIGIN.X + half - 9),
+					e.root.Position.Y, math.clamp(goal.Z, ORIGIN.Z - half + 9, ORIGIN.Z + half - 9))
+				e.tacticGoal, e.tacticIntent = goal, intent
+				e.model:SetAttribute("FieldTacticalIntent", intent)
+				-- 반복 연타 중인 주인공을 읽고 방패병이 미리 무게중심을 낮춘다.
+				-- 실제 막기/피해 경감은 기존 strikeEnemy의 정면 판정에서만 적용된다.
+				if e.ac.kind == "shield" and flat.Magnitude < 15
+					and now - (swingBridge.basicAt or -100) < 0.45 then
+					e.guardUntil = math.max(e.guardUntil or 0, now + 0.30)
+				end
+			end
 			local wish = if frozen then 0 else AC.moveWish(e.ac, dist)
 			local beforeMove = e.root.Position
 			if frozen or e.ac.state == "stagger" then
@@ -6417,9 +6456,26 @@ function FieldScene.start(opts)
 					facing = remaining.Unit
 				end
 			elseif e.waiting and not frozen and flat.Magnitude > 0.1 and wish == 0 then
-				-- 공격 차례를 기다리는 적은 정면을 유지하며 측면으로 포위한다.
-				e.circleDir = e.circleDir or (if math.random() < 0.5 then 1 else -1)
+				-- 공격 토큰 대기자도 멈춰서 직선 줄을 서지 않고 플레이어 좌우로 반원을 만든다.
+				e.circleDir = e.circleDir or e.tacticSide or 1
 				desired = flat.Unit:Cross(Vector3.yAxis) * e.circleDir * e.ac.def.speed * 0.45
+			elseif e.ac.def.keepAway and e.ac.state == "chase" and not frozen
+				and e.tacticGoal and (e.tacticIntent == "retreat" or wish == 0) then
+				-- 궁수/총병은 조준 전 후방 재배치·수평 견제. 공격 예고/발사 시에는 기존 정지 규칙이 우선.
+				local route = (e.tacticGoal - pv.Position) * Vector3.new(1, 0, 1)
+				if route.Magnitude > 2 then
+					desired = route.Unit * math.min(e.ac.def.speed * 0.64, route.Magnitude / math.max(dtc, 0.016))
+				end
+			elseif e.tacticGoal and wish > 0 and e.ac.state == "chase" and not frozen
+				and flat.Magnitude > e.ac.def.range * STUD + 5 and flat.Magnitude < 70 then
+				-- 검병과 돌격병은 목표 옆구리로 접근하지만 최종 타격 거리에서는 주인공을 향해 선회.
+				local route = (e.tacticGoal - pv.Position) * Vector3.new(1, 0, 1)
+				if route.Magnitude > 2 then
+					local routeDir = (route.Unit * 0.72 + flat.Unit * 0.28)
+					desired = routeDir.Unit * math.min(e.ac.def.speed * 0.8, route.Magnitude / math.max(dtc, 0.016))
+				else
+					desired = flat.Unit * e.ac.def.speed * 0.68
+				end
 			elseif wish ~= 0 and flat.Magnitude > 0.1 then
 				desired = flat.Unit * wish * math.min(e.ac.def.speed * 0.8, flat.Magnitude / math.max(dtc, 0.016))
 			end
