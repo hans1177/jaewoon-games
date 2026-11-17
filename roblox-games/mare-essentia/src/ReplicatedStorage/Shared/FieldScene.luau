@@ -3917,8 +3917,9 @@ function FieldScene.start(opts)
 		AC.regen(pl, math.min(dt, 0.1)) -- 느린 폰(30fps)에서도 기력이 같은 속도로 찬다
 		-- [보스 독 지속피해] 4초 동안 1초마다 2피해. 매 프레임 차감하거나 여러 보스의 독을 합산하지 않는다.
 		-- 최초 공격을 막았거나 회피했으면 아예 걸리지 않는다. 본 효과는 기존 플레이어 저장과 무관하다.
-		if pl.hp > 0 and now < bossPoisonUntil and now >= bossPoisonNextAt then
-			bossPoisonNextAt = now + 1
+		if pl.hp > 0 and bossPoisonNextAt <= bossPoisonUntil and now >= bossPoisonNextAt then
+			-- [정확한 4틱] 프레임 지연으로 마지막 1초가 건너뛰지 않도록 발동 예정시각으로 누적한다.
+			bossPoisonNextAt += 1
 			pl.hp = math.max(0, pl.hp - 2)
 			lastCombatAt = now
 			refresh()
