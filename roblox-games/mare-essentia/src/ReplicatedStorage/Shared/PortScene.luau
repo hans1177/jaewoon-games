@@ -4266,7 +4266,10 @@ function PortScene.build(info, onFacility)
 					end
 					local delta = where - (w.lastPos or where)
 					local moving = delta.Magnitude > 0.025
-					local forward = if moving then delta.Unit else Vector3.new(0, 0, 1)
+					-- [마을 주민 정면] 멈춘 사람은 마지막 이동 방향을 유지한다.
+					-- 월드 +Z로 강제 회전하면 일부 주민이 앞서 바라보던 방향과 반대로 서게 된다.
+					local forward = if moving then delta.Unit else (w.lastFacing or w.base.LookVector)
+					if moving then w.lastFacing = forward end
 					w.model:PivotTo(CFrame.lookAt(where, where + forward))
 					w.lastPos = where
 					if w.lastRoutine ~= routine then
