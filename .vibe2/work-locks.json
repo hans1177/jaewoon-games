@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1agojao",
+      "worker": "vibe2",
+      "taskId": "defense-studio-evolution-roblox-usability-v2",
+      "gameId": "defense",
+      "files": [
+        "roblox-games/defense/client/Game.client.luau",
+        "roblox-games/defense/shared/GameConfig.luau",
+        "roblox-games/defense/server/Game.server.luau",
+        "roblox-games/defense/client/MaterialPresentation.client.luau",
+        "roblox-games/defense/shared/RobloxCommonUI.luau",
+        "roblox-games/defense/shared/RobloxCommonMaterials.luau"
+      ],
+      "baseSha": "8eaab797776a8f4b94d43371322d16403c88c94e",
+      "runId": "44028263548",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-17T06:28:43.085Z",
+      "expiresAt": "2026-11-17T07:13:43.085Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:defense-studio-evolution-roblox-usability-v2"
+      ]
+    }
+  ]
 }
