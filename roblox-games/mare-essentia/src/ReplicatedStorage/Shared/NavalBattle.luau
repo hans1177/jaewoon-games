@@ -342,6 +342,60 @@ function NavalBattle.play(opts)
 		sea.Reflectance = 0
 	end
 
+	-- [해역별 배경] 실제 등록된 지형 메시만 먼 해안에 배치한다. 해전 경로·충돌·서버 판정 불변.
+	-- 같은 교전 조건이면 같은 풍경이며, 기후/상대/기함이 달라지면 바닷빛과 해안 유형이 바뀐다.
+	if not opts.cardOnly then
+		local coasts = {
+			{ water = Color3.fromRGB(39, 137, 156), props = {
+				{ "cliff-rock", 120, 385, -340 }, { "tropical-palm-tall", 51, 412, -312 },
+				{ "platform-beach", 145, -470, 365 }, { "tropical-palm-short", 48, -430, 332 } } },
+			{ water = Color3.fromRGB(42, 111, 151), props = {
+				{ "cliff-steps-rock", 145, -410, -345 }, { "ruins-pillar-decorated", 68, -392, -320 },
+				{ "cliff-rock", 120, 460, 360 }, { "mystic-stone-arch", 62, 440, 346 } } },
+			{ water = Color3.fromRGB(47, 89, 121), props = {
+				{ "cliff-waterfall-rock", 135, 405, -360 }, { "north-pine-fall", 58, 433, -331 },
+				{ "cliff-rock", 138, -460, 350 }, { "tree-pinedefaulta", 56, -437, 329 } } },
+			{ water = Color3.fromRGB(66, 124, 138), props = {
+				{ "mystic-sand-dune", 140, -425, -362 }, { "arid-cactus-tall", 43, -405, -342 },
+				{ "cliff-rock", 132, 478, 364 }, { "egypt-obelisk", 56, 450, 340 } } },
+		}
+		local mapKey = tostring(opts.shipId or "") .. tostring(opts.enemyName or "") .. tostring(opts.weatherName or "")
+		local mapHash = 0
+		for i = 1, #mapKey do mapHash += string.byte(mapKey, i) end
+		local coast = coasts[mapHash % #coasts + 1]
+		sea.Color = coast.water
+		-- [기존 에셋 로더] 메시 준비가 끝난 뒤, 등록된 실물만 복제한다. 기본 도형 대체물 생성 금지.
+		task.delay(1.0, function()
+			if not folder.Parent then return end
+			local lib = ReplicatedStorage:FindFirstChild("MareAssets")
+			local terrain = lib and lib:FindFirstChild("Terrain")
+			if not terrain then return end
+			for _, spec in coast.props do
+				local template = terrain:FindFirstChild(spec[1])
+				if template and template:IsA("Model") and AssetIds["Terrain/" .. spec[1]] then
+					local model = template:Clone()
+					for _, node in model:GetDescendants() do
+						if node:IsA("BasePart") then
+							node.Anchored = true
+							node.CanCollide, node.CanTouch, node.CanQuery = false, false, false
+						end
+					end
+					model.Name = "NavalCoast"
+					model.Parent = folder
+					local ok = pcall(function()
+						local _, dims = model:GetBoundingBox()
+						model:ScaleTo(spec[2] / math.max(dims.X, dims.Z, 0.01))
+						local box, ext = model:GetBoundingBox()
+						local bottom = box.Position - Vector3.new(0, ext.Y * 0.5, 0)
+						local target = ORIGIN + Vector3.new(spec[3], 0, spec[4])
+						model:PivotTo(CFrame.new(target - bottom) * model:GetPivot())
+					end)
+					if not ok then model:Destroy() end
+				end
+			end
+		end)
+	end
+
 	-- [36척 해전 실물] 선박 구매·저장 ID를 유지하면서 등록된 V5 모델만 우선 수입한다.
 	-- 터치 기기에서는 경량판을, 미등록 모델은 기존 원본을 그대로 사용한다.
 	local function newShip(asset, length, pos, theta, tint, shipId)
@@ -649,7 +703,9 @@ function NavalBattle.play(opts)
 	local rangeLabel = label(gui, string.format("🎯 %s · 사거리 %d · 탄속 %.1f초", cannon.name, cannon.range, cannon.dur), 13, Color3.fromRGB(255, 226, 150))
 	rangeLabel.AnchorPoint = Vector2.new(0.5, 1)
 	rangeLabel.Position = UDim2.new(0.5, 0, 1, -12)
-	rangeLabel.Size = UDim2.fromOffset(300, 20)
+	rangeLabel.Size = UDim2.fromOffset(math.min(460, battleViewport.X - 32), 20)
+	rangeLabel.TextSize = if battleViewport.X < 480 then 11 else 13
+	rangeLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	-- [해전 전술 판넬] 실제 적과의 거리·선측 각·장전 시간으로 다음 행동을 시각화한다.
 	-- 중앙 아래쪽은 기존 장전 게이지, 위쪽은 전술 판단만 표시한다.
 	local tactic = label(gui, "① 적선에 접근 중", 15, Color3.fromRGB(255, 224, 159), true)
@@ -677,11 +733,11 @@ function NavalBattle.play(opts)
 	-- 판정값은 원래 cannon.range와 각도 그대로 사용하며 장식용 기본 파츠를 추가하지 않는다.
 	local rangeRing = { segments = {}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 }
 	do
-		local count = if MOBILE_VFX then 20 else 32
-		local segmentLength = 2 * math.pi * cannon.range / count * 0.67
+		local count = if MOBILE_VFX then 24 else 40 -- [깨끗한 탐지 원] 조각 수만 약간 늘리고 파츠는 재사용
+		local segmentLength = 2 * math.pi * cannon.range / count * 0.86
 		for i = 1, count do
-			local seg = part(folder, Vector3.new(1.15, 0.16, segmentLength), CFrame.new(ORIGIN), Color3.fromRGB(255, 210, 128), Enum.Material.Neon)
-			seg.Transparency = 0.72
+			local seg = part(folder, Vector3.new(0.72, 0.12, segmentLength), CFrame.new(ORIGIN), Color3.fromRGB(255, 210, 128), Enum.Material.Neon)
+			seg.Transparency = 0.78
 			rangeRing.segments[i] = seg
 		end
 		-- 기존 등록 선박 메시와 사거리 원주에 광선만 연결한다. 새 Part·선박·외부 에셋은 만들지 않는다.
@@ -699,12 +755,12 @@ function NavalBattle.play(opts)
 			sweep.Attachment1 = edge
 			sweep.FaceCamera = true
 			sweep.LightEmission = 0.85
-			sweep.Width0, sweep.Width1 = 0.08, if MOBILE_VFX then 0.6 else 1.0
+			sweep.Width0, sweep.Width1 = 0.04, if MOBILE_VFX then 0.24 else 0.32 -- [탐지 안테나] 두꺼운 리본 제거
 			sweep.Color = ColorSequence.new(Color3.fromRGB(160, 235, 215), Color3.fromRGB(255, 217, 139))
 			sweep.Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.96),
-				NumberSequenceKeypoint.new(0.56, 0.87),
-				NumberSequenceKeypoint.new(1, 0.38),
+				NumberSequenceKeypoint.new(0, 0.97),
+				NumberSequenceKeypoint.new(0.56, 0.89),
+				NumberSequenceKeypoint.new(1, 0.66),
 			})
 			sweep.Enabled = false
 			sweep.Parent = folder
@@ -4301,9 +4357,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local heading = Vector3.new(math.cos(me.theta), 0, math.sin(me.theta))
 			local broadside = if dd > 0.1 then math.abs(heading:Cross(direction.Unit).Y) else 0
 			local aligned = broadside > 0.5
+			local sideCross = if dd > 0.1 then heading:Cross(direction.Unit).Y else 0
+			local gunSide = if sideCross < 0 then "우현" else "좌현"
+			local aimAngle = if dd > 0.1 then math.deg(math.acos(math.clamp(heading:Dot(direction.Unit), -1, 1))) else 0
+			local sideDeviation = math.floor(math.abs(90 - aimAngle) + 0.5) -- [실제 포각] 선측 정면 90°, 양옆 60° 이내가 포격 가능
 			local color = if not inRange then Color3.fromRGB(255, 205, 130) elseif aligned then Color3.fromRGB(124, 236, 161) else Color3.fromRGB(255, 178, 100)
 			local tau = math.pi * 2
-			local scanAngle = (now * 0.78) % tau
+			local scanAngle = (now * 1.85) % tau -- [탐지광] 8초/회전 → 약 3.4초/회전
 			local cd = cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
 			local reloadProgress = if opts.card or not inRange then 0 else 1 - math.clamp((nextMeFire - now) / math.max(0.1, cd), 0, 1)
 			local firing = now < rangeRing.volleyUntil
@@ -4321,7 +4381,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local sideArc = math.abs(heading:Cross(radial).Y) > 0.5
 				local charged = ((angle - me.theta + tau) % tau) / tau <= reloadProgress
 				local trailAngle = (scanAngle - angle + tau) % tau
-				local trail = if trailAngle < 1.2 then 1 - trailAngle / 1.2 else 0
+				local trail = if trailAngle < 1.65 then (1 - trailAngle / 1.65) ^ 1.35 else 0 -- [잔광] 짧은 원주 잔상
 				local enemyGap = math.abs((angle - enemyAngle + math.pi) % tau - math.pi)
 				local onEnemy = enemyGap < math.pi / #rangeRing.segments * 1.3
 				local tint = if sideArc then (if inRange and aligned then Color3.fromRGB(100, 216, 158) else Color3.fromRGB(230, 178, 104))
@@ -4329,7 +4389,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local alpha = if sideArc then (if charged then 0.43 else 0.66) else 0.84
 				if trail > 0 then
 					tint = tint:Lerp(Color3.fromRGB(150, 247, 220), trail)
-					alpha = math.min(alpha, 0.78 - 0.68 * trail)
+					alpha = math.min(alpha, 0.83 - 0.63 * trail)
 				end
 				if onEnemy then
 					local pulse = 0.5 + 0.5 * math.sin(now * 6)
@@ -4363,8 +4423,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				radar.beam.Color = ColorSequence.new(Color3.fromRGB(135, 223, 210),
 					if inRange and aligned then Color3.fromRGB(120, 255, 170) else Color3.fromRGB(255, 211, 136))
 			end
-			rangeLabel.Text = string.format("%s · %dm/%dm · %s", cannon.name, math.floor(dd), cannon.range,
-				if not inRange then "사거리 밖" elseif aligned then "발사각 확보" else "선측 정렬")
+			rangeLabel.Text = if battleViewport.X < 480 then
+				string.format("포각 %s %d° · %s", gunSide, math.floor(aimAngle + 0.5),
+					if not inRange then "거리 밖" elseif aligned then "발사 가능" else "조타 필요")
+				else string.format("%s %dm/%dm · %s %d° · %s", cannon.name, math.floor(dd), cannon.range,
+					gunSide, math.floor(aimAngle + 0.5),
+					if not inRange then "거리 밖" elseif aligned then "발사 가능" else "측면 정렬")
 			rangeLabel.TextColor3 = color
 			-- [전술 단계] 실제 사거리와 기존 시각용 장전 쿨타임만 표시한다.
 			local status, tip, tone
@@ -4380,7 +4444,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			elseif not inRange then
 				status, tip, tone = "① 적선 접근", string.format("포 사거리까지 %d m · 바람과 조타를 확인해.", math.ceil(dd - cannon.range)), Color3.fromRGB(255, 205, 130)
 			elseif not aligned then
-				status, tip, tone = "② 선측 정렬 권장", "적에게 배의 옆면을 향하면 포격을 보기 쉬워.", Color3.fromRGB(255, 185, 123)
+				status, tip, tone = "② 선측 정렬 · 포각 확인",
+					string.format("%s %d° · 측면 편차 %d° (60° 이내면 포격)", gunSide, math.floor(aimAngle + 0.5), sideDeviation),
+					Color3.fromRGB(255, 185, 123)
 			elseif now < nextMeFire then
 				status, tip, tone = "③ 대포 재장전", string.format("남은 약 %.1f초 · 적선과의 거리 %dm", math.max(0, nextMeFire - now), math.floor(dd)), Color3.fromRGB(242, 212, 138)
 			else
@@ -4401,8 +4467,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if aim then
 					local u = i / (#trajDots + 1)
 					dot.CFrame = CFrame.new(a0:Lerp(a1, u) + Vector3.new(0, math.sin(u * math.pi) * cannon.arc, 0))
-					dot.Transparency = if inRange then 0.35 else 0.8
-					dot.Color = if inRange then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 130, 110)
+					dot.Transparency = if not aligned then 0.88 elseif inRange then 0.3 else 0.78
+					dot.Color = if inRange and aligned then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 166, 106)
 				else
 					dot.Transparency = 1
 				end
