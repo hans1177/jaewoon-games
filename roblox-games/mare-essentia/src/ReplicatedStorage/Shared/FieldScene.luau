@@ -1193,9 +1193,10 @@ function FieldScene.start(opts)
 		L.ColorShift_Top = lightSave.ColorShiftTop
 		if gui.Parent then gui:Destroy() end
 	end)
+	local compactTouch = visualMobile and workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X < 450
 	-- [모바일/PC] 카메라 거리 3단계. 각 모드 안에서는 핀치·마우스 휠로 자유롭게 확대한다.
 	local cameraBtn = btn(gui, "시야: 기본", Color3.fromRGB(56, 78, 96), UDim2.fromOffset(108, 44),
-		UDim2.new(1, -12, 0, 184), Vector2.new(1, 0))
+		UDim2.new(1, -12, 0, 12), Vector2.new(1, 0))
 	cameraBtn.Name = "FieldCameraMode"
 	cameraBtn.TextSize = 14
 	cameraBtn.Activated:Connect(function()
@@ -1206,9 +1207,11 @@ function FieldScene.start(opts)
 	end)
 
 	local title = label(gui, "", 16)
-	title.AnchorPoint = Vector2.new(0.5, 0)
-	title.Position = UDim2.new(0.5, 0, 0, 18)
-	title.Size = UDim2.fromOffset(320, 24)
+	title.AnchorPoint = if compactTouch then Vector2.zero else Vector2.new(0.5, 0)
+	title.Position = if compactTouch then UDim2.fromOffset(109, 12) else UDim2.new(0.5, 0, 0, 18)
+	title.Size = UDim2.fromOffset(if compactTouch then 112 else 320, if compactTouch then 40 else 24)
+	title.TextWrapped = compactTouch
+	if compactTouch then title.TextSize = 11 end
 
 	local hpBack = Instance.new("Frame")
 	hpBack.AnchorPoint = Vector2.new(0.5, 0)
@@ -1319,9 +1322,9 @@ function FieldScene.start(opts)
 	end
 
 	local note = label(gui, "", 14, Color3.fromRGB(255, 220, 160))
-	note.AnchorPoint = Vector2.new(0.5, 0)
-	note.Position = UDim2.new(0.5, 0, 0, 46)
-	note.Size = UDim2.fromOffset(320, 22)
+	note.AnchorPoint = if compactTouch then Vector2.zero else Vector2.new(0.5, 0)
+	note.Position = if compactTouch then UDim2.fromOffset(12, 158) else UDim2.new(0.5, 0, 0, 46)
+	note.Size = UDim2.fromOffset(if compactTouch then 206 else 320, 22)
 
 	local function refresh()
 		if workspace:GetAttribute("DevGod") then pl.hp = pl.maxHp end -- 개발 캡처 전용: 서 있기만 해도 죽지 않게
@@ -1498,7 +1501,7 @@ function FieldScene.start(opts)
 	completeBtn.Visible = false
 	completeBtn.TextSize = 17
 	local completeReopen = btn(gui, "조사 완료", Color3.fromRGB(137, 111, 59), UDim2.fromOffset(98, 38),
-		UDim2.new(1, -12, 0, 98), Vector2.new(1, 0))
+		UDim2.new(1, -12, 0, 64), Vector2.new(1, 0))
 	completeReopen.Name = "FieldCompleteReopen"
 	completeReopen.Visible = false
 	completeReopen.TextSize = 14
@@ -1560,8 +1563,8 @@ function FieldScene.start(opts)
 
 	local questHint = label(gui, "", 13, Color3.fromRGB(254, 229, 162))
 	questHint.Name = "FieldQuestHint"
-	questHint.Position = UDim2.fromOffset(12, 173)
-	questHint.Size = UDim2.fromOffset(230, 42)
+	questHint.Position = UDim2.fromOffset(12, if compactTouch then 186 else 173)
+	questHint.Size = UDim2.fromOffset(if compactTouch then 206 else 230, 42)
 	questHint.TextWrapped = true
 	questHint.TextXAlignment = Enum.TextXAlignment.Left
 	if targetCard then
@@ -1977,8 +1980,8 @@ function FieldScene.start(opts)
 		local flashUntil, flashNext = 0, clockStart + 16
 		local timeLabel = label(gui, "", 13, Color3.fromRGB(231, 239, 244))
 		timeLabel.Name = "FieldWeatherClock"
-		timeLabel.Position = UDim2.fromOffset(12, 216)
-		timeLabel.Size = UDim2.fromOffset(if visualMobile then 252 else 300, 26)
+		timeLabel.Position = UDim2.fromOffset(12, if compactTouch then 232 else 216)
+		timeLabel.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 252 else 300, 26)
 		timeLabel.TextSize = 12
 		timeLabel.TextXAlignment = Enum.TextXAlignment.Left
 		-- 투명 발사대는 눈·빗방울의 발원점일 뿐, 동물·장식용 기본 파츠를 생성하지 않는다.
@@ -2237,10 +2240,10 @@ function FieldScene.start(opts)
 
 	-- 미니맵: 주변 약 130스터드를 보여 준다(북쪽이 위). 흰 점=나, 금색=발견물(멀면 가장자리에 표시), 빨강=적, 큰 주황=두목
 	do
-		local MM, RADIUS = 120, 130
+		local MM, RADIUS = if compactTouch then 92 elseif visualMobile then 106 else 120, 130
 		local map = Instance.new("Frame")
 		map.AnchorPoint = Vector2.new(0, 0)
-		map.Position = UDim2.fromOffset(118, 50)
+		map.Position = if compactTouch then UDim2.fromOffset(226, 176) else UDim2.fromOffset(236, 74)
 		map.Size = UDim2.fromOffset(MM, MM)
 		map.BackgroundColor3 = Color3.fromRGB(16, 24, 30)
 		map.BackgroundTransparency = 0.35
@@ -2332,7 +2335,6 @@ function FieldScene.start(opts)
 	local UserInputService = game:GetService("UserInputService")
 	-- [상용 모바일 전투 HUD] 엄지에 닿는 120~128px 원형 주공격. 회피/이동 패드와 겹치지 않는다.
 	-- 화면비와 무관하게 하단·오른쪽 안전 여백을 유지하고 PC도 기존 바로 공격 입력을 지원한다.
-	local compactTouch = visualMobile and workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X < 450
 	local attackBtn = btn(gui, "", Color3.fromRGB(177, 57, 43),
 		UDim2.fromOffset(if compactTouch then 118 elseif visualMobile then 128 else 112,
 			if compactTouch then 118 elseif visualMobile then 128 else 112),
@@ -2458,7 +2460,7 @@ function FieldScene.start(opts)
 	local weaponRankLabel = label(gui, "숙련 1단", 13, Color3.fromRGB(255, 231, 158))
 	weaponRankLabel.Name = "FieldWeaponMastery"
 	weaponRankLabel.AnchorPoint = Vector2.new(0.5, 0)
-	weaponRankLabel.Position = UDim2.new(1, -90, 1, -34)
+	weaponRankLabel.Position = UDim2.new(1, -78, 1, -28)
 	weaponRankLabel.Size = UDim2.fromOffset(114, 22)
 	weaponRankLabel.Font = Enum.Font.GothamBlack
 	weaponRankLabel.TextStrokeTransparency = 0.16
@@ -2470,7 +2472,7 @@ function FieldScene.start(opts)
 		attackBtn:SetAttribute("WeaponMasteryExperience", initialPractice and initialPractice.xp or 0)
 	end
 	-- [무기 교체] 기존 장비를 첫 번째 슬롯으로 보존하고, 다른 전투 거리의 무기 1개만 빠르게 교체한다.
-	local reserveWeapon = Weapons.get(if wpn.ranged then "sword" else "bow")
+	local reserveWeapon = Weapons.get(opts.reserveWeapon or (if wpn.ranged then "sword" else "bow"))
 	if attackIcon then
 		local iconKey = if wpn.family == "fist" then "Menu/cc0_glove" elseif wpn.family == "axe" then "Menu/cc0_axe"
 			elseif wpn.ranged then "Menu/cc0_crossbow" else "Menu/cc0_sword"
@@ -3573,6 +3575,7 @@ function FieldScene.start(opts)
 	fxPart.Parent = workspace
 	local sparks = Instance.new("ParticleEmitter")
 	sparks.Rate = 0
+	sparks.Texture = "rbxasset://textures/particles/sparkles_main.dds" -- 기본 흰 사각 입자 제거
 	sparks.Lifetime = NumberRange.new(0.25, 0.5)
 	sparks.Speed = NumberRange.new(14, 26)
 	sparks.SpreadAngle = Vector2.new(180, 180)
@@ -3582,6 +3585,7 @@ function FieldScene.start(opts)
 	sparks.Parent = fxPart
 	local slash = Instance.new("ParticleEmitter")
 	slash.Rate = 0
+	slash.Texture = "rbxasset://textures/particles/flare_main.dds" -- 네모난 충격파 대신 원형 광륜
 	slash.Lifetime = NumberRange.new(0.2, 0.3)
 	slash.Speed = NumberRange.new(0, 2)
 	slash.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 4), NumberSequenceKeypoint.new(1, 8) })
@@ -6265,50 +6269,24 @@ function FieldScene.start(opts)
 		bindPress(hit, useAttack)
 		bindHold(hit)
 	end
-	-- [탐험 무기] 기존 두 무기 빠른 교체는 유지하고, 보조 슬롯에서 등록된 실물 무기를 선택한다.
-	-- 기존 무기 정의의 공격력/속도/사거리만 쓰며, 등록되지 않은 외형을 가짜로 장착하지 않는다.
+	-- [집안별 2무기 교체] 처음 선택한 집안의 주·보조 장비만 탐험에서 교차 장착한다.
+	-- 선택 중 계속 무기를 순환시키던 버튼을 제거하여 카메라·회피·공격 영역을 보호한다.
 	do
-		local availableWeapons = {}
-		for _, candidate in Weapons.playerChoices() do
-			if candidate.family == "fist" or (candidate.model and AssetIds["Relics/" .. candidate.model]) then
-				table.insert(availableWeapons, candidate)
-			end
-		end
-		-- 수석식 총기 실물은 해당 역사 시기에서만 보조 슬롯에 제공한다.
-		if type(opts.year) == "number" and opts.year >= 1680 then
-			for _, candidate in Weapons.Regional do
-				if candidate.model and AssetIds["Relics/" .. candidate.model] then
-					table.insert(availableWeapons, candidate)
-				end
-			end
-		end
-		local wbtn = btn(gui, wpn.name .. " ↔ " .. reserveWeapon.name, Color3.fromRGB(65, 83, 105), UDim2.fromOffset(110, 42), UDim2.new(1, -88, 0, 210), Vector2.new(0.5, 0.5))
+		local wbtn = btn(gui, wpn.name .. " ↔ " .. reserveWeapon.name, Color3.fromRGB(65, 83, 105),
+			UDim2.fromOffset(if compactTouch then 116 else 142, 44), UDim2.new(1, -12, 0, 112), Vector2.new(1, 0))
 		wbtn.Name = "FieldWeapon"
-		wbtn.TextSize = 13
+		wbtn.TextSize = if compactTouch then 12 else 13
+		wbtn.TextWrapped = true
 		wbtn:SetAttribute("WeaponChoiceCount", 2)
-		local chooseBtn = btn(gui, "보조: " .. reserveWeapon.name, Color3.fromRGB(69, 100, 89), UDim2.fromOffset(126, 40), UDim2.new(1, -88, 0, 264), Vector2.new(0.5, 0.5))
-		chooseBtn.Name = "FieldWeaponSelect"
-		chooseBtn.TextSize = 13
-		chooseBtn:SetAttribute("AvailableWeaponCount", #availableWeapons)
-		bindPress(chooseBtn, function()
-			if finished or #availableWeapons < 2 then return end
-			local currentIndex = table.find(availableWeapons, reserveWeapon) or 0
-			for offset = 1, #availableWeapons do
-				local candidate = availableWeapons[(currentIndex + offset - 1) % #availableWeapons + 1]
-				if candidate.id ~= wpn.id then
-					reserveWeapon = candidate
-					chooseBtn.Text = "보조: " .. reserveWeapon.name
-					wbtn.Text = wpn.name .. " ↔ " .. reserveWeapon.name
-					say("선택한 보조 무기: " .. reserveWeapon.name)
-					break
-				end
-			end
-		end)
+		wbtn:SetAttribute("WeaponPrimaryId", wpn.id)
+		wbtn:SetAttribute("WeaponSecondaryId", reserveWeapon.id)
 		bindPress(wbtn, function()
+			if finished then return end
 			chainMotionSerial += 1
 			wpn, reserveWeapon = reserveWeapon, wpn
 			wbtn.Text = wpn.name .. " ↔ " .. reserveWeapon.name
-			chooseBtn.Text = "보조: " .. reserveWeapon.name
+			wbtn:SetAttribute("WeaponPrimaryId", wpn.id)
+			wbtn:SetAttribute("WeaponSecondaryId", reserveWeapon.id)
 			if attackIcon then
 				local iconKey = if wpn.family == "fist" then "Menu/cc0_glove" elseif wpn.family == "axe" then "Menu/cc0_axe"
 					elseif wpn.ranged then "Menu/cc0_crossbow" else "Menu/cc0_sword"
