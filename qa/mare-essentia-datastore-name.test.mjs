@@ -106,3 +106,32 @@ test('동료 명세 계산은 별도 책임 범위에서 실행되어 필드 컴
   assert.match(field,/무기 숙련 시 2~3연타 확률 발동/);
   assert.doesNotMatch(field,/무기 숙련 시 2~5단 확률 발동/);
 });
+
+// [실물 무기 회귀] 승인된 해적 키트 원본만 사용하고 저장·전투 수치를 변경하지 않는다.
+test('실물 해적 선상도·쌍날도끼·권총은 CC0 원본과 병종에 연결된다',()=>{
+  const weaponDefs=read('ReplicatedStorage/Shared/Weapons.luau');
+  const required=[
+    {id:'cutlass',name:'weapon-cutlass',role:'선상도 검병'},
+    {id:'doubleaxe',name:'weapon-doubleaxe',role:'쌍날도끼 돌격병'},
+    {id:'ship_pistol',name:'weapon-pirate-pistol',role:'해적 권총병'},
+  ];
+  for(const item of required){
+    const file='roblox-games/mare-essentia/assets/relics/'+item.name+'.glb';
+    assert.ok(fs.existsSync(file),'원본 메시 누락: '+item.name);
+    const proof=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
+    assert.equal(proof.license,'CC0-1.0',item.name+' 사용 허가');
+    assert.equal(proof.author,'Quaternius',item.name+' 원저작자');
+    assert.match(proof.source,/^https:\/\/quaternius\.com\/packs\/piratekit\.html$/);
+    assert.ok(proof.sourceSha256 && /^[a-f0-9]{64}$/.test(proof.sourceSha256),'해시 누락: '+item.name);
+    assert.ok(weaponDefs.includes('"'+item.id+'"') && weaponDefs.includes('"'+item.name+'"'),'장비 명세 누락: '+item.id);
+    assert.ok(field.includes('"'+item.role+'"'),'적 병종 누락: '+item.role);
+    assert.ok(field.includes('AssetIds["Relics/'+item.name+'"]'),'미등록 무기 차단 누락: '+item.name);
+  }
+  assert.match(field,/style\[4\] == "ship_pistol"\) then/);
+  assert.match(field,/equipFieldWeapon\(enemy\.model, enemy\.weapon, enemy\.shieldModel, enemy\.throwAsset\)/);
+  assert.match(field,/local shieldBlocked = not quiet and e\.shieldModel and e\.ac\.def\.frontGuard/);
+  assert.match(field,/e\.root\.CFrame\.LookVector:Dot\(approach\.Unit\) > 0\.35/);
+  assert.match(field,/e\.model:FindFirstChild\("FieldShield"\) ~= nil/);
+  assert.match(field,/e\.bombAim = hrp\.Position/);
+  assert.match(field,/hit = diff\.Magnitude <= 6/);
+});

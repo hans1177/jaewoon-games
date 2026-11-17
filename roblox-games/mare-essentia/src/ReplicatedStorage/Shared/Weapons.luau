@@ -43,7 +43,7 @@ end
 -- 실제 3D 에셋이 없는 무기는 모델을 거짓으로 연결하지 않는다. 공용 모션 프로필은 실존하는 것만 사용.
 local regionalDefs = {
 	{ "rapier", "레이피어", "sword", "RAPIER", "europe", "유럽 도시의 검술 교육" },
-	{ "cutlass", "선상도", "sword", "SABRE", "sea", "선원·해상 상인의 짧은 외날검" },
+	{ "cutlass", "선상도", "sword", "SABRE", "sea", "선원·해상 상인의 짧은 외날검", "weapon-cutlass" },
 	{ "katana", "일본도", "sword", "KATANA", "japan", "일본 무가 출신" },
 	{ "hwando", "환도", "sword", "SABRE", "korea", "조선 수군·무인" },
 	{ "dao", "도", "sword", "SABRE", "china", "중국 상인·무인" },
@@ -63,10 +63,12 @@ local regionalDefs = {
 	{ "wheellock_pistol", "륜발식 권총", "gun", "PISTOL", "early_firearm", "고가의 기계식 발화 권총" },
 	{ "flintlock_pistol", "수석식 권총", "gun", "PISTOL", "late_firearm", "수석식 발화 권총", "weapon-flintlock-pistol" },
 	{ "ottoman_kubur", "오스만 쿠부르 권총", "gun", "PISTOL", "west_asia", "오스만 지역의 호신·기병용 권총" },
-	{ "ship_pistol", "선상 권총", "gun", "PISTOL", "sea", "배 위에서 사용하는 짧은 총신의 권총" },
+	{ "ship_pistol", "선상 권총", "gun", "PISTOL", "sea", "배 위에서 사용하는 짧은 총신의 권총", "weapon-pirate-pistol" },
 	{ "dueling_pistol", "결투용 권총", "gun", "PISTOL", "europe", "18세기 유럽 결투용 권총" },
 	-- [기존 등록 실물] weapon-hammer는 이미 승인된 Relics 모델. 철퇴와 피해·속도·사거리를 공유한다.
 	{ "warhammer", "전투 망치", "mace", "MACE", "europe", "실물 전투망치 병종", "weapon-hammer" },
+	-- [CC0 해적 실물] 원본 도끼의 공격력·속도·사거리를 물려받고 외형만 쌍날 도끼로 구분한다.
+	{ "doubleaxe", "쌍날 도끼", "axe", "WAR_AXE", "sea", "해상 정예용 쌍날 도끼", "weapon-doubleaxe" },
 }
 Weapons.Regional = {} :: { Weapon }
 for _, v in regionalDefs do

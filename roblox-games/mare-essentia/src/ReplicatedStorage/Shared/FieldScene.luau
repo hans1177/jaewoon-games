@@ -1178,6 +1178,7 @@ function FieldScene.start(opts)
 			{ "단검 척후병", "Rogue_Hooded", Color3.fromRGB(67, 79, 87), "dagger" },
 			{ "철퇴병", "Knight", Color3.fromRGB(117, 119, 132), "mace" },
 			{ "격투병", "Barbarian", Color3.fromRGB(140, 75, 59), "fist" },
+			{ "선상도 검병", "Rogue", Color3.fromRGB(62, 92, 124), "cutlass" },
 		},
 		archer = {
 			{ "궁수", "Rogue", Color3.fromRGB(98, 105, 70), "bow" },
@@ -1187,6 +1188,7 @@ function FieldScene.start(opts)
 			{ "장총병", "Rogue_Hooded", Color3.fromRGB(66, 106, 90), "flintlock_musket" },
 			{ "권총병", "Rogue", Color3.fromRGB(112, 90, 72), "flintlock_pistol" },
 			{ "화약 폭탄병", "Rogue_Hooded", Color3.fromRGB(118, 77, 57), "bomb", nil, "bomb" },
+			{ "해적 권총병", "Rogue", Color3.fromRGB(117, 84, 57), "ship_pistol" },
 		},
 		shield = {
 			{ "원형방패 검병", "Knight", Color3.fromRGB(117, 119, 132), "sword", "shield-round" },
@@ -1199,12 +1201,14 @@ function FieldScene.start(opts)
 			{ "장창 돌격병", "Knight", Color3.fromRGB(120, 104, 84), "spear" },
 			{ "단검 습격병", "Rogue_Hooded", Color3.fromRGB(84, 91, 70), "dagger" },
 			{ "망치 돌격병", "Barbarian", Color3.fromRGB(120, 54, 61), "warhammer" },
+			{ "쌍날도끼 돌격병", "Barbarian", Color3.fromRGB(71, 102, 93), "doubleaxe" },
 		},
 		boss = {
 			{ "도끼 두목", "Barbarian", Color3.fromRGB(135, 63, 55), "axe" },
 			{ "방패 지휘관", "Knight", Color3.fromRGB(117, 77, 66), "sword", "shield-rectangle" },
 			{ "철퇴 두목", "Knight", Color3.fromRGB(83, 90, 109), "mace" },
 			{ "전투망치 두목", "Barbarian", Color3.fromRGB(112, 67, 69), "warhammer" },
+			{ "쌍날도끼 두목", "Barbarian", Color3.fromRGB(64, 86, 112), "doubleaxe" },
 		},
 	}
 	-- [퀘스트 1~5단 적 편성] 기존 적 수·체력·공격력·드롭은 그대로, 상위 단계는 견제·정예 조합이 늘어난다.
@@ -1275,11 +1279,19 @@ function FieldScene.start(opts)
 			styleN = 1
 			style = looks.archer[1]
 		end
+		-- [실물 무기 승인] 로블록스 자산 번호 미등록 중에는 빈손 무장병 대신 기존 원본 병종을 사용한다.
+		if style[4] == "cutlass" and not AssetIds["Relics/weapon-cutlass"] then
+			style = looks.grunt[1]
+		elseif style[4] == "doubleaxe" and not AssetIds["Relics/weapon-doubleaxe"] then
+			style = looks.charger[1]
+		elseif style[4] == "ship_pistol" and not AssetIds["Relics/weapon-pirate-pistol"] then
+			style = looks.archer[2]
+		end
 		-- [모든 시대 투척병] 시대별 실물을 재사용한다. 미등록 폭탄 메시로 대체하지 않는다.
 		local throwAsset = style[6]
 		-- [역사·실물 일치] 도기는 어디까지나 도기 투척이고, 폭탄병 명칭은 실물 화약 폭탄에만 쓴다.
 		-- [시대 일치] 1680년 이전에는 수석식 총 대신 기존 활/석궁 실물 모델만 사용한다.
-		if (opts.year or 1517) < 1680 and (style[4] == "flintlock_musket" or style[4] == "flintlock_pistol") then
+		if (opts.year or 1517) < 1680 and (style[4] == "flintlock_musket" or style[4] == "flintlock_pistol" or style[4] == "ship_pistol") then
 			style = looks.archer[(styleN % 2) + 1]
 		end
 		local weapon = Weapons.get(style[4])
