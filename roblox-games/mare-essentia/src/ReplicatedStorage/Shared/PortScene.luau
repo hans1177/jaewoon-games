@@ -5175,18 +5175,34 @@ function PortScene.build(info, onFacility)
 		end
 		local relocated, stopped, inspected = 0, 0, 0
 		for _, walker in walkers do
-			if not walker.model.Parent or walker.mode == "sparring" or walker.mode == "animal" or walker.mode == "circle" then
+			if not walker.model.Parent or walker.mode == "sparring" or walker.mode == "animal" then
 				continue
 			end
 			inspected += 1
 			local original = walker.base
 			local moving = walker.len and walker.len > 0 and (walker.mode == "path" or walker.mode == nil)
 			local scheduled = walker.mode == "schedule" and walker.morning and walker.market and walker.evening
+			local circling = walker.mode == "circle" and walker.cx and walker.cz and walker.r
 			local safe
 			for _, offset in offsets do
 				-- [좌표 정합] 주민 위치와 일과형 경유지를 모두 세계 좌표로 평행 이동한다.
 				local candidate = original + offset
-				if scheduled then
+				if circling then
+					-- [아이·주민 원형 동선] 기존 8개 발걸음 위치를 한 번 검사해 분수·난간·가판대 안으로 들어가지 않는다.
+					local clear = true
+					for sample = 0, 7 do
+						local angle = sample * math.pi / 4
+						local point = CFrame.new(walker.cx + offset.X + math.cos(angle) * walker.r,
+							candidate.Position.Y, walker.cz + offset.Z + math.sin(angle) * walker.r)
+						if blocked(point, 0, walker.model) then clear = false; break end
+					end
+					if clear then
+						safe = candidate
+						walker.cx += offset.X
+						walker.cz += offset.Z
+						break
+					end
+				elseif scheduled then
 					local morning, market, evening = walker.morning + offset, walker.market + offset, walker.evening + offset
 					local function clearSegment(a, b)
 						local step = b - a
@@ -5221,7 +5237,12 @@ function PortScene.build(info, onFacility)
 			if safe then
 				if (safe.Position - original.Position).Magnitude > 0.1 then relocated += 1 end
 				walker.base = safe
-				walker.model:PivotTo(safe)
+				-- [원형 동선 시작점] 첫 프레임 전에 분수 중심이 아닌 검증된 원 바깥 첫 발판에 놓는다.
+				if walker.mode == "circle" then
+					walker.model:PivotTo(CFrame.new(walker.cx + walker.r, safe.Position.Y, walker.cz) * (safe - safe.Position))
+				else
+					walker.model:PivotTo(safe)
+				end
 				walker.lastPos = safe.Position
 			else
 				walker.model:Destroy()
