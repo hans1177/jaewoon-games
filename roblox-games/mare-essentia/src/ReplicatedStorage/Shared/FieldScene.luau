@@ -1690,10 +1690,13 @@ function FieldScene.start(opts)
 		local function bell(x: number): number return math.sin(math.clamp(x, 0, 1) * math.pi) end
 		local function rootFor(kind: string, p: number): CFrame?
 			if kind == "slash" then
+				-- [원거리 사격 자세] 실제 사격은 몸을 앞으로 날리지 않고 발을 고정한 채 견착·반동만 준다.
+				if wpn.ranged then return CFrame.new(0, -0.09 * bell(p), 0) * CFrame.Angles(0.07 * bell(p), 0, 0) end
 				-- 일반 공격: 몸을 크게 비틀며 한 걸음 내딛고 벤다(좌우 번갈아)
 				local side = if slashIdx % 2 == 0 then 1 else -1
 				return CFrame.new(0, -0.25 * bell(p), -1.4 * bell((p - 0.1) / 0.7)) * CFrame.Angles(-0.45 * bell((p - 0.1) / 0.65), 0.45 * side * bell(p), 0.12 * side * bell(p))
 			elseif kind == "heavy" then
+				if wpn.ranged then return CFrame.new(0, -0.12 * bell(p), 0) * CFrame.Angles(0.10 * bell(p), 0, 0) end
 				-- 점프 강타: 웅크림(0~0.18) → 도약(~0.55) → 내려찍기(~0.62) → 착지 충격(~0.8) → 일어남
 				local y, lean = 0, 0
 				if p < 0.18 then
@@ -1714,6 +1717,7 @@ function FieldScene.start(opts)
 				end
 				return CFrame.new(0, y, 0) * CFrame.Angles(lean, 0, 0)
 			elseif kind == "spin" then
+				if wpn.ranged then return CFrame.new(0, -0.12 * bell(p), 0) * CFrame.Angles(0, 0.12 * bell(p), 0) end
 				return CFrame.new(0, -0.5 * bell(p), 0) * CFrame.Angles(0.12, p * math.pi * 4, 0)
 			elseif kind == "dash" then
 				return CFrame.new(0, 0.9 * bell(p) - 0.2, 0) * CFrame.Angles(-p * math.pi * 2, 0, 0)
@@ -1814,6 +1818,46 @@ function FieldScene.start(opts)
 					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.08 * impulse, 0, -0.03)
 					canon.Head = (canon.Head or id) * CFrame.Angles(0.07 * impulse, 0, 0)
 				end
+			end
+			-- [R15 원거리 견착] 원본 공용 콤보 뒤에 실제 무기별 팔·가슴·손목 정렬만 보정한다.
+			-- 석궁은 두 손으로 수평 지지, 활은 한 팔로 밀고 한 팔로 당기며, 화기는 개머리판을 견착한다.
+			-- 이동 중에는 어깨를 내려 걷기 모션을 보존한다. 타격·발사 시각·사거리는 기존 전투 함수가 소유한다.
+			if wpn.ranged then
+				local hum = ch:FindFirstChildOfClass("Humanoid")
+				local traveling = hum and hum.MoveDirection.Magnitude > 0.08
+				local readiness = if traveling then 0.32 else 0.75
+				local firing = swingKind == "slash" or swingKind == "heavy" or swingKind == "spin"
+				local progress = if firing then math.clamp((os.clock() - swingT0) / math.max(swingDur, 0.05), 0, 1) else 0
+				local press = if firing then math.sin(math.clamp(progress / 0.48, 0, 1) * math.pi * 0.5) else 0
+				local recoil = if firing then math.sin(math.clamp((progress - 0.35) / 0.34, 0, 1) * math.pi) else 0
+				local poseWeight = if firing then 0.65 + 0.35 * press else readiness
+				local id = CFrame.identity
+				local crossbow = wpn.motion == "CROSSBOW"
+				local bow = wpn.family == "bow"
+				local longGun = wpn.motion == "RIFLE"
+				local pistol = wpn.motion == "PISTOL"
+				if crossbow then
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.56 * poseWeight + 0.13 * recoil, 0.08, 0.10)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.65 * poseWeight, -0.13, -0.11)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.38 * poseWeight + 0.20 * recoil, 0, 0)
+					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.50 * poseWeight, 0, 0)
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(0.18 * recoil, 0, 0)
+				elseif bow then
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.92 * poseWeight, 0, -0.09)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.52 * poseWeight - 0.30 * press + 0.28 * recoil, 0.18 * poseWeight, 0.18)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.70 * poseWeight - 0.26 * press + 0.47 * recoil, 0, 0)
+				elseif longGun then
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.65 * poseWeight, 0, -0.18)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.69 * poseWeight + 0.15 * recoil, 0, 0.13)
+					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.42 * poseWeight, 0, 0)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.42 * poseWeight + 0.20 * recoil, 0, 0)
+				elseif pistol or wpn.family == "firearm" then
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.80 * poseWeight + 0.20 * recoil, 0, 0.08)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.48 * poseWeight + 0.25 * recoil, 0, 0)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.21 * poseWeight, 0, -0.12)
+				end
+				canon.Head = (canon.Head or id) * CFrame.Angles(-0.06 * poseWeight + 0.06 * recoil, 0, 0)
+				canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.08 * poseWeight + 0.11 * recoil, 0, 0)
 			end
 			if swingKind then
 				rootRot = rootFor(swingKind, math.clamp((os.clock() - swingT0) / swingDur, 0, 1))
@@ -3048,11 +3092,12 @@ function FieldScene.start(opts)
 		streakActionSeq += 1
 		streakAttempts += 1
 		lastCombatAt = now
-		-- 조준 보조: 가까운 적(40스터드 안)을 바라보고, 닿지 않으면 몸을 날려 붙는다 (폰에서 헛손질 방지)
+		-- [원거리 조준 보조] 활·석궁·총은 실제 무기 사거리까지 탐색하고, 근접 무기만 기존 40스터드를 쓴다.
+		-- 전진 돌진을 원거리 사격에 적용하지 않는다. 정면에서 가장 가까운 살아 있는 적을 바라본다.
 		do
-			local near, nd = nil, 40
+			local near, nd = nil, if wpn.ranged then wpn.range * STUD + 3 else 40
 			for _, e in enemies do
-				if e.root and e.root.Parent then
+				if not e.ac.dead and e.root and e.root.Parent then
 					local d = ((e.root.Position - hrp.Position) * Vector3.new(1, 0, 1)).Magnitude
 					if d < nd then near, nd = e, d end
 				end
@@ -3061,7 +3106,7 @@ function FieldScene.start(opts)
 				local flat = (near.root.Position - hrp.Position) * Vector3.new(1, 0, 1)
 				if flat.Magnitude > 0.1 then
 					local reach = (if moveId == "rush" then wpn.range else (AC.Moves[moveId] and AC.Moves[moveId].range or 5)) * STUD
-					local lunge = if nd > reach - 2 and not (wpn.ranged and moveId == "rush") then math.min(nd - (reach - 3), 10) else 0
+					local lunge = if not wpn.ranged and nd > reach - 2 then math.min(nd - (reach - 3), 10) else 0
 					hrp.CFrame = CFrame.lookAt(hrp.Position + flat.Unit * math.max(0, lunge), hrp.Position + flat.Unit * math.max(0, lunge) + flat.Unit)
 				end
 			end
@@ -3131,10 +3176,11 @@ function FieldScene.start(opts)
 			end
 			local hits, shots = 0, 0 -- [회피 명중 분리] 사격 시도 수와 실제 적중 수를 혼동하지 않는다.
 			local defeatedAt = nil -- [킬캠] 기존 타격으로 쓰러진 적 위치만 읽는다.
-			-- 무기에 따라 기본 공격의 사거리·각도가 다르다. 석궁·총은 가장 가까운 한 명을 쏜다(총알 궤적 표시).
-			local rangeR = if moveId == "rush" then wpn.range else mv.range
-			local arcR = if moveId == "rush" and wpn.ranged then 36 else mv.arc
-			local rangedShot = moveId == "rush" and wpn.ranged
+			-- [원거리 실제 판정] 일반 사격·집중 사격·견제 사격 모두 해당 무기의 등록 사거리에서 한 발만 명중한다.
+			-- 기본 공격·스킬의 피해 배수·기력·재사용시간은 그대로, 근접 스킬은 기존 범위를 유지한다.
+			local rangeR = if wpn.ranged or moveId == "rush" then wpn.range else mv.range
+			local arcR = if wpn.ranged then (if moveId == "sweep" then 70 else 36) else mv.arc
+			local rangedShot = wpn.ranged
 			local list = table.clone(enemies)
 			if rangedShot then
 				table.sort(list, function(x, y)
@@ -3159,20 +3205,18 @@ function FieldScene.start(opts)
 					shots += 1
 					if rangedShot then
 						-- 총알·화살 궤적: 짧게 번쩍이는 빛줄기
-						local a0 = hrp.Position + Vector3.new(0, 0.5, 0)
-						local b0 = e.root.Position
-						local len = (b0 - a0).Magnitude
-						local arrow = wpn.family == "bow" or wpn.id == "crossbow"
-						local tr = part(folder, Vector3.new(if arrow then 0.09 else 0.25, if arrow then 0.09 else 0.25, len), CFrame.lookAt(a0, b0) * CFrame.new(0, 0, -len / 2), if arrow then Color3.fromRGB(187, 148, 89) else Color3.fromRGB(255, 230, 150), if arrow then Enum.Material.Wood else Enum.Material.Neon)
-						tr.CanCollide, tr.CanQuery = false, false
-						game:GetService("TweenService"):Create(tr, TweenInfo.new(0.14), { Transparency = 1, Size = Vector3.new(0.05, 0.05, len) }):Play()
-						task.delay(0.2, function() tr:Destroy() end)
-						burst(b0 + Vector3.new(0, 1.5, 0), 6, false)
-						sfx(if wpn.family == "firearm" and wpn.id ~= "crossbow" then "sfx_hit" else "sfx_card_swing", 0.6, if wpn.family == "firearm" and wpn.id ~= "crossbow" then 1.6 else 1.2)
+						local a0 = hrp.Position + Vector3.new(0, 1.1, 0)
+						local b0 = e.root.Position + Vector3.new(0, 1.2, 0)
+						-- 원본 화살/탄환 빔을 재사용하고 판정과 동일한 목표에만 표시한다.
+						arrowTrail(a0, b0)
+						burst(b0, 6, false)
+						sfx(if wpn.family == "firearm" and wpn.id ~= "crossbow" then "sfx_card_fire"
+							else "sfx_card_volley", 0.6, if wpn.id == "crossbow" then 1.25 else 1.1)
 					end
 				end
 			end
 			for _, b in table.clone(barrels) do
+				if rangedShot and shots >= 1 then break end
 				local tb = (b.pos - hrp.Position) * Vector3.new(1, 0, 1)
 				local ab = 0
 				if tb.Magnitude > 0.1 then
@@ -3182,9 +3226,11 @@ function FieldScene.start(opts)
 				if AC.inReach(rangeR * STUD + 3, arcR, tb.Magnitude, ab) then
 					explodeBarrel(b, hrp, hitActionSeq)
 					hits += 1
+					if rangedShot then shots += 1 end
 				end
 			end
 			for _, c in table.clone(crates) do
+				if rangedShot and shots >= 1 then break end
 				local tb = (c.pos - hrp.Position) * Vector3.new(1, 0, 1)
 				local ab = 0
 				if tb.Magnitude > 0.1 then
@@ -3193,6 +3239,7 @@ function FieldScene.start(opts)
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, tb.Magnitude, ab) then
 					breakCrate(c)
+					if rangedShot then shots += 1 end
 				end
 			end
 			if hits == 0 and hitActionSeq >= streakCountedSeq then endStreak("헛손질") end
