@@ -840,6 +840,8 @@ function NavalBattle.play(opts)
 		nm.TextSize = if battleViewport.X < 480 then 11 else 14
 		-- 막대 위에 선체 % 숫자를 크게 표시한다
 		local pct = label(back, "100%", 14, Color3.fromRGB(255, 255, 255), true)
+		pct.TextStrokeColor3 = Color3.fromRGB(12, 24, 35)
+		pct.TextStrokeTransparency = 0.55
 		pct.Size = UDim2.fromScale(1, 1)
 		pct.ZIndex = 5
 		return fill, pct, nm
@@ -1002,7 +1004,7 @@ function NavalBattle.play(opts)
 	tactic.AnchorPoint = Vector2.new(0.5, 0)
 	tactic.Position = UDim2.new(0.5, 0, 0, 119)
 	tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.52 elseif battleViewport.X < 720 then 0.48 else 0.46, 0, 0, 46)
-	tactic.TextSize = if MOBILE_VFX then 12 else 14
+	tactic.TextSize = if battleViewport.X < 480 then 13 else 14
 	tactic.TextTruncate = Enum.TextTruncate.AtEnd
 	tactic.TextWrapped = true
 	tactic.BackgroundColor3 = Color3.fromRGB(27, 35, 43)
@@ -1069,11 +1071,23 @@ function NavalBattle.play(opts)
 	sailLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	-- 기동 점수: 포탄 낙하 경고를 피하면 올라간다 (결과와는 별개로 명성 보너스만 준다)
 	local flair, combo, dodged = 0, 0, 0
-	local comboLabel = label(gui, "", 22, Color3.fromRGB(255, 226, 120))
-	comboLabel.AnchorPoint = Vector2.new(0.5, 0)
-	comboLabel.Position = UDim2.new(0.5, 0, 0, if battleViewport.X < 480 then math.min(336, battleViewport.Y - 105) else 208)
-	comboLabel.Visible = battleViewport.X >= 720 -- [모바일] 전술·스킬 영역을 침범하는 중복 콤보 문구 숨김
-	comboLabel.Size = UDim2.fromOffset(300, 30)
+	-- [지상 연타형 해전] 숫자를 매 프레임 늘였다 줄이는 대신 고정 픽셀 서체로 선명하게 표시한다.
+	-- 좁은 폰에서는 왼편 해역에 배치해 우측 지원 카드·하단 기술 버튼과 겹치지 않는다.
+	local comboLabel = label(gui, "", if battleViewport.X < 480 then 26 else 37, Color3.fromRGB(255, 226, 120))
+	comboLabel.Name = "NavalHitStreak"
+	comboLabel.Font = Enum.Font.Bangers
+	comboLabel.AnchorPoint = if battleViewport.X < 480 then Vector2.new(0, 0) else Vector2.new(0.5, 0)
+	comboLabel.Position = if battleViewport.X < 480 then UDim2.fromOffset(12, 179)
+		else UDim2.new(0.5, 0, 0, 202)
+	comboLabel.Size = if battleViewport.X < 480 then UDim2.fromOffset(166, 42)
+		else UDim2.fromOffset(math.min(380, battleViewport.X - 40), 48)
+	comboLabel.TextStrokeColor3 = Color3.fromRGB(11, 17, 27)
+	comboLabel.TextStrokeTransparency = 0.24
+	comboLabel.TextTransparency = 1
+	comboLabel.TextXAlignment = if battleViewport.X < 480 then Enum.TextXAlignment.Left else Enum.TextXAlignment.Center
+	comboLabel.ZIndex = 19
+	comboLabel.Visible = not opts.cardOnly
+	local navalHitStreak, navalHitAt, streakNoticeToken = 0, -100, 0
 
 	local subtitle = label(gui, "", 16)
 	subtitle.AnchorPoint = Vector2.new(0.5, 1)
@@ -1275,10 +1289,10 @@ function NavalBattle.play(opts)
 			caption.BackgroundTransparency = 1
 			caption.Text = text
 			caption.Font = Enum.Font.GothamBold
-			caption.TextSize = if size.X.Offset >= 90 then 13 else 10
+			caption.TextSize = if size.X.Offset >= 90 then 13 else 12
 			caption.TextColor3 = Color3.fromRGB(255, 242, 211)
 			caption.TextStrokeColor3 = Color3.fromRGB(14, 26, 44)
-			caption.TextStrokeTransparency = 0.08
+			caption.TextStrokeTransparency = 0.34
 			caption.TextTruncate = Enum.TextTruncate.AtEnd
 			caption.ZIndex = b.ZIndex + 2
 			caption.Parent = b
@@ -3269,16 +3283,19 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				dodged += 1
 				combo += 1
 				flair += 10 + combo * 2
-				comboLabel.Text = string.format("회피! 콤보 x%d", combo)
-				Sfx.play("sfx_click", 0.6, 1.2 + combo * 0.05)
+				streakNoticeToken += 1
+				local token = streakNoticeToken
+				comboLabel.Text = string.format("회피 %d연속!", combo)
+				comboLabel.TextColor3 = Color3.fromRGB(144, 243, 226)
+				comboLabel.TextTransparency = 0
+				Sfx.play("sfx_skill_evade", 0.35, 1.15 + math.min(combo, 8) * 0.035, "sfx_click")
 				task.delay(1.2, function()
-					if comboLabel.Text:sub(1, 6) == "회피!" then
-						comboLabel.Text = ""
+					if not finished and streakNoticeToken == token and comboLabel.Parent then
+						game:GetService("TweenService"):Create(comboLabel, TweenInfo.new(0.32), { TextTransparency = 1 }):Play()
 					end
 				end)
 			else
 				combo = 0
-				comboLabel.Text = ""
 			end
 		end)
 	end
@@ -3789,26 +3806,29 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- 대포 한 발
 	local kick = 0 -- 포격·피격 때 순간적으로 화각이 튀는 정도
 	-- 화면 가운데 잠깐 뜨는 한 줄 연출 글자
+	-- [해전 글씨 선명도] 전투 알림 한 개만 표시하고 폰트를 고정한다.
+	-- 이전에는 매 프레임 TextSize를 바꿔 한글 윤곽이 뭉개지고 알림이 겹쳤다.
+	local currentAnnouncement = nil
 	local function popText(text, color)
-		local l = label(gui, text, 30, color)
+		if currentAnnouncement and currentAnnouncement.Parent then currentAnnouncement:Destroy() end
+		local l = label(gui, text, if battleViewport.X < 480 then 24 else 33, color)
+		currentAnnouncement = l
+		l.Name = "NavalBattleAnnouncement"
+		l.Font = Enum.Font.Bangers
 		l.AnchorPoint = Vector2.new(0.5, 0.5)
-		l.Position = UDim2.new(0.5, 0, 0.3, 0)
-		l.Size = UDim2.fromOffset(420, 44)
-		l.TextStrokeTransparency = 1
-		l.ZIndex = 20
-		local t0 = os.clock()
-		local conn
-		conn = RunService.Heartbeat:Connect(function()
-			local k = (os.clock() - t0) / 1.4
-			if k >= 1 or finished then
-				conn:Disconnect()
-				l:Destroy()
-				return
-			end
-			l.Position = UDim2.new(0.5, 0, 0.3 - k * 0.06, 0)
-			l.TextTransparency = math.max(0, (k - 0.6) / 0.4)
-			l.TextStrokeTransparency = 1
-			l.TextSize = 30 + (1 - k) * 8
+		l.Position = UDim2.fromScale(0.5, if battleViewport.X < 480 then 0.25 else 0.27)
+		l.Size = UDim2.fromOffset(math.min(410, battleViewport.X - 24), if battleViewport.X < 480 then 50 else 58)
+		l.TextWrapped = true
+		l.TextStrokeColor3 = Color3.fromRGB(13, 20, 29)
+		l.TextStrokeTransparency = 0.18
+		l.ZIndex = 28
+		game:GetService("TweenService"):Create(l, TweenInfo.new(1.20, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+			Position = l.Position - UDim2.fromOffset(0, 30),
+			TextTransparency = 1, TextStrokeTransparency = 1,
+		}):Play()
+		task.delay(1.28, function()
+			if l.Parent then l:Destroy() end
+			if currentAnnouncement == l then currentAnnouncement = nil end
 		end)
 	end
 	skillPop = popText
@@ -3841,11 +3861,38 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		l.AnchorPoint = Vector2.new(0.5, 0.5)
 		l.Size = UDim2.fromOffset(120, 36)
 		l.Position = UDim2.fromOffset(v.X - inset.X, v.Y - inset.Y)
-		l.TextStrokeTransparency = 1
+		l.Font = Enum.Font.Bangers
+		l.TextStrokeColor3 = Color3.fromRGB(16, 22, 30)
+		l.TextStrokeTransparency = 0.25
 		l.ZIndex = 22
 		local TS = game:GetService("TweenService")
 		TS:Create(l, TweenInfo.new(1.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Position = l.Position - UDim2.fromOffset(0, 54), TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
 		task.delay(1.2, function() l:Destroy() end)
+		-- [포격 연타] 실명중 때만 집계하는 시각 피드백. 회피 콤보·피해 판정·보상에는 영향 없음.
+		if not toPlayer and not opts.cardOnly then
+			local nowHit = os.clock()
+			navalHitStreak = if nowHit - navalHitAt <= 3.2 then navalHitStreak + 1 else 1
+			navalHitAt = nowHit
+			streakNoticeToken += 1
+			local token = streakNoticeToken
+			comboLabel.Text = string.format("%d연타! 포격", navalHitStreak)
+			comboLabel.TextColor3 = if navalHitStreak >= 10 then Color3.fromRGB(255, 166, 109)
+				elseif navalHitStreak >= 5 then Color3.fromRGB(255, 233, 137)
+				else Color3.fromRGB(243, 249, 255)
+			comboLabel.TextTransparency = 0
+			if navalHitStreak == 3 or navalHitStreak == 5 or navalHitStreak == 10 then
+				Sfx.play(if navalHitStreak >= 10 then "sfx_horn" else "sfx_card_ring",
+					if MOBILE_VFX then 0.26 else 0.40,
+					if navalHitStreak >= 10 then 1.12 else 1.30, "sfx_bell")
+			end
+			task.delay(1.35, function()
+				if not finished and streakNoticeToken == token and comboLabel.Parent then
+					game:GetService("TweenService"):Create(comboLabel, TweenInfo.new(0.30), { TextTransparency = 1 }):Play()
+				end
+			end)
+		elseif toPlayer then
+			navalHitStreak = 0
+		end
 	end
 	-- 돛대가 부러져 바다로 쓰러진다 (체력이 크게 줄어든 첫 순간)
 	local function dismast(sh)
@@ -4932,14 +4979,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			foePct.Text = string.format("%d%%", math.ceil(foeHp * 100))
 		end
 		meFill.BackgroundColor3 = if meHp < 0.3 then Color3.fromRGB(214, 82, 76) elseif meHp < 0.6 then Color3.fromRGB(226, 178, 80) else Color3.fromRGB(91, 181, 120)
-		-- [기함 에너지바] 실제 2개 스킬 중 활성화된 버프와 남은 시간을 선체 내구 숫자 옆에 표시.
+		-- [선체 숫자 선명도] 버프 문구 때문에 폰트가 10px까지 줄던 문제를 막는다.
+		-- 선체 체력은 항상 14px로, 기존 활성 스킬 시간은 아래 3px 상태 막대로만 표현한다.
 		buffFill.Visible = false
 		mePct.TextSize = 14
 		for _, sk in SKILLS do
 			local remaining = math.max(0, skillUntil[sk.id] - now)
 			if remaining > 0 and sk.id ~= "fire" then
-				mePct.Text = string.format("%s · %s %.1f초", mePct.Text, sk.text, remaining)
-				mePct.TextSize = if MOBILE_VFX then 10 else 12
 				buffFill.BackgroundColor3 = sk.col
 				buffFill.Size = UDim2.new(math.clamp(remaining / sk.dur, 0, 1), 0, 0, 3)
 				buffFill.Visible = true
