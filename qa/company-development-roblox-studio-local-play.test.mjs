@@ -4175,6 +4175,32 @@ test('Mare weapon two skill types, dagger basic speed and seven profession dodge
   assert.ok(scene.includes('AC.tryMove(pl, moveId, now)')&&
     scene.includes('task.delay(if kind == "slash" then 0.14'),
     'original invulnerability authority and attack damage timing must be retained');
+  // [성직자·학자 거대 회피] 둘이 같은 모션/이펙트를 쓰면 실패. R15 전신·루트·빛 궤적을 각각 검사한다.
+  const priest=scene.match(/clergy = \{([\s\S]*?)\n\t\t\t\},/)?.[1];
+  const scholar=scene.match(/scholar = \{([\s\S]*?)\n\t\t\t\},/)?.[1];
+  assert.ok(priest && scholar && priest!==scholar,'clergy and scholar dodge poses must differ');
+  for(const joint of ['Spine','Chest','Head','UpperArmL','UpperArmR','ForearmL','ForearmR',
+    'HandL','HandR','ThighL','ThighR','ShinL','ShinR','FootL','FootR']){
+    assert.ok(priest.includes(joint+' = A(')&&scholar.includes(joint+' = A('),
+      'large dodge must animate full R15 body: '+joint);
+  }
+  assert.ok(scene.includes('elseif dodgeStyle == "clergy" then')&&
+    scene.includes('elseif dodgeStyle == "scholar" then')&&
+    scene.includes('CFrame.new(1.35 * press, -0.35 * press, 0)')&&
+    scene.includes('CFrame.new(-1.55 * press, -0.62 * press, 0)'),
+    'distinct large lateral sanctuary step and scholar low diagonal leap');
+  assert.ok(scene.includes('math.sin(math.clamp(p, 0, 1) * math.pi) ^ 0.72')&&
+    scene.includes('then 2.0 else 1.70')&&
+    scene.includes('if swingKind == "dash" then 1.85 else nil'),
+    'evade must have large held pose and faster joint response without affecting weapon attack speed');
+  for(const atom of ['"BLOCK_IMPACT"','"HEAL_PULSE"','"UPGRADE_BURST"','"DODGE_EVASION_PULSE"']){
+    assert.ok(scene.includes('pulseAt('+atom),'dodge must reuse registered VFX: '+atom);
+  }
+  assert.ok(scene.includes('if study and not care then "학자"')&&
+    scene.includes('if visualMobile then 2 else 5')&&
+    scene.includes('if visualMobile then 3 else 6')&&
+    scene.includes('pulseAt("DODGE_EVASION_PULSE", dodgeOrigin'),
+    'scholar/clergy class selection, mobile ghost cap and start/end effect must work');
 });
 
 test('Mare nine weapon families have distinct authored normal and skill R15 gameplay',()=>{
