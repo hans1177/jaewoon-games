@@ -300,14 +300,18 @@ test('Studio frames go only to an image-capable provider', async () => {
 test('무료 외부 AI는 10분마다 다른 Studio 스크린샷을 분석하고 확인된 장면을 소스별로 기억한다', () => {
   const source = fs.readFileSync('tools/vibe-brain.mjs', 'utf8');
   const workflow = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
-  assert.match(workflow, /cron: '3-53\\/10 \\* \\* \\* \\*'/);
-  assert.match(source, /readStudioVisualOrder\\(arg\\('studio-ref'\\), ledger\\.visualCoverage\\)/);
-  assert.match(source, /coverage\\.sourceRevision === revision/);
-  assert.match(source, /reviewed\\.has\\(label\\)/);
-  assert.match(source, /STUDIO_VISUAL_REVIEWED=/);
-  assert.match(source, /visual\\.labels/);
-  assert.match(source, /b\\.kind === 'visual'/);
-  assert.match(source, /minGapMin: 10/);
-  assert.match(workflow, /vars\\.VIBE_BRAIN != 'off'/);
-  assert.match(workflow, /VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'/);
+  for (const needle of [
+    "readStudioVisualOrder(arg('studio-ref'), ledger.visualCoverage)",
+    'coverage.sourceRevision === revision',
+    'reviewed.has(label)',
+    'STUDIO_VISUAL_REVIEWED=',
+    'visual.labels',
+    "b.kind === 'visual'",
+    'minGapMin: 10'
+  ]) assert.ok(source.includes(needle), '필수 기능 누락: ' + needle);
+  for (const needle of [
+    "cron: '3-53/10 * * * *'",
+    "vars.VIBE_BRAIN != 'off'",
+    "VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'"
+  ]) assert.ok(workflow.includes(needle), '예약·무료 보장 누락: ' + needle);
 });
