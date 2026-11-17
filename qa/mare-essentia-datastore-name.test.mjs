@@ -911,3 +911,25 @@ test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 
   assert.doesNotMatch(section,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/);
   assert.doesNotMatch(field,/FieldEnemyRespawn|spawnReinforcement/);
 });
+
+
+test('탐험 1~10타·회피 전환은 실제 배율이 적용된 R15 자세를 끊김 없이 연결한다', () => {
+  const scale = field.indexOf('FM.scale(canon, if swingKind == "dash" then');
+  const blend = field.indexOf('if swingKind and swingBridge.from then');
+  const root = field.indexOf('rootRot = rootFor(swingKind');
+  const cache = field.indexOf('if swingKind and (swingCombo or swingKind == "dash") then');
+  const step = field.indexOf('FM.step(pfm, dt, rootRot');
+  assert.ok(scale >= 0 && scale < blend && blend < root && root < cache && cache < step,
+    '배율 적용 → 관절·루트 연결 → 최종 자세 캐시 → 관절 전송 순서가 유지되어야 한다');
+  assert.match(field, /weight = weight \* \(2 - weight\)/);
+  assert.match(field, /blend = blend \* \(2 - blend\)/);
+  assert.match(field, /swingBridge\.from, swingBridge\.rootFrom, swingBridge\.rootLast = nil, nil, nil/);
+  assert.match(field, /local settle = math\.sin\(math\.clamp\(\(p - 0\.57\) \/ 0\.43, 0, 1\) \* math\.pi\)/);
+  assert.match(field, /-- 공격 종료 직후 오래된 자세로 다음 공격을 시작하지 않도록 즉시 캐시 폐기한다\./);
+  for (const t of [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1]) {
+    const eased = t * (2 - t);
+    assert.ok(eased >= t && eased <= 1);
+  }
+  assert.match(field, /pl\.autoNormalHits % 5 == 0/);
+  assert.match(field, /if rank > 1 and comboNow - lastMasteryComboAt >= 7/);
+});
