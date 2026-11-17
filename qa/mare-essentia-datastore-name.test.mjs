@@ -384,7 +384,18 @@ test('탐험 현장별 10종 3차원 지형, 주야·기상·실물 동물 및 �
   }
   assert.match(field,/FieldQuestTerrainTheme/);
   assert.match(field,/FieldTerrainFeatureCount/);
-  assert.match(field,/\(not visualMobile or index <= 9\) and AssetIds/);
+  // [배경 디테일] 모바일 지형 수 제한, 승인 에셋 통합 배치, 지연 복제 및 철수 정리.
+  assert.match(field,/if not visualMobile or index <= 9 then/);
+  assert.match(field,/local function placeFeature\(entry\)/);
+  assert.match(field,/local function stageFeature\(entry\)/);
+  assert.ok(field.includes('if not AssetIds[entry[1] .. "/" .. entry[2]] then return nil end'));
+  assert.match(field,/if not placed then table\.insert\(pending, entry\) end/);
+  assert.match(field,/\{ "Terrain", "Town", "Castle", "Naval", "Cargo" \}/);
+  assert.match(field,/entry\.position = c \+ Vector3\.new\(e\[4\], 0, e\[5\]\)/);
+  assert.match(field,/FieldTerrainSurvey/);
+  assert.match(field,/anchorPart:FindFirstChild\("FieldTerrainSurveyPoint"\)/);
+  assert.match(field,/surveyPoint\.WorldPosition = Vector3\.new/);
+  assert.match(field,/prompt\.Parent = surveyPoint/);
   assert.match(field,/local function retryPending\(groupName, modelName\)/);
   assert.match(field,/group\.ChildAdded:Connect\(function\(child\)/);
   assert.match(field,/if not needed then return end/);
