@@ -231,6 +231,20 @@ local function placeShip(parent, asset, at, length, yaw, tint)
 			tpl = group and group:FindFirstChild(CUSTOM_SHIP_FALLBACK[shipId])
 		end
 	end
+	-- [선저 형태 보존] 원본 메시가 지연되면 등록된 입체 선체를 먼저 찾는다.
+	-- 임시 사각형 선저는 모든 등록 선체가 없는 극단적 상태에서만 사용한다.
+	if not (tpl and tpl:IsA("Model")) and group then
+		local realHulls = if string.find(asset, "boat-", 1, true)
+			then { "boat-row-large", "boat-sail-a", "ship-small" }
+			else { "ship-medium", "ship-small", "ship-large" }
+		for _, hullName in realHulls do
+			local candidate = group:FindFirstChild(hullName)
+			if AssetIds["Naval/" .. hullName] and candidate and candidate:IsA("Model") then
+				tpl = candidate
+				break
+			end
+		end
+	end
 	if tpl and tpl:IsA("Model") then
 		local m = tpl:Clone()
 		for _, d in m:GetDescendants() do
@@ -592,6 +606,7 @@ function NavalBattle.play(opts)
 		f.BackgroundTransparency = 0.15
 		f.BorderSizePixel = 0
 		f.Parent = row
+		f.Visible = star or battleViewport.X >= 480 -- [좁은 폰 상단] 기함을 우선 표시하고 호위는 3D 장면에 보존.
 		local c = Instance.new("UICorner")
 		c.CornerRadius = UDim.new(0, 8)
 		c.Parent = f
@@ -712,7 +727,7 @@ function NavalBattle.play(opts)
 	tactic.Name = "BattleTacticalReadout"
 	tactic.AnchorPoint = Vector2.new(0.5, 0)
 	tactic.Position = UDim2.new(0.5, 0, 0, 119)
-	tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.46 elseif MOBILE_VFX then 0.52 else 0.55, 0, 0, 46)
+	tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.62 elseif MOBILE_VFX then 0.52 else 0.55, 0, 0, 46)
 	tactic.TextSize = if MOBILE_VFX then 12 else 14
 	tactic.TextTruncate = Enum.TextTruncate.AtEnd
 	tactic.TextWrapped = true
@@ -1220,9 +1235,9 @@ function NavalBattle.play(opts)
 			end
 		end
 		if i.KeyCode == Enum.KeyCode.A or i.KeyCode == Enum.KeyCode.Left then
-			steerDir = 1
+			steerDir = -1 -- [좌현 조향] 스틱과 키보드 좌측을 일치시킨다
 		elseif i.KeyCode == Enum.KeyCode.D or i.KeyCode == Enum.KeyCode.Right then
-			steerDir = -1
+			steerDir = 1
 		end
 	end))
 	table.insert(conns, UIS.InputEnded:Connect(function(i)
@@ -1973,7 +1988,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			identity.BackgroundColor3 = if regionDeck then regionDeck.color else Color3.fromRGB(75, 56, 40)
 			identity.BackgroundTransparency = 0.13
 			identity.TextScaled = true
-			identity.TextStrokeTransparency = 0.48
+			identity.TextStrokeTransparency = 1
 			identity.ZIndex = 8
 			local stamp = label(f, tostring(power or c.power or ""), 15, ink, true)
 			stamp.AnchorPoint = Vector2.new(0.5, 1)
@@ -2122,7 +2137,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			inscription.TextSize = 11
 			inscription.TextScaled = true
 			inscription.Font = Enum.Font.Antique
-			inscription.TextStrokeTransparency = 0.5
+			inscription.TextStrokeTransparency = 1
 			inscription.ZIndex = image.ZIndex + 5
 			inscription.Parent = art
 			local combatFlash = Instance.new("Frame")
@@ -2357,7 +2372,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local focusName = label(focusFrame, "", 17, Color3.fromRGB(247, 211, 151), true)
 		focusName.Position = UDim2.fromScale(0.045, 0.017)
 		focusName.Size = UDim2.fromScale(0.8, 0.075)
-		focusName.TextStrokeTransparency = 0.38
+		focusName.TextStrokeTransparency = 1
 		focusName.Font = Enum.Font.Antique
 		focusName.ZIndex = 53
 		local focusRule = label(focusFrame, "", 14, ink, true)
@@ -2687,7 +2702,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				kindLabel.Position = UDim2.fromScale(0.48, 0.03)
 				kindLabel.Size = UDim2.fromScale(0.48, 0.14)
 				kindLabel.TextXAlignment = Enum.TextXAlignment.Right
-				kindLabel.TextStrokeTransparency = 0.28
+				kindLabel.TextStrokeTransparency = 1
 				kindLabel.ZIndex = 8
 				-- 정보부는 낡은 양피지 띠, 그림부는 움직이는 판화로 분리한다.
 				local parchmentBand = Instance.new("Frame")
@@ -3408,7 +3423,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		l.AnchorPoint = Vector2.new(0.5, 0.5)
 		l.Position = UDim2.new(0.5, 0, 0.3, 0)
 		l.Size = UDim2.fromOffset(420, 44)
-		l.TextStrokeTransparency = 0.2
+		l.TextStrokeTransparency = 1
 		l.ZIndex = 20
 		local t0 = os.clock()
 		local conn
@@ -3421,7 +3436,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			l.Position = UDim2.new(0.5, 0, 0.3 - k * 0.06, 0)
 			l.TextTransparency = math.max(0, (k - 0.6) / 0.4)
-			l.TextStrokeTransparency = 0.2 + l.TextTransparency * 0.8
+			l.TextStrokeTransparency = 1
 			l.TextSize = 30 + (1 - k) * 8
 		end)
 	end
@@ -3455,7 +3470,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		l.AnchorPoint = Vector2.new(0.5, 0.5)
 		l.Size = UDim2.fromOffset(120, 36)
 		l.Position = UDim2.fromOffset(v.X - inset.X, v.Y - inset.Y)
-		l.TextStrokeTransparency = 0.1
+		l.TextStrokeTransparency = 1
 		l.ZIndex = 22
 		local TS = game:GetService("TweenService")
 		TS:Create(l, TweenInfo.new(1.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Position = l.Position - UDim2.fromOffset(0, 54), TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
@@ -3996,7 +4011,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 								banner.Text = "도망 성공!"
 								banner.TextColor3 = Color3.fromRGB(150, 220, 255)
 								banner.TextTransparency = 0
-								banner.TextStrokeTransparency = 0.3
+								banner.TextStrokeTransparency = 1
 								subtitle.Text = ""
 							else
 								subtitle.Text = "도망 실패! 해적이 따라붙었다"
@@ -4242,7 +4257,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					CH.flash("medic")
 					banner.TextColor3 = if opts.winner == "a" then Color3.fromRGB(255, 214, 120) elseif opts.winner == "b" then Color3.fromRGB(230, 110, 100) else Color3.fromRGB(220, 220, 230)
 					banner.TextTransparency = 0
-					banner.TextStrokeTransparency = 0.3
+					banner.TextStrokeTransparency = 1
 					if opts.winner == "a" then
 						Sfx.play("sfx_fanfare", 0.74, 1.0, "sfx_quest_reward")
 						task.delay(0.28, function()
@@ -4469,7 +4484,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			else
 				status, tip, tone = "③ 포격 준비", string.format("적선 %dm · 사거리 %dm · 자동 포격 대기", math.floor(dd), cannon.range), Color3.fromRGB(130, 237, 172)
 			end
-			local messageText = status .. "\n" .. tip
+			local messageText = if battleViewport.X < 480 then status .. "\n" ..
+				(if not inRange then "대포 사거리 밖" elseif not aligned then string.format("%s 포각 %d°", gunSide, math.floor(aimAngle + 0.5))
+					elseif now < nextMeFire then "대포 장전 중" else "측면 포격 가능")
+				else status .. "\n" .. tip -- [상단 가독성] 세로 폰에서 정보가 잘리지 않게 두 줄 압축
 			if messageText ~= lastTacticText then
 				tactic.Text, lastTacticText = messageText, messageText
 			end
