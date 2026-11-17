@@ -4617,6 +4617,8 @@ function FieldScene.start(opts)
 				end
 				if dodgeDir then
 					e.lastDodge, e.dodgeT0, e.dodgeUntil, e.dodgeDir = evadeAt, evadeAt, evadeAt + 0.36, dodgeDir
+					-- 선택한 실제 좌/우 회피 방향을 R15 어깨·발목 모션에도 전달한다.
+					e.model:SetAttribute("FieldEnemyDodgeSide", e.tacticSide)
 					e.hurtAt = -100
 					e.model:SetAttribute("FieldEnemyReaction", if e.ac.kind == "archer" then "backstep" else "sidestep")
 					if e.tag and e.tag.Parent then
@@ -7446,16 +7448,17 @@ function FieldScene.start(opts)
 					e.root.Position.Y, math.clamp(goal.Z, ORIGIN.Z - half + 9, ORIGIN.Z + half - 9))
 				e.tacticGoal, e.tacticIntent = goal, intent
 				e.model:SetAttribute("FieldTacticalIntent", intent)
-				-- 반복 연타 중인 주인공을 읽고 방패병이 미리 무게중심을 낮춘다.
-				-- 실제 막기/피해 경감은 기존 strikeEnemy의 정면 판정에서만 적용된다.
-				if e.ac.kind == "shield" and flat.Magnitude < 15
-					and now - (swingBridge.basicAt or -100) < 0.45
-					and now >= (e.nextGuardTellAt or 0) then
-					-- [방패 준비] 공격 연타를 보았을 때 한 번만 자세를 세우고 기존 정면 판정으로 막는다.
-					e.guardUntil = math.max(e.guardUntil or 0, now + 0.30)
-					e.nextGuardTellAt = now + 1.4
-					e.model:SetAttribute("FieldTacticalIntent", "guard")
-				end
+			end
+			-- [방패 즉시 판단] 0.65초 이동 목표 갱신과 독립하여 주인공의 진짜 평타 입력을 짧게 읽는다.
+			-- 정면에서만 방패를 들어 올리므로 측면·후면에서의 원래 피해 판정은 그대로 통과한다.
+			if e.ac.kind == "shield" and (e.ac.state == "chase" or e.ac.state == "recover")
+				and not frozen and flat.Magnitude > 0.1 and flat.Magnitude < 15
+				and now - (swingBridge.basicAt or -100) < 0.22
+				and now >= (e.nextGuardTellAt or 0)
+				and e.root.CFrame.LookVector:Dot(flat.Unit) > 0.22 then
+				e.guardUntil = math.max(e.guardUntil or 0, now + 0.30)
+				e.nextGuardTellAt = now + 1.4
+				e.model:SetAttribute("FieldTacticalIntent", "guard")
 			end
 			local wish = if frozen then 0 else AC.moveWish(e.ac, dist)
 			local beforeMove = e.root.Position
