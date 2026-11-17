@@ -459,6 +459,8 @@ test('탐험 무기별 실물 메시 축·피격 부위 절삭 관통 둔격 이
   assert.match(field,/axis = if size\.X >= size\.Y and size\.X >= size\.Z/);
   assert.match(field,/elseif size\.Z >= size\.Y then Vector3\.new\(0, 0, 1\)/);
   assert.match(field,/for _, part in sword:GetDescendants\(\) do/);
+  assert.match(field,/if trail.Parent then trail.Enabled = false end/);
+  assert.match(field,/task.delay\(trail.Lifetime \+ 0\.04, function\(\) pcall\(ctl.Destroy\) end\)/);
   assert.match(field,/local detailedContact = basicAttack == true and ownerAttack ~= false and not quiet/);
   assert.match(field,/and not shieldBlocked and not weaponParry and actionSeq ~= nil and actionSeq > 0/);
   assert.match(field,/and impactBeat ~= nil and swingBridge\.impactSeq ~= actionSeq/);
