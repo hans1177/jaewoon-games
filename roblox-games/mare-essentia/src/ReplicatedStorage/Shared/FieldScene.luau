@@ -1344,7 +1344,13 @@ function FieldScene.start(opts)
 			individualDef.range = math.min(individualDef.range, weapon.range)
 		end
 		if weapon.family == "bow" then individualDef.range = math.min(individualDef.range, weapon.range) end
+		-- [탐험 난도] 필드 몬스터의 최대 체력만 높여 한두 번의 평타로 끝나지 않게 한다.
+		-- 공용 ActionCombat 적 정의, 공격력·사거리·공격주기·드롭·보상·저장/퀘스트 진행은 불변.
+		-- 졸개·사수 1.75배, 방패·돌격 정예 1.8배, 두목 1.7배 (기본 40→70/28→49/70→126/50→90/300→510).
+		individualDef.hp = math.floor(individualDef.hp *
+			(if isBoss then 1.7 elseif ac.kind == "shield" or ac.kind == "charger" then 1.8 else 1.75) + 0.5)
 		ac.def = individualDef
+		ac.hp = individualDef.hp
 		-- [몹 역할별 실루엣] 기존 전투 능력은 유지하고 R15 비율·걸음 성격만 다르게 설정한다.
 		-- [병종 실루엣] 기존 R15 리그·실제 손 장착 메시 재사용. 키/체형/바지색으로 원거리·투척·방패·돌격을 구분.
 		local bodyType = if isBoss or ac.kind == "shield" then "heavy" elseif throwAsset or ac.kind == "archer" then "slim"
@@ -1532,21 +1538,79 @@ function FieldScene.start(opts)
 
 	-- [탐험 전투 조작] 공격·회피 두 버튼만 표시한다. 강타는 주인공 기본 공격 5회 명중마다 자동 발동한다.
 	local UserInputService = game:GetService("UserInputService")
-	-- [모바일 전투 HUD] 엄지 버튼은 오른쪽 하단, 철수는 왼쪽 위로 분리해 오터치를 방지한다.
-	local attackBtn = btn(gui, "", Color3.fromRGB(169, 55, 50),
-		UDim2.fromOffset(if visualMobile then 112 else 100, if visualMobile then 112 else 100),
-		UDim2.new(1, -90, 1, -88), Vector2.new(0.5, 0.5))
+	-- [상용 모바일 전투 HUD] 엄지에 닿는 120~128px 원형 주공격. 회피/이동 패드와 겹치지 않는다.
+	-- 화면비와 무관하게 하단·오른쪽 안전 여백을 유지하고 PC도 기존 바로 공격 입력을 지원한다.
+	local compactTouch = visualMobile and workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X < 450
+	local attackBtn = btn(gui, "", Color3.fromRGB(177, 57, 43),
+		UDim2.fromOffset(if compactTouch then 118 elseif visualMobile then 128 else 112,
+			if compactTouch then 118 elseif visualMobile then 128 else 112),
+		UDim2.new(1, if compactTouch then -85 elseif visualMobile then -98 else -88,
+			1, if compactTouch then -85 elseif visualMobile then -98 else -88), Vector2.new(0.5, 0.5))
 	attackBtn.Name = "FieldAttack"
-	-- [작은 스마트폰 세로 화면] 왼쪽 이동 패드와 손가락 입력 공간 확보.
-	if visualMobile and workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X < 450 then
-		attackBtn.Position = UDim2.new(1, -74, 1, -74)
-		attackBtn.Size = UDim2.fromOffset(104, 104)
-	end
 	attackBtn:SetAttribute("SkillFullName", "일반 공격")
+	attackBtn:SetAttribute("TouchPriority", "ATTACK")
 	attackBtn.Text = ""
 	attackBtn.TextSize = 19
+	attackBtn.AutoButtonColor = false -- 기본 회색 호버 대신 전용 금속 눌림/광택 연출
 	attackBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 	local attackIcon = addIcon(attackBtn, "Menu/cc0_sword")
+	-- [공격 메달 한정 스타일] 임시 지역변수를 전투 본문에 남기지 않아 Luau 레지스터 예산을 보호한다.
+	do
+	local attackRim = attackBtn:FindFirstChildOfClass("UIStroke")
+	attackRim.Color = Color3.fromRGB(255, 192, 112)
+	attackRim.Thickness = if visualMobile then 4 else 3
+	attackRim.Transparency = 0.04
+	-- [기존 승인 아이콘 유지] 메달 내부의 아이콘/이중 링/텍스트를 시각 계층으로 분리한다.
+	local innerMedal = attackBtn:FindFirstChild("FieldIconMedallion")
+	if innerMedal then
+		innerMedal.Size = UDim2.fromScale(0.86, 0.86)
+		innerMedal.BackgroundTransparency = 0.08
+		innerMedal.BackgroundColor3 = Color3.fromRGB(78, 29, 30)
+		local gleam = Instance.new("UIGradient")
+		gleam.Rotation = 115
+		gleam.Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(139, 63, 50)),
+			ColorSequenceKeypoint.new(0.46, Color3.fromRGB(87, 30, 31)),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(42, 17, 28)),
+		})
+		gleam.Parent = innerMedal
+		local medalRim = innerMedal:FindFirstChild("FieldIconRim")
+		if medalRim then
+			medalRim.Thickness = 2.8
+			medalRim.Color = Color3.fromRGB(255, 215, 144)
+		end
+	end
+	if attackIcon then
+		attackIcon.Size = UDim2.fromScale(0.67, 0.67)
+		attackIcon.Position = UDim2.fromScale(0.5, 0.42)
+		attackIcon.ImageColor3 = Color3.fromRGB(255, 242, 218)
+	end
+	local attackCaption = label(attackBtn, "공격", if visualMobile then 17 else 16, Color3.fromRGB(255, 235, 189))
+	attackCaption.Name = "FieldAttackCaption"
+	attackCaption.Font = Enum.Font.GothamBlack
+	attackCaption.AnchorPoint = Vector2.new(0.5, 0.5)
+	attackCaption.Position = UDim2.fromScale(0.5, 0.78)
+	attackCaption.Size = UDim2.fromScale(0.72, 0.19)
+	attackCaption.TextStrokeTransparency = 0.12
+	attackCaption.ZIndex = attackBtn.ZIndex + 6
+	-- [터치 피드백] 공격 1회마다 즉시 번쩍이는 이너 링. 공격 판정 및 추가 피해 없음.
+	local attackPulse = Instance.new("Frame")
+	attackPulse.Name = "FieldAttackPulse"
+	attackPulse.AnchorPoint = Vector2.new(0.5, 0.5)
+	attackPulse.Position = UDim2.fromScale(0.5, 0.5)
+	attackPulse.Size = UDim2.fromScale(0.65, 0.65)
+	attackPulse.BackgroundTransparency = 1
+	attackPulse.ZIndex = attackBtn.ZIndex + 7
+	attackPulse.Active = false
+	attackPulse.Parent = attackBtn
+	Instance.new("UICorner", attackPulse).CornerRadius = UDim.new(1, 0)
+	local pulseRim = Instance.new("UIStroke")
+	pulseRim.Name = "FieldAttackPulseRim"
+	pulseRim.Color = Color3.fromRGB(255, 231, 160)
+	pulseRim.Thickness = 2.4
+	pulseRim.Transparency = 1
+	pulseRim.Parent = attackPulse
+	end
 	-- [자동 강타 충전] 공격 버튼 둘레에 명중 5칸만 표시한다. 신규 스킬 버튼·저장 키는 없다.
 	local autoHitPips = {}
 	for i = 1, 5 do
@@ -1554,8 +1618,8 @@ function FieldScene.start(opts)
 		pip.Name = "FieldAutoHit" .. i
 		pip.AnchorPoint = Vector2.new(0.5, 0.5)
 		local angle = math.rad(205 + (i - 1) * 32.5)
-		pip.Position = UDim2.fromScale(0.5 + 0.43 * math.cos(angle), 0.5 + 0.43 * math.sin(angle))
-		pip.Size = UDim2.fromOffset(10, 10)
+		pip.Position = UDim2.fromScale(0.5 + 0.445 * math.cos(angle), 0.5 + 0.445 * math.sin(angle))
+		pip.Size = UDim2.fromOffset(if visualMobile then 12 else 10, if visualMobile then 12 else 10)
 		pip.BorderSizePixel = 0
 		pip.ZIndex = attackBtn.ZIndex + 5
 		pip.Parent = attackBtn
@@ -1567,8 +1631,9 @@ function FieldScene.start(opts)
 	local function refreshAutoHitPips()
 		local charged = (pl.autoNormalHits or 0) % 5
 		for i, pip in autoHitPips do
-			pip.BackgroundColor3 = if i <= charged then Color3.fromRGB(255, 216, 110) else Color3.fromRGB(91, 67, 54)
-			pip.BackgroundTransparency = if i <= charged then 0 else 0.35
+			pip.BackgroundColor3 = if i <= charged then Color3.fromRGB(255, 233, 151) else Color3.fromRGB(91, 45, 35)
+			pip.BackgroundTransparency = if i <= charged then 0 else 0.15
+			pip:SetAttribute("Charged", i <= charged)
 		end
 		attackBtn:SetAttribute("AutoHeavyHits", charged)
 	end
@@ -4201,7 +4266,25 @@ function FieldScene.start(opts)
 			pl.guarding = false
 		end)
 	end
-	local function useAttack() useMove("rush") end
+	local lastAttackTap = -100
+	local function useAttack()
+		-- [버튼/넓은 터치면] 동시에 인식된 같은 탭은 한 번만 처리한다.
+		local now = os.clock()
+		if now - lastAttackTap < 0.08 then return end
+		lastAttackTap = now
+		useMove("rush")
+		-- [공격 눌림 반응] 실제 동작에는 영향을 주지 않는 0.16초 빛의 원형 파문.
+		local attackPulse = attackBtn:FindFirstChild("FieldAttackPulse")
+		local pulseRim = attackPulse and attackPulse:FindFirstChild("FieldAttackPulseRim")
+		if attackPulse and pulseRim then
+			pulseRim.Transparency = 0.06
+			attackPulse.Size = UDim2.fromScale(0.70, 0.70)
+			TweenService:Create(attackPulse, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Size = UDim2.fromScale(0.97, 0.97) }):Play()
+			TweenService:Create(pulseRim, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Transparency = 1 }):Play()
+		end
+	end
 	local function useDash() useMove("dodge") end
 	-- 버튼은 터치 '닿는 순간' 바로 반응한다(폰에서 손가락이 살짝 밀려도 Activated 가 안 뜨는 경우 대비). 같은 누름의 중복은 막는다.
 	local function bindPress(b: GuiButton, fn: () -> ())
@@ -4254,7 +4337,8 @@ function FieldScene.start(opts)
 		hit.AnchorPoint = attackBtn.AnchorPoint
 		hit.Position = attackBtn.Position
 		hit.Name = "FieldAttackHit"
-		hit.Size = UDim2.fromOffset(150, 150)
+		-- [엄지 허용 오차] 주공격보다 20px 넓지만 회피 영역을 침범하지 않는 터치 범위.
+		hit.Size = attackBtn.Size + UDim2.fromOffset(20, 20)
 		hit.BackgroundTransparency = 1
 		hit.Text = ""
 		hit.AutoButtonColor = false
@@ -4351,13 +4435,11 @@ function FieldScene.start(opts)
 	-- [모바일 두 버튼] 공격은 우하단, 회피는 엄지 위쪽에 크게 고정. 글씨 없는 기존 등록 아이콘만 사용.
 	-- 세로 화면은 이동 조이스틱과 거리 확보, 가로 화면은 전투 시야와 손가락이 겹치지 않게 한다.
 	do
-		local compactTouch = visualMobile and workspace.CurrentCamera
-			and workspace.CurrentCamera.ViewportSize.X < 450
 		local b = btn(gui, "", Color3.fromRGB(32, 141, 144),
-			UDim2.fromOffset(if compactTouch then 100 elseif visualMobile then 110 else 94,
-				if compactTouch then 100 elseif visualMobile then 110 else 94),
-			if compactTouch then UDim2.new(1, -155, 1, -199)
-				else UDim2.new(1, attackBtn.Position.X.Offset - 142, 1, attackBtn.Position.Y.Offset - 50),
+			UDim2.fromOffset(if compactTouch then 96 elseif visualMobile then 106 else 94,
+				if compactTouch then 96 elseif visualMobile then 106 else 94),
+			if compactTouch then UDim2.new(1, -171, 1, -211)
+				else UDim2.new(1, attackBtn.Position.X.Offset - 146, 1, attackBtn.Position.Y.Offset - 66),
 			Vector2.new(0.5, 0.5))
 		b.Name = "FieldDodge"
 		b.Text = ""
@@ -4366,7 +4448,18 @@ function FieldScene.start(opts)
 		b:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 		b:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(114, 244, 228)
 		b:FindFirstChildOfClass("UIStroke").Thickness = 3.2
-		addIcon(b, "Menu/chart_compass")
+		b.AutoButtonColor = false
+		local dodgeIcon = addIcon(b, "Menu/chart_compass")
+		if dodgeIcon then
+			dodgeIcon.Size = UDim2.fromScale(0.73, 0.73)
+			dodgeIcon.Position = UDim2.fromScale(0.5, 0.41)
+		end
+		local dodgeCaption = label(b, "회피", if visualMobile then 14 else 13, Color3.fromRGB(198, 255, 242))
+		dodgeCaption.Name = "FieldDodgeCaption"
+		dodgeCaption.AnchorPoint = Vector2.new(0.5, 0.5)
+		dodgeCaption.Position = UDim2.fromScale(0.5, 0.79)
+		dodgeCaption.Size = UDim2.fromScale(0.70, 0.20)
+		dodgeCaption.ZIndex = b.ZIndex + 6
 		bindPress(b, function() useMove("dodge") end)
 		combatBtns.dodge = { btn = b, label = "회피" }
 	end
