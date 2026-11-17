@@ -3545,7 +3545,8 @@ function FieldScene.start(opts)
 				local mine = holdFrom
 				task.delay(0.5, function()
 					if holdFrom == mine and not finished then
-						say("차징 완료! 손을 떼면 돌진 베기")
+						-- [원거리 터치 조작] 활·석궁·총은 꾹 눌러도 근접 돌진으로 무기를 바꾸지 않는다.
+						say(if wpn.ranged then "원거리 조준 중" else "차징 완료! 손을 떼면 돌진 베기")
 					end
 				end)
 			end
@@ -3554,7 +3555,8 @@ function FieldScene.start(opts)
 			if (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) and holdFrom > 0 then
 				local held = os.clock() - holdFrom
 				holdFrom = 0
-				if held >= 0.5 then
+				if held >= 0.5 and not wpn.ranged then
+					-- 기본 사격은 누른 순간 이미 한 발 발사된다. 손 뗄 때 중복 공격·순간 이동은 만들지 않는다.
 					dashSlash()
 				end
 			end
