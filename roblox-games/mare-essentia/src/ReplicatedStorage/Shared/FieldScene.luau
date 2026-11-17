@@ -2459,9 +2459,14 @@ function FieldScene.start(opts)
 						local finale = if slashIdx == 10 then 1 else 0
 						local spread = if bow then 0.93 elseif crossbow then 0.68 elseif longGun then 0.57 else 1.05
 						local orbit = (0.45 + phase * 0.11 + finale * 0.40) * kick
-						return CFrame.new(side * spread * orbit, (if phase % 3 == 0 then 0.30 else -0.28) * kick + finale * 0.35 * kick, -0.20 * release)
-							* CFrame.Angles((if finale == 1 then -0.48 else 0.22) * kick,
-								-side * (0.52 + phase * 0.095 + finale * 0.45) * kick, side * 0.31 * kick)
+						-- [원거리 시네마틱 10박] 활·권총은 마지막에 완전 회전 후 목표선으로 복귀, 석궁·장총은 견착 유지.
+						local eased = p * p * (3 - 2 * p)
+						local landing = math.sin(math.clamp((p - 0.62) / 0.38, 0, 1) * math.pi)
+						local yaw = if finale == 1 and not (crossbow or longGun) then -side * eased * math.pi * 2
+							else -side * (0.52 + phase * 0.095 + finale * 0.45) * kick
+						return CFrame.new(side * spread * orbit, (if phase % 3 == 0 then 0.30 else -0.28) * kick + finale * 0.35 * kick - 0.18 * landing, -0.20 * release)
+							* CFrame.Angles((if finale == 1 then -0.48 else 0.22) * kick + 0.13 * landing,
+								yaw, side * (0.31 * kick - 0.11 * landing))
 					elseif slashIdx == 2 then
 						-- 두 번째 발: 발을 옆으로 밟으며 시선을 목표에 고정하고 총구/활만 방향을 꺾는다.
 						local sidestep = if bow then 0.76 elseif crossbow then 0.52 elseif longGun then 0.43 else 0.92
@@ -2498,8 +2503,12 @@ function FieldScene.start(opts)
 				local forward = if longReach then 1.20 elseif heavy then 0.65 else 0.96
 				local rotation = (if finale then 1.95 elseif slashIdx % 3 == 0 then 1.1 else 0.50 + slashIdx * 0.055)
 				local leap = if finale then (if swift then 0.62 elseif heavy then 0.20 else 0.40) else 0
-				return CFrame.new(side * lateral * beat, (leap - dip) * beat, -forward * thrust)
-					* CFrame.Angles((if finale then -0.56 else -0.30) * beat, side * rotation * beat, -side * 0.26 * beat)
+				-- [검무 10박 마무리] 빠른 무기는 부드러운 전신 회전 후 전방 복귀, 중량 무기는 묵직한 반회전과 착지.
+				local eased = p * p * (3 - 2 * p)
+				local finishTurn = if finale and not heavy then side * eased * math.pi * 2 else side * rotation * beat
+				local heelLand = if finale then math.sin(math.clamp((p - 0.60) / 0.40, 0, 1) * math.pi) else 0
+				return CFrame.new(side * lateral * beat, (leap - dip) * beat - 0.16 * heelLand, -forward * thrust)
+					* CFrame.Angles((if finale then -0.56 else -0.30) * beat + 0.18 * heelLand, finishTurn, -side * 0.26 * beat + side * 0.10 * heelLand)
 			elseif kind == "heavy" then
 				if wpn.ranged then return CFrame.new(0, -0.12 * bell(p), 0) * CFrame.Angles(0.10 * bell(p), 0, 0) end
 				-- [숙련 3타] 3타는 시각 보조 동작이므로 공중으로 뛰지 않고, 발을 디디며 무게만 싣는다.
@@ -2681,6 +2690,10 @@ function FieldScene.start(opts)
 						canon.FootL = (canon.FootL or id) * CFrame.Angles(0.25 * air - 0.17 * land, -side * 0.11 * land, 0)
 						canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.18 * air + 0.29 * land - 0.16 * recover, side * 0.10 * land, 0)
 						canon.Chest = (canon.Chest or id) * CFrame.Angles(0.10 * wind - 0.15 * land, -side * 0.13 * air, 0)
+						-- [회피 관성 마감] 동체보다 고개가 늦게 돌아오고 발끝부터 닿은 뒤 양팔이 무기 자세로 복귀.
+						canon.Head = (canon.Head or id) * CFrame.Angles(-0.12 * air + 0.14 * recover, -side * 0.17 * wind + side * 0.16 * recover, 0)
+						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.14 * wind + 0.17 * recover, 0, side * 0.07 * air)
+						canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.11 * air + 0.12 * recover, 0, -side * 0.10 * land)
 						if style == "warrior" then
 							canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.24 * land, -0.12 * side * peak, 0.20 * land)
 							canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.42 * peak + 0.24 * land, 0, 0)
@@ -2816,6 +2829,16 @@ function FieldScene.start(opts)
 				local step = math.sin(math.clamp(p / 0.56, 0, 1) * math.pi)
 				local shoulder = math.sin(math.clamp((p - 0.10) / 0.70, 0, 1) * math.pi)
 				local finish = math.sin(math.clamp((p - 0.29) / 0.54, 0, 1) * math.pi)
+				-- [4·7·10박 강조] 어깨·팔꿈치·발의 지연 반응으로 끊기지 않는 검무/연사 연결.
+				local accent = if slashIdx == 4 then 0.24 elseif slashIdx == 7 then 0.38 elseif slashIdx == 10 then 0.52 else 0
+				if accent > 0 then
+					local push = math.sin(math.clamp((p - 0.05) / 0.60, 0, 1) * math.pi)
+					local recover = math.sin(math.clamp((p - 0.43) / 0.55, 0, 1) * math.pi)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-accent * 0.54 * push, side * accent * 0.70 * recover, 0)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-accent * push + 0.22 * accent * recover, 0, -side * accent * 0.37 * push)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-accent * 0.48 * push + accent * 0.68 * recover, 0, 0)
+					canon.FootR = (canon.FootR or id) * CFrame.Angles(-accent * 0.24 * push + accent * 0.31 * recover, 0, side * 0.12 * recover)
+				end
 				-- [10박자 마무리] 스윙을 억지로 반복하지 않고 시선·축발·팔끝이 순차적으로 회수된다.
 				if slashIdx == 10 then
 					local landing = math.sin(math.clamp((p - 0.55) / 0.43, 0, 1) * math.pi)
@@ -4455,9 +4478,23 @@ function FieldScene.start(opts)
 				pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 0.5, 0), cyan, violet, 6, if mobile then 3 else 7)
 				sfx("sfx_card_spell", 0.23, 1.34)
 			end
-			-- [공통 착지 박자] 전신 R15 동작의 착지에 맞춘 마지막 빛줄기. 장애물/적/피해 판정 없음.
-			task.delay(0.21, function()
-				if finished or not hrp.Parent then return end
+			-- [회피 중간 궤적] 착지와 분리된 한 번의 짧은 시각 섬광. 모바일은 입자 2개로 제한.
+			task.delay(0.13, function()
+				if finished or not hrp.Parent or swingKind ~= "dash" then return end
+				local glideColor = if dodgeStyle == "warrior" then Color3.fromRGB(110, 205, 246)
+					elseif dodgeStyle == "gunner" then Color3.fromRGB(255, 198, 113)
+					elseif dodgeStyle == "navigator" then Color3.fromRGB(95, 230, 213)
+					elseif dodgeStyle == "merchant" then Color3.fromRGB(255, 206, 98)
+					elseif dodgeStyle == "doctor" then Color3.fromRGB(112, 229, 182)
+					elseif dodgeStyle == "clergy" then Color3.fromRGB(252, 218, 125)
+					else Color3.fromRGB(177, 157, 255)
+				pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, -0.5, -0.3), glideColor,
+					glideColor:Lerp(Color3.new(1, 1, 1), 0.65), if mobile then 3.2 else 5.5,
+					if mobile then 2 else 5)
+			end)
+			-- [공통 착지 박자] 발이 닿는 0.30초에 마지막 섬광. 장애물·적·피해 판정 없음.
+			task.delay(0.30, function()
+				if finished or not hrp.Parent or swingKind ~= "dash" then return end
 				local color = if dodgeStyle == "warrior" then Color3.fromRGB(255, 218, 145)
 					elseif dodgeStyle == "gunner" then Color3.fromRGB(255, 208, 148)
 					elseif dodgeStyle == "navigator" then Color3.fromRGB(108, 237, 210)
@@ -4543,7 +4580,7 @@ function FieldScene.start(opts)
 						if rapidPose then 0.27 elseif kind == "heavy" then 0.34 else 0.18,
 						if rapidPose then 0.54 elseif kind == "heavy" then 0.74 else 0.40)
 					if rapidPose then
-						local flank = if basicBeat == 2 then -1 else 1
+						local flank = if basicBeat % 2 == 0 then -1 else 1
 						local flashAt = hrp.CFrame * CFrame.new(flank * 1.1, if basicBeat == 3 then -1.0 else 0.6, -2.1)
 						pulseAt("SHAPE_BURST", flashAt, aimColor, aimColor:Lerp(Color3.new(1, 1, 1), 0.7),
 							if basicBeat == 3 then 7 else 4.6, if visualMobile then 2 else 6)
@@ -4554,6 +4591,12 @@ function FieldScene.start(opts)
 						elseif basicBeat >= 4 then
 							trailsOn(ch0, { "LeftHand", "LeftLowerArm", "RightHand", "LeftLowerLeg" }, aimColor,
 								if basicBeat == 10 then 0.47 else 0.27, 0.52)
+							-- [4·7박 교차 사격 섬광] 주인공 관절 단계만 강조하며 추가 탄환·피해를 생성하지 않는다.
+							if basicBeat == 4 or basicBeat == 7 then
+								pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(flank * 0.8, if basicBeat == 7 then 0.65 else 1.15, -2.1),
+									aimColor, Color3.fromRGB(248, 252, 255), if basicBeat == 7 then 5.2 else 3.7,
+									if visualMobile then 2 else 5)
+							end
 							if basicBeat == 10 then
 								auraOn(ch0, aimColor, aimColor:Lerp(Color3.new(1, 1, 1), 0.73), 0.42)
 								pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, 0.6, -2.2),
@@ -4572,6 +4615,14 @@ function FieldScene.start(opts)
 						else Color3.fromRGB(199, 216, 255)
 					trailsOn(ch0, { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerLeg", "RightLowerLeg" },
 						trailColor, if basicBeat == 10 then 0.48 else 0.27, 0.56)
+					-- [4·7박 검무 궤적] 기존 검광 에셋을 교차 각도로 사용. 피해·타격 횟수는 원본 그대로.
+					if basicBeat == 4 or basicBeat == 7 then
+						if not visualMobile or basicBeat == 7 then
+							slashArc(hrp, trailColor, math.min(reachV, 12),
+								if wpn.family == "spear" then 60 elseif wpn.family == "dagger" then 95 else 145,
+								if basicBeat == 4 then -38 else 42)
+						end
+					end
 					if basicBeat == 10 then
 						auraOn(ch0, trailColor, trailColor:Lerp(Color3.new(1, 1, 1), 0.66), 0.42)
 						pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, -1.6, -1.2),
