@@ -1067,6 +1067,10 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/function FX\.shipFire\(sh, key, hp, now\)/,'ship damage keeps attached flames/smoke');
   assert.match(battle,/vent\.Position = root\.CFrame:PointToObjectSpace\(origin\)/,'damage fire follows actual moving ships');
   assert.match(battle,/vent\.fire\.Rate = if hp < 0\.42/,'fire intensity must reflect the unchanged hull fraction');
+  assert.match(battle,/vent\.fire\.Enabled = vent\.fire\.Rate > 0/,'damage-driven fire emitter must actually ignite');
+  assert.match(battle,/vent\.soot\.Enabled = vent\.soot\.Rate > 0/,'damage smoke must actually turn on');
+  assert.match(battle,/FX\.boardingCrewSpawned = true/,'boarding crew rigs must spawn at most once');
+  assert.match(battle,/for i = 1, \(if MOBILE_VFX then 2 else 4\) do/,'mobile boarding actors are bounded');
   assert.match(battle,/function FX\.boarding\(\)/);
   assert.match(battle,/FX\.boardZoom \+=/,'boarding cinematic transitions smoothly');
   assert.match(battle,/cam\.FieldOfView = 76 .* - FX\.boardZoom \* 19/,'boarding zoom cannot change ship mechanics');
