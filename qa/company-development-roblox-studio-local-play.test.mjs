@@ -4130,6 +4130,53 @@ test('Mare R15 enemy ally authored weapon impact matches strike event timing',()
     'enemy combat authority and ally damage, speed, range and reward flow remain unchanged');
 });
 
+// [무기 스킬·직업 회피] 무기별 스킬은 정확히 두 유형, 기본 회피/방어·카드·저장/게임 규칙은 독립적이다.
+test('Mare weapon two skill types, dagger basic speed and seven profession dodges',()=>{
+  const base='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
+  const scene=fs.readFileSync(base+'FieldScene.luau','utf8');
+  const motion=fs.readFileSync(base+'FieldMotion.luau','utf8');
+  const weapons=fs.readFileSync(base+'Weapons.luau','utf8');
+  const jobs=fs.readFileSync(base+'JobSkills.luau','utf8');
+  assert.ok(scene.includes('attackBtn:SetAttribute("WeaponSkillCount", 2)')&&
+    scene.includes('local available = { "heavy", "sweep" }')&&
+    scene.includes('mkSkill("dodge"')&&scene.includes('mkSkill("parry"'),
+    'two weapon-skill types with separate evade and guard');
+  for(const family of ['fist','blade','dagger','axe','spear','blunt','bow','firearm']){
+    const row=weapons.split('\n').find(x=>x.includes(family+' = { basic = '));
+    assert.ok(row && row.includes('heavy = ') && row.includes('sweep = '),'missing 2 weapon skills '+family);
+  }
+  assert.ok(jobs.includes('JobSkills.MAX_PLAYER_SKILLS = 3'),
+    'existing character/card loadout and third unlock must not be removed');
+  const timings={dagger:.34,fist:.37,blade:.39,spear:.41,bow:.43,firearm:.43,axe:.45,blunt:.45,crossbow:.46};
+  assert.ok(Object.entries(timings).every(([key,time])=>key==='dagger'||time>timings.dagger));
+  assert.ok(scene.includes('wpn.family == "dagger" then 0.34')&&
+    scene.includes('wpn.family == "blade" then 0.39')&&
+    scene.includes('wpn.id == "crossbow" then 0.46')&&
+    scene.includes('wpn.family == "axe" or wpn.family == "blunt" then 0.45'));
+  assert.ok(scene.includes('local impact = math.clamp(0.14 / swingDur, 0.15, 0.75)')&&
+    scene.includes('progress = if p < impact then p / impact * contact'),
+    'authored melee contact must match original basic damage at 0.14 sec');
+  const shared=scene.indexOf('local dodgeStyle = "warrior"');
+  const root=scene.indexOf('if dodgeStyle == "navigator" then');
+  const action=scene.indexOf('dodgeStyle = JobSkills.categoryOf(profession)');
+  assert.ok(shared>0 && root>shared && action>root,'dodge style must be shared by input and animation state');
+  for(const role of ['warrior','gunner','clergy','doctor','navigator','merchant','scholar']){
+    assert.ok(scene.includes(role+' = {'),'missing profession R15 pose: '+role);
+  }
+  assert.ok(scene.includes('src = dashPoses[dodgeStyle] or dashPoses.warrior')&&
+    scene.includes('ch0:SetAttribute("FieldDodgeStyle", dodgeStyle)')&&
+    scene.includes('startSwing("dash", 0.4)')&&
+    scene.includes('hrp.CFrame = hrp.CFrame + look.Unit * 14'),
+    'dodge animation must preserve original movement, timing and character input');
+  for(const role of ['archer','shield','charger','thrower','boss','grunt']){
+    assert.ok(motion.includes('if role == "'+role+'"')||motion.includes('elseif role == "'+role+'"'),
+      'enemy combat role evasion missing '+role);
+  }
+  assert.ok(scene.includes('AC.tryMove(pl, moveId, now)')&&
+    scene.includes('task.delay(if kind == "slash" then 0.14'),
+    'original invulnerability authority and attack damage timing must be retained');
+});
+
 test('Mare nine weapon families have distinct authored normal and skill R15 gameplay',()=>{
   const base='roblox-games/mare-essentia/';
   const source=fs.readFileSync(base+'src/ReplicatedStorage/Shared/Weapons.luau','utf8');
