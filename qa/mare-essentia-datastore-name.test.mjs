@@ -247,6 +247,25 @@ test('원거리 화살 석궁은 실제 긴 축을 바로 세우고 3D 탄도·�
   assert.ok(chance(1,true,true,true)>=.35,'빗나감 하한 유효');
 });
 
+// [유적 탐험] 모바일 HUD와 충돌하지 않도록 조사 알림만 펼치고 등록 원더 이미지가 원본을 표시한다.
+test('유적 상호작용과 발견 화면의 모바일 잘림·조사 키 충돌을 방지한다',()=>{
+  assert.ok(field.includes('note.Name = "FieldInteractionNote"'));
+  assert.ok(field.includes('local expanded = duration ~= nil and duration > 2.2'));
+  assert.ok(field.includes('note.Size = if expanded then UDim2.new(0.78, 0, 0, 64)'));
+  assert.ok(field.includes('note.TextWrapped = expanded'));
+  assert.ok(field.includes('say(clueText[theme] or clueText.plains, 4.5)'));
+  assert.ok(field.includes('prompt.KeyboardKeyCode = Enum.KeyCode.T'));
+  assert.ok(field.includes('math.min(extent.X * 0.55 + 4, 16)'));
+  assert.ok(field.includes('math.min(extent.Z * 0.55 + 4, 16)'));
+  assert.ok(client.includes('local image = "rbxassetid://" .. tostring(assetId)'));
+  assert.doesNotMatch(client,/local image = "rbxthumb:\/\//);
+  const scenes=read('ReplicatedStorage/Shared/WonderScenes.luau');
+  const assets=read('ReplicatedStorage/Shared/AssetIds.luau');
+  for(const match of scenes.matchAll(/art = "(event_[a-z_]+)"/g)){
+    assert.ok(assets.includes('["CardArt/'+match[1]+'"]'),'미등록 유적 원더 그림 '+match[1]);
+  }
+});
+
 // [재생기/날씨 음향 회귀] 최초 지연 로드와 권한 실패가 모든 음악·효과음을 영구 음소거하지 않도록 한다.
 test('음악 효과음 환경음은 기본 믹서 크기·지연 로딩·자동 재시도 경로를 유지한다',()=>{
   const audio=read('ReplicatedStorage/Shared/Sfx.luau');

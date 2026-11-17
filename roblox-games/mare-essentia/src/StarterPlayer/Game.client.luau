@@ -10092,7 +10092,8 @@ function H.playWonderScene(cardId)
 	fstroke.Thickness = 3
 	fstroke.Color = Color3.fromRGB(212, 168, 74)
 	fstroke.Parent = frame
-	local image = "rbxthumb://type=Asset&id=" .. tostring(assetId) .. "&w=768&h=432"
+	-- [원더/유적 이미지] 실제 등록된 원화 ID를 직접 로드해야 썸네일 자리표시자로 깨지지 않는다.
+	local image = "rbxassetid://" .. tostring(assetId)
 	local N = 14
 	local zoom = Instance.new("Frame") -- 천천히 다가가는 화면 (Ken Burns)
 	zoom.AnchorPoint = Vector2.new(0.5, 0.5)
