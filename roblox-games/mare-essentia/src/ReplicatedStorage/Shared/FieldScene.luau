@@ -3559,8 +3559,23 @@ function FieldScene.start(opts)
 					local aimColor = if wpn.motion == "CROSSBOW" then Color3.fromRGB(181, 215, 240)
 						elseif wpn.family == "bow" then Color3.fromRGB(156, 225, 159)
 						else Color3.fromRGB(255, 200, 129)
-					trailsOn(ch0, { "RightHand", "RightLowerArm", "LeftHand" }, aimColor,
-						if kind == "heavy" then 0.34 else 0.18, if kind == "heavy" then 0.74 else 0.40)
+					-- [영화식 연속 사격] 기본 1발은 가벼운 총구 잔상, 2·3발은 다리 디딤과 전신 잔광.
+					local rapidPose = moveId == "rush" and basicBeat >= 2
+					trailsOn(ch0, if rapidPose then { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerArm", "RightLowerLeg" }
+						else { "RightHand", "RightLowerArm", "LeftHand" }, aimColor,
+						if rapidPose then 0.27 elseif kind == "heavy" then 0.34 else 0.18,
+						if rapidPose then 0.54 elseif kind == "heavy" then 0.74 else 0.40)
+					if rapidPose then
+						local flank = if basicBeat == 2 then -1 else 1
+						local flashAt = hrp.CFrame * CFrame.new(flank * 1.1, if basicBeat == 3 then -1.0 else 0.6, -2.1)
+						pulseAt("SHAPE_BURST", flashAt, aimColor, aimColor:Lerp(Color3.new(1, 1, 1), 0.7),
+							if basicBeat == 3 then 7 else 4.6, if visualMobile then 2 else 6)
+						if basicBeat == 3 then
+							-- 3발째는 낮은 슬라이드로 마무리. 모바일은 아우라 하나만, PC는 순간적인 전신 잔상.
+							auraOn(ch0, aimColor, aimColor:Lerp(Color3.new(1, 1, 1), 0.65), 0.34)
+							if not visualMobile then afterimage(ch0, aimColor, 2, 0.06) end
+						end
+					end
 				elseif kind == "spin" then
 					trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(120, 220, 255), 0.4, 0.9)
 					auraOn(ch0, Color3.fromRGB(90, 190, 255), Color3.fromRGB(230, 250, 255), 0.8)
@@ -3771,7 +3786,14 @@ function FieldScene.start(opts)
 								pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(side * 0.35, 1.2, -2.9),
 									shotColor, Color3.fromRGB(255, 247, 227), if stage == 3 then 6 else 4,
 									if visualMobile then 2 else 5)
-								trailsOn(player.Character, { "RightHand", "LeftHand" }, shotColor, 0.18, 0.32)
+								-- [숙련 연사] 발사 손과 발 디딤의 잔광을 동시에 표현한다. 기존 R15 소체와 공용 이펙트만 사용.
+								trailsOn(player.Character, { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerArm", "RightLowerLeg" },
+									shotColor, if stage == 3 then 0.27 else 0.20, if stage == 3 then 0.48 else 0.35)
+								if stage == 3 then
+									pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(side * 0.7, -1.4, -1.5),
+										shotColor, shotColor:Lerp(Color3.new(1, 1, 1), 0.7), 7,
+										if visualMobile then 2 else 7)
+								end
 							end
 							if stage == chain then
 								masteryCinema(hrp, stage, defeatedAt)
