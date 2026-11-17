@@ -2522,8 +2522,7 @@ function FieldScene.start(opts)
 	end)
 
 	local swingKind, swingT0, swingDur = nil, 0, 0
-	local hitStopUntil = 0 -- 타격 정지: 이 시각까지 휘두르기 진행을 멈춘다
-	local hitStopLast = os.clock()
+	-- [지상 연속 타격] 모션 시간은 멈추지 않는다. 강타 손맛은 기존 넉백·카메라·효과음으로 남긴다.
 	local swingCombo, slashIdx = nil, 0
 	-- [연타 관절 연결] 한 공격이 끝나기 전에 다음 시각 모션을 시작할 때 R15 실제 마지막 자세를 이어 붙인다.
 	-- 신규 애니메이션 트랙/이동 판정 없이 기존 캐논 관절만 보간한다. 최근 프레임 포즈는 테이블을 재사용한다.
@@ -3116,14 +3115,6 @@ function FieldScene.start(opts)
 			local canon = pfm.canon
 			table.clear(canon)
 			local rootRot = nil
-			do
-				local nowc = os.clock()
-				local elapsed = math.max(0, nowc - hitStopLast)
-				if nowc < hitStopUntil then
-					swingT0 += elapsed -- 기존 타격 정지는 유지한다. 긴 숙련 슬로모션은 사용하지 않는다.
-				end
-				hitStopLast = nowc
-			end
 			if swingKind then
 				local p = (os.clock() - swingT0) / swingDur
 				if p >= 1 then
@@ -4193,6 +4184,10 @@ function FieldScene.start(opts)
 	comboLabel.TextStrokeColor3 = Color3.fromRGB(22, 22, 37)
 	comboLabel.TextStrokeTransparency = 0.04
 	comboLabel.ZIndex = 22
+	-- [폰트 뭉개짐 방지] 라벨 글자 크기는 이벤트당 한 번만 고정하고 팝 애니메이션은 UIScale로 처리한다.
+	local comboPopScale = Instance.new("UIScale")
+	comboPopScale.Scale = 1
+	comboPopScale.Parent = comboLabel
 	local comboInfo = label(gui, "", if visualMobile then 17 else 18, Color3.fromRGB(202, 235, 255))
 	comboInfo.Name = "FieldStreakRecord"
 	comboInfo.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -4236,14 +4231,15 @@ function FieldScene.start(opts)
 			elseif milestone then (if visualMobile then 63 else 76)
 			else (if visualMobile then 51 else 60)
 		comboLabel.Text = text
-		comboLabel.TextSize = targetSize + (if milestone then 19 else 12)
+		comboLabel.TextSize = targetSize
 		comboLabel.TextColor3 = accent or (if milestone then Color3.fromRGB(255, 226, 112) else Color3.fromRGB(232, 249, 255))
 		comboLabel.TextTransparency = 0
-		comboLabel.TextStrokeTransparency = 0.04
-		comboLabel.Rotation = if milestone then -6 else (if comboToken % 2 == 0 then 3 else -3)
+		comboLabel.TextStrokeTransparency = 0.15
+		comboLabel.Rotation = 0
 		comboLabel.Position = UDim2.fromScale(0.5, if milestone then 0.245 else 0.27)
-		comboPopTween = TweenService:Create(comboLabel, TweenInfo.new(0.13, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-			TextSize = targetSize, Rotation = 0,
+		comboPopScale.Scale = if milestone then 1.20 else 1.13
+		comboPopTween = TweenService:Create(comboPopScale, TweenInfo.new(0.13, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+			Scale = 1,
 		})
 		comboPopTween:Play()
 		task.delay(if milestone then 0.75 else 0.43, function()
@@ -4365,10 +4361,7 @@ function FieldScene.start(opts)
 				else (if autoHeavy then 0.77 elseif spectacular then 0.68 else 0.83))
 		end
 		local now = os.clock()
-		-- [연타 기록] 일반 5타 알림은 움직임을 멈추지 않고, 필살·특별 기록의 연출만 유지한다.
-		if autoHeavy or spectacular then
-			hitStopUntil = math.max(hitStopUntil, now + (if autoHeavy then 0.10 else 0.12))
-		end
+		-- [강타 연속성] 필살/대기록도 관절 재생을 멈추지 않고 화면 흔들림만 증폭한다.
 		shakeUntil = math.max(shakeUntil, now + (if autoHeavy then 0.17 else 0.15))
 		shakeAmp = if visualMobile then (if autoHeavy then 0.27 else 0.22)
 			else (if autoHeavy then 0.55 elseif spectacular then 0.72 else 0.35)
@@ -4634,10 +4627,7 @@ function FieldScene.start(opts)
 		end
 		if not quiet then
 			local hitAt = os.clock()
-			-- [끊김 없는 평타] 일반 명중마다 전신 모션 시계를 멈추지 않는다. 강타·스킬 정지만 유지한다.
-			if basicAttack ~= true then
-				hitStopUntil = math.max(hitStopUntil, hitAt + (if mult >= 1.5 then 0.09 else 0.045))
-			end
+			-- [실제 명중] 강타·스킬도 공격 모션 시간을 멈추지 않는다. 기존 피해/넉백은 유지한다.
 			lastCombatAt = hitAt
 			local creditedSeq = actionSeq or streakActionSeq
 			if ownerAttack ~= false and creditedSeq > 0 and creditedSeq > streakActionSeq - 64
@@ -4835,17 +4825,19 @@ function FieldScene.start(opts)
 			sfx("sfx_metal_clash", 0.75, 0.93)
 			pulseAt("BLOCK_IMPACT", CFrame.new(impactPos), Color3.fromRGB(155, 194, 224), Color3.fromRGB(255, 230, 161), 7, 5)
 		elseif family == "axe" then
-			-- [도끼 적중] 둔탁한 작업장 도끼질 대신 짧은 칼날 절삭음.
-			sfx("sfx_boarding_slash", if quiet then 0.20 else 0.48, 1.16)
+			-- [도끼 적중] 휘두름 슬래시와 별개로 묵직한 장갑 절삭음을 한 번만 사용한다.
+			sfx("sfx_card_armor", if quiet then 0.18 else 0.40, 1.23)
 			if not visualMobile then shockRing(impactPos - Vector3.new(0, 2, 0), 7, Color3.fromRGB(246, 169, 100), 0.18) end
 		elseif family == "blunt" then
-			-- [철퇴 적중] 묵직한 목재 타격 대신 금속 징 소리의 어택 부분만 사용한다.
-			sfx("sfx_metal_clash", if quiet then 0.19 else 0.38, 1.37)
+			-- [망치/철퇴] 저음 금속 충격으로 도끼의 날카로운 접촉음과 구분한다.
+			sfx("sfx_metal_clash", if quiet then 0.19 else 0.42, 0.89)
 		elseif family == "spear" then
-			sfx("sfx_card_blade", 0.55, 1.33)
+			-- [창] 찌르기 준비 소리와 겹치지 않는 짧은 관통음을 사용한다.
+			sfx("sfx_boarding_draw", if quiet then 0.17 else 0.37, 1.46)
 			pulseAt("IMPACT_FLASH", CFrame.new(impactPos), Color3.fromRGB(155, 229, 248), Color3.new(1, 1, 1), 5, 4)
 		elseif family == "dagger" then
-			sfx("sfx_card_blade", 0.46, 1.5)
+			-- [단검] 빠르고 높은 음의 단일 베기 접촉음을 유지한다.
+			sfx("sfx_card_blade", if quiet then 0.20 else 0.38, 1.62)
 		elseif impactWeapon.motion == "CROSSBOW" then
 			-- [석궁 적중] 격발과 겹치는 화기 소리를 없애고 짧은 쇠 볼트 접촉음만 사용한다.
 			sfx("sfx_card_chain", if quiet then 0.16 else 0.29, 1.65)
@@ -4855,7 +4847,8 @@ function FieldScene.start(opts)
 			-- [총탄 적중] 발포음은 사격 함수에서 한 번, 접촉음은 가벼운 금속성 잔향만 출력한다.
 			sfx("sfx_card_ring", if quiet then 0.14 else 0.23, 1.65)
 		elseif family == "fist" then
-			sfx("sfx_card_swing", if quiet then 0.20 else 0.44, 1.27)
+			-- [맨손] 휘두르는 바람소리 대신 몸체에 맞는 낮은 타격음.
+			sfx("sfx_hit", if quiet then 0.17 else 0.41, 0.93)
 		elseif impactWeapon.motion == "RAPIER" then
 			sfx("sfx_card_blade", if quiet then 0.18 else 0.40, 1.52)
 		elseif impactWeapon.motion == "SABRE" or impactWeapon.motion == "SCIMITAR" or impactWeapon.motion == "KATANA" then
