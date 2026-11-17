@@ -65,6 +65,8 @@ end
 -- 실제 Roblox R15 리그: 기본 도형으로 NPC를 만드는 대신 15관절 Humanoid를 생성한다.
 -- 장면별 모든 인간 NPC는 이 원본을 복제하므로 뼈대 없는 정적 메시를 NPC로 사용하지 않는다.
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local r15Template = nil
 local r15Unavailable = false
 local rigMotors = setmetatable({}, { __mode = "k" })
@@ -473,6 +475,103 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 		root = model:FindFirstChild("Root", true),
 	}
 	return model
+end
+
+
+-- [R15 몹 실물 외형] 기존 승인된 People 조각만 표준 R15 몸통·머리·어깨에 붙인다.
+-- 통짜 스킨을 정적 몸체로 덮지 않는다. 모터 15관절·피격·공격·저장·속도는 그대로 유지한다.
+-- 이름 / 대상 R15 부위 / 가로·세로·두께 / 높이 오프셋. 기존 AssetIds와 MareAssets를 재사용한다.
+local MOB_OUTFIT_PARTS = {
+	knight = {
+		{ "male_ranger_body", "UpperTorso", 1.22, 1.56, 1.27, -0.10 },
+		{ "female_ranger_acc_pauldrons", "UpperTorso", 1.52, 1.10, 1.48, 0.30 },
+	},
+	rogue = {
+		{ "male_ranger_body", "UpperTorso", 1.16, 1.50, 1.22, -0.10 },
+		{ "male_ranger_head_hood", "Head", 1.23, 1.31, 1.21, 0.16 },
+	},
+	ranger = {
+		{ "female_ranger_body", "UpperTorso", 1.17, 1.52, 1.23, -0.10 },
+		{ "female_ranger_head_hood", "Head", 1.24, 1.32, 1.22, 0.16 },
+	},
+	pirate = {
+		{ "male_peasant_body", "UpperTorso", 1.21, 1.55, 1.26, -0.10 },
+	},
+	pirate_female = {
+		{ "female_peasant_body", "UpperTorso", 1.19, 1.53, 1.26, -0.10 },
+	},
+	brute = {
+		{ "male_peasant_body", "UpperTorso", 1.23, 1.57, 1.27, -0.10 },
+		{ "male_ranger_acc_pauldron", "RightUpperArm", 1.35, 1.15, 1.36, 0.30 },
+	},
+	bombard = {
+		{ "female_peasant_body", "UpperTorso", 1.19, 1.51, 1.22, -0.10 },
+		{ "male_ranger_head_hood", "Head", 1.24, 1.30, 1.23, 0.16 },
+	},
+	warlord = {
+		{ "male_ranger_body", "UpperTorso", 1.27, 1.61, 1.32, -0.12 },
+		{ "female_ranger_acc_pauldrons", "UpperTorso", 1.64, 1.16, 1.57, 0.33 },
+	},
+}
+
+-- 이미 생성된 R15 몹에 승인 실물 외형을 적용한다. People 자산이 늦게 로드되면 같은 함수를 재호출한다.
+function Pose.applyRegisteredMobOutfit(model)
+	if not model or not model.Parent or model:GetAttribute("RigType") ~= "R15" then return false end
+	local specs = MOB_OUTFIT_PARTS[model:GetAttribute("MobAssetProfile")]
+	if not specs then return false end
+	local shelf = ReplicatedStorage:FindFirstChild("MareAssets")
+	local people = shelf and shelf:FindFirstChild("People")
+	local attached = 0
+	for _, spec in specs do
+		local assetName, boneName = spec[1], spec[2]
+		local slotName = "R15Asset_" .. assetName
+		if model:FindFirstChild(slotName) then
+			attached += 1
+			continue
+		end
+		-- [안전] 등록·사용승인된 이름이 아니거나 실제 메시가 없으면 빈 외형을 가장하지 않는다.
+		local approved = AssetIds["People/" .. assetName]
+		local source = approved and people and people:FindFirstChild(assetName)
+		local target = model:FindFirstChild(boneName)
+		if not (source and source:IsA("Model") and target and target:IsA("BasePart")) then continue end
+		local skin = source:Clone()
+		skin.Name = slotName
+		local parts = {}
+		for _, item in skin:GetDescendants() do
+			if item:IsA("Script") or item:IsA("LocalScript") or item:IsA("ModuleScript")
+				or item:IsA("Humanoid") or item:IsA("Animator") or item:IsA("Motor6D")
+				or item:IsA("WeldConstraint") then
+				item:Destroy()
+			elseif item:IsA("BasePart") then
+				table.insert(parts, item)
+			end
+		end
+		-- [모바일/관절 보호] 통짜 캐릭터 모델·과도한 파츠는 장착하지 않는다.
+		if #parts < 1 or #parts > 12 then skin:Destroy(); continue end
+		local ok = pcall(function()
+			local bounds, ext = skin:GetBoundingBox()
+			if ext.X < 0.01 or ext.Y < 0.01 or ext.Z < 0.01 then error("empty mesh") end
+			local ratio = math.min(
+				target.Size.X * spec[3] / ext.X,
+				target.Size.Y * spec[4] / ext.Y,
+				target.Size.Z * spec[5] / ext.Z
+			)
+			if ratio <= 0 or ratio ~= ratio or ratio > 100 then error("invalid scale") end
+			skin:ScaleTo(ratio)
+			bounds = skin:GetBoundingBox()
+			skin:PivotTo((target.CFrame * CFrame.new(0, target.Size.Y * spec[6], 0)) * bounds:ToObjectSpace(skin:GetPivot()))
+			for _, part in parts do
+				part.Anchored, part.CanCollide, part.CanTouch, part.CanQuery = false, false, false, false
+				part.Massless = true
+				local weld = Instance.new("WeldConstraint")
+				weld.Part0, weld.Part1, weld.Parent = target, part, part
+			end
+			skin.Parent = model
+		end)
+		if ok then attached += 1 else skin:Destroy() end
+	end
+	model:SetAttribute("MobAppearanceState", if attached == #specs then "ready" elseif attached > 0 then "partial" else "asset_pending")
+	return attached == #specs
 end
 
 function Pose.walkR15(model, phase, moving)
