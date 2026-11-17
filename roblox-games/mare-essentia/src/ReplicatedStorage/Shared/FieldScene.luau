@@ -6788,6 +6788,15 @@ function FieldScene.start(opts)
 					groundRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0), e.ac.def.range * STUD * 0.85, e.ac.def.windup)
 				end
 				e.parryAt = nil
+				-- [원거리 조준 고정] 발사 예고 때 예상 탄착점만 정한다. 이후 좌우 이동하면 회피할 수 있다.
+				-- 발사 횟수·무기 수치·폭탄의 기존 고정 목표점은 변경하지 않는다.
+				e.rangedAim = nil
+				if e.ac.def.keepAway and not e.throwAsset then
+					local velocity = hrp.AssemblyLinearVelocity * Vector3.new(1, 0, 1)
+					local lead = velocity * 0.14
+					if lead.Magnitude > 2.4 then lead = lead.Unit * 2.4 end
+					e.rangedAim = hrp.Position + lead
+				end
 				-- [정예·보스 특수공격 예고] 다음 공격이 감속/독을 거는지 기존 빨간 예고 UI에 직접 표시한다.
 				-- 타격 시 다시 명중·방어·쿨타임을 검사하므로 예고 자체가 피해나 상태를 적용하지 않는다.
 				e.telegraphStatus = if e.boss and now >= (e.nextPoisonAt or 0) and now >= bossPoisonUntil then "poison"
@@ -6823,7 +6832,7 @@ function FieldScene.start(opts)
 				end
 				-- 돌진병은 달려들 길(붉은 띠), 사수는 조준선(붉은 빔)을 보여 준다: 예고 중에 비키면 피할 수 있다
 				if e.ac.def.charge or e.ac.def.keepAway then
-					local from, gp = e.root.Position, hrp.Position
+					local from, gp = e.root.Position, (e.rangedAim or hrp.Position)
 					local dv = Vector3.new(gp.X - from.X, 0, gp.Z - from.Z)
 					if dv.Magnitude > 1 then
 						local isCharge = e.ac.def.charge
@@ -6891,6 +6900,14 @@ function FieldScene.start(opts)
 					local diff = (hrp.Position - e.bombAim) * Vector3.new(1, 0, 1)
 					hit = diff.Magnitude <= 6
 				end
+				-- [사수 회피 판정] 예고 이후 움직인 목표를 다시 추적하지 않는다.
+				-- 기존 사거리·공격력·방어·무적·드랍 처리는 유지한다.
+				if e.ac.def.keepAway and e.rangedAim and not e.throwAsset then
+					local offset = (hrp.Position - e.rangedAim) * Vector3.new(1, 0, 1)
+					local tolerance = if e.weapon and e.weapon.motion == "RIFLE" then 3.4
+						elseif e.weapon and e.weapon.motion == "CROSSBOW" then 4.0 else 4.6
+					hit = hit and offset.Magnitude <= tolerance
+				end
 				if e.ac.def.charge then
 					-- [돌진 모션] 공격 판정 시각·범위는 유지하되 시각 모델은 목표로 1프레임 순간이동하지 않는다.
 					-- 매 프레임 일정 거리만 전진해 PC·모바일 프레임 지연에도 돌진이 눈에 보인다.
@@ -6920,6 +6937,7 @@ function FieldScene.start(opts)
 					end
 				end
 				if e.ac.def.keepAway then
+					local shotTarget = e.rangedAim or hrp.Position
 					if e.throwAsset == "bomb" then
 						-- 화약 폭탄은 사전 경고 중 날아왔고 현재 착탄/피해 판정이 일치한다.
 						e.bombAim = nil
@@ -6929,20 +6947,21 @@ function FieldScene.start(opts)
 					elseif e.weapon and e.weapon.id == "crossbow" then
 						-- [석궁] 쇠뇌 시위·볼트 궤적. 총기 발포음은 재생하지 않는다.
 						sfx("sfx_card_volley", 0.34, 1.46)
-						arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0), nil, nil, "CROSSBOW")
+						arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), shotTarget + Vector3.new(0, 1.5, 0), nil, nil, "CROSSBOW")
 					elseif e.weapon and e.weapon.family == "firearm" then
 						-- [총병] 승인된 화약 사격 소리와 총구 섬광.
 						sfx(if e.weapon.motion == "PISTOL" then "sfx_card_fire" else "sfx_cannon",
 							if e.weapon.motion == "PISTOL" then 0.29 else 0.34, if e.weapon.motion == "PISTOL" then 1.52 else 1.87)
 						pulseAt("IMPACT_FLASH", e.root.CFrame * CFrame.new(0, 1.3, -2),
 							Color3.fromRGB(255, 207, 125), Color3.fromRGB(255, 248, 210), 5, if visualMobile then 2 else 4)
-						arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0), nil, nil, e.weapon.motion)
+						arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), shotTarget + Vector3.new(0, 1.5, 0), nil, nil, e.weapon.motion)
 					else
 						sfx("sfx_rope_release", 0.32, if e.weapon and e.weapon.motion == "LONGBOW" then 1.12 else 1.38)
-						arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0),
+						arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), shotTarget + Vector3.new(0, 1.5, 0),
 							nil, nil, if e.weapon then e.weapon.motion else "BOW")
 					end
 				end
+				e.rangedAim = nil
 				if e.warn then e.warn:Destroy() e.warn = nil end
 				if e.warnBb then e.warnBb:Destroy() e.warnBb = nil end
 				-- [완벽 회피] 실전 공격 판정이 온 순간에만 검증한다. 무적 회피 중이며
