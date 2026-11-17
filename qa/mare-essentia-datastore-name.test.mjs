@@ -415,6 +415,36 @@ test('탐험 0.4초 회피 6종 및 무기별 10타 공중 검무 유지',()=>{
   assert.match(field,/pl\.matrixDodgeUntil = now \+ \(mv\.invuln or 0\.35\)/);
 });
 
+// [무기별 1~10타 섬광·잔상 안전 회귀] 효과는 실제 공격 시간에 맞추되 전투 권한과 분리한다.
+test('탐험 무기별 검광·창끝·중량 충격파·활석궁총 타격 시각 연출',()=>{
+  const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+  for(const marker of [
+    '[원거리 무기별 10단 발사 섬광]', '[원거리 손목별 잔광]',
+    '[근접 무기별 2~10타 도장 잔광]', '[무기별 2~9타 접촉 섬광]',
+    '[3·6·9타 무기별 2박]', '[1타 무기별 첫칼]', '[10타 무기별 2박 피날레]'
+  ]) assert.ok(field.includes(marker),'무기별 연타 효과 누락: '+marker);
+  assert.match(field,/local rangedTrail = if wpn\.family == "bow" then/);
+  assert.match(field,/elseif wpn\.motion == "CROSSBOW" then \{ "LeftHand", "RightHand", "RightLowerArm" \}/);
+  assert.match(field,/elseif wpn\.motion == "RIFLE" then \{ "LeftHand", "LeftLowerArm", "RightHand" \}/);
+  for(const family of ['dagger','spear','axe','blunt','fist']){
+    assert.ok(field.includes('wpn.family == "'+family+'"'),'무기별 궤적 구분 누락: '+family);
+  }
+  const ranged=field.slice(field.indexOf('-- [원거리 무기별 10단 발사 섬광]'),field.indexOf('-- [영화식 연속 사격]',field.indexOf('-- [원거리 무기별 10단 발사 섬광]')));
+  const melee=field.slice(field.indexOf('-- [무기별 2~9타 접촉 섬광]'),field.indexOf('if basicBeat == 10 then',field.indexOf('-- [무기별 2~9타 접촉 섬광]')));
+  for(const region of [ranged,melee]){
+    assert.ok(region.length>200,'무기별 효과 범위 누락');
+    assert.match(region,/task\.delay\(0\.14, function\(\)/);
+    assert.match(region,/swingBridge\.basicAt ~= fxAt or wpn\.id ~= fxWeapon/);
+    assert.match(region,/if visualMobile and fxBeat/);
+    for(const forbidden of ['AC.damageEnemy(', 'AC.tryMove(', 'strikeEnemy(', 'pl.autoNormalHits =']){
+      assert.ok(!region.includes(forbidden),'연출이 전투 판정을 건드림: '+forbidden);
+    }
+  }
+  assert.match(field,/if pl\.autoNormalHits % 5 == 0 then/);
+  assert.match(field,/task\.delay\(if kind == "slash" then 0\.14/);
+  assert.match(field,/startSwing\("dash", 0\.4\)/);
+});
+
 // [쓰시마식 검술 1~10타 단계별 전신 연계] 실제 피해 판정·회피·저장 권한과 분리한다.
 test('탐험 단계별 검술 발놀림과 골반 회전의 부드러운 전환 보호',()=>{
   const field=read('ReplicatedStorage/Shared/FieldScene.luau');
