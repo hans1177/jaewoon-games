@@ -57,8 +57,8 @@ test('2·3연타 막타는 무기별 시각 연출만 재생하고 실제 타격
   for (const feature of ['"급습"','"분쇄"','"관통"','"충격"','"속사"','"관통 사격"','"반동 사격"','"교차 베기"']) {
     assert.ok(field.includes(feature), '무기별 마무리 누락: '+feature);
   }
-  assert.match(field,/elseif wpn\.id == "crossbow" then\s*if strong then arrowTrail/);
-  assert.match(field,/elseif family == "bow" then\s*if strong then arrowTrail/);
+  assert.match(field,/elseif wpn\.ranged then[\s\S]*?pulseAt\("SHAPE_BURST", hrp\.CFrame/);
+  assert.match(field,/elseif family == "bow" then[\s\S]*?Color3\.fromRGB\(165, 231, 165\)/);
   assert.match(field,/-- 추가 공격은 R15 무기 자세와 이펙트뿐이다/);
   assert.match(client,/call\("Explore", \{ siteId = s\.id, observedCardId = observedCardId \}\)/);
   assert.doesNotMatch(discovery,/state\.coins\s*\+=\s*earned/);
@@ -307,11 +307,20 @@ test('연타 무기별 3단 시각 동작은 서로 다르고 관절을 끊김 �
   assert.match(field,/local rapidPose = moveId == "rush" and basicBeat >= 2/);
   assert.match(field,/if basicBeat == 3 then[\s\S]*?auraOn\(ch0, aimColor/);
   assert.match(field,/if not visualMobile then afterimage\(ch0, aimColor, 2, 0\.06\) end/);
-  assert.match(field,/return CFrame\.new\(-0\.68 \* kick, -0\.26 \* kick, -0\.12 \* kick\)/);
-  assert.match(field,/return CFrame\.new\(0\.84 \* kick, -0\.76 \* kick, -0\.20 \* kick\)/);
-  assert.match(field,/canon\.ThighL = \(canon\.ThighL or id\) \* CFrame\.Angles\(-0\.61 \* drop \* pulse/);
-  assert.match(field,/canon\.ShinR = \(canon\.ShinR or id\) \* CFrame\.Angles\(-0\.31 \* drop \* pulse/);
+  assert.match(field,/return CFrame\.new\(-sidestep \* kick, -\(if longGun then 0\.24 else 0\.34\) \* kick, -0\.12 \* release\)/);
+  assert.match(field,/return CFrame\.new\(slide \* kick, -crouch \* kick, -0\.18 \* release\)/);
+  assert.match(field,/canon\.ThighL = \(canon\.ThighL or id\) \* CFrame\.Angles\(-0\.61 \* drop \* plant/);
+  assert.match(field,/canon\.ShinR = \(canon\.ShinR or id\) \* CFrame\.Angles\(-0\.31 \* drop \* plant/);
   assert.match(field,/local shotVolume = 0\.31/);
+  // [시네마틱 전신] 동일한 팔 흔들기가 아니라 1타 무기별 실루엣, 2타 스텝, 3타 낮은 격발이다.
+  assert.match(field,/local sidestep = if bow then 0\.76 elseif crossbow then 0\.52 elseif longGun then 0\.43 else 0\.92/);
+  assert.match(field,/local crouch = if bow then 0\.66 elseif crossbow then 0\.44 elseif longGun then 0\.58 else 0\.82/);
+  assert.match(field,/local plant = math\.sin\(math\.clamp\(p \/ 0\.58, 0, 1\) \* math\.pi\)/);
+  assert.match(field,/local shoulder = math\.sin\(math\.clamp\(\(p - 0\.08\) \/ 0\.72, 0, 1\) \* math\.pi\)/);
+  assert.match(field,/local trigger = math\.sin\(math\.clamp\(\(p - 0\.26\) \/ 0\.55, 0, 1\) \* math\.pi\)/);
+  assert.match(field,/canon\.Head = \(canon\.Head or id\) \* CFrame\.Angles\(0\.12 \* trigger/);
+  assert.match(field,/canon\.UpperArmR = \(canon\.UpperArmR or id\) \* CFrame\.Angles\(-0\.38 \* shoulder \+ 0\.30 \* trigger/);
+  assert.match(field,/canon\.HandR = \(canon\.HandR or id\) \* CFrame\.Angles\(0\.45 \* trigger/);
   assert.match(field,/arrowTrail\(shootFrom, shootTo, nil, nil, wpn\.motion, stage == 3\)/);
   assert.match(field,/if visualMobile then 2 else 7\)/);
   assert.doesNotMatch(motion,/CROSSBOW = \{ "W:FIREARM_RECOIL", "W:FIREARM_CYCLE"/);
