@@ -1443,6 +1443,195 @@ function FieldScene.start(opts)
 
 	end
 
+
+	-- [탐험 시간·날씨·실물 동물] 이번 현장에만 존재하는 비저장 환경 연출.
+	-- 기존 퀘스트 목표·전투 수치·보상·드롭·데이터 저장에는 간섭하지 않는다.
+	do
+		local lighting = game:GetService("Lighting")
+		local climateRng = Random.new((opts.seed or 7) * 137 + 19)
+		local snowy = biome.mat == Enum.Material.Snow or biome.region == "nordic"
+		local dry = biome.mat == Enum.Material.Sand or biome.kind == "mine"
+		local weatherOptions = if snowy then { "맑음", "흐림", "눈", "옅은 안개" }
+			elseif dry then { "맑음", "흐림", "옅은 안개" }
+			else { "맑음", "흐림", "비", "옅은 안개", "소나기" }
+		local weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)]
+		local clockStart = os.clock()
+		local weatherNext = clockStart + climateRng:NextNumber(55, 90)
+		local flashUntil, flashNext = 0, clockStart + 16
+		local timeLabel = label(gui, "", 13, Color3.fromRGB(231, 239, 244))
+		timeLabel.Name = "FieldWeatherClock"
+		timeLabel.Position = UDim2.fromOffset(12, 216)
+		timeLabel.Size = UDim2.fromOffset(228, 26)
+		timeLabel.TextXAlignment = Enum.TextXAlignment.Left
+		-- 투명 발사대는 눈·빗방울의 발원점일 뿐, 동물·장식용 기본 파츠를 생성하지 않는다.
+		local precipAnchor = part(folder, Vector3.new(55, 0.2, 55),
+			CFrame.new(ORIGIN + Vector3.new(0, 25, 0)), Color3.new(1, 1, 1))
+		precipAnchor.Name = "FieldPrecipitationSource"
+		precipAnchor.Transparency = 1
+		precipAnchor.CastShadow = false
+		precipAnchor.CanCollide, precipAnchor.CanTouch, precipAnchor.CanQuery = false, false, false
+		local precip = Instance.new("ParticleEmitter")
+		precip.Name = "FieldPrecipitation"
+		precip.Texture = if snowy then "rbxasset://textures/particles/smoke_main.dds" else "rbxasset://textures/particles/sparkles_main.dds"
+		precip.Shape = Enum.ParticleEmitterShape.Box
+		precip.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
+		precip.EmissionDirection = Enum.NormalId.Bottom
+		precip.Lifetime = if snowy then NumberRange.new(2.4, 3.4) else NumberRange.new(0.6, 1.1)
+		precip.Speed = if snowy then NumberRange.new(4, 8) else NumberRange.new(45, 65)
+		precip.Acceleration = if snowy then Vector3.new(1.6, -3.8, 0.9) else Vector3.new(3, -17, 1)
+		precip.SpreadAngle = if snowy then Vector2.new(22, 22) else Vector2.new(8, 8)
+		precip.Size = if snowy then NumberSequence.new(0.20) else NumberSequence.new(0.075)
+		precip.Transparency = NumberSequence.new(0.43, 0.78)
+		precip.Color = ColorSequence.new(if snowy then Color3.fromRGB(230, 243, 255) else Color3.fromRGB(171, 211, 247))
+		precip.LightEmission = if snowy then 0.2 else 0.08
+		precip.Rate = 0
+		precip.Parent = precipAnchor
+		folder:SetAttribute("FieldWeather", weather)
+		local timeElapsed = 0
+		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
+			if finished or not folder.Parent then return end
+			timeElapsed += math.min(dt, 0.2)
+			if timeElapsed < 0.5 then return end
+			timeElapsed = 0
+			local now = os.clock()
+			local hrp0 = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			if hrp0 and precipAnchor.Parent then
+				precipAnchor.Position = hrp0.Position + Vector3.new(0, 23, 0)
+			end
+			if now >= weatherNext then
+				local old = weather
+				weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)]
+				if weather == old then weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)] end
+				weatherNext = now + climateRng:NextNumber(65, 115)
+				folder:SetAttribute("FieldWeather", weather)
+				if weather ~= old then say("탐험 날씨 변화: " .. weather) end
+			end
+			-- 12분마다 한 바퀴의 새벽→낮→황혼→밤. 조명은 탐험 종료 시 기존 값으로 복구한다.
+			local clock = (biome.clock + (now - clockStart) * (24 / 720)) % 24
+			local sun = math.clamp(math.sin((clock - 6) * math.pi / 12) * 1.15 + 0.16, 0, 1)
+			local phase = if clock < 5 or clock >= 20 then "밤"
+				elseif clock < 8 then "새벽" elseif clock < 17 then "낮" else "황혼"
+			local damp = if weather == "옅은 안개" then 0.48 elseif weather == "소나기" then 0.71
+				elseif weather == "눈" or weather == "비" then 0.80 else 1
+			lighting.ClockTime = clock
+			lighting.Brightness = (0.52 + 1.58 * sun) * (if weather == "소나기" then 0.78 else 1)
+			lighting.FogEnd = math.max(105, biome.fogEnd * damp)
+			lighting.FogColor = biome.fog:Lerp(Color3.fromRGB(60, 78, 111), (1 - sun) * 0.55)
+			lighting.Ambient = biome.fog:Lerp(Color3.fromRGB(83, 103, 132), if sun < 0.5 then 0.77 else 0.54)
+			lighting.OutdoorAmbient = biome.fog:Lerp(Color3.fromRGB(112, 127, 151), if sun < 0.5 then 0.69 else 0.45)
+			if weather == "소나기" and now >= flashNext then
+				flashUntil = now + 0.18
+				flashNext = now + climateRng:NextNumber(14, 28)
+			end
+			lighting.ColorShift_Top = if now < flashUntil then Color3.fromRGB(215, 230, 255)
+				elseif sun < 0.20 then Color3.fromRGB(131, 145, 180)
+				elseif phase == "새벽" or phase == "황혼" then Color3.fromRGB(255, 182, 131)
+				else lightSave.ColorShiftTop
+			precip.Rate = if weather == "눈" then (if visualMobile then 17 else 31)
+				elseif weather == "비" or weather == "소나기" then (if visualMobile then 45 else 90) else 0
+			if weather == "소나기" then precip.Rate *= 1.45 end
+			timeLabel.Text = string.format("%s %02d:%02d  ·  %s", phase, math.floor(clock), math.floor((clock % 1) * 60), weather)
+			folder:SetAttribute("FieldTimePhase", phase)
+			folder:SetAttribute("FieldClockTime", clock)
+		end))
+	end
+
+	-- [자연 관찰] 항구에서 이미 쓰는 승인된 Animals 메시만 출현.
+	-- 살아 있는 현장 동물은 공격 대상이 아니며 관찰은 기록 연출만 남긴다(보상·도감 저장 없음).
+	do
+		local wildlifeRng = Random.new((opts.seed or 7) * 197 + 31)
+		local animalShelf = ReplicatedStorage:FindFirstChild("MareAssets")
+		animalShelf = animalShelf and animalShelf:FindFirstChild("Animals")
+		local names = { sheep = "양", horse = "말", donkey = "당나귀", cow = "소",
+			["dog-pug"] = "개", cat = "고양이", chicken = "닭", pig = "돼지",
+			elephant = "코끼리", llama = "라마" }
+		local sizes = { sheep = 2.3, horse = 3.8, donkey = 3.2, cow = 3.4,
+			["dog-pug"] = 1.5, cat = 1.1, chicken = 1.0, pig = 2.2,
+			elephant = 6.5, llama = 3.2 }
+		local region = biome.region or ""
+		local candidates = if region == "nordic" or region == "britain" then { "sheep", "horse", "cow", "dog-pug" }
+			elseif region == "desert" or region == "ottoman" then { "donkey", "cat", "sheep" }
+			elseif region == "malabar" then { "elephant", "cow", "chicken", "cat" }
+			elseif region == "colonial" then { "llama", "horse", "pig", "chicken" }
+			elseif biome.kind == "forest" then { "sheep", "horse", "dog-pug", "cat" }
+			elseif biome.kind == "coast" then { "chicken", "dog-pug", "cat", "sheep" }
+			else { "horse", "donkey", "sheep", "chicken", "cat" }
+		local animals = {}
+		local maxAnimals = if visualMobile then 2 else 4
+		local lastWildlifeSpawn = -100
+		folder:SetAttribute("FieldAmbientObservations", 0)
+		local function spawnWildlife()
+			if not animalShelf or not animalShelf.Parent or #animals >= maxAnimals then return end
+			local available = {}
+			for _, species in candidates do
+				local template = animalShelf:FindFirstChild(species)
+				if AssetIds["Animals/" .. species] and template and template:IsA("Model") then
+					table.insert(available, species)
+				end
+			end
+			if #available == 0 then return end -- 승인 실물 없으면 가짜 동물 생성 금지.
+			local species = available[wildlifeRng:NextInteger(1, #available)]
+			local pos = ORIGIN + scatter(65)
+			local root0 = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			if root0 and (root0.Position - pos).Magnitude < 32 then return end
+			local model = placeModel(folder, "Animals", species, pos, sizes[species], false)
+			if not model then return end
+			model.Name = "FieldAmbientAnimal"
+			model:SetAttribute("ObservedSpecies", species)
+			local focus = model:FindFirstChildWhichIsA("BasePart", true)
+			if focus then
+				local prompt = Instance.new("ProximityPrompt")
+				prompt.Name = "FieldWildlifeObserve"
+				prompt.ObjectText = names[species] or species
+				prompt.ActionText = "조용히 관찰"
+				prompt.HoldDuration = 0.9
+				prompt.MaxActivationDistance = 12
+				prompt.RequiresLineOfSight = false
+				prompt.Parent = focus
+				prompt.Triggered:Connect(function(triggerPlayer)
+					if finished or triggerPlayer ~= player or not prompt.Enabled then return end
+					prompt.Enabled = false
+					folder:SetAttribute("FieldAmbientObservations", (folder:GetAttribute("FieldAmbientObservations") or 0) + 1)
+					say("동물 발견: " .. (names[species] or species) .. " · 현장 관찰 완료")
+				end)
+			end
+			table.insert(animals, { model = model, center = model:GetPivot(), bornAt = os.clock(),
+				phase = wildlifeRng:NextNumber(0, 7), direction = wildlifeRng:NextNumber(-math.pi, math.pi) })
+		end
+		-- 자연동물은 최대 4마리만 두고 화면 밖에 있을 때 짧은 산책·풀 뜯기를 반복한다.
+		local tick = 0
+		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
+			if finished or not folder.Parent then return end
+			tick += math.min(dt, 0.2)
+			if tick < 0.24 then return end
+			tick = 0
+			local now = os.clock()
+			local root0 = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			for i = #animals, 1, -1 do
+				local a = animals[i]
+				if not a.model.Parent or now - a.bornAt > 100 then
+					if a.model.Parent then a.model:Destroy() end
+					table.remove(animals, i)
+				elseif not root0 or (root0.Position - a.center.Position).Magnitude < 160 then
+					local time = now - a.bornAt
+					local stroll = 5.5 * math.sin(time * 0.33 + a.phase)
+					local drift = 2.3 * math.sin(time * 0.21 + a.phase)
+					local offset = Vector3.new(math.cos(a.direction) * stroll, 0, math.sin(a.direction) * stroll + drift)
+					local yaw = math.sin(time * 0.28 + a.phase) * 0.36
+					local crouch = -0.09 * math.max(0, math.sin(time * 1.25 + a.phase))
+					a.model:PivotTo(a.center * CFrame.new(offset + Vector3.new(0, crouch, 0)) * CFrame.Angles(0, yaw, 0))
+				end
+			end
+			local phase = folder:GetAttribute("FieldTimePhase") or "낮"
+			-- [새벽/황혼 생태] 동물 조우를 조금 더 자주 시도하지만 생성 수 상한은 항상 유지한다.
+			local gap = if phase == "새벽" or phase == "황혼" then 18 else 32
+			if now - lastWildlifeSpawn >= gap and #animals < maxAnimals then
+				lastWildlifeSpawn = now
+				spawnWildlife()
+			end
+		end))
+	end
+
 	-- 미니맵: 주변 약 130스터드를 보여 준다(북쪽이 위). 흰 점=나, 금색=발견물(멀면 가장자리에 표시), 빨강=적, 큰 주황=두목
 	do
 		local MM, RADIUS = 120, 130
