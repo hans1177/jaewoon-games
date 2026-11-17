@@ -203,6 +203,26 @@ H.MENU_FOCUS = {
 	tech = { "기술 연구", "연구 조건 → 이해한 지식 → 기술 해금" },
 }
 
+-- [교역 시세 통합] 화살표는 일별 등락이 아닌 현재 세계 항구 평균 대비 가격이다.
+function H.marketPriceSignal(g)
+	local average = tonumber(g.avgPrice) or tonumber(g.basePrice) or 0
+	local buying = tonumber(g.buyTotals and g.buyTotals[1]) or tonumber(g.buy) or 0
+	if average <= 0 then return "➖", 0, "key" end
+	local delta = (buying / average - 1) * 100
+	if delta < -0.5 then return "⬇️", delta, "good" end
+	if delta > 0.5 then return "⬆️", delta, "key" end
+	return "➖", delta, "key"
+end
+
+-- [실제 예상 손익] 보유분 평균 매입가와 관세가 반영된 서버 판매 견적만 비교한다.
+function H.tradeProfit(g, qty)
+	if (tonumber(g.owned) or 0) <= 0 or (tonumber(g.basis) or 0) <= 0 then return nil end
+	local amount = math.min(math.max(1, qty or 1), g.owned)
+	local net = g.sellTotals and g.sellTotals[amount]
+	if not net then return nil end
+	return math.floor(net - g.basis * amount + 0.5)
+end
+
 local view = nil -- 서버가 보낸 최신 스냅샷
 local currentTab = "status"
 local syncScene
@@ -1069,7 +1089,7 @@ local function mkRow(parent, title, subtitle, buttons, height)
 		local buttonSpace = if narrow then 0 else btnWidth
 		textBox.Size = UDim2.new(1, -(left + buttonSpace + 12), if narrow then 0 else 1, if narrow then math.max(30, layout.AbsoluteContentSize.Y + 10) else -8)
 		local textHeight = layout.AbsoluteContentSize.Y + 12
-		local targetHeight = math.max(minH, textHeight + (if narrow then 54 else 0))
+		local targetHeight = math.max(minH, textHeight + (row:GetAttribute("FooterHeight") or 0) + (if narrow then 54 else 0))
 		if row.Size.Y.Offset ~= targetHeight then row.Size = UDim2.new(1, -6, 0, targetHeight) end
 		for i, button in buttonRefs do
 			if narrow then
@@ -1090,6 +1110,7 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	end
 	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fitRow)
 	row:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitRow)
+	row:GetAttributeChangedSignal("FooterHeight"):Connect(fitRow)
 	task.defer(fitRow)
 	return row
 end
@@ -5646,6 +5667,7 @@ local function openTradeHall()
 	tradeHallRefresh = build
 	build()
 end
+H.tradeHall = openTradeHall
 
 function RENDERERS.trade()
 	H.counselRows(1)
@@ -5929,10 +5951,16 @@ function H.counselRows(n)
 		if counsel.tab == currentTab then table.insert(relevant, counsel) end
 	end
 	if #relevant == 0 and H.MENU_FOCUS[currentTab] then
-		-- 새 조언이 없는 화면도 해당 메뉴에서 할 일을 정확히 안내한다.
+		-- 새 조언이 없어도 실제 승선 동료가 현재 시설의 할 일을 말한다.
+		local speaker = { name = "늙은 항해사 베르나르", role = "항해사" }
+		for _, companion in (view.companions and view.companions.list) or {} do
+			if companion.joined then
+				speaker = { id = companion.id, name = companion.name, role = companion.role or "동료" }
+				break
+			end
+		end
 		table.insert(relevant, {
-			who = { name = "시설 길잡이", role = TAB_NAME[currentTab] },
-			text = H.MENU_FOCUS[currentTab][2], tab = currentTab,
+			who = speaker, text = H.MENU_FOCUS[currentTab][2], tab = currentTab,
 		})
 	end
 	local shown = 0
@@ -5944,9 +5972,9 @@ function H.counselRows(n)
 			if cs.tab ~= currentTab then
 				table.insert(buttons, { text = cs.label or "이동", color = COLORS.green, onClick = function() H.goAdvice(cs.tab) end })
 			elseif currentTab == "trade" then
-				table.insert(buttons, { text = "교역 장부", color = COLORS.green, onClick = openTradeHall })
+				table.insert(buttons, { text = "교역 장부", color = COLORS.green, onClick = function() if H.tradeHall then H.tradeHall() end end })
 			elseif currentTab == "yard" then
-				table.insert(buttons, { text = "선박 관리", color = COLORS.green, onClick = openYardHall })
+				table.insert(buttons, { text = "선박 관리", color = COLORS.green, onClick = function() if H.yardHall then H.yardHall() end end })
 			end
 			if cs.dismissable then
 				table.insert(buttons, { text = "알겠어요", color = COLORS.grey, onClick = function() call("AdviceDone", { id = cs.id }) end })
@@ -6360,6 +6388,7 @@ function openYardHall()
 	tradeHallRefresh = build
 	build()
 end
+H.yardHall = openYardHall
 
 function H.startField(s)
 	-- [입장 추적] 입력 전달 여부와 실제 지상맵 생성 단계를 별도로 검증한다(저장/보상과 무관).
