@@ -1370,8 +1370,21 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     assert.equal(meta.actualRobloxRuntimeVerified,false);
     assert.equal(meta.visualQualityApproved,false);
     assert.equal(meta.robloxPublishedVerified,false);
-    assert.ok(!port.includes(ship+'-custom'),ship+' unverified harbor art must not activate');
-    assert.ok(!battle.includes(ship+'-custom'),ship+' unverified battle art must not activate');
+    // [등록 자산 연결] 실제 등록표의 동일 원본 SHA·Model 형식·Universe 권한이 모두 확인된 함종만
+    // 기존 AssetIds 동적 경로로 진입한다. 미등록 외형은 새 고유 모델로 위장해 연결할 수 없다.
+    const registered=JSON.parse(fs.readFileSync(root+'/assets-registered.json','utf8')).assets['Naval/'+ship+'-custom'];
+    const verified=registered?.assetType==='Model' && registered?.usePermissionGranted===true
+      && registered?.sourceSha256===meta.sourceSha256
+      && /^[1-9][0-9]*$/.test(String(registered?.assetId||''));
+    if(verified){
+      assert.match(port,/if AssetIds\["Naval\/" \.\. meshName\] then[\s\S]*SHIP_MESH\[shipId\] = meshName/,
+        ship+' must use original harbor mesh through registered AssetIds');
+      assert.match(battle,/if AssetIds\["Naval\/" \.\. meshName\] then[\s\S]*PLAYER_SHIP\[shipId\] = meshName/,
+        ship+' must use original naval mesh through registered AssetIds');
+    }else{
+      assert.ok(!port.includes('SHIP_MESH.'+ship+' = "'+ship+'-custom"'),ship+' unverified harbor art must not activate');
+      assert.ok(!battle.includes('PLAYER_SHIP.'+ship+' = "'+ship+'-custom"'),ship+' unverified battle art must not activate');
+    }
   }
 });
 
