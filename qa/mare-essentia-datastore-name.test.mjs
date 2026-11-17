@@ -353,7 +353,7 @@ test('탐험 현장별 10종 3차원 지형, 주야·기상·실물 동물 및 �
   for(const theme of ['coast','forest','highland','mine','ruins','fort','desert','farm','lake','plains']){
     assert.match(scenery,new RegExp('\\b'+theme+' = \\{'),'퀘스트 지형 모델 목록 누락: '+theme);
   }
-  for(const [,kind,name] of scenery.matchAll(/\\{"(Terrain|Town|Castle|Naval)","([^"]+)",/g)){
+  for(const [,kind,name] of scenery.matchAll(/\{"(Terrain|Town|Castle|Naval)","([^"]+)",/g)){
     assert.ok(assets.includes('["'+kind+'/'+name+'"]'),'승인되지 않은 지형 에셋: '+kind+'/'+name);
   }
   assert.match(field,/FieldQuestTerrainTheme/);
@@ -370,5 +370,5 @@ test('탐험 현장별 10종 3차원 지형, 주야·기상·실물 동물 및 �
   assert.match(field,/local function spawnWildlife/);
   assert.match(field,/weatherNext = now \+ climateRng:NextNumber/);
   assert.match(field,/local clock = \(biome\.clock \+ \(now - clockStart\)/);
-  assert.doesNotMatch(field.slice(field.indexOf('[자연 관찰]'),field.indexOf('-- 미니맵:',field.indexOf('[자연 관찰]'))),/AC\\.damageEnemy|rewardGold|saveState/);
+  assert.doesNotMatch(field.slice(field.indexOf('[자연 관찰]'),field.indexOf('-- 미니맵:',field.indexOf('[자연 관찰]'))),/AC\.damageEnemy|rewardGold|saveState/);
 });
