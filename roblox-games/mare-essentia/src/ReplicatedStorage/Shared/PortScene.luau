@@ -2280,7 +2280,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					if placed >= maxSites then break end
 					local row = math.floor((index - 1) / 3)
 					local side = if row == 0 then 1 else -1
-					local z = side * (if isRoyalCity then 330 else 246) + side * (n - 1) * 27
+					local z = side * (if isRoyalCity then 330 else 246) + side * (n - 1) * 44
 					local x = -286 - ((index - 1) % 3) * 63
 					if c[7] then
 						-- 특산품 두 채는 기존 외곽 건축 구획에서 도로·궁전·일반 주거 필지를 피한다.
@@ -5082,58 +5082,86 @@ function PortScene.build(info, onFacility)
 
 	folder.Parent = workspace
 
-	-- [동선 사전 검증] 걷기 시작 전에 건물·창고·울타리와 이동 직선이 교차하면 인접한 안전한 길로 옮긴다.
-	-- 경로 1개마다 최대 7회만 공간 질의하고, 매 프레임 충돌 검사는 하지 않는다.
+	-- [마을 주민·건축물 간섭] 완성된 마을에서 초기 위치와 실제 이동 궤적을 확인한다.
+	-- 이동형·고정형·일과형 모두 생성 직후 한 번만 검사한다(프레임별 공간 질의 금지).
 	pcall(function()
 		local params = OverlapParams.new()
 		params.FilterType = Enum.RaycastFilterType.Include
 		params.FilterDescendantsInstances = { folder }
-		local function blocked(cf, length)
+		local offsets = {
+			Vector3.zero, Vector3.new(7, 0, 0), Vector3.new(-7, 0, 0),
+			Vector3.new(14, 0, 0), Vector3.new(-14, 0, 0),
+			Vector3.new(0, 0, 7), Vector3.new(0, 0, -7),
+		}
+		local function blocked(cf, length, actor)
 			local half = math.max(0, length) / 2
 			local box = cf * CFrame.new(0, 3.1, -half)
 			for _, hit in workspace:GetPartBoundsInBox(box, Vector3.new(4.4, 5, length + 4), params) do
+				local owner = hit:FindFirstAncestorOfClass("Model")
 				if hit.CanCollide and hit.Name ~= "Ground" and hit.Name ~= "TownFloor"
 					and hit.Name ~= "SafetyFloor" and hit.Size.Y >= 2
-					and not hit:FindFirstAncestor("Villager") then
+					and not (actor and hit:IsDescendantOf(actor))
+					and not (owner and owner:FindFirstChildOfClass("Humanoid")) then
 					return true
 				end
 			end
 			return false
 		end
+		local relocated, stopped = 0, 0
 		for _, walker in walkers do
-			if walker.model.Parent and walker.len and walker.len > 0 and (walker.mode == "path" or walker.mode == nil) then
-				local original = walker.base
-				local safe = nil
-				for _, offset in {
-					Vector3.new(0, 0, 0), Vector3.new(7, 0, 0), Vector3.new(-7, 0, 0),
-					Vector3.new(14, 0, 0), Vector3.new(-14, 0, 0),
-					Vector3.new(0, 0, 7), Vector3.new(0, 0, -7),
-				} do
-					local candidate = original * CFrame.new(offset)
-					if not blocked(candidate, walker.len) then safe = candidate break end
-				end
-				if safe then
-					walker.base = safe
-					walker.model:PivotTo(safe)
-				else
-					-- 막힌 길은 무리해서 관통하지 않는다. 대기할 빈자리도 없으면 주민만 숨긴다.
-					for _, offset in {
-						Vector3.new(0, 0, 0), Vector3.new(9, 0, 0), Vector3.new(-9, 0, 0),
-						Vector3.new(18, 0, 0), Vector3.new(-18, 0, 0),
-						Vector3.new(0, 0, 12), Vector3.new(0, 0, -12),
-					} do
-						local candidate = original * CFrame.new(offset)
-						if not blocked(candidate, 0) then
-							walker.base = candidate
-							walker.model:PivotTo(candidate)
-							walker.mode, walker.kind = "stay", "look"
-							break
-						end
+			if not walker.model.Parent or walker.mode == "sparring" or walker.mode == "animal" or walker.mode == "circle" then
+				continue
+			end
+			local original = walker.base
+			local moving = walker.len and walker.len > 0 and (walker.mode == "path" or walker.mode == nil)
+			local scheduled = walker.mode == "schedule" and walker.morning and walker.market and walker.evening
+			local safe
+			for _, offset in offsets do
+				local candidate = original * CFrame.new(offset)
+				if scheduled then
+					local morning, market, evening = walker.morning + offset, walker.market + offset, walker.evening + offset
+					local function clearSegment(a, b)
+						local step = b - a
+						return step.Magnitude < 0.01 or not blocked(CFrame.lookAt(a, b), step.Magnitude, walker.model)
 					end
-					if walker.mode ~= "stay" then walker.model:Destroy() end
+					if not blocked(CFrame.new(morning), 0, walker.model)
+						and not blocked(CFrame.new(market), 0, walker.model)
+						and not blocked(CFrame.new(evening), 0, walker.model)
+						and clearSegment(morning, market) and clearSegment(market, evening)
+						and clearSegment(evening, morning) then
+						safe = candidate
+						walker.morning, walker.market, walker.evening = morning, market, evening
+						break
+					end
+				elseif not blocked(candidate, if moving then walker.len else 0, walker.model) then
+					safe = candidate
+					break
 				end
 			end
+			if not safe then
+				-- 이동 경로가 막혔으면 빈 정지 위치를 찾고, 그것도 없으면 시각 NPC만 숨긴다.
+				for _, offset in offsets do
+					local candidate = original * CFrame.new(offset)
+					if not blocked(candidate, 0, walker.model) then
+						safe = candidate
+						walker.mode, walker.kind = "stay", "look"
+						stopped += 1
+						break
+					end
+				end
+			end
+			if safe then
+				if (safe.Position - original.Position).Magnitude > 0.1 then relocated += 1 end
+				walker.base = safe
+				walker.model:PivotTo(safe)
+				walker.lastPos = safe.Position
+			else
+				walker.model:Destroy()
+				stopped += 1
+			end
 		end
+		folder:SetAttribute("NpcRouteRelocated", relocated)
+		folder:SetAttribute("NpcRouteBlocked", stopped)
 	end)
 
 
