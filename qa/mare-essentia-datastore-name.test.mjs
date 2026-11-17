@@ -453,7 +453,7 @@ test('탐험 무기별 실물 메시 축·피격 부위 절삭 관통 둔격 이
   const common=read('ReplicatedStorage/Shared/CommonVFX.luau');
   for(const marker of [
     '[실제 칼날 축]', '[실물 무기날 선택]', '[실제 적중 1회당 1번]',
-    '[3·6·9타 칼끝 여운]', '[맞는 재질감]', '[원거리 무기별 10단 발사 섬광]'
+    '[3·6·9타 잔흔]', '[맞는 재질감]', '[원거리 무기별 10단 발사 섬광]'
   ]) assert.ok(field.includes(marker),'무기별 정밀 타격 효과 누락: '+marker);
   for(const atom of ['IMPACT_FLASH','SHAPE_BURST','CRITICAL_BURST']){
     assert.ok(common.includes('"'+atom+'"'),'승인된 공용 효과 누락: '+atom);
@@ -472,6 +472,8 @@ test('탐험 무기별 실물 메시 축·피격 부위 절삭 관통 둔격 이
   assert.match(field,/if not rangedImpact and not detailedContact then/);
   assert.match(field,/if rangedImpact and not shieldBlocked and not detailedContact then/);
   assert.match(field,/if not visualMobile and sharp and beat % 3 == 0 then/);
+  assert.match(field,/task\.delay\(0\.055, function\(\)/);
+  assert.match(field,/or swingBridge\.impactSeq ~= hitSeq then return end/);
   const start=field.indexOf('-- [실제 적중 1회당 1번]');
   const stop=field.indexOf('-- [맞는 재질감]',start);
   assert.ok(start>0&&stop>start,'정밀 적중 효과 범위 누락');
