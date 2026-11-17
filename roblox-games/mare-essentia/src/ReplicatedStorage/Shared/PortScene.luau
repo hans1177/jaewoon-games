@@ -8,6 +8,7 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
 
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local Voyage = require(script.Parent:WaitForChild("Voyage"))
@@ -424,7 +425,7 @@ end
 -- [중앙광장 영구 공터] 중심(-6, 0), 바닥 반경 24를 비워두고 여유 2스터드를 확보한다.
 -- 기존 승인된 건축·소품·생산물 모델만 이 구역 안에서 막는다. 인물/동물은 계속 출입할 수 있다.
 local CENTRAL_PLAZA_RADIUS = 26
-local function importedModel(parent, kind, asset, bottomPosition, desiredSize, solid, tint)
+local function importedModel(parent, kind, asset, bottomPosition, desiredSize, solid, tint, buildDelay)
 	if parent.Name == "PortScene" and kind ~= "People" and kind ~= "Animals" then
 		local dx, dz = bottomPosition.X + 6, bottomPosition.Z
 		if dx * dx + dz * dz < CENTRAL_PLAZA_RADIUS * CENTRAL_PLAZA_RADIUS then return nil end
@@ -519,6 +520,45 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		warn("[MareEssentia] 모델 수입본 배치 오류", kind, asset, err)
 		m:Destroy()
 		return nil
+	end
+	-- [실제 3D 설치 모션] 요청된 장식과 공사 단계에만 적용한다. 원본 메시의 최종 좌표·충돌을 복원한다.
+	-- 보이는 파츠가 너무 많은 원본은 모바일 드로콜/트윈 폭증을 피하기 위해 즉시 설치한다.
+	if type(buildDelay) == "number" and buildDelay >= 0 then
+		local pieces = {}
+		for _, piece in m:GetDescendants() do
+			if piece:IsA("BasePart") then
+				table.insert(pieces, { part = piece, final = piece.CFrame, alpha = piece.Transparency, solid = piece.CanCollide })
+				if #pieces > 24 then break end
+			end
+		end
+		if #pieces > 0 and #pieces <= 24 then
+			local _, span = m:GetBoundingBox()
+			local drop = math.clamp(span.Y * 0.4, 0.9, 3.4)
+			for _, piece in pieces do
+				piece.part.CanCollide = false
+				piece.part.Transparency = 1
+				piece.part.CFrame = piece.final + Vector3.new(0, -drop, 0)
+			end
+			m:SetAttribute("BuildVisualState", "installing")
+			task.delay(buildDelay, function()
+				if not m.Parent or not parent.Parent then return end
+				local timing = TweenInfo.new(0.72, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+				for _, piece in pieces do
+					if piece.part.Parent then
+						TweenService:Create(piece.part, timing, { CFrame = piece.final, Transparency = piece.alpha }):Play()
+					end
+				end
+				task.delay(0.76, function()
+					if not m.Parent or not parent.Parent then return end
+					for _, piece in pieces do
+						if piece.part.Parent then piece.part.CanCollide = piece.solid end
+					end
+					m:SetAttribute("BuildVisualState", "complete")
+				end)
+			end)
+		else
+			m:SetAttribute("BuildVisualState", "complete")
+		end
 	end
 	return m
 end
@@ -1113,6 +1153,8 @@ end
 -- 마을 주민의 일: 직업마다 일터와 모션이 있고, 항구 발전도가 오를수록 일하는 사람이 늘어난다.
 local IDLE_POOL = { "talk", "lean", "point", "wave", "write", "inspect", "count", "stretch", "drink", "listen", "salute" } -- 멈춰 선 주민이 상황과 시간에 따라 다른 동작을 한다
 local stallSpots = {}
+-- [경제 건축 연출] 현재 세션의 항구별 장식 단계만 기억한다. 게임 저장·서버 경제에는 쓰지 않는다.
+local lastDecorationGrowth = {}
 local SKIN_HAIR = { Color3.fromRGB(48, 36, 30), Color3.fromRGB(86, 60, 40), Color3.fromRGB(150, 110, 60), Color3.fromRGB(30, 28, 30) }
 local GRAY_HAIR = Color3.fromRGB(206, 204, 200)
 local function faceTo(from, to)
@@ -1469,9 +1511,11 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			local progress = tonumber(info.construction.progress)
 			if progress == nil and unfinished > 0 then progress = builtCount / (builtCount + unfinished) end
 			local phase = math.clamp(math.floor(math.clamp(progress or 0, 0, 1) * 3 + 0.001), 0, 3)
-			if phase >= 1 then importedModel(folder, "Town", "floor_base", at, 13, false) end
-			if phase >= 2 then importedModel(folder, "Town", "kenney_wood_wall_01", at + Vector3.new(0, 0, zs * 4), 12, false) end
-			if phase >= 3 then importedModel(folder, "Town", "kenney_roof_straight_red_01", at + Vector3.new(0, 7, zs * 4), 13, false) end
+			-- [공정 1→2→3] 바닥·벽체·지붕을 실제 건축 진행도 순서로 세우는 모션.
+			-- 실물경제가 허용한 공정 외에는 모델을 추가하지 않는다.
+			if phase >= 1 then importedModel(folder, "Town", "floor_base", at, 13, false, nil, 0.14) end
+			if phase >= 2 then importedModel(folder, "Town", "kenney_wood_wall_01", at + Vector3.new(0, 0, zs * 4), 12, false, nil, 0.85) end
+			if phase >= 3 then importedModel(folder, "Town", "kenney_roof_straight_red_01", at + Vector3.new(0, 7, zs * 4), 13, false, nil, 1.55) end
 			local mark = part(folder, Vector3.new(1, 1, 1), CFrame.new(at + Vector3.new(0, 0, 0)), Color3.new(1, 1, 1))
 			mark:SetAttribute("ConstructionPhase", phase)
 			mark:SetAttribute("ConstructionWork", buildingType)
@@ -2246,8 +2290,14 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	-- [자동 장식 건축] 실제 건설된 시장·농장·교회·공방·관청과 번영도를 읽어 단계별 실물 소품을 선택한다.
 	-- 시설 수나 생산량을 늘리는 경제 효과는 없고, 모바일 최대 7개 / PC 최대 13개만 배치한다.
 	local decor = PortBuildings.decorativeVisual(lvl, info.sim and info.sim.buildings, info.sim and info.sim.prosperity)
-	local decorPlaced = 0
-	local decorLimit = if game:GetService("UserInputService").TouchEnabled then 7 else 13
+	local previousDecor = lastDecorationGrowth[info.portId]
+	local decorPlaced, decorAnimated, decorBuilders = 0, 0, 0
+	local touchDecor = game:GetService("UserInputService").TouchEnabled
+	local decorLimit = if touchDecor then 7 else 13
+	local animationLimit = if touchDecor then 3 else 6
+	local builderLimit = if touchDecor then 1 else 2
+	local jobs = info.sim and info.sim.jobs
+	local hasBuilders = not info.sim or (jobs and ((jobs.laborer or 0) + (jobs.craftsman or 0)) > 0)
 	-- 도시마다 고정된 지형 시드로 구획 방향·필지 크기·외곽 폭을 달리한다. 재진입해도 같은 항구는 같은 형태다.
 	local districtSeed = seeded(info.portId .. ":city-plan")
 	local districtOffset = districtSeed:NextNumber(-7, 7)
@@ -2479,8 +2529,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							if grade >= 2 and decorPlaced < decorLimit then
 								local kind = if c[1] == "hall" then "Terrain" else "Town"
 								local asset = if c[1] == "hall" then "column" else "bench_B"
-								local prop = importedModel(folder, kind, asset, at + Vector3.new(13, 0, face * 11), 5, false)
+								local newGrade = previousDecor and grade > (previousDecor[if c[1] == "hall" then "civic" else "industry"] or 0)
+									and decorAnimated < animationLimit
+								local delay = if newGrade then 0.2 + decorAnimated * 0.36 else nil
+								local prop = importedModel(folder, kind, asset, at + Vector3.new(13, 0, face * 11), 5, false, nil, delay)
 								if prop then
+									if newGrade then decorAnimated += 1 end
 									decorPlaced += 1
 									prop.Name = "CityGrowthDecoration_" .. c[1] .. "_" .. n
 									prop:SetAttribute("BuildPlotId", ("%s:decor:%d:%d"):format(info.portId, index, n))
@@ -2488,6 +2542,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 									prop:SetAttribute("BuildTier", grade)
 									prop:SetAttribute("BuildState", "complete")
 									prop:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+									prop:SetAttribute("ShowcaseOnly", true)
 								end
 							end
 							prompt(folder, at + Vector3.new(0, 3, face * 7), c[2], "시설 이용", c[8], onFacility)
@@ -2499,6 +2554,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	end
 	-- 한 줄 채우기: z = 줄의 중심, t = 0(항구 쪽)~1(성벽 쪽)
 	-- [주거 구획] 항구·대로 측면·주거 행·칸 번호 조합으로 재진입 시 같은 필지 키를 쓴다.
+	local residentialDecorationPlaced = false
 	local function fillRow(z, t, xStart, side, laneIndex, rowIndex)
 		local x = xStart
 		local slotIndex = 0
@@ -2523,6 +2579,30 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					body:SetAttribute("BuildState", "complete")
 					body:SetAttribute("BuildTier", fl)
 					body:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+					-- [주거 성장] 이미 존재하는 주택 앞에 주민 휴식 시설·우물을 하나만 건설한다.
+					-- 첫 세대에 보이면 완공 상태로, 도시 발전 중 새로 해금된 경우에만 설치 모션을 사용한다.
+					if not residentialDecorationPlaced and decor.residential > 0 and decorPlaced < decorLimit then
+						local newGrade = previousDecor and decor.residential > (previousDecor.residential or 0)
+							and decorAnimated < animationLimit
+						local itemName = if decor.residential >= 3 then "village-well" else "bench_A"
+						local front = if pos.Z > 0 then -1 else 1
+						local placeAt = pos + Vector3.new(ww * 0.28, 0, front * (ww * 0.45 + 4))
+						local detail = importedModel(folder, "Town", itemName, placeAt, 4.5, false, nil,
+							if newGrade then 0.28 + decorAnimated * 0.36 else nil)
+						if detail then
+							residentialDecorationPlaced = true
+							decorPlaced += 1
+							if newGrade then decorAnimated += 1 end
+							detail.Name = "CityGrowthDecoration_residential"
+							detail:SetAttribute("BuildPlotId", plotId .. ":decor")
+							detail:SetAttribute("BuildType", "decoration")
+							detail:SetAttribute("BuildTier", decor.residential)
+							detail:SetAttribute("BuildPhase", 4)
+							detail:SetAttribute("BuildState", "complete")
+							detail:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+							detail:SetAttribute("ShowcaseOnly", true)
+						end
+					end
 					table.insert(placedLots, { X = pos.X, Z = pos.Z, H = half })
 					if smokers < 28 and rng:NextNumber() < 0.22 then
 						smokers += 1
@@ -2596,8 +2676,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	strip(folder, style, -212, 0, 9, 320)
 	-- 구역 내용 (등록된 실제 3D 모델만 사용)
 	do
-		local function put(kind, asset, size, x, z, solid, yaw)
-			local m = importedModel(folder, kind, asset, Vector3.new(x, 0, z), size, solid == true)
+		local function put(kind, asset, size, x, z, solid, yaw, buildDelay)
+			local m = importedModel(folder, kind, asset, Vector3.new(x, 0, z), size, solid == true, nil, buildDelay)
 			if m and yaw then rotateAround(m, Vector3.new(x, 0, z), yaw) end
 			return m
 		end
@@ -2676,9 +2756,13 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				for tier = 1, math.min(grade, #decorations) do
 					if decorPlaced >= decorLimit then break end
 					local row = decorations[tier]
-					local obj = put(row[1], row[2], row[3], cx + row[4], cz + row[5], false)
+					local newGrade = previousDecor and tier > (previousDecor[d.kind] or 0)
+						and decorAnimated < animationLimit
+					local delay = if newGrade then 0.24 + decorAnimated * 0.36 else nil
+					local obj = put(row[1], row[2], row[3], cx + row[4], cz + row[5], false, nil, delay)
 					if obj then
 						decorPlaced += 1
+						if newGrade then decorAnimated += 1 end
 						obj.Name = "CityGrowthDecoration_" .. d.kind .. "_" .. tier
 						obj:SetAttribute("BuildPlotId", ("%s:decor:%s:%d"):format(info.portId, d.kind, tier))
 						obj:SetAttribute("BuildType", "decoration")
@@ -2686,6 +2770,41 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						obj:SetAttribute("BuildPhase", 4)
 						obj:SetAttribute("BuildState", "complete")
 						obj:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+						obj:SetAttribute("ShowcaseOnly", true)
+						if newGrade then
+							-- [시공 현장] 장식 기초를 잡는 임시 비계는 완공 후 사라지고, 실제 R15 목수가 망치질한다.
+							local installAt = Vector3.new(cx + row[4], 0, cz + row[5])
+							local scaffold = importedModel(folder, "Terrain", "wood-support",
+								installAt + Vector3.new(-3, 0, 0), 5, false)
+							if scaffold then
+								scaffold.Name = "CityDecorationScaffold"
+								scaffold:SetAttribute("ShowcaseOnly", true)
+								task.delay(delay + 1.4, function()
+									if scaffold.Parent then scaffold:Destroy() end
+								end)
+							end
+							if hasBuilders and decorBuilders < builderLimit then
+								local workerAt = installAt + Vector3.new(6, 0, 5)
+								local worker = villager(folder, workerAt, faceTo(workerAt, installAt),
+									C(143, 109, 73), rng, "Barbarian", true,
+									{ profession = "carpenter", hat = "cap", year = info.year or currentYear })
+								if worker then
+									decorBuilders += 1
+									worker:SetAttribute("Job", "construction_worker")
+									worker:SetAttribute("ShowcaseOnly", true)
+									worker:SetAttribute("BuildPlotId", obj:GetAttribute("BuildPlotId"))
+									local duty = { model = worker, base = worker:GetPivot(), mode = "stay",
+										kind = "hammer", phase = rng:NextNumber(0, 5) }
+									table.insert(walkers, duty)
+									task.delay(delay + 1.6, function()
+										if worker.Parent and folder.Parent then
+											duty.kind = "inspect"
+											worker:SetAttribute("Activity", "inspect")
+										end
+									end)
+								end
+							end
+						end
 					end
 				end
 			end
@@ -2720,7 +2839,31 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			end
 		end
 	end
+	-- [항만 창고 장식] 실제 경제에 창고가 세워진 경우에만 화물 보호·가로 소품이 자란다.
+	if decor.harbor > 0 and decorPlaced < decorLimit then
+		local newGrade = previousDecor and decor.harbor > (previousDecor.harbor or 0)
+			and decorAnimated < animationLimit
+		local delay = if newGrade then 0.25 + decorAnimated * 0.36 else nil
+		local warehouseDisplay = importedModel(folder, "Cargo",
+			if decor.harbor >= 3 then "resource-planks" else "box-open",
+			Vector3.new(-31, 0, 222), 4, false, nil, delay)
+		if warehouseDisplay then
+			decorPlaced += 1
+			if newGrade then decorAnimated += 1 end
+			warehouseDisplay.Name = "CityGrowthDecoration_harbor"
+			warehouseDisplay:SetAttribute("BuildPlotId", info.portId .. ":harbor:decoration")
+			warehouseDisplay:SetAttribute("BuildType", "decoration")
+			warehouseDisplay:SetAttribute("BuildTier", decor.harbor)
+			warehouseDisplay:SetAttribute("BuildPhase", 4)
+			warehouseDisplay:SetAttribute("BuildState", "complete")
+			warehouseDisplay:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+			warehouseDisplay:SetAttribute("ShowcaseOnly", true)
+		end
+	end
+	if info.sim and info.sim.buildings then lastDecorationGrowth[info.portId] = decor end
 	folder:SetAttribute("CityDecorationVisible", decorPlaced)
+	folder:SetAttribute("CityDecorationInstalledThisVisit", decorAnimated)
+	folder:SetAttribute("CityDecorationBuilders", decorBuilders)
 	folder:SetAttribute("CityDecorationGrowthMode", "ECONOMY_READ_ONLY")
 	-- 특산품 구역: 이 항구의 생산품마다 관련 건물(공방·양조장·제재소 …)을 세우고, 지붕 위 간판에 그 상품의 3D 아이콘을 단다.
 	do

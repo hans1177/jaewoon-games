@@ -211,6 +211,8 @@ function B.decorativeVisual(level, buildings, prosperity)
 		farm = grade("farm", 2),
 		civic = grade("hall", 3),
 		industry = grade("workshop", 2),
+		residential = grade("house", 2),
+		harbor = grade("warehouse", 2),
 	}
 end
 

@@ -1132,3 +1132,32 @@ test('경제 공사 종류·건축자 모션·도시 장식 성장 모두 기존
  assert.match(scene,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
  assert.match(scene,/obj:SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
 });
+
+// [자동 발전 3D 설치 모션] 경제 건축 시공 단계, 새 장식 설치, 기존 필지/저장 불변 보장.
+test('발전도 해금 장식은 단계적으로 설치되고 기존 완공물은 입항 때마다 재시공하지 않는다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const config=read('ReplicatedStorage/Shared/PortBuildings.luau');
+ assert.match(scene,/local TweenService = game:GetService\("TweenService"\)/);
+ assert.match(scene,/local lastDecorationGrowth = \{\}/);
+ assert.match(scene,/local function importedModel\(parent, kind, asset, bottomPosition, desiredSize, solid, tint, buildDelay\)/);
+ assert.match(scene,/piece\.part\.CFrame = piece\.final \+ Vector3\.new\(0, -drop, 0\)/);
+ assert.match(scene,/TweenService:Create\(piece\.part, timing, \{ CFrame = piece\.final, Transparency = piece\.alpha \}\):Play\(\)/);
+ assert.match(scene,/piece\.part\.CanCollide = piece\.solid/);
+ assert.match(scene,/if not m\.Parent or not parent\.Parent then return end/);
+ assert.match(scene,/phase >= 1 then importedModel\(folder, "Town", "floor_base", at, 13, false, nil, 0\.14\)/);
+ assert.match(scene,/phase >= 2 then importedModel\(folder, "Town", "kenney_wood_wall_01",/);
+ assert.match(scene,/phase >= 3 then importedModel\(folder, "Town", "kenney_roof_straight_red_01",/);
+ assert.match(scene,/local newGrade = previousDecor and tier > \(previousDecor\[d\.kind\] or 0\)/);
+ assert.match(scene,/if info\.sim and info\.sim\.buildings then lastDecorationGrowth\[info\.portId\] = decor end/);
+ assert.match(scene,/CityDecorationScaffold/);
+ assert.match(scene,/worker:SetAttribute\("Job", "construction_worker"\)/);
+ assert.match(scene,/duty\.kind = "inspect"/);
+ for(const tier of ['residential','harbor'])assert.match(config,new RegExp(tier+' = grade\\('));
+ assert.match(scene,/CityGrowthDecoration_residential/);
+ assert.match(scene,/CityGrowthDecoration_harbor/);
+ assert.match(scene,/CityDecorationInstalledThisVisit/);
+ assert.match(scene,/CityDecorationBuilders/);
+ assert.match(scene,/local animationLimit = if touchDecor then 3 else 6/);
+ assert.match(scene,/local builderLimit = if touchDecor then 1 else 2/);
+ assert.match(scene,/BuildAuthority", "VISUAL_ONLY"/);
+});
