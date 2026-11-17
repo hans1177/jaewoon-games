@@ -469,7 +469,7 @@ local RegionalFieldQuests: { { any } } = {
 		{ "베닌 내륙 길", "lagos_benin_road", "lagos", "zoo_elephant", "베닌 왕국 가는 길", "아프리카코끼리", "내륙 숲길로 향해 아프리카코끼리의 발자국을 추적해." },
 	} },
 	{ "east_africa", "동아프리카·희망봉", {
-		{ "몸바사 산호초", "mombasa_reef", "mombasa", "zoo_whale_shark", "산호초 해안", "고래상어", "동아프리카 산호초의 고래상어를 관찰해." },
+		{ "몸바사 산호초", "mombasa_reef", "mombasa", "zoo_sea_snake", "산호초 해안", "바다뱀", "동아프리카 산호초를 지나는 바다뱀의 움직임을 관찰해." },
 		{ "스톤 타운의 골목", "zanzibar_stone", "zanzibar", "site_zanzibar_stone", "스톤 타운", "스톤 타운", "잔지바르의 옛 항구와 교역의 흔적을 조사해." },
 		{ "킬와의 조각 문", "kilwa_ruins", "kilwa", "relic_swahili_door", "킬와 옛 궁전 터", "조각된 문", "킬와 옛 궁전의 스와힐리 조각 문을 기록해." },
 		{ "테이블 산의 꽃", "cape_table_mountain", "cape_town", "bot_protea", "테이블 산", "프로테아", "테이블 산의 독특한 프로테아 식물을 관찰해." },

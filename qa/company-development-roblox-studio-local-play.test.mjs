@@ -3951,6 +3951,40 @@ test('Mare scheduled Studio expeditions cover all 22 cultural regions without si
 
 // [실제 무기별 평타·스킬] 데이터, 공용 원본 R15 클립, 기존 동료 자동스킬 및 공식 Studio 입력을 함께 확인한다.
 // [퀘스트 등급·병종 회귀] 원래 목표/보상은 유지하고 1~5단의 UI·현장 조합을 구분한다.
+// [지역 탐험 40단계] 실존 Sites 카드 연결, 항구별 자동완료, 이동 안내를 검증한다.
+test('Mare overseas exploration quests cover eight regions and forty real site card goals',()=>{
+  const base='roblox-games/mare-essentia/src/';
+  const quests=fs.readFileSync(base+'ReplicatedStorage/Shared/Quests.luau','utf8');
+  const sites=fs.readFileSync(base+'ReplicatedStorage/Shared/Sites.luau','utf8');
+  const cards=fs.readFileSync(base+'ReplicatedStorage/Shared/KnowledgeCards.luau','utf8');
+  const service=fs.readFileSync(base+'ServerScriptService/Services/Quest.luau','utf8');
+  const view=fs.readFileSync(base+'ServerScriptService/Services/View.luau','utf8');
+  const client=fs.readFileSync(base+'StarterPlayer/Game.client.luau','utf8');
+  const begin=quests.indexOf('local RegionalFieldQuests:');
+  const end=quests.indexOf('-- 증권거래소',begin);
+  assert.ok(begin>=0 && end>begin,'regional quests must use the canonical quest pipeline');
+  const block=quests.slice(begin,end);
+  const items=[...block.matchAll(/^\s*\{ "[^"]+", "([^"]+)", "([^"]+)", "([^"]+)", "[^"]+", "[^"]+", "[^"]+" \},$/gm)];
+  assert.equal(items.length,40,'eight overseas regions must have five field quests each');
+  for(const region of ['red_sea','west_africa','east_africa','south_asia','southeast_asia','east_asia','americas','pacific']){
+    assert.ok(block.includes('{ "'+region+'", '),'missing region: '+region);
+  }
+  const seen=new Set();
+  for(const item of items){
+    const [,site,port,card]=item;
+    const row=sites.split('\n').find(x=>x.includes('id = "'+site+'"'));
+    assert.ok(row&&row.includes('portId = "'+port+'"')&&row.includes('"'+card+'"'),
+      'exploration quest must use the actual port and site card pool: '+site+'/'+card);
+    assert.ok(cards.includes('{ "'+card+'", '),'quest target must be a registered knowledge card: '+card);
+    assert.ok(!seen.has(card),'regional field quest target should not be duplicated: '+card);
+    seen.add(card);
+  }
+  assert.ok(block.includes('after = prev')&&block.includes('difficulty = stage')&&block.includes('kind = "discover_card"'));
+  assert.ok(service.includes('if quest.exploreSite and quest.portId ~= state.portId then return false end'));
+  assert.ok(view.includes('fieldQuest = fieldQuest')&&view.includes('view.quests.fieldRoutes = {}'));
+  assert.ok(client.includes('현장 의뢰: ')&&client.includes('세계 현장 탐험 · 8개 권역'));
+});
+
 test('Mare quests and field encounters expose five meaningful difficulty grades',()=>{
   const base='roblox-games/mare-essentia/src/';
   const quests=fs.readFileSync(base+'ReplicatedStorage/Shared/Quests.luau','utf8');
