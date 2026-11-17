@@ -1641,3 +1641,6 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 - 기존 자산 업로드 통로 `tools/mare-essentia-upload-assets.mjs`와 기존 회귀검사만 사용한다. 다른 임시 배포 경로 없음.
 - 원본 GLB 검증과 자산 등록번호 확인은 별개다. **Roblox Studio 실화면·모바일 성능·체험 게시** 결과가 확보되기 전에는 항구/해전의 기존 시각 연결을 바꾸지 않는다.
 | `relics/` | weapon-bomb.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/piratekit.html |
+| `relics/` | weapon-cutlass.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/piratekit.html |
+| `relics/` | weapon-doubleaxe.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/piratekit.html |
+| `relics/` | weapon-pirate-pistol.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/piratekit.html |
