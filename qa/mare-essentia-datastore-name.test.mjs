@@ -77,11 +77,11 @@ test('연타 1단 봉인·무기별 낮은 확률·공용 7초 제한·최대 3�
   assert.match(field,/local threeHitBase = if rank == 2 then 0 elseif rank == 3 then 0\.16/);
   assert.match(field,/chain = if rank == 2 then 2[\s\S]*?then 3 else 2/);
   assert.match(field,/for stage = 2, chain do/);
-  assert.doesNotMatch(field,/chain = if rank == 2 then 2[\s\S]*?else 5\)/);
+  assert.match(field,/chain = if rank == 2 then 2[\s\S]{0,210}then 3 else 2/);
 });
 
 test('필드 전투 스킬 버튼은 글자 없이 등록 아이콘을 중앙에 표시한다',()=>{
-  assert.match(field,/local iconOnly = string\.sub\(button\.Name, 1, 11\) == "FieldSkill_"/);
+  assert.match(field,/local iconOnly = button\.Name == "FieldAttack" or string\.sub\(button\.Name, 1, 11\) == "FieldSkill_"/);
   assert.match(field,/medallion\.Position = UDim2\.fromScale\(0\.5, if iconOnly then 0\.5 else 0\.385\)/);
   assert.match(field,/img\.Position = UDim2\.fromScale\(0\.5, if iconOnly then 0\.5 else 0\.385\)/);
   assert.match(field,/local function mkSkill\(key, label, color, pos, size\)[\s\S]*?btn\(gui, "", color/);
