@@ -1089,8 +1089,8 @@ test('Mare naval steering, smooth hulls, aiming and battle presentation stay con
   assert.ok(battle.includes('me.theta += steerDir * turnSign * (if now < skillUntil.evade then 2.6 else 1.5) * dt'));
   assert.ok(battle.includes('local turnSign = if rightTurn:Dot(cam.CFrame.RightVector) < -0.05 then -1 else 1'));
   assert.doesNotMatch(battle,/TextStrokeTransparency\s*=\s*0\./,'battle labels are clean fonts without stroke blur');
-  assert.ok(battle.includes('f.Visible = star or battleViewport.X >= 480'));
-  assert.ok(battle.includes('skip = mkBtn("건너뛰기", UDim2.new(1, -12'));
+  assert.ok(battle.includes('f.Visible = star or battleViewport.X >= 720'));
+  assert.ok(battle.includes('skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, 119)'));
   assert.ok(battle.includes('local coasts = {'));
   for(const id of ['cliff-rock','tropical-palm-tall','ruins-pillar-decorated','north-pine-fall','egypt-obelisk']){
     assert.ok(assetIds.includes('"Terrain/'+id+'"'),'battle coast must use a registered mesh: '+id);
@@ -1129,9 +1129,9 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/steerDir = if math\.abs\(nx\) < 0\.12 then 0 else nx/);
   assert.match(src,/local turnSign = if rightTurn:Dot\(cam\.CFrame\.RightVector\) < -0\.05 then -1 else 1/);
   assert.match(src,/me\.theta \+= steerDir \* turnSign \*/);
-  assert.match(src,/adviceLine\.Visible = battleViewport\.X >= 720/);
+  assert.match(src,/adviceLine\.Visible = battleViewport\.X >= 1000/);
   assert.match(src,/if battleViewport\.X < 720 then 173 else 122/);
-  assert.match(src,/tactic\.Size = UDim2\.new\(if battleViewport\.X < 480 then 0\.62/);
+  assert.match(src,/tactic\.Size = UDim2\.new\(if battleViewport\.X < 480 then 0\.52/);
   assert.match(src,/l\.TextStrokeTransparency = 1/);
   for(const key of ['east-bamboo-grove','greek-ruins-a','haunted-pine-crooked','land-floating-island']){
     assert.ok(src.includes('"'+key+'",'),key+' has a registered-region background binding');
@@ -1162,6 +1162,58 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/if inRange and side > 0\.5 and now >= nextMeFire then/);
   assert.match(src,/local r2 = Combat\.board\(fa, fb, seed\)/);
   assert.doesNotMatch(src,/FX\.boardingCrewSpawned = true/);
+});
+
+// [모바일 해전 안전 영역·카드 습득] 스튜디오 실제 화면 검사의 별도 전제조건을 정적 좌표·코드로 검증한다.
+test('Mare naval touch controls avoid HUD overlap and card acquisition never forces a modal reveal',()=>{
+  const root='roblox-games/mare-essentia/src/';
+  const battle=fs.readFileSync(root+'ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const game=fs.readFileSync(root+'StarterPlayer/Game.client.luau','utf8');
+  for(const token of [
+    'local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, 119)',
+    'if battleViewport.X < 480 then 56 else 96',
+    'sailLabel.Position = UDim2.new(0.5, 0, 0, if battleViewport.X < 480 then 69 else 44)',
+    'f.Visible = star or battleViewport.X >= 720',
+    'comboLabel.Visible = battleViewport.X >= 720',
+    'subtitle.Visible = opts.cardOnly or battleViewport.X >= 1000',
+    'rangeLabel.Visible = battleViewport.X >= 720',
+    'distLabel.Visible = not opts.cardOnly and battleViewport.X >= 720',
+    'if i == 1 then -250 else -170',
+    'local panel = Instance.new("ScrollingFrame")',
+    'panel.CanvasSize = UDim2.fromOffset(0, entriesHeight)',
+    'panel.Visible = battleViewport.Y >= 380 and (battleViewport.X >= 720 or battleViewport.Y >= 520)',
+    'math.min(entriesHeight, availableHeight)',
+    'reloadBack.Visible = not opts.cardOnly and (battleViewport.X >= 720',
+    'string.format("장전 %.1f초", math.max(0, nextMeFire - now))',
+  ]) assert.ok(battle.includes(token),'missing mobile-safe naval HUD binding: '+token);
+  const intersects=(a,b)=>a.x<b.x+b.w && b.x<a.x+a.w && a.y<b.y+b.h && b.y<a.y+a.h;
+  // [휴대전화 세로] 320~430폭에서 왼쪽 스틱, 2개 기술, 가속·건너뛰기가 서로 터치하지 않는다.
+  for(const [w,h] of [[320,640],[360,640],[390,844],[430,932]]){
+    const stick={x:28,y:h-198,w:170,h:170};
+    const speed={x:w-120,y:h-120,w:96,h:96};
+    const skill1={x:w-107,y:h-285,w:70,h:70};
+    const skill2={x:w-107,y:h-205,w:70,h:70};
+    const skip={x:12,y:119,w:56,h:36};
+    const tactic={x:w*.24,y:119,w:w*.52,h:46};
+    const fleetLeft={x:16,y:66,w:96,h:46},fleetRight={x:w-112,y:66,w:96,h:46};
+    const wind={x:(w-Math.max(80,w-240))/2,y:69,w:Math.max(80,w-240),h:20};
+    const reload={x:(w-Math.min(260,w-40))/2,y:h-315,w:Math.min(260,w-40),h:20};
+    const panelHeight=Math.min(24+4*30,Math.max(34,h-520));
+    const cardPanel={x:w-182,y:173,w:166,h:panelHeight};
+    for(const [left,right] of [[stick,speed],[stick,skill1],[stick,skill2],[speed,skill1],[speed,skill2],[skill1,skill2],[skip,tactic],[wind,fleetLeft],[wind,fleetRight],[reload,stick],[reload,skill1],[reload,skill2],[reload,cardPanel]]){
+      assert.equal(intersects(left,right),false,'phone HUD overlap at '+w+'x'+h+': '+JSON.stringify([left,right]));
+    }
+  }
+  const seenStart=game.indexOf('function H.checkNewCards()');
+  const seenEnd=game.indexOf('\nlocal function tierRows(',seenStart);
+  const discovered=game.slice(seenStart,seenEnd);
+  assert.ok(seenStart>0 && seenEnd>seenStart);
+  assert.match(discovered,/H\.seenCards\[c\.id\] = true/,'real codex discovery bookkeeping remains');
+  assert.doesNotMatch(discovered,/H\.showCardGain\(|H\.gainQueue|H\.gainBusy|Sfx\.play/,'new cards cannot launch blocking events');
+  assert.match(game,/local previous = pg:FindFirstChild\("CardGain"\)/,'Studio card preview remains opt-in');
+  assert.doesNotMatch(game,/새 지식 카드 발견!|TweenInfo\.new\(20, Enum\.EasingStyle\.Sine\)/,'dated reveal and 14%-zoomed blurry illustration removed');
+  assert.match(game,/local portraitWidth = math\.min\(256,/,'low-res portrait atlas must not be upscaled to 330px');
+  assert.match(game,/bg\.Size = UDim2\.fromScale\(1, 1\)/,'event art must not be magnified beyond display area');
 });
 
 // [7대륙 36척] 실물 자산·단계별 효과·구매/서버 판정 보호 회귀 검사.

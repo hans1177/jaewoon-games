@@ -879,7 +879,7 @@ function NavalBattle.play(opts)
 		f.BackgroundTransparency = 0.15
 		f.BorderSizePixel = 0
 		f.Parent = row
-		f.Visible = star or battleViewport.X >= 480 -- [좁은 폰 상단] 기함을 우선 표시하고 호위는 3D 장면에 보존.
+		f.Visible = star or battleViewport.X >= 720 -- [좁은 화면] 양쪽 함대 카드가 서로 겹치지 않도록 기함 우선.
 		local c = Instance.new("UICorner")
 		c.CornerRadius = UDim.new(0, 8)
 		c.Parent = f
@@ -961,7 +961,7 @@ function NavalBattle.play(opts)
 	adviceLine.AnchorPoint = Vector2.new(0.5, 0)
 	adviceLine.Position = UDim2.new(0.5, 0, 0, 174)
 	adviceLine.Size = UDim2.fromOffset(math.min(420, battleViewport.X - 32), 24)
-	adviceLine.Visible = battleViewport.X >= 720 -- [모바일 HUD] 중간 폭에서도 카드 지원·전술판과 중앙 조언이 겹치지 않게 한다
+	adviceLine.Visible = battleViewport.X >= 1000 -- [상단 안전 영역] 지원판·전술판 사이 조언 띠는 넓은 화면에서만 노출.
 	adviceLine.BackgroundColor3 = Color3.fromRGB(34, 28, 22)
 	adviceLine.BackgroundTransparency = 1
 	adviceLine.TextTransparency = 1
@@ -991,7 +991,8 @@ function NavalBattle.play(opts)
 	local rangeLabel = label(gui, string.format("🎯 %s · 사거리 %d · 탄속 %.1f초", cannon.name, cannon.range, cannon.dur), 13, Color3.fromRGB(255, 226, 150))
 	rangeLabel.AnchorPoint = Vector2.new(0.5, 1)
 	rangeLabel.Position = UDim2.new(0.5, 0, 1, -12)
-	rangeLabel.Size = UDim2.fromOffset(math.min(460, battleViewport.X - 32), 20)
+	rangeLabel.Size = UDim2.fromOffset(math.min(460, math.max(180, battleViewport.X - 440)), 20)
+	rangeLabel.Visible = battleViewport.X >= 720 -- [모바일] 조타·기술·가속과 겹치는 하단 중복 포각을 숨기고 전술판에 표시.
 	rangeLabel.TextSize = if battleViewport.X < 480 then 11 else 13
 	rangeLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	-- [해전 전술 판넬] 실제 적과의 거리·선측 각·장전 시간으로 다음 행동을 시각화한다.
@@ -1000,7 +1001,7 @@ function NavalBattle.play(opts)
 	tactic.Name = "BattleTacticalReadout"
 	tactic.AnchorPoint = Vector2.new(0.5, 0)
 	tactic.Position = UDim2.new(0.5, 0, 0, 119)
-	tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.62 elseif battleViewport.X < 720 then 0.48 else 0.46, 0, 0, 46)
+	tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.52 elseif battleViewport.X < 720 then 0.48 else 0.46, 0, 0, 46)
 	tactic.TextSize = if MOBILE_VFX then 12 else 14
 	tactic.TextTruncate = Enum.TextTruncate.AtEnd
 	tactic.TextWrapped = true
@@ -1062,14 +1063,16 @@ function NavalBattle.play(opts)
 		trajDots[i] = d
 	end
 	sailLabel.AnchorPoint = Vector2.new(0.5, 0)
-	sailLabel.Position = UDim2.new(0.5, 0, 0, 44)
-	sailLabel.Size = UDim2.fromOffset(190, 20)
+	sailLabel.Position = UDim2.new(0.5, 0, 0, if battleViewport.X < 480 then 69 else 44)
+	sailLabel.Size = UDim2.fromOffset(if battleViewport.X < 480 then math.max(80, battleViewport.X - 240) elseif battleViewport.X < 720 then 160 else 190, 20)
+	sailLabel.TextSize = if battleViewport.X < 480 then 11 else 14
+	sailLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	-- 기동 점수: 포탄 낙하 경고를 피하면 올라간다 (결과와는 별개로 명성 보너스만 준다)
 	local flair, combo, dodged = 0, 0, 0
 	local comboLabel = label(gui, "", 22, Color3.fromRGB(255, 226, 120))
 	comboLabel.AnchorPoint = Vector2.new(0.5, 0)
 	comboLabel.Position = UDim2.new(0.5, 0, 0, if battleViewport.X < 480 then math.min(336, battleViewport.Y - 105) else 208)
-	comboLabel.Visible = battleViewport.X >= 480 or battleViewport.Y >= 520 -- [가로 소형] 겹침 방지
+	comboLabel.Visible = battleViewport.X >= 720 -- [모바일] 전술·스킬 영역을 침범하는 중복 콤보 문구 숨김
 	comboLabel.Size = UDim2.fromOffset(300, 30)
 
 	local subtitle = label(gui, "", 16)
@@ -1077,6 +1080,7 @@ function NavalBattle.play(opts)
 	subtitle.Position = UDim2.new(0.5, 0, 1, -96)
 	subtitle.Size = UDim2.new(0.7, 0, 0, 40)
 	subtitle.TextWrapped = true
+	subtitle.Visible = opts.cardOnly or battleViewport.X >= 1000 -- [전술 화면] 짧은 화면 하단 조작과 설명 자막 분리
 
 	local hint = label(gui, if opts.sim ~= nil and not opts.card and not opts.cardOnly then "배의 옆면을 적선 쪽으로 돌리면 대포가 나가요! 붉은 원은 적 포탄 낙하 지점 — 벗어나서 피하세요. 맞닿으면 백병전! 해역 가장자리까지 달리면 도망칠 수 있어요." elseif opts.card then "적선 가까이 다가가면 카드 대결이 시작돼요. 카드에서 이기면 전투 승리! 해역 가장자리까지 달리면 도망칠 수 있어요." else "가까이 가면 대포가 자동으로 나가고, 배가 맞닿으면 백병전! 해역 가장자리까지 달리면 도망칠 수 있어요.", 14, Color3.fromRGB(255, 226, 170))
 	hint.AnchorPoint = Vector2.new(0.5, 1)
@@ -1108,10 +1112,21 @@ function NavalBattle.play(opts)
 	do
 		local entries = opts.cardEffects or {}
 		if #entries > 0 and not opts.cardOnly then
-			local panel = Instance.new("Frame")
+			-- [카드 지원 겹침 방지] 실제 효과/칩은 모두 유지하고 보이는 높이만 남은 조작 공간에 맞춘다.
+			local panel = Instance.new("ScrollingFrame")
 			panel.AnchorPoint = Vector2.new(1, 0)
-			panel.Position = UDim2.new(1, -16, 0, if battleViewport.X < 720 then 173 else 122) -- [폭별 배치] 좁은 폰에서 중앙 전술판 아래로 분리
-			panel.Size = UDim2.fromOffset(if battleViewport.X < 480 then 166 else 190, 24 + #entries * 30)
+			panel.Position = UDim2.new(1, -16, 0, if battleViewport.X < 720 then 173 else 122)
+			local entriesHeight = 24 + #entries * 30
+			local availableHeight = if battleViewport.X < 480 then math.max(34, battleViewport.Y - 520)
+				elseif battleViewport.X < 720 then math.max(54, battleViewport.Y - 405)
+				else math.max(54, battleViewport.Y - 330)
+			panel.Size = UDim2.fromOffset(if battleViewport.X < 480 then 166 else 190,
+				math.min(entriesHeight, availableHeight))
+			panel.CanvasSize = UDim2.fromOffset(0, entriesHeight)
+			panel.ScrollingDirection = Enum.ScrollingDirection.Y
+			panel.ScrollBarThickness = 3
+			panel.ClipsDescendants = true
+			panel.Visible = battleViewport.Y >= 380 and (battleViewport.X >= 720 or battleViewport.Y >= 520)
 			panel.BackgroundColor3 = Color3.fromRGB(30, 24, 20)
 			panel.BackgroundTransparency = 0.35
 			panel.BorderSizePixel = 0
@@ -1238,8 +1253,10 @@ function NavalBattle.play(opts)
 	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(96, 96), Vector2.new(1, 1))
 	speedBtn.TextSize = 20
 	speedBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
-	local skip = mkBtn("건너뛰기", UDim2.new(1, -12, 0, if battleViewport.X < 480 then 174 else 119), UDim2.fromOffset(96, 30), Vector2.new(1, 0)) -- [상단 겹침] 중앙 전술/조언과 분리
-	skip.TextSize = 14
+	local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, 119),
+		UDim2.fromOffset(if battleViewport.X < 480 then 56 else 96, if battleViewport.X < 480 then 36 else 30), Vector2.new(0, 0)) -- [좌상단] 전술판·우측 카드 지원·왼쪽 조타와 분리
+	skip.TextSize = if battleViewport.X < 480 then 11 else 14
+	skip.TextWrapped = battleViewport.X < 480
 	skip.Activated:Connect(finish)
 	local phase = "duel" -- duel → board → end (도주 중엔 fleeing)
 	-- [함선 특화 2스킬] 기존 Ships.trait에서 선박 역할을 읽는다. 모든 기함은 포 사격(Q) + 특화(E) 정확히 두 개.
@@ -1315,10 +1332,16 @@ function NavalBattle.play(opts)
 	end
 	-- 스킬은 가속 버튼(오른쪽 아래) 둘레의 반원에 놓는다 (엄지로 닿기 쉽게)
 	for i, sk in SKILLS do
-		local n = #SKILLS
-		local ang = math.rad(if n == 1 then 135 else 120 + (i - 1) * (55 / (n - 1))) -- 위쪽 버튼이 적 함대 카드와 겹치지 않게 낮춘다
-		sk.x = -72 + math.floor(math.cos(ang) * 104)
-		sk.y = -72 - math.floor(math.sin(ang) * 104)
+		if battleViewport.X < 480 then
+			-- [세로 폰 우측 열] 기술 2개를 가속 위로 쌓아 왼쪽 조타와 겹치지 않게 한다.
+			sk.x = -72
+			sk.y = if i == 1 then -250 else -170
+		else
+			local n = #SKILLS
+			local ang = math.rad(if n == 1 then 135 else 120 + (i - 1) * (55 / (n - 1)))
+			sk.x = -72 + math.floor(math.cos(ang) * 104)
+			sk.y = -72 - math.floor(math.sin(ang) * 104)
+		end
 	end
 	local skillPop = function(_text, _color) end -- popText 가 만들어진 뒤 연결된다
 	local skillFx = function(_id, _dur) end -- FX 가 만들어진 뒤 연결된다
@@ -1381,12 +1404,13 @@ function NavalBattle.play(opts)
 	-- 장전 게이지: 다음 포격까지 얼마나 남았는지 (사정거리 밖이면 회색)
 	local reloadBack = Instance.new("Frame")
 	reloadBack.AnchorPoint = Vector2.new(0.5, 1)
-	reloadBack.Position = UDim2.new(0.5, 0, 1, -62)
-	reloadBack.Size = UDim2.fromOffset(300, 20)
+	reloadBack.Position = UDim2.new(0.5, 0, 1, if battleViewport.X < 480 then -295 elseif battleViewport.X < 720 then -212 else -62)
+	reloadBack.Size = UDim2.fromOffset(if battleViewport.X < 480 then math.min(260, battleViewport.X - 40)
+		elseif battleViewport.X < 720 then math.min(280, battleViewport.X - 48) else 300, 20)
 	reloadBack.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
 	reloadBack.BackgroundTransparency = 0.15
 	reloadBack.BorderSizePixel = 0
-	reloadBack.Visible = not opts.cardOnly
+	reloadBack.Visible = not opts.cardOnly and (battleViewport.X >= 720 or (battleViewport.X < 480 and battleViewport.Y >= 620) or (battleViewport.X >= 480 and battleViewport.Y >= 520))
 	reloadBack.Parent = gui
 	do
 		local c = Instance.new("UICorner")
@@ -1414,8 +1438,8 @@ function NavalBattle.play(opts)
 	local distLabel = label(gui, "", 15, Color3.fromRGB(255, 255, 255))
 	distLabel.AnchorPoint = Vector2.new(0.5, 1)
 	distLabel.Position = UDim2.new(0.5, 0, 1, -36)
-	distLabel.Size = UDim2.fromOffset(340, 22)
-	distLabel.Visible = not opts.cardOnly
+	distLabel.Size = UDim2.fromOffset(math.min(340, math.max(180, battleViewport.X - 440)), 22)
+	distLabel.Visible = not opts.cardOnly and battleViewport.X >= 720 -- [모바일] 전술판에 거리·장전 상태 통합
 	-- 적선이 화면 밖이면 가장자리에 방향 화살표
 	local foeArrow = label(gui, "➤", 34, Color3.fromRGB(255, 96, 84))
 	foeArrow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -4226,7 +4250,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			me.speed = myTop * (stickThrottle or throttle) * wf *
 				(if now < skillUntil.dash then 2.0 elseif now < skillUntil.evade then 1.3 else 1)
-			sailLabel.Text = if wf > 1.12 then "⛵ 순풍 — 속도 증가" elseif wf < 0.88 then "⛵ 맞바람 — 속도 감소" else "⛵ 옆바람"
+			sailLabel.Text = if battleViewport.X < 480 then (if wf > 1.12 then "순풍" elseif wf < 0.88 then "맞바람" else "옆바람")
+				else (if wf > 1.12 then "⛵ 순풍 — 속도 증가" elseif wf < 0.88 then "⛵ 맞바람 — 속도 감소" else "⛵ 옆바람")
 			sailLabel.TextColor3 = if wf > 1.12 then Color3.fromRGB(130, 235, 150) elseif wf < 0.88 then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(150, 220, 255)
 			if cardBusy then me.speed = 0 end
 			me.pos += forward(me.theta) * me.speed * dt
@@ -4769,7 +4794,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			local messageText = if battleViewport.X < 480 then status .. "\n" ..
 				(if not inRange then "대포 사거리 밖" elseif not aligned then steerCue .. " 돌려"
-					elseif now < nextMeFire then "대포 장전 중" else "측면 포격 가능")
+					elseif now < nextMeFire then string.format("장전 %.1f초", math.max(0, nextMeFire - now)) else "측면 포격 가능")
 				else status .. "\n" .. tip -- [상단 가독성] 세로 폰에서 정보가 잘리지 않게 두 줄 압축
 			if messageText ~= lastTacticText then
 				tactic.Text, lastTacticText = messageText, messageText
