@@ -278,8 +278,8 @@ test('음악 효과음 환경음은 기본 믹서 크기·지연 로딩·자동 
   assert.ok(fieldScene.includes('if weather == "소나기" then 0.88 else 0.68'));
   assert.ok(fieldScene.includes('elseif phase == "밤" then 0.43 else 0.58'));
   // [무음 근본 원인] 100개 영수증의 granted=true만 믿고 다른 Universe를 건너뛰면 실게임에서 소리가 나지 않는다.
-  const upload=read('tools/mare-audio-upload.mjs');
-  const receipts=JSON.parse(read('roblox-games/mare-essentia/audio/uploaded.json'));
+  const upload=fs.readFileSync('tools/mare-audio-upload.mjs','utf8');
+  const receipts=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/audio/uploaded.json','utf8'));
   const audioIds=read('ReplicatedStorage/Shared/AudioIds.luau');
   assert.ok(upload.includes("process.env.MARE_UNIVERSE_ID||'10775310508'"));
   assert.ok(upload.includes("if(universeId!=='10775310508')"));
