@@ -5437,7 +5437,7 @@ local function openTradeHall()
 			nm.TextTruncate = Enum.TextTruncate.AtEnd
 			nm.AutomaticSize = Enum.AutomaticSize.None
 			local profit = H.tradeProfit(g, 1)
-			local profitText = if profit == nil then "매입 내역 없음"
+			local profitText = if profit == nil then "세후손익 미확인"
 				elseif profit >= 0 then "세후 이익 +" .. H.commas(profit) else "세후 손실 -" .. H.commas(-profit)
 			local budgetQty = 0
 			for n = 1, math.min(20, view.orderCap or 20, free0, g.supply or 20) do
@@ -5768,7 +5768,7 @@ function RENDERERS.trade()
 				badge.Parent = cardF
 			end
 			local profit = H.tradeProfit(g, 1)
-			local profitLabel = if profit == nil then "매입내역 없음"
+			local profitLabel = if profit == nil then "세후손익 미확인"
 				elseif profit >= 0 then "세후이익 +" .. H.commas(profit) else "세후손실 -" .. H.commas(-profit)
 			local info = mkLabel(cardF, string.format("매입 %s · 판매 %s\n%s 평균 %s (%+.1f%%)\n보유 %d · %s",
 				H.commas(g.buyTotals and g.buyTotals[1] or g.buy), H.commas(g.sell),
