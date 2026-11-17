@@ -51,6 +51,7 @@ return function(D, S)
 			end
 		end
 		local bonusHull = S.State.fleetHull(state)
+		local trait = def.trait or {}
 		local sup: any = S.Cardbook.navalSupport(state) -- 덱의 지식 카드가 자동으로 거드는 효과
 		return {
 			name = if #state.fleet > 0 then string.format("우리 선단(%d척)", #state.fleet + 1) else "우리 배",
@@ -59,11 +60,12 @@ return function(D, S)
 			crew = state.ship.crew,
 			maxCrew = def.crew,
 			cannons = def.cannons + S.State.fleetCannons(state),
-			speed = def.speed + sup.speed,
+			speed = def.speed * (1 + (trait.sail or 0)) + sup.speed,
 			steam = def.steam,
 			fuel = if def.steam then (state.cargo.coal or 0) else 0,
-			cannonMult = 1 + S.State.techSum(state, "cannonMult") + S.Perk.cannonBonus(state) + S.Shipyard.cannonMult(state) + 0.02 * (battleLv - 1) + sup.cannonMult,
-			meleeMult = 1 + 0.03 * (battleLv - 1) + sup.meleeMult,
+			-- [지역별 전투 특화] 서버가 계산한 포격·백병전 결과가 유일한 기준.
+			cannonMult = 1 + S.State.techSum(state, "cannonMult") + S.Perk.cannonBonus(state) + S.Shipyard.cannonMult(state) + 0.02 * (battleLv - 1) + sup.cannonMult + (trait.cannon or 0),
+			meleeMult = 1 + 0.03 * (battleLv - 1) + sup.meleeMult + (trait.melee or 0),
 			pumpReduction = S.State.techSum(state, "pumpReduction") + sup.pump,
 			cardSupport = sup,
 			skills = skills,

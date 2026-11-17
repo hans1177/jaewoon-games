@@ -24,7 +24,9 @@ return function(D, S)
 		if state.ship.id == def.id then
 			return false, "이미 이 배를 가지고 있어요"
 		end
-		local block = D.Ships.saleBlock(def, D.CultureRegions.ofPort(D.Ports.Ports, state.portId), state.nationId)
+		-- [지역 전용 판매] 서버에서 항구·국가·모험 레벨을 최종 검증한다.
+		local block = D.Ships.saleBlock(def, D.CultureRegions.ofPort(D.Ports.Ports, state.portId),
+			state.nationId, state.portId, state.careers.adventure.level)
 		if block then
 			return false, block
 		end
@@ -147,6 +149,8 @@ return function(D, S)
 			return if yard then maxHull else math.floor(maxHull * FIELD_CAP)
 		end
 		local unit = cost(state, REPAIR_COST) * (if yard then 1 else FIELD_MULT)
+		-- [선체 수리] 기존 수리량·선단 순서·비상 수리 60% 규칙을 유지한다.
+		local repairMult = 1 + (if def.trait then def.trait.repair or 0 else 0)
 		local missing = math.max(0, capOf(def.hull) - state.ship.hull)
 		for _, f in state.fleet do
 			missing += math.max(0, capOf(D.Ships.Ships[f.id].hull) - f.hull)
@@ -154,11 +158,12 @@ return function(D, S)
 		if missing <= 0 then
 			return false, if yard then "수리할 곳이 없어요" else "응급 수리는 선체 60%까지만 돼요. 조선소에서 마저 고치세요"
 		end
-		local points = math.min(missing, math.floor(state.coins / unit))
+		local points = math.min(missing, math.floor(state.coins / (unit * repairMult)))
 		if points <= 0 then
 			return false, "코인이 부족해요"
 		end
-		state.coins -= points * unit
+		local bill = math.floor(points * unit * repairMult + 0.5)
+		state.coins -= bill
 		-- 기함부터, 남는 만큼 선단 배를 고친다
 		local left = points
 		local own = math.min(left, math.max(0, capOf(def.hull) - state.ship.hull))
@@ -169,7 +174,7 @@ return function(D, S)
 			f.hull += n
 			left -= n
 		end
-		return true, string.format("%s 선체 +%d (-%d)", if yard then "수리" else "응급 수리", points, points * unit)
+		return true, string.format("%s 선체 +%d (-%d)", if yard then "수리" else "응급 수리", points, bill)
 	end
 
 	function handlers.HireCrew(state, p)
@@ -240,7 +245,9 @@ return function(D, S)
 		if not currentPort(state).shipyard then
 			return false, "선단에 배를 들이려면 조선소가 있는 항구여야 해요"
 		end
-		local fblock = D.Ships.saleBlock(def, D.CultureRegions.ofPort(D.Ports.Ports, state.portId), state.nationId)
+		-- 선단 구매에도 동일한 지역·해금 조건을 적용한다.
+		local fblock = D.Ships.saleBlock(def, D.CultureRegions.ofPort(D.Ports.Ports, state.portId),
+			state.nationId, state.portId, state.careers.adventure.level)
 		if fblock then
 			return false, fblock
 		end

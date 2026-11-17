@@ -92,6 +92,7 @@ return function(D, S)
 			-- [기함 정보] 기존 ShipDef 실측값. 저장/선박 규칙은 변경하지 않는다.
 			price = def.price, baseCargo = D.Ships.Ships[state.ship.id].cargo, summary = def.summary, class = def.class, className = D.Ships.ClassNames[def.class],
 			rowed = def.rowed, fuelPerDay = def.fuelPerDay,
+			trait = def.trait, -- [현재 선박 고유 성능] 저장 변경 없이 화면에서 실제 적용률 표시
 			cannonName = (D.Ships.CannonById[state.ship.cannon or "basic"] or D.Ships.CannonById.basic).name,
 			cannonBonus = (D.Ships.CannonById[state.ship.cannon or "basic"] or D.Ships.CannonById.basic).mult,
 			plating = state.ship.plating or 0,
@@ -541,18 +542,27 @@ return function(D, S)
 			view.shipyard.fullMissing = math.max(0, fullMissing)
 			view.shipyard.maxHull = maxHull
 			view.shipyard.field = not port.shipyard
-			view.shipyard.repairTotal = math.max(0, missing) * view.shipyard.repairCost * (if port.shipyard then 1 else 2)
+			view.shipyard.repairTotal = math.floor(math.max(0, missing) * view.shipyard.repairCost
+				* (if port.shipyard then 1 else 2)
+				* (1 + (if def0.trait then def0.trait.repair or 0 else 0)) + 0.5)
 		end
+		local culture = D.CultureRegions.ofPort(D.Ports.Ports, state.portId)
 		for _, shipId in D.Ships.Order do
 			local s = D.Ships.Ships[shipId]
+			-- [지역 조선소] 기존 28척의 목록은 보존. 신규 함종은 해당 문화권·특별 항구에서만 진열.
+			local localShip = not s.newRegional or s.id == state.ship.id or
+				(if s.specialPort then s.specialPort == state.portId
+					else s.regions and culture and table.find(s.regions, culture) ~= nil)
+			if localShip then
 			local locked = nil
 			if s.techReq and not state.tech[s.techReq] then
 				locked = "연구 필요: " .. D.Tech.Tech[s.techReq].name
 			end
-			locked = locked or D.Ships.saleBlock(s, D.CultureRegions.ofPort(D.Ports.Ports, state.portId), state.nationId)
+			locked = locked or D.Ships.saleBlock(s, culture, state.nationId, state.portId, state.careers.adventure.level)
 			table.insert(view.shipyard.ships, {
 				id = s.id,
 				rowed = s.rowed, nation = s.nation, regions = s.regions,
+				trait = s.trait, newRegional = s.newRegional, specialPort = s.specialPort,
 				name = s.name,
 				steam = s.steam,
 				price = s.price,
@@ -573,6 +583,7 @@ return function(D, S)
 				locked = locked or (if s.class >= 2 and state.license < s.class - 1 then "면허 필요: " .. D.Ships.Licenses[s.class - 1].name else nil),
 				owned = (s.id == state.ship.id),
 			})
+			end
 		end
 
 		-- 탐험 지점

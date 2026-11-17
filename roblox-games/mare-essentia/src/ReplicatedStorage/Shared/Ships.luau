@@ -20,6 +20,13 @@ export type ShipDef = {
 	visual: string?, -- 입체 모델·그림을 빌려 올 기본 배 id
 	tint: { number }?, -- 선체 색 {r,g,b} (지역·나라의 특징)
 	rowed: boolean?, -- 노로 움직이는 배: 바람이 없어도 속도를 잃지 않는다
+	-- 선박의 역할별 고유 운용 성능. 기존 저장 키·기본 능력치는 변경하지 않는다.
+	trait: { role: string, weak: string, sail: number?, wind: number?, supplies: number?,
+		cargo: number?, cannon: number?, melee: number?, storm: number?, repair: number?,
+		tariff: number?, explore: number?, long: number?, shallow: number?, evade: number?, cargoGuard: number? }?,
+	specialPort: string?, -- 미지 대륙 선박은 기존 태평양 외항의 비밀 조선소에서만 등장
+	minAdventure: number?, -- 기존 모험 경험/해역 해금 요구치
+	newRegional: boolean?, -- 지역 판매 신설 선박 여부: 모바일 진열에서 해당 조선소만 표시
 }
 
 local Ships: { [string]: ShipDef } = {
@@ -156,6 +163,108 @@ local Blueprints = {
 	{ id="astheria_flagship", name="아스테리아 해도함", faction="lost", stage=6, era="가상 6단계", hull="대형 장거리 미지 탐사선", rig="다중 혼합돛", deck="천문 관측대·최종 해도실", remodel="일곱 해역 문양·고유 돛대 구조 개조", card="lo_25", existingId=nil, targetLengthStuds=56, targetBeamStuds=17, targetMastHeightStuds=45, sailingZone="가상 원양", proposedEdge=0.08 },
 }
 
+-- [36척 역할 성능] 설계도 한 척당 고유 주특화·약점. 모든 보정은 기존 서버 책임 함수가 사용한다.
+-- 종전 선박의 기초 수치·가격·등급·저장 키는 바꾸지 않는다.
+local ShipPerformance = {
+	cog = { role = "북해 화물", weak = "기동·백병 약세", cargo = 0.1, sail = -0.05, storm = 0.05, cargoGuard = 0.08, melee = -0.04 },
+	caravel = { role = "탐사·역풍", weak = "적재량 약세", wind = 0.08, explore = 0.08, cargo = -0.03 },
+	carrack = { role = "원양 장거리", weak = "선회·수리 부담", long = 0.08, supplies = -0.1, repair = 0.06, sail = -0.04 },
+	galleon = { role = "포격·호위", weak = "유지비 부담", cannon = 0.06, storm = 0.04, repair = 0.08 },
+	ship_of_line = { role = "일제포격", weak = "보급·교역 부담", cannon = 0.1, supplies = 0.15, tariff = -0.02, repair = 0.12 },
+	kobaya = { role = "연안 기동", weak = "내구·적재 약세", sail = 0.1, storm = -0.06, cargo = -0.04 },
+	sekibune = { role = "접현·노선", weak = "원양 보급 부담", melee = 0.08, wind = 0.05, supplies = 0.07 },
+	panokseon = { role = "화포·접현 방어", weak = "원양 속도 약세", cannon = 0.08, storm = 0.06, sail = -0.05 },
+	geobukseon = { role = "접현 돌격", weak = "원양·적재 약세", melee = 0.15, cannon = 0.05, sail = -0.08, cargo = -0.04 },
+	treasure_ship = { role = "대량 원양 운송", weak = "기동·함포 약세", cargo = 0.15, long = 0.05, cannon = -0.07, sail = -0.04, cargoGuard = 0.12 },
+	bermuda_sloop = { role = "순풍 고속 항해", weak = "적재·방어 약세", sail = 0.12, wind = 0.06, cargo = -0.05, storm = -0.04, evade = 0.08 },
+	new_england_ketch = { role = "원양 안정·보급", weak = "함포 약세", long = 0.08, supplies = -0.06, cannon = -0.05 },
+	chesapeake_schooner = { role = "연안 경쾌 항해", weak = "대양 폭풍 약세", sail = 0.1, explore = 0.04, storm = -0.05, evade = 0.08 },
+	atlantic_brigantine = { role = "원양 기동 호위", weak = "적재 제한", long = 0.08, sail = 0.04, cargo = -0.05 },
+	manila_galleon = { role = "태평양 대량 교역", weak = "느린 기동·수리", cargo = 0.12, tariff = 0.08, sail = -0.08, repair = 0.08, cargoGuard = 0.12 },
+	zaruk = { role = "얕은 연안·소형 교역", weak = "외양 폭풍 약세", sail = 0.06, tariff = 0.06, storm = -0.12, shallow = 0.12 },
+	sambuk = { role = "계절풍 항해", weak = "낮은 내구", wind = 0.08, sail = 0.04, storm = -0.05 },
+	dhow = { role = "인도양 저비용 교역", weak = "화력 약세", long = 0.06, supplies = -0.1, cannon = -0.05 },
+	baghlah = { role = "향신료 대량 교역", weak = "느린 선회", cargo = 0.1, tariff = 0.08, sail = -0.05 },
+	oman_boom = { role = "원양 항속·보급", weak = "화력·기동 약세", long = 0.12, supplies = -0.1, cannon = -0.05, sail = -0.05 },
+	prau = { role = "열도 기동", weak = "외해·내구 약세", sail = 0.12, wind = 0.05, storm = -0.09, shallow = 0.10 },
+	pattamar = { role = "계절풍 쾌속 교역", weak = "포격 취약", wind = 0.08, tariff = 0.05, cannon = -0.06 },
+	coracora = { role = "연안 접현 기습", weak = "원양 보급 부담", melee = 0.1, sail = 0.06, supplies = 0.08 },
+	chola_warship = { role = "원정·백병전 호위", weak = "높은 보급 비용", melee = 0.1, storm = 0.04, supplies = 0.09 },
+	javanese_jong = { role = "대량 적재·화물 보호", weak = "느린 기동·수리", cargo = 0.15, storm = 0.07, sail = -0.08, repair = 0.08, cargoGuard = 0.12 },
+	nile_papyrus = { role = "강·얕은 연안", weak = "외해 폭풍 약세", sail = 0.05, storm = -0.15, cargo = -0.04, shallow = 0.14 },
+	pirogue = { role = "연안 강어귀", weak = "대양 항해 약세", sail = 0.1, storm = -0.12, shallow = 0.12 },
+	mtepe = { role = "연안 저비용 교역", weak = "포격 약세", tariff = 0.08, supplies = -0.04, cannon = -0.04 },
+	zanzibar_dhow = { role = "향신료 항로·풍향", weak = "접현 방어 약세", wind = 0.08, long = 0.05, tariff = 0.04, melee = -0.05 },
+	zanzibar_jahazi = { role = "원양 대량 보급", weak = "기동 약세", long = 0.1, supplies = -0.12, cargo = 0.06, sail = -0.05 },
+	mu_voyager = { role = "해류 탐사", weak = "적재 제한", explore = 0.06, sail = 0.04, cargo = -0.04 },
+	mist_seeker = { role = "안개 해도 탐사", weak = "함포 약세", explore = 0.08, storm = 0.04, cannon = -0.05, evade = 0.08 },
+	lemuria_scout = { role = "풍향·폭풍 대응", weak = "내구·적재 약세", wind = 0.1, storm = 0.08, sail = 0.04, cargo = -0.05 },
+	atlantis_carrier = { role = "유적·장거리 탐사", weak = "수리비 부담", long = 0.08, explore = 0.08, repair = 0.1 },
+	flying_dutchman = { role = "해무 전투·생존", weak = "교역 비효율", cannon = 0.08, storm = 0.1, tariff = -0.05, evade = 0.10 },
+	astheria_flagship = { role = "천문 원양 탐사", weak = "높은 유지비", long = 0.08, explore = 0.08, wind = 0.06, repair = 0.15 },
+}
+-- [신규 23척의 기준 함종값] 이미 등록·승인된 전용 3D 모델과 설계가 있는 함종만 확장한다.
+-- 옛 28척은 이 표로 덮어쓰지 않고, 기존 판매·수리·국가 제한을 그대로 유지한다.
+local NewShipStats = {
+	ship_of_line = { class = 4, price = 15000, cargo = 24, speed = 5, hull = 340, cannons = 18, crew = 65 },
+	kobaya = { class = 1, price = 1500, cargo = 14, speed = 9, hull = 85, cannons = 2, crew = 22, rowed = true },
+	panokseon = { class = 2, price = 5100, cargo = 20, speed = 6, hull = 215, cannons = 11, crew = 44, rowed = true },
+	treasure_ship = { class = 2, price = 10500, cargo = 95, speed = 5, hull = 245, cannons = 5, crew = 40 },
+	bermuda_sloop = { class = 1, price = 2100, cargo = 22, speed = 10, hull = 85, cannons = 3, crew = 16 },
+	new_england_ketch = { class = 1, price = 3000, cargo = 38, speed = 7, hull = 125, cannons = 4, crew = 20 },
+	chesapeake_schooner = { class = 2, price = 4700, cargo = 30, speed = 10, hull = 135, cannons = 6, crew = 24 },
+	atlantic_brigantine = { class = 2, price = 5400, cargo = 35, speed = 9, hull = 165, cannons = 8, crew = 30 },
+	zaruk = { class = 1, price = 1100, cargo = 18, speed = 8, hull = 65, cannons = 1, crew = 9, rowed = true },
+	sambuk = { class = 1, price = 2600, cargo = 33, speed = 8, hull = 100, cannons = 3, crew = 18 },
+	oman_boom = { class = 2, price = 8200, cargo = 78, speed = 5, hull = 225, cannons = 5, crew = 34 },
+	coracora = { class = 2, price = 4800, cargo = 26, speed = 8, hull = 165, cannons = 7, crew = 48, rowed = true },
+	chola_warship = { class = 2, price = 7600, cargo = 29, speed = 7, hull = 240, cannons = 12, crew = 58, rowed = true },
+	javanese_jong = { class = 2, price = 10200, cargo = 96, speed = 4, hull = 255, cannons = 5, crew = 38 },
+	nile_papyrus = { class = 1, price = 850, cargo = 14, speed = 5, hull = 55, cannons = 1, crew = 9, rowed = true },
+	zanzibar_dhow = { class = 2, price = 6500, cargo = 64, speed = 7, hull = 185, cannons = 5, crew = 26 },
+	zanzibar_jahazi = { class = 2, price = 9200, cargo = 82, speed = 6, hull = 235, cannons = 7, crew = 34 },
+	mu_voyager = { class = 1, price = 2400, cargo = 22, speed = 8, hull = 95, cannons = 3, crew = 16 },
+	mist_seeker = { class = 1, price = 4200, cargo = 28, speed = 9, hull = 110, cannons = 4, crew = 22 },
+	lemuria_scout = { class = 2, price = 6300, cargo = 31, speed = 10, hull = 160, cannons = 6, crew = 26 },
+	atlantis_carrier = { class = 2, price = 10000, cargo = 60, speed = 7, hull = 240, cannons = 10, crew = 42 },
+	flying_dutchman = { class = 4, price = 15500, cargo = 28, speed = 8, hull = 310, cannons = 16, crew = 55 },
+	astheria_flagship = { class = 4, price = 24000, cargo = 66, speed = 9, hull = 360, cannons = 14, crew = 60 },
+}
+local BlueprintSaleRegions = {
+	europe = { "north_sea", "atlantic_europe", "mediterranean" },
+	east_asia = { "east_asia" },
+	new_world = { "americas" },
+	middle_east = { "red_sea" },
+	southeast_asia = { "south_asia", "southeast_asia" },
+	africa = { "west_africa", "east_africa" },
+}
+for _, blueprint in Blueprints do
+	local perf = ShipPerformance[blueprint.id]
+	assert(perf, "missing ship trait " .. blueprint.id)
+	if not Ships[blueprint.id] then
+		local stats = NewShipStats[blueprint.id]
+		assert(stats, "missing new ship stats " .. blueprint.id)
+		Ships[blueprint.id] = {
+			id = blueprint.id, name = blueprint.name, steam = false,
+			price = stats.price, cargo = stats.cargo, speed = stats.speed,
+			hull = stats.hull, cannons = stats.cannons, crew = stats.crew,
+			fuelPerDay = 0, class = stats.class,
+			rowed = stats.rowed,
+			-- 기존 지역 조선소만 판매. 미지대륙은 기존 호놀룰루 외항을 전용 거점으로 사용한다.
+			regions = if blueprint.id == "nile_papyrus" then { "red_sea" }
+				elseif blueprint.id == "zanzibar_dhow" or blueprint.id == "zanzibar_jahazi" then { "east_africa" }
+				else BlueprintSaleRegions[blueprint.faction],
+			specialPort = if blueprint.faction == "lost" then "honolulu" else nil,
+			newRegional = true,
+			minAdventure = if blueprint.faction == "lost" then 6 + blueprint.stage * 4 else nil,
+			summary = blueprint.hull .. " · " .. perf.role,
+		}
+	end
+	Ships[blueprint.id].trait = perf
+end
+-- [연관 기존 선박] 별도 신규 선박 ID가 있는 설계는 기존 원본의 수치를 변경하지 않는다.
+-- 기존 국가 전용선·증기선·호위선도 28척의 저장/경제 구조 그대로 운용한다.
+
 -- 항만청 면허: 등급 N+1 배를 사려면 면허 N단계가 필요하다.
 local Licenses = {
 	{ name = "연안 항해 면허", fame = 30, fee = 300 },
@@ -208,6 +317,12 @@ local Order = {
 	"galley", "xebec", "cog", "carrack", "brigantine", "dhow", "baghlah", "mtepe", "pirogue", "junk", "geobukseon", "prau", "pattamar",
 	"privateer", "east_indiaman", "corvette", "nau", "kadirga", "jahazi", "kotia", "sekibune", "manila_galleon",
 	"paddle_steamer", "ironclad_frigate",
+	-- [7대륙 신규 23척] 기존 판매 진열에만 추가. 별도 상점·저장 구조는 만들지 않는다.
+	"ship_of_line", "kobaya", "panokseon", "treasure_ship",
+	"bermuda_sloop", "new_england_ketch", "chesapeake_schooner", "atlantic_brigantine",
+	"zaruk", "sambuk", "oman_boom", "coracora", "chola_warship", "javanese_jong",
+	"nile_papyrus", "zanzibar_dhow", "zanzibar_jahazi",
+	"mu_voyager", "mist_seeker", "lemuria_scout", "atlantis_carrier", "flying_dutchman", "astheria_flagship",
 }
 
 -- 이 배를 지금 살 수 없는 이유 (살 수 있으면 nil). regionId = 현재 항구의 문화권, nationId = 주인공 나라.
@@ -215,7 +330,13 @@ local RegionNames: { [string]: string } = {
 	mediterranean = "지중해", red_sea = "홍해·중동", north_sea = "북해·발트", atlantic_europe = "대서양 유럽", americas = "아메리카",
 	west_africa = "서아프리카", east_africa = "동아프리카", south_asia = "남아시아", southeast_asia = "동남아·오세아니아", east_asia = "동아시아",
 }
-local function saleBlock(def: ShipDef, regionId: string?, nationId: string?): string?
+local function saleBlock(def: ShipDef, regionId: string?, nationId: string?, portId: string?, adventureLevel: number?): string?
+	if def.specialPort and def.specialPort ~= portId then
+		return "특수 제작 선박: 호놀룰루 조선소에서만 취급해요"
+	end
+	if def.minAdventure and (adventureLevel or 0) < def.minAdventure then
+		return string.format("모험 레벨 %d부터 구매 가능해요", def.minAdventure)
+	end
 	if def.nation and def.nation ~= nationId then
 		return "다른 나라 전용 배예요"
 	end

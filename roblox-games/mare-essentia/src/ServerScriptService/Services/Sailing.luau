@@ -12,7 +12,13 @@ return function(D, S)
 		local nation = D.Ports.Nations[state.nationId]
 		local dist = D.SeaRoutes.lengthKm(from.id, to.id, D.Ports.Ports)
 		local coal = if def.steam then (state.cargo.coal or 0) else 0
-		return D.Voyage.plan(S.State.fleetSpeed(state, def.speed) * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coal, S.State.totalCrew(state), dist, (if def.rowed then math.max(1, D.Voyage.weather(state.day, state.portId).wind) else D.Voyage.weather(state.day, state.portId).wind)) -- 노로 가는 배는 맞바람에도 느려지지 않는다
+		local trait = def.trait or {}
+		local wind = D.Voyage.weather(state.day, state.portId).wind
+		if def.rowed then wind = math.max(1, wind) end
+		wind += (if wind < 1 then 1 - wind else wind - 1) * (trait.wind or 0)
+		local speedBonus = (trait.sail or 0) + (if dist >= 2000 then trait.long or 0 else 0)
+		local speed = S.State.fleetSpeed(state, def.speed) * nation.speedMult * S.Perk.speedMult(state) * (1 + speedBonus)
+		return D.Voyage.plan(speed, def.steam, def.fuelPerDay, coal, S.State.totalCrew(state), dist, wind, 1 + (trait.supplies or 0))
 	end
 
 	-- 보물지도: 목적지 항구 근처 해역에 묻힌 보물. 도착하면 찾는다.
@@ -95,7 +101,13 @@ return function(D, S)
 		local wind = weather.wind
 		local dist = D.SeaRoutes.lengthKm(from.id, to.id, D.Ports.Ports)
 		local coalAvailable = if def.steam then (state.cargo.coal or 0) else 0
-		local plan = D.Voyage.plan(S.State.fleetSpeed(state, def.speed) * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coalAvailable, S.State.totalCrew(state), dist, if def.rowed then math.max(1, wind) else wind)
+		-- [36척 항속 차별화] 기항 거리·풍향·선박 보급률. 기존 선단 최저속/국가/동료 보정은 유지한다.
+		local trait = def.trait or {}
+		local windFactor = if def.rowed then math.max(1, wind) else wind
+		windFactor += (if windFactor < 1 then 1 - windFactor else windFactor - 1) * (trait.wind or 0)
+		local speedBonus = (trait.sail or 0) + (if dist >= 2000 then trait.long or 0 else 0)
+		local effectiveSpeed = S.State.fleetSpeed(state, def.speed) * nation.speedMult * S.Perk.speedMult(state) * (1 + speedBonus)
+		local plan = D.Voyage.plan(effectiveSpeed, def.steam, def.fuelPerDay, coalAvailable, S.State.totalCrew(state), dist, windFactor, 1 + (trait.supplies or 0))
 		local event = D.Voyage.rollEvent(ctx.rng, plan.days, weather.id)
 
 		local msgs = {}
@@ -115,7 +127,8 @@ return function(D, S)
 		end
 
 		-- 보급품 소모
-		local need = D.Voyage.suppliesPerDay(S.State.totalCrew(state)) * days
+		-- 예보/실제 출항/날짜 보정 모두 같은 보급률을 사용해 보급 부족 판정을 왜곡하지 않는다.
+		local need = math.max(1, math.ceil(D.Voyage.suppliesPerDay(S.State.totalCrew(state)) * days * (1 + (trait.supplies or 0))))
 		if state.ship.supplies >= need then
 			state.ship.supplies -= need
 		else
@@ -152,6 +165,7 @@ return function(D, S)
 
 		-- 사건: 항해가 길수록 더 많이 만난다 (8일마다 +1, 최대 4번). 선택형·전투는 한 번만.
 		local events = { event }
+		local avoidedPirates = false -- 기존 해전 승리 기록과 회피 성공을 혼동하지 않는다.
 		local singles = { pirates = true, merchant = true, blockade = true }
 		local usedSingle = singles[event.kind] == true
 		for _ = 1, math.min(3, math.floor(days / 8)) do
@@ -169,7 +183,7 @@ return function(D, S)
 			elseif event.kind == "tailwind" then
 				table.insert(msgs, "순풍을 타고 하루를 아꼈다")
 			elseif event.kind == "storm" then
-				local dmg = math.floor(def.hull * event.amount * (1 - S.State.techSum(state, "pumpReduction")))
+				local dmg = math.floor(def.hull * event.amount * (1 - S.State.techSum(state, "pumpReduction")) * (1 - (trait.storm or 0)))
 				state.ship.hull = math.max(1, state.ship.hull - dmg)
 				table.insert(msgs, string.format("폭풍! 선체 -%d", dmg))
 				moraleAdd(-6)
@@ -196,7 +210,8 @@ return function(D, S)
 				table.insert(msgs, "짙은 안개에 갇혀 하루를 더 보냈다")
 				moraleAdd(-3)
 			elseif event.kind == "reef" then
-				local dmg = math.max(1, math.floor(def.hull * event.amount))
+				-- [얕은 흘수] 암초·연안 장애물의 피해 감소. 해역 진행·항구 잠금에는 영향 없음.
+				local dmg = math.max(1, math.floor(def.hull * event.amount * (1 - (trait.shallow or 0))))
 				state.ship.hull = math.max(1, state.ship.hull - dmg)
 				table.insert(msgs, string.format("암초를 스쳤다! 선체 -%d", dmg))
 			elseif event.kind == "rescue" then
@@ -264,7 +279,9 @@ return function(D, S)
 				table.insert(msgs, "옛 선장의 병 편지를 건졌다. 지도 한 장이 들어 있었다")
 				giveMap(state, ctx, msgs)
 			elseif event.kind == "rats" then
-				local lost = math.min(state.ship.supplies, math.floor(8 + 12 * ctx.rng()))
+				-- [화물/선창 방호] 쥐떼가 보급품을 훼손했을 때 기존 피해에서 일부만 감면한다.
+				local lost = math.min(state.ship.supplies,
+					math.floor((8 + 12 * ctx.rng()) * (1 - (trait.cargoGuard or 0))))
 				state.ship.supplies -= lost
 				table.insert(msgs, string.format("쥐떼가 창고를 갉아먹었다! 보급품 -%d", lost))
 				moraleAdd(-3)
@@ -350,12 +367,19 @@ return function(D, S)
 					moraleAdd(-3)
 				end
 			elseif event.kind == "pirates" then
-				S.Battle.encounter(state, ctx, msgs)
+				-- [해적 회피] 소형 기동선·안개 탐사선이 접근을 조기에 발견한다.
+				-- 실패하면 기존 해전 로직으로 진행한다.
+				if (trait.evade or 0) > 0 and ctx.rng() < trait.evade then
+					avoidedPirates = true
+					table.insert(msgs, "해적선의 추격을 재빨리 피해 전투를 피했다")
+				else
+					S.Battle.encounter(state, ctx, msgs)
+				end
 			end
 		end
 
 		-- 연출용 기록(저장 안 함): 3D 항해 장면이 사건을 그린다
-		state.voyageEvent = { kind = event.kind, all = (function() local k = {} for _, e in events do table.insert(k, e.kind) end return k end)(), won = event.kind == "pirates" and state.lastBattle ~= nil and state.lastBattle.winner == "a" or nil }
+		state.voyageEvent = { kind = event.kind, all = (function() local k = {} for _, e in events do table.insert(k, e.kind) end return k end)(), won = event.kind == "pirates" and not avoidedPirates and state.lastBattle ~= nil and state.lastBattle.winner == "a" or nil }
 
 		-- 바다에서 만난 생물·현상·전설 (해상 도감 카드)
 		do
@@ -532,7 +556,9 @@ return function(D, S)
 			state.coins += coinBonus
 			table.insert(msgs, string.format("바람 고리 보상 코인 +%d", coinBonus))
 		end
-		local xp = math.floor(days * 3 * score * cm)
+		-- 모험선의 탐사 특화는 기존 보상 산식에만 가산하고 경험치·저장 구조는 그대로 사용한다.
+		local shipTrait = S.State.shipDef(state).trait or {}
+		local xp = math.floor(days * 3 * score * cm * (1 + (shipTrait.explore or 0)))
 		if xp > 0 then
 			S.State.gainXp(state, "adventure", xp, msgs)
 		end
