@@ -65,6 +65,8 @@ local regionalDefs = {
 	{ "ottoman_kubur", "오스만 쿠부르 권총", "gun", "PISTOL", "west_asia", "오스만 지역의 호신·기병용 권총" },
 	{ "ship_pistol", "선상 권총", "gun", "PISTOL", "sea", "배 위에서 사용하는 짧은 총신의 권총" },
 	{ "dueling_pistol", "결투용 권총", "gun", "PISTOL", "europe", "18세기 유럽 결투용 권총" },
+	-- [기존 등록 실물] weapon-hammer는 이미 승인된 Relics 모델. 철퇴와 피해·속도·사거리를 공유한다.
+	{ "warhammer", "전투 망치", "mace", "MACE", "europe", "실물 전투망치 병종", "weapon-hammer" },
 }
 Weapons.Regional = {} :: { Weapon }
 for _, v in regionalDefs do
