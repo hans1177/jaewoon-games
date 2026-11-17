@@ -5679,6 +5679,7 @@ H.tradeHall = openTradeHall
 
 function RENDERERS.trade()
 	H.counselRows(1)
+	add(function() return mkLabel(content, "⬇️ 세계 평균보다 저렴 · ⬆️ 평균보다 비쌈 · ➖ 비슷함\n예상 판매손익은 내 매입원가와 관세를 반영해 표시해.", 14, COLORS.gold, true) end)
 	if view.rep then
 		local r = view.rep
 		H.statStrip({
@@ -5728,11 +5729,12 @@ function RENDERERS.trade()
 		grid.Size = UDim2.new(1, -6, 0, 0)
 		grid.AutomaticSize = Enum.AutomaticSize.Y
 		local gl = Instance.new("UIGridLayout")
-		gl.CellSize = UDim2.new(0.5, -4, 0, 128)
+		gl.CellSize = UDim2.new(1, -6, 0, 164)
 		gl.CellPadding = UDim2.fromOffset(6, 6)
 		gl.SortOrder = Enum.SortOrder.LayoutOrder
 		gl.Parent = grid
 		for i, g in view.goods do
+			local priceIcon, deviation = H.marketPriceSignal(g)
 			local cardF = Instance.new("Frame")
 			cardF.LayoutOrder = i
 			cardF.BackgroundColor3 = COLORS.row
@@ -5741,14 +5743,14 @@ function RENDERERS.trade()
 			cardF.Parent = grid
 			local st = Instance.new("UIStroke")
 			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-			st.Color = if g.trend == "up" then COLORS.green elseif g.trend == "down" then COLORS.red else Color3.fromRGB(70, 84, 104)
+			st.Color = if priceIcon == "⬇️" then COLORS.green elseif priceIcon == "⬆️" then COLORS.gold else Color3.fromRGB(70, 84, 104)
 			st.Thickness = 1.5
 			st.Parent = cardF
 			local gi = GOOD_ICON[g.id]
 			local icon = if gi then modelIcon(cardF, gi[1], gi[2], gi[3], 60, g.name, gi[4])
 				else modelIcon(cardF, nil, nil, nil, 60, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(cardF, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 18, COLORS.text, true)
+			local nm = mkLabel(cardF, g.name .. " " .. priceIcon .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else ""), 18, COLORS.text, true)
 			nm.Position = UDim2.fromOffset(76, 6)
 			nm.Size = UDim2.new(1, -150, 0, 24)
 			nm.AutomaticSize = Enum.AutomaticSize.None
@@ -5765,9 +5767,15 @@ function RENDERERS.trade()
 				corner(badge, 6)
 				badge.Parent = cardF
 			end
-			local info = mkLabel(cardF, string.format("사기 %d · 팔기 %d\n보유 %d", g.buy, g.sell, g.owned), 16, COLORS.text, false)
+			local profit = H.tradeProfit(g, 1)
+			local profitLabel = if profit == nil then "매입내역 없음"
+				elseif profit >= 0 then "세후이익 +" .. H.commas(profit) else "세후손실 -" .. H.commas(-profit)
+			local info = mkLabel(cardF, string.format("매입 %s · 판매 %s\n%s 평균 %s (%+.1f%%)\n보유 %d · %s",
+				H.commas(g.buyTotals and g.buyTotals[1] or g.buy), H.commas(g.sell),
+				priceIcon, H.commas(g.avgPrice or g.basePrice or 0), deviation, g.owned, profitLabel), 14, COLORS.text, false)
+			info.TextWrapped = true
 			info.Position = UDim2.fromOffset(76, 34)
-			info.Size = UDim2.new(1, -84, 0, 44)
+			info.Size = UDim2.new(1, -84, 0, 70)
 			info.AutomaticSize = Enum.AutomaticSize.None
 			local buy = mkButton(cardF, "구매", COLORS.blue, UDim2.new(0.5, -10, 0, 36), function() call("Buy", { goodId = g.id, amount = amount() }) end, true)
 			buy.Position = UDim2.new(0, 6, 1, -42)
@@ -5779,6 +5787,15 @@ function RENDERERS.trade()
 				sm.Position = UDim2.new(1, -8, 0, 34)
 			end
 		end
+		-- [모바일 교역 카드] 좁은 화면은 1열, 중간은 2열, 넓은 화면은 3열로 글자가 잘리지 않게 한다.
+		local function fitGrid()
+			local width = grid.AbsoluteSize.X
+			if width <= 0 then return end
+			local columns = if width < 460 then 1 elseif width < 910 then 2 else 3
+			gl.CellSize = UDim2.new(1 / columns, -6 * (columns - 1) / columns, 0, 164)
+		end
+		grid:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitGrid)
+		task.defer(fitGrid)
 		return grid
 	end)
 
