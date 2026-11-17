@@ -2306,7 +2306,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local previousDecor = lastDecorationGrowth[info.portId]
 	local decorPlaced, decorAnimated, decorBuilders = 0, 0, 0
 	local touchDecor = game:GetService("UserInputService").TouchEnabled
-	local decorLimit = if touchDecor then 7 else 13
+	local decorLimit = if game:GetService("UserInputService").TouchEnabled then 7 else 13
 	local animationLimit = if touchDecor then 3 else 6
 	local builderLimit = if touchDecor then 1 else 2
 	local jobs = info.sim and info.sim.jobs
