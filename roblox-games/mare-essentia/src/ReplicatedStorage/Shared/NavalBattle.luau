@@ -3348,36 +3348,41 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- [4단계 수면 충돌] 기존 등록된 엔진 물 입자만 사용: 수면 충격 → 물기둥 → 낙하 물방울 → 잔여 거품.
 	-- 기존 단색 원기둥·구체 물보라를 생성하지 않는다. 위치·규모는 실제 포탄 착탄 좌표로 정한다.
 	function FX.splash(pos, profile, power)
+		-- [4단계 수면 물보라] 큰 네모 연기판 대신 물방울·하얀 포말을 실제 착수점에서 확산한다.
+		-- 탄종/선체/침몰 물보라 강도는 기존 power 그대로 유지한다.
 		local style = profile or DEFAULT_FX
 		local theme = style.theme or FX_THEMES.europe
 		local strength = math.clamp(power or 1, 0.65, 3.2)
 		local surface = Vector3.new(pos.X, ORIGIN.Y + 0.35, pos.Z)
-		-- 1차: 튀어 오르기 직전의 수면 거품과 움푹 패이는 수면 충격
+		-- 1차: 물속 충돌 직후 수면 양옆으로 튀는 미세 거품.
 		FX.burst(surface, nil, {
-			{ tex = "smoke", c0 = Color3.fromRGB(203, 232, 245), c1 = theme.foam, s0 = 1.8 * strength, s1 = 6.6 * strength,
-				life = 0.38, v0 = 3, v1 = 7, spread = 170, n = if MOBILE_VFX then 3 else 7, a0 = 0.22, drag = 5 },
+			{ tex = "spark", c0 = Color3.fromRGB(241, 254, 255), c1 = theme.foam,
+				s0 = 0.75 * strength, s1 = 0.06, life = 0.44,
+				v0 = 7, v1 = 16 * strength, spread = 170, glow = 0.35,
+				n = if MOBILE_VFX then 8 else 16, a0 = 0.18,
+				acc = Vector3.new(0, -9, 0), drag = 4 },
 		})
-		-- 2차: 대포 구경·선체 침수 규모에 비례하는 물기둥
+		-- 2차: 세로 물기둥. 기존 함수는 낙하 운동만 시각화한다.
 		FX.waterColumn(surface, style, strength)
 		task.delay(0.20, function()
 			if finished then return end
-			-- 3차: 위로 솟은 작은 물방울들이 중력과 물살에 따라 떨어진다.
+			-- 3차: 물기둥 꼭대기에서 중력으로 떨어지는 빛나는 물방울.
 			FX.burst(surface + Vector3.new(0, 4 * strength, 0), Vector3.new(0, 1, 0), {
-				{ tex = "spark", c0 = Color3.fromRGB(242, 252, 255), c1 = theme.foam,
-					s0 = 0.75 * strength, s1 = 0.18, life = 0.95 + strength * 0.15,
-					v0 = 7, v1 = 16 * strength, spread = 70,
-					n = if MOBILE_VFX then 5 else math.floor(11 * strength),
-					acc = Vector3.new(0, -42, 0), drag = 0.5, a0 = 0.16 },
+				{ tex = "spark", c0 = Color3.fromRGB(240, 252, 255), c1 = theme.foam,
+					s0 = math.min(1.15, 0.58 * strength), s1 = 0.05,
+					life = 0.7 + strength * 0.1, v0 = 6, v1 = 15 * strength,
+					spread = 80, n = if MOBILE_VFX then 9 else 19,
+					acc = Vector3.new(0, -44, 0), drag = 0.8, a0 = 0.12 },
 			})
 		end)
 		task.delay(0.53, function()
 			if finished then return end
-			-- 4차: 물방울이 내려앉은 뒤 남는 낮고 넓은 포말
+			-- 4차: 내려앉은 거품이 수면 위로 퍼지고 투명하게 사라진다.
 			FX.burst(surface, nil, {
-				{ tex = "smoke", c0 = Color3.fromRGB(245, 253, 255), c1 = theme.foam,
-					s0 = 2.5 * strength, s1 = 7.0 * strength, life = 1.45,
-					v0 = 2, v1 = 8 * strength, spread = 175,
-					n = if MOBILE_VFX then 3 else math.floor(7 * strength), a0 = 0.28, drag = 3.4 },
+				{ tex = "spark", c0 = Color3.fromRGB(247, 255, 255), c1 = theme.foam,
+					s0 = math.min(1.3, 0.8 * strength), s1 = 0.02, life = 0.95,
+					v0 = 3, v1 = 8 * strength, spread = 175,
+					n = if MOBILE_VFX then 6 else 12, a0 = 0.35, drag = 6 },
 			})
 		end)
 	end
@@ -3538,24 +3543,26 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end
 	-- [상황별 물기둥] 같은 실제 수면 충돌 좌표를 사용한다. 크기는 대포 구경·침몰 단계에만 따른다.
 	function FX.waterColumn(pos, profile, power)
+		-- [수면 기둥] 파란 사각 스프라이트 대신 작은 물방울 무리가 수직으로 솟아 떨어진다.
 		local style = profile or DEFAULT_FX
 		local stage = math.clamp(style.stage or 2, 1, 6)
 		local theme = style.theme or FX_THEMES.europe
-		local density = if MOBILE_VFX then 0.50 else 1
 		local strength = math.clamp(power or 1, 0.65, 3.2)
-		local spread = if style.faction == "southeast_asia" then 44 elseif style.faction == "new_world" then 32 else 20
+		local spread = if style.faction == "southeast_asia" then 35
+			elseif style.faction == "new_world" then 30 else 23
 		FX.burst(pos + Vector3.new(0, 1, 0), Vector3.new(0, 1, 0), {
-			{ tex = "smoke", c0 = FOAM, c1 = theme.foam,
-				s0 = (3.3 + stage * 0.37) * strength, s1 = (9.0 + stage * 1.55) * strength,
-				life = (0.95 + stage * 0.09) * math.sqrt(strength), v0 = 12 * strength, v1 = (22 + stage * 1.2) * strength,
-				spread = spread * 0.52, n = math.max(3, math.floor((5 + stage * 1.2) * density * strength)),
-				a0 = 0.17, acc = Vector3.new(0, -19, 0), drag = 1 },
-			{ tex = "spark", c0 = theme.foam, s0 = 0.75 * strength, s1 = 0.16,
-				life = 0.75, v0 = 15 * strength, v1 = (26 + stage * 2) * strength, spread = spread,
-				n = math.max(4, math.floor((8 + stage * 2.3) * density * strength)),
-				acc = Vector3.new(0, -60, 0), a0 = 0.16, glow = 0.2 },
+			{ tex = "spark", c0 = Color3.fromRGB(246, 255, 255), c1 = theme.foam,
+				s0 = math.min(1.5, (0.61 + stage * 0.06) * strength), s1 = 0.05,
+				life = (0.77 + stage * 0.055) * math.sqrt(strength),
+				v0 = 13 * strength, v1 = (22 + stage * 1.3) * strength,
+				spread = spread, n = if MOBILE_VFX then 12 else math.min(25, math.floor((12 + stage * 2) * strength)),
+				a0 = 0.08, acc = Vector3.new(0, -50, 0), drag = 0.5, glow = 0.26 },
+			{ tex = "smoke", c0 = Color3.fromRGB(229, 250, 255), c1 = theme.foam,
+				s0 = math.min(1.3, 0.65 * strength), s1 = math.min(2.6, 1.9 * strength),
+				life = 0.45, v0 = 8 * strength, v1 = 14 * strength,
+				spread = spread * 0.7, n = if MOBILE_VFX then 2 else 5,
+				a0 = 0.78, acc = Vector3.new(0, -14, 0), drag = 1.5 },
 		})
-		-- 기존 수면 파문만 재사용. 새 기본 도형 소품·선박 모델은 만들지 않는다.
 		FX.shockRing(pos, theme.foam, (7 + stage * 1.4) * strength, 0.6 + strength * 0.12)
 	end
 	-- 스킬 연출: 배에 붙은 입자를 지속시간 동안 켜 두고, 시작 순간 충격파를 낸다
@@ -3767,36 +3774,55 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end
 	-- [해역·노선별 항적] 대양 범선은 길고 얇은 흰 줄, 노선은 양측 거품, 미지 선박은 청록빛 잔류 파문.
 	function FX.wake(sh, key, now)
-		-- [해상 항적] 원래 납작한 사각 파츠 대신 배 뒤편에 낮게 번지는 하얀 포말 입자.
-		-- 경량 모바일은 간격을 늘리고, 함선은 실제 이동 방향/등록 테마를 유지한다.
+		-- [항적·뱃머리 파도] 선박 이동 방향에 맞춰 선수 좌우 물보라와 V자형 포말을 생성한다.
+		-- 새로운 3D 물/기본 도형 없이 승인된 선박 모델과 기존 spark 입자만 사용한다.
 		local last = FX.wakeAt[key]
 		local profile = sh.fx or DEFAULT_FX
 		local theme = profile.theme or FX_THEMES.europe
-		local step = if MOBILE_VFX then 0.32 else 0.23
+		local step = if MOBILE_VFX then 0.31 else 0.22
+		if last and now - last.t < step then return end
 		local moved = last and (sh.pos - last.pos).Magnitude or 0
-		if not last or now - last.t >= step then
-			FX.wakeAt[key] = { pos = sh.pos, t = now }
-			if moved > 0.35 then
-				local heading = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
-				local back = ORIGIN + sh.pos - heading * (sh.length * 0.47) + Vector3.new(0, 0.25, 0)
-				local rowing = profile.rowed == true
-				FX.burst(back, nil, {
+		FX.wakeAt[key] = { pos = sh.pos, t = now, frame = if last then (last.frame or 0) + 1 else 1 }
+		if moved <= 0.35 or (sh.speed or 0) <= 1.5 then return end
+		local heading = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
+		local right = Vector3.new(-heading.Z, 0, heading.X)
+		local rowing = profile.rowed == true
+		local drive = math.clamp((sh.speed or 0) / 18, 0.34, 1.75)
+		local stern = ORIGIN + sh.pos - heading * sh.length * 0.49 + Vector3.new(0, 0.27, 0)
+		-- [선미] 흰 선형 포말과 조금 굵은 물방울을 겹쳐 물살이 끊기지 않도록 한다.
+		FX.burst(stern, Vector3.new(-heading.X, 0.1, -heading.Z), {
+			{ tex = "spark", c0 = Color3.fromRGB(245, 255, 255), c1 = theme.foam,
+				s0 = if rowing then 0.76 else 0.62, s1 = 0.025, life = if rowing then 0.88 else 0.72,
+				v0 = 2 * drive, v1 = 7 * drive, spreadX = if rowing then 92 else 55, spreadY = 15,
+				axis = "forward", n = if MOBILE_VFX then 5 else 9,
+				a0 = 0.25, drag = 4.2, acc = Vector3.new(0, -4, 0), glow = 0.13 },
+		})
+		-- [선수] 좌현·우현 물보라가 배 앞에서 갈라진다. 모바일은 반씩 번갈아 표시한다.
+		local bow = ORIGIN + sh.pos + heading * sh.length * 0.43 + Vector3.new(0, 0.33, 0)
+		for side = -1, 1, 2 do
+			if not MOBILE_VFX or side == (if FX.wakeAt[key].frame % 2 == 0 then 1 else -1) then
+				local sprayDir = right * side * 0.72 - heading * 0.35 + Vector3.new(0, 0.7, 0)
+				FX.burst(bow + right * side * sh.length * 0.075, sprayDir, {
 					{ tex = "spark", c0 = Color3.fromRGB(248, 255, 255), c1 = theme.foam,
-						s0 = if rowing then 0.54 else 0.35, s1 = 0.03,
-						life = if rowing then 0.75 else 0.54, v0 = 2, v1 = if rowing then 7 else 5,
-						spread = 165, n = if MOBILE_VFX then 2 else 5,
-						a0 = 0.38, drag = 5, acc = Vector3.new(0, -4, 0) },
+						s0 = math.min(0.95, 0.57 * drive), s1 = 0.04,
+						life = 0.45, v0 = 7 * drive, v1 = 15 * drive,
+						spreadX = 28, spreadY = 38, axis = "forward",
+						n = if MOBILE_VFX then 5 else 9, a0 = 0.11,
+						acc = Vector3.new(0, -20, 0), drag = 1.9, glow = 0.25 },
 				})
-				if rowing and not MOBILE_VFX then
-					local side = Vector3.new(-heading.Z, 0, heading.X)
-					for sign = -1, 1, 2 do
-						FX.burst(back + side * sign * sh.length * 0.18, nil, {
-							{ tex = "spark", c0 = theme.foam, s0 = 0.25, s1 = 0.02,
-								life = 0.4, v0 = 1, v1 = 4, spread = 135,
-								n = 2, a0 = 0.45, drag = 4 },
-						})
-					end
-				end
+			end
+		end
+		-- [노선] 실제 노로 젓는 함선은 양쪽에서 짧은 흰 물줄기를 추가한다.
+		if rowing and not MOBILE_VFX and FX.wakeAt[key].frame % 2 == 0 then
+			for side = -1, 1, 2 do
+				local oar = ORIGIN + sh.pos - heading * sh.length * 0.15
+					+ right * side * sh.length * 0.22 + Vector3.new(0, 0.30, 0)
+				FX.burst(oar, right * side + Vector3.new(0, 0.35, 0), {
+					{ tex = "spark", c0 = theme.foam, s0 = 0.45, s1 = 0.02,
+						life = 0.42, v0 = 4, v1 = 10,
+						spreadX = 32, spreadY = 40, axis = "forward", n = 5,
+						a0 = 0.25, drag = 3.6, acc = Vector3.new(0, -11, 0) },
+				})
 			end
 		end
 	end
@@ -5178,12 +5204,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		kick = kick * 0.86
 		local boardingView = phase == "board" and not cardBusy and not opts.cardOnly and not (rt and rt.sunk) and not sinkStart
 		FX.boardZoom += ((if boardingView then 1 else 0) - FX.boardZoom) * (1 - math.exp(-dt * 4.2))
-		cam.FieldOfView = 76 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom - FX.boardZoom * (17 + math.clamp(me.fx.stage or 2, 1, 6) * 0.6)
+		cam.FieldOfView = (if MOBILE_VFX then 73 else 75) - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom - FX.boardZoom * (17 + math.clamp(me.fx.stage or 2, 1, 6) * 0.6)
 		local f = forward(me.theta)
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
 		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
-		local camPos = ORIGIN + me.pos - f * (170 + dist * 0.55) + Vector3.new(0, math.min(80, 70 + dist * 0.12), 0)
+		-- [선체 가독성] 선박 외형이 너무 작게 보이지 않게 카메라만 약간 가까이 이동한다.
+		local camPos = ORIGIN + me.pos - f * ((if MOBILE_VFX then 147 else 160) + dist * (if MOBILE_VFX then 0.46 else 0.51))
+			+ Vector3.new(0, math.min(78, 65 + dist * 0.11), 0)
 		if cardBusy then
 			local mid = (me.pos + foe.pos) / 2
 			local dir = foe.pos - me.pos
