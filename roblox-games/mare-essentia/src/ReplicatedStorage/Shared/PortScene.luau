@@ -570,6 +570,21 @@ local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 	outfit.year = year
 	outfit.culture = currentKey
 	outfit.profession = if extra and extra.profession then extra.profession else role
+	-- [남녀 외형] 기존 문화권 복장색·연도는 유지하고 남녀별 머리/체형/주민복을 지정한다.
+	local female = if extra and type(extra.female) == "boolean" then extra.female else rng:NextNumber() < 0.47
+	outfit.gender = if female then "female" else "male"
+	if year >= 1500 then
+		if female then
+			outfit.hair = outfit.hair or (if rng:NextNumber() < 0.52 then "bun" else "long")
+			if not outfit.companion then
+				outfit.skirt = outfit.skirt or coat
+				outfit.skirtLong = true
+			end
+		else
+			outfit.hair = outfit.hair or "short"
+		end
+	end
+	if outfit.companion then outfit.hat = nil end
 	-- 15세기: 후대 모자뿐 아니라 Part 조립으로 만들어진 가짜 의상·머리카락은 새로 붙이지 않는다.
 	-- 실제 승인된 15세기 R15 복식·머리 메시의 장착 검증이 끝나면 그 메시만 사용한다.
 	if year < 1500 then
@@ -1200,7 +1215,8 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	local o = OUTFIT[key] or OUTFIT.north or {}
 	local function person(pos, facing, spec, profession)
 		local extra = { year = year, age = spec.age or "adult", profession = spec.profession or profession or spec.role or "villager" }
-		local female = spec.female
+		local female = if type(spec.female) == "boolean" then spec.female else rng:NextNumber() < 0.47
+		extra.female = female
 		local old = extra.age == "elder"
 		local hairColor = if old then GRAY_HAIR else SKIN_HAIR[rng:NextInteger(1, #SKIN_HAIR)]
 		extra.hairColor = hairColor
@@ -4875,7 +4891,13 @@ function PortScene.build(info, onFacility)
 		for i, c in info.companions or {} do
 			local look = looks[c.id] or { "Rogue", Color3.fromRGB(120, 100, 80) }
 			local v = villager(folder, Vector3.new(-6 - i * 3, 0.18, 8 + i * 2), math.pi / 2,
-				look[2], rng, look[1], true, { height = heroHeight, companion = true })
+				look[2], rng, look[1], true, {
+					height = heroHeight, companion = true,
+					-- 명시된 성별 또는 기존 인물의 성별. 동료 능력/저장값은 그대로 둔다.
+					female = c.female == true or c.gender == "female" or c.id == "c_merian"
+						or c.id == "t_mate" or c.id == "t_surgeon" or c.id == "t_purser",
+					bodyType = "athletic", noHat = true,
+				})
 			if v then
 				v.Name = "Companion_" .. c.id
 				v:SetAttribute("CompanionId", c.id) -- 항구에서만 동료 전용 달리기 관절을 강화한다.
@@ -5273,6 +5295,34 @@ function PortScene.build(info, onFacility)
 	-- [진단] 질의가 실패하면 성공으로 간주하지 않고 스튜디오에서 확인할 수 있게 보존한다.
 	folder:SetAttribute("NpcRouteAudit", if routeOk then "PASS" else "FAIL")
 	if not routeOk then folder:SetAttribute("NpcRouteFailure", tostring(routeError)) end
+
+	-- [기존 People 등록 모델 지연 로딩] 주민과 동료의 미완성 복장만 기존 장착 책임 함수로 갱신한다.
+	-- 이벤트 묶음은 한 번만 조회하고 장면 파괴 시 연결을 즉시 끊는다.
+	do
+		local shelf = ReplicatedStorage:FindFirstChild("MareAssets")
+		local people = shelf and shelf:FindFirstChild("People")
+		if people then
+			local queued = false
+			local outfitConn = people.ChildAdded:Connect(function(asset)
+				if not asset:IsA("Model") or not AssetIds["People/" .. asset.Name] then return end
+				if not (string.find(asset.Name, "peasant", 1, true) or string.find(asset.Name, "ranger", 1, true)
+					or string.sub(asset.Name, 1, 5) == "hair_") then return end
+				if queued then return end
+				queued = true
+				task.delay(0.08, function()
+					queued = false
+					if not folder.Parent then return end
+					for _, subject in folder:GetDescendants() do
+						if subject:IsA("Model") and subject:GetAttribute("NpcAssetProfile")
+							and subject:GetAttribute("NpcAppearanceState") ~= "ready" then
+							Pose.applyRegisteredMobOutfit(subject)
+						end
+					end
+				end)
+			end)
+			folder.Destroying:Connect(function() outfitConn:Disconnect() end)
+		end
+	end
 
 	-- 움직임: 배 흔들림, 갈매기, 풍차
 	local shipBase = ship:GetPivot()

@@ -75,7 +75,7 @@ local r15ActionBlends = setmetatable({}, { __mode = "k" })
 
 -- 얼굴: 기본 얼굴 데칼 대신 눈썹·눈·입·수염·흉터를 UI 로 그려, 사람마다 표정과 생김새가 다르게 한다.
 -- (뷰포트 초상화는 SurfaceGui 를 그리지 못하므로 그때는 기본 얼굴을 그대로 둔다)
-local function drawFace(head, role, skin, rng)
+local function drawFace(head, role, skin, rng, gender)
 	local decal = head:FindFirstChildWhichIsA("Decal")
 	local gui = Instance.new("SurfaceGui")
 	gui.Name = "MareFace"
@@ -135,10 +135,10 @@ local function drawFace(head, role, skin, rng)
 	end
 	-- 수염과 콧수염
 	local beard = rng:NextInteger(1, 4)
-	if role == "Barbarian" or beard == 1 then
+	if gender ~= "female" and (role == "Barbarian" or beard == 1) then
 		box(100, 176, 100, 40, hair, 0, true)
 		box(100, 132, 56, 12, hair, 0, true)
-	elseif beard == 2 then
+	elseif gender ~= "female" and beard == 2 then
 		box(100, 132, 60, 12, hair, 0, true)
 	end
 	-- 흉터와 안대
@@ -393,6 +393,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 		if type(outfit.year) == "number" then model:SetAttribute("AppearanceYear", outfit.year) end
 		if type(outfit.culture) == "string" then model:SetAttribute("AppearanceCulture", outfit.culture) end
 		if type(outfit.profession) == "string" then model:SetAttribute("AppearanceProfession", outfit.profession) end
+		if outfit.gender == "female" or outfit.gender == "male" then model:SetAttribute("AppearanceGender", outfit.gender) end
 	end
 	if outfit and outfit.hair then
 		pcall(addHair, model, outfit.hair, outfit.hairColor or Color3.fromRGB(60, 42, 30))
@@ -411,7 +412,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	end
 	local headPart = model:FindFirstChild("Head")
 	if headPart and headPart:IsA("BasePart") and not parent:IsA("WorldModel") then
-		pcall(drawFace, headPart, role, skin, rng)
+		pcall(drawFace, headPart, role, skin, rng, outfit and outfit.gender)
 	end
 	humanoid.AutoRotate = false
 	humanoid.WalkSpeed = 0
@@ -420,6 +421,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	-- [공통 R15 외형] 직업·나이에 따라 실루엣과 몸짓을 부여한다. 게임 수치·저장은 변경하지 않는다.
 	local physique = if outfit and type(outfit.bodyType) == "string" then outfit.bodyType
 		elseif outfit and outfit.age == "elder" then "elder"
+		elseif outfit and outfit.gender == "female" then "slim"
 		elseif role == "Barbarian" then "heavy" elseif role == "Rogue" or role == "Rogue_Hooded" then "slim"
 		elseif role == "Knight" then "athletic" else "average"
 	local style = if outfit and type(outfit.motionStyle) == "string" then outfit.motionStyle
@@ -489,6 +491,12 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 		neck = model:FindFirstChild("Neck", true),
 		root = model:FindFirstChild("Root", true),
 	}
+	-- [주민·동료 3D 복식] 원본 R15 15관절과 스케일을 보존한 채 승인된 People 메시를 장착한다.
+	-- 외형 전용 속성만 사용한다. 미로드 시 항구 자산 인입 이벤트에서 원래 장착 함수를 재호출한다.
+	if outfit and (outfit.gender == "female" or outfit.gender == "male") then
+		model:SetAttribute("NpcAssetProfile", (if outfit.companion then "companion_" else "citizen_") .. outfit.gender)
+		Pose.applyRegisteredMobOutfit(model)
+	end
 	return model
 end
 
@@ -525,6 +533,26 @@ local MOB_OUTFIT_PARTS = {
 		{ "female_peasant_body", "UpperTorso", 1.19, 1.51, 1.22, -0.10 },
 		{ "male_ranger_head_hood", "Head", 1.24, 1.30, 1.23, 0.16 },
 	},
+	-- [대항해시대 복식 4종] 기등록 GLB 실물 메시로 주민/동료의 남녀 복장을 분리한다.
+	-- 각 부위는 본체 R15 관절에 용접되며 전투/이동 관절 자체는 대체하지 않는다.
+	citizen_male = {
+		{ "male_peasant_body", "UpperTorso", 1.18, 1.52, 1.25, -0.08 },
+		{ "hair_simpleparted", "Head", 1.15, 1.23, 1.18, 0.13 },
+	},
+	citizen_female = {
+		{ "female_peasant_body", "UpperTorso", 1.16, 1.50, 1.22, -0.08 },
+		{ "hair_buns", "Head", 1.16, 1.24, 1.18, 0.14 },
+	},
+	companion_male = {
+		{ "male_ranger_body", "UpperTorso", 1.23, 1.56, 1.26, -0.10 },
+		{ "male_ranger_acc_pauldron", "RightUpperArm", 1.27, 1.13, 1.29, 0.25 },
+		{ "hair_simpleparted", "Head", 1.15, 1.23, 1.18, 0.13 },
+	},
+	companion_female = {
+		{ "female_ranger_body", "UpperTorso", 1.18, 1.52, 1.23, -0.10 },
+		{ "female_ranger_acc_pauldrons", "UpperTorso", 1.48, 1.08, 1.45, 0.29 },
+		{ "hair_long", "Head", 1.16, 1.26, 1.18, 0.12 },
+	},
 	warlord = {
 		{ "male_ranger_body", "UpperTorso", 1.27, 1.61, 1.32, -0.12 },
 		{ "female_ranger_acc_pauldrons", "UpperTorso", 1.64, 1.16, 1.57, 0.33 },
@@ -534,7 +562,9 @@ local MOB_OUTFIT_PARTS = {
 -- 이미 생성된 R15 몹에 승인 실물 외형을 적용한다. People 자산이 늦게 로드되면 같은 함수를 재호출한다.
 function Pose.applyRegisteredMobOutfit(model)
 	if not model or not model.Parent or model:GetAttribute("RigType") ~= "R15" then return false end
-	local profile = model:GetAttribute("MobAssetProfile")
+	local npcProfile = model:GetAttribute("NpcAssetProfile")
+	local profile = model:GetAttribute("MobAssetProfile") or npcProfile
+	local npcOutfit = npcProfile ~= nil and model:GetAttribute("MobAssetProfile") == nil
 	local specs = MOB_OUTFIT_PARTS[profile]
 	if not specs then return false end
 	local shelf = ReplicatedStorage:FindFirstChild("MareAssets")
@@ -542,7 +572,7 @@ function Pose.applyRegisteredMobOutfit(model)
 
 	-- [기본 복식 재질] 실제 GLB가 지연될 때도 병종별 실루엣·소재가 다르게 보인다.
 	-- 얼굴·피부·R15 관절은 원본 그대로, 몸통·장갑·장화의 표시용 재질만 한 번 교정한다.
-	if model:GetAttribute("MobMaterialProfileApplied") ~= profile then
+	if not npcOutfit and model:GetAttribute("MobMaterialProfileApplied") ~= profile then
 		local armored = profile == "knight" or profile == "warlord"
 		local leather = profile == "brute" or profile == "rogue" or profile == "ranger"
 		local cloth = if armored then Color3.fromRGB(59, 68, 79)
@@ -629,6 +659,7 @@ function Pose.applyRegisteredMobOutfit(model)
 					local tint = if armor then Color3.fromRGB(108, 117, 124)
 						elseif hair then Color3.fromRGB(69, 52, 41)
 						elseif hide then Color3.fromRGB(71, 78, 71)
+						elseif npcOutfit and (tunic or meshName:find("ranger_body", 1, true)) then target.Color
 						elseif tunic then Color3.fromRGB(126, 108, 86)
 						else Color3.fromRGB(96, 79, 65)
 					-- 원본 메시 색을 최대한 유지한다. 흰색 단색 메시일 때만 실제 소재색을 분명히 준다.
@@ -642,9 +673,18 @@ function Pose.applyRegisteredMobOutfit(model)
 			end
 			skin.Parent = model
 		end)
-		if ok then attached += 1 else skin:Destroy() end
+		if ok then
+			attached += 1
+			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" then
+				-- 실물 모발 메시에 가짜 예비 머리 파츠가 겹쳐 보이지 않게 한다.
+				for _, piece in model:GetChildren() do
+					if piece:IsA("BasePart") and piece.Name == "Hair" then piece.Transparency = 1 end
+				end
+			end
+		else skin:Destroy() end
 	end
-	model:SetAttribute("MobAppearanceState", if attached == #specs then "ready" elseif attached > 0 then "partial" else "asset_pending")
+	model:SetAttribute(if npcOutfit then "NpcAppearanceState" else "MobAppearanceState",
+		if attached == #specs then "ready" elseif attached > 0 then "partial" else "asset_pending")
 	return attached == #specs
 end
 

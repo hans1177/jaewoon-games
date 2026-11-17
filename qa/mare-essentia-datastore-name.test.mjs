@@ -991,3 +991,25 @@ test('무기별 정밀 R15 동작은 타격 전후 영점 복귀와 기존 전�
   assert.match(field,/pl\.autoNormalHits % 5 == 0/);
   assert.match(field,/if rank > 1 and comboNow - lastMasteryComboAt >= 7/);
 });
+
+// [R15 주민·동료 실물복식] 남녀 네 계열과 기존 15관절/저장키 보존 회귀.
+test('항구 주민·동료 남녀 4계열은 등록된 실제 3D 의상 메시를 사용한다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  const port=read('ReplicatedStorage/Shared/PortScene.luau');
+  for(const profile of ['citizen_male','citizen_female','companion_male','companion_female']) {
+    assert.ok(pose.includes(profile+' = {'),'복식 계열 누락: '+profile);
+  }
+  for(const asset of ['male_peasant_body','female_peasant_body','male_ranger_body','female_ranger_body','hair_simpleparted','hair_buns','hair_long']) {
+    assert.ok(pose.includes('"'+asset+'"'),'기존 등록 3D 복장 누락: '+asset);
+  }
+  assert.match(pose,/Pose\.applyRegisteredMobOutfit\(model\)/);
+  assert.match(pose,/model:SetAttribute\("NpcAssetProfile"/);
+  assert.match(pose,/gender ~= "female" and beard == 2/);
+  assert.match(port,/extra\.female = female/);
+  assert.match(port,/c\.id == "c_merian"/);
+  assert.match(port,/people\.ChildAdded:Connect\(function\(asset\)/);
+  assert.match(port,/outfitConn:Disconnect\(\)/);
+  assert.match(pose,/part\.Massless = true/);
+  assert.match(pose,/part\.CanCollide, part\.CanTouch, part\.CanQuery = false, false, false, false/);
+  assert.match(pose,/model:SetAttribute\("RigType", "R15"\)/);
+});
