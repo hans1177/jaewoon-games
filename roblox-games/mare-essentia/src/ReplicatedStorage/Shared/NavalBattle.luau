@@ -279,7 +279,7 @@ local function label(parent, text, size, color, bold)
 	l.TextSize = size
 	l.Font = if bold == false then Enum.Font.Gotham else Enum.Font.GothamBold
 	l.TextColor3 = color or Color3.fromRGB(250, 236, 200)
-	l.TextStrokeTransparency = 0.45
+	l.TextStrokeTransparency = 1 -- [해전 글씨] 그림자/중복 외곽선 제거: 폰트 자체만 렌더링
 	l.Parent = parent
 	return l
 end
@@ -460,6 +460,7 @@ function NavalBattle.play(opts)
 	cam.CameraType = Enum.CameraType.Scriptable
 	cam.FieldOfView = 62
 
+	local battleViewport = cam.ViewportSize -- [상단 HUD] 폰 가로/세로에서 체력·바람·전술을 분리한다.
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "BattleGui"
 	gui.ResetOnSpawn = false
@@ -470,7 +471,7 @@ function NavalBattle.play(opts)
 		local back = Instance.new("Frame")
 		back.AnchorPoint = Vector2.new(if side == "L" then 0 else 1, 0)
 		back.Position = UDim2.new(if side == "L" then 0 else 1, if side == "L" then 16 else -16, 0, 34)
-		back.Size = UDim2.new(0.33, 0, 0, 22)
+		back.Size = UDim2.new(if battleViewport.X < 480 then 0.23 elseif battleViewport.X < 720 then 0.27 else 0.33, 0, 0, 22)
 		back.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
 		back.BorderSizePixel = 0
 		back.Parent = gui
@@ -492,9 +493,10 @@ function NavalBattle.play(opts)
 		local nm = label(gui, name, 14)
 		nm.AnchorPoint = Vector2.new(if side == "L" then 0 else 1, 0)
 		nm.Position = UDim2.new(if side == "L" then 0 else 1, if side == "L" then 16 else -16, 0, 12)
-		nm.Size = UDim2.new(0.33, 0, 0, 20)
+		nm.Size = UDim2.new(if battleViewport.X < 480 then 0.23 elseif battleViewport.X < 720 then 0.27 else 0.33, 0, 0, 20)
+		nm.TextTruncate = Enum.TextTruncate.AtEnd
 		nm.TextXAlignment = if side == "L" then Enum.TextXAlignment.Left else Enum.TextXAlignment.Right
-		nm.TextSize = 16
+		nm.TextSize = if battleViewport.X < 480 then 11 else 14
 		-- 막대 위에 선체 % 숫자를 크게 표시한다
 		local pct = label(back, "100%", 14, Color3.fromRGB(255, 255, 255), true)
 		pct.Size = UDim2.fromScale(1, 1)
@@ -582,8 +584,8 @@ function NavalBattle.play(opts)
 	do
 		local wind = Instance.new("Frame")
 		wind.AnchorPoint = Vector2.new(0.5, 0)
-		wind.Position = UDim2.new(0.5, 0, 0, 24)
-		wind.Size = UDim2.fromOffset(190, 34)
+		wind.Position = UDim2.new(0.5, 0, 0, 10)
+		wind.Size = UDim2.fromOffset(if battleViewport.X < 480 then 120 elseif battleViewport.X < 720 then 160 else 190, 32)
 		wind.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
 		wind.BackgroundTransparency = 0.15
 		wind.BorderSizePixel = 0
@@ -592,12 +594,14 @@ function NavalBattle.play(opts)
 		wc.CornerRadius = UDim.new(0, 8)
 		wc.Parent = wind
 		local arrow = label(wind, "➤", 22, Color3.fromRGB(150, 220, 255))
-		arrow.Position = UDim2.fromOffset(6, 3)
-		arrow.Size = UDim2.fromOffset(28, 28)
+		arrow.Position = UDim2.fromOffset(4, 4)
+		arrow.Size = UDim2.fromOffset(24, 24)
 		arrow.Rotation = opts.windAngle or 0
 		local wl = label(wind, string.format("%s · 바람 %d%%", opts.weatherName or "맑음", math.floor((opts.wind or 1) * 100 + 0.5)), 14, Color3.fromRGB(250, 236, 200))
-		wl.Position = UDim2.fromOffset(38, 6)
-		wl.Size = UDim2.new(1, -44, 0, 22)
+		wl.Position = UDim2.fromOffset(29, 6)
+		wl.Size = UDim2.new(1, -34, 0, 20)
+		wl.TextSize = if battleViewport.X < 480 then 10 else 12
+		wl.TextTruncate = Enum.TextTruncate.AtEnd
 		wl.TextXAlignment = Enum.TextXAlignment.Left
 	end
 
@@ -613,8 +617,9 @@ function NavalBattle.play(opts)
 	-- 동료 조언 띠: 항해사·포수 등이 상황을 보고 한마디 (한 번에 하나, 같은 말은 두 번까지)
 	local adviceLine = label(gui, "", 14, Color3.fromRGB(255, 236, 190))
 	adviceLine.AnchorPoint = Vector2.new(0.5, 0)
-	adviceLine.Position = UDim2.new(0.5, 0, 0, 86)
-	adviceLine.Size = UDim2.fromOffset(420, 24)
+	adviceLine.Position = UDim2.new(0.5, 0, 0, 174)
+	adviceLine.Size = UDim2.fromOffset(math.min(420, battleViewport.X - 32), 24)
+	adviceLine.Visible = battleViewport.X >= 480 -- [폰 세로] 좁은 화면은 상단 전술 안내만 사용
 	adviceLine.BackgroundColor3 = Color3.fromRGB(34, 28, 22)
 	adviceLine.BackgroundTransparency = 1
 	adviceLine.TextTransparency = 1
@@ -631,7 +636,7 @@ function NavalBattle.play(opts)
 		adviceLine.Text = string.format("%s: %s", opts.advisorName or "동료", text)
 		adviceLine.BackgroundTransparency = 0.35
 		adviceLine.TextTransparency = 0
-		adviceLine.TextStrokeTransparency = 0.45
+		adviceLine.TextStrokeTransparency = 1
 		local Tw = game:GetService("TweenService")
 		task.delay(5.5, function()
 			if adviceLine.Parent then
@@ -650,8 +655,10 @@ function NavalBattle.play(opts)
 	local tactic = label(gui, "① 적선에 접근 중", 15, Color3.fromRGB(255, 224, 159), true)
 	tactic.Name = "BattleTacticalReadout"
 	tactic.AnchorPoint = Vector2.new(0.5, 0)
-	tactic.Position = UDim2.new(0.5, 0, 0, 117)
-	tactic.Size = UDim2.new(0.55, 0, 0, 48)
+	tactic.Position = UDim2.new(0.5, 0, 0, 119)
+	tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.46 elseif MOBILE_VFX then 0.52 else 0.55, 0, 0, 46)
+	tactic.TextSize = if MOBILE_VFX then 12 else 14
+	tactic.TextTruncate = Enum.TextTruncate.AtEnd
 	tactic.TextWrapped = true
 	tactic.BackgroundColor3 = Color3.fromRGB(27, 35, 43)
 	tactic.BackgroundTransparency = 0.18
@@ -711,13 +718,13 @@ function NavalBattle.play(opts)
 		trajDots[i] = d
 	end
 	sailLabel.AnchorPoint = Vector2.new(0.5, 0)
-	sailLabel.Position = UDim2.new(0.5, 0, 0, 62)
+	sailLabel.Position = UDim2.new(0.5, 0, 0, 44)
 	sailLabel.Size = UDim2.fromOffset(190, 20)
 	-- 기동 점수: 포탄 낙하 경고를 피하면 올라간다 (결과와는 별개로 명성 보너스만 준다)
 	local flair, combo, dodged = 0, 0, 0
 	local comboLabel = label(gui, "", 22, Color3.fromRGB(255, 226, 120))
 	comboLabel.AnchorPoint = Vector2.new(0.5, 0)
-	comboLabel.Position = UDim2.new(0.5, 0, 0, 200)
+	comboLabel.Position = UDim2.new(0.5, 0, 0, 208)
 	comboLabel.Size = UDim2.fromOffset(300, 30)
 
 	local subtitle = label(gui, "", 16)
@@ -731,6 +738,7 @@ function NavalBattle.play(opts)
 	hint.Position = UDim2.new(0.5, 0, 1, -150)
 	hint.Size = UDim2.new(0.8, 0, 0, 36)
 	hint.TextWrapped = true
+	hint.Visible = not MOBILE_VFX or opts.cardOnly -- [폰트 정돈] 긴 도움말 대신 두 줄 전술 패널을 남긴다.
 
 	local banner = label(gui, "", 44)
 	banner.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -885,7 +893,7 @@ function NavalBattle.play(opts)
 	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(96, 96), Vector2.new(1, 1))
 	speedBtn.TextSize = 20
 	speedBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
-	local skip = mkBtn("건너뛰기", UDim2.new(0.5, 0, 0, 90), UDim2.fromOffset(96, 30), Vector2.new(0.5, 0))
+	local skip = mkBtn("건너뛰기", UDim2.new(1, -12, 0, if battleViewport.X < 480 then 174 else 119), UDim2.fromOffset(96, 30), Vector2.new(1, 0)) -- [상단 겹침] 중앙 전술/조언과 분리
 	skip.TextSize = 14
 	skip.Activated:Connect(finish)
 	local phase = "duel" -- duel → board → end (도주 중엔 fleeing)
@@ -1115,7 +1123,7 @@ function NavalBattle.play(opts)
 		end
 		knob.Position = UDim2.new(0.5, d.X, 0.5, d.Y)
 		local nx, ny = d.X / r, -d.Y / r
-		steerDir = if math.abs(nx) < 0.12 then 0 else -nx
+		steerDir = if math.abs(nx) < 0.12 then 0 else nx -- [해상 조타] 스틱을 오른쪽으로 밀면 우현, 왼쪽은 좌현
 		stickThrottle = math.clamp(0.6 + ny * 0.5, 0.1, 1)
 	end
 	local function stickRelease()
@@ -3663,15 +3671,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- [실제 접현] 기존 R15 선원을 갑판에 재사용하고 검술 동작만 연출한다.
 	-- 백병전 피해·승패·카드 상태에 간섭하지 않으며, 중복 소환은 막는다.
 	local function updateCrews(now)
-		if FX.boardingActive and not FX.boardingCrewSpawned and not opts.card then
-			FX.boardingCrewSpawned = true
-			task.spawn(function()
-				if finished then return end
-				spawnCrew(me, "me", Color3.fromRGB(60, 87, 107), "Sailor")
-				if finished then return end
-				spawnCrew(foe, "foe", Color3.fromRGB(117, 48, 39), "Rogue")
-			end)
-		end
+		-- [해전 백병전] 갑판에 별도 R15 인형을 만들지 않는다. 접현 연출과 카드 전용 선원만 유지한다.
 		for side, list in crews do
 			local sh = if side == "me" then me else foe
 			local other = if side == "me" then foe else me
