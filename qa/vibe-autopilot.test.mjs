@@ -142,3 +142,17 @@ test('autopilot 점검 결과는 별도 브랜치에 보관되고 판단기가 �
   const y = fs.readFileSync('.github/workflows/vibe-autopilot.yml', 'utf8');
   assert.ok(y.indexOf('-autopilot-report') < y.indexOf('-studio-frames'));
 });
+
+// [대항해시대] 같은 화면 반복 대신 대륙·선박·무기를 독립 영역으로 순회한다.
+test('대항해시대 Studio 10분 자동점검은 7대륙·36척 선박·무기를 서로 다른 영역으로 순회한다', () => {
+  const m = GAMES['mare-essentia'].scripts;
+  assert.match(m.regions, /mare-regions\\.json$/);
+  assert.match(m.ships, /mare-ships\\.json$/);
+  assert.match(m.weapons, /mare-weapons\\.json$/);
+  assert.equal(new Set(['regions', 'ships', 'weapons'].map(kind => KINDS[kind].group)).size, 3);
+  for (const kind of ['regions', 'ships', 'weapons']) {
+    assert.ok(KINDS[kind].cooldown >= 60, kind + ': 재검사 제한 누락');
+    assert.ok(JSON.parse(fs.readFileSync(m[kind], 'utf8')).length >= 20, kind + ': 실제 시나리오 누락');
+    assert.ok(dispatchPlan({ game: 'mare-essentia', kind }).includes('inputs[script]=' + m[kind]));
+  }
+});
