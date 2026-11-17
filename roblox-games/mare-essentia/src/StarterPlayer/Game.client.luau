@@ -6282,6 +6282,21 @@ local function renderYard()
 		return row
 	end)
 	H.counselRows(1)
+	-- [선박 고유 능력] 현재 기함 성능과 약점을 실제 서버 운용 보정치로 안내한다.
+	if sh.trait then
+		add(function()
+			local t = sh.trait
+			return mkRow(content, "기함 특화 · " .. t.role,
+				string.format("약점: %s\n항해 %+d%% · 장거리 %+d%% · 역풍대응 %+d%%\n보급 %+d%% · 선창 %+d%% · 관세절감 %+d%%\n포격 %+d%% · 백병 %+d%% · 폭풍피해 감소 %+d%% · 탐사 %+d%%",
+				t.weak or "없음",
+				math.floor((t.sail or 0) * 100 + 0.5), math.floor((t.long or 0) * 100 + 0.5),
+				math.floor((t.wind or 0) * 100 + 0.5), math.floor((t.supplies or 0) * 100 + 0.5),
+				math.floor((t.cargo or 0) * 100 + 0.5), math.floor((t.tariff or 0) * 100 + 0.5),
+				math.floor((t.cannon or 0) * 100 + 0.5), math.floor((t.melee or 0) * 100 + 0.5),
+				math.floor((t.storm or 0) * 100 + 0.5), math.floor((t.explore or 0) * 100 + 0.5)),
+				nil, 125)
+		end)
+	end
 	add(function() return mkHeader(content, "정비 · 보급 · 선원") end)
 	if not yard.available and view.nearestYard then
 		add(function()
@@ -6392,15 +6407,15 @@ local function renderYard()
 	else
 		add(function() return mkLabel(content, "선체 보강: 최고 단계 · 추가 개조 없음", 14, COLORS.green, true) end)
 	end
-	-- [7대륙 36척] 등록된 선박 원본·경량판과 실제 구매 가능한 기존 함종을 별도로 안내한다.
-	-- 모델 등록과 게임 속 구매 개방은 서로 다른 단계이므로 구매·저장 규칙을 임의로 변경하지 않는다.
+	-- [7대륙 36척] 지역별 신규 선박은 기존 조선소 구매 목록에 연결하고 지역·면허·모험 제한을 안내한다.
+	-- 모델·구매/저장·전투 구조는 기존 시스템을 재사용한다.
 	local blueprintHead = add(function()
 		return mkHeader(content, string.format("7대륙 선박 %d종 · 3D 원본 설계", #ShipsData.Blueprints))
 	end)
 	blueprintHead.Name = "YardSectionBlueprints"
 	H.shipBlueprintFaction = H.shipBlueprintFaction or "europe"
 	add(function() return mkLabel(content,
-		"실존 6대륙 각 1~5단계 · 미지의 땅 1~6단계. 등록된 실물 3D는 항구·해전에서 해당 기존 함종에 우선 적용해. 설계 전용 선박은 구매 미개방, 게임 능력치는 종전 그대로야.",
+		"실존 6대륙 1~5단계 · 미지의 땅 1~6단계. 36척 모두 3D 원본·개별 항해·교역·전투 성능 적용. 신규 23척은 해당 지역 조선소에서, 미지 선박은 호놀룰루에서 구매해.",
 		13, COLORS.muted, false) end)
 	local stageScenes = {
 		"얇은 포염·가벼운 물보라", "선측 불티·파편 증가", "연장된 포탄 잔상·진한 포연",
@@ -6415,7 +6430,7 @@ local function renderYard()
 	for _, category in ShipsData.BlueprintFactions do
 		add(function()
 			return mkRow(content, category.name .. " · 선박 " .. (if category.id == "lost" then "6" else "5") .. "종",
-			if category.id == "lost" then "가상 탐사선 1~6단계 · 특수성능 미적용" else "선체·돛·갑판 고유 설계 · 연출만 구분", {
+			if category.id == "lost" then "호놀룰루 비밀 조선소 · 모험 레벨 필요" else "지역 조선소에서만 구매 · 선박별 운용 특화", {
 				{ text = if H.shipBlueprintFaction == category.id then "선택 중" else "선택", color = if H.shipBlueprintFaction == category.id then COLORS.gold else COLORS.blue,
 					onClick = function() H.shipBlueprintFaction = category.id; if tradeHallRefresh then tradeHallRefresh() else render() end end },
 			}, 70)
@@ -6427,17 +6442,21 @@ local function renderYard()
 				-- 36척 실제 등록번호와 조선소 구매 개방을 따로 보여주고 전투 효과는 시각 전용임을 명시한다.
 				local hasFull = AssetIds["Naval/" .. plan.id .. "-v5"] ~= nil
 				local hasMobile = AssetIds["Naval/" .. plan.id .. "-v5-mobile"] ~= nil
-				local available = ShipsData.Ships[plan.id] ~= nil
-				local related = not available and plan.existingId and ShipsData.Ships[plan.existingId] ~= nil
-				local status = if available then "기존 판매 조건 적용"
-					elseif related then "연관 함종 존재·이 설계는 구매 미개방"
-					else "설계 전용·구매 미개방"
+				local definition = ShipsData.Ships[plan.id]
+				local shop = nil
+				for _, item in yard.ships do
+					if item.id == plan.id then shop = item; break end
+				end
+				local status = if shop then (if shop.locked then shop.locked else "이 조선소에서 구매 가능")
+					elseif plan.faction == "lost" then "호놀룰루 전용"
+					else "해당 지역의 조선소에서 구매"
 				local visual = if hasFull and hasMobile then "원본·모바일 경량판 등록" elseif hasFull then "원본 등록·경량판 미등록" else "자산 등록 대기"
-				local info = string.format("%s · %s\n선체: %s\n돛·노: %s\n갑판: %s\n3D: %s · %s\n지역 연출: %s\n%d단계 포격: %s\n실제 구매: %s",
-					plan.era, plan.sailingZone, plan.hull, plan.rig, plan.deck, visual, status,
-					regionScenes[plan.faction] or "기본 해전 연출", plan.stage, stageScenes[plan.stage] or "기본 해전 연출", status)
-				if plan.proposedEdge then info ..= string.format("\n가상 특수성능 +%d%% 설계안 · 미적용", math.floor(plan.proposedEdge * 100 + 0.5)) end
-				return mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, nil, 252)
+				local role = definition and definition.trait and definition.trait.role or "고유 특화"
+				local weak = definition and definition.trait and definition.trait.weak or "없음"
+				local info = string.format("%s · %s\n선체: %s\n돛·노: %s\n갑판: %s\n3D: %s\n지역 연출: %s\n%d단계 포격: %s\n고유 운용: %s · 약점: %s\n구매 지역·해금: %s",
+					plan.era, plan.sailingZone, plan.hull, plan.rig, plan.deck, visual,
+					regionScenes[plan.faction] or "기본 해전 연출", plan.stage, stageScenes[plan.stage] or "기본 해전 연출", role, weak, status)
+				return mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, nil, 240)
 			end)
 		end
 	end
@@ -6459,6 +6478,23 @@ local function renderYard()
 				s.summary, H.commas(s.price), H.commas(s.tradeIn), H.commas(pay), refund,
 				diffCargo, s.speed - sh.speed, s.hull - sh.maxHull, s.cannons - sh.cannons,
 				s.crew - sh.maxCrew, sh.cargoUsed, s.capacityAfter, H.commas(view.player.coins))
+			if s.trait then
+				local t = s.trait
+				sub ..= string.format("\n특화: %s · 약점: %s", t.role or "일반", t.weak or "없음")
+				local labels = {}
+				for _, trait in {
+					{ "항해", t.sail }, { "장거리", t.long }, { "풍향", t.wind },
+					{ "보급 소모", t.supplies }, { "적재", t.cargo }, { "관세 절감", t.tariff },
+					{ "포격", t.cannon }, { "백병전", t.melee }, { "폭풍 감소", t.storm },
+					{ "탐사 경험", t.explore }, { "수리 비용", t.repair },
+				} do
+					if trait[2] and trait[2] ~= 0 then
+						table.insert(labels, string.format("%s %+d%%", trait[1], math.floor(trait[2] * 100 + 0.5)))
+					end
+				end
+				sub ..= "\n" .. table.concat(labels, " · ")
+			end
+			if s.newRegional then sub ..= "\n지역 전용 조선소 입고 함종" end
 			if s.id == "galleon" and AssetIds["Naval/galleon-heritage"] then
 			sub ..= "\n선박 원형: Nautical Galleon · R-LAB (rakshaan), CC BY 4.0 · 전시대 제거"
 		end
