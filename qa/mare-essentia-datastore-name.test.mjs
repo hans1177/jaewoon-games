@@ -925,7 +925,7 @@ test('탐험 1~10타·회피 전환은 실제 배율이 적용된 R15 자세를 
   assert.match(field, /blend = blend \* blend \* \(3 - 2 \* blend\)/);
   assert.match(field, /swingBridge\.from, swingBridge\.rootFrom, swingBridge\.rootLast = nil, nil, nil/);
   assert.match(field, /local settle = math\.sin\(math\.clamp\(\(p - 0\.57\) \/ 0\.43, 0, 1\) \* math\.pi\)/);
-  assert.match(field, /-- 공격 종료 직후 오래된 자세로 다음 공격을 시작하지 않도록 즉시 캐시 폐기한다\./);
+  assert.match(field, /elseif os\.clock\(\) - swingBridge\.lastAt > 1\.1 then/);
   for (const t of [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1]) {
     const eased = t * t * (3 - 2 * t);
     assert.ok(eased >= 0 && eased <= 1);
