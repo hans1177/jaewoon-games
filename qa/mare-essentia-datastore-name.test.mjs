@@ -267,6 +267,25 @@ test('유적 상호작용과 발견 화면의 모바일 잘림·조사 키 충�
   }
 });
 
+// [스튜디오 실증 회귀] 실제 탐험 2메달 HUD와 자동검사 스크립트가 같은 버튼을 검사해야 한다.
+test('스튜디오 탐험 실증은 현재 공격·회피 메달과 집안별 두 무기를 검사한다',()=>{
+  const path='roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json';
+  const script=JSON.parse(fs.readFileSync(path,'utf8'));
+  assert.equal(script.length,241,'기존 전체 스튜디오 검사 순서 유지');
+  const entry=script[234].code;
+  const motion=script[236].code;
+  assert.ok(entry.includes('FIELD_QA_ENTRY_FAIL:'),'실제 UI로 탐험 입장 검증 필수');
+  assert.ok(entry.includes('FieldCombatReady'),'실제 전투 준비 검증 필수');
+  assert.ok(entry.includes('FIELD_DODGE_ICON_UNAPPROVED'),'회피 원화 실증 검증 필수');
+  assert.ok(entry.includes('FIELD_WEAPON_CHOICES_NOT_TWO'),'두 무기 교체 검증 필수');
+  assert.ok(motion.includes('FIELD_ATTACK_WEAPON_ICON_UNAPPROVED'),'선택 무기별 원화 실증 검증 필수');
+  assert.ok(motion.includes('FIELD_MOTION_ACTOR_SAMPLE_TOO_SMALL'),'적·동료의 실제 모션 검증 유지');
+  assert.doesNotMatch(entry+motion,/FieldSkill_parry|FieldSkill_dodge/,'사라진 구 스킬 버튼을 요구하면 안 된다');
+  assert.ok(field.includes('b.Name = "FieldDodge"'));
+  assert.ok(field.includes('wbtn.Name = "FieldWeapon"'));
+  assert.ok(field.includes('wbtn:SetAttribute("WeaponChoiceCount", 2)'));
+});
+
 // [재생기/날씨 음향 회귀] 최초 지연 로드와 권한 실패가 모든 음악·효과음을 영구 음소거하지 않도록 한다.
 test('음악 효과음 환경음은 기본 믹서 크기·지연 로딩·자동 재시도 경로를 유지한다',()=>{
   const audio=read('ReplicatedStorage/Shared/Sfx.luau');
