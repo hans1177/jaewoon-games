@@ -247,6 +247,33 @@ test('원거리 화살 석궁은 실제 긴 축을 바로 세우고 3D 탄도·�
   assert.ok(chance(1,true,true,true)>=.35,'빗나감 하한 유효');
 });
 
+// [재생기/날씨 음향 회귀] 최초 지연 로드와 권한 실패가 모든 음악·효과음을 영구 음소거하지 않도록 한다.
+test('음악 효과음 환경음은 기본 믹서 크기·지연 로딩·자동 재시도 경로를 유지한다',()=>{
+  const audio=read('ReplicatedStorage/Shared/Sfx.luau');
+  const fieldScene=read('ReplicatedStorage/Shared/FieldScene.luau');
+  const ids=read('ReplicatedStorage/Shared/AudioIds.luau');
+  for(const name of ['music_harbor','music_battle','sfx_wind','sfx_waves','sfx_rope_release','sfx_card_fire']){
+    assert.ok(ids.includes(name+'="rbxassetid://'),'필수 등록 음원 누락: '+name);
+  }
+  for(const snippet of [
+    'group.Volume = 1',
+    'local broken: { [string]: number } = {}',
+    'broken[name] = os.clock() + 20',
+    'task.delay(math.max(12, s.TimeLength + 1)',
+    's.Ended:Once(',
+    'if currentName == name and currentMusic and currentMusic.Parent',
+    'currentName = nil', 'Sfx.music(name)',
+    'if ambientKey == key and #ambient > 0 then',
+    'Sfx.ambient(names, gain)',
+    'local priority = { "music_harbor"',
+  ]) assert.ok(audio.includes(snippet),'음향 복원 경로 누락: '+snippet);
+  assert.doesNotMatch(audio,/broken\[name\] = true/,'오디오 로딩 실패 영구 봉인 금지');
+  assert.doesNotMatch(audio,/local first = probe\(all\)/,'모바일 전체 음원 100개 동시 프리로드 금지');
+  assert.ok(fieldScene.includes('Sfx.ambient({ "sfx_wind" }, 0.60)'));
+  assert.ok(fieldScene.includes('if weather == "소나기" then 0.88 else 0.68'));
+  assert.ok(fieldScene.includes('elseif phase == "밤" then 0.43 else 0.58'));
+});
+
 // [몹 상태이상 회귀] 정예 둔화/두목 독은 방어·회피한 공격에서 발동하지 않고 전투·저장 흐름에 섞이지 않는다.
 test('정예 감속과 두목 맹독은 명중에만 발동하고 중첩·이동속도 누출을 막는다',()=>{
   assert.match(field,/local eliteSlowUntil, bossPoisonUntil, bossPoisonNextAt = 0, 0, math\.huge/);
