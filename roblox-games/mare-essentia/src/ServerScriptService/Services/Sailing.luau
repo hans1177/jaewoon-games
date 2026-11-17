@@ -209,7 +209,8 @@ return function(D, S)
 				table.insert(msgs, "짙은 안개에 갇혀 하루를 더 보냈다")
 				moraleAdd(-3)
 			elseif event.kind == "reef" then
-				local dmg = math.max(1, math.floor(def.hull * event.amount))
+				-- [얕은 흘수] 암초·연안 장애물의 피해 감소. 해역 진행·항구 잠금에는 영향 없음.
+				local dmg = math.max(1, math.floor(def.hull * event.amount * (1 - (trait.shallow or 0))))
 				state.ship.hull = math.max(1, state.ship.hull - dmg)
 				table.insert(msgs, string.format("암초를 스쳤다! 선체 -%d", dmg))
 			elseif event.kind == "rescue" then
@@ -277,7 +278,9 @@ return function(D, S)
 				table.insert(msgs, "옛 선장의 병 편지를 건졌다. 지도 한 장이 들어 있었다")
 				giveMap(state, ctx, msgs)
 			elseif event.kind == "rats" then
-				local lost = math.min(state.ship.supplies, math.floor(8 + 12 * ctx.rng()))
+				-- [화물/선창 방호] 쥐떼가 보급품을 훼손했을 때 기존 피해에서 일부만 감면한다.
+				local lost = math.min(state.ship.supplies,
+					math.floor((8 + 12 * ctx.rng()) * (1 - (trait.cargoGuard or 0))))
 				state.ship.supplies -= lost
 				table.insert(msgs, string.format("쥐떼가 창고를 갉아먹었다! 보급품 -%d", lost))
 				moraleAdd(-3)
@@ -363,7 +366,13 @@ return function(D, S)
 					moraleAdd(-3)
 				end
 			elseif event.kind == "pirates" then
-				S.Battle.encounter(state, ctx, msgs)
+				-- [해적 회피] 소형 기동선·안개 탐사선이 접근을 조기에 발견한다.
+				-- 실패하면 기존 해전 로직으로 진행한다.
+				if (trait.evade or 0) > 0 and ctx.rng() < trait.evade then
+					table.insert(msgs, "해적선의 추격을 재빨리 피해 전투를 피했다")
+				else
+					S.Battle.encounter(state, ctx, msgs)
+				end
 			end
 		end
 
