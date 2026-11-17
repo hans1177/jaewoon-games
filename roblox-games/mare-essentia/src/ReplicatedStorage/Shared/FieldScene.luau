@@ -2581,6 +2581,28 @@ function FieldScene.start(opts)
 						local finale = if slashIdx == 10 then 1 else 0
 						local spread = if bow then 0.93 elseif crossbow then 0.68 elseif longGun then 0.57 else 1.05
 						local orbit = (0.45 + phase * 0.11 + finale * 0.40) * kick
+						-- [활·권총 공중 연사] 낮은 측면 슬라이드→공중 옆돌기→역방향 발구름→높은 백덤블링.
+						-- 석궁·장총은 견착과 무게를 유지하는 슬라이드·피벗 중심. 실제 사거리·탄환·피해는 불변.
+						local agile = not crossbow and not longGun
+						local rollP = math.clamp((p - 0.08) / 0.75, 0, 1)
+						local roll = rollP * rollP * (3 - 2 * rollP) * math.pi * 2
+						local catch = math.sin(math.clamp((p - 0.64) / 0.36, 0, 1) * math.pi)
+						if slashIdx == 5 then
+							return CFrame.new(side * spread * 1.42 * kick, -0.82 * kick + 0.13 * catch, -0.44 * release)
+								* CFrame.Angles(0.28 * kick, -side * 0.68 * kick, side * 0.21 * kick)
+						elseif slashIdx == 6 and agile then
+							return CFrame.new(side * 0.92 * kick, 1.58 * kick - 0.19 * catch, -0.24 * release)
+								* CFrame.Angles(-0.19 * kick, side * 0.18 * kick, side * roll)
+						elseif slashIdx == 7 then
+							return CFrame.new(-side * spread * 1.67 * kick, -0.96 * kick + 0.16 * catch, -0.32 * release)
+								* CFrame.Angles(0.34 * kick, side * 0.76 * kick, -side * 0.24 * kick)
+						elseif slashIdx == 8 then
+							return CFrame.new(side * spread * 0.68 * kick, (if agile then 2.28 else 0.85) * kick - 0.17 * catch, -0.18 * release)
+								* CFrame.Angles(if agile then roll else -0.19 * kick, -side * 0.24 * kick, side * 0.16 * kick)
+						elseif slashIdx == 9 and agile then
+							return CFrame.new(side * spread * 1.12 * kick, 2.16 * kick - 0.20 * catch, -0.22 * release)
+								* CFrame.Angles(-0.17 * kick, side * 0.22 * kick, -side * roll)
+						end
 						-- [원거리 시네마틱 10박] 활·권총은 마지막에 완전 회전 후 목표선으로 복귀, 석궁·장총은 견착 유지.
 						local eased = p * p * (3 - 2 * p)
 						local landing = math.sin(math.clamp((p - 0.62) / 0.38, 0, 1) * math.pi)
@@ -3153,6 +3175,17 @@ function FieldScene.start(opts)
 					canon.ShinR = (canon.ShinR or id) * CFrame.Angles(-0.31 * drop * plant, 0, 0)
 					canon.FootL = (canon.FootL or id) * CFrame.Angles(0.23 * plant, 0, -side * 0.12 * plant)
 					canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.28 * plant, 0, side * 0.14 * plant)
+					-- [원거리 공중연사 발놀림] 낮은 슬라이드는 축다리를 뻗고, 공중 사격은 양무릎을 늦게 회수.
+					if slashIdx == 5 or slashIdx == 7 then
+						canon.ThighL = (canon.ThighL or id) * CFrame.Angles(0.42 * plant - 0.16 * trigger, 0, side * 0.15 * plant)
+						canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.74 * plant + 0.27 * trigger, 0, 0)
+						canon.FootL = (canon.FootL or id) * CFrame.Angles(-0.39 * plant + 0.20 * trigger, 0, 0)
+					elseif (slashIdx == 6 or slashIdx == 8 or slashIdx == 9) and not crossbow and not rifle then
+						canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.79 * plant + 0.27 * trigger, 0, -side * 0.18 * plant)
+						canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.41 * plant + 0.28 * trigger, 0, side * 0.19 * plant)
+						canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.82 * plant - 0.34 * trigger, 0, 0)
+						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.30 * plant + 0.24 * trigger, 0, -side * 0.30 * plant)
+					end
 					if slashIdx >= 4 then
 						-- [4~10회 연사] 골반과 어깨를 반대로 열고 반대손을 목표선으로 빠르게 복귀.
 						local turn = if slashIdx % 2 == 0 then 1 else -1
