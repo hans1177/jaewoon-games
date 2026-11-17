@@ -302,7 +302,7 @@ test('근접·원거리 10단 전신 모션과 마무리 이펙트는 기존 피
     assert.ok(common.includes(weapon+'={id="'+weapon+'"'),weapon+' 기본 모션 프로필 누락');
   }
   assert.match(motion,/local actorBeat = if rangedActor then 1 else \(h\.weaponBeat or 1\)/);
-  assert.match(field,/local swingBridge = \{ last = \{\}, lastAt = -100, from = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100 \}/);
+  assert.match(field,/local swingBridge = \{ last = \{\}, lastAt = -100, from = nil, rootLast = nil, rootFrom = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100 \}/);
   assert.match(field,/swingBridge\.from = table\.clone\(swingBridge\.last\)/);
   assert.match(field,/canon\[joint\] = old:Lerp\(canon\[joint\] or CFrame\.identity, weight\)/);
   assert.match(field,/weight = weight \* weight \* \(3 - 2 \* weight\)/);
