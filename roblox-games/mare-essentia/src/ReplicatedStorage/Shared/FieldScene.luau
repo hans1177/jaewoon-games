@@ -1264,10 +1264,14 @@ function FieldScene.start(opts)
 		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % #kinds + 1])
 		local styleN = math.floor((i - 1) / 4) % #looks[ac.kind] + 1
 		-- [실등록 화약병] 1650년 이후, 전용 폭탄이 Roblox AssetIds에 있는 경우만 편성한다.
+		local assetShelf = ReplicatedStorage:FindFirstChild("MareAssets")
+		local bombShelf = assetShelf and assetShelf:FindFirstChild("Relics")
+		local bombModel = AssetIds["Relics/weapon-bomb"] and bombShelf and bombShelf:FindFirstChild("weapon-bomb")
+		local bombReady = bombModel and bombModel:IsA("Model") and bombModel:FindFirstChildWhichIsA("BasePart", true) ~= nil
 		if ac.kind == "archer" and (opts.year or 1517) >= 1650
-			and AssetIds["Relics/weapon-bomb"] and math.floor((i - 1) / 4) % 6 == 4 then styleN = 7 end
+			and bombReady and math.floor((i - 1) / 4) % 6 == 4 then styleN = 7 end
 		local style = looks[ac.kind][styleN]
-		if style[6] == "bomb" and ((opts.year or 1517) < 1650 or not AssetIds["Relics/weapon-bomb"]) then
+		if style[6] == "bomb" and ((opts.year or 1517) < 1650 or not bombReady) then
 			styleN = 1
 			style = looks.archer[1]
 		end
@@ -1881,7 +1885,7 @@ function FieldScene.start(opts)
 	end))
 
 	-- 궁수 화살 궤적: 두 끝점 사이에 빔을 잠깐 그린다 (모양 파트 없이 보이지 않는 좌표만 쓴다)
-	local function arrowTrail(from: Vector3, to: Vector3, thrownAsset: string?)
+	local function arrowTrail(from: Vector3, to: Vector3, thrownAsset: string?, flightOverride: number?)
 		if thrownAsset == "stone" or thrownAsset == "jar" or thrownAsset == "bomb" then
 			-- [실물 포물선] 실등록된 돌·도기·해적 화약폭탄 메시만 복제한다. 임시 원형 대체 금지.
 			local kind = if thrownAsset == "stone" then "Town" else "Relics"
@@ -1905,7 +1909,7 @@ function FieldScene.start(opts)
 			item:ScaleTo(math.clamp(1.3 / length, 0.08, 3))
 			item.Parent = folder
 			local started = os.clock()
-			local duration = math.clamp((to - from).Magnitude / 75, 0.2, 0.42)
+			local duration = flightOverride or math.clamp((to - from).Magnitude / 75, 0.2, 0.42)
 			local move
 			move = RunService.Heartbeat:Connect(function()
 				if finished or not item.Parent then
@@ -3873,6 +3877,13 @@ function FieldScene.start(opts)
 				if e.throwAsset == "bomb" then
 					e.bombAim = hrp.Position
 					groundRing(e.bombAim - Vector3.new(0, 2.5, 0), 6, e.ac.def.windup + 0.28)
+					-- [폭발 충돌 동기화] 실물 투사체가 타격 판정 시각에 도착하도록 예고 말기에 투척한다.
+					-- 기존 공격력·회피·방어는 원본 strike에서 한 번만 정산한다.
+					local destination = e.bombAim
+					task.delay(math.max(0, e.ac.def.windup - 0.32), function()
+						if finished or not folder.Parent or not e.model.Parent or e.ac.dead or e.ac.state ~= "windup" then return end
+						arrowTrail(e.root.Position + Vector3.new(0, 2.6, 0), destination + Vector3.new(0, -1.8, 0), "bomb", 0.32)
+					end)
 				end
 				-- 돌진병은 달려들 길(붉은 띠), 사수는 조준선(붉은 빔)을 보여 준다: 예고 중에 비키면 피할 수 있다
 				if e.ac.def.charge or e.ac.def.keepAway then
@@ -3969,11 +3980,12 @@ function FieldScene.start(opts)
 					end
 				end
 				if e.ac.def.keepAway then
-					if e.throwAsset then
-						local aim = if e.throwAsset == "bomb" and e.bombAim then e.bombAim else hrp.Position
-						arrowTrail(e.root.Position + Vector3.new(0, 2.6, 0), aim + Vector3.new(0, if e.throwAsset == "bomb" then -1.8 else 0.6, 0), e.throwAsset)
-						if e.throwAsset ~= "bomb" then sfx("sfx_card_swing", 0.34, if e.throwAsset == "stone" then 1.22 else 0.92) end
+					if e.throwAsset == "bomb" then
+						-- 화약 폭탄은 사전 경고 중 날아왔고 현재 착탄/피해 판정이 일치한다.
 						e.bombAim = nil
+					elseif e.throwAsset then
+						arrowTrail(e.root.Position + Vector3.new(0, 2.6, 0), hrp.Position + Vector3.new(0, 0.6, 0), e.throwAsset)
+						sfx("sfx_card_swing", 0.34, if e.throwAsset == "stone" then 1.22 else 0.92)
 					elseif e.weapon and e.weapon.id == "crossbow" then
 						-- [석궁] 쇠뇌 시위·볼트 궤적. 총기 발포음은 재생하지 않는다.
 						sfx("sfx_equipment_wear", 0.42, 1.55)
