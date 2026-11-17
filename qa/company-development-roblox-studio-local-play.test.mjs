@@ -4195,7 +4195,7 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
     scene.includes('equipped.heavy, equipped.sweep = true, false')&&
     scene.includes('aw.family == "axe", true, false, nil, aw'),
     'automatic skill must use original cooldown stamina and keep ally damage outside owner streak');
-  // [모바일 2버튼] 공격 우하단, 회피는 엄지 측면. 별도 스킬/방어 버튼 없음.
+  // [모바일 반원형 3메달] 기존 공격·회피 두 행동 + 주·보조 무기교체. 별도 스킬/방어 버튼 없음.
   assert.ok(scene.includes('workspace.CurrentCamera.ViewportSize.X < 450')&&
     scene.includes('UDim2.fromOffset(if compactTouch then 118 elseif visualMobile then 128 else 112,')&&
     scene.includes('if compactTouch then 96 elseif visualMobile then 106 else 94')&&
@@ -4210,8 +4210,13 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
     scene.includes('addIcon(b, "Menu/chart_compass")')&&
     !scene.includes('addIcon(skillBtns.parry.btn,')&&
     scene.includes('attackBtn.Text = ""')&&
-    scene.includes('b.Text = ""'),
-    'mobile combat buttons must be icon-only and use existing registered icons');
+    scene.includes('b.Text = ""')&&
+    scene.includes('if AssetIds["Menu/field_attack"] then addIcon(attackBtn, "Menu/field_attack")')&&
+    scene.includes('if AssetIds["Menu/field_dodge"] then addIcon(b, "Menu/field_dodge")')&&
+    scene.includes('addIcon(wbtn, "Menu/field_weapon")')&&
+    scene.includes('wbtn.Name = "FieldWeapon"')&&
+    scene.includes('Vector2.new(0.5, 0.5))'),
+    'mobile combat controls must use owner-approved attack/dodge/swap original artwork without changing combat authority');
   assert.ok(scene.includes('comboLabel.Font = Enum.Font.Bangers')&&
     scene.includes('comboLabel.TextStrokeColor3 = Color3.fromRGB(22, 22, 37)')&&
     scene.includes('if visualMobile then 63 else 76')&&

@@ -40,6 +40,31 @@ end
 local function addIcon(button: TextButton, key: string)
 	local id = (AssetIds :: any)[key]
 	if not id then return nil end
+	-- [지상 전투 원화] 완성형 원형 PNG는 기존 금속 테두리·가죽 배경 위에 겹치지 않는다.
+	-- Roblox Image 자산 등록 이전에는 호출부가 기존 아이콘을 그대로 사용한다.
+	if string.sub(key, 1, 11) == "Menu/field_" then
+		button.BackgroundTransparency = 1
+		button.ClipsDescendants = false
+		local gradient = button:FindFirstChildOfClass("UIGradient")
+		if gradient then gradient.Enabled = false end
+		local outline = button:FindFirstChildOfClass("UIStroke")
+		if outline then outline.Enabled = false end
+		local leather = button:FindFirstChild("FieldLeatherTexture")
+		if leather then leather.Visible = false end
+		local art = Instance.new("ImageLabel")
+		art.Name = "FieldButtonIcon"
+		art.BackgroundTransparency = 1
+		art.AnchorPoint = Vector2.new(0.5, 0.5)
+		art.Position = UDim2.fromScale(0.5, 0.5)
+		art.Size = UDim2.fromScale(1, 1)
+		art.ScaleType = Enum.ScaleType.Fit
+		art.Image = "rbxassetid://" .. tostring(id)
+		art.ImageColor3 = Color3.new(1, 1, 1)
+		art.ZIndex = button.ZIndex + 3
+		art.Parent = button
+		button:SetAttribute("IconArtKey", key)
+		return art
+	end
 	local painted = string.sub(key, 1, 8) == "CardArt/"
 	local iconOnly = button.Name == "FieldAttack" or button.Name == "FieldDodge"
 	local medallion = Instance.new("Frame")
@@ -2399,7 +2424,8 @@ function FieldScene.start(opts)
 	attackBtn.TextSize = 19
 	attackBtn.AutoButtonColor = false -- 기본 회색 호버 대신 전용 금속 눌림/광택 연출
 	attackBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
-	local attackIcon = addIcon(attackBtn, "Menu/cc0_sword")
+	local attackIcon = if AssetIds["Menu/field_attack"] then addIcon(attackBtn, "Menu/field_attack")
+		else addIcon(attackBtn, "Menu/cc0_sword")
 	-- [공격 메달 한정 스타일] 임시 지역변수를 전투 본문에 남기지 않아 Luau 레지스터 예산을 보호한다.
 	do
 	local attackRim = attackBtn:FindFirstChildOfClass("UIStroke")
@@ -2426,13 +2452,14 @@ function FieldScene.start(opts)
 			medalRim.Color = Color3.fromRGB(255, 215, 144)
 		end
 	end
-	if attackIcon then
+	if attackIcon and attackBtn:GetAttribute("IconArtKey") ~= "Menu/field_attack" then
 		attackIcon.Size = UDim2.fromScale(0.67, 0.67)
 		attackIcon.Position = UDim2.fromScale(0.5, 0.42)
 		attackIcon.ImageColor3 = Color3.fromRGB(255, 242, 218)
 	end
 	local attackCaption = label(attackBtn, "공격", if visualMobile then 17 else 16, Color3.fromRGB(255, 235, 189))
 	attackCaption.Name = "FieldAttackCaption"
+	attackCaption.Visible = attackBtn:GetAttribute("IconArtKey") ~= "Menu/field_attack"
 	attackCaption.Font = Enum.Font.GothamBlack
 	attackCaption.AnchorPoint = Vector2.new(0.5, 0.5)
 	attackCaption.Position = UDim2.fromScale(0.5, 0.78)
@@ -6477,14 +6504,25 @@ function FieldScene.start(opts)
 		bindPress(hit, useAttack)
 		bindHold(hit)
 	end
-	-- [집안별 2무기 교체] 처음 선택한 집안의 주·보조 장비만 탐험에서 교차 장착한다.
-	-- 선택 중 계속 무기를 순환시키던 버튼을 제거하여 카메라·회피·공격 영역을 보호한다.
+	-- [집안별 2무기 교체] 기존 주·보조 교차 장착을 유지하고 오른쪽 엄지 반원 상단에 원형 배치한다.
+	-- [모바일] 공격(하단) → 회피(왼쪽) → 무기교체(상단) 세 버튼의 실제 입력 면적도 겹치지 않는다.
 	do
-		local wbtn = btn(gui, wpn.name .. " ↔ " .. reserveWeapon.name, Color3.fromRGB(65, 83, 105),
-			UDim2.fromOffset(if compactTouch then math.min(116, workspace.CurrentCamera.ViewportSize.X - 230) else 142, 44), UDim2.new(1, -12, 0, 112), Vector2.new(1, 0)) -- [좁은 세로] 영웅 HUD와 무기 버튼 분리
+		local wbtn = btn(gui, "교체", Color3.fromRGB(65, 83, 105),
+			UDim2.fromOffset(if compactTouch then 78 elseif visualMobile then 88 else 82,
+				if compactTouch then 78 elseif visualMobile then 88 else 82),
+			if compactTouch then UDim2.new(0, math.max(226, workspace.CurrentCamera.ViewportSize.X - 120), 1, -337)
+				else UDim2.new(1, attackBtn.Position.X.Offset - 12, 1, attackBtn.Position.Y.Offset - 182),
+			Vector2.new(0.5, 0.5))
 		wbtn.Name = "FieldWeapon"
-		wbtn.TextSize = if compactTouch then 12 else 13
+		wbtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
+		wbtn.AutoButtonColor = false
+		wbtn.TextSize = if compactTouch then 13 else 14
 		wbtn.TextWrapped = true
+		if AssetIds["Menu/field_weapon"] then
+			addIcon(wbtn, "Menu/field_weapon")
+			wbtn.Text = ""
+		end
+		wbtn:SetAttribute("SkillFullName", wpn.name .. " ↔ " .. reserveWeapon.name)
 		wbtn:SetAttribute("WeaponChoiceCount", 2)
 		wbtn:SetAttribute("WeaponPrimaryId", wpn.id)
 		wbtn:SetAttribute("WeaponSecondaryId", reserveWeapon.id)
@@ -6497,10 +6535,11 @@ function FieldScene.start(opts)
 			end
 			swingBridge.pendingBasicBeat = nil
 			wpn, reserveWeapon = reserveWeapon, wpn
-			wbtn.Text = wpn.name .. " ↔ " .. reserveWeapon.name
+			wbtn:SetAttribute("SkillFullName", wpn.name .. " ↔ " .. reserveWeapon.name)
+			if wbtn:GetAttribute("IconArtKey") ~= "Menu/field_weapon" then wbtn.Text = "교체" end
 			wbtn:SetAttribute("WeaponPrimaryId", wpn.id)
 			wbtn:SetAttribute("WeaponSecondaryId", reserveWeapon.id)
-			if attackIcon then
+			if attackIcon and attackBtn:GetAttribute("IconArtKey") ~= "Menu/field_attack" then
 				local iconKey = if wpn.family == "fist" then "Menu/cc0_glove" elseif wpn.family == "axe" then "Menu/cc0_axe"
 					elseif wpn.ranged then "Menu/cc0_crossbow" else "Menu/cc0_sword"
 				attackIcon.Image = "rbxassetid://" .. tostring(AssetIds[iconKey])
@@ -6561,13 +6600,15 @@ function FieldScene.start(opts)
 		b:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(114, 244, 228)
 		b:FindFirstChildOfClass("UIStroke").Thickness = 3.2
 		b.AutoButtonColor = false
-		local dodgeIcon = addIcon(b, "Menu/chart_compass")
-		if dodgeIcon then
+		local dodgeIcon = if AssetIds["Menu/field_dodge"] then addIcon(b, "Menu/field_dodge")
+			else addIcon(b, "Menu/chart_compass")
+		if dodgeIcon and b:GetAttribute("IconArtKey") ~= "Menu/field_dodge" then
 			dodgeIcon.Size = UDim2.fromScale(0.73, 0.73)
 			dodgeIcon.Position = UDim2.fromScale(0.5, 0.41)
 		end
 		local dodgeCaption = label(b, "회피", if visualMobile then 14 else 13, Color3.fromRGB(198, 255, 242))
 		dodgeCaption.Name = "FieldDodgeCaption"
+		dodgeCaption.Visible = b:GetAttribute("IconArtKey") ~= "Menu/field_dodge"
 		dodgeCaption.AnchorPoint = Vector2.new(0.5, 0.5)
 		dodgeCaption.Position = UDim2.fromScale(0.5, 0.79)
 		dodgeCaption.Size = UDim2.fromScale(0.70, 0.20)

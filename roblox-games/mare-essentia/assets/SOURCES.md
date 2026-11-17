@@ -1695,3 +1695,18 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 | `Menu/naval_speed` | `assets/icons/naval_speed.png` | `aecdf9d4f72b6ef98becbf9b04f326b97c861178a88c442397a354d577017e98` | 512×512 |
 
 실제 Roblox 자산 번호·Universe 사용 권한·Studio 화면 검증은 등록기 실행 결과와 별도로 확인한다.
+
+## 2026-11-18 지상 탐험 전투 원형 버튼 3종 (프로젝트 자체 원화)
+
+- 사용자 승인 ChatGPT 원화 3종을 각각 독립 512×512 투명 배경 PNG로 저장했다. 네 모서리 알파 0, 개별 SHA-256 검수. 라이선스 `PROJECT_ORIGINAL_ART`.
+- `Menu/field_attack`=공격(쌍검), `Menu/field_dodge`=회피(질주), `Menu/field_weapon`=주·보조 무기 교체(도끼/활). 기존 메뉴 원화 승인·Open Cloud Image 등록 통로를 사용한다.
+- 3개는 오른쪽 하단 공격→왼쪽 회피→상단 교체 반원형으로 배치한다. 등록 전에는 기존 공용 아이콘 또는 문자 버튼이 남는다.
+- 원화 교체 외에 자동강타 5명중, 피해, 무기선택 2개, 회피 무적, 숙련·체력·저장·입력 규칙은 변경하지 않는다.
+
+| 자산 키 | 파일 | SHA-256 | 크기 |
+|---|---|---|---|
+| `Menu/field_attack` | `assets/icons/field_attack.png` | `3a49dddb976f67a4c0e60d2ab1a0fbc8908430244ce2675276c217df6494af9c` | 512×512 |
+| `Menu/field_dodge` | `assets/icons/field_dodge.png` | `27e4f2138be3b10b63a58a2dc0a694283c1408f7460d2c512d59a5565db4027d` | 512×512 |
+| `Menu/field_weapon` | `assets/icons/field_weapon.png` | `b27cef0c696dc459ef78d57c9dee8b6618827e7f2610f9416619e4444fbb1b7b` | 512×512 |
+
+로블록스 자산번호·Universe 사용 권한·Studio 표시 여부는 정식 등록/배포 결과로 별도 확인한다.

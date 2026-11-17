@@ -90,7 +90,9 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   // [실제 터치 사각형] 모서리까지 입력을 받으므로 원형 그림의 빈 여백도 겹치면 안 된다.
   assert.ok(field.includes('math.min(112, math.max(72, workspace.CurrentCamera.ViewportSize.X - 232))'));
   assert.ok(field.includes('if compactTouch then 90 else 98'));
-  assert.ok(field.includes('if compactTouch then math.min(116, workspace.CurrentCamera.ViewportSize.X - 230)'));
+  assert.ok(field.includes('if compactTouch then 78 elseif visualMobile then 88 else 82'));
+  assert.ok(field.includes('addIcon(wbtn, "Menu/field_weapon")'));
+  assert.ok(field.includes('if compactTouch then UDim2.new(0, math.max(226, workspace.CurrentCamera.ViewportSize.X - 120), 1, -337)'));
   assert.ok(field.includes('if compactTouch then -math.min(85, workspace.CurrentCamera.ViewportSize.X - 247)'));
   assert.ok(field.includes('if compactTouch then UDim2.new(0, math.max(226, workspace.CurrentCamera.ViewportSize.X - 120), 1, -211)'));
   const overlaps=(a,b)=>a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
@@ -102,12 +104,12 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
     const attackX=width-Math.min(85,width-247);
     const attackHit=rect(attackX-69,height-154,138,138);
     const hero=rect(12,74,202,82);
-    const weapon=rect(width-12-Math.min(116,width-230),112,Math.min(116,width-230),44);
+    const weapon=rect(dodgeX-39,height-376,78,78);
     const complete=rect(width-102,64,90,38);
     const title=rect(109,12,Math.min(112,Math.max(72,width-232)),40);
     const camera=rect(width-120,12,108,44);
-    for(const [left,right] of [[pad,dodge],[pad,attackHit],[dodge,attackHit],
-      [hero,weapon],[hero,complete],[title,camera]]){
+    for(const [left,right] of [[pad,dodge],[pad,attackHit],[pad,weapon],[dodge,attackHit],
+      [dodge,weapon],[attackHit,weapon],[hero,weapon],[hero,complete],[title,camera]]){
       assert.equal(overlaps(left,right),false,'모바일 '+width+'×'+height+' 탐험 조작 겹침');
     }
   }
@@ -115,6 +117,9 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.match(field,/dodgeCaption\.Name = "FieldDodgeCaption"/);
   assert.match(field,/addIcon\(attackBtn, "Menu\/cc0_sword"\)/);
   assert.match(field,/addIcon\(b, "Menu\/chart_compass"\)/);
+  for(const key of ['field_attack','field_dodge','field_weapon'])
+    assert.ok(field.includes('"Menu/'+key+'"'), '지상 버튼 이미지 등록키 누락: '+key);
+  assert.ok(field.includes('attackBtn:GetAttribute("IconArtKey") ~= "Menu/field_attack"'),'무기교체가 새 공격 원화를 덮어쓰면 안 됨');
   assert.match(field,/bindPress\(attackBtn, useAttack\)/);
   assert.match(field,/bindHold\(attackBtn\)/);
   assert.match(field,/hit\.Size = attackBtn\.Size \+ UDim2\.fromOffset\(20, 20\)/);
