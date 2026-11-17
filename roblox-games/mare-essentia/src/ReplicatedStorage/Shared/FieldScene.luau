@@ -6136,6 +6136,7 @@ function FieldScene.start(opts)
 				e.ac.state = "stagger"
 			end
 			local frozen = knocked or now < (e.holdUntil or 0)
+				or now < (e.guardUntil or 0) or now < (e.parryUntil or 0)
 			if e.kbUntil and now < e.kbUntil and not e.ac.def.boss then
 				local duration = math.max(e.kbUntil - e.kbT0, 0.05)
 				local k = 1 - (now - e.kbT0) / duration
