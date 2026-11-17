@@ -295,3 +295,19 @@ test('Studio frames go only to an image-capable provider', async () => {
   assert.match(requests[0].url, /generativelanguage\.googleapis\.com/);
   assert.deepEqual(requests[0].body.contents[0].parts, [{ text: 'inspect' }, { inlineData: images[0] }]);
 });
+
+// [스튜디오] 매 회차 같은 시작 화면 3장만 보지 않고 아직 확인하지 않은 화면으로 순회한다.
+test('무료 외부 AI는 10분마다 다른 Studio 스크린샷을 분석하고 확인된 장면을 소스별로 기억한다', () => {
+  const source = fs.readFileSync('tools/vibe-brain.mjs', 'utf8');
+  const workflow = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
+  assert.match(workflow, /cron: '3-53\\/10 \\* \\* \\* \\*'/);
+  assert.match(source, /readStudioVisualOrder\\(arg\\('studio-ref'\\), ledger\\.visualCoverage\\)/);
+  assert.match(source, /coverage\\.sourceRevision === revision/);
+  assert.match(source, /reviewed\\.has\\(label\\)/);
+  assert.match(source, /STUDIO_VISUAL_REVIEWED=/);
+  assert.match(source, /visual\\.labels/);
+  assert.match(source, /b\\.kind === 'visual'/);
+  assert.match(source, /minGapMin: 10/);
+  assert.match(workflow, /vars\\.VIBE_BRAIN != 'off'/);
+  assert.match(workflow, /VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'/);
+});
