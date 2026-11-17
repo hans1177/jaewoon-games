@@ -1720,7 +1720,7 @@ function FieldScene.start(opts)
 		}
 		castPoses.cast_ward, castPoses.cast_snipe = castPoses.cast_armor, castPoses.cast_volley
 		-- [직업별 R15 회피] 기본 행동은 그대로, 가드 팔·골반·디딤발 자세를 직업에 따라 구별한다.
-		local dashPoses = {
+		castPoses.dodge = {
 			warrior = {
 				Spine = A(0.16, 0.22, -0.12), Chest = A(-0.32, -0.20, 0.14),
 				UpperArmL = A(-0.74, 0, -0.21), UpperArmR = A(-0.55, 0, 0.26),
@@ -1885,7 +1885,7 @@ function FieldScene.start(opts)
 					if swingKind == "guard" then
 						src = FM.combo("slash1", { "W:BLADE_SLASH_R" }).guard
 					elseif swingKind == "dash" then
-						src = dashPoses[ch:GetAttribute("FieldDodgeStyle") or "warrior"] or dashPoses.warrior
+						src = castPoses.dodge[ch:GetAttribute("FieldDodgeStyle") or "warrior"] or castPoses.dodge.warrior
 					else
 						src = castPoses[swingKind] or (if string.sub(swingKind, 1, 4) == "cast" then castPoses.cast_read else castPose)
 					end
