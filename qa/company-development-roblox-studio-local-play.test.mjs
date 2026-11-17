@@ -4163,7 +4163,7 @@ test('Mare weapon two skill types, dagger basic speed and seven profession dodge
   for(const role of ['warrior','gunner','clergy','doctor','navigator','merchant','scholar']){
     assert.ok(scene.includes(role+' = {'),'missing profession R15 pose: '+role);
   }
-  assert.ok(scene.includes('src = dashPoses[ch:GetAttribute("FieldDodgeStyle") or "warrior"] or dashPoses.warrior')&&
+  assert.ok(scene.includes('src = castPoses.dodge[ch:GetAttribute("FieldDodgeStyle") or "warrior"] or castPoses.dodge.warrior')&&
     scene.includes('ch0:SetAttribute("FieldDodgeStyle", dodgeStyle)')&&
     scene.includes('startSwing("dash", 0.4)')&&
     scene.includes('hrp.CFrame = hrp.CFrame + look.Unit * 14'),
@@ -4175,6 +4175,31 @@ test('Mare weapon two skill types, dagger basic speed and seven profession dodge
   assert.ok(scene.includes('AC.tryMove(pl, moveId, now)')&&
     scene.includes('task.delay(if kind == "slash" then 0.14'),
     'original invulnerability authority and attack damage timing must be retained');
+  // [모바일 터치 HUD] 이동패드 방해 없이 큰 회피 버튼과 3개 스킬을 분리한다.
+  assert.ok(scene.includes('workspace.CurrentCamera.ViewportSize.X < 450')&&
+    scene.includes('local compactTouch = visualMobile and screenWidth < 450')&&
+    scene.includes('attackBtn.Size = UDim2.fromOffset(104, 104)')&&
+    scene.includes('if compactTouch then 92 elseif visualMobile then 104 else 86')&&
+    scene.includes('slotPos(slotI)')&&
+    scene.includes('arcPos(math.clamp(outerSkillRadius * 0.82, 132, 164), 4)'),
+    'large mobile dodge must remain reachable without overlapping joystick or skill rows');
+  assert.ok(scene.includes('button.Name == "FieldAttack" or string.sub')&&
+    scene.includes('attackBtn:SetAttribute("SkillFullName", "일반 공격")')&&
+    scene.includes('addIcon(skillBtns.dodge.btn, "Menu/chart_compass")')&&
+    scene.includes('addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")')&&
+    scene.includes('attackBtn.Text = ""')&&
+    scene.includes('b.Text = ""'),
+    'mobile combat buttons must be icon-only and use existing registered icons');
+  assert.ok(scene.includes('comboLabel.Font = Enum.Font.Bangers')&&
+    scene.includes('comboLabel.TextStrokeColor3 = Color3.fromRGB(22, 22, 37)')&&
+    scene.includes('if visualMobile then 63 else 76')&&
+    scene.includes('TextSize = targetSize, Rotation = 0')&&
+    scene.includes('comboInfo.Font = Enum.Font.GothamBlack')&&
+    scene.includes('초당 %.1f타'),
+    'large high-contrast combo lettering and speed HUD must preserve real hit-count logic');
+  assert.ok(!scene.includes('local comboGaugeCorner =')&&!scene.includes('local comboFillCorner =')&&
+    !scene.includes('local innerSkillRadius =')&&!scene.includes('local ATK_C ='),
+    'Luau 200-register budget: decorative and redundant HUD locals may not be reintroduced');
   // [성직자·학자 거대 회피] 둘이 같은 모션/이펙트를 쓰면 실패. R15 전신·루트·빛 궤적을 각각 검사한다.
   const priest=scene.match(/clergy = \{([\s\S]*?)\n\t\t\t\},/)?.[1];
   const scholar=scene.match(/scholar = \{([\s\S]*?)\n\t\t\t\},/)?.[1];
