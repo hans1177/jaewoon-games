@@ -4234,7 +4234,7 @@ function PortScene.build(info, onFacility)
 		{ name = "교역소", tab = "trade", pos = Vector3.new(-12, 0, 36), w = 20, d = 12, floors = 1, color = Color3.fromRGB(176, 120, 60), economy = "market", always = true },
 		{ name = "주점", tab = "quest", pos = Vector3.new(-12, 0, -36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 76, 44), economy = "tavern", always = true },
 		{ name = "항만청", tab = "route", pos = Vector3.new(8, 0, 58), w = 12, d = 10, floors = 2, color = Color3.fromRGB(90, 110, 140), economy = "dock", key = "harbormaster" },
-		{ name = "은행", tab = "harbor", pos = Vector3.new(-50, 0, 36), w = 14, d = 12, floors = if sceneLevel >= 4 then 3 else 2, color = Color3.fromRGB(220, 214, 200), economy = "market", key = "bank" },
+		{ name = "은행", tab = "harbor", pos = Vector3.new(-50, 0, 36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(220, 214, 200), economy = "market", key = "bank" },
 		{ name = "상인 길드", tab = "trade", pos = Vector3.new(-50, 0, -36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(150, 120, 90), economy = "warehouse", key = "guild" },
 		{ name = "학자의 서재", tab = "tech", pos = Vector3.new(-88, 0, 36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 100, 140), economy = "school", always = true },
 		{ name = "도서관 (도감)", tab = "codex", pos = Vector3.new(-88, 0, -36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(100, 120, 110), economy = "school", always = true },
@@ -4312,7 +4312,7 @@ function PortScene.build(info, onFacility)
 				elseif f.name == "주점" then
 					-- 굴뚝 솟은 비대칭 여관 본관 + 넓은 식사 차양: 시장이나 학술관과 다른 실루엣.
 					importedModel(folder, "Town", "overhang", at(0, 3), 10.5, false, style.roofs[1])
-					importedModel(folder, "Town", "chimney", f.pos + Vector3.new(-3.6, f.floors * 6.8 * grow, 0), 4.8, false)
+					importedModel(folder, "Town", "chimney", f.pos + Vector3.new(-3.6, visualFloors * 6.8 * grow, 0), 4.8, false)
 					importedModel(folder, "Cargo", "barrel", at(-8, 1), 2.7, false)
 					importedModel(folder, "Town", "bench_A", at(8, 2), 4.2, false)
 					if lv >= 2 then lantern(folder, at(-5, 0), 3) end
