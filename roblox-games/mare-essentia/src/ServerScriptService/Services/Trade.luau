@@ -38,7 +38,10 @@ return function(D, S)
 		if port.country == state.nationId then
 			return 0
 		end
-		return math.max(0, 0.05 - (state.rep[port.country] or 0) / 100 * 0.05)
+		-- [상선 교역 특화] 매매가격·재고·판매율 상한은 유지하고 외국 항구 관세만 최대 ±8% 상대 보정.
+		local base = math.max(0, 0.05 - (state.rep[port.country] or 0) / 100 * 0.05)
+		local trait = S.State.shipDef(state).trait or {}
+		return math.max(0, base * (1 - (trait.tariff or 0)))
 	end
 
 	local function sellRateFor(state)
