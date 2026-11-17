@@ -1333,9 +1333,20 @@ function FieldScene.start(opts)
 			elseif ac.kind == "shield" then Color3.fromRGB(50, 59, 73)
 			elseif ac.kind == "charger" then Color3.fromRGB(81, 48, 43)
 			elseif isBoss then Color3.fromRGB(53, 41, 41) else Color3.fromRGB(65, 58, 52)
+		-- [승인 R15 몹 외형] 기존 적의 병종·시대·무기를 따라 부위별 실물 복식을 선택한다.
+		-- 몬스터 원본을 통째로 고정하지 않고 R15 관절·원본 전투 판정은 유지한다.
+		local mobProfile = if isBoss then "warlord"
+			elseif throwAsset == "bomb" then "bombard"
+			elseif weapon.id == "ship_pistol" or weapon.id == "cutlass" then (if styleN % 2 == 0 then "pirate_female" else "pirate")
+			elseif ac.kind == "shield" then "knight"
+			elseif style[2] == "Barbarian" then "brute"
+			elseif style[2] == "Rogue_Hooded" then "rogue"
+			elseif ac.kind == "archer" then "ranger"
+			else "pirate"
+		local mobHat = if mobProfile == "pirate" or mobProfile == "pirate_female" then "tricorn" else nil
 		-- [생성 중단 보호] 공식 R15 로딩이 지연되는 동안 철수해도 콜백 오류가 전파되지 않는다.
 		local created, model = pcall(Pose.createR15, folder, pos, 0, style[3], rng, if styleN == 1 then def[2] else style[2], stature,
-			{ bodyType = bodyType, motionStyle = motionStyle, trousers = trousers, persona = styleN, profession = ac.kind, year = opts.year })
+			{ bodyType = bodyType, motionStyle = motionStyle, trousers = trousers, persona = styleN, profession = ac.kind, year = opts.year, hat = mobHat })
 		if not created and not finished then
 			warn("[MareEssentia] 탐험 적 리그 생성 오류", model)
 			model = nil
@@ -1349,6 +1360,12 @@ function FieldScene.start(opts)
 			continue
 		end
 		model.Name = "FieldEnemy"
+		-- [모바일 최적화] 가까운 선발대·정예·두목 우선으로 메시 복식을 적용한다.
+		-- 멀리 있는 일반 적의 원본 R15·무기는 변경하지 않는다.
+		if isBoss or not visualMobile or i <= 28 or i % 6 == 0 then
+			model:SetAttribute("MobAssetProfile", mobProfile)
+			Pose.applyRegisteredMobOutfit(model)
+		end
 		local root = model:FindFirstChild("HumanoidRootPart")
 		if not root then model:Destroy(); continue end
 		local bb = Instance.new("BillboardGui")
@@ -2775,6 +2792,23 @@ function FieldScene.start(opts)
 									if thrownName ~= "" then thrownName else nil)
 							end
 						end
+					end
+				end
+			end)
+		end))
+	end
+	-- [늦게 로드된 R15 몹 자산] 기존 MareAssets.People 도착 이벤트로 복식만 재연결한다.
+	-- R15 모터·움직임·HP·사거리·드롭·저장 키에는 손대지 않는다.
+	local peopleGroup = assetLibrary and assetLibrary:FindFirstChild("People")
+	if peopleGroup then
+		table.insert(conns, peopleGroup.ChildAdded:Connect(function(asset)
+			if not asset:IsA("Model") or not AssetIds["People/" .. asset.Name] then return end
+			task.defer(function()
+				if finished or not folder.Parent then return end
+				for _, enemy in enemies do
+					if enemy.model.Parent and enemy.model:GetAttribute("MobAppearanceState") ~= "ready"
+						and enemy.model:GetAttribute("MobAssetProfile") then
+						Pose.applyRegisteredMobOutfit(enemy.model)
 					end
 				end
 			end)
