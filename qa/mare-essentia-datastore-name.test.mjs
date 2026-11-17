@@ -405,6 +405,9 @@ test('탐험 0.4초 회피 6종 및 무기별 10타 공중 검무 유지',()=>{
   assert.match(field,/local spin = t \* t \* \(3 - 2 \* t\) \* math\.pi \* 2/);
   assert.match(field,/elseif trick == 5 then[\s\S]*?canon\.HandL/);
   assert.match(field,/local spin = spinPhase \* spinPhase \* \(3 - 2 \* spinPhase\) \* math\.pi \* 2/);
+  assert.ok(field.includes('[활·권총 공중 연사]'),'원거리 연속사격 곡예 누락');
+  assert.ok(field.includes('[원거리 공중연사 발놀림]'),'원거리 공중 자세 누락');
+  assert.match(field,/local agile = not crossbow and not longGun/);
   for(const i of [4,5,6,7,8,9]) assert.ok(field.includes('slashIdx == '+i),'10연타 곡예 단계 누락: '+i);
   assert.match(field,/if basicAttack == true then[\s\S]*?pl\.autoNormalHits = \(pl\.autoNormalHits or 0\) \+ 1/);
   assert.match(field,/if pl\.autoNormalHits % 5 == 0 then/);
