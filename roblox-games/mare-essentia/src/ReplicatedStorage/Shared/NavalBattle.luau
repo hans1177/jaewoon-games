@@ -2814,15 +2814,41 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				n = if MOBILE_VFX then 3 else 3 + stage, a0 = 0.3 },
 		}, { color = theme.flash, bright = if MOBILE_VFX then 1.6 else 2 + stage * 0.2, range = 18, dur = 0.4 })
 	end
-	-- 물기둥과 퍼지는 물결
-	function FX.splash(pos, profile)
-		FX.waterColumn(pos, profile)
-		FX.spawn(Vector3.new(3, 2.4, 2.4), pos + Vector3.new(0, 1.5, 0), C_WATER, Enum.Material.SmoothPlastic, Enum.PartType.Cylinder, Vector3.new(0, 11, 0), 0.9, { grow = 0.8, t0 = 0.2, g = 14, upright = true })
-		FX.spawn(Vector3.new(0.3, 3, 3), pos + Vector3.new(0, 0.3, 0), C_WATER, Enum.Material.Neon, Enum.PartType.Cylinder, Vector3.zero, 1.1, { grow = 7, t0 = 0.35, ring = true, upright = true })
-		for _ = 1, 6 do
-			FX.spawn(Vector3.new(0.6, 0.6, 0.6), pos, C_WATER, Enum.Material.SmoothPlastic, Enum.PartType.Ball,
-				Vector3.new((math.random() - 0.5) * 12, 8 + math.random() * 8, (math.random() - 0.5) * 12), 0.9, { g = 30, t0 = 0.2 })
-		end
+	-- [4단계 수면 충돌] 기존 등록된 엔진 물 입자만 사용: 수면 충격 → 물기둥 → 낙하 물방울 → 잔여 거품.
+	-- 기존 단색 원기둥·구체 물보라를 생성하지 않는다. 위치·규모는 실제 포탄 착탄 좌표로 정한다.
+	function FX.splash(pos, profile, power)
+		local style = profile or DEFAULT_FX
+		local theme = style.theme or FX_THEMES.europe
+		local strength = math.clamp(power or 1, 0.65, 2.4)
+		local surface = Vector3.new(pos.X, ORIGIN.Y + 0.35, pos.Z)
+		-- 1차: 튀어 오르기 직전의 수면 거품과 움푹 패이는 수면 충격
+		FX.burst(surface, nil, {
+			{ tex = "smoke", c0 = Color3.fromRGB(203, 232, 245), c1 = theme.foam, s0 = 1.1 * strength, s1 = 3.8 * strength,
+				life = 0.38, v0 = 3, v1 = 7, spread = 170, n = if MOBILE_VFX then 3 else 7, a0 = 0.22, drag = 5 },
+		})
+		-- 2차: 대포 구경·선체 침수 규모에 비례하는 물기둥
+		FX.waterColumn(surface, style, strength)
+		task.delay(0.20, function()
+			if finished then return end
+			-- 3차: 위로 솟은 작은 물방울들이 중력과 물살에 따라 떨어진다.
+			FX.burst(surface + Vector3.new(0, 4 * strength, 0), Vector3.new(0, 1, 0), {
+				{ tex = "spark", c0 = Color3.fromRGB(242, 252, 255), c1 = theme.foam,
+					s0 = 0.5 * strength, s1 = 0.11, life = 0.80 + strength * 0.15,
+					v0 = 7, v1 = 16 * strength, spread = 70,
+					n = if MOBILE_VFX then 5 else math.floor(11 * strength),
+					acc = Vector3.new(0, -42, 0), drag = 0.5, a0 = 0.16 },
+			})
+		end)
+		task.delay(0.53, function()
+			if finished then return end
+			-- 4차: 물방울이 내려앉은 뒤 남는 낮고 넓은 포말
+			FX.burst(surface, nil, {
+				{ tex = "smoke", c0 = Color3.fromRGB(245, 253, 255), c1 = theme.foam,
+					s0 = 1.5 * strength, s1 = 4.5 * strength, life = 1.15,
+					v0 = 2, v1 = 8 * strength, spread = 175,
+					n = if MOBILE_VFX then 3 else math.floor(7 * strength), a0 = 0.28, drag = 3.4 },
+			})
+		end)
 	end
 	do -- 입자 연출용 지역 변수는 이 블록 안에만 둔다 (함수당 지역 변수 한도 때문)
 	local TweenService = game:GetService("TweenService")
@@ -2936,24 +2962,27 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			FX.shockRing(pos - Vector3.new(0, 3.9, 0), theme.foam, 8 + stage * 1.3, 0.82)
 		end
 	end
-	-- [지역별 수면] 같은 실제 포탄 충돌 위치를 사용하고 물보라 색·분산만 지역별로 조정한다.
-	function FX.waterColumn(pos, profile)
+	-- [상황별 물기둥] 같은 실제 수면 충돌 좌표를 사용한다. 크기는 대포 구경·침몰 단계에만 따른다.
+	function FX.waterColumn(pos, profile, power)
 		local style = profile or DEFAULT_FX
 		local stage = math.clamp(style.stage or 2, 1, 6)
 		local theme = style.theme or FX_THEMES.europe
-		local density = if MOBILE_VFX then 0.55 else 1
+		local density = if MOBILE_VFX then 0.50 else 1
+		local strength = math.clamp(power or 1, 0.65, 2.4)
 		local spread = if style.faction == "southeast_asia" then 44 elseif style.faction == "new_world" then 32 else 20
 		FX.burst(pos + Vector3.new(0, 1, 0), Vector3.new(0, 1, 0), {
-			{ tex = "smoke", c0 = FOAM, c1 = theme.foam, s0 = 2.1 + stage * 0.2, s1 = 5 + stage * 1.1,
-				life = 1 + stage * 0.08, v0 = 10, v1 = 17 + stage,
-				spread = spread * 0.52, n = math.floor((5 + stage * 1.2) * density),
-				a0 = 0.17, acc = Vector3.new(0, -14, 0), drag = 1 },
-			{ tex = "spark", c0 = theme.foam, s0 = 0.7, s1 = 0.16,
-				life = 0.75, v0 = 15, v1 = 26 + stage * 2, spread = spread,
-				n = math.floor((8 + stage * 2.3) * density),
+			{ tex = "smoke", c0 = FOAM, c1 = theme.foam,
+				s0 = (1.8 + stage * 0.25) * strength, s1 = (4.4 + stage * 1.0) * strength,
+				life = (0.8 + stage * 0.08) * math.sqrt(strength), v0 = 9 * strength, v1 = (16 + stage) * strength,
+				spread = spread * 0.52, n = math.max(3, math.floor((5 + stage * 1.2) * density * strength)),
+				a0 = 0.17, acc = Vector3.new(0, -19, 0), drag = 1 },
+			{ tex = "spark", c0 = theme.foam, s0 = 0.75 * strength, s1 = 0.16,
+				life = 0.75, v0 = 15 * strength, v1 = (26 + stage * 2) * strength, spread = spread,
+				n = math.max(4, math.floor((8 + stage * 2.3) * density * strength)),
 				acc = Vector3.new(0, -60, 0), a0 = 0.16, glow = 0.2 },
 		})
-		FX.shockRing(pos, theme.foam, 7 + stage * 1.4, 0.7)
+		-- 기존 수면 파문만 재사용. 새 기본 도형 소품·선박 모델은 만들지 않는다.
+		FX.shockRing(pos, theme.foam, (7 + stage * 1.4) * strength, 0.6 + strength * 0.12)
 	end
 	-- 스킬 연출: 배에 붙은 입자를 지속시간 동안 켜 두고, 시작 순간 충격파를 낸다
 	function FX.skill(sh, id, dur)
@@ -3075,7 +3104,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				life = 1.35, v0 = 3, v1 = 8, spread = 85,
 				n = if MOBILE_VFX then 4 else 5 + stage, a0 = 0.38 },
 		})
-		FX.waterColumn(Vector3.new(center.X, ORIGIN.Y, center.Z), me.fx)
+		FX.waterColumn(Vector3.new(center.X, ORIGIN.Y, center.Z), me.fx, 1.15)
+		Sfx.play("sfx_rope_pull", 0.38, 0.95, "sfx_creak")
+		Sfx.play("sfx_boarding_draw", 0.35, 0.88, "sfx_metal_clash")
 	end
 	-- [포탄 비행] 원본 4종 포탄의 속도·사거리·탄도를 유지하며 지역·단계별 궤적만 바꾼다.
 	function FX.projectile(ball, nc, profile)
@@ -3272,12 +3303,21 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if hullHit then 6 + math.random() * 3 else 0.4,
 			(math.random() - 0.5) * 6
 		)
-		-- [함종 발사음] 저단계는 높은 포성, 고단계는 낮고 묵직한 포성. 기존 효과음을 변주한다.
+		-- [함종별 포성] 소형선은 날카롭게, 대형함은 낮고 무겁게. 등록된 원본 효과음만 층층이 재생한다.
 		local style = if shooter then shooter.fx else DEFAULT_FX
 		local stage = math.clamp(style.stage or 2, 1, 6)
-		Sfx.play("sfx_naval_cannon", 0.74 + stage * 0.015,
+		local nearShip = (fromPos - me.pos).Magnitude < 110
+		Sfx.play("sfx_naval_cannon", (if nearShip then 0.71 else 0.42) + stage * 0.02,
 			1.13 - stage * 0.045 + math.random() * 0.08, "sfx_cannon")
+		if stage >= 4 and nearShip and not MOBILE_VFX then
+			Sfx.play("sfx_cannon", 0.26 + stage * 0.025, 0.82 - stage * 0.016)
+		end
 		FX.muzzle(from, (to - from).Unit, style)
+		if nearShip and stage >= 2 and not MOBILE_VFX then
+			task.delay(math.min(0.22, nc.dur * 0.40), function()
+				if not finished then Sfx.play("sfx_sail_fabric", 0.13, 1.35 + stage * 0.025) end
+			end)
+		end
 		if stage >= 5 and not MOBILE_VFX then
 			task.delay(0.14, function()
 				if not finished then Sfx.play("sfx_cannon", 0.25, 0.78) end
@@ -3328,21 +3368,29 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 				-- 착탄과 물보라를 실제 포탄 충돌 프레임에 맞춰 별도 재생한다.
 				if hullHit then
-					Sfx.play("sfx_naval_hull_hit", 0.78, 0.88 + math.random() * 0.2, "sfx_hit")
-					Sfx.play("sfx_naval_wood", 0.55, 0.9 + math.random() * 0.25, "sfx_creak")
-					if math.random() < 0.4 then
-						Sfx.play("sfx_creak", 0.3, 0.85 + math.random() * 0.18)
+					Sfx.play("sfx_naval_hull_hit", 0.72 + stage * 0.026, 1.05 - stage * 0.03 + math.random() * 0.08, "sfx_hit")
+					Sfx.play("sfx_naval_wood", 0.45 + stage * 0.025, 1.12 - stage * 0.037, "sfx_creak")
+					if stage >= 4 and not MOBILE_VFX then
+						Sfx.play("sfx_metal_clash", 0.23, 0.85, "sfx_hit")
 					end
 				else
-					Sfx.play("sfx_naval_splash", 0.55, 0.9 + math.random() * 0.22, "sfx_splash")
+					Sfx.play("sfx_naval_splash", 0.43 + nc.ball * 0.11, 1.1 - nc.ball * 0.1, "sfx_splash")
+					if nc.ball >= 1.5 and not MOBILE_VFX then
+						task.delay(0.15, function()
+							if not finished then Sfx.play("sfx_splash", 0.22, 0.85) end
+						end)
+					end
 				end
 				if hullHit then
 					FX.splinters(to, if MOBILE_VFX then 5 else 5 + stage * 2)
 					FX.impact(to, nc.ball, style)
 					shake = math.max(shake, 1.3)
 					kick = math.max(kick, 5 + nc.ball)
+					if to.Y <= ORIGIN.Y + 9 then
+						FX.splash(Vector3.new(to.X, ORIGIN.Y, to.Z), style, nc.ball * 0.78)
+					end
 				else
-					FX.splash(to, style)
+					FX.splash(to, style, nc.ball)
 				end
 				-- 충돌 시 거대한 광구·회색 공 대신 위의 실제 파편·입자 폭발과 물결만 사용한다.
 				-- 별도 프레임 연결을 만들지 않아 모바일 부하도 줄인다.
