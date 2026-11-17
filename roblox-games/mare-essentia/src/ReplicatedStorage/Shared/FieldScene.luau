@@ -5066,8 +5066,8 @@ function FieldScene.start(opts)
 				if tgt and not moving and now >= a.nextAt then
 					a.nextAt = now + 1.3 / aw.speed
 					a.swingAt = now
-					-- [동료 무기 연속 동작] 공격 주기·피해를 바꾸지 않고 관절 동작 번호만 넘긴다.
-					if a.fm then a.fm.weaponBeat = ((a.fm.weaponBeat or 0) % 3) + 1 end
+					-- [동료 기본 공격] 별도 연타 누적·마무리 콤보는 사용하지 않는다.
+					-- 기존 동료 공격 주기·피해·실물 무기 동작은 유지한다.
 					a.energy = math.max(0, a.energy - 10)
 					strikeEnemy(tgt, 0.6 * aw.power, a.root.Position, if aw.family == "axe" then 2 else 1.0,
 						aw.family == "axe", true, false, nil, aw)
