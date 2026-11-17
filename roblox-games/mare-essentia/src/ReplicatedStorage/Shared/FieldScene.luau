@@ -3699,10 +3699,11 @@ function FieldScene.start(opts)
 	sparks.Parent = fxPart
 	local slash = Instance.new("ParticleEmitter")
 	slash.Rate = 0
-	slash.Texture = "rbxasset://textures/particles/flare_main.dds" -- 네모난 충격파 대신 원형 광륜
+	slash.Texture = "rbxasset://textures/particles/sparkles_main.dds" -- [네모 제거] 큰 평면 광륜 대신 작은 타격 불꽃
 	slash.Lifetime = NumberRange.new(0.2, 0.3)
-	slash.Speed = NumberRange.new(0, 2)
-	slash.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 4), NumberSequenceKeypoint.new(1, 8) })
+	slash.Speed = NumberRange.new(4, 9)
+	slash.SpreadAngle = Vector2.new(180, 180)
+	slash.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.75), NumberSequenceKeypoint.new(0.3, 1.1), NumberSequenceKeypoint.new(1, 0) })
 	slash.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(1, 1) })
 	slash.LightEmission = 1
 	slash.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(150, 210, 255))
