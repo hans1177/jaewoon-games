@@ -4004,6 +4004,35 @@ test('Mare quests and field encounters expose five meaningful difficulty grades'
   assert.ok(field.includes('local bossCount = if danger0 < 3 then 0'));
 });
 
+// [현장 모션 회귀] R15 관절/실제 발보폭/진입·정지·회피/지연 회전은 기존 공용 모션 경로를 사용한다.
+test('Mare enemies and companions have grounded speed responsive R15 locomotion',()=>{
+  const base='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
+  const field=fs.readFileSync(base+'FieldScene.luau','utf8');
+  const motion=fs.readFileSync(base+'FieldMotion.luau','utf8');
+  assert.ok(motion.includes('CM.SampleProceduralActorMotion(')&&motion.includes('CM.MapCombatPoseToR15('),
+    'original canonical R15 joint motion must be preserved');
+  assert.ok(motion.includes('local targetEffort = if state == "RUN"')&&motion.includes('h.groundEffort = oldEffort'),
+    'running and stopping must ease from measured movement');
+  assert.ok(motion.includes('local plant = math.sin(phase * math.pi * 2) * (if retreat then -1 else 1)'));
+  assert.ok(motion.includes('local side = math.clamp(strafe or 0')&&motion.includes('local heel = math.cos('));
+  assert.ok(motion.includes('bend("FootL", 0.24 * slip')&&motion.includes('bend("FootR", -0.18 * slip'),
+    'dodges must plant a foot and recover stance');
+  assert.ok(motion.includes('실제 타격 발동작')&&motion.includes('bend("ShinL", -0.24 * step'),
+    'melee attacks must include leg load and landing');
+  assert.ok(motion.includes('bend("Spine", 0, -lag * 0.16'),
+    'turns must follow through hips and torso');
+  assert.ok(field.includes('kindId == "archer" or e.throwAsset ~= nil')&&
+    field.includes('e.root.CFrame.RightVector:Dot(e.moveVel)'),
+    'enemy strafe/backpedal must use physical velocity');
+  assert.ok(field.includes('a.moveVel = (a.moveVel or Vector3.zero):Lerp(wantedVel')&&
+    field.includes('a.moveVel.Magnitude * math.clamp(dt'),
+    'companions must accelerate and decelerate without snapping');
+  assert.ok(field.includes('math.clamp(a.moveVel.Magnitude / (if tgt then 16 else 20)'),
+    'companion gait must use actual movement speed');
+  assert.ok(field.includes('AC.moveWish(e.ac, dist)')&&field.includes('AC.damageEnemy(')&&field.includes('AC.takeHit(pl,'),
+    'original combat authority, attack/defense flows must remain');
+});
+
 test('Mare nine weapon families have distinct authored normal and skill R15 gameplay',()=>{
   const base='roblox-games/mare-essentia/';
   const source=fs.readFileSync(base+'src/ReplicatedStorage/Shared/Weapons.luau','utf8');

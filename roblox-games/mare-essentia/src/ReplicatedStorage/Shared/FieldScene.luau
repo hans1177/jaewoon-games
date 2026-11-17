@@ -4124,7 +4124,7 @@ function FieldScene.start(opts)
 				local rot = pv.Rotation
 				if facing then
 					local targetRot = CFrame.lookAt(Vector3.zero, facing).Rotation
-					rot = rot:Lerp(targetRot, 1 - math.exp(-7 * dtc))
+					rot = rot:Lerp(targetRot, 1 - math.exp(-(if charging then 12 elseif e.ac.state == "windup" then 10 else 7) * dtc))
 				end
 				e.model:PivotTo(CFrame.new(pv.Position + delta) * rot)
 			end
@@ -4208,8 +4208,11 @@ function FieldScene.start(opts)
 						bob, lean = 0.22 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.55
 					end
 				end
-				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll), kindId == "archer" and wish < 0, nil, if e.throwAsset then nil else (e.weapon and e.weapon.motion),
-					math.clamp(traveled / math.max(dtc, 0.016) / math.max(e.ac.def.speed, 1), 0.18, 1.25))
+				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll),
+					(kindId == "archer" or e.throwAsset ~= nil) and wish < 0, nil,
+					if e.throwAsset then nil else (e.weapon and e.weapon.motion),
+					math.clamp(traveled / math.max(dtc, 0.016) / math.max(e.ac.def.speed, 1), 0.18, 1.25),
+					math.clamp(e.root.CFrame.RightVector:Dot(e.moveVel) / math.max(e.ac.def.speed, 1), -1, 1))
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then
@@ -4446,9 +4449,12 @@ function FieldScene.start(opts)
 				local stop = if tgt then (if aw.ranged then 16 else 5.5) else 3
 				local to = Vector3.new(goal.X - a.root.Position.X, 0, goal.Z - a.root.Position.Z)
 				local moving = to.Magnitude > stop
-				if moving then
-					local step = math.min(to.Magnitude - stop, (if tgt then 16 else 20) * math.clamp(dt, 0, 0.1))
-					a.model:PivotTo(a.model:GetPivot() + to.Unit * step)
+				-- [동료 가감속] 목표가 바뀔 때 발은 연속해서 디디며 몸이 갑자기 직각으로 꺾이지 않는다.
+				local wantedVel = if moving then to.Unit * (if tgt then 16 else 20) else Vector3.zero
+				a.moveVel = (a.moveVel or Vector3.zero):Lerp(wantedVel, 1 - math.exp(-10 * math.clamp(dt, 0, 0.1)))
+				if moving and a.moveVel.Magnitude > 0.05 then
+					local step = math.min(to.Magnitude - stop, a.moveVel.Magnitude * math.clamp(dt, 0, 0.1))
+					a.model:PivotTo(a.model:GetPivot() + a.moveVel.Unit * step)
 					a.gait = (a.gait or 0) + step / 5.2
 				end
 				if to.Magnitude > 0.5 then
@@ -4534,7 +4540,8 @@ function FieldScene.start(opts)
 						-- [타격 예고] 다음 공격 직전의 짧은 무기 준비. 대미지 발생 시각은 변경하지 않는다.
 						FM.actor(a.fm, "ANTICIPATION", 1 - (a.nextAt - now) / 0.22, dt, nil, 1.18)
 					elseif moving then
-						FM.actor(a.fm, "RUN", (a.gait or 0) % 1, dt, nil, 1.3)
+						FM.actor(a.fm, "RUN", (a.gait or 0) % 1, dt, nil, 1.3, nil, false, nil, nil,
+							math.clamp(a.moveVel.Magnitude / (if tgt then 16 else 20), 0.18, 1.25))
 					else
 						FM.actor(a.fm, "IDLE", (now / 2.4 + a.slot * 0.3) % 1, dt, nil, 1.15)
 					end

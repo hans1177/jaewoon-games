@@ -94,7 +94,7 @@ function FM.scale(canon, gain: number)
 end
 
 -- 사람형 적·동료: 상태(IDLE/RUN/ANTICIPATION/ATTACK/RECOVERY/HIT)와 위상(0~1)으로 자세를 만든다.
-function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?, rootRot: CFrame?, retreat: boolean?, skill: string?, weaponMotion: string?, moveEffort: number?)
+function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?, rootRot: CFrame?, retreat: boolean?, skill: string?, weaponMotion: string?, moveEffort: number?, strafe: number?)
 	-- [상태 전이] 이전 프레임의 실제 관절 자세를 보존해 급작스러운 팔·다리 교체를 방지한다.
 	if h.lastActorState and h.lastActorState ~= state then
 		h.transitionPose = table.clone(h.canon)
@@ -120,6 +120,12 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	-- [공통 R15 모션] 체형·성격에 따라 관절의 무게중심과 보행·시선을 조절한다.
 	local style = h.model:GetAttribute("MotionStyle") or "civilian"
 	local persona = h.model:GetAttribute("MotionPersonality") or 1
+	-- [지면 접지] 실제 이동속도를 누적해 출발 시 보폭이 커지고 정지 시 발이 자연스럽게 모이도록 한다.
+	-- 루트 이동은 FieldScene 원래 AI가 소유하며 여기서는 관절 자세만 변경한다.
+	local targetEffort = if state == "RUN" then math.clamp(moveEffort or 1, 0, 1.25) else 0
+	local oldEffort = h.groundEffort or targetEffort
+	h.groundEffort = oldEffort + (targetEffort - oldEffort)
+		* (1 - math.exp(-(if targetEffort > oldEffort then 8 else 12) * math.clamp(dt, 0, 0.1)))
 	-- [몸 방향] 회전이 먼저 끝나도 고개→상체→발의 미세 반작용이 남아 급회전 느낌을 줄인다.
 	local facing = h.model:GetPivot().LookVector
 	local previous = h.lastFacing
@@ -143,23 +149,34 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		bend("ThighR", (0.075 + shift * 0.028) * stance, 0, 0.032 * shift)
 		bend("UpperArmL", (-0.13 - 0.025 * breathe) * stance, 0, -0.035)
 		bend("UpperArmR", (-0.13 + 0.025 * breathe) * stance, 0, 0.035)
+		-- 달리다가 멈출 때 마지막 반 걸음에 체중을 싣고 뒤꿈치를 내린다.
+		local settle = math.clamp(h.groundEffort or 0, 0, 1)
+		bend("ShinL", -0.11 * settle, 0, 0)
+		bend("ShinR", -0.11 * settle, 0, 0)
+		bend("FootL", 0.16 * settle, 0, -0.035 * shift)
+		bend("FootR", 0.16 * settle, 0, 0.035 * shift)
 	elseif state == "RUN" then
-		-- [발 디딤 보정] 실제 이동 거리와 위상에 따른 골반·무릎·발목 순서. 발이 아닌 몸통만 움직이는 스케이팅 금지.
+		-- [관절 보행] 이동 거리 → 발 디딤 위상, 실제 속도 → 보폭 크기. 후퇴는 발 순서를 반전한다.
 		local stride = if style == "heavy" then 0.78 elseif style == "nimble" then 1.08 elseif style == "scholar" then 0.86 else 1
 		local effort = math.clamp(moveEffort or 1, 0.18, 1.25)
-		local plant = math.sin(phase * math.pi * 2)
+		effort = math.clamp((h.groundEffort or effort), 0.18, 1.25)
+		local plant = math.sin(phase * math.pi * 2) * (if retreat then -1 else 1)
+		local heel = math.cos(phase * math.pi * 2)
 		local liftL, liftR = math.max(0, -plant), math.max(0, plant)
-		bend("Chest", -0.11 * effort, -plant * 0.12 * effort, plant * 0.055 * effort)
-		bend("Spine", -0.055 * effort, plant * 0.095 * effort, -plant * 0.03)
-		bend("Head", 0.06 * effort, plant * 0.035, 0)
-		bend("ThighL", plant * 0.64 * stride * effort, 0, -0.035)
-		bend("ThighR", -plant * 0.64 * stride * effort, 0, 0.035)
+		local side = math.clamp(strafe or 0, -1, 1)
+		local sway = (if style == "heavy" then 0.055 else 0.08) * effort
+		bend("Chest", -0.11 * effort, -plant * 0.11 * effort - side * 0.09, plant * sway + side * 0.07)
+		bend("Spine", -0.05 * effort, plant * 0.085 * effort, -plant * sway * 0.5 - side * 0.06)
+		bend("Head", 0.06 * effort, plant * 0.025 + side * 0.035, -side * 0.025)
+		bend("ThighL", plant * 0.60 * stride * effort, 0, -0.035 - side * 0.12 * effort)
+		bend("ThighR", -plant * 0.60 * stride * effort, 0, 0.035 - side * 0.12 * effort)
 		bend("ShinL", -liftL * 0.52 * stride * effort, 0, 0)
 		bend("ShinR", -liftR * 0.52 * stride * effort, 0, 0)
-		bend("FootL", (-plant * 0.23 + liftL * 0.16) * stride * effort, 0, 0)
-		bend("FootR", (plant * 0.23 + liftR * 0.16) * stride * effort, 0, 0)
-		bend("UpperArmL", -plant * 0.42 * stride * effort, 0, -0.045)
-		bend("UpperArmR", plant * 0.42 * stride * effort, 0, 0.045)
+		-- 체중이 실리는 발은 뒤꿈치부터 구르고, 떠 있는 발은 발끝을 들어 다음 착지를 준비한다.
+		bend("FootL", (-plant * 0.20 + liftL * 0.20 + heel * 0.045) * stride * effort, -side * 0.08, 0)
+		bend("FootR", (plant * 0.20 + liftR * 0.20 - heel * 0.045) * stride * effort, -side * 0.08, 0)
+		bend("UpperArmL", -plant * 0.38 * stride * effort, 0, -0.045 - side * 0.04)
+		bend("UpperArmR", plant * 0.38 * stride * effort, 0, 0.045 - side * 0.04)
 		bend("ForearmL", -0.17 - liftL * 0.25 * effort, 0, 0)
 		bend("ForearmR", -0.17 - liftR * 0.25 * effort, 0, 0)
 	elseif state == "EVADE" then
@@ -175,6 +192,9 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		bend("ThighR", -0.25 * slip, 0, 0.13 * side * slip)
 		bend("ShinL", -0.34 * slip, 0, 0)
 		bend("ShinR", -0.20 * slip, 0, 0)
+		-- 미끄러지듯 측면으로 움직이는 대신 축발 발목을 세우고 회피발을 들어 딛는다.
+		bend("FootL", 0.24 * slip, -0.14 * side * slip, -0.06 * side * slip)
+		bend("FootR", -0.18 * slip, 0.15 * side * slip, 0.08 * side * slip)
 	elseif state == "HIT" then
 		bend("Head", 0.1 * pulse, 0.1 * pulse * (if persona == 1 then -1 else 1), 0)
 	end
@@ -377,13 +397,36 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			FM.sample(weaponCombo, math.clamp((phase - 0.25) / 0.35, 0, 1) * weaponCombo.duration, h.canon)
 		end
 	end
+	-- [실제 타격 발동작] 무기 상체 모션 뒤에도 디딤발은 고정하고 반대쪽 발을 앞으로 딛는다.
+	-- 공격 판정·거리·시간은 전혀 바꾸지 않는다. 서 있는 상태에서 뿌리째 미끄러지는 느낌만 줄인다.
+	if state == "ATTACK" and (role == "grunt" or role == "archer" or role == "shield"
+		or role == "charger" or role == "thrower" or role == "boss") then
+		local release = math.clamp((phase - 0.25) / 0.35, 0, 1)
+		local step = math.sin(release * math.pi)
+		local weight = if role == "shield" or role == "boss" then 0.75 else 1
+		bend("ThighL", (-0.22 + release * 0.28) * weight, 0, -0.04)
+		bend("ThighR", (0.21 - release * 0.14) * weight, 0, 0.04)
+		bend("ShinL", -0.24 * step * weight, 0, 0)
+		bend("FootL", 0.20 * step * weight, 0, 0)
+		bend("FootR", -0.13 * step * weight, 0, 0)
+	elseif state == "RECOVERY" and (role == "grunt" or role == "archer" or role == "shield"
+		or role == "charger" or role == "thrower" or role == "boss") then
+		local land = (1 - math.clamp(phase, 0, 1)) ^ 2
+		bend("ShinL", -0.13 * land, 0, 0)
+		bend("FootL", 0.16 * land, 0, 0)
+		bend("FootR", -0.07 * land, 0, 0)
+	end
 	-- [지연 회전] 공격 중에는 정확한 방향을 방해하지 않으며 이동/대기만 목·허리가 따라간다.
 	if state == "IDLE" or state == "RUN" then
 		local lag = h.turnLag or 0
 		bend("Head", 0, -lag * 0.64, 0)
 		bend("Chest", 0, -lag * 0.28, lag * 0.10)
-		bend("FootL", 0, lag * 0.14, 0)
-		bend("FootR", 0, lag * 0.14, 0)
+		bend("FootL", 0, lag * 0.18, -lag * 0.045)
+		bend("FootR", 0, -lag * 0.12, lag * 0.045)
+		-- 목→가슴→골반→발 방향으로 약한 비틀림이 잔상처럼 따라온다.
+		bend("Spine", 0, -lag * 0.16, 0)
+		bend("ThighL", 0, lag * 0.08, 0)
+		bend("ThighR", 0, -lag * 0.08, 0)
 	end
 	-- 폰 화면에서도 읽히도록 관절 회전량을 키운다 (gain 1 = 원본)
 	if gain and gain ~= 1 then
