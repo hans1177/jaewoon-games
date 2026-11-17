@@ -458,6 +458,65 @@ function FieldScene.start(opts)
 	folder:SetAttribute("FieldDifficultyGrade", math.clamp(math.floor(tonumber(opts.danger) or 1), 1, 5))
 	folder:SetAttribute("FieldRegion", biome.region or "generic")
 	folder:SetAttribute("FieldEncounterPattern", biome.encounter or biome.kind)
+	local questName = opts.name or ""
+	local questTerrain = if string.find(questName, "화산", 1, true) or string.find(questName, "용암", 1, true)
+			or string.find(questName, "분화구", 1, true) then "volcanic"
+		elseif string.find(questName, "빙하", 1, true) or string.find(questName, "설원", 1, true)
+			or string.find(questName, "빙설", 1, true) then "glacier"
+		elseif string.find(questName, "늪", 1, true) or string.find(questName, "습지", 1, true)
+			or string.find(questName, "맹그로브", 1, true) then "swamp"
+		elseif string.find(questName, "정글", 1, true) or string.find(questName, "밀림", 1, true) then "jungle"
+		elseif string.find(questName, "광산", 1, true) or string.find(questName, "탄광", 1, true) or string.find(questName, "채석", 1, true) then "mine"
+		elseif string.find(questName, "폭포", 1, true) or string.find(questName, "계곡", 1, true)
+			or string.find(questName, "절벽", 1, true) or string.find(questName, "고지", 1, true)
+			or string.find(questName, "산맥", 1, true) then "highland"
+		elseif string.find(questName, "유적", 1, true) or string.find(questName, "신전", 1, true)
+			or string.find(questName, "열석", 1, true) or string.find(questName, "봉분", 1, true)
+			or string.find(questName, "석상", 1, true) then "ruins"
+		elseif string.find(questName, "성채", 1, true) or string.find(questName, "요새", 1, true)
+			or string.find(questName, "성벽", 1, true) then "fort"
+		elseif string.find(questName, "농장", 1, true) or string.find(questName, "과수원", 1, true)
+			or string.find(questName, "들판", 1, true) then "farm"
+		elseif string.find(questName, "호수", 1, true) or string.find(questName, "강", 1, true)
+			or string.find(questName, "습지", 1, true) then "lake"
+		elseif string.find(questName, "사막", 1, true) or string.find(questName, "모래", 1, true)
+			or string.find(questName, "오아시스", 1, true) then "desert"
+		elseif string.find(questName, "정글", 1, true) or string.find(questName, "밀림", 1, true)
+			or string.find(questName, "숲", 1, true) then "forest"
+		elseif string.find(questName, "해변", 1, true) or string.find(questName, "난파", 1, true)
+			or string.find(questName, "항만", 1, true) or string.find(questName, "포구", 1, true) then "coast"
+		elseif biome.kind == "forest" then "forest"
+		elseif biome.kind == "coast" then "coast"
+		elseif biome.kind == "mine" then "mine"
+		elseif biome.mat == Enum.Material.Sand then "desert"
+		elseif biome.encounter == "ruins" then "ruins"
+		elseif biome.encounter == "highland" then "highland"
+		else "plains"
+	-- [특수 기후의 실제 바닥 재질] 색 보정만이 아니라 눈·진흙·화산암 지형을 구분한다.
+	if questTerrain == "glacier" then
+		winterScene = true
+		seasonName = "빙설기"
+		biome.mat = Enum.Material.Snow
+		biome.ground = Color3.fromRGB(214, 227, 235)
+		biome.fog = Color3.fromRGB(184, 205, 226)
+		biome.fogEnd = math.min(biome.fogEnd, 470)
+	elseif questTerrain == "volcanic" then
+		biome.mat = Enum.Material.Slate
+		biome.ground = Color3.fromRGB(77, 72, 75)
+		biome.fog = Color3.fromRGB(122, 109, 112)
+		biome.fogEnd = math.min(biome.fogEnd, 520)
+	elseif questTerrain == "swamp" then
+		biome.mat = Enum.Material.Mud
+		biome.ground = biome.ground:Lerp(Color3.fromRGB(65, 87, 76), 0.72)
+		biome.fog = Color3.fromRGB(137, 167, 154)
+		biome.fogEnd = math.min(biome.fogEnd, 390)
+	elseif questTerrain == "jungle" then
+		biome.mat = Enum.Material.Grass
+		biome.ground = biome.ground:Lerp(Color3.fromRGB(49, 103, 59), 0.55)
+		biome.fog = biome.fog:Lerp(Color3.fromRGB(123, 173, 146), 0.45)
+	end
+	folder:SetAttribute("FieldQuestTerrainTheme", questTerrain)
+	folder:SetAttribute("FieldSeasonLabel", seasonName)
 	-- 지역(바이옴)과 위험도에 따라 맵 크기가 다르다: 위험한 곳일수록 넓다
 	local SIZE = math.floor(biome.size * (1 + math.min(opts.danger or 1, 10) * 0.03))
 	local AREA = math.min((SIZE / 200) ^ 2, 2.5)
@@ -503,20 +562,30 @@ function FieldScene.start(opts)
 	do
 		local terrain = workspace.Terrain
 		local mat = biome.mat
-		if mat ~= Enum.Material.Sand and mat ~= Enum.Material.Slate and mat ~= Enum.Material.Mud then
-			mat = Enum.Material.Grass
-		end
+		-- [지형 윤곽] 계곡은 높은 능선, 해안은 낮은 언덕, 설원은 빙설 능선, 늪은 낮은 둔덕.
+		-- 플레이 공간 바깥에서만 조성하며 기존 지면·전투 경로와 충돌하지 않는다.
+		if questTerrain == "volcanic" or questTerrain == "mine" then mat = Enum.Material.Slate
+		elseif questTerrain == "glacier" then mat = Enum.Material.Snow
+		elseif questTerrain == "swamp" then mat = Enum.Material.Mud
+		elseif mat ~= Enum.Material.Sand and mat ~= Enum.Material.Slate and mat ~= Enum.Material.Mud then mat = Enum.Material.Grass end
 		local hills = {}
 		local hillRng = Random.new((opts.seed or 7) * 13 + 5)
-		-- [모바일 메모리] 보이지 않는 원거리 지형 갱신 횟수를 줄이고 동일한 둘레를 유지한다.
 		local hillCount = if visualMobile then 16 else 28
 		for i = 0, hillCount - 1 do
 			local ang = i / hillCount * math.pi * 2 + hillRng:NextNumber(-0.08, 0.08)
-			local dist = half + hillRng:NextNumber(34, 54)
-			local r = hillRng:NextNumber(22, 38)
-			local c = ORIGIN + Vector3.new(math.cos(ang) * dist, -r * hillRng:NextNumber(0.35, 0.6), math.sin(ang) * dist)
-			terrain:FillBall(c, r, mat)
-			table.insert(hills, { c, r })
+			local radius = if questTerrain == "highland" or questTerrain == "volcanic" then hillRng:NextNumber(40, 60)
+				elseif questTerrain == "mine" or questTerrain == "glacier" then hillRng:NextNumber(32, 48)
+				elseif questTerrain == "forest" or questTerrain == "jungle" then hillRng:NextNumber(27, 41)
+				elseif questTerrain == "farm" or questTerrain == "swamp" then hillRng:NextNumber(13, 24)
+				elseif questTerrain == "coast" or questTerrain == "lake" then hillRng:NextNumber(15, 27)
+				else hillRng:NextNumber(20, 35)
+			local dist = half + radius + hillRng:NextNumber(8, 23)
+			local rise = if questTerrain == "highland" or questTerrain == "volcanic" then 0.27
+				elseif questTerrain == "mine" or questTerrain == "glacier" then 0.32
+				elseif questTerrain == "farm" or questTerrain == "swamp" then 0.64 else 0.48
+			local center = ORIGIN + Vector3.new(math.cos(ang) * dist, -radius * rise, math.sin(ang) * dist)
+			terrain:FillBall(center, radius, mat)
+			table.insert(hills, { center, radius })
 		end
 		folder.Destroying:Connect(function()
 			for _, h in hills do
@@ -592,34 +661,7 @@ function FieldScene.start(opts)
 	-- 숲길·협곡·폐광·해안·유적·사막·농경지·호숫가의 실루엣을 구별한다.
 	-- 전투/조사/시작 위치를 건드리지 않고 기존 승인 메시만 필드 외곽과 측면에 배치한다.
 	do
-	local questName = opts.name or ""
-	local questTerrain = if string.find(questName, "광산", 1, true) or string.find(questName, "탄광", 1, true) or string.find(questName, "채석", 1, true) then "mine"
-		elseif string.find(questName, "폭포", 1, true) or string.find(questName, "계곡", 1, true)
-			or string.find(questName, "절벽", 1, true) or string.find(questName, "고지", 1, true)
-			or string.find(questName, "산맥", 1, true) then "highland"
-		elseif string.find(questName, "유적", 1, true) or string.find(questName, "신전", 1, true)
-			or string.find(questName, "열석", 1, true) or string.find(questName, "봉분", 1, true)
-			or string.find(questName, "석상", 1, true) then "ruins"
-		elseif string.find(questName, "성채", 1, true) or string.find(questName, "요새", 1, true)
-			or string.find(questName, "성벽", 1, true) then "fort"
-		elseif string.find(questName, "농장", 1, true) or string.find(questName, "과수원", 1, true)
-			or string.find(questName, "들판", 1, true) then "farm"
-		elseif string.find(questName, "호수", 1, true) or string.find(questName, "강", 1, true)
-			or string.find(questName, "습지", 1, true) then "lake"
-		elseif string.find(questName, "사막", 1, true) or string.find(questName, "모래", 1, true)
-			or string.find(questName, "오아시스", 1, true) then "desert"
-		elseif string.find(questName, "정글", 1, true) or string.find(questName, "밀림", 1, true)
-			or string.find(questName, "숲", 1, true) then "forest"
-		elseif string.find(questName, "해변", 1, true) or string.find(questName, "난파", 1, true)
-			or string.find(questName, "항만", 1, true) or string.find(questName, "포구", 1, true) then "coast"
-		elseif biome.kind == "forest" then "forest"
-		elseif biome.kind == "coast" then "coast"
-		elseif biome.kind == "mine" then "mine"
-		elseif biome.mat == Enum.Material.Sand then "desert"
-		elseif biome.encounter == "ruins" then "ruins"
-		elseif biome.encounter == "highland" then "highland"
-		else "plains"
-	folder:SetAttribute("FieldQuestTerrainTheme", questTerrain)
+
 	local mirror = if (math.floor(tonumber(opts.seed) or 7) % 2 == 0) then 1 else -1
 
 	-- [실물 배경 통합 배치] 나무·바위·문화권 소품·퀘스트 건축물 모두 기존 승인된 원본으로만 생성한다.
@@ -818,6 +860,32 @@ function FieldScene.start(opts)
 			{"Terrain","river-stone-bank",12,-0.72,-0.12,true,0}, {"Terrain","forest-bush-detailed",9,0.60,-0.42,false,0},
 			{"Terrain","tree-oak",18,0.77,-0.68,true,0}, {"Terrain","campfire-logs",5,0.56,-0.75,false,0},
 		},
+		jungle = {
+			{"Terrain","cliff-waterfall-rock",36,-0.80,-0.81,true,0}, {"Terrain","land-waterfall",25,-0.77,-0.74,false,0},
+			{"Terrain","tropical-palm-tall",21,-0.61,-0.48,true,0}, {"Terrain","tropical-palm-tall",19,0.62,-0.43,true,0},
+			{"Terrain","east-bamboo-grove",15,-0.74,-0.12,false,0}, {"Terrain","east-bamboo-grove",13,0.75,-0.14,false,0},
+			{"Terrain","bridge-wood",16,-0.48,-0.55,true,32}, {"Terrain","river-stone-bank",13,-0.70,-0.37,false,0},
+			{"Terrain","forest-bush-detailed",9,0.54,-0.16,false,0},
+		},
+		swamp = {
+			{"Terrain","ground-riverbend",22,-0.68,-0.75,false,0}, {"Terrain","ground-riverstraight",21,-0.60,-0.46,false,70},
+			{"Terrain","bridge-wood",17,-0.58,-0.28,true,90}, {"Town","tree-crooked",18,-0.77,-0.62,true,0},
+			{"Terrain","forest-bush-detailed",11,0.59,-0.72,false,0}, {"Terrain","river-stone-bank",15,0.76,-0.43,false,0},
+			{"Terrain","tree-oak",20,0.80,-0.78,true,0}, {"Terrain","ground-rivercross",18,-0.71,-0.12,false,0},
+			{"Terrain","forest-bush-detailed",7,0.58,-0.15,false,0},
+		},
+		glacier = {
+			{"Terrain","cliff-rock",38,-0.79,-0.79,true,0}, {"Terrain","cliff-steps-rock",29,-0.81,-0.46,true,20},
+			{"Terrain","cliff-rock",41,0.82,-0.81,true,0}, {"Terrain","cliff-rock",30,0.83,-0.40,true,30},
+			{"Terrain","gate-rock",19,-0.57,-0.55,true,0}, {"Terrain","north-pine-fall",18,0.66,-0.22,false,0},
+			{"Terrain","north-pine-fall",15,-0.67,-0.13,false,0}, {"Terrain","river-stone-bank",14,0.73,-0.60,false,0},
+		},
+		volcanic = {
+			{"Terrain","cliff-cave-rock",44,0.75,-0.84,true,0}, {"Terrain","cliff-rock",38,-0.78,-0.82,true,0},
+			{"Terrain","cliff-steps-rock",30,-0.83,-0.48,true,35}, {"Terrain","cliff-rock",33,0.85,-0.43,true,0},
+			{"Terrain","debris",16,0.68,-0.27,false,0}, {"Terrain","cliff-rock",26,-0.70,-0.18,true,20},
+			{"Terrain","campfire-stones",7,0.54,-0.56,false,0}, {"Terrain","Rock_2",11,-0.61,-0.61,true,0},
+		},
 		plains = {
 			{"Terrain","ground-pathstraight",24,-0.45,-0.60,false,0}, {"Terrain","mystic-stone-arch",19,0.69,-0.80,true,0},
 			{"Terrain","altar-stone",11,0.69,-0.53,true,0}, {"Terrain","campfire-stones",5,-0.62,-0.76,false,0},
@@ -831,7 +899,8 @@ function FieldScene.start(opts)
 		coast = { 7, 8, 9 }, forest = { 4, 8, 9 }, highland = { 8, 9, 10 },
 		mine = { 7, 9, 10 }, ruins = { 5, 7, 9 }, fort = { 7, 8 },
 		desert = { 5, 6, 9 }, farm = { 2, 3, 7 }, lake = { 3, 7, 8 },
-		plains = { 4, 6, 5 },
+		plains = { 4, 6, 5 }, jungle = { 5, 8, 9 }, swamp = { 3, 6, 8 },
+		glacier = { 5, 6, 8 }, volcanic = { 5, 7, 8 },
 	}
 	local featureList = landforms[questTerrain] or landforms.plains
 	for index, entry in featureList do
@@ -839,6 +908,43 @@ function FieldScene.start(opts)
 			entry.landmark = true
 			entry.survey = table.find(surveyIndices[questTerrain] or surveyIndices.plains, index) ~= nil
 			stageFeature(entry)
+		end
+	end
+	-- [문화권 전용 윤곽] 공통 지형 위에 같은 소품을 반복하지 않고 국가별 대표 실물 건축·식생 군집을 놓는다.
+	-- 위치는 맵 가장자리로 제한해 기존 퀘스트 목표·전투·시작 동선을 유지한다.
+	local regionalSilhouettes = {
+		iberia = { {"Terrain","ruins-wall-arched",23,-0.73,-0.59}, {"Terrain","column",15,-0.62,-0.42}, {"Terrain","tree-oak",17,0.71,-0.59} },
+		italy = { {"Terrain","greek-ruins-a",28,0.72,-0.75}, {"Terrain","greek-column",20,-0.62,-0.61}, {"Terrain","greek-statue",14,0.63,-0.39} },
+		france = { {"Town","windmill",30,0.73,-0.79}, {"Terrain","bridge-stone",19,-0.63,-0.47}, {"Terrain","forest-flower-purple",6,-0.65,-0.20} },
+		britain = { {"Castle","wall-narrow-gate",27,-0.72,-0.76}, {"Terrain","haunted-iron-gate",16,0.71,-0.60}, {"Terrain","haunted-pine-crooked",20,-0.67,-0.36} },
+		hanse = { {"Town","windmill",31,0.77,-0.76}, {"Naval","structure-platform-dock",24,-0.69,-0.72}, {"Terrain","north-pine-fall",19,-0.73,-0.34} },
+		nordic = { {"Terrain","cliff-rock",39,-0.78,-0.77}, {"Terrain","gate-rock",22,0.73,-0.64}, {"Terrain","north-pine-fall",20,-0.66,-0.24}, {"Terrain","campfire-logs",6,0.57,-0.30} },
+		brick = { {"Town","windmill",31,0.73,-0.81}, {"Terrain","ground-riverbend",25,-0.64,-0.61}, {"Town","house",19,-0.71,-0.32} },
+		stone = { {"Castle","tower-hexagon-base",28,-0.73,-0.73}, {"Terrain","bridge-stone",18,0.63,-0.48}, {"Terrain","north-pine-fall",20,-0.65,-0.28} },
+		med = { {"Terrain","greek-amphitheater",34,-0.76,-0.79}, {"Terrain","greek-column",18,0.71,-0.58}, {"Terrain","coast-grass-patch",8,0.62,-0.28} },
+		ottoman = { {"Town","temple-stone",36,0.74,-0.78}, {"Terrain","tent-detailedopen",15,-0.66,-0.56}, {"Terrain","egypt-column",17,0.70,-0.32} },
+		desert = { {"Terrain","mystic-sand-dune",34,-0.79,-0.81}, {"Terrain","egypt-temple-arch-a",28,0.73,-0.73}, {"Terrain","egypt-obelisk",25,0.69,-0.40} },
+		swahili = { {"Terrain","tent-detailedopen",17,0.68,-0.68}, {"Terrain","canoe",13,-0.72,-0.70}, {"Terrain","tropical-palm-tall",21,-0.66,-0.30} },
+		malabar = { {"Terrain","tropical-palm-tall",24,-0.75,-0.77}, {"Terrain","east-bamboo-grove",16,0.74,-0.61}, {"Terrain","ground-riverbend",22,-0.64,-0.35} },
+		korea = { {"Town","temple-stone",33,0.72,-0.77}, {"Terrain","bridge-stone",20,-0.65,-0.51}, {"Terrain","east-bamboo-grove",18,0.68,-0.29} },
+		japan = { {"Town","temple-tower",36,-0.74,-0.80}, {"Terrain","bridge-wood",20,0.66,-0.62}, {"Terrain","east-bamboo-grove",18,-0.69,-0.37}, {"Terrain","forest-flower-purple",7,0.63,-0.25} },
+		china = { {"Town","temple-tower",40,0.75,-0.82}, {"Terrain","bridge-stone",21,-0.64,-0.56}, {"Terrain","cliff-rock",32,-0.80,-0.83}, {"Terrain","east-bamboo-grove",15,0.66,-0.30} },
+		seasia = { {"Terrain","cliff-waterfall-rock",38,-0.79,-0.81}, {"Terrain","tropical-palm-tall",24,0.76,-0.68}, {"Terrain","east-bamboo-grove",18,-0.66,-0.29} },
+		tropic = { {"Terrain","tropical-palm-tall",24,-0.73,-0.75}, {"Naval","boat-fishing-small",15,0.70,-0.73}, {"Terrain","canoe",12,0.66,-0.39} },
+		colonial = { {"Town","windmill",34,0.75,-0.82}, {"Terrain","crops-cornstagec",15,-0.70,-0.59}, {"Town","house",21,-0.66,-0.32} },
+		creole = { {"Terrain","crop-melon",12,-0.71,-0.69}, {"Terrain","tropical-palm-short",17,0.71,-0.59}, {"Terrain","canoe",13,0.63,-0.31} },
+		pacific = { {"Naval","structure-platform-dock",29,-0.71,-0.76}, {"Terrain","canoe",14,0.72,-0.68}, {"Terrain","tropical-palm-tall",24,0.69,-0.29} },
+		wafrica = { {"Terrain","tent-detailedopen",18,-0.72,-0.68}, {"Terrain","tropical-palm-tall",23,0.71,-0.75}, {"Terrain","canoe",14,0.66,-0.39} },
+	}
+	local regionalFeatures = regionalSilhouettes[region]
+	if regionalFeatures then
+		for index, feature in regionalFeatures do
+			if not visualMobile or index <= 3 then
+				local entry = { feature[1], feature[2], feature[3], nil, nil, false }
+				entry.position = ORIGIN + Vector3.new(feature[4] * half * mirror, 0, feature[5] * half)
+				entry.landmark = true
+				stageFeature(entry)
+			end
 		end
 	end
 	folder:SetAttribute("FieldTerrainFeatureCount", built)
@@ -860,7 +966,11 @@ function FieldScene.start(opts)
 
 	-- [지역 원근·계절 디테일] 큰 랜드마크 앞에 잎·풀·자갈·화단 군집을 층으로 배치해 평면감을 줄인다.
 	-- 지역마다 실제 승인된 기존 Terrain 모델만 사용한다. 새 물체 합성이나 지형 장벽은 만들지 않는다.
-	local detailAssets = if questTerrain == "coast" then { "coast-grass-patch", "Grass_Small", "river-stone-bank" }
+	local detailAssets = if questTerrain == "jungle" then { "forest-bush-detailed", "east-bamboo-grove", "tropical-palm-short" }
+		elseif questTerrain == "swamp" then { "forest-bush-detailed", "river-stone-bank", "ground-riverbend" }
+		elseif questTerrain == "glacier" then { "north-pine-fall", "Rock_2", "river-stone-bank" }
+		elseif questTerrain == "volcanic" then { "debris", "Rock_2", "cliff-rock" }
+		elseif questTerrain == "coast" then { "coast-grass-patch", "Grass_Small", "river-stone-bank" }
 		elseif questTerrain == "mine" then { "debris", "Rock_2", "log-stack" }
 		elseif questTerrain == "ruins" or questTerrain == "fort" then { "forest-bush-detailed", "river-stone-bank", "forest-flower-purple" }
 		elseif questTerrain == "highland" then { "river-stone-bank", "Rock_2", "north-pine-fall" }
@@ -869,7 +979,7 @@ function FieldScene.start(opts)
 		elseif questTerrain == "desert" then { "arid-cactus-short", "coast-grass-patch", "Grass_Small" }
 		elseif questTerrain == "forest" then { "forest-bush-detailed", "forest-flower-purple", "Grass_Small" }
 		else { "Grass_Small", "forest-flower-yellow", "river-stone-bank" }
-	if tropical then detailAssets = { "forest-bush-detailed", "Grass_Small", "east-bamboo-grove" }
+	if tropical and questTerrain ~= "swamp" and questTerrain ~= "volcanic" then detailAssets = { "forest-bush-detailed", "Grass_Small", "east-bamboo-grove" }
 	elseif winterScene then detailAssets = { "north-pine-fall", "river-stone-bank", "Rock_2" }
 	elseif season == "가을" and (questTerrain == "forest" or questTerrain == "plains") then
 		detailAssets = { "forest-bush-detailed", "forest-flower-yellow", "coast-grass-patch" }
@@ -1332,6 +1442,8 @@ function FieldScene.start(opts)
 		end
 		gui:Destroy()
 		folder:Destroy()
+		-- [현장 음향 복구] 항구·전투 화면에 탐험 풍향/폭풍 루프가 남지 않도록 원래 음향 관리자로 반환한다.
+		pcall(function() Sfx.ambient(nil) end)
 		if opts.onFinish then
 			local ok, err = pcall(opts.onFinish, result, observedCardId, earnedPractice, fieldStreakResult)
 			if not ok then warn("[MareEssentia] 탐험 복귀 오류", err) end
@@ -1841,7 +1953,7 @@ function FieldScene.start(opts)
 	do
 		local lighting = game:GetService("Lighting")
 		local climateRng = Random.new((opts.seed or 7) * 137 + 19)
-		local snowy = winterScene or (region == "nordic" and season ~= "여름")
+		local snowy = winterScene or questTerrain == "glacier" or (region == "nordic" and season ~= "여름")
 		local dry = arid or biome.kind == "mine"
 		-- [기후별 기상] 북방 설기·온대 봄비·열대 우기·사막 건기를 구별한다.
 		local weatherOptions = if snowy then { "맑음", "흐림", "눈", "옅은 안개" }
@@ -1883,10 +1995,15 @@ function FieldScene.start(opts)
 		precip.Rate = 0
 		precip.Parent = precipAnchor
 		-- [계절의 숨결] 기존 비·눈 발원점을 재사용해 봄 꽃가루·가을 낙엽·열대 수증기·사막 먼지를 띄운다.
-		local driftType = if arid then "모래바람" elseif season == "가을" and not tropical then "낙엽"
+		local driftType = if questTerrain == "volcanic" then "화산재"
+			elseif questTerrain == "swamp" then "수면 안개"
+			elseif questTerrain == "glacier" then "설풍"
+			elseif arid then "모래바람" elseif season == "가을" and not tropical then "낙엽"
 			elseif season == "봄" and not tropical then "꽃가루" elseif monsoon then "수증기"
 			elseif snowy then "설풍" else "산들바람"
-		local driftColor = if driftType == "모래바람" then Color3.fromRGB(209, 180, 124)
+		local driftColor = if driftType == "화산재" then Color3.fromRGB(100, 102, 106)
+			elseif driftType == "수면 안개" then Color3.fromRGB(157, 191, 183)
+			elseif driftType == "모래바람" then Color3.fromRGB(209, 180, 124)
 			elseif driftType == "낙엽" then Color3.fromRGB(198, 118, 58)
 			elseif driftType == "꽃가루" then Color3.fromRGB(234, 207, 129)
 			elseif driftType == "설풍" then Color3.fromRGB(225, 236, 244)
@@ -1909,6 +2026,9 @@ function FieldScene.start(opts)
 		drift.Parent = precipAnchor
 		folder:SetAttribute("FieldSeasonalDrift", driftType)
 		folder:SetAttribute("FieldWeather", weather)
+		-- [현장 음향] 등록·승인된 기존 음원만 사용한다. 날씨/계절/지형 변화에서만 부드럽게 교차 재생한다.
+		local soundscapeKey = ""
+		local nextDetailSoundAt = clockStart + climateRng:NextNumber(7, 14)
 		local timeElapsed = 0
 		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
 			if finished or not folder.Parent then return end
@@ -1933,6 +2053,46 @@ function FieldScene.start(opts)
 			local sun = math.clamp(math.sin((clock - 6) * math.pi / 12) * 1.15 + 0.16, 0, 1)
 			local phase = if clock < 5 or clock >= 20 then "밤"
 				elseif clock < 8 then "새벽" elseif clock < 17 then "낮" else "황혼"
+			local newSoundscape = questTerrain .. ":" .. weather .. ":" .. seasonName .. ":" .. phase
+			if newSoundscape ~= soundscapeKey then
+				soundscapeKey = newSoundscape
+				local rain = weather == "비" or weather == "소나기"
+				local water = questTerrain == "coast" or questTerrain == "lake" or questTerrain == "swamp"
+					or (biome.kind == "coast" and questTerrain ~= "mine" and questTerrain ~= "desert")
+				local layers = if rain then { "sfx_wind", "sfx_ambience_storm" }
+					elseif water then { "sfx_waves", "sfx_wind" } else { "sfx_wind" }
+				local gain = if rain then (if weather == "소나기" then 0.48 else 0.31)
+					elseif weather == "옅은 안개" then 0.16
+					elseif seasonName == "겨울" or seasonName == "건조한 계절" then 0.36
+					elseif phase == "밤" then 0.20 else 0.27
+				pcall(function() Sfx.ambient(layers, gain) end)
+				folder:SetAttribute("FieldSoundscape", newSoundscape)
+			end
+			-- 자연의 작은 소리는 전투 중엔 건너뛴다. 반복 피드백·오디오 폭증을 방지한다.
+			if now >= nextDetailSoundAt then
+				nextDetailSoundAt = now + climateRng:NextNumber(if visualMobile then 16 else 12, 27)
+				if now - lastCombatAt > 4 then
+					local cue, vol, pitch = nil, 0.16, climateRng:NextNumber(0.91, 1.1)
+					if weather == "비" or weather == "소나기" then
+						cue, vol = "sfx_splash", 0.13
+					elseif questTerrain == "coast" or biome.kind == "coast" then
+						cue, vol = "sfx_gull", if phase == "밤" then 0.08 else 0.24
+					elseif questTerrain == "mine" or questTerrain == "swamp" or questTerrain == "lake" then
+						cue, vol = "sfx_splash", 0.11
+					elseif questTerrain == "forest" or questTerrain == "jungle" then
+						cue, vol = if season == "겨울" then "sfx_creak" else "sfx_sail_fabric", 0.13
+					elseif questTerrain == "desert" or arid then
+						cue, vol = "sfx_sail_fabric", 0.14
+					elseif questTerrain == "fort" or region == "brick" or region == "britain" then
+						cue, vol = "sfx_bell", 0.12
+					elseif questTerrain == "volcanic" or questTerrain == "glacier" or season == "겨울" then
+						cue, vol = "sfx_creak", 0.10
+					elseif season == "가을" or season == "봄" then
+						cue, vol = "sfx_sail_fabric", 0.11
+					end
+					if cue then sfx(cue, vol, pitch) end
+				end
+			end
 			local damp = if weather == "옅은 안개" then 0.48 elseif weather == "소나기" then 0.71
 				elseif weather == "눈" or weather == "비" then 0.80 else 1
 			lighting.ClockTime = clock
@@ -1957,6 +2117,8 @@ function FieldScene.start(opts)
 			local windStrength = if weather == "소나기" then 2.2 elseif weather == "눈" then 1.7 else 1
 			drift.Acceleration = Vector3.new((5.5 + gust) * windStrength, if driftType == "낙엽" then -3.0 else 0.8, 1.9 * windStrength)
 			drift.Rate = (if visualMobile then 3 else 8) * (if weather == "소나기" then 0.45 else 1)
+				* (if driftType == "화산재" or driftType == "모래바람" then 1.5
+					elseif driftType == "수면 안개" and phase == "밤" then 1.35 else 1)
 			timeLabel.Text = string.format("%s %s %02d:%02d · %s", seasonName, phase, math.floor(clock), math.floor((clock % 1) * 60), weather)
 			folder:SetAttribute("FieldTimePhase", phase)
 			folder:SetAttribute("FieldClockTime", clock)
