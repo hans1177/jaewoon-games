@@ -1737,11 +1737,11 @@ function FieldScene.start(opts)
 			individualDef.range = math.min(individualDef.range, weapon.range)
 		end
 		if weapon.family == "bow" then individualDef.range = math.min(individualDef.range, weapon.range) end
-		-- [탐험 난도] 필드 몬스터의 최대 체력만 높여 한두 번의 평타로 끝나지 않게 한다.
-		-- 공용 ActionCombat 적 정의, 공격력·사거리·공격주기·드롭·보상·저장/퀘스트 진행은 불변.
-		-- 졸개·사수 1.75배, 방패·돌격 정예 1.8배, 두목 1.7배 (기본 40→70/28→49/70→126/50→90/300→510).
+		-- [전투 지속력] 장면 전용 최대 체력만 증가. 공용 ActionCombat/공격력/보상/드롭/저장은 불변.
+		-- 일반 2.35배(검병 94·궁수 66), 방패·돌격 2.55배(179·128), 두목 2.75배(825).
+		-- 적이 강타 후 기상·막기·회피 동작을 충분히 보여 주도록 한다.
 		individualDef.hp = math.floor(individualDef.hp *
-			(if isBoss then 1.7 elseif ac.kind == "shield" or ac.kind == "charger" then 1.8 else 1.75) + 0.5)
+			(if isBoss then 2.75 elseif ac.kind == "shield" or ac.kind == "charger" then 2.55 else 2.35) + 0.5)
 		ac.def = individualDef
 		ac.hp = individualDef.hp
 		-- [몹 역할별 실루엣] 기존 전투 능력은 유지하고 R15 비율·걸음 성격만 다르게 설정한다.
@@ -1831,7 +1831,7 @@ function FieldScene.start(opts)
 		tag.TextSize = if isBoss then 14 else 12
 		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil
-		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber() })
+		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0 })
 	end
 
 	end
@@ -3995,26 +3995,34 @@ function FieldScene.start(opts)
 	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?, ownerAttack: boolean?, actionSeq: number?, attackerWeapon, basicAttack: boolean?)
 		-- [동료 무기음] 실제 공격자의 장비를 따라가고 피해·보상은 기존 공식 그대로 둔다.
 		local impactWeapon = attackerWeapon or wpn
-		-- [정예 반응 회피] 공격 중·경직 중에는 발동하지 않으며, 7초 제한으로 무한 회피를 방지한다.
+		-- [병종별 실전 방어] 궁수·투척병은 뒤로 미끄러지고 검병은 측면 회피,
+		-- 두목은 드물게 측면 축발로 빠진다. 방패병은 회피 대신 정면 방패 사용.
+		-- 강타/기절은 확실히 명중하게 회피를 금지하고 각 적마다 재사용 제한을 둔다.
 		local evadeAt = os.clock()
-		if not quiet and e.elite and not e.ac.dead and (e.ac.state == "chase" or e.ac.state == "recover")
-			and evadeAt - (e.lastDodge or -100) >= 7 and math.random() < (if e.boss then 0.12 else 0.22) then
+		local dodgeRole = e.ac.kind == "archer" or e.ac.kind == "grunt" or e.boss
+		local dodgeChance = if e.boss then 0.10 elseif e.ac.kind == "archer" then 0.22 else 0.14
+		local dodgeGap = if e.ac.kind == "archer" then 5.2 else 7
+		if dodgeRole and not stagger and not quiet and not e.ac.dead
+			and (e.ac.state == "chase" or e.ac.state == "recover")
+			and evadeAt - (e.lastDodge or -100) >= dodgeGap and math.random() < dodgeChance then
 			local away = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
 			if away.Magnitude > 0.1 then
 				local side = Vector3.new(-away.Unit.Z, 0, away.Unit.X) * (if (e.motionPhase or 0) < 0.5 then 1 else -1)
-				local target = e.root.Position + side * 4.2
+				local dodgeDir = if e.ac.kind == "archer" then (away.Unit * 0.82 + side * 0.18).Unit else side
+				local target = e.root.Position + dodgeDir * (if e.ac.kind == "archer" then 5.4 else 4.2)
 				if math.abs(target.X - ORIGIN.X) < half - 8 and math.abs(target.Z - ORIGIN.Z) < half - 8 then
-					e.lastDodge, e.dodgeT0, e.dodgeUntil, e.dodgeDir = evadeAt, evadeAt, evadeAt + 0.3, side
+					e.lastDodge, e.dodgeT0, e.dodgeUntil, e.dodgeDir = evadeAt, evadeAt, evadeAt + 0.36, dodgeDir
 					e.hurtAt = -100
+					e.model:SetAttribute("FieldEnemyReaction", if e.ac.kind == "archer" then "backstep" else "sidestep")
 					if e.tag and e.tag.Parent then
 						local oldText = e.tag.Text
-						e.tag.Text = "회피!"
-						task.delay(0.45, function()
-							if e.tag and e.tag.Parent and e.tag.Text == "회피!" then e.tag.Text = oldText end
+						e.tag.Text = if e.ac.kind == "archer" then "후퇴!" else "회피!"
+						task.delay(0.42, function()
+							if e.tag and e.tag.Parent and (e.tag.Text == "회피!" or e.tag.Text == "후퇴!") then e.tag.Text = oldText end
 						end)
 					end
-					burst(e.root.Position + Vector3.new(0, 1.6, 0), 8, false, "dodge")
-					sfx("sfx_skill_evade", 0.5, 1.18)
+					burst(e.root.Position + Vector3.new(0, 1.6, 0), if visualMobile then 3 else 8, false, "dodge")
+					sfx("sfx_skill_evade", 0.45, 1.18)
 					return
 				end
 			end
@@ -4023,19 +4031,54 @@ function FieldScene.start(opts)
 		-- 경직, 측면·후방, 광역 피해는 방패에 막히지 않는다. 기존 70% 방어율은 보존한다.
 		local approach = (hrpPos - e.root.Position) * Vector3.new(1, 0, 1)
 		local shieldBlocked = not quiet and e.shieldModel and e.ac.def.frontGuard
-			and e.ac.state ~= "stagger" and approach.Magnitude > 0.1
+			and e.ac.state ~= "stagger" and not stagger and approach.Magnitude > 0.1
 			and e.root.CFrame.LookVector:Dot(approach.Unit) > 0.35
 			and e.model:FindFirstChild("FieldShield") ~= nil
-		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power) * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, shieldBlocked == true, stagger)
+		-- 검병·돌진병·두목은 실제 손의 무기로 측면 받아치기를 할 수 있다.
+		-- 무기 없는 적/원거리 탄환/강타에는 무기 막기를 적용하지 않는다.
+		local parryRole = e.ac.kind == "grunt" or e.ac.kind == "charger" or e.boss
+		local weaponParry = not quiet and not stagger and not impactWeapon.ranged and not shieldBlocked
+			and parryRole and approach.Magnitude > 0.1
+			and e.root.CFrame.LookVector:Dot(approach.Unit) > 0.22
+			and (e.ac.state == "chase" or e.ac.state == "recover")
+			and evadeAt >= (e.nextParryAt or 0)
+			and math.random() < (if e.boss then 0.16 elseif e.ac.kind == "charger" then 0.20 else 0.13)
+		if weaponParry then
+			e.parryUntil, e.nextParryAt = evadeAt + 0.37, evadeAt + (if e.boss then 6 else 4.5)
+			e.model:SetAttribute("FieldEnemyReaction", "parry")
+		elseif shieldBlocked then
+			e.guardUntil = evadeAt + 0.37
+			e.model:SetAttribute("FieldEnemyReaction", "shield")
+		end
+		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power)
+			* (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1)
+			* (if weaponParry then 0.52 else 1), mult, shieldBlocked == true, stagger)
 		e.hp = e.ac.hp
 		e.hurtAt = os.clock()
+		e.hitVariant = (e.hitVariant or 0) % 3 + 1
+		e.model:SetAttribute("FieldHitVariant", e.hitVariant)
 		e.bar.Size = UDim2.fromScale(math.max(e.ac.hp, 0) / e.maxHp, 1)
 		local away = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
+		if not died and stagger and knock >= 4 and not e.boss and not shieldBlocked
+			and evadeAt - (e.lastFallAt or -100) >= 3.5 then
+			-- 강타/스킬 → 밀려나며 넘어짐 → 바닥 버팀 → 무릎으로 일어남.
+			-- 기존 ActionCombat.stagger로 기상 전 공격·이동을 막는다.
+			e.lastFallAt, e.knockAt = evadeAt, evadeAt
+			e.knockUntil, e.riseUntil = evadeAt + 0.78, evadeAt + 1.57
+			e.knockVariant = e.hitVariant
+			e.ac.stagger = math.max(e.ac.stagger, 1.57)
+			e.ac.state = "stagger"
+			e.model:SetAttribute("FieldEnemyReaction", "knockdown")
+		elseif not died and e.boss and stagger then
+			-- 두목은 완전히 넘어지지 않고 한쪽 무릎을 꿇으며 버텨 다음 공격을 준비한다.
+			e.holdUntil = evadeAt + 0.42
+			e.model:SetAttribute("FieldEnemyReaction", "boss-brace")
+		end
 		if away.Magnitude > 0.1 and not e.ac.def.boss then
-			-- 순간이동 대신 짧게 미끄러지듯 밀려난다(0.18초 감속)
-			e.kbVel = away.Unit * (knock / 0.09)
-			e.kbUntil = os.clock() + 0.18
-			e.kbT0 = os.clock()
+			-- 짧은 후퇴를 감속시켜 강타가 아닌 평타도 몸이 밀리는 걸 보여 준다.
+			e.kbVel = away.Unit * (knock / 0.11)
+			e.kbUntil = evadeAt + (if e.riseUntil > evadeAt then 0.30 else 0.18)
+			e.kbT0 = evadeAt
 		end
 		if not quiet then
 			local hitAt = os.clock()
@@ -4145,7 +4188,10 @@ function FieldScene.start(opts)
 		if not rangedImpact then
 			burst(impactPos, if visualMobile then math.min(12 + dealt, 20) else 12 + dealt, mult >= 1.5)
 		end
-		if shieldBlocked then
+		if weaponParry then
+			sfx("sfx_metal_clash", 0.75, 1.20)
+			pulseAt("BLOCK_IMPACT", CFrame.new(impactPos), Color3.fromRGB(239, 206, 130), Color3.fromRGB(255, 245, 194), 7, if visualMobile then 3 else 6)
+		elseif shieldBlocked then
 			sfx("sfx_metal_clash", 0.75, 0.93)
 			pulseAt("BLOCK_IMPACT", CFrame.new(impactPos), Color3.fromRGB(155, 194, 224), Color3.fromRGB(255, 230, 161), 7, 5)
 		elseif family == "axe" then
