@@ -2500,7 +2500,7 @@ function FieldScene.start(opts)
 	local swingCombo, slashIdx = nil, 0
 	-- [연타 관절 연결] 한 공격이 끝나기 전에 다음 시각 모션을 시작할 때 R15 실제 마지막 자세를 이어 붙인다.
 	-- 신규 애니메이션 트랙/이동 판정 없이 기존 캐논 관절만 보간한다. 최근 프레임 포즈는 테이블을 재사용한다.
-	local swingBridge = { last = {}, lastAt = -100, from = nil, rootLast = nil, rootFrom = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100, impactSeq = -1 }
+	local swingBridge = { last = {}, lastAt = -100, from = nil, rootLast = nil, rootFrom = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100, impactSeq = -1, lungeTween = nil, pendingBasicBeat = nil, pendingBasicScheduled = false }
 	-- [모션 직업] 기존 캐릭터 FieldDodgeStyle 속성을 입력·렌더 간 정본으로 사용하여 Luau 지역변수 한도를 지킨다.
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
@@ -2539,6 +2539,28 @@ function FieldScene.start(opts)
 	-- [무기별 실물 R15 모션] 보통 공격은 반드시 1단. 뒤이어 보이는 타격은 숙련 발동시에만 재생한다.
 	local function startSwing(kind: string, dur: number, stage: number?, visualOnly: boolean?)
 		local nextStage = math.clamp(math.floor(stage or 1), 1, 10)
+		-- [평타 연타] 0.14초 접촉 전 다시 누르면 이전 검격을 끊지 않고 최신 입력 자세만 예약한다.
+		-- 기존 명중 예약·피해·무기 쿨타임은 useMove에서 이미 처리했으므로 시각 모션만 정렬한다.
+		if kind == "slash" and not visualOnly and swingKind == "slash" and os.clock() - swingT0 < 0.14 then
+			swingBridge.pendingBasicBeat = nextStage
+			swingBridge.pendingBasicSerial = chainMotionSerial
+			swingBridge.pendingBasicWeapon = wpn.id
+			if not swingBridge.pendingBasicScheduled then
+				swingBridge.pendingBasicScheduled = true
+				task.delay(math.max(0.01, swingT0 + 0.14 - os.clock()), function()
+					swingBridge.pendingBasicScheduled = false
+					local beat = swingBridge.pendingBasicBeat
+					swingBridge.pendingBasicBeat = nil
+					if not finished and beat and swingBridge.pendingBasicSerial == chainMotionSerial
+						and swingBridge.pendingBasicWeapon == wpn.id and char3() then
+						startSwing("slash", dur, beat)
+					end
+				end)
+			end
+			return
+		elseif kind ~= "slash" or visualOnly then
+			swingBridge.pendingBasicBeat = nil
+		end
 		-- [연타·회피 관절 연결] 공격 → 회피 → 다음 공격까지 최근 전신 자세를 이어 불연속 회전을 막는다.
 		if FM and (kind == "dash" or nextStage >= 2 or kind == "slash" or kind == "heavy") and os.clock() - swingBridge.lastAt <= 0.32 and next(swingBridge.last) then
 			swingBridge.from = table.clone(swingBridge.last)
@@ -4312,7 +4334,10 @@ function FieldScene.start(opts)
 				else (if autoHeavy then 0.77 elseif spectacular then 0.68 else 0.83))
 		end
 		local now = os.clock()
-		hitStopUntil = math.max(hitStopUntil, now + (if autoHeavy then 0.10 elseif spectacular then 0.12 else 0.055))
+		-- [연타 기록] 일반 5타 알림은 움직임을 멈추지 않고, 필살·특별 기록의 연출만 유지한다.
+		if autoHeavy or spectacular then
+			hitStopUntil = math.max(hitStopUntil, now + (if autoHeavy then 0.10 else 0.12))
+		end
 		shakeUntil = math.max(shakeUntil, now + (if autoHeavy then 0.17 else 0.15))
 		shakeAmp = if visualMobile then (if autoHeavy then 0.27 else 0.22)
 			else (if autoHeavy then 0.55 elseif spectacular then 0.72 else 0.35)
@@ -4578,7 +4603,10 @@ function FieldScene.start(opts)
 		end
 		if not quiet then
 			local hitAt = os.clock()
-			hitStopUntil = math.max(hitStopUntil, hitAt + (if mult >= 1.5 then 0.09 else 0.045))
+			-- [끊김 없는 평타] 일반 명중마다 전신 모션 시계를 멈추지 않는다. 강타·스킬 정지만 유지한다.
+			if basicAttack ~= true then
+				hitStopUntil = math.max(hitStopUntil, hitAt + (if mult >= 1.5 then 0.09 else 0.045))
+			end
 			lastCombatAt = hitAt
 			local creditedSeq = actionSeq or streakActionSeq
 			if ownerAttack ~= false and creditedSeq > 0 and creditedSeq > streakActionSeq - 64
@@ -5343,6 +5371,11 @@ function FieldScene.start(opts)
 			end
 			return
 		end
+		-- [평타 접근] 이전 보간이 남아 있으면 다음 공격·회피의 실제 현재 위치부터 다시 진행한다.
+		if swingBridge.lungeTween then
+			swingBridge.lungeTween:Cancel()
+			swingBridge.lungeTween = nil
+		end
 		if moveId == "dodge" then
 			-- [실제 직업 → 모션] 직업 우선, 게임에 직업 정보가 없는 구버전은 장비와 마력으로 자세만 추정한다.
 			-- 회피 거리는 원래 14스터드, 무적과 스태미나 판정은 기존 ActionCombat이 전담한다.
@@ -5525,7 +5558,13 @@ function FieldScene.start(opts)
 				if flat.Magnitude > 0.1 then
 					local reach = (if moveId == "rush" then wpn.range else (AC.Moves[moveId] and AC.Moves[moveId].range or 5)) * STUD
 					local lunge = if not wpn.ranged and nd > reach - 2 then math.min(nd - (reach - 3), 10) else 0
-					hrp.CFrame = CFrame.lookAt(hrp.Position + flat.Unit * math.max(0, lunge), hrp.Position + flat.Unit * math.max(0, lunge) + flat.Unit)
+					local nextPos = hrp.Position + flat.Unit * math.max(0, lunge)
+					-- [순간이동 제거] 원래 접근 거리(최대 10스터드)는 보존하고, 명중 0.14초 전에
+					-- 기존 HRP를 실제 이동 경로로 보간한다. 방향 전환도 함께 이어 급격한 회전을 막는다.
+					swingBridge.lungeTween = TweenService:Create(hrp,
+						TweenInfo.new(0.125, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+						{ CFrame = CFrame.lookAt(nextPos, nextPos + flat.Unit) })
+					swingBridge.lungeTween:Play()
 				end
 			end
 		end
@@ -6137,6 +6176,10 @@ function FieldScene.start(opts)
 		dashCd = os.clock() + 3
 		pl.invulnUntil = math.max(pl.invulnUntil or -1, os.clock() + 0.35)
 		local from = hrp.Position
+		if swingBridge.lungeTween then
+			swingBridge.lungeTween:Cancel()
+			swingBridge.lungeTween = nil
+		end
 		afterimage(player.Character, Color3.fromRGB(255, 214, 120), 6, 0.04)
 		trailsOn(player.Character, TRAIL_LIMBS, Color3.fromRGB(255, 214, 120), 0.4, 1)
 		startSwing(if wpn.family == "fist" then "elbow" else "heavy", 0.5, 1)
@@ -6427,6 +6470,11 @@ function FieldScene.start(opts)
 		bindPress(wbtn, function()
 			if finished then return end
 			chainMotionSerial += 1
+			if swingBridge.lungeTween then
+				swingBridge.lungeTween:Cancel()
+				swingBridge.lungeTween = nil
+			end
+			swingBridge.pendingBasicBeat = nil
 			wpn, reserveWeapon = reserveWeapon, wpn
 			wbtn.Text = wpn.name .. " ↔ " .. reserveWeapon.name
 			wbtn:SetAttribute("WeaponPrimaryId", wpn.id)
