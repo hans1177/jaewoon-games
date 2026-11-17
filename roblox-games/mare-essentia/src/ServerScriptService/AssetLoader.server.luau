@@ -240,7 +240,7 @@ for _ = 1, 12 do
 					restoredParts = shipColorParts, unnamedParts = shipUnknownParts,
 				}))
 				ReplicatedStorage:SetAttribute("MareShipV5ColorAuditState",
-					if shipColorExpected == shipColorModels and shipUnknownParts == 0 then "PASS" else "FAIL")
+					if shipColorExpected == 72 and shipColorModels == 72 and shipColorParts > 0 and shipUnknownParts == 0 then "PASS" else "FAIL")
 				ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = #queue, loaded = loaded, failed = failed, errors = failedKeys}))
 				ReplicatedStorage:SetAttribute("MareModelAuditState", if failed == 0 and loaded == #queue then "PASS" else "FAIL")
 			end
