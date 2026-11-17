@@ -8,7 +8,7 @@ import crypto from 'crypto';
 import { execFileSync } from 'node:child_process';
 import { askChain, buildProviders } from './vibe-llm.mjs';
 
-export const LIMITS = { maxFiles: 3, maxChangedLines: 80, maxPerDay: 12, minGapMin: 20, maxAttemptsPerOrder: 4, retryGapMin: 45, contextChars: 11000 };
+export const LIMITS = { maxFiles: 3, maxChangedLines: 80, maxPerDay: 12, minGapMin: 10, maxAttemptsPerOrder: 4, retryGapMin: 45, contextChars: 11000 };
 export const CODE_KINDS = new Set(['error', 'ui', 'combat', 'background', 'visual']);   // 에셋 권한·Studio 연결 문제는 코드로 못 고친다
 
 const ALLOWED = /^roblox-games\/(fantasy-survival\/(client|server|shared)|mare-essentia\/src)\/(?!(?:.*\/)?(?:Common\/|[^\/]*(?:VisualAssetIds|LookAssignment|SkillTreeIconIds|OpeningAssetIds)[^\/]*$)).+\.luau$/;
@@ -37,7 +37,8 @@ export function pickOrder(orders, ledger, now = Date.now()) {
     return (now - a.lastAt) / 60000 >= LIMITS.retryGapMin;
   });
   // 오류가 먼저, 그다음 자주 보인 것
-  ok.sort((a, b) => (b.kind === 'error') - (a.kind === 'error') || (b.seen || 0) - (a.seen || 0));
+  // 실제 오류를 먼저 고치고, 그다음에는 아직 보지 않은 Studio 장면을 우선 분석한다.
+  ok.sort((a, b) => (b.kind === 'error') - (a.kind === 'error') || (b.kind === 'visual') - (a.kind === 'visual') || (b.seen || 0) - (a.seen || 0));
   return ok[0] || null;
 }
 
@@ -300,7 +301,7 @@ export function recordMerged(ledger, result, pr, now = Date.now()) {
 function readJson(f, d) { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return d; } }
 
 // 기존 자동 점검의 보고서와 같은 커밋에 들어 있는 Studio 게임 화면만 사용한다.
-function readStudioVisualOrder(ref) {
+function readStudioVisualOrder(ref, coverage = {}) {
   const game = 'mare-essentia';
   const git = (...args) => execFileSync('git', args, { stdio: ['ignore', 'pipe', 'ignore'] });
   try {
@@ -308,6 +309,8 @@ function readStudioVisualOrder(ref) {
     const report = JSON.parse(git('show', commit + ':report.json').toString());
     const revision = String(report.sourceRevision || '');
     if (!/^[a-f0-9]{40}$/.test(revision)) return null;
+    // 동일한 소스에서는 지난번에 이미 분석한 장면을 다시 고르지 않는다.
+    const reviewed = new Set(coverage.sourceRevision === revision && Array.isArray(coverage.labels) ? coverage.labels : []);
     const source = ':roblox-games/' + game;
     if (!git('rev-parse', revision + source).equals(git('rev-parse', 'HEAD' + source))) return null;
     const files = new Set(git('ls-tree', '--name-only', '-z', commit).toString().split('\0'));
@@ -316,7 +319,7 @@ function readStudioVisualOrder(ref) {
     const digest = crypto.createHash('sha256');
     for (const row of report.log || []) {
       const label = row.capture;
-      if (typeof label !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(label) || labels.includes(label)) continue;
+      if (typeof label !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(label) || labels.includes(label) || reviewed.has(label)) continue;
       const file = ['png', 'jpg'].map(ext => label + '-0.' + ext).find(name => files.has(name));
       if (!file || Number(git('cat-file', '-s', commit + ':' + file)) > 2 * 1024 * 1024) continue;
       const bytes = git('show', commit + ':' + file);
@@ -331,6 +334,8 @@ function readStudioVisualOrder(ref) {
     if (!images.length) return null;
     return {
       images,
+      labels,
+      sourceRevision: revision,
       order: {
         game,
         kind: 'visual',
@@ -369,10 +374,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const providers = await buildProviders({ allowGemini: process.env.BRAIN_ALLOW_GEMINI !== 'no', log: m => console.log(m) });
   const ranked = rankProviders(providers, ledger.providers);
   console.log('모델 순서:', ranked.map(p => p.name).join(' → ') || '(없음)', providers.length - ranked.length ? `(한도로 쉬는 모델 ${providers.length - ranked.length}개)` : '');
-  const visual = ranked.some(p => p.acceptsImages) && arg('studio-ref') ? readStudioVisualOrder(arg('studio-ref')) : null;
+  const visual = ranked.some(p => p.acceptsImages) && arg('studio-ref') ? readStudioVisualOrder(arg('studio-ref'), ledger.visualCoverage) : null;
   const llm = (prompt, images) => askChain({ prompt, images, providers: ranked, log: m => console.log(m) });
   const result = await runBrain({ orders, ledger, root: process.cwd(), llm, playbook, visual, log: m => console.log(m) });
-  // 3) 배운 것 기록
+  // 3) 실제 외부 이미지 AI가 응답한 장면만 소스별 분석 이력에 기록한다. 오류·호출 실패 시 재시도 가능.
+  if (visual && result.order?.fingerprint === visual.order.fingerprint && result.trace?.some(row => row.ok)) {
+    const earlier = ledger.visualCoverage?.sourceRevision === visual.sourceRevision ? ledger.visualCoverage.labels || [] : [];
+    ledger.visualCoverage = { sourceRevision: visual.sourceRevision, labels: [...new Set([...earlier, ...visual.labels])].slice(-120) };
+    console.log('STUDIO_VISUAL_REVIEWED=' + visual.labels.join(','));
+  }
+  // 4) 배운 것 기록
   if (result.trace) ledger.providers = updateProviderStats(ledger.providers, result.trace, result.ok ? result.provider : (result.rejected ? '' : null));
   if (result.ok && !result.replayed && result.order?.kind !== 'visual') { const c = addCandidate(playbook, { order: result.order, parsed: { summary: result.summary, edits: result.edits }, provider: result.provider }); playbook = c.playbook; result.pbKey = c.key; }
   if (result.prompt && result.responseText && result.order?.kind !== 'visual') {
