@@ -144,7 +144,12 @@ end)
 
 local cursor = 1
 local pending, loaded, failed = #queue, 0, 0
-local shipColorModels, shipColorParts, shipUnknownParts = 0, 0, 0
+local shipColorModels, shipColorParts, shipUnknownParts, shipColorExpected = 0, 0, 0, 0
+for _, item in queue do
+	if item.kind == "Naval" and (item.name:match("%-v5$") or item.name:match("%-v5%-mobile$")) then
+		shipColorExpected += 1
+	end
+end
 -- [Studio QA] 등록 모델 전체의 실제 로딩 성공·실패를 카운트하며 라이브 저장/동작은 건드리지 않는다.
 local studioAudit = RunService:IsStudio()
 local failedKeys = {}
@@ -231,8 +236,11 @@ for _ = 1, 12 do
 			if studioAudit and pending == 0 then
 				-- [스튜디오 독립 진단] 미복원 메시가 남았는지 확인할 수 있도록 집계만 기록한다.
 				ReplicatedStorage:SetAttribute("MareShipV5ColorAudit", HttpService:JSONEncode({
-					models = shipColorModels, restoredParts = shipColorParts, unnamedParts = shipUnknownParts,
+					expected = shipColorExpected, models = shipColorModels,
+					restoredParts = shipColorParts, unnamedParts = shipUnknownParts,
 				}))
+				ReplicatedStorage:SetAttribute("MareShipV5ColorAuditState",
+					if shipColorExpected == shipColorModels and shipUnknownParts == 0 then "PASS" else "FAIL")
 				ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = #queue, loaded = loaded, failed = failed, errors = failedKeys}))
 				ReplicatedStorage:SetAttribute("MareModelAuditState", if failed == 0 and loaded == #queue then "PASS" else "FAIL")
 			end
