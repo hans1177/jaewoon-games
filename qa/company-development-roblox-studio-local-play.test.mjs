@@ -4630,3 +4630,28 @@ test('Mare 36 designed ships have source-verified registered models and seven-co
     || x.code?.includes('zanzibar_jahazi="jahazi-custom"')),'Studio must load two new unique original GLBs');
   assert.ok(steps.some(x=>x.code?.includes('SHIP_36_PREVIEW_CLEAN_EXIT_PASS')));
 });
+
+
+// [마을 주민 전방 검증] 기존 주민 모션 코드와 공식 Studio 실물 얼굴 검사만 확인한다.
+test('Mare town villagers keep arm gestures in front and faces aligned with torso without changing NPC jobs',()=>{
+  const root='roblox-games/mare-essentia/';
+  const pose=fs.readFileSync(root+'src/ReplicatedStorage/Shared/Pose.luau','utf8');
+  const port=fs.readFileSync(root+'src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const script=JSON.parse(fs.readFileSync(root+'tools/devloop/studio-scripts/mare-town.json','utf8'));
+  assert.match(pose,/gui\.Face = Enum\.NormalId\.Front/);
+  assert.match(pose,/faceHead\.CFrame\.LookVector:Dot\(faceTorso\.CFrame\.LookVector\) < -0\.35/);
+  assert.match(pose,/model:SetAttribute\("NpcFaceReversed",/);
+  assert.match(pose,/motor == m\.leftArm or motor == m\.rightArm/);
+  assert.match(pose,/pitch < -0\.30 then cf = CFrame\.Angles\(-pitch, yaw, roll\)/);
+  assert.match(pose,/motor == m\.neck and model:GetAttribute\("NpcFaceReversed"\)/);
+  assert.match(pose,/joint == m\.neck and model:GetAttribute\("NpcFaceReversed"\)/);
+  assert.match(pose,/state ~= "walk" and state ~= "run"/);
+  assert.match(port,/local forward = if moving then delta\.Unit else \(w\.lastFacing or w\.base\.LookVector\)/);
+  assert.match(port,/if moving then w\.lastFacing = forward end/);
+  assert.doesNotMatch(port,/local forward = if moving then delta\.Unit else Vector3\.new\(0, 0, 1\)/);
+  const faceAudit=script.find(row=>row.type==='luau'&&row.code?.includes('TOWN_NPC_FACE_REVERSED:'));
+  assert.ok(faceAudit,'official Studio must verify visible R15 resident faces');
+  assert.match(faceAudit.code,/head\.CFrame\.LookVector:Dot\(torso\.CFrame\.LookVector\)/);
+  assert.match(faceAudit.code,/TOWN_NPC_FACE_AUDIT_NO_VISIBLE_RESIDENTS/);
+  assert.equal(script.length,45,'existing town gameplay and capture sequence must remain unchanged');
+});
