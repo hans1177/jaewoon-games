@@ -549,15 +549,51 @@ function FieldScene.start(opts)
 		return Vector3.new(0, 0, 0)
 	end
 
-	-- [탐험 지역변수 한도] 현장 지형 생성은 이 블록에서 종료하고 전투 UI 변수를 보호한다.
+	-- [퀘스트 지형 배치] 지형 이름이 먼저, 문화권은 그 위에 추가한다.
+	-- 숲길·협곡·폐광·해안·유적·사막·농경지·호숫가의 실루엣을 구별한다.
+	-- 전투/조사/시작 위치를 건드리지 않고 기존 승인 메시만 필드 외곽과 측면에 배치한다.
 	do
+	local questName = opts.name or ""
+	local questTerrain = if string.find(questName, "광산", 1, true) or string.find(questName, "탄광", 1, true) or string.find(questName, "채석", 1, true) then "mine"
+		elseif string.find(questName, "폭포", 1, true) or string.find(questName, "계곡", 1, true)
+			or string.find(questName, "절벽", 1, true) or string.find(questName, "고지", 1, true)
+			or string.find(questName, "산맥", 1, true) then "highland"
+		elseif string.find(questName, "유적", 1, true) or string.find(questName, "신전", 1, true)
+			or string.find(questName, "열석", 1, true) or string.find(questName, "봉분", 1, true)
+			or string.find(questName, "석상", 1, true) then "ruins"
+		elseif string.find(questName, "성채", 1, true) or string.find(questName, "요새", 1, true)
+			or string.find(questName, "성벽", 1, true) then "fort"
+		elseif string.find(questName, "농장", 1, true) or string.find(questName, "과수원", 1, true)
+			or string.find(questName, "들판", 1, true) then "farm"
+		elseif string.find(questName, "호수", 1, true) or string.find(questName, "강", 1, true)
+			or string.find(questName, "습지", 1, true) then "lake"
+		elseif biome.kind == "forest" then "forest"
+		elseif biome.kind == "coast" then "coast"
+		elseif biome.kind == "mine" then "mine"
+		elseif biome.mat == Enum.Material.Sand then "desert"
+		elseif biome.encounter == "ruins" then "ruins"
+		elseif biome.encounter == "highland" then "highland"
+		else "plains"
+	folder:SetAttribute("FieldQuestTerrainTheme", questTerrain)
+	local mirror = if (math.floor(tonumber(opts.seed) or 7) % 2 == 0) then 1 else -1
 	-- 나무와 바위
 	local treeNames = biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
 	-- [모바일 안정화] 메시는 화면 자원만 줄이고 탐험 보상·몬스터 수·위험도는 유지한다.
 	local treeCount = math.floor(biome.trees * 2 * AREA)
 	local visualTreeCount = if visualMobile then math.min(treeCount, 44) else treeCount
-	for _ = 1, visualTreeCount do
+	for index = 1, visualTreeCount do
 		local pos = ORIGIN + scatter(14)
+		-- 산길·유적은 바깥 능선으로, 숲은 양옆의 구불구불한 수목 통로로 배치한다.
+		if questTerrain == "forest" then
+			local side = if index % 2 == 0 then -1 else 1
+			local z = rng:NextNumber(-half * 0.88, half * 0.61)
+			local curve = math.sin(z / math.max(half, 1) * 6) * half * 0.07
+			pos = ORIGIN + Vector3.new(side * (half * rng:NextNumber(0.27, 0.78) + curve), 0, z)
+		elseif questTerrain == "highland" or questTerrain == "mine" or questTerrain == "ruins" then
+			local side = if index % 2 == 0 then -1 else 1
+			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.62, 0.89), 0,
+				rng:NextNumber(-half * 0.83, half * 0.53))
+		end
 		local h = rng:NextNumber(9, 15)
 		-- 지역 나무는 기존 Town/Terrain의 실제 CC0 메시만 사용한다. 없는 종류는 도형 대체 없이 건너뛴다.
 		local name = treeNames[rng:NextInteger(1, #treeNames)]
@@ -568,12 +604,117 @@ function FieldScene.start(opts)
 	local rockNames = { { "Town", "rock-large" }, { "Town", "rock-small" }, { "Town", "rock-wide" }, { "Terrain", "Rock_2" } }
 	local rockCount = math.floor(biome.rocks * 1.6 * AREA)
 	local visualRockCount = if visualMobile then math.min(rockCount, 36) else rockCount
-	for _ = 1, visualRockCount do
+	for index = 1, visualRockCount do
 		local pos = ORIGIN + scatter(10)
+		if questTerrain == "highland" or questTerrain == "mine" or questTerrain == "coast" then
+			-- 협곡 양벽·해안 암초: 플레이어의 중앙 통로와 시작 지점은 비운다.
+			local side = if index % 2 == 0 then 1 else -1
+			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.62, 0.91), 0,
+				rng:NextNumber(-half * 0.86, half * 0.48))
+		end
 		local rock = rockNames[rng:NextInteger(1, #rockNames)]
 		-- 실제 등록된 바위 메시만 배치한다. 파츠 박스 우회 금지.
 		placeModel(folder, rock[1], rock[2], pos, rng:NextNumber(2.5, 6), true)
 	end
+
+
+	-- [입체 지형 랜드마크] 같은 평면에 소품만 흩뿌리던 방식 대신,
+	-- 외곽 절벽·입구·강변·농경 구획을 하나의 장소로 묶어 뚜렷한 원근감을 준다.
+	-- 항목: { 등록 그룹, 메시 이름, 높이, X/반폭, Z/반폭, 충돌, Y회전 }
+	local landforms = {
+		coast = {
+			{"Naval","structure-platform-dock",34,-0.66,-0.74,true,0}, {"Naval","dock-side",16,-0.76,-0.53,true,90},
+			{"Naval","boat-fishing-small",12,-0.61,-0.87,false,22}, {"Terrain","cliff-rock",27,0.79,-0.70,true,0},
+			{"Terrain","cliff-rock",21,0.83,-0.34,true,25}, {"Naval","rocks-sand-a",13,0.68,-0.85,true,0},
+			{"Naval","rocks-sand-b",10,0.70,-0.58,true,0}, {"Terrain","coast-grass-patch",5,-0.50,-0.30,false,0},
+			{"Terrain","bridge-wood",12,-0.58,-0.42,true,0}, {"Terrain","campfire-logs",3.8,-0.44,-0.71,false,0},
+		},
+		forest = {
+			{"Terrain","cliff-waterfall-rock",34,-0.77,-0.78,true,0}, {"Terrain","land-waterfall",21,-0.72,-0.72,false,0},
+			{"Terrain","bridge-wood",16,-0.43,-0.56,true,42}, {"Terrain","forest-bush-detailed",7,-0.51,-0.26,false,0},
+			{"Terrain","tree-oak",17,-0.49,-0.44,true,0}, {"Terrain","tree-oak",15,0.49,-0.30,true,0},
+			{"Terrain","tree-pinedefaulta",18,-0.61,-0.14,true,0}, {"Terrain","tree-pinedefaulta",17,0.60,-0.56,true,0},
+			{"Terrain","campfire-logs",4.5,0.66,-0.74,false,0}, {"Terrain","river-stone-bank",12,-0.67,-0.60,false,0},
+			{"Terrain","forest-flower-purple",3,0.45,-0.15,false,0},
+		},
+		highland = {
+			{"Terrain","cliff-rock",34,-0.78,-0.85,true,0}, {"Terrain","cliff-steps-rock",27,-0.81,-0.51,true,30},
+			{"Terrain","cliff-rock",31,0.80,-0.77,true,0}, {"Terrain","cliff-rock",25,0.85,-0.38,true,15},
+			{"Terrain","cliff-waterfall-rock",32,-0.72,-0.18,true,0}, {"Terrain","cliff-waterfalltop-rock",25,-0.76,-0.24,true,0},
+			{"Terrain","bridge-stone",18,0.61,-0.62,true,33}, {"Terrain","gate-rock",16,-0.57,-0.67,true,0},
+			{"Terrain","river-stone-bank",12,0.68,-0.42,false,0}, {"Terrain","campfire-stones",6,0.59,-0.14,false,0},
+		},
+		mine = {
+			{"Terrain","cliff-cave-rock",43,0.67,-0.78,true,0}, {"Terrain","gate-metal-bars",18,0.65,-0.53,true,0},
+			{"Terrain","cliff-rock",29,0.85,-0.50,true,0}, {"Terrain","cliff-rock",28,0.78,-0.20,true,0},
+			{"Terrain","cliff-rock",30,-0.77,-0.67,true,0}, {"Terrain","cliff-steps-rock",17,-0.69,-0.35,true,0},
+			{"Terrain","log-stack",7,0.51,-0.39,true,0}, {"Terrain","campfire-logs",5,-0.53,-0.68,false,0},
+			{"Terrain","bridge-wood",13,-0.64,-0.48,true,0}, {"Terrain","debris",12,0.57,-0.26,false,0},
+		},
+		ruins = {
+			{"Terrain","ruins-wall-arched",23,-0.71,-0.75,true,0}, {"Terrain","ruins-pillar-decorated",16,-0.57,-0.70,true,0},
+			{"Terrain","greek-ruins-a",24,0.68,-0.72,true,0}, {"Terrain","greek-ruins-b",23,0.77,-0.56,true,35},
+			{"Terrain","greek-column",15,-0.44,-0.47,true,0}, {"Terrain","greek-column",16,0.48,-0.47,true,0},
+			{"Terrain","greek-statue",12,0.68,-0.33,true,0}, {"Terrain","ruins-wall-arched",18,-0.63,-0.20,true,90},
+			{"Terrain","altar-stone",10,-0.64,-0.46,true,0}, {"Terrain","greek-ruins-c",18,0.76,-0.16,true,0},
+		},
+		fort = {
+			{"Castle","wall-narrow-gate",23,-0.52,-0.74,true,0}, {"Castle","wall",20,-0.79,-0.74,true,0},
+			{"Castle","wall",20,-0.79,-0.49,true,0}, {"Castle","tower-hexagon-base",23,-0.73,-0.88,true,0},
+			{"Castle","fortress",38,0.75,-0.71,true,0}, {"Castle","wall",20,0.67,-0.42,true,0},
+			{"Castle","flag-banner-long",15,0.62,-0.86,false,0}, {"Castle","bridge-draw",19,0.54,-0.61,true,0},
+		},
+		desert = {
+			{"Terrain","mystic-sand-dune",27,-0.76,-0.84,true,0}, {"Terrain","mystic-sand-dune",31,0.74,-0.67,true,90},
+			{"Terrain","egypt-temple-arch-a",21,-0.54,-0.66,true,0}, {"Terrain","egypt-obelisk",26,0.69,-0.28,true,0},
+			{"Terrain","egypt-column",14,-0.64,-0.38,true,0}, {"Terrain","arid-cactus-tall",8,0.76,-0.15,false,0},
+			{"Terrain","arid-cactus-tall",7,-0.77,-0.20,false,0}, {"Terrain","cliff-rock",23,0.83,-0.88,true,0},
+			{"Terrain","campfire-stones",5,0.57,-0.50,false,0},
+		},
+		farm = {
+			{"Town","windmill",35,0.72,-0.76,true,0}, {"Terrain","ground-pathstraight",25,0.42,-0.45,false,0},
+			{"Terrain","crops-wheatstageb",8,-0.72,-0.72,false,0}, {"Terrain","crops-wheatstageb",8,-0.58,-0.72,false,0},
+			{"Terrain","crops-wheatstageb",8,-0.72,-0.48,false,0}, {"Terrain","crops-wheatstageb",8,-0.58,-0.48,false,0},
+			{"Terrain","crop-carrot",7,0.63,-0.35,false,0}, {"Terrain","crop-turnip",7,0.78,-0.35,false,0},
+			{"Terrain","crops-cornstagec",10,-0.60,-0.18,false,0}, {"Terrain","log-stack",7,0.61,-0.57,true,0},
+		},
+		lake = {
+			{"Terrain","cliff-waterfall-rock",29,-0.82,-0.78,true,0}, {"Terrain","land-waterfall",19,-0.73,-0.72,false,0},
+			{"Terrain","ground-riverbend",18,-0.59,-0.53,false,0}, {"Terrain","ground-riverstraight",20,-0.51,-0.34,false,0},
+			{"Terrain","bridge-stone",20,-0.56,-0.12,true,90}, {"Terrain","river-stone-bank",12,-0.75,-0.34,true,0},
+			{"Terrain","river-stone-bank",12,-0.72,-0.12,true,0}, {"Terrain","forest-bush-detailed",9,0.60,-0.42,false,0},
+			{"Terrain","tree-oak",18,0.77,-0.68,true,0}, {"Terrain","campfire-logs",5,0.56,-0.75,false,0},
+		},
+		plains = {
+			{"Terrain","ground-pathstraight",24,-0.45,-0.60,false,0}, {"Terrain","mystic-stone-arch",19,0.69,-0.80,true,0},
+			{"Terrain","altar-stone",11,0.69,-0.53,true,0}, {"Terrain","campfire-stones",5,-0.62,-0.76,false,0},
+			{"Terrain","coast-grass-patch",7,-0.64,-0.34,false,0}, {"Terrain","forest-flower-yellow",5,0.57,-0.25,false,0},
+			{"Terrain","ruins-pillar-decorated",13,0.78,-0.42,true,0},
+		},
+	}
+	local featureList = landforms[questTerrain] or landforms.plains
+	local built = 0
+	for index, entry in featureList do
+		if not visualMobile or index <= 9 then
+			-- 두 계곡 측면에만 고정 메시를 배치해 시작 지점과 퀘스트 조사 경로를 막지 않는다.
+			local px = entry[4] * half * mirror
+			local pz = entry[5] * half
+			local pos = ORIGIN + Vector3.new(px, 0, pz)
+			if AssetIds[entry[1] .. "/" .. entry[2]] then
+				local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6])
+				if m then
+					m.Name = "FieldTerrainLandmark"
+					m:SetAttribute("TerrainTheme", questTerrain)
+					m:SetAttribute("TerrainFeature", entry[2])
+					if entry[7] and entry[7] ~= 0 then
+						m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, math.rad(entry[7]), 0) * CFrame.new(-pos) * m:GetPivot())
+					end
+					built += 1
+				end
+			end
+		end
+	end
+	folder:SetAttribute("FieldTerrainFeatureCount", built)
 
 	end
 
@@ -1441,6 +1582,196 @@ function FieldScene.start(opts)
 		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber() })
 	end
 
+	end
+
+	-- [탐험 시간·날씨·실물 동물] 이번 현장에만 존재하는 비저장 환경 연출.
+	-- 기존 퀘스트 목표·전투 수치·보상·드롭·데이터 저장에는 간섭하지 않는다.
+	do
+		local lighting = game:GetService("Lighting")
+		local climateRng = Random.new((opts.seed or 7) * 137 + 19)
+		local snowy = biome.mat == Enum.Material.Snow or biome.region == "nordic"
+		local dry = biome.mat == Enum.Material.Sand or biome.kind == "mine"
+		local weatherOptions = if snowy then { "맑음", "흐림", "눈", "옅은 안개" }
+			elseif dry then { "맑음", "흐림", "옅은 안개" }
+			else { "맑음", "흐림", "비", "옅은 안개", "소나기" }
+		local weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)]
+		local clockStart = os.clock()
+		local weatherNext = clockStart + climateRng:NextNumber(55, 90)
+		local flashUntil, flashNext = 0, clockStart + 16
+		local timeLabel = label(gui, "", 13, Color3.fromRGB(231, 239, 244))
+		timeLabel.Name = "FieldWeatherClock"
+		timeLabel.Position = UDim2.fromOffset(12, 216)
+		timeLabel.Size = UDim2.fromOffset(228, 26)
+		timeLabel.TextXAlignment = Enum.TextXAlignment.Left
+		-- 투명 발사대는 눈·빗방울의 발원점일 뿐, 동물·장식용 기본 파츠를 생성하지 않는다.
+		local precipAnchor = part(folder, Vector3.new(55, 0.2, 55),
+			CFrame.new(ORIGIN + Vector3.new(0, 25, 0)), Color3.new(1, 1, 1))
+		precipAnchor.Name = "FieldPrecipitationSource"
+		precipAnchor.Transparency = 1
+		precipAnchor.CastShadow = false
+		precipAnchor.CanCollide, precipAnchor.CanTouch, precipAnchor.CanQuery = false, false, false
+		local precip = Instance.new("ParticleEmitter")
+		precip.Name = "FieldPrecipitation"
+		precip.Texture = if snowy then "rbxasset://textures/particles/smoke_main.dds" else "rbxasset://textures/particles/sparkles_main.dds"
+		precip.Shape = Enum.ParticleEmitterShape.Box
+		precip.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
+		precip.EmissionDirection = Enum.NormalId.Bottom
+		precip.Lifetime = if snowy then NumberRange.new(2.4, 3.4) else NumberRange.new(0.6, 1.1)
+		precip.Speed = if snowy then NumberRange.new(4, 8) else NumberRange.new(45, 65)
+		precip.Acceleration = if snowy then Vector3.new(1.6, -3.8, 0.9) else Vector3.new(3, -17, 1)
+		precip.SpreadAngle = if snowy then Vector2.new(22, 22) else Vector2.new(8, 8)
+		precip.Size = if snowy then NumberSequence.new(0.20) else NumberSequence.new(0.075)
+		precip.Transparency = NumberSequence.new(0.43, 0.78)
+		precip.Color = ColorSequence.new(if snowy then Color3.fromRGB(230, 243, 255) else Color3.fromRGB(171, 211, 247))
+		precip.LightEmission = if snowy then 0.2 else 0.08
+		precip.Rate = 0
+		precip.Parent = precipAnchor
+		folder:SetAttribute("FieldWeather", weather)
+		local timeElapsed = 0
+		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
+			if finished or not folder.Parent then return end
+			timeElapsed += math.min(dt, 0.2)
+			if timeElapsed < 0.5 then return end
+			timeElapsed = 0
+			local now = os.clock()
+			local hrp0 = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			if hrp0 and precipAnchor.Parent then
+				precipAnchor.Position = hrp0.Position + Vector3.new(0, 23, 0)
+			end
+			if now >= weatherNext then
+				local old = weather
+				weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)]
+				if weather == old then weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)] end
+				weatherNext = now + climateRng:NextNumber(65, 115)
+				folder:SetAttribute("FieldWeather", weather)
+				if weather ~= old then say("탐험 날씨 변화: " .. weather) end
+			end
+			-- 12분마다 한 바퀴의 새벽→낮→황혼→밤. 조명은 탐험 종료 시 기존 값으로 복구한다.
+			local clock = (biome.clock + (now - clockStart) * (24 / 720)) % 24
+			local sun = math.clamp(math.sin((clock - 6) * math.pi / 12) * 1.15 + 0.16, 0, 1)
+			local phase = if clock < 5 or clock >= 20 then "밤"
+				elseif clock < 8 then "새벽" elseif clock < 17 then "낮" else "황혼"
+			local damp = if weather == "옅은 안개" then 0.48 elseif weather == "소나기" then 0.71
+				elseif weather == "눈" or weather == "비" then 0.80 else 1
+			lighting.ClockTime = clock
+			lighting.Brightness = (0.52 + 1.58 * sun) * (if weather == "소나기" then 0.78 else 1)
+			lighting.FogEnd = math.max(105, biome.fogEnd * damp)
+			lighting.FogColor = biome.fog:Lerp(Color3.fromRGB(60, 78, 111), (1 - sun) * 0.55)
+			lighting.Ambient = biome.fog:Lerp(Color3.fromRGB(83, 103, 132), if sun < 0.5 then 0.77 else 0.54)
+			lighting.OutdoorAmbient = biome.fog:Lerp(Color3.fromRGB(112, 127, 151), if sun < 0.5 then 0.69 else 0.45)
+			if weather == "소나기" and now >= flashNext then
+				flashUntil = now + 0.18
+				flashNext = now + climateRng:NextNumber(14, 28)
+			end
+			lighting.ColorShift_Top = if now < flashUntil then Color3.fromRGB(215, 230, 255)
+				elseif sun < 0.20 then Color3.fromRGB(131, 145, 180)
+				elseif phase == "새벽" or phase == "황혼" then Color3.fromRGB(255, 182, 131)
+				else lightSave.ColorShiftTop
+			precip.Rate = if weather == "눈" then (if visualMobile then 17 else 31)
+				elseif weather == "비" or weather == "소나기" then (if visualMobile then 45 else 90) else 0
+			if weather == "소나기" then precip.Rate *= 1.45 end
+			timeLabel.Text = string.format("%s %02d:%02d  ·  %s", phase, math.floor(clock), math.floor((clock % 1) * 60), weather)
+			folder:SetAttribute("FieldTimePhase", phase)
+			folder:SetAttribute("FieldClockTime", clock)
+		end))
+	end
+
+	-- [자연 관찰] 항구에서 이미 쓰는 승인된 Animals 메시만 출현.
+	-- 살아 있는 현장 동물은 공격 대상이 아니며 관찰은 기록 연출만 남긴다(보상·도감 저장 없음).
+	do
+		local wildlifeRng = Random.new((opts.seed or 7) * 197 + 31)
+		-- 승인된 동물 메시가 늦게 로드되어도 새 조우 시 다시 조회한다.
+		local animalShelf = nil
+		local names = { sheep = "양", horse = "말", donkey = "당나귀", cow = "소",
+			["dog-pug"] = "개", cat = "고양이", chicken = "닭", pig = "돼지",
+			elephant = "코끼리", llama = "라마" }
+		local sizes = { sheep = 2.3, horse = 3.8, donkey = 3.2, cow = 3.4,
+			["dog-pug"] = 1.5, cat = 1.1, chicken = 1.0, pig = 2.2,
+			elephant = 6.5, llama = 3.2 }
+		local region = biome.region or ""
+		local candidates = if region == "nordic" or region == "britain" then { "sheep", "horse", "cow", "dog-pug" }
+			elseif region == "desert" or region == "ottoman" then { "donkey", "cat", "sheep" }
+			elseif region == "malabar" then { "elephant", "cow", "chicken", "cat" }
+			elseif region == "colonial" then { "llama", "horse", "pig", "chicken" }
+			elseif biome.kind == "forest" then { "sheep", "horse", "dog-pug", "cat" }
+			elseif biome.kind == "coast" then { "chicken", "dog-pug", "cat", "sheep" }
+			else { "horse", "donkey", "sheep", "chicken", "cat" }
+		local animals = {}
+		local maxAnimals = if visualMobile then 2 else 4
+		local lastWildlifeSpawn = -100
+		folder:SetAttribute("FieldAmbientObservations", 0)
+		local function spawnWildlife()
+			local assets = ReplicatedStorage:FindFirstChild("MareAssets")
+			animalShelf = assets and assets:FindFirstChild("Animals")
+			if not animalShelf or not animalShelf.Parent or #animals >= maxAnimals then return end
+			local available = {}
+			for _, species in candidates do
+				local template = animalShelf:FindFirstChild(species)
+				if AssetIds["Animals/" .. species] and template and template:IsA("Model") then
+					table.insert(available, species)
+				end
+			end
+			if #available == 0 then return end -- 승인 실물 없으면 가짜 동물 생성 금지.
+			local species = available[wildlifeRng:NextInteger(1, #available)]
+			local pos = ORIGIN + scatter(65)
+			local root0 = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			if root0 and (root0.Position - pos).Magnitude < 32 then return end
+			local model = placeModel(folder, "Animals", species, pos, sizes[species], false)
+			if not model then return end
+			model.Name = "FieldAmbientAnimal"
+			model:SetAttribute("ObservedSpecies", species)
+			local focus = model:FindFirstChildWhichIsA("BasePart", true)
+			if focus then
+				local prompt = Instance.new("ProximityPrompt")
+				prompt.Name = "FieldWildlifeObserve"
+				prompt.ObjectText = names[species] or species
+				prompt.ActionText = "조용히 관찰"
+				prompt.HoldDuration = 0.9
+				prompt.MaxActivationDistance = 12
+				prompt.RequiresLineOfSight = false
+				prompt.Parent = focus
+				prompt.Triggered:Connect(function(triggerPlayer)
+					if finished or triggerPlayer ~= player or not prompt.Enabled then return end
+					prompt.Enabled = false
+					folder:SetAttribute("FieldAmbientObservations", (folder:GetAttribute("FieldAmbientObservations") or 0) + 1)
+					say("동물 발견: " .. (names[species] or species) .. " · 현장 관찰 완료")
+				end)
+			end
+			table.insert(animals, { model = model, center = model:GetPivot(), bornAt = os.clock(),
+				phase = wildlifeRng:NextNumber(0, 7), direction = wildlifeRng:NextNumber(-math.pi, math.pi) })
+		end
+		-- 자연동물은 최대 4마리만 두고 화면 밖에 있을 때 짧은 산책·풀 뜯기를 반복한다.
+		local tick = 0
+		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
+			if finished or not folder.Parent then return end
+			tick += math.min(dt, 0.2)
+			if tick < 0.24 then return end
+			tick = 0
+			local now = os.clock()
+			local root0 = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			for i = #animals, 1, -1 do
+				local a = animals[i]
+				if not a.model.Parent or now - a.bornAt > 100 then
+					if a.model.Parent then a.model:Destroy() end
+					table.remove(animals, i)
+				elseif not root0 or (root0.Position - a.center.Position).Magnitude < 160 then
+					local time = now - a.bornAt
+					local stroll = 5.5 * math.sin(time * 0.33 + a.phase)
+					local drift = 2.3 * math.sin(time * 0.21 + a.phase)
+					local offset = Vector3.new(math.cos(a.direction) * stroll, 0, math.sin(a.direction) * stroll + drift)
+					local yaw = math.sin(time * 0.28 + a.phase) * 0.36
+					local crouch = -0.09 * math.max(0, math.sin(time * 1.25 + a.phase))
+					a.model:PivotTo(a.center * CFrame.new(offset + Vector3.new(0, crouch, 0)) * CFrame.Angles(0, yaw, 0))
+				end
+			end
+			local phase = folder:GetAttribute("FieldTimePhase") or "낮"
+			-- [새벽/황혼 생태] 동물 조우를 조금 더 자주 시도하지만 생성 수 상한은 항상 유지한다.
+			local gap = if phase == "새벽" or phase == "황혼" then 18 else 32
+			if now - lastWildlifeSpawn >= gap and #animals < maxAnimals then
+				lastWildlifeSpawn = now
+				spawnWildlife()
+			end
+		end))
 	end
 
 	-- 미니맵: 주변 약 130스터드를 보여 준다(북쪽이 위). 흰 점=나, 금색=발견물(멀면 가장자리에 표시), 빨강=적, 큰 주황=두목
