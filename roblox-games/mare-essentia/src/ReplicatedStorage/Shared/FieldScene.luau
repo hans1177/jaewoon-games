@@ -1561,6 +1561,10 @@ function FieldScene.start(opts)
 	local hitStopUntil = 0 -- 타격 정지: 이 시각까지 휘두르기 진행을 멈춘다
 	local hitStopLast = os.clock()
 	local swingCombo, slashIdx = nil, 0
+	-- [연타 관절 연결] 한 공격이 끝나기 전에 다음 시각 모션을 시작할 때 R15 실제 마지막 자세를 이어 붙인다.
+	-- 신규 애니메이션 트랙/이동 판정 없이 기존 캐논 관절만 보간한다. 최근 프레임 포즈는 테이블을 재사용한다.
+	local swingLastPose = {}
+	local swingBridgeFrom, swingBridgeAt, swingBridgeTime = nil, 0, 0
 	-- [모션 직업] 기존 캐릭터 FieldDodgeStyle 속성을 입력·렌더 간 정본으로 사용하여 Luau 지역변수 한도를 지킨다.
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
@@ -1596,6 +1600,17 @@ function FieldScene.start(opts)
 	-- 공격 동작: 캐릭터의 오른팔·허리를 짧게 휘두른다 (애니메이터가 쓴 뒤 덮어쓴다)
 	-- [무기별 실물 R15 모션] 보통 공격은 반드시 1단. 뒤이어 보이는 타격은 숙련 발동시에만 재생한다.
 	local function startSwing(kind: string, dur: number, stage: number?)
+		local nextStage = math.clamp(math.floor(stage or 1), 1, 5)
+		-- [연타 교차 보간] 2·3타에서 현재 실제 관절을 남겨 끊기는 팔/허리/발목을 연결한다.
+		if FM and nextStage >= 2 and swingKind and next(swingLastPose) then
+			swingBridgeFrom = table.clone(swingLastPose)
+			swingBridgeAt = os.clock()
+			swingBridgeTime = if wpn.family == "dagger" or wpn.family == "fist" then 0.075
+				elseif wpn.family == "axe" or wpn.family == "blunt" then 0.14
+				elseif wpn.ranged then 0.12 else 0.105
+		else
+			swingBridgeFrom = nil
+		end
 		-- [무기별 공격음] 각 승인 오디오의 원본을 사용한다.
 		-- 준비/휘두름은 여기서, 투사체 발포는 실제 공격 판정 시 한 번만 재생해 저음이 겹치지 않는다.
 		if wpn.ranged and (kind == "slash" or kind == "heavy" or kind == "spin") then
@@ -1637,7 +1652,7 @@ function FieldScene.start(opts)
 		end
 		swingCombo = nil
 		if FM then
-			local beat = math.clamp(math.floor(stage or 1), 1, 5)
+			local beat = nextStage
 			if wpn.family == "fist" then
 				-- [마력숲 원본 참조] 잽·크로스·훅 / 승룡 / 회전차기 / 팔꿈치·무릎
 				local style = if kind == "heavy" then "UNARMED_UPPERCUT"
@@ -1668,7 +1683,7 @@ function FieldScene.start(opts)
 				dur = math.max(dur, swingCombo.duration)
 			end
 		end
-		slashIdx = math.clamp(math.floor(stage or 1), 1, 5)
+		slashIdx = nextStage
 		swingKind, swingT0, swingDur = kind, os.clock(), dur
 		local source = player.Character
 		if source then
@@ -1814,6 +1829,11 @@ function FieldScene.start(opts)
 				return CFrame.new(0, -0.25 * bell(p), -1.4 * bell((p - 0.1) / 0.7)) * CFrame.Angles(-0.45 * bell((p - 0.1) / 0.65), 0.45 * side * bell(p), 0.12 * side * bell(p))
 			elseif kind == "heavy" then
 				if wpn.ranged then return CFrame.new(0, -0.12 * bell(p), 0) * CFrame.Angles(0.10 * bell(p), 0, 0) end
+				-- [숙련 3타] 3타는 시각 보조 동작이므로 공중으로 뛰지 않고, 발을 디디며 무게만 싣는다.
+				if slashIdx >= 2 then
+					local side = if slashIdx % 2 == 0 then 1 else -1
+					return CFrame.new(0, -0.25 * bell(p), 0) * CFrame.Angles(0.30 * bell(p), side * 0.20 * bell(p), 0)
+				end
 				-- 점프 강타: 웅크림(0~0.18) → 도약(~0.55) → 내려찍기(~0.62) → 착지 충격(~0.8) → 일어남
 				local y, lean = 0, 0
 				if p < 0.18 then
@@ -1971,8 +1991,9 @@ function FieldScene.start(opts)
 			if wpn.ranged then
 				local hum = ch:FindFirstChildOfClass("Humanoid")
 				local traveling = hum and hum.MoveDirection.Magnitude > 0.08
-				local readiness = if traveling then 0.32 else 0.75
-				local firing = swingKind == "slash" or swingKind == "heavy" or swingKind == "spin"
+				local actionPose = swingKind == "slash" or swingKind == "heavy" or swingKind == "spin"
+				local readiness = if actionPose then 0.95 elseif traveling then 0.32 else 0.75
+				local firing = actionPose and slashIdx == 1
 				local progress = if firing then math.clamp((os.clock() - swingT0) / math.max(swingDur, 0.05), 0, 1) else 0
 				local press = if firing then math.sin(math.clamp(progress / 0.48, 0, 1) * math.pi * 0.5) else 0
 				local recoil = if firing then math.sin(math.clamp((progress - 0.35) / 0.34, 0, 1) * math.pi) else 0
@@ -2004,6 +2025,59 @@ function FieldScene.start(opts)
 				end
 				canon.Head = (canon.Head or id) * CFrame.Angles(-0.06 * poseWeight + 0.06 * recoil, 0, 0)
 				canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.08 * poseWeight + 0.11 * recoil, 0, 0)
+			end
+			-- [연타 관성] 무기 프로필별 두 번째/세 번째 시각 동작에 발 디딤과 팔꿈치 회수를 얹는다.
+			-- CommonMotion 원본 타격 동작에만 아주 짧은 보정으로 적용, 공격력·속도·사거리에는 영향 없음.
+			if swingKind and swingCombo and slashIdx >= 2 then
+				local p = math.clamp((os.clock() - swingT0) / math.max(swingDur, 0.05), 0, 1)
+				local pulse = math.sin(p * math.pi)
+				local side = if slashIdx % 2 == 0 then -1 else 1
+				local id = CFrame.identity
+				local family = wpn.family
+				if family == "dagger" then
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.08 * pulse, side * 0.19 * pulse, side * 0.06 * pulse)
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.18 * pulse, 0, side * 0.14 * pulse)
+					canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.06 * pulse, side * 0.10 * pulse, 0)
+				elseif family == "spear" then
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.09 * pulse, side * 0.10 * pulse, 0)
+					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.10 * pulse, 0, side * 0.06 * pulse)
+					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.12 * pulse, 0, -0.04 * pulse)
+				elseif family == "axe" or family == "blunt" then
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(0.12 * pulse, side * 0.23 * pulse, 0)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.12 * pulse, 0, -side * 0.08 * pulse)
+					canon.FootL = (canon.FootL or id) * CFrame.Angles(0.12 * pulse, 0, side * 0.04 * pulse)
+				elseif family == "blade" then
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(0, side * 0.16 * pulse, -side * 0.04 * pulse)
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.09 * pulse, side * 0.12 * pulse, 0)
+				elseif family == "fist" then
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.12 * pulse, side * 0.16 * pulse, 0)
+					canon.FootR = (canon.FootR or id) * CFrame.Angles(0.12 * pulse, 0, side * 0.06 * pulse)
+				elseif wpn.ranged then
+					-- 활: 화살 재장전·시위 회수 / 석궁: 노리쇠 / 총: 약실 재장전. 발포 반동은 1타만.
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(if slashIdx == 2 then -0.20 * pulse else 0.10 * pulse, 0, 0)
+					canon.Head = (canon.Head or id) * CFrame.Angles(0.06 * pulse, side * 0.04 * pulse, 0)
+				end
+			end
+			-- [관절 교량] 2·3타 첫 0.08~0.14초 동안 직전 프레임 자세를 목표 자세까지 스무스스텝으로 잇는다.
+			if swingKind and swingBridgeFrom then
+				local weight = math.clamp((os.clock() - swingBridgeAt) / swingBridgeTime, 0, 1)
+				if weight >= 1 then
+					swingBridgeFrom = nil
+				else
+					weight = weight * weight * (3 - 2 * weight)
+					for joint, old in swingBridgeFrom do
+						if typeof(old) == "CFrame" then
+							canon[joint] = old:Lerp(canon[joint] or CFrame.identity, weight)
+						end
+					end
+				end
+			end
+			-- [프레임 캐시] 공격 중에만 카메라·모션과 독립적인 캐논 관절을 재사용한다.
+			table.clear(swingLastPose)
+			if swingKind and swingCombo then
+				for joint, cf in canon do
+					if typeof(cf) == "CFrame" then swingLastPose[joint] = cf end
+				end
 			end
 			if swingKind then
 				rootRot = rootFor(swingKind, math.clamp((os.clock() - swingT0) / swingDur, 0, 1))
