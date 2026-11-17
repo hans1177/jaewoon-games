@@ -4003,7 +4003,7 @@ function playStory(ev)
 			bg.Name = "Illustration"
 			bg.AnchorPoint = Vector2.new(0.5, 0.5)
 			bg.Position = UDim2.fromScale(0.5, 0.5)
-			bg.Size = UDim2.fromScale(1.02, 1.02)
+			bg.Size = UDim2.fromScale(1, 1)
 			bg.BackgroundTransparency = 1
 			bg.ScaleType = Enum.ScaleType.Crop
 			bg.Image = "rbxassetid://" .. tostring(img)
@@ -4012,10 +4012,13 @@ function playStory(ev)
 			shade.Rotation = 90
 			shade.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(1, 0.25) })
 			shade.Parent = bg
-			game:GetService("TweenService"):Create(bg, TweenInfo.new(20, Enum.EasingStyle.Sine), { Size = UDim2.fromScale(1.14, 1.14) }):Play()
+			-- [이벤트 원화] 원본보다 14% 더 확대하면 저해상도 원화와 세부 질감이 흐려져 확대를 생략한다.
 		end
 	end
 
+	-- [초상 원본 화질] 256폭 지역 아틀라스를 330px로 확장하지 않고 원본 이하로 표시한다.
+	local storyViewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
+	local portraitWidth = math.min(256, math.max(110, math.floor(storyViewport.Y * 0.56 * 0.76)))
 	-- 등장 인물: 승인된 3D 인물 모델을 반신 초상으로 보여 준다 (모델이 없으면 실루엣)
 	local portraitModel = storyPortraitModel(ev.npc or "", ev.id or "")
 	local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
@@ -4062,7 +4065,7 @@ function playStory(ev)
 		ph.Name = "NpcPortrait"
 		ph.AnchorPoint = Vector2.new(0.5, 1)
 		ph.Position = UDim2.fromScale(0.5, 1)
-		ph.Size = UDim2.new(0, 250, 1, -14)
+		ph.Size = UDim2.new(0, portraitWidth, 1, -14)
 		ph.BackgroundTransparency = 1
 		ph.ScaleType = Enum.ScaleType.Crop
 		ph.Image = "rbxassetid://" .. tostring(cport.assetId or AssetIds["Portraits/" .. cport.atlas])
@@ -4093,7 +4096,7 @@ function playStory(ev)
 		photo.Name = "NpcPortrait"
 		photo.AnchorPoint = Vector2.new(0.5, 1)
 		photo.Position = UDim2.fromScale(0.5, 1)
-		photo.Size = UDim2.new(0, 330, 1, 6)
+		photo.Size = UDim2.new(0, portraitWidth, 1, -14)
 		photo.BackgroundTransparency = 1
 		photo.BorderSizePixel = 0
 		photo.ScaleType = Enum.ScaleType.Crop
@@ -4108,7 +4111,7 @@ function playStory(ev)
 		vf.BackgroundTransparency = 1
 		vf.AnchorPoint = Vector2.new(0.5, 1)
 		vf.Position = UDim2.fromScale(0.5, 1)
-		vf.Size = UDim2.new(0, 330, 1, 6)
+		vf.Size = UDim2.new(0, portraitWidth, 1, -14)
 		vf.Ambient = Color3.fromRGB(170, 170, 178)
 		vf.LightColor = Color3.fromRGB(255, 236, 205)
 		vf.LightDirection = Vector3.new(-0.6, -0.8, -1).Unit
@@ -7679,177 +7682,65 @@ function H.showCombatCard(unit, origin, skill)
 	})
 end
 
--- ───── 지식 카드를 새로 얻을 때의 연출: 카드가 튀어나와 뒤집히고 희귀도 빛이 퍼진다 ─────
+-- [카드 습득 화면] 도감/보상은 별도 정본으로 유지한다. 디버그 미리보기만 작은 비차단 알림으로 남긴다.
+-- 첫 카드부터 자동 팝업·뒤집기·광선·팡파르·화면 암전은 재생하지 않는다.
 local GAIN_COLOR = {
-	Common = Color3.fromRGB(190, 170, 130), Uncommon = Color3.fromRGB(110, 190, 120), Rare = Color3.fromRGB(90, 150, 230),
-	Epic = Color3.fromRGB(180, 110, 230), Legendary = Color3.fromRGB(245, 200, 80),
+	Common = Color3.fromRGB(190, 170, 130), Uncommon = Color3.fromRGB(110, 190, 120),
+	Rare = Color3.fromRGB(90, 150, 230), Epic = Color3.fromRGB(180, 110, 230),
+	Legendary = Color3.fromRGB(245, 200, 80),
 }
 local GAIN_RARITY = { Common = "흔함", Uncommon = "보통", Rare = "희귀", Epic = "영웅급", Legendary = "전설" }
-H.gainQueue = {}
-H.gainBusy = false
 
 function H.showCardGain(card, moreCount)
-	local BC = require(Shared:WaitForChild("BoardingCards"))
-	local tw = game:GetService("TweenService")
-	local tint = GAIN_COLOR[card.rarity] or GAIN_COLOR.Common
-	-- 효과음: 흔한 카드는 동전 소리, 희귀 이상은 종소리, 전설은 팡파르 (등록된 기존 효과음만 쓴다)
-	Sfx.play(if card.rarity == "Legendary" then "sfx_fanfare" elseif card.rarity == "Epic" or card.rarity == "Rare" then "sfx_bell" else "sfx_coin", 0.7, 1, "sfx_click")
+	if not card then return end
+	-- [스튜디오 수동 미리보기] 카드 획득 자동 호출은 하지 않는다. 다른 화면의 터치를 가리지 않는다.
+	local pg = player:WaitForChild("PlayerGui")
+	local previous = pg:FindFirstChild("CardGain")
+	if previous then previous:Destroy() end
 	local g = overlayGui("CardGain", 95)
-	local dim = Instance.new("TextButton")
-	dim.Size = UDim2.fromScale(1, 1)
-	dim.BackgroundColor3 = Color3.new(0, 0, 0)
-	dim.BackgroundTransparency = 1
-	dim.Text = ""
-	dim.AutoButtonColor = false
-	dim.Parent = g
-	tw:Create(dim, TweenInfo.new(0.25), { BackgroundTransparency = 0.35 }):Play()
-
+	local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
+	local badge = Instance.new("Frame")
+	badge.Name = "CardDiscoveryNotice"
+	badge.AnchorPoint = Vector2.new(0.5, 0)
+	badge.Position = UDim2.new(0.5, 0, 0, if vp.Y < 500 then 66 else 78)
+	badge.Size = UDim2.fromOffset(math.min(320, math.max(180, vp.X - 32)), 54)
+	badge.BackgroundColor3 = Color3.fromRGB(27, 35, 43)
+	badge.BackgroundTransparency = 0.08
+	badge.BorderSizePixel = 0
+	badge.Parent = g
+	corner(badge, 10)
+	local edge = Instance.new("UIStroke")
+	edge.Color = GAIN_COLOR[card.rarity] or GAIN_COLOR.Common
+	edge.Thickness = 1.5
+	edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	edge.Parent = badge
 	local title = Instance.new("TextLabel")
 	title.BackgroundTransparency = 1
-	title.AnchorPoint = Vector2.new(0.5, 0)
-	title.Position = UDim2.fromScale(0.5, 0.06)
-	title.Size = UDim2.fromOffset(320, 30)
-	title.Font = Enum.Font.Antique
-	title.TextSize = 24
-	title.TextColor3 = tint
-	title.Text = "새 지식 카드 발견!"
-	title.TextTransparency = 1
-	title.Parent = dim
-	tw:Create(title, TweenInfo.new(0.4), { TextTransparency = 0 }):Play()
-
-	local stage = Instance.new("Frame")
-	stage.AnchorPoint = Vector2.new(0.5, 0.5)
-	stage.Position = UDim2.fromScale(0.5, 0.52)
-	stage.Size = UDim2.fromOffset(260, 360)
-	stage.BackgroundTransparency = 1
-	stage.Parent = dim
-
-	-- 뒤에서 퍼지는 빛줄기
-	for i = 1, 8 do
-		local ray = Instance.new("Frame")
-		ray.AnchorPoint = Vector2.new(0.5, 0.5)
-		ray.Position = UDim2.fromScale(0.5, 0.5)
-		ray.Size = UDim2.fromOffset(6, 20)
-		ray.Rotation = i * 45
-		ray.BackgroundColor3 = tint
-		ray.BackgroundTransparency = 0.3
-		ray.BorderSizePixel = 0
-		ray.ZIndex = 1
-		ray.Parent = stage
-		local grow = tw:Create(ray, TweenInfo.new(0.9, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(6, 330), BackgroundTransparency = 1 })
-		grow:Play()
-	end
-
-	-- 카드 본체 (작게 시작해 튀어나오며 뒤집힌다)
-	local face = Instance.new("Frame")
-	face.AnchorPoint = Vector2.new(0.5, 0.5)
-	face.Position = UDim2.fromScale(0.5, 0.5)
-	face.Size = UDim2.fromOffset(0, 0)
-	face.BackgroundColor3 = Color3.fromRGB(226, 205, 165)
-	face.BorderSizePixel = 0
-	face.ClipsDescendants = true
-	face.ZIndex = 5
-	face.Parent = stage
-	corner(face, 12)
-	local stroke = Instance.new("UIStroke")
-	stroke.Color = tint
-	stroke.Thickness = 2
-	stroke.Parent = face
-	local art = Instance.new("Frame")
-	art.Position = UDim2.fromOffset(10, 10)
-	art.Size = UDim2.new(1, -20, 0, 160)
-	art.ZIndex = 6
-	art.Parent = face
-	corner(art, 8)
-	local fieldDef = findField(card.field) or { name = "?", color = { 90, 90, 100 } }
-	paintCardArt(art, card, fieldDef, false)
-	for _, d in art:GetDescendants() do
-		if d:IsA("GuiObject") then d.ZIndex = 7 end
-	end
-	local function line(text, y, size, color, font)
-		local l = Instance.new("TextLabel")
-		l.BackgroundTransparency = 1
-		l.Position = UDim2.fromOffset(12, y)
-		l.Size = UDim2.new(1, -24, 0, size + 6)
-		l.Font = font or Enum.Font.Gotham
-		l.TextSize = size
-		l.TextColor3 = color
-		l.TextWrapped = true
-		l.TextXAlignment = Enum.TextXAlignment.Center
-		l.TextYAlignment = Enum.TextYAlignment.Top
-		l.Text = text
-		l.ZIndex = 8
-		l.Parent = face
-		return l
-	end
-	local ink = Color3.fromRGB(50, 36, 24)
-	line(card.name, 178, 20, ink, Enum.Font.Antique)
-	line(string.format("%s · %s", fieldDef.name, GAIN_RARITY[card.rarity] or card.rarity), 206, 13, Color3.fromRGB(110, 80, 50))
-	local d = BC.Units[card.id] or BC.Specials[card.id]
-	local battle = if d == nil then "" elseif d.special then "전투: 즉시 효과 카드" else string.format("전투: %s 줄 · 위력 %d%s", BC.ROW_NAME[d.row], d.power, if d.hero then " · 영웅" else "")
-	line(battle, 228, 13, Color3.fromRGB(70, 90, 70), Enum.Font.GothamBold)
-	local desc = line(card.description or "", 250, 12, ink)
-	desc.Size = UDim2.new(1, -24, 0, 70)
-
-	-- 튀어나오기 → 가로로 뒤집히는 느낌(폭을 줄였다 키움) → 안착
-	local pop = tw:Create(face, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(220, 330), Rotation = 0 })
-	face.Rotation = -12
-	pop:Play()
-	task.delay(0.45, function()
-		if not face.Parent then return end
-		tw:Create(face, TweenInfo.new(0.16), { Size = UDim2.fromOffset(20, 330) }):Play()
-		task.delay(0.16, function()
-			if not face.Parent then return end
-			tw:Create(face, TweenInfo.new(0.22, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(240, 340) }):Play()
-			tw:Create(stroke, TweenInfo.new(0.9, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Thickness = if card.rarity == "Legendary" or card.rarity == "Epic" then 6 else 4 }):Play()
-		end)
+	title.Position = UDim2.fromOffset(12, 5)
+	title.Size = UDim2.new(1, -24, 0, 23)
+	title.Font = Enum.Font.GothamBold
+	title.TextSize = 15
+	title.TextXAlignment = Enum.TextXAlignment.Left
+	title.TextTruncate = Enum.TextTruncate.AtEnd
+	title.TextColor3 = Color3.fromRGB(246, 238, 221)
+	title.TextStrokeTransparency = 1
+	title.Text = tostring(card.name or "지식 카드")
+	title.Parent = badge
+	local detail = Instance.new("TextLabel")
+	detail.BackgroundTransparency = 1
+	detail.Position = UDim2.fromOffset(12, 29)
+	detail.Size = UDim2.new(1, -24, 0, 19)
+	detail.Font = Enum.Font.Gotham
+	detail.TextSize = 12
+	detail.TextXAlignment = Enum.TextXAlignment.Left
+	detail.TextTruncate = Enum.TextTruncate.AtEnd
+	detail.TextColor3 = Color3.fromRGB(189, 204, 214)
+	detail.TextStrokeTransparency = 1
+	detail.Text = "도감 등록 · " .. (GAIN_RARITY[card.rarity] or tostring(card.rarity or "일반"))
+	detail.Parent = badge
+	task.delay(3, function()
+		if g.Parent then g:Destroy() end
 	end)
-	-- 반짝이 조각이 위로 날아오른다
-	for i = 1, 14 do
-		task.delay(0.5 + i * 0.05, function()
-			if not stage.Parent then return end
-			local sp = Instance.new("TextLabel")
-			sp.BackgroundTransparency = 1
-			sp.Size = UDim2.fromOffset(20, 20)
-			sp.AnchorPoint = Vector2.new(0.5, 0.5)
-			sp.Position = UDim2.fromScale(0.15 + (i * 0.37 % 0.7), 0.65)
-			sp.Font = Enum.Font.GothamBold
-			sp.TextSize = 16 + (i % 3) * 4
-			sp.TextColor3 = tint
-			sp.Text = "✦"
-			sp.ZIndex = 9
-			sp.Parent = stage
-			local up = tw:Create(sp, TweenInfo.new(1.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Position = UDim2.fromScale(sp.Position.X.Scale + 0.1 * ((i % 2) * 2 - 1), 0.1), TextTransparency = 1 })
-			up:Play()
-			up.Completed:Once(function() sp:Destroy() end)
-		end)
-	end
-
-	local hint = Instance.new("TextLabel")
-	hint.BackgroundTransparency = 1
-	hint.AnchorPoint = Vector2.new(0.5, 1)
-	hint.Position = UDim2.fromScale(0.5, 0.96)
-	hint.Size = UDim2.fromOffset(320, 22)
-	hint.Font = Enum.Font.Gotham
-	hint.TextSize = 13
-	hint.TextColor3 = Color3.fromRGB(230, 220, 190)
-	hint.Text = if moreCount and moreCount > 0 then string.format("화면을 누르면 다음 카드 (외 %d장)", moreCount) else "화면을 누르면 닫혀요 · 이 카드는 카드 배틀 덱에 쓸 수 있어요"
-	hint.Parent = dim
-
-	local closed = false
-	local function close()
-		if closed then return end
-		closed = true
-		g:Destroy()
-		H.gainBusy = false
-		local nextCard = table.remove(H.gainQueue, 1)
-		if nextCard then
-			H.gainBusy = true
-			H.showCardGain(nextCard, #H.gainQueue)
-		end
-	end
-	dim.Activated:Connect(close)
-	task.delay(4.5, close)
 end
 
 -- 개발 확인용: workspace 속성 DevSail 에 항구 id 를 넣으면 그 항구로 출항 연출을 보여 준다
@@ -7969,23 +7860,15 @@ workspace:GetAttributeChangedSignal("DevCardGain"):Connect(function()
 	end
 end)
 
--- 도감에 새로 들어온 카드를 찾아 연출을 띄운다 (처음 한 번은 기록만 하고 띄우지 않는다)
+-- [도감 획득] 최초 카드부터 이후 카드까지 저장·발견 표시만 갱신한다.
+-- 강제 전면 이벤트/사운드/클릭 대기는 없으며, 도감과 덱 상세 기능은 그대로 이용할 수 있다.
 function H.checkNewCards()
 	local cards = view and view.codex and view.codex.cards
 	if not cards then return end
-	local first = H.seenCards == nil
 	H.seenCards = H.seenCards or {}
 	for _, c in cards do
 		if c.found and not H.seenCards[c.id] then
 			H.seenCards[c.id] = true
-			if not first then
-				if H.gainBusy then
-					table.insert(H.gainQueue, c)
-				else
-					H.gainBusy = true
-					H.showCardGain(c, 0)
-				end
-			end
 		end
 	end
 end
