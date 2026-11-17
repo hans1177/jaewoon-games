@@ -1768,6 +1768,36 @@ function FieldScene.start(opts)
 					end
 				end
 			end
+			-- [주인공 무기별 지면 접지·손목 반동] 원본 숙련 콤보 뒤에 작은 보조 관절만 합성한다.
+			-- 명중 횟수·타격 정지·애니메이션 길이·능력치는 기존 계산을 그대로 사용한다.
+			if swingKind and swingCombo then
+				local p = math.clamp((os.clock() - swingT0) / swingDur, 0, 1)
+				local impulse = math.sin(p * math.pi)
+				local settle = math.max(0, (p - 0.57) / 0.43)
+				local id = CFrame.identity
+				local family = wpn.family
+				local thrust = family == "spear" or family == "dagger"
+				local heavy = family == "axe" or family == "blunt"
+				local range = family == "bow" or family == "firearm"
+				local torque = if heavy then 0.20 elseif thrust then 0.08 elseif range then 0.045 else 0.12
+				canon.Chest = (canon.Chest or id) * CFrame.Angles(
+					if heavy then -0.14 * impulse + 0.09 * settle elseif thrust then -0.12 * impulse else 0.045 * impulse,
+					(if range then -0.04 else 1) * torque * impulse, 0)
+				canon.HandR = (canon.HandR or id) * CFrame.Angles(
+					if heavy then 0.17 * impulse - 0.12 * settle
+					elseif family == "firearm" then 0.25 * impulse - 0.14 * settle
+					elseif family == "bow" then -0.21 * impulse + 0.18 * settle
+					elseif thrust then -0.11 * impulse else 0.09 * impulse, 0, 0)
+				if not range then
+					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.13 * impulse, 0, -0.025 * impulse)
+					canon.ShinL = (canon.ShinL or id) * CFrame.Angles(-0.10 * impulse, 0, 0)
+					canon.FootL = (canon.FootL or id) * CFrame.Angles(0.09 * impulse, 0, 0)
+				else
+					-- 활·총기는 발을 고정하고 상체의 순간 반동을 더 크게 보여 준다.
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.08 * impulse, 0, -0.03)
+					canon.Head = (canon.Head or id) * CFrame.Angles(0.07 * impulse, 0, 0)
+				end
+			end
 			if swingKind then
 				rootRot = rootFor(swingKind, math.clamp((os.clock() - swingT0) / swingDur, 0, 1))
 			end

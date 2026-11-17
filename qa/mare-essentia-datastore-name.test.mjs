@@ -153,4 +153,9 @@ test('적과 동료는 무기별 준비·타격·회수 동작과 원본 PBR 맵
   assert.match(field,/FM\.actor\(a\.fm, "RECOVERY",[^\n]+a\.weapon\.motion\)/);
   assert.match(field,/FM\.actor\(a\.fm, "ANTICIPATION",[^\n]+a\.weapon\.motion\)/);
   assert.match(field,/if not quiet then/);
+  assert.match(field,/local thrust = family == "spear" or family == "dagger"/);
+  assert.match(field,/local heavy = family == "axe" or family == "blunt"/);
+  assert.match(field,/local range = family == "bow" or family == "firearm"/);
+  assert.match(field,/canon\.HandR = \(canon\.HandR or id\)/);
+  assert.match(field,/canon\.FootL = \(canon\.FootL or id\)/);
 });
