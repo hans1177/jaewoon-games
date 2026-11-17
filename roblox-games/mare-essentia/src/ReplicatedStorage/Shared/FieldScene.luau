@@ -7192,7 +7192,8 @@ function FieldScene.start(opts)
 		local spawned = {} -- 영입 슬롯별 생성 성공만 기록. 실패 슬롯만 재시도한다.
 		local nextSpawnRetryAt = 0
 		local spawning = false -- R15 모델 생성이 비동기로 끝날 때까지 같은 슬롯 중복 소환 차단.
-		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
+		-- [실제 관절 재생 시점] Animator 평가가 끝난 물리 직전 단계에 갱신해 팔다리가 고정된 인형처럼 남지 않게 한다.
+		table.insert(conns, RunService.PreSimulation:Connect(function(dt)
 			if finished or #allyDefs == 0 then
 				return
 			end
@@ -7371,18 +7372,29 @@ function FieldScene.start(opts)
 				local stop = if tgt then (if aw.ranged then 16 else 5.5) else 3
 				local to = Vector3.new(goal.X - a.root.Position.X, 0, goal.Z - a.root.Position.Z)
 				local moving = to.Magnitude > stop
-				-- [동료 가감속] 목표가 바뀔 때 발은 연속해서 디디며 몸이 갑자기 직각으로 꺾이지 않는다.
-				local wantedVel = if moving then to.Unit * (if tgt then 16 else 20) else Vector3.zero
-				a.moveVel = (a.moveVel or Vector3.zero):Lerp(wantedVel, 1 - math.exp(-10 * math.clamp(dt, 0, 0.1)))
+				-- [동료 관성 보행] 이동 최고속도는 유지하고 목표에 가까워질수록 다리 디딤과 실제 이동을 함께 감속한다.
+				local maxSpeed = if tgt then 16 else 20
+				local remaining = math.max(0, to.Magnitude - stop)
+				local desiredSpeed = if moving then math.min(maxSpeed, math.max(2, remaining * 3.5)) else 0
+				local wantedVel = if moving then to.Unit * desiredSpeed else Vector3.zero
+				local previousVel = a.moveVel or Vector3.zero
+				local accel = if desiredSpeed > previousVel.Magnitude then 6.5 else 9
+				a.moveVel = previousVel:Lerp(wantedVel, 1 - math.exp(-accel * math.clamp(dt, 0, 0.1)))
+				local walked = 0
 				if moving and a.moveVel.Magnitude > 0.05 then
-					local step = math.min(to.Magnitude - stop, a.moveVel.Magnitude * math.clamp(dt, 0, 0.1))
-					a.model:PivotTo(a.model:GetPivot() + a.moveVel.Unit * step)
-					a.gait = (a.gait or 0) + step / 5.2
+					walked = math.min(remaining, a.moveVel.Magnitude * math.clamp(dt, 0, 0.1))
+					a.model:PivotTo(a.model:GetPivot() + a.moveVel.Unit * walked)
+					a.gait = (a.gait or 0) + walked / 5.2
 				end
-				if to.Magnitude > 0.5 then
+				-- [시선·발 방향 분리] 적을 공격할 때는 적을 보고, 복귀하면 주인공과 같은 방향을 보며 회전은 지연시킨다.
+				local face = if tgt then tgt.root.Position - a.root.Position
+					elseif moving and a.moveVel.Magnitude > 0.05 then a.moveVel else root0.CFrame.LookVector
+				face = Vector3.new(face.X, 0, face.Z)
+				if face.Magnitude > 0.01 then
 					local pv = a.model:GetPivot()
-					local front = CFrame.lookAt(pv.Position, pv.Position + to.Unit)
-					a.model:PivotTo(CFrame.new(pv.Position) * pv.Rotation:Lerp(front.Rotation, math.clamp(dt * 10, 0, 1)))
+					local front = CFrame.lookAt(pv.Position, pv.Position + face.Unit)
+					a.model:PivotTo(CFrame.new(pv.Position) * pv.Rotation:Lerp(front.Rotation,
+						1 - math.exp(-(if moving then 5.5 else 8) * math.clamp(dt, 0, 0.1))))
 				end
 				if tgt and not moving and now >= a.nextAt then
 					a.nextAt = now + 1.3 / aw.speed
@@ -7468,7 +7480,7 @@ function FieldScene.start(opts)
 						FM.actor(a.fm, "ANTICIPATION", 1 - (a.nextAt - now) / 0.22, dt, nil, 1.18, nil, false, nil, a.weapon.motion)
 					elseif moving then
 						FM.actor(a.fm, "RUN", (a.gait or 0) % 1, dt, nil, 1.3, nil, false, nil, a.weapon.motion,
-							math.clamp(a.moveVel.Magnitude / (if tgt then 16 else 20), 0.18, 1.25))
+							math.clamp(walked / math.max(dt, 0.008) / maxSpeed, 0.18, 1.25))
 					else
 						FM.actor(a.fm, "IDLE", (now / 2.4 + a.slot * 0.3) % 1, dt, nil, 1.15, nil, false, nil, a.weapon.motion)
 					end

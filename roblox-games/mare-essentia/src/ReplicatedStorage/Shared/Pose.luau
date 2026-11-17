@@ -1053,13 +1053,16 @@ function Pose.makeR15Action(model, state, progress, t)
 		local stride = if motionStyle == "heavy" then 0.84 elseif motionStyle == "elder" then 0.7 elseif motionStyle == "nimble" then 1.1 else 1
 		local amp = (if run then 0.96 else 0.74) * stride * (if companionRun then 1.17 else 1)
 		local kneeAmp = (if run then 1.22 else 0.91) * stride * (if companionRun then 1.15 else 1)
-		set(m.leftLeg, A(s * amp, 0, 0)); set(m.rightLeg, A(-s * amp, 0, 0))
+		-- [동료 축발] 관절 각도를 일정하게 왕복시키는 인형식 보행 대신 착지-밀기-들기 위상을 나눈다.
+		local pushL, pushR = math.max(0, -s), math.max(0, s)
+		set(m.leftLeg, A(s * amp + (if companionRun then -pushL * 0.10 else 0), 0, 0))
+		set(m.rightLeg, A(-s * amp + (if companionRun then -pushR * 0.10 else 0), 0, 0))
 		-- 무릎은 다리가 앞으로 나올 때 접힌다 (R15 무릎은 음수 방향이 접힘)
 		set(m.leftKnee, A(-(math.max(0, c) * kneeAmp + 0.08), 0, 0))
 		set(m.rightKnee, A(-(math.max(0, -c) * kneeAmp + 0.08), 0, 0))
 		-- [착지 발목] 디딤 발은 지면에 남기고 들린 발끝은 착지를 준비한다.
-		set(m.leftAnkle, A(-s * 0.15 - math.max(0, c) * 0.14, 0, 0))
-		set(m.rightAnkle, A(s * 0.15 - math.max(0, -c) * 0.14, 0, 0))
+		set(m.leftAnkle, A(-s * 0.15 - math.max(0, c) * 0.14 + (if companionRun then pushL * 0.16 else 0), 0, 0))
+		set(m.rightAnkle, A(s * 0.15 - math.max(0, -c) * 0.14 + (if companionRun then pushR * 0.16 else 0), 0, 0))
 		-- 반대 다리와 교차하는 팔. 앞팔은 충분히 나가되 뒤팔은 짧게 흔들어
 		-- 뒤로 과하게 꺾이거나 등 뒤에 고정돼 보이지 않게 한다 (R15 전방 = 양의 X 회전).
 		-- [팔-다리 역위상] 짧은 후방 스윙 때문에 교차가 사라진 회귀 수정. 팔 전후 비대칭은 유지한다.
@@ -1078,9 +1081,13 @@ function Pose.makeR15Action(model, state, progress, t)
 		-- [지면 접지] 과도한 수직 바운스를 줄이고 하중 이동은 무릎·발목에 분산한다.
 		local bob = (math.cos(2 * w) * 0.5 + 0.5) * (if companionRun then 0.16 elseif run then 0.12 else 0.075) * stride
 		local lean = if motionStyle == "elder" then 0.12 elseif motionStyle == "nimble" then -0.06 else 0
-		set(m.root, CFrame.new(0, bob, 0) * A((if run then -0.13 else -0.03) + lean, s * 0.08, s * 0.03))
-		set(m.waist, A((if run then -0.04 else 0) - lean * 0.4, -s * 0.13, 0))
-		set(m.neck, A(if run then 0.085 else 0, s * 0.035, 0))
+		-- [유기적 질주] 발이 지면을 차는 순간 골반 회전·어깨 반작용·시선 안정화를 각기 다른 위상으로 준다.
+		local pelvisShift = if companionRun then s * 0.055 * stride else 0
+		set(m.root, CFrame.new(pelvisShift, bob, 0) * A((if companionRun then -0.20 elseif run then -0.13 else -0.03) + lean,
+			s * (if companionRun then 0.12 else 0.08), s * (if companionRun then 0.06 else 0.03)))
+		set(m.waist, A((if companionRun then -0.10 elseif run then -0.04 else 0) - lean * 0.4,
+			-s * (if companionRun then 0.20 else 0.13), s * (if companionRun then 0.055 else 0)))
+		set(m.neck, A(if run then 0.085 else 0, s * (if companionRun then 0.052 else 0.035), -s * (if companionRun then 0.028 else 0)))
 		-- [몸 좌우 기울기] 착지한 쪽에 허리 힘을 싣고 목으로 균형을 잡는다.
 		set(m.waist, m.waist.Transform * A(0, 0, -s * 0.024))
 		set(m.neck, m.neck.Transform * A(0, 0, s * 0.014))
