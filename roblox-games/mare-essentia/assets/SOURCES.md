@@ -1644,3 +1644,19 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 | `relics/` | weapon-cutlass.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/piratekit.html |
 | `relics/` | weapon-doubleaxe.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/piratekit.html |
 | `relics/` | weapon-pirate-pistol.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/piratekit.html |
+
+## 2026-11-17 생성 원화 — 교역품 6종 2.5D 아이콘
+
+- 제작: ChatGPT 이미지 생성으로 제작한 게임 전용 원화. 상업용 게임의 교역품 표시를 위해 원본을 512×512 PNG 색인 256색·투명 배경으로 최적화했다.
+- 원본 마스터: 사용자 대화에 제공된 1024×1024 투명 PNG 6개(`mare_goods_register_ready.zip`). 목록·인벤토리는 512픽셀 파일을 자동 축소 사용하고, 불필요한 별도 동일 이미지 사이즈는 업로드하지 않는다.
+- 기존 `Goods/<id>` 키·거래 가격·보유수량·저장 및 보상은 그대로 유지. 승인 해시는 `assets/APPROVED_IMAGES.json`, 실제 Roblox 자산 ID와 체험 사용 권한은 등록 파이프라인이 검증한 뒤 `assets-registered.json`에 반영한다.
+- 금지: 술병·술잔·술통 등 규제 물품 이미지, 기존 제재 자산과 해당 파생물, 합본 견본 이미지는 등록 대상에 포함하지 않는다.
+
+| 품목 ID | 게임 이미지 | PNG 512px 파일 바이트 | 최적화 원본 SHA-256 | 라이선스 |
+|---|---|---:|---|---|
+| `pepper` | `assets/goods/pepper.png` | 93848 | `999ea5ffd347bec9ae803835b39682e7ec724f15ef6841109ccb212cb5469010` | PROJECT_ORIGINAL_ART |
+| `silk` | `assets/goods/silk.png` | 79117 | `84ab549ba7855cd9c1107883c485ac99f688e2b0207ab76aaea8f30fd4c2e1cf` | PROJECT_ORIGINAL_ART |
+| `gold` | `assets/goods/gold.png` | 87684 | `320752ecf6e90479270e6fdbba609cf4036cfa39dc8a1ee5f2867a77979278e2` | PROJECT_ORIGINAL_ART |
+| `porcelain` | `assets/goods/porcelain.png` | 69298 | `c851821264f272d6f2e849251f7890dc0e10af006a205f631266f6f86977b3d3` | PROJECT_ORIGINAL_ART |
+| `coffee` | `assets/goods/coffee.png` | 95402 | `2d8c6d85e9f8ed9f96befd33cd66591cac871b8ea43c4a82ee773f5e45b3f416` | PROJECT_ORIGINAL_ART |
+| `timber` | `assets/goods/timber.png` | 75929 | `38fdd4ab5236ff4fbf894f5dfaaf3386ab70728c036b811a3386f2cb41744b36` | PROJECT_ORIGINAL_ART |
