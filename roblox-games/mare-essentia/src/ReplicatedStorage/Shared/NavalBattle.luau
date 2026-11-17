@@ -3598,11 +3598,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if hullHit then
 					Sfx.play("sfx_naval_hull_hit", 0.72 + stage * 0.026, 1.05 - stage * 0.03 + math.random() * 0.08, "sfx_hit")
 					Sfx.play("sfx_naval_wood", 0.45 + stage * 0.025, 1.12 - stage * 0.037, "sfx_creak")
+					if math.random() < 0.42 then
+						Sfx.play(if stage >= 4 then "sfx_rope_release" else "sfx_creak", 0.25, 0.78 + math.random() * 0.4)
+					end
 					if stage >= 4 and not MOBILE_VFX then
 						Sfx.play("sfx_metal_clash", 0.23, 0.85, "sfx_hit")
 					end
 				else
-					Sfx.play("sfx_naval_splash", 0.43 + nc.ball * 0.11, 1.1 - nc.ball * 0.1, "sfx_splash")
+					Sfx.play("sfx_naval_splash", 0.50 + nc.ball * 0.11, 1.1 - nc.ball * 0.1, "sfx_splash")
+					if nc.ball >= 1.5 then Sfx.play("sfx_splash", 0.22, 1.16 + math.random() * 0.18) end
 					if nc.ball >= 1.5 and not MOBILE_VFX then
 						task.delay(0.15, function()
 							if not finished then Sfx.play("sfx_splash", 0.22, 0.85) end
@@ -4229,7 +4233,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						if mode == "fire" and (sunk.hp or 1) > 0.45 then mode = "stern" end
 						FX.sink = { mode = mode, side = sunk.lastHitSide or 1,
 							duration = if sunk.length >= 48 then 6.6 elseif sunk.length >= 38 then 5.2 else 3.9,
-							nextSplash = now + 0.4, nextSound = now + 0.9, lastSplash = false }
+							nextSplash = now + 0.4, nextSound = now + 0.9,
+							nextSmoke = now + 0.18, lastSplash = false }
 						sinkStart = now
 						Sfx.play("sfx_naval_sink", 0.64 + math.min(sunk.length / 200, 0.2), if sunk.length > 45 then 0.77 else 0.95, "sfx_splash")
 					end
@@ -4306,16 +4311,26 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local along = if sink.mode == "stern" then -1 else 1
 			local endPos = sunk.pos + forwardShip * sunk.length * 0.25 * along
 			if now >= sink.nextSplash and k < 0.95 then
-				sink.nextSplash = now + (if MOBILE_VFX then 0.94 else 0.53)
+				sink.nextSplash = now + (if MOBILE_VFX then 0.85 else 0.50)
 				FX.splash(ORIGIN + Vector3.new(endPos.X, 0, endPos.Z), sunk.fx,
-					math.clamp(0.8 + k * 1.2 + sunk.length / 100, 0.8, 2.0))
+					math.clamp(1.1 + k * 1.5 + sunk.length / 90, 1.0, 3.0))
 				if k > 0.3 and not MOBILE_VFX then
 					FX.splinters(ORIGIN + sunk.pos + Vector3.new(0, 4 - k * 6, 0), 4)
 				end
 			end
+			-- [선체 침몰 연무] 진행 위치마다 큰 검은 매연을 솟게 한다. 모바일은 1초당 5개 상한.
+			if now >= sink.nextSmoke and k < 0.93 then
+				sink.nextSmoke = now + (if MOBILE_VFX then 1.05 else 0.65)
+				local mist = (sunk.fx and sunk.fx.theme) or FX_THEMES.europe
+				FX.burst(ORIGIN + sunk.pos + Vector3.new(0, 7 - k * 7, 0), nil, {
+					{ tex = "smoke", c0 = C_DARK, c1 = mist.smoke, s0 = 6 + k * 4, s1 = 19 + k * 13,
+						life = 2.8, v0 = 6, v1 = 15, spread = 48, n = if MOBILE_VFX then 5 else 11,
+						a0 = 0.35, acc = Vector3.new(0, 5, 0), drag = 1.7 },
+				})
+			end
 			if sink.mode == "fire" and now >= (FX.sinkFlameAt or 0) and k < 0.88 then
 				FX.sinkFlameAt = now + (if MOBILE_VFX then 1.0 else 0.5)
-				FX.flame(ORIGIN + sunk.pos + Vector3.new(0, 6 - k * 8, 0), 3.4, sunk.fx)
+				FX.flame(ORIGIN + sunk.pos + Vector3.new(0, 6 - k * 8, 0), 4.8, sunk.fx)
 			end
 			if now >= sink.nextSound and k < 0.85 then
 				sink.nextSound = now + (if MOBILE_VFX then 1.45 else 0.9)
@@ -4327,8 +4342,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if k >= 0.93 and not sink.lastSplash then
 				sink.lastSplash = true
 				FX.splash(ORIGIN + Vector3.new(sunk.pos.X, 0, sunk.pos.Z), sunk.fx,
-					if sunk.length >= 48 then 2.2 else 1.5)
-				Sfx.play("sfx_naval_splash", 0.72, if sunk.length >= 48 then 0.72 else 0.91, "sfx_splash")
+					if sunk.length >= 48 then 3.1 else 2.35)
+				Sfx.play("sfx_naval_splash", 0.78, if sunk.length >= 48 then 0.72 else 0.91, "sfx_splash")
+				Sfx.play("sfx_splash", 0.34, if sunk.length >= 48 then 0.74 else 1.05) -- [침몰] 이중 물결 효과음
 			end
 		end
 		-- 손상 연출: 체력이 줄수록 연기, 더 줄면 불길이 오른다
