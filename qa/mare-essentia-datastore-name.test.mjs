@@ -933,3 +933,43 @@ test('탐험 1~10타·회피 전환은 실제 배율이 적용된 R15 자세를 
   assert.match(field, /pl\.autoNormalHits % 5 == 0/);
   assert.match(field, /if rank > 1 and comboNow - lastMasteryComboAt >= 7/);
 });
+
+
+test('무기별 정밀 R15 동작은 타격 전후 영점 복귀와 기존 전투 권한을 지킨다', () => {
+  const a=field.indexOf('-- [무기별 정밀 동작]');
+  const b=field.indexOf('-- [쓰시마식 1~3타]',a);
+  assert.ok(a>0 && b>a,'기존 주인공 관절 합성 블록을 직접 수정해야 한다');
+  const fine=field.slice(a,b);
+  for(const family of ['dagger','fist','spear','axe','blunt','blade']){
+    assert.ok(fine.includes('family == "'+family+'"'),'무기 세부 동작 누락: '+family);
+  }
+  for(const variant of ['RAPIER','KATANA','SABRE','SCIMITAR']){
+    assert.ok(fine.includes('wpn.motion == "'+variant+'"'),'검종별 정밀 자세 누락: '+variant);
+  }
+  assert.match(fine,/local prepare = math\.sin\(math\.clamp\(p \/ 0\.34, 0, 1\) \* math\.pi\) \^ 2/);
+  assert.match(fine,/local contact = math\.sin\(math\.clamp\(\(p - 0\.11\) \/ 0\.60, 0, 1\) \* math\.pi\) \^ 2/);
+  assert.match(fine,/local recover = math\.sin\(math\.clamp\(\(p - 0\.43\) \/ 0\.57, 0, 1\) \* math\.pi\) \^ 2/);
+  for(const forbidden of ['AC.tryMove(', 'strikeEnemy(', 'hrp.CFrame =', 'pl.autoNormalHits +=']){
+    assert.ok(!fine.includes(forbidden),'시각 모션에 전투 권한이 혼입됨: '+forbidden);
+  }
+  const rangeStart=field.indexOf('-- [사격 곡선]');
+  const rangeEnd=field.indexOf('-- [연타 관성]',rangeStart);
+  assert.ok(rangeStart>0 && rangeEnd>rangeStart,'기존 원거리 견착 보정 블록 누락');
+  const range=field.slice(rangeStart,rangeEnd);
+  assert.match(range,/local press = if firing then math\.sin\(progress \* math\.pi\) \^ 2 else 0/);
+  assert.match(range,/local recoil = if firing then math\.sin\(math\.clamp\(\(progress - 0\.26\) \/ 0\.42, 0, 1\) \* math\.pi\) \^ 2 else 0/);
+  assert.match(range,/local recover = if firing then math\.sin\(math\.clamp\(\(progress - 0\.56\) \/ 0\.44, 0, 1\) \* math\.pi\) \^ 2 else 0/);
+  for(const variant of ['crossbow','bow','longGun','pistol']){
+    assert.ok(range.includes(variant),'원거리 무기 고유 반동 누락: '+variant);
+  }
+  for(const [start,end] of [[0,0.34],[0.11,0.71],[0.43,1],[0.26,0.68],[0.56,1]]){
+    const pulse=p=>Math.sin(Math.max(0,Math.min(1,(p-start)/(end-start)))*Math.PI)**2;
+    assert.ok(Math.abs(pulse(0))<1e-10 && Math.abs(pulse(1))<1e-10,'시작·끝 관절 흔들림 잔존');
+    assert.ok(pulse((start+end)/2)>0.999,'무기별 파형이 실제로 움직여야 한다');
+  }
+  assert.match(field,/elseif swingKind and swingCombo and \(wpn\.family == "dagger" or wpn\.family == "fist"\) then 1\.12/);
+  assert.match(field,/elseif swingKind and swingCombo and \(wpn\.family == "axe" or wpn\.family == "blunt"\) then 0\.96/);
+  assert.match(field,/elseif swingKind and swingCombo and wpn\.family == "spear" then 1\.06 else nil/);
+  assert.match(field,/pl\.autoNormalHits % 5 == 0/);
+  assert.match(field,/if rank > 1 and comboNow - lastMasteryComboAt >= 7/);
+});
