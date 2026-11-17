@@ -312,6 +312,8 @@ test('무료 외부 AI는 10분마다 다른 Studio 스크린샷을 분석하고
   for (const needle of [
     "cron: '3-53/10 * * * *'",
     "workflows: ['Vibe Autopilot', 'Devloop Studio Capture']",
+    'for frames_branch in mare-essentia-studio-frames mare-essentia-autopilot-report',
+    'STUDIO_SCREENSHOT_SOURCE_MATCH=',
     "github.event.workflow_run.path == '.github/workflows/devloop-studio.yml'",
     "vars.VIBE_BRAIN != 'off'",
     "VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'"
