@@ -4322,6 +4322,8 @@ function PortScene.build(info, onFacility)
 						scaffold:SetAttribute("BuildPlotId", info.portId .. ":facility:" .. f.name)
 						scaffold:SetAttribute("BuildType", f.economy)
 						scaffold:SetAttribute("BuildTier", facilityTier)
+						scaffold:SetAttribute("BuildPhase", 2)
+						scaffold:SetAttribute("BuildState", "constructing")
 						scaffold:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 						facilityUpgradeAnimations += 1
 						local jobs = info.sim and info.sim.jobs
@@ -4337,7 +4339,11 @@ function PortScene.build(info, onFacility)
 								builder:SetAttribute("BuildPlotId", info.portId .. ":facility:" .. f.name)
 								builder:SetAttribute("ShowcaseOnly", true)
 								table.insert(walkers, { model = builder, base = builder:GetPivot(), mode = "stay", kind = "hammer", phase = rng:NextNumber(0, 5) })
-								task.delay(delay + 4, function()
+								task.spawn(function()
+									local deadline = os.clock() + 25
+									while builder.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
+									if not folder.Parent then return end
+									task.wait(delay + 3.8)
 									if builder.Parent then builder:Destroy() end
 								end)
 							end
