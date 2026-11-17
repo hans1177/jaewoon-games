@@ -873,6 +873,31 @@ test('탐험 지역 기후·사계절 배경과 바람 입자 디테일',()=>{
 });
 
 
+// [탐험 흰 건물·바닥 회귀] 승인된 메시의 색상 유실과 층 겹침만 바로잡고 전투·퀘스트 판정은 보존한다.
+test('대항해시대 탐험의 흰 건물·바닥과 성탑 층 겹침 방지',()=>{
+  const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+  const start=field.indexOf('local function placeModel(');
+  const end=field.indexOf('local function label(',start);
+  assert.ok(start>=0 && end>start,'기존 필드 모델 배치 책임 함수 누락');
+  const placement=field.slice(start,end);
+  for(const marker of [
+    'local named = (kind == "Town"', 'kind == "Castle"',
+    'kind == "Terrain"', 'kind == "Naval"',
+    'd.TextureID ~= ""', 'sa and sa.ColorMap ~= ""', 'ch.TextureId ~= ""',
+    'light >= 0.80 and chroma <= 0.13',
+    'Enum.Material.Cobblestone', 'Enum.Material.WoodPlanks',
+    'Enum.Material.Slate', 'Enum.Material.Ground',
+    'd.Material, d.Color, d.Reflectance = mat, color, 0',
+    'm:ScaleTo(m:GetScale() * ratio)',
+  ]) assert.ok(placement.includes(marker),'건축 메시 색상·배율 복구 누락: '+marker);
+  assert.ok(field.includes('"tower-hexagon-mid", 12, -30, -26, true, nil, 8'));
+  assert.ok(field.includes('"tower-hexagon-roof", 12, 30, -26, true, nil, 16'));
+  assert.ok(field.includes('entry.position = c + Vector3.new(e[4], e[8] or 0, e[5])'));
+  assert.doesNotMatch(placement,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/,'건물 복구에 임시 도형 금지');
+  assert.match(field,/local enemyCount = math\.clamp\(20 \+ \(danger0 - 1\) \* 6/);
+  assert.match(field,/AC\.stepEnemy\(e\.ac, enemyDt, dist, not e\.waiting\)/);
+});
+
 // [탐험 연타 사물과 병종 전술·방어·기상] 기존 플레이 규칙과 승인된 R15 모델로만 구현한다.
 test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 모션',()=>{
   const field=read('ReplicatedStorage/Shared/FieldScene.luau');

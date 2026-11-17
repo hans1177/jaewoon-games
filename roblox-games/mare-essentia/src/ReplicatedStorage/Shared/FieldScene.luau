@@ -266,6 +266,40 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 				for _, ch in d:GetChildren() do
 					if ch:IsA("SpecialMesh") then ch.VertexColor = Vector3.new(tint.R, tint.G, tint.B) end
 				end
+			else
+				-- [흰 건물·바닥 복구] 맵 있는 승인 메시/PBR은 보존하고, 색이 빠진 흰 면만 기존 재질로 복구한다.
+				local named = (kind == "Town" and (asset:find("house", 1, true) or asset:find("church", 1, true)
+					or asset:find("temple", 1, true) or asset:find("tower", 1, true)
+					or asset:find("windmill", 1, true)))
+					or (kind == "Castle" and not asset:find("flag", 1, true))
+					or (kind == "Terrain" and (asset:find("ground-", 1, true) or asset:find("ruins", 1, true)
+					or asset:find("bridge", 1, true) or asset:find("column", 1, true)))
+					or (kind == "Naval" and (asset:find("dock", 1, true) or asset:find("platform", 1, true)))
+				if named then
+					local sa = d:FindFirstChildOfClass("SurfaceAppearance")
+					local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and sa.ColorMap ~= "")
+					for _, ch in d:GetChildren() do
+						if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
+					end
+					local light = math.min(d.Color.R, d.Color.G, d.Color.B)
+					local chroma = math.max(d.Color.R, d.Color.G, d.Color.B) - light
+					if not textured and light >= 0.80 and chroma <= 0.13 then
+						local name = (asset .. " " .. d.Name):lower()
+						local mat, color = Enum.Material.Cobblestone, Color3.fromRGB(145, 139, 123)
+						if name:find("roof", 1, true) or name:find("tile", 1, true) then
+							mat, color = Enum.Material.Slate, Color3.fromRGB(117, 107, 100)
+						elseif name:find("wood", 1, true) or name:find("beam", 1, true)
+							or name:find("dock", 1, true) or name:find("platform", 1, true) then
+							mat, color = Enum.Material.WoodPlanks, Color3.fromRGB(128, 97, 69)
+						elseif name:find("path", 1, true) or name:find("ground-", 1, true) then
+							mat, color = Enum.Material.Ground, Color3.fromRGB(135, 119, 91)
+						elseif name:find("house", 1, true) or name:find("church", 1, true) then
+							mat, color = Enum.Material.Brick, Color3.fromRGB(163, 139, 116)
+						end
+						d.Material, d.Color, d.Reflectance = mat, color, 0
+						if sa then sa.Color = color end
+					end
+				end
 			end
 		end
 	end
@@ -280,7 +314,10 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 		if axis < 0.01 then
 			error("empty")
 		end
-		m:ScaleTo(desired / axis)
+		-- [원본 배율 보존] ScaleTo는 절대 배율이므로 모델의 수입 배율을 보존한다.
+		local ratio = desired / axis
+		if ratio ~= ratio or ratio <= 0 or ratio == math.huge then error("invalid imported model scale") end
+		m:ScaleTo(m:GetScale() * ratio)
 		local center, size = m:GetBoundingBox()
 		local b = Vector3.new(center.Position.X, center.Position.Y - size.Y / 2, center.Position.Z)
 		m:PivotTo(CFrame.new(bottom - b) * m:GetPivot())
@@ -1080,9 +1117,9 @@ function FieldScene.start(opts)
 		local STONES = cat(ringOf("Terrain", "mystic-column", 12, 22, 10, true), { { "Terrain", "mystic-stone-arch", 16, 0, 0, true }, { "Terrain", "mystic-broken-column", 9, 8, 6, true } })
 		local FORT = cat({ { "Castle", "fortress", 44, 0, 0, true } }, rowOf("Castle", "wall", 14, -36, 36, 6, 30, true), rowOf("Castle", "wall", 14, -36, 36, 6, -30, true),
 			{ { "Castle", "flag-banner-long", 12, -12, 24 }, { "Castle", "flag-banner-long", 12, 12, 24 } })
-		local TOWER = cat({ { "Castle", "fortress", 40, 0, 0, true }, { "Castle", "tower-hexagon-base", 12, -30, -26, true }, { "Castle", "tower-hexagon-mid", 12, -30, -26, true },
-			{ "Castle", "tower-hexagon-roof", 12, -30, -26, true }, { "Castle", "tower-hexagon-base", 12, 30, -26, true }, { "Castle", "tower-hexagon-mid", 12, 30, -26, true },
-			{ "Castle", "tower-hexagon-roof", 12, 30, -26, true }, { "Castle", "bridge-draw", 14, 0, 32, true } }, rowOf("Castle", "wall", 14, -40, 40, 6, -40, true))
+		local TOWER = cat({ { "Castle", "fortress", 40, 0, 0, true }, { "Castle", "tower-hexagon-base", 12, -30, -26, true }, { "Castle", "tower-hexagon-mid", 12, -30, -26, true, nil, 8 },
+			{ "Castle", "tower-hexagon-roof", 12, -30, -26, true, nil, 16 }, { "Castle", "tower-hexagon-base", 12, 30, -26, true }, { "Castle", "tower-hexagon-mid", 12, 30, -26, true, nil, 8 },
+			{ "Castle", "tower-hexagon-roof", 12, 30, -26, true, nil, 16 }, { "Castle", "bridge-draw", 14, 0, 32, true } }, rowOf("Castle", "wall", 14, -40, 40, 6, -40, true))
 		local DOCKS = cat({ { "Naval", "structure-platform-dock", 40, 0, -20, true }, { "Naval", "boat-fishing-small", 12, 14, -34 }, { "Town", "windmill", 24, -34, 10, true } },
 			rowOf("Cargo", "barrel", 3, -24, 24, 6, 12), rowOf("Town", "house", 18, -40, 40, 3, 30, true), { { "Town", "stall-red", 7, -14, 18 }, { "Town", "stall-green", 7, 14, 18 } })
 		local LIGHT = cat({ { "Naval", "tower-complete-large", 40, 0, 0, true }, { "Naval", "tower-complete-small", 14, 20, 14, true } }, rowOf("Cargo", "barrel", 3, -14, 14, 4, 18))
@@ -1107,7 +1144,8 @@ function FieldScene.start(opts)
 				for index, e in lm[2] do
 					if not visualMobile or index <= 22 then
 						local entry = { e[1], e[2], e[3], nil, nil, e[6] == true }
-						entry.position = c + Vector3.new(e[4], 0, e[5])
+						-- [성탑 층높이] 층/지붕이 바닥에 겹치는 흰 평면 깨짐 방지.
+						entry.position = c + Vector3.new(e[4], e[8] or 0, e[5])
 						if index == 1 then entry.title = nm end
 						stageFeature(entry)
 					end
