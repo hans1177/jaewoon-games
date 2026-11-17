@@ -1037,3 +1037,24 @@ test('항구 주민·동료 남녀 4계열은 등록된 실제 3D 의상 메시�
   assert.match(pose,/part\.CanCollide, part\.CanTouch, part\.CanQuery = false, false, false, false/);
   assert.match(pose,/model:SetAttribute\("RigType", "R15"\)/);
 });
+
+// [항구 7구획 확장] 기존 경제/자산 정본을 유지하며 왕궁 경기병/창고/식료품/직업 모션을 검사한다.
+test('왕궁 경기병 2명과 지역별 창고·식료품·직업 모션은 순수 시각화로 유지된다',()=>{
+ const port=read('ReplicatedStorage/Shared/PortScene.luau');
+ const pose=read('ReplicatedStorage/Shared/Pose.luau');
+ assert.match(port,/for i, side in \{ -1, 1 \} do[\s\S]*?RoyalLightCavalry_/);
+ assert.match(port,/if AssetIds\["Animals\/horse"\] then importedModel\(folder, "Animals", "horse"/);
+ assert.match(port,/folder:SetAttribute\("RoyalLightCavalryVisible", cavalryVisible\)/);
+ assert.match(port,/folder:SetAttribute\("RoyalLightCavalryMounted", mountedVisible\)/);
+ assert.match(port,/elseif w\.mode == "royal_rider" then/);
+ assert.match(port,/MarketFoodShop_/);
+ assert.match(port,/HarborWarehouseGoods_/);
+ assert.match(port,/cargo:SetAttribute\("ShowcaseOnly", true\)/);
+ assert.match(port,/key == "japan" or key == "china" or key == "korea"/);
+ for(const name of ['harvest','weigh','milk','kneel','fold']){
+  assert.ok(pose.includes('elseif kind == "'+name+'" then'),'새 작업 모션 누락: '+name);
+  assert.ok(port.includes('"'+name+'"'),'항구 작업 배치 누락: '+name);
+ }
+ assert.match(port,/local visibleCap = if game:GetService\("UserInputService"\)\.TouchEnabled then 6 else 12/);
+ assert.match(port,/local courtStaff = PortBuildings\.royalPopulation/);
+});

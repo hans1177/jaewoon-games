@@ -1734,14 +1734,14 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			elseif made.cloth or made.silk or made.wool then "sew"
 			elseif made.grain or made.beer or made.sugar then "knead" else "hammer"
 		local JOB_YARD = {
-			farmer = { name = "농부", kinds = { "hoe", "stoop", "inspect" }, rest = { "stretch", "talk", "drink" }, spec = { role = "Barbarian", hat = "straw" }, tint = C(110, 125, 76) },
+			farmer = { name = "농부", kinds = { "hoe", "harvest", "stoop", "inspect" }, rest = { "stretch", "talk", "drink" }, spec = { role = "Barbarian", hat = "straw" }, tint = C(110, 125, 76) },
 			fisher = { name = "어부", kinds = { "fish", "lift", "inspect" }, rest = { "drink", "talk", "stretch" }, spec = { role = "Barbarian", hat = "knit" }, tint = C(70, 106, 146) },
 			craftsman = { name = "장인", kinds = { craft, "inspect", "count", "hammer" }, rest = { "stretch", "drink", "talk" }, spec = { role = "Barbarian", hat = "cap" }, tint = C(146, 99, 57) },
-			merchant = { name = "상인", kinds = { "stall", "count", "offer", "receive" }, rest = { "talk", "drink", "listen" }, spec = { role = "Rogue" }, prop = { "Town", "stall", 6.5 }, tint = C(121, 71, 132) },
+			merchant = { name = "상인", kinds = { "stall", "weigh", "count", "offer", "receive" }, rest = { "talk", "drink", "listen" }, spec = { role = "Rogue" }, prop = { "Town", "stall", 6.5 }, tint = C(121, 71, 132) },
 			sailor = { name = "선원", kinds = { "lift", "carry", "inspect", "salute" }, rest = { "drink", "talk", "stretch" }, spec = { role = "Barbarian", hat = "cap" }, tint = C(59, 92, 138) },
 			guard = { name = "경비병", kinds = { "salute", "look", "point", "inspect" }, rest = { "lean", "look", "stretch" }, spec = { role = "Knight", hat = false }, tint = C(69, 78, 111) },
 			official = { name = "관리", kinds = { "write", "read", "count", "point" }, rest = { "talk", "listen", "drink" }, spec = { role = "Mage", hat = "wide" }, tint = C(108, 78, 134) },
-			clergy = { name = "성직자", kinds = { "pray", "read", "bell" }, rest = { "talk", "listen", "look" }, spec = { role = "Mage", hat = false }, tint = C(96, 87, 80) },
+			clergy = { name = "성직자", kinds = { "pray", "kneel", "read", "bell" }, rest = { "talk", "listen", "look" }, spec = { role = "Mage", hat = false }, tint = C(96, 87, 80) },
 			laborer = { name = "일꾼", kinds = { "carry", "lift", "sweep", "polish" }, rest = { "stretch", "drink", "talk" }, spec = { role = "Rogue", hat = "cap" }, tint = C(119, 104, 79) },
 		}
 		local ORDER = { "farmer", "fisher", "craftsman", "merchant", "sailor", "guard", "official", "clergy", "laborer" }
@@ -1818,11 +1818,11 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		end
 		local available = {
 			{ name = "대장장이", job = "smith", group = "craftsman", need = built("workshop", 2) and (made.iron or made.copper or made.tin), at = Vector3.new(-160, 0, -114), prop = { "Town", "workbench-anvil", 4 }, work = { "forge", "inspect", "hammer" }, rest = { "stretch", "drink" }, color = C(129, 72, 53) },
-			{ name = "재단사", job = "tailor", group = "craftsman", need = built("workshop", 2) and (made.cloth or made.silk or made.wool), at = Vector3.new(-188, 0, -114), prop = { "Cargo", "textiles-stack-large-colored", 3 }, work = { "sew", "inspect", "count" }, rest = { "talk", "drink" }, color = C(117, 86, 148) },
+			{ name = "재단사", job = "tailor", group = "craftsman", need = built("workshop", 2) and (made.cloth or made.silk or made.wool), at = Vector3.new(-188, 0, -114), prop = { "Cargo", "textiles-stack-large-colored", 3 }, work = { "sew", "fold", "inspect" }, rest = { "talk", "drink" }, color = C(117, 86, 148) },
 			{ name = "제빵사", job = "baker", group = "craftsman", need = built("workshop", 2) and (made.grain or made.maize or made.beer), at = Vector3.new(-214, 0, -114), prop = { "Cargo", "food-flour", 3 }, work = { "knead", "stir", "inspect" }, rest = { "drink", "talk" }, color = C(180, 130, 85) },
 			{ name = "목수", job = "carpenter", group = "craftsman", need = built("workshop", 2) and (made.timber or made.mahogany or made.kauri), at = Vector3.new(-124, 0, -113), prop = { "Cargo", "resource-planks", 3 }, work = { "hammer", "inspect", "lift" }, rest = { "stretch", "drink" }, color = C(136, 101, 67) },
 			{ name = "조선공", job = "shipwright", group = "sailor", need = lvl >= 3 and info.hasShipyard, at = Vector3.new(-19, 0, -106), prop = { "Cargo", "resource-planks", 3.5 }, work = { "hammer", "inspect", "carry" }, rest = { "talk", "stretch" }, color = C(79, 103, 134) },
-			{ name = "목장지기", job = "herder", group = "farmer", need = built("farm", 2), at = Vector3.new(-660, 0, 0), prop = { "Cargo", "wood-log-a", 3 }, work = { "look", "hoe", "inspect" }, rest = { "drink", "lean" }, color = C(130, 121, 83) },
+			{ name = "목장지기", job = "herder", group = "farmer", need = built("farm", 2), at = Vector3.new(-660, 0, 0), prop = { "Cargo", "wood-log-a", 3 }, work = { "look", "milk", "inspect" }, rest = { "drink", "lean" }, color = C(130, 121, 83) },
 			{ name = "교사", job = "teacher", group = "official", need = built("school", 3), at = Vector3.new(-86, 0, 21), prop = { "Interior", "bookcaseclosed", 4.2 }, work = { "read", "write", "point" }, rest = { "talk", "listen" }, color = C(80, 115, 108) },
 			{ name = "서기관", job = "clerk", group = "official", need = built("hall", 3), at = Vector3.new(-110, 0, 21), prop = { "Interior", "bookcaseclosed", 3.8 }, work = { "write", "count", "read" }, rest = { "talk", "listen" }, color = C(91, 89, 131) },
 			{ name = "은행원", job = "banker", group = "merchant", need = lvl >= 4 and built("market", 2) and table.find(info.facilities or {}, "bank") ~= nil, at = Vector3.new(-54, 0, 18), prop = { "Cargo", "gold-bars", 2.1 }, work = { "count", "write", "offer" }, rest = { "talk", "read" }, color = C(105, 75, 119) },
@@ -2378,6 +2378,38 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							elseif c[1] == "workshop" or c[1] == "warehouse" then
 								importedModel(folder, "Cargo", "resource-planks", at + Vector3.new(5, 0, face * 3), 3.4, false)
 							end
+							-- [실물 창고·식료품점] 이미 건설된 시장/창고의 개방형 공간에 지역 생산품만 진열한다.
+							-- 판매 가격·교역재고·건물 수는 변경하지 않는 시각 전시다. 주류·담배·약물 제외.
+							if c[1] == "warehouse" or c[1] == "market" then
+								local displayed = 0
+								local maxProducts = if game:GetService("UserInputService").TouchEnabled then 1 else 2
+								for _, good in made do
+									if displayed >= maxProducts then break end
+									local food = table.find({ "grain", "fish", "maize", "fruit", "grapes", "lemon",
+										"meat", "cheese", "honey", "salt", "sugar", "coconut", "dates" }, good) ~= nil
+									if c[1] == "warehouse" or food then
+										if good ~= "beer" and good ~= "wine" and good ~= "rum" and good ~= "sake"
+											and good ~= "tobacco" and good ~= "opium" then
+											local mesh = GOOD_MESH[good]
+											if mesh and AssetIds[mesh[1] .. "/" .. mesh[2]] then
+												local goodsAt = at + Vector3.new(-5 + displayed * 5, 0, face * 3)
+												local cargo = importedModel(folder, mesh[1], mesh[2], goodsAt, goodSize(good, 2.3), false, mesh[3])
+												if cargo then
+													displayed += 1
+													cargo.Name = if c[1] == "market" then "MarketFoodShop_" .. good else "HarborWarehouseGoods_" .. good
+													cargo:SetAttribute("LocalProduct", good)
+													cargo:SetAttribute("ShowcaseOnly", true)
+													cargo:SetAttribute("PortId", info.portId)
+												end
+											end
+										end
+									end
+								end
+								if c[1] == "market" and displayed > 0 then
+									local signPart = ground:FindFirstChildWhichIsA("BasePart", true)
+									if signPart then sign(folder, signPart, "식료품점 · 지역 농수산물", C(227, 191, 126), 8, true) end
+								end
+							end
 							if c[7] then
 								local mesh = GOOD_MESH[c[7]]
 								local item = importedModel(folder, mesh[1], mesh[2], at + Vector3.new(0, 0, face * 2), goodSize(c[7], 3.2), false, mesh[3])
@@ -2481,7 +2513,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			local cx, cz = d.at.X, d.at.Z
 			local face = if cz > 0 then 0 else math.pi
 			if d.kind == "religious" then
-				if key == "japan" or key == "china" then
+				if key == "japan" or key == "china" or key == "korea" then
 					put("Town", "temple-tower", 26, cx, cz, true, face)
 					put("Town", "temple-stone", 14, cx + 14, cz + (if cz > 0 then -8 else 8), true, face)
 				elseif key == "ottoman" or key == "swahili" or key == "malabar" or key == "desert" or key == "tropic" or key == "seasia" or key == "pacific" or key == "wafrica" then
@@ -2507,7 +2539,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			else -- farm
 				-- 지역에 맞는 작물: 동아시아는 벼·양배추·가지, 더운 지방은 옥수수·호박·멜론, 그 밖은 밀·양배추·당근
 				local crops
-				if key == "japan" or key == "china" or key == "seasia" then
+				if key == "japan" or key == "china" or key == "korea" or key == "seasia" then
 					crops = { { "Terrain", "crops-wheatstageb", 5 }, { "Cargo", "cabbage", 2.8 }, { "Cargo", "eggplant", 2.6 } }
 				elseif hotKey then
 					crops = { { "Cargo", "corn", 3.2 }, { "Cargo", "pumpkin", 2.8 }, { "Terrain", "crop-melon", 5 } }
@@ -4207,6 +4239,45 @@ function PortScene.build(info, onFacility)
 		folder:SetAttribute("RoyalDistrictWidth", math.floor(wide))
 		folder:SetAttribute("RoyalDistrictTier", palaceTier)
 		folder:SetAttribute("RoyalCourtPopulation", courtStaff)
+		-- [왕궁 경기병 2명] 이미 등록된 말 모델을 이용해 기마 경호 실루엣을 만든다.
+		-- 두 명은 지역별 복색의 순수 연출 근위대이며 세계경제 인구·군사 유닛·저장값에는 포함되지 않는다.
+		local cavalryTitle = if korean then "조선 기마 근위" elseif key == "japan" then "성곽 기마 호위"
+			elseif key == "china" then "관아 기마 호위" elseif islamic then "궁정 기마 친위"
+			elseif indian or southeast then "왕실 기마 호위" else "궁정 경기병"
+		local cavalryCoat = if korean or key == "china" then C(53, 78, 108)
+			elseif key == "japan" then C(81, 65, 98) elseif islamic then C(52, 113, 101)
+			elseif westAfrican or tropical then C(148, 94, 52) else C(68, 89, 125)
+		local cavalryVisible, mountedVisible = 0, 0
+		for i, side in { -1, 1 } do
+			local at = Vector3.new(frontX + 62, 0, side * 49)
+			local horse = if AssetIds["Animals/horse"] then importedModel(folder, "Animals", "horse", at, 4.1, false) else nil
+			local saddleY = 0
+			if horse then
+				local box, span = horse:GetBoundingBox()
+				saddleY = math.max(1.5, box.Position.Y + span.Y * 0.13)
+				horse.Name = "RoyalLightCavalryHorse_" .. i
+				horse:SetAttribute("ShowcaseOnly", true)
+			end
+			local rider = villager(folder, at + Vector3.new(0, saddleY, 0), math.pi, cavalryCoat, rng, "Knight", true, {
+				year = info.year or currentYear, profession = "royal_light_cavalry", companion = true,
+				female = i == 2, bodyType = "athletic", motionStyle = "disciplined", noHat = true,
+			})
+			if rider then
+				cavalryVisible += 1
+				if horse then mountedVisible += 1 end
+				rider.Name = "RoyalLightCavalry_" .. i
+				rider:SetAttribute("Job", "royal_light_cavalry")
+				rider:SetAttribute("Workplace", cavalryTitle)
+				rider:SetAttribute("CavalryMounted", horse ~= nil)
+				rider:SetAttribute("ShowcaseOnly", true)
+				local headPart = rider:FindFirstChild("Head")
+				if headPart then sign(folder, headPart, cavalryTitle, C(228, 213, 177), 4, true) end
+				table.insert(walkers, { model = rider, base = rider:GetPivot(), mode = if horse then "royal_rider" else "stay",
+					kind = if horse then "sit" else "salute", phase = i * 2.3 })
+			end
+		end
+		folder:SetAttribute("RoyalLightCavalryVisible", cavalryVisible)
+		folder:SetAttribute("RoyalLightCavalryMounted", mountedVisible)
 	end
 
 	-- 성당 종탑 (유럽·식민지 문화권만. 다른 문화권은 지역 대표 건축물을 따로 세운다)
@@ -4283,6 +4354,14 @@ function PortScene.build(info, onFacility)
 				if not Pose.makeR15Action(w.model, action, progress, now) and not w.motionWarned then
 					w.motionWarned = true
 					warn("[MareEssentia] 항구 R15 대련 모션 적용 실패:", w.model.Name)
+				end
+			elseif w.mode == "royal_rider" then
+				-- [경기병 착석] 정지 기마 경호는 R15 관절만 갱신하고 말·동선·판정을 이동시키지 않는다.
+				if w.model.Parent then
+					local camera = workspace.CurrentCamera
+					if not camera or (camera.CFrame.Position - w.base.Position).Magnitude < 180 then
+						Pose.work(w.model, "sit", now + w.phase)
+					end
 				end
 			elseif w.mode == "schedule" then
 				if w.model.Parent then

@@ -824,6 +824,44 @@ function Pose.work(model, kind, t, moving)
 		set(m.waist, A(0.18, 0, 0)); set(m.neck, A(0.35, 0, 0))
 		set(m.leftArm, A(-1.0, 0, -0.15)); set(m.rightArm, A(-1.0, 0, 0.15))
 		set(m.leftElbow, A(-1.5, 0, 0)); set(m.rightElbow, A(-1.5, 0, 0))
+	elseif kind == "harvest" then
+		-- [수확] 허리를 굽혀 이삭을 잡고 바구니 쪽으로 천천히 옮긴다.
+		local s = (math.sin(t * 1.75) + 1) * 0.5
+		set(m.waist, A(0.46 + s * 0.22, math.sin(t * 0.7) * 0.12, 0))
+		set(m.leftArm, A(-0.75 - s * 0.36, 0, 0.18))
+		set(m.rightArm, A(-1.05 + s * 0.3, 0, -0.22))
+		set(m.leftElbow, A(-0.68, 0, 0)); set(m.rightElbow, A(-0.85, 0, 0))
+		set(m.leftKnee, A(-0.22 - s * 0.12, 0, 0))
+	elseif kind == "weigh" then
+		-- [상인 계량] 양손에 저울과 물품을 들고 균형을 맞춘다.
+		local s = math.sin(t * 1.55)
+		set(m.leftArm, A(-1.15 + s * 0.12, 0, 0.27))
+		set(m.rightArm, A(-0.98 - s * 0.13, 0, -0.27))
+		set(m.leftElbow, A(-0.86, 0, 0)); set(m.rightElbow, A(-0.92, 0, 0))
+		set(m.neck, A(0.12, s * 0.14, 0))
+	elseif kind == "milk" then
+		-- [낙농] 무릎을 굽혀 한 손으로 통을 받치고 다른 손으로 착유한다.
+		local beat = math.sin(t * 3.1)
+		set(m.root, CFrame.new(0, -0.42, 0))
+		set(m.waist, A(0.38, 0.1, 0))
+		set(m.leftLeg, A(0.3, 0, 0)); set(m.rightKnee, A(-0.75, 0, 0))
+		set(m.leftArm, A(-0.9, 0, 0.32))
+		set(m.rightArm, A(-0.98 + beat * 0.13, 0, -0.2))
+		set(m.rightElbow, A(-1.05 - beat * 0.18, 0, 0))
+	elseif kind == "kneel" then
+		-- [종교·의례] 기도 중 한쪽 무릎을 굽히고 양손을 모은다.
+		set(m.root, CFrame.new(0, -0.34, 0))
+		set(m.leftKnee, A(-0.84, 0, 0)); set(m.rightLeg, A(0.4, 0, 0))
+		set(m.waist, A(0.25, 0, 0)); set(m.neck, A(0.32, 0, 0))
+		set(m.leftArm, A(-1.0, 0, -0.18)); set(m.rightArm, A(-1.0, 0, 0.18))
+		set(m.leftElbow, A(-1.35, 0, 0)); set(m.rightElbow, A(-1.35, 0, 0))
+	elseif kind == "fold" then
+		-- [재단] 두 손으로 천을 펼쳤다가 접는다.
+		local s = math.sin(t * 2.3)
+		set(m.waist, A(0.18 + s * 0.06, 0, 0))
+		set(m.leftArm, A(-0.86, 0, 0.28 - s * 0.17))
+		set(m.rightArm, A(-0.86, 0, -0.28 + s * 0.17))
+		set(m.leftElbow, A(-0.88, 0, 0)); set(m.rightElbow, A(-0.88, 0, 0))
 	elseif kind == "knead" then
 		-- 제빵사: 양손으로 반죽을 밀고 접으며 허리 무게중심을 움직인다.
 		local beat = math.sin(t * 2.7)
