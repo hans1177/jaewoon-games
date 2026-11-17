@@ -553,10 +553,12 @@ function FieldScene.start(opts)
 	end
 
 	-- [낙사 방지] 기존 바닥 아래에 충돌 안전판을 두고, 이동 감시에서 추락 시 마지막 안전 지점으로 복귀한다.
-	local safetyFloor = part(folder, Vector3.new(SIZE + 24, 2, SIZE + 24), CFrame.new(ORIGIN + Vector3.new(0, -14, 0)), Color3.fromRGB(44, 43, 40))
-	safetyFloor.Name = "FieldSafetyFloor"
-	safetyFloor.Transparency = 1
-	safetyFloor.CanQuery = false
+	do -- [Luau 지역변수 한도] 낙사 안전판 임시 참조 정리
+		local safetyFloor = part(folder, Vector3.new(SIZE + 24, 2, SIZE + 24), CFrame.new(ORIGIN + Vector3.new(0, -14, 0)), Color3.fromRGB(44, 43, 40))
+		safetyFloor.Name = "FieldSafetyFloor"
+		safetyFloor.Transparency = 1
+		safetyFloor.CanQuery = false
+	end
 
 	-- 지평선 언덕: 사방 가장자리 바깥에 복셀 지형 언덕을 쌓아 평평한 느낌을 줄인다 (끝나면 지운다)
 	do
@@ -600,9 +602,11 @@ function FieldScene.start(opts)
 	local char = player.Character or player.CharacterAdded:Wait()
 	char:PivotTo(CFrame.new(spawn))
 	-- 항구 전경에서는 캐릭터가 고정(Anchored)되어 있다. 탐험에서는 걸어 다닐 수 있어야 하므로 풀어 준다.
-	local fieldRoot = char:FindFirstChild("HumanoidRootPart")
-	if fieldRoot and fieldRoot:IsA("BasePart") then
-		fieldRoot.Anchored = false
+	do -- [Luau 지역변수 한도] 항구 앵커 해제 임시 참조 정리
+		local fieldRoot = char:FindFirstChild("HumanoidRootPart")
+		if fieldRoot and fieldRoot:IsA("BasePart") then
+			fieldRoot.Anchored = false
+		end
 	end
 	do
 		local fh = char:FindFirstChildOfClass("Humanoid")
@@ -1242,13 +1246,15 @@ function FieldScene.start(opts)
 	heroPanel.BackgroundTransparency = 0.12
 	heroPanel.BorderSizePixel = 0
 	heroPanel.Parent = gui
-	local heroCorner = Instance.new("UICorner")
-	heroCorner.CornerRadius = UDim.new(0, 10)
-	heroCorner.Parent = heroPanel
-	local heroStroke = Instance.new("UIStroke")
-	heroStroke.Color = Color3.fromRGB(210, 170, 99)
-	heroStroke.Thickness = 1.3
-	heroStroke.Parent = heroPanel
+	do -- [Luau 지역변수 한도] 주인공 HUD 테두리 초기화 지역화
+		local heroCorner = Instance.new("UICorner")
+		heroCorner.CornerRadius = UDim.new(0, 10)
+		heroCorner.Parent = heroPanel
+		local heroStroke = Instance.new("UIStroke")
+		heroStroke.Color = Color3.fromRGB(210, 170, 99)
+		heroStroke.Thickness = 1.3
+		heroStroke.Parent = heroPanel
+	end
 	local heroFace = Instance.new("ImageLabel")
 	heroFace.Name = "FieldHeroPortrait"
 	heroFace.Size = UDim2.fromOffset(44, 56)
@@ -1262,9 +1268,11 @@ function FieldScene.start(opts)
 		heroFace.ImageRectSize = opts.heroPortrait.size or Vector2.zero
 	end
 	heroFace.Parent = heroPanel
-	local faceCorner = Instance.new("UICorner")
-	faceCorner.CornerRadius = UDim.new(0, 7)
-	faceCorner.Parent = heroFace
+	do -- [Luau 지역변수 한도] 주인공 초상화 장식 지역화
+		local faceCorner = Instance.new("UICorner")
+		faceCorner.CornerRadius = UDim.new(0, 7)
+		faceCorner.Parent = heroFace
+	end
 	local heroName = label(heroPanel, tostring(opts.heroName or player.DisplayName), 14)
 	heroName.Name = "FieldHeroName"
 	heroName.Size = UDim2.fromOffset(136, 20)
@@ -1464,13 +1472,15 @@ function FieldScene.start(opts)
 	completePopup.ZIndex = 22
 	completePopup.Visible = false
 	completePopup.Parent = gui
-	local popupCorner = Instance.new("UICorner")
-	popupCorner.CornerRadius = UDim.new(0, 15)
-	popupCorner.Parent = completePopup
-	local popupStroke = Instance.new("UIStroke")
-	popupStroke.Color = Color3.fromRGB(239, 202, 115)
-	popupStroke.Thickness = 2.2
-	popupStroke.Parent = completePopup
+	do -- [Luau 지역변수 한도] 탐험 완료창 장식 지역화
+		local popupCorner = Instance.new("UICorner")
+		popupCorner.CornerRadius = UDim.new(0, 15)
+		popupCorner.Parent = completePopup
+		local popupStroke = Instance.new("UIStroke")
+		popupStroke.Color = Color3.fromRGB(239, 202, 115)
+		popupStroke.Thickness = 2.2
+		popupStroke.Parent = completePopup
+	end
 	local popupTitle = label(completePopup, "탐험 조사 완료!", 24, Color3.fromRGB(255, 231, 157))
 	popupTitle.Name = "FieldCompletionTitle"
 	popupTitle.Size = UDim2.new(1, -24, 0, 34)
@@ -2451,10 +2461,12 @@ function FieldScene.start(opts)
 	weaponRankLabel.Font = Enum.Font.GothamBlack
 	weaponRankLabel.TextStrokeTransparency = 0.16
 	weaponRankLabel.ZIndex = attackBtn.ZIndex + 3
-	local initialPractice = weaponPractice[wpn.id]
-	weaponRankLabel.Text = string.format("무기 숙련 %d단", initialPractice and initialPractice.rank or 1)
-	attackBtn:SetAttribute("WeaponMasteryRank", initialPractice and initialPractice.rank or 1)
-	attackBtn:SetAttribute("WeaponMasteryExperience", initialPractice and initialPractice.xp or 0)
+	do -- [Luau 지역변수 한도] 시작 숙련 표시값 초기화 지역화
+		local initialPractice = weaponPractice[wpn.id]
+		weaponRankLabel.Text = string.format("무기 숙련 %d단", initialPractice and initialPractice.rank or 1)
+		attackBtn:SetAttribute("WeaponMasteryRank", initialPractice and initialPractice.rank or 1)
+		attackBtn:SetAttribute("WeaponMasteryExperience", initialPractice and initialPractice.xp or 0)
+	end
 	-- [무기 교체] 기존 장비를 첫 번째 슬롯으로 보존하고, 다른 전투 거리의 무기 1개만 빠르게 교체한다.
 	local reserveWeapon = Weapons.get(if wpn.ranged then "sword" else "bow")
 	if attackIcon then
@@ -4044,18 +4056,20 @@ function FieldScene.start(opts)
 	lockBb.AlwaysOnTop = true
 	lockBb.Enabled = false
 	lockBb.Parent = gui
-	local lockLbl = label(lockBb, "▼", 26, Color3.fromRGB(255, 226, 120))
-	lockLbl.Size = UDim2.fromScale(1, 1)
-	local lockTarget = nil
-	table.insert(conns, RunService.Heartbeat:Connect(function()
-		local _, hrp = char3()
-		local best = if hrp then nearest(hrp, 30) else nil
-		if best ~= lockTarget then
-			lockTarget = best
-			lockBb.Adornee = if best then best.root else nil
-		end
-		lockBb.Enabled = best ~= nil
-	end))
+	do -- [Luau 지역변수 한도] 목표 잠금 표식 상태를 연결 내부에 보존
+		local lockLbl = label(lockBb, "▼", 26, Color3.fromRGB(255, 226, 120))
+		lockLbl.Size = UDim2.fromScale(1, 1)
+		local lockTarget = nil
+		table.insert(conns, RunService.Heartbeat:Connect(function()
+			local _, hrp = char3()
+			local best = if hrp then nearest(hrp, 30) else nil
+			if best ~= lockTarget then
+				lockTarget = best
+				lockBb.Adornee = if best then best.root else nil
+			end
+			lockBb.Enabled = best ~= nil
+		end))
+	end
 
 	-- [연타] 광역 공격은 한 번의 공격 행동당 1타만 기록한다. 저장 보상·무기 숙련은 기존 책임 함수에 남긴다.
 	local streakN, streakT, streakSpeedBest = 0, 0, 0
@@ -4884,66 +4898,68 @@ function FieldScene.start(opts)
 	-- [실물 무기 지연 로드] Relics는 항구 모델보다 늦게 로드되므로, 도착한 승인 모델만 재장착한다.
 	-- 플레이어/동료의 기존 무기 ID와 전투 수치, 저장 구조는 유지한다.
 	-- [실물 무기·방패 지연 로드] 실제 메시가 뒤늦게 도착하면 해당 장비가 필요한 배우만 갱신한다.
-	local assetLibrary = ReplicatedStorage:FindFirstChild("MareAssets")
-	local relicGroup = assetLibrary and assetLibrary:FindFirstChild("Relics")
-	if relicGroup then
-		table.insert(conns, relicGroup.ChildAdded:Connect(function(asset)
-			if not asset:IsA("Model") or not (string.match(asset.Name, "^weapon%-") or string.match(asset.Name, "^shield%-") or asset.Name == "pot")
-				or not AssetIds["Relics/" .. asset.Name] then return end
-			task.defer(function()
-				local deadline = os.clock() + 5
-				while asset.Parent == relicGroup and not asset:FindFirstChildWhichIsA("BasePart", true)
-					and os.clock() < deadline and not finished do
-					task.wait(0.1)
-				end
-				if finished or not folder.Parent or not asset:FindFirstChildWhichIsA("BasePart", true) then return end
-				local character = player.Character
-				if character and character:GetAttribute("WeaponVisualSource") == "asset_pending" then
-					local id = character:GetAttribute("EquippedWeaponId")
-					local shieldName = character:GetAttribute("EquippedShieldModel")
-					if type(id) == "string" then
-						local weapon = Weapons.get(id)
-						if weapon.model == asset.Name or shieldName == asset.Name then
-							equipFieldWeapon(character, weapon, if shieldName ~= "" then shieldName else nil)
-						end
+	do -- [Luau 지역변수 한도] 지연 로드 자산 참조가 화면 전체 레지스터를 점유하지 않게 정리
+		local assetLibrary = ReplicatedStorage:FindFirstChild("MareAssets")
+		local relicGroup = assetLibrary and assetLibrary:FindFirstChild("Relics")
+		if relicGroup then
+			table.insert(conns, relicGroup.ChildAdded:Connect(function(asset)
+				if not asset:IsA("Model") or not (string.match(asset.Name, "^weapon%-") or string.match(asset.Name, "^shield%-") or asset.Name == "pot")
+					or not AssetIds["Relics/" .. asset.Name] then return end
+				task.defer(function()
+					local deadline = os.clock() + 5
+					while asset.Parent == relicGroup and not asset:FindFirstChildWhichIsA("BasePart", true)
+						and os.clock() < deadline and not finished do
+						task.wait(0.1)
 					end
-				end
-				for _, characterModel in folder:GetDescendants() do
-					if characterModel:IsA("Model") and characterModel:GetAttribute("WeaponVisualSource") == "asset_pending" then
-						local id = characterModel:GetAttribute("EquippedWeaponId")
-						local shieldName = characterModel:GetAttribute("EquippedShieldModel")
-						local thrownName = characterModel:GetAttribute("EquippedThrownAsset")
+					if finished or not folder.Parent or not asset:FindFirstChildWhichIsA("BasePart", true) then return end
+					local character = player.Character
+					if character and character:GetAttribute("WeaponVisualSource") == "asset_pending" then
+						local id = character:GetAttribute("EquippedWeaponId")
+						local shieldName = character:GetAttribute("EquippedShieldModel")
 						if type(id) == "string" then
 							local weapon = Weapons.get(id)
-							if weapon.model == asset.Name or shieldName == asset.Name
-								or (asset.Name == "pot" and thrownName == "jar") or (asset.Name == "weapon-bomb" and thrownName == "bomb") then
-								equipFieldWeapon(characterModel, weapon, if shieldName ~= "" then shieldName else nil,
-									if thrownName ~= "" then thrownName else nil)
+							if weapon.model == asset.Name or shieldName == asset.Name then
+								equipFieldWeapon(character, weapon, if shieldName ~= "" then shieldName else nil)
 							end
 						end
 					end
-				end
-			end)
-		end))
-	end
-	-- [늦게 로드된 R15 몹 자산] 기존 MareAssets.People 도착 이벤트로 복식만 재연결한다.
-	-- R15 모터·움직임·HP·사거리·드롭·저장 키에는 손대지 않는다.
-	local peopleGroup = assetLibrary and assetLibrary:FindFirstChild("People")
-	if peopleGroup then
-		table.insert(conns, peopleGroup.ChildAdded:Connect(function(asset)
-			if not asset:IsA("Model") or not AssetIds["People/" .. asset.Name] then return end
-			task.defer(function()
-				if finished or not folder.Parent then return end
-				for _, enemy in enemies do
-					if enemy.model.Parent and enemy.model:GetAttribute("MobAppearanceState") ~= "ready"
-						and enemy.model:GetAttribute("MobAssetProfile") then
-						Pose.applyRegisteredMobOutfit(enemy.model)
+					for _, characterModel in folder:GetDescendants() do
+						if characterModel:IsA("Model") and characterModel:GetAttribute("WeaponVisualSource") == "asset_pending" then
+							local id = characterModel:GetAttribute("EquippedWeaponId")
+							local shieldName = characterModel:GetAttribute("EquippedShieldModel")
+							local thrownName = characterModel:GetAttribute("EquippedThrownAsset")
+							if type(id) == "string" then
+								local weapon = Weapons.get(id)
+								if weapon.model == asset.Name or shieldName == asset.Name
+									or (asset.Name == "pot" and thrownName == "jar") or (asset.Name == "weapon-bomb" and thrownName == "bomb") then
+									equipFieldWeapon(characterModel, weapon, if shieldName ~= "" then shieldName else nil,
+										if thrownName ~= "" then thrownName else nil)
+								end
+							end
+						end
 					end
-				end
-			end)
-		end))
+				end)
+			end))
+		end
+		-- [늦게 로드된 R15 몹 자산] 기존 MareAssets.People 도착 이벤트로 복식만 재연결한다.
+		-- R15 모터·움직임·HP·사거리·드롭·저장 키에는 손대지 않는다.
+		local peopleGroup = assetLibrary and assetLibrary:FindFirstChild("People")
+		if peopleGroup then
+			table.insert(conns, peopleGroup.ChildAdded:Connect(function(asset)
+				if not asset:IsA("Model") or not AssetIds["People/" .. asset.Name] then return end
+				task.defer(function()
+					if finished or not folder.Parent then return end
+					for _, enemy in enemies do
+						if enemy.model.Parent and enemy.model:GetAttribute("MobAppearanceState") ~= "ready"
+							and enemy.model:GetAttribute("MobAssetProfile") then
+							Pose.applyRegisteredMobOutfit(enemy.model)
+						end
+					end
+				end)
+			end))
+		end
+		-- [몬스터 무기·방패] 기존 적을 생성한 뒤 승인된 실물 메시를 손에 장착한다.
 	end
-	-- [몬스터 무기·방패] 기존 적을 생성한 뒤 승인된 실물 메시를 손에 장착한다.
 	for _, enemy in enemies do
 		if enemy.model and enemy.model.Parent and enemy.weapon then
 			equipFieldWeapon(enemy.model, enemy.weapon, enemy.shieldModel, enemy.throwAsset)
