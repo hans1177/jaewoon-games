@@ -184,23 +184,23 @@ end
 
 -- [전체 메뉴 리뉴얼] 기존 시설 동작은 유지하고 메뉴마다 목적·순서를 짧게 표시한다.
 H.MENU_FOCUS = {
-	trade = { "교역 장부", "시세 비교 → 수량 선택 → 매입·판매" },
-	harbor = { "항구 정보", "특산품·수요 → 시장·시설 → 발전 현황" },
-	route = { "항로 선택", "거리·위험 → 보급 확인 → 출항" },
-	map = { "세계 지도", "목적지 탐색 → 항구 정보 → 항로 연결" },
-	yard = { "선박 관리", "선체·보급 → 선단·대포 → 새 배 비교" },
-	board = { "주점 의뢰", "의뢰 조건 → 위험·보상 → 수락·납품" },
-	quest = { "진행 일지", "현재 목표 → 달성 조건 → 보상 받기" },
-	recruit = { "동료 영입", "직업·특기 → 영입 조건 → 선원 배치" },
-	crew = { "동료 관리", "동료 능력 → 직책 배치 → 승조 효과" },
-	status = { "선장 현황", "선체·화물 → 명성·직업 → 다음 목표" },
-	battle = { "전투 준비", "적 위험 → 선체·대포 → 해적 사냥" },
-	explore = { "지상 탐험", "지역 위험 → 탐험 준비 → 지식 발견" },
-	war = { "함대 지휘", "보유 함선 → 진형·전술 → 해전" },
-	gwent = { "카드 대결", "덱 구성 → 병종 배치 → 카드 대결" },
-	scholar = { "학자와 보고", "새 발견 → 학자에게 보고 → 이해한 지식" },
-	codex = { "지식 백과", "분야 선택 → 발견물 확인 → 미수집 목표" },
-	tech = { "기술 연구", "연구 조건 → 이해한 지식 → 기술 해금" },
+	trade = { "교역 장부", "시세 비교 → 수량 선택 → 매입·판매" , "교역 장부 열기" },
+	harbor = { "항구 정보", "특산품·수요 → 시장·시설 → 발전 현황" , "항구 살펴보기" },
+	route = { "항로 선택", "거리·위험 → 보급 확인 → 출항" , "항로 살펴보기" },
+	map = { "세계 지도", "목적지 탐색 → 항구 정보 → 항로 연결" , "지도 살펴보기" },
+	yard = { "선박 관리", "선체·보급 → 선단·대포 → 새 배 비교" , "새 배 비교" },
+	board = { "주점 의뢰", "의뢰 조건 → 위험·보상 → 수락·납품" , "의뢰 살펴보기" },
+	quest = { "진행 일지", "현재 목표 → 달성 조건 → 보상 받기" , "진행 목표 보기" },
+	recruit = { "동료 영입", "직업·특기 → 영입 조건 → 선원 배치" , "동료 비교하기" },
+	crew = { "동료 관리", "동료 능력 → 직책 배치 → 승조 효과" , "직책 살펴보기" },
+	status = { "선장 현황", "선체·화물 → 명성·직업 → 다음 목표" , "상태 살펴보기" },
+	battle = { "전투 준비", "적 위험 → 선체·대포 → 해적 사냥" , "전투 준비 보기" },
+	explore = { "지상 탐험", "지역 위험 → 탐험 준비 → 지식 발견" , "탐험 준비 보기" },
+	war = { "함대 지휘", "보유 함선 → 진형·전술 → 해전" , "함대 살펴보기" },
+	gwent = { "카드 대결", "덱 구성 → 병종 배치 → 카드 대결" , "덱 살펴보기" },
+	scholar = { "학자와 보고", "새 발견 → 학자에게 보고 → 이해한 지식" , "발견 보고 보기" },
+	codex = { "지식 백과", "분야 선택 → 발견물 확인 → 미수집 목표" , "도감 살펴보기" },
+	tech = { "기술 연구", "연구 조건 → 이해한 지식 → 기술 해금" , "연구 살펴보기" },
 }
 
 -- [교역 시세 통합] 화살표는 일별 등락이 아닌 현재 세계 항구 평균 대비 가격이다.
@@ -4357,19 +4357,19 @@ function H.walletBar(mode)
 end
 
 function H.statStrip(items)
+	-- [전체 메뉴 공통 지표] 작은 화면은 2열로 나눠 수치가 잘리지 않게 한다.
 	add(function()
 		local strip = Instance.new("Frame")
+		strip.Name = "MenuSummaryMetrics"
 		strip.BackgroundTransparency = 1
 		strip.Size = UDim2.new(1, -6, 0, 50)
-		local lay = Instance.new("UIListLayout")
-		lay.FillDirection = Enum.FillDirection.Horizontal
-		lay.Padding = UDim.new(0, 6)
+		local lay = Instance.new("UIGridLayout")
+		lay.CellPadding = UDim2.fromOffset(6, 6)
 		lay.SortOrder = Enum.SortOrder.LayoutOrder
 		lay.Parent = strip
 		for i, it in items do
 			local chip = Instance.new("Frame")
 			chip.LayoutOrder = i
-			chip.Size = UDim2.new(1 / #items, -6 * (#items - 1) / #items, 1, 0)
 			chip.BackgroundColor3 = Color3.fromRGB(236, 214, 170)
 			chip.BorderSizePixel = 0
 			corner(chip, 6)
@@ -4386,6 +4386,7 @@ function H.statStrip(items)
 			lb.Font = Enum.Font.Gotham
 			lb.TextSize = 12
 			lb.TextXAlignment = Enum.TextXAlignment.Left
+			lb.TextTruncate = Enum.TextTruncate.AtEnd
 			lb.TextColor3 = INK_SOFT
 			lb.Text = it[1]
 			lb.Parent = chip
@@ -4401,6 +4402,19 @@ function H.statStrip(items)
 			vl.Text = it[2]
 			vl.Parent = chip
 		end
+		local function fitStrip()
+			local width = strip.AbsoluteSize.X
+			if width <= 0 then return end
+			local cols = if width < 460 and #items >= 3 then 2 else math.max(1, #items)
+			local rows = math.ceil(#items / cols)
+			lay.CellSize = UDim2.new(1 / cols, -6 * (cols - 1) / cols, 0, 50)
+			local height = rows * 50 + (rows - 1) * 6
+			if strip.Size.Y.Offset ~= height then
+				strip.Size = UDim2.new(1, -6, 0, height)
+			end
+		end
+		strip:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitStrip)
+		task.defer(fitStrip)
 		return strip
 	end)
 end
@@ -5729,7 +5743,7 @@ function RENDERERS.trade()
 		grid.Size = UDim2.new(1, -6, 0, 0)
 		grid.AutomaticSize = Enum.AutomaticSize.Y
 		local gl = Instance.new("UIGridLayout")
-		gl.CellSize = UDim2.new(1, -6, 0, 164)
+		gl.CellSize = UDim2.new(1, -6, 0, 198)
 		gl.CellPadding = UDim2.fromOffset(6, 6)
 		gl.SortOrder = Enum.SortOrder.LayoutOrder
 		gl.Parent = grid
@@ -5777,6 +5791,38 @@ function RENDERERS.trade()
 			info.Position = UDim2.fromOffset(76, 34)
 			info.Size = UDim2.new(1, -84, 0, 70)
 			info.AutomaticSize = Enum.AutomaticSize.None
+			-- [교역 카드 가격 비교] 중앙 표식은 모든 항구의 현재 평균 매입가, 채움은 이 항구 매입가다.
+			local average = tonumber(g.avgPrice) or tonumber(g.basePrice) or 0
+			if average > 0 then
+				local price = tonumber(g.buyTotals and g.buyTotals[1]) or tonumber(g.buy) or 0
+				local track = Instance.new("Frame")
+				track.Name = "WorldAverageBar"
+				track.Position = UDim2.fromOffset(76, 114)
+				track.Size = UDim2.new(1, -84, 0, 9)
+				track.BorderSizePixel = 0
+				track.BackgroundColor3 = Color3.fromRGB(118, 99, 76)
+				track.Parent = cardF
+				corner(track, 4)
+				local fill = Instance.new("Frame")
+				fill.Name = "PortPriceFill"
+				fill.Size = UDim2.fromScale(math.clamp(price / average - 0.5, 0, 1), 1)
+				fill.BackgroundColor3 = if deviation < -0.5 then COLORS.green elseif deviation > 0.5 then COLORS.gold else COLORS.grey
+				fill.BorderSizePixel = 0
+				fill.Parent = track
+				corner(fill, 4)
+				local mid = Instance.new("Frame")
+				mid.Name = "WorldAverageMark"
+				mid.Position = UDim2.new(0.5, -1, -0.25, 0)
+				mid.Size = UDim2.new(0, 2, 1.5, 0)
+				mid.BackgroundColor3 = INK
+				mid.BorderSizePixel = 0
+				mid.Parent = track
+				local legend = mkLabel(cardF, if deviation < -0.5 then "● 저렴 · 중앙선=세계평균" elseif deviation > 0.5 then "● 비쌈 · 중앙선=세계평균" else "● 평균 근처 · 중앙선=세계평균", 11, INK_SOFT, false)
+				legend.Position = UDim2.fromOffset(76, 126)
+				legend.Size = UDim2.new(1, -84, 0, 18)
+				legend.AutomaticSize = Enum.AutomaticSize.None
+				legend.TextTruncate = Enum.TextTruncate.AtEnd
+			end
 			local buy = mkButton(cardF, "구매", COLORS.blue, UDim2.new(0.5, -10, 0, 36), function() call("Buy", { goodId = g.id, amount = amount() }) end, true)
 			buy.Position = UDim2.new(0, 6, 1, -42)
 			local sell = mkButton(cardF, "판매", COLORS.green, UDim2.new(0.5, -10, 0, 36), function() call("Sell", { goodId = g.id, amount = amount() }) end, g.owned > 0)
@@ -5792,7 +5838,7 @@ function RENDERERS.trade()
 			local width = grid.AbsoluteSize.X
 			if width <= 0 then return end
 			local columns = if width < 460 then 1 elseif width < 910 then 2 else 3
-			gl.CellSize = UDim2.new(1 / columns, -6 * (columns - 1) / columns, 0, 164)
+			gl.CellSize = UDim2.new(1 / columns, -6 * (columns - 1) / columns, 0, 198)
 		end
 		grid:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitGrid)
 		task.defer(fitGrid)
@@ -6213,7 +6259,7 @@ local function renderYard()
 	local shipHeader = add(function() return mkHeader(content, "새 배 비교 · 실제 구매 가격") end)
 	shipHeader.Name = "YardSectionShips"
 	add(function() return mkLabel(content, "막대 색=새 배 · 흰 선=현재 기함 · ▲ 향상 / ▼ 감소\n실결제는 기함 매각 보상을 뺀 금액이고, 교체하면 기존 대포·보강은 초기화돼.", 14, COLORS.muted, false) end)
-	local maxCargo, maxSpeed, maxHull = 1, 1, 1
+	local maxCargo, maxSpeed, maxHull = sh.cargoCapacity, sh.speed, sh.maxHull
 	for _, s in yard.ships do
 		maxCargo, maxSpeed, maxHull = math.max(maxCargo, s.capacityAfter or s.cargo), math.max(maxSpeed, s.speed), math.max(maxHull, s.hull)
 	end
@@ -6257,15 +6303,17 @@ local function renderYard()
 				local y = (i - 1) * 20
 				local delta = st[2] - st[3]
 				local arrow = if delta > 0.05 then "▲" elseif delta < -0.05 then "▼" else "━"
-				local label = mkLabel(chart, st[1] .. " " .. arrow, 12, if delta >= 0 then INK_SOFT else COLORS.red, true)
+				local currentValue = if st[1] == "속도" then string.format("%.1f", st[3]) else string.format("%d", st[3])
+				local nextValue = if st[1] == "속도" then string.format("%.1f", st[2]) else string.format("%d", st[2])
+				local label = mkLabel(chart, st[1] .. " " .. arrow .. " " .. nextValue .. "/" .. currentValue, 12, if delta >= 0 then INK_SOFT else COLORS.red, true)
 				label.Position = UDim2.fromOffset(0, y)
-				label.Size = UDim2.fromOffset(65, 18)
+				label.Size = UDim2.fromOffset(119, 18)
 				label.AutomaticSize = Enum.AutomaticSize.None
 				local track = Instance.new("Frame")
 				track.BackgroundColor3 = Color3.fromRGB(80, 68, 57)
 				track.BorderSizePixel = 0
-				track.Position = UDim2.new(0, 68, 0, y + 5)
-				track.Size = UDim2.new(1, -72, 0, 9)
+				track.Position = UDim2.new(0, 122, 0, y + 5)
+				track.Size = UDim2.new(1, -126, 0, 9)
 				track.Parent = chart
 				corner(track, 4)
 				local fill = Instance.new("Frame")
@@ -6284,8 +6332,8 @@ local function renderYard()
 			end
 			local function fitChart()
 				local narrow = row.AbsoluteSize.X < 450
-				chart.Position = UDim2.new(0, if narrow then 110 else 118, 1, if narrow then -126 else -73)
-				chart.Size = UDim2.new(1, if narrow then -118 else -232, 0, 60)
+				chart.Position = UDim2.new(0, if narrow then 12 else 118, 1, if narrow then -121 else -73)
+				chart.Size = UDim2.new(1, if narrow then -24 else -232, 0, 60)
 			end
 			row:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitChart)
 			task.defer(fitChart)
@@ -6345,8 +6393,10 @@ function openYardHall()
 		if width <= 0 and workspace.CurrentCamera then width = workspace.CurrentCamera.ViewportSize.X end
 		local showPortrait = width >= 760
 		local inset = if showPortrait then 258 else 10
-		scroll.Position = UDim2.fromOffset(inset, 128)
-		scroll.Size = UDim2.new(1, -inset - 8, 1, -136)
+		local compactNav = not showPortrait
+		-- [조선소 모바일 길찾기] 다섯 목차 버튼을 3열×2행으로 배치하고 본문과 겹치지 않게 내린다.
+		scroll.Position = UDim2.fromOffset(inset, if compactNav then 172 else 128)
+		scroll.Size = UDim2.new(1, -inset - 8, 1, if compactNav then -180 else -136)
 		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, 62), COLORS.paper)
 		corner(top, 6)
 		bookMaterial(top, "parchment", 220)
@@ -6366,15 +6416,16 @@ function openYardHall()
 		leave.Position = UDim2.new(1, -9, 0.5, 0)
 
 		-- [조선소 항목 탐색] 기존 renderYard의 제목으로 바로 이동. 별도 메뉴/저장 구조를 만들지 않는다.
-		local nav = mkBox(root, UDim2.fromOffset(inset, 76), UDim2.new(1, -inset - 8, 0, 44), COLORS.leather)
+		local nav = mkBox(root, UDim2.fromOffset(inset, 76), UDim2.new(1, -inset - 8, 0, if compactNav then 88 else 44), COLORS.leather)
+		local navColumns = if compactNav then 3 else 5
 		for i, entry in { { "내 배·정비", "YardSectionShip" }, { "선단", "YardSectionFleet" }, { "대포·보강", "YardSectionRefit" }, { "7대륙 설계", "YardSectionBlueprints" }, { "새 배 비교", "YardSectionShips" } } do
-			local btn0 = mkButton(nav, entry[1], COLORS.paper, UDim2.new(0.2, -6, 0, 40), function()
+			local btn0 = mkButton(nav, entry[1], COLORS.paper, UDim2.new(1 / navColumns, -6, 0, 40), function()
 				local target = scroll:FindFirstChild(entry[2])
 				if target then
 					scroll.CanvasPosition = Vector2.new(0, math.max(0, target.AbsolutePosition.Y - scroll.AbsolutePosition.Y + scroll.CanvasPosition.Y))
 				end
 			end, true)
-			btn0.Position = UDim2.new((i - 1) / 5, 4, 0, 2)
+			btn0.Position = UDim2.new(((i - 1) % navColumns) / navColumns, 4, 0, 2 + math.floor((i - 1) / navColumns) * 44)
 			btn0.TextSize = 14
 		end
 		local left = mkBox(root, UDim2.fromOffset(8, 128), UDim2.new(0, 240, 1, -136), COLORS.leather)
@@ -10393,12 +10444,16 @@ function render()
 			heading.Position = UDim2.fromOffset(12, 5)
 			heading.Size = UDim2.new(1, if compact then -24 else -142, 0, 25)
 			heading.AutomaticSize = Enum.AutomaticSize.None
-			local steps = mkLabel(banner, focus[2], if compact then 13 else 14, Color3.fromRGB(243, 231, 204), false)
+			local stages = string.split(focus[2], " → ")
+			local guide = if compact and #stages >= 3
+				then "① " .. stages[1] .. "   ② " .. stages[2] .. "\n③ " .. stages[3]
+				else "① " .. table.concat(stages, "   →   ")
+			local steps = mkLabel(banner, guide, if compact then 13 else 14, Color3.fromRGB(243, 231, 204), false)
 			steps.Position = UDim2.fromOffset(12, 34)
 			steps.Size = UDim2.new(1, if compact then -24 else -132, 0, if compact then 48 else 34)
 			steps.AutomaticSize = Enum.AutomaticSize.None
 			steps.TextWrapped = true
-			local action = mkButton(banner, if currentTab == "trade" then "교역 시작" elseif currentTab == "yard" then "선박 비교" else "바로 보기",
+			local action = mkButton(banner, focus[3] or "바로 보기",
 				COLORS.gold, if compact then UDim2.new(1, -24, 0, 38) else UDim2.fromOffset(110, 42), function()
 					if currentTab == "trade" and H.tradeHall then H.tradeHall() return end
 					if currentTab == "yard" and H.yardHall then H.yardHall() return end
