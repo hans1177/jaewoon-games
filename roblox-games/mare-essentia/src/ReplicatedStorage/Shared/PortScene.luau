@@ -1204,10 +1204,11 @@ local function zoneLayout(portId, lvl, shipyardBuilt, buildings)
 	lay.pens = math.clamp(1 + math.floor(lvl / 2) + (if lay.farm then 1 else 0), 1, 4)
 	return lay
 end
--- 목장/방목지 중심: 도시·왕궁·밭/주택보다 서쪽, 각 농장 100x90 부지.
--- 동일 좌표를 쓰는 목장 모양과 가축 배치는 항상 같이 이동한다.
+-- [대형 농촌 구획] 농장·목장의 중앙선을 통일해 4개까지 독립 필지가 겹치지 않는다.
+-- 도시·궁전·항구는 동쪽, 경작지는 서쪽으로 분리한다. 경제·저장 기준 좌표가 아니다.
 local function penAt(i, n)
-	return Vector3.new(-745, 0, (i - (n + 1) / 2) * 155)
+	local rural = PortBuildings.RuralPlots
+	return Vector3.new(rural.centerX, 0, (i - (n + 1) / 2) * rural.penSpacing)
 end
 
 local function spawnJobs(folder, info, rng, lvl, walkers, key)
@@ -1586,32 +1587,49 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				table.insert(stock, sp)
 			end
 		end
-		-- 1) 대형 목장: 소/양/말은 열린 방목지, 돼지는 따로 분리된 낮은 사육 울타리.
-		-- 모든 기존 지붕 축사/마굿간은 제거. 각 목장은 성장 단계·실제 농장 재고에 따라 개체 수가 달라진다.
+		-- 1) 초대형 방목지: 소·양·말 초지 260x208, 돼지 사육지 176x144.
+		-- 실제 농장 수와 가축 수는 기존 경제·지역 생물종 그대로, 울타리 세그먼트 수만 최적화한다.
 		local farmCount = info.sim and info.sim.buildings and info.sim.buildings.farm
 		local grazeCount = if farmCount then math.clamp(2 + math.floor(math.sqrt(math.max(0, farmCount)) / 5), 2, 7) else math.clamp(2 + lvl, 3, 7)
+		local rural = PortBuildings.RuralPlots
 		for i = 1, lay.pens do
 			local c = penAt(i, lay.pens)
 			local sp = if #stock > 0 then stock[(i - 1) % #stock + 1] else nil
-			-- 넓은 목장(100x90), 짧은 울타리만. 더 이상 지붕·기둥 축사를 만들지 않는다.
-			local halfX = if sp == "pig" then 39 else 54
-			local halfZ = if sp == "pig" then 32 else 44
+			local halfX = if sp == "pig" then rural.pigHalfX else rural.pastureHalfX
+			local halfZ = if sp == "pig" then rural.pigHalfZ else rural.pastureHalfZ
 			local grass = part(folder, Vector3.new(halfX * 2, 0.12, halfZ * 2), CFrame.new(c.X, 0.26, c.Z),
 				if sp == "pig" then C(139, 118, 88) else C(105, 139, 82), if sp == "pig" then Enum.Material.Ground else Enum.Material.Grass)
 			grass.Name = if sp == "pig" then "PigYard" else "OpenPasture"
 			grass.CanCollide = false
 			grass.CanQuery = false
-			for x = -halfX, halfX, 13 do
+			grass:SetAttribute("BuildPlotId", info.portId .. ":pasture:" .. i)
+			grass:SetAttribute("BuildType", "farm")
+			grass:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+			grass:SetAttribute("PlotHalfWidth", halfX)
+			grass:SetAttribute("PlotHalfDepth", halfZ)
+			grass:SetAttribute("EconomicFarmCount", tonumber(farmCount) or -1)
+			-- [울타리 최적화] 26스튜드 단위로 길이별 기존 실물 레일을 확대해 넓은 둘레를 적은 메시로 감싼다.
+			local xSections = math.ceil(halfX * 2 / rural.fenceSegmentMax)
+			local xStep = halfX * 2 / xSections
+			for k = 1, xSections do
+				local x = -halfX + (k - 0.5) * xStep
 				for _, dz in { -halfZ, halfZ } do
-					importedModel(folder, "Town", "fence_rails_long", c + Vector3.new(x, 0, dz), 12.6, false)
+					importedModel(folder, "Town", "fence_rails_long", c + Vector3.new(x, 0, dz), xStep * 0.98, false)
 				end
 			end
-			for z = -halfZ + 8, halfZ - 8, 13 do
+			local zSections = math.ceil(halfZ * 2 / rural.fenceSegmentMax)
+			local zStep = halfZ * 2 / zSections
+			for k = 1, zSections do
+				local z = -halfZ + (k - 0.5) * zStep
 				for _, dx in { -halfX, halfX } do
-					local rail = importedModel(folder, "Town", "fence_rails_long", c + Vector3.new(dx, 0, z), 12.6, false)
-					rotateAround(rail, c + Vector3.new(dx, 0, z), math.pi / 2)
+					local at = c + Vector3.new(dx, 0, z)
+					local rail = importedModel(folder, "Town", "fence_rails_long", at, zStep * 0.98, false)
+					rotateAround(rail, at, math.pi / 2)
 				end
 			end
+			-- 사육지 안쪽 급수통은 승인된 Cargo 메시 1개만 쓰고 경제 수량에는 반영하지 않는다.
+			local trough = importedModel(folder, "Cargo", "bucket", c + Vector3.new(halfX - 15, 0, -halfZ + 15), 3.4, false)
+			if trough then trough.Name = "PastureWater_" .. i end
 			if sp then
 				if sp == "elephant" then
 					animal(sp, c)
@@ -2955,23 +2973,50 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		end
 		folder:SetAttribute("HarborPlotCount", plotCount)
 		folder:SetAttribute("HarborPlotOwnership", "VISUAL_ONLY")
-		-- 목장 밖 경작지: 실제 농장 산업 재고·발전 단계에 따라 경작 이랑이 증가한다.
-		-- 가축 울타리와 축사 지붕은 여기에서 다시 만들지 않는다.
+		-- [초대형 실경작지] 방목지 서쪽의 별도 농지 320x220에 고랑·작물을 펼친다.
+		-- 모바일에서 한 필지 최대 6x7, PC 최대 9x10 포기만 사용해 기존 메시 부하를 넘기지 않는다.
+		-- 항구 지역 생산품에 옥수수가 있을 때만 옥수수 작물을 배치한다. 생산·재고 계산은 읽기 전용이다.
 		if lay.farm then
 			local farmland = if info.sim and info.sim.buildings then info.sim.buildings.farm or 0 else lvl * 4
-			local rows = math.clamp(math.floor(2 + math.sqrt(math.max(0, farmland))), 2, 10)
+			local rural = PortBuildings.RuralPlots
+			local touch = game:GetService("UserInputService").TouchEnabled
+			local rows = math.clamp(math.floor(4 + math.sqrt(math.max(0, farmland)) / 3), 4,
+				if touch then rural.maxCropRowsTouch else rural.maxCropRowsDesktop)
+			local columns = if touch then rural.cropColumnsTouch else rural.cropColumnsDesktop
+			local produced = (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {}
+			local maize = table.find(produced, "maize") ~= nil
 			for i = 1, lay.pens do
 				local c = penAt(i, lay.pens)
+				local center = c + Vector3.new(rural.cropOffsetX, 0, 0)
+				local soil = part(folder, Vector3.new(rural.cropWidth, 0.14, rural.cropDepth),
+					CFrame.new(center.X, 0.21, center.Z), C(105, 84, 57), Enum.Material.Ground)
+				soil.Name = "GrandFarmTract"
+				soil.CanCollide = false
+				soil.CanQuery = false
+				soil:SetAttribute("BuildPlotId", info.portId .. ":farmland:" .. i)
+				soil:SetAttribute("BuildType", "farm")
+				soil:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+				soil:SetAttribute("PlotHalfWidth", rural.cropWidth / 2)
+				soil:SetAttribute("PlotHalfDepth", rural.cropDepth / 2)
+				soil:SetAttribute("EconomicFarmCount", tonumber(farmland) or -1)
+				-- 길게 뻗은 관개 수로가 넓은 경작지의 경계를 한눈에 구분해 준다.
+				local water = part(folder, Vector3.new(rural.cropWidth - 12, 0.12, 5),
+					CFrame.new(center.X, 0.30, center.Z - rural.cropDepth / 2 + 8), C(69, 131, 153), Enum.Material.Glass)
+				water.Name = "FarmIrrigationChannel"
+				water.CanCollide = false
+				water.CanQuery = false
 				for rz = 1, rows do
-					local z = c.Z + (rz - (rows + 1) / 2) * 6
-					local at = Vector3.new(c.X - 139, 0, z)
-					local soil = part(folder, Vector3.new(86, 0.18, 4.2), CFrame.new(at + Vector3.new(0, 0.16, 0)), C(88, 62, 40), Enum.Material.Ground)
-					soil.Name = "FarmFurrow"
-					soil.CanCollide = false
-					soil.CanQuery = false
-					for k = 1, 9 do
-						local crop = if (k + rz) % 3 == 0 then "crops-wheatstageb" else "crops-wheatstagea"
-						one("Terrain", crop, 5.5, c.X - 97 - k * 8, 0, z)
+					local z = center.Z + (rz - (rows + 1) / 2) * (rural.cropDepth - 38) / rows
+					local furrow = part(folder, Vector3.new(rural.cropWidth - 18, 0.17, 5.5),
+						CFrame.new(center.X, 0.35, z), C(88, 62, 40), Enum.Material.Ground)
+					furrow.Name = "FarmFurrow"
+					furrow.CanCollide = false
+					furrow.CanQuery = false
+					for k = 1, columns do
+						local x = center.X + (k - (columns + 1) / 2) * (rural.cropWidth - 54) / (columns - 1)
+						local crop = if maize then "crops-cornstagec"
+							elseif (k + rz) % 3 == 0 then "crops-wheatstageb" else "crops-wheatstagea"
+						one("Terrain", crop, 5.5, x, 0, z)
 					end
 				end
 			end
@@ -3743,7 +3788,10 @@ function PortScene.build(info, onFacility)
 		floor.Name = "TownFloor"
 		floor.CanCollide = true
 		floor.CanQuery = true
-		local farmGround = part(folder, Vector3.new(440, 0.3, 2 * (CITY_LIMIT_Z + 14)), CFrame.new(-835, 0.02, 0),
+		-- [농촌 확장] 왕궁·주거 바닥과 겹치지 않는 서쪽 전용 지형에 목장과 경작지를 모두 수용한다.
+		local rural = PortBuildings.RuralPlots
+		local farmGround = part(folder, Vector3.new(rural.groundWidth, 0.3, 2 * (CITY_LIMIT_Z + 14)),
+			CFrame.new(rural.groundCenterX, 0.02, 0),
 			style.ground:Lerp(C(112, 143, 83), 0.55), Enum.Material.Grass)
 		farmGround.Name = "RuralGround"
 		farmGround.CanCollide = true

@@ -1078,3 +1078,23 @@ test('자동 경제발전 건축 필지는 기존 경제 수요를 읽고 미래
   assert.match(port,/local function fillRow\(z, t, xStart, side, laneIndex, rowIndex\)/);
   assert.match(port,/SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
 });
+
+// [대형 농업 구획] 경제 건설량과 가축 수는 그대로 두고 대형 농촌 부지만 렌더링한다.
+test('실제 농장 320x220과 목장 260x208은 도로·왕궁을 피해 분리되고 모바일 가벼운 에셋으로 제한된다',()=>{
+  const port=read('ReplicatedStorage/Shared/PortScene.luau');
+  const buildings=read('ReplicatedStorage/Shared/PortBuildings.luau');
+  assert.match(buildings,/B\.RuralPlots = \{/);
+  for (const property of ['pastureHalfX = 130','pastureHalfZ = 104','pigHalfX = 88','pigHalfZ = 72',
+    'cropWidth = 320','cropDepth = 220','penSpacing = 280','groundWidth = 700',
+    'maxCropRowsTouch = 6','cropColumnsTouch = 7']) assert.ok(buildings.includes(property),property);
+  assert.match(port,/local rural = PortBuildings\.RuralPlots/);
+  assert.match(port,/grass:SetAttribute\("BuildPlotId", info\.portId \.\. ":pasture:" \.\. i\)/);
+  assert.match(port,/soil:SetAttribute\("BuildPlotId", info\.portId \.\. ":farmland:" \.\. i\)/);
+  assert.match(port,/local xSections = math\.ceil\(halfX \* 2 \/ rural\.fenceSegmentMax\)/);
+  assert.match(port,/local zSections = math\.ceil\(halfZ \* 2 \/ rural\.fenceSegmentMax\)/);
+  assert.match(port,/local grazeCount = if farmCount then math\.clamp\(2 \+ math\.floor\(math\.sqrt\(math\.max\(0, farmCount\)\) \/ 5\), 2, 7\)/);
+  assert.match(port,/local columns = if touch then rural\.cropColumnsTouch else rural\.cropColumnsDesktop/);
+  assert.match(port,/FarmIrrigationChannel/);
+  assert.match(port,/EconomicFarmCount/);
+  assert.match(port,/BuildAuthority", "VISUAL_ONLY"/);
+});
