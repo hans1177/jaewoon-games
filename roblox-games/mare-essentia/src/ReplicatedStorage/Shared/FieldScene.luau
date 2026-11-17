@@ -4772,12 +4772,12 @@ function FieldScene.start(opts)
 			local trickName = ({ "옆구르기", "백덤블링", "높은 회전 점프", "슬라이딩", "한손 짚고 돌기", "측면 공중회전" })[
 				(ch0 and ch0:GetAttribute("FieldDodgeTrick")) or 1
 			] or "회피"
-			say(({
+			say((({
 				warrior = "무인", gunner = "포수",
 				navigator = "항해사", merchant = "상인",
 				doctor = "의사", clergy = "성직자",
 				scholar = "학자",
-			})[dodgeStyle] .. " · " .. trickName)
+			})[dodgeStyle] or "회피") .. " · " .. trickName)
 			return
 		end
 		-- [공격 1회 = 연타 최대 1타] 대시 회피는 공격으로 집계하지 않는다.
