@@ -55,13 +55,27 @@ jobs:
         run: |
           set -uo pipefail
           mkdir -p build
-          if git fetch --no-tags --depth=1 origin refs/heads/mare-essentia-autopilot-report; then
-            git update-ref refs/vibe/brain-studio-report FETCH_HEAD
-            source_sha=$(git show refs/vibe/brain-studio-report:report.json | jq -r '.sourceRevision // empty')
-            if [[ "$source_sha" =~ ^[a-f0-9]{40}$ ]]; then
-              git cat-file -e "$source_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$source_sha"
+          # [화면 분석] 오래된 1장짜리 autopilot 보고서보다 실제 Studio 최신 캡처를 먼저 검토한다.
+          # 현재 게임 소스 트리와 정확히 맞는 보고서만 무료 외부 AI에 넘긴다.
+          for frames_branch in mare-essentia-studio-frames mare-essentia-autopilot-report; do
+            if ! git fetch --no-tags --depth=1 origin "refs/heads/$frames_branch"; then
+              continue
             fi
-          fi
+            source_sha=$(git show FETCH_HEAD:report.json 2>/dev/null | jq -r '.sourceRevision // empty' || true)
+            if [[ ! "$source_sha" =~ ^[a-f0-9]{40}$ ]]; then
+              echo "STUDIO_SCREENSHOT_REPORT_INVALID=$frames_branch"
+              continue
+            fi
+            git cat-file -e "$source_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$source_sha" || true
+            source_tree=$(git rev-parse "$source_sha:roblox-games/mare-essentia" 2>/dev/null || true)
+            head_tree=$(git rev-parse "HEAD:roblox-games/mare-essentia" 2>/dev/null || true)
+            if [[ -n "$source_tree" && "$source_tree" == "$head_tree" ]]; then
+              git update-ref refs/vibe/brain-studio-report FETCH_HEAD
+              echo "STUDIO_SCREENSHOT_SOURCE_MATCH=$frames_branch:$source_sha"
+              break
+            fi
+            echo "STUDIO_SCREENSHOT_STALE=$frames_branch:$source_sha"
+          done
           gh api "repos/${GITHUB_REPOSITORY}/contents/autopilot-orders.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/autopilot-orders.json 2>/dev/null || echo '[]' > build/autopilot-orders.json
           gh api "repos/${GITHUB_REPOSITORY}/contents/brain-ledger.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-ledger.json 2>/dev/null || rm -f build/brain-ledger.json
           gh api "repos/${GITHUB_REPOSITORY}/contents/brain-playbook.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-playbook.json 2>/dev/null || rm -f build/brain-playbook.json
