@@ -41,14 +41,16 @@ local function addIcon(button: TextButton, key: string)
 	local id = (AssetIds :: any)[key]
 	if not id then return nil end
 	local painted = string.sub(key, 1, 8) == "CardArt/"
-	local iconOnly = string.sub(button.Name, 1, 11) == "FieldSkill_" or string.sub(button.Name, 1, 16) == "FieldLockedSkill"
+	local iconOnly = button.Name == "FieldAttack" or string.sub(button.Name, 1, 11) == "FieldSkill_" or string.sub(button.Name, 1, 16) == "FieldLockedSkill"
 	local medallion = Instance.new("Frame")
 	medallion.Name = "FieldIconMedallion"
 	medallion.AnchorPoint = Vector2.new(0.5, 0.5)
 	medallion.Position = UDim2.fromScale(0.5, if iconOnly then 0.5 else 0.385)
-	medallion.Size = UDim2.fromScale(if iconOnly then 0.88 else (if painted then 0.83 else 0.82),
-		if iconOnly then 0.88 else (if painted then 0.74 else 0.76))
-	medallion.BackgroundColor3 = if painted then Color3.fromRGB(38, 32, 28) else Color3.fromRGB(40, 43, 47)
+	medallion.Size = UDim2.fromScale(if iconOnly then 0.94 else (if painted then 0.83 else 0.82),
+		if iconOnly then 0.94 else (if painted then 0.74 else 0.76))
+	medallion.BackgroundColor3 = if button.Name == "FieldSkill_dodge" then Color3.fromRGB(12, 72, 87)
+		elseif button.Name == "FieldAttack" then Color3.fromRGB(88, 29, 33)
+		elseif painted then Color3.fromRGB(38, 32, 28) else Color3.fromRGB(40, 43, 47)
 	medallion.BackgroundTransparency = if painted then 0 else 0.33
 	medallion.BorderSizePixel = 0
 	medallion.ZIndex = button.ZIndex + 2
@@ -58,8 +60,11 @@ local function addIcon(button: TextButton, key: string)
 	rounded.Parent = medallion
 	local rim = Instance.new("UIStroke")
 	rim.Name = "FieldIconRim"
-	rim.Color = Color3.fromRGB(245, 208, 128)
-	rim.Thickness = if painted then 1.2 else 1.6
+	rim.Color = if button.Name == "FieldSkill_dodge" then Color3.fromRGB(120, 244, 233)
+		elseif button.Name == "FieldAttack" then Color3.fromRGB(255, 207, 143)
+		else Color3.fromRGB(245, 208, 128)
+	rim.Thickness = if button.Name == "FieldSkill_dodge" then 3 elseif button.Name == "FieldAttack" then 2.5
+		elseif painted then 1.2 else 1.6
 	rim.Transparency = 0.14
 	rim.Parent = medallion
 	local img = Instance.new("ImageLabel")
@@ -68,8 +73,8 @@ local function addIcon(button: TextButton, key: string)
 	img.Image = "rbxassetid://" .. tostring(id)
 	img.AnchorPoint = Vector2.new(0.5, 0.5)
 	img.Position = UDim2.fromScale(0.5, if iconOnly then 0.5 else 0.385)
-	img.Size = UDim2.fromScale(if iconOnly then 0.82 else (if painted then 0.83 else 0.79),
-		if iconOnly then 0.82 else 0.72)
+	img.Size = UDim2.fromScale(if iconOnly then 0.88 else (if painted then 0.83 else 0.79),
+		if iconOnly then 0.88 else 0.72)
 	img.ScaleType = Enum.ScaleType.Fit -- 승인 원화 가장자리 잘림 없이 전부 표시
 	img.ImageTransparency = 0
 	img.ImageColor3 = if painted then Color3.new(1, 1, 1) else Color3.fromRGB(255, 246, 222)
@@ -1528,8 +1533,12 @@ function FieldScene.start(opts)
 	-- 입력 버튼: 공격 + 스킬 3개(강타·회전베기·구르기). 키보드 F·Q·E·R 도 된다.
 	local UserInputService = game:GetService("UserInputService")
 	-- [모바일 전투 HUD] 엄지 버튼은 오른쪽 하단, 철수는 왼쪽 위로 분리해 오터치를 방지한다.
-	local attackBtn = btn(gui, "공격", Color3.fromRGB(169, 55, 50), UDim2.fromOffset(96, 96), UDim2.new(1, -90, 1, -88), Vector2.new(0.5, 0.5))
+	local attackBtn = btn(gui, "", Color3.fromRGB(169, 55, 50),
+		UDim2.fromOffset(if visualMobile then 112 else 100, if visualMobile then 112 else 100),
+		UDim2.new(1, -90, 1, -88), Vector2.new(0.5, 0.5))
 	attackBtn.Name = "FieldAttack"
+	attackBtn:SetAttribute("SkillFullName", "일반 공격")
+	attackBtn.Text = ""
 	attackBtn.TextSize = 19
 	attackBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 	local attackIcon = addIcon(attackBtn, "Menu/cc0_sword")
@@ -3948,11 +3957,12 @@ function FieldScene.start(opts)
 	local cameraViewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(390, 640)
 	local screenWidth = if cameraViewport.X >= 100 then cameraViewport.X else 390
 	local screenHeight = if cameraViewport.Y >= 250 then cameraViewport.Y else 640
+	-- [엄지 동선] 일반 공격 → 크게 키운 회피 → 스킬 3칸 순으로 겹치지 않게 배치한다.
 	local outerSkillRadius = math.clamp(math.min(screenWidth * 0.56, screenHeight * 0.45), 162, 200)
-	local innerSkillRadius = math.clamp(outerSkillRadius * 0.56, 94, 114)
+	local innerSkillRadius = math.clamp(outerSkillRadius * 0.82, 132, 164)
 	local compactTouch = visualMobile and screenWidth < 360
-	local skillSize = if compactTouch then 64 elseif visualMobile then 76 else 68
-	local basicSize = if compactTouch then 60 elseif visualMobile then 68 else 64
+	local skillSize = if compactTouch then 72 elseif visualMobile then 82 else 72
+	local basicSize = if compactTouch then 64 elseif visualMobile then 68 else 64
 	-- [반원 중심] 기존 공격 버튼의 위치를 그대로 사용해 모든 해상도에서 엄지 중심이 일치한다.
 	local ATK_C = Vector2.new(attackBtn.Position.X.Offset, attackBtn.Position.Y.Offset)
 	local function arcPos(r: number, theta: number): UDim2
@@ -3964,6 +3974,11 @@ function FieldScene.start(opts)
 		local b = btn(gui, "", color, UDim2.fromOffset(size or 56, size or 56), pos, Vector2.new(0.5, 0.5))
 		b.Name = "FieldSkill_" .. key
 		b.Text = ""
+		if key == "dodge" then
+			b:SetAttribute("TouchPriority", "DODGE")
+			b:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(114, 244, 228)
+			b:FindFirstChildOfClass("UIStroke").Thickness = 3.2
+		end
 		b:SetAttribute("SkillFullName", label)
 		b:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 		bindPress(b, function()
@@ -3972,9 +3987,12 @@ function FieldScene.start(opts)
 		skillBtns[key] = { btn = b, label = label }
 	end
 	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
-	mkSkill("dodge", "회피", Color3.fromRGB(61, 127, 106), arcPos(innerSkillRadius, 42), basicSize)
-	mkSkill("parry", "방어", Color3.fromRGB(94, 89, 138), arcPos(innerSkillRadius, 114), basicSize)
-	addIcon(skillBtns.dodge.btn, "Menu/cc0_glove")
+	mkSkill("dodge", "회피", Color3.fromRGB(32, 141, 144),
+		arcPos(innerSkillRadius, 4), if compactTouch then 88 elseif visualMobile then 104 else 86)
+	mkSkill("parry", "방어", Color3.fromRGB(71, 88, 127),
+		arcPos(innerSkillRadius * 0.98, 45), basicSize)
+	-- [등록 아이콘] 장갑 대신 실제 등록 나침반 방향 아이콘으로 이동·회피 기능을 구분한다.
+	addIcon(skillBtns.dodge.btn, "Menu/chart_compass")
 	addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
 	local function castEffect(sk, name, ch, hp0)
@@ -4078,11 +4096,16 @@ function FieldScene.start(opts)
 		end
 		equipped.heavy, equipped.sweep = slotOf.heavy ~= nil, slotOf.sweep ~= nil
 		local function slotPos(id): UDim2
-			return arcPos(outerSkillRadius, 20 + ((slotOf[id] or 1) - 1) * 42.5)
+			-- [전투 스킬] 공격 바로 위로 3칸을 계단형 배치. 회피·방어와 원형 터치 영역을 분리한다.
+			local i = slotOf[id] or 1
+			return UDim2.new(1, ATK_C.X + (if i == 1 then -outerSkillRadius
+				elseif i == 2 then -outerSkillRadius * 0.40 else outerSkillRadius * 0.14),
+				1, ATK_C.Y - (if i == 1 then outerSkillRadius * 0.80
+				elseif i == 2 then outerSkillRadius * 0.98 else outerSkillRadius * 0.97))
 		end
 		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
 		for slotI = slotCount + 1, JobSkills.MAX_PLAYER_SKILLS do
-			local lb = btn(gui, "", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(skillSize, skillSize), arcPos(outerSkillRadius, 20 + (slotI - 1) * 42.5), Vector2.new(0.5, 0.5))
+			local lb = btn(gui, "", Color3.fromRGB(70, 76, 90), UDim2.fromOffset(skillSize, skillSize), slotPos(if slotI == 1 then "heavy" elseif slotI == 2 then "sweep" else "card1"), Vector2.new(0.5, 0.5))
 			lb.Name = "FieldLockedSkill" .. slotI
 			lb.Text = ""
 			lb:SetAttribute("SkillFullName", "잠긴 스킬")
