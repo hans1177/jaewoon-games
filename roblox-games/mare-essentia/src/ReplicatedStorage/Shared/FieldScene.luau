@@ -2001,10 +2001,10 @@ function FieldScene.start(opts)
 	-- 한 번의 타격: ActionCombat 규칙으로 피해를 계산하고 효과·처치를 처리한다
 	-- 연속 명중 연출: 5·10·15… 명중마다 화면 번쩍임·충격파·잠깐 멈춤(슬로모션 느낌)
 	local streakN, streakT, streakBest = 0, 0, 0 -- [이번 탐험 최고 기록] 저장 구조는 바꾸지 않는다.
-	local function comboCinema(n: number)
+	local function comboCinema(n: number, isRecord: boolean)
 		local _, h0 = char3()
 		local spectacular = n >= 50 and n % 25 == 0
-		showCombo(string.format("%d연타%s!", n, if n >= 10 and n >= streakBest then " · 신기록" else ""), true)
+		showCombo(string.format("%d연타%s!", n, if isRecord then " · 신기록" else ""), true)
 		screenFlash(Color3.fromRGB(255, 236, 170), if visualMobile then 0.84 else 0.62)
 		hitStopUntil = math.max(hitStopUntil, os.clock() + (if spectacular then 0.16 else 0.08))
 		shakeUntil, shakeAmp = os.clock() + 0.2, if visualMobile then 0.3 else 0.7
@@ -2159,7 +2159,7 @@ function FieldScene.start(opts)
 			local isRecord = streakN >= 10 and streakN > streakBest
 			streakBest = math.max(streakBest, streakN)
 			showCombo(string.format("%d연타%s", streakN, if isRecord then " · 신기록!" else ""), false)
-			if streakN % 5 == 0 then comboCinema(streakN) end
+			if streakN % 5 == 0 then comboCinema(streakN, isRecord) end
 		end
 		burst(e.root.Position + Vector3.new(0, 2, 0), 12 + dealt, mult >= 1.5)
 		if not quiet then
@@ -2252,6 +2252,7 @@ function FieldScene.start(opts)
 				refresh()
 			end
 		end
+		return true -- 정예 회피로 빗나간 경우에만 nil을 돌려준다.
 	end
 
 	-- [무기 외형] 등록된 실제 3D 메시만 사용한다. 늦게 도착한 모델도 기존 장착 함수로 갱신한다.
@@ -2611,7 +2612,7 @@ function FieldScene.start(opts)
 			if finished then
 				return
 			end
-			local hits = 0
+			local hits, shots = 0, 0 -- [회피 명중 분리] 사격 시도 수와 실제 적중 수를 혼동하지 않는다.
 			local defeatedAt = nil -- [킬캠] 기존 타격으로 쓰러진 적 위치만 읽는다.
 			-- 무기에 따라 기본 공격의 사거리·각도가 다르다. 석궁·총은 가장 가까운 한 명을 쏜다(총알 궤적 표시).
 			local rangeR = if moveId == "rush" then wpn.range else mv.range
@@ -2624,7 +2625,7 @@ function FieldScene.start(opts)
 				end)
 			end
 			for _, e in list do
-				if rangedShot and hits >= 1 then
+				if rangedShot and shots >= 1 then
 					break
 				end
 				local to = (e.root.Position - hrp.Position) * Vector3.new(1, 0, 1)
@@ -2635,9 +2636,10 @@ function FieldScene.start(opts)
 					ang = math.deg(math.acos(math.clamp(look.Unit:Dot(to.Unit), -1, 1)))
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, dist, ang) then
-					strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3) or wpn.family == "blunt")
+					local landed = strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3) or wpn.family == "blunt")
 					if e.ac.dead then defeatedAt = e.root.Position end
-					hits += 1
+					if landed then hits += 1 end
+					shots += 1
 					if rangedShot then
 						-- 총알·화살 궤적: 짧게 번쩍이는 빛줄기
 						local a0 = hrp.Position + Vector3.new(0, 0.5, 0)
@@ -3614,7 +3616,7 @@ function FieldScene.start(opts)
 			elseif not evading and wish > 0 and delta.Magnitude > flat.Magnitude then
 				delta = flat
 			end
-			if delta.Magnitude > 0.001 or facing then
+			if delta.Magnitude > 0.001 or (facing and e.ac.state ~= "idle") then
 				local rot = pv.Rotation
 				if facing then
 					local targetRot = CFrame.lookAt(Vector3.zero, facing).Rotation
