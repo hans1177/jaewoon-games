@@ -4029,7 +4029,7 @@ test('Mare enemies and companions have grounded speed responsive R15 locomotion'
   assert.ok(field.includes('kindId == "archer" or e.throwAsset ~= nil')&&
     field.includes('e.root.CFrame.RightVector:Dot(e.moveVel)'),
     'enemy strafe/backpedal must use physical velocity');
-  assert.ok(field.includes('a.moveVel = (a.moveVel or Vector3.zero):Lerp(wantedVel')&&
+  assert.ok(field.includes('a.moveVel = previousVel:Lerp(wantedVel, 1 - math.exp(-accel * math.clamp(dt, 0, 0.1)))')&&
     field.includes('a.moveVel.Magnitude * math.clamp(dt'),
     'companions must accelerate and decelerate without snapping');
   assert.ok(field.includes('math.clamp(a.moveVel.Magnitude / (if tgt then 16 else 20)'),
@@ -4043,8 +4043,9 @@ test('Mare enemy and companion weapon motions use grounded shared combo and reco
   const root='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
   const scene=fs.readFileSync(root+'FieldScene.luau','utf8');
   const motion=fs.readFileSync(root+'FieldMotion.luau','utf8');
-  assert.ok(motion.includes('FM.weaponCombo(weaponMotion, h.weaponBeat or 1)'),
-    'shared authored weapon beat must be played for enemy and ally');
+  assert.ok(motion.includes('local actorBeat = if rangedActor then 1 else (h.weaponBeat or 1)')&&
+    motion.includes('FM.weaponCombo(weaponMotion, actorBeat) or FM.weaponCombo(weaponMotion, 1)'),
+    'melee enemy and ally use authored weapon beats; ranged attacks keep one actual firing pose');
   assert.ok(motion.includes('weaponMotion ~= nil or role == "ally-melee"'),
     'unarmed companion must use canonical combat motion without changing bomb throw');
   assert.ok(scene.includes('e.fm.weaponBeat = ((e.fm.weaponBeat or 0) % 3) + 1')&&
@@ -4155,7 +4156,7 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
     scene.includes('wpn.family == "blade" then 0.39')&&
     scene.includes('wpn.id == "crossbow" then 0.46')&&
     scene.includes('wpn.family == "axe" or wpn.family == "blunt" then 0.45'));
-  assert.ok(scene.includes('local impact = math.clamp(0.14 / swingDur, 0.15, 0.75)')&&
+  assert.ok(scene.includes('local impact = math.clamp(0.14 / swingDur, 0.15, 0.65)')&&
     scene.includes('progress = if p < impact then p / impact * contact'),
     'authored melee contact must match original basic damage at 0.14 sec');
   const shared=scene.indexOf('local style = ch and ch:GetAttribute("FieldDodgeStyle") or "warrior"');
@@ -4271,10 +4272,11 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
   assert.ok(field.includes('startSwing(finishKind, if stage == 3 then 0.34 else 0.26, stage, true)'),'bonus chains must play actual R15 steps');
   assert.ok(field.includes('pl.combo = 0') && field.includes('mult = 1'),'first attack must be basic single hit');
   const active=field.slice(field.indexOf('if chain > 1 then'),field.indexOf('elseif hits == 0 and moveId == "rush"'));
-  assert.ok(active.includes('startSwing(finishKind, if stage == 3 then 0.34 else 0.26, stage)')
-    && active.includes('elseif stage == chain and stage == 3')
+  assert.ok(active.includes('startSwing(finishKind, if stage == 3 then 0.34 else 0.26, stage, true)')
+    && active.includes('if stage == chain and stage == 3 and wpn.family == "fist"')
+    && active.includes('if stage == chain then')
     && !active.includes('strikeEnemy('),
-    'bonus visual beats must not add damage or award duplicate experience');
+    'bonus visual beats must be purely cinematic, use authored finishers and never add damage or experience');
   assert.ok(field.includes('if now >= a.nextSkill and (#enemies > 0 or (a.healer and pl.hp < pl.maxHp * 0.65)) then')
     && field.includes('a.skillCd[sid] = now + def.cooldown')
     && field.includes('castEffect(sid, a.name')
