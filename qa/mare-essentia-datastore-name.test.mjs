@@ -104,7 +104,8 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.match(field,/if basicAttack == true then[\s\S]*?pl\.autoNormalHits = \(pl\.autoNormalHits or 0\) \+ 1/);
   assert.match(field,/local autoHeavyReady = basicAttack == true/);
   assert.match(field,/local basicHit = basicAttack == true/);
-  assert.match(field,/hitActionSeq, nil, moveId == "rush"\)/);
+  assert.match(field,/hitActionSeq, nil, moveId == "rush", basicBeat\)/);
+  assert.match(field,/basicAttack: boolean\?, impactBeat: number\?\)/);
   assert.doesNotMatch(field,/pl\.basicAttackSeq/);
   assert.match(field,/FieldAutoSkillPending/);
   assert.match(field,/if useMove\("heavy"\) then[\s\S]*?comboCinema\(streakN, record, true\)/);
@@ -302,7 +303,8 @@ test('근접·원거리 10단 전신 모션과 마무리 이펙트는 기존 피
     assert.ok(common.includes(weapon+'={id="'+weapon+'"'),weapon+' 기본 모션 프로필 누락');
   }
   assert.match(motion,/local actorBeat = if rangedActor then 1 else \(h\.weaponBeat or 1\)/);
-  assert.match(field,/local swingBridge = \{ last = \{\}, lastAt = -100, from = nil, rootLast = nil, rootFrom = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100 \}/);
+  assert.match(field,/local swingBridge = \{ last = \{\}, lastAt = -100, from = nil, rootLast = nil, rootFrom = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100, impactSeq = -1 \}/);
+  assert.match(field,/swingBridge\.impactSeq = actionSeq/);
   assert.match(field,/swingBridge\.from = table\.clone\(swingBridge\.last\)/);
   assert.match(field,/canon\[joint\] = old:Lerp\(canon\[joint\] or CFrame\.identity, weight\)/);
   assert.match(field,/weight = weight \* weight \* \(3 - 2 \* weight\)/);
