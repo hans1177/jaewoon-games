@@ -6092,7 +6092,7 @@ function H.counselRows(n)
 	end
 	if #relevant == 0 and H.MENU_FOCUS[currentTab] then
 		-- 새 조언이 없어도 실제 승선 동료가 현재 시설의 할 일을 말한다.
-		local speaker = { name = "늙은 항해사 베르나르", role = "항해사" }
+		local speaker = { name = "선장 항해 비서", role = "항해 안내" }
 		for _, companion in (view.companions and view.companions.list) or {} do
 			if companion.joined then
 				speaker = { id = companion.id, name = companion.name, role = companion.role or "동료" }
@@ -6116,10 +6116,57 @@ function H.counselRows(n)
 		elseif currentTab == "yard" and view.ship then
 			local ship = view.ship
 			if ship.maxHull > 0 and ship.hull < ship.maxHull * 0.5 then
-				adviceText = string.format("기함 선체가 %d/%d야. 수리를 확인하고 새 배의 선체·속도·화물칸을 비교해.", ship.hull, ship.maxHull)
+				adviceText = string.format("기함 선체 %d/%d야. 수리를 먼저 확인하고 화물·속도·선체·포문·승조원까지 비교해.", ship.hull, ship.maxHull)
 			else
-				adviceText = "새 배를 고를 때 현재 기함과 선체·속도·화물칸을 비교해. 구매 전 보유 자금도 확인해."
+				adviceText = "새 배와 현재 기함의 다섯 성능을 비교해. 교체하면 기존 개조는 초기화돼."
 			end
+		elseif currentTab == "route" then
+			local missing = nil
+			for _, r in (view.routes or {}) do
+				if not r.locked and (r.supplies > view.ship.supplies or (r.coal or 0) > (view.ship.coal or 0)) then missing = r; break end
+			end
+			adviceText = if missing then missing.name .. " 항로는 보급품·석탄이 모자라. 출항 전 준비량을 확인해."
+				else "항로별 항해일과 보급 필요량·의뢰 목적지를 비교하고 지도를 확인해."
+		elseif currentTab == "map" then
+			adviceText = "항구를 누르면 거리·항해일·보급량이 보여. 금색=현재, 주황=의뢰, 초록=조선소야."
+		elseif currentTab == "battle" then
+			adviceText = if view.ship.hull < view.ship.maxHull * 0.5 then "기함 내구도가 절반 이하여서 위험해. 수리 후 자동스킬을 확인해."
+				else "출격 전에 선체·포문·승조원과 자동스킬 발동 순서를 확인해."
+		elseif currentTab == "war" then
+			adviceText = if view.war then string.format("함대전 %d/%d파도 진행 중이야. 파도 사이에 선체가 회복되지 않아.", view.war.wave, view.war.total)
+				else "함대전은 여러 파도에 걸쳐 싸워. 선체·포문·승조원을 먼저 확인해."
+		elseif currentTab == "quest" or currentTab == "board" then
+			local ready = 0
+			for _, q in (view.quests and view.quests.active) or {} do
+				if q.kind == "deliver" and q.progress >= q.amount then ready += 1 end
+			end
+			adviceText = if ready > 0 then string.format("납품 준비가 끝난 의뢰가 %d건이야. 진행 일지에서 보상을 확인해.", ready)
+				else "현재 의뢰의 진행도·보상과 주점 의뢰의 남은 기한을 확인해."
+		elseif currentTab == "status" then
+			adviceText = string.format("선체 %d/%d · 화물 %d/%d · 보급 %d. 부족한 상태부터 정비해.", view.ship.hull, view.ship.maxHull, view.ship.cargoUsed, view.ship.cargoCapacity, view.ship.supplies)
+		elseif currentTab == "crew" then
+			local joined = 0
+			for _, c in (view.companions and view.companions.list) or {} do if c.joined then joined += 1 end end
+			adviceText = string.format("승선 동료 %d명 · 정원 %d명. 직책 적합도를 확인하고 배치해.", joined, view.companions.max or 0)
+		elseif currentTab == "recruit" then
+			adviceText = "초상·직업·특기·영입 비용을 비교해. 합류한 동료는 직책에 맞게 배치해."
+		elseif currentTab == "harbor" then
+			adviceText = view.player.portName .. "의 특산품·수요와 산업 발전 상태를 확인하면 교역 계획을 세우기 쉬워."
+		elseif currentTab == "explore" then
+			adviceText = "탐험 지점의 위험·보상·발견물을 비교하고 준비 상태를 확인해."
+		elseif currentTab == "gwent" then
+			adviceText = "근접·사격·포·특수 카드 비중과 병종 상성을 보고 덱을 편성해."
+		elseif currentTab == "tech" then
+			local ready = 0
+			for _, t in (view.tech or {}) do
+				if not t.owned and not t.blocked and (t.cost or 0) <= view.player.coins then ready += 1 end
+			end
+			adviceText = if ready > 0 then string.format("현재 연구 가능한 기술이 %d개야. 비용과 효과를 비교해.", ready)
+				else "잠긴 기술의 선행 조건과 필요한 코인을 확인해."
+		elseif currentTab == "scholar" then
+			adviceText = "항구 학자에게 발견물을 보고하고 연구 성과와 해금 가능한 지식을 확인해."
+		elseif currentTab == "codex" then
+			adviceText = "지식 백과에서 발견·미발견 항목을 구분하고 다음 수집 목표를 정해."
 		end
 		table.insert(relevant, {
 			who = speaker, text = adviceText, tab = currentTab,
@@ -6137,6 +6184,14 @@ function H.counselRows(n)
 				table.insert(buttons, { text = "교역 장부", color = COLORS.green, onClick = function() if H.tradeHall then H.tradeHall() end end })
 			elseif currentTab == "yard" then
 				table.insert(buttons, { text = "선박 관리", color = COLORS.green, onClick = function() if H.yardHall then H.yardHall() end end })
+			elseif currentTab == "route" then
+				table.insert(buttons, { text = "지도", color = COLORS.green, onClick = function() openTab("map", "chart") end })
+			elseif currentTab == "map" then
+				table.insert(buttons, { text = "항로", color = COLORS.green, onClick = function() openTab("route") end })
+			elseif currentTab == "crew" then
+				table.insert(buttons, { text = "영입", color = COLORS.green, onClick = function() openTab("recruit") end })
+			elseif currentTab == "quest" then
+				table.insert(buttons, { text = "의뢰판", color = COLORS.green, onClick = function() openTab("board") end })
 			end
 			if cs.dismissable then
 				table.insert(buttons, { text = "알겠어요", color = COLORS.grey, onClick = function() call("AdviceDone", { id = cs.id }) end })
@@ -8538,14 +8593,33 @@ function RENDERERS.scholar()
 end
 
 function RENDERERS.tech()
+	-- [연구소] 해금 상태와 자금 조건을 서버 스냅샷으로 분리해 보여 준다.
+	local completed, affordable, blocked = 0, 0, 0
+	for _, t in view.tech do
+		if t.owned then completed += 1
+		elseif t.blocked then blocked += 1
+		elseif (t.cost or 0) <= view.player.coins then affordable += 1 end
+	end
+	H.statStrip({
+		{ "연구 완료", tostring(completed), tone = "good" },
+		{ "지금 가능", tostring(affordable), tone = "good" },
+		{ "조건 잠금", tostring(blocked), tone = "key" },
+		{ "보유 코인", H.commas(view.player.coins), tone = "key" },
+	})
 	add(function()
-		return mkLabel(content, "증기 연구: 지식 카드를 발견하고 코인으로 연구해요. 증기 장비는 석탄을 태워요.", 14, COLORS.muted, false)
+		return mkLabel(content, "기술은 선행 지식과 보유 코인을 확인해 연구해. 증기 장비는 석탄을 사용해.", 14, COLORS.muted, false)
 	end)
 	add(function()
 		local tiles = {}
 		for _, t in view.tech do
-			table.insert(tiles, { icon = if t.owned then "cc0_yes" else "tech", title = t.name, sub = if t.owned then "연구 완료" elseif t.blocked then t.blocked else t.summary,
-				btn = if t.owned then "완료" else tostring(t.cost) .. " 코인", color = COLORS.steam, enabled = not t.owned and t.blocked == nil, onClick = function() call("Research", { techId = t.id }) end })
+			local affordableNow = (t.cost or 0) <= view.player.coins
+			local reason = if t.owned then "연구 완료" elseif t.blocked then t.blocked
+				elseif not affordableNow then string.format("코인 %s 부족 · %s", H.commas((t.cost or 0) - view.player.coins), t.summary)
+				else "연구 가능 · " .. t.summary
+			table.insert(tiles, { icon = if t.owned then "cc0_yes" else "tech", title = t.name, sub = reason,
+				btn = if t.owned then "완료" elseif not affordableNow and not t.blocked then "자금 부족" else tostring(t.cost) .. " 코인",
+				color = COLORS.steam, enabled = not t.owned and t.blocked == nil and affordableNow,
+				onClick = function() call("Research", { techId = t.id }) end })
 		end
 		return H.tileGrid(tiles, content, 176, 160)
 	end)
@@ -10589,6 +10663,39 @@ function render()
 			action.AnchorPoint = if compact then Vector2.new(0, 0) else Vector2.new(1, 0.5)
 			action.Position = if compact then UDim2.fromOffset(12, 91) else UDim2.new(1, -10, 0.5, 0)
 			return banner
+		end)
+	end
+	-- [선장 항해 비서] 서버 실측 상태에서 가장 시급한 일 한 개만 추천. 자원 조작은 실행하지 않는다.
+	local cue, detail, target = nil, nil, nil
+	if ship.maxHull > 0 and ship.hull < ship.maxHull * 0.4 then
+		cue, detail, target = "선체 수리 필요", string.format("내구도 %d/%d · 항해 전 수리 상태를 확인해.", ship.hull, ship.maxHull), "yard"
+	elseif ship.supplies <= 5 then
+		cue, detail, target = "보급품 부족", "현재 보유 " .. tostring(ship.supplies) .. "개 · 필요한 보급과 비용을 확인해.", "yard"
+	elseif ship.cargoCapacity > 0 and ship.cargoUsed >= ship.cargoCapacity then
+		cue, detail, target = "화물칸 가득 참", string.format("%d/%d칸 · 거래 전에 적재 화물을 정리해.", ship.cargoUsed, ship.cargoCapacity), "trade"
+	else
+		for _, q in (view.quests and view.quests.active) or {} do
+			if q.kind == "deliver" and q.progress >= q.amount then
+				cue, detail, target = "납품 가능한 의뢰", q.name .. " · 보상 수령 조건을 확인해.", "quest"
+				break
+			end
+		end
+		if not cue then
+			for _, t in (view.tech or {}) do
+				if not t.owned and not t.blocked and (t.cost or 0) <= p.coins then
+					cue, detail, target = "연구 가능한 기술", t.name .. " · 비용 " .. H.commas(t.cost or 0) .. "코인", "tech"
+					break
+				end
+			end
+		end
+	end
+	if cue and target ~= currentTab then
+		add(function()
+			local row = mkRow(content, "🧭 항해 비서 · " .. cue, detail, {
+				{ text = TAB_NAME[target] .. " 보기", color = COLORS.green, onClick = function() openTab(target) end },
+			}, 76)
+			row.Name = "CaptainPriorityAdvice"
+			return row
 		end)
 	end
 	H.counselRows(1)
