@@ -183,7 +183,7 @@ for _, t in TABS do
 end
 
 -- [전체 메뉴 리뉴얼] 기존 시설 동작은 유지하고 메뉴마다 목적·순서를 짧게 표시한다.
-local MENU_FOCUS = {
+H.MENU_FOCUS = {
 	trade = { "교역 장부", "시세 비교 → 수량 선택 → 매입·판매" },
 	harbor = { "항구 정보", "특산품·수요 → 시장·시설 → 발전 현황" },
 	route = { "항로 선택", "거리·위험 → 보급 확인 → 출항" },
@@ -5928,11 +5928,11 @@ function H.counselRows(n)
 		-- 교역 화면에는 교역, 조선소에는 선박 조언만 표시한다.
 		if counsel.tab == currentTab then table.insert(relevant, counsel) end
 	end
-	if #relevant == 0 and MENU_FOCUS[currentTab] then
+	if #relevant == 0 and H.MENU_FOCUS[currentTab] then
 		-- 새 조언이 없는 화면도 해당 메뉴에서 할 일을 정확히 안내한다.
 		table.insert(relevant, {
 			who = { name = "시설 길잡이", role = TAB_NAME[currentTab] },
-			text = MENU_FOCUS[currentTab][2], tab = currentTab,
+			text = H.MENU_FOCUS[currentTab][2], tab = currentTab,
 		})
 	end
 	local shown = 0
@@ -10290,7 +10290,7 @@ function render()
 		add(function() return mkLabel(content, message, 17, if messageOk then COLORS.gold else COLORS.red, true) end)
 	end
 	-- [시설 공통 목표 카드] 현재 화면의 할 일을 단계별로 안내해 모든 메뉴의 길찾기를 통일한다.
-	local focus = MENU_FOCUS[currentTab]
+	local focus = H.MENU_FOCUS[currentTab]
 	if focus then
 		add(function()
 			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 64), Color3.fromRGB(64, 48, 35))
