@@ -209,6 +209,71 @@ test('원거리 공격은 무기 사거리로 조준·발사하며 석궁 R15 �
 });
 
 
+// [원거리 원본 자세·투사체·명중 공정성] 무료 기본 Trail과 등록 무기를 유지, 피해·숙련 정산은 적중 때만.
+test('원거리 화살 석궁은 실제 긴 축을 바로 세우고 3D 탄도·거리별 빗나감을 쓴다',()=>{
+  const scene=read('ReplicatedStorage/Shared/FieldScene.luau');
+  const motion=read('ReplicatedStorage/Shared/FieldMotion.luau');
+  const projectile=scene.slice(scene.indexOf('local function arrowTrail('),scene.indexOf('-- 바닥 범위 예고:'));
+  assert.ok(projectile.length>2000,'투사체 실제 탄도 생성 구간 누락');
+  assert.doesNotMatch(projectile,/Instance\.new\("Beam"\)/,'넓은 네모 Beam이 복구되지 않아야 한다');
+  for(const snippet of [
+    'shaft.Shape = if gun then Enum.PartType.Ball else Enum.PartType.Cylinder',
+    'shaft.Name = "FieldProjectile"', 'tip.Name = "FieldArrowTip"',
+    'local trail = Instance.new("Trail")', 'trail.WidthScale = NumberSequence.new',
+    'CFrame.lookAt(p, p + aim)', 'trail.Enabled = false',
+    'if finished or not shaft.Parent then'
+  ]) assert.ok(projectile.includes(snippet),'실물형 화살/볼트·잔광 회귀: '+snippet);
+  for(const snippet of [
+    'hand = if weapon.family == "bow" then leftHand else rightHand',
+    'local bowHold = weapon.family == "bow"',
+    'local crossbowHold = weapon.motion == "CROSSBOW"',
+    'local targetAxis = if bowHold then Vector3.yAxis else forward',
+    'CFrame.fromRotationBetweenVectors(sourceAxis, targetAxis)',
+    '[활 진짜 조준]', '[석궁 수평 견착]',
+    'local shotLanded = true', 'local baseAccuracy = if wpn.motion == "CROSSBOW"',
+    '- (if shooterMoving then 0.10 else 0)',
+    '- (if targetMoving then 0.085 else 0)',
+    '(e.dodgeUntil or 0) > os.clock()',
+    'if shotLanded then strikeEnemy(', 'else false',
+    'if landed then hits += 1 end', 'shots += 1',
+    'if not shotLanded then', 'if rangedShot and shots == 0 then'
+  ]) assert.ok(scene.includes(snippet),'활·석궁/확률 판정 회귀: '+snippet);
+  assert.ok(motion.includes('[궁수 실제 활대]'));
+  assert.ok(motion.includes('[석궁 사수 수평 지지]'));
+  const chance=(range,moving,target,dodging,base=0.92)=>Math.max(.35,Math.min(.98,
+    base-.27*range-(moving?.10:0)-(target?.085:0)-(dodging?.20:0)));
+  assert.ok(chance(0,false,false,false)>chance(1,false,false,false),'거리가 멀수록 명중률 감소');
+  assert.ok(chance(1,true,true,true)<chance(1,false,false,false),'이동·회피 시 명중률 추가 감소');
+  assert.ok(chance(1,true,true,true)>=.35,'빗나감 하한 유효');
+});
+
+// [재생기/날씨 음향 회귀] 최초 지연 로드와 권한 실패가 모든 음악·효과음을 영구 음소거하지 않도록 한다.
+test('음악 효과음 환경음은 기본 믹서 크기·지연 로딩·자동 재시도 경로를 유지한다',()=>{
+  const audio=read('ReplicatedStorage/Shared/Sfx.luau');
+  const fieldScene=read('ReplicatedStorage/Shared/FieldScene.luau');
+  const ids=read('ReplicatedStorage/Shared/AudioIds.luau');
+  for(const name of ['music_harbor','music_battle','sfx_wind','sfx_waves','sfx_rope_release','sfx_card_fire']){
+    assert.ok(ids.includes(name+'="rbxassetid://'),'필수 등록 음원 누락: '+name);
+  }
+  for(const snippet of [
+    'group.Volume = 1',
+    'local broken: { [string]: number } = {}',
+    'broken[name] = os.clock() + 20',
+    'task.delay(math.max(12, s.TimeLength + 1)',
+    's.Ended:Once(',
+    'if currentName == name and currentMusic and currentMusic.Parent',
+    'currentName = nil', 'Sfx.music(name)',
+    'if ambientKey == key and #ambient > 0 then',
+    'Sfx.ambient(names, gain)',
+    'local priority = { "music_harbor"',
+  ]) assert.ok(audio.includes(snippet),'음향 복원 경로 누락: '+snippet);
+  assert.doesNotMatch(audio,/broken\[name\] = true/,'오디오 로딩 실패 영구 봉인 금지');
+  assert.doesNotMatch(audio,/local first = probe\(all\)/,'모바일 전체 음원 100개 동시 프리로드 금지');
+  assert.ok(fieldScene.includes('Sfx.ambient({ "sfx_wind" }, 0.60)'));
+  assert.ok(fieldScene.includes('if weather == "소나기" then 0.88 else 0.68'));
+  assert.ok(fieldScene.includes('elseif phase == "밤" then 0.43 else 0.58'));
+});
+
 // [몹 상태이상 회귀] 정예 둔화/두목 독은 방어·회피한 공격에서 발동하지 않고 전투·저장 흐름에 섞이지 않는다.
 test('정예 감속과 두목 맹독은 명중에만 발동하고 중첩·이동속도 누출을 막는다',()=>{
   assert.match(field,/local eliteSlowUntil, bossPoisonUntil, bossPoisonNextAt = 0, 0, math\.huge/);

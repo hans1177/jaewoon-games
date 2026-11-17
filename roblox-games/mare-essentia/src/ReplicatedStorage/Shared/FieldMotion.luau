@@ -634,6 +634,10 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("ThighR", 0.19 * prepare + 0.08 * strike, 0, 0.06 * strike)
 			bend("FootR", -0.13 * strike + 0.08 * returnGrip, 0, 0)
 		elseif bow then
+			-- [궁수 실제 활대] 왼손 수직 활대 지지, 오른손 귀 옆 시위 당김. 기존 전투 판정 그대로.
+			bend("HandL", -0.14 * prepare, 0, 0)
+			bend("ForearmL", -0.18 * prepare, 0, -0.06 * prepare)
+			bend("Head", -0.045 * prepare, -0.10 * prepare, 0)
 			-- [활·장궁] 앞팔 고정→뒤팔로 시위 끝까지 당김→손가락 이탈→가슴 회전·팔 복귀.
 			local draw = if grip == "LONGBOW" then 1.16 else 1
 			bend("UpperArmL", -0.34 * hold - draw * (0.82 * prepare + 0.24 * strike), 0, -0.18 * prepare)
@@ -645,6 +649,10 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("Head", -0.13 * prepare, -0.06 * prepare + 0.07 * follow, 0)
 			bend("ThighL", 0.10 * prepare, 0, -0.08 * prepare)
 		elseif crossbow then
+			-- [석궁 사수 수평 지지] 왼손으로 레일을 받치고 오른손으로 방아쇠를 당긴다.
+			bend("HandL", -0.14 * prepare, 0, -0.04 * prepare)
+			bend("ThighL", 0.11 * prepare, 0, -0.04 * prepare)
+			bend("Head", -0.07 * prepare, 0, 0)
 			-- [R15 석궁병] 왼팔 전방 지지, 오른팔 방아쇠 견착, 시선/몸통은 볼트 발사선에 수평 정렬.
 			-- 예고-격발-재장전 구간의 관절만 변경한다. AI 거리·피해·사격 횟수는 FieldScene 그대로.
 			local brace = math.clamp(hold * 0.70 + prepare + 0.52 * strike, 0, 1)

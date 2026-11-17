@@ -6,7 +6,8 @@ local TweenService = game:GetService("TweenService")
 
 local IDS = require(script.Parent:WaitForChild("AudioIds"))
 -- 불러오기에 실패한 소리(권한 미승인·삭제 등)는 건너뛰고 다음 대체 소리를 쓴다
-local broken: { [string]: boolean } = {}
+local broken: { [string]: number } = {} -- 일시적인 로딩 실패만 20초 유예. 영구 음소거 금지
+local warned: { [string]: boolean } = {}
 local Regions = require(script.Parent:WaitForChild("Regions"))
 
 -- 기본 음량: 지역·스토리 원본의 인코딩 감쇠(0.50~0.64)를 상쇄한다.
@@ -31,6 +32,7 @@ local Sfx = {}
 local group = Instance.new("SoundGroup")
 group.Name = "MareAudio"
 group.Parent = SoundService
+group.Volume = 1 -- [공통 믹서] 기본 0.5 감쇠가 하위 음원 전체에 두 번 적용되지 않도록 고정.
 local musicGroup = Instance.new("SoundGroup")
 musicGroup.Name = "MareMusic"
 musicGroup.Parent = group
@@ -66,10 +68,10 @@ function Sfx.play(name, volume, speed, fallback)
 		return
 	end
 	-- 신규 해전 음원이 아직 등록되지 않았거나 재생에 실패했으면 기존 승인 효과음을 쓴다.
-	if not IDS[name] or broken[name] then
+	if not IDS[name] or (broken[name] and os.clock() < broken[name]) then
 		name = fallback
 	end
-	if not name or not IDS[name] or broken[name] then
+	if not name or not IDS[name] or (broken[name] and os.clock() < broken[name]) then
 		return
 	end
 	local now = os.clock()
@@ -86,8 +88,10 @@ function Sfx.play(name, volume, speed, fallback)
 	end
 	s.PlaybackSpeed = speed or (0.96 + math.random() * 0.08)
 	s:Play()
-	task.delay(math.max(3, s.TimeLength + 1), function()
-		s:Destroy()
+	-- [모바일 느린 로딩] 첫 재생은 TimeLength=0일 수 있어 3초 만에 자르지 않는다.
+	s.Ended:Once(function() if s.Parent then s:Destroy() end end)
+	task.delay(math.max(12, s.TimeLength + 1), function()
+		if s.Parent then s:Destroy() end
 	end)
 end
 
@@ -139,7 +143,9 @@ function Sfx.currentName()
 end
 
 function Sfx.music(name)
-	if currentName == name then
+	-- [음악 재생 복구] 이전 요청이 로드 실패·정지 상태라면 동일 곡도 다시 시도한다.
+	if currentName == name and currentMusic and currentMusic.Parent
+		and currentMusic.Playing and not (broken[name] and os.clock() < broken[name]) then
 		return
 	end
 	currentName = name
@@ -152,7 +158,7 @@ function Sfx.music(name)
 			old:Destroy()
 		end)
 	end
-	if not name or not IDS[name] or broken[name] then
+	if not name or not IDS[name] or (broken[name] and os.clock() < broken[name]) then
 		return
 	end
 	local s = make(name, musicGroup)
@@ -165,6 +171,13 @@ function Sfx.music(name)
 	s:Play()
 	TweenService:Create(s, TweenInfo.new(2), { Volume = target }):Play()
 	currentMusic = s
+	-- [배경음 자동 복구] 승인된 음원도 첫 요청이 지연될 수 있다. 22초 뒤 미로딩일 때만 재요청.
+	task.delay(22, function()
+		if currentMusic == s and currentName == name and s.Parent and not s.IsLoaded then
+			currentName = nil
+			Sfx.music(name)
+		end
+	end)
 end
 
 
@@ -173,50 +186,47 @@ end
 local function firstReady(...)
 	for i = 1, select("#", ...) do
 		local name = select(i, ...)
-		if name and IDS[name] and not broken[name] then
+		if name and IDS[name] and (not broken[name] or os.clock() >= broken[name]) then
 			return name
 		end
 	end
 	return nil
 end
 
--- 시작하고 잠시 뒤 등록된 소리를 미리 불러와 실패한 이름을 기록한다. 일시적 실패일 수 있어 한 번 더 확인한 뒤에만 막는다.
+-- [재생 회복] 로딩 중·일시 통신 실패를 영구 결함으로 기록하지 않는다.
+-- 핵심 배경음/효과음부터 먼저 확인한다. 실패가 반복돼도 20초 뒤 다시 재시도 가능하다.
+-- 전체 100개 자산을 동시에 프리로드해 모바일 오디오 스트림을 막는 동작은 피한다.
 task.spawn(function()
-	task.wait(8)
+	task.wait(3)
 	local ContentProvider = game:GetService("ContentProvider")
-	local function probe(names)
-		local failed, byContent, sounds = {}, {}, {}
-		for _, name in names do
-			local snd = Instance.new("Sound")
-			snd.Name = "Probe_" .. name
-			snd.SoundId = IDS[name]
-			sounds[#sounds + 1] = snd
-			byContent[IDS[name]] = name
-		end
-		pcall(function()
-			ContentProvider:PreloadAsync(sounds, function(contentId, status)
-				if status ~= Enum.AssetFetchStatus.Success and byContent[contentId] then
-					failed[#failed + 1] = byContent[contentId]
-				end
+	local priority = { "music_harbor", "music_sea", "music_battle", "sfx_wind", "sfx_waves",
+		"sfx_card_swing", "sfx_rope_release", "sfx_card_volley", "sfx_card_fire",
+		"sfx_hit", "sfx_metal_clash", "sfx_click" }
+	for _, name in priority do
+		local id = IDS[name]
+		if id then
+			local sound = Instance.new("Sound")
+			sound.Name = "MareAudioPreload"
+			sound.SoundId = id
+			sound.Parent = SoundService
+			local failed = false
+			local ok = pcall(function()
+				ContentProvider:PreloadAsync({ sound }, function(contentId, status)
+					if contentId == id and status ~= Enum.AssetFetchStatus.Success then failed = true end
+				end)
 			end)
-		end)
-		for _, snd in sounds do
-			snd:Destroy()
+			sound:Destroy()
+			if not ok or failed then
+				broken[name] = os.clock() + 20
+				if not warned[name] then
+					warned[name] = true
+					warn("[MareAudio] 원본 음원 로딩 실패, 20초 뒤 재시도:", name)
+				end
+			else
+				broken[name] = nil
+			end
 		end
-		return failed
-	end
-	local all = {}
-	for name in IDS do
-		all[#all + 1] = name
-	end
-	local first = probe(all)
-	if #first == 0 then
-		return
-	end
-	task.wait(5)
-	for _, name in probe(first) do
-		broken[name] = true
-		warn("[Sfx] 소리를 불러오지 못해 대체 소리를 씁니다:", name)
+		task.wait(0.04)
 	end
 end)
 
@@ -422,8 +432,12 @@ end
 function Sfx.ambient(names, gain)
 	local level = math.clamp(tonumber(gain) or 1, 0, 1)
 	local key = table.concat(names or {}, "|") .. ":" .. string.format("%.2f", level)
-	if ambientKey == key then
-		return
+	if ambientKey == key and #ambient > 0 then
+		local audible = false
+		for _, track in ambient do
+			if track.Parent and track.Playing then audible = true break end
+		end
+		if audible then return end
 	end
 	ambientKey = key
 	for _, s in ambient do
@@ -435,15 +449,31 @@ function Sfx.ambient(names, gain)
 	end
 	ambient = {}
 	for _, name in names or {} do
-		local s = make(name, sfxGroup)
+		local s = if not broken[name] or os.clock() >= broken[name] then make(name, sfxGroup) else nil
 		if s then
 			s.Looped = true
 			local target = s.Volume * level
 			s.Volume = 0
 			s:Play()
 			TweenService:Create(s, TweenInfo.new(1.5), { Volume = target }):Play()
-			table.insert(ambient, s)
+				table.insert(ambient, s)
+			-- [환경음 자동 복구] 로딩 실패 뒤에도 같은 날씨가 이어지면 22초마다 복구를 재시도한다.
+			task.delay(22, function()
+				if ambientKey == key and s.Parent and not s.IsLoaded then
+					ambientKey = nil
+					Sfx.ambient(names, gain)
+				end
+			end)
 		end
+	end
+	-- [모든 환경음 로딩 실패] 초기 20초 유예에도 날씨가 그대로라면 다음 호출이 없어 영구 무음이 되던 문제를 복구한다.
+	if names and #names > 0 and #ambient == 0 then
+		task.delay(21, function()
+			if ambientKey == key and #ambient == 0 then
+				ambientKey = nil
+				Sfx.ambient(names, gain)
+			end
+		end)
 	end
 end
 
