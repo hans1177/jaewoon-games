@@ -3009,14 +3009,23 @@ function FieldScene.start(opts)
 					swingKind = nil
 				elseif swingCombo then
 					-- [1~10타 실타격 동기화] 빠른 일반 공격 모두 기존 0.14초 명중 시각에 원본 CONTACT 자세를 맞춘다.
-					local progress = p
-					if swingKind == "slash" then
-						local contact = math.clamp(swingCombo.steps[1].contact / swingCombo.duration, 0.1, 0.85)
-						local impact = math.clamp(0.14 / swingDur, 0.15, 0.75)
-						progress = if p < impact then p / impact * contact
-							else contact + (p - impact) / (1 - impact) * (1 - contact)
+					-- [연타 자연 복귀] 원본 fadeDuration까지 샘플링해서 마지막 프레임이 갑자기 초기 자세로 끊기지 않도록 한다.
+					-- 실제 명중시각 0.14초는 고정, 마지막 22%는 무기 가드로 자연스럽게 풀어준다.
+					local returnStart = 0.78
+					local sampledAt
+					if p >= returnStart then
+						sampledAt = swingCombo.duration + (p - returnStart) / (1 - returnStart) * swingCombo.fadeDuration
+					else
+						local progress = p / returnStart
+						if swingKind == "slash" then
+							local contact = math.clamp(swingCombo.steps[1].contact / swingCombo.duration, 0.1, 0.85)
+							local impact = math.clamp(0.14 / swingDur, 0.15, 0.65)
+							progress = if p < impact then p / impact * contact
+								else contact + (p - impact) / (returnStart - impact) * (1 - contact)
+						end
+						sampledAt = math.clamp(progress, 0, 1) * swingCombo.duration
 					end
-					FM.sample(swingCombo, math.clamp(progress, 0, 1) * swingCombo.duration, canon)
+					FM.sample(swingCombo, sampledAt, canon)
 				else
 					-- 회피는 짧은 0.4초에도 큰 자세가 충분히 보여야 하므로 극대점 전후 체류를 늘린다.
 					local w = if swingKind == "guard" then math.min(1, p * 8) * (1 - math.max(0, (p - 0.85) / 0.15))
@@ -4544,11 +4553,24 @@ function FieldScene.start(opts)
 					distance = if heavy then 3.8 elseif thrust then 1.2 else 2.1,
 					mist = not visualMobile and heavy and beat >= 7,
 				})
-				-- [3·6·9타 칼끝 여운] 강한 첫 섬광 뒤 얇은 잔흔이 늦게 사라져 두꺼운 폭발이 반복되지 않는다.
+				-- [4·7·10타 실명중 단면] 무기별 교차 섬광·미세 파편. 기존 VFX 풀만 재사용하며 모바일은 단일 효과 유지.
+				if not visualMobile and (beat == 4 or beat == 7 or beat == 10) then
+					local glint = center + e.root.CFrame.RightVector * side * (if thrust then 0.12 else 0.28)
+					pcall(CommonVFX.Create, "SHAPE_BURST", {
+						parent = workspace, cframe = CFrame.new(glint),
+						color = tint:Lerp(Color3.new(1, 1, 1), 0.72), accent = tint,
+						textureKey = if sharp then "slash" else nil, rotation = angle - side * 58,
+						hideRing = true, count = if heavy then 3 else 1,
+						startSize = 0.18, endSize = if thrust then 1.35 elseif heavy then 2.35 else size * 0.65,
+						duration = if heavy then 0.14 else 0.11, distance = if heavy then 1.9 else 0.9,
+					})
+				end
+				-- [3·6·9타 잔흔] 다음 공격이 시작되면 이전 공격 예약을 취소한다.
 				if not visualMobile and sharp and beat % 3 == 0 then
-					local fxWeapon = impactWeapon.id
+					local fxWeapon, hitSeq = impactWeapon.id, actionSeq
 					task.delay(0.055, function()
-						if finished or not e.root.Parent or wpn.id ~= fxWeapon then return end
+						if finished or not e.root.Parent or wpn.id ~= fxWeapon
+							or swingBridge.impactSeq ~= hitSeq then return end
 						pcall(CommonVFX.Create, "SHAPE_BURST", {
 							parent = workspace, cframe = CFrame.new(center), color = tint:Lerp(Color3.new(1, 1, 1), 0.45),
 							accent = tint, textureKey = "slash", rotation = angle - side * 13,
