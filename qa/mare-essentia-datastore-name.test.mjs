@@ -391,6 +391,25 @@ test('근접·원거리 10단 전신 모션과 마무리 이펙트는 기존 피
 
 
 
+// [6종 곡예 회피와 고속 연타 검무] 시각 관절만 변경하며 전투 판정은 기존 그대로다.
+test('탐험 0.4초 회피 6종 및 무기별 10타 공중 검무 유지',()=>{
+  const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+  for(const marker of [
+    '[0.4초 댄스 회피 6종]', '[6종 회피 전신 관절]', '[전투 무용 4~9박]', '[4~9박 전신 곡예 관절]',
+    '[옆구르기]', '[백덤블링]', '[높은 점프]', '[슬라이딩]', '[한손 짚고 돌기]', '[측면 공중회전]'
+  ]) assert.ok(field.includes(marker),'곡예 모션 누락: '+marker);
+  assert.match(field,/FieldDodgeTrick", \(ch0:GetAttribute\("FieldDodgeTrick"\) or 0\) % 6 \+ 1/);
+  assert.match(field,/startSwing\("dash", 0\.4\)/);
+  assert.match(field,/local spin = t \* t \* \(3 - 2 \* t\) \* math\.pi \* 2/);
+  assert.match(field,/elseif trick == 5 then[\s\S]*?canon\.HandL/);
+  assert.match(field,/local spin = spinPhase \* spinPhase \* \(3 - 2 \* spinPhase\) \* math\.pi \* 2/);
+  for(const i of [4,5,6,7,8,9]) assert.ok(field.includes('slashIdx == '+i),'10연타 곡예 단계 누락: '+i);
+  assert.match(field,/if basicAttack == true then[\s\S]*?pl\.autoNormalHits = \(pl\.autoNormalHits or 0\) \+ 1/);
+  assert.match(field,/if pl\.autoNormalHits % 5 == 0 then/);
+  assert.match(field,/hrp\.CFrame = hrp\.CFrame \+ look\.Unit \* 14/);
+  assert.match(field,/pl\.matrixDodgeUntil = now \+ \(mv\.invuln or 0\.35\)/);
+});
+
 // [탐험 지도 다양성] 승인된 외부 메시와 기존 퀘스트/전투 계약만 사용한다.
 test('탐험 현장별 10종 3차원 지형, 주야·기상·실물 동물 및 단서 조사 연결',()=>{
   const field=read('ReplicatedStorage/Shared/FieldScene.luau');
