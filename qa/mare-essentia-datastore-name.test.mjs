@@ -184,4 +184,7 @@ test('원거리 공격은 무기 사거리로 조준·발사하며 석궁 R15 �
   assert.match(fieldMotion,/elseif crossbow then[\s\S]*?bend\("UpperArmL",[\s\S]*?bend\("ForearmL"/);
   assert.match(field,/arrowTrail\(a0, b0\)/);
   assert.match(field,/if not wpn\.ranged and nd > reach - 2 then/);
+  // 원거리 공격은 눌렀을 때 이미 발사됐으므로 길게 누른 뒤 떼어도 근접 돌진을 발동하지 않는다.
+  assert.match(field,/if held >= 0\.5 and not wpn\.ranged then/);
+  assert.match(field,/say\(if wpn\.ranged then "원거리 조준 중"/);
 });
