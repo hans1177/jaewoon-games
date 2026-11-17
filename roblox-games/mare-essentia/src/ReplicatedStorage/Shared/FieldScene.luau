@@ -1563,7 +1563,7 @@ function FieldScene.start(opts)
 	local swingCombo, slashIdx = nil, 0
 	-- [연타 관절 연결] 한 공격이 끝나기 전에 다음 시각 모션을 시작할 때 R15 실제 마지막 자세를 이어 붙인다.
 	-- 신규 애니메이션 트랙/이동 판정 없이 기존 캐논 관절만 보간한다. 최근 프레임 포즈는 테이블을 재사용한다.
-	local swingBridge = { last = {}, from = nil, at = 0, duration = 0 }
+	local swingBridge = { last = {}, from = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100 }
 	-- [모션 직업] 기존 캐릭터 FieldDodgeStyle 속성을 입력·렌더 간 정본으로 사용하여 Luau 지역변수 한도를 지킨다.
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
@@ -1598,7 +1598,7 @@ function FieldScene.start(opts)
 
 	-- 공격 동작: 캐릭터의 오른팔·허리를 짧게 휘두른다 (애니메이터가 쓴 뒤 덮어쓴다)
 	-- [무기별 실물 R15 모션] 보통 공격은 반드시 1단. 뒤이어 보이는 타격은 숙련 발동시에만 재생한다.
-	local function startSwing(kind: string, dur: number, stage: number?)
+	local function startSwing(kind: string, dur: number, stage: number?, visualOnly: boolean?)
 		local nextStage = math.clamp(math.floor(stage or 1), 1, 5)
 		-- [연타 교차 보간] 2·3타에서 현재 실제 관절을 남겨 끊기는 팔/허리/발목을 연결한다.
 		if FM and nextStage >= 2 and swingKind and next(swingBridge.last) then
@@ -1613,14 +1613,27 @@ function FieldScene.start(opts)
 		-- [무기별 공격음] 각 승인 오디오의 원본을 사용한다.
 		-- 준비/휘두름은 여기서, 투사체 발포는 실제 공격 판정 시 한 번만 재생해 저음이 겹치지 않는다.
 		if wpn.ranged and (kind == "slash" or kind == "heavy" or kind == "spin") then
-			if wpn.motion == "CROSSBOW" then
-				sfx("sfx_equipment_wear", 0.28, 1.48) -- 석궁 노리쇠/시위 장전
+			-- [영화식 속사] 첫 발은 기존 준비음, 이어지는 2·3발은 장전/노리쇠가 아닌 실제 격발음.
+			-- 숙련에서 따라 나오는 2·3발은 시각 연출이며 피해 판정은 앞선 한 번만 수행한다.
+			if nextStage >= 2 then
+				local shotVolume = if visualOnly then 0.31 else 0.42
+				if wpn.motion == "CROSSBOW" then
+					sfx("sfx_card_volley", shotVolume, if nextStage == 2 then 1.43 else 1.58)
+				elseif wpn.family == "bow" then
+					sfx("sfx_rope_release", shotVolume, if wpn.motion == "LONGBOW" then 1.12 else 1.38)
+				elseif wpn.motion == "RIFLE" then
+					sfx("sfx_cannon", shotVolume * 0.8, if nextStage == 2 then 1.85 else 1.95)
+				else
+					sfx("sfx_card_fire", shotVolume, if nextStage == 2 then 1.52 else 1.62)
+				end
+			elseif wpn.motion == "CROSSBOW" then
+				sfx("sfx_equipment_wear", 0.28, 1.48)
 			elseif wpn.family == "bow" then
-				sfx("sfx_rope_pull", 0.25, if wpn.motion == "LONGBOW" then 1.05 else 1.32) -- 장궁/각궁 현 당김
+				sfx("sfx_rope_pull", 0.25, if wpn.motion == "LONGBOW" then 1.05 else 1.32)
 			elseif wpn.motion == "RIFLE" then
-				sfx("sfx_cannon_reload", 0.23, 1.62) -- 화승/수석 장총 장전
+				sfx("sfx_cannon_reload", 0.23, 1.62)
 			else
-				sfx("sfx_card_chain", 0.22, 1.72) -- 권총 격철 조작
+				sfx("sfx_card_chain", 0.22, 1.72)
 			end
 		elseif kind == "dash" then
 			sfx("sfx_skill_evade", 0.54, 1.16)
@@ -1822,7 +1835,19 @@ function FieldScene.start(opts)
 		local function rootFor(kind: string, p: number): CFrame?
 			if kind == "slash" then
 				-- [원거리 사격 자세] 실제 사격은 몸을 앞으로 날리지 않고 발을 고정한 채 견착·반동만 준다.
-				if wpn.ranged then return CFrame.new(0, -0.09 * bell(p), 0) * CFrame.Angles(0.07 * bell(p), 0, 0) end
+				if wpn.ranged then
+					local kick = bell(p)
+					if slashIdx == 2 then
+						-- [원거리 2타] 발을 옆으로 딛으며 상체를 크게 틀고 측면 사격.
+						return CFrame.new(-0.36 * kick, -0.18 * kick, 0)
+							* CFrame.Angles(-0.16 * kick, 0.44 * kick, -0.20 * kick)
+					elseif slashIdx == 3 then
+						-- [원거리 3타] 낮은 무릎 슬라이드 후 반대 방향으로 꺾으며 마무리 사격.
+						return CFrame.new(0.39 * kick, -0.45 * kick, 0)
+							* CFrame.Angles(0.28 * kick, -0.51 * kick, 0.23 * kick)
+					end
+					return CFrame.new(0, -0.09 * kick, 0) * CFrame.Angles(0.07 * kick, 0, 0)
+				end
 				-- 일반 공격: 몸을 크게 비틀며 한 걸음 내딛고 벤다(좌우 번갈아)
 				local side = if slashIdx % 2 == 0 then 1 else -1
 				return CFrame.new(0, -0.25 * bell(p), -1.4 * bell((p - 0.1) / 0.7)) * CFrame.Angles(-0.45 * bell((p - 0.1) / 0.65), 0.45 * side * bell(p), 0.12 * side * bell(p))
@@ -1992,7 +2017,7 @@ function FieldScene.start(opts)
 				local traveling = hum and hum.MoveDirection.Magnitude > 0.08
 				local actionPose = swingKind == "slash" or swingKind == "heavy" or swingKind == "spin"
 				local readiness = if actionPose then 0.95 elseif traveling then 0.32 else 0.75
-				local firing = actionPose and slashIdx == 1
+				local firing = actionPose -- 2·3타도 팔과 개머리판에 연속 격발 반동을 부여한다.
 				local progress = if firing then math.clamp((os.clock() - swingT0) / math.max(swingDur, 0.05), 0, 1) else 0
 				local press = if firing then math.sin(math.clamp(progress / 0.48, 0, 1) * math.pi * 0.5) else 0
 				local recoil = if firing then math.sin(math.clamp((progress - 0.35) / 0.34, 0, 1) * math.pi) else 0
@@ -2052,9 +2077,40 @@ function FieldScene.start(opts)
 					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.12 * pulse, side * 0.16 * pulse, 0)
 					canon.FootR = (canon.FootR or id) * CFrame.Angles(0.12 * pulse, 0, side * 0.06 * pulse)
 				elseif wpn.ranged then
-					-- 활: 화살 재장전·시위 회수 / 석궁: 노리쇠 / 총: 약실 재장전. 발포 반동은 1타만.
-					canon.HandR = (canon.HandR or id) * CFrame.Angles(if slashIdx == 2 then -0.20 * pulse else 0.10 * pulse, 0, 0)
-					canon.Head = (canon.Head or id) * CFrame.Angles(0.06 * pulse, side * 0.04 * pulse, 0)
+					-- [원거리 영화식 2·3연타] 팔·허리·무릎·발끝이 좌우로 번갈아 움직인다.
+					-- 실제 충돌체/서버 위치/명중 횟수는 바꾸지 않고 R15 관절만 넓게 흔든다.
+					local bow = family == "bow"
+					local crossbow = wpn.motion == "CROSSBOW"
+					local rifle = wpn.motion == "RIFLE"
+					local drop = if slashIdx == 3 then 1 else 0.45
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.18 * drop * pulse, side * 0.30 * pulse, -side * 0.12 * pulse)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.12 * pulse, -side * 0.36 * pulse, side * 0.16 * pulse)
+					canon.Head = (canon.Head or id) * CFrame.Angles(0.07 * pulse, side * 0.15 * pulse, 0)
+					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.37 * drop * pulse, 0, -0.11 * pulse)
+					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(0.31 * drop * pulse, 0, 0.10 * pulse)
+					canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.32 * drop * pulse, 0, 0)
+					canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.18 * pulse, 0, side * 0.09 * pulse)
+					if bow then
+						-- 활: 몸을 크게 열고 시위 팔을 뒤로 빼며 좌우 교차 사격.
+						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.24 * pulse, 0, -side * 0.20 * pulse)
+						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.34 * pulse, side * 0.26 * pulse, 0)
+						canon.HandR = (canon.HandR or id) * CFrame.Angles(0.33 * pulse, 0, side * 0.21 * pulse)
+					elseif crossbow then
+						-- 석궁: 양손 수평 견착 유지, 측면 빠른 격발과 반동.
+						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.26 * pulse, -side * 0.14 * pulse, 0)
+						canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.38 * pulse, side * 0.12 * pulse, 0)
+						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(0.29 * pulse, 0, 0)
+					elseif rifle then
+						-- 장총: 견착한 채 어깨와 허리가 다른 방향으로 역회전.
+						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.24 * pulse, 0, -0.09 * pulse)
+						canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(0.34 * pulse, side * 0.09 * pulse, 0)
+						canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.20 * pulse, 0, 0)
+					else
+						-- 권총: 한 손을 크게 뻗고 반대손으로 균형을 잡으며 빠른 연사.
+						canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.45 * pulse, 0, side * 0.17 * pulse)
+						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(0.39 * pulse, 0, 0)
+						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(0.25 * pulse, -side * 0.14 * pulse, 0)
+					end
 				end
 			end
 			-- [관절 교량] 2·3타 첫 0.08~0.14초 동안 직전 프레임 자세를 목표 자세까지 스무스스텝으로 잇는다.
