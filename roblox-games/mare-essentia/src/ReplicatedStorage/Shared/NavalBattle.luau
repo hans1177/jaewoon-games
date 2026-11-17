@@ -138,6 +138,51 @@ for shipId in ShipDefs.Ships do
 	end
 end
 
+-- [7대륙 해전 연출] 기존 설계도의 36척·단계·문화권을 그대로 읽는다.
+-- 색·연기·충격파·항적만 결정하며 구매 등급, 대포 성능, 서버 판정에는 관여하지 않는다.
+local FX_THEMES = {
+	europe = { flash = Color3.fromRGB(255, 199, 110), tracer = Color3.fromRGB(246, 235, 205), smoke = Color3.fromRGB(125, 124, 118), foam = Color3.fromRGB(236, 241, 244), spark = Color3.fromRGB(255, 216, 125) },
+	east_asia = { flash = Color3.fromRGB(255, 130, 77), tracer = Color3.fromRGB(255, 193, 143), smoke = Color3.fromRGB(111, 105, 102), foam = Color3.fromRGB(229, 243, 246), spark = Color3.fromRGB(252, 85, 62) },
+	new_world = { flash = Color3.fromRGB(255, 184, 105), tracer = Color3.fromRGB(255, 243, 218), smoke = Color3.fromRGB(156, 148, 130), foam = Color3.fromRGB(241, 250, 255), spark = Color3.fromRGB(255, 223, 161) },
+	middle_east = { flash = Color3.fromRGB(255, 202, 118), tracer = Color3.fromRGB(255, 226, 166), smoke = Color3.fromRGB(155, 141, 119), foam = Color3.fromRGB(220, 245, 240), spark = Color3.fromRGB(250, 195, 108) },
+	southeast_asia = { flash = Color3.fromRGB(255, 180, 114), tracer = Color3.fromRGB(247, 221, 180), smoke = Color3.fromRGB(135, 142, 137), foam = Color3.fromRGB(190, 246, 228), spark = Color3.fromRGB(251, 167, 104) },
+	africa = { flash = Color3.fromRGB(255, 197, 135), tracer = Color3.fromRGB(242, 224, 193), smoke = Color3.fromRGB(145, 117, 97), foam = Color3.fromRGB(243, 244, 216), spark = Color3.fromRGB(231, 172, 111) },
+	lost = { flash = Color3.fromRGB(108, 228, 236), tracer = Color3.fromRGB(172, 156, 255), smoke = Color3.fromRGB(90, 92, 141), foam = Color3.fromRGB(138, 239, 232), spark = Color3.fromRGB(174, 134, 255) },
+}
+local FX_PROFILES = {}
+local DEFAULT_FX = { faction = "europe", stage = 2, theme = FX_THEMES.europe, rowed = false }
+for _, blueprint in ShipDefs.Blueprints do
+	local style = { faction = blueprint.faction, stage = blueprint.stage, theme = FX_THEMES[blueprint.faction] or FX_THEMES.europe, rowed = false }
+	FX_PROFILES[blueprint.id] = style
+	-- [기존 판매 함종] 별도 설계 이름이 있어도 원래 구매 ID에 외형 연출만 연결한다.
+	if blueprint.existingId and not FX_PROFILES[blueprint.existingId] then
+		FX_PROFILES[blueprint.existingId] = style
+	end
+end
+local REGION_FX = {
+	mediterranean = "europe", north_sea = "europe", atlantic_europe = "europe",
+	americas = "new_world", east_asia = "east_asia",
+	red_sea = "middle_east", south_asia = "southeast_asia", southeast_asia = "southeast_asia",
+	east_africa = "africa", west_africa = "africa",
+}
+local NATION_FX = {
+	england = "europe", netherlands = "europe", france = "europe", portugal = "europe",
+	ottoman = "middle_east", swahili = "africa", malabar = "southeast_asia",
+	japan = "east_asia", new_spain = "new_world",
+}
+for shipId, definition in ShipDefs.Ships do
+	local style = FX_PROFILES[shipId]
+	local faction = if style then style.faction elseif definition.nation then NATION_FX[definition.nation]
+		elseif definition.regions then REGION_FX[definition.regions[1]] else "europe"
+	faction = faction or "europe"
+	FX_PROFILES[shipId] = {
+		faction = faction,
+		stage = if style then style.stage else math.clamp(definition.class or 1, 1, 4),
+		theme = FX_THEMES[faction] or FX_THEMES.europe,
+		rowed = definition.rowed == true,
+	}
+end
+
 local function part(parent, size, cf, color, material, shape)
 	local p = Instance.new("Part")
 	p.Anchored = true
@@ -160,6 +205,19 @@ local function placeShip(parent, asset, at, length, yaw, tint)
 	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 	local group = lib and lib:FindFirstChild("Naval")
 	local tpl = group and group:FindFirstChild(asset)
+	-- [등록된 36척 V5] 원본 로딩이 지연되면 이전 실제 선체를 사용하고, 흰 도형 임시배로 바꾸지 않는다.
+	local v5ShipId = string.match(asset, "^(.-)%-v5%-mobile$") or string.match(asset, "^(.-)%-v5$")
+	if v5ShipId and not (tpl and tpl:IsA("Model")) then
+		if string.find(asset, "-mobile", 1, true) then
+			tpl = group and group:FindFirstChild(v5ShipId .. "-v5")
+		end
+		if not (tpl and tpl:IsA("Model")) then
+			tpl = group and group:FindFirstChild(PLAYER_SHIP[v5ShipId] or "ship-medium")
+		end
+		if not (tpl and tpl:IsA("Model")) then
+			tpl = group and group:FindFirstChild("ship-medium")
+		end
+	end
 	-- [해전 3D] 상세 갈레온 로딩 지연 시 기존 해전 범선을 그대로 사용한다.
 	if asset == "galleon-heritage" and not (tpl and tpl:IsA("Model")) then
 		tpl = group and group:FindFirstChild("ship-pirate-large")
@@ -284,18 +342,24 @@ function NavalBattle.play(opts)
 		sea.Reflectance = 0
 	end
 
-	-- 배들: 위치, 방향(θ), 속도를 우리가 직접 움직인다
-	local function newShip(asset, length, pos, theta, tint)
+	-- [36척 해전 실물] 선박 구매·저장 ID를 유지하면서 등록된 V5 모델만 우선 수입한다.
+	-- 터치 기기에서는 경량판을, 미등록 모델은 기존 원본을 그대로 사용한다.
+	local function newShip(asset, length, pos, theta, tint, shipId)
+		if shipId and AssetIds["Naval/" .. shipId .. "-v5"] then
+			local light = shipId .. "-v5-mobile"
+			asset = if MOBILE_VFX and AssetIds["Naval/" .. light] then light else shipId .. "-v5"
+		end
 		local m = placeShip(folder, asset, ORIGIN + pos, length, 0, tint)
 		local base = m:GetPivot()
 		local rot = base - base.Position
-		return { model = m, pos = pos, theta = theta, speed = 0, rot = rot, y = base.Position.Y - ORIGIN.Y, length = length }
+		return { model = m, pos = pos, theta = theta, speed = 0, rot = rot, y = base.Position.Y - ORIGIN.Y,
+			length = length, fx = FX_PROFILES[shipId] or DEFAULT_FX, shipId = shipId }
 	end
-	local shipDef = require(script.Parent:WaitForChild("Ships")).Ships[opts.shipId or ""]
+	local shipDef = ShipDefs.Ships[opts.shipId or ""]
 	local myLen = if shipDef then math.clamp(26 + shipDef.hull * 0.1, 30, 52) else 40
 	local myTop = if shipDef then 12 + shipDef.speed * 1.2 else 19
 	local cannon = NC[SHIP_CANNON[opts.shipId or ""] or "demi"]
-	local me = newShip(PLAYER_SHIP[opts.shipId] or "ship-medium", myLen, Vector3.new(-80, 0, 50), 0)
+	local me = newShip(PLAYER_SHIP[opts.shipId] or "ship-medium", myLen, Vector3.new(-80, 0, 50), 0, nil, opts.shipId)
 	local foe = newShip(if opts.isBoss then "ship-pirate-large" else "ship-pirate-medium", if opts.isBoss then 54 else 40, Vector3.new(80, 0, -50), math.pi)
 	-- 해적 호위선: 연출용 (싸움 결과에는 영향 없음)
 	local escorts = {}
@@ -318,7 +382,7 @@ function NavalBattle.play(opts)
 			if fd then
 				local len = math.clamp(24 + fd.hull * 0.08, 26, 44)
 				local side = if i % 2 == 1 then 1 else -1
-				local al = newShip(PLAYER_SHIP[id] or "ship-small", len, me.pos + Vector3.new(-26 * math.ceil(i / 2), 0, 22 * side * math.ceil(i / 2)), 0)
+				local al = newShip(PLAYER_SHIP[id] or "ship-small", len, me.pos + Vector3.new(-26 * math.ceil(i / 2), 0, 22 * side * math.ceil(i / 2)), 0, nil, id)
 				al.nc = NC[SHIP_CANNON[id] or "demi"]
 				al.slot = Vector3.new(-30 * math.ceil(i / 2), 0, 24 * side * math.ceil(i / 2))
 				al.topSpeed = 12 + fd.speed * 1.2
