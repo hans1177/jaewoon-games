@@ -551,7 +551,7 @@ test('근접·원거리 10단 전신 모션과 마무리 이펙트는 기존 피
   assert.match(motion,/local actorBeat = if rangedActor then 1 else \(h\.weaponBeat or 1\)/);
   // [연타 상태 검사] 예전 선언문의 정확한 끝 위치를 강제하지 않고 원래 계약 필드를 개별 확인한다.
   // 예약 타격·입력 버퍼가 추가돼도 기존 10타 시각 연결과 명중 중복 방지 계약은 유지해야 한다.
-  const bridge = field.match(/local swingBridge = \\{[^\\r\\n]*\\}/)?.[0];
+  const bridge = field.match(/local swingBridge = \{[^\r\n]*\}/)?.[0];
   assert.ok(bridge,'R15 공격 전신 연결 상태 누락');
   for(const key of [
     'last = {}','lastAt = -100','from = nil','rootLast = nil','rootFrom = nil',
@@ -560,9 +560,9 @@ test('근접·원거리 10단 전신 모션과 마무리 이펙트는 기존 피
     assert.ok(bridge.includes(key),'R15 연타 필수 상태 누락: '+key);
   }
   // [모션/폰트 회귀] 강타·필살도 관절 시계를 멈추지 않으며 표시 글자 크기는 고정한다.
-  assert.doesNotMatch(field,/hitStopUntil|hitStopLast|swingT0 \\+= elapsed/);
-  assert.match(field,/comboPopScale = Instance\\.new\\("UIScale"\\)/);
-  assert.match(field,/comboLabel\\.TextSize = targetSize/);
+  assert.doesNotMatch(field,/hitStopUntil|hitStopLast|swingT0 \+= elapsed/);
+  assert.match(field,/comboPopScale = Instance\.new\("UIScale"\)/);
+  assert.match(field,/comboLabel\.TextSize = targetSize/);
   assert.match(field,/swingBridge\.impactSeq = actionSeq/);
   assert.match(field,/swingBridge\.from = table\.clone\(swingBridge\.last\)/);
   assert.match(field,/canon\[joint\] = old:Lerp\(canon\[joint\] or CFrame\.identity, weight\)/);
