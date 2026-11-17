@@ -1718,10 +1718,44 @@ function FieldScene.start(opts)
 			},
 		}
 		castPoses.cast_ward, castPoses.cast_snipe = castPoses.cast_armor, castPoses.cast_volley
-		local dashPose = {
-			Spine = CFrame.Angles(0.5, 0, 0), Chest = CFrame.Angles(0.25, 0, 0), Head = CFrame.Angles(-0.4, 0, 0),
-			ThighL = CFrame.Angles(-1.0, 0, 0), ThighR = CFrame.Angles(0.6, 0, 0), ShinL = CFrame.Angles(1.2, 0, 0),
-			UpperArmL = CFrame.Angles(0.9, 0, -0.1), UpperArmR = CFrame.Angles(0.9, 0, 0.1),
+		-- [직업별 R15 회피] 기본 행동은 그대로, 가드 팔·골반·디딤발 자세를 직업에 따라 구별한다.
+		local dodgeStyle = "warrior"
+		local dashPoses = {
+			warrior = {
+				Spine = A(0.16, 0.22, -0.12), Chest = A(-0.32, -0.20, 0.14),
+				UpperArmL = A(-0.74, 0, -0.21), UpperArmR = A(-0.55, 0, 0.26),
+				ThighL = A(-0.54, 0, -0.20), ThighR = A(0.34, 0, 0.13), ShinL = A(0.60, 0, 0), FootL = A(0.26, 0, -0.12),
+			},
+			gunner = {
+				Spine = A(0.28, 0.10, -0.13), Chest = A(0.42, -0.15, 0), Head = A(-0.18, 0, 0),
+				UpperArmL = A(-0.70, 0, -0.32), UpperArmR = A(-0.92, 0, 0.13),
+				ThighL = A(-0.88, 0, -0.11), ThighR = A(0.40, 0, 0.13), ShinL = A(1.05, 0, 0), FootL = A(0.32, 0, 0),
+			},
+			clergy = {
+				Spine = A(0.24, 0.13, 0), Chest = A(0.25, -0.16, 0.08), Head = A(-0.18, -0.11, 0),
+				UpperArmL = A(-1.00, 0, -0.50), UpperArmR = A(-1.00, 0, 0.50),
+				ThighL = A(-0.55, 0, -0.09), ThighR = A(0.38, 0, 0.11), ShinR = A(0.50, 0, 0),
+			},
+			doctor = {
+				Spine = A(0.20, -0.10, 0), Chest = A(0.30, 0.12, 0), Head = A(-0.16, 0.06, 0),
+				UpperArmL = A(-0.60, 0, -0.25), UpperArmR = A(-0.72, 0, 0.18),
+				ThighL = A(-0.62, 0, -0.10), ThighR = A(0.49, 0, 0.11), ShinL = A(0.64, 0, 0),
+			},
+			navigator = {
+				Spine = A(0.60, 0.12, 0), Chest = A(0.48, -0.18, 0), Head = A(-0.32, 0, 0),
+				UpperArmL = A(0.88, 0, -0.15), UpperArmR = A(0.88, 0, 0.15),
+				ThighL = A(-1.08, 0, 0), ThighR = A(0.65, 0, 0), ShinL = A(1.20, 0, 0), FootL = A(-0.20, 0, 0),
+			},
+			merchant = {
+				Spine = A(0.18, 0.28, 0.10), Chest = A(-0.11, -0.26, -0.12), Head = A(0.05, 0.14, 0),
+				UpperArmL = A(-0.38, 0, -0.32), UpperArmR = A(-0.48, 0, 0.28),
+				ThighL = A(-0.69, 0, -0.28), ThighR = A(0.40, 0, 0.28), ShinL = A(0.58, 0, 0), FootR = A(0.14, 0, 0.24),
+			},
+			scholar = {
+				Spine = A(0.36, 0.07, 0), Chest = A(0.39, -0.12, 0), Head = A(-0.19, 0.11, 0),
+				UpperArmL = A(-1.03, 0, -0.16), UpperArmR = A(-0.84, 0, 0.24),
+				ThighL = A(-0.78, 0, -0.07), ThighR = A(0.50, 0, 0.07), ShinL = A(0.80, 0, 0),
+			},
 		}
 		-- 몸 전체 움직임(마력숲처럼): 베기는 앞으로 숙이며 파고들고, 강타는 뛰어올라 내리찍고, 회전베기는 낮게 두 바퀴, 회피는 앞구르기
 		local function bell(x: number): number return math.sin(math.clamp(x, 0, 1) * math.pi) end
@@ -1757,7 +1791,18 @@ function FieldScene.start(opts)
 				if wpn.ranged then return CFrame.new(0, -0.12 * bell(p), 0) * CFrame.Angles(0, 0.12 * bell(p), 0) end
 				return CFrame.new(0, -0.5 * bell(p), 0) * CFrame.Angles(0.12, p * math.pi * 4, 0)
 			elseif kind == "dash" then
-				return CFrame.new(0, 0.9 * bell(p) - 0.2, 0) * CFrame.Angles(-p * math.pi * 2, 0, 0)
+				-- [회피 가중치] 시작·종료 자세는 0으로 복귀한다. 항해사는 낮은 구르기, 다른 직업은 각자 측보.
+				local press = bell(p)
+				if dodgeStyle == "navigator" then
+					return CFrame.new(0, -0.36 * press, 0) * CFrame.Angles(-p * math.pi * 2, 0, 0)
+				elseif dodgeStyle == "gunner" then
+					return CFrame.new(0, -0.48 * press, 0) * CFrame.Angles(-0.22 * press, 0.18 * press, -0.15 * press)
+				elseif dodgeStyle == "merchant" then
+					return CFrame.new(0, -0.23 * press, 0) * CFrame.Angles(-0.12 * press, 0.30 * press, 0.18 * press)
+				elseif dodgeStyle == "clergy" or dodgeStyle == "doctor" or dodgeStyle == "scholar" then
+					return CFrame.new(0, -0.32 * press, 0) * CFrame.Angles(0.14 * press, -0.22 * press, 0)
+				end
+				return CFrame.new(0, -0.30 * press, 0) * CFrame.Angles(-0.24 * press, -0.34 * press, 0)
 			elseif kind == "cast_heal" then
 				return CFrame.new(0, -0.35 * bell(p), 0)
 			elseif kind == "cast_luck" then
@@ -1820,7 +1865,7 @@ function FieldScene.start(opts)
 					if swingKind == "guard" then
 						src = FM.combo("slash1", { "W:BLADE_SLASH_R" }).guard
 					elseif swingKind == "dash" then
-						src = dashPose
+						src = dashPoses[dodgeStyle] or dashPoses.warrior
 					else
 						src = castPoses[swingKind] or (if string.sub(swingKind, 1, 4) == "cast" then castPoses.cast_read else castPose)
 					end
