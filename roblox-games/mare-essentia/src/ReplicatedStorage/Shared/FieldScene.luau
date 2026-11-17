@@ -1169,12 +1169,39 @@ function FieldScene.start(opts)
 	local bossCount = if danger0 < 3 then 0 else math.clamp(math.floor(danger0 / 2), 1, 8)
 	local enemyCount = math.clamp(20 + (danger0 - 1) * 6, 20, 100 - bossCount)
 	-- [몹 다양화] 규칙(HP/속도/피해/드롭)은 원본 그대로, 색상·복식·관절 액션만 직군별 3종으로 구분한다.
+	-- [실물 병종] 기존 승인된 Relics 무기·방패만 연결한다. 원본 적 수/HP/피해/드롭은 유지한다.
+	-- 병종 외형: 직업 명칭, 복식 원형, 외투색, Weapons ID, 왼손 방패(있을 때).
 	local looks = {
-		grunt = { { "검객", "Rogue", Color3.fromRGB(114, 86, 72) }, { "난투꾼", "Barbarian", Color3.fromRGB(140, 75, 59) }, { "기습병", "Rogue_Hooded", Color3.fromRGB(67, 79, 87) } },
-		archer = { { "궁수", "Rogue", Color3.fromRGB(98, 105, 70) }, { "명사수", "Knight", Color3.fromRGB(82, 101, 127) }, { "척후병", "Rogue_Hooded", Color3.fromRGB(66, 106, 90) } },
-		shield = { { "호위병", "Knight", Color3.fromRGB(117, 119, 132) }, { "근위병", "Knight", Color3.fromRGB(126, 91, 76) }, { "경비대장", "Rogue", Color3.fromRGB(103, 94, 76) } },
-		charger = { { "돌격대", "Barbarian", Color3.fromRGB(132, 80, 58) }, { "광전사", "Barbarian", Color3.fromRGB(120, 54, 61) }, { "습격병", "Rogue", Color3.fromRGB(84, 91, 70) } },
-		boss = { { "전장 두목", "Knight", Color3.fromRGB(117, 77, 66) }, { "약탈 우두머리", "Barbarian", Color3.fromRGB(135, 63, 55) }, { "거인 대장", "Knight", Color3.fromRGB(83, 90, 109) } },
+		grunt = {
+			{ "검병", "Rogue", Color3.fromRGB(114, 86, 72), "sword" },
+			{ "단검 척후병", "Rogue_Hooded", Color3.fromRGB(67, 79, 87), "dagger" },
+			{ "철퇴병", "Knight", Color3.fromRGB(117, 119, 132), "mace" },
+			{ "격투병", "Barbarian", Color3.fromRGB(140, 75, 59), "fist" },
+		},
+		archer = {
+			{ "궁수", "Rogue", Color3.fromRGB(98, 105, 70), "bow" },
+			{ "석궁병", "Knight", Color3.fromRGB(82, 101, 127), "crossbow" },
+			{ "장총병", "Rogue_Hooded", Color3.fromRGB(66, 106, 90), "flintlock_musket" },
+			{ "권총병", "Rogue", Color3.fromRGB(112, 90, 72), "flintlock_pistol" },
+		},
+		shield = {
+			{ "원형방패 검병", "Knight", Color3.fromRGB(117, 119, 132), "sword", "shield-round" },
+			{ "사각방패 철퇴병", "Knight", Color3.fromRGB(126, 91, 76), "mace", "shield-rectangle" },
+			{ "원형방패 창병", "Barbarian", Color3.fromRGB(103, 94, 76), "spear", "shield-round" },
+			{ "사각방패 도끼병", "Knight", Color3.fromRGB(95, 107, 109), "axe", "shield-rectangle" },
+		},
+		charger = {
+			{ "도끼 돌격병", "Barbarian", Color3.fromRGB(132, 80, 58), "axe" },
+			{ "장창 돌격병", "Knight", Color3.fromRGB(120, 104, 84), "spear" },
+			{ "단검 습격병", "Rogue_Hooded", Color3.fromRGB(84, 91, 70), "dagger" },
+			{ "망치 돌격병", "Barbarian", Color3.fromRGB(120, 54, 61), "warhammer" },
+		},
+		boss = {
+			{ "도끼 두목", "Barbarian", Color3.fromRGB(135, 63, 55), "axe" },
+			{ "방패 지휘관", "Knight", Color3.fromRGB(117, 77, 66), "sword", "shield-rectangle" },
+			{ "철퇴 두목", "Knight", Color3.fromRGB(83, 90, 109), "mace" },
+			{ "전투망치 두목", "Barbarian", Color3.fromRGB(112, 67, 69), "warhammer" },
+		},
 	}
 	local kinds = { "grunt", "archer", "shield", "charger" }
 	-- [지역별 몬스터 배치] 숲길·유적·해안·산길·사막마다 무리 위치를 바꾼다.
@@ -1226,8 +1253,31 @@ function FieldScene.start(opts)
 			task.wait()
 		end
 		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % #kinds + 1])
-		local styleN = math.floor((i - 1) / 4) % 3 + 1
+		local styleN = math.floor((i - 1) / 4) % 4 + 1
 		local style = looks[ac.kind][styleN]
+		-- [시대 일치] 1680년 이전에는 수석식 총 대신 기존 활/석궁 실물 모델만 사용한다.
+		if (opts.year or 1517) < 1680 and (style[4] == "flintlock_musket" or style[4] == "flintlock_pistol") then
+			style = looks.archer[(styleN % 2) + 1]
+		end
+		local weapon = Weapons.get(style[4])
+		-- [병종 전술] 원본 HP·공격력·드롭률은 고정하고 무기에 맞는 공격 준비/거리만 달리한다.
+		local individualDef = table.clone(ac.def)
+		if weapon.family == "dagger" then
+			individualDef.windup *= 0.80
+			individualDef.recover *= 0.85
+		elseif weapon.family == "axe" or weapon.id == "warhammer" then
+			individualDef.windup *= 1.18
+			individualDef.recover *= 1.18
+		elseif weapon.family == "spear" then
+			if not isBoss then individualDef.range = math.max(individualDef.range, 8) end
+		elseif weapon.id == "crossbow" then
+			individualDef.recover *= 1.28
+		elseif weapon.family == "firearm" then
+			individualDef.windup *= 1.17
+			individualDef.recover *= 1.50
+			individualDef.range = math.min(individualDef.range, weapon.range)
+		end
+		ac.def = individualDef
 		-- [몹 역할별 실루엣] 기존 전투 능력은 유지하고 R15 비율·걸음 성격만 다르게 설정한다.
 		local bodyType = if ac.kind == "archer" then "slim" elseif ac.kind == "shield" or isBoss then "heavy"
 			elseif ac.kind == "charger" then "athletic" else "average"
@@ -1271,6 +1321,8 @@ function FieldScene.start(opts)
 		bar.BackgroundColor3 = Color3.fromRGB(214, 82, 76)
 		bar.BorderSizePixel = 0
 		bar.Parent = barBack
+		model:SetAttribute("EnemyWeaponId", weapon.id)
+		model:SetAttribute("EnemyShieldModel", style[5] or "")
 		model:SetAttribute("MotionRole", if isBoss then "boss" else ac.kind) -- 게임 규칙이 아닌 관절 동작 선택용
 		model:SetAttribute("MotionVariant", styleN) -- 복식·전투 몸짓 전용(저장/피해와 무관)
 		local isElite = isBoss or ac.kind == "shield" or ac.kind == "charger"
@@ -1278,7 +1330,7 @@ function FieldScene.start(opts)
 		tag.TextSize = if isBoss then 14 else 12
 		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil
-		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber() })
+		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber() })
 	end
 
 	end
@@ -2420,24 +2472,41 @@ function FieldScene.start(opts)
 
 	-- [무기 외형] 등록된 실제 3D 메시만 사용한다. 늦게 도착한 모델도 기존 장착 함수로 갱신한다.
 	-- 기존 무기·동료 데이터와 무관한 클라이언트 연출만 교체한다. 전투 수치·저장키는 수정하지 않는다.
-	local function equipFieldWeapon(character, weapon)
-		if not character then return end
+	-- [실물 장비] 주인공/동료/적이 같은 검증된 Relics 메시를 공유한다. 오른손 무기, 왼손 실제 방패.
+	local function equipFieldWeapon(character, weapon, shieldModel)
+		if not character or not weapon then return end
 		local prev = character:FindFirstChild("FieldWeapon") or character:FindFirstChild("FieldSword")
 		if prev then prev:Destroy() end
+		local previousShield = character:FindFirstChild("FieldShield")
+		if previousShield then previousShield:Destroy() end
 		character:SetAttribute("EquippedWeaponId", weapon.id)
 		character:SetAttribute("EquippedWeaponName", weapon.name)
+		character:SetAttribute("EquippedShieldModel", shieldModel or "")
 		character:SetAttribute("WeaponVisualSource", "unarmed")
-		if weapon.family == "fist" then return end
-		local hand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
-		if not (hand and hand:IsA("BasePart")) then return end
+		if weapon.family == "fist" and not shieldModel then return end
+		local rightHand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
+		local leftHand = character:FindFirstChild("LeftHand") or character:FindFirstChild("Left Arm")
 		local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 		local group = lib and lib:FindFirstChild("Relics")
-		-- [자산 권한] 등록표에 없는 임의 모델을 장착하지 않는다.
-		local registeredId = weapon.model and AssetIds["Relics/" .. weapon.model]
-		local tpl = registeredId and group and group:FindFirstChild(weapon.model)
-		if tpl and tpl:IsA("Model") then
+		local items = {}
+		if weapon.family ~= "fist" then
+			table.insert(items, { modelName = weapon.model, hand = rightHand, shield = false })
+		end
+		if shieldModel then
+			table.insert(items, { modelName = shieldModel, hand = leftHand, shield = true })
+		end
+		local complete = true
+		for _, item in items do
+			local modelName = item.modelName
+			local hand = item.hand
+			local registeredId = modelName and AssetIds["Relics/" .. modelName]
+			local tpl = registeredId and group and group:FindFirstChild(modelName)
+			if not (hand and hand:IsA("BasePart") and tpl and tpl:IsA("Model")) then
+				complete = false
+				continue
+			end
 			local held = tpl:Clone()
-			held.Name = if weapon.id == "sword" then "FieldSword" else "FieldWeapon"
+			held.Name = if item.shield then "FieldShield" elseif weapon.id == "sword" then "FieldSword" else "FieldWeapon"
 			local count = 0
 			for _, bp in held:GetDescendants() do
 				if bp:IsA("BasePart") then
@@ -2446,53 +2515,55 @@ function FieldScene.start(opts)
 					bp.Massless = true
 				end
 			end
-			if count > 0 then
-				local bb, ext = held:GetBoundingBox()
-				local longest = math.max(ext.X, ext.Y, ext.Z)
-				-- [손 장착 크기] 원본 메시 비율을 유지하며 무기별 크기만 조정한다.
-				local targetLength = if weapon.family == "dagger" then 1.8
-					elseif weapon.family == "bow" then 3.5
-					elseif weapon.family == "spear" then 4.6
-					elseif weapon.family == "axe" or weapon.family == "blunt" then 3.1
-					elseif weapon.family == "firearm" then (if weapon.motion == "PISTOL" then 2.0 else 3.7)
-					else 3.3
-				if longest > 0.05 then pcall(function() held:ScaleTo(targetLength / longest) end) end
-				held.Parent = character
-				bb, ext = held:GetBoundingBox()
-				local ax = if ext.X >= ext.Y and ext.X >= ext.Z then bb.RightVector elseif ext.Y >= ext.Z then bb.UpVector else bb.LookVector
-				local fwd = hand.CFrame.LookVector
-				local cross = ax:Cross(fwd)
-				local rotation = if cross.Magnitude < 1e-4
-					then (if ax:Dot(fwd) > 0 then CFrame.identity else CFrame.fromAxisAngle(hand.CFrame.UpVector, math.pi))
-					else CFrame.fromAxisAngle(cross.Unit, math.acos(math.clamp(ax:Dot(fwd), -1, 1)))
-				local len = math.max(ext.X, ext.Y, ext.Z)
-				local newBB = CFrame.new(hand.Position + fwd * (len * 0.35) - hand.CFrame.UpVector * 0.3) * (rotation * bb.Rotation)
-				held:PivotTo(newBB * bb:ToObjectSpace(held:GetPivot()))
-				for _, bp in held:GetDescendants() do
-					if bp:IsA("BasePart") then
-						local weld = Instance.new("WeldConstraint")
-						weld.Part0, weld.Part1, weld.Parent = hand, bp, bp
-					end
-				end
-				character:SetAttribute("WeaponVisualSource", "registered")
-				return
+			if count == 0 then
+				complete = false
+				held:Destroy()
+				continue
 			end
-			held:Destroy()
+			local bb, ext = held:GetBoundingBox()
+			local longest = math.max(ext.X, ext.Y, ext.Z)
+			local targetLength = if item.shield then (if modelName == "shield-rectangle" then 3.1 else 2.5)
+				elseif weapon.family == "dagger" then 1.8
+				elseif weapon.family == "bow" then 3.5
+				elseif weapon.family == "spear" then 4.6
+				elseif weapon.family == "axe" or weapon.family == "blunt" then 3.1
+				elseif weapon.family == "firearm" then (if weapon.motion == "PISTOL" then 2.0 else 3.7)
+				else 3.3
+			if longest > 0.05 then pcall(function() held:ScaleTo(targetLength / longest) end) end
+			held.Parent = character
+			bb, ext = held:GetBoundingBox()
+			local ax = if item.shield then (if ext.X <= ext.Y and ext.X <= ext.Z then bb.RightVector
+				elseif ext.Y <= ext.Z then bb.UpVector else bb.LookVector)
+				else (if ext.X >= ext.Y and ext.X >= ext.Z then bb.RightVector
+				elseif ext.Y >= ext.Z then bb.UpVector else bb.LookVector)
+			local fwd = if item.shield then character:GetPivot().LookVector else hand.CFrame.LookVector
+			local cross = ax:Cross(fwd)
+			local rotation = if cross.Magnitude < 1e-4
+				then (if ax:Dot(fwd) > 0 then CFrame.identity else CFrame.fromAxisAngle(hand.CFrame.UpVector, math.pi))
+				else CFrame.fromAxisAngle(cross.Unit, math.acos(math.clamp(ax:Dot(fwd), -1, 1)))
+			local len = math.max(ext.X, ext.Y, ext.Z)
+			local newBB = CFrame.new(hand.Position + fwd * (if item.shield then 0.55 else len * 0.35)
+				- hand.CFrame.UpVector * (if item.shield then 0 else 0.3)) * (rotation * bb.Rotation)
+			held:PivotTo(newBB * bb:ToObjectSpace(held:GetPivot()))
+			for _, bp in held:GetDescendants() do
+				if bp:IsA("BasePart") then
+					local weld = Instance.new("WeldConstraint")
+					weld.Part0, weld.Part1, weld.Parent = hand, bp, bp
+				end
+			end
 		end
-
-		-- [미등록 자산] Roblox 등록·권한·실물 수입 전에는 도형 조립으로 대체하지 않는다.
-		-- 원본이 등록되고 MareAssets에 수입되면 위 경로로 바로 장착된다.
-		character:SetAttribute("WeaponVisualSource", "asset_pending")
+		character:SetAttribute("WeaponVisualSource", if complete then "registered" else "asset_pending")
 	end
 	-- [실물 무기 지연 로드] Relics는 항구 모델보다 늦게 로드되므로, 도착한 승인 모델만 재장착한다.
 	-- 플레이어/동료의 기존 무기 ID와 전투 수치, 저장 구조는 유지한다.
+	-- [실물 무기·방패 지연 로드] 실제 메시가 뒤늦게 도착하면 해당 장비가 필요한 배우만 갱신한다.
 	local assetLibrary = ReplicatedStorage:FindFirstChild("MareAssets")
 	local relicGroup = assetLibrary and assetLibrary:FindFirstChild("Relics")
 	if relicGroup then
 		table.insert(conns, relicGroup.ChildAdded:Connect(function(asset)
-			if not asset:IsA("Model") or not string.match(asset.Name, "^weapon%-") then return end
+			if not asset:IsA("Model") or not (string.match(asset.Name, "^weapon%-") or string.match(asset.Name, "^shield%-"))
+				or not AssetIds["Relics/" .. asset.Name] then return end
 			task.defer(function()
-				-- Roblox 모델/메시의 복제 순서가 달라도 빈 모델을 장착 완료로 간주하지 않는다.
 				local deadline = os.clock() + 5
 				while asset.Parent == relicGroup and not asset:FindFirstChildWhichIsA("BasePart", true)
 					and os.clock() < deadline and not finished do
@@ -2502,22 +2573,34 @@ function FieldScene.start(opts)
 				local character = player.Character
 				if character and character:GetAttribute("WeaponVisualSource") == "asset_pending" then
 					local id = character:GetAttribute("EquippedWeaponId")
+					local shieldName = character:GetAttribute("EquippedShieldModel")
 					if type(id) == "string" then
 						local weapon = Weapons.get(id)
-						if weapon.model == asset.Name then equipFieldWeapon(character, weapon) end
+						if weapon.model == asset.Name or shieldName == asset.Name then
+							equipFieldWeapon(character, weapon, if shieldName ~= "" then shieldName else nil)
+						end
 					end
 				end
 				for _, characterModel in folder:GetDescendants() do
 					if characterModel:IsA("Model") and characterModel:GetAttribute("WeaponVisualSource") == "asset_pending" then
 						local id = characterModel:GetAttribute("EquippedWeaponId")
+						local shieldName = characterModel:GetAttribute("EquippedShieldModel")
 						if type(id) == "string" then
 							local weapon = Weapons.get(id)
-							if weapon.model == asset.Name then equipFieldWeapon(characterModel, weapon) end
+							if weapon.model == asset.Name or shieldName == asset.Name then
+								equipFieldWeapon(characterModel, weapon, if shieldName ~= "" then shieldName else nil)
+							end
 						end
 					end
 				end
 			end)
 		end))
+	end
+	-- [몬스터 무기·방패] 기존 적을 생성한 뒤 승인된 실물 메시를 손에 장착한다.
+	for _, enemy in enemies do
+		if enemy.model and enemy.model.Parent and enemy.weapon then
+			equipFieldWeapon(enemy.model, enemy.weapon, enemy.shieldModel)
+		end
 	end
 	-- 플레이어 무기는 현장 교체 시 즉시 실제 손의 장비까지 교체한다.
 	equipFieldWeapon(player.Character, wpn)
@@ -3758,7 +3841,13 @@ function FieldScene.start(opts)
 					end
 				end
 				if e.ac.def.keepAway then
-					arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0))
+					if e.weapon and e.weapon.family == "firearm" then
+						-- [총병 발포] 원본 발포 소리·섬광 사용. 화살로 총알을 위장하지 않는다.
+						sfx("sfx_naval_cannon", 0.28, 1.45)
+						burst(e.root.Position + Vector3.new(0, 1.7, 0), 10, true)
+					else
+						arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0))
+					end
 				end
 				if e.warn then e.warn:Destroy() e.warn = nil end
 				if e.warnBb then e.warnBb:Destroy() e.warnBb = nil end
@@ -3928,7 +4017,7 @@ function FieldScene.start(opts)
 						bob, lean = 0.22 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.55
 					end
 				end
-				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll), kindId == "archer" and wish < 0)
+				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll), kindId == "archer" and wish < 0, nil, e.weapon and e.weapon.motion)
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then
