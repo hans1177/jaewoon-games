@@ -4278,24 +4278,29 @@ function FieldScene.start(opts)
 				FM.destroy(e.fm)
 				e.fm = nil
 			end
-			-- 마지막 일격: 맞은 반대 방향으로 밀려나며(점점 느려짐) 쓰러진다
+			-- [3종 사망 연출] 마지막 일격 방향·병종에 따라 후방 쓰러짐/전방 무너짐/측면 굴러짐.
+			-- 첫 0.7초 피격 밀림, 이후 관절이 바닥에서 진정되며 마지막에만 서서히 사라진다.
+			-- 사망·전리품 판정은 이미 기존 AC.damageEnemy에서 확정하며 재출현은 없다.
 			local flyDir = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
 			flyDir = if flyDir.Magnitude > 0.1 then flyDir.Unit else Vector3.zero
 			local flyDist = (if mult >= 1.5 then 9 else 5) * (if e.boss then 0.3 else 1)
+			local deathVariant = if e.boss then 1 else (e.hitVariant or 1)
 			task.spawn(function()
 				local t0 = os.clock()
 				local lastP = 0
-				while dying.Parent and os.clock() - t0 < 0.7 do
-					local p = (os.clock() - t0) / 0.7
-					Pose.dieR15(dying, p)
-					local ease = 1 - (1 - p) * (1 - p)
+				local duration = if visualMobile then 1.35 else 1.70
+				while dying.Parent and os.clock() - t0 < duration do
+					local p = math.clamp((os.clock() - t0) / duration, 0, 1)
+					Pose.dieR15(dying, p, deathVariant)
+					local flight = math.min(p * duration / 0.70, 1)
+					local ease = 1 - (1 - flight) * (1 - flight)
 					pcall(function()
 						dying:PivotTo(dying:GetPivot() + flyDir * flyDist * (ease - lastP))
 					end)
 					lastP = ease
 					task.wait()
 				end
-				dying:Destroy()
+				if dying.Parent then dying:Destroy() end
 			end)
 			do
 				local p0 = e.root.Position
@@ -6041,9 +6046,17 @@ function FieldScene.start(opts)
 			if flat.Magnitude > 120 and e.ac.state == "idle" and not e.ac.dead then
 				continue
 			end
-			local frozen = now < (e.holdUntil or 0)
+			-- [다운→기상 상태 머신] 기존 AC.stagger로 기상 중 공격을 완전히 막는다.
+			-- 다운 시간이 끝나면 원래 AI가 추적 상태로 돌아간다(재생성·적 수 변화 없음).
+			local knocked = now < (e.riseUntil or 0)
+			if knocked then
+				e.ac.stagger = math.max(0.05, e.riseUntil - now)
+				e.ac.state = "stagger"
+			end
+			local frozen = knocked or now < (e.holdUntil or 0)
 			if e.kbUntil and now < e.kbUntil and not e.ac.def.boss then
-				local k = 1 - (now - e.kbT0) / 0.18 -- 선형 감속
+				local duration = math.max(e.kbUntil - e.kbT0, 0.05)
+				local k = 1 - (now - e.kbT0) / duration
 				e.model:PivotTo(e.model:GetPivot() + e.kbVel * math.max(k, 0) * enemyDt * 2)
 			end
 			local event, hit = nil, nil
@@ -6368,8 +6381,16 @@ function FieldScene.start(opts)
 			if e.fm then
 				local st, ph = "IDLE", (now / 2.4 + e.motionPhase) % 1
 				local acs = e.ac.state
-				if (e.dodgeUntil or 0) > now then
-					st, ph = "EVADE", math.clamp((now - (e.dodgeT0 or now)) / 0.3, 0, 1)
+				if now < (e.knockUntil or 0) then
+					st, ph = "KNOCKDOWN", math.clamp((now - (e.knockAt or now)) / 0.78, 0, 1)
+				elseif now < (e.riseUntil or 0) then
+					st, ph = "GETUP", math.clamp((now - e.knockUntil) / math.max(e.riseUntil - e.knockUntil, 0.1), 0, 1)
+				elseif (e.parryUntil or 0) > now then
+					st, ph = "PARRY", 1 - (e.parryUntil - now) / 0.37
+				elseif (e.guardUntil or 0) > now then
+					st, ph = "BLOCK", 1 - (e.guardUntil - now) / 0.37
+				elseif (e.dodgeUntil or 0) > now then
+					st, ph = "EVADE", math.clamp((now - (e.dodgeT0 or now)) / 0.36, 0, 1)
 				elseif hurtProgress >= 0 and hurtProgress < 1 then
 					st, ph = "HIT", hurtProgress
 				elseif acs == "windup" then
@@ -6391,8 +6412,14 @@ function FieldScene.start(opts)
 				elseif st == "RECOVERY" then
 					lean = -0.3 * (1 - ph)
 				elseif st == "HIT" then
-					-- 맞는 순간 확 젖혀졌다가 되돌아온다(맞은 쪽으로 몸이 꺾이는 느낌)
-					lean = 0.6 * (1 - ph) * (1 - ph)
+					-- 병종/타격 순번에 따라 상체 숙임과 뒤젖힘을 교대로 써 반복 피격도 다르게 보인다.
+					lean = (if e.hitVariant == 2 then -0.36 else 0.6) * (1 - ph) * (1 - ph)
+				elseif st == "BLOCK" or st == "PARRY" then
+					lean = if st == "BLOCK" then 0.24 else -0.22
+				elseif st == "KNOCKDOWN" then
+					lean = -0.1
+				elseif st == "GETUP" then
+					lean = 0.18 * (1 - ph)
 				end
 				-- [근접 돌진 접지] 기존 공격 이동거리와 사거리·판정은 그대로 두되,
 				-- 실제 전진한 거리만 발 디딤 포즈로 전달해 공중에서 미끄러지는 느낌을 막는다.
@@ -6406,6 +6433,14 @@ function FieldScene.start(opts)
 				local bob, roll = 0, 0
 				if st == "IDLE" then
 					bob, roll, lean = math.sin(now * 2.2 + e.spawnT) * 0.06, math.sin(now * 1.1 + e.spawnT) * 0.05, lean + math.sin(now * 1.6 + e.spawnT) * 0.04
+				elseif st == "KNOCKDOWN" then
+					bob = -0.65 * math.min(ph * 2.4, 1)
+					roll = (if e.knockVariant == 2 then 0.36 else -0.21) * math.sin(ph * math.pi * 0.75)
+				elseif st == "GETUP" then
+					bob = -0.65 * (1 - ph) * (1 - ph)
+					roll = (if e.knockVariant == 2 then 0.14 else -0.09) * (1 - ph)
+				elseif st == "BLOCK" or st == "PARRY" then
+					bob, roll = -0.13, if st == "PARRY" then 0.19 * math.sin(ph * math.pi) else -0.08
 				elseif st == "RUN" then
 					local pace = math.clamp((e.moveVel or Vector3.zero).Magnitude / math.max(e.ac.def.speed, 1), 0, 1.4)
 					bob, roll, lean = math.abs(math.sin((e.gait or 0) * math.pi * 2)) * 0.075 * pace, math.sin((e.gait or 0) * math.pi * 2) * 0.03, -0.12 * pace
