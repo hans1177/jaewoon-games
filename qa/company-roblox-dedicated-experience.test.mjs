@@ -1132,6 +1132,79 @@ test('Mare registered 36 ship models have seven regional battle signatures and s
   assert.match(client,/if hasFull and hasMobile then "원본·모바일 경량판 등록"/);
 });
 
+// [7대륙 36척 운용 검증] 기존 구매·저장·서버 계산 경로에만 특성을 적용한다.
+test('Mare all 36 designed ships have 23 new region-locked purchases and server-owned specialties', () => {
+  const root='roblox-games/mare-essentia/src';
+  const read=(path)=>fs.readFileSync(root+'/'+path,'utf8');
+  const ships=read('ReplicatedStorage/Shared/Ships.luau');
+  const portData=read('ReplicatedStorage/Shared/Ports.luau');
+  const voyage=read('ReplicatedStorage/Shared/Voyage.luau');
+  const state=read('ServerScriptService/Services/State.luau');
+  const sail=read('ServerScriptService/Services/Sailing.luau');
+  const yard=read('ServerScriptService/Services/Shipyard.luau');
+  const view=read('ServerScriptService/Services/View.luau');
+  const trade=read('ServerScriptService/Services/Trade.luau');
+  const battle=read('ServerScriptService/Services/Battle.luau');
+  const ui=read('StarterPlayer/Game.client.luau');
+  const blueprints=[...ships.matchAll(/\{ id="([a-z_]+)", name="[^"]+", faction="([a-z_]+)", stage=(\d+)/g)]
+    .map(m=>({id:m[1],faction:m[2],stage:Number(m[3])}));
+  assert.equal(blueprints.length,36,'6 historical regions of five + fantasy region of six');
+  const performance=ships.split('local ShipPerformance = {')[1]?.split('\n}\n-- [신규 23척')[0];
+  const statRows=ships.split('local NewShipStats = {')[1]?.split('\n}\nlocal BlueprintSaleRegions')[0];
+  assert.ok(performance && statRows,'ship stats and traits must be in the canonical Ships module');
+  const traits=[...performance.matchAll(/^\s*([a-z_]+) = \{ role = "([^"]+)", weak = "([^"]+)", ([^\n]+) \},\s*$/gm)];
+  const newer=[...statRows.matchAll(/^\s*([a-z_]+) = \{ class = (\d+), price = (\d+), cargo = (\d+), speed = (\d+), hull = (\d+), cannons = (\d+), crew = (\d+)(?:, rowed = true)? \},\s*$/gm)];
+  assert.equal(traits.length,36,'every licensed blueprint has one independently authored role');
+  assert.equal(newer.length,23,'only the previously unavailable 23 ships are newly purchasable');
+  assert.equal(new Set(traits.map(x=>x[1])).size,36,'do not duplicate trait keys');
+  assert.equal(new Set(newer.map(x=>x[1])).size,23,'do not duplicate ship IDs');
+  for(const p of blueprints){
+    const trait=traits.find(x=>x[1]===p.id);
+    assert.ok(trait,p.id+' must have a distinct role');
+    for(const m of trait[4].matchAll(/([a-z]+) = (-?[\d.]+)/g)){
+      assert.ok(Math.abs(Number(m[2]))<=0.16,p.id+' '+m[1]+' effect must be balance-capped');
+    }
+    assert.ok(p.stage>=1&&p.stage<=6,p.id+' legal design stage');
+  }
+  for(const row of newer){
+    assert.ok(blueprints.some(x=>x.id===row[1]),row[1]+' has registered blueprint');
+    assert.ok(Number(row[2])>=1 && Number(row[2])<=4,'existing license stage bound');
+    for(const i of [3,4,5,6,7,8]) assert.ok(Number(row[i])>0,row[1]+' requires positive ship stats');
+  }
+  assert.match(ships,/for _, blueprint in Blueprints do[\s\S]*?if not Ships\[blueprint\.id\] then/,'existing ship stats remain authoritative');
+  assert.match(ships,/newRegional = true/,'new models can be filtered to their home region');
+  assert.match(ships,/minAdventure = if blueprint\.faction == "lost" then 6 \+ blueprint\.stage \* 4 else nil/,'lost ships require established adventure progression');
+  assert.match(ships,/specialPort = if blueprint\.faction == "lost" then "honolulu" else nil/);
+  assert.match(portData,/honolulu = \{[\s\S]*?shipyard = true/,'the rare ship dealer must be reachable');
+  assert.match(ships,/if def\.specialPort and def\.specialPort ~= portId then/,'special location check is server-owned');
+  assert.match(ships,/if def\.minAdventure and \(adventureLevel or 0\) < def\.minAdventure then/,'progression check is server-owned');
+  assert.match(yard,/local block = D\.Ships\.saleBlock\(def,[\s\S]*?state\.portId, state\.careers\.adventure\.level\)/,'flagship purchase validates the region server side');
+  assert.match(yard,/local fblock = D\.Ships\.saleBlock\(def,[\s\S]*?state\.portId, state\.careers\.adventure\.level\)/,'fleet purchase validates the region server side');
+  assert.match(view,/local culture = D\.CultureRegions\.ofPort/);
+  assert.match(view,/if localShip then/,'worldwide catalog must not overwhelm mobile');
+  assert.match(view,/trait = s\.trait, newRegional = s\.newRegional/);
+  assert.match(state,/local roleCargo = def\.cargo \* \(1 \+ \(if def\.trait then def\.trait\.cargo or 0 else 0\)\)/,'cargo capacity uses existing fleet and tech stack');
+  assert.match(voyage,/supplyFactor: number\?/);
+  assert.match(sail,/local speedBonus = \(trait\.sail or 0\) \+ \(if dist >= 2000 then trait\.long or 0 else 0\)/);
+  assert.match(sail,/local need = math\.max\(1, math\.ceil\(D\.Voyage\.suppliesPerDay/,'supply costs use original days and crew');
+  assert.match(sail,/trait\.storm or 0/,'storm damage receives weather specialization');
+  assert.match(sail,/trait\.shallow or 0/,'shallow hulls reduce reef injury only');
+  assert.match(sail,/trait\.cargoGuard or 0/,'sealed cargo holds reduce rat spoilage');
+  assert.match(sail,/trait\.evade or 0/,'pirate evasion stays inside existing server voyage');
+  assert.match(sail,/trait\.explore or 0/,'exploration career retains original XP rules');
+  assert.match(trade,/base \* \(1 - \(trait\.tariff or 0\)\)/,'sale percentage is unchanged; only foreign tariffs are reduced');
+  assert.match(read('ReplicatedStorage/Shared/TradeMath.luau'),/MAX_SELL_RATE = 0\.95/,'same-port buy-sell abuse stays blocked');
+  assert.match(battle,/sup\.cannonMult \+ \(trait\.cannon or 0\)/);
+  assert.match(battle,/sup\.meleeMult \+ \(trait\.melee or 0\)/);
+  assert.match(battle,/local trait = def\.trait or \{\}/,'server fighter is authoritative');
+  assert.match(yard,/local repairMult = 1 \+ \(if def\.trait then def\.trait\.repair or 0 else 0\)/);
+  assert.match(view,/view\.shipyard\.repairTotal = math\.floor/,'repair preview and server share the same cost multiplier');
+  assert.match(ui,/36척 모두 3D 원본·개별 항해·교역·전투 성능 적용/);
+  assert.match(ui,/고유 운용: %s · 약점: %s/);
+  assert.match(state,/ship = state\.ship,/,'existing persistence keeps the same ship keys');
+  assert.match(ships,/caravel = \{[\s\S]*?cargo = 20, speed = 7, hull = 100, cannons = 4, crew = 20/,'starter caravel values unchanged');
+});
+
 test('Mare standalone card duel board respects four rendered rows, zoom and approved image gating', () => {
   const source=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
