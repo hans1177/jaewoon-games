@@ -123,6 +123,18 @@ local order = { Town = 1, Naval = 2, Cargo = 3, Interior = 4, Terrain = 5, Castl
 -- [항구·탐험 초반 조경] 먼저 등록된 승인 메시만 기존 로딩 큐의 맨 앞에서 수입한다.
 -- 별도 작업 큐나 임시 모델을 만들지 않고, 기존 우선 선박 두 종 다음에 배치한다.
 local earlyScenery = { ["Terrain/Grass_Small"] = true, ["Terrain/Bush_Small"] = true, ["Terrain/Rock_2"] = true }
+-- [R15 실물 복식] 이미 등록된 People 조각 8개만 기존 InsertService 로더에서 앞당긴다.
+-- 장면 진입 후 지연 로드 재장착도 유지하며, 새 큐·모델·다운로드 경로를 만들지 않는다.
+local earlyMobParts = {
+	["People/male_ranger_body"] = true,
+	["People/female_ranger_body"] = true,
+	["People/male_ranger_head_hood"] = true,
+	["People/female_ranger_head_hood"] = true,
+	["People/male_ranger_acc_pauldron"] = true,
+	["People/female_ranger_acc_pauldrons"] = true,
+	["People/male_peasant_body"] = true,
+	["People/female_peasant_body"] = true,
+}
 local queue = {}
 for key, assetId in ids do
 	local kind, name = string.match(key, "^(%w+)/(.+)$")
@@ -135,9 +147,11 @@ end
 -- 항구 필수 모델을 제외하거나 기존 큐·동시성 구조를 변경하지 않는다.
 table.sort(queue, function(a, b)
 	local ap = if a.key == "Naval/ship-large" then -1 elseif a.key == "Naval/ship-medium" then 0 elseif earlyScenery[a.key] then 0.5
-		elseif a.kind == "Relics" and string.match(a.name, "^weapon%-") then 0.75 else order[a.kind] or 99
+		elseif a.kind == "Relics" and string.match(a.name, "^weapon%-") then 0.75
+		elseif earlyMobParts[a.key] then 0.8 else order[a.kind] or 99
 	local bp = if b.key == "Naval/ship-large" then -1 elseif b.key == "Naval/ship-medium" then 0 elseif earlyScenery[b.key] then 0.5
-		elseif b.kind == "Relics" and string.match(b.name, "^weapon%-") then 0.75 else order[b.kind] or 99
+		elseif b.kind == "Relics" and string.match(b.name, "^weapon%-") then 0.75
+		elseif earlyMobParts[b.key] then 0.8 else order[b.kind] or 99
 	if ap ~= bp then return ap < bp end
 	return a.key < b.key
 end)
