@@ -5194,7 +5194,15 @@ local function openTradeHall()
 		coinText.AutomaticSize = Enum.AutomaticSize.None
 		coinText.TextXAlignment = Enum.TextXAlignment.Center
 		local hold = mkLabel(top, string.format("화물 %d/%d", ship.cargoUsed, ship.cargoCapacity), 13, INK_SOFT, false)
-		local toastLbl = mkLabel(top, message or "", 13, Color3.fromRGB(60, 100, 50), true)
+		-- [교역소 동료 조언] 전용 매매 화면에서도 관련 조언이 사라지지 않게 표시한다.
+		local tradeHint = "시세와 화물칸을 비교한 뒤 매입·판매하세요."
+		for _, counsel in (view.counsel or {}) do
+			if counsel.id == "menu_trade" then
+				tradeHint = (counsel.who and counsel.who.name or "동료") .. ": 특산품 시세를 비교하세요."
+				break
+			end
+		end
+		local toastLbl = mkLabel(top, if message ~= "" then message else tradeHint, 13, Color3.fromRGB(60, 100, 50), true)
 		toastLbl.Position = if narrow then UDim2.fromOffset(12, 114) else UDim2.new(0.5, 112, 0, 8)
 		toastLbl.Size = if narrow then UDim2.new(1, -24, 0, 20) else UDim2.new(0.5, -210, 0, 44)
 		toastLbl.AutomaticSize = Enum.AutomaticSize.None
@@ -6331,10 +6339,11 @@ function openYardHall()
 		sayL.TextYAlignment = Enum.TextYAlignment.Top
 
 		-- 기존 조선소 화면 내용을 이 스크롤 영역에 그린다
-		local saved = content
+		local saved, previousAdvice = content, H.contextAdviceShown
 		content = scroll
+		H.contextAdviceShown = false
 		local ok, err = pcall(renderYard)
-		content = saved
+		content, H.contextAdviceShown = saved, previousAdvice
 		if not ok then
 			warn("[Game] 조선소 화면 오류", err)
 		end
