@@ -10090,7 +10090,9 @@ function H.playWonderScene(cardId)
 	fstroke.Thickness = 3
 	fstroke.Color = Color3.fromRGB(212, 168, 74)
 	fstroke.Parent = frame
-	local image = "rbxthumb://type=Asset&id=" .. tostring(assetId) .. "&w=768&h=432"
+	-- [유적·원더 화면] rbxthumb는 자산 미리보기여서 등록 원화 대신 썸네일/깨진 화면이 나타날 수 있다.
+	-- 기존 CardArt 등록 이미지 ID를 다른 스토리 삽화처럼 UI에서 직접 렌더링한다.
+	local image = "rbxassetid://" .. tostring(assetId)
 	local N = 14
 	local zoom = Instance.new("Frame") -- 천천히 다가가는 화면 (Ken Burns)
 	zoom.AnchorPoint = Vector2.new(0.5, 0.5)
