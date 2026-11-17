@@ -182,7 +182,7 @@ test('원거리 공격은 무기 사거리로 조준·발사하며 석궁 R15 �
   assert.match(field,/local crossbow = wpn\.motion == "CROSSBOW"/);
   assert.match(field,/canon\.ForearmL = \(canon\.ForearmL or id\)/);
   assert.match(fieldMotion,/elseif crossbow then[\s\S]*?bend\("UpperArmL",[\s\S]*?bend\("ForearmL"/);
-  assert.match(field,/arrowTrail\(a0, b0\)/);
+  assert.match(field,/arrowTrail\(a0, b0, nil, nil, wpn\.motion, moveId ~= "rush"\)/);
   assert.match(field,/if not wpn\.ranged and nd > reach - 2 then/);
   // 원거리 공격은 눌렀을 때 이미 발사됐으므로 길게 누른 뒤 떼어도 근접 돌진을 발동하지 않는다.
   assert.match(field,/if held >= 0\.5 and not wpn\.ranged then/);
@@ -219,4 +219,41 @@ test('정예 감속과 두목 맹독은 명중에만 발동하고 중첩·이동
   // 정상·비정상 철수에서 모두 속도를 원복해야 저장/항구 제어가 깨지지 않는다.
   assert.equal((field.match(/slowedHumanoid\.WalkSpeed = originalFieldWalkSpeed/g)||[]).length, 3);
   assert.match(field,/task\.defer\(function\(\) finish\("defeat"\) end\)/);
+});
+
+
+// [전투 소리 회귀] 이미 승인된 음원만 쓰면서 무기별 발사/장전/명중을 분리한다.
+test('무기별 실제 발사음과 원거리 스킬 이펙트가 등록된 음원으로 구분된다',()=>{
+  const audio=read('ReplicatedStorage/Shared/AudioIds.luau');
+  for(const sound of [
+    'sfx_rope_pull','sfx_rope_release','sfx_equipment_wear','sfx_cannon_reload',
+    'sfx_card_chain','sfx_card_volley','sfx_card_fire','sfx_cannon',
+    'sfx_boarding_draw','sfx_boarding_slash','sfx_card_blade','sfx_card_swing',
+    'sfx_metal_clash','sfx_card_ring',
+  ]){
+    assert.ok(audio.includes(sound+'="rbxassetid://'),'승인 음원 누락: '+sound);
+  }
+  // 기본 무기는 각기 다른 타격 종류, 지역 무기는 기존 모션 그룹별 소리를 그대로 사용한다.
+  for(const motion of ['CROSSBOW','RIFLE','PISTOL','LONGBOW','RAPIER','SABRE','SCIMITAR','KATANA']){
+    assert.ok(field.includes('wpn.motion == "'+motion+'"'),'무기 동작음 누락: '+motion);
+  }
+  for(const family of ['dagger','spear','axe','blunt','fist','bow']){
+    assert.ok(field.includes('family == "'+family+'"'),'무기군별 분기 누락: '+family);
+  }
+  assert.match(field,/local impactWeapon = attackerWeapon or wpn/);
+  assert.match(field,/local family = impactWeapon\.family/);
+  assert.match(field,/aw\.family == "axe", true, false, nil, aw/);
+  assert.match(field,/local rangedImpact = impactWeapon\.ranged and \(family == "bow" or family == "firearm"\)/);
+  assert.match(field,/local rangedShot = wpn\.ranged[\s\S]*?sfx\("sfx_rope_release", 0\.49/);
+  assert.doesNotMatch(field,/sfx\(if wpn\.family == "firearm" and wpn\.id ~= "crossbow"/);
+  assert.match(field,/shotMotion: string\?, charged: boolean\?/);
+  assert.match(field,/local a1, at1 = anchorAt\(from \+ flightDir \* streakLength\)/);
+  assert.match(field,/\{ Position = to - flightDir \* streakLength \}/);
+  assert.match(field,/\{ Position = to \}\):Play\(\)/);
+  // 집중 사격/견제 사격과 카드 저격/일제사격은 무기별 색과 적중 이펙트를 갖는다.
+  assert.match(field,/if kind ~= "slash" then[\s\S]*?pulseAt\(if kind == "heavy" then "CRITICAL_BURST"/);
+  assert.match(field,/local equippedId = ch and ch:GetAttribute\("EquippedWeaponId"\)/);
+  assert.match(field,/arrowTrail\(pos, hitPos, nil, nil, motion, sk == "snipe"\)/);
+  assert.match(field,/arrowTrail\(a0, b0, nil, nil, aw\.motion\)/);
+  assert.match(field,/nil, nil, if e\.weapon then e\.weapon\.motion else "BOW"/);
 });
