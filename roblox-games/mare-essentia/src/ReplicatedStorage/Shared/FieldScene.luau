@@ -2030,7 +2030,9 @@ function FieldScene.start(opts)
 		tag.TextSize = if isBoss then 14 else 12
 		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil
-		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0, tacticAt = 0, tacticGoal = nil, tacticIntent = "approach", tacticSide = if rng:NextNumber() < 0.5 then -1 else 1 })
+		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0, tacticAt = 0, tacticGoal = nil, tacticIntent = "approach", tacticSide = if rng:NextNumber() < 0.5 then -1 else 1,
+			counterReadyAt = 0, counterUntil = 0, nextGuardCounterAt = 0, lastReadBasicAt = -100,
+			playerChain = 0, bossReadUntil = 0, nextBossReadAt = 0 })
 	end
 
 	end
@@ -4580,10 +4582,40 @@ function FieldScene.start(opts)
 			and evadeAt - (e.lastDodge or -100) >= dodgeGap and math.random() < dodgeChance then
 			local away = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
 			if away.Magnitude > 0.1 then
-				local side = Vector3.new(-away.Unit.Z, 0, away.Unit.X) * (if (e.motionPhase or 0) < 0.5 then 1 else -1)
-				local dodgeDir = if e.ac.kind == "archer" then (away.Unit * 0.82 + side * 0.18).Unit else side
-				local target = e.root.Position + dodgeDir * (if e.ac.kind == "archer" then 5.4 else 4.2)
-				if math.abs(target.X - ORIGIN.X) < half - 8 and math.abs(target.Z - ORIGIN.Z) < half - 8 then
+				-- [지형을 읽는 회피] 우선 방향이 벽·동료·맵 경계에 막히면 반대로 피한다.
+				-- 실제 기존 회피 확률과 회피 시간은 그대로 유지하며 성공하는 경로만 고른다.
+				local side = Vector3.new(-away.Unit.Z, 0, away.Unit.X) * (e.tacticSide or 1)
+				local stepLen = if e.ac.kind == "archer" then 5.4 else 4.2
+				local obstacleParams = RaycastParams.new()
+				obstacleParams.FilterType = Enum.RaycastFilterType.Exclude
+				obstacleParams.FilterDescendantsInstances = { e.model, player.Character }
+				local dodgeDir = nil
+				for choice = 1, 2 do
+					local candidateSide = if choice == 1 then side else -side
+					local candidate = if e.ac.kind == "archer"
+						then (away.Unit * 0.82 + candidateSide * 0.18).Unit else candidateSide
+					local target = e.root.Position + candidate * stepLen
+					if math.abs(target.X - ORIGIN.X) < half - 8 and math.abs(target.Z - ORIGIN.Z) < half - 8 then
+						local blocked = false
+						local ray = workspace:Raycast(e.root.Position + Vector3.new(0, 1.6, 0), candidate * stepLen, obstacleParams)
+						if ray and ray.Instance.CanCollide then blocked = true end
+						if not blocked then
+							for _, other in enemies do
+								if other ~= e and not other.ac.dead and other.root and other.root.Parent
+									and (other.root.Position - target).Magnitude < 3.8 then
+									blocked = true
+									break
+								end
+							end
+						end
+						if not blocked then
+							dodgeDir = candidate
+							e.tacticSide = if choice == 1 then (e.tacticSide or 1) else -(e.tacticSide or 1)
+							break
+						end
+					end
+				end
+				if dodgeDir then
 					e.lastDodge, e.dodgeT0, e.dodgeUntil, e.dodgeDir = evadeAt, evadeAt, evadeAt + 0.36, dodgeDir
 					e.hurtAt = -100
 					e.model:SetAttribute("FieldEnemyReaction", if e.ac.kind == "archer" then "backstep" else "sidestep")
@@ -4618,15 +4650,24 @@ function FieldScene.start(opts)
 			and math.random() < (if e.boss then 0.16 elseif e.ac.kind == "charger" then 0.20 else 0.13)
 		if weaponParry then
 			e.parryUntil, e.nextParryAt = evadeAt + 0.37, evadeAt + (if e.boss then 6 else 4.5)
+			-- [방어 후 반격] 기존 AC 공격 대기·공격권을 유지하며 다음 허용 차례만 우선 배정한다.
+			e.counterReadyAt, e.counterUntil = evadeAt + 0.37, evadeAt + 2.2
+			e.tacticAt = 0
 			e.model:SetAttribute("FieldEnemyReaction", "parry")
 		elseif shieldBlocked then
 			e.guardUntil = evadeAt + 0.37
+			-- 방패병은 무한 반격하지 않고 제한된 창에서만 공격 차례 우선권을 가진다.
+			if evadeAt >= (e.nextGuardCounterAt or 0) then
+				e.counterReadyAt, e.counterUntil = evadeAt + 0.37, evadeAt + 1.8
+				e.nextGuardCounterAt = evadeAt + 4.2
+			end
 			e.model:SetAttribute("FieldEnemyReaction", "shield")
 		end
 		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power)
 			* (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1)
 			* (if weaponParry then 0.52 else 1), mult, shieldBlocked == true, stagger)
 		e.hp = e.ac.hp
+		if died or stagger then e.counterUntil = 0 end -- 기절·쓰러진 몹은 방어 뒤 반격을 예약하지 않는다.
 		e.hurtAt = os.clock()
 		e.hitVariant = (e.hitVariant or 0) % 3 + 1
 		e.model:SetAttribute("FieldHitVariant", e.hitVariant)
@@ -7016,6 +7057,20 @@ function FieldScene.start(opts)
 		local acList = {}
 		for _, o in enemies do table.insert(acList, o.ac) end
 		local attackers = AC.attackersCount(acList)
+		-- [협동 반격권] 준비가 끝난 방어 성공 몹 한 명만 다음 순서를 우선 사용한다.
+		-- 기존 동시 공격 상한·실제 예고시간·개인 공격 간격은 그대로 둔다.
+		local nextCounter = nil
+		if now >= (pl.nextEnemyTurnAt or 0) and attackers < AC.MELEE_TOKENS then
+			for _, o in enemies do
+				if not o.ac.dead and o.ac.state == "chase" and now >= (o.counterReadyAt or math.huge)
+					and now < (o.counterUntil or 0) and now >= (o.nextDuelAt or 0)
+					and now >= (o.riseUntil or 0) and now >= (o.parryUntil or 0)
+					and (o.root.Position - hrp.Position).Magnitude <= o.ac.def.range * STUD + 5 then
+					nextCounter = o
+					break
+				end
+			end
+		end
 		for index, e in table.clone(enemies) do
 			local to = hrp.Position - e.root.Position
 			local flat = Vector3.new(to.X, 0, to.Z)
@@ -7044,7 +7099,8 @@ function FieldScene.start(opts)
 				-- [개떼 공격 차단] 기존 동시 공격 2명 상한을 원거리·두목까지 공통 적용한다.
 				-- 공격권 대기 중에도 chase는 유지하고, 다음 공격권은 병종별 과거 공격 시각으로 분산한다.
 				e.waiting = e.ac.state == "chase" and (others >= AC.MELEE_TOKENS
-					or now < (pl.nextEnemyTurnAt or 0) or now < (e.nextDuelAt or 0))
+					or now < (pl.nextEnemyTurnAt or 0) or now < (e.nextDuelAt or 0)
+					or (nextCounter ~= nil and nextCounter ~= e))
 				event, hit = AC.stepEnemy(e.ac, enemyDt, dist, not e.waiting)
 			end
 			if event == "telegraph" then
@@ -7055,7 +7111,8 @@ function FieldScene.start(opts)
 				-- 개별 공격 시간·피해량·사거리·쿨타임은 ActionCombat 원본을 유지한다.
 				pl.nextEnemyTurnAt = now + math.max(0.80, math.min(e.ac.def.windup + 0.20, 1.30))
 				e.nextDuelAt = now + math.max(2.2, e.ac.def.windup + e.ac.def.active + e.ac.def.recover + 0.30)
-				e.model:SetAttribute("FieldTacticalIntent", "strike")
+				e.model:SetAttribute("FieldTacticalIntent", if e == nextCounter then "counter" else "strike")
+				e.counterUntil = 0 -- 정상 공격으로 진입하면 한 번의 우선권을 소모한다.
 				e.warnUntil = now + e.ac.def.windup
 				burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
 				sfx("sfx_event_danger", 0.35, 1.2)
@@ -7337,8 +7394,23 @@ function FieldScene.start(opts)
 				local spread = (index % 4) * 2.4
 				local intent = "approach"
 				local goal = hrp.Position
+				-- [반복 공격 학습] 두목만 최근 일반 공격의 간격을 기억해 측면 전술을 바꾼다.
+				-- 학습 반응에는 쿨다운이 있고 피해/회피 확률·공격 토큰 수를 올리지 않는다.
+				if e.boss and swingBridge.basicAt > (e.lastReadBasicAt or -100) then
+					e.playerChain = if swingBridge.basicAt - (e.lastReadBasicAt or -100) <= 1.25
+						then math.min(4, (e.playerChain or 0) + 1) else 1
+					e.lastReadBasicAt = swingBridge.basicAt
+					if e.playerChain >= 3 and now >= (e.nextBossReadAt or 0) then
+						e.bossReadUntil, e.nextBossReadAt = now + 2.0, now + 5.0
+						e.tacticSide = -(e.tacticSide or 1)
+						side = e.tacticSide
+					end
+				end
 				if e.ac.kind == "shield" then
 					intent, goal = "frontline", hrp.Position + looking * (7.2 + spread * 0.25) + right * side * (2.8 + spread)
+				elseif e.weapon and e.weapon.family == "spear" then
+					-- 창병은 사거리 바깥에서 좌우 디딤 후 찌르기. 명중 거리 자체는 바꾸지 않는다.
+					intent, goal = "reach", hrp.Position - looking * (4.0 + spread * 0.25) + right * side * (6.5 + spread)
 				elseif e.ac.kind == "grunt" then
 					intent, goal = "flank", hrp.Position - looking * (3.8 + spread * 0.40) + right * side * (9.0 + spread)
 				elseif e.ac.kind == "charger" then
@@ -7351,7 +7423,24 @@ function FieldScene.start(opts)
 						goal = hrp.Position + away.Unit * retreat + right * side * (7 + spread)
 					end
 				elseif e.boss then
-					intent, goal = "pressure", hrp.Position + looking * 8 + right * side * (3 + spread * 0.5)
+					local readingCombo = now < (e.bossReadUntil or 0)
+					intent = if readingCombo then "counter-flank" else "pressure"
+					goal = hrp.Position + looking * (if readingCombo then -3 else 8)
+						+ right * side * (if readingCombo then 10 + spread * 0.5 else 3 + spread * 0.5)
+					e.model:SetAttribute("FieldBossStance", if readingCombo then "reading" else "pressure")
+				end
+				-- [협동 간격] 같은 지점으로 3명이 겹치지 않게 기존 목표를 옆으로 벌린다.
+				-- 0.65초마다만 1회 검사하며 동료끼리 공격력/충돌체는 바꾸지 않는다.
+				if not e.ac.def.keepAway and not e.boss then
+					local nearGoal = 0
+					for _, other in enemies do
+						if other ~= e and not other.ac.dead and other.root and other.root.Parent
+							and (other.root.Position - goal).Magnitude < 6 then
+							nearGoal += 1
+							if nearGoal >= 2 then break end
+						end
+					end
+					if nearGoal > 0 then goal += right * side * (3.0 + nearGoal * 1.5) end
 				end
 				goal = Vector3.new(math.clamp(goal.X, ORIGIN.X - half + 9, ORIGIN.X + half - 9),
 					e.root.Position.Y, math.clamp(goal.Z, ORIGIN.Z - half + 9, ORIGIN.Z + half - 9))
@@ -7360,8 +7449,12 @@ function FieldScene.start(opts)
 				-- 반복 연타 중인 주인공을 읽고 방패병이 미리 무게중심을 낮춘다.
 				-- 실제 막기/피해 경감은 기존 strikeEnemy의 정면 판정에서만 적용된다.
 				if e.ac.kind == "shield" and flat.Magnitude < 15
-					and now - (swingBridge.basicAt or -100) < 0.45 then
+					and now - (swingBridge.basicAt or -100) < 0.45
+					and now >= (e.nextGuardTellAt or 0) then
+					-- [방패 준비] 공격 연타를 보았을 때 한 번만 자세를 세우고 기존 정면 판정으로 막는다.
 					e.guardUntil = math.max(e.guardUntil or 0, now + 0.30)
+					e.nextGuardTellAt = now + 1.4
+					e.model:SetAttribute("FieldTacticalIntent", "guard")
 				end
 			end
 			local wish = if frozen then 0 else AC.moveWish(e.ac, dist)
