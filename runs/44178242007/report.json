@@ -1,0 +1,396 @@
+{
+ "sourceRevision": "7c580e65274aa3e619115cdb9eebef73565544d5",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "cam\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:britain:london_fields\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:britain:london_fields:mobs=20:motions=20\ntext"
+  },
+  {
+   "step": 5,
+   "capture": "region_00_london",
+   "files": 1
+  },
+  {
+   "step": 6,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:nordic:bergen_cliffs\ntext"
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:nordic:bergen_cliffs:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 9,
+   "capture": "region_01_bergen",
+   "files": 1
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:italy:vesuvius_slopes\ntext"
+  },
+  {
+   "step": 12,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:italy:vesuvius_slopes:mobs=33:motions=33\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "region_02_naples",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:swahili:aden_crater\ntext"
+  },
+  {
+   "step": 16,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:swahili:aden_crater:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 17,
+   "capture": "region_03_aden",
+   "files": 1
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:malabar:malacca_fort\ntext"
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:malabar:malacca_fort:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 21,
+   "capture": "region_04_malacca",
+   "files": 1
+  },
+  {
+   "step": 22,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:japan:nagasaki_dejima\ntext"
+  },
+  {
+   "step": 24,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:japan:nagasaki_dejima:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "region_05_nagasaki",
+   "files": 1
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:creole:auto_mystery_mys_bermuda\ntext"
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:creole:auto_mystery_mys_bermuda:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 29,
+   "capture": "region_06_havana",
+   "files": 1
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:swahili:mombasa_fort\ntext"
+  },
+  {
+   "step": 32,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:swahili:mombasa_fort:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 33,
+   "capture": "region_07_mombasa",
+   "files": 1
+  },
+  {
+   "step": 34,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:china:canton_factories\ntext"
+  },
+  {
+   "step": 36,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:china:canton_factories:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 37,
+   "capture": "region_08_canton",
+   "files": 1
+  },
+  {
+   "step": 38,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:nordic:stockholm_woods\ntext"
+  },
+  {
+   "step": 40,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:nordic:stockholm_woods:mobs=20:motions=20\ntext"
+  },
+  {
+   "step": 41,
+   "capture": "region_09_stockholm",
+   "files": 1
+  },
+  {
+   "step": 42,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:pacific:pac_survey_00\ntext"
+  },
+  {
+   "step": 44,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:pacific:pac_survey_00:mobs=20:motions=20\ntext"
+  },
+  {
+   "step": 45,
+   "capture": "region_10_sydney",
+   "files": 1
+  },
+  {
+   "step": 46,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:iberia:seville_groves\ntext"
+  },
+  {
+   "step": 48,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:iberia:seville_groves:mobs=20:motions=20\ntext"
+  },
+  {
+   "step": 49,
+   "capture": "region_11_seville",
+   "files": 1
+  },
+  {
+   "step": 50,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:france:rouen_coast\ntext"
+  },
+  {
+   "step": 52,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:france:rouen_coast:mobs=20:motions=20\ntext"
+  },
+  {
+   "step": 53,
+   "capture": "region_12_rouen",
+   "files": 1
+  },
+  {
+   "step": 54,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:hanse:hamburg_lab\ntext"
+  },
+  {
+   "step": 56,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:hanse:hamburg_lab:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 57,
+   "capture": "region_13_hamburg",
+   "files": 1
+  },
+  {
+   "step": 58,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:stone:petersburg_neva\ntext"
+  },
+  {
+   "step": 60,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:stone:petersburg_neva:mobs=33:motions=33\ntext"
+  },
+  {
+   "step": 61,
+   "capture": "region_14_st_petersburg",
+   "files": 1
+  },
+  {
+   "step": 62,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:med:rhodes_colossus\ntext"
+  },
+  {
+   "step": 64,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:med:rhodes_colossus:mobs=33:motions=33\ntext"
+  },
+  {
+   "step": 65,
+   "capture": "region_15_rhodes",
+   "files": 1
+  },
+  {
+   "step": 66,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:colonial:auto_mystery_mys_sargasso\ntext"
+  },
+  {
+   "step": 68,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:colonial:auto_mystery_mys_sargasso:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 69,
+   "capture": "region_16_santo_domingo",
+   "files": 1
+  },
+  {
+   "step": 70,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:korea:busan_waegwan\ntext"
+  },
+  {
+   "step": 72,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:korea:busan_waegwan:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 73,
+   "capture": "region_17_busan",
+   "files": 1
+  },
+  {
+   "step": 74,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:seasia:hoi_an_lanterns\ntext"
+  },
+  {
+   "step": 76,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:seasia:hoi_an_lanterns:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 77,
+   "capture": "region_18_hoi_an",
+   "files": 1
+  },
+  {
+   "step": 78,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:desert:tangier_strait\ntext"
+  },
+  {
+   "step": 80,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:desert:tangier_strait:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 81,
+   "capture": "region_19_tangier",
+   "files": 1
+  },
+  {
+   "step": 82,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:tropic:louis_dodo\ntext"
+  },
+  {
+   "step": 84,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:tropic:louis_dodo:mobs=33:motions=33\ntext"
+  },
+  {
+   "step": 85,
+   "capture": "region_20_port_louis",
+   "files": 1
+  },
+  {
+   "step": 86,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:wafrica:praia_cliffs\ntext"
+  },
+  {
+   "step": 88,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:wafrica:praia_cliffs:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 89,
+   "capture": "region_21_praia",
+   "files": 1
+  },
+  {
+   "step": 90,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:ottoman:algiers_kasbah\ntext"
+  },
+  {
+   "step": 92,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:ottoman:algiers_kasbah:mobs=26:motions=26\ntext"
+  },
+  {
+   "step": 93,
+   "capture": "region_22_algiers",
+   "files": 1
+  },
+  {
+   "step": 94,
+   "ctx": "Client",
+   "out": "REGION_QA_LAUNCHED:brick:amsterdam_gardens\ntext"
+  },
+  {
+   "step": 96,
+   "ctx": "Client",
+   "out": "REGION_QA_PASS:brick:amsterdam_gardens:mobs=20:motions=20\ntext"
+  },
+  {
+   "step": 97,
+   "capture": "region_23_amsterdam",
+   "files": 1
+  },
+  {
+   "step": 98,
+   "ctx": "Client",
+   "out": "REGION_QA_CLEAN_EXIT_PASS\ntext"
+  }
+ ],
+ "errors": [],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 16,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 99,
+  "completedSteps": 99,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 24,
+  "capturedFrames": 24,
+  "abortedEarly": false
+ }
+}
