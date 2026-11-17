@@ -696,6 +696,9 @@ function FieldScene.start(opts)
 	local lastCombatAt = os.clock()
 	local activeHealers = {}
 	local passiveRegenHudAt, passiveRegenFxAt = 0, -100
+	-- [정예 둔화·보스 독] 탐험 한 판에만 존재하는 비저장 상태. 중복 효과와 지속 피해 폭증을 방지한다.
+	local eliteSlowUntil, bossPoisonUntil, bossPoisonNextAt = 0, 0, math.huge
+	local slowedHumanoid, originalFieldWalkSpeed = nil, nil
 	local fieldStreakResult = { hits = 0, speed = 0, accuracy = 100, credited = {} }
 	local found = 0
 	local nodeCount = math.max(1, opts.nodes or 1)
@@ -714,6 +717,11 @@ function FieldScene.start(opts)
 	folder.Destroying:Connect(function()
 		if finished then return end
 		finished = true
+		-- [예외 철수] 둔화 상태를 항구로 가져가지 않도록 원래 이동속도를 즉시 복원한다.
+		if slowedHumanoid and slowedHumanoid.Parent and originalFieldWalkSpeed then
+			slowedHumanoid.WalkSpeed = originalFieldWalkSpeed
+		end
+		slowedHumanoid, originalFieldWalkSpeed = nil, nil
 		for _, c in conns do
 			local ok, err = pcall(function() c:Disconnect() end)
 			if not ok then warn("[MareEssentia] 비정상 탐험 정리 오류", err) end
@@ -823,6 +831,13 @@ function FieldScene.start(opts)
 	healthNumber.Position = UDim2.fromOffset(58, 29)
 	healthNumber.Size = UDim2.fromOffset(133, 11)
 	healthNumber.ZIndex = 6
+	-- [상태이상 HUD] 초상화 아래에 간결하게 표시해 기존 기력·마력 진행선과 겹치지 않는다.
+	local debuffLabel = label(heroPanel, "", 10, Color3.fromRGB(151, 210, 249))
+	debuffLabel.Name = "FieldHeroDebuff"
+	debuffLabel.Position = UDim2.fromOffset(5, 67)
+	debuffLabel.Size = UDim2.fromOffset(52, 13)
+	debuffLabel.TextScaled = true
+	debuffLabel.ZIndex = 7
 	local magicUser = opts.heroUsesMana == true
 	local magicValue, magicFill, magicAmount = 100, nil, nil
 	if magicUser then
@@ -887,6 +902,11 @@ function FieldScene.start(opts)
 			return
 		end
 		finished = true
+		-- [정상 철수] 감속으로 낮춘 이동속도는 필드를 떠나기 전에 반드시 복구한다.
+		if slowedHumanoid and slowedHumanoid.Parent and originalFieldWalkSpeed then
+			slowedHumanoid.WalkSpeed = originalFieldWalkSpeed
+		end
+		slowedHumanoid, originalFieldWalkSpeed = nil, nil
 		killcamToken += 1
 		pcall(function() RunService:UnbindFromRenderStep("FieldMasteryKillcam") end)
 		if killcamCamera and killcamCamera.Parent then killcamCamera.FieldOfView = killcamFov end
@@ -3895,6 +3915,27 @@ function FieldScene.start(opts)
 	table.insert(conns, RunService.Heartbeat:Connect(function(dt)
 		local now = os.clock()
 		AC.regen(pl, math.min(dt, 0.1)) -- 느린 폰(30fps)에서도 기력이 같은 속도로 찬다
+		-- [보스 독 지속피해] 4초 동안 1초마다 2피해. 매 프레임 차감하거나 여러 보스의 독을 합산하지 않는다.
+		-- 최초 공격을 막았거나 회피했으면 아예 걸리지 않는다. 본 효과는 기존 플레이어 저장과 무관하다.
+		if pl.hp > 0 and now < bossPoisonUntil and now >= bossPoisonNextAt then
+			bossPoisonNextAt = now + 1
+			pl.hp = math.max(0, pl.hp - 2)
+			lastCombatAt = now
+			refresh()
+			if pl.hp <= 0 then
+				task.defer(function() finish("defeat") end)
+				return
+			end
+		end
+		-- [동시 상태이상 표시] 정예 둔화와 두목 독은 별개 타이머로 처리하며 둘 다 있을 때 짧게 안내한다.
+		local slowed = now < eliteSlowUntil
+		local poisoned = now < bossPoisonUntil
+		local debuff = if poisoned and slowed then "독·둔화" elseif poisoned then "독 " .. tostring(math.ceil(bossPoisonUntil - now))
+			elseif slowed then "둔화 " .. tostring(math.ceil(eliteSlowUntil - now)) else ""
+		if debuffLabel.Text ~= debuff then
+			debuffLabel.Text = debuff
+			debuffLabel.TextColor3 = if poisoned then Color3.fromRGB(144, 232, 144) else Color3.fromRGB(151, 210, 249)
+		end
 		-- [비전투 극소량 체력 회복] 8초간 전투 행동이 없고 40스터드 이내 적이 없을 때만 작동한다.
 		-- 자연 초당 0.12, 실제 치료 동료가 28스터드 안에 있으면 동료당 +0.18(최대 2명).
 		if now - lastCombatAt >= 8 and pl.hp > 0 and pl.hp < pl.maxHp then
@@ -4233,7 +4274,24 @@ function FieldScene.start(opts)
 					elseif dealt > 0 then
 						lastCombatAt = now
 						endStreak("피격")
-						say("공격을 받았다!")
+						-- [정예 스킬] 방패·돌격 정예는 명중 시 3초간 이동속도 35% 감소.
+						-- 같은 몹은 8초에 한 번만 적용하고, 여러 명이 맞혀도 감속률은 중첩하지 않는다.
+						if e.elite and not e.boss and now >= (e.nextSlowAt or 0) then
+							e.nextSlowAt = now + 8
+							eliteSlowUntil = math.max(eliteSlowUntil, now + 3)
+							say("정예 둔화! 3초")
+							pulseAt("BUFF_PULSE", hrp.CFrame * CFrame.new(0, -1.7, 0),
+								Color3.fromRGB(92, 173, 244), Color3.fromRGB(202, 237, 255), 4, if visualMobile then 2 else 5)
+						-- [두목 스킬] 보스의 독타격은 4초간 매초 2의 지속피해. 효과 중복 불가, 보스별 10초 제한.
+						elseif e.boss and now >= (e.nextPoisonAt or 0) and now >= bossPoisonUntil then
+							e.nextPoisonAt = now + 10
+							bossPoisonUntil, bossPoisonNextAt = now + 4, now + 1
+							say("두목의 맹독! 4초")
+							pulseAt("BUFF_PULSE", hrp.CFrame * CFrame.new(0, -1.7, 0),
+								Color3.fromRGB(93, 190, 92), Color3.fromRGB(194, 255, 156), 5, if visualMobile then 2 else 6)
+						else
+							say("공격을 받았다!")
+						end
 						local armedFamily = e.weapon and e.weapon.family or "blade"
 						hurtReact(if e.ac.def.boss then 2 elseif armedFamily == "axe" or armedFamily == "blunt" then 1.45
 							elseif armedFamily == "dagger" then 0.65 else 1)
@@ -4910,8 +4968,29 @@ function FieldScene.start(opts)
 			r2.Anchored = false
 		end
 		if h2 then
-			if h2.WalkSpeed < 16 then
-				h2.WalkSpeed = if workspace:GetAttribute("FieldTouchPad") then 22 else 18
+			-- [이동 감시와 둔화 통합] 기존 '<16이면 강제 회복' 로직이 감속을 즉시 지우던 충돌을 수정한다.
+			-- 기준속도는 첫 명중 때 기록하고 효과 종료·캐릭터 변경·철수 시 복원한다.
+			if slowedHumanoid and slowedHumanoid ~= h2 then
+				if slowedHumanoid.Parent and originalFieldWalkSpeed then
+					slowedHumanoid.WalkSpeed = originalFieldWalkSpeed
+				end
+				slowedHumanoid, originalFieldWalkSpeed = nil, nil
+			end
+			if os.clock() < eliteSlowUntil then
+				if slowedHumanoid ~= h2 then
+					slowedHumanoid = h2
+					originalFieldWalkSpeed = if h2.WalkSpeed < 16 then (if workspace:GetAttribute("FieldTouchPad") then 22 else 18)
+						else h2.WalkSpeed
+				end
+				local targetSpeed = math.max(7, (originalFieldWalkSpeed or 18) * 0.65)
+				if math.abs(h2.WalkSpeed - targetSpeed) > 0.05 then h2.WalkSpeed = targetSpeed end
+			else
+				if slowedHumanoid == h2 and originalFieldWalkSpeed then
+					h2.WalkSpeed = originalFieldWalkSpeed
+					slowedHumanoid, originalFieldWalkSpeed = nil, nil
+				elseif h2.WalkSpeed < 16 then
+					h2.WalkSpeed = if workspace:GetAttribute("FieldTouchPad") then 22 else 18
+				end
 			end
 			if h2.PlatformStand or h2.Sit then
 				h2.PlatformStand = false
