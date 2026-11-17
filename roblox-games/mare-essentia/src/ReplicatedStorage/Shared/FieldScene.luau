@@ -2084,7 +2084,8 @@ function FieldScene.start(opts)
 	local shakeUntil, shakeAmp = 0, 0
 	local function hurtReact(power: number)
 		hurtStroke.Transparency = 0.35
-		sfx("sfx_hit", 0.8, 0.7 + math.random() * 0.1)
+		-- [피격음] 낮은 울림을 줄이고 짧고 또렷한 피격음으로 조정한다.
+		sfx("sfx_hit", 0.48, 1.25 + math.random() * 0.12)
 		shakeUntil, shakeAmp = os.clock() + 0.25, power
 	end
 	table.insert(conns, RunService.RenderStepped:Connect(function(dt)
@@ -2711,7 +2712,11 @@ function FieldScene.start(opts)
 		-- [무기 타격감] 동일 피해·보상은 유지하고 원본 사운드·이펙트만 무기별로 차별화한다.
 		local impactPos = e.root.Position + Vector3.new(0, 2, 0)
 		local family = wpn.family
-		burst(impactPos, if visualMobile then math.min(12 + dealt, 20) else 12 + dealt, mult >= 1.5)
+		local rangedImpact = not quiet and wpn.ranged and (family == "bow" or family == "firearm")
+		-- [맞는 재질감] 화살/볼트/총알 명중은 둔탁한 파열 대신 작은 타격 섬광만 사용한다.
+		if not rangedImpact then
+			burst(impactPos, if visualMobile then math.min(12 + dealt, 20) else 12 + dealt, mult >= 1.5)
+		end
 		if shieldBlocked then
 			sfx("sfx_metal_clash", 0.75, 0.93)
 			pulseAt("BLOCK_IMPACT", CFrame.new(impactPos), Color3.fromRGB(155, 194, 224), Color3.fromRGB(255, 230, 161), 7, 5)
@@ -2723,25 +2728,48 @@ function FieldScene.start(opts)
 			pulseAt("IMPACT_FLASH", CFrame.new(impactPos), Color3.fromRGB(155, 229, 248), Color3.new(1, 1, 1), 5, 4)
 		elseif family == "dagger" then
 			sfx("sfx_card_blade", 0.46, 1.5)
-		elseif family == "bow" or family == "firearm" then
-			sfx(if family == "firearm" then "sfx_card_fire" else "sfx_card_volley", 0.52, 1.18)
+		elseif wpn.motion == "CROSSBOW" then
+			-- [석궁 적중] 격발과 겹치는 화기 소리를 없애고 짧은 쇠 볼트 접촉음만 사용한다.
+			sfx("sfx_card_chain", if quiet then 0.16 else 0.29, 1.65)
+		elseif family == "bow" then
+			sfx("sfx_card_blade", if quiet then 0.14 else 0.27, 1.75)
+		elseif family == "firearm" then
+			-- [총탄 적중] 발포음은 사격 함수에서 한 번, 접촉음은 가벼운 금속성 잔향만 출력한다.
+			sfx("sfx_card_ring", if quiet then 0.14 else 0.23, 1.65)
+		elseif family == "fist" then
+			sfx("sfx_card_swing", if quiet then 0.20 else 0.44, 1.27)
 		else
-			sfx("sfx_hit", if quiet then 0.4 else 0.7, 0.95 + math.random() * 0.2)
+			-- [검·곡도] 기존 sfx_hit의 저음 타격 대신 짧고 날카로운 검날 접촉음.
+			sfx("sfx_boarding_slash", if quiet then 0.22 else 0.45, 1.31 + math.random() * 0.08)
 		end
-		if mult >= 1.5 and not shieldBlocked then sfx("sfx_metal_clash", 0.6, 0.9) end
+		if mult >= 1.5 and not shieldBlocked and not wpn.ranged and (family == "axe" or family == "blunt") then
+			sfx("sfx_metal_clash", 0.42, 1.12)
+		end
+		if rangedImpact and not shieldBlocked then
+			local tint = if wpn.motion == "CROSSBOW" then Color3.fromRGB(186, 215, 230)
+				elseif family == "bow" then Color3.fromRGB(175, 221, 152)
+				else Color3.fromRGB(255, 216, 145)
+			pulseAt("IMPACT_FLASH", CFrame.new(impactPos), tint, Color3.fromRGB(246, 241, 212),
+				if mult >= 1.5 then 5 else 3, if visualMobile then 2 else 4)
+		end
 		flashHit(e.model)
 		popDamage(e.model, dealt, mult >= 1.5)
 		do
 			local crit = mult >= 1.5
 			local c = if crit then Color3.fromRGB(255, 205, 80) else Color3.fromRGB(190, 230, 255)
-			shards(e.root.Position + Vector3.new(0, 1.5, 0), if crit then 14 else 7, c, if crit then 7 else 4)
-			if crit then shockRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 1.5, 0), 9, c, 0.35) end
+			if not rangedImpact then
+				shards(e.root.Position + Vector3.new(0, 1.5, 0), if crit then 14 else 7, c, if crit then 7 else 4)
+				if crit then shockRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 1.5, 0), 9, c, 0.35) end
+			end
 		end
 		-- 타격 멈춤(적이 잠깐 굳음)과 시야 펀치로 손맛을 준다
-		e.holdUntil = os.clock() + (if mult >= 1.5 then 0.12 elseif wpn.family == "axe" or wpn.family == "blunt" then 0.085 elseif wpn.family == "dagger" then 0.04 else 0.06)
+		e.holdUntil = os.clock() + (if rangedImpact then (if mult >= 1.5 then 0.05 else 0.025)
+			elseif mult >= 1.5 then 0.12 elseif wpn.family == "axe" or wpn.family == "blunt" then 0.085
+			elseif wpn.family == "dagger" then 0.04 else 0.06)
 		local punchCam = workspace.CurrentCamera
 		if punchCam and not quiet then
-			punchCam.FieldOfView = 70 - (if mult >= 1.5 then 5 else 2)
+			punchCam.FieldOfView = 70 - (if rangedImpact then (if mult >= 1.5 then 1.4 else 0.6)
+				elseif mult >= 1.5 then 5 else 2)
 			task.delay(0.1, function()
 				punchCam.FieldOfView = 70
 			end)
