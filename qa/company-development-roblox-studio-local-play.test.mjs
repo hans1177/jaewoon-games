@@ -3763,6 +3763,10 @@ test('Studio Auto QA dispatches only Mare and cancels older Forest-only captures
   assert.ok(workflow.includes('contains(" · fantasy-survival ·")'));
   assert.ok(workflow.includes('gh run cancel'));
   assert.equal(workflow.split('gh workflow run devloop-studio.yml').length-1,1);
+  assert.ok(workflow.includes('group: studio-autoqa-dispatch-mare-essentia'));
+  assert.ok(workflow.includes('STUDIO_PUSH_TARGET=SHIPS'));
+  assert.ok(workflow.includes('script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json'));
+  assert.doesNotMatch(workflow,/scripts\+=\(/);
   const runner=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
   assert.ok(runner.includes("inputs.game == 'mare-essentia'"));
   assert.ok(runner.includes('runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]'));
@@ -3939,7 +3943,9 @@ test('Mare scheduled Studio expeditions cover all 22 cultural regions without si
   assert.ok(auto.includes("2) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-regions.json"));
   assert.ok(auto.includes("STUDIO_ROTATION_SKIP=RUNNER_BUSY"));
   assert.ok(auto.includes("STUDIO_ROTATION_SLOT=$slot"));
-  assert.ok(auto.includes('for script in '));
+  assert.ok(auto.includes('STUDIO_PUSH_TARGET=SHIPS'));
+  assert.ok(auto.includes('gh workflow run devloop-studio.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game=$game" -f "script=$script"'));
+  assert.doesNotMatch(auto,/for script in|scripts\+=\(/);
   assert.equal(auto.split('gh workflow run devloop-studio.yml').length-1,1);
 });
 
