@@ -5340,7 +5340,7 @@ local function openTradeHall()
 		search.Font = Enum.Font.GothamMedium
 		search.TextSize = 14
 		search.ClearTextOnFocus = false
-		search.PlaceholderText = "품목 · 종류 · 용도 검색"
+		search.PlaceholderText = "품목 검색 · ⬇️ 평균보다 저렴 · ⬆️ 비쌈"
 		search.Text = query
 		search.Visible = list.Visible
 		search.Parent = root
@@ -5405,7 +5405,7 @@ local function openTradeHall()
 			local row = Instance.new("TextButton")
 			row.Text = ""
 			row.LayoutOrder = i
-			row.Size = UDim2.new(1, -8, 0, 158)
+			row.Size = UDim2.new(1, -8, 0, 190)
 			row.BackgroundColor3 = if g.id == hallGood then Color3.fromRGB(236, 210, 156) else COLORS.paper
 			row.BorderSizePixel = 0
 			row.AutoButtonColor = true
@@ -5430,54 +5430,56 @@ local function openTradeHall()
 			if gi and gi[4] == "Goods/" .. g.id then gi = { "Goods", g.id } end
 			local icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], 78, g.name, gi[4]) else modelIcon(row, nil, nil, nil, 78, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(row, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else "") .. (if g.scarcity and ladderHas("goods", "scarcity") then " 〔" .. g.scarcity .. "〕" else ""), 17, INK, true)
+			local indicator, pct = H.marketPriceSignal(g)
+			local nm = mkLabel(row, g.name .. " " .. indicator .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.scarcity and ladderHas("goods", "scarcity") then " 〔" .. g.scarcity .. "〕" else ""), 17, INK, true)
 			nm.Position = UDim2.fromOffset(94, 8)
 			nm.Size = UDim2.new(1, if g.tag ~= "" then -150 else -104, 0, 26)
 			nm.TextTruncate = Enum.TextTruncate.AtEnd
 			nm.AutomaticSize = Enum.AutomaticSize.None
-			local pct = if (g.basePrice or 0) > 0 then math.floor((g.buy / g.basePrice - 1) * 100 + 0.5) else 0
+			local profit = H.tradeProfit(g, 1)
+			local profitText = if profit == nil then "매입 내역 없음"
+				elseif profit >= 0 then "세후 이익 +" .. H.commas(profit) else "세후 손실 -" .. H.commas(-profit)
 			local budgetQty = 0
 			for n = 1, math.min(20, view.orderCap or 20, free0, g.supply or 20) do
 				local cost = if g.buyTotals and g.buyTotals[n] then g.buyTotals[n] else unitBuyOf(g) * n
 				if cost <= p.coins then budgetQty = n end
 			end
-			-- [작은 화면] 실제 두 줄에 맞춰 가격과 구입 가능 수량을 우선 노출한다.
-			local priceText = if narrow
-				then string.format("구매 %s · 판매 %s\n시세 %+.0f%% · 가능 %d · 보유 %d", H.commas(g.buy), H.commas(g.sell), pct, budgetQty, g.owned)
-				else string.format("구매 %s · 판매 %s · 기준가 %+.0f%%\n보유 %d · 항구재고 %s · 지금 구매 가능 %d개",
-					H.commas(g.buy), H.commas(g.sell), pct, g.owned, if g.supply == nil then "-" else tostring(g.supply), budgetQty)
-			local pr = mkLabel(row, priceText, 15, INK, false)
+			-- [교역품 읽기 순서] 가격 → 세계 평균 화살표 → 세후 손익 → 현재 보유·구매 가능.
+			local priceText = string.format("매입 %s · 판매 %s\n%s 세계평균 %s (%+.1f%%)\n보유 %d · 구매 가능 %d\n%s",
+				H.commas(unitBuyOf(g)), H.commas(g.sell), indicator, H.commas(g.avgPrice or g.basePrice or 0), pct,
+				g.owned, budgetQty, profitText)
+			local pr = mkLabel(row, priceText, 14, INK, false)
 			pr.TextWrapped = true
 			pr.Position = UDim2.fromOffset(94, 34)
-			pr.Size = UDim2.new(1, -102, 0, 46)
+			pr.Size = UDim2.new(1, -102, 0, 76)
 			pr.AutomaticSize = Enum.AutomaticSize.None
-			local use = mkLabel(row, (g.category or "교역품") .. " · " .. (g.purpose or "항구 간 판매"), 13, INK_SOFT, false)
-			use.Position = UDim2.fromOffset(94, 82)
-			use.Size = UDim2.new(1, -102, 0, 22)
+			local use = mkLabel(row, (g.category or "교역품") .. " · " .. (g.purpose or "항구 간 판매"), 12, INK_SOFT, false)
+			use.Position = UDim2.fromOffset(94, 116)
+			use.Size = UDim2.new(1, -102, 0, 20)
 			use.AutomaticSize = Enum.AutomaticSize.None
 			use.TextTruncate = Enum.TextTruncate.AtEnd
-			-- 시세 막대 (Port Royale식 수요·공급 막대): 왼쪽(초록)=싸다 → 사기 좋음, 오른쪽(금색)=비싸다 → 팔기 좋음. 가운데 눈금이 평소 값.
-			local baseGood = PortData.Goods[g.id]
-			if baseGood and baseGood.basePrice > 0 then
-				local pm = g.buy / baseGood.basePrice -- 세계 평균가(기본값) 대비 이 항구의 지금 값
+			-- [세계 평균 그래프] 가운데 세로선이 실시간 세계 항구 평균, 채움은 현재 매입시세.
+			local average = g.avgPrice or g.basePrice or 0
+			if average > 0 then
+				local pm = unitBuyOf(g) / average
 				local gauge = Instance.new("Frame")
 				gauge.BackgroundColor3 = Color3.fromRGB(200, 184, 150)
 				gauge.BorderSizePixel = 0
-				gauge.Position = UDim2.new(0, 94, 0, 111)
+				gauge.Position = UDim2.new(0, 94, 0, 142)
 				gauge.Size = UDim2.new(1, -102, 0, 5)
 				corner(gauge, 3)
 				gauge.Parent = row
-				local ratio = math.clamp((pm - 0.6) / 1.0, 0, 1) -- 0.6배~1.6배
+				local ratio = math.clamp((pm - 0.5) / 1.0, 0, 1) -- 세계평균(1.0배)은 50% 위치
 				local fill = Instance.new("Frame")
 				fill.BorderSizePixel = 0
 				fill.Size = UDim2.fromScale(ratio, 1)
-				fill.BackgroundColor3 = if pm < 0.93 then COLORS.green elseif pm > 1.1 then COLORS.gold else Color3.fromRGB(150, 140, 120)
+				fill.BackgroundColor3 = if pct < -0.5 then COLORS.green elseif pct > 0.5 then COLORS.gold else Color3.fromRGB(150, 140, 120)
 				corner(fill, 3)
 				fill.Parent = gauge
 				local tick = Instance.new("Frame")
 				tick.BorderSizePixel = 0
 				tick.BackgroundColor3 = INK
-				tick.Position = UDim2.fromScale(0.4, -0.4)
+				tick.Position = UDim2.fromScale(0.5, -0.4)
 				tick.Size = UDim2.new(0, 2, 1.8, 0)
 				tick.Parent = gauge
 			end
@@ -5487,7 +5489,7 @@ local function openTradeHall()
 			local canSell = math.min(g.owned, oc, g.absorb or oc)
 			local bar = Instance.new("Frame")
 			bar.BackgroundTransparency = 1
-			bar.Position = UDim2.fromOffset(94, 119)
+			bar.Position = UDim2.fromOffset(94, 152)
 			bar.Size = UDim2.new(1, -100, 0, 34)
 			bar.Parent = row
 			local bl = Instance.new("UIListLayout")
@@ -5554,7 +5556,8 @@ local function openTradeHall()
 			local gi = GOOD_ICON[sel.id]
 			local big = if gi then modelIcon(right, gi[1], gi[2], gi[3], 96, sel.name, gi[4]) else modelIcon(right, nil, nil, nil, 96, sel.name)
 			big.Position = UDim2.fromOffset(12, 12)
-			local hn = mkLabel(right, sel.name, 24, INK, true)
+			local detailIcon, diff = H.marketPriceSignal(sel)
+			local hn = mkLabel(right, sel.name .. " " .. detailIcon, 24, INK, true)
 			hn.Position = UDim2.fromOffset(120, 16)
 			hn.Size = UDim2.new(1, -130, 0, 30)
 			hn.AutomaticSize = Enum.AutomaticSize.None
@@ -5575,11 +5578,13 @@ local function openTradeHall()
 				if cost <= p.coins then maxBuy = n end
 			end
 			local maxSell = math.min(20, view.orderCap or 20, sel.owned, sel.absorb or 20)
-			local diff = if (sel.basePrice or 0) > 0 then math.floor((sel.buy / sel.basePrice - 1) * 100 + 0.5) else 0
 			local basis = if (sel.basis or 0) > 0 then H.commas(math.floor(sel.basis + 0.5)) else "미구매"
-			local info = mkLabel(right, string.format("구매 %s%s · 판매 %s\n세계 기준가 %s · 현지 시세 %+.0f%%\n내 평균 매입가 %s · 보유 %d개\n내 돈 %s · 예산상 구매 %d개\n빈 화물 %d · 구매한도 %s / 판매한도 %s",
+			local profit = H.tradeProfit(sel, 1)
+			local profitText = if profit == nil then "미보유"
+				elseif profit >= 0 then "+" .. H.commas(profit) else "-" .. H.commas(-profit)
+			local info = mkLabel(right, string.format("매입 %s%s · 판매 %s\n%s 세계 평균시세 %s · %+.1f%%\n내 평균 매입가 %s · 보유 %d개\n판매 1개 예상손익 %s (관세 후)\n내 돈 %s · 살 수 있는 수량 %d\n빈 화물 %d · 항구 구매한도 %s / 판매한도 %s",
 				H.commas(unitBuy), if dealPct > 0 then " (할인중)" else "", H.commas(sel.sell),
-				H.commas(sel.basePrice or 0), diff, basis, sel.owned, H.commas(p.coins),
+				detailIcon, H.commas(sel.avgPrice or sel.basePrice or 0), diff, basis, sel.owned, profitText, H.commas(p.coins),
 				maxBuy, free, if sel.supply then tostring(sel.supply) else "-", if sel.absorb then tostring(sel.absorb) else "-"), 15, INK, true)
 			info.Position = UDim2.fromOffset(14, 124)
 			info.Size = UDim2.new(1, -28, 0, 184)
@@ -5598,7 +5603,10 @@ local function openTradeHall()
 				local pay = if sel.buyTotals and sel.buyTotals[qty] then sel.buyTotals[qty] else unitBuy * qty
 				local sellQty = math.min(qty, maxSell)
 				local get = if sellQty < 1 then 0 elseif sel.sellTotals and sel.sellTotals[sellQty] then sel.sellTotals[sellQty] else sel.sell * sellQty
-				receipt.Text = string.format("%d개 · 구매 %s · 남는 돈 %s\n판매(관세 후) %s", qty, H.commas(pay), H.commas(p.coins - pay), H.commas(get))
+				local profit = H.tradeProfit(sel, sellQty)
+				receipt.Text = string.format("매입 %d개 %s · 잔액 %s\n매각 %d개 %s · 손익 %s",
+					qty, H.commas(pay), H.commas(p.coins - pay),
+					sellQty, H.commas(get), if profit == nil then "미보유" else string.format("%+d", profit))
 				receipt.TextColor3 = if qty > maxBuy then COLORS.red else COLORS.text
 			end
 			local function setQuantity(value)
