@@ -802,6 +802,11 @@
   {
     "type": "luau",
     "ctx": "Client",
+    "code": "-- [마을 동선 검증] 실제 항구 생성 직후 검사와 주민 이동 경로를 확인한다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"NPC_ROUTE_SCENE_MISSING\")\nassert(scene:GetAttribute(\"NpcRouteAudit\")==\"PASS\",\"NPC_ROUTE_AUDIT_FAILED:\"..tostring(scene:GetAttribute(\"NpcRouteFailure\")))\nlocal checked=scene:GetAttribute(\"NpcRouteChecked\")\nlocal relocated=scene:GetAttribute(\"NpcRouteRelocated\")\nlocal stopped=scene:GetAttribute(\"NpcRouteBlocked\")\nassert(type(checked)==\"number\" and checked>0,\"NPC_ROUTE_INSPECTION_EMPTY\")\nassert(type(relocated)==\"number\" and type(stopped)==\"number\",\"NPC_ROUTE_METRICS_MISSING\")\nreturn string.format(\"NPC_ROUTE_AUDIT_PASS checked=%d relocated=%d fallback=%d\",checked,relocated,stopped)"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
     "code": "local scene=workspace:FindFirstChild(\"PortScene\") assert(scene and scene:GetAttribute(\"R15SparringTest\")==true,\"HARBOR_NPC_SPARRING_NOT_ACTIVE\") local stage=scene:GetAttribute(\"R15SparringStage\") assert(typeof(stage)==\"Vector3\",\"HARBOR_NPC_STAGE_MISSING\") local people={} for _,m in ipairs(scene:GetDescendants()) do if m:IsA(\"Model\") and m.Name==\"Villager\" and m:FindFirstChild(\"HumanoidRootPart\") and (m:GetPivot().Position-stage).Magnitude<12 then table.insert(people,m) end end assert(#people==2,\"HARBOR_NPC_STAGE_PAIR_NOT_FOUND count=\"..tostring(#people)) local mid=(people[1]:GetPivot().Position+people[2]:GetPivot().Position)*0.5 assert((mid-stage).Magnitude<5,\"HARBOR_NPC_STAGE_POSITION_MISMATCH\") workspace:SetAttribute(\"ShotFov\",45) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(stage+Vector3.new(0,5,16),stage+Vector3.new(0,1.5,0))) return \"HARBOR_NPC_STAGE_PAIR_FOUND distance=\"..tostring((people[1]:GetPivot().Position-people[2]:GetPivot().Position).Magnitude)"
   },
   {
