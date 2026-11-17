@@ -133,9 +133,7 @@ jobs:
               [.files[].filename | select(
                 startswith("roblox-games/mare-essentia/assets/naval/") or
                 . == "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Ships.luau" or
-                . == "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau" or
-                . == "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json" or
-                . == ".github/workflows/studio-autoqa.yml"
+                . == "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json"
               )] | length' 2>/dev/null || echo 0)
             if [ "$ship_paths" -gt 0 ]; then
               script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json
