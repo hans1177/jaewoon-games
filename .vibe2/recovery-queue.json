@@ -245401,7 +245401,9 @@
         "system-ai-handoff-to-reservation:system-ai:44192386777:1",
         "actions-run:44192386777",
         "system-ai-handoff-to-reservation:system-ai:44194695380:1",
-        "actions-run:44194695380"
+        "actions-run:44194695380",
+        "system-ai-handoff-to-reservation:system-ai:44197053465:1",
+        "actions-run:44197053465"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -245419,7 +245421,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-11-17T23:15:47.890Z"
+      "updatedAt": "2026-11-17T23:28:37.640Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -250823,7 +250825,9 @@
         "system-ai-handoff-to-reservation:system-ai:44192386777:1",
         "actions-run:44192386777",
         "system-ai-handoff-to-reservation:system-ai:44194695380:1",
-        "actions-run:44194695380"
+        "actions-run:44194695380",
+        "system-ai-handoff-to-reservation:system-ai:44197053465:1",
+        "actions-run:44197053465"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -250841,7 +250845,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-11-17T23:15:47.826Z"
+      "updatedAt": "2026-11-17T23:28:37.557Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -256689,7 +256693,16 @@
         "system-ai-handoff-to-reservation:system-ai:44192386777:1",
         "actions-run:44192386777",
         "system-ai-handoff-to-reservation:system-ai:44194695380:1",
-        "actions-run:44194695380"
+        "actions-run:44194695380",
+        "system-ai-handoff-to-reservation:system-ai:44197053465:1",
+        "actions-run:44197053465",
+        "external-ai-raw-output-sha256:12c44153ddc83863f9e7b73a3b130bc46082d6c20b4ce452f815bd024032f94f",
+        "selected-strategy:correct-shell-script-syntax-in-reject-job",
+        "system-ai-critic-decision-sha256:631ecc5c246b4de47c85472755496cdce2578dcb667267e8e37de1db4c835688",
+        "system-ai-applied-answer-sha256:8dede710aeaa70dcc20c821eaffeef9351fad4f53a5f98fd58e064987783ef54",
+        "repair-strategy-fingerprint:30fb069c8588f512aa03f00aa4846a4eff8434c40117c7ba3010a02179417512",
+        "failed-strategy-fingerprint:30fb069c8588f512aa03f00aa4846a4eff8434c40117c7ba3010a02179417512",
+        "model-output-sha256:12c44153ddc83863f9e7b73a3b130bc46082d6c20b4ce452f815bd024032f94f"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -256707,7 +256720,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-11-17T23:15:47.968Z"
+      "updatedAt": "2026-11-17T23:28:37.752Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -271311,7 +271324,9 @@
         "system-ai-handoff-to-reservation:system-ai:44192386777:1",
         "actions-run:44192386777",
         "system-ai-handoff-to-reservation:system-ai:44194695380:1",
-        "actions-run:44194695380"
+        "actions-run:44194695380",
+        "system-ai-handoff-to-reservation:system-ai:44197053465:1",
+        "actions-run:44197053465"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -271329,7 +271344,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-30T03:07:30.585Z",
-      "updatedAt": "2026-11-17T23:15:48.095Z"
+      "updatedAt": "2026-11-17T23:28:37.968Z"
     },
     {
       "id": "recovery-00b462d32b871dc8e70a",
