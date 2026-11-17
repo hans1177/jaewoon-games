@@ -4270,7 +4270,8 @@ function FieldScene.start(opts)
 
 
 	-- 폰: 기본 터치 조이스틱이 막히는 경우가 있어, 탐험 중에는 직접 만든 이동 패드를 쓴다(왼쪽 아래 원판을 끌면 카메라 기준으로 걷는다).
-	do
+	-- [Luau 200레지스터 제한] 모바일 패드 초기화는 원래 기능을 그대로 별도 실행 프레임에서 처리한다.
+	(function()
 		local UIS = game:GetService("UserInputService")
 		if UIS.TouchEnabled and not UIS.KeyboardEnabled then
 			local ctrl
@@ -4401,7 +4402,7 @@ function FieldScene.start(opts)
 			end })
 			workspace:SetAttribute("FieldTouchPad", true)
 		end
-	end
+	end)()
 
 	-- 이동 감시: 다른 화면 코드(항구 전경 등)가 캐릭터를 다시 고정하거나 조작을 끄지 못하게 매 프레임 되돌린다.
 	local lastSafe = CFrame.new(spawn)
