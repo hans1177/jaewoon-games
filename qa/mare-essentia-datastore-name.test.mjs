@@ -148,7 +148,12 @@ test('적과 동료는 무기별 준비·타격·회수 동작과 원본 PBR 맵
   assert.match(field,/bp:FindFirstChildOfClass\("SurfaceAppearance"\)/);
   assert.match(field,/Enum\.Material\.Metal/);
   assert.match(field,/Enum\.Material\.Wood/);
-  assert.match(field,/bp\.Reflectance = if material == Enum\.Material\.Metal then 0\.055 else 0/);
+  // [실물 재질] 원본 PBR/텍스처는 건드리지 않으며 미등록 표면의 소재별 반사율만 적용한다.
+  assert.match(field,/local preservedPbr = bp:FindFirstChildOfClass\("SurfaceAppearance"\) ~= nil/);
+  assert.match(field,/local preservedTexture = bp:IsA\("MeshPart"\) and bp.TextureID ~= ""/);
+  assert.match(field,/if not preservedPbr and not preservedTexture then/);
+  assert.match(field,/material, tint, reflectance = Enum\.Material\.Metal, Color3\.fromRGB\(172, 182, 187\), 0\.055/);
+  assert.match(field,/bp\.Material, bp\.Reflectance = material, reflectance/);
   assert.match(field,/FM\.actor\(e\.fm, st, ph, dt, e\.boss/);
   assert.match(field,/FM\.actor\(a\.fm, "RECOVERY",[^\n]+a\.weapon\.motion\)/);
   assert.match(field,/FM\.actor\(a\.fm, "ANTICIPATION",[^\n]+a\.weapon\.motion\)/);
