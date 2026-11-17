@@ -3527,7 +3527,7 @@ function FieldScene.start(opts)
 		end)
 	end
 
-	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?, ownerAttack: boolean?, actionSeq: number?, attackerWeapon)
+	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?, ownerAttack: boolean?, actionSeq: number?, attackerWeapon, basicAttack: boolean?)
 		-- [동료 무기음] 실제 공격자의 장비를 따라가고 피해·보상은 기존 공식 그대로 둔다.
 		local impactWeapon = attackerWeapon or wpn
 		-- [정예 반응 회피] 공격 중·경직 중에는 발동하지 않으며, 7초 제한으로 무한 회피를 방지한다.
@@ -3594,7 +3594,9 @@ function FieldScene.start(opts)
 				streakN += 1
 				streakT = hitAt
 				-- [주인공 일반공격만] 동료·광역·자동 스킬 적중은 다음 자동 발동을 쌓지 않는다.
-				if creditedSeq == pl.basicAttackSeq then
+				-- [속사 입력 역전 방지] 발사 시 캡처한 공격 종류를 사용한다.
+				-- 다음 공격이 먼저 입력돼도 0.14초 지연된 이전 평타의 명중은 정확하게 1회 기록한다.
+				if basicAttack == true then
 					pl.autoNormalHits = (pl.autoNormalHits or 0) + 1
 					if pl.autoNormalHits % 5 == 0 then
 						local owner = player.Character
@@ -3633,7 +3635,7 @@ function FieldScene.start(opts)
 					if root then pulseAt("BUFF_PULSE", root.CFrame * CFrame.new(0, -1.8, 0), accent, Color3.new(1, 1, 1), 5, if visualMobile then 3 else 6) end
 				end
 				-- [스킬 축하 충돌 방지] 5번째 명중에 발동할 자동 강타는 실제 성공 후 한 번만 축하한다.
-				local autoHeavyReady = creditedSeq == pl.basicAttackSeq
+				local autoHeavyReady = basicAttack == true
 					and (pl.autoNormalHits or 0) > 0 and pl.autoNormalHits % 5 == 0
 					and (pl.cd.heavy or -100) <= hitAt and pl.hp > 0
 				if autoHeavyReady then
@@ -3645,7 +3647,7 @@ function FieldScene.start(opts)
 					showCombo(string.format("%d연타 · 기적의 연결!", streakN), true, accent)
 				else
 					-- [1~4타 연출] 기존 무기별 R15 연속동작 위에만 짧은 빛을 얹는다.
-					local basicHit = creditedSeq == pl.basicAttackSeq
+					local basicHit = basicAttack == true
 					if basicHit and streakN <= 2 then
 						trailsOn(player.Character, { "RightHand", "RightLowerArm" }, accent, 0.12, 0.18)
 					elseif basicHit and streakN == 3 then
@@ -4355,7 +4357,6 @@ function FieldScene.start(opts)
 		end
 		if moveId == "rush" then
 			chainMotionSerial += 1
-			pl.basicAttackSeq = streakActionSeq
 			pl.combo = 0
 			pl.lastHit = -100
 			mult = 1
@@ -4546,7 +4547,8 @@ function FieldScene.start(opts)
 					ang = math.deg(math.acos(math.clamp(look.Unit:Dot(to.Unit), -1, 1)))
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, dist, ang) then
-					local landed = strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3) or wpn.family == "blunt", nil, nil, hitActionSeq)
+					-- [원본 공격 종류 전달] 다음 입력에 의해 평타 명중 소유권이 바뀌지 않도록 행동별로 캡처한다.
+					local landed = strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3) or wpn.family == "blunt", nil, nil, hitActionSeq, nil, moveId == "rush")
 					if e.ac.dead then defeatedAt = e.root.Position end
 					if landed then hits += 1 end
 					shots += 1
