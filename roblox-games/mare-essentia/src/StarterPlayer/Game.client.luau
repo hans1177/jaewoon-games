@@ -182,6 +182,27 @@ for _, t in TABS do
 	TAB_NAME[t.id] = t.name
 end
 
+-- [전체 메뉴 리뉴얼] 기존 시설 동작은 유지하고 메뉴마다 목적·순서를 짧게 표시한다.
+local MENU_FOCUS = {
+	trade = { "교역 장부", "시세 비교 → 수량 선택 → 매입·판매" },
+	harbor = { "항구 정보", "특산품·수요 → 시장·시설 → 발전 현황" },
+	route = { "항로 선택", "거리·위험 → 보급 확인 → 출항" },
+	map = { "세계 지도", "목적지 탐색 → 항구 정보 → 항로 연결" },
+	yard = { "선박 관리", "선체·보급 → 선단·대포 → 새 배 비교" },
+	board = { "주점 의뢰", "의뢰 조건 → 위험·보상 → 수락·납품" },
+	quest = { "진행 일지", "현재 목표 → 달성 조건 → 보상 받기" },
+	recruit = { "동료 영입", "직업·특기 → 영입 조건 → 선원 배치" },
+	crew = { "동료 관리", "동료 능력 → 직책 배치 → 승조 효과" },
+	status = { "선장 현황", "선체·화물 → 명성·직업 → 다음 목표" },
+	battle = { "전투 준비", "적 위험 → 선체·대포 → 해적 사냥" },
+	explore = { "지상 탐험", "지역 위험 → 탐험 준비 → 지식 발견" },
+	war = { "함대 지휘", "보유 함선 → 진형·전술 → 해전" },
+	gwent = { "카드 대결", "덱 구성 → 병종 배치 → 카드 대결" },
+	scholar = { "학자와 보고", "새 발견 → 학자에게 보고 → 이해한 지식" },
+	codex = { "지식 백과", "분야 선택 → 발견물 확인 → 미수집 목표" },
+	tech = { "기술 연구", "연구 조건 → 이해한 지식 → 기술 해금" },
+}
+
 local view = nil -- 서버가 보낸 최신 스냅샷
 local currentTab = "status"
 local syncScene
@@ -5893,19 +5914,44 @@ end
 local openYardHall
 -- 동료 조언 줄: 말하는 동료의 초상과 말, 그리고 바로 가는 버튼 (최대 n개)
 function H.counselRows(n)
-	for i, cs in (view.counsel or {}) do
-		if i > n then
-			break
-		end
+	if H.contextAdviceShown or not view then return end
+	local relevant = {}
+	for _, counsel in (view.counsel or {}) do
+		-- 교역 화면에는 교역, 조선소에는 선박 조언만 표시한다.
+		if counsel.tab == currentTab then table.insert(relevant, counsel) end
+	end
+	if #relevant == 0 and MENU_FOCUS[currentTab] then
+		-- 새 조언이 없는 화면도 해당 메뉴에서 할 일을 정확히 안내한다.
+		table.insert(relevant, {
+			who = { name = "시설 길잡이", role = TAB_NAME[currentTab] },
+			text = MENU_FOCUS[currentTab][2], tab = currentTab,
+		})
+	end
+	local shown = 0
+	for _, cs in relevant do
+		if shown >= (n or 1) then break end
+		shown += 1
 		add(function()
-			local row = mkRow(content, string.format("%s (%s)", cs.who.name, cs.who.role or "동료"), "\"" .. cs.text .. "\"", {
-				{ text = cs.label, color = COLORS.green, onClick = function() H.goAdvice(cs.tab) end },
-				if cs.dismissable then { text = "알겠어요", color = COLORS.grey, onClick = function() call("AdviceDone", { id = cs.id }) end } else nil,
-			}, 96)
-			H.companionFace(row, cs.who.id, 64)
+			local buttons = {}
+			if cs.tab ~= currentTab then
+				table.insert(buttons, { text = cs.label or "이동", color = COLORS.green, onClick = function() H.goAdvice(cs.tab) end })
+			elseif currentTab == "trade" then
+				table.insert(buttons, { text = "교역 장부", color = COLORS.green, onClick = openTradeHall })
+			elseif currentTab == "yard" then
+				table.insert(buttons, { text = "선박 관리", color = COLORS.green, onClick = openYardHall })
+			end
+			if cs.dismissable then
+				table.insert(buttons, { text = "알겠어요", color = COLORS.grey, onClick = function() call("AdviceDone", { id = cs.id }) end })
+			end
+			local role = cs.who and cs.who.role or "동료"
+			local name = cs.who and cs.who.name or "시설 길잡이"
+			local row = mkRow(content, string.format("조언 · %s (%s)", name, role), cs.text, buttons, 96)
+			row.Name = "MenuAdvice_" .. currentTab
+			if cs.who and cs.who.id then H.companionFace(row, cs.who.id, 64) end
 			return row
 		end)
 	end
+	H.contextAdviceShown = shown > 0
 end
 
 -- 동료 얼굴을 줄 왼쪽에 붙인다 (그린 초상 → 학자 초상 → 입체 모델 순서)
@@ -10184,6 +10230,7 @@ end
 
 function render()
 	order = 0
+	H.contextAdviceShown = false
 	H.clearContent()
 	if not audioLock then
 		Sfx.portMusic(view and view.player and PortData.Ports[view.player.portId],
@@ -10233,6 +10280,26 @@ function render()
 	if message ~= "" then
 		add(function() return mkLabel(content, message, 17, if messageOk then COLORS.gold else COLORS.red, true) end)
 	end
+	-- [시설 공통 목표 카드] 현재 화면의 할 일을 단계별로 안내해 모든 메뉴의 길찾기를 통일한다.
+	local focus = MENU_FOCUS[currentTab]
+	if focus then
+		add(function()
+			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 64), Color3.fromRGB(64, 48, 35))
+			banner.Name = "MenuFocus_" .. currentTab
+			corner(banner, 8)
+			local heading = mkLabel(banner, "◆ " .. focus[1], 18, Color3.fromRGB(255, 222, 144), true)
+			heading.Position = UDim2.fromOffset(12, 5)
+			heading.Size = UDim2.new(1, -24, 0, 25)
+			heading.AutomaticSize = Enum.AutomaticSize.None
+			local steps = mkLabel(banner, focus[2], 14, Color3.fromRGB(243, 231, 204), false)
+			steps.Position = UDim2.fromOffset(12, 34)
+			steps.Size = UDim2.new(1, -24, 0, 25)
+			steps.AutomaticSize = Enum.AutomaticSize.None
+			steps.TextWrapped = true
+			return banner
+		end)
+	end
+	H.counselRows(1)
 	RENDERERS[currentTab]()
 end
 
