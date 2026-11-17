@@ -818,7 +818,8 @@ test('탐험 현장별 10종 3차원 지형, 주야·기상·실물 동물 및 �
   assert.ok(field.includes('if not AssetIds[entry[1] .. "/" .. entry[2]] then return nil end'));
   assert.match(field,/if not placed then table\.insert\(pending, entry\) end/);
   assert.match(field,/\{ "Terrain", "Town", "Castle", "Naval", "Cargo" \}/);
-  assert.match(field,/entry\.position = c \+ Vector3\.new\(e\[4\], 0, e\[5\]\)/);
+  // [층별 고도 보존] 성탑·지붕 수직 오프셋을 무시하지 않고 XZ 원위치도 유지한다.
+  assert.match(field,/entry\.position = c \+ Vector3\.new\(e\[4\], e\[8\] or 0, e\[5\]\)/);
   assert.match(field,/FieldTerrainSurvey/);
   assert.match(field,/anchorPart:FindFirstChild\("FieldTerrainSurveyPoint"\)/);
   assert.match(field,/surveyPoint\.WorldPosition = Vector3\.new/);
