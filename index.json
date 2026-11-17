@@ -2,13 +2,13 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "44059276300",
+    "runId": "44060515671",
     "kind": "deep",
-    "at": "2026-11-17T09:58:10.964Z",
+    "at": "2026-11-17T10:05:45.580Z",
     "sourceRevision": "6b2dc6c2409261b607542db7bd10ede62a8c8f54",
     "result": "FAIL",
     "frames": 59,
-    "changedFrames": 59,
+    "changedFrames": 58,
     "summary": {
       "plannedSteps": 241,
       "completedSteps": 235,
@@ -19,10 +19,30 @@
       "capturedFrames": 59,
       "abortedEarly": true
     },
-    "path": "runs/44059276300"
+    "path": "runs/44060515671"
   },
-  "lastDeepAt": "2026-11-17T09:58:10.964Z",
+  "lastDeepAt": "2026-11-17T10:05:45.580Z",
   "runs": [
+    {
+      "runId": "44060515671",
+      "kind": "deep",
+      "at": "2026-11-17T10:05:45.580Z",
+      "sourceRevision": "6b2dc6c2409261b607542db7bd10ede62a8c8f54",
+      "result": "FAIL",
+      "frames": 59,
+      "changedFrames": 58,
+      "summary": {
+        "plannedSteps": 241,
+        "completedSteps": 235,
+        "plannedClicks": 10,
+        "successfulClicks": 10,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 62,
+        "capturedFrames": 59,
+        "abortedEarly": true
+      },
+      "path": "runs/44060515671"
+    },
     {
       "runId": "44059276300",
       "kind": "deep",
@@ -82,26 +102,6 @@
         "abortedEarly": true
       },
       "path": "runs/44056954092"
-    },
-    {
-      "runId": "44056050646",
-      "kind": "deep",
-      "at": "2026-11-17T09:36:16.885Z",
-      "sourceRevision": "ceb21b3fae8b0bdfafad67959aa141c7168c71b0",
-      "result": "FAIL",
-      "frames": 59,
-      "changedFrames": 59,
-      "summary": {
-        "plannedSteps": 241,
-        "completedSteps": 235,
-        "plannedClicks": 10,
-        "successfulClicks": 10,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 62,
-        "capturedFrames": 59,
-        "abortedEarly": true
-      },
-      "path": "runs/44056050646"
     },
     {
       "runId": "44048185529",
