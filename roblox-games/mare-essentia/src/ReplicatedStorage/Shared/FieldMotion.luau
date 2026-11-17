@@ -33,7 +33,15 @@ function FM.new(model: Model, followAnimator: boolean)
 			end
 		end
 	end
-	local ctl = CM.BindJointPose(joints, { followAnimator = followAnimator, response = 11 })
+	-- [R15 관절 반응] 손과 팔은 타격을 따라가고 무게중심과 발은 조금 느리게 반응한다.
+	local ctl = CM.BindJointPose(joints, { followAnimator = followAnimator, response = 12,
+		responseByJoint = {
+			Waist = 15, Neck = 17, LeftShoulder = 22, RightShoulder = 22,
+			LeftElbow = 25, RightElbow = 25, LeftWrist = 28, RightWrist = 28,
+			LeftHip = 13, RightHip = 13, LeftKnee = 15, RightKnee = 15,
+			LeftAnkle = 16, RightAnkle = 16,
+		},
+	})
 	local nj = 0
 	for _ in joints do nj += 1 end
 	return { ctl = ctl, canon = {}, r15 = {}, model = model, r6 = r6, joints = joints, nj = nj, t0 = os.clock() }
@@ -69,7 +77,7 @@ local function mapR6(h, canon, rootRot)
 end
 
 -- canon(Spine·Chest·UpperArmR… 공통 이름 포즈)를 R15 관절 이름으로 옮겨 적용한다. rootRot: 몸 전체 회전(회전베기용).
-function FM.step(h, dt: number, rootRot: CFrame?)
+function FM.step(h, dt: number, rootRot: CFrame?, responseScale: number?)
 	if h.r6 then
 		mapR6(h, h.canon, rootRot)
 	else
@@ -78,7 +86,7 @@ function FM.step(h, dt: number, rootRot: CFrame?)
 			h.r15.Root = rootRot
 		end
 	end
-	h.ctl.Step(h.r15, dt)
+	h.ctl.Step(h.r15, dt, responseScale)
 end
 
 -- 관절 회전량을 키운다(폰 화면에서도 큼직하게 읽히도록). gain 1 = 원본.
@@ -402,12 +410,17 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("Chest", 0.08 + recoil * 0.13, 0, 0)
 		end
 	end
-	-- [적·동료 공용 무기 연속 공격] 실제 장착 무기의 원본 R15 동작을 공격 차례(1~3타)대로 재생한다.
-	-- 맨손 동료는 원본 잽/크로스를, 폭탄 투척병은 아래의 고유 투척 관절 동작을 유지한다.
-	if state == "ATTACK" and (weaponMotion ~= nil or role == "ally-melee" or role == "ally-ranged") then
+	-- [실제 타격 동기화] 원본 키프레임의 CONTACT를 기존 공격 판정 시각에 배치한다.
+	-- 예고 동안 준비, 공격 동안 충격과 반동, 회복 동안 동일 원본 가드를 자연스럽게 풀어 준다.
+	if (state == "ANTICIPATION" or state == "ATTACK" or state == "RECOVERY")
+		and (weaponMotion ~= nil or role == "ally-melee" or role == "ally-ranged") then
 		local weaponCombo = FM.weaponCombo(weaponMotion, h.weaponBeat or 1) or FM.weaponCombo(weaponMotion, 1)
 		if weaponCombo then
-			FM.sample(weaponCombo, math.clamp((phase - 0.25) / 0.35, 0, 1) * weaponCombo.duration, h.canon)
+			local contact = math.clamp(weaponCombo.steps[1].contact / weaponCombo.duration, 0.1, 0.85)
+			local motionProgress = if state == "ANTICIPATION" then math.clamp(phase, 0, 1) * contact
+				elseif state == "ATTACK" then contact + math.clamp((phase - 0.25) / 0.35, 0, 1) * (1 - contact)
+				else 1 + math.clamp(phase, 0, 1) * weaponCombo.fadeDuration / weaponCombo.duration
+			FM.sample(weaponCombo, motionProgress * weaponCombo.duration, h.canon)
 		end
 	end
 	-- [무기별 전신 모션] 원본 공격 자세에 예고→발사/충격→후속 반동→손목 회수·재장전을 동기화한다.
@@ -538,6 +551,13 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("Spine", 0.09 * inertia * settle, -0.035 * inertia * settle, 0)
 			bend("ThighR", 0.055 * inertia * settle, 0, 0)
 		end
+		-- [좌우 연속타] 무기 2타의 회전 방향에 맞춰 골반·몸통·디딤발 반작용을 준다.
+		if state == "ATTACK" and not (gun or bow or crossbow) then
+			local beatSide = if (h.weaponBeat or 1) % 2 == 0 then -1 else 1
+			bend("Spine", 0, 0.05 * beatSide * strike, 0)
+			bend("Chest", 0, 0.09 * beatSide * strike, 0.035 * beatSide * strike)
+			bend("FootR", 0, 0, 0.035 * beatSide * strike)
+		end
 		-- [방패병] 무기 타격 전에도 왼팔 방패면을 유지하고 반격 후 충격을 무릎으로 흡수한다.
 		if role == "shield" then
 			local brace = math.clamp(hold + prepare + 0.6 * follow + returnGrip, 0, 1)
@@ -634,7 +654,15 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		end
 		if q >= 1 then h.transitionPose = nil end
 	end
-	FM.step(h, dt, rootRot)
+	-- [무기 관성] 단검의 재빠른 타격과 도끼의 무거운 회복을 기존 공용 포즈 필터로 구분한다.
+	local fastWeapon = weaponMotion == "DAGGER" or weaponMotion == "RAPIER"
+	local heavyWeapon = weaponMotion == "WAR_AXE" or weaponMotion == "MACE"
+	local response = if state == "ATTACK" then (if fastWeapon then 2.05 else 1.75)
+		elseif state == "HIT" or state == "EVADE" then 1.55
+		elseif state == "ANTICIPATION" then 1.20
+		elseif state == "RECOVERY" then (if heavyWeapon then 0.82 else 1)
+		else 1
+	FM.step(h, dt, rootRot, response)
 end
 
 local comboCache = {}
