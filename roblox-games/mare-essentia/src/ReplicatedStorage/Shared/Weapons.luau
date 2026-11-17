@@ -183,6 +183,21 @@ local ORIGIN_WEAPONS: { [string]: string } = {
 	craftsman = "mace", clergy = "fist",
 }
 
+-- [출신별 보조 무기] 기존 집안 ID만 읽는 두 번째 장비. 새 저장 키·능력치 변경 없음.
+local ORIGIN_SIDEARMS: { [string]: string } = {
+	farmer = "bow", noble = "crossbow", merchant = "bow", sailor = "bow",
+	soldier = "sword", scholar = "dagger", cook = "bow", doctor = "bow",
+	craftsman = "crossbow", clergy = "bow",
+}
+
+function Weapons.originSidearm(originId: string?, year: number?): Weapon
+	local primaryId = ORIGIN_WEAPONS[originId or ""] or "sword"
+	local secondaryId = ORIGIN_SIDEARMS[originId or ""] or "bow"
+	if originId == "soldier" and (year or 1517) >= 1680 then primaryId = "flintlock_musket" end
+	if primaryId == secondaryId then secondaryId = if primaryId == "bow" then "sword" else "bow" end
+	return Weapons.get(secondaryId)
+end
+
 function Weapons.originWeapon(originId: string?, year: number?): Weapon
 	local id = ORIGIN_WEAPONS[originId or ""] or "sword"
 	-- 수석식 총기는 실제 발화 시대와 등록된 모델이 모두 맞을 때에만 초기 장비로 선택한다.
