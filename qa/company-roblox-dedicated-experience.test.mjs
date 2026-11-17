@@ -1122,6 +1122,30 @@ test('Mare naval steering, smooth hulls, aiming and battle presentation stay con
   assert.equal(aligned(0,Math.PI),false);
 });
 
+// [해전 화면 검증] 기존 해전 코드의 화면 방향 조향·8개 해역·폰 UI·포각·탐지광·침몰 효과와 규칙 불변을 검증한다.
+test('Mare naval steering, eight coasts, mobile HUD, aiming, radar and large VFX share one canonical battle flow', () => {
+  const src=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  assert.match(src,/steerDir = if math\.abs\(nx\) < 0\.12 then 0 else nx/);
+  assert.match(src,/local turnSign = if rightTurn:Dot\(cam\.CFrame\.RightVector\) < -0\.05 then -1 else 1/);
+  assert.match(src,/me\.theta \+= steerDir \* turnSign \*/);
+  assert.match(src,/adviceLine\.Visible = battleViewport\.X >= 720/);
+  assert.match(src,/if battleViewport\.X < 720 then 173 else 122/);
+  assert.match(src,/tactic\.Size = UDim2\.new\(if battleViewport\.X < 480 then 0\.62/);
+  assert.match(src,/l\.TextStrokeTransparency = 1/);
+  for(const key of ['east-bamboo-grove','greek-ruins-a','haunted-pine-crooked','land-floating-island']){
+    assert.ok(src.includes('"'+key+'",'),key+' has a registered-region background binding');
+  }
+  assert.match(src,/local coast = coasts\[mapHash % #coasts \+ 1\]/);
+  assert.match(src,/local steerCue = \(if turnNeeded >= 0 then "우로 " else "좌로 "\)/);
+  assert.match(src,/local scanAngle = \(now \* 2\.45\) % tau/);
+  assert.match(src,/if trailAngle < 1\.45/);
+  assert.match(src,/s0 = scale \* 1\.95/);
+  assert.match(src,/s1 = 10\.0 \+ stage \* 1\.15/);
+  assert.match(src,/if inRange and side > 0\.5 and now >= nextMeFire then/);
+  assert.match(src,/local r2 = Combat\.board\(fa, fb, seed\)/);
+  assert.doesNotMatch(src,/FX\.boardingCrewSpawned = true/);
+});
+
 // [7대륙 36척] 실물 자산·단계별 효과·구매/서버 판정 보호 회귀 검사.
 test('Mare registered 36 ship models have seven regional battle signatures and six visual tiers', () => {
   const root='roblox-games/mare-essentia';
