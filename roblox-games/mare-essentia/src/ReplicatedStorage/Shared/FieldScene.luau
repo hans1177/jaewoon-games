@@ -4332,6 +4332,7 @@ function FieldScene.start(opts)
 		local detailedContact = basicAttack == true and ownerAttack ~= false and not quiet
 			and not shieldBlocked and not weaponParry and actionSeq ~= nil and actionSeq > 0
 			and impactBeat ~= nil and swingBridge.impactSeq ~= actionSeq
+			and dealt > 0 and CommonVFX ~= nil and CommonVFX.Create ~= nil
 		if detailedContact then
 			swingBridge.impactSeq = actionSeq
 			if CommonVFX and CommonVFX.Create then
