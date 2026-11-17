@@ -129,6 +129,9 @@ return function(D, S)
 
 	-- 동료 전용 퀘스트는 호감도가 모자라면 아직 보이지 않는다
 	local function visible(state, quest)
+		-- [지역 탐험] 신규 현장 의뢰는 지정된 항구에서만 보여 주고 자동 완료한다.
+		-- 기존 퀘스트와 이미 저장된 도감·완료 기록에는 영향을 주지 않는다.
+		if quest.exploreSite and quest.portId ~= state.portId then return false end
 		if quest.after and not state.quests.done[quest.after] then
 			return false
 		end

@@ -595,6 +595,13 @@ return function(D, S)
 				local left = 0
 				-- [탐험 도감] 보상 규칙을 바꾸지 않고 서버가 이미 검증한 미발견 카드만 현장 연출에 전달한다.
 				local observableCards = {}
+				local fieldQuest
+				for _, q in D.Quests.Quests do
+					if q.exploreSite == site.id and not state.quests.done[q.id] and S.Quest.visible(state, q) then
+						fieldQuest = string.format("%d/5단 · %s", D.Quests.Grade(q), q.name)
+						break
+					end
+				end
 				for _, cardId in site.pool do
 					if not state.discovered[cardId] then
 						left += 1
@@ -610,6 +617,7 @@ return function(D, S)
 					minLevel = site.minLevel,
 					days = site.days,
 					left = left,
+					fieldQuest = fieldQuest, -- 현지 퀘스트 조건을 통과한 진행 단계만 알린다.
 					observableCards = observableCards, -- 저장 상태가 아닌 탐험 화면용 임시 후보
 					fromYear = site.fromYear,
 					locked = blocked,

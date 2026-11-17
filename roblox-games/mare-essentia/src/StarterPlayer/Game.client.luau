@@ -7094,7 +7094,8 @@ function RENDERERS.explore()
 		local tiles = {}
 		for _, s in view.sites do
 			table.insert(tiles, { icon = "explore", title = s.name,
-				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then s.locked or "연구 조건 필요" else string.format("난이도 %d/5단 · 발견 %d · %d일", math.clamp(s.minLevel or 1, 1, 5), s.left, s.days),
+				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then s.locked or "연구 조건 필요" else string.format("난이도 %d/5단 · 발견 %d · %d일%s", math.clamp(s.minLevel or 1, 1, 5), s.left, s.days,
+					if s.fieldQuest then "\n현장 의뢰: " .. s.fieldQuest else ""),
 				-- [탐험 진입] 이용할 수 없는 버튼을 "지상맵 입장"으로 오인하지 않도록 실제 상태를 표시한다. 해금·발견 규칙은 그대로.
 				btn = if s.left == 0 then "조사 완료" elseif not s.unlocked then "연구 조건" else "지상맵 입장",
 				color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
