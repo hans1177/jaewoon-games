@@ -8857,6 +8857,20 @@ function RENDERERS.quest()
 			end)
 		end
 	end
+	-- [세계 현장 탐험] 해외 8개 권역의 다음 1~5단 목적지 표시.
+	-- 현지라면 탐험 탭으로, 먼 지역이면 기존 항해 지도로 안내한다.
+	if view.quests.fieldRoutes and #view.quests.fieldRoutes > 0 then
+		add(function() return mkHeader(content, "세계 현장 탐험 · 8개 권역") end)
+		for _, route in view.quests.fieldRoutes do
+			add(function()
+				local action = if route.here then "탐험지" else "항해 지도"
+				local targetTab = if route.here then "explore" else "map"
+				return mkRow(content, route.name,
+					string.format("%d/5단 · %s · %s", route.grade or 1, route.port, route.summary),
+					{ { text = action, color = COLORS.blue, onClick = function() openTab(targetTab) end } }, 94)
+			end)
+		end
+	end
 	if (view.quests.otherPortDeliver or 0) > 0 or #view.quests.available > #autos then
 		add(function()
 			return mkLabel(content, "다른 항구의 소문과 사람들에게서 더 많은 의뢰를 들을 수 있어요.", 12, COLORS.muted, true)

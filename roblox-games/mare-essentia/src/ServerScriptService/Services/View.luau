@@ -695,6 +695,24 @@ return function(D, S)
 			end
 		end
 
+		-- [세계 현장 탐험] 어느 항구에서든 8개 권역의 다음 목적지를 알 수 있게 한다.
+		-- 서버가 기존 완료 기록과 선행 단계로 계산하므로 새로운 저장 상태는 필요하지 않다.
+		view.quests.fieldRoutes = {}
+		for _, q in D.Quests.Quests do
+			if q.exploreSite and not state.quests.done[q.id] and (not q.after or state.quests.done[q.after]) then
+				local destination = D.Ports.Ports[q.portId]
+				table.insert(view.quests.fieldRoutes, {
+					name = q.name, grade = D.Quests.Grade(q),
+					port = destination and destination.name or q.portId,
+					summary = q.summary, here = q.portId == state.portId,
+				})
+			end
+		end
+		table.sort(view.quests.fieldRoutes, function(a, b)
+			if a.here ~= b.here then return a.here end
+			return a.name < b.name
+		end)
+
 		-- 도감
 		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {}, methods = {}, kinds = {}, rarities = {}, resources = {}, resourceCounts = {}, worldCounts = {}, topicCounts = {}, evidenceCounts = {} }
 		local fieldDiscipline = {}
