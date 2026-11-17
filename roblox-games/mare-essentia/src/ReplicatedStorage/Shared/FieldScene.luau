@@ -19,6 +19,8 @@ local Weapons = require(script.Parent:WaitForChild("Weapons"))
 local Specialties = require(script.Parent:WaitForChild("Specialties"))
 local Ports = require(script.Parent:WaitForChild("Ports"))
 local Cultures = require(script.Parent:WaitForChild("PortCultures"))
+-- [동물 실물 규격] 기존 항구/목장의 Animals 시각 정본만 재사용한다.
+local PortBuildings = require(script.Parent:WaitForChild("PortBuildings"))
 -- 마력숲과 같은 공용 전투 이펙트(타격·치명타·회피·공격 예고). 못 읽어도 기존 입자 효과로 돌아간다.
 local okVfx, CommonVFX = pcall(function()
 	return require(script.Parent:WaitForChild("CommonVFX", 5))
@@ -258,7 +260,26 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 			d.CanCollide = solid == true
 			d.CanTouch = false
 			local tint = tintOverride or FIELD_TINT[asset]
-			if tint then
+			if kind == "Animals" and tint then
+				-- [야생 생물 품종색] 원본 PBR 맵/무늬와 눈·발굽·뿔 등 세부색은 보존한다.
+				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
+				local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and sa.ColorMap ~= "")
+				for _, ch in d:GetChildren() do
+					if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
+				end
+				local partName = d.Name:lower()
+				local detail = partName:find("eye", 1, true) or partName:find("pupil", 1, true)
+					or partName:find("hoof", 1, true) or partName:find("horn", 1, true)
+					or partName:find("mane", 1, true) or partName:find("tail", 1, true)
+					or partName:find("beak", 1, true) or partName:find("saddle", 1, true)
+				if not textured and not detail then
+					local light = math.max(d.Color.R, d.Color.G, d.Color.B)
+					d.Color = d.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
+					d.Material = if asset == "elephant" then Enum.Material.Slate
+						elseif asset == "pig" then Enum.Material.SmoothPlastic else Enum.Material.Fabric
+					if sa and sa.ColorMap == "" then sa.Color = d.Color end
+				end
+			elseif tint then
 				d.Color = tint
 				pcall(function() (d :: any).UsePartColor = true end)
 				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
@@ -1691,12 +1712,14 @@ function FieldScene.start(opts)
 			-- [승인된 동물 실물] 기존 Animals 폴더의 실제 종이 맞을 때만 3D 메시를 사용한다.
 			-- 없는 종을 다른 동물 메시로 위장하지 않고 종 이름과 승인된 도감 원화를 보여 준다.
 			local animalModels = {
-				zoo_elephant = { "elephant", 11 }, zoo_indian_elephant = { "elephant", 11 },
-				am_llama = { "llama", 6 },
+				zoo_elephant = { "elephant", PortBuildings.AnimalVisual.elephant.size },
+				zoo_indian_elephant = { "elephant", PortBuildings.AnimalVisual.elephant.size },
+				am_llama = { "llama", PortBuildings.AnimalVisual.llama.size },
 			}
 			local animal = if isWildlife then animalModels[targetCard.id] else nil
 			if animal and AssetIds["Animals/" .. animal[1]] then
-				local placed = placeModel(folder, "Animals", animal[1], pos, animal[2], false)
+				local coats = PortBuildings.AnimalVisual[animal[1]].coats
+				local placed = placeModel(folder, "Animals", animal[1], pos, animal[2], false, coats[1])
 				if placed then
 					placed.Name = "FieldWildlife"
 					placed:SetAttribute("ObservedSpecies", targetCard.id)
@@ -1709,7 +1732,8 @@ function FieldScene.start(opts)
 							if asset.Name ~= animal[1] or finished or not anchor.Parent then return end
 							task.defer(function()
 								if finished or not anchor.Parent then return end
-								local readyModel = placeModel(folder, "Animals", animal[1], pos, animal[2], false)
+								local coats = PortBuildings.AnimalVisual[animal[1]].coats
+								local readyModel = placeModel(folder, "Animals", animal[1], pos, animal[2], false, coats[1])
 								if readyModel then
 									readyModel.Name = "FieldWildlife"
 									readyModel:SetAttribute("ObservedSpecies", targetCard.id)
@@ -2268,9 +2292,8 @@ function FieldScene.start(opts)
 		local names = { sheep = "양", horse = "말", donkey = "당나귀", cow = "소",
 			["dog-pug"] = "개", cat = "고양이", chicken = "닭", pig = "돼지",
 			elephant = "코끼리", llama = "라마" }
-		local sizes = { sheep = 2.3, horse = 3.8, donkey = 3.2, cow = 3.4,
-			["dog-pug"] = 1.5, cat = 1.1, chicken = 1.0, pig = 2.2,
-			elephant = 6.5, llama = 3.2 }
+		-- [항구·탐험 일치] 말 성체, 소, 양, 돼지 등 실물 비율을 목장과 똑같이 적용한다.
+		local sizes = PortBuildings.AnimalVisual
 		local region = biome.region or ""
 		local candidates = if region == "nordic" or region == "britain" then { "sheep", "horse", "cow", "dog-pug" }
 			elseif region == "desert" or region == "ottoman" then { "donkey", "cat", "sheep" }
@@ -2299,8 +2322,12 @@ function FieldScene.start(opts)
 			local pos = ORIGIN + scatter(65)
 			local root0 = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 			if root0 and (root0.Position - pos).Magnitude < 32 then return end
-			local model = placeModel(folder, "Animals", species, pos, sizes[species], false)
+			local visual = sizes[species]
+			local coatIndex = 1 + math.floor(math.abs(pos.X * 0.21 + pos.Z * 0.39)) % #visual.coats
+			local model = placeModel(folder, "Animals", species, pos, visual.size, false, visual.coats[coatIndex])
 			if not model then return end
+			model:SetAttribute("AnimalVisualSize", visual.size)
+			model:SetAttribute("AnimalCoatIndex", coatIndex)
 			model.Name = "FieldAmbientAnimal"
 			model:SetAttribute("ObservedSpecies", species)
 			local focus = model:FindFirstChildWhichIsA("BasePart", true)
