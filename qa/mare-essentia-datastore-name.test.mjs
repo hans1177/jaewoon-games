@@ -445,6 +445,43 @@ test('탐험 무기별 검광·창끝·중량 충격파·활석궁총 타격 시
   assert.match(field,/startSwing\("dash", 0\.4\)/);
 });
 
+// [실제 적중 1회만 정밀 검광] 공격 전 연출과 피해 판정은 기존 소유권을 유지한다.
+test('탐험 무기별 실물 메시 축·피격 부위 절삭 관통 둔격 이펙트·모바일 절제',()=>{
+  const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+  const common=read('ReplicatedStorage/Shared/CommonVFX.luau');
+  for(const marker of [
+    '[실제 칼날 축]', '[실물 무기날 선택]', '[실제 적중 1회당 1번]',
+    '[3·6·9타 칼끝 여운]', '[맞는 재질감]', '[원거리 무기별 10단 발사 섬광]'
+  ]) assert.ok(field.includes(marker),'무기별 정밀 타격 효과 누락: '+marker);
+  for(const atom of ['IMPACT_FLASH','SHAPE_BURST','CRITICAL_BURST']){
+    assert.ok(common.includes('"'+atom+'"'),'승인된 공용 효과 누락: '+atom);
+  }
+  assert.match(field,/axis = if size\.X >= size\.Y and size\.X >= size\.Z/);
+  assert.match(field,/elseif size\.Z >= size\.Y then Vector3\.new\(0, 0, 1\)/);
+  assert.match(field,/for _, part in sword:GetDescendants\(\) do/);
+  assert.match(field,/local detailedContact = basicAttack == true and ownerAttack ~= false and not quiet/);
+  assert.match(field,/and not shieldBlocked and not weaponParry and actionSeq ~= nil and actionSeq > 0/);
+  assert.match(field,/and impactBeat ~= nil and swingBridge\.impactSeq ~= actionSeq/);
+  assert.match(field,/swingBridge\.impactSeq = actionSeq/);
+  assert.match(field,/nil, nil, hitActionSeq, nil, moveId == "rush", basicBeat\)/);
+  assert.match(field,/local beat = math\.clamp\(math\.floor\(impactBeat\), 1, 10\)/);
+  assert.match(field,/if not rangedImpact and not detailedContact then/);
+  assert.match(field,/if rangedImpact and not shieldBlocked and not detailedContact then/);
+  assert.match(field,/if not visualMobile and sharp and beat % 3 == 0 then/);
+  const start=field.indexOf('-- [실제 적중 1회당 1번]');
+  const stop=field.indexOf('-- [맞는 재질감]',start);
+  assert.ok(start>0&&stop>start,'정밀 적중 효과 범위 누락');
+  const effect=field.slice(start,stop);
+  for(const item of ['axe','blunt','dagger','spear','fist','bow','RIFLE','CROSSBOW','KATANA']){
+    assert.ok(effect.includes('"'+item+'"'),'무기별 충돌 효과 누락: '+item);
+  }
+  for(const forbidden of ['AC.damageEnemy(', 'AC.tryMove(', 'strikeEnemy(', 'pl.autoNormalHits =','Instance.new(']){
+    assert.ok(!effect.includes(forbidden),'효과에서 전투 판정 또는 임의 파츠 생성: '+forbidden);
+  }
+  assert.match(effect,/count = if visualMobile then 2 elseif heavy then 6 else 3/);
+  assert.match(field,/if pl\.autoNormalHits % 5 == 0 then/);
+});
+
 // [쓰시마식 검술 1~10타 단계별 전신 연계] 실제 피해 판정·회피·저장 권한과 분리한다.
 test('탐험 단계별 검술 발놀림과 골반 회전의 부드러운 전환 보호',()=>{
   const field=read('ReplicatedStorage/Shared/FieldScene.luau');
