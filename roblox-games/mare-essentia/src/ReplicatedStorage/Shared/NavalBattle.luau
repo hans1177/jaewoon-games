@@ -2754,12 +2754,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end
 	end
 	-- [침몰 화재] 단순 주황색 구 대신 유기적으로 상승하는 불꽃·그을음 스프라이트.
-	function FX.flame(pos, scale)
-		local glow = Color3.fromRGB(255, 188, 96)
+	function FX.flame(pos, scale, profile)
+		local style = profile or DEFAULT_FX
+		local theme = style.theme or FX_THEMES.europe
+		local stage = math.clamp(style.stage or 2, 1, 6)
 		FX.burst(pos + Vector3.new(0, scale * 0.2, 0), nil, {
-			{ tex = "fire", c0 = glow, c1 = Color3.fromRGB(185, 48, 28), s0 = scale * 1.2, s1 = scale * 0.35, life = 0.95, v0 = 4, v1 = 9, spread = 35, glow = 1, n = if MOBILE_VFX then 5 else 11, a0 = 0.04 },
-			{ tex = "smoke", c0 = Color3.fromRGB(64, 56, 50), c1 = Color3.fromRGB(125, 119, 113), s0 = scale, s1 = scale * 2.6, life = 1.8, v0 = 4, v1 = 9, spread = 24, n = if MOBILE_VFX then 3 else 7, a0 = 0.3 },
-		}, { color = glow, bright = if MOBILE_VFX then 1.6 else 3.0, range = 18, dur = 0.4 })
+			{ tex = "fire", c0 = theme.flash, c1 = if style.faction == "lost" then theme.spark else RED,
+				s0 = scale * 1.2, s1 = scale * 0.35, life = 0.95, v0 = 4, v1 = 9,
+				spread = 35, glow = 1, n = if MOBILE_VFX then 4 else 5 + stage * 2, a0 = 0.04 },
+			{ tex = "smoke", c0 = SOOT, c1 = theme.smoke, s0 = scale,
+				s1 = scale * (1.8 + stage * 0.16), life = 1.8, v0 = 4, v1 = 9, spread = 24,
+				n = if MOBILE_VFX then 3 else 3 + stage, a0 = 0.3 },
+		}, { color = theme.flash, bright = if MOBILE_VFX then 1.6 else 2 + stage * 0.2, range = 18, dur = 0.4 })
 	end
 	-- 물기둥과 퍼지는 물결
 	function FX.splash(pos, profile)
@@ -3186,6 +3192,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local function shoot(fromPos, toPos, fx, nc)
 		nc = nc or NC.demi
 		local from = ORIGIN + fromPos + Vector3.new(0, 7, 0)
+		local shooter = nil
 		do
 			local nearest = nil
 			local nearestDistance = 6
@@ -3196,6 +3203,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 			end
 			if nearest then
+				shooter = nearest
 				local heading = Vector3.new(math.cos(nearest.theta), 0, math.sin(nearest.theta))
 				local broadside = Vector3.new(-heading.Z, 0, heading.X)
 				local aim = toPos - fromPos
@@ -3211,8 +3219,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if hullHit then 6 + math.random() * 3 else 0.4,
 			(math.random() - 0.5) * 6
 		)
-		Sfx.play("sfx_naval_cannon", 0.82, 0.92 + math.random() * 0.16, "sfx_cannon")
-		FX.muzzle(from, (to - from).Unit)
+		-- [함종 발사음] 저단계는 높은 포성, 고단계는 낮고 묵직한 포성. 기존 효과음을 변주한다.
+		local style = if shooter then shooter.fx else DEFAULT_FX
+		local stage = math.clamp(style.stage or 2, 1, 6)
+		Sfx.play("sfx_naval_cannon", 0.74 + stage * 0.015,
+			1.13 - stage * 0.045 + math.random() * 0.08, "sfx_cannon")
+		FX.muzzle(from, (to - from).Unit, style)
+		if stage >= 5 and not MOBILE_VFX then
+			task.delay(0.14, function()
+				if not finished then Sfx.play("sfx_cannon", 0.25, 0.78) end
+			end)
+		end
 		shake = math.max(shake, if hullHit then 0.7 else 0.35)
 		kick = math.max(kick, nc.ball * 1.6)
 		if hullHit then
@@ -3224,7 +3241,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end
 		-- 발사 화염·조명은 FX.muzzle 입자가 담당한다. 구형 광구를 중복 생성하지 않는다.
 		local ball = part(folder, Vector3.new(nc.ball, nc.ball, nc.ball), CFrame.new(from), Color3.fromRGB(30, 30, 34), Enum.Material.Metal, Enum.PartType.Ball)
-		FX.projectile(ball, nc)
+		FX.projectile(ball, nc, style)
 		-- 수면 그림자는 PC에서만 표시한다. 모바일에서는 비행 궤적을 우선한다.
 		local shadow = nil
 		if not MOBILE_VFX then
@@ -3263,12 +3280,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					Sfx.play("sfx_naval_splash", 0.55, 0.9 + math.random() * 0.22, "sfx_splash")
 				end
 				if hullHit then
-					FX.splinters(to, 9)
-					FX.impact(to, nc.ball)
+					FX.splinters(to, if MOBILE_VFX then 5 else 5 + stage * 2)
+					FX.impact(to, nc.ball, style)
 					shake = math.max(shake, 1.3)
 					kick = math.max(kick, 5 + nc.ball)
 				else
-					FX.splash(to)
+					FX.splash(to, style)
 				end
 				-- 충돌 시 거대한 광구·회색 공 대신 위의 실제 파편·입자 폭발과 물결만 사용한다.
 				-- 별도 프레임 연결을 만들지 않아 모바일 부하도 줄인다.
@@ -3890,7 +3907,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				-- [모바일 예산] 침몰 폭발 입자는 프레임마다 생성하지 않고 짧은 간격으로 제한한다.
 				if math.random() < 0.5 and now >= (FX.sinkFlameAt or 0) then
 					FX.sinkFlameAt = now + (if MOBILE_VFX then 0.7 else 0.38)
-					FX.flame(at, 3)
+					FX.flame(at, 3, sunk.fx)
 				end
 				if math.random() < 0.3 then
 					FX.splinters(at, 3)
@@ -4042,7 +4059,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		kick = kick * 0.86
 		local boardingView = phase == "board" and not cardBusy and not opts.cardOnly and not (rt and rt.sunk) and not sinkStart
 		FX.boardZoom += ((if boardingView then 1 else 0) - FX.boardZoom) * (1 - math.exp(-dt * 4.2))
-		cam.FieldOfView = 76 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom - FX.boardZoom * 19
+		cam.FieldOfView = 76 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom - FX.boardZoom * (17 + math.clamp(me.fx.stage or 2, 1, 6) * 0.6)
 		local f = forward(me.theta)
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
