@@ -1692,7 +1692,7 @@ function FieldScene.start(opts)
 	local function startSwing(kind: string, dur: number, stage: number?, visualOnly: boolean?)
 		local nextStage = math.clamp(math.floor(stage or 1), 1, 10)
 		-- [연타 교차 보간] 2·3타에서 현재 실제 관절을 남겨 끊기는 팔/허리/발목을 연결한다.
-		if FM and (nextStage >= 2 or kind == "slash") and os.clock() - swingBridge.lastAt <= 0.32 and next(swingBridge.last) then
+		if FM and (nextStage >= 2 or kind == "slash" or kind == "heavy") and os.clock() - swingBridge.lastAt <= 0.32 and next(swingBridge.last) then
 			swingBridge.from = table.clone(swingBridge.last)
 			swingBridge.at = os.clock()
 			swingBridge.duration = if wpn.family == "dagger" or wpn.family == "fist" then 0.075
@@ -2944,8 +2944,9 @@ function FieldScene.start(opts)
 			comboInfo.Text = string.format("타이기록 %d연타! · 다음 명중이 신기록", streakBest)
 		end
 	end))
-	-- [연타 축하] 화면 효과·소리는 5타 간격, 핵심 기록 10·25·50·100·200타만 강하게 강조한다.
-	local function comboCinema(n: number, isRecord: boolean)
+	-- [연타 성공 시네마] 원본 5타 간격 축하를 유지하되, 자동 강타 성공 때는 중복 축하 대신 무기별 1회 필살 연출로 통합.
+	-- 기존 피격/쿨타임/무기 숙련의 판정에는 관여하지 않으며, 모바일에는 최소한의 기존 공용 VFX만 쓴다.
+	local function comboCinema(n: number, isRecord: boolean, autoHeavy: boolean?)
 		local _, h0 = char3()
 		local precision = if streakAttempts > 0 then streakLanded / streakAttempts else 1
 		local qualified = if n >= 200 then precision >= 0.95 elseif n >= 100 then precision >= 0.90
@@ -2953,26 +2954,98 @@ function FieldScene.start(opts)
 		local spectacular = qualified and (n == 25 or n == 50 or n == 100 or n == 200 or (n > 200 and n % 100 == 0))
 		local title = if not qualified then "정밀도 부족" elseif n >= 200 then "신화" elseif n >= 100 then "전설"
 			elseif n >= 50 then "폭주" elseif n >= 25 then "질주" elseif n >= 10 then "가속" else "연결"
-		local color = if n >= 200 then Color3.fromRGB(255, 155, 231)
+		local family = wpn.family
+		local color = if autoHeavy then
+			(if family == "fist" then Color3.fromRGB(255, 221, 155)
+			elseif family == "dagger" then Color3.fromRGB(126, 249, 206)
+			elseif family == "axe" then Color3.fromRGB(255, 127, 91)
+			elseif family == "spear" then Color3.fromRGB(119, 224, 255)
+			elseif family == "blunt" then Color3.fromRGB(248, 193, 119)
+			elseif wpn.motion == "CROSSBOW" then Color3.fromRGB(188, 218, 255)
+			elseif family == "bow" then Color3.fromRGB(156, 237, 169)
+			elseif family == "firearm" then Color3.fromRGB(255, 203, 111)
+			else Color3.fromRGB(243, 218, 149))
+			elseif n >= 200 then Color3.fromRGB(255, 155, 231)
 			elseif n >= 100 then Color3.fromRGB(255, 115, 102)
 			elseif n >= 50 then Color3.fromRGB(255, 218, 107)
 			elseif n >= 25 then Color3.fromRGB(187, 150, 255)
 			else Color3.fromRGB(112, 214, 255)
-		showCombo(string.format("%d연타 · %s%s!", n, title, if isRecord then " · 역대 신기록" else ""), true, color)
-		if n >= 10 then screenFlash(color, if visualMobile then 0.90 else (if spectacular then 0.68 else 0.83)) end
-		hitStopUntil = math.max(hitStopUntil, os.clock() + (if spectacular then 0.12 else 0.055))
-		shakeUntil, shakeAmp = os.clock() + 0.15, if visualMobile then 0.22 else (if spectacular then 0.72 else 0.35)
-		if spectacular then
+		showCombo(if autoHeavy then string.format("%d연타 · %s 필살!%s", n, wpn.name, if isRecord then " · 신기록" else "")
+			else string.format("%d연타 · %s%s!", n, title, if isRecord then " · 역대 신기록" else ""), true, color)
+		if n >= 10 or autoHeavy then
+			screenFlash(color, if visualMobile then (if autoHeavy then 0.88 else 0.90)
+				else (if autoHeavy then 0.77 elseif spectacular then 0.68 else 0.83))
+		end
+		local now = os.clock()
+		hitStopUntil = math.max(hitStopUntil, now + (if autoHeavy then 0.10 elseif spectacular then 0.12 else 0.055))
+		shakeUntil = math.max(shakeUntil, now + (if autoHeavy then 0.17 else 0.15))
+		shakeAmp = if visualMobile then (if autoHeavy then 0.27 else 0.22)
+			else (if autoHeavy then 0.55 elseif spectacular then 0.72 else 0.35)
+		-- 실제 무기 강타음은 기존 startSwing에서 1회 재생. 여기서는 짧은 성공 알림만 사용한다.
+		if autoHeavy then
+			sfx(if spectacular then "sfx_fanfare" else "sfx_card_ring", if visualMobile then 0.27 else 0.36, 1.25)
+		elseif spectacular then
 			sfx("sfx_fanfare", if visualMobile then 0.35 else 0.48, 1 + math.min(n, 200) / 350)
 		elseif n % 10 == 0 then
 			sfx("sfx_card_ring", 0.43, 1 + math.min(n, 100) / 260)
 		else
 			sfx("sfx_card_chain", 0.22, 1.05)
 		end
-		if h0 and (n % 10 == 0 or spectacular) then
+		if not h0 then return end
+		if autoHeavy then
+			-- [5타 필살] 무기별 고유 광선/검광/충격. 기존 heavy 1회에만 더하는 순수 시각 연출.
+			local front = h0.Position + h0.CFrame.LookVector * (if wpn.ranged then 8 else 5)
+			local reach = math.max(7, wpn.range * 2)
+			local ch = player.Character
+			if family == "fist" then
+				trailsOn(ch, { "RightHand", "LeftHand", "RightLowerArm" }, color, 0.23, 0.38)
+				pulseAt("CRITICAL_BURST", h0.CFrame * CFrame.new(0, 2, -3), color, Color3.fromRGB(255, 251, 221),
+					7, if visualMobile then 3 else 8)
+				shockRing(front - Vector3.new(0, 1.5, 0), 10, color, 0.27)
+			elseif family == "dagger" then
+				slashArc(h0, color, reach * 0.85, 73, -34)
+				slashArc(h0, color:Lerp(Color3.new(1, 1, 1), 0.45), reach * 0.85, 74, 34)
+				afterimage(ch, color, if visualMobile then 1 else 3, 0.045)
+			elseif family == "axe" then
+				slashArc(h0, color, reach * 1.1, 125, -41)
+				shards(front, if visualMobile then 4 else 10, color, 5)
+				shockRing(front - Vector3.new(0, 2.2, 0), 12, color, 0.28)
+			elseif family == "spear" then
+				slashArc(h0, color, reach * 1.15, 38, 0)
+				pulseAt("IMPACT_FLASH", h0.CFrame * CFrame.new(0, 1.3, -reach * 0.65), color,
+					Color3.new(1, 1, 1), 9, if visualMobile then 3 else 7)
+			elseif family == "blunt" then
+				shockRing(front - Vector3.new(0, 1.8, 0), 13, color, 0.27)
+				shards(front, if visualMobile then 3 else 8, color, 4)
+			elseif wpn.motion == "CROSSBOW" then
+				-- [볼트 환영 탄도] 빈 공간을 지나는 빛선. 실제 볼트/피해 판정은 뒤의 기존 1발만 처리한다.
+				arrowTrail(h0.Position + Vector3.new(0, 1.4, 0), front + h0.CFrame.LookVector * 24,
+					nil, nil, wpn.motion, true)
+				pulseAt("IMPACT_FLASH", h0.CFrame * CFrame.new(0, 1.3, -2.8), color,
+					Color3.fromRGB(255, 246, 227), 5, if visualMobile then 2 else 5)
+			elseif family == "bow" then
+				arrowTrail(h0.Position + Vector3.new(0, 1.4, 0), front + h0.CFrame.LookVector * 25,
+					nil, nil, wpn.motion, true)
+				trailsOn(ch, { "RightHand", "LeftHand", "RightLowerArm" }, color, 0.22, 0.36)
+			elseif family == "firearm" then
+				pulseAt("CRITICAL_BURST", h0.CFrame * CFrame.new(0, 1.3, -2.9), color,
+					Color3.fromRGB(255, 250, 226), 7, if visualMobile then 3 else 8)
+				arrowTrail(h0.Position + Vector3.new(0, 1.4, 0), front + h0.CFrame.LookVector * 29,
+					nil, nil, wpn.motion, true)
+			else
+				-- 검/도검: 좌우 교차검광과 전방 황금 파동.
+				slashArc(h0, color, reach, 110, -33)
+				slashArc(h0, color:Lerp(Color3.new(1, 1, 1), 0.4), reach, 110, 33)
+				shockRing(front - Vector3.new(0, 1.8, 0), 10, color, 0.26)
+			end
+			if n >= 10 then
+				shockRing(h0.Position - Vector3.new(0, 2.3, 0), if spectacular then 19 else 12, color, 0.31)
+			end
+		elseif n % 10 == 0 or spectacular then
 			shockRing(h0.Position - Vector3.new(0, 2.5, 0), if spectacular then 22 else 12, color, 0.32)
 			if spectacular then
-				pulseAt("UPGRADE_BURST", h0.CFrame * CFrame.new(0, -1.5, 0), color, Color3.fromRGB(255, 245, 225), 11, if visualMobile then 8 else 16)
+				pulseAt("UPGRADE_BURST", h0.CFrame * CFrame.new(0, -1.5, 0), color, Color3.fromRGB(255, 245, 225), 11,
+					if visualMobile then 8 else 16)
 				if not visualMobile then afterimage(player.Character, color, 2, 0.055) end
 			end
 		end
@@ -3184,12 +3257,39 @@ function FieldScene.start(opts)
 					local _, root = char3()
 					if root then pulseAt("BUFF_PULSE", root.CFrame * CFrame.new(0, -1.8, 0), accent, Color3.new(1, 1, 1), 5, if visualMobile then 3 else 6) end
 				end
-				if streakN % 5 == 0 then
+				-- [스킬 축하 충돌 방지] 5번째 명중에 발동할 자동 강타는 실제 성공 후 한 번만 축하한다.
+				local autoHeavyReady = creditedSeq == pl.basicAttackSeq
+					and (pl.autoNormalHits or 0) > 0 and pl.autoNormalHits % 5 == 0
+					and (pl.cd.heavy or -100) <= hitAt and pl.hp > 0
+				if autoHeavyReady then
+					showCombo(string.format("%d연타 · 필살 준비!", streakN), false, Color3.fromRGB(255, 226, 156))
+				elseif streakN % 5 == 0 then
 					comboCinema(streakN, isRecord)
 				elseif miracle and not isRecord then
 					showCombo(string.format("%d연타 · 기적의 연결!", streakN), true, accent)
 				else
-					showCombo(string.format("%d연타 · %s%s", streakN, grade, if isRecord then " · 역대 신기록!" else ""), isRecord, accent)
+					-- [1~4타 연출] 기존 무기별 R15 연속동작 위에만 짧은 빛을 얹는다.
+					local basicHit = creditedSeq == pl.basicAttackSeq
+					if basicHit and streakN <= 2 then
+						trailsOn(player.Character, { "RightHand", "RightLowerArm" }, accent, 0.12, 0.18)
+					elseif basicHit and streakN == 3 then
+						screenFlash(accent, if visualMobile then 0.965 else 0.935)
+						trailsOn(player.Character, { "RightHand", "RightLowerArm", "LeftHand" }, accent, 0.17, 0.25)
+					elseif basicHit and (pl.autoNormalHits or 0) % 5 == 4 then
+						local rim = attackBtn:FindFirstChildOfClass("UIStroke")
+						if rim then
+							TweenService:Create(rim, TweenInfo.new(0.12), { Color = Color3.fromRGB(255, 236, 143), Thickness = 5 }):Play()
+							task.delay(0.22, function()
+								if rim.Parent then
+									TweenService:Create(rim, TweenInfo.new(0.2), { Color = Color3.fromRGB(255, 192, 112),
+										Thickness = if visualMobile then 4 else 3 }):Play()
+								end
+							end)
+						end
+					end
+					showCombo(if basicHit and (pl.autoNormalHits or 0) % 5 == 4
+						then string.format("%d연타 · 강타 준비!", streakN)
+						else string.format("%d연타 · %s%s", streakN, grade, if isRecord then " · 역대 신기록!" else ""), isRecord, accent)
 					if isRecord then sfx("sfx_card_ring", 0.52, 1.24) end
 				end
 			end
@@ -3872,6 +3972,11 @@ function FieldScene.start(opts)
 		end
 		-- [연타 무조건 발동 금지] ActionCombat의 공용 기본 3타 규칙은 유지하고
 		-- 이 탐험에서만 기본 공격을 항상 단타로 처리한다. 숙련 연타는 명중 뒤 별도로 추첨한다.
+		if moveId == "heavy" then
+			-- [연속모션 충돌 차단] 필살이 시작되면 이전 평타의 예약된 숙련 2·3타 연출을 취소한다.
+			-- 실제 예약 피해/회피 판정은 건드리지 않는다.
+			chainMotionSerial += 1
+		end
 		if moveId == "rush" then
 			chainMotionSerial += 1
 			pl.basicAttackSeq = streakActionSeq
@@ -4181,6 +4286,7 @@ function FieldScene.start(opts)
 			end
 			refresh()
 		end)
+		return true -- 실제 ActionCombat 시전 성공 여부를 자동 강타 축하와 공유.
 	end
 	-- 돌진 베기: 공격 버튼을 0.5초 이상 눌렀다 떼면 앞으로 돌진하며 길 위의 적을 모두 벤다(기력 25, 3초 쿨).
 	local dashCd = 0
@@ -4739,9 +4845,11 @@ function FieldScene.start(opts)
 				ch:SetAttribute("FieldAutoSkillPending", nil)
 				if not finished and pl.hp > 0 and mark == pl.autoNormalHits
 					and (pl.cd.heavy or -100) <= os.clock() and pl.stamina >= AC.Moves.heavy.stamina then
-					showCombo(string.format("%d연타 · %s 자동!", streakN, Weapons.actionDesign(wpn).heavy),
-						true, Color3.fromRGB(255, 205, 122))
-					useMove("heavy")
+					-- [5타 자동강타] 스킬이 실제 시전된 경우에만 기존 연타 시네마 1회 실행.
+					-- 위 strikeEnemy에서는 이 경우 5타 일반 축하를 생략해 화면·카메라·효과음 중복을 막는다.
+					if useMove("heavy") then
+						comboCinema(streakN, false, true)
+					end
 				end
 			end
 			-- [기존 개발 검증] 수동 스킬 버튼 삭제와 무관하게 테스트용 카드 발동은 보존.
