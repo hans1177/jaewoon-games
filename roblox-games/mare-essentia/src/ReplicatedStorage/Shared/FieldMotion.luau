@@ -144,6 +144,10 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		bend("ThighR", 0.48 * collapse, 0, 0.18 * collapse)
 		bend("ShinL", -1.10 * collapse, 0, 0)
 		bend("ShinR", -0.85 * collapse, 0, 0)
+		-- [쓰러짐 관성] 몸을 비스듬히 무너뜨리면서 한 손과 양발로 지면을 받는다.
+		bend("FootL", 0.24 * collapse, 0, -0.08 * fallSide * collapse)
+		bend("FootR", -0.19 * collapse, 0, 0.08 * fallSide * collapse)
+		bend("HandL", -0.28 * collapse, 0, -0.11 * collapse)
 	elseif state == "GETUP" then
 		local onGround = (1 - math.clamp(phase, 0, 1)) ^ 1.45
 		local brace = math.sin(math.clamp(phase, 0, 1) * math.pi)
@@ -160,6 +164,10 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		bend("ShinL", -1.10 * onGround - 0.42 * brace, 0, 0)
 		bend("ShinR", -0.85 * onGround - 0.22 * brace, 0, 0)
 		bend("FootL", -0.15 * brace, 0, 0)
+		-- [기상 3단] 손으로 바닥을 밀고, 한쪽 무릎을 세운 뒤 양발의 균형을 되찾는다.
+		bend("HandL", -0.26 * onGround + 0.20 * brace, 0, 0)
+		bend("FootR", 0.20 * onGround - 0.18 * brace, 0, 0)
+		bend("ShinR", -0.34 * brace, 0, 0)
 	elseif state == "BLOCK" then
 		-- 방패병: 왼손 방패를 눈높이로 세우고 양발을 벌려 실제 가드 판정을 표현.
 		bend("Spine", 0.19 + 0.08 * pulse, 0, 0)
@@ -195,6 +203,11 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		bend("UpperArmL", -0.21 * recoil, 0, -0.23 * recoil)
 		bend("ThighL", 0.18 * recoil, 0, 0)
 		bend("Head", 0.23 * recoil, -0.14 * fallSide * recoil, 0)
+		-- [피격 충격 전달] 상체에서 골반→발로 충격이 이어지고 손이 옆구리를 감싼다.
+		bend("Spine", 0.13 * recoil, -0.17 * fallSide * recoil, 0)
+		bend("ForearmL", -0.42 * recoil, 0, 0)
+		bend("ShinR", -0.28 * recoil, 0, 0)
+		bend("FootR", 0.20 * recoil, 0, 0.09 * fallSide * recoil)
 	end
 	-- [공통 R15 모션] 체형·성격에 따라 관절의 무게중심과 보행·시선을 조절한다.
 	local style = h.model:GetAttribute("MotionStyle") or "civilian"
@@ -222,6 +235,11 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		local shift = math.sin(t * 0.43 + persona)
 		local stance = if style == "heavy" then 1.12 elseif style == "nimble" then 0.88 else 1
 		bend("Chest", breathe * 0.018, shift * 0.045, shift * 0.022)
+		-- [적 경계 동작] 시선을 천천히 옮기고 골반과 반대 방향으로 어깨를 돌려 정지 인형 느낌을 줄인다.
+		if role ~= "ally-melee" and role ~= "ally-ranged" then
+			bend("Head", 0.025 * breathe, math.sin(t * 0.47 + persona) * 0.13, -shift * 0.025)
+			bend("Spine", 0, -shift * 0.045, 0)
+		end
 		-- [지상 모션] 가만히 선 몬스터도 어깨·양다리 관절이 실제로 움직이도록
 		-- 기존 호흡·체중 이동에 낮은 전투 대기 자세를 더한다. 이동·공격·피해 판정은 불변.
 		bend("ThighL", (-0.075 - shift * 0.028) * stance, 0, -0.032 * shift)
@@ -261,6 +279,18 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		bend("UpperArmR", plant * 0.38 * stride * effort, 0, 0.045 - side * 0.04)
 		bend("ForearmL", -0.17 - liftL * 0.25 * effort, 0, 0)
 		bend("ForearmR", -0.17 - liftR * 0.25 * effort, 0, 0)
+		-- [적 보행 접지] 발이 땅을 디딜 때 무릎을 굽히고 뒤꿈치가 구르며, 골반이 어깨보다 반 박자 늦게 따라간다.
+		-- 이동 거리·속도는 FieldScene의 기존 AI를 사용하고 이 값은 관절에만 적용한다.
+		if role ~= "ally-melee" and role ~= "ally-ranged" then
+			local support = math.max(0, math.cos(phase * math.pi * 4)) * effort
+			local weight = if role == "boss" or role == "charger" then 0.75 else 1
+			bend("Spine", -0.055 * effort, -plant * 0.075 * weight, side * 0.045)
+			bend("ShinL", -support * 0.085 * weight, 0, 0)
+			bend("ShinR", -support * 0.085 * weight, 0, 0)
+			bend("FootL", -plant * 0.095 * weight - support * 0.055, 0, 0)
+			bend("FootR", plant * 0.095 * weight - support * 0.055, 0, 0)
+			bend("Chest", 0, plant * 0.045 * weight, side * 0.035)
+		end
 		-- [전투 동료 달리기] 실제 보폭과 동일한 위상으로 질주·뒤꿈치 밀기·팔꿈치 역스윙을 크게 표현.
 		-- 루트 이동속도/공격/스킬 판정은 FieldScene 원본 그대로. 허리와 발목은 부드럽게 회수한다.
 		if role == "ally-melee" or role == "ally-ranged" then
@@ -713,6 +743,47 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		bend("ThighL", 0.16 * punch, 0, 0)
 		bend("ThighR", -0.15 * punch, 0, 0)
 		bend("FootL", -0.14 * punch, 0, 0)
+	end
+	-- [적 검무 발놀림] 준비 동작 → 축발 회전 → 실제 타격 순간 → 반동 자세 회수.
+	-- 무기별 승인 모션 포즈를 적용한 뒤 양발·골반·고개만 덧그려, 팔만 흔드는 인형 모션을 방지한다.
+	-- 공격 판정·공격 속도·이동 거리·피해·저장에는 영향이 없다.
+	if role == "grunt" or role == "archer" or role == "shield" or role == "charger" or role == "boss" or role == "thrower" then
+		local side = if (h.model:GetAttribute("MotionVariant") or 1) % 2 == 0 then -1 else 1
+		local weight = if role == "boss" or role == "charger" then 1.22 elseif role == "archer" or role == "thrower" then 0.64 else 1
+		local p = math.clamp(phase, 0, 1)
+		if state == "ANTICIPATION" then
+			local wind = p * p * (3 - 2 * p)
+			bend("Spine", 0.11 * wind * weight, side * 0.18 * wind, 0)
+			bend("Chest", 0.05 * wind, side * 0.20 * wind, side * 0.04 * wind)
+			bend("Head", -0.05 * wind, -side * 0.21 * wind, 0)
+			bend("ThighR", 0.19 * wind * weight, 0, side * 0.07 * wind)
+			bend("ShinR", -0.25 * wind * weight, 0, 0)
+			bend("FootR", 0.18 * wind, -side * 0.07 * wind, 0)
+		elseif state == "ATTACK" then
+			local t = math.clamp((p - 0.25) / 0.35, 0, 1)
+			local thrust = math.sin(t * math.pi)
+			local follow = t * t * (3 - 2 * t)
+			bend("Spine", -0.12 * thrust * weight, side * (0.25 * thrust - 0.18 * follow), 0)
+			bend("Chest", -0.17 * thrust * weight, -side * 0.24 * thrust, -side * 0.08 * follow)
+			bend("Head", 0.06 * thrust, side * 0.15 * thrust, 0)
+			bend("ThighL", -0.28 * thrust * weight, 0, -side * 0.06 * thrust)
+			bend("ShinL", -0.19 * thrust * weight, 0, 0)
+			bend("FootL", 0.21 * thrust - 0.13 * follow, 0, side * 0.06 * follow)
+		elseif state == "RECOVERY" then
+			local recoil = (1 - p) * (1 - p)
+			bend("Spine", -0.12 * weight * recoil, -side * 0.14 * recoil, 0)
+			bend("Chest", -0.10 * recoil, side * 0.16 * recoil, 0)
+			bend("Head", 0.08 * recoil, -side * 0.11 * recoil, 0)
+			bend("ThighL", 0.17 * recoil, 0, 0)
+			bend("ShinL", -0.18 * recoil, 0, 0)
+			bend("FootL", 0.16 * recoil, 0, 0)
+		elseif state == "BLOCK" or state == "PARRY" then
+			local brace = math.sin(p * math.pi)
+			bend("Spine", 0.10 * brace, side * (if state == "PARRY" then 0.19 else -0.07) * brace, 0)
+			bend("ThighR", 0.16 * brace, 0, side * 0.07 * brace)
+			bend("ShinR", -0.26 * brace, 0, 0)
+			bend("FootR", 0.20 * brace, 0, 0)
+		end
 	end
 	-- [실제 타격 발동작] 무기 상체 모션 뒤에도 디딤발은 고정하고 반대쪽 발을 앞으로 딛는다.
 	-- 공격 판정·거리·시간은 전혀 바꾸지 않는다. 서 있는 상태에서 뿌리째 미끄러지는 느낌만 줄인다.
