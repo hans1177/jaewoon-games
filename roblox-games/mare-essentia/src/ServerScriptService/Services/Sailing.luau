@@ -12,7 +12,13 @@ return function(D, S)
 		local nation = D.Ports.Nations[state.nationId]
 		local dist = D.SeaRoutes.lengthKm(from.id, to.id, D.Ports.Ports)
 		local coal = if def.steam then (state.cargo.coal or 0) else 0
-		return D.Voyage.plan(S.State.fleetSpeed(state, def.speed) * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coal, S.State.totalCrew(state), dist, (if def.rowed then math.max(1, D.Voyage.weather(state.day, state.portId).wind) else D.Voyage.weather(state.day, state.portId).wind)) -- 노로 가는 배는 맞바람에도 느려지지 않는다
+		local trait = def.trait or {}
+		local wind = D.Voyage.weather(state.day, state.portId).wind
+		if def.rowed then wind = math.max(1, wind) end
+		wind += (if wind < 1 then 1 - wind else wind - 1) * (trait.wind or 0)
+		local speedBonus = (trait.sail or 0) + (if dist >= 2000 then trait.long or 0 else 0)
+		local speed = S.State.fleetSpeed(state, def.speed) * nation.speedMult * S.Perk.speedMult(state) * (1 + speedBonus)
+		return D.Voyage.plan(speed, def.steam, def.fuelPerDay, coal, S.State.totalCrew(state), dist, wind, 1 + (trait.supplies or 0))
 	end
 
 	-- 보물지도: 목적지 항구 근처 해역에 묻힌 보물. 도착하면 찾는다.
@@ -95,7 +101,13 @@ return function(D, S)
 		local wind = weather.wind
 		local dist = D.SeaRoutes.lengthKm(from.id, to.id, D.Ports.Ports)
 		local coalAvailable = if def.steam then (state.cargo.coal or 0) else 0
-		local plan = D.Voyage.plan(S.State.fleetSpeed(state, def.speed) * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coalAvailable, S.State.totalCrew(state), dist, if def.rowed then math.max(1, wind) else wind)
+		-- [36척 항속 차별화] 기항 거리·풍향·선박 보급률. 기존 선단 최저속/국가/동료 보정은 유지한다.
+		local trait = def.trait or {}
+		local windFactor = if def.rowed then math.max(1, wind) else wind
+		windFactor += (if windFactor < 1 then 1 - windFactor else windFactor - 1) * (trait.wind or 0)
+		local speedBonus = (trait.sail or 0) + (if dist >= 2000 then trait.long or 0 else 0)
+		local effectiveSpeed = S.State.fleetSpeed(state, def.speed) * nation.speedMult * S.Perk.speedMult(state) * (1 + speedBonus)
+		local plan = D.Voyage.plan(effectiveSpeed, def.steam, def.fuelPerDay, coalAvailable, S.State.totalCrew(state), dist, windFactor, 1 + (trait.supplies or 0))
 		local event = D.Voyage.rollEvent(ctx.rng, plan.days, weather.id)
 
 		local msgs = {}
@@ -115,7 +127,8 @@ return function(D, S)
 		end
 
 		-- 보급품 소모
-		local need = D.Voyage.suppliesPerDay(S.State.totalCrew(state)) * days
+		-- 예보/실제 출항/날짜 보정 모두 같은 보급률을 사용해 보급 부족 판정을 왜곡하지 않는다.
+		local need = math.max(1, math.ceil(D.Voyage.suppliesPerDay(S.State.totalCrew(state)) * days * (1 + (trait.supplies or 0))))
 		if state.ship.supplies >= need then
 			state.ship.supplies -= need
 		else
@@ -169,7 +182,7 @@ return function(D, S)
 			elseif event.kind == "tailwind" then
 				table.insert(msgs, "순풍을 타고 하루를 아꼈다")
 			elseif event.kind == "storm" then
-				local dmg = math.floor(def.hull * event.amount * (1 - S.State.techSum(state, "pumpReduction")))
+				local dmg = math.floor(def.hull * event.amount * (1 - S.State.techSum(state, "pumpReduction")) * (1 - (trait.storm or 0)))
 				state.ship.hull = math.max(1, state.ship.hull - dmg)
 				table.insert(msgs, string.format("폭풍! 선체 -%d", dmg))
 				moraleAdd(-6)
@@ -532,7 +545,9 @@ return function(D, S)
 			state.coins += coinBonus
 			table.insert(msgs, string.format("바람 고리 보상 코인 +%d", coinBonus))
 		end
-		local xp = math.floor(days * 3 * score * cm)
+		-- 모험선의 탐사 특화는 기존 보상 산식에만 가산하고 경험치·저장 구조는 그대로 사용한다.
+		local shipTrait = S.State.shipDef(state).trait or {}
+		local xp = math.floor(days * 3 * score * cm * (1 + (shipTrait.explore or 0)))
 		if xp > 0 then
 			S.State.gainXp(state, "adventure", xp, msgs)
 		end
