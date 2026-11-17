@@ -4021,6 +4021,12 @@ function FieldScene.start(opts)
 			bossPoisonNextAt += 1
 			pl.hp = math.max(0, pl.hp - 2)
 			lastCombatAt = now
+			-- [독 피드백] 피해 숫자만 바뀌는 대신 독이 흐르는 걸 보여 주되, 모바일은 입자를 최소화한다.
+			local poisonedRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			if poisonedRoot then
+				shards(poisonedRoot.Position + Vector3.new(0, 1.5, 0), if visualMobile then 2 else 5,
+					Color3.fromRGB(115, 220, 101), 2)
+			end
 			refresh()
 			if pl.hp <= 0 then
 				task.defer(function() finish("defeat") end)
@@ -4030,7 +4036,9 @@ function FieldScene.start(opts)
 		-- [동시 상태이상 표시] 정예 둔화와 두목 독은 별개 타이머로 처리하며 둘 다 있을 때 짧게 안내한다.
 		local slowed = now < eliteSlowUntil
 		local poisoned = now < bossPoisonUntil
-		local debuff = if poisoned and slowed then "독·둔화" elseif poisoned then "독 " .. tostring(math.ceil(bossPoisonUntil - now))
+		local debuff = if poisoned and slowed then "독" .. tostring(math.ceil(bossPoisonUntil - now))
+			.. "·둔" .. tostring(math.ceil(eliteSlowUntil - now))
+			elseif poisoned then "독 " .. tostring(math.ceil(bossPoisonUntil - now))
 			elseif slowed then "둔화 " .. tostring(math.ceil(eliteSlowUntil - now)) else ""
 		if debuffLabel.Text ~= debuff then
 			debuffLabel.Text = debuff
@@ -4210,6 +4218,10 @@ function FieldScene.start(opts)
 					groundRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0), e.ac.def.range * STUD * 0.85, e.ac.def.windup)
 				end
 				e.parryAt = nil
+				-- [정예·보스 특수공격 예고] 다음 공격이 감속/독을 거는지 기존 빨간 예고 UI에 직접 표시한다.
+				-- 타격 시 다시 명중·방어·쿨타임을 검사하므로 예고 자체가 피해나 상태를 적용하지 않는다.
+				e.telegraphStatus = if e.boss and now >= (e.nextPoisonAt or 0) and now >= bossPoisonUntil then "poison"
+					elseif e.elite and not e.boss and now >= (e.nextSlowAt or 0) then "slow" else nil
 				-- [폭탄 사전 경고] 던지기 전에 목표 지점을 고정한다. 움직이면 폭발을 피할 수 있다.
 				if e.throwAsset == "bomb" then
 					e.bombAim = hrp.Position
@@ -4278,9 +4290,11 @@ function FieldScene.start(opts)
 				-- 공격 예고: 머리 위 붉은 느낌표 + 몸이 붉게
 				if not e.warn then
 					local h = Instance.new("Highlight")
-					h.FillColor = Color3.fromRGB(255, 40, 40)
+					h.FillColor = if e.telegraphStatus == "poison" then Color3.fromRGB(70, 198, 94)
+						elseif e.telegraphStatus == "slow" then Color3.fromRGB(85, 160, 245) else Color3.fromRGB(255, 40, 40)
 					h.FillTransparency = 0.55
-					h.OutlineColor = Color3.fromRGB(255, 80, 60)
+					h.OutlineColor = if e.telegraphStatus == "poison" then Color3.fromRGB(175, 255, 147)
+						elseif e.telegraphStatus == "slow" then Color3.fromRGB(160, 222, 255) else Color3.fromRGB(255, 80, 60)
 					h.Parent = e.model
 					e.warn = h
 					local bbw = Instance.new("BillboardGui")
@@ -4291,8 +4305,10 @@ function FieldScene.start(opts)
 					local wl = Instance.new("TextLabel")
 					wl.Size = UDim2.fromScale(1, 1)
 					wl.BackgroundTransparency = 1
-					wl.Text = "!"
-					wl.TextColor3 = Color3.fromRGB(255, 70, 60)
+					wl.Text = if e.telegraphStatus == "poison" then "독"
+						elseif e.telegraphStatus == "slow" then "둔" else "!"
+					wl.TextColor3 = if e.telegraphStatus == "poison" then Color3.fromRGB(144, 255, 157)
+						elseif e.telegraphStatus == "slow" then Color3.fromRGB(143, 215, 255) else Color3.fromRGB(255, 70, 60)
 					wl.Font = Enum.Font.GothamBlack
 					wl.TextScaled = true
 					wl.Parent = bbw
@@ -4376,14 +4392,14 @@ function FieldScene.start(opts)
 						endStreak("피격")
 						-- [정예 스킬] 방패·돌격 정예는 명중 시 3초간 이동속도 35% 감소.
 						-- 같은 몹은 8초에 한 번만 적용하고, 여러 명이 맞혀도 감속률은 중첩하지 않는다.
-						if e.elite and not e.boss and now >= (e.nextSlowAt or 0) then
+						if not pl.guarding and e.elite and not e.boss and now >= (e.nextSlowAt or 0) then
 							e.nextSlowAt = now + 8
 							eliteSlowUntil = math.max(eliteSlowUntil, now + 3)
 							say("정예 둔화! 3초")
 							pulseAt("BUFF_PULSE", hrp.CFrame * CFrame.new(0, -1.7, 0),
 								Color3.fromRGB(92, 173, 244), Color3.fromRGB(202, 237, 255), 4, if visualMobile then 2 else 5)
 						-- [두목 스킬] 보스의 독타격은 4초간 매초 2의 지속피해. 효과 중복 불가, 보스별 10초 제한.
-						elseif e.boss and now >= (e.nextPoisonAt or 0) and now >= bossPoisonUntil then
+						elseif not pl.guarding and e.boss and now >= (e.nextPoisonAt or 0) and now >= bossPoisonUntil then
 							e.nextPoisonAt = now + 10
 							bossPoisonUntil, bossPoisonNextAt = now + 4, now + 1
 							say("두목의 맹독! 4초")
