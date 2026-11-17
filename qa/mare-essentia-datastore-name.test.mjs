@@ -331,9 +331,12 @@ test('무기별 실제 발사음과 원거리 스킬 이펙트가 등록된 음�
   assert.match(field,/local rangedShot = wpn\.ranged[\s\S]*?sfx\("sfx_rope_release", 0\.49/);
   assert.doesNotMatch(field,/sfx\(if wpn\.family == "firearm" and wpn\.id ~= "crossbow"/);
   assert.match(field,/shotMotion: string\?, charged: boolean\?/);
-  assert.match(field,/local a1, at1 = anchorAt\(from \+ flightDir \* streakLength\)/);
-  assert.match(field,/\{ Position = to - flightDir \* streakLength \}/);
-  assert.match(field,/\{ Position = to \}\):Play\(\)/);
+  // [화살 볼트 3D] 과거 사각 Beam이 아닌 가는 실제 투사체와 짧은 Trail을 검사한다.
+  assert.match(field,/shaft\.Name = "FieldProjectile"/);
+  assert.match(field,/tip\.Name = "FieldArrowTip"/);
+  assert.match(field,/local trail = Instance\.new\("Trail"\)/);
+  assert.match(field,/shaft\.CFrame = CFrame\.lookAt\(p, p \+ aim\)/);
+  assert.doesNotMatch(field.slice(field.indexOf('local function arrowTrail('),field.indexOf('-- 바닥 범위 예고:')),/Instance\.new\("Beam"\)/);
   // 집중 사격/견제 사격과 카드 저격/일제사격은 무기별 색과 적중 이펙트를 갖는다.
   assert.match(field,/if kind ~= "slash" then[\s\S]*?pulseAt\(if kind == "heavy" then "CRITICAL_BURST"/);
   assert.match(field,/local equippedId = ch and ch:GetAttribute\("EquippedWeaponId"\)/);
