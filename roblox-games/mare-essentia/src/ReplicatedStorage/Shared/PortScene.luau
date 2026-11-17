@@ -541,7 +541,20 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			end
 			m:SetAttribute("BuildVisualState", "installing")
 			task.delay(buildDelay, function()
-				if not m.Parent or not parent.Parent then return end
+				-- 장면이 Workspace에 배치되기 전에 설치 모션이 사라지지 않도록 부착 완료를 기다린다.
+				local deadline = os.clock() + 25
+				while m.Parent and not parent.Parent and os.clock() < deadline do task.wait(0.12) end
+				if not m.Parent then return end
+				if not parent.Parent then
+					-- 타임아웃에는 숨김·위치·원래 충돌을 복원해 완성 자산이 사라지지 않게 한다.
+					for _, piece in pieces do
+						if piece.part.Parent then
+							piece.part.CFrame, piece.part.Transparency, piece.part.CanCollide = piece.final, piece.alpha, piece.solid
+						end
+					end
+					m:SetAttribute("BuildVisualState", "complete")
+					return
+				end
 				local timing = TweenInfo.new(0.72, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 				for _, piece in pieces do
 					if piece.part.Parent then
@@ -2779,7 +2792,11 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							if scaffold then
 								scaffold.Name = "CityDecorationScaffold"
 								scaffold:SetAttribute("ShowcaseOnly", true)
-								task.delay(delay + 1.4, function()
+								task.spawn(function()
+									local deadline = os.clock() + 25
+									while scaffold.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
+									if not scaffold.Parent or not folder.Parent then return end
+									task.wait(delay + 1.4)
 									if scaffold.Parent then scaffold:Destroy() end
 								end)
 							end
@@ -2796,7 +2813,11 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 									local duty = { model = worker, base = worker:GetPivot(), mode = "stay",
 										kind = "hammer", phase = rng:NextNumber(0, 5) }
 									table.insert(walkers, duty)
-									task.delay(delay + 1.6, function()
+									task.spawn(function()
+										local deadline = os.clock() + 25
+										while worker.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
+										if not worker.Parent or not folder.Parent then return end
+										task.wait(delay + 1.6)
 										if worker.Parent and folder.Parent then
 											duty.kind = "inspect"
 											worker:SetAttribute("Activity", "inspect")
