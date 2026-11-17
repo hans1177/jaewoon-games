@@ -233,4 +233,28 @@ for _, c in B.Chains do
 	B.ById[c.id] = c
 end
 
+-- [가축 실물 규격·품종 팔레트] 항구 목장/왕궁 말/탐험 야생동물이 공유하는 시각 정본.
+-- size는 세 축 중 최대 실측 길이(스터드). 실제 사육 수·경제·전투·저장에는 전혀 영향이 없다.
+-- 신규 에셋을 만들지 않고 이미 승인된 Animals 메시의 비무늬 영역만 자연색으로 보정한다.
+B.AnimalVisual = {
+	horse = { size = 8.8, coats = { Color3.fromRGB(132, 78, 45), Color3.fromRGB(63, 48, 39),
+		Color3.fromRGB(49, 46, 45), Color3.fromRGB(195, 185, 169), Color3.fromRGB(172, 131, 79) } },
+	cow = { size = 7.3, coats = { Color3.fromRGB(155, 108, 72), Color3.fromRGB(79, 68, 60),
+		Color3.fromRGB(218, 205, 183), Color3.fromRGB(184, 129, 87) } },
+	donkey = { size = 6.5, coats = { Color3.fromRGB(126, 116, 100), Color3.fromRGB(110, 88, 72),
+		Color3.fromRGB(170, 151, 120) } },
+	llama = { size = 7.0, coats = { Color3.fromRGB(218, 193, 151), Color3.fromRGB(156, 117, 87),
+		Color3.fromRGB(231, 219, 197) } },
+	sheep = { size = 3.8, coats = { Color3.fromRGB(235, 228, 207), Color3.fromRGB(177, 168, 151),
+		Color3.fromRGB(112, 99, 86) } },
+	pig = { size = 4.1, coats = { Color3.fromRGB(222, 156, 148), Color3.fromRGB(179, 126, 107),
+		Color3.fromRGB(91, 79, 75) } },
+	elephant = { size = 13.5, coats = { Color3.fromRGB(126, 121, 115), Color3.fromRGB(109, 114, 114) } },
+	["dog-pug"] = { size = 2.6, coats = { Color3.fromRGB(174, 136, 96), Color3.fromRGB(125, 100, 80) } },
+	cat = { size = 1.8, coats = { Color3.fromRGB(96, 91, 88), Color3.fromRGB(168, 132, 91),
+		Color3.fromRGB(215, 203, 181) } },
+	chicken = { size = 1.55, coats = { Color3.fromRGB(231, 223, 202), Color3.fromRGB(165, 109, 71),
+		Color3.fromRGB(74, 69, 65) } },
+}
+
 return B

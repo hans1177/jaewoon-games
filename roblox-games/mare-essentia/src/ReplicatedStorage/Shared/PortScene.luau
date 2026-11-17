@@ -425,6 +425,8 @@ end
 -- [중앙광장 영구 공터] 중심(-6, 0), 바닥 반경 24를 비워두고 여유 2스터드를 확보한다.
 -- 기존 승인된 건축·소품·생산물 모델만 이 구역 안에서 막는다. 인물/동물은 계속 출입할 수 있다.
 local CENTRAL_PLAZA_RADIUS = 26
+-- [지역 건축] 실제 항구 문화권을 수입 건축 메시와 기존 집 생성에서 함께 참조한다.
+local currentKey = "north"
 local function importedModel(parent, kind, asset, bottomPosition, desiredSize, solid, tint, buildDelay)
 	if parent.Name == "PortScene" and kind ~= "People" and kind ~= "Animals" then
 		local dx, dz = bottomPosition.X + 6, bottomPosition.Z
@@ -436,33 +438,131 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 	local template = group and group:FindFirstChild(asset)
 	if not template or not template:IsA("Model") then return nil end
 	local m = template:Clone()
-	local hasParts = false
+	-- [흰색 건물 수정] 등록된 건물의 텍스처 없는 흰 메시만 지역별 벽·지붕·목재·석조로 복원한다.
+	local architecture = (kind == "Town" and (asset:find("house", 1, true)
+		or asset:find("temple", 1, true) or asset:find("church", 1, true)
+		or asset:find("tower", 1, true) or asset:find("wall", 1, true)
+		or asset:find("roof", 1, true) or asset:find("kenney_", 1, true)
+		or asset:find("quaternius_", 1, true) or asset:find("windmill", 1, true)
+		or asset:find("arch", 1, true) or asset:find("door", 1, true)
+		or asset:find("floor", 1, true) or asset:find("stall", 1, true)))
+		or (kind == "Castle" and not (asset:find("flag", 1, true) or asset:find("banner", 1, true)))
+		or (kind == "Terrain" and (asset:find("ground-", 1, true) or asset:find("ruins", 1, true)
+			or asset:find("bridge", 1, true) or asset:find("column", 1, true)))
+		or (kind == "Naval" and (asset:find("dock", 1, true) or asset:find("platform", 1, true)))
+	local east = currentKey == "japan" or currentKey == "china" or currentKey == "seasia"
+	local sandy = currentKey == "desert" or currentKey == "ottoman"
+		or currentKey == "swahili" or currentKey == "wafrica" or currentKey == "malabar"
+	local mediterranean = currentKey == "iberia" or currentKey == "italy" or currentKey == "med"
+		or currentKey == "creole"
+	local wallColor = if sandy then C(189, 161, 124)
+		elseif east then C(186, 172, 150) elseif mediterranean then C(207, 176, 147)
+		else C(156, 148, 138)
+	local roofColor = if east then C(76, 82, 82) elseif mediterranean then C(155, 79, 56)
+		elseif sandy then C(162, 128, 98) else C(100, 105, 110)
+	local hasParts, restoredSurfaces = false, 0
 	for _, p in m:GetDescendants() do
 		if p:IsA("BasePart") then
 			hasParts = true
 			p.Anchored = true
 			p.CanCollide = solid == true
 			p.CanTouch = false
+			local low = math.min(p.Color.R, p.Color.G, p.Color.B)
+			local high = math.max(p.Color.R, p.Color.G, p.Color.B)
+			local importedWhite = low >= 0.78 and high - low <= 0.14
 			if tint then
-				p.Color = tint
-				-- 질감이 있는 메시는 UsePartColor 를 켜야 Color 가 질감에 곱해진다(없는 속성이면 무시)
-				pcall(function() (p :: any).UsePartColor = true end)
-				local sc = SOLID_TREES[asset] or solidTint(asset)
-				if sc and p:IsA("MeshPart") then
-					p.TextureID = ""
-					p.Color = sc
+				if kind == "Animals" then
+					-- [실물 가축 품종색] 기등록 원본 PBR/텍스처와 눈·갈기·발굽 무늬는 보존한다.
+						-- 색이 빠진 단색 몸통 메시만 부드럽게 보정해 생물별 털색을 살린다.
+					local sa = p:FindFirstChildOfClass("SurfaceAppearance")
+					local textured = (p:IsA("MeshPart") and p.TextureID ~= "") or (sa and sa.ColorMap ~= "")
+					for _, ch in p:GetChildren() do
+						if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
+					end
+					local partName = p.Name:lower()
+					local detail = partName:find("eye", 1, true) or partName:find("pupil", 1, true)
+						or partName:find("hoof", 1, true) or partName:find("horn", 1, true)
+						or partName:find("mane", 1, true) or partName:find("tail", 1, true)
+						or partName:find("beak", 1, true) or partName:find("saddle", 1, true)
+					if textured and not detail then
+						-- 원본 털무늬/노멀맵은 살리고, 품종별 색은 약하게만 반영한다.
+						p.Color = p.Color:Lerp(tint, 0.24)
+						if sa then sa.Color = sa.Color:Lerp(tint, 0.24) end
+					elseif not textured and not detail then
+						local light = math.max(p.Color.R, p.Color.G, p.Color.B)
+						p.Color = p.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
+						p.Material = if asset == "elephant" then Enum.Material.Slate
+							elseif asset == "pig" then Enum.Material.SmoothPlastic else Enum.Material.Fabric
+						if sa and sa.ColorMap == "" then sa.Color = p.Color end
+						-- SpecialMesh.VertexColor 이중 곱셈은 털색을 검게 만들므로 이 경로에서는 건드리지 않는다.
+					end
+				else
+					p.Color = tint
+					-- 질감이 있는 메시는 UsePartColor 를 켜야 Color 가 질감에 곱해진다(없는 속성이면 무시)
+					pcall(function() (p :: any).UsePartColor = true end)
+					local sc = SOLID_TREES[asset] or solidTint(asset)
+					if sc and p:IsA("MeshPart") then
+						p.TextureID = ""
+						p.Color = sc
+					end
+					-- Part + SpecialMesh 형태로 수입된 모델은 메시의 VertexColor 로 곱한다
+					for _, ch in p:GetChildren() do
+						if ch:IsA("SpecialMesh") then ch.VertexColor = Vector3.new(tint.R, tint.G, tint.B) end
+					end
+					-- 질감(SurfaceAppearance)이 있는 모델은 MeshPart.Color 가 무시되므로 질감 쪽 색도 함께 곱한다
+					local sa = p:FindFirstChildOfClass("SurfaceAppearance")
+					if sa then sa.Color = tint end
 				end
-				-- Part + SpecialMesh 형태로 수입된 모델은 메시의 VertexColor 로 곱한다
-				for _, ch in p:GetChildren() do
-					if ch:IsA("SpecialMesh") then ch.VertexColor = Vector3.new(tint.R, tint.G, tint.B) end
-				end
-				-- 질감(SurfaceAppearance)이 있는 모델은 MeshPart.Color 가 무시되므로 질감 쪽 색도 함께 곱한다
+			end
+			if architecture and importedWhite
+				and p.Material ~= Enum.Material.Glass and p.Material ~= Enum.Material.Metal
+				and p.Material ~= Enum.Material.Neon then
 				local sa = p:FindFirstChildOfClass("SurfaceAppearance")
-				if sa then sa.Color = tint end
+				local textured = (p:IsA("MeshPart") and p.TextureID ~= "")
+					or (sa and sa.ColorMap ~= "")
+				for _, child in p:GetChildren() do
+					if child:IsA("SpecialMesh") and child.TextureId ~= "" then textured = true end
+				end
+				if not textured then
+					-- 벽/지붕/문틀/돌계단을 구별한다. 원본 무늬 메시와 문화권별 집 색은 보존한다.
+					local name = (asset .. " " .. p.Name):lower()
+					local material, paint = Enum.Material.Brick, wallColor
+					if name:find("roof", 1, true) or name:find("tile", 1, true)
+						or name:find("gable", 1, true) or name:find("shingle", 1, true) then
+						material, paint = Enum.Material.Slate, roofColor
+						if tint then paint = paint:Lerp(tint, 0.8) end
+					elseif name:find("wood", 1, true) or name:find("timber", 1, true)
+						or name:find("beam", 1, true) or name:find("door", 1, true)
+						or name:find("frame", 1, true) or name:find("floor", 1, true)
+						or name:find("dock", 1, true) or name:find("platform", 1, true) then
+						material, paint = Enum.Material.WoodPlanks, C(117, 87, 62)
+						if tint then paint = paint:Lerp(tint, 0.32) end
+					elseif name:find("stone", 1, true) or name:find("grey", 1, true)
+						or name:find("column", 1, true) or name:find("castle", 1, true)
+						or name:find("tower", 1, true) or name:find("ruin", 1, true)
+						or name:find("bridge", 1, true) or name:find("ground-", 1, true) then
+						material = if sandy then Enum.Material.Sandstone else Enum.Material.Cobblestone
+						paint = wallColor:Lerp(C(122, 119, 113), if sandy then 0.18 else 0.48)
+						if tint then paint = paint:Lerp(tint, 0.42) end
+					elseif tint then
+						paint = paint:Lerp(tint, 0.86)
+					end
+					p.Material, p.Color, p.Reflectance = material, paint, 0
+					if sa and sa.ColorMap == "" then sa.Color = paint end
+					-- 원래 무텍스처 메시의 이중 색 곱셈을 막고 지정된 돌/벽돌 색을 그대로 표시한다.
+					for _, child in p:GetChildren() do
+						if child:IsA("SpecialMesh") then child.VertexColor = Vector3.new(1, 1, 1) end
+					end
+					restoredSurfaces += 1
+				end
 			end
 		end
 	end
 	if not hasParts then m:Destroy(); return nil end
+	if architecture then
+		m:SetAttribute("ArchitectureRestoredSurfaces", restoredSurfaces)
+		m:SetAttribute("ArchitectureCulture", currentKey)
+	end
 	local ok, err = pcall(function()
 		m.Parent = parent
 		local _, ext = m:GetBoundingBox()
@@ -596,7 +696,6 @@ local KEEPER_ROLE = {
 	["상인 길드"] = "Rogue_Hooded", ["학자의 서재"] = "Mage", ["도서관 (도감)"] = "Mage",
 }
 local OC = Color3.fromRGB
-local currentKey = "north"
 local currentYear = 1700
 local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 	role = role or ({ "Knight", "Barbarian", "Mage", "Rogue", "Rogue_Hooded" })[rng:NextInteger(1, 5)]
@@ -1601,15 +1700,24 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			wafrica = { "cow", "sheep", "chicken", "dog" },
 		}
 		-- 크기(길이 기준), 움직임(graze 풀뜯기 / peck 쪼기 / tail 꼬리·귀 / still 거의 가만히)
+		local animalVisual = PortBuildings.AnimalVisual
 		local KIND = {
 			duck = { 1.35, "peck" },
-			cow = { 3.4, "graze" }, horse = { 3.8, "graze" }, sheep = { 2.3, "graze" }, pig = { 2.2, "peck" }, llama = { 3.2, "graze" },
-			donkey = { 3.2, "graze" }, elephant = { 6.5, "still" }, chicken = { 1, "peck" }, dog = { 1.5, "tail" }, cat = { 1.1, "still" },
+			cow = { animalVisual.cow.size, "graze" }, horse = { animalVisual.horse.size, "graze" },
+			sheep = { animalVisual.sheep.size, "graze" }, pig = { animalVisual.pig.size, "peck" },
+			llama = { animalVisual.llama.size, "graze" }, donkey = { animalVisual.donkey.size, "graze" },
+			elephant = { animalVisual.elephant.size, "still" }, chicken = { animalVisual.chicken.size, "peck" },
+			dog = { animalVisual["dog-pug"].size, "tail" }, cat = { animalVisual.cat.size, "still" },
 		}
 		local list = SPECIES[key] or SPECIES.britain
 		local function animal(species, pos)
 			local k = KIND[species]
-			local m = if species == "duck" then nil else k and importedModel(folder, "Animals", if species == "dog" then "dog-pug" else species, pos, k[1], false)
+			local asset = if species == "dog" then "dog-pug" else species
+			local skin = animalVisual[asset]
+			-- [품종별 코트] 직업·서식지·사육량을 바꾸지 않도록 기존 RNG 소비 없이 좌표로만 품종을 선택한다.
+			local coatIndex = if skin then 1 + math.floor(math.abs(pos.X * 0.21 + pos.Z * 0.39 + #walkers * 0.67)) % #skin.coats else 0
+			local coat = if skin then skin.coats[coatIndex] else nil
+			local m = if species == "duck" then nil else k and importedModel(folder, "Animals", asset, pos, k[1], false, coat)
 			if species == "duck" then
 				-- 오리: 승인된 외부 메시가 아직 없으므로 기존 파트로 가벼운 입체 모델을 직접 제작한다.
 				m = Instance.new("Model")
@@ -1633,6 +1741,10 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				end
 			end
 			if not m then return end
+			-- [시각 진단] 실제 동물 몸체 스케일과 털색 품종. 저장 키·경제 가축 수가 아니다.
+			m:SetAttribute("AnimalSpecies", species)
+			m:SetAttribute("AnimalVisualSize", k and k[1] or 1.35)
+			m:SetAttribute("AnimalCoatIndex", coatIndex)
 			-- 가축은 월드 기준 회전이나 X/Z 축 기울기를 적용하지 않는다. 원본 방향을 제자리에서만 정규화한다.
 			local origin = m:GetPivot()
 			local forward = origin.LookVector
@@ -3825,7 +3937,11 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 				ring(x, z, 17, 17, "fence_straight")
 				local beasts = { "elephant", "llama", "horse", "donkey" }
 				for k = 1, 4 do
-					local m = importedModel(folder, "Animals", beasts[k], Vector3.new(x - 9 + (k % 2) * 18, 0, z - 9 + (k // 2) * 14), if beasts[k] == "elephant" then 8 else 5, false)
+					local species = beasts[k]
+					local visual = PortBuildings.AnimalVisual[species]
+					local m = importedModel(folder, "Animals", species,
+						Vector3.new(x - 9 + (k % 2) * 18, 0, z - 9 + (k // 2) * 14),
+						visual.size, false, visual.coats[(k - 1) % #visual.coats + 1])
 					if m then rotateAround(m, Vector3.new(x - 9 + (k % 2) * 18, 0, z - 9 + (k // 2) * 14), rng:NextNumber(0, math.pi * 2)) end
 				end
 				put("Town", "stall-red", 6, x, z + front * 19, false, face)
@@ -4743,13 +4859,20 @@ function PortScene.build(info, onFacility)
 		local cavalryVisible, mountedVisible = 0, 0
 		for i, side in { -1, 1 } do
 			local at = Vector3.new(frontX + 62, 0, side * 49)
-			local horse = if AssetIds["Animals/horse"] then importedModel(folder, "Animals", "horse", at, 4.1, false) else nil
+			-- [성체 군마] 기마 근위는 사람보다 작은 말이 아닌 실제 성체 실루엣·서로 다른 털색을 쓴다.
+			local cavalryHorse = PortBuildings.AnimalVisual.horse
+			local coat = cavalryHorse.coats[if i == 1 then 2 else 4]
+			local horse = if AssetIds["Animals/horse"] then importedModel(folder, "Animals", "horse", at,
+				cavalryHorse.size, false, coat) else nil
 			local saddleY = 0
 			if horse then
 				local box, span = horse:GetBoundingBox()
 				saddleY = math.max(1.5, box.Position.Y + span.Y * 0.13)
 				horse.Name = "RoyalLightCavalryHorse_" .. i
 				horse:SetAttribute("ShowcaseOnly", true)
+				horse:SetAttribute("AnimalSpecies", "horse")
+				horse:SetAttribute("AnimalVisualSize", cavalryHorse.size)
+				horse:SetAttribute("AnimalCoatIndex", if i == 1 then 2 else 4)
 			end
 			local rider = villager(folder, at + Vector3.new(0, saddleY, 0), math.pi, cavalryCoat, rng, "Knight", true, {
 				year = info.year or currentYear, profession = "royal_light_cavalry", companion = true,
