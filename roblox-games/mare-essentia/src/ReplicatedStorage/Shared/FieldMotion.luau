@@ -94,7 +94,7 @@ function FM.scale(canon, gain: number)
 end
 
 -- 사람형 적·동료: 상태(IDLE/RUN/ANTICIPATION/ATTACK/RECOVERY/HIT)와 위상(0~1)으로 자세를 만든다.
-function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?, rootRot: CFrame?, retreat: boolean?, skill: string?)
+function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?, rootRot: CFrame?, retreat: boolean?, skill: string?, weaponMotion: string?)
 	-- [상태 전이] 이전 프레임의 실제 관절 자세를 보존해 급작스러운 팔·다리 교체를 방지한다.
 	if h.lastActorState and h.lastActorState ~= state then
 		h.transitionPose = table.clone(h.canon)
@@ -339,6 +339,14 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("ThighL", 0.08 + recoil * 0.1, 0, 0)
 			bend("ThighR", 0.08 + recoil * 0.07, 0, 0)
 			bend("Chest", 0.08 + recoil * 0.13, 0, 0)
+		end
+	end
+	-- [몬스터 실무기 모션] 검/도끼/창/철퇴/활/석궁/총은 공용 무기 원본 관절 동작을 재생한다.
+	-- 공격 판정·타이밍·피해량은 기존 ActionCombat에 맡기고 시각 자세만 교체한다.
+	if state == "ATTACK" and weaponMotion then
+		local weaponCombo = FM.weaponCombo(weaponMotion, 1)
+		if weaponCombo then
+			FM.sample(weaponCombo, math.clamp((phase - 0.25) / 0.35, 0, 1) * weaponCombo.duration, h.canon)
 		end
 	end
 	-- [지연 회전] 공격 중에는 정확한 방향을 방해하지 않으며 이동/대기만 목·허리가 따라간다.
