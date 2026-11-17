@@ -47,7 +47,10 @@ export const GAMES = {
       facilities: M + 'mare-facilities.json',
       holes: M + 'mare-holes.json',
       poselab: M + 'mare-poselab.json',
-      assetsizes: M + 'asset-sizes.json'
+      assetsizes: M + 'asset-sizes.json',
+      regions: M + 'mare-regions.json',
+      ships: M + 'mare-ships.json',
+      weapons: M + 'mare-weapons.json'
     }
   }
 };
@@ -77,7 +80,10 @@ export const KINDS = {
   light: { base: 2, cooldown: 12 * 60, area: '조명 진단', group: 'background' },
   visual: { base: 2, cooldown: 12 * 60, area: '화면 연출 점검', group: 'background' },
   ladder: { base: 2, cooldown: 12 * 60, area: '비주얼 단계 점검', group: 'background' },
-  assetsizes: { base: 2, cooldown: 12 * 60, area: '에셋 크기 점검', group: 'assets' }
+  assetsizes: { base: 2, cooldown: 12 * 60, area: '에셋 크기 점검', group: 'assets' },
+  regions: { base: 4, cooldown: 4 * 60, area: '7대륙 지역·항구 실제 플레이 점검', group: 'regions' },
+  ships: { base: 5, cooldown: 4 * 60, area: '대륙별 36척 실물 선박 점검', group: 'ships' },
+  weapons: { base: 4, cooldown: 4 * 60, area: '무기별 전투·모션 점검', group: 'weapons' }
 };
 
 // ---- 신호 읽기: Studio report.json 의 HEALTH_* 줄을 구조로 바꾼다 -----------------------------
