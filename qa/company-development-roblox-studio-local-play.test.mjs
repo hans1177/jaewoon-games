@@ -4032,8 +4032,9 @@ test('Mare enemies and companions have grounded speed responsive R15 locomotion'
   assert.ok(field.includes('a.moveVel = previousVel:Lerp(wantedVel, 1 - math.exp(-accel * math.clamp(dt, 0, 0.1)))')&&
     field.includes('a.moveVel.Magnitude * math.clamp(dt'),
     'companions must accelerate and decelerate without snapping');
-  assert.ok(field.includes('math.clamp(a.moveVel.Magnitude / (if tgt then 16 else 20)'),
-    'companion gait must use actual movement speed');
+  assert.ok(field.includes('a.gait = (a.gait or 0) + walked / 5.2')&&
+    field.includes('math.clamp(walked / math.max(dt, 0.008) / maxSpeed, 0.12, 1.25)'),
+    'companion gait must advance by actual displacement and match the bounded walking speed');
   assert.ok(field.includes('AC.moveWish(e.ac, dist)')&&field.includes('AC.damageEnemy(')&&field.includes('AC.takeHit(pl,'),
     'original combat authority, attack/defense flows must remain');
 });
@@ -4180,7 +4181,7 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
     'original invulnerability authority and attack damage timing must be retained');
   assert.ok(scene.includes('if basicAttack == true then')&&
     scene.includes('local autoHeavyReady = basicAttack == true')&&
-    scene.includes('hitActionSeq, nil, moveId == "rush")')&&
+    scene.includes('hitActionSeq, nil, moveId == "rush", basicBeat)')&&
     !scene.includes('pl.basicAttackSeq')&&
     scene.includes('pl.autoNormalHits = (pl.autoNormalHits or 0) + 1')&&
     scene.includes('if pl.autoNormalHits % 5 == 0 then')&&
@@ -4198,7 +4199,8 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
   assert.ok(scene.includes('workspace.CurrentCamera.ViewportSize.X < 450')&&
     scene.includes('UDim2.fromOffset(if compactTouch then 118 elseif visualMobile then 128 else 112,')&&
     scene.includes('if compactTouch then 96 elseif visualMobile then 106 else 94')&&
-    scene.includes('if compactTouch then UDim2.new(1, -171, 1, -211)')&&
+    scene.includes('if compactTouch then UDim2.new(0, math.max(226, workspace.CurrentCamera.ViewportSize.X - 120), 1, -211)')&&
+    scene.includes('else UDim2.new(1, attackBtn.Position.X.Offset - 146, 1, attackBtn.Position.Y.Offset - 66)')&&
     scene.includes('combatBtns.dodge = { btn = b, label = "회피" }'),
     'large dodge and attack must be separated for thumb reach on portrait mobile');
   assert.ok(scene.includes('button.Name == "FieldAttack" or button.Name == "FieldDodge"')&&
@@ -4231,9 +4233,11 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
   }
   assert.ok(scene.includes('elseif dodgeStyle == "clergy" then')&&
     scene.includes('elseif dodgeStyle == "scholar" then')&&
-    scene.includes('CFrame.new(1.20 * side * press, 0.52 * press, 0)')&&
-    scene.includes('CFrame.new(-1.45 * side * press, -0.55 * press, 0)'),
-    'distinct large lateral sanctuary step and scholar low diagonal leap');
+    scene.includes('ch0:SetAttribute("FieldDodgeBeat", -(ch0:GetAttribute("FieldDodgeBeat") or -1))')&&
+    scene.includes('ch0:SetAttribute("FieldDodgeTrick", (ch0:GetAttribute("FieldDodgeTrick") or 0) % 6 + 1)')&&
+    scene.includes('pulseAt("BLOCK_IMPACT", landingGround, gold, pearl')&&
+    scene.includes('pulseAt("UPGRADE_BURST", originGround, cyan, violet'),
+    'distinct full-body clergy and scholar dodges must alternate six visual tricks without changing movement distance');
   assert.ok(scene.includes('math.sin(math.clamp(p, 0, 1) * math.pi) ^ 0.72')&&
     scene.includes('then 2.0 else 1.70')&&
     scene.includes('if swingKind == "dash" then 1.85 else nil'),
@@ -4283,7 +4287,7 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
     && field.includes('if ally.healer then table.insert(activeHealers, ally) end'),
     'companion skills and out-of-combat healer assistance must remain automatic');
   assert.ok(field.includes('not fieldStreakResult.credited[creditedSeq]')
-    && field.includes('if hits == 0 and hitActionSeq >= streakCountedSeq then endStreak("헛손질") end')
+    && field.includes('if hits == 0 and not sceneryHit and hitActionSeq >= streakCountedSeq then endStreak("헛손질") end')
     && field.includes('now - lastCombatAt >= 8')
     && field.includes('0.12 + math.min(healers, 2) * 0.18'),
     'cumulative streak must be scored per attack and passive healing must remain tiny and non-combat only');
