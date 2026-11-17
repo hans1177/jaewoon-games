@@ -378,6 +378,10 @@ test('스튜디오 탐험 실증은 현재 공격·회피 메달과 집안별 �
   assert.ok(live.includes('grade==2 then {"grunt","archer","shield"}'),'2단 편성 검증 필수');
   assert.ok(live.includes('{"grunt","archer","shield","charger"}'),'3단 이상 편성 검증 필수');
   assert.ok(live.includes('for _,role in expectedRoles do'),'실존 병종 R15 모션 모두 검사');
+  assert.ok(live.includes('{"thrower","boss"}'),'투척병·두목 별도 모션 역할도 실제 생성 시 검사');
+  assert.ok(live.includes('if grade>=3 then assert(roles.boss'),'상위 난이도 두목 실증 필수');
+  assert.ok(field.includes('elseif throwAsset then "thrower" else ac.kind'),
+    '기존 투척 무기 전용 모션 역할과 검사 일치 필수');
   assert.ok(live.includes('distinct>=math.min(3,#expectedRoles)'),'난이도에 맞는 다른 전신 자세 검증');
   assert.ok(live.includes('FIELD_SURVEY_PROMPTS_MISSING'),'현장 조사 지점 실제 생성 검사');
   assert.ok(live.includes('FIELD_SURVEY_KEY_CONFLICT'),'전투 E와 조사 T 분리 검증');
