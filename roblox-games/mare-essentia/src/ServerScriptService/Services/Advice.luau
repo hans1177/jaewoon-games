@@ -172,6 +172,25 @@ return function(D, S)
 			end
 		end
 
+		-- [시설별 조언] 전체 화면에 공통 경고 하나만 보여 주지 않고 실제 방문한 메뉴에서
+		-- 관련 직책의 동료가 조언하도록 교역·조선소·항해·전투·연구 주제를 구분한다.
+		local special = port and port.produces and port.produces[1]
+		local product = special and D.Ports.Goods[special]
+		if special and product then
+			add("menu_trade", 20, "trade", string.format("%s의 특산품 '%s'부터 시세를 비교하세요. 매입가와 다른 항구의 매도가 차이를 확인한 뒤 화물칸에 맞게 실으세요.",
+				port.name or "현재 항구", product.name or special), "trade", "교역 장부")
+		else
+			add("menu_trade", 20, "trade", "교역소에서 가격과 보유 화물을 비교하고, 다음 항구의 수요가 높은 물건을 골라 보세요.", "trade", "교역 장부")
+		end
+		if hasYard then
+			add("menu_yard", 20, "ship", string.format("지금 기함 선체는 %d%%입니다. 조선소에서 수리 비용·승조원·보급품과 새 선박의 화물칸을 비교해 보세요.", pct), "yard", "기함·정비 보기")
+		else
+			add("menu_yard", 20, "ship", "이 항구에는 조선소가 없어요. 인근 조선항을 확인하고 기함 수리와 다음 배의 성능을 비교하세요.", "yard", "조선항 찾기")
+		end
+		add("menu_route", 18, "route", string.format("현재 보급품은 %d개입니다. 목적지까지 걸리는 날짜와 해역 위험을 살핀 뒤 출항하세요.", state.ship.supplies), "route", "항로 살펴보기")
+		add("menu_battle", 17, "gun", "전투 전에 선체와 대포, 덱을 확인하세요. 준비가 부족하면 먼저 수리하고 가까운 해역의 적부터 만나 보세요.", "battle", "전투 준비")
+		add("menu_scholar", 17, "knowledge", "탐험에서 발견한 지식은 학자에게 보고해 이해한 지식으로 바꾸세요. 연구와 항해에 도움이 됩니다.", "scholar", "지식 보고")
+
 		table.sort(out, function(a, b)
 			return a.priority > b.priority
 		end)
