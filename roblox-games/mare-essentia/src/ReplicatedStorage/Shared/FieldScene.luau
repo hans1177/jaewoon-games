@@ -1733,9 +1733,14 @@ function FieldScene.start(opts)
 				ThighL = A(-0.88, 0, -0.11), ThighR = A(0.40, 0, 0.13), ShinL = A(1.05, 0, 0), FootL = A(0.32, 0, 0),
 			},
 			clergy = {
-				Spine = A(0.24, 0.13, 0), Chest = A(0.25, -0.16, 0.08), Head = A(-0.18, -0.11, 0),
-				UpperArmL = A(-1.00, 0, -0.50), UpperArmR = A(-1.00, 0, 0.50),
-				ThighL = A(-0.55, 0, -0.09), ThighR = A(0.38, 0, 0.11), ShinR = A(0.50, 0, 0),
+				-- [성역 도약] 두 팔로 커다란 보호 원을 펼치며 옆으로 몸을 던지고 한 발로 착지한다.
+				Spine = A(-0.24, 0.34, 0.32), Chest = A(-0.36, -0.34, -0.28), Head = A(0.18, 0.20, 0),
+				UpperArmL = A(-1.28, -0.24, -1.06), UpperArmR = A(-1.32, 0.24, 1.06),
+				ForearmL = A(-0.68, 0, 0), ForearmR = A(-0.68, 0, 0),
+				HandL = A(-0.30, 0, -0.32), HandR = A(-0.30, 0, 0.32),
+				ThighL = A(-0.83, 0, -0.33), ThighR = A(0.65, 0, 0.35),
+				ShinL = A(0.94, 0, 0), ShinR = A(-0.22, 0, 0),
+				FootL = A(0.46, -0.12, 0), FootR = A(-0.20, 0.12, 0),
 			},
 			doctor = {
 				Spine = A(0.20, -0.10, 0), Chest = A(0.30, 0.12, 0), Head = A(-0.16, 0.06, 0),
@@ -1753,9 +1758,14 @@ function FieldScene.start(opts)
 				ThighL = A(-0.69, 0, -0.28), ThighR = A(0.40, 0, 0.28), ShinL = A(0.58, 0, 0), FootR = A(0.14, 0, 0.24),
 			},
 			scholar = {
-				Spine = A(0.36, 0.07, 0), Chest = A(0.39, -0.12, 0), Head = A(-0.19, 0.11, 0),
-				UpperArmL = A(-1.03, 0, -0.16), UpperArmR = A(-0.84, 0, 0.24),
-				ThighL = A(-0.78, 0, -0.07), ThighR = A(0.50, 0, 0.07), ShinL = A(0.80, 0, 0),
+				-- [지식의 도약] 몸을 깊게 숙이고 한 팔로 머리를 감싼 채 반대 방향으로 크게 비껴뛴다.
+				Spine = A(0.65, -0.48, -0.34), Chest = A(0.56, 0.36, 0.26), Head = A(-0.36, 0.30, 0),
+				UpperArmL = A(-1.70, -0.16, -0.52), UpperArmR = A(-0.70, 0.32, 0.65),
+				ForearmL = A(-1.02, 0, -0.18), ForearmR = A(-0.38, 0, 0),
+				HandL = A(-0.22, 0, -0.30), HandR = A(0.24, 0, 0.20),
+				ThighL = A(-1.18, 0, -0.36), ThighR = A(0.74, 0, 0.32),
+				ShinL = A(1.28, 0, 0), ShinR = A(-0.35, 0, 0),
+				FootL = A(0.55, 0, -0.11), FootR = A(-0.32, 0, 0.15),
 			},
 		}
 		-- 몸 전체 움직임(마력숲처럼): 베기는 앞으로 숙이며 파고들고, 강타는 뛰어올라 내리찍고, 회전베기는 낮게 두 바퀴, 회피는 앞구르기
@@ -1800,7 +1810,13 @@ function FieldScene.start(opts)
 					return CFrame.new(0, -0.48 * press, 0) * CFrame.Angles(-0.22 * press, 0.18 * press, -0.15 * press)
 				elseif dodgeStyle == "merchant" then
 					return CFrame.new(0, -0.23 * press, 0) * CFrame.Angles(-0.12 * press, 0.30 * press, 0.18 * press)
-				elseif dodgeStyle == "clergy" or dodgeStyle == "doctor" or dodgeStyle == "scholar" then
+				elseif dodgeStyle == "clergy" then
+					-- 성직자: 부드러운 성역 측면 도약. 원점에서 끝 자세까지 영구 이동하지 않는 관절 오프셋.
+					return CFrame.new(1.35 * press, -0.35 * press, 0) * CFrame.Angles(-0.30 * press, 0.42 * press, 0.28 * press)
+				elseif dodgeStyle == "scholar" then
+					-- 학자: 반대쪽으로 몸을 크게 던지는 저공 비껴뛰기.
+					return CFrame.new(-1.55 * press, -0.62 * press, 0) * CFrame.Angles(-0.48 * press, -0.42 * press, -0.35 * press)
+				elseif dodgeStyle == "doctor" then
 					return CFrame.new(0, -0.32 * press, 0) * CFrame.Angles(0.14 * press, -0.22 * press, 0)
 				end
 				return CFrame.new(0, -0.30 * press, 0) * CFrame.Angles(-0.24 * press, -0.34 * press, 0)
@@ -1861,7 +1877,10 @@ function FieldScene.start(opts)
 					end
 					FM.sample(swingCombo, math.clamp(progress, 0, 1) * swingCombo.duration, canon)
 				else
-					local w = if swingKind == "guard" then math.min(1, p * 8) * (1 - math.max(0, (p - 0.85) / 0.15)) else math.sin(math.min(p, 1) * math.pi)
+					-- 회피는 짧은 0.4초에도 큰 자세가 충분히 보여야 하므로 극대점 전후 체류를 늘린다.
+					local w = if swingKind == "guard" then math.min(1, p * 8) * (1 - math.max(0, (p - 0.85) / 0.15))
+						elseif swingKind == "dash" then math.sin(math.clamp(p, 0, 1) * math.pi) ^ 0.72
+						else math.sin(math.min(p, 1) * math.pi)
 					local src
 					if swingKind == "guard" then
 						src = FM.combo("slash1", { "W:BLADE_SLASH_R" }).guard
@@ -1953,8 +1972,10 @@ function FieldScene.start(opts)
 			if swingKind then
 				rootRot = rootFor(swingKind, math.clamp((os.clock() - swingT0) / swingDur, 0, 1))
 			end
-			FM.scale(canon, 1.45) -- 주인공 공격·스킬 동작도 큼직하게
-			FM.step(pfm, dt, rootRot)
+			-- [거대한 회피] 성직자·학자 2.0배, 기타 직업 1.70배. 무기 공격 원래 자세는 1.45배 그대로.
+			FM.scale(canon, if swingKind == "dash" then
+				(if dodgeStyle == "clergy" or dodgeStyle == "scholar" then 2.0 else 1.70) else 1.45)
+			FM.step(pfm, dt, rootRot, if swingKind == "dash" then 1.85 else nil)
 		end))
 		table.insert(conns, { Disconnect = function()
 			if pfm then
