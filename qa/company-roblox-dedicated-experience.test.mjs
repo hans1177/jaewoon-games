@@ -1128,7 +1128,7 @@ test('Mare registered 36 ship models have seven regional battle signatures and s
   assert.match(battle,/local r2 = Combat\.board\(fa, fb, seed\)/,'boarding resolution remains unchanged');
   assert.match(client,/string\.format\("7대륙 선박 %d종 · 3D 원본 설계", #ShipsData\.Blueprints\)/);
   assert.doesNotMatch(client,/선박 35종|미지의 땅 2~6단계/);
-  assert.match(client,/elseif related then "연관 함종 존재·이 설계는 구매 미개방"/);
+  assert.match(client,/if shop then \(if shop.locked then shop.locked else "이 조선소에서 구매 가능"\)/,'all formerly unavailable ships now use the existing regional shop rules');
   assert.match(client,/if hasFull and hasMobile then "원본·모바일 경량판 등록"/);
 });
 
@@ -1191,7 +1191,7 @@ test('Mare all 36 designed ships have 23 new region-locked purchases and server-
   assert.match(sail,/trait\.shallow or 0/,'shallow hulls reduce reef injury only');
   assert.match(sail,/trait\.cargoGuard or 0/,'sealed cargo holds reduce rat spoilage');
   assert.match(sail,/trait\.evade or 0/,'pirate evasion stays inside existing server voyage');
-  assert.match(sail,/trait\.explore or 0/,'exploration career retains original XP rules');
+  assert.match(sail,/shipTrait\.explore or 0/,'exploration career retains original XP rules');
   assert.match(trade,/base \* \(1 - \(trait\.tariff or 0\)\)/,'sale percentage is unchanged; only foreign tariffs are reduced');
   assert.match(read('ReplicatedStorage/Shared/TradeMath.luau'),/MAX_SELL_RATE = 0\.95/,'same-port buy-sell abuse stays blocked');
   assert.match(battle,/sup\.cannonMult \+ \(trait\.cannon or 0\)/);
