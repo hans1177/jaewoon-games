@@ -4306,7 +4306,17 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
   assert.equal(steps.filter(row=>row.type==='capture').length,27);
   for(const id of names){
     assert.ok(steps.some(row=>row.code?.includes('WEAPON_QA_LAUNCHED:'+id)),'missing real scene: '+id);
-    assert.ok(steps.some(row=>row.code?.includes('WEAPON_R15_POSE_MISSING:'+id)),'missing five-stage sample: '+id);
+    assert.ok(steps.some(row=>row.code?.includes('WEAPON_R15_POSE_MISSING:'+id)),'missing full 10-stage sample: '+id);
+    const probe=steps.find(row=>row.code?.includes('WEAPON_QA_READY:'+id+':STAGES_1_TO_10'));
+    assert.ok(probe,'무기별 실제 Studio 10타 QA 누락: '+id);
+    assert.match(probe.code,/for stage=1,10 do/);
+    assert.match(probe.code,/for frame=0,24 do/);
+    assert.match(probe.code,/FM.sample\(combo,combo.duration\*\(frame\/24\),pose\)/);
+    assert.match(probe.code,/WEAPON_MOTION_FRAME_JUMP:/);
+    assert.match(probe.code,/WEAPON_MOTION_NONFINITE:/);
+    assert.match(probe.code,/WEAPON_MOTION_MANNEQUIN:/);
+    assert.match(probe.code,/movedChannels\[joint\]=true/);
+    assert.ok(!probe.code.includes('workspace:SetAttribute(\'DevFieldSkill\',\'attack\')'),'검사만 무기 전투를 재생하며 기존 공격 권한은 유지');
     for(const motion of ['SLASH','HEAVY','SPIN'])
       assert.ok(steps.some(row=>row.code?.includes('WEAPON_'+motion+'_R15_PASS:'+id)),'missing real input: '+id+'/'+motion);
     for(const suffix of ['a','b','sweep'])
