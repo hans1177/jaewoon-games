@@ -2268,6 +2268,8 @@ function FieldScene.start(opts)
 				-- 같은 광역 베기·일제 사격으로 여러 적을 맞혀도 기록은 1타만 오른다.
 				streakCountedSeq = streakActionSeq
 				if hitAt - streakT > streakLimit() then endStreak("시간 만료") end
+				local miracle = streakN >= 10 and (streakLimit() - (hitAt - streakT)) > 0
+					and (streakLimit() - (hitAt - streakT)) <= 0.5
 				streakN += 1
 				streakT = hitAt
 				for i = #streakRecent, 1, -1 do
@@ -2292,8 +2294,15 @@ function FieldScene.start(opts)
 				comboInfo.Text = string.format("%s · 초당 %.1f타 · 역대 %d연타", grade, pace, streakBest)
 				comboGauge.Visible = true
 				comboGaugeFill.Size = UDim2.fromScale(1, 1)
+				if miracle then
+					sfx("sfx_card_ring", 0.35, 1.4)
+					local _, root = char3()
+					if root then pulseAt("BUFF_PULSE", root.CFrame * CFrame.new(0, -1.8, 0), accent, Color3.new(1, 1, 1), 5, if visualMobile then 3 else 6) end
+				end
 				if streakN % 5 == 0 then
 					comboCinema(streakN, isRecord)
+				elseif miracle and not isRecord then
+					showCombo(string.format("%d연타 · 기적의 연결!", streakN), true, accent)
 				else
 					showCombo(string.format("%d연타 · %s%s", streakN, grade, if isRecord then " · 역대 신기록!" else ""), isRecord, accent)
 					if isRecord then sfx("sfx_card_ring", 0.52, 1.24) end
