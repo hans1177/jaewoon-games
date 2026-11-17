@@ -41,7 +41,8 @@ function Voyage.plan(
 	coalAvailable: number,
 	crew: number,
 	distanceKm: number,
-	windMult: number
+	windMult: number,
+	supplyFactor: number?
 ): Plan
 	local kmPerDay = speedKnots * KM_PER_KNOT_DAY
 	local days = 1
@@ -68,7 +69,8 @@ function Voyage.plan(
 	return {
 		distanceKm = distanceKm,
 		days = days,
-		supplies = Voyage.suppliesPerDay(crew) * days,
+		-- [특성 보급] 기존 항해 일수와 선단 선원 수를 그대로 사용하고 선박 보급 효율만 적용.
+		supplies = math.max(1, math.ceil(Voyage.suppliesPerDay(crew) * days * (supplyFactor or 1))),
 		coal = coal,
 	}
 end
