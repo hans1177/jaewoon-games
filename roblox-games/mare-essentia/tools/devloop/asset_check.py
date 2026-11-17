@@ -7,7 +7,9 @@ reg_path = os.path.join(root, sys.argv[2] if len(sys.argv) > 2 else "assets-regi
 reg = json.load(open(reg_path))["assets"]
 kinds = sorted({k.split("/")[0] for k in reg})
 p1 = re.compile(r'importedModel\([^,\n]+,\s*"(\w+)",\s*"([\w\-\.]+)"')
-p2 = re.compile(r'\{\s*"(%s)",\s*"([\w\-\.]+)"' % "|".join(kinds))
+# 모델 쌍의 세 번째 항목이 다른 모델 그룹 문자열이면 에셋 참조가 아니라 그룹 목록이다.
+# 예: { "Terrain", "Town", "Castle" } 는 Terrain/Town 모델이 아니다.
+p2 = re.compile(r'\{\s*"(%s)",\s*"([\w\-\.]+)"(?=\s*(?:\}|,\s*(?!\s*")))' % "|".join(kinds))
 p3 = re.compile(r'(?:place|addProp|placeModel)\((?:[^,\n"]+,\s*)?"(%s)",\s*"([\w\-\.]+)"' % "|".join(kinds))
 p4 = re.compile(r'\b(?:rowOf|one)\(\s*"(%s)",\s*"([\w\-\.]+)"' % "|".join(kinds))
 used, missing = set(), []
