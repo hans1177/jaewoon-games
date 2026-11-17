@@ -7068,8 +7068,10 @@ function FieldScene.start(opts)
 					and now < (o.counterUntil or 0) and now >= (o.nextDuelAt or 0)
 					and now >= (o.riseUntil or 0) and now >= (o.parryUntil or 0)
 					and (o.root.Position - hrp.Position).Magnitude <= o.ac.def.range * STUD + 5 then
-					nextCounter = o
-					break
+					-- [공정한 반격 순서] 방어 성공 후 반격권이 먼저 만료되는 적에게 차례를 양보한다.
+					if not nextCounter or (o.counterUntil or math.huge) < (nextCounter.counterUntil or math.huge) then
+						nextCounter = o
+					end
 				end
 			end
 		end
@@ -7414,7 +7416,22 @@ function FieldScene.start(opts)
 					-- 창병은 사거리 바깥에서 좌우 디딤 후 찌르기. 명중 거리 자체는 바꾸지 않는다.
 					intent, goal = "reach", hrp.Position - looking * (4.0 + spread * 0.25) + right * side * (6.5 + spread)
 				elseif e.ac.kind == "grunt" then
-					intent, goal = "flank", hrp.Position - looking * (3.8 + spread * 0.40) + right * side * (9.0 + spread)
+					-- [3인 협동] 같은 근접 무리가 전부 후방으로 몰리지 않게 선두 하나를 세운다.
+					-- 이미 방패병이 전면을 맡았으면 검병은 측면으로, 아니면 앞 번호 검병이 압박한다.
+					local hasFront = false
+					for mateIndex, mate in enemies do
+						if mate ~= e and not mate.ac.dead and mate.root and mate.root.Parent
+							and (mate.root.Position - hrp.Position).Magnitude <= 32
+							and (mate.ac.kind == "shield" or (mate.ac.kind == "grunt" and mateIndex < index)) then
+							hasFront = true
+							break
+						end
+					end
+					if hasFront then
+						intent, goal = "flank", hrp.Position - looking * (3.8 + spread * 0.40) + right * side * (9.0 + spread)
+					else
+						intent, goal = "frontline", hrp.Position + looking * (7.2 + spread * 0.25) + right * side * (2.0 + spread * 0.3)
+					end
 				elseif e.ac.kind == "charger" then
 					intent, goal = "ambush", hrp.Position - looking * (5.5 + spread * 0.55) + right * side * (10.5 + spread)
 				elseif e.ac.kind == "archer" then
@@ -7425,11 +7442,19 @@ function FieldScene.start(opts)
 						goal = hrp.Position + away.Unit * retreat + right * side * (7 + spread)
 					end
 				elseif e.boss then
+					-- [두목의 방어 읽기] 실제 방어 자세만 보고 측면으로 이동한다. 추가 공격이나 즉시 반격은 없다.
+					if pl.guarding and now >= (e.nextGuardReadAt or 0) then
+						e.guardReadUntil, e.nextGuardReadAt = now + 1.05, now + 5.5
+						e.tacticSide = -(e.tacticSide or 1)
+						side = e.tacticSide
+					end
 					local readingCombo = now < (e.bossReadUntil or 0)
-					intent = if readingCombo then "counter-flank" else "pressure"
-					goal = hrp.Position + looking * (if readingCombo then -3 else 8)
-						+ right * side * (if readingCombo then 10 + spread * 0.5 else 3 + spread * 0.5)
-					e.model:SetAttribute("FieldBossStance", if readingCombo then "reading" else "pressure")
+					local readingGuard = now < (e.guardReadUntil or 0)
+					local reading = readingCombo or readingGuard
+					intent = if readingCombo then "counter-flank" elseif readingGuard then "guard-flank" else "pressure"
+					goal = hrp.Position + looking * (if reading then -3 else 8)
+						+ right * side * (if reading then 10 + spread * 0.5 else 3 + spread * 0.5)
+					e.model:SetAttribute("FieldBossStance", if reading then "reading" else "pressure")
 				end
 				-- [협동 간격] 같은 지점으로 3명이 겹치지 않게 기존 목표를 옆으로 벌린다.
 				-- 0.65초마다만 1회 검사하며 동료끼리 공격력/충돌체는 바꾸지 않는다.
@@ -7615,7 +7640,9 @@ function FieldScene.start(opts)
 					local pace = math.clamp((e.moveVel or Vector3.zero).Magnitude / math.max(e.ac.def.speed, 1), 0, 1.4)
 					bob, roll, lean = math.abs(math.sin((e.gait or 0) * math.pi * 2)) * 0.075 * pace, math.sin((e.gait or 0) * math.pi * 2) * 0.03, -0.12 * pace
 				elseif st == "EVADE" then
-					bob, roll, lean = -0.18 * math.sin(ph * math.pi), (if (e.motionPhase or 0) < 0.5 then 1 else -1) * 0.20 * math.sin(ph * math.pi), -0.20
+					-- [회피 모션 정합] 임의 생성 위상이 아니라 AI가 실제 선택한 좌/우를 관절 회전에 쓴다.
+					local evadeSide = e.model:GetAttribute("FieldEnemyDodgeSide") or e.tacticSide or 1
+					bob, roll, lean = -0.18 * math.sin(ph * math.pi), evadeSide * 0.20 * math.sin(ph * math.pi), -0.20
 				elseif st == "HIT" then
 					roll = 0.25 * (1 - ph) * (if (e.spawnT * 100) % 2 < 1 then 1 else -1)
 				end

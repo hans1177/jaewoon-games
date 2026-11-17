@@ -927,6 +927,17 @@ test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 
   assert.match(combat,/A\.MELEE_TOKENS = 2/);
   assert.match(field,/e\.waiting = e\.ac\.state == "chase" and \(others >= AC\.MELEE_TOKENS[\s\S]*?e\.nextDuelAt/);
   assert.match(field,/AC\.stepEnemy\(e\.ac, enemyDt, dist, not e\.waiting\)/);
+  // [협동 AI 회귀] 3인 무리는 방패·검병 중 한 명만 정면을 맡고, 측면·원거리 지원과 반격 순서를 유지한다.
+  assert.match(field,/for mateIndex, mate in enemies do[\s\S]*?mate\.ac\.kind == "shield"/);
+  assert.match(field,/mateIndex < index/);
+  assert.match(field,/intent, goal = "flank"/);
+  assert.match(field,/intent, goal = "frontline"/);
+  assert.match(field,/nextCounter\.counterUntil/);
+  assert.match(field,/not nextCounter or/);
+  assert.match(field,/guardReadUntil, e\.nextGuardReadAt = now \+ 1\.05, now \+ 5\.5/);
+  assert.match(field,/intent = if readingCombo then "counter-flank" elseif readingGuard then "guard-flank"/);
+  assert.match(field,/local evadeSide = e\.model:GetAttribute\("FieldEnemyDodgeSide"\)/);
+  assert.match(field,/evadeSide \* 0\.20 \* math\.sin\(ph \* math\.pi\)/);
   assert.doesNotMatch(field,/AC\.stepEnemy\(e\.ac, enemyDt, dist, if e\.ac\.def\.keepAway or e\.ac\.def\.boss then true/);
   assert.match(field,/local band = math\.clamp\(\(flat\.Magnitude - ring\) \/ 6/);
   assert.match(field,/desired = \(tangent \* 0\.44 \+ flat\.Unit \* band\)/);
