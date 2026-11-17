@@ -1434,3 +1434,83 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
   assert.match(pose,/part\.CanCollide, part\.CanTouch, part\.CanQuery = false, false, false, false/);
 });
+
+// [가축 실물 비율·자연 품종색] 목장/동물원/왕궁 기마병/탐험 현장 공통 규격 회귀.
+test('성체 말과 주요 가축의 크기·품종색은 항구와 탐험이 공유하고 원본 텍스처를 보존한다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+ const config=read('ReplicatedStorage/Shared/PortBuildings.luau');
+ const assets=read('ReplicatedStorage/Shared/AssetIds.luau');
+ const species=['horse','cow','donkey','llama','sheep','pig','elephant','dog-pug','cat','chicken'];
+ for(const sp of species){
+  assert.ok(assets.includes('["Animals/'+sp+'"]'),'승인된 실물 동물 모델: '+sp);
+  assert.ok(config.includes(sp+' = { size = ')||config.includes('["'+sp+'"] = { size = '),'단일 실물 크기 규격: '+sp);
+ }
+ assert.match(config,/horse = \{ size = 8\.8,/);
+ assert.match(config,/cow = \{ size = 7\.3,/);
+ assert.match(config,/donkey = \{ size = 6\.5,/);
+ assert.match(config,/sheep = \{ size = 3\.8,/);
+ assert.match(config,/pig = \{ size = 4\.1,/);
+ assert.match(config,/elephant = \{ size = 13\.5,/);
+ assert.match(scene,/local animalVisual = PortBuildings\.AnimalVisual/);
+ assert.match(scene,/horse = \{ animalVisual\.horse\.size, "graze" \}/);
+ assert.match(scene,/local cavalryHorse = PortBuildings\.AnimalVisual\.horse/);
+ assert.match(scene,/cavalryHorse\.size, false, coat/);
+ assert.match(scene,/horse:SetAttribute\("AnimalVisualSize", cavalryHorse\.size\)/);
+ assert.match(scene,/if horse then mountedVisible \+= 1 end/);
+ assert.match(scene,/local coatIndex = if skin then 1 \+ math\.floor/);
+ assert.match(scene,/m:SetAttribute\("AnimalCoatIndex", coatIndex\)/);
+ assert.match(scene,/local textured = \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\) or \(sa and sa\.ColorMap ~= ""\)/);
+ assert.match(scene,/if not textured and not detail then/);
+ assert.match(scene,/local scale = if isAnimal then m:GetScale\(\) \* ratio else ratio/);
+ assert.match(scene,/if math\.abs\(actualAxis - desiredSize\) > desiredSize \* 0\.2 then/);
+ assert.match(field,/local PortBuildings = require\(script\.Parent:WaitForChild\("PortBuildings"\)\)/);
+ assert.match(field,/local sizes = PortBuildings\.AnimalVisual/);
+ assert.match(field,/placeModel\(folder, "Animals", species, pos, visual\.size, false, visual\.coats\[coatIndex\]\)/);
+ assert.match(field,/if not textured and not detail then/);
+ assert.match(field,/placed:SetAttribute\("ObservedSpecies", targetCard\.id\)/);
+ assert.match(scene,/for k = 1, grazeCount do/);
+ assert.match(scene,/for i = 1, lay\.pens do/);
+ assert.match(scene,/horse:SetAttribute\("ShowcaseOnly", true\)/);
+ assert.doesNotMatch(config,/DataStoreService/);
+});
+
+
+
+// [건물 흰색 복원] 텍스처 있는 실물은 유지하고 지역·부위별로 흰 기본 메시만 재질을 복구한다.
+test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 재질로 복구되고 저장·진행도를 보존한다',()=>{
+ const port=read('ReplicatedStorage/Shared/PortScene.luau');
+ const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+ const start=port.indexOf('local function importedModel(parent, kind, asset, bottomPosition');
+ const stop=port.indexOf('-- 등불:',start);
+ assert.ok(start>0&&stop>start,'기존 단일 수입 모델 책임 함수');
+ const block=port.slice(start,stop);
+ assert.ok(port.indexOf('local currentKey = "north"') < start,'문화권은 기존 importer에서 유효해야 한다');
+ for(const selector of ['asset:find("house"','asset:find("kenney_"','asset:find("quaternius_"',
+  'asset:find("wall"','asset:find("roof"','asset:find("stall"',
+  'kind == "Castle"','kind == "Terrain"','kind == "Naval"']){
+  assert.ok(block.includes(selector),'건물 유형별 복원 선택 누락: '+selector);
+ }
+ assert.match(block,/local importedWhite = low >= 0\.78 and high - low <= 0\.14/);
+ assert.match(block,/local east = currentKey == "japan"/);
+ assert.match(block,/local sandy = currentKey == "desert"/);
+ assert.match(block,/local mediterranean = currentKey == "iberia"/);
+ assert.match(block,/local textured = \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\)/);
+ assert.match(block,/sa and sa\.ColorMap ~= ""/);
+ assert.match(block,/child:IsA\("SpecialMesh"\) and child\.TextureId ~= ""/);
+ assert.match(block,/if architecture and importedWhite/);
+ assert.match(block,/if not textured then/);
+ assert.match(block,/Enum\.Material\.Brick, wallColor/);
+ assert.match(block,/Enum\.Material\.Slate, roofColor/);
+ assert.match(block,/Enum\.Material\.WoodPlanks/);
+ assert.match(block,/Enum\.Material\.Cobblestone/);
+ assert.match(block,/m:SetAttribute\("ArchitectureRestoredSurfaces", restoredSurfaces\)/);
+ assert.match(block,/m:SetAttribute\("ArchitectureCulture", currentKey\)/);
+ assert.match(port,/houseTier = sceneLevel/);
+ assert.match(port,/local tintColor = wallColor or style\.walls\[1\]/);
+ assert.match(field,/asset:find\("kenney_", 1, true\)/);
+ assert.match(field,/asset:find\("eastasia", 1, true\)/);
+ assert.match(field,/local textured = \(d:IsA\("MeshPart"\) and d\.TextureID ~= ""\)/);
+ assert.match(field,/if not textured and light >= 0\.80 and chroma <= 0\.13 then/);
+ assert.match(field,/culture = ad\.nation/);
+});
