@@ -4679,7 +4679,7 @@ function FieldScene.start(opts)
 			pulseAt("IMPACT_FLASH", CFrame.new(b.pos), Color3.fromRGB(242, 144, 72),
 				Color3.fromRGB(255, 238, 162), 3.5, if visualMobile then 2 else 5)
 			sfx("sfx_metal_clash", 0.31, 1.25)
-			return true
+			return "damaged"
 		end
 		table.remove(barrels, idx)
 		b.model:Destroy()
@@ -4708,7 +4708,7 @@ function FieldScene.start(opts)
 			end
 		end
 		say(if n > 0 then string.format("폭발! %d명 휘말렸다", n) else "폭발! 아무도 없었다")
-		return true
+		return "exploded"
 	end
 
 	-- 동작 하나를 쓴다: 규칙 검사(쿨타임·기력·콤보) → 모션 → 범위 안의 적을 친다
@@ -5186,6 +5186,8 @@ function FieldScene.start(opts)
 					end
 				end
 			end
+			-- 사물 타격은 오브젝트 반응만; 기존 몬스터 적중·무기숙련·최고 연타 기록으로 적립하지 않는다.
+			local sceneryHit = false
 			for _, b in table.clone(barrels) do
 				if rangedShot and shots >= 1 then break end
 				local tb = (b.pos - hrp.Position) * Vector3.new(1, 0, 1)
@@ -5195,7 +5197,10 @@ function FieldScene.start(opts)
 					ab = math.deg(math.acos(math.clamp(lk.Unit:Dot(tb.Unit), -1, 1)))
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, tb.Magnitude, ab) then
-					if explodeBarrel(b, hrp, hitActionSeq, if moveId == "heavy" then 2 else 1) then hits += 1 end
+					local result = explodeBarrel(b, hrp, hitActionSeq, if moveId == "heavy" then 2 else 1)
+					if result then sceneryHit = true end
+					-- 기존 1회 폭발만 적중/숙련 정산. 폭발 전 내구도 타격은 정산하지 않는다.
+					if result == "exploded" then hits += 1 end
 					if rangedShot then shots += 1 end
 				end
 			end
@@ -5208,14 +5213,13 @@ function FieldScene.start(opts)
 					ab = math.deg(math.acos(math.clamp(lk.Unit:Dot(tb.Unit), -1, 1)))
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, tb.Magnitude, ab) then
-					if breakCrate(c, if moveId == "heavy" then 2 else 1) then hits += 1 end
+					if breakCrate(c, if moveId == "heavy" then 2 else 1) then sceneryHit = true end
 					if rangedShot then shots += 1 end
 				end
 			end
 			-- [모든 장면 배경 타격] 기존 나무/암석/캠프/도시/퀘스트 랜드마크 메시가
 			-- 같은 무기 범위·각도에서 명중 섬광과 짧은 흔들림으로 반응한다.
 			-- 건물/단서는 파괴하지 않아 맵·퀘스트 진행을 막지 않고, 타격 숙련/보상도 지급하지 않는다.
-			local sceneryHit = false
 			local visualObjectHits = 0
 			local maxVisualHits = if visualMobile then 2 else 4
 			for _, obj in fieldObjects do
