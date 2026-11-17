@@ -3490,6 +3490,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				spread = if mortar then 58 else 36, axis = "forward",
 				n = math.max(1, math.floor((2 + stage * 0.8) * density)),
 				a0 = 0.56, drag = 2.5, acc = Vector3.new(0, 4, 0) },
+			-- [선측 포연] 포구 앞에서 짧은 그을음이 올라가 배와 화포가 한 몸처럼 보이게 한다.
+			{ tex = "smoke", c0 = Color3.fromRGB(108, 106, 106), c1 = theme.smoke,
+				s0 = 0.8, s1 = if mortar then 3.3 else 2.4, life = 0.85,
+				v0 = 2.0, v1 = 4.3, spread = 68, axis = "forward",
+				n = if MOBILE_VFX then 2 else 4, a0 = 0.67,
+				drag = 2.7, acc = Vector3.new(0, 4, 0) },
 		}, { color = theme.flash, bright = if MOBILE_VFX then 1.65 else 2.5 + stage * 0.27,
 			range = if mortar then 25 else 19, dur = if swivel then 0.12 else 0.23 })
 		if (longGun or mortar) and not MOBILE_VFX then
@@ -4158,6 +4164,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			Sfx.play("sfx_cannon", 0.26 + stage * 0.025, 0.82 - stage * 0.016)
 		end
 		FX.muzzle(from, (to - from).Unit, style, nc)
+		-- [실제 포구 반동] 발사한 승인 선체 메시의 포격 방향만 기록한다. 속도·피해·장전은 변경하지 않는다.
+		if shooter then
+			local fireAxis = toPos - fromPos
+			local shipRight = Vector3.new(-math.sin(shooter.theta), 0, math.cos(shooter.theta))
+			shooter.recoilAt = os.clock()
+			shooter.recoilSide = if shipRight:Dot(fireAxis) >= 0 then -1 else 1
+			shooter.recoilForce = math.clamp(nc.ball * 0.11, 0.08, 0.26)
+		end
 		if nearShip and stage >= 2 and not MOBILE_VFX then
 			task.delay(math.min(0.22, nc.dur * 0.40), function()
 				if not finished then Sfx.play("sfx_sail_fabric", 0.13, 1.35 + stage * 0.025) end
@@ -4251,6 +4265,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local hp = sh.hp or 1
 		local heel = (1 - hp) * 0.28 * (sh.heelSide or 1)
 		local pitch = math.clamp((sh.speed or 0) / 90, 0, 0.1) + math.sin(t * 0.9 + sh.length) * 0.03
+		-- [발사 순간 반동] 실제 모델 Pivot만 아주 짧게 흔들린 뒤 감쇠한다.
+		if sh.recoilAt then
+			local age = t - sh.recoilAt
+			if age >= 0 and age < 0.50 then
+				local pulse = math.exp(-age * 9) * math.sin(age * 23)
+				heel += (sh.recoilSide or 1) * (sh.recoilForce or 0.1) * pulse
+				pitch += (sh.recoilForce or 0.1) * 0.32 * pulse
+			end
+		end
 		local dip, rollAdd, pitchAdd = -(1 - hp) * 1.6, 0, 0
 		if sink then
 			-- [5가지 선체 침몰] 기존 승인 모델의 Pivot만 움직인다. 함종·피격 방향·화재 상태를 반영한다.
@@ -4941,6 +4964,19 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				sink.nextSplash = now + (if MOBILE_VFX then 0.85 else 0.50)
 				FX.splash(ORIGIN + Vector3.new(endPos.X, 0, endPos.Z), sunk.fx,
 					math.clamp(1.1 + k * 1.5 + sunk.length / 90, 1.0, 3.0))
+				-- [침수선] 뱃전 양옆 포말이 함선과 함께 커진다. 새로운 원통·네모 도형은 사용하지 않는다.
+				local beam = Vector3.new(-forwardShip.Z, 0, forwardShip.X)
+				local foamTint = (sunk.fx and sunk.fx.theme and sunk.fx.theme.foam) or Color3.fromRGB(238, 248, 252)
+				for side = -1, 1, 2 do
+					FX.burst(ORIGIN + sunk.pos + beam * (side * sunk.length * 0.17)
+						+ Vector3.new(0, 0.26, 0), beam * side + Vector3.new(0, 0.20, 0), {
+						{ tex = "spark", c0 = Color3.fromRGB(246, 255, 255), c1 = foamTint,
+							s0 = 0.45 + k * 0.25, s1 = 0.03, life = 0.61,
+							v0 = 3, v1 = 8 + k * 5, spread = 65, axis = "forward",
+							n = if MOBILE_VFX then 4 else 8, a0 = 0.23, drag = 3,
+							acc = Vector3.new(0, -11, 0) },
+					})
+				end
 				if k > 0.3 and not MOBILE_VFX then
 					FX.splinters(ORIGIN + sunk.pos + Vector3.new(0, 4 - k * 6, 0), 4)
 				end
@@ -4950,9 +4986,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				sink.nextSmoke = now + (if MOBILE_VFX then 1.05 else 0.65)
 				local mist = (sunk.fx and sunk.fx.theme) or FX_THEMES.europe
 				FX.burst(ORIGIN + sunk.pos + Vector3.new(0, 7 - k * 7, 0), nil, {
-					{ tex = "smoke", c0 = C_DARK, c1 = mist.smoke, s0 = 6 + k * 4, s1 = 19 + k * 13,
-						life = 2.8, v0 = 6, v1 = 15, spread = 48, n = if MOBILE_VFX then 5 else 11,
-						a0 = 0.30, acc = Vector3.new(0, 5, 0), drag = 1.6 },
+					-- [침몰 구도] 큰 연기가 선박 전체를 가리지 않도록 연기 입자의 크기와 불투명도를 줄인다.
+					{ tex = "smoke", c0 = C_DARK, c1 = mist.smoke, s0 = 3.8 + k * 2, s1 = 11 + k * 9,
+						life = 2.35, v0 = 5, v1 = 11, spread = 48, n = if MOBILE_VFX then 4 else 9,
+						a0 = 0.43, acc = Vector3.new(0, 5, 0), drag = 1.6 },
 				})
 			end
 			if sink.mode == "fire" and now >= (FX.sinkFlameAt or 0) and k < 0.88 then
@@ -5285,12 +5322,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			-- 항복·접현 승리는 침몰을 연출하지 않고 두 함선을 보여 준다.
 			local damaged = if loser == "me" then me else foe
 			local winnerShip = if opts.winner == "a" then me elseif opts.winner == "b" then foe else me
-			local showingSinking = FX.sink and now - endAt < FX.sink.duration * 0.72
+			-- [침몰 시네마] 배가 수면 밑으로 사라질 때까지 선체를 따라 내려보고 이후 승전함으로 전환한다.
+			local sinkingTime = if FX.sink then math.clamp((now - endAt) / FX.sink.duration, 0, 1) else 0
+			local showingSinking = FX.sink and sinkingTime < 0.91
 			local focusShip = if showingSinking then damaged else winnerShip
-			local shot = ORIGIN + focusShip.pos + Vector3.new(0, if showingSinking then 7 else 9, 0)
+			local shot = ORIGIN + focusShip.pos + Vector3.new(0,
+				if showingSinking then math.max(1, 7 - sinkingTime * 5) else 9, 0)
 			local retreat = forward(focusShip.theta)
-			local desired = shot - retreat * (if showingSinking then 95 else 110)
-				+ Vector3.new(35, if showingSinking then 27 else 36, 22)
+			local desired = shot - retreat * (if showingSinking then 95 - sinkingTime * 12 else 110)
+				+ Vector3.new(35, if showingSinking then 27 - sinkingTime * 8 else 36, 22)
 			focus = focus:Lerp(shot, 0.92)
 			camPos = camPos:Lerp(desired, if MOBILE_VFX then 0.78 else 0.91)
 			cam.FieldOfView = 66 - (if showingSinking then 7 else 3) * math.clamp((now - endAt) / 1.5, 0, 1)
