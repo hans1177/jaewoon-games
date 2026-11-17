@@ -222,8 +222,14 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("Chest", -0.14 * (1 - phase), 0, 0)
 		end
 	elseif role == "archer" then
-		-- 사수: 예고 단계에 두 손으로 조준하고 타격 후 팔을 낮춘다.
-		if attack then
+		-- [화약 투척병] 승인된 실제 폭탄 모델을 오른손에서 던지는 독립 R15 모션.
+		if attack and h.model:GetAttribute("EnemyWeaponId") == "bomb" then
+			local throw = if state == "ANTICIPATION" then 1 - math.clamp(phase, 0, 1) * 0.25 else -0.5
+			bend("UpperArmR", -1.25 * throw, 0, 0.35)
+			bend("ForearmR", -0.55 * throw, 0, 0)
+			bend("UpperArmL", -0.16, 0, -0.1)
+			bend("Chest", 0.24 * throw, -0.24 * throw, 0)
+		elseif attack then
 			bend("UpperArmL", -0.72 - pulse * 0.24, 0, -0.14)
 			bend("UpperArmR", -0.92 - pulse * 0.16, 0, 0.17)
 			bend("ForearmL", -0.38, 0, 0)
