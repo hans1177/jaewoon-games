@@ -4242,24 +4242,38 @@ test('Mare 36 designed ships have source-verified registered models and seven-co
   const assetIds=fs.readFileSync(base+'src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
   const port=fs.readFileSync(base+'src/ReplicatedStorage/Shared/PortScene.luau','utf8');
   const registry=JSON.parse(fs.readFileSync(base+'assets-registered.json','utf8')).assets;
-  const blueprints=[...ships.matchAll(/\{ id="([^"]+)", name="([^"]+)", faction="([^"]+)", stage=(\d+)/g)]
-    .map(m=>({id:m[1],faction:m[3],stage:Number(m[4])}));
+  // [실물 36척 치수] 6개 미지 대륙 함종은 치수 필드가 stage 바로 뒤에 있지 않으므로
+  // 항목별 전체 정의 행에서 실제 길이·폭·돛대 높이를 확인한다.
+  const blueprintLines=ships.split('\n').filter(row=>/^\s*\{ id="[^"]+", name="[^"]+", faction="[^"]+", stage=\d+/.test(row));
+  const blueprints=blueprintLines.map(row=>{
+    const field=name=>row.match(new RegExp('\\b'+name+'=([\\d.]+)'))?.[1];
+    return {id:row.match(/\bid="([^"]+)"/)?.[1],faction:row.match(/\bfaction="([^"]+)"/)?.[1],
+      stage:Number(field('stage')),length:Number(field('targetLengthStuds')),
+      beam:Number(field('targetBeamStuds')),mast:Number(field('targetMastHeightStuds'))};
+  });
   assert.equal(blueprints.length,36);
   assert.equal(new Set(blueprints.map(bp=>bp.id)).size,36);
-  const aliases={galleon:'galleon-heritage',atlantic_brigantine:'brigantine-custom',zanzibar_jahazi:'jahazi-custom'};
-  const factions=new Map();
+  const aliases={galleon:'galleon-heritage'};
+  const factions=new Map(), registeredIds=new Set(), originalHashes=new Set();
   for(const bp of blueprints){
     factions.set(bp.faction,(factions.get(bp.faction)||0)+1);
+    assert.ok(Number.isFinite(bp.length)&&bp.length>=24&&bp.length<=56,'invalid ship length: '+bp.id);
+    assert.ok(Number.isFinite(bp.beam)&&bp.beam>=7&&bp.beam<bp.length/2,'invalid ship beam: '+bp.id);
+    assert.ok(Number.isFinite(bp.mast)&&bp.mast>=14&&bp.mast<=50,'invalid ship mast: '+bp.id);
     const model=aliases[bp.id]||bp.id+'-custom',key='Naval/'+model;
     const asset=registry[key];
     assert.ok(asset&&asset.usePermissionGranted===true&&asset.assetId&&asset.sourceSha256,'missing registered source: '+bp.id);
     assert.equal(asset.assetType,'Model','not a model: '+bp.id);
+    assert.ok(!registeredIds.has(String(asset.assetId)),'shared ship asset ID: '+bp.id);
+    registeredIds.add(String(asset.assetId));
     const file=base+'assets/naval/'+model+'.glb';
     const bytes=fs.readFileSync(file);
     assert.equal(bytes.toString('ascii',0,4),'glTF','not a GLB: '+model);
     assert.equal(bytes.readUInt32LE(8),bytes.length,'GLB byte size mismatch: '+model);
     const sourceHash=crypto.createHash('sha256').update(bytes).digest('hex');
     assert.equal(sourceHash,asset.sourceSha256,'outdated Roblox registration: '+model);
+    assert.ok(!originalHashes.has(sourceHash),'duplicate 3D hull binary: '+bp.id);
+    originalHashes.add(sourceHash);
     const proof=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
     assert.equal(proof.sourceSha256,sourceHash,'model proof mismatch: '+model);
     assert.ok(proof.author&&proof.source&&proof.license,'missing model lineage: '+model);
@@ -4270,6 +4284,7 @@ test('Mare 36 designed ships have source-verified registered models and seven-co
   assert.match(port,/for _, blueprint in ShipsMod.Blueprints do/);
   assert.match(port,/BLUEPRINT_SHIP_SIZE\[shipId\] or 26 \* s/);
   assert.match(port,/SHIP_MESH\[blueprint.id\] = meshName/);
+  assert.doesNotMatch(port,/blueprintMeshSources/,'unverified shared hull must never substitute a unique blueprint');
   const steps=JSON.parse(fs.readFileSync(base+'tools/devloop/studio-scripts/mare-ships.json','utf8'));
   const expected=['europe','east_asia','new_world','middle_east','southeast_asia','africa','lost'];
   assert.equal(steps.filter(x=>x.type==='capture').length,7);
@@ -4277,5 +4292,7 @@ test('Mare 36 designed ships have source-verified registered models and seven-co
     assert.ok(steps.some(x=>x.type==='capture'&&x.name==='ships_'+f),'missing continent capture: '+f);
     assert.ok(steps.some(x=>x.code?.includes('SHIP_CONTINENT_RUNTIME_PASS:'+f)),'missing runtime loading: '+f);
   }
+  assert.ok(!steps.some(x=>x.code?.includes('atlantic_brigantine="brigantine-custom"')
+    || x.code?.includes('zanzibar_jahazi="jahazi-custom"')),'Studio must load two new unique original GLBs');
   assert.ok(steps.some(x=>x.code?.includes('SHIP_36_PREVIEW_CLEAN_EXIT_PASS')));
 });
