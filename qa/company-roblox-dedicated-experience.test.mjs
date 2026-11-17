@@ -1181,7 +1181,7 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
     'if i == 1 then -250 else -170',
     'local panel = Instance.new("ScrollingFrame")',
     'panel.CanvasSize = UDim2.fromOffset(0, entriesHeight)',
-    'panel.Visible = battleViewport.X >= 720 or battleViewport.Y >= 520',
+    'panel.Visible = battleViewport.Y >= 380 and (battleViewport.X >= 720 or battleViewport.Y >= 520)',
     'math.min(entriesHeight, availableHeight)',
     'reloadBack.Visible = not opts.cardOnly and (battleViewport.X >= 720',
     'string.format("장전 %.1f초", math.max(0, nextMeFire - now))',
