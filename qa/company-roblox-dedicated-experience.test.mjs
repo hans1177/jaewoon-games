@@ -1070,7 +1070,7 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/FX\.boardZoom \+=/,'boarding cinematic transitions smoothly');
   assert.match(battle,/cam\.FieldOfView = 76 .* - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom is visual-only and scales by tier');
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/,'mobile deck fires stay capped and desktop ship tiers scale');
-  assert.match(battle,/if MOBILE_VFX then 24 else 40/,'mobile range outline has bounded parts');
+  assert.match(battle,/if MOBILE_VFX then 28 else 40/,'mobile range outline has bounded parts');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun-fire range is unchanged');
   assert.match(battle,/rtDamage\(false, base \* acc\)/,'existing damage authority is unchanged');
   assert.match(battle,/local r2 = Combat\.board\(fa, fb, seed\)/,'boarding resolution is unchanged');
@@ -1086,7 +1086,8 @@ test('Mare naval steering, smooth hulls, aiming and battle presentation stay con
   assert.ok(battle.includes('steerDir = if math.abs(nx) < 0.12 then 0 else nx'));
   assert.ok(battle.includes('steerDir = -1 -- [좌현 조향]'));
   assert.ok(battle.includes('elseif i.KeyCode == Enum.KeyCode.D or i.KeyCode == Enum.KeyCode.Right then\n\t\t\tsteerDir = 1'));
-  assert.ok(battle.includes('me.theta += steerDir * (if now < skillUntil.evade then 2.6 else 1.5) * dt'));
+  assert.ok(battle.includes('me.theta += steerDir * turnSign * (if now < skillUntil.evade then 2.6 else 1.5) * dt'));
+  assert.ok(battle.includes('local turnSign = if rightTurn:Dot(cam.CFrame.RightVector) < -0.05 then -1 else 1'));
   assert.doesNotMatch(battle,/TextStrokeTransparency\s*=\s*0\./,'battle labels are clean fonts without stroke blur');
   assert.ok(battle.includes('f.Visible = star or battleViewport.X >= 480'));
   assert.ok(battle.includes('skip = mkBtn("건너뛰기", UDim2.new(1, -12'));
@@ -1099,9 +1100,9 @@ test('Mare naval steering, smooth hulls, aiming and battle presentation stay con
   assert.ok(battle.includes('local aimAngle = if dd > 0.1 then math.deg(math.acos'));
   assert.ok(battle.includes('local sideDeviation = math.floor(math.abs(90 - aimAngle) + 0.5)'));
   assert.ok(battle.includes('local aligned = broadside > 0.5'),'gun-angle display cannot redefine existing fire rule');
-  assert.ok(battle.includes('local scanAngle = (now * 1.85) % tau'));
-  assert.ok(battle.includes('sweep.Width0, sweep.Width1 = 0.04'));
-  assert.ok(battle.includes('if trailAngle < 1.65'));
+  assert.ok(battle.includes('local scanAngle = (now * 2.45) % tau'));
+  assert.ok(battle.includes('sweep.Width0, sweep.Width1 = 0.035'));
+  assert.ok(battle.includes('if trailAngle < 1.45'));
   assert.ok(battle.includes('nextSmoke = now + 0.18'));
   assert.ok(battle.includes('n = if MOBILE_VFX then 5 else 11'));
   assert.ok(battle.includes('s1 = 19 + k * 13'));
