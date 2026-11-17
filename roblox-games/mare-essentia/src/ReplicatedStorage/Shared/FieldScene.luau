@@ -3882,7 +3882,24 @@ function FieldScene.start(opts)
 					local destination = e.bombAim
 					task.delay(math.max(0, e.ac.def.windup - 0.32), function()
 						if finished or not folder.Parent or not e.model.Parent or e.ac.dead or e.ac.state ~= "windup" then return end
+						-- [실물 투척] 발사한 순간 오른손에 든 동일 폭탄을 감춘다.
+						-- 복제품이 날아가 착탄한 뒤 다음 투척 준비 전에 원래 메시 투명도로 복구한다.
+						local held = e.model:FindFirstChild("FieldWeapon")
+						local hidden = {}
+						if held and e.model:GetAttribute("EnemyWeaponId") == "bomb" then
+							for _, part in held:GetDescendants() do
+								if part:IsA("BasePart") then
+									table.insert(hidden, { part = part, alpha = part.Transparency })
+									part.Transparency = 1
+								end
+							end
+						end
 						arrowTrail(e.root.Position + Vector3.new(0, 2.6, 0), destination + Vector3.new(0, -1.8, 0), "bomb", 0.32)
+						task.delay(0.32 + math.min(e.ac.def.recover * 0.65, 1.2), function()
+							for _, item in hidden do
+								if item.part.Parent then item.part.Transparency = item.alpha end
+							end
+						end)
 					end)
 				end
 				-- 돌진병은 달려들 길(붉은 띠), 사수는 조준선(붉은 빔)을 보여 준다: 예고 중에 비키면 피할 수 있다
