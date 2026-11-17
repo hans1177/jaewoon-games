@@ -620,6 +620,10 @@ function FieldScene.start(opts)
 	folder:SetAttribute("FieldQuestTerrainTheme", questTerrain)
 	local mirror = if (math.floor(tonumber(opts.seed) or 7) % 2 == 0) then 1 else -1
 
+	-- [디아블로식 타격 월드] 탐험 중 놓인 기존 승인된 나무·암석·건축물 메시를 공격 판정에도 등록한다.
+	-- 중요 건물/조사 랜드마크는 전투 연출만 반응하고 제거하지 않는다(퀘스트 경로 보호).
+	-- 필드 종료와 함께 자동 소멸하는 로컬 객체 목록으로 저장·보상에는 관여하지 않는다.
+	local fieldObjects = {}
 	-- [실물 배경 통합 배치] 나무·바위·문화권 소품·퀘스트 건축물 모두 기존 승인된 원본으로만 생성한다.
 	-- AssetLoader가 뒤늦게 등록한 모델도 같은 좌표에 한 번만 배치한다. 새 파츠 대체는 하지 않는다.
 	local pending = {}
@@ -640,6 +644,13 @@ function FieldScene.start(opts)
 		if entry[7] and entry[7] ~= 0 then
 			m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, math.rad(entry[7]), 0) * CFrame.new(-pos) * m:GetPivot())
 		end
+		-- 모든 승인된 필드 장식은 무기로 타격 가능. 큰 랜드마크는 시각 반응만 하고 영구 파괴하지 않는다.
+		local center, extent = m:GetBoundingBox()
+		m:SetAttribute("FieldCombatObject", true)
+		m:SetAttribute("FieldObjectHits", 0)
+		table.insert(fieldObjects, { model = m, pos = center.Position,
+			radius = math.clamp(math.max(extent.X, extent.Z) * 0.24, 1.4, 7.5),
+			origin = m:GetPivot(), lastHit = -100 })
 		-- 대표 건축물은 지연 로드돼도 지명 표지판을 놓친 채 끝나지 않게 한다.
 		if entry.title and not folder:GetAttribute("FieldNamedLandmarkTitle") then
 			local adorn = m:FindFirstChildWhichIsA("BasePart", true)
@@ -1019,6 +1030,8 @@ function FieldScene.start(opts)
 	end
 	end
 
+	-- [스코프 공유] 게임 시작 시 장식 배치 흐름에서 생성된 로컬 모델 목록만 전투가 참조한다.
+	-- [배경 접속] 기존 장면 do 스코프 안에서 누적되므로 아래 공격 판정에 참조를 전달한다.
 	-- 상태
 	local pl = AC.newPlayer(100)
 	local BASE_DMG = 10
