@@ -1556,6 +1556,7 @@ function FieldScene.start(opts)
 			glint.Position = UDim2.fromScale(0.1 + (i % 5) * 0.2, if i <= 5 then 0.11 else 0.92)
 			glint.BackgroundColor3 = Color3.fromRGB(255, 224, 142)
 			glint.BorderSizePixel = 0
+			Instance.new("UICorner", glint).CornerRadius = UDim.new(1, 0) -- [완료 보상] 사각 픽셀 대신 둥근 광점
 			glint.ZIndex = 26
 			glint.Parent = completePopup
 			TweenService:Create(glint, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
@@ -1584,8 +1585,13 @@ function FieldScene.start(opts)
 
 	local questHint = label(gui, "", 13, Color3.fromRGB(254, 229, 162))
 	questHint.Name = "FieldQuestHint"
-	questHint.Position = UDim2.fromOffset(12, if compactTouch then 186 else 173)
-	questHint.Size = UDim2.fromOffset(if compactTouch then 206 else 230, 42)
+	-- [모바일 퀘스트] 가로 화면에서는 이동 조이스틱 및 동료 HUD와 분리한다.
+	questHint.Position = if compactTouch then UDim2.fromOffset(12, 186)
+		elseif visualMobile and not compactTouch and workspace.CurrentCamera
+			and workspace.CurrentCamera.ViewportSize.X < 720
+			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 256)
+		elseif visualMobile then UDim2.fromOffset(12, 158) else UDim2.fromOffset(12, 173)
+	questHint.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 212 else 230, 42)
 	questHint.TextWrapped = true
 	questHint.TextXAlignment = Enum.TextXAlignment.Left
 	if targetCard then
@@ -1597,7 +1603,8 @@ function FieldScene.start(opts)
 	for i = 1, nodeCount do
 		local pos = ORIGIN + scatter(30)
 		local special = i == 1 and targetCard ~= nil
-		local anchor = part(folder, Vector3.new(3, 3, 3), CFrame.new(pos + Vector3.new(0, 1.5, 0)), Color3.fromRGB(255, 214, 120), Enum.Material.Neon)
+		local anchor = part(folder, Vector3.new(3, 3, 3), CFrame.new(pos + Vector3.new(0, 1.5, 0)), Color3.fromRGB(255, 214, 120), Enum.Material.Neon, Enum.PartType.Ball)
+		-- [발견 표시] 조사 판정 크기는 유지하고 네모난 발광 상자만 구형으로 바꾼다.
 		anchor.Transparency = if special then 1 else 0.35
 		anchor.CanCollide = false
 		anchor.CanQuery = false
@@ -1685,6 +1692,7 @@ function FieldScene.start(opts)
 				local clue = part(folder, Vector3.new(2.2, 0.35, 2.2), CFrame.new(cluePos + Vector3.new(0, 0.25, 0)),
 					Color3.fromRGB(164, 138, 79), Enum.Material.Slate)
 				clue.Name = "FieldEvidence" .. clueIndex
+				clue.Shape = Enum.PartType.Ball -- [희귀 흔적] 원본 크기를 유지한 둥근 납작돌
 				clue.CanCollide = false
 				local cluePrompt = Instance.new("ProximityPrompt")
 				cluePrompt.ActionText = if isWildlife then "동물 흔적 조사" else "현장 단서 조사"
@@ -2001,7 +2009,12 @@ function FieldScene.start(opts)
 		local flashUntil, flashNext = 0, clockStart + 16
 		local timeLabel = label(gui, "", 13, Color3.fromRGB(231, 239, 244))
 		timeLabel.Name = "FieldWeatherClock"
-		timeLabel.Position = UDim2.fromOffset(12, if compactTouch then 232 else 216)
+		-- [기후 HUD] 모바일 가로에서 왼쪽 이동패드를 덮지 않게 오른쪽 정보열로 이동.
+		timeLabel.Position = if compactTouch then UDim2.fromOffset(12, 232)
+			elseif visualMobile and not compactTouch and workspace.CurrentCamera
+			and workspace.CurrentCamera.ViewportSize.X < 720
+			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 304)
+			elseif visualMobile then UDim2.fromOffset(184, 270) else UDim2.fromOffset(12, 216)
 		timeLabel.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 252 else 300, 26)
 		timeLabel.TextSize = 12
 		timeLabel.TextXAlignment = Enum.TextXAlignment.Left
