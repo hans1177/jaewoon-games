@@ -3713,7 +3713,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if math.random() < 0.3 then
 					FX.smoke(at, 1, 2.6, true)
 				end
-				if math.random() < 0.5 then
+				-- [모바일 예산] 침몰 폭발 입자는 프레임마다 생성하지 않고 짧은 간격으로 제한한다.
+				if math.random() < 0.5 and now >= (FX.sinkFlameAt or 0) then
+					FX.sinkFlameAt = now + (if MOBILE_VFX then 0.7 else 0.38)
 					FX.flame(at, 3)
 				end
 				if math.random() < 0.3 then
