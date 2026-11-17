@@ -610,7 +610,12 @@ test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 
     'FieldEnemyReaction', 'FieldHitVariant', 'FieldTacticalIntent',
     'intent, goal = "frontline"', 'intent, goal = "flank"',
     'intent, goal = "ambush"', '"retreat" else "strafe"',
-    'e.waiting = others >= AC.MELEE_TOKENS',
+    'e.waiting = e.ac.state == "chase" and (others >= AC.MELEE_TOKENS',
+    'pl.nextEnemyTurnAt = now + math.max(0.80',
+    'e.nextDuelAt = now + math.max(2.2',
+    'local ring = math.clamp(e.ac.def.range * STUD + 5',
+    'RunService.PreSimulation:Connect(function(dt)',
+    'not e.waiting)',
     'e.tacticAt = now + 0.65',
     'Pose.dieR15(dying, p, deathVariant)'
   ]) assert.ok(field.includes(marker),'탐험 전술/전투 연결 누락: '+marker);
@@ -635,6 +640,17 @@ test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 
   for(const disallowed of ['AC.damageEnemy(', 'AC.stepEnemy(', 'Instance.new(', ':PivotTo(']) {
     assert.ok(!enemyFootwork.includes(disallowed),'R15 모션 전용 구간에서 실제 전투·위치 조작 금지: '+disallowed);
   }
+  // [개떼 공격·관절 렌더 회귀] 모든 병종이 같은 2개 공격권을 쓰며 대기 중 겹치지 않는다.
+  assert.match(combat,/A\.MELEE_TOKENS = 2/);
+  assert.match(field,/e\.waiting = e\.ac\.state == "chase" and \(others >= AC\.MELEE_TOKENS[\s\S]*?e\.nextDuelAt/);
+  assert.match(field,/AC\.stepEnemy\(e\.ac, enemyDt, dist, not e\.waiting\)/);
+  assert.doesNotMatch(field,/AC\.stepEnemy\(e\.ac, enemyDt, dist, if e\.ac\.def\.keepAway or e\.ac\.def\.boss then true/);
+  assert.match(field,/local band = math\.clamp\(\(flat\.Magnitude - ring\) \/ 6/);
+  assert.match(field,/desired = \(tangent \* 0\.44 \+ flat\.Unit \* band\)/);
+  assert.match(field,/pl\.nextEnemyTurnAt = now \+ math\.max\(0\.80/);
+  assert.match(field,/RunService\.PreSimulation:Connect\(function\(dt\)/);
+  assert.match(motion,/model:SetAttribute\("FieldJointChannels", nj\)/);
+  assert.match(motion,/model:SetAttribute\("FieldJointReady", if r6 then nj >= 6 else nj >= 12\)/);
   assert.match(pose,/function Pose\.dieR15\(model, alpha, variant\)/);
   assert.match(pose,/local fade = math\.clamp\(\(a - 0\.78\) \/ 0\.22/);
   assert.match(field,/local duration = if visualMobile then 1\.35 else 1\.70/);

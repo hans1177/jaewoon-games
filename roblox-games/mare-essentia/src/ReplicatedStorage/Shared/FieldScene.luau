@@ -6612,8 +6612,9 @@ function FieldScene.start(opts)
 	end))
 	workspace:SetAttribute("FieldCombatReady", true)
 
-	-- 적 이동·공격
-	table.insert(conns, RunService.Heartbeat:Connect(function(dt)
+	-- [적 R15 관절·전술 통합 루프] Animator 갱신 뒤 PreSimulation에서 모터를 적용해야 팔·무릎 자세가 사라지지 않는다.
+	-- 기존 적 공격·피해·스폰은 동일한 단일 업데이트 경로를 그대로 사용한다.
+	table.insert(conns, RunService.PreSimulation:Connect(function(dt)
 		if finished then
 			return
 		end
@@ -6629,7 +6630,7 @@ function FieldScene.start(opts)
 		local acList = {}
 		for _, o in enemies do table.insert(acList, o.ac) end
 		local attackers = AC.attackersCount(acList)
-		for _, e in table.clone(enemies) do
+		for index, e in table.clone(enemies) do
 			local to = hrp.Position - e.root.Position
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
@@ -6654,13 +6655,21 @@ function FieldScene.start(opts)
 			local event, hit = nil, nil
 			if not frozen then
 				local others = attackers - (if e.ac.state == "windup" or e.ac.state == "active" then 1 else 0)
-				e.waiting = others >= AC.MELEE_TOKENS and e.ac.state == "chase" and not e.ac.def.keepAway and not e.ac.def.boss
-				event, hit = AC.stepEnemy(e.ac, enemyDt, dist, if e.ac.def.keepAway or e.ac.def.boss then true else not e.waiting)
+				-- [개떼 공격 차단] 기존 동시 공격 2명 상한을 원거리·두목까지 공통 적용한다.
+				-- 공격권 대기 중에도 chase는 유지하고, 다음 공격권은 병종별 과거 공격 시각으로 분산한다.
+				e.waiting = e.ac.state == "chase" and (others >= AC.MELEE_TOKENS
+					or now < (pl.nextEnemyTurnAt or 0) or now < (e.nextDuelAt or 0))
+				event, hit = AC.stepEnemy(e.ac, enemyDt, dist, not e.waiting)
 			end
 			if event == "telegraph" then
 				-- [적 무기 연속 동작] 공격 차례에 따라 기존 공용 무기 1~3타를 순환한다. 피해·판정은 동일.
 				if e.fm then e.fm.weaponBeat = ((e.fm.weaponBeat or 0) % 3) + 1 end
 				attackers += 1
+				-- [공격 순서 분산] 예고가 끝나기 전 여러 무기가 한꺼번에 들어오지 않게 다음 차례를 예약.
+				-- 개별 공격 시간·피해량·사거리·쿨타임은 ActionCombat 원본을 유지한다.
+				pl.nextEnemyTurnAt = now + math.max(0.80, math.min(e.ac.def.windup + 0.20, 1.30))
+				e.nextDuelAt = now + math.max(2.2, e.ac.def.windup + e.ac.def.active + e.ac.def.recover + 0.30)
+				e.model:SetAttribute("FieldTacticalIntent", "strike")
 				e.warnUntil = now + e.ac.def.windup
 				burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
 				sfx("sfx_event_danger", 0.35, 1.2)
@@ -6915,23 +6924,24 @@ function FieldScene.start(opts)
 				looking = looking.Unit
 				local right = Vector3.new(-looking.Z, 0, looking.X)
 				local side = e.tacticSide or 1
+				local spread = (index % 4) * 2.4
 				local intent = "approach"
 				local goal = hrp.Position
 				if e.ac.kind == "shield" then
-					intent, goal = "frontline", hrp.Position + looking * 7.2 + right * side * 2.8
+					intent, goal = "frontline", hrp.Position + looking * (7.2 + spread * 0.25) + right * side * (2.8 + spread)
 				elseif e.ac.kind == "grunt" then
-					intent, goal = "flank", hrp.Position - looking * 3.8 + right * side * 9.0
+					intent, goal = "flank", hrp.Position - looking * (3.8 + spread * 0.40) + right * side * (9.0 + spread)
 				elseif e.ac.kind == "charger" then
-					intent, goal = "ambush", hrp.Position - looking * 5.5 + right * side * 10.5
+					intent, goal = "ambush", hrp.Position - looking * (5.5 + spread * 0.55) + right * side * (10.5 + spread)
 				elseif e.ac.kind == "archer" then
 					local away = (e.root.Position - hrp.Position) * Vector3.new(1, 0, 1)
 					if away.Magnitude > 0.1 then
 						local retreat = if e.ac.hp <= e.maxHp * 0.35 then 34 else 28
 						intent = if away.Magnitude < retreat then "retreat" else "strafe"
-						goal = hrp.Position + away.Unit * retreat + right * side * 7
+						goal = hrp.Position + away.Unit * retreat + right * side * (7 + spread)
 					end
 				elseif e.boss then
-					intent, goal = "pressure", hrp.Position + looking * 8 + right * side * 3
+					intent, goal = "pressure", hrp.Position + looking * 8 + right * side * (3 + spread * 0.5)
 				end
 				goal = Vector3.new(math.clamp(goal.X, ORIGIN.X - half + 9, ORIGIN.X + half - 9),
 					e.root.Position.Y, math.clamp(goal.Z, ORIGIN.Z - half + 9, ORIGIN.Z + half - 9))
@@ -6965,10 +6975,16 @@ function FieldScene.start(opts)
 					desired = remaining.Unit * math.min(48, remaining.Magnitude / math.max(dtc, 0.016))
 					facing = remaining.Unit
 				end
-			elseif e.waiting and not frozen and flat.Magnitude > 0.1 and wish == 0 then
-				-- 공격 토큰 대기자도 멈춰서 직선 줄을 서지 않고 플레이어 좌우로 반원을 만든다.
+			elseif e.waiting and not frozen and not e.ac.def.keepAway and e.ac.state == "chase"
+				and flat.Magnitude > 0.1 and flat.Magnitude < 40 then
+				-- [기다리는 적은 밖에서 견제] 플레이어에게 몸을 비비던 궤도를 반경 12~27 스터드로 유지한다.
+				-- 뒤로 물러나는 발과 측면 디딤만 이동시키며 공격권이 오면 원래 사거리로 진입한다.
 				e.circleDir = e.circleDir or e.tacticSide or 1
-				desired = flat.Unit:Cross(Vector3.yAxis) * e.circleDir * e.ac.def.speed * 0.45
+				local ring = math.clamp(e.ac.def.range * STUD + 5 + (index % 3) * 2, 12, 27)
+				local band = math.clamp((flat.Magnitude - ring) / 6, -0.85, 0.75)
+				local tangent = flat.Unit:Cross(Vector3.yAxis) * e.circleDir
+				desired = (tangent * 0.44 + flat.Unit * band) * e.ac.def.speed * 0.70
+				e.model:SetAttribute("FieldTacticalIntent", "guard-circle")
 			elseif e.ac.def.keepAway and e.ac.state == "chase" and not frozen
 				and e.tacticGoal and (e.tacticIntent == "retreat" or wish == 0) then
 				-- 궁수/총병은 조준 전 후방 재배치·수평 견제. 공격 예고/발사 시에는 기존 정지 규칙이 우선.

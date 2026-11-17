@@ -44,6 +44,10 @@ function FM.new(model: Model, followAnimator: boolean)
 	})
 	local nj = 0
 	for _ in joints do nj += 1 end
+	-- [리그 연결 검증] 실제 R15 관절을 충분히 읽었는지 개발 스튜디오에서 즉시 확인할 수 있다.
+	-- 전투 판정·저장·복제 모델에 영향을 주지 않는 런타임 진단 속성.
+	model:SetAttribute("FieldJointChannels", nj)
+	model:SetAttribute("FieldJointReady", if r6 then nj >= 6 else nj >= 12)
 	return { ctl = ctl, canon = {}, r15 = {}, model = model, r6 = r6, joints = joints, nj = nj, t0 = os.clock() }
 end
 
