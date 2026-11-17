@@ -543,6 +543,8 @@ function FieldScene.start(opts)
 		return Vector3.new(0, 0, 0)
 	end
 
+	-- [탐험 지역변수 한도] 현장 지형 생성은 이 블록에서 종료하고 전투 UI 변수를 보호한다.
+	do
 	-- 나무와 바위
 	local treeNames = biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
 	-- [모바일 안정화] 메시는 화면 자원만 줄이고 탐험 보상·몬스터 수·위험도는 유지한다.
@@ -565,6 +567,8 @@ function FieldScene.start(opts)
 		local rock = rockNames[rng:NextInteger(1, #rockNames)]
 		-- 실제 등록된 바위 메시만 배치한다. 파츠 박스 우회 금지.
 		placeModel(folder, rock[1], rock[2], pos, rng:NextNumber(2.5, 6), true)
+	end
+
 	end
 
 	-- 문화권 소품(기둥·천막·카누 등): 등록된 모델만 놓고, 없으면 건너뛴다
@@ -1149,6 +1153,8 @@ function FieldScene.start(opts)
 		end)
 	end
 
+	-- [탐험 지역변수 한도] 적 생성 작업용 변수는 스폰 완료 즉시 해제. 적 목록과 규칙은 기존 그대로.
+	do
 	-- 적: 가까이 오면 쫓아와 때린다
 	-- 적: 최소 20명, 위험할수록 늘어 최대 100명(두목 포함). 무리를 지어 맵 곳곳에 흩어져 있다.
 	local danger0 = opts.danger or 1
@@ -1265,6 +1271,8 @@ function FieldScene.start(opts)
 		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil
 		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber() })
+	end
+
 	end
 
 	-- 미니맵: 주변 약 130스터드를 보여 준다(북쪽이 위). 흰 점=나, 금색=발견물(멀면 가장자리에 표시), 빨강=적, 큰 주황=두목
