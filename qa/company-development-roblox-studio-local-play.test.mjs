@@ -4156,14 +4156,14 @@ test('Mare weapon two skill types, dagger basic speed and seven profession dodge
   assert.ok(scene.includes('local impact = math.clamp(0.14 / swingDur, 0.15, 0.75)')&&
     scene.includes('progress = if p < impact then p / impact * contact'),
     'authored melee contact must match original basic damage at 0.14 sec');
-  const shared=scene.indexOf('local dodgeStyle = "warrior"');
+  const shared=scene.indexOf('local dodgeStyle = player.Character and player.Character:GetAttribute("FieldDodgeStyle") or "warrior"');
   const root=scene.indexOf('if dodgeStyle == "navigator" then');
   const action=scene.indexOf('dodgeStyle = JobSkills.categoryOf(profession)');
   assert.ok(shared>0 && root>shared && action>root,'dodge style must be shared by input and animation state');
   for(const role of ['warrior','gunner','clergy','doctor','navigator','merchant','scholar']){
     assert.ok(scene.includes(role+' = {'),'missing profession R15 pose: '+role);
   }
-  assert.ok(scene.includes('src = dashPoses[dodgeStyle] or dashPoses.warrior')&&
+  assert.ok(scene.includes('src = dashPoses[ch:GetAttribute("FieldDodgeStyle") or "warrior"] or dashPoses.warrior')&&
     scene.includes('ch0:SetAttribute("FieldDodgeStyle", dodgeStyle)')&&
     scene.includes('startSwing("dash", 0.4)')&&
     scene.includes('hrp.CFrame = hrp.CFrame + look.Unit * 14'),
