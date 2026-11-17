@@ -2398,6 +2398,13 @@ function FieldScene.start(opts)
 			elseif swingCombo and kind ~= "spin" then
 				dur = math.max(dur, swingCombo.duration)
 			end
+			-- [고속 연출만 고정] 회피는 모든 무기에서 0.4초, 2~10타 전신 곡예는 최대 0.44초로 압축.
+			-- 실제 쿨타임·공격 주기·피해·스킬 시계는 useMove/ActionCombat 원본 그대로.
+			if kind == "dash" then
+				dur = 0.4
+			elseif kind == "slash" and beat >= 2 then
+				dur = math.clamp(dur, 0.33, 0.44)
+			end
 		end
 		slashIdx = nextStage
 		swingKind, swingT0, swingDur = kind, os.clock(), dur
@@ -4761,12 +4768,16 @@ function FieldScene.start(opts)
 			-- [회피 우선순위] 예약된 숙련 시각 연타는 취소해 회피 관절과 충돌하지 않게 한다. 실타격 판정은 그대로.
 			chainMotionSerial += 1
 			startSwing("dash", 0.4)
+			-- [묘기 알림] 실제 재생 중인 6종 동작 이름을 표시해 고정된 회피 안내와 불일치하지 않게 한다.
+			local trickName = ({ "옆구르기", "백덤블링", "높은 회전 점프", "슬라이딩", "한손 짚고 돌기", "측면 공중회전" })[
+				(ch0 and ch0:GetAttribute("FieldDodgeTrick")) or 1
+			] or "회피"
 			say(({
-				warrior = "무인 · 전투 구르기", gunner = "포수 · 슬라이딩 회피",
-				navigator = "항해사 · 공중제비", merchant = "상인 · 금빛 피벗",
-				doctor = "의사 · 응급 스텝", clergy = "성직자 · 성역 도약",
-				scholar = "학자 · 지식의 도약",
-			})[dodgeStyle] or "회피")
+				warrior = "무인", gunner = "포수",
+				navigator = "항해사", merchant = "상인",
+				doctor = "의사", clergy = "성직자",
+				scholar = "학자",
+			})[dodgeStyle] .. " · " .. trickName)
 			return
 		end
 		-- [공격 1회 = 연타 최대 1타] 대시 회피는 공격으로 집계하지 않는다.
