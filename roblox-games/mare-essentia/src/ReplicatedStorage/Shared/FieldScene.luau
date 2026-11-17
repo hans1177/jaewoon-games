@@ -1336,7 +1336,7 @@ function FieldScene.start(opts)
 		end)
 	end
 	pcall(function()
-		Sfx.ambient({ "sfx_wind" }, 0.3)
+		Sfx.ambient({ "sfx_wind" }, 0.60)
 	end)
 	local noteToken = 0
 	local function say(text)
@@ -2071,10 +2071,12 @@ function FieldScene.start(opts)
 					or (biome.kind == "coast" and questTerrain ~= "mine" and questTerrain ~= "desert")
 				local layers = if rain then { "sfx_wind", "sfx_ambience_storm" }
 					elseif water then { "sfx_waves", "sfx_wind" } else { "sfx_wind" }
-				local gain = if rain then (if weather == "소나기" then 0.48 else 0.31)
-					elseif weather == "옅은 안개" then 0.16
-					elseif seasonName == "겨울" or seasonName == "건조한 계절" then 0.36
-					elseif phase == "밤" then 0.20 else 0.27
+				-- [배경음 청감] 기존 0.16~0.48배로 또 낮추던 환경음 게인을 회복한다.
+				-- 전투 효과음보다는 작게, 바람·파도·비 소리가 확실히 들리는 범위만 유지.
+				local gain = if rain then (if weather == "소나기" then 0.88 else 0.68)
+					elseif weather == "옅은 안개" then 0.40
+					elseif seasonName == "겨울" or seasonName == "건조한 계절" then 0.57
+					elseif phase == "밤" then 0.43 else 0.58
 				pcall(function() Sfx.ambient(layers, gain) end)
 				folder:SetAttribute("FieldSoundscape", newSoundscape)
 			end
