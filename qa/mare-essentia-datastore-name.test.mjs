@@ -1109,3 +1109,26 @@ test('실제 농장 320x220과 목장 260x208은 도로·왕궁을 피해 분리
   assert.match(port,/EconomicFarmCount/);
   assert.match(port,/BuildAuthority", "VISUAL_ONLY"/);
 });
+
+// [경제 연동 자동 공사 + 단계 장식] 기존 경제 지출·시설 수가 있을 때만 시각 공사/장식을 만든다.
+test('경제 공사 종류·건축자 모션·도시 장식 성장 모두 기존 경제 원본을 읽는다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const plan=read('ReplicatedStorage/Shared/PortBuildings.luau');
+ const server=read('ServerScriptService/Services/Econ.luau');
+ assert.match(server,/construction\.active = construction\.spending > 0\.01 and needed > 0\.01/);
+ assert.match(scene,/local liveConstruction = info\.sim and info\.sim\.construction/);
+ assert.match(scene,/if \(tonumber\(liveConstruction\[id\]\) or 0\) > 0\.01 then/);
+ assert.match(scene,/local i = activeSites\[slot\]/);
+ assert.match(scene,/mark:SetAttribute\("EconomicConstructionSpending"/);
+ assert.match(scene,/mark:SetAttribute\("EconomicConstructionNeed"/);
+ assert.match(scene,/"stoop" else "hammer"/);
+ assert.match(scene,/"carry", 1\.7, \{ role = "Barbarian", hat = "cap" \}/);
+ assert.match(plan,/function B\.decorativeVisual\(level, buildings, prosperity\)/);
+ assert.match(plan,/count >= 12 and healthy/);
+ for(const kind of ['market','religious','farm','industry','civic']) assert.ok(plan.includes(kind + ' = grade('),kind);
+ assert.match(scene,/local decor = PortBuildings\.decorativeVisual\(lvl, info\.sim and info\.sim\.buildings, info\.sim and info\.sim\.prosperity\)/);
+ assert.match(scene,/decorLimit = if game:GetService\("UserInputService"\)\.TouchEnabled then 7 else 13/);
+ assert.match(scene,/CityGrowthDecoration_/);
+ assert.match(scene,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
+ assert.match(scene,/obj:SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
+});

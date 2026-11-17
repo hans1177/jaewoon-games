@@ -1431,9 +1431,26 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	-- 망치질·자재 나르는 일꾼이 보인다. (공사가 끝나면 클라이언트가 새 단계 장면으로 다시 짓는다)
 	if info.construction then
 		local sites = { Vector3.new(-40, 0, 17), Vector3.new(-40, 0, -17), Vector3.new(-74, 0, 17), Vector3.new(-74, 0, -17), Vector3.new(-100, 0, 17), Vector3.new(-100, 0, -17) }
-		local n = math.min(#sites, 2 * math.max(1, (info.construction.to or lvl + 1) - lvl) + 2,
-			if game:GetService("UserInputService").TouchEnabled then 3 else 6)
-		for i = 1, n do
+		local types = { "house", "workshop", "farm", "warehouse", "market", "hall" }
+		local maxSites = if game:GetService("UserInputService").TouchEnabled then 3 else 6
+		-- [실제 경제 공사] 서버가 지출·부족량을 확인한 시설만 공사장에 배치한다.
+		-- 수동 개발 단계 전환만 전달된 경우에는 기존 발전 공사장 배치를 유지한다.
+		local liveConstruction = info.sim and info.sim.construction
+		local activeSites = {}
+		if liveConstruction then
+			for index, id in types do
+				if (tonumber(liveConstruction[id]) or 0) > 0.01 then
+					table.insert(activeSites, index)
+				end
+			end
+		end
+		if #activeSites == 0 then
+			local count = math.min(#sites, 2 * math.max(1, (info.construction.to or lvl + 1) - lvl) + 2)
+			for index = 1, count do table.insert(activeSites, index) end
+		end
+		local n = math.min(#activeSites, maxSites)
+		for slot = 1, n do
+			local i = activeSites[slot]
 			local at = sites[i]
 			local zs = if at.Z > 0 then 1 else -1
 			importedModel(folder, "Terrain", "wood-structure", at, 10, false)
@@ -1444,7 +1461,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			importedModel(folder, "Town", "workbench-anvil", at + Vector3.new(-9, 0, -zs * 3), 3, false)
 			-- [실제 공사 단계] 현재 경제의 건설 부족분 대비 이미 건축된 비율로 기초→벽→지붕을 표시한다.
 			-- 원본 저장값이나 공사 완료 판정은 수정하지 않으며, 승인된 3D 건축 메시만 사용한다.
-			local buildingType = ({ "house", "workshop", "farm", "warehouse", "market", "hall" })[i]
+			local buildingType = types[i]
 			local liveStock = info.sim and info.sim.buildings
 			local buildNeed = info.sim and info.sim.construction
 			local builtCount = tonumber(liveStock and liveStock[buildingType]) or 0
@@ -1466,6 +1483,8 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			mark:SetAttribute("BuildState", "constructing")
 			mark:SetAttribute("BuildTier", lvl)
 			mark:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+			mark:SetAttribute("EconomicConstructionSpending", tonumber(liveConstruction and liveConstruction.spending) or 0)
+			mark:SetAttribute("EconomicConstructionNeed", unfinished)
 			mark.Transparency = 1
 			mark.CanCollide = false
 			sign(folder, mark, "🚧 공사 중", Color3.fromRGB(200, 120, 30), 9)
@@ -2224,6 +2243,11 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local big = (port and port.shipyard) or false
 	local P = PROFILE[key] or PROFILE.north
 	local lvl = sceneLevel
+	-- [자동 장식 건축] 실제 건설된 시장·농장·교회·공방·관청과 번영도를 읽어 단계별 실물 소품을 선택한다.
+	-- 시설 수나 생산량을 늘리는 경제 효과는 없고, 모바일 최대 7개 / PC 최대 13개만 배치한다.
+	local decor = PortBuildings.decorativeVisual(lvl, info.sim and info.sim.buildings, info.sim and info.sim.prosperity)
+	local decorPlaced = 0
+	local decorLimit = if game:GetService("UserInputService").TouchEnabled then 7 else 13
 	-- 도시마다 고정된 지형 시드로 구획 방향·필지 크기·외곽 폭을 달리한다. 재진입해도 같은 항구는 같은 형태다.
 	local districtSeed = seeded(info.portId .. ":city-plan")
 	local districtOffset = districtSeed:NextNumber(-7, 7)
@@ -2450,6 +2474,22 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 								local item = importedModel(folder, mesh[1], mesh[2], at + Vector3.new(0, 0, face * 2), goodSize(c[7], 3.2), false, mesh[3])
 								if item then item.Name = "SpecialtyProduct_" .. c[7] end
 							end
+							-- [산업·행정 장식] 실제 보유 공방·관청에서만 높은 등급의 간판·기념 장식이 자란다.
+							local grade = if c[1] == "hall" then decor.civic elseif c[1] == "workshop" then decor.industry else 0
+							if grade >= 2 and decorPlaced < decorLimit then
+								local kind = if c[1] == "hall" then "Terrain" else "Town"
+								local asset = if c[1] == "hall" then "column" else "bench_B"
+								local prop = importedModel(folder, kind, asset, at + Vector3.new(13, 0, face * 11), 5, false)
+								if prop then
+									decorPlaced += 1
+									prop.Name = "CityGrowthDecoration_" .. c[1] .. "_" .. n
+									prop:SetAttribute("BuildPlotId", ("%s:decor:%d:%d"):format(info.portId, index, n))
+									prop:SetAttribute("BuildType", "decoration")
+									prop:SetAttribute("BuildTier", grade)
+									prop:SetAttribute("BuildState", "complete")
+									prop:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+								end
+							end
 							prompt(folder, at + Vector3.new(0, 3, face * 7), c[2], "시설 이용", c[8], onFacility)
 						end
 					end
@@ -2612,6 +2652,43 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				put("Town", if key == "iberia" or key == "north" or key == "med" then "windmill" else "watermill", 30, cx + 62, cz, true, face)
 				put("Terrain", "log-stack", 4, cx - 56, cz + 4, false)
 			end
+			-- [구역 자동 장식] 2~5단계의 실제 시설과 번영 기준으로만 장식이 완공된다.
+			-- 나중에 직접 건축할 수 있도록 주거 필지와 구별되는 안정적인 장식 필지 번호를 부여한다.
+			local grade = decor[d.kind] or 0
+			if grade > 0 then
+				local decorations = if d.kind == "market" then {
+					{ "Cargo", "food-crate-large-apples", 3, -31, 35 },
+					{ "Town", "bench_B", 4, 30, 35 },
+					{ "Town", "fountain-square", 8, 31, -34 },
+					{ "Castle", "flag-banner-short", 9, -31, -34 },
+				} elseif d.kind == "religious" then {
+					{ "Town", "bench_A", 4.5, -31, 33 },
+					{ "Town", "village-well", 7, 32, 33 },
+					{ if key == "japan" or key == "china" or key == "korea" then "Town" else "Terrain",
+						if key == "japan" or key == "china" or key == "korea" then "eastasia-column-base" else "column", 7, -33, -34 },
+					{ "Castle", "flag-banner-short", 9, 33, -34 },
+				} else {
+					{ "Town", "cart", 5, -60, 40 },
+					{ "Cargo", "food-crate-large-apples", 3.5, 60, 40 },
+					{ "Town", "village-well", 7, -60, -40 },
+					{ "Cargo", "resource-planks", 4.5, 60, -40 },
+				}
+				for tier = 1, math.min(grade, #decorations) do
+					if decorPlaced >= decorLimit then break end
+					local row = decorations[tier]
+					local obj = put(row[1], row[2], row[3], cx + row[4], cz + row[5], false)
+					if obj then
+						decorPlaced += 1
+						obj.Name = "CityGrowthDecoration_" .. d.kind .. "_" .. tier
+						obj:SetAttribute("BuildPlotId", ("%s:decor:%s:%d"):format(info.portId, d.kind, tier))
+						obj:SetAttribute("BuildType", "decoration")
+						obj:SetAttribute("BuildTier", tier + 1)
+						obj:SetAttribute("BuildPhase", 4)
+						obj:SetAttribute("BuildState", "complete")
+						obj:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+					end
+				end
+			end
 			-- 구역별 주민: 하는 일이 다르다 (광장에만 몰려 있지 않게)
 			local function npc(dx, dz, yaw, kind, mode, spec)
 				local m = villager(folder, Vector3.new(cx + dx, 0, cz + dz), yaw, Color3.fromRGB(rng:NextInteger(60, 190), rng:NextInteger(60, 150), rng:NextInteger(40, 130)), rng, spec and spec.role or "Rogue", false, spec and spec.extra)
@@ -2643,6 +2720,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			end
 		end
 	end
+	folder:SetAttribute("CityDecorationVisible", decorPlaced)
+	folder:SetAttribute("CityDecorationGrowthMode", "ECONOMY_READ_ONLY")
 	-- 특산품 구역: 이 항구의 생산품마다 관련 건물(공방·양조장·제재소 …)을 세우고, 지붕 위 간판에 그 상품의 3D 아이콘을 단다.
 	do
 		local SPECIAL_NAME = {

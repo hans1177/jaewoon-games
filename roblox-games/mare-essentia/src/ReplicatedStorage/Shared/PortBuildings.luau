@@ -190,6 +190,30 @@ B.StreetGrowth = {
 	{ lampStep = 19, plazaLamps = 10, fountain = true },
 }
 
+-- [경제 기반 자동 장식 건축] 기존 시가지 발전도와 실물경제의 건설된 시설 수만 읽는다.
+-- 새 장식 투자/재고/저장키는 생성하지 않으며, 경제 침체 시 최상급 장식만 보류한다.
+function B.decorativeVisual(level, buildings, prosperity)
+	local stage = math.clamp(math.floor(tonumber(level) or 1), 1, 5)
+	local healthy = (tonumber(prosperity) or 100) >= 90
+	local function grade(id, unlock)
+		if stage < unlock then return 0 end
+		local count = if buildings then math.max(0, tonumber(buildings[id]) or 0) else stage * 2
+		if count < 1 then return 0 end
+		local tier = 1
+		if stage >= 3 and count >= 3 then tier = 2 end
+		if stage >= 4 and count >= 6 then tier = 3 end
+		if stage >= 5 and count >= 12 and healthy then tier = 4 end
+		return tier
+	end
+	return {
+		market = grade("market", 2),
+		religious = grade("church", 2),
+		farm = grade("farm", 2),
+		civic = grade("hall", 3),
+		industry = grade("workshop", 2),
+	}
+end
+
 B.CategoryNames = { culture = "문화", commerce = "상업·금융", science = "과학", industry = "산업·기술", religion = "종교" }
 B.Landmarks = {
 	{ id = "theater", name = "야외 극장", category = "culture", minLevel = 2, since = 1600 },
