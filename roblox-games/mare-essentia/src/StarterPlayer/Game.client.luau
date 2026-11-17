@@ -6187,14 +6187,30 @@ local function renderYard()
 	else
 		add(function() return mkLabel(content, "선체 보강: 최고 단계 · 추가 개조 없음", 14, COLORS.green, true) end)
 	end
-	-- [7대륙 선박 설계도] 전용 실물 모델이 없는 함종은 설계로만 보여 준다.
-	local blueprintHead = add(function() return mkHeader(content, "7대륙 선박 35종 · 제작설계") end)
+	-- [7대륙 36척] 등록된 선박 원본·경량판과 실제 구매 가능한 기존 함종을 별도로 안내한다.
+	-- 모델 등록과 게임 속 구매 개방은 서로 다른 단계이므로 구매·저장 규칙을 임의로 변경하지 않는다.
+	local blueprintHead = add(function()
+		return mkHeader(content, string.format("7대륙 선박 %d종 · 3D 원본 설계", #ShipsData.Blueprints))
+	end)
 	blueprintHead.Name = "YardSectionBlueprints"
 	H.shipBlueprintFaction = H.shipBlueprintFaction or "europe"
-	add(function() return mkLabel(content, "실존 6대륙 각 1~5단계, 미지의 땅 2~6단계. 모델 원본·사용권한·시각검증 전에는 게임 성능에 적용하지 않아.", 13, COLORS.muted, false) end)
+	add(function() return mkLabel(content,
+		"실존 6대륙 각 1~5단계 · 미지의 땅 1~6단계. 등록된 실물 3D는 항구·해전에서 해당 기존 함종에 우선 적용해. 설계 전용 선박은 구매 미개방, 게임 능력치는 종전 그대로야.",
+		13, COLORS.muted, false) end)
+	local stageScenes = {
+		"얇은 포염·가벼운 물보라", "선측 불티·파편 증가", "연장된 포탄 잔상·진한 포연",
+		"확산 섬광·2지점 화재", "무거운 포성·3지점 화재·2중 물결", "미지 선박의 발광 궤적·해무·최종 충격파",
+	}
+	local regionScenes = {
+		europe = "황금 포염·굵은 화약 연기", east_asia = "붉은 화포 불티·노선 거품",
+		new_world = "흰 포탄 잔상·날렵한 항적", middle_east = "황금 포염·연한 물보라",
+		southeast_asia = "청록 파도·기동 항적", africa = "목재 파편·노선 물결",
+		lost = "청록·보라 발광 충격파",
+	}
 	for _, category in ShipsData.BlueprintFactions do
 		add(function()
-			return mkRow(content, category.name .. " · 선박 5종", if category.id == "lost" then "아스테리아 가상 선박 · 3~8% 우위 설계" else "시대·선체·돛·갑판 전용 제작", {
+			return mkRow(content, category.name .. " · 선박 " .. (if category.id == "lost" then "6" else "5") .. "종",
+			if category.id == "lost" then "가상 탐사선 1~6단계 · 특수성능 미적용" else "선체·돛·갑판 고유 설계 · 연출만 구분", {
 				{ text = if H.shipBlueprintFaction == category.id then "선택 중" else "선택", color = if H.shipBlueprintFaction == category.id then COLORS.gold else COLORS.blue,
 					onClick = function() H.shipBlueprintFaction = category.id; if tradeHallRefresh then tradeHallRefresh() else render() end end },
 			}, 70)
@@ -6203,10 +6219,20 @@ local function renderYard()
 	for _, plan in ShipsData.Blueprints do
 		if plan.faction == H.shipBlueprintFaction then
 			add(function()
-				local info = string.format("%s · %s\n선체: %s\n추진: %s\n갑판: %s\n모델 수정: %s\n카드: %s",
-					plan.era .. " · 항행 " .. plan.sailingZone, if plan.existingId then "기존 함종 관련·전용 메시 검수 전" else "신규 설계·원본 미확보", plan.hull, plan.rig, plan.deck, plan.remodel, plan.card or "별도 연결 대기")
+				-- 36척 실제 등록번호와 조선소 구매 개방을 따로 보여주고 전투 효과는 시각 전용임을 명시한다.
+				local hasFull = AssetIds["Naval/" .. plan.id .. "-v5"] ~= nil
+				local hasMobile = AssetIds["Naval/" .. plan.id .. "-v5-mobile"] ~= nil
+				local available = ShipsData.Ships[plan.id] ~= nil
+				local related = not available and plan.existingId and ShipsData.Ships[plan.existingId] ~= nil
+				local status = if available then "기존 판매 조건 적용"
+					elseif related then "연관 함종 존재·이 설계는 구매 미개방"
+					else "설계 전용·구매 미개방"
+				local visual = if hasFull and hasMobile then "원본·모바일 경량판 등록" elseif hasFull then "원본 등록·경량판 미등록" else "자산 등록 대기"
+				local info = string.format("%s · %s\n선체: %s\n돛·노: %s\n갑판: %s\n3D: %s · %s\n지역 연출: %s\n%d단계 포격: %s\n실제 구매: %s",
+					plan.era, plan.sailingZone, plan.hull, plan.rig, plan.deck, visual, status,
+					regionScenes[plan.faction] or "기본 해전 연출", plan.stage, stageScenes[plan.stage] or "기본 해전 연출", status)
 				if plan.proposedEdge then info ..= string.format("\n가상 특수성능 +%d%% 설계안 · 미적용", math.floor(plan.proposedEdge * 100 + 0.5)) end
-				return mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, nil, 210)
+				return mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, nil, 252)
 			end)
 		end
 	end
