@@ -3681,7 +3681,13 @@ function FieldScene.start(opts)
 				if chain > 1 then
 					local activeWeapon, activeSerial = wpn.id, chainMotionSerial
 					for stage = 2, chain do
-						task.delay((stage - 1) * 0.20, function()
+						-- [연타 연결] 후속 3타는 2타의 무기별 충격·회수 자세가 화면에 드러난 뒤 시작한다.
+						-- 처음 한 번의 명중 판정/공격속도는 그대로, 시각 연출 예약시간만 변경한다.
+						local stageDelay = if stage == 2 then 0.20
+							elseif wpn.family == "dagger" or wpn.family == "fist" then 0.45
+							elseif wpn.family == "axe" or wpn.family == "blunt" then 0.53
+							elseif wpn.ranged then 0.56 else 0.49
+						task.delay(stageDelay, function()
 							if finished or not hrp.Parent or wpn.id ~= activeWeapon or chainMotionSerial ~= activeSerial then return end
 							-- 추가 공격은 R15 무기 자세와 이펙트뿐이다. 실제 피해·드롭·보상은 최초 명중 1회 그대로.
 							local finishKind = if stage == chain and stage == 3 and wpn.family == "fist" then "elbow"
@@ -3691,7 +3697,12 @@ function FieldScene.start(opts)
 							if stage == chain then
 								masteryCinema(hrp, stage, defeatedAt)
 							elseif wpn.ranged then
-								pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.1, -3), Color3.fromRGB(255, 214, 144), Color3.fromRGB(255, 247, 211), 4, 3)
+								-- [시각 2타] 실제 추가 발사 없이 활의 시위·석궁 노리쇠·총의 약실 재장전을 짧게 밝힌다.
+								local reloadColor = if wpn.motion == "CROSSBOW" then Color3.fromRGB(173, 216, 234)
+									elseif wpn.family == "bow" then Color3.fromRGB(152, 227, 169)
+									else Color3.fromRGB(255, 204, 144)
+								pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, 1.2, -1.5),
+									reloadColor, Color3.fromRGB(246, 241, 216), 2.8, if visualMobile then 2 else 4)
 							else
 								local reach = math.max(7, wpn.range * STUD)
 								local color = if wpn.family == "fist" then Color3.fromRGB(250, 209, 132)
