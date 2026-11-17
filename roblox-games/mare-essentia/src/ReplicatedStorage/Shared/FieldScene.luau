@@ -3112,36 +3112,36 @@ function FieldScene.start(opts)
 					canon.FootR = (canon.FootR or id) * CFrame.Angles(-accent * 0.24 * push + accent * 0.31 * recover, 0, side * 0.12 * recover)
 				end
 				-- [4~9박 전신 곡예 관절] 무기별 모션에 손목 지지·무릎 접힘·발끝 순차 착지 동작을 합성.
-				if slashIdx == 4 then
+				if not wpn.ranged and slashIdx == 4 then
 					-- [4타] 옆구르기에 맞춰 양팔 보호·양무릎 접기.
 					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.62 * shoulder, 0, -side * 0.36 * shoulder)
 					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.49 * shoulder, 0, side * 0.31 * shoulder)
 					canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.69 * step - 0.25 * finish, 0, 0)
 					canon.ShinR = (canon.ShinR or id) * CFrame.Angles(0.52 * step - 0.22 * finish, 0, 0)
-				elseif slashIdx == 5 then
+				elseif not wpn.ranged and slashIdx == 5 then
 					-- [5타] 한손 짚기 또는 중량 무기의 축발 선회.
 					local handWeight = if family == "dagger" or family == "fist" then 1 else 0.55
 					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.93 * shoulder * handWeight, 0, -side * 0.24 * shoulder)
 					canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.36 * shoulder * handWeight + 0.28 * finish, 0, 0)
 					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(0.45 * step, 0, side * 0.34 * shoulder)
 					canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.19 * step + 0.25 * finish, side * 0.15 * step, 0)
-				elseif slashIdx == 6 then
+				elseif not wpn.ranged and slashIdx == 6 then
 					-- [6타] 날렵한 무기는 백덤블링 무릎 접기, 중량 무기는 힘 모아 들어치기.
 					local tuck = if family == "axe" or family == "blunt" then 0.40 else 1
 					canon.ThighL = (canon.ThighL or id) * CFrame.Angles((-0.71 * step + 0.29 * finish) * tuck, 0, 0)
 					canon.ThighR = (canon.ThighR or id) * CFrame.Angles((-0.71 * step + 0.29 * finish) * tuck, 0, 0)
 					canon.ShinL = (canon.ShinL or id) * CFrame.Angles((0.84 * step - 0.35 * finish) * tuck, 0, 0)
 					canon.ShinR = (canon.ShinR or id) * CFrame.Angles((0.84 * step - 0.35 * finish) * tuck, 0, 0)
-				elseif slashIdx == 7 then
+				elseif not wpn.ranged and slashIdx == 7 then
 					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.85 * step + 0.35 * finish, 0, 0)
 					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(0.55 * step, 0, -side * 0.17 * step)
 					canon.FootL = (canon.FootL or id) * CFrame.Angles(-0.30 * step + 0.25 * finish, 0, 0)
-				elseif slashIdx == 8 then
+				elseif not wpn.ranged and slashIdx == 8 then
 					-- [8타] 공중 피루엣에서 팔 벌리기·한 무릎 접기.
 					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.34 * shoulder, 0, -0.61 * shoulder)
 					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.34 * shoulder, 0, 0.61 * shoulder)
 					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.47 * step, 0, 0)
-				elseif slashIdx == 9 then
+				elseif not wpn.ranged and slashIdx == 9 then
 					-- [9타] 측면회전 후 양발의 늦은 접지로 마지막 타격 각도를 확보.
 					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.48 * shoulder + 0.19 * finish, 0, side * 0.41 * shoulder)
 					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.56 * step + 0.36 * finish, 0, side * 0.24 * step)
