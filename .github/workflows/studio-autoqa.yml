@@ -114,6 +114,21 @@ jobs:
           if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
             scripts+=("roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-regions.json")
             scripts+=("roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-weapons.json")
+            # [7대륙 36척] 정기 실물 모델·대륙별 화면 증빙은 공식 Studio 실행기에서 확인한다.
+            scripts+=("roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json")
+          elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            # [선박 원본 변경] 무관한 게임 변경마다 36척을 재촬영하지 않는다. 실제 선박 관련 변경만 검사한다.
+            ship_paths=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA" --jq '
+              [.files[].filename | select(
+                startswith("roblox-games/mare-essentia/assets/naval/") or
+                . == "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Ships.luau" or
+                . == "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau" or
+                . == "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json" or
+                . == ".github/workflows/studio-autoqa.yml"
+              )] | length' 2>/dev/null || echo 0)
+            if [ "$ship_paths" -gt 0 ]; then
+              scripts+=("roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json")
+            fi
           fi
           for script in "${scripts[@]}"; do
             gh workflow run devloop-studio.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game=$game" -f "script=$script"
