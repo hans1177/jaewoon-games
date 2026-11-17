@@ -4444,6 +4444,12 @@ local RENDERERS: { [string]: any } = {}
 function RENDERERS.harbor()
 	local h = view.harbor
 	H.walletBar("harbor")
+	-- [항구 수요·산업] 특산/수요/발전의 실측 항목을 한눈에 확인.
+	H.statStrip({
+		{ "지역 특산", tostring(#(h.produces or {})) .. "종", tone = "good" },
+		{ "항구 수요", tostring(#(h.demands or {})) .. "종", tone = "key" },
+		{ "항구 발전", tostring(h.level) .. "단계", tone = "key" },
+	})
 	add(function() return mkHeader(content, view.player.portName .. " · " .. h.name .. " (" .. h.level .. "단계)") end)
 	add(function()
 		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 16, COLORS.text, true)
@@ -4735,6 +4741,14 @@ function RENDERERS.recruit()
 		if rank(a) ~= rank(b) then return rank(a) < rank(b) end
 		return a.fee < b.fee
 	end)
+	local joined = 0
+	for _, c in view.companions.list do if c.joined then joined += 1 end end
+	H.statStrip({
+		{ "영입 가능", tostring(open) .. "명", tone = "good" },
+		{ "승선 동료", tostring(joined) .. "명", tone = "key" },
+		{ "배치 가능", tostring(math.max(0, (view.companions.max or 0) - joined)) .. "자리", tone = "key" },
+		{ "보유 코인", H.commas(view.player.coins), tone = "key" },
+	})
 	add(function() return mkHeader(content, string.format("주점 동료 · 영입 가능 %d명 (자리 %d칸)", open, view.companions.max or 0)) end)
 	if #list == 0 then
 		add(function() return mkLabel(content, "이 항구의 주점에는 영입할 동료가 없어요.", 14, COLORS.muted, true) end)
@@ -4770,6 +4784,18 @@ function RENDERERS.recruit()
 end
 
 function RENDERERS.crew()
+	-- [동료 배치 현황] 기존 선장실 배치 데이터를 그대로 요약한다.
+	local joined, filled, matched = 0, 0, 0
+	for _, c in (view.companions.list or {}) do if c.joined then joined += 1 end end
+	for _, st in (view.companions.stations or {}) do
+		if st.seatId then filled += 1; if st.matched then matched += 1 end end
+	end
+	H.statStrip({
+		{ "승선 동료", tostring(joined) .. "명", tone = "key" },
+		{ "직책 배치", tostring(filled) .. "/" .. tostring(#(view.companions.stations or {})), tone = "good" },
+		{ "적합 직책", tostring(matched) .. "자리", tone = "good" },
+		{ "미배치", tostring(math.max(0, joined - filled)) .. "명", tone = if joined > filled then "bad" else "good" },
+	})
 	add(function() return mkHeader(content, "동료와 대화") end)
 	add(function()
 		return mkLabel(content, "배에 탄 동료의 [대화] 버튼을 누르면 이야기를 나눌 수 있어요. 대화할수록 호감도가 올라 새 이야기와 선물이 열려요.", 13, COLORS.muted, true)
@@ -6009,6 +6035,15 @@ end
 
 function RENDERERS.route()
 	local ship = view.ship
+	local possible = 0
+	for _, r in (view.routes or {}) do
+		if not r.locked and r.supplies <= ship.supplies and (r.coal or 0) <= (ship.coal or 0) then possible += 1 end
+	end
+	H.statStrip({
+		{ "보급품", tostring(ship.supplies), tone = if ship.supplies <= 5 then "bad" else "key" },
+		{ "석탄", tostring(ship.coal or 0), tone = "key" },
+		{ "준비된 항로", tostring(possible) .. "/" .. tostring(#(view.routes or {})), tone = "good" },
+	})
 	if view.weather then
 		add(function()
 			local fc = ""
@@ -6853,6 +6888,17 @@ end
 
 function RENDERERS.explore()
 	H.walletBar(if H.exploreScholarView then "tavern" else "battle")
+	local availableSites, pendingSites, remain = 0, 0, 0
+	for _, site in (view.sites or {}) do
+		if site.unlocked and site.left > 0 then availableSites += 1
+		elseif not site.unlocked and site.left > 0 then pendingSites += 1 end
+		remain += math.max(0, site.left or 0)
+	end
+	H.statStrip({
+		{ "탐험 가능", tostring(availableSites) .. "곳", tone = "good" },
+		{ "잠긴 지점", tostring(pendingSites) .. "곳", tone = "key" },
+		{ "남은 기회", tostring(remain), tone = "key" },
+	})
 	if not H.exploreScholarView then -- 서재의 보고 탭에서는 탐험 지점을 보이지 않는다
 	add(function() return mkHeader(content, "탐험 지점") end)
 	if #view.sites == 0 then
@@ -8815,6 +8861,11 @@ end
 
 function RENDERERS.war()
 	H.walletBar("tavern")
+	H.statStrip({
+		{ "선체", string.format("%d/%d", view.ship.hull, view.ship.maxHull), tone = if view.ship.hull < view.ship.maxHull * 0.5 then "bad" else "good" },
+		{ "함대전", if view.war then string.format("%d/%d파도", view.war.wave, view.war.total) else "미진행", tone = "key" },
+		{ "작전 후보", tostring(#(view.wars or {})) .. "개", tone = "key" },
+	})
 	add(function()
 		return mkRow(content, "대규모 해전 의뢰", "한 번의 출격이 아니라 여러 척을 차례로 상대하는 작전이에요. 파도마다 실시간으로 싸우고, 모두 돌파하면 큰 보상! 한 번이라도 지면 작전 실패예요. 파도 사이에 선체는 회복되지 않으니 아껴 싸우세요.", nil, 92)
 	end)
@@ -10698,6 +10749,17 @@ function render()
 			return row
 		end)
 	end
+	if H.recentTab and H.recentTab ~= currentTab and TAB_NAME[H.recentTab] then
+		local recent = H.recentTab
+		add(function()
+			local b = mkButton(content, "↶ 최근 메뉴: " .. TAB_NAME[recent], COLORS.grey, UDim2.new(1, -6, 0, 36), function()
+				openTab(recent, if recent == "map" then "chart" else nil)
+			end)
+			b.Name = "RecentFacilityShortcut"
+			b.TextSize = 14
+			return b
+		end)
+	end
 	H.counselRows(1)
 	RENDERERS[currentTab]()
 end
@@ -11221,6 +11283,8 @@ function H.goAdvice(tab)
 end
 
 openTab = function(tabId, mapPage)
+	-- [최근 사용] 영구 저장 키 변경 없이 이 실행 중 직전 메뉴만 기억한다.
+	if currentTab ~= tabId and TAB_NAME[currentTab] then H.recentTab = currentTab end
 	currentTab = tabId
 	message = "" -- 창을 새로 열 때 지난 안내 문구는 지운다
 	H.mapPage = mapPage
