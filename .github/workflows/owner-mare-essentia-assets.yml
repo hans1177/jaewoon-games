@@ -126,7 +126,18 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m pip install --disable-pip-version-check --quiet numpy==2.3.5 trimesh==4.11.1 pillow==12.3.0
-          python3 tools/mare-essentia-ship-v5.py
+          # [메모리 안정성] 36척을 동일 생성기로 6척씩 실행해 원본 메시 누적 메모리를 피한다.
+          python3 - <<'PY'
+          import runpy, subprocess, sys
+          source = 'tools/mare-essentia-ship-v5.py'
+          entries = runpy.run_path(source)['OLD']
+          ids = [entry['id'] for entry in entries]
+          if len(ids) != 36 or len(set(ids)) != 36:
+              raise SystemExit('MARE_V5_EXACT_36_BLUEPRINTS_REQUIRED')
+          for start in range(0, 36, 6):
+              print('MARE_V5_REBUILD_BATCH', start // 6 + 1, ids[start:start + 6], flush=True)
+              subprocess.run([sys.executable, source, *ids[start:start + 6]], check=True)
+          PY
 
       - name: Upload licensed models and menu icons to Roblox and write AssetIds
         id: asset_registration
