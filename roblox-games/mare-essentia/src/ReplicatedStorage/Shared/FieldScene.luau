@@ -3254,15 +3254,25 @@ function FieldScene.start(opts)
 				local longGun = wpn.motion == "RIFLE"
 				local pistol = wpn.motion == "PISTOL"
 				if crossbow then
-					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.56 * poseWeight + 0.13 * recoil, 0.08, 0.10)
-					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.65 * poseWeight, -0.13, -0.11)
-					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.38 * poseWeight + 0.20 * recoil, 0, 0)
-					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.50 * poseWeight, 0, 0)
-					canon.HandR = (canon.HandR or id) * CFrame.Angles(0.18 * recoil, 0, 0)
+					-- [석궁 수평 견착] 오른손 방아쇠·왼손 레일 받침·고개 조준을 같은 수평선으로 묶는다.
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.72 * poseWeight + 0.17 * recoil, 0.04, 0.10)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.81 * poseWeight, -0.11, -0.14)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.47 * poseWeight + 0.25 * recoil, 0, 0)
+					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.58 * poseWeight, 0, 0)
+					canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.13 * poseWeight, 0, -0.04)
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(0.22 * recoil, 0, 0)
+					canon.Head = (canon.Head or id) * CFrame.Angles(-0.06 * poseWeight, 0, 0)
 				elseif bow then
-					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.92 * poseWeight, 0, -0.09)
-					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.52 * poseWeight - 0.30 * press + 0.28 * recoil, 0.18 * poseWeight, 0.18)
-					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.70 * poseWeight - 0.26 * press + 0.47 * recoil, 0, 0)
+					-- [활 진짜 조준] 왼손으로 수직 활대를 펴고, 오른손 시위는 턱 옆으로 당겼다가 놓는다.
+					-- 활대와 화살의 방향축은 equipFieldWeapon/arrowTrail에서 동일 목표 전방을 사용한다.
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-1.03 * poseWeight, -0.12, -0.20)
+					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.16 * poseWeight, 0, 0)
+					canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.13 * poseWeight, 0, 0)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.68 * poseWeight - 0.42 * press + 0.32 * recoil, 0.30 * poseWeight, 0.24)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.86 * poseWeight - 0.32 * press + 0.52 * recoil, 0.08, 0)
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.18 * press + 0.32 * recoil, 0.08, 0)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(0, 0.12 * poseWeight, 0)
+					canon.Head = (canon.Head or id) * CFrame.Angles(-0.04 * poseWeight, -0.09 * poseWeight, 0)
 				elseif longGun then
 					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.65 * poseWeight, 0, -0.18)
 					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.69 * poseWeight + 0.15 * recoil, 0, 0.13)
