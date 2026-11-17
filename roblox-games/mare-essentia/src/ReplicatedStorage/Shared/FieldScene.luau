@@ -2753,7 +2753,7 @@ function FieldScene.start(opts)
 		-- [무기 타격감] 동일 피해·보상은 유지하고 원본 사운드·이펙트만 무기별로 차별화한다.
 		local impactPos = e.root.Position + Vector3.new(0, 2, 0)
 		local family = impactWeapon.family
-		local rangedImpact = not quiet and impactWeapon.ranged and (family == "bow" or family == "firearm")
+		local rangedImpact = impactWeapon.ranged and (family == "bow" or family == "firearm")
 		-- [맞는 재질감] 화살/볼트/총알 명중은 둔탁한 파열 대신 작은 타격 섬광만 사용한다.
 		if not rangedImpact then
 			burst(impactPos, if visualMobile then math.min(12 + dealt, 20) else 12 + dealt, mult >= 1.5)
@@ -4015,6 +4015,17 @@ function FieldScene.start(opts)
 			auraOn(ch, Color3.fromRGB(100, 170, 255), Color3.fromRGB(235, 245, 255), 1.4)
 			pulseAt("BLOCK_IMPACT", hp0.CFrame * CFrame.new(0, 0.5, 0), Color3.fromRGB(120, 190, 255), Color3.fromRGB(255, 255, 255), 8, 12)
 		elseif sk == "volley" or sk == "snipe" then
+			-- [카드 원거리 스킬] 실제 사용자의 무기 장착 ID로 투사체·발포음을 선택한다.
+			-- 명중 수/배율/사거리/쿨타임은 기존 카드 규칙을 그대로 유지한다.
+			local equippedId = ch and ch:GetAttribute("EquippedWeaponId")
+			local rangedWeapon = if type(equippedId) == "string" then Weapons.get(equippedId) else wpn
+			local motion = if rangedWeapon.ranged then rangedWeapon.motion else "BOW"
+			local spellColor = if motion == "CROSSBOW" then Color3.fromRGB(181, 217, 238)
+				elseif motion == "BOW" or motion == "LONGBOW" then Color3.fromRGB(162, 231, 173)
+				else Color3.fromRGB(255, 202, 140)
+			pulseAt(if sk == "snipe" then "CRITICAL_BURST" else "SHAPE_BURST",
+				hp0.CFrame * CFrame.new(0, 1.3, -2.2), spellColor, Color3.fromRGB(255, 243, 216),
+				if sk == "snipe" then 5.5 else 3.8, if visualMobile then 3 else 7)
 			local list = table.clone(enemies)
 			table.sort(list, function(a, b)
 				return (a.root.Position - hp0.Position).Magnitude < (b.root.Position - hp0.Position).Magnitude
@@ -4026,16 +4037,27 @@ function FieldScene.start(opts)
 					break
 				end
 				hitN += 1
-				arrowTrail(pos, e.root.Position + Vector3.new(0, 1.5, 0))
+				local hitPos = e.root.Position + Vector3.new(0, 1.5, 0)
+				arrowTrail(pos, hitPos, nil, nil, motion, sk == "snipe")
+				pulseAt("IMPACT_FLASH", CFrame.new(hitPos), spellColor, Color3.fromRGB(251, 248, 229),
+					if sk == "snipe" then 5 else 3, if visualMobile then 2 else 4)
 				if strikeEnemy(e, if sk == "snipe" then 3.0 else 1.2, hp0.Position, 1.5, sk == "snipe", false, ch == player.Character) then
 					hitLanded += 1
 				end
 			end
 			if ch == player.Character and hitLanded == 0 then endStreak("헛손질") end
-			trailsOn(ch, { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerArm" }, Color3.fromRGB(255, 220, 130), 0.4, 0.9)
-			pulseAt("SHAPE_BURST", hp0.CFrame * CFrame.new(0, -1.5, 0), Color3.fromRGB(255, 210, 120), Color3.fromRGB(255, 245, 210), 9, 12)
+			trailsOn(ch, { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerArm" }, spellColor,
+				if sk == "snipe" then 0.42 else 0.25, if sk == "snipe" then 0.8 else 0.54)
 			say(name .. (if hitN > 0 then ": 원거리 공격!" else ": 맞힐 적이 없다"))
-			sfx("sfx_card_volley", 0.7, 1)
+			if motion == "CROSSBOW" then
+				sfx("sfx_card_volley", 0.42, if sk == "snipe" then 1.21 else 1.46)
+			elseif motion == "BOW" or motion == "LONGBOW" then
+				sfx("sfx_rope_release", 0.45, if motion == "LONGBOW" then 1.12 else 1.38)
+			elseif motion == "RIFLE" then
+				sfx("sfx_cannon", 0.32, 1.87)
+			else
+				sfx("sfx_card_fire", 0.4, 1.52)
+			end
 		elseif sk == "rally" then
 			pl.buffUntil = now + 8
 			say(name .. ": 8초간 공격력 +30%")
