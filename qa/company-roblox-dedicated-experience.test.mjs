@@ -1054,6 +1054,36 @@ test('Mare naval encounter keeps card duel exclusive to the dedicated tavern flo
   assert.doesNotMatch(client,/해적과 싸우면 카드 대결로 승패가 갈려요|카드에서 이기면 전체 승리예요/);
 });
 
+// [해전 시각 품질 회귀] 기존 포격·접현 판정은 그대로 두고 장면 연출만 정교하게 바꾼다.
+test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets', () => {
+  const battle=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  assert.match(battle,/local MOBILE_VFX = game:GetService\("UserInputService"\)\.TouchEnabled/);
+  assert.match(battle,/local rangeRing = \{ segments = \{\} \}/,'range is an outline, not a solid sea-covering disk');
+  assert.match(battle,/local segmentLength = 2 \* math\.pi \* cannon\.range \/ count/,'radius must reuse existing gun range');
+  assert.doesNotMatch(battle,/rangeRing\.(?:Transparency|CFrame|Color|Size)\s*=/,'obsolete solid cylinder range must stay removed');
+  assert.match(battle,/FX\.projectile\(ball, nc\)/,'the existing cannon routine gets a traced cannonball');
+  assert.doesNotMatch(battle,/local boom = part\(folder|local flash = part\(folder/,'cartoon light balls must not mask cannon bursts');
+  assert.match(battle,/function FX\.flame\(pos, scale\)[\s\S]*?FX\.burst\(/,'sinking flames use sprites instead of orange spheres');
+
+  assert.match(battle,/trail\.Attachment0, trail\.Attachment1 = a0, a1/,'trajectory has a continuous trail');
+  assert.match(battle,/shadow\.CFrame = CFrame\.new\(bpos\.X/,'PC ballistic water shadow follows the real cannonball');
+  assert.match(battle,/function FX\.shipFire\(sh, key, hp, now\)/,'ship damage keeps attached flames/smoke');
+  assert.match(battle,/vent\.Position = root\.CFrame:PointToObjectSpace\(origin\)/,'damage fire follows actual moving ships');
+  assert.match(battle,/vent\.fire\.Rate = if hp < 0\.42/,'fire intensity must reflect the unchanged hull fraction');
+  assert.match(battle,/vent\.fire\.Enabled = vent\.fire\.Rate > 0/,'damage-driven fire emitter must actually ignite');
+  assert.match(battle,/vent\.soot\.Enabled = vent\.soot\.Rate > 0/,'damage smoke must actually turn on');
+  assert.match(battle,/FX\.boardingCrewSpawned = true/,'boarding crew rigs must spawn at most once');
+  assert.match(battle,/for i = 1, \(if MOBILE_VFX then 2 else 4\) do/,'mobile boarding actors are bounded');
+  assert.match(battle,/function FX\.boarding\(\)/);
+  assert.match(battle,/FX\.boardZoom \+=/,'boarding cinematic transitions smoothly');
+  assert.match(battle,/cam\.FieldOfView = 76 .* - FX\.boardZoom \* 19/,'boarding zoom cannot change ship mechanics');
+  assert.match(battle,/if MOBILE_VFX then 1 else 2/,'mobile flames are limited to one deck vent');
+  assert.match(battle,/if MOBILE_VFX then 20 else 32/,'mobile range outline has bounded parts');
+  assert.match(battle,/local inRange = d < cannon\.range/,'live gun-fire range is unchanged');
+  assert.match(battle,/rtDamage\(false, base \* acc\)/,'existing damage authority is unchanged');
+  assert.match(battle,/local r2 = Combat\.board\(fa, fb, seed\)/,'boarding resolution is unchanged');
+});
+
 test('Mare standalone card duel board respects four rendered rows, zoom and approved image gating', () => {
   const source=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
