@@ -1548,7 +1548,7 @@ function FieldScene.start(opts)
 	attackBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 	local attackIcon = addIcon(attackBtn, "Menu/cc0_sword")
 	-- [무기별 스킬] 강타·휩쓸기 두 가지만 계산한다. 막기·회피·카드는 별개 행동.
-	attackBtn:SetAttribute("WeaponSkillCount", 2)
+	attackBtn:SetAttribute("WeaponSkillCount", 1)
 	local retreat = btn(gui, "철수", Color3.fromRGB(54, 75, 86), UDim2.fromOffset(88, 42), UDim2.new(0, 12, 0, 12), Vector2.new(0, 0))
 	retreat.Name = "FieldRetreat"
 	retreat.TextSize = 14
@@ -2565,6 +2565,7 @@ function FieldScene.start(opts)
 		if streakN <= 0 then return end
 		local ended = streakN
 		streakN = 0
+		pl.autoNormalHits = 0
 		streakRecordShown = false
 		table.clear(streakRecent)
 		comboGauge.Visible = false
@@ -2800,6 +2801,14 @@ function FieldScene.start(opts)
 					and (streakLimit() - (hitAt - streakT)) <= 0.5
 				streakN += 1
 				streakT = hitAt
+				-- [주인공 일반공격만] 동료·광역·자동 스킬 적중은 다음 자동 발동을 쌓지 않는다.
+				if creditedSeq == pl.basicAttackSeq then
+					pl.autoNormalHits = (pl.autoNormalHits or 0) + 1
+					if pl.autoNormalHits % 5 == 0 then
+						local owner = player.Character
+						if owner then owner:SetAttribute("FieldAutoSkillPending", pl.autoNormalHits) end
+					end
+				end
 				for i = #streakRecent, 1, -1 do
 					if hitAt - streakRecent[i] > 1.5 then table.remove(streakRecent, i) end
 				end
@@ -3470,6 +3479,7 @@ function FieldScene.start(opts)
 		-- 이 탐험에서만 기본 공격을 항상 단타로 처리한다. 숙련 연타는 명중 뒤 별도로 추첨한다.
 		if moveId == "rush" then
 			chainMotionSerial += 1
+			pl.basicAttackSeq = streakActionSeq
 			pl.combo = 0
 			pl.lastHit = -100
 			mult = 1
@@ -3894,8 +3904,6 @@ function FieldScene.start(opts)
 		end)
 	end
 	local function useAttack() useMove("rush") end
-	local function useHeavy() useMove("heavy") end
-	local function useSpin() useMove("sweep") end
 	local function useDash() useMove("dodge") end
 	-- 버튼은 터치 '닿는 순간' 바로 반응한다(폰에서 손가락이 살짝 밀려도 Activated 가 안 뜨는 경우 대비). 같은 누름의 중복은 막는다.
 	local function bindPress(b: GuiButton, fn: () -> ())
@@ -4186,7 +4194,8 @@ function FieldScene.start(opts)
 		for i2, id in loadout do
 			slotOf[id] = i2
 		end
-		equipped.heavy, equipped.sweep = slotOf.heavy ~= nil, slotOf.sweep ~= nil
+		-- [일반 스킬 한 종류] 저장된 카드/장착 데이터는 그대로 읽지만 자동 강타 하나만 전투에서 사용한다.
+		equipped.heavy, equipped.sweep = true, false
 		-- [자동 스킬] 기존 장착 칸/해금 정보는 그대로 유지하고 공격·회피 외 버튼만 만들지 않는다.
 		local function useCard(key, card)
 			local now = os.clock()
@@ -4219,34 +4228,18 @@ function FieldScene.start(opts)
 			startSwing("cast_" .. tostring(sk), if sk == "volley" or sk == "snipe" then 0.8 else 0.9)
 			castEffect(sk, card.name, ch, hp0)
 		end
-		-- [연타 직업 자동기] 15연타마다 장착·해금된 카드 중 실제 직업과 맞는 기술을 우선 사용한다.
-		-- 기존 useCard를 재사용해 8초 쿨타임/마력/피해 판정·동료 스킬과의 분리를 유지한다.
+		-- [주인공 전용 연타 자동 스킬] 평타 명중 5회마다 강타 1종만 발동. 동료·카드는 연타 미집계.
+		-- 기존 ActionCombat.tryMove가 쿨타임·기력·무적·피해 판정을 그대로 맡는다.
 		table.insert(conns, RunService.Heartbeat:Connect(function()
 			local ch = player.Character
-			local mark = ch and ch:GetAttribute("FieldAutoCardPending")
+			local mark = ch and ch:GetAttribute("FieldAutoSkillPending")
 			if mark and ch then
-				ch:SetAttribute("FieldAutoCardPending", nil)
-				if not finished and streakN == mark then
-					local style = JobSkills.Categories[ch:GetAttribute("FieldDodgeStyle") or "warrior"]
-					local choice = nil
-					for i, card in cs do
-						local key = "card" .. i
-						if i <= 3 and slotOf[key] and (pl.cd[key] or -100) <= os.clock() then
-							if not choice then choice = i end
-							if style and table.find(style.skills, card.skill) then choice = i break end
-						end
-					end
-					if choice then
-						showCombo(string.format("%d연타 · %s 자동!", mark, cs[choice].name), true,
-							Color3.fromRGB(157, 230, 255))
-						useCard("card" .. choice, cs[choice])
-					else
-						local fallback = if equipped.heavy then "heavy" elseif equipped.sweep then "sweep" else nil
-						if fallback and (pl.cd[fallback] or -100) <= os.clock()
-							and pl.stamina >= AC.Moves[fallback].stamina then
-							useMove(fallback)
-						end
-					end
+				ch:SetAttribute("FieldAutoSkillPending", nil)
+				if not finished and pl.hp > 0 and mark == pl.autoNormalHits
+					and (pl.cd.heavy or -100) <= os.clock() and pl.stamina >= AC.Moves.heavy.stamina then
+					showCombo(string.format("%d연타 · %s 자동!", streakN, Weapons.actionDesign(wpn).heavy),
+						true, Color3.fromRGB(255, 205, 122))
+					useMove("heavy")
 				end
 			end
 			-- [기존 개발 검증] 수동 스킬 버튼 삭제와 무관하게 테스트용 카드 발동은 보존.
@@ -4398,10 +4391,6 @@ function FieldScene.start(opts)
 		end
 		if input.KeyCode == Enum.KeyCode.F then
 			useAttack()
-		elseif input.KeyCode == Enum.KeyCode.Q then
-			useHeavy()
-		elseif input.KeyCode == Enum.KeyCode.E then
-			useSpin()
 		elseif input.KeyCode == Enum.KeyCode.R then
 			useDash()
 		elseif input.KeyCode == Enum.KeyCode.G then
