@@ -5878,8 +5878,9 @@ function PortScene.build(info, onFacility)
 			local queued = false
 			local outfitConn = people.ChildAdded:Connect(function(asset)
 				if not asset:IsA("Model") or not AssetIds["People/" .. asset.Name] then return end
+				-- 신규 액세서리도 기존 People 인입 이벤트에서 한 번만 재장착한다.
 				if not (string.find(asset.Name, "peasant", 1, true) or string.find(asset.Name, "ranger", 1, true)
-					or string.sub(asset.Name, 1, 5) == "hair_") then return end
+					or string.sub(asset.Name, 1, 5) == "hair_" or string.sub(asset.Name, 1, 4) == "acc_") then return end
 				if queued then return end
 				queued = true
 				task.delay(0.08, function()
