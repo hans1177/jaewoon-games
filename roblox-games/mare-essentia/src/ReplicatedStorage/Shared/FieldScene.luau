@@ -2144,35 +2144,45 @@ function FieldScene.start(opts)
 					local crossbow = wpn.motion == "CROSSBOW"
 					local rifle = wpn.motion == "RIFLE"
 					local drop = if slashIdx == 3 then 1 else 0.45
-					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.32 * drop * pulse, side * 0.52 * pulse, -side * 0.24 * pulse)
-					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.21 * pulse, -side * 0.56 * pulse, side * 0.26 * pulse)
-					canon.Head = (canon.Head or id) * CFrame.Angles(0.12 * pulse, side * 0.23 * pulse, 0)
-					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.61 * drop * pulse, 0, -0.17 * pulse)
-					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(0.53 * drop * pulse, 0, 0.18 * pulse)
-					canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.59 * drop * pulse, 0, 0)
-					canon.ShinR = (canon.ShinR or id) * CFrame.Angles(-0.31 * drop * pulse, 0, 0)
-					canon.FootL = (canon.FootL or id) * CFrame.Angles(0.23 * pulse, 0, -side * 0.12 * pulse)
-					canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.28 * pulse, 0, side * 0.14 * pulse)
+					-- [모션의 시간차] 지지발/골반이 먼저 회전하고, 어깨가 따라오며, 손목은 마지막 격발에 튕긴다.
+					local plant = math.sin(math.clamp(p / 0.58, 0, 1) * math.pi)
+					local shoulder = math.sin(math.clamp((p - 0.08) / 0.72, 0, 1) * math.pi)
+					local trigger = math.sin(math.clamp((p - 0.26) / 0.55, 0, 1) * math.pi)
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.32 * drop * plant, side * 0.52 * plant, -side * 0.24 * plant)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.21 * shoulder, -side * 0.56 * shoulder, side * 0.26 * shoulder)
+					-- 고개는 허리가 돌아가도 목표 방향을 더 늦게 따라가고, 사격 직후에 회수한다.
+					canon.Head = (canon.Head or id) * CFrame.Angles(0.12 * trigger, side * (0.39 * shoulder - 0.15 * trigger), 0)
+					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.61 * drop * plant, 0, -0.17 * plant)
+					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(0.53 * drop * plant, 0, 0.18 * plant)
+					canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.59 * drop * plant, 0, 0)
+					canon.ShinR = (canon.ShinR or id) * CFrame.Angles(-0.31 * drop * plant, 0, 0)
+					canon.FootL = (canon.FootL or id) * CFrame.Angles(0.23 * plant, 0, -side * 0.12 * plant)
+					canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.28 * plant, 0, side * 0.14 * plant)
 					if bow then
 						-- 활: 몸을 크게 열고 시위 팔을 뒤로 빼며 좌우 교차 사격.
-						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.24 * pulse, 0, -side * 0.20 * pulse)
-						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.34 * pulse, side * 0.26 * pulse, 0)
-						canon.HandR = (canon.HandR or id) * CFrame.Angles(0.33 * pulse, 0, side * 0.21 * pulse)
+						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.30 * shoulder, 0, -side * 0.24 * shoulder)
+						canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.20 * shoulder, 0, 0)
+						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.41 * shoulder + 0.27 * trigger, side * 0.30 * shoulder, 0)
+						canon.HandR = (canon.HandR or id) * CFrame.Angles(0.45 * trigger, 0, side * 0.27 * trigger)
 					elseif crossbow then
 						-- 석궁: 양손 수평 견착 유지, 측면 빠른 격발과 반동.
-						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.26 * pulse, -side * 0.14 * pulse, 0)
-						canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.38 * pulse, side * 0.12 * pulse, 0)
-						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(0.29 * pulse, 0, 0)
+						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.28 * shoulder, -side * 0.14 * shoulder, 0)
+						canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.38 * shoulder + 0.30 * trigger, side * 0.12 * shoulder, 0)
+						canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.16 * shoulder, 0, -0.05 * shoulder)
+						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(0.36 * trigger, 0, 0)
+						canon.HandR = (canon.HandR or id) * CFrame.Angles(0.21 * trigger, 0, 0)
 					elseif rifle then
 						-- 장총: 견착한 채 어깨와 허리가 다른 방향으로 역회전.
-						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.24 * pulse, 0, -0.09 * pulse)
-						canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(0.34 * pulse, side * 0.09 * pulse, 0)
-						canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.20 * pulse, 0, 0)
+						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.26 * shoulder, 0, -0.09 * shoulder)
+						canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.12 * shoulder + 0.46 * trigger, side * 0.09 * shoulder, 0)
+						canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.23 * shoulder, 0, 0)
+						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(0.24 * trigger, 0, 0)
 					else
 						-- 권총: 한 손을 크게 뻗고 반대손으로 균형을 잡으며 빠른 연사.
-						canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.45 * pulse, 0, side * 0.17 * pulse)
-						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(0.39 * pulse, 0, 0)
-						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(0.25 * pulse, -side * 0.14 * pulse, 0)
+						canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.55 * shoulder + 0.39 * trigger, 0, side * 0.20 * shoulder)
+						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(0.51 * trigger, 0, 0)
+						canon.HandR = (canon.HandR or id) * CFrame.Angles(0.26 * trigger, 0, side * 0.14 * trigger)
+						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(0.28 * plant, -side * 0.16 * plant, 0)
 					end
 				end
 			end
