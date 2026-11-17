@@ -429,6 +429,7 @@ test('탐험 단계별 검술 발놀림과 골반 회전의 부드러운 전환 
   assert.match(field,/rootFrom = swingBridge\.rootLast/);
   assert.match(field,/rootRot = swingBridge\.rootFrom:Lerp\(rootRot or CFrame\.identity, blend\)/);
   assert.match(field,/if swingKind == "slash" and slashIdx <= 3 and not wpn\.ranged then/);
+  for(const beat of [4,5,6,7,8,9]) assert.ok(field.includes('not wpn.ranged and slashIdx == '+beat),'근접 검무가 원거리 견착과 충돌: '+beat);
   assert.match(field,/if kind == "dash" then\s+dur = 0\.4/);
   assert.match(field,/elseif kind == "slash" and beat >= 2 then\s+dur = math\.clamp\(dur, 0\.33, 0\.44\)/);
   assert.match(field,/task\.delay\(if kind == "slash" then 0\.14/);
