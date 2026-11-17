@@ -7208,6 +7208,10 @@ function FieldScene.start(opts)
 		local spawned = {} -- 영입 슬롯별 생성 성공만 기록. 실패 슬롯만 재시도한다.
 		local nextSpawnRetryAt = 0
 		local spawning = false -- R15 모델 생성이 비동기로 끝날 때까지 같은 슬롯 중복 소환 차단.
+		-- [탐험 동료 지면] 기존 지형·전투물의 실제 충돌면만 확인하고, 캐릭터 신체는 무시한다.
+		local allyGroundRay = RaycastParams.new()
+		allyGroundRay.FilterType = Enum.RaycastFilterType.Exclude
+		allyGroundRay.RespectCanCollide = true
 		-- [실제 관절 재생 시점] Animator 평가가 끝난 물리 직전 단계에 갱신해 팔다리가 고정된 인형처럼 남지 않게 한다.
 		table.insert(conns, RunService.PreSimulation:Connect(function(dt)
 			if finished or #allyDefs == 0 then
@@ -7218,6 +7222,7 @@ function FieldScene.start(opts)
 			if not root0 then
 				return
 			end
+			allyGroundRay.FilterDescendantsInstances = { ch }
 			local now = os.clock()
 			if #allies < #allyDefs and not spawning and now >= nextSpawnRetryAt then
 				spawning = true
@@ -7346,6 +7351,7 @@ function FieldScene.start(opts)
 						energyCaption.Size = UDim2.fromOffset(38, 12)
 						energyCaption.ZIndex = 6
 						local ally = { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now,
+							footOffset = m:GetPivot().Position.Y - pos0.Y,
 							fm = if FM then FM.new(m, false) else nil, name = ad.name, skills = ad.skills,
 							weapon = ad.weapon or Weapons.get("sword"), skillCd = {}, nextSkill = now + 4 + i * 2,
 							gait = (i - 1) * 0.45, energy = 100, energyFill = energyFill,
@@ -7403,6 +7409,20 @@ function FieldScene.start(opts)
 					a.model:PivotTo(a.model:GetPivot() + a.moveVel.Unit * walked)
 					a.gait = (a.gait or 0) + walked / 5.2
 				end
+				-- [발 접지] 이동 후 동료의 발바닥이 서야 할 충돌면 높이를 읽어 모델 전체를 천천히 붙인다.
+				-- 지면에 없는 공중 장식·벽은 무시하고, 계단·완만한 지형만 최대 1.6스터드 보정한다.
+				local floorHit = workspace:Raycast(a.root.Position + Vector3.new(0, 4, 0),
+					Vector3.new(0, -14, 0), allyGroundRay)
+				if floorHit and floorHit.Normal.Y > 0.7 then
+					local pivot = a.model:GetPivot()
+					local wantedY = floorHit.Position.Y + a.footOffset + 0.015
+					local gap = wantedY - pivot.Position.Y
+					if math.abs(gap) < 1.6 and math.abs(gap) > 0.002 then
+						a.model:PivotTo(pivot + Vector3.new(0,
+							math.clamp(gap * (1 - math.exp(-13 * math.clamp(dt, 0, 0.1))), -0.22, 0.22), 0))
+					end
+				end
+				local gaitMoving = walked > 0.01
 				-- [시선·발 방향 분리] 적을 공격할 때는 적을 보고, 복귀하면 주인공과 같은 방향을 보며 회전은 지연시킨다.
 				local face = if tgt then tgt.root.Position - a.root.Position
 					elseif moving and a.moveVel.Magnitude > 0.05 then a.moveVel else root0.CFrame.LookVector
@@ -7495,7 +7515,7 @@ function FieldScene.start(opts)
 					elseif tgt and not moving and a.nextAt > now and a.nextAt - now < 0.22 then
 						-- [타격 예고] 다음 공격 직전의 짧은 무기 준비. 대미지 발생 시각은 변경하지 않는다.
 						FM.actor(a.fm, "ANTICIPATION", 1 - (a.nextAt - now) / 0.22, dt, nil, 1.18, nil, false, nil, a.weapon.motion)
-					elseif moving then
+					elseif gaitMoving then
 						FM.actor(a.fm, "RUN", (a.gait or 0) % 1, dt, nil, 1.3, nil, false, nil, a.weapon.motion,
 							math.clamp(walked / math.max(dt, 0.008) / maxSpeed, 0.18, 1.25))
 					else
@@ -7506,7 +7526,8 @@ function FieldScene.start(opts)
 				elseif ap >= 0 and ap < 1 then
 					Pose.makeR15Action(a.model, "attack", ap, now - a.t0)
 				else
-					Pose.makeR15Action(a.model, if moving then "run" else "idle", 0, if moving then (a.gait or 0) * 2 * math.pi else now - a.t0)
+					Pose.makeR15Action(a.model, if gaitMoving then "run" else "idle", 0,
+						if gaitMoving then (a.gait or 0) * 2 * math.pi else now - a.t0)
 				end
 			end
 		end))

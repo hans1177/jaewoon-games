@@ -4853,7 +4853,9 @@ function PortScene.build(info, onFacility)
 				-- [동료 이름표] 번호·직업 대신 영입 동료 이름을 표시한다.
 				if tag then sign(folder, tag, tostring(c.name or c.role or "동료"), if i % 2 == 1 then Color3.fromRGB(125, 224, 255) else Color3.fromRGB(245, 207, 110), 4, true) end
 				local at = v:GetPivot().Position
-				table.insert(followers, { model = v, index = i, pos = Vector3.new(at.X, 0, at.Z), baseY = at.Y, phase = i * 1.7, idleKind = look[3] or "look", gait = i * 0.3, speed = 0, heading = v:GetPivot().Rotation })
+				table.insert(followers, { model = v, index = i, pos = Vector3.new(at.X, 0, at.Z), baseY = at.Y,
+					footOffset = at.Y - 0.18, phase = i * 1.7, idleKind = look[3] or "look", gait = i * 0.3,
+					speed = 0, heading = v:GetPivot().Rotation })
 			end
 		end
 	end
@@ -4876,6 +4878,10 @@ function PortScene.build(info, onFacility)
 	local followConn
 	if #followers > 0 then
 		local Players = game:GetService("Players")
+		-- [항구 동료 지면 추적] 다른 NPC와 물·장식은 밟지 않고 실제 충돌 가능한 길·다리·선착장만 접지한다.
+		local groundRay = RaycastParams.new()
+		groundRay.FilterType = Enum.RaycastFilterType.Exclude
+		groundRay.RespectCanCollide = true
 		-- [동료 R15] 주민/전투와 동일한 공식 관절 적용 시점에서 보행·대기 모션을 갱신한다.
 		followConn = RunService.PreSimulation:Connect(function(deltaTime)
 			local now = os.clock()
@@ -4885,6 +4891,7 @@ function PortScene.build(info, onFacility)
 			local char = Players.LocalPlayer and Players.LocalPlayer.Character
 			local root = char and char:FindFirstChild("HumanoidRootPart")
 			if not root then return end
+			groundRay.FilterDescendantsInstances = { char }
 			local look = Vector3.new(root.CFrame.LookVector.X, 0, root.CFrame.LookVector.Z)
 			if look.Magnitude < 0.01 then look = Vector3.new(1, 0, 0) end
 			look = look.Unit
@@ -4910,6 +4917,15 @@ function PortScene.build(info, onFacility)
 					end
 					local moving = walked > 0.005
 					local faceDir = if moving then delta.Unit else look
+					-- [발 접지] 주인공을 쫓는 경로의 바닥을 매 프레임 샘플링한다. 급경사·큰 장애물은 발판으로 보지 않는다.
+					local surface = workspace:Raycast(Vector3.new(f.pos.X, f.baseY + 5, f.pos.Z),
+						Vector3.new(0, -14, 0), groundRay)
+					if surface and surface.Normal.Y > 0.7 then
+						local wantedY = surface.Position.Y + f.footOffset + 0.015
+						if math.abs(wantedY - f.baseY) < 2.5 then
+							f.baseY += (wantedY - f.baseY) * (1 - math.exp(-11 * dt))
+						end
+					end
 					local at = f.pos + Vector3.new(0, f.baseY, 0)
 					-- [동료 추적] 몸 회전과 골반 방향은 급격히 꺾지 않도록 실제 이동 방향에 지연 보간한다.
 					f.heading = f.heading:Lerp(CFrame.lookAt(Vector3.zero, faceDir).Rotation, 1 - math.exp(-6 * dt))

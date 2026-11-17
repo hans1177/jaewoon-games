@@ -304,14 +304,17 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("Chest", -0.10 * drive * sprint, -plant * 0.09 * sprint, plant * 0.055 * sprint)
 			bend("ThighL", plant * 0.24 * drive * sprint, 0, 0)
 			bend("ThighR", -plant * 0.24 * drive * sprint, 0, 0)
-			bend("ShinL", -liftL * 0.22 * sprint, 0, 0)
-			bend("ShinR", -liftR * 0.22 * sprint, 0, 0)
+			-- [축발 지지] 지면에 실린 다리는 무릎을 펴고, 앞으로 뻗는 다리만 접는다.
+			local supportL, supportR = math.max(0, plant), math.max(0, -plant)
+			bend("ShinL", (-liftL * 0.22 + supportL * 0.065) * sprint, 0, 0)
+			bend("ShinR", (-liftR * 0.22 + supportR * 0.065) * sprint, 0, 0)
 			bend("UpperArmL", -plant * 0.26 * sprint, 0, 0)
 			bend("UpperArmR", plant * 0.26 * sprint, 0, 0)
 			bend("ForearmL", -0.14 * sprint, 0, 0)
 			bend("ForearmR", -0.14 * sprint, 0, 0)
-			bend("FootL", liftL * 0.12 * sprint, 0, 0)
-			bend("FootR", liftR * 0.12 * sprint, 0, 0)
+			-- [발뒤꿈치-발끝 연결] 공중발만 들고, 지지발은 뒤꿈치에서 앞꿈치로 체중을 싣는다.
+			bend("FootL", (liftL * 0.12 - supportL * 0.11) * sprint, 0, 0)
+			bend("FootR", (liftR * 0.12 - supportR * 0.11) * sprint, 0, 0)
 			-- [접지 고정] 루트 전체를 위로 들던 0.09스터드 바운스를 없앤다.
 			-- 달리기 활력은 위의 다리·발목·가슴 동작으로만 표현해 실제 발바닥 높이를 유지한다.
 		end
