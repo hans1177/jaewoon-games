@@ -739,18 +739,18 @@ local WEAPON_HIGH_BEATS = {
 	AXE = { "W:AXE_CLEAVE", "W:AXE_DIAGONAL" },
 	SPEAR = { "W:SPEAR_SWEEP", "W:SPEAR_BUTT_STRIKE" },
 	BLUNT = { "W:BLUNT_GROUND_SLAM", "W:BLUNT_RISING" },
-	BOW = { "W:BOW_DRAW", "W:BOW_RELEASE" },
-	FIREARM = { "W:FIREARM_BURST", "W:FIREARM_RELOAD" },
+	BOW = { "W:BOW_RELEASE", "W:BOW_RELEASE" },
+	FIREARM = { "W:FIREARM_BURST", "W:FIREARM_RECOIL" },
 	DUAL = { "W:DUAL_CROSS", "W:DUAL_REVERSE" },
 }
--- [원거리 영화식 3연타] 재장전/노리쇠 대신 연속 격발 관절을 사용한다.
--- BOW_RELEASE / FIREARM_BURST 등 실제 등록된 포즈이며 몸 회전/발 디딤은 FieldScene에서 단계별 합성.
+-- [원거리 10단 영화식 연사] 기존 확인된 격발 관절만 재사용하며 장전 동작 없이 이어진다.
+-- 손·발·척추 회전은 FieldScene에서 합성하고 기존 1회 명중 판정에는 영향이 없다.
 local WEAPON_CHAIN_STANCES = {
-	CROSSBOW = { "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL" },
-	PISTOL = { "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL" },
-	RIFLE = { "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL" },
-	BOW = { "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE" },
-	LONGBOW = { "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE" },
+	CROSSBOW = { "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_BURST", "W:FIREARM_RECOIL" },
+	PISTOL = { "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_BURST", "W:FIREARM_RECOIL" },
+	RIFLE = { "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_BURST", "W:FIREARM_RECOIL" },
+	BOW = { "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE" },
+	LONGBOW = { "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE" },
 	RAPIER = { "W:BLADE_THRUST", "W:BLADE_RIPOSTE", "W:BLADE_SLASH_L" },
 }
 function FM.weaponCombo(motion: string?, idx: number)
@@ -767,10 +767,10 @@ function FM.weaponCombo(motion: string?, idx: number)
 			if not route then
 				return nil
 			end
-			local stage = math.clamp(math.floor(idx), 1, 5)
+			local stage = math.clamp(math.floor(idx), 1, 10)
 			local extras = WEAPON_HIGH_BEATS[prof.family]
 			local stances = WEAPON_CHAIN_STANCES[motion]
-			local action = if stage <= 3 and stances then stances[stage]
+			local action = if stances and stances[stage] then stances[stage]
 				elseif stage > #route and extras then extras[((stage - #route - 1) % #extras) + 1]
 				else route[(stage - 1) % #route + 1]
 			return CM.CreateCombatCombo(motion, { action })

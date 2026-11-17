@@ -259,22 +259,22 @@ test('무기별 실제 발사음과 원거리 스킬 이펙트가 등록된 음�
 });
 
 
-// [연타 무기별 3단 시각 동작] 승인된 공용 R15 자세만 쓰며 기존 피해 1회·숙련 확률·저장값은 유지한다.
-test('연타 무기별 3단 시각 동작은 서로 다르고 관절을 끊김 없이 이어 붙인다',()=>{
+// [연타 무기별 10단 시각 동작] 공용 R15 원자와 기존 명중·숙련·저장 계약을 유지한다.
+test('근접·원거리 10단 전신 모션과 마무리 이펙트는 기존 피해 판정을 유지한다',()=>{
   const motion=read('ReplicatedStorage/Shared/FieldMotion.luau');
   const common=read('ReplicatedStorage/Shared/CommonMotion.luau');
   const chains={
-    CROSSBOW:['FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL'],
-    PISTOL:['FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL'],
-    RIFLE:['FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL'],
-    BOW:['BOW_RELEASE','BOW_RELEASE','BOW_RELEASE'],
-    LONGBOW:['BOW_RELEASE','BOW_RELEASE','BOW_RELEASE'],
+    CROSSBOW:['FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_BURST','FIREARM_RECOIL'],
+    PISTOL:['FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_BURST','FIREARM_RECOIL'],
+    RIFLE:['FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_BURST','FIREARM_RECOIL'],
+    BOW:['BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE'],
+    LONGBOW:['BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE','BOW_RELEASE'],
     RAPIER:['BLADE_THRUST','BLADE_RIPOSTE','BLADE_SLASH_L'],
   };
   const family={CROSSBOW:'FIREARM',PISTOL:'FIREARM',RIFLE:'FIREARM',
     BOW:'BOW',LONGBOW:'BOW',RAPIER:'BLADE'};
   for(const [weapon,atoms] of Object.entries(chains)){
-    assert.ok(motion.includes(weapon+' = { '+atoms.map(x=>'"W:'+x+'"').join(', ')+' }'),weapon+' 3단 연계 누락');
+    assert.ok(motion.includes(weapon+' = { '+atoms.map(x=>'"W:'+x+'"').join(', ')+' }'),weapon+' 등록 연계 누락');
     for(const atom of atoms){
       assert.ok(common.includes('{id="'+atom+'",family="'+family[weapon]+'"'),weapon+' 승인 원자 누락: '+atom);
     }
@@ -283,7 +283,7 @@ test('연타 무기별 3단 시각 동작은 서로 다르고 관절을 끊김 �
     assert.ok(common.includes(weapon+'={id="'+weapon+'"'),weapon+' 기본 모션 프로필 누락');
   }
   assert.match(motion,/local actorBeat = if rangedActor then 1 else \(h\.weaponBeat or 1\)/);
-  assert.match(field,/local swingBridge = \{ last = \{\}, from = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100 \}/);
+  assert.match(field,/local swingBridge = \{ last = \{\}, lastAt = -100, from = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100 \}/);
   assert.match(field,/swingBridge\.from = table\.clone\(swingBridge\.last\)/);
   assert.match(field,/canon\[joint\] = old:Lerp\(canon\[joint\] or CFrame\.identity, weight\)/);
   assert.match(field,/weight = weight \* weight \* \(3 - 2 \* weight\)/);
@@ -301,8 +301,12 @@ test('연타 무기별 3단 시각 동작은 서로 다르고 관절을 끊김 �
   assert.match(visualOnly,/startSwing\(finishKind,/);
   assert.doesNotMatch(visualOnly,/strikeEnemy\(|AC\.damageEnemy\(|AC\.takeHit\(/);
   assert.match(field,/if rank > 1 and comboNow - lastMasteryComboAt >= 7/);
-  // [영화식 원거리 연타] 빨리 연속 입력한 평타 1→2→3은 실타격 1회씩, 숙련 연타는 순수 시각이다.
-  assert.match(field,/basicBeat = if pressedAt - swingBridge\.basicAt <= 1\.1 then swingBridge\.basicBeat % 3 \+ 1 else 1/);
+  // [무기별 10연타] 연속 입력 1~10은 원래 공격당 피해 1회씩이며 추가 연출은 비타격이다.
+  assert.match(field,/if moveId == "rush" then\s*-- \[연속 공격 10박자\]/);
+  assert.match(field,/basicBeat = if pressedAt - swingBridge\.basicAt <= 1\.1 then swingBridge\.basicBeat % 10 \+ 1 else 1/);
+  assert.match(field,/local nextStage = math\.clamp\(math\.floor\(stage or 1\), 1, 10\)/);
+  assert.match(motion,/local stage = math\.clamp\(math\.floor\(idx\), 1, 10\)/);
+  assert.match(motion,/local action = if stances and stances\[stage\] then stances\[stage\]/);
   assert.match(field,/startSwing\(kind, if kind == "spin" then 0\.6 elseif kind == "heavy" then 0\.7 else 0\.4, basicBeat\)/);
   assert.match(field,/local rapidPose = moveId == "rush" and basicBeat >= 2/);
   assert.match(field,/if basicBeat == 3 then[\s\S]*?auraOn\(ch0, aimColor/);
@@ -325,5 +329,14 @@ test('연타 무기별 3단 시각 동작은 서로 다르고 관절을 끊김 �
   assert.match(field,/if visualMobile then 2 else 7\)/);
   assert.doesNotMatch(motion,/CROSSBOW = \{ "W:FIREARM_RECOIL", "W:FIREARM_CYCLE"/);
   assert.doesNotMatch(motion,/BOW = \{ "W:BOW_RELEASE", "W:BOW_RENOCK"/);
+  // 10타 마무리의 자연스러운 전신 관절 연결, 무기별 시각 차별화와 모바일 축약.
+  assert.match(field,/local flourish = if slashIdx == 10 then 1\.90/);
+  assert.match(field,/if basicBeat == 10 then[\s\S]*?auraOn\(ch0, trailColor/);
+  assert.match(field,/if not visualMobile and basicBeat >= 7 then afterimage/);
+  assert.match(field,/if slashIdx >= 4 then[\s\S]*?local turn = if slashIdx % 2 == 0/);
+  assert.match(field,/swingBridge\.lastAt = os\.clock\(\)/);
+  assert.match(field,/elseif os\.clock\(\) - swingBridge\.lastAt > 1\.1 then/);
+  assert.doesNotMatch(field,/sfx\("sfx_cannon_reload", 0\.23, 1\.62\)/);
+  assert.match(weapons,/cadence = "스냅사격·측면스텝·낮은선회/);
 });
 

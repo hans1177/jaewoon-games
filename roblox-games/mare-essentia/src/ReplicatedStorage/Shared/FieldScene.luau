@@ -1654,7 +1654,7 @@ function FieldScene.start(opts)
 	local swingCombo, slashIdx = nil, 0
 	-- [연타 관절 연결] 한 공격이 끝나기 전에 다음 시각 모션을 시작할 때 R15 실제 마지막 자세를 이어 붙인다.
 	-- 신규 애니메이션 트랙/이동 판정 없이 기존 캐논 관절만 보간한다. 최근 프레임 포즈는 테이블을 재사용한다.
-	local swingBridge = { last = {}, from = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100 }
+	local swingBridge = { last = {}, lastAt = -100, from = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100 }
 	-- [모션 직업] 기존 캐릭터 FieldDodgeStyle 속성을 입력·렌더 간 정본으로 사용하여 Luau 지역변수 한도를 지킨다.
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
@@ -1690,14 +1690,14 @@ function FieldScene.start(opts)
 	-- 공격 동작: 캐릭터의 오른팔·허리를 짧게 휘두른다 (애니메이터가 쓴 뒤 덮어쓴다)
 	-- [무기별 실물 R15 모션] 보통 공격은 반드시 1단. 뒤이어 보이는 타격은 숙련 발동시에만 재생한다.
 	local function startSwing(kind: string, dur: number, stage: number?, visualOnly: boolean?)
-		local nextStage = math.clamp(math.floor(stage or 1), 1, 5)
+		local nextStage = math.clamp(math.floor(stage or 1), 1, 10)
 		-- [연타 교차 보간] 2·3타에서 현재 실제 관절을 남겨 끊기는 팔/허리/발목을 연결한다.
-		if FM and nextStage >= 2 and swingKind and next(swingBridge.last) then
+		if FM and (nextStage >= 2 or kind == "slash") and os.clock() - swingBridge.lastAt <= 0.32 and next(swingBridge.last) then
 			swingBridge.from = table.clone(swingBridge.last)
 			swingBridge.at = os.clock()
 			swingBridge.duration = if wpn.family == "dagger" or wpn.family == "fist" then 0.075
 				elseif wpn.family == "axe" or wpn.family == "blunt" then 0.14
-				elseif wpn.ranged then 0.12 else 0.105
+				elseif wpn.ranged then 0.095 else 0.105
 		else
 			swingBridge.from = nil
 		end
@@ -1721,11 +1721,11 @@ function FieldScene.start(opts)
 					end
 				end
 			elseif wpn.motion == "CROSSBOW" then
-				sfx("sfx_equipment_wear", 0.28, 1.48)
+				sfx("sfx_card_chain", 0.16, 1.68)
 			elseif wpn.family == "bow" then
 				sfx("sfx_rope_pull", 0.25, if wpn.motion == "LONGBOW" then 1.05 else 1.32)
 			elseif wpn.motion == "RIFLE" then
-				sfx("sfx_cannon_reload", 0.23, 1.62)
+				sfx("sfx_card_chain", 0.17, 1.42)
 			else
 				sfx("sfx_card_chain", 0.22, 1.72)
 			end
@@ -1957,7 +1957,17 @@ function FieldScene.start(opts)
 					local bow = wpn.family == "bow"
 					local crossbow = wpn.motion == "CROSSBOW"
 					local longGun = wpn.motion == "RIFLE"
-					if slashIdx == 2 then
+					if slashIdx >= 4 then
+						-- [원거리 4~10타] 교차사격→측면 선회→낮은 역회전→도약→10타 마무리.
+						local phase = slashIdx - 3
+						local side = if phase % 2 == 0 then 1 else -1
+						local finale = if slashIdx == 10 then 1 else 0
+						local spread = if bow then 0.93 elseif crossbow then 0.68 elseif longGun then 0.57 else 1.05
+						local orbit = (0.45 + phase * 0.11 + finale * 0.40) * kick
+						return CFrame.new(side * spread * orbit, (if phase % 3 == 0 then 0.30 else -0.28) * kick + finale * 0.35 * kick, -0.20 * release)
+							* CFrame.Angles((if finale == 1 then -0.48 else 0.22) * kick,
+								-side * (0.52 + phase * 0.095 + finale * 0.45) * kick, side * 0.31 * kick)
+					elseif slashIdx == 2 then
 						-- 두 번째 발: 발을 옆으로 밟으며 시선을 목표에 고정하고 총구/활만 방향을 꺾는다.
 						local sidestep = if bow then 0.76 elseif crossbow then 0.52 elseif longGun then 0.43 else 0.92
 						local twist = if bow then 0.73 elseif crossbow then 0.48 elseif longGun then 0.40 else 0.89
@@ -1979,8 +1989,22 @@ function FieldScene.start(opts)
 					return CFrame.new(0.12 * kick, -0.15 * kick, 0) * CFrame.Angles(0.15 * release, -0.24 * kick, 0.11 * kick)
 				end
 				-- 일반 공격: 몸을 크게 비틀며 한 걸음 내딛고 벤다(좌우 번갈아)
+				-- [근접 10박자 무기별 전신] 연속 디딤발, 골반, 척추와 무기 회전으로 무용처럼 연결.
+				-- 공격 피해·실제 이동·서버 충돌 판정은 원본 전투 함수만 소유한다.
+				local beat = bell(p)
+				local thrust = bell((p - 0.08) / 0.78)
 				local side = if slashIdx % 2 == 0 then 1 else -1
-				return CFrame.new(0, -0.25 * bell(p), -1.4 * bell((p - 0.1) / 0.7)) * CFrame.Angles(-0.45 * bell((p - 0.1) / 0.65), 0.45 * side * bell(p), 0.12 * side * bell(p))
+				local swift = wpn.family == "dagger" or wpn.family == "fist"
+				local longReach = wpn.family == "spear"
+				local heavy = wpn.family == "axe" or wpn.family == "blunt"
+				local finale = slashIdx == 10
+				local lateral = (0.16 + (slashIdx % 5) * 0.15) * (if swift then 1.24 else 1)
+				local dip = if swift then 0.52 elseif longReach then 0.29 elseif heavy then 0.42 else 0.34
+				local forward = if longReach then 1.20 elseif heavy then 0.65 else 0.96
+				local rotation = (if finale then 1.95 elseif slashIdx % 3 == 0 then 1.1 else 0.50 + slashIdx * 0.055)
+				local leap = if finale then (if swift then 0.62 elseif heavy then 0.20 else 0.40) else 0
+				return CFrame.new(side * lateral * beat, (leap - dip) * beat, -forward * thrust)
+					* CFrame.Angles((if finale then -0.56 else -0.30) * beat, side * rotation * beat, -side * 0.26 * beat)
 			elseif kind == "heavy" then
 				if wpn.ranged then return CFrame.new(0, -0.12 * bell(p), 0) * CFrame.Angles(0.10 * bell(p), 0, 0) end
 				-- [숙련 3타] 3타는 시각 보조 동작이므로 공중으로 뛰지 않고, 발을 디디며 무게만 싣는다.
@@ -2199,9 +2223,18 @@ function FieldScene.start(opts)
 					elseif family == "bow" then -0.21 * impulse + 0.18 * settle
 					elseif thrust then -0.11 * impulse else 0.09 * impulse, 0, 0)
 				if not range then
-					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.13 * impulse, 0, -0.025 * impulse)
-					canon.ShinL = (canon.ShinL or id) * CFrame.Angles(-0.10 * impulse, 0, 0)
-					canon.FootL = (canon.FootL or id) * CFrame.Angles(0.09 * impulse, 0, 0)
+					-- [근접 무용식 디딤발] 10박자 내내 반대 무릎을 접고 착지해 몸통 선회에 연결.
+					local stepSide = if slashIdx % 2 == 0 then -1 else 1
+					local quick = family == "dagger" or family == "fist"
+					local heavyStep = family == "axe" or family == "blunt"
+					local stride = if quick then 0.42 elseif heavyStep then 0.26 else 0.33
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.14 * impulse, stepSide * stride * impulse, -stepSide * 0.12 * impulse)
+					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-stride * impulse, 0, -stepSide * 0.13 * impulse)
+					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(0.34 * impulse, 0, stepSide * 0.14 * impulse)
+					canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.40 * impulse, 0, 0)
+					canon.ShinR = (canon.ShinR or id) * CFrame.Angles(-0.22 * impulse, 0, 0)
+					canon.FootL = (canon.FootL or id) * CFrame.Angles(0.18 * impulse, 0, -stepSide * 0.09 * impulse)
+					canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.16 * impulse, 0, stepSide * 0.09 * impulse)
 				else
 					-- 활·총기는 발을 고정하고 상체의 순간 반동을 더 크게 보여 준다.
 					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.08 * impulse, 0, -0.03)
@@ -2257,31 +2290,66 @@ function FieldScene.start(opts)
 				local side = if slashIdx % 2 == 0 then -1 else 1
 				local id = CFrame.identity
 				local family = wpn.family
-				if family == "dagger" then
-					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.08 * pulse, side * 0.19 * pulse, side * 0.06 * pulse)
-					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.18 * pulse, 0, side * 0.14 * pulse)
-					canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.06 * pulse, side * 0.10 * pulse, 0)
+				-- [10타 진폭] 여덟·아홉 타에서 선회가 커지고 열 번째에 공중 회전 마무리.
+				local flourish = if slashIdx == 10 then 1.90 elseif slashIdx >= 7 then 1.48 else 1
+				pulse *= flourish
+				
+				-- [전신 연쇄] 골반·발은 먼저, 가슴·팔꿈치는 그다음, 손목·시선은 마지막에 움직인다.
+				-- 매 단계 방향과 리듬을 바꿔 같은 동작을 기계적으로 반복하지 않는다.
+				local step = math.sin(math.clamp(p / 0.56, 0, 1) * math.pi)
+				local shoulder = math.sin(math.clamp((p - 0.10) / 0.70, 0, 1) * math.pi)
+				local finish = math.sin(math.clamp((p - 0.29) / 0.54, 0, 1) * math.pi)
+								if family == "dagger" then
+					-- [단검] 골반을 낮추며 교차 역수 → 후속 손목 회수 → 빠른 공중 교차 마무리.
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.25 * step, -side * 0.31 * step, side * 0.18 * step)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.24 * shoulder, side * 0.38 * shoulder * flourish, side * 0.16 * shoulder)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.34 * shoulder, -side * 0.24 * shoulder, -side * 0.18 * shoulder)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.39 * shoulder + 0.21 * finish, side * 0.31 * shoulder, side * 0.15 * shoulder)
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.26 * shoulder + 0.25 * finish, 0, side * 0.20 * finish)
+					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.27 * step, 0, side * 0.13 * step)
+					canon.FootR = (canon.FootR or id) * CFrame.Angles(0.17 * finish, side * 0.12 * step, 0)
 				elseif family == "spear" then
-					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.09 * pulse, side * 0.10 * pulse, 0)
-					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.10 * pulse, 0, side * 0.06 * pulse)
-					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.12 * pulse, 0, -0.04 * pulse)
+					-- [창] 뒷발 밀기 → 창자루 회전 → 긴 찌르기·뒤로 훑는 마무리.
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.18 * step, -side * 0.19 * step, 0)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.16 * shoulder, side * 0.29 * shoulder * flourish, -side * 0.08 * shoulder)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.25 * shoulder, -side * 0.23 * shoulder, 0)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.24 * shoulder + 0.22 * finish, side * 0.24 * shoulder, 0)
+					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.19 * shoulder, 0, side * 0.13 * finish)
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.14 * shoulder + 0.21 * finish, 0, 0)
+					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.27 * step, 0, -0.11 * step)
 				elseif family == "axe" or family == "blunt" then
-					canon.Chest = (canon.Chest or id) * CFrame.Angles(0.12 * pulse, side * 0.23 * pulse, 0)
-					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.12 * pulse, 0, -side * 0.08 * pulse)
-					canon.FootL = (canon.FootL or id) * CFrame.Angles(0.12 * pulse, 0, side * 0.04 * pulse)
+					-- [도끼·철퇴] 느리지만 큰 관성: 발 밀기 → 몸통 역회전 → 묵직한 활강·상승 마무리.
+					local axe = family == "axe"
+					local swing = if axe then 0.38 else 0.33
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.18 * step, -side * 0.27 * step, 0)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(0.15 * shoulder, side * swing * shoulder * flourish, -side * 0.16 * shoulder)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.33 * shoulder + 0.23 * finish, side * 0.22 * shoulder, side * 0.18 * shoulder)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.27 * shoulder, -side * 0.18 * shoulder, -side * 0.12 * shoulder)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.22 * shoulder + 0.26 * finish, 0, 0)
+					canon.FootL = (canon.FootL or id) * CFrame.Angles(0.24 * finish, 0, side * 0.11 * step)
 				elseif family == "blade" then
-					canon.Chest = (canon.Chest or id) * CFrame.Angles(0, side * 0.16 * pulse, -side * 0.04 * pulse)
-					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.09 * pulse, side * 0.12 * pulse, 0)
+					-- [검] X자 교차 베기 → 낮은 역선회 → 10타 상승 회전 베기.
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.13 * step, -side * 0.28 * step, side * 0.11 * step)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.17 * shoulder, side * 0.36 * shoulder * flourish, -side * 0.15 * shoulder)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.29 * shoulder + 0.26 * finish, side * 0.26 * shoulder, -side * 0.19 * shoulder)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.24 * shoulder + 0.19 * finish, 0, side * 0.12 * shoulder)
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.20 * shoulder + 0.21 * finish, side * 0.22 * shoulder, 0)
 				elseif family == "fist" then
-					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.12 * pulse, side * 0.16 * pulse, 0)
-					canon.FootR = (canon.FootR or id) * CFrame.Angles(0.12 * pulse, 0, side * 0.06 * pulse)
+					-- [맨손] 반대발 디딤 → 회전 훅 → 팔꿈치·돌려차기 → 10타 공중 마무리.
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.19 * step, -side * 0.34 * step, side * 0.17 * step)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.24 * shoulder, side * 0.39 * shoulder * flourish, side * 0.15 * shoulder)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.40 * shoulder, -side * 0.24 * shoulder, 0)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.33 * shoulder + 0.20 * finish, side * 0.23 * shoulder, 0)
+					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.36 * step + 0.22 * finish, 0, side * 0.24 * step)
+					canon.ShinR = (canon.ShinR or id) * CFrame.Angles(0.55 * step - 0.24 * finish, 0, 0)
+					canon.FootR = (canon.FootR or id) * CFrame.Angles(0.28 * finish, 0, side * 0.15 * step)
 				elseif wpn.ranged then
 					-- [원거리 영화식 2·3연타] 팔·허리·무릎·발끝이 좌우로 번갈아 움직인다.
 					-- 실제 충돌체/서버 위치/명중 횟수는 바꾸지 않고 R15 관절만 넓게 흔든다.
 					local bow = family == "bow"
 					local crossbow = wpn.motion == "CROSSBOW"
 					local rifle = wpn.motion == "RIFLE"
-					local drop = if slashIdx == 3 then 1 else 0.45
+					local drop = if slashIdx == 3 then 1 elseif slashIdx >= 7 then 1.1 else 0.65
 					-- [모션의 시간차] 지지발/골반이 먼저 회전하고, 어깨가 따라오며, 손목은 마지막 격발에 튕긴다.
 					local plant = math.sin(math.clamp(p / 0.58, 0, 1) * math.pi)
 					local shoulder = math.sin(math.clamp((p - 0.08) / 0.72, 0, 1) * math.pi)
@@ -2296,6 +2364,17 @@ function FieldScene.start(opts)
 					canon.ShinR = (canon.ShinR or id) * CFrame.Angles(-0.31 * drop * plant, 0, 0)
 					canon.FootL = (canon.FootL or id) * CFrame.Angles(0.23 * plant, 0, -side * 0.12 * plant)
 					canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.28 * plant, 0, side * 0.14 * plant)
+					if slashIdx >= 4 then
+						-- [4~10회 연사] 골반과 어깨를 반대로 열고 반대손을 목표선으로 빠르게 복귀.
+						local turn = if slashIdx % 2 == 0 then 1 else -1
+						local finalWeight = if slashIdx == 10 then 1.65 else 1
+						canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.24 * plant, turn * 0.39 * plant, turn * 0.22 * plant)
+						canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.19 * shoulder, -turn * 0.42 * shoulder, -turn * 0.15 * shoulder)
+						canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.41 * finalWeight * plant, 0, turn * 0.20 * plant)
+						canon.ShinR = (canon.ShinR or id) * CFrame.Angles(0.46 * finalWeight * plant, 0, 0)
+						canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.33 * shoulder, turn * 0.18 * shoulder, 0)
+						canon.HandR = (canon.HandR or id) * CFrame.Angles(0.33 * trigger, -turn * 0.20 * trigger, 0)
+					end
 					if bow then
 						-- 활: 몸을 크게 열고 시위 팔을 뒤로 빼며 좌우 교차 사격.
 						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.30 * shoulder, 0, -side * 0.24 * shoulder)
@@ -2338,12 +2417,15 @@ function FieldScene.start(opts)
 					end
 				end
 			end
-			-- [프레임 캐시] 공격 중에만 카메라·모션과 독립적인 캐논 관절을 재사용한다.
-			table.clear(swingBridge.last)
+			-- [프레임 캐시] 마지막 공격 프레임의 전신 관절을 다음 연타에 직접 연결한다.
 			if swingKind and swingCombo then
+				table.clear(swingBridge.last)
 				for joint, cf in canon do
 					if typeof(cf) == "CFrame" then swingBridge.last[joint] = cf end
 				end
+				swingBridge.lastAt = os.clock()
+			elseif os.clock() - swingBridge.lastAt > 1.1 then
+				table.clear(swingBridge.last)
 			end
 			if swingKind then
 				rootRot = rootFor(swingKind, math.clamp((os.clock() - swingT0) / swingDur, 0, 1))
@@ -3803,9 +3885,10 @@ function FieldScene.start(opts)
 		-- [평타 1→2→3] 원거리 무기는 빠르게 반복 터치할 때 매 발마다 다른 영화식 사격 자세로 이어진다.
 		-- 숙련 추가 타격이 아니며 원본 공격 수·피해·사거리·재사용시간은 그대로 유지한다.
 		local basicBeat = 1
-		if wpn.ranged and moveId == "rush" then
+		if moveId == "rush" then
+			-- [연속 공격 10박자] 1회 입력당 피해 판정은 기존 1회. 무기별 전신 포즈만 10단 순환.
 			local pressedAt = os.clock()
-			basicBeat = if pressedAt - swingBridge.basicAt <= 1.1 then swingBridge.basicBeat % 3 + 1 else 1
+			basicBeat = if pressedAt - swingBridge.basicAt <= 1.1 then swingBridge.basicBeat % 10 + 1 else 1
 			swingBridge.basicBeat, swingBridge.basicAt = basicBeat, pressedAt
 		end
 		startSwing(kind, if kind == "spin" then 0.6 elseif kind == "heavy" then 0.7 else 0.4, basicBeat)
@@ -3829,11 +3912,36 @@ function FieldScene.start(opts)
 						pulseAt("SHAPE_BURST", flashAt, aimColor, aimColor:Lerp(Color3.new(1, 1, 1), 0.7),
 							if basicBeat == 3 then 7 else 4.6, if visualMobile then 2 else 6)
 						if basicBeat == 3 then
-							-- 3발째는 낮은 슬라이드로 마무리. 모바일은 아우라 하나만, PC는 순간적인 전신 잔상.
+							-- 낮은 회전 사격 후 다음 연타에 연결.
 							auraOn(ch0, aimColor, aimColor:Lerp(Color3.new(1, 1, 1), 0.65), 0.34)
 							if not visualMobile then afterimage(ch0, aimColor, 2, 0.06) end
+						elseif basicBeat >= 4 then
+							trailsOn(ch0, { "LeftHand", "LeftLowerArm", "RightHand", "LeftLowerLeg" }, aimColor,
+								if basicBeat == 10 then 0.47 else 0.27, 0.52)
+							if basicBeat == 10 then
+								auraOn(ch0, aimColor, aimColor:Lerp(Color3.new(1, 1, 1), 0.73), 0.42)
+								pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, 0.6, -2.2),
+									aimColor, Color3.fromRGB(255, 252, 224), 8, if visualMobile then 3 else 8)
+							end
+							if not visualMobile and basicBeat >= 7 then afterimage(ch0, aimColor, if basicBeat == 10 then 3 else 2, 0.055) end
 						end
 					end
+				elseif kind == "slash" and basicBeat >= 2 then
+					-- [근접 10연타 궤적] 무기별 잔광은 연출 전용. 10번째만 큰 회전 마무리.
+					local trailColor = if wpn.family == "dagger" then Color3.fromRGB(156, 255, 220)
+						elseif wpn.family == "axe" then Color3.fromRGB(255, 157, 88)
+						elseif wpn.family == "spear" then Color3.fromRGB(127, 224, 255)
+						elseif wpn.family == "blunt" then Color3.fromRGB(255, 216, 149)
+						elseif wpn.family == "fist" then Color3.fromRGB(251, 233, 181)
+						else Color3.fromRGB(199, 216, 255)
+					trailsOn(ch0, { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerLeg", "RightLowerLeg" },
+						trailColor, if basicBeat == 10 then 0.48 else 0.27, 0.56)
+					if basicBeat == 10 then
+						auraOn(ch0, trailColor, trailColor:Lerp(Color3.new(1, 1, 1), 0.66), 0.42)
+						pulseAt("SHAPE_BURST", hrp.CFrame * CFrame.new(0, -1.6, -1.2),
+							trailColor, Color3.fromRGB(255, 249, 226), 8, if visualMobile then 3 else 8)
+					end
+					if not visualMobile and basicBeat >= 7 then afterimage(ch0, trailColor, if basicBeat == 10 then 3 else 2, 0.065) end
 				elseif kind == "spin" then
 					trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(120, 220, 255), 0.4, 0.9)
 					auraOn(ch0, Color3.fromRGB(90, 190, 255), Color3.fromRGB(230, 250, 255), 0.8)
@@ -4398,6 +4506,9 @@ function FieldScene.start(opts)
 			end
 			equipFieldWeapon(player.Character, wpn)
 			slashIdx = 0
+			swingBridge.basicBeat, swingBridge.basicAt = 0, -100
+			swingBridge.from, swingBridge.lastAt = nil, -100
+			table.clear(swingBridge.last)
 			local practice = weaponPractice[wpn.id]
 			local rank = practice and practice.rank or 1
 			weaponRankLabel.Text = string.format("무기 숙련 %d단", rank)
