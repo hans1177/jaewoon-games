@@ -3571,13 +3571,13 @@ function FieldScene.start(opts)
 			-- [거대한 회피] 성직자·학자 2.0배, 기타 직업 1.70배. 무기 공격 원래 자세는 1.45배 그대로.
 			FM.scale(canon, if swingKind == "dash" then
 				(if ch:GetAttribute("FieldDodgeStyle") == "clergy" or ch:GetAttribute("FieldDodgeStyle") == "scholar" then 2.0 else 1.70) else 1.45)
-			-- [관절 교량] 직전 화면 자세에서 다음 타로 바로 이어지는 감속 보간. 시작 박자 멈춤 없이 실제 배율을 맞춘다.
+			-- [관절 교량] 실제 적용한 관절 배율을 맞춰 직전 타의 마지막 프레임에서 다음 타로 자연스럽게 연결한다.
 			if swingKind and swingBridge.from then
 				local weight = math.clamp((os.clock() - swingBridge.at) / swingBridge.duration, 0, 1)
 				if weight >= 1 then
 					swingBridge.from = nil
 				else
-					weight = weight * (2 - weight)
+					weight = weight * weight * (3 - 2 * weight)
 					for joint, old in swingBridge.from do
 						if typeof(old) == "CFrame" then
 							canon[joint] = old:Lerp(canon[joint] or CFrame.identity, weight)
@@ -3593,7 +3593,7 @@ function FieldScene.start(opts)
 					if blend >= 1 then
 						swingBridge.rootFrom = nil
 					else
-						blend = blend * (2 - blend)
+						blend = blend * blend * (3 - 2 * blend)
 						rootRot = swingBridge.rootFrom:Lerp(rootRot or CFrame.identity, blend)
 					end
 				end
