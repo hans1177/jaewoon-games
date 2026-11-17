@@ -153,6 +153,36 @@ jobs:
           else
             node tools/mare-essentia-upload-assets.mjs
           fi
+          # [36척 V5 등록 확정] 72개가 전부 실제 자산번호와 Universe 사용 권한을 받아야 성공이다.
+          if [[ "${{ steps.ship_v5.outcome }}" == "success" ]]; then
+            python3 - <<'PY'
+          import hashlib, json, pathlib
+          root = pathlib.Path("roblox-games/mare-essentia/assets/naval")
+          registry = json.loads(pathlib.Path("roblox-games/mare-essentia/assets-registered.json").read_text())
+          models = sorted(root.glob("*-v5*.glb"))
+          if len(models) != 72:
+              raise SystemExit("MARE_V5_72_SOURCE_FILES_REQUIRED:" + str(len(models)))
+          ids = set()
+          for model in models:
+              key = "Naval/" + model.stem
+              proof = json.loads(pathlib.Path(str(model) + ".license.json").read_text())
+              row = registry["assets"].get(key) or {}
+              source_hash = hashlib.sha256(model.read_bytes()).hexdigest()
+              if (proof.get("sourceSha256") != source_hash
+                  or proof.get("license") != "PROJECT_ORIGINAL_ART"
+                  or row.get("sourceSha256") != source_hash
+                  or row.get("assetType") != "Model"
+                  or row.get("usePermissionGranted") is not True
+                  or not str(row.get("assetId", "")).isdigit()
+                  or not int(row["assetId"])):
+                  raise SystemExit("MARE_V5_MODEL_ID_RIGHTS_OR_HASH_INVALID:" + key)
+              ids.add(str(row["assetId"]))
+          if len(ids) != 72:
+              raise SystemExit("MARE_V5_DUPLICATE_ASSET_IDS")
+          print("MARE_V5_72_MODELS_REGISTERED_RIGHTS_CONFIRMED=72")
+          print("MARE_V5_NATIVE_STUDIO_QA=UNVERIFIED")
+          PY
+          fi
 
       - name: Verify external CC0 nau and three coastal merchant hulls with Roblox granted assets
         id: nau_check
@@ -200,6 +230,10 @@ jobs:
           # 등록·권한 확인 실패 시 바이너리를 main에 반영하지 않는다.
           if [[ "${{ steps.ship_v5.outcome }}" == "failure" ]]; then
             echo "::error::MARE_V5_ORIGINAL_MODEL_GENERATION_FAILED"
+            exit 1
+          fi
+          if [[ "${{ steps.ship_v5.outcome }}" == "success" && "${{ steps.asset_registration.outcome }}" != "success" ]]; then
+            echo "::error::MARE_V5_72_MODEL_REGISTRATION_INCOMPLETE"
             exit 1
           fi
           if [[ "${{ steps.nau_check.outcome }}" == "failure" ]]; then
