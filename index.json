@@ -2,13 +2,13 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "44079465244",
+    "runId": "44081440927",
     "kind": "deep",
-    "at": "2026-11-17T12:12:36.245Z",
+    "at": "2026-11-17T12:24:57.395Z",
     "sourceRevision": "bd902096f095ba9531c41bddd60ca4f0c346d35e",
     "result": "PASS",
     "frames": 62,
-    "changedFrames": 61,
+    "changedFrames": 62,
     "summary": {
       "plannedSteps": 241,
       "completedSteps": 241,
@@ -19,10 +19,30 @@
       "capturedFrames": 62,
       "abortedEarly": false
     },
-    "path": "runs/44079465244"
+    "path": "runs/44081440927"
   },
-  "lastDeepAt": "2026-11-17T12:12:36.245Z",
+  "lastDeepAt": "2026-11-17T12:24:57.395Z",
   "runs": [
+    {
+      "runId": "44081440927",
+      "kind": "deep",
+      "at": "2026-11-17T12:24:57.395Z",
+      "sourceRevision": "bd902096f095ba9531c41bddd60ca4f0c346d35e",
+      "result": "PASS",
+      "frames": 62,
+      "changedFrames": 62,
+      "summary": {
+        "plannedSteps": 241,
+        "completedSteps": 241,
+        "plannedClicks": 10,
+        "successfulClicks": 10,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 62,
+        "capturedFrames": 62,
+        "abortedEarly": false
+      },
+      "path": "runs/44081440927"
+    },
     {
       "runId": "44079465244",
       "kind": "deep",
@@ -82,26 +102,6 @@
         "abortedEarly": false
       },
       "path": "runs/44073059364"
-    },
-    {
-      "runId": "44072685147",
-      "kind": "deep",
-      "at": "2026-11-17T11:27:02.370Z",
-      "sourceRevision": "fdf8f8e903b7770010a65eb7604694bdbdee8eee",
-      "result": "PASS",
-      "frames": 62,
-      "changedFrames": 62,
-      "summary": {
-        "plannedSteps": 241,
-        "completedSteps": 241,
-        "plannedClicks": 10,
-        "successfulClicks": 10,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 62,
-        "capturedFrames": 62,
-        "abortedEarly": false
-      },
-      "path": "runs/44072685147"
     },
     {
       "runId": "44048185529",
