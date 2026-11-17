@@ -1072,16 +1072,63 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/vent\.fire\.Rate = if hp < 0\.42/,'fire intensity must reflect the unchanged hull fraction');
   assert.match(battle,/vent\.fire\.Enabled = vent\.fire\.Rate > 0/,'damage-driven fire emitter must actually ignite');
   assert.match(battle,/vent\.soot\.Enabled = vent\.soot\.Rate > 0/,'damage smoke must actually turn on');
-  assert.match(battle,/FX\.boardingCrewSpawned = true/,'boarding crew rigs must spawn at most once');
-  assert.match(battle,/for i = 1, \(if MOBILE_VFX then 2 else 4\) do/,'mobile boarding actors are bounded');
+  assert.doesNotMatch(battle,/FX\.boardingCrewSpawned = true/,'real boarding must not spawn floating R15 character puppets');
+  assert.match(battle,/if opts\.card then\s+task\.spawn\(function\(\)/,'card-only battle keeps its original crew actors');
+  assert.match(battle,/for i = 1, \(if MOBILE_VFX then 2 else 4\) do/,'card-only mobile crew remains bounded');
   assert.match(battle,/function FX\.boarding\(\)/);
   assert.match(battle,/FX\.boardZoom \+=/,'boarding cinematic transitions smoothly');
   assert.match(battle,/cam\.FieldOfView = 76 .* - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom is visual-only and scales by tier');
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/,'mobile deck fires stay capped and desktop ship tiers scale');
-  assert.match(battle,/if MOBILE_VFX then 20 else 32/,'mobile range outline has bounded parts');
+  assert.match(battle,/if MOBILE_VFX then 24 else 40/,'mobile range outline has bounded parts');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun-fire range is unchanged');
   assert.match(battle,/rtDamage\(false, base \* acc\)/,'existing damage authority is unchanged');
   assert.match(battle,/local r2 = Combat\.board\(fa, fb, seed\)/,'boarding resolution is unchanged');
+});
+
+// [해상전투 8가지 수정] 조향·상단폰트·실제 포각·레이더·해안·백병전·선저·대형 이펙트를 보존한다.
+test('Mare naval steering, smooth hulls, aiming and battle presentation stay consistent', () => {
+  const base='roblox-games/mare-essentia/';
+  const battle=fs.readFileSync(base+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const hull=fs.readFileSync('tools/mare-essentia-ship-v5.py','utf8');
+  const assetIds=fs.readFileSync(base+'src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  // 스틱 +X, 키보드 D는 우현. 좌측 -X, A는 좌현. 중앙 데드존은 그대로.
+  assert.ok(battle.includes('steerDir = if math.abs(nx) < 0.12 then 0 else nx'));
+  assert.ok(battle.includes('steerDir = -1 -- [좌현 조향]'));
+  assert.ok(battle.includes('elseif i.KeyCode == Enum.KeyCode.D or i.KeyCode == Enum.KeyCode.Right then\n\t\t\tsteerDir = 1'));
+  assert.ok(battle.includes('me.theta += steerDir * (if now < skillUntil.evade then 2.6 else 1.5) * dt'));
+  assert.doesNotMatch(battle,/TextStrokeTransparency\s*=\s*0\./,'battle labels are clean fonts without stroke blur');
+  assert.ok(battle.includes('f.Visible = star or battleViewport.X >= 480'));
+  assert.ok(battle.includes('skip = mkBtn("건너뛰기", UDim2.new(1, -12'));
+  assert.ok(battle.includes('local coasts = {'));
+  for(const id of ['cliff-rock','tropical-palm-tall','ruins-pillar-decorated','north-pine-fall','egypt-obelisk']){
+    assert.ok(assetIds.includes('"Terrain/'+id+'"'),'battle coast must use a registered mesh: '+id);
+  }
+  assert.ok(battle.includes('AssetIds["Terrain/" .. spec[1]]'));
+  assert.ok(battle.includes('node.CanCollide, node.CanTouch, node.CanQuery = false, false, false'));
+  assert.ok(battle.includes('local aimAngle = if dd > 0.1 then math.deg(math.acos'));
+  assert.ok(battle.includes('local sideDeviation = math.floor(math.abs(90 - aimAngle) + 0.5)'));
+  assert.ok(battle.includes('local aligned = broadside > 0.5'),'gun-angle display cannot redefine existing fire rule');
+  assert.ok(battle.includes('local scanAngle = (now * 1.85) % tau'));
+  assert.ok(battle.includes('sweep.Width0, sweep.Width1 = 0.04'));
+  assert.ok(battle.includes('if trailAngle < 1.65'));
+  assert.ok(battle.includes('nextSmoke = now + 0.18'));
+  assert.ok(battle.includes('n = if MOBILE_VFX then 5 else 11'));
+  assert.ok(battle.includes('s1 = 19 + k * 13'));
+  assert.ok(battle.includes('FX.flame(ORIGIN + sunk.pos + Vector3.new(0, 6 - k * 8, 0), 4.8, sunk.fx)'));
+  assert.ok(battle.includes('Sfx.play("sfx_naval_splash"'));
+  assert.ok(battle.includes('Sfx.play("sfx_naval_wood"'));
+  assert.ok(battle.includes('local realHulls = if string.find(asset'));
+  assert.ok(hull.includes('def hull_cross(self,q,level):'));
+  assert.ok(hull.includes("if self.form in ('flat','turtle','war')"));
+  assert.ok(hull.includes("elif self.form in ('deep','tall','battleship')"));
+  assert.ok(hull.includes("elif self.form in ('slim','low','outrigger')"));
+  assert.ok(hull.includes('N=36 if self.mobile else 56'),'mobile ships keep actual curved longitudinal hull sections');
+  // 선측 기준 60° 이내, 사거리 1배 유지. 실제 피해량은 원래 서버 계산 담당.
+  const aligned=(heading,target)=>Math.abs(Math.sin(target-heading))>0.5;
+  assert.equal(aligned(0,Math.PI/2),true);
+  assert.equal(aligned(0,Math.PI/2+0.7),true);
+  assert.equal(aligned(0,0),false);
+  assert.equal(aligned(0,Math.PI),false);
 });
 
 // [7대륙 36척] 실물 자산·단계별 효과·구매/서버 판정 보호 회귀 검사.
