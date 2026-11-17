@@ -4240,7 +4240,8 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
     'distinct full-body clergy and scholar dodges must alternate six visual tricks without changing movement distance');
   assert.ok(scene.includes('math.sin(math.clamp(p, 0, 1) * math.pi) ^ 0.72')&&
     scene.includes('then 2.0 else 1.70')&&
-    scene.includes('if swingKind == "dash" then 1.85 else nil'),
+    scene.includes('FM.step(pfm, dt, rootRot, if swingKind == "dash" then 1.85')&&
+    scene.includes('elseif swingKind and swingCombo and (wpn.family == "dagger" or wpn.family == "fist") then 1.12'),
     'evade must have large held pose and faster joint response without affecting weapon attack speed');
   for(const atom of ['"BLOCK_IMPACT"','"HEAL_PULSE"','"UPGRADE_BURST"','"DODGE_EVASION_PULSE"']){
     assert.ok(scene.includes('pulseAt('+atom),'dodge must reuse registered VFX: '+atom);
@@ -4683,7 +4684,7 @@ test('Mare central plaza is reserved as empty walking space and all original civ
   }
   for(const marker of [
     'Vector3.new(-124, 0, 126)', 'local ax, az = -160, -128',
-    'Vector3.new(-106, 1, 122)', 'Vector3.new(-108, 0, 122)',
+    'CFrame.new(-106, 1, 122)', 'Vector3.new(-108, 0, 122)',
     'Vector3.new(-94, 0, -13)', 'Vector3.new(-94, 0, 13)',
     'Vector3.new(-114, 0, -14)', 'Vector3.new(-114, 0, 14)',
     'Vector3.new(-136, 0, 14)', 'Vector3.new(-126, 0, 32)',
