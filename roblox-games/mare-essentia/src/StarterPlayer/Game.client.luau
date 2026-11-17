@@ -216,7 +216,7 @@ end
 
 -- [실제 예상 손익] 보유분 평균 매입가와 관세가 반영된 서버 판매 견적만 비교한다.
 function H.tradeProfit(g, qty)
-	if (tonumber(g.owned) or 0) <= 0 or (tonumber(g.basis) or 0) <= 0 then return nil end
+	if (tonumber(g.owned) or 0) <= 0 or (tonumber(g.basis) or 0) <= 0 or (tonumber(qty) or 1) < 1 then return nil end
 	local amount = math.min(math.max(1, qty or 1), g.owned)
 	local net = g.sellTotals and g.sellTotals[amount]
 	if not net then return nil end
@@ -10382,7 +10382,7 @@ function render()
 					if currentTab == "yard" and H.yardHall then H.yardHall() return end
 					-- 다른 메뉴는 실제 화면의 첫 조작 버튼으로 스크롤한다. 구매·보상 판정은 실행하지 않는다.
 					for _, element in content:GetDescendants() do
-						if element:IsA("TextButton") and element.Interactable and element ~= action
+						if element:IsA("TextButton") and element.Interactable
 							and not element:FindFirstAncestor("MenuFocus_" .. currentTab)
 							and not element:FindFirstAncestor("MenuAdvice_" .. currentTab) then
 							local y = element.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 12
