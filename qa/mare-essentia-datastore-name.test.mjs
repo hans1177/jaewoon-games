@@ -1105,7 +1105,7 @@ test('직업별 주민과 남녀 탐험 동료의 실제 메시 복식은 등록
 // [주민·동료 복식 3차] 선원/장인과 기존 헤어 스타일 일치·초기 로딩·성별 오분류 방지.
 test('선원·장인 직업별 실물 복장과 여성 헤어 스타일을 원본 R15 메시에서 선택한다',()=>{
   const pose=read('ReplicatedStorage/Shared/Pose.luau');
-  const loader=read('../ServerScriptService/AssetLoader.server.luau');
+  const loader=read('ServerScriptService/AssetLoader.server.luau');
   const port=read('ReplicatedStorage/Shared/PortScene.luau');
   const field=read('ReplicatedStorage/Shared/FieldScene.luau');
   for(const name of ['citizen_sailor_male','citizen_sailor_female','citizen_artisan_male','citizen_artisan_female']) {
