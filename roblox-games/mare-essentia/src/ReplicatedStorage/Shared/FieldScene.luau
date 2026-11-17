@@ -7777,7 +7777,7 @@ function FieldScene.start(opts)
 						local coat = regionalCoats[nation] or Color3.fromHSV(((h % 360) / 360 + (slot - 1) * 0.32) % 1, 0.45, 0.67)
 						-- 기존 영입 메타데이터를 읽되, 성별 추정/저장값 변경 없이 외형에만 전달한다.
 						local knownFemale = id == "c_merian" or id == "t_nun" or id == "t_bhikkhuni"
-							or id == "t_mate" or id == "t_surgeon" or id == "t_purser"
+							or id == "t_mate" or id == "t_surgeon"
 						local female = if type(nm) == "table" and type(nm.female) == "boolean" then nm.female
 							elseif type(nm) == "table" and (nm.gender == "female" or nm.gender == "male") then nm.gender == "female"
 							else knownFemale

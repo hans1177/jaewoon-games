@@ -5372,7 +5372,7 @@ function PortScene.build(info, onFacility)
 					-- 명시된 성별 또는 기존 인물의 성별. 동료 능력/저장값은 그대로 둔다.
 					female = c.female == true or c.gender == "female" or c.id == "c_merian"
 						or c.id == "t_nun" or c.id == "t_bhikkhuni"
-						or c.id == "t_mate" or c.id == "t_surgeon" or c.id == "t_purser",
+						or c.id == "t_mate" or c.id == "t_surgeon",
 					bodyType = "athletic", noHat = true,
 				})
 			if v then

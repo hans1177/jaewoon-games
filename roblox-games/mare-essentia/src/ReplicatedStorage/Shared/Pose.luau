@@ -265,9 +265,12 @@ end
 
 -- [직업별 실제 복식] 주민 직군만 외형 분류한다. 경제 직업·게임 저장·전투 판정은 원본 그대로다.
 local NPC_PROFESSION_LOOK = {
-	farmer = "worker", fisher = "worker", docker = "worker", herder = "worker", carpenter = "worker",
-	smith = "worker", tailor = "worker", baker = "worker", shipwright = "worker", sailor = "worker",
-	laborer = "worker", industry_artisan = "worker", royal_stablehand = "worker", royal_gardener = "worker",
+	-- [1차 산업/도시 장인/해양직] 기존 직업 ID만 외형 분류한다. 수익·생산량·저장값 불변.
+	farmer = "worker", docker = "worker", herder = "worker", laborer = "worker",
+	royal_stablehand = "worker", royal_gardener = "worker",
+	carpenter = "artisan", smith = "artisan", tailor = "artisan", baker = "artisan",
+	shipwright = "artisan", industry_artisan = "artisan",
+	fisher = "sailor", sailor = "sailor", boatswain = "sailor",
 	guard = "guard", royal_guard = "guard", royal_gate_guard = "guard",
 	royal_ceremonial_guard = "guard", royal_light_cavalry = "guard",
 	merchant = "official", banker = "official", clerk = "official", teacher = "official",
@@ -406,6 +409,11 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 		if type(outfit.culture) == "string" then model:SetAttribute("AppearanceCulture", outfit.culture) end
 		if type(outfit.profession) == "string" then model:SetAttribute("AppearanceProfession", outfit.profession) end
 		if outfit.gender == "female" or outfit.gender == "male" then model:SetAttribute("AppearanceGender", outfit.gender) end
+		-- [실물 머리 맞춤] 기존 머리/연령 선택을 다시 뽑지 않고 3D 머리 메시와 같은 값으로 묶는다.
+		if outfit.hair == "short" or outfit.hair == "bun" or outfit.hair == "long" then
+			model:SetAttribute("NpcHairStyle", outfit.hair)
+		end
+		if typeof(outfit.hairColor) == "Color3" then model:SetAttribute("NpcHairTint", outfit.hairColor) end
 	end
 	if outfit and outfit.hair then
 		pcall(addHair, model, outfit.hair, outfit.hairColor or Color3.fromRGB(60, 42, 30))
@@ -592,6 +600,23 @@ local MOB_OUTFIT_PARTS = {
 		{ "female_peasant_body", "UpperTorso", 1.17, 1.51, 1.22, -0.08 },
 		{ "hair_long", "Head", 1.16, 1.26, 1.18, 0.12 },
 	},
+	-- [3차 직능 복식] 선원은 활동복, 장인은 생활복으로 구분한다. 신규 자산/파트 생성 없음.
+	citizen_sailor_male = {
+		{ "male_ranger_body", "UpperTorso", 1.18, 1.54, 1.24, -0.08 },
+		{ "hair_simpleparted", "Head", 1.14, 1.22, 1.17, 0.12 },
+	},
+	citizen_sailor_female = {
+		{ "female_ranger_body", "UpperTorso", 1.17, 1.52, 1.22, -0.08 },
+		{ "hair_buns", "Head", 1.15, 1.23, 1.17, 0.13 },
+	},
+	citizen_artisan_male = {
+		{ "male_peasant_body", "UpperTorso", 1.19, 1.52, 1.24, -0.08 },
+		{ "hair_simpleparted", "Head", 1.15, 1.23, 1.18, 0.13 },
+	},
+	citizen_artisan_female = {
+		{ "female_peasant_body", "UpperTorso", 1.17, 1.50, 1.22, -0.08 },
+		{ "hair_buns", "Head", 1.16, 1.24, 1.18, 0.14 },
+	},
 	-- [성직 동료] 금속 갑옷 대신 승인된 생활복·후드를 써 직책을 시각적으로 구별한다.
 	companion_clergy_male = {
 		{ "male_peasant_body", "UpperTorso", 1.18, 1.53, 1.23, -0.08 },
@@ -667,6 +692,16 @@ function Pose.applyRegisteredMobOutfit(model)
 	local attached = 0
 	for _, spec in specs do
 		local assetName, boneName = spec[1], spec[2]
+		-- [여성 3D 머리] 생성 시 정한 올림머리/긴머리를 실물 메시에도 그대로 반영한다.
+		-- 작업자 전용 짧은 머리·성직자 후드는 기존 계열 그대로 둔다.
+		if npcOutfit and string.sub(assetName, 1, 5) == "hair_"
+			and (profile == "citizen_female" or profile == "citizen_official_female"
+				or profile == "citizen_sailor_female" or profile == "citizen_artisan_female"
+				or profile == "companion_female") then
+			local hairstyle = model:GetAttribute("NpcHairStyle")
+			if hairstyle == "long" then assetName = "hair_long"
+			elseif hairstyle == "bun" then assetName = "hair_buns" end
+		end
 		local slotName = "R15Asset_" .. assetName
 		if model:FindFirstChild(slotName) then
 			attached += 1
@@ -715,7 +750,7 @@ function Pose.applyRegisteredMobOutfit(model)
 					local tunic = meshName:find("peasant", 1, true)
 					part.Material = if armor then Enum.Material.Metal elseif hair or hide or tunic then Enum.Material.Fabric else Enum.Material.Leather
 					local tint = if armor then Color3.fromRGB(108, 117, 124)
-						elseif hair then Color3.fromRGB(69, 52, 41)
+						elseif hair then (if npcOutfit then model:GetAttribute("NpcHairTint") else nil) or Color3.fromRGB(69, 52, 41)
 						elseif hide then Color3.fromRGB(71, 78, 71)
 						elseif npcOutfit and (tunic or meshName:find("ranger_body", 1, true)) then target.Color
 						elseif tunic then Color3.fromRGB(126, 108, 86)
@@ -723,7 +758,9 @@ function Pose.applyRegisteredMobOutfit(model)
 					-- 원본 메시 색을 최대한 유지한다. 흰색 단색 메시일 때만 실제 소재색을 분명히 준다.
 					local neutral = math.max(part.Color.R, part.Color.G, part.Color.B)
 						- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.11
-					part.Color = part.Color:Lerp(tint, if neutral and part.Color.R > 0.72 then 0.78 else 0.14)
+					part.Color = part.Color:Lerp(tint,
+						if hair and npcOutfit and model:GetAttribute("NpcHairTint") then 0.72
+						elseif neutral and part.Color.R > 0.72 then 0.78 else 0.14)
 					part.Reflectance = if armor then 0.025 else 0
 				end
 				local weld = Instance.new("WeldConstraint")

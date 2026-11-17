@@ -1102,6 +1102,32 @@ test('직업별 주민과 남녀 탐험 동료의 실제 메시 복식은 등록
   assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
 });
 
+// [주민·동료 복식 3차] 선원/장인과 기존 헤어 스타일 일치·초기 로딩·성별 오분류 방지.
+test('선원·장인 직업별 실물 복장과 여성 헤어 스타일을 원본 R15 메시에서 선택한다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  const loader=read('../ServerScriptService/AssetLoader.server.luau');
+  const port=read('ReplicatedStorage/Shared/PortScene.luau');
+  const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+  for(const name of ['citizen_sailor_male','citizen_sailor_female','citizen_artisan_male','citizen_artisan_female']) {
+    assert.ok(pose.includes(name+' = {'),'선원/장인 3D 복식 누락: '+name);
+  }
+  for(const career of ['fisher = "sailor"','sailor = "sailor"','smith = "artisan"','tailor = "artisan"','shipwright = "artisan"']) {
+    assert.ok(pose.includes(career),'직업별 복식 연결 누락: '+career);
+  }
+  assert.match(pose,/model:SetAttribute\("NpcHairStyle", outfit\.hair\)/);
+  assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
+  assert.match(pose,/if hairstyle == "long" then assetName = "hair_long"/);
+  assert.match(pose,/elseif hairstyle == "bun" then assetName = "hair_buns"/);
+  assert.match(pose,/if hair and npcOutfit and model:GetAttribute\("NpcHairTint"\) then 0\.72/);
+  for(const mesh of ['hair_long','hair_simpleparted','hair_buzzed','hair_buzzedfemale']) {
+    assert.ok(loader.includes('["People/'+mesh+'"] = true'),'로더 우선순위 누락: '+mesh);
+  }
+  assert.doesNotMatch(port,/or c\.id == "t_purser"/);
+  assert.doesNotMatch(field,/or id == "t_purser"/);
+  assert.match(pose,/model:SetAttribute\("RigType", "R15"\)/);
+  assert.match(pose,/part\.CanCollide, part\.CanTouch, part\.CanQuery = false, false, false, false/);
+});
+
 // [항구 7구획 확장] 기존 경제/자산 정본을 유지하며 왕궁 경기병/창고/식료품/직업 모션을 검사한다.
 test('왕궁 경기병 2명과 지역별 창고·식료품·직업 모션은 순수 시각화로 유지된다',()=>{
  const port=read('ReplicatedStorage/Shared/PortScene.luau');
