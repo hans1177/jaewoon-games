@@ -10074,19 +10074,25 @@ function H.playWonderScene(cardId)
 	root.ZIndex = 100
 	root.Parent = layer
 	TS:Create(root, TweenInfo.new(0.8), { BackgroundTransparency = 0 }):Play()
-	-- 16:9 액자
+	-- [원더/유적 모바일 액자] 16:9 그림은 유지하되 화면 세로 높이에서 제목·건너뛰기·자막 공간을 먼저 확보한다.
+	-- 큰 액자를 94% 화면에 곧장 확대하면 가로로 짧은 휴대폰에서 상하가 잘리고 터치 글씨와 겹친다.
 	local frame = Instance.new("Frame")
 	frame.AnchorPoint = Vector2.new(0.5, 0.5)
-	frame.Position = UDim2.fromScale(0.5, 0.46)
-	frame.Size = UDim2.fromScale(0.94, 0.94)
+	frame.Position = UDim2.fromScale(0.5, 0.5)
+	frame.Size = UDim2.fromOffset(0, 0)
 	frame.BackgroundColor3 = Color3.fromRGB(236, 222, 190)
 	frame.BackgroundTransparency = 0
 	frame.ZIndex = 101
 	frame.ClipsDescendants = true
 	frame.Parent = root
-	local ratio = Instance.new("UIAspectRatioConstraint")
-	ratio.AspectRatio = 16 / 9
-	ratio.Parent = frame
+	local function fitWonderArt()
+		local screen = root.AbsoluteSize
+		if screen.X <= 0 or screen.Y <= 0 then return end
+		local height = math.max(1, math.min(screen.X * 0.94 * 9 / 16, screen.Y - 180))
+		frame.Size = UDim2.fromOffset(math.floor(height * 16 / 9), math.floor(height))
+	end
+	local artResize = root:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitWonderArt)
+	fitWonderArt()
 	local fstroke = Instance.new("UIStroke")
 	fstroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	fstroke.Thickness = 3
@@ -10144,7 +10150,7 @@ function H.playWonderScene(cardId)
 	-- 자막
 	local cap = Instance.new("TextLabel")
 	cap.AnchorPoint = Vector2.new(0.5, 1)
-	cap.Position = UDim2.fromScale(0.5, 0.985)
+	cap.Position = UDim2.new(0.5, 0, 1, -8)
 	cap.Size = UDim2.new(0.9, 0, 0, 74)
 	cap.BackgroundTransparency = 1
 	cap.TextColor3 = Color3.fromRGB(246, 232, 200)
@@ -10157,7 +10163,7 @@ function H.playWonderScene(cardId)
 	cap.Parent = root
 	local ttl = Instance.new("TextLabel")
 	ttl.AnchorPoint = Vector2.new(0.5, 0)
-	ttl.Position = UDim2.fromScale(0.5, 0.02)
+	ttl.Position = UDim2.new(0.5, 0, 0, 32)
 	ttl.Size = UDim2.new(0.9, 0, 0, 40)
 	ttl.BackgroundTransparency = 1
 	ttl.TextTransparency = 1
@@ -10165,6 +10171,12 @@ function H.playWonderScene(cardId)
 	ttl.TextStrokeTransparency = 1
 	ttl.Font = Enum.Font.GothamBold
 	ttl.TextSize = 28
+	-- [긴 유적 이름] 세로 화면에서도 제목이 액자를 벗어나지 않게 글자만 화면 너비에 맞춘다.
+	ttl.TextScaled = true
+	local titleLimit = Instance.new("UITextSizeConstraint")
+	titleLimit.MinTextSize = 14
+	titleLimit.MaxTextSize = 28
+	titleLimit.Parent = ttl
 	ttl.Text = sc.title
 	ttl.ZIndex = 110
 	ttl.Parent = root
@@ -10188,6 +10200,7 @@ function H.playWonderScene(cardId)
 			return
 		end
 		alive = false
+		artResize:Disconnect()
 		H.sceneBusy = false
 		Sfx.play("sfx_fanfare", 0.6)
 		Sfx.music(prevMusic)
