@@ -345,9 +345,12 @@ function NavalBattle.play(opts)
 		or string.find(weather, "squall", 1, true) ~= nil
 	Sfx.ambient(if roughSeas then { "sfx_ambience_storm", "sfx_waves" } else { "sfx_waves", "sfx_wind" }, 0.55)
 
-	local sea = part(folder, Vector3.new(2600, 2, 2600), CFrame.new(ORIGIN + Vector3.new(0, -1, 0)), Color3.fromRGB(34, 112, 156), Enum.Material.Glass)
-	sea.Transparency = 0.15
-	sea.Reflectance = 0.08
+	-- [해상전투 배경] 유리판처럼 비치는 가짜 수면을 제거하고 기존 항해 장면의 수면 재질로 통일한다.
+	local sea = part(folder, Vector3.new(2600, 2, 2600), CFrame.new(ORIGIN + Vector3.new(0, -1, 0)), Color3.fromRGB(34, 112, 156), Enum.Material.SmoothPlastic)
+	sea.Name = "NavalSeaSurface"
+	sea.Transparency = 0
+	sea.Reflectance = 0.06
+	sea.CastShadow = false
 	if opts.cardOnly then
 		-- 주점 카드 대결: 바다가 아니라 나무 탁자 위에서 한다 (배는 숨기고 그 자리에 탁자 판을 깐다)
 		sea.Material = Enum.Material.Wood
@@ -376,11 +379,11 @@ function NavalBattle.play(opts)
 			{ id="north_sea", name="북해 겨울 전투", water=Color3.fromRGB(60, 93, 119), sky=Color3.fromRGB(135, 151, 166),
 				props={{"cliff-cave-rock",170,-455,366},{"north-pine-fall",60,-430,342},{"cliff-rock",165,457,-374},{"tree-pinedefaulta",57,430,-350}} },
 			{ id="arctic", name="북극 유빙", water=Color3.fromRGB(68, 126, 151), sky=Color3.fromRGB(178, 211, 231),
-				props={{"mystic-crystals",76,-453,-373},{"cliff-rock",153,465,390},{"mystic-crystals",65,438,365},{"cliff-steps-rock",112,-429,-345}} },
+				props={{"cliff-steps-rock",153,-453,-373},{"cliff-rock",153,465,390},{"cliff-cave-rock",125,438,365},{"cliff-steps-rock",112,-429,-345}} },
 			{ id="cape", name="희망봉 격랑", water=Color3.fromRGB(39, 96, 121), sky=Color3.fromRGB(112, 144, 161),
 				props={{"cliff-steps-rock",183,444,-387},{"cliff-waterfall-rock",155,-462,368},{"cliff-rock",172,466,375},{"north-pine-fall",54,-433,342}} },
 			{ id="volcanic", name="화산섬 해전", water=Color3.fromRGB(46, 80, 91), sky=Color3.fromRGB(147, 104, 100),
-				props={{"cliff-rock",205,456,-390},{"mystic-crystals",71,435,-366},{"cliff-cave-rock",156,-458,385},{"mystic-sand-dune",110,-431,360}} },
+				props={{"cliff-rock",205,456,-390},{"cliff-steps-rock",144,435,-366},{"cliff-cave-rock",156,-458,385},{"cliff-rock",110,-431,360}} },
 			{ id="tropical", name="열대 무인도", water=Color3.fromRGB(30, 169, 168), sky=Color3.fromRGB(152, 218, 230),
 				props={{"platform-beach",190,443,-379},{"tropical-palm-tall",70,422,-352},{"platform-beach",161,-460,382},{"tropical-palm-short",53,-433,357}} },
 			{ id="ghost", name="안개 속 유령 해역", water=Color3.fromRGB(49, 83, 100), sky=Color3.fromRGB(100, 121, 133),
@@ -390,9 +393,9 @@ function NavalBattle.play(opts)
 			{ id="strait", name="좁은 해협 전투", water=Color3.fromRGB(39, 126, 146), sky=Color3.fromRGB(158, 199, 211),
 				props={{"cliff-steps-rock",195,-447,-357},{"cliff-rock",202,458,360},{"ruins-pillar-decorated",58,-426,-333},{"cliff-waterfall-rock",119,436,336}} },
 			{ id="gold_coast", name="아프리카 황금 해안", water=Color3.fromRGB(41, 133, 145), sky=Color3.fromRGB(226, 169, 124),
-				props={{"mystic-sand-dune",181,-458,371},{"tropical-palm-tall",64,-430,346},{"cliff-rock",171,450,-378},{"arid-cactus-tall",49,426,-349}} },
+				props={{"platform-beach",181,-458,371},{"tropical-palm-tall",64,-430,346},{"cliff-rock",171,450,-378},{"tropical-palm-short",49,426,-349}} },
 			{ id="moonlight", name="달빛 해상전", water=Color3.fromRGB(29, 66, 110), sky=Color3.fromRGB(73, 94, 144),
-				props={{"land-floating-island",159,458,-384},{"north-pine-fall",57,432,-357},{"cliff-rock",150,-462,375},{"mystic-stone-arch",58,-436,346}} },
+				props={{"cliff-steps-rock",159,458,-384},{"north-pine-fall",57,432,-357},{"cliff-rock",150,-462,375},{"cliff-cave-rock",105,-436,346}} },
 		}
 		local locationKey = tostring(opts.portId or "") .. "|" .. tostring(opts.shipId or "") .. "|"
 			.. tostring(opts.enemyName or "") .. "|" .. tostring(opts.weatherName or "")
@@ -416,7 +419,8 @@ function NavalBattle.play(opts)
 			elseif portLat >= 38 and portLon > -78 and portLon < 18 then regions = {2,7,13,12}
 			end
 		end
-		local phase = if sceneSeed % 3 == 0 then "day" elseif sceneSeed % 3 == 1 then "sunset" else "night"
+		-- [해역 시간대] 매 전투마다 낮·밤이 무작위로 바뀌지 않고 해역 분위기를 따른다.
+		local phase = "day"
 		local mode = if roughSeas then "storm"
 			elseif string.find(weather, "안개", 1, true) or string.find(weather, "fog", 1, true) then "fog"
 			elseif string.find(weather, "비", 1, true) or string.find(weather, "rain", 1, true) then "rain"
@@ -424,18 +428,17 @@ function NavalBattle.play(opts)
 			elseif sceneSeed % 3 == 0 then "rain" else "clear"
 		local coastIndex = regions[sceneSeed % #regions + 1]
 		if mode == "fog" and sceneSeed % 3 == 0 then coastIndex = 12 end
-		if phase == "night" and sceneSeed % 5 == 0 then coastIndex = 16 end
 		if roughSeas and sceneSeed % 4 == 0 then coastIndex = 2 end
 		local coast = coasts[coastIndex]
 		-- [해역 고유 정체성] 지중해는 노을, 야간 해역은 달빛, 유령 해역은 해무를 반드시 유지한다.
-		if coast.id == "mediterranean" then phase = "sunset"
-		elseif coast.id == "moonlight" then phase = "night" end
+		if coast.id == "mediterranean" or coast.id == "gold_coast" then phase = "sunset"
+		elseif coast.id == "moonlight" or coast.id == "ghost" then phase = "night" end
 		if coast.id == "ghost" then mode = "fog"
 		elseif coast.id == "atlantic_storm" or coast.id == "cape" then mode = "storm" end
 		if mode == "storm" and not roughSeas then
 			Sfx.ambient({ "sfx_ambience_storm", "sfx_waves" }, 0.55)
 		end
-		sea.Color = coast.water
+		sea.Color = coast.water:Lerp(Color3.fromRGB(17, 37, 54), 0.12)
 		folder:SetAttribute("NavalEnvironment", coast.id)
 		folder:SetAttribute("NavalEnvironmentName", coast.name)
 		folder:SetAttribute("NavalEnvironmentCount", #coasts)
@@ -448,7 +451,60 @@ function NavalBattle.play(opts)
 			elseif phase == "night" then Color3.fromRGB(110, 124, 157)
 			elseif phase == "sunset" then Color3.fromRGB(230, 171, 146) else Color3.fromRGB(233, 232, 220)
 		local foamColor = if phase == "night" then Color3.fromRGB(123, 163, 198) else Color3.fromRGB(198, 238, 237)
-		-- [전투 전용 하늘빛] 클라이언트의 조명 효과를 사용하고 장면 파괴 시 반드시 되돌린다.
+		-- [해전 자연광] 가짜 하늘 벽 대신 실제 Roblox 하늘·대기·구름. 원래 월드 설정은 복원한다.
+		local lighting = game:GetService("Lighting")
+		local savedLighting = {
+			clock = lighting.ClockTime, fogColor = lighting.FogColor,
+			fogStart = lighting.FogStart, fogEnd = lighting.FogEnd,
+			ambient = lighting.OutdoorAmbient,
+		}
+		lighting.ClockTime = if phase == "night" then 21.15 elseif phase == "sunset" then 17.45 else 11.8
+		lighting.FogColor = skyColor
+		lighting.FogStart = if mode == "fog" then 210 elseif mode == "storm" then 370 else 690
+		lighting.FogEnd = if mode == "fog" then 950 elseif mode == "storm" then 1250 else 1900
+		lighting.OutdoorAmbient = if phase == "night" then Color3.fromRGB(72, 96, 132)
+			elseif mode == "storm" then Color3.fromRGB(101, 117, 130)
+			else Color3.fromRGB(153, 174, 184)
+		local originalAtmosphere = lighting:FindFirstChildOfClass("Atmosphere")
+		local atmosphere = originalAtmosphere or Instance.new("Atmosphere")
+		local savedAtmosphere = if originalAtmosphere then {
+			density = atmosphere.Density, offset = atmosphere.Offset,
+			color = atmosphere.Color, decay = atmosphere.Decay,
+			glare = atmosphere.Glare, haze = atmosphere.Haze,
+		} else nil
+		if not originalAtmosphere then atmosphere.Name = "NavalOceanAtmosphere" end
+		atmosphere.Color = skyColor:Lerp(Color3.fromRGB(222, 231, 238), if phase == "night" then 0.2 else 0.35)
+		atmosphere.Decay = if phase == "sunset" then Color3.fromRGB(234, 158, 114)
+			elseif phase == "night" then Color3.fromRGB(90, 125, 170)
+			else coast.sky
+		atmosphere.Density = if mode == "fog" then 0.43 elseif mode == "storm" then 0.34 else 0.20
+		atmosphere.Offset = if mode == "fog" then 0.05 else 0.22
+		atmosphere.Haze = if mode == "fog" then 3.1 elseif mode == "storm" then 2.0 else 0.85
+		atmosphere.Glare = if mode == "storm" or phase == "night" then 0 else 0.22
+		if not originalAtmosphere then atmosphere.Parent = lighting end
+		local terrain = workspace.Terrain
+		local originalClouds = terrain:FindFirstChildOfClass("Clouds")
+		local clouds = originalClouds or Instance.new("Clouds")
+		local savedClouds = if originalClouds then {
+			cover = clouds.Cover, density = clouds.Density, color = clouds.Color,
+		} else nil
+		if not originalClouds then clouds.Name = "NavalWeatherClouds" end
+		clouds.Color = cloudColor
+		clouds.Cover = if mode == "storm" then 0.77 elseif mode == "fog" then 0.56
+			elseif mode == "rain" then 0.62 elseif phase == "night" then 0.34 else 0.22
+		clouds.Density = if mode == "storm" then 0.74 elseif mode == "rain" then 0.53 else 0.38
+		if not originalClouds then clouds.Parent = terrain end
+		local bloom = Instance.new("BloomEffect")
+		bloom.Name = "NavalSeaGlow"
+		bloom.Intensity = if MOBILE_VFX then 0.10 else 0.19
+		bloom.Size = 18
+		bloom.Threshold = 1.4
+		bloom.Parent = lighting
+		local sunRays = Instance.new("SunRaysEffect")
+		sunRays.Name = "NavalSeaSunRays"
+		sunRays.Intensity = if mode == "storm" or phase == "night" then 0 else (if MOBILE_VFX then 0.025 else 0.07)
+		sunRays.Spread = 0.62
+		sunRays.Parent = lighting
 		local colorGrade = Instance.new("ColorCorrectionEffect")
 		colorGrade.Name = "NavalBattleEnvironmentGrade"
 		colorGrade.TintColor = if phase == "night" then Color3.fromRGB(162, 181, 219)
@@ -456,74 +512,49 @@ function NavalBattle.play(opts)
 		colorGrade.Brightness = if phase == "night" then -0.12 elseif phase == "sunset" then 0.015 else 0.025
 		colorGrade.Contrast = if mode == "storm" then 0.09 else 0.035
 		colorGrade.Saturation = if mode == "storm" then -0.24 elseif phase == "night" then -0.12 else 0
-		colorGrade.Parent = game:GetService("Lighting")
-		-- [하늘 4면·수평선] 전장 바깥에 둔 비충돌 배경. 지도와 배·카메라 조작을 막지 않는다.
-		for side = 1, 4 do
-			local wall = part(folder, if side <= 2 then Vector3.new(2550, 530, 2) else Vector3.new(2, 530, 2550),
-				CFrame.new(ORIGIN + (if side == 1 then Vector3.new(0, 195, -1190)
-					elseif side == 2 then Vector3.new(0, 195, 1190)
-					elseif side == 3 then Vector3.new(-1190, 195, 0) else Vector3.new(1190, 195, 0))),
-				skyColor, Enum.Material.SmoothPlastic)
-			wall.Name = "NavalDistantSky"
-			wall.Transparency = 0.17
-			wall.CastShadow = false
+		colorGrade.Parent = lighting
+		-- [수평선 정리] 네모 하늘벽·공 구름·태양 구체·직사각형 파도판을 전부 폐기.
+		-- [수면 결] 네이티브 불꽃 입자로 만든 낮은 거품은 보이지 않는 Terrain Attachment만 이용한다.
+		local oceanNodes = {}
+		for i = 1, (if MOBILE_VFX then 12 else 20) do
+			local x, z = (i * 197 % 950) - 475, (i * 283 % 950) - 475
+			local anchor = Instance.new("Attachment")
+			anchor.Name = "NavalOceanFoam"
+			anchor.WorldCFrame = CFrame.new(ORIGIN + Vector3.new(x, 0.18, z))
+			anchor.Parent = terrain
+			local foam = Instance.new("ParticleEmitter")
+			foam.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+			foam.Color = ColorSequence.new(foamColor, coast.water:Lerp(Color3.fromRGB(234, 251, 253), 0.60))
+			foam.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.78),
+				NumberSequenceKeypoint.new(0.35, 0.52),
+				NumberSequenceKeypoint.new(1, 1),
+			})
+			foam.Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.18),
+				NumberSequenceKeypoint.new(0.30, if mode == "storm" then 0.85 else 0.48),
+				NumberSequenceKeypoint.new(1, 0),
+			})
+			foam.Lifetime = NumberRange.new(0.52, 0.95)
+			foam.Speed = NumberRange.new(0.6, if mode == "storm" then 4.2 else 2.5)
+			foam.SpreadAngle = Vector2.new(165, 12)
+			foam.EmissionDirection = Enum.NormalId.Top
+			foam.Drag = 3.5
+			foam.Rate = if MOBILE_VFX then 1.2 else (if mode == "storm" then 3.1 else 1.8)
+			foam.LightEmission = 0.28
+			foam.Parent = anchor
+			table.insert(oceanNodes, anchor)
 		end
-		-- [태양·달·수면 반사] 배경에서만 빛나며 포탄·선체 충돌에는 참여하지 않는다.
-		local celestial = part(folder, Vector3.new(if phase == "night" then 62 else 95,
-			if phase == "night" then 62 else 95, if phase == "night" then 62 else 95),
-			CFrame.new(ORIGIN + Vector3.new(450, if phase == "sunset" then 92 else 285, -1145)),
-			if phase == "night" then Color3.fromRGB(225, 234, 255) else Color3.fromRGB(255, 218, 148),
-			Enum.Material.Neon, Enum.PartType.Ball)
-		celestial.Name = if phase == "night" then "NavalMoon" else "NavalSun"
-		celestial.Transparency = 0.13
-		celestial.CastShadow = false
-		if not MOBILE_VFX then
-			for n = 1, 7 do
-				local shine = part(folder, Vector3.new(9 + n * 5, 0.04, 2.5 + n),
-					CFrame.new(ORIGIN + Vector3.new(190 + n * 33, 0.09, -390 - n * 44)),
-					if phase == "night" then Color3.fromRGB(172, 201, 235) else Color3.fromRGB(255, 217, 160),
-					Enum.Material.Neon)
-				shine.Name = "NavalSunGlitter"
-				shine.Transparency = 0.76 + n * 0.017
-				shine.CastShadow = false
-			end
-		end
-		-- [거리별 구름·해무] 카메라 이동에 따라 자연스러운 깊이감이 생기는 실제 3D 층.
-		local clouds = {}
-		for i = 1, (if MOBILE_VFX then 6 else 12) do
-			local depth = if i % 2 == 0 then 930 else 570
-			local x = (i * 227 % 1430) - 715
-			local z = if i % 4 < 2 then -depth else depth
-			local at = ORIGIN + Vector3.new(x, 155 + (i * 43 % 130), z)
-			local cloud = part(folder, Vector3.new(88 + i % 4 * 46, 25 + i % 3 * 14, 34 + i % 4 * 15),
-				CFrame.new(at), cloudColor, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
-			cloud.Name = "NavalCloudLayer"
-			cloud.Transparency = if mode == "storm" then 0.33 else 0.47
-			cloud.CastShadow = false
-			table.insert(clouds, { model=cloud, at=at, drift=if depth == 930 then 1.4 else 3.3, seed=i })
-		end
-		local waves = {}
-		for i = 1, (if MOBILE_VFX then 11 else 26) do
-			local x = (i * 197 % 970) - 485
-			local z = (i * 283 % 970) - 485
-			local base = ORIGIN + Vector3.new(x, 0.07, z)
-			local crest = part(folder, Vector3.new(7 + i % 5 * 4, 0.05, 1.4 + i % 3 * 0.6),
-				CFrame.new(base) * CFrame.Angles(0, i * 1.2, 0), foamColor, Enum.Material.Neon)
-			crest.Name = "NavalWaveCrest"
-			crest.Transparency = 0.72 + (i % 4) * 0.045
-			crest.CastShadow = false
-			table.insert(waves, { model=crest, at=base, yaw=i * 1.2, seed=i })
-		end
+		local weatherNodes = {}
 		if mode == "rain" or mode == "storm" or coast.id == "north_sea" or coast.id == "arctic" then
 			local snowfall = coast.id == "north_sea" or coast.id == "arctic"
 			-- [기상 입자] 등록된 엔진 기본 입자만 사용. 터치 기기에서는 발생률 제한.
 			for i = 1, (if MOBILE_VFX then 2 else 4) do
-				local source = part(folder, Vector3.new(2, 2, 2),
-					CFrame.new(ORIGIN + Vector3.new(-240 + i * 96, 125, -170 + i * 68)),
-					Color3.new(1, 1, 1), Enum.Material.SmoothPlastic)
+				local source = Instance.new("Attachment")
 				source.Name = "NavalWeatherEmitter"
-				source.Transparency = 1
-				source.CanTouch = false
+				source.WorldCFrame = CFrame.new(ORIGIN + Vector3.new(-240 + i * 96, 125, -170 + i * 68))
+				source.Parent = terrain
+				table.insert(weatherNodes, source)
 				local rain = Instance.new("ParticleEmitter")
 				rain.Texture = "rbxasset://textures/particles/sparkles_main.dds"
 				rain.EmissionDirection = Enum.NormalId.Bottom
@@ -538,56 +569,24 @@ function NavalBattle.play(opts)
 				rain.Parent = source
 			end
 		end
-		local mist = {}
-		if mode == "fog" or mode == "storm" or coast.id == "ghost" then
-			for i = 1, (if MOBILE_VFX then 2 else 5) do
-				local at = ORIGIN + Vector3.new((i % 2 == 0 and 1 or -1) * (310 + i * 35), 23, -270 + i * 82)
-				local haze = part(folder, Vector3.new(235, 65, 4), CFrame.new(at),
-					Color3.fromRGB(185, 205, 209), Enum.Material.Glass)
-				haze.Name = "NavalFogBank"
-				haze.Transparency = 0.79
-				haze.CastShadow = false
-				table.insert(mist, { model=haze, at=at, seed=i })
-			end
-		end
-		-- [지역 특화 원경] 얼음·화산·등대는 전장 외측 장식이며 능력치·충돌과 무관하다.
-		local beaconLight = nil
-		if coast.id == "arctic" then
-			for i = 1, (if MOBILE_VFX then 3 else 7) do
-				local ice = Instance.new("WedgePart")
-				ice.Name = "NavalIceberg"
-				ice.Anchored, ice.CanCollide, ice.CanTouch, ice.CanQuery = true, false, false, false
-				ice.Size = Vector3.new(20 + i % 3 * 12, 35 + i % 4 * 17, 26 + i % 3 * 15)
-				ice.CFrame = CFrame.new(ORIGIN + Vector3.new(-485 + i * 105, 12, -405 - i % 3 * 31))
-					* CFrame.Angles(0, i * 0.71, 0)
-				ice.Material, ice.Color, ice.Transparency = Enum.Material.Ice, Color3.fromRGB(193, 224, 238), 0.08
-				ice.Parent = folder
-			end
-		elseif coast.id == "volcanic" then
-			local glow = part(folder, Vector3.new(34, 34, 34),
-				CFrame.new(ORIGIN + Vector3.new(445, 96, -388)), Color3.fromRGB(250, 89, 47),
-				Enum.Material.Neon, Enum.PartType.Ball)
-			glow.Name, glow.Transparency = "NavalVolcanoGlow", 0.28
+		-- [해무/특수 해역] 안개는 Atmosphere가 처리한다.
+		-- 원형 빙산·네온 화산구·네모 등대는 실물 모델이 없어 새로 만들지 않는다.
+		if coast.id == "volcanic" then
+			local ashOrigin = Instance.new("Attachment")
+			ashOrigin.Name = "NavalVolcanicAsh"
+			ashOrigin.WorldCFrame = CFrame.new(ORIGIN + Vector3.new(445, 86, -388))
+			ashOrigin.Parent = terrain
+			table.insert(oceanNodes, ashOrigin)
 			local ash = Instance.new("ParticleEmitter")
 			ash.Texture = "rbxasset://textures/particles/smoke_main.dds"
-			ash.Rate = if MOBILE_VFX then 6 else 18
-			ash.Speed = NumberRange.new(10, 20)
-			ash.Lifetime = NumberRange.new(4, 6)
-			ash.Size = NumberSequence.new(8, 20)
-			ash.Color = ColorSequence.new(Color3.fromRGB(85, 70, 66), Color3.fromRGB(134, 111, 100))
-			ash.Transparency = NumberSequence.new(0.30, 1)
+			ash.Rate = if MOBILE_VFX then 3 else 9
+			ash.Speed = NumberRange.new(4, 10)
+			ash.Lifetime = NumberRange.new(2, 3.5)
+			ash.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 2), NumberSequenceKeypoint.new(1, 7) })
+			ash.Color = ColorSequence.new(Color3.fromRGB(72, 65, 63), Color3.fromRGB(127, 105, 100))
+			ash.Transparency = NumberSequence.new(0.67, 1)
 			ash.EmissionDirection = Enum.NormalId.Top
-			ash.Parent = glow
-		elseif coast.id == "harbor" or coast.id == "strait" then
-			local tower = part(folder, Vector3.new(11, 57, 11),
-				CFrame.new(ORIGIN + Vector3.new(-422, 29, 358)), Color3.fromRGB(201, 191, 170), Enum.Material.Slate)
-			tower.Name = "NavalLighthouse"
-			local beacon = part(folder, Vector3.new(15, 11, 15),
-				CFrame.new(ORIGIN + Vector3.new(-422, 61, 358)),
-				Color3.fromRGB(255, 225, 145), Enum.Material.Neon, Enum.PartType.Ball)
-			beacon.Name = "NavalBeacon"
-			beacon.Transparency = 0.15
-			beaconLight = beacon
+			ash.Parent = ashOrigin
 		end
 		-- [승인된 실물 지형] 라이선스 등록·실제 로딩이 완료된 모델만 복제한다.
 		local distantShips = {}
@@ -597,7 +596,7 @@ function NavalBattle.play(opts)
 			local terrain = lib and lib:FindFirstChild("Terrain")
 			if not terrain then return end
 			for index, spec in coast.props do
-				if MOBILE_VFX and index > 2 then break end
+				if MOBILE_VFX and index > 3 then break end
 				local template = terrain:FindFirstChild(spec[1])
 				if template and template:IsA("Model") and AssetIds["Terrain/" .. spec[1]] then
 					local model = template:Clone()
@@ -648,30 +647,15 @@ function NavalBattle.play(opts)
 			if tickSum < (if MOBILE_VFX then 0.20 else 0.10) then return end
 			elapsed += tickSum
 			tickSum = 0
-			local gust = if mode == "storm" then 2.3 elseif mode == "rain" then 1.4 else 0.8
-			for _, cloud in clouds do
-				cloud.model.CFrame = CFrame.new(cloud.at + Vector3.new(
-					math.sin(elapsed * 0.035 * gust + cloud.seed) * 21 * cloud.drift, 0,
-					math.cos(elapsed * 0.022 + cloud.seed) * 7))
-			end
-			for _, crest in waves do
-				crest.model.CFrame = CFrame.new(crest.at + Vector3.new(
-					math.sin(elapsed * 0.65 + crest.seed) * 3 * gust,
-					math.sin(elapsed * 1.45 + crest.seed * 1.8) * 0.055,
-					math.cos(elapsed * 0.28 + crest.seed) * 5)) * CFrame.Angles(0, crest.yaw, 0)
-				crest.model.Transparency = math.clamp(0.76 + math.sin(elapsed * 1.7 + crest.seed) * 0.12, 0.58, 0.92)
-			end
-			for _, band in mist do
-				band.model.CFrame = CFrame.new(band.at + Vector3.new(math.sin(elapsed * 0.13 + band.seed) * 26, 0, 0))
-			end
+			-- 기본 파도·하늘은 엔진이 움직인다. 매 프레임 사각형/구체를 갱신하지 않는다.
 			for _, merchant in distantShips do
 				if merchant.model.Parent then
 					merchant.model:PivotTo(merchant.start * CFrame.new(math.sin(elapsed * 0.055 + merchant.speed) * 50,
 						math.sin(elapsed * 1.2 + merchant.speed) * 0.27, 0))
 				end
 			end
-			if beaconLight then beaconLight.Transparency = 0.13 + (1 + math.sin(elapsed * 2.7)) * 0.19 end
-			sea.Color = coast.water:Lerp(foamColor, 0.023 + math.sin(elapsed * (if mode == "storm" then 1.8 else 0.7)) * 0.018)
+			sea.Color = coast.water:Lerp(foamColor,
+				0.035 + math.sin(elapsed * (if mode == "storm" then 1.5 else 0.6)) * 0.012)
 			if mode == "storm" then
 				local flash = math.sin(elapsed * 0.47 + sceneSeed) > 0.994
 				colorGrade.Brightness = (if phase == "night" then -0.12 else 0.025) + (if flash then 0.23 else 0)
@@ -679,6 +663,22 @@ function NavalBattle.play(opts)
 		end)
 		folder.Destroying:Connect(function()
 			envConnection:Disconnect()
+			-- [전투 종료 복원] 해상전용 하늘/바다 효과를 남기지 않아 탐험·항해 장면을 보호한다.
+			for _, anchor in oceanNodes do anchor:Destroy() end
+			for _, anchor in weatherNodes do anchor:Destroy() end
+			lighting.ClockTime, lighting.FogColor = savedLighting.clock, savedLighting.fogColor
+			lighting.FogStart, lighting.FogEnd = savedLighting.fogStart, savedLighting.fogEnd
+			lighting.OutdoorAmbient = savedLighting.ambient
+			if savedAtmosphere and atmosphere.Parent then
+				atmosphere.Density, atmosphere.Offset = savedAtmosphere.density, savedAtmosphere.offset
+				atmosphere.Color, atmosphere.Decay = savedAtmosphere.color, savedAtmosphere.decay
+				atmosphere.Glare, atmosphere.Haze = savedAtmosphere.glare, savedAtmosphere.haze
+			elseif not originalAtmosphere then atmosphere:Destroy() end
+			if savedClouds and clouds.Parent then
+				clouds.Cover, clouds.Density, clouds.Color = savedClouds.cover, savedClouds.density, savedClouds.color
+			elseif not originalClouds then clouds:Destroy() end
+			bloom:Destroy()
+			sunRays:Destroy()
 			colorGrade:Destroy()
 		end)
 	end
