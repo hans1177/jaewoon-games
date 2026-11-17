@@ -6190,10 +6190,10 @@ local function renderYard()
 	end
 	local shipHeader = add(function() return mkHeader(content, "새 배 비교 · 실제 구매 가격") end)
 	shipHeader.Name = "YardSectionShips"
-	add(function() return mkLabel(content, "현재 기함의 매각 보상 50%를 뺀 금액이 실결제야. 선박을 바꾸면 기존 대포·보강은 기본으로 돌아가.", 14, COLORS.muted, false) end)
+	add(function() return mkLabel(content, "막대 색=새 배 · 흰 선=현재 기함 · ▲ 향상 / ▼ 감소\n실결제는 기함 매각 보상을 뺀 금액이고, 교체하면 기존 대포·보강은 초기화돼.", 14, COLORS.muted, false) end)
 	local maxCargo, maxSpeed, maxHull = 1, 1, 1
 	for _, s in yard.ships do
-		maxCargo, maxSpeed, maxHull = math.max(maxCargo, s.cargo), math.max(maxSpeed, s.speed), math.max(maxHull, s.hull)
+		maxCargo, maxSpeed, maxHull = math.max(maxCargo, s.capacityAfter or s.cargo), math.max(maxSpeed, s.speed), math.max(maxHull, s.hull)
 	end
 	for _, s in yard.ships do
 		add(function()
@@ -6219,38 +6219,54 @@ local function renderYard()
 					onClick = function() call("BuyShip", { shipId = s.id }) end } }, if s.id == "galleon" and AssetIds["Naval/galleon-heritage"] then 236 else 210)
 			local si = SHIP_ICON[s.id]
 			if si then withIcon(row, si[1], si[2], si[3], 100) end
-			-- [기함 대조 막대] 채운 부분=선택 배, 선=지금 배. 위치는 행 아래에 고정해 모바일 줄바꿈과 겹침을 줄인다.
+			-- [선박 시각 비교] 실제 교체 후 화물칸·속도·선체를 표시한다.
+			-- 공통 카드의 본문 높이에 비교 영역을 예약해 모바일에서도 버튼·설명과 겹치지 않게 한다.
+			row:SetAttribute("FooterHeight", 76)
+			local chart = Instance.new("Frame")
+			chart.Name = "ShipComparisonBars"
+			chart.BackgroundTransparency = 1
+			chart.Parent = row
 			local stats = {
-				{ "화물", s.cargo, sh.baseCargo or sh.cargoCapacity, maxCargo, COLORS.gold },
+				{ "화물", s.capacityAfter or s.cargo, sh.cargoCapacity, maxCargo, COLORS.gold },
 				{ "속도", s.speed, sh.speed, maxSpeed, COLORS.blue },
 				{ "선체", s.hull, sh.maxHull, maxHull, COLORS.green },
 			}
 			for i, st in stats do
-				local y = -56 + (i - 1) * 16
-				local lb = mkLabel(row, string.format("%s %.0f", st[1], st[2]), 11, COLORS.muted, false)
-				lb.Position = UDim2.new(0, 116, 1, y - 2)
-				lb.Size = UDim2.fromOffset(70, 14)
-				lb.AutomaticSize = Enum.AutomaticSize.None
-				local back = Instance.new("Frame")
-				back.BackgroundColor3 = Color3.fromRGB(8, 14, 22)
-				back.BorderSizePixel = 0
-				back.Position = UDim2.new(0, 190, 1, y)
-				back.Size = UDim2.new(1, -278, 0, 8)
-				back.Parent = row
-				corner(back, 4)
+				local y = (i - 1) * 20
+				local delta = st[2] - st[3]
+				local arrow = if delta > 0.05 then "▲" elseif delta < -0.05 then "▼" else "━"
+				local label = mkLabel(chart, st[1] .. " " .. arrow, 12, if delta >= 0 then INK_SOFT else COLORS.red, true)
+				label.Position = UDim2.fromOffset(0, y)
+				label.Size = UDim2.fromOffset(65, 18)
+				label.AutomaticSize = Enum.AutomaticSize.None
+				local track = Instance.new("Frame")
+				track.BackgroundColor3 = Color3.fromRGB(80, 68, 57)
+				track.BorderSizePixel = 0
+				track.Position = UDim2.new(0, 68, 0, y + 5)
+				track.Size = UDim2.new(1, -72, 0, 9)
+				track.Parent = chart
+				corner(track, 4)
 				local fill = Instance.new("Frame")
 				fill.BackgroundColor3 = st[5]
 				fill.BorderSizePixel = 0
-				fill.Size = UDim2.fromScale(math.clamp(st[2] / st[4], 0, 1), 1)
-				fill.Parent = back
+				fill.Size = UDim2.fromScale(math.clamp(st[2] / math.max(1, st[4]), 0, 1), 1)
+				fill.Parent = track
 				corner(fill, 4)
-				local mark = Instance.new("Frame")
-				mark.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				mark.BorderSizePixel = 0
-				mark.Position = UDim2.new(math.clamp(st[3] / st[4], 0, 1), -1, -0.3, 0)
-				mark.Size = UDim2.new(0, 2, 1.6, 0)
-				mark.Parent = back
+				local current = Instance.new("Frame")
+				current.Name = "CurrentShipMark"
+				current.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				current.BorderSizePixel = 0
+				current.Position = UDim2.new(math.clamp(st[3] / math.max(1, st[4]), 0, 1), -1, -0.3, 0)
+				current.Size = UDim2.new(0, 3, 1.6, 0)
+				current.Parent = track
 			end
+			local function fitChart()
+				local narrow = row.AbsoluteSize.X < 450
+				chart.Position = UDim2.new(0, if narrow then 110 else 118, 1, if narrow then -126 else -73)
+				chart.Size = UDim2.new(1, if narrow then -118 else -232, 0, 60)
+			end
+			row:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitChart)
+			task.defer(fitChart)
 			return row
 		end)
 	end
@@ -10343,22 +10359,41 @@ function render()
 	if message ~= "" then
 		add(function() return mkLabel(content, message, 17, if messageOk then COLORS.gold else COLORS.red, true) end)
 	end
-	-- [시설 공통 목표 카드] 현재 화면의 할 일을 단계별로 안내해 모든 메뉴의 길찾기를 통일한다.
+	-- [전체 메뉴 1순위 행동] 단계 안내와 핵심 진입 버튼을 첫 화면에 둔다.
 	local focus = H.MENU_FOCUS[currentTab]
 	if focus then
 		add(function()
-			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 64), Color3.fromRGB(64, 48, 35))
+			local compact = mainInner.AbsoluteSize.X < 480
+			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, if compact then 92 else 76), Color3.fromRGB(64, 48, 35))
 			banner.Name = "MenuFocus_" .. currentTab
 			corner(banner, 8)
 			local heading = mkLabel(banner, "◆ " .. focus[1], 18, Color3.fromRGB(255, 222, 144), true)
 			heading.Position = UDim2.fromOffset(12, 5)
-			heading.Size = UDim2.new(1, -24, 0, 25)
+			heading.Size = UDim2.new(1, if compact then -24 else -142, 0, 25)
 			heading.AutomaticSize = Enum.AutomaticSize.None
-			local steps = mkLabel(banner, focus[2], 14, Color3.fromRGB(243, 231, 204), false)
+			local steps = mkLabel(banner, focus[2], if compact then 13 else 14, Color3.fromRGB(243, 231, 204), false)
 			steps.Position = UDim2.fromOffset(12, 34)
-			steps.Size = UDim2.new(1, -24, 0, 25)
+			steps.Size = UDim2.new(1, -132, 0, if compact then 52 else 34)
 			steps.AutomaticSize = Enum.AutomaticSize.None
 			steps.TextWrapped = true
+			local action = mkButton(banner, if currentTab == "trade" then "교역 시작" elseif currentTab == "yard" then "선박 비교" else "바로 보기",
+				COLORS.gold, UDim2.fromOffset(110, 42), function()
+					if currentTab == "trade" and H.tradeHall then H.tradeHall() return end
+					if currentTab == "yard" and H.yardHall then H.yardHall() return end
+					-- 다른 메뉴는 실제 화면의 첫 조작 버튼으로 스크롤한다. 구매·보상 판정은 실행하지 않는다.
+					for _, element in content:GetDescendants() do
+						if element:IsA("TextButton") and element.Interactable and element ~= action
+							and not element:FindFirstAncestor("MenuFocus_" .. currentTab)
+							and not element:FindFirstAncestor("MenuAdvice_" .. currentTab) then
+							local y = element.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 12
+							content.CanvasPosition = Vector2.new(0, math.max(0, y))
+							break
+						end
+					end
+				end, true)
+			action.Name = "MenuPrimaryAction_" .. currentTab
+			action.AnchorPoint = Vector2.new(1, 0.5)
+			action.Position = UDim2.new(1, -10, 0.5, 0)
 			return banner
 		end)
 	end
