@@ -2319,10 +2319,12 @@ function FieldScene.start(opts)
 
 	-- 미니맵: 주변 약 130스터드를 보여 준다(북쪽이 위). 흰 점=나, 금색=발견물(멀면 가장자리에 표시), 빨강=적, 큰 주황=두목
 	do
-		local MM, RADIUS = if compactTouch then 92 elseif visualMobile then 106 else 120, 130
+		local MM, RADIUS = if compactTouch then 92
+			elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 82
+			elseif visualMobile then 106 else 120, 130
 		local map = Instance.new("Frame")
 		map.AnchorPoint = Vector2.new(0, 0)
-		map.Position = if compactTouch then UDim2.fromOffset(226, 176) else UDim2.fromOffset(236, 74)
+		map.Position = if compactTouch then UDim2.fromOffset(226, 90) else UDim2.fromOffset(236, 74)
 		map.Size = UDim2.fromOffset(MM, MM)
 		map.BackgroundColor3 = Color3.fromRGB(16, 24, 30)
 		map.BackgroundTransparency = 0.35
@@ -2419,8 +2421,10 @@ function FieldScene.start(opts)
 			elseif visualMobile then 116 else 112,
 			if compactTouch then 104 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 104
 			elseif visualMobile then 116 else 112),
-		UDim2.new(1, if compactTouch then -82 elseif visualMobile then -95 else -88,
-			1, if compactTouch then -87 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then -70
+		UDim2.new(1, if compactTouch then -76
+			elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 and workspace.CurrentCamera.ViewportSize.X < 650 then -76
+			elseif visualMobile then -95 else -88,
+			1, if compactTouch then -85 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then -70
 				elseif visualMobile then -88 else -88), Vector2.new(0.5, 0.5))
 	attackBtn.Name = "FieldAttack"
 	attackBtn:SetAttribute("SkillFullName", "일반 공격")
@@ -6540,7 +6544,7 @@ function FieldScene.start(opts)
 				elseif visualMobile then 80 else 82,
 				if compactTouch then 76 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 72
 				elseif visualMobile then 80 else 82),
-			if compactTouch then UDim2.new(1, -125, 1, -330)
+			if compactTouch then UDim2.new(1, -68, 1, -315)
 				elseif visualMobile then UDim2.new(1,
 					if workspace.CurrentCamera.ViewportSize.X < 780 then -90 else -175,
 					1, if workspace.CurrentCamera.ViewportSize.Y < 330 then -181 else -225)
@@ -6626,7 +6630,7 @@ function FieldScene.start(opts)
 				elseif visualMobile then 96 else 94,
 				if compactTouch then 86 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 88
 				elseif visualMobile then 96 else 94),
-			if compactTouch then UDim2.new(1, -125, 1, -210)
+			if compactTouch then UDim2.new(1, -62, 1, -202)
 				elseif visualMobile then UDim2.new(1, -235, 1,
 					if workspace.CurrentCamera.ViewportSize.Y < 330 then -67 else -106)
 				else UDim2.new(1, attackBtn.Position.X.Offset - 146, 1, attackBtn.Position.Y.Offset - 66),
