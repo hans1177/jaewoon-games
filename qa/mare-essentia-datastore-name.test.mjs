@@ -257,3 +257,48 @@ test('무기별 실제 발사음과 원거리 스킬 이펙트가 등록된 음�
   assert.match(field,/arrowTrail\(a0, b0, nil, nil, aw\.motion\)/);
   assert.match(field,/nil, nil, if e\.weapon then e\.weapon\.motion else "BOW"/);
 });
+
+
+// [연타 무기별 3단 시각 동작] 승인된 공용 R15 자세만 쓰며 기존 피해 1회·숙련 확률·저장값은 유지한다.
+test('연타 무기별 3단 시각 동작은 서로 다르고 관절을 끊김 없이 이어 붙인다',()=>{
+  const motion=read('ReplicatedStorage/Shared/FieldMotion.luau');
+  const common=read('ReplicatedStorage/Shared/CommonMotion.luau');
+  const chains={
+    CROSSBOW:['FIREARM_RECOIL','FIREARM_CYCLE','FIREARM_AIM'],
+    PISTOL:['FIREARM_RECOIL','FIREARM_CYCLE','FIREARM_AIM'],
+    RIFLE:['FIREARM_RECOIL','FIREARM_RELOAD','FIREARM_AIM'],
+    BOW:['BOW_RELEASE','BOW_RENOCK','BOW_DRAW'],
+    LONGBOW:['BOW_RELEASE','BOW_RENOCK','BOW_DRAW'],
+    RAPIER:['BLADE_THRUST','BLADE_RIPOSTE','BLADE_SLASH_L'],
+  };
+  const family={CROSSBOW:'FIREARM',PISTOL:'FIREARM',RIFLE:'FIREARM',
+    BOW:'BOW',LONGBOW:'BOW',RAPIER:'BLADE'};
+  for(const [weapon,atoms] of Object.entries(chains)){
+    assert.ok(motion.includes(weapon+' = { '+atoms.map(x=>'"W:'+x+'"').join(', ')+' }'),weapon+' 3단 연계 누락');
+    for(const atom of atoms){
+      assert.ok(common.includes('{id="'+atom+'",family="'+family[weapon]+'"'),weapon+' 승인 원자 누락: '+atom);
+    }
+  }
+  for(const weapon of ['DAGGER','SWORD','KATANA','SABRE','SCIMITAR','WAR_AXE','SPEAR','MACE']){
+    assert.ok(common.includes(weapon+'={id="'+weapon+'"'),weapon+' 기본 모션 프로필 누락');
+  }
+  assert.match(motion,/local actorBeat = if rangedActor then 1 else \(h\.weaponBeat or 1\)/);
+  assert.match(field,/local swingBridge = \{ last = \{\}, from = nil, at = 0, duration = 0 \}/);
+  assert.match(field,/swingBridge\.from = table\.clone\(swingBridge\.last\)/);
+  assert.match(field,/canon\[joint\] = old:Lerp\(canon\[joint\] or CFrame\.identity, weight\)/);
+  assert.match(field,/weight = weight \* weight \* \(3 - 2 \* weight\)/);
+  assert.match(field,/table\.clear\(swingBridge\.last\)/);
+  assert.match(field,/if swingKind and swingCombo and slashIdx >= 2 then/);
+  assert.match(field,/local stageDelay = if stage == 2 then 0\.20/);
+  assert.match(field,/elseif wpn\.family == "axe" or wpn\.family == "blunt" then 0\.53/);
+  assert.match(field,/elseif wpn\.ranged then 0\.56 else 0\.49/);
+  assert.match(field,/local firing = actionPose and slashIdx == 1/);
+  // 시각 2~3단은 공격·피해·보상·쿨타임을 중복 발생시키지 않는다.
+  const start=field.indexOf('if chain > 1 then');
+  const stop=field.indexOf('elseif hits == 0 and moveId == "rush" then',start);
+  assert.ok(start>0 && stop>start,'순수 시각 연타 블록 범위 누락');
+  const visualOnly=field.slice(start,stop);
+  assert.match(visualOnly,/startSwing\(finishKind,/);
+  assert.doesNotMatch(visualOnly,/strikeEnemy\(|AC\.damageEnemy\(|AC\.takeHit\(/);
+  assert.match(field,/if rank > 1 and comboNow - lastMasteryComboAt >= 7/);
+});
