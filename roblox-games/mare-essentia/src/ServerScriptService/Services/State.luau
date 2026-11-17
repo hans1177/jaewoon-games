@@ -178,7 +178,9 @@ return function(D)
 	end
 
 	function State.cargoCapacityFor(state, def)
-		return math.floor((def.cargo + State.fleetCargo(state)) * (1 + State.techSum(state, "cargoMult")))
+		-- [선박별 화물 설계] 기함 고유 선창 효율만 적용. 기존 선단·기술 효과와 저장 수량은 보존한다.
+		local roleCargo = def.cargo * (1 + (if def.trait then def.trait.cargo or 0 else 0))
+		return math.floor((roleCargo + State.fleetCargo(state)) * (1 + State.techSum(state, "cargoMult")))
 	end
 
 	function State.cargoCapacity(state)
