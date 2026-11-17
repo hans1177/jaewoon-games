@@ -1350,24 +1350,36 @@ function FieldScene.start(opts)
 	local function say(text, duration)
 		noteToken += 1
 		local mine = noteToken
-		-- [유적 설명 잘림 복구] 긴 상호작용 기록만 체력바 아래와 퀘스트 안내 위로 옮겨
-		-- 모바일 가로·세로 화면에서 최대 세 줄로 읽는다. 전투 알림 위치는 기존 그대로.
+		-- [유적 상호작용] 읽는 동안에도 공격·회피·이동 패드가 가려지지 않게 전투 HUD 밖에 표시한다.
 		local expanded = duration ~= nil and duration > 2.2
-		-- [긴 현장 안내] 체력·동료·미니맵·교체 버튼에서 떨어진 여백에 표시한다.
-		note.AnchorPoint = if compactTouch then Vector2.zero else Vector2.new(0.5, 0)
+		local screen = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(832, 384)
+		local narrowLandscape = visualMobile and not compactTouch and screen.X < 740 and screen.X > screen.Y
+		-- 폭 740 미만 가로형에서는 긴 안내가 퀘스트·날씨와 같은 영역을 사용하므로 잠깐 숨긴다.
+		-- 새 전투 알림이 덮어쓰더라도 마지막 메시지의 종료 시점에 원래 정보열을 복원한다.
+		local questHud = if narrowLandscape then gui:FindFirstChild("FieldQuestHint") else nil
+		local weatherHud = if narrowLandscape then gui:FindFirstChild("FieldWeatherClock") else nil
+		if questHud then questHud.Visible = not expanded end
+		if weatherHud then weatherHud.Visible = not expanded end
+		note.AnchorPoint = if compactTouch or (expanded and visualMobile) then Vector2.zero else Vector2.new(0.5, 0)
 		note.Position = if expanded then
-			(if compactTouch then UDim2.fromOffset(12, 398) else UDim2.new(0.5, 0, 0, 190))
+			(if compactTouch then UDim2.fromOffset(12, 398)
+				elseif narrowLandscape then UDim2.fromOffset(184, screen.Y - 108)
+				elseif visualMobile then UDim2.fromOffset(184, 202)
+				else UDim2.new(0.5, 0, 0, 190))
 			elseif compactTouch then UDim2.fromOffset(12, 158) else UDim2.new(0.5, 0, 0, 46)
-		note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 else 256, 64)
+		note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 244 else 256, 64)
 			else UDim2.fromOffset(if compactTouch then 206 else 320, 22)
 		note.TextWrapped = expanded
 		note.TextYAlignment = Enum.TextYAlignment.Center
+		note.TextSize = if expanded and narrowLandscape then 12 else 14
 		note.BackgroundTransparency = if expanded then 0.2 else 1
 		note.Text = text
 		task.delay(duration or 2.2, function()
 			if noteToken == mine then
 				note.Text = ""
 				note.BackgroundTransparency = 1
+				if questHud and questHud.Parent then questHud.Visible = true end
+				if weatherHud and weatherHud.Parent then weatherHud.Visible = true end
 			end
 		end)
 	end
