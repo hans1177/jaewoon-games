@@ -251,7 +251,8 @@ test('원거리 화살 석궁은 실제 긴 축을 바로 세우고 3D 탄도·�
 test('유적 상호작용과 발견 화면의 모바일 잘림·조사 키 충돌을 방지한다',()=>{
   assert.ok(field.includes('note.Name = "FieldInteractionNote"'));
   assert.ok(field.includes('local expanded = duration ~= nil and duration > 2.2'));
-  assert.ok(field.includes('note.Size = if expanded then UDim2.new(0.78, 0, 0, 64)'));
+  assert.ok(field.includes('note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 else 256, 64)'));
+  assert.ok(field.includes('if compactTouch then UDim2.fromOffset(12, 398) else UDim2.new(0.5, 0, 0, 190)'))
   assert.ok(field.includes('note.TextWrapped = expanded'));
   assert.ok(field.includes('say(clueText[theme] or clueText.plains, 4.5)'));
   assert.ok(field.includes('prompt.KeyboardKeyCode = Enum.KeyCode.T'));
