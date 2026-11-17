@@ -60,6 +60,7 @@ jobs:
         if: ${{ always() && (steps.upload.outcome == 'success' || steps.upload.outcome == 'failure') }}
         env:
           GH_TOKEN: ${{ github.token }}
+          MARE_UNIVERSE_ID: ${{ inputs.universe_id || '10775310508' }}
         run: |
           set -euo pipefail
           git config user.name 'mare-audio-upload'
@@ -74,6 +75,14 @@ jobs:
           const base='roblox-games/mare-essentia/audio/';
           const manifest=JSON.parse(fs.readFileSync(base+'manifest.json','utf8'));
           const receipts=JSON.parse(fs.readFileSync(base+'uploaded.json','utf8'));
+          const universe=process.env.MARE_UNIVERSE_ID;
+          for(const track of manifest.tracks){
+            const receipt=receipts[track.name];
+            if(!receipt?.granted||receipt.grantedUniverseId!==universe
+              ||!/^[1-9][0-9]*$/.test(String(receipt.assetId||'')))
+              throw Error('AUDIO_LIVE_UNIVERSE_PERMISSION_NOT_VERIFIED '+track.name);
+          }
+          console.log('AUDIO_LIVE_UNIVERSE_PERMISSIONS_VERIFIED '+manifest.tracks.length+' universe='+universe);
           const paths=[];
           for(const track of manifest.tracks.filter(track=>track.license==='CC0-1.0'||track.name==='music_region_w_africa')){
             const file=base+track.file;
