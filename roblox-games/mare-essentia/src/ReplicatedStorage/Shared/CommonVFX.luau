@@ -123,7 +123,14 @@ local function createCombatPulse(atomId, options, profile)
   folder:SetAttribute("OwnsStaminaAuthority",false)
   folder:SetAttribute("ImageParticleRenderer",true)
   folder:SetAttribute("PooledEffect",true)
-  anchor.CFrame = cframe
+  -- [무기별 궤적 방향] 기존 투명 발사 좌표만 회전한다. 신규 파츠·메시·게임 이동은 없다.
+  local style = tostring(options.style or "")
+  if style=="blade" or style=="dagger" or style=="cleave" then
+    anchor.CFrame = cframe * CFrame.Angles(0,math.rad(clamp(options.rotation or 0,-80,80))*.65,0)
+  else
+    anchor.CFrame = cframe
+  end
+  folder:SetAttribute("CombatVisualStyle",style)
   folder.Parent = options.parent or workspace
   local duration = clamp(options.duration or profile.duration,0.08,1.2)
   local scale = clamp(options.scale or 1,0.25,4)
@@ -147,12 +154,25 @@ local function createCombatPulse(atomId, options, profile)
   local flashCount = if options.hideFlash~=true and options.particlesOnly~=true then (MOBILE and 2 or 5) else 0
   local ringCount = if options.hideRing~=true and options.particlesOnly~=true then (MOBILE and 4 or 10) else 0
   flash.Texture=SPRITES.spark;flash.Orientation=Enum.ParticleOrientation.FacingCamera
+  flash.EmissionDirection=Enum.NormalId.Front
   flash.Speed=NumberRange.new(reduced and 0 or 2,reduced and 0 or 5)
   flash.SpreadAngle=Vector2.new(180,180);flash.Lifetime=NumberRange.new(duration*.8)
   flash.Rotation=NumberRange.new(tonumber(options.rotation)or 0)
   flash.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,clamp(flashStart*.32,.16,1.0)),NumberSequenceKeypoint.new(1,0)})
+  if style=="dagger" or style=="pierce" or style=="arrow" or style=="bolt" then
+    flash.SpreadAngle=Vector2.new(18,12)
+    flash.Speed=NumberRange.new(reduced and 0 or 5,reduced and 0 or 9)
+    flash.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.26),NumberSequenceKeypoint.new(.35,.18),NumberSequenceKeypoint.new(1,0)})
+  elseif style=="blade" or style=="cleave" then
+    flash.SpreadAngle=Vector2.new(if style=="blade" then 110 else 78,12)
+    flash.Speed=NumberRange.new(reduced and 0 or 4,reduced and 0 or 8)
+  elseif style=="gunshot" then
+    flash.SpreadAngle=Vector2.new(32,25)
+    flash.Speed=NumberRange.new(reduced and 0 or 7,reduced and 0 or 12)
+  end
   if flashCount>0 then flash:Emit(flashCount) end
   ring.Texture=SPRITES.spark;ring.Orientation=Enum.ParticleOrientation.FacingCamera
+  ring.EmissionDirection=Enum.NormalId.Top
   local ringSpeed=if reduced then 0 else clamp((ringEnd-ringStart)/math.max(.08,duration)*.46,2,28)
   ring.Speed=NumberRange.new(ringSpeed*.72,ringSpeed)
   ring.SpreadAngle=Vector2.new(180,180);ring.Lifetime=NumberRange.new(duration)
@@ -163,10 +183,39 @@ local function createCombatPulse(atomId, options, profile)
   sparks.Lifetime=NumberRange.new(duration*.55,duration)
   local distance=clamp(options.distance or profile.distance or 3,0,40)*scale
   local speed=clamp(options.speed or distance/math.max(.08,duration),0,65)
+  sparks.EmissionDirection=Enum.NormalId.Front
   sparks.Speed=NumberRange.new(reduced and 0 or speed*.5,reduced and 0 or speed)
   sparks.SpreadAngle=Vector2.new(180,180);sparks.Drag=2
   sparks.Rotation=NumberRange.new(0,360);sparks.RotSpeed=NumberRange.new(-90,90)
   sparks.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.42*scale),NumberSequenceKeypoint.new(1,0)})
+  -- [무기별 실루엣] 한 종류의 방사형 폭죽 대신 베기·찌르기·파쇄·탄도 방향을 분리한다.
+  -- 모든 패턴은 작은 내장 spark 입자만 사용한다. 대형 사각판/광원 파츠를 생성하지 않는다.
+  if style=="blade" or style=="cleave" then
+    sparks.SpreadAngle=Vector2.new(if style=="blade" then 108 else 75,if style=="blade" then 9 else 19)
+    sparks.Speed=NumberRange.new(reduced and 0 or speed*.55,reduced and 0 or math.min(speed*1.25,65))
+    sparks.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.30*scale),NumberSequenceKeypoint.new(.4,.19*scale),NumberSequenceKeypoint.new(1,0)})
+    sparks.Drag=if style=="cleave" then 5 else 2
+  elseif style=="dagger" then
+    sparks.SpreadAngle=Vector2.new(24,12)
+    sparks.Speed=NumberRange.new(reduced and 0 or speed*.85,reduced and 0 or math.min(speed*1.5,65))
+    sparks.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.24*scale),NumberSequenceKeypoint.new(1,0)})
+    sparks.Drag=1
+  elseif style=="pierce" or style=="arrow" or style=="bolt" then
+    sparks.SpreadAngle=Vector2.new(if style=="pierce" then 7 else 13,if style=="pierce" then 7 else 11)
+    sparks.Speed=NumberRange.new(reduced and 0 or speed*.85,reduced and 0 or math.min(speed*1.7,65))
+    sparks.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.20*scale),NumberSequenceKeypoint.new(.48,.13*scale),NumberSequenceKeypoint.new(1,0)})
+    sparks.Drag=if style=="arrow" then 3 else 1
+  elseif style=="hammer" or style=="fist" then
+    sparks.SpreadAngle=Vector2.new(180,180)
+    sparks.Speed=NumberRange.new(reduced and 0 or speed*.35,reduced and 0 or speed*.9)
+    sparks.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,(if style=="hammer" then .52 else .32)*scale),NumberSequenceKeypoint.new(.45,.22*scale),NumberSequenceKeypoint.new(1,0)})
+    sparks.Drag=if style=="hammer" then 7 else 4
+  elseif style=="gunshot" then
+    sparks.SpreadAngle=Vector2.new(35,28)
+    sparks.Speed=NumberRange.new(reduced and 0 or speed*.75,reduced and 0 or math.min(speed*1.5,65))
+    sparks.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.33*scale),NumberSequenceKeypoint.new(.3,.19*scale),NumberSequenceKeypoint.new(1,0)})
+    sparks.Drag=3
+  end
   local mistCount = if options.mist==true then (MOBILE and 2 or 4) else 0
   local sparksCount = if MOBILE then math.min(count,math.max(0,12-flashCount-ringCount-mistCount)) else count
   if sparksCount>0 then sparks:Emit(sparksCount) end
