@@ -3158,6 +3158,17 @@ function FieldScene.start(opts)
 			return
 		end
 		if moveId == "dodge" then
+			-- [실제 직업 → 모션] 직업 우선, 게임에 직업 정보가 없는 구버전은 장비와 마력으로 자세만 추정한다.
+			-- 회피 거리는 원래 14스터드, 무적과 스태미나 판정은 기존 ActionCombat이 전담한다.
+			local ch0 = player.Character
+			local profession = opts.heroProfession or opts.heroJob or opts.profession or opts.job
+				or (ch0 and (ch0:GetAttribute("Profession") or ch0:GetAttribute("Job")))
+			if type(profession) ~= "string" or profession == "" then
+				profession = if magicUser then "성직자" elseif wpn.family == "dagger" then "항해사"
+					elseif wpn.ranged then "포수" else "무인"
+			end
+			dodgeStyle = JobSkills.categoryOf(profession)
+			if ch0 then ch0:SetAttribute("FieldDodgeStyle", dodgeStyle) end
 			local look = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
 			if look.Magnitude > 0.1 then
 				hrp.CFrame = hrp.CFrame + look.Unit * 14
