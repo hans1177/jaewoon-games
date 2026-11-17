@@ -481,10 +481,17 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			end
 		end
 		if kind ~= "People" and kind ~= "Animals" then
-			local _, size = m:GetBoundingBox()
-			-- 월드 원점을 기준으로 모델을 회전하면 수입된 가축이 엉뚱한 곳으로 이동한다.
-			-- 장식용 메시만 제자리 중심을 기준으로 방향을 맞춘다.
-			if size.Z > size.X then m:PivotTo(m:GetPivot() * CFrame.Angles(0, math.pi / 2, 0)) end
+			local box, size = m:GetBoundingBox()
+			-- [선박 원본 길이] 수입 모델의 로컬 축이 회전해도 월드 X(선수·선미) 실제 길이를 계산한다.
+			-- Model.PrimaryPart가 있는 경우 GetBoundingBox().Size.X는 폭일 수 있어 크기만 보고 회전하면 안 된다.
+			if kind == "Naval" then
+				local worldX = math.abs(box.RightVector.X) * size.X + math.abs(box.UpVector.X) * size.Y + math.abs(box.LookVector.X) * size.Z
+				local worldZ = math.abs(box.RightVector.Z) * size.X + math.abs(box.UpVector.Z) * size.Y + math.abs(box.LookVector.Z) * size.Z
+				if worldZ > worldX then m:PivotTo(m:GetPivot() * CFrame.Angles(0, math.pi / 2, 0)) end
+			else
+				-- [기존 건물·장식 보존] 비선박 모델은 종전 방향 규칙을 유지한다.
+				if size.Z > size.X then m:PivotTo(m:GetPivot() * CFrame.Angles(0, math.pi / 2, 0)) end
+			end
 		end
 		local center, size = m:GetBoundingBox()
 		local bottom = Vector3.new(center.Position.X, center.Position.Y - size.Y / 2, center.Position.Z)
