@@ -275,8 +275,28 @@ test('원거리 화살 석궁은 실제 긴 축을 바로 세우고 3D 탄도·�
 test('유적 상호작용과 발견 화면의 모바일 잘림·조사 키 충돌을 방지한다',()=>{
   assert.ok(field.includes('note.Name = "FieldInteractionNote"'));
   assert.ok(field.includes('local expanded = duration ~= nil and duration > 2.2'));
-  assert.ok(field.includes('note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 else 256, 64)'));
-  assert.ok(field.includes('if compactTouch then UDim2.fromOffset(12, 398) else UDim2.new(0.5, 0, 0, 190)'))
+  assert.ok(field.includes('note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 244 else 256, 64)'));
+  assert.ok(field.includes('elseif narrowLandscape then UDim2.fromOffset(184, screen.Y - 108)'));
+  assert.ok(field.includes('elseif visualMobile then UDim2.fromOffset(184, 202)'));
+  assert.ok(field.includes('if questHud then questHud.Visible = not expanded end'));
+  assert.ok(field.includes('if weatherHud then weatherHud.Visible = not expanded end'));
+  assert.ok(field.includes('if questHud and questHud.Parent then questHud.Visible = true end'));
+  assert.ok(field.includes('if weatherHud and weatherHud.Parent then weatherHud.Visible = true end'));
+  // [모바일 가로] 유적 설명 3줄이 실제 공격/회피 터치 영역과 겹치지 않는지 확인한다.
+  for(const [width,height] of [[600,340],[720,384],[832,384],[960,540]]){
+    const narrow = width < 740;
+    const x = 184, y = narrow ? height - 108 : 202, w = 244, h = 64;
+    const rect=(left,top,rw,rh)=>({left,top,right:left+rw,bottom:top+rh});
+    const note=rect(x,y,w,h);
+    const dodge=rect(width-98-146-53,height-98-66-53,106,106);
+    const attack=rect(width-98-74,height-98-74,148,148);
+    const pad=rect(28,height-178,150,150);
+    const overlap=(a,b)=>a.left<b.right && b.left<a.right && a.top<b.bottom && b.top<a.bottom;
+    for(const other of [dodge,attack,pad]){
+      assert.equal(overlap(note,other),false,'유적 안내가 전투 터치 영역과 겹침: '+width+'x'+height);
+    }
+    assert.ok(!narrow || y >= dodge.bottom+2,'좁은 가로에서 회피 버튼이 보이도록 아래쪽에 배치');
+  }
   assert.ok(field.includes('note.TextWrapped = expanded'));
   assert.ok(field.includes('say(clueText[theme] or clueText.plains, 4.5)'));
   assert.ok(field.includes('prompt.KeyboardKeyCode = Enum.KeyCode.T'));
