@@ -368,6 +368,9 @@ test('Studio Auto QA routes Mare publisher by workflow path without launching Fo
   assert.equal(qa.split('gh workflow run devloop-studio.yml').length-1,1);
   assert.ok(qa.includes("    - cron: '*/10 * * * *'")); // Studio 상태 확인 10분 간격
   assert.ok(qa.includes('STUDIO_ROTATION_SKIP=RUNNER_BUSY'));
+  assert.ok(qa.includes('group: studio-autoqa-dispatch-mare-essentia'));
+  assert.ok(qa.includes('STUDIO_PUSH_TARGET=SHIPS'));
+  assert.doesNotMatch(qa,/scripts\+=\(|for script in/);
   assert.ok(qa.includes('github.event.repository.private == false'));
 });
 
