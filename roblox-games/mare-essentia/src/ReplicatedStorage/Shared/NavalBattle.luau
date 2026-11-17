@@ -636,6 +636,27 @@ function NavalBattle.play(opts)
 	rangeLabel.AnchorPoint = Vector2.new(0.5, 1)
 	rangeLabel.Position = UDim2.new(0.5, 0, 1, -12)
 	rangeLabel.Size = UDim2.fromOffset(300, 20)
+	-- [해전 전술 판넬] 실제 적과의 거리·선측 각·장전 시간으로 다음 행동을 시각화한다.
+	-- 중앙 아래쪽은 기존 장전 게이지, 위쪽은 전술 판단만 표시한다.
+	local tactic = label(gui, "① 적선에 접근 중", 15, Color3.fromRGB(255, 224, 159), true)
+	tactic.Name = "BattleTacticalReadout"
+	tactic.AnchorPoint = Vector2.new(0.5, 0)
+	tactic.Position = UDim2.new(0.5, 0, 0, 117)
+	tactic.Size = UDim2.new(0.55, 0, 0, 48)
+	tactic.TextWrapped = true
+	tactic.BackgroundColor3 = Color3.fromRGB(27, 35, 43)
+	tactic.BackgroundTransparency = 0.18
+	tactic.BorderSizePixel = 0
+	tactic.Visible = not opts.cardOnly
+	tactic.ZIndex = 10
+	local tacticCorner = Instance.new("UICorner")
+	tacticCorner.CornerRadius = UDim.new(0, 9)
+	tacticCorner.Parent = tactic
+	local tacticStroke = Instance.new("UIStroke")
+	tacticStroke.Color = Color3.fromRGB(178, 153, 106)
+	tacticStroke.Thickness = 1.5
+	tacticStroke.Parent = tactic
+	local lastTacticText, lastTacticColor = "", nil
 	-- [선박 밑 사거리] 바다를 가리던 거대한 원판 대신 얇은 점선 원주만 그린다.
 	-- 기존 포의 cannon.range를 그대로 사용한다. 수치는 바꾸지 않는다.
 	local rangeRing = { segments = {} }
@@ -3956,6 +3977,29 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			rangeLabel.Text = string.format("%s · %dm/%dm · %s", cannon.name, math.floor(dd), cannon.range,
 				if not inRange then "사거리 밖" elseif aligned then "발사각 확보" else "선측 정렬")
 			rangeLabel.TextColor3 = color
+			-- [전술 단계] 실제 사거리와 기존 시각용 장전 쿨타임만 표시한다.
+			local status, tip, tone
+			if phase == "board" then
+				status, tip, tone = "④ 접현 백병전", "선체 내구도와 승조원 피해를 확인해.", Color3.fromRGB(255, 174, 123)
+			elseif phase == "end" then
+				status, tip, tone = "전투 종료", "확정된 결과를 확인해.", Color3.fromRGB(248, 220, 163)
+			elseif not inRange then
+				status, tip, tone = "① 적선 접근", string.format("포 사거리까지 %d m · 바람과 조타를 확인해.", math.ceil(dd - cannon.range)), Color3.fromRGB(255, 205, 130)
+			elseif not aligned then
+				status, tip, tone = "② 선측 정렬 권장", "적에게 배의 옆면을 향하면 포격을 보기 쉬워.", Color3.fromRGB(255, 185, 123)
+			elseif now < nextMeFire then
+				status, tip, tone = "③ 대포 재장전", string.format("남은 약 %.1f초 · 적선과의 거리 %dm", math.max(0, nextMeFire - now), math.floor(dd)), Color3.fromRGB(242, 212, 138)
+			else
+				status, tip, tone = "③ 포격 준비", string.format("적선 %dm · 사거리 %dm · 자동 포격 대기", math.floor(dd), cannon.range), Color3.fromRGB(130, 237, 172)
+			end
+			local messageText = status .. "\n" .. tip
+			if messageText ~= lastTacticText then
+				tactic.Text, lastTacticText = messageText, messageText
+			end
+			if tone ~= lastTacticColor then
+				tactic.TextColor3, tacticStroke.Color = tone, tone
+				lastTacticColor = tone
+			end
 			local aim = phase == "duel" and not opts.card and dd < cannon.range * 1.25
 			local a0 = ORIGIN + me.pos + Vector3.new(0, 8, 0)
 			local a1 = ORIGIN + foe.pos + Vector3.new(0, 6, 0)
@@ -3989,7 +4033,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local prog = if opts.card or not inRange then 0 else 1 - math.clamp((nextMeFire - now) / math.max(0.1, cdNow), 0, 1)
 			reloadFill.Size = UDim2.fromScale(prog, 1)
 			reloadFill.BackgroundColor3 = if now < skillUntil.rapid then Color3.fromRGB(255, 120, 70) elseif prog >= 1 then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(240, 180, 80)
-			reloadText.Text = if not inRange then "포 — 사거리 밖" elseif prog >= 1 then "포 발사 준비!" else "포 장전 중..."
+			reloadText.Text = if not inRange then "포 — 사거리 밖"
+				elseif prog >= 1 then "포 발사 준비!"
+				else string.format("포 장전 · %.1f초", math.max(0, nextMeFire - now))
 			local v = cam:WorldToViewportPoint(ORIGIN + foe.pos)
 			local vp = cam.ViewportSize
 			local onScr = v.Z > 0 and v.X > 40 and v.X < vp.X - 40 and v.Y > 90 and v.Y < vp.Y - 90
@@ -4025,14 +4071,25 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		for _, sk in SKILLS do
 			local b = skillBtn[sk.id]
 			local left = skillReady[sk.id] - now
-			if now < skillUntil[sk.id] then
+			local active = now < skillUntil[sk.id]
+			local ready = left <= 0
+			if active then
 				b.Text = sk.text .. "\n발동 중"
-			elseif left > 0 then
-				b.Text = string.format("%d초", math.ceil(left))
+				b.BackgroundColor3 = sk.col
+			elseif not ready then
+				b.Text = string.format("%s\n%d초", sk.text, math.ceil(left))
 				b.BackgroundColor3 = Color3.fromRGB(60, 62, 70)
 			else
-				b.Text = sk.text
+				b.Text = sk.text .. "\n준비"
 				b.BackgroundColor3 = sk.col
+			end
+			b.Interactable = ready
+			b.Active = ready
+			b.AutoButtonColor = ready
+			local rim = b:FindFirstChildOfClass("UIStroke")
+			if rim then
+				rim.Color = if active then Color3.fromRGB(255, 234, 148) elseif ready then Color3.fromRGB(190, 244, 198) else Color3.fromRGB(92, 99, 109)
+				rim.Transparency = if active or ready then 0 else 0.35
 			end
 		end
 		-- 배 카드: 기함은 전체 막대를, 선단 배는 피해의 절반만 받은 것으로 보여 준다
