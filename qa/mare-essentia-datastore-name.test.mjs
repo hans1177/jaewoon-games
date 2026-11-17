@@ -135,3 +135,22 @@ test('실물 해적 선상도·쌍날도끼·권총은 CC0 원본과 병종에 �
   assert.match(field,/e\.bombAim = hrp\.Position/);
   assert.match(field,/hit = diff\.Magnitude <= 6/);
 });
+
+// [무기 사실성 회귀] R15 관절·재질 표현만 보강하고 전투 수치·저장 구조는 변경하지 않는다.
+test('적과 동료는 무기별 준비·타격·회수 동작과 원본 PBR 맵을 유지한다',()=>{
+  const fieldMotion=read('ReplicatedStorage/Shared/FieldMotion.luau');
+  for(const weapon of ['PISTOL','RIFLE','BOW','LONGBOW','CROSSBOW','SPEAR','DAGGER','WAR_AXE','MACE','RAPIER','SABRE','SCIMITAR','KATANA']){
+    assert.ok(fieldMotion.includes('grip == "'+weapon+'"'),'무기 동작 구분 누락: '+weapon);
+  }
+  for(const name of ['prepare','strike','returnGrip','hold','RightWrist','ForearmR','UpperArmL','ThighL','FootR']){
+    assert.ok(fieldMotion.includes(name),'R15 관절 단계 누락: '+name);
+  }
+  assert.match(field,/bp:FindFirstChildOfClass\("SurfaceAppearance"\)/);
+  assert.match(field,/Enum\.Material\.Metal/);
+  assert.match(field,/Enum\.Material\.Wood/);
+  assert.match(field,/bp\.Reflectance = if material == Enum\.Material\.Metal then 0\.055 else 0/);
+  assert.match(field,/FM\.actor\(e\.fm, st, ph, dt, e\.boss/);
+  assert.match(field,/FM\.actor\(a\.fm, "RECOVERY",[^\n]+a\.weapon\.motion\)/);
+  assert.match(field,/FM\.actor\(a\.fm, "ANTICIPATION",[^\n]+a\.weapon\.motion\)/);
+  assert.match(field,/if not quiet then/);
+});

@@ -2644,6 +2644,25 @@ function FieldScene.start(opts)
 					count += 1
 					bp.Anchored, bp.CanCollide, bp.CanTouch, bp.CanQuery = false, false, false, false
 					bp.Massless = true
+					-- [실물 재질] 승인된 GLB의 색상 맵·거칠기 맵·금속성 맵은 그대로 보존한다.
+					-- 별도 표면 맵이 없는 부품만 물리 재질로 표현한다. 추가 텍스처 다운로드/발광 오버레이 없음.
+					if not bp:FindFirstChildOfClass("SurfaceAppearance") then
+						local segment = string.lower(bp.Name)
+						local shaft = string.find(segment, "handle", 1, true) or string.find(segment, "grip", 1, true)
+							or string.find(segment, "stock", 1, true) or string.find(segment, "shaft", 1, true)
+						local iron = string.find(segment, "blade", 1, true) or string.find(segment, "edge", 1, true)
+							or string.find(segment, "barrel", 1, true) or string.find(segment, "head", 1, true)
+						local material = if item.throwable then (if thrownAsset == "stone" then Enum.Material.Slate else Enum.Material.SmoothPlastic)
+							elseif item.shield then (if shaft then Enum.Material.Wood else Enum.Material.Metal)
+							elseif shaft then Enum.Material.Wood
+							elseif iron then Enum.Material.Metal
+							elseif weapon.family == "bow" or weapon.id == "crossbow" or weapon.family == "spear" then Enum.Material.Wood
+							elseif weapon.family == "firearm" then Enum.Material.Metal
+							else Enum.Material.Metal
+						bp.Material = material
+						-- 과한 거울처럼 번쩍이지 않게 낮은 반사율로 강철과 목재 차이만 표시한다.
+						bp.Reflectance = if material == Enum.Material.Metal then 0.055 else 0
+					end
 				end
 			end
 			if count == 0 then
@@ -4531,19 +4550,19 @@ function FieldScene.start(opts)
 							FM.scale(a.fm.canon, 1.3)
 							FM.step(a.fm, dt)
 						else
-							FM.actor(a.fm, "ATTACK", ap * 0.9, dt, nil, 1.35)
+							FM.actor(a.fm, "ATTACK", ap * 0.9, dt, nil, 1.35, nil, false, nil, a.weapon.motion)
 						end
 					elseif ap >= 1 and ap < 1.7 then
 						-- [동료 무기 회수] 실제 공격 후 0.35초 자세를 정돈한다(기존 공격 판정·주기는 동일).
-						FM.actor(a.fm, "RECOVERY", math.clamp((ap - 1) / 0.7, 0, 1), dt, nil, 1.25)
+						FM.actor(a.fm, "RECOVERY", math.clamp((ap - 1) / 0.7, 0, 1), dt, nil, 1.25, nil, false, nil, a.weapon.motion)
 					elseif tgt and not moving and a.nextAt > now and a.nextAt - now < 0.22 then
 						-- [타격 예고] 다음 공격 직전의 짧은 무기 준비. 대미지 발생 시각은 변경하지 않는다.
-						FM.actor(a.fm, "ANTICIPATION", 1 - (a.nextAt - now) / 0.22, dt, nil, 1.18)
+						FM.actor(a.fm, "ANTICIPATION", 1 - (a.nextAt - now) / 0.22, dt, nil, 1.18, nil, false, nil, a.weapon.motion)
 					elseif moving then
-						FM.actor(a.fm, "RUN", (a.gait or 0) % 1, dt, nil, 1.3, nil, false, nil, nil,
+						FM.actor(a.fm, "RUN", (a.gait or 0) % 1, dt, nil, 1.3, nil, false, nil, a.weapon.motion,
 							math.clamp(a.moveVel.Magnitude / (if tgt then 16 else 20), 0.18, 1.25))
 					else
-						FM.actor(a.fm, "IDLE", (now / 2.4 + a.slot * 0.3) % 1, dt, nil, 1.15)
+						FM.actor(a.fm, "IDLE", (now / 2.4 + a.slot * 0.3) % 1, dt, nil, 1.15, nil, false, nil, a.weapon.motion)
 					end
 				elseif a.castAt and now - a.castAt < 0.7 then
 					Pose.makeR15Action(a.model, if a.castSkill == "rally" or a.castSkill == "heal" then "cheer" elseif a.castSkill == "armor" then "guard" else "talk", (now - a.castAt) / 0.7, now - a.t0)
