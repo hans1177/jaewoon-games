@@ -3186,25 +3186,74 @@ function FieldScene.start(opts)
 			local profession = opts.heroProfession or opts.heroJob or opts.profession or opts.job
 				or (ch0 and (ch0:GetAttribute("Profession") or ch0:GetAttribute("Job")))
 			if type(profession) ~= "string" or profession == "" then
-				profession = if magicUser then "성직자" elseif wpn.family == "dagger" then "항해사"
+				-- [구버전 호환] 별도 직업값이 없다면 기존 실제 카드 특성으로 학자/성직자만 구별한다.
+				local study, care = false, false
+				for _, card in opts.cardSkills or {} do
+					if card.skill == "read" or card.skill == "snipe" then study = true end
+					if card.skill == "heal" or card.skill == "ward" or card.skill == "armor" then care = true end
+				end
+				profession = if study and not care then "학자"
+					elseif magicUser then "성직자" elseif wpn.family == "dagger" then "항해사"
 					elseif wpn.ranged then "포수" else "무인"
 			end
 			dodgeStyle = JobSkills.categoryOf(profession)
 			if ch0 then ch0:SetAttribute("FieldDodgeStyle", dodgeStyle) end
+			local dodgeOrigin = hrp.CFrame
 			local look = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
 			if look.Magnitude > 0.1 then
 				hrp.CFrame = hrp.CFrame + look.Unit * 14
 			end
-			burst(hrp.Position, 24, false, "dodge")
+			-- [직업별 거대 회피 이펙트] 기존 공용 VFX만 사용. 회피 거리·명중·무적·쿨타임 불변.
+			burst(hrp.Position, if dodgeStyle == "clergy" or dodgeStyle == "scholar"
+				then (if visualMobile then 22 else 32) else 24, false, "dodge")
 			do
 				local ch0 = player.Character
-				trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(82, 204, 255), 0.42, 1.2)
-				auraOn(ch0, Color3.fromRGB(96, 181, 255), Color3.fromRGB(244, 218, 147), 0.9)
-				afterimage(ch0, Color3.fromRGB(110, 205, 255), 4, 0.05)
-				for i, dl in { 0.02, 0.2 } do
-					task.delay(dl, function()
-						pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(0, -2.4, 0), if i == 1 then Color3.fromRGB(117, 214, 255) else Color3.fromRGB(255, 210, 127), Color3.fromRGB(239, 249, 255), 7, 10)
+				if dodgeStyle == "clergy" then
+					-- 성직자: 시작 지점 성역 빛 고리 → 커다란 황금 보호파 → 두 팔에서 뻗는 빛줄기와 잔상.
+					local gold = Color3.fromRGB(252, 218, 125)
+					local pearl = Color3.fromRGB(244, 242, 255)
+					trailsOn(ch0, { "LeftHand", "RightHand", "LeftLowerArm", "RightLowerArm", "LeftLowerLeg", "RightLowerLeg" },
+						gold, 0.46, 0.75)
+					auraOn(ch0, Color3.fromRGB(255, 219, 143), pearl, 0.65)
+					afterimage(ch0, gold, if visualMobile then 2 else 5, 0.065)
+					pulseAt("DODGE_EVASION_PULSE", dodgeOrigin * CFrame.new(0, -2.4, 0),
+						gold, pearl, if visualMobile then 11 else 15, if visualMobile then 7 else 14)
+					pulseAt("BLOCK_IMPACT", hrp.CFrame * CFrame.new(0, -2.1, 0),
+						Color3.fromRGB(255, 231, 173), pearl, if visualMobile then 13 else 18, if visualMobile then 8 else 17)
+					task.delay(0.18, function()
+						if finished or not hrp.Parent then return end
+						pulseAt("HEAL_PULSE", hrp.CFrame * CFrame.new(0, -2.2, 0),
+							gold, pearl, if visualMobile then 10 else 15, if visualMobile then 5 else 12)
 					end)
+				elseif dodgeStyle == "scholar" then
+					-- 학자: 시작 지점 청록 지식 원 → 푸른 대각선 잔상 → 착지 시 별빛 파동.
+					local cyan = Color3.fromRGB(94, 228, 239)
+					local blue = Color3.fromRGB(178, 185, 255)
+					trailsOn(ch0, { "LeftHand", "RightHand", "LeftLowerArm", "RightLowerArm", "LeftFoot", "RightFoot" },
+						cyan, 0.48, 0.78)
+					auraOn(ch0, Color3.fromRGB(116, 180, 255), cyan, 0.66)
+					afterimage(ch0, cyan, if visualMobile then 3 else 6, 0.06)
+					pulseAt("UPGRADE_BURST", dodgeOrigin * CFrame.new(0, -2.1, 0),
+						cyan, blue, if visualMobile then 10 else 15, if visualMobile then 7 else 15)
+					pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(0, -2.3, 0),
+						Color3.fromRGB(116, 198, 255), cyan, if visualMobile then 14 else 19, if visualMobile then 9 else 19)
+					task.delay(0.17, function()
+						if finished or not hrp.Parent then return end
+						pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, -0.5, 0),
+							blue, cyan, if visualMobile then 6 else 10, if visualMobile then 4 else 9)
+					end)
+				else
+					trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(82, 204, 255), 0.42, 1.2)
+					auraOn(ch0, Color3.fromRGB(96, 181, 255), Color3.fromRGB(244, 218, 147), 0.9)
+					afterimage(ch0, Color3.fromRGB(110, 205, 255), 4, 0.05)
+					for i, dl in { 0.02, 0.2 } do
+						task.delay(dl, function()
+							if finished or not hrp.Parent then return end
+							pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(0, -2.4, 0),
+								if i == 1 then Color3.fromRGB(117, 214, 255) else Color3.fromRGB(255, 210, 127),
+								Color3.fromRGB(239, 249, 255), 7, 10)
+						end)
+					end
 				end
 			end
 			startSwing("dash", 0.4)
