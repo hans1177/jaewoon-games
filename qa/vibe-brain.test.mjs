@@ -311,6 +311,8 @@ test('무료 외부 AI는 10분마다 다른 Studio 스크린샷을 분석하고
   ]) assert.ok(source.includes(needle), '필수 기능 누락: ' + needle);
   for (const needle of [
     "cron: '3-53/10 * * * *'",
+    "workflows: ['Vibe Autopilot', 'Devloop Studio Capture']",
+    "github.event.workflow_run.path == '.github/workflows/devloop-studio.yml'",
     "vars.VIBE_BRAIN != 'off'",
     "VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'"
   ]) assert.ok(workflow.includes(needle), '예약·무료 보장 누락: ' + needle);
