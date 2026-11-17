@@ -2402,6 +2402,27 @@ do
 		local vy = S.View.build(sa, ctx)
 		check("조선소: 수리 비용 정보가 화면에 있음", vy.shipyard.missing > 0 and vy.shipyard.repairTotal == vy.shipyard.missing * vy.shipyard.repairCost)
 		check("조언: 화면에 조언 목록이 실림", vy.counsel ~= nil and #vy.counsel >= 1)
+		-- [세계 평균 시세] 서버가 실제 항구 가격을 평균 내고, 국지적 재고 변화가 평균에도 반영된다.
+		local priceState = newState("england")
+		priceState.portId = "london"
+		local priceCtx = { rng = rng, market = S.MarketClass.new() }
+		local marketView = S.View.build(priceState, priceCtx)
+		local sample = marketView.goods[1]
+		check("교역 화면: 세계 항구 평균시세를 상품마다 전달", sample ~= nil
+			and type(sample.avgPrice) == "number" and sample.avgPrice > 0)
+		if sample then
+			priceCtx.market:set(priceState.portId, sample.id, 2)
+			local changed = S.View.build(priceState, priceCtx)
+			local updated = nil
+			for _, g in changed.goods do
+				if g.id == sample.id then updated = g break end
+			end
+			check("교역 화면: 현지 재고 상승은 현재가·세계 평균에 반영",
+				updated ~= nil and updated.buy > sample.buy and updated.avgPrice >= sample.avgPrice)
+			check("교역 화면: 세계 평균과 개인 매입원가·관세 후 판매견적 구분",
+				sample.basePrice > 0 and sample.avgPrice > 0 and sample.sellTotals[1] ~= nil
+				and sample.basis == 0)
+		end
 		local sb = newState("england")
 		sb.fame = 500; sb.coins = 99999; sb.scholarsMet.harrison = true; sb.scholarsMet.newton = true
 		act(sb, "Recruit", { companionId = "c_harrison" })
