@@ -1318,10 +1318,17 @@ function FieldScene.start(opts)
 		magicAmount.ZIndex = 6
 	end
 
+	-- [모바일 유적 상호작용] 긴 조사 문장을 한 줄 22px에 넣으면 한글이 잘려 화면이 깨진다.
+	-- 상단 체력바(86px)와 조사 목표(173px) 사이에 줄바꿈 가능한 현장 알림을 배치한다.
 	local note = label(gui, "", 14, Color3.fromRGB(255, 220, 160))
+	note.Name = "FieldInteractionNote"
 	note.AnchorPoint = Vector2.new(0.5, 0)
-	note.Position = UDim2.new(0.5, 0, 0, 46)
-	note.Size = UDim2.fromOffset(320, 22)
+	note.Position = UDim2.new(0.5, 0, 0, 106)
+	note.Size = UDim2.new(0.78, 0, 0, 56)
+	note.TextWrapped = true
+	note.TextYAlignment = Enum.TextYAlignment.Center
+	note.TextStrokeTransparency = 0.16
+	note.ZIndex = 9
 
 	local function refresh()
 		if workspace:GetAttribute("DevGod") then pl.hp = pl.maxHp end -- 개발 캡처 전용: 서 있기만 해도 죽지 않게
@@ -1339,11 +1346,11 @@ function FieldScene.start(opts)
 		Sfx.ambient({ "sfx_wind" }, 0.60)
 	end)
 	local noteToken = 0
-	local function say(text)
+	local function say(text, duration)
 		noteToken += 1
 		local mine = noteToken
 		note.Text = text
-		task.delay(2.2, function()
+		task.delay(duration or 2.2, function()
 			if noteToken == mine then
 				note.Text = ""
 			end
@@ -1379,15 +1386,18 @@ function FieldScene.start(opts)
 			local surveyPoint = Instance.new("Attachment")
 			surveyPoint.Name = "FieldTerrainSurveyPoint"
 			surveyPoint.Parent = anchorPart
+			-- [유적 조사 위치] 예전 30% 안쪽 좌표는 단단한 석주/석상 메시 속에 프롬프트를 묻었다.
+			-- 모델 외벽 바깥 중앙 길 방향으로 조사 지점을 빼서 돌 사이에서도 실제 접근 가능하게 한다.
 			surveyPoint.WorldPosition = Vector3.new(
-				center.Position.X + math.sign(ORIGIN.X - center.Position.X) * math.min(extent.X * 0.30, 8),
-				ORIGIN.Y + 3,
-				center.Position.Z + math.sign(ORIGIN.Z - center.Position.Z) * math.min(extent.Z * 0.30, 8))
+				center.Position.X + math.sign(ORIGIN.X - center.Position.X) * math.min(extent.X * 0.55 + 4, 16),
+				ORIGIN.Y + 3.2,
+				center.Position.Z + math.sign(ORIGIN.Z - center.Position.Z) * math.min(extent.Z * 0.55 + 4, 16))
 			clues += 1
 			local prompt = Instance.new("ProximityPrompt")
 			prompt.Name = "FieldTerrainClue"
-			prompt.ObjectText = "탐험 흔적"
+			prompt.ObjectText = if theme == "ruins" then "유적 조사 지점" else "탐험 흔적"
 			prompt.ActionText = "현장 조사"
+			prompt.KeyboardKeyCode = Enum.KeyCode.T -- 회전 스킬 E와 충돌하지 않게 발견물 조사 키와 통일
 			prompt.HoldDuration = 0.55
 			prompt.MaxActivationDistance = 12
 			prompt.RequiresLineOfSight = false
@@ -1396,7 +1406,7 @@ function FieldScene.start(opts)
 				if finished or activator ~= player or not prompt.Enabled then return end
 				prompt.Enabled = false
 				folder:SetAttribute("FieldTerrainClues", (folder:GetAttribute("FieldTerrainClues") or 0) + 1)
-				say(clueText[theme] or clueText.plains)
+				say(clueText[theme] or clueText.plains, 4.5) -- 긴 유적·지역 기록을 읽을 시간 확보
 			end)
 		end
 		for _, landmark in folder:GetChildren() do attachClue(landmark) end
