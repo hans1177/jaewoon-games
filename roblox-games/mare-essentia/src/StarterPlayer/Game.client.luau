@@ -5984,8 +5984,30 @@ function H.counselRows(n)
 				break
 			end
 		end
+		local adviceText = H.MENU_FOCUS[currentTab][2]
+		if currentTab == "trade" then
+			local cheapest, bestPct = nil, 0
+			for _, good in (view.goods or {}) do
+				local _, pct = H.marketPriceSignal(good)
+				if pct < bestPct then
+					cheapest, bestPct = good, pct
+				end
+			end
+			if cheapest and bestPct < -0.5 then
+				adviceText = string.format("%s는 세계 평균보다 %.1f%% 저렴해. 매입 전에 수량을 확인하고 판매손익과 구분해.", cheapest.name, -bestPct)
+			else
+				adviceText = "세계 평균보다 크게 저렴한 상품이 없어. 보유 상품의 세후 판매손익을 먼저 확인해."
+			end
+		elseif currentTab == "yard" and view.ship then
+			local ship = view.ship
+			if ship.maxHull > 0 and ship.hull < ship.maxHull * 0.5 then
+				adviceText = string.format("기함 선체가 %d/%d야. 수리를 확인하고 새 배의 선체·속도·화물칸을 비교해.", ship.hull, ship.maxHull)
+			else
+				adviceText = "새 배를 고를 때 현재 기함과 선체·속도·화물칸을 비교해. 구매 전 보유 자금도 확인해."
+			end
+		end
 		table.insert(relevant, {
-			who = speaker, text = H.MENU_FOCUS[currentTab][2], tab = currentTab,
+			who = speaker, text = adviceText, tab = currentTab,
 		})
 	end
 	local shown = 0
@@ -10364,7 +10386,7 @@ function render()
 	if focus then
 		add(function()
 			local compact = mainInner.AbsoluteSize.X < 480
-			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, if compact then 92 else 76), Color3.fromRGB(64, 48, 35))
+			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, if compact then 136 else 76), Color3.fromRGB(64, 48, 35))
 			banner.Name = "MenuFocus_" .. currentTab
 			corner(banner, 8)
 			local heading = mkLabel(banner, "◆ " .. focus[1], 18, Color3.fromRGB(255, 222, 144), true)
@@ -10373,11 +10395,11 @@ function render()
 			heading.AutomaticSize = Enum.AutomaticSize.None
 			local steps = mkLabel(banner, focus[2], if compact then 13 else 14, Color3.fromRGB(243, 231, 204), false)
 			steps.Position = UDim2.fromOffset(12, 34)
-			steps.Size = UDim2.new(1, -132, 0, if compact then 52 else 34)
+			steps.Size = UDim2.new(1, if compact then -24 else -132, 0, if compact then 48 else 34)
 			steps.AutomaticSize = Enum.AutomaticSize.None
 			steps.TextWrapped = true
 			local action = mkButton(banner, if currentTab == "trade" then "교역 시작" elseif currentTab == "yard" then "선박 비교" else "바로 보기",
-				COLORS.gold, UDim2.fromOffset(110, 42), function()
+				COLORS.gold, if compact then UDim2.new(1, -24, 0, 38) else UDim2.fromOffset(110, 42), function()
 					if currentTab == "trade" and H.tradeHall then H.tradeHall() return end
 					if currentTab == "yard" and H.yardHall then H.yardHall() return end
 					-- 다른 메뉴는 실제 화면의 첫 조작 버튼으로 스크롤한다. 구매·보상 판정은 실행하지 않는다.
@@ -10392,8 +10414,8 @@ function render()
 					end
 				end, true)
 			action.Name = "MenuPrimaryAction_" .. currentTab
-			action.AnchorPoint = Vector2.new(1, 0.5)
-			action.Position = UDim2.new(1, -10, 0.5, 0)
+			action.AnchorPoint = if compact then Vector2.new(0, 0) else Vector2.new(1, 0.5)
+			action.Position = if compact then UDim2.fromOffset(12, 91) else UDim2.new(1, -10, 0.5, 0)
 			return banner
 		end)
 	end
