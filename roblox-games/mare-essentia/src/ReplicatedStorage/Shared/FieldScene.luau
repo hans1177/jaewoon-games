@@ -1547,6 +1547,8 @@ function FieldScene.start(opts)
 	local hitStopUntil = 0 -- 타격 정지: 이 시각까지 휘두르기 진행을 멈춘다
 	local hitStopLast = os.clock()
 	local swingCombo, slashIdx = nil, 0
+	-- 직업별 회피가 입력 콜백과 PreSimulation 모션에서 같은 값을 보도록 바깥 전투 상태에 둔다.
+	local dodgeStyle = "warrior"
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
 
@@ -1719,7 +1721,6 @@ function FieldScene.start(opts)
 		}
 		castPoses.cast_ward, castPoses.cast_snipe = castPoses.cast_armor, castPoses.cast_volley
 		-- [직업별 R15 회피] 기본 행동은 그대로, 가드 팔·골반·디딤발 자세를 직업에 따라 구별한다.
-		local dodgeStyle = "warrior"
 		local dashPoses = {
 			warrior = {
 				Spine = A(0.16, 0.22, -0.12), Chest = A(-0.32, -0.20, 0.14),
