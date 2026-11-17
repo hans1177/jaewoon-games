@@ -3900,11 +3900,11 @@ function FieldScene.start(opts)
 				end
 			end
 		end
-		local wbtn = btn(gui, wpn.name .. " ↔ " .. reserveWeapon.name, Color3.fromRGB(65, 83, 105), UDim2.fromOffset(110, 42), UDim2.new(1, -82, 1, -315), Vector2.new(0.5, 0.5))
+		local wbtn = btn(gui, wpn.name .. " ↔ " .. reserveWeapon.name, Color3.fromRGB(65, 83, 105), UDim2.fromOffset(110, 42), UDim2.new(1, -88, 0, 210), Vector2.new(0.5, 0.5))
 		wbtn.Name = "FieldWeapon"
 		wbtn.TextSize = 13
 		wbtn:SetAttribute("WeaponChoiceCount", 2)
-		local chooseBtn = btn(gui, "보조: " .. reserveWeapon.name, Color3.fromRGB(69, 100, 89), UDim2.fromOffset(126, 40), UDim2.new(0, 80, 1, -218), Vector2.new(0.5, 0.5))
+		local chooseBtn = btn(gui, "보조: " .. reserveWeapon.name, Color3.fromRGB(69, 100, 89), UDim2.fromOffset(126, 40), UDim2.new(1, -88, 0, 264), Vector2.new(0.5, 0.5))
 		chooseBtn.Name = "FieldWeaponSelect"
 		chooseBtn.TextSize = 13
 		chooseBtn:SetAttribute("AvailableWeaponCount", #availableWeapons)
@@ -3968,50 +3968,28 @@ function FieldScene.start(opts)
 	staminaNumber.Size = UDim2.fromOffset(133, 11)
 	staminaNumber.ZIndex = 6
 	local skillBtns = {}
-	-- [모바일 전투 HUD] 화면 높이와 엄지 도달 범위에 맞춰 큰 반원형으로 배치한다.
-	-- 오른쪽 화면 밖 잘림을 막고 공격 버튼/철수 버튼/조이스틱과 겹치지 않게 둔다.
-	local cameraViewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(390, 640)
-	local screenWidth = if cameraViewport.X >= 100 then cameraViewport.X else 390
-	local screenHeight = if cameraViewport.Y >= 250 then cameraViewport.Y else 640
-	-- [엄지 동선] 일반 공격 → 크게 키운 회피 → 스킬 3칸 순으로 겹치지 않게 배치한다.
-	local outerSkillRadius = math.clamp(math.min(screenWidth * 0.56, screenHeight * 0.45), 162, 200)
-	local compactTouch = visualMobile and screenWidth < 450
-	local skillSize = if compactTouch then 76 elseif visualMobile then 82 else 72
-	-- [루아우 지역변수 절약] 버튼 위치는 기존 attackBtn 속성에서 직접 계산한다. 부수적인 보관 변수는 만들지 않는다.
-	local function arcPos(r: number, theta: number): UDim2
-		local a = math.rad(theta)
-		return UDim2.new(1, attackBtn.Position.X.Offset - r * math.cos(a),
-			1, attackBtn.Position.Y.Offset - r * math.sin(a))
-	end
-	-- [모바일 아이콘 스킬] 스킬명은 속성에 보존하고 화면엔 기존 공용 아이콘만 표시한다.
-	local function mkSkill(key, label, color, pos, size)
-		local b = btn(gui, "", color, UDim2.fromOffset(size or 56, size or 56), pos, Vector2.new(0.5, 0.5))
-		b.Name = "FieldSkill_" .. key
+	-- [모바일 두 버튼] 공격은 우하단, 회피는 엄지 위쪽에 크게 고정. 글씨 없는 기존 등록 아이콘만 사용.
+	-- 세로 화면은 이동 조이스틱과 거리 확보, 가로 화면은 전투 시야와 손가락이 겹치지 않게 한다.
+	do
+		local compactTouch = visualMobile and workspace.CurrentCamera
+			and workspace.CurrentCamera.ViewportSize.X < 450
+		local b = btn(gui, "", Color3.fromRGB(32, 141, 144),
+			UDim2.fromOffset(if compactTouch then 100 elseif visualMobile then 110 else 94,
+				if compactTouch then 100 elseif visualMobile then 110 else 94),
+			if compactTouch then UDim2.new(1, -155, 1, -199)
+				else UDim2.new(1, attackBtn.Position.X.Offset - 142, 1, attackBtn.Position.Y.Offset - 50),
+			Vector2.new(0.5, 0.5))
+		b.Name = "FieldSkill_dodge"
 		b.Text = ""
-		if key == "dodge" then
-			b:SetAttribute("TouchPriority", "DODGE")
-			b:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(114, 244, 228)
-			b:FindFirstChildOfClass("UIStroke").Thickness = 3.2
-		end
-		b:SetAttribute("SkillFullName", label)
+		b:SetAttribute("SkillFullName", "회피")
+		b:SetAttribute("TouchPriority", "DODGE")
 		b:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
-		bindPress(b, function()
-			if key == "parry" then useGuard() else useMove(key) end
-		end)
-		skillBtns[key] = { btn = b, label = label }
+		b:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(114, 244, 228)
+		b:FindFirstChildOfClass("UIStroke").Thickness = 3.2
+		addIcon(b, "Menu/chart_compass")
+		bindPress(b, function() useMove("dodge") end)
+		skillBtns.dodge = { btn = b, label = "회피" }
 	end
-	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
-	mkSkill("dodge", "회피", Color3.fromRGB(32, 141, 144),
-		if compactTouch then UDim2.new(1, attackBtn.Position.X.Offset - 88, 1, attackBtn.Position.Y.Offset - 90)
-			else arcPos(math.clamp(outerSkillRadius * 0.82, 132, 164), 4),
-		if compactTouch then 92 elseif visualMobile then 104 else 86)
-	mkSkill("parry", "방어", Color3.fromRGB(71, 88, 127),
-		if compactTouch then UDim2.new(1, attackBtn.Position.X.Offset + 3, 1, attackBtn.Position.Y.Offset - 108)
-			else arcPos(math.clamp(outerSkillRadius * 0.82, 132, 164) * 0.98, 45),
-		if compactTouch then 58 elseif visualMobile then 68 else 64)
-	-- [등록 아이콘] 장갑 대신 실제 등록 나침반 방향 아이콘으로 이동·회피 기능을 구분한다.
-	addIcon(skillBtns.dodge.btn, "Menu/chart_compass")
-	addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
 	local function castEffect(sk, name, ch, hp0)
 		-- [전투 스킬 안정성] 시전자의 이름/대상과 관계없이 시간 효과의 시각을 함수 안에서 계산한다.
