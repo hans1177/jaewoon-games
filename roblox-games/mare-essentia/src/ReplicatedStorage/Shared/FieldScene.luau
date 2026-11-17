@@ -1271,10 +1271,14 @@ function FieldScene.start(opts)
 		elseif weapon.family == "spear" then
 			if not isBoss then individualDef.range = math.max(individualDef.range, 8) end
 		elseif weapon.id == "crossbow" then
+			individualDef.range = math.min(individualDef.range, weapon.range)
 			individualDef.recover *= 1.28
 		elseif weapon.family == "firearm" then
 			individualDef.windup *= 1.17
 			individualDef.recover *= 1.50
+			individualDef.range = math.min(individualDef.range, weapon.range)
+		end
+		if weapon.family == "bow" then
 			individualDef.range = math.min(individualDef.range, weapon.range)
 		end
 		ac.def = individualDef
@@ -2305,7 +2309,13 @@ function FieldScene.start(opts)
 				end
 			end
 		end
-		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power) * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, e.ac.state ~= "stagger", stagger)
+		-- [방패 방향] 실제 적 R15가 바라보는 전방에서만 기존 방패 방어율을 적용한다.
+		-- 측면/후방 공격, 경직 중 공격은 방패를 우회하되 기존 방어 수치 자체는 변경하지 않는다.
+		local towardPlayer = (hrpPos - e.root.Position) * Vector3.new(1, 0, 1)
+		local shieldFacing = e.ac.state ~= "stagger" and towardPlayer.Magnitude > 0.1
+			and e.root.CFrame.LookVector:Dot(towardPlayer.Unit) > 0.35
+		local shieldBlocked = shieldFacing and e.ac.def.frontGuard ~= nil
+		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power) * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, shieldFacing, stagger)
 		e.hp = e.ac.hp
 		e.hurtAt = os.clock()
 		e.bar.Size = UDim2.fromScale(math.max(e.ac.hp, 0) / e.maxHp, 1)
@@ -2376,15 +2386,27 @@ function FieldScene.start(opts)
 				end
 			end
 		end
-		burst(e.root.Position + Vector3.new(0, 2, 0), 12 + dealt, mult >= 1.5)
-		if not quiet then
-			sfx("sfx_hit", 0.7, 0.95 + math.random() * 0.2)
-			if mult >= 1.5 then
-				sfx("sfx_metal_clash", 0.6, 0.9)
-			end
+		-- [무기별 실제 타격감] 판정 피해량은 불변. 무기 계열에 따라 충돌음·섬광·진동·스턴감만 차별화한다.
+		local family = wpn.family
+		local impact = e.root.Position + Vector3.new(0, 2, 0)
+		burst(impact, if visualMobile then math.min(12 + dealt, 18) else 12 + dealt, mult >= 1.5)
+		if shieldBlocked then
+			sfx("sfx_metal_clash", 0.8, 0.9)
+			pulseAt("BLOCK_IMPACT", CFrame.new(impact), Color3.fromRGB(160, 195, 228), Color3.fromRGB(255, 222, 150), 7, 5)
+		elseif family == "axe" or family == "blunt" then
+			sfx("sfx_workshop_chop", 0.72, if family == "axe" then 0.85 else 0.72)
+			if not visualMobile then shockRing(impact - Vector3.new(0, 2, 0), 7, Color3.fromRGB(252, 166, 91), 0.18) end
+		elseif family == "spear" then
+			sfx("sfx_card_blade", 0.55, 1.3)
+			pulseAt("IMPACT_FLASH", CFrame.new(impact), Color3.fromRGB(147, 230, 245), Color3.new(1, 1, 1), 5, 4)
+		elseif family == "dagger" then
+			sfx("sfx_card_blade", 0.48, 1.5)
+		elseif family == "bow" or family == "firearm" then
+			sfx(if family == "firearm" then "sfx_card_fire" else "sfx_card_volley", 0.52, 1.25)
 		else
-			sfx("sfx_hit", 0.4, 1.1)
+			sfx("sfx_hit", if quiet then 0.4 else 0.7, 0.95 + math.random() * 0.2)
 		end
+		if mult >= 1.5 and not shieldBlocked then sfx("sfx_metal_clash", 0.6, 0.9) end
 		flashHit(e.model)
 		popDamage(e.model, dealt, mult >= 1.5)
 		do
@@ -2394,7 +2416,7 @@ function FieldScene.start(opts)
 			if crit then shockRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 1.5, 0), 9, c, 0.35) end
 		end
 		-- 타격 멈춤(적이 잠깐 굳음)과 시야 펀치로 손맛을 준다
-		e.holdUntil = os.clock() + (if mult >= 1.5 then 0.12 else 0.06)
+		e.holdUntil = os.clock() + (if mult >= 1.5 then 0.12 elseif wpn.family == "axe" or wpn.family == "blunt" then 0.085 elseif wpn.family == "dagger" then 0.04 else 0.06)
 		local punchCam = workspace.CurrentCamera
 		if punchCam and not quiet then
 			punchCam.FieldOfView = 70 - (if mult >= 1.5 then 5 else 2)
@@ -3840,14 +3862,22 @@ function FieldScene.start(opts)
 						shards(ep + Vector3.new(0, 1.5, 0), 6, ered, 4)
 					end
 				end
+				-- [병종별 실제 발사] 총은 화약 발포·총구 섬광, 석궁은 한 발의 장전음, 활은 시위 소리.
 				if e.ac.def.keepAway then
-					if e.weapon and e.weapon.family == "firearm" then
-						-- [총병 발포] 원본 발포 소리·섬광 사용. 화살로 총알을 위장하지 않는다.
-						sfx("sfx_naval_cannon", 0.28, 1.45)
-						burst(e.root.Position + Vector3.new(0, 1.7, 0), 10, true)
+					if e.weapon and e.weapon.family == "firearm" and e.weapon.id ~= "crossbow" then
+						sfx("sfx_cannon", if e.weapon.motion == "PISTOL" then 0.32 else 0.45, 1.5)
+						pulseAt("IMPACT_FLASH", e.root.CFrame * CFrame.new(0, 1.35, -2), Color3.fromRGB(255, 210, 128), Color3.fromRGB(255, 251, 218), 8, 5)
+					elseif e.weapon and e.weapon.id == "crossbow" then
+						sfx("sfx_equipment_wear", 0.4, 1.55)
+						arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0))
 					else
+						sfx("sfx_card_volley", 0.5, 1.2)
 						arrowTrail(e.root.Position + Vector3.new(0, 1.5, 0), hrp.Position + Vector3.new(0, 1.5, 0))
 					end
+				elseif e.shieldModel then
+					sfx("sfx_metal_clash", 0.35, 0.7)
+				elseif e.weapon and (e.weapon.family == "axe" or e.weapon.family == "blunt") then
+					shockRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 1.2, 0), 5, Color3.fromRGB(244, 163, 96), 0.2)
 				end
 				if e.warn then e.warn:Destroy() e.warn = nil end
 				if e.warnBb then e.warnBb:Destroy() e.warnBb = nil end
@@ -3871,8 +3901,13 @@ function FieldScene.start(opts)
 						lastCombatAt = now
 						endStreak("피격")
 						say("공격을 받았다!")
-						hurtReact(if e.ac.def.boss then 2 else 1)
-						burst(hrp.Position + Vector3.new(0, 2, 0), 16, false)
+						local weaponFamily = e.weapon and e.weapon.family or "blade"
+						hurtReact(if e.ac.def.boss then 2 else (if weaponFamily == "axe" or weaponFamily == "blunt" then 1.45 elseif weaponFamily == "dagger" then 0.65 else 1))
+						local hitColor = if weaponFamily == "axe" or weaponFamily == "blunt" then Color3.fromRGB(255, 178, 86)
+							elseif weaponFamily == "spear" then Color3.fromRGB(135, 230, 246)
+							elseif e.shieldModel then Color3.fromRGB(165, 195, 230) else Color3.fromRGB(255, 92, 73)
+						shards(hrp.Position + Vector3.new(0, 1.5, 0), if visualMobile then 5 else 9, hitColor, 4)
+						burst(hrp.Position + Vector3.new(0, 2, 0), if visualMobile then 9 else 16, false)
 						refresh()
 						if pl.hp <= 0 then
 							task.defer(function()
