@@ -2,13 +2,13 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "44040604717",
+    "runId": "44041358695",
     "kind": "deep",
-    "at": "2026-11-17T07:53:32.802Z",
-    "sourceRevision": "e04eeb921f57236fa8431ed297009bdeadc00b99",
+    "at": "2026-11-17T08:00:32.342Z",
+    "sourceRevision": "8dae4668a3cca26fb0ee23c96ac1a18d7788bb5f",
     "result": "FAIL",
     "frames": 59,
-    "changedFrames": 58,
+    "changedFrames": 59,
     "summary": {
       "plannedSteps": 241,
       "completedSteps": 235,
@@ -19,10 +19,30 @@
       "capturedFrames": 59,
       "abortedEarly": true
     },
-    "path": "runs/44040604717"
+    "path": "runs/44041358695"
   },
-  "lastDeepAt": "2026-11-17T07:53:32.802Z",
+  "lastDeepAt": "2026-11-17T08:00:32.342Z",
   "runs": [
+    {
+      "runId": "44041358695",
+      "kind": "deep",
+      "at": "2026-11-17T08:00:32.342Z",
+      "sourceRevision": "8dae4668a3cca26fb0ee23c96ac1a18d7788bb5f",
+      "result": "FAIL",
+      "frames": 59,
+      "changedFrames": 59,
+      "summary": {
+        "plannedSteps": 241,
+        "completedSteps": 235,
+        "plannedClicks": 10,
+        "successfulClicks": 10,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 62,
+        "capturedFrames": 59,
+        "abortedEarly": true
+      },
+      "path": "runs/44041358695"
+    },
     {
       "runId": "44040604717",
       "kind": "deep",
@@ -82,26 +102,6 @@
         "abortedEarly": true
       },
       "path": "runs/44039147920"
-    },
-    {
-      "runId": "44038422000",
-      "kind": "deep",
-      "at": "2026-11-17T07:31:34.913Z",
-      "sourceRevision": "cba18853960308d56df8735f8db4ba83b1f28601",
-      "result": "FAIL",
-      "frames": 59,
-      "changedFrames": 59,
-      "summary": {
-        "plannedSteps": 241,
-        "completedSteps": 235,
-        "plannedClicks": 10,
-        "successfulClicks": 10,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 62,
-        "capturedFrames": 59,
-        "abortedEarly": true
-      },
-      "path": "runs/44038422000"
     },
     {
       "runId": "44018235321",
