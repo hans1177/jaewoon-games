@@ -5368,9 +5368,10 @@ function PortScene.build(info, onFacility)
 			local look = looks[c.id] or { "Rogue", Color3.fromRGB(120, 100, 80) }
 			local v = villager(folder, Vector3.new(-6 - i * 3, 0.18, 8 + i * 2), math.pi / 2,
 				look[2], rng, look[1], true, {
-					height = heroHeight, companion = true,
+					height = heroHeight, companion = true, profession = c.role,
 					-- 명시된 성별 또는 기존 인물의 성별. 동료 능력/저장값은 그대로 둔다.
 					female = c.female == true or c.gender == "female" or c.id == "c_merian"
+						or c.id == "t_nun" or c.id == "t_bhikkhuni"
 						or c.id == "t_mate" or c.id == "t_surgeon" or c.id == "t_purser",
 					bodyType = "athletic", noHat = true,
 				})

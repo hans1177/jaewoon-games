@@ -1074,6 +1074,33 @@ test('항구 주민·동료 남녀 4계열은 등록된 실제 3D 의상 메시�
   assert.match(pose,/model:SetAttribute\("RigType", "R15"\)/);
 });
 
+// [주민·동료 실물복식 2차] 직업군과 탐험 현장 동료 복식을 기존 R15·자산 인입 책임 안에서 검증한다.
+test('직업별 주민과 남녀 탐험 동료의 실제 메시 복식은 등록 자산과 R15 결합을 재사용한다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  const port=read('ReplicatedStorage/Shared/PortScene.luau');
+  const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+  for(const profile of ['citizen_worker_male','citizen_worker_female','citizen_guard_male','citizen_guard_female',
+    'citizen_official_male','citizen_official_female','companion_clergy_male','companion_clergy_female']) {
+    assert.ok(pose.includes(profile+' = {'), '직업 복식 누락: '+profile);
+  }
+  for(const name of ['hair_buzzed','hair_buzzedfemale','male_ranger_acc_pauldron','female_ranger_acc_pauldrons',
+    'male_ranger_head_hood','female_ranger_head_hood']) {
+    assert.ok(pose.includes('"'+name+'"'), '기등록 복식 자산 누락: '+name);
+  }
+  assert.match(pose,/NPC_PROFESSION_LOOK\[outfit\.profession\]/);
+  assert.match(pose,/look = "companion_clergy"/);
+  assert.match(pose,/model:SetAttribute\("NpcAssetProfile", look \.\. "_" \.\. outfit\.gender\)/);
+  assert.match(field,/local knownFemale = id == "c_merian"/);
+  assert.match(field,/nm\.gender == "female" or nm\.gender == "male"/);
+  assert.match(field,/companion = true, gender = if ad\.female then "female" else "male"/);
+  assert.match(field,/outfit\.hair = if ad\.female then/);
+  assert.match(field,/for _, subject in folder:GetChildren\(\) do[\s\S]*?subject:GetAttribute\("NpcAppearanceState"\) ~= "ready"/);
+  assert.match(port,/profession = c\.role/);
+  assert.match(port,/c\.id == "t_nun" or c\.id == "t_bhikkhuni"/);
+  assert.match(pose,/skin:ScaleTo\(ratio\)/);
+  assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
+});
+
 // [항구 7구획 확장] 기존 경제/자산 정본을 유지하며 왕궁 경기병/창고/식료품/직업 모션을 검사한다.
 test('왕궁 경기병 2명과 지역별 창고·식료품·직업 모션은 순수 시각화로 유지된다',()=>{
  const port=read('ReplicatedStorage/Shared/PortScene.luau');

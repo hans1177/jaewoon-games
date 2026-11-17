@@ -5317,6 +5317,13 @@ function FieldScene.start(opts)
 							Pose.applyRegisteredMobOutfit(enemy.model)
 						end
 					end
+					-- 같은 People 인입 이벤트에서 탐험 동료도 재장착한다. 별도 반복 검사 없음.
+					for _, subject in folder:GetChildren() do
+						if subject:IsA("Model") and subject:GetAttribute("NpcAssetProfile")
+							and subject:GetAttribute("NpcAppearanceState") ~= "ready" then
+							Pose.applyRegisteredMobOutfit(subject)
+						end
+					end
 				end)
 			end))
 		end
@@ -7768,7 +7775,14 @@ function FieldScene.start(opts)
 							malabar = Color3.fromRGB(79, 119, 88),
 						}
 						local coat = regionalCoats[nation] or Color3.fromHSV(((h % 360) / 360 + (slot - 1) * 0.32) % 1, 0.45, 0.67)
-						table.insert(allyDefs, { id = id, name = name, role = role, coat = coat, job = vocation, skills = JobSkills.allySkills(vocation), weapon = weapon, nation = nation })
+						-- 기존 영입 메타데이터를 읽되, 성별 추정/저장값 변경 없이 외형에만 전달한다.
+						local knownFemale = id == "c_merian" or id == "t_nun" or id == "t_bhikkhuni"
+							or id == "t_mate" or id == "t_surgeon" or id == "t_purser"
+						local female = if type(nm) == "table" and type(nm.female) == "boolean" then nm.female
+							elseif type(nm) == "table" and (nm.gender == "female" or nm.gender == "male") then nm.gender == "female"
+							else knownFemale
+						table.insert(allyDefs, { id = id, name = name, role = role, coat = coat, job = vocation, female = female,
+							skills = JobSkills.allySkills(vocation), weapon = weapon, nation = nation })
 					end
 				end
 			end
@@ -7809,10 +7823,10 @@ function FieldScene.start(opts)
 					local bodyType = if ad.role == "Barbarian" then "heavy" elseif ad.role == "Rogue" then "slim" else "athletic"
 					local motionStyle = if ad.weapon and ad.weapon.ranged then "scholar" elseif ad.role == "Barbarian" then "heavy" else "disciplined"
 					local outfit = { bodyType = bodyType, motionStyle = motionStyle, persona = persona, profession = ad.job, year = opts.year,
-						companion = true } -- 실제 양발 밑면을 바닥에 맞추는 동료 전용 생성 옵션.
+						companion = true, gender = if ad.female then "female" else "male" } -- 실제 양발 밑면을 바닥에 맞추는 동료 전용 생성 옵션.
 					-- 시대가 맞지 않는 조립형 장식은 추가하지 않는다.
 					if type(opts.year) == "number" and opts.year >= 1500 then
-						outfit.hair = if persona == 2 then "bun" else "short"
+						outfit.hair = if ad.female then (if persona == 2 then "bun" else "long") else "short"
 						outfit.hairColor = if persona == 1 then Color3.fromRGB(46, 34, 28) else Color3.fromRGB(88, 68, 50)
 					end
 					-- [동료 체격] 주인공의 실제 R15 머리~발 높이에 맞춘다. 성별 추정으로 크기를 임의 변경하지 않는다.

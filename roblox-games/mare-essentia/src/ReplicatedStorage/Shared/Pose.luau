@@ -263,6 +263,18 @@ local function addSkirt(model, color, long)
 	w.Parent = q
 end
 
+-- [직업별 실제 복식] 주민 직군만 외형 분류한다. 경제 직업·게임 저장·전투 판정은 원본 그대로다.
+local NPC_PROFESSION_LOOK = {
+	farmer = "worker", fisher = "worker", docker = "worker", herder = "worker", carpenter = "worker",
+	smith = "worker", tailor = "worker", baker = "worker", shipwright = "worker", sailor = "worker",
+	laborer = "worker", industry_artisan = "worker", royal_stablehand = "worker", royal_gardener = "worker",
+	guard = "guard", royal_guard = "guard", royal_gate_guard = "guard",
+	royal_ceremonial_guard = "guard", royal_light_cavalry = "guard",
+	merchant = "official", banker = "official", clerk = "official", teacher = "official",
+	royal_scholar = "official", royal_scribe = "official", royal_archivist = "official",
+	royal_administrator = "official", royal_court_officer = "official", royal_servant = "official",
+	royal_messenger = "official",
+}
 -- outfit 추가 필드: age("child"|"adult"|"elder"), hair("short"|"bun"|"long"), hairColor, skirt(Color3), skirtLong
 function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height, outfit)
 	if not r15Template then
@@ -494,7 +506,17 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	-- [주민·동료 3D 복식] 원본 R15 15관절과 스케일을 보존한 채 승인된 People 메시를 장착한다.
 	-- 외형 전용 속성만 사용한다. 미로드 시 항구 자산 인입 이벤트에서 원래 장착 함수를 재호출한다.
 	if outfit and (outfit.gender == "female" or outfit.gender == "male") then
-		model:SetAttribute("NpcAssetProfile", (if outfit.companion then "companion_" else "citizen_") .. outfit.gender)
+		local look = if outfit.companion then "companion" else "citizen"
+		if outfit.companion then
+			if outfit.profession == "성직자" or outfit.profession == "수녀" or outfit.profession == "승려"
+				or outfit.profession == "비구니" or outfit.profession == "순례자" then
+				look = "companion_clergy"
+			end
+		else
+			local jobLook = NPC_PROFESSION_LOOK[outfit.profession]
+			if jobLook then look = "citizen_" .. jobLook end
+		end
+		model:SetAttribute("NpcAssetProfile", look .. "_" .. outfit.gender)
 		Pose.applyRegisteredMobOutfit(model)
 	end
 	return model
@@ -542,6 +564,42 @@ local MOB_OUTFIT_PARTS = {
 	citizen_female = {
 		{ "female_peasant_body", "UpperTorso", 1.16, 1.50, 1.22, -0.08 },
 		{ "hair_buns", "Head", 1.16, 1.24, 1.18, 0.14 },
+	},
+	-- [항구 주민 2차 복식] 중노동·궁정 경비·상점/행정 구분. 등록된 소형 People 메시만 쓴다.
+	citizen_worker_male = {
+		{ "male_peasant_body", "UpperTorso", 1.20, 1.52, 1.25, -0.08 },
+		{ "hair_buzzed", "Head", 1.14, 1.22, 1.17, 0.12 },
+	},
+	citizen_worker_female = {
+		{ "female_peasant_body", "UpperTorso", 1.18, 1.50, 1.22, -0.08 },
+		{ "hair_buzzedfemale", "Head", 1.15, 1.23, 1.18, 0.13 },
+	},
+	citizen_guard_male = {
+		{ "male_ranger_body", "UpperTorso", 1.22, 1.55, 1.25, -0.10 },
+		{ "male_ranger_acc_pauldron", "RightUpperArm", 1.30, 1.12, 1.29, 0.25 },
+		{ "hair_simpleparted", "Head", 1.15, 1.23, 1.18, 0.13 },
+	},
+	citizen_guard_female = {
+		{ "female_ranger_body", "UpperTorso", 1.18, 1.53, 1.23, -0.10 },
+		{ "female_ranger_acc_pauldrons", "UpperTorso", 1.48, 1.08, 1.45, 0.29 },
+		{ "hair_buns", "Head", 1.16, 1.24, 1.18, 0.14 },
+	},
+	citizen_official_male = {
+		{ "male_peasant_body", "UpperTorso", 1.19, 1.53, 1.25, -0.08 },
+		{ "hair_simpleparted", "Head", 1.15, 1.23, 1.18, 0.13 },
+	},
+	citizen_official_female = {
+		{ "female_peasant_body", "UpperTorso", 1.17, 1.51, 1.22, -0.08 },
+		{ "hair_long", "Head", 1.16, 1.26, 1.18, 0.12 },
+	},
+	-- [성직 동료] 금속 갑옷 대신 승인된 생활복·후드를 써 직책을 시각적으로 구별한다.
+	companion_clergy_male = {
+		{ "male_peasant_body", "UpperTorso", 1.18, 1.53, 1.23, -0.08 },
+		{ "male_ranger_head_hood", "Head", 1.22, 1.29, 1.21, 0.15 },
+	},
+	companion_clergy_female = {
+		{ "female_peasant_body", "UpperTorso", 1.16, 1.51, 1.22, -0.08 },
+		{ "female_ranger_head_hood", "Head", 1.22, 1.29, 1.21, 0.15 },
 	},
 	companion_male = {
 		{ "male_ranger_body", "UpperTorso", 1.23, 1.56, 1.26, -0.10 },
