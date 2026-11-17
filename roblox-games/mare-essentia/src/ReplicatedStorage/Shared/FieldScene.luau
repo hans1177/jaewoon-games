@@ -2994,7 +2994,7 @@ function FieldScene.start(opts)
 					elseif family == "bow" then -0.21 * impulse + 0.18 * settle
 					elseif thrust then -0.11 * impulse else 0.09 * impulse, 0, 0)
 				-- [쓰시마식 1~3타] 발끝→골반→어깨→손목의 시간차를 첫 타부터 적용.
-				if swingKind == "slash" and slashIdx <= 3 then
+				if swingKind == "slash" and slashIdx <= 3 and not wpn.ranged then
 					local side = if slashIdx % 2 == 0 then 1 else -1
 					local plant = math.sin(math.clamp(p / 0.51, 0, 1) * math.pi)
 					local release = math.sin(math.clamp((p - 0.11) / 0.62, 0, 1) * math.pi)
