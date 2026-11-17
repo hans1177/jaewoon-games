@@ -729,6 +729,17 @@ function NavalBattle.play(opts)
 	banner.Size = UDim2.fromOffset(400, 70)
 	banner.TextTransparency = 1
 	banner.TextStrokeTransparency = 1
+	-- [승패 시네마] 기존 승패 배너 아래에 실제 종료 원인만 표시한다. 임의 보상 금액은 만들지 않는다.
+	local endingCaption = label(gui, "", 17, Color3.fromRGB(246, 224, 190), true)
+	endingCaption.Name = "NavalOutcomeCaption"
+	endingCaption.AnchorPoint = Vector2.new(0.5, 0.5)
+	endingCaption.Position = UDim2.fromScale(0.5, 0.53)
+	endingCaption.Size = UDim2.new(0.72, 0, 0, 45)
+	endingCaption.BackgroundColor3 = Color3.fromRGB(20, 27, 35)
+	endingCaption.BackgroundTransparency = 0.18
+	endingCaption.TextWrapped = true
+	endingCaption.ZIndex = 18
+	endingCaption.Visible = false
 
 	-- 카드 지원 표시판: 덱의 지식 카드가 해전을 자동으로 거드는 효과. 발동할 때마다 해당 줄이 번쩍이고 문구가 떠오른다.
 	local CH = { chips = {}, shown = {} }
@@ -2751,7 +2762,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end)
 	end
 	-- [해전 이펙트] 연기·파편·불꽃·물기둥·항적을 한 목록으로 관리한다 (함수 안 지역 변수 수를 아끼려고 한 표에 모음)
-	local FX = { list = {}, wakeAt = {}, dmgAt = {}, fireStates = {}, boardZoom = 0, cam = nil }
+	local FX = { list = {}, wakeAt = {}, dmgAt = {}, fireStates = {}, boardZoom = 0, cam = nil,
+		sink = nil, outcomeReason = nil }
 	local C_SMOKE, C_DARK, C_WATER, C_WOOD = Color3.fromRGB(215, 215, 220), Color3.fromRGB(62, 62, 68), Color3.fromRGB(200, 232, 245), Color3.fromRGB(104, 70, 40)
 	function FX.spawn(size, pos, color, material, shape, vel, life, o)
 		if #FX.list > 260 then
@@ -3218,6 +3230,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		else
 			rangeRing.impactUntil = os.clock() + 0.48
 		end
+		-- [피해 방향] 표시용 실제 피격 방향과 피격 횟수만 기록한다. HP·서버 판정은 바꾸지 않는다.
+		local incoming = if toPlayer then foe.pos - me.pos else me.pos - foe.pos
+		local facing = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
+		sh.lastHitSide = if facing:Cross(incoming).Y >= 0 then 1 else -1
+		sh.damageHits = (sh.damageHits or 0) + 1
 		local v, on = cam:WorldToViewportPoint(ORIGIN + sh.pos + Vector3.new((math.random() - 0.5) * 12, 16, 0))
 		if not on then
 			return
@@ -3415,10 +3432,23 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local pitch = math.clamp((sh.speed or 0) / 90, 0, 0.1) + math.sin(t * 0.9 + sh.length) * 0.03
 		local dip, rollAdd, pitchAdd = -(1 - hp) * 1.6, 0, 0
 		if sink then
+			-- [5가지 선체 침몰] 기존 승인 모델의 Pivot만 움직인다. 함종·피격 방향·화재 상태를 반영한다.
 			local k = sink.k
-			dip -= k * k * 22
-			rollAdd = sink.side * k * 1.15
-			pitchAdd = -k * 0.42 -- 선수부터 가라앉는다
+			local mode = sink.mode or "bow"
+			dip -= k * k * (12 + sh.length * 0.24)
+			if mode == "bow" then
+				pitchAdd, rollAdd = -k * 0.85, sink.side * k * 0.22
+			elseif mode == "stern" then
+				pitchAdd, rollAdd = k * 0.82, sink.side * k * 0.20
+			elseif mode == "capsize" then
+				rollAdd, pitchAdd = sink.side * k * 1.85, -k * 0.12
+				dip -= math.max(0, k - 0.48) * 9
+			elseif mode == "fire" then
+				rollAdd, pitchAdd = sink.side * k * 0.62, -k * 0.36
+				dip += (1 - k) * k * 3.5
+			elseif mode == "mast" then
+				rollAdd, pitchAdd = sink.side * k * 1.12, -k * 0.68
+			end
 		end
 		local bob = CFrame.new(0, math.sin(t * 1.3 + sh.length) * 0.5 + dip, 0) * CFrame.Angles(-sh.roll + heel + rollAdd, 0, pitch + pitchAdd)
 		sh.model:PivotTo(CFrame.new(ORIGIN + Vector3.new(sh.pos.X, sh.y, sh.pos.Z)) * CFrame.Angles(0, -sh.theta, 0) * bob * sh.rot)
@@ -3543,6 +3573,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			return
 		end
 		rt.ended = true
+		FX.outcomeReason = why
 		local now = os.clock()
 		local claim = {
 			winner = w, reason = why, elapsed = now - rt.start,
@@ -3949,21 +3980,57 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					phase = "end"
 					endAt = now
 					meHp, foeHp = meEnd, foeEnd
-					if loser then
+					local reason = FX.outcomeReason or opts.reason or ""
+					local captured = reason == "boarded" or reason == "surrender" or reason == "fled"
+						or reason == "escaped" or reason == "stalemate" or opts.card ~= nil or opts.cardOnly
+					if loser and not captured then
+						-- [상태 기반 침몰] 실제 패배함의 함종 크기·피격횟수·돛대 손상에 따라 다섯 장면을 분기한다.
+						local sunk = if loser == "me" then me else foe
+						local modes = { "bow", "stern", "capsize", "fire", "mast" }
+						local seed = math.floor(sunk.length) + (sunk.damageHits or 0) * 7
+							+ #(sunk.shipId or opts.enemyName or "")
+						local mode = modes[seed % #modes + 1]
+						if mode == "mast" and not sunk.dismasted then mode = "bow" end
+						if mode == "fire" and (sunk.hp or 1) > 0.45 then mode = "stern" end
+						FX.sink = { mode = mode, side = sunk.lastHitSide or 1,
+							duration = if sunk.length >= 48 then 6.6 elseif sunk.length >= 38 then 5.2 else 3.9,
+							nextSplash = now + 0.4, nextSound = now + 0.9, lastSplash = false }
 						sinkStart = now
-						-- CC0 함선 침몰 효과음을 한 번만 재생한다. 미등록이면 기존 물보라로 대체한다.
-						Sfx.play("sfx_naval_sink", 0.64, 0.94, "sfx_splash")
+						Sfx.play("sfx_naval_sink", 0.64 + math.min(sunk.length / 200, 0.2), if sunk.length > 45 then 0.77 else 0.95, "sfx_splash")
 					end
 					banner.Text = if opts.winner == "a" then "승리!" elseif opts.winner == "b" then "패배..." else "물러났다"
 					CH.flash("medic")
 					banner.TextColor3 = if opts.winner == "a" then Color3.fromRGB(255, 214, 120) elseif opts.winner == "b" then Color3.fromRGB(230, 110, 100) else Color3.fromRGB(220, 220, 230)
 					banner.TextTransparency = 0
 					banner.TextStrokeTransparency = 0.3
+					if opts.winner == "a" then
+						Sfx.play("sfx_fanfare", 0.74, 1.0, "sfx_quest_reward")
+						task.delay(0.28, function()
+							if not finished then Sfx.play("sfx_horn", 0.42, 1.08) end
+						end)
+					elseif opts.winner == "b" then
+						Sfx.play("sfx_event_danger", 0.54, 0.87, "sfx_horn")
+						Sfx.play("sfx_creak", 0.50, 0.68)
+					else
+						Sfx.play("sfx_waves", 0.24, 0.95)
+					end
+					if not opts.cardOnly then
+						endingCaption.Text = if captured and opts.winner == "a" then "접현·항복으로 적선을 제압했어."
+							elseif captured and opts.winner == "b" then "기함이 제압됐어. 남은 승조원을 확인해."
+							elseif FX.sink and opts.winner == "a" then "적선 침몰 · 승전 나팔과 함께 함대를 확인해."
+							elseif FX.sink and opts.winner == "b" then "기함 침몰 · 패배 결과를 확인해."
+							elseif opts.winner == "a" then "해전 승리 · 전투 결과를 확인해."
+							elseif opts.winner == "b" then "해전 패배 · 피해 상태를 확인해."
+							else "전투 종료 · 함선 상태를 확인해."
+						endingCaption.Visible = true
+					end
 					subtitle.Text = ""
 				end
 			end
 		elseif phase == "end" then
-			if now - endAt > 2.4 then
+			-- [승패 카메라 길이] 침몰은 함종별 장면이 끝날 때까지 보여 주되 전투 판정은 이미 확정돼 있다.
+			local outroDuration = if FX.sink then FX.sink.duration + 0.6 elseif opts.cardOnly then 2.4 else 3.5
+			if now - endAt > outroDuration then
 				finish()
 				return
 			end
@@ -3991,35 +4058,42 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 			end
 		end
-		-- 배 그리기 (침몰 연출 포함)
+		-- [침몰 5종] 서버 확정 결과 이후 기존 함선 모델의 움직임·포말·선체 파열을 단계별로 재현한다.
 		me.hp, foe.hp = meHp, foeHp
 		local meSink, foeSink
-		if sinkStart then
-			local k = math.clamp((now - sinkStart) / 2.8, 0, 1)
-			local sink = { k = k, side = if loser == "me" then -1 else 1 }
-			if loser == "me" then
-				meSink = sink
-			else
-				foeSink = sink
-			end
-			-- 가라앉는 동안 연기·파편·거품
+		if sinkStart and FX.sink then
+			local sink = FX.sink
+			local k = math.clamp((now - sinkStart) / sink.duration, 0, 1)
+			local pose = { k = k, side = sink.side, mode = sink.mode }
 			local sunk = if loser == "me" then me else foe
-			if k < 0.95 and math.random() < 0.55 then
-				local at = ORIGIN + sunk.pos + Vector3.new(0, 7 - k * 10, 0) + Vector3.new((math.random() - 0.5) * sunk.length * 0.7, 0, (math.random() - 0.5) * 8)
-				if math.random() < 0.3 then
-					FX.smoke(at, 1, 2.6, true)
+			if loser == "me" then meSink = pose else foeSink = pose end
+			local forwardShip = forward(sunk.theta)
+			local along = if sink.mode == "stern" then -1 else 1
+			local endPos = sunk.pos + forwardShip * sunk.length * 0.25 * along
+			if now >= sink.nextSplash and k < 0.95 then
+				sink.nextSplash = now + (if MOBILE_VFX then 0.94 else 0.53)
+				FX.splash(ORIGIN + Vector3.new(endPos.X, 0, endPos.Z), sunk.fx,
+					math.clamp(0.8 + k * 1.2 + sunk.length / 100, 0.8, 2.0))
+				if k > 0.3 and not MOBILE_VFX then
+					FX.splinters(ORIGIN + sunk.pos + Vector3.new(0, 4 - k * 6, 0), 4)
 				end
-				-- [모바일 예산] 침몰 폭발 입자는 프레임마다 생성하지 않고 짧은 간격으로 제한한다.
-				if math.random() < 0.5 and now >= (FX.sinkFlameAt or 0) then
-					FX.sinkFlameAt = now + (if MOBILE_VFX then 0.7 else 0.38)
-					FX.flame(at, 3, sunk.fx)
+			end
+			if sink.mode == "fire" and now >= (FX.sinkFlameAt or 0) and k < 0.88 then
+				FX.sinkFlameAt = now + (if MOBILE_VFX then 1.0 else 0.5)
+				FX.flame(ORIGIN + sunk.pos + Vector3.new(0, 6 - k * 8, 0), 3.4, sunk.fx)
+			end
+			if now >= sink.nextSound and k < 0.85 then
+				sink.nextSound = now + (if MOBILE_VFX then 1.45 else 0.9)
+				Sfx.play("sfx_naval_wood", 0.48 + k * 0.2, 0.95 - k * 0.23, "sfx_creak")
+				if not MOBILE_VFX and k > 0.48 then
+					Sfx.play("sfx_rope_release", 0.26, 0.78, "sfx_creak")
 				end
-				if math.random() < 0.3 then
-					FX.splinters(at, 3)
-				end
-				if k > 0.5 and math.random() < 0.5 then
-					FX.splash(Vector3.new(at.X, 0, at.Z))
-				end
+			end
+			if k >= 0.93 and not sink.lastSplash then
+				sink.lastSplash = true
+				FX.splash(ORIGIN + Vector3.new(sunk.pos.X, 0, sunk.pos.Z), sunk.fx,
+					if sunk.length >= 48 then 2.2 else 1.5)
+				Sfx.play("sfx_naval_splash", 0.72, if sunk.length >= 48 then 0.72 else 0.91, "sfx_splash")
 			end
 		end
 		-- 손상 연출: 체력이 줄수록 연기, 더 줄면 불길이 오른다
@@ -4269,6 +4343,21 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local closeFocus = ORIGIN + mid + Vector3.new(0, 7, 0)
 			camPos = camPos:Lerp(closePos, FX.boardZoom)
 			focus = focus:Lerp(closeFocus, FX.boardZoom)
+		end
+		if phase == "end" and not opts.cardOnly and endAt then
+			-- [종전 시네마] 초반에는 침몰 함선, 후반에는 승리한 함대를 낮은 각도로 보여 준다.
+			-- 항복·접현 승리는 침몰을 연출하지 않고 두 함선을 보여 준다.
+			local damaged = if loser == "me" then me else foe
+			local winnerShip = if opts.winner == "a" then me elseif opts.winner == "b" then foe else me
+			local showingSinking = FX.sink and now - endAt < FX.sink.duration * 0.72
+			local focusShip = if showingSinking then damaged else winnerShip
+			local shot = ORIGIN + focusShip.pos + Vector3.new(0, if showingSinking then 7 else 9, 0)
+			local retreat = forward(focusShip.theta)
+			local desired = shot - retreat * (if showingSinking then 95 else 110)
+				+ Vector3.new(35, if showingSinking then 27 else 36, 22)
+			focus = focus:Lerp(shot, 0.92)
+			camPos = camPos:Lerp(desired, if MOBILE_VFX then 0.78 else 0.91)
+			cam.FieldOfView = 66 - (if showingSinking then 7 else 3) * math.clamp((now - endAt) / 1.5, 0, 1)
 		end
 		local a = 1 - math.exp(-dt * (if cardBusy then 6 else 2.6))
 		FX.cam = if FX.cam then { pos = FX.cam.pos:Lerp(camPos, a), focus = FX.cam.focus:Lerp(focus, a) } else { pos = camPos, focus = focus }
