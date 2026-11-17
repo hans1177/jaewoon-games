@@ -6,6 +6,8 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- [모바일 입자 예산] 효과 밀도만 조절한다. 명중·사거리·재사용 대기시간은 변경하지 않는다.
+local MOBILE_VFX = game:GetService("UserInputService").TouchEnabled
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
@@ -570,9 +572,18 @@ function NavalBattle.play(opts)
 	rangeLabel.AnchorPoint = Vector2.new(0.5, 1)
 	rangeLabel.Position = UDim2.new(0.5, 0, 1, -12)
 	rangeLabel.Size = UDim2.fromOffset(300, 20)
-	-- 사거리 링 + 탄도 점선 미리보기 (사거리 안이면 초록, 밖이면 빨강)
-	local rangeRing = part(folder, Vector3.new(0.3, cannon.range * 2, cannon.range * 2), CFrame.new(ORIGIN) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(255, 226, 150), Enum.Material.Neon, Enum.PartType.Cylinder)
-	rangeRing.Transparency = 0.9
+	-- [선박 밑 사거리] 바다를 가리던 거대한 원판 대신 얇은 점선 원주만 그린다.
+	-- 기존 포의 cannon.range를 그대로 사용한다. 수치는 바꾸지 않는다.
+	local rangeRing = { segments = {} }
+	do
+		local count = if MOBILE_VFX then 20 else 32
+		local segmentLength = 2 * math.pi * cannon.range / count * 0.67
+		for i = 1, count do
+			local seg = part(folder, Vector3.new(1.15, 0.16, segmentLength), CFrame.new(ORIGIN), Color3.fromRGB(255, 210, 128), Enum.Material.Neon)
+			seg.Transparency = 0.72
+			rangeRing.segments[i] = seg
+		end
+	end
 	local trajDots = {}
 	for i = 1, 14 do
 		local d = part(folder, Vector3.new(0.8, 0.8, 0.8), CFrame.new(ORIGIN), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, Enum.PartType.Ball)
@@ -2629,7 +2640,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end)
 	end
 	-- [해전 이펙트] 연기·파편·불꽃·물기둥·항적을 한 목록으로 관리한다 (함수 안 지역 변수 수를 아끼려고 한 표에 모음)
-	local FX = { list = {}, wakeAt = {}, dmgAt = {}, cam = nil }
+	local FX = { list = {}, wakeAt = {}, dmgAt = {}, fireStates = {}, boardZoom = 0, cam = nil }
 	local C_SMOKE, C_DARK, C_WATER, C_WOOD = Color3.fromRGB(215, 215, 220), Color3.fromRGB(62, 62, 68), Color3.fromRGB(200, 232, 245), Color3.fromRGB(104, 70, 40)
 	function FX.spawn(size, pos, color, material, shape, vel, life, o)
 		if #FX.list > 260 then
@@ -2809,6 +2820,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		lt.Parent = anchorPart
 		FX.shockRing(ORIGIN + sh.pos, ringColor, 26, 0.8)
 		FX.shockRing(ORIGIN + sh.pos, ringColor, 16, 0.55)
+		-- 스킬 발동 순간 선체를 가로지르는 강한 빛·바람과 파편. 기존 공격 판정에는 영향 없음.
+		FX.burst(ORIGIN + sh.pos + Vector3.new(0, 7, 0), nil, {
+			{ tex = "spark", c0 = ringColor, c1 = light.color, s0 = 1.1, s1 = 0.18, life = 0.75, v0 = 14, v1 = 34, spread = 100, glow = 0.9, n = if MOBILE_VFX then 10 else 24, a0 = 0 },
+			{ tex = if id == "rapid" then "fire" else "smoke", c0 = light.color, c1 = ringColor, s0 = 2.6, s1 = 5.2, life = 0.65, v0 = 3, v1 = 18, spread = 90, glow = 0.7, n = if MOBILE_VFX then 5 else 12, a0 = 0.22 },
+		}, { color = ringColor, bright = if MOBILE_VFX then 2 else 4, range = 30, dur = 0.33 })
 		task.delay(dur, function()
 			for _, pe in ems do
 				pe.Enabled = false
@@ -2819,6 +2835,79 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				lt:Destroy()
 			end)
 		end)
+	end
+	-- [선체 화재] 해전 피해에 따라 갑판·선미에 붙어 움직이는 불길과 매연.
+	-- 매 프레임 새 파츠를 찍지 않고 선체에 고정한 방출기만 갱신한다.
+	function FX.shipFire(sh, key, hp, now)
+		local state = FX.fireStates[key]
+		if not state and hp < 0.62 then
+			local root = sh.model.PrimaryPart or sh.model:FindFirstChildWhichIsA("BasePart", true)
+			if not root then return end
+			state = { next = 0, vents = {} }
+			FX.fireStates[key] = state
+			for i = 1, (if MOBILE_VFX then 1 else 2) do
+				local along = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
+				local origin = ORIGIN + sh.pos + along * (sh.length * (if i == 1 then -0.17 else 0.16)) + Vector3.new(0, 7, 0)
+				local vent = Instance.new("Attachment")
+				vent.Name = "NavalDamageFire"
+				vent.Position = root.CFrame:PointToObjectSpace(origin)
+				vent.Parent = root
+				local fire = emitterOn(vent, {
+					tex = "fire", c0 = YELLOW, c1 = RED, s0 = 2.7, s1 = 0.3, life = 0.85, v0 = 2, v1 = 6,
+					spread = 24, glow = 1, rate = 0, a0 = 0.05, acc = Vector3.new(0, 7, 0)
+				})
+				local soot = emitterOn(vent, {
+					tex = "smoke", c0 = SOOT, c1 = GREY, s0 = 1.8, s1 = 7.8, life = 2.1, v0 = 2, v1 = 8,
+					spread = 26, rate = 0, a0 = 0.38, acc = Vector3.new(0, 6, 0), drag = 1.3
+				})
+				local glow = Instance.new("PointLight")
+				glow.Name = "DeckFireLight"
+				glow.Color = ORANGE
+				glow.Range = 15
+				glow.Brightness = 0
+				glow.Parent = vent
+				table.insert(state.vents, { fire = fire, soot = soot, glow = glow })
+			end
+		end
+		if not state or now < state.next then return end
+		state.next = now + 0.14
+		local severity = math.clamp((0.62 - hp) / 0.62, 0, 1)
+		for _, vent in state.vents do
+			vent.soot.Rate = math.floor(severity * (if MOBILE_VFX then 7 else 14))
+			vent.fire.Rate = if hp < 0.42 then math.floor((0.42 - hp) * (if MOBILE_VFX then 35 else 65)) else 0
+			vent.glow.Brightness = if hp < 0.42 then severity * (if MOBILE_VFX then 1.1 else 2.0) * (0.85 + 0.15 * math.sin(now * 13)) else 0
+		end
+	end
+	-- [접현 충돌] 사다리·닻줄이 맞닿는 순간의 물보라·목재 먼지·쇳조각, 시각 효과만 재생한다.
+	function FX.boarding()
+		local center = ORIGIN + (me.pos + foe.pos) * 0.5
+		FX.burst(center + Vector3.new(0, 6, 0), nil, {
+			{ tex = "spark", c0 = YELLOW, c1 = ORANGE, s0 = 0.8, s1 = 0.12, life = 0.65, v0 = 9, v1 = 24, spread = 130, glow = 0.7, n = if MOBILE_VFX then 8 else 19, a0 = 0.08 },
+			{ tex = "smoke", c0 = GREY, c1 = SOOT, s0 = 2.8, s1 = 8, life = 1.35, v0 = 3, v1 = 8, spread = 85, n = if MOBILE_VFX then 4 else 10, a0 = 0.38 },
+		})
+		FX.waterColumn(Vector3.new(center.X, ORIGIN.Y, center.Z))
+	end
+	-- [날아가는 포탄] 실제 궤적을 따라 밝은 연기 띠·작은 화약 먼지.
+	function FX.projectile(ball, nc)
+		local a0 = Instance.new("Attachment")
+		a0.Position = Vector3.new(0, nc.ball * 0.34, 0)
+		a0.Parent = ball
+		local a1 = Instance.new("Attachment")
+		a1.Position = Vector3.new(0, -nc.ball * 0.34, 0)
+		a1.Parent = ball
+		local trail = Instance.new("Trail")
+		trail.Attachment0, trail.Attachment1 = a0, a1
+		trail.FaceCamera = true
+		trail.Lifetime = if MOBILE_VFX then 0.17 else 0.28
+		trail.MinLength = 0.08
+		trail.Color = ColorSequence.new(Color3.fromRGB(244, 232, 203), GREY)
+		trail.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(1, 1) })
+		trail.WidthScale = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(1, 0.18) })
+		trail.Parent = ball
+		emitterOn(ball, {
+			tex = "smoke", c0 = GREY, c1 = C_SMOKE, s0 = 0.7, s1 = 3.6, life = 0.6, v0 = 0.1, v1 = 1.8,
+			rate = if MOBILE_VFX then 7 else 16, a0 = 0.45, spread = 45, drag = 2.4
+		})
 	end
 	end
 	-- 배 뒤로 길게 남는 항적
@@ -2834,18 +2923,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 		end
 	end
-	-- 피해가 쌓이면 연기가 오르고, 더 심하면 불이 붙는다
+	-- [선체 손상 단계] 갑판 고정 불꽃과 매연이 피해율에 따라 진해지고 회복 시 사라진다.
 	function FX.damage(sh, key, now)
-		local hp = sh.hp or 1
-		if hp >= 0.65 or (FX.dmgAt[key] or 0) > now then
-			return
-		end
-		FX.dmgAt[key] = now + (if hp < 0.35 then 0.16 else 0.3)
-		local at = ORIGIN + sh.pos + Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta)) * ((math.random() - 0.5) * sh.length * 0.6) + Vector3.new(0, 9, 0)
-		FX.smoke(at, 1, 2 + (1 - hp) * 2, true)
-		if hp < 0.35 then
-			FX.flame(at, 2.6)
-		end
+		FX.shipFire(sh, key, sh.hp or 1, now)
 	end
 
 	-- 대포 한 발
@@ -2937,10 +3017,29 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 		end)
 	end
+	-- [포격 시네마] 함선 중앙이 아닌 실제 좌·우 선측 포구에서 번갈아 발사한다.
 	local function shoot(fromPos, toPos, fx, nc)
 		nc = nc or NC.demi
-		local from = ORIGIN + fromPos + Vector3.new(0, 8, 0)
-		-- 서버 기록의 확정 타격만 선체에 맞히고, 나머지 포탄은 수면에 떨어뜨린다.
+		local from = ORIGIN + fromPos + Vector3.new(0, 7, 0)
+		do
+			local nearest = nil
+			local nearestDistance = 6
+			for _, group in { { me, foe }, allies, escorts } do
+				for _, sh in group do
+					local gap = (fromPos - sh.pos).Magnitude
+					if gap < nearestDistance then nearest, nearestDistance = sh, gap end
+				end
+			end
+			if nearest then
+				local heading = Vector3.new(math.cos(nearest.theta), 0, math.sin(nearest.theta))
+				local broadside = Vector3.new(-heading.Z, 0, heading.X)
+				local aim = toPos - fromPos
+				local sign = if broadside:Dot(aim) >= 0 then 1 else -1
+				local barrel = (math.random() - 0.5) * nearest.length * 0.55
+				from += broadside * sign * math.min(5, nearest.length * 0.11) + heading * barrel
+			end
+		end
+		-- 기존 전투의 실제 명중 판정·피해량을 유지한다. 모델의 비행 경로만 풍부하게 그린다.
 		local hullHit = fx ~= nil
 		local to = ORIGIN + toPos + Vector3.new(
 			(math.random() - 0.5) * 10,
@@ -2963,19 +3062,31 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			flash:Destroy()
 		end)
 		local ball = part(folder, Vector3.new(nc.ball, nc.ball, nc.ball), CFrame.new(from), Color3.fromRGB(30, 30, 34), Enum.Material.Metal, Enum.PartType.Ball)
+		FX.projectile(ball, nc)
+		-- 수면 그림자는 PC에서만 표시한다. 모바일에서는 비행 궤적을 우선한다.
+		local shadow = nil
+		if not MOBILE_VFX then
+			shadow = part(folder, Vector3.new(0.12, 2, 2), CFrame.new(from.X, ORIGIN.Y + 0.1, from.Z) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(25, 55, 72), Enum.Material.SmoothPlastic, Enum.PartType.Cylinder)
+			shadow.Transparency = 0.64
+		end
 		local t0 = os.clock()
 		local dur = nc.dur
 		local conn
 		conn = RunService.Heartbeat:Connect(function()
 			local u = math.clamp((os.clock() - t0) / dur, 0, 1)
 			local bpos = from:Lerp(to, u) + Vector3.new(0, math.sin(u * math.pi) * nc.arc, 0)
-			ball.CFrame = CFrame.new(bpos)
-			if u < 1 and math.random() < 0.5 then
-				FX.spawn(Vector3.new(0.9, 0.9, 0.9), bpos, C_SMOKE, Enum.Material.SmoothPlastic, Enum.PartType.Ball, Vector3.zero, 0.5, { grow = 1.5, t0 = 0.4 }) -- 포탄 꼬리
+			local velocity = (to - from) + Vector3.new(0, math.cos(u * math.pi) * nc.arc * math.pi, 0)
+			ball.CFrame = CFrame.lookAt(bpos, bpos + velocity.Unit)
+			if shadow then
+				shadow.CFrame = CFrame.new(bpos.X, ORIGIN.Y + 0.13, bpos.Z) * CFrame.Angles(0, 0, math.pi / 2)
+				local diameter = 2.2 + math.sin(u * math.pi) * 2
+				shadow.Size = Vector3.new(0.12, diameter, diameter)
+				shadow.Transparency = 0.62 + math.sin(u * math.pi) * 0.22
 			end
 			if u >= 1 then
 				conn:Disconnect()
 				ball:Destroy()
+				if shadow then shadow:Destroy() end
 				if finished then
 					return
 				end
@@ -3198,6 +3309,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			Sfx.play("sfx_horn")
 			Sfx.play("sfx_naval_ram", 0.68, 0.96, "sfx_creak")
 			Sfx.play("sfx_boarding_slash", 0.46, 1)
+			FX.boarding()
 		else
 			subtitle.Text = if w == "a" then "적선이 침몰한다!" elseif w == "b" then "우리 배가 가라앉는다..." else "서로 물러났다."
 		end
@@ -3485,7 +3597,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 								c.Visible = false
 							end)
 						end
-						rangeRing.Transparency = 1
+						for _, segment in rangeRing.segments do segment.Transparency = 1 end
 						rangeLabel.Visible = false
 					end
 					subtitle.Text = "사정거리 안! 카드 대결 시작!"
@@ -3530,6 +3642,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					Sfx.play("sfx_horn")
 					Sfx.play("sfx_naval_ram", 0.68, 0.96, "sfx_creak")
 					Sfx.play("sfx_boarding_slash", 0.46, 1)
+					FX.boarding()
 				end
 			else
 				-- 백병전: 남은 기록을 차례로 보여 준다
@@ -3638,13 +3751,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				dismast(sh)
 				popText(if sh == me then "돛대가 부러졌다!" else "적선의 돛대가 부러졌다!", if sh == me then Color3.fromRGB(255, 130, 110) else Color3.fromRGB(255, 226, 120))
 			end
-			if not side[3] and hp < 0.55 and math.random() < (0.55 - hp) * 0.5 then
-				local at = ORIGIN + sh.pos + Vector3.new((math.random() - 0.5) * sh.length * 0.6, 8 + math.random() * 5, (math.random() - 0.5) * 6)
-				FX.smoke(at, 1, 2.2, true)
-				if hp < 0.3 and math.random() < 0.5 then
-					FX.flame(at, 2.5)
-				end
-			end
+			-- 부유하는 임의 불덩이 대신 FX.damage에서 선체 고정 화재를 갱신한다.
 		end
 		poseShip(me, now, meSink)
 		poseShip(foe, now, foeSink)
@@ -3656,13 +3763,26 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			poseShip(al, now, nil)
 		end
 		do
-			-- 사거리 링은 내 배를 따라다니고, 탄도 점선은 적선까지의 포물선을 보여준다
-			rangeRing.CFrame = CFrame.new(ORIGIN + me.pos + Vector3.new(0, 0.7, 0)) * CFrame.Angles(0, 0, math.pi / 2)
+			-- [사거리 정확도] 기존 cannon.range로 얇은 원주와 발사 각도를 표시한다.
+			-- 적이 사거리 안이어도 함선 옆면이 적을 향하지 않으면 황색 정렬 안내를 띄운다.
 			local dd = (foe.pos - me.pos).Magnitude
 			local inRange = dd < cannon.range
-			rangeRing.Color = if inRange then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 226, 150)
-			rangeRing.Transparency = if opts.cardOnly then 1 elseif inRange then 0.93 else 0.82
-			rangeLabel.TextColor3 = if inRange then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 226, 150)
+			local direction = foe.pos - me.pos
+			local broadside = if dd > 0.1 then math.abs(Vector3.new(math.cos(me.theta), 0, math.sin(me.theta)):Cross(direction.Unit).Y) else 0
+			local aligned = broadside > 0.5
+			local color = if not inRange then Color3.fromRGB(255, 205, 130) elseif aligned then Color3.fromRGB(124, 236, 161) else Color3.fromRGB(255, 178, 100)
+			for i, seg in rangeRing.segments do
+				local angle = (i - 1) * math.pi * 2 / #rangeRing.segments
+				local radial = Vector3.new(math.cos(angle), 0, math.sin(angle))
+				local tangent = Vector3.new(-radial.Z, 0, radial.X)
+				local at = ORIGIN + me.pos + radial * cannon.range + Vector3.new(0, 0.2, 0)
+				seg.CFrame = CFrame.lookAt(at, at + tangent)
+				seg.Color = color
+				seg.Transparency = if opts.cardOnly then 1 elseif inRange and aligned then 0.49 else 0.67
+			end
+			rangeLabel.Text = string.format("%s · %dm/%dm · %s", cannon.name, math.floor(dd), cannon.range,
+				if not inRange then "사거리 밖" elseif aligned then "발사각 확보" else "선측 정렬")
+			rangeLabel.TextColor3 = color
 			local aim = phase == "duel" and not opts.card and dd < cannon.range * 1.25
 			local a0 = ORIGIN + me.pos + Vector3.new(0, 8, 0)
 			local a1 = ORIGIN + foe.pos + Vector3.new(0, 6, 0)
@@ -3759,24 +3879,35 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 		end
 
-		-- 카메라: 두 배가 모두 보이도록 넓게 잡는다. 거리가 벌어질수록 뒤로·위로 물러나고, 부드럽게 따라간다.
+		-- [접현 시네마] 포격 중에는 2척을 넓게, 백병전 중에는 갑판 높이로 부드럽게 줌인한다.
+		-- 카드판과 침몰 연출은 종전 카메라 흐름을 유지한다. 화면 효과로만 쓰인다.
 		shake = math.max(0, shake - 0.06)
 		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
 		kick = kick * 0.86
-		cam.FieldOfView = 76 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom
+		local boardingView = phase == "board" and not cardBusy and not opts.cardOnly and not (rt and rt.sunk) and not sinkStart
+		FX.boardZoom += ((if boardingView then 1 else 0) - FX.boardZoom) * (1 - math.exp(-dt * 4.2))
+		cam.FieldOfView = 76 - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom - FX.boardZoom * 19
 		local f = forward(me.theta)
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
 		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
-		local camPos = ORIGIN + me.pos - f * (170 + dist * 0.55) + Vector3.new(0, math.min(80, 70 + dist * 0.12), 0) -- 높이는 구름층 아래(80)로 막고 대신 뒤로 물러난다
+		local camPos = ORIGIN + me.pos - f * (170 + dist * 0.55) + Vector3.new(0, math.min(80, 70 + dist * 0.12), 0)
 		if cardBusy then
-			-- 카드 대결 중: 두 배의 옆면이 한 화면에 들어오는 무대 시점
 			local mid = (me.pos + foe.pos) / 2
 			local dir = foe.pos - me.pos
 			local perp = Vector3.new(-dir.Z, 0, dir.X)
 			perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
 			focus = ORIGIN + mid + Vector3.new(0, 2, 0)
 			camPos = ORIGIN + mid + perp * 112 + Vector3.new(0, 40, 0)
+		elseif FX.boardZoom > 0.01 then
+			local mid = (me.pos + foe.pos) / 2
+			local dir = foe.pos - me.pos
+			local perp = Vector3.new(-dir.Z, 0, dir.X)
+			perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
+			local closePos = ORIGIN + mid + perp * (if MOBILE_VFX then 69 else 58) + Vector3.new(0, if MOBILE_VFX then 28 else 23, 0)
+			local closeFocus = ORIGIN + mid + Vector3.new(0, 7, 0)
+			camPos = camPos:Lerp(closePos, FX.boardZoom)
+			focus = focus:Lerp(closeFocus, FX.boardZoom)
 		end
 		local a = 1 - math.exp(-dt * (if cardBusy then 6 else 2.6))
 		FX.cam = if FX.cam then { pos = FX.cam.pos:Lerp(camPos, a), focus = FX.cam.focus:Lerp(focus, a) } else { pos = camPos, focus = focus }
