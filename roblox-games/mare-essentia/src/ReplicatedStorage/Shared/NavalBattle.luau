@@ -503,6 +503,15 @@ function NavalBattle.play(opts)
 	end
 	local meFill, mePct = bar("L", "우리 배")
 	local foeFill, foePct = bar("R", opts.enemyName or "해적선")
+	-- [함선 버프 표시] 기함 내구 막대의 아래쪽 3픽셀을 실제 스킬 남은 시간 표시로 쓴다.
+	local buffFill = Instance.new("Frame")
+	buffFill.Name = "ShipSkillBuffProgress"
+	buffFill.Position = UDim2.new(0, 0, 1, -3)
+	buffFill.Size = UDim2.fromScale(0, 0)
+	buffFill.BorderSizePixel = 0
+	buffFill.BackgroundColor3 = Color3.fromRGB(160, 226, 255)
+	buffFill.ZIndex = 6
+	buffFill.Parent = meFill.Parent
 
 	-- 선단 카드: 대항해시대 온라인처럼 우리 배와 적 배를 카드로 늘어놓고, 배마다 선체 막대를 보여 준다
 	local function cardRow(anchorX, posX, posY, color)
@@ -879,11 +888,27 @@ function NavalBattle.play(opts)
 	local skip = mkBtn("건너뛰기", UDim2.new(0.5, 0, 0, 90), UDim2.fromOffset(96, 30), Vector2.new(0.5, 0))
 	skip.TextSize = 14
 	skip.Activated:Connect(finish)
-	-- 스킬 버튼: 가속 버튼 옆에 둔다. 쿨타임이 돌면 남은 초를 보여 준다 (결과는 서버가 정하므로 전투 연출·기동만 돕는다)
-	local SKILLS = {
-		{ id = "rapid", text = "연속 사격", key = Enum.KeyCode.Q, cd = 20, dur = 6, col = Color3.fromRGB(190, 96, 62) },
-		{ id = "evade", text = "회피 기동", key = Enum.KeyCode.E, cd = 16, dur = 4, col = Color3.fromRGB(70, 130, 170) },
-	}
+	-- [함선 특화 2스킬] 기존 Ships.trait에서 선박 역할을 읽는다. 모든 기함은 포 사격(Q) + 특화(E) 정확히 두 개.
+	-- 백병형은 접현 돌진, 철갑·화물보호형은 2초 철벽, 정찰선은 회피, 포격형은 기존 일제사격.
+	-- 기존 함종값·저장키·피해 공식은 수정하지 않고, 실시간 해전에서만 방어 판정을 적용한다.
+	local SKILLS
+	do
+		local id = opts.shipId or ""
+		local trait = if shipDef then shipDef.trait or {} else {}
+		local special = if (trait.melee or 0) >= 0.08 or id == "galley" or id == "kadirga" or id == "privateer" or id == "xebec" then
+			{ id = "dash", text = "접현 돌진", key = Enum.KeyCode.E, cd = 22, dur = 2.6, col = Color3.fromRGB(245, 153, 87) }
+			elseif (trait.cargoGuard or 0) >= 0.08 or id == "ironclad_frigate" or id == "panokseon" or id == "junk" then
+			{ id = "guard", text = "철벽 방어", key = Enum.KeyCode.E, cd = 32, dur = 2, col = Color3.fromRGB(118, 197, 244) }
+			elseif (trait.evade or 0) > 0 or (trait.sail or 0) >= 0.10 or (trait.explore or 0) >= 0.08
+				or id == "corvette" or id == "brigantine" then
+			{ id = "evade", text = "회피 기동", key = Enum.KeyCode.E, cd = 16, dur = 4, col = Color3.fromRGB(70, 168, 198) }
+			else
+			{ id = "rapid", text = "일제사격", key = Enum.KeyCode.E, cd = 20, dur = 6, col = Color3.fromRGB(198, 105, 70) }
+		SKILLS = {
+			{ id = "fire", text = "포 사격", key = Enum.KeyCode.Q, cd = 7, dur = 0.7, col = Color3.fromRGB(204, 163, 98) },
+			special,
+		}
+	end
 	-- 스킬은 가속 버튼(오른쪽 아래) 둘레의 반원에 놓는다 (엄지로 닿기 쉽게)
 	for i, sk in SKILLS do
 		local n = #SKILLS
@@ -893,22 +918,42 @@ function NavalBattle.play(opts)
 	end
 	local skillPop = function(_text, _color) end -- popText 가 만들어진 뒤 연결된다
 	local skillFx = function(_id, _dur) end -- FX 가 만들어진 뒤 연결된다
-	local skillUntil, skillReady = { rapid = 0, evade = 0 }, { rapid = 0, evade = 0 }
+	local skillUntil, skillReady = { fire = 0, rapid = 0, evade = 0, dash = 0, guard = 0 },
+		{ fire = 0, rapid = 0, evade = 0, dash = 0, guard = 0 }
+	local fireOrderUntil = 0
+	local nextMeFire = os.clock() + 0.9
 	local skillBtn = {}
 	local function useSkill(sk)
 		local now = os.clock()
-		if now < skillReady[sk.id] or opts.cardOnly then
-			return
+		if now < skillReady[sk.id] or opts.cardOnly or opts.card then return end
+		if sk.id == "fire" then
+			-- [실제 포 사격] 사거리/선측 조건을 만족할 때만 발동. 다음 자동 포격을 즉시 당겨 온다.
+			-- 기존 포탄·명중·피해 계산은 원래 해전 책임 함수가 수행한다.
+			local target = foe.pos - me.pos
+			if target.Magnitude >= cannon.range or target.Magnitude < 0.1 then
+				skillPop("사거리 밖!", Color3.fromRGB(255, 188, 112))
+				return
+			end
+			local heading = Vector3.new(math.cos(me.theta), 0, math.sin(me.theta))
+			if math.abs(heading:Cross(target.Unit).Y) <= 0.5 then
+				skillPop("선측을 맞춰!", Color3.fromRGB(255, 188, 112))
+				return
+			end
+			fireOrderUntil = now + 0.5
+			nextMeFire = math.min(nextMeFire, now)
 		end
 		skillReady[sk.id] = now + sk.cd
 		skillUntil[sk.id] = now + sk.dur
 		skillPop(sk.text .. "!", sk.col)
 		skillFx(sk.id, sk.dur)
-		if sk.id == "rapid" then
-			Sfx.play("sfx_skill_rapid", 0.8, 1, "sfx_horn")
-			Sfx.play("sfx_naval_cannon", 0.5, 0.7, "sfx_cannon")
+		if sk.id == "rapid" or sk.id == "fire" then
+			Sfx.play("sfx_skill_rapid", 0.65, 1, "sfx_horn")
+			Sfx.play("sfx_naval_cannon", if sk.id == "fire" then 0.38 else 0.5, 0.82, "sfx_cannon")
+		elseif sk.id == "guard" then
+			Sfx.play("sfx_metal_clash", 0.75, 0.76, "sfx_hit")
+			Sfx.play("sfx_skill_evade", 0.4, 0.72, "sfx_horn")
 		else
-			Sfx.play("sfx_skill_evade", 0.8, 1, "sfx_sail")
+			Sfx.play("sfx_skill_evade", 0.8, if sk.id == "dash" then 1.18 else 1, "sfx_sail")
 			Sfx.play("sfx_naval_splash", 0.45, 1.2, "sfx_splash")
 		end
 	end
@@ -3005,20 +3050,30 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local at = Instance.new("Attachment")
 		at.Parent = anchorPart
 		local list, light, ringColor
-		if id == "rapid" then
+		if id == "fire" or id == "rapid" then
 			ringColor = ORANGE
 			list = {
 				{ tex = "fire", c0 = YELLOW, c1 = RED, s0 = 3.5, s1 = 0.5, life = 0.8, v0 = 6, v1 = 14, spread = 60, glow = 1, rate = 38, a0 = 0 },
 				{ tex = "spark", c0 = YELLOW, s0 = 0.8, s1 = 0.2, life = 0.9, v0 = 14, v1 = 30, glow = 1, rate = 30, acc = Vector3.new(0, -20, 0), a0 = 0 },
 			}
 			light = { color = ORANGE, bright = 3, range = 30 }
-		else
-			ringColor = Color3.fromRGB(150, 220, 255)
+		elseif id == "guard" then
+			-- [철벽] 기존 함선 메시 위로 차가운 금속 불티가 흐르는 2초 방어 피드백.
+			ringColor = Color3.fromRGB(112, 211, 255)
 			list = {
-				{ tex = "smoke", c0 = FOAM, c1 = SEA, s0 = 2.5, s1 = 6, life = 0.9, v0 = 22, v1 = 40, spread = 18, rate = 44, a0 = 0.35, drag = 3 },
-				{ tex = "spark", c0 = Color3.fromRGB(190, 235, 255), s0 = 0.9, s1 = 0.2, life = 0.7, v0 = 24, v1 = 50, spread = 25, glow = 1, rate = 36, a0 = 0 },
+				{ tex = "spark", c0 = Color3.fromRGB(191, 233, 255), c1 = ringColor,
+					s0 = 1.2, s1 = 0.15, life = 0.8, v0 = 5, v1 = 16, spread = 120,
+					glow = 0.85, rate = if MOBILE_VFX then 9 else 20, a0 = 0.06 },
 			}
-			light = { color = Color3.fromRGB(150, 210, 255), bright = 2, range = 26 }
+			light = { color = ringColor, bright = 2.6, range = 25 }
+		else
+			-- [접현 돌진·회피] 파도와 풍향을 가르는 입자. 기존 승인 텍스처만 사용.
+			ringColor = if id == "dash" then Color3.fromRGB(255, 184, 104) else Color3.fromRGB(150, 220, 255)
+			list = {
+				{ tex = "smoke", c0 = FOAM, c1 = SEA, s0 = 2.5, s1 = 6, life = 0.9, v0 = 22, v1 = 40, spread = 18, rate = if MOBILE_VFX then 18 else 44, a0 = 0.35, drag = 3 },
+				{ tex = "spark", c0 = ringColor, s0 = 0.9, s1 = 0.2, life = 0.7, v0 = 24, v1 = 50, spread = 25, glow = 1, rate = if MOBILE_VFX then 12 else 36, a0 = 0 },
+			}
+			light = { color = ringColor, bright = 2, range = 26 }
 		end
 		local ems = {}
 		for _, e in list do
@@ -3559,7 +3614,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local loser = if RT then nil elseif opts.winner == "a" then "foe" elseif opts.winner == "b" then "me" else nil
 	local phase = "duel" -- duel → board → end (도주 중엔 fleeing)
 	local fleeProgress, fleeTried = 0, false
-	local nextMeFire, nextFoeFire = os.clock() + 0.9, os.clock() + 1.7
+	local nextFoeFire = os.clock() + 1.7
 	local boardStart = nil
 	local endAt = nil
 	local melIdx = 0
@@ -3622,7 +3677,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end
 	end
 	local function rtDamage(toPlayer, amount)
-		if not rt or rt.ended or amount <= 0 then
+		if not rt or rt.ended or amount <= 0 then return end
+		-- [2초 철벽] 실시간 해전 중 선체·선원 피해를 일시 차단. 서버 결과 신고에도 실제 남은 HP를 전달한다.
+		if toPlayer and os.clock() < skillUntil.guard then
+			if os.clock() >= (me.nextGuardCue or 0) then
+				me.nextGuardCue = os.clock() + 0.65
+				skillPop("철벽 방어!", Color3.fromRGB(149, 226, 255))
+				Sfx.play("sfx_metal_clash", 0.48, 0.84, "sfx_hit")
+			end
 			return
 		end
 		if toPlayer then
@@ -3675,8 +3737,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		if phase == "duel" or phase == "board" then
 			-- 우리 배: 방향키로 돌리고 가속 설정만큼 앞으로
 			me.theta += steerDir * (if now < skillUntil.evade then 2.6 else 1.5) * dt
+			-- [접현 돌진] 수동 조타 중에는 그 방향 우선. 자동 조타일 때만 실제 적선으로 선수를 향한다.
+			if now < skillUntil.dash and phase == "duel" and steerDir == 0 then
+				local approach = foe.pos - me.pos
+				if approach.Magnitude > 15 then
+					steerToward(me, math.atan2(approach.Z, approach.X), dt, 2.6)
+				end
+			end
 			-- 조종 보조: 스틱을 놓고 있으면 적선에 옆면(포 방향)을 자동으로 맞춘다
-			if steerDir == 0 and phase == "duel" then
+			if steerDir == 0 and phase == "duel" and now >= skillUntil.dash then
 				local dv = foe.pos - me.pos
 				if dv.Magnitude < 110 then
 					local ang = math.atan2(dv.Z, dv.X)
@@ -3698,13 +3767,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					navalSay("range", "적이 사거리 밖이에요. 가까이 붙어요 (스틱을 위로).", now)
 				elseif wf < 0.88 then
 					navalSay("wind", "맞바람이에요. 바람을 등지게 뱃머리를 돌리면 빨라져요.", now)
-				elseif dist < cannon.range and now >= skillReady.rapid then
-					navalSay("rapid", "사거리 안이에요. 지금 연속 사격(Q)을 쓰면 좋아요.", now)
+				elseif dist < cannon.range and now >= skillReady.fire then
+					navalSay("rapid", "사거리 안이에요. 선측을 맞춰 포 사격(Q)을 쓰면 좋아요.", now)
 				elseif dist < 60 then
 					navalSay("close", "너무 가까워요. 옆면을 맞춰 일제 사격하거나 거리를 벌려요.", now)
 				end
 			end
-			me.speed = myTop * (stickThrottle or throttle) * wf * (if now < skillUntil.evade then 1.3 else 1)
+			me.speed = myTop * (stickThrottle or throttle) * wf *
+				(if now < skillUntil.dash then 2.0 elseif now < skillUntil.evade then 1.3 else 1)
 			sailLabel.Text = if wf > 1.12 then "⛵ 순풍 — 속도 증가" elseif wf < 0.88 then "⛵ 맞바람 — 속도 감소" else "⛵ 옆바람"
 			sailLabel.TextColor3 = if wf > 1.12 then Color3.fromRGB(130, 235, 150) elseif wf < 0.88 then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(150, 220, 255)
 			if cardBusy then me.speed = 0 end
@@ -3793,6 +3863,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					local toFoe = foe.pos - me.pos
 					local side = if toFoe.Magnitude > 0.1 then math.abs(fwdv:Cross(toFoe.Unit).Y) else 0
 					local inRange = d < cannon.range
+					-- Q 포 사격 명령도 기존 실제 선측·사거리·명중 계산을 그대로 통과한다.
+					if now < fireOrderUntil and inRange and side > 0.5 then
+						nextMeFire = math.min(nextMeFire, now)
+						fireOrderUntil = 0
+					end
 					if inRange and side > 0.5 and now >= nextMeFire then
 						nextMeFire = now + cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
 						local lead = foe.pos + forward(foe.theta) * foe.speed * cannon.dur
@@ -3857,6 +3932,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					end
 				end
 				-- 자동 포격: 사정거리 안이면 쿨타임마다 한 발씩 기록을 소비한다
+				if now < fireOrderUntil and not RT and d < cannon.range then
+					nextMeFire = math.min(nextMeFire, now)
+					fireOrderUntil = 0
+				end
 				if not opts.card and not RT and d < cannon.range and now >= nextMeFire and meDone + 0 < #meQueue and foeDone + meDone >= 0 then
 					nextMeFire = now + cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
 					local idx = #meQueue - (#meQueue - (meDone - (0)) ) -- 순서대로
@@ -4273,6 +4352,20 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			foePct.Text = string.format("%d%%", math.ceil(foeHp * 100))
 		end
 		meFill.BackgroundColor3 = if meHp < 0.3 then Color3.fromRGB(214, 82, 76) elseif meHp < 0.6 then Color3.fromRGB(226, 178, 80) else Color3.fromRGB(91, 181, 120)
+		-- [기함 에너지바] 실제 2개 스킬 중 활성화된 버프와 남은 시간을 선체 내구 숫자 옆에 표시.
+		buffFill.Visible = false
+		mePct.TextSize = 14
+		for _, sk in SKILLS do
+			local remaining = math.max(0, skillUntil[sk.id] - now)
+			if remaining > 0 and sk.id ~= "fire" then
+				mePct.Text = string.format("%s · %s %.1f초", mePct.Text, sk.text, remaining)
+				mePct.TextSize = if MOBILE_VFX then 10 else 12
+				buffFill.BackgroundColor3 = sk.col
+				buffFill.Size = UDim2.fromScale(math.clamp(remaining / sk.dur, 0, 1), 0)
+				buffFill.Visible = true
+				break
+			end
+		end
 		for _, sk in SKILLS do
 			local b = skillBtn[sk.id]
 			local left = skillReady[sk.id] - now
