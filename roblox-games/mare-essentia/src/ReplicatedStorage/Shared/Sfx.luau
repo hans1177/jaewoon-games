@@ -47,6 +47,7 @@ local currentMusic, currentName = nil, nil
 local ambient = {}
 local ambientKey = nil -- 같은 항구 화면을 다시 그릴 때 환경음을 중복 재생하지 않는다
 local lastPlayed = {}
+local loadingEffects = {} -- [모바일 지연 로딩] 같은 효과음 미로딩 객체는 한 개만 유지한다.
 
 local function make(name, parent)
 	local id = IDS[name]
@@ -87,7 +88,7 @@ function Sfx.play(name, volume, speed, fallback)
 	if not sfxOn then
 		return
 	end
-	-- 신규 해전 음원이 아직 등록되지 않았거나 재생에 실패했으면 기존 승인 효과음을 쓴다.
+	-- 기존 승인 자산만 사용하고, 실패한 효과음은 기존 대체 자산으로 재생한다.
 	if not IDS[name] or (broken[name] and os.clock() < broken[name]) then
 		name = fallback
 	end
@@ -98,25 +99,33 @@ function Sfx.play(name, volume, speed, fallback)
 	if lastPlayed[name] and now - lastPlayed[name] < 0.05 then
 		return
 	end
+	-- [모바일 느린 로딩] 소리 하나가 막혔다고 매 연타마다 미로딩 Sound를 새로 쌓지 않는다.
+	-- 로드가 끝나면 같은 음원의 이후 타격은 정상적인 다중 재생으로 복귀한다.
+	local waiting = loadingEffects[name]
+	if waiting and waiting.Parent and not waiting.IsLoaded then return end
+	if waiting then loadingEffects[name] = nil end
 	lastPlayed[name] = now
 	local s = make(name, sfxGroup)
-	if not s then
-		return
-	end
-	if volume then
-		s.Volume = volume
-	end
+	if not s then return end
+	if volume then s.Volume = volume end
 	s.PlaybackSpeed = speed or (0.96 + math.random() * 0.08)
-	-- [첫 모바일 터치 효과음] 파일이 늦게 도착했다면 같은 사운드를 다시 재생한다.
 	if not s.IsLoaded then
+		loadingEffects[name] = s
 		s.Loaded:Once(function()
+			if loadingEffects[name] == s then loadingEffects[name] = nil end
 			if s.Parent and sfxOn and not s.Playing then s:Play() end
 		end)
 	end
 	s:Play()
-	-- [모바일 느린 로딩] 첫 재생은 TimeLength=0일 수 있어 3초 만에 자르지 않는다.
-	s.Ended:Once(function() if s.Parent then s:Destroy() end end)
-	task.delay(math.max(12, s.TimeLength + 1), function()
+	s.Ended:Once(function()
+		if loadingEffects[name] == s then loadingEffects[name] = nil end
+		if s.Parent then s:Destroy() end
+	end)
+	-- [지연 로딩 복구] 이전 12초 타이머는 파일이 12초 뒤 도착하기 전에
+	-- 객체를 삭제해 첫 모바일 효과음이 영구히 들리지 않게 했다.
+	-- 최대 34초만 유지하며, 로딩 중에는 같은 효과음 한 개만 상주한다.
+	task.delay(math.max(34, s.TimeLength + 1), function()
+		if loadingEffects[name] == s then loadingEffects[name] = nil end
 		if s.Parent then s:Destroy() end
 	end)
 end
