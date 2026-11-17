@@ -7,6 +7,7 @@
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local Voyage = require(script.Parent:WaitForChild("Voyage"))
@@ -328,6 +329,7 @@ end
 -- 공식 Studio Importer로 수입한 실제 GLB/OBJ/FBX 모델 우선 사용
 -- 원본: roblox-games/mare-essentia/assets/, 수입본: ReplicatedStorage/MareAssets
 local BLUEPRINT_SHIP_SIZE = {} -- 제작 전용 선박 외형 크기. 구매·능력치·저장 정보는 건드리지 않는다.
+local V5_SHIP_LENGTH = {} -- 5차 원본의 검증된 목표 길이. 기존 선박 외형 크기는 유지한다.
 local SHIP_MESH = {
 	caravel = "ship-small", fluyt = "ship-medium",
 	frigate = "ship-pirate-medium", galleon = "ship-large",
@@ -343,6 +345,7 @@ do
 	-- [7대륙 36척 전용 실물] 각 설계는 본인 등록번호가 실제 있는 고유 GLB만 선택한다.
 	-- 다른 함종 메시는 대체하지 않는다. 등록·권한 검증 전에는 기존 선박 규칙과 저장값을 유지한다.
 	for _, blueprint in ShipsMod.Blueprints do
+		V5_SHIP_LENGTH[blueprint.id] = blueprint.targetLengthStuds
 		if not ShipsMod.Ships[blueprint.id] then
 			local meshName = blueprint.id .. "-custom"
 			if AssetIds["Naval/" .. meshName] then
@@ -858,10 +861,20 @@ local function buildShip(parent, shipId, at)
 	local s = look.scale
 	local modelLength = BLUEPRINT_SHIP_SIZE[shipId] or 26 * s
 	local bottom = Vector3.new(at.X, at.Y - 2 * s, at.Z)
-	-- 선박 ID별 완제품 Mesh가 있으면 그것을 우선한다. 없으면 원본 선체와 실제 Mesh 소품을 조합한다.
-	local dedicated = importedModel(parent, "Ships", shipId, bottom, modelLength, false, look.metal and look.hull or nil)
+	-- [5차 선박 원본] 기존 자산 업로더가 승인·등록한 실제 GLB만 사용한다.
+	-- 터치 기기에는 경량판 우선. 미등록·로딩 지연 시 기존 수입본을 보존한다.
+	local fullName, mobileName = shipId .. "-v5", shipId .. "-v5-mobile"
+	local hasMobile = UserInputService.TouchEnabled and AssetIds["Naval/" .. mobileName] ~= nil
+	local preferredName = if hasMobile then mobileName elseif AssetIds["Naval/" .. fullName] then fullName else nil
+	local upgraded = if preferredName then importedModel(parent, "Naval", preferredName, bottom, V5_SHIP_LENGTH[shipId] or modelLength, false) else nil
+	if not upgraded and hasMobile and AssetIds["Naval/" .. fullName] then
+		preferredName = fullName
+		upgraded = importedModel(parent, "Naval", fullName, bottom, V5_SHIP_LENGTH[shipId] or modelLength, false)
+	end
+	-- 선박 ID별 기존 완제품·전용 GLB·공용 선체를 순서대로 유지한다.
+	local dedicated = if upgraded then nil else importedModel(parent, "Ships", shipId, bottom, modelLength, false, look.metal and look.hull or nil)
 	local meshAsset = SHIP_MESH[shipId] or "ship-small"
-	local shipMesh = dedicated or importedModel(parent, "Naval", meshAsset, bottom, modelLength, false, look.metal and look.hull or nil)
+	local shipMesh = upgraded or dedicated or importedModel(parent, "Naval", meshAsset, bottom, modelLength, false, look.metal and look.hull or nil)
 	-- 신규 상세 갈레온이 아직 스트리밍되지 않았다면 운영 중인 기존 범선 모델을 보존한다.
 	if not shipMesh and shipId == "galleon" and SHIP_MESH.galleon == "galleon-heritage" then
 		meshAsset = "ship-large"
@@ -877,7 +890,8 @@ local function buildShip(parent, shipId, at)
 	end
 	if shipMesh then
 		shipMesh.Name = "Ship"
-		if not dedicated and meshAsset ~= shipId .. "-custom" then
+		if upgraded then shipMesh:SetAttribute("MareShipV5Model", preferredName) end
+		if not upgraded and not dedicated and meshAsset ~= shipId .. "-custom" then
 			-- [외형 중복 방지] 완성 고유 메시에는 기존 대포·외륜·굴뚝·갑판 조합을 다시 추가하지 않는다.
 			-- 대포, 선루, 굴뚝, 장갑판 모두 실제 수입한 3D Mesh 모델을 조합한다.
 			-- 완성 원형 메시에는 함포·선루 중복 모델을 추가하지 않는다.
