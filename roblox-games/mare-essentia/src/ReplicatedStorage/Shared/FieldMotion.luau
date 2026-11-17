@@ -743,14 +743,14 @@ local WEAPON_HIGH_BEATS = {
 	FIREARM = { "W:FIREARM_BURST", "W:FIREARM_RELOAD" },
 	DUAL = { "W:DUAL_CROSS", "W:DUAL_REVERSE" },
 }
--- [무기 숙련 시각 연계] 실제 타격은 1번. 이 순서는 R15 자세/재장전 구간만 결정한다.
--- 공용 CommonMotion에 이미 등록된 같은 계열 동작만 사용하고, 특화 무기별 재발사 연출을 만들지 않는다.
+-- [원거리 영화식 3연타] 재장전/노리쇠 대신 연속 격발 관절을 사용한다.
+-- BOW_RELEASE / FIREARM_BURST 등 실제 등록된 포즈이며 몸 회전/발 디딤은 FieldScene에서 단계별 합성.
 local WEAPON_CHAIN_STANCES = {
-	CROSSBOW = { "W:FIREARM_RECOIL", "W:FIREARM_CYCLE", "W:FIREARM_AIM" },
-	PISTOL = { "W:FIREARM_RECOIL", "W:FIREARM_CYCLE", "W:FIREARM_AIM" },
-	RIFLE = { "W:FIREARM_RECOIL", "W:FIREARM_RELOAD", "W:FIREARM_AIM" },
-	BOW = { "W:BOW_RELEASE", "W:BOW_RENOCK", "W:BOW_DRAW" },
-	LONGBOW = { "W:BOW_RELEASE", "W:BOW_RENOCK", "W:BOW_DRAW" },
+	CROSSBOW = { "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL" },
+	PISTOL = { "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL" },
+	RIFLE = { "W:FIREARM_RECOIL", "W:FIREARM_BURST", "W:FIREARM_RECOIL" },
+	BOW = { "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE" },
+	LONGBOW = { "W:BOW_RELEASE", "W:BOW_RELEASE", "W:BOW_RELEASE" },
 	RAPIER = { "W:BLADE_THRUST", "W:BLADE_RIPOSTE", "W:BLADE_SLASH_L" },
 }
 function FM.weaponCombo(motion: string?, idx: number)
