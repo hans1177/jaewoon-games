@@ -2736,7 +2736,7 @@ function FieldScene.start(opts)
 							material, tint, reflectance = Enum.Material.Fabric, Color3.fromRGB(186, 167, 131), 0
 						elseif handle then
 							material, tint, reflectance = Enum.Material.Leather, Color3.fromRGB(77, 55, 38), 0
-						elseif stock or family == "bow" or weapon.id == "crossbow" or (family == "spear" and not edge and not iron) then
+						elseif stock or (family == "bow" and not edge and not iron) or (weapon.id == "crossbow" and not edge and not iron and not guard) or (family == "spear" and not edge and not iron) then
 							material, tint, reflectance = Enum.Material.Wood, Color3.fromRGB(116, 84, 52), 0
 						elseif edge then
 							material, tint, reflectance = Enum.Material.Metal, Color3.fromRGB(172, 182, 187), 0.055
