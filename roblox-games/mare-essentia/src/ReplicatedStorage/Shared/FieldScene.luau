@@ -272,7 +272,11 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 					or partName:find("hoof", 1, true) or partName:find("horn", 1, true)
 					or partName:find("mane", 1, true) or partName:find("tail", 1, true)
 					or partName:find("beak", 1, true) or partName:find("saddle", 1, true)
-				if not textured and not detail then
+				if textured and not detail then
+					-- 원본 털무늬/PBR은 보존하면서 승인된 메시의 품종색만 약하게 곱한다.
+					d.Color = d.Color:Lerp(tint, 0.24)
+					if sa then sa.Color = sa.Color:Lerp(tint, 0.24) end
+				elseif not textured and not detail then
 					local light = math.max(d.Color.R, d.Color.G, d.Color.B)
 					d.Color = d.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
 					d.Material = if asset == "elephant" then Enum.Material.Slate
