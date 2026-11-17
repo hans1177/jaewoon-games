@@ -1533,6 +1533,8 @@ function FieldScene.start(opts)
 	attackBtn.TextSize = 19
 	attackBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 	local attackIcon = addIcon(attackBtn, "Menu/cc0_sword")
+	-- [무기별 스킬] 강타·휩쓸기 두 가지만 계산한다. 막기·회피·카드는 별개 행동.
+	attackBtn:SetAttribute("WeaponSkillCount", 2)
 	local retreat = btn(gui, "철수", Color3.fromRGB(54, 75, 86), UDim2.fromOffset(88, 42), UDim2.new(0, 12, 0, 12), Vector2.new(0, 0))
 	retreat.Name = "FieldRetreat"
 	retreat.TextSize = 14
@@ -1614,7 +1616,18 @@ function FieldScene.start(opts)
 				swingCombo = FM.weaponCombo(wpn.motion, beat) or FM.combo("slash" .. beat, { SLASH_IDS[(beat - 1) % #SLASH_IDS + 1] })
 			end
 			dur = Weapons.swingDuration(wpn, dur)
-			if swingCombo and kind ~= "spin" then
+			if kind == "slash" and beat == 1 then
+				-- [일반 공격 모션만] 단검이 가장 빠르고 다른 무기는 0.05~0.12초 더 느리게 복귀한다.
+				-- 기존 무기 속도/쿨타임/피해/타격 판정/스킬 동작 시간은 유지한다.
+				dur = if wpn.family == "dagger" then 0.34
+					elseif wpn.family == "fist" then 0.37
+					elseif wpn.family == "blade" then 0.39
+					elseif wpn.family == "spear" then 0.41
+					elseif wpn.id == "crossbow" then 0.46
+					elseif wpn.family == "bow" or wpn.family == "firearm" then 0.43
+					elseif wpn.family == "axe" or wpn.family == "blunt" then 0.45
+					else 0.42
+			elseif swingCombo and kind ~= "spin" then
 				dur = math.max(dur, swingCombo.duration)
 			end
 		end
@@ -1792,7 +1805,15 @@ function FieldScene.start(opts)
 				if p >= 1 then
 					swingKind = nil
 				elseif swingCombo then
-					FM.sample(swingCombo, p * swingCombo.duration, canon)
+					-- [타격 순간 고정] 무기별 일반 공격 길이가 달라도 기존 0.14초 적중 시 원본 CONTACT 자세로 맞춘다.
+					local progress = p
+					if swingKind == "slash" and slashIdx == 1 then
+						local contact = math.clamp(swingCombo.steps[1].contact / swingCombo.duration, 0.1, 0.85)
+						local impact = math.clamp(0.14 / swingDur, 0.15, 0.75)
+						progress = if p < impact then p / impact * contact
+							else contact + (p - impact) / (1 - impact) * (1 - contact)
+					end
+					FM.sample(swingCombo, math.clamp(progress, 0, 1) * swingCombo.duration, canon)
 				else
 					local w = if swingKind == "guard" then math.min(1, p * 8) * (1 - math.max(0, (p - 0.85) / 0.15)) else math.sin(math.min(p, 1) * math.pi)
 					local src
