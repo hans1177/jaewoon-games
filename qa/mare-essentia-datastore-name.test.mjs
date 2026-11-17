@@ -1310,3 +1310,38 @@ test('마을 7개 시설은 실제 건설 수량·번영도·항구 발전도에
  assert.match(facilities,/prompt\(folder, Vector3\.new\(f\.pos\.X, 3, doorZ\), f\.name, "들어가기", f\.tab, onFacility\)/);
  assert.doesNotMatch(facilities,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/);
 });
+
+// [시설 발전 자동 시공] 실제 경제 건설로 외형 단계가 상승했을 때 한 번만 비계/주민 모션을 표시한다.
+test('경제 시설 증축 연출은 발전 시에만 실행되고 재입항과 모바일 한도를 존중한다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const ids=read('ReplicatedStorage/Shared/AssetIds.luau');
+ const begin=scene.indexOf('-- [자동 증축 작업] 기존 경제 정본에서 단계가 처음 올라갈 때만 승인된 공사용 실물 메시');
+ const end=scene.indexOf('-- 조선소:',begin);
+ assert.ok(begin>=0&&end>begin,'시설 시공은 기존 PortScene.build 안');
+ const region=scene.slice(begin,end);
+ assert.match(scene,/local lastFacilityGrowth = \{\}/);
+ assert.match(region,/local previousFacilityGrowth = lastFacilityGrowth\[info\.portId\]/);
+ assert.match(region,/currentFacilityGrowth\[f\.name\] = facilityTier/);
+ assert.match(region,/facilityTier > previousFacilityGrowth\[f\.name\]/);
+ assert.match(region,/and facilityUpgradeAnimations < facilityAnimationCap/);
+ assert.match(region,/local facilityAnimationCap = if touchFacility then 1 else 3/);
+ assert.match(region,/local facilityBuilderCap = if touchFacility then 1 else 2/);
+ assert.match(region,/if upgrade then/);
+ assert.ok(ids.includes('["Terrain/wood-structure"]'),'기등록 실제 시공 비계');
+ assert.match(region,/importedModel\(folder, "Terrain", "wood-structure", at\(-14, 4\), 6\.5, false, nil, delay\)/);
+ assert.match(region,/scaffold:SetAttribute\("BuildState", "constructing"\)/);
+ assert.match(region,/scaffold:SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
+ assert.match(region,/local hasWorkers = not info\.sim or \(jobs and/);
+ assert.match(region,/builder:SetAttribute\("Job", "construction_worker"\)/);
+ assert.match(region,/kind = "hammer", phase = rng:NextNumber\(0, 5\)/);
+ assert.match(region,/while builder\.Parent and not folder\.Parent/);
+ assert.match(region,/if builder\.Parent then builder:Destroy\(\) end/);
+ assert.match(region,/if scaffold\.Parent then scaffold:Destroy\(\) end/);
+ assert.match(region,/if info\.sim and info\.sim\.buildings then lastFacilityGrowth\[info\.portId\] = currentFacilityGrowth end/);
+ assert.match(region,/folder:SetAttribute\("FacilityUpgradesThisVisit", facilityUpgradeAnimations\)/);
+ assert.match(region,/folder:SetAttribute\("FacilityUpgradeMode", "ECONOMY_VISUAL_ONLY"\)/);
+ assert.match(region,/if f\.key == "bank" then\s+if facilityTier >= 3 then/);
+ assert.match(region,/if facilityTier >= 5 then/);
+ assert.match(region,/prompt\(folder, Vector3\.new\(f\.pos\.X, 3, doorZ\), f\.name, "들어가기", f\.tab, onFacility\)/);
+ assert.doesNotMatch(region,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/);
+});

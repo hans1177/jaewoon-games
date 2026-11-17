@@ -1168,6 +1168,8 @@ local IDLE_POOL = { "talk", "lean", "point", "wave", "write", "inspect", "count"
 local stallSpots = {}
 -- [경제 건축 연출] 현재 세션의 항구별 장식 단계만 기억한다. 게임 저장·서버 경제에는 쓰지 않는다.
 local lastDecorationGrowth = {}
+-- [시설 자동 증축] 실제 경제 건축 단계만 항구별 세션에 기억한다. 저장·구매 로직과 무관하다.
+local lastFacilityGrowth = {}
 local SKIN_HAIR = { Color3.fromRGB(48, 36, 30), Color3.fromRGB(86, 60, 40), Color3.fromRGB(150, 110, 60), Color3.fromRGB(30, 28, 30) }
 local GRAY_HAIR = Color3.fromRGB(206, 204, 200)
 local function faceTo(from, to)
@@ -4229,6 +4231,13 @@ function PortScene.build(info, onFacility)
 		end
 	end
 
+	-- [자동 증축 작업] 기존 경제 정본에서 단계가 처음 올라갈 때만 승인된 공사용 실물 메시를 설치한다.
+	local previousFacilityGrowth = lastFacilityGrowth[info.portId]
+	local currentFacilityGrowth = {}
+	local facilityUpgradeAnimations, facilityUpgradeBuilders = 0, 0
+	local touchFacility = game:GetService("UserInputService").TouchEnabled
+	local facilityAnimationCap = if touchFacility then 1 else 3
+	local facilityBuilderCap = if touchFacility then 1 else 2
 	-- 시설 건물: { 이름, 탭, 위치, 크기, 벽색 }
 	local facilities = {
 		{ name = "교역소", tab = "trade", pos = Vector3.new(-12, 0, 36), w = 20, d = 12, floors = 1, color = Color3.fromRGB(176, 120, 60), economy = "market", always = true },
@@ -4253,6 +4262,9 @@ function PortScene.build(info, onFacility)
 			if info.sim and (tonumber(info.sim.prosperity) or 100) < 90 then
 				facilityTier = math.min(facilityTier, 4)
 			end
+			currentFacilityGrowth[f.name] = facilityTier
+			local upgrade = previousFacilityGrowth and previousFacilityGrowth[f.name]
+				and facilityTier > previousFacilityGrowth[f.name] and facilityUpgradeAnimations < facilityAnimationCap
 			local grow = 1.21 + 0.025 * (facilityTier - 1)
 			local visualFloors = math.min(3, f.floors + (if facilityTier >= 4 then 1 else 0))
 			local tone = f.color:Lerp(style.walls[1], 0.5):Lerp(Color3.fromRGB(90, 80, 70),
@@ -4300,6 +4312,51 @@ function PortScene.build(info, onFacility)
 				local zs = if f.pos.Z > 0 then -1 else 1
 				local fx, fz = f.pos.X, doorZ
 				local function at(dx, dz) return Vector3.new(fx + dx, 0, fz + zs * dz) end
+				-- [실제 증축 시공] 이미 있는 건설 비계·R15 망치 모션을 재사용한다. 새 경제 저장 키나 시설은 만들지 않는다.
+				-- 장면 첫 방문/같은 단계 재입항/하락 단계에서는 시공을 재생하지 않는다.
+				if upgrade then
+					local delay = 0.15 + facilityUpgradeAnimations * 0.38
+					local scaffold = importedModel(folder, "Terrain", "wood-structure", at(-14, 4), 6.5, false, nil, delay)
+					if scaffold then
+						scaffold.Name = "FacilityUpgradeScaffold_" .. f.tab
+						scaffold:SetAttribute("BuildPlotId", info.portId .. ":facility:" .. f.name)
+						scaffold:SetAttribute("BuildType", f.economy)
+						scaffold:SetAttribute("BuildTier", facilityTier)
+						scaffold:SetAttribute("BuildPhase", 2)
+						scaffold:SetAttribute("BuildState", "constructing")
+						scaffold:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+						facilityUpgradeAnimations += 1
+						local jobs = info.sim and info.sim.jobs
+						local hasWorkers = not info.sim or (jobs and ((jobs.laborer or 0) + (jobs.craftsman or 0)) > 0)
+						if hasWorkers and facilityUpgradeBuilders < facilityBuilderCap then
+							local workerPos = at(-12, 6)
+							local builder = villager(folder, workerPos, faceTo(workerPos, at(-14, 4)),
+								Color3.fromRGB(144, 115, 82), rng, "Barbarian", true, { profession = "construction_worker", hat = "cap" })
+							if builder then
+								facilityUpgradeBuilders += 1
+								builder.Name = "FacilityBuilder_" .. f.tab
+								builder:SetAttribute("Job", "construction_worker")
+								builder:SetAttribute("BuildPlotId", info.portId .. ":facility:" .. f.name)
+								builder:SetAttribute("ShowcaseOnly", true)
+								table.insert(walkers, { model = builder, base = builder:GetPivot(), mode = "stay", kind = "hammer", phase = rng:NextNumber(0, 5) })
+								task.spawn(function()
+									local deadline = os.clock() + 25
+									while builder.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
+									if not folder.Parent then return end
+									task.wait(delay + 3.8)
+									if builder.Parent then builder:Destroy() end
+								end)
+							end
+						end
+						task.spawn(function()
+							local deadline = os.clock() + 25
+							while scaffold.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
+							if not folder.Parent then return end
+							task.wait(delay + 3.2)
+							if scaffold.Parent then scaffold:Destroy() end
+						end)
+					end
+				end
 				-- [항구 시설별 실물 윤곽] 첫 발전 단계부터 서로 다른 건축물로 인식되게 한다.
 				-- 같은 저장·시설탭·출입 좌표를 그대로 두며 등록된 CC0 실물 모델만 재사용한다.
 				if f.name == "교역소" then
@@ -4372,16 +4429,16 @@ function PortScene.build(info, onFacility)
 			end
 			-- 은행은 항구 발전도에 따라 커진다: 3단계 기둥, 4단계 깃발, 5단계 금괴 더미
 			if f.key == "bank" then
-				if sceneLevel >= 3 then
+				if facilityTier >= 3 then
 					for _, dx in { -5, 0, 5 } do
 						importedModel(folder, "Terrain", "column", Vector3.new(f.pos.X + dx, 0, doorZ + (if f.pos.Z > 0 then -1.5 else 1.5)), 6, false)
 					end
 				end
-				if sceneLevel >= 4 then
+				if facilityTier >= 4 then
 					importedModel(folder, "Castle", "flag-banner-long", Vector3.new(f.pos.X + 8, 0, doorZ), 9, false)
 					importedModel(folder, "Castle", "flag-banner-long", Vector3.new(f.pos.X - 8, 0, doorZ), 9, false)
 				end
-				if sceneLevel >= 5 then
+				if facilityTier >= 5 then
 					importedModel(folder, "Cargo", "gold-bars-stack-large", Vector3.new(f.pos.X + 4, 0, doorZ + (if f.pos.Z > 0 then -3 else 3)), 2.4, false)
 				end
 			end
@@ -4389,6 +4446,10 @@ function PortScene.build(info, onFacility)
 			villager(folder, Vector3.new(f.pos.X + 3, 0, doorZ), if f.pos.Z > 0 then 0 else math.pi, Color3.fromRGB(rng:NextInteger(60, 160), rng:NextInteger(50, 120), rng:NextInteger(40, 110)), rng, KEEPER_ROLE[f.name] or "Knight")
 		end
 	end
+	if info.sim and info.sim.buildings then lastFacilityGrowth[info.portId] = currentFacilityGrowth end
+	folder:SetAttribute("FacilityUpgradesThisVisit", facilityUpgradeAnimations)
+	folder:SetAttribute("FacilityUpgradeBuilders", facilityUpgradeBuilders)
+	folder:SetAttribute("FacilityUpgradeMode", "ECONOMY_VISUAL_ONLY")
 
 	-- 조선소: 남쪽 물가의 경사 선대와 짓고 있는 배의 뼈대
 	if info.hasShipyard then
