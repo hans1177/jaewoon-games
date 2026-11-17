@@ -2263,7 +2263,7 @@ function FieldScene.start(opts)
 	local swingCombo, slashIdx = nil, 0
 	-- [연타 관절 연결] 한 공격이 끝나기 전에 다음 시각 모션을 시작할 때 R15 실제 마지막 자세를 이어 붙인다.
 	-- 신규 애니메이션 트랙/이동 판정 없이 기존 캐논 관절만 보간한다. 최근 프레임 포즈는 테이블을 재사용한다.
-	local swingBridge = { last = {}, lastAt = -100, from = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100 }
+	local swingBridge = { last = {}, lastAt = -100, from = nil, rootLast = nil, rootFrom = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100 }
 	-- [모션 직업] 기존 캐릭터 FieldDodgeStyle 속성을 입력·렌더 간 정본으로 사용하여 Luau 지역변수 한도를 지킨다.
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
@@ -2303,13 +2303,16 @@ function FieldScene.start(opts)
 		-- [연타·회피 관절 연결] 공격 → 회피 → 다음 공격까지 최근 전신 자세를 이어 불연속 회전을 막는다.
 		if FM and (kind == "dash" or nextStage >= 2 or kind == "slash" or kind == "heavy") and os.clock() - swingBridge.lastAt <= 0.32 and next(swingBridge.last) then
 			swingBridge.from = table.clone(swingBridge.last)
+			-- [쓰시마식 연계] 이전 검무의 골반과 전신 회전까지 다음 타의 첫 자세로 이어 준다.
+			swingBridge.rootFrom = swingBridge.rootLast
 			swingBridge.at = os.clock()
 			swingBridge.duration = if kind == "dash" then 0.065
-				elseif wpn.family == "dagger" or wpn.family == "fist" then 0.075
-				elseif wpn.family == "axe" or wpn.family == "blunt" then 0.14
-				elseif wpn.ranged then 0.095 else 0.105
+				elseif wpn.family == "dagger" or wpn.family == "fist" then 0.070
+				elseif wpn.family == "axe" or wpn.family == "blunt" then 0.11
+				elseif wpn.ranged then 0.085 else 0.09
 		else
 			swingBridge.from = nil
+			swingBridge.rootFrom = nil
 		end
 		-- [무기별 공격음] 각 승인 오디오의 원본을 사용한다.
 		-- 준비/휘두름은 여기서, 투사체 발포는 실제 공격 판정 시 한 번만 재생해 저음이 겹치지 않는다.
@@ -2652,15 +2655,36 @@ function FieldScene.start(opts)
 				local spinPhase = math.clamp((p - 0.08) / 0.75, 0, 1)
 				local spin = spinPhase * spinPhase * (3 - 2 * spinPhase) * math.pi * 2
 				local settle = math.sin(math.clamp((p - 0.63) / 0.37, 0, 1) * math.pi)
-				if slashIdx == 4 then
+				-- [쓰시마 1·2·3단] 선발 체중 이동 → 반대발 사선 베기 → 낮은 선회 역베기.
+				-- 모든 루트 이동은 R15 시각 포즈만 다루며 실제 명중·사거리·좌표는 기존 전투가 담당한다.
+				local plant = math.sin(math.clamp(p / 0.48, 0, 1) * math.pi)
+				local release = math.sin(math.clamp((p - 0.12) / 0.65, 0, 1) * math.pi)
+				if slashIdx == 1 then
+					return CFrame.new(-side * lateral * 0.32 * plant, -0.22 * plant, -forward * 0.64 * release)
+						* CFrame.Angles(-0.16 * plant - 0.10 * release, -side * (if longReach then 0.20 else 0.32) * plant, -side * 0.10 * release)
+				elseif slashIdx == 2 then
+					return CFrame.new(side * lateral * 1.18 * beat, -0.38 * plant, -forward * 0.47 * release)
+						* CFrame.Angles(-0.20 * plant + 0.11 * settle, side * 0.65 * beat, side * 0.21 * plant)
+				elseif slashIdx == 3 then
+					return CFrame.new(-side * lateral * 1.25 * beat, -(if swift then 0.67 else 0.50) * beat, -forward * 0.35 * release)
+						* CFrame.Angles(0.38 * beat - 0.12 * settle, -side * 1.12 * beat, -side * 0.29 * beat)
+				elseif slashIdx == 4 then
 					return CFrame.new(side * lateral * 1.6 * beat, -(if heavy then 0.65 else 0.95) * beat + 0.12 * settle, -forward * 0.45 * thrust)
 						* CFrame.Angles(-0.23 * beat, side * 0.22 * beat, if heavy then -side * 1.45 * beat else -side * spin)
 				elseif slashIdx == 5 and swift then
 					return CFrame.new(side * 0.87 * beat, -0.34 * beat + 0.68 * bell((p - 0.12) / 0.70), -0.26 * thrust)
 						* CFrame.Angles(0.13 * beat, side * 0.22 * beat, side * spin)
+				elseif slashIdx == 5 then
+					-- [5단 축발 선회] 검·창은 반회전, 도끼·철퇴는 뒷발로 눌러 묵직하게 궤도 전환.
+					return CFrame.new(side * lateral * 0.86 * beat, -(if heavy then 0.40 else 0.28) * beat, -0.23 * thrust)
+						* CFrame.Angles(-0.22 * beat, side * (if heavy then 1.10 else 1.62) * beat, -side * 0.24 * beat)
 				elseif slashIdx == 6 and not heavy then
 					return CFrame.new(-side * 0.28 * beat, 2.15 * beat - 0.18 * settle, -0.37 * thrust)
 						* CFrame.Angles(spin, side * 0.16 * beat, 0)
+				elseif slashIdx == 6 then
+					-- [6단 중량 차별화] 백덤블링 대신 두 손 내려찍기 전신 감아올리기.
+					return CFrame.new(-side * 0.35 * beat, -0.60 * beat + 0.15 * settle, -0.31 * thrust)
+						* CFrame.Angles(-0.44 * beat, side * 0.95 * beat, side * 0.16 * beat)
 				elseif slashIdx == 7 then
 					return CFrame.new(side * 1.12 * beat, -0.97 * beat + 0.12 * settle, -forward * 0.64 * thrust)
 						* CFrame.Angles(0.34 * beat, -side * 0.82 * beat, side * 0.24 * beat)
@@ -2670,6 +2694,10 @@ function FieldScene.start(opts)
 				elseif slashIdx == 9 and not heavy then
 					return CFrame.new(side * 1.18 * beat, 1.91 * beat - 0.23 * settle, -forward * 0.28 * thrust)
 						* CFrame.Angles(0.12 * beat, side * 0.24 * beat, -side * spin)
+				elseif slashIdx == 9 then
+					-- [9단 반대축] 중량 무기도 크게 역디딤해 10단 마무리로 관성을 넘긴다.
+					return CFrame.new(side * lateral * 1.36 * beat, -0.64 * beat + 0.13 * settle, -0.30 * thrust)
+						* CFrame.Angles(0.24 * beat, -side * 1.24 * beat, side * 0.27 * beat)
 				end
 				-- [검무 10박 마무리] 빠른 무기는 부드러운 전신 회전 후 전방 복귀, 중량 무기는 묵직한 반회전과 착지.
 				local eased = p * p * (3 - 2 * p)
