@@ -1138,6 +1138,7 @@ test('Mare naval steering, eight coasts, mobile HUD, aiming, radar and large VFX
   }
   assert.match(src,/local coast = coasts\[mapHash % #coasts \+ 1\]/);
   assert.match(src,/local steerCue = \(if turnNeeded >= 0 then "우로 " else "좌로 "\)/);
+  assert.match(src,/\) \.\. "°"/, "aim cue string literal must be closed");
   assert.match(src,/local scanAngle = \(now \* 2\.45\) % tau/);
   assert.match(src,/if trailAngle < 1\.45/);
   assert.match(src,/s0 = scale \* 1\.95/);

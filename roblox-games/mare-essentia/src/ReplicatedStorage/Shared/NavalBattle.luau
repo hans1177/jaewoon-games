@@ -4419,7 +4419,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local turnLeft = (enemyBearing + math.pi / 2 - me.theta + math.pi) % (math.pi * 2) - math.pi
 			local turnRight = (enemyBearing - math.pi / 2 - me.theta + math.pi) % (math.pi * 2) - math.pi
 			local turnNeeded = if math.abs(turnRight) < math.abs(turnLeft) then turnRight else turnLeft
-			local steerCue = (if turnNeeded >= 0 then "우로 " else "좌로 ") .. tostring(math.floor(math.abs(math.deg(turnNeeded)) + 0.5)) .. "°
+			local steerCue = (if turnNeeded >= 0 then "우로 " else "좌로 ") .. tostring(math.floor(math.abs(math.deg(turnNeeded)) + 0.5)) .. "°"
 			local color = if not inRange then Color3.fromRGB(255, 205, 130) elseif aligned then Color3.fromRGB(124, 236, 161) else Color3.fromRGB(255, 178, 100)
 			local tau = math.pi * 2
 			local scanAngle = (now * 2.45) % tau -- [탐지광] 약 2.6초/회전, 조각 잔광은 점진적으로 감쇠
