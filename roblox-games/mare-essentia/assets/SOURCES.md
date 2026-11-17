@@ -1645,18 +1645,40 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 | `relics/` | weapon-doubleaxe.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/piratekit.html |
 | `relics/` | weapon-pirate-pistol.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/piratekit.html |
 
-## 2026-11-17 생성 원화 — 교역품 6종 2.5D 아이콘
+## 2026-11-17 생성 원화 — 교역품 26종 2.5D 아이콘
 
-- 제작: ChatGPT 이미지 생성으로 제작한 게임 전용 원화. 상업용 게임의 교역품 표시를 위해 원본을 512×512 PNG 색인 256색·투명 배경으로 최적화했다.
-- 원본 마스터: 사용자 대화에 제공된 1024×1024 투명 PNG 6개(`mare_goods_register_ready.zip`). 목록·인벤토리는 512픽셀 파일을 자동 축소 사용하고, 불필요한 별도 동일 이미지 사이즈는 업로드하지 않는다.
-- 기존 `Goods/<id>` 키·거래 가격·보유수량·저장 및 보상은 그대로 유지. 승인 해시는 `assets/APPROVED_IMAGES.json`, 실제 Roblox 자산 ID와 체험 사용 권한은 등록 파이프라인이 검증한 뒤 `assets-registered.json`에 반영한다.
-- 금지: 술병·술잔·술통 등 규제 물품 이미지, 기존 제재 자산과 해당 파생물, 합본 견본 이미지는 등록 대상에 포함하지 않는다.
+- 제작: ChatGPT로 직접 제작한 게임용 교역품 단독 원화. 라이브러리 보관 원본에서 512×512 PNG로 최적화하고 실제 알파 0~255·네 모서리 투명·SHA-256을 검증했다.
+- 출처: ChatGPT 라이브러리 `mare_goods_register_ready.zip`, `roblox_goods_ready.zip`, `glass_assets.zip`, `goods_wool_coal.zip` 및 각 원본 PNG. 모두 프로젝트 전용 원화(PROJECT_ORIGINAL_ART).
+- 중복 원화는 품목마다 하나만 선택. 원화 파일명과 기존 Goods 품목 ID를 유지한다. 올리브는 게임 규칙이나 교역품을 새로 추가하지 않고 자산 등록만 수행한다.
+- 기존 `owner-mare-essentia-assets.yml`과 `tools/mare-essentia-upload-assets.mjs`의 Image 등록 경로만 사용한다. 해시 승인: `assets/APPROVED_IMAGES.json`. 발급 자산 번호·체험 사용 권한: `assets-registered.json`. 등록·권한·실제 Studio 시각 검증을 구분한다.
+- 게임의 거래 가격·보유량·보상·저장 키와 술 규제 제한을 변경하지 않는다.
 
-| 품목 ID | 게임 이미지 | PNG 512px 파일 바이트 | 최적화 원본 SHA-256 | 라이선스 |
+| 품목 | 이미지 | 512px 바이트 | SHA-256 | 원본 출처 |
 |---|---|---:|---|---|
-| `pepper` | `assets/goods/pepper.png` | 93848 | `999ea5ffd347bec9ae803835b39682e7ec724f15ef6841109ccb212cb5469010` | PROJECT_ORIGINAL_ART |
-| `silk` | `assets/goods/silk.png` | 79117 | `84ab549ba7855cd9c1107883c485ac99f688e2b0207ab76aaea8f30fd4c2e1cf` | PROJECT_ORIGINAL_ART |
-| `gold` | `assets/goods/gold.png` | 87684 | `320752ecf6e90479270e6fdbba609cf4036cfa39dc8a1ee5f2867a77979278e2` | PROJECT_ORIGINAL_ART |
-| `porcelain` | `assets/goods/porcelain.png` | 69298 | `c851821264f272d6f2e849251f7890dc0e10af006a205f631266f6f86977b3d3` | PROJECT_ORIGINAL_ART |
-| `coffee` | `assets/goods/coffee.png` | 95402 | `2d8c6d85e9f8ed9f96befd33cd66591cac871b8ea43c4a82ee773f5e45b3f416` | PROJECT_ORIGINAL_ART |
-| `timber` | `assets/goods/timber.png` | 75929 | `38fdd4ab5236ff4fbf894f5dfaaf3386ab70728c036b811a3386f2cb41744b36` | PROJECT_ORIGINAL_ART |
+| `amber` | `assets/goods/amber.png` | 441010 | `d69543990147f7d17127d91f8d3566f75d0165efbac1accee75e6312115eb8e5` | ChatGPT original; source in Library 호박 속에 보존된 곤충 클러스터.png |
+| `cloth` | `assets/goods/cloth.png` | 616550 | `bc782769ac27211f1700f354d29b22e9df326fb89ed1f221fd6f6c7c4dc8afe2` | ChatGPT original; transparent master in Library cloth.png |
+| `coal` | `assets/goods/coal.png` | 447687 | `5999345f16b92035b6eda05ff27097434f2d5d435e472565619719b183be1479` | ChatGPT original; transparent master in Library goods_wool_coal.zip |
+| `cocoa` | `assets/goods/cocoa.png` | 396656 | `fca84bd21a350c435d231117ecdce860a18a934dced9df241bc9cd83772ce539` | ChatGPT 2.5D original; transparent master in Library roblox_goods_ready.zip |
+| `coffee` | `assets/goods/coffee.png` | 410951 | `ad4ff4c5924dcb2bf4066dd230d258cbd649dd5e392d0987f841902ad50db766` | ChatGPT 2.5D original; transparent master in Library mare_goods_register_ready.zip |
+| `coral` | `assets/goods/coral.png` | 423746 | `a209c170a34310d7d4b225e84c89470c3b5b7e3b2add1b6b45b96591cc3b98a3` | ChatGPT 2.5D original; transparent master in Library roblox_goods_ready.zip |
+| `dates` | `assets/goods/dates.png` | 446007 | `1a34b064d329464f0d5597087f0bfd29d0c7b113744edd84b798bf0c2ef73fe4` | ChatGPT 2.5D original; transparent master in Library roblox_goods_ready.zip |
+| `fish` | `assets/goods/fish.png` | 563727 | `7c6d127b381f9f588793c99a5d9195557ea8f38036d0e2f2556a2bc88c4a50b6` | ChatGPT original; source in Library 신선한 생선과 얼음 나무 상자.png |
+| `fur` | `assets/goods/fur.png` | 605411 | `1f0dc0106087fd1d2112d22b8f15b3c7b3b2fa79636e9783c48038842c59e7b8` | ChatGPT original; source in Library 모피 무역 화물 더미.png |
+| `glass` | `assets/goods/glass.png` | 344870 | `9bbca10648b327ba15a85607fb8f15472c411d475ac38ca787688d3a6debc7f7` | ChatGPT original; transparent master in Library glass_assets.zip |
+| `gold` | `assets/goods/gold.png` | 375035 | `a9a21bae451bc99e8427a15d341ecd97dc59a8a54c007c79c9650ec83c08be58` | ChatGPT 2.5D original; transparent master in Library mare_goods_register_ready.zip |
+| `iron` | `assets/goods/iron.png` | 437288 | `b24e12ab32cfd17442acafca3880ce78126dcfbb88b52f13b1338c53abbc28b7` | ChatGPT original; transparent master in Library iron.png |
+| `ivory` | `assets/goods/ivory.png` | 614353 | `1ea155c10c7441321563de162395df032f4bfb2279b1c66620189856552e9c28` | ChatGPT original; source in Library 상아 무역품과 정교한 조각품들.png |
+| `olive` | `assets/goods/olive.png` | 290427 | `6ac6829c2a4ad4d0915c50a4ccd8a857cd4fdcf45b9dcff132b655fdaa9aedd6` | ChatGPT 2.5D original; transparent master in Library roblox_goods_ready.zip |
+| `olive_oil` | `assets/goods/olive_oil.png` | 243937 | `caeeeeb1ef358d64e3bc82c59bc5521672ddaa973430eb83ace28c5fdac297e1` | ChatGPT 2.5D original; transparent master in Library roblox_goods_ready.zip |
+| `pearls` | `assets/goods/pearls.png` | 406490 | `09b586647d59dfffa4056a9efd772ee21587869d3767b1c55214017f0c348ee7` | ChatGPT 2.5D original; transparent master in Library roblox_goods_ready.zip |
+| `pepper` | `assets/goods/pepper.png` | 412965 | `07dddb45b4ddf4915917e111a54a3c1d5819a0ee6ae710c84d35ef2c68c20bfd` | ChatGPT 2.5D original; transparent master in Library mare_goods_register_ready.zip |
+| `porcelain` | `assets/goods/porcelain.png` | 296810 | `b619ba2d3eef65fbf87fda509f14f7eca2d8c28d7911b5a40d93a46d434f3576` | ChatGPT 2.5D original; transparent master in Library mare_goods_register_ready.zip |
+| `saffron` | `assets/goods/saffron.png` | 509532 | `64ddd746be581a8328dc6ed9990a1a4709d95aae9c1f9fc6f29f261373315349` | ChatGPT 2.5D original; transparent master in Library roblox_goods_ready.zip |
+| `salt` | `assets/goods/salt.png` | 563774 | `b4d59bc67a4d2be16663a638af9c51cabf75220d51f571ea787f34c17dd66f5e` | ChatGPT original; transparent master in Library salt.png |
+| `silk` | `assets/goods/silk.png` | 345074 | `b73a6d1e2d89f8243b722902b47d9b8f26252562c404a92adfc0e969d5dee338` | ChatGPT 2.5D original; transparent master in Library mare_goods_register_ready.zip |
+| `spice` | `assets/goods/spice.png` | 328656 | `808a466a5378809b27c63755c69844bc200b57c5a7b4885325f5622c78965d33` | ChatGPT 2.5D original; transparent master in Library roblox_goods_ready.zip |
+| `sugar` | `assets/goods/sugar.png` | 255180 | `b8d383ec18e37285ea0787c3db21424f9a3dc0c5792987385229f3f449218b24` | ChatGPT 2.5D original; transparent master in Library roblox_goods_ready.zip |
+| `tea` | `assets/goods/tea.png` | 430825 | `3160f8725ca19eb40cdf7e5ddb46a2243a4d1877f5433b7d4a12f21e77be9871` | ChatGPT 2.5D original; transparent master in Library roblox_goods_ready.zip |
+| `timber` | `assets/goods/timber.png` | 349595 | `295f531df80159e7f56751b534a424a21742cb1308a9ef74640f15a9c0f2b487` | ChatGPT 2.5D original; transparent master in Library mare_goods_register_ready.zip |
+| `wool` | `assets/goods/wool.png` | 433722 | `29078ddc2686f85ec92356dcb47a29ee62483e216e7bd0ff92cf25d75b868b77` | ChatGPT original; transparent master in Library goods_wool_coal.zip |
+

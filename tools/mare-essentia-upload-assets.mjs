@@ -1146,6 +1146,8 @@ if (!studioRegrantPath) for (const [id, review] of Object.entries(modelOriginals
 
 // 2026-11-11 오너 승인으로 바이브가 직접 그린 평면 벡터 교역품(소스: assets/goods/src/)
 const VIBE_DRAWN_GOODS = ['pepper','silk','porcelain','coffee','timber','feathers','cloves','nutmeg','cinnamon','lacquer','camphor','ginseng','vanilla','cochineal','sealskin','guano','nitrate','ambergris','gum_arabic','beer_grain','sake_rice','brazilwood','cocoa','copper','ebony','gems','gold','jade','kauri','logwood','mahogany','maize','palm_oil','pearl_shell','sandalwood','sandalwood_hi','silver'].map(n => n + '.png');
+// [ChatGPT 2.5D 교역품 원화] 승인 해시를 가진 게임 전용 투명 이미지에만 적용. 기존 Image 업로드·권한 등록기를 그대로 사용한다.
+const CHATGPT_ORIGINAL_GOODS = ['amber','cloth','coal','cocoa','coffee','coral','dates','fish','fur','glass','gold','iron','ivory','olive','olive_oil','pearls','pepper','porcelain','saffron','salt','silk','spice','sugar','tea','timber','wool'].map(n => n + '.png');
 // [지식카드 51장] 이름 규칙 밖(ast_*, zoo_* 등)이라도 APPROVED_IMAGES에 해시 승인된 카드 jpg는 등록 대상에 포함한다.
 const approvedCardNames = new Set();
 for (const k of Object.keys(cardApprovalDocument.approved || {})) if (k.startsWith('CardArt/')) approvedCardNames.add(k.slice(8) + '.jpg');
@@ -1187,7 +1189,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
         : kind === 'Menu' && f.startsWith('vfx_') ? 'CC0-1.0'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
         : kind === 'Portraits' && f === 'heroes.jpg' ? 'PUBLIC_DOMAIN_AND_ORIGINAL'
-        : kind === 'Portraits' || kind === 'Goods' && ['dates.png', 'raisins.png', ...VIBE_DRAWN_GOODS].includes(f) ? 'PROJECT_ORIGINAL_ART'
+        : kind === 'Portraits' || kind === 'Goods' && ['dates.png', 'raisins.png', ...VIBE_DRAWN_GOODS, ...CHATGPT_ORIGINAL_GOODS].includes(f) ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Goods' && ['saffron.png', 'rice.png', 'indigo.png'].includes(f) ? 'CC0-1.0' : image ? 'CC-BY-3.0' : 'CC0-1.0'});
   }
 }
@@ -1424,6 +1426,7 @@ for (const item of plan) {
           : item.kind === 'Portraits' && item.name.startsWith('scholar_') ? 'Public-domain historical portrait from Wikimedia Commons (license verified by fetch_commons.py); see assets/portraits/portraits-report.json'
           : item.kind === 'Portraits' ? 'Original NPC dialogue portrait for Mare Essentia at owner request; see assets/SOURCES.md'
           : item.kind === 'Menu' && item.license === 'PROJECT_ORIGINAL_ART' ? 'Original aged parchment and embossed leather texture rendered for Mare Essentia book UI; approved hash in assets/APPROVED_IMAGES.json'
+          : item.kind === 'Goods' && CHATGPT_ORIGINAL_GOODS.includes(item.name + '.png') ? 'Original ChatGPT 2.5D transparent commodity illustration for Mare Essentia; approved source hash in assets/APPROVED_IMAGES.json and provenance in assets/SOURCES.md'
           : item.license === 'PROJECT_ORIGINAL_ART' ? 'Original vector commodity art made for Mare Essentia at owner request; see assets/SOURCES.md'
           : item.kind === 'Goods' && ['rice', 'indigo'].includes(item.name) ? 'OpenFarm Open Crop Icons CC0 source illustrations; see assets/SOURCES.md'
           : item.kind === 'Menu' && item.name.startsWith('vfx_') ? 'CC0 particle sprite (OpenGameArt Particle Pack, 80 sprites); same source as company common VFX; see assets/SOURCES.md'
