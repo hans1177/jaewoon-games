@@ -738,6 +738,16 @@ local WEAPON_HIGH_BEATS = {
 	FIREARM = { "W:FIREARM_BURST", "W:FIREARM_RELOAD" },
 	DUAL = { "W:DUAL_CROSS", "W:DUAL_REVERSE" },
 }
+-- [무기 숙련 시각 연계] 실제 타격은 1번. 이 순서는 R15 자세/재장전 구간만 결정한다.
+-- 공용 CommonMotion에 이미 등록된 같은 계열 동작만 사용하고, 특화 무기별 재발사 연출을 만들지 않는다.
+local WEAPON_CHAIN_STANCES = {
+	CROSSBOW = { "W:FIREARM_RECOIL", "W:FIREARM_CYCLE", "W:FIREARM_AIM" },
+	PISTOL = { "W:FIREARM_RECOIL", "W:FIREARM_CYCLE", "W:FIREARM_AIM" },
+	RIFLE = { "W:FIREARM_RECOIL", "W:FIREARM_RELOAD", "W:FIREARM_AIM" },
+	BOW = { "W:BOW_RELEASE", "W:BOW_RENOCK", "W:BOW_DRAW" },
+	LONGBOW = { "W:BOW_RELEASE", "W:BOW_DRAW", "W:BOW_RENOCK" },
+	RAPIER = { "W:BLADE_THRUST", "W:BLADE_RIPOSTE", "W:BLADE_SLASH_L" },
+}
 function FM.weaponCombo(motion: string?, idx: number)
 	local key = "wpn:" .. tostring(motion) .. ":" .. idx
 	local c = comboCache[key]
@@ -754,7 +764,10 @@ function FM.weaponCombo(motion: string?, idx: number)
 			end
 			local stage = math.clamp(math.floor(idx), 1, 5)
 			local extras = WEAPON_HIGH_BEATS[prof.family]
-			local action = if stage > #route and extras then extras[((stage - #route - 1) % #extras) + 1] else route[(stage - 1) % #route + 1]
+			local stances = WEAPON_CHAIN_STANCES[motion]
+			local action = if stage <= 3 and stances then stances[stage]
+				elseif stage > #route and extras then extras[((stage - #route - 1) % #extras) + 1]
+				else route[(stage - 1) % #route + 1]
 			return CM.CreateCombatCombo(motion, { action })
 		end)
 		c = if ok and res then res else false
