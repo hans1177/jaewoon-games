@@ -332,7 +332,7 @@ test('유적 상호작용과 발견 화면의 모바일 잘림·조사 키 충�
 test('1단 검병·궁수 편성은 유지하면서 승인된 R15 체형 3종 이상을 실제 배정한다',()=>{
   assert.ok(field.includes('local kinds = if danger0 <= 1 then { "grunt", "grunt", "archer", "grunt" }'));
   assert.ok(field.includes('local enemyCount = math.clamp(20 + (danger0 - 1) * 6, 20, 100 - bossCount)'));
-  const grunt=field.match(/\tgrunt = \{([\s\S]*?)\n\t\},/);
+  const grunt=field.match(/\t\tgrunt = \{([\s\S]*?)\n\t\t\},/);
   assert.ok(grunt,'실제 검병 복식 정의 누락');
   const profiles=[...grunt[1].matchAll(/\{ ".*?", "(.*?)", Color3/g)].map(x=>x[1]);
   assert.ok(profiles.length>=5,'기존 검병 5종 복식 보존');
