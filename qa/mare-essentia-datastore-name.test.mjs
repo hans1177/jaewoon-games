@@ -400,6 +400,8 @@ test('탐험 0.4초 회피 6종 및 무기별 10타 공중 검무 유지',()=>{
   ]) assert.ok(field.includes(marker),'곡예 모션 누락: '+marker);
   assert.match(field,/FieldDodgeTrick", \(ch0:GetAttribute\("FieldDodgeTrick"\) or 0\) % 6 \+ 1/);
   assert.match(field,/startSwing\("dash", 0\.4\)/);
+  assert.match(field,/if kind == "dash" then\s+dur = 0\.4/);
+  assert.match(field,/elseif kind == "slash" and beat >= 2 then\s+dur = math\.clamp\(dur, 0\.33, 0\.44\)/);
   assert.match(field,/local spin = t \* t \* \(3 - 2 \* t\) \* math\.pi \* 2/);
   assert.match(field,/elseif trick == 5 then[\s\S]*?canon\.HandL/);
   assert.match(field,/local spin = spinPhase \* spinPhase \* \(3 - 2 \* spinPhase\) \* math\.pi \* 2/);
