@@ -3978,9 +3978,16 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
     && active.includes('elseif stage == chain and stage == 3')
     && !active.includes('strikeEnemy('),
     'bonus visual beats must not add damage or award duplicate experience');
-  assert.ok(field.includes('if now >= a.nextSkill and #enemies > 0 then')
+  assert.ok(field.includes('if now >= a.nextSkill and (#enemies > 0 or (a.healer and pl.hp < pl.maxHp * 0.65)) then')
     && field.includes('a.skillCd[sid] = now + def.cooldown')
-    && field.includes('castEffect(sid, a.name'),'companion skills must remain automatic');
+    && field.includes('castEffect(sid, a.name')
+    && field.includes('if ally.healer then table.insert(activeHealers, ally) end'),
+    'companion skills and out-of-combat healer assistance must remain automatic');
+  assert.ok(field.includes('streakCountedSeq ~= streakActionSeq')
+    && field.includes('if hits == 0 then endStreak("헛손질") end')
+    && field.includes('now - lastCombatAt >= 8')
+    && field.includes('0.12 + math.min(healers, 2) * 0.18'),
+    'cumulative streak must be scored per attack and passive healing must remain tiny and non-combat only');
   assert.ok(allies.includes('function JobSkills.allySkills'));
   const steps=JSON.parse(fs.readFileSync(base+'tools/devloop/studio-scripts/mare-weapons.json','utf8'));
   const names=['fist','sword','dagger','axe','spear','mace','bow','crossbow','gun'];
