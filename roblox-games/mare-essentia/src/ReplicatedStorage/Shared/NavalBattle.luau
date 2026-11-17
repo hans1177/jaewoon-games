@@ -2879,6 +2879,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		for _, vent in state.vents do
 			vent.soot.Rate = math.floor(severity * (if MOBILE_VFX then 7 else 14))
 			vent.fire.Rate = if hp < 0.42 then math.floor((0.42 - hp) * (if MOBILE_VFX then 35 else 65)) else 0
+			-- Rate가 0으로 생성된 기존 emitterOn은 Enabled=false이므로 피해 단계마다 함께 켜야 한다.
+			vent.soot.Enabled = vent.soot.Rate > 0
+			vent.fire.Enabled = vent.fire.Rate > 0
 			vent.glow.Brightness = if hp < 0.42 then severity * (if MOBILE_VFX then 1.1 else 2.0) * (0.85 + 0.15 * math.sin(now * 13)) else 0
 		end
 	end
