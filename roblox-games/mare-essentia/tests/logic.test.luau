@@ -1320,6 +1320,11 @@ do
 	st.coins = 5000
 	local fresh = S.MarketClass.new()
 	local c = { rng = rng, market = fresh }
+	-- [화물 규칙 재발 방지] 시작 선박의 고유 적재량 특화가 실제 화물 상한에 적용되는지 검증한다.
+	-- 전투·가격·저장·선박 정의는 그대로 두며, 예전 20칸 고정 가정이 다시 들어오지 못하게 한다.
+	local shipDef = S.State.shipDef(st)
+	local shipCargoExpected = math.floor(shipDef.cargo * (1 + (if shipDef.trait then shipDef.trait.cargo or 0 else 0)))
+	check("starter ship capacity matches original trait", S.State.cargoCapacity(st) == shipCargoExpected, S.State.cargoCapacity(st))
 	-- [선박 화물 특화] 초반 캐러벨은 적재량 보정 때문에 20개보다 작을 수 있다.
 	-- 실제 서버의 화물·주문 상한 안에서 교역하고 수치·가격·경험치 규칙은 변경하지 않는다.
 	local amount = math.min(5, S.State.cargoCapacity(st) - S.State.cargoUsed(st), S.Econ.orderCap(st))
