@@ -134,6 +134,8 @@ local earlyMobParts = {
 	["People/female_ranger_acc_pauldrons"] = true,
 	["People/male_peasant_body"] = true,
 	["People/female_peasant_body"] = true,
+	["People/hair_beard"] = true,
+	["People/hair_buns"] = true,
 }
 local queue = {}
 for key, assetId in ids do
