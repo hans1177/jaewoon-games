@@ -1126,7 +1126,7 @@ function NavalBattle.play(opts)
 			panel.ScrollingDirection = Enum.ScrollingDirection.Y
 			panel.ScrollBarThickness = 3
 			panel.ClipsDescendants = true
-			panel.Visible = battleViewport.X >= 720 or battleViewport.Y >= 520
+			panel.Visible = battleViewport.Y >= 380 and (battleViewport.X >= 720 or battleViewport.Y >= 520)
 			panel.BackgroundColor3 = Color3.fromRGB(30, 24, 20)
 			panel.BackgroundTransparency = 0.35
 			panel.BorderSizePixel = 0
