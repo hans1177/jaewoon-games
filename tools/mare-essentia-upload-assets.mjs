@@ -788,6 +788,269 @@ async function prepareLicensedOriginals() {
 }
 if (!studioRegrantPath) await prepareLicensedOriginals();
 
+// [7대륙 36척] 독립 선박 3D 실물 원본: 기존 등록기 안에서만 신규 결손 GLB를 직접 제작한다.
+// 기본 모델 이름 교체나 타 함종 메시 복제가 아니다. 등록·권한·게임 표시는 기존 검증 흐름에 맡긴다.
+async function prepareOriginalBlueprintShips() {
+  const designs = [
+    {id:'atlantic_brigantine', length:46, beam:7.5, depth:4.6, tall:36, west:true,
+      description:'Individually built Atlantic brigantine: raked bow, double masts, square forecourses, aft gaff, guns and rope stays'},
+    {id:'zanzibar_jahazi', length:55, beam:9.4, depth:6.2, tall:44, west:false,
+      description:'Individually built Swahili jahazi: deep sewn-plank trading hull, monumental lateen yards, spice hold, palm canopy and carved eyes'},
+  ];
+  const colors=[
+    ['oak',[0.43,0.26,0.12,1]],['strake',[0.58,0.36,0.19,1]],['dark',[0.22,0.13,0.07,1]],
+    ['deck',[0.69,0.48,0.26,1]],['linen',[0.94,0.86,0.69,1]],['sailAccent',[0.71,0.36,0.19,1]],
+    ['rope',[0.30,0.21,0.11,1]],['bronze',[0.75,0.57,0.29,1]],['iron',[0.19,0.22,0.22,1]],
+    ['glass',[0.26,0.48,0.48,1]],['cargo',[0.51,0.38,0.21,1]],['flag',[0.14,0.39,0.48,1]],
+    ['palm',[0.68,0.51,0.24,1]]
+  ];
+  const palette=Object.fromEntries(colors.map(([n],i)=>[n,i]));
+  const plus=(a,b)=>a.map((v,i)=>v+b[i]),minus=(a,b)=>a.map((v,i)=>v-b[i]),times=(a,k)=>a.map(v=>v*k);
+  const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+  const unit=a=>times(a,1/(Math.hypot(...a)||1));
+  for(const design of designs){
+    const target=path.join(ROOT,'assets/naval',design.id+'-custom.glb'),licensePath=target+'.license.json';
+    let existing=null;
+    try{existing=await fs.readFile(target);}catch(e){if(e.code!=='ENOENT')throw e;}
+    if(existing){
+      const record=JSON.parse(await fs.readFile(licensePath,'utf8'));
+      const hash=crypto.createHash('sha256').update(existing).digest('hex');
+      if(record.sourceSha256!==hash||record.license!=='PROJECT_ORIGINAL_ART'
+        ||record.shipBlueprintId!==design.id||existing.toString('ascii',0,4)!=='glTF'
+        ||existing.readUInt32LE(8)!==existing.length)
+        throw Error('MARE_AUTHORED_BLUEPRINT_SOURCE_DRIFT:'+design.id);
+      console.log('MARE_AUTHORED_BLUEPRINT_VERIFIED',design.id,hash);
+      continue;
+    }
+    const L=design.length,B=design.beam,D=design.depth,west=design.west,groups=colors.map(()=>({p:[],n:[],i:[],count:0}));
+    let low=[Infinity,Infinity,Infinity],high=[-Infinity,-Infinity,-Infinity];
+    const emit=(mat,a,b,c)=>{
+      const face=cross(minus(b,a),minus(c,a));
+      if(Math.hypot(...face)<0.0000001)return;
+      const g=groups[palette[mat]],normal=unit(face),index=g.p.length/3;
+      for(const v of [a,b,c]){
+        g.p.push(...v);g.n.push(...normal);
+        for(let k=0;k<3;k++){low[k]=Math.min(low[k],v[k]);high[k]=Math.max(high[k],v[k]);}
+      }
+      g.i.push(index,index+1,index+2);g.count++;
+    };
+    const quad=(mat,a,b,c,d)=>{emit(mat,a,b,c);emit(mat,a,c,d);};
+    const rod=(mat,a,b,r=0.06,segments=8)=>{
+      const length=Math.hypot(...minus(b,a));if(length<0.001)return;
+      const dir=unit(minus(b,a)),n=unit(cross(dir,Math.abs(dir[1])>.92?[0,0,1]:[0,1,0])),m=unit(cross(dir,n));
+      for(let j=0;j<segments;j++){
+        const ang=j*2*Math.PI/segments,next=(j+1)*2*Math.PI/segments;
+        const off=plus(times(n,r*Math.cos(ang)),times(m,r*Math.sin(ang)));
+        const off2=plus(times(n,r*Math.cos(next)),times(m,r*Math.sin(next)));
+        quad(mat,plus(a,off),plus(a,off2),plus(b,off2),plus(b,off));
+      }
+    };
+    const box=(mat,x,y,z,dx,dy,dz)=>{
+      const a=[x-dx/2,y-dy/2,z-dz/2],b=[x+dx/2,y-dy/2,z-dz/2],c=[x+dx/2,y+dy/2,z-dz/2],d=[x-dx/2,y+dy/2,z-dz/2],
+        e=[x-dx/2,y-dy/2,z+dz/2],f=[x+dx/2,y-dy/2,z+dz/2],g=[x+dx/2,y+dy/2,z+dz/2],h=[x-dx/2,y+dy/2,z+dz/2];
+      for(const face of [[a,b,c,d],[f,e,h,g],[e,a,d,h],[b,f,g,c],[d,c,g,h],[e,f,b,a]])quad(mat,...face);
+    };
+    const beam=t=>B*Math.sqrt(Math.max(0.015,1-t*t))*(west?1-0.13*t:1+0.07*t);
+    const hull=(t,angle)=>[t*L/2,1.5-D*Math.sin(angle)*(0.84+0.16*(1-Math.abs(t)))+t*(west?0.15:0.28),Math.cos(angle)*beam(t)];
+    // [선체] 연속 곡면 판재(대략 5000 삼각형), 다른 선수 기울기·폭·흘수와 우현/좌현 진짜 메시.
+    for(let i=0;i<100;i++){
+      const t=-.995+1.99*i/100,t2=-.995+1.99*(i+1)/100;
+      for(let j=0;j<28;j++){
+        const v=j*Math.PI/28,v2=(j+1)*Math.PI/28;
+        quad(j%7===0?'strake':j%7===6?'dark':'oak',hull(t,v),hull(t2,v),hull(t2,v2),hull(t,v2));
+      }
+    }
+    // [갑판] 별도 3D 목재 갑판, 횡거더, 이음부·목재 못과 양현 난간.
+    for(let i=0;i<80;i++){
+      const t=-.985+1.97*i/80,t2=-.985+1.97*(i+1)/80;
+      for(let j=0;j<18;j++){
+        const z=-1+2*j/18,z2=-1+2*(j+1)/18;
+        quad((j+i)%9===0?'strake':'deck',[t*L/2,1.56,z*beam(t)*.94],[t2*L/2,1.56,z*beam(t2)*.94],
+          [t2*L/2,1.56,z2*beam(t2)*.94],[t*L/2,1.56,z2*beam(t)*.94]);
+      }
+    }
+    for(const side of [-1,1]){
+      for(let j=0;j<6;j++){
+        const angle=side===-1?Math.PI-(0.18+j*.16):0.18+j*.16;
+        for(let i=0;i<34;i++){
+          const t=-.975+1.95*i/34,t2=-.975+1.95*(i+1)/34;
+          rod(j===0?'bronze':j===5?'dark':'strake',hull(t,angle),hull(t2,angle),j===0?.08:.045,6);
+        }
+      }
+      for(let i=0;i<42;i++){
+        const t=-.96+1.92*i/42,t2=-.96+1.92*(i+1)/42;
+        rod('bronze',[t*L/2,1.97,side*beam(t)*.98],[t2*L/2,1.97,side*beam(t2)*.98],.10,7);
+      }
+      for(let i=0;i<22;i++){
+        const t=-.94+1.88*i/22;rod('oak',[t*L/2,1.54,side*beam(t)*.98],[t*L/2,2.02,side*beam(t)*.98],.07,6);
+      }
+    }
+    rod('dark',[L*.47,.65,0],[L*.55,west?3.65:5.9,0],.28,12);
+    rod('bronze',[L*.55,west?3.65:5.9,0],[L*.61,west?2.9:4.8,0],.15,9);
+    rod('oak',[-L*.47,.5,0],[-L*.49,west?4.2:6.1,0],.33,10);
+    // [선미] 별도 객실 외벽, 창, 모서리 장식, 노출된 밧줄과 두 개의 독립 화물창.
+    box('oak',-L*.32,2.6,0,west?9:13,2.1,B*.76);
+    for(const side of [-1,1]){
+      box('strake',-L*.32,3.70,side*B*.29,west?7.9:11.4,.20,.18);
+      for(let j=0;j<(west?3:5);j++){
+        const x=-L*.40+j*(west?2.55:2.2);
+        box('bronze',x,2.85,side*B*.42,1.02,.91,.15);
+        box('glass',x,2.85,side*B*.44,.74,.65,.08);
+        rod('dark',[x,2.43,side*B*.47],[x,3.28,side*B*.47],.04,6);
+      }
+    }
+    for(let k=0;k<2;k++){
+      const x=L*(k===0?-.045:.20);
+      box('dark',x,1.74,0,west?4.4:6.1,.20,west?2.65:3.7);
+      for(let j=0;j<6;j++)rod('bronze',[x-1.9+j*.7,1.89,-1],[x-1.9+j*.7,1.89,1],.022,6);
+    }
+    if(west)for(const side of [-1,1])for(let j=0;j<7;j++){
+      const x=-L*.24+j*(L*.51/6),z=side*beam(x/(L/2))*.98;
+      box('iron',x,.48,z,1.37,.77,.24);
+      rod('bronze',[x,.48,z],[x,.48,z+side*.6],.15,9);
+    }
+    else for(const side of [-1,1])for(let j=0;j<18;j++){
+      const x=-L*.34+j*(L*.70/17),z=side*beam(x/(L/2))*.97;
+      rod('rope',[x,.73,z],[x,1.9,z],.04,7);
+    }
+    // [교역품 실물] 묶은 향신료/보급 목재 상자와 화물 결박.
+    for(let i=0;i<(west?9:18);i++){
+      const x=-L*.12+Math.floor(i/3)*(west?2.15:2.05),z=(i%3-1)*(west?1.60:1.9);
+      box('cargo',x,2.13,z,west?1.55:1.73,1.14,west?1.25:1.53);
+      rod('rope',[x-.8,2.75,z],[x+.8,2.75,z],.04,7);
+      rod('rope',[x,2.75,z-.70],[x,2.75,z+.70],.04,7);
+    }
+    const mast=(x,top,r=.33)=>{
+      rod('oak',[x,1.56,0],[x+.30,top,0],r,12);
+      rod('bronze',[x+.30,top-.72,0],[x+.30,top-.35,0],r+.075,12);
+      rod('dark',[x+.30,top-.5,0],[x+.30,top+1.55,0],.12,9);
+      for(let i=1;i<=3;i++)for(const sign of [-1,1])
+        rod('rope',[x+.3,top-i*(top-1.5)*.16,0],[x+(i-2)*.7,1.65,sign*(B-1.25)],.042,7);
+    };
+    const squareSail=(x,lo,hi,w,color)=>{
+      const nu=40,nv=26,P=(u,v)=>[x+Math.sin(u*Math.PI)*Math.sin(v*Math.PI)*1.14,lo+(hi-lo)*v,(u-.5)*w];
+      for(let i=0;i<nu;i++)for(let j=0;j<nv;j++)
+        quad((j%13===0||i%17===0)?'strake':color,P(i/nu,j/nv),P((i+1)/nu,j/nv),P((i+1)/nu,(j+1)/nv),P(i/nu,(j+1)/nv));
+      rod('oak',[x,hi,-w*.54],[x,hi,w*.54],.15,8);
+      rod('oak',[x,lo,-w*.54],[x,lo,w*.54],.11,8);
+      for(const side of [-1,1]){
+        rod('rope',[x,hi,side*w*.5],[x,1.55,side*(B-.7)],.05,7);
+        rod('rope',[x,lo,side*w*.5],[x,1.55,side*(B-.7)],.035,7);
+      }
+      for(let j=0;j<5;j++)for(let i=0;i<nu;i++)
+        rod('rope',P(i/nu,j/4),P((i+1)/nu,j/4),.019,5);
+    };
+    const lateen=(a,b,c,color,billow)=>{
+      const n=66,P=(u,v)=>{const p=plus(a,plus(times(minus(b,a),u),times(minus(c,a),v)));
+        p[2]+=billow*Math.sin(Math.PI*u)*Math.sin(Math.PI*v);return p;};
+      for(let i=0;i<n;i++)for(let j=0;j<n-i;j++){
+        emit(color,P(i/n,j/n),P((i+1)/n,j/n),P(i/n,(j+1)/n));
+        if(i+j<n-1)emit(color,P((i+1)/n,j/n),P((i+1)/n,(j+1)/n),P(i/n,(j+1)/n));
+      }
+      for(const [p,q] of [[a,b],[b,c],[c,a]])rod('rope',p,q,.06,7);
+      for(let k=1;k<6;k++){
+        const p=plus(a,times(minus(b,a),k/6)),q=plus(p,times(minus(c,a),.6*(1-k/6)));
+        rod('rope',p,q,.025,6);
+      }
+    };
+    if(west){
+      mast(11,35);mast(-11,33);
+      squareSail(11,13,24,18.5,'linen');squareSail(11,25,33,14.5,'linen');
+      squareSail(-11,16,26,14.5,'linen');
+      lateen([-11,2.7,0],[-22,7,0],[-11,32,0],'sailAccent',.85);
+      lateen([10,23,0],[L*.61,3.2,0],[11,31,0],'linen',.5);
+      rod('oak',[L*.38,2.5,0],[L*.64,3.6,0],.2,10);
+      for(let i=0;i<5;i++){const x=-20+i*9;rod('rope',[x,1.7,5],[x+6,5.8,-5],.04,6);}
+      box('bronze',-19,3.85,0,1.25,.32,1.25);
+      for(let i=0;i<3;i++){const y=32+i*1.18;quad('flag',[11,y,0],[11,y+1.1,0],[13.5+i*.3,y+.75,0],[13,y,0]);}
+    }else{
+      mast(-3,42,.44);mast(-18,29,.28);
+      lateen([-7,4.5,0],[21,11.5,0],[-.2,41,0],'linen',1.8);
+      lateen([-19,5,0],[-4,9.4,0],[-18,30,0],'strake',1.1);
+      lateen([10,6,0],[L*.55,4,0],[1,28,0],'linen',.75);
+      rod('dark',[-18,29,0],[22,11.1,0],.20,12);
+      rod('dark',[-24,8.4,0],[-1,42,0],.21,12);
+      // [스와힐리 선형] 15분할 아치형 야자 차양, 청동 눈 문양, 후미 조타 난간.
+      for(let j=0;j<15;j++){
+        const x=-L*.4+j*.86,crest=6.8+Math.sin(j*Math.PI/14)*.72;
+        for(let k=0;k<11;k++){
+          const z=-B*.42+k*(B*.84/10),z2=z+B*.84/10;
+          quad(j%3===0?'strake':'palm',[x,crest,z],[x+.77,crest,z],[x+.77,crest,z2],[x,crest,z2]);
+        }
+        for(const side of [-1,1])
+          rod('dark',[x,3.5,side*B*.46],[x,crest,side*B*.46],.082,7);
+      }
+      for(const side of [-1,1])for(let i=0;i<3;i++){
+        const x=L*.29+i*1.1,z=side*beam(x/(L/2))*.99;
+        rod('bronze',[x,1.2,z],[x+.15,1.9,z],.08,9);
+        rod('glass',[x+.1,1.54,z+side*.06],[x+.1,1.6,z+side*.06],.18,10);
+      }
+      for(let i=0;i<18;i++){
+        const a=i*Math.PI/9,b=(i+1)*Math.PI/9;
+        rod('bronze',[L*.51+Math.cos(a)*.75,4.5+Math.sin(a)*.78,0],
+            [L*.51+Math.cos(b)*.75,4.5+Math.sin(b)*.78,0],.07,7);
+      }
+    }
+    for(const side of [-1,1])for(let j=0;j<20;j++){
+      const t=-.9+j*.095,z=side*beam(t),x=t*L/2;
+      rod(j%5===0?'bronze':'dark',[x,1.45,z],[x,.89,z*.89],j%5===0?.075:.032,6);
+    }
+    // [glTF 2.0] 색상별 하위 메시, 정면/뒷면, 실제 삼각형 인덱스와 노멀을 갖는 완성 GLB.
+    const triangles=groups.reduce((v,g)=>v+g.count,0);
+    if(triangles<13000||triangles>85000||high[0]-low[0]<40||high[1]-low[1]<28||high[2]-low[2]<12)
+      throw Error('MARE_AUTHORED_SHIP_GEOMETRY_INCOMPLETE:'+design.id+':'+triangles);
+    const parts=[],views=[],accessors=[],primitives=[];let binLength=0;
+    const bufferView=(data,targetKind)=>{
+      const pad=(4-binLength%4)%4;
+      if(pad){parts.push(Buffer.alloc(pad));binLength+=pad;}
+      const b=Buffer.from(data.buffer,data.byteOffset,data.byteLength),index=views.length;
+      views.push({buffer:0,byteOffset:binLength,byteLength:b.length,target:targetKind});
+      parts.push(b);binLength+=b.length;return index;
+    };
+    const accessor=(view,count,componentType,type)=>{
+      return accessors.push({bufferView:view,count,componentType,type})-1;
+    };
+    for(let m=0;m<groups.length;m++){
+      const g=groups[m];if(!g.count)continue;
+      const count=g.p.length/3,p=bufferView(new Float32Array(g.p),34962),
+        n=bufferView(new Float32Array(g.n),34962),indices=bufferView(new Uint32Array(g.i),34963);
+      primitives.push({attributes:{POSITION:accessor(p,count,5126,'VEC3'),NORMAL:accessor(n,count,5126,'VEC3')},
+        indices:accessor(indices,g.i.length,5125,'SCALAR'),material:m,mode:4});
+    }
+    const scene={asset:{version:'2.0',generator:'Mare Essentia original seven-continent ship sculptor'},scene:0,
+      scenes:[{nodes:[0]}],nodes:[{name:design.id,mesh:0}],
+      meshes:[{name:design.id,primitives}],
+      materials:colors.map(([name,rgba])=>({name,pbrMetallicRoughness:{
+        baseColorFactor:rgba,metallicFactor:name==='iron'?.4:0,roughnessFactor:.85},doubleSided:true})),
+      buffers:[{byteLength:binLength}],bufferViews:views,accessors};
+    const sceneBytes=Buffer.from(JSON.stringify(scene),'utf8');
+    const scenePad=(4-sceneBytes.length%4)%4,binPad=(4-binLength%4)%4;
+    const binary=Buffer.concat(parts),json=Buffer.concat([sceneBytes,Buffer.alloc(scenePad,0x20)]);
+    const total=12+8+json.length+8+binLength+binPad;
+    const glb=Buffer.alloc(total);glb.write('glTF',0);glb.writeUInt32LE(2,4);glb.writeUInt32LE(total,8);
+    glb.writeUInt32LE(json.length,12);glb.writeUInt32LE(0x4e4f534a,16);json.copy(glb,20);
+    const binStart=20+json.length;
+    glb.writeUInt32LE(binLength+binPad,binStart);glb.writeUInt32LE(0x004e4942,binStart+4);
+    binary.copy(glb,binStart+8);
+    if(glb.readUInt32LE(8)!==glb.length||glb.readUInt32LE(12)%4||scene.meshes[0].primitives.length<10)
+      throw Error('MARE_AUTHORED_SHIP_GLB_INVALID:'+design.id);
+    const hash=crypto.createHash('sha256').update(glb).digest('hex');
+    const proof={license:'PROJECT_ORIGINAL_ART',author:'GPT-6 / Mare Essentia original modelling',
+      source:'ai-generated',sourceSha256:hash,shipBlueprintId:design.id,
+      originalSource:'Original authored triangular hull and complete rigging, no copied ship meshes',
+      structuralGlbVerified:true,modelGeometryGroups:colors.map(row=>row[0]),
+      triangles,modelTargetSizeStuds:{length:L,beam:B*2,mastHeight:high[1]},
+      derivedBytes:glb.length,modifications:design.description,
+      actualRobloxRuntimeVerified:false,visualQualityApproved:false,robloxPublishedVerified:false,
+      assetProductionStatus:'SOURCE_BINARY_COMPLETE_AWAITING_IMPORT_AND_RUNTIME_QA'};
+    await fs.writeFile(target,glb);
+    await fs.writeFile(licensePath,JSON.stringify(proof,null,2)+'\n');
+    console.log('MARE_AUTHORED_SHIP_BINARY_CREATED',design.id,hash,glb.length,triangles);
+  }
+}
+if (!studioRegrantPath) await prepareOriginalBlueprintShips();
+
+
 
 const rawCookie = String(process.env.ROBLOX_ROBLOSECURITY || process.env.ROBLOX_SECURITY_COOKIE || '').trim();
 const cookie = rawCookie.includes('.ROBLOSECURITY=') ? rawCookie : (rawCookie ? '.ROBLOSECURITY=' + rawCookie + ';' : '');
