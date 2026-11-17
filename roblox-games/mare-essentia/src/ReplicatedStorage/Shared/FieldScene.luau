@@ -4586,15 +4586,19 @@ function FieldScene.start(opts)
 						m:ScaleTo(4 / longest)
 					end)
 				end
-				local p0 = ORIGIN + scatter(20)
+				-- [전투 동선 배치] 이미 승인된 실제 통을 삼각형 위험 구역으로 모아 사격/근접 연타 대상이 된다.
+				local p0 = ORIGIN + Vector3.new((i - 2) * half * 0.32, 0, half * 0.12 - (i - 1) * half * 0.26)
 				m.Parent = folder
 				m:PivotTo(CFrame.new(p0 + Vector3.new(0, 2, 0)))
+				m:SetAttribute("FieldCombatObject", true)
+				m:SetAttribute("FieldObjectMaxHp", 4)
+				m:SetAttribute("FieldObjectHp", 4)
 				local hl = Instance.new("Highlight")
 				hl.FillColor = Color3.fromRGB(255, 90, 40)
 				hl.FillTransparency = 0.75
 				hl.OutlineColor = Color3.fromRGB(255, 160, 60)
 				hl.Parent = m
-				table.insert(barrels, { model = m, pos = p0 + Vector3.new(0, 2, 0) })
+				table.insert(barrels, { model = m, pos = p0 + Vector3.new(0, 2, 0), hp = 4 })
 			end
 		end
 	end
@@ -4620,17 +4624,31 @@ function FieldScene.start(opts)
 						m:ScaleTo(3 / longest)
 					end)
 				end
-				local p0 = ORIGIN + scatter(12)
+				-- [디아블로식 사물 군집] 좌우 전투 통로에 교대로 배치. 중앙 시작/조사 길은 비운다.
+				local lane = if i % 2 == 0 then -1 else 1
+				local row = math.floor((i - 1) / 2)
+				local p0 = ORIGIN + Vector3.new(lane * (18 + row * 5), 0, half * (0.62 - row * 0.27))
 				m.Parent = folder
 				m:PivotTo(CFrame.new(p0 + Vector3.new(0, 1.5, 0)) * CFrame.Angles(0, rng:NextNumber(0, 6.28), 0))
-				table.insert(crates, { model = m, pos = p0 + Vector3.new(0, 1.5, 0) })
+				m:SetAttribute("FieldCombatObject", true)
+				m:SetAttribute("FieldObjectMaxHp", 3)
+				m:SetAttribute("FieldObjectHp", 3)
+				table.insert(crates, { model = m, pos = p0 + Vector3.new(0, 1.5, 0), hp = 3 })
 			end
 		end
 	end
-	local function breakCrate(c)
+	local function breakCrate(c, strikePower: number?)
 		local idx = table.find(crates, c)
-		if not idx then
-			return
+		if not idx then return false end
+		-- [연타 내구도] 기존 1회 랜덤 드롭은 실제 파괴 순간에만 굴린다.
+		c.hp = math.max(0, (c.hp or 3) - (strikePower or 1))
+		c.model:SetAttribute("FieldObjectHp", c.hp)
+		if c.hp > 0 then
+			pulseAt("IMPACT_FLASH", CFrame.new(c.pos), Color3.fromRGB(226, 191, 125),
+				Color3.fromRGB(255, 242, 209), 3.2, if visualMobile then 2 else 4)
+			c.model:PivotTo(c.model:GetPivot() * CFrame.Angles(0, math.rad(if c.hp % 2 == 0 then 7 else -8), 0))
+			sfx("sfx_card_chain", 0.24, 1.26)
+			return true
 		end
 		table.remove(crates, idx)
 		c.model:Destroy()
@@ -4648,12 +4666,20 @@ function FieldScene.start(opts)
 			say("공격력 상승! (8초)")
 		end
 		refresh()
+		return true
 	end
 
-	local function explodeBarrel(b, hrp: BasePart, hitActionSeq: number?)
+	local function explodeBarrel(b, hrp: BasePart, hitActionSeq: number?, strikePower: number?)
 		local idx = table.find(barrels, b)
-		if not idx then
-			return
+		if not idx then return false end
+		-- [위험 사물 연타] 견제 타격에는 금속 불꽃만 튀고, 내구도 소진 뒤에만 기존 폭발/주변 피해가 발생한다.
+		b.hp = math.max(0, (b.hp or 4) - (strikePower or 1))
+		b.model:SetAttribute("FieldObjectHp", b.hp)
+		if b.hp > 0 then
+			pulseAt("IMPACT_FLASH", CFrame.new(b.pos), Color3.fromRGB(242, 144, 72),
+				Color3.fromRGB(255, 238, 162), 3.5, if visualMobile then 2 else 5)
+			sfx("sfx_metal_clash", 0.31, 1.25)
+			return true
 		end
 		table.remove(barrels, idx)
 		b.model:Destroy()
@@ -4682,6 +4708,7 @@ function FieldScene.start(opts)
 			end
 		end
 		say(if n > 0 then string.format("폭발! %d명 휘말렸다", n) else "폭발! 아무도 없었다")
+		return true
 	end
 
 	-- 동작 하나를 쓴다: 규칙 검사(쿨타임·기력·콤보) → 모션 → 범위 안의 적을 친다
@@ -5168,8 +5195,7 @@ function FieldScene.start(opts)
 					ab = math.deg(math.acos(math.clamp(lk.Unit:Dot(tb.Unit), -1, 1)))
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, tb.Magnitude, ab) then
-					explodeBarrel(b, hrp, hitActionSeq)
-					hits += 1
+					if explodeBarrel(b, hrp, hitActionSeq, if moveId == "heavy" then 2 else 1) then hits += 1 end
 					if rangedShot then shots += 1 end
 				end
 			end
@@ -5182,11 +5208,63 @@ function FieldScene.start(opts)
 					ab = math.deg(math.acos(math.clamp(lk.Unit:Dot(tb.Unit), -1, 1)))
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, tb.Magnitude, ab) then
-					breakCrate(c)
+					if breakCrate(c, if moveId == "heavy" then 2 else 1) then hits += 1 end
 					if rangedShot then shots += 1 end
 				end
 			end
-			if hits == 0 and hitActionSeq >= streakCountedSeq then endStreak("헛손질") end
+			-- [모든 장면 배경 타격] 기존 나무/암석/캠프/도시/퀘스트 랜드마크 메시가
+			-- 같은 무기 범위·각도에서 명중 섬광과 짧은 흔들림으로 반응한다.
+			-- 건물/단서는 파괴하지 않아 맵·퀘스트 진행을 막지 않고, 타격 숙련/보상도 지급하지 않는다.
+			local sceneryHit = false
+			local visualObjectHits = 0
+			local maxVisualHits = if visualMobile then 2 else 4
+			for _, obj in fieldObjects do
+				if visualObjectHits >= maxVisualHits or (rangedShot and shots >= 1) then break end
+				if not obj.model.Parent or not obj.model:GetAttribute("FieldCombatObject") then continue end
+				local toward = (obj.pos - hrp.Position) * Vector3.new(1, 0, 1)
+				local nearDist = math.max(0, toward.Magnitude - obj.radius)
+				local angle = 0
+				if toward.Magnitude > 0.01 then
+					local facing = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
+					angle = math.deg(math.acos(math.clamp(facing.Unit:Dot(toward.Unit), -1, 1)))
+				end
+				if AC.inReach(rangeR * STUD + 3, arcR, nearDist, angle) then
+					visualObjectHits += 1
+					sceneryHit = true
+					if rangedShot then shots += 1 end
+					local nowHit = os.clock()
+					obj.lastHit = nowHit
+					local number = (obj.model:GetAttribute("FieldObjectHits") or 0) + 1
+					obj.model:SetAttribute("FieldObjectHits", math.min(number, 999))
+					local impactAt = Vector3.new(obj.pos.X, math.clamp(obj.pos.Y, ORIGIN.Y + 1.2, ORIGIN.Y + 6), obj.pos.Z)
+					local tint = if obj.model:GetAttribute("TerrainTheme") == "mine" then Color3.fromRGB(179, 190, 203)
+						elseif obj.model:GetAttribute("TerrainTheme") == "forest" then Color3.fromRGB(151, 213, 126)
+						else Color3.fromRGB(247, 201, 130)
+					pulseAt("IMPACT_FLASH", CFrame.new(impactAt), tint, Color3.fromRGB(255, 244, 203),
+						if moveId == "heavy" then 5 else 3, if visualMobile then 2 else 4)
+					if number % 3 == 0 then
+						-- 실제 연타 표시만 준다. 원본 적중/무기 숙련/드롭 정산은 절대 누적하지 않는다.
+						showCombo(string.format("환경 연속 타격 %d회!", number), false, tint)
+					end
+					local effect = Instance.new("Highlight")
+					effect.Name = "FieldObjectImpact"
+					effect.FillColor = tint
+					effect.OutlineColor = Color3.fromRGB(255, 239, 178)
+					effect.FillTransparency = 0.82
+					effect.OutlineTransparency = 0.48
+					effect.Parent = obj.model
+					-- 등록 실물 메시 자체를 잠깐 기울였다가 원위치로 돌려 놓는다.
+					if obj.radius <= 5 and number % 2 == 0 then
+						local tilt = if number % 4 == 0 then -1 else 1
+						obj.model:PivotTo(obj.origin * CFrame.Angles(0, 0, math.rad(tilt * (if moveId == "heavy" then 5 else 2.5))))
+					end
+					task.delay(0.18, function()
+						if effect.Parent then effect:Destroy() end
+						if obj.model.Parent and obj.lastHit == nowHit then obj.model:PivotTo(obj.origin) end
+					end)
+				end
+			end
+			if hits == 0 and not sceneryHit and hitActionSeq >= streakCountedSeq then endStreak("헛손질") end
 			if moveId == "rush" and hits > 0 then
 				local practice = weaponPractice[wpn.id]
 				if not practice then
