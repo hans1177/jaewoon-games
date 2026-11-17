@@ -53,6 +53,24 @@ test('신호 해석: HEALTH 줄에서 오류·자산 실패·몹·UI·조명을 
   assert.deepEqual(ids, ['asset-fail', 'console-errors', 'no-mobs', 'sky-missing', 'sparse-world', 'ui-missing']);
 });
 
+test('Studio 무기별 연속 프레임 오류는 스크린샷이 있어도 바이브 무기 복구 지시서로 연결한다', () => {
+  const error='step34: WEAPON_MOTION_FRAME_JUMP:dagger:7:11:HandR:1.56';
+  const state=parseReport({errors:[error], log:[{step:34,out:'WEAPON_QA_READY:dagger'}], summary:{abortedEarly:false,capturedFrames:4}});
+  assert.equal(state.studioErrors.length,1);
+  const issues=findingsFrom('mare-essentia',state);
+  const motion=issues.find(x=>x.id==='weapon-motion-continuity');
+  assert.ok(motion,'무기 프레임 오류가 사진 촬영 뒤에도 누락되면 안 된다');
+  assert.equal(motion.task,'weapons');
+  assert.equal(motion.kind,'combat');
+  assert.equal(motion.fingerprint,'mare-essentia:weapon-motion-continuity');
+  assert.equal(findingsFrom('fantasy-survival',state).some(x=>x.id==='weapon-motion-continuity'),false);
+  assert.equal(findingsFrom('mare-essentia',parseReport({errors:[],log:[],summary:{capturedFrames:4}})).some(x=>x.id==='weapon-motion-continuity'),false);
+  for (const marker of ['WEAPON_MOTION_MANNEQUIN','WEAPON_MOTION_NONFINITE','WEAPON_R15_POSE_MISSING']) {
+    const bad=parseReport({errors:['step20: '+marker+':spear:2'],log:[],summary:{capturedFrames:5}});
+    assert.ok(findingsFrom('mare-essentia',bad).some(x=>x.task==='weapons'),marker);
+  }
+});
+
 test('발견이 있는 영역은 점수가 올라 쿨다운 중이어도 급하면 먼저 점검한다', () => {
   const now = Date.parse('2026-11-11T12:00:00Z');
   const L = emptyLedger();

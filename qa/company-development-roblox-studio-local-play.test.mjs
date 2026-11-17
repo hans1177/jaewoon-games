@@ -4240,7 +4240,9 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
     'distinct full-body clergy and scholar dodges must alternate six visual tricks without changing movement distance');
   assert.ok(scene.includes('math.sin(math.clamp(p, 0, 1) * math.pi) ^ 0.72')&&
     scene.includes('then 2.0 else 1.70')&&
-    scene.includes('if swingKind == "dash" then 1.85 else nil'),
+    scene.includes('FM.step(pfm, dt, rootRot, if swingKind == "dash" then 1.85') &&
+    scene.includes('elseif swingKind and swingCombo and (wpn.family == "dagger" or wpn.family == "fist") then 1.12') &&
+    scene.includes('elseif swingKind and swingCombo and (wpn.family == "axe" or wpn.family == "blunt") then 0.96'),
     'evade must have large held pose and faster joint response without affecting weapon attack speed');
   for(const atom of ['"BLOCK_IMPACT"','"HEAL_PULSE"','"UPGRADE_BURST"','"DODGE_EVASION_PULSE"']){
     assert.ok(scene.includes('pulseAt('+atom),'dodge must reuse registered VFX: '+atom);
@@ -4306,7 +4308,17 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
   assert.equal(steps.filter(row=>row.type==='capture').length,27);
   for(const id of names){
     assert.ok(steps.some(row=>row.code?.includes('WEAPON_QA_LAUNCHED:'+id)),'missing real scene: '+id);
-    assert.ok(steps.some(row=>row.code?.includes('WEAPON_R15_POSE_MISSING:'+id)),'missing five-stage sample: '+id);
+    assert.ok(steps.some(row=>row.code?.includes('WEAPON_R15_POSE_MISSING:'+id)),'missing full 10-stage sample: '+id);
+    const probe=steps.find(row=>row.code?.includes('WEAPON_QA_READY:'+id+':STAGES_1_TO_10'));
+    assert.ok(probe,'무기별 실제 Studio 10타 QA 누락: '+id);
+    assert.match(probe.code,/for stage=1,10 do/);
+    assert.match(probe.code,/for frame=0,24 do/);
+    assert.match(probe.code,/FM.sample\(combo,combo.duration\*\(frame\/24\),pose\)/);
+    assert.match(probe.code,/WEAPON_MOTION_FRAME_JUMP:/);
+    assert.match(probe.code,/WEAPON_MOTION_NONFINITE:/);
+    assert.match(probe.code,/WEAPON_MOTION_MANNEQUIN:/);
+    assert.match(probe.code,/movedChannels\[joint\]=true/);
+    assert.ok(!probe.code.includes('workspace:SetAttribute(\'DevFieldSkill\',\'attack\')'),'검사만 무기 전투를 재생하며 기존 공격 권한은 유지');
     for(const motion of ['SLASH','HEAVY','SPIN'])
       assert.ok(steps.some(row=>row.code?.includes('WEAPON_'+motion+'_R15_PASS:'+id)),'missing real input: '+id+'/'+motion);
     for(const suffix of ['a','b','sweep'])
