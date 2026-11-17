@@ -328,6 +328,36 @@ test('유적 상호작용과 발견 화면의 모바일 잘림·조사 키 충�
   }
 });
 
+// [스튜디오 실제 실패 복구] 초급 20마리에서 체형 2종으로 수렴했던 R15 실루엣을 검사한다.
+test('1단 검병·궁수 편성은 유지하면서 승인된 R15 체형 3종 이상을 실제 배정한다',()=>{
+  assert.ok(field.includes('local kinds = if danger0 <= 1 then { "grunt", "grunt", "archer", "grunt" }'));
+  assert.ok(field.includes('local enemyCount = math.clamp(20 + (danger0 - 1) * 6, 20, 100 - bossCount)'));
+  const grunt=field.match(/\t\tgrunt = \{([\s\S]*?)\n\t\t\},/);
+  assert.ok(grunt,'실제 검병 복식 정의 누락');
+  const profiles=[...grunt[1].matchAll(/\{ ".*?", "(.*?)", Color3/g)].map(x=>x[1]);
+  assert.ok(profiles.length>=5,'기존 검병 5종 복식 보존');
+  const expect=[
+    ['Barbarian','heavy'],
+    ['Knight','athletic'],
+    ['Rogue_Hooded','slim']
+  ];
+  for(const [style,physique] of expect){
+    assert.ok(field.includes('elseif ac.kind == "grunt" and style[2] == "'+style+'" then "'+physique+'"'),
+      '검병 실물 복식과 체형 매칭 누락: '+style);
+  }
+  const kinds=['grunt','grunt','archer','grunt'],physiques=new Set();
+  for(let i=1;i<=20;i++){
+    const role=kinds[(i-1)%kinds.length];
+    const style=profiles[Math.floor((i-1)/4)%profiles.length];
+    const physique=role==='archer'?'slim':style==='Barbarian'?'heavy':
+      style==='Knight'?'athletic':style==='Rogue_Hooded'?'slim':'average';
+    physiques.add(physique);
+  }
+  assert.ok(physiques.size>=3,'실제 1단 적 20마리 체형 3종 확보 실패: '+[...physiques]);
+  assert.ok(field.includes('{ bodyType = bodyType, motionStyle = motionStyle, trousers = trousers, persona = styleN'),
+    '기존 R15 몸체 생성 연결 보존');
+});
+
 // [스튜디오 실증 회귀] 실제 탐험 2메달 HUD와 자동검사 스크립트가 같은 버튼을 검사해야 한다.
 test('스튜디오 탐험 실증은 현재 공격·회피 메달과 집안별 두 무기를 검사한다',()=>{
   const path='roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json';
