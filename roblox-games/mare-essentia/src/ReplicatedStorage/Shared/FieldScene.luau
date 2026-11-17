@@ -5126,9 +5126,20 @@ function FieldScene.start(opts)
 						elseif wpn.family == "spear" then Color3.fromRGB(127, 224, 255)
 						elseif wpn.family == "blunt" then Color3.fromRGB(255, 216, 149)
 						elseif wpn.family == "fist" then Color3.fromRGB(251, 233, 181)
+						elseif wpn.motion == "RAPIER" then Color3.fromRGB(173, 233, 255)
+						elseif wpn.motion == "KATANA" then Color3.fromRGB(206, 221, 255)
+						elseif wpn.motion == "SABRE" or wpn.motion == "SCIMITAR" then Color3.fromRGB(255, 222, 177)
 						else Color3.fromRGB(199, 216, 255)
-					trailsOn(ch0, { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerLeg", "RightLowerLeg" },
-						trailColor, if basicBeat == 10 then 0.48 else 0.27, 0.56)
+					-- [근접 무기별 2~10타 도장 잔광] 단검 양손 교차·창 양손 찌르기·도끼 내리찍기·철퇴 손목·격투 손발.
+					local strikeTrail = if wpn.family == "dagger" then { "RightHand", "LeftHand", "RightLowerArm", "LeftLowerArm" }
+						elseif wpn.family == "spear" then { "RightHand", "LeftHand", "RightLowerArm" }
+						elseif wpn.family == "axe" then { "RightHand", "RightLowerArm", "RightLowerLeg" }
+						elseif wpn.family == "blunt" then { "RightHand", "RightLowerArm", "LeftHand" }
+						elseif wpn.family == "fist" then { "RightHand", "LeftHand", "RightLowerLeg", "LeftLowerLeg" }
+						else { "RightHand", "RightLowerArm", "LeftHand", "RightLowerLeg" }
+					trailsOn(ch0, strikeTrail, trailColor, if basicBeat == 10 then 0.44
+						elseif wpn.family == "dagger" or wpn.family == "fist" then 0.19 else 0.27,
+						if basicBeat == 10 then 0.52 else 0.38)
 					-- [4·7박 검무 궤적] 기존 검광 에셋을 교차 각도로 사용. 피해·타격 횟수는 원본 그대로.
 					if basicBeat == 4 or basicBeat == 7 then
 						if not visualMobile or basicBeat == 7 then
@@ -5136,6 +5147,39 @@ function FieldScene.start(opts)
 								if wpn.family == "spear" then 60 elseif wpn.family == "dagger" then 95 else 145,
 								if basicBeat == 4 then -38 else 42)
 						end
+					end
+					-- [무기별 2~9타 접촉 섬광] 0.14초 공격 자세에 맞춰 창끝·검날·철퇴·발끝의 한 순간만 빛난다.
+					-- 무기 교체/다음 타/회피에는 시각 예약을 폐기. 피해·공격·5타 강타 코드는 건드리지 않는다.
+					if basicBeat < 10 then
+						local fxAt, fxWeapon, fxBeat, fxFamily, fxMotion = swingBridge.basicAt, wpn.id, basicBeat, wpn.family, wpn.motion
+						task.delay(0.14, function()
+							if finished or not hrp.Parent or swingKind ~= "slash" or slashIdx ~= fxBeat
+								or swingBridge.basicAt ~= fxAt or wpn.id ~= fxWeapon then return end
+							if visualMobile and fxBeat % 2 == 0 then return end
+							local side = if fxBeat % 2 == 0 then -1 else 1
+							local thrust = fxFamily == "spear" or fxMotion == "RAPIER"
+							local heavy = fxFamily == "axe" or fxFamily == "blunt"
+							local fist = fxFamily == "fist"
+							local at = hrp.CFrame * CFrame.new(if fxFamily == "dagger" or fist then side * 0.54 else 0,
+								if heavy then -1.12 elseif fist and fxBeat % 3 == 0 then -0.84 else 1.03,
+								-(if thrust then 3.0 elseif fist then 1.6 elseif heavy then 2.0 else 2.35))
+							local atom = if heavy then "CRITICAL_BURST" elseif fist then "SHAPE_BURST"
+								elseif thrust or fxFamily == "dagger" then "IMPACT_FLASH" else "SHAPE_BURST"
+							local size = if fxFamily == "dagger" then 3.0 elseif thrust then 4.0
+								elseif fxFamily == "axe" then 5.8 elseif fxFamily == "blunt" then 5.2 elseif fist then 4.1 else 4.6
+							pulseAt(atom, at, trailColor, trailColor:Lerp(Color3.new(1, 1, 1), 0.74),
+								size + (if fxBeat >= 7 then 1 else 0), if visualMobile then 2 else 4)
+							-- [3·6·9타 무기별 2박] 날렵한 무기는 교차 칼빛, 무거운 무기는 발구름 충격파.
+							if not visualMobile and (fxBeat == 3 or fxBeat == 6 or fxBeat == 9) then
+								if heavy or fist then
+									shockRing(hrp.Position - Vector3.new(0, 2, 0), if fist then 3.6 else 4.8, trailColor, 0.20)
+								else
+									slashArc(hrp, trailColor, math.min(reachV, 11),
+										if thrust then 42 elseif fxFamily == "dagger" then 80 else 125,
+										if fxFamily == "dagger" then side * 65 elseif fxMotion == "KATANA" then side * 34 else -side * 35)
+								end
+							end
+						end)
 					end
 					if basicBeat == 10 then
 						auraOn(ch0, trailColor, trailColor:Lerp(Color3.new(1, 1, 1), 0.66), 0.42)
@@ -5168,6 +5212,25 @@ function FieldScene.start(opts)
 						end
 					end
 					if not visualMobile and basicBeat >= 7 then afterimage(ch0, trailColor, if basicBeat == 10 then 3 else 2, 0.065) end
+				elseif kind == "slash" and moveId == "rush" then
+					-- [1타 무기별 첫칼] 첫 디딤부터 검·단검·창·도끼·철퇴·격투 잔광을 분리한다.
+					local firstColor = if wpn.family == "dagger" then Color3.fromRGB(156, 255, 220)
+						elseif wpn.family == "spear" then Color3.fromRGB(127, 224, 255)
+						elseif wpn.family == "axe" then Color3.fromRGB(255, 157, 88)
+						elseif wpn.family == "blunt" then Color3.fromRGB(255, 216, 149)
+						elseif wpn.family == "fist" then Color3.fromRGB(251, 233, 181)
+						else Color3.fromRGB(205, 224, 255)
+					trailsOn(ch0, if wpn.family == "fist" then { "RightHand", "RightLowerArm", "RightLowerLeg" }
+						elseif wpn.family == "dagger" or wpn.family == "spear" then { "RightHand", "LeftHand", "RightLowerArm" }
+						else { "RightHand", "RightLowerArm" }, firstColor, 0.19, 0.33)
+					local fxAt, fxWeapon = swingBridge.basicAt, wpn.id
+					task.delay(0.14, function()
+						if finished or not hrp.Parent or swingKind ~= "slash" or slashIdx ~= 1
+							or swingBridge.basicAt ~= fxAt or wpn.id ~= fxWeapon then return end
+						pulseAt(if wpn.family == "axe" or wpn.family == "blunt" then "CRITICAL_BURST" else "IMPACT_FLASH",
+							hrp.CFrame * CFrame.new(0, if wpn.family == "axe" or wpn.family == "blunt" then -0.82 else 0.81, -2.0),
+							firstColor, Color3.fromRGB(255, 252, 233), if visualMobile then 2.8 else 3.8, if visualMobile then 2 else 4)
+					end)
 				elseif kind == "spin" then
 					trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(120, 220, 255), 0.4, 0.9)
 					auraOn(ch0, Color3.fromRGB(90, 190, 255), Color3.fromRGB(230, 250, 255), 0.8)
