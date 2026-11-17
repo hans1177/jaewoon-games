@@ -695,7 +695,7 @@ function FieldScene.start(opts)
 	local lastCombatAt = os.clock()
 	local activeHealers = {}
 	local passiveRegenHudAt, passiveRegenFxAt = 0, -100
-	local fieldStreakResult = { hits = 0, speed = 0, accuracy = 100 }
+	local fieldStreakResult = { hits = 0, speed = 0, accuracy = 100, credited = {} }
 	local found = 0
 	local nodeCount = math.max(1, opts.nodes or 1)
 	local observedCardId = nil -- [탐험] finish 콜백과 현장 조사에서 공유하는 이번 탐험 한정 값
@@ -2228,7 +2228,7 @@ function FieldScene.start(opts)
 		end)
 	end
 
-	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?, ownerAttack: boolean?)
+	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?, ownerAttack: boolean?, actionSeq: number?)
 		-- [정예 반응 회피] 공격 중·경직 중에는 발동하지 않으며, 7초 제한으로 무한 회피를 방지한다.
 		local evadeAt = os.clock()
 		if not quiet and e.elite and not e.ac.dead and (e.ac.state == "chase" or e.ac.state == "recover")
@@ -2268,9 +2268,17 @@ function FieldScene.start(opts)
 			local hitAt = os.clock()
 			hitStopUntil = math.max(hitStopUntil, hitAt + (if mult >= 1.5 then 0.09 else 0.045))
 			lastCombatAt = hitAt
-			if ownerAttack ~= false and streakActionSeq > 0 and streakCountedSeq ~= streakActionSeq then
-				-- 같은 광역 베기·일제 사격으로 여러 적을 맞혀도 기록은 1타만 오른다.
-				streakCountedSeq = streakActionSeq
+			local creditedSeq = actionSeq or streakActionSeq
+			if ownerAttack ~= false and creditedSeq > 0 and creditedSeq > streakActionSeq - 64
+				and not fieldStreakResult.credited[creditedSeq] then
+				-- [빠른 연속 공격] 지연 판정이 겹쳐도 행동별 실제 명중 1회만 기록한다.
+				fieldStreakResult.credited[creditedSeq] = true
+				streakCountedSeq = math.max(streakCountedSeq, creditedSeq)
+				if streakCountedSeq % 64 == 0 then
+					for oldSeq in fieldStreakResult.credited do
+						if oldSeq < streakCountedSeq - 64 then fieldStreakResult.credited[oldSeq] = nil end
+					end
+				end
 				streakLanded += 1
 				if hitAt - streakT > streakLimit() then endStreak("시간 만료") end
 				local miracle = streakN >= 10 and (streakLimit() - (hitAt - streakT)) > 0
@@ -2608,7 +2616,7 @@ function FieldScene.start(opts)
 		refresh()
 	end
 
-	local function explodeBarrel(b, hrp: BasePart)
+	local function explodeBarrel(b, hrp: BasePart, hitActionSeq: number?)
 		local idx = table.find(barrels, b)
 		if not idx then
 			return
@@ -2621,7 +2629,7 @@ function FieldScene.start(opts)
 		local n = 0
 		for _, e in table.clone(enemies) do
 			if (e.root.Position - b.pos).Magnitude <= 14 then
-				strikeEnemy(e, 3, b.pos, 6, true)
+				strikeEnemy(e, 3, b.pos, 6, true, nil, nil, hitActionSeq)
 				n += 1
 			end
 		end
@@ -2769,6 +2777,7 @@ function FieldScene.start(opts)
 			end
 		end
 		local combo = pl.combo
+		local hitActionSeq = streakActionSeq -- 지연된 타격 판정도 원래 누른 공격의 식별값을 사용한다.
 		task.delay(if kind == "slash" then 0.14 elseif kind == "heavy" then 0.42 else 0.2, function()
 			if finished then
 				return
@@ -2797,7 +2806,7 @@ function FieldScene.start(opts)
 					ang = math.deg(math.acos(math.clamp(look.Unit:Dot(to.Unit), -1, 1)))
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, dist, ang) then
-					local landed = strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3) or wpn.family == "blunt")
+					local landed = strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3) or wpn.family == "blunt", nil, nil, hitActionSeq)
 					if e.ac.dead then defeatedAt = e.root.Position end
 					if landed then hits += 1 end
 					shots += 1
@@ -2824,7 +2833,7 @@ function FieldScene.start(opts)
 					ab = math.deg(math.acos(math.clamp(lk.Unit:Dot(tb.Unit), -1, 1)))
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, tb.Magnitude, ab) then
-					explodeBarrel(b, hrp)
+					explodeBarrel(b, hrp, hitActionSeq)
 					hits += 1
 				end
 			end
@@ -2839,7 +2848,7 @@ function FieldScene.start(opts)
 					breakCrate(c)
 				end
 			end
-			if hits == 0 then endStreak("헛손질") end
+			if hits == 0 and hitActionSeq >= streakCountedSeq then endStreak("헛손질") end
 			if moveId == "rush" and hits > 0 then
 				local practice = weaponPractice[wpn.id]
 				if not practice then
