@@ -1321,10 +1321,15 @@ function FieldScene.start(opts)
 		magicAmount.ZIndex = 6
 	end
 
+	-- [상호작용 안내] 평소 전투 HUD 배치는 유지하고 긴 유적 조사 기록만 별도 영역에 펼친다.
 	local note = label(gui, "", 14, Color3.fromRGB(255, 220, 160))
+	note.Name = "FieldInteractionNote"
 	note.AnchorPoint = if compactTouch then Vector2.zero else Vector2.new(0.5, 0)
 	note.Position = if compactTouch then UDim2.fromOffset(12, 158) else UDim2.new(0.5, 0, 0, 46)
 	note.Size = UDim2.fromOffset(if compactTouch then 206 else 320, 22)
+	note.BackgroundColor3 = Color3.fromRGB(19, 29, 40)
+	note.TextStrokeTransparency = 0.16
+	note.ZIndex = 9
 
 	local function refresh()
 		if workspace:GetAttribute("DevGod") then pl.hp = pl.maxHp end -- 개발 캡처 전용: 서 있기만 해도 죽지 않게
@@ -1342,13 +1347,26 @@ function FieldScene.start(opts)
 		Sfx.ambient({ "sfx_wind" }, 0.60)
 	end)
 	local noteToken = 0
-	local function say(text)
+	local function say(text, duration)
 		noteToken += 1
 		local mine = noteToken
+		-- [유적 설명 잘림 복구] 긴 상호작용 기록만 체력바 아래와 퀘스트 안내 위로 옮겨
+		-- 모바일 가로·세로 화면에서 최대 세 줄로 읽는다. 전투 알림 위치는 기존 그대로.
+		local expanded = duration ~= nil and duration > 2.2
+		note.AnchorPoint = if expanded then Vector2.new(0.5, 0)
+			elseif compactTouch then Vector2.zero else Vector2.new(0.5, 0)
+		note.Position = if expanded then UDim2.new(0.5, 0, 0, 106)
+			elseif compactTouch then UDim2.fromOffset(12, 158) else UDim2.new(0.5, 0, 0, 46)
+		note.Size = if expanded then UDim2.new(0.78, 0, 0, 64)
+			else UDim2.fromOffset(if compactTouch then 206 else 320, 22)
+		note.TextWrapped = expanded
+		note.TextYAlignment = Enum.TextYAlignment.Center
+		note.BackgroundTransparency = if expanded then 0.2 else 1
 		note.Text = text
-		task.delay(2.2, function()
+		task.delay(duration or 2.2, function()
 			if noteToken == mine then
 				note.Text = ""
+				note.BackgroundTransparency = 1
 			end
 		end)
 	end
@@ -1382,15 +1400,17 @@ function FieldScene.start(opts)
 			local surveyPoint = Instance.new("Attachment")
 			surveyPoint.Name = "FieldTerrainSurveyPoint"
 			surveyPoint.Parent = anchorPart
+			-- [유적 석주·석상 접촉] 메시 안에 묻히지 않게 바깥쪽 중앙 길을 바라보는 조사 지점으로 이동한다.
 			surveyPoint.WorldPosition = Vector3.new(
-				center.Position.X + math.sign(ORIGIN.X - center.Position.X) * math.min(extent.X * 0.30, 8),
-				ORIGIN.Y + 3,
-				center.Position.Z + math.sign(ORIGIN.Z - center.Position.Z) * math.min(extent.Z * 0.30, 8))
+				center.Position.X + math.sign(ORIGIN.X - center.Position.X) * math.min(extent.X * 0.55 + 4, 16),
+				ORIGIN.Y + 3.2,
+				center.Position.Z + math.sign(ORIGIN.Z - center.Position.Z) * math.min(extent.Z * 0.55 + 4, 16))
 			clues += 1
 			local prompt = Instance.new("ProximityPrompt")
 			prompt.Name = "FieldTerrainClue"
-			prompt.ObjectText = "탐험 흔적"
+			prompt.ObjectText = if theme == "ruins" then "유적 조사 지점" else "탐험 흔적"
 			prompt.ActionText = "현장 조사"
+			prompt.KeyboardKeyCode = Enum.KeyCode.T -- 전투 회전 E와 중복되지 않게 발견물 조사와 통일
 			prompt.HoldDuration = 0.55
 			prompt.MaxActivationDistance = 12
 			prompt.RequiresLineOfSight = false
@@ -1399,7 +1419,7 @@ function FieldScene.start(opts)
 				if finished or activator ~= player or not prompt.Enabled then return end
 				prompt.Enabled = false
 				folder:SetAttribute("FieldTerrainClues", (folder:GetAttribute("FieldTerrainClues") or 0) + 1)
-				say(clueText[theme] or clueText.plains)
+				say(clueText[theme] or clueText.plains, 4.5)
 			end)
 		end
 		for _, landmark in folder:GetChildren() do attachClue(landmark) end
