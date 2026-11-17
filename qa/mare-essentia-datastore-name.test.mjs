@@ -284,6 +284,23 @@ test('유적 상호작용과 발견 화면의 모바일 잘림·조사 키 충�
   assert.ok(field.includes('math.min(extent.Z * 0.55 + 4, 16)'));
   assert.ok(client.includes('local image = "rbxassetid://" .. tostring(assetId)'));
   assert.doesNotMatch(client,/local image = "rbxthumb:\/\//);
+  // [모바일 원더 화면] 제목·자막·16:9 액자 사이의 실제 화면 높이 여백을 확보한다.
+  assert.ok(client.includes('local function fitWonderArt()'));
+  assert.ok(client.includes('screen.X * 0.94 * 9 / 16, screen.Y - 180'));
+  assert.ok(client.includes('root:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitWonderArt)'));
+  assert.ok(client.includes('artResize:Disconnect()'));
+  assert.ok(client.includes('ttl.TextScaled = true'));
+  assert.ok(client.includes('ttl.Position = UDim2.new(0.5, 0, 0, 32)'));
+  assert.ok(client.includes('cap.Position = UDim2.new(0.5, 0, 1, -8)'));
+  for(const [w,h] of [[320,240],[832,384],[384,832],[1280,720]]){
+    const height=Math.max(1,Math.min(w*0.94*9/16,h-180));
+    const artWidth=Math.floor(height*16/9);
+    const artHeight=Math.floor(height);
+    const top=(h-artHeight)/2,bottom=(h+artHeight)/2;
+    assert.ok(artWidth<=w*0.94+1,'원더 원화 가로 넘침 '+w+'x'+h);
+    assert.ok(top>=72,'원더 제목 겹침 '+w+'x'+h);
+    assert.ok(bottom<=h-82,'원더 자막 겹침 '+w+'x'+h);
+  }
   const scenes=read('ReplicatedStorage/Shared/WonderScenes.luau');
   const assets=read('ReplicatedStorage/Shared/AssetIds.luau');
   for(const match of scenes.matchAll(/art = "(event_[a-z_]+)"/g)){
