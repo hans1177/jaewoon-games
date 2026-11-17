@@ -316,7 +316,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 		end
 		-- [원본 배율 보존] ScaleTo는 절대 배율이므로 모델의 수입 배율을 보존한다.
 		local ratio = desired / axis
-		if ratio < 0.01 or ratio > 100 then error("invalid imported model scale") end
+		if ratio ~= ratio or ratio <= 0 or ratio == math.huge then error("invalid imported model scale") end
 		m:ScaleTo(m:GetScale() * ratio)
 		local center, size = m:GetBoundingBox()
 		local b = Vector3.new(center.Position.X, center.Position.Y - size.Y / 2, center.Position.Z)
