@@ -466,6 +466,15 @@ function Sfx.ambient(names, gain)
 			end)
 		end
 	end
+	-- [모든 환경음 로딩 실패] 초기 20초 유예에도 날씨가 그대로라면 다음 호출이 없어 영구 무음이 되던 문제를 복구한다.
+	if names and #names > 0 and #ambient == 0 then
+		task.delay(21, function()
+			if ambientKey == key and #ambient == 0 then
+				ambientKey = nil
+				Sfx.ambient(names, gain)
+			end
+		end)
+	end
 end
 
 musicGroup.Volume = musicLevel
