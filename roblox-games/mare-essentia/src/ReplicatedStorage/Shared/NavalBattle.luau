@@ -2958,12 +2958,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end
 	-- 연기 덩어리 n개 (dark = 불탄 검은 연기)
 	function FX.smoke(pos, n, scale, dark)
-		for _ = 1, n do
-			local r = scale * (0.7 + math.random() * 0.6)
-			FX.spawn(Vector3.new(r, r, r), pos + Vector3.new((math.random() - 0.5) * 3, 0, (math.random() - 0.5) * 3),
-				if dark then C_DARK else C_SMOKE, Enum.Material.SmoothPlastic, Enum.PartType.Ball,
-				Vector3.new((math.random() - 0.5) * 3, 3 + math.random() * 4, (math.random() - 0.5) * 3), 1.3 + math.random() * 0.6, { grow = if dark then 1.6 else 2.4, t0 = if dark then 0.55 else 0.3 })
-		end
+		-- [연기 재질] 불투명 공 대신 기존 파티클 재사용. 모바일 배출량 상한 유지.
+		FX.burst(pos, nil, {
+			{ tex = "smoke", c0 = if dark then C_DARK else C_SMOKE, c1 = C_SMOKE,
+				s0 = scale * 1.8, s1 = scale * 5, life = 2.4,
+				v0 = 5, v1 = 12, spread = 48, n = if MOBILE_VFX then math.min(n + 1, 5) else n * 3,
+				a0 = if dark then 0.28 else 0.38, acc = Vector3.new(0, 6, 0), drag = 1.3 },
+		})
 	end
 	-- 나무 파편과 불똥
 	function FX.splinters(pos, n)
@@ -2983,11 +2984,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local theme = style.theme or FX_THEMES.europe
 		local stage = math.clamp(style.stage or 2, 1, 6)
 		FX.burst(pos + Vector3.new(0, scale * 0.2, 0), nil, {
-			{ tex = "fire", c0 = theme.flash, c1 = if style.faction == "lost" then theme.spark else RED,
-				s0 = scale * 1.2, s1 = scale * 0.35, life = 0.95, v0 = 4, v1 = 9,
+			{ tex = "fire", c0 = theme.flash, c1 = if style.faction == "lost" then theme.spark else Color3.fromRGB(190, 52, 28),
+				s0 = scale * 1.65, s1 = scale * 0.55, life = 1.25, v0 = 6, v1 = 12,
 				spread = 35, glow = 1, n = if MOBILE_VFX then 4 else 5 + stage * 2, a0 = 0.04 },
-			{ tex = "smoke", c0 = SOOT, c1 = theme.smoke, s0 = scale,
-				s1 = scale * (1.8 + stage * 0.16), life = 1.8, v0 = 4, v1 = 9, spread = 24,
+			{ tex = "smoke", c0 = C_DARK, c1 = theme.smoke, s0 = scale * 1.3,
+				s1 = scale * (2.6 + stage * 0.21), life = 2.7, v0 = 5, v1 = 12, spread = 32,
 				n = if MOBILE_VFX then 3 else 3 + stage, a0 = 0.3 },
 		}, { color = theme.flash, bright = if MOBILE_VFX then 1.6 else 2 + stage * 0.2, range = 18, dur = 0.4 })
 	end
@@ -2996,11 +2997,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	function FX.splash(pos, profile, power)
 		local style = profile or DEFAULT_FX
 		local theme = style.theme or FX_THEMES.europe
-		local strength = math.clamp(power or 1, 0.65, 2.4)
+		local strength = math.clamp(power or 1, 0.65, 3.2)
 		local surface = Vector3.new(pos.X, ORIGIN.Y + 0.35, pos.Z)
 		-- 1차: 튀어 오르기 직전의 수면 거품과 움푹 패이는 수면 충격
 		FX.burst(surface, nil, {
-			{ tex = "smoke", c0 = Color3.fromRGB(203, 232, 245), c1 = theme.foam, s0 = 1.1 * strength, s1 = 3.8 * strength,
+			{ tex = "smoke", c0 = Color3.fromRGB(203, 232, 245), c1 = theme.foam, s0 = 1.8 * strength, s1 = 6.6 * strength,
 				life = 0.38, v0 = 3, v1 = 7, spread = 170, n = if MOBILE_VFX then 3 else 7, a0 = 0.22, drag = 5 },
 		})
 		-- 2차: 대포 구경·선체 침수 규모에 비례하는 물기둥
@@ -3010,7 +3011,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			-- 3차: 위로 솟은 작은 물방울들이 중력과 물살에 따라 떨어진다.
 			FX.burst(surface + Vector3.new(0, 4 * strength, 0), Vector3.new(0, 1, 0), {
 				{ tex = "spark", c0 = Color3.fromRGB(242, 252, 255), c1 = theme.foam,
-					s0 = 0.5 * strength, s1 = 0.11, life = 0.80 + strength * 0.15,
+					s0 = 0.75 * strength, s1 = 0.18, life = 0.95 + strength * 0.15,
 					v0 = 7, v1 = 16 * strength, spread = 70,
 					n = if MOBILE_VFX then 5 else math.floor(11 * strength),
 					acc = Vector3.new(0, -42, 0), drag = 0.5, a0 = 0.16 },
@@ -3021,7 +3022,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			-- 4차: 물방울이 내려앉은 뒤 남는 낮고 넓은 포말
 			FX.burst(surface, nil, {
 				{ tex = "smoke", c0 = Color3.fromRGB(245, 253, 255), c1 = theme.foam,
-					s0 = 1.5 * strength, s1 = 4.5 * strength, life = 1.15,
+					s0 = 2.5 * strength, s1 = 7.0 * strength, life = 1.45,
 					v0 = 2, v1 = 8 * strength, spread = 175,
 					n = if MOBILE_VFX then 3 else math.floor(7 * strength), a0 = 0.28, drag = 3.4 },
 			})
@@ -3095,7 +3096,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local spread = if style.faction == "east_asia" then 36 elseif style.faction == "africa" then 30 else 16
 		FX.burst(from + dir * 2, dir, {
 			{ tex = "fire", c0 = theme.flash, c1 = if style.faction == "lost" then theme.spark else RED,
-				s0 = 2 + stage * 0.38, s1 = 3 + stage * 0.72, life = 0.25 + stage * 0.035,
+				s0 = 2.8 + stage * 0.55, s1 = 4.5 + stage * 1.05, life = 0.28 + stage * 0.04,
 				v0 = 16, v1 = 25 + stage * 3, spread = spread, glow = 1,
 				n = math.floor((3 + stage * 1.7) * density), a0 = 0 },
 			{ tex = "spark", c0 = theme.spark, c1 = theme.tracer,
@@ -3103,7 +3104,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				v0 = 22, v1 = 38 + stage * 5, spread = spread + 8, glow = 1,
 				n = math.floor((5 + stage * 2.3) * density), acc = Vector3.new(0, -24, 0), a0 = 0 },
 			{ tex = "smoke", c0 = theme.smoke, c1 = if style.faction == "lost" then theme.tracer else GREY,
-				s0 = 1.6 + stage * 0.45, s1 = 4 + stage * 1.7, life = 0.9 + stage * 0.2,
+				s0 = 2.5 + stage * 0.56, s1 = 6 + stage * 2.2, life = 1.15 + stage * 0.22,
 				v0 = 4, v1 = 9 + stage, spread = 20 + stage * 3,
 				n = math.floor((2 + stage * 1.5) * density), a0 = 0.33, drag = 2.2 },
 		}, { color = theme.flash, bright = 2.8 + stage * 0.45, range = 18 + stage * 3, dur = 0.16 + stage * 0.015 })
@@ -3124,14 +3125,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		power = power or 1
 		FX.burst(pos, nil, {
 			{ tex = "fire", c0 = theme.flash, c1 = if style.faction == "lost" then theme.spark else RED,
-				s0 = 2.7 + power + stage * 0.35, s1 = 4.8 + power * 1.3 + stage * 0.85,
+				s0 = 3.7 + power * 1.2 + stage * 0.44, s1 = 6.8 + power * 1.6 + stage * 1.2,
 				life = 0.48 + stage * 0.06, v0 = 4, v1 = 11 + stage, glow = 1,
 				n = math.floor((5 + stage * 1.5) * density), a0 = 0 },
 			{ tex = "spark", c0 = theme.spark, c1 = theme.tracer, s0 = 0.65 + stage * 0.1, s1 = 0.1,
 				life = 0.65, v0 = 18, v1 = 36 + stage * 3, glow = 1,
 				n = math.floor((8 + stage * 3) * density), acc = Vector3.new(0, -54, 0), a0 = 0 },
-			{ tex = "smoke", c0 = SOOT, c1 = theme.smoke, s0 = 3 + stage * 0.4,
-				s1 = 6 + stage * 1.5, life = 1.4 + stage * 0.18, v0 = 3, v1 = 9,
+			{ tex = "smoke", c0 = SOOT, c1 = theme.smoke, s0 = 4.3 + stage * 0.5,
+				s1 = 9.2 + stage * 1.9, life = 1.85 + stage * 0.21, v0 = 3, v1 = 9,
 				n = math.floor((3 + stage * 1.4) * density), a0 = 0.32, acc = Vector3.new(0, 6, 0), drag = 1.5 },
 		}, { color = theme.flash, bright = 3.5 + stage * 0.7, range = 23 + stage * 3, dur = 0.24 + stage * 0.024 })
 		FX.shockRing(pos - Vector3.new(0, 4, 0), theme.flash, 9 + stage * 2.7 + power, 0.46 + stage * 0.035)
@@ -3145,12 +3146,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local stage = math.clamp(style.stage or 2, 1, 6)
 		local theme = style.theme or FX_THEMES.europe
 		local density = if MOBILE_VFX then 0.50 else 1
-		local strength = math.clamp(power or 1, 0.65, 2.4)
+		local strength = math.clamp(power or 1, 0.65, 3.2)
 		local spread = if style.faction == "southeast_asia" then 44 elseif style.faction == "new_world" then 32 else 20
 		FX.burst(pos + Vector3.new(0, 1, 0), Vector3.new(0, 1, 0), {
 			{ tex = "smoke", c0 = FOAM, c1 = theme.foam,
-				s0 = (1.8 + stage * 0.25) * strength, s1 = (4.4 + stage * 1.0) * strength,
-				life = (0.8 + stage * 0.08) * math.sqrt(strength), v0 = 9 * strength, v1 = (16 + stage) * strength,
+				s0 = (2.7 + stage * 0.33) * strength, s1 = (7.0 + stage * 1.45) * strength,
+				life = (0.95 + stage * 0.09) * math.sqrt(strength), v0 = 12 * strength, v1 = (22 + stage * 1.2) * strength,
 				spread = spread * 0.52, n = math.max(3, math.floor((5 + stage * 1.2) * density * strength)),
 				a0 = 0.17, acc = Vector3.new(0, -19, 0), drag = 1 },
 			{ tex = "spark", c0 = theme.foam, s0 = 0.75 * strength, s1 = 0.16,
@@ -3283,13 +3284,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local fire = emitterOn(vent, {
 					tex = "fire", c0 = theme.flash,
 					c1 = if profile.faction == "lost" then theme.spark else RED,
-					s0 = 1.6 + stage * 0.32, s1 = 0.3, life = 0.8, v0 = 2, v1 = 6,
+					s0 = 2.7 + stage * 0.52, s1 = 0.55, life = 1.1, v0 = 3, v1 = 8,
 					spread = 24, glow = 1, rate = 0, a0 = 0.05, acc = Vector3.new(0, 7, 0)
 				})
 				local soot = emitterOn(vent, {
 					tex = "smoke", c0 = if profile.faction == "lost" then theme.smoke else SOOT,
-					c1 = theme.smoke, s0 = 1.3 + stage * 0.18, s1 = 5 + stage * 0.6,
-					life = 2.1, v0 = 2, v1 = 8, spread = 26, rate = 0, a0 = 0.38,
+					c1 = theme.smoke, s0 = 2.2 + stage * 0.28, s1 = 8.5 + stage * 0.9,
+					life = 3.2, v0 = 3, v1 = 11, spread = 26, rate = 0, a0 = 0.38,
 					acc = Vector3.new(0, 6, 0), drag = 1.3
 				})
 				local glow = Instance.new("PointLight")
@@ -3305,8 +3306,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		state.next = now + 0.14
 		local severity = math.clamp((0.62 - hp) / 0.62, 0, 1)
 		for _, vent in state.vents do
-			vent.soot.Rate = math.floor(severity * (if MOBILE_VFX then 7 else (5 + stage * 2)))
-			vent.fire.Rate = if hp < 0.42 then math.floor((0.42 - hp) * (if MOBILE_VFX then 35 else (30 + stage * 8))) else 0
+			vent.soot.Rate = math.floor(severity * (if MOBILE_VFX then 10 else (7 + stage * 3)))
+			vent.fire.Rate = if hp < 0.42 then math.floor((0.42 - hp) * (if MOBILE_VFX then 46 else (38 + stage * 9))) else 0
 			vent.soot.Enabled = vent.soot.Rate > 0
 			vent.fire.Enabled = vent.fire.Rate > 0
 			vent.glow.Brightness = if hp < 0.42 then severity * (if MOBILE_VFX then 1.1 else (1.0 + stage * 0.2)) * (0.85 + 0.15 * math.sin(now * 13)) else 0
@@ -3378,7 +3379,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local back = ORIGIN + sh.pos - heading * (sh.length * 0.46) + Vector3.new(0, 0.25, 0)
 				local narrow = if profile.faction == "new_world" or profile.faction == "middle_east" then 0.75 else 1
 				local wide = if profile.rowed then 1.35 else narrow
-				FX.spawn(Vector3.new(2.4 * wide, 0.2, 2.4 * wide), back, theme.foam,
+				FX.spawn(Vector3.new(3.2 * wide, 0.2, 3.2 * wide), back, theme.foam,
 					Enum.Material.SmoothPlastic, nil, Vector3.zero, 1.35, { grow = 1.9 + wide * 0.5, t0 = 0.38, flat = true })
 				if not MOBILE_VFX then
 					FX.spawn(Vector3.new(1.3, 0.2, 1.3), ORIGIN + sh.pos + heading * sh.length * 0.5 + Vector3.new(0, 0.25, 0),
