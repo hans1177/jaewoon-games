@@ -1058,7 +1058,7 @@ test('Mare naval encounter keeps card duel exclusive to the dedicated tavern flo
 test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets', () => {
   const battle=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   assert.match(battle,/local MOBILE_VFX = game:GetService\("UserInputService"\)\.TouchEnabled/);
-  assert.match(battle,/local rangeRing = \{ segments = \{\} \}/,'range is an outline, not a solid sea-covering disk');
+  assert.match(battle,/local rangeRing = \{ segments = \{\}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 \}/,'range remains a segmented outline with newer impact radar states, not a solid sea disk');
   assert.match(battle,/local segmentLength = 2 \* math\.pi \* cannon\.range \/ count/,'radius must reuse existing gun range');
   assert.doesNotMatch(battle,/rangeRing\.(?:Transparency|CFrame|Color|Size)\s*=/,'obsolete solid cylinder range must stay removed');
   assert.match(battle,/FX\.projectile\(ball, nc, style\)/,'the existing cannon routine gets culture-stage trails');
@@ -1200,7 +1200,7 @@ test('Mare all 36 designed ships have 23 new region-locked purchases and server-
   assert.match(yard,/local repairMult = 1 \+ \(if def\.trait then def\.trait\.repair or 0 else 0\)/);
   assert.match(view,/view\.shipyard\.repairTotal = math\.floor/,'repair preview and server share the same cost multiplier');
   assert.match(ui,/36척 모두 3D 원본·개별 항해·교역·전투 성능 적용/);
-  assert.match(ui,/고유 운용: %s · 약점: %s/);
+  assert.match(ui,/주특화: %s\\n약점: %s/,'ship roles and weaknesses remain visible on separate mobile-readable lines');
 
   assert.match(ui,/onClick = function\(\) call\("BuyShip", \{ shipId = shop\.id \}\) end/,'blueprint cards must call the existing server purchase route');
   assert.match(ui,/not shop\.owned and not shop\.locked and shop\.canCarry and shop\.netCost <= view\.player\.coins/,'mobile direct purchase keeps funds, cargo and unlock gates');
