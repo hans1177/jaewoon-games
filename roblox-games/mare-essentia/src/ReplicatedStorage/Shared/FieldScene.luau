@@ -41,14 +41,14 @@ local function addIcon(button: TextButton, key: string)
 	local id = (AssetIds :: any)[key]
 	if not id then return nil end
 	local painted = string.sub(key, 1, 8) == "CardArt/"
-	local iconOnly = button.Name == "FieldAttack" or string.sub(button.Name, 1, 11) == "FieldSkill_" or string.sub(button.Name, 1, 16) == "FieldLockedSkill"
+	local iconOnly = button.Name == "FieldAttack" or button.Name == "FieldDodge"
 	local medallion = Instance.new("Frame")
 	medallion.Name = "FieldIconMedallion"
 	medallion.AnchorPoint = Vector2.new(0.5, 0.5)
 	medallion.Position = UDim2.fromScale(0.5, if iconOnly then 0.5 else 0.385)
 	medallion.Size = UDim2.fromScale(if iconOnly then 0.94 else (if painted then 0.83 else 0.82),
 		if iconOnly then 0.94 else (if painted then 0.74 else 0.76))
-	medallion.BackgroundColor3 = if button.Name == "FieldSkill_dodge" then Color3.fromRGB(12, 72, 87)
+	medallion.BackgroundColor3 = if button.Name == "FieldDodge" then Color3.fromRGB(12, 72, 87)
 		elseif button.Name == "FieldAttack" then Color3.fromRGB(88, 29, 33)
 		elseif painted then Color3.fromRGB(38, 32, 28) else Color3.fromRGB(40, 43, 47)
 	medallion.BackgroundTransparency = if painted then 0 else 0.33
@@ -60,10 +60,10 @@ local function addIcon(button: TextButton, key: string)
 	rounded.Parent = medallion
 	local rim = Instance.new("UIStroke")
 	rim.Name = "FieldIconRim"
-	rim.Color = if button.Name == "FieldSkill_dodge" then Color3.fromRGB(120, 244, 233)
+	rim.Color = if button.Name == "FieldDodge" then Color3.fromRGB(120, 244, 233)
 		elseif button.Name == "FieldAttack" then Color3.fromRGB(255, 207, 143)
 		else Color3.fromRGB(245, 208, 128)
-	rim.Thickness = if button.Name == "FieldSkill_dodge" then 3 elseif button.Name == "FieldAttack" then 2.5
+	rim.Thickness = if button.Name == "FieldDodge" then 3 elseif button.Name == "FieldAttack" then 2.5
 		elseif painted then 1.2 else 1.6
 	rim.Transparency = 0.14
 	rim.Parent = medallion
@@ -1530,7 +1530,7 @@ function FieldScene.start(opts)
 		end))
 	end
 
-	-- 입력 버튼: 공격 + 스킬 3개(강타·회전베기·구르기). 키보드 F·Q·E·R 도 된다.
+	-- [탐험 전투 조작] 공격·회피 두 버튼만 표시한다. 강타는 주인공 기본 공격 5회 명중마다 자동 발동한다.
 	local UserInputService = game:GetService("UserInputService")
 	-- [모바일 전투 HUD] 엄지 버튼은 오른쪽 하단, 철수는 왼쪽 위로 분리해 오터치를 방지한다.
 	local attackBtn = btn(gui, "", Color3.fromRGB(169, 55, 50),
@@ -1547,6 +1547,32 @@ function FieldScene.start(opts)
 	attackBtn.TextSize = 19
 	attackBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 	local attackIcon = addIcon(attackBtn, "Menu/cc0_sword")
+	-- [자동 강타 충전] 공격 버튼 둘레에 명중 5칸만 표시한다. 신규 스킬 버튼·저장 키는 없다.
+	local autoHitPips = {}
+	for i = 1, 5 do
+		local pip = Instance.new("Frame")
+		pip.Name = "FieldAutoHit" .. i
+		pip.AnchorPoint = Vector2.new(0.5, 0.5)
+		local angle = math.rad(205 + (i - 1) * 32.5)
+		pip.Position = UDim2.fromScale(0.5 + 0.43 * math.cos(angle), 0.5 + 0.43 * math.sin(angle))
+		pip.Size = UDim2.fromOffset(10, 10)
+		pip.BorderSizePixel = 0
+		pip.ZIndex = attackBtn.ZIndex + 5
+		pip.Parent = attackBtn
+		local corner = Instance.new("UICorner")
+		corner.CornerRadius = UDim.new(1, 0)
+		corner.Parent = pip
+		autoHitPips[i] = pip
+	end
+	local function refreshAutoHitPips()
+		local charged = (pl.autoNormalHits or 0) % 5
+		for i, pip in autoHitPips do
+			pip.BackgroundColor3 = if i <= charged then Color3.fromRGB(255, 216, 110) else Color3.fromRGB(91, 67, 54)
+			pip.BackgroundTransparency = if i <= charged then 0 else 0.35
+		end
+		attackBtn:SetAttribute("AutoHeavyHits", charged)
+	end
+	refreshAutoHitPips()
 	-- [무기별 스킬] 강타·휩쓸기 두 가지만 계산한다. 막기·회피·카드는 별개 행동.
 	attackBtn:SetAttribute("WeaponSkillCount", 1)
 	local retreat = btn(gui, "철수", Color3.fromRGB(54, 75, 86), UDim2.fromOffset(88, 42), UDim2.new(0, 12, 0, 12), Vector2.new(0, 0))
@@ -1877,6 +1903,22 @@ function FieldScene.start(opts)
 					local side = if slashIdx % 2 == 0 then 1 else -1
 					return CFrame.new(0, -0.25 * bell(p), 0) * CFrame.Angles(0.30 * bell(p), side * 0.20 * bell(p), 0)
 				end
+				-- [무기별 강타 자세] 피해·사거리·기력은 그대로, R15 관절 자세만 변화한다.
+				local beat = bell(p)
+				if wpn.family == "dagger" then
+					-- 단검 급습: 체중을 낮추고 교차 찌르기
+					return CFrame.new(0, -0.34 * beat, -0.75 * beat)
+						* CFrame.Angles(-0.48 * beat, 0.38 * beat, -0.16 * beat)
+				elseif wpn.family == "spear" then
+					-- 창 관통: 전방으로 길게 찌르기
+					return CFrame.new(0, -0.25 * beat, -0.65 * beat)
+						* CFrame.Angles(-0.24 * beat, 0.12 * beat, 0)
+				elseif wpn.family == "fist" then
+					-- 맨손 훅: 낮게 중심을 틀어 회전
+					return CFrame.new(0, -0.27 * beat, 0)
+						* CFrame.Angles(-0.20 * beat, -0.52 * beat, 0.24 * beat)
+				end
+				-- 도끼 분쇄·철퇴 충격·검 강타는 기존 도약 내려찍기를 유지한다.
 				-- 점프 강타: 웅크림(0~0.18) → 도약(~0.55) → 내려찍기(~0.62) → 착지 충격(~0.8) → 일어남
 				local y, lean = 0, 0
 				if p < 0.18 then
@@ -2642,6 +2684,7 @@ function FieldScene.start(opts)
 		local ended = streakN
 		streakN = 0
 		pl.autoNormalHits = 0
+		refreshAutoHitPips()
 		streakRecordShown = false
 		table.clear(streakRecent)
 		comboGauge.Visible = false
@@ -2879,6 +2922,7 @@ function FieldScene.start(opts)
 						local owner = player.Character
 						if owner then owner:SetAttribute("FieldAutoSkillPending", pl.autoNormalHits) end
 					end
+					refreshAutoHitPips()
 				end
 				for i = #streakRecent, 1, -1 do
 					if hitAt - streakRecent[i] > 1.5 then table.remove(streakRecent, i) end
@@ -4170,7 +4214,7 @@ function FieldScene.start(opts)
 	staminaNumber.Position = UDim2.fromOffset(58, 47)
 	staminaNumber.Size = UDim2.fromOffset(133, 11)
 	staminaNumber.ZIndex = 6
-	local skillBtns = {}
+	local combatBtns = {}
 	-- [모바일 두 버튼] 공격은 우하단, 회피는 엄지 위쪽에 크게 고정. 글씨 없는 기존 등록 아이콘만 사용.
 	-- 세로 화면은 이동 조이스틱과 거리 확보, 가로 화면은 전투 시야와 손가락이 겹치지 않게 한다.
 	do
@@ -4182,7 +4226,7 @@ function FieldScene.start(opts)
 			if compactTouch then UDim2.new(1, -155, 1, -199)
 				else UDim2.new(1, attackBtn.Position.X.Offset - 142, 1, attackBtn.Position.Y.Offset - 50),
 			Vector2.new(0.5, 0.5))
-		b.Name = "FieldSkill_dodge"
+		b.Name = "FieldDodge"
 		b.Text = ""
 		b:SetAttribute("SkillFullName", "회피")
 		b:SetAttribute("TouchPriority", "DODGE")
@@ -4191,7 +4235,7 @@ function FieldScene.start(opts)
 		b:FindFirstChildOfClass("UIStroke").Thickness = 3.2
 		addIcon(b, "Menu/chart_compass")
 		bindPress(b, function() useMove("dodge") end)
-		skillBtns.dodge = { btn = b, label = "회피" }
+		combatBtns.dodge = { btn = b, label = "회피" }
 	end
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
 	local function castEffect(sk, name, ch, hp0)
@@ -4445,7 +4489,7 @@ function FieldScene.start(opts)
 			magicFill.Size = UDim2.fromScale(magicValue / 100, 1)
 			magicAmount.Text = string.format("마력 %d", math.floor(magicValue + 0.5))
 		end
-		for key, sb in skillBtns do
+		for key, sb in combatBtns do
 			if key == "heavy" or key == "sweep" then
 				local style = Weapons.actionDesign(wpn)
 				local detailed = if key == "heavy" then style.heavyName else style.sweepName
@@ -4495,12 +4539,8 @@ function FieldScene.start(opts)
 			sb.btn:SetAttribute("CooldownRemaining", math.max(0, left))
 		end
 	end))
-	-- 화면 아무 곳이나 톡 치면(버튼 제외) 공격: 폰은 탭, PC는 마우스 왼쪽 클릭
-	table.insert(conns, UserInputService.TouchTap:Connect(function(_, processed)
-		if not processed and not finished then
-			useAttack()
-		end
-	end))
+	-- [모바일 오입력 방지] 탐험 화면 탭은 공격으로 처리하지 않고 공격 버튼만 받는다.
+	-- PC의 기존 왼쪽 클릭 공격은 유지한다.
 	table.insert(conns, UserInputService.InputBegan:Connect(function(input, processed)
 		if not processed and not finished and input.UserInputType == Enum.UserInputType.MouseButton1 then
 			useAttack()
