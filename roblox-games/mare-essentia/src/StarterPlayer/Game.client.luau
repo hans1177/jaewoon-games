@@ -1010,7 +1010,8 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	end
 
 	local btnCount = buttons and #buttons or 0
-	local btnWidth = btnCount * 100 + 8 -- 버튼 칸을 넓혀 크게 (단추 92 + 간격 8)
+	local btnWidth = btnCount * 100 + 8 -- 넓은 화면에서는 기존 오른쪽 행동 칸을 유지한다
+	local buttonRefs = {}
 
 	local textBox = Instance.new("Frame")
 	textBox.Name = "RowText"
@@ -1024,40 +1025,51 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	if subtitle and subtitle ~= "" then
 		mkLabel(textBox, subtitle, 16, INK_SOFT, false)
 	end
-	-- 버튼이 많아 글자 칸이 좁아지면 부제가 줄바꿈되어 행 밖으로 잘린다. 글이 길면 행 높이를 늘려 맞춘다.
-	local baseHeight = height or 60
-	local function fitRowHeight()
-		local need = layout.AbsoluteContentSize.Y + 8
-		if need > baseHeight and row.Size.Y.Offset ~= need then
-			row.Size = UDim2.new(1, -6, 0, need)
-		end
-	end
-	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fitRowHeight)
-	task.defer(fitRowHeight)
 
 	if buttons then
 		for i, spec in buttons do
 			local b = mkButton(row, spec.text, spec.color or COLORS.blue, UDim2.fromOffset(92, 48), spec.onClick, spec.enabled)
 			b.AnchorPoint = Vector2.new(1, 0.5)
 			b.Position = UDim2.new(1, -6 - (btnCount - i) * 100, 0.5, 0)
+			table.insert(buttonRefs, b)
 		end
 	end
-	-- 좁은 화면에서는 글자가 여러 줄로 접혀 고정 높이를 넘으므로(CUT), 글자 높이에 맞춰 행을 늘린다.
-	local minH = math.max(height or 60, 78) -- 그림이 커진 만큼 행도 높게
-	local function fitRow()
-		local need = layout.AbsoluteContentSize.Y + 12
-		if need > minH then
-			row.Size = UDim2.new(1, -6, 0, need)
-		else
-			row.Size = UDim2.new(1, -6, 0, minH)
-		end
-	end
-	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fitRow)
-	fitRow()
+	local minH = math.max(height or 60, 78)
 	local ic = H.iconFor(title, subtitle)
 	if ic and minH >= 50 then
 		withIcon(row, ic[2], ic[3], nil, math.min(66, minH - 12))
 	end
+	-- [전체 메뉴 공통 가독성] 휴대폰에서는 긴 설명 위에 행동 버튼이 겹치지 않도록
+	-- 한 카드 안에서 '내용 위 / 버튼 아래'로 배치한다. 넓은 화면의 오른쪽 버튼 배치는 유지.
+	local function fitRow()
+		local width = row.AbsoluteSize.X
+		local narrow = width > 0 and width < 450 and btnCount > 0
+		local left = textBox.Position.X.Offset
+		local buttonSpace = if narrow then 0 else btnWidth
+		textBox.Size = UDim2.new(1, -(left + buttonSpace + 12), if narrow then 0 else 1, if narrow then math.max(30, layout.AbsoluteContentSize.Y + 10) else -8)
+		local textHeight = layout.AbsoluteContentSize.Y + 12
+		local targetHeight = math.max(minH, textHeight + (if narrow then 54 else 0))
+		if row.Size.Y.Offset ~= targetHeight then row.Size = UDim2.new(1, -6, 0, targetHeight) end
+		for i, button in buttonRefs do
+			if narrow then
+				button.AnchorPoint = Vector2.new(0, 1)
+				button.Position = UDim2.new((i - 1) / btnCount, 5, 1, -5)
+				button.Size = UDim2.new(1 / btnCount, -10, 0, 44)
+			else
+				button.AnchorPoint = Vector2.new(1, 0.5)
+				button.Position = UDim2.new(1, -6 - (btnCount - i) * 100, 0.5, 0)
+				button.Size = UDim2.fromOffset(92, 48)
+			end
+		end
+		local rowIcon = row:FindFirstChild("RowIcon")
+		if rowIcon then
+			rowIcon.Position = if narrow then UDim2.fromOffset(8, 8)
+				else UDim2.new(0, 8, 0.5, -rowIcon.Size.Y.Offset / 2)
+		end
+	end
+	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fitRow)
+	row:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitRow)
+	task.defer(fitRow)
 	return row
 end
 
