@@ -2379,6 +2379,19 @@ do
 		local list = S.Advice.list(sa)
 		check("조언: 초반에는 안내 조언이 나옴", #list >= 1 and list[1].id == "g_trade", list[1] and list[1].id)
 		check("조언: 조언에 말하는 동료와 이동 화면이 있음", list[1].who.name ~= nil and list[1].tab ~= nil)
+		-- [메뉴 문맥 검증] 같은 항구에서도 교역·조선소·항해마다 서로 다른 실용 조언을 준다.
+		local menuAdvice = {}
+		for _, counsel in list do
+			if string.sub(counsel.id, 1, 5) == "menu_" then menuAdvice[counsel.id] = counsel end
+		end
+		check("조언: 교역소는 실제 특산품·시세 조언", menuAdvice.menu_trade ~= nil
+			and menuAdvice.menu_trade.tab == "trade" and string.find(menuAdvice.menu_trade.text, "시세") ~= nil)
+		check("조언: 조선소는 선체·새 배 비교", menuAdvice.menu_yard ~= nil
+			and menuAdvice.menu_yard.tab == "yard" and string.find(menuAdvice.menu_yard.text, "선체") ~= nil)
+		check("조언: 항로·전투·학자도 주제에 맞게 구분", menuAdvice.menu_route ~= nil
+			and menuAdvice.menu_battle ~= nil and menuAdvice.menu_scholar ~= nil
+			and menuAdvice.menu_route.tab == "route" and menuAdvice.menu_battle.tab == "battle"
+			and menuAdvice.menu_scholar.tab == "scholar")
 		sa.ship.hull = 20
 		local l2 = S.Advice.list(sa)
 		check("조언: 선체가 적으면 수리 조언이 맨 위, 조선소로 이동", l2[1].id == "hull_low" and l2[1].tab == "yard", l2[1].id)
