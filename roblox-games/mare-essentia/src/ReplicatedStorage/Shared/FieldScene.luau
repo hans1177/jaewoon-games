@@ -1547,8 +1547,7 @@ function FieldScene.start(opts)
 	local hitStopUntil = 0 -- 타격 정지: 이 시각까지 휘두르기 진행을 멈춘다
 	local hitStopLast = os.clock()
 	local swingCombo, slashIdx = nil, 0
-	-- 직업별 회피가 입력 콜백과 PreSimulation 모션에서 같은 값을 보도록 바깥 전투 상태에 둔다.
-	local dodgeStyle = "warrior"
+	-- [모션 직업] 기존 캐릭터 FieldDodgeStyle 속성을 입력·렌더 간 정본으로 사용하여 Luau 지역변수 한도를 지킨다.
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
 
@@ -1802,7 +1801,8 @@ function FieldScene.start(opts)
 				if wpn.ranged then return CFrame.new(0, -0.12 * bell(p), 0) * CFrame.Angles(0, 0.12 * bell(p), 0) end
 				return CFrame.new(0, -0.5 * bell(p), 0) * CFrame.Angles(0.12, p * math.pi * 4, 0)
 			elseif kind == "dash" then
-				-- [회피 가중치] 시작·종료 자세는 0으로 복귀한다. 항해사는 낮은 구르기, 다른 직업은 각자 측보.
+				-- [회피 가중치] 직업 속성을 R15 루트 관절에서도 직접 읽는다. 상위 전투 변수는 추가하지 않는다.
+				local dodgeStyle = player.Character and player.Character:GetAttribute("FieldDodgeStyle") or "warrior"
 				local press = bell(p)
 				if dodgeStyle == "navigator" then
 					return CFrame.new(0, -0.36 * press, 0) * CFrame.Angles(-p * math.pi * 2, 0, 0)
@@ -1885,7 +1885,7 @@ function FieldScene.start(opts)
 					if swingKind == "guard" then
 						src = FM.combo("slash1", { "W:BLADE_SLASH_R" }).guard
 					elseif swingKind == "dash" then
-						src = dashPoses[dodgeStyle] or dashPoses.warrior
+						src = dashPoses[ch:GetAttribute("FieldDodgeStyle") or "warrior"] or dashPoses.warrior
 					else
 						src = castPoses[swingKind] or (if string.sub(swingKind, 1, 4) == "cast" then castPoses.cast_read else castPose)
 					end
@@ -1974,7 +1974,7 @@ function FieldScene.start(opts)
 			end
 			-- [거대한 회피] 성직자·학자 2.0배, 기타 직업 1.70배. 무기 공격 원래 자세는 1.45배 그대로.
 			FM.scale(canon, if swingKind == "dash" then
-				(if dodgeStyle == "clergy" or dodgeStyle == "scholar" then 2.0 else 1.70) else 1.45)
+				(if ch:GetAttribute("FieldDodgeStyle") == "clergy" or ch:GetAttribute("FieldDodgeStyle") == "scholar" then 2.0 else 1.70) else 1.45)
 			FM.step(pfm, dt, rootRot, if swingKind == "dash" then 1.85 else nil)
 		end))
 		table.insert(conns, { Disconnect = function()
@@ -3196,7 +3196,7 @@ function FieldScene.start(opts)
 					elseif magicUser then "성직자" elseif wpn.family == "dagger" then "항해사"
 					elseif wpn.ranged then "포수" else "무인"
 			end
-			dodgeStyle = JobSkills.categoryOf(profession)
+			local dodgeStyle = JobSkills.categoryOf(profession)
 			if ch0 then ch0:SetAttribute("FieldDodgeStyle", dodgeStyle) end
 			local dodgeOrigin = hrp.CFrame
 			local look = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
