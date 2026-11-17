@@ -4653,5 +4653,17 @@ test('Mare town villagers keep arm gestures in front and faces aligned with tors
   assert.ok(faceAudit,'official Studio must verify visible R15 resident faces');
   assert.match(faceAudit.code,/head\.CFrame\.LookVector:Dot\(torso\.CFrame\.LookVector\)/);
   assert.match(faceAudit.code,/TOWN_NPC_FACE_AUDIT_NO_VISIBLE_RESIDENTS/);
+  assert.match(faceAudit.code,/TOWN_NPC_BELOW_GROUND:/);
+  assert.match(pose,/if not parent:IsA\("WorldModel"\) or \(outfit and outfit.companion\) then/);
+  assert.match(pose,/leftFoot.Position.Y - leftFoot.Size.Y \* 0\.5/);
+  assert.match(port,/local lift = Vector3.new\(0, t.base.Position.Y - t.morning.Y, 0\)/);
+  assert.match(port,/t.morning \+= lift/);
+  assert.match(port,/t.market \+= lift/);
+  assert.match(port,/t.evening \+= lift/);
+  assert.match(port,/local floorY = w.base.Position.Y/);
+  assert.match(port,/local circling = walker.mode == "circle" and walker.cx and walker.cz and walker.r/);
+  assert.match(port,/for sample = 0, 7 do/);
+  assert.match(port,/walker.cx \+= offset.X/);
+  assert.match(port,/walker.model:PivotTo\(CFrame.new\(walker.cx \+ walker.r, safe.Position.Y, walker.cz\)/);
   assert.equal(script.length,45,'existing town gameplay and capture sequence must remain unchanged');
 });
