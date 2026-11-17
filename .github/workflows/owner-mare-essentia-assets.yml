@@ -14,6 +14,7 @@ on:
       - 'tools/devloop/assets_wanted.py'
       - 'qa/company-roblox-dedicated-experience.test.mjs'
       - 'tools/mare-essentia-upload-assets.mjs'
+      - 'tools/mare-essentia-ship-v5.py'
   # [자체 연습] 기존 무료 자산 등록 절차에서 하루 한 번 누락된 3D 원본만 재검사한다.
   schedule:
     - cron: '20 19 * * *'
@@ -26,6 +27,11 @@ on:
         default: '10775310508'
       studio_regrant:
         description: '실제 Studio 실패 보고서의 미디어만 권한 재검증(원본 재업로드 금지)'
+        type: boolean
+        required: false
+        default: false
+      register_v5:
+        description: '선박 36척 V5 고품질·모바일 72개 신규 자산 등록'
         type: boolean
         required: false
         default: false
@@ -111,6 +117,17 @@ jobs:
         run: |
           node --test --test-name-pattern='Mare (trade|generated original|licensed galleon|ship original)' qa/company-roblox-dedicated-experience.test.mjs
 
+      # [5차 선박] 기존 3D 자산 등록 작업 안에서만 36척×2종 원본을 재현한다.
+      # 원본 해시와 다르면 모델/자산번호를 갱신하지 않으며, 평시·정기 실행에는 추가 비용이 없다.
+      - name: Rebuild and verify original 36-ship V5 models
+        id: ship_v5
+        if: ${{ (github.event_name == 'push' && contains(github.event.head_commit.message, '[mare-v5-register]')) || (github.event_name == 'workflow_dispatch' && inputs.register_v5 == true) }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --quiet numpy==2.3.5 trimesh==4.11.1 pillow==12.3.0
+          python3 tools/mare-essentia-ship-v5.py
+
       - name: Upload licensed models and menu icons to Roblox and write AssetIds
         id: asset_registration
         # 정기 연습은 무료 정적 진단만 수행한다. 신규/변경 승인 자산 업로드는 기존 push·수동 경로.
@@ -181,11 +198,15 @@ jobs:
           set -euo pipefail
           # 검수된 생성 모델 원화만 기존 등록기에서 승격했다면 같은 정식 카드 폴더로 GitHub에 자동 전송한다.
           # 등록·권한 확인 실패 시 바이너리를 main에 반영하지 않는다.
+          if [[ "${{ steps.ship_v5.outcome }}" == "failure" ]]; then
+            echo "::error::MARE_V5_ORIGINAL_MODEL_GENERATION_FAILED"
+            exit 1
+          fi
           if [[ "${{ steps.nau_check.outcome }}" == "failure" ]]; then
             echo "::error::MARE_EXTERNAL_CC0_HULL_OR_REGISTRATION_QA_FAILED"
             exit 1
           fi
-          for f in roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb.license.json roblox-games/mare-essentia/assets/naval/fishing-net.glb roblox-games/mare-essentia/assets/naval/fishing-net.glb.license.json roblox-games/mare-essentia/assets/naval/net-floats.glb roblox-games/mare-essentia/assets/naval/net-floats.glb.license.json roblox-games/mare-essentia/assets/naval/galleon-heritage.glb roblox-games/mare-essentia/assets/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png; do
+          for f in roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb.license.json roblox-games/mare-essentia/assets/naval/fishing-net.glb roblox-games/mare-essentia/assets/naval/fishing-net.glb.license.json roblox-games/mare-essentia/assets/naval/net-floats.glb roblox-games/mare-essentia/assets/naval/net-floats.glb.license.json roblox-games/mare-essentia/assets/naval/galleon-heritage.glb roblox-games/mare-essentia/assets/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png roblox-games/mare-essentia/assets/naval/*-v5*.glb*; do
             if [[ ( "$f" == roblox-games/mare-essentia/assets/naval/nau-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/nau-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/rowboat-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/kotia-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/mtepe-custom.glb* ) && ( "${{ steps.asset_registration.outcome }}" != "success" || "${{ steps.nau_check.outcome }}" != "success" ) ]]; then
               echo "SKIP_UNVERIFIED_EXTERNAL_CC0_HULL $f"
               continue
@@ -196,6 +217,11 @@ jobs:
             fi
             if [[ "$f" == roblox-games/mare-essentia/assets/cardart/*.png && "${{ steps.asset_registration.outcome }}" != "success" ]]; then
               echo "SKIP_UNVERIFIED_MODEL_ORIGINAL $f"
+              continue
+            fi
+            # [V5 원본 파일 승격] 등록번호와 Universe 사용 권한을 검증하기 전에는 GitHub 원본도 승격하지 않는다.
+            if [[ "$f" == roblox-games/mare-essentia/assets/naval/*-v5*.glb* && ( "${{ steps.ship_v5.outcome }}" != "success" || "${{ steps.asset_registration.outcome }}" != "success" ) ]]; then
+              echo "SKIP_UNREGISTERED_V5 $f"
               continue
             fi
             if [ ! -e "$f" ]; then echo "SKIP_MISSING $f"; continue; fi
