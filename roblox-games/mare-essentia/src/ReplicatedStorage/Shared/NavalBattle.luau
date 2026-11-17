@@ -3300,8 +3300,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end)
 	end
 	-- [해전 이펙트] 연기·파편·불꽃·물기둥·항적을 한 목록으로 관리한다 (함수 안 지역 변수 수를 아끼려고 한 표에 모음)
+	-- [전투 맵 아이템] 기존 등록 3D 보급 부표/화약폭탄 모델을 재사용한다. 미등록이면 생성하지 않는다.
 	local FX = { wakeAt = {}, dmgAt = {}, fireStates = {}, boardZoom = 0, cam = nil,
-		sink = nil, outcomeReason = nil }
+		sink = nil, outcomeReason = nil, items = {}, itemSerial = 0, nextItemAt = os.clock() + 6,
+		mineCharges = 0 }
 	local C_SMOKE, C_DARK, C_WATER = Color3.fromRGB(215, 215, 220), Color3.fromRGB(62, 62, 68), Color3.fromRGB(200, 232, 245)
 	-- [해상전투 이펙트] 임의 원통·구·사각 파편과 매 프레임 크기 변경을 폐기한다.
 	-- 기존 ParticleEmitter/Attachment를 사용하며 포탄·판정·함선 모델은 건드리지 않는다.
@@ -3894,6 +3896,118 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			navalHitStreak = 0
 		end
 	end
+	-- [실시간 해상전투 맵] 보급 부표·기뢰를 직접 조타해 회수한다.
+	-- 저장·카드 전투·자동 재현에는 적용하지 않고 기존 실제 등록 모델만 복제한다.
+	function FX.itemsStep(now)
+		if not RT or not rt or rt.ended or phase ~= "duel" or finished then return end
+		if now >= FX.nextItemAt then
+			FX.nextItemAt = now + (if MOBILE_VFX then 13 else 11)
+			if #FX.items < 3 then
+				FX.itemSerial += 1
+				local kind = if FX.itemSerial % 3 == 0 then "mine" else "energy"
+				local library = ReplicatedStorage:FindFirstChild("MareAssets")
+				local group = library and library:FindFirstChild(if kind == "mine" then "Relics" else "Naval")
+				local assetName = if kind == "mine" then "weapon-bomb" else "buoy"
+				local tpl = group and group:FindFirstChild(assetName)
+				if AssetIds[(if kind == "mine" then "Relics/" else "Naval/") .. assetName]
+					and tpl and tpl:IsA("Model") then
+					local heading = Vector3.new(math.cos(me.theta), 0, math.sin(me.theta))
+					local right = Vector3.new(-heading.Z, 0, heading.X)
+					local offset = heading * math.random(55, 92) + right * math.random(-48, 48)
+					local pos = Vector3.new(math.clamp(me.pos.X + offset.X, -350, 350), 0,
+						math.clamp(me.pos.Z + offset.Z, -350, 350))
+					if (pos - foe.pos).Magnitude > 24 then
+						local model = tpl:Clone()
+						for _, d in model:GetDescendants() do
+							if d:IsA("BasePart") then
+								d.Anchored = true
+								d.CanCollide = false
+								d.CanQuery = false
+								d.CanTouch = false
+							end
+						end
+						model.Name = if kind == "mine" then "NavalMinePickup" else "NavalEnergyPickup"
+						model.Parent = folder
+						local ok = pcall(function()
+							local _, ext = model:GetBoundingBox()
+							model:ScaleTo((if kind == "mine" then 5.0 else 6.0)
+								/ math.max(0.01, ext.X, ext.Y, ext.Z))
+							local box, size = model:GetBoundingBox()
+							local bottom = box.Position - Vector3.new(0, size.Y * 0.5, 0)
+							model:PivotTo(CFrame.new(ORIGIN + pos + Vector3.new(0, 0.6, 0) - bottom) * model:GetPivot())
+						end)
+						local root = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart", true)
+						if ok and root then
+							model:SetAttribute("NavalPickupKind", kind)
+							local tint = if kind == "mine" then Color3.fromRGB(255, 175, 113)
+								else Color3.fromRGB(120, 238, 252)
+							local highlight = Instance.new("Highlight")
+							highlight.FillColor = tint
+							highlight.OutlineColor = tint
+							highlight.FillTransparency = 0.81
+							highlight.OutlineTransparency = 0.22
+							highlight.DepthMode = Enum.HighlightDepthMode.Occluded
+							highlight.Parent = model
+							local billboard = Instance.new("BillboardGui")
+							billboard.Name = "NavalPickupName"
+							billboard.Adornee = root
+							billboard.Size = UDim2.fromOffset(118, 34)
+							billboard.StudsOffsetWorldSpace = Vector3.new(0, 4.2, 0)
+							billboard.AlwaysOnTop = true
+							billboard.MaxDistance = 220
+							billboard.Parent = gui
+							local sign = label(billboard, if kind == "mine" then "기뢰 회수" else "기력 보급", 17, tint)
+							sign.Size = UDim2.fromScale(1, 1)
+							sign.Font = Enum.Font.GothamBlack
+							sign.TextStrokeColor3 = Color3.fromRGB(17, 27, 35)
+							sign.TextStrokeTransparency = 0.28
+							table.insert(FX.items, {
+								kind = kind, pos = pos, model = model, marker = billboard,
+								pivot = model:GetPivot(), expires = now + 30,
+								phase = math.random() * 6.28,
+							})
+						else
+							model:Destroy() -- 해당 실제 모델 검증에 실패하면 대체 파츠를 만들지 않는다.
+						end
+					end
+				end
+			end
+		end
+		for i = #FX.items, 1, -1 do
+			local item = FX.items[i]
+			local picked = item.model.Parent and (me.pos - item.pos).Magnitude <= math.max(12, me.length * 0.25)
+			if picked then
+				if item.kind == "energy" then
+					-- [기력] 포격/특화 재사용시간 각각 5초 단축. 기존 cd 값·지속시간은 보존한다.
+					for _, sk in SKILLS do
+						skillReady[sk.id] = math.max(now, skillReady[sk.id] - 5)
+					end
+					popText("기력 보급! 재사용 -5초", Color3.fromRGB(135, 247, 231))
+					Sfx.play("sfx_card_ring", 0.54, 1.32, "sfx_bell")
+					FX.burst(ORIGIN + item.pos + Vector3.new(0, 3, 0), nil, {
+						{ tex = "spark", c0 = Color3.fromRGB(145, 247, 250), c1 = Color3.fromRGB(240, 255, 255),
+							s0 = 0.55, s1 = 0.04, life = 0.55, v0 = 12, v1 = 23,
+							spread = 130, glow = 0.9, n = if MOBILE_VFX then 5 else 11 },
+					})
+				else
+					-- [기뢰] 다음 실제 적중 포격에만 소형 추가 폭발. 최대 두 발 보관, 저장/무제한 적립 없음.
+					FX.mineCharges = math.min(2, FX.mineCharges + 1)
+					popText(string.format("기뢰 확보! %d발 장전", FX.mineCharges), Color3.fromRGB(255, 199, 128))
+					Sfx.play("sfx_metal_clash", 0.44, 1.17, "sfx_card_ring")
+					FX.shockRing(ORIGIN + item.pos, Color3.fromRGB(255, 214, 142), 11, 0.42)
+				end
+			elseif item.model.Parent and now < item.expires then
+				item.model:PivotTo(item.pivot * CFrame.new(0, math.sin(now * 1.9 + item.phase) * 0.42, 0)
+					* CFrame.Angles(0, math.sin(now + item.phase) * 0.10, 0))
+			end
+			if picked or not item.model.Parent or now >= item.expires then
+				if item.marker.Parent then item.marker:Destroy() end
+				if item.model.Parent then item.model:Destroy() end
+				table.remove(FX.items, i)
+			end
+		end
+	end
+
 	-- 돛대가 부러져 바다로 쓰러진다 (체력이 크게 줄어든 첫 순간)
 	local function dismast(sh)
 		sh.dismasted = true
@@ -4251,6 +4365,20 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end
 	local function rtDamage(toPlayer, amount)
 		if not rt or rt.ended or amount <= 0 then return end
+		if not toPlayer and FX.mineCharges > 0 then
+			-- [기뢰 발동] 회수한 기뢰만 실제 적중 1회에 한 발 소비한다.
+			-- 기존 포탄 피해·장전시간·탄도는 그대로, 작은 추가 피해와 수면 폭발을 더한다.
+			FX.mineCharges -= 1
+			amount += 6
+			FX.splash(ORIGIN + foe.pos, foe.fx, 0.85)
+			FX.burst(ORIGIN + foe.pos + Vector3.new(0, 4, 0), nil, {
+				{ tex = "spark", c0 = Color3.fromRGB(255, 223, 146), c1 = Color3.fromRGB(244, 140, 76),
+					s0 = 0.65, s1 = 0.06, life = 0.44, v0 = 18, v1 = 33,
+					spread = 150, glow = 0.9, n = if MOBILE_VFX then 5 else 13 },
+			})
+			Sfx.play("sfx_naval_ram", if MOBILE_VFX then 0.48 else 0.67, 1.13, "sfx_cannon")
+			popText("기뢰 명중! 추가 피해 +6", Color3.fromRGB(255, 192, 119))
+		end
 		-- [2초 철벽] 실시간 해전 중 선체·선원 피해를 일시 차단. 서버 결과 신고에도 실제 남은 HP를 전달한다.
 		if toPlayer and os.clock() < skillUntil.guard then
 			if os.clock() >= (me.nextGuardCue or 0) then
@@ -4364,6 +4492,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			sailLabel.TextColor3 = if wf > 1.12 then Color3.fromRGB(130, 235, 150) elseif wf < 0.88 then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(150, 220, 255)
 			if cardBusy then me.speed = 0 end
 			me.pos += forward(me.theta) * me.speed * dt
+			-- [맵 아이템] 이동 직후 충돌을 계산해 터치·키보드 모두 접근만으로 획득한다.
+			FX.itemsStep(now)
 			-- 아군 함선은 기함 옆 대형 자리를 향해 따라간다
 			for _, al in allies do
 				local rot = CFrame.Angles(0, -me.theta, 0)
