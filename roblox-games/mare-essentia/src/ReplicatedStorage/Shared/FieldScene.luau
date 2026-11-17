@@ -7191,6 +7191,7 @@ function FieldScene.start(opts)
 		local allies: { any } = {}
 		local spawned = {} -- 영입 슬롯별 생성 성공만 기록. 실패 슬롯만 재시도한다.
 		local nextSpawnRetryAt = 0
+		local spawning = false -- R15 모델 생성이 비동기로 끝날 때까지 같은 슬롯 중복 소환 차단.
 		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
 			if finished or #allyDefs == 0 then
 				return
@@ -7201,7 +7202,8 @@ function FieldScene.start(opts)
 				return
 			end
 			local now = os.clock()
-			if #allies < #allyDefs and now >= nextSpawnRetryAt then
+			if #allies < #allyDefs and not spawning and now >= nextSpawnRetryAt then
+				spawning = true
 				nextSpawnRetryAt = now + 5 -- 외부 R15 생성 실패 때 매 프레임 중복 요청하지 않는다.
 				for i, ad in allyDefs do
 					if not spawned[i] then
@@ -7340,6 +7342,7 @@ function FieldScene.start(opts)
 					end
 					end
 				end
+				spawning = false
 			end
 			for _, a in allies do
 				-- [동료 안정 추적] 한 프레임마다 목표를 바꾸면 몹 사이를 지그재그로 뛰므로 기존 대상을 유지한다.
