@@ -165,6 +165,7 @@ return function(D, S)
 
 		-- 사건: 항해가 길수록 더 많이 만난다 (8일마다 +1, 최대 4번). 선택형·전투는 한 번만.
 		local events = { event }
+		local avoidedPirates = false -- 기존 해전 승리 기록과 회피 성공을 혼동하지 않는다.
 		local singles = { pirates = true, merchant = true, blockade = true }
 		local usedSingle = singles[event.kind] == true
 		for _ = 1, math.min(3, math.floor(days / 8)) do
@@ -369,6 +370,7 @@ return function(D, S)
 				-- [해적 회피] 소형 기동선·안개 탐사선이 접근을 조기에 발견한다.
 				-- 실패하면 기존 해전 로직으로 진행한다.
 				if (trait.evade or 0) > 0 and ctx.rng() < trait.evade then
+					avoidedPirates = true
 					table.insert(msgs, "해적선의 추격을 재빨리 피해 전투를 피했다")
 				else
 					S.Battle.encounter(state, ctx, msgs)
@@ -377,7 +379,7 @@ return function(D, S)
 		end
 
 		-- 연출용 기록(저장 안 함): 3D 항해 장면이 사건을 그린다
-		state.voyageEvent = { kind = event.kind, all = (function() local k = {} for _, e in events do table.insert(k, e.kind) end return k end)(), won = event.kind == "pirates" and state.lastBattle ~= nil and state.lastBattle.winner == "a" or nil }
+		state.voyageEvent = { kind = event.kind, all = (function() local k = {} for _, e in events do table.insert(k, e.kind) end return k end)(), won = event.kind == "pirates" and not avoidedPirates and state.lastBattle ~= nil and state.lastBattle.winner == "a" or nil }
 
 		-- 바다에서 만난 생물·현상·전설 (해상 도감 카드)
 		do
