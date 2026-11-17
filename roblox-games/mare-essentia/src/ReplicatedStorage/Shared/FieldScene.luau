@@ -3712,54 +3712,87 @@ function FieldScene.start(opts)
 			end)
 			return
 		end
-		local function anchorAt(pos: Vector3)
-			local a = Instance.new("Part")
-			a.Anchored, a.CanCollide, a.CanQuery, a.CanTouch = true, false, false, false
-			a.Transparency = 1
-			a.Size = Vector3.one * 0.1
-			a.Position = pos
-			a.Parent = workspace
-			local at = Instance.new("Attachment")
-			at.Parent = a
-			return a, at
-		end
-		-- [실물 사격 궤적] 기존 공용 Beam 두 개 앵커만 사용한다. 시위·석궁 볼트·화기 탄도를 분리한다.
-		-- 피해 판정은 FieldScene 원본에서 이미 확정되며 여기서는 빛의 폭·색·이동만 표시한다.
+		-- [실물형 투사체] 넓은 사각 Beam을 쓰지 않고 가느다란 3D 화살대·볼트·탄환을 날린다.
+		-- 원본 공격 판정과 별개인 시각 효과. 원거리 사용 무기마다 길이·속도·색·탄도를 구분한다.
 		local bow = shotMotion == "BOW" or shotMotion == "LONGBOW"
 		local crossbow = shotMotion == "CROSSBOW"
 		local gun = shotMotion == "PISTOL" or shotMotion == "RIFLE"
 		local flight = to - from
-		local flightDir = if flight.Magnitude > 0.05 then flight.Unit else Vector3.new(0, 0, -1)
-		local streakLength = math.min(flight.Magnitude * 0.6, if bow then 3.4 elseif crossbow then 2.7 else 2.2)
-		-- [탄두-탄미] 맵 전체를 잇는 고정 빔이 아니라 실제 전진하는 짧은 발광 궤적을 만든다.
-		local a0, at0 = anchorAt(from)
-		local a1, at1 = anchorAt(from + flightDir * streakLength)
-		local beam = Instance.new("Beam")
-		beam.Attachment0, beam.Attachment1 = at0, at1
-		beam.Width0 = if bow then (if charged then 0.17 else 0.10)
-			elseif crossbow then (if charged then 0.13 else 0.08)
-			elseif gun then (if charged then 0.24 else 0.16) else 0.26
-		beam.Width1 = if bow then 0.025 elseif crossbow then 0.02 elseif gun then 0.045 else 0.08
-		beam.Color = if bow then ColorSequence.new(Color3.fromRGB(178, 214, 154), Color3.fromRGB(224, 195, 130))
-			elseif crossbow then ColorSequence.new(Color3.fromRGB(188, 213, 228), Color3.fromRGB(243, 226, 173))
-			elseif gun then ColorSequence.new(Color3.fromRGB(255, 243, 197), Color3.fromRGB(255, 177, 82))
-			else ColorSequence.new(Color3.fromRGB(255, 232, 150), Color3.fromRGB(255, 150, 70))
-		beam.LightEmission = if bow then 0.24 elseif crossbow then 0.42 else 0.82
-		beam.FaceCamera = true
-		beam.Transparency = NumberSequence.new(if bow then 0.26 elseif crossbow then 0.18 else 0.08)
-		beam.CurveSize0 = if bow then 0.35 else 0
-		beam.Segments = if bow then 5 else 1
-		beam.Parent = a0
-		-- 탄속: 볼트는 직진, 장궁 화살은 조금 느리고 화승총 탄환은 거의 즉시 화면을 가른다.
-		local duration = if shotMotion == "RIFLE" or shotMotion == "PISTOL" then 0.09
-			elseif crossbow then 0.13 elseif bow then 0.20 else 0.16
-		game:GetService("TweenService"):Create(a0, TweenInfo.new(duration, Enum.EasingStyle.Linear),
-			{ Position = to - flightDir * streakLength }):Play()
-		game:GetService("TweenService"):Create(a1, TweenInfo.new(duration, Enum.EasingStyle.Linear),
-			{ Position = to }):Play()
-		task.delay(duration + 0.06, function()
-			a0:Destroy()
-			a1:Destroy()
+		if flight.Magnitude < 0.05 then return end
+		local direction = flight.Unit
+		local length = if bow then 1.55 elseif crossbow then 0.92 elseif gun then 0.16 else 1.10
+		local shaft = Instance.new("Part")
+		shaft.Name = "FieldProjectile"
+		shaft.Shape = if gun then Enum.PartType.Ball else Enum.PartType.Cylinder
+		shaft.Size = if gun then Vector3.one * 0.14
+			else Vector3.new(if crossbow then 0.075 else 0.055, length, if crossbow then 0.075 else 0.055)
+		shaft.Material = if gun then Enum.Material.Neon else Enum.Material.SmoothPlastic
+		shaft.Color = if bow then Color3.fromRGB(132, 96, 57)
+			elseif crossbow then Color3.fromRGB(146, 157, 157)
+			elseif gun then Color3.fromRGB(255, 226, 175) else Color3.fromRGB(177, 155, 103)
+		shaft.Anchored, shaft.CanCollide, shaft.CanTouch, shaft.CanQuery = true, false, false, false
+		shaft.CastShadow = false
+		shaft.CFrame = CFrame.lookAt(from, to) * CFrame.Angles(math.pi / 2, 0, 0)
+		shaft.Parent = folder
+		-- [금속촉] 화살·볼트 끝만 작게 밝게 해 네모난 플래시 대신 비행방향이 읽히게 한다.
+		local tip
+		if not gun then
+			tip = Instance.new("Part")
+			tip.Name = "FieldArrowTip"
+			tip.Shape = Enum.PartType.Ball
+			tip.Size = Vector3.one * (if crossbow then 0.115 else 0.095)
+			tip.Material = Enum.Material.Metal
+			tip.Color = Color3.fromRGB(187, 195, 187)
+			tip.Anchored, tip.CanCollide, tip.CanTouch, tip.CanQuery = true, false, false, false
+			tip.CastShadow = false
+			tip.CFrame = CFrame.new(from + direction * (length * 0.5))
+			tip.Parent = folder
+		end
+		-- [아주 얇은 잔광] 공식 Trail을 꼬리 끝에 붙여 길고 각진 화면 가로 빛판을 제거한다.
+		local at0 = Instance.new("Attachment")
+		local at1 = Instance.new("Attachment")
+		at0.Position = Vector3.new(-0.028, if gun then 0 else length * 0.48, 0)
+		at1.Position = Vector3.new(0.028, if gun then 0 else length * 0.48, 0)
+		at0.Parent, at1.Parent = shaft, shaft
+		local trail = Instance.new("Trail")
+		trail.Attachment0, trail.Attachment1 = at0, at1
+		trail.FaceCamera = true
+		trail.Lifetime = if bow then 0.085 elseif crossbow then 0.055 else 0.035
+		trail.MinLength = 0.15
+		trail.LightEmission = if gun then 0.55 else 0.12
+		trail.Color = ColorSequence.new(if gun then Color3.fromRGB(250, 202, 135)
+			elseif crossbow then Color3.fromRGB(199, 214, 220) else Color3.fromRGB(208, 194, 150))
+		trail.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.38),
+			NumberSequenceKeypoint.new(1, 1)})
+		trail.WidthScale = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.60),
+			NumberSequenceKeypoint.new(1, 0)})
+		trail.Parent = shaft
+		local duration = flightOverride or (if gun then 0.09 elseif crossbow then 0.16 elseif bow then 0.24 else 0.18)
+		local lift = if bow then math.min(flight.Magnitude * 0.045, 2.5)
+			elseif crossbow then math.min(flight.Magnitude * 0.012, 0.55) else 0
+		local started = os.clock()
+		local move
+		move = RunService.Heartbeat:Connect(function()
+			if finished or not shaft.Parent then
+				move:Disconnect()
+				if shaft.Parent then shaft:Destroy() end
+				if tip and tip.Parent then tip:Destroy() end
+				return
+			end
+			local t = math.clamp((os.clock() - started) / math.max(duration, 0.02), 0, 1)
+			local p = from:Lerp(to, t) + Vector3.new(0, math.sin(t * math.pi) * lift, 0)
+			local tangent = flight + Vector3.new(0, math.cos(t * math.pi) * math.pi * lift, 0)
+			local aim = if tangent.Magnitude > 0.001 then tangent.Unit else direction
+			shaft.CFrame = CFrame.lookAt(p, p + aim) * CFrame.Angles(math.pi / 2, 0, 0)
+			if tip and tip.Parent then tip.CFrame = CFrame.new(p + aim * (length * 0.5)) end
+			if t >= 1 then
+				move:Disconnect()
+				trail.Enabled = false
+				task.delay(trail.Lifetime + 0.04, function()
+					if shaft.Parent then shaft:Destroy() end
+					if tip and tip.Parent then tip:Destroy() end
+				end)
+			end
 		end)
 	end
 
@@ -4763,7 +4796,7 @@ function FieldScene.start(opts)
 				kind = if thrownAsset == "stone" then "Town" else "Relics", hand = rightHand, shield = false, throwable = true })
 		end
 		if weapon.family ~= "fist" and not (thrownAsset == "bomb" and weapon.family == "explosive") then
-			table.insert(items, { modelName = weapon.model, hand = rightHand, shield = false })
+			table.insert(items, { modelName = weapon.model, hand = if weapon.family == "bow" then leftHand else rightHand, shield = false })
 		end
 		if shieldModel then
 			table.insert(items, { modelName = shieldModel, hand = leftHand, shield = true })
@@ -4873,19 +4906,49 @@ function FieldScene.start(opts)
 			if longest > 0.05 then pcall(function() held:ScaleTo(targetLength / longest) end) end
 			held.Parent = character
 			bb, ext = held:GetBoundingBox()
-			local ax = if item.shield then (if ext.X <= ext.Y and ext.X <= ext.Z then bb.RightVector
-				elseif ext.Y <= ext.Z then bb.UpVector else bb.LookVector)
-				else (if ext.X >= ext.Y and ext.X >= ext.Z then bb.RightVector
-				elseif ext.Y >= ext.Z then bb.UpVector else bb.LookVector)
-			local fwd = if item.shield then character:GetPivot().LookVector else hand.CFrame.LookVector
-			local cross = ax:Cross(fwd)
-			local rotation = if cross.Magnitude < 1e-4
-				then (if ax:Dot(fwd) > 0 then CFrame.identity else CFrame.fromAxisAngle(hand.CFrame.UpVector, math.pi))
-				else CFrame.fromAxisAngle(cross.Unit, math.acos(math.clamp(ax:Dot(fwd), -1, 1)))
-			local len = math.max(ext.X, ext.Y, ext.Z)
-			local newBB = CFrame.new(hand.Position + fwd * (if item.shield then 0.55 else len * 0.35)
-				- hand.CFrame.UpVector * (if item.shield then 0 else 0.3)) * (rotation * bb.Rotation)
-			held:PivotTo(newBB * bb:ToObjectSpace(held:GetPivot()))
+			-- [활·석궁 바로잡기] 손목 LookVector는 달리기/사격 중 수시로 회전해 실제 무기가 거꾸로 꺾이므로
+			-- 몸통의 수평 전방을 기준으로 활의 긴 축을 수직, 석궁의 총몸을 전방으로 맞춘다.
+			local bowHold = weapon.family == "bow" and not item.shield and not item.throwable
+			local crossbowHold = weapon.motion == "CROSSBOW" and not item.shield and not item.throwable
+			if bowHold or crossbowHold then
+				local forward = character:GetPivot().LookVector
+				forward = Vector3.new(forward.X, 0, forward.Z)
+				forward = if forward.Magnitude > 0.1 then forward.Unit else Vector3.new(0, 0, -1)
+				local sourceAxis = if bowHold then (if ext.X >= ext.Y and ext.X >= ext.Z then bb.RightVector
+					elseif ext.Z >= ext.Y then bb.LookVector else bb.UpVector)
+					else (if ext.Z >= ext.Y then bb.LookVector else bb.RightVector)
+				local targetAxis = if bowHold then Vector3.yAxis else forward
+				local rotation = CFrame.fromRotationBetweenVectors(sourceAxis, targetAxis)
+				-- [활 활대 면 / 석궁 상부면] 축을 맞춘 뒤에도 뒤집히지 않게 몸 기준 수평/상부를 정렬한다.
+				local secondary = if bowHold then (if ext.Z >= ext.Y and ext.Z >= ext.X then bb.RightVector else bb.LookVector)
+					else bb.UpVector
+				local rotated = rotation * secondary
+				local facingPlane = if bowHold then Vector3.new(rotated.X, 0, rotated.Z)
+					else rotated - forward * rotated:Dot(forward)
+				local wanted = if bowHold then forward else Vector3.yAxis
+				if facingPlane.Magnitude > 0.1 then
+					rotation = CFrame.fromRotationBetweenVectors(facingPlane.Unit, wanted) * rotation
+				end
+				local placedAt = hand.Position + forward * (if bowHold then 0.30 else math.max(ext.X, ext.Y, ext.Z) * 0.25)
+					+ Vector3.new(0, if bowHold then 0.02 else 0.16, 0)
+				local alignedBB = CFrame.new(placedAt) * rotation * bb.Rotation
+				held:PivotTo(alignedBB * bb:ToObjectSpace(held:GetPivot()))
+			else
+				-- 검·도끼·방패·총기의 승인 모델 장착 축과 기존 손맛은 그대로 유지한다.
+				local ax = if item.shield then (if ext.X <= ext.Y and ext.X <= ext.Z then bb.RightVector
+					elseif ext.Y <= ext.Z then bb.UpVector else bb.LookVector)
+					else (if ext.X >= ext.Y and ext.X >= ext.Z then bb.RightVector
+					elseif ext.Y >= ext.Z then bb.UpVector else bb.LookVector)
+				local fwd = if item.shield then character:GetPivot().LookVector else hand.CFrame.LookVector
+				local cross = ax:Cross(fwd)
+				local rotation = if cross.Magnitude < 1e-4
+					then (if ax:Dot(fwd) > 0 then CFrame.identity else CFrame.fromAxisAngle(hand.CFrame.UpVector, math.pi))
+					else CFrame.fromAxisAngle(cross.Unit, math.acos(math.clamp(ax:Dot(fwd), -1, 1)))
+				local len = math.max(ext.X, ext.Y, ext.Z)
+				local newBB = CFrame.new(hand.Position + fwd * (if item.shield then 0.55 else len * 0.35)
+					- hand.CFrame.UpVector * (if item.shield then 0 else 0.3)) * (rotation * bb.Rotation)
+				held:PivotTo(newBB * bb:ToObjectSpace(held:GetPivot()))
+			end
 			for _, bp in held:GetDescendants() do
 				if bp:IsA("BasePart") then
 					local weld = Instance.new("WeldConstraint")
@@ -5681,16 +5744,38 @@ function FieldScene.start(opts)
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, dist, ang) then
 					-- [원본 공격 종류 전달] 다음 입력에 의해 평타 명중 소유권이 바뀌지 않도록 행동별로 캡처한다.
-					local landed = strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3) or wpn.family == "blunt", nil, nil, hitActionSeq, nil, moveId == "rush", basicBeat)
-					if e.ac.dead then defeatedAt = e.root.Position end
+					-- [원거리 명중 공정성] 거리·사격자 이동·적의 이동·회피가 명중 확률을 결정한다.
+					-- 한 발은 한 번만 시도하며 빗나간 발은 피해·숙련·5타 자동강타를 적립하지 않는다.
+					local shotLanded = true
+					if rangedShot then
+						local rangeRatio = math.clamp(dist / math.max(rangeR * STUD, 1), 0, 1)
+						local shooterMoving = hrp.AssemblyLinearVelocity.Magnitude > 5
+						local targetMoving = (e.moveVel or Vector3.zero).Magnitude > 5
+						local baseAccuracy = if wpn.motion == "CROSSBOW" then 0.94
+							elseif wpn.family == "bow" then 0.92 else 0.89
+						local accuracy = baseAccuracy - 0.27 * rangeRatio
+							- (if shooterMoving then 0.10 else 0)
+							- (if targetMoving then 0.085 else 0)
+							- (if (e.dodgeUntil or 0) > os.clock() then 0.20 else 0)
+						if moveId == "heavy" then accuracy += 0.08 end
+						shotLanded = comboRng:NextNumber() <= math.clamp(accuracy, 0.35, 0.98)
+					end
+					local landed = if shotLanded then strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3) or wpn.family == "blunt", nil, nil, hitActionSeq, nil, moveId == "rush", basicBeat) else false
+					if shotLanded and e.ac.dead then defeatedAt = e.root.Position end
 					if landed then hits += 1 end
 					shots += 1
 					if rangedShot then
-						-- 총알·화살 궤적: 짧게 번쩍이는 빛줄기
-						local a0 = hrp.Position + Vector3.new(0, 1.1, 0)
+						-- [발사 위치] 활은 왼손의 활대에서, 석궁은 오른손의 볼트 레일에서 시작한다.
+						local hand = player.Character and player.Character:FindFirstChild(if wpn.family == "bow" then "LeftHand" else "RightHand")
+						local a0 = if hand and hand:IsA("BasePart") then hand.Position + hrp.CFrame.LookVector * (if wpn.motion == "CROSSBOW" then 1.25 else 0.40)
+							else hrp.Position + Vector3.new(0, 1.1, 0)
 						local b0 = e.root.Position + Vector3.new(0, 1.2, 0)
-						-- [무기별 탄도] 기존 데미지 판정 1회에 시위/볼트/화약 궤적 1개만 연결한다.
-						-- 총구 발포음은 위에서 한 번 재생했으므로 여기서는 중복 재생하지 않는다.
+						if not shotLanded then
+							-- [실제 빗나감] 기하학적 목표 옆을 지나가게 하여 확정 명중과 화면 연출 불일치를 없앤다.
+							local side = if comboRng:NextNumber() < 0.5 then -1 else 1
+							b0 += hrp.CFrame.RightVector * side * (3 + dist * 0.055)
+								+ Vector3.new(0, if comboRng:NextNumber() < 0.5 then 1.2 else -0.9, 0)
+						end
 						arrowTrail(a0, b0, nil, nil, wpn.motion, moveId ~= "rush")
 					end
 				end
@@ -5776,6 +5861,13 @@ function FieldScene.start(opts)
 						if obj.model.Parent and obj.lastHit == nowHit then obj.model:PivotTo(obj.origin) end
 					end)
 				end
+			end
+			-- [표적 없는 사격] 탄환이 없는 것처럼 보이지 않게 전방으로 실제 투사체만 날린다.
+			if rangedShot and shots == 0 then
+				local hand = player.Character and player.Character:FindFirstChild(if wpn.family == "bow" then "LeftHand" else "RightHand")
+				local origin = if hand and hand:IsA("BasePart") then hand.Position else hrp.Position + Vector3.new(0, 1.2, 0)
+				arrowTrail(origin, origin + hrp.CFrame.LookVector * math.min(rangeR * STUD, 45),
+					nil, nil, wpn.motion, moveId ~= "rush")
 			end
 			if hits == 0 and not sceneryHit and hitActionSeq >= streakCountedSeq then endStreak("헛손질") end
 			if moveId == "rush" and hits > 0 then
