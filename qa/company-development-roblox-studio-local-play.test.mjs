@@ -3753,7 +3753,7 @@ test('Studio Auto QA dispatches only Mare and cancels older Forest-only captures
   const workflow=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
   assert.ok(workflow.includes('name: Studio Auto QA'));
   assert.ok(workflow.includes('  schedule:'));
-  assert.ok(workflow.includes("cron: '43 3,15 * * *'"));
+  assert.ok(workflow.includes("cron: '*/10 * * * *'"));
   assert.ok(workflow.includes('roblox-games/mare-essentia/src/**'));
   assert.ok(!workflow.includes('roblox-games/fantasy-survival/'));
   assert.ok(workflow.includes('workflows: ["Owner Mare Essentia Direct Publish"]'));
@@ -3821,7 +3821,8 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   const gen=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.ok(gen.includes('("mare-cardbattle", "mare-voyage", "mare-battle")'));
-  assert.equal(steps.length,237);
+  assert.equal(steps.length,241);
+  assert.equal(steps.filter(step=>step.code?.includes('NPC_ROUTE_AUDIT_PASS checked=')).length,1);
   const slowIntro=steps.filter(step=>step.code?.includes('FIELD_QA_INTRO_MODAL_NOT_FINISHED'));
   assert.equal(slowIntro.length,1);
   assert.equal(slowIntro[0].timeoutMs,90000);
@@ -3934,8 +3935,10 @@ test('Mare scheduled Studio expeditions cover all 22 cultural regions without si
   }
   assert.ok(steps.some(row=>row.code?.includes('REGION_QA_CLEAN_EXIT_PASS')));
   const auto=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
-  assert.ok(auto.includes("cron: '43 3,15 * * *'"));
-  assert.ok(auto.includes('scripts+=("roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-regions.json")'));
+  assert.ok(auto.includes("cron: '*/10 * * * *'"));
+  assert.ok(auto.includes("2) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-regions.json"));
+  assert.ok(auto.includes("STUDIO_ROTATION_SKIP=RUNNER_BUSY"));
+  assert.ok(auto.includes("STUDIO_ROTATION_SLOT=$slot"));
   assert.ok(auto.includes('for script in '));
   assert.equal(auto.split('gh workflow run devloop-studio.yml').length-1,1);
 });
@@ -3986,8 +3989,10 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
   }
   assert.ok(steps.some(row=>row.code?.includes('WEAPON_QA_FINAL_CLEAN_EXIT_PASS')));
   const daily=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
-  assert.ok(daily.includes("cron: '43 3,15 * * *'"));
-  assert.ok(daily.includes('scripts+=("roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-weapons.json")'));
+  assert.ok(daily.includes("cron: '*/10 * * * *'"));
+  assert.ok(daily.includes("3) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-weapons.json"));
+  assert.ok(daily.includes("0) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-town.json"));
+  assert.ok(daily.includes("4) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json"));
 });
 
 test('Mare official Studio QA records complete registered media, model loading and feature verification',()=>{

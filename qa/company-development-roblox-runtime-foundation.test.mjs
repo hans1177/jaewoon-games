@@ -1231,7 +1231,7 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  const verify=roadmap.roblox?.developmentVerification||{};
  const studio=roadmap.roblox?.studioExecution||{};
  const stack=roadmap.developmentLifecycleMachine?.nativeGameFoundationValidationStack||{};
- const architectureSummary=architecture.status;
+ // [중앙 정책] 요약 상태값이 아닌 권한 원본과 최종 게이트 잠금을 검증한다.
  assert.deepEqual(verify.postBuildUpRequired,['CODE_QA','STATIC_QA']);
  assert.equal(verify.studio,'REQUIRED_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY');
  assert.equal(verify.studioBlocksDevelopment,false);
@@ -1245,9 +1245,11 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  assert.equal(stack.releaseGate.runtimeFoundationRequiredForInternalRelease,false);
  assert.equal(stack.releaseGate.internalRuntimeValidationRequiredForInternalRelease,false);
  assert.equal(stack.releaseGate.studioRequiredForInternalRelease,true);
- assert.equal(architectureSummary,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+ assert.equal(architecture.authority,'MACHINE_EXECUTION_ARCHITECTURE_MAP');
+ assert.equal(architecture.sourceOfTruth,'company-learning/company-architecture-map.json');
+ assert.equal(architecture.finalChainLockTopology.status,'LOCKED');
  const runtimeWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
-  assert.match(runtimeWorkflow,/if: \$\{\{ !cancelled\(\) \}\}/);
+ assert.match(runtimeWorkflow,/if: needs\.dedupe\.outputs\.run == 'true'/);
  assert.match(runtimeWorkflow,/run_studio:[\s\S]*?default:\s*false/);
  assert.match(runtimeWorkflow,/probeRobloxOpenCloudEngine/);
 });
@@ -1280,7 +1282,8 @@ test('runtime QA validates Cloud independently while optional Studio is exact op
  assert.match(workflow,/SERVER_DIAGNOSTIC_ENABLED: true/);
  assert.match(workflow,/ROBLOX_REQUIRED_DEPLOY_CREDENTIAL_MISSING/);
  assert.match(workflow,/const exactStudioInternalValidation=/);
-  assert.match(workflow,/if: \$\{\{ !cancelled\(\) \}\}/);
+ assert.match(workflow,/if: needs\.dedupe\.outputs\.run == 'true'/);
+ assert.match(workflow,/Probe exact Roblox Open Cloud engine execution\n\s+working-directory: main\n\s+continue-on-error: true/);
  assert.match(workflow,/internalStudioValidationOnly:true/);
  assert.match(workflow,/externalServerBootRequired:false/);
  assert.match(workflow,/authority:'roblox-internal-studio-single-session-qa'/);
