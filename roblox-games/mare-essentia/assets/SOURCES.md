@@ -1710,3 +1710,24 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 | `Menu/field_weapon` | `assets/icons/field_weapon.png` | `b27cef0c696dc459ef78d57c9dee8b6618827e7f2610f9416619e4444fbb1b7b` | 512×512 |
 
 로블록스 자산번호·Universe 사용 권한·Studio 표시 여부는 정식 등록/배포 결과로 별도 확인한다.
+
+## 2026-11-18 실제 제작 3D 머리·액세서리 11종
+
+- 기존 머리 GLB 복제가 아닌 독립 제작 GLB 2.0 메시: 머리 6종·액세서리 5종.
+- 제작자: Mare Essentia / GPT-6. 프로젝트에서 직접 제작한 기하구조와 원본 PBR 재질. CC0-1.0으로 무상 이용·수정 가능.
+- 파일마다 `.glb.license.json`에 원본 Git 바이너리 SHA-1, 정점·삼각형·부분 수 기록. 기존 R15 관절·세이브·전투 및 게임 수치 불변.
+- 소스 제작/보관과 Roblox 실제 등록/권한 확인/캐릭터 장착/모바일 화면 검증은 구분해야 한다. 등록이 확인되기 전 임의 자산 ID 연결 금지.
+
+| 3D 원본 | 삼각형 |
+|---|---:|
+| `people/hair_braided_crown.glb` | 5112 |
+| `people/hair_low_bun.glb` | 2536 |
+| `people/hair_sailor_ponytail.glb` | 3432 |
+| `people/hair_side_braid.glb` | 1864 |
+| `people/hair_shoulder_waves.glb` | 5280 |
+| `people/hair_court_curls.glb` | 3712 |
+| `people/acc_sailor_headband.glb` | 1848 |
+| `people/acc_pearl_hairpin.glb` | 1344 |
+| `people/acc_ribbon_bow.glb` | 728 |
+| `people/acc_feather_hat.glb` | 7696 |
+| `people/acc_guild_badge.glb` | 1520 |
