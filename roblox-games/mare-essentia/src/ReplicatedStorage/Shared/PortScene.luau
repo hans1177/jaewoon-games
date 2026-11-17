@@ -340,16 +340,12 @@ do
 			SHIP_MESH[id] = SHIP_MESH[def.visual]
 		end
 	end
-	-- [7대륙 36척 실물 전시] 기존 선박 데이터와 분리해 등록된 외형만 연결한다.
-	-- 아메리카 브리간틴·잔지바르 자하즈는 동일 함종의 검증된 CC0 원본을 전용 모델 확보 전까지 쓴다.
-	local blueprintMeshSources = { atlantic_brigantine = "brigantine-custom", zanzibar_jahazi = "jahazi-custom" }
+	-- [7대륙 36척 전용 실물] 각 설계는 본인 등록번호가 실제 있는 고유 GLB만 선택한다.
+	-- 다른 함종 메시는 대체하지 않는다. 등록·권한 검증 전에는 기존 선박 규칙과 저장값을 유지한다.
 	for _, blueprint in ShipsMod.Blueprints do
 		if not ShipsMod.Ships[blueprint.id] then
 			local meshName = blueprint.id .. "-custom"
-			if not AssetIds["Naval/" .. meshName] then
-				meshName = blueprintMeshSources[blueprint.id]
-			end
-			if meshName and AssetIds["Naval/" .. meshName] then
+			if AssetIds["Naval/" .. meshName] then
 				SHIP_MESH[blueprint.id] = meshName
 				BLUEPRINT_SHIP_SIZE[blueprint.id] = blueprint.targetLengthStuds
 			end
