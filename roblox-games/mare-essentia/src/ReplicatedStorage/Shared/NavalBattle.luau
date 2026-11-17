@@ -888,6 +888,7 @@ function NavalBattle.play(opts)
 	local skip = mkBtn("건너뛰기", UDim2.new(0.5, 0, 0, 90), UDim2.fromOffset(96, 30), Vector2.new(0.5, 0))
 	skip.TextSize = 14
 	skip.Activated:Connect(finish)
+	local phase = "duel" -- duel → board → end (도주 중엔 fleeing)
 	-- [함선 특화 2스킬] 기존 Ships.trait에서 선박 역할을 읽는다. 모든 기함은 포 사격(Q) + 특화(E) 정확히 두 개.
 	-- 백병형은 접현 돌진, 철갑·화물보호형은 2초 철벽, 정찰선은 회피, 포격형은 기존 일제사격.
 	-- 기존 함종값·저장키·피해 공식은 수정하지 않고, 실시간 해전에서만 방어 판정을 적용한다.
@@ -925,7 +926,7 @@ function NavalBattle.play(opts)
 	local skillBtn = {}
 	local function useSkill(sk)
 		local now = os.clock()
-		if now < skillReady[sk.id] or opts.cardOnly or opts.card then return end
+		if now < skillReady[sk.id] or opts.cardOnly or opts.card or phase ~= "duel" then return end
 		if sk.id == "fire" then
 			-- [실제 포 사격] 사거리/선측 조건을 만족할 때만 발동. 다음 자동 포격을 즉시 당겨 온다.
 			-- 기존 포탄·명중·피해 계산은 원래 해전 책임 함수가 수행한다.
@@ -3612,7 +3613,6 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 
 	local sinkStart = nil
 	local loser = if RT then nil elseif opts.winner == "a" then "foe" elseif opts.winner == "b" then "me" else nil
-	local phase = "duel" -- duel → board → end (도주 중엔 fleeing)
 	local fleeProgress, fleeTried = 0, false
 	local nextFoeFire = os.clock() + 1.7
 	local boardStart = nil
@@ -4381,9 +4381,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				b.Text = sk.text .. "\n준비"
 				b.BackgroundColor3 = sk.col
 			end
-			b.Interactable = ready
-			b.Active = ready
-			b.AutoButtonColor = ready
+			b.Interactable = ready and phase == "duel" and not opts.cardOnly and not opts.card
+			b.Active = b.Interactable
+			b.AutoButtonColor = b.Interactable
 			local rim = b:FindFirstChildOfClass("UIStroke")
 			if rim then
 				rim.Color = if active then Color3.fromRGB(255, 234, 148) elseif ready then Color3.fromRGB(190, 244, 198) else Color3.fromRGB(92, 99, 109)
