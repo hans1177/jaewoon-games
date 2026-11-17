@@ -586,6 +586,8 @@ function FieldScene.start(opts)
 		return Vector3.new(0, 0, 0)
 	end
 
+	-- [디아블로식 타격 월드] 모든 승인된 배경 모델의 피격만 기록, 전투 수치·보상·랜드마크는 그대로 둔다.
+	local fieldObjects = {}
 	-- [퀘스트 지형 배치] 지형 이름이 먼저, 문화권은 그 위에 추가한다.
 	-- 숲길·협곡·폐광·해안·유적·사막·농경지·호숫가의 실루엣을 구별한다.
 	-- 전투/조사/시작 위치를 건드리지 않고 기존 승인 메시만 필드 외곽과 측면에 배치한다.
@@ -620,10 +622,6 @@ function FieldScene.start(opts)
 	folder:SetAttribute("FieldQuestTerrainTheme", questTerrain)
 	local mirror = if (math.floor(tonumber(opts.seed) or 7) % 2 == 0) then 1 else -1
 
-	-- [디아블로식 타격 월드] 탐험 중 놓인 기존 승인된 나무·암석·건축물 메시를 공격 판정에도 등록한다.
-	-- 중요 건물/조사 랜드마크는 전투 연출만 반응하고 제거하지 않는다(퀘스트 경로 보호).
-	-- 필드 종료와 함께 자동 소멸하는 로컬 객체 목록으로 저장·보상에는 관여하지 않는다.
-	local fieldObjects = {}
 	-- [실물 배경 통합 배치] 나무·바위·문화권 소품·퀘스트 건축물 모두 기존 승인된 원본으로만 생성한다.
 	-- AssetLoader가 뒤늦게 등록한 모델도 같은 좌표에 한 번만 배치한다. 새 파츠 대체는 하지 않는다.
 	local pending = {}
@@ -1030,8 +1028,6 @@ function FieldScene.start(opts)
 	end
 	end
 
-	-- [스코프 공유] 게임 시작 시 장식 배치 흐름에서 생성된 로컬 모델 목록만 전투가 참조한다.
-	-- [배경 접속] 기존 장면 do 스코프 안에서 누적되므로 아래 공격 판정에 참조를 전달한다.
 	-- 상태
 	local pl = AC.newPlayer(100)
 	local BASE_DMG = 10
