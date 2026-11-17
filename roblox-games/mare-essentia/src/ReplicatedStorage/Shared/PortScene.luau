@@ -4844,8 +4844,8 @@ function PortScene.build(info, onFacility)
 		}
 		for i, c in info.companions or {} do
 			local look = looks[c.id] or { "Rogue", Color3.fromRGB(120, 100, 80) }
-			local v = villager(folder, Vector3.new(-6 - i * 3, 0, 8 + i * 2), math.pi / 2,
-				look[2], rng, look[1], true, { height = heroHeight })
+			local v = villager(folder, Vector3.new(-6 - i * 3, 0.18, 8 + i * 2), math.pi / 2,
+				look[2], rng, look[1], true, { height = heroHeight, companion = true })
 			if v then
 				v.Name = "Companion_" .. c.id
 				v:SetAttribute("CompanionId", c.id) -- 항구에서만 동료 전용 달리기 관절을 강화한다.

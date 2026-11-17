@@ -455,6 +455,16 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	model:ScaleTo((height or 5.8) / currentHeight)
 	local bounds, size = model:GetBoundingBox()
 	local bottom = bounds.Position - Vector3.new(0, size.Y / 2, 0)
+	-- [동료 발바닥 접지] 리그 전체 외곽 상자(장식·루트 포함) 대신 실제 R15 양발의 밑면을 기준으로 위치시킨다.
+	-- 모델 높이·장비·관절 구조는 유지하고 동료의 초기 지면 간격만 정렬한다.
+	if outfit and outfit.companion then
+		local leftFoot = model:FindFirstChild("LeftFoot")
+		local rightFoot = model:FindFirstChild("RightFoot")
+		if leftFoot and rightFoot and leftFoot:IsA("BasePart") and rightFoot:IsA("BasePart") then
+			bottom = Vector3.new(bottom.X,
+				math.min(leftFoot.Position.Y - leftFoot.Size.Y * 0.5, rightFoot.Position.Y - rightFoot.Size.Y * 0.5), bottom.Z)
+		end
+	end
 	model:PivotTo(CFrame.new(bottomPosition - bottom) * model:GetPivot())
 	local placed = model:GetPivot()
 	model:PivotTo(CFrame.new(placed.Position) * CFrame.Angles(0, facing or 0, 0))
@@ -1046,7 +1056,8 @@ function Pose.makeR15Action(model, state, progress, t)
 	elseif state == "walk" or state == "run" then
 		-- 걸음 주기: 발 앞으로(무릎 굽힘) → 딛기 → 뒤로 밀기. 반대 팔이 같이 흔들리고 몸이 위아래·좌우로 자연스럽게 흔들린다.
 		local run = state == "run"
-		local companionRun = run and model:GetAttribute("CompanionId") ~= nil
+		local companionMove = model:GetAttribute("CompanionId") ~= nil
+		local companionRun = run and companionMove
 		-- [발걸음] 걷기·달리기 모두 이동거리로 받은 위상을 사용한다.
 		local w = time
 		local s, c = math.sin(w), math.cos(w)
@@ -1079,7 +1090,9 @@ function Pose.makeR15Action(model, state, progress, t)
 		set(m.leftElbow, A(-(elbowBack + (elbowFront - elbowBack) * leftForward), 0, 0))
 		set(m.rightElbow, A(-(elbowBack + (elbowFront - elbowBack) * rightForward), 0, 0))
 		-- [지면 접지] 과도한 수직 바운스를 줄이고 하중 이동은 무릎·발목에 분산한다.
-		local bob = (math.cos(2 * w) * 0.5 + 0.5) * (if companionRun then 0.16 elseif run then 0.12 else 0.075) * stride
+		local bob = (math.cos(2 * w) * 0.5 + 0.5)
+			* (if companionMove then 0.022 elseif run then 0.12 else 0.075) * stride
+		-- 동료는 착지 순간 골반을 높이 띄우지 않는다. 비주얼 요철은 무릎·발목이 담당한다.
 		local lean = if motionStyle == "elder" then 0.12 elseif motionStyle == "nimble" then -0.06 else 0
 		-- [유기적 질주] 발이 지면을 차는 순간 골반 회전·어깨 반작용·시선 안정화를 각기 다른 위상으로 준다.
 		local pelvisShift = if companionRun then s * 0.055 * stride else 0

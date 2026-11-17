@@ -7227,12 +7227,13 @@ function FieldScene.start(opts)
 					-- [동료 접지] Pose.createR15의 인자는 몸통 위치가 아닌 발바닥 좌표다.
 					-- 주인공 루트 높이(약 3스터드)를 더하던 기존 계산이 동료 공중부양의 원인이다.
 					local footX = root0.Position.X + i * 5 - 8
-					local pos0 = Vector3.new(footX, ORIGIN.Y + 0.08, root0.Position.Z - 4)
+					local pos0 = Vector3.new(footX, ORIGIN.Y + 0.015, root0.Position.Z - 4)
 					-- [동료 고유 R15] 영입 이름·직업에 따른 체형·움직임을 안정적으로 재생한다.
 					local persona = hashName(ad.name) % 3 + 1
 					local bodyType = if ad.role == "Barbarian" then "heavy" elseif ad.role == "Rogue" then "slim" else "athletic"
 					local motionStyle = if ad.weapon and ad.weapon.ranged then "scholar" elseif ad.role == "Barbarian" then "heavy" else "disciplined"
-					local outfit = { bodyType = bodyType, motionStyle = motionStyle, persona = persona, profession = ad.job, year = opts.year }
+					local outfit = { bodyType = bodyType, motionStyle = motionStyle, persona = persona, profession = ad.job, year = opts.year,
+						companion = true } -- 실제 양발 밑면을 바닥에 맞추는 동료 전용 생성 옵션.
 					-- 시대가 맞지 않는 조립형 장식은 추가하지 않는다.
 					if type(opts.year) == "number" and opts.year >= 1500 then
 						outfit.hair = if persona == 2 then "bun" else "short"

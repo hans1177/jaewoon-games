@@ -312,7 +312,8 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 			bend("ForearmR", -0.14 * sprint, 0, 0)
 			bend("FootL", liftL * 0.12 * sprint, 0, 0)
 			bend("FootR", liftR * 0.12 * sprint, 0, 0)
-			rootRot = (rootRot or id) * CFrame.new(0, (1 - math.abs(plant)) * 0.09 * sprint, 0)
+			-- [접지 고정] 루트 전체를 위로 들던 0.09스터드 바운스를 없앤다.
+			-- 달리기 활력은 위의 다리·발목·가슴 동작으로만 표현해 실제 발바닥 높이를 유지한다.
 		end
 	elseif state == "EVADE" then
 		-- [정예 회피] 기존 R15 달리기 포즈에 측면 체중 이동과 가드·발 디딤을 더한다.
