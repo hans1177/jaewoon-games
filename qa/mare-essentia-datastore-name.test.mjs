@@ -80,20 +80,29 @@ test('연타 1단 봉인·무기별 낮은 확률·공용 7초 제한·최대 3�
   assert.match(field,/chain = if rank == 2 then 2[\s\S]{0,210}then 3 else 2/);
 });
 
-test('필드 전투 스킬 버튼은 글자 없이 등록 아이콘을 중앙에 표시한다',()=>{
-  assert.match(field,/local iconOnly = button\.Name == "FieldAttack" or string\.sub\(button\.Name, 1, 11\) == "FieldSkill_"/);
+// [탐험 상용 버튼 회귀] 공격·회피 2개만 표시하고 5타 자동 강타는 실제 명중에서만 발생한다.
+test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동 강타에 연결된다',()=>{
+  assert.match(field,/local iconOnly = button\.Name == "FieldAttack" or button\.Name == "FieldDodge"/);
   assert.match(field,/medallion\.Position = UDim2\.fromScale\(0\.5, if iconOnly then 0\.5 else 0\.385\)/);
   assert.match(field,/img\.Position = UDim2\.fromScale\(0\.5, if iconOnly then 0\.5 else 0\.385\)/);
-  assert.match(field,/local function mkSkill\(key, label, color, pos, size\)[\s\S]*?btn\(gui, "", color/);
-  assert.match(field,/b:SetAttribute\("SkillFullName", label\)/);
-  assert.match(field,/lb\.Text = ""[\s\S]*?addIcon\(lb, "Menu\/cc0_no"\)/);
-  assert.match(field,/b:SetAttribute\("SkillShortName", shortName\)/);
-  assert.match(field,/local paintedKey = if type\(card\.id\) == "string" and AssetIds\["CardArt\/"/);
-  assert.doesNotMatch(field,/FieldSkillCaption/);
+  assert.match(field,/attackBtn\.Name = "FieldAttack"/);
+  assert.match(field,/b\.Name = "FieldDodge"/);
+  assert.match(field,/attackCaption\.Name = "FieldAttackCaption"/);
+  assert.match(field,/dodgeCaption\.Name = "FieldDodgeCaption"/);
+  assert.match(field,/addIcon\(attackBtn, "Menu\/cc0_sword"\)/);
+  assert.match(field,/addIcon\(b, "Menu\/chart_compass"\)/);
+  assert.match(field,/bindPress\(attackBtn, useAttack\)/);
+  assert.match(field,/bindHold\(attackBtn\)/);
+  assert.match(field,/hit\.Size = attackBtn\.Size \+ UDim2\.fromOffset\(20, 20\)/);
+  assert.match(field,/combatBtns\.dodge = \{ btn = b, label = "회피" \}/);
+  assert.equal((field.match(/bindPress\(b, function\(\) useMove\("dodge"\) end\)/g)||[]).length,1,'회피 입력 중복 금지');
+  assert.doesNotMatch(field,/FieldSkillCaption|Name = "FieldSkill_|local function mkSkill\(/);
   assert.match(field,/timer\.Visible = false -- \[아이콘 전용\]/);
+  assert.match(field,/equipped\.heavy, equipped\.sweep = true, false/);
+  assert.match(field,/pl\.autoNormalHits % 5 == 0/);
+  assert.match(field,/FieldAutoSkillPending/);
+  assert.match(field,/if useMove\("heavy"\) then[\s\S]*?comboCinema\(streakN, record, true\)/);
   assert.match(field,/sb\.btn:GetAttribute\("IconArtKey"\) ~= iconKey/);
-  assert.match(field,/if key == "parry" then useGuard\(\) else useMove\(key\) end/);
-  assert.match(field,/useCard\(key, card\)/);
   assert.match(field,/pl\.cd\[key\] = now \+ 8/);
 });
 
@@ -154,7 +163,10 @@ test('적과 동료는 무기별 준비·타격·회수 동작과 원본 PBR 맵
   assert.match(field,/if not preservedPbr and not preservedTexture then/);
   assert.match(field,/material, tint, reflectance = Enum\.Material\.Metal, Color3\.fromRGB\(172, 182, 187\), 0\.055/);
   assert.match(field,/bp\.Material, bp\.Reflectance = material, reflectance/);
-  assert.match(field,/FM\.actor\(e\.fm, st, ph, dt, e\.boss/);
+  // [완벽 회피 매트릭스] 적 모션만 둔화하고 주인공/스킬 쿨타임은 정상 시간으로 유지한다.
+  assert.match(field,/local enemyDt = dtc \* \(if now < \(pl\.matrixSlowUntil or 0\) then 0\.24 else 1\)/);
+  assert.match(field,/AC\.stepEnemy\(e\.ac, enemyDt,/);
+  assert.match(field,/FM\.actor\(e\.fm, st, ph, enemyDt, e\.boss/);
   assert.match(field,/FM\.actor\(a\.fm, "RECOVERY",[^\n]+a\.weapon\.motion\)/);
   assert.match(field,/FM\.actor\(a\.fm, "ANTICIPATION",[^\n]+a\.weapon\.motion\)/);
   assert.match(field,/if not quiet then/);
@@ -263,6 +275,7 @@ test('무기별 실제 발사음과 원거리 스킬 이펙트가 등록된 음�
 test('근접·원거리 10단 전신 모션과 마무리 이펙트는 기존 피해 판정을 유지한다',()=>{
   const motion=read('ReplicatedStorage/Shared/FieldMotion.luau');
   const common=read('ReplicatedStorage/Shared/CommonMotion.luau');
+  const weapons=read('ReplicatedStorage/Shared/Weapons.luau');
   const chains={
     CROSSBOW:['FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_BURST','FIREARM_RECOIL'],
     PISTOL:['FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_RECOIL','FIREARM_BURST','FIREARM_BURST','FIREARM_RECOIL'],
@@ -338,5 +351,12 @@ test('근접·원거리 10단 전신 모션과 마무리 이펙트는 기존 피
   assert.match(field,/elseif os\.clock\(\) - swingBridge\.lastAt > 1\.1 then/);
   assert.doesNotMatch(field,/sfx\("sfx_cannon_reload", 0\.23, 1\.62\)/);
   assert.match(weapons,/cadence = "스냅사격·측면스텝·낮은선회/);
+  // [5타 강타 시네마] 기존 10박자/숙련 추가 동작이 강타와 겹치지 않는다.
+  assert.match(field,/local function comboCinema\(n: number, isRecord: boolean, autoHeavy: boolean\?\)/);
+  assert.match(field,/if moveId == "heavy" then[\s\S]{0,250}chainMotionSerial \+= 1/);
+  assert.match(field,/chainMotionSerial ~= visualSerial/);
+  assert.match(field,/local reach = math\.max\(7, wpn\.range \* 2\)/);
+  assert.match(field,/if useMove\("heavy"\) then[\s\S]*?comboCinema\(streakN, record, true\)/);
+  assert.match(field,/AC\.tryMove\(pl, moveId, now\)/);
 });
 
