@@ -7463,6 +7463,7 @@ function FieldScene.start(opts)
 						energyCaption.ZIndex = 6
 						local ally = { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now,
 							footOffset = m:GetPivot().Position.Y - pos0.Y,
+							leftFoot = m:FindFirstChild("LeftFoot"), rightFoot = m:FindFirstChild("RightFoot"),
 							fm = if FM then FM.new(m, false) else nil, name = ad.name, skills = ad.skills,
 							weapon = ad.weapon or Weapons.get("sword"), skillCd = {}, nextSkill = now + 4 + i * 2,
 							gait = (i - 1) * 0.45, energy = 100, energyFill = energyFill,
@@ -7528,9 +7529,20 @@ function FieldScene.start(opts)
 					local pivot = a.model:GetPivot()
 					local wantedY = floorHit.Position.Y + a.footOffset + 0.015
 					local gap = wantedY - pivot.Position.Y
-					if math.abs(gap) < 1.6 and math.abs(gap) > 0.002 then
-						a.model:PivotTo(pivot + Vector3.new(0,
-							math.clamp(gap * (1 - math.exp(-13 * math.clamp(dt, 0, 0.1))), -0.22, 0.22), 0))
+					if math.abs(gap) < 1.6 then
+						-- [실제 신발 접지] 한쪽 발이 스윙 중 떠 있어도 낮은 쪽 축발은 땅에 남게 미세 보정한다.
+						-- 타격 시 발이 순간 이동하지 않도록 발바닥 보정량은 0.14스터드까지만 허용한다.
+						local soleCorrection = 0
+						if a.leftFoot and a.rightFoot and a.leftFoot.Parent and a.rightFoot.Parent then
+							local lowestSole = math.min(a.leftFoot.Position.Y - a.leftFoot.Size.Y * 0.5,
+								a.rightFoot.Position.Y - a.rightFoot.Size.Y * 0.5)
+							soleCorrection = math.clamp(floorHit.Position.Y + 0.015 - lowestSole, -0.14, 0.14)
+						end
+						local correction = gap * (1 - math.exp(-13 * math.clamp(dt, 0, 0.1)))
+							+ soleCorrection * (1 - math.exp(-7 * math.clamp(dt, 0, 0.1))) * 0.55
+						if math.abs(correction) > 0.002 then
+							a.model:PivotTo(pivot + Vector3.new(0, math.clamp(correction, -0.22, 0.22), 0))
+						end
 					end
 				end
 				local gaitMoving = walked > 0.01
@@ -7627,8 +7639,10 @@ function FieldScene.start(opts)
 						-- [타격 예고] 다음 공격 직전의 짧은 무기 준비. 대미지 발생 시각은 변경하지 않는다.
 						FM.actor(a.fm, "ANTICIPATION", 1 - (a.nextAt - now) / 0.22, dt, nil, 1.18, nil, false, nil, a.weapon.motion)
 					elseif gaitMoving then
+						-- [옆걸음] 적을 바라보며 이동하는 동료는 좌우 발과 골반이 진행 방향을 따라가도록 한다.
+						local sideStep = math.clamp(a.root.CFrame.RightVector:Dot(a.moveVel) / maxSpeed, -1, 1)
 						FM.actor(a.fm, "RUN", (a.gait or 0) % 1, dt, nil, 1.3, nil, false, nil, a.weapon.motion,
-							math.clamp(walked / math.max(dt, 0.008) / maxSpeed, 0.18, 1.25))
+							math.clamp(walked / math.max(dt, 0.008) / maxSpeed, 0.12, 1.25), sideStep)
 					else
 						FM.actor(a.fm, "IDLE", (now / 2.4 + a.slot * 0.3) % 1, dt, nil, 1.15, nil, false, nil, a.weapon.motion)
 					end
@@ -7638,7 +7652,8 @@ function FieldScene.start(opts)
 					Pose.makeR15Action(a.model, "attack", ap, now - a.t0)
 				else
 					Pose.makeR15Action(a.model, if gaitMoving then "run" else "idle", 0,
-						if gaitMoving then (a.gait or 0) * 2 * math.pi else now - a.t0)
+						if gaitMoving then (a.gait or 0) * 2 * math.pi else now - a.t0,
+						if gaitMoving then walked / math.max(dt, 0.008) / maxSpeed else 0)
 				end
 			end
 		end))

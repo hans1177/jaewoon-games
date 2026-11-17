@@ -4855,7 +4855,8 @@ function PortScene.build(info, onFacility)
 				local at = v:GetPivot().Position
 				table.insert(followers, { model = v, index = i, pos = Vector3.new(at.X, 0, at.Z), baseY = at.Y,
 					footOffset = at.Y - 0.18, phase = i * 1.7, idleKind = look[3] or "look", gait = i * 0.3,
-					speed = 0, heading = v:GetPivot().Rotation })
+					speed = 0, heading = v:GetPivot().Rotation,
+					leftFoot = v:FindFirstChild("LeftFoot"), rightFoot = v:FindFirstChild("RightFoot") })
 			end
 		end
 	end
@@ -4923,7 +4924,15 @@ function PortScene.build(info, onFacility)
 					if surface and surface.Normal.Y > 0.7 then
 						local wantedY = surface.Position.Y + f.footOffset + 0.015
 						if math.abs(wantedY - f.baseY) < 2.5 then
+							-- [실제 발 디딤] 양발 가운데 지면에 가까운 쪽이 뜨거나 잠기면 얕게 자세를 낮춘다.
+							local soleCorrection = 0
+							if f.leftFoot and f.rightFoot and f.leftFoot.Parent and f.rightFoot.Parent then
+							local lowestSole = math.min(f.leftFoot.Position.Y - f.leftFoot.Size.Y * 0.5,
+								f.rightFoot.Position.Y - f.rightFoot.Size.Y * 0.5)
+							soleCorrection = math.clamp(surface.Position.Y + 0.015 - lowestSole, -0.14, 0.14)
+							end
 							f.baseY += (wantedY - f.baseY) * (1 - math.exp(-11 * dt))
+								+ soleCorrection * (1 - math.exp(-7 * dt)) * 0.55
 						end
 					end
 					local at = f.pos + Vector3.new(0, f.baseY, 0)
@@ -4934,7 +4943,8 @@ function PortScene.build(info, onFacility)
 					-- [동료 걷기/달리기] 실측 이동속도로 달리기/걷기를 전환한다.
 					local pace = if moving then walked / math.max(dt, 0.008) else 0
 					Pose.makeR15Action(f.model, if not moving then "idle" elseif pace > 9 then "run" else "walk",
-						0, if moving then f.gait else now + f.phase)
+						0, if moving then f.gait else now + f.phase,
+						if moving then math.clamp(pace / (if pace > 9 then 16 else 9), 0.15, 1) else 0)
 					if not moving then
 						local cycle = (now + f.phase * 3) % 26
 						local idleKind = if cycle < 2.4 then "look"

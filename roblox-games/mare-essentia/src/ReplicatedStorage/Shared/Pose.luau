@@ -998,7 +998,7 @@ end
 -- 게임의 공격 판정·스킬 수치·저장 구조는 변경하지 않는다.
 -- state: idle, walk, run, attack, shoot, reload, guard, hurt, cheer, talk
 -- progress: 동작 진행률(0~1), t: 누적 시간(초)
-function Pose.makeR15Action(model, state, progress, t)
+function Pose.makeR15Action(model, state, progress, t, moveEffort)
 	local m = rigMotors[model]
 	if not m then return false end
 	local humanoid = model:FindFirstChildOfClass("Humanoid")
@@ -1058,12 +1058,14 @@ function Pose.makeR15Action(model, state, progress, t)
 		local run = state == "run"
 		local companionMove = model:GetAttribute("CompanionId") ~= nil
 		local companionRun = run and companionMove
+		-- [실제 이동 연동] 느리게 접근하면 팔·발걸음이 줄고 전속력에서만 크게 뛴다.
+		local speedStride = if companionMove then 0.42 + 0.58 * math.clamp(tonumber(moveEffort) or 1, 0.12, 1) else 1
 		-- [발걸음] 걷기·달리기 모두 이동거리로 받은 위상을 사용한다.
 		local w = time
 		local s, c = math.sin(w), math.cos(w)
 		local stride = if motionStyle == "heavy" then 0.84 elseif motionStyle == "elder" then 0.7 elseif motionStyle == "nimble" then 1.1 else 1
-		local amp = (if run then 0.96 else 0.74) * stride * (if companionRun then 1.17 else 1)
-		local kneeAmp = (if run then 1.22 else 0.91) * stride * (if companionRun then 1.15 else 1)
+		local amp = (if run then 0.96 else 0.74) * stride * (if companionRun then 1.17 else 1) * speedStride
+		local kneeAmp = (if run then 1.22 else 0.91) * stride * (if companionRun then 1.15 else 1) * speedStride
 		-- [동료 축발] 관절 각도를 일정하게 왕복시키는 인형식 보행 대신 착지-밀기-들기 위상을 나눈다.
 		local pushL, pushR = math.max(0, -s), math.max(0, s)
 		set(m.leftLeg, A(s * amp + (if companionRun then -pushL * 0.10 else 0), 0, 0))
@@ -1078,8 +1080,8 @@ function Pose.makeR15Action(model, state, progress, t)
 		-- 뒤로 과하게 꺾이거나 등 뒤에 고정돼 보이지 않게 한다 (R15 전방 = 양의 X 회전).
 		-- [팔-다리 역위상] 짧은 후방 스윙 때문에 교차가 사라진 회귀 수정. 팔 전후 비대칭은 유지한다.
 		-- [실제 스튜디오 회귀] 노인·중갑병의 짧은 보폭에서도 팔·반대 다리 교차가 식별되도록 조절한다.
-		local armForward = (if run then 0.90 else 0.78) * stride * (if companionRun then 1.18 else 1)
-		local armBack = (if run then 0.49 else 0.50) * stride * (if companionRun then 1.1 else 1)
+		local armForward = (if run then 0.90 else 0.78) * stride * (if companionRun then 1.18 else 1) * speedStride
+		local armBack = (if run then 0.49 else 0.50) * stride * (if companionRun then 1.1 else 1) * speedStride
 		local leftForward, rightForward = math.max(0, -s), math.max(0, s)
 		local leftBack, rightBack = math.max(0, s), math.max(0, -s)
 		set(m.leftArm, A(leftForward * armForward - leftBack * armBack, 0, 0.06))

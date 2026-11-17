@@ -243,6 +243,11 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		if role ~= "ally-melee" and role ~= "ally-ranged" then
 			bend("Head", 0.025 * breathe, math.sin(t * 0.47 + persona) * 0.13, -shift * 0.025)
 			bend("Spine", 0, -shift * 0.045, 0)
+		else
+			-- [동료 생체 대기] 고개가 숨쉬기와 다른 박자로 주변을 살피고 상체·발에 무게가 실린다.
+			bend("Head", 0.016 * breathe, math.sin(t * 0.38 + persona) * 0.11, -shift * 0.02)
+			bend("Spine", 0.024 * breathe, -shift * 0.065, shift * 0.02)
+			bend("Chest", -0.016 * breathe, shift * 0.044, -shift * 0.018)
 		end
 		-- [지상 모션] 가만히 선 몬스터도 어깨·양다리 관절이 실제로 움직이도록
 		-- 기존 호흡·체중 이동에 낮은 전투 대기 자세를 더한다. 이동·공격·피해 판정은 불변.
@@ -300,6 +305,10 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 		if role == "ally-melee" or role == "ally-ranged" then
 			local sprint = math.clamp(effort, 0, 1.25)
 			local drive = if style == "heavy" then 0.75 else 1
+			-- [측면 질주] 정면 사격 중 옆으로 움직여도 상체는 표적에 남고 하체가 옆으로 디딘다.
+			bend("ThighL", 0, -side * 0.16 * sprint, -side * 0.08 * sprint)
+			bend("ThighR", 0, side * 0.16 * sprint, -side * 0.08 * sprint)
+			bend("Chest", 0, -side * 0.08 * sprint, side * 0.08 * sprint)
 			bend("Spine", -0.15 * drive * sprint, plant * 0.075 * sprint, 0)
 			bend("Chest", -0.10 * drive * sprint, -plant * 0.09 * sprint, plant * 0.055 * sprint)
 			bend("ThighL", plant * 0.24 * drive * sprint, 0, 0)
