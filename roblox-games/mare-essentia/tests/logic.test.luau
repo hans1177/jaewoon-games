@@ -1320,15 +1320,20 @@ do
 	st.coins = 5000
 	local fresh = S.MarketClass.new()
 	local c = { rng = rng, market = fresh }
-	local ok = handlers.Buy(st, { goodId = "wool", amount = 20 }, c)
+	-- [선박 화물 특화] 초반 캐러벨은 적재량 보정 때문에 20개보다 작을 수 있다.
+	-- 실제 서버의 화물·주문 상한 안에서 교역하고 수치·가격·경험치 규칙은 변경하지 않는다.
+	local amount = math.min(5, S.State.cargoCapacity(st) - S.State.cargoUsed(st), S.Econ.orderCap(st))
+	check("cross-port trade volume valid", amount >= 1)
+	local ok = handlers.Buy(st, { goodId = "wool", amount = amount }, c)
 	local spent = 5000 - st.coins
-	check("bought 20 wool", ok)
+	check("bought wool within ship capacity", ok and st.cargo.wool == amount)
 	st.portId = "amsterdam"
-	handlers.Sell(st, { goodId = "wool", amount = 20 }, c)
+	local sold = handlers.Sell(st, { goodId = "wool", amount = amount }, c)
 	local profit = st.coins - 5000
-	check("cross-port trade profitable", profit > 0, profit)
-	check("trade xp gained", st.careers.trade.xp > 0 or st.careers.trade.level > 1)
-	print(string.format("  info: 양모 20개 런던→암스테르담 이익 %d (투자 %d)", profit, spent))
+	check("cross-port wool sold", sold and st.cargo.wool == nil)
+	check("cross-port trade profitable", sold and profit > 0, profit)
+	check("trade xp gained", sold and (st.careers.trade.xp > 0 or st.careers.trade.level > 1))
+	print(string.format("  info: 양모 %d개 런던→암스테르담 이익 %d (투자 %d)", amount, profit, spent))
 end
 
 -- 5. 항해 -------------------------------------------------------------
@@ -2173,9 +2178,33 @@ do
 	check("view codex", v.codex.total == #D.Cards.Cards and v.codex.found == 0)
 	check("view hides unfound names", v.codex.cards[1].name == "???")
 	check("view tech", #v.tech == 6)
-	check("view quests", (function() local c = 0 for _, a in v.quests.available do if D.Quests.ById[a.id].strand ~= "main" then c += 1 end end return c end)() + v.quests.otherPortDeliver == (function() local n = 0 for _, q in D.Quests.Quests do if not q.companionId and not q.after and not q.nation then n += 1 end end return n end)())
+	-- [의뢰 표시] 현재 항구·선행 조건에 따라 보이지 않는 의뢰는 합계에 넣지 않는다.
+	local eligibleQuests, shownQuests = 0, v.quests.otherPortDeliver
+	for _, q in D.Quests.Quests do
+		if q.strand ~= "main" and not st.quests.active[q.id] and not st.quests.done[q.id] and S.Quest.visible(st, q) then
+			eligibleQuests += 1
+		end
+	end
+	for _, q in v.quests.available do
+		if D.Quests.ById[q.id].strand ~= "main" then shownQuests += 1 end
+	end
+	check("view quests", shownQuests == eligibleQuests, shownQuests .. "/" .. eligibleQuests)
 	check("view loadout", v.loadout.slots == 3)
-	check("view shipyard", v.shipyard.available == true and #v.shipyard.ships == #D.Ships.Order)
+	-- [지역별 조선소] 전체 함종을 모든 항구에 노출하지 않으며 기존 판매 순서는 유지한다.
+	local culture = D.CultureRegions.ofPort(D.Ports.Ports, st.portId)
+	local localShips = {}
+	for _, shipId in D.Ships.Order do
+		local ship = D.Ships.Ships[shipId]
+		local localShip = not ship.newRegional or ship.id == st.ship.id
+			or (if ship.specialPort then ship.specialPort == st.portId
+				else ship.regions and culture and table.find(ship.regions, culture) ~= nil)
+		if localShip then table.insert(localShips, shipId) end
+	end
+	local correctlyListed = v.shipyard.available == true and #v.shipyard.ships == #localShips
+	for i, shipId in localShips do
+		if not v.shipyard.ships[i] or v.shipyard.ships[i].id ~= shipId then correctlyListed = false break end
+	end
+	check("view shipyard", correctlyListed, #v.shipyard.ships .. "/" .. #localShips)
 	check("view scholars at london", #v.scholars >= 4)
 	check("view careers", #v.careers == 3)
 end
@@ -4168,10 +4197,12 @@ do
 			check("카드 선박 연결 " .. bp.id, not bp.card or D.BoardingCards.Units[bp.card] ~= nil or D.BoardingCards.Specials[bp.card] ~= nil)
 			check("실존 원본 게임 배 연결 " .. bp.id, not bp.existingId or D.Ships.Ships[bp.existingId] ~= nil)
 			if bp.faction == "lost" then
+				-- [실제 등록 연결] 옛 시안 시절의 '게임에 미등록' 조건은 6척 구현과 충돌한다.
+				-- 현재는 고유 단계·보정을 유지하면서 실제 게임 함종과 판매 목록 연결까지 검증한다.
 				check("미지의 땅 1~6단계 특화 설계 " .. bp.id, bp.stage >= 1 and bp.stage <= 6
 					and ((bp.stage == 1 and bp.id == "mu_voyager" and bp.proposedEdge == nil)
 						or (bp.stage >= 2 and bp.proposedEdge >= 0.03 and bp.proposedEdge <= 0.08))
-					and D.Ships.Ships[bp.id] == nil)
+					and D.Ships.Ships[bp.id] ~= nil and table.find(D.Ships.Order, bp.id) ~= nil)
 			else
 				check("실존 1~5단계 설계 " .. bp.id, bp.stage >= 1 and bp.stage <= 5 and bp.proposedEdge == nil)
 			end
