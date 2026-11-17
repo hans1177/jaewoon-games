@@ -4244,41 +4244,95 @@ function PortScene.build(info, onFacility)
 			-- 발전도가 오를수록 건물이 커지고 벽이 밝고 말끔해진다 (1단계는 낡고 어두운 색)
 			local grow = 1.21 + 0.02 * (sceneLevel - 1) -- 시설 필지와 입구 보행 폭을 확보하며 단계별 증축을 유지
 			local tone = f.color:Lerp(style.walls[1], 0.5):Lerp(Color3.fromRGB(90, 80, 70), if sceneLevel <= 1 then 0.18 else 0):Lerp(Color3.new(1, 1, 1), 0.05 * (sceneLevel - 1))
-			local body = house(folder, f.pos, f.w * grow, f.d * grow, f.floors, style, rng, tone)
+			-- [시설 고유 건축] 서재=학문탑, 도서관=열주 학술관.
+			-- 지역 양식을 지켜야 할 한옥·중정·고상식 건물은 기존 현지 주택을 쓰고 주변 실물 부속으로 차별화한다.
+			local form = (style.house or {}).form
+			local localArchitecture = style.kit == "eastasia" or form == "flat" or form == "courtyard"
+				or form == "carved" or form == "stilt" or form == "coastal"
+			local signatureAsset = if localArchitecture then nil
+				elseif f.name == "학자의 서재" then "quaternius_large_square_tower"
+				elseif f.name == "도서관 (도감)" then "temple-stone"
+				else nil
+			local signature = signatureAsset and importedModel(folder, "Town", signatureAsset, f.pos,
+				math.max(f.w, f.d) * grow * HOUSE_SCALE, true, tone)
+			if signature then
+				signature.Name = if f.name == "학자의 서재" then "ScholarStudyTower" else "HarborLibraryHall"
+				signature:SetAttribute("FacilityIdentity", f.tab)
+			end
+			local body = (signature and signature:FindFirstChildWhichIsA("BasePart", true))
+				or house(folder, f.pos, f.w * grow, f.d * grow, f.floors, style, rng, tone)
 			-- 문이 광장(가운데 길) 쪽을 보도록: 위쪽 줄은 -Z, 아래쪽 줄은 +Z 방향 입구
 			local doorZ = if f.pos.Z > 0 then f.pos.Z - f.d * grow / 2 - 2 else f.pos.Z + f.d * grow / 2 + 2
-			sign(folder, body, f.name, nil, (f.floors * 3 + 6) * grow)
+			local signHeight = (f.floors * 3 + 6) * grow
+			if signature then
+				local _, ext = signature:GetBoundingBox()
+				signHeight = math.max(signHeight, ext.Y * 0.64)
+			end
+			sign(folder, body, f.name, nil, signHeight)
 			do
 				-- 시설별 외형 단계 (승인된 기존 3D 소품만): 2단계 생활 소품, 3단계 장식, 4단계 깃발·기둥, 5단계 상징물
 				local lv = sceneLevel
 				local zs = if f.pos.Z > 0 then -1 else 1
 				local fx, fz = f.pos.X, doorZ
 				local function at(dx, dz) return Vector3.new(fx + dx, 0, fz + zs * dz) end
+				-- [항구 시설별 실물 윤곽] 첫 발전 단계부터 서로 다른 건축물로 인식되게 한다.
+				-- 같은 저장·시설탭·출입 좌표를 그대로 두며 등록된 CC0 실물 모델만 재사용한다.
 				if f.name == "교역소" then
+					importedModel(folder, "Town", "stall-green", at(-9, 2.5), 7, false)
+					importedModel(folder, "Town", "cart", at(10, 2), 4.5, false)
 					if lv >= 2 then importedModel(folder, "Cargo", "barrel", at(-6, 0), 2.4, false) importedModel(folder, "Cargo", "box-open", at(-8, 0.5), 2.2, false) end
 					if lv >= 3 then importedModel(folder, "Town", "stall-red", at(9, 2), 6, false) end
 					if lv >= 4 then importedModel(folder, "Castle", "flag-banner-short", at(-10, 1), 8, false) end
 					if lv >= 5 then importedModel(folder, "Cargo", "textiles-stack-large-colored", at(7, 0), 2.6, false) importedModel(folder, "Cargo", "gold-bars-stack-large", at(11, 0), 2.2, false) end
 				elseif f.name == "주점" then
+					-- 굴뚝 솟은 비대칭 여관 본관 + 넓은 식사 차양: 시장이나 학술관과 다른 실루엣.
+					importedModel(folder, "Town", "overhang", at(0, 3), 10.5, false, style.roofs[1])
+					importedModel(folder, "Town", "chimney", f.pos + Vector3.new(-3.6, f.floors * 6.8 * grow, 0), 4.8, false)
+					importedModel(folder, "Cargo", "barrel", at(-8, 1), 2.7, false)
+					importedModel(folder, "Town", "bench_A", at(8, 2), 4.2, false)
 					if lv >= 2 then lantern(folder, at(-5, 0), 3) end
-					if lv >= 3 then importedModel(folder, "Town", "bench_A", at(6, 1), 3.6, false) end
+					if lv >= 3 then importedModel(folder, "Town", "stall-red", at(10, 4), 5.5, false) end
 					if lv >= 4 then lantern(folder, at(5, 0), 3) importedModel(folder, "Castle", "flag-banner-short", at(-8, 1), 7, false) end
 					if lv >= 5 then importedModel(folder, "Cargo", "pot-stew", at(9, 0), 2.2, false) end
 				elseif f.name == "항만청" then
+					-- 항만 관제탑과 신호 깃발로 교역소·은행과 구분한다.
+					importedModel(folder, "Town", "quaternius_watch_tower_wroof", f.pos + Vector3.new(10, 0, 1.5), 10, false, tone)
+					importedModel(folder, "Naval", "flag-high", at(-7, 2), 8, false)
 					if lv >= 3 then importedModel(folder, "Castle", "flag-banner-long", at(-8, 0), 9, false) end
 					if lv >= 4 then
 						for k, part_ in { "tower-hexagon-base", "tower-hexagon-mid", "tower-hexagon-top" } do
 							importedModel(folder, "Castle", part_, Vector3.new(fx + 11, (k - 1) * 6, f.pos.Z), 7, true)
 						end
 					end
+				elseif f.name == "은행" then
+					-- 대리석 현관과 출납 금고 상징: 주점과 달리 정면 좌우가 대칭인 금융 건축.
+					for _, dx in { -5.4, 5.4 } do
+						importedModel(folder, "Terrain", "column", at(dx, 1.1), 9, false, Color3.fromRGB(205, 199, 184))
+					end
+					importedModel(folder, "Town", "kenney_grey_arch_01", at(0, 1.8), 7.5, false)
 				elseif f.name == "상인 길드" then
+					-- 간판만 다른 주택이 아니라 긴 출입 회랑을 둔 상인 회관.
+					importedModel(folder, "Town", "kenney_wood_arch_01", at(0, 2.3), 8, false)
+					importedModel(folder, "Town", "quaternius_wall_entrance_bricks", at(-9, 2.6), 8, false, tone)
+					importedModel(folder, "Town", "stall-green", at(9.5, 3), 5.6, false)
 					if lv >= 3 then importedModel(folder, "Castle", "flag-banner-long", at(-8, 0), 9, false) end
 					if lv >= 4 then for _, dx in { -4, 4 } do importedModel(folder, "Terrain", "column", at(dx, 1.5), 6, false) end end
-					if lv >= 5 then importedModel(folder, "Town", "stall-green", at(10, 2), 6, false) end
-				elseif f.name == "학자의 서재" or f.name == "도서관 (도감)" then
+				elseif f.name == "학자의 서재" then
+					-- 학자의 관측탑/서재 출입구에 책과 천문 기구를 배치한다.
+					importedModel(folder, "Interior", "bookcaseclosed", at(-7, 1.5), 4.5, false)
+					importedModel(folder, "Relics", "journal-open", at(7, 1.5), 2.2, false)
+					importedModel(folder, "Relics", "magnifying-glass", at(9, 2.7), 2.4, false)
 					if lv >= 2 then lantern(folder, at(-5, 0), 3) end
-					if lv >= 4 then for _, dx in { -4, 4 } do importedModel(folder, "Terrain", "column", at(dx, 1.5), 6, false) end end
-					if lv >= 5 then importedModel(folder, "Terrain", "statue-column", at(9, 2), 9, true) end
+					if lv >= 4 then importedModel(folder, "Town", "quaternius_small_square_tower", f.pos + Vector3.new(11, 0, -2), 8, false, tone) end
+				elseif f.name == "도서관 (도감)" then
+					-- 학문탑과는 반대로 넓고 낮은 열주 서고, 책이 가득한 현관으로 구분한다.
+					for _, dx in { -6, 6 } do
+						importedModel(folder, "Terrain", "column", at(dx, 1.4), 7.5, false, tone)
+					end
+					importedModel(folder, "Interior", "bookcaseopenlow", at(-9, 1.8), 4.3, false)
+					importedModel(folder, "Interior", "bookcaseclosed", at(9, 1.8), 4.3, false)
+					if lv >= 2 then lantern(folder, at(-5, 0), 3) end
+					if lv >= 5 then importedModel(folder, "Terrain", "statue-column", at(12, 2.5), 9, false) end
 				end
 			end
 			-- 은행은 항구 발전도에 따라 커진다: 3단계 기둥, 4단계 깃발, 5단계 금괴 더미
