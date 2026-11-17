@@ -1325,12 +1325,12 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		end
 	end
 
-	-- 요리: 광장 한쪽 모닥불 솥을 젓는 아낙 (1단계부터), 단계가 오르면 한 명 더
-	importedModel(folder, "Terrain", "campfire-stones", Vector3.new(-26, 0, -14), 3.6, false)
-	importedModel(folder, "Cargo", "pot-stew", Vector3.new(-26, 1.2, -14), 2.2, false)
-	stay(Vector3.new(-26, 0, -11.2), Vector3.new(-26, 0, -14), "stir", { female = true, role = "Rogue", hat = false })
+	-- [광장 바깥 조리터] 모닥불·솥·요리 주민을 같이 옮겨 기존 조리 모션과 생활 연출을 유지한다.
+	importedModel(folder, "Terrain", "campfire-stones", Vector3.new(-82, 0, -26), 3.6, false)
+	importedModel(folder, "Cargo", "pot-stew", Vector3.new(-82, 1.2, -26), 2.2, false)
+	stay(Vector3.new(-82, 0, -23.2), Vector3.new(-82, 0, -26), "stir", { female = true, role = "Rogue", hat = false })
 	if lvl >= 3 then
-		stay(Vector3.new(-29, 0, -12), Vector3.new(-26, 0, -14), "stir", { female = true, role = "Rogue", hat = false, age = "elder" })
+		stay(Vector3.new(-85, 0, -24), Vector3.new(-82, 0, -26), "stir", { female = true, role = "Rogue", hat = false, age = "elder" })
 	end
 	-- 경제 국면 연출: 호황·버블엔 상점 증축 비계와 활기, 불황·붕괴엔 문 닫은 가게(판자 울타리·빈 통)
 	do
@@ -1387,8 +1387,9 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			stay(Vector3.new(-14, 0, 6), Vector3.new(-26, 0, 0), "talk", { role = "Mage", hat = true })
 		end
 		if has.scholarly then
-			importedModel(folder, "Terrain", "pillar-obelisk", Vector3.new(-12, 0, 24), 16, true)
-			importedModel(folder, "Terrain", "statue-obelisk", Vector3.new(-12, 0, -24), 14, true)
+			-- [문화 기념비 이전] 중앙광장 외곽 기념구역으로 옮겨 학문 관련 실물 상징물은 유지한다.
+			importedModel(folder, "Terrain", "pillar-obelisk", Vector3.new(-190, 0, 128), 16, true)
+			importedModel(folder, "Terrain", "statue-obelisk", Vector3.new(-190, 0, -128), 14, true)
 		end
 		if has.fair then
 			for k = 0, 3 do
@@ -3578,6 +3579,9 @@ function PortScene.build(info, onFacility)
 	end
 	local folder = Instance.new("Folder")
 	folder.Name = "PortScene"
+	-- [중앙광장 영구 예약] 시각 시설물은 외곽에, 광장 중앙에는 보행·집회만 허용한다.
+	folder:SetAttribute("CentralPlazaClearRadius", CENTRAL_PLAZA_RADIUS)
+	folder:SetAttribute("CentralPlazaReserved", true)
 	-- [왕궁/광장/작업장] 모든 NPC가 같은 기존 애니메이션 목록을 사용하도록 먼저 초기화한다.
 	local walkers = {}
 	-- [지역별 건축] 기존 항구 문화권을 따르되, 로도스·파마구스타는 점령 연도 이후 오스만 양식으로 전환한다.
