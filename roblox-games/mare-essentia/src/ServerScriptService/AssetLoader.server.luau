@@ -18,6 +18,106 @@ if not ok or type(ids) ~= "table" then
 	return
 end
 
+-- [로블록스 선박 재질 복구] 등록된 36척의 원본·모바일 GLB는 같은 팔레트와 재질별 메시를 사용한다.
+-- 수입기가 GLB의 baseColorFactor를 흰색으로 놓쳐도 메시 이름 끝의 원본 재질명으로 복원한다.
+-- 원본 모델, 기존 텍스처 맵, 자산번호, 외부 업로드 경로는 변경하지 않는다.
+local SHIP_V5_COLORS = {
+	hull = Color3.fromRGB(98, 59, 36),
+	hull2 = Color3.fromRGB(124, 73, 43),
+	darkwood = Color3.fromRGB(62, 39, 29),
+	wood = Color3.fromRGB(162, 105, 58),
+	pine = Color3.fromRGB(189, 138, 81),
+	pale = Color3.fromRGB(222, 181, 108),
+	deck = Color3.fromRGB(178, 124, 74),
+	decklight = Color3.fromRGB(199, 150, 91),
+	seam = Color3.fromRGB(83, 55, 35),
+	rope = Color3.fromRGB(110, 86, 57),
+	rig = Color3.fromRGB(91, 68, 48),
+	iron = Color3.fromRGB(67, 76, 81),
+	black = Color3.fromRGB(31, 41, 43),
+	bronze = Color3.fromRGB(168, 112, 53),
+	gold = Color3.fromRGB(223, 178, 78),
+	lightgold = Color3.fromRGB(245, 211, 130),
+	sail = Color3.fromRGB(241, 220, 173),
+	sail2 = Color3.fromRGB(226, 193, 137),
+	sailbright = Color3.fromRGB(250, 235, 200),
+	ivory = Color3.fromRGB(241, 228, 200),
+	sailshade = Color3.fromRGB(194, 169, 133),
+	red = Color3.fromRGB(146, 52, 43),
+	red2 = Color3.fromRGB(190, 76, 51),
+	vermillion = Color3.fromRGB(179, 66, 38),
+	blue = Color3.fromRGB(56, 104, 121),
+	blue2 = Color3.fromRGB(85, 154, 166),
+	teal = Color3.fromRGB(29, 114, 126),
+	turquoise = Color3.fromRGB(65, 171, 173),
+	mint = Color3.fromRGB(122, 210, 193),
+	olive = Color3.fromRGB(80, 100, 73),
+	cream = Color3.fromRGB(242, 228, 183),
+	ghost = Color3.fromRGB(97, 157, 143),
+	ghostdark = Color3.fromRGB(38, 66, 72),
+	window = Color3.fromRGB(211, 173, 95),
+	reed = Color3.fromRGB(179, 153, 93),
+	reed2 = Color3.fromRGB(208, 183, 110),
+	white = Color3.fromRGB(245, 241, 224),
+	silver = Color3.fromRGB(171, 187, 190),
+}
+local SHIP_V5_MATERIALS = {
+	-- [선체·갑판] 나뭇결과 판재의 미세한 무늬를 Roblox 기본 재질로 표현한다.
+	hull = Enum.Material.WoodPlanks, hull2 = Enum.Material.WoodPlanks,
+	darkwood = Enum.Material.WoodPlanks, wood = Enum.Material.WoodPlanks,
+	pine = Enum.Material.WoodPlanks, pale = Enum.Material.Wood,
+	deck = Enum.Material.WoodPlanks, decklight = Enum.Material.WoodPlanks,
+	seam = Enum.Material.Wood, reed = Enum.Material.Wood, reed2 = Enum.Material.Wood,
+	-- [돛·밧줄] 금속 광택 대신 거친 캔버스·직물 표면을 사용한다.
+	sail = Enum.Material.Fabric, sail2 = Enum.Material.Fabric,
+	sailbright = Enum.Material.Fabric, sailshade = Enum.Material.Fabric,
+	ivory = Enum.Material.Fabric, white = Enum.Material.Fabric,
+	cream = Enum.Material.Fabric, rope = Enum.Material.Fabric, rig = Enum.Material.Wood,
+	-- [함포·장식] 색이 유지되는 단단한 주조 금속 표면.
+	iron = Enum.Material.Metal, black = Enum.Material.Metal,
+	bronze = Enum.Material.Metal, gold = Enum.Material.Metal,
+	lightgold = Enum.Material.Metal, silver = Enum.Material.Metal,
+	window = Enum.Material.Glass,
+}
+local function restoreShipV5Materials(model, assetName)
+	-- [72척 원본·경량판만] 기존 선박·교역품·항구·인물·건물 재질은 건드리지 않는다.
+	if not (assetName:match("%-v5$") or assetName:match("%-v5%-mobile$")) then return 0, 0 end
+	local restored, unrecognized = 0, 0
+	for _, piece in model:GetDescendants() do
+		if piece:IsA("MeshPart") then
+			-- 원본 제작기는 '선박ID_역할_재질'로 모든 개별 메시의 이름을 지정한다.
+			local material = piece.Name:lower():match("_([%w]+)$")
+			if not SHIP_V5_COLORS[material] and piece.Parent then
+				material = piece.Parent.Name:lower():match("_([%w]+)$")
+			end
+			local color = SHIP_V5_COLORS[material]
+			if color then
+				piece.Color = color
+				local surface = piece:FindFirstChildOfClass("SurfaceAppearance")
+				local textured = piece.TextureID ~= "" or (surface and surface.ColorMap ~= "")
+				-- [질감 보존] 승인된 PBR ColorMap은 제거하거나 새로 덮지 않는다.
+				-- 맵 없는 모델은 목재·천·금속의 기본 재질로 구분해 회색 평면처럼 보이지 않게 한다.
+				if not textured then
+					local finish = SHIP_V5_MATERIALS[material]
+					if not finish and (material == "red" or material == "red2" or material == "vermillion"
+						or material == "blue" or material == "blue2" or material == "teal" or material == "turquoise"
+						or material == "mint" or material == "olive" or material == "ghost" or material == "ghostdark") then
+						local n = piece.Name:lower()
+						finish = if n:find("_flags_", 1, true) or n:find("_rigging_", 1, true) then Enum.Material.Fabric
+							else Enum.Material.WoodPlanks
+					end
+					if finish then piece.Material = finish end
+					if surface then surface.Color = color end
+				end
+				restored += 1
+			else
+				unrecognized += 1
+			end
+		end
+	end
+	return restored, unrecognized
+end
+
 -- 메인 화면에서 쓰는 모델부터 로드하고, 나머지는 기존 폴더로 계속 채운다.
 local order = { Town = 1, Naval = 2, Cargo = 3, Interior = 4, Terrain = 5, Castle = 6, Relics = 7, People = 8 }
 -- [항구·탐험 초반 조경] 먼저 등록된 승인 메시만 기존 로딩 큐의 맨 앞에서 수입한다.
@@ -44,6 +144,12 @@ end)
 
 local cursor = 1
 local pending, loaded, failed = #queue, 0, 0
+local shipColorModels, shipColorParts, shipUnknownParts, shipColorExpected = 0, 0, 0, 0
+for _, item in queue do
+	if item.kind == "Naval" and (item.name:match("%-v5$") or item.name:match("%-v5%-mobile$")) then
+		shipColorExpected += 1
+	end
+end
 -- [Studio QA] 등록 모델 전체의 실제 로딩 성공·실패를 카운트하며 라이브 저장/동작은 건드리지 않는다.
 local studioAudit = RunService:IsStudio()
 local failedKeys = {}
@@ -102,6 +208,14 @@ for _ = 1, 12 do
 						end
 						print("[MareEssentia] village-well unavailable textures removed=" .. repaired)
 					end
+					-- [36척 선체 색상] 수입 모델을 라이브러리에 넣기 전 한 번만 색·질감을 복원한다.
+					-- 항구/해전/조선소는 기존 템플릿을 복제하므로 추가 처리 비용이 없다.
+					if item.kind == "Naval" and (item.name:match("%-v5$") or item.name:match("%-v5%-mobile$")) then
+						local colored, unknown = restoreShipV5Materials(model, item.name)
+						if colored > 0 then shipColorModels += 1 end
+						shipColorParts += colored
+						shipUnknownParts += unknown
+					end
 					model.Name = item.name
 					model.Parent = group
 					if model ~= container then container:Destroy() end
@@ -120,6 +234,13 @@ for _ = 1, 12 do
 			pending -= 1
 			if (order[item.kind] or 99) <= 3 or earlyScenery[item.key] then priorityPending -= 1 end
 			if studioAudit and pending == 0 then
+				-- [스튜디오 독립 진단] 미복원 메시가 남았는지 확인할 수 있도록 집계만 기록한다.
+				ReplicatedStorage:SetAttribute("MareShipV5ColorAudit", HttpService:JSONEncode({
+					expected = shipColorExpected, models = shipColorModels,
+					restoredParts = shipColorParts, unnamedParts = shipUnknownParts,
+				}))
+				ReplicatedStorage:SetAttribute("MareShipV5ColorAuditState",
+					if shipColorExpected == 72 and shipColorModels == 72 and shipColorParts > 0 and shipUnknownParts == 0 then "PASS" else "FAIL")
 				ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = #queue, loaded = loaded, failed = failed, errors = failedKeys}))
 				ReplicatedStorage:SetAttribute("MareModelAuditState", if failed == 0 and loaded == #queue then "PASS" else "FAIL")
 			end

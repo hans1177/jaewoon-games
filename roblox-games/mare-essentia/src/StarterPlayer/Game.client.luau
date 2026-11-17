@@ -448,6 +448,16 @@ do
 			SHIP_ICON[id] = { base[1], base[2], if def.tint then Color3.fromRGB(def.tint[1], def.tint[2], def.tint[3]) else base[3] }
 		end
 	end
+	-- [36척 실제 배색] 등록된 설계 전용 3D 원본으로 모든 조선소 그림을 교체한다.
+	-- 기존 공용 범선 그림·색칠 방식은 자산 로딩에 실패할 때만 남긴다.
+	local touch = game:GetService("UserInputService").TouchEnabled
+	for _, blueprint in ShipsMod.Blueprints do
+		local model = blueprint.id .. "-v5"
+		local light = blueprint.id .. "-v5-mobile"
+		if AssetIds["Naval/" .. model] then
+			SHIP_ICON[blueprint.id] = { "Naval", if touch and AssetIds["Naval/" .. light] then light else model }
+		end
+	end
 end
 
 -- 화면에 남아 있는 큰 입체 표본만 최대 10개까지 회전시킨다.
@@ -750,9 +760,10 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 	local vf = Instance.new("ViewportFrame")
 	vf.Size = UDim2.fromOffset(px, px)
 	H.iconPaper(vf, px)
-	-- [교역품 조명] 밝은 중성광과 따뜻한 종이 배경으로 재질과 윤곽을 분리한다.
-	vf.Ambient = Color3.fromRGB(202, 195, 181)
-	vf.LightColor = Color3.fromRGB(255, 247, 224)
+	-- [배 표면 가독성] 선체 나뭇결·금속·돛천은 과도한 주변광에서 하얗게 떠 보인다.
+	-- 기존 교역품 조명은 유지하고 선박 뷰포트만 대비 있는 경사광으로 조절한다.
+	vf.Ambient = if kind == "Naval" then Color3.fromRGB(135, 140, 145) else Color3.fromRGB(202, 195, 181)
+	vf.LightColor = if kind == "Naval" then Color3.fromRGB(255, 236, 209) else Color3.fromRGB(255, 247, 224)
 	vf.LightDirection = Vector3.new(-0.8, -1.6, -0.55).Unit
 	local cam = Instance.new("Camera")
 	cam.FieldOfView = 35
@@ -847,8 +858,8 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 			nameTile.Parent = vf
 			fallback = nameTile
 		end
-		-- [지연 전환] 등록 메시가 도착하면 열린 카드의 그림을 3D로 바꾼다.
-		if kind == "Cargo" and group and asset and knownId then
+		-- [지연 전환] 교역품·선박 모두 등록 원본이 늦게 도착하면 썸네일을 3D로 교체한다.
+		if (kind == "Cargo" or kind == "Naval") and group and asset and knownId then
 			readyConnection = group.ChildAdded:Connect(function(child)
 				if child.Name == asset then showRegisteredModel(child) end
 			end)
@@ -6438,6 +6449,22 @@ local function renderYard()
 		southeast_asia = "청록 파도·기동 항적", africa = "목재 파편·노선 물결",
 		lost = "청록·보라 발광 충격파",
 	}
+	-- [지역 조선소 배색 해설] 실제 38색 원본 재질을 손상 없이 복원했는지 눈으로 비교할 수 있다.
+	local regionMaterials = {
+		europe = "호두빛 판재·황동 장식·상아색 캔버스 돛",
+		east_asia = "짙은 목재·주홍 선체 장식·노선 갑판",
+		new_world = "밝은 목재·미색 돛천·철제 난간",
+		middle_east = "황갈색 목재·삼각돛·황동 선수 장식",
+		southeast_asia = "거친 열대 목재·직물 돛·노",
+		africa = "갈대 편조·무광 목재·천연 섬유 돛",
+		lost = "암청·청록 선체·보라 장식·은빛 금속",
+	}
+	local regionPaint = {
+		europe = Color3.fromRGB(156, 93, 53), east_asia = Color3.fromRGB(142, 59, 45),
+		new_world = Color3.fromRGB(172, 128, 84), middle_east = Color3.fromRGB(205, 158, 89),
+		southeast_asia = Color3.fromRGB(97, 132, 116), africa = Color3.fromRGB(164, 125, 80),
+		lost = Color3.fromRGB(67, 151, 167),
+	}
 	for _, category in ShipsData.BlueprintFactions do
 		add(function()
 			return mkRow(content, category.name .. " · 선박 " .. (if category.id == "lost" then "6" else "5") .. "종",
@@ -6464,9 +6491,10 @@ local function renderYard()
 				local visual = if hasFull and hasMobile then "원본·모바일 경량판 등록" elseif hasFull then "원본 등록·경량판 미등록" else "자산 등록 대기"
 				local role = definition and definition.trait and definition.trait.role or "고유 특화"
 				local weak = definition and definition.trait and definition.trait.weak or "없음"
-				local info = string.format("%s · %s\n선체: %s\n돛·노: %s\n갑판: %s\n3D: %s\n지역 연출: %s\n%d단계 포격: %s\n고유 운용: %s · 약점: %s\n구매 지역·해금: %s",
-					plan.era, plan.sailingZone, plan.hull, plan.rig, plan.deck, visual,
-					regionScenes[plan.faction] or "기본 해전 연출", plan.stage, stageScenes[plan.stage] or "기본 해전 연출", role, weak, status)
+				local info = string.format("⚓ %s · %s\n🎨 배색·질감: %s\n🪵 선체: %s\n⛵ 돛·노: %s\n갑판: %s\n3D: %s\n전투 연출: %s\n%d단계 포격: %s\n주특화: %s\n약점: %s\n구매 위치·조건: %s",
+					plan.era, plan.sailingZone, regionMaterials[plan.faction] or "원본 배색",
+					plan.hull, plan.rig, plan.deck, visual, regionScenes[plan.faction] or "기본 해전 연출",
+					plan.stage, stageScenes[plan.stage] or "기본 해전 연출", role, weak, status)
 				-- [지역 전용선 바로 구매] 기존 BuyShip 서버 검사만 호출한다. 이 화면에서 우회 구매는 불가능하다.
 				local purchase = nil
 				if shop then
@@ -6481,7 +6509,13 @@ local function renderYard()
 						onClick = function() call("BuyShip", { shipId = shop.id }) end
 					}}
 				end
-				return mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, purchase, 274)
+				local row = mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, purchase, 300)
+				-- 설명이 긴 선박도 기존 가변 높이 카드가 끝까지 표시하고, 모바일에서는 정지 3D로 성능을 아낀다.
+				local icon = SHIP_ICON[plan.id]
+				if icon then withIcon(row, icon[1], icon[2], icon[3], 76) end
+				local swatch = row:FindFirstChild("AccentBar")
+				if swatch then swatch.BackgroundColor3 = regionPaint[plan.faction] or UI_BRASS end
+				return row
 			end)
 		end
 	end

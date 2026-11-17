@@ -1058,7 +1058,7 @@ test('Mare naval encounter keeps card duel exclusive to the dedicated tavern flo
 test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets', () => {
   const battle=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   assert.match(battle,/local MOBILE_VFX = game:GetService\("UserInputService"\)\.TouchEnabled/);
-  assert.match(battle,/local rangeRing = \{ segments = \{\} \}/,'range is an outline, not a solid sea-covering disk');
+  assert.match(battle,/local rangeRing = \{ segments = \{\}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 \}/,'range remains a segmented outline with newer impact radar states, not a solid sea disk');
   assert.match(battle,/local segmentLength = 2 \* math\.pi \* cannon\.range \/ count/,'radius must reuse existing gun range');
   assert.doesNotMatch(battle,/rangeRing\.(?:Transparency|CFrame|Color|Size)\s*=/,'obsolete solid cylinder range must stay removed');
   assert.match(battle,/FX\.projectile\(ball, nc, style\)/,'the existing cannon routine gets culture-stage trails');
@@ -1200,7 +1200,7 @@ test('Mare all 36 designed ships have 23 new region-locked purchases and server-
   assert.match(yard,/local repairMult = 1 \+ \(if def\.trait then def\.trait\.repair or 0 else 0\)/);
   assert.match(view,/view\.shipyard\.repairTotal = math\.floor/,'repair preview and server share the same cost multiplier');
   assert.match(ui,/36척 모두 3D 원본·개별 항해·교역·전투 성능 적용/);
-  assert.match(ui,/고유 운용: %s · 약점: %s/);
+  assert.match(ui,/주특화: %s\\n약점: %s/,'ship roles and weaknesses remain visible on separate mobile-readable lines');
 
   assert.match(ui,/onClick = function\(\) call\("BuyShip", \{ shipId = shop\.id \}\) end/,'blueprint cards must call the existing server purchase route');
   assert.match(ui,/not shop\.owned and not shop\.locked and shop\.canCarry and shop\.netCost <= view\.player\.coins/,'mobile direct purchase keeps funds, cargo and unlock gates');
@@ -1732,4 +1732,39 @@ test('Mare external CC0 coastal original hull and Roblox registration integrity'
   for(const ship of ['jahazi','kotia','mtepe'])
     assert.ok(!port.includes(ship+'-custom')&&!battle.includes(ship+'-custom'),
       'unverified mobile model may not be activated in gameplay: '+ship);
+});
+
+// [36척 V5 선박 재질·배색 회귀] 원본 GLB 팔레트와 실제 로더·모바일 미리보기가 일치해야 한다.
+test('Mare V5 original 38 material colors and wood cloth metal visuals survive Roblox import', () => {
+  const root='roblox-games/mare-essentia';
+  const generator=fs.readFileSync('tools/mare-essentia-ship-v5.py','utf8');
+  const loader=fs.readFileSync(root+'/src/ServerScriptService/AssetLoader.server.luau','utf8');
+  const ui=fs.readFileSync(root+'/src/StarterPlayer/Game.client.luau','utf8');
+  const idRows=[...generator.matchAll(/'(\w+)':\[(\d+),(\d+),(\d+),255\]/g)];
+  const paletteBlock=generator.split('PALETTE={')[1].split('\n}')[0];
+  const colors=[...paletteBlock.matchAll(/'(\w+)':\[(\d+),(\d+),(\d+),255\]/g)];
+  assert.equal(colors.length,38,'original 38-color design palette cannot be lost');
+  assert.ok(idRows.length>=38,'original hull/sail palette remains in the producer');
+  for(const [,key,r,g,b] of colors){
+    assert.ok(loader.includes(key+' = Color3.fromRGB('+r+', '+g+', '+b+')'),key+' original GLB tone must be restored');
+  }
+  assert.match(generator,/node_name=self\.id\+'_'\+role\+'_'\+mat/,'GLB imports have traceable per-part material names');
+  assert.match(loader,/local function restoreShipV5Materials\(model, assetName\)/);
+  assert.match(loader,/assetName:match\("%-v5\$"\) or assetName:match\("%-v5%-mobile\$"\)/,'only own V5 models should be repainted');
+  assert.match(loader,/piece\.Name:lower\(\):match\("_\(\[%w\]\+\)\$"\)/,'original material suffix must be recovered');
+  for(const material of ['WoodPlanks','Fabric','Metal','Glass'])
+    assert.ok(loader.includes('Enum.Material.'+material),'distinct physical surface finish '+material);
+  assert.match(loader,/piece\.Color = color/);
+  assert.match(loader,/if not textured then[\s\S]*?piece\.Material = finish/,'preserve uploaded PBR color maps');
+  assert.match(loader,/if surface then surface\.Color = color end/,'restore original PBR tint when maps are missing');
+  assert.doesNotMatch(loader,/piece\.TextureID\s*=\s*""/,'do not destroy real ship textures');
+  assert.match(loader,/shipColorModels \+= 1/,'track whether registered models are actually colored');
+  assert.match(loader,/MareShipV5ColorAudit/,'Studio can inspect remaining uncolored parts');
+  assert.match(ui,/SHIP_ICON\[blueprint\.id\] = \{ "Naval", if touch and AssetIds\["Naval\/" \.\. light\] then light else model \}/);
+  assert.match(ui,/if \(kind == "Cargo" or kind == "Naval"\) and group and asset and knownId then/,'delayed ship models appear in preview');
+  assert.match(ui,/local regionMaterials = \{/);
+  assert.match(ui,/local regionPaint = \{/);
+  assert.match(ui,/if icon then withIcon\(row, icon\[1\], icon\[2\], icon\[3\], 76\) end/,'all 36 cards show small distinct models');
+  assert.match(ui,/local textHeight = layout\.AbsoluteContentSize\.Y \+ 12/,'descriptions grow with content to avoid mobile clipping');
+  assert.match(ui,/if kind == "Naval" then Color3\.fromRGB\(135, 140, 145\)/,'neutral ship lighting reveals materials');
 });
