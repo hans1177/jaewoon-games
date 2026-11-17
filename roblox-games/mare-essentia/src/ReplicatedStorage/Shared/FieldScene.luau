@@ -2391,7 +2391,14 @@ function FieldScene.start(opts)
 				end
 			end
 		end
-		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power) * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, e.ac.state ~= "stagger", stagger)
+		-- [실물 방패 판정] 등록된 방패가 실제 왼손에 들려 있고 적 정면에서 오는 직접 공격일 때만 방어한다.
+		-- 경직, 측면·후방, 광역 피해는 방패에 막히지 않는다. 기존 70% 방어율은 보존한다.
+		local approach = (hrpPos - e.root.Position) * Vector3.new(1, 0, 1)
+		local shieldBlocked = not quiet and e.shieldModel and e.ac.def.frontGuard
+			and e.ac.state ~= "stagger" and approach.Magnitude > 0.1
+			and e.root.CFrame.LookVector:Dot(approach.Unit) > 0.35
+			and e.model:FindFirstChild("FieldShield") ~= nil
+		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power) * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, shieldBlocked == true, stagger)
 		e.hp = e.ac.hp
 		e.hurtAt = os.clock()
 		e.bar.Size = UDim2.fromScale(math.max(e.ac.hp, 0) / e.maxHp, 1)
@@ -2462,15 +2469,27 @@ function FieldScene.start(opts)
 				end
 			end
 		end
-		burst(e.root.Position + Vector3.new(0, 2, 0), 12 + dealt, mult >= 1.5)
-		if not quiet then
-			sfx("sfx_hit", 0.7, 0.95 + math.random() * 0.2)
-			if mult >= 1.5 then
-				sfx("sfx_metal_clash", 0.6, 0.9)
-			end
+		-- [무기 타격감] 동일 피해·보상은 유지하고 원본 사운드·이펙트만 무기별로 차별화한다.
+		local impactPos = e.root.Position + Vector3.new(0, 2, 0)
+		local family = wpn.family
+		burst(impactPos, if visualMobile then math.min(12 + dealt, 20) else 12 + dealt, mult >= 1.5)
+		if shieldBlocked then
+			sfx("sfx_metal_clash", 0.75, 0.93)
+			pulseAt("BLOCK_IMPACT", CFrame.new(impactPos), Color3.fromRGB(155, 194, 224), Color3.fromRGB(255, 230, 161), 7, 5)
+		elseif family == "axe" or family == "blunt" then
+			sfx("sfx_workshop_chop", 0.72, if family == "axe" then 0.88 else 0.72)
+			if not visualMobile then shockRing(impactPos - Vector3.new(0, 2, 0), 7, Color3.fromRGB(246, 169, 100), 0.18) end
+		elseif family == "spear" then
+			sfx("sfx_card_blade", 0.55, 1.33)
+			pulseAt("IMPACT_FLASH", CFrame.new(impactPos), Color3.fromRGB(155, 229, 248), Color3.new(1, 1, 1), 5, 4)
+		elseif family == "dagger" then
+			sfx("sfx_card_blade", 0.46, 1.5)
+		elseif family == "bow" or family == "firearm" then
+			sfx(if family == "firearm" then "sfx_card_fire" else "sfx_card_volley", 0.52, 1.18)
 		else
-			sfx("sfx_hit", 0.4, 1.1)
+			sfx("sfx_hit", if quiet then 0.4 else 0.7, 0.95 + math.random() * 0.2)
 		end
+		if mult >= 1.5 and not shieldBlocked then sfx("sfx_metal_clash", 0.6, 0.9) end
 		flashHit(e.model)
 		popDamage(e.model, dealt, mult >= 1.5)
 		do
@@ -2480,7 +2499,7 @@ function FieldScene.start(opts)
 			if crit then shockRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 1.5, 0), 9, c, 0.35) end
 		end
 		-- 타격 멈춤(적이 잠깐 굳음)과 시야 펀치로 손맛을 준다
-		e.holdUntil = os.clock() + (if mult >= 1.5 then 0.12 else 0.06)
+		e.holdUntil = os.clock() + (if mult >= 1.5 then 0.12 elseif wpn.family == "axe" or wpn.family == "blunt" then 0.085 elseif wpn.family == "dagger" then 0.04 else 0.06)
 		local punchCam = workspace.CurrentCamera
 		if punchCam and not quiet then
 			punchCam.FieldOfView = 70 - (if mult >= 1.5 then 5 else 2)
@@ -3983,8 +4002,15 @@ function FieldScene.start(opts)
 						lastCombatAt = now
 						endStreak("피격")
 						say("공격을 받았다!")
-						hurtReact(if e.ac.def.boss then 2 else 1)
-						burst(hrp.Position + Vector3.new(0, 2, 0), 16, false)
+						local armedFamily = e.weapon and e.weapon.family or "blade"
+						hurtReact(if e.ac.def.boss then 2 elseif armedFamily == "axe" or armedFamily == "blunt" then 1.45
+							elseif armedFamily == "dagger" then 0.65 else 1)
+						local sparkColor = if e.throwAsset == "bomb" then Color3.fromRGB(255, 155, 80)
+							elseif armedFamily == "axe" or armedFamily == "blunt" then Color3.fromRGB(252, 183, 91)
+							elseif armedFamily == "spear" then Color3.fromRGB(146, 226, 246)
+							elseif e.shieldModel then Color3.fromRGB(164, 200, 242) else Color3.fromRGB(255, 91, 75)
+						shards(hrp.Position + Vector3.new(0, 1.5, 0), if visualMobile then 5 else 9, sparkColor, 4)
+						burst(hrp.Position + Vector3.new(0, 2, 0), if visualMobile then 9 else 16, false)
 						refresh()
 						if pl.hp <= 0 then
 							task.defer(function()
