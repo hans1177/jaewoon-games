@@ -1615,20 +1615,20 @@ function FieldScene.start(opts)
 		if wpn.ranged and (kind == "slash" or kind == "heavy" or kind == "spin") then
 			-- [영화식 속사] 첫 발은 기존 준비음, 이어지는 2·3발은 장전/노리쇠가 아닌 실제 격발음.
 			-- 숙련에서 따라 나오는 2·3발은 시각 연출이며 피해 판정은 앞선 한 번만 수행한다.
-			if nextStage >= 2 and visualOnly then
-				local shotVolume = 0.31
-				if wpn.motion == "CROSSBOW" then
-					sfx("sfx_card_volley", shotVolume, if nextStage == 2 then 1.43 else 1.58)
-				elseif wpn.family == "bow" then
-					sfx("sfx_rope_release", shotVolume, if wpn.motion == "LONGBOW" then 1.12 else 1.38)
-				elseif wpn.motion == "RIFLE" then
-					sfx("sfx_cannon", shotVolume * 0.8, if nextStage == 2 then 1.85 else 1.95)
-				else
-					sfx("sfx_card_fire", shotVolume, if nextStage == 2 then 1.52 else 1.62)
+			if nextStage >= 2 then
+				-- [실제 연속 평타] 발포음은 원래 공격판정에서 1회. 숙련 시각 연타만 독립 격발음.
+				if visualOnly then
+					local shotVolume = 0.31
+					if wpn.motion == "CROSSBOW" then
+						sfx("sfx_card_volley", shotVolume, if nextStage == 2 then 1.43 else 1.58)
+					elseif wpn.family == "bow" then
+						sfx("sfx_rope_release", shotVolume, if wpn.motion == "LONGBOW" then 1.12 else 1.38)
+					elseif wpn.motion == "RIFLE" then
+						sfx("sfx_cannon", shotVolume * 0.8, if nextStage == 2 then 1.85 else 1.95)
+					else
+						sfx("sfx_card_fire", shotVolume, if nextStage == 2 then 1.52 else 1.62)
+					end
 				end
-			elseif nextStage >= 2 then
-				-- [실제 연속 평타] 다음 발포음은 기존 공격 판정 시점에서 한 번만 재생한다.
-				-- 시위/장전 준비음을 겹치지 않게 하고 몸과 팔은 즉시 다음 사격 자세로 움직인다.
 			elseif wpn.motion == "CROSSBOW" then
 				sfx("sfx_equipment_wear", 0.28, 1.48)
 			elseif wpn.family == "bow" then
@@ -1842,12 +1842,12 @@ function FieldScene.start(opts)
 					local kick = bell(p)
 					if slashIdx == 2 then
 						-- [원거리 2타] 발을 옆으로 딛으며 상체를 크게 틀고 측면 사격.
-						return CFrame.new(-0.36 * kick, -0.18 * kick, 0)
-							* CFrame.Angles(-0.16 * kick, 0.44 * kick, -0.20 * kick)
+						return CFrame.new(-0.68 * kick, -0.26 * kick, -0.12 * kick)
+							* CFrame.Angles(-0.24 * kick, 0.66 * kick, -0.29 * kick)
 					elseif slashIdx == 3 then
 						-- [원거리 3타] 낮은 무릎 슬라이드 후 반대 방향으로 꺾으며 마무리 사격.
-						return CFrame.new(0.39 * kick, -0.45 * kick, 0)
-							* CFrame.Angles(0.28 * kick, -0.51 * kick, 0.23 * kick)
+						return CFrame.new(0.84 * kick, -0.76 * kick, -0.20 * kick)
+							* CFrame.Angles(0.41 * kick, -0.78 * kick, 0.35 * kick)
 					end
 					return CFrame.new(0, -0.09 * kick, 0) * CFrame.Angles(0.07 * kick, 0, 0)
 				end
@@ -2086,13 +2086,15 @@ function FieldScene.start(opts)
 					local crossbow = wpn.motion == "CROSSBOW"
 					local rifle = wpn.motion == "RIFLE"
 					local drop = if slashIdx == 3 then 1 else 0.45
-					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.18 * drop * pulse, side * 0.30 * pulse, -side * 0.12 * pulse)
-					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.12 * pulse, -side * 0.36 * pulse, side * 0.16 * pulse)
-					canon.Head = (canon.Head or id) * CFrame.Angles(0.07 * pulse, side * 0.15 * pulse, 0)
-					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.37 * drop * pulse, 0, -0.11 * pulse)
-					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(0.31 * drop * pulse, 0, 0.10 * pulse)
-					canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.32 * drop * pulse, 0, 0)
-					canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.18 * pulse, 0, side * 0.09 * pulse)
+					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.32 * drop * pulse, side * 0.52 * pulse, -side * 0.24 * pulse)
+					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.21 * pulse, -side * 0.56 * pulse, side * 0.26 * pulse)
+					canon.Head = (canon.Head or id) * CFrame.Angles(0.12 * pulse, side * 0.23 * pulse, 0)
+					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.61 * drop * pulse, 0, -0.17 * pulse)
+					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(0.53 * drop * pulse, 0, 0.18 * pulse)
+					canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.59 * drop * pulse, 0, 0)
+					canon.ShinR = (canon.ShinR or id) * CFrame.Angles(-0.31 * drop * pulse, 0, 0)
+					canon.FootL = (canon.FootL or id) * CFrame.Angles(0.23 * pulse, 0, -side * 0.12 * pulse)
+					canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.28 * pulse, 0, side * 0.14 * pulse)
 					if bow then
 						-- 활: 몸을 크게 열고 시위 팔을 뒤로 빼며 좌우 교차 사격.
 						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.24 * pulse, 0, -side * 0.20 * pulse)
