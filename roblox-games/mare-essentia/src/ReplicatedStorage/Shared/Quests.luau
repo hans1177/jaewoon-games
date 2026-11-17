@@ -8,6 +8,8 @@ export type Quest = {
 	kind: string, -- "discover_card"(특정 카드 획득) | "deliver" | "discover" | "win" | "visit" | "research" | "field" | "understand" | "understand_card" | "present" | "expo" | "joint" | "port_tech" | "landmark" | "launch" | "era" | "stock" | "dividend" | "order_patrol"
 	goodId: string?,
 	portId: string?,
+	exploreSite: string?, -- 지역 현장 퀘스트 대상 기존 탐험지 id
+	difficulty: number?, -- 신규 현장 탐험 1~5단 등급
 	techId: string?,
 	amount: number,
 	rewardCoins: number,
@@ -449,6 +451,84 @@ for _, rc in RegionalChains do
 	end
 end
 
+-- [지역 현장 탐험 1~5단] 기존 지점·카드·서버 보상/저장 규칙을 그대로 사용한다.
+-- 각 단계는 해당 항구에서만 열리고, 이전 단계의 기록을 완료해야 다음 항구 의뢰가 열린다.
+local RegionalFieldQuests: { { any } } = {
+	{ "red_sea", "홍해·북아프리카", {
+		{ "절벽의 홍학", "oran_cliffs", "oran", "zoo_flamingo", "오랑 해안 절벽", "홍학", "오랑 해안에서 물새 무리의 이동과 먹이활동을 조사해." },
+		{ "카르타고 항구의 동전", "tunis_ruins2", "tunis", "relic_carthage_coin", "카르타고 항구 터", "카르타고 동전", "카르타고 옛 항구에 남은 동전의 무늬와 거래 흔적을 기록해." },
+		{ "홍해의 물길", "aden_crater", "aden", "geo_red_sea", "아덴 분화구 저수지", "홍해", "아덴의 화산 지형을 따라 인도양과 이어지는 바닷길을 확인해." },
+		{ "산호초의 거인", "jeddah_reef", "jeddah", "zoo_whale_shark", "홍해 산호초", "고래상어", "제다 앞 산호초에서 고래상어의 이동을 관찰해." },
+		{ "페르세폴리스 원정", "muscat_persepolis", "muscat", "site_persepolis", "페르시아 내륙 원정 (페르세폴리스)", "페르세폴리스", "무스카트에서 내륙으로 떠나 고대 왕궁의 기둥과 터를 답사해." },
+	} },
+	{ "west_africa", "서아프리카", {
+		{ "세네갈의 마른 바람", "saint_louis_river", "saint_louis", "geo_harmattan", "세네갈 강 어귀", "하르마탄", "세네갈 강 어귀에서 하르마탄 바람과 항해 조건을 관측해." },
+		{ "비사고스 뿌리 숲", "bissau_mangrove", "bissau", "bot_mangrove", "비사고스 맹그로브", "맹그로브", "맹그로브의 뿌리와 바닷물의 흐름을 기록해." },
+		{ "고레 섬의 기억", "goree_island", "dakar", "site_goree", "고레 섬", "고레 섬", "고레 섬의 장소와 사람들의 역사를 조사해." },
+		{ "엘미나 요새 조사", "elmina_castle", "elmina", "site_elmina_castle", "엘미나 성 탐방", "엘미나 성", "해안 요새의 구조와 이곳에서 벌어진 역사를 기록해." },
+		{ "베닌 내륙 길", "lagos_benin_road", "lagos", "zoo_elephant", "베닌 왕국 가는 길", "아프리카코끼리", "내륙 숲길로 향해 아프리카코끼리의 발자국을 추적해." },
+	} },
+	{ "east_africa", "동아프리카·희망봉", {
+		{ "몸바사 산호초", "mombasa_reef", "mombasa", "zoo_whale_shark", "산호초 해안", "고래상어", "동아프리카 산호초의 고래상어를 관찰해." },
+		{ "스톤 타운의 골목", "zanzibar_stone", "zanzibar", "site_zanzibar_stone", "스톤 타운", "스톤 타운", "잔지바르의 옛 항구와 교역의 흔적을 조사해." },
+		{ "킬와의 조각 문", "kilwa_ruins", "kilwa", "relic_swahili_door", "킬와 옛 궁전 터", "조각된 문", "킬와 옛 궁전의 스와힐리 조각 문을 기록해." },
+		{ "테이블 산의 꽃", "cape_table_mountain", "cape_town", "bot_protea", "테이블 산", "프로테아", "테이블 산의 독특한 프로테아 식물을 관찰해." },
+		{ "희망봉 측량", "cape_good_hope", "cape_town", "geo_cape_good_hope", "희망봉", "희망봉", "두 바다가 만나는 희망봉의 바람과 해안을 기록해." },
+	} },
+	{ "south_asia", "남아시아·실론", {
+		{ "코친의 어망", "cochin_nets", "cochin", "site_cochin_nets", "코친 중국식 어망", "코친 중국식 어망", "코친의 고정식 어망 구조와 물때를 관찰해." },
+		{ "말라바르의 후추", "calicut_pepper", "calicut", "bot_pepper_vine", "캘리컷 후추밭", "후추 덩굴", "캘리컷의 후추 덩굴과 향신료 생산 현장을 조사해." },
+		{ "해안 사원의 청동상", "madras_temple", "madras", "relic_brahma_statue", "마말라푸람 해안 사원", "청동 신상", "해안 사원에 남은 청동상의 제작 흔적을 기록해." },
+		{ "실론의 푸른 보석", "colombo_gems", "colombo", "min_sapphire", "라트나푸라 보석 광산", "사파이어", "라트나푸라 광산에서 사파이어를 조사해." },
+		{ "아그라의 코끼리", "surat_agra", "surat", "zoo_indian_elephant", "아그라 가는 길", "인도코끼리", "수라트에서 내륙으로 향해 인도코끼리를 관찰해." },
+	} },
+	{ "southeast_asia", "동남아시아", {
+		{ "마닐라의 성벽", "manila_walls", "manila", "site_manila_intramuros", "인트라무로스", "인트라무로스", "마닐라의 옛 성벽과 항구의 흔적을 답사해." },
+		{ "호이안의 칠기", "hoi_an_lanterns", "hoi_an", "relic_lacquer_box", "호이안 옛 거리", "칠기 상자", "호이안에서 칠기 상자의 제작 기법을 조사해." },
+		{ "양곤의 파고다", "rangoon_shwedagon", "rangoon", "site_shwedagon", "쉐다곤 파고다", "쉐다곤 파고다", "쉐다곤 파고다의 역사와 건축을 기록해." },
+		{ "반다의 육두구", "banda_nutmeg", "banda", "bot_nutmeg_tree", "반다 육두구 숲", "육두구나무", "반다 제도에서 육두구나무의 열매를 관찰해." },
+		{ "코모도 섬 탐사", "komodo_island", "makassar", "zoo_komodo", "코모도 섬", "코모도왕도마뱀", "먼 섬에서 코모도왕도마뱀을 안전하게 관찰해." },
+	} },
+	{ "east_asia", "동아시아", {
+		{ "서해 갯벌의 두루미", "incheon_flats", "incheon", "zoo_crane", "서해 갯벌", "두루미", "인천 갯벌에서 두루미의 이동과 먹이활동을 관찰해." },
+		{ "광저우의 차밭", "canton_tea", "canton", "bot_tea_plant", "차밭 언덕", "차나무", "광저우 언덕에서 차나무와 재배 방식을 조사해." },
+		{ "데지마의 항해 기록", "nagasaki_dejima", "nagasaki", "site_dejima", "데지마", "데지마", "나가사키 데지마의 교류 흔적을 답사해." },
+		{ "후지 산의 지형", "edo_fuji", "edo", "geo_fuji", "후지 산 전망", "후지 산", "에도에서 후지 산의 지형을 기록해." },
+		{ "동아시아 태풍 관측", "typhoon_sea", "macau", "geo_typhoon", "태풍 해역", "태풍", "마카오 앞바다에서 태풍과 거친 파도를 관측해." },
+	} },
+	{ "americas", "아메리카", {
+		{ "헤시피의 바다거북", "recife_reef", "recife", "am_turtle_green", "헤시피 암초", "푸른바다거북", "헤시피의 암초에서 푸른바다거북을 관찰해." },
+		{ "카카오 해안", "laguaira_coast", "la_guaira", "am_cacao_pod", "베네수엘라 해안", "카카오 꼬투리", "베네수엘라 해안의 카카오 열매를 기록해." },
+		{ "마야의 석비", "campeche_maya", "campeche", "am_maya_stela", "마야 해안 유적", "마야 석비", "캄페체 해안 유적의 마야 석비를 조사해." },
+		{ "아마존 하구", "belem_amazon", "belem", "geo_amazon_mouth", "아마존 하구", "아마존 강 어귀", "벨렝에서 거대한 강과 바다가 만나는 지형을 측량해." },
+		{ "안데스 횡단", "andes_route", "buenos_aires", "geo_andes", "안데스 횡단", "안데스 산맥", "남미 산줄기를 넘어 안데스의 지형을 기록해." },
+	} },
+	{ "pacific", "태평양·오세아니아", {
+		{ "호주 해안의 캥거루", "pac_survey_00", "sydney", "pac_kangaroo", "시드니 일대 탐사 1", "캥거루", "시드니 해안의 캥거루 서식지를 찾아 관찰해." },
+		{ "파푸아의 타로", "pac_survey_05", "port_moresby", "pac_taro", "포트모르즈비 일대 탐사 6", "타로", "포트모르즈비 주변의 타로 작물을 조사해." },
+		{ "피지의 꽃", "pac_survey_06", "suva", "pac_hibiscus", "수바 일대 탐사 7", "히비스커스", "수바 주변 열대 숲의 히비스커스를 기록해." },
+		{ "북부 바다의 고래", "pac_survey_03", "darwin", "pac_humpback", "다윈 일대 탐사 4", "혹등고래", "다윈 북부 해안에서 혹등고래를 관찰해." },
+		{ "카우리 숲 원정", "pac_survey_04", "auckland", "pac_kauri_tree", "오클랜드 일대 탐사 5", "카우리 나무", "오클랜드의 카우리 숲으로 장거리 답사를 떠나." },
+	} },
+}
+for _, route in RegionalFieldQuests do
+	local prev: string? = nil
+	for stage, mission in route[3] do
+		local id = "q_field_" .. route[1] .. "_" .. tostring(stage)
+		local quest: Quest = {
+			id = id, name = route[2] .. " · " .. mission[1],
+			kind = "discover_card", exploreSite = mission[2], portId = mission[3], cardId = mission[4],
+			amount = 1, after = prev, difficulty = stage, strand = "history",
+			summary = string.format("지역 현장 %d/5 · %s에서 %s 발견", stage, mission[5], mission[6]),
+			story = mission[7],
+			rewardCoins = 90 + stage * 115, rewardFame = 4 + stage * 4,
+			rewardCareer = "adventure", rewardXp = 25 + stage * 24,
+		}
+		table.insert(Quests, quest)
+		prev = id
+	end
+end
+
 -- 증권거래소: 주식을 거래하고 배당을 받는 연속 퀘스트
 table.insert(Quests, { id = "q_stock_1", name = "첫 주주", summary = "증권거래소에서 주식 거래 3번 하기 (암스테르담·런던)", kind = "stock", amount = 3, rewardCoins = 600, rewardFame = 20, rewardCareer = "trade", rewardXp = 90 } :: Quest)
 table.insert(Quests, { id = "q_stock_2", name = "배당의 맛", summary = "주식 배당으로 코인 1000 받기", kind = "dividend", amount = 1000, after = "q_stock_1", rewardCoins = 1500, rewardFame = 40, rewardCareer = "trade", rewardXp = 160 } :: Quest)
@@ -544,6 +624,7 @@ end
 -- [퀘스트 난이도 1~5단] 기존 완료 조건·보상·저장 키를 바꾸지 않고 실제 목표 규모를 기준으로 분류한다.
 -- 종류별 단위가 달라 납품량·방문 항구 수·전투 승수·발견 수를 각각 판정한다.
 local function Grade(q: Quest): number
+	if q.difficulty then return math.clamp(math.floor(q.difficulty), 1, 5) end
 	local n = math.max(0, q.amount or 0)
 	local g = 1
 	if q.kind == "win" then
