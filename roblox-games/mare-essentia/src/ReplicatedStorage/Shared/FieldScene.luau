@@ -426,8 +426,8 @@ function FieldScene.start(opts)
 	local northern = region == "nordic" or region == "hanse" or region == "britain" or region == "stone"
 	local tropical = region == "seasia" or region == "tropic" or region == "malabar"
 		or region == "pacific" or region == "creole"
-	local arid = region == "desert" or region == "ottoman" or region == "med"
-		or region == "wafrica" or region == "swahili" or biome.mat == Enum.Material.Sand
+	local arid = not tropical and (region == "desert" or region == "ottoman" or region == "med"
+		or region == "wafrica" or region == "swahili" or biome.mat == Enum.Material.Sand)
 	local climateZone = if northern then "북방" elseif tropical then "열대"
 		elseif arid then "건조" else "온대"
 	local monsoon = tropical and month >= 5 and month <= 10
