@@ -1615,8 +1615,8 @@ function FieldScene.start(opts)
 		if wpn.ranged and (kind == "slash" or kind == "heavy" or kind == "spin") then
 			-- [영화식 속사] 첫 발은 기존 준비음, 이어지는 2·3발은 장전/노리쇠가 아닌 실제 격발음.
 			-- 숙련에서 따라 나오는 2·3발은 시각 연출이며 피해 판정은 앞선 한 번만 수행한다.
-			if nextStage >= 2 then
-				local shotVolume = if visualOnly then 0.31 else 0.42
+			if nextStage >= 2 and visualOnly then
+				local shotVolume = 0.31
 				if wpn.motion == "CROSSBOW" then
 					sfx("sfx_card_volley", shotVolume, if nextStage == 2 then 1.43 else 1.58)
 				elseif wpn.family == "bow" then
@@ -1626,6 +1626,9 @@ function FieldScene.start(opts)
 				else
 					sfx("sfx_card_fire", shotVolume, if nextStage == 2 then 1.52 else 1.62)
 				end
+			elseif nextStage >= 2 then
+				-- [실제 연속 평타] 다음 발포음은 기존 공격 판정 시점에서 한 번만 재생한다.
+				-- 시위/장전 준비음을 겹치지 않게 하고 몸과 팔은 즉시 다음 사격 자세로 움직인다.
 			elseif wpn.motion == "CROSSBOW" then
 				sfx("sfx_equipment_wear", 0.28, 1.48)
 			elseif wpn.family == "bow" then
