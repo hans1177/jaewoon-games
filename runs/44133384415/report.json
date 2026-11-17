@@ -1,0 +1,2063 @@
+{
+ "sourceRevision": "9e6a4fd01b8bd20ff245fb5c80ffcc38293d56ab",
+ "log": [
+  {
+   "step": 1,
+   "capture": "c00_start",
+   "files": 1
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "QAAutoIntro on\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "INTRO_CENTER_QA_MONITOR_READY\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "SCROLLED ⚓ 새 게임 시작\ntext"
+  },
+  {
+   "step": 6,
+   "click": "title01",
+   "at": "785,140",
+   "out": "785,140 CLICK=⚓ 새 게임 시작\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 785,
+      "y": 140
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 8,
+   "capture": "t01",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "SCROLLED 프랑스\ntext"
+  },
+  {
+   "step": 11,
+   "click": "title02",
+   "at": "922,83",
+   "out": "922,83 CLICK=프랑스\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 922,
+      "y": 83
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 13,
+   "capture": "t02",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "SCROLLED ⚓  출항하기\ntext"
+  },
+  {
+   "step": 16,
+   "click": "title03",
+   "at": "730,257",
+   "out": "730,257 CLICK=⚓  출항하기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 730,
+      "y": 257
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 18,
+   "capture": "intro_center_early",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "capture": "intro_center_next",
+   "files": 1
+  },
+  {
+   "step": 22,
+   "capture": "intro_center_late",
+   "files": 1
+  },
+  {
+   "step": 24,
+   "capture": "t03",
+   "files": 1
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "INTRO_OK\ntext"
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "INTRO_CENTER_SIZE_UNIFIED_PASS stages=3 |길드 서기|대상 상인 카심|떠돌이 화가\ntext"
+  },
+  {
+   "step": 28,
+   "capture": "intro_done",
+   "files": 1
+  },
+  {
+   "step": 29,
+   "ctx": "Client",
+   "out": "INTRO_RUNTIME_STATE_PASS\ntext"
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997738 | 현황 | 동료 관리 | 초상화가 완성되었다 | ◆ 선장 현황 | ① 선체·화물   →   명성·직업   →   다음 목표 | 상태 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참\ntext"
+  },
+  {
+   "step": 31,
+   "ctx": "Client",
+   "out": "tab harbor\ntext"
+  },
+  {
+   "step": 33,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:harbor\ntext"
+  },
+  {
+   "step": 34,
+   "capture": "tab_harbor",
+   "files": 1
+  },
+  {
+   "step": 35,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 상인 길드 · 항구 정보 | 교역소 | 999997738 | 교역 | 항구 정보 | ◆ 항구 정보 | ① 특산품·수요   →   시장·시설   →   발전 현황 | 항구 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참 | 19/19칸 · 거래 전에 적재 화물을 정리해.\ntext"
+  },
+  {
+   "step": 36,
+   "ctx": "Client",
+   "out": "tab trade\ntext"
+  },
+  {
+   "step": 38,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:trade\ntext"
+  },
+  {
+   "step": 39,
+   "ctx": "Client",
+   "out": "TRADE_MENU_CONTEXT_PRICE_UI_PASS\ntext"
+  },
+  {
+   "step": 40,
+   "capture": "tab_trade",
+   "files": 1
+  },
+  {
+   "step": 41,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 상인 길드 · 교역 | 교역소 | 999997738 | 교역 | 항구 정보 | ◆ 교역 장부 | ① 시세 비교   →   수량 선택   →   매입·판매 | 교역 장부 열기 | ↶ 최근 메뉴: 항구 정보 | 조언 · 대상 상인 카심 (베테랑 대상 상인)\ntext"
+  },
+  {
+   "step": 42,
+   "click": "qa_tab_trade_to_harbor",
+   "at": "81,155",
+   "out": "81,155 CLICK=FACILITY_TAB_trade_TO_harbor\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 81,
+      "y": 155
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 44,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:trade_TO_harbor\ntext"
+  },
+  {
+   "step": 45,
+   "capture": "qa_click_trade_to_harbor",
+   "files": 1
+  },
+  {
+   "step": 46,
+   "ctx": "Client",
+   "out": "tab route\ntext"
+  },
+  {
+   "step": 48,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:route\ntext"
+  },
+  {
+   "step": 49,
+   "capture": "tab_route",
+   "files": 1
+  },
+  {
+   "step": 50,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 항만 관리관 · 항해 | 항만청 | 999997738 | 항해 | 지도 | ◆ 항로 선택 | ① 거리·위험   →   보급 확인   →   출항 | 항로 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참 | 19/19칸 · 거래 전에 적재 화물을 정리해.\ntext"
+  },
+  {
+   "step": 51,
+   "click": "qa_tab_route_to_map",
+   "at": "81,155",
+   "out": "81,155 CLICK=FACILITY_TAB_route_TO_map\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 81,
+      "y": 155
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 53,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:route_TO_map\ntext"
+  },
+  {
+   "step": 54,
+   "capture": "qa_click_route_to_map",
+   "files": 1
+  },
+  {
+   "step": 55,
+   "ctx": "Client",
+   "out": "tab map\ntext"
+  },
+  {
+   "step": 57,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:map\ntext"
+  },
+  {
+   "step": 58,
+   "capture": "tab_map",
+   "files": 1
+  },
+  {
+   "step": 59,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 항만 관리관 · 지도 | 항만청 | 999997738 | 항해 | 지도 | ◆ 세계 지도 | ① 목적지 탐색   →   항구 정보   →   항로 연결 | 지도 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참 | 19/19칸 · 거래 전에 적재 화물을 정리해.\ntext"
+  },
+  {
+   "step": 60,
+   "ctx": "Client",
+   "out": "tab yard\ntext"
+  },
+  {
+   "step": 62,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:yard\ntext"
+  },
+  {
+   "step": 63,
+   "capture": "tab_yard",
+   "files": 1
+  },
+  {
+   "step": 64,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 조선 장인 · 조선소 | 조선소 | 999997738 | 조선소 | ◆ 선박 관리 | ① 선체·보급   →   선단·대포   →   새 배 비교 | 새 배 비교 | 🧭 항해 비서 · 화물칸 가득 참 | 19/19칸 · 거래 전에 적재 화물을 정리해. | 교역 보기\ntext"
+  },
+  {
+   "step": 65,
+   "ctx": "Client",
+   "out": "tab quest\ntext"
+  },
+  {
+   "step": 67,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:quest\ntext"
+  },
+  {
+   "step": 68,
+   "capture": "tab_quest",
+   "files": 1
+  },
+  {
+   "step": 69,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 주점 주인 · 진행 일지 | 주점 | 999997738 | 의뢰 받기 | 진행 일지 | 동료 영입 | ◆ 진행 일지 | ① 현재 목표   →   달성 조건   →   보상 받기 | 진행 목표 보기 | 🧭 항해 비서 · 화물칸 가득 참\ntext"
+  },
+  {
+   "step": 70,
+   "ctx": "Client",
+   "out": "tab explore\ntext"
+  },
+  {
+   "step": 72,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:explore\ntext"
+  },
+  {
+   "step": 73,
+   "capture": "tab_explore",
+   "files": 1
+  },
+  {
+   "step": 74,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 전투 교관 · 지상 탐험 | 전투 본부 | 999997738 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | ◆ 지상 탐험 | ① 지역 위험   →   탐험 준비   →   지식 발견 | 탐험 준비 보기\ntext"
+  },
+  {
+   "step": 75,
+   "ctx": "Client",
+   "out": "tab battle\ntext"
+  },
+  {
+   "step": 77,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:battle\ntext"
+  },
+  {
+   "step": 78,
+   "capture": "tab_battle",
+   "files": 1
+  },
+  {
+   "step": 79,
+   "ctx": "Client",
+   "out": "UI_UNIFIED_PASS DOCK=7 BATTLE_TABS=4 TAVERN=MUG DECK=CARD WAR=CANNON\ntext"
+  },
+  {
+   "step": 80,
+   "capture": "ui_battle_unified",
+   "files": 1
+  },
+  {
+   "step": 81,
+   "ctx": "Client",
+   "out": "QA_MENU_ICONS_VISIBLE_FOR_CAPTURE\ntext"
+  },
+  {
+   "step": 83,
+   "capture": "ui_main_menu_icons",
+   "files": 1
+  },
+  {
+   "step": 84,
+   "ctx": "Client",
+   "out": "QA_MENU_ICONS_CAPTURE_RESTORED\ntext"
+  },
+  {
+   "step": 85,
+   "ctx": "Client",
+   "out": "UI_MOBILE_420PX_SIMULATED\ntext"
+  },
+  {
+   "step": 87,
+   "ctx": "Client",
+   "out": "UI_MOBILE_2X2_PASS width=406 tabs=4\ntext"
+  },
+  {
+   "step": 88,
+   "capture": "ui_mobile_battle_2x2",
+   "files": 1
+  },
+  {
+   "step": 89,
+   "ctx": "Client",
+   "out": "UI_MOBILE_LAYOUT_RESTORED\ntext"
+  },
+  {
+   "step": 91,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 전투 교관 · 해적 사냥 | 전투 본부 | 999997738 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | ◆ 전투 준비 | ① 적 위험   →   선체·대포   →   해적 사냥 | 전투 준비 보기\ntext"
+  },
+  {
+   "step": 92,
+   "ctx": "Client",
+   "out": "tab codex\ntext"
+  },
+  {
+   "step": 94,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:codex\ntext"
+  },
+  {
+   "step": 95,
+   "capture": "tab_codex",
+   "files": 1
+  },
+  {
+   "step": 96,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 학자 · 지식 백과 | 학자의 서재 | 999997738 | 지식 보고 | 지식 백과 | 연구 | ◆ 지식 백과 | ① 분야 선택   →   발견물 확인   →   미수집 목표 | 도감 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참\ntext"
+  },
+  {
+   "step": 97,
+   "click": "qa_tab_codex_to_tech",
+   "at": "81,205",
+   "out": "81,205 CLICK=FACILITY_TAB_codex_TO_tech\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 81,
+      "y": 205
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 99,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:codex_TO_tech\ntext"
+  },
+  {
+   "step": 100,
+   "capture": "qa_click_codex_to_tech",
+   "files": 1
+  },
+  {
+   "step": 101,
+   "ctx": "Client",
+   "out": "tab tech\ntext"
+  },
+  {
+   "step": 103,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:tech\ntext"
+  },
+  {
+   "step": 104,
+   "capture": "tab_tech",
+   "files": 1
+  },
+  {
+   "step": 105,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 학자 · 연구 | 학자의 서재 | 999997738 | 지식 보고 | 지식 백과 | 연구 | ◆ 기술 연구 | ① 연구 조건   →   이해한 지식   →   기술 해금 | 연구 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참\ntext"
+  },
+  {
+   "step": 106,
+   "ctx": "Client",
+   "out": "tab status\ntext"
+  },
+  {
+   "step": 108,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:status\ntext"
+  },
+  {
+   "step": 109,
+   "capture": "tab_status",
+   "files": 1
+  },
+  {
+   "step": 110,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997738 | 현황 | 동료 관리 | ◆ 선장 현황 | ① 선체·화물   →   명성·직업   →   다음 목표 | 상태 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참 | 19/19칸 · 거래 전에 적재 화물을 정리해.\ntext"
+  },
+  {
+   "step": 111,
+   "click": "qa_tab_status_to_crew",
+   "at": "81,155",
+   "out": "81,155 CLICK=FACILITY_TAB_status_TO_crew\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 81,
+      "y": 155
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 113,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:status_TO_crew\ntext"
+  },
+  {
+   "step": 114,
+   "capture": "qa_click_status_to_crew",
+   "files": 1
+  },
+  {
+   "step": 115,
+   "ctx": "Client",
+   "out": "tab crew\ntext"
+  },
+  {
+   "step": 117,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:crew\ntext"
+  },
+  {
+   "step": 118,
+   "capture": "tab_crew",
+   "files": 1
+  },
+  {
+   "step": 119,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 · 동료 관리 | 선장실 | 999997738 | 현황 | 동료 관리 | ◆ 동료 관리 | ① 동료 능력   →   직책 배치   →   승조 효과 | 직책 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참 | 19/19칸 · 거래 전에 적재 화물을 정리해.\ntext"
+  },
+  {
+   "step": 120,
+   "ctx": "Client",
+   "out": "QA_TRADE_HALL_OPEN\ntext"
+  },
+  {
+   "step": 122,
+   "ctx": "Client",
+   "out": "TRADE_HALL_NO_LEFTOVER_ICONS_PASS\ntext"
+  },
+  {
+   "step": 123,
+   "ctx": "Client",
+   "out": "TRADE_HALL_AVERAGE_AND_PROFIT_PASS\ntext"
+  },
+  {
+   "step": 124,
+   "capture": "ui_trade_hall_no_hud",
+   "files": 1
+  },
+  {
+   "step": 125,
+   "ctx": "Client",
+   "out": "QA_YARD_HALL_OPEN\ntext"
+  },
+  {
+   "step": 127,
+   "ctx": "Client",
+   "out": "YARD_HALL_NO_LEFTOVER_ICONS_PASS\ntext"
+  },
+  {
+   "step": 128,
+   "ctx": "Client",
+   "out": "SHIP_COMPARISON_CHART_PASS\ntext"
+  },
+  {
+   "step": 129,
+   "capture": "ui_yard_hall_no_hud",
+   "files": 1
+  },
+  {
+   "step": 130,
+   "click": "yard_leave",
+   "at": "992,-19",
+   "out": "992,-19 CLICK=나가기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 992,
+      "y": -19
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 132,
+   "ctx": "Client",
+   "out": "HALL_BOOK_ONLY_RETURN_PASS\ntext"
+  },
+  {
+   "step": 133,
+   "capture": "ui_hall_return_clean",
+   "files": 1
+  },
+  {
+   "step": 134,
+   "ctx": "Client",
+   "out": "VOYAGE_QA_EVENT_OPEN\ntext"
+  },
+  {
+   "step": 136,
+   "ctx": "Client",
+   "out": "VOYAGE_QA_EVENT_GATE_PASS\ntext"
+  },
+  {
+   "step": 137,
+   "ctx": "Client",
+   "out": "VOYAGE_QA_RESUMED_AFTER_EVENT:false:이미 이 항구에 있어요\ntext"
+  },
+  {
+   "step": 138,
+   "ctx": "Client",
+   "out": "NEWGAME ok=true\ntext"
+  },
+  {
+   "step": 140,
+   "ctx": "Client",
+   "out": "DEV Deck\ntext"
+  },
+  {
+   "step": 142,
+   "ctx": "Client",
+   "out": "CARD_DECK_RUNTIME_PASS\ntext"
+  },
+  {
+   "step": 143,
+   "capture": "cb0_deck",
+   "files": 1
+  },
+  {
+   "step": 144,
+   "ctx": "Client",
+   "out": "CARD_BOOK_RUNTIME_PASS\ntext"
+  },
+  {
+   "step": 145,
+   "ctx": "Client",
+   "out": "DEV Practice\ntext"
+  },
+  {
+   "step": 147,
+   "ctx": "Client",
+   "out": "CARD_PRACTICE_RUNTIME_PASS\ntext"
+  },
+  {
+   "step": 148,
+   "capture": "cb1",
+   "files": 1
+  },
+  {
+   "step": 149,
+   "ctx": "Client",
+   "out": "CARD_BOARD_RUNTIME_PASS\ntext"
+  },
+  {
+   "step": 151,
+   "capture": "cb2",
+   "files": 1
+  },
+  {
+   "step": 152,
+   "click": "card_practice_exit",
+   "at": "76,292",
+   "out": "76,292 CARD_PRACTICE_EXIT_REAL_CLICK\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 76,
+      "y": 292
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 153,
+   "ctx": "Client",
+   "out": "started\ntext"
+  },
+  {
+   "step": 155,
+   "capture": "v1_start",
+   "files": 1
+  },
+  {
+   "step": 157,
+   "capture": "v2_event",
+   "files": 1
+  },
+  {
+   "step": 158,
+   "ctx": "Client",
+   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.5, 218.88217163085938, 36.4609375 on=true parent=VoyageScene fog=2600 brightness=1.9873353242874146 atmo=0.3700000047683716 camdist=36.66710662841797\ntext"
+  },
+  {
+   "step": 160,
+   "capture": "v3_event2",
+   "files": 1
+  },
+  {
+   "step": 162,
+   "capture": "v4_late",
+   "files": 1
+  },
+  {
+   "step": 163,
+   "ctx": "Client",
+   "out": "nil\ntext"
+  },
+  {
+   "step": 164,
+   "ctx": "Client",
+   "out": "play ok=true nil\ntext"
+  },
+  {
+   "step": 166,
+   "capture": "b1_start",
+   "files": 1
+  },
+  {
+   "step": 167,
+   "ctx": "Client",
+   "out": "NAVAL_BATTLE_RUNTIME_PASS\ntext"
+  },
+  {
+   "step": 169,
+   "capture": "b2_mid",
+   "files": 1
+  },
+  {
+   "step": 170,
+   "ctx": "Client",
+   "out": "LOGS(10): ContentId: rbxassethash://0906894039c14c12902d705fe104a52c failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://6ac48a146066f8f3fc1e8697e7fd4943 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://3c82ad002c6dae041b312e9691fa21bf failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://cebc78d13a45c6899ddd7963602f97b4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
+  },
+  {
+   "step": 171,
+   "ctx": "Server",
+   "out": "LOGS(23): ContentId: rbxassethash://0906894039c14c12902d705fe104a52c failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://71747cd397780cd5c8bbd00c56d4dfaa failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://6ac48a146066f8f3fc1e8697e7fd4943 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://3c82ad002c6dae041b312e9691fa21bf failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://cebc78d13a45c6899ddd7963602f97b4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // [QA] FAIL asset AssetIds.CardArt/af_03 rbxassetid://72489040757878 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/af_15 rbxassetid://77023165428158 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
+  },
+  {
+   "step": 172,
+   "ctx": "Client",
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 174,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 175,
+   "ctx": "Client",
+   "out": "NPC_ROUTE_AUDIT_PASS checked=39 relocated=7 fallback=1\ntext"
+  },
+  {
+   "step": 176,
+   "ctx": "Client",
+   "out": "HARBOR_NPC_STAGE_PAIR_FOUND distance=5\ntext"
+  },
+  {
+   "step": 178,
+   "capture": "harbor_npc_sparring_01",
+   "files": 1
+  },
+  {
+   "step": 180,
+   "capture": "harbor_npc_sparring_02",
+   "files": 1
+  },
+  {
+   "step": 182,
+   "capture": "harbor_npc_sparring_03",
+   "files": 1
+  },
+  {
+   "step": 184,
+   "capture": "harbor_npc_sparring_04",
+   "files": 1
+  },
+  {
+   "step": 186,
+   "capture": "harbor_npc_sparring_05",
+   "files": 1
+  },
+  {
+   "step": 188,
+   "capture": "harbor_npc_sparring_06",
+   "files": 1
+  },
+  {
+   "step": 190,
+   "capture": "harbor_npc_sparring_07",
+   "files": 1
+  },
+  {
+   "step": 192,
+   "capture": "harbor_npc_sparring_08",
+   "files": 1
+  },
+  {
+   "step": 193,
+   "ctx": "Client",
+   "out": "R15_MOTION_IDLE\ntext"
+  },
+  {
+   "step": 195,
+   "capture": "harbor_motion_idle",
+   "files": 1
+  },
+  {
+   "step": 196,
+   "ctx": "Client",
+   "out": "R15_MOTION_WALK\ntext"
+  },
+  {
+   "step": 198,
+   "capture": "harbor_motion_walk",
+   "files": 1
+  },
+  {
+   "step": 199,
+   "ctx": "Client",
+   "out": "MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2 ACTIVE_WALKERS=9 CARRY_FORWARD=true\ntext"
+  },
+  {
+   "step": 200,
+   "ctx": "Client",
+   "out": "R15_MOTION_RUN\ntext"
+  },
+  {
+   "step": 202,
+   "capture": "harbor_motion_run",
+   "files": 1
+  },
+  {
+   "step": 203,
+   "ctx": "Client",
+   "out": "MOTION_RUN_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2\ntext"
+  },
+  {
+   "step": 204,
+   "ctx": "Client",
+   "out": "R15_MOTION_ATTACK\ntext"
+  },
+  {
+   "step": 206,
+   "capture": "harbor_motion_attack",
+   "files": 1
+  },
+  {
+   "step": 207,
+   "ctx": "Client",
+   "out": "R15_MOTION_SHOOT\ntext"
+  },
+  {
+   "step": 209,
+   "capture": "harbor_motion_shoot",
+   "files": 1
+  },
+  {
+   "step": 210,
+   "ctx": "Client",
+   "out": "R15_MOTION_RELOAD\ntext"
+  },
+  {
+   "step": 212,
+   "capture": "harbor_motion_reload",
+   "files": 1
+  },
+  {
+   "step": 213,
+   "ctx": "Client",
+   "out": "R15_MOTION_GUARD\ntext"
+  },
+  {
+   "step": 215,
+   "capture": "harbor_motion_guard",
+   "files": 1
+  },
+  {
+   "step": 216,
+   "ctx": "Client",
+   "out": "R15_MOTION_HURT\ntext"
+  },
+  {
+   "step": 218,
+   "capture": "harbor_motion_hurt",
+   "files": 1
+  },
+  {
+   "step": 219,
+   "ctx": "Client",
+   "out": "R15_MOTION_CHEER\ntext"
+  },
+  {
+   "step": 221,
+   "capture": "harbor_motion_cheer",
+   "files": 1
+  },
+  {
+   "step": 222,
+   "ctx": "Client",
+   "out": "R15_MOTION_TALK\ntext"
+  },
+  {
+   "step": 224,
+   "capture": "harbor_motion_talk",
+   "files": 1
+  },
+  {
+   "step": 225,
+   "ctx": "Client",
+   "out": "MOTION_VILLAGER_GESTURES_PASS KINDS=9 DISTINCT=9 WALKING_WORK=2\ntext"
+  },
+  {
+   "step": 226,
+   "ctx": "Client",
+   "out": "NPC_FACE_FRONT_PASS R15=50 BACKWARDS=0\ntext"
+  },
+  {
+   "step": 227,
+   "capture": "harbor_npc_face_front",
+   "files": 1
+  }
+ ],
+ "errors": [
+  "step228:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action ExecuteLuau.runCode sent to DMN_ID_PLAYCLIENT failed - Target is not reachable (ExecuteLuau.runCode, DMN_ID_PLAYCLIENT). No OnInvoke handler responded for this action. Sender: DMN_ID_STANDALONE. | text"
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 23,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 241,
+  "completedSteps": 229,
+  "plannedClicks": 10,
+  "successfulClicks": 9,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 62,
+  "capturedFrames": 58,
+  "abortedEarly": true
+ },
+ "visualSamples": [
+  {
+   "name": "c00_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 224043,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "t01",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 247572,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 새 게임 시작"
+  },
+  {
+   "name": "t02",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 247947,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "프랑스"
+  },
+  {
+   "name": "intro_center_early",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 135843,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "intro_center_next",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 157414,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0171616077423096,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "intro_center_late",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 165664,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.020317554473877,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "t03",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 114559,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.023496150970459,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "intro_done",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 161816,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0280416011810303,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "tab_harbor",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 164365,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "tab_trade",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 167719,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓  출항하기"
+  },
+  {
+   "name": "qa_click_trade_to_harbor",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 171612,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_trade_TO_harbor"
+  },
+  {
+   "name": "tab_route",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 163097,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_trade_TO_harbor"
+  },
+  {
+   "name": "qa_click_route_to_map",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 163779,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_map",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 164091,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_yard",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 164879,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_quest",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 169325,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_explore",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 171311,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_battle",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 170753,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "ui_battle_unified",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 170678,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "ui_main_menu_icons",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 236996,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "ui_mobile_battle_2x2",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 200990,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_codex",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 168513,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "qa_click_codex_to_tech",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 168126,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "tab_tech",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 168056,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "tab_status",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 164073,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "qa_click_status_to_crew",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 164166,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "tab_crew",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 164478,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "ui_trade_hall_no_hud",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 194458,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "ui_yard_hall_no_hud",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 171642,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "ui_hall_return_clean",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 164378,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "나가기"
+  },
+  {
+   "name": "cb0_deck",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 203389,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "나가기"
+  },
+  {
+   "name": "cb1",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 212783,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "나가기"
+  },
+  {
+   "name": "cb2",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 208632,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "나가기"
+  },
+  {
+   "name": "v1_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 256584,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v2_event",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 232229,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v3_event2",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 276509,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "v4_late",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 269180,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "b1_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 143739,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "b2_mid",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 157459,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_01",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 102552,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_02",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 101854,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_03",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 101813,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_04",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 100505,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_05",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 102084,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_06",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 101854,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_07",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 101856,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_sparring_08",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 100868,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_idle",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 99612,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_walk",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 102189,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_run",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 101194,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_attack",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 101356,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_shoot",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 100738,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_reload",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 101073,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_guard",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 101880,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_hurt",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 100775,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_cheer",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 101306,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_motion_talk",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 100128,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "harbor_npc_face_front",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 101618,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   }
+  }
+ ],
+ "assetOwnership": {
+  "reportedFailedIds": [
+   "72489040757878",
+   "77023165428158",
+   "107877140385634",
+   "127370718437030",
+   "105991549101223",
+   "114650000468629",
+   "125327803198600",
+   "120956229711846",
+   "114615121747571",
+   "76486492447366",
+   "135648768778892",
+   "97023606015316"
+  ],
+  "contexts": {
+   "Server": {
+    "owners": {
+     "127370718437030": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_comet"
+      ]
+     },
+     "125327803198600": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_jupiter_moons"
+      ]
+     },
+     "107877140385634": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_aurora"
+      ]
+     },
+     "114650000468629": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_halley_prediction"
+      ]
+     },
+     "97023606015316": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/bot_potato"
+      ]
+     },
+     "114615121747571": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_venus"
+      ]
+     },
+     "135648768778892": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/bot_plant_anatomy"
+      ]
+     },
+     "120956229711846": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_saturn_rings"
+      ]
+     },
+     "77023165428158": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/af_15"
+      ]
+     },
+     "76486492447366": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/bot_herbarium"
+      ]
+     },
+     "105991549101223": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_halley_comet"
+      ]
+     },
+     "72489040757878": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/af_03"
+      ]
+     }
+    },
+    "scanned": 23345,
+    "contentRefs": 5069,
+    "complete": true
+   },
+   "Client": {
+    "owners": {
+     "127370718437030": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_comet"
+      ]
+     },
+     "125327803198600": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_jupiter_moons"
+      ]
+     },
+     "107877140385634": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_aurora"
+      ]
+     },
+     "114650000468629": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_halley_prediction"
+      ]
+     },
+     "97023606015316": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/bot_potato"
+      ]
+     },
+     "114615121747571": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_venus"
+      ]
+     },
+     "135648768778892": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/bot_plant_anatomy"
+      ]
+     },
+     "120956229711846": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_saturn_rings"
+      ]
+     },
+     "77023165428158": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/af_15"
+      ]
+     },
+     "76486492447366": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/bot_herbarium"
+      ]
+     },
+     "105991549101223": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/ast_halley_comet"
+      ]
+     },
+     "72489040757878": {
+      "instances": [],
+      "registry": [
+       "AssetIds.CardArt/af_03"
+      ]
+     }
+    },
+    "scanned": 25001,
+    "contentRefs": 2568,
+    "complete": false
+   }
+  }
+ },
+ "visualEvidence": {
+  "framesChecked": 58,
+  "framesWithInvalidSize": 0,
+  "voyageSceneObserved": false,
+  "departureObserved": false,
+  "voyageDiagnostics": [],
+  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
+ }
+}
