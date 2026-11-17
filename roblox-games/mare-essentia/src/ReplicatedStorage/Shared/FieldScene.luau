@@ -2562,9 +2562,17 @@ function FieldScene.start(opts)
 		shakeUntil = math.max(shakeUntil, now + (if strong then 0.14 else 0.07))
 		shakeAmp = (if visualMobile then (if strong then 0.14 else 0.06) else (if strong then 0.30 else 0.12))
 			* (if family == "axe" or family == "blunt" then 1.25 else 1)
-		sfx(if family == "axe" or family == "blunt" then "sfx_metal_clash"
-			elseif family == "firearm" then "sfx_hit" else "sfx_card_swing",
-			if visualMobile then 0.38 else 0.5, if strong then 0.92 else 1.13)
+		-- [숙련 연타] 2·3단 추가 판정 없이 무기별 날카로운 마무리 소리만 재생한다.
+		sfx(if wpn.motion == "CROSSBOW" then "sfx_card_chain"
+			elseif family == "bow" then "sfx_rope_release"
+			elseif wpn.motion == "RIFLE" then "sfx_cannon_reload"
+			elseif family == "firearm" then "sfx_card_fire"
+			elseif family == "dagger" then "sfx_boarding_draw"
+			elseif family == "spear" then "sfx_card_blade"
+			elseif family == "axe" then "sfx_boarding_slash"
+			elseif family == "blunt" then "sfx_metal_clash"
+			elseif family == "blade" then "sfx_boarding_slash" else "sfx_card_swing",
+			if visualMobile then 0.21 else 0.32, if strong then 1.18 else 1.36)
 		if family == "fist" then
 			trailsOn(player.Character, { "RightHand", "LeftHand" }, color, 0.11, 0.22)
 			shockRing(front - Vector3.new(0, 1.6, 0), if strong then 9 else 5, color, 0.22)
@@ -2742,9 +2750,13 @@ function FieldScene.start(opts)
 		if shieldBlocked then
 			sfx("sfx_metal_clash", 0.75, 0.93)
 			pulseAt("BLOCK_IMPACT", CFrame.new(impactPos), Color3.fromRGB(155, 194, 224), Color3.fromRGB(255, 230, 161), 7, 5)
-		elseif family == "axe" or family == "blunt" then
-			sfx("sfx_workshop_chop", 0.72, if family == "axe" then 0.88 else 0.72)
+		elseif family == "axe" then
+			-- [도끼 적중] 둔탁한 작업장 도끼질 대신 짧은 칼날 절삭음.
+			sfx("sfx_boarding_slash", if quiet then 0.20 else 0.48, 1.16)
 			if not visualMobile then shockRing(impactPos - Vector3.new(0, 2, 0), 7, Color3.fromRGB(246, 169, 100), 0.18) end
+		elseif family == "blunt" then
+			-- [철퇴 적중] 묵직한 목재 타격 대신 금속 징 소리의 어택 부분만 사용한다.
+			sfx("sfx_metal_clash", if quiet then 0.19 else 0.38, 1.37)
 		elseif family == "spear" then
 			sfx("sfx_card_blade", 0.55, 1.33)
 			pulseAt("IMPACT_FLASH", CFrame.new(impactPos), Color3.fromRGB(155, 229, 248), Color3.new(1, 1, 1), 5, 4)
@@ -2760,13 +2772,15 @@ function FieldScene.start(opts)
 			sfx("sfx_card_ring", if quiet then 0.14 else 0.23, 1.65)
 		elseif family == "fist" then
 			sfx("sfx_card_swing", if quiet then 0.20 else 0.44, 1.27)
+		elseif wpn.motion == "RAPIER" then
+			sfx("sfx_card_blade", if quiet then 0.18 else 0.40, 1.52)
+		elseif wpn.motion == "SABRE" or wpn.motion == "SCIMITAR" or wpn.motion == "KATANA" then
+			sfx("sfx_boarding_slash", if quiet then 0.22 else 0.43, 1.43)
 		else
-			-- [검·곡도] 기존 sfx_hit의 저음 타격 대신 짧고 날카로운 검날 접촉음.
-			sfx("sfx_boarding_slash", if quiet then 0.22 else 0.45, 1.31 + math.random() * 0.08)
+			-- [양날검] 목제 타격음 없이 금속 날 끝의 짧은 충돌음을 선택한다.
+			sfx("sfx_boarding_draw", if quiet then 0.20 else 0.42, 1.34)
 		end
-		if mult >= 1.5 and not shieldBlocked and not wpn.ranged and (family == "axe" or family == "blunt") then
-			sfx("sfx_metal_clash", 0.42, 1.12)
-		end
+		-- 치명타 금속음 중복을 없앤다. 타격별로 고유 오디오를 한 번만 재생한다.
 		if rangedImpact and not shieldBlocked then
 			local tint = if wpn.motion == "CROSSBOW" then Color3.fromRGB(186, 215, 230)
 				elseif family == "bow" then Color3.fromRGB(175, 221, 152)
@@ -3368,7 +3382,11 @@ function FieldScene.start(opts)
 			do
 				local ch0 = player.Character
 				if wpn.ranged then
-					trailsOn(ch0, { "RightHand", "RightLowerArm", "LeftHand" }, Color3.fromRGB(246, 207, 142), 0.22, 0.5)
+					local aimColor = if wpn.motion == "CROSSBOW" then Color3.fromRGB(181, 215, 240)
+						elseif wpn.family == "bow" then Color3.fromRGB(156, 225, 159)
+						else Color3.fromRGB(255, 200, 129)
+					trailsOn(ch0, { "RightHand", "RightLowerArm", "LeftHand" }, aimColor,
+						if kind == "heavy" then 0.34 else 0.18, if kind == "heavy" then 0.74 else 0.40)
 				elseif kind == "spin" then
 					trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(120, 220, 255), 0.4, 0.9)
 					auraOn(ch0, Color3.fromRGB(90, 190, 255), Color3.fromRGB(230, 250, 255), 0.8)
@@ -3384,8 +3402,15 @@ function FieldScene.start(opts)
 				end
 			end
 			if wpn.ranged then
-				-- 활·총/석궁은 검기 없이 정렬·격발 방향에만 별도 점멸을 준다.
-				pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.1, -3), Color3.fromRGB(255, 223, 148), Color3.fromRGB(255, 251, 222), 4, 5)
+				-- [원거리 스킬 준비] 집중=총구/시위에 압축 광휘, 견제=짧은 횡방향 잔광. 평타는 불필요한 오라 없음.
+				if kind ~= "slash" then
+					local skillColor = if wpn.motion == "CROSSBOW" then Color3.fromRGB(166, 214, 240)
+						elseif wpn.family == "bow" then Color3.fromRGB(142, 228, 160)
+						else Color3.fromRGB(255, 202, 131)
+					pulseAt(if kind == "heavy" then "CRITICAL_BURST" else "SHAPE_BURST",
+						hrp.CFrame * CFrame.new(0, 1.2, -2.6), skillColor, Color3.fromRGB(252, 241, 210),
+						if kind == "heavy" then 5 else 3.6, if visualMobile then 3 else 6)
+				end
 			elseif kind == "spin" then
 				shockRing(hrp.Position - Vector3.new(0, 2.5, 0), reachV + 4, Color3.fromRGB(120, 220, 255), 0.45)
 				slashArc(hrp, Color3.fromRGB(150, 230, 255), reachV, 330, 0)
@@ -3421,6 +3446,25 @@ function FieldScene.start(opts)
 			local rangeR = if wpn.ranged or moveId == "rush" then wpn.range else mv.range
 			local arcR = if wpn.ranged then (if moveId == "sweep" then 70 else 36) else mv.arc
 			local rangedShot = wpn.ranged
+			-- [무기별 실제 격발음] 명중 여부와 무관하게 한 발을 쏠 때 한 번만 재생한다.
+			-- 활/장궁은 시위, 석궁은 볼트, 권총은 작은 화약음, 장총은 명확한 긴 화약음.
+			if rangedShot then
+				local flashColor = if wpn.motion == "CROSSBOW" then Color3.fromRGB(186, 214, 234)
+					elseif wpn.family == "bow" then Color3.fromRGB(169, 230, 169)
+					else Color3.fromRGB(255, 210, 134)
+				pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.1, -2.6), flashColor,
+					Color3.fromRGB(255, 246, 225), if moveId == "heavy" then 5.5 else 3.2,
+					if visualMobile then 2 else 4)
+				if wpn.motion == "CROSSBOW" then
+					sfx("sfx_card_volley", 0.45, 1.46)
+				elseif wpn.family == "bow" then
+					sfx("sfx_rope_release", 0.49, if wpn.motion == "LONGBOW" then 1.12 else 1.38)
+				elseif wpn.motion == "RIFLE" then
+					sfx("sfx_cannon", 0.38, 1.87)
+				else
+					sfx("sfx_card_fire", 0.43, 1.52)
+				end
+			end
 			local list = table.clone(enemies)
 			if rangedShot then
 				table.sort(list, function(x, y)
@@ -3447,11 +3491,9 @@ function FieldScene.start(opts)
 						-- 총알·화살 궤적: 짧게 번쩍이는 빛줄기
 						local a0 = hrp.Position + Vector3.new(0, 1.1, 0)
 						local b0 = e.root.Position + Vector3.new(0, 1.2, 0)
-						-- 원본 화살/탄환 빔을 재사용하고 판정과 동일한 목표에만 표시한다.
-						arrowTrail(a0, b0)
-						burst(b0, 6, false)
-						sfx(if wpn.family == "firearm" and wpn.id ~= "crossbow" then "sfx_card_fire"
-							else "sfx_card_volley", 0.6, if wpn.id == "crossbow" then 1.25 else 1.1)
+						-- [무기별 탄도] 기존 데미지 판정 1회에 시위/볼트/화약 궤적 1개만 연결한다.
+						-- 총구 발포음은 위에서 한 번 재생했으므로 여기서는 중복 재생하지 않는다.
+						arrowTrail(a0, b0, nil, nil, wpn.motion, moveId ~= "rush")
 					end
 				end
 			end
