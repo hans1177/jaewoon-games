@@ -295,7 +295,11 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 				-- [흰 건물·바닥 복구] 맵 있는 승인 메시/PBR은 보존하고, 색이 빠진 흰 면만 기존 재질로 복구한다.
 				local named = (kind == "Town" and (asset:find("house", 1, true) or asset:find("church", 1, true)
 					or asset:find("temple", 1, true) or asset:find("tower", 1, true)
-					or asset:find("windmill", 1, true)))
+					or asset:find("windmill", 1, true) or asset:find("kenney_", 1, true)
+					or asset:find("quaternius_", 1, true) or asset:find("eastasia", 1, true)
+					or asset:find("wall", 1, true) or asset:find("roof", 1, true)
+					or asset:find("floor", 1, true) or asset:find("arch", 1, true)
+					or asset:find("door", 1, true) or asset:find("stall", 1, true)))
 					or (kind == "Castle" and not asset:find("flag", 1, true))
 					or (kind == "Terrain" and (asset:find("ground-", 1, true) or asset:find("ruins", 1, true)
 					or asset:find("bridge", 1, true) or asset:find("column", 1, true)))
@@ -318,7 +322,8 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 							mat, color = Enum.Material.WoodPlanks, Color3.fromRGB(128, 97, 69)
 						elseif name:find("path", 1, true) or name:find("ground-", 1, true) then
 							mat, color = Enum.Material.Ground, Color3.fromRGB(135, 119, 91)
-						elseif name:find("house", 1, true) or name:find("church", 1, true) then
+						elseif name:find("house", 1, true) or name:find("church", 1, true)
+							or name:find("temple", 1, true) or name:find("wall", 1, true) then
 							mat, color = Enum.Material.Brick, Color3.fromRGB(163, 139, 116)
 						end
 						d.Material, d.Color, d.Reflectance = mat, color, 0
