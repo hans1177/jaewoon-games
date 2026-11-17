@@ -421,7 +421,14 @@ local function assetTint(kind, asset)
 	return nil
 end
 
+-- [중앙광장 영구 공터] 중심(-6, 0), 바닥 반경 24를 비워두고 여유 2스터드를 확보한다.
+-- 기존 승인된 건축·소품·생산물 모델만 이 구역 안에서 막는다. 인물/동물은 계속 출입할 수 있다.
+local CENTRAL_PLAZA_RADIUS = 26
 local function importedModel(parent, kind, asset, bottomPosition, desiredSize, solid, tint)
+	if parent.Name == "PortScene" and kind ~= "People" and kind ~= "Animals" then
+		local dx, dz = bottomPosition.X + 6, bottomPosition.Z
+		if dx * dx + dz * dz < CENTRAL_PLAZA_RADIUS * CENTRAL_PLAZA_RADIUS then return nil end
+	end
 	tint = tint or assetTint(kind, asset)
 	local library = ReplicatedStorage:FindFirstChild("MareAssets")
 	local group = library and library:FindFirstChild(kind)
@@ -602,6 +609,11 @@ end
 
 local vacancyRate = 0 -- 빈집 비율 (PortScene.build 가 정한다)
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
+	-- [광장 건축 금지] 향후 시설 추가에서도 중앙광장의 빈 보행 공간은 유지한다.
+	if parent.Name == "PortScene" then
+		local dx, dz = pos.X + 6, pos.Z
+		if dx * dx + dz * dz < CENTRAL_PLAZA_RADIUS * CENTRAL_PLAZA_RADIUS then return nil end
+	end
 	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
 	-- 마을 전체가 한 팔레트로 보이도록: 지역 대표색(첫 색)에 가깝게 모으고 집마다 아주 조금만 다르게 한다
 	local tintColor = wallColor or style.walls[1]:Lerp(style.walls[rng:NextInteger(1, #style.walls)], 0.3)
@@ -3046,23 +3058,22 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		end
 	end
 
-	-- 2) 광장 중심: 동상·기둥·깃발, 시장 가판대를 더 둘러 세운다
+	-- [중앙광장 비움] 기존 동상·석주·깃발은 서쪽 기념구역/시장거리로 옮겨 문화권 자산을 유지한다.
 	if lvl >= 2 then
-		importedModel(folder, "Terrain", "statue-column", Vector3.new(-26, 0, 0), 12, true)
-	end
-	if lvl >= 2 then
-		for _, c in { Vector3.new(-26, 0, 8), Vector3.new(-26, 0, -8), Vector3.new(-17, 0, 8), Vector3.new(-17, 0, -8) } do
+		importedModel(folder, "Terrain", "statue-column", Vector3.new(-124, 0, 126), 12, true)
+		for _, c in { Vector3.new(-134, 0, 134), Vector3.new(-114, 0, 134),
+			Vector3.new(-134, 0, 118), Vector3.new(-114, 0, 118) } do
 			importedModel(folder, "Town", "pillar-stone", c, 5, false)
 		end
 	end
 	if lvl >= 3 then
-		for _, z in { -24, 24 } do
-			for _, x in { -2, -22, -42, -62 } do
+		for _, z in { -32, 32 } do
+			for _, x in { -108, -128, -148, -168 } do
 				importedModel(folder, "Castle", "flag-banner-short", Vector3.new(x, 0, z), 7, false)
 			end
 		end
 	end
-	local extraStalls = { Vector3.new(-44, 0, 13), Vector3.new(-44, 0, -13), Vector3.new(-70, 0, 13), Vector3.new(-70, 0, -13), Vector3.new(-6, 0, -14), Vector3.new(-6, 0, 14) }
+	local extraStalls = { Vector3.new(-44, 0, 13), Vector3.new(-44, 0, -13), Vector3.new(-70, 0, 13), Vector3.new(-70, 0, -13), Vector3.new(-94, 0, -13), Vector3.new(-94, 0, 13) }
 	local stallMax = if lvl <= 1 then 2 elseif lvl == 2 then 4 else #extraStalls
 	if info.sim and info.sim.buildings then
 		stallMax = math.clamp(math.floor(1 + math.sqrt(math.max(0, info.sim.buildings.market or 0))), 1, #extraStalls)
@@ -3267,9 +3278,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		end
 	end
 
-	-- 6-b) 광장 중앙: 이 마을의 핵심 정체성 상징물 (길 축을 막지 않게 분수 반대편에 둔다)
+	-- [지역 상징물 이전] 중앙광장은 비우고 서쪽 문화구역으로 상징탑을 옮긴다.
 	do
-		local ax, az = -8, 11
+		local ax, az = -160, -128
 		local function big(kind, asset, size) return importedModel(folder, kind, asset, Vector3.new(ax, 0, az), size, true) end
 		if key == "med" or key == "iberia" or key == "italy" then
 			big("Terrain", "statue-column", 20)
@@ -3798,10 +3809,10 @@ function PortScene.build(info, onFacility)
 	for _, sx in (PROFILE[styleKeyOf(style)] or PROFILE.north).streets do
 		part(folder, Vector3.new(6 + (sceneLevel - 1), 0.25, 130), CFrame.new(sx, 0.12, 0), roadColor(style), roadMat())
 	end
-	-- 광장 분수도 CC0 수입 메쉬 우선
+	-- [분수 이전] 중앙광장은 포장 바닥만 남기고 분수 구조물은 서쪽 문화거리로 옮긴다.
 	if PortBuildings.StreetGrowth[sceneLevel].fountain then
-		part(folder, Vector3.new(2, 8, 8), CFrame.new(-8, 1, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(200, 196, 186), Enum.Material.Marble, Enum.PartType.Cylinder)
-		part(folder, Vector3.new(2.2, 6.5, 6.5), CFrame.new(-8, 1.2, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(80, 150, 200), Enum.Material.Glass, Enum.PartType.Cylinder)
+		part(folder, Vector3.new(2, 8, 8), CFrame.new(-106, 1, 122) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(200, 196, 186), Enum.Material.Marble, Enum.PartType.Cylinder)
+		part(folder, Vector3.new(2.2, 6.5, 6.5), CFrame.new(-106, 1.2, 122) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(80, 150, 200), Enum.Material.Glass, Enum.PartType.Cylinder)
 	end
 
 	-- 마을 광장: 중앙 분수를 둘러싼 원형 광장. 발전도가 오를수록 바닥이 흙 → 자갈 → 포석 → 화강암 → 대리석으로 고급스러워진다.
@@ -3823,9 +3834,9 @@ function PortScene.build(info, onFacility)
 		if sceneLevel >= 4 then disc(10, 0.29, plazaCol[sceneLevel], plazaMat[sceneLevel]) end
 		local plazaLamps = PortBuildings.StreetGrowth[sceneLevel].plazaLamps
 		if plazaLamps > 0 then
+			-- [광장 공터] 기존 조명 수는 유지하되 광장 안쪽 원형 배치를 서쪽 거리로 이전한다.
 			for i = 0, plazaLamps - 1 do
-				local a = i / plazaLamps * math.pi * 2
-				lantern(folder, Vector3.new(-6 + math.cos(a) * 22, 0, math.sin(a) * 22), 3)
+				lantern(folder, Vector3.new(-94 - math.floor(i / 2) * 18, 0, if i % 2 == 0 then 30 else -30), 3)
 			end
 		end
 	end
@@ -4766,7 +4777,8 @@ function PortScene.build(info, onFacility)
 	end
 	-- 광장: 시장 가판대, 우물, 수레, 벤치
 	do
-		for i, spot in { Vector3.new(-18, 0, -13), Vector3.new(-18, 0, 13), Vector3.new(2, 0, 14) } do
+		-- [장터 이전] 중앙광장 가판대 3개를 기존 서쪽 상업거리로 이동한다.
+		for i, spot in { Vector3.new(-114, 0, -14), Vector3.new(-114, 0, 14), Vector3.new(-136, 0, 14) } do
 			local marketStyle = if i % 2 == 0 then "stall-red" else "stall-green"
 			if not importedModel(folder, "Town", marketStyle, spot, 6.5, false) then
 				importedModel(folder, "Town", "stall", spot, 6.5, false)
@@ -4778,7 +4790,7 @@ function PortScene.build(info, onFacility)
 		for i = 1, 12 do
 			showcase[i] = made[(i - 1) % math.max(1, #made) + 1] or "cheese"
 		end
-		local stalls = { Vector3.new(-18, 2.5, -13), Vector3.new(-18, 2.5, 13), Vector3.new(2, 2.5, 14) }
+		local stalls = { Vector3.new(-114, 2.5, -14), Vector3.new(-114, 2.5, 14), Vector3.new(-136, 2.5, 14) }
 		for index, good in showcase do
 			local stand = stalls[math.ceil(index / 4)]
 			local mesh = GOOD_MESH[good]
@@ -4792,10 +4804,10 @@ function PortScene.build(info, onFacility)
 			end
 		end
 		if PortBuildings.StreetGrowth[sceneLevel].fountain then
-			importedModel(folder, "Town", "fountain-square", Vector3.new(-10, 0, 0), 7, true)
+			importedModel(folder, "Town", "fountain-square", Vector3.new(-108, 0, 122), 7, true)
 		end
-		importedModel(folder, "Town", "stall-bench", Vector3.new(-6, 0, 13), 4, false)
-		importedModel(folder, "Town", "stall-stool", Vector3.new(-12, 0, 11), 2, false)
+		importedModel(folder, "Town", "stall-bench", Vector3.new(-122, 0, 28), 4, false)
+		importedModel(folder, "Town", "stall-stool", Vector3.new(-140, 0, 28), 2, false)
 		-- 4~5단계 조선항 전용 경비탑: 둘째 잔교와 겹치지 않는 육지 쪽 위치에 배치.
 		if PortData.Ports[info.portId] and PortData.Ports[info.portId].shipyard
 			and dockGrowth.sidePier and dockGrowth.tier >= 4 then
@@ -4808,14 +4820,15 @@ function PortScene.build(info, onFacility)
 				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(10, 0, 61), 5, false)
 			end
 		end
-		importedModel(folder, "Interior", "tablecrosscloth", Vector3.new(-30, 0, -13), 4.8, false)
-		importedModel(folder, "Interior", "coatrack", Vector3.new(-36, 0, -23), 3.4, false)
-		importedModel(folder, "Interior", "rugrounded", Vector3.new(-10, 0, -18), 4.8, false)
-		importedModel(folder, "Town", "village-well", Vector3.new(-30, 0, 15), 5.5, true)
-		importedModel(folder, "Town", "cart", Vector3.new(-24, 0, 19), 5.5, false)
-		importedModel(folder, "Town", "cart", Vector3.new(-26, 0, -19), 5.5, false)
-		importedModel(folder, "Town", "bench_A", Vector3.new(-8, 0, 9), 4.5, false)
-		importedModel(folder, "Town", "bench_B", Vector3.new(-8, 0, -9), 4.5, false)
+		-- [외곽 장터·우물] 중앙광장 소품도 전부 외곽 거리로 이동해 주민 이동 구역을 비운다.
+		importedModel(folder, "Interior", "tablecrosscloth", Vector3.new(-148, 0, -32), 4.8, false)
+		importedModel(folder, "Interior", "coatrack", Vector3.new(-36, 0, -45), 3.4, false)
+		importedModel(folder, "Interior", "rugrounded", Vector3.new(-152, 0, -38), 4.8, false)
+		importedModel(folder, "Town", "village-well", Vector3.new(-126, 0, 32), 5.5, true)
+		importedModel(folder, "Town", "cart", Vector3.new(-158, 0, 32), 5.5, false)
+		importedModel(folder, "Town", "cart", Vector3.new(-176, 0, -32), 5.5, false)
+		importedModel(folder, "Town", "bench_A", Vector3.new(-100, 0, 30), 4.5, false)
+		importedModel(folder, "Town", "bench_B", Vector3.new(-100, 0, -30), 4.5, false)
 		for _, x in { -52, -74, -96, -118, -138 } do
 			for side = -1, 1, 2 do
 				-- 사막·열대·지중해 마을에는 소나무 대신 야자나무
