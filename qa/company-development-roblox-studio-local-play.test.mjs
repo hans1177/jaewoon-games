@@ -4064,7 +4064,7 @@ test('Mare enemy and companion weapon motions use grounded shared combo and reco
     motion.includes('local follow = if state == "ATTACK"')&&
     motion.includes('local returnGrip = if state == "RECOVERY"'),
     'weapon wind-up, strike, follow-through and recover must stay on original timing');
-  assert.ok(scene.includes('AC.stepEnemy(e.ac, dtc, dist')&&
+  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&
     scene.includes('strikeEnemy(tgt, 0.6 * aw.power')&&
     scene.includes('a.nextAt = now + 1.3 / aw.speed'),
     'original attack authority, ally power and cooldown remain intact');
@@ -4091,7 +4091,7 @@ test('Mare enemy and companion weapon motion transition and foot contact are con
   assert.ok(scene.includes('FM.actor(a.fm, "ATTACK", 0.25 + math.clamp(ap, 0, 1) * 0.35')&&
     !scene.includes('math.min(ap * 1.6, 1) * 0.35'),
     'companion weapon animation must not freeze before the original attack finishes');
-  assert.ok(scene.includes('AC.stepEnemy(e.ac, dtc, dist')&&
+  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&
     scene.includes('a.nextAt = now + 1.3 / aw.speed')&&
     scene.includes('strikeEnemy(tgt, 0.6 * aw.power'),
     'enemy authority and companion cooldown, range and damage are unchanged');
@@ -4124,7 +4124,7 @@ test('Mare R15 enemy ally authored weapon impact matches strike event timing',()
   assert.ok(motion.includes('local beatSide = if (h.weaponBeat or 1) % 2 == 0 then -1 else 1')&&
     motion.includes('not (gun or bow or crossbow)'),
     'melee alternating sides must not disrupt ranged weapon aiming');
-  assert.ok(scene.includes('AC.stepEnemy(e.ac, dtc, dist')&&
+  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&
     scene.includes('strikeEnemy(tgt, 0.6 * aw.power')&&
     scene.includes('a.nextAt = now + 1.3 / aw.speed'),
     'enemy combat authority and ally damage, speed, range and reward flow remain unchanged');
@@ -4139,7 +4139,7 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
   const jobs=fs.readFileSync(base+'JobSkills.luau','utf8');
   assert.ok(scene.includes('attackBtn:SetAttribute("WeaponSkillCount", 1)')&&
     scene.includes('local available = { "heavy", "sweep" }')&&
-    scene.includes('b.Name = "FieldSkill_dodge"')&&
+    scene.includes('b.Name = "FieldDodge"')&&
     !scene.includes('mkSkill("parry"')&&!scene.includes('mkSkill("heavy"')&&
     !scene.includes('mkSkill("sweep"')&&!scene.includes('local function slotPos('),
     'only attack and evade combat buttons; preserve older weapon/card skill definitions and loadout');
@@ -4158,9 +4158,9 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
   assert.ok(scene.includes('local impact = math.clamp(0.14 / swingDur, 0.15, 0.75)')&&
     scene.includes('progress = if p < impact then p / impact * contact'),
     'authored melee contact must match original basic damage at 0.14 sec');
-  const shared=scene.indexOf('local dodgeStyle = player.Character and player.Character:GetAttribute("FieldDodgeStyle") or "warrior"');
-  const root=scene.indexOf('if dodgeStyle == "navigator" then');
-  const action=scene.indexOf('dodgeStyle = JobSkills.categoryOf(profession)');
+  const shared=scene.indexOf('local style = ch and ch:GetAttribute("FieldDodgeStyle") or "warrior"');
+  const root=scene.indexOf('if style == "navigator" then');
+  const action=scene.indexOf('local dodgeStyle = if JobSkills.Categories[profession]');
   assert.ok(shared>0 && root>shared && action>root,'dodge style must be shared by input and animation state');
   for(const role of ['warrior','gunner','clergy','doctor','navigator','merchant','scholar']){
     assert.ok(scene.includes(role+' = {'),'missing profession R15 pose: '+role);
@@ -4177,8 +4177,10 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
   assert.ok(scene.includes('AC.tryMove(pl, moveId, now)')&&
     scene.includes('task.delay(if kind == "slash" then 0.14'),
     'original invulnerability authority and attack damage timing must be retained');
-  assert.ok(scene.includes('if creditedSeq == pl.basicAttackSeq then')&&
-    scene.includes('pl.basicAttackSeq = streakActionSeq')&&
+  assert.ok(scene.includes('if basicAttack == true then')&&
+    scene.includes('local autoHeavyReady = basicAttack == true')&&
+    scene.includes('hitActionSeq, nil, moveId == "rush")')&&
+    !scene.includes('pl.basicAttackSeq')&&
     scene.includes('pl.autoNormalHits = (pl.autoNormalHits or 0) + 1')&&
     scene.includes('if pl.autoNormalHits % 5 == 0 then')&&
     scene.includes('ch:SetAttribute("FieldAutoSkillPending", nil)')&&
@@ -4193,12 +4195,14 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
     'automatic skill must use original cooldown stamina and keep ally damage outside owner streak');
   // [모바일 2버튼] 공격 우하단, 회피는 엄지 측면. 별도 스킬/방어 버튼 없음.
   assert.ok(scene.includes('workspace.CurrentCamera.ViewportSize.X < 450')&&
-    scene.includes('attackBtn.Size = UDim2.fromOffset(104, 104)')&&
-    scene.includes('if compactTouch then 100 elseif visualMobile then 110 else 94')&&
-    scene.includes('if compactTouch then UDim2.new(1, -155, 1, -199)')&&
-    scene.includes('skillBtns.dodge = { btn = b, label = "회피" }'),
+    scene.includes('UDim2.fromOffset(if compactTouch then 118 elseif visualMobile then 128 else 112,')&&
+    scene.includes('if compactTouch then 96 elseif visualMobile then 106 else 94')&&
+    scene.includes('if compactTouch then UDim2.new(1, -171, 1, -211)')&&
+    scene.includes('combatBtns.dodge = { btn = b, label = "회피" }'),
     'large dodge and attack must be separated for thumb reach on portrait mobile');
-  assert.ok(scene.includes('button.Name == "FieldAttack" or string.sub')&&
+  assert.ok(scene.includes('button.Name == "FieldAttack" or button.Name == "FieldDodge"')&&
+    scene.includes('attackCaption.Name = "FieldAttackCaption"')&&
+    scene.includes('dodgeCaption.Name = "FieldDodgeCaption"')&&
     scene.includes('attackBtn:SetAttribute("SkillFullName", "일반 공격")')&&
     scene.includes('addIcon(b, "Menu/chart_compass")')&&
     !scene.includes('addIcon(skillBtns.parry.btn,')&&
@@ -4226,8 +4230,8 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
   }
   assert.ok(scene.includes('elseif dodgeStyle == "clergy" then')&&
     scene.includes('elseif dodgeStyle == "scholar" then')&&
-    scene.includes('CFrame.new(1.35 * press, -0.35 * press, 0)')&&
-    scene.includes('CFrame.new(-1.55 * press, -0.62 * press, 0)'),
+    scene.includes('CFrame.new(1.20 * side * press, 0.52 * press, 0)')&&
+    scene.includes('CFrame.new(-1.45 * side * press, -0.55 * press, 0)'),
     'distinct large lateral sanctuary step and scholar low diagonal leap');
   assert.ok(scene.includes('math.sin(math.clamp(p, 0, 1) * math.pi) ^ 0.72')&&
     scene.includes('then 2.0 else 1.70')&&
@@ -4239,7 +4243,7 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
   assert.ok(scene.includes('if study and not care then "학자"')&&
     scene.includes('if visualMobile then 2 else 5')&&
     scene.includes('if visualMobile then 3 else 6')&&
-    scene.includes('pulseAt("DODGE_EVASION_PULSE", dodgeOrigin'),
+    scene.includes('pulseAt("DODGE_EVASION_PULSE", originGround'),
     'scholar/clergy class selection, mobile ghost cap and start/end effect must work');
 });
 
@@ -4264,7 +4268,7 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
   assert.ok(motion.includes('WEAPON_HIGH_BEATS'));
   assert.ok(field.includes('Weapons.actionDesign(wpn).heavyBeat'));
   assert.ok(field.includes('Weapons.actionDesign(wpn).sweepBeat'));
-  assert.ok(field.includes('startSwing(finishKind, if stage == 3 then 0.34 else 0.26, stage)'),'bonus chains must play actual R15 steps');
+  assert.ok(field.includes('startSwing(finishKind, if stage == 3 then 0.34 else 0.26, stage, true)'),'bonus chains must play actual R15 steps');
   assert.ok(field.includes('pl.combo = 0') && field.includes('mult = 1'),'first attack must be basic single hit');
   const active=field.slice(field.indexOf('if chain > 1 then'),field.indexOf('elseif hits == 0 and moveId == "rush"'));
   assert.ok(active.includes('startSwing(finishKind, if stage == 3 then 0.34 else 0.26, stage)')

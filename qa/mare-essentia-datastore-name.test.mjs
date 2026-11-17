@@ -100,6 +100,12 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.match(field,/timer\.Visible = false -- \[아이콘 전용\]/);
   assert.match(field,/equipped\.heavy, equipped\.sweep = true, false/);
   assert.match(field,/pl\.autoNormalHits % 5 == 0/);
+  // [빠른 연타] 0.14초 지연된 이전 평타도 명중 당시 새 입력 여부와 관계없이 충전해야 한다.
+  assert.match(field,/if basicAttack == true then[\s\S]*?pl\.autoNormalHits = \(pl\.autoNormalHits or 0\) \+ 1/);
+  assert.match(field,/local autoHeavyReady = basicAttack == true/);
+  assert.match(field,/local basicHit = basicAttack == true/);
+  assert.match(field,/hitActionSeq, nil, moveId == "rush"\)/);
+  assert.doesNotMatch(field,/pl\.basicAttackSeq/);
   assert.match(field,/FieldAutoSkillPending/);
   assert.match(field,/if useMove\("heavy"\) then[\s\S]*?comboCinema\(streakN, record, true\)/);
   assert.match(field,/sb\.btn:GetAttribute\("IconArtKey"\) ~= iconKey/);
