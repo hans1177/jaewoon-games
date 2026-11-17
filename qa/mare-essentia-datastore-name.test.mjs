@@ -365,12 +365,23 @@ test('스튜디오 탐험 실증은 현재 공격·회피 메달과 집안별 �
   assert.equal(script.length,241,'기존 전체 스튜디오 검사 순서 유지');
   const entry=script[234].code;
   const motion=script[236].code;
+  const live=script[239].code;
   assert.ok(entry.includes('FIELD_QA_ENTRY_FAIL:'),'실제 UI로 탐험 입장 검증 필수');
   assert.ok(entry.includes('FieldCombatReady'),'실제 전투 준비 검증 필수');
   assert.ok(entry.includes('FIELD_DODGE_ICON_UNAPPROVED'),'회피 원화 실증 검증 필수');
   assert.ok(entry.includes('FIELD_WEAPON_CHOICES_NOT_TWO'),'두 무기 교체 검증 필수');
   assert.ok(motion.includes('FIELD_ATTACK_WEAPON_ICON_UNAPPROVED'),'선택 무기별 원화 실증 검증 필수');
   assert.ok(motion.includes('FIELD_MOTION_ACTOR_SAMPLE_TOO_SMALL'),'적·동료의 실제 모션 검증 유지');
+  // [난이도별 실증] 초급 필드의 미출현 3~4단 병종을 요구하지 않되 현재 출현 직군 전체를 검사한다.
+  assert.ok(live.includes('field:GetAttribute("FieldDifficultyGrade")'),'실제 난이도 참조 필수');
+  assert.ok(live.includes('grade<=1 then {"grunt","archer"}'),'1단 편성 검증 필수');
+  assert.ok(live.includes('grade==2 then {"grunt","archer","shield"}'),'2단 편성 검증 필수');
+  assert.ok(live.includes('{"grunt","archer","shield","charger"}'),'3단 이상 편성 검증 필수');
+  assert.ok(live.includes('for _,role in expectedRoles do'),'실존 병종 R15 모션 모두 검사');
+  assert.ok(live.includes('distinct>=math.min(3,#expectedRoles)'),'난이도에 맞는 다른 전신 자세 검증');
+  assert.ok(live.includes('FIELD_SURVEY_PROMPTS_MISSING'),'현장 조사 지점 실제 생성 검사');
+  assert.ok(live.includes('FIELD_SURVEY_KEY_CONFLICT'),'전투 E와 조사 T 분리 검증');
+  assert.ok(live.includes('FIELD_SURVEY_REACH_BLOCKED'),'유적 조사 가시거리·접근성 검증');
   assert.doesNotMatch(entry+motion,/FieldSkill_parry|FieldSkill_dodge/,'사라진 구 스킬 버튼을 요구하면 안 된다');
   assert.ok(field.includes('b.Name = "FieldDodge"'));
   assert.ok(field.includes('wbtn.Name = "FieldWeapon"'));
