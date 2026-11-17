@@ -194,7 +194,8 @@ return function(D, S)
 		local recordLimit = math.min(500, math.floor(elapsed / 0.15) + 1)
 		if record ~= nil and (type(record) ~= "number" or record ~= record or record < 0
 			or record ~= math.floor(record) or record > recordLimit) then
-			return false, "탐험 연타 기록이 유효하지 않아요"
+			-- 기록 검증 실패가 기존 무기 숙련 정산까지 막지 않도록 기록만 무시한다.
+			record = nil
 		end
 		for id, earned in p.hits do
 			state.weaponPractice[id] = math.min(10000, (state.weaponPractice[id] or 0) + earned)
