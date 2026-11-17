@@ -2402,9 +2402,7 @@ function FieldScene.start(opts)
 	comboGauge.Visible = false
 	comboGauge.ZIndex = 22
 	comboGauge.Parent = gui
-	local comboGaugeCorner = Instance.new("UICorner")
-	comboGaugeCorner.CornerRadius = UDim.new(1, 0)
-	comboGaugeCorner.Parent = comboGauge
+	Instance.new("UICorner", comboGauge).CornerRadius = UDim.new(1, 0)
 	local comboGaugeFill = Instance.new("Frame")
 	comboGaugeFill.Name = "TimeRemaining"
 	comboGaugeFill.Size = UDim2.fromScale(1, 1)
@@ -2412,9 +2410,7 @@ function FieldScene.start(opts)
 	comboGaugeFill.BorderSizePixel = 0
 	comboGaugeFill.ZIndex = 23
 	comboGaugeFill.Parent = comboGauge
-	local comboFillCorner = Instance.new("UICorner")
-	comboFillCorner.CornerRadius = UDim.new(1, 0)
-	comboFillCorner.Parent = comboGaugeFill
+	Instance.new("UICorner", comboGaugeFill).CornerRadius = UDim.new(1, 0)
 	local comboToken, comboTween, comboPopTween = 0, nil, nil
 	local function showCombo(text: string, milestone: boolean?, accent: Color3?)
 		if finished or not comboLabel.Parent then return end
@@ -3974,15 +3970,13 @@ function FieldScene.start(opts)
 	local screenHeight = if cameraViewport.Y >= 250 then cameraViewport.Y else 640
 	-- [엄지 동선] 일반 공격 → 크게 키운 회피 → 스킬 3칸 순으로 겹치지 않게 배치한다.
 	local outerSkillRadius = math.clamp(math.min(screenWidth * 0.56, screenHeight * 0.45), 162, 200)
-	local innerSkillRadius = math.clamp(outerSkillRadius * 0.82, 132, 164)
 	local compactTouch = visualMobile and screenWidth < 360
 	local skillSize = if compactTouch then 72 elseif visualMobile then 82 else 72
-	local basicSize = if compactTouch then 64 elseif visualMobile then 68 else 64
-	-- [반원 중심] 기존 공격 버튼의 위치를 그대로 사용해 모든 해상도에서 엄지 중심이 일치한다.
-	local ATK_C = Vector2.new(attackBtn.Position.X.Offset, attackBtn.Position.Y.Offset)
+	-- [루아우 지역변수 절약] 버튼 위치는 기존 attackBtn 속성에서 직접 계산한다. 부수적인 보관 변수는 만들지 않는다.
 	local function arcPos(r: number, theta: number): UDim2
 		local a = math.rad(theta)
-		return UDim2.new(1, ATK_C.X - r * math.cos(a), 1, ATK_C.Y - r * math.sin(a))
+		return UDim2.new(1, attackBtn.Position.X.Offset - r * math.cos(a),
+			1, attackBtn.Position.Y.Offset - r * math.sin(a))
 	end
 	-- [모바일 아이콘 스킬] 스킬명은 속성에 보존하고 화면엔 기존 공용 아이콘만 표시한다.
 	local function mkSkill(key, label, color, pos, size)
@@ -4003,9 +3997,10 @@ function FieldScene.start(opts)
 	end
 	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
 	mkSkill("dodge", "회피", Color3.fromRGB(32, 141, 144),
-		arcPos(innerSkillRadius, 4), if compactTouch then 88 elseif visualMobile then 104 else 86)
+		arcPos(math.clamp(outerSkillRadius * 0.82, 132, 164), 4), if compactTouch then 88 elseif visualMobile then 104 else 86)
 	mkSkill("parry", "방어", Color3.fromRGB(71, 88, 127),
-		arcPos(innerSkillRadius * 0.98, 45), basicSize)
+		arcPos(math.clamp(outerSkillRadius * 0.82, 132, 164) * 0.98, 45),
+		if compactTouch then 64 elseif visualMobile then 68 else 64)
 	-- [등록 아이콘] 장갑 대신 실제 등록 나침반 방향 아이콘으로 이동·회피 기능을 구분한다.
 	addIcon(skillBtns.dodge.btn, "Menu/chart_compass")
 	addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")
@@ -4135,9 +4130,9 @@ function FieldScene.start(opts)
 		local function slotPos(id): UDim2
 			-- [전투 스킬] 공격 바로 위로 3칸을 계단형 배치. 회피·방어와 원형 터치 영역을 분리한다.
 			local i = if type(id) == "number" then id else (slotOf[id] or 1)
-			return UDim2.new(1, ATK_C.X + (if i == 1 then -outerSkillRadius
+			return UDim2.new(1, attackBtn.Position.X.Offset + (if i == 1 then -outerSkillRadius
 				elseif i == 2 then -outerSkillRadius * 0.40 else outerSkillRadius * 0.14),
-				1, ATK_C.Y - (if i == 1 then outerSkillRadius * 0.80
+				1, attackBtn.Position.Y.Offset - (if i == 1 then outerSkillRadius * 0.80
 				elseif i == 2 then outerSkillRadius * 0.98 else outerSkillRadius * 0.97))
 		end
 		-- 아직 안 열린 칸은 잠금 표시로 보여 준다(누르면 해금 조건을 알려 준다)
