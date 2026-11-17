@@ -1,5 +1,5 @@
 {
- "sourceRevision": "d54304fda4592398d024bee00e66980d9245513b",
+ "sourceRevision": "71be75ffffe02904cb42f8ccdc4961c740173978",
  "log": [
   {
    "step": 1,
@@ -141,7 +141,7 @@
   {
    "step": 30,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997503 | 현황 | 동료 관리 | 초상화가 완성되었다 | ◆ 선장 현황 | ① 선체·화물   →   명성·직업   →   다음 목표 | 상태 살펴보기 | 조언 · 대상 상인 카심 (베테랑 대상 상인)\ntext"
+   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997500 | 현황 | 동료 관리 | 초상화가 완성되었다 | ◆ 선장 현황 | ① 선체·화물   →   명성·직업   →   다음 목표 | 상태 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참\ntext"
   },
   {
    "step": 31,
@@ -161,7 +161,7 @@
   {
    "step": 35,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 상인 길드 · 항구 정보 | 교역소 | 999997503 | 교역 | 항구 정보 | ◆ 항구 정보 | ① 특산품·수요   →   시장·시설   →   발전 현황 | 항구 살펴보기 | 조언 · 대상 상인 카심 (베테랑 대상 상인) | 특산품·수요 → 시장·시설 → 발전 현황\ntext"
+   "out": "TEXTS: 이스탄불 · 상인 길드 · 항구 정보 | 교역소 | 999997500 | 교역 | 항구 정보 | ◆ 항구 정보 | ① 특산품·수요   →   시장·시설   →   발전 현황 | 항구 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참 | 20/20칸 · 거래 전에 적재 화물을 정리해.\ntext"
   },
   {
    "step": 36,
@@ -186,7 +186,7 @@
   {
    "step": 41,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 상인 길드 · 교역 | 교역소 | 999997503 | 교역 | 항구 정보 | ◆ 교역 장부 | ① 시세 비교   →   수량 선택   →   매입·판매 | 교역 장부 열기 | 조언 · 대상 상인 카심 (베테랑 대상 상인) | 화물칸이 가득 찼어요. 교역소에서 팔아 이익을 남겨 보죠.\ntext"
+   "out": "TEXTS: 이스탄불 · 상인 길드 · 교역 | 교역소 | 999997500 | 교역 | 항구 정보 | ◆ 교역 장부 | ① 시세 비교   →   수량 선택   →   매입·판매 | 교역 장부 열기 | ↶ 최근 메뉴: 항구 정보 | 조언 · 대상 상인 카심 (베테랑 대상 상인)\ntext"
   },
   {
    "step": 42,
@@ -235,7 +235,7 @@
   {
    "step": 50,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 항만 관리관 · 항해 | 항만청 | 999997503 | 항해 | 지도 | ◆ 항로 선택 | ① 거리·위험   →   보급 확인   →   출항 | 항로 살펴보기 | 조언 · 대상 상인 카심 (베테랑 대상 상인) | [길잡이 2/9] 물건을 실었어요! 이제 항만청에서 다른 항구를 골라 출\ntext"
+   "out": "TEXTS: 이스탄불 · 항만 관리관 · 항해 | 항만청 | 999997500 | 항해 | 지도 | ◆ 항로 선택 | ① 거리·위험   →   보급 확인   →   출항 | 항로 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참 | 20/20칸 · 거래 전에 적재 화물을 정리해.\ntext"
   },
   {
    "step": 51,
@@ -284,7 +284,7 @@
   {
    "step": 59,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 항만 관리관 · 지도 | 항만청 | 999997503 | 항해 | 지도 | ◆ 세계 지도 | ① 목적지 탐색   →   항구 정보   →   항로 연결 | 지도 살펴보기 | 조언 · 대상 상인 카심 (베테랑 대상 상인) | 목적지 탐색 → 항구 정보 → 항로 연결\ntext"
+   "out": "TEXTS: 이스탄불 · 항만 관리관 · 지도 | 항만청 | 999997500 | 항해 | 지도 | ◆ 세계 지도 | ① 목적지 탐색   →   항구 정보   →   항로 연결 | 지도 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참 | 20/20칸 · 거래 전에 적재 화물을 정리해.\ntext"
   },
   {
    "step": 60,
@@ -304,7 +304,7 @@
   {
    "step": 64,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 조선 장인 · 조선소 | 조선소 | 999997503 | 조선소 | ◆ 선박 관리 | ① 선체·보급   →   선단·대포   →   새 배 비교 | 새 배 비교 | 조언 · 대상 상인 카심 (베테랑 대상 상인) | 코인이 넉넉해요. 더 큰 배로 바꾸거나 대포를 손볼 때가 된 것 같아요. | 선박 관리\ntext"
+   "out": "TEXTS: 이스탄불 · 조선 장인 · 조선소 | 조선소 | 999997500 | 조선소 | ◆ 선박 관리 | ① 선체·보급   →   선단·대포   →   새 배 비교 | 새 배 비교 | 🧭 항해 비서 · 화물칸 가득 참 | 20/20칸 · 거래 전에 적재 화물을 정리해. | 교역 보기\ntext"
   },
   {
    "step": 65,
@@ -324,7 +324,7 @@
   {
    "step": 69,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 주점 주인 · 진행 일지 | 주점 | 999997503 | 의뢰 받기 | 진행 일지 | 동료 영입 | ◆ 진행 일지 | ① 현재 목표   →   달성 조건   →   보상 받기 | 진행 목표 보기 | 조언 · 대상 상인 카심 (베테랑 대상 상인)\ntext"
+   "out": "TEXTS: 이스탄불 · 주점 주인 · 진행 일지 | 주점 | 999997500 | 의뢰 받기 | 진행 일지 | 동료 영입 | ◆ 진행 일지 | ① 현재 목표   →   달성 조건   →   보상 받기 | 진행 목표 보기 | 🧭 항해 비서 · 화물칸 가득 참\ntext"
   },
   {
    "step": 70,
@@ -344,7 +344,7 @@
   {
    "step": 74,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 전투 교관 · 지상 탐험 | 전투 본부 | 999997503 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | ◆ 지상 탐험 | ① 지역 위험   →   탐험 준비   →   지식 발견 | 탐험 준비 보기\ntext"
+   "out": "TEXTS: 이스탄불 · 전투 교관 · 지상 탐험 | 전투 본부 | 999997500 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | ◆ 지상 탐험 | ① 지역 위험   →   탐험 준비   →   지식 발견 | 탐험 준비 보기\ntext"
   },
   {
    "step": 75,
@@ -409,7 +409,7 @@
   {
    "step": 91,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 전투 교관 · 해적 사냥 | 전투 본부 | 999997503 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | ◆ 전투 준비 | ① 적 위험   →   선체·대포   →   해적 사냥 | 전투 준비 보기\ntext"
+   "out": "TEXTS: 이스탄불 · 전투 교관 · 해적 사냥 | 전투 본부 | 999997500 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | ◆ 전투 준비 | ① 적 위험   →   선체·대포   →   해적 사냥 | 전투 준비 보기\ntext"
   },
   {
    "step": 92,
@@ -429,7 +429,7 @@
   {
    "step": 96,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 학자 · 지식 백과 | 학자의 서재 | 999997503 | 지식 보고 | 지식 백과 | 연구 | ◆ 지식 백과 | ① 분야 선택   →   발견물 확인   →   미수집 목표 | 도감 살펴보기 | 조언 · 대상 상인 카심 (베테랑 대상 상인)\ntext"
+   "out": "TEXTS: 이스탄불 · 학자 · 지식 백과 | 학자의 서재 | 999997500 | 지식 보고 | 지식 백과 | 연구 | ◆ 지식 백과 | ① 분야 선택   →   발견물 확인   →   미수집 목표 | 도감 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참\ntext"
   },
   {
    "step": 97,
@@ -478,7 +478,7 @@
   {
    "step": 105,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 학자 · 연구 | 학자의 서재 | 999997503 | 지식 보고 | 지식 백과 | 연구 | ◆ 기술 연구 | ① 연구 조건   →   이해한 지식   →   기술 해금 | 연구 살펴보기 | 조언 · 대상 상인 카심 (베테랑 대상 상인)\ntext"
+   "out": "TEXTS: 이스탄불 · 학자 · 연구 | 학자의 서재 | 999997500 | 지식 보고 | 지식 백과 | 연구 | ◆ 기술 연구 | ① 연구 조건   →   이해한 지식   →   기술 해금 | 연구 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참\ntext"
   },
   {
    "step": 106,
@@ -498,7 +498,7 @@
   {
    "step": 110,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997503 | 현황 | 동료 관리 | ◆ 선장 현황 | ① 선체·화물   →   명성·직업   →   다음 목표 | 상태 살펴보기 | 조언 · 대상 상인 카심 (베테랑 대상 상인) | 선체·화물 → 명성·직업 → 다음 목표\ntext"
+   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997500 | 현황 | 동료 관리 | ◆ 선장 현황 | ① 선체·화물   →   명성·직업   →   다음 목표 | 상태 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참 | 20/20칸 · 거래 전에 적재 화물을 정리해.\ntext"
   },
   {
    "step": 111,
@@ -547,7 +547,7 @@
   {
    "step": 119,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 선장 · 동료 관리 | 선장실 | 999997503 | 현황 | 동료 관리 | ◆ 동료 관리 | ① 동료 능력   →   직책 배치   →   승조 효과 | 직책 살펴보기 | 조언 · 대상 상인 카심 (베테랑 대상 상인) | 동료 능력 → 직책 배치 → 승조 효과\ntext"
+   "out": "TEXTS: 이스탄불 · 선장 · 동료 관리 | 선장실 | 999997500 | 현황 | 동료 관리 | ◆ 동료 관리 | ① 동료 능력   →   직책 배치   →   승조 효과 | 직책 살펴보기 | 🧭 항해 비서 · 화물칸 가득 참 | 20/20칸 · 거래 전에 적재 화물을 정리해.\ntext"
   },
   {
    "step": 120,
@@ -720,7 +720,7 @@
   {
    "step": 158,
    "ctx": "Client",
-   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.4929809570312, 220.5385284423828, 36.4580078125 on=true parent=VoyageScene fog=2600 brightness=1.9879506826400757 atmo=0.3700000047683716 camdist=36.68791198730469\ntext"
+   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.5, 219.7527313232422, 36.447265625 on=true parent=VoyageScene fog=2600 brightness=1.9883745908737183 atmo=0.3700000047683716 camdist=36.66531753540039\ntext"
   },
   {
    "step": 160,
@@ -760,12 +760,12 @@
   {
    "step": 170,
    "ctx": "Client",
-   "out": "LOGS(11): ContentId: rbxassethash://0906894039c14c12902d705fe104a52c failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://71747cd397780cd5c8bbd00c56d4dfaa failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://6ac48a146066f8f3fc1e8697e7fd4943 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://3c82ad002c6dae041b312e9691fa21bf failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://cebc78d13a45c6899ddd7963602f97b4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
+   "out": "LOGS(16): ContentId: rbxassethash://71747cd397780cd5c8bbd00c56d4dfaa failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://0906894039c14c12902d705fe104a52c failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://6ac48a146066f8f3fc1e8697e7fd4943 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://3c82ad002c6dae041b312e9691fa21bf failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://cebc78d13a45c6899ddd7963602f97b4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found // ColorSequence.new(): table expected. // ColorSequence.new(): table expected. // ColorSequence.new(): table expected. // ColorSequence.new(): table expected. // ColorSequence.new(): table expected.\ntext"
   },
   {
    "step": 171,
    "ctx": "Server",
-   "out": "LOGS(23): ContentId: rbxassethash://0906894039c14c12902d705fe104a52c failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://71747cd397780cd5c8bbd00c56d4dfaa failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://6ac48a146066f8f3fc1e8697e7fd4943 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://3c82ad002c6dae041b312e9691fa21bf failed due to: Game server must be running in a universe with a valid place. Place universe not found // [QA] FAIL asset AssetIds.CardArt/af_03 rbxassetid://72489040757878 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/af_15 rbxassetid://77023165428158 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // ContentId: rbxassethash://cebc78d13a45c6899ddd7963602f97b4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
+   "out": "LOGS(23): ContentId: rbxassethash://0906894039c14c12902d705fe104a52c failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://71747cd397780cd5c8bbd00c56d4dfaa failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://6ac48a146066f8f3fc1e8697e7fd4943 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://3c82ad002c6dae041b312e9691fa21bf failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://cebc78d13a45c6899ddd7963602f97b4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // [QA] FAIL asset AssetIds.CardArt/af_03 rbxassetid://72489040757878 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/af_15 rbxassetid://77023165428158 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // ContentId: rbxassethash://5b996f0537b5e3d30bca024d0f000e93 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://7b75ccac01b8a3c56168d707d422b689 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://eccf0b85f67d84572db173b99a51029a failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://c331ddc58a542309bbd5fbb2445248f4 failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://96bad87f29b5e6ab2ecaa95c2cfbeaeb failed due to: Game server must be running in a universe with a valid place. Place universe not found // ContentId: rbxassethash://42d3c06385badf5deccb21c06aa39dab failed due to: Game server must be running in a universe with a valid place. Place universe not found\ntext"
   },
   {
    "step": 172,
@@ -999,7 +999,7 @@
   {
    "step": 236,
    "ctx": "Client",
-   "out": "FIELD_MOTION_STABLE actors=21 maxStep=2.21 twoWeapons=PASS skillArt=PASS\ntext"
+   "out": "FIELD_MOTION_STABLE actors=21 maxStep=0.96 twoWeapons=PASS skillArt=PASS\ntext"
   },
   {
    "step": 237,
@@ -1009,7 +1009,7 @@
   {
    "step": 239,
    "ctx": "Client",
-   "out": "MOTION_FIELD_ACTORS_PASS ENEMY_ROLES=4 ALLIES=1 ENEMY_JOINTS=5 ALLY_JOINTS=5 DISTINCT_ROLE_POSES=4 DISTINCT_SUPPORT_POSES=4\ntext"
+   "out": "MOTION_FIELD_ACTORS_PASS ENEMY_ROLES=4 ALLIES=1 ENEMY_JOINTS=6 ALLY_JOINTS=5 DISTINCT_ROLE_POSES=4 DISTINCT_SUPPORT_POSES=4\ntext"
   },
   {
    "step": 240,
@@ -1024,9 +1024,15 @@
    "Client",
    "Server"
   ],
-  "errorCount": 0,
+  "errorCount": 1,
   "warningCount": 24,
-  "errors": []
+  "errors": [
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "ColorSequence.new(): table expected."
+   }
+  ]
  },
  "summary": {
   "plannedSteps": 241,
@@ -1045,7 +1051,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 224198,
+      "bytes": 224087,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1068,7 +1074,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 247553,
+      "bytes": 247927,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1083,7 +1089,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 247942,
+      "bytes": 247739,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1098,7 +1104,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 132132,
+      "bytes": 135862,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1122,7 +1128,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 149057,
+      "bytes": 157235,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1135,7 +1141,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.018311023712158,
+    "brightness": 2.0166049003601074,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1146,7 +1152,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 158906,
+      "bytes": 166361,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1159,7 +1165,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0208704471588135,
+    "brightness": 2.019444465637207,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1170,7 +1176,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 112186,
+      "bytes": 119236,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1183,7 +1189,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0241241455078125,
+    "brightness": 2.023533821105957,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1194,7 +1200,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 154645,
+      "bytes": 162030,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1207,7 +1213,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0287415981292725,
+    "brightness": 2.0285189151763916,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1218,7 +1224,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 157256,
+      "bytes": 164890,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1233,7 +1239,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 159316,
+      "bytes": 166707,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1248,7 +1254,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 157174,
+      "bytes": 170865,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1263,7 +1269,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163281,
+      "bytes": 163101,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1278,7 +1284,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 155394,
+      "bytes": 164586,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1293,7 +1299,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 155072,
+      "bytes": 163943,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1308,7 +1314,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 159718,
+      "bytes": 164559,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1323,7 +1329,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 161963,
+      "bytes": 167937,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1338,7 +1344,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164430,
+      "bytes": 171020,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1353,7 +1359,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167307,
+      "bytes": 171023,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1368,7 +1374,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 166902,
+      "bytes": 170641,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1383,7 +1389,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 224867,
+      "bytes": 234864,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1398,7 +1404,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 186847,
+      "bytes": 202754,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1413,7 +1419,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 165610,
+      "bytes": 168132,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1428,7 +1434,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 161909,
+      "bytes": 167881,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1443,7 +1449,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 161886,
+      "bytes": 167838,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1458,7 +1464,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 154659,
+      "bytes": 164288,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1473,7 +1479,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 155999,
+      "bytes": 164236,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1488,7 +1494,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 155476,
+      "bytes": 164114,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1503,7 +1509,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 194359,
+      "bytes": 194694,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1518,7 +1524,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170912,
+      "bytes": 170995,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1533,7 +1539,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 156472,
+      "bytes": 165066,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1548,7 +1554,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 203332,
+      "bytes": 203329,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1563,7 +1569,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 215586,
+      "bytes": 215043,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1578,7 +1584,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 210350,
+      "bytes": 210727,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1593,7 +1599,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 95967,
+      "bytes": 135084,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1607,7 +1613,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 123553,
+      "bytes": 134738,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1621,7 +1627,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 142128,
+      "bytes": 109944,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1635,7 +1641,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 134214,
+      "bytes": 124831,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1649,7 +1655,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 128688,
+      "bytes": 142285,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1663,7 +1669,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 146416,
+      "bytes": 144096,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1677,7 +1683,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 96174,
+      "bytes": 96807,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1691,7 +1697,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 97846,
+      "bytes": 96404,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1705,7 +1711,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 96941,
+      "bytes": 96450,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1719,7 +1725,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 96958,
+      "bytes": 95843,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1733,7 +1739,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 96392,
+      "bytes": 95054,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1747,7 +1753,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 98218,
+      "bytes": 96830,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1761,7 +1767,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 96962,
+      "bytes": 96450,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1775,7 +1781,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 96554,
+      "bytes": 96450,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1789,7 +1795,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 93991,
+      "bytes": 92584,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1803,7 +1809,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 100429,
+      "bytes": 95264,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1817,7 +1823,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 95485,
+      "bytes": 99131,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1831,7 +1837,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 98236,
+      "bytes": 94882,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1845,7 +1851,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 97077,
+      "bytes": 97132,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1859,7 +1865,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 95914,
+      "bytes": 95564,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1873,7 +1879,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 96971,
+      "bytes": 96534,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1887,7 +1893,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 96189,
+      "bytes": 93810,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1901,7 +1907,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 97754,
+      "bytes": 97567,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1915,7 +1921,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 94451,
+      "bytes": 93924,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1929,7 +1935,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 100295,
+      "bytes": 94739,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1943,7 +1949,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168108,
+      "bytes": 197120,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1958,7 +1964,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 210654,
+      "bytes": 210953,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1973,7 +1979,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 213398,
+      "bytes": 212571,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1988,7 +1994,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 216729,
+      "bytes": 212188,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2215,8 +2221,8 @@
     },
     "Sail": {
      "invalid": 0,
-     "rejected": 180,
-     "accepted": 1,
+     "rejected": 177,
+     "accepted": 4,
      "calls": 181
     },
     "Research": {
@@ -2335,8 +2341,8 @@
     },
     "Haggle": {
      "invalid": 0,
-     "rejected": 72,
-     "accepted": 45,
+     "rejected": 66,
+     "accepted": 51,
      "calls": 117
     },
     "Explore": {
@@ -2355,14 +2361,14 @@
    "observed": {
     "naval-resolved": 1,
     "quest-accepted": 5,
-    "voyage-arrived": 1,
+    "voyage-arrived": 4,
     "naval-encounter": 1
    },
    "calls": 1998,
    "issues": [],
-   "rejected": 1855,
+   "rejected": 1846,
    "failed": 0,
-   "accepted": 140
+   "accepted": 149
   }
  },
  "assetRegistryAudit": {
@@ -2554,7 +2560,7 @@
      }
     },
     "scanned": 25001,
-    "contentRefs": 4334,
+    "contentRefs": 4339,
     "complete": false
    }
   }
