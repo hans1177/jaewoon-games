@@ -94,7 +94,7 @@ function FM.scale(canon, gain: number)
 end
 
 -- 사람형 적·동료: 상태(IDLE/RUN/ANTICIPATION/ATTACK/RECOVERY/HIT)와 위상(0~1)으로 자세를 만든다.
-function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?, rootRot: CFrame?, retreat: boolean?, skill: string?, weaponMotion: string?, moveEffort: number?, strafe: number?)
+function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?, gain: number?, rootRot: CFrame?, retreat: boolean?, skill: string?, weaponMotion: string?, moveEffort: number?, strafe: number?, attackAdvance: number?)
 	-- [상태 전이] 이전 프레임의 실제 관절 자세를 보존해 급작스러운 팔·다리 교체를 방지한다.
 	if h.lastActorState and h.lastActorState ~= state then
 		h.transitionPose = table.clone(h.canon)
@@ -474,9 +474,11 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	if state == "ATTACK" and (role == "grunt" or role == "archer" or role == "shield"
 		or role == "charger" or role == "thrower" or role == "boss") then
 		local release = math.clamp((phase - 0.25) / 0.35, 0, 1)
-		local step = math.sin(release * math.pi)
+		-- 공격 Root 전진 거리를 앞발 들기·무릎 굽힘에 반영한다. 전진이 없는 공격은 기존 자세.
+		local advance = math.clamp((attackAdvance or 0) * 2, 0, 0.55)
+		local step = math.sin(release * math.pi) * (1 + advance) + advance * (1 - release) * 0.4
 		local weight = if role == "shield" or role == "boss" then 0.75 else 1
-		bend("ThighL", (-0.22 + release * 0.28) * weight, 0, -0.04)
+		bend("ThighL", (-0.22 + release * 0.28 - advance * 0.12) * weight, 0, -0.04)
 		bend("ThighR", (0.21 - release * 0.14) * weight, 0, 0.04)
 		bend("ShinL", -0.24 * step * weight, 0, 0)
 		bend("FootL", 0.20 * step * weight, 0, 0)

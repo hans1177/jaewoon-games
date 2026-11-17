@@ -4021,6 +4021,11 @@ test('Mare enemies and companions have grounded speed responsive R15 locomotion'
     'melee attacks must include leg load and landing');
   assert.ok(motion.includes('bend("Spine", 0, -lag * 0.16'),
     'turns must follow through hips and torso');
+  assert.ok(field.includes('e.attackStep = lunge.Magnitude') &&
+    field.includes('e.attackStep)') &&
+    motion.includes('attackAdvance: number?') &&
+    motion.includes('local advance = math.clamp((attackAdvance or 0) * 2'),
+    'real melee lunge must drive planted-foot pose without changing the original lunge');
   assert.ok(field.includes('kindId == "archer" or e.throwAsset ~= nil')&&
     field.includes('e.root.CFrame.RightVector:Dot(e.moveVel)'),
     'enemy strafe/backpedal must use physical velocity');

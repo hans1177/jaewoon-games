@@ -4217,10 +4217,13 @@ function FieldScene.start(opts)
 					-- 맞는 순간 확 젖혀졌다가 되돌아온다(맞은 쪽으로 몸이 꺾이는 느낌)
 					lean = 0.6 * (1 - ph) * (1 - ph)
 				end
-				-- 타격 순간 앞으로 짧게 달려들며 벤다 (근접형만, 플레이어 앞 2.5스터드까지)
+				-- [근접 돌진 접지] 기존 공격 이동거리와 사거리·판정은 그대로 두되,
+				-- 실제 전진한 거리만 발 디딤 포즈로 전달해 공중에서 미끄러지는 느낌을 막는다.
+				e.attackStep = 0
 				if st == "ATTACK" and not def0.keepAway and def0.range <= 12 and flat.Magnitude > 2.5 then
 					local lunge = flat.Unit * math.min(def0.speed * 1.8 * dtc, flat.Magnitude - 2.5)
 					e.model:PivotTo(e.model:GetPivot() + lunge)
+					e.attackStep = lunge.Magnitude
 				end
 				-- 숨쉬기·체중 이동(대기), 달릴 때 위아래 출렁임과 앞으로 숙임으로 가만히 있어도 살아 보이게 한다
 				local bob, roll = 0, 0
@@ -4261,7 +4264,8 @@ function FieldScene.start(opts)
 					(kindId == "archer" or e.throwAsset ~= nil) and wish < 0, nil,
 					if e.throwAsset then nil else (e.weapon and e.weapon.motion),
 					math.clamp(traveled / math.max(dtc, 0.016) / math.max(e.ac.def.speed, 1), 0.18, 1.25),
-					math.clamp(e.root.CFrame.RightVector:Dot(e.moveVel) / math.max(e.ac.def.speed, 1), -1, 1))
+					math.clamp(e.root.CFrame.RightVector:Dot(e.moveVel) / math.max(e.ac.def.speed, 1), -1, 1),
+					e.attackStep)
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then
