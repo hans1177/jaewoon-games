@@ -1218,7 +1218,9 @@ function FieldScene.start(opts)
 		L.ColorShift_Top = lightSave.ColorShiftTop
 		if gui.Parent then gui:Destroy() end
 	end)
-	local compactTouch = visualMobile and workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X < 450
+	local compactTouch = visualMobile and workspace.CurrentCamera
+		and (workspace.CurrentCamera.ViewportSize.X < 520
+			or workspace.CurrentCamera.ViewportSize.X <= workspace.CurrentCamera.ViewportSize.Y)
 	-- [모바일/PC] 카메라 거리 3단계. 각 모드 안에서는 핀치·마우스 휠로 자유롭게 확대한다.
 	local cameraBtn = btn(gui, "시야: 기본", Color3.fromRGB(56, 78, 96), UDim2.fromOffset(108, 44),
 		UDim2.new(1, -12, 0, 12), Vector2.new(1, 0))
@@ -2410,13 +2412,16 @@ function FieldScene.start(opts)
 
 	-- [탐험 전투 조작] 공격·회피 두 버튼만 표시한다. 강타는 주인공 기본 공격 5회 명중마다 자동 발동한다.
 	local UserInputService = game:GetService("UserInputService")
-	-- [상용 모바일 전투 HUD] 엄지에 닿는 120~128px 원형 주공격. 회피/이동 패드와 겹치지 않는다.
-	-- 화면비와 무관하게 하단·오른쪽 안전 여백을 유지하고 PC도 기존 바로 공격 입력을 지원한다.
+	-- [모바일 3버튼] 승인 원형 원화를 유지하면서 공격·회피·무기교체 반원 간격을 확보한다.
+	-- 파티 HUD와 분리하고 짧은 가로화면은 버튼 크기를 줄여 화면 아래에 안전하게 넣는다.
 	local attackBtn = btn(gui, "", Color3.fromRGB(177, 57, 43),
-		UDim2.fromOffset(if compactTouch then 118 elseif visualMobile then 128 else 112,
-			if compactTouch then 118 elseif visualMobile then 128 else 112),
-		UDim2.new(1, if compactTouch then -math.min(85, workspace.CurrentCamera.ViewportSize.X - 247) elseif visualMobile then -98 else -88,
-			1, if compactTouch then -85 elseif visualMobile then -98 else -88), Vector2.new(0.5, 0.5)) -- [좁은 세로] 공격 여유 터치 영역과 이동 패드 사이 최소 간격
+		UDim2.fromOffset(if compactTouch then 104 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 104
+			elseif visualMobile then 116 else 112,
+			if compactTouch then 104 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 104
+			elseif visualMobile then 116 else 112),
+		UDim2.new(1, if compactTouch then -82 elseif visualMobile then -95 else -88,
+			1, if compactTouch then -87 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then -70
+				elseif visualMobile then -88 else -88), Vector2.new(0.5, 0.5))
 	attackBtn.Name = "FieldAttack"
 	attackBtn:SetAttribute("SkillFullName", "일반 공격")
 	attackBtn:SetAttribute("TouchPriority", "ATTACK")
@@ -2551,6 +2556,10 @@ function FieldScene.start(opts)
 	end
 	-- [무기 교체] 기존 장비를 첫 번째 슬롯으로 보존하고, 다른 전투 거리의 무기 1개만 빠르게 교체한다.
 	local reserveWeapon = Weapons.get(opts.reserveWeapon or (if wpn.ranged then "sword" else "bow"))
+	-- [무기 교체가 같아 보이는 문제] 잘못된 보조 ID가 주 무기와 같으면 기존 기본 반대 병과를 사용한다.
+	if reserveWeapon.id == wpn.id then
+		reserveWeapon = Weapons.get(if wpn.ranged then "sword" else "bow")
+	end
 	if attackIcon then
 		local iconKey = if wpn.family == "fist" then "Menu/cc0_glove" elseif wpn.family == "axe" then "Menu/cc0_axe"
 			elseif wpn.ranged then "Menu/cc0_crossbow" else "Menu/cc0_sword"
@@ -6436,23 +6445,34 @@ function FieldScene.start(opts)
 		end
 	end
 	local function useDash() useMove("dodge") end
-	-- 버튼은 터치 '닿는 순간' 바로 반응한다(폰에서 손가락이 살짝 밀려도 Activated 가 안 뜨는 경우 대비). 같은 누름의 중복은 막는다.
+	-- [입력 확정] Touch는 눌렀을 때 1회, 마우스/게임패드는 Activated 1회만 처리한다.
+	-- 기존에는 Touch InputBegan/Activated가 둘 다 실행돼 교체를 두 번 눌러 원래 무기로 되돌아갔다.
 	local function bindPress(b: GuiButton, fn: () -> ())
-		local last = 0
+		local lastAction = -100
+		local touchActive = false
+		local lastTouchEnded = -100
 		local function go()
-			local t = os.clock()
-			if t - last < 0.08 then
-				return
-			end
-			last = t
+			local now = os.clock()
+			if now - lastAction < 0.08 then return end
+			lastAction = now
 			fn()
 		end
 		b.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			if input.UserInputType == Enum.UserInputType.Touch then
+				touchActive = true
 				go()
 			end
 		end)
-		b.Activated:Connect(go)
+		b.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch then
+				touchActive = false
+				lastTouchEnded = os.clock()
+			end
+		end)
+		b.Activated:Connect(function()
+			if touchActive or os.clock() - lastTouchEnded < 0.45 then return end
+			go()
+		end)
 	end
 	bindPress(attackBtn, useAttack)
 	local holdFrom = 0
@@ -6497,13 +6517,18 @@ function FieldScene.start(opts)
 		bindPress(hit, useAttack)
 		bindHold(hit)
 	end
-	-- [집안별 2무기 교체] 기존 주·보조 교차 장착을 유지하고 오른쪽 엄지 반원 상단에 원형 배치한다.
-	-- [모바일] 공격(하단) → 회피(왼쪽) → 무기교체(상단) 세 버튼의 실제 입력 면적도 겹치지 않는다.
+	-- [무기교체 반원 상단] 위쪽 파티 상태창·카메라 버튼을 침범하지 않도록 오른쪽 끝에 고정한다.
+	-- 동일 반원에서 공격·회피의 확장 터치 영역과 실제 원형이 떨어지도록 간격을 계산했다.
 	do
 		local wbtn = btn(gui, "교체", Color3.fromRGB(65, 83, 105),
-			UDim2.fromOffset(if compactTouch then 78 elseif visualMobile then 88 else 82,
-				if compactTouch then 78 elseif visualMobile then 88 else 82),
-			if compactTouch then UDim2.new(0, math.max(226, workspace.CurrentCamera.ViewportSize.X - 120), 1, -337)
+			UDim2.fromOffset(if compactTouch then 76 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 72
+				elseif visualMobile then 80 else 82,
+				if compactTouch then 76 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 72
+				elseif visualMobile then 80 else 82),
+			if compactTouch then UDim2.new(1, -125, 1, -330)
+				elseif visualMobile then UDim2.new(1,
+					if workspace.CurrentCamera.ViewportSize.X < 780 then -90 else -175,
+					1, if workspace.CurrentCamera.ViewportSize.Y < 330 then -181 else -225)
 				else UDim2.new(1, attackBtn.Position.X.Offset - 12, 1, attackBtn.Position.Y.Offset - 182),
 			Vector2.new(0.5, 0.5))
 		wbtn.Name = "FieldWeapon"
@@ -6527,6 +6552,9 @@ function FieldScene.start(opts)
 				swingBridge.lungeTween = nil
 			end
 			swingBridge.pendingBasicBeat = nil
+			-- [교체 즉시 시각 복원] 앞 무기의 예약 타격 포즈가 새 활·석궁·검에 남지 않게 한다.
+			swingKind, swingCombo, slashIdx = nil, nil, 0
+			swingBridge.rootFrom, swingBridge.rootLast = nil, nil
 			wpn, reserveWeapon = reserveWeapon, wpn
 			wbtn:SetAttribute("SkillFullName", wpn.name .. " ↔ " .. reserveWeapon.name)
 			if wbtn:GetAttribute("IconArtKey") ~= "Menu/field_weapon" then wbtn.Text = "교체" end
@@ -6576,14 +6604,17 @@ function FieldScene.start(opts)
 	staminaNumber.Size = UDim2.fromOffset(133, 11)
 	staminaNumber.ZIndex = 6
 	local combatBtns = {}
-	-- [모바일 두 버튼] 공격은 우하단, 회피는 엄지 위쪽에 크게 고정. 글씨 없는 기존 등록 아이콘만 사용.
-	-- 세로 화면은 이동 조이스틱과 거리 확보, 가로 화면은 전투 시야와 손가락이 겹치지 않게 한다.
+	-- [회피 버튼] 화면 아래 공격 왼쪽에 두고 중앙 파티창·보조 버튼과 입력 면적을 분리한다.
 	do
 		local b = btn(gui, "", Color3.fromRGB(32, 141, 144),
-			UDim2.fromOffset(if compactTouch then 96 elseif visualMobile then 106 else 94,
-				if compactTouch then 96 elseif visualMobile then 106 else 94),
-			if compactTouch then UDim2.new(0, math.max(226, workspace.CurrentCamera.ViewportSize.X - 120), 1, -211)
-				else UDim2.new(1, attackBtn.Position.X.Offset - 146, 1, attackBtn.Position.Y.Offset - 66), -- [좁은 세로] 조이스틱 150px 경계 바깥에 회피 터치 영역 고정
+			UDim2.fromOffset(if compactTouch then 86 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 88
+				elseif visualMobile then 96 else 94,
+				if compactTouch then 86 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 88
+				elseif visualMobile then 96 else 94),
+			if compactTouch then UDim2.new(1, -125, 1, -210)
+				elseif visualMobile then UDim2.new(1, -235, 1,
+					if workspace.CurrentCamera.ViewportSize.Y < 330 then -67 else -106)
+				else UDim2.new(1, attackBtn.Position.X.Offset - 146, 1, attackBtn.Position.Y.Offset - 66),
 			Vector2.new(0.5, 0.5))
 		b.Name = "FieldDodge"
 		b.Text = ""
@@ -7647,13 +7678,16 @@ function FieldScene.start(opts)
 						-- 고정 체력 표시를 두고 실제 공격·스킬 사용량에 따른 전투 에너지만 시각적으로 갱신한다.
 						local status = Instance.new("Frame")
 						status.Name = "FieldAllyStatus" .. i
-						-- [동료 HUD] 가로 화면은 미니맵 오른쪽, 좁은 세로 화면은 퀘스트 아래.
-						-- 아주 낮은 해상도는 월드 동료 이름표만 유지하여 이동 패드를 가리지 않는다.
+						-- [파티 HUD] 가로형은 미니맵 옆의 상단 상태열, 세로형은 퀘스트 아래.
+						-- 600~719 너비에서는 좌측 미니맵·우측 무기교체 사이의 실제 가용폭만 사용한다.
 						local screen = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
-						status.Position = if screen.X >= 720 then UDim2.fromOffset(356, 74 + (i - 1) * 56)
+						local narrowParty = screen.X >= 600 and screen.X < 720 and screen.X > screen.Y
+						local partyWidth = if narrowParty then math.clamp(screen.X - 500, 100, 170) else 202
+						status.Position = if screen.X >= 600 and screen.X > screen.Y then
+							UDim2.fromOffset(356, 74 + (i - 1) * (if screen.Y < 350 then 46 else 56))
 							else UDim2.fromOffset(12, 282 + (i - 1) * 56)
-						status.Size = UDim2.fromOffset(202, 52)
-						status.Visible = screen.X >= 720 or screen.Y >= 540
+						status.Size = UDim2.fromOffset(partyWidth, if screen.Y < 350 and screen.X > screen.Y then 44 else 52)
+						status.Visible = (screen.X >= 600 and screen.X > screen.Y) or screen.Y >= 540
 						status.BackgroundColor3 = Color3.fromRGB(24, 33, 49)
 						status.BackgroundTransparency = 0.12
 						status.BorderSizePixel = 0
@@ -7667,8 +7701,8 @@ function FieldScene.start(opts)
 						frame.Parent = status
 						local face = Instance.new("ImageLabel")
 						face.Name = "FieldAllyPortrait"
-						face.Size = UDim2.fromOffset(39, 43)
-						face.Position = UDim2.fromOffset(6, 5)
+						face.Size = UDim2.fromOffset(if narrowParty then 29 else 39, if narrowParty then 35 else 43)
+						face.Position = UDim2.fromOffset(if narrowParty then 4 else 6, 5)
 						face.BackgroundColor3 = Color3.fromRGB(56, 70, 82)
 						face.BorderSizePixel = 0
 						face.ScaleType = Enum.ScaleType.Crop
@@ -7684,22 +7718,23 @@ function FieldScene.start(opts)
 						faceRound.Parent = face
 						local nameText = label(status, ad.name, 13)
 						nameText.Name = "FieldAllyName"
-						nameText.Position = UDim2.fromOffset(51, 3)
-						nameText.Size = UDim2.fromOffset(143, 18)
+						nameText.Position = UDim2.fromOffset(if narrowParty then 37 else 51, 3)
+						nameText.Size = UDim2.fromOffset(if narrowParty then math.max(60, partyWidth - 42) else 143, 18)
+						nameText.TextSize = if narrowParty then 11 else 13
 						nameText.TextXAlignment = Enum.TextXAlignment.Left
 						nameText.TextTruncate = Enum.TextTruncate.AtEnd
 						local hpLine = Instance.new("Frame")
 						hpLine.Name = "FieldAllyHealth"
-						hpLine.Size = UDim2.fromOffset(140, 6)
-						hpLine.Position = UDim2.fromOffset(51, 24)
+						hpLine.Size = UDim2.fromOffset(if narrowParty then math.max(55, partyWidth - 43) else 140, 6)
+						hpLine.Position = UDim2.fromOffset(if narrowParty then 37 else 51, 24)
 						hpLine.BackgroundColor3 = Color3.fromRGB(82, 181, 117)
 						hpLine.BorderSizePixel = 0
 						hpLine.Parent = status
 						local manaAlly = JobSkills.categoryOf(ad.job) == "clergy"
 						local energyLine = Instance.new("Frame")
 						energyLine.Name = if manaAlly then "FieldAllyMana" else "FieldAllyStamina"
-						energyLine.Size = UDim2.fromOffset(140, 7)
-						energyLine.Position = UDim2.fromOffset(51, 36)
+						energyLine.Size = UDim2.fromOffset(if narrowParty then math.max(55, partyWidth - 43) else 140, 7)
+						energyLine.Position = UDim2.fromOffset(if narrowParty then 37 else 51, 36)
 						energyLine.BackgroundColor3 = Color3.fromRGB(42, 52, 68)
 						energyLine.BorderSizePixel = 0
 						energyLine.Parent = status
@@ -7714,6 +7749,7 @@ function FieldScene.start(opts)
 						energyCaption.TextXAlignment = Enum.TextXAlignment.Right
 						energyCaption.Position = UDim2.fromOffset(153, 34)
 						energyCaption.Size = UDim2.fromOffset(38, 12)
+						energyCaption.Visible = not narrowParty -- 좁은 파티 상태열에서는 진행선만 사용
 						energyCaption.ZIndex = 6
 						local ally = { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now,
 							footOffset = m:GetPivot().Position.Y - pos0.Y,
