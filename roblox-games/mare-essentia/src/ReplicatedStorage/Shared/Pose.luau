@@ -1147,17 +1147,38 @@ function Pose.makeR15Action(model, state, progress, t)
 	return true
 end
 
--- 쓰러지는 모션: alpha 0 -> 1 동안 뒤로 눕고 점점 투명해진다
-function Pose.dieR15(model, alpha)
+-- [사망 3종 R15 관절] 후방 주저앉기·전방 붕괴·측면 구르기. 메시/시체 오브젝트를 새로 만들지 않는다.
+-- 임팩트→무릎 붕괴→바닥 착지→마지막 짧은 페이드 순서로 연결하며 피통/전리품 판정은 호출자 소유다.
+function Pose.dieR15(model, alpha, variant)
+	local a = math.clamp(alpha, 0, 1)
+	local style = math.clamp(math.floor(tonumber(variant) or 1), 1, 3)
+	local fall = math.clamp((a - 0.04) / 0.54, 0, 1)
+	fall = fall * fall * (3 - 2 * fall)
+	local flinch = math.sin(math.clamp(a / 0.30, 0, 1) * math.pi)
+	local lastBreath = math.sin(math.clamp((a - 0.55) / 0.28, 0, 1) * math.pi) * 0.05
 	local m = rigMotors[model]
-	if m and m.root then
-		local a = math.clamp(alpha, 0, 1)
-		m.root.Transform = CFrame.new(0, -a * 1.2, a * 0.8) * CFrame.Angles(-a * 1.45, 0, 0)
+	if m then
+		local A = CFrame.Angles
+		if m.root then
+			m.root.Transform = CFrame.new(0, -fall * 1.10, fall * (if style == 2 then -0.45 else 0.65))
+				* A((if style == 2 then 1.42 else -1.44) * fall, 0, (if style == 3 then 1.22 else 0.16) * fall)
+		end
+		if m.waist then m.waist.Transform = A(-0.36 * flinch + 0.22 * fall, 0.15 * (if style == 3 then 1 else -1) * fall, 0.15 * fall) end
+		if m.neck then m.neck.Transform = A(0.28 * flinch - 0.15 * fall + lastBreath, 0.16 * fall, 0.13 * fall) end
+		if m.leftArm then m.leftArm.Transform = A(-0.55 * fall - 0.30 * flinch, 0, -0.45 * fall) end
+		if m.rightArm then m.rightArm.Transform = A(-1.05 * fall - 0.22 * flinch, 0, 0.52 * fall) end
+		if m.leftElbow then m.leftElbow.Transform = A(-0.70 * fall, 0, 0) end
+		if m.rightElbow then m.rightElbow.Transform = A(-0.90 * fall, 0, 0) end
+		if m.leftLeg then m.leftLeg.Transform = A(0.45 * fall, 0, -0.20 * fall) end
+		if m.rightLeg then m.rightLeg.Transform = A(0.25 * fall, 0, 0.23 * fall) end
+		if m.leftKnee then m.leftKnee.Transform = A(-0.83 * fall, 0, 0) end
+		if m.rightKnee then m.rightKnee.Transform = A(-1.06 * fall, 0, 0) end
 	end
-	local t = math.clamp((alpha - 0.4) / 0.6, 0, 1)
+	-- 즉시 사라지는 종이 인형 방지: 쓰러진 상태로 잠시 남고 마지막 22%에서만 페이드한다.
+	local fade = math.clamp((a - 0.78) / 0.22, 0, 1)
 	for _, d in model:GetDescendants() do
 		if d:IsA("BasePart") and d.Name ~= "HumanoidRootPart" then
-			d.Transparency = t
+			d.Transparency = fade
 		end
 	end
 end
