@@ -1813,50 +1813,70 @@ function FieldScene.start(opts)
 		castPoses.cast_ward, castPoses.cast_snipe = castPoses.cast_armor, castPoses.cast_volley
 		-- [직업별 R15 회피] 기본 행동은 그대로, 가드 팔·골반·디딤발 자세를 직업에 따라 구별한다.
 		castPoses.dodge = {
+			-- [무인] 어깨를 감싼 전투 구르기: 무기를 몸에 붙이고 전방으로 굴렀다가 한쪽 무릎으로 착지.
 			warrior = {
-				Spine = A(0.16, 0.22, -0.12), Chest = A(-0.32, -0.20, 0.14),
-				UpperArmL = A(-0.74, 0, -0.21), UpperArmR = A(-0.55, 0, 0.26),
-				ThighL = A(-0.54, 0, -0.20), ThighR = A(0.34, 0, 0.13), ShinL = A(0.60, 0, 0), FootL = A(0.26, 0, -0.12),
+				Spine = A(0.66, 0.15, -0.32), Chest = A(0.54, -0.25, 0.22), Head = A(-0.44, -0.12, 0.12),
+				UpperArmL = A(-1.20, 0.12, -0.38), UpperArmR = A(-1.36, -0.16, 0.48),
+				ForearmL = A(-0.75, 0, 0), ForearmR = A(-0.84, 0, 0),
+				ThighL = A(-1.18, 0, -0.32), ThighR = A(0.78, 0, 0.18),
+				ShinL = A(1.30, 0, 0), ShinR = A(-0.42, 0, 0),
+				FootL = A(0.48, 0, 0), FootR = A(-0.24, 0, 0),
 			},
+			-- [포수] 낮은 측면 슬라이딩: 왼팔로 무기를 고정하고 오른 무릎을 접어 조준선을 보존.
 			gunner = {
-				Spine = A(0.28, 0.10, -0.13), Chest = A(0.42, -0.15, 0), Head = A(-0.18, 0, 0),
-				UpperArmL = A(-0.70, 0, -0.32), UpperArmR = A(-0.92, 0, 0.13),
-				ThighL = A(-0.88, 0, -0.11), ThighR = A(0.40, 0, 0.13), ShinL = A(1.05, 0, 0), FootL = A(0.32, 0, 0),
+				Spine = A(0.58, 0.28, -0.24), Chest = A(0.38, -0.34, 0.32), Head = A(-0.32, 0.18, -0.14),
+				UpperArmL = A(-1.36, 0.12, -0.48), UpperArmR = A(-1.58, -0.10, 0.34),
+				ForearmL = A(-0.88, 0, 0), ForearmR = A(-0.72, 0, 0),
+				HandR = A(-0.22, 0, 0), ThighL = A(-1.34, 0, -0.28), ThighR = A(0.50, 0, 0.28),
+				ShinL = A(1.44, 0, 0), ShinR = A(-0.68, 0, 0),
+				FootL = A(0.56, 0, 0), FootR = A(-0.24, 0, 0),
 			},
+			-- [성직자] 보호 기도를 펼치며 빛 속으로 측면 도약. 회피 효과는 실제 보호막/회복을 생성하지 않는다.
 			clergy = {
-				-- [성역 도약] 두 팔로 커다란 보호 원을 펼치며 옆으로 몸을 던지고 한 발로 착지한다.
-				Spine = A(-0.24, 0.34, 0.32), Chest = A(-0.36, -0.34, -0.28), Head = A(0.18, 0.20, 0),
-				UpperArmL = A(-1.28, -0.24, -1.06), UpperArmR = A(-1.32, 0.24, 1.06),
-				ForearmL = A(-0.68, 0, 0), ForearmR = A(-0.68, 0, 0),
-				HandL = A(-0.30, 0, -0.32), HandR = A(-0.30, 0, 0.32),
-				ThighL = A(-0.83, 0, -0.33), ThighR = A(0.65, 0, 0.35),
-				ShinL = A(0.94, 0, 0), ShinR = A(-0.22, 0, 0),
-				FootL = A(0.46, -0.12, 0), FootR = A(-0.20, 0.12, 0),
+				Spine = A(-0.35, 0.38, 0.36), Chest = A(-0.48, -0.35, -0.36), Head = A(0.22, 0.20, 0),
+				UpperArmL = A(-1.72, -0.25, -1.18), UpperArmR = A(-1.75, 0.25, 1.18),
+				ForearmL = A(-0.78, 0, 0), ForearmR = A(-0.78, 0, 0),
+				HandL = A(-0.36, 0, -0.35), HandR = A(-0.36, 0, 0.35),
+				ThighL = A(-1.08, 0, -0.40), ThighR = A(0.84, 0, 0.40),
+				ShinL = A(1.08, 0, 0), ShinR = A(-0.38, 0, 0),
+				FootL = A(0.55, -0.12, 0), FootR = A(-0.25, 0.12, 0),
 			},
+			-- [의사] 수술 도구를 보호하는 낮은 측면 스텝, 팔꿈치로 몸을 가리며 빠르게 재정렬.
 			doctor = {
-				Spine = A(0.20, -0.10, 0), Chest = A(0.30, 0.12, 0), Head = A(-0.16, 0.06, 0),
-				UpperArmL = A(-0.60, 0, -0.25), UpperArmR = A(-0.72, 0, 0.18),
-				ThighL = A(-0.62, 0, -0.10), ThighR = A(0.49, 0, 0.11), ShinL = A(0.64, 0, 0),
+				Spine = A(0.46, -0.25, -0.15), Chest = A(0.32, 0.30, 0.20), Head = A(-0.33, -0.12, 0.10),
+				UpperArmL = A(-1.26, -0.10, -0.72), UpperArmR = A(-0.90, 0.20, 0.45),
+				ForearmL = A(-1.28, 0, 0), ForearmR = A(-0.56, 0, 0),
+				HandL = A(-0.36, 0, 0.10), ThighL = A(-1.16, 0, -0.24), ThighR = A(0.61, 0, 0.28),
+				ShinL = A(1.12, 0, 0), ShinR = A(-0.34, 0, 0),
+				FootL = A(0.42, 0, 0), FootR = A(-0.31, 0, 0),
 			},
+			-- [항해사] 양팔을 몸에 붙이고 공중에서 완전히 한 바퀴 도는 선원식 전방 공중제비.
 			navigator = {
-				Spine = A(0.60, 0.12, 0), Chest = A(0.48, -0.18, 0), Head = A(-0.32, 0, 0),
-				UpperArmL = A(0.88, 0, -0.15), UpperArmR = A(0.88, 0, 0.15),
-				ThighL = A(-1.08, 0, 0), ThighR = A(0.65, 0, 0), ShinL = A(1.20, 0, 0), FootL = A(-0.20, 0, 0),
+				Spine = A(0.92, 0.12, 0), Chest = A(0.70, -0.12, 0.05), Head = A(-0.57, 0, 0),
+				UpperArmL = A(1.26, 0.06, -0.22), UpperArmR = A(1.26, -0.06, 0.22),
+				ForearmL = A(-0.50, 0, 0), ForearmR = A(-0.50, 0, 0),
+				ThighL = A(-1.46, 0, -0.13), ThighR = A(-1.46, 0, 0.13),
+				ShinL = A(1.60, 0, 0), ShinR = A(1.60, 0, 0),
+				FootL = A(-0.38, 0, 0), FootR = A(-0.38, 0, 0),
 			},
+			-- [상인] 한쪽 팔로 소지품을 지키면서 몸을 돌려 비껴가는 재빠른 반회전.
 			merchant = {
-				Spine = A(0.18, 0.28, 0.10), Chest = A(-0.11, -0.26, -0.12), Head = A(0.05, 0.14, 0),
-				UpperArmL = A(-0.38, 0, -0.32), UpperArmR = A(-0.48, 0, 0.28),
-				ThighL = A(-0.69, 0, -0.28), ThighR = A(0.40, 0, 0.28), ShinL = A(0.58, 0, 0), FootR = A(0.14, 0, 0.24),
+				Spine = A(0.36, 0.52, 0.18), Chest = A(0.12, -0.54, -0.24), Head = A(-0.16, 0.36, 0),
+				UpperArmL = A(-1.28, -0.15, -0.52), UpperArmR = A(-0.88, 0.26, 0.62),
+				ForearmL = A(-1.20, 0, 0), ForearmR = A(-0.65, 0, 0),
+				HandL = A(-0.30, 0, 0), ThighL = A(-0.95, 0, -0.34), ThighR = A(0.58, 0, 0.27),
+				ShinL = A(0.94, 0, 0), ShinR = A(-0.40, 0, 0),
+				FootL = A(0.34, 0, -0.15), FootR = A(-0.22, 0, 0.20),
 			},
+			-- [학자] 지식의 문양을 여는 양손 비틀림과 반대 방향 도약, 낮은 착지.
 			scholar = {
-				-- [지식의 도약] 몸을 깊게 숙이고 한 팔로 머리를 감싼 채 반대 방향으로 크게 비껴뛴다.
-				Spine = A(0.65, -0.48, -0.34), Chest = A(0.56, 0.36, 0.26), Head = A(-0.36, 0.30, 0),
-				UpperArmL = A(-1.70, -0.16, -0.52), UpperArmR = A(-0.70, 0.32, 0.65),
-				ForearmL = A(-1.02, 0, -0.18), ForearmR = A(-0.38, 0, 0),
-				HandL = A(-0.22, 0, -0.30), HandR = A(0.24, 0, 0.20),
-				ThighL = A(-1.18, 0, -0.36), ThighR = A(0.74, 0, 0.32),
-				ShinL = A(1.28, 0, 0), ShinR = A(-0.35, 0, 0),
-				FootL = A(0.55, 0, -0.11), FootR = A(-0.32, 0, 0.15),
+				Spine = A(0.72, -0.62, -0.40), Chest = A(0.66, 0.52, 0.38), Head = A(-0.47, 0.35, 0),
+				UpperArmL = A(-1.85, -0.35, -0.74), UpperArmR = A(-1.25, 0.44, 0.82),
+				ForearmL = A(-1.24, 0, -0.20), ForearmR = A(-0.82, 0, 0.12),
+				HandL = A(-0.38, 0, -0.32), HandR = A(0.26, 0, 0.24),
+				ThighL = A(-1.36, 0, -0.42), ThighR = A(0.92, 0, 0.38),
+				ShinL = A(1.38, 0, 0), ShinR = A(-0.54, 0, 0),
+				FootL = A(0.60, 0, -0.10), FootR = A(-0.42, 0, 0.17),
 			},
 		}
 		-- 몸 전체 움직임(마력숲처럼): 베기는 앞으로 숙이며 파고들고, 강타는 뛰어올라 내리찍고, 회전베기는 낮게 두 바퀴, 회피는 앞구르기
@@ -1942,25 +1962,43 @@ function FieldScene.start(opts)
 				if wpn.ranged then return CFrame.new(0, -0.12 * bell(p), 0) * CFrame.Angles(0, 0.12 * bell(p), 0) end
 				return CFrame.new(0, -0.5 * bell(p), 0) * CFrame.Angles(0.12, p * math.pi * 4, 0)
 			elseif kind == "dash" then
-				-- [회피 가중치] 직업 속성을 R15 루트 관절에서도 직접 읽는다. 상위 전투 변수는 추가하지 않는다.
-				local dodgeStyle = player.Character and player.Character:GetAttribute("FieldDodgeStyle") or "warrior"
+				-- [직업별 R15 회피 궤적] 실제 14스터드 이동과 무적 시간은 전투 함수가 소유한다.
+				-- 매 회피마다 좌우 동작만 번갈아 보이며 RootJoint 시각 자세는 시작·끝에 원위치로 복귀한다.
+				local ch = player.Character
+				local style = ch and ch:GetAttribute("FieldDodgeStyle") or "warrior"
+				local side = ch and ch:GetAttribute("FieldDodgeBeat") or 1
 				local press = bell(p)
-				if dodgeStyle == "navigator" then
-					return CFrame.new(0, -0.36 * press, 0) * CFrame.Angles(-p * math.pi * 2, 0, 0)
-				elseif dodgeStyle == "gunner" then
-					return CFrame.new(0, -0.48 * press, 0) * CFrame.Angles(-0.22 * press, 0.18 * press, -0.15 * press)
-				elseif dodgeStyle == "merchant" then
-					return CFrame.new(0, -0.23 * press, 0) * CFrame.Angles(-0.12 * press, 0.30 * press, 0.18 * press)
-				elseif dodgeStyle == "clergy" then
-					-- 성직자: 부드러운 성역 측면 도약. 원점에서 끝 자세까지 영구 이동하지 않는 관절 오프셋.
-					return CFrame.new(1.35 * press, -0.35 * press, 0) * CFrame.Angles(-0.30 * press, 0.42 * press, 0.28 * press)
-				elseif dodgeStyle == "scholar" then
-					-- 학자: 반대쪽으로 몸을 크게 던지는 저공 비껴뛰기.
-					return CFrame.new(-1.55 * press, -0.62 * press, 0) * CFrame.Angles(-0.48 * press, -0.42 * press, -0.35 * press)
-				elseif dodgeStyle == "doctor" then
-					return CFrame.new(0, -0.32 * press, 0) * CFrame.Angles(0.14 * press, -0.22 * press, 0)
+				local turn = math.sin(math.clamp((p - 0.08) / 0.84, 0, 1) * math.pi)
+				if style == "navigator" then
+					-- 항해사: 공중 전방 한 바퀴, 몸을 둥글게 말아 전진.
+					return CFrame.new(0.20 * side * press, -0.72 * press, -0.28 * press)
+						* CFrame.Angles(-p * math.pi * 2, 0.18 * side * turn, 0)
+				elseif style == "warrior" then
+					-- 무인: 어깨를 축으로 비스듬히 구른 뒤 방어 자세로 착지.
+					return CFrame.new(0.44 * side * press, -0.56 * press, -0.24 * press)
+						* CFrame.Angles(-0.58 * press, 0.20 * side * turn, -side * p * math.pi * 2)
+				elseif style == "gunner" then
+					-- 포수: 한 무릎을 낮추어 옆으로 슬라이딩, 무기는 정면을 바라본다.
+					return CFrame.new(0.97 * side * press, -0.82 * press, -0.10 * press)
+						* CFrame.Angles(0.24 * press, -0.66 * side * turn, 0.25 * side * press)
+				elseif style == "merchant" then
+					-- 상인: 소지품을 감싸면서 빠른 반회전 피벗.
+					return CFrame.new(0.70 * side * press, -0.42 * press, 0)
+						* CFrame.Angles(-0.15 * press, side * 1.35 * turn, -0.24 * side * press)
+				elseif style == "clergy" then
+					-- 성직자: 성역의 빛 속으로 비스듬히 솟아올라 기도 자세로 착지.
+					return CFrame.new(1.20 * side * press, 0.52 * press, 0)
+						* CFrame.Angles(-0.32 * press, -0.52 * side * turn, 0.35 * side * press)
+				elseif style == "scholar" then
+					-- 학자: 문양을 가로질러 낮고 길게 옆으로 미끄러진다.
+					return CFrame.new(-1.45 * side * press, -0.55 * press, 0)
+						* CFrame.Angles(-0.44 * press, 0.72 * side * turn, -0.35 * side * press)
+				elseif style == "doctor" then
+					-- 의사: 몸을 접어 비껴 딛고 재빨리 선다.
+					return CFrame.new(-0.87 * side * press, -0.62 * press, 0)
+						* CFrame.Angles(0.36 * press, -0.35 * side * turn, -0.18 * side * press)
 				end
-				return CFrame.new(0, -0.30 * press, 0) * CFrame.Angles(-0.24 * press, -0.34 * press, 0)
+				return CFrame.new(0, -0.40 * press, 0) * CFrame.Angles(-0.30 * press, 0, 0)
 			elseif kind == "cast_heal" then
 				return CFrame.new(0, -0.35 * bell(p), 0)
 			elseif kind == "cast_luck" then
@@ -2037,6 +2075,41 @@ function FieldScene.start(opts)
 					end
 					for name, cf in src do
 						canon[name] = CFrame.identity:Lerp(cf, wl)
+					end
+					-- [직업별 회피 3박자] 준비→공중/슬라이드→발 디딤. 기존 고정 포즈에 손목·무릎·고개 반동을 더한다.
+					if swingKind == "dash" then
+						local style = ch:GetAttribute("FieldDodgeStyle") or "warrior"
+						local side = ch:GetAttribute("FieldDodgeBeat") or 1
+						local peak = math.sin(p * math.pi)
+						local land = math.sin(math.clamp((p - 0.5) / 0.5, 0, 1) * math.pi)
+						local id = CFrame.identity
+						if style == "warrior" then
+							canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.24 * land, -0.12 * side * peak, 0.20 * land)
+							canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.42 * peak + 0.24 * land, 0, 0)
+							canon.Head = (canon.Head or id) * CFrame.Angles(0.25 * land, -0.15 * side * peak, 0)
+						elseif style == "gunner" then
+							canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.38 * peak + 0.25 * land, 0, 0)
+							canon.HandR = (canon.HandR or id) * CFrame.Angles(0.30 * land, 0, -0.12 * side * peak)
+							canon.FootL = (canon.FootL or id) * CFrame.Angles(0.36 * land, 0, 0)
+						elseif style == "navigator" then
+							canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.35 * peak + 0.32 * land, 0, 0)
+							canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.35 * peak + 0.32 * land, 0, 0)
+							canon.Head = (canon.Head or id) * CFrame.Angles(-0.24 * peak + 0.15 * land, 0, 0)
+						elseif style == "merchant" then
+							canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.38 * peak, 0, 0)
+							canon.Head = (canon.Head or id) * CFrame.Angles(0, 0.24 * side * land, 0)
+						elseif style == "doctor" then
+							canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.30 * peak, 0, 0)
+							canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.28 * peak + 0.22 * land, 0, 0)
+						elseif style == "clergy" then
+							canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.24 * peak, 0, -0.12 * land)
+							canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.24 * peak, 0, 0.12 * land)
+							canon.Head = (canon.Head or id) * CFrame.Angles(-0.20 * peak + 0.18 * land, 0, 0)
+						elseif style == "scholar" then
+							canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.32 * peak, 0, -0.24 * land)
+							canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.27 * land, 0, 0.18 * peak)
+							canon.Head = (canon.Head or id) * CFrame.Angles(0, -0.22 * side * land, 0)
+						end
 					end
 				end
 			end
@@ -3513,68 +3586,118 @@ function FieldScene.start(opts)
 					elseif magicUser then "성직자" elseif wpn.family == "dagger" then "항해사"
 					elseif wpn.ranged then "포수" else "무인"
 			end
-			local dodgeStyle = JobSkills.categoryOf(profession)
-			if ch0 then ch0:SetAttribute("FieldDodgeStyle", dodgeStyle) end
+			-- [정규 직업 코드 호환] 한국어 직업명뿐 아니라 저장 없이 전달된 warrior/gunner 등 영문 분류도 그대로 인식한다.
+			local dodgeStyle = if JobSkills.Categories[profession] then profession else JobSkills.categoryOf(profession)
+			if ch0 then
+				ch0:SetAttribute("FieldDodgeStyle", dodgeStyle)
+				-- [시각 교대] 같은 직업도 연속 회피하면 왼쪽·오른쪽 R15 모션이 번갈아 보인다.
+				ch0:SetAttribute("FieldDodgeBeat", -(ch0:GetAttribute("FieldDodgeBeat") or -1))
+			end
 			local dodgeOrigin = hrp.CFrame
+			-- [완벽 회피 판정 준비] 누르는 순간 이미 공격 예고/진행 중이던 적만 기록한다.
+			-- 실제 적 공격이 무적 시간 내에 빗나가야 성공. 단순 연속 회피·멀리서 누르기로 발동하지 않는다.
+			local matrixThreats = {}
+			for _, enemy in enemies do
+				local state = enemy.ac.state
+				if not enemy.ac.dead and (state == "windup" or state == "active")
+					and (enemy.root.Position - dodgeOrigin.Position).Magnitude <= enemy.ac.def.range * STUD + 8 then
+					matrixThreats[enemy] = true
+				end
+			end
+			pl.matrixDodgeUntil = now + (mv.invuln or 0.35)
+			pl.matrixDodgeOrigin = dodgeOrigin.Position
+			pl.matrixDodgeThreats = matrixThreats
+			pl.matrixDodgeConsumed = false
 			local look = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
 			if look.Magnitude > 0.1 then
 				hrp.CFrame = hrp.CFrame + look.Unit * 14
 			end
-			-- [직업별 거대 회피 이펙트] 기존 공용 VFX만 사용. 회피 거리·명중·무적·쿨타임 불변.
-			burst(hrp.Position, if dodgeStyle == "clergy" or dodgeStyle == "scholar"
-				then (if visualMobile then 22 else 32) else 24, false, "dodge")
-			do
-				local ch0 = player.Character
-				if dodgeStyle == "clergy" then
-					-- 성직자: 시작 지점 성역 빛 고리 → 커다란 황금 보호파 → 두 팔에서 뻗는 빛줄기와 잔상.
-					local gold = Color3.fromRGB(252, 218, 125)
-					local pearl = Color3.fromRGB(244, 242, 255)
-					trailsOn(ch0, { "LeftHand", "RightHand", "LeftLowerArm", "RightLowerArm", "LeftLowerLeg", "RightLowerLeg" },
-						gold, 0.46, 0.75)
-					auraOn(ch0, Color3.fromRGB(255, 219, 143), pearl, 0.65)
-					afterimage(ch0, gold, if visualMobile then 2 else 5, 0.065)
-					pulseAt("DODGE_EVASION_PULSE", dodgeOrigin * CFrame.new(0, -2.4, 0),
-						gold, pearl, if visualMobile then 11 else 15, if visualMobile then 7 else 14)
-					pulseAt("BLOCK_IMPACT", hrp.CFrame * CFrame.new(0, -2.1, 0),
-						Color3.fromRGB(255, 231, 173), pearl, if visualMobile then 13 else 18, if visualMobile then 8 else 17)
-					task.delay(0.18, function()
-						if finished or not hrp.Parent then return end
-						pulseAt("HEAL_PULSE", hrp.CFrame * CFrame.new(0, -2.2, 0),
-							gold, pearl, if visualMobile then 10 else 15, if visualMobile then 5 else 12)
-					end)
-				elseif dodgeStyle == "scholar" then
-					-- 학자: 시작 지점 청록 지식 원 → 푸른 대각선 잔상 → 착지 시 별빛 파동.
-					local cyan = Color3.fromRGB(94, 228, 239)
-					local blue = Color3.fromRGB(178, 185, 255)
-					trailsOn(ch0, { "LeftHand", "RightHand", "LeftLowerArm", "RightLowerArm", "LeftFoot", "RightFoot" },
-						cyan, 0.48, 0.78)
-					auraOn(ch0, Color3.fromRGB(116, 180, 255), cyan, 0.66)
-					afterimage(ch0, cyan, if visualMobile then 3 else 6, 0.06)
-					pulseAt("UPGRADE_BURST", dodgeOrigin * CFrame.new(0, -2.1, 0),
-						cyan, blue, if visualMobile then 10 else 15, if visualMobile then 7 else 15)
-					pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(0, -2.3, 0),
-						Color3.fromRGB(116, 198, 255), cyan, if visualMobile then 14 else 19, if visualMobile then 9 else 19)
-					task.delay(0.17, function()
-						if finished or not hrp.Parent then return end
-						pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, -0.5, 0),
-							blue, cyan, if visualMobile then 6 else 10, if visualMobile then 4 else 9)
-					end)
-				else
-					trailsOn(ch0, TRAIL_LIMBS, Color3.fromRGB(82, 204, 255), 0.42, 1.2)
-					auraOn(ch0, Color3.fromRGB(96, 181, 255), Color3.fromRGB(244, 218, 147), 0.9)
-					afterimage(ch0, Color3.fromRGB(110, 205, 255), 4, 0.05)
-					for i, dl in { 0.02, 0.2 } do
-						task.delay(dl, function()
-							if finished or not hrp.Parent then return end
-							pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(0, -2.4, 0),
-								if i == 1 then Color3.fromRGB(117, 214, 255) else Color3.fromRGB(255, 210, 127),
-								Color3.fromRGB(239, 249, 255), 7, 10)
-						end)
-					end
-				end
+			-- [직업별 회피 영화식 연출] 시작·잔상·착지 3단계. 공격 판정/무적/기력/저장/이동 거리는 변경하지 않는다.
+			-- 승인된 기존 공용 VFX와 사운드만 재사용하며, 모바일은 입자와 잔상 수를 줄인다.
+			local mobile = visualMobile == true
+			local originGround = dodgeOrigin * CFrame.new(0, -2.2, 0)
+			local landingGround = hrp.CFrame * CFrame.new(0, -2.2, 0)
+			if dodgeStyle == "warrior" then
+				-- 무인: 검광을 두르고 어깨 구르기 → 금속성 착지 충격.
+				local steel, spark = Color3.fromRGB(110, 205, 246), Color3.fromRGB(255, 222, 133)
+				trailsOn(ch0, { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerLeg", "RightLowerLeg" }, steel, 0.35, 0.72)
+				afterimage(ch0, steel, if mobile then 2 else 4, 0.055)
+				pulseAt("DODGE_EVASION_PULSE", originGround, steel, spark, 9, if mobile then 5 else 10)
+				pulseAt("BLOCK_IMPACT", landingGround, spark, steel, 11, if mobile then 6 else 12)
+				sfx("sfx_boarding_draw", 0.22, 1.34)
+			elseif dodgeStyle == "gunner" then
+				-- 포수: 낮은 슬라이딩 궤적 → 탄피빛 선광과 조준선 회복.
+				local smoke, flash = Color3.fromRGB(131, 186, 210), Color3.fromRGB(255, 198, 113)
+				trailsOn(ch0, { "LeftHand", "RightHand", "RightLowerArm", "LeftFoot", "RightFoot" }, flash, 0.36, 0.54)
+				afterimage(ch0, smoke, if mobile then 2 else 4, 0.05)
+				pulseAt("SHAPE_BURST", originGround, smoke, flash, 7, if mobile then 4 else 8)
+				pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1, -1.8), flash, smoke, 5, if mobile then 3 else 6)
+				sfx("sfx_card_chain", 0.23, 1.52)
+			elseif dodgeStyle == "navigator" then
+				-- 항해사: 바람을 가르며 공중제비 → 양쪽 발의 바람 소용돌이.
+				local wind, foam = Color3.fromRGB(95, 230, 213), Color3.fromRGB(204, 251, 246)
+				trailsOn(ch0, { "LeftFoot", "RightFoot", "LeftLowerLeg", "RightLowerLeg", "LeftHand" }, wind, 0.40, 0.72)
+				afterimage(ch0, wind, if mobile then 2 else 5, 0.045)
+				pulseAt("DODGE_EVASION_PULSE", originGround, wind, foam, 12, if mobile then 6 else 12)
+				pulseAt("SHAPE_BURST", landingGround, foam, wind, 9, if mobile then 4 else 9)
+				sfx("sfx_rope_release", 0.28, 1.48)
+			elseif dodgeStyle == "merchant" then
+				-- 상인: 금빛 피벗과 동전빛 궤적. 금화/보상은 실제 지급하지 않는다.
+				local gold, ivory = Color3.fromRGB(255, 206, 98), Color3.fromRGB(255, 244, 196)
+				trailsOn(ch0, { "LeftHand", "RightHand", "LeftFoot", "RightFoot" }, gold, 0.34, 0.54)
+				afterimage(ch0, gold, if mobile then 2 else 4, 0.06)
+				pulseAt("UPGRADE_BURST", originGround, gold, ivory, 7, if mobile then 4 else 8)
+				pulseAt("SHAPE_BURST", landingGround, ivory, gold, 8, if mobile then 5 else 9)
+				sfx("sfx_coin", 0.26, 1.28)
+			elseif dodgeStyle == "doctor" then
+				-- 의사: 청록 응급 회피 → 부드러운 생체 빛과 손목 재정렬. 체력 회복 효과는 없다.
+				local jade, white = Color3.fromRGB(112, 229, 182), Color3.fromRGB(237, 255, 246)
+				trailsOn(ch0, { "LeftHand", "RightHand", "LeftLowerArm", "LeftFoot", "RightFoot" }, jade, 0.34, 0.52)
+				afterimage(ch0, jade, if mobile then 2 else 4, 0.06)
+				pulseAt("HEAL_PULSE", originGround, jade, white, 7, if mobile then 4 else 7)
+				pulseAt("DODGE_EVASION_PULSE", landingGround, jade, white, 10, if mobile then 5 else 10)
+				sfx("sfx_card_magic", 0.23, 1.30)
+			elseif dodgeStyle == "clergy" then
+				-- 성직자: 금빛 성역 개방 → 기도 도약 → 후광 착지. 실제 보호막은 생성하지 않는다.
+				local gold, pearl = Color3.fromRGB(252, 218, 125), Color3.fromRGB(244, 242, 255)
+				trailsOn(ch0, { "LeftHand", "RightHand", "LeftLowerArm", "RightLowerArm", "LeftLowerLeg", "RightLowerLeg" }, gold, 0.44, 0.74)
+				auraOn(ch0, gold, pearl, 0.53)
+				afterimage(ch0, gold, if mobile then 2 else 5, 0.05)
+				pulseAt("DODGE_EVASION_PULSE", originGround, gold, pearl, 12, if mobile then 6 else 13)
+				pulseAt("BLOCK_IMPACT", landingGround, gold, pearl, 15, if mobile then 7 else 14)
+				pulseAt("HEAL_PULSE", hrp.CFrame * CFrame.new(0, 0.5, 0), pearl, gold, 7, if mobile then 3 else 8)
+				sfx("sfx_card_magic", 0.26, 1.22)
+			elseif dodgeStyle == "scholar" then
+				-- 학자: 시작 위치 지식문양 → 푸른 공간 궤적 → 보랏빛 귀환 문양.
+				local cyan, violet = Color3.fromRGB(94, 228, 239), Color3.fromRGB(177, 157, 255)
+				trailsOn(ch0, { "LeftHand", "RightHand", "LeftLowerArm", "RightLowerArm", "LeftFoot", "RightFoot" }, cyan, 0.44, 0.72)
+				auraOn(ch0, violet, cyan, 0.50)
+				afterimage(ch0, violet, if mobile then 2 else 5, 0.05)
+				pulseAt("UPGRADE_BURST", originGround, cyan, violet, 12, if mobile then 6 else 12)
+				pulseAt("DODGE_EVASION_PULSE", landingGround, violet, cyan, 14, if mobile then 7 else 15)
+				pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 0.5, 0), cyan, violet, 6, if mobile then 3 else 7)
+				sfx("sfx_card_spell", 0.23, 1.34)
 			end
+			-- [공통 착지 박자] 전신 R15 동작의 착지에 맞춘 마지막 빛줄기. 장애물/적/피해 판정 없음.
+			task.delay(0.21, function()
+				if finished or not hrp.Parent then return end
+				local color = if dodgeStyle == "warrior" then Color3.fromRGB(255, 218, 145)
+					elseif dodgeStyle == "gunner" then Color3.fromRGB(255, 208, 148)
+					elseif dodgeStyle == "navigator" then Color3.fromRGB(108, 237, 210)
+					elseif dodgeStyle == "merchant" then Color3.fromRGB(255, 215, 126)
+					elseif dodgeStyle == "doctor" then Color3.fromRGB(124, 237, 176)
+					elseif dodgeStyle == "clergy" then Color3.fromRGB(255, 231, 164)
+					else Color3.fromRGB(179, 187, 255)
+				pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, -2.1, 0), color,
+					Color3.fromRGB(255, 255, 240), if mobile then 3.5 else 5, if mobile then 2 else 5)
+			end)
 			startSwing("dash", 0.4)
-			say("회피! 잠깐 무적")
+			say(({
+				warrior = "무인 · 전투 구르기", gunner = "포수 · 슬라이딩 회피",
+				navigator = "항해사 · 공중제비", merchant = "상인 · 금빛 피벗",
+				doctor = "의사 · 응급 스텝", clergy = "성직자 · 성역 도약",
+				scholar = "학자 · 지식의 도약",
+			})[dodgeStyle] or "회피")
 			return
 		end
 		-- [공격 1회 = 연타 최대 1타] 대시 회피는 공격으로 집계하지 않는다.
@@ -4591,6 +4714,8 @@ function FieldScene.start(opts)
 		end
 		local now = os.clock()
 		local dtc = math.min(dt, 0.1)
+		-- [매트릭스 회피] 성공한 순간만 짧게 적 세계시간을 늦춘다. 주인공·동료·재화·쿨타임은 정상 진행.
+		local enemyDt = dtc * (if now < (pl.matrixSlowUntil or 0) then 0.24 else 1)
 		local acList = {}
 		for _, o in enemies do table.insert(acList, o.ac) end
 		local attackers = AC.attackersCount(acList)
@@ -4605,13 +4730,13 @@ function FieldScene.start(opts)
 			local frozen = now < (e.holdUntil or 0)
 			if e.kbUntil and now < e.kbUntil and not e.ac.def.boss then
 				local k = 1 - (now - e.kbT0) / 0.18 -- 선형 감속
-				e.model:PivotTo(e.model:GetPivot() + e.kbVel * math.max(k, 0) * dtc * 2)
+				e.model:PivotTo(e.model:GetPivot() + e.kbVel * math.max(k, 0) * enemyDt * 2)
 			end
 			local event, hit = nil, nil
 			if not frozen then
 				local others = attackers - (if e.ac.state == "windup" or e.ac.state == "active" then 1 else 0)
 				e.waiting = others >= AC.MELEE_TOKENS and e.ac.state == "chase" and not e.ac.def.keepAway and not e.ac.def.boss
-				event, hit = AC.stepEnemy(e.ac, dtc, dist, if e.ac.def.keepAway or e.ac.def.boss then true else not e.waiting)
+				event, hit = AC.stepEnemy(e.ac, enemyDt, dist, if e.ac.def.keepAway or e.ac.def.boss then true else not e.waiting)
 			end
 			if event == "telegraph" then
 				-- [적 무기 연속 동작] 공격 차례에 따라 기존 공용 무기 1~3타를 순환한다. 피해·판정은 동일.
@@ -4781,6 +4906,13 @@ function FieldScene.start(opts)
 				end
 				if e.warn then e.warn:Destroy() e.warn = nil end
 				if e.warnBb then e.warnBb:Destroy() e.warnBb = nil end
+				-- [완벽 회피] 실전 공격 판정이 온 순간에만 검증한다. 무적 회피 중이며
+				-- 해당 적을 회피 시작 때 위협으로 확인했을 때만 100% 성공으로 인정한다.
+				local perfectDodge = not pl.ward and not pl.matrixDodgeConsumed
+					and now <= (pl.matrixDodgeUntil or 0) and AC.isInvulnerable(pl, now)
+					and pl.matrixDodgeThreats and pl.matrixDodgeThreats[e] == true
+					and (hit or (pl.matrixDodgeOrigin
+						and (e.root.Position - pl.matrixDodgeOrigin).Magnitude <= e.ac.def.range * STUD + 8))
 				-- 예고 중에 멀리 피했으면 헛치고, 닿았으면 피해(회피 중이면 0)
 				if hit and pl.ward then
 					pl.ward = false
@@ -4838,7 +4970,19 @@ function FieldScene.start(opts)
 						say("피했다!")
 					end
 				else
-					say("헛쳤다! 지금이 기회")
+					if not perfectDodge then say("헛쳤다! 지금이 기회") end
+				end
+				if perfectDodge then
+					-- [매트릭스식 성공 연출] 피해/보상/시전 횟수 추가 없이 적 AI·이동만 0.72초 동안 24% 속도로 재생.
+					pl.matrixDodgeConsumed = true
+					pl.matrixSlowUntil = now + 0.72
+					showCombo("완벽 회피! · 매트릭스 슬로모션", true, Color3.fromRGB(122, 240, 246))
+					screenFlash(Color3.fromRGB(122, 236, 248), if visualMobile then 0.91 else 0.82)
+					pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(0, -2.2, 0),
+						Color3.fromRGB(98, 220, 242), Color3.fromRGB(238, 255, 255), 13, if visualMobile then 5 else 12)
+					afterimage(char, Color3.fromRGB(141, 230, 250), if visualMobile then 2 else 4, 0.055)
+					sfx("sfx_card_ring", 0.44, 1.38)
+					shakeUntil, shakeAmp = now + 0.12, if visualMobile then 0.12 else 0.26
 				end
 			end
 			-- [적 가감속·선회] 기존 추적/후퇴/돌진 규칙은 유지하고 이동을 부드럽게 보간한다.
@@ -4875,10 +5019,10 @@ function FieldScene.start(opts)
 			if not charging and not evading and (frozen or e.ac.state == "windup" or e.ac.state == "active" or e.ac.state == "recover") then
 				e.moveVel = Vector3.zero
 			else
-				e.moveVel = (e.moveVel or Vector3.zero):Lerp(desired, 1 - math.exp(-response * dtc))
+				e.moveVel = (e.moveVel or Vector3.zero):Lerp(desired, 1 - math.exp(-response * enemyDt))
 			end
 			if e.moveVel.Magnitude < 0.07 then e.moveVel = Vector3.zero end
-			local delta = e.moveVel * dtc
+			local delta = e.moveVel * enemyDt
 			if charging and e.chargeTarget then
 				local remaining = (e.chargeTarget - pv.Position) * Vector3.new(1, 0, 1)
 				if delta.Magnitude >= remaining.Magnitude then
@@ -4892,7 +5036,7 @@ function FieldScene.start(opts)
 				local rot = pv.Rotation
 				if facing then
 					local targetRot = CFrame.lookAt(Vector3.zero, facing).Rotation
-					rot = rot:Lerp(targetRot, 1 - math.exp(-(if charging then 12 elseif e.ac.state == "windup" then 10 else 7) * dtc))
+					rot = rot:Lerp(targetRot, 1 - math.exp(-(if charging then 12 elseif e.ac.state == "windup" then 10 else 7) * enemyDt))
 				end
 				e.model:PivotTo(CFrame.new(pv.Position + delta) * rot)
 			end
@@ -4940,7 +5084,7 @@ function FieldScene.start(opts)
 				-- 실제 전진한 거리만 발 디딤 포즈로 전달해 공중에서 미끄러지는 느낌을 막는다.
 				e.attackStep = 0
 				if st == "ATTACK" and not def0.keepAway and def0.range <= 12 and flat.Magnitude > 2.5 then
-					local lunge = flat.Unit * math.min(def0.speed * 1.8 * dtc, flat.Magnitude - 2.5)
+					local lunge = flat.Unit * math.min(def0.speed * 1.8 * enemyDt, flat.Magnitude - 2.5)
 					e.model:PivotTo(e.model:GetPivot() + lunge)
 					e.attackStep = lunge.Magnitude
 				end
@@ -4979,7 +5123,7 @@ function FieldScene.start(opts)
 						bob, lean = 0.22 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.55
 					end
 				end
-				FM.actor(e.fm, st, ph, dt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll),
+				FM.actor(e.fm, st, ph, enemyDt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll),
 					(kindId == "archer" or e.throwAsset ~= nil) and wish < 0, nil,
 					if e.throwAsset then nil else (e.weapon and e.weapon.motion),
 					math.clamp(traveled / math.max(dtc, 0.016) / math.max(e.ac.def.speed, 1), 0.18, 1.25),
