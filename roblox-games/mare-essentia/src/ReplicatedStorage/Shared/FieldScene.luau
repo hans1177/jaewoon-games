@@ -3361,7 +3361,8 @@ function FieldScene.start(opts)
 		end
 	end
 	-- 카드 스킬: 덱의 학문·우군 카드가 둘째 줄 버튼이 된다(최대 3장, 재사용 14초). 효과는 카드의 skill 종류가 정한다.
-	do
+	-- [Luau 200레지스터 제한] 같은 UI 초기화 본문을 별도 함수 프레임에서 바로 실행해 바깥 전투 함수의 지역변수 폭증을 막는다.
+	(function()
 		local cs = opts.cardSkills or {}
 		if #cs == 0 and workspace:GetAttribute("DevCards") then
 			cs = { { name = "의학", skill = "heal" }, { name = "화학", skill = "volley" }, { name = "물리", skill = "armor" } } -- 개발 캡처 전용
@@ -3471,7 +3472,7 @@ function FieldScene.start(opts)
 				useCard("card" .. dev, cs[dev])
 			end
 		end))
-	end
+	end)()
 	table.insert(conns, RunService.Heartbeat:Connect(function(dt)
 		local now = os.clock()
 		AC.regen(pl, math.min(dt, 0.1)) -- 느린 폰(30fps)에서도 기력이 같은 속도로 찬다
