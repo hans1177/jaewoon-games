@@ -2114,11 +2114,12 @@ function FieldScene.start(opts)
 	-- [무기별 실물 R15 모션] 보통 공격은 반드시 1단. 뒤이어 보이는 타격은 숙련 발동시에만 재생한다.
 	local function startSwing(kind: string, dur: number, stage: number?, visualOnly: boolean?)
 		local nextStage = math.clamp(math.floor(stage or 1), 1, 10)
-		-- [연타 교차 보간] 2·3타에서 현재 실제 관절을 남겨 끊기는 팔/허리/발목을 연결한다.
-		if FM and (nextStage >= 2 or kind == "slash" or kind == "heavy") and os.clock() - swingBridge.lastAt <= 0.32 and next(swingBridge.last) then
+		-- [연타·회피 관절 연결] 공격 → 회피 → 다음 공격까지 최근 전신 자세를 이어 불연속 회전을 막는다.
+		if FM and (kind == "dash" or nextStage >= 2 or kind == "slash" or kind == "heavy") and os.clock() - swingBridge.lastAt <= 0.32 and next(swingBridge.last) then
 			swingBridge.from = table.clone(swingBridge.last)
 			swingBridge.at = os.clock()
-			swingBridge.duration = if wpn.family == "dagger" or wpn.family == "fist" then 0.075
+			swingBridge.duration = if kind == "dash" then 0.065
+				elseif wpn.family == "dagger" or wpn.family == "fist" then 0.075
 				elseif wpn.family == "axe" or wpn.family == "blunt" then 0.14
 				elseif wpn.ranged then 0.095 else 0.105
 		else
@@ -2480,15 +2481,18 @@ function FieldScene.start(opts)
 				local style = ch and ch:GetAttribute("FieldDodgeStyle") or "warrior"
 				local side = ch and ch:GetAttribute("FieldDodgeBeat") or 1
 				local press = bell(p)
+				-- [회피 회전 완충] 진입·착지 각속도를 0으로 감쇠해 끝 프레임 회전을 튀지 않게 한다.
+				local eased = p * p * (3 - 2 * p)
+				local flip = eased * math.pi * 2
 				local turn = math.sin(math.clamp((p - 0.08) / 0.84, 0, 1) * math.pi)
 				if style == "navigator" then
 					-- 항해사: 공중 전방 한 바퀴, 몸을 둥글게 말아 전진.
 					return CFrame.new(0.20 * side * press, -0.72 * press, -0.28 * press)
-						* CFrame.Angles(-p * math.pi * 2, 0.18 * side * turn, 0)
+						* CFrame.Angles(-flip, 0.18 * side * turn, 0)
 				elseif style == "warrior" then
 					-- 무인: 어깨를 축으로 비스듬히 구른 뒤 방어 자세로 착지.
 					return CFrame.new(0.44 * side * press, -0.56 * press, -0.24 * press)
-						* CFrame.Angles(-0.58 * press, 0.20 * side * turn, -side * p * math.pi * 2)
+						* CFrame.Angles(-0.58 * press, 0.20 * side * turn, -side * flip)
 				elseif style == "gunner" then
 					-- 포수: 한 무릎을 낮추어 옆으로 슬라이딩, 무기는 정면을 바라본다.
 					return CFrame.new(0.97 * side * press, -0.82 * press, -0.10 * press)
@@ -2558,9 +2562,9 @@ function FieldScene.start(opts)
 				if p >= 1 then
 					swingKind = nil
 				elseif swingCombo then
-					-- [타격 순간 고정] 무기별 일반 공격 길이가 달라도 기존 0.14초 적중 시 원본 CONTACT 자세로 맞춘다.
+					-- [1~10타 실타격 동기화] 빠른 일반 공격 모두 기존 0.14초 명중 시각에 원본 CONTACT 자세를 맞춘다.
 					local progress = p
-					if swingKind == "slash" and slashIdx == 1 then
+					if swingKind == "slash" then
 						local contact = math.clamp(swingCombo.steps[1].contact / swingCombo.duration, 0.1, 0.85)
 						local impact = math.clamp(0.14 / swingDur, 0.15, 0.75)
 						progress = if p < impact then p / impact * contact
@@ -2588,39 +2592,58 @@ function FieldScene.start(opts)
 					for name, cf in src do
 						canon[name] = CFrame.identity:Lerp(cf, wl)
 					end
-					-- [직업별 회피 3박자] 준비→공중/슬라이드→발 디딤. 기존 고정 포즈에 손목·무릎·고개 반동을 더한다.
+					-- [직업별 회피 4박자] 예비 힘 저장 → 공중/슬라이드 → 접지 → 무기·시선 복귀. 피격·이동 권한은 변경하지 않는다.
 					if swingKind == "dash" then
 						local style = ch:GetAttribute("FieldDodgeStyle") or "warrior"
 						local side = ch:GetAttribute("FieldDodgeBeat") or 1
 						local peak = math.sin(p * math.pi)
 						local land = math.sin(math.clamp((p - 0.5) / 0.5, 0, 1) * math.pi)
 						local id = CFrame.identity
+						local wind = math.sin(math.clamp(p / 0.24, 0, 1) * math.pi)
+						local air = math.sin(math.clamp((p - 0.12) / 0.62, 0, 1) * math.pi)
+						local recover = math.sin(math.clamp((p - 0.79) / 0.21, 0, 1) * math.pi)
+						-- [공통 축발·상체 관성] 몸통 회전 → 무릎 접기 → 발끝 착지 → 어깨 회수.
+						canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.17 * wind + 0.13 * land, side * 0.15 * air - side * 0.11 * recover, 0)
+						canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.22 * wind + 0.18 * land, 0, -side * 0.12 * air)
+						canon.ThighR = (canon.ThighR or id) * CFrame.Angles(0.18 * wind - 0.22 * land, 0, side * 0.12 * air)
+						canon.ShinR = (canon.ShinR or id) * CFrame.Angles(-0.27 * air + 0.31 * land, 0, 0)
+						canon.FootL = (canon.FootL or id) * CFrame.Angles(0.25 * air - 0.17 * land, -side * 0.11 * land, 0)
+						canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.18 * air + 0.29 * land - 0.16 * recover, side * 0.10 * land, 0)
+						canon.Chest = (canon.Chest or id) * CFrame.Angles(0.10 * wind - 0.15 * land, -side * 0.13 * air, 0)
 						if style == "warrior" then
 							canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.24 * land, -0.12 * side * peak, 0.20 * land)
 							canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.42 * peak + 0.24 * land, 0, 0)
 							canon.Head = (canon.Head or id) * CFrame.Angles(0.25 * land, -0.15 * side * peak, 0)
+							canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.30 * wind + 0.26 * recover, 0, -side * 0.16 * air)
 						elseif style == "gunner" then
 							canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.38 * peak + 0.25 * land, 0, 0)
 							canon.HandR = (canon.HandR or id) * CFrame.Angles(0.30 * land, 0, -0.12 * side * peak)
 							canon.FootL = (canon.FootL or id) * CFrame.Angles(0.36 * land, 0, 0)
+							canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.24 * wind + 0.22 * recover, 0, 0)
 						elseif style == "navigator" then
 							canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.35 * peak + 0.32 * land, 0, 0)
 							canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.35 * peak + 0.32 * land, 0, 0)
 							canon.Head = (canon.Head or id) * CFrame.Angles(-0.24 * peak + 0.15 * land, 0, 0)
+							canon.FootL = (canon.FootL or id) * CFrame.Angles(0.36 * land, 0, side * 0.20 * air)
+							canon.FootR = (canon.FootR or id) * CFrame.Angles(0.36 * land, 0, -side * 0.20 * air)
 						elseif style == "merchant" then
 							canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.38 * peak, 0, 0)
 							canon.Head = (canon.Head or id) * CFrame.Angles(0, 0.24 * side * land, 0)
+							canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.25 * wind + 0.21 * land, 0, side * 0.13 * air)
 						elseif style == "doctor" then
 							canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.30 * peak, 0, 0)
 							canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.28 * peak + 0.22 * land, 0, 0)
+							canon.Head = (canon.Head or id) * CFrame.Angles(0, -side * 0.18 * air + side * 0.15 * recover, 0)
 						elseif style == "clergy" then
 							canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.24 * peak, 0, -0.12 * land)
 							canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.24 * peak, 0, 0.12 * land)
 							canon.Head = (canon.Head or id) * CFrame.Angles(-0.20 * peak + 0.18 * land, 0, 0)
+							canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.25 * air + 0.18 * recover, 0, -0.14 * wind)
 						elseif style == "scholar" then
 							canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.32 * peak, 0, -0.24 * land)
 							canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.27 * land, 0, 0.18 * peak)
 							canon.Head = (canon.Head or id) * CFrame.Angles(0, -0.22 * side * land, 0)
+							canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.16 * air + 0.20 * recover, side * 0.16 * air, 0)
 						end
 					end
 				end
@@ -2722,7 +2745,16 @@ function FieldScene.start(opts)
 				local step = math.sin(math.clamp(p / 0.56, 0, 1) * math.pi)
 				local shoulder = math.sin(math.clamp((p - 0.10) / 0.70, 0, 1) * math.pi)
 				local finish = math.sin(math.clamp((p - 0.29) / 0.54, 0, 1) * math.pi)
-								if family == "dagger" then
+				-- [10박자 마무리] 스윙을 억지로 반복하지 않고 시선·축발·팔끝이 순차적으로 회수된다.
+				if slashIdx == 10 then
+					local landing = math.sin(math.clamp((p - 0.55) / 0.43, 0, 1) * math.pi)
+					canon.Head = (canon.Head or id) * CFrame.Angles(-0.16 * shoulder + 0.22 * landing, side * 0.17 * finish, 0)
+					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.24 * step + 0.16 * landing, 0, -side * 0.11 * step)
+					canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.32 * step - 0.26 * landing, 0, 0)
+					canon.FootL = (canon.FootL or id) * CFrame.Angles(-0.19 * step + 0.27 * landing, 0, side * 0.12 * landing)
+					canon.FootR = (canon.FootR or id) * CFrame.Angles(0.22 * landing, 0, -side * 0.10 * landing)
+				end
+				if family == "dagger" then
 					-- [단검] 골반을 낮추며 교차 역수 → 후속 손목 회수 → 빠른 공중 교차 마무리.
 					canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.25 * step, -side * 0.31 * step, side * 0.18 * step)
 					canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.24 * shoulder, side * 0.38 * shoulder * flourish, side * 0.16 * shoulder)
@@ -2841,7 +2873,7 @@ function FieldScene.start(opts)
 				end
 			end
 			-- [프레임 캐시] 마지막 공격 프레임의 전신 관절을 다음 연타에 직접 연결한다.
-			if swingKind and swingCombo then
+			if swingKind and (swingCombo or swingKind == "dash") then
 				table.clear(swingBridge.last)
 				for joint, cf in canon do
 					if typeof(cf) == "CFrame" then swingBridge.last[joint] = cf end
@@ -4365,6 +4397,8 @@ function FieldScene.start(opts)
 				pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, -2.1, 0), color,
 					Color3.fromRGB(255, 255, 240), if mobile then 3.5 else 5, if mobile then 2 else 5)
 			end)
+			-- [회피 우선순위] 예약된 숙련 시각 연타는 취소해 회피 관절과 충돌하지 않게 한다. 실타격 판정은 그대로.
+			chainMotionSerial += 1
 			startSwing("dash", 0.4)
 			say(({
 				warrior = "무인 · 전투 구르기", gunner = "포수 · 슬라이딩 회피",
