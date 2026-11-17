@@ -457,7 +457,11 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						or partName:find("hoof", 1, true) or partName:find("horn", 1, true)
 						or partName:find("mane", 1, true) or partName:find("tail", 1, true)
 						or partName:find("beak", 1, true) or partName:find("saddle", 1, true)
-						if not textured and not detail then
+						if textured and not detail then
+						-- 원본 털무늬/노멀맵은 살리고, 품종별 색은 약하게만 반영한다.
+						p.Color = p.Color:Lerp(tint, 0.24)
+						if sa then sa.Color = sa.Color:Lerp(tint, 0.24) end
+					elseif not textured and not detail then
 						local light = math.max(p.Color.R, p.Color.G, p.Color.B)
 						p.Color = p.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
 						p.Material = if asset == "elephant" then Enum.Material.Slate
