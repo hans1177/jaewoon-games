@@ -2272,7 +2272,7 @@ function FieldScene.start(opts)
 	local swingCombo, slashIdx = nil, 0
 	-- [연타 관절 연결] 한 공격이 끝나기 전에 다음 시각 모션을 시작할 때 R15 실제 마지막 자세를 이어 붙인다.
 	-- 신규 애니메이션 트랙/이동 판정 없이 기존 캐논 관절만 보간한다. 최근 프레임 포즈는 테이블을 재사용한다.
-	local swingBridge = { last = {}, lastAt = -100, from = nil, rootLast = nil, rootFrom = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100 }
+	local swingBridge = { last = {}, lastAt = -100, from = nil, rootLast = nil, rootFrom = nil, at = 0, duration = 0, basicBeat = 0, basicAt = -100, impactSeq = -1 }
 	-- [모션 직업] 기존 캐릭터 FieldDodgeStyle 속성을 입력·렌더 간 정본으로 사용하여 Luau 지역변수 한도를 지킨다.
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
@@ -3681,7 +3681,15 @@ function FieldScene.start(opts)
 		local function attach(part: Instance?, len: number?, weaponPart: boolean?)
 			if part and part:IsA("BasePart") then
 				local foot = part.Name:find("Foot") ~= nil or part.Name:find("Leg") ~= nil
-				local axis = if foot or family == "fist" then Vector3.new(1, 0, 0) else Vector3.new(0, 1, 0)
+				-- [실제 칼날 축] 메시가 눕거나 비스듬히 장착돼도 가장 긴 날 방향을 따라 빛이 그려지도록 한다.
+				local axis
+				if weaponPart then
+					local size = part.Size
+					axis = if size.X >= size.Y and size.X >= size.Z then Vector3.new(1, 0, 0)
+						elseif size.Z >= size.Y then Vector3.new(0, 0, 1) else Vector3.new(0, 1, 0)
+				else
+					axis = if foot or family == "fist" then Vector3.new(1, 0, 0) else Vector3.new(0, 1, 0)
+				end
 				local width = if weaponPart then (if thrust then 0.25 elseif quick then 0.38 elseif heavy then 0.92 else 0.63)
 					elseif foot then 0.28 elseif wpn.ranged then 0.30 elseif quick then 0.38 else 0.53
 				local length = if weaponPart then math.min(4, len or part.Size.Y * 1.5)
@@ -3698,17 +3706,19 @@ function FieldScene.start(opts)
 		for _, nm in names do attach(ch:FindFirstChild(nm)) end
 		local sword = ch:FindFirstChild("FieldWeapon", true) or ch:FindFirstChild("FieldSword", true)
 		if sword and family ~= "fist" and not wpn.ranged then
-			local blade = if sword:IsA("BasePart") then sword else sword:FindFirstChildWhichIsA("BasePart", true)
-			-- [실제 무기 메시 추적] 등록된 실물 칼날/도끼날의 가장 긴 메시 축에 맞춰 트레일을 붙인다.
+			-- [실물 무기날 선택] 손잡이나 장식보다 가장 긴 메시를 선택해 날 전체에 잔흔을 남긴다.
+			local blade = if sword:IsA("BasePart") then sword else nil
+			if not blade then
+				for _, part in sword:GetDescendants() do
+					if part:IsA("BasePart") and (not blade or math.max(part.Size.X, part.Size.Y, part.Size.Z)
+						> math.max(blade.Size.X, blade.Size.Y, blade.Size.Z)) then
+						blade = part
+					end
+				end
+			end
 			if blade then
 				local size = blade.Size
-				local longest = math.max(size.X, size.Y, size.Z)
-				if longest == size.X then
-					-- 근접 무기 장착 방향은 기존 에셋 정렬을 보존한다.
-					attach(blade, longest, true)
-				else
-					attach(blade, longest, true)
-				end
+				attach(blade, math.max(size.X, size.Y, size.Z), true)
 			end
 		end
 	end
@@ -4125,7 +4135,7 @@ function FieldScene.start(opts)
 		end)
 	end
 
-	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?, ownerAttack: boolean?, actionSeq: number?, attackerWeapon, basicAttack: boolean?)
+	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?, ownerAttack: boolean?, actionSeq: number?, attackerWeapon, basicAttack: boolean?, impactBeat: number?)
 		-- [동료 무기음] 실제 공격자의 장비를 따라가고 피해·보상은 기존 공식 그대로 둔다.
 		local impactWeapon = attackerWeapon or wpn
 		-- [병종별 실전 방어] 궁수·투척병은 뒤로 미끄러지고 검병은 측면 회피,
@@ -4317,8 +4327,72 @@ function FieldScene.start(opts)
 		local impactPos = e.root.Position + Vector3.new(0, 2, 0)
 		local family = impactWeapon.family
 		local rangedImpact = impactWeapon.ranged and (family == "bow" or family == "firearm")
-		-- [맞는 재질감] 화살/볼트/총알 명중은 둔탁한 파열 대신 작은 타격 섬광만 사용한다.
-		if not rangedImpact then
+		-- [실제 적중 1회당 1번] 방패/패링/동료/스킬과 섞이지 않고 플레이어 연타가 닿은 표면만 정밀하게 밝힌다.
+		-- 시각 효과만 교체하고 기존 damageEnemy·명중계수·숙련·경직·보상은 그대로 유지한다.
+		local detailedContact = basicAttack == true and ownerAttack ~= false and not quiet
+			and not shieldBlocked and not weaponParry and actionSeq ~= nil and actionSeq > 0
+			and impactBeat ~= nil and swingBridge.impactSeq ~= actionSeq
+		if detailedContact then
+			swingBridge.impactSeq = actionSeq
+			if CommonVFX and CommonVFX.Create then
+				local beat = math.clamp(math.floor(impactBeat), 1, 10)
+				local side = if beat % 2 == 0 then -1 else 1
+				local thrust = family == "spear" or impactWeapon.motion == "RAPIER"
+				local sharp = family == "dagger" or family == "blade" or thrust
+				local heavy = family == "axe" or family == "blunt"
+				local fist = family == "fist"
+				local bow = family == "bow"
+				local crossbow = impactWeapon.motion == "CROSSBOW"
+				local rifle = impactWeapon.motion == "RIFLE"
+				local tint = if family == "dagger" then Color3.fromRGB(150, 251, 223)
+					elseif thrust then Color3.fromRGB(157, 226, 255)
+					elseif family == "axe" then Color3.fromRGB(255, 171, 113)
+					elseif family == "blunt" then Color3.fromRGB(255, 217, 160)
+					elseif fist then Color3.fromRGB(255, 237, 188)
+					elseif bow then Color3.fromRGB(175, 246, 183)
+					elseif crossbow then Color3.fromRGB(194, 229, 250)
+					elseif rifle then Color3.fromRGB(255, 220, 166)
+					elseif impactWeapon.ranged then Color3.fromRGB(255, 183, 133)
+					elseif impactWeapon.motion == "KATANA" then Color3.fromRGB(209, 222, 255)
+					else Color3.fromRGB(230, 242, 255)
+				local size = if family == "dagger" then 1.55 elseif thrust then 2.05
+					elseif heavy then 3.6 elseif fist then 2.5 elseif bow or crossbow then 1.55
+					elseif impactWeapon.ranged then 2.35 else 2.9
+				local angle = if thrust then side * 8 elseif family == "dagger" then side * 58
+					elseif impactWeapon.motion == "KATANA" then side * 42 else side * 32
+				local atom = if heavy then "CRITICAL_BURST" elseif impactWeapon.ranged or thrust or family == "dagger"
+					then "IMPACT_FLASH" else "SHAPE_BURST"
+				local epic = beat == 10
+				local center = impactPos + e.root.CFrame.RightVector * (if family == "dagger" or fist then side * 0.25 else 0)
+				pcall(CommonVFX.Create, atom, {
+					parent = workspace, cframe = CFrame.new(center), color = tint,
+					accent = tint:Lerp(Color3.new(1, 1, 1), 0.76),
+					textureKey = if sharp then "slash" else nil, rotation = angle,
+					duration = if family == "dagger" then 0.13 elseif heavy then 0.27 else 0.19,
+					startSize = if sharp then 0.40 else 0.55,
+					endSize = size + (if epic then 1.0 else 0),
+					startDiameter = if heavy then 1.1 else 0.55,
+					endDiameter = if heavy then (if epic then 7 else 5.2) else 2.2,
+					hideRing = not heavy, count = if visualMobile then 2 elseif heavy then 6 else 3,
+					distance = if heavy then 3.8 elseif thrust then 1.2 else 2.1,
+					mist = not visualMobile and heavy and beat >= 7,
+				})
+				-- [3·6·9타 칼끝 여운] 강한 첫 섬광 뒤 얇은 잔흔이 늦게 사라져 두꺼운 폭발이 반복되지 않는다.
+				if not visualMobile and sharp and beat % 3 == 0 then
+					local fxWeapon = impactWeapon.id
+					task.delay(0.055, function()
+						if finished or not e.root.Parent or wpn.id ~= fxWeapon then return end
+						pcall(CommonVFX.Create, "SHAPE_BURST", {
+							parent = workspace, cframe = CFrame.new(center), color = tint:Lerp(Color3.new(1, 1, 1), 0.45),
+							accent = tint, textureKey = "slash", rotation = angle - side * 13,
+							hideRing = true, count = 0, startSize = 0.23, endSize = size * 0.75, duration = 0.13,
+						})
+					end)
+				end
+			end
+		end
+		-- [맞는 재질감] 정밀 적중에는 중복 파열을 제거하고 방패·동료·스킬의 기존 효과는 유지한다.
+		if not rangedImpact and not detailedContact then
 			burst(impactPos, if visualMobile then math.min(12 + dealt, 20) else 12 + dealt, mult >= 1.5)
 		end
 		if weaponParry then
@@ -4358,7 +4432,7 @@ function FieldScene.start(opts)
 			sfx("sfx_boarding_draw", if quiet then 0.20 else 0.42, 1.34)
 		end
 		-- 치명타 금속음 중복을 없앤다. 타격별로 고유 오디오를 한 번만 재생한다.
-		if rangedImpact and not shieldBlocked then
+		if rangedImpact and not shieldBlocked and not detailedContact then
 			local tint = if impactWeapon.motion == "CROSSBOW" then Color3.fromRGB(186, 215, 230)
 				elseif family == "bow" then Color3.fromRGB(175, 221, 152)
 				else Color3.fromRGB(255, 216, 145)
@@ -4370,7 +4444,7 @@ function FieldScene.start(opts)
 		do
 			local crit = mult >= 1.5
 			local c = if crit then Color3.fromRGB(255, 205, 80) else Color3.fromRGB(190, 230, 255)
-			if not rangedImpact then
+			if not rangedImpact and not detailedContact then
 				shards(e.root.Position + Vector3.new(0, 1.5, 0), if crit then 14 else 7, c, if crit then 7 else 4)
 				if crit then shockRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 1.5, 0), 9, c, 0.35) end
 			end
@@ -5402,7 +5476,7 @@ function FieldScene.start(opts)
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, dist, ang) then
 					-- [원본 공격 종류 전달] 다음 입력에 의해 평타 명중 소유권이 바뀌지 않도록 행동별로 캡처한다.
-					local landed = strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3) or wpn.family == "blunt", nil, nil, hitActionSeq, nil, moveId == "rush")
+					local landed = strikeEnemy(e, mult, hrp.Position, if combo >= 3 and moveId == "rush" then 6 elseif mv.stagger then 5 else 2.5, mv.stagger or (moveId == "rush" and combo >= 3) or wpn.family == "blunt", nil, nil, hitActionSeq, nil, moveId == "rush", basicBeat)
 					if e.ac.dead then defeatedAt = e.root.Position end
 					if landed then hits += 1 end
 					shots += 1
