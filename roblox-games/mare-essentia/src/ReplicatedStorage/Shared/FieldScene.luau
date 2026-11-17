@@ -1582,22 +1582,44 @@ function FieldScene.start(opts)
 	-- 공격 동작: 캐릭터의 오른팔·허리를 짧게 휘두른다 (애니메이터가 쓴 뒤 덮어쓴다)
 	-- [무기별 실물 R15 모션] 보통 공격은 반드시 1단. 뒤이어 보이는 타격은 숙련 발동시에만 재생한다.
 	local function startSwing(kind: string, dur: number, stage: number?)
+		-- [무기별 공격음] 각 승인 오디오의 원본을 사용한다.
+		-- 준비/휘두름은 여기서, 투사체 발포는 실제 공격 판정 시 한 번만 재생해 저음이 겹치지 않는다.
 		if wpn.ranged and (kind == "slash" or kind == "heavy" or kind == "spin") then
-			-- [원거리 준비음] 검 휘두름 대신 시위 장전·총기 조작음을 쓴다. 실제 발사는 기존 타격 시각.
-			sfx(if wpn.family == "bow" or wpn.motion == "CROSSBOW" then "sfx_equipment_wear" else "sfx_card_chain",
-				0.38, if wpn.motion == "CROSSBOW" then 1.2 else 1.0)
-		elseif kind == "heavy" then
-			sfx(if wpn.family == "fist" then "sfx_card_swing" else "sfx_card_blade", 0.7, 0.85)
-		elseif kind == "spin" or kind == "elbow" then
-			sfx("sfx_card_swing", 0.7, 0.75)
+			if wpn.motion == "CROSSBOW" then
+				sfx("sfx_equipment_wear", 0.28, 1.48) -- 석궁 노리쇠/시위 장전
+			elseif wpn.family == "bow" then
+				sfx("sfx_rope_pull", 0.25, if wpn.motion == "LONGBOW" then 1.05 else 1.32) -- 장궁/각궁 현 당김
+			elseif wpn.motion == "RIFLE" then
+				sfx("sfx_cannon_reload", 0.23, 1.62) -- 화승/수석 장총 장전
+			else
+				sfx("sfx_card_chain", 0.22, 1.72) -- 권총 격철 조작
+			end
 		elseif kind == "dash" then
-			sfx("sfx_skill_evade", 0.6, 1.1)
+			sfx("sfx_skill_evade", 0.54, 1.16)
 		elseif kind == "guard" then
-			sfx("sfx_equipment_wear", 0.5, 1.2)
+			sfx("sfx_equipment_wear", 0.45, 1.24)
 		elseif string.sub(kind, 1, 4) == "cast" then
-			-- 카드 전용 원본 이펙트가 자체 소리를 재생한다.
+			-- 카드 전용 효과는 실제 시전 함수에서 재생한다.
 		else
-			sfx("sfx_card_swing", 0.55, 0.95 + math.random() * 0.2)
+			local heavy = kind == "heavy" or kind == "spin"
+			local family = wpn.family
+			if family == "dagger" then
+				sfx("sfx_boarding_draw", if heavy then 0.47 else 0.34, if heavy then 1.42 else 1.68)
+			elseif family == "spear" then
+				sfx("sfx_card_blade", if heavy then 0.49 else 0.36, if heavy then 1.34 else 1.58)
+			elseif family == "axe" then
+				sfx("sfx_boarding_slash", if heavy then 0.52 else 0.40, if heavy then 0.93 else 1.12)
+			elseif family == "blunt" then
+				sfx("sfx_card_chain", if heavy then 0.48 else 0.36, if heavy then 0.98 else 1.14)
+			elseif family == "fist" then
+				sfx("sfx_card_swing", if heavy then 0.42 else 0.29, if heavy then 1.12 else 1.38)
+			elseif wpn.motion == "RAPIER" then
+				sfx("sfx_card_blade", if heavy then 0.45 else 0.30, 1.48) -- 레이피어 찌르기
+			elseif wpn.motion == "SABRE" or wpn.motion == "SCIMITAR" or wpn.motion == "KATANA" then
+				sfx("sfx_boarding_slash", if heavy then 0.49 else 0.34, 1.30) -- 외날검
+			else
+				sfx("sfx_boarding_draw", if heavy then 0.49 else 0.35, if heavy then 1.12 else 1.31) -- 양날검
+			end
 		end
 		swingCombo = nil
 		if FM then
