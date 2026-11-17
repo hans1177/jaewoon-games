@@ -3609,10 +3609,9 @@ function FieldScene.start(opts)
 					if typeof(cf) == "CFrame" then swingBridge.last[joint] = cf end
 				end
 				swingBridge.lastAt = os.clock()
-			else
-				-- 공격 종료 직후 오래된 자세로 다음 공격을 시작하지 않도록 즉시 캐시 폐기한다.
+			elseif os.clock() - swingBridge.lastAt > 1.1 then
+				-- [기존 연계 창 유지] 1.1초가 지난 오래된 포즈만 버리고 0.32초 내 다음 타는 연결한다.
 				table.clear(swingBridge.last)
-				swingBridge.lastAt = -100
 			end
 			FM.step(pfm, dt, rootRot, if swingKind == "dash" then 1.85 else nil)
 		end))
