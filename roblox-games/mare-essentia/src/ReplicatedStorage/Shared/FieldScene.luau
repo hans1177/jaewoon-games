@@ -1591,7 +1591,7 @@ function FieldScene.start(opts)
 			and workspace.CurrentCamera.ViewportSize.X < 720
 			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 256)
 		elseif visualMobile then UDim2.fromOffset(12, 158) else UDim2.fromOffset(12, 173)
-	questHint.Size = UDim2.fromOffset(if compactTouch then 206 else 230, 42)
+	questHint.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 212 else 230, 42)
 	questHint.TextWrapped = true
 	questHint.TextXAlignment = Enum.TextXAlignment.Left
 	if targetCard then
