@@ -392,7 +392,7 @@ function NavalBattle.play(opts)
 			{ id="gold_coast", name="아프리카 황금 해안", water=Color3.fromRGB(41, 133, 145), sky=Color3.fromRGB(226, 169, 124),
 				props={{"mystic-sand-dune",181,-458,371},{"tropical-palm-tall",64,-430,346},{"cliff-rock",171,450,-378},{"arid-cactus-tall",49,426,-349}} },
 			{ id="moonlight", name="달빛 해상전", water=Color3.fromRGB(29, 66, 110), sky=Color3.fromRGB(73, 94, 144),
-				props={{"cliff-cave-rock",159,458,-384},{"north-pine-fall",57,432,-357},{"cliff-rock",150,-462,375},{"mystic-stone-arch",58,-436,346}} },
+				props={{"land-floating-island",159,458,-384},{"north-pine-fall",57,432,-357},{"cliff-rock",150,-462,375},{"mystic-stone-arch",58,-436,346}} },
 		}
 		local locationKey = tostring(opts.portId or "") .. "|" .. tostring(opts.shipId or "") .. "|"
 			.. tostring(opts.enemyName or "") .. "|" .. tostring(opts.weatherName or "")
