@@ -3058,7 +3058,8 @@ function FieldScene.start(opts)
 		local family = wpn.family
 		local front = hrp.Position + hrp.CFrame.LookVector * (if wpn.ranged then 10 else 4)
 		local target = if typeof(defeatedAt) == "Vector3" and (defeatedAt - hrp.Position).Magnitude <= 40 then defeatedAt else front
-		local reach = math.max(7, wpn.range * STUD)
+		-- [기존 숙련 2·3타 버그] STUD은 이 함수 아래 지역변수여서 참조 불가. 기존 1거리=2스터드 그대로 사용.
+		local reach = math.max(7, wpn.range * 2)
 		local color = if family == "fist" then Color3.fromRGB(255, 209, 132)
 			elseif family == "dagger" then Color3.fromRGB(120, 243, 205)
 			elseif family == "axe" then Color3.fromRGB(255, 144, 90)
@@ -3262,6 +3263,7 @@ function FieldScene.start(opts)
 					and (pl.autoNormalHits or 0) > 0 and pl.autoNormalHits % 5 == 0
 					and (pl.cd.heavy or -100) <= hitAt and pl.hp > 0
 				if autoHeavyReady then
+					pl.autoHeavyRecord = isRecord -- 저장되지 않는 장면 임시 표시. 25타 등 최고 기록 축하를 자동 강타까지 전달.
 					showCombo(string.format("%d연타 · 필살 준비!", streakN), false, Color3.fromRGB(255, 226, 156))
 				elseif streakN % 5 == 0 then
 					comboCinema(streakN, isRecord)
@@ -4874,8 +4876,13 @@ function FieldScene.start(opts)
 					and (pl.cd.heavy or -100) <= os.clock() and pl.stamina >= AC.Moves.heavy.stamina then
 					-- [5타 자동강타] 스킬이 실제 시전된 경우에만 기존 연타 시네마 1회 실행.
 					-- 위 strikeEnemy에서는 이 경우 5타 일반 축하를 생략해 화면·카메라·효과음 중복을 막는다.
+					local record = pl.autoHeavyRecord == true
+					pl.autoHeavyRecord = nil
 					if useMove("heavy") then
-						comboCinema(streakN, false, true)
+						comboCinema(streakN, record, true)
+					else
+						-- 중간에 시전 조건이 바뀌었으면 기존 5타 축하는 복원한다.
+						comboCinema(streakN, record)
 					end
 				end
 			end
