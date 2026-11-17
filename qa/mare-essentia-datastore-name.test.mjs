@@ -272,7 +272,10 @@ test('음악 효과음 환경음은 기본 믹서 크기·지연 로딩·자동 
     'if s.Parent and sfxOn and not s.Playing then s:Play() end',
     'if s.Parent and ambientKey == key and not s.Playing then s:Play() end',
   ]) assert.ok(audio.includes(snippet),'음향 복원 경로 누락: '+snippet);
-  assert.doesNotMatch(audio,/broken\[name\] = true/,'오디오 로딩 실패 영구 봉인 금지');
+  // 12초 로딩 실패 → 20초 유예 중 22초 재요청이 버려져 영구 무음이 되던 문제 방지.
+  assert.match(audio,/local retryAfter = math\.max\(0, \(broken\[name\] or 0\) - os\.clock\(\)\) \+ 0\.2/,'배경음 재요청은 로딩 실패 유예 종료 뒤에만 실행');
+  assert.match(audio,/task\.delay\(retryAfter, function\(\)[\s\S]*?if currentMusic == s and currentName == name and s\.Parent and not s\.IsLoaded then[\s\S]*?Sfx\.music\(name\)/,'화면 전환·늦은 로딩 이후의 중복 재생 금지');
+  assert.doesNotMatch(audio,/broken\\[name\\] = true/,'오디오 로딩 실패 영구 봉인 금지');
   assert.doesNotMatch(audio,/local first = probe\(all\)/,'모바일 전체 음원 100개 동시 프리로드 금지');
   assert.ok(fieldScene.includes('Sfx.ambient({ "sfx_wind" }, 0.60)'));
   assert.ok(fieldScene.includes('if weather == "소나기" then 0.88 else 0.68'));

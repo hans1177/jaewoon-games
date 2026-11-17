@@ -202,12 +202,17 @@ function Sfx.music(name)
 	s:Play()
 	TweenService:Create(s, TweenInfo.new(2), { Volume = target }):Play()
 	currentMusic = s
-	-- [배경음 자동 복구] 승인된 음원도 첫 요청이 지연될 수 있다. 22초 뒤 미로딩일 때만 재요청.
+	-- [배경음 자동 복구] 12초에 로딩 실패로 20초 유예된 음원을 22초에 즉시 재요청하면
+	-- 유예에 막혀 currentMusic만 사라지고 영구 무음이 된다. 유예 만료 후 같은 곡일 때만 복구한다.
 	task.delay(22, function()
-		if currentMusic == s and currentName == name and s.Parent and not s.IsLoaded then
-			currentName = nil
-			Sfx.music(name)
-		end
+		if currentMusic ~= s or currentName ~= name or not s.Parent or s.IsLoaded then return end
+		local retryAfter = math.max(0, (broken[name] or 0) - os.clock()) + 0.2
+		task.delay(retryAfter, function()
+			if currentMusic == s and currentName == name and s.Parent and not s.IsLoaded then
+				currentName = nil
+				Sfx.music(name)
+			end
+		end)
 	end)
 end
 
