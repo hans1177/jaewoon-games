@@ -1563,8 +1563,7 @@ function FieldScene.start(opts)
 	local swingCombo, slashIdx = nil, 0
 	-- [연타 관절 연결] 한 공격이 끝나기 전에 다음 시각 모션을 시작할 때 R15 실제 마지막 자세를 이어 붙인다.
 	-- 신규 애니메이션 트랙/이동 판정 없이 기존 캐논 관절만 보간한다. 최근 프레임 포즈는 테이블을 재사용한다.
-	local swingLastPose = {}
-	local swingBridgeFrom, swingBridgeAt, swingBridgeTime = nil, 0, 0
+	local swingBridge = { last = {}, from = nil, at = 0, duration = 0 }
 	-- [모션 직업] 기존 캐릭터 FieldDodgeStyle 속성을 입력·렌더 간 정본으로 사용하여 Luau 지역변수 한도를 지킨다.
 	local SLASH_IDS = { "W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST" }
 	-- 주인공 무기: 모든 무기를 쓸 수 있고 버튼으로 바꾼다(동료는 직업별로 고정)
@@ -1602,14 +1601,14 @@ function FieldScene.start(opts)
 	local function startSwing(kind: string, dur: number, stage: number?)
 		local nextStage = math.clamp(math.floor(stage or 1), 1, 5)
 		-- [연타 교차 보간] 2·3타에서 현재 실제 관절을 남겨 끊기는 팔/허리/발목을 연결한다.
-		if FM and nextStage >= 2 and swingKind and next(swingLastPose) then
-			swingBridgeFrom = table.clone(swingLastPose)
-			swingBridgeAt = os.clock()
-			swingBridgeTime = if wpn.family == "dagger" or wpn.family == "fist" then 0.075
+		if FM and nextStage >= 2 and swingKind and next(swingBridge.last) then
+			swingBridge.from = table.clone(swingBridge.last)
+			swingBridge.at = os.clock()
+			swingBridge.duration = if wpn.family == "dagger" or wpn.family == "fist" then 0.075
 				elseif wpn.family == "axe" or wpn.family == "blunt" then 0.14
 				elseif wpn.ranged then 0.12 else 0.105
 		else
-			swingBridgeFrom = nil
+			swingBridge.from = nil
 		end
 		-- [무기별 공격음] 각 승인 오디오의 원본을 사용한다.
 		-- 준비/휘두름은 여기서, 투사체 발포는 실제 공격 판정 시 한 번만 재생해 저음이 겹치지 않는다.
@@ -2059,13 +2058,13 @@ function FieldScene.start(opts)
 				end
 			end
 			-- [관절 교량] 2·3타 첫 0.08~0.14초 동안 직전 프레임 자세를 목표 자세까지 스무스스텝으로 잇는다.
-			if swingKind and swingBridgeFrom then
-				local weight = math.clamp((os.clock() - swingBridgeAt) / swingBridgeTime, 0, 1)
+			if swingKind and swingBridge.from then
+				local weight = math.clamp((os.clock() - swingBridge.at) / swingBridge.duration, 0, 1)
 				if weight >= 1 then
-					swingBridgeFrom = nil
+					swingBridge.from = nil
 				else
 					weight = weight * weight * (3 - 2 * weight)
-					for joint, old in swingBridgeFrom do
+					for joint, old in swingBridge.from do
 						if typeof(old) == "CFrame" then
 							canon[joint] = old:Lerp(canon[joint] or CFrame.identity, weight)
 						end
@@ -2073,10 +2072,10 @@ function FieldScene.start(opts)
 				end
 			end
 			-- [프레임 캐시] 공격 중에만 카메라·모션과 독립적인 캐논 관절을 재사용한다.
-			table.clear(swingLastPose)
+			table.clear(swingBridge.last)
 			if swingKind and swingCombo then
 				for joint, cf in canon do
-					if typeof(cf) == "CFrame" then swingLastPose[joint] = cf end
+					if typeof(cf) == "CFrame" then swingBridge.last[joint] = cf end
 				end
 			end
 			if swingKind then
