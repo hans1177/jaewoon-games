@@ -40,7 +40,11 @@ test('탐험 숙련은 서버 유효 무기·시간 상한·중복 재전송 검
   assert.match(discovery,/math\.min\(120,/);
   assert.match(client,/call\("FieldPracticeBegin"/);
   assert.match(client,/call\("FieldPracticeCommit"/);
-  assert.match(field,/pcall\(opts\.onFinish, result, observedCardId, earnedPractice\)/);
+  // 탐험 종료의 기존 3개 반환값을 유지하고, 검증 대상인 연타 기록만 마지막 인자로 추가 전달한다.
+  assert.match(field,/pcall\(opts\.onFinish, result, observedCardId, earnedPractice, fieldStreakResult\)/);
+  assert.match(client,/onFinish = function\(result, observedCardId, gainedPractice, streakRecord\)/);
+  assert.match(client,/record = streakRecord and streakRecord\.hits or 0/);
+  assert.match(discovery,/local recordLimit = math\.min\(500,/);
   assert.match(field,/local rank = practiceRank\(practice\.xp\)/);
 });
 
