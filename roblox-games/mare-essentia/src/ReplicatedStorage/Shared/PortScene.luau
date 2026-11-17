@@ -327,6 +327,7 @@ end
 
 -- 공식 Studio Importer로 수입한 실제 GLB/OBJ/FBX 모델 우선 사용
 -- 원본: roblox-games/mare-essentia/assets/, 수입본: ReplicatedStorage/MareAssets
+local BLUEPRINT_SHIP_SIZE = {} -- 제작 전용 선박 외형 크기. 구매·능력치·저장 정보는 건드리지 않는다.
 local SHIP_MESH = {
 	caravel = "ship-small", fluyt = "ship-medium",
 	frigate = "ship-pirate-medium", galleon = "ship-large",
@@ -337,6 +338,21 @@ do
 	for id, def in ShipsMod.Ships do
 		if def.visual and not SHIP_MESH[id] then
 			SHIP_MESH[id] = SHIP_MESH[def.visual]
+		end
+	end
+	-- [7대륙 36척 실물 전시] 기존 선박 데이터와 분리해 등록된 외형만 연결한다.
+	-- 아메리카 브리간틴·잔지바르 자하즈는 동일 함종의 검증된 CC0 원본을 전용 모델 확보 전까지 쓴다.
+	local blueprintMeshSources = { atlantic_brigantine = "brigantine-custom", zanzibar_jahazi = "jahazi-custom" }
+	for _, blueprint in ShipsMod.Blueprints do
+		if not ShipsMod.Ships[blueprint.id] then
+			local meshName = blueprint.id .. "-custom"
+			if not AssetIds["Naval/" .. meshName] then
+				meshName = blueprintMeshSources[blueprint.id]
+			end
+			if meshName and AssetIds["Naval/" .. meshName] then
+				SHIP_MESH[blueprint.id] = meshName
+				BLUEPRINT_SHIP_SIZE[blueprint.id] = blueprint.targetLengthStuds
+			end
 		end
 	end
 end
@@ -844,11 +860,12 @@ end
 local function buildShip(parent, shipId, at)
 	local look = SHIP_LOOK[shipId] or SHIP_LOOK.caravel
 	local s = look.scale
+	local modelLength = BLUEPRINT_SHIP_SIZE[shipId] or 26 * s
 	local bottom = Vector3.new(at.X, at.Y - 2 * s, at.Z)
 	-- 선박 ID별 완제품 Mesh가 있으면 그것을 우선한다. 없으면 원본 선체와 실제 Mesh 소품을 조합한다.
-	local dedicated = importedModel(parent, "Ships", shipId, bottom, 26 * s, false, look.metal and look.hull or nil)
+	local dedicated = importedModel(parent, "Ships", shipId, bottom, modelLength, false, look.metal and look.hull or nil)
 	local meshAsset = SHIP_MESH[shipId] or "ship-small"
-	local shipMesh = dedicated or importedModel(parent, "Naval", meshAsset, bottom, 26 * s, false, look.metal and look.hull or nil)
+	local shipMesh = dedicated or importedModel(parent, "Naval", meshAsset, bottom, modelLength, false, look.metal and look.hull or nil)
 	-- 신규 상세 갈레온이 아직 스트리밍되지 않았다면 운영 중인 기존 범선 모델을 보존한다.
 	if not shipMesh and shipId == "galleon" and SHIP_MESH.galleon == "galleon-heritage" then
 		meshAsset = "ship-large"

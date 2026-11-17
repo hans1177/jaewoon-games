@@ -4233,3 +4233,49 @@ test('Mare goods/menu asset replacement requires verified Image uploads with ato
     assert.match(String(approved[id]),/^[a-f0-9]{64}$/);
   }
 });
+
+ 
+// [7대륙 36척 실물 증빙] 설계 수량과 모델 등록 권한·원본 해시·실측 Studio 화면 검사를 묶는다.
+test('Mare 36 designed ships have source-verified registered models and seven-continent Studio preview',()=>{
+  const base='roblox-games/mare-essentia/';
+  const ships=fs.readFileSync(base+'src/ReplicatedStorage/Shared/Ships.luau','utf8');
+  const assetIds=fs.readFileSync(base+'src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  const port=fs.readFileSync(base+'src/ReplicatedStorage/Shared/PortScene.luau','utf8');
+  const registry=JSON.parse(fs.readFileSync(base+'assets-registered.json','utf8')).assets;
+  const blueprints=[...ships.matchAll(/\{ id="([^"]+)", name="([^"]+)", faction="([^"]+)", stage=(\d+)/g)]
+    .map(m=>({id:m[1],faction:m[3],stage:Number(m[4])}));
+  assert.equal(blueprints.length,36);
+  assert.equal(new Set(blueprints.map(bp=>bp.id)).size,36);
+  const aliases={galleon:'galleon-heritage',atlantic_brigantine:'brigantine-custom',zanzibar_jahazi:'jahazi-custom'};
+  const factions=new Map();
+  for(const bp of blueprints){
+    factions.set(bp.faction,(factions.get(bp.faction)||0)+1);
+    const model=aliases[bp.id]||bp.id+'-custom',key='Naval/'+model;
+    const asset=registry[key];
+    assert.ok(asset&&asset.usePermissionGranted===true&&asset.assetId&&asset.sourceSha256,'missing registered source: '+bp.id);
+    assert.equal(asset.assetType,'Model','not a model: '+bp.id);
+    const file=base+'assets/naval/'+model+'.glb';
+    const bytes=fs.readFileSync(file);
+    assert.equal(bytes.toString('ascii',0,4),'glTF','not a GLB: '+model);
+    assert.equal(bytes.readUInt32LE(8),bytes.length,'GLB byte size mismatch: '+model);
+    const sourceHash=crypto.createHash('sha256').update(bytes).digest('hex');
+    assert.equal(sourceHash,asset.sourceSha256,'outdated Roblox registration: '+model);
+    const proof=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
+    assert.equal(proof.sourceSha256,sourceHash,'model proof mismatch: '+model);
+    assert.ok(proof.author&&proof.source&&proof.license,'missing model lineage: '+model);
+    assert.ok(assetIds.includes('["'+key+'"] = '+asset.assetId),'model registration not in runtime table: '+key);
+  }
+  for(const continent of ['europe','east_asia','new_world','middle_east','southeast_asia','africa','lost'])
+    assert.equal(factions.get(continent),continent==='lost'?6:5,'wrong continent allocation: '+continent);
+  assert.match(port,/for _, blueprint in ShipsMod.Blueprints do/);
+  assert.match(port,/BLUEPRINT_SHIP_SIZE\[shipId\] or 26 \* s/);
+  assert.match(port,/SHIP_MESH\[blueprint.id\] = meshName/);
+  const steps=JSON.parse(fs.readFileSync(base+'tools/devloop/studio-scripts/mare-ships.json','utf8'));
+  const expected=['europe','east_asia','new_world','middle_east','southeast_asia','africa','lost'];
+  assert.equal(steps.filter(x=>x.type==='capture').length,7);
+  for(const f of expected){
+    assert.ok(steps.some(x=>x.type==='capture'&&x.name==='ships_'+f),'missing continent capture: '+f);
+    assert.ok(steps.some(x=>x.code?.includes('SHIP_CONTINENT_RUNTIME_PASS:'+f)),'missing runtime loading: '+f);
+  }
+  assert.ok(steps.some(x=>x.code?.includes('SHIP_36_PREVIEW_CLEAN_EXIT_PASS')));
+});
