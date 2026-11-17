@@ -3245,6 +3245,56 @@ function FieldScene.start(opts)
 					elseif family == "firearm" then 0.25 * impulse - 0.14 * settle
 					elseif family == "bow" then -0.21 * impulse + 0.18 * settle
 					elseif thrust then -0.11 * impulse else 0.09 * impulse, 0, 0)
+				-- [무기별 정밀 동작] 준비·접촉·회수의 관절 파형은 양 끝에서 0이 되어 다음 타 자세를 튕기지 않는다.
+				-- 공격 판정·0.14초 명중·10박자·이동·쿨타임은 건드리지 않고 기존 관절 목표에만 덧셈한다.
+				if not range then
+					local prepare = math.sin(math.clamp(p / 0.34, 0, 1) * math.pi) ^ 2
+					local contact = math.sin(math.clamp((p - 0.11) / 0.60, 0, 1) * math.pi) ^ 2
+					local recover = math.sin(math.clamp((p - 0.43) / 0.57, 0, 1) * math.pi) ^ 2
+					local side = if slashIdx % 2 == 0 then -1 else 1
+					if family == "dagger" then
+						-- 단검: 역수 준비 → 짧은 손목 관통 → 팔꿈치 접고 축발 회수.
+						canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(0.13 * prepare - 0.18 * contact, side * 0.09 * contact, 0)
+						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.16 * prepare + 0.23 * contact - 0.11 * recover, 0, 0)
+						canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.13 * contact + 0.17 * recover, 0, side * 0.11 * contact)
+						canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.12 * prepare + 0.10 * recover, 0, -side * 0.07 * contact)
+					elseif family == "fist" then
+						-- 격투: 비공격손 가드 → 어깨 선행 → 전완 충격 → 손목과 발목의 늦은 복귀.
+						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.12 * prepare + 0.08 * recover, 0, -side * 0.06 * contact)
+						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.19 * contact + 0.15 * recover, 0, 0)
+						canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.12 * contact + 0.10 * recover, side * 0.07 * contact, 0)
+						canon.ShinR = (canon.ShinR or id) * CFrame.Angles(0.13 * prepare - 0.09 * recover, 0, 0)
+					elseif family == "spear" then
+						-- 창: 앞손 지지·뒷손 관통, 뒷꿈치로 체중을 밀고 창끝을 늦게 회수한다.
+						canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.12 * prepare + 0.10 * recover, 0, -side * 0.07 * contact)
+						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.23 * contact + 0.14 * recover, side * 0.06 * contact, 0)
+						canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.10 * contact + 0.12 * recover, 0, 0)
+						canon.FootL = (canon.FootL or id) * CFrame.Angles(-0.14 * prepare + 0.11 * recover, 0, 0)
+					elseif family == "axe" or family == "blunt" then
+						-- 도끼는 수직 중량, 철퇴는 측면 관성: 어깨가 먼저 멈추고 손목이 늦게 따라온다.
+						local mass = if family == "axe" then 1 else 0.82
+						canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.12 * mass * prepare + 0.08 * mass * recover, side * 0.06 * contact, 0)
+						canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.16 * mass * contact + 0.08 * recover, 0, side * 0.07 * contact)
+						canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.13 * mass * contact + 0.19 * mass * recover, 0, 0)
+						canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.10 * mass * contact + 0.16 * mass * recover, 0, side * (if family == "axe" then 0.04 else 0.12) * contact)
+						canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.11 * prepare + 0.07 * recover, 0, 0)
+					elseif family == "blade" then
+						-- 직검 교차베기 / 레이피어 직선찌르기 / 외날검 허리와 칼끝이 엇박으로 회수된다.
+						canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.06 * prepare, side * 0.10 * contact - side * 0.06 * recover, 0)
+						if wpn.motion == "RAPIER" then
+							canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.19 * contact + 0.12 * recover, -side * 0.04 * contact, 0)
+							canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.09 * contact + 0.10 * recover, 0, 0)
+							canon.FootL = (canon.FootL or id) * CFrame.Angles(-0.11 * prepare + 0.09 * recover, 0, 0)
+						elseif wpn.motion == "KATANA" or wpn.motion == "SABRE" or wpn.motion == "SCIMITAR" then
+							canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.14 * contact + 0.10 * recover, side * 0.09 * contact, 0)
+							canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.16 * contact + 0.15 * recover, 0, side * 0.09 * recover)
+							canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.09 * prepare + 0.10 * recover, 0, 0)
+						else
+							canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.12 * contact + 0.13 * recover, 0, side * 0.06 * contact)
+							canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.14 * contact + 0.12 * recover, 0, 0)
+						end
+					end
+				end
 				-- [쓰시마식 1~3타] 발끝→골반→어깨→손목의 시간차를 첫 타부터 적용.
 				if swingKind == "slash" and slashIdx <= 3 and not wpn.ranged then
 					local side = if slashIdx % 2 == 0 then 1 else -1
@@ -3305,9 +3355,11 @@ function FieldScene.start(opts)
 				local readiness = if actionPose then 0.95 elseif traveling then 0.32 else 0.75
 				local firing = actionPose -- 2·3타도 팔과 개머리판에 연속 격발 반동을 부여한다.
 				local progress = if firing then math.clamp((os.clock() - swingT0) / math.max(swingDur, 0.05), 0, 1) else 0
-				local press = if firing then math.sin(math.clamp(progress / 0.48, 0, 1) * math.pi * 0.5) else 0
-				local recoil = if firing then math.sin(math.clamp((progress - 0.35) / 0.34, 0, 1) * math.pi) else 0
-				local poseWeight = if firing then 0.65 + 0.35 * press else readiness
+				-- [사격 곡선] 조준 압력·발사 반동·견착 회수 모두 시작/끝 미분값 0. 일반 평타의 0.14초 명중 시각은 유지.
+				local press = if firing then math.sin(progress * math.pi) ^ 2 else 0
+				local recoil = if firing then math.sin(math.clamp((progress - 0.26) / 0.42, 0, 1) * math.pi) ^ 2 else 0
+				local recover = if firing then math.sin(math.clamp((progress - 0.56) / 0.44, 0, 1) * math.pi) ^ 2 else 0
+				local poseWeight = if firing then 0.75 + 0.20 * press else readiness
 				local id = CFrame.identity
 				local crossbow = wpn.motion == "CROSSBOW"
 				local bow = wpn.family == "bow"
@@ -3315,36 +3367,36 @@ function FieldScene.start(opts)
 				local pistol = wpn.motion == "PISTOL"
 				if crossbow then
 					-- [석궁 수평 견착] 오른손 방아쇠·왼손 레일 받침·고개 조준을 같은 수평선으로 묶는다.
-					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.72 * poseWeight + 0.17 * recoil, 0.04, 0.10)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.72 * poseWeight + 0.17 * recoil - 0.08 * recover, 0.04, 0.10)
 					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.81 * poseWeight, -0.11, -0.14)
 					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.47 * poseWeight + 0.25 * recoil, 0, 0)
-					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.58 * poseWeight, 0, 0)
+					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.58 * poseWeight + 0.09 * recover, 0, 0)
 					canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.13 * poseWeight, 0, -0.04)
-					canon.HandR = (canon.HandR or id) * CFrame.Angles(0.22 * recoil, 0, 0)
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(0.22 * recoil - 0.13 * recover, 0, 0)
 					canon.Head = (canon.Head or id) * CFrame.Angles(-0.06 * poseWeight, 0, 0)
 				elseif bow then
 					-- [활 진짜 조준] 왼손으로 수직 활대를 펴고, 오른손 시위는 턱 옆으로 당겼다가 놓는다.
 					-- 활대와 화살의 방향축은 equipFieldWeapon/arrowTrail에서 동일 목표 전방을 사용한다.
-					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-1.03 * poseWeight, -0.12, -0.20)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-1.03 * poseWeight + 0.06 * recover, -0.12, -0.20)
 					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.16 * poseWeight, 0, 0)
 					canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.13 * poseWeight, 0, 0)
 					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.68 * poseWeight - 0.42 * press + 0.32 * recoil, 0.30 * poseWeight, 0.24)
-					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.86 * poseWeight - 0.32 * press + 0.52 * recoil, 0.08, 0)
-					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.18 * press + 0.32 * recoil, 0.08, 0)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.86 * poseWeight - 0.32 * press + 0.52 * recoil + 0.12 * recover, 0.08, 0)
+					canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.18 * press + 0.32 * recoil + 0.14 * recover, 0.08, 0)
 					canon.Chest = (canon.Chest or id) * CFrame.Angles(0, 0.12 * poseWeight, 0)
 					canon.Head = (canon.Head or id) * CFrame.Angles(-0.04 * poseWeight, -0.09 * poseWeight, 0)
 				elseif longGun then
 					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.65 * poseWeight, 0, -0.18)
-					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.69 * poseWeight + 0.15 * recoil, 0, 0.13)
-					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.42 * poseWeight, 0, 0)
-					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.42 * poseWeight + 0.20 * recoil, 0, 0)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.69 * poseWeight + 0.21 * recoil - 0.08 * recover, 0, 0.13)
+					canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.42 * poseWeight + 0.10 * recover, 0, 0)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.42 * poseWeight + 0.24 * recoil - 0.11 * recover, 0, 0)
 				elseif pistol or wpn.family == "firearm" then
-					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.80 * poseWeight + 0.20 * recoil, 0, 0.08)
-					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.48 * poseWeight + 0.25 * recoil, 0, 0)
-					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.21 * poseWeight, 0, -0.12)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.80 * poseWeight + 0.25 * recoil - 0.10 * recover, 0, 0.08)
+					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-0.48 * poseWeight + 0.30 * recoil - 0.13 * recover, 0, 0)
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.21 * poseWeight - 0.11 * recoil + 0.09 * recover, 0, -0.12)
 				end
-				canon.Head = (canon.Head or id) * CFrame.Angles(-0.06 * poseWeight + 0.06 * recoil, 0, 0)
-				canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.08 * poseWeight + 0.11 * recoil, 0, 0)
+				canon.Head = (canon.Head or id) * CFrame.Angles(-0.06 * poseWeight + 0.06 * recoil - 0.04 * recover, 0, 0)
+				canon.Chest = (canon.Chest or id) * CFrame.Angles(-0.08 * poseWeight + 0.11 * recoil - 0.07 * recover, 0, 0)
 			end
 			-- [연타 관성] 무기 프로필별 두 번째/세 번째 시각 동작에 발 디딤과 팔꿈치 회수를 얹는다.
 			-- CommonMotion 원본 타격 동작에만 아주 짧은 보정으로 적용, 공격력·속도·사거리에는 영향 없음.
@@ -3613,7 +3665,11 @@ function FieldScene.start(opts)
 				-- [기존 연계 창 유지] 1.1초가 지난 오래된 포즈만 버리고 0.32초 내 다음 타는 연결한다.
 				table.clear(swingBridge.last)
 			end
-			FM.step(pfm, dt, rootRot, if swingKind == "dash" then 1.85 else nil)
+			-- [관절 응답] 가벼운 무기는 즉시 반응하고 중량 무기는 늦게 따라오되 판정·동작 시간은 동일하다.
+			FM.step(pfm, dt, rootRot, if swingKind == "dash" then 1.85
+				elseif swingKind and swingCombo and (wpn.family == "dagger" or wpn.family == "fist") then 1.12
+				elseif swingKind and swingCombo and (wpn.family == "axe" or wpn.family == "blunt") then 0.96
+				elseif swingKind and swingCombo and wpn.family == "spear" then 1.06 else nil)
 		end))
 		table.insert(conns, { Disconnect = function()
 			if pfm then
