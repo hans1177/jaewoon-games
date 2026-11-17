@@ -9602,6 +9602,9 @@ syncScene = function()
 		math.floor(math.sqrt(math.max(0, bld.workshop or 0))),
 		math.floor(math.sqrt(math.max(0, bld.school or 0))),
 		math.floor(math.sqrt(math.max(0, bld.hall or 0))),
+		-- [시설 자동 확장] 선술집 신축 및 경제 회복/침체 경계에서만 마을 건축 갱신.
+		math.floor(math.sqrt(math.max(0, bld.tavern or 0))),
+		if (tonumber(sim and sim.prosperity) or 100) >= 90 then "P1" else "P0",
 	}, ":")
 	local developed = view.village and view.village.here
 	local owned = (view.harbor and view.harbor.builtLandmarks) or {}
