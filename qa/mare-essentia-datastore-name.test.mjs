@@ -378,7 +378,12 @@ test('탐험 현장별 10종 3차원 지형, 주야·기상·실물 동물 및 �
   }
   assert.match(field,/FieldQuestTerrainTheme/);
   assert.match(field,/FieldTerrainFeatureCount/);
-  assert.match(field,/if not visualMobile or index <= 9 then/);
+  assert.match(field,/\(not visualMobile or index <= 9\) and AssetIds/);
+  assert.match(field,/local function retryPending\(groupName, modelName\)/);
+  assert.match(field,/group\.ChildAdded:Connect\(function\(child\)/);
+  assert.match(field,/if not needed then return end/);
+  assert.match(field,/folder\.Destroying:Connect\(function\(\)/);
+  assert.match(field,/folder\.ChildAdded:Connect\(function\(landmark\)/);
   assert.match(field,/FieldTerrainLandmark/);
   assert.match(field,/FieldTerrainClue/);
   assert.match(field,/FieldTerrainClues/);

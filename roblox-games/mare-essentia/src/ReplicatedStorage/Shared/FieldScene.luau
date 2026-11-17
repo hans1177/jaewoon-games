@@ -692,30 +692,73 @@ function FieldScene.start(opts)
 			{"Terrain","ruins-pillar-decorated",13,0.78,-0.42,true,0},
 		},
 	}
+
 	local featureList = landforms[questTerrain] or landforms.plains
 	local built = 0
+	-- [늦은 3D 자산 복구] AssetLoader가 Terrain/Castle 모델을 항구보다 늦게 불러온다.
+	-- 같은 퀘스트의 승인 원본이 로드되는 즉시 해당 배치만 완성한다.
+	local pending = {}
+	local function placeFeature(entry)
+		if not folder.Parent then return false end
+		local px = entry[4] * half * mirror
+		local pz = entry[5] * half
+		local pos = ORIGIN + Vector3.new(px, 0, pz)
+		local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6])
+		if not m then return false end
+		m.Name = "FieldTerrainLandmark"
+		m:SetAttribute("TerrainTheme", questTerrain)
+		m:SetAttribute("TerrainFeature", entry[2])
+		if entry[7] and entry[7] ~= 0 then
+			m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, math.rad(entry[7]), 0) * CFrame.new(-pos) * m:GetPivot())
+		end
+		built += 1
+		folder:SetAttribute("FieldTerrainFeatureCount", built)
+		return true
+	end
 	for index, entry in featureList do
-		if not visualMobile or index <= 9 then
-			-- 두 계곡 측면에만 고정 메시를 배치해 시작 지점과 퀘스트 조사 경로를 막지 않는다.
-			local px = entry[4] * half * mirror
-			local pz = entry[5] * half
-			local pos = ORIGIN + Vector3.new(px, 0, pz)
-			if AssetIds[entry[1] .. "/" .. entry[2]] then
-				local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6])
-				if m then
-					m.Name = "FieldTerrainLandmark"
-					m:SetAttribute("TerrainTheme", questTerrain)
-					m:SetAttribute("TerrainFeature", entry[2])
-					if entry[7] and entry[7] ~= 0 then
-						m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, math.rad(entry[7]), 0) * CFrame.new(-pos) * m:GetPivot())
-					end
-					built += 1
-				end
-			end
+		if (not visualMobile or index <= 9) and AssetIds[entry[1] .. "/" .. entry[2]] then
+			if not placeFeature(entry) then table.insert(pending, entry) end
 		end
 	end
 	folder:SetAttribute("FieldTerrainFeatureCount", built)
-
+	if #pending > 0 then
+		local library = ReplicatedStorage:FindFirstChild("MareAssets")
+		if library then
+			local modelConnections = {}
+			local function retryPending(groupName, modelName)
+				if not folder.Parent then return end
+				for index = #pending, 1, -1 do
+					local entry = pending[index]
+					if entry[1] == groupName and entry[2] == modelName and placeFeature(entry) then
+						table.remove(pending, index)
+					end
+				end
+			end
+			for _, groupName in { "Terrain", "Town", "Castle", "Naval" } do
+				local group = library:FindFirstChild(groupName)
+				if group then
+					table.insert(modelConnections, group.ChildAdded:Connect(function(child)
+						if not child:IsA("Model") then return end
+						local needed = false
+						for _, entry in pending do
+							if entry[1] == groupName and entry[2] == child.Name then needed = true break end
+						end
+						if not needed then return end
+						-- 복제된 BasePart가 클라이언트에 도착할 시간을 준 뒤 2회까지 점검.
+						task.delay(0.25, function()
+							retryPending(groupName, child.Name)
+							if not folder.Parent then return end
+							task.delay(1.5, function() retryPending(groupName, child.Name) end)
+						end)
+					end))
+				end
+			end
+			folder.Destroying:Connect(function()
+				for _, conn in modelConnections do conn:Disconnect() end
+				table.clear(pending)
+			end)
+		end
+	end
 	end
 
 	-- 문화권 소품(기둥·천막·카누 등): 등록된 모델만 놓고, 없으면 건너뛴다
@@ -1055,31 +1098,37 @@ function FieldScene.start(opts)
 			lake = "물가의 돌이 닳은 흔적을 보면 오래전 누군가 이 길을 지나갔다.",
 			plains = "들판의 낡은 이정표가 지금은 사라진 길을 가리킨다.",
 		}
+
 		local clues = 0
 		folder:SetAttribute("FieldTerrainClues", 0)
-		for _, landmark in folder:GetChildren() do
-			if clues >= 2 then break end
-			if landmark:IsA("Model") and landmark.Name == "FieldTerrainLandmark" then
-				local anchorPart = landmark:FindFirstChildWhichIsA("BasePart", true)
-				if anchorPart then
-					clues += 1
-					local prompt = Instance.new("ProximityPrompt")
-					prompt.Name = "FieldTerrainClue"
-					prompt.ObjectText = "탐험 흔적"
-					prompt.ActionText = "현장 조사"
-					prompt.HoldDuration = 0.55
-					prompt.MaxActivationDistance = 12
-					prompt.RequiresLineOfSight = false
-					prompt.Parent = anchorPart
-					prompt.Triggered:Connect(function(activator)
-						if finished or activator ~= player or not prompt.Enabled then return end
-						prompt.Enabled = false
-						folder:SetAttribute("FieldTerrainClues", (folder:GetAttribute("FieldTerrainClues") or 0) + 1)
-						say(clueText[theme] or clueText.plains)
-					end)
-				end
-			end
+		local function attachClue(landmark)
+			if clues >= 2 or finished or not landmark:IsA("Model") or landmark.Name ~= "FieldTerrainLandmark" then return end
+			local anchorPart = landmark:FindFirstChildWhichIsA("BasePart", true)
+			if not anchorPart or anchorPart:FindFirstChild("FieldTerrainClue") then return end
+			clues += 1
+			local prompt = Instance.new("ProximityPrompt")
+			prompt.Name = "FieldTerrainClue"
+			prompt.ObjectText = "탐험 흔적"
+			prompt.ActionText = "현장 조사"
+			prompt.HoldDuration = 0.55
+			prompt.MaxActivationDistance = 12
+			prompt.RequiresLineOfSight = false
+			prompt.Parent = anchorPart
+			prompt.Triggered:Connect(function(activator)
+				if finished or activator ~= player or not prompt.Enabled then return end
+				prompt.Enabled = false
+				folder:SetAttribute("FieldTerrainClues", (folder:GetAttribute("FieldTerrainClues") or 0) + 1)
+				say(clueText[theme] or clueText.plains)
+			end)
 		end
+		for _, landmark in folder:GetChildren() do attachClue(landmark) end
+		-- [지연 모델도 현장 조사 가능] 원본 모델이 늦게 도착한 경우에도 2개 조사 지점을 유지한다.
+		table.insert(conns, folder.ChildAdded:Connect(function(landmark)
+			if finished or clues >= 2 then return end
+			task.defer(function()
+				if landmark.Parent == folder then attachClue(landmark) end
+			end)
+		end))
 	end
 
 	-- [2~3연타 마무리] 숙련도는 5단계까지 유지하되 연타는 최대 3타, 시각 연출만 적용한다.
