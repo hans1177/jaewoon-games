@@ -1559,7 +1559,11 @@ function FieldScene.start(opts)
 	-- 공격 동작: 캐릭터의 오른팔·허리를 짧게 휘두른다 (애니메이터가 쓴 뒤 덮어쓴다)
 	-- [무기별 실물 R15 모션] 보통 공격은 반드시 1단. 뒤이어 보이는 타격은 숙련 발동시에만 재생한다.
 	local function startSwing(kind: string, dur: number, stage: number?)
-		if kind == "heavy" then
+		if wpn.ranged and (kind == "slash" or kind == "heavy" or kind == "spin") then
+			-- [원거리 준비음] 검 휘두름 대신 시위 장전·총기 조작음을 쓴다. 실제 발사는 기존 타격 시각.
+			sfx(if wpn.family == "bow" or wpn.motion == "CROSSBOW" then "sfx_equipment_wear" else "sfx_card_chain",
+				0.38, if wpn.motion == "CROSSBOW" then 1.2 else 1.0)
+		elseif kind == "heavy" then
 			sfx(if wpn.family == "fist" then "sfx_card_swing" else "sfx_card_blade", 0.7, 0.85)
 		elseif kind == "spin" or kind == "elbow" then
 			sfx("sfx_card_swing", 0.7, 0.75)
