@@ -116,6 +116,11 @@
   {
     "type": "luau",
     "ctx": "Client",
+    "code": "-- [마을 실물 검증] 현재 항구의 주민 동선 사전검사와 경제시설 예약 면적을 확인한다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"TOWN_SCENE_MISSING\")\nlocal relocated=scene:GetAttribute(\"NpcRouteRelocated\")\nlocal stopped=scene:GetAttribute(\"NpcRouteBlocked\")\nassert(type(relocated)==\"number\" and type(stopped)==\"number\",\"TOWN_NPC_ROUTE_PREFLIGHT_MISSING\")\nlocal lots={}\nfor _,obj in scene:GetChildren() do\n if obj:IsA(\"Model\") and string.sub(obj.Name,1,12)==\"EconomySite_\" then\n  local pos=obj:GetPivot().Position\n  for _,other in lots do\n   assert(math.abs(pos.X-other.X)>=36 or math.abs(pos.Z-other.Z)>=36,\"TOWN_ECONOMY_LOT_OVERLAP:\"..obj.Name)\n  end\n  table.insert(lots,pos)\n end\nend\nreturn string.format(\"TOWN_LIVE_SPACING_PASS relocated=%d stopped=%d industry_sites=%d\",relocated,stopped,#lots)"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
     "code": "local f=workspace:FindFirstChild(\"PortScene\") if not f then return \"NO PortScene\" end local parts,models,houses,meshes=0,0,0,0 for _,d in ipairs(f:GetDescendants()) do if d:IsA(\"BasePart\") then parts+=1 end if d:IsA(\"MeshPart\") then meshes+=1 end if d:IsA(\"Model\") then models+=1 if d.Name==\"HarborHouse\" then houses+=1 end end end return string.format(\"parts=%d meshparts=%d models=%d houses=%d\",parts,meshes,models,houses)"
   },
   {
