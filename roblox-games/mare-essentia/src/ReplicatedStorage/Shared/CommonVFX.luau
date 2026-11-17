@@ -226,7 +226,7 @@ function RobloxCommonVFX.AttachShortTrail(hostPart, options)
   trail.Attachment1 = a1
   trail.Lifetime = lifetime
   trail.MinLength = 0.05
-  trail.FaceCamera = true
+  trail.FaceCamera = false
   trail.Texture = SPRITES.light
   trail.LightEmission = 1
   trail.LightInfluence = 0
@@ -239,8 +239,10 @@ function RobloxCommonVFX.AttachShortTrail(hostPart, options)
     NumberSequenceKeypoint.new(0.70, 0.24),
     NumberSequenceKeypoint.new(1, 1),
   })
+  -- [얇은 칼날 궤적] 길이 전체에 펼쳐지는 사각 리본 대신 끝이 뾰족한 짧은 선으로 제한.
   trail.WidthScale = NumberSequence.new({
-    NumberSequenceKeypoint.new(0, width),
+    NumberSequenceKeypoint.new(0, 0),
+    NumberSequenceKeypoint.new(0.28, math.min(width, 0.24)),
     NumberSequenceKeypoint.new(1, 0),
   })
   trail.Parent = hostPart
