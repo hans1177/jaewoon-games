@@ -2691,24 +2691,70 @@ function FieldScene.start(opts)
 					count += 1
 					bp.Anchored, bp.CanCollide, bp.CanTouch, bp.CanQuery = false, false, false, false
 					bp.Massless = true
-					-- [실물 재질] 승인된 GLB의 색상 맵·거칠기 맵·금속성 맵은 그대로 보존한다.
-					-- 별도 표면 맵이 없는 부품만 물리 재질로 표현한다. 추가 텍스처 다운로드/발광 오버레이 없음.
-					if not bp:FindFirstChildOfClass("SurfaceAppearance") then
-						local segment = string.lower(bp.Name)
-						local shaft = string.find(segment, "handle", 1, true) or string.find(segment, "grip", 1, true)
-							or string.find(segment, "stock", 1, true) or string.find(segment, "shaft", 1, true)
-						local iron = string.find(segment, "blade", 1, true) or string.find(segment, "edge", 1, true)
-							or string.find(segment, "barrel", 1, true) or string.find(segment, "head", 1, true)
-						local material = if item.throwable then (if thrownAsset == "stone" then Enum.Material.Slate else Enum.Material.SmoothPlastic)
-							elseif item.shield then (if shaft then Enum.Material.Wood else Enum.Material.Metal)
-							elseif shaft then Enum.Material.Wood
-							elseif iron then Enum.Material.Metal
-							elseif weapon.family == "bow" or weapon.id == "crossbow" or weapon.family == "spear" then Enum.Material.Wood
-							elseif weapon.family == "firearm" then Enum.Material.Metal
-							else Enum.Material.Metal
-						bp.Material = material
-						-- 과한 거울처럼 번쩍이지 않게 낮은 반사율로 강철과 목재 차이만 표시한다.
-						bp.Reflectance = if material == Enum.Material.Metal then 0.055 else 0
+					-- [무기 실사 재질] 이미 등록된 GLB의 표면외형/PBR·텍스처 맵은 최우선으로 보존한다.
+					-- 지도 없는 메시의 손잡이·총열·검날·시위·방패 테두리만 재질과 빛 반사량으로 구별한다.
+					-- 부품을 새로 추가하거나 게임 속성·무기 밸런스를 변경하지 않는다.
+					local preservedPbr = bp:FindFirstChildOfClass("SurfaceAppearance") ~= nil
+					local preservedTexture = bp:IsA("MeshPart") and bp.TextureID ~= ""
+					if not preservedPbr and not preservedTexture then
+						local name = string.lower(bp.Name)
+						local handle = name:find("handle", 1, true) or name:find("grip", 1, true)
+							or name:find("hilt", 1, true) or name:find("shaft", 1, true)
+						local stock = name:find("stock", 1, true) or name:find("wood", 1, true)
+						local edge = name:find("blade", 1, true) or name:find("edge", 1, true)
+							or name:find("sword", 1, true) or name:find("cutlass", 1, true)
+						local iron = name:find("barrel", 1, true) or name:find("lock", 1, true)
+							or name:find("hammer", 1, true) or name:find("muzzle", 1, true)
+							or name:find("axehead", 1, true) or name:find("bolt", 1, true)
+						local guard = name:find("guard", 1, true) or name:find("pommel", 1, true)
+							or name:find("rivet", 1, true) or name:find("rim", 1, true)
+						local stringPart = name:find("string", 1, true) or name:find("fuse", 1, true)
+							or name:find("cord", 1, true)
+						local family = weapon.family
+						local material, tint, reflectance
+						if item.throwable and thrownAsset == "stone" then
+							material, tint, reflectance = Enum.Material.Slate, Color3.fromRGB(111, 106, 100), 0
+						elseif item.throwable and thrownAsset == "bomb" then
+							-- 17세기 화약폭탄은 거울 광택이 아니라 검게 산화된 철피·짧은 심지로 표현한다.
+							material = if stringPart then Enum.Material.Fabric else Enum.Material.CorrodedMetal
+							tint = if stringPart then Color3.fromRGB(174, 156, 116) else Color3.fromRGB(62, 65, 62)
+							reflectance = if stringPart then 0 else 0.012
+						elseif item.throwable then
+							material, tint, reflectance = Enum.Material.SmoothPlastic, Color3.fromRGB(137, 111, 81), 0
+						elseif item.shield then
+							-- 방패 표면은 옻칠 목재/가죽, 쇠테·리벳만 무광 강철로 구별한다.
+							if guard or iron then
+								material, tint, reflectance = Enum.Material.Metal, Color3.fromRGB(122, 127, 124), 0.025
+							elseif handle then
+								material, tint, reflectance = Enum.Material.Leather, Color3.fromRGB(74, 55, 42), 0
+							else
+								material = if modelName == "shield-rectangle" then Enum.Material.Metal else Enum.Material.Wood
+								tint = if modelName == "shield-rectangle" then Color3.fromRGB(93, 101, 106) else Color3.fromRGB(112, 82, 55)
+								reflectance = if modelName == "shield-rectangle" then 0.022 else 0
+							end
+						elseif stringPart then
+							material, tint, reflectance = Enum.Material.Fabric, Color3.fromRGB(186, 167, 131), 0
+						elseif handle then
+							material, tint, reflectance = Enum.Material.Leather, Color3.fromRGB(77, 55, 38), 0
+						elseif stock or family == "bow" or weapon.id == "crossbow" or (family == "spear" and not edge and not iron) then
+							material, tint, reflectance = Enum.Material.Wood, Color3.fromRGB(116, 84, 52), 0
+						elseif edge then
+							material, tint, reflectance = Enum.Material.Metal, Color3.fromRGB(172, 182, 187), 0.055
+						elseif guard then
+							material, tint, reflectance = Enum.Material.Metal, Color3.fromRGB(142, 121, 80), 0.032
+						elseif iron or family == "firearm" then
+							material, tint, reflectance = Enum.Material.Metal, Color3.fromRGB(95, 104, 110), 0.035
+						elseif family == "axe" or family == "blunt" or family == "blade" or family == "dagger" then
+							material, tint, reflectance = Enum.Material.Metal, Color3.fromRGB(150, 159, 164), 0.04
+						else
+							material, tint, reflectance = Enum.Material.Wood, Color3.fromRGB(119, 86, 55), 0
+						end
+						bp.Material, bp.Reflectance = material, reflectance
+						-- 원본에 색이 있으면 최대한 남기고, 색 없는 회백색 메시만 소재에 맞춰 보정한다.
+						local light = math.max(bp.Color.R, bp.Color.G, bp.Color.B)
+						local chroma = light - math.min(bp.Color.R, bp.Color.G, bp.Color.B)
+						local influence = if light > 0.74 and chroma < 0.12 then 0.78 else 0.13
+						bp.Color = bp.Color:Lerp(tint, influence)
 					end
 				end
 			end
