@@ -2618,6 +2618,30 @@ function FieldScene.start(opts)
 				local forward = if longReach then 1.20 elseif heavy then 0.65 else 0.96
 				local rotation = (if finale then 1.95 elseif slashIdx % 3 == 0 then 1.1 else 0.50 + slashIdx * 0.055)
 				local leap = if finale then (if swift then 0.62 elseif heavy then 0.20 else 0.40) else 0
+				-- [전투 무용 4~9박] 옆구르기·한손 짚기·백덤블링·슬라이딩·높은 선회·측면 공중회전.
+				-- 중량 무기는 무게 중심을 지키는 피벗 위주, 모든 동작은 기존 타격/이동과 분리된 시각 전용.
+				local spinPhase = math.clamp((p - 0.08) / 0.75, 0, 1)
+				local spin = spinPhase * spinPhase * (3 - 2 * spinPhase) * math.pi * 2
+				local settle = math.sin(math.clamp((p - 0.63) / 0.37, 0, 1) * math.pi)
+				if slashIdx == 4 then
+					return CFrame.new(side * lateral * 1.6 * beat, -(if heavy then 0.65 else 0.95) * beat + 0.12 * settle, -forward * 0.45 * thrust)
+						* CFrame.Angles(-0.23 * beat, side * 0.22 * beat, if heavy then -side * 1.45 * beat else -side * spin)
+				elseif slashIdx == 5 and swift then
+					return CFrame.new(side * 0.87 * beat, -0.34 * beat + 0.68 * bell((p - 0.12) / 0.70), -0.26 * thrust)
+						* CFrame.Angles(0.13 * beat, side * 0.22 * beat, side * spin)
+				elseif slashIdx == 6 and not heavy then
+					return CFrame.new(-side * 0.28 * beat, 2.15 * beat - 0.18 * settle, -0.37 * thrust)
+						* CFrame.Angles(spin, side * 0.16 * beat, 0)
+				elseif slashIdx == 7 then
+					return CFrame.new(side * 1.12 * beat, -0.97 * beat + 0.12 * settle, -forward * 0.64 * thrust)
+						* CFrame.Angles(0.34 * beat, -side * 0.82 * beat, side * 0.24 * beat)
+				elseif slashIdx == 8 then
+					return CFrame.new(side * 0.52 * beat, (if heavy then 1.55 else 2.82) * beat - 0.18 * settle, -0.25 * thrust)
+						* CFrame.Angles(-0.28 * beat, side * spin, side * 0.14 * beat)
+				elseif slashIdx == 9 and not heavy then
+					return CFrame.new(side * 1.18 * beat, 1.91 * beat - 0.23 * settle, -forward * 0.28 * thrust)
+						* CFrame.Angles(0.12 * beat, side * 0.24 * beat, -side * spin)
+				end
 				-- [검무 10박 마무리] 빠른 무기는 부드러운 전신 회전 후 전방 복귀, 중량 무기는 묵직한 반회전과 착지.
 				local eased = p * p * (3 - 2 * p)
 				local finishTurn = if finale and not heavy then side * eased * math.pi * 2 else side * rotation * beat
@@ -2670,46 +2694,45 @@ function FieldScene.start(opts)
 				if wpn.ranged then return CFrame.new(0, -0.12 * bell(p), 0) * CFrame.Angles(0, 0.12 * bell(p), 0) end
 				return CFrame.new(0, -0.5 * bell(p), 0) * CFrame.Angles(0.12, p * math.pi * 4, 0)
 			elseif kind == "dash" then
-				-- [직업별 R15 회피 궤적] 실제 14스터드 이동과 무적 시간은 전투 함수가 소유한다.
-				-- 매 회피마다 좌우 동작만 번갈아 보이며 RootJoint 시각 자세는 시작·끝에 원위치로 복귀한다.
+				-- [0.4초 댄스 회피 6종] 옆구르기·백덤블링·높은 점프·슬라이딩·한손 짚기·측면 공중회전.
+				-- R15 시각 RootJoint만 사용하며 실제 14스터드 이동·무적·공격 수치는 보존한다.
 				local ch = player.Character
 				local style = ch and ch:GetAttribute("FieldDodgeStyle") or "warrior"
 				local side = ch and ch:GetAttribute("FieldDodgeBeat") or 1
+				local trick = ch and ch:GetAttribute("FieldDodgeTrick") or 1
 				local press = bell(p)
-				-- [회피 회전 완충] 진입·착지 각속도를 0으로 감쇠해 끝 프레임 회전을 튀지 않게 한다.
-				local eased = p * p * (3 - 2 * p)
-				local flip = eased * math.pi * 2
+				-- [빠른 자연스러운 회전] 준비 0.08초, 회전 종료 0.33초, 남은 시간은 착지·회수.
+				local t = math.clamp((p - 0.08) / 0.75, 0, 1)
+				local spin = t * t * (3 - 2 * t) * math.pi * 2
 				local turn = math.sin(math.clamp((p - 0.08) / 0.84, 0, 1) * math.pi)
-				if style == "navigator" then
-					-- 항해사: 공중 전방 한 바퀴, 몸을 둥글게 말아 전진.
-					return CFrame.new(0.20 * side * press, -0.72 * press, -0.28 * press)
-						* CFrame.Angles(-flip, 0.18 * side * turn, 0)
-				elseif style == "warrior" then
-					-- 무인: 어깨를 축으로 비스듬히 구른 뒤 방어 자세로 착지.
-					return CFrame.new(0.44 * side * press, -0.56 * press, -0.24 * press)
-						* CFrame.Angles(-0.58 * press, 0.20 * side * turn, -side * flip)
-				elseif style == "gunner" then
-					-- 포수: 한 무릎을 낮추어 옆으로 슬라이딩, 무기는 정면을 바라본다.
-					return CFrame.new(0.97 * side * press, -0.82 * press, -0.10 * press)
-						* CFrame.Angles(0.24 * press, -0.66 * side * turn, 0.25 * side * press)
-				elseif style == "merchant" then
-					-- 상인: 소지품을 감싸면서 빠른 반회전 피벗.
-					return CFrame.new(0.70 * side * press, -0.42 * press, 0)
-						* CFrame.Angles(-0.15 * press, side * 1.35 * turn, -0.24 * side * press)
-				elseif style == "clergy" then
-					-- 성직자: 성역의 빛 속으로 비스듬히 솟아올라 기도 자세로 착지.
-					return CFrame.new(1.20 * side * press, 0.52 * press, 0)
-						* CFrame.Angles(-0.32 * press, -0.52 * side * turn, 0.35 * side * press)
-				elseif style == "scholar" then
-					-- 학자: 문양을 가로질러 낮고 길게 옆으로 미끄러진다.
-					return CFrame.new(-1.45 * side * press, -0.55 * press, 0)
-						* CFrame.Angles(-0.44 * press, 0.72 * side * turn, -0.35 * side * press)
-				elseif style == "doctor" then
-					-- 의사: 몸을 접어 비껴 딛고 재빨리 선다.
-					return CFrame.new(-0.87 * side * press, -0.62 * press, 0)
-						* CFrame.Angles(0.36 * press, -0.35 * side * turn, -0.18 * side * press)
+				local land = math.sin(math.clamp((p - 0.64) / 0.36, 0, 1) * math.pi)
+				local lift = if style == "navigator" or style == "clergy" then 1.18 elseif style == "gunner" or style == "doctor" then 0.92 else 1
+				local span = if style == "scholar" or style == "merchant" then 1.18 else 1
+				if trick == 1 then
+					-- [옆구르기] 어깨부터 바닥을 감싸듯 말고 발끝으로 착지.
+					return CFrame.new(side * 1.18 * span * press, -1.12 * press + 0.16 * land, -0.34 * press)
+						* CFrame.Angles(-0.22 * press, side * 0.16 * turn, -side * spin)
+				elseif trick == 2 then
+					-- [백덤블링] 무릎을 접어 뒤로 한 바퀴 회전.
+					return CFrame.new(-side * 0.22 * press, 2.38 * lift * press - 0.26 * land, 0.32 * press)
+						* CFrame.Angles(spin, side * 0.14 * turn, 0)
+				elseif trick == 3 then
+					-- [높은 점프] 공중 피루엣, 가볍게 접지.
+					return CFrame.new(side * 0.60 * span * press, 3.35 * lift * press - 0.28 * land, -0.43 * press)
+						* CFrame.Angles(-0.36 * press, side * spin, side * 0.20 * turn)
+				elseif trick == 4 then
+					-- [슬라이딩] 몸을 낮게 미끄러뜨린 뒤 축발로 일어서기.
+					return CFrame.new(side * 1.72 * span * press, -1.25 * press + 0.17 * land, -0.72 * press)
+						* CFrame.Angles(0.34 * press, -side * 0.78 * turn, side * 0.23 * press)
+				elseif trick == 5 then
+					-- [한손 짚고 돌기] 한 팔을 축으로 카트휠, 골반·발끝 회수.
+					return CFrame.new(side * 1.04 * span * press, -0.43 * press + 0.58 * lift * math.sin(math.clamp((p - 0.16) / 0.65, 0, 1) * math.pi), -0.18 * press)
+						* CFrame.Angles(-0.16 * press, side * 0.24 * turn, side * spin)
+				else
+					-- [측면 공중회전] 손을 짚지 않고 옆으로 한 바퀴.
+					return CFrame.new(side * 1.32 * span * press, 2.10 * lift * press - 0.22 * land, -0.24 * press)
+						* CFrame.Angles(0.15 * press, side * 0.37 * turn, -side * spin)
 				end
-				return CFrame.new(0, -0.40 * press, 0) * CFrame.Angles(-0.30 * press, 0, 0)
 			elseif kind == "cast_heal" then
 				return CFrame.new(0, -0.35 * bell(p), 0)
 			elseif kind == "cast_luck" then
@@ -2791,6 +2814,7 @@ function FieldScene.start(opts)
 					if swingKind == "dash" then
 						local style = ch:GetAttribute("FieldDodgeStyle") or "warrior"
 						local side = ch:GetAttribute("FieldDodgeBeat") or 1
+						local trick = ch:GetAttribute("FieldDodgeTrick") or 1
 						local peak = math.sin(p * math.pi)
 						local land = math.sin(math.clamp((p - 0.5) / 0.5, 0, 1) * math.pi)
 						local id = CFrame.identity
@@ -2843,6 +2867,51 @@ function FieldScene.start(opts)
 							canon.HandR = (canon.HandR or id) * CFrame.Angles(-0.27 * land, 0, 0.18 * peak)
 							canon.Head = (canon.Head or id) * CFrame.Angles(0, -0.22 * side * land, 0)
 							canon.Spine = (canon.Spine or id) * CFrame.Angles(-0.16 * air + 0.20 * recover, side * 0.16 * air, 0)
+						end
+						-- [6종 회피 전신 관절] 발 디딤 → 회전 → 손 지지 → 발끝 착지를 묘기별로 연결.
+						if trick == 1 then
+							canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.76 * air, 0, -side * 0.40 * air)
+							canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.76 * air, 0, side * 0.40 * air)
+							canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.85 * air - 0.35 * land, 0, 0)
+							canon.ShinR = (canon.ShinR or id) * CFrame.Angles(0.85 * air - 0.35 * land, 0, 0)
+						elseif trick == 2 then
+							-- [백덤블링] 팔 젖히기·양무릎 접기.
+							canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.85 * wind + 0.58 * air, 0, -0.15 * air)
+							canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.85 * wind + 0.58 * air, 0, 0.15 * air)
+							canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.90 * air + 0.32 * land, 0, 0)
+							canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.90 * air + 0.32 * land, 0, 0)
+							canon.ShinL = (canon.ShinL or id) * CFrame.Angles(1.10 * air - 0.42 * land, 0, 0)
+							canon.ShinR = (canon.ShinR or id) * CFrame.Angles(1.10 * air - 0.42 * land, 0, 0)
+						elseif trick == 3 then
+							-- [공중 피루엣] 양팔 펼치기·한 무릎 올리기.
+							canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.40 * air, 0, -0.92 * air)
+							canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.40 * air, 0, 0.92 * air)
+							canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.83 * air + 0.24 * land, 0, -0.12 * air)
+							canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.90 * air - 0.34 * land, 0, 0)
+							canon.FootR = (canon.FootR or id) * CFrame.Angles(-0.39 * air + 0.28 * land, 0, 0)
+						elseif trick == 4 then
+							-- [슬라이딩] 양다리 비대칭·팔 지지.
+							canon.ThighL = (canon.ThighL or id) * CFrame.Angles(0.68 * air - 0.22 * land, 0, -side * 0.18 * air)
+							canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.82 * air + 0.28 * land, 0, 0)
+							canon.ShinR = (canon.ShinR or id) * CFrame.Angles(0.95 * air - 0.30 * land, 0, 0)
+							canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(0.36 * air - 0.15 * recover, 0, -side * 0.26 * air)
+							canon.FootL = (canon.FootL or id) * CFrame.Angles(-0.35 * air + 0.24 * land, 0, 0)
+						elseif trick == 5 then
+							-- [한손 지지 카트휠] 왼손 짚기·양다리 V자.
+							canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-1.04 * air, 0, -side * 0.24 * air)
+							canon.ForearmL = (canon.ForearmL or id) * CFrame.Angles(-0.31 * air + 0.26 * recover, 0, 0)
+							canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.42 * air + 0.36 * land, 0, side * 0.14 * air)
+							canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(0.38 * air, 0, side * 0.72 * air)
+							canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.40 * air, 0, -side * 0.42 * air)
+							canon.ThighR = (canon.ThighR or id) * CFrame.Angles(0.38 * air, 0, side * 0.46 * air)
+						else
+							-- [옆공중회전] 두 팔 벌리기·교차 무릎·발끝 착지.
+							canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.56 * air, 0, -0.66 * air)
+							canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.56 * air, 0, 0.66 * air)
+							canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.70 * air + 0.28 * land, 0, -side * 0.14 * air)
+							canon.ThighR = (canon.ThighR or id) * CFrame.Angles(0.35 * air - 0.20 * land, 0, side * 0.14 * air)
+							canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.81 * air - 0.31 * land, 0, 0)
+							canon.FootR = (canon.FootR or id) * CFrame.Angles(0.36 * land - 0.25 * air, 0, 0)
 						end
 					end
 				end
@@ -2953,6 +3022,30 @@ function FieldScene.start(opts)
 					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-accent * push + 0.22 * accent * recover, 0, -side * accent * 0.37 * push)
 					canon.ForearmR = (canon.ForearmR or id) * CFrame.Angles(-accent * 0.48 * push + accent * 0.68 * recover, 0, 0)
 					canon.FootR = (canon.FootR or id) * CFrame.Angles(-accent * 0.24 * push + accent * 0.31 * recover, 0, side * 0.12 * recover)
+				end
+				-- [4~9박 전신 곡예 관절] 무기별 모션에 손목 지지·무릎 접힘·발끝 순차 착지 동작을 합성.
+				if slashIdx == 4 or slashIdx == 9 then
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.62 * shoulder, 0, -side * 0.36 * shoulder)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.49 * shoulder, 0, side * 0.31 * shoulder)
+					canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.69 * step - 0.25 * finish, 0, 0)
+					canon.ShinR = (canon.ShinR or id) * CFrame.Angles(0.52 * step - 0.22 * finish, 0, 0)
+				elseif slashIdx == 5 and (family == "dagger" or family == "fist") then
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.93 * shoulder, 0, -side * 0.24 * shoulder)
+					canon.HandL = (canon.HandL or id) * CFrame.Angles(-0.36 * shoulder + 0.28 * finish, 0, 0)
+					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(0.45 * step, 0, side * 0.34 * shoulder)
+				elseif slashIdx == 6 and family ~= "axe" and family ~= "blunt" then
+					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.71 * step + 0.29 * finish, 0, 0)
+					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.71 * step + 0.29 * finish, 0, 0)
+					canon.ShinL = (canon.ShinL or id) * CFrame.Angles(0.84 * step - 0.35 * finish, 0, 0)
+					canon.ShinR = (canon.ShinR or id) * CFrame.Angles(0.84 * step - 0.35 * finish, 0, 0)
+				elseif slashIdx == 7 then
+					canon.ThighR = (canon.ThighR or id) * CFrame.Angles(-0.85 * step + 0.35 * finish, 0, 0)
+					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(0.55 * step, 0, -side * 0.17 * step)
+					canon.FootL = (canon.FootL or id) * CFrame.Angles(-0.30 * step + 0.25 * finish, 0, 0)
+				elseif slashIdx == 8 then
+					canon.UpperArmL = (canon.UpperArmL or id) * CFrame.Angles(-0.34 * shoulder, 0, -0.61 * shoulder)
+					canon.UpperArmR = (canon.UpperArmR or id) * CFrame.Angles(-0.34 * shoulder, 0, 0.61 * shoulder)
+					canon.ThighL = (canon.ThighL or id) * CFrame.Angles(-0.47 * step, 0, 0)
 				end
 				-- [10박자 마무리] 스윙을 억지로 반복하지 않고 시선·축발·팔끝이 순차적으로 회수된다.
 				if slashIdx == 10 then
@@ -4538,8 +4631,9 @@ function FieldScene.start(opts)
 			local dodgeStyle = if JobSkills.Categories[profession] then profession else JobSkills.categoryOf(profession)
 			if ch0 then
 				ch0:SetAttribute("FieldDodgeStyle", dodgeStyle)
-				-- [시각 교대] 같은 직업도 연속 회피하면 왼쪽·오른쪽 R15 모션이 번갈아 보인다.
+				-- [시각 교대] 같은 직업도 회피마다 6종 묘기를 순환하며 왼쪽·오른쪽 전신 동작을 바꾼다.
 				ch0:SetAttribute("FieldDodgeBeat", -(ch0:GetAttribute("FieldDodgeBeat") or -1))
+				ch0:SetAttribute("FieldDodgeTrick", (ch0:GetAttribute("FieldDodgeTrick") or 0) % 6 + 1)
 			end
 			local dodgeOrigin = hrp.CFrame
 			-- [완벽 회피 판정 준비] 누르는 순간 이미 공격 예고/진행 중이던 적만 기록한다.
