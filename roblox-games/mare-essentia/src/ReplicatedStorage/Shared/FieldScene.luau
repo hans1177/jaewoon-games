@@ -1186,6 +1186,7 @@ function FieldScene.start(opts)
 			{ "도기 투척병", "Rogue", Color3.fromRGB(134, 91, 65), "fist", nil, "jar" },
 			{ "장총병", "Rogue_Hooded", Color3.fromRGB(66, 106, 90), "flintlock_musket" },
 			{ "권총병", "Rogue", Color3.fromRGB(112, 90, 72), "flintlock_pistol" },
+			{ "화약 폭탄병", "Rogue_Hooded", Color3.fromRGB(118, 77, 57), "bomb", nil, "bomb" },
 		},
 		shield = {
 			{ "원형방패 검병", "Knight", Color3.fromRGB(117, 119, 132), "sword", "shield-round" },
@@ -1262,13 +1263,17 @@ function FieldScene.start(opts)
 		end
 		local ac = AC.newEnemy(if isBoss then "boss" else kinds[(i - 1) % #kinds + 1])
 		local styleN = math.floor((i - 1) / 4) % #looks[ac.kind] + 1
+		-- [실등록 화약병] 1650년 이후, 전용 폭탄이 Roblox AssetIds에 있는 경우만 편성한다.
+		if ac.kind == "archer" and (opts.year or 1517) >= 1650
+			and AssetIds["Relics/weapon-bomb"] and math.floor((i - 1) / 4) % 6 == 4 then styleN = 7 end
 		local style = looks[ac.kind][styleN]
+		if style[6] == "bomb" and ((opts.year or 1517) < 1650 or not AssetIds["Relics/weapon-bomb"]) then
+			styleN = 1
+			style = looks.archer[1]
+		end
 		-- [모든 시대 투척병] 시대별 실물을 재사용한다. 미등록 폭탄 메시로 대체하지 않는다.
 		local throwAsset = style[6]
-		if throwAsset == "jar" and (opts.year or 1517) >= 1600 then
-			style = table.clone(style)
-			style[1] = "폭탄병"
-		end
+		-- [역사·실물 일치] 도기는 어디까지나 도기 투척이고, 폭탄병 명칭은 실물 화약 폭탄에만 쓴다.
 		-- [시대 일치] 1680년 이전에는 수석식 총 대신 기존 활/석궁 실물 모델만 사용한다.
 		if (opts.year or 1517) < 1680 and (style[4] == "flintlock_musket" or style[4] == "flintlock_pistol") then
 			style = looks.archer[(styleN % 2) + 1]
@@ -1286,6 +1291,11 @@ function FieldScene.start(opts)
 			if not isBoss then individualDef.range = math.max(individualDef.range, 8) end
 		elseif weapon.id == "crossbow" then
 			individualDef.recover *= 1.28
+		elseif weapon.family == "explosive" then
+			individualDef.range = math.min(individualDef.range, weapon.range)
+			individualDef.keepAway = 10
+			individualDef.windup = 1.2
+			individualDef.recover = 1.85
 		elseif weapon.family == "firearm" then
 			individualDef.windup *= 1.17
 			individualDef.recover *= 1.50
@@ -1870,10 +1880,10 @@ function FieldScene.start(opts)
 
 	-- 궁수 화살 궤적: 두 끝점 사이에 빔을 잠깐 그린다 (모양 파트 없이 보이지 않는 좌표만 쓴다)
 	local function arrowTrail(from: Vector3, to: Vector3, thrownAsset: string?)
-		if thrownAsset == "stone" or thrownAsset == "jar" then
-			-- [실물 포물선] 기존 등록된 CC0 메시만 복제한다. 임시 구체·폭탄 모델 금지.
+		if thrownAsset == "stone" or thrownAsset == "jar" or thrownAsset == "bomb" then
+			-- [실물 포물선] 실등록된 돌·도기·해적 화약폭탄 메시만 복제한다. 임시 원형 대체 금지.
 			local kind = if thrownAsset == "stone" then "Town" else "Relics"
-			local asset = if thrownAsset == "stone" then "rock-small" else "pot"
+			local asset = if thrownAsset == "stone" then "rock-small" elseif thrownAsset == "bomb" then "weapon-bomb" else "pot"
 			local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 			local group = lib and lib:FindFirstChild(kind)
 			local original = AssetIds[kind .. "/" .. asset] and group and group:FindFirstChild(asset)
@@ -1907,8 +1917,9 @@ function FieldScene.start(opts)
 				if t >= 1 then
 					move:Disconnect()
 					item:Destroy()
-					burst(to, if thrownAsset == "jar" then 11 else 5, thrownAsset == "jar")
-					if thrownAsset == "jar" then sfx("sfx_card_chain", 0.28, 0.9) end
+					burst(to, if thrownAsset == "bomb" then 20 elseif thrownAsset == "jar" then 11 else 5, thrownAsset ~= "stone")
+					if thrownAsset == "bomb" then sfx("sfx_naval_cannon", 0.5, 1.4)
+					elseif thrownAsset == "jar" then sfx("sfx_card_chain", 0.28, 0.9) end
 				end
 			end)
 			return
@@ -2566,11 +2577,11 @@ function FieldScene.start(opts)
 		local group = lib and lib:FindFirstChild("Relics")
 		local items = {}
 		if thrownAsset then
-			-- [실물 투척병] 동일한 장착·용접 경로 사용. 손에 든 돌/도기와 날아가는 모델이 일치한다.
-			table.insert(items, { modelName = if thrownAsset == "stone" then "rock-small" else "pot",
+			-- [실물 투척병] 손에 든 돌/도기/폭탄과 날아가는 동일 모델을 쓴다.
+			table.insert(items, { modelName = if thrownAsset == "stone" then "rock-small" elseif thrownAsset == "bomb" then "weapon-bomb" else "pot",
 				kind = if thrownAsset == "stone" then "Town" else "Relics", hand = rightHand, shield = false, throwable = true })
 		end
-		if weapon.family ~= "fist" then
+		if weapon.family ~= "fist" and not (thrownAsset == "bomb" and weapon.family == "explosive") then
 			table.insert(items, { modelName = weapon.model, hand = rightHand, shield = false })
 		end
 		if shieldModel then
@@ -2672,7 +2683,8 @@ function FieldScene.start(opts)
 						local thrownName = characterModel:GetAttribute("EquippedThrownAsset")
 						if type(id) == "string" then
 							local weapon = Weapons.get(id)
-							if weapon.model == asset.Name or shieldName == asset.Name or (asset.Name == "pot" and thrownName == "jar") then
+							if weapon.model == asset.Name or shieldName == asset.Name
+								or (asset.Name == "pot" and thrownName == "jar") or (asset.Name == "weapon-bomb" and thrownName == "bomb") then
 								equipFieldWeapon(characterModel, weapon, if shieldName ~= "" then shieldName else nil,
 									if thrownName ~= "" then thrownName else nil)
 							end
@@ -3836,6 +3848,11 @@ function FieldScene.start(opts)
 					groundRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0), e.ac.def.range * STUD * 0.85, e.ac.def.windup)
 				end
 				e.parryAt = nil
+				-- [폭탄 사전 경고] 던지기 전에 목표 지점을 고정한다. 움직이면 폭발을 피할 수 있다.
+				if e.throwAsset == "bomb" then
+					e.bombAim = hrp.Position
+					groundRing(e.bombAim - Vector3.new(0, 2.5, 0), 6, e.ac.def.windup + 0.28)
+				end
 				-- 돌진병은 달려들 길(붉은 띠), 사수는 조준선(붉은 빔)을 보여 준다: 예고 중에 비키면 피할 수 있다
 				if e.ac.def.charge or e.ac.def.keepAway then
 					local from, gp = e.root.Position, hrp.Position
@@ -3898,6 +3915,10 @@ function FieldScene.start(opts)
 				end
 			elseif event == "strike" then
 				e.swingAt = now
+				if e.throwAsset == "bomb" and e.bombAim then
+					local diff = (hrp.Position - e.bombAim) * Vector3.new(1, 0, 1)
+					hit = diff.Magnitude <= 6
+				end
 				if e.ac.def.charge then
 					-- [돌진 모션] 공격 판정 시각·범위는 유지하되 시각 모델은 목표로 1프레임 순간이동하지 않는다.
 					-- 매 프레임 일정 거리만 전진해 PC·모바일 프레임 지연에도 돌진이 눈에 보인다.
@@ -3928,8 +3949,10 @@ function FieldScene.start(opts)
 				end
 				if e.ac.def.keepAway then
 					if e.throwAsset then
-						arrowTrail(e.root.Position + Vector3.new(0, 2.6, 0), hrp.Position + Vector3.new(0, 0.6, 0), e.throwAsset)
-						sfx("sfx_card_swing", 0.34, if e.throwAsset == "stone" then 1.22 else 0.92)
+						local aim = if e.throwAsset == "bomb" and e.bombAim then e.bombAim else hrp.Position
+						arrowTrail(e.root.Position + Vector3.new(0, 2.6, 0), aim + Vector3.new(0, if e.throwAsset == "bomb" then -1.8 else 0.6, 0), e.throwAsset)
+						if e.throwAsset ~= "bomb" then sfx("sfx_card_swing", 0.34, if e.throwAsset == "stone" then 1.22 else 0.92) end
+						e.bombAim = nil
 					elseif e.weapon and e.weapon.family == "firearm" then
 						-- [총병 발포] 원본 발포 소리·섬광 사용. 화살로 총알을 위장하지 않는다.
 						sfx("sfx_naval_cannon", 0.28, 1.45)
