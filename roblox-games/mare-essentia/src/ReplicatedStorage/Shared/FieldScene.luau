@@ -1537,6 +1537,11 @@ function FieldScene.start(opts)
 		UDim2.fromOffset(if visualMobile then 112 else 100, if visualMobile then 112 else 100),
 		UDim2.new(1, -90, 1, -88), Vector2.new(0.5, 0.5))
 	attackBtn.Name = "FieldAttack"
+	-- [작은 스마트폰 세로 화면] 왼쪽 이동 패드와 손가락 입력 공간 확보.
+	if visualMobile and workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X < 450 then
+		attackBtn.Position = UDim2.new(1, -74, 1, -74)
+		attackBtn.Size = UDim2.fromOffset(104, 104)
+	end
 	attackBtn:SetAttribute("SkillFullName", "일반 공격")
 	attackBtn.Text = ""
 	attackBtn.TextSize = 19
@@ -3970,8 +3975,8 @@ function FieldScene.start(opts)
 	local screenHeight = if cameraViewport.Y >= 250 then cameraViewport.Y else 640
 	-- [엄지 동선] 일반 공격 → 크게 키운 회피 → 스킬 3칸 순으로 겹치지 않게 배치한다.
 	local outerSkillRadius = math.clamp(math.min(screenWidth * 0.56, screenHeight * 0.45), 162, 200)
-	local compactTouch = visualMobile and screenWidth < 360
-	local skillSize = if compactTouch then 72 elseif visualMobile then 82 else 72
+	local compactTouch = visualMobile and screenWidth < 450
+	local skillSize = if compactTouch then 76 elseif visualMobile then 82 else 72
 	-- [루아우 지역변수 절약] 버튼 위치는 기존 attackBtn 속성에서 직접 계산한다. 부수적인 보관 변수는 만들지 않는다.
 	local function arcPos(r: number, theta: number): UDim2
 		local a = math.rad(theta)
@@ -3997,10 +4002,13 @@ function FieldScene.start(opts)
 	end
 	-- 기본 행동(스킬 수에 안 센다): 회피·방어. 스킬 3칸은 바깥 줄에 놓인다.
 	mkSkill("dodge", "회피", Color3.fromRGB(32, 141, 144),
-		arcPos(math.clamp(outerSkillRadius * 0.82, 132, 164), 4), if compactTouch then 88 elseif visualMobile then 104 else 86)
+		if compactTouch then UDim2.new(1, attackBtn.Position.X.Offset - 88, 1, attackBtn.Position.Y.Offset - 90)
+			else arcPos(math.clamp(outerSkillRadius * 0.82, 132, 164), 4),
+		if compactTouch then 92 elseif visualMobile then 104 else 86)
 	mkSkill("parry", "방어", Color3.fromRGB(71, 88, 127),
-		arcPos(math.clamp(outerSkillRadius * 0.82, 132, 164) * 0.98, 45),
-		if compactTouch then 64 elseif visualMobile then 68 else 64)
+		if compactTouch then UDim2.new(1, attackBtn.Position.X.Offset + 3, 1, attackBtn.Position.Y.Offset - 108)
+			else arcPos(math.clamp(outerSkillRadius * 0.82, 132, 164) * 0.98, 45),
+		if compactTouch then 58 elseif visualMobile then 68 else 64)
 	-- [등록 아이콘] 장갑 대신 실제 등록 나침반 방향 아이콘으로 이동·회피 기능을 구분한다.
 	addIcon(skillBtns.dodge.btn, "Menu/chart_compass")
 	addIcon(skillBtns.parry.btn, "Menu/cc0_shield2")
@@ -4130,6 +4138,10 @@ function FieldScene.start(opts)
 		local function slotPos(id): UDim2
 			-- [전투 스킬] 공격 바로 위로 3칸을 계단형 배치. 회피·방어와 원형 터치 영역을 분리한다.
 			local i = if type(id) == "number" then id else (slotOf[id] or 1)
+			if compactTouch then
+				return UDim2.new(1, attackBtn.Position.X.Offset + (if i == 1 then -115 elseif i == 2 then -40 else 26),
+					1, attackBtn.Position.Y.Offset - (if i == 1 then 210 elseif i == 2 then 224 else 212))
+			end
 			return UDim2.new(1, attackBtn.Position.X.Offset + (if i == 1 then -outerSkillRadius
 				elseif i == 2 then -outerSkillRadius * 0.40 else outerSkillRadius * 0.14),
 				1, attackBtn.Position.Y.Offset - (if i == 1 then outerSkillRadius * 0.80
