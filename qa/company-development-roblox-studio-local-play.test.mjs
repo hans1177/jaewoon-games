@@ -4097,6 +4097,39 @@ test('Mare enemy and companion weapon motion transition and foot contact are con
     'enemy authority and companion cooldown, range and damage are unchanged');
 });
 
+// [전투 모션 연속] 타격 이벤트 시 키프레임 접촉과 관절별 반응 속도가 같은 기존 공용 경로로 이어진다.
+test('Mare R15 enemy ally authored weapon impact matches strike event timing',()=>{
+  const base='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
+  const motion=fs.readFileSync(base+'FieldMotion.luau','utf8');
+  const scene=fs.readFileSync(base+'FieldScene.luau','utf8');
+  const common=fs.readFileSync(base+'CommonMotion.luau','utf8');
+  assert.ok(motion.includes('weaponCombo.steps[1].contact / weaponCombo.duration')&&
+    motion.includes('if state == "ANTICIPATION" then math.clamp(phase, 0, 1) * contact')&&
+    motion.includes('elseif state == "ATTACK" then contact + math.clamp((phase - 0.25) / 0.35, 0, 1) * (1 - contact)'),
+    'weapon windup must meet the authored contact pose at original attack event');
+  assert.ok(motion.includes('weaponCombo.fadeDuration / weaponCombo.duration')&&
+    motion.includes('FM.sample(weaponCombo, motionProgress * weaponCombo.duration, h.canon)'),
+    'weapon recovery must continue through the authored guard fade');
+  for(const contact of [0.27,0.44,0.67]){
+    const lastWindup=contact, firstStrike=contact+0*(1-contact);
+    const lastStrike=contact+1*(1-contact), firstRecover=1+0*(.14/.4);
+    assert.ok(Math.abs(lastWindup-firstStrike)<1e-10 && Math.abs(lastStrike-firstRecover)<1e-10,
+      'weapon contact and recovery frame boundaries must have continuous phase');
+  }
+  assert.ok(motion.includes('responseByJoint = {')&&
+    motion.includes('RightWrist = 28')&&
+    motion.includes('FM.step(h, dt, rootRot, response)')&&
+    common.includes('row.response*response*elapsed'),
+    'fast hands, lower body contact and heavier recovery must reuse original joint smoothing');
+  assert.ok(motion.includes('local beatSide = if (h.weaponBeat or 1) % 2 == 0 then -1 else 1')&&
+    motion.includes('not (gun or bow or crossbow)'),
+    'melee alternating sides must not disrupt ranged weapon aiming');
+  assert.ok(scene.includes('AC.stepEnemy(e.ac, dtc, dist')&&
+    scene.includes('strikeEnemy(tgt, 0.6 * aw.power')&&
+    scene.includes('a.nextAt = now + 1.3 / aw.speed'),
+    'enemy combat authority and ally damage, speed, range and reward flow remain unchanged');
+});
+
 test('Mare nine weapon families have distinct authored normal and skill R15 gameplay',()=>{
   const base='roblox-games/mare-essentia/';
   const source=fs.readFileSync(base+'src/ReplicatedStorage/Shared/Weapons.luau','utf8');
