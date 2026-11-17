@@ -142,18 +142,23 @@ local function createCombatPulse(atomId, options, profile)
     emitter.Color=ColorSequence.new(color,accent)
     emitter.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.08),NumberSequenceKeypoint.new(.4,.18),NumberSequenceKeypoint.new(1,1)})
   end
-  flash.Texture = options.textureKey=="slash" and SPRITES.slash or SPRITES.light
-  flash.Orientation = Enum.ParticleOrientation.FacingCamera
-  flash.Speed = NumberRange.new(0);flash.Lifetime=NumberRange.new(duration*.8)
+  -- [탐험 네모 제거] 대형 카메라 정면 사각 스프라이트를 작은 불꽃과 방사형 입자로 대체한다.
+  -- 경고/타격/스킬 종류 및 지속시간은 유지하고 화면에 넓은 텍스처 판을 펼치지 않는다.
+  local flashCount = if options.hideFlash~=true and options.particlesOnly~=true then (MOBILE and 2 or 5) else 0
+  local ringCount = if options.hideRing~=true and options.particlesOnly~=true then (MOBILE and 4 or 10) else 0
+  flash.Texture=SPRITES.spark;flash.Orientation=Enum.ParticleOrientation.FacingCamera
+  flash.Speed=NumberRange.new(reduced and 0 or 2,reduced and 0 or 5)
+  flash.SpreadAngle=Vector2.new(180,180);flash.Lifetime=NumberRange.new(duration*.8)
   flash.Rotation=NumberRange.new(tonumber(options.rotation)or 0)
-  flash.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,flashStart),NumberSequenceKeypoint.new(.18,reduced and flashStart or flashEnd*.7),NumberSequenceKeypoint.new(1,reduced and flashStart or flashEnd)})
-  if options.hideFlash~=true and options.particlesOnly~=true then flash:Emit(1)end
-  -- A stationary radial flash faces the camera instead of a nearly-zero velocity.
-  ring.Texture=SPRITES.ring;ring.Orientation=Enum.ParticleOrientation.FacingCamera
-  ring.Speed=NumberRange.new(0);ring.Lifetime=NumberRange.new(duration)
-  ring.Rotation=NumberRange.new(0);ring.Color=ColorSequence.new(accent)
-  ring.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,ringStart),NumberSequenceKeypoint.new(1,reduced and ringStart or ringEnd)})
-  if options.hideRing~=true and options.particlesOnly~=true then ring:Emit(1)end
+  flash.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,clamp(flashStart*.32,.16,1.0)),NumberSequenceKeypoint.new(1,0)})
+  if flashCount>0 then flash:Emit(flashCount) end
+  ring.Texture=SPRITES.spark;ring.Orientation=Enum.ParticleOrientation.FacingCamera
+  local ringSpeed=if reduced then 0 else clamp((ringEnd-ringStart)/math.max(.08,duration)*.46,2,28)
+  ring.Speed=NumberRange.new(ringSpeed*.72,ringSpeed)
+  ring.SpreadAngle=Vector2.new(180,180);ring.Lifetime=NumberRange.new(duration)
+  ring.Rotation=NumberRange.new(0,360);ring.Color=ColorSequence.new(accent)
+  ring.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,clamp(ringStart*.16,.18,.65)),NumberSequenceKeypoint.new(1,0)})
+  if ringCount>0 then ring:Emit(ringCount) end
   sparks.Texture=SPRITES.spark;sparks.Orientation=Enum.ParticleOrientation.FacingCamera
   sparks.Lifetime=NumberRange.new(duration*.55,duration)
   local distance=clamp(options.distance or profile.distance or 3,0,40)*scale
@@ -162,16 +167,19 @@ local function createCombatPulse(atomId, options, profile)
   sparks.SpreadAngle=Vector2.new(180,180);sparks.Drag=2
   sparks.Rotation=NumberRange.new(0,360);sparks.RotSpeed=NumberRange.new(-90,90)
   sparks.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.42*scale),NumberSequenceKeypoint.new(1,0)})
-  if count>0 then sparks:Emit(count)end
-  mist.Texture=SPRITES.smoke;mist.Orientation=Enum.ParticleOrientation.FacingCamera
+  local mistCount = if options.mist==true then (MOBILE and 2 or 4) else 0
+  local sparksCount = if MOBILE then math.min(count,math.max(0,12-flashCount-ringCount-mistCount)) else count
+  if sparksCount>0 then sparks:Emit(sparksCount) end
+  -- 큰 연기 쿼드 대신 작은 잔광 입자를 사용한다.
+  mist.Texture=SPRITES.spark;mist.Orientation=Enum.ParticleOrientation.FacingCamera
   mist.Lifetime=NumberRange.new(duration*.9,duration*1.2)
   mist.Speed=NumberRange.new(.3,1.3);mist.Drag=1
   mist.Rotation=NumberRange.new(0,360);mist.RotSpeed=NumberRange.new(-25,25)
   mist.Color=ColorSequence.new(accent)
-  mist.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.9*scale),NumberSequenceKeypoint.new(1,3.5*scale)})
-  mist.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.75),NumberSequenceKeypoint.new(1,1)})
-  if options.mist==true then mist:Emit(MOBILE and 2 or 4)end
-  folder:SetAttribute("DisplayedParticleCount",count+(options.hideFlash~=true and options.particlesOnly~=true and 1 or 0)+(options.hideRing~=true and options.particlesOnly~=true and 1 or 0))
+  mist.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.32*scale),NumberSequenceKeypoint.new(1,0)})
+  mist.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.7),NumberSequenceKeypoint.new(1,1)})
+  if mistCount>0 then mist:Emit(mistCount) end
+  folder:SetAttribute("DisplayedParticleCount",sparksCount+flashCount+ringCount+mistCount)
   task.delay(duration*1.3+.15,function()
     if node.destroyed or node.token~=token then return end
     for _,emitter in ipairs(node.emitters)do emitter:Clear()end
@@ -227,7 +235,8 @@ function RobloxCommonVFX.AttachShortTrail(hostPart, options)
   trail.Lifetime = lifetime
   trail.MinLength = 0.05
   trail.FaceCamera = false
-  trail.Texture = SPRITES.light
+  -- [네모 잔광 제거] 고정 스프라이트 판 대신 끝이 가늘어지는 기본 Trail을 쓴다.
+  trail.Texture = ""
   trail.LightEmission = 1
   trail.LightInfluence = 0
   trail.Color = ColorSequence.new({
