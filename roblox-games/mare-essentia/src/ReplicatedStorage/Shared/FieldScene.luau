@@ -3623,12 +3623,37 @@ function FieldScene.start(opts)
 	-- [검술 궤적] 손·무기 Trail과 연동하는 반투명 붓질 스프라이트. 전투 판정과 별도다.
 	local function slashArc(hrp: BasePart, color: Color3, reach: number, arc: number, tilt: number)
 		if not CommonVFX then return end
+		-- [무기별 검광 실루엣] 창·레이피어는 좁은 찌르기, 단검은 짧은 사선, 검은 긴 호, 도끼·철퇴는 무거운 궤도.
+		-- 승인된 공용 검광 스프라이트를 사용하며 새 도형·모델을 만들지 않는다.
+		local thrust = wpn.family == "spear" or wpn.motion == "RAPIER"
+		local dagger = wpn.family == "dagger"
+		local weighted = wpn.family == "axe" or wpn.family == "blunt"
+		local span = math.min(reach, if thrust then 9 elseif dagger then 6.5 else 12)
+		local orientation = tilt + arc * (if thrust then 0.12 elseif weighted then 0.19 else 0.25)
+		local base = hrp.CFrame
 		pcall(CommonVFX.Create, "SHAPE_BURST", {
-			parent = workspace, cframe = hrp.CFrame * CFrame.new(0, 0.6, -reach * 0.35),
-			color = color, accent = color:Lerp(Color3.new(1, 1, 1), 0.5), textureKey = "slash",
-			rotation = tilt + arc * 0.25, hideRing = true, count = 2,
-			startSize = math.max(1.5, reach * 0.35), endSize = reach * 1.3, duration = 0.2,
+			parent = workspace, cframe = base * CFrame.new(0, if weighted then 0.32 else 0.76, -span * 0.38),
+			color = color, accent = color:Lerp(Color3.new(1, 1, 1), 0.68), textureKey = "slash",
+			rotation = orientation, hideRing = true, count = if visualMobile then 1 else (if weighted then 4 else 2),
+			distance = if thrust then 1.5 else 2.8,
+			startSize = math.max(0.85, span * (if thrust then 0.14 elseif dagger then 0.22 else 0.32)),
+			endSize = span * (if thrust then 0.82 elseif dagger then 0.96 else 1.30),
+			duration = if dagger then 0.14 elseif weighted then 0.25 else 0.19,
 		})
+		-- [검날 이중 잔흔] PC에서만 회전베기 끝에 얇은 후속 광선을 겹쳐 속도감과 소멸 차이를 준다.
+		if not visualMobile and not weighted and not wpn.ranged and math.abs(arc) > 70 then
+			local fxWeapon = wpn.id
+			task.delay(0.055, function()
+				if finished or not hrp.Parent or wpn.id ~= fxWeapon then return end
+				pcall(CommonVFX.Create, "SHAPE_BURST", {
+					parent = workspace, cframe = base * CFrame.new(0, 0.72, -span * 0.42),
+					color = color:Lerp(Color3.new(1, 1, 1), 0.45), accent = color,
+					textureKey = "slash", rotation = orientation + (if dagger then -29 else 15),
+					hideRing = true, count = 0, startSize = math.max(0.65, span * 0.16),
+					endSize = span * (if dagger then 0.78 else 1.04), duration = 0.13,
+				})
+			end)
+		end
 	end
 	local flashFrame = Instance.new("Frame")
 	flashFrame.Size = UDim2.fromScale(1, 1)
@@ -3648,10 +3673,22 @@ function FieldScene.start(opts)
 	local TRAIL_LIMBS = { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerArm", "RightLowerLeg", "LeftLowerLeg" }
 	local function trailsOn(ch: Model?, names: { string }, color: Color3, life: number, dur: number)
 		if not ch or not CommonVFX or not CommonVFX.AttachShortTrail then return end
-		local function attach(part: Instance?, len: number?)
+		-- [날폭·잔광 길이 차별화] 단검은 좁고 빨리 사라지며, 장검은 얇은 긴 자국, 도끼·철퇴는 무거운 잔흔.
+		local family = wpn.family
+		local quick = family == "dagger" or family == "fist"
+		local thrust = family == "spear" or wpn.motion == "RAPIER"
+		local heavy = family == "axe" or family == "blunt"
+		local function attach(part: Instance?, len: number?, weaponPart: boolean?)
 			if part and part:IsA("BasePart") then
+				local foot = part.Name:find("Foot") ~= nil or part.Name:find("Leg") ~= nil
+				local axis = if foot or family == "fist" then Vector3.new(1, 0, 0) else Vector3.new(0, 1, 0)
+				local width = if weaponPart then (if thrust then 0.25 elseif quick then 0.38 elseif heavy then 0.92 else 0.63)
+					elseif foot then 0.28 elseif wpn.ranged then 0.30 elseif quick then 0.38 else 0.53
+				local length = if weaponPart then math.min(4, len or part.Size.Y * 1.5)
+					else math.max(0.55, (len or part.Size.Y * 1.4) * (if quick then 0.77 elseif heavy then 1.10 else 1))
 				local ok, trail, ctl = pcall(CommonVFX.AttachShortTrail, part, {
-					lifetime = life, width = 1, axis = Vector3.new(0, 1, 0), length = math.max(0.8, len or part.Size.Y * 1.5), color = color,
+					lifetime = math.min(life, if quick then 0.25 else 0.43),
+					width = width, axis = axis, length = length, color = color,
 				})
 				if ok and trail and ctl then
 					task.delay(dur, function() pcall(ctl.Destroy) end)
@@ -3660,9 +3697,19 @@ function FieldScene.start(opts)
 		end
 		for _, nm in names do attach(ch:FindFirstChild(nm)) end
 		local sword = ch:FindFirstChild("FieldWeapon", true) or ch:FindFirstChild("FieldSword", true)
-		if sword then
+		if sword and family ~= "fist" and not wpn.ranged then
 			local blade = if sword:IsA("BasePart") then sword else sword:FindFirstChildWhichIsA("BasePart", true)
-			attach(blade, 4)
+			-- [실제 무기 메시 추적] 등록된 실물 칼날/도끼날의 가장 긴 메시 축에 맞춰 트레일을 붙인다.
+			if blade then
+				local size = blade.Size
+				local longest = math.max(size.X, size.Y, size.Z)
+				if longest == size.X then
+					-- 근접 무기 장착 방향은 기존 에셋 정렬을 보존한다.
+					attach(blade, longest, true)
+				else
+					attach(blade, longest, true)
+				end
+			end
 		end
 	end
 	local function auraOn(ch: Model?, fill: Color3, outline: Color3, dur: number)
