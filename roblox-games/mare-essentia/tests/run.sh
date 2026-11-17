@@ -56,6 +56,7 @@ if command -v "$COMPILE" >/dev/null 2>&1 || [ -x "$COMPILE" ]; then
   echo "== 클라이언트·전투 장면 컴파일 검사 =="
   "$COMPILE" --null "$ROOT/src/StarterPlayer/Game.client.luau" >/dev/null
   "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/FieldScene.luau" >/dev/null
+  "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/NavalBattle.luau" >/dev/null
 fi
 
 echo "== 무기 연타·아이콘 스킬·저장 회귀 검사 =="
