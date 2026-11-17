@@ -3240,35 +3240,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end)
 	end
 	-- [해전 이펙트] 연기·파편·불꽃·물기둥·항적을 한 목록으로 관리한다 (함수 안 지역 변수 수를 아끼려고 한 표에 모음)
-	local FX = { list = {}, wakeAt = {}, dmgAt = {}, fireStates = {}, boardZoom = 0, cam = nil,
+	local FX = { wakeAt = {}, dmgAt = {}, fireStates = {}, boardZoom = 0, cam = nil,
 		sink = nil, outcomeReason = nil }
-	local C_SMOKE, C_DARK, C_WATER, C_WOOD = Color3.fromRGB(215, 215, 220), Color3.fromRGB(62, 62, 68), Color3.fromRGB(200, 232, 245), Color3.fromRGB(104, 70, 40)
-	function FX.spawn(size, pos, color, material, shape, vel, life, o)
-		if #FX.list > 260 then
-			return
-		end
-		o = o or {}
-		local p = part(folder, size, if o.upright then CFrame.new(pos) * CFrame.Angles(0, 0, math.pi / 2) else CFrame.new(pos), color, material, shape)
-		p.Transparency = o.t0 or 0
-		table.insert(FX.list, { p = p, vel = vel or Vector3.zero, life = life, age = 0, grow = o.grow or 0, g = o.g or 0, t0 = o.t0 or 0, size = size, flat = o.flat, ring = o.ring })
-	end
-	function FX.update(dt)
-		for i = #FX.list, 1, -1 do
-			local f = FX.list[i]
-			f.age += dt
-			local k = f.age / f.life
-			if k >= 1 then
-				f.p:Destroy()
-				table.remove(FX.list, i)
-			else
-				f.vel += Vector3.new(0, -f.g * dt, 0)
-				local grow = 1 + f.grow * k
-				f.p.Size = if f.ring then Vector3.new(f.size.X, f.size.Y * grow, f.size.Z * grow) elseif f.flat then Vector3.new(f.size.X * grow, f.size.Y, f.size.Z * grow) else f.size * grow
-				f.p.Position += f.vel * dt
-				f.p.Transparency = f.t0 + (1 - f.t0) * k * k
-			end
-		end
-	end
+	local C_SMOKE, C_DARK, C_WATER = Color3.fromRGB(215, 215, 220), Color3.fromRGB(62, 62, 68), Color3.fromRGB(200, 232, 245)
+	-- [해상전투 이펙트] 임의 원통·구·사각 파편과 매 프레임 크기 변경을 폐기한다.
+	-- 기존 ParticleEmitter/Attachment를 사용하며 포탄·판정·함선 모델은 건드리지 않는다.
 	-- 연기 덩어리 n개 (dark = 불탄 검은 연기)
 	function FX.smoke(pos, n, scale, dark)
 		-- [연기 재질] 불투명 공 대신 기존 파티클 재사용. 모바일 배출량 상한 유지.
@@ -3281,15 +3257,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end
 	-- 나무 파편과 불똥
 	function FX.splinters(pos, n)
-		for _ = 1, n do
-			local w = 0.3 + math.random() * 0.7
-			FX.spawn(Vector3.new(w, w * 0.4, w * 2.2), pos, C_WOOD, Enum.Material.Wood, nil,
-				Vector3.new((math.random() - 0.5) * 26, 8 + math.random() * 14, (math.random() - 0.5) * 26), 1.1 + math.random() * 0.6, { g = 38 })
-		end
-		for _ = 1, math.floor(n / 2) do
-			FX.spawn(Vector3.new(0.5, 0.5, 0.5), pos, Color3.fromRGB(255, 190, 80), Enum.Material.Neon, Enum.PartType.Ball,
-				Vector3.new((math.random() - 0.5) * 34, 6 + math.random() * 16, (math.random() - 0.5) * 34), 0.6 + math.random() * 0.3, { g = 30 })
-		end
+		-- [선체 파손] 나무 상자 조각을 생성하지 않고 짧은 황갈색 가시 불티가 비산한다.
+		local count = math.clamp(n, 1, if MOBILE_VFX then 6 else 18)
+		FX.burst(pos, nil, {
+			{ tex = "spark", c0 = Color3.fromRGB(240, 185, 112), c1 = Color3.fromRGB(127, 81, 49),
+				s0 = 0.30, s1 = 0.06, life = 0.62, v0 = 13, v1 = 29, spread = 130,
+				n = count, glow = 0.33, acc = Vector3.new(0, -34, 0), drag = 1.4, a0 = 0.08 },
+			{ tex = "spark", c0 = Color3.fromRGB(255, 222, 145), c1 = Color3.fromRGB(242, 140, 77),
+				s0 = 0.22, s1 = 0.04, life = 0.37, v0 = 20, v1 = 37, spread = 140,
+				n = if MOBILE_VFX then 2 else math.max(3, math.floor(count * 0.65)),
+				glow = 0.8, acc = Vector3.new(0, -32, 0), a0 = 0.05 },
+		})
 	end
 	-- [침몰 화재] 단순 주황색 구 대신 유기적으로 상승하는 불꽃·그을음 스프라이트.
 	function FX.flame(pos, scale, profile)
@@ -3357,7 +3335,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		pe.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, e.a0 or 0.1), NumberSequenceKeypoint.new(0.7, e.a1 or 0.5), NumberSequenceKeypoint.new(1, 1) })
 		pe.Lifetime = NumberRange.new(e.life * 0.7, e.life)
 		pe.Speed = NumberRange.new(e.v0 or 0, e.v1 or e.v0 or 0)
-		pe.SpreadAngle = Vector2.new(e.spread or 180, e.spread or 180)
+		pe.SpreadAngle = Vector2.new(e.spreadX or e.spread or 180, e.spreadY or e.spread or 180)
+		-- [포탄 방향] 발사 화염/불티는 포신 전방, 물보라·선체 파편은 지면 위로 뿜는다.
+		pe.EmissionDirection = if e.axis == "forward" then Enum.NormalId.Front else Enum.NormalId.Top
 		pe.Acceleration = e.acc or Vector3.zero
 		pe.Drag = e.drag or 0
 		pe.Rotation = NumberRange.new(0, 360)
@@ -3384,7 +3364,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local longest = 1
 		for _, e in list do
 			local pe = emitterOn(anchor, e)
-			pe:Emit(e.n or 8)
+			pe:Emit(math.min(e.n or 8, if MOBILE_VFX then 12 else 26))
 			longest = math.max(longest, e.life + 0.2)
 		end
 		if light then
@@ -3397,60 +3377,101 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local FOAM, SEA = Color3.fromRGB(245, 252, 255), Color3.fromRGB(150, 205, 230)
 	-- 충격파 고리: 수면 위로 납작하게 퍼지는 링
 	function FX.shockRing(pos, color, size, life)
-		FX.spawn(Vector3.new(0.35, 2, 2), pos + Vector3.new(0, 0.6, 0), color, Enum.Material.Neon, Enum.PartType.Cylinder, Vector3.zero, life or 0.7, { grow = size or 14, t0 = 0.25, ring = true, upright = true })
+		-- [수면 파문] 기본 원통 파츠 대신 수평으로 번지는 미세 포말·불티.
+		-- 이펙트 전용이므로 충돌/타격/선체 데이터에 관여하지 않는다.
+		local duration = math.clamp(life or 0.6, 0.2, 1.1)
+		local radius = math.clamp(size or 14, 4, 42)
+		FX.burst(pos + Vector3.new(0, 0.2, 0), nil, {
+			{ tex = "spark", c0 = color, c1 = color:Lerp(Color3.new(1, 1, 1), 0.55),
+				s0 = if MOBILE_VFX then 0.30 else 0.42, s1 = 0.03,
+				life = duration, v0 = radius * 0.34 / duration,
+				v1 = math.min(40, radius * 0.58 / duration), spread = 165,
+				n = if MOBILE_VFX then 5 else 12, a0 = 0.10, drag = 4, glow = 0.45,
+				acc = Vector3.new(0, -7, 0) },
+		})
 	end
 	-- [지역별 함포] 단계 1은 짧은 포염, 3부터 긴 화약 연기, 4 이상은 추가 분산 섬광.
 	-- 동아시아는 화약 불티, 유럽은 진한 포연, 미지의 땅은 신비로운 색 궤적을 강조한다.
-	function FX.muzzle(from, dir, profile)
+	function FX.muzzle(from, dir, profile, cannonProfile)
+		-- [포종별 포염] 선회포는 빠른 섬광, 중포는 붉은 화약, 장포는 긴 직선 포화,
+		-- 구포는 위로 퍼지는 묵직한 포연. 지역 색은 기존 함선 테마를 그대로 사용한다.
 		local style = profile or DEFAULT_FX
 		local stage = math.clamp(style.stage or 2, 1, 6)
 		local theme = style.theme or FX_THEMES.europe
-		local density = if MOBILE_VFX then 0.55 else 1
-		local spread = if style.faction == "east_asia" then 36 elseif style.faction == "africa" then 30 else 16
-		FX.burst(from + dir * 2, dir, {
-			{ tex = "fire", c0 = theme.flash, c1 = if style.faction == "lost" then theme.spark else RED,
-				s0 = 2.8 + stage * 0.55, s1 = 4.5 + stage * 1.05, life = 0.28 + stage * 0.04,
-				v0 = 16, v1 = 25 + stage * 3, spread = spread, glow = 1,
-				n = math.floor((3 + stage * 1.7) * density), a0 = 0 },
-			{ tex = "spark", c0 = theme.spark, c1 = theme.tracer,
-				s0 = 0.6 + stage * 0.06, s1 = 0.14, life = 0.35 + stage * 0.035,
-				v0 = 22, v1 = 38 + stage * 5, spread = spread + 8, glow = 1,
-				n = math.floor((5 + stage * 2.3) * density), acc = Vector3.new(0, -24, 0), a0 = 0 },
-			{ tex = "smoke", c0 = theme.smoke, c1 = if style.faction == "lost" then theme.tracer else GREY,
-				s0 = 2.5 + stage * 0.56, s1 = 6 + stage * 2.2, life = 1.15 + stage * 0.22,
-				v0 = 4, v1 = 9 + stage, spread = 20 + stage * 3,
-				n = math.floor((2 + stage * 1.5) * density), a0 = 0.33, drag = 2.2 },
-		}, { color = theme.flash, bright = 2.8 + stage * 0.45, range = 18 + stage * 3, dur = 0.16 + stage * 0.015 })
-		if stage >= 4 then
-			FX.burst(from + dir * 3.5, dir, {
-				{ tex = "spark", c0 = theme.tracer, c1 = theme.spark, s0 = 1.1, s1 = 0.1,
-					life = 0.5, v0 = 32, v1 = 58, spread = if style.faction == "east_asia" then 64 else 30,
-					glow = 0.85, n = if MOBILE_VFX then 4 else (stage - 2) * 6, a0 = 0.1 },
+		local cannon = cannonProfile or NC.demi
+		local swivel = cannon.dur <= 0.36
+		local mortar = cannon.arc >= 35
+		local longGun = cannon.range >= 180
+		local density = if MOBILE_VFX then 0.56 else 1
+		local spread = if swivel then 14 elseif longGun then 8 elseif mortar then 34
+			elseif style.faction == "east_asia" then 30 else 19
+		local flash = if swivel then 1.15 elseif longGun then 1.55 elseif mortar then 2.2 else 1.85
+		FX.burst(from + dir * 1.6, dir, {
+			{ tex = "spark", c0 = theme.flash, c1 = if style.faction == "lost" then theme.spark else Color3.fromRGB(255, 156, 82),
+				s0 = flash, s1 = 0.08, life = if swivel then 0.17 elseif mortar then 0.37 else 0.25,
+				v0 = if longGun then 35 else 18, v1 = if longGun then 54 else 30 + stage * 2,
+				spread = spread, glow = 1, axis = "forward",
+				n = math.max(2, math.floor((4 + stage * 1.1) * density)), a0 = 0.01 },
+			{ tex = "spark", c0 = theme.spark, c1 = theme.tracer, s0 = if longGun then 0.53 else 0.35,
+				s1 = 0.04, life = if longGun then 0.48 else 0.30,
+				v0 = 27, v1 = if longGun then 62 else 43, spread = spread + 12,
+				glow = 1, axis = "forward",
+				n = math.floor((5 + stage * 1.6) * density), acc = Vector3.new(0, -18, 0), a0 = 0.03 },
+			{ tex = "smoke", c0 = theme.smoke, c1 = if style.faction == "lost" then theme.tracer else Color3.fromRGB(160, 151, 139),
+				s0 = if mortar then 2.4 else 1.3, s1 = if mortar then 5.1 else 3.3,
+				life = if mortar then 1.8 else 1.1 + stage * 0.09, v0 = 3, v1 = 8,
+				spread = if mortar then 58 else 36, axis = "forward",
+				n = math.max(1, math.floor((2 + stage * 0.8) * density)),
+				a0 = 0.56, drag = 2.5, acc = Vector3.new(0, 4, 0) },
+		}, { color = theme.flash, bright = if MOBILE_VFX then 1.65 else 2.5 + stage * 0.27,
+			range = if mortar then 25 else 19, dur = if swivel then 0.12 else 0.23 })
+		if (longGun or mortar) and not MOBILE_VFX then
+			FX.burst(from + dir * 3.2, dir, {
+				{ tex = "spark", c0 = theme.tracer, c1 = theme.flash,
+					s0 = 0.40, s1 = 0.02, life = 0.32,
+					v0 = if longGun then 38 else 19, v1 = if longGun then 64 else 43,
+					spread = if longGun then 8 else 42, axis = "forward", glow = 0.75,
+					n = if longGun then 6 else 9, a0 = 0.06 },
 			})
 		end
 	end
 	-- [지역·단계별 명중] 공격이 이미 적중한 프레임에만 파편·매연·충격파를 그린다.
-	function FX.impact(pos, power, profile)
+	function FX.impact(pos, power, profile, cannonProfile)
+		-- [실제 명중] 선체 화약섬광 → 금속/목재 불티 → 연무 → 입자 충격파.
+		-- 선회포는 날렵하고, 장포는 선형 관통, 구포는 무거운 파쇄로만 구별한다.
 		local style = profile or DEFAULT_FX
 		local stage = math.clamp(style.stage or 2, 1, 6)
 		local theme = style.theme or FX_THEMES.europe
+		local cannon = cannonProfile or NC.demi
 		local density = if MOBILE_VFX then 0.5 else 1
-		power = power or 1
+		local heavy = cannon.arc >= 35
+		local piercing = cannon.range >= 180
+		local quick = cannon.dur <= 0.36
+		local force = math.clamp(power or 1, 0.8, 2.5)
 		FX.burst(pos, nil, {
-			{ tex = "fire", c0 = theme.flash, c1 = if style.faction == "lost" then theme.spark else RED,
-				s0 = 3.7 + power * 1.2 + stage * 0.44, s1 = 6.8 + power * 1.6 + stage * 1.2,
-				life = 0.48 + stage * 0.06, v0 = 4, v1 = 11 + stage, glow = 1,
-				n = math.floor((5 + stage * 1.5) * density), a0 = 0 },
-			{ tex = "spark", c0 = theme.spark, c1 = theme.tracer, s0 = 0.65 + stage * 0.1, s1 = 0.1,
-				life = 0.65, v0 = 18, v1 = 36 + stage * 3, glow = 1,
-				n = math.floor((8 + stage * 3) * density), acc = Vector3.new(0, -54, 0), a0 = 0 },
-			{ tex = "smoke", c0 = SOOT, c1 = theme.smoke, s0 = 4.3 + stage * 0.5,
-				s1 = 9.2 + stage * 1.9, life = 1.85 + stage * 0.21, v0 = 3, v1 = 9,
-				n = math.floor((3 + stage * 1.4) * density), a0 = 0.32, acc = Vector3.new(0, 6, 0), drag = 1.5 },
-		}, { color = theme.flash, bright = 3.5 + stage * 0.7, range = 23 + stage * 3, dur = 0.24 + stage * 0.024 })
-		FX.shockRing(pos - Vector3.new(0, 4, 0), theme.flash, 9 + stage * 2.7 + power, 0.46 + stage * 0.035)
-		if stage >= 5 and not MOBILE_VFX then
-			FX.shockRing(pos - Vector3.new(0, 3.9, 0), theme.foam, 8 + stage * 1.3, 0.82)
+			{ tex = "spark", c0 = theme.flash, c1 = if style.faction == "lost" then theme.spark else Color3.fromRGB(237, 126, 75),
+				s0 = (if heavy then 0.93 else 0.63) * force, s1 = 0.05,
+				life = if quick then 0.25 else 0.42, v0 = if piercing then 26 else 12,
+				v1 = if piercing then 45 else 27 + stage * 2, spread = if piercing then 42 else 145,
+				glow = 1, n = math.max(2, math.floor((4 + stage * 1.6) * density)), a0 = 0.03 },
+			{ tex = "spark", c0 = theme.spark, c1 = theme.tracer,
+				s0 = if heavy then 0.65 else 0.38, s1 = 0.04, life = 0.55,
+				v0 = if quick then 24 else 15, v1 = if piercing then 51 else 33 + stage * 2,
+				spread = if piercing then 75 else 170, glow = 0.9,
+				n = math.floor((7 + stage * 2) * density),
+				acc = Vector3.new(0, -42, 0), a0 = 0.08 },
+			{ tex = "smoke", c0 = Color3.fromRGB(69, 67, 66), c1 = theme.smoke,
+				s0 = if heavy then 2.9 else 1.9, s1 = if heavy then 6.9 else 4.9,
+				life = 1.25 + stage * 0.12, v0 = 3, v1 = if heavy then 11 else 7,
+				spread = if heavy then 70 else 48,
+				n = math.max(2, math.floor((3 + stage * 0.9) * density)),
+				a0 = 0.60, acc = Vector3.new(0, 6, 0), drag = 1.8 },
+		}, { color = theme.flash, bright = if MOBILE_VFX then 1.8 else 3.1 + stage * 0.3,
+			range = 20 + stage * 2, dur = 0.20 + stage * 0.018 })
+		FX.shockRing(pos - Vector3.new(0, 4, 0), theme.flash,
+			9 + stage * 2.3 + force * (if heavy then 2.2 else 1), 0.40 + stage * 0.03)
+		if heavy and not MOBILE_VFX then
+			FX.shockRing(pos - Vector3.new(0, 3.7, 0), theme.foam, 12 + stage * 1.8, 0.72)
 		end
 	end
 	-- [상황별 물기둥] 같은 실제 수면 충돌 좌표를 사용한다. 크기는 대포 구경·침몰 단계에만 따른다.
@@ -3665,9 +3686,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			NumberSequenceKeypoint.new(0, if stage >= 4 then 0.08 else 0.27),
 			NumberSequenceKeypoint.new(1, 1)
 		})
+		-- [탄도 잔광] 선회포는 짧고 빠르게, 장포는 가늘고 길게, 구포는 묵직하게.
+		-- 네모난 리본 가장자리를 막기 위해 폭을 양 끝에서 0으로 좁힌다.
 		trail.WidthScale = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 0.65 + stage * 0.08),
-			NumberSequenceKeypoint.new(1, 0.08)
+			NumberSequenceKeypoint.new(0, 0),
+			NumberSequenceKeypoint.new(0.24, math.min(0.95, if nc.dur <= 0.36 then 0.30
+				elseif nc.range >= 180 then 0.42 elseif nc.arc >= 35 then 0.82 else 0.58)),
+			NumberSequenceKeypoint.new(1, 0)
 		})
 		trail.Parent = ball
 		emitterOn(ball, {
@@ -3680,29 +3705,34 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end
 	-- [해역·노선별 항적] 대양 범선은 길고 얇은 흰 줄, 노선은 양측 거품, 미지 선박은 청록빛 잔류 파문.
 	function FX.wake(sh, key, now)
+		-- [해상 항적] 원래 납작한 사각 파츠 대신 배 뒤편에 낮게 번지는 하얀 포말 입자.
+		-- 경량 모바일은 간격을 늘리고, 함선은 실제 이동 방향/등록 테마를 유지한다.
 		local last = FX.wakeAt[key]
 		local profile = sh.fx or DEFAULT_FX
 		local theme = profile.theme or FX_THEMES.europe
-		local step = if MOBILE_VFX then 0.17 else 0.11
+		local step = if MOBILE_VFX then 0.32 else 0.23
 		local moved = last and (sh.pos - last.pos).Magnitude or 0
 		if not last or now - last.t >= step then
 			FX.wakeAt[key] = { pos = sh.pos, t = now }
-			if moved > 0.15 then
+			if moved > 0.35 then
 				local heading = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
-				local back = ORIGIN + sh.pos - heading * (sh.length * 0.46) + Vector3.new(0, 0.25, 0)
-				local narrow = if profile.faction == "new_world" or profile.faction == "middle_east" then 0.75 else 1
-				local wide = if profile.rowed then 1.35 else narrow
-				FX.spawn(Vector3.new(3.2 * wide, 0.2, 3.2 * wide), back, theme.foam,
-					Enum.Material.SmoothPlastic, nil, Vector3.zero, 1.35, { grow = 1.9 + wide * 0.5, t0 = 0.38, flat = true })
-				if not MOBILE_VFX then
-					FX.spawn(Vector3.new(1.3, 0.2, 1.3), ORIGIN + sh.pos + heading * sh.length * 0.5 + Vector3.new(0, 0.25, 0),
-						theme.foam, Enum.Material.SmoothPlastic, nil, Vector3.zero, 0.9, { grow = 1.6, t0 = 0.48, flat = true })
-					if profile.rowed then
-						local side = Vector3.new(-heading.Z, 0, heading.X)
-						for sign = -1, 1, 2 do
-							FX.spawn(Vector3.new(1.5, 0.15, 1.5), back + side * sign * sh.length * 0.2,
-								theme.foam, Enum.Material.SmoothPlastic, nil, Vector3.zero, 0.65, { grow = 2.1, t0 = 0.48, flat = true })
-						end
+				local back = ORIGIN + sh.pos - heading * (sh.length * 0.47) + Vector3.new(0, 0.25, 0)
+				local rowing = profile.rowed == true
+				FX.burst(back, nil, {
+					{ tex = "spark", c0 = Color3.fromRGB(248, 255, 255), c1 = theme.foam,
+						s0 = if rowing then 0.54 else 0.35, s1 = 0.03,
+						life = if rowing then 0.75 else 0.54, v0 = 2, v1 = if rowing then 7 else 5,
+						spread = 165, n = if MOBILE_VFX then 2 else 5,
+						a0 = 0.38, drag = 5, acc = Vector3.new(0, -4, 0) },
+				})
+				if rowing and not MOBILE_VFX then
+					local side = Vector3.new(-heading.Z, 0, heading.X)
+					for sign = -1, 1, 2 do
+						FX.burst(back + side * sign * sh.length * 0.18, nil, {
+							{ tex = "spark", c0 = theme.foam, s0 = 0.25, s1 = 0.02,
+								life = 0.4, v0 = 1, v1 = 4, spread = 135,
+								n = 2, a0 = 0.45, drag = 4 },
+						})
 					end
 				end
 			end
@@ -3853,7 +3883,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		if stage >= 4 and nearShip and not MOBILE_VFX then
 			Sfx.play("sfx_cannon", 0.26 + stage * 0.025, 0.82 - stage * 0.016)
 		end
-		FX.muzzle(from, (to - from).Unit, style)
+		FX.muzzle(from, (to - from).Unit, style, nc)
 		if nearShip and stage >= 2 and not MOBILE_VFX then
 			task.delay(math.min(0.22, nc.dur * 0.40), function()
 				if not finished then Sfx.play("sfx_sail_fabric", 0.13, 1.35 + stage * 0.025) end
@@ -3881,11 +3911,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local ball = part(folder, Vector3.new(nc.ball, nc.ball, nc.ball), CFrame.new(from), Color3.fromRGB(30, 30, 34), Enum.Material.Metal, Enum.PartType.Ball)
 		FX.projectile(ball, nc, style)
 		-- 수면 그림자는 PC에서만 표시한다. 모바일에서는 비행 궤적을 우선한다.
-		local shadow = nil
-		if not MOBILE_VFX then
-			shadow = part(folder, Vector3.new(0.12, 2, 2), CFrame.new(from.X, ORIGIN.Y + 0.1, from.Z) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(25, 55, 72), Enum.Material.SmoothPlastic, Enum.PartType.Cylinder)
-			shadow.Transparency = 0.64
-		end
+		-- [탄도 그림자] 임의 납작한 원통을 만들지 않고 실제 포탄+꼬리만 표시한다.
 		local t0 = os.clock()
 		local dur = nc.dur
 		local conn
@@ -3894,16 +3920,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local bpos = from:Lerp(to, u) + Vector3.new(0, math.sin(u * math.pi) * nc.arc, 0)
 			local velocity = (to - from) + Vector3.new(0, math.cos(u * math.pi) * nc.arc * math.pi, 0)
 			ball.CFrame = CFrame.lookAt(bpos, bpos + velocity.Unit)
-			if shadow then
-				shadow.CFrame = CFrame.new(bpos.X, ORIGIN.Y + 0.13, bpos.Z) * CFrame.Angles(0, 0, math.pi / 2)
-				local diameter = 2.2 + math.sin(u * math.pi) * 2
-				shadow.Size = Vector3.new(0.12, diameter, diameter)
-				shadow.Transparency = 0.62 + math.sin(u * math.pi) * 0.22
-			end
 			if u >= 1 then
 				conn:Disconnect()
 				ball:Destroy()
-				if shadow then shadow:Destroy() end
 				if finished then
 					return
 				end
@@ -3928,7 +3947,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 				if hullHit then
 					FX.splinters(to, if MOBILE_VFX then 5 else 5 + stage * 2)
-					FX.impact(to, nc.ball, style)
+					FX.impact(to, nc.ball, style, nc)
 					shake = math.max(shake, 1.3)
 					kick = math.max(kick, 5 + nc.ball)
 					if to.Y <= ORIGIN.Y + 9 then
@@ -4824,7 +4843,6 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end
 		FX.damage(me, "me", now)
 		FX.damage(foe, "foe", now)
-		FX.update(dt)
 		meFill.Size = UDim2.fromScale(meHp, 1)
 		foeFill.Size = UDim2.fromScale(foeHp, 1)
 		if not opts.cardOnly then
