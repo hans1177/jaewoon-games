@@ -240,10 +240,10 @@ local BlueprintSaleRegions = {
 }
 for _, blueprint in Blueprints do
 	local perf = ShipPerformance[blueprint.id]
-	assert(perf, "missing ship trait " .. blueprint.id)
+	assert(perf, "missing ship trait " .. tostring(blueprint.id))
 	if not Ships[blueprint.id] then
 		local stats = NewShipStats[blueprint.id]
-		assert(stats, "missing new ship stats " .. blueprint.id)
+		assert(stats, "missing new ship stats " .. tostring(blueprint.id))
 		Ships[blueprint.id] = {
 			id = blueprint.id, name = blueprint.name, steam = false,
 			price = stats.price, cargo = stats.cargo, speed = stats.speed,
@@ -257,7 +257,7 @@ for _, blueprint in Blueprints do
 			specialPort = if blueprint.faction == "lost" then "honolulu" else nil,
 			newRegional = true,
 			minAdventure = if blueprint.faction == "lost" then 6 + blueprint.stage * 4 else nil,
-			summary = blueprint.hull .. " · " .. perf.role,
+			summary = tostring(blueprint.hull) .. " · " .. tostring(perf.role),
 		}
 	end
 	Ships[blueprint.id].trait = perf
