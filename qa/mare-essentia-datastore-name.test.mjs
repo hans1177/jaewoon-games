@@ -1365,7 +1365,7 @@ test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 
   assert.ok(fs.existsSync(f),'원본 GLB 누락: '+name);
   const raw=fs.readFileSync(f);
   const license=JSON.parse(fs.readFileSync(f+'.license.json','utf8'));
-  const gitSha=crypto.createHash('sha1').update('blob '+raw.length+'\\0').update(raw).digest('hex');
+  const gitSha=crypto.createHash('sha1').update('blob '+raw.length+String.fromCharCode(0)).update(raw).digest('hex');
   assert.equal(license.license,'CC0-1.0',name+' 무료 사용 승인');
   assert.equal(license.sourceSizeBytes,raw.length,name+' 원본 크기');
   assert.equal(license.sourceGitBlobSha1,gitSha,name+' 원본 해시 증빙');
