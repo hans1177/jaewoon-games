@@ -515,3 +515,54 @@ test('탐험 지역 기후·사계절 배경과 바람 입자 디테일',()=>{
   // 전투/적 자동 재출현은 장면의 계절 연출과 무관하다.
   assert.doesNotMatch(field,/FieldEnemyRespawn|spawnReinforcement/);
 });
+
+
+// [탐험 연타 사물과 병종 전술·방어·기상] 기존 플레이 규칙과 승인된 R15 모델로만 구현한다.
+test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 모션',()=>{
+  const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+  const motion=read('ReplicatedStorage/Shared/FieldMotion.luau');
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  const combat=read('ReplicatedStorage/Shared/ActionCombat.luau');
+  const assets=read('ReplicatedStorage/Shared/AssetIds.luau');
+  for(const marker of [
+    'local fieldObjects = {}', 'FieldCombatObject', 'FieldObjectHits',
+    'for _, obj in fieldObjects do', 'FieldObjectMaxHp', 'FieldObjectHp',
+    'local sceneryHit = false', 'local visualObjectHits = 0',
+    'local function breakCrate(c, strikePower: number?)',
+    'local function explodeBarrel(b, hrp: BasePart, hitActionSeq: number?, strikePower: number?)',
+    'if isBoss then 2.75 elseif ac.kind == "shield" or ac.kind == "charger" then 2.55 else 2.35',
+    'e.knockUntil, e.riseUntil', 'e.ac.stagger = math.max(e.ac.stagger, 1.57)',
+    'local knocked = now < (e.riseUntil or 0)', 'st, ph = "KNOCKDOWN"',
+    'st, ph = "GETUP"', 'st, ph = "BLOCK"', 'st, ph = "PARRY"',
+    'FieldEnemyReaction', 'FieldHitVariant', 'FieldTacticalIntent',
+    'intent, goal = "frontline"', 'intent, goal = "flank"',
+    'intent, goal = "ambush"', '"retreat" else "strafe"',
+    'e.waiting = others >= AC.MELEE_TOKENS',
+    'e.tacticAt = now + 0.65',
+    'Pose.dieR15(dying, p, deathVariant)'
+  ]) assert.ok(field.includes(marker),'탐험 전술/전투 연결 누락: '+marker);
+  for(const marker of [
+    'state == "KNOCKDOWN"', 'state == "GETUP"', 'state == "BLOCK"',
+    'state == "PARRY"', 'local fallSide =',
+    'bend("UpperArmL", -1.36', 'bend("UpperArmR", -1.44',
+    'local hitStyle = h.model:GetAttribute("FieldHitVariant")'
+  ]) assert.ok(motion.includes(marker),'R15 적 모션 누락: '+marker);
+  assert.match(pose,/function Pose\.dieR15\(model, alpha, variant\)/);
+  assert.match(pose,/local fade = math\.clamp\(\(a - 0\.78\) \/ 0\.22/);
+  assert.match(field,/local duration = if visualMobile then 1\.35 else 1\.70/);
+  assert.match(field,/if hits == 0 and not sceneryHit and hitActionSeq >= streakCountedSeq then endStreak/);
+  assert.match(field,/if result == "exploded" then hits \+= 1 end/);
+  assert.match(field,/if breakCrate\(c, if moveId == "heavy" then 2 else 1\) then sceneryHit = true end/);
+  assert.match(field,/if rangedShot and shots >= 1 then break end/);
+  assert.match(field,/local frozen = knocked or now < \(e\.holdUntil or 0\)[\s\S]{0,120}or now < \(e\.guardUntil or 0\)/);
+  assert.match(field,/if not visualMobile or index <= 9 then/);
+  assert.match(field,/local function placeFeature\(entry\)/);
+  assert.match(field,/if not AssetIds\[entry\[1\] \.\. "\/" \.\. entry\[2\]\] then return nil end/);
+  assert.match(combat,/A\.MELEE_TOKENS = 2/);
+  // 새 피격 시스템은 기존 등록 모델을 재사용한다. 신규 사물 도형이나 새 몬스터 자산 없음.
+  assert.ok(assets.includes('["Cargo/bucket"]'));
+  assert.ok(assets.includes('["Naval/barrel"]'));
+  const section=field.slice(field.indexOf('-- [디아블로식 사물 군집]'),field.indexOf('local function breakCrate('));
+  assert.doesNotMatch(section,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/);
+  assert.doesNotMatch(field,/FieldEnemyRespawn|spawnReinforcement/);
+});

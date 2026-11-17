@@ -586,6 +586,8 @@ function FieldScene.start(opts)
 		return Vector3.new(0, 0, 0)
 	end
 
+	-- [디아블로식 타격 월드] 모든 승인된 배경 모델의 피격만 기록, 전투 수치·보상·랜드마크는 그대로 둔다.
+	local fieldObjects = {}
 	-- [퀘스트 지형 배치] 지형 이름이 먼저, 문화권은 그 위에 추가한다.
 	-- 숲길·협곡·폐광·해안·유적·사막·농경지·호숫가의 실루엣을 구별한다.
 	-- 전투/조사/시작 위치를 건드리지 않고 기존 승인 메시만 필드 외곽과 측면에 배치한다.
@@ -640,6 +642,13 @@ function FieldScene.start(opts)
 		if entry[7] and entry[7] ~= 0 then
 			m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, math.rad(entry[7]), 0) * CFrame.new(-pos) * m:GetPivot())
 		end
+		-- 모든 승인된 필드 장식은 무기로 타격 가능. 큰 랜드마크는 시각 반응만 하고 영구 파괴하지 않는다.
+		local center, extent = m:GetBoundingBox()
+		m:SetAttribute("FieldCombatObject", true)
+		m:SetAttribute("FieldObjectHits", 0)
+		table.insert(fieldObjects, { model = m, pos = center.Position,
+			radius = math.clamp(math.max(extent.X, extent.Z) * 0.24, 1.4, 7.5),
+			origin = m:GetPivot(), lastHit = -100 })
 		-- 대표 건축물은 지연 로드돼도 지명 표지판을 놓친 채 끝나지 않게 한다.
 		if entry.title and not folder:GetAttribute("FieldNamedLandmarkTitle") then
 			local adorn = m:FindFirstChildWhichIsA("BasePart", true)
@@ -1728,11 +1737,11 @@ function FieldScene.start(opts)
 			individualDef.range = math.min(individualDef.range, weapon.range)
 		end
 		if weapon.family == "bow" then individualDef.range = math.min(individualDef.range, weapon.range) end
-		-- [탐험 난도] 필드 몬스터의 최대 체력만 높여 한두 번의 평타로 끝나지 않게 한다.
-		-- 공용 ActionCombat 적 정의, 공격력·사거리·공격주기·드롭·보상·저장/퀘스트 진행은 불변.
-		-- 졸개·사수 1.75배, 방패·돌격 정예 1.8배, 두목 1.7배 (기본 40→70/28→49/70→126/50→90/300→510).
+		-- [전투 지속력] 장면 전용 최대 체력만 증가. 공용 ActionCombat/공격력/보상/드롭/저장은 불변.
+		-- 일반 2.35배(검병 94·궁수 66), 방패·돌격 2.55배(179·128), 두목 2.75배(825).
+		-- 적이 강타 후 기상·막기·회피 동작을 충분히 보여 주도록 한다.
 		individualDef.hp = math.floor(individualDef.hp *
-			(if isBoss then 1.7 elseif ac.kind == "shield" or ac.kind == "charger" then 1.8 else 1.75) + 0.5)
+			(if isBoss then 2.75 elseif ac.kind == "shield" or ac.kind == "charger" then 2.55 else 2.35) + 0.5)
 		ac.def = individualDef
 		ac.hp = individualDef.hp
 		-- [몹 역할별 실루엣] 기존 전투 능력은 유지하고 R15 비율·걸음 성격만 다르게 설정한다.
@@ -1822,7 +1831,7 @@ function FieldScene.start(opts)
 		tag.TextSize = if isBoss then 14 else 12
 		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil
-		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber() })
+		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0, tacticAt = 0, tacticGoal = nil, tacticIntent = "approach", tacticSide = if rng:NextNumber() < 0.5 then -1 else 1 })
 	end
 
 	end
@@ -4072,26 +4081,34 @@ function FieldScene.start(opts)
 	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?, ownerAttack: boolean?, actionSeq: number?, attackerWeapon, basicAttack: boolean?)
 		-- [동료 무기음] 실제 공격자의 장비를 따라가고 피해·보상은 기존 공식 그대로 둔다.
 		local impactWeapon = attackerWeapon or wpn
-		-- [정예 반응 회피] 공격 중·경직 중에는 발동하지 않으며, 7초 제한으로 무한 회피를 방지한다.
+		-- [병종별 실전 방어] 궁수·투척병은 뒤로 미끄러지고 검병은 측면 회피,
+		-- 두목은 드물게 측면 축발로 빠진다. 방패병은 회피 대신 정면 방패 사용.
+		-- 강타/기절은 확실히 명중하게 회피를 금지하고 각 적마다 재사용 제한을 둔다.
 		local evadeAt = os.clock()
-		if not quiet and e.elite and not e.ac.dead and (e.ac.state == "chase" or e.ac.state == "recover")
-			and evadeAt - (e.lastDodge or -100) >= 7 and math.random() < (if e.boss then 0.12 else 0.22) then
+		local dodgeRole = e.ac.kind == "archer" or e.ac.kind == "grunt" or e.boss
+		local dodgeChance = if e.boss then 0.10 elseif e.ac.kind == "archer" then 0.22 else 0.14
+		local dodgeGap = if e.ac.kind == "archer" then 5.2 else 7
+		if dodgeRole and not stagger and not quiet and not e.ac.dead
+			and (e.ac.state == "chase" or e.ac.state == "recover")
+			and evadeAt - (e.lastDodge or -100) >= dodgeGap and math.random() < dodgeChance then
 			local away = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
 			if away.Magnitude > 0.1 then
 				local side = Vector3.new(-away.Unit.Z, 0, away.Unit.X) * (if (e.motionPhase or 0) < 0.5 then 1 else -1)
-				local target = e.root.Position + side * 4.2
+				local dodgeDir = if e.ac.kind == "archer" then (away.Unit * 0.82 + side * 0.18).Unit else side
+				local target = e.root.Position + dodgeDir * (if e.ac.kind == "archer" then 5.4 else 4.2)
 				if math.abs(target.X - ORIGIN.X) < half - 8 and math.abs(target.Z - ORIGIN.Z) < half - 8 then
-					e.lastDodge, e.dodgeT0, e.dodgeUntil, e.dodgeDir = evadeAt, evadeAt, evadeAt + 0.3, side
+					e.lastDodge, e.dodgeT0, e.dodgeUntil, e.dodgeDir = evadeAt, evadeAt, evadeAt + 0.36, dodgeDir
 					e.hurtAt = -100
+					e.model:SetAttribute("FieldEnemyReaction", if e.ac.kind == "archer" then "backstep" else "sidestep")
 					if e.tag and e.tag.Parent then
 						local oldText = e.tag.Text
-						e.tag.Text = "회피!"
-						task.delay(0.45, function()
-							if e.tag and e.tag.Parent and e.tag.Text == "회피!" then e.tag.Text = oldText end
+						e.tag.Text = if e.ac.kind == "archer" then "후퇴!" else "회피!"
+						task.delay(0.42, function()
+							if e.tag and e.tag.Parent and (e.tag.Text == "회피!" or e.tag.Text == "후퇴!") then e.tag.Text = oldText end
 						end)
 					end
-					burst(e.root.Position + Vector3.new(0, 1.6, 0), 8, false, "dodge")
-					sfx("sfx_skill_evade", 0.5, 1.18)
+					burst(e.root.Position + Vector3.new(0, 1.6, 0), if visualMobile then 3 else 8, false, "dodge")
+					sfx("sfx_skill_evade", 0.45, 1.18)
 					return
 				end
 			end
@@ -4100,19 +4117,54 @@ function FieldScene.start(opts)
 		-- 경직, 측면·후방, 광역 피해는 방패에 막히지 않는다. 기존 70% 방어율은 보존한다.
 		local approach = (hrpPos - e.root.Position) * Vector3.new(1, 0, 1)
 		local shieldBlocked = not quiet and e.shieldModel and e.ac.def.frontGuard
-			and e.ac.state ~= "stagger" and approach.Magnitude > 0.1
+			and e.ac.state ~= "stagger" and not stagger and approach.Magnitude > 0.1
 			and e.root.CFrame.LookVector:Dot(approach.Unit) > 0.35
 			and e.model:FindFirstChild("FieldShield") ~= nil
-		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power) * (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1), mult, shieldBlocked == true, stagger)
+		-- 검병·돌진병·두목은 실제 손의 무기로 측면 받아치기를 할 수 있다.
+		-- 무기 없는 적/원거리 탄환/강타에는 무기 막기를 적용하지 않는다.
+		local parryRole = e.ac.kind == "grunt" or e.ac.kind == "charger" or e.boss
+		local weaponParry = not quiet and not stagger and not impactWeapon.ranged and not shieldBlocked
+			and parryRole and approach.Magnitude > 0.1
+			and e.root.CFrame.LookVector:Dot(approach.Unit) > 0.22
+			and (e.ac.state == "chase" or e.ac.state == "recover")
+			and evadeAt >= (e.nextParryAt or 0)
+			and math.random() < (if e.boss then 0.16 elseif e.ac.kind == "charger" then 0.20 else 0.13)
+		if weaponParry then
+			e.parryUntil, e.nextParryAt = evadeAt + 0.37, evadeAt + (if e.boss then 6 else 4.5)
+			e.model:SetAttribute("FieldEnemyReaction", "parry")
+		elseif shieldBlocked then
+			e.guardUntil = evadeAt + 0.37
+			e.model:SetAttribute("FieldEnemyReaction", "shield")
+		end
+		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power)
+			* (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1)
+			* (if weaponParry then 0.52 else 1), mult, shieldBlocked == true, stagger)
 		e.hp = e.ac.hp
 		e.hurtAt = os.clock()
+		e.hitVariant = (e.hitVariant or 0) % 3 + 1
+		e.model:SetAttribute("FieldHitVariant", e.hitVariant)
 		e.bar.Size = UDim2.fromScale(math.max(e.ac.hp, 0) / e.maxHp, 1)
 		local away = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
+		if not died and stagger and knock >= 4 and not e.boss and not shieldBlocked
+			and evadeAt - (e.lastFallAt or -100) >= 3.5 then
+			-- 강타/스킬 → 밀려나며 넘어짐 → 바닥 버팀 → 무릎으로 일어남.
+			-- 기존 ActionCombat.stagger로 기상 전 공격·이동을 막는다.
+			e.lastFallAt, e.knockAt = evadeAt, evadeAt
+			e.knockUntil, e.riseUntil = evadeAt + 0.78, evadeAt + 1.57
+			e.knockVariant = e.hitVariant
+			e.ac.stagger = math.max(e.ac.stagger, 1.57)
+			e.ac.state = "stagger"
+			e.model:SetAttribute("FieldEnemyReaction", "knockdown")
+		elseif not died and e.boss and stagger then
+			-- 두목은 완전히 넘어지지 않고 한쪽 무릎을 꿇으며 버텨 다음 공격을 준비한다.
+			e.holdUntil = evadeAt + 0.42
+			e.model:SetAttribute("FieldEnemyReaction", "boss-brace")
+		end
 		if away.Magnitude > 0.1 and not e.ac.def.boss then
-			-- 순간이동 대신 짧게 미끄러지듯 밀려난다(0.18초 감속)
-			e.kbVel = away.Unit * (knock / 0.09)
-			e.kbUntil = os.clock() + 0.18
-			e.kbT0 = os.clock()
+			-- 짧은 후퇴를 감속시켜 강타가 아닌 평타도 몸이 밀리는 걸 보여 준다.
+			e.kbVel = away.Unit * (knock / 0.11)
+			e.kbUntil = evadeAt + (if e.riseUntil > evadeAt then 0.30 else 0.18)
+			e.kbT0 = evadeAt
 		end
 		if not quiet then
 			local hitAt = os.clock()
@@ -4222,7 +4274,10 @@ function FieldScene.start(opts)
 		if not rangedImpact then
 			burst(impactPos, if visualMobile then math.min(12 + dealt, 20) else 12 + dealt, mult >= 1.5)
 		end
-		if shieldBlocked then
+		if weaponParry then
+			sfx("sfx_metal_clash", 0.75, 1.20)
+			pulseAt("BLOCK_IMPACT", CFrame.new(impactPos), Color3.fromRGB(239, 206, 130), Color3.fromRGB(255, 245, 194), 7, if visualMobile then 3 else 6)
+		elseif shieldBlocked then
 			sfx("sfx_metal_clash", 0.75, 0.93)
 			pulseAt("BLOCK_IMPACT", CFrame.new(impactPos), Color3.fromRGB(155, 194, 224), Color3.fromRGB(255, 230, 161), 7, 5)
 		elseif family == "axe" then
@@ -4309,24 +4364,29 @@ function FieldScene.start(opts)
 				FM.destroy(e.fm)
 				e.fm = nil
 			end
-			-- 마지막 일격: 맞은 반대 방향으로 밀려나며(점점 느려짐) 쓰러진다
+			-- [3종 사망 연출] 마지막 일격 방향·병종에 따라 후방 쓰러짐/전방 무너짐/측면 굴러짐.
+			-- 첫 0.7초 피격 밀림, 이후 관절이 바닥에서 진정되며 마지막에만 서서히 사라진다.
+			-- 사망·전리품 판정은 이미 기존 AC.damageEnemy에서 확정하며 재출현은 없다.
 			local flyDir = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
 			flyDir = if flyDir.Magnitude > 0.1 then flyDir.Unit else Vector3.zero
 			local flyDist = (if mult >= 1.5 then 9 else 5) * (if e.boss then 0.3 else 1)
+			local deathVariant = if e.boss then 1 else (e.hitVariant or 1)
 			task.spawn(function()
 				local t0 = os.clock()
 				local lastP = 0
-				while dying.Parent and os.clock() - t0 < 0.7 do
-					local p = (os.clock() - t0) / 0.7
-					Pose.dieR15(dying, p)
-					local ease = 1 - (1 - p) * (1 - p)
+				local duration = if visualMobile then 1.35 else 1.70
+				while dying.Parent and os.clock() - t0 < duration do
+					local p = math.clamp((os.clock() - t0) / duration, 0, 1)
+					Pose.dieR15(dying, p, deathVariant)
+					local flight = math.min(p * duration / 0.70, 1)
+					local ease = 1 - (1 - flight) * (1 - flight)
 					pcall(function()
 						dying:PivotTo(dying:GetPivot() + flyDir * flyDist * (ease - lastP))
 					end)
 					lastP = ease
 					task.wait()
 				end
-				dying:Destroy()
+				if dying.Parent then dying:Destroy() end
 			end)
 			do
 				local p0 = e.root.Position
@@ -4612,15 +4672,19 @@ function FieldScene.start(opts)
 						m:ScaleTo(4 / longest)
 					end)
 				end
-				local p0 = ORIGIN + scatter(20)
+				-- [전투 동선 배치] 이미 승인된 실제 통을 삼각형 위험 구역으로 모아 사격/근접 연타 대상이 된다.
+				local p0 = ORIGIN + Vector3.new((i - 2) * half * 0.32, 0, half * 0.12 - (i - 1) * half * 0.26)
 				m.Parent = folder
 				m:PivotTo(CFrame.new(p0 + Vector3.new(0, 2, 0)))
+				m:SetAttribute("FieldCombatObject", true)
+				m:SetAttribute("FieldObjectMaxHp", 4)
+				m:SetAttribute("FieldObjectHp", 4)
 				local hl = Instance.new("Highlight")
 				hl.FillColor = Color3.fromRGB(255, 90, 40)
 				hl.FillTransparency = 0.75
 				hl.OutlineColor = Color3.fromRGB(255, 160, 60)
 				hl.Parent = m
-				table.insert(barrels, { model = m, pos = p0 + Vector3.new(0, 2, 0) })
+				table.insert(barrels, { model = m, pos = p0 + Vector3.new(0, 2, 0), hp = 4 })
 			end
 		end
 	end
@@ -4646,17 +4710,31 @@ function FieldScene.start(opts)
 						m:ScaleTo(3 / longest)
 					end)
 				end
-				local p0 = ORIGIN + scatter(12)
+				-- [디아블로식 사물 군집] 좌우 전투 통로에 교대로 배치. 중앙 시작/조사 길은 비운다.
+				local lane = if i % 2 == 0 then -1 else 1
+				local row = math.floor((i - 1) / 2)
+				local p0 = ORIGIN + Vector3.new(lane * (18 + row * 5), 0, half * (0.62 - row * 0.27))
 				m.Parent = folder
 				m:PivotTo(CFrame.new(p0 + Vector3.new(0, 1.5, 0)) * CFrame.Angles(0, rng:NextNumber(0, 6.28), 0))
-				table.insert(crates, { model = m, pos = p0 + Vector3.new(0, 1.5, 0) })
+				m:SetAttribute("FieldCombatObject", true)
+				m:SetAttribute("FieldObjectMaxHp", 3)
+				m:SetAttribute("FieldObjectHp", 3)
+				table.insert(crates, { model = m, pos = p0 + Vector3.new(0, 1.5, 0), hp = 3 })
 			end
 		end
 	end
-	local function breakCrate(c)
+	local function breakCrate(c, strikePower: number?)
 		local idx = table.find(crates, c)
-		if not idx then
-			return
+		if not idx then return false end
+		-- [연타 내구도] 기존 1회 랜덤 드롭은 실제 파괴 순간에만 굴린다.
+		c.hp = math.max(0, (c.hp or 3) - (strikePower or 1))
+		c.model:SetAttribute("FieldObjectHp", c.hp)
+		if c.hp > 0 then
+			pulseAt("IMPACT_FLASH", CFrame.new(c.pos), Color3.fromRGB(226, 191, 125),
+				Color3.fromRGB(255, 242, 209), 3.2, if visualMobile then 2 else 4)
+			c.model:PivotTo(c.model:GetPivot() * CFrame.Angles(0, math.rad(if c.hp % 2 == 0 then 7 else -8), 0))
+			sfx("sfx_card_chain", 0.24, 1.26)
+			return true
 		end
 		table.remove(crates, idx)
 		c.model:Destroy()
@@ -4674,12 +4752,20 @@ function FieldScene.start(opts)
 			say("공격력 상승! (8초)")
 		end
 		refresh()
+		return true
 	end
 
-	local function explodeBarrel(b, hrp: BasePart, hitActionSeq: number?)
+	local function explodeBarrel(b, hrp: BasePart, hitActionSeq: number?, strikePower: number?)
 		local idx = table.find(barrels, b)
-		if not idx then
-			return
+		if not idx then return false end
+		-- [위험 사물 연타] 견제 타격에는 금속 불꽃만 튀고, 내구도 소진 뒤에만 기존 폭발/주변 피해가 발생한다.
+		b.hp = math.max(0, (b.hp or 4) - (strikePower or 1))
+		b.model:SetAttribute("FieldObjectHp", b.hp)
+		if b.hp > 0 then
+			pulseAt("IMPACT_FLASH", CFrame.new(b.pos), Color3.fromRGB(242, 144, 72),
+				Color3.fromRGB(255, 238, 162), 3.5, if visualMobile then 2 else 5)
+			sfx("sfx_metal_clash", 0.31, 1.25)
+			return "damaged"
 		end
 		table.remove(barrels, idx)
 		b.model:Destroy()
@@ -4708,6 +4794,7 @@ function FieldScene.start(opts)
 			end
 		end
 		say(if n > 0 then string.format("폭발! %d명 휘말렸다", n) else "폭발! 아무도 없었다")
+		return "exploded"
 	end
 
 	-- 동작 하나를 쓴다: 규칙 검사(쿨타임·기력·콤보) → 모션 → 범위 안의 적을 친다
@@ -5185,6 +5272,8 @@ function FieldScene.start(opts)
 					end
 				end
 			end
+			-- 사물 타격은 오브젝트 반응만; 기존 몬스터 적중·무기숙련·최고 연타 기록으로 적립하지 않는다.
+			local sceneryHit = false
 			for _, b in table.clone(barrels) do
 				if rangedShot and shots >= 1 then break end
 				local tb = (b.pos - hrp.Position) * Vector3.new(1, 0, 1)
@@ -5194,8 +5283,10 @@ function FieldScene.start(opts)
 					ab = math.deg(math.acos(math.clamp(lk.Unit:Dot(tb.Unit), -1, 1)))
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, tb.Magnitude, ab) then
-					explodeBarrel(b, hrp, hitActionSeq)
-					hits += 1
+					local result = explodeBarrel(b, hrp, hitActionSeq, if moveId == "heavy" then 2 else 1)
+					if result then sceneryHit = true end
+					-- 기존 1회 폭발만 적중/숙련 정산. 폭발 전 내구도 타격은 정산하지 않는다.
+					if result == "exploded" then hits += 1 end
 					if rangedShot then shots += 1 end
 				end
 			end
@@ -5208,11 +5299,62 @@ function FieldScene.start(opts)
 					ab = math.deg(math.acos(math.clamp(lk.Unit:Dot(tb.Unit), -1, 1)))
 				end
 				if AC.inReach(rangeR * STUD + 3, arcR, tb.Magnitude, ab) then
-					breakCrate(c)
+					if breakCrate(c, if moveId == "heavy" then 2 else 1) then sceneryHit = true end
 					if rangedShot then shots += 1 end
 				end
 			end
-			if hits == 0 and hitActionSeq >= streakCountedSeq then endStreak("헛손질") end
+			-- [모든 장면 배경 타격] 기존 나무/암석/캠프/도시/퀘스트 랜드마크 메시가
+			-- 같은 무기 범위·각도에서 명중 섬광과 짧은 흔들림으로 반응한다.
+			-- 건물/단서는 파괴하지 않아 맵·퀘스트 진행을 막지 않고, 타격 숙련/보상도 지급하지 않는다.
+			local visualObjectHits = 0
+			local maxVisualHits = if visualMobile then 2 else 4
+			for _, obj in fieldObjects do
+				if visualObjectHits >= maxVisualHits or (rangedShot and shots >= 1) then break end
+				if not obj.model.Parent or not obj.model:GetAttribute("FieldCombatObject") then continue end
+				local toward = (obj.pos - hrp.Position) * Vector3.new(1, 0, 1)
+				local nearDist = math.max(0, toward.Magnitude - obj.radius)
+				local angle = 0
+				if toward.Magnitude > 0.01 then
+					local facing = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
+					angle = math.deg(math.acos(math.clamp(facing.Unit:Dot(toward.Unit), -1, 1)))
+				end
+				if AC.inReach(rangeR * STUD + 3, arcR, nearDist, angle) then
+					visualObjectHits += 1
+					sceneryHit = true
+					if rangedShot then shots += 1 end
+					local nowHit = os.clock()
+					obj.lastHit = nowHit
+					local number = (obj.model:GetAttribute("FieldObjectHits") or 0) + 1
+					obj.model:SetAttribute("FieldObjectHits", math.min(number, 999))
+					local impactAt = Vector3.new(obj.pos.X, math.clamp(obj.pos.Y, ORIGIN.Y + 1.2, ORIGIN.Y + 6), obj.pos.Z)
+					local tint = if obj.model:GetAttribute("TerrainTheme") == "mine" then Color3.fromRGB(179, 190, 203)
+						elseif obj.model:GetAttribute("TerrainTheme") == "forest" then Color3.fromRGB(151, 213, 126)
+						else Color3.fromRGB(247, 201, 130)
+					pulseAt("IMPACT_FLASH", CFrame.new(impactAt), tint, Color3.fromRGB(255, 244, 203),
+						if moveId == "heavy" then 5 else 3, if visualMobile then 2 else 4)
+					if number % 3 == 0 then
+						-- 실제 연타 표시만 준다. 원본 적중/무기 숙련/드롭 정산은 절대 누적하지 않는다.
+						showCombo(string.format("환경 연속 타격 %d회!", number), false, tint)
+					end
+					local effect = Instance.new("Highlight")
+					effect.Name = "FieldObjectImpact"
+					effect.FillColor = tint
+					effect.OutlineColor = Color3.fromRGB(255, 239, 178)
+					effect.FillTransparency = 0.82
+					effect.OutlineTransparency = 0.48
+					effect.Parent = obj.model
+					-- 등록 실물 메시 자체를 잠깐 기울였다가 원위치로 돌려 놓는다.
+					if obj.radius <= 5 and number % 2 == 0 then
+						local tilt = if number % 4 == 0 then -1 else 1
+						obj.model:PivotTo(obj.origin * CFrame.Angles(0, 0, math.rad(tilt * (if moveId == "heavy" then 5 else 2.5))))
+					end
+					task.delay(0.18, function()
+						if effect.Parent then effect:Destroy() end
+						if obj.model.Parent and obj.lastHit == nowHit then obj.model:PivotTo(obj.origin) end
+					end)
+				end
+			end
+			if hits == 0 and not sceneryHit and hitActionSeq >= streakCountedSeq then endStreak("헛손질") end
 			if moveId == "rush" and hits > 0 then
 				local practice = weaponPractice[wpn.id]
 				if not practice then
@@ -6072,9 +6214,18 @@ function FieldScene.start(opts)
 			if flat.Magnitude > 120 and e.ac.state == "idle" and not e.ac.dead then
 				continue
 			end
-			local frozen = now < (e.holdUntil or 0)
+			-- [다운→기상 상태 머신] 기존 AC.stagger로 기상 중 공격을 완전히 막는다.
+			-- 다운 시간이 끝나면 원래 AI가 추적 상태로 돌아간다(재생성·적 수 변화 없음).
+			local knocked = now < (e.riseUntil or 0)
+			if knocked then
+				e.ac.stagger = math.max(0.05, e.riseUntil - now)
+				e.ac.state = "stagger"
+			end
+			local frozen = knocked or now < (e.holdUntil or 0)
+				or now < (e.guardUntil or 0) or now < (e.parryUntil or 0)
 			if e.kbUntil and now < e.kbUntil and not e.ac.def.boss then
-				local k = 1 - (now - e.kbT0) / 0.18 -- 선형 감속
+				local duration = math.max(e.kbUntil - e.kbT0, 0.05)
+				local k = 1 - (now - e.kbT0) / duration
 				e.model:PivotTo(e.model:GetPivot() + e.kbVel * math.max(k, 0) * enemyDt * 2)
 			end
 			local event, hit = nil, nil
@@ -6330,7 +6481,46 @@ function FieldScene.start(opts)
 					shakeUntil, shakeAmp = now + 0.12, if visualMobile then 0.12 else 0.26
 				end
 			end
-			-- [적 가감속·선회] 기존 추적/후퇴/돌진 규칙은 유지하고 이동을 부드럽게 보간한다.
+			-- [고스트 오브 쓰시마식 병종 협동] 원본 AC 공격 토큰(동시 근접 2명)/공격 주기/데미지를 유지.
+			-- 프레임당 전체 적을 새로 탐색하지 않고 각 적만 0.65~0.9초마다 목표 포지션을 갱신한다.
+			-- 방패는 전면 압박, 검병은 좌우 측후방, 돌격병은 외측에서 합류, 사수는 거리 유지와 사선 확보.
+			if e.ac.state == "chase" and not frozen and now >= (e.tacticAt or 0)
+				and flat.Magnitude < 90 then
+				e.tacticAt = now + 0.65 + (e.motionPhase or 0) * 0.25
+				local looking = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
+				if looking.Magnitude < 0.01 then looking = Vector3.new(0, 0, -1) end
+				looking = looking.Unit
+				local right = Vector3.new(-looking.Z, 0, looking.X)
+				local side = e.tacticSide or 1
+				local intent = "approach"
+				local goal = hrp.Position
+				if e.ac.kind == "shield" then
+					intent, goal = "frontline", hrp.Position + looking * 7.2 + right * side * 2.8
+				elseif e.ac.kind == "grunt" then
+					intent, goal = "flank", hrp.Position - looking * 3.8 + right * side * 9.0
+				elseif e.ac.kind == "charger" then
+					intent, goal = "ambush", hrp.Position - looking * 5.5 + right * side * 10.5
+				elseif e.ac.kind == "archer" then
+					local away = (e.root.Position - hrp.Position) * Vector3.new(1, 0, 1)
+					if away.Magnitude > 0.1 then
+						local retreat = if e.ac.hp <= e.maxHp * 0.35 then 34 else 28
+						intent = if away.Magnitude < retreat then "retreat" else "strafe"
+						goal = hrp.Position + away.Unit * retreat + right * side * 7
+					end
+				elseif e.boss then
+					intent, goal = "pressure", hrp.Position + looking * 8 + right * side * 3
+				end
+				goal = Vector3.new(math.clamp(goal.X, ORIGIN.X - half + 9, ORIGIN.X + half - 9),
+					e.root.Position.Y, math.clamp(goal.Z, ORIGIN.Z - half + 9, ORIGIN.Z + half - 9))
+				e.tacticGoal, e.tacticIntent = goal, intent
+				e.model:SetAttribute("FieldTacticalIntent", intent)
+				-- 반복 연타 중인 주인공을 읽고 방패병이 미리 무게중심을 낮춘다.
+				-- 실제 막기/피해 경감은 기존 strikeEnemy의 정면 판정에서만 적용된다.
+				if e.ac.kind == "shield" and flat.Magnitude < 15
+					and now - (swingBridge.basicAt or -100) < 0.45 then
+					e.guardUntil = math.max(e.guardUntil or 0, now + 0.30)
+				end
+			end
 			local wish = if frozen then 0 else AC.moveWish(e.ac, dist)
 			local beforeMove = e.root.Position
 			if frozen or e.ac.state == "stagger" then
@@ -6353,9 +6543,26 @@ function FieldScene.start(opts)
 					facing = remaining.Unit
 				end
 			elseif e.waiting and not frozen and flat.Magnitude > 0.1 and wish == 0 then
-				-- 공격 차례를 기다리는 적은 정면을 유지하며 측면으로 포위한다.
-				e.circleDir = e.circleDir or (if math.random() < 0.5 then 1 else -1)
+				-- 공격 토큰 대기자도 멈춰서 직선 줄을 서지 않고 플레이어 좌우로 반원을 만든다.
+				e.circleDir = e.circleDir or e.tacticSide or 1
 				desired = flat.Unit:Cross(Vector3.yAxis) * e.circleDir * e.ac.def.speed * 0.45
+			elseif e.ac.def.keepAway and e.ac.state == "chase" and not frozen
+				and e.tacticGoal and (e.tacticIntent == "retreat" or wish == 0) then
+				-- 궁수/총병은 조준 전 후방 재배치·수평 견제. 공격 예고/발사 시에는 기존 정지 규칙이 우선.
+				local route = (e.tacticGoal - pv.Position) * Vector3.new(1, 0, 1)
+				if route.Magnitude > 2 then
+					desired = route.Unit * math.min(e.ac.def.speed * 0.64, route.Magnitude / math.max(dtc, 0.016))
+				end
+			elseif e.tacticGoal and wish > 0 and e.ac.state == "chase" and not frozen
+				and flat.Magnitude > e.ac.def.range * STUD + 5 and flat.Magnitude < 70 then
+				-- 검병과 돌격병은 목표 옆구리로 접근하지만 최종 타격 거리에서는 주인공을 향해 선회.
+				local route = (e.tacticGoal - pv.Position) * Vector3.new(1, 0, 1)
+				if route.Magnitude > 2 then
+					local routeDir = (route.Unit * 0.72 + flat.Unit * 0.28)
+					desired = routeDir.Unit * math.min(e.ac.def.speed * 0.8, route.Magnitude / math.max(dtc, 0.016))
+				else
+					desired = flat.Unit * e.ac.def.speed * 0.68
+				end
 			elseif wish ~= 0 and flat.Magnitude > 0.1 then
 				desired = flat.Unit * wish * math.min(e.ac.def.speed * 0.8, flat.Magnitude / math.max(dtc, 0.016))
 			end
@@ -6399,8 +6606,16 @@ function FieldScene.start(opts)
 			if e.fm then
 				local st, ph = "IDLE", (now / 2.4 + e.motionPhase) % 1
 				local acs = e.ac.state
-				if (e.dodgeUntil or 0) > now then
-					st, ph = "EVADE", math.clamp((now - (e.dodgeT0 or now)) / 0.3, 0, 1)
+				if now < (e.knockUntil or 0) then
+					st, ph = "KNOCKDOWN", math.clamp((now - (e.knockAt or now)) / 0.78, 0, 1)
+				elseif now < (e.riseUntil or 0) then
+					st, ph = "GETUP", math.clamp((now - e.knockUntil) / math.max(e.riseUntil - e.knockUntil, 0.1), 0, 1)
+				elseif (e.parryUntil or 0) > now then
+					st, ph = "PARRY", 1 - (e.parryUntil - now) / 0.37
+				elseif (e.guardUntil or 0) > now then
+					st, ph = "BLOCK", 1 - (e.guardUntil - now) / 0.37
+				elseif (e.dodgeUntil or 0) > now then
+					st, ph = "EVADE", math.clamp((now - (e.dodgeT0 or now)) / 0.36, 0, 1)
 				elseif hurtProgress >= 0 and hurtProgress < 1 then
 					st, ph = "HIT", hurtProgress
 				elseif acs == "windup" then
@@ -6422,8 +6637,14 @@ function FieldScene.start(opts)
 				elseif st == "RECOVERY" then
 					lean = -0.3 * (1 - ph)
 				elseif st == "HIT" then
-					-- 맞는 순간 확 젖혀졌다가 되돌아온다(맞은 쪽으로 몸이 꺾이는 느낌)
-					lean = 0.6 * (1 - ph) * (1 - ph)
+					-- 병종/타격 순번에 따라 상체 숙임과 뒤젖힘을 교대로 써 반복 피격도 다르게 보인다.
+					lean = (if e.hitVariant == 2 then -0.36 else 0.6) * (1 - ph) * (1 - ph)
+				elseif st == "BLOCK" or st == "PARRY" then
+					lean = if st == "BLOCK" then 0.24 else -0.22
+				elseif st == "KNOCKDOWN" then
+					lean = -0.1
+				elseif st == "GETUP" then
+					lean = 0.18 * (1 - ph)
 				end
 				-- [근접 돌진 접지] 기존 공격 이동거리와 사거리·판정은 그대로 두되,
 				-- 실제 전진한 거리만 발 디딤 포즈로 전달해 공중에서 미끄러지는 느낌을 막는다.
@@ -6437,6 +6658,14 @@ function FieldScene.start(opts)
 				local bob, roll = 0, 0
 				if st == "IDLE" then
 					bob, roll, lean = math.sin(now * 2.2 + e.spawnT) * 0.06, math.sin(now * 1.1 + e.spawnT) * 0.05, lean + math.sin(now * 1.6 + e.spawnT) * 0.04
+				elseif st == "KNOCKDOWN" then
+					bob = -0.65 * math.min(ph * 2.4, 1)
+					roll = (if e.knockVariant == 2 then 0.36 else -0.21) * math.sin(ph * math.pi * 0.75)
+				elseif st == "GETUP" then
+					bob = -0.65 * (1 - ph) * (1 - ph)
+					roll = (if e.knockVariant == 2 then 0.14 else -0.09) * (1 - ph)
+				elseif st == "BLOCK" or st == "PARRY" then
+					bob, roll = -0.13, if st == "PARRY" then 0.19 * math.sin(ph * math.pi) else -0.08
 				elseif st == "RUN" then
 					local pace = math.clamp((e.moveVel or Vector3.zero).Magnitude / math.max(e.ac.def.speed, 1), 0, 1.4)
 					bob, roll, lean = math.abs(math.sin((e.gait or 0) * math.pi * 2)) * 0.075 * pace, math.sin((e.gait or 0) * math.pi * 2) * 0.03, -0.12 * pace
