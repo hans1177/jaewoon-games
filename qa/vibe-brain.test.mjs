@@ -475,3 +475,33 @@ test('네모트론이 마을 시설 배치 5칸 내에서만 수정하고 게임
   assert.throws(() => validateReview({...review, edits:[{...review.edits[0], anchor:1}]},
     [screenshot],policy,[{anchor:0,path:target,before:original}]),/EDIT_NOT_VISUAL_OR_NOT_IN_POLICY/);
 });
+
+
+test('무료 전문 AI 역할별로 실제 PBR·선박·화물·무기·이펙트 사진을 교차 수집한다', () => {
+  const scenario = JSON.parse(fs.readFileSync(
+    'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', 'utf8'));
+  const files = scenario.filter(step => step.type === 'capture')
+    .map(step => step.name + '-0.jpg');
+  for (let cycle = 0; cycle < 5; cycle++) {
+    for (const role of ['NPC','WORLD','UI','MOTION']) {
+      const result = selectStudioDesignPhotoNames(files, cycle, 8, role);
+      assert.equal(result.length,8, '실물 화면 부족: '+role+' '+cycle);
+      assert.equal(new Set(result).size,8);
+      if (role === 'WORLD') {
+        assert.equal(result.filter(name => name.startsWith('town_')).length,2);
+        assert.equal(result.filter(name => name.startsWith('cargo_')).length,2);
+        assert.equal(result.filter(name => name.startsWith('material_')).length,2);
+        assert.equal(result.filter(name => name.startsWith('ship_') || name.startsWith('cb') ||
+          name.startsWith('v1_') || name.startsWith('v2_') || name.startsWith('v3_') ||
+          name.startsWith('v4_')).length,2);
+      } else if (role === 'NPC') {
+        assert.ok(result.every(name => name.startsWith('harbor_npc_')));
+      } else if (role === 'MOTION') {
+        assert.ok(result.some(name => name.startsWith('weapon_')));
+        assert.ok(result.some(name => name.startsWith('vfx_')));
+      } else {
+        assert.ok(result.every(name => name.startsWith('ui_') || name.startsWith('tab_')));
+      }
+    }
+  }
+});
