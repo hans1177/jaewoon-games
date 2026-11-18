@@ -392,6 +392,8 @@ function record(status, fields = {}) {
   const report = {version: 3, provider: 'MULTI_FREE_VISUAL', gameId: 'mare-essentia',
     sourceRevision: trim(process.env.GITHUB_SHA), status, selectedRole: designRuntime.selectedRole,
     usageWindow: designRuntime.usageWindow, cooldowns: designRuntime.cooldowns,
+    providerCooldowns: designRuntime.providerCooldowns,
+    quotaSnapshot: designRuntime.quotaSnapshot,
     attempts: designRuntime.attempts, ...fields};
   fs.mkdirSync(path.dirname(reportPath), {recursive: true});
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n');
@@ -832,11 +834,25 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     return record('SKIPPED_STUDIO_SOURCE_EVIDENCE_MISMATCH', {frames: proofs});
   if (trim(process.env.COMPANY_EXTERNAL_AI_ENABLED) !== 'YES')
     return record('SKIPPED_EXTERNAL_AI_OPT_IN_REQUIRED', {frames: proofs});
+  // [자동 섭외] 공식 API의 무료 가격·이미지 능력을 확인한 모델만 합류한다.
+  const hasFreeRouter = trim(process.env.OPENROUTER_DESIGN_FREE_TIER_VERIFIED)==='YES' &&
+    trim(process.env.OPENROUTER_API_KEY);
+  const [accountQuota,discovered] = hasFreeRouter ? await Promise.all([
+    readOpenRouterFreeQuota(process.env.OPENROUTER_API_KEY,fetchImpl),
+    discoverFreeVisionModels({fetchImpl,policy})
+  ]) : [null,[]];
+  designRuntime.quotaSnapshot = accountQuota;
+  const diagnostics = [];
   const freeModels = selectFreeDesignModels({
-    frameNames: photos.map(photo => photo.name), role: designRuntime.selectedRole, policy, previous: carriedHistory, feedback
+    frameNames:photos.map(photo=>photo.name),role:designRuntime.selectedRole,
+    policy,previous:carriedHistory,feedback,extraModels:discovered,
+    quotaSnapshot:accountQuota,diagnostics
   });
+  console.log('DESIGN_FREE_QUOTA='+JSON.stringify(Object.keys(DAILY_LIMIT).map(provider=>
+    freeQuotaStatus(provider,designRuntime.usageWindow,accountQuota))));
+  console.log('DESIGN_FREE_RECRUITED='+discovered.length);
   if (!freeModels.length)
-    return record('SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE', {frames: proofs});
+    return record('SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE', {frames: proofs,modelAvailability:diagnostics});
   if (trim(process.env.NEMOTRON_DESIGN_CANDIDATE) !== 'YES')
     return record('SKIPPED_CANDIDATE_EDIT_NOT_ENABLED', {frames: proofs});
   let branch = '';
@@ -891,10 +907,17 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   // [메인] 가장 적합한 무료 전문가부터 시도하고 한도/출력 오류면 다른 무료 전문가에게 넘긴다.
   // 유료/안전 거부가 발견되면 중단. 동일 모델에 재시도 폭증·유료 전환 없음.
   const routeLimit = policy.directVisualDesign.freeSpecialistPool.maxCallsPerCapture;
-  for (const model of freeModels.slice(0, routeLimit)) {
-    const previousCount = designRuntime.usageWindow.calls[model.provider] || 0;
-    if (previousCount >= DAILY_LIMIT[model.provider]) continue;
-    designRuntime.usageWindow.calls[model.provider] = previousCount + 1;
+  let attempted = 0;
+  for (const model of freeModels) {
+    if (attempted >= routeLimit) break;
+    if (freeQuotaStatus(model.provider,designRuntime.usageWindow,
+      designRuntime.quotaSnapshot).remaining <= 0 ||
+      Date.parse(designRuntime.providerCooldowns[model.provider]||'')>Date.now()) continue;
+    attempted++;
+    designRuntime.usageWindow.calls[model.provider] =
+      (designRuntime.usageWindow.calls[model.provider] || 0) + 1;
+    if (model.provider==='OPENROUTER' && designRuntime.quotaSnapshot)
+      designRuntime.quotaSnapshot.remaining=Math.max(0,designRuntime.quotaSnapshot.remaining-1);
     const result = await callFreeDesignModel(model, prompt, photos, fetchImpl);
     modelAttempt(model.id, result.status, {provider: model.provider, model: model.model});
     if (['BILLING_BLOCKED', 'NONZERO_COST_BLOCKED', 'CONTENT_POLICY_BLOCKED'].includes(result.status))
@@ -902,6 +925,9 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     if (result.status !== 'OK') {
       if (result.retryAfterMs)
         designRuntime.cooldowns[model.id] = new Date(Date.now() + result.retryAfterMs).toISOString();
+      if (result.status==='HTTP_429')
+        designRuntime.providerCooldowns[model.provider] =
+          new Date(Date.now() + (result.retryAfterMs||60000)).toISOString();
       continue;
     }
     let reviewed;
@@ -923,7 +949,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
       continue;
     }
     const evidence = {frames: proofs, provider: model.provider, model: model.model,
-      selectedRole: designRoleForFrames(photos.map(photo => photo.name)),
+      selectedRole: designRuntime.selectedRole,
       rawResponseSha256: digest(result.text),
       issues: reviewed.issues, edits: candidate.changes,
       sourceHashes: [...candidate.files].map(([file, content]) =>
@@ -1014,7 +1040,16 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
   if (previous?.edits?.some(edit=>edit.category==='sound-presentation'))
     return unavailable('BLOCKED_AUDIO_ARTISTIC_QUALITY_NOT_PROVABLE_FROM_SCREENSHOTS');
   loadPreviousDesignUsage(previous);
-  const allModels = selectFreeDesignModels({frameNames: names, role: previous.selectedRole, policy, previous});
+  // [독립 검증] 후보 작성과 동일한 무료 모델 공동 사용량·계정 잔여량을 재확인한다.
+  const hasFreeRouter=trim(process.env.OPENROUTER_DESIGN_FREE_TIER_VERIFIED)==='YES' &&
+    trim(process.env.OPENROUTER_API_KEY);
+  const [accountQuota,discovered]=hasFreeRouter?await Promise.all([
+    readOpenRouterFreeQuota(process.env.OPENROUTER_API_KEY,fetchImpl),
+    discoverFreeVisionModels({fetchImpl,policy})
+  ]):[null,[]];
+  designRuntime.quotaSnapshot=accountQuota;
+  const allModels=selectFreeDesignModels({frameNames:names,role:previous.selectedRole,
+    policy,previous,extraModels:discovered,quotaSnapshot:accountQuota});
   // 후보 모델 스스로 최종 수용을 결정할 수 없다.
   const reviewers = allModels.filter(model => model.provider !== previous.provider);
   if (!reviewers.length)
@@ -1029,10 +1064,17 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
     'PASS only when at least two distinct screenshots show actual improvements without any regression; ' +
     'uncertain/no visual improvement -> UNKNOWN. File names: ' + JSON.stringify(names);
   const pairs = names.flatMap((name, index) => [baseline[index], after[index]]);
-  for (const reviewer of reviewers.slice(0, policy.directVisualDesign.freeSpecialistPool.maxCallsPerCapture)) {
-    const previousCalls = designRuntime.usageWindow.calls[reviewer.provider] || 0;
-    if (previousCalls >= DAILY_LIMIT[reviewer.provider]) continue;
-    designRuntime.usageWindow.calls[reviewer.provider] = previousCalls + 1;
+  let reviewCalls=0;
+  for (const reviewer of reviewers) {
+    if (reviewCalls>=policy.directVisualDesign.freeSpecialistPool.maxCallsPerCapture) break;
+    if (freeQuotaStatus(reviewer.provider,designRuntime.usageWindow,
+      designRuntime.quotaSnapshot).remaining<=0 ||
+      Date.parse(designRuntime.providerCooldowns[reviewer.provider]||'')>Date.now()) continue;
+    reviewCalls++;
+    designRuntime.usageWindow.calls[reviewer.provider] =
+      (designRuntime.usageWindow.calls[reviewer.provider]||0)+1;
+    if (reviewer.provider==='OPENROUTER'&&designRuntime.quotaSnapshot)
+      designRuntime.quotaSnapshot.remaining=Math.max(0,designRuntime.quotaSnapshot.remaining-1);
     const result = await callFreeDesignModel(reviewer, prompt, pairs, fetchImpl);
     modelAttempt(reviewer.id, result.status);
     if (['CONTENT_POLICY_BLOCKED', 'BILLING_BLOCKED', 'NONZERO_COST_BLOCKED'].includes(result.status))
@@ -1040,6 +1082,9 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
     if (result.status !== 'OK') {
       if (result.retryAfterMs) designRuntime.cooldowns[reviewer.id] =
         new Date(Date.now() + result.retryAfterMs).toISOString();
+      if (result.status==='HTTP_429')
+        designRuntime.providerCooldowns[reviewer.provider] =
+          new Date(Date.now()+(result.retryAfterMs||60000)).toISOString();
       continue;
     }
     let verdict;
