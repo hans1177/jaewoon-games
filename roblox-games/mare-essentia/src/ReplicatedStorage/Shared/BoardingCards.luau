@@ -444,8 +444,9 @@ B.Units.lo_21 = { id="lo_21", name="유령선 플라잉 더치맨", category="�
 B.Units.lo_22 = { id="lo_22", name="사이렌의 노래", category="전설 생물", lore="듣는 이의 마음을 끌어당기는 노래", stage={ art="CardArt/event_calm_seas", motion="scout", scene="사이렌의 노래" }, row="ranged", power=3, weapon="gun", ability="spy" }
 B.Units.lo_23 = { id="lo_23", name="고대 거인", category="전설 생물", lore="돌산처럼 우뚝 선 옛이야기 속의 거인", stage={ art="CardArt/event_stonehenge", motion="pounce", scene="고대 거인" }, row="melee", power=7, weapon="axe", ability="armor" }
 B.Units.lo_24 = { id="lo_24", name="안개의 정령", category="전설 생물", lore="안개 속에서 길을 흐리는 존재", stage={ art="CardArt/event_calm_seas", motion="scout", scene="안개의 정령" }, row="ranged", power=3, weapon="gun", ability="bond" }
-B.Specials.lo_25 = { id="lo_25", name="전설의 나침반", category="유물", lore="가야 할 곳을 가리킨다는 신비한 나침반", stage={ art="CardArt/event_chart_west_europe", motion="scout", scene="전설의 나침반" }, special="horn", text="내 가장 센 줄의 일반 카드 점수가 두 배", }
-B.Specials.lo_26 = { id="lo_26", name="현자의 지도", category="유물", lore="잊힌 땅의 위치를 그린 지도", stage={ art="CardArt/event_chart_south_america", motion="wind", scene="현자의 지도" }, special="wind", text="날씨를 걷어 내고 카드를 한 장 뽑는다", }
+B.Units.lo_46 = { id="lo_46", name="묠니르", category="유물", lore="북유럽 신화에서 천둥의 신 토르가 쓰는 망치. 같은 줄의 다른 아군 일반 카드 점수를 높인다.", row="melee", power=4, ability="morale" }
+B.Specials.lo_25 = { id="lo_25", name="엑스칼리버", category="유물", lore="아서왕 전설에서 아서가 호수의 여인에게 받은 검", special="horn", text="내 가장 센 줄의 일반 카드 점수가 두 배" }
+B.Specials.lo_26 = { id="lo_26", name="현자의 돌", category="유물", lore="금속을 금으로 바꾸고 생명의 영약을 만드는 데 쓰인다는 연금술 전승의 물질", special="wind", text="날씨를 걷어 내고 카드를 한 장 뽑는다" }
 B.Specials.lo_27 = { id="lo_27", name="저주의 안개", category="미스터리", lore="시야를 가리고 힘을 앗아 가는 짙은 안개", stage={ art="CardArt/event_calm_seas", motion="storm", scene="저주의 안개" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="melee", }
 B.Specials.lo_28 = { id="lo_28", name="불의 폭풍", category="미스터리", lore="하늘을 붉게 물들이는 폭풍", stage={ art="CardArt/event_hurricane", motion="storm", scene="불의 폭풍" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="ranged", }
 B.Specials.lo_29 = { id="lo_29", name="깊은 바다의 소용돌이", category="미스터리", lore="모든 것을 삼키는 거대한 소용돌이", stage={ art="CardArt/event_storm", motion="storm", scene="깊은 바다의 소용돌이" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="cannon", }
@@ -692,12 +693,13 @@ B.CardEnglish = {
 	lo_22 = { name = "Song of the Sirens", lore = "A song that pulls at the hearts of all who hear it." },
 	lo_23 = { name = "Ancient Giant", lore = "A giant from old tales who stands like a mountain." },
 	lo_24 = { name = "Mist Spirit", lore = "A being that clouds the way within the fog." },
-	lo_25 = { name = "Legendary Compass", lore = "A mystical compass said to point where you must go." },
-	lo_26 = { name = "Sage's Map", lore = "A map drawn of forgotten lands." },
+	lo_25 = { name = "Excalibur", lore = "The sword Arthur receives from the Lady of the Lake." },
+	lo_26 = { name = "Philosopher's Stone", lore = "An alchemical substance said to transmute metals into gold and produce an elixir of life." },
 	lo_27 = { name = "Cursed Fog", lore = "A thick fog that dims sight and saps strength." },
 	lo_28 = { name = "Firestorm", lore = "A storm that turns the sky red." },
 	lo_29 = { name = "Abyssal Whirlpool", lore = "A vast whirlpool that swallows everything." },
 	lo_30 = { name = "Mystic Lantern", lore = "A light that shows the way in darkness." },
+	lo_46 = { name = "Mjolnir", lore = "The hammer wielded by Thor, the Norse god of thunder." },
 }
 
 -- 두목 전용 영웅: 두목을 쓰러뜨린 뒤 보상 후보에만 나온다 (일반 뽑기에는 나오지 않는다)
@@ -716,7 +718,7 @@ B.Factions = {
 	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", specialty = "동물", leaders = { "rajaraja", "tranhungdao", "akbar" },
 		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30", "sa_31", "sa_32", "sa_33"} },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
-		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30"} },
+		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30", "lo_46"} },
 	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", specialty = "지형·원더", leaders = { "mansa", "hannibal", "shaka" },
 		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30", "af_31", "af_32", "af_33", "af_34" } },
 }
