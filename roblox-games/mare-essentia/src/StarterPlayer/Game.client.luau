@@ -260,6 +260,7 @@ local arriveNext = false -- 다음 장면은 입항 연출로 시작
 local amountIndex = 1
 local message = ""
 local messageOk = true
+local ranking = nil
 
 local mailBox, marketList = nil, nil
 local mailDraft = { to = "", coins = "", text = "" }
@@ -11102,7 +11103,6 @@ task.spawn(function()
 			    end
 			end)
 
-			local ranking = nil
 			return
 		end
 		-- 그 밖의 응답(너무 빨라요 등)은 멈추지 말고 다시 시도한다

@@ -29,6 +29,7 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
 test('로블록스 시작 화면은 3D 항구 장면 로딩과 분리되고 저장·출항은 안전하게 대기한다',()=>{
   const port=read('ReplicatedStorage/Shared/PortScene.luau');
   assert.match(client,/local PortScene = nil/);
+  assert.ok(client.indexOf('local ranking = nil') < client.indexOf('-- 시작 --------------------------------------------------------------------'),'기존 랭킹 상태는 UI 초기화 범위에 남아야 한다');
   assert.match(client,/task\.spawn\(function\(\)[\s\S]*?return require\(Shared:WaitForChild\("PortScene"\)\)/);
   assert.match(client,/gui:SetAttribute\("PortSceneStatus", "ready"\)/);
   assert.ok(client.indexOf('gui:SetAttribute("StartupStage", "title-ready")') < client.indexOf('return require(Shared:WaitForChild("PortScene"))'),'3D 로딩이 시작 메뉴보다 먼저 실행되면 안 된다');
