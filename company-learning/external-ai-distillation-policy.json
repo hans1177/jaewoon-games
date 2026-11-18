@@ -180,27 +180,38 @@
         "GEMINI_FLASH",
         "OPENROUTER_GEMMA",
         "OPENROUTER_NEMOTRON",
+        "OPENROUTER_GEMMA26",
+        "OPENROUTER_OMNI",
         "GEMINI_LITE"
       ],
       "roles": {
         "NPC": [
           "NVIDIA_VL",
           "OPENROUTER_NEMOTRON",
+          "OPENROUTER_GEMMA",
           "GEMINI_FLASH"
         ],
         "WORLD": [
           "GEMINI_FLASH",
+          "OPENROUTER_GEMMA26",
           "OPENROUTER_GEMMA",
           "NVIDIA_VL"
         ],
         "UI": [
           "OPENROUTER_GEMMA",
           "GEMINI_FLASH",
+          "OPENROUTER_GEMMA26",
           "NVIDIA_VL"
         ],
         "GENERAL": [
           "GEMINI_LITE",
+          "OPENROUTER_GEMMA26",
           "NVIDIA_VL"
+        ],
+        "MOTION": [
+          "OPENROUTER_OMNI",
+          "OPENROUTER_NEMOTRON",
+          "GEMINI_FLASH"
         ]
       },
       "actualFreeTierAndApiKeyRequired": true,
@@ -228,7 +239,14 @@
       "releaseViaExistingF0F9AndAuthorizedRobloxPublishOnly": true,
       "existingStudioWorkflow": ".github/workflows/devloop-studio.yml",
       "existingReviewer": "tools/company-nemotron-design-review.mjs",
-      "noNewQueueWorkflowOrShadowPipeline": true
+      "noNewQueueWorkflowOrShadowPipeline": true,
+      "experimentalImageGeneration": {
+        "status": "UNBOUND_LICENSE_HOLD",
+        "exampleModel": "recraft/recraft-v4.1-flash-v2:free",
+        "endDate": "2026-11-28",
+        "automatedGameAssetPublication": false,
+        "reason": "Temporary free API and owner approved asset provenance + license checks required"
+      }
     }
   }
 }
