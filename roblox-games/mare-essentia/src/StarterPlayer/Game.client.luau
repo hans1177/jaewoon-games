@@ -1896,9 +1896,9 @@ H.bookSpine = pageRule(mainInner, UDim2.fromOffset(132, 68), UDim2.new(0, 1, 1, 
 function H.layoutBook()
   local width, height = mainInner.AbsoluteSize.X, mainInner.AbsoluteSize.Y
   -- [공통 현황] 제목과 자금·화물칸이 작은 폰에서도 서로 겹치지 않게 한다.
-  H.menuStatusLabel.Position = UDim2.new(1, if width < 600 then -198 else -388, 0, 15)
-  H.menuStatusLabel.Size = UDim2.fromOffset(if width < 600 then 155 else 330, 34)
-  H.menuStatusLabel.TextSize = if width < 600 then 15 else 18
+  H.menuStatusLabel.Position = UDim2.new(1, if width < 740 then -234 else -388, 0, 15)
+  H.menuStatusLabel.Size = UDim2.fromOffset(if width < 740 then 192 else 330, 34)
+  H.menuStatusLabel.TextSize = if width < 740 then 15 else 18
   local tabCount = #groupOf(currentTab).tabs
   local gallery = view ~= nil and not newGameMode and currentTab ~= "map"
   local three = gallery and width >= 740
@@ -2715,7 +2715,10 @@ H.hudCalendar = {
 	voyage = require(Shared:WaitForChild("Voyage")),
 }
 -- [자금·화물 단일 표기] 기존 HUD·시설 책·교역·조선소의 동일 서버 스냅샷 사용.
-function H.statusMoneyCargo(p, ship)
+function H.statusMoneyCargo(p, ship, compact)
+	if compact then
+		return string.format("돈 %s · 짐 %d/%d", H.commas(p.coins), ship.cargoUsed, ship.cargoCapacity)
+	end
 	return string.format("자금 %s코인 · 화물 %d/%d", H.commas(p.coins), ship.cargoUsed, ship.cargoCapacity)
 end
 
@@ -2754,7 +2757,7 @@ function H.updateHud(p, ship)
 	hullFill.BackgroundColor3 = if ship.hull / math.max(1, ship.maxHull) < 0.35 then Color3.fromRGB(255, 80, 40) else Color3.fromRGB(214, 40, 36)
 	H.hudShip.Text = string.format("화물 %d/%d · 명성 %d", ship.cargoUsed, ship.cargoCapacity, p.fame)
 	H.hudCoin.Text = tostring(p.coins) .. " 코인"
-	H.menuStatusLabel.Text = H.statusMoneyCargo(p, ship)
+	H.menuStatusLabel.Text = H.statusMoneyCargo(p, ship, mainInner.AbsoluteSize.X < 740)
 end
 
 -- 화면 중앙 상단 동료 말풍선: 게임을 시작하거나 새 항구에 닿으면 동료가 인사하고 앞으로 할 일을 조언한다.
@@ -2806,8 +2809,10 @@ do
 		bubble.AnchorPoint = Vector2.new(0, 0)
 		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2),
 			if width < 610 then 310 elseif width < 1050 then 174 else 76)
-		H.goalBanner.Position = UDim2.new(0.5, 0, 0, if width < 610 then 246 elseif width < 1050 then 120 else 8)
-		H.goalBanner.Size = UDim2.fromOffset(if width < 610 then math.max(170, width - 16) elseif width < 1050 then math.min(530, width - 24) else math.min(480, width - 600), 54)
+		H.goalBanner.Position = UDim2.new(0.5, 0, 0, if width < 610 then 246 elseif width < 790 then 120 else 8)
+		H.goalBanner.Size = UDim2.fromOffset(if width < 610 then math.max(170, width - 16)
+			elseif width < 790 then math.min(530, width - 24)
+			else math.clamp(width - 590, 204, 480), 54)
 		bubble.Size = UDim2.fromOffset(bubbleWidth, 0)
 	end
 	hud:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutBubble)
@@ -5476,7 +5481,7 @@ local function openTradeHall()
 		title.AutomaticSize = Enum.AutomaticSize.None
 		title.TextTruncate = Enum.TextTruncate.AtEnd
 		-- [공통 상단 자금·화물] 교역 중에도 한 자리에서만 실측값을 확인한다.
-		local commonStatus = mkLabel(top, H.statusMoneyCargo(p, ship), if narrow then 18 else 20, INK, true)
+		local commonStatus = mkLabel(top, H.statusMoneyCargo(p, ship, narrow), if narrow then 18 else 20, INK, true)
 		commonStatus.Name = "TradeGlobalMoneyCargo"
 		commonStatus.Position = UDim2.fromOffset(12, if narrow then 42 else 33)
 		commonStatus.Size = UDim2.new(1, -112, 0, 32)
@@ -7125,7 +7130,7 @@ function openYardHall()
 		title.Size = UDim2.new(1, -104, 0, 25)
 		title.AutomaticSize = Enum.AutomaticSize.None
 		title.TextTruncate = Enum.TextTruncate.AtEnd
-		local hold = mkLabel(top, H.statusMoneyCargo(p, ship) .. " · 기함 " .. ship.name, 17, INK_SOFT, true)
+		local hold = mkLabel(top, H.statusMoneyCargo(p, ship, width < 740) .. " · 기함 " .. ship.name, 17, INK_SOFT, true)
 		hold.Position = UDim2.fromOffset(12, 34)
 		hold.Size = UDim2.new(1, -100, 0, 20)
 		hold.AutomaticSize = Enum.AutomaticSize.None
