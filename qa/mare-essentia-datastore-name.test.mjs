@@ -1242,6 +1242,37 @@ test('발전도 해금 장식은 단계적으로 설치되고 기존 완공물�
  assert.match(scene,/BuildAuthority", "VISUAL_ONLY"/);
 });
 
+
+
+// [장식 시공 생명주기] 모든 구역의 신규 해금 장식에 동일한 임시 작업 현장을 적용한다.
+test('주거·항만·공방·행정·시장 장식은 실제 신규 단계에서만 시공하고 목수·비계를 정리한다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const start=scene.indexOf('local function stageDecoration(item, site, buildDelay)');
+ const end=scene.indexOf('-- 도시마다 고정된 지형 시드',start);
+ assert.ok(start>0&&end>start,'기존 densify 내부의 단일 장식 시공 책임 함수');
+ const stage=scene.slice(start,end);
+ assert.match(stage,/item:GetAttribute\("BuildVisualState"\) ~= "installing"/);
+ assert.match(stage,/item:SetAttribute\("BuildState", "constructing"\)/);
+ assert.match(stage,/item:SetAttribute\("BuildState", "complete"\)/);
+ assert.match(stage,/scaffold.Name = "CityDecorationScaffold"/);
+ assert.match(stage,/scaffold:SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
+ assert.match(stage,/worker:SetAttribute\("Activity", "hammer"\)/);
+ assert.match(stage,/duty.kind = "inspect"/);
+ assert.match(stage,/worker:Destroy\(\)/);
+ assert.match(stage,/scaffold:Destroy\(\)/);
+ assert.match(stage,/while item.Parent and not folder.Parent/);
+ for(const call of [
+  'stageDecoration(prop, at + Vector3.new(13, 0, face * 11), delay)',
+  'stageDecoration(detail, placeAt, delay)',
+  'stageDecoration(obj, Vector3.new(cx + row[4], 0, cz + row[5]), delay)',
+  'stageDecoration(warehouseDisplay, Vector3.new(-31, 0, 222), delay)',
+ ]) assert.ok(scene.includes('if newGrade then '+call) || scene.includes(call),'신규 해금 장식 미연결: '+call);
+ assert.equal((scene.match(/stageDecoration\(/g)||[]).length,5,'4개 배치 경로+단일 책임 함수');
+ assert.match(scene,/decorLimit = if game:GetService\("UserInputService"\)\.TouchEnabled then 7 else 13/);
+ assert.match(scene,/local builderLimit = if touchDecor then 1 else 2/);
+ assert.match(scene,/if info\.sim and info\.sim\.buildings then lastDecorationGrowth\[info\.portId\] = decor end/);
+});
+
 // [마을 시설 건물 정체성] 학자·주점·서고 등 동일 주택 외형 회귀를 차단한다.
 test('마을 7개 시설은 승인된 건축물과 업종별 실물 구조로 구분한다',()=>{
  const scene=read('ReplicatedStorage/Shared/PortScene.luau');

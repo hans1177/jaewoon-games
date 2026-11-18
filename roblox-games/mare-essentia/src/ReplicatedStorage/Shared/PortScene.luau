@@ -2425,6 +2425,59 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local builderLimit = if touchDecor then 1 else 2
 	local jobs = info.sim and info.sim.jobs
 	local hasBuilders = not info.sim or (jobs and ((jobs.laborer or 0) + (jobs.craftsman or 0)) > 0)
+
+	-- [성장 장식 시공] 모든 구역이 동일한 설치·비계 제거·목수 점검 과정을 사용한다.
+	-- 처음 방문한 기존 완공물과 즉시 설치된 대형 메시는 재시공하지 않는다.
+	local function stageDecoration(item, site, buildDelay)
+		if not item or item:GetAttribute("BuildVisualState") ~= "installing" then return end
+		item:SetAttribute("BuildState", "constructing")
+		local scaffold = importedModel(folder, "Terrain", "wood-support", site + Vector3.new(-3, 0, 0), 5, false)
+		if scaffold then
+			scaffold.Name = "CityDecorationScaffold"
+			scaffold:SetAttribute("BuildPlotId", item:GetAttribute("BuildPlotId"))
+			scaffold:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+			scaffold:SetAttribute("ShowcaseOnly", true)
+		end
+		local worker, duty
+		if hasBuilders and decorBuilders < builderLimit then
+			local workerAt = site + Vector3.new(6, 0, 5)
+			worker = villager(folder, workerAt, faceTo(workerAt, site),
+				C(143, 109, 73), rng, "Barbarian", true,
+				{ profession = "carpenter", hat = "cap", year = info.year or currentYear })
+			if worker then
+				decorBuilders += 1
+				worker:SetAttribute("Job", "construction_worker")
+				worker:SetAttribute("Activity", "hammer")
+				worker:SetAttribute("ShowcaseOnly", true)
+				worker:SetAttribute("BuildPlotId", item:GetAttribute("BuildPlotId"))
+				duty = { model = worker, base = worker:GetPivot(), mode = "stay",
+					kind = "hammer", phase = rng:NextNumber(0, 5) }
+				table.insert(walkers, duty)
+			end
+		end
+		task.spawn(function()
+			-- [항구 로딩 보호] Workspace 부착 전에는 작업 시간을 소모하지 않는다.
+			local deadline = os.clock() + 25
+			while item.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
+			if not item.Parent or not folder.Parent then
+				if item.Parent then item:SetAttribute("BuildState", "complete") end
+				if scaffold and scaffold.Parent then scaffold:Destroy() end
+				if worker and worker.Parent then worker:Destroy() end
+				return
+			end
+			task.wait((buildDelay or 0) + 0.85)
+			if item.Parent then item:SetAttribute("BuildState", "complete") end
+			if scaffold and scaffold.Parent then scaffold:Destroy() end
+			if worker and worker.Parent then
+				if item.Parent and folder.Parent then
+					duty.kind = "inspect"
+					worker:SetAttribute("Activity", "inspect")
+					task.wait(1.2)
+				end
+				if worker.Parent then worker:Destroy() end
+			end
+		end)
+	end
 	-- 도시마다 고정된 지형 시드로 구획 방향·필지 크기·외곽 폭을 달리한다. 재진입해도 같은 항구는 같은 형태다.
 	local districtSeed = seeded(info.portId .. ":city-plan")
 	local districtOffset = districtSeed:NextNumber(-7, 7)
@@ -2670,6 +2723,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 									prop:SetAttribute("BuildState", "complete")
 									prop:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 									prop:SetAttribute("ShowcaseOnly", true)
+					if newGrade then stageDecoration(prop, at + Vector3.new(13, 0, face * 11), delay) end
 								end
 							end
 							prompt(folder, at + Vector3.new(0, 3, face * 7), c[2], "시설 이용", c[8], onFacility)
@@ -2714,8 +2768,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						local itemName = if decor.residential >= 3 then "village-well" else "bench_A"
 						local front = if pos.Z > 0 then -1 else 1
 						local placeAt = pos + Vector3.new(ww * 0.28, 0, front * (ww * 0.45 + 4))
-						local detail = importedModel(folder, "Town", itemName, placeAt, 4.5, false, nil,
-							if newGrade then 0.28 + decorAnimated * 0.36 else nil)
+						local delay = if newGrade then 0.28 + decorAnimated * 0.36 else nil
+						local detail = importedModel(folder, "Town", itemName, placeAt, 4.5, false, nil, delay)
 						if detail then
 							residentialDecorationPlaced = true
 							decorPlaced += 1
@@ -2728,6 +2782,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							detail:SetAttribute("BuildState", "complete")
 							detail:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 							detail:SetAttribute("ShowcaseOnly", true)
+							if newGrade then stageDecoration(detail, placeAt, delay) end
 						end
 					end
 					table.insert(placedLots, { X = pos.X, Z = pos.Z, H = half })
@@ -2899,46 +2954,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						obj:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 						obj:SetAttribute("ShowcaseOnly", true)
 						if newGrade then
-							-- [시공 현장] 장식 기초를 잡는 임시 비계는 완공 후 사라지고, 실제 R15 목수가 망치질한다.
-							local installAt = Vector3.new(cx + row[4], 0, cz + row[5])
-							local scaffold = importedModel(folder, "Terrain", "wood-support",
-								installAt + Vector3.new(-3, 0, 0), 5, false)
-							if scaffold then
-								scaffold.Name = "CityDecorationScaffold"
-								scaffold:SetAttribute("ShowcaseOnly", true)
-								task.spawn(function()
-									local deadline = os.clock() + 25
-									while scaffold.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
-									if not scaffold.Parent or not folder.Parent then return end
-									task.wait(delay + 1.4)
-									if scaffold.Parent then scaffold:Destroy() end
-								end)
-							end
-							if hasBuilders and decorBuilders < builderLimit then
-								local workerAt = installAt + Vector3.new(6, 0, 5)
-								local worker = villager(folder, workerAt, faceTo(workerAt, installAt),
-									C(143, 109, 73), rng, "Barbarian", true,
-									{ profession = "carpenter", hat = "cap", year = info.year or currentYear })
-								if worker then
-									decorBuilders += 1
-									worker:SetAttribute("Job", "construction_worker")
-									worker:SetAttribute("ShowcaseOnly", true)
-									worker:SetAttribute("BuildPlotId", obj:GetAttribute("BuildPlotId"))
-									local duty = { model = worker, base = worker:GetPivot(), mode = "stay",
-										kind = "hammer", phase = rng:NextNumber(0, 5) }
-									table.insert(walkers, duty)
-									task.spawn(function()
-										local deadline = os.clock() + 25
-										while worker.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
-										if not worker.Parent or not folder.Parent then return end
-										task.wait(delay + 1.6)
-										if worker.Parent and folder.Parent then
-											duty.kind = "inspect"
-											worker:SetAttribute("Activity", "inspect")
-										end
-									end)
-								end
-							end
+							stageDecoration(obj, Vector3.new(cx + row[4], 0, cz + row[5]), delay)
 						end
 					end
 				end
@@ -2993,6 +3009,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			warehouseDisplay:SetAttribute("BuildState", "complete")
 			warehouseDisplay:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 			warehouseDisplay:SetAttribute("ShowcaseOnly", true)
+			if newGrade then stageDecoration(warehouseDisplay, Vector3.new(-31, 0, 222), delay) end
 		end
 	end
 	if info.sim and info.sim.buildings then lastDecorationGrowth[info.portId] = decor end
