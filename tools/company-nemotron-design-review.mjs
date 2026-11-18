@@ -246,10 +246,10 @@ export function selectStudioDesignPhotoNames(names, sequence = 0, limit = 8, rol
       ['ui_mobile_battle_2x2','ui_main_menu_icons','ui_battle_unified','ui_trade_hall_no_hud','ui_yard_hall_no_hud']
     ],
     MOTION: [
-      ['weapon_blade_close','weapon_ranged_close','harbor_motion_attack','harbor_motion_shoot','weapon_blade_close'],
-      ['weapon_ranged_close','weapon_blade_close','harbor_motion_shoot','harbor_motion_reload','weapon_ranged_close'],
-      ['vfx_battle_mid_action','vfx_battle_late_action','b1_start','b2_mid','vfx_battle_mid_action'],
-      ['vfx_battle_late_action','vfx_battle_mid_action','b2_mid','b1_start','vfx_battle_late_action'],
+      ['weapon_blade_close','weapon_ranged_close','weapon_blade_close','weapon_ranged_close','weapon_blade_close'],
+      ['weapon_ranged_close','weapon_blade_close','weapon_ranged_close','weapon_blade_close','weapon_ranged_close'],
+      ['vfx_battle_mid_action','vfx_battle_late_action','vfx_battle_mid_action','vfx_battle_late_action','vfx_battle_mid_action'],
+      ['vfx_battle_late_action','vfx_battle_mid_action','vfx_battle_late_action','vfx_battle_mid_action','vfx_battle_late_action'],
       ['harbor_motion_attack','harbor_motion_shoot','harbor_motion_reload','harbor_motion_guard','harbor_motion_run'],
       ['harbor_motion_shoot','harbor_motion_attack','harbor_motion_hurt','harbor_motion_cheer','harbor_motion_talk'],
       ['harbor_motion_walk','harbor_motion_run','harbor_motion_idle','harbor_motion_guard','harbor_motion_hurt'],
