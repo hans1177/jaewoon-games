@@ -11790,6 +11790,8 @@ function render()
 		end
 		H.menuActionButton.Name = "MenuPrimaryAction_" .. currentTab -- [기존 런타임 QA 이름 계약 유지]
 		H.menuActionButton.Text = actionText
+		-- [서재 중복 제거] 백과 표지에 발견 진행도가 있으므로 같은 숫자·설명 배너를 다시 넣지 않는다.
+		if currentTab ~= "codex" then
 		add(function()
 			-- [작은 모바일 가로화면] 큰 숫자와 조건은 유지하되 카드 높이만 적응한다.
 			local short = mainInner.AbsoluteSize.Y < 500
@@ -11814,6 +11816,7 @@ function render()
 			explanation.TextYAlignment = Enum.TextYAlignment.Top
 			return banner
 		end)
+		end
 		-- [고정 하단 버튼] 기존 실행 함수를 재사용한다. 출항만 기존 확인 창으로 보낸다.
 		H.invokeMenuPrimary = function()
 			if currentTab == "trade" and H.tradeHall then H.tradeHall() return end
@@ -11854,7 +11857,7 @@ function render()
 		H.menuActionDock.Visible = false
 	end
 	-- [권고 단일화] 자동 우선순위 경고는 개인 저널에서 확인한다.
-	if H.recentTab and H.recentTab ~= currentTab and TAB_NAME[H.recentTab] then
+	if currentTab ~= "codex" and H.recentTab and H.recentTab ~= currentTab and TAB_NAME[H.recentTab] then
 		local recent = H.recentTab
 		add(function()
 			local b = mkButton(content, "↶ 최근 메뉴: " .. TAB_NAME[recent], COLORS.grey, UDim2.new(1, -6, 0, 36), function()
