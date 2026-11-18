@@ -109,9 +109,19 @@ export function selectVibe59FreeExperts({
   department='DEVELOPMENT',taskText='',responsibleFiles=[],verifiedOutcomes=[],
   freeCapacity={},env=process.env,includeUnconfigured=false,now=Date.now()
 }={}){
-  const dept=clean(department).toUpperCase().replaceAll('-','_');
+  const requested=clean(department).toUpperCase().replaceAll('-','_');
   const source=(clean(taskText).slice(0,1600)+' '+
     (Array.isArray(responsibleFiles)?responsibleFiles.slice(0,16).join(' '):'')).toLowerCase();
+  // [Vibe5.9 게임 작업] 작업자의 실제 목표·책임 파일에 따라 코드/인물/UI/동작을 자동 구분한다.
+  // AI가 제안한 문자열이 아니라 기존 워크오더의 책임 범위만 분류에 사용한다.
+  const dept=requested!=='AUTO'?requested:
+    /npc|head|face|hair|outfit|clothing|portrait|주민|캐릭터|얼굴|머리|의상|외형|옷|표정|피부|pose\.luau|townmood/i.test(source)||
+    /hud|interface|menu|버튼|화면|ui|gui|카드|font|visual|graphics|texture|material|lighting|조명|재질|그래픽|디자인|아트|배경|항구|마을|선박|건물|모션|애니메이션|움직임|animation|motion|ship|portscene/i.test(source)
+      ?'GRAPHICS'
+      :/음향|효과음|음악|오디오|사운드|sound|audio|music/.test(source)?'AUDIO'
+      :/회귀|검증|품질|테스트|qa|regression|test/.test(source)?'QA'
+      :/밸런스|보상|경제|난이도|balance|economy|reward/.test(source)?'BALANCE'
+      :/기획|설계|계획|planning/.test(source)?'PLANNING':'DEVELOPMENT';
   const graphic=dept==='GRAPHICS';
   const role=graphic
     ?/npc|head|face|hair|옷|머리|얼굴|주민|캐릭터/.test(source)?'NPC'
