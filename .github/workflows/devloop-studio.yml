@@ -562,37 +562,56 @@ jobs:
           } finally {
             Pop-Location
           }
-          # [후보 수정] 외부 모델 원문/임의 경로가 아니라 Pose 시각 숫자만 허용한다.
-          # 기존 Node 회귀 검사에 성공한 격리 브랜치만 PR로 제출한다. main 자동 병합은 하지 않는다.
+          # [디자인 후보] 정식 Studio 증거에 연결된 시각 소스 변경만 격리 브랜치에 올린다.
+          # 중앙정책 전체 시각 파일 중 실제 수정한 파일만 검사한다. 외부 AI의 main 직접 반영은 금지.
           $designReport = Join-Path $out 'nemotron-design-review.json'
           if ($env:CAP_GAME -eq 'mare-essentia' -and (Test-Path -LiteralPath $designReport)) {
             $design = Get-Content -LiteralPath $designReport -Encoding UTF8 -Raw | ConvertFrom-Json
             if ([string]$design.status -eq 'CANDIDATE_EDITED') {
               Push-Location 'main'
               try {
-                $changedFiles = @(& git diff --name-only)
-                $visualSource = 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau'
-                if ($changedFiles.Count -ne 1 -or $changedFiles[0] -ne $visualSource) {
+                $designPolicy = (Get-Content -LiteralPath 'company-learning/external-ai-distillation-policy.json' -Encoding UTF8 -Raw | ConvertFrom-Json).directVisualDesign
+                $allowlist = @($designPolicy.allowedSourceFiles)
+                $expectedFiles = @($design.edits | ForEach-Object { [string]$_.path } | Sort-Object -Unique)
+                $changedFiles = @(& git diff --name-only | Sort-Object -Unique)
+                $expectedKey = [string]::Join('|', @($expectedFiles | Sort-Object))
+                $changedKey = [string]::Join('|', @($changedFiles | Sort-Object))
+                $invalidPaths = @($expectedFiles | Where-Object { $_ -notin $allowlist -or -not (Test-Path -LiteralPath $_ -PathType Leaf) })
+                if ($expectedFiles.Count -eq 0 -or $expectedFiles.Count -gt [int]$designPolicy.maximumCandidateFilesPerRun -or
+                    @($design.edits).Count -gt [int]$designPolicy.maximumSourceEditsPerRun -or
+                    $invalidPaths.Count -gt 0 -or $expectedKey -ne $changedKey -or
+                    $changedFiles.Count -ne $expectedFiles.Count) {
                   Write-Host 'NEMOTRON_CANDIDATE=BLOCKED_UNAUTHORIZED_FILE_CHANGE'
-                } elseif (@($design.edits).Count -lt 1) {
-                  Write-Host 'NEMOTRON_CANDIDATE=BLOCKED_EMPTY_EDIT'
                 } else {
+                  & node --check tools/company-nemotron-design-review.mjs
+                  if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_REVIEWER_SYNTAX_FAILED' }
                   & node --test qa/mare-essentia-datastore-name.test.mjs
                   if ($LASTEXITCODE -ne 0) {
                     Write-Host 'NEMOTRON_CANDIDATE=BLOCKED_REGRESSION_FAILED'
                   } else {
-                    git config user.name 'mare-capture-bot'
-                    git config user.email 'mare-capture-bot@users.noreply.github.com'
-                    & git add -- $visualSource
-                    & git commit -q -m "design(mare): Nemotron visual candidate from Studio $env:GITHUB_RUN_ID"
-                    if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_COMMIT_FAILED' }
-                    & git push -q $remote "HEAD:refs/heads/$designBranch"
-                    if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_PUSH_FAILED' }
-                    & gh pr create --base main --head $designBranch --title "design(mare): Nemotron Studio candidate $env:GITHUB_RUN_ID" --body "Free NVIDIA visual evidence: mare-essentia-studio-frames/runs/$env:GITHUB_RUN_ID. Only exact visual values in existing Pose.luau. Node regression tested. Independent Studio before/after evidence, security QA and existing release gates remain mandatory before merge."
-                    if ($LASTEXITCODE -ne 0) {
-                      Write-Host 'NEMOTRON_CANDIDATE=BRANCH_PUSHED_PR_NOT_VERIFIED'
+                    # [정적 게임 검사] 동일 게임의 기존 Rojo 정의로 후보를 재빌드한다.
+                    $rojo = Get-ChildItem (Join-Path $env:RUNNER_TEMP 'rojo-bin') -Recurse -Filter rojo.exe |
+                      Select-Object -First 1 -ExpandProperty FullName
+                    $candidatePlace = Join-Path $env:RUNNER_TEMP 'mare-nemotron-candidate.rbxl'
+                    & $rojo build 'roblox-games/mare-essentia/default.project.json' -o $candidatePlace
+                    $buildExit = [int]$LASTEXITCODE
+                    Remove-Item -LiteralPath $candidatePlace -ErrorAction SilentlyContinue
+                    if ($buildExit -ne 0) {
+                      Write-Host 'NEMOTRON_CANDIDATE=BLOCKED_ROJO_BUILD_FAILED'
                     } else {
-                      Write-Host 'NEMOTRON_CANDIDATE=PR_OPENED_AWAITING_STUDIO_QA'
+                      git config user.name 'mare-capture-bot'
+                      git config user.email 'mare-capture-bot@users.noreply.github.com'
+                      & git add -- $expectedFiles
+                      & git commit -q -m "design(mare): Nemotron visual candidate from Studio $env:GITHUB_RUN_ID"
+                      if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_COMMIT_FAILED' }
+                      & git push -q $remote "HEAD:refs/heads/$designBranch"
+                      if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_PUSH_FAILED' }
+                      & gh pr create --base main --head $designBranch --title "design(mare): Nemotron Studio candidate $env:GITHUB_RUN_ID" --body "Free NVIDIA visual design candidate from verified Studio source $env:GITHUB_SHA. Source edits are limited to exact visual expressions in the central file allowlist. Node regression and Rojo build passed. Candidate AFTER Studio visual verification, native security QA and existing F0-F9 release gates remain pending; no auto-merge."
+                      if ($LASTEXITCODE -ne 0) {
+                        Write-Host 'NEMOTRON_CANDIDATE=BRANCH_PUSHED_PR_NOT_VERIFIED'
+                      } else {
+                        Write-Host 'NEMOTRON_CANDIDATE=PR_OPENED_AWAITING_STUDIO_QA'
+                      }
                     }
                   }
                 }
