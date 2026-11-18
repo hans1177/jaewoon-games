@@ -560,6 +560,8 @@ test('hard bottleneck repairs use an adversarial critic before verified candidat
   assert.match(worker,/function shouldUseDeepReasoning/);
   assert.match(worker,/function buildRepairCriticPrompt/);
   assert.match(worker,/SYSTEM_AI_DEEP_STRATEGY_OPTIONS_REQUIRED/);
+  assert.match(worker,/STRICT STRATEGY RETRY/);
+  assert.match(worker,/new Set\(strategyOptions\.map\(row=>row\.id\)\)\.size<2/);
   assert.match(worker,/SYSTEM_AI_CRITIC_STRATEGY_NOT_FOLLOWED/);
   assert.match(worker,/criticRawStored:false/);
   assert.match(worker,/appliedAnswerSha256/);
