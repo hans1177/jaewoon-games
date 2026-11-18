@@ -9851,10 +9851,18 @@ function RENDERERS.quest()
 		end
 	end
 	if view.quests.historyThreads and #view.quests.historyThreads > 0 then
-		add(function() return mkHeader(content, "연결된 세계사 · 완결한 항로") end)
+		add(function() return mkHeader(content, "연결된 세계사 · 선장이 남긴 판단") end)
 		for _, thread in view.quests.historyThreads do
 			add(function()
-				return mkLabel(content, thread.route .. " · " .. thread.theme .. "\n" .. thread.question, 13, COLORS.muted, false)
+				if thread.verdict then
+					return mkRow(content, thread.route .. " · 기록 확정",
+						thread.theme .. "\n내가 택한 판단: " .. thread.verdict, nil, 102)
+				end
+				local destination = if thread.here then "tavern" else "map"
+				local action = if thread.here then "판단하러 가기" else "항해 지도"
+				return mkRow(content, thread.route .. " · 마지막 판단 대기",
+					thread.theme .. "\n" .. thread.port .. "에서 이야기를 듣고 판단을 저널에 남겨.",
+					{ { text = action, color = COLORS.gold, onClick = function() openTab(destination) end } }, 106)
 			end)
 		end
 	end
