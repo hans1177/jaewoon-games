@@ -84,6 +84,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           NVIDIA_FREE_TIER_VERIFIED: ${{ vars.NVIDIA_FREE_TIER_VERIFIED || 'NO' }}
+          COMPANY_EXTERNAL_AI_ENABLED: ${{ vars.COMPANY_EXTERNAL_AI_ENABLED || 'NO' }}
           NEMOTRON_DESIGN_CANDIDATE: 'YES'
         run: |
           $ErrorActionPreference = 'Stop'
