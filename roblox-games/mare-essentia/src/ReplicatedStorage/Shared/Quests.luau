@@ -1,4 +1,5 @@
 --!strict
+-- 파일명: Quests.luau · 연속 퀘스트와 10대 항로 저널 데이터
 -- 퀘스트 데이터. 진행도는 플레이어 상태에서 계산한다 (Quest 서비스 참고).
 
 export type Quest = {
