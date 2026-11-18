@@ -24,12 +24,30 @@ test('Gemini 모델 고르기: 무료 Flash 계열만, 최신 버전 먼저, 음
 
 test('공급자 순서: Gemini(무료 확인 시) → Codestral → GitHub Models → Groq → OpenRouter, 키 없으면 건너뜀, 무료 확인이 없으면 Gemini 제외', async () => {
   const fetchFn = async () => ({ ok: true, json: async () => ({ models: [{ name: 'models/gemini-3.8-flash', supportedGenerationMethods: ['generateContent'] }] }) });
-  const env = { GEMINI_API_KEY: 'k', MISTRAL_CODESTRAL_API_KEY: 'k', GITHUB_MODELS_TOKEN: 't', GROQ_API_KEY: 'k', OPENROUTER_API_KEY: 'k' };
+  const env = { GEMINI_API_KEY: 'k', MISTRAL_CODESTRAL_API_KEY: 'k',
+    VIBE_BRAIN_CODESTRAL_FREE_TIER_VERIFIED: 'YES',
+    GITHUB_MODELS_TOKEN: 't', VIBE_BRAIN_GITHUB_MODELS_FREE_TIER_VERIFIED: 'YES',
+    GROQ_API_KEY: 'k', VIBE2_GROQ_FREE_PLAN_VERIFIED: 'YES', OPENROUTER_API_KEY: 'k' };
   const all = (await buildProviders({ env, fetchFn })).map(p => p.name.split(':')[0]);
   assert.deepEqual(all, ['gemini', 'codestral', 'github-models', 'groq', 'openrouter']);
   const noG = (await buildProviders({ env, allowGemini: false, fetchFn })).map(p => p.name.split(':')[0]);
   assert.deepEqual(noG, ['codestral', 'github-models', 'groq', 'openrouter']);
-  assert.deepEqual((await buildProviders({ env: { GITHUB_MODELS_TOKEN: 't' }, fetchFn })).map(p => p.name.split(':')[0]), ['github-models']);
+  assert.deepEqual((await buildProviders({ env: { GITHUB_MODELS_TOKEN: 't',
+    VIBE_BRAIN_GITHUB_MODELS_FREE_TIER_VERIFIED: 'YES' }, fetchFn }))
+    .map(p => p.name.split(':')[0]), ['github-models']);
+  const noProof = {...env, VIBE_BRAIN_CODESTRAL_FREE_TIER_VERIFIED: 'NO',
+    VIBE_BRAIN_GITHUB_MODELS_FREE_TIER_VERIFIED: 'NO', VIBE2_GROQ_FREE_PLAN_VERIFIED: 'NO'};
+  assert.deepEqual((await buildProviders({env: noProof, fetchFn}))
+    .map(p => p.name.split(':')[0]), ['gemini', 'openrouter'],
+    '키만 가진 미검증 외부 AI는 무료 후보로 간주하지 않는다');
+  const forced = await buildProviders({env: {OPENROUTER_API_KEY: 'k',
+    VIBE_BRAIN_OPENROUTER_MODEL: 'paid/model,google/gemma-4-31b-it:free'}, fetchFn});
+  assert.deepEqual(forced.map(p => p.name), ['openrouter:google/gemma-4-31b-it:free'],
+    '강제 지정한 유료 모델도 자동 제외');
+  const forcedGemini = await buildProviders({env: {GEMINI_API_KEY: 'k',
+    VIBE_BRAIN_GEMINI_MODELS: 'gemini-3.8-pro,gemini-3.8-flash'}, fetchFn});
+  assert.deepEqual(forcedGemini.map(p => p.name), ['gemini:gemini-3.8-flash'],
+    '강제 지정한 유료 제미나이 모델도 자동 제외');
   assert.deepEqual(await buildProviders({ env: {}, fetchFn }), []);
 });
 
@@ -125,6 +143,9 @@ test('워크플로: 10분 주기, 끄는 변수, Gemini 는 무료 확인 변수
   assert.match(y, /vars\.VIBE_BRAIN != 'off'/);
   assert.match(y, /GEMINI_API_KEY: \$\{\{ vars\.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets\.GEMINI_API_KEY \|\| '' \}\}/);
   assert.match(y, /GITHUB_MODELS_TOKEN: \$\{\{ github\.token \}\}/);
+  assert.match(y, /VIBE_BRAIN_CODESTRAL_FREE_TIER_VERIFIED: /);
+  assert.match(y, /VIBE2_GROQ_FREE_PLAN_VERIFIED: /);
+  assert.match(y, /VIBE_BRAIN_GITHUB_MODELS_FREE_TIER_VERIFIED: /);
   assert.match(y, /models: read/);
   assert.match(y, /if: \$\{\{ steps\.verify\.outputs\.verified == 'yes' \}\}/);
   assert.match(y, /MERGE_ON:-off\}" = "on"/);
@@ -284,7 +305,7 @@ test('Studio frames go only to an image-capable provider', async () => {
   const images = [{ mimeType: 'image/png', data: 'AA==' }];
   const requests = [];
   const providers = await buildProviders({
-    env: { GEMINI_API_KEY: 'fake', VIBE_BRAIN_GEMINI_MODELS: 'gemini-test-flash', GITHUB_MODELS_TOKEN: 'fake' },
+    env: { GEMINI_API_KEY: 'fake', VIBE_BRAIN_GEMINI_MODELS: 'gemini-3.8-flash', GITHUB_MODELS_TOKEN: 'fake' },
     fetchFn: async (url, init) => {
       requests.push({ url, body: JSON.parse(init.body) });
       return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: '{}' }] } }] }) };
