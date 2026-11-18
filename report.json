@@ -1,5 +1,5 @@
 {
- "sourceRevision": "8792a664f662b8f6483c340cc58e6fd57ac97d1f",
+ "sourceRevision": "fddc4b27557e8b153aeb1f3deb90e8816f944c86",
  "log": [
   {
    "step": 1,
@@ -141,7 +141,7 @@
   {
    "step": 30,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 현황 | 동료 관리 | 초상화가 완성되었다 | ◆ 현황 · 핵심 정보 | 선체 100/100 · 동료 1명 | 적합 직책 1/1 · 포 4문 · 선원 20명\n보급 30개 · 선체와 적\ntext"
+   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 현황 | 선장 현황 | 동료 관리 | 동료 관리 | 초상화가 완성되었다 | ◆ 현황 · 핵심 정보\ntext"
   },
   {
    "step": 31,
@@ -161,7 +161,7 @@
   {
    "step": 35,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 상인 길드 · 항구 정보 | 교역소 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 현황 | 교역 | 항구 정보 | ◆ 항구 정보 · 핵심 정보 | 시세 비교 · 실제 판매손익 확인 | 자금·화물은 상단에서, 매입·판매가는 장부에서 확인해.\ntext"
+   "out": "TEXTS: 이스탄불 · 상인 길드 · 항구 정보 | 교역소 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 현황 | 교역 | 교역 장부 | 항구 정보 | 항구 정보 | ◆ 항구 정보 · 핵심 정보\ntext"
   },
   {
    "step": 36,
@@ -186,7 +186,7 @@
   {
    "step": 41,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 상인 길드 · 교역 | 교역소 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 항구 정보 | 교역 | 항구 정보 | ◆ 교역 · 핵심 정보 | 시세 비교 · 실제 판매손익 확인 | 자금·화물은 상단에서, 매입·판매가는 장부에서 확인해.\ntext"
+   "out": "TEXTS: 이스탄불 · 상인 길드 · 교역 | 교역소 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 항구 정보 | 교역 | 교역 장부 | 항구 정보 | 항구 정보 | ◆ 교역 · 핵심 정보\ntext"
   },
   {
    "step": 42,
@@ -235,7 +235,7 @@
   {
    "step": 50,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 항만 관리관 · 항해 | 항만청 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 항구 정보 | 항해 | 지도 | ◆ 항해 · 핵심 정보 | 534 km · 4일 · 보급 8개 | 가까운 항구 이즈미르 · 석탄 0개 필요\n출항 가능 20항로 · 현재 석\ntext"
+   "out": "TEXTS: 이스탄불 · 항만 관리관 · 항해 | 항만청 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 항구 정보 | 항해 | 항로 선택 | 지도 | 세계 지도 | ◆ 항해 · 핵심 정보\ntext"
   },
   {
    "step": 51,
@@ -284,7 +284,7 @@
   {
    "step": 59,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 항만 관리관 · 지도 | 항만청 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 항해 | 항해 | 지도 | ◆ 지도 · 핵심 정보 | 534 km · 4일 · 보급 8개 | 가까운 항구 이즈미르 · 석탄 0개 필요\n출항 가능 20항로 · 현재 석\ntext"
+   "out": "TEXTS: 이스탄불 · 항만 관리관 · 지도 | 항만청 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 항해 | 항해 | 항로 선택 | 지도 | 세계 지도 | ◆ 지도 · 핵심 정보\ntext"
   },
   {
    "step": 60,
@@ -304,7 +304,7 @@
   {
    "step": 64,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 조선 장인 · 조선소 | 조선소 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 지도 | 조선소 | ◆ 조선소 · 핵심 정보 | 선체 100/100 · 동료 1명 | 적합 직책 1/1 · 포 4문 · 선원 20명\n보급 30개 · 선체와 적 | 조선소 관리 열기\ntext"
+   "out": "TEXTS: 이스탄불 · 조선 장인 · 조선소 | 조선소 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 지도 | 조선소 | 선박 관리 | ◆ 조선소 · 핵심 정보 | 선체 100/100 · 동료 1명 | 적합 직책 1/1 · 포 4문 · 선원 20명\n보급 30개 · 선체와 적\ntext"
   },
   {
    "step": 65,
@@ -324,7 +324,7 @@
   {
    "step": 69,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 주점 주인 · 진행 일지 | 주점 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 조선소 | 의뢰 받기 | 진행 일지 | 동료 영입 | ◆ 진행 일지 · 핵심 정보 | 진행 중 5건 · 새 의뢰 87건\ntext"
+   "out": "TEXTS: 이스탄불 · 주점 주인 · 진행 일지 | 주점 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 조선소 | 의뢰 받기 | 주점 의뢰 | 진행 일지 | 진행 일지 | 동료 영입\ntext"
   },
   {
    "step": 70,
@@ -344,7 +344,7 @@
   {
    "step": 74,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 전투 교관 · 지상 탐험 | 전투 본부 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 진행 일지 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | ◆ 지상 탐험 · 핵심 정보\ntext"
+   "out": "TEXTS: 이스탄불 · 전투 교관 · 지상 탐험 | 전투 본부 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 진행 일지 | 해적 사냥 | 전투 준비 | 지상 탐험 | 지상 탐험 | 함대전\ntext"
   },
   {
    "step": 75,
@@ -393,7 +393,7 @@
   }
  ],
  "errors": [
-  "step87:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:1: MOBILE_TAB_HEIGHT=101 | text"
+  "step87:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:1: MOBILE_TAB_HEIGHT=114 | text"
  ],
  "consoleCapture": {
   "captured": true,
@@ -418,7 +418,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 251376,
+      "bytes": 251337,
       "width": 0,
       "height": 0,
       "pass": true
@@ -441,7 +441,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 250714,
+      "bytes": 250776,
       "width": 0,
       "height": 0,
       "pass": true
@@ -456,7 +456,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195447,
+      "bytes": 195211,
       "width": 0,
       "height": 0,
       "pass": true
@@ -471,7 +471,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 207293,
+      "bytes": 148020,
       "width": 0,
       "height": 0,
       "pass": true
@@ -495,7 +495,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 122132,
+      "bytes": 123376,
       "width": 0,
       "height": 0,
       "pass": true
@@ -508,7 +508,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0159623622894287,
+    "brightness": 2.0141472816467285,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -519,7 +519,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 153253,
+      "bytes": 153937,
       "width": 0,
       "height": 0,
       "pass": true
@@ -532,7 +532,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0191242694854736,
+    "brightness": 2.0181684494018555,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -543,7 +543,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 109037,
+      "bytes": 110120,
       "width": 0,
       "height": 0,
       "pass": true
@@ -556,7 +556,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.022697925567627,
+    "brightness": 2.021733045578003,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -567,7 +567,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 157284,
+      "bytes": 159042,
       "width": 0,
       "height": 0,
       "pass": true
@@ -580,7 +580,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0275280475616455,
+    "brightness": 2.0271596908569336,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -591,7 +591,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 159705,
+      "bytes": 160763,
       "width": 0,
       "height": 0,
       "pass": true
@@ -606,7 +606,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 161486,
+      "bytes": 163444,
       "width": 0,
       "height": 0,
       "pass": true
@@ -621,7 +621,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 159872,
+      "bytes": 161164,
       "width": 0,
       "height": 0,
       "pass": true
@@ -636,7 +636,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 161676,
+      "bytes": 163281,
       "width": 0,
       "height": 0,
       "pass": true
@@ -651,7 +651,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 131226,
+      "bytes": 131645,
       "width": 0,
       "height": 0,
       "pass": true
@@ -666,7 +666,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 131678,
+      "bytes": 132237,
       "width": 0,
       "height": 0,
       "pass": true
@@ -681,7 +681,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 148822,
+      "bytes": 149415,
       "width": 0,
       "height": 0,
       "pass": true
@@ -696,7 +696,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 165528,
+      "bytes": 168473,
       "width": 0,
       "height": 0,
       "pass": true
@@ -711,7 +711,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 171284,
+      "bytes": 174459,
       "width": 0,
       "height": 0,
       "pass": true
@@ -726,7 +726,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167098,
+      "bytes": 170525,
       "width": 0,
       "height": 0,
       "pass": true
@@ -741,7 +741,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 166998,
+      "bytes": 170459,
       "width": 0,
       "height": 0,
       "pass": true
@@ -756,7 +756,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 241612,
+      "bytes": 239789,
       "width": 0,
       "height": 0,
       "pass": true
