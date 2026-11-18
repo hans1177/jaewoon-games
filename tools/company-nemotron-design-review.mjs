@@ -48,7 +48,7 @@ export const DESIGN_FREE_MODELS = Object.freeze([
     endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent'}
 ]);
 const DAILY_LIMIT = Object.freeze({NVIDIA: 12, GEMINI: 12, OPENROUTER: 30});
-const designRuntime = {usageWindow: null, cooldowns: {}, attempts: []};
+const designRuntime = {usageWindow: null, cooldowns: {}, attempts: [], selectedRole: ''};
 const currentDay = () => new Date().toISOString().slice(0, 10);
 function loadPreviousDesignUsage(previous = {}) {
   const nowDay = currentDay();
@@ -65,10 +65,18 @@ function loadPreviousDesignUsage(previous = {}) {
 export function designRoleForFrames(frameNames = []) {
   const names = frameNames.join(' ').toLowerCase();
   if (/(npc|face|hair|outfit|villager|resident|skin|citizen)/.test(names)) return 'NPC';
-  if (/(hud|menu|gui|card|map_ui|inventory|font|interface)/.test(names)) return 'UI';
+  if (/(hud|menu|gui|card|tab_|map_ui|inventory|font|interface)/.test(names)) return 'UI';
   if (/(animation|motion|idle|run|walk|attack|swing|movement)/.test(names)) return 'MOTION';
   if (/(harbor|sea|ship|port|island|landscape|world|voyage|town|lighting|field)/.test(names)) return 'WORLD';
   return 'GENERAL';
+}
+// [분야별 자동 순환] 실제 캡처에 2장 이상 있는 분야만 우선 배정한다.
+export function selectDesignFrameRole(frameNames = [], previousRole = '') {
+  const roles = ['NPC', 'WORLD', 'UI', 'MOTION', 'GENERAL'];
+  const available = roles.filter(role =>
+    frameNames.filter(name => designRoleForFrames([name]) === role).length >= 2);
+  const previous = available.indexOf(previousRole);
+  return available.length ? available[(previous + 1) % available.length] : 'GENERAL';
 }
 export function selectFreeDesignModels({
   frameNames = [], policy, env = process.env, previous = {}, now = Date.now()
@@ -174,7 +182,7 @@ export function authorizedCandidateBranch(name, runId) {
 
 function record(status, fields = {}) {
   const report = {version: 3, provider: 'MULTI_FREE_VISUAL', gameId: 'mare-essentia',
-    sourceRevision: trim(process.env.GITHUB_SHA), status,
+    sourceRevision: trim(process.env.GITHUB_SHA), status, selectedRole: designRuntime.selectedRole,
     usageWindow: designRuntime.usageWindow, cooldowns: designRuntime.cooldowns,
     attempts: designRuntime.attempts, ...fields};
   fs.mkdirSync(path.dirname(reportPath), {recursive: true});
@@ -184,11 +192,14 @@ function record(status, fields = {}) {
 }
 
 // [스튜디오 증거] 실제 캡처 이름, 원본 리비전, 이미지 바이트 형식을 모두 대조한다.
-function photosFromStudio(directory = framesRoot) {
+function photosFromStudio(directory = framesRoot, selectedRole = '') {
   if (!fs.existsSync(directory)) return [];
   const found = [];
-  for (const name of fs.readdirSync(directory).sort()) {
-    if (!/^[A-Za-z0-9_.-]+-[0-9]+\.(?:jpe?g|png)$/i.test(name)) continue;
+  const names = fs.readdirSync(directory).sort().filter(name =>
+    /^[A-Za-z0-9_.-]+-[0-9]+\.(?:jpe?g|png)$/i.test(name));
+  const relevant = selectedRole ? names.filter(name =>
+    designRoleForFrames([name]) === selectedRole) : names;
+  for (const name of (relevant.length >= 2 ? relevant : names)) {
     const file = path.join(directory, name);
     if (!fs.statSync(file).isFile()) continue;
     const bytes = fs.readFileSync(file);
@@ -353,7 +364,17 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     contract.allowedSourceFiles.length < 2 ||
     contract.allowedSourceFiles.some(file => !/^roblox-games\/mare-essentia\/src\/[A-Za-z0-9_./-]+\.luau$/.test(file)))
     throw Error('CANONICAL_DESIGN_POLICY_DENIED');
-  const photos = photosFromStudio();
+  // [재사용 이력] 기존 Studio 증거 브랜치에 저장된 호출 한도와 제공자 쿨다운.
+  let previous = {};
+  try {
+    if (options.previous && fs.existsSync(path.resolve(options.previous)))
+      previous = JSON.parse(fs.readFileSync(path.resolve(options.previous), 'utf8'));
+  } catch {/* 손상된 이력은 권한을 주지 않고 신규 증거로만 처리한다. */}
+  loadPreviousDesignUsage(previous);
+  const pictures = fs.existsSync(framesRoot) ? fs.readdirSync(framesRoot)
+    .filter(name => /-[0-9]+\.(?:jpe?g|png)$/i.test(name)) : [];
+  designRuntime.selectedRole = selectDesignFrameRole(pictures, previous.selectedRole);
+  const photos = photosFromStudio(framesRoot, designRuntime.selectedRole);
   const proofs = photos.map(({name, sha256}) => ({name, sha256}));
   if (photos.length < 2) return record('SKIPPED_STUDIO_IMAGES_UNAVAILABLE', {frames: proofs});
   let studio;
@@ -366,13 +387,6 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     return record('SKIPPED_STUDIO_SOURCE_EVIDENCE_MISMATCH', {frames: proofs});
   if (trim(process.env.COMPANY_EXTERNAL_AI_ENABLED) !== 'YES')
     return record('SKIPPED_EXTERNAL_AI_OPT_IN_REQUIRED', {frames: proofs});
-  // [재사용 이력] 기존 Studio 증거 브랜치에 저장된 호출 한도와 제공자 쿨다운.
-  let previous = {};
-  try {
-    if (options.previous && fs.existsSync(path.resolve(options.previous)))
-      previous = JSON.parse(fs.readFileSync(path.resolve(options.previous), 'utf8'));
-  } catch {/* 손상된 이력은 권한을 주지 않고 신규 증거로만 처리한다. */}
-  loadPreviousDesignUsage(previous);
   const freeModels = selectFreeDesignModels({
     frameNames: photos.map(photo => photo.name), policy, previous
   });
@@ -513,8 +527,8 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
   } catch {
     return unavailable('BLOCKED_VISUAL_BASELINE_EVIDENCE_MISSING');
   }
-  const beforePhotos = photosFromStudio(beforeDir);
-  const afterPhotos = photosFromStudio(framesRoot);
+  const beforePhotos = photosFromStudio(beforeDir, previous.selectedRole);
+  const afterPhotos = photosFromStudio(framesRoot, previous.selectedRole);
   const beforeByName = new Map(beforePhotos.map(photo => [photo.name, photo]));
   const names = afterPhotos.map(photo => photo.name).filter(name => beforeByName.has(name)).slice(0, 4);
   const baseline = names.map(name => beforeByName.get(name));
