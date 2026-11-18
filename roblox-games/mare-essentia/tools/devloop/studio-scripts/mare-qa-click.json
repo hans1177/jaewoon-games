@@ -777,6 +777,22 @@
   "name": "b2_mid"
  },
  {
+  "type": "wait",
+  "ms": 1100
+ },
+ {
+  "type": "capture",
+  "name": "vfx_battle_mid_action"
+ },
+ {
+  "type": "wait",
+  "ms": 1100
+ },
+ {
+  "type": "capture",
+  "name": "vfx_battle_late_action"
+ },
+ {
   "type": "luau",
   "ctx": "Client",
   "code": "local out={} for _,m in ipairs(game:GetService('LogService'):GetLogHistory()) do if (m.messageType==Enum.MessageType.MessageError or m.messageType==Enum.MessageType.MessageWarning) and #out<25 then out[#out+1]=string.sub(m.message,1,160) end end return 'LOGS('..#out..'): '..table.concat(out,' // ')"
@@ -959,6 +975,89 @@
  {
   "type": "luau",
   "ctx": "Client",
+  "code": "-- [공식 Studio 재질 집계] 화면 품질 판정 대용이 아닌 근거 값. 기존 속성 변경 없음.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_MATERIAL_SCENE_MISSING\")\nlocal n={part=0,mesh=0,pbr=0,color=0,normal=0,rough=0,metal=0,texture=0,plain=0,wood=0,stone=0,fabric=0,metalPart=0}\nfor _,d in scene:GetDescendants() do\n if d:IsA(\"BasePart\") then\n  n.part+=1\n  local m=d.Material.Name\n  if m==\"Wood\" or m==\"WoodPlanks\" then n.wood+=1\n  elseif m==\"Slate\" or m==\"Rock\" or m==\"Granite\" or m==\"Cobblestone\" or m==\"Marble\" then n.stone+=1\n  elseif m==\"Fabric\" then n.fabric+=1\n  elseif m==\"Metal\" or m==\"CorrodedMetal\" then n.metalPart+=1 end\n  if d:IsA(\"MeshPart\") then\n   n.mesh+=1\n   local p=d:FindFirstChildOfClass(\"SurfaceAppearance\")\n   if p then\n    n.pbr+=1\n    if p.ColorMap~=\"\" then n.color+=1 end\n    if p.NormalMap~=\"\" then n.normal+=1 end\n    if p.RoughnessMap~=\"\" then n.rough+=1 end\n    if p.MetalnessMap~=\"\" then n.metal+=1 end\n   end\n   if d.TextureID~=\"\" then n.texture+=1 end\n   if not p and d.TextureID==\"\" then n.plain+=1 end\n  end\n end\nend\nassert(n.part>0,\"DESIGN_MATERIAL_NO_SCENE_PARTS\")\nreturn string.format(\"STUDIO_MATERIAL_AUDIT parts=%d mesh=%d pbr=%d color=%d normal=%d roughness=%d metalness=%d texture=%d untextured_mesh=%d wood=%d stone=%d fabric=%d metal=%d\",n.part,n.mesh,n.pbr,n.color,n.normal,n.rough,n.metal,n.texture,n.plain,n.wood,n.stone,n.fabric,n.metalPart)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 외형 근거] 실제 항구 원본만 촬영한다. 게임 오브젝트 변경 금지.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_SCENE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",37)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-98,26,78),Vector3.new(-88,12,36)))\nreturn \"DESIGN_MATERIAL_FRAME:material_stone_roof\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "material_stone_roof"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 외형 근거] 실제 항구 원본만 촬영한다. 게임 오브젝트 변경 금지.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_SCENE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",45)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(28,13,51),Vector3.new(22,3,13)))\nreturn \"DESIGN_MATERIAL_FRAME:material_wood_dock\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "material_wood_dock"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 외형 근거] 실제 항구 원본만 촬영한다. 게임 오브젝트 변경 금지.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_SCENE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",38)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(50,12,17),Vector3.new(30,2,4)))\nreturn \"DESIGN_MATERIAL_FRAME:cargo_warehouse_close\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "cargo_warehouse_close"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 외형 근거] 실제 항구 원본만 촬영한다. 게임 오브젝트 변경 금지.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_SCENE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",38)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(44,17,-6),Vector3.new(32,2,-3)))\nreturn \"DESIGN_MATERIAL_FRAME:cargo_trade_crates\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "cargo_trade_crates"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 외형 근거] 실제 항구 원본만 촬영한다. 게임 오브젝트 변경 금지.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_SCENE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",40)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(65,15,44),Vector3.new(50,7,16)))\nreturn \"DESIGN_MATERIAL_FRAME:ship_hull_detail\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "ship_hull_detail"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 외형 근거] 실제 항구 원본만 촬영한다. 게임 오브젝트 변경 금지.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_SCENE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",43)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(14,39,55),Vector3.new(50,22,16)))\nreturn \"DESIGN_MATERIAL_FRAME:ship_sails_rigging\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "ship_sails_rigging"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
   "code": "-- [마을 동선 검증] 실제 항구 생성 직후 검사와 주민 이동 경로를 확인한다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"NPC_ROUTE_SCENE_MISSING\")\nassert(scene:GetAttribute(\"NpcRouteAudit\")==\"PASS\",\"NPC_ROUTE_AUDIT_FAILED:\"..tostring(scene:GetAttribute(\"NpcRouteFailure\")))\nlocal checked=scene:GetAttribute(\"NpcRouteChecked\")\nlocal relocated=scene:GetAttribute(\"NpcRouteRelocated\")\nlocal stopped=scene:GetAttribute(\"NpcRouteBlocked\")\nassert(type(checked)==\"number\" and checked>0,\"NPC_ROUTE_INSPECTION_EMPTY\")\nassert(type(relocated)==\"number\" and type(stopped)==\"number\",\"NPC_ROUTE_METRICS_MISSING\")\nreturn string.format(\"NPC_ROUTE_AUDIT_PASS checked=%d relocated=%d fallback=%d\",checked,relocated,stopped)"
  },
  {
@@ -1095,6 +1194,24 @@
  {
   "type": "luau",
   "ctx": "Client",
+  "code": "-- [무기 실증] 기존 대련 무기 실물 근접 촬영.\nlocal s=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_WEAPON_SCENE_MISSING\")\nlocal p=assert(s:GetAttribute(\"R15SparringStage\"),\"DESIGN_WEAPON_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(0,3.3,8),p+Vector3.new(0,1.8,0)))\nworkspace:SetAttribute(\"ShotFov\",32)\nreturn \"DESIGN_WEAPON_FRAME:weapon_blade_close\""
+ },
+ {
+  "type": "wait",
+  "ms": 320
+ },
+ {
+  "type": "capture",
+  "name": "weapon_blade_close"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [기존 모션 카메라 복구] 이동/공격 프레임의 원래 시야를 유지한다.\nlocal s=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_WEAPON_SCENE_MISSING\")\nlocal p=assert(s:GetAttribute(\"R15SparringStage\"),\"DESIGN_WEAPON_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(0,5,16),p+Vector3.new(0,1.5,0)))\nworkspace:SetAttribute(\"ShotFov\",45)\nreturn \"DESIGN_WEAPON_CAMERA_RESTORED\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
   "code": "local scene=assert(workspace:FindFirstChild(\"PortScene\")) scene:SetAttribute(\"R15MotionShowcase\",true) scene:SetAttribute(\"R15MotionState\",\"shoot\") return \"R15_MOTION_SHOOT\""
  },
  {
@@ -1104,6 +1221,24 @@
  {
   "type": "capture",
   "name": "harbor_motion_shoot"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [무기 실증] 기존 대련 무기 실물 근접 촬영.\nlocal s=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_WEAPON_SCENE_MISSING\")\nlocal p=assert(s:GetAttribute(\"R15SparringStage\"),\"DESIGN_WEAPON_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(0,3.3,8),p+Vector3.new(0,1.8,0)))\nworkspace:SetAttribute(\"ShotFov\",32)\nreturn \"DESIGN_WEAPON_FRAME:weapon_ranged_close\""
+ },
+ {
+  "type": "wait",
+  "ms": 320
+ },
+ {
+  "type": "capture",
+  "name": "weapon_ranged_close"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [기존 모션 카메라 복구] 이동/공격 프레임의 원래 시야를 유지한다.\nlocal s=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_WEAPON_SCENE_MISSING\")\nlocal p=assert(s:GetAttribute(\"R15SparringStage\"),\"DESIGN_WEAPON_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(0,5,16),p+Vector3.new(0,1.5,0)))\nworkspace:SetAttribute(\"ShotFov\",45)\nreturn \"DESIGN_WEAPON_CAMERA_RESTORED\""
  },
  {
   "type": "luau",
