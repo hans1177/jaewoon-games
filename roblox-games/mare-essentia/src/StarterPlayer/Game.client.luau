@@ -1957,12 +1957,14 @@ function H.layoutBook()
   local statusWidth = if width < 480 then math.max(140, math.min(252, width - 142))
     elseif width < 740 then math.min(290, width - 156)
     else math.clamp(math.floor(width * 0.36), 280, 380)
-  local topY, rowH = if width < 740 then 36 else 15, if width < 740 then 30 else 34
+  local topY = if width < 740 then 36 else 15
+  local rowH = if width < 740 then 30 else 34
   if width < 740 then
     -- [폰] 두 칸 전체를 가운데 정렬하며 폭이 작을수록 자금 표시만 줄인다.
     local reserve = if recent then recentWidth + 8 else 0
     statusWidth = math.min(statusWidth, math.max(110, width - reserve - 24))
-    local startX = math.max(8, math.floor((width - statusWidth - reserve) / 2))
+    local groupWidth = statusWidth + recentWidth + 8
+    local startX = math.max(8, math.floor((width - (if recent then groupWidth else statusWidth)) / 2))
     H.menuStatusLabel.AnchorPoint = Vector2.zero
     H.menuStatusLabel.Position = UDim2.fromOffset(startX, topY)
     H.menuRecentButton.Position = UDim2.fromOffset(startX + statusWidth + 8, topY)
@@ -1978,7 +1980,7 @@ function H.layoutBook()
   H.menuRecentButton.TextSize = if width < 480 then 14 else 16
   H.menuRecentButton.Visible = recent
   H.menuRecentButton.Text = if recent then "↶ " .. TAB_NAME[H.recentTab] else ""
-    headerLabel.Size = UDim2.fromOffset(if width < 740 then math.max(86, width - 152)
+  headerLabel.Size = UDim2.fromOffset(if width < 740 then math.max(86, width - 152)
     else math.max(108, math.floor((width - statusWidth) * 0.5) - 82), 29)
   H.pageDetails.Size = UDim2.fromOffset(if width < 740 then 0
     else math.max(100, math.floor((width - statusWidth) * 0.5) - 82), 18)
