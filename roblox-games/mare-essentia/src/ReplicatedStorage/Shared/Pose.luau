@@ -179,7 +179,7 @@ local function drawFace(head, role, skin, rng, gender)
 		decal.Parent = head
 	end
 	decal.Face = Enum.NormalId.Front
-	if decal.Texture == "" or decal.Texture == "rbxassetid://0" then
+	if decal.Texture == "" then
 		decal.Texture = "rbxasset://textures/face.png"
 	end
 	decal.Transparency = 0
