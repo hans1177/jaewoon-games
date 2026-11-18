@@ -194,6 +194,8 @@ local function extraTests()
 	local before = stX.history.pending
 	stX.history.pending = nil
 	stX.history.seen = {}
+	-- [역사 사건 회귀] 같은 항구에서는 사건을 연속 노출하지 않으므로 새 방문을 만들어 앞당김을 검사한다.
+	stX._autoEventPort = nil
 	stX.pace = { days = 365 * 10, window = 0, used = 0 }
 	S.History.tick(stX)
 	check("속도: 학문·탐험 사건은 앞당김만큼 일찍 닥침", stX.history.pending ~= nil)
@@ -363,11 +365,14 @@ local function extraTests()
 	check("원더 연출: 모든 장면의 카드·원화·음악 분위기·자막이 있음", badScene == 0 and next(WSd.Scenes) ~= nil)
 	local stW = newState("england")
 	local msgsW: { any } = {}
+	-- [카드 획득 회귀] 최초 일반/원더 카드 모두 승인된 비차단 출현 애니메이션으로 보인다.
 	S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
-	check("원더 연출: 원더 카드를 처음 발견하면 장면 예약", stW.pendingScene == "site_stonehenge")
-	stW.pendingScene = nil
-	S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
-	check("원더 연출: 이미 발견한 카드는 다시 예약하지 않음", stW.pendingScene == nil)
+	check("원더 연출: 첫 획득은 도감에 기록하고 강제 장면을 열지 않음",
+		stW.discovered.site_stonehenge == true and stW.pendingScene == nil)
+	local afterFirstWonderCoins = stW.coins
+	local repeatedWonder = S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
+	check("원더 연출: 이미 발견한 카드는 다시 보상받거나 장면을 예약하지 않음",
+		repeatedWonder == false and stW.pendingScene == nil and stW.coins == afterFirstWonderCoins)
 	local stN = newState("england")
 	S.Discovery.grantCard(stN, "bot_tulip", msgsW)
 	check("원더 연출: 일반 카드는 장면 없음", stN.pendingScene == nil)
