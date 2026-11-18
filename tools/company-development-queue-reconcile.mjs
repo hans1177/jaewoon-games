@@ -482,10 +482,35 @@ export function reconcileDevelopmentQueue({root='.'}={}){
 
     if(!catalogConfirmed||!lifecycleActive)continue;
     if(!seedActive||!seedConfirmed||!design){
-      // Source continuation is planned from the catalog; incomplete design is not fabricated.
-      // Preserve existing runtime/source evidence until normal admission can resume.
-      if((!seed||(seedActive&&seedConfirmed))&&oldById.has(gameId)&&fs.existsSync(p('roblox-games',gameId,'default.project.json'))){
-        next.push({...oldById.get(gameId),sourceContinuationPendingAdmission:true});seen.add(gameId);preserved.push(gameId);
+      // [개발 대기] 설계/시드가 미검증된 기존 Roblox 게임은 실제 개발 허가 대신
+      // '정본 소스 보존·승인 대기'로 등록한다. 게임 소스/저장/공개 승인은 건드리지 않는다.
+      const sourcePath=directPaths(gameId).ROBLOX;
+      const sourcePresent=fs.existsSync(p(sourcePath,'default.project.json'));
+      const old=oldById.get(gameId);
+      if(sourcePresent&&(!seed||(seedActive&&seedConfirmed))&&old){
+        next.push({...old,sourceContinuationPendingAdmission:true});
+        seen.add(gameId);
+        preserved.push(gameId);
+      }else if(sourcePresent&&!seed&&!old
+        &&clean(game.productionClassSource)==='EXISTING_ROBLOX_SOURCE_INTAKE'
+        &&game.sourceIntake?.kind==='EXISTING_ROJO_PROJECT'){
+        // 새 소스 발견 시에도 기존 큐 형식만 사용. 설계 PASS나 F0 통과는 생성하지 않는다.
+        next.push({
+          gameId,gameName:clean(game.name)||gameId,
+          productionClass:'DEVELOPMENT_CONFIRMED',
+          productionClassSource:'EXISTING_ROBLOX_SOURCE_INTAKE',
+          status:'PENDING',selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',
+          concurrentTargetPlatforms:[...DIRECT_PLATFORMS],
+          platformExecutionMode:'ROBLOX_ONLY_OWNER_ACTIVE',
+          targetSourcePaths:directPaths(gameId),
+          robloxProjectPath:sourcePath,sourcePath,
+          currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+          canonicalState:'PENDING_ROBLOX_SOURCE_BIND',
+          sourceContinuationPendingAdmission:true,
+          enqueuedAt:stamp,updatedAt:stamp
+        });
+        seen.add(gameId);
+        created.push(gameId);
       }
       continue;
     }
