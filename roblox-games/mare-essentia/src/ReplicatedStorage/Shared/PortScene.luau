@@ -2362,7 +2362,7 @@ do
 	SIG.bandar_abbas = cat(one("Town", "temple-stone", 29, -8, 0), one("Castle", "fortress", 22, 19, 10), one("Castle", "tower-hexagon-roof", 16, -20, 12))
 	SIG.diu = cat(one("Castle", "fortress", 30, -10, 0), one("Town", "temple-stone", 23, 19, 10), one("Town", "church", 17, -23, 12))
 	SIG.port_louis = cat(one("Castle", "fortress", 27, -9, 0), one("Town", "church", 24, 18, 6), one("Naval", "palm-detailed-straight", 13, -22, 12))
-	SIG.tainan = cat(one("Town", "eastasia-base", 26, -9, 0), one("Town", "eastasia-roof", 28, -9, 10), one("Terrain", "gate-overhang", 16, 20, 11))
+	SIG.tainan = cat(one("Town", "eastasia-base", 26, -9, 0), one("Town", "eastasia-roof", 28, -9, 0, 11), one("Terrain", "gate-overhang", 16, 20, 11))
 	SIG.makassar = cat(one("Castle", "fortress", 27, -8, 0), one("Town", "temple-stone", 22, 19, 9), one("Naval", "palm-detailed-straight", 13, -24, 12))
 	SIG.ambon = cat(one("Castle", "fortress", 25, -10, 0), one("Naval", "palm-detailed-straight", 17, 19, 5), one("Terrain", "statue-ring", 12, -24, 13))
 	SIG.campeche = cat(one("Castle", "fortress", 29, -8, 0), one("Town", "church", 24, 19, 9), one("Castle", "wall", 18, -22, 12))
