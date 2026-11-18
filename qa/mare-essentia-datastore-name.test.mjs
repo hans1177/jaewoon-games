@@ -2269,7 +2269,7 @@ test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치�
 // [무료 디자인 전문가 회귀] 전문 분야, 일일 한도, 쿨다운, 독립 전후 판정.
 test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다운을 지킨다', async () => {
   const {DESIGN_FREE_MODELS, designRoleForFrames, selectFreeDesignModels, selectDesignFrameRole,
-    validateVisualComparison} = await import('../tools/company-nemotron-design-review.mjs');
+    validateVisualComparison, verifiedDesignFeedback} = await import('../tools/company-nemotron-design-review.mjs');
   const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
   const config = policy.directVisualDesign.freeSpecialistPool;
   assert.equal(config.paidFallbackForbidden, true);
@@ -2337,7 +2337,55 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
   assert.throws(() => validateVisualComparison({
     verdict: 'PASS', improvements: [evidence('invented.jpg')], regressions: []
   }, ['npc_face-0.jpg']), /VISUAL_COMPARISON_EVIDENCE_INVALID/);
+  // [검증 증거 학습] 실제 Studio 소스·이미지·다른 제공자 검증을 모두 만족한 모델만 우선 배치.
+  const original = {sourceRevision: 'a'.repeat(40), status: 'CANDIDATE_EDITED',
+    provider: 'GEMINI', model: 'gemini-3.8-flash', selectedRole: 'NPC'};
+  const frameA = 'harbor_npc_sparring_01-0.jpg', frameB = 'harbor_npc_sparring_02-0.jpg';
+  const comparison = {
+    status: 'VISUAL_BEFORE_AFTER_PASS', sourceRevision: 'b'.repeat(40),
+    beforeRevision: original.sourceRevision, candidateRevision: 'b'.repeat(40),
+    authorProvider: 'GEMINI', authorModel: 'gemini-3.8-flash',
+    selectedRole: 'NPC', reviewerProvider: 'OPENROUTER', reviewerModel: 'google/gemma-4-31b-it:free',
+    independentQaPassed: true, afterStudioPassed: true,
+    comparison: {status: 'PASS', improvements: [
+      {screenshot: frameA, evidenceSha256: 'c'.repeat(64)},
+      {screenshot: frameB, evidenceSha256: 'd'.repeat(64)}
+    ], regressions: []},
+    beforeFrames: [
+      {name: frameA, sha256: '1'.repeat(64)}, {name: frameB, sha256: '2'.repeat(64)}
+    ],
+    afterFrames: [
+      {name: frameA, sha256: '3'.repeat(64)}, {name: frameB, sha256: '4'.repeat(64)}
+    ]
+  };
+  assert.equal(verifiedDesignFeedback(original, comparison)?.model, original.model);
+  assert.equal(models({frameNames: [frameA], previous: original, feedback: comparison})[0].id,
+    'GEMINI_FLASH', '다른 제공자의 실물 전후 검증이 확인된 모델만 우선 선택');
+  assert.equal(verifiedDesignFeedback(original, {
+    ...comparison, reviewerProvider: 'GEMINI'}), null,
+    '동일 제공자 자기 평가만으로 긍정 학습 금지');
+  assert.equal(verifiedDesignFeedback(original, {
+    ...comparison, beforeRevision: 'f'.repeat(40)}), null,
+    '과거 기준선과 다른 사진 검증을 재사용하면 안 된다');
+  assert.equal(verifiedDesignFeedback(original, {
+    ...comparison, afterStudioPassed: false}), null);
+  assert.equal(verifiedDesignFeedback(original, {
+    ...comparison, comparison: {...comparison.comparison, regressions: [{
+      screenshot: frameA, evidenceSha256: 'e'.repeat(64)
+    }]}}), null);
+  assert.equal(verifiedDesignFeedback(original, {
+    ...comparison, afterFrames: comparison.beforeFrames}), null,
+    '사진이 모두 같으면 디자인 개선 성공이라 할 수 없다');
+  assert.equal(models({frameNames: [frameA], previous: {
+    ...original, attempts: [{id: 'NVIDIA_VL', status: 'REVIEW_INVALID'}]}
+  })[0].id, 'OPENROUTER_NEMOTRON',
+  '동일 분야에서 허위 앵커 또는 잘못된 JSON을 낸 모델은 다음 호출에 후순위');
+  assert.equal(models({frameNames: [frameA], feedback: comparison, previous: {
+    ...original, usageWindow: {day, calls: {GEMINI: 12}}
+  }})[0].provider, 'NVIDIA', '성공 학습도 무료 사용량 상한을 해제하지 못한다');
+
   const workflow = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  assert.match(workflow, /--feedback=\$priorVisualFeedback/);
   assert.match(workflow, /--mode=verify/);
   assert.match(workflow, /DESIGN_AUTO_MERGE=MERGED_AFTER_STUDIO_VISUAL_SECURITY_QA/);
   assert.match(workflow, /company-roblox-source-drift-sync\.yml/);
