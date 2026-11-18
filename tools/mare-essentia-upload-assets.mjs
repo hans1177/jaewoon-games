@@ -1344,7 +1344,8 @@ for (const item of plan) {
     registry.assets[id].source = item.file;
     // 구형 등록표는 로컬 승인 원본 해시를 기준으로 다음 이미지 변경을 탐지한다.
     // 이 값만으로 Roblox 원격 바이너리 동일성/Studio 표시를 주장하지 않는다.
-    if ((item.kind === 'Goods' && item.assetType === 'Image') || item.kind === 'Materials' || regionalCardArt)
+    if ((item.kind === 'Goods' && item.assetType === 'Image') || item.kind === 'Materials' || regionalCardArt
+      || (item.kind === 'CardArt' && approvedImages[id] === sourceSha256))
       registry.assets[id].sourceSha256 = sourceSha256;
     if (registry.assets[id].usePermissionGranted !== true) pendingPermissions.push({id, assetId: registry.assets[id].assetId});
     console.log('SKIP_ALREADY_REGISTERED', id);
@@ -1466,7 +1467,8 @@ for (const item of plan) {
     if (!/^[1-9][0-9]*$/.test(assetId || '')) throw new Error('NO_ASSET_ID');
     // 신규 자산도 기존 목록과 함께 일괄 권한 부여한다. 자산별 개별 PATCH 300회 호출 금지.
     registry.assets[id] = {assetId, source: item.file, license: item.license, assetType: item.assetType, usePermissionGranted: false,
-      ...((item.kind === 'Goods' && item.assetType === 'Image') || regionalCardArt || item.sourceLicense ? {sourceSha256} : {})};
+      ...((item.kind === 'Goods' && item.assetType === 'Image') || regionalCardArt
+        || (item.kind === 'CardArt' && approvedImages[id] === sourceSha256) || item.sourceLicense ? {sourceSha256} : {})};
     pendingPermissions.push({id, assetId});
 
     console.log('UPLOADED', id, assetId);
