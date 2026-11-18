@@ -47,20 +47,112 @@ export const DESIGN_FREE_MODELS = Object.freeze([
     role: 'GENERAL', keyName: 'GEMINI_API_KEY', verifiedName: 'GEMINI_DESIGN_FREE_TIER_VERIFIED',
     endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent'}
 ]);
+// [무료 한도] 자체 안전 상한이다. 실제 계정 한도는 별도 API/응답 정보로 더 낮게 제한한다.
 const DAILY_LIMIT = Object.freeze({NVIDIA: 12, GEMINI: 12, OPENROUTER: 30});
-const designRuntime = {usageWindow: null, cooldowns: {}, attempts: [], selectedRole: ''};
-const currentDay = () => new Date().toISOString().slice(0, 10);
+const designRuntime = {
+  usageWindow: null, cooldowns: {}, providerCooldowns: {}, quotaSnapshot: null,
+  attempts: [], selectedRole: ''
+};
+const currentDay = (now = Date.now()) => new Date(now).toISOString().slice(0,10);
+// [초기화] Gemini 일일 한도: 태평양 자정 / OpenRouter: UTC 자정.
+// NVIDIA 실계정 초기화는 증빙이 없어서 보수적인 UTC 내부 상한 + 응답 쿨다운을 병행한다.
+export function freeQuotaDay(provider, now = Date.now()) {
+  if (provider !== 'GEMINI') return currentDay(now);
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone:'America/Los_Angeles', year:'numeric',month:'2-digit',day:'2-digit'
+  }).formatToParts(new Date(now));
+  const part = key => parts.find(row => row.type === key)?.value;
+  return part('year')+'-'+part('month')+'-'+part('day');
+}
+export function freeQuotaStatus(provider, usageWindow = {}, quotaSnapshot = null, now = Date.now()) {
+  const day = freeQuotaDay(provider, now), cap = DAILY_LIMIT[provider];
+  if (!cap) return {provider, day, localRemaining:0, actualRemaining:null, remaining:0};
+  const previousDay = usageWindow?.days?.[provider];
+  const oldDay = usageWindow?.day;
+  // [기존 장부] 일괄 UTC 날짜만 있던 기록은 UTC 당일에는 소진 여부를 보수적으로 유지.
+  const tracked = previousDay ? previousDay === day : oldDay === currentDay(now);
+  const count = tracked && Number.isInteger(usageWindow?.calls?.[provider])
+    ? Math.max(0,usageWindow.calls[provider]) : 0;
+  const localRemaining = Math.max(0,cap-count);
+  const actualRemaining = provider === 'OPENROUTER' &&
+    quotaSnapshot?.provider === provider && quotaSnapshot?.day === currentDay(now) &&
+    Number.isInteger(quotaSnapshot.remaining) && quotaSnapshot.remaining >= 0
+    ? quotaSnapshot.remaining : null;
+  return {provider,day,localRemaining,actualRemaining,
+    remaining:actualRemaining === null ? localRemaining : Math.min(localRemaining,actualRemaining),
+    source:actualRemaining === null ? 'CONSERVATIVE_LOCAL_CAP' : 'VERIFIED_OPENROUTER_KEY_API'};
+}
+// [공식 계정 잔여량] 키 원문·결제·개인 정보 저장 금지. 조회 실패 시 자체 안전 상한만 사용한다.
+export async function readOpenRouterFreeQuota(key, fetchImpl = globalThis.fetch, now = Date.now()) {
+  if (!key) return null;
+  try {
+    const response = await fetchImpl('https://openrouter.ai/api/v1/key', {
+      method:'GET',headers:{authorization:'Bearer '+key}
+    });
+    if (!response.ok) return null;
+    const body = await response.json();
+    const quota = body?.data?.free_model_daily_requests;
+    const remaining = Number(quota?.remaining), limit = Number(quota?.limit);
+    if (!Number.isInteger(remaining) || !Number.isInteger(limit) ||
+      limit <= 0 || remaining < 0 || remaining > limit) return null;
+    return {provider:'OPENROUTER',day:currentDay(now),remaining,limit,
+      checkedAt:new Date(now).toISOString()};
+  } catch { return null; }
+}
+// [추가 무료 모델 탐색] 정식 공급자 목록 중 가격 0, :free, 이미지 입력·텍스트 출력 모두 검증된 모델만.
+// API 데이터는 URL·계정·설정·코드를 제안하거나 실행할 권한이 없다.
+export async function discoverFreeVisionModels({fetchImpl=globalThis.fetch,env=process.env,
+  policy={},limit=12}={}) {
+  const config=policy?.directVisualDesign?.freeSpecialistPool;
+  if (config?.liveDiscoveryEnabled!==true ||
+    !trim(env.OPENROUTER_API_KEY) ||
+    trim(env.OPENROUTER_DESIGN_FREE_TIER_VERIFIED)!=='YES') return [];
+  try {
+    const response=await fetchImpl('https://openrouter.ai/api/v1/models',{method:'GET'});
+    if (!response.ok) return [];
+    const body=await response.json();
+    const found=[];
+    for (const row of Array.isArray(body?.data)?body.data:[]) {
+      const id=String(row?.id||''), input=row?.architecture?.input_modalities,
+        output=row?.architecture?.output_modalities;
+      if (!/^[a-z0-9][a-z0-9._/-]{2,110}:free$/.test(id) ||
+        String(row?.pricing?.prompt)!=='0' || String(row?.pricing?.completion)!=='0' ||
+        !Array.isArray(input) || !input.includes('image') || !input.includes('text') ||
+        !Array.isArray(output) || !output.includes('text') ||
+        DESIGN_FREE_MODELS.some(model=>model.model===id)) continue;
+      found.push({id:'OPENROUTER_DISCOVERED_'+digest(id).slice(0,12),
+        provider:'OPENROUTER',model:id,role:'VISION',
+        keyName:'OPENROUTER_API_KEY',verifiedName:'OPENROUTER_DESIGN_FREE_TIER_VERIFIED',
+        endpoint:'https://openrouter.ai/api/v1/chat/completions',
+        discoveredFree:true});
+    }
+    return found.sort((a,b)=>a.model.localeCompare(b.model)).slice(0,
+      Math.min(12,Math.max(0,limit)));
+  } catch { return []; }
+}
 function loadPreviousDesignUsage(previous = {}) {
-  const nowDay = currentDay();
-  designRuntime.usageWindow = {day: nowDay, calls: previous?.usageWindow?.day === nowDay
-    ? Object.fromEntries(Object.entries(previous.usageWindow.calls || {})
-      .filter(([name, count]) => Object.hasOwn(DAILY_LIMIT, name) &&
-        Number.isInteger(count) && count >= 0 && count <= 1000))
-    : {}};
-  designRuntime.cooldowns = Object.fromEntries(Object.entries(previous?.cooldowns || {})
-    .filter(([id, until]) => DESIGN_FREE_MODELS.some(model => model.id === id) &&
-      Number.isFinite(Date.parse(until)) && Date.parse(until) > Date.now()));
-  designRuntime.attempts = [];
+  const now=Date.now(), nowDay=currentDay(now), source=previous?.usageWindow||{};
+  const calls={}, days={};
+  for (const provider of Object.keys(DAILY_LIMIT)) {
+    const day=freeQuotaDay(provider,now);
+    const oldDay=source.days?.[provider];
+    const carry=oldDay ? oldDay===day : source.day===nowDay;
+    const count=Number(source.calls?.[provider]);
+    calls[provider]=carry && Number.isInteger(count) && count>=0
+      ? Math.min(1000,count) : 0;
+    days[provider]=day;
+  }
+  designRuntime.usageWindow={day:nowDay,calls,days};
+  designRuntime.cooldowns=Object.fromEntries(Object.entries(previous?.cooldowns||{})
+    .filter(([id,until])=>(
+      DESIGN_FREE_MODELS.some(model=>model.id===id) ||
+      /^OPENROUTER_DISCOVERED_[a-f0-9]{12}$/.test(id)) &&
+      Number.isFinite(Date.parse(until)) && Date.parse(until)>now));
+  designRuntime.providerCooldowns=Object.fromEntries(Object.entries(previous?.providerCooldowns||{})
+    .filter(([provider,until])=>Object.hasOwn(DAILY_LIMIT,provider) &&
+      Number.isFinite(Date.parse(until)) && Date.parse(until)>now));
+  designRuntime.quotaSnapshot=null;
+  designRuntime.attempts=[];
 }
 export function designRoleForFrames(frameNames = []) {
   const names = frameNames.join(' ').toLowerCase();
