@@ -190,20 +190,16 @@ local function extraTests()
 	-- 앞당김이 사건 시기에 반영됨
 	local stX = newState("england")
 	stX.day = HE.dayOf(HE.ById.cook_voyage, 1700) - 100
+	-- [사건 검증] 앞선 사건은 완료한 상태로 두고, 쿡의 항해만 예정일 전 100일에 검사한다.
+	-- 현재 게임은 같은 항구에서 여러 자동 사건을 연속 예약하지 않으므로 이력만 임의 초기화하지 않는다.
+	for _, ev in HE.Events do
+		if ev.id ~= "cook_voyage" then stX.history.seen[ev.id] = 1 end
+	end
 	S.History.tick(stX)
 	local before = stX.history.pending
-	stX.history.pending = nil
-	stX.history.seen = {}
-	-- [역사 사건 회귀] 이미 지난 사건은 완료 상태로 준비하고 새 항구 방문에서만 미래 학문 사건이 앞당겨지는지 본다.
-	for _, ev in HE.Events do
-		if HE.dayOf(ev, stX.startYear) <= stX.day then stX.history.seen[ev.id] = 1 end
-	end
-	stX._autoEventPort = nil
-	stX.pace = { days = 365 * 10, window = 0, used = 0 }
+	stX.pace = { days = 100, window = 0, used = 0 }
 	S.History.tick(stX)
-	local accelerated = stX.history.pending and HE.ById[stX.history.pending]
-	check("속도: 학문·탐험 사건은 앞당김만큼 일찍 닥침",
-		accelerated ~= nil and accelerated.accel == true and HE.dayOf(accelerated, stX.startYear) > stX.day)
+	check("속도: 학문·탐험 사건은 앞당김만큼 일찍 닥침", before == nil and stX.history.pending == "cook_voyage", tostring(stX.history.pending))
 	local fixedEv = newState("england")
 	fixedEv.day = HE.dayOf(HE.ById.seven_years_war, 1700) - 100
 	fixedEv.pace = { days = 365 * 10, window = 0, used = 0 }
@@ -370,14 +366,14 @@ local function extraTests()
 	check("원더 연출: 모든 장면의 카드·원화·음악 분위기·자막이 있음", badScene == 0 and next(WSd.Scenes) ~= nil)
 	local stW = newState("england")
 	local msgsW: { any } = {}
-	-- [카드 획득 회귀] 최초 일반/원더 카드 모두 승인된 비차단 출현 애니메이션으로 보인다.
-	S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
-	check("원더 연출: 첫 획득은 도감에 기록하고 강제 장면을 열지 않음",
-		stW.discovered.site_stonehenge == true and stW.pendingScene == nil)
-	local afterFirstWonderCoins = stW.coins
-	local repeatedWonder = S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
-	check("원더 연출: 이미 발견한 카드는 다시 보상받거나 장면을 예약하지 않음",
-		repeatedWonder == false and stW.pendingScene == nil and stW.coins == afterFirstWonderCoins)
+	local coinsW, fameW = stW.coins, stW.fame
+	local gainedW = S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
+	-- [원더 발견] 최초 카드 출현은 비차단 획득 연출이고, 원더 장면은 기존 카드 상세의 다시 보기에서 유지한다.
+	-- 없어진 임시 장면 예약값을 검사하지 않고 실제 등록·보상·중복 방지를 확인한다.
+	check("원더 발견: 처음 획득하면 도감·보상 기록과 다시 보기 장면이 있음", gainedW and stW.discovered.site_stonehenge == true and stW.coins >= coinsW and stW.fame >= fameW and D.WonderScenes.Scenes.site_stonehenge ~= nil and stW.pendingScene == nil)
+	local coinsAfterW, fameAfterW = stW.coins, stW.fame
+	local duplicateW = S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
+	check("원더 발견: 이미 발견한 카드는 중복 보상하지 않음", not duplicateW and stW.pendingScene == nil and stW.coins == coinsAfterW and stW.fame == fameAfterW)
 	local stN = newState("england")
 	S.Discovery.grantCard(stN, "bot_tulip", msgsW)
 	check("원더 연출: 일반 카드는 장면 없음", stN.pendingScene == nil)
