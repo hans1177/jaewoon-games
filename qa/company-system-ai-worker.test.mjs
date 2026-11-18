@@ -41,12 +41,12 @@ test('System AI workers reuse only the canonical verified free-model rotation',(
   const end=workflow.indexOf('      - name: Verify no-change assignment',begin);
   assert.ok(begin>=0&&end>begin,'existing System AI model step must remain the only free-route owner');
   const modelStep=workflow.slice(begin,end);
-  assert.match(modelStep,/GEMINI_API_KEY: \\\$\\{\\{ secrets\\.GEMINI_API_KEY \\}\\}/);
-  assert.match(modelStep,/GROQ_API_KEY: \\\$\\{\\{ secrets\\.GROQ_API_KEY \\}\\}/);
-  assert.match(modelStep,/OPENROUTER_API_KEY: \\\$\\{\\{ secrets\\.OPENROUTER_API_KEY \\}\\}/);
-  assert.match(modelStep,/VIBE2_GROQ_FREE_PLAN_VERIFIED: \\\$\\{\\{ vars\\.VIBE2_GROQ_FREE_PLAN_VERIFIED \\|\\| 'NO' \\}\\}/);
-  assert.match(modelStep,/VIBE2_EXTERNAL_FREE_ROTATION: 'YES'/);
-  assert.doesNotMatch(modelStep,/VIBE2_GROQ_FREE_PLAN_VERIFIED \\|\\| 'YES'/);
+  assert.ok(modelStep.includes('GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}'));
+  assert.ok(modelStep.includes('GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}'));
+  assert.ok(modelStep.includes('OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}'));
+  assert.ok(modelStep.includes("VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'NO' }}"));
+  assert.ok(modelStep.includes("VIBE2_EXTERNAL_FREE_ROTATION: 'YES'"));
+  assert.ok(!modelStep.includes("VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES'"));
 });
 
 test('shared System AI worker loads latest main without downloading repository history',()=>{
