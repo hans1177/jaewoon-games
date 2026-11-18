@@ -4223,7 +4223,9 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
   assert.ok(scene.includes('comboLabel.Font = Enum.Font.Bangers')&&
     scene.includes('comboLabel.TextStrokeColor3 = Color3.fromRGB(22, 22, 37)')&&
     scene.includes('if visualMobile then 63 else 76')&&
-    scene.includes('TextSize = targetSize, Rotation = 0')&&
+    scene.includes('comboLabel.TextSize = targetSize')&&
+    scene.includes('comboLabel.Rotation = 0')&&
+    scene.includes('TweenService:Create(comboPopScale, TweenInfo.new(0.13, Enum.EasingStyle.Back')&&
     scene.includes('comboInfo.Font = Enum.Font.GothamBlack')&&
     scene.includes('초당 %.1f타'),
     'large high-contrast combo lettering and speed HUD must preserve real hit-count logic');
