@@ -732,6 +732,20 @@ return function(D, S)
 		local linkedSites, resourceLinks, explorationLinks = {}, {}, {}
 		local scholarNames = {}
 		for _, scholar in D.Scholars.Scholars do scholarNames[scholar.id] = scholar.name end
+		-- [지식→다음 이야기] 방금 완수한 지역 카드가 다음 퀘스트를 여는 원인을 역산한다.
+		-- 저장을 늘리거나 보상을 재발급하지 않고 기존 after·done 관계만 사용한다.
+		local nextRouteByQuest, nextRouteByCard = {}, {}
+		for _, q in D.Quests.Quests do
+			if q.routeId and q.after then nextRouteByQuest[q.after] = q end
+		end
+		for _, q in D.Quests.Quests do
+			if q.routeId and q.cardId and state.quests.done[q.id] then
+				local nextQuest = nextRouteByQuest[q.id]
+				if nextQuest and not state.quests.done[nextQuest.id] then
+					nextRouteByCard[q.cardId] = nextQuest
+				end
+			end
+		end
 		for _, site in D.Sites.Sites do
 			linkedSites[site.id] = site.name
 			for _, cardId in site.pool do
@@ -848,6 +862,11 @@ return function(D, S)
 				era = c.meta and c.meta.era or nil,
 				region = c.meta and c.meta.region and D.Ports.Ports[c.meta.region] and D.Ports.Ports[c.meta.region].name or (c.visitPort and D.Ports.Ports[c.visitPort] and D.Ports.Ports[c.visitPort].name) or nil,
 				-- [개인 백과] 자료의 대표 지역과 실제 플레이어 최초 습득 장소를 구별한다.
+				nextClue = if found and nextRouteByCard[c.id] then {
+					quest = nextRouteByCard[c.id].name,
+					port = D.Ports.Ports[nextRouteByCard[c.id].portId] and D.Ports.Ports[nextRouteByCard[c.id].portId].name or nil,
+					source = nextRouteByCard[c.id].leadSource,
+				} else nil,
 				provenance = if origin then {
 					port = originPort and originPort.name or "위치 미상",
 					day = origin.day,
