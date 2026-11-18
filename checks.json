@@ -1,28 +1,28 @@
 {
-  "runId": "44221016636",
-  "kind": "studio",
-  "sourceRevision": "9036e09faf6f31c54d32db95b894dfaa52b251cc",
+  "runId": "44222003486",
+  "kind": "deep",
+  "sourceRevision": "482235487636454b64510dca8e6329750fc76807",
   "result": "FAIL",
   "failureStage": "STUDIO_EXECUTION",
   "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
   "summary": {
-    "plannedSteps": 138,
-    "completedSteps": 5,
-    "plannedClicks": 0,
+    "plannedSteps": 241,
+    "completedSteps": 7,
+    "plannedClicks": 10,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 27,
-    "capturedFrames": 0,
+    "plannedFrames": 62,
+    "capturedFrames": 1,
     "abortedEarly": true
   },
   "errors": [
-    "step4:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:25: WEAPON_SKILL_BUTTON_MISSING:fist:h"
+    "step6:STUDIO_UI_TARGET_NOT_FOUND:title01"
   ],
   "audits": {
-    "models": "NOT_RUN",
-    "registered": "NOT_RUN",
-    "features": "NOT_RUN",
-    "registry": "NOT_RUN"
+    "models": "UNVERIFIED",
+    "registered": "UNVERIFIED",
+    "features": "UNVERIFIED",
+    "registry": "UNVERIFIED"
   },
   "steps": [
     {
@@ -34,10 +34,12 @@
     },
     {
       "step": 1,
-      "type": "luau",
-      "name": "",
+      "type": "capture",
+      "name": "c00_start",
       "status": "PASS",
-      "screenshots": []
+      "screenshots": [
+        "c00_start-0.jpg"
+      ]
     },
     {
       "step": 2,
@@ -48,7 +50,7 @@
     },
     {
       "step": 3,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -57,26 +59,26 @@
       "step": 4,
       "type": "luau",
       "name": "",
-      "status": "FAIL",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 5,
-      "type": "luau",
+      "type": "wait",
       "name": "",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 6,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
+      "type": "click_from_luau",
+      "name": "title01",
+      "status": "FAIL",
       "screenshots": []
     },
     {
       "step": 7,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
@@ -84,7 +86,7 @@
     {
       "step": 8,
       "type": "capture",
-      "name": "wp_fist_a",
+      "name": "t01",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -104,71 +106,71 @@
     },
     {
       "step": 11,
-      "type": "luau",
-      "name": "",
+      "type": "click_from_luau",
+      "name": "title02",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 12,
-      "type": "capture",
-      "name": "wp_fist_b",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 13,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
+      "step": 13,
+      "type": "capture",
+      "name": "t02",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
       "step": 14,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 15,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 16,
-      "type": "capture",
-      "name": "wp_fist_sweep",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 17,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 18,
       "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
+      "step": 16,
+      "type": "click_from_luau",
+      "name": "title03",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 17,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 18,
+      "type": "capture",
+      "name": "intro_center_early",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
       "step": 19,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 20,
-      "type": "luau",
-      "name": "",
+      "type": "capture",
+      "name": "intro_center_next",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -181,28 +183,28 @@
     },
     {
       "step": 22,
-      "type": "luau",
-      "name": "",
+      "type": "capture",
+      "name": "intro_center_late",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 23,
-      "type": "capture",
-      "name": "wp_sword_a",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 24,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
+      "step": 24,
+      "type": "capture",
+      "name": "t03",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
       "step": 25,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
@@ -216,21 +218,21 @@
     },
     {
       "step": 27,
-      "type": "capture",
-      "name": "wp_sword_b",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 28,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
+      "step": 28,
+      "type": "capture",
+      "name": "intro_done",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
       "step": 29,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
@@ -244,29 +246,29 @@
     },
     {
       "step": 31,
-      "type": "capture",
-      "name": "wp_sword_sweep",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 32,
       "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
-      "step": 33,
+      "step": 32,
       "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
-      "step": 34,
+      "step": 33,
       "type": "luau",
       "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 34,
+      "type": "capture",
+      "name": "tab_harbor",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -279,22 +281,22 @@
     },
     {
       "step": 36,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 37,
       "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
+      "step": 37,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
       "step": 38,
-      "type": "capture",
-      "name": "wp_dagger_a",
+      "type": "luau",
+      "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -307,8 +309,8 @@
     },
     {
       "step": 40,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "tab_trade",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -321,57 +323,57 @@
     },
     {
       "step": 42,
-      "type": "capture",
-      "name": "wp_dagger_b",
+      "type": "click_from_luau",
+      "name": "qa_tab_trade_to_harbor",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 43,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 44,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 45,
-      "type": "luau",
-      "name": "",
+      "type": "capture",
+      "name": "qa_click_trade_to_harbor",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 46,
-      "type": "capture",
-      "name": "wp_dagger_sweep",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 47,
       "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
-      "step": 48,
+      "step": 47,
       "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
-      "step": 49,
+      "step": 48,
       "type": "luau",
       "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 49,
+      "type": "capture",
+      "name": "tab_route",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -384,63 +386,63 @@
     },
     {
       "step": 51,
-      "type": "wait",
-      "name": "",
+      "type": "click_from_luau",
+      "name": "qa_tab_route_to_map",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 52,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 53,
-      "type": "capture",
-      "name": "wp_axe_a",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 54,
       "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
+      "step": 54,
+      "type": "capture",
+      "name": "qa_click_route_to_map",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
       "step": 55,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 56,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 57,
-      "type": "capture",
-      "name": "wp_axe_b",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 58,
       "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
+      "step": 58,
+      "type": "capture",
+      "name": "tab_map",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
       "step": 59,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
@@ -454,8 +456,8 @@
     },
     {
       "step": 61,
-      "type": "capture",
-      "name": "wp_axe_sweep",
+      "type": "wait",
+      "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -468,8 +470,8 @@
     },
     {
       "step": 63,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "tab_yard",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -504,7 +506,7 @@
     {
       "step": 68,
       "type": "capture",
-      "name": "wp_spear_a",
+      "name": "tab_quest",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -517,35 +519,35 @@
     },
     {
       "step": 70,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 71,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 72,
-      "type": "capture",
-      "name": "wp_spear_b",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 73,
       "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
+      "step": 73,
+      "type": "capture",
+      "name": "tab_explore",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
       "step": 74,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
@@ -559,8 +561,8 @@
     },
     {
       "step": 76,
-      "type": "capture",
-      "name": "wp_spear_sweep",
+      "type": "wait",
+      "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -573,8 +575,8 @@
     },
     {
       "step": 78,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "tab_battle",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -587,21 +589,21 @@
     },
     {
       "step": 80,
-      "type": "luau",
-      "name": "",
+      "type": "capture",
+      "name": "ui_battle_unified",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 81,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 82,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
@@ -609,7 +611,7 @@
     {
       "step": 83,
       "type": "capture",
-      "name": "wp_mace_a",
+      "name": "ui_main_menu_icons",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -622,50 +624,50 @@
     },
     {
       "step": 85,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 86,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 87,
-      "type": "capture",
-      "name": "wp_mace_b",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 88,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 89,
       "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
-      "step": 90,
+      "step": 87,
       "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
-      "step": 91,
+      "step": 88,
       "type": "capture",
-      "name": "wp_mace_sweep",
+      "name": "ui_mobile_battle_2x2",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 89,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 90,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 91,
+      "type": "luau",
+      "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -692,29 +694,29 @@
     },
     {
       "step": 95,
-      "type": "luau",
-      "name": "",
+      "type": "capture",
+      "name": "tab_codex",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 96,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 97,
-      "type": "luau",
-      "name": "",
+      "type": "click_from_luau",
+      "name": "qa_tab_codex_to_tech",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 98,
-      "type": "capture",
-      "name": "wp_bow_a",
+      "type": "wait",
+      "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -727,8 +729,8 @@
     },
     {
       "step": 100,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "qa_click_codex_to_tech",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -741,8 +743,8 @@
     },
     {
       "step": 102,
-      "type": "capture",
-      "name": "wp_bow_b",
+      "type": "wait",
+      "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -755,8 +757,8 @@
     },
     {
       "step": 104,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "tab_tech",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -769,29 +771,29 @@
     },
     {
       "step": 106,
-      "type": "capture",
-      "name": "wp_bow_sweep",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 107,
       "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
-      "step": 108,
+      "step": 107,
       "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
-      "step": 109,
+      "step": 108,
       "type": "luau",
       "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 109,
+      "type": "capture",
+      "name": "tab_status",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -804,63 +806,63 @@
     },
     {
       "step": 111,
-      "type": "wait",
-      "name": "",
+      "type": "click_from_luau",
+      "name": "qa_tab_status_to_crew",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 112,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 113,
-      "type": "capture",
-      "name": "wp_crossbow_a",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 114,
       "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
+      "step": 114,
+      "type": "capture",
+      "name": "qa_click_status_to_crew",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
       "step": 115,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 116,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 117,
-      "type": "capture",
-      "name": "wp_crossbow_b",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 118,
       "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
+      "step": 118,
+      "type": "capture",
+      "name": "tab_crew",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
       "step": 119,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
@@ -874,8 +876,8 @@
     },
     {
       "step": 121,
-      "type": "capture",
-      "name": "wp_crossbow_sweep",
+      "type": "wait",
+      "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -888,15 +890,15 @@
     },
     {
       "step": 123,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 124,
-      "type": "luau",
-      "name": "",
+      "type": "capture",
+      "name": "ui_trade_hall_no_hud",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -923,64 +925,64 @@
     },
     {
       "step": 128,
-      "type": "capture",
-      "name": "wp_gun_a",
+      "type": "luau",
+      "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 129,
-      "type": "luau",
-      "name": "",
+      "type": "capture",
+      "name": "ui_yard_hall_no_hud",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 130,
-      "type": "wait",
-      "name": "",
+      "type": "click_from_luau",
+      "name": "yard_leave",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 131,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 132,
-      "type": "capture",
-      "name": "wp_gun_b",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 133,
       "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
+      "step": 133,
+      "type": "capture",
+      "name": "ui_hall_return_clean",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
       "step": 134,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 135,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 136,
-      "type": "capture",
-      "name": "wp_gun_sweep",
+      "type": "luau",
+      "name": "",
       "status": "NOT_RUN",
       "screenshots": []
     },
@@ -990,15 +992,751 @@
       "name": "",
       "status": "NOT_RUN",
       "screenshots": []
+    },
+    {
+      "step": 138,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 139,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 140,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 141,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 142,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 143,
+      "type": "capture",
+      "name": "cb0_deck",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 144,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 145,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 146,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 147,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 148,
+      "type": "capture",
+      "name": "cb1",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 149,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 150,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 151,
+      "type": "capture",
+      "name": "cb2",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 152,
+      "type": "click_from_luau",
+      "name": "card_practice_exit",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 153,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 154,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 155,
+      "type": "capture",
+      "name": "v1_start",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 156,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 157,
+      "type": "capture",
+      "name": "v2_event",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 158,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 159,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 160,
+      "type": "capture",
+      "name": "v3_event2",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 161,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 162,
+      "type": "capture",
+      "name": "v4_late",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 163,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 164,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 165,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 166,
+      "type": "capture",
+      "name": "b1_start",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 167,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 168,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 169,
+      "type": "capture",
+      "name": "b2_mid",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 170,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 171,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 172,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 173,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 174,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 175,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 176,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 177,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 178,
+      "type": "capture",
+      "name": "harbor_npc_sparring_01",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 179,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 180,
+      "type": "capture",
+      "name": "harbor_npc_sparring_02",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 181,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 182,
+      "type": "capture",
+      "name": "harbor_npc_sparring_03",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 183,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 184,
+      "type": "capture",
+      "name": "harbor_npc_sparring_04",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 185,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 186,
+      "type": "capture",
+      "name": "harbor_npc_sparring_05",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 187,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 188,
+      "type": "capture",
+      "name": "harbor_npc_sparring_06",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 189,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 190,
+      "type": "capture",
+      "name": "harbor_npc_sparring_07",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 191,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 192,
+      "type": "capture",
+      "name": "harbor_npc_sparring_08",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 193,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 194,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 195,
+      "type": "capture",
+      "name": "harbor_motion_idle",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 196,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 197,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 198,
+      "type": "capture",
+      "name": "harbor_motion_walk",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 199,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 200,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 201,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 202,
+      "type": "capture",
+      "name": "harbor_motion_run",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 203,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 204,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 205,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 206,
+      "type": "capture",
+      "name": "harbor_motion_attack",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 207,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 208,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 209,
+      "type": "capture",
+      "name": "harbor_motion_shoot",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 210,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 211,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 212,
+      "type": "capture",
+      "name": "harbor_motion_reload",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 213,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 214,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 215,
+      "type": "capture",
+      "name": "harbor_motion_guard",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 216,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 217,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 218,
+      "type": "capture",
+      "name": "harbor_motion_hurt",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 219,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 220,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 221,
+      "type": "capture",
+      "name": "harbor_motion_cheer",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 222,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 223,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 224,
+      "type": "capture",
+      "name": "harbor_motion_talk",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 225,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 226,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 227,
+      "type": "capture",
+      "name": "harbor_npc_face_front",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 228,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 229,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 230,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 231,
+      "type": "click_from_luau",
+      "name": "field_entry",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 232,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 233,
+      "type": "capture",
+      "name": "field_entry",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 234,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 235,
+      "type": "capture",
+      "name": "field_npc_ally_mob",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 236,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 237,
+      "type": "capture",
+      "name": "field_motion_smooth_icons",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 238,
+      "type": "wait",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 239,
+      "type": "luau",
+      "name": "",
+      "status": "NOT_RUN",
+      "screenshots": []
+    },
+    {
+      "step": 240,
+      "type": "capture",
+      "name": "field_actor_after_motion",
+      "status": "NOT_RUN",
+      "screenshots": []
     }
   ],
-  "screenshotComparison": [],
+  "screenshotComparison": [
+    {
+      "name": "c00_start-0.jpg",
+      "sha256": "8ffdb1b693cba8cf8f0ec2bf6ea75c481ad269d66bcdc56e3f4ad8eeaa24a890",
+      "comparison": "SAME_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44222003486/c00_start-0.jpg"
+    }
+  ],
   "screenshotFrameAudit": {
-    "checked": 0,
+    "checked": 1,
     "invalid": 0,
-    "images": [],
+    "images": [
+      {
+        "name": "c00_start-0.jpg",
+        "bytes": 43708,
+        "width": 1311,
+        "height": 475,
+        "status": "PASS"
+      }
+    ],
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "44178242007"
+  "previousRunId": "44220213523"
 }

@@ -1,19 +1,35 @@
 {
- "sourceRevision": "9036e09faf6f31c54d32db95b894dfaa52b251cc",
+ "sourceRevision": "482235487636454b64510dca8e6329750fc76807",
  "log": [
   {
    "step": 1,
-   "ctx": "Client",
-   "out": "WEAPON_QA_INITIALIZED\ntext"
+   "capture": "c00_start",
+   "files": 1
   },
   {
    "step": 2,
    "ctx": "Client",
-   "out": "WEAPON_QA_LAUNCHED:fist\ntext"
+   "out": "QAAutoIntro on\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "INTRO_CENTER_QA_MONITOR_READY\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "MARE_TITLE_NOT_READY_AFTER_50S;LOADING=true;CORE=session-ready;REMOTE=true;CLIENT=require-PortScene;ASSETS=true\ntext"
+  },
+  {
+   "step": 6,
+   "click": "title01",
+   "at": "NOT_FOUND",
+   "out": "NONE\ntext"
   }
  ],
  "errors": [
-  "step4:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:25: WEAPON_SKILL_BUTTON_MISSING:fist:h"
+  "step6:STUDIO_UI_TARGET_NOT_FOUND:title01"
  ],
  "consoleCapture": {
   "captured": true,
@@ -22,13 +38,46 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 138,
-  "completedSteps": 5,
-  "plannedClicks": 0,
+  "plannedSteps": 241,
+  "completedSteps": 7,
+  "plannedClicks": 10,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 27,
-  "capturedFrames": 0,
+  "plannedFrames": 62,
+  "capturedFrames": 1,
   "abortedEarly": true
+ },
+ "visualSamples": [
+  {
+   "name": "c00_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 43708,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  }
+ ],
+ "visualEvidence": {
+  "framesChecked": 1,
+  "framesWithInvalidSize": 0,
+  "voyageSceneObserved": false,
+  "departureObserved": false,
+  "voyageDiagnostics": [],
+  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
  }
 }
