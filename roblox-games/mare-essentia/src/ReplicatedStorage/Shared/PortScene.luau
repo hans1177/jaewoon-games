@@ -7,6 +7,8 @@
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- [실물 로딩 진단] 항구 모듈 자체의 내부 초기화 단계만 표시한다.
+ReplicatedStorage:SetAttribute("MarePortScenePhase", "dependencies")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 
@@ -20,6 +22,7 @@ local Chains = require(script.Parent:WaitForChild("ProductionChains"))
 local PortScene = {}
 
 local Cultures = require(script.Parent:WaitForChild("PortCultures"))
+ReplicatedStorage:SetAttribute("MarePortScenePhase", "dependencies-ready")
 local MED, STYLE, REGION, PROFILE, OUTFIT = Cultures.MED, Cultures.STYLE, Cultures.REGION, Cultures.PROFILE, Cultures.OUTFIT
 local C = Color3.fromRGB
 local PORT_CLOCK_EPOCH = os.clock()
@@ -373,6 +376,7 @@ local CUSTOM_SHIP_FALLBACK = {
 	paddle_steamer = "ship-medium",
 	ironclad_frigate = "ship-pirate-large",
 }
+ReplicatedStorage:SetAttribute("MarePortScenePhase", "ships")
 local ShipDefs = require(script.Parent:WaitForChild("Ships"))
 for shipId in ShipDefs.Ships do
 	local meshName = shipId .. "-custom"
@@ -2161,6 +2165,7 @@ local COUNTRY_PLAN = {
 	denmark = { lot = 1.02, gap = 1.08, density = 0.95 }, finland = { lot = 1.05, gap = 1.14, density = 0.92 },
 	russia = { lot = 1.02, gap = 1.08, density = 0.95 }, malta = { lot = 0.96, gap = 0.98, density = 1.01 },
 }
+ReplicatedStorage:SetAttribute("MarePortScenePhase", "landmarks")
 local SIG = {}
 do
 	local function one(kind, asset, size, dx, dz, y, tint)
@@ -2398,6 +2403,7 @@ do
 	SIG.vancouver = cat(one("Town", "house", 24, -11, 0), one("Terrain", "tree-pinedefaulta", 18, 17, 10), one("Naval", "tower-watch", 26, -23, 12))
 	SIG.oslo = cat(one("Castle", "fortress", 28, 0, 0), one("Town", "house", 17, -24, 0, 0, C(184, 78, 58)), one("Town", "house", 17, 24, 0, 0, C(214, 190, 119)))
 end
+ReplicatedStorage:SetAttribute("MarePortScenePhase", "landmarks-ready")
 
 local function placeSignature(folder, info)
 	local list = SIG[info.portId]
@@ -6759,5 +6765,9 @@ function PortScene.placeModel(parent, kind, asset, pos, size)
 	return importedModel(parent, kind, asset, pos, size, false)
 end
 
+-- [정본 3D 장면] 스튜디오 스모크와 클라이언트가 같은 원본 공개 함수를 검증한다.
+assert(type(PortScene.build) == "function" and type(PortScene.makeShip) == "function"
+    and type(PortScene.placeModel) == "function", "MARE_PORTSCENE_PUBLIC_API_MISSING")
+ReplicatedStorage:SetAttribute("MarePortScenePhase", "export-ready")
 return PortScene
 

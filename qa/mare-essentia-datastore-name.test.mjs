@@ -25,6 +25,21 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
   assert.match(core,/return "P_" \.\. player.UserId/);
 });
 
+// [게임 시작 방어] 3D 장면의 무거운 로딩은 제목 화면을 막지 않고 기존 항구 함수에 재진입한다.
+test('로블록스 시작 화면은 3D 항구 장면 로딩과 분리되고 저장·출항은 안전하게 대기한다',()=>{
+  const port=read('ReplicatedStorage/Shared/PortScene.luau');
+  assert.match(client,/local PortScene = nil/);
+  assert.match(client,/task\.spawn\(function\(\)[\s\S]*?return require\(Shared:WaitForChild\("PortScene"\)\)/);
+  assert.match(client,/gui:SetAttribute\("PortSceneStatus", "ready"\)/);
+  assert.match(client,/if view and syncScene then[\s\S]*?sceneKey = nil[\s\S]*?syncScene\(\)/);
+  assert.match(client,/syncScene = function\(\)\n\s*--[^\n]*\n\s*if not PortScene then return end/);
+  assert.match(client,/local function sail\(portId\)[\s\S]*?if not PortScene then[\s\S]*?return[\s\S]*?sailingNow = true/);
+  assert.match(port,/MARE_PORTSCENE_PUBLIC_API_MISSING/);
+  assert.match(port,/MarePortScenePhase", "landmarks-ready"/);
+  assert.match(core,/local STORE_NAME = "MareEssentia_v2"/);
+  assert.match(client,/local remote = ReplicatedStorage:WaitForChild\("GameAction"\)/);
+});
+
 test('Mare Essentia 저장소 이름은 MareEssentia_v2로 고정된다', () => {
   const m=core.match(/^local STORE_NAME = "([^"]+)"/m);
   assert.ok(m,'STORE_NAME 선언을 찾지 못함');
