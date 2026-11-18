@@ -279038,11 +279038,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_00f57f8429c8e0186d4e45ed",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13707",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b36bcbc428c98da1afbf478838d0b09848e9ca6b",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13707,
+        "baseBranch": "main",
+        "headBranch": "nemotron-full-design-20261118",
+        "baseSha": "b36bcbc428c98da1afbf478838d0b09848e9ca6b",
+        "headSha": "9a548be0c7163260d53a59e409360a4f9b81a6ff",
+        "mergeCommitSha": "017aff808de819af038550c1d0d7e405f920c79e",
+        "mergedAt": "2026-11-18T04:54:18Z",
+        "authorLogin": "hans1177",
+        "titleHash": "53f6e96d7287cdfd5021d7b606d4bb8782b23ae619a3e24b18c6cd4bec023808",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "nemotron-full-design-20261118",
+        "candidateSha": "9a548be0c7163260d53a59e409360a4f9b81a6ff"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 646,
+        "deletedLineCount": 274,
+        "changedFiles": [
+          ".github/workflows/devloop-studio.yml",
+          "qa/company-recovery-learning.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/vibe-autopilot.test.mjs",
+          "qa/vibe-brain.test.mjs",
+          "tools/company-nemotron-design-review.mjs",
+          "tools/company-recovery-escalation.mjs",
+          "tools/vibe-autopilot.mjs",
+          "tools/vibe-brain.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/devloop-studio.yml",
+          "qa/company-recovery-learning.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/vibe-autopilot.test.mjs",
+          "qa/vibe-brain.test.mjs",
+          "tools/company-nemotron-design-review.mjs",
+          "tools/company-recovery-escalation.mjs",
+          "tools/vibe-autopilot.mjs",
+          "tools/vibe-brain.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13707",
+        "merge-commit:017aff808de819af038550c1d0d7e405f920c79e",
+        "base-main:b36bcbc428c98da1afbf478838d0b09848e9ca6b"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2227
+    "total": 2228
   }
 }
