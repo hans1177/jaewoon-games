@@ -105,22 +105,6 @@ local function drawFace(head, role, skin, rng, gender)
 	gui.LightInfluence = 0.6
 	-- [실물 얼굴] R15 곡면 머리에서 표면 UI가 메시 안에 가려지지 않도록 전면 렌더링한다.
 	gui.AlwaysOnTop = true
-	-- [실물 화면 복구] 곡면 R15 Head의 바운딩 면이 실제 피부 메시 뒤로 들어가
-	-- 눈·입이 전부 사라지는 현상을 막는다. 투명한 전면 캔버스만 머리에 고정한다.
-	-- 기존 MareFace SurfaceGui와 눈/입/수염 표현은 그대로 재사용한다.
-	local canvas = Instance.new("Part")
-	canvas.Name = "MareFaceCanvas"
-	canvas.Size = Vector3.new(head.Size.X * 0.86, head.Size.Y * 0.85, 0.02)
-	canvas.CFrame = head.CFrame * CFrame.new(0, 0, -head.Size.Z * 0.54)
-	canvas.Transparency = 1
-	canvas.CastShadow = false
-	canvas.Anchored = false
-	canvas.CanCollide, canvas.CanTouch, canvas.CanQuery, canvas.Massless = false, false, false, true
-	canvas.Parent = head
-	local faceJoint = Instance.new("WeldConstraint")
-	faceJoint.Part0, faceJoint.Part1 = head, canvas
-	faceJoint.Parent = canvas
-	gui.Adornee = canvas
 	gui.Parent = head
 	local function box(x, y, w, h, color, rot, round)
 		local f = Instance.new("Frame")
