@@ -2603,8 +2603,11 @@ test('네모트론 3.5 실제 이미지 API 요청은 추론 토큰 낭비 없�
       assert.equal(request.headers.Authorization, 'Bearer fixture-key');
       assert.deepEqual(body.chat_template_kwargs, {enable_thinking: false},
         'NVIDIA 공식 직접 답변 모드로 빈 추론 출력 차단');
-      assert.deepEqual(body.response_format, {type: 'json_object'},
-        'NVIDIA 공식 JSON 모드로 잘못된 구문 출력 차단');
+      assert.equal(body.response_format.type, 'json_schema');
+      assert.equal(body.response_format.json_schema.name, 'mare_visual_design');
+      assert.equal(body.response_format.json_schema.strict, true);
+      assert.deepEqual(body.response_format.json_schema.schema.required,
+        ['issues', 'edits'], 'NVIDIA 필수 JSON 응답 키를 모델 단계부터 강제');
     } else {
       assert.equal(url, router.endpoint);
       assert.equal(request.headers.Authorization, 'Bearer fixture-other-key');
@@ -2684,8 +2687,13 @@ test('무료 디자인 7개 모델 전체는 지정 엔드포인트로만 이미
         assert.ok(model.model.endsWith(':free'), '무료 ID만 허용: ' + model.id);
       if (model.provider === 'NVIDIA') {
         assert.deepEqual(body.chat_template_kwargs, {enable_thinking: false});
-        assert.deepEqual(body.response_format, {type: 'json_object'});
+        assert.equal(body.response_format.type, 'json_schema');
+        assert.deepEqual(body.response_format.json_schema.schema.required,
+          ['issues', 'edits']);
       }
+      if (model.id === 'OPENROUTER_NEMOTRON')
+        assert.deepEqual(body.reasoning, {enabled: false},
+          '오픈라우터 네모트론 기본 추론의 출력 토큰 소진 방지');
       return {ok: true, json: async () => ({
         usage: {cost: 0},
         choices: [{message: {content: '{"issues":[],"edits":[]}'}}]
@@ -2742,4 +2750,35 @@ test('디자인 무료 공급자별 인증 실패·형식 오류·결제 요구�
     '무효 응답 모델은 다음 회차에서 제외하고 다른 무료 모델로 교대');
   assert.ok(alternatives.some(model=>model.provider==='GEMINI'));
   assert.ok(alternatives.some(model=>model.provider==='OPENROUTER'));
+});
+
+
+// [공식 NVIDIA 독립 검수] 원본 디자인 스키마와 다른 전후 비교 응답 계약을 직접 요청한다.
+test('네모트론 후보와 독립 검수는 동일 무료 호출에서 다른 필수 JSON 필드를 요구한다',async()=>{
+  const {DESIGN_FREE_MODELS,callFreeDesignModel,validateVisualComparison} =
+    await import('../tools/company-nemotron-design-review.mjs');
+  const nvidia=DESIGN_FREE_MODELS.find(x=>x.id==='NVIDIA_VL');
+  const env={NVIDIA_API_KEY:'fixture-free'};
+  const frame={name:'harbor_npc_face_front-0.jpg',url:'data:image/jpeg;base64,YWJj'};
+  let calls=0;
+  const result=await callFreeDesignModel(nvidia,'Compare before after',[frame],
+    async(url,request)=>{
+      calls++;
+      assert.equal(url,nvidia.endpoint);
+      const body=JSON.parse(request.body);
+      assert.equal(body.response_format.type,'json_schema');
+      assert.equal(body.response_format.json_schema.name,'mare_visual_comparison');
+      const schema=body.response_format.json_schema.schema;
+      assert.deepEqual(schema.required,['verdict','improvements','regressions']);
+      assert.equal(schema.properties.verdict.enum.includes('UNKNOWN'),true);
+      assert.equal(schema.additionalProperties,false);
+      return {ok:true,json:async()=>({
+        choices:[{message:{content:'{"verdict":"UNKNOWN","improvements":[],"regressions":[]}'}}],
+        usage:{cost:0}
+      })};
+    },env,'comparison');
+  assert.equal(calls,1);
+  assert.equal(result.status,'OK');
+  assert.equal(validateVisualComparison(result.text,[frame.name]).status,'UNVERIFIED',
+    'JSON 구조 성공은 시각 개선 성공과 구분');
 });

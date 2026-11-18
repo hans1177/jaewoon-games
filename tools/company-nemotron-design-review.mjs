@@ -322,8 +322,31 @@ function modelAttempt(id, status, details = {}) {
   designRuntime.attempts.push(row);
   console.log('DESIGN_FREE_MODEL_ATTEMPT=' + id + ':' + status);
 }
-export async function callFreeDesignModel(model, prompt, photos, fetchImpl, env = process.env) {
+export async function callFreeDesignModel(model, prompt, photos, fetchImpl, env = process.env,
+  kind = 'design') {
   const key = trim(env[model.keyName]);
+  // [무료 구조화 출력] NVIDIA의 json_object는 필수 필드를 보장하지 않는다.
+  // 기존 후보 검수와 독립 전후 검수를 구분하여 출력 스키마까지 모델에 전달한다.
+  const evidence = {type: 'object', additionalProperties: false, properties: {
+    screenshot: {type: 'string'}, evidence: {type: 'string'}
+  }, required: ['screenshot', 'evidence']};
+  const structuredSchema = kind === 'comparison'
+    ? {type: 'object', additionalProperties: false, properties: {
+        verdict: {type: 'string', enum: ['PASS', 'FAIL', 'UNKNOWN']},
+        improvements: {type: 'array', items: evidence},
+        regressions: {type: 'array', items: evidence}
+      }, required: ['verdict', 'improvements', 'regressions']}
+    : {type: 'object', additionalProperties: false, properties: {
+        issues: {type: 'array', items: {type: 'object', additionalProperties: false,
+          properties: {category: {type: 'string'},
+            severity: {type: 'string', enum: ['low', 'medium', 'high']},
+            screenshot: {type: 'string'}, evidence: {type: 'string'}},
+          required: ['category', 'severity', 'screenshot', 'evidence']}},
+        edits: {type: 'array', items: {type: 'object', additionalProperties: false,
+          properties: {category: {type: 'string'}, screenshot: {type: 'string'},
+            anchor: {type: 'integer'}, after: {type: 'string'}},
+          required: ['category', 'screenshot', 'anchor', 'after']}}
+      }, required: ['issues', 'edits']};
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 90000);
   try {
@@ -339,9 +362,14 @@ export async function callFreeDesignModel(model, prompt, photos, fetchImpl, env 
           // 유료 크레딧이나 호출 수를 늘리지 않고 직접 답변 모드를 요청한다.
           ...(model.provider === 'NVIDIA'
             ? {chat_template_kwargs: {enable_thinking: false},
-                // [공식 NVIDIA JSON 모드] 멀티모달 응답의 잘못된 쉼표·문자열로 검증이 실패하는 현상을 줄인다.
-                // 내용·경로·앵커의 신뢰성은 기존 validateReview에서 계속 독립 검증한다.
-                response_format: {type: 'json_object'}} : {}),
+                // [공식 JSON 스키마] 필수 issues/edits 또는 전후 verdict 필드를 출력에서 강제한다.
+                // 독립 소스/스크린샷 검증은 기존 validateReview 로직을 그대로 사용한다.
+                response_format: {type: 'json_schema', json_schema: {
+                  name: kind === 'comparison' ? 'mare_visual_comparison' : 'mare_visual_design',
+                  strict: true, schema: structuredSchema
+                }}} : model.id === 'OPENROUTER_NEMOTRON'
+              // [무료 멀티모달] 기본 추론이 max_tokens를 모두 써버려 빈 content가 되는 현상 차단.
+              ? {reasoning: {enabled: false}} : {}),
           messages: [{role: 'user', content: [{type: 'text', text: prompt},
             ...photos.map(photo => ({type: 'image_url', image_url: {url: photo.url}}))]}]};
     const headers = model.provider === 'GEMINI'
@@ -836,7 +864,8 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
     const previousCalls = designRuntime.usageWindow.calls[reviewer.provider] || 0;
     if (previousCalls >= DAILY_LIMIT[reviewer.provider]) continue;
     designRuntime.usageWindow.calls[reviewer.provider] = previousCalls + 1;
-    const result = await callFreeDesignModel(reviewer, prompt, pairs, fetchImpl);
+    const result = await callFreeDesignModel(reviewer, prompt, pairs, fetchImpl,
+      process.env, 'comparison');
     modelAttempt(reviewer.id, result.status);
     if (['CONTENT_POLICY_BLOCKED', 'BILLING_BLOCKED', 'NONZERO_COST_BLOCKED'].includes(result.status))
       return unavailable('BLOCKED_VISUAL_REVIEW_FREE_POLICY');
