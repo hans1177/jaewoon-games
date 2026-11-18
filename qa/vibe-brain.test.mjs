@@ -436,8 +436,13 @@ test('네모트론이 마을 시설 배치 5칸 내에서만 수정하고 게임
     'architecture', target), false);
   assert.equal(visualEditLooksSafe(original, after.replace('w = 20', 'w = 28'),
     'architecture', target), false);
+  assert.equal(visualEditLooksSafe(original, original.replace('w = 20', 'w = 28'),
+    'architecture', target), false);
   const policy = JSON.parse(fs.readFileSync(
     'company-learning/external-ai-distillation-policy.json','utf8')).directVisualDesign;
+  assert.equal(policy.studioEvidenceSelection.expectedCoverageFrames, 83);
+  assert.equal(policy.studioEvidenceSelection.maxImagesPerFreeCall, 8);
+  assert.equal(policy.townLayoutEdit.maximumHorizontalShiftStuds, 5);
   const screenshot = 'town_market_facade-0.jpg';
   const evidence = '실제 시장 건물과 진입로가 부분적으로 겹쳐 보여 건물의 가로 배치 미세 조정이 필요함';
   const review = {issues: [{category:'architecture',severity:'high',screenshot,evidence}],
