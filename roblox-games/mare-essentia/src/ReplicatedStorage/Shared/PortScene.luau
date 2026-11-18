@@ -591,6 +591,8 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 	if architecture then
 		m:SetAttribute("ArchitectureRestoredSurfaces", restoredSurfaces)
 		m:SetAttribute("ArchitectureCulture", currentKey)
+		-- [모바일 거리별 건축] 원본 모델의 자동 LOD만 켜고 새 루프·에셋은 만들지 않는다.
+		m.LevelOfDetail = Enum.ModelLevelOfDetail.Automatic
 	end
 	local ok, err = pcall(function()
 		m.Parent = parent
@@ -865,7 +867,9 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				local _, e2 = upper:GetBoundingBox()
 				top += e2.Y
 			end
-			local roof = importedModel(parent, "Town", "eastasia-roof", Vector3.new(pos.X, top, pos.Z), size * 1.22, false, style.roofs[rng:NextInteger(1, #style.roofs)])
+			-- [한중일 차별화] 같은 기와라도 처마 폭과 지붕 실루엣은 지역마다 다르다.
+			local roofSpan = if currentKey == "china" then 1.32 elseif currentKey == "japan" then 1.15 else 1.22
+			local roof = importedModel(parent, "Town", "eastasia-roof", Vector3.new(pos.X, top, pos.Z), size * roofSpan, false, style.roofs[rng:NextInteger(1, #style.roofs)])
 			if roof then
 				roof.Name = "HarborRoof"
 				uniformMaterial(roof, style, "roof")
@@ -2582,7 +2586,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local districtSeed = seeded(info.portId .. ":city-plan")
 	local districtOffset = districtSeed:NextNumber(-7, 7)
 	local lotVariance = districtSeed:NextNumber(0.94, 1.06)
-	local laneOffset = districtSeed:NextNumber(-9, 9)
+	local coastForm = folder:GetAttribute("CoastForm") or "plain"
+	-- [지형 맞춤 골목] 기존 해안선·운하·언덕 분류를 마을 골목 방향에 재사용한다.
+	local terrainLaneShift = if coastForm == "hill" then 3.5 elseif coastForm == "river" or coastForm == "delta" then -2.5
+		elseif coastForm == "lagoon" or coastForm == "canal" then 2 else 0
+	local laneOffset = districtSeed:NextNumber(-9, 9) + terrainLaneShift
+	folder:SetAttribute("CityRoadTerrain", coastForm)
 	local streetsX = P.streets
 	local function nearStreet(x, w)
 		for _, sx in streetsX do
@@ -2912,6 +2921,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	-- [항구별 진단] 주택 배치 수량은 화면용 정수만 장면에 기록한다. DB·경제·전투 수치에는 영향이 없다.
 	local homeCandidates, homePlaced, homeShifted, homePlotRejected, homeModelRejected = 0, 0, 0, 0, 0
 	local homeSizeCounts = { 0, 0, 0, 0, 0 }
+	local oldTownHomes, newTownHomes, nightWindows = 0, 0, 0
+	local touchHousing = game:GetService("UserInputService").TouchEnabled
+	local nightWindowLimit = if touchHousing then 5 else 11
 	-- 한 항구의 주택 후보 전부가 같은 5개 인접 위치를 사용해 재방문 배치를 재현한다.
 	local homeShifts = { Vector3.zero, Vector3.new(-2.4, 0, 0), Vector3.new(2.4, 0, 0),
 		Vector3.new(0, 0, -2.4), Vector3.new(0, 0, 2.4) }
@@ -2924,6 +2936,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		while x > X_END do
 			slotIndex += 1
 			local plotId = ("%s:home:%d:%d:%d:%d"):format(info.portId, side, laneIndex, rowIndex, slotIndex)
+			-- [도시 성장] 항구 쪽 오래된 구획과 발전 후 새로 열린 외곽 구획을 구분한다.
+			local quarter = if laneIndex == 0 then "old" elseif lvl >= 3 then "new" else "edge"
 			if rng:NextNumber() < dens then
 				homeCandidates += 1
 				local sz = S * rng:NextNumber(0.9, 1.08)
@@ -2984,6 +2998,18 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					staged.Name = "PortScene"
 					local body = house(staged, pos, ww, dd, fl, style, rng)
 					if body then
+						-- [구시가지 회백색 풍화·신시가지 회칠] PBR 및 원본 텍스처는 유지.
+						for _, surface in staged:GetDescendants() do
+							if surface:IsA("BasePart") and surface.Material ~= Enum.Material.Glass
+								and surface.Material ~= Enum.Material.Metal and surface.Material ~= Enum.Material.Neon then
+								local appearance = surface:FindFirstChildOfClass("SurfaceAppearance")
+								local painted = appearance ~= nil or (surface:IsA("MeshPart") and surface.TextureID ~= "")
+								if not painted then
+									surface.Color = if quarter == "old" then surface.Color:Lerp(C(139, 130, 117), 0.16)
+										elseif quarter == "new" then surface.Color:Lerp(style.walls[1], 0.12) else surface.Color
+								end
+							end
+						end
 						local bounds, dimensions = staged:GetBoundingBox()
 						local measuredHalfX = math.abs(bounds.Position.X - pos.X) + dimensions.X * 0.5 + 2.5
 						local measuredHalfZ = math.abs(bounds.Position.Z - pos.Z) + dimensions.Z * 0.5 + 2.5
@@ -3013,6 +3039,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							homePlaced += 1
 							if chosenShift.Magnitude > 0 then homeShifted += 1 end
 							homeSizeCounts[sizeClass] += 1
+							if quarter == "old" then oldTownHomes += 1 elseif quarter == "new" then newTownHomes += 1 end
 							-- 실제 주거 입주·증축 판단은 기존 경제의 주택 수·발전도가 담당한다.
 							body:SetAttribute("BuildPlotId", plotId)
 							body:SetAttribute("BuildType", "house")
@@ -3025,6 +3052,28 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							body:SetAttribute("BuildingClearance", math.max(actualHalfX, actualHalfZ))
 							body:SetAttribute("BuildingFootprintX", actualHalfX * 2)
 							body:SetAttribute("BuildingFootprintZ", actualHalfZ * 2)
+							body:SetAttribute("CityQuarter", quarter)
+							body:SetAttribute("CityResidenceType", if sizeClass <= 2 then "cottage"
+								elseif sizeClass >= 4 then "merchant_manor" else "town_house")
+							body:SetAttribute("CityArchitectureCulture", key)
+							-- [밤이 밝아지는 창] 기존 주야 조명의 PointLight 갱신 경로에 자동 연결된다.
+							-- 모바일 5곳/PC 11곳만 만들고 야간 시간에만 조도가 강해진다.
+							if lvl >= 2 and nightWindows < nightWindowLimit and homePlaced % 13 == 1 then
+								local streetFront = if pos.Z > 0 then -1 else 1
+								local lampAt = Vector3.new(bounds.Position.X, pos.Y + math.min(4.5, dimensions.Y * 0.37),
+									bounds.Position.Z + streetFront * dimensions.Z * 0.31) + chosenShift
+								local window = part(folder, Vector3.new(1.15, 1.35, 0.12), CFrame.new(lampAt),
+									C(243, 200, 135), Enum.Material.Neon)
+								window.Name = "CityNightWindow"
+								window.CanCollide, window.CanTouch, window.CanQuery, window.CastShadow = false, false, false, false
+								window.Transparency = 0.2
+								window:SetAttribute("CityQuarter", quarter)
+								local glow = Instance.new("PointLight")
+								glow.Color, glow.Range, glow.Brightness = C(255, 204, 134), 12, 0.48
+								glow.Shadows = false
+								glow.Parent = window
+								nightWindows += 1
+							end
 							-- [주거 성장] 이미 존재하는 주택 앞에 주민 휴식 시설·우물을 하나만 건설한다.
 							-- 첫 세대에 보이면 완공 상태로, 도시 발전 중 새로 해금된 경우에만 설치 모션을 사용한다.
 							if not residentialDecorationPlaced and decor.residential > 0 and decorPlaced < decorLimit then
@@ -3131,6 +3180,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	folder:SetAttribute("CityHousingCulture", key)
 	folder:SetAttribute("CityHousingCandidates", homeCandidates)
 	folder:SetAttribute("CityHousingPlaced", homePlaced)
+	folder:SetAttribute("CityOldTownHomes", oldTownHomes)
+	folder:SetAttribute("CityNewTownHomes", newTownHomes)
+	folder:SetAttribute("CityNightWindowCount", nightWindows)
 	folder:SetAttribute("CityHousingShifted", homeShifted)
 	folder:SetAttribute("CityHousingPlotRejected", homePlotRejected)
 	folder:SetAttribute("CityHousingModelRejected", homeModelRejected)
