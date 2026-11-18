@@ -10,7 +10,7 @@ const core=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/C
 // [시작 로딩 회귀] 저장을 건드리지 않는 진단만 노출하고, 실제 서버/클라이언트 어느 단계에서 멈췄는지 증명한다.
 test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증거를 남긴다',()=>{
   const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
-  assert.equal(capture.length,241);
+  assert.equal(capture.length,304);
   assert.match(capture[4].code,/MARE_TITLE_NOT_READY_AFTER_50S;LOADING=/);
   assert.match(capture[4].code,/MareCoreStartStage/);
   assert.match(capture[4].code,/StartupStage/);
@@ -454,7 +454,8 @@ test('1단 검병·궁수 편성은 유지하면서 승인된 R15 체형 3종 �
 test('스튜디오 탐험 실증은 현재 공격·회피 메달과 집안별 두 무기를 검사한다',()=>{
   const path='roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json';
   const script=JSON.parse(fs.readFileSync(path,'utf8'));
-  assert.equal(script.length,241,'기존 전체 스튜디오 검사 순서 유지');
+  assert.equal(script.length,304,'기존 전체 스튜디오 검사 순서와 21장 디자인 확장 유지');
+  assert.equal(script.filter(step => step.type==='capture').length,83,'실물 Studio 사진 83장 실증');
   // [실제 화면 대기] 고정시간을 넘기는 PC 시작 로딩에서 아무 버튼을 잘못 누르지 않는다.
   assert.equal(script[4].type,'luau');
   assert.equal(script[4].timeoutMs,85000);
@@ -463,9 +464,10 @@ test('스튜디오 탐험 실증은 현재 공격·회피 메달과 집안별 �
   assert.match(script[4].code,/task\.wait\(0\.5\)/);
   assert.match(script[6].code,/if not best or bs<=0 then return 'NONE' end/);
 
-  const entry=script[234].code;
-  const motion=script[236].code;
-  const live=script[239].code;
+  // [디자인 캡처 삽입 대응] 실제 검증 의미와 실행 순서를 유지하되 단순 단계 번호 변경에는 종속되지 않는다.
+  const entry=script.find(step=>step.type==='luau' && step.code?.includes('FIELD_QA_ENTRY_FAIL:'))?.code || '';
+  const motion=script.find(step=>step.type==='luau' && step.code?.includes('FIELD_ATTACK_WEAPON_ICON_UNAPPROVED'))?.code || '';
+  const live=script.find(step=>step.type==='luau' && step.code?.includes('MOTION_ENEMY_ROLE_MISSING'))?.code || '';
   assert.ok(entry.includes('FIELD_QA_ENTRY_FAIL:'),'실제 UI로 탐험 입장 검증 필수');
   assert.ok(entry.includes('FieldCombatReady'),'실제 전투 준비 검증 필수');
   // [승인 원화 회귀] 새 공격 원화는 완성형 PNG를 검증하고, 구형 아이콘만 메달 테두리를 검증한다.
