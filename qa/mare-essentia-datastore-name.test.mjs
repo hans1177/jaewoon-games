@@ -2856,7 +2856,7 @@ test('세계 지역 사건·백과 연결을 검증하고 기존 저장 키와 �
   const portIds=new Set([...ports.matchAll(/id = "([a-z_]+)", name = "[^"]+", country = /g)].map(m=>m[1]));
   const continents=new Set();
   const questsById=new Map();
-  assert.ok(rows.length>=72,'7대륙 지역 사건은 36개의 연속 조사에 걸쳐 분포해야 한다');
+  assert.ok(rows.length>=87,'7대륙 지역 사건은 36개 분야 및 심화 조사로 분포해야 한다');
   for(const [,id] of rows){
     const line=quests.split('\n').find(v=>v.includes('id = "'+id+'"'));
     assert.ok(line,'지역 퀘스트가 목록에 등록돼야 한다: '+id);
@@ -2876,9 +2876,18 @@ test('세계 지역 사건·백과 연결을 검증하고 기존 저장 키와 �
   for(const [id,line] of questsById){
     if(id.endsWith('_2')){
       assert.ok(questsById.has(id.slice(0,-1)+'1'),'연속 이야기의 첫 단계 누락: '+id);
-      assert.match(line,/rewardCardId = "region_/,'사건 종결 시 백과 기록 카드 획득: '+id);
+      if(questsById.has(id.slice(0,-1)+'3')){
+        assert.doesNotMatch(line,/rewardCardId = "region_/,'심화 조사 전 카드 조기 획득 차단: '+id);
+      }else{
+        assert.match(line,/rewardCardId = "region_/,'일반 지역 사건은 두 단계 후 카드 획득: '+id);
+      }
+    } else if(id.endsWith('_3')){
+      assert.ok(questsById.has(id.slice(0,-1)+'2'),'심화 사건의 두 번째 단계 필수: '+id);
+      assert.match(line,/rewardCardId = "region_/,'심화 사건은 세 단계 후 카드 획득: '+id);
+      assert.match(line,/major = true/,'심화 사건 마지막에만 중요 이벤트: '+id);
     }
   }
+  assert.ok([...questsById.keys()].filter(id=>id.endsWith('_3')).length>=15,'7대륙의 주요 사건 15개는 3단계 심화 연속 퀘스트');
   assert.ok((cards.match(/\{ "region_[a-z0-9_]+"/g)||[]).length>=36,'지역 백과 카드 36장 이상');
   assert.ok((story.match(/id = "region_event_/g)||[]).length>=15,'중요 사건만 선택형 장면');
   assert.match(questService,/새 소식 · %s/);
