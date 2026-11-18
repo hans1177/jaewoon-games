@@ -6051,8 +6051,40 @@ local function openTradeHall()
 			sellAll.TextSize = 16
 			if compactList then sellAll.Position = UDim2.fromOffset(2, 50) end
 		end
+		-- [교역품 정렬 복구] 기존 싼 순·판매이익·보유순·이름순을 교역 장부 목록 위에 그대로 둔다.
+		H.tradeSort = H.tradeSort or "price"
+		local sortBar = Instance.new("Frame")
+		sortBar.Name = "TradeSort"
+		sortBar.BackgroundTransparency = 1
+		sortBar.Size = UDim2.new(1, -8, 0, 42)
+		sortBar.LayoutOrder = -1
+		sortBar.Parent = list
+		for i, spec in { { "싼 순", "price" }, { "판매이익", "profit" }, { "보유순", "owned" }, { "이름순", "name" } } do
+			local key = spec[2]
+			local button = mkButton(sortBar, spec[1], if H.tradeSort == key then COLORS.gold else COLORS.paper,
+				UDim2.new(0.25, -4, 0, 38), function()
+					H.tradeSort = key
+					list.CanvasPosition = Vector2.zero
+					build()
+				end, true)
+			button.Position = UDim2.new((i - 1) * 0.25, 2, 0, 0)
+			button.TextSize = 13
+		end
+		local sortedGoods = table.clone(goods)
+		table.sort(sortedGoods, function(a, b)
+			local function score(g)
+				if H.tradeSort == "profit" then return H.tradeProfit(g, 1) or -math.huge end
+				if H.tradeSort == "owned" then return tonumber(g.owned) or 0 end
+				if H.tradeSort == "name" then return 0 end
+				local _, pct = H.marketPriceSignal(g)
+				return pct
+			end
+			local left, right = score(a), score(b)
+			if left ~= right then return if H.tradeSort == "price" then left < right else left > right end
+			return a.name < b.name
+		end)
 		local indexed = {}
-		for i, g in (if list.Visible then goods else {}) do
+		for i, g in (if list.Visible then sortedGoods else {}) do
 			local show = H.hallFilter == "all" or (H.hallFilter == "specialty" and g.tag == "특산") or (H.hallFilter == "demand" and g.tag == "수요") or (H.hallFilter == "owned" and g.owned > 0)
 			if not show then
 				continue
@@ -12617,9 +12649,9 @@ function render()
 		end
 		-- [고정 하단 버튼] 기존 실행 함수를 재사용한다. 출항만 기존 확인 창으로 보낸다.
 		H.invokeMenuPrimary = function()
-			-- [시설 내 바로가기] 새 큰 화면을 띄우지 않고 현재 목록의 실제 상품·선박으로 이동한다.
-			if currentTab == "trade" or currentTab == "yard" then
-				local target = content:FindFirstChild(if currentTab == "trade" then "TradeGoodsGrid" else "YardSectionShips", true)
+			-- [시설 내 바로가기] 조선소 목록은 기존 스크롤 위치로 안내한다.
+			if currentTab == "yard" then
+				local target = content:FindFirstChild("YardSectionShips", true)
 				if target then
 					local y = target.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 8
 					content.CanvasPosition = Vector2.new(0, math.max(0, y))
