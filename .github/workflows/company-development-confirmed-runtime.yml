@@ -181,6 +181,10 @@ jobs:
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
           const ownerExcludedGameIds=new Set(roadmap?.developmentSpeedExecution?.perGameFailureIsolation?.ownerExcludedGameIds||[]);
+          const focus=roadmap?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
+          const exclusiveFocus=focus.enabled===true&&focus.completionPursuit?.enabled===true
+            &&focus.completionPursuit.nonFocusedDevelopmentContinues===false
+            ?new Set(focus.ownerFocusedGameIds||[]):null;
           // 영구 중단한 게임은 오래된 개발 큐에서도 다시 등록하지 않는다.
           if(!Array.isArray(roadmap?.permanentProjectRemoval?.ids))throw Error('OWNER_PERMANENT_REMOVAL_POLICY_REQUIRED');
           const permanentlyRemovedGameIds=new Set(roadmap.permanentProjectRemoval.ids);
@@ -188,6 +192,7 @@ jobs:
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('UPPER_PLATFORM_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=(q.items||[]).filter(item=>
             !ownerExcludedGameIds.has(item.gameId)&&
+            (!exclusiveFocus||exclusiveFocus.has(item.gameId))&&
             !permanentlyRemovedGameIds.has(item.gameId)&&
             (!requested||item.gameId===requested)&&
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&
