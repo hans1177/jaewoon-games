@@ -47,6 +47,23 @@ do
 	size.MinTextSize = 13
 	size.Parent = H.startupLabel
 end
+-- [로딩 관찰] 무거운 모듈을 기다리는 동안도 표지 문구를 계속 갱신한다.
+-- 독립된 새 로딩 경로 없이 기존 StartLoading 표시와 StartupStage 진단값만 사용한다.
+task.spawn(function()
+    local started = os.clock()
+    while H.startupCover and H.startupCover.Parent do
+        task.wait(1)
+        local stage = tostring(gui:GetAttribute("StartupStage") or "")
+        if stage == "state-failed" or stage == "title-ready" then break end
+        if H.startupLabel and H.startupLabel.Parent then
+            local phase = if string.find(stage, "server-state", 1, true) then "항해 기록 확인"
+                elseif stage == "client-ui-build" then "서재·항구 메뉴 구성"
+                elseif stage == "await-GameAction" then "서버 연결 준비"
+                else "항해 자료 준비"
+            H.startupLabel.Text = string.format("학문의 바다\n%s 중... (%d초)", phase, math.floor(os.clock() - started))
+        end
+    end
+end)
 
 -- [캐릭터 스폰] 항구가 클라이언트에 만들어지기 전에는 바닥이 없으므로 추락을 막는다.
 -- 실제 걸어 다니는 시점에는 아래 applyView에서 고정을 해제한다.
@@ -110,10 +127,10 @@ local SeaRoutes = require(Shared:WaitForChild("SeaRoutes"))
 -- [로딩 분리] 시작 메뉴/서버 상태는 무거운 3D 항구 장면과 독립적으로 표시한다.
 -- 단일 PortScene 정본을 계속 사용하고, 3D 장면은 같은 모듈을 비동기로 준비한다.
 local PortScene = nil
-gui:SetAttribute("StartupStage", "require-VoyageScene")
-local VoyageScene = require(Shared:WaitForChild("VoyageScene"))
-gui:SetAttribute("StartupStage", "require-FieldScene")
-local FieldScene = require(Shared:WaitForChild("FieldScene"))
+-- [진입 시 로딩] 대형 항해·필드 모듈을 초기 표지 표시 전에 동기 호출하지 않는다.
+-- 출항/탐험의 원래 책임 함수가 실제 사용 시 기존 정본 모듈을 불러온다.
+local VoyageScene = nil
+local FieldScene = nil
 gui:SetAttribute("StartupStage", "require-Weapons")
 local Weapons = require(Shared:WaitForChild("Weapons"))
 gui:SetAttribute("StartupStage", "require-Pose")
@@ -121,8 +138,8 @@ local Pose = require(Shared:WaitForChild("Pose"))
 gui:SetAttribute("StartupStage", "require-Sfx")
 local Sfx = require(Shared:WaitForChild("Sfx"))
 local audioLock = false -- 해전·항해 중에는 장면이 음악을 정한다
-gui:SetAttribute("StartupStage", "require-NavalBattle")
-local NavalBattle = require(Shared:WaitForChild("NavalBattle"))
+-- [진입 시 로딩] 3D 해전은 시작 화면 이후 전투 또는 카드 창에서 읽는다.
+local NavalBattle = nil
 gui:SetAttribute("StartupStage", "require-AssetIds")
 local AssetIds = require(Shared:WaitForChild("AssetIds"))
 gui:SetAttribute("StartupStage", "await-GameAction")
@@ -198,6 +215,7 @@ local TABS = {
 	{ id = "scholar", name = "지식 보고" },
 	{ id = "yard", name = "조선소" },
 	{ id = "codex", name = "지식 백과" },
+    { id = "encyclopedia", name = "백과사전" },
 	{ id = "tech", name = "연구" },
 	{ id = "map", name = "지도" },
 	{ id = "explore", name = "지상 탐험" },
@@ -213,7 +231,7 @@ local GROUPS = {
 	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
 	{ name = "주점", keeper = "주점 주인", tabs = { "board", "quest", "recruit" } }, -- 주점: 의뢰·동료
 	{ name = "전투 본부", keeper = "전투 교관", tabs = { "battle", "explore", "war", "gwent" } }, -- 전투·지상 탐험·함대전·카드 배틀
-	{ name = "학자의 서재", keeper = "학자", tabs = { "scholar", "codex", "tech" } },
+	{ name = "학자의 서재", keeper = "학자", tabs = { "scholar", "codex", "tech", "encyclopedia" } },
 	{ name = "선장실", keeper = "선장", tabs = { "status", "crew" } },
 }
 local function groupOf(tabId)
@@ -247,6 +265,7 @@ H.MENU_FOCUS = {
 	gwent = { "카드 대결", "덱 구성 → 병종 배치 → 카드 대결" , "덱 살펴보기" },
 	scholar = { "학자와 보고", "새 발견 → 학자에게 보고 → 이해한 지식" , "발견 보고 보기" },
 	codex = { "지식 백과", "분야 선택 → 발견물 확인 → 미수집 목표" , "도감 살펴보기" },
+    encyclopedia = { "세계 백과사전", "발견한 실물 사진 → 역사·과학 설명 → 개인 발견 기록", "책장 넘기기" },
 	tech = { "기술 연구", "연구 조건 → 이해한 지식 → 기술 해금" , "연구 살펴보기" },
 }
 
@@ -2012,7 +2031,7 @@ function H.layoutBook()
     else math.max(100, math.floor((width - statusWidth) * 0.5) - 82), 18)
   H.pageDetails.Visible = width >= 740
   local tabCount = #groupOf(currentTab).tabs
-  local gallery = view ~= nil and not newGameMode and currentTab ~= "map" and currentTab ~= "codex"
+  local gallery = view ~= nil and not newGameMode and currentTab ~= "map" and currentTab ~= "codex" and currentTab ~= "encyclopedia"
   local three = gallery and width >= 740
   local tabs = tabBar.Visible
   H.bookSpine.Visible = false
@@ -2750,7 +2769,7 @@ end
 
 -- 개인 카드 창: 내가 가진 카드(주인공·동료·지식·유물·동물·우군·배)와 지도자 능력을 보여 준다 (오른쪽 위 버튼)
 do
-	local BC = require(Shared:WaitForChild("BoardingCards"))
+	local BC = nil -- [시작 속도] 내 카드가 열릴 때만 기존 카드 규칙 모듈 로드
 	local KIND = { crew = "🃏 인물", relic = "💎 유물", animal = "🐾 동물", book = "📖 지식", friend = "🤝 우군", ship = "⚓ 배" }
 	local deckBtn = H.hudShortcut(hudTop, "DeckButton", "deck", "내 카드", true)
 	deckBtn.AnchorPoint = Vector2.new(1, 0)
@@ -2768,7 +2787,17 @@ do
 			open = nil
 			return
 		end
-		local layer = overlayGui("DeckWindow", 56)
+        -- [내 카드 진입] 시작 화면을 먼저 띄우고, 버튼을 눌렀을 때 정본 모듈을 준비한다.
+        local ready, loaded = pcall(function()
+            BC = BC or require(Shared:WaitForChild("BoardingCards"))
+            return NavalBattle or require(Shared:WaitForChild("NavalBattle"))
+        end)
+        if not ready then
+            warn("[MareEssentia] 카드 장부 로드 실패", loaded)
+            return
+        end
+        NavalBattle = loaded
+        local layer = overlayGui("DeckWindow", 56)
 		open = layer
 		local dim = Instance.new("TextButton")
 		dim.Size = UDim2.fromScale(1, 1)
@@ -3416,6 +3445,17 @@ local function call(action, payload)
 	end
 	-- 해전을 했다면 전투 기록을 3D 장면으로 보여 준다
 	if result.ok and (action == "Hunt" or action == "ChallengeBoss" or action == "WarStart" or action == "WarNext" or action == "TavernJob") and view and view.lastBattle and not inField then
+        -- [해전 진입] 기존 정본 전투 모듈만 늦게 읽는다. 실패하면 항구 메뉴를 유지한다.
+        local ready, loaded = pcall(function()
+            return NavalBattle or require(Shared:WaitForChild("NavalBattle"))
+        end)
+        if not ready then
+            warn("[MareEssentia] 해전 장면 로드 실패", loaded)
+            message, messageOk = "해전 장면을 불러오지 못했어.", false
+            render()
+            return result
+        end
+        NavalBattle = loaded
 		local lb = view.lastBattle
 		local resolved = false
 		inField = true
@@ -3896,7 +3936,9 @@ local function sail(portId)
 			end
 		end)
 		-- 3D 바다 항해 (끝날 때까지 메뉴는 숨겨 둔다). 실패하면 예전 2D 연출로 대신한다.
-		local ok, err, hits, ringTotal = pcall(VoyageScene.play, {
+		local ok, err, hits, ringTotal = pcall(function()
+            VoyageScene = VoyageScene or require(Shared:WaitForChild("VoyageScene"))
+            return VoyageScene.play({
 			shipId = view.ship.id,
 			steam = steam,
 			days = days,
@@ -3938,7 +3980,8 @@ local function sail(portId)
 				end
 				return { merchants = POOL[rid] or POOL.europe, fleets = fleets, names = names }
 			end)(),
-		})
+		    })
+        end)
 		if not ok then
 			warn("[Game] 3D 항해 오류, 2D로 대체:", err)
 			local cam = workspace.CurrentCamera
@@ -7596,6 +7639,18 @@ function H.startField(s)
 		return
 	end
 	workspace:SetAttribute("FieldEntryFailure", nil)
+    -- [지상 탐험 진입] 최초 탐험 때만 기존 필드 정본을 로드한다.
+    local sceneOk, loaded = pcall(function()
+        return FieldScene or require(Shared:WaitForChild("FieldScene"))
+    end)
+    if not sceneOk then
+        workspace:SetAttribute("FieldEntryFailure", "FIELD_MODULE_UNAVAILABLE")
+        warn("[MareEssentia] 지상 탐험 모듈 로드 실패", loaded)
+        message, messageOk = "지상 탐험을 준비하지 못했어.", false
+        render()
+        return
+    end
+    FieldScene = loaded
 	-- 필드 생성 오류가 나더라도 항구 시점·조작·기존 캐릭터 상태를 되돌릴 수 있게 보관한다.
 	local returnCharacter = player.Character
 	local returnCFrame = returnCharacter and returnCharacter:GetPivot()
@@ -9704,6 +9759,107 @@ function RENDERERS.codex()
 	end
 end
 
+-- [세계 백과사전] 새 저장소·카드 목록을 만들지 않고 기존 발견된 지식과 승인 사진만 책 페이지로 편집한다.
+function RENDERERS.encyclopedia()
+    local cx = view.codex or {}
+    local found = {}
+    for _, card in (cx.cards or {}) do
+        if card.found == true then table.insert(found, card) end
+    end
+    table.sort(found, function(a, b)
+        if a.field ~= b.field then return tostring(a.field) < tostring(b.field) end
+        return tostring(a.name) < tostring(b.name)
+    end)
+    add(function() return mkHeader(content, "세계 백과사전 · 발견된 지식의 원화와 기록") end)
+    if #found == 0 then
+        add(function()
+            return mkRow(content, "아직 기록된 지식이 없어.", "탐험·교역·학자 보고에서 발견한 지식이 이 책에 쌓여.", {}, 92)
+        end)
+        return
+    end
+    H.encyclopediaPage = math.clamp(H.encyclopediaPage or 1, 1, #found)
+    local current = found[H.encyclopediaPage]
+    local category = findField(current.field) or { name = tostring(current.field or "인류의 기록"), color = { 122, 89, 48 } }
+    add(function()
+        local pageWidth = math.max(230, content.AbsoluteSize.X - 12)
+        local spread = pageWidth >= 620
+        local h = if spread then 390 else 600
+        local page = Instance.new("Frame")
+        page.Name = "EncyclopediaBookPage"
+        page.Size = UDim2.new(1, -8, 0, h)
+        page.BackgroundColor3 = COLORS.paper
+        page.BorderSizePixel = 0
+        page.ClipsDescendants = true
+        corner(page, 8)
+        bookMaterial(page, "parchment", 224)
+        local edge = Instance.new("UIStroke")
+        edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        edge.Color = UI_BRASS_DARK
+        edge.Thickness = 2
+        edge.Parent = page
+        local art = Instance.new("Frame")
+        art.Name = "EncyclopediaIllustration"
+        art.Position = UDim2.fromOffset(12, 12)
+        art.Size = if spread then UDim2.new(0.50, -19, 1, -24) else UDim2.new(1, -24, 0, 255)
+        art.BorderSizePixel = 0
+        corner(art, 7)
+        art.Parent = page
+        paintCardArt(art, current, category, true)
+        local bookTitle = mkLabel(page, current.name, 23, INK, true)
+        bookTitle.Position = if spread then UDim2.new(0.52, 4, 0, 17) else UDim2.fromOffset(15, 279)
+        bookTitle.Size = if spread then UDim2.new(0.48, -19, 0, 64) else UDim2.new(1, -30, 0, 48)
+        bookTitle.AutomaticSize = Enum.AutomaticSize.None
+        bookTitle.TextWrapped = true
+        local chapter = mkLabel(page, string.format("제%d장 / %d · %s", H.encyclopediaPage, #found, category.name), 16, INK_SOFT, true)
+        chapter.Position = if spread then UDim2.new(0.52, 4, 0, 87) else UDim2.fromOffset(15, 330)
+        chapter.Size = UDim2.new(if spread then 0.48 else 1, if spread then -19 else -30, 0, 28)
+        chapter.AutomaticSize = Enum.AutomaticSize.None
+        local notes = mkLabel(page, tostring(current.description or "발견한 지식의 자세한 설명은 도감 원문에서 확인해."), 18, INK, false)
+        notes.Position = if spread then UDim2.new(0.52, 4, 0, 127) else UDim2.fromOffset(15, 366)
+        notes.Size = if spread then UDim2.new(0.48, -22, 0, 145) else UDim2.new(1, -30, 0, 145)
+        notes.AutomaticSize = Enum.AutomaticSize.None
+        notes.TextWrapped = true
+        notes.TextYAlignment = Enum.TextYAlignment.Top
+        notes.TextTruncate = Enum.TextTruncate.AtEnd
+        local first = current.provenance
+        local location = if first then string.format("첫 발견 · %s / 항해 %d일", first.port or "미상", first.day or 0)
+            else "항해자의 발견 기록 · 이전 기록"
+        local origin = mkLabel(page, location, 15, INK_SOFT, false)
+        origin.Position = if spread then UDim2.new(0.52, 4, 0, 283) else UDim2.fromOffset(15, 518)
+        origin.Size = UDim2.new(if spread then 0.48 else 1, if spread then -19 else -30, 0, 32)
+        origin.AutomaticSize = Enum.AutomaticSize.None
+        origin.TextTruncate = Enum.TextTruncate.AtEnd
+        local read = mkButton(page, "원문 · 연관 기록 펼치기", COLORS.gold,
+            if spread then UDim2.new(0.48, -22, 0, 48) else UDim2.new(1, -30, 0, 42),
+            function() H.showCardDetail(current) end, true)
+        read.Position = if spread then UDim2.new(0.52, 4, 1, -58) else UDim2.fromOffset(15, 554)
+        read.TextSize = 17
+        return page
+    end)
+    add(function()
+        local nav = Instance.new("Frame")
+        nav.Name = "EncyclopediaPageNavigation"
+        nav.BackgroundTransparency = 1
+        nav.Size = UDim2.new(1, -8, 0, 60)
+        local previous = mkButton(nav, "◀ 이전 장", COLORS.leather, UDim2.new(0.31, -4, 0, 52), function()
+            H.encyclopediaPage = math.max(1, H.encyclopediaPage - 1)
+            render()
+        end, H.encyclopediaPage > 1)
+        previous.Position = UDim2.fromOffset(0, 4)
+        local counter = mkLabel(nav, string.format("%d / %d", H.encyclopediaPage, #found), 20, COLORS.gold, true)
+        counter.Position = UDim2.new(0.32, 0, 0, 14)
+        counter.Size = UDim2.new(0.36, 0, 0, 32)
+        counter.AutomaticSize = Enum.AutomaticSize.None
+        counter.TextXAlignment = Enum.TextXAlignment.Center
+        local nextPage = mkButton(nav, "다음 장 ▶", COLORS.gold, UDim2.new(0.31, -4, 0, 52), function()
+            H.encyclopediaPage = math.min(#found, H.encyclopediaPage + 1)
+            render()
+        end, H.encyclopediaPage < #found)
+        nextPage.Position = UDim2.new(0.69, 4, 0, 4)
+        return nav
+    end)
+end
+
 function RENDERERS.scholar()
 	H.exploreScholarView = true
 	local ok, err = pcall(RENDERERS.explore)
@@ -10463,7 +10619,7 @@ H.TAB_ICON = {
 	board = { "Glyph", "board" }, quest = { "Menu", "quest" }, recruit = { "Glyph", "recruit" }, explore = { "Menu", "explore" },
 	route = { "Menu", "route" }, map = { "Menu", "map" }, trade = { "Menu", "trade" }, harbor = { "Menu", "harbor" },
 	yard = { "Menu", "yard" }, battle = { "Menu", "battle" }, war = { "Glyph", "war" }, gwent = { "Glyph", "gwent" },
-	scholar = { "Glyph", "scholar" }, codex = { "Menu", "codex" }, tech = { "Glyph", "research" },
+	scholar = { "Glyph", "scholar" }, codex = { "Menu", "codex" }, encyclopedia = { "Menu", "codex" }, tech = { "Glyph", "research" },
 	status = { "Glyph", "captain" }, crew = { "Glyph", "crew" },
 }
 function H.renderTabs()
@@ -12186,17 +12342,8 @@ end)
 gui:SetAttribute("StartupStage", "server-state-request")
 
 task.spawn(function()
-	-- 서버가 늦으면 얼마나 기다렸는지 화면에 보여 준다(멈춘 것처럼 보이지 않게)
-	local startedAt = os.clock()
-	task.spawn(function()
-		while H.startupCover and H.startupLabel do
-			task.wait(1)
-			if H.startupCover and H.startupLabel then
-				H.startupLabel.Text = string.format("학문의 바다\n항구와 항해 기록을 불러오는 중... (%d초)", math.floor(os.clock() - startedAt))
-			end
-		end
-	end)
-	for attempt = 1, 30 do
+	-- [표지 갱신 단일화] 모듈 대기 전부터 시작된 같은 로딩 표시를 사용한다.
+    for attempt = 1, 30 do
 		gui:SetAttribute("StartupStage", "server-state-" .. tostring(attempt))
 		local result = call("State")
 		if result and (result.view or result.needsNewGame) then
