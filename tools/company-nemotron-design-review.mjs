@@ -133,6 +133,12 @@ export function visualEditLooksSafe(before, after, category = '', sourcePath = '
   const oldPlacement = before.match(location), newPlacement = after.match(location);
   if (oldPlacement || newPlacement) {
     if (!oldPlacement || !newPlacement) return false;
+    // [기존 시설 보호] 건축물 폭·층수·경제 데이터는 색채·위치 편집에 섞여 바뀔 수 없다.
+    if (/^\s*\{\s*name\s*=\s*"/.test(before) && /\btab\s*=\s*"/.test(before)) {
+      const rgb = /Color3\.fromRGB\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)/;
+      const unchanged = line => line.replace(location, '#POSITION#').replace(rgb, '#COLOR#');
+      if (unchanged(before) !== unchanged(after)) return false;
+    }
     if (oldPlacement[0] !== newPlacement[0]) {
       if (category !== 'architecture' ||
         sourcePath !== 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau' ||
