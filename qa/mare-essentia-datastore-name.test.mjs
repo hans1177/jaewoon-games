@@ -55,11 +55,29 @@ test('서재 백과 책 판면·모바일 넘기기·교역 평균가 회귀', (
   assert.match(source,/showingNotes = not showingNotes/);
   // 서재의 발견 현황은 백과 표지에만, 최근 메뉴는 다른 시설에서만 보여 준다.
   assert.match(source,/H\.menuActionButton\.Text = actionText\n\s*-- \[서재 중복 제거\]/);
-  assert.match(source,/if currentTab ~= "codex" and H\.recentTab/);
+  assert.match(source,/H\.menuRecentButton\.Name = "RecentFacilityShortcut"/);
+  assert.match(source,/recentBtn\.Name = "TradeRecentFacility"/);
+  assert.match(source,/recentBtn\.Name = "YardRecentFacility"/);
+  assert.doesNotMatch(source,/mkButton\(content, "↶ 최근 메뉴:/);
   assert.equal(capture.length,241);
   assert.match(capture[123].code,/TRADE_AVERAGE_DIRECTION_NOT_RENDERED/);
   assert.match(capture[123].code,/TRADE_WORLD_AVERAGE_PRICE_NOT_RENDERED/);
   assert.match(capture[123].code,/TRADE_NET_PROFIT_NOT_RENDERED/);
+});
+
+test('새 항해 첫 카드 창 오발동 차단과 가죽·양피지 버튼 계약', () => {
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  const buttonCode=source.slice(source.indexOf('local function mkButton('),source.indexOf('local function mkRow('));
+  assert.match(source,/pickBefore ~= pickKey/);
+  assert.match(source,/action ~= "State" and action ~= "NewGame" and action ~= "CardPick"/);
+  assert.match(source,/and not H.titleMenuOpen and not H.openingPending/);
+  assert.match(capture[29].code,/INTRO_UNEXPECTED_DECK_WINDOW/);
+  assert.doesNotMatch(buttonCode,/Color3\.fromRGB\(183, 226, 177\)/);
+  assert.doesNotMatch(buttonCode,/Color3\.fromRGB\(183, 215, 236\)/);
+  assert.match(buttonCode,/elseif good or travel then Color3\.fromRGB\(251, 237, 208\)/);
+  assert.match(source,/local groupWidth = statusWidth \+ recentWidth \+ 8/);
+  assert.equal(capture.length,241);
 });
 
 test('항구 장면의 소품 선택은 Luau 복수 반환 조건식 없이 실행된다', () => {
