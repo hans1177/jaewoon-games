@@ -1,112 +1,18 @@
 {
- "sourceRevision": "286155bf75db55fc59b98db6f6667e1c79d11e8b",
+ "sourceRevision": "a22169dbf23ae303219ed599586f0351603136b1",
  "log": [
   {
    "step": 1,
-   "capture": "c00_start",
-   "files": 1
-  },
-  {
-   "step": 2,
    "ctx": "Client",
-   "out": "QAAutoIntro on\ntext"
+   "out": "LAB ok R15NPC\ntext"
   },
   {
    "step": 3,
    "ctx": "Client",
-   "out": "INTRO_CENTER_QA_MONITOR_READY\ntext"
-  },
-  {
-   "step": 4,
-   "ctx": "Client",
-   "out": "SCROLLED ⚓ 새 게임 시작\ntext"
-  },
-  {
-   "step": 6,
-   "click": "title01",
-   "at": "785,140",
-   "out": "785,140 CLICK=⚓ 새 게임 시작\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 785,
-      "y": 140
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 8,
-   "capture": "t01",
-   "files": 1
-  },
-  {
-   "step": 9,
-   "ctx": "Client",
-   "out": "SCROLLED 프랑스\ntext"
-  },
-  {
-   "step": 11,
-   "click": "title02",
-   "at": "922,84",
-   "out": "922,84 CLICK=프랑스\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 922,
-      "y": 84
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 13,
-   "capture": "t02",
-   "files": 1
-  },
-  {
-   "step": 14,
-   "ctx": "Client",
-   "out": "SCROLLED ⚓  출항하기\ntext"
-  },
-  {
-   "step": 16,
-   "click": "title03",
-   "at": "730,257",
-   "out": "730,257 CLICK=⚓  출항하기\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 730,
-      "y": 257
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 18,
-   "capture": "intro_center_early",
-   "files": 1
+   "out": "PROBE fwd=-5.684341886080802e-14, -1.4210854715202004e-14, -1 anchored=true\nPROBE LeftHip +0.6 -> LeftFoot fwd=1.10 up=0.34\nPROBE LeftKnee +0.6 -> LeftFoot fwd=0.60 up=0.19\nPROBE LeftKnee -0.6 -> LeftFoot fwd=-0.60 up=0.19\nPROBE LeftShoulder -1.0 -> LeftHand fwd=-1.37 up=0.75\nPROBE LeftShoulder +1.0 -> LeftHand fwd=1.37 up=0.75\nPROBE LeftElbow -0.8 -> LeftHand fwd=-0.64 up=0.27\nPROBE LeftElbow +0.8 -> LeftHand fwd=0.64 up=0.27\nPROBE Waist +0.4 -> Head fwd=-0.84 up=-0.17\nPROBE Root +0.3 -> Head fwd=-0.75 up=-0.11\nPROBE joints \ntext"
   }
  ],
- "errors": [
-  "step20:ROBLOX_STUDIO_MCP_TOOL_ERROR:screen_capture:Network action ScreenCaptureTool.CaptureScreen sent to DMN_RSRVD_FOCUSED failed - Target is not reachable (ScreenCaptureTool.CaptureScreen, DMN_RSRVD_FOCUSED). No OnInvoke handler responded for this action. Sender: DMN_ID_STANDALONE. | text"
- ],
+ "errors": [],
  "consoleCapture": {
   "captured": true,
   "errorCount": 0,
@@ -114,100 +20,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 241,
-  "completedSteps": 21,
-  "plannedClicks": 10,
-  "successfulClicks": 3,
+  "plannedSteps": 4,
+  "completedSteps": 4,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 62,
-  "capturedFrames": 4,
-  "abortedEarly": true
- },
- "visualSamples": [
-  {
-   "name": "c00_start",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 224082,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": false,
-    "brightness": 1,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "t01",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 248149,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 새 게임 시작"
-  },
-  {
-   "name": "t02",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 248612,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "프랑스"
-  },
-  {
-   "name": "intro_center_early",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 156428,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓  출항하기",
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": true,
-    "brightness": 2.0154619216918945,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  }
- ],
- "visualEvidence": {
-  "framesChecked": 4,
-  "framesWithInvalidSize": 0,
-  "voyageSceneObserved": false,
-  "departureObserved": false,
-  "voyageDiagnostics": [],
-  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
+  "plannedFrames": 0,
+  "capturedFrames": 0,
+  "abortedEarly": false
  }
 }
