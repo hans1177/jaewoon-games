@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { pickGeminiModels, askChain, buildProviders, LlmError } from '../tools/vibe-llm.mjs';
+import { pickGeminiModels, askChain, buildProviders, openaiCompatCall, geminiCall, LlmError } from '../tools/vibe-llm.mjs';
 import { rankProviders, updateProviderStats, signature, similarity, playbookReplay, examplesFor, addCandidate, labelOutcomes, sanitize, datasetLine, emptyPlaybook, pickOrder, gate, findContext, buildPrompt, parseEdits, validateEdits, applyEdits, runBrain, recordAttempt, recordMerged, emptyBrainLedger, LIMITS } from '../tools/vibe-brain.mjs';
 
 const mkRoot = files => {
@@ -284,7 +284,7 @@ test('Studio frames go only to an image-capable provider', async () => {
   const images = [{ mimeType: 'image/png', data: 'AA==' }];
   const requests = [];
   const providers = await buildProviders({
-    env: { GEMINI_API_KEY: 'fake', VIBE_BRAIN_GEMINI_MODELS: 'gemini-test-flash', GITHUB_MODELS_TOKEN: 'fake' },
+    env: { GEMINI_API_KEY: 'fake', VIBE_BRAIN_GEMINI_MODELS: 'gemini-3.8-flash', GITHUB_MODELS_TOKEN: 'fake' },
     fetchFn: async (url, init) => {
       requests.push({ url, body: JSON.parse(init.body) });
       return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: '{}' }] } }] }) };
@@ -382,4 +382,36 @@ test('Studio 사진 참조는 뒤이은 원본 fetch 에 의해 바뀌지 않는
   assert.match(workflow, /git ls-tree --name-only "\$frames_sha" \| grep -Eq/);
   assert.match(workflow, /STUDIO_SCREENSHOT_EVIDENCE_COMMIT=/);
   assert.doesNotMatch(workflow, /git update-ref refs\/vibe\/brain-studio-report FETCH_HEAD/);
+});
+
+
+// [실제 호출 경로 보안] 기존 무료 모델은 유지하되 강제 비무료 모델·비용 발생 응답만 차단한다.
+test('자동 개발 두뇌는 비무료 강제 모델을 제외하고 결제 요구 후 모델 교대를 멈춘다',async()=>{
+  const fetchFn=async()=>({ok:true,json:async()=>({models:[]})});
+  const logs=[];
+  const providers=await buildProviders({env:{
+    GEMINI_API_KEY:'fake', VIBE_BRAIN_GEMINI_MODELS:'gemini-3.8-pro,gemini-3.8-flash',
+    OPENROUTER_API_KEY:'fake',
+    VIBE_BRAIN_OPENROUTER_MODEL:'paid/model,google/gemma-4-31b-it:free'
+  },fetchFn,log:x=>logs.push(x)});
+  assert.deepEqual(providers.map(p=>p.name),
+    ['gemini:gemini-3.8-flash','openrouter:google/gemma-4-31b-it:free']);
+  assert.ok(logs.includes('GEMINI_NONFREE_FORCED_MODEL_BLOCKED'));
+  assert.ok(logs.includes('OPENROUTER_NONFREE_FORCED_MODEL_BLOCKED'));
+  let nextCalls=0;
+  await assert.rejects(()=>askChain({prompt:'bounded',providers:[
+    {name:'only-free',call:async()=>{throw new LlmError('HTTP_402',{status:402});}},
+    {name:'other-free',call:async()=>{nextCalls++;return '{}';}}
+  ]}),/FREE_AI_BILLING_BLOCKED_NO_FALLBACK/);
+  assert.equal(nextCalls,0,'결제 요청이 나오면 다른 무료 공급자로 우회하지 않는다');
+  const respondCost=async()=>({ok:true,json:async()=>({usage:{cost:0.01},
+    choices:[{message:{content:'{}'}}],
+    candidates:[{content:{parts:[{text:'{}'}]}}]})});
+  await assert.rejects(()=>openaiCompatCall({
+    url:'https://fixture.invalid',key:'fixture',model:'safe:free',prompt:'x',
+    fetchFn:respondCost,name:'OPENROUTER'
+  }),/NONZERO_COST_RESPONSE_BLOCKED/);
+  await assert.rejects(()=>geminiCall({
+    key:'fixture',model:'gemini-3.8-flash',prompt:'x',fetchFn:respondCost
+  }),/NONZERO_COST_RESPONSE_BLOCKED/);
 });
