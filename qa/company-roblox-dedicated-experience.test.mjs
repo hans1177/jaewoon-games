@@ -1073,7 +1073,7 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 2 else 4\) do/,'card-only mobile crew remains bounded');
   assert.match(battle,/function FX\.boarding\(\)/);
   assert.match(battle,/FX\.boardZoom \+=/,'boarding cinematic transitions smoothly');
-  assert.match(battle,/cam\.FieldOfView = 76 .* - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom is visual-only and scales by tier');
+  assert.match(battle,/cam\.FieldOfView = \(if MOBILE_VFX then 73 else 75\) - kick \* 0\.6 \+ math\.min\(shake, 2\.5\) \* 2 \+ \(me\.speed \/ myTop\) \* 5 \+ killZoom - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom stays tier-scaled while mobile and desktop preserve independent camera limits');
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/,'mobile deck fires stay capped and desktop ship tiers scale');
   assert.match(battle,/if MOBILE_VFX then 28 else 40/,'mobile range outline has bounded parts');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun-fire range is unchanged');
@@ -1110,7 +1110,7 @@ test('Mare naval steering, smooth hulls, aiming and battle presentation stay con
   assert.ok(battle.includes('if trailAngle < 1.45'));
   assert.ok(battle.includes('nextSmoke = now + 0.18'));
   assert.ok(battle.includes('n = if MOBILE_VFX then 5 else 11'));
-  assert.ok(battle.includes('s1 = 19 + k * 13'));
+  assert.ok(battle.includes('s0 = 3.8 + k * 2, s1 = 11 + k * 9'),'sinking smoke scales with progress but avoids obscuring the hull');
   assert.ok(battle.includes('FX.flame(ORIGIN + sunk.pos + Vector3.new(0, 6 - k * 8, 0), 4.8, sunk.fx)'));
   assert.ok(battle.includes('Sfx.play("sfx_naval_splash"'));
   assert.ok(battle.includes('Sfx.play("sfx_naval_wood"'));
@@ -1152,8 +1152,8 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/folder:SetAttribute\("NavalTimePhase", phase\)/);
   assert.match(src,/folder:SetAttribute\("NavalWeatherMode", mode\)/);
   assert.match(src,/local portLat, portLon = tonumber\(opts\.portLat\), tonumber\(opts\.portLon\)/);
-  assert.match(src,/for i = 1, \(if MOBILE_VFX then 11 else 26\) do/);
-  assert.match(src,/if MOBILE_VFX and index > 2 then break end/);
+  assert.match(src,/for i = 1, \(if MOBILE_VFX then 12 else 20\) do/,'foam attachments remain bounded on mobile and desktop');
+  assert.match(src,/if MOBILE_VFX and index > 3 then break end/,'mobile shore models retain the three-object cap');
   assert.match(src,/folder\.Destroying:Connect\(function\(\)[\s\S]*?colorGrade:Destroy\(\)/);
   const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   assert.match(client,/portLat = view\.player and PortData\.Ports\[view\.player\.portId\]/);
@@ -1265,7 +1265,8 @@ test('Mare registered 36 ship models have seven regional battle signatures and s
   assert.match(battle,/function FX\.waterColumn\(pos, profile, power\)/);
   assert.match(battle,/function FX\.shipFire\(sh, key, hp, now\)/);
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/);
-  assert.match(battle,/local density = if MOBILE_VFX then 0\.55 else 1/,'mobile density is bounded');
+  assert.match(battle,/local density = if MOBILE_VFX then 0\.56 else 1/,'mobile cannon particle budget stays below desktop');
+  assert.match(battle,/local density = if MOBILE_VFX then 0\.5 else 1/,'secondary mobile particle budget remains at half desktop');
   assert.match(battle,/FX\.wake\(me, "me", now\)/,'existing wake loop remains in place');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun range remains untouched');
   assert.match(battle,/rtDamage\(false, base \* acc\)/,'actual damage computation remains untouched');
