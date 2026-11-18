@@ -7,6 +7,7 @@ export const VERIFIED_FREE_FALLBACK_MODELS=Object.freeze({
   OPENROUTER:'google/gemma-4-31b-it:free'
 });
 const cooldownUntil=new Map();
+const groqQuotaByModel=new Map();
 let nextSlot=0;
 const clean=value=>String(value??'').trim();
 function infrastructureFailure(message,retryAt=0){
@@ -34,6 +35,35 @@ export function retryDelayMs(response,status,body=null){
     delay=status===404||(status===429&&dailyQuota)?86400000:status===429?60000:15000;
   }
   return Math.min(86400000,Math.max(1000,delay));
+}
+// [무료 그록 회계] 공식 응답 헤더의 모델별 일간 요청·분당 토큰을 분리하여 기록.
+// 응답 헤더가 없거나 모순되면 잔량을 만들지 않는다. 계정 전체 제공업체 합산치로 표시하지 않는다.
+export function groqQuotaFromHeaders(response,now=Date.now()){
+  const get=name=>clean(response?.headers?.get?.(name));
+  const limit=get('x-ratelimit-limit-requests'), remaining=get('x-ratelimit-remaining-requests');
+  const tokenLimit=get('x-ratelimit-limit-tokens'), tokenRemaining=get('x-ratelimit-remaining-tokens');
+  const integer=value=>/^\d+$/.test(value)?Number(value):null;
+  const values=[limit,remaining,tokenLimit,tokenRemaining].map(integer);
+  if(values.some(value=>!Number.isSafeInteger(value)||value<0))return null;
+  const [requestsPerDayLimit,requestsPerDayRemaining,tokensPerMinuteLimit,tokensPerMinuteRemaining]=values;
+  if(requestsPerDayRemaining>requestsPerDayLimit||tokensPerMinuteRemaining>tokensPerMinuteLimit)
+    return null;
+  const resetAt=value=>{
+    const parsed=/^(?:(\d+(?:\.\d+)?)h)?(?:(\d+(?:\.\d+)?)m)?(?:(\d+(?:\.\d+)?)s)?$/.exec(value);
+    if(!parsed||!parsed[0])return null;
+    const duration=(Number(parsed[1]||0)*3600+Number(parsed[2]||0)*60+Number(parsed[3]||0))*1000;
+    return duration>0&&duration<=86400000?new Date(now+Math.ceil(duration)).toISOString():null;
+  };
+  return {
+    scope:'GROQ_MODEL_RATE_LIMIT_HEADERS',requestsPerDayLimit,requestsPerDayRemaining,
+    tokensPerMinuteLimit,tokensPerMinuteRemaining,
+    requestsResetAt:resetAt(get('x-ratelimit-reset-requests')),
+    tokensResetAt:resetAt(get('x-ratelimit-reset-tokens')),
+    observedAt:new Date(now).toISOString(),accountWideBalanceVerified:false
+  };
+}
+export function latestGroqModelQuota(model){
+  return groqQuotaByModel.get('GROQ:'+clean(model))||null;
 }
 export function verifiedFreeGeminiModels(env=process.env){
   const models=[clean(env.VIBE2_GEMINI_MODEL||GEMINI_FREE_MODELS[0]),clean(env.VIBE2_GEMINI_BACKUP_MODEL||GEMINI_FREE_MODELS[1])];
@@ -152,6 +182,16 @@ export async function requestGeminiFreePair({
         headers:{'content-type':'application/json','authorization':'Bearer '+route.key},
         body:JSON.stringify(body)
       });
+      const groqQuota=route.provider==='GROQ'?groqQuotaFromHeaders(response):null;
+      if(groqQuota){
+        groqQuotaByModel.set(slot,groqQuota);
+        // 성공 응답 직후 일일 또는 분당 여유가 0이면 다음 호출부터 공식 재사용 시각을 지킨다.
+        const exhausted=[
+          groqQuota.requestsPerDayRemaining===0?Date.parse(groqQuota.requestsResetAt):0,
+          groqQuota.tokensPerMinuteRemaining===0?Date.parse(groqQuota.tokensResetAt):0
+        ].filter(value=>Number.isFinite(value)&&value>Date.now());
+        if(exhausted.length)cooldownUntil.set(slot,Math.max(cooldownUntil.get(slot)||0,...exhausted));
+      }
       if(!response.ok){
         const status=response.status;
         if([401,402,403].includes(status))
@@ -171,9 +211,19 @@ export async function requestGeminiFreePair({
           const requestContextFailure=status===400&&/context[_ -]?length|maximum context|too many tokens|prompt[^.]{0,80}too (?:long|large)|input[^.]{0,80}token[^.]{0,80}(?:limit|exceed)/i.test(
             [errorBody?.error?.code,errorBody?.error?.type,errorBody?.error?.message].map(clean).join(' '));
           if(!requestContextFailure){
-            const delay=status===400?Math.max(1800000,retryDelayMs(response,status,errorBody))
+            let delay=status===400?Math.max(1800000,retryDelayMs(response,status,errorBody))
               :retryDelayMs(response,status,errorBody);
-            cooldownUntil.set(slot,Date.now()+delay);
+            if(status===429&&groqQuota){
+              const requestReset=groqQuota.requestsPerDayRemaining===0
+                ?Date.parse(groqQuota.requestsResetAt):0;
+              const tokenReset=groqQuota.tokensPerMinuteRemaining===0
+                ?Date.parse(groqQuota.tokensResetAt):0;
+              const providerRetry=Math.max(
+                Number.isFinite(requestReset)?requestReset-Date.now():0,
+                Number.isFinite(tokenReset)?tokenReset-Date.now():0,0);
+              delay=Math.max(delay,providerRetry);
+            }
+            cooldownUntil.set(slot,Math.max(cooldownUntil.get(slot)||0,Date.now()+delay));
           }
           if(requestContextFailure)console.log('VIBE2_EXTERNAL_FREE_REQUEST_CONTEXT_REJECTED='+slot);
           failures.push(slot+':HTTP_'+status);
@@ -194,7 +244,10 @@ export async function requestGeminiFreePair({
         continue;
       }
       console.log('VIBE2_EXTERNAL_AI_MODEL_USED='+slot);
-      return{text,model:route.model,provider:route.provider};
+      if(groqQuota)console.log('VIBE2_FREE_AI_GROQ_RPD_REMAINING='+
+        groqQuota.requestsPerDayRemaining+';TPM_REMAINING='+groqQuota.tokensPerMinuteRemaining);
+      return{text,model:route.model,provider:route.provider,
+        ...(groqQuota?{freeQuota:groqQuota}:{})};
     }catch(error){
       if(error?.name==='AbortError'||error instanceof TypeError||error instanceof SyntaxError){
         cooldownUntil.set(slot,Date.now()+15000);
