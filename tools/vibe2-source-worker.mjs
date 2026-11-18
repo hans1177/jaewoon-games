@@ -9051,8 +9051,9 @@ export async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile
   // 아무 무료 모델도 없을 때는 종전과 동일하게 실패하며 유료/로컬 경로는 열지 않는다.
   const eligible=selectVibe59FreeExperts({department:specialistDepartment||'DEVELOPMENT',
     taskText:specialistTask||String(prompt).slice(0,1600),
-    responsibleFiles:specialistFiles,env:{...process.env,GEMINI_API_KEY:key}});
-  if(!key&&!eligible.expertCandidates.length)
+    responsibleFiles:specialistFiles,env:{...process.env,GEMINI_API_KEY:key},
+    includeUnconfigured:true});
+  if(!key&&!eligible.expertCandidates.some(row=>row.available))
     throw Object.assign(new Error('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK'),
       {vibe2InfrastructureFailure:true});
   const {text}=await requestGeminiFreePair({
@@ -9488,7 +9489,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const specialistFiles=responsibleFiles;
   const specialistDepartment='AUTO';
   const specialistRoute=selectVibe59FreeExperts({department:specialistDepartment,
-    taskText:specialistTask,responsibleFiles:specialistFiles});
+    taskText:specialistTask,responsibleFiles:specialistFiles,includeUnconfigured:true});
   const specialistRole=['NPC','WORLD','UI','MOTION','GRAPHICS'].includes(specialistRoute.domain)
     ?'graphics':({PLANNING:'planning',QA:'qa',BALANCE:'balance'}[specialistRoute.domain]||'development');
   const learned=selectVerifiedDepartmentLearning(
@@ -10079,7 +10080,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   }
   // [무모델] 인증된 외부 모델이 없더라도 위의 기존 결정론적 Web·진단·Roblox 수정은
   // 우선 검증한다. 실행 가능한 원본 변경이 없으면 AI 응답을 꾸며내지 않고 큐에 원인을 넘긴다.
-  const noExternalModelAvailable=specialistRoute.expertCandidates.length===0;
+  const noExternalModelAvailable=!specialistRoute.expertCandidates.some(row=>row.available);
   if(!generated&&target==='roblox'
     &&(clean(process.env.VIBE2_ROBLOX_NO_MODEL_ONLY).toLowerCase()==='true'||noExternalModelAvailable)
     &&!responseFile&&!(Array.isArray(responseFiles)&&responseFiles.some(Boolean))){
