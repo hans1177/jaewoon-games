@@ -2595,11 +2595,15 @@ test('네모트론 3.5 실제 이미지 API 요청은 추론 토큰 낭비 없�
       assert.equal(request.headers.Authorization, 'Bearer fixture-key');
       assert.deepEqual(body.chat_template_kwargs, {enable_thinking: false},
         'NVIDIA 공식 직접 답변 모드로 빈 추론 출력 차단');
+      assert.deepEqual(body.response_format, {type: 'json_object'},
+        'NVIDIA 공식 JSON 모드로 잘못된 구문 출력 차단');
     } else {
       assert.equal(url, router.endpoint);
       assert.equal(request.headers.Authorization, 'Bearer fixture-other-key');
       assert.equal(body.chat_template_kwargs, undefined,
         '다른 제공자 전용 요청 구조를 임의 변경하지 않는다');
+      assert.equal(body.response_format, undefined,
+        '다른 제공자 응답 형식 계약을 임의 변경하지 않는다');
     }
     return {ok: true, json: async () => ({
       usage: {cost: 0},

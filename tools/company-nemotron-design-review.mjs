@@ -339,7 +339,10 @@ export async function callFreeDesignModel(model, prompt, photos, fetchImpl, env 
           // [네모트론 공식 API] 기본 추론이 답변 토큰을 모두 소진해 빈 content가 되는 오류 예방.
           // 유료 크레딧이나 호출 수를 늘리지 않고 직접 답변 모드를 요청한다.
           ...(model.provider === 'NVIDIA'
-            ? {chat_template_kwargs: {enable_thinking: false}} : {}),
+            ? {chat_template_kwargs: {enable_thinking: false},
+                // [공식 NVIDIA JSON 모드] 멀티모달 응답의 잘못된 쉼표·문자열로 검증이 실패하는 현상을 줄인다.
+                // 내용·경로·앵커의 신뢰성은 기존 validateReview에서 계속 독립 검증한다.
+                response_format: {type: 'json_object'}} : {}),
           messages: [{role: 'user', content: [{type: 'text', text: prompt},
             ...photos.map(photo => ({type: 'image_url', image_url: {url: photo.url}}))]}]};
     const headers = model.provider === 'GEMINI'
