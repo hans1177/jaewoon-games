@@ -1,3 +1,4 @@
+-- 파일명: roblox-games/mare-essentia/tests/smoke_portscene.luau
 -- 항구 장면 스모크 빌드: 엔진 목업 위에서 모든 문화권 대표 항구를 발전도 1~5로 지어 본다.
 -- 런타임 오류(nil 접근·오타)와 '등록되지 않은 에셋 요청'을 배포 전에 잡는다.
 local State = require("./mockstate")
@@ -127,6 +128,11 @@ for _, id in { "Naval/rocks-sand-a", "Naval/rocks-sand-b", "Naval/rocks-sand-c",
 		fails += 1
 		print("회귀 실패: 등록된 해안 배경 요청되지 않음 " .. id)
 	end
+end
+-- [실제 Roblox 이벤트 계약] 항구 장면이 People 신규 에셋 연결을 등록했는지 확인한다.
+if State.peopleChildAddedConnections == 0 then
+	fails += 1
+	print("회귀 실패: 항구 People.ChildAdded 에셋 갱신 이벤트 연결 없음")
 end
 local used = 0 for _ in State.used do used += 1 end
 print(("스모크 빌드: 항구 %d곳 × 5단계 중 %d건 성공, 시대 전환 %d/4건, 에셋 %d종 요청, 실패 %d"):format(#ports, built, eraBuilt, used, fails))
