@@ -71,7 +71,15 @@ test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가
   assert.match(source,/call\("Sell", \{ goodId = sel\.id, amount = math\.min\(qty, maxSell\) \}\)/);
   assert.match(source,/root:GetPropertyChangedSignal\("AbsoluteSize"\)/);
   assert.match(source,/chart\.Name = "ShipComparisonBars"/);
+  assert.match(source,/sortBar\.Name = "TradeSort"/);
   assert.match(source,/H\.tradeProfit\(g, 1\)/);
+  // 게시판과 우편, 시장 소식은 거래 장부 바로 옆 '거래소·우편' 탭에서 유지한다.
+  assert.match(source,/id = "market", name = "거래소·우편"/);
+  assert.match(source,/tabs = \{ "trade", "market", "harbor" \}/);
+  assert.match(source,/function RENDERERS\.market\(\)/);
+  for(const action of ['MarketList','MarketPost','MarketBuy','MarketCancel','MailInbox','MailClaim','MailSend']){
+    assert.match(source,new RegExp('call\\("'+action+'"'));
+  }
   // [서재] 보고·지식 백과·연구·세계 백과가 동일 탭창에서 전환되어야 한다.
   assert.match(source,/tabs = \{ "scholar", "codex", "tech", "encyclopedia" \}/);
   assert.match(source,/function RENDERERS\.scholar\(\)/);
