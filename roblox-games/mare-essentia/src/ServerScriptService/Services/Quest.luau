@@ -341,7 +341,7 @@ return function(D, S)
 		-- 중요한 연대기 장면은 위의 S.Story.autoTrigger에서 먼저 처리한다.
 		local regionalNews = {}
 		for _, quest in D.Quests.Quests do
-			if quest.newsSource and not state.quests.done[quest.id] and visible(state, quest) then
+			if quest.newsSource and quest.sagaPort == state.portId and not state.quests.done[quest.id] and visible(state, quest) then
 				table.insert(regionalNews, quest)
 			end
 		end
