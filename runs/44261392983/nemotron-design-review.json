@@ -1,0 +1,135 @@
+{
+  "version": 3,
+  "provider": "MULTI_FREE_VISUAL",
+  "gameId": "mare-essentia",
+  "sourceRevision": "6fedec571a038d56bf7f029b492764248d099077",
+  "status": "REVIEWED_NO_VERIFIED_EDIT",
+  "selectedRole": "WORLD",
+  "usageWindow": {
+    "day": "2026-11-18",
+    "calls": {
+      "NVIDIA": 6,
+      "GEMINI": 2,
+      "OPENROUTER": 2
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-18",
+      "GEMINI": "2026-11-17",
+      "OPENROUTER": "2026-11-18"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-18T07:06:56.348Z",
+      "GEMINI": "2026-11-18T07:46:01.536Z",
+      "OPENROUTER": "2026-11-18T07:45:41.208Z"
+    }
+  },
+  "cooldowns": {
+    "GEMINI_FLASH": "2026-11-18T08:10:27.465Z",
+    "OPENROUTER_GEMMA26": "2026-11-18T08:01:28.076Z",
+    "NVIDIA_VL": "2026-11-18T08:30:31.059Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 6,
+      "remainingLocal": 6,
+      "effectiveRemaining": 6,
+      "regularWorkRemaining": 3,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": 5.6,
+      "estimatedHoursToLocalCap": 1.1,
+      "nextLocalWindowAt": "2026-11-19T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 0,
+      "remainingLocal": 12,
+      "effectiveRemaining": 12,
+      "regularWorkRemaining": 9,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": null,
+      "estimatedHoursToLocalCap": null,
+      "nextLocalWindowAt": "2026-11-19T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 2,
+      "remainingLocal": 28,
+      "effectiveRemaining": 28,
+      "regularWorkRemaining": 22,
+      "emergencyReserveRemaining": 6,
+      "estimatedCallsPerHour": 4,
+      "estimatedHoursToLocalCap": 7,
+      "nextLocalWindowAt": "2026-11-19T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [
+    {
+      "id": "GEMINI_FLASH",
+      "status": "OK",
+      "provider": "GEMINI",
+      "model": "gemini-3.8-flash"
+    },
+    {
+      "id": "GEMINI_FLASH",
+      "status": "NO_VALID_EDIT"
+    },
+    {
+      "id": "OPENROUTER_GEMMA26",
+      "status": "HTTP_429",
+      "provider": "OPENROUTER",
+      "model": "google/gemma-4-26b-a4b-it:free"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "OK",
+      "provider": "NVIDIA",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "SOURCE_ANCHOR_INVALID",
+      "failureSignature": "SOURCE_ANCHOR_NOT_UNIQUE:roblox-games_mare-essentia_src_StarterPlayer_TownMood.client.luau"
+    }
+  ],
+  "frames": [
+    {
+      "name": "cb0_deck-0.jpg",
+      "sha256": "7fd7d4b45aae22d65fdd04c27400729afe3db51afc18b5dfbb9d25d929d5d4dc"
+    },
+    {
+      "name": "cb1-0.jpg",
+      "sha256": "d3cdc5ea6afebade3f3d8339d4799a5e074815bc27e0dfef9ef1bb013e52112e"
+    },
+    {
+      "name": "cb2-0.jpg",
+      "sha256": "22837515ee2cf1a9383cee394954b31c249ae0d40279e352f9fa57f286bbfdc6"
+    },
+    {
+      "name": "field_entry-0.jpg",
+      "sha256": "a927502f43e47fe6bc21752dfa11f4f3e5fd6c67b0324b923d29bc7a4fc5b9d2"
+    }
+  ],
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
