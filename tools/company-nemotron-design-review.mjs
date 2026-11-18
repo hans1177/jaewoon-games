@@ -78,8 +78,52 @@ export function selectDesignFrameRole(frameNames = [], previousRole = '') {
   const previous = available.indexOf(previousRole);
   return available.length ? available[(previous + 1) % available.length] : 'GENERAL';
 }
+// [검증된 모델 성공 학습] 오직 공식 Studio 전후 사진·독립 모델·정확한 소스 SHA가 일치할 때만 긍정 배치 신호를 발급한다.
+// 모델 본인의 자기 평가, 소스 정적 PASS 또는 사진 해시가 다른 사실만으로 성공을 학습하지 않는다.
+export function verifiedDesignFeedback(previous = {}, feedback = {}) {
+  const sha = value => /^[a-f0-9]{40}$/i.test(String(value ?? ''));
+  const imageSha = value => /^[a-f0-9]{64}$/i.test(String(value ?? ''));
+  if (previous?.status !== 'CANDIDATE_EDITED' ||
+    !sha(previous.sourceRevision) || !sha(feedback.candidateRevision) ||
+    previous.sourceRevision === feedback.candidateRevision ||
+    feedback.beforeRevision !== previous.sourceRevision ||
+    feedback.sourceRevision !== feedback.candidateRevision ||
+    feedback.authorProvider !== previous.provider ||
+    feedback.authorModel !== previous.model ||
+    feedback.selectedRole !== previous.selectedRole ||
+    feedback.reviewerProvider === previous.provider ||
+    !feedback.reviewerProvider ||
+    feedback.status !== 'VISUAL_BEFORE_AFTER_PASS' ||
+    feedback.independentQaPassed !== true || feedback.afterStudioPassed !== true ||
+    feedback.comparison?.status !== 'PASS' ||
+    !Array.isArray(feedback.comparison?.improvements) ||
+    feedback.comparison.improvements.length < 2 ||
+    !Array.isArray(feedback.comparison?.regressions) ||
+    feedback.comparison.regressions.length > 0 ||
+    !Array.isArray(feedback.beforeFrames) || !Array.isArray(feedback.afterFrames) ||
+    feedback.beforeFrames.length < 2 ||
+    feedback.beforeFrames.length !== feedback.afterFrames.length)
+    return null;
+  const pairs = feedback.beforeFrames.every((entry, i) => {
+    const after = feedback.afterFrames[i];
+    return entry?.name === after?.name &&
+      imageSha(entry.sha256) && imageSha(after?.sha256);
+  });
+  if (!pairs ||
+    !feedback.beforeFrames.some((entry, i) => entry.sha256 !== feedback.afterFrames[i].sha256))
+    return null;
+  const photoNames = new Set(feedback.beforeFrames.map(entry => entry.name));
+  const improvedNames = new Set(feedback.comparison.improvements
+    .map(entry => entry?.screenshot).filter(name => photoNames.has(name)));
+  if (improvedNames.size < 2 ||
+    feedback.comparison.improvements.some(entry => !imageSha(entry.evidenceSha256)))
+    return null;
+  return {provider: previous.provider, model: previous.model, role: previous.selectedRole,
+    sourceRevision: previous.sourceRevision, candidateRevision: feedback.candidateRevision};
+}
+
 export function selectFreeDesignModels({
-  frameNames = [], policy, env = process.env, previous = {}, now = Date.now()
+  frameNames = [], policy, env = process.env, previous = {}, feedback = {}, now = Date.now()
 } = {}) {
   const config = policy?.directVisualDesign?.freeSpecialistPool;
   if (config?.enabled !== true || config?.paidFallbackForbidden !== true ||
@@ -99,9 +143,21 @@ export function selectFreeDesignModels({
       (!Number.isFinite(cooling) || cooling <= now);
   });
   const preference = config.roles?.[role] || [];
+  const verified = verifiedDesignFeedback(previous, feedback);
+  const score = model => {
+    // [성공] 검증된 같은 전문 역할 + 정확한 모델에 한해서만 다음 호출에 우선권을 준다.
+    if (verified?.role === role && verified.provider === model.provider &&
+      verified.model === model.model) return -1;
+    const order = preference.indexOf(model.id);
+    // [실패] 기존 같은 분야의 잘못된 JSON/존재하지 않는 앵커 제안만 한 단계 후순위.
+    const invalid = previous?.selectedRole === role &&
+      Array.isArray(previous?.attempts) &&
+      previous.attempts.some(row => row?.id === model.id &&
+        ['REVIEW_INVALID', 'SOURCE_ANCHOR_INVALID'].includes(row?.status));
+    return (order < 0 ? 999 : order) + (invalid ? 2 : 0);
+  };
   return eligible.sort((left, right) =>
-    (preference.indexOf(left.id) < 0 ? 999 : preference.indexOf(left.id)) -
-    (preference.indexOf(right.id) < 0 ? 999 : preference.indexOf(right.id)) ||
+    score(left) - score(right) ||
     DESIGN_FREE_MODELS.indexOf(left) - DESIGN_FREE_MODELS.indexOf(right));
 }
 
@@ -371,6 +427,12 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
       previous = JSON.parse(fs.readFileSync(path.resolve(options.previous), 'utf8'));
   } catch {/* 손상된 이력은 권한을 주지 않고 신규 증거로만 처리한다. */}
   loadPreviousDesignUsage(previous);
+  // [학습] 동일 Studio 브랜치의 독립 전후 비교 증거만 불러온다.
+  let feedback = {};
+  try {
+    if (options.feedback && fs.existsSync(path.resolve(options.feedback)))
+      feedback = JSON.parse(fs.readFileSync(path.resolve(options.feedback), 'utf8'));
+  } catch {/* 손상되거나 없는 전후 증거는 성공으로 간주하지 않는다. */}
   const pictures = fs.existsSync(framesRoot) ? fs.readdirSync(framesRoot)
     .filter(name => /-[0-9]+\.(?:jpe?g|png)$/i.test(name)) : [];
   designRuntime.selectedRole = selectDesignFrameRole(pictures, previous.selectedRole);
@@ -388,7 +450,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   if (trim(process.env.COMPANY_EXTERNAL_AI_ENABLED) !== 'YES')
     return record('SKIPPED_EXTERNAL_AI_OPT_IN_REQUIRED', {frames: proofs});
   const freeModels = selectFreeDesignModels({
-    frameNames: photos.map(photo => photo.name), policy, previous
+    frameNames: photos.map(photo => photo.name), policy, previous, feedback
   });
   if (!freeModels.length)
     return record('SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE', {frames: proofs});
@@ -579,7 +641,8 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
     return record(verdict.status === 'PASS' ? 'VISUAL_BEFORE_AFTER_PASS' : 'VISUAL_BEFORE_AFTER_UNVERIFIED', {
       beforeRevision, candidateRevision, beforeFrames: baseline.map(x => ({name: x.name, sha256: x.sha256})),
       afterFrames: after.map(x => ({name: x.name, sha256: x.sha256})),
-      authorProvider: previous.provider, reviewerProvider: reviewer.provider,
+      authorProvider: previous.provider, authorModel: previous.model,
+      selectedRole: previous.selectedRole, reviewerProvider: reviewer.provider,
       reviewerModel: reviewer.model, comparison: verdict, rawResponseSha256: digest(result.text),
       independentQaPassed: verdict.status === 'PASS',
       afterStudioPassed: verdict.status === 'PASS', releasePassed: false
