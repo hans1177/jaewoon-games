@@ -31,6 +31,13 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
   assert.match(core,/return "P_" \.\. player.UserId/);
 });
 
+test('항구 장면의 소품 선택은 Luau 복수 반환 조건식 없이 실행된다', () => {
+  const port=read('ReplicatedStorage/Shared/PortScene.luau');
+  assert.doesNotMatch(port,/local propGroup, propName\s*=\s*if/);
+  assert.match(port,/local propGroup, propName\s*\n\s*if family == "fishery" then/);
+  assert.match(port,/propGroup, propName = "Cargo", "box-open"/);
+});
+
 test('게임 시작 메뉴는 PortScene 정본을 기다리지 않고 서버 상태를 표시한다', () => {
   const port=read('ReplicatedStorage/Shared/PortScene.luau');
   assert.ok(client.indexOf('gui:SetAttribute("StartupStage", "server-state-request")')>client.indexOf('gui:SetAttribute("PortSceneLoadState", "loading")'));
@@ -2086,7 +2093,9 @@ test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox
   assert.match(loader,/local MATERIAL_FINISHES = \{/);
   for(const name of ['Town/house','Town/bench_A','Town/bench_B','Town/cobblestones','Terrain/bridge-stone'])
     assert.ok(loader.includes('["'+name+'"] = {'),'UV 확인된 건축물에만 재질 적용: '+name);
-  assert.match(loader,/not mesh:FindFirstChildOfClass\("SurfaceAppearance"\)/);
+  assert.match(loader,/model:SetAttribute\("PBRFinishPending"/);
+  assert.doesNotMatch(loader,/surface\.(?:ColorMap|NormalMap|RoughnessMap|MetalnessMap)\s*=/,
+    '서버 실행 중 PBR 맵에 쓰지 않는다');
   assert.match(loader,/and kind ~= "Materials"/);
   assert.match(uploader,/R15_OUTFIT_UV_AND_SOURCE_PROOF_REQUIRED/);
   assert.match(uploader,/const outfitUvUpgrade = item.kind === 'People'/);
