@@ -91,6 +91,75 @@ export function verifiedFreeGeminiModels(env=process.env){
     throw new Error('GEMINI_FREE_MODEL_PAIR_INVALID');
   return models;
 }
+// [Vibe5.9 전문 배정] 기존 무료 모델 고정 목록만 사용한다. 순위는 검증 전 가설이며 능력 인증이 아니다.
+// 기획/코드/그래픽/품질/경제/음향은 같은 모델이라도 서로 다른 우선순위를 갖는다.
+const VIBE59_EXPERT_PRIORS=Object.freeze({
+  PLANNING:['GEMINI_LITE','GEMINI_FLASH','OPENROUTER','GROQ'],
+  DEVELOPMENT:['GROQ','GEMINI_FLASH','OPENROUTER','GEMINI_LITE'],
+  GRAPHICS:['OPENROUTER','GEMINI_FLASH','GEMINI_LITE','GROQ'],
+  NPC:['GEMINI_FLASH','OPENROUTER','GEMINI_LITE','GROQ'],
+  WORLD:['GEMINI_FLASH','OPENROUTER','GEMINI_LITE','GROQ'],
+  UI:['OPENROUTER','GEMINI_FLASH','GEMINI_LITE','GROQ'],
+  MOTION:['GEMINI_FLASH','OPENROUTER','GROQ','GEMINI_LITE'],
+  QA:['GROQ','GEMINI_FLASH','OPENROUTER','GEMINI_LITE'],
+  BALANCE:['GEMINI_FLASH','GROQ','GEMINI_LITE','OPENROUTER'],
+  AUDIO:['GEMINI_FLASH','OPENROUTER','GEMINI_LITE','GROQ']
+});
+export function selectVibe59FreeExperts({
+  department='DEVELOPMENT',taskText='',responsibleFiles=[],verifiedOutcomes=[],
+  freeCapacity={},env=process.env,includeUnconfigured=false,now=Date.now()
+}={}){
+  const dept=clean(department).toUpperCase().replaceAll('-','_');
+  const source=(clean(taskText).slice(0,1600)+' '+
+    (Array.isArray(responsibleFiles)?responsibleFiles.slice(0,16).join(' '):'')).toLowerCase();
+  const graphic=dept==='GRAPHICS';
+  const role=graphic
+    ?/npc|head|face|hair|옷|머리|얼굴|주민|캐릭터/.test(source)?'NPC'
+      :/hud|interface|\.client|menu|ui|버튼|화면/.test(source)?'UI'
+      :/motion|animation|walk|run|애니|동작/.test(source)?'MOTION'
+      :/port|ship|harbor|landscape|town|world|마을|배경|항구|선박/.test(source)?'WORLD':'GRAPHICS'
+    :Object.hasOwn(VIBE59_EXPERT_PRIORS,dept)?dept:'DEVELOPMENT';
+  const ids=VIBE59_EXPERT_PRIORS[role];
+  const geminiModels=verifiedFreeGeminiModels(env);
+  const choices=[
+    {id:'GEMINI_FLASH',provider:'GEMINI',model:geminiModels[0],available:true},
+    {id:'GEMINI_LITE',provider:'GEMINI',model:geminiModels[1],available:true},
+    {id:'GROQ',provider:'GROQ',model:VERIFIED_FREE_FALLBACK_MODELS.GROQ,
+      available:clean(env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES'&&
+        !!clean(env.GROQ_API_KEY)&&clean(env.VIBE2_GROQ_FREE_PLAN_VERIFIED)==='YES'},
+    {id:'OPENROUTER',provider:'OPENROUTER',model:VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER,
+      available:clean(env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES'&&!!clean(env.OPENROUTER_API_KEY)}
+  ];
+  const scored=choices.map(item=>{
+    const preference=ids.indexOf(item.id);
+    const skill=Math.max(.4,1-preference*.18);
+    // 독립 QA 검증 + 같은 모델·분야 + 원본 리비전 증거가 없는 피드백은 점수에 반영하지 않는다.
+    const observed=(Array.isArray(verifiedOutcomes)?verifiedOutcomes:[]).slice(-100)
+      .filter(row=>row?.verified===true&&row?.independentQa==='PASS'&&
+        clean(row.sourceRevision)&&row.provider===item.provider&&row.model===item.model&&
+        clean(row.role).toUpperCase()===role&&['SUCCESS','FAILURE'].includes(row.outcome));
+    const success=observed.filter(row=>row.outcome==='SUCCESS').length;
+    const quality=observed.length?(success+2)/(observed.length+4):.5;
+    const capacity=freeCapacity?.[item.provider+':'+item.model];
+    const confirmed=capacity?.verified===true&&
+      Number.isInteger(capacity.remaining)&&Number.isInteger(capacity.limit)&&
+      capacity.limit>0&&capacity.remaining>=0&&capacity.remaining<=capacity.limit&&
+      now-Date.parse(capacity.observedAt)<10*60*1000&&now>=Date.parse(capacity.observedAt);
+    const remaining=confirmed?capacity.remaining/capacity.limit:.5;
+    const cooling=(cooldownUntil.get(item.provider==='GEMINI'?item.model:
+      item.provider+':'+item.model)||0)>now;
+    return {...item,domain:role,verifiedSamples:observed.length,
+      score:Math.round(100*(.4*quality+.25*skill+.15*remaining+
+        .1*(observed.length?quality:.5)+.1*(observed.length?quality:.5))),
+      eligible:item.available&&!cooling&&(!confirmed||capacity.remaining>0),
+      evidence:observed.length?'INDEPENDENT_QA':'ROLE_PRIOR_UNVERIFIED'};
+  }).sort((a,b)=>b.score-a.score||ids.indexOf(a.id)-ids.indexOf(b.id));
+  return Object.freeze({version:'5.9',domain:role,source:'EXISTING_FREE_MODEL_ROTATION',
+    expertCandidates:scored.filter(x=>includeUnconfigured||x.eligible)
+      .map(({id,provider,model,score,eligible,verifiedSamples,evidence})=>
+        ({id,provider,model,score,eligible,verifiedSamples,evidence})),
+    sourceWrite:false,externalModelCalled:false,independentQaRequired:true});
+}
 export async function requestGeminiFreePair({
   apiKey,contents,maxOutputTokens=3072,temperature=.08,timeoutMs=240000,responseMimeType=null,fetchImpl=globalThis.fetch,geminiRetryAt=null,preferredRole=''
 }={}){
