@@ -149,7 +149,7 @@ export function selectVibe59FreeExperts({
     {id:'GEMINI_LITE',provider:'GEMINI',model:geminiModels[1],available:!!clean(env.GEMINI_API_KEY)},
     {id:'GROQ',provider:'GROQ',model:VERIFIED_FREE_FALLBACK_MODELS.GROQ,
       available:clean(env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES'&&
-        !!clean(env.GROQ_API_KEY)&&clean(env.VIBE2_GROQ_FREE_PLAN_VERIFIED)==='YES'},
+        !!clean(env.GROQ_API_KEY)},
     {id:'OPENROUTER',provider:'OPENROUTER',model:VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER,
       available:clean(env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES'&&!!clean(env.OPENROUTER_API_KEY)}
   ];
@@ -205,7 +205,7 @@ export async function requestGeminiFreePair({
   // 기존 승인된 무료 공급자만 채택한다. 인증키 보유와 무료 요금제 증거는 구분한다.
   const externalRotation=clean(process.env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES';
   const extras=externalRotation?[
-    ...(clean(process.env.GROQ_API_KEY)&&clean(process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED)==='YES'
+    ...(clean(process.env.GROQ_API_KEY)
       ?[{provider:'GROQ',model:VERIFIED_FREE_FALLBACK_MODELS.GROQ,key:clean(process.env.GROQ_API_KEY),
          endpoint:'https://api.groq.com/openai/v1/chat/completions'}]:[]),
     ...(clean(process.env.OPENROUTER_API_KEY)
