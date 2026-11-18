@@ -1,5 +1,5 @@
 {
- "sourceRevision": "df954c24447957e96b261f74b64c2bc7cf46c7fb",
+ "sourceRevision": "a6734a1831f266bbbb078d5c3d06e96477180426",
  "log": [
   {
    "step": 1,
@@ -720,7 +720,7 @@
   {
    "step": 158,
    "ctx": "Client",
-   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.5070190429688, 218.97845458984375, 36.4638671875 on=true parent=VoyageScene fog=1064.0831298828125 brightness=1.984381914138794 atmo=0.3700000047683716 camdist=36.672279357910156\ntext"
+   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.4929809570312, 218.78341674804688, 36.4482421875 on=true parent=VoyageScene fog=651.2246704101562 brightness=1.983305811882019 atmo=0.3700000047683716 camdist=36.651771545410156\ntext"
   },
   {
    "step": 160,
@@ -765,7 +765,7 @@
   {
    "step": 171,
    "ctx": "Server",
-   "out": "LOGS(18): The current thread cannot write 'ColorMap' (lacking capability Plugin) // The current thread cannot write 'ColorMap' (lacking capability Plugin) // The current thread cannot write 'ColorMap' (lacking capability Plugin) // The current thread cannot write 'NormalMap' (lacking capability Plugin) // [QA] FAIL asset AssetIds.CardArt/af_03 rbxassetid://72489040757878 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/af_15 rbxassetid://77023165428158 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // [MareEssentia] 우선 모델 불러오기 제한시간 도달 83 // The current thread cannot write 'NormalMap' (lacking capability Plugin)\ntext"
+   "out": "LOGS(18): The current thread cannot write 'ColorMap' (lacking capability Plugin) // The current thread cannot write 'ColorMap' (lacking capability Plugin) // The current thread cannot write 'ColorMap' (lacking capability Plugin) // The current thread cannot write 'NormalMap' (lacking capability Plugin) // [QA] FAIL asset AssetIds.CardArt/af_03 rbxassetid://72489040757878 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/af_15 rbxassetid://77023165428158 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // [MareEssentia] 우선 모델 불러오기 제한시간 도달 35 // The current thread cannot write 'NormalMap' (lacking capability Plugin)\ntext"
   },
   {
    "step": 172,
@@ -940,7 +940,7 @@
   {
    "step": 225,
    "ctx": "Client",
-   "out": "MOTION_VILLAGER_GESTURES_PASS KINDS=9 DISTINCT=9 WALKING_WORK=2\ntext"
+   "out": "MOTION_VILLAGER_GESTURES_PASS KINDS=9 DISTINCT=8 WALKING_WORK=2\ntext"
   },
   {
    "step": 226,
@@ -951,44 +951,10 @@
    "step": 227,
    "capture": "harbor_npc_face_front",
    "files": 1
-  },
-  {
-   "step": 228,
-   "ctx": "Client",
-   "out": "FIELD_QA_OPEN_EXPLORE_TAB GUI_ENABLED=true UNLOCKED_BEFORE=0\ntext"
-  },
-  {
-   "step": 230,
-   "ctx": "Client",
-   "out": "FIELD_QA_ENTRY_AVAILABLE=12 LOCKED_LABELS=0 REAL_UI_ONLY=true\ntext"
-  },
-  {
-   "step": 231,
-   "click": "field_entry",
-   "at": "298,190",
-   "out": "298,190 CLICK=지상맵 입장 HITBOX=VISIBLE BLOCKER=none\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 298,
-      "y": 190
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 233,
-   "capture": "field_entry",
-   "files": 1
   }
  ],
  "errors": [
-  "step234:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:23: FIELD_PREMIUM_MEDALLION_MISSING | "
+  "step228:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action ExecuteLuau.runCode sent to DMN_ID_PLAYCLIENT failed - Target is not reachable (ExecuteLuau.runCode, DMN_ID_PLAYCLIENT). No OnInvoke handler responded for this action. Sender: DMN_ID_STANDALONE. | text"
  ],
  "consoleCapture": {
   "captured": true,
@@ -997,7 +963,7 @@
    "Server"
   ],
   "errorCount": 2,
-  "warningCount": 14,
+  "warningCount": 13,
   "errors": [
    {
     "type": "studio-console-error",
@@ -1013,12 +979,12 @@
  },
  "summary": {
   "plannedSteps": 241,
-  "completedSteps": 235,
+  "completedSteps": 229,
   "plannedClicks": 10,
-  "successfulClicks": 10,
+  "successfulClicks": 9,
   "skippedOptionalClicks": 0,
   "plannedFrames": 62,
-  "capturedFrames": 59,
+  "capturedFrames": 58,
   "abortedEarly": true
  },
  "visualSamples": [
@@ -1028,7 +994,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 224039,
+      "bytes": 224194,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1051,7 +1017,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 248123,
+      "bytes": 248273,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1066,7 +1032,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 248647,
+      "bytes": 248597,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1081,7 +1047,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 136117,
+      "bytes": 135573,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1105,7 +1071,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 158495,
+      "bytes": 158493,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1118,7 +1084,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0178675651550293,
+    "brightness": 2.0192711353302,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1129,7 +1095,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 165869,
+      "bytes": 165863,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1142,7 +1108,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.020936965942383,
+    "brightness": 2.0233514308929443,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1153,7 +1119,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120252,
+      "bytes": 127034,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1166,7 +1132,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.024414539337158,
+    "brightness": 2.0266339778900146,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1177,7 +1143,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 162973,
+      "bytes": 162770,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1190,7 +1156,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.029252290725708,
+    "brightness": 2.0313918590545654,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1201,7 +1167,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 165007,
+      "bytes": 165134,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1216,7 +1182,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167902,
+      "bytes": 168472,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1231,7 +1197,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 171051,
+      "bytes": 170301,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1246,7 +1212,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163135,
+      "bytes": 163276,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1261,7 +1227,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164124,
+      "bytes": 164383,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1276,7 +1242,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164240,
+      "bytes": 164497,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1291,7 +1257,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 165072,
+      "bytes": 164799,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1306,7 +1272,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168064,
+      "bytes": 168082,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1321,7 +1287,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 171269,
+      "bytes": 171004,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1336,7 +1302,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170754,
+      "bytes": 170808,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1351,7 +1317,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170657,
+      "bytes": 170397,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1366,7 +1332,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 235340,
+      "bytes": 238088,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1381,7 +1347,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 205404,
+      "bytes": 208702,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1396,7 +1362,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168508,
+      "bytes": 168475,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1411,7 +1377,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167923,
+      "bytes": 167950,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1426,7 +1392,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167640,
+      "bytes": 167559,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1441,7 +1407,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163426,
+      "bytes": 163622,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1456,7 +1422,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164696,
+      "bytes": 165035,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1471,7 +1437,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164340,
+      "bytes": 164875,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1486,7 +1452,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 194298,
+      "bytes": 194793,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1501,7 +1467,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170766,
+      "bytes": 170477,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1516,7 +1482,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164702,
+      "bytes": 164406,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1531,7 +1497,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 203508,
+      "bytes": 203365,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1546,7 +1512,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 213193,
+      "bytes": 213461,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1561,7 +1527,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 208397,
+      "bytes": 208146,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1576,7 +1542,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 254648,
+      "bytes": 258551,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1590,7 +1556,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 257466,
+      "bytes": 254894,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1604,7 +1570,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 234258,
+      "bytes": 274658,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1618,7 +1584,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 255898,
+      "bytes": 269270,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1632,7 +1598,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 144735,
+      "bytes": 144584,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1646,7 +1612,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 146819,
+      "bytes": 138127,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1660,7 +1626,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 103742,
+      "bytes": 105635,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1674,7 +1640,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106229,
+      "bytes": 106424,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1688,7 +1654,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105788,
+      "bytes": 106346,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1702,7 +1668,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105773,
+      "bytes": 105717,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1716,7 +1682,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104474,
+      "bytes": 105820,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1730,7 +1696,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106543,
+      "bytes": 103638,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1744,7 +1710,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105803,
+      "bytes": 106334,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1758,7 +1724,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105860,
+      "bytes": 105826,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1772,7 +1738,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 103613,
+      "bytes": 103399,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1786,7 +1752,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106042,
+      "bytes": 105635,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1800,7 +1766,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105618,
+      "bytes": 106664,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1814,7 +1780,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105371,
+      "bytes": 104229,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1828,7 +1794,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104931,
+      "bytes": 105179,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1842,7 +1808,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105211,
+      "bytes": 105310,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1856,7 +1822,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105730,
+      "bytes": 105709,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1870,7 +1836,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104139,
+      "bytes": 104224,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1884,7 +1850,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105642,
+      "bytes": 105604,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1898,7 +1864,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 103605,
+      "bytes": 104311,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1912,28 +1878,13 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104250,
+      "bytes": 106156,
       "width": 0,
       "height": 0,
       "pass": true
      }
     ]
    }
-  },
-  {
-   "name": "field_entry",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 157447,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
   }
  ],
  "assetOwnership": {
@@ -2027,7 +1978,7 @@
       ]
      }
     },
-    "scanned": 23467,
+    "scanned": 23448,
     "contentRefs": 5136,
     "complete": true
    },
@@ -2107,13 +2058,13 @@
      }
     },
     "scanned": 25001,
-    "contentRefs": 3606,
+    "contentRefs": 3696,
     "complete": false
    }
   }
  },
  "visualEvidence": {
-  "framesChecked": 59,
+  "framesChecked": 58,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
