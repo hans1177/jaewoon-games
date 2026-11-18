@@ -50,7 +50,8 @@ local function addIcon(button: TextButton, key: string)
 		local gradient = button:FindFirstChildOfClass("UIGradient")
 		if gradient then gradient.Enabled = false end
 		local outline = button:FindFirstChildOfClass("UIStroke")
-		if outline then outline.Enabled = false end
+		-- [승인 원화·버튼 테두리] 공격 버튼의 기존 금색 UIStroke는 보이게 유지한다.
+		if outline then outline.Enabled = button.Name == "FieldAttack" end
 		local leather = button:FindFirstChild("FieldLeatherTexture")
 		if leather then leather.Visible = false end
 		local art = Instance.new("ImageLabel")
