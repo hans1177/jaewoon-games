@@ -894,7 +894,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     freeQuotaStatus(provider,designRuntime.usageWindow,accountQuota))));
   console.log('DESIGN_FREE_RECRUITED='+discovered.length);
   if (!freeModels.length)
-    return record('SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE', {frames: proofs,modelAvailability:diagnostics});
+    return record('SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE', {frames: proofs,modelAvailability: diagnostics});
   if (trim(process.env.NEMOTRON_DESIGN_CANDIDATE) !== 'YES')
     return record('SKIPPED_CANDIDATE_EDIT_NOT_ENABLED', {frames: proofs});
   let branch = '';
