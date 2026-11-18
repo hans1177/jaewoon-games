@@ -1080,7 +1080,7 @@ function NavalBattle.play(opts)
 	comboLabel.Font = Enum.Font.GothamBold
 	-- [연타 정보] 중앙 이벤트·조타·기술 버튼과 겹치지 않게 넓은 화면의 아래쪽 정보열로 이동한다.
 	comboLabel.AnchorPoint = if battleViewport.X < 480 then Vector2.new(0, 0) else Vector2.new(0.5, 0)
-	comboLabel.Position = if battleViewport.X < 480 then UDim2.fromOffset(12, 179)
+	comboLabel.Position = if battleViewport.X < 480 then UDim2.fromOffset(12, 250)
 		else UDim2.new(0.5, 0, 0, math.floor(battleViewport.Y * 0.55 + 39))
 	comboLabel.Size = if battleViewport.X < 480 then UDim2.fromOffset(166, 42)
 		else UDim2.fromOffset(math.min(300, math.max(180, battleViewport.X - 520)), 38)
@@ -3874,17 +3874,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		l.AnchorPoint = Vector2.new(0.5, 0.5)
 		-- [중앙 전투 알림] 상단 전술판·연타·양측 96px 기술을 피하고 한 줄로만 표시한다.
 		l.Position = if battleViewport.Y < 340 then UDim2.new(0.5, 0, 0, 122)
-			else UDim2.fromScale(0.5, if battleViewport.X < 480 then 0.25 else 0.55)
+			else UDim2.fromScale(0.5, if battleViewport.X < 480 then 190 / battleViewport.Y else 0.55)
 		l.Size = UDim2.fromOffset(if battleViewport.X < 480 then math.min(340, battleViewport.X - 24)
 			else math.min(370, math.max(190, battleViewport.X - 500)),
-			if battleViewport.Y < 340 then 38 elseif battleViewport.X < 480 then 50 else 46)
+			if battleViewport.Y < 340 then 38 elseif battleViewport.X < 480 then 40 else 46)
 		l.TextWrapped = false
 		l.TextTruncate = Enum.TextTruncate.AtEnd
 		l.TextStrokeColor3 = Color3.fromRGB(13, 20, 29)
 		l.TextStrokeTransparency = 1 -- [중앙 글씨] 한글 외곽선 번짐 제거
 		l.ZIndex = 28
 		game:GetService("TweenService"):Create(l, TweenInfo.new(1.20, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-			Position = l.Position + UDim2.fromOffset(0, if battleViewport.Y < 340 then 8 else 10),
+			Position = l.Position + UDim2.fromOffset(0, if battleViewport.Y < 340 then 8 elseif battleViewport.X < 480 then 4 else 10),
 			TextTransparency = 1, TextStrokeTransparency = 1,
 		}):Play()
 		task.delay(1.28, function()
