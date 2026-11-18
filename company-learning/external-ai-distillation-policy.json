@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "kind": "vibe2-external-ai-distillation-policy",
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Owner permits external AI to directly edit all visual design categories in isolated code candidate branches. Raw external knowledge still cannot self-promote or be accepted as verified QA, main, gameplay, save, security, or release authority.",
@@ -169,6 +169,29 @@
     "independentStudioBeforeAfterQaBeforeAcceptance": true,
     "autoMergeOrReleaseWithoutOwnerDefinedGate": false,
     "modelGeneratedSourceCannotExecuteUntilBoundedCandidateQa": true,
-    "modelCannotMutateCanonicalCentralPolicy": true
+    "modelCannotMutateCanonicalCentralPolicy": true,
+    "studioEvidenceSelection": {
+      "officialCaptureScenario": "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json",
+      "expectedCoverageFrames": 83,
+      "architectureAndStreetsFrames": 12,
+      "residentFaceAndOutfitFrames": 9,
+      "maxImagesPerFreeCall": 8,
+      "rotationPhases": 5,
+      "sourcesMustBeExactStudioCaptureAndCodeRevision": true,
+      "preserveOriginalQASteps": true,
+      "noImageGenerationOrSyntheticPass": true
+    },
+    "townLayoutEdit": {
+      "enabled": true,
+      "scope": "EXISTING_NAMED_FACILITY_POSITION_IN_PORTSCENE_ONLY",
+      "sourceFile": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+      "maximumHorizontalShiftStuds": 5,
+      "verticalShiftStuds": 0,
+      "sameStreetSideRequired": true,
+      "minimumPlazaDistanceFromCenterlineStuds": 32,
+      "sizeFloorsEconomyRoutesAndSaveUnchanged": true,
+      "exactSourceAnchorAndIndependentStudioBeforeAfterQaRequired": true,
+      "cannotCreateDestroyOrMoveGameplayFacilityIdentity": true
+    }
   }
 }
