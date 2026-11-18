@@ -179,7 +179,7 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "-- [교역 탭] 기존 교역 장부를 별도 화면 없이 시설 책 안에서 확인한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer.PlayerGui\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"),\"TRADE_GUI_MISSING\")\nlocal main=assert(gui:FindFirstChild(\"Main\",true),\"TRADE_MAIN_MISSING\")\nlocal detail=assert(gui:FindFirstChild(\"FacilityDetail\",true),\"TRADE_TAB_DETAIL_MISSING\")\nlocal list=assert(detail:FindFirstChild(\"TradeIndex\"),\"TRADE_INDEX_MISSING\")\nassert(main.Visible and detail.Visible and list.Visible,\"TRADE_TAB_DETAIL_NOT_VISIBLE\")\nassert(not pg:FindFirstChild(\"TradeHallGui\"),\"TRADE_EXTRA_WINDOW_RETURNED\")\nreturn \"TRADE_MENU_CONTEXT_PRICE_UI_PASS\""
+    "code": "-- [교역 탭] 기존 교역 장부를 별도 화면 없이 시설 책 안에서 확인한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer.PlayerGui\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"),\"TRADE_GUI_MISSING\")\nlocal main=assert(gui:FindFirstChild(\"Main\",true),\"TRADE_MAIN_MISSING\")\nlocal detail=assert(gui:FindFirstChild(\"FacilityDetail\",true),\"TRADE_TAB_DETAIL_MISSING\")\nlocal list=assert(detail:FindFirstChild(\"TradeIndex\"),\"TRADE_INDEX_MISSING\")\nassert(main.Visible and detail.Visible and list.Visible,\"TRADE_TAB_DETAIL_NOT_VISIBLE\")\n-- [기존 부가 기능] 거래소 게시판과 우편은 인접 시설 탭으로 직접 진입한다.\nlocal extra=assert(gui:FindFirstChild(\"FacilityTab_market\",true),\"TRADE_MARKET_TAB_MISSING\")\nassert(extra:IsA(\"TextButton\") and extra.Visible and extra.Interactable,\"TRADE_MARKET_TAB_DISABLED\")\nassert(not pg:FindFirstChild(\"TradeHallGui\"),\"TRADE_EXTRA_WINDOW_RETURNED\")\nreturn \"TRADE_MENU_CONTEXT_PRICE_UI_PASS\""
   },
   {
     "type": "capture",
