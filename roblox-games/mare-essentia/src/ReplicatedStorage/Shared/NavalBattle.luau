@@ -1003,12 +1003,16 @@ function NavalBattle.play(opts)
 	tactic.Name = "BattleTacticalReadout"
 	tactic.AnchorPoint = Vector2.new(0.5, 0)
 	tactic.Position = UDim2.new(0.5, 0, 0, 119)
-	tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.52 elseif battleViewport.X < 720 then 0.48 else 0.46, 0, 0, 46)
-	tactic.TextSize = if battleViewport.X < 480 then 13 else 14
-	tactic.TextTruncate = Enum.TextTruncate.AtEnd
-	tactic.TextWrapped = true
-	tactic.BackgroundColor3 = Color3.fromRGB(27, 35, 43)
-	tactic.BackgroundTransparency = 0.18
+	-- [중앙 해전 글씨] 축소·외곽선 번짐을 없애고 충분한 폭의 인쇄판에 고정 크기로 표시한다.
+    tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.66 elseif battleViewport.X < 720 then 0.60 else 0.50, 0, 0, 54)
+    tactic.TextSize = if battleViewport.X < 480 then 15 else 18
+    tactic.Font = Enum.Font.GothamBold
+    tactic.TextScaled = false
+    tactic.TextStrokeTransparency = 1
+    tactic.TextTruncate = Enum.TextTruncate.AtEnd
+    tactic.TextWrapped = true
+    tactic.BackgroundColor3 = Color3.fromRGB(21, 29, 35)
+    tactic.BackgroundTransparency = 0.04
 	tactic.BorderSizePixel = 0
 	tactic.Visible = not opts.cardOnly
 	tactic.ZIndex = 10
@@ -1263,7 +1267,12 @@ function NavalBattle.play(opts)
 		local st = Instance.new("UIStroke")
 		st.Color = Color3.fromRGB(214, 170, 82)
 		st.Thickness = 2
-		st.Parent = b
+        st.Parent = b
+        -- [해상 기술] 버튼에 고유 확대 상태를 두고 재사용 완료 순간만 한 번 반짝인다.
+        local readyScale = Instance.new("UIScale")
+        readyScale.Name = "NavalReadyScale"
+        readyScale.Scale = 1
+        readyScale.Parent = b
 		local assetId = iconKey and AssetIds[iconKey]
 		if assetId then
 			b.BackgroundTransparency = 1
@@ -1290,10 +1299,10 @@ function NavalBattle.play(opts)
 			caption.BackgroundTransparency = 1
 			caption.Text = text
 			caption.Font = Enum.Font.GothamBold
-			caption.TextSize = if size.X.Offset >= 90 then 13 else 12
+			caption.TextSize = if size.X.Offset >= 90 then 16 else 14
 			caption.TextColor3 = Color3.fromRGB(255, 242, 211)
 			caption.TextStrokeColor3 = Color3.fromRGB(14, 26, 44)
-			caption.TextStrokeTransparency = 0.34
+			caption.TextStrokeTransparency = 1
 			caption.TextTruncate = Enum.TextTruncate.AtEnd
 			caption.ZIndex = b.ZIndex + 2
 			caption.Parent = b
@@ -3862,21 +3871,31 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local currentAnnouncement = nil
 	local function popText(text, color)
 		if currentAnnouncement and currentAnnouncement.Parent then currentAnnouncement:Destroy() end
-		local l = label(gui, text, if battleViewport.X < 480 then 24 else 33, color)
-		currentAnnouncement = l
-		l.Name = "NavalBattleAnnouncement"
-		l.Font = Enum.Font.GothamBold
-		l.AnchorPoint = Vector2.new(0.5, 0.5)
-		l.Position = UDim2.fromScale(0.5, if battleViewport.X < 480 then 0.25 else 0.27)
-		l.Size = UDim2.fromOffset(math.min(410, battleViewport.X - 24), if battleViewport.X < 480 then 50 else 58)
-		l.TextWrapped = true
-		l.TextStrokeColor3 = Color3.fromRGB(13, 20, 29)
-		l.TextStrokeTransparency = 0.92
-		l.ZIndex = 28
-		game:GetService("TweenService"):Create(l, TweenInfo.new(1.20, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-			Position = l.Position - UDim2.fromOffset(0, 30),
-			TextTransparency = 1, TextStrokeTransparency = 1,
-		}):Play()
+		local l = label(gui, text, if battleViewport.X < 480 then 23 else 30, color)
+        currentAnnouncement = l
+        l.Name = "NavalBattleAnnouncement"
+        l.Font = Enum.Font.GothamBold
+        l.AnchorPoint = Vector2.new(0.5, 0.5)
+        l.Position = UDim2.fromScale(0.5, if battleViewport.X < 480 then 0.25 else 0.27)
+        l.Size = UDim2.fromOffset(math.min(410, battleViewport.X - 24), if battleViewport.X < 480 then 50 else 58)
+        l.TextScaled = false
+        l.TextWrapped = true
+        l.TextStrokeTransparency = 1
+        l.BackgroundColor3 = Color3.fromRGB(28, 25, 21)
+        l.BackgroundTransparency = 0.08
+        l.ZIndex = 28
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 8)
+        corner.Parent = l
+        local edge = Instance.new("UIStroke")
+        edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        edge.Color = Color3.fromRGB(216, 177, 104)
+        edge.Thickness = 1.5
+        edge.Parent = l
+        -- [중앙 안내 선명도] 글자 자체를 움직이며 보간하지 않고 명도만 부드럽게 낮춘다.
+        game:GetService("TweenService"):Create(l, TweenInfo.new(1.20, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            TextTransparency = 1, BackgroundTransparency = 1,
+        }):Play()
 		task.delay(1.28, function()
 			if l.Parent then l:Destroy() end
 			if currentAnnouncement == l then currentAnnouncement = nil end
@@ -5143,7 +5162,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			elseif now < skillUntil[SKILLS[2].id] then
 				local sk = SKILLS[2]
 				status = "특화 발동 · " .. sk.text
-				tip = string.format("%s · 남은 %.1f초", sk.cue or "전투 기술", skillUntil[sk.id] - now)
+				tip = (sk.cue or "전투 기술") .. " · 효과 발동 중"
 				tone = sk.col
 			elseif not inRange then
 				status, tip, tone = "① 적선 접근", string.format("포 사거리까지 %d m · 바람과 조타를 확인해.", math.ceil(dd - cannon.range)), Color3.fromRGB(255, 205, 130)
@@ -5152,13 +5171,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					string.format("%s %d° · 편차 %d° · %s", gunSide, math.floor(aimAngle + 0.5), sideDeviation, steerCue),
 					Color3.fromRGB(255, 185, 123)
 			elseif now < nextMeFire then
-				status, tip, tone = "③ 대포 재장전", string.format("남은 약 %.1f초 · 적선과의 거리 %dm", math.max(0, nextMeFire - now), math.floor(dd)), Color3.fromRGB(242, 212, 138)
+				status, tip, tone = "③ 대포 재장전", string.format("화포 준비 중 · 적선과의 거리 %dm", math.floor(dd)), Color3.fromRGB(242, 212, 138)
 			else
 				status, tip, tone = "③ 포격 준비", string.format("적선 %dm · 사거리 %dm · 자동 포격 대기", math.floor(dd), cannon.range), Color3.fromRGB(130, 237, 172)
 			end
 			local messageText = if battleViewport.X < 480 then status .. "\n" ..
 				(if not inRange then "대포 사거리 밖" elseif not aligned then steerCue .. " 돌려"
-					elseif now < nextMeFire then string.format("장전 %.1f초", math.max(0, nextMeFire - now)) else "측면 포격 가능")
+					elseif now < nextMeFire then "장전 중" else "측면 포격 가능")
 				else status .. "\n" .. tip -- [상단 가독성] 세로 폰에서 정보가 잘리지 않게 두 줄 압축
 			if messageText ~= lastTacticText then
 				tactic.Text, lastTacticText = messageText, messageText
@@ -5207,7 +5226,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			reloadFill.BackgroundColor3 = if now < skillUntil.rapid then Color3.fromRGB(255, 120, 70) elseif prog >= 1 then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(240, 180, 80)
 			reloadText.Text = if not inRange then "포 — 사거리 밖"
 				elseif prog >= 1 then "포 발사 준비!"
-				else string.format("포 장전 · %.1f초", math.max(0, nextMeFire - now))
+				else "포 장전 중"
 			local v = cam:WorldToViewportPoint(ORIGIN + foe.pos)
 			local vp = cam.ViewportSize
 			local onScr = v.Z > 0 and v.X > 40 and v.X < vp.X - 40 and v.Y > 90 and v.Y < vp.Y - 90
@@ -5281,18 +5300,26 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if not b:GetAttribute("NavalWasCooling") then b:SetAttribute("NavalWasCooling", true) end
 			elseif b:GetAttribute("NavalWasCooling") then
 				b:SetAttribute("NavalWasCooling", false)
-				b:SetAttribute("NavalReadyPulseUntil", now + 0.42)
+				b:SetAttribute("NavalReadyPulseUntil", now + 0.55)
+                local readyScale = b:FindFirstChild("NavalReadyScale")
+                if readyScale and readyScale:IsA("UIScale") then
+                    readyScale.Scale = 1.12
+                    TweenService:Create(readyScale, TweenInfo.new(0.42, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+                end
 			end
 			b.Interactable = ready and phase == "duel" and not opts.cardOnly and not opts.card
 			b.Active = b.Interactable
 			b.AutoButtonColor = b.Interactable
 			local rim = b:FindFirstChildOfClass("UIStroke")
 			if rim then
-				local pulse = math.clamp(((b:GetAttribute("NavalReadyPulseUntil") or 0) - now) / 0.42, 0, 1)
+				local pulse = math.clamp(((b:GetAttribute("NavalReadyPulseUntil") or 0) - now) / 0.55, 0, 1)
 				local baseColor = if active then Color3.fromRGB(255, 234, 148)
 					elseif ready then Color3.fromRGB(190, 244, 198) else Color3.fromRGB(96, 108, 123)
-				rim.Color = baseColor:Lerp(Color3.fromRGB(255, 244, 153), pulse)
-				rim.Thickness = 2 + 2 * pulse
+				rim.Color = baseColor:Lerp(Color3.fromRGB(255, 248, 164), pulse)
+                rim.Thickness = 2.2 + 2.6 * pulse
+                if art and art:IsA("ImageLabel") and pulse > 0 then
+                    art.ImageColor3 = art.ImageColor3:Lerp(Color3.fromRGB(255, 232, 143), pulse * 0.9)
+                end
 				rim.Transparency = if ready or active then 0.06 else 0.28
 			end
 		end
