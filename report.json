@@ -1,5 +1,5 @@
 {
- "sourceRevision": "ebb420c4d8db5c9d44c4800483f59aed47aa7840",
+ "sourceRevision": "01bc9a199bae2ecb31625e139f440029efc8665a",
  "log": [
   {
    "step": 1,
@@ -720,7 +720,7 @@
   {
    "step": 158,
    "ctx": "Client",
-   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.5, 219.28387451171875, 36.4462890625 on=true parent=VoyageScene fog=2600 brightness=1.9867072105407715 atmo=0.3700000047683716 camdist=36.65728759765625\ntext"
+   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.5, 218.7316131591797, 36.4501953125 on=true parent=VoyageScene fog=1880.7508544921875 brightness=1.9892610311508179 atmo=0.3700000047683716 camdist=36.65364074707031\ntext"
   },
   {
    "step": 160,
@@ -850,7 +850,7 @@
   {
    "step": 199,
    "ctx": "Client",
-   "out": "MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2 ACTIVE_WALKERS=7 CARRY_FORWARD=true\ntext"
+   "out": "MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2 ACTIVE_WALKERS=9 CARRY_FORWARD=true\ntext"
   },
   {
    "step": 200,
@@ -951,73 +951,11 @@
    "step": 227,
    "capture": "harbor_npc_face_front",
    "files": 1
-  },
-  {
-   "step": 228,
-   "ctx": "Client",
-   "out": "FIELD_QA_OPEN_EXPLORE_TAB GUI_ENABLED=true UNLOCKED_BEFORE=0\ntext"
-  },
-  {
-   "step": 230,
-   "ctx": "Client",
-   "out": "FIELD_QA_ENTRY_AVAILABLE=12 LOCKED_LABELS=0 REAL_UI_ONLY=true\ntext"
-  },
-  {
-   "step": 231,
-   "click": "field_entry",
-   "at": "298,190",
-   "out": "298,190 CLICK=지상맵 입장 HITBOX=VISIBLE BLOCKER=none\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 298,
-      "y": 190
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 233,
-   "capture": "field_entry",
-   "files": 1
-  },
-  {
-   "step": 234,
-   "ctx": "Client",
-   "out": "FIELD_QA_ENTRY_PASS MOVEMENT_READY: x=3000 screen=FieldGui\ntext"
-  },
-  {
-   "step": 235,
-   "capture": "field_npc_ally_mob",
-   "files": 1
-  },
-  {
-   "step": 236,
-   "ctx": "Client",
-   "out": "FIELD_MOTION_STABLE actors=21 maxStep=1.20 twoWeapons=PASS skillArt=PASS\ntext"
-  },
-  {
-   "step": 237,
-   "capture": "field_motion_smooth_icons",
-   "files": 1
-  },
-  {
-   "step": 239,
-   "ctx": "Client",
-   "out": "MOTION_FIELD_ACTORS_PASS ENEMY_ROLES=3 ALLIES=1 ENEMY_JOINTS=5 ALLY_JOINTS=6 DISTINCT_ROLE_POSES=3 DISTINCT_SUPPORT_POSES=4\ntext"
-  },
-  {
-   "step": 240,
-   "capture": "field_actor_after_motion",
-   "files": 1
   }
  ],
- "errors": [],
+ "errors": [
+  "step228:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action ExecuteLuau.runCode sent to DMN_ID_PLAYCLIENT failed - Target is not reachable (ExecuteLuau.runCode, DMN_ID_PLAYCLIENT). No OnInvoke handler responded for this action. Sender: DMN_ID_STANDALONE. | text"
+ ],
  "consoleCapture": {
   "captured": true,
   "contexts": [
@@ -1025,18 +963,18 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 13,
+  "warningCount": 12,
   "errors": []
  },
  "summary": {
   "plannedSteps": 241,
-  "completedSteps": 241,
+  "completedSteps": 229,
   "plannedClicks": 10,
-  "successfulClicks": 10,
+  "successfulClicks": 9,
   "skippedOptionalClicks": 0,
   "plannedFrames": 62,
-  "capturedFrames": 62,
-  "abortedEarly": false
+  "capturedFrames": 58,
+  "abortedEarly": true
  },
  "visualSamples": [
   {
@@ -1045,7 +983,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 224119,
+      "bytes": 224083,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1068,7 +1006,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 248215,
+      "bytes": 248289,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1083,7 +1021,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 248684,
+      "bytes": 248602,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1098,7 +1036,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 151486,
+      "bytes": 156447,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1122,7 +1060,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 142834,
+      "bytes": 143325,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1135,7 +1073,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.015472173690796,
+    "brightness": 2.016749143600464,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1146,7 +1084,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 165902,
+      "bytes": 165846,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1159,7 +1097,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0182058811187744,
+    "brightness": 2.019085645675659,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1170,7 +1108,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 114883,
+      "bytes": 117479,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1183,7 +1121,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.021453380584717,
+    "brightness": 2.02239727973938,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1194,7 +1132,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 162966,
+      "bytes": 163071,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1207,7 +1145,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0271456241607666,
+    "brightness": 2.0269978046417236,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1218,7 +1156,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164229,
+      "bytes": 164336,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1233,7 +1171,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168444,
+      "bytes": 168328,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1248,7 +1186,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170660,
+      "bytes": 171302,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1263,7 +1201,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163267,
+      "bytes": 163102,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1278,7 +1216,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163845,
+      "bytes": 163732,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1293,7 +1231,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164352,
+      "bytes": 163698,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1308,7 +1246,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164887,
+      "bytes": 165261,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1323,7 +1261,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168744,
+      "bytes": 169119,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1338,7 +1276,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 171146,
+      "bytes": 171272,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1353,7 +1291,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170770,
+      "bytes": 170839,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1368,7 +1306,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170771,
+      "bytes": 170765,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1383,7 +1321,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 235205,
+      "bytes": 232539,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1398,7 +1336,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 196374,
+      "bytes": 195426,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1413,7 +1351,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167939,
+      "bytes": 168529,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1428,7 +1366,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167843,
+      "bytes": 168171,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1443,7 +1381,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167795,
+      "bytes": 168133,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1458,7 +1396,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164288,
+      "bytes": 164407,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1473,7 +1411,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164891,
+      "bytes": 164565,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1488,7 +1426,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164586,
+      "bytes": 164098,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1503,7 +1441,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 194450,
+      "bytes": 194461,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1518,7 +1456,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 171694,
+      "bytes": 171143,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1533,7 +1471,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164465,
+      "bytes": 164461,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1548,7 +1486,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 203171,
+      "bytes": 203229,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1563,7 +1501,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 212863,
+      "bytes": 212913,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1578,7 +1516,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 208208,
+      "bytes": 208653,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1593,7 +1531,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 255755,
+      "bytes": 251557,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1607,7 +1545,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 253748,
+      "bytes": 245495,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1621,7 +1559,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 237813,
+      "bytes": 196769,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1635,7 +1573,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 236719,
+      "bytes": 267345,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1649,7 +1587,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 144436,
+      "bytes": 144123,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1663,7 +1601,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 151092,
+      "bytes": 153165,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1677,7 +1615,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105635,
+      "bytes": 105982,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1691,7 +1629,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105659,
+      "bytes": 106097,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1705,7 +1643,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105597,
+      "bytes": 106043,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1719,7 +1657,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105573,
+      "bytes": 105828,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1733,7 +1671,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105605,
+      "bytes": 104153,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1747,7 +1685,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104150,
+      "bytes": 105022,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1761,7 +1699,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104519,
+      "bytes": 106319,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1775,7 +1713,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105487,
+      "bytes": 106160,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1789,7 +1727,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 102151,
+      "bytes": 102820,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1803,7 +1741,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104887,
+      "bytes": 106411,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1817,7 +1755,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106297,
+      "bytes": 104383,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1831,7 +1769,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105475,
+      "bytes": 104366,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1845,7 +1783,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104940,
+      "bytes": 105027,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1859,7 +1797,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105131,
+      "bytes": 105581,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1873,7 +1811,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105584,
+      "bytes": 106012,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1887,7 +1825,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 102173,
+      "bytes": 102727,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1901,7 +1839,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104638,
+      "bytes": 105622,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1915,7 +1853,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 103742,
+      "bytes": 103161,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1929,461 +1867,15 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 83441,
+      "bytes": 84977,
       "width": 0,
       "height": 0,
       "pass": true
      }
     ]
    }
-  },
-  {
-   "name": "field_entry",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 153493,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
-  },
-  {
-   "name": "field_npc_ally_mob",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 215348,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
-  },
-  {
-   "name": "field_motion_smooth_icons",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 215747,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
-  },
-  {
-   "name": "field_actor_after_motion",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 219774,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
   }
  ],
- "assetAudit": {
-  "models": {
-   "status": "PASS",
-   "loaded": 799,
-   "errors": [],
-   "failed": 0,
-   "registered": 799
-  },
-  "registered": {
-   "status": "PASS",
-   "failed": 0,
-   "imagesSounds": 473,
-   "models": 808,
-   "elapsedSeconds": 16,
-   "timedOut": false,
-   "registered": 1281,
-   "serverPreloadUnresponsive": true,
-   "failedMedia": [],
-   "fetchCallbacks": 0,
-   "currentBatch": 1,
-   "serverPreloadEvidence": {
-    "status": "FAIL",
-    "failed": 12,
-    "failedMedia": [
-     {
-      "id": "rbxassetid://72489040757878",
-      "key": "AssetIds.CardArt/af_03",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://77023165428158",
-      "key": "AssetIds.CardArt/af_15",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://107877140385634",
-      "key": "AssetIds.CardArt/ast_aurora",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://127370718437030",
-      "key": "AssetIds.CardArt/ast_comet",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://105991549101223",
-      "key": "AssetIds.CardArt/ast_halley_comet",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://114650000468629",
-      "key": "AssetIds.CardArt/ast_halley_prediction",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://125327803198600",
-      "key": "AssetIds.CardArt/ast_jupiter_moons",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://120956229711846",
-      "key": "AssetIds.CardArt/ast_saturn_rings",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://114615121747571",
-      "key": "AssetIds.CardArt/ast_venus",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://76486492447366",
-      "key": "AssetIds.CardArt/bot_herbarium",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://135648768778892",
-      "key": "AssetIds.CardArt/bot_plant_anatomy",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://97023606015316",
-      "key": "AssetIds.CardArt/bot_potato",
-      "status": "TIMEOUT_16S"
-     }
-    ],
-    "timedOut": false,
-    "fetchCallbacks": 0
-   },
-   "clientVerified": true,
-   "soundClientVerified": true,
-   "authority": "OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED"
-  },
-  "features": {
-   "status": "PASS",
-   "progress": "2044:DONE",
-   "coverage": {
-    "Visit": {
-     "invalid": 0,
-     "rejected": 54,
-     "accepted": 0,
-     "calls": 54
-    },
-    "BuyFleetShip": {
-     "invalid": 0,
-     "rejected": 48,
-     "accepted": 3,
-     "calls": 51
-    },
-    "VoyageBonus": {
-     "invalid": 0,
-     "rejected": 181,
-     "accepted": 0,
-     "calls": 181
-    },
-    "PlayStory": {
-     "invalid": 0,
-     "rejected": 225,
-     "accepted": 3,
-     "calls": 228
-    },
-    "Hunt": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Audience": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "BuyGear": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 6,
-     "calls": 6
-    },
-    "BuyShip": {
-     "invalid": 0,
-     "rejected": 49,
-     "accepted": 2,
-     "calls": 51
-    },
-    "HireCrew": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyPlating": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyMap": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "NewGame": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "WaitDay": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "SetSpecialty": {
-     "invalid": 0,
-     "rejected": 10,
-     "accepted": 5,
-     "calls": 15
-    },
-    "Talk": {
-     "invalid": 0,
-     "rejected": 47,
-     "accepted": 2,
-     "calls": 49
-    },
-    "Borrow": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "QAGrant": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Sell": {
-     "invalid": 0,
-     "rejected": 98,
-     "accepted": 20,
-     "calls": 118
-    },
-    "Buy": {
-     "invalid": 0,
-     "rejected": 98,
-     "accepted": 20,
-     "calls": 118
-    },
-    "Repair": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "Sail": {
-     "invalid": 0,
-     "rejected": 177,
-     "accepted": 4,
-     "calls": 181
-    },
-    "Research": {
-     "invalid": 0,
-     "rejected": 6,
-     "accepted": 0,
-     "calls": 6
-    },
-    "Withdraw": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuySupplies": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "DismissEscort": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "ToggleGear": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 6,
-     "calls": 6
-    },
-    "VoyageChoice": {
-     "invalid": 0,
-     "rejected": 180,
-     "accepted": 1,
-     "calls": 181
-    },
-    "ResolveBattle": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Repay": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Recruit": {
-     "invalid": 0,
-     "rejected": 48,
-     "accepted": 1,
-     "calls": 49
-    },
-    "Accept": {
-     "invalid": 0,
-     "rejected": 3,
-     "accepted": 5,
-     "calls": 8
-    },
-    "Feast": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "TalkChoice": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "BuyInsurance": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyEscort": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "State": {
-     "invalid": 0,
-     "rejected": 2,
-     "accepted": 0,
-     "calls": 2
-    },
-    "Rumor": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "ChallengeBoss": {
-     "invalid": 0,
-     "rejected": 4,
-     "accepted": 0,
-     "calls": 4
-    },
-    "Deposit": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyLicense": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "Haggle": {
-     "invalid": 0,
-     "rejected": 65,
-     "accepted": 52,
-     "calls": 117
-    },
-    "Explore": {
-     "invalid": 0,
-     "rejected": 592,
-     "accepted": 0,
-     "calls": 592
-    },
-    "BuyCannon": {
-     "invalid": 0,
-     "rejected": 3,
-     "accepted": 2,
-     "calls": 5
-    }
-   },
-   "observed": {
-    "naval-resolved": 1,
-    "quest-accepted": 5,
-    "voyage-arrived": 4,
-    "naval-encounter": 1
-   },
-   "calls": 2044,
-   "issues": [],
-   "rejected": 1892,
-   "failed": 0,
-   "accepted": 149
-  }
- },
- "assetRegistryAudit": {
-  "registered": 1181,
-  "activeIds": 1181,
-  "mismatched": [],
-  "missing": [],
-  "unverifiedPermissions": [],
-  "status": "PASS"
- },
- "clientImageAudit": {
-  "mode": "VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED",
-  "expected": 373,
-  "soundExpected": 100,
-  "missing": [],
-  "soundMissing": [],
-  "batches": 8,
-  "loaded": 373,
-  "soundLoaded": 100
- },
  "assetOwnership": {
   "reportedFailedIds": [
    "72489040757878",
@@ -2475,7 +1967,7 @@
       ]
      }
     },
-    "scanned": 23483,
+    "scanned": 23458,
     "contentRefs": 5142,
     "complete": true
    },
@@ -2555,13 +2047,13 @@
      }
     },
     "scanned": 25001,
-    "contentRefs": 4574,
+    "contentRefs": 4564,
     "complete": false
    }
   }
  },
  "visualEvidence": {
-  "framesChecked": 62,
+  "framesChecked": 58,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
