@@ -1,3 +1,4 @@
+// 파일명: qa/mare-essentia-datastore-name.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -52,7 +53,9 @@ test('항구 시작과 재생성에서 공중 캐릭터가 노출되지 않는�
   assert.match(client,/H.placeCharacterOnSpawn\(char\)/);
   assert.match(spawn,/part.LocalTransparencyModifier = if sceneSpawn then 0 else 1/);
   assert.match(client,/player.CharacterAppearanceLoaded:Connect\(H.placeCharacterOnSpawn\)/);
-  assert.match(client,/titleGui.Enabled = on or H.titleMenuOpen or waitingPort/);
+  assert.match(client,/local titleVisible = on or H.titleMenuOpen/);
+  assert.match(client,/titleGui.Enabled = titleVisible or waitingPort/);
+  assert.match(client,/titlePanel.Visible = titleVisible/);
   assert.match(client,/if H.portLoadingLabel then H.portLoadingLabel.Visible = waitingPort and not H.titleMenuOpen end/);
   assert.match(client,/if H.setTitleMode then H.setTitleMode\(not view or newGameMode\) end/);
   assert.match(client,/H.setTitleMode\(false\)/);
@@ -2781,4 +2784,51 @@ test('네모트론 후보와 독립 검수는 동일 무료 호출에서 다른 
   assert.equal(result.status,'OK');
   assert.equal(validateVisualComparison(result.text,[frame.name]).status,'UNVERIFIED',
     'JSON 구조 성공은 시각 개선 성공과 구분');
+});
+
+
+// [교역·조선소·방문 메뉴 회귀] 실물 미리보기와 모바일 버튼 정렬은 기존 렌더러만 사용한다.
+test('대항해시대 교역품 3D·선박 전시장·공통 방문 메뉴가 화면 공간을 활용한다',()=>{
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const goods=source.slice(source.indexOf('local GOOD_ICON = {}'),source.indexOf('-- 줄 제목·부제'));
+  const trade=source.slice(source.indexOf('local function openTradeHall()'),source.indexOf('H.tradeHall = openTradeHall'));
+  const yard=source.slice(source.indexOf('function openYardHall()'),source.indexOf('H.yardHall = openYardHall'));
+  assert.ok(goods.includes('GOOD_ICON[goodsId] = { "Cargo", cargoAsset, nil, "Goods/" .. goodsId }'),
+    '실제 등록된 Cargo 모델만 상품 원화와 연결');
+  assert.match(trade,/g\.id ~= hallGood then gi = \{ "Goods", g\.id \} end/,
+    '선택 상품만 3D로 표시하고 나머지 목록은 원화로 남겨 화면 부하 제한');
+  assert.match(trade,/math\.min\(heroW - 22, root\.AbsoluteSize\.Y - menuY - 94, 620\)/,
+    '넓은 화면에서 선택 교역품의 3D 높이 확대');
+  assert.match(trade,/art\.Size = UDim2\.new\(1, -20, 0, heroPx\)/,
+    '교역품 전시대의 가로 여백 활용');
+  assert.match(trade,/math\.min\(width - 34, math\.max\(190, root\.AbsoluteSize\.Y \* 0\.56\), 370\)/,
+    '모바일 교역품 상세 화면도 원본 확대');
+  assert.match(yard,/model\.Size = UDim2\.new\(1, -20, 0, px\)/,
+    '선체가 긴 실제 함선의 가로 3D 전시 공간');
+  assert.match(yard,/math\.min\(heroWidth - 20, heroHeight - 62, 620\)/,
+    '선박 3D 높이 최대치 확대');
+  assert.match(source,/width < math\.max\(450, left \+ btnWidth \+ 240\)/,
+    '방문 메뉴의 3~5개 버튼과 설명이 중간 화면 폭에서 겹치지 않게 재배치');
+  assert.match(source,/local iconPx = if it\.portrait then 164 else 148/,
+    '공통 시설 메뉴 원화와 인물 초상 확대');
+  for(const op of ['Buy','Sell','BuyShip','Repair','BuySupplies'])
+    assert.ok(source.includes('call("'+op+'"'),'기존 거래·조선 서버 호출 유지: '+op);
+  assert.doesNotMatch(trade,/Instance\.new\("Part"\)/,'UI에 새 임시 3D 도형 금지');
+});
+
+
+// [무료 AI 디자인 검수] 실사 캡처의 메뉴 분야를 모두 기존 UI 역할로 분류한다.
+test('AI 디자인 3D 교역품·조선·모든 방문 메뉴 화면을 UI 검수한다',async()=>{
+  const {designRoleForFrames,selectDesignFrameRole}=await import('../tools/company-nemotron-design-review.mjs');
+  const targets=['trade_goods_3d-0.jpg','market_trade-0.jpg','cargo_inventory-0.jpg',
+    'shipyard_preview-0.jpg','research_tech-0.jpg','quest_journal-0.jpg',
+    'codex_book-0.jpg','recruit_crew-0.jpg','status_wallet-0.jpg','merchant_dialog-0.jpg'];
+  for(const name of targets)assert.equal(designRoleForFrames([name]),'UI',name);
+  assert.equal(designRoleForFrames(['ship_harbor-0.jpg']),'WORLD','일반 항해 풍경은 WORLD 유지');
+  assert.equal(designRoleForFrames(['npc_face-0.jpg']),'NPC','초상·인물은 NPC 유지');
+  assert.equal(selectDesignFrameRole(targets),'UI','UI 화면 2장 이상이면 기존 순환에서 검수');
+  const source=fs.readFileSync('tools/company-nemotron-design-review.mjs','utf8');
+  assert.match(source,/trade goods 3D previews, shipyard/,'무료 디자인 검수 프롬프트 영역');
+  assert.match(source,/Only change visual constants on EXISTING exact source lines shown in anchors/,
+    '기존 안전한 단일 코드 앵커 변경만 허용');
 });
