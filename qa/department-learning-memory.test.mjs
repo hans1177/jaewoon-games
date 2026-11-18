@@ -77,3 +77,39 @@ test('verified failure learning is retained as evidence without awarding XP',()=
   assert.deepEqual(qa[0].risks,['mobile regression']);
   assert.equal(ledger.departments.qa.xp,2040);
 });
+
+
+// [Vibe5.9 전문 학습] 모델 이름은 QA 증거에서만 취득하고 미승인/미검증 모델은 배정 점수에 반영하지 않는다.
+test('Vibe59 independently verified specialist identity survives existing learning ledger',()=>{
+  const evidence={id:'vibe59-expert-pass',type:'VIBE2',gameId:'mare-essentia',
+    outcome:'SUCCESS',verified:true,independentQa:'PASS',
+    sourceRevision:'1'.repeat(40),verifiedAt:'2026-11-18T06:40:00Z',
+    departmentLearning:{gate:'PASS',gameId:'mare-essentia',gameSlug:'mare-essentia',
+      sourcePath:'roblox-games/mare-essentia',workLane:'FULL',results:[
+        resultFor('planning',{provider:'GEMINI',model:'gemini-3.5-flash-lite',
+          specialistDomain:'PLANNING'}),
+        resultFor('development',{provider:'GROQ',model:'openai/gpt-oss-20b',
+          specialistDomain:'DEVELOPMENT'}),
+        resultFor('graphics',{provider:'OPENROUTER',model:'google/gemma-4-31b-it:free',
+          specialistDomain:'NPC'}),
+        resultFor('qa',{provider:'OPENROUTER',model:'unknown-paid-model',
+          specialistDomain:'QA'}),
+        resultFor('balance')
+      ]}
+  };
+  const rows=normalizeVerifiedDepartmentLearning(evidence);
+  assert.equal(rows.length,5);
+  assert.equal(rows.find(x=>x.role==='graphics').specialistDomain,'NPC');
+  assert.equal(rows.find(x=>x.role==='graphics').provider,'OPENROUTER');
+  assert.equal(rows.find(x=>x.role==='qa').model,null,'승인 안 된 모델의 성적은 보존하지 않는다');
+  const ledger={version:1,departments:{graphics:{xp:110}},history:[]};
+  assert.equal(ingestVerifiedDepartmentEvidence(ledger,evidence).added,5);
+  assert.equal(ledger.departments.graphics.xp,110,'모델 성적 학습이 회사 XP를 임의로 바꾸지 않는다');
+  const selected=selectVerifiedDepartmentLearning(ledger,{role:'graphics',
+    gameId:'mare-essentia',sourcePath:'roblox-games/mare-essentia'},5);
+  assert.equal(selected[0].model,'google/gemma-4-31b-it:free');
+  assert.equal(selected[0].specialistDomain,'NPC');
+  assert.equal(selected[0].verified,true);
+  assert.equal(selected[0].independentQa,'PASS');
+  assert.equal(normalizeVerifiedDepartmentLearning({...evidence,independentQa:'FAIL'}).length,0);
+});
