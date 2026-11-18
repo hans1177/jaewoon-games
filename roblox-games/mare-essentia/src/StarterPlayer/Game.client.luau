@@ -11292,6 +11292,17 @@ function render()
 			local cx = view.codex or {}
 			fact = string.format("지식 발견 %d / %d장", cx.found or 0, cx.total or 0)
 			context = string.format("만난 학자 %d명 · 미발견 카드 내용은 공개하지 않음", #(view.scholars or {}))
+			if currentTab == "scholar" then
+				-- [학자의 서재] 보고 화면에서도 연구 효과·해금 조건을 잊지 않게 연결한다.
+				for _, t in (view.tech or {}) do
+					if not t.owned then
+						context = string.format("연계 연구: %s · %s\n해금: %s", t.name or "기술", t.summary or "연구 효과 확인",
+							t.blocked or string.format("비용 %s코인", H.commas(t.cost or 0)))
+						break
+					end
+				end
+				actionText = "연구 효과·해금 조건 보기"
+			end
 		elseif currentTab == "tech" then
 			-- [학자의 서재] 실제 연구 요약·필요 선행지식·비용을 우선 보여 준다.
 			local researchable, candidate = 0, nil
@@ -11316,6 +11327,7 @@ function render()
 			end
 			actionText = "연구 효과·조건 확인"
 		end
+		H.menuActionButton.Name = "MenuPrimaryAction_" .. currentTab -- [기존 런타임 QA 이름 계약 유지]
 		H.menuActionButton.Text = actionText
 		add(function()
 			-- [작은 모바일 가로화면] 큰 숫자와 조건은 유지하되 카드 높이만 적응한다.
@@ -11349,6 +11361,7 @@ function render()
 		H.invokeMenuPrimary = function()
 			if currentTab == "trade" and H.tradeHall then H.tradeHall() return end
 			if currentTab == "yard" and H.yardHall then H.yardHall() return end
+			if currentTab == "scholar" then openTab("tech") return end
 			if (currentTab == "crew" or currentTab == "status") and H.openCabin then H.openCabin() return end
 			if currentTab == "route" and H.menuPrimaryRoute then confirmSail(H.menuPrimaryRoute) return end
 			if currentTab == "board" then
