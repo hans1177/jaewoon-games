@@ -132,6 +132,8 @@ export async function discoverFreeVisionModels({fetchImpl=globalThis.fetch,env=p
         output=row?.architecture?.output_modalities;
       if (!/^[a-z0-9][a-z0-9._/-]{2,110}:free$/.test(id) ||
         String(row?.pricing?.prompt)!=='0' || String(row?.pricing?.completion)!=='0' ||
+        ['image','request'].some(key => row?.pricing?.[key] !== undefined &&
+          String(row.pricing[key]) !== '0') ||
         !Array.isArray(input) || !input.includes('image') || !input.includes('text') ||
         !Array.isArray(output) || !output.includes('text') ||
         DESIGN_FREE_MODELS.some(model=>model.model===id)) continue;
@@ -139,7 +141,7 @@ export async function discoverFreeVisionModels({fetchImpl=globalThis.fetch,env=p
         provider:'OPENROUTER',model:id,role:'VISION',
         keyName:'OPENROUTER_API_KEY',verifiedName:'OPENROUTER_DESIGN_FREE_TIER_VERIFIED',
         endpoint:'https://openrouter.ai/api/v1/chat/completions',
-        discoveredFree:true});
+        discoveredFree:true, pricingProven:true, modalitiesProven:true});
     }
     return found.sort((a,b)=>a.model.localeCompare(b.model)).slice(0,
       Math.min(12,Math.max(0,limit)));
@@ -282,7 +284,8 @@ export function selectFreeDesignModels({
   const approved=new Set(config.modelIds||[]);
   const additional=config.liveDiscoveryEnabled===true && Array.isArray(extraModels)
     ?extraModels.filter(model=>model?.discoveredFree===true &&
-      /^OPENROUTER_DISCOVERED_[a-f0-9]{12}$/.test(model.id) &&
+      model?.pricingProven===true && model?.modalitiesProven===true &&
+      model.id==='OPENROUTER_DISCOVERED_'+digest(model.model).slice(0,12) &&
       /^[a-z0-9][a-z0-9._/-]{2,110}:free$/.test(model.model) &&
       model.provider==='OPENROUTER' &&
       model.keyName==='OPENROUTER_API_KEY' &&
