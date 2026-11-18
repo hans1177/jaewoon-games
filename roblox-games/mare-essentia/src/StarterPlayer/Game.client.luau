@@ -1824,6 +1824,24 @@ contentLayout.Padding = UDim.new(0, 5)
 contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 contentLayout.Parent = content
 
+-- [오른쪽 아래 고정 실행] 스크롤 내용과 분리해 조작 위치를 모든 시설에서 일정하게 유지한다.
+-- 기존 수락·출항·연구·전투의 서버 확인과 저장 흐름은 그대로 호출한다.
+H.menuActionDock = Instance.new("Frame")
+H.menuActionDock.Name = "MenuActionDock"
+H.menuActionDock.BackgroundColor3 = COLORS.paper
+H.menuActionDock.BorderSizePixel = 0
+H.menuActionDock.ZIndex = 9
+H.menuActionDock.Visible = false
+H.menuActionDock.Parent = mainInner
+corner(H.menuActionDock, 7)
+H.menuActionButton = mkButton(H.menuActionDock, "행동 확인", COLORS.gold, UDim2.new(1, -12, 0, 46), function()
+	if H.invokeMenuPrimary then H.invokeMenuPrimary() end
+end, true)
+H.menuActionButton.Name = "MenuPrimaryAction"
+H.menuActionButton.Position = UDim2.fromOffset(6, 6)
+H.menuActionButton.ZIndex = 10
+H.menuActionButton.TextSize = 20
+
 -- [전체 시설 공통 전시장] 기존 시설별 content 렌더러는 그대로 보존하고, 교역소처럼 목록·원화·정보로 분리한다.
 H.facilityGallery = Instance.new("Frame")
 H.facilityGallery.Name = "FacilityGallery"
@@ -1882,10 +1900,11 @@ function H.layoutBook()
   local tabs = tabBar.Visible
   H.bookSpine.Visible = false
   H.facilityGallery.Visible = gallery
+  H.menuActionDock.Visible = gallery
   if three then
     -- [가로 공통] 왼쪽 17% 시설 선택 / 가운데 31% 대형 원화 / 오른쪽 정보와 실제 행동 버튼.
     local navW = math.clamp(math.floor(width * 0.17), 138, 184)
-    local artW = math.clamp(math.floor(width * 0.31), 218, 440)
+    local artW = math.clamp(math.floor(width * 0.34), 218, 460)
     if not tabs then
       tabBar.Visible = true
     end
@@ -1902,7 +1921,9 @@ function H.layoutBook()
     H.galleryHint.Position = UDim2.new(0, 12, 1, -76)
     H.galleryHint.Size = UDim2.new(1, -24, 0, 70)
     content.Position = UDim2.fromOffset(navW + artW + 24, 68)
-    content.Size = UDim2.new(1, -navW - artW - 32, 1, -76)
+    content.Size = UDim2.new(1, -navW - artW - 32, 1, -138)
+    H.menuActionDock.Position = UDim2.new(0, navW + artW + 24, 1, -66)
+    H.menuActionDock.Size = UDim2.new(1, -navW - artW - 32, 0, 58)
   else
     -- [세로 화면] 기존 목록 탐색과 버튼은 유지하며, 세로 공간이 넉넉할 때만 원화를 표시한다.
     local compact = tabs and tabCount >= 4 and width < 480
@@ -1925,7 +1946,9 @@ function H.layoutBook()
     H.galleryHint.Size = UDim2.new(0.58, -14, 1, -56)
     local contentY = top + (if showArt then artH + 8 else 0)
     content.Position = UDim2.fromOffset(8, contentY)
-    content.Size = UDim2.new(1, -16, 1, -contentY - 8)
+    content.Size = UDim2.new(1, -16, 1, -contentY - (if gallery then 70 else 8))
+    H.menuActionDock.Position = UDim2.new(0, 8, 1, -66)
+    H.menuActionDock.Size = UDim2.new(1, -16, 0, 58)
   end
 end
 mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)
@@ -11284,108 +11307,212 @@ function render()
 	if message ~= "" then
 		add(function() return mkLabel(content, message, 17, if messageOk then COLORS.gold else COLORS.red, true) end)
 	end
-	-- [모든 시설 오른쪽 핵심 정보] 교역소처럼 실제 숫자 → 판단 근거 → 조작 버튼을 먼저 읽는다.
-	-- 서버 스냅샷을 읽기만 하며, 각 시설의 기존 호출·결제·보상·저장 흐름은 변경하지 않는다.
+	-- [오른쪽 상단 판단 정보] 교역소 기준: 실제 서버 값 → 조건 → 실행을 순서대로 읽는다.
+	-- 보상·위험·연구 효과·선박 능력은 표시만 하며 기존 규칙과 서버 판정을 바꾸지 않는다.
 	local focus = H.MENU_FOCUS[currentTab]
+	H.menuPrimaryRoute = nil
 	if focus then
 		local fact, context, urgent = "현재 항구 " .. tostring(p.portName), "실제 진행 상태와 조건을 아래에서 확인해.", false
-		if currentTab == "board" or currentTab == "quest" then
+		local actionText = focus[3] or "첫 동작 확인"
+		if currentTab == "board" then
+			-- [주점] 주점 전용 의뢰가 일지 의뢰와 다르므로 tavernQ의 보상·제한을 표시한다.
+			local q = view.tavernQ or {}
+			local job = q.active or (q.offer or {})[1]
+			if job then
+				fact = if job.kind == "event" then "선택 사건 · 결과 확인"
+					else string.format("보상 %s코인 · 명성 +%d", H.commas(job.coins or 0), job.fame or 0)
+				local grade = if job.shady then "고위험" elseif job.kind == "hunt" then "해전" else "일반"
+				local condition = if job.blocked then tostring(job.blocked) elseif q.active then "실행 가능"
+					else "수락 가능 · 현재 진행 의뢰 없음"
+				context = string.format("%s · 난이도 %s\n조건: %s%s", job.name or "의뢰", grade, condition,
+					if q.active and job.left then string.format(" · 남은 %d일", job.left) else "")
+				urgent = job.blocked ~= nil or job.shady == true
+				actionText = if q.active and job.blocked == nil and job.kind ~= "event" then "진행 중 의뢰 실행"
+					else "의뢰 조건·선택 확인"
+			else
+				fact = string.format("새 일감 %d건", #(q.offer or {}))
+				context = "받은 의뢰 없음 · 소문을 듣고 수락 조건과 보상을 확인해."
+				actionText = "새 의뢰 찾기"
+			end
+		elseif currentTab == "quest" then
 			local qs = view.quests or {}
+			local active = (qs.active or {})[1]
 			fact = string.format("진행 중 %d건 · 새 의뢰 %d건", #(qs.active or {}), #(qs.available or {}))
-			context = string.format("완료 기록 %d건 · 보상은 원래 의뢰 조건 충족 후 수령", qs.doneCount or 0)
+			context = if active then string.format("현재 목표: %s\n난이도 %d/5 · 조건과 보상은 일지에서 확인", active.name or active.summary or "진행 중", tonumber(active.grade) or 1)
+				else string.format("완료 기록 %d건 · 다음 의뢰의 보상과 조건 확인", qs.doneCount or 0)
 		elseif currentTab == "route" or currentTab == "map" then
-			local ready = 0
+			-- [항만청] 가까운 해상 항로의 실제 거리·기간·소모량을 보여 준다.
+			local nearest, ready = nil, 0
 			for _, r in (view.routes or {}) do
-				if not r.locked and (r.supplies or 0) <= (ship.supplies or 0) and (r.coal or 0) <= (ship.coal or 0) then ready += 1 end
+				if not r.locked then
+					if not nearest or (r.distanceKm or math.huge) < (nearest.distanceKm or math.huge) then nearest = r end
+					if (r.supplies or 0) <= (ship.supplies or 0) and (r.coal or 0) <= (ship.coal or 0) then ready += 1 end
+				end
 			end
-			fact = string.format("출항 준비 %d / %d항로", ready, #(view.routes or {}))
-			context = string.format("보급품 %d개 · 석탄 %d개 · 항로별 위험·거리 확인", ship.supplies or 0, ship.coal or 0)
-			urgent = ready == 0
-		elseif currentTab == "recruit" or currentTab == "crew" then
-			local joined, available = 0, 0
+			if nearest then
+				fact = string.format("%d km · %d일 · 보급 %d개", nearest.distanceKm or 0, nearest.days or 0, nearest.supplies or 0)
+				local safe = (ship.supplies or 0) >= (nearest.supplies or 0) and (ship.coal or 0) >= (nearest.coal or 0)
+				local risk = if view.weather and view.weather.id == "storm" then "폭풍 주의"
+					elseif view.weather and view.weather.id == "rain" then "비·시야 주의" else "항해 중 해적·돌발 사건 가능"
+				context = string.format("가까운 항구: %s · 석탄 %d개 필요\n현재 보급 %d · 석탄 %d · %s",
+					nearest.name, nearest.coal or 0, ship.supplies or 0, ship.coal or 0, risk)
+				urgent = not safe
+				H.menuPrimaryRoute = if safe then nearest else nil
+				actionText = if safe then "가까운 항구 출항 확인" else "보급 부족 · 항로 확인"
+			else
+				fact = string.format("출항 가능 %d / %d항로", ready, #(view.routes or {}))
+				context = string.format("보급 %d개 · 석탄 %d개 · 해금된 항로 확인", ship.supplies or 0, ship.coal or 0)
+				urgent = ready == 0
+			end
+		elseif currentTab == "recruit" or currentTab == "crew" or currentTab == "status" or currentTab == "yard" then
+			-- [선장실] 이미 계산된 배와 동료 배치 수치만 읽어 전력·빈 자리를 강조한다.
+			local joined, filled, matched = 0, 0, 0
 			for _, c in ((view.companions and view.companions.list) or {}) do
-				if c.joined then joined += 1 elseif c.role and not c.blocked then available += 1 end
+				if c.joined then joined += 1 end
 			end
-			fact = string.format("승선 %d / %d명 · 영입 가능 %d명", joined, (view.companions and view.companions.max) or 0, available)
-			context = string.format("빈 자리 %d명 · 보유 %s코인", math.max(0, ((view.companions and view.companions.max) or 0) - joined), H.commas(p.coins))
-		elseif currentTab == "status" or currentTab == "yard" then
-			fact = string.format("선체 %d / %d · 화물 %d / %d", ship.hull or 0, ship.maxHull or 0, ship.cargoUsed or 0, ship.cargoCapacity or 0)
-			context = string.format("보급품 %d개 · 기함 %s · 보유 %s코인", ship.supplies or 0, ship.name or "", H.commas(p.coins))
+			for _, station in ((view.companions and view.companions.stations) or {}) do
+				if station.seatId then
+					filled += 1
+					if station.matched then matched += 1 end
+				end
+			end
+			fact = string.format("선체 %d/%d · 동료 %d명", ship.hull or 0, ship.maxHull or 0, joined)
+			context = string.format("적합 직책 %d/%d · 포 %d문 · 선원 %d명\n보급 %d개 · 화물 %d/%d",
+				matched, filled, ship.cannons or 0, ship.crew or 0, ship.supplies or 0, ship.cargoUsed or 0, ship.cargoCapacity or 0)
 			urgent = (ship.maxHull or 0) > 0 and (ship.hull or 0) < (ship.maxHull or 1) * 0.4
+			actionText = if currentTab == "crew" or currentTab == "status" then "동료 직책 배치"
+				elseif currentTab == "yard" then "조선소 관리 열기" else "동료 영입 조건 확인"
 		elseif currentTab == "trade" or currentTab == "harbor" then
-			fact = string.format("보유 %s코인 · 화물 %d / %d", H.commas(p.coins), ship.cargoUsed or 0, ship.cargoCapacity or 0)
-			context = "세계 평균과 세후손익은 다름 · 실제 매입/판매 수량 확인"
+			fact = string.format("보유 %s코인 · 화물 %d/%d", H.commas(p.coins), ship.cargoUsed or 0, ship.cargoCapacity or 0)
+			context = "세계 평균과 실제 판매손익은 달라 · 매입·판매 수량을 확인해."
 		elseif currentTab == "battle" or currentTab == "war" then
-			fact = string.format("선체 %d / %d · 대포 %d문", ship.hull or 0, ship.maxHull or 0, ship.cannons or 0)
-			context = string.format("승조원 %d명 · 호위함 %d척 · 출전 전 전력 확인", ship.crew or 0, (view.fleet and view.fleet.escorts) or 0)
-			urgent = (ship.maxHull or 0) > 0 and (ship.hull or 0) < (ship.maxHull or 1) * 0.4
-		elseif currentTab == "explore" then
-			local openSites = 0
-			for _, site in (view.sites or {}) do
-				if site.unlocked and (site.left or 0) > 0 then openSites += 1 end
+			-- [전투 본부] 적 전력을 공개하지 않은 경우 임의 수치를 만들지 않는다.
+			local mission = (view.wars or {})[1]
+			local enemy = (view.bosses or {})[1]
+			if currentTab == "war" and view.war then
+				fact = string.format("진행 %d/%d파도 · 선체 %d/%d", view.war.wave or 0, view.war.total or 0, ship.hull or 0, ship.maxHull or 0)
+				context = string.format("상대: %s · 승리: 마지막 파도까지 전부 격파\n패배 시 작전 실패 · 파도 사이 선체 회복 없음", view.war.name or "적 함대")
+				actionText = if view.war.next then "다음 파도 전투" else "현재 전투 상태 확인"
+			elseif currentTab == "war" and mission then
+				fact = string.format("적 함대 %d파도 · 보상 %s코인", mission.waves or 0, H.commas(mission.coins or 0))
+				context = string.format("%s · 승리: 전 파도 격파\n수락 조건: %s", mission.name or "해전 의뢰",
+					mission.blocked or string.format("전투 Lv.%d 이상", mission.minLevel or 0))
+				actionText = "해전 작전 선택"
+				urgent = mission.blocked ~= nil
+			else
+				fact = string.format("대포 %d문 · 선체 %d/%d", ship.cannons or 0, ship.hull or 0, ship.maxHull or 0)
+				context = string.format("상대: %s · 적 전력 미공개\n승리: 적 함선 격파 · 출격 전에 선체와 자동스킬 확인",
+					if enemy then enemy.name or "해적" else "해적 함선")
+				actionText = "사략선 사냥 출격"
 			end
-			fact = string.format("탐험 가능 %d / %d지역", openSites, #(view.sites or {}))
+			urgent = urgent or ((ship.maxHull or 0) > 0 and (ship.hull or 0) < (ship.maxHull or 1) * 0.4)
+		elseif currentTab == "explore" then
+			local available = 0
+			for _, site in (view.sites or {}) do
+				if site.unlocked and (site.left or 0) > 0 then available += 1 end
+			end
+			fact = string.format("탐험 가능 %d / %d지역", available, #(view.sites or {}))
 			context = string.format("보급품 %d개 · 장소별 위험과 남은 발견물 확인", ship.supplies or 0)
 		elseif currentTab == "gwent" then
 			fact = string.format("내 카드 %d장 · 보유 %s코인", #((view.deck and view.deck.cards) or {}), H.commas(p.coins))
-			context = "병종 배치와 카드 효과 확인 · 대전은 기존 규칙 유지"
+			context = "병종 배치와 카드 효과 확인 · 기존 카드 대결 규칙 유지"
 		elseif currentTab == "scholar" or currentTab == "codex" then
 			local cx = view.codex or {}
 			fact = string.format("지식 발견 %d / %d장", cx.found or 0, cx.total or 0)
 			context = string.format("만난 학자 %d명 · 미발견 카드 내용은 공개하지 않음", #(view.scholars or {}))
-		elseif currentTab == "tech" then
-			local researchable = 0
-			for _, t in (view.tech or {}) do
-				if not t.owned and not t.blocked and (t.cost or 0) <= p.coins then researchable += 1 end
+			if currentTab == "scholar" then
+				-- [학자의 서재] 보고 화면에서도 연구 효과·해금 조건을 잊지 않게 연결한다.
+				for _, t in (view.tech or {}) do
+					if not t.owned then
+						context = string.format("연계 연구: %s · %s\n해금: %s", t.name or "기술", t.summary or "연구 효과 확인",
+							t.blocked or string.format("비용 %s코인", H.commas(t.cost or 0)))
+						break
+					end
+				end
+				actionText = "연구 효과·해금 조건 보기"
 			end
-			fact = string.format("지금 연구 가능 %d개", researchable)
-			context = string.format("보유 %s코인 · 선행 지식/비용 충족 시 해금", H.commas(p.coins))
+		elseif currentTab == "tech" then
+			-- [학자의 서재] 실제 연구 요약·필요 선행지식·비용을 우선 보여 준다.
+			local researchable, candidate = 0, nil
+			for _, t in (view.tech or {}) do
+				if not t.owned then
+					if not candidate then candidate = t end
+					if not t.blocked and (t.cost or 0) <= p.coins then
+						researchable += 1
+						if not candidate or candidate.blocked then candidate = t end
+					end
+				end
+			end
+			fact = string.format("연구 가능 %d개 · 보유 %s코인", researchable, H.commas(p.coins))
+			if candidate then
+				local reason = if candidate.blocked then tostring(candidate.blocked)
+					elseif (candidate.cost or 0) > p.coins then string.format("코인 %s 부족", H.commas((candidate.cost or 0) - p.coins))
+					else string.format("해금 충족 · 비용 %s코인", H.commas(candidate.cost or 0))
+				context = string.format("%s 효과: %s\n해금: %s", candidate.name or "연구", candidate.summary or "연구 효과 확인", reason)
+				urgent = candidate.blocked ~= nil
+			else
+				context = "연구 완료 · 새 기술은 선행 지식을 발견하면 해금돼."
+			end
+			actionText = "연구 효과·조건 확인"
 		end
+		H.menuActionButton.Name = "MenuPrimaryAction_" .. currentTab -- [기존 런타임 QA 이름 계약 유지]
+		H.menuActionButton.Text = actionText
 		add(function()
-			-- [좁은 오른쪽 정보창] 화면 전체가 아니라 실제 상세 패널 너비로 행 구성을 판단한다.
-			local compact = content.AbsoluteSize.X < 520
-			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, if compact then 192 else 166), Color3.fromRGB(64, 48, 35))
+			-- [작은 모바일 가로화면] 큰 숫자와 조건은 유지하되 카드 높이만 적응한다.
+			local short = mainInner.AbsoluteSize.Y < 500
+			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, if short then 188 else 218), Color3.fromRGB(64, 48, 35))
 			banner.Name = "MenuFocus_" .. currentTab
 			corner(banner, 8)
 			local heading = mkLabel(banner, "◆ " .. focus[1] .. " · 핵심 정보", 19, Color3.fromRGB(255, 222, 144), true)
 			heading.Position = UDim2.fromOffset(12, 7)
 			heading.Size = UDim2.new(1, -24, 0, 26)
 			heading.AutomaticSize = Enum.AutomaticSize.None
-			local highlight = mkLabel(banner, fact, if compact then 20 else 23, if urgent then Color3.fromRGB(255, 142, 128) else Color3.fromRGB(255, 238, 187), true)
+			local highlight = mkLabel(banner, fact, 23, if urgent then Color3.fromRGB(255, 142, 128) else Color3.fromRGB(255, 238, 187), true)
 			highlight.Position = UDim2.fromOffset(12, 36)
-			highlight.Size = UDim2.new(1, -24, 0, if compact then 48 else 30)
+			highlight.Size = UDim2.new(1, -24, 0, 48)
 			highlight.AutomaticSize = Enum.AutomaticSize.None
 			highlight.TextWrapped = true
 			local explanation = mkLabel(banner, context, 17, Color3.fromRGB(249, 232, 207), true)
-			explanation.Position = UDim2.fromOffset(12, if compact then 82 else 69)
-			explanation.Size = UDim2.new(1, -24, 0, if compact then 43 else 30)
+			explanation.Position = UDim2.fromOffset(12, 84)
+			explanation.Size = UDim2.new(1, -24, 0, if short then 63 else 86)
 			explanation.AutomaticSize = Enum.AutomaticSize.None
 			explanation.TextWrapped = true
+			explanation.TextYAlignment = Enum.TextYAlignment.Top
 			local guide = mkLabel(banner, focus[2], 16, Color3.fromRGB(236, 205, 148), false)
-			guide.Position = UDim2.fromOffset(12, if compact then 123 else 98)
-			guide.Size = UDim2.new(1, -24, 0, 24)
+			guide.Position = UDim2.fromOffset(12, if short then 151 else 178)
+			guide.Size = UDim2.new(1, -24, 0, 29)
 			guide.AutomaticSize = Enum.AutomaticSize.None
 			guide.TextTruncate = Enum.TextTruncate.AtEnd
-			local action = mkButton(banner, focus[3] or "바로 보기", COLORS.gold, UDim2.new(1, -24, 0, 40), function()
-				if currentTab == "trade" and H.tradeHall then H.tradeHall() return end
-				if currentTab == "yard" and H.yardHall then H.yardHall() return end
-				-- [기존 이동] 다른 시설은 현재 메뉴 첫 동작으로 스크롤만 이동하고 실제 액션은 실행하지 않는다.
-				for _, element in content:GetDescendants() do
-					if element:IsA("TextButton") and element.Interactable
-						and not element:FindFirstAncestor("MenuFocus_" .. currentTab)
-						and not element:FindFirstAncestor("MenuAdvice_" .. currentTab) then
-						local y = element.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 12
-						content.CanvasPosition = Vector2.new(0, math.max(0, y))
-						break
-					end
-				end
-			end, true)
-			action.Name = "MenuPrimaryAction_" .. currentTab
-			action.AnchorPoint = Vector2.new(0, 1)
-			action.Position = UDim2.new(0, 12, 1, -8)
-			action.TextSize = 18
 			return banner
 		end)
+		-- [고정 하단 버튼] 기존 실행 함수를 재사용한다. 출항만 기존 확인 창으로 보낸다.
+		H.invokeMenuPrimary = function()
+			if currentTab == "trade" and H.tradeHall then H.tradeHall() return end
+			if currentTab == "yard" and H.yardHall then H.yardHall() return end
+			if currentTab == "scholar" then openTab("tech") return end
+			if (currentTab == "crew" or currentTab == "status") and H.openCabin then H.openCabin() return end
+			if currentTab == "route" and H.menuPrimaryRoute then confirmSail(H.menuPrimaryRoute) return end
+			if currentTab == "board" then
+				local active = view.tavernQ and view.tavernQ.active
+				if active and not active.blocked and active.kind ~= "event" then
+					call("TavernJob", { id = active.id })
+					return
+				end
+			end
+			if currentTab == "war" and view.war and view.war.next then call("WarNext") return end
+			if currentTab == "battle" then call("Hunt") return end
+			-- 연구·전투 작전·수락 후보가 여러 개면 플레이어가 목록에서 직접 고른다.
+			for _, element in content:GetDescendants() do
+				if element:IsA("TextButton") and element.Interactable and element.Visible then
+					local y = element.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 12
+					content.CanvasPosition = Vector2.new(0, math.max(0, y))
+					break
+				end
+			end
+		end
+	else
+		H.invokeMenuPrimary = nil
+		H.menuActionDock.Visible = false
 	end
 	-- [선장 항해 비서] 서버 실측 상태에서 가장 시급한 일 한 개만 추천. 자원 조작은 실행하지 않는다.
 	local cue, detail, target = nil, nil, nil
