@@ -1,6 +1,7 @@
+-- 파일명: roblox-games/mare-essentia/tests/mockstate.luau
 -- 스모크 테스트 공용 상태: 에셋 라이브러리(등록된 에셋만 '있음')와 사용 기록
 local AssetIds = require("./AssetIds")
-local State = { used = {}, missing = {}, built = 0 }
+local State = { used = {}, missing = {}, built = 0, peopleChildAddedConnections = 0 }
 local kinds = {}
 for key in AssetIds do
 	local k, n = key:match("^(%w+)/(.+)$")
@@ -34,11 +35,20 @@ State.library = setmetatable({}, { __index = function(_, k)
 		return function(_, kind)
 			if kind == "Ships" then return nil end
 			if not kinds[kind] then State.missing[kind .. "/?"] = true return nil end
-			return { FindFirstChild = function(_, name)
+			local category = { FindFirstChild = function(_, name)
 				State.used[kind .. "/" .. name] = true
 				if not kinds[kind][name] then State.missing[kind .. "/" .. name] = true return nil end
 				return model(State.proxy, kind, name)
 			end }
+			-- [이벤트 목업] Roblox Folder.ChildAdded의 연결 계약을 재현하고 실제 항구 연결 횟수를 검사한다.
+			if kind == "People" then
+				category.ChildAdded = { Connect = function(_, callback)
+					if type(callback) ~= "function" then error("People.ChildAdded requires a callback") end
+					State.peopleChildAddedConnections += 1
+					return { Disconnect = function() end }
+				end }
+			end
+			return category
 		end
 	end
 	return nil
