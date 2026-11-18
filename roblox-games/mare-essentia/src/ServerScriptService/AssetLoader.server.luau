@@ -211,6 +211,7 @@ end
 if studioAudit and #queue == 0 then
 	ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = 0, loaded = 0, failed = 0, errors = { "NO_REGISTERED_MODELS" }}))
 	ReplicatedStorage:SetAttribute("MareModelAuditState", "FAIL")
+	ReplicatedStorage:SetAttribute("MareOutfitMaterialAuditState", "FAIL")
 end
 for _ = 1, 12 do
 	task.spawn(function()
