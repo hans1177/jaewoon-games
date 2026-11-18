@@ -9229,7 +9229,6 @@ if string.sub(codexField, 1, 2) == "r:" then
 				end)
 			end
 		end
-		end
 	end
 	return
 end
