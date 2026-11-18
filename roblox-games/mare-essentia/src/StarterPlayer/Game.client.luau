@@ -8940,6 +8940,15 @@ local function renderCodexOverview()
 		return cover
 	end)
 
+	-- [지식 백과] 기존 도감에서 백과사전 양장본으로 연결한다.
+	add(function()
+		return mkRow(content, "대항해 지식 대백과", "대표 삽화 1장 · 역사 해설 · 관련 지식 · 책갈피", {
+			{ text = "책 펼치기", color = COLORS.gold, onClick = function()
+				codexField = "book"
+				render()
+			end },
+		}, 76)
+	end)
 	-- [서재 빠른 길] 긴 설명 카드 대신 네 가지 목적지를 손가락 두 번 이내에 연다.
 	add(function()
 		local quick = Instance.new("Frame")
@@ -9789,8 +9798,10 @@ local f = findField(codexField)
 end
 
 function RENDERERS.codex()
-	-- [중복 조언 제거] 동료 조언과 할 일은 저널 한 곳에서만 확인한다.
-	if codexField then
+	-- [지식 백과의 책 펼치기] 기존 검색·분류·카드 기능은 보존한다.
+	if codexField == "book" then
+		RENDERERS.encyclopedia()
+	elseif codexField then
 		H.renderCodexField()
 	else
 		renderCodexOverview()
@@ -9798,106 +9809,288 @@ function RENDERERS.codex()
 end
 
 -- [세계 백과사전] 새 저장소·카드 목록을 만들지 않고 기존 발견된 지식과 승인 사진만 책 페이지로 편집한다.
+-- [세계 백과사전 · 양장본] 이미 승인된 삽화와 편집된 자료만 사용한다.
+-- 금지된 외부 그림 자동 수집은 하지 않으며 보상·저장·게임 규칙은 변경하지 않는다.
 function RENDERERS.encyclopedia()
-    local cx = view.codex or {}
-    local found = {}
-    for _, card in (cx.cards or {}) do
-        if card.found == true then table.insert(found, card) end
-    end
-    table.sort(found, function(a, b)
-        if a.field ~= b.field then return tostring(a.field) < tostring(b.field) end
-        return tostring(a.name) < tostring(b.name)
-    end)
-    add(function() return mkHeader(content, "세계 백과사전 · 발견된 지식의 원화와 기록") end)
-    if #found == 0 then
-        add(function()
-            return mkRow(content, "아직 기록된 지식이 없어.", "탐험·교역·학자 보고에서 발견한 지식이 이 책에 쌓여.", {}, 92)
-        end)
-        return
-    end
-    H.encyclopediaPage = math.clamp(H.encyclopediaPage or 1, 1, #found)
-    local current = found[H.encyclopediaPage]
-    local category = findField(current.field) or { name = tostring(current.field or "인류의 기록"), color = { 122, 89, 48 } }
-    add(function()
-        local pageWidth = math.max(230, content.AbsoluteSize.X - 12)
-        local spread = pageWidth >= 620
-        local h = if spread then 390 else 600
-        local page = Instance.new("Frame")
-        page.Name = "EncyclopediaBookPage"
-        page.Size = UDim2.new(1, -8, 0, h)
-        page.BackgroundColor3 = COLORS.paper
-        page.BorderSizePixel = 0
-        page.ClipsDescendants = true
-        corner(page, 8)
-        bookMaterial(page, "parchment", 224)
-        local edge = Instance.new("UIStroke")
-        edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        edge.Color = UI_BRASS_DARK
-        edge.Thickness = 2
-        edge.Parent = page
-        local art = Instance.new("Frame")
-        art.Name = "EncyclopediaIllustration"
-        art.Position = UDim2.fromOffset(12, 12)
-        art.Size = if spread then UDim2.new(0.50, -19, 1, -24) else UDim2.new(1, -24, 0, 255)
-        art.BorderSizePixel = 0
-        corner(art, 7)
-        art.Parent = page
-        paintCardArt(art, current, category, true)
-        local bookTitle = mkLabel(page, current.name, 23, INK, true)
-        bookTitle.Position = if spread then UDim2.new(0.52, 4, 0, 17) else UDim2.fromOffset(15, 279)
-        bookTitle.Size = if spread then UDim2.new(0.48, -19, 0, 64) else UDim2.new(1, -30, 0, 48)
-        bookTitle.AutomaticSize = Enum.AutomaticSize.None
-        bookTitle.TextWrapped = true
-        local chapter = mkLabel(page, string.format("제%d장 / %d · %s", H.encyclopediaPage, #found, category.name), 16, INK_SOFT, true)
-        chapter.Position = if spread then UDim2.new(0.52, 4, 0, 87) else UDim2.fromOffset(15, 330)
-        chapter.Size = UDim2.new(if spread then 0.48 else 1, if spread then -19 else -30, 0, 28)
-        chapter.AutomaticSize = Enum.AutomaticSize.None
-        local notes = mkLabel(page, tostring(current.description or "발견한 지식의 자세한 설명은 도감 원문에서 확인해."), 18, INK, false)
-        notes.Position = if spread then UDim2.new(0.52, 4, 0, 127) else UDim2.fromOffset(15, 366)
-        notes.Size = if spread then UDim2.new(0.48, -22, 0, 145) else UDim2.new(1, -30, 0, 145)
-        notes.AutomaticSize = Enum.AutomaticSize.None
-        notes.TextWrapped = true
-        notes.TextYAlignment = Enum.TextYAlignment.Top
-        notes.TextTruncate = Enum.TextTruncate.AtEnd
-        local first = current.provenance
-        local location = if first then string.format("첫 발견 · %s / 항해 %d일", first.port or "미상", first.day or 0)
-            else "항해자의 발견 기록 · 이전 기록"
-        local origin = mkLabel(page, location, 15, INK_SOFT, false)
-        origin.Position = if spread then UDim2.new(0.52, 4, 0, 283) else UDim2.fromOffset(15, 518)
-        origin.Size = UDim2.new(if spread then 0.48 else 1, if spread then -19 else -30, 0, 32)
-        origin.AutomaticSize = Enum.AutomaticSize.None
-        origin.TextTruncate = Enum.TextTruncate.AtEnd
-        local read = mkButton(page, "원문 · 연관 기록 펼치기", COLORS.gold,
-            if spread then UDim2.new(0.48, -22, 0, 48) else UDim2.new(1, -30, 0, 42),
-            function() H.showCardDetail(current) end, true)
-        read.Position = if spread then UDim2.new(0.52, 4, 1, -58) else UDim2.fromOffset(15, 554)
-        read.TextSize = 17
-        return page
-    end)
-    add(function()
-        local nav = Instance.new("Frame")
-        nav.Name = "EncyclopediaPageNavigation"
-        nav.BackgroundTransparency = 1
-        nav.Size = UDim2.new(1, -8, 0, 60)
-        local previous = mkButton(nav, "◀ 이전 장", COLORS.leather, UDim2.new(0.31, -4, 0, 52), function()
-            H.encyclopediaPage = math.max(1, H.encyclopediaPage - 1)
-            render()
-        end, H.encyclopediaPage > 1)
-        previous.Position = UDim2.fromOffset(0, 4)
-        local counter = mkLabel(nav, string.format("%d / %d", H.encyclopediaPage, #found), 20, COLORS.gold, true)
-        counter.Position = UDim2.new(0.32, 0, 0, 14)
-        counter.Size = UDim2.new(0.36, 0, 0, 32)
-        counter.AutomaticSize = Enum.AutomaticSize.None
-        counter.TextXAlignment = Enum.TextXAlignment.Center
-        local nextPage = mkButton(nav, "다음 장 ▶", COLORS.gold, UDim2.new(0.31, -4, 0, 52), function()
-            H.encyclopediaPage = math.min(#found, H.encyclopediaPage + 1)
-            render()
-        end, H.encyclopediaPage < #found)
-        nextPage.Position = UDim2.new(0.69, 4, 0, 4)
-        return nav
-    end)
+	local cx = view.codex or {}
+	local articles = require(Shared:WaitForChild("KnowledgeCards")).Articles
+	local all, groups, known, byId = {}, { { id = "all", name = "전체" } }, {}, {}
+	for _, card in (cx.cards or {}) do
+		if card.found then
+			table.insert(all, card)
+			byId[card.id] = card
+			if card.field and not known[card.field] then
+				known[card.field] = true
+				local group = findField(card.field)
+				table.insert(groups, { id = card.field, name = if group then group.name else tostring(card.field) })
+			end
+		end
+	end
+	table.sort(all, function(a, b)
+		if a.field ~= b.field then return tostring(a.field) < tostring(b.field) end
+		return tostring(a.name) < tostring(b.name)
+	end)
+	table.sort(groups, function(a, b) return a.name < b.name end)
+	local fieldId = H.encyclopediaCategoryId or "all"
+	if fieldId ~= "all" and not known[fieldId] then fieldId = "all"; H.encyclopediaCategoryId = fieldId end
+	local groupName, nextId = "전체", "all"
+	for i, g in groups do
+		if g.id == fieldId then
+			groupName = g.name
+			nextId = groups[if i < #groups then i + 1 else 1].id
+			break
+		end
+	end
+	local queryText = string.lower(H.encyclopediaSearchText or "")
+	local found = {}
+	for _, card in all do
+		if fieldId == "all" or card.field == fieldId then
+			local words = { card.name or "", card.description or "", card.discipline or "",
+				card.era or "", card.region or "", card.topic or "" }
+			for _, tag in (card.tags or {}) do table.insert(words, tostring(tag)) end
+			for _, alias in (card.aliases or {}) do table.insert(words, tostring(alias)) end
+			if queryText == "" or string.find(string.lower(table.concat(words, " ")), queryText, 1, true) then
+				table.insert(found, card)
+			end
+		end
+	end
+	add(function() return mkHeader(content, string.format("대항해 지식 대백과 · 발견 %d / %d", #all, cx.total or #all)) end)
+	-- [목차] 검색과 분야 선택은 이 접속의 UI에만 기억한다.
+	add(function()
+		local panel = mkBox(content, UDim2.new(), UDim2.new(1, -8, 0, 107), COLORS.paper)
+		panel.Name = "EncyclopediaIndex"
+		corner(panel, 7)
+		local search = Instance.new("TextBox")
+		search.Name = "EncyclopediaSearch"
+		search.Position = UDim2.fromOffset(8, 8)
+		search.Size = UDim2.new(1, -109, 0, 42)
+		search.BackgroundColor3 = Color3.fromRGB(249, 236, 208)
+		search.TextColor3 = INK
+		search.PlaceholderColor3 = INK_SOFT
+		search.PlaceholderText = "지식 이름 · 시대 · 학문"
+		search.Text = H.encyclopediaSearchText or ""
+		search.ClearTextOnFocus = false
+		search.Font = Enum.Font.Gotham
+		search.TextSize = 16
+		search.Parent = panel
+		corner(search, 5)
+		search:GetPropertyChangedSignal("Text"):Connect(function() H.encyclopediaSearchText = search.Text end)
+		search.FocusLost:Connect(function(enter)
+			if enter then H.encyclopediaPage = 1; render() end
+		end)
+		local submit = mkButton(panel, "검색", COLORS.gold, UDim2.fromOffset(90, 42), function()
+			H.encyclopediaSearchText = search.Text
+			H.encyclopediaPage = 1
+			render()
+		end, true)
+		submit.Position = UDim2.new(1, -98, 0, 8)
+		local group = mkButton(panel, "분야 · " .. groupName, COLORS.leather,
+			UDim2.new(0.62, -12, 0, 42), function()
+				H.encyclopediaCategoryId = nextId
+				H.encyclopediaPage = 1
+				render()
+			end, true)
+		group.Position = UDim2.fromOffset(8, 58)
+		group.TextSize = 15
+		local reset = mkButton(panel, "전체 목차", COLORS.blue, UDim2.new(0.38, -8, 0, 42), function()
+			H.encyclopediaCategoryId = "all"
+			H.encyclopediaSearchText = ""
+			H.encyclopediaPage = 1
+			render()
+		end, true)
+		reset.Position = UDim2.new(0.62, 0, 0, 58)
+		reset.TextSize = 15
+		return panel
+	end)
+	if #found == 0 then
+		add(function()
+			local hint = if #all == 0 then "탐험과 학자 보고로 발견하면 이곳에 기록돼."
+				else "검색어 또는 분야에 해당하는 책이 없어. 전체 목차를 열어 줘."
+			return mkRow(content, "읽을 지식이 없어", hint, {}, 80)
+		end)
+		return
+	end
+	H.encyclopediaPage = math.clamp(H.encyclopediaPage or 1, 1, #found)
+	local current = found[H.encyclopediaPage]
+	local category = findField(current.field) or { name = tostring(current.field or "세계 지식"), color = { 122, 89, 48 } }
+	local article = articles[current.id]
+	-- [가죽 표지·양피지] 한 장의 사진과 전체 길이 해설. 말줄임 없이 책 안에서 읽는다.
+	add(function()
+		local book = Instance.new("Frame")
+		book.Name = "EncyclopediaBookPage"
+		book.Size = UDim2.new(1, -8, 0, math.clamp(math.max(content.AbsoluteSize.Y, 530) - 120, 410, 690))
+		book.BackgroundColor3 = COLORS.leather
+		book.BorderSizePixel = 0
+		corner(book, 9)
+		bookMaterial(book, "leather", 192)
+		local border = Instance.new("UIStroke")
+		border.Color = UI_BRASS
+		border.Thickness = 2
+		border.Parent = book
+		local paper = mkBox(book, UDim2.fromOffset(9, 9), UDim2.new(1, -18, 1, -18), COLORS.paper)
+		corner(paper, 5)
+		bookMaterial(paper, "parchment", 192)
+		local sheet = Instance.new("ScrollingFrame")
+		sheet.Name = "EncyclopediaFullArticle"
+		sheet.BackgroundTransparency = 1
+		sheet.BorderSizePixel = 0
+		sheet.Position = UDim2.fromOffset(6, 6)
+		sheet.Size = UDim2.new(1, -12, 1, -12)
+		sheet.ScrollBarThickness = 4
+		sheet.ScrollingDirection = Enum.ScrollingDirection.Y
+		sheet.CanvasSize = UDim2.new()
+		sheet.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		sheet.Parent = paper
+		local pad = Instance.new("UIPadding")
+		pad.PaddingTop = UDim.new(0, 12)
+		pad.PaddingBottom = UDim.new(0, 18)
+		pad.PaddingLeft = UDim.new(0, 12)
+		pad.PaddingRight = UDim.new(0, 12)
+		pad.Parent = sheet
+		local layout = Instance.new("UIListLayout")
+		layout.Padding = UDim.new(0, 9)
+		layout.SortOrder = Enum.SortOrder.LayoutOrder
+		layout.Parent = sheet
+		local order = 0
+		local function line(textValue, size, strong, tone)
+			local label = mkLabel(sheet, tostring(textValue), size, tone or INK, strong, order)
+			label.Size = UDim2.new(1, -8, 0, 0)
+			label.AutomaticSize = Enum.AutomaticSize.Y
+			label.TextTruncate = Enum.TextTruncate.None
+			order += 1
+			return label
+		end
+		line(string.format("대항해 지식 대백과  ·  제%03d장 / %d", H.encyclopediaPage, #found), 16, true, INK_SOFT)
+		line(current.name, 25, true, INK)
+		line(category.name .. " · " .. (current.discipline or "세계 지식")
+			.. (if current.era then " · " .. current.era else ""), 16, true, INK_SOFT)
+		local art = Instance.new("Frame")
+		art.Name = "EncyclopediaIllustration"
+		art.Size = UDim2.new(1, -8, 0, if content.AbsoluteSize.X >= 620 then 270 else 225)
+		art.BackgroundColor3 = Color3.fromRGB(208, 185, 146)
+		art.BorderSizePixel = 0
+		art.LayoutOrder = order
+		order += 1
+		corner(art, 5)
+		art.Parent = sheet
+		paintCardArt(art, current, category, true)
+		line(if type(current.image) == "string" and current.image ~= ""
+			then "대표 그림 · " .. current.name
+			else "대표 그림 미등록 · 확인된 원화만 표시해", 14, false, INK_SOFT)
+		line("Ⅰ. 개요", 19, true)
+		line(current.description or "등록된 개요가 없어.", 17, false)
+		if article then
+			if article.details and article.details ~= "" then
+				line("Ⅱ. 특징과 구조", 19, true)
+				line(article.details, 17, false)
+			end
+			if article.context and article.context ~= "" then
+				line("Ⅲ. 쓰임과 배경", 19, true)
+				line(article.context, 17, false)
+			end
+			if article.history and article.history ~= "" then
+				line("Ⅳ. 역사 속 이야기", 19, true)
+				line(article.history, 17, false)
+			end
+		else
+			line("추가 해설 준비 중", 19, true)
+			line("검증된 장문 해설이 아직 등록되지 않았어. 추측한 역사를 자동으로 보태지 않아.", 16, false)
+		end
+		line("분류와 시대", 19, true)
+		line("주제: " .. (current.topic or "기타")
+			.. "\n학문: " .. (current.discipline or "미분류")
+			.. (if current.era then "\n시대: " .. current.era else "")
+			.. (if current.region then "\n지역: " .. current.region else "")
+			.. (if current.evidence then "\n자료 구분: " .. current.evidence else ""), 16, false)
+		line("내 항해 기록", 19, true)
+		local first = current.provenance
+		line(if first then "첫 발견: " .. tostring(first.port or "위치 미상")
+			.. " · 항해 " .. tostring(first.day or 0) .. "일째 · " .. tostring(first.method or "발견")
+			else "이전에 획득한 지식 · 자세한 발견 위치는 기록되지 않았어.", 16, false)
+		line("자료·저작권", 19, true)
+		line(if article and article.topic then "본문 참고: 위키백과 · " .. article.topic
+			.. "\n해설은 게임에 편집·수록된 자료야. 실시간 연동은 아니야."
+			else "본문: 게임 지식카드 · 외부 참고 자료 확인 대기", 15, false, INK_SOFT)
+		if current.wikidata then line("위키데이터: " .. tostring(current.wikidata), 15, false, INK_SOFT) end
+		if current.credit and current.credit ~= "" then
+			line("대표 그림 출처: " .. current.credit, 15, false, INK_SOFT)
+		end
+		-- [관련 지식] 기존 연관 카드만 연결한다. 미발견 정보는 열지 않는다.
+		local linked = 0
+		for _, rel in (current.relations or {}) do
+			local target = rel.cardId and byId[rel.cardId]
+			if target and rel.found and linked < 5 then
+				if linked == 0 then line("이어 읽을 지식", 19, true) end
+				linked += 1
+				local related = mkButton(sheet, target.name .. " · 관련 항목", COLORS.blue,
+					UDim2.new(1, -12, 0, 42), function()
+						for i, shown in found do
+							if shown.id == target.id then
+								H.encyclopediaPage = i
+								Sfx.play("sfx_book_turn", 0.3)
+								render()
+								return
+							end
+						end
+						H.showCardDetail(target)
+					end, true)
+				related.LayoutOrder = order
+				order += 1
+				related.TextSize = 16
+			end
+		end
+		local more = mkButton(sheet, "카드 원문 · 추가 연구 기록", COLORS.gold,
+			UDim2.new(1, -12, 0, 46), function() H.showCardDetail(current) end, true)
+		more.LayoutOrder = order
+		more.TextSize = 16
+		return book
+	end)
+	-- [장 넘기기·책갈피] 세션 상태만 유지하고 기존 저장 구조는 그대로 둔다.
+	add(function()
+		local nav = Instance.new("Frame")
+		nav.Name = "EncyclopediaPageNavigation"
+		nav.BackgroundTransparency = 1
+		nav.Size = UDim2.new(1, -8, 0, 108)
+		local prev = mkButton(nav, "◀ 이전 장", COLORS.leather, UDim2.new(0.35, -5, 0, 46), function()
+			H.encyclopediaPage = math.max(1, H.encyclopediaPage - 1)
+			Sfx.play("sfx_book_turn", 0.3)
+			render()
+		end, H.encyclopediaPage > 1)
+		prev.Position = UDim2.fromOffset(0, 3)
+		local count = mkLabel(nav, string.format("%d / %d", H.encyclopediaPage, #found), 17, COLORS.gold, true)
+		count.Position = UDim2.new(0.35, 0, 0, 13)
+		count.Size = UDim2.new(0.3, 0, 0, 28)
+		count.AutomaticSize = Enum.AutomaticSize.None
+		count.TextXAlignment = Enum.TextXAlignment.Center
+		local nextPage = mkButton(nav, "다음 장 ▶", COLORS.gold, UDim2.new(0.35, -5, 0, 46), function()
+			H.encyclopediaPage = math.min(#found, H.encyclopediaPage + 1)
+			Sfx.play("sfx_book_turn", 0.3)
+			render()
+		end, H.encyclopediaPage < #found)
+		nextPage.Position = UDim2.new(0.65, 5, 0, 3)
+		local save = mkButton(nav, "책갈피 꽂기", COLORS.leather, UDim2.new(0.5, -5, 0, 44), function()
+			H.encyclopediaBookmarkId = current.id
+			render()
+		end, true)
+		save.Position = UDim2.fromOffset(0, 59)
+		save.TextSize = 16
+		local saved = H.encyclopediaBookmarkId and byId[H.encyclopediaBookmarkId]
+		local jump = mkButton(nav, if saved then "책갈피 · " .. saved.name else "책갈피 없음",
+			COLORS.blue, UDim2.new(0.5, -5, 0, 44), function()
+				if not saved then return end
+				H.encyclopediaCategoryId = "all"
+				H.encyclopediaSearchText = ""
+				H.encyclopediaPage = 1
+				for i, card in all do
+					if card.id == saved.id then H.encyclopediaPage = i; break end
+				end
+				render()
+			end, saved ~= nil)
+		jump.Position = UDim2.new(0.5, 5, 0, 59)
+		jump.TextSize = 15
+		return nav
+	end)
 end
-
 function RENDERERS.scholar()
 	H.exploreScholarView = true
 	local ok, err = pcall(RENDERERS.explore)
