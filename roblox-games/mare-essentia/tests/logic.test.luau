@@ -97,6 +97,40 @@ do
 	check("세계 탐험 10대 항로", regions == 10)
 	check("항로별 연속 퀘스트 50장", total == 50 and correctStages)
 	check("항로별 실제 항구·현장·카드·전후 단서 연결", #issues == 0, table.concat(issues, ", "))
+	-- [서사 회귀] 실제 정규 도감은 그대로 두고 50장 각각 고유한 인물·의문·반전·결말을 제공한다.
+	local openingSet, endingSet, authored, dupOpening, dupEnding = {}, {}, 0, 0, 0
+	for _, q in D.Quests.Quests do
+		if q.routeId then
+			local j = q.journal
+			if j and j.speaker and j.theme and j.basis and j.opening and j.question and j.ending
+				and #j.opening > 100 and #j.ending > 70 and #j.question > 30 then
+				authored += 1
+			end
+			local startText, finishText = D.Quests.Story(q)
+			if openingSet[startText] then dupOpening += 1 end
+			if endingSet[finishText] then dupEnding += 1 end
+			openingSet[startText], endingSet[finishText] = true, true
+			if not string.find(startText, "남은 의문:", 1, true)
+				or not string.find(finishText, "다음 장", 1, true) and j and j.stage < 5 then
+				table.insert(issues, "저널 인과·후속 연결: " .. q.id)
+			end
+		end
+	end
+	check("10대 항로 50장 고유 저널 원고", authored == 50, tostring(authored))
+	check("저널 진입·결말 중복 없는 서사", dupOpening == 0 and dupEnding == 0)
+	local snapshot = S.View.build(S.State.new("england", 1700), ctx)
+	local visibleRoutes = 0
+	for _, entry in snapshot.quests.fieldRoutes do
+		if entry.routeId then
+			visibleRoutes += 1
+			if not entry.id or not entry.question or not entry.theme then
+				table.insert(issues, "저널 단서 스냅샷: " .. tostring(entry.id))
+			end
+		end
+	end
+	check("최초 저널 10대 항로 다음 장 표시", visibleRoutes == 10, tostring(visibleRoutes))
+	check("연속 사건·저널 단서 구조", #issues == 0, table.concat(issues, ", "))
+
 
 	local first = S.State.new("england", 1700)
 	first.portId = "london"
