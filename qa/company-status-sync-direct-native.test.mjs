@@ -179,18 +179,21 @@ test('owner focus preserves active games and excludes permanently removed titles
   const {company}=runCompanyStatusSync({filesystem});
   const focus=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8')).developmentLifecycleMachine.focusedDevelopmentCaretakers;
   assert.equal(company.operations.autonomousFocus.enabled,true);
-  assert.equal(company.operations.autonomousFocus.targetSlots,3);
+  assert.equal(company.operations.autonomousFocus.targetSlots,focus.targetFocusedGames);
   assert.equal(company.operations.autonomousFocus.filledSlots,focus.ownerFocusedGameIds.length);
   assert.deepEqual(company.operations.autonomousFocus.focusedGameIds,focus.ownerFocusedGameIds);
   assert.deepEqual(company.operations.autonomousFocus.games.map(game=>game.gameId),focus.ownerFocusedGameIds);
   const expected=focus.ownerFocusedGameIds.map(gameId=>[gameId,focus.ownerFocusedGamePlatforms[gameId]]);
   assert.deepEqual(company.operations.autonomousFocus.games.map(game=>[game.gameId,game.selectedPlatform]),expected);
   const removed=new Set(JSON.parse(fs.readFileSync('game-catalog.json','utf8')).permanentRemovalPolicy?.ids||[]);
-  assert.deepEqual(expected,[['insect-survival','WEB']]);
+  assert.deepEqual(expected,[['mare-essentia','ROBLOX']]);
   assert.ok(focus.ownerFocusedGameIds.every(id=>!removed.has(id)),'removed games must never be focused');
   for(const game of company.operations.autonomousFocus.games.filter(game=>game.selectedPlatform==='WEB')){
     assert.ok(fs.existsSync(`web-games/${game.slug}/index.html`),`missing Web source: ${game.slug}`);
     assert.equal(game.targetPlatformReady,true,`Web source readiness missing: ${game.slug}`);
+  }
+  for(const game of company.operations.autonomousFocus.games.filter(game=>game.selectedPlatform==='ROBLOX')){
+    assert.ok(fs.existsSync(`roblox-games/${game.slug}/default.project.json`),`missing Roblox source: ${game.slug}`);
   }
   assert.ok(company.operations.autonomousFocus.source.includes('company-learning/platform-release-roadmap.json'));
   assert.ok(writes.has('company-status.json'));
