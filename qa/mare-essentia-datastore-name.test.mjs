@@ -1,3 +1,4 @@
+// 파일명: qa/mare-essentia-datastore-name.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -2781,4 +2782,34 @@ test('네모트론 후보와 독립 검수는 동일 무료 호출에서 다른 
   assert.equal(result.status,'OK');
   assert.equal(validateVisualComparison(result.text,[frame.name]).status,'UNVERIFIED',
     'JSON 구조 성공은 시각 개선 성공과 구분');
+});
+
+
+// [교역·조선소·방문 메뉴 회귀] 실물 미리보기와 모바일 버튼 정렬은 기존 렌더러만 사용한다.
+test('대항해시대 교역품 3D·선박 전시장·공통 방문 메뉴가 화면 공간을 활용한다',()=>{
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const goods=source.slice(source.indexOf('local GOOD_ICON = {}'),source.indexOf('-- 줄 제목·부제'));
+  const trade=source.slice(source.indexOf('local function openTradeHall()'),source.indexOf('H.tradeHall = openTradeHall'));
+  const yard=source.slice(source.indexOf('function openYardHall()'),source.indexOf('H.yardHall = openYardHall'));
+  assert.ok(goods.includes('GOOD_ICON[goodsId] = { "Cargo", cargoAsset, nil, "Goods/" .. goodsId }'),
+    '실제 등록된 Cargo 모델만 상품 원화와 연결');
+  assert.match(trade,/g\.id ~= hallGood then gi = \{ "Goods", g\.id \} end/,
+    '선택 상품만 3D로 표시하고 나머지 목록은 원화로 남겨 화면 부하 제한');
+  assert.match(trade,/math\.min\(heroW - 22, root\.AbsoluteSize\.Y - menuY - 94, 620\)/,
+    '넓은 화면에서 선택 교역품의 3D 높이 확대');
+  assert.match(trade,/art\.Size = UDim2\.new\(1, -20, 0, heroPx\)/,
+    '교역품 전시대의 가로 여백 활용');
+  assert.match(trade,/math\.min\(width - 34, math\.max\(190, root\.AbsoluteSize\.Y \* 0\.56\), 370\)/,
+    '모바일 교역품 상세 화면도 원본 확대');
+  assert.match(yard,/model\.Size = UDim2\.new\(1, -20, 0, px\)/,
+    '선체가 긴 실제 함선의 가로 3D 전시 공간');
+  assert.match(yard,/math\.min\(heroWidth - 20, heroHeight - 62, 620\)/,
+    '선박 3D 높이 최대치 확대');
+  assert.match(source,/width < math\.max\(450, left \+ btnWidth \+ 240\)/,
+    '방문 메뉴의 3~5개 버튼과 설명이 중간 화면 폭에서 겹치지 않게 재배치');
+  assert.match(source,/local iconPx = if it\.portrait then 164 else 148/,
+    '공통 시설 메뉴 원화와 인물 초상 확대');
+  for(const op of ['Buy','Sell','BuyShip','Repair','BuySupplies'])
+    assert.ok(source.includes('call("'+op+'"'),'기존 거래·조선 서버 호출 유지: '+op);
+  assert.doesNotMatch(trade,/Instance\.new\("Part"\)/,'UI에 새 임시 3D 도형 금지');
 });
