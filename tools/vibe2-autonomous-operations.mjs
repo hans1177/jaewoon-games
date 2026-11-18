@@ -211,7 +211,7 @@ export function automaticImpactedChecks(changedFiles=[],{gameRepair={},sourceRoo
   });
   // [로블록스 24시간 감시] 정적 경로·소유된 수리 계약만 위험 분류에 사용한다.
   // 위험 신호는 런타임·모바일·배포 PASS 증거가 아니며 기존 QA를 대체하지 않는다.
-  const robloxParts=files.filter(file=>/^roblox-games\\/[^/]+\\//i.test(file))
+  const robloxParts=files.filter(file=>file.startsWith('roblox-games/')&&file.split('/').length>=3)
     .map(file=>file.replace(/([a-z0-9])([A-Z])/g,'$1/$2').replace(/[._-]/g,'/').toLowerCase().split('/'));
   const hasRobloxRole=names=>robloxParts.some(parts=>names.some(name=>parts.includes(name)));
   const savedPath=files.some(f=>/(?:^|[\/._-])(?:save|saving|profile|data-store|datastore|inventory|economy|currency)(?:[\/._-]|$)/i.test(f));
