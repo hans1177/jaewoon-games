@@ -1209,7 +1209,14 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
   const discovered=game.slice(seenStart,seenEnd);
   assert.ok(seenStart>0 && seenEnd>seenStart);
   assert.match(discovered,/H\.seenCards\[c\.id\] = true/,'real codex discovery bookkeeping remains');
-  assert.doesNotMatch(discovered,/H\.showCardGain\(|H\.gainQueue|H\.gainBusy|Sfx\.play/,'new cards cannot launch blocking events');
+  assert.match(discovered,/local firstSnapshot = H\.seenCards == nil/,'reconnect preserves existing found-card baseline');
+  assert.match(discovered,/H\.showCardGain\(found\.card, found\.extra\)/,'only genuine new discovery starts UI reveal');
+  assert.match(discovered,/H\.cardGainQueue = H\.cardGainQueue or \{\}/,'multiple simultaneous gains are queued without modal scenes');
+  assert.match(discovered,/extra = #acquired - 1/,'one reveal summarizes same-response additional cards');
+  assert.match(game,/g:SetAttribute\("NonBlockingCardNotice", true\)/,'card reveal is cosmetic and nonblocking');
+  assert.match(game,/H\.dockButtons and H\.dockButtons\.codex/,'card shrinks to real library dock icon');
+  assert.match(game,/Name = "CardSparkle"/,'rarity-colored sparkles');
+  assert.match(game,/Name = "DiscoveryHalo"/,'card acquisition light rings');
   assert.match(game,/local previous = pg:FindFirstChild\("CardGain"\)/,'Studio card preview remains opt-in');
   assert.doesNotMatch(game,/새 지식 카드 발견!|TweenInfo\.new\(20, Enum\.EasingStyle\.Sine\)/,'dated reveal and 14%-zoomed blurry illustration removed');
   assert.match(game,/local portraitWidth = math\.min\(256,/,'low-res portrait atlas must not be upscaled to 330px');
@@ -1925,4 +1932,32 @@ test('Mare naval battle uses three approved original circular HUD images without
   assert.match(naval,/b\.Interactable = ready and phase == "duel"/);
   assert.match(naval,/if now < skillReady\[sk\.id\] or opts\.cardOnly/);
   assert.match(naval,/local art = b:FindFirstChild\("NavalButtonArtwork"\)/);
+});
+
+
+// [도시 자동 사건·카드 원더 차단] 수동으로 듣는 이야기는 유지하고 같은 방문의 자동 씬만 절제한다.
+test('Mare first card has no forced wonder and spontaneous port events are limited to one',()=>{
+  const root='roblox-games/mare-essentia/src/ServerScriptService/Services/';
+  const discovery=fs.readFileSync(root+'Discovery.luau','utf8');
+  const cardGrant=discovery.slice(discovery.indexOf('local function grantCard('),discovery.indexOf('-- [발견] 항구 도착만으로'));
+  assert.ok(cardGrant.includes('state.discovered[cardId] = true'),'card rewards still update canonical discovery');
+  assert.ok(cardGrant.includes('S.Cardbook.reward(state, "discover"'),'card-drop probability unchanged');
+  assert.doesNotMatch(cardGrant,/state\.pendingScene\s*=\s*cardId/,'first and later cards do not summon a blocking wonder movie');
+  const quest=fs.readFileSync(root+'Quest.luau','utf8');
+  const arrive=quest.slice(quest.indexOf('local function arrivalHooks('),quest.indexOf('-- 항구에 도착하면 받아 둔'));
+  for(const token of ['S.History.tick(state)','local offered = offer(state, msgs, "주점에서 소문을 들었다")',
+    'S.Chronicle.arrive(state, msgs)','S.Story.autoTrigger(state, msgs)','state._autoEventPort = state.portId'])
+    assert.ok(arrive.includes(token),'arrival keeps existing responsibility: '+token);
+  assert.ok(arrive.indexOf('S.History.tick(state)')<arrive.indexOf('local offered = offer('));
+  assert.ok(arrive.indexOf('local offered = offer(')<arrive.indexOf('S.Chronicle.arrive(state, msgs)'));
+  assert.ok(arrive.indexOf('S.Chronicle.arrive(state, msgs)')<arrive.indexOf('S.Story.autoTrigger(state, msgs)'));
+  assert.match(arrive,/if offered then[\s\S]*?state\._autoEventPort = state\.portId[\s\S]*?return/);
+  assert.match(arrive,/if S\.Chronicle and S\.Chronicle\.arrive\(state, msgs\) then[\s\S]*?return/);
+  const history=fs.readFileSync(root+'History.luau','utf8');
+  assert.match(history,/if state\._autoEventPort == state\.portId then return nil end/);
+  assert.match(history,/h\.seen\[ev\.id\] = math\.floor\(idx\)[\s\S]*?state\._autoEventPort = state\.portId/);
+  assert.match(history,/h\.pending = best\.id/,'unseen history is deferred, not marked as seen');
+  const story=fs.readFileSync(root+'Story.luau','utf8');
+  assert.match(story,/function handlers\.PlayStory\(state, p\)/,'player-initiated story stays intact');
+  assert.match(quest,/local function offer\(state, msgs, how, personId\)/,'player initiated quests preserved');
 });
