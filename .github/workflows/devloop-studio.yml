@@ -164,6 +164,8 @@ jobs:
           $out = Join-Path $env:RUNNER_TEMP 'mare-frames'
           $reportFile = Join-Path $out 'report.json'
           $studioNodeExitCode = 1
+          $firstAttempt = Join-Path $env:RUNNER_TEMP 'mare-first-attempt'
+          Remove-Item -Recurse -Force $firstAttempt -ErrorAction SilentlyContinue
           # [메인] MCP 통신이 끊긴 경우에만 같은 빌드·같은 작업을 새 Studio 세션으로 한 번 재시도한다.
           # 게임 코드 오류, 클릭 실패, 화면 불일치는 재시도하지 않고 기존 QA 실패로 남긴다.
           for ($studioAttempt = 1; $studioAttempt -le 2; $studioAttempt++) {
@@ -195,8 +197,18 @@ jobs:
             $rpcStalled = $attemptErrors.Count -gt 0 -and
               @($attemptErrors | Where-Object { [string]$_ -notmatch 'MCP timeout: tools/call|MCP process exited code=|ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action .*Target is not reachable' }).Count -eq 0
             if (-not $rpcStalled) { break }
+            Move-Item -LiteralPath $out -Destination $firstAttempt
             Write-Warning 'STUDIO_MCP_TRANSPORT_RETRY=FRESH_OFFICIAL_STUDIO_SESSION_ONCE'
             Start-Sleep -Seconds 8
+          }
+          if (Test-Path -LiteralPath $firstAttempt) {
+            Copy-Item -LiteralPath (Join-Path $firstAttempt 'report.json') -Destination (Join-Path $out 'first-attempt-report.json')
+            $lastShot = $attemptReport.abortDiagnostics.lastScreenshot
+            if ($lastShot -match '^[a-zA-Z0-9_-]+$') {
+              Get-ChildItem -LiteralPath $firstAttempt -Filter "$lastShot-*" -File | ForEach-Object {
+                Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $out ('first-attempt-' + $_.Name))
+              }
+            }
           }
           # [실증 검증] 성공처럼 보이는 빈 캡처·스크립트 오류는 실패로 처리한다.
           $reportFile = Join-Path $out 'report.json'
