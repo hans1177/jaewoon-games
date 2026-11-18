@@ -402,7 +402,7 @@ test('free Gemini system worker retries invalid repair schema once and keeps det
     .map(key=>[key,process.env[key]]));
   process.chdir(cwd);
   try{
-    write('tools/demo.mjs',"export const value=1;\\n");
+    write('tools/demo.mjs',"export const value=1;\n");
     write('task.json',JSON.stringify({
       id:'schema-retry',status:'running',taskType:'bottleneck-repair',
       goal:'repair source generation failure',responsibleFiles:['tools/demo.mjs'],
