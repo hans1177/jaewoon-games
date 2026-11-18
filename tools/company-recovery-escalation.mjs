@@ -205,6 +205,7 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
   const studioSignature=['STUDIO_SCRIPT_REPORTED_ERRORS','STUDIO_MCP_TOOL_TIMEOUT','STUDIO_SCREENSHOTS_MISSING',
     'STUDIO_OBSERVED_RUNTIME_WARNINGS','STUDIO_OBSERVED_SOURCE_RUNTIME_ERROR',
     'STUDIO_ASSET_AUDIT_FAILED','STUDIO_FEATURE_AUDIT_FAILED','STUDIO_FULL_AUDIT_INCOMPLETE',
+    'STUDIO_SCREENSHOTS_INCOMPLETE','STUDIO_SCREENSHOT_INVALID_IMAGE',
     'STUDIO_MCP_PLAYCLIENT_UNREACHABLE'].includes(studioValue('FAILURE_SIGNATURE'))?studioValue('FAILURE_SIGNATURE'):'';
   const tasks=Array.isArray(gameQueueInput.tasks)?gameQueueInput.tasks:[];
   const failedJobs=(Array.isArray(jobsInput.jobs)?jobsInput.jobs:[]).filter(job=>clean(job?.conclusion)==='failure');

@@ -1204,6 +1204,16 @@ test('Studio QA failure uses exact source evidence and canonical source intake b
   assert.equal(timeout.owner,'SYSTEM_AI');
   assert.equal(timeout.queue.tasks[0].failureSignature,'STUDIO_MCP_TOOL_TIMEOUT');
   assert.deepEqual(timeout.queue.tasks[0].responsibleFiles,['.github/workflows/devloop-studio.yml']);
+  // [실제 Studio 0장 캡처] 검사 실패 원인을 일반 워크플로 오류로 잃어버리지 않는다.
+  for(const failureSignature of ['STUDIO_SCREENSHOTS_INCOMPLETE','STUDIO_SCREENSHOT_INVALID_IMAGE']){
+    const missingFrames=escalateDeploymentFailure({event:{workflow_run:run},catalogInput:{games:[]},
+      jobsInput:{...jobs,studioMarkers:['STUDIO_QA_GAME_ID=mare-essentia',
+        'STUDIO_QA_FAILURE_STAGE=STUDIO_EXECUTION',
+        'STUDIO_QA_FAILURE_SIGNATURE='+failureSignature]}});
+    assert.equal(missingFrames.owner,'SYSTEM_AI');
+    assert.equal(missingFrames.queue.tasks[0].failureSignature,failureSignature);
+    assert.deepEqual(missingFrames.queue.tasks[0].responsibleFiles,['.github/workflows/devloop-studio.yml']);
+  }
   const missing=escalateDeploymentFailure({event:{workflow_run:run},catalogInput:{games:[]},
     jobsInput:{...jobs,studioMarkers:jobs.studioMarkers.filter(v=>!v.startsWith('STUDIO_QA_SOURCE_FILE='))}});
   assert.equal(missing.owner,'SYSTEM_AI');
