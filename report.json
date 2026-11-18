@@ -1,5 +1,5 @@
 {
- "sourceRevision": "697a24594ff1b0c58c2f8718d7ab6166ae5feb55",
+ "sourceRevision": "59b9b6b2dc7de36c9df733ab7f8b38eab867907d",
  "log": [
   {
    "step": 1,
@@ -720,7 +720,7 @@
   {
    "step": 158,
    "ctx": "Client",
-   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.5, 219.0861053466797, 36.4453125 on=true parent=VoyageScene fog=2069.776611328125 brightness=1.986767292022705 atmo=0.3700000047683716 camdist=36.65442657470703\ntext"
+   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.5070190429688, 218.83155822753906, 36.4453125 on=true parent=VoyageScene fog=2600 brightness=1.9862197637557983 atmo=0.3700000047683716 camdist=36.65138626098633\ntext"
   },
   {
    "step": 160,
@@ -850,7 +850,7 @@
   {
    "step": 199,
    "ctx": "Client",
-   "out": "MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2 ACTIVE_WALKERS=10 CARRY_FORWARD=true\ntext"
+   "out": "MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2 ACTIVE_WALKERS=8 CARRY_FORWARD=true\ntext"
   },
   {
    "step": 200,
@@ -940,7 +940,7 @@
   {
    "step": 225,
    "ctx": "Client",
-   "out": "MOTION_VILLAGER_GESTURES_PASS KINDS=9 DISTINCT=9 WALKING_WORK=2\ntext"
+   "out": "MOTION_VILLAGER_GESTURES_PASS KINDS=9 DISTINCT=8 WALKING_WORK=2\ntext"
   },
   {
    "step": 226,
@@ -951,44 +951,10 @@
    "step": 227,
    "capture": "harbor_npc_face_front",
    "files": 1
-  },
-  {
-   "step": 228,
-   "ctx": "Client",
-   "out": "FIELD_QA_OPEN_EXPLORE_TAB GUI_ENABLED=true UNLOCKED_BEFORE=0\ntext"
-  },
-  {
-   "step": 230,
-   "ctx": "Client",
-   "out": "FIELD_QA_ENTRY_AVAILABLE=12 LOCKED_LABELS=0 REAL_UI_ONLY=true\ntext"
-  },
-  {
-   "step": 231,
-   "click": "field_entry",
-   "at": "298,190",
-   "out": "298,190 CLICK=지상맵 입장 HITBOX=VISIBLE BLOCKER=none\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 298,
-      "y": 190
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 233,
-   "capture": "field_entry",
-   "files": 1
   }
  ],
  "errors": [
-  "step234:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:23: FIELD_PREMIUM_MEDALLION_MISSING | "
+  "step228:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action ExecuteLuau.runCode sent to DMN_ID_PLAYCLIENT failed - Target is not reachable (ExecuteLuau.runCode, DMN_ID_PLAYCLIENT). No OnInvoke handler responded for this action. Sender: DMN_ID_STANDALONE. | text"
  ],
  "consoleCapture": {
   "captured": true,
@@ -997,17 +963,17 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 13,
+  "warningCount": 12,
   "errors": []
  },
  "summary": {
   "plannedSteps": 241,
-  "completedSteps": 235,
+  "completedSteps": 229,
   "plannedClicks": 10,
-  "successfulClicks": 10,
+  "successfulClicks": 9,
   "skippedOptionalClicks": 0,
   "plannedFrames": 62,
-  "capturedFrames": 59,
+  "capturedFrames": 58,
   "abortedEarly": true
  },
  "visualSamples": [
@@ -1017,7 +983,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 224070,
+      "bytes": 224181,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1055,7 +1021,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 248604,
+      "bytes": 248695,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1094,7 +1060,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 158564,
+      "bytes": 158374,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1107,7 +1073,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.016808271408081,
+    "brightness": 2.0177743434906006,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1118,7 +1084,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 165626,
+      "bytes": 165787,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1131,7 +1097,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.020673990249634,
+    "brightness": 2.021481513977051,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1142,7 +1108,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 128688,
+      "bytes": 122651,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1155,7 +1121,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.024660348892212,
+    "brightness": 2.02473521232605,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1166,7 +1132,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163010,
+      "bytes": 162992,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1179,7 +1145,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0294740200042725,
+    "brightness": 2.0294582843780518,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1190,7 +1156,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164251,
+      "bytes": 165594,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1205,7 +1171,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168305,
+      "bytes": 167864,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1220,7 +1186,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170545,
+      "bytes": 170845,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1235,7 +1201,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163431,
+      "bytes": 162931,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1250,7 +1216,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163926,
+      "bytes": 164097,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1265,7 +1231,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164050,
+      "bytes": 164213,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1280,7 +1246,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 165920,
+      "bytes": 164900,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1295,7 +1261,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168578,
+      "bytes": 168354,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1310,7 +1276,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 171190,
+      "bytes": 171400,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1325,7 +1291,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170705,
+      "bytes": 170801,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1340,7 +1306,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170745,
+      "bytes": 170545,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1355,7 +1321,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 241356,
+      "bytes": 236021,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1370,7 +1336,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 200029,
+      "bytes": 201141,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1385,7 +1351,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168771,
+      "bytes": 169300,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1400,7 +1366,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167612,
+      "bytes": 168214,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1415,7 +1381,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167790,
+      "bytes": 168108,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1430,7 +1396,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164266,
+      "bytes": 164222,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1445,7 +1411,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164827,
+      "bytes": 164008,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1460,7 +1426,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164370,
+      "bytes": 164706,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1475,7 +1441,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 194518,
+      "bytes": 194479,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1490,7 +1456,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 171528,
+      "bytes": 171456,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1505,7 +1471,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164300,
+      "bytes": 164262,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1520,7 +1486,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 203386,
+      "bytes": 203524,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1535,7 +1501,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 213286,
+      "bytes": 213112,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1550,7 +1516,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 208240,
+      "bytes": 208544,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1565,7 +1531,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 257745,
+      "bytes": 257138,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1579,7 +1545,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 251570,
+      "bytes": 250661,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1593,7 +1559,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 258602,
+      "bytes": 276579,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1607,7 +1573,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 265239,
+      "bytes": 269774,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1621,7 +1587,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 143796,
+      "bytes": 144560,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1635,7 +1601,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 156767,
+      "bytes": 156410,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1649,7 +1615,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 102689,
+      "bytes": 103332,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1663,7 +1629,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104006,
+      "bytes": 101905,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1677,7 +1643,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105549,
+      "bytes": 103457,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1691,7 +1657,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104374,
+      "bytes": 103353,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1705,7 +1671,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 103995,
+      "bytes": 102830,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1719,7 +1685,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104431,
+      "bytes": 102880,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1733,7 +1699,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104431,
+      "bytes": 103419,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1747,7 +1713,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104431,
+      "bytes": 102605,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1761,7 +1727,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 101250,
+      "bytes": 100461,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1775,7 +1741,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 102168,
+      "bytes": 102586,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1789,7 +1755,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104539,
+      "bytes": 103881,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1803,7 +1769,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 102979,
+      "bytes": 101667,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1817,7 +1783,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 103913,
+      "bytes": 102725,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1831,7 +1797,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 103782,
+      "bytes": 102615,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1845,7 +1811,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104537,
+      "bytes": 103392,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1859,7 +1825,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 102250,
+      "bytes": 102239,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1873,7 +1839,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104452,
+      "bytes": 103295,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1887,7 +1853,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 102740,
+      "bytes": 101949,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1901,28 +1867,13 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104918,
+      "bytes": 102816,
       "width": 0,
       "height": 0,
       "pass": true
      }
     ]
    }
-  },
-  {
-   "name": "field_entry",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 158885,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
   }
  ],
  "assetOwnership": {
@@ -2016,7 +1967,7 @@
       ]
      }
     },
-    "scanned": 23483,
+    "scanned": 23458,
     "contentRefs": 5142,
     "complete": true
    },
@@ -2096,13 +2047,13 @@
      }
     },
     "scanned": 25001,
-    "contentRefs": 3259,
+    "contentRefs": 3762,
     "complete": false
    }
   }
  },
  "visualEvidence": {
-  "framesChecked": 59,
+  "framesChecked": 58,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
