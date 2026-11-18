@@ -215,17 +215,24 @@ test('Gemini 429 failover reaches only a pinned OpenRouter free model',async()=>
   });
 });
 
-test('Groq route requires an explicitly confirmed free plan; never infers it from API key',async()=>{
+test('Groq uses the pinned free model when API key exists without redundant free-tier flag',async()=>{
   await withExternalFixture(async()=>{
     process.env.GROQ_API_KEY='groq-test-secret';
     process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
-    const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=groq-unverified-'+Date.now());
+    const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=groq-free-key-'+Date.now());
     const calls=[];
-    await assert.rejects(isolated({apiKey:'test',contents:[],fetchImpl:async url=>{
-      calls.push(String(url));
-      return{ok:false,status:429,headers:{get:()=> '30'}};
-    }}),/GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE/);
-    assert.equal(calls.length,2,'no unverified Groq free-plan request may leave the worker');
+    const result=await isolated({apiKey:'test',
+      contents:[{role:'user',parts:[{text:'free code task'}]}],
+      fetchImpl:async(url,options)=>{
+        calls.push({url:String(url),options});
+        if(String(url).includes('googleapis.com'))return{ok:false,status:429,headers:{get:()=> '30'}};
+        return{ok:true,json:async()=>({choices:[{message:{content:'{"ok":true}'}}],usage:{cost:0}})};
+      }
+    });
+    assert.equal(calls.length,3);
+    assert.equal(result.provider,'GROQ');
+    assert.equal(result.model,VERIFIED_FREE_FALLBACK_MODELS.GROQ);
+    assert.equal(JSON.parse(calls.at(-1).options.body).service_tier,'on_demand');
   });
 });
 
@@ -542,9 +549,9 @@ test('Vibe59 specialist routing assigns actual free model by domain',async()=>{
     }}});
   assert.ok(!cooldown.expertCandidates.some(row=>row.provider==='GROQ'),
     '검증된 무료 잔량 0 슬롯은 다음 배정에서 제외');
-  assert.ok(!selectVibe59FreeExperts({department:'DEVELOPMENT',
+  assert.ok(selectVibe59FreeExperts({department:'DEVELOPMENT',
     env:{...env,VIBE2_GROQ_FREE_PLAN_VERIFIED:'NO'}}).expertCandidates
-    .some(row=>row.provider==='GROQ'),'그록 무료 요금제 확인 없이 호출 금지');
+    .some(row=>row.provider==='GROQ'),'무료 고정 모델은 추가 확인 플래그 없이 배정');
   await withExternalFixture(async()=>{
     process.env.GROQ_API_KEY='groq-fixture';
     process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
