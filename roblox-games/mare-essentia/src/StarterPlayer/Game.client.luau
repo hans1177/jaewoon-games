@@ -3255,6 +3255,8 @@ local tradeHallRefresh -- 교역소 별도 화면이 열려 있으면 서버 응
 
 local lastCallAt = 0
 local function call(action, payload)
+	-- [첫 접속] 저장 응답 확인 중에는 전체 게임 창을 그리지 않는다.
+	local startupStateRequest = action == "State" and H.startupCover and H.startupCover.Parent ~= nil
 	-- 앞선 요청이 끝나길 잠깐 기다린다 (버튼을 눌렀는데 아무 반응이 없던 문제 방지). 너무 오래 걸리면 풀어 준다.
 	local waited = 0
 	while busy and waited < 8 do
@@ -3278,7 +3280,8 @@ local function call(action, payload)
 		done = true
 	end)
 	local t = 0
-	while not done and t < 15 do
+	local timeout = if startupStateRequest then 6 else 15
+	while not done and t < timeout do
 		task.wait(0.05)
 		t += 0.05
 	end
@@ -3286,13 +3289,13 @@ local function call(action, payload)
 	lastCallAt = os.clock()
 	if not done then
 		message, messageOk = "서버 응답이 늦어요. 잠시 후 다시 눌러 주세요", false
-		render()
+		if not startupStateRequest then render() end
 		return nil
 	end
 	if DEBUG_LOG then print("[Game] call", action, ok, type(result) == "table" and result.ok, type(result) == "table" and result.message or result) end
 	if not ok or type(result) ~= "table" then
 		message, messageOk = "서버와 연결하지 못했어요", false
-		render()
+		if not startupStateRequest then render() end
 		return nil
 	end
 	do
@@ -3411,7 +3414,8 @@ local function call(action, payload)
 	if result.message and result.message ~= "" then
 		message, messageOk = result.message, result.ok
 	end
-	render()
+	-- 서버 상태 로드가 끝날 때 제목 화면만 한 번 만들고, 실제 게임 창은 이어하기에서 구성한다.
+	if not startupStateRequest then render() end
 	if tradeHallRefresh then
 		tradeHallRefresh()
 	end
@@ -12349,7 +12353,7 @@ gui:SetAttribute("StartupStage", "server-state-request")
 
 task.spawn(function()
 	-- [표지 갱신 단일화] 모듈 대기 전부터 시작된 같은 로딩 표시를 사용한다.
-    for attempt = 1, 30 do
+    for attempt = 1, 8 do
 		gui:SetAttribute("StartupStage", "server-state-" .. tostring(attempt))
 		local result = call("State")
 		if result and (result.view or result.needsNewGame) then
@@ -12357,7 +12361,6 @@ task.spawn(function()
 			message = ""
 			-- 화면을 그리다 오류가 나도 로딩 화면에 갇히지 않게 하고, 오류 내용을 보여 준다.
 			local okDraw, errDraw = pcall(function()
-				render()
 				H.showTitle()
 			end)
 			if not okDraw then
@@ -12365,7 +12368,8 @@ task.spawn(function()
 				if H.startupLabel then
 					H.startupLabel.Text = "시작 화면 오류\n" .. string.sub(tostring(errDraw), 1, 160)
 				end
-				task.wait(8)
+				gui:SetAttribute("StartupStage", "title-failed")
+				return
 			end
 			-- 실제 시작 메뉴가 완성된 뒤에만 로딩 화면을 닫는다.
 			if H.startupCover then
