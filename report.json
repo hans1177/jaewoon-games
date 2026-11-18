@@ -1,5 +1,5 @@
 {
- "sourceRevision": "804fa565c766eba7f7902dd0e049c460dd745db8",
+ "sourceRevision": "df954c24447957e96b261f74b64c2bc7cf46c7fb",
  "log": [
   {
    "step": 1,
@@ -720,7 +720,7 @@
   {
    "step": 158,
    "ctx": "Client",
-   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.4929809570312, 218.7388458251953, 36.453125 on=true parent=VoyageScene fog=2298.842041015625 brightness=1.9832504987716675 atmo=0.3700000047683716 camdist=36.6568717956543\ntext"
+   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.5070190429688, 218.97845458984375, 36.4638671875 on=true parent=VoyageScene fog=1064.0831298828125 brightness=1.984381914138794 atmo=0.3700000047683716 camdist=36.672279357910156\ntext"
   },
   {
    "step": 160,
@@ -765,7 +765,7 @@
   {
    "step": 171,
    "ctx": "Server",
-   "out": "LOGS(18): The current thread cannot write 'ColorMap' (lacking capability Plugin) // The current thread cannot write 'ColorMap' (lacking capability Plugin) // The current thread cannot write 'ColorMap' (lacking capability Plugin) // The current thread cannot write 'NormalMap' (lacking capability Plugin) // [QA] FAIL asset AssetIds.CardArt/af_03 rbxassetid://72489040757878 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/af_15 rbxassetid://77023165428158 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // [MareEssentia] 우선 모델 불러오기 제한시간 도달 135 // The current thread cannot write 'NormalMap' (lacking capability Plugin)\ntext"
+   "out": "LOGS(18): The current thread cannot write 'ColorMap' (lacking capability Plugin) // The current thread cannot write 'ColorMap' (lacking capability Plugin) // The current thread cannot write 'ColorMap' (lacking capability Plugin) // The current thread cannot write 'NormalMap' (lacking capability Plugin) // [QA] FAIL asset AssetIds.CardArt/af_03 rbxassetid://72489040757878 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/af_15 rbxassetid://77023165428158 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S // [MareEssentia] 우선 모델 불러오기 제한시간 도달 83 // The current thread cannot write 'NormalMap' (lacking capability Plugin)\ntext"
   },
   {
    "step": 172,
@@ -951,10 +951,44 @@
    "step": 227,
    "capture": "harbor_npc_face_front",
    "files": 1
+  },
+  {
+   "step": 228,
+   "ctx": "Client",
+   "out": "FIELD_QA_OPEN_EXPLORE_TAB GUI_ENABLED=true UNLOCKED_BEFORE=0\ntext"
+  },
+  {
+   "step": 230,
+   "ctx": "Client",
+   "out": "FIELD_QA_ENTRY_AVAILABLE=12 LOCKED_LABELS=0 REAL_UI_ONLY=true\ntext"
+  },
+  {
+   "step": 231,
+   "click": "field_entry",
+   "at": "298,190",
+   "out": "298,190 CLICK=지상맵 입장 HITBOX=VISIBLE BLOCKER=none\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 298,
+      "y": 190
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 233,
+   "capture": "field_entry",
+   "files": 1
   }
  ],
  "errors": [
-  "step228:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action ExecuteLuau.runCode sent to DMN_ID_PLAYCLIENT failed - Target is not reachable (ExecuteLuau.runCode, DMN_ID_PLAYCLIENT). No OnInvoke handler responded for this action. Sender: DMN_ID_STANDALONE. | text"
+  "step234:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:23: FIELD_PREMIUM_MEDALLION_MISSING | "
  ],
  "consoleCapture": {
   "captured": true,
@@ -963,7 +997,7 @@
    "Server"
   ],
   "errorCount": 2,
-  "warningCount": 13,
+  "warningCount": 14,
   "errors": [
    {
     "type": "studio-console-error",
@@ -979,12 +1013,12 @@
  },
  "summary": {
   "plannedSteps": 241,
-  "completedSteps": 229,
+  "completedSteps": 235,
   "plannedClicks": 10,
-  "successfulClicks": 9,
+  "successfulClicks": 10,
   "skippedOptionalClicks": 0,
   "plannedFrames": 62,
-  "capturedFrames": 58,
+  "capturedFrames": 59,
   "abortedEarly": true
  },
  "visualSamples": [
@@ -994,7 +1028,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 224086,
+      "bytes": 224039,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1017,7 +1051,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 248306,
+      "bytes": 248123,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1032,7 +1066,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 248615,
+      "bytes": 248647,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1047,7 +1081,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 135573,
+      "bytes": 136117,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1071,7 +1105,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 143579,
+      "bytes": 158495,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1084,7 +1118,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.019641399383545,
+    "brightness": 2.0178675651550293,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1095,7 +1129,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 166896,
+      "bytes": 165869,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1108,7 +1142,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.022514581680298,
+    "brightness": 2.020936965942383,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1119,7 +1153,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 117249,
+      "bytes": 120252,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1132,7 +1166,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.025806427001953,
+    "brightness": 2.024414539337158,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1143,7 +1177,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163036,
+      "bytes": 162973,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1156,7 +1190,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.030932903289795,
+    "brightness": 2.029252290725708,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1167,7 +1201,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 165254,
+      "bytes": 165007,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1182,7 +1216,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168576,
+      "bytes": 167902,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1197,7 +1231,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170631,
+      "bytes": 171051,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1212,7 +1246,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163559,
+      "bytes": 163135,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1227,7 +1261,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164047,
+      "bytes": 164124,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1242,7 +1276,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164316,
+      "bytes": 164240,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1257,7 +1291,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 165438,
+      "bytes": 165072,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1272,7 +1306,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168282,
+      "bytes": 168064,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1287,7 +1321,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170858,
+      "bytes": 171269,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1302,7 +1336,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170972,
+      "bytes": 170754,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1317,7 +1351,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170959,
+      "bytes": 170657,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1332,7 +1366,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 245151,
+      "bytes": 235340,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1347,7 +1381,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 213397,
+      "bytes": 205404,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1362,7 +1396,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168440,
+      "bytes": 168508,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1377,7 +1411,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167446,
+      "bytes": 167923,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1392,7 +1426,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167712,
+      "bytes": 167640,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1407,7 +1441,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163914,
+      "bytes": 163426,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1422,7 +1456,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164539,
+      "bytes": 164696,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1437,7 +1471,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164313,
+      "bytes": 164340,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1452,7 +1486,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 194537,
+      "bytes": 194298,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1467,7 +1501,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170467,
+      "bytes": 170766,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1482,7 +1516,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164345,
+      "bytes": 164702,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1497,7 +1531,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 203725,
+      "bytes": 203508,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1512,7 +1546,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 212996,
+      "bytes": 213193,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1527,7 +1561,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 208566,
+      "bytes": 208397,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1542,7 +1576,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 253796,
+      "bytes": 254648,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1556,7 +1590,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 247108,
+      "bytes": 257466,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1570,7 +1604,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 235093,
+      "bytes": 234258,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1584,7 +1618,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 269335,
+      "bytes": 255898,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1598,7 +1632,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 146719,
+      "bytes": 144735,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1612,7 +1646,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 139907,
+      "bytes": 146819,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1626,7 +1660,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105890,
+      "bytes": 103742,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1640,7 +1674,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104215,
+      "bytes": 106229,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1654,7 +1688,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105728,
+      "bytes": 105788,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1668,7 +1702,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106847,
+      "bytes": 105773,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1682,7 +1716,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105796,
+      "bytes": 104474,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1696,7 +1730,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105828,
+      "bytes": 106543,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1710,7 +1744,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105937,
+      "bytes": 105803,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1724,7 +1758,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105031,
+      "bytes": 105860,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1738,7 +1772,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 103493,
+      "bytes": 103613,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1752,7 +1786,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105741,
+      "bytes": 106042,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1766,7 +1800,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105856,
+      "bytes": 105618,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1780,7 +1814,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104418,
+      "bytes": 105371,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1794,7 +1828,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105526,
+      "bytes": 104931,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1808,7 +1842,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105437,
+      "bytes": 105211,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1822,7 +1856,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105894,
+      "bytes": 105730,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1836,7 +1870,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104129,
+      "bytes": 104139,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1850,7 +1884,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106354,
+      "bytes": 105642,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1864,7 +1898,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104858,
+      "bytes": 103605,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1878,13 +1912,28 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104663,
+      "bytes": 104250,
       "width": 0,
       "height": 0,
       "pass": true
      }
     ]
    }
+  },
+  {
+   "name": "field_entry",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 157447,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
   }
  ],
  "assetOwnership": {
@@ -1978,7 +2027,7 @@
       ]
      }
     },
-    "scanned": 23442,
+    "scanned": 23467,
     "contentRefs": 5136,
     "complete": true
    },
@@ -2058,13 +2107,13 @@
      }
     },
     "scanned": 25001,
-    "contentRefs": 3631,
+    "contentRefs": 3606,
     "complete": false
    }
   }
  },
  "visualEvidence": {
-  "framesChecked": 58,
+  "framesChecked": 59,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
