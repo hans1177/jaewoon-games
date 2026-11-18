@@ -2534,6 +2534,10 @@ test('오픈라우터 공식 무료 잔량을 실제 요청 없이 검증한다'
   assert.equal(forecast.OPENROUTER.remainingLocal, 30, '내부 디자인 한도는 별도로 유지');
   assert.equal(forecast.OPENROUTER.effectiveRemaining, 0, '실제 계정 무료 잔량 우선');
   assert.equal(forecast.OPENROUTER.accountWideBalanceVerified, true);
+  assert.equal(forecastFreeDesignQuota({day: '2026-11-18',
+    calls: {OPENROUTER: 1}}, now, {...balance, remaining: 0,
+      source: 'OPENROUTER_KEY_API_PLUS_LOCAL_ATTEMPTS'}).OPENROUTER.accountWideBalanceVerified,
+    false, '실제 조회 후 로컬 호출을 차감한 잔량은 검증 실측치로 표시하지 않는다');
   const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
   const diagnostics = [];
   assert.ok(!selectFreeDesignModels({policy, env, now, accountQuota: balance, diagnostics})
