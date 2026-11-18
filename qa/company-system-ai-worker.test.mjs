@@ -221,6 +221,52 @@ test('live free-model critic REVISE retries missing strategies before applying e
   }
 });
 
+test('live free-model retries cannot promote duplicate strategy ids or write source',async()=>{
+  const cwd=root(),prev=process.cwd(),priorFetch=globalThis.fetch;
+  const envNames=['GEMINI_API_KEY','SYSTEM_AI_GEMINI_MODEL','VIBE2_GEMINI_MODEL','VIBE2_GEMINI_BACKUP_MODEL'];
+  const previousEnv=Object.fromEntries(envNames.map(name=>[name,process.env[name]]));
+  let calls=0;
+  try{
+    process.chdir(cwd);
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('task.json',JSON.stringify({id:'duplicate-strategies',status:'running',
+      taskType:'bottleneck-repair',goal:'repair exact source',
+      responsibleFiles:['tools/demo.mjs'],acceptanceCriteria:['value becomes 2']}));
+    process.env.GEMINI_API_KEY='TEST_ONLY_NOT_SENT_TO_NETWORK';
+    process.env.SYSTEM_AI_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_BACKUP_MODEL='gemini-3.5-flash-lite';
+    const edit={path:'tools/demo.mjs',find:'value=1',replace:'value=2'};
+    const initial={summary:'missing alternatives',edits:[edit]};
+    const repeated={summary:'invalid repeated strategy ids',edits:[edit],
+      strategyOptions:[
+        {id:'same',summary:'option A',risk:'LOW',files:['tools/demo.mjs']},
+        {id:'same',summary:'option B',risk:'HIGH',files:['tools/demo.mjs']}
+      ],selectedStrategyId:'same'};
+    const critic={verdict:'PASS',preferredStrategyId:'same',weakPoints:[],requiredCorrections:[]};
+    globalThis.fetch=async()=>{
+      const answer=[initial,repeated,critic][calls++];
+      if(!answer)throw new Error('UNEXPECTED_EXTRA_MODEL_REQUEST');
+      return{ok:true,status:200,json:async()=>({
+        candidates:[{content:{parts:[{text:JSON.stringify(answer)}]}}]
+      })};
+    };
+    await assert.rejects(runSystemAiWorker({taskFile:'task.json',outputFile:'result.json'}),
+      /SYSTEM_AI_DEEP_STRATEGY_OPTIONS_REQUIRED/);
+    assert.equal(calls,3);
+    assert.equal(fs.readFileSync('tools/demo.mjs','utf8'),"export const value=1;\n");
+    assert.equal(fs.existsSync('result.json'),false);
+  }finally{
+    globalThis.fetch=priorFetch;
+    for(const name of envNames){
+      if(previousEnv[name]===undefined)delete process.env[name];
+      else process.env[name]=previousEnv[name];
+    }
+    process.chdir(prev);
+    fs.rmSync(cwd,{recursive:true,force:true});
+  }
+});
+
 test('system AI edits only assigned system file and leaves completion for supervisor',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
