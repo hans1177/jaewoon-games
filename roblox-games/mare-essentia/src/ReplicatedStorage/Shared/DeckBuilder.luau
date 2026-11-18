@@ -1,7 +1,7 @@
 --!nonstrict
 -- 내 카드(덱 구성) 화면: 카드 게임 컬렉션처럼 [왼쪽 카드 격자 | 오른쪽 덱 목록] 두 칸 + 위 상태줄 + 아래 큰 행동 버튼.
 -- 규칙·저장은 CardBook/서버가 그대로 맡고, 여기서는 보여 주고 누르는 일만 한다 (ctx 로 동작을 받는다).
---   카드 누르기 = 덱에 1장 넣기 · ⓘ = 큰 카드 보기 · 덱 줄의 − = 1장 빼기
+--   카드 누르기 = 큰 카드 보기 · + = 덱에 1장 넣기 · 덱 줄의 − = 1장 빼기
 local TweenService = game:GetService("TweenService")
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
 local Gallery = require(script.Parent:WaitForChild("CardGallery"))
@@ -11,7 +11,13 @@ local DeckBuilder = {}
 local INK = Color3.fromRGB(250, 236, 200)
 local GOLD = Color3.fromRGB(246, 208, 130)
 local PANEL = Color3.fromRGB(34, 27, 22)
-local PANEL2 = Color3.fromRGB(48, 38, 30)
+local PANEL2 = Color3.fromRGB(50, 37, 28)
+local BINDING = Color3.fromRGB(126, 90, 73)
+local PAPER = Color3.fromRGB(211, 187, 149)
+local SEPIA = Color3.fromRGB(56, 38, 29)
+local ADD = Color3.fromRGB(45, 86, 64)
+local REMOVE = Color3.fromRGB(113, 54, 43)
+local SAVE = Color3.fromRGB(119, 83, 37)
 local TIER_COLOR = { Color3.fromRGB(176, 112, 62), Color3.fromRGB(196, 202, 212), Color3.fromRGB(238, 196, 84) }
 local ROW_COLOR = { melee = Color3.fromRGB(190, 84, 62), ranged = Color3.fromRGB(96, 150, 84), cannon = Color3.fromRGB(84, 124, 176) }
 local ROW_SHORT = { melee = "근", ranged = "사", cannon = "포" }
@@ -28,6 +34,13 @@ local function corner(o, r)
 	local c = Instance.new("UICorner")
 	c.CornerRadius = UDim.new(0, r)
 	c.Parent = o
+	if o:IsA("TextButton") or o:IsA("Frame") then
+		local edge = Instance.new("UIStroke")
+		edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		edge.Color = BINDING
+		edge.Transparency = 0.2
+		edge.Parent = o
+	end
 end
 
 local function text(parent, str, size, color, bold)
@@ -49,6 +62,7 @@ local function button(parent, str, color, size, fn)
 	b.TextColor3 = INK
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = size or 16
+	b.TextWrapped = true
 	b.BorderSizePixel = 0
 	b.AutoButtonColor = true
 	b.Parent = parent
@@ -73,7 +87,13 @@ function DeckBuilder.build(parent, ctx)
 	local recPop -- 추천 덱 선택 창 (아래에서 만든다)
 	local root = Instance.new("Frame")
 	root.Name = "DeckBuilder"
-	root.BackgroundTransparency = 1
+	root.BackgroundColor3 = Color3.fromRGB(55, 36, 32)
+	root.BorderSizePixel = 0
+	root.AutoLocalize = true
+	local backdrop = Instance.new("UIGradient")
+	backdrop.Color = ColorSequence.new(Color3.fromRGB(255, 239, 213), Color3.fromRGB(154, 139, 124))
+	backdrop.Rotation = 90
+	backdrop.Parent = root
 	root.Size = UDim2.fromScale(1, 1)
 	root.Parent = parent
 
@@ -81,15 +101,16 @@ function DeckBuilder.build(parent, ctx)
 	local top = Instance.new("Frame")
 	top.Size = UDim2.new(1, -16, 0, 40)
 	top.Position = UDim2.fromOffset(8, 6)
-	top.BackgroundColor3 = PANEL
+	top.BackgroundColor3 = PAPER
 	top.BorderSizePixel = 0
 	top.Parent = root
 	corner(top, 10)
-	local title = text(top, "내 카드", 22, GOLD, true)
+	local title = text(top, "내 카드", 22, SEPIA, true)
 	title.Position = UDim2.fromOffset(12, 0)
 	title.Size = UDim2.new(0.2, 0, 1, 0)
 	title.TextXAlignment = Enum.TextXAlignment.Left
-	local collect = text(top, "", 15, INK, true)
+	title.Font = Enum.Font.Antique
+	local collect = text(top, "", 15, SEPIA, true)
 	collect.Position = UDim2.fromScale(0.2, 0)
 	collect.Size = UDim2.fromScale(0.2, 1)
 	-- 보급 막대: 덱 비용이 한도에 얼마나 찼는지 한눈에
@@ -116,10 +137,22 @@ function DeckBuilder.build(parent, ctx)
 	countPill.BackgroundTransparency = 0
 	countPill.BackgroundColor3 = Color3.fromRGB(150, 225, 150)
 	corner(countPill, 8)
-	local closeBtn = button(top, "닫기", Color3.fromRGB(110, 54, 46), 16, function() ctx.onClose() end)
+	local closeBtn = button(top, "닫기", REMOVE, 16, function() ctx.onClose() end)
 	closeBtn.AnchorPoint = Vector2.new(1, 0.5)
 	closeBtn.Position = UDim2.new(1, -8, 0.5, 0)
-	closeBtn.Size = UDim2.fromOffset(64, 34)
+	closeBtn.Size = UDim2.fromOffset(44, 36)
+	local function layoutHeader()
+		local compact = top.AbsoluteSize.X < 440
+		title.TextSize = if compact then 17 else 22
+		collect.TextSize = if compact then 12 else 15
+		provText.TextSize = if compact then 11 else 14
+		countPill.TextSize = if compact then 13 else 17
+		countPill.Size = UDim2.new(0.30, -56, 0.7, 0)
+		if compact then countPill.Position = UDim2.fromScale(0.66, 0.5) else countPill.Position = UDim2.fromScale(0.70, 0.5) end
+		provBack.Size = UDim2.fromScale(if compact then 0.22 else 0.26, 0.44)
+	end
+	top:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutHeader)
+	layoutHeader()
 
 	-- ── 아래 행동 버튼 ──
 	local bottom = Instance.new("Frame")
@@ -161,6 +194,37 @@ function DeckBuilder.build(parent, ctx)
 	right.Size = UDim2.new(0.4, -8, 1, 0)
 	right.Parent = body
 	corner(right, 10)
+
+	-- 좁은 화면에서는 컬렉션과 덱을 전체 폭에서 번갈아 읽는다.
+	local showDeck = false
+	local collectionTab = button(body, "보유 카드", PANEL2, 15)
+	collectionTab.Size = UDim2.new(0.5, -4, 0, 42)
+	local deckTab = button(body, "내 덱", PANEL2, 15)
+	deckTab.Position = UDim2.new(0.5, 4, 0, 0)
+	deckTab.Size = collectionTab.Size
+	local function layoutBody()
+		local compact = body.AbsoluteSize.X < 600
+		collectionTab.Visible, deckTab.Visible = compact, compact
+		collectionTab.BackgroundColor3 = if showDeck then PANEL2 else SAVE
+		deckTab.BackgroundColor3 = if showDeck then SAVE else PANEL2
+		left.Visible = not compact or not showDeck
+		right.Visible = not compact or showDeck
+		left.Position = if compact then UDim2.fromOffset(0, 48) else UDim2.new()
+		right.Position = if compact then UDim2.new(1, 0, 0, 48) else UDim2.fromScale(1, 0)
+		left.Size = if compact then UDim2.new(1, 0, 1, -48) else UDim2.fromScale(0.6, 1)
+		right.Size = if compact then UDim2.new(1, 0, 1, -48) else UDim2.new(0.4, -8, 1, 0)
+	end
+	collectionTab.Activated:Connect(function()
+		showDeck = false
+		layoutBody()
+	end)
+	deckTab.Activated:Connect(function()
+		showDeck = true
+		layoutBody()
+	end)
+	body:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutBody)
+	layoutBody()
+
 
 	-- 왼쪽: 필터 칩 + 격자
 	local chips = Instance.new("ScrollingFrame")
@@ -207,7 +271,7 @@ function DeckBuilder.build(parent, ctx)
 	local leaderBox = Instance.new("Frame")
 	leaderBox.Position = UDim2.fromOffset(6, 6)
 	leaderBox.Size = UDim2.new(1, -12, 0, 50)
-	leaderBox.BackgroundColor3 = PANEL2
+	leaderBox.BackgroundColor3 = Color3.fromRGB(85, 51, 45)
 	leaderBox.BorderSizePixel = 0
 	leaderBox.Parent = right
 	corner(leaderBox, 8)
@@ -272,7 +336,7 @@ function DeckBuilder.build(parent, ctx)
 	statusLine.Size = UDim2.new(1, 0, 0, 20)
 	statusLine.TextXAlignment = Enum.TextXAlignment.Left
 	statusLine.TextYAlignment = Enum.TextYAlignment.Top
-	local saveBtn = button(bottom, "덱 저장", Color3.fromRGB(52, 120, 70), 16, function()
+	local saveBtn = button(bottom, "덱 저장", SAVE, 15, function()
 		if cur.okDeck then
 			Sfx.play("sfx_ui_confirm", 0.5, 1, "sfx_click")
 			ctx.act("CardSetDeck", { ids = cur.ids })
@@ -283,9 +347,19 @@ function DeckBuilder.build(parent, ctx)
 	local autoBtn = button(bottom, "자동 덱", Color3.fromRGB(60, 96, 140), 15, function() ctx.act("CardAutoDeck") end)
 	local recBtn = button(bottom, "추천 덱", Color3.fromRGB(110, 90, 60), 15, function() recPop.Visible = not recPop.Visible end)
 	for i, b in { saveBtn, autoBtn, recBtn } do
-		b.Size = UDim2.new(0, 60, 1, 0)
+		b.Size = UDim2.new(0, 100, 1, 0)
 		b.LayoutOrder = 2 + i
 	end
+	local function layoutFooter()
+		local compact = bottom.AbsoluteSize.X < 490
+		bl.Padding = UDim.new(0, if compact then 4 else 8)
+		for _, b in { duelBtn, practiceBtn, saveBtn, autoBtn, recBtn, tavernBtn } do
+			b.TextSize = if compact then 12 else 15
+			b.Size = UDim2.new(0, 0, 1, 0)
+		end
+	end
+	bottom:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutFooter)
+	layoutFooter()
 	local row2 = Instance.new("Frame")
 	row2.BackgroundTransparency = 1
 	row2.Position = UDim2.fromOffset(0, 24)
@@ -308,7 +382,10 @@ function DeckBuilder.build(parent, ctx)
 	recPop = Instance.new("Frame")
 	recPop.AnchorPoint = Vector2.new(0.5, 1)
 	recPop.Position = UDim2.new(0.5, 0, 1, -54)
-	recPop.Size = UDim2.new(0.6, 0, 0, 44)
+	recPop.Size = UDim2.new(1, -16, 0, 44)
+	local recSize = Instance.new("UISizeConstraint")
+	recSize.MaxSize = Vector2.new(480, 44)
+	recSize.Parent = recPop
 	recPop.BackgroundColor3 = Color3.fromRGB(26, 20, 16)
 	recPop.BorderSizePixel = 0
 	recPop.Visible = false
@@ -464,17 +541,17 @@ function DeckBuilder.build(parent, ctx)
 				TweenService:Create(shine, TweenInfo.new(2.6, Enum.EasingStyle.Linear, Enum.EasingDirection.In, -1, false, 1.2), { Offset = Vector2.new(1, 0) }):Play()
 			end
 		end
-		-- ⓘ: 큰 카드 보기 / 타일 누르기: 덱에 넣기
-		local info = button(tile, "i", Color3.fromRGB(32, 24, 18), 15, function()
+		if owned > (want[id] or 0) and not d.archiveOnly then
+			local add = button(tile, "+", ADD, 20, function() addCard(id, tile) end)
+			add.Name = "QuickAdd"
+			add.AnchorPoint = Vector2.new(1, 1)
+			add.Position = UDim2.new(1, -4, 0.7, -4)
+			add.Size = UDim2.fromOffset(42, 42)
+			add.ZIndex = 5
+		end
+		tile.Activated:Connect(function()
 			Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click")
 			Gallery.showDetail(ctx.galleryCtx, id)
-		end)
-		info.AnchorPoint = Vector2.new(1, 1)
-		info.Position = UDim2.new(1, -4, 1, -4)
-		info.Size = UDim2.fromOffset(26, 26)
-		info.ZIndex = 5
-		tile.Activated:Connect(function()
-			if owned > 0 then addCard(id, tile) else Gallery.showDetail(ctx.galleryCtx, id) end
 		end)
 		return tile
 	end
@@ -518,7 +595,7 @@ function DeckBuilder.build(parent, ctx)
 
 	local function paintChips()
 		for fid, b in chipBtns do
-			b.BackgroundColor3 = if fid == state.filter then Color3.fromRGB(214, 160, 70) else Color3.fromRGB(70, 60, 66)
+			b.BackgroundColor3 = if fid == state.filter then PAPER else PANEL2
 			b.TextColor3 = if fid == state.filter then Color3.fromRGB(40, 28, 18) else INK
 		end
 	end
@@ -553,7 +630,7 @@ function DeckBuilder.build(parent, ctx)
 			return a.id < b.id
 		end)
 		if #list == 0 then
-			local e = text(deckScroll, "덱이 비었어요.\n왼쪽 카드를 눌러 넣거나 '자동 덱'을 눌러요.", 15, Color3.fromRGB(190, 175, 150), false)
+			local e = text(deckScroll, "덱이 비었어요.\n카드의 + 버튼을 누르거나 '자동 덱'을 눌러요.", 15, Color3.fromRGB(190, 175, 150), false)
 			e.Size = UDim2.new(1, 0, 0, 60)
 			return
 		end
@@ -589,7 +666,7 @@ function DeckBuilder.build(parent, ctx)
 			cnt.AnchorPoint = Vector2.new(1, 0)
 			cnt.Position = UDim2.new(1, -44, 0, 0)
 			cnt.Size = UDim2.fromOffset(34, 34)
-			local minus = button(row, "-", Color3.fromRGB(130, 58, 52), 20, function()
+			local minus = button(row, "−", REMOVE, 20, function()
 				Sfx.play("sfx_click", 0.5, 0.9)
 				ctx.onWant(e.id, -1)
 				refresh(true)
@@ -673,7 +750,7 @@ function DeckBuilder.build(parent, ctx)
 		provFill.Size = UDim2.fromScale(math.clamp(cost / math.max(1, limit), 0, 1), 1)
 		provFill.BackgroundColor3 = if cost > limit then Color3.fromRGB(200, 90, 70) else Color3.fromRGB(110, 180, 110)
 		provText.Text = string.format("보급 %d/%d", cost, limit)
-		countPill.Text = string.format("덱 %d장 (%d~%d)", #ids, CB.MIN_DECK, CB.MAX_DECK)
+		countPill.Text = string.format("%d / %d", #ids, CB.MAX_DECK)
 		local countOk = #ids >= CB.MIN_DECK and #ids <= CB.MAX_DECK
 		countPill.BackgroundColor3 = if countOk then Color3.fromRGB(150, 225, 150) else Color3.fromRGB(240, 170, 130)
 		balLabels.melee.Text = "근접 " .. rowCount.melee
@@ -685,6 +762,8 @@ function DeckBuilder.build(parent, ctx)
 
 		saveBtn.BackgroundTransparency = if okDeck then 0 else 0.6
 		saveBtn.Text = "덱 저장"
+		saveBtn.Active = okDeck
+		saveBtn.AutoButtonColor = okDeck
 		local view = ctx.getView()
 		local duelLeft = (view and view.duelLeft) or 0 -- view = view.cardbook
 		duelBtn.Text = string.format("카드 대결\n(보상 %d회)", duelLeft)
