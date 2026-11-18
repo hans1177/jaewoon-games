@@ -171,8 +171,8 @@ local COLORS = {
 	text = Color3.fromRGB(244, 226, 190),
 	muted = Color3.fromRGB(191, 165, 121),
 	row = Color3.fromRGB(60, 44, 32),
-	blue = Color3.fromRGB(64, 80, 78),
-	green = Color3.fromRGB(71, 99, 75),
+	blue = Color3.fromRGB(112, 80, 52), -- 오래된 해도에 찍은 갈색 잉크
+	green = Color3.fromRGB(124, 104, 61), -- 황동·올리브 안료
 	red = Color3.fromRGB(137, 58, 44),
 	gold = Color3.fromRGB(207, 159, 77),
 	grey = Color3.fromRGB(108, 88, 65),
@@ -1950,32 +1950,35 @@ function H.layoutBook()
   local width, height = mainInner.AbsoluteSize.X, mainInner.AbsoluteSize.Y
   -- [공통 현황] 제목과 자금·화물칸이 작은 폰에서도 서로 겹치지 않게 한다.
   -- [상단 중앙] 모든 시설에서 자금·화물을 가로 중앙에 표시. 작은 폰은 두 번째 줄을 쓴다.
-  local statusWidth = if width < 480 then math.max(168, math.min(252, width - 142))
-    elseif width < 740 then math.min(290, width - 156)
-    else math.clamp(math.floor(width * 0.36), 280, 380)
+  -- [모든 시설] 공통 자금 표시와 직전 메뉴를 붙이고 두 영역을 동일한 기준선으로 정렬한다.
   local recent = view ~= nil and not newGameMode and H.recentTab ~= nil
     and H.recentTab ~= currentTab and TAB_NAME[H.recentTab] ~= nil
   local recentWidth = if width < 480 then 90 elseif width < 740 then 116 else 142
-  if recent and width < 740 then
-    -- [좁은 폰] 자금과 최근 메뉴를 한 줄의 묶음으로 중앙 정렬해 겹침을 막는다.
-    statusWidth = math.min(statusWidth, math.max(140, width - recentWidth - 34))
-    local groupWidth = statusWidth + recentWidth + 8
-    local startX = math.max(8, math.floor((width - groupWidth) / 2))
+  local statusWidth = if width < 480 then math.max(140, math.min(252, width - 142))
+    elseif width < 740 then math.min(290, width - 156)
+    else math.clamp(math.floor(width * 0.36), 280, 380)
+  local topY, rowH = if width < 740 then 36 else 15, if width < 740 then 30 else 34
+  if width < 740 then
+    -- [폰] 두 칸 전체를 가운데 정렬하며 폭이 작을수록 자금 표시만 줄인다.
+    local reserve = if recent then recentWidth + 8 else 0
+    statusWidth = math.min(statusWidth, math.max(110, width - reserve - 24))
+    local startX = math.max(8, math.floor((width - statusWidth - reserve) / 2))
     H.menuStatusLabel.AnchorPoint = Vector2.zero
-    H.menuStatusLabel.Position = UDim2.fromOffset(startX, 38)
-    H.menuRecentButton.Position = UDim2.fromOffset(startX + statusWidth + 8, 32)
-    H.menuRecentButton.Size = UDim2.fromOffset(recentWidth, 34)
+    H.menuStatusLabel.Position = UDim2.fromOffset(startX, topY)
+    H.menuRecentButton.Position = UDim2.fromOffset(startX + statusWidth + 8, topY)
   else
+    -- [넓은 화면] 중앙 자금 표시의 위치를 유지한 채 바로 오른쪽에 최근 메뉴를 둔다.
     H.menuStatusLabel.AnchorPoint = Vector2.new(0.5, 0)
-    H.menuStatusLabel.Position = UDim2.new(0.5, 0, 0, if width < 740 then 38 else 15)
-    H.menuRecentButton.Position = UDim2.fromOffset(math.floor(width * 0.5 + statusWidth * 0.5 + 10), 15)
-    H.menuRecentButton.Size = UDim2.fromOffset(recentWidth, 34)
+    H.menuStatusLabel.Position = UDim2.new(0.5, 0, 0, topY)
+    H.menuRecentButton.Position = UDim2.fromOffset(math.floor(width * 0.5 + statusWidth * 0.5 + 8), topY)
   end
-  H.menuStatusLabel.Size = UDim2.fromOffset(statusWidth, if width < 740 then 22 else 34)
+  H.menuStatusLabel.Size = UDim2.fromOffset(statusWidth, rowH)
   H.menuStatusLabel.TextSize = if width < 480 then 14 elseif width < 740 then 16 else 18
+  H.menuRecentButton.Size = UDim2.fromOffset(recentWidth, rowH)
+  H.menuRecentButton.TextSize = if width < 480 then 14 else 16
   H.menuRecentButton.Visible = recent
   H.menuRecentButton.Text = if recent then "↶ " .. TAB_NAME[H.recentTab] else ""
-  headerLabel.Size = UDim2.fromOffset(if width < 740 then math.max(86, width - 152)
+    headerLabel.Size = UDim2.fromOffset(if width < 740 then math.max(86, width - 152)
     else math.max(108, math.floor((width - statusWidth) * 0.5) - 82), 29)
   H.pageDetails.Size = UDim2.fromOffset(if width < 740 then 0
     else math.max(100, math.floor((width - statusWidth) * 0.5) - 82), 18)
@@ -2225,7 +2228,7 @@ end
 -- [항해 도구] 아이콘 데이터는 바로 아래 H.hudShortcut 메서드에만 유지한다.
 do
 local HUD_MENU_TINT = {
-	view = Color3.fromRGB(196, 222, 246), gear = Color3.fromRGB(196, 222, 246),
+	view = Color3.fromRGB(235, 206, 158), gear = Color3.fromRGB(235, 206, 158),
 	deck = Color3.fromRGB(255, 176, 150), help = Color3.fromRGB(255, 255, 255),
 }
 local HUD_MENU_ART = {
@@ -2718,6 +2721,9 @@ do
 	deckBtn.Position = UDim2.new(1, -120, 0, SYS_Y)
 	local open = nil
 	function H.openDeck(onlyOpen: boolean?)
+		-- [첫 게임 보호] 시작 화면/선장 소개 중에는 내 카드 창 자동 개봉을 막는다.
+		if not view or newGameMode or H.titleMenuOpen or H.openingPending or sceneHold
+			or (view.captain and view.captain.step ~= "done") then return end
 		if open then
 			if onlyOpen then
 				return
@@ -3353,6 +3359,8 @@ local function call(action, payload)
 	if type(pickIds) ~= "table" or #pickIds == 0 then
 		H.deckPickShown = nil
 	elseif result.ok and action ~= "State" and action ~= "NewGame" and action ~= "CardPick"
+		and string.sub(action, 1, 5) ~= "Intro" -- 이름·동료·초상 안내는 카드 보상 이벤트가 아니다.
+		and (not view.captain or view.captain.step == "done")
 		and H.openDeck and not inField and not sceneHold and not newGameMode
 		and not H.titleMenuOpen and not H.openingPending then
 		local pickKey = table.concat(pickIds, ",")
@@ -3363,6 +3371,7 @@ local function call(action, payload)
 				if type(currentPick) == "table" and #currentPick > 0
 					and table.concat(currentPick, ",") == pickKey
 					and not inField and not sceneHold and not newGameMode
+					and (not view.captain or view.captain.step == "done")
 					and not H.titleMenuOpen and not H.openingPending then
 					H.openDeck(true)
 				end
@@ -5627,29 +5636,33 @@ local function openTradeHall()
 		title.AutomaticSize = Enum.AutomaticSize.None
 		title.TextTruncate = Enum.TextTruncate.AtEnd
 		-- [교역 상단] 자금과 직전 메뉴를 이웃한 한 줄로 배치하고 거래 안내 중복은 숨긴다.
+		-- [교역소] 자금·화물과 최근 메뉴를 중앙 한 줄에 나란히, 같은 높이로 둔다.
 		local recent = H.recentTab
 		local showRecent = recent and TAB_NAME[recent] ~= nil and recent ~= "trade"
-		local recentWidth = if narrow then 106 else 140
-		local cashWidth = if narrow then math.max(142, width - 16 - recentWidth - 30)
+		local recentWidth = if width < 330 then 84 elseif narrow then 104 else 136
+		local cashWidth = if narrow then math.max(110, math.min(274, width - (if showRecent then recentWidth + 44 else 40)))
 			else math.clamp(math.floor(width * 0.36), 220, 315)
+		local groupWidth = cashWidth + (if showRecent then recentWidth + 8 else 0)
+		local groupX = math.max(8, math.floor((width - 16 - groupWidth) / 2))
+		local rowY = if narrow then 64 else 28
 		local commonStatus = mkLabel(top, H.statusMoneyCargo(p, ship, narrow), if narrow then 15 else 18, INK, true)
 		commonStatus.Name = "TradeGlobalMoneyCargo"
-		commonStatus.AnchorPoint = if narrow then Vector2.zero else Vector2.new(0.5, 0)
-		commonStatus.Position = if narrow then UDim2.fromOffset(12, 64) else UDim2.new(0.45, 0, 0, 30)
-		commonStatus.Size = UDim2.fromOffset(cashWidth, 30)
+		commonStatus.AnchorPoint = Vector2.zero
+		commonStatus.Position = UDim2.fromOffset(groupX, rowY)
+		commonStatus.Size = UDim2.fromOffset(cashWidth, 34)
 		commonStatus.AutomaticSize = Enum.AutomaticSize.None
 		commonStatus.TextTruncate = Enum.TextTruncate.AtEnd
-		commonStatus.TextXAlignment = if narrow then Enum.TextXAlignment.Left else Enum.TextXAlignment.Center
+		commonStatus.TextXAlignment = Enum.TextXAlignment.Center
+		commonStatus.TextYAlignment = Enum.TextYAlignment.Center
 		if showRecent then
 			local recentBtn = mkButton(top, "↶ " .. TAB_NAME[recent], COLORS.leather,
-				UDim2.fromOffset(recentWidth, 36), function()
+				UDim2.fromOffset(recentWidth, 34), function()
 					closeTradeHall()
 					openTab(recent, if recent == "map" then "chart" else nil)
 				end, true)
 			recentBtn.Name = "TradeRecentFacility"
-			recentBtn.TextSize = 15
-			recentBtn.Position = if narrow then UDim2.fromOffset(12 + cashWidth + 8, 59)
-				else UDim2.new(0.45, math.floor(cashWidth * 0.5) + 8, 0, 27)
+			recentBtn.TextSize = if width < 330 then 13 else 15
+			recentBtn.Position = UDim2.fromOffset(groupX + cashWidth + 8, rowY)
 		end
 		-- [중복 설명 제거] 조언은 저널에서, 거래 알림은 결과가 있을 때만 보여 준다.
 		local toastLbl = mkLabel(top, message, 15, INK_SOFT, true)
@@ -7302,19 +7315,24 @@ function openYardHall()
 		title.AutomaticSize = Enum.AutomaticSize.None
 		title.TextTruncate = Enum.TextTruncate.AtEnd
 		-- [조선소 상단] 기함 이름의 중복 표기를 빼고 자금·최근 메뉴를 나란히 둔다.
+		-- [조선소] 자금 표시 옆으로 최근 시설을 옮기고 교역소와 같은 간격으로 정렬한다.
 		local recent = H.recentTab
 		local showRecent = recent and TAB_NAME[recent] ~= nil and recent ~= "yard"
 		local recentWidth = if width < 380 then 78 elseif width < 740 then 94 else 132
-		local cashWidth = if width < 740 then math.max(108, width - recentWidth - 132)
+		local cashWidth = if width < 740 then math.max(100, math.min(260, width - (if showRecent then recentWidth + 44 else 40)))
 			else math.clamp(math.floor(width * 0.38), 230, 330)
+		local groupWidth = cashWidth + (if showRecent then recentWidth + 8 else 0)
+		local groupX = math.max(8, math.floor((width - 16 - groupWidth) / 2))
 		local cashText = if width < 480 then "돈 " .. H.commas(p.coins)
 			else H.statusMoneyCargo(p, ship, width < 740)
 		local hold = mkLabel(top, cashText, if width < 480 then 14 else 17, INK_SOFT, true)
-		hold.AnchorPoint = if width >= 740 then Vector2.new(0.5, 0) else Vector2.zero
-		hold.Position = if width >= 740 then UDim2.new(0.44, 0, 0, 33) else UDim2.fromOffset(12, 34)
-		hold.Size = UDim2.fromOffset(cashWidth, 22)
+		hold.AnchorPoint = Vector2.zero
+		hold.Position = UDim2.fromOffset(groupX, 29)
+		hold.Size = UDim2.fromOffset(cashWidth, 34)
 		hold.AutomaticSize = Enum.AutomaticSize.None
 		hold.TextTruncate = Enum.TextTruncate.AtEnd
+		hold.TextXAlignment = Enum.TextXAlignment.Center
+		hold.TextYAlignment = Enum.TextYAlignment.Center
 		if showRecent then
 			local recentBtn = mkButton(top, "↶ " .. TAB_NAME[recent], COLORS.leather,
 				UDim2.fromOffset(recentWidth, 34), function()
@@ -7322,8 +7340,7 @@ function openYardHall()
 					openTab(recent, if recent == "map" then "chart" else nil)
 				end, true)
 			recentBtn.Name = "YardRecentFacility"
-			recentBtn.Position = if width >= 740 then UDim2.new(0.44, math.floor(cashWidth * 0.5) + 8, 0, 29)
-				else UDim2.fromOffset(12 + cashWidth + 8, 30)
+			recentBtn.Position = UDim2.fromOffset(groupX + cashWidth + 8, 29)
 			recentBtn.TextSize = if width < 480 then 13 else 15
 		end
 		local leave = mkButton(top, "나가기", COLORS.leather, UDim2.fromOffset(78, 44), closeTradeHall, true)
@@ -11065,10 +11082,12 @@ end
 function H.startNewGame()
 	local restart = view ~= nil
 	newGameMode = false
+	H.openingPending = true -- 시작 응답을 기다리는 사이 카드 창이 겹치지 않도록 선점한다.
 	sceneHold = true -- 오프닝이 끝날 때까지 마을 장면을 먼저 짓지 않는다
 	local result = call("NewGame", { nationId = chosenNation, startYear = chosenYear, origin = H.chosenOrigin, restart = restart, room = H.roomMode == true })
 	if not (result and result.ok) then
 		sceneHold = false
+		H.openingPending = false
 	end
 	if not (result and result.ok) and restart then
 		newGameMode = true
@@ -11096,7 +11115,7 @@ titleGui.ScreenInsets = Enum.ScreenInsets.None
 titleGui.ClipToDeviceSafeArea = false
 titleGui.Enabled = false
 ;(function()
-	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(40, 76, 98))
+	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(54, 38, 27))
 	root.ClipsDescendants = true
 	-- [바닥 준비 대기] 원본 표지 배경 위에 상태만 표시한다. 새 화면·우회 로딩 파이프라인은 만들지 않는다.
 	H.portLoadingLabel = Instance.new("TextLabel")
@@ -11158,7 +11177,7 @@ titleGui.Enabled = false
 	})
 	rayFade.Parent = rays
 
-	local shade = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(23, 26, 30), 0.28)
+	local shade = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(41, 28, 21), 0.28)
 	shade.ZIndex = 5
 	local shadeFade = Instance.new("UIGradient")
 	shadeFade.Transparency = NumberSequence.new(1, 0)
@@ -11180,7 +11199,7 @@ titleGui.Enabled = false
 	subtitle.TextStrokeColor3 = COLORS.ink
 	subtitle.TextStrokeTransparency = 0.6
 	subtitle.ZIndex = 6
-	local curtain = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(19, 24, 30), 1)
+	local curtain = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(36, 25, 19), 1)
 	curtain.ZIndex = 8
 
 	local function layout()
