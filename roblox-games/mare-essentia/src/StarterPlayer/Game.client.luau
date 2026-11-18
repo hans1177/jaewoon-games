@@ -12327,6 +12327,12 @@ end
 -- 첫 시작 화면은 저장 응답을 우선 표시하고, 완료 후 현재 항구를 그대로 그린다.
 gui:SetAttribute("PortSceneLoadState", "loading")
 task.spawn(function()
+    -- [시작 응답 우선] 저장 상태와 타이틀이 실제 표시된 뒤에 무거운 정본 항구를 불러온다.
+    -- 렌더링·저장·입항 함수는 건드리지 않고 기존 비동기 항구 준비의 시작 시점만 조정한다.
+    while H.startupCover and H.startupCover.Parent and player.Parent do
+        task.wait(0.1)
+    end
+    if not player.Parent then return end
 	local ok, scene = pcall(function()
 		return require(Shared:WaitForChild("PortScene"))
 	end)
