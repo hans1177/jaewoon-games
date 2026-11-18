@@ -6922,18 +6922,20 @@ function openYardHall()
 		local p, ship = view.player, view.ship
 		local width = root.AbsoluteSize.X
 		if width <= 0 and workspace.CurrentCamera then width = workspace.CurrentCamera.ViewportSize.X end
-		local showPortrait = width >= 1550
+		local showPortrait = width >= 1800
 		local inset = if showPortrait then 258 else 8
-		local compactNav = width < 740
 		local landscape = width >= 740
-		local heroTop = if compactNav then 172 else 128
-		local heroWidth = if landscape then math.floor((width - inset - 16) * 0.55) else width - inset - 8
+		local compactNav = not landscape
 		local availableH = math.max(300, root.AbsoluteSize.Y)
+		-- [조선소도 교역소형] 가로: 왼쪽 18% 항목 / 중앙 36% 선박 / 오른쪽 실제 정비·구매.
+		-- [세로] 기존 항목 버튼 두 줄 → 배 그림 → 정비 목록 순서를 유지한다.
+		local navWidth = if landscape then math.clamp(math.floor((width - inset - 16) * 0.18), 136, 230) else 0
+		local heroTop = if landscape then 76 else 172
+		local heroWidth = if landscape then math.floor((width - inset - navWidth - 24) * 0.46) else width - inset - 8
 		local heroHeight = if landscape then availableH - heroTop - 8 else math.clamp(math.floor(availableH * 0.30), 160, 260)
-		-- [조선소] 가로 그림 55% + 조작 목록 45%, 세로 그림 위 + 목록 아래.
-		scroll.Position = if landscape then UDim2.fromOffset(inset + heroWidth + 8, heroTop)
+		scroll.Position = if landscape then UDim2.fromOffset(inset + navWidth + heroWidth + 16, heroTop)
 			else UDim2.fromOffset(inset, heroTop + heroHeight + 8)
-		scroll.Size = if landscape then UDim2.new(1, -inset - heroWidth - 16, 1, -heroTop - 8)
+		scroll.Size = if landscape then UDim2.new(1, -inset - navWidth - heroWidth - 24, 1, -heroTop - 8)
 			else UDim2.new(1, -inset - 8, 1, -heroTop - heroHeight - 16)
 		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, 62), COLORS.paper)
 		corner(top, 6)
@@ -6953,18 +6955,20 @@ function openYardHall()
 		leave.AnchorPoint = Vector2.new(1, 0.5)
 		leave.Position = UDim2.new(1, -9, 0.5, 0)
 
-		-- [조선소 항목 탐색] 기존 renderYard의 제목으로 바로 이동. 별도 메뉴/저장 구조를 만들지 않는다.
-		local nav = mkBox(root, UDim2.fromOffset(inset, 76), UDim2.new(1, -inset - 8, 0, if compactNav then 88 else 44), COLORS.leather)
-		local navColumns = if compactNav then 3 else 5
+		-- [시설 왼쪽 목록] 기존 조선소 섹션으로 스크롤만 이동한다. 구매/재화 판정은 변경하지 않는다.
+		local nav = mkBox(root, if landscape then UDim2.fromOffset(inset, heroTop) else UDim2.fromOffset(inset, 76),
+			if landscape then UDim2.new(0, navWidth, 1, -heroTop - 8) else UDim2.new(1, -inset - 8, 0, 88), COLORS.leather)
+		local navColumns = if landscape then 1 else 3
 		for i, entry in { { "내 배·정비", "YardSectionShip" }, { "선단", "YardSectionFleet" }, { "대포·보강", "YardSectionRefit" }, { "7대륙 설계", "YardSectionBlueprints" }, { "새 배 비교", "YardSectionShips" } } do
-			local btn0 = mkButton(nav, entry[1], COLORS.paper, UDim2.new(1 / navColumns, -6, 0, 40), function()
+			local btn0 = mkButton(nav, entry[1], COLORS.paper, if landscape then UDim2.new(1, -8, 0, 48) else UDim2.new(1 / navColumns, -6, 0, 40), function()
 				local target = scroll:FindFirstChild(entry[2])
 				if target then
 					scroll.CanvasPosition = Vector2.new(0, math.max(0, target.AbsolutePosition.Y - scroll.AbsolutePosition.Y + scroll.CanvasPosition.Y))
 				end
 			end, true)
-			btn0.Position = UDim2.new(((i - 1) % navColumns) / navColumns, 4, 0, 2 + math.floor((i - 1) / navColumns) * 44)
-			btn0.TextSize = 14
+			btn0.Position = if landscape then UDim2.fromOffset(4, 4 + (i - 1) * 54)
+				else UDim2.new(((i - 1) % navColumns) / navColumns, 4, 0, 2 + math.floor((i - 1) / navColumns) * 44)
+			btn0.TextSize = 17
 		end
 		-- [선박 전시장] 기존 등록된 함종에만 적용, 함선 성능·구매 규칙 불변.
 		local preview = nil
@@ -6978,7 +6982,8 @@ function openYardHall()
 			end
 		end
 		if preview then H.shipPreviewId = preview.id end
-		local gallery = mkBox(root, UDim2.fromOffset(inset, heroTop), UDim2.fromOffset(heroWidth, heroHeight), Color3.fromRGB(230, 209, 171))
+		local gallery = mkBox(root, UDim2.fromOffset(inset + (if landscape then navWidth + 8 else 0), heroTop),
+			UDim2.fromOffset(heroWidth, heroHeight), Color3.fromRGB(230, 209, 171))
 		gallery.Name = "YardShipGallery"
 		corner(gallery, 8)
 		bookMaterial(gallery, "parchment", 220)
