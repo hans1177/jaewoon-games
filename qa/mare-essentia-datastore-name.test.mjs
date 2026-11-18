@@ -2269,7 +2269,8 @@ test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치�
 // [무료 디자인 전문가 회귀] 전문 분야, 일일 한도, 쿨다운, 독립 전후 판정.
 test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다운을 지킨다', async () => {
   const {DESIGN_FREE_MODELS, designRoleForFrames, selectFreeDesignModels, selectDesignFrameRole,
-    validateVisualComparison, verifiedDesignFeedback} = await import('../tools/company-nemotron-design-review.mjs');
+    validateVisualComparison, verifiedDesignFeedback, mergeFreeVisualUsage} =
+      await import('../tools/company-nemotron-design-review.mjs');
   const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
   const config = policy.directVisualDesign.freeSpecialistPool;
   assert.equal(config.paidFallbackForbidden, true);
@@ -2380,6 +2381,28 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
   assert.equal(verifiedDesignFeedback(original, {
     ...comparison, afterFrames: comparison.beforeFrames}, now), null,
     '사진이 모두 같으면 디자인 개선 성공이라 할 수 없다');
+  const beforeCount = {...original, usageWindow: {day, calls: {GEMINI: 2, OPENROUTER: 0}}};
+  const verifiedCalls = {...comparison, gameId: 'mare-essentia',
+    usageWindow: {day, calls: {GEMINI: 3, OPENROUTER: 2}},
+    cooldowns: {OPENROUTER_GEMMA: new Date(now + 60000).toISOString()}};
+  const accounting = mergeFreeVisualUsage(beforeCount, verifiedCalls, now);
+  assert.equal(accounting.usageWindow.calls.GEMINI, 3,
+    '초안 생성과 독립 검수 누적 사용량을 중복 합계하지 않고 이어받는다');
+  assert.equal(accounting.usageWindow.calls.OPENROUTER, 2);
+  assert.ok(accounting.cooldowns.OPENROUTER_GEMMA);
+  assert.equal(mergeFreeVisualUsage(beforeCount, {...verifiedCalls,
+    beforeRevision: 'f'.repeat(40)}, now).usageWindow.calls.OPENROUTER, 0,
+  '다른 기준선의 검증 사용량을 신뢰하면 안 된다');
+  assert.equal(mergeFreeVisualUsage(beforeCount, {...verifiedCalls,
+    usageWindow: {day, calls: {GEMINI: 1, OPENROUTER: 1}}}, now).usageWindow.calls.GEMINI, 2,
+  '과거 사용량을 줄여 무료 호출을 늘릴 수 없다');
+  assert.equal(models({frameNames: [frameA], previous: beforeCount,
+    feedback: {...verifiedCalls, usageWindow: {day, calls: {GEMINI: 12, OPENROUTER: 2}}}})
+    .some(model => model.provider === 'GEMINI'), false,
+  '독립 검수에서 소진한 공급자는 다음 디자인 작업이 재사용할 수 없다');
+  assert.deepEqual(models({frameNames: [frameA]}).slice(0, 3).map(model => model.provider),
+    ['NVIDIA', 'OPENROUTER', 'GEMINI'],
+    '한도 소진이나 장애에 대비해 다른 무료 공급자를 먼저 교대한다');
   assert.equal(models({frameNames: [frameA], previous: {
     ...original, attempts: [{id: 'NVIDIA_VL', status: 'REVIEW_INVALID'}]}
   })[0].id, 'OPENROUTER_NEMOTRON',
