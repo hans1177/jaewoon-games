@@ -194,11 +194,16 @@ local function extraTests()
 	local before = stX.history.pending
 	stX.history.pending = nil
 	stX.history.seen = {}
-	-- [역사 사건 회귀] 같은 항구에서는 사건을 연속 노출하지 않으므로 새 방문을 만들어 앞당김을 검사한다.
+	-- [역사 사건 회귀] 이미 지난 사건은 완료 상태로 준비하고 새 항구 방문에서만 미래 학문 사건이 앞당겨지는지 본다.
+	for _, ev in HE.Events do
+		if HE.dayOf(ev, stX.startYear) <= stX.day then stX.history.seen[ev.id] = 1 end
+	end
 	stX._autoEventPort = nil
 	stX.pace = { days = 365 * 10, window = 0, used = 0 }
 	S.History.tick(stX)
-	check("속도: 학문·탐험 사건은 앞당김만큼 일찍 닥침", stX.history.pending ~= nil)
+	local accelerated = stX.history.pending and HE.ById[stX.history.pending]
+	check("속도: 학문·탐험 사건은 앞당김만큼 일찍 닥침",
+		accelerated ~= nil and accelerated.accel == true and HE.dayOf(accelerated, stX.startYear) > stX.day)
 	local fixedEv = newState("england")
 	fixedEv.day = HE.dayOf(HE.ById.seven_years_war, 1700) - 100
 	fixedEv.pace = { days = 365 * 10, window = 0, used = 0 }
