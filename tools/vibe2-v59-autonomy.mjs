@@ -1538,13 +1538,9 @@ export function buildVibe59AutonomyPlan({order={},target='web',codeFlow=null,sou
   // 실제 호출은 소스 작업자/부서 작업자의 기존 API 책임 함수가 수행한다.
   const sourceFiles=Array.isArray(order.source?.responsibleFiles)?order.source.responsibleFiles:
     Array.isArray(order.responsibilityFiles)?order.responsibilityFiles:[];
-  const scope=(clean(order.originalGoal||order.goal)+' '+sourceFiles.slice(0,16).join(' ')).toLowerCase();
-  const department=/(외형|머리|의상|그래픽|디자인|재질|조명|아트|visual|texture|hair|clothing|graphics|portrait)/.test(scope)
-    ?'GRAPHICS':/(테스트|검수|검증|품질|회귀|regression|test|qa)/.test(scope)?'QA'
-    :/(밸런스|보상|경제|난이도|balance|economy|reward)/.test(scope)?'BALANCE'
-    :/(기획|설계|계획|planning|design doc)/.test(scope)?'PLANNING':'DEVELOPMENT';
   const freeAiSpecialists=selectVibe59FreeExperts({
-    department,taskText:requirement.goal,responsibleFiles:sourceFiles,includeUnconfigured:true});
+    department:'AUTO',taskText:clean(order.originalGoal||order.goal),
+    responsibleFiles:sourceFiles,includeUnconfigured:true});
   return Object.freeze({version:'5.9',sourceWrite:false,runtimeVerified:false,
     requirement,assembly,repair,memory,completion,creativity,freeAiSpecialists,
     skillCatalog:{total:VIBE59_LUAU_CODING_SKILLS_109.length,
