@@ -832,18 +832,18 @@ local NPC_REGISTERED_ACCESSORY = {
 -- [원본 GLB 재질] 복식 9종에 포함된 glTF 색상 12개와 금속/가죽/직물 구분을 그대로 사용한다.
 -- 실제 ColorMap/SurfaceAppearance가 있으면 우선 보존하고, 누락된 색만 원본 기준으로 복원한다.
 local OUTFIT_SOURCE_MATERIALS = {
-	{ Color3.new(0.14, 0.21, 0.28), Enum.Material.Fabric },
-	{ Color3.new(0.58, 0.42, 0.26), Enum.Material.Fabric },
-	{ Color3.new(0.88, 0.79, 0.65), Enum.Material.Fabric },
-	{ Color3.new(0.72, 0.49, 0.19), Enum.Material.Metal },
-	{ Color3.new(0.32, 0.18, 0.11), Enum.Material.Leather },
-	{ Color3.new(0.44, 0.16, 0.18), Enum.Material.Fabric },
-	{ Color3.new(0.47, 0.53, 0.57), Enum.Material.Metal },
-	{ Color3.new(0.23, 0.27, 0.31), Enum.Material.Metal },
-	{ Color3.new(0.25, 0.36, 0.31), Enum.Material.Fabric },
-	{ Color3.new(0.78, 0.76, 0.70), Enum.Material.Fabric },
-	{ Color3.new(0.09, 0.11, 0.15), Enum.Material.Fabric },
-	{ Color3.new(0.83, 0.66, 0.34), Enum.Material.Metal },
+	{ Color3.new(0.14, 0.21, 0.28), Enum.Material.Fabric, Color3.new(0.4100, 0.4956, 0.5657) },
+	{ Color3.new(0.58, 0.42, 0.26), Enum.Material.Fabric, Color3.new(0.7858, 0.6800, 0.5469) },
+	{ Color3.new(0.88, 0.79, 0.65), Enum.Material.Fabric, Color3.new(0.9453, 0.9013, 0.8267) },
+	{ Color3.new(0.72, 0.49, 0.19), Enum.Material.Metal, Color3.new(0.8650, 0.7287, 0.4731) },
+	{ Color3.new(0.32, 0.18, 0.11), Enum.Material.Leather, Color3.new(0.6012, 0.4614, 0.3656) },
+	{ Color3.new(0.44, 0.16, 0.18), Enum.Material.Fabric, Color3.new(0.6944, 0.4366, 0.4614) },
+	{ Color3.new(0.47, 0.53, 0.57), Enum.Material.Metal, Color3.new(0.7152, 0.7548, 0.7797) },
+	{ Color3.new(0.23, 0.27, 0.31), Enum.Material.Metal, Color3.new(0.5169, 0.5564, 0.5926) },
+	{ Color3.new(0.25, 0.36, 0.31), Enum.Material.Fabric, Color3.new(0.5371, 0.6343, 0.5926) },
+	{ Color3.new(0.78, 0.76, 0.70), Enum.Material.Fabric, Color3.new(0.8962, 0.8860, 0.8543) },
+	{ Color3.new(0.09, 0.11, 0.15), Enum.Material.Fabric, Color3.new(0.3318, 0.3656, 0.4236) },
+	{ Color3.new(0.83, 0.66, 0.34), Enum.Material.Metal, Color3.new(0.9212, 0.8323, 0.6180) },
 }
 -- [GLB 무채색 가져오기 보정] 인덱스를 잃어버린 메시만 역할별 원본 주재질 사용.
 local OUTFIT_PRIMARY_MATERIALS = {
@@ -1052,8 +1052,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			for _, part in parts do
 				part.Anchored, part.CanCollide, part.CanTouch, part.CanQuery = false, false, false, false
 				part.Massless = true
-				local textured = part:FindFirstChildOfClass("SurfaceAppearance") ~= nil
-					or (part:IsA("MeshPart") and part.TextureID ~= "")
+				local surface = part:FindFirstChildOfClass("SurfaceAppearance")
+				local textured = (surface ~= nil and (surface.ColorMap ~= ""
+					or surface.MetalnessMap ~= "" or surface.RoughnessMap ~= "" or surface.NormalMap ~= ""))
+					or (part:IsA("MeshPart") and (part.TextureID ~= "" or part.MaterialVariant ~= ""))
 				-- [원본 재질 복원] 9개 복식 GLB는 ColorMap 없이 glTF baseColorFactor로
 				-- 금속·가죽·직물을 나눴다. 텍스처가 없다는 이유로 Roblox의 기본 플라스틱을
 				-- 방치하지 않고 실제 GLB 주재질에 가까운 색·표면으로 복원한다.
@@ -1061,25 +1063,30 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					local color = part.Color
 					local bestMaterial, bestError = nil, math.huge
 					for _, candidate in OUTFIT_SOURCE_MATERIALS do
-						local sourceColor = candidate[1]
-						local err = (color.R - sourceColor.R) ^ 2
-							+ (color.G - sourceColor.G) ^ 2 + (color.B - sourceColor.B) ^ 2
-						if err < bestError then
-							bestMaterial, bestError = candidate[2], err
+						-- [GLB 원색] Blender/glTF의 선형색과 Roblox 수입기의 감마색을
+						-- 모두 비교한다. 비슷한 녹색 천을 녹슨 금속으로 오분류하지 않는다.
+						for _, sourceColor in { candidate[1], candidate[3] } do
+							local err = (color.R - sourceColor.R) ^ 2
+								+ (color.G - sourceColor.G) ^ 2 + (color.B - sourceColor.B) ^ 2
+							if err < bestError then
+								bestMaterial, bestError = candidate[2], err
+							end
 						end
 					end
 					local fallback = OUTFIT_PRIMARY_MATERIALS[assetName]
-					if bestError < 0.045 then
+					-- [재질 원본 존중] 일치도가 높은 원본 재단 색상만 정확하게 대응시킨다.
+					-- 애매한 수입 모델까지 대표색 하나로 덮지 않아 소매·안감·단추를 보존한다.
+					if bestError < 0.0064 then
 						part.Material = bestMaterial
-					elseif fallback then
+					elseif fallback and color.R > 0.94 and color.G > 0.94 and color.B > 0.94 then
+						-- 실제 GLB 원본에 완전한 흰색은 없다. 색상을 전부 잃은 부품만 주색으로 구제한다.
 						part.Material = fallback[2]
-						-- 색상을 잃고 흰색으로 업로드된 경우에만 원본 주색을 복원한다.
-						-- 멀쩡한 GLB의 재단 부위별 색상 차이는 절대로 일괄 덮지 않는다.
-						if color.R > 0.88 and color.G > 0.88 and color.B > 0.88 then
-							part.Color = fallback[1]
-						end
+						part.Color = fallback[1]
 					end
-					part.Reflectance = if part.Material == Enum.Material.Metal then 0.025 else 0
+					-- 원본 금속광을 유지하되 플라스틱 같은 과한 반사는 억제한다.
+					if part.Material == Enum.Material.Metal then
+						part.Reflectance = math.min(part.Reflectance, 0.025)
+					end
 				elseif not textured then
 					local meshName = (assetName .. "_" .. part.Name):lower()
 					local armor = meshName:find("pauldron", 1, true) or meshName:find("plate", 1, true)
