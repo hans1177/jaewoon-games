@@ -80,8 +80,10 @@ gui:SetAttribute("StartupStage", "require-Geo")
 local Geo = require(Shared:WaitForChild("Geo"))
 gui:SetAttribute("StartupStage", "require-SeaRoutes")
 local SeaRoutes = require(Shared:WaitForChild("SeaRoutes"))
-gui:SetAttribute("StartupStage", "require-PortScene")
-local PortScene = require(Shared:WaitForChild("PortScene"))
+-- [시작화면 병목 제거] 3D 항구 장면은 비동기로 읽고 게임 메뉴·서버 저장 상태를 먼저 표시한다.
+-- 기존 PortScene.build/배/에셋 함수는 제거하거나 대체하지 않는다.
+local PortScene = nil
+gui:SetAttribute("PortSceneStatus", "loading")
 gui:SetAttribute("StartupStage", "require-VoyageScene")
 local VoyageScene = require(Shared:WaitForChild("VoyageScene"))
 gui:SetAttribute("StartupStage", "require-FieldScene")
@@ -259,6 +261,7 @@ local amountIndex = 1
 local message = ""
 local messageOk = true
 local ranking = nil
+
 local mailBox, marketList = nil, nil
 local mailDraft = { to = "", coins = "", text = "" }
 local postPrice = {}
@@ -3352,6 +3355,12 @@ local epilogueMessage = nil
 
 local function sail(portId)
 	if sailingNow or sceneHold or inField or not (view and view.player and view.ship) then return end
+	-- [출항 안전] 필수 3D 장면 초기화가 끝나기 전 서버 항해·저장을 변경하지 않는다.
+	if not PortScene then
+		message, messageOk = "항구 장면을 준비하고 있어요. 잠시 후 다시 시도해 줘.", false
+		render()
+		return
+	end
 	sailingNow = true
 	-- [출항 순서] 현재 지역·역사·중요 인물 이벤트를 끝내야 항해를 시작할 수 있다.
 	-- 기존 이벤트 큐를 그대로 사용하며 선택/보상/서버 저장 흐름은 바꾸지 않는다.
@@ -3863,9 +3872,9 @@ local function playEpilogue(msg, opts)
 		naval:WaitForChild("ship-large", 6)
 	end
 	-- placeModel은 기존 등록 Mesh를 복제하며, 없으면 nil을 반환한다.
-	local vessel = PortScene.placeModel(shipWorld, "Naval", "ship-large", Vector3.zero, 44)
+	local vessel = if PortScene then (PortScene.placeModel(shipWorld, "Naval", "ship-large", Vector3.zero, 44)
 		or PortScene.placeModel(shipWorld, "Naval", "ship-medium", Vector3.zero, 38)
-		or PortScene.placeModel(shipWorld, "Naval", "boat-sail-a", Vector3.zero, 34)
+		or PortScene.placeModel(shipWorld, "Naval", "boat-sail-a", Vector3.zero, 34)) else nil
 	if vessel then
 		local cf, size = vessel:GetBoundingBox()
 		local focus = cf.Position + Vector3.new(0, size.Y * 0.06, 0)
@@ -9544,6 +9553,8 @@ end)
 
 -- 3D 항구 장면: 항구나 배가 바뀔 때만 다시 만든다
 syncScene = function()
+	-- [원래 3D 장면 지연 로드] 메뉴·기존 저장은 유지하고 모델 함수가 준비되면 동일 장면을 재시도한다.
+	if not PortScene then return end
 	if sceneHold or inField then
 		return -- 항해 중·지상 탐험 중에는 항구 장면을 다시 짓거나 캐릭터를 항구로 되돌리지 않는다
 	end
@@ -11071,6 +11082,27 @@ task.spawn(function()
 				H.startupCover = nil
 			end
 			gui:SetAttribute("StartupStage", "title-ready")
+			-- [시작 후 3D 장면] 먼저 제목 화면을 실제로 표시한 다음 기존 항구 모듈을 읽는다.
+			-- [항구 장면 원래 모듈] 첫 메뉴와 무관한 3D 컴파일·수입을 분리한다.
+			-- 읽기가 끝난 뒤 기존 syncScene을 재사용하며 진행 데이터·항구 수치는 바꾸지 않는다.
+			task.spawn(function()
+			    local ok, loaded = pcall(function()
+			        return require(Shared:WaitForChild("PortScene"))
+			    end)
+			    if ok and type(loaded) == "table" and type(loaded.build) == "function"
+			        and type(loaded.makeShip) == "function" and type(loaded.placeModel) == "function" then
+			        PortScene = loaded
+			        gui:SetAttribute("PortSceneStatus", "ready")
+			        if view and syncScene then
+			            sceneKey = nil
+			            syncScene()
+			        end
+			    else
+			        gui:SetAttribute("PortSceneStatus", "failed")
+			        warn("[MareEssentia] 항구 장면 초기화 실패", tostring(loaded))
+			    end
+			end)
+
 			return
 		end
 		-- 그 밖의 응답(너무 빨라요 등)은 멈추지 말고 다시 시도한다
