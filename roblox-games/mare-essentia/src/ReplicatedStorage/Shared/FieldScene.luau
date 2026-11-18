@@ -273,15 +273,27 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 					or partName:find("mane", 1, true) or partName:find("tail", 1, true)
 					or partName:find("beak", 1, true) or partName:find("saddle", 1, true)
 				if textured and not detail then
-					-- 원본 털무늬/PBR은 보존하면서 승인된 메시의 품종색만 약하게 곱한다.
-					d.Color = d.Color:Lerp(tint, 0.24)
-					if sa then sa.Color = sa.Color:Lerp(tint, 0.24) end
+					-- [가축/야생 공통 PBR] 원본 지도는 보존하고 중복 색 곱셈을 한 채널로 줄인다.
+					if sa and sa.ColorMap ~= "" then
+						sa.Color = sa.Color:Lerp(tint, 0.16)
+					elseif not sa then
+						d.Color = d.Color:Lerp(tint, 0.16)
+					end
 				elseif not textured and not detail then
 					local light = math.max(d.Color.R, d.Color.G, d.Color.B)
 					d.Color = d.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
-					d.Material = if asset == "elephant" then Enum.Material.Slate
-						elseif asset == "pig" then Enum.Material.SmoothPlastic else Enum.Material.Fabric
+					-- [종별 자연 재질] 양털/단모 가죽/돼지 피부. 원본 PBR은 절대 덮지 않는다.
+					if not sa then
+						d.Material = if asset == "sheep" or asset == "llama" or asset == "chicken"
+							or asset == "cat" or asset == "dog-pug" then Enum.Material.Fabric
+							elseif asset == "cow" or asset == "horse" or asset == "donkey" then Enum.Material.Leather
+							elseif asset == "elephant" then Enum.Material.Concrete
+							else Enum.Material.SmoothPlastic
+						d.Reflectance = 0
+					end
 					if sa and sa.ColorMap == "" then sa.Color = d.Color end
+				elseif not textured and not sa and (partName:find("mane", 1, true) or partName:find("tail", 1, true)) then
+					d.Material = Enum.Material.Fabric
 				end
 			elseif tint then
 				d.Color = tint
