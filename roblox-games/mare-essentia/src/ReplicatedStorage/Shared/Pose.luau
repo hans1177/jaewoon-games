@@ -959,9 +959,9 @@ function Pose.applyRegisteredMobOutfit(model)
 		if ok then
 			attached += 1
 			if npcOutfit and (string.sub(assetName, 1, 5) == "hair_"
-				or assetName == "acc_feather_hat" or assetName == "acc_sailor_headband") then
-				-- [실제 메시 우선] 기등록 머리·모자가 장착된 뒤에만 과거 도형 예비품을 숨긴다.
-				-- 원본 에셋이 미로드 상태라면 예비 외형을 유지해 NPC가 순간적으로 사라지지 않는다.
+				or (detailAllowed and assetName == "acc_feather_hat")) then
+				-- [지역 복식 보존] 실물 머리와 서유럽 깃털모자만 기존 예비 도형을 가린다.
+				-- 선원 머리띠는 지역별 모자 대신 쓰지 않으며, 미로드 시 원형을 유지한다.
 				local fallbackName = if string.sub(assetName, 1, 5) == "hair_" then "Hair" else "Hat"
 				for _, piece in model:GetChildren() do
 					if piece:IsA("BasePart") and piece.Name == fallbackName then piece.Transparency = 1 end
