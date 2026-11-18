@@ -567,7 +567,7 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "-- [교역 원화·시세] 상품 카드에서 직접 매입/매각하고 세계 평균·세후손익을 확인한다.\nlocal gui=assert(game:GetService(\"Players\").LocalPlayer.PlayerGui:FindFirstChild(\"MareEssentiaGui\"))\nlocal grid=assert(gui:FindFirstChild(\"TradeGoodsGrid\",true))\nlocal hasBuy,hasSell,hasAverage,hasProfit=false,false,false,false\nfor _,v in grid:GetDescendants() do\n if v:IsA(\"TextButton\") then\n  if string.find(v.Text,\"구매\",1,true) then hasBuy=true end\n  if string.find(v.Text,\"판매\",1,true) then hasSell=true end\n elseif v:IsA(\"TextLabel\") and string.find(v.Text,\"세후\",1,true) then hasProfit=true end\n if v.Name==\"WorldAverageBar\" then hasAverage=true end\nend\nassert(hasBuy and hasSell and hasAverage and hasProfit,\"TRADE_INLINE_PRICE_OR_ACTION_MISSING\")\nreturn \"TRADE_INLINE_PRICES_AND_ACTIONS_PASS\""
+    "code": "-- [교역 원화·시세] 상품 카드에서 직접 매입/매각하고 세계 평균·세후손익을 확인한다.\nlocal gui=assert(game:GetService(\"Players\").LocalPlayer.PlayerGui:FindFirstChild(\"MareEssentiaGui\"))\nlocal grid=assert(gui:FindFirstChild(\"TradeGoodsGrid\",true))\nlocal hasBuy,hasSell,hasAverage,hasProfit=false,false,false,false\nfor _,v in grid:GetDescendants() do\n if v:IsA(\"TextButton\") and v.Position.Y.Scale==1 and v.Position.Y.Offset==-50 then\n  -- [거래 버튼] 재고·코인 부족일 때 문구가 바뀌어도 실제 매입/매각 버튼 위치를 검증한다.\n  if v.Position.X.Scale==0 then hasBuy=true end\n  if v.Position.X.Scale==0.5 then hasSell=true end\n elseif v:IsA(\"TextLabel\") and string.find(v.Text,\"세후\",1,true) then hasProfit=true end\n if v.Name==\"WorldAverageBar\" then hasAverage=true end\nend\nassert(hasBuy and hasSell and hasAverage and hasProfit,\"TRADE_INLINE_PRICE_OR_ACTION_MISSING\")\nreturn \"TRADE_INLINE_PRICES_AND_ACTIONS_PASS\""
   },
   {
     "type": "capture",
