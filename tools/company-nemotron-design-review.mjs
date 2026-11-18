@@ -113,6 +113,8 @@ export async function reviewNemotron({fetchImpl=globalThis.fetch}={}) {
   const photos=images();
   const proofs=photos.map(({name,sha256})=>({name,sha256}));
   if(photos.length<2)return record('SKIPPED_STUDIO_IMAGES_UNAVAILABLE',{frames:proofs});
+  if(trim(process.env.COMPANY_EXTERNAL_AI_ENABLED)!=='YES')
+    return record('SKIPPED_CENTRAL_EXTERNAL_AI_OPT_IN_REQUIRED',{frames:proofs});
   if(trim(process.env.NVIDIA_FREE_TIER_VERIFIED)!=='YES')
     return record('SKIPPED_FREE_TIER_UNVERIFIED',{frames:proofs});
   const apiKey=trim(process.env.NVIDIA_API_KEY);
