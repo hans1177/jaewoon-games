@@ -1,0 +1,83 @@
+{
+ "sourceRevision": "29efbb574b554fcbb7261a3a29c70948a9bab2a3",
+ "log": [
+  {
+   "step": 1,
+   "capture": "c00_start",
+   "files": 1
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "QAAutoIntro on\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "INTRO_CENTER_QA_MONITOR_READY\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "NONE\ntext"
+  },
+  {
+   "step": 6,
+   "click": "title01",
+   "at": "NOT_FOUND",
+   "out": "NONE\ntext"
+  }
+ ],
+ "errors": [
+  "step6:STUDIO_UI_TARGET_NOT_FOUND:title01"
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 241,
+  "completedSteps": 7,
+  "plannedClicks": 10,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 62,
+  "capturedFrames": 1,
+  "abortedEarly": true
+ },
+ "visualSamples": [
+  {
+   "name": "c00_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 43708,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  }
+ ],
+ "visualEvidence": {
+  "framesChecked": 1,
+  "framesWithInvalidSize": 0,
+  "voyageSceneObserved": false,
+  "departureObserved": false,
+  "voyageDiagnostics": [],
+  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
+ }
+}
