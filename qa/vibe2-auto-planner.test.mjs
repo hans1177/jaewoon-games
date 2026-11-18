@@ -5628,7 +5628,8 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   try{
   const repoRoot=path.resolve(process.cwd());
   const catalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
-  const plannerCatalog={...catalog,games:[...(catalog.games||[]),{
+  const plannerCatalog={...catalog,games:[...(catalog.games||[]).map(game=>
+    game.id==='mare-essentia'?{...game,developmentHandling:'OWNER_DIRECT_FOCUSED_BUILD_UP'}:game),{
     id:'generic-game',
     name:'백로그 점유 테스트 게임',
     productionClass:'DEVELOPMENT_CONFIRMED',
@@ -5637,15 +5638,15 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   const sourceRevision='e3ff6bb1a0ccd6eb8398da4431d413c28974267d';
   const artifactIdentity='sha256:'+'1'.repeat(64);
   const developmentQueue={items:[{
-    gameId:'fantasy-survival',
-    gameName:'심야 대탈출',
+    gameId:'mare-essentia',
+    gameName:'대항해시대',
     status:'ACTIVE',
     productionClass:'DEVELOPMENT_CONFIRMED',
     selectedPlatform:'ROBLOX',
     targetPlatform:'ROBLOX',
     concurrentTargetPlatforms:['ROBLOX'],
-    robloxProjectPath:'roblox-games/fantasy-survival',
-    targetSourcePaths:{ROBLOX:'roblox-games/fantasy-survival'},
+    robloxProjectPath:'roblox-games/mare-essentia',
+    targetSourcePaths:{ROBLOX:'roblox-games/mare-essentia'},
     robloxBuildOrPackagePassed:true,
     robloxSourceCommit:sourceRevision,
     robloxBuildArtifactIdentity:artifactIdentity,
@@ -5663,8 +5664,8 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
     canonicalState:'F0_SOURCE_PREFLIGHT_PASSED',
     routingBlockers:['roblox-studio-internal-validation-pending']
   }]};
-  const projects=collectProjects({},catalog,repoRoot,developmentQueue);
-  const robloxProject=projects.find(project=>project.gameId==='fantasy-survival'&&project.engine==='roblox');
+  const projects=collectProjects({},plannerCatalog,repoRoot,developmentQueue);
+  const robloxProject=projects.find(project=>project.gameId==='mare-essentia'&&project.engine==='roblox');
   assert.ok(robloxProject);
   assert.equal(robloxProject.ownerResumableBuildUp,true);
 
@@ -5729,7 +5730,7 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   });
   assert.equal(result.planned,true);
   assert.equal(result.planningBacklog.ownerResumableTargetBypass,true);
-  const resumed=result.tasks.find(task=>task.gameId==='fantasy-survival');
+  const resumed=result.tasks.find(task=>task.gameId==='mare-essentia');
   assert.ok(resumed);
   assert.equal(resumed.maxRetries,null);
   assert.equal(resumed.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
@@ -6340,6 +6341,17 @@ test('all-platform library CC0 replacement uses registered responsible sources a
  fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(policy));
  fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[{id:'demo',lifecycleState:'ACTIVE'}]}));
  for(const [engine,file] of [['web','web-games/demo/index.html'],['roblox','roblox-games/demo/client/Game.client.luau'],['unity','unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs']]){
+  // [격리된 개발 허용 fixture] 실제 Mare 집중개발 정책은 수정하지 않는다.
+  const fixturePolicy={...policy,developmentLifecycleMachine:{
+    ...policy.developmentLifecycleMachine,focusedDevelopmentCaretakers:{
+      ...policy.developmentLifecycleMachine.focusedDevelopmentCaretakers,
+      enabled:true,targetFocusedGames:1,maxFocusedGames:1,
+      ownerFocusedGameIds:['demo'],
+      ownerFocusedGamePlatforms:{demo:engine==='unity'?'ROBLOX':engine.toUpperCase()},
+      focusScope:'OWNER_EXACT_GAME_AND_PLATFORM_ONLY'
+    }
+  }};
+  fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(fixturePolicy));
   fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});fs.writeFileSync(path.join(root,file),'original presentation source');
   const project={gameId:'demo',engine,projectPath:engine==='unity'?'unity-games/demo':engine==='roblox'?'roblox-games/demo':'web-games/demo',releaseState:'development-confirmed'};
   const next=findPresentationQualityTask(project,root,{tasks:[]});
