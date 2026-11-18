@@ -73,6 +73,22 @@ local r15RetryAt = 0 -- 일시적인 아바타 생성 실패 후 재시도. 영�
 local rigMotors = setmetatable({}, { __mode = "k" })
 -- R15 모션 전환: 게임 데이터에 저장하지 않는 NPC별 관절 보간 상태.
 local r15ActionBlends = setmetatable({}, { __mode = "k" })
+-- [모바일 실제 성능] 임의 기기 등급표 대신 현재 프레임으로 복식 여유를 판단한다.
+-- 장면당 새 갱신기를 만들지 않고 Pose 모듈의 기존 생명주기 동안 한 번만 수집한다.
+local mobileDetailFps = 48
+if UserInputService.TouchEnabled then
+	local RunService = game:GetService("RunService")
+	local fpsTime, fpsFrames = 0, 0
+	RunService.Heartbeat:Connect(function(dt)
+		if dt <= 0 or dt >= 0.2 then return end
+		fpsTime += dt
+		fpsFrames += 1
+		if fpsTime >= 2 then
+			mobileDetailFps = mobileDetailFps * 0.55 + fpsFrames / fpsTime * 0.45
+			fpsTime, fpsFrames = 0, 0
+		end
+	end)
+end
 
 -- 얼굴: 기본 얼굴 데칼 대신 눈썹·눈·입·수염·흉터를 UI 로 그려, 사람마다 표정과 생김새가 다르게 한다.
 -- (뷰포트 초상화는 SurfaceGui 를 그리지 못하므로 그때는 기본 얼굴을 그대로 둔다)
@@ -577,12 +593,24 @@ local MOB_OUTFIT_PARTS = {
 		{ "hair_simpleparted", "Head", 1.15, 1.23, 1.18, 0.13 },
 		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
 		{ "outfit_vest", "UpperTorso", 1.18, 1.49, 1.22, -0.04 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 	},
 	citizen_female = {
 		{ "female_peasant_body", "UpperTorso", 1.16, 1.50, 1.22, -0.08 },
 		{ "hair_buns", "Head", 1.16, 1.24, 1.18, 0.14 },
 		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
 		{ "outfit_vest", "UpperTorso", 1.18, 1.49, 1.22, -0.04 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 	},
 	-- [항구 주민 2차 복식] 중노동·궁정 경비·상점/행정 구분. 등록된 소형 People 메시만 쓴다.
 	citizen_worker_male = {
@@ -591,6 +619,11 @@ local MOB_OUTFIT_PARTS = {
 		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
 		{ "outfit_apron", "LowerTorso", 1.20, 1.49, 1.21, -0.08 },
 		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 	},
 	citizen_worker_female = {
 		{ "female_peasant_body", "UpperTorso", 1.18, 1.50, 1.22, -0.08 },
@@ -598,6 +631,11 @@ local MOB_OUTFIT_PARTS = {
 		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
 		{ "outfit_apron", "LowerTorso", 1.20, 1.49, 1.21, -0.08 },
 		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 	},
 	citizen_guard_male = {
 		{ "male_ranger_body", "UpperTorso", 1.22, 1.55, 1.25, -0.10 },
@@ -631,6 +669,9 @@ local MOB_OUTFIT_PARTS = {
 		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
 		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
 		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 	},
 	citizen_official_female = {
 		{ "female_peasant_body", "UpperTorso", 1.17, 1.51, 1.22, -0.08 },
@@ -640,6 +681,9 @@ local MOB_OUTFIT_PARTS = {
 		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
 		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
 		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 	},
 	-- [3차 직능 복식] 선원은 활동복, 장인은 생활복으로 구분한다. 신규 자산/파트 생성 없음.
 	citizen_sailor_male = {
@@ -650,6 +694,9 @@ local MOB_OUTFIT_PARTS = {
 		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
 		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
 	},
 	citizen_sailor_female = {
 		{ "female_ranger_body", "UpperTorso", 1.17, 1.52, 1.22, -0.08 },
@@ -659,6 +706,9 @@ local MOB_OUTFIT_PARTS = {
 		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
 		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
 	},
 	citizen_artisan_male = {
 		{ "male_peasant_body", "UpperTorso", 1.19, 1.52, 1.24, -0.08 },
@@ -668,6 +718,10 @@ local MOB_OUTFIT_PARTS = {
 		{ "outfit_apron", "LowerTorso", 1.20, 1.49, 1.21, -0.08 },
 		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
 		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 	},
 	citizen_artisan_female = {
 		{ "female_peasant_body", "UpperTorso", 1.17, 1.50, 1.22, -0.08 },
@@ -677,6 +731,10 @@ local MOB_OUTFIT_PARTS = {
 		{ "outfit_apron", "LowerTorso", 1.20, 1.49, 1.21, -0.08 },
 		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
 		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 	},
 	-- [성직 동료] 금속 갑옷 대신 승인된 생활복·후드를 써 직책을 시각적으로 구별한다.
 	companion_clergy_male = {
@@ -685,6 +743,11 @@ local MOB_OUTFIT_PARTS = {
 		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
 		{ "outfit_stole", "UpperTorso", 1.19, 1.45, 1.21, -0.05 },
 		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 	},
 	companion_clergy_female = {
 		{ "female_peasant_body", "UpperTorso", 1.16, 1.51, 1.22, -0.08 },
@@ -692,6 +755,11 @@ local MOB_OUTFIT_PARTS = {
 		-- [입체 재단복] 기본 R15 관절을 보존하는 직업별 착용 메시.
 		{ "outfit_stole", "UpperTorso", 1.19, 1.45, 1.21, -0.05 },
 		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		{ "outfit_boot", "LeftLowerLeg", 1.24, 1.36, 1.25, -0.04 },
+		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 	},
 	companion_male = {
 		{ "male_ranger_body", "UpperTorso", 1.23, 1.56, 1.26, -0.10 },
@@ -704,6 +772,8 @@ local MOB_OUTFIT_PARTS = {
 		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
 		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
 	},
 	companion_female = {
 		{ "female_ranger_body", "UpperTorso", 1.18, 1.52, 1.23, -0.10 },
@@ -716,6 +786,8 @@ local MOB_OUTFIT_PARTS = {
 		{ "outfit_boot", "RightLowerLeg", 1.24, 1.36, 1.25, -0.04 },
 		{ "outfit_cuff", "LeftLowerArm", 1.21, 0.85, 1.25, -0.01 },
 		{ "outfit_cuff", "RightLowerArm", 1.21, 0.85, 1.25, -0.01 },
+		-- [등록 3D 복장] 직업·성별에 맞는 기존 소매·장화·허리띠만 추가.
+		{ "outfit_belt", "LowerTorso", 1.22, 0.90, 1.23, 0.02 },
 	},
 	warlord = {
 		{ "male_ranger_body", "UpperTorso", 1.27, 1.61, 1.32, -0.12 },
@@ -757,39 +829,62 @@ local NPC_REGISTERED_ACCESSORY = {
 	companion_female = { "acc_pearl_hairpin", "Head", 0.55, 0.58, 0.60, 0.28, 0.33, -0.06 },
 }
 
--- 이미 생성된 R15 몹에 승인 실물 외형을 적용한다. People 자산이 늦게 로드되면 같은 함수를 재호출한다.
-function Pose.applyRegisteredMobOutfit(model)
+-- 이미 생성된 R15 몹에 승인 실물 외형을 적용한다. People 지연 로드·거리 갱신을 같은 함수에서 처리한다.
+function Pose.applyRegisteredMobOutfit(model, throttled)
 	if not model or not model.Parent or model:GetAttribute("RigType") ~= "R15" then return false end
+	-- [기존 모션 루프 재사용] 모바일의 거리별 복식 갱신은 인물마다 2초 이상 간격을 둔다.
+	-- 최초 장착·자산 도착 이벤트는 throttled=false라서 기다리지 않고 바로 갱신된다.
+	if throttled then
+		if not UserInputService.TouchEnabled or not model:GetAttribute("NpcAssetProfile") then return true end
+		local now = os.clock()
+		if now < (model:GetAttribute("NpcOutfitNextCheckAt") or 0) then return true end
+		model:SetAttribute("NpcOutfitNextCheckAt", now + 2.4 + (tonumber(model:GetAttribute("MotionPersonality")) or 1) * 0.17)
+	end
 	local npcProfile = model:GetAttribute("NpcAssetProfile")
 	local profile = model:GetAttribute("MobAssetProfile") or npcProfile
 	local npcOutfit = npcProfile ~= nil and model:GetAttribute("MobAssetProfile") == nil
-	-- [근세 유럽 복식] 연도/문화권을 검사하고 모바일에는 서로 다른 세부 메시 2종만 표시한다.
+	-- [시대·문화권 보존] 기존 근세 서유럽만 상세 재단복을 착용한다.
 	local year = model:GetAttribute("AppearanceYear")
 	local culture = model:GetAttribute("AppearanceCulture")
 	local detailAllowed = npcOutfit and type(year) == "number" and year >= 1500 and year < 1800
 		and EUROPEAN_DETAIL_CULTURES[culture] == true
-	local detailLimit = if UserInputService.TouchEnabled then 2 else 4
+	local detailLimit = 99 -- PC는 기존 등록 복식 전체. 모바일은 거리·실제 FPS에 맞춰 조절.
 	local detailOrder = {}
 	local detailKinds = 0
 	local specs = MOB_OUTFIT_PARTS[profile]
 	if not specs then return false end
-	-- [모바일 복식 실루엣] 한 NPC당 상세 모델 2종을 유지하되 복부 벨트보다 장화·소매를
-	-- 먼저 보여준다. 좌우 부위는 같은 실물 메시 종류로 계산해 추가 메모리를 쓰지 않는다.
 	local mobileEssentials = nil
-	if UserInputService.TouchEnabled then
-		if string.find(profile, "citizen_guard_", 1, true) == 1 then
-			mobileEssentials = { outfit_guard = true, outfit_boot = true }
-		elseif string.find(profile, "citizen_official_", 1, true) == 1 then
-			mobileEssentials = { outfit_coat = true, outfit_cuff = true }
-		elseif string.find(profile, "citizen_sailor_", 1, true) == 1 then
-			mobileEssentials = { outfit_sash = true, outfit_boot = true }
-		elseif string.find(profile, "citizen_artisan_", 1, true) == 1 then
-			mobileEssentials = { outfit_vest = true, outfit_apron = true }
-		elseif string.find(profile, "companion_clergy_", 1, true) == 1 then
-			mobileEssentials = { outfit_stole = true, outfit_belt = true }
-		elseif string.find(profile, "companion_", 1, true) == 1 then
-			mobileEssentials = { outfit_coat = true, outfit_boot = true }
+	if UserInputService.TouchEnabled and detailAllowed then
+		local camera, torso = workspace.CurrentCamera, model:FindFirstChild("UpperTorso")
+		local distance = if camera and torso then (camera.CFrame.Position - torso.Position).Magnitude else 0
+		local previous = model:GetAttribute("NpcOutfitDetailLimit") or 4
+		if distance > (if previous > 2 then 85 else 70)
+			or (mobileDetailFps < 38 and distance > (if previous > 2 then 48 else 38)) then
+			-- [원거리·저사양] 실제 메시 2종만 보여 주고 장갑·머리·기본 R15는 그대로 둔다.
+			detailLimit = 2
+		elseif mobileDetailFps >= 52 and distance <= (if previous == 2 then 26 else 36) then
+			-- [실측 고성능 근거리] 재단복 전체 표시(장식·소매·허리띠·장화).
+			detailLimit = 99
+		else
+			-- [모바일 기본] 최소 4종을 유지한다. 프레임이 낮아도 근거리 외형은 보호.
+			detailLimit = 4
 		end
+		if detailLimit == 2 then
+			if string.find(profile, "citizen_guard_", 1, true) == 1 then
+				mobileEssentials = { outfit_guard = true, outfit_boot = true }
+			elseif string.find(profile, "citizen_official_", 1, true) == 1 then
+				mobileEssentials = { outfit_coat = true, outfit_cuff = true }
+			elseif string.find(profile, "citizen_sailor_", 1, true) == 1 then
+				mobileEssentials = { outfit_sash = true, outfit_boot = true }
+			elseif string.find(profile, "citizen_artisan_", 1, true) == 1 then
+				mobileEssentials = { outfit_vest = true, outfit_apron = true }
+			elseif string.find(profile, "companion_clergy_", 1, true) == 1 then
+				mobileEssentials = { outfit_stole = true, outfit_belt = true }
+			elseif string.find(profile, "companion_", 1, true) == 1 then
+				mobileEssentials = { outfit_coat = true, outfit_boot = true }
+			end
+		end
+		if previous ~= detailLimit then model:SetAttribute("NpcOutfitDetailLimit", detailLimit) end
 	end
 	-- [등록·사용 권한 관문] 기존 AssetIds에 등록된 추가 액세서리만 장착 시도한다.
 	-- 등록 전에는 기등록 복식만 사용한다. 기존 프로필 표는 수정하지 않는다.
@@ -840,18 +935,21 @@ function Pose.applyRegisteredMobOutfit(model)
 	local attached = 0
 	for _, spec in specs do
 		local assetName, boneName = spec[1], spec[2]
-		-- [직접 제작 GLB] 좌우 소매·장화를 하나씩 개별 장착하고 모바일 부하를 제한한다.
+		-- [입체 복식 거리 제어] 근접 시 추가 메시를 장착하고 멀어지면 보이는 부품만 숨긴다.
+		-- 이미 생성된 원본은 재복제하지 않으므로 LOD 왕복 시 메시/메모리가 중복되지 않는다.
 		if string.sub(assetName, 1, 7) == "outfit_" then
-			-- 모바일에서는 지정된 직능별 실루엣만 세어 실제 장착 메시를 2종 이내로 제한한다.
-			if not detailAllowed or (mobileEssentials and not mobileEssentials[assetName]) then
-				attached += 1
-				continue
-			end
-			if not detailOrder[assetName] then
+			local allowed = detailAllowed and (not mobileEssentials or mobileEssentials[assetName] == true)
+			if allowed and not detailOrder[assetName] then
 				detailKinds += 1
 				detailOrder[assetName] = detailKinds
 			end
-			if detailOrder[assetName] > detailLimit then
+			if not allowed or detailOrder[assetName] > detailLimit then
+				local inactive = model:FindFirstChild("R15Asset_" .. assetName .. "_" .. boneName)
+				if inactive then
+					for _, part in inactive:GetDescendants() do
+						if part:IsA("BasePart") then part.LocalTransparencyModifier = 1 end
+					end
+				end
 				attached += 1
 				continue
 			end
@@ -877,7 +975,13 @@ function Pose.applyRegisteredMobOutfit(model)
 			end
 		end
 		local slotName = "R15Asset_" .. assetName .. "_" .. boneName
-		if model:FindFirstChild(slotName) then
+		local equipped = model:FindFirstChild(slotName)
+		if equipped then
+			if string.sub(assetName, 1, 7) == "outfit_" then
+				for _, part in equipped:GetDescendants() do
+					if part:IsA("BasePart") then part.LocalTransparencyModifier = 0 end
+				end
+			end
 			attached += 1
 			continue
 		end
@@ -992,6 +1096,9 @@ local workSmooth = setmetatable({}, { __mode = "k" }) -- NPC 모델이 사라지
 function Pose.work(model, kind, t, moving)
 	local m = rigMotors[model]
 	if not m then return end
+	if UserInputService.TouchEnabled and model:GetAttribute("NpcAssetProfile") then
+		Pose.applyRegisteredMobOutfit(model, true)
+	end
 	local function set(motor, cf)
 		if not motor then return end
 		if motor == m.leftArm or motor == m.rightArm then
@@ -1379,6 +1486,9 @@ end
 function Pose.makeR15Action(model, state, progress, t, moveEffort)
 	local m = rigMotors[model]
 	if not m then return false end
+	if UserInputService.TouchEnabled and model:GetAttribute("NpcAssetProfile") then
+		Pose.applyRegisteredMobOutfit(model, true)
+	end
 	local humanoid = model:FindFirstChildOfClass("Humanoid")
 	if not humanoid or humanoid.RigType ~= Enum.HumanoidRigType.R15 then return false end
 	-- 잘못된 동작 요청이 들어와도 기존 관절 자세를 지우지 않는다.
