@@ -8213,6 +8213,21 @@ function H.showCardDetail(card)
 			mkLabel(body, "연관 학문: " .. table.concat(card.relatedDisciplines, " · "), 13, brown, false, 4)
 		end
 	end
+	-- [개인 탐험 백과] 원본 백과 정의와 내 최초 발견 경위를 구분해서 보여 준다.
+	if card.found then
+		local first = card.provenance
+		if first then
+			local notes = { "내 최초 발견: " .. (first.port or "위치 미상") .. " · 항해 " .. tostring(first.day or 0) .. "일째" }
+			table.insert(notes, "획득 방식: " .. (first.method or "발견"))
+			if first.site then table.insert(notes, "현장: " .. first.site) end
+			if first.person then table.insert(notes, "배운 인물: " .. first.person) end
+			if first.quest then table.insert(notes, "획득 퀘스트: " .. first.quest) end
+			if first.event then table.insert(notes, "관련 사건: " .. first.event) end
+			mkLabel(body, table.concat(notes, "\n"), 14, ink, true, 4)
+		else
+			mkLabel(body, "개인 발견 기록: 이전에 획득한 카드 · 당시 항구와 인물 정보 없음", 12, brown, false, 4)
+		end
+	end
 	if card.found and card.entityType then
 		mkLabel(body, "백과 개체: " .. card.entityType, 13, brown, false, 4)
 		-- [세계 백과 14영역] 소재·연구 학문과 독립된 주제 및 근거 분류.
@@ -9762,17 +9777,17 @@ function RENDERERS.quest()
 			end)
 		end
 	end
-	-- [세계 현장 탐험] 해외 8개 권역의 다음 1~5단 목적지 표시.
+	-- [세계 현장 탐험] 10대 이야기 항로의 다음 1~5단 목적지와 단서 출처 표시.
 	-- 현지라면 탐험 탭으로, 먼 지역이면 기존 항해 지도로 안내한다.
 	if view.quests.fieldRoutes and #view.quests.fieldRoutes > 0 then
-		add(function() return mkHeader(content, "세계 현장 탐험 · 8개 권역") end)
+		add(function() return mkHeader(content, string.format("세계 탐험 · %d대 항로", view.quests.routeCount or 10)) end)
 		for _, route in view.quests.fieldRoutes do
 			add(function()
 				local action = if route.here then "탐험지" else "항해 지도"
 				local targetTab = if route.here then "explore" else "map"
 				return mkRow(content, route.name,
-					string.format("%d/5단 · %s · %s", route.grade or 1, route.port, route.summary),
-					{ { text = action, color = COLORS.blue, onClick = function() openTab(targetTab) end } }, 94)
+					string.format("%d/5단 · %s · 단서: %s\n%s", route.grade or 1, route.port, route.leadSource or "현지 탐험", route.summary),
+					{ { text = action, color = COLORS.blue, onClick = function() openTab(targetTab) end } }, 112)
 			end)
 		end
 	end
