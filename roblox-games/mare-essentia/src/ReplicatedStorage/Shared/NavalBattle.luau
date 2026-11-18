@@ -5293,7 +5293,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local caption = b:FindFirstChild("NavalButtonCaption")
 				if caption and caption:IsA("TextLabel") then
 					caption.Text = sk.text
-					caption.TextStrokeTransparency = 0.85
+					caption.TextStrokeTransparency = 1
 				end
 			end
 			if not ready then
@@ -5304,7 +5304,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
                 local readyScale = b:FindFirstChild("NavalReadyScale")
                 if readyScale and readyScale:IsA("UIScale") then
                     readyScale.Scale = 1.12
-                    TweenService:Create(readyScale, TweenInfo.new(0.42, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+                    game:GetService("TweenService"):Create(readyScale, TweenInfo.new(0.42, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
                 end
 			end
 			b.Interactable = ready and phase == "duel" and not opts.cardOnly and not opts.card
