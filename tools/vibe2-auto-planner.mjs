@@ -859,7 +859,7 @@ function focusedCaretakerPolicy(repoRoot=process.cwd()){
   const target=Number(policy.targetFocusedGames),maximum=Number(policy.maxFocusedGames);
   if(policy.enabled===true&&policy.completionPursuit?.enabled===true
     &&(!Number.isSafeInteger(target)||target<1
-      ||!Number.isSafeInteger(maximum)||maximum<target
+      ||!Number.isSafeInteger(maximum)||maximum!==target
       ||selectedIds.length<1||selectedIds.length>target
       ||selectedIds.some(id=>!clean(id))
       ||new Set(selectedIds.map(clean)).size!==selectedIds.length))
