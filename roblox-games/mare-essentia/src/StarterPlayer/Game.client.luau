@@ -9465,7 +9465,7 @@ local f = findField(codexField)
 end
 
 function RENDERERS.codex()
-	if not codexField then H.counselRows(1) end
+	-- [중복 조언 제거] 동료 조언과 할 일은 저널 한 곳에서만 확인한다.
 	if codexField then
 		H.renderCodexField()
 	else
