@@ -393,6 +393,14 @@ test('스튜디오 탐험 실증은 현재 공격·회피 메달과 집안별 �
   const path='roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json';
   const script=JSON.parse(fs.readFileSync(path,'utf8'));
   assert.equal(script.length,241,'기존 전체 스튜디오 검사 순서 유지');
+  // [실제 화면 대기] 고정시간을 넘기는 PC 시작 로딩에서 아무 버튼을 잘못 누르지 않는다.
+  assert.equal(script[4].type,'luau');
+  assert.equal(script[4].timeoutMs,85000);
+  assert.match(script[4].code,/MARE_TITLE_NOT_READY_AFTER_50S/);
+  assert.match(script[4].code,/FindFirstChild\('StartLoading'\)/);
+  assert.match(script[4].code,/task\.wait\(0\.5\)/);
+  assert.match(script[6].code,/if not best or bs<=0 then return 'NONE' end/);
+
   const entry=script[234].code;
   const motion=script[236].code;
   const live=script[239].code;
