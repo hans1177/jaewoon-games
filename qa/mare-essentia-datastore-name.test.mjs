@@ -43,13 +43,13 @@ test('항구 시작과 재생성에서 공중 캐릭터가 노출되지 않는�
   const client=read('StarterPlayer/Game.client.luau');
   const spawn=client.slice(client.indexOf('function H.placeCharacterOnSpawn(character)'),client.indexOf('player.CharacterAdded:Connect(H.placeCharacterOnSpawn)'));
   assert.match(spawn,/root.Anchored = true/);
-  assert.match(spawn,/if sceneSpawn then character:PivotTo\\(sceneSpawn\\) end/);
+  assert.match(spawn,/if sceneSpawn then character:PivotTo\(sceneSpawn\) end/);
   assert.match(spawn,/part.LocalTransparencyModifier = if sceneSpawn then 0 else 1/);
-  assert.match(client,/player.CharacterAppearanceLoaded:Connect\\(H.placeCharacterOnSpawn\\)/);
+  assert.match(client,/player.CharacterAppearanceLoaded:Connect\(H.placeCharacterOnSpawn\)/);
   assert.match(client,/titleGui.Enabled = on or H.titleMenuOpen or waitingPort/);
   assert.match(client,/if H.portLoadingLabel then H.portLoadingLabel.Visible = waitingPort and not H.titleMenuOpen end/);
-  assert.match(client,/if H.setTitleMode then H.setTitleMode\\(not view or newGameMode\\) end/);
-  assert.match(client,/H.setTitleMode\\(false\\)/);
+  assert.match(client,/if H.setTitleMode then H.setTitleMode\(not view or newGameMode\) end/);
+  assert.match(client,/H.setTitleMode\(false\)/);
 });
 
 test('게임 시작 메뉴는 PortScene 정본을 기다리지 않고 서버 상태를 표시한다', () => {
