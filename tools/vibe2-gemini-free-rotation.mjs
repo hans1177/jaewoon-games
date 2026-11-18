@@ -20,7 +20,25 @@ function infrastructureFailure(message,retryAt=0){
   }
   return error;
 }
-export function retryDelayMs(response,status,body=null){
+// [무료 충원] Gemini 프로젝트·모델 일간 한도는 미국 태평양 자정에 초기화된다.
+// 매 24시간 고정 대기하면 실제 초기화 후에도 미사용 무료 용량이 방치된다.
+export function geminiPacificDailyRefillDelayMs(now=Date.now()){
+  const localDay=ms=>{
+    const parts=new Intl.DateTimeFormat('en-US',{
+      timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'
+    }).formatToParts(new Date(ms));
+    const fields=Object.fromEntries(parts.filter(p=>p.type!=='literal')
+      .map(p=>[p.type,p.value]));
+    return fields.year+'-'+fields.month+'-'+fields.day;
+  };
+  const current=localDay(now),hour=Math.floor(now/3600000)*3600000;
+  for(let i=1;i<=49;i++){
+    const candidate=hour+i*3600000;
+    if(localDay(candidate)!==current)return Math.max(1000,candidate-now);
+  }
+  return 86400000;
+}
+export function retryDelayMs(response,status,body=null,{provider='GENERIC',now=Date.now()}={}){
   const value=clean(response?.headers?.get?.('retry-after'));
   const seconds=Number(value);
   let delay=Number.isFinite(seconds)&&seconds>0?seconds*1000:Date.parse(value)-Date.now();
@@ -32,7 +50,9 @@ export function retryDelayMs(response,status,body=null){
     const detail=clean(body?.error?.message);
     const dailyQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota/i.test(detail);
     // Daily free-tier exhaustion must not hot-loop during the next GitHub Actions wave.
-    delay=status===404||(status===429&&dailyQuota)?86400000:status===429?60000:15000;
+    delay=status===429&&dailyQuota&&provider==='GEMINI'
+      ?geminiPacificDailyRefillDelayMs(now)
+      :status===404||(status===429&&dailyQuota)?86400000:status===429?60000:15000;
   }
   return Math.min(86400000,Math.max(1000,delay));
 }
@@ -112,7 +132,8 @@ export async function requestGeminiFreePair({
           if(status===429&&typeof response.json==='function'){
             try{errorBody=await response.json();}catch{/* Keep the HTTP status authoritative. */}
           }
-          cooldownUntil.set(model,Date.now()+retryDelayMs(response,status,errorBody));
+          cooldownUntil.set(model,Date.now()+retryDelayMs(response,status,errorBody,
+            {provider:'GEMINI'}));
           failures.push(model+':HTTP_'+status);
           console.log('VIBE2_GEMINI_FREE_ROTATE='+model+':HTTP_'+status);
           continue;
