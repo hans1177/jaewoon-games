@@ -312,7 +312,8 @@ function cooldownAfter(response, status, error = null) {
   if (!Number.isFinite(delay) || delay < 1000) {
     const detail = trim(error?.error?.message);
     delay = status === 429 && /daily|per day|requestsperday|free.?tier quota/i.test(detail)
-      ? 86400000 : status === 429 ? 60000 : status === 404 ? 86400000 : 30000;
+      ? 86400000 : status === 429 ? 60000 : status === 404 ? 86400000 :
+        status === 400 ? 1800000 : 30000;
   }
   return Math.min(86400000, Math.max(1000, delay));
 }
@@ -359,7 +360,8 @@ export async function callFreeDesignModel(model, prompt, photos, fetchImpl, env 
       if ([400, 403].includes(response.status) &&
         /safety|content policy|moderation|disallowed|blocked content/i.test(reason))
         return {status: 'CONTENT_POLICY_BLOCKED'};
-      if ([401, 403].includes(response.status)) return {status: 'AUTH_BLOCKED'};
+      if ([401, 403].includes(response.status))
+        return {status: 'AUTH_BLOCKED', retryAfterMs: 21600000};
       return {status: 'HTTP_' + response.status,
         retryAfterMs: cooldownAfter(response, response.status, failure)};
     }
@@ -421,7 +423,8 @@ function photosFromStudio(directory = framesRoot, selectedRole = '') {
     if (!jpeg && !png) continue;
     found.push({name, sha256: digest(bytes), url: 'data:image/' +
       (jpeg ? 'jpeg' : 'png') + ';base64,' + bytes.toString('base64')});
-    if (found.length === 8) break;
+    // [무료 이미지 호출] 실제 촬영 62장 중 역할별 대표 4장만 전송해 토큰·시간 낭비를 막는다.
+    if (found.length === 4) break;
   }
   return found;
 }
@@ -673,6 +676,13 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     '"screenshot":"existing image name","evidence":"specific visible evidence"}],' +
     '"edits":[{"category":"matching medium or high issue category","screenshot":"same photo",' +
     '"anchor":number,"after":"same referenced line with ONLY numerical visual values or existing visual enum changed"}]}. ' +
+    'Prefer only ONE or TWO high-confidence edits. Each edit must reference a real numbered anchor ' +
+    'from the exact list; copy the full original source line precisely, changing ONLY existing ' +
+    'visual numeric literals or an existing Enum.Material/Font member. Keep all whitespace, ' +
+    'punctuation, indentation, identifiers, string literals and assignment targets unchanged. ' +
+    'Every edit requires a medium/high issue with matching category AND screenshot. ' +
+    'No fabricated screenshots, categories, anchors, keys or trailing commas. ' +
+    'If any condition is uncertain return valid JSON with empty edits. ' +
     'At most 10 edits across 4 files. Never add/remove functions, statements, assets, text, ' +
     'commands, identifiers, property targets or line breaks. Empty edits when uncertain. ' +
     'Policies: ' + JSON.stringify({categories: contract.visualCategories,
@@ -705,6 +715,8 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     } catch (error) {
       modelAttempt(model.id, 'REVIEW_INVALID', {
         failureSignature: trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 90)});
+      // [순환] 무효한 JSON/시각 수정안은 현 모델만 쿨다운하고 다른 무료 모델로 넘어간다.
+      designRuntime.cooldowns[model.id] = new Date(Date.now() + 1800000).toISOString();
       continue;
     }
     const originals = Object.fromEntries([...new Set(reviewed.edits.map(edit => edit.path))]
@@ -715,6 +727,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     } catch (error) {
       modelAttempt(model.id, 'SOURCE_ANCHOR_INVALID', {
         failureSignature: trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 90)});
+      designRuntime.cooldowns[model.id] = new Date(Date.now() + 1800000).toISOString();
       continue;
     }
     const evidence = {frames: proofs, provider: model.provider, model: model.model,
@@ -727,6 +740,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
       releasePassed: false};
     if (!candidate.changes.length) {
       modelAttempt(model.id, 'NO_VALID_EDIT');
+      designRuntime.cooldowns[model.id] = new Date(Date.now() + 600000).toISOString();
       continue;
     }
     for (const [file, content] of candidate.files) fs.writeFileSync(path.join(root, file), content);
@@ -836,6 +850,7 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
     catch (error) {
       modelAttempt(reviewer.id, 'VISUAL_COMPARISON_INVALID', {
         reason: trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 90)});
+      designRuntime.cooldowns[reviewer.id] = new Date(Date.now() + 1800000).toISOString();
       continue;
     }
     return record(verdict.status === 'PASS' ? 'VISUAL_BEFORE_AFTER_PASS' : 'VISUAL_BEFORE_AFTER_UNVERIFIED', {
