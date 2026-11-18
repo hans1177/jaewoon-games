@@ -7,6 +7,14 @@ on:
       - 'roblox-games/mare-essentia/**'
       - 'qa/mare-essentia-datastore-name.test.mjs'
       - '.github/workflows/devloop-gates.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tools/company-nemotron-design-review.mjs'
+      - 'qa/mare-essentia-datastore-name.test.mjs'
+      - 'company-learning/external-ai-distillation-policy.json'
+      - '.github/workflows/devloop-studio.yml'
+      - '.github/workflows/devloop-gates.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -26,3 +34,7 @@ jobs:
         run: LUAU_DIR=/tmp/luau bash roblox-games/mare-essentia/tests/run.sh
       - name: Port quality table
         run: LUAU_DIR=/tmp/luau bash roblox-games/mare-essentia/tests/run.sh quality | head -20
+      - name: Existing Studio design model and source regression
+        run: |
+          node --check tools/company-nemotron-design-review.mjs
+          node --test qa/mare-essentia-datastore-name.test.mjs
