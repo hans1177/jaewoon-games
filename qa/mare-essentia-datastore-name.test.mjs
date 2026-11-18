@@ -2162,7 +2162,9 @@ test('R15 주민 얼굴은 공식 Studio 흰 얼굴 회귀를 막도록 기본 �
   const face=source.slice(start,end);
   assert.match(face,/gui\.Face\s*=\s*Enum\.NormalId\.Front/);
   assert.match(face,/gui\.AlwaysOnTop\s*=\s*true/);
+  assert.match(face,/if not decal then[\s\S]*Instance\.new\("Decal"\)/);
   assert.match(face,/decal\.Face\s*=\s*Enum\.NormalId\.Front/);
+  assert.match(face,/decal\.Texture\s*=\s*"rbxasset:\/\/textures\/face\.png"/);
   assert.match(face,/decal\.Transparency\s*=\s*0/);
   assert.doesNotMatch(face,/decal:Destroy\(\)/);
 });
