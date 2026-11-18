@@ -43,7 +43,10 @@ test('항구 시작과 재생성에서 공중 캐릭터가 노출되지 않는�
   const client=read('StarterPlayer/Game.client.luau');
   const spawn=client.slice(client.indexOf('function H.placeCharacterOnSpawn(character)'),client.indexOf('player.CharacterAdded:Connect(H.placeCharacterOnSpawn)'));
   assert.match(spawn,/root.Anchored = true/);
-  assert.match(spawn,/if sceneSpawn then character:PivotTo\(sceneSpawn\) end/);
+  assert.match(spawn,/character:PivotTo\(groundedSpawn\)/);
+  assert.match(spawn,/workspace:Raycast\(sceneSpawn.Position/);
+  assert.match(spawn,/ground.Position.Y \+ humanoid.HipHeight \+ root.Size.Y \* 0.5/);
+  assert.match(client,/H.placeCharacterOnSpawn\(char\)/);
   assert.match(spawn,/part.LocalTransparencyModifier = if sceneSpawn then 0 else 1/);
   assert.match(client,/player.CharacterAppearanceLoaded:Connect\(H.placeCharacterOnSpawn\)/);
   assert.match(client,/titleGui.Enabled = on or H.titleMenuOpen or waitingPort/);
