@@ -841,7 +841,7 @@ function NavalBattle.play(opts)
 		-- 막대 위에 선체 % 숫자를 크게 표시한다
 		local pct = label(back, "100%", 14, Color3.fromRGB(255, 255, 255), true)
 		pct.TextStrokeColor3 = Color3.fromRGB(12, 24, 35)
-		pct.TextStrokeTransparency = 0.55
+		pct.TextStrokeTransparency = 1 -- [체력 숫자] 그림자 번짐 없이 진행막대 위에 선명하게 표시한다.
 		pct.Size = UDim2.fromScale(1, 1)
 		pct.ZIndex = 5
 		return fill, pct, nm
@@ -881,7 +881,7 @@ function NavalBattle.play(opts)
 		f.BackgroundTransparency = 0.15
 		f.BorderSizePixel = 0
 		f.Parent = row
-		f.Visible = star or battleViewport.X >= 720 -- [좁은 화면] 양쪽 함대 카드가 서로 겹치지 않도록 기함 우선.
+		f.Visible = (star or battleViewport.X >= 720) and battleViewport.Y >= 340 -- [낮은 가로 화면] 중복 선단 카드 숨김, 상단 양측 선체 체력은 유지.
 		local c = Instance.new("UICorner")
 		c.CornerRadius = UDim.new(0, 8)
 		c.Parent = f
@@ -1002,9 +1002,11 @@ function NavalBattle.play(opts)
 	local tactic = label(gui, "① 적선에 접근 중", 15, Color3.fromRGB(255, 224, 159), true)
 	tactic.Name = "BattleTacticalReadout"
 	tactic.AnchorPoint = Vector2.new(0.5, 0)
-	tactic.Position = UDim2.new(0.5, 0, 0, 119)
-	tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.52 elseif battleViewport.X < 720 then 0.48 else 0.46, 0, 0, 46)
-	tactic.TextSize = if battleViewport.X < 480 then 13 else 14
+	-- [상단 전술 고정] 낮은 가로 화면에서는 선단 중복 카드를 접고 가운데 전술만 간결하게 남긴다.
+	tactic.Position = UDim2.new(0.5, 0, 0, if battleViewport.Y < 340 then 64 else 119)
+	tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.52 elseif battleViewport.X < 720 then 0.48 else 0.46,
+		0, 0, if battleViewport.Y < 340 then 32 else 46)
+	tactic.TextSize = if battleViewport.X < 480 then 13 else 15
 	tactic.TextTruncate = Enum.TextTruncate.AtEnd
 	tactic.TextWrapped = true
 	tactic.BackgroundColor3 = Color3.fromRGB(27, 35, 43)
@@ -1076,17 +1078,18 @@ function NavalBattle.play(opts)
 	local comboLabel = label(gui, "", if battleViewport.X < 480 then 26 else 37, Color3.fromRGB(255, 226, 120))
 	comboLabel.Name = "NavalHitStreak"
 	comboLabel.Font = Enum.Font.GothamBold
+	-- [연타 정보] 중앙 이벤트·조타·기술 버튼과 겹치지 않게 넓은 화면의 아래쪽 정보열로 이동한다.
 	comboLabel.AnchorPoint = if battleViewport.X < 480 then Vector2.new(0, 0) else Vector2.new(0.5, 0)
 	comboLabel.Position = if battleViewport.X < 480 then UDim2.fromOffset(12, 179)
-		else UDim2.new(0.5, 0, 0, 202)
+		else UDim2.new(0.5, 0, 0, 250)
 	comboLabel.Size = if battleViewport.X < 480 then UDim2.fromOffset(166, 42)
-		else UDim2.fromOffset(math.min(380, battleViewport.X - 40), 48)
+		else UDim2.fromOffset(math.min(300, math.max(180, battleViewport.X - 520)), 38)
 	comboLabel.TextStrokeColor3 = Color3.fromRGB(11, 17, 27)
 	comboLabel.TextStrokeTransparency = 1
 	comboLabel.TextTransparency = 1
 	comboLabel.TextXAlignment = if battleViewport.X < 480 then Enum.TextXAlignment.Left else Enum.TextXAlignment.Center
 	comboLabel.ZIndex = 19
-	comboLabel.Visible = not opts.cardOnly
+	comboLabel.Visible = not opts.cardOnly and (battleViewport.X < 480 or battleViewport.X >= 720) and battleViewport.Y >= 340 -- [낮은 폰] 공간 없는 연타 텍스트만 숨김
 	local navalHitStreak, navalHitAt, streakNoticeToken = 0, -100, 0
 
 	local subtitle = label(gui, "", 16)
@@ -1386,6 +1389,10 @@ function NavalBattle.play(opts)
 			-- [세로 폰 우측 열] 기술 2개를 가속 위로 쌓아 왼쪽 조타와 겹치지 않게 한다.
 			sk.x = -72
 			sk.y = if i == 1 then -276 else -176
+		elseif battleViewport.Y < 340 then
+			-- [낮은 가로 폰] 위쪽 체력, 오른쪽 가속, 아래쪽 두 기술의 96px 터치 영역이 겹치지 않게 배치.
+			sk.x = if i == 1 then -126 else -230
+			sk.y = if i == 1 then -168 else -83
 		else
 			local n = #SKILLS
 			local ang = math.rad(if n == 1 then 135 else 120 + (i - 1) * (55 / (n - 1)))
@@ -3860,19 +3867,23 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local currentAnnouncement = nil
 	local function popText(text, color)
 		if currentAnnouncement and currentAnnouncement.Parent then currentAnnouncement:Destroy() end
-		local l = label(gui, text, if battleViewport.X < 480 then 24 else 33, color)
+		local l = label(gui, text, if battleViewport.Y < 340 then 19 elseif battleViewport.X < 480 then 24 else 26, color)
 		currentAnnouncement = l
 		l.Name = "NavalBattleAnnouncement"
 		l.Font = Enum.Font.GothamBold
 		l.AnchorPoint = Vector2.new(0.5, 0.5)
-		l.Position = UDim2.fromScale(0.5, if battleViewport.X < 480 then 0.25 else 0.27)
-		l.Size = UDim2.fromOffset(math.min(410, battleViewport.X - 24), if battleViewport.X < 480 then 50 else 58)
-		l.TextWrapped = true
+		-- [중앙 전투 알림] 상단 전술판·연타·양측 96px 기술을 피하고 한 줄로만 표시한다.
+		l.Position = if battleViewport.Y < 340 then UDim2.new(0.5, 0, 0, 122)
+			else UDim2.fromScale(0.5, if battleViewport.X < 480 then 0.25 else 0.55)
+		l.Size = UDim2.fromOffset(math.min(370, math.max(190, battleViewport.X - 500)),
+			if battleViewport.Y < 340 then 38 elseif battleViewport.X < 480 then 50 else 46)
+		l.TextWrapped = false
+		l.TextTruncate = Enum.TextTruncate.AtEnd
 		l.TextStrokeColor3 = Color3.fromRGB(13, 20, 29)
 		l.TextStrokeTransparency = 1 -- [중앙 글씨] 한글 외곽선 번짐 제거
 		l.ZIndex = 28
 		game:GetService("TweenService"):Create(l, TweenInfo.new(1.20, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-			Position = l.Position - UDim2.fromOffset(0, 30),
+			Position = l.Position + UDim2.fromOffset(0, if battleViewport.Y < 340 then 8 else 10),
 			TextTransparency = 1, TextStrokeTransparency = 1,
 		}):Play()
 		task.delay(1.28, function()
