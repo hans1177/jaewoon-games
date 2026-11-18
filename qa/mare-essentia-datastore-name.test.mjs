@@ -2453,3 +2453,56 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
   assert.match(workflow, /company-roblox-source-drift-sync\.yml/);
   assert.match(workflow, /STUDIO_CANDIDATE_REF/);
 });
+
+ 
+// [무료 AI 관제 회귀] 기존 Studio 디자인 모델 선택기 안에서만 잔량·초기화·예비량을 검증한다.
+test('무료 디자인 한도 예측은 계정 전체 잔량을 주장하지 않는다', async () => {
+  const {freeDesignWindowId, forecastFreeDesignQuota, mergeFreeVisualUsage,
+    selectFreeDesignModels} = await import('../tools/company-nemotron-design-review.mjs');
+  const time = Date.parse('2026-11-18T08:30:00Z');
+  assert.equal(freeDesignWindowId('GEMINI', Date.parse('2026-11-18T07:30:00Z')),
+    '2026-11-17', '미국 태평양 자정 전에는 이전 일일 창을 유지해야 한다');
+  assert.equal(freeDesignWindowId('GEMINI', time), '2026-11-18');
+  assert.equal(freeDesignWindowId('OPENROUTER', time), '2026-11-18');
+  assert.equal(freeDesignWindowId('GEMINI', Date.parse('2026-03-08T08:30:00Z')),
+    '2026-03-08', '서머타임 전환일에도 로컬 날짜를 정확히 계산한다');
+  const previous = {usageWindow: {
+    day: '2026-11-18',
+    windowIds: {NVIDIA: '2026-11-18', GEMINI: '2026-11-17',
+      OPENROUTER: '2026-11-18'},
+    calls: {NVIDIA: 5, GEMINI: 12, OPENROUTER: 20},
+    firstCallAtByProvider: {NVIDIA: '2026-11-18T06:30:00Z'}
+  }};
+  const carried = mergeFreeVisualUsage(previous, {}, time).usageWindow;
+  assert.equal(carried.calls.GEMINI, 0, '제미나이 공식 새 날짜의 내부 소비량만 갱신');
+  assert.equal(carried.calls.OPENROUTER, 20, '다른 업체 소비량은 제미나이 초기화로 복구하지 않는다');
+  assert.equal(carried.calls.NVIDIA, 5);
+  const snapshot = forecastFreeDesignQuota(carried, time);
+  assert.equal(snapshot.NVIDIA.remainingLocal, 7);
+  assert.equal(snapshot.NVIDIA.regularWorkRemaining, 4);
+  assert.equal(snapshot.NVIDIA.emergencyReserveRemaining, 3);
+  assert.equal(snapshot.NVIDIA.estimatedCallsPerHour, 2);
+  assert.equal(snapshot.NVIDIA.estimatedHoursToLocalCap, 3.5);
+  assert.equal(snapshot.GEMINI.nextLocalWindowAt, '2026-11-19T08:00:00.000Z');
+  assert.equal(snapshot.GEMINI.resetBasis, 'PACIFIC_DAILY');
+  assert.equal(snapshot.OPENROUTER.resetBasis, 'INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED');
+  assert.ok(Object.values(snapshot).every(row => row.accountWideBalanceVerified === false &&
+    row.scope === 'STUDIO_VISUAL_ONLY'),
+  '디자인 자체 제한을 전체 계정 잔량으로 표시하면 안 된다');
+  const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
+  const env = {
+    NVIDIA_API_KEY: 'fixture', NVIDIA_FREE_TIER_VERIFIED: 'YES',
+    GEMINI_API_KEY: 'fixture', GEMINI_DESIGN_FREE_TIER_VERIFIED: 'YES',
+    OPENROUTER_API_KEY: 'fixture', OPENROUTER_DESIGN_FREE_TIER_VERIFIED: 'YES'
+  };
+  const reserveFirst = selectFreeDesignModels({policy, env, now: time,
+    frameNames: ['npc_face-0.jpg'],
+    previous: {usageWindow: {day: '2026-11-18', calls: {NVIDIA: 10}}}});
+  assert.equal(reserveFirst[0].provider, 'OPENROUTER',
+    '긴급 예비량만 남은 제공자보다 일반 작업 여유가 있는 제공자를 우선 사용');
+  assert.ok(reserveFirst.some(row => row.provider === 'NVIDIA'),
+    '예비량은 소진 전 차단이 아니라 후순위로 보전한다');
+  assert.equal(forecastFreeDesignQuota({day: '2026-11-18', calls: {NVIDIA: 1}}, time)
+    .NVIDIA.estimatedHoursToLocalCap, null,
+  '호출 속도 관측이 부족하면 소진 시간을 지어내지 않는다');
+});
