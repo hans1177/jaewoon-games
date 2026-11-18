@@ -61,6 +61,60 @@ end
 local ctx = { rng = rng, market = S.MarketClass.new() }
 
 local passed, failed = 0, 0
+-- [개인 세계 탐험 백과 회귀] 10대 항로 × 5장 단서와 실제 카드·항구·탐험지를 대조한다.
+do
+	local counts, total, issues = {}, 0, {}
+	local sites = {}
+	for _, site in D.Sites.Sites do sites[site.id] = site end
+	for _, q in D.Quests.Quests do
+		if q.routeId then
+			total += 1
+			counts[q.routeId] = (counts[q.routeId] or 0) + 1
+			local site = sites[q.exploreSite]
+			if not site or site.portId ~= q.portId or not table.find(site.pool, q.cardId) then
+				table.insert(issues, "현장·카드 연결: " .. q.id)
+			end
+			if not q.leadSource or q.leadSource == "" then
+				table.insert(issues, "단서 출처 없음: " .. q.id)
+			end
+			if #("route_clue:" .. q.id) >= 40 then
+				table.insert(issues, "기존 이야기 기록 키 길이 초과: " .. q.id)
+			end
+			local stage = tonumber(string.match(q.id, "_(%d+)$"))
+			if stage and stage > 1 then
+				local prev = q.after and D.Quests.ById[q.after]
+				if not prev or prev.routeId ~= q.routeId or prev.id ~= ("q_field_" .. q.routeId .. "_" .. tostring(stage - 1)) then
+					table.insert(issues, "선행 이야기 연결: " .. q.id)
+				end
+			end
+		end
+	end
+	local regions, correctStages = 0, true
+	for _, count in counts do
+		regions += 1
+		if count ~= 5 then correctStages = false end
+	end
+	check("세계 탐험 10대 항로", regions == 10)
+	check("항로별 연속 퀘스트 50장", total == 50 and correctStages)
+	check("항로별 실제 항구·현장·카드·전후 단서 연결", #issues == 0, table.concat(issues, ", "))
+
+	local first = S.State.new("england", 1700)
+	first.portId = "london"
+	local msgs = {}
+	local got = S.Discovery.grantCard(first, "site_stonehenge", msgs, { method = "explore", siteId = "salisbury_plain" })
+	local record = first.cardOrigins.site_stonehenge
+	check("개인 백과 최초 탐험 항구·탐험지", got == true and record and record.portId == "london" and record.siteId == "salisbury_plain" and record.method == "explore")
+	first.portId = "amsterdam"
+	local repeated = S.Discovery.grantCard(first, "site_stonehenge", {}, { method = "quest", questId = "q_first_discovery" })
+	check("기존 중복 발견 방지·최초 획득 이력 불변", repeated == false and first.cardOrigins.site_stonehenge.portId == "london")
+	local loaded = S.State.sanitize(S.State.serialize(first))
+	check("최초 발견 항구·탐험지 저장 왕복", loaded.cardOrigins.site_stonehenge.portId == "london" and loaded.cardOrigins.site_stonehenge.siteId == "salisbury_plain")
+	local legacy = S.State.serialize(first)
+	legacy.cardOrigins = nil
+	local oldSave = S.State.sanitize(legacy)
+	check("이전 저장 도감 유지·가짜 획득 경위 미생성", oldSave.discovered.site_stonehenge == true and next(oldSave.cardOrigins) == nil)
+end
+
 -- 거시경제 국면·미개발 특산 보정 (History.mult 에 항상 곱해진다)
 local function macroOf(st, portId, goodId)
 	local p = D.Ports.Ports[portId]
