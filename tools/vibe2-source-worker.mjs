@@ -9046,7 +9046,8 @@ export async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile
   const {text}=await requestGeminiFreePair({
     apiKey:key,
     contents:[{role:'user',parts:[{text:String(prompt)}]}],
-    maxOutputTokens:maxPredict,timeoutMs,temperature,preferredRole:'CODE_REPAIR'
+    maxOutputTokens:maxPredict,timeoutMs,temperature,preferredRole:'CODE_REPAIR',
+    specialistDepartment:'DEVELOPMENT',specialistTask:String(prompt).slice(0,1600)
   });
   if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&(/no_think|think|```/i).test(text))
     throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');
