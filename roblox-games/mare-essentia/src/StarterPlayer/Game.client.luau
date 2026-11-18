@@ -1796,6 +1796,14 @@ local coinChip, _, coinValue = CommonUI.CreateCurrencyChip({ name = "Coins", siz
 coinChip.AnchorPoint = Vector2.new(1, 0)
 coinChip.Position = UDim2.new(1, -56, 0, 15)
 coinChip.Parent = mainInner
+coinChip.Visible = false -- [중복 정리] 상단 공통 현황으로 통합, 코인 갱신 참조는 보존.
+H.menuStatusLabel = mkLabel(mainInner, "", 18, Color3.fromRGB(249, 225, 162), true)
+H.menuStatusLabel.Name = "MenuGlobalMoneyCargo"
+H.menuStatusLabel.AutomaticSize = Enum.AutomaticSize.None
+H.menuStatusLabel.TextXAlignment = Enum.TextXAlignment.Right
+H.menuStatusLabel.TextTruncate = Enum.TextTruncate.AtEnd
+H.menuStatusLabel.Position = UDim2.new(1, -388, 0, 15)
+H.menuStatusLabel.Size = UDim2.fromOffset(330, 34)
 
 local tabBar = Instance.new("Frame")
 tabBar.BackgroundTransparency = 1
@@ -1887,6 +1895,10 @@ end
 H.bookSpine = pageRule(mainInner, UDim2.fromOffset(132, 68), UDim2.new(0, 1, 1, -76))
 function H.layoutBook()
   local width, height = mainInner.AbsoluteSize.X, mainInner.AbsoluteSize.Y
+  -- [공통 현황] 제목과 자금·화물칸이 작은 폰에서도 서로 겹치지 않게 한다.
+  H.menuStatusLabel.Position = UDim2.new(1, if width < 600 then -198 else -388, 0, 15)
+  H.menuStatusLabel.Size = UDim2.fromOffset(if width < 600 then 155 else 330, 34)
+  H.menuStatusLabel.TextSize = if width < 600 then 15 else 18
   local tabCount = #groupOf(currentTab).tabs
   local gallery = view ~= nil and not newGameMode and currentTab ~= "map"
   local three = gallery and width >= 740
@@ -2099,14 +2111,18 @@ do
 local banner = Instance.new("Frame")
 banner.AnchorPoint = Vector2.new(0.5, 0)
 banner.Position = UDim2.new(0.5, 0, 0, 8)
-banner.Size = UDim2.fromOffset(130, 28)
+banner.Size = UDim2.fromOffset(420, 54)
 banner.BackgroundColor3 = Color3.fromRGB(90, 62, 28)
+banner.Name = "FirstVoyageObjective"
+H.goalBanner = banner
 banner.Parent = hud
-banner.Visible = false -- 상단 중앙 항구 이름은 쓰지 않는다
+banner.Visible = false -- [항해 목표] 첫 안내가 있을 때만 보여 주는 중앙 목표 리본
 corner(banner, 8)
 hudStroke(banner, 2)
 hudBanner = hudText(banner, UDim2.new(), UDim2.fromScale(1, 1), 20, Color3.fromRGB(255, 240, 200), Enum.TextXAlignment.Center)
-hudBanner.TextSize = 15
+hudBanner.TextSize = 17
+hudBanner.TextWrapped = true
+hudBanner.Font = Enum.Font.GothamBold
 end
 
 -- [코인 카드] 카드 생성 직후 임시 변수 해제.
@@ -2698,6 +2714,11 @@ H.hudCalendar = {
 	seasons = { "겨울", "봄", "여름", "가을" },
 	voyage = require(Shared:WaitForChild("Voyage")),
 }
+-- [자금·화물 단일 표기] 기존 HUD·시설 책·교역·조선소의 동일 서버 스냅샷 사용.
+function H.statusMoneyCargo(p, ship)
+	return string.format("자금 %s코인 · 화물 %d/%d", H.commas(p.coins), ship.cargoUsed, ship.cargoCapacity)
+end
+
 function H.updateHud(p, ship)
 	local calendar = H.hudCalendar
 	local day = math.floor(p.day or 0)
@@ -2711,12 +2732,29 @@ function H.updateHud(p, ship)
 	local season = calendar.seasons[calendar.voyage.season(day, port and port.lat or 0)]
 	H.hudName.Text = string.format("%d년 %d월 %d일 · %s", p.year, month, monthDay, season)
 	H.hudPort.Text = tostring(p.portName) .. " · " .. tostring(ship.name)
-	hudBanner.Text = tostring(p.portName)
+	-- [첫 항해 목표] 이미 표시되는 게임 중앙 현판을 재사용한다.
+	local guide = view and view.guide
+	local mission = view and (view.actIntro or view.act)
+	local objective = if guide then tostring(guide.title or "첫 항해")
+		elseif mission then tostring(mission.title or "항해 목표") else ""
+	if guide then
+		for _, step in (guide.steps or {}) do
+			if step.mark ~= "✓" and step.mark ~= "✔" and step.mark ~= "완료" then
+				objective ..= " · " .. tostring(step.text or "")
+				break
+			end
+		end
+	elseif mission and mission.goal then
+		objective ..= " · " .. tostring(mission.goal)
+	end
+	hudBanner.Text = objective
+	H.goalBanner.Visible = objective ~= ""
 	hullFill.Size = UDim2.fromScale(math.clamp(ship.hull / math.max(1, ship.maxHull), 0, 1), 1)
 	hullText.Text = string.format("선체 %d/%d", math.floor(ship.hull), math.floor(ship.maxHull))
 	hullFill.BackgroundColor3 = if ship.hull / math.max(1, ship.maxHull) < 0.35 then Color3.fromRGB(255, 80, 40) else Color3.fromRGB(214, 40, 36)
 	H.hudShip.Text = string.format("화물 %d/%d · 명성 %d", ship.cargoUsed, ship.cargoCapacity, p.fame)
 	H.hudCoin.Text = tostring(p.coins) .. " 코인"
+	H.menuStatusLabel.Text = H.statusMoneyCargo(p, ship)
 end
 
 -- 화면 중앙 상단 동료 말풍선: 게임을 시작하거나 새 항구에 닿으면 동료가 인사하고 앞으로 할 일을 조언한다.
@@ -2767,7 +2805,9 @@ do
 		local bubbleWidth = math.clamp(width - left - right, 1, 760)
 		bubble.AnchorPoint = Vector2.new(0, 0)
 		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2),
-			if width < 610 then 262 elseif width < 1050 then 142 else 8)
+			if width < 610 then 310 elseif width < 1050 then 174 else 76)
+		H.goalBanner.Position = UDim2.new(0.5, 0, 0, if width < 610 then 246 elseif width < 1050 then 120 else 8)
+		H.goalBanner.Size = UDim2.fromOffset(if width < 610 then math.max(170, width - 16) elseif width < 1050 then math.min(530, width - 24) else math.min(480, width - 600), 54)
 		bubble.Size = UDim2.fromOffset(bubbleWidth, 0)
 	end
 	hud:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutBubble)
@@ -5300,13 +5340,13 @@ function H.addStoryPanel()
 		add(function() return mkHeader(content, view.prologue.title) end)
 		add(function() return mkLabel(content, view.prologue.text, 16, COLORS.gold, true) end)
 	end
-	if view.actIntro then
+	if view.actIntro and currentTab ~= "trade" then
 		add(function() return mkHeader(content, view.actIntro.title) end)
 		add(function() return mkLabel(content, view.actIntro.text .. "\n목표: " .. view.actIntro.goal, 16, COLORS.gold, true) end)
-	elseif view.act then
+	elseif view.act and currentTab ~= "trade" then
 		add(function() return mkLabel(content, view.act.title .. " — 목표: " .. view.act.goal, 15, COLORS.gold, true) end)
 	end
-	if view.guide then
+	if view.guide and currentTab ~= "trade" then
 		add(function() return mkHeader(content, "🧭 " .. view.guide.title) end)
 		add(function()
 			local lines = {}
@@ -5435,19 +5475,13 @@ local function openTradeHall()
 		title.Size = if narrow then UDim2.new(1, -110, 0, 25) else UDim2.new(0.32, 0, 0, 25)
 		title.AutomaticSize = Enum.AutomaticSize.None
 		title.TextTruncate = Enum.TextTruncate.AtEnd
-		-- 화면 가운데에 내 코인을 크게: 사고팔 때마다 바로 보인다
-		local coinBox = mkBox(top, UDim2.new(0.5, 0, 0.5, 0), UDim2.fromOffset(if narrow then 150 else 210, 46), Color3.fromRGB(58, 42, 28))
-		coinBox.AnchorPoint = Vector2.new(0.5, 0.5)
-		if narrow then
-			coinBox.Position = UDim2.new(0.5, 0, 0, 52)
-			coinBox.Size = UDim2.fromOffset(154, 36)
-		end
-		corner(coinBox, 10)
-		local coinText = mkLabel(coinBox, string.format("💰 %s", H.commas and H.commas(p.coins) or tostring(p.coins)), if narrow then 20 else 26, Color3.fromRGB(255, 226, 120), true)
-		coinText.Size = UDim2.fromScale(1, 1)
-		coinText.AutomaticSize = Enum.AutomaticSize.None
-		coinText.TextXAlignment = Enum.TextXAlignment.Center
-		local hold = mkLabel(top, string.format("화물 %d/%d", ship.cargoUsed, ship.cargoCapacity), 13, INK_SOFT, false)
+		-- [공통 상단 자금·화물] 교역 중에도 한 자리에서만 실측값을 확인한다.
+		local commonStatus = mkLabel(top, H.statusMoneyCargo(p, ship), if narrow then 18 else 20, INK, true)
+		commonStatus.Name = "TradeGlobalMoneyCargo"
+		commonStatus.Position = UDim2.fromOffset(12, if narrow then 42 else 33)
+		commonStatus.Size = UDim2.new(1, -112, 0, 32)
+		commonStatus.AutomaticSize = Enum.AutomaticSize.None
+		commonStatus.TextTruncate = Enum.TextTruncate.AtEnd
 		-- [교역소 동료 조언] 전용 매매 화면에서도 관련 조언이 사라지지 않게 표시한다.
 		local tradeHint = "시세와 화물칸을 비교한 뒤 매입·판매하세요."
 		for _, counsel in (view.counsel or {}) do
@@ -5457,14 +5491,11 @@ local function openTradeHall()
 			end
 		end
 		local toastLbl = mkLabel(top, if message ~= "" then message else tradeHint, 13, Color3.fromRGB(60, 100, 50), true)
-		toastLbl.Position = if narrow then UDim2.fromOffset(120, 82) else UDim2.new(0.5, 112, 0, 8)
-		toastLbl.Size = if narrow then UDim2.new(1, -130, 0, 20) else UDim2.new(0.5, -210, 0, 44)
+		toastLbl.Position = if narrow then UDim2.fromOffset(12, 78) else UDim2.new(0.50, 30, 0, 8)
+		toastLbl.Size = if narrow then UDim2.new(1, -30, 0, 20) else UDim2.new(0.50, -130, 0, 42)
 		toastLbl.AutomaticSize = Enum.AutomaticSize.None
 		toastLbl.TextWrapped = true
 		toastLbl.TextTruncate = Enum.TextTruncate.AtEnd
-		hold.Position = UDim2.fromOffset(12, if narrow then 82 else 34)
-		hold.Size = UDim2.new(if narrow then 0.3 else 0.32, 0, 0, 20)
-		hold.AutomaticSize = Enum.AutomaticSize.None
 		local backToList = narrow and detailOpen
 		local leave = mkButton(top, if backToList then "목록" else "나가기", COLORS.leather, UDim2.fromOffset(78, 44), function()
 			if backToList then
@@ -6909,10 +6940,10 @@ local function renderYard()
 			local pay = math.max(0, s.netCost)
 			local refund = if s.netCost < 0 then " · 차액 환급 " .. H.commas(-s.netCost) else ""
 			local diffCargo = s.capacityAfter - sh.cargoCapacity
-			local sub = string.format("%s\n정가 %s - 내 기함 보상 %s = 실결제 %s%s\n화물 %+d칸 · 속도 %+.1f · 선체 %+d · 포 %+d\n승조원 정원 %+d · 현재 화물 %d/%d · 내 돈 %s",
+			local sub = string.format("%s\n정가 %s - 기함 보상 %s = 실결제 %s%s\n화물 %+d칸 · 속도 %+.1f · 선체 %+d · 포 %+d\n승조원 정원 %+d · 교체 후 적재 한도 %d칸",
 				s.summary, H.commas(s.price), H.commas(s.tradeIn), H.commas(pay), refund,
 				diffCargo, s.speed - sh.speed, s.hull - sh.maxHull, s.cannons - sh.cannons,
-				s.crew - sh.maxCrew, sh.cargoUsed, s.capacityAfter, H.commas(view.player.coins))
+				s.crew - sh.maxCrew, s.capacityAfter)
 			if s.trait then
 				local t = s.trait
 				sub ..= string.format("\n특화: %s · 약점: %s", t.role or "일반", t.weak or "없음")
@@ -6940,11 +6971,6 @@ local function renderYard()
 			if not s.owned and s.netCost > view.player.coins then sub ..= "\n자금 부족 " .. H.commas(s.netCost - view.player.coins) .. "코인" end
 			local row = mkRow(content, string.format("[등급%d] %s%s", s.class, s.name, if s.owned then " · 현재 기함" elseif s.steam then " · 증기" else ""),
 				sub, {
-					{ text = if s.id == H.shipPreviewId then "미리보기 중" else "모형 보기", color = COLORS.gold,
-						onClick = function()
-							H.shipPreviewId = s.id
-							if tradeHallRefresh then tradeHallRefresh() else render() end
-						end },
 					{ text = if s.owned then "현재 배" elseif s.locked then "잠김" elseif not s.canCarry then "화물 초과" elseif s.netCost > view.player.coins then "코인 부족" else "교체\n" .. H.commas(pay),
 						color = if s.steam then COLORS.steam else COLORS.blue,
 						enabled = yard.available and not s.owned and not s.locked and s.canCarry and s.netCost <= view.player.coins,
@@ -6952,6 +6978,23 @@ local function renderYard()
 				}, if s.id == "galleon" and AssetIds["Naval/galleon-heritage"] then 236 else 210)
 			local si = SHIP_ICON[s.id]
 			if si then withIcon(row, si[1], si[2], si[3], 100) end
+			-- [오른쪽 선박 목록] 배 이름·사진을 누르면 기존 중앙 3D 갤러리에 연결한다.
+			-- 교체/구매는 원래 버튼만 실행하고 제목 선택은 결제를 호출하지 않는다.
+			if H.yardHallActive then
+				local selectArea = Instance.new("TextButton")
+				selectArea.Name = "SelectShip3D_" .. tostring(s.id)
+				selectArea.Text = ""
+				selectArea.BackgroundTransparency = 1
+				selectArea.BorderSizePixel = 0
+				selectArea.AutoButtonColor = false
+				selectArea.Size = UDim2.new(1, -4, 0, 78)
+				selectArea.ZIndex = 4
+				selectArea.Parent = row
+				selectArea.Activated:Connect(function()
+					H.shipPreviewId = s.id
+					if tradeHallRefresh then tradeHallRefresh() else render() end
+				end)
+			end
 			-- [선박 시각 비교] 실제 교체 후 화물칸·속도·선체를 표시한다.
 			-- 공통 카드의 본문 높이에 비교 영역을 예약해 모바일에서도 버튼·설명과 겹치지 않게 한다.
 			row:SetAttribute("FooterHeight", 118)
@@ -7082,8 +7125,7 @@ function openYardHall()
 		title.Size = UDim2.new(1, -104, 0, 25)
 		title.AutomaticSize = Enum.AutomaticSize.None
 		title.TextTruncate = Enum.TextTruncate.AtEnd
-		local hold = mkLabel(top, string.format("소지금 %s · 기함 %s · 선체 %d/%d · 화물 %d/%d",
-			H.commas(p.coins), ship.name, ship.hull, ship.maxHull, ship.cargoUsed, ship.cargoCapacity), 14, INK_SOFT, false)
+		local hold = mkLabel(top, H.statusMoneyCargo(p, ship) .. " · 기함 " .. ship.name, 17, INK_SOFT, true)
 		hold.Position = UDim2.fromOffset(12, 34)
 		hold.Size = UDim2.new(1, -100, 0, 20)
 		hold.AutomaticSize = Enum.AutomaticSize.None
@@ -7127,19 +7169,19 @@ function openYardHall()
 		local shipName = preview and preview.name or ship.name
 		local shipId = preview and preview.id or ship.id
 		local shipArt = SHIP_ICON[shipId]
-		local px = math.floor(math.max(90, math.min(heroWidth - 20, heroHeight - 62, 430)))
+		local px = math.floor(math.max(96, math.min(heroWidth - 14, heroHeight - 78, 440)))
 		if shipArt then
 			local model = modelIcon(gallery, shipArt[1], shipArt[2], shipArt[3], px, shipName)
 			model.AnchorPoint = Vector2.new(0.5, 0.5)
 			model.Position = UDim2.new(0.5, 0, 0.48, -8)
 		end
-		local label = mkLabel(gallery, shipName .. (if preview and preview.owned then " · 현재 기함" else ""), 19, INK, true)
+		local label = mkLabel(gallery, shipName .. (if preview and preview.owned then " · 현재 기함" else ""), 21, INK, true)
 		label.Position = UDim2.new(0, 12, 1, -60)
 		label.Size = UDim2.new(1, -24, 0, 22)
 		label.AutomaticSize = Enum.AutomaticSize.None
 		label.TextTruncate = Enum.TextTruncate.AtEnd
 		label.TextXAlignment = Enum.TextXAlignment.Center
-		local inspect = mkButton(gallery, "선박 확대", COLORS.gold, UDim2.fromOffset(118, 38), function() zoomOpen = true; build() end, shipArt ~= nil)
+		local inspect = mkButton(gallery, "3D 확대", COLORS.gold, UDim2.fromOffset(128, 44), function() zoomOpen = true; build() end, shipArt ~= nil)
 		inspect.AnchorPoint = Vector2.new(0.5, 1)
 		inspect.Position = UDim2.new(0.5, 0, 1, -5)
 		local left = mkBox(root, UDim2.fromOffset(8, 128), UDim2.new(0, 240, 1, -136), COLORS.leather)
@@ -11485,8 +11527,8 @@ function render()
 			actionText = if currentTab == "crew" or currentTab == "status" then "동료 직책 배치"
 				elseif currentTab == "yard" then "조선소 관리 열기" else "동료 영입 조건 확인"
 		elseif currentTab == "trade" or currentTab == "harbor" then
-			fact = string.format("보유 %s코인 · 화물 %d/%d", H.commas(p.coins), ship.cargoUsed or 0, ship.cargoCapacity or 0)
-			context = "세계 평균과 실제 판매손익은 달라 · 매입·판매 수량을 확인해."
+			fact = "시세 비교 · 실제 판매손익 확인"
+			context = "자금·화물은 상단에서, 매입·판매가는 장부에서 확인해."
 		elseif currentTab == "battle" or currentTab == "war" then
 			-- [전투 본부] 적 전력을 공개하지 않은 경우 임의 수치를 만들지 않는다.
 			local mission = (view.wars or {})[1]
