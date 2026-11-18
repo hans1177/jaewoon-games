@@ -600,8 +600,8 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 	if architecture then
 		m:SetAttribute("ArchitectureRestoredSurfaces", restoredSurfaces)
 		m:SetAttribute("ArchitectureCulture", currentKey)
-		-- [모바일 거리별 건축] 원본 모델의 자동 LOD만 켜고 새 루프·에셋은 만들지 않는다.
-		m.LevelOfDetail = Enum.ModelLevelOfDetail.Automatic
+		-- [모바일 건축 LOD] 실행 중 LevelOfDetail 쓰기는 PluginOrOpenCloud 권한 오류를 일으킨다.
+		-- 등록된 원본 모델의 LOD 설정을 복제본에서 그대로 보존해 항구 생성 중단을 막는다.
 	end
 	local ok, err = pcall(function()
 		m.Parent = parent
