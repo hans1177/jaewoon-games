@@ -1279,6 +1279,124 @@
       "webPublishedSourceTreeSha": "b430538daa6a6b3f6a8114b77748b0edb0b704f8"
     },
     {
+      "id": "mare-essentia",
+      "name": "대항해시대",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
+      "lifecycleState": "ACTIVE",
+      "selectedPlatform": "ROBLOX",
+      "robloxProjectPath": "roblox-games/mare-essentia",
+      "developmentHandling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
+      "sourceIntake": {
+        "kind": "EXISTING_ROJO_PROJECT",
+        "designVerified": false,
+        "runtimeVerified": false,
+        "externalReleaseApproved": false
+      },
+      "homepageCategory": "development-confirmed",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 6,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "mare-essentia",
+          "name": "대항해시대",
+          "description": "",
+          "genres": [],
+          "image": "assets/pwa-icon-512.png",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/pwa-icon-512.png",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": null,
+          "robloxThumbnail": null,
+          "robloxTitleArtwork": null
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
+          "target": "",
+          "handling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
+          "selectedPlatform": "ROBLOX",
+          "stage": ""
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": false,
+            "playable": false,
+            "state": "",
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": "roblox-games/mare-essentia"
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "",
+            "sourceTreeSha": ""
+          },
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "",
+          "recentWork": "",
+          "runtime": {
+            "authority": "company-runtime",
+            "developmentActive": false,
+            "platform": "ROBLOX",
+            "platformLabel": "",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_RUNTIME",
+            "validationSchemaVersion": null,
+            "genre": [],
+            "genreLabel": "",
+            "subgenre": "",
+            "playMode": "",
+            "playModeLabel": "플레이 방식 미평가",
+            "latestWork": "개발 작업 정보 없음",
+            "updatedAt": null,
+            "status": "ACTIVE",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 6
+    },
+    {
       "id": "seed-casual-realm-weaver",
       "name": "세계의 직조자",
       "description": "캐주얼 세계 창조 게임",
@@ -1330,7 +1448,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 6,
+        "catalogOrder": 7,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-casual-realm-weaver",
@@ -1441,7 +1559,7 @@
           }
         }
       },
-      "catalogOrder": 6,
+      "catalogOrder": 7,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1518,7 +1636,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 7,
+        "catalogOrder": 8,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -1629,7 +1747,7 @@
           }
         }
       },
-      "catalogOrder": 7,
+      "catalogOrder": 8,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1706,7 +1824,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 8,
+        "catalogOrder": 9,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-puzzle-chromatic-cascade",
@@ -1817,7 +1935,7 @@
           }
         }
       },
-      "catalogOrder": 8,
+      "catalogOrder": 9,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1898,7 +2016,7 @@
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 9,
+        "catalogOrder": 10,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -2013,7 +2131,7 @@
           }
         }
       },
-      "catalogOrder": 9,
+      "catalogOrder": 10,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2087,7 +2205,7 @@
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 10,
+        "catalogOrder": 11,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
@@ -2202,7 +2320,7 @@
           }
         }
       },
-      "catalogOrder": 10,
+      "catalogOrder": 11,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2276,7 +2394,7 @@
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 11,
+        "catalogOrder": 12,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -2391,7 +2509,7 @@
           }
         }
       },
-      "catalogOrder": 11,
+      "catalogOrder": 12,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2465,7 +2583,7 @@
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 12,
+        "catalogOrder": 13,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-survival-horror-es-doors",
@@ -2580,7 +2698,7 @@
           }
         }
       },
-      "catalogOrder": 12,
+      "catalogOrder": 13,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2650,7 +2768,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 13,
+        "catalogOrder": 14,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -2789,7 +2907,7 @@
           }
         }
       },
-      "catalogOrder": 13,
+      "catalogOrder": 14,
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "PERMANENTLY_REMOVED_REJECTED_TEST",
@@ -2899,7 +3017,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 14,
+        "catalogOrder": 15,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -3010,7 +3128,7 @@
           }
         }
       },
-      "catalogOrder": 14,
+      "catalogOrder": 15,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3091,7 +3209,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 15,
+        "catalogOrder": 16,
         "authority": "company-runtime",
         "identity": {
           "gameId": "cat-step",
@@ -3234,7 +3352,7 @@
           }
         }
       },
-      "catalogOrder": 15,
+      "catalogOrder": 16,
       "homepageMedia": {
         "gameId": "cat-step",
         "titleEn": "CAT STEP",
@@ -3338,7 +3456,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 16,
+        "catalogOrder": 17,
         "authority": "company-runtime",
         "identity": {
           "gameId": "core-clash-4v4",
@@ -3481,7 +3599,7 @@
           }
         }
       },
-      "catalogOrder": 16,
+      "catalogOrder": 17,
       "homepageMedia": {
         "gameId": "core-clash-4v4",
         "titleEn": "CORE CLASH",
@@ -3553,7 +3671,7 @@
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "selectedPlatform": "WEB",
-      "catalogOrder": 17,
+      "catalogOrder": 18,
       "homepageStage": "웹 게임 개발 중 · 런타임 검증 대기",
       "homepageRecentWork": "심해 잠수, 보물 4개 회수, 산소·체력, 거대 생물 회피, 음파·모바일 조작",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
@@ -3583,7 +3701,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 17,
+        "catalogOrder": 18,
         "authority": "company-runtime",
         "identity": {
           "gameId": "deep-diver",
@@ -3724,7 +3842,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 18,
+        "catalogOrder": 19,
         "authority": "company-runtime",
         "identity": {
           "gameId": "defense",
@@ -3867,7 +3985,7 @@
           }
         }
       },
-      "catalogOrder": 18,
+      "catalogOrder": 19,
       "homepageMedia": {
         "gameId": "defense",
         "titleEn": "FOREST DEFENSE",
@@ -3972,7 +4090,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 19,
+        "catalogOrder": 20,
         "authority": "company-runtime",
         "identity": {
           "gameId": "dice-battle-board",
@@ -4115,7 +4233,7 @@
           }
         }
       },
-      "catalogOrder": 19,
+      "catalogOrder": 20,
       "homepageMedia": {
         "gameId": "dice-battle-board",
         "titleEn": "DICE BATTLE",
@@ -4220,7 +4338,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 20,
+        "catalogOrder": 21,
         "authority": "company-runtime",
         "identity": {
           "gameId": "exorcist-office",
@@ -4363,7 +4481,7 @@
           }
         }
       },
-      "catalogOrder": 20,
+      "catalogOrder": 21,
       "homepageMedia": {
         "gameId": "exorcist-office",
         "titleEn": "EXORCIST OFFICE",
@@ -4466,7 +4584,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 21,
+        "catalogOrder": 22,
         "authority": "company-runtime",
         "identity": {
           "gameId": "fantasy-survival",
@@ -4609,7 +4727,7 @@
           }
         }
       },
-      "catalogOrder": 21,
+      "catalogOrder": 22,
       "productionTarget": "ROBLOX_UNITY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "concurrentTargetPlatforms": [
@@ -4722,7 +4840,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 22,
+        "catalogOrder": 23,
         "authority": "company-runtime",
         "identity": {
           "gameId": "fifty-days",
@@ -4863,7 +4981,7 @@
           }
         }
       },
-      "catalogOrder": 22,
+      "catalogOrder": 23,
       "homepageMedia": {
         "gameId": "fifty-days",
         "titleEn": "FIFTY DAYS",
@@ -4959,7 +5077,7 @@
             "route": "web-games/forest-survival/"
           }
         },
-        "catalogOrder": 23,
+        "catalogOrder": 24,
         "homepage": {
           "featured": false,
           "category": "development-confirmed",
@@ -4968,7 +5086,7 @@
           }
         }
       },
-      "catalogOrder": 23
+      "catalogOrder": 24
     },
     {
       "id": "gem-survivor",
@@ -5026,7 +5144,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 24,
+        "catalogOrder": 25,
         "authority": "company-runtime",
         "identity": {
           "gameId": "gem-survivor",
@@ -5169,7 +5287,7 @@
           }
         }
       },
-      "catalogOrder": 24,
+      "catalogOrder": 25,
       "homepageMedia": {
         "gameId": "gem-survivor",
         "titleEn": "GEM SURVIVOR",
@@ -5274,7 +5392,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 25,
+        "catalogOrder": 26,
         "authority": "company-runtime",
         "identity": {
           "gameId": "kingshot-ad",
@@ -5417,7 +5535,7 @@
           }
         }
       },
-      "catalogOrder": 25,
+      "catalogOrder": 26,
       "homepageMedia": {
         "gameId": "kingshot-ad",
         "titleEn": "KINGSHOT",
@@ -5519,7 +5637,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 26,
+        "catalogOrder": 27,
         "authority": "company-runtime",
         "identity": {
           "gameId": "mini-empire",
@@ -5634,7 +5752,7 @@
           }
         }
       },
-      "catalogOrder": 26,
+      "catalogOrder": 27,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerWebEntryFile": "web-games/mini-empire/index.html",
@@ -5713,7 +5831,7 @@
       "ownerWebEntryFile": "web-games/moon-ruins/index.html",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 27,
+        "catalogOrder": 28,
         "authority": "company-runtime",
         "identity": {
           "gameId": "moon-ruins",
@@ -5826,7 +5944,7 @@
           }
         }
       },
-      "catalogOrder": 27,
+      "catalogOrder": 28,
       "webPublishedRoute": "web-games/moon-ruins/",
       "webPublishedSourceTreeSha": "3c9df920247cf1c63815df0f09de12cc790b92ca",
       "concurrentTargetPlatforms": [
@@ -5875,7 +5993,7 @@
       "homepageRecentWork": "Kenney CC0 3D 범선, 8개 항구 교역, A* 항로, 함포전, 운송 계약, 저장 기능 구현 · 런타임 및 배포 검증 대기",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "selectedPlatform": "WEB",
-      "catalogOrder": 28,
+      "catalogOrder": 29,
       "updatedAt": "2026-10-20T19:38:00+09:00",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -5907,7 +6025,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 28,
+        "catalogOrder": 29,
         "authority": "company-runtime",
         "identity": {
           "gameId": "ocean-voyage",
@@ -6097,7 +6215,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 29,
+        "catalogOrder": 30,
         "authority": "company-runtime",
         "identity": {
           "gameId": "party-rpg",
@@ -6240,7 +6358,7 @@
           }
         }
       },
-      "catalogOrder": 29,
+      "catalogOrder": 30,
       "homepageMedia": {
         "gameId": "party-rpg",
         "titleEn": "PARTY RPG",
@@ -6345,7 +6463,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 30,
+        "catalogOrder": 31,
         "authority": "company-runtime",
         "identity": {
           "gameId": "realistic-builder",
@@ -6488,7 +6606,7 @@
           }
         }
       },
-      "catalogOrder": 30,
+      "catalogOrder": 31,
       "homepageMedia": {
         "gameId": "realistic-builder",
         "titleEn": "REALISTIC BUILDER",
@@ -6590,7 +6708,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 31,
+        "catalogOrder": 32,
         "authority": "company-runtime",
         "identity": {
           "gameId": "restaurant-tycoon",
@@ -6705,7 +6823,7 @@
           }
         }
       },
-      "catalogOrder": 31,
+      "catalogOrder": 32,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerWebEntryFile": "web-games/restaurant-tycoon/index.html",
@@ -6785,7 +6903,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 32,
+        "catalogOrder": 33,
         "authority": "company-runtime",
         "identity": {
           "gameId": "star-frontier",
@@ -6926,7 +7044,7 @@
           }
         }
       },
-      "catalogOrder": 32,
+      "catalogOrder": 33,
       "homepageMedia": {
         "gameId": "star-frontier",
         "titleEn": "STAR FRONTIER",
@@ -7031,7 +7149,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 33,
+        "catalogOrder": 34,
         "authority": "company-runtime",
         "identity": {
           "gameId": "tower-choice-rpg",
@@ -7174,7 +7292,7 @@
           }
         }
       },
-      "catalogOrder": 33,
+      "catalogOrder": 34,
       "homepageMedia": {
         "gameId": "tower-choice-rpg",
         "titleEn": "TEN FLOOR TOWER",
@@ -7250,7 +7368,7 @@
       "homepageStage": "웹 개발 중 · 게시 후 검증 대기",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 34,
+        "catalogOrder": 35,
         "authority": "OWNER_DIRECT_GAME_BUILD",
         "identity": {
           "gameId": "turn-rpg",
@@ -7299,7 +7417,7 @@
           }
         }
       },
-      "catalogOrder": 34
+      "catalogOrder": 35
     },
     {
       "id": "zombie-survival",
@@ -7354,7 +7472,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 35,
+        "catalogOrder": 36,
         "authority": "company-runtime",
         "identity": {
           "gameId": "zombie-survival",
@@ -7497,7 +7615,7 @@
           }
         }
       },
-      "catalogOrder": 35,
+      "catalogOrder": 36,
       "selectedPlatform": "WEB",
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
@@ -7605,7 +7723,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 36,
+        "catalogOrder": 37,
         "authority": "company-runtime",
         "identity": {
           "gameId": "bug-defense",
@@ -7718,7 +7836,7 @@
           }
         }
       },
-      "catalogOrder": 36,
+      "catalogOrder": 37,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -7797,7 +7915,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 37,
+        "catalogOrder": 38,
         "authority": "company-runtime",
         "identity": {
           "gameId": "insect-survival",
@@ -7938,7 +8056,7 @@
           }
         }
       },
-      "catalogOrder": 37,
+      "catalogOrder": 38,
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -8043,7 +8161,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 38,
+        "catalogOrder": 39,
         "authority": "company-runtime",
         "identity": {
           "gameId": "chess-battle",
@@ -8182,7 +8300,7 @@
           }
         }
       },
-      "catalogOrder": 38,
+      "catalogOrder": 39,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -8295,7 +8413,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 39,
+        "catalogOrder": 40,
         "authority": "company-runtime",
         "identity": {
           "gameId": "human-go",
@@ -8406,7 +8524,7 @@
           }
         }
       },
-      "catalogOrder": 39,
+      "catalogOrder": 40,
       "ownerWebSourceState": "RESTORED_LEGACY_PENDING_RUNTIME_QA",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -8477,7 +8595,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 40,
+        "catalogOrder": 41,
         "authority": "company-runtime",
         "identity": {
           "gameId": "island-village",
@@ -8590,7 +8708,7 @@
           }
         }
       },
-      "catalogOrder": 40,
+      "catalogOrder": 41,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -8670,7 +8788,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 41,
+        "catalogOrder": 42,
         "authority": "company-runtime",
         "identity": {
           "gameId": "monster-adventure",
@@ -8811,7 +8929,7 @@
           }
         }
       },
-      "catalogOrder": 41,
+      "catalogOrder": 42,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -8922,7 +9040,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 42,
+        "catalogOrder": 43,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival",
@@ -9033,7 +9151,7 @@
           }
         }
       },
-      "catalogOrder": 42,
+      "catalogOrder": 43,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -9108,7 +9226,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 43,
+        "catalogOrder": 44,
         "authority": "company-runtime",
         "identity": {
           "gameId": "territory-war",
@@ -9247,7 +9365,7 @@
           }
         }
       },
-      "catalogOrder": 43,
+      "catalogOrder": 44,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "targetPlatform": "ROBLOX",
@@ -9310,22 +9428,6 @@
       "webPublishedSourceTreeSha": "bd1cd06ff49b156e284f3d5946e8f9d368819175",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
-    },
-    {
-      "id": "mare-essentia",
-      "name": "대항해시대",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
-      "lifecycleState": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "robloxProjectPath": "roblox-games/mare-essentia",
-      "developmentHandling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
-      "sourceIntake": {
-        "kind": "EXISTING_ROJO_PROJECT",
-        "designVerified": false,
-        "runtimeVerified": false,
-        "externalReleaseApproved": false
-      }
     }
   ],
   "runtimeAuthority": "company-runtime",
