@@ -19,9 +19,9 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
   assert.match(capture[11].code,/local pref=\{"상인 집안"\}/);
   assert.match(capture[16].code,/local pref=\{"출항하기"\}/);
   // [모바일 큰 원화] 실제 전시 원화의 높이를 반영해 겹침을 검사한다.
-  assert.match(capture[87].code,/FindFirstChild\\('FacilityGallery'\\)/);
-  assert.match(capture[87].code,/expectedTop=gallery\\.Position\\.Y\\.Offset\\+gallery\\.AbsoluteSize\\.Y\\+8/);
-  assert.match(capture[87].code,/content\\.Position\\.Y\\.Offset==expectedTop/);
+  assert.match(capture[87].code,/FindFirstChild\('FacilityGallery'\)/);
+  assert.match(capture[87].code,/expectedTop=gallery\.Position\.Y\.Offset\+gallery\.AbsoluteSize\.Y\+8/);
+  assert.match(capture[87].code,/content\.Position\.Y\.Offset==expectedTop/);
   assert.match(capture[4].code,/MARE_TITLE_NOT_READY_AFTER_50S;LOADING=/);
   assert.match(capture[4].code,/MareCoreStartStage/);
   assert.match(capture[4].code,/StartupStage/);
