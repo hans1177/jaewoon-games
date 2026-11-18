@@ -201,8 +201,9 @@ export function automaticImpactedChecks(changedFiles=[],{gameRepair={},sourceRoo
   const tests=['source-syntax-and-security',...games.map(g=>'game-runtime:'+g),
     ...(shared?['shared-dependency-regression']:[]),'full-release-fan-in-unchanged'];
   // [위험 예측] 기존 게임의 저장·서버 권한 경계와 공유 코드 변경을 놓치지 않는다.
-  const server=files.some(f=>/(?:^roblox-games\/[^/]+\/(?:server|ServerScriptService)\/|\.server\.lua(?:u)?$)/i.test(f));
-  const client=files.some(f=>/(?:^roblox-games\/[^/]+\/(?:client|StarterPlayerScripts|StarterGui)\/|\.client\.lua(?:u)?$)/i.test(f));
+  // [로블록스 실경로] Rojo src와 기존 단순 프로젝트의 서버·클라이언트 영역을 직접 분류한다.
+  const server=files.some(f=>/(?:^roblox-games\/[^/]+\/(?:src\/)?(?:server|ServerScriptService)\/|\.server\.lua(?:u)?$)/i.test(f));
+  const client=files.some(f=>/(?:^roblox-games\/[^/]+\/(?:src\/)?(?:client|StarterPlayer|StarterPlayerScripts|StarterGui)\/|\.client\.lua(?:u)?$)/i.test(f));
   const root=clean(sourceRoot).replaceAll('\\','/').replace(/^\.\/+|\/+$/g,'');
   const owned=Array.isArray(gameRepair?.responsibleFiles)&&gameRepair.responsibleFiles.some(raw=>{
     if(typeof raw!=='string'||!raw||raw.startsWith('/')||raw.includes('\\')||
@@ -215,13 +216,18 @@ export function automaticImpactedChecks(changedFiles=[],{gameRepair={},sourceRoo
     .map(file=>file.replace(/([a-z0-9])([A-Z])/g,'$1/$2').replace(/[._-]/g,'/').toLowerCase().split('/'));
   const hasRobloxRole=names=>robloxParts.some(parts=>names.some(name=>parts.includes(name)));
   const savedPath=files.some(f=>/(?:^|[\/._-])(?:save|saving|profile|data-store|datastore|inventory|economy|currency)(?:[\/._-]|$)/i.test(f));
-  const save=savedPath||(gameRepair?.required===true&&owned&&gameRepair.saveMigration?.required===true);
-  const economy=hasRobloxRole(['economy','reward','rewards','loot','drop','currency','gold','shop','trade','inventory']);
-  const firstPlay=hasRobloxRole(['start','startup','loading','login','menu','lobby','intro','spawn','title','port','harbor']);
-  const mobile=hasRobloxRole(['gui','hud','touch','mobile','button','joystick','input','ui']);
-  const assets=hasRobloxRole(['asset','assets','mesh','meshes','model','models','texture','textures','animation','animations','audio','vfx','world','environment','camera']);
-  const performance=hasRobloxRole(['performance','streaming','render','lod','optimization','memory','profiler']);
-  const multiplayer=gameRepair?.required===true&&owned&&gameRepair.multiplayerLifecycle?.required===true;
+  // [자동 위험 감시] 파일·소유된 복구 계약만 본다. 운영 데이터나 PASS를 추정하지 않는다.
+  const save=savedPath||hasRobloxRole(['state','persistence','persist'])||
+    (gameRepair?.required===true&&owned&&gameRepair.saveMigration?.required===true);
+  const economy=hasRobloxRole(['economy','reward','rewards','loot','drop','currency','gold','shop','trade','inventory','market']);
+  const firstPlay=hasRobloxRole(['start','startup','loading','login','menu','lobby','intro','spawn','title','port','harbor'])||
+    files.some(f=>/^roblox-games\/[^/]+\/.*\/(?:Core\.server|Game\.client)\.luau$/i.test(f));
+  const mobile=hasRobloxRole(['gui','hud','touch','mobile','button','joystick','input','ui','control']);
+  const assets=hasRobloxRole(['asset','assets','mesh','meshes','model','models','texture','textures','animation','animations','audio','vfx','world','environment','camera','field','scene','pose','character','port','harbor']);
+  const performance=hasRobloxRole(['performance','streaming','render','lod','optimization','memory','profiler','field','scene']);
+  const multiplayer=hasRobloxRole(['multiplayer','players','session','network','remote','reconnect','rejoin','party'])||
+    (gameRepair?.required===true&&owned&&gameRepair.multiplayerLifecycle?.required===true);
+  const publication=files.some(f=>/^roblox-games\/[^/]+\/(?:experience-target\.json|(?:[^/]+\/)*[^/]*\.project\.json)$/i.test(f));
   const repeat=Number.isSafeInteger(gameRepair?.repeatCount)&&gameRepair.repeatCount>=2&&gameRepair.repeatCount<=10000;
   const recurrent=gameRepair?.required===true&&gameRepair?.prePatchReproduced===true&&
     typeof gameRepair?.failureSignature==='string'&&gameRepair.failureSignature.length>0&&
@@ -236,10 +242,12 @@ export function automaticImpactedChecks(changedFiles=[],{gameRepair={},sourceRoo
   if(assets)signals.push('ROBLOX_NATIVE_ASSET_BINDING_TOUCHPOINT');
   if(performance)signals.push('ROBLOX_PERFORMANCE_BUDGET_TOUCHPOINT');
   if(multiplayer)signals.push('ROBLOX_MULTIPLAYER_CONTRACT_TOUCHPOINT');
+  if(publication)signals.push('ROBLOX_PUBLISH_TARGET_TOUCHPOINT');
   if(shared)signals.push('SHARED_DEPENDENCY_CHANGE');
   if(recurrent)signals.push('REPEATED_DECLARED_FAILURE');
   const score=(save?4:0)+(server&&client?3:server?2:0)+(shared?2:0)+(recurrent?5:0)
-    +(economy?4:0)+(firstPlay?3:0)+(mobile?2:0)+(assets?2:0)+(performance?2:0)+(multiplayer?2:0);
+    +(economy?4:0)+(firstPlay?3:0)+(mobile?2:0)+(assets?2:0)+(performance?2:0)
+    +(multiplayer?2:0)+(publication?4:0);
   // [영향 테스트] 미리 승인된 기존 QA 테스트만 추천한다. 경로/실행 검증 없이 자동 실행하지 않는다.
   const selected=[];
   if(gameRepair?.required===true&&owned){
