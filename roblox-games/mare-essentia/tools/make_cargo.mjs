@@ -50,7 +50,13 @@ class Art {
 }
 
 // 메인: 이름이 같은 교역품의 개별 실물 외형만 제작. 무관한 상자·동물 임의 대체 없음.
-function model(id){const m=new Art(id);
+function model(id){
+ // [동일 원본 재현성] 8종 개량 모델은 다른 품목 제작 순서와 무관하게 같은 GLB를 낸다.
+ if(qualityTargets.includes(id)){
+  seed=20611112;
+  for(let k=0;k<id.length;k++)seed=(Math.imul(seed,1664525)+1013904223+id.charCodeAt(k))>>>0;
+ }
+ const m=new Art(id);
  switch(id){
  // [품질] 상품별 전용 실루엣. 같은 돌덩이 모델을 색만 바꿔 재활용하지 않는다.
  case 'amber':{
@@ -152,6 +158,34 @@ if(process.argv.includes('--check')){
   console.log('CARGO_3D_QUALITY_CHECK='+id+' TRIANGLES='+tri+' BYTES='+out.length);
  }
  console.log('CARGO_3D_UNIQUE_SHAPES=8 PASS');
+ process.exit(0);
+}
+// [등록 전 개량] 기존 등록 자산·원본 SHA를 대조한 후 동일 경로의 8종 원화만 재생성한다.
+// 실제 Roblox ID 변경과 사용권한·게시 판정은 기존 등록기/QA가 수행한다.
+if(process.argv.includes('--registered-upgrade')){
+ const liveRoot='roblox-games/mare-essentia';
+ const registry=JSON.parse(fs.readFileSync(path.join(liveRoot,'assets-registered.json'),'utf8'));
+ if(registry.universeId!=='10775310508')throw Error('CARGO_TARGET_UNIVERSE_MISMATCH');
+ for(const id of qualityTargets){
+  const file=path.join(liveRoot,'assets/cargo',id+'.glb'),proofFile=file+'.license.json';
+  const registered=registry.assets['Cargo/'+id];
+  if(!registered||registered.assetType!=='Model'||registered.usePermissionGranted!==true||!registered.assetId)
+   throw Error('CARGO_REGISTERED_BASELINE_MISSING:'+id);
+  const original=fs.readFileSync(file),proof=JSON.parse(fs.readFileSync(proofFile,'utf8'));
+  const oldHash=crypto.createHash('sha256').update(original).digest('hex');
+  if(proof.license!=='PROJECT_ORIGINAL_ART'||proof.sourceSha256!==oldHash
+   ||(registered.sourceSha256 && registered.sourceSha256!==oldHash))
+   throw Error('CARGO_ORIGINAL_INTEGRITY_FAILED:'+id);
+  const {out,tri}=encode(model(id));
+  const nextHash=crypto.createHash('sha256').update(out).digest('hex');
+  if(nextHash===oldHash){console.log('CARGO_3D_QUALITY_ALREADY_CURRENT='+id);continue;}
+  if(tri<300||tri>6000||out.length>550000)throw Error('CARGO_3D_MOBILE_BUDGET_FAILED:'+id);
+  const nextProof={...proof,sourceSha256:nextHash,verification:'AWAITING_ROBLOX_REREGISTRATION',usePermissionGranted:false,nativeRuntimeVerified:false};
+  fs.writeFileSync(file,out);
+  fs.writeFileSync(proofFile,JSON.stringify(nextProof,null,2)+'\n');
+  console.log('CARGO_3D_UPGRADE_READY='+id+' TRIANGLES='+tri+' SHA256='+nextHash);
+ }
+ console.log('CARGO_3D_UPGRADE_PENDING_REGISTERED_ASSET_QA=8');
  process.exit(0);
 }
 // 메인: 기존 원본 보존, 출처/해시 누락 시 미완료. 이전 6종은 건드리지 않는다.
