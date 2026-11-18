@@ -116929,7 +116929,7 @@
     },
     {
       "id": "marketing-cozy-island-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -116963,8 +116963,8 @@
       "failureStage": null,
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
-      "handoffCount": 51,
-      "previousReservationId": "system-ai:44266344484:1",
+      "handoffCount": 52,
+      "previousReservationId": "system-ai:44267289779:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -116972,12 +116972,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44267289779:1",
-      "reservedAt": "2026-11-18T08:39:44.334Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "stale-system-ai-reservation-reclaimed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -122107,7 +122107,8 @@
         "model-output-sha256:48d54e54ce2f524c37da8f23983853e1a26dc3892a7090501e0dad78e2fba55e",
         "system-ai-handoff-to-reservation:system-ai:44266344484:1",
         "actions-run:44266344484",
-        "system-ai-handoff-to-reservation:system-ai:44267289779:1"
+        "system-ai-handoff-to-reservation:system-ai:44267289779:1",
+        "system-ai-handoff-from-reservation:system-ai:44267289779:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1666,
@@ -122122,7 +122123,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-18T08:39:44.334Z"
+      "updatedAt": "2026-11-18T09:13:44.526Z"
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
@@ -125194,7 +125195,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -125228,8 +125229,8 @@
       "failureStage": null,
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
-      "handoffCount": 18,
-      "previousReservationId": "system-ai:44262143445:1",
+      "handoffCount": 19,
+      "previousReservationId": "system-ai:44267289779:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -125237,12 +125238,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44267289779:1",
-      "reservedAt": "2026-11-18T08:39:44.334Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "stale-system-ai-reservation-reclaimed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -125882,7 +125883,8 @@
         "system-ai-impact-score:652",
         "system-ai-blocked-task-count:7",
         "system-ai-representative-canary:system-ai-verification-failed",
-        "system-ai-handoff-to-reservation:system-ai:44267289779:1"
+        "system-ai-handoff-to-reservation:system-ai:44267289779:1",
+        "system-ai-handoff-from-reservation:system-ai:44267289779:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 652,
@@ -125897,7 +125899,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-18T08:39:44.334Z"
+      "updatedAt": "2026-11-18T09:13:44.526Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
@@ -154119,7 +154121,7 @@
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -154161,12 +154163,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44272857725:1",
+      "reservedAt": "2026-11-18T09:13:46.545Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-verification-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -154365,7 +154367,8 @@
         "system-ai-applied-answer-sha256:82be5db7230d70b5b3b0df8e90893fe6b4754e930a8d3d2f82baeefb8113b47a",
         "repair-strategy-fingerprint:28afdd0cdc70821ff114a958ef708bcea91c3ba9e79c75e02a2f022a990a5cb6",
         "failed-strategy-fingerprint:28afdd0cdc70821ff114a958ef708bcea91c3ba9e79c75e02a2f022a990a5cb6",
-        "model-output-sha256:f0100b4e649ef9b002e2c320294c013006b4d89eaf5cbf40a520d9c9d3243b53"
+        "model-output-sha256:f0100b4e649ef9b002e2c320294c013006b4d89eaf5cbf40a520d9c9d3243b53",
+        "system-ai-handoff-to-reservation:system-ai:44272857725:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 552,
@@ -154380,7 +154383,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-18T09:01:25.624Z"
+      "updatedAt": "2026-11-18T09:13:46.545Z"
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
@@ -155537,7 +155540,7 @@
     },
     {
       "id": "marketing-wild-survival-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -155580,12 +155583,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44272857725:1",
+      "reservedAt": "2026-11-18T09:13:46.545Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -155629,7 +155632,8 @@
         "system-ai-impact-score:1666",
         "system-ai-blocked-task-count:33",
         "system-ai-handoff-to-reservation:system-ai:44267187964:1",
-        "actions-run:44267187964"
+        "actions-run:44267187964",
+        "system-ai-handoff-to-reservation:system-ai:44272857725:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1666,
@@ -155644,11 +155648,11 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-04T05:50:03.661Z",
-      "updatedAt": "2026-11-18T08:42:09.959Z"
+      "updatedAt": "2026-11-18T09:13:46.545Z"
     },
     {
       "id": "recovery-recovery-c6e7736588dc69fb9540",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -155738,8 +155742,8 @@
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "source-candidate-generation-failed",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
-      "handoffCount": 50,
-      "previousReservationId": "system-ai:44251915664:1",
+      "handoffCount": 51,
+      "previousReservationId": "system-ai:44267289779:1",
       "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -155747,12 +155751,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:44267289779:1",
-      "reservedAt": "2026-11-18T08:39:44.334Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "stale-system-ai-reservation-reclaimed",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -161108,7 +161112,8 @@
         "model-output-sha256:7b4f1fed59ffbe41848197eb924dbdada1c36bbd4d1d5a60f8639a5783c3b969",
         "system-ai-handoff-to-reservation:system-ai:44266344484:1",
         "actions-run:44266344484",
-        "system-ai-handoff-to-reservation:system-ai:44267289779:1"
+        "system-ai-handoff-to-reservation:system-ai:44267289779:1",
+        "system-ai-handoff-from-reservation:system-ai:44267289779:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1938,
@@ -161123,11 +161128,11 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-11-18T08:39:44.334Z"
+      "updatedAt": "2026-11-18T09:13:44.526Z"
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -161225,8 +161230,8 @@
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "work-order-not-runnable",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
-      "handoffCount": 53,
-      "previousReservationId": "system-ai:44251915664:1",
+      "handoffCount": 54,
+      "previousReservationId": "system-ai:44267289779:1",
       "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -161234,12 +161239,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:44267289779:1",
-      "reservedAt": "2026-11-18T08:39:44.334Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "stale-system-ai-reservation-reclaimed",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -166842,7 +166847,8 @@
         "actions-run:44264208196",
         "system-ai-handoff-to-reservation:system-ai:44266344484:1",
         "actions-run:44266344484",
-        "system-ai-handoff-to-reservation:system-ai:44267289779:1"
+        "system-ai-handoff-to-reservation:system-ai:44267289779:1",
+        "system-ai-handoff-from-reservation:system-ai:44267289779:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
@@ -166857,7 +166863,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-11-18T08:39:44.334Z"
+      "updatedAt": "2026-11-18T09:13:44.526Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
@@ -175491,7 +175497,7 @@
     },
     {
       "id": "recovery-recovery-907315c8bf74eb20724e",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -175540,8 +175546,8 @@
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "stale-system-ai-reservation-reclaimed",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
-      "handoffCount": 10,
-      "previousReservationId": "system-ai:44251915664:1",
+      "handoffCount": 11,
+      "previousReservationId": "system-ai:44267289779:1",
       "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -175549,12 +175555,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:44267289779:1",
-      "reservedAt": "2026-11-18T08:39:44.334Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "stale-system-ai-reservation-reclaimed",
       "evidence": [
         "deployment-failure-run:39070616916:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -176721,7 +176727,8 @@
         "system-ai-handoff-from-reservation:system-ai:44251915664:1",
         "system-ai-handoff-to-reservation:system-ai:44266344484:1",
         "actions-run:44266344484",
-        "system-ai-handoff-to-reservation:system-ai:44267289779:1"
+        "system-ai-handoff-to-reservation:system-ai:44267289779:1",
+        "system-ai-handoff-from-reservation:system-ai:44267289779:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1058,
@@ -176736,7 +176743,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T21:30:30.043Z",
-      "updatedAt": "2026-11-18T08:39:44.334Z"
+      "updatedAt": "2026-11-18T09:13:44.526Z"
     },
     {
       "id": "recovery-recovery-919dea22a6ccc3578fc7",
@@ -188266,7 +188273,7 @@
     },
     {
       "id": "recovery-recovery-9a838fb1109024466f82",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -188316,8 +188323,8 @@
       "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
       "failureSignature": "WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
-      "handoffCount": 34,
-      "previousReservationId": "system-ai:44251915664:1",
+      "handoffCount": 35,
+      "previousReservationId": "system-ai:44267289779:1",
       "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -188325,12 +188332,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:44267289779:1",
-      "reservedAt": "2026-11-18T08:39:44.334Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "stale-system-ai-reservation-reclaimed",
       "evidence": [
         "deployment-failure-run:40125353017:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -191737,7 +191744,8 @@
         "actions-run:44264208196",
         "system-ai-handoff-to-reservation:system-ai:44266344484:1",
         "actions-run:44266344484",
-        "system-ai-handoff-to-reservation:system-ai:44267289779:1"
+        "system-ai-handoff-to-reservation:system-ai:44267289779:1",
+        "system-ai-handoff-from-reservation:system-ai:44267289779:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2374,
@@ -191752,7 +191760,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-24T19:39:33.428Z",
-      "updatedAt": "2026-11-18T08:39:44.334Z"
+      "updatedAt": "2026-11-18T09:13:44.526Z"
     },
     {
       "id": "recovery-recovery-5debf7e19cca75143235",
@@ -217432,7 +217440,7 @@
     },
     {
       "id": "recovery-recovery-ad89d6a6bbf42a8096fd",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -217482,8 +217490,8 @@
       "failureStage": "STUDIO_EXECUTION",
       "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
-      "handoffCount": 2,
-      "previousReservationId": "system-ai:44251915664:1",
+      "handoffCount": 3,
+      "previousReservationId": "system-ai:44267289779:1",
       "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -217491,12 +217499,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:44267289779:1",
-      "reservedAt": "2026-11-18T08:39:44.334Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "stale-system-ai-reservation-reclaimed",
       "evidence": [
         "deployment-failure-run:44233435770:1",
         "deployment-workflow:.github/workflows/devloop-studio.yml",
@@ -217575,7 +217583,8 @@
         "actions-run:44264208196",
         "system-ai-handoff-to-reservation:system-ai:44266344484:1",
         "actions-run:44266344484",
-        "system-ai-handoff-to-reservation:system-ai:44267289779:1"
+        "system-ai-handoff-to-reservation:system-ai:44267289779:1",
+        "system-ai-handoff-from-reservation:system-ai:44267289779:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1066,
@@ -217590,7 +217599,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-11-18T05:29:44.865Z",
-      "updatedAt": "2026-11-18T08:39:44.334Z"
+      "updatedAt": "2026-11-18T09:13:44.526Z"
     },
     {
       "id": "recovery-recovery-450207b3d084c830bc47",
