@@ -12,10 +12,10 @@
     },
     "mare-essentia:health": {
       "lastAt": 1794977668088,
-      "pending": true,
+      "pending": false,
       "lastSha": "513e1857efe98871750eeefdab00bffa7d18f942",
-      "runs": 10,
-      "ema": 0.986,
+      "runs": 11,
+      "ema": 0.99,
       "failStreak": 0,
       "lastResult": "FOUND"
     },
@@ -159,9 +159,9 @@
       "lastSha": "697a9b4b6fdbf6bc85a1916b37fe7672d7e0491c"
     },
     "mare-essentia:ships": {
-      "lastAt": 1794904586660,
+      "lastAt": 1794990544582,
       "pending": true,
-      "lastSha": "47e70027640d0a6c643e02e41d7423f3a3155159"
+      "lastSha": "e8403b862d3c034608183b0ee47042ebac56a4dd"
     },
     "mare-essentia:regions": {
       "lastAt": 1794950246465,
@@ -176,7 +176,7 @@
   },
   "lastReport": {
     "fantasy-survival": "[{\"plannedSteps\":9,\"completedSteps\":2,\"plannedClicks\":2,\"successfulClicks\":0,\"plannedFrames\":1,\"capturedFrames\":0,\"abortedEarly\":true},1,0,[]]",
-    "mare-essentia": "[{\"plannedSteps\":5,\"completedSteps\":5,\"plannedClicks\":0,\"successfulClicks\":0,\"skippedOptionalClicks\":0,\"plannedFrames\":1,\"capturedFrames\":1,\"abortedEarly\":false},0,3,[{\"step\":4,\"ctx\":\"Client\",\"out\":\"HEALTH_ERR n=0 first=\\nHEALTH_ASSET fail=0 total=15 ids=\\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\\nHEALTH_UI 퀘스트=0 항해=7 교역=2 백과=0\\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\\ntext\"}]]"
+    "mare-essentia": "[{\"plannedSteps\":5,\"completedSteps\":5,\"plannedClicks\":0,\"successfulClicks\":0,\"skippedOptionalClicks\":0,\"plannedFrames\":1,\"capturedFrames\":1,\"abortedEarly\":false},0,3,[{\"step\":4,\"ctx\":\"Client\",\"out\":\"HEALTH_ERR n=0 first=\\nHEALTH_ASSET fail=0 total=11 ids=\\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\\nHEALTH_UI 퀘스트=0 항해=6 교역=2 백과=0\\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\\ntext\"}]]"
   },
   "orders": {
     "fantasy-survival:studio-unreachable": {
@@ -199,8 +199,8 @@
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:no-mobs",
       "firstAt": 1794371928830,
-      "lastAt": 1794561479077,
-      "seen": 10,
+      "lastAt": 1794990544582,
+      "seen": 11,
       "resolvedAt": 1794375225082
     },
     "mare-essentia:sky-missing": {
@@ -211,8 +211,8 @@
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:sky-missing",
       "firstAt": 1794371928830,
-      "lastAt": 1794561479077,
-      "seen": 10,
+      "lastAt": 1794990544582,
+      "seen": 11,
       "resolvedAt": 1794375225082
     },
     "mare-essentia:sparse-world": {
@@ -223,8 +223,8 @@
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:sparse-world",
       "firstAt": 1794371928830,
-      "lastAt": 1794561479077,
-      "seen": 10,
+      "lastAt": 1794990544582,
+      "seen": 11,
       "resolvedAt": 1794375225082
     },
     "fantasy-survival:asset-fail": {
@@ -290,13 +290,12 @@
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:ui-missing",
       "firstAt": 1794456463187,
-      "lastAt": 1794561479077,
-      "seen": 5,
+      "lastAt": 1794990544582,
+      "seen": 6,
       "resolvedAt": 1794462200681
     }
   },
   "history": [
-    "mare-essentia:ui",
     "mare-essentia:town",
     "mare-essentia:cards",
     "mare-essentia:health",
@@ -307,8 +306,9 @@
     "mare-essentia:weapons",
     "mare-essentia:town",
     "mare-essentia:poselab",
-    "mare-essentia:health"
+    "mare-essentia:health",
+    "mare-essentia:ships"
   ],
-  "lastDispatchAt": 1794977668088,
-  "lastDecisionAt": 1794977668088
+  "lastDispatchAt": 1794990544582,
+  "lastDecisionAt": 1794990544582
 }
