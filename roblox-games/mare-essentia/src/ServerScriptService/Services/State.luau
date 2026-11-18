@@ -930,6 +930,7 @@ return function(D)
 			cargo = state.cargo,
 			basis = state.basis,
 			discovered = state.discovered,
+			cardOrigins = state.cardOrigins, -- 개인 백과 최초 발견 이력을 기존 저장 경로로 보존
 			codexLevel = state.codexLevel,
 			tech = state.tech,
 			careers = state.careers,
