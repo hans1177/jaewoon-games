@@ -61,8 +61,7 @@ jobs:
             if ! git fetch --no-tags --depth=1 origin "refs/heads/$frames_branch"; then
               continue
             fi
-            # [화면 근거 고정] 아래에서 source SHA 를 별도로 fetch하면 FETCH_HEAD 가 교체된다.
-            # 반드시 원래 Studio 사진/보고서 커밋을 먼저 확정한다.
+            # [화면 근거 고정] source SHA 재조회가 FETCH_HEAD 를 바꾸더라도 사진 커밋을 보존한다.
             frames_sha=$(git rev-parse --verify "FETCH_HEAD^{commit}" 2>/dev/null || true)
             if [[ ! "$frames_sha" =~ ^[a-f0-9]{40}$ ]]; then
               echo "STUDIO_SCREENSHOT_COMMIT_INVALID=$frames_branch"
@@ -77,100 +76,8 @@ jobs:
             source_tree=$(git rev-parse "$source_sha:roblox-games/mare-essentia" 2>/dev/null || true)
             head_tree=$(git rev-parse "HEAD:roblox-games/mare-essentia" 2>/dev/null || true)
             if [[ -n "$source_tree" && "$source_tree" == "$head_tree" ]]; then
-              # [실물 보존] 소스가 아닌 사진 커밋만 참조하며 실제 화면 파일을 확인한다.
-              if ! git ls-tree --name-only "$frames_sha" | grep -Eq -- '-0\.(png|jpg)
-            echo "STUDIO_SCREENSHOT_STALE=$frames_branch:$source_sha"
-          done
-          gh api "repos/${GITHUB_REPOSITORY}/contents/autopilot-orders.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/autopilot-orders.json 2>/dev/null || echo '[]' > build/autopilot-orders.json
-          gh api "repos/${GITHUB_REPOSITORY}/contents/brain-ledger.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-ledger.json 2>/dev/null || rm -f build/brain-ledger.json
-          gh api "repos/${GITHUB_REPOSITORY}/contents/brain-playbook.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-playbook.json 2>/dev/null || rm -f build/brain-playbook.json
-          gh api "repos/${GITHUB_REPOSITORY}/contents/brain-dataset.jsonl?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-dataset.jsonl 2>/dev/null || rm -f build/brain-dataset.jsonl
-      - name: Think (ask free models for one safe fix)
-        env:
-          GEMINI_API_KEY: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets.GEMINI_API_KEY || '' }}
-          MISTRAL_CODESTRAL_API_KEY: ${{ secrets.MISTRAL_CODESTRAL_API_KEY }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          GITHUB_MODELS_TOKEN: ${{ github.token }}
-          BRAIN_RETRY_NOW: ${{ github.event.inputs.retry_now || '0' }}
-        run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --studio-ref refs/vibe/brain-studio-report --ledger build/brain-ledger.json --playbook build/brain-playbook.json --dataset build/brain-dataset.jsonl --out build/brain-result.json
-      - name: Verify the change (syntax and game tests)
-        id: verify
-        run: |
-          set -uo pipefail
-          ok=$(node -p "require('./build/brain-result.json').ok")
-          if [ "$ok" != "true" ]; then echo "verified=no" >> "$GITHUB_OUTPUT"; exit 0; fi
-          fail=0
-          # git diff 에는 LFS 포인터 때문에 관계없는 음원 파일이 섞여 나온다. 두뇌가 실제로 고친 파일만 본다.
-          changed=$(node -p "(require('./build/brain-result.json').files||[]).join('\\n')")
-          echo "$changed"
-          for f in $changed; do
-            case "$f" in
-              roblox-games/fantasy-survival/client/*|roblox-games/fantasy-survival/server/*|roblox-games/fantasy-survival/shared/*|roblox-games/mare-essentia/src/*) ;;
-              *) echo "허용되지 않은 파일: $f"; fail=1 ;;
-            esac
-            git show "HEAD:$f" > /tmp/before.luau 2>/dev/null || true
-            cp "$f" /tmp/after.luau
-            b=$(/tmp/luau/luau-analyze /tmp/before.luau 2>&1 | grep -c "SyntaxError" || true)
-            a=$(/tmp/luau/luau-analyze /tmp/after.luau 2>&1 | grep -c "SyntaxError" || true)
-            echo "SyntaxError before=$b after=$a ($f)"
-            [ "$a" -gt "$b" ] && fail=1
-          done
-          game=$(node -p "require('./build/brain-result.json').fingerprint.split(':')[0]")
-          if [ "$game" = "mare-essentia" ]; then
-            LUAU_DIR=/tmp/luau bash roblox-games/mare-essentia/tests/run.sh || fail=1
-            node --test qa/mare-*.test.mjs || fail=1
-          else
-            for t in qa/fantasy-*.test.mjs; do node --test "$t" >/dev/null 2>&1 || { echo "테스트 실패: $t"; fail=1; }; done
-          fi
-          if [ "$fail" -eq 0 ]; then echo "verified=yes" >> "$GITHUB_OUTPUT"; else echo "verified=no" >> "$GITHUB_OUTPUT"; git checkout -- $changed ; fi
-      - name: Open a pull request, merge only when allowed
-        if: ${{ steps.verify.outputs.verified == 'yes' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          MERGE_ON: ${{ vars.VIBE_BRAIN_MERGE }}
-        run: |
-          set -euo pipefail
-          summary=$(node -p "require('./build/brain-result.json').summary")
-          fp=$(node -p "require('./build/brain-result.json').fingerprint")
-          prov=$(node -p "require('./build/brain-result.json').provider")
-          text=$(node -p "require('./build/brain-result.json').text")
-          branch="vibe-brain/run-${GITHUB_RUN_ID}"
-          git config user.name "vibe-brain"
-          git config user.email "vibe-brain@users.noreply.github.com"
-          git checkout -q -b "$branch"
-          git add -- $(node -p "(require('./build/brain-result.json').files||[]).join(' ')")
-          git commit -q -m "fix(vibe-brain): ${summary}"
-          git push -q origin "$branch"
-          body="바이브 두뇌가 자동으로 만든 수정입니다.\n\n- 지시서: ${fp}\n- 내용: ${text}\n- 모델: ${prov}\n- 검증: 문법 오류 증가 없음 + 게임 테스트 통과\n- 병합 후 자동 판단기가 Studio 점검으로 결과를 다시 확인합니다."
-          pr=$(gh api -X POST "repos/${GITHUB_REPOSITORY}/pulls" -f title="fix(vibe-brain): ${summary}" -f head="$branch" -f base=main -f body="$(printf "$body")" --jq .number)
-          echo "PR #$pr"
-          if [[ "$fp" == *:visual:* ]]; then
-            echo "화면 수정 후보는 Studio 재검증이 필요해 PR만 열어 두었다."
-          elif [ "${MERGE_ON:-off}" = "on" ]; then
-            gh api -X PUT "repos/${GITHUB_REPOSITORY}/pulls/${pr}/merge" -f merge_method=squash >/dev/null && merged=yes || merged=no
-            if [ "$merged" = "yes" ]; then node tools/vibe-brain.mjs --record-merged "$pr" --ledger build/brain-ledger.json --out build/brain-result.json; echo "MERGED #$pr"; fi
-          else
-            echo "병합은 VIBE_BRAIN_MERGE=on 일 때만 한다. PR 만 열어 두었다."
-          fi
-      - name: Save the brain ledger, playbook and learning dataset to vibe-gym-data (never main)
-        if: ${{ always() }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -uo pipefail
-          put() {
-            local src="$1" dest="$2" sha
-            [ -f "$src" ] || return 0
-            sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${dest}?ref=vibe-gym-data" --jq .sha 2>/dev/null || true)"
-            gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/${dest}" -f message="brain: ${dest}" -f branch=vibe-gym-data -f content="$(base64 -w0 "$src")" ${sha:+-f sha="$sha"} >/dev/null && echo "SAVED $dest"
-          }
-          # 학습용 기록은 2MB 를 넘으면 오래된 줄부터 버린다
-          if [ -f build/brain-dataset.jsonl ] && [ "$(stat -c %s build/brain-dataset.jsonl)" -gt 2000000 ]; then tail -c 1500000 build/brain-dataset.jsonl | sed '1d' > build/brain-dataset.tmp && mv build/brain-dataset.tmp build/brain-dataset.jsonl; fi
-          put build/brain-ledger.json brain-ledger.json
-          put build/brain-playbook.json brain-playbook.json
-          put build/brain-dataset.jsonl brain-dataset.jsonl
-; then
+              # [실물 근거] 사진이 없으면 선택하지 않고, 동일 사진 커밋만 분석에 전달한다.
+              if ! git ls-tree --name-only "$frames_sha" | grep -Eq -- '-0\.(png|jpg)$'; then
                 echo "STUDIO_SCREENSHOT_IMAGES_MISSING=$frames_branch"
                 continue
               fi
