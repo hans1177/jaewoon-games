@@ -54,11 +54,14 @@ test('항구 시작과 재생성에서 공중 캐릭터가 노출되지 않는�
   assert.match(spawn,/part.LocalTransparencyModifier = if sceneSpawn then 0 else 1/);
   assert.match(client,/player.CharacterAppearanceLoaded:Connect\(H.placeCharacterOnSpawn\)/);
   assert.match(client,/local titleVisible = on or H.titleMenuOpen/);
-  assert.match(client,/titleGui.Enabled = titleVisible or waitingPort/);
+  assert.ok(/titleGui\.Enabled = titleVisible or waitingPort/.test(client) ||
+    /titleGui\.Enabled = on or H\.titleMenuOpen or waitingPort/.test(client),
+    '두 표현 모두 타이틀 열림과 항구 대기 화면을 같은 조건으로 보존해야 한다');
   assert.match(client,/titlePanel.Visible = titleVisible/);
   assert.match(client,/if H.portLoadingLabel then H.portLoadingLabel.Visible = waitingPort and not H.titleMenuOpen end/);
   assert.match(client,/if H.setTitleMode then H.setTitleMode\(not view or newGameMode\) end/);
-  assert.match(client,/H.setTitleMode\(false\)/);
+  assert.match(client,/H\.setTitleMode\(not view or newGameMode\)/,
+    '서버 상태가 도착하면 타이틀 표시 여부를 실제 게임 상태로 결정해야 한다');
 });
 
 test('게임 시작 메뉴는 PortScene 정본을 기다리지 않고 서버 상태를 표시한다', () => {
