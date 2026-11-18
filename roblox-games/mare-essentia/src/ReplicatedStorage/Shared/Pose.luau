@@ -726,15 +726,22 @@ local MOB_OUTFIT_PARTS = {
 -- [주민·동료 추가 실물 헤어 6종] 기등록 모델을 먼저 유지하고 등록된 원본 번호가 있을 때만 전환한다.
 -- 주민 역할/성별/머리색 결정은 기존 R15에서 가져오고 저장·전투·직업 수치는 변경하지 않는다.
 local NPC_REGISTERED_HAIR = {
-	citizen_male = { short = "hair_court_curls" },
-	citizen_female = { long = "hair_shoulder_waves", bun = "hair_low_bun" },
-	citizen_guard_female = { bun = "hair_braided_crown" },
-	citizen_official_male = { short = "hair_court_curls" },
-	citizen_official_female = { long = "hair_shoulder_waves", bun = "hair_braided_crown" },
-	citizen_sailor_female = { long = "hair_sailor_ponytail", bun = "hair_low_bun" },
-	citizen_artisan_female = { long = "hair_side_braid", bun = "hair_low_bun" },
-	companion_male = { short = "hair_court_curls" },
-	companion_female = { long = "hair_side_braid", bun = "hair_braided_crown" },
+	-- [직업·개성별 머리] 기존 People 실물 헤어만 사용하며 인물의 MotionPersonality 값으로
+	-- 재호출·자산 지연 로드 후에도 같은 머리 메시를 유지한다.
+	citizen_male = { short = { "hair_simpleparted", "hair_court_curls", "hair_buzzed" } },
+	citizen_female = { long = { "hair_shoulder_waves", "hair_side_braid" }, bun = { "hair_low_bun", "hair_braided_crown" } },
+	citizen_worker_male = { short = { "hair_buzzed", "hair_simpleparted" } },
+	citizen_worker_female = { long = { "hair_side_braid", "hair_shoulder_waves" }, bun = { "hair_low_bun", "hair_buzzedfemale" } },
+	citizen_guard_male = { short = { "hair_simpleparted", "hair_court_curls" } },
+	citizen_guard_female = { long = { "hair_shoulder_waves", "hair_braided_crown" }, bun = { "hair_braided_crown", "hair_low_bun" } },
+	citizen_official_male = { short = { "hair_court_curls", "hair_simpleparted" } },
+	citizen_official_female = { long = { "hair_shoulder_waves", "hair_court_curls" }, bun = { "hair_braided_crown", "hair_low_bun" } },
+	citizen_sailor_male = { short = { "hair_simpleparted", "hair_buzzed" } },
+	citizen_sailor_female = { long = { "hair_sailor_ponytail", "hair_side_braid" }, bun = { "hair_low_bun", "hair_sailor_ponytail" } },
+	citizen_artisan_male = { short = { "hair_buzzed", "hair_simpleparted" } },
+	citizen_artisan_female = { long = { "hair_side_braid", "hair_shoulder_waves" }, bun = { "hair_low_bun", "hair_braided_crown" } },
+	companion_male = { short = { "hair_simpleparted", "hair_court_curls" } },
+	companion_female = { long = { "hair_side_braid", "hair_shoulder_waves" }, bun = { "hair_braided_crown", "hair_low_bun" } },
 }
 -- [승인된 헤드·몸통 액세서리 5종] 추가 요소만 분리한다. 위치는 R15 부위의 상대 좌표.
 -- 배열 7/8열: 기존 Y 오프셋 뒤의 X/Z 배율(미지정이면 0). 금속 배지는 겉옷 바깥쪽에 보이게 장착한다.
@@ -766,6 +773,24 @@ function Pose.applyRegisteredMobOutfit(model)
 	local detailKinds = 0
 	local specs = MOB_OUTFIT_PARTS[profile]
 	if not specs then return false end
+	-- [모바일 복식 실루엣] 한 NPC당 상세 모델 2종을 유지하되 복부 벨트보다 장화·소매를
+	-- 먼저 보여준다. 좌우 부위는 같은 실물 메시 종류로 계산해 추가 메모리를 쓰지 않는다.
+	local mobileEssentials = nil
+	if UserInputService.TouchEnabled then
+		if string.find(profile, "^citizen_guard_") then
+			mobileEssentials = { outfit_guard = true, outfit_boot = true }
+		elseif string.find(profile, "^citizen_official_") then
+			mobileEssentials = { outfit_coat = true, outfit_cuff = true }
+		elseif string.find(profile, "^citizen_sailor_") then
+			mobileEssentials = { outfit_sash = true, outfit_boot = true }
+		elseif string.find(profile, "^citizen_artisan_") then
+			mobileEssentials = { outfit_vest = true, outfit_apron = true }
+		elseif string.find(profile, "^companion_clergy_") then
+			mobileEssentials = { outfit_stole = true, outfit_belt = true }
+		elseif string.find(profile, "^companion_") then
+			mobileEssentials = { outfit_coat = true, outfit_boot = true }
+		end
+	end
 	-- [등록·사용 권한 관문] 기존 AssetIds에 등록된 추가 액세서리만 장착 시도한다.
 	-- 등록 전에는 기등록 복식만 사용한다. 기존 프로필 표는 수정하지 않는다.
 	local accessory = npcOutfit and NPC_REGISTERED_ACCESSORY[profile]
@@ -817,11 +842,16 @@ function Pose.applyRegisteredMobOutfit(model)
 		local assetName, boneName = spec[1], spec[2]
 		-- [직접 제작 GLB] 좌우 소매·장화를 하나씩 개별 장착하고 모바일 부하를 제한한다.
 		if string.sub(assetName, 1, 7) == "outfit_" then
+			-- 모바일에서는 지정된 직능별 실루엣만 세어 실제 장착 메시를 2종 이내로 제한한다.
+			if not detailAllowed or (mobileEssentials and not mobileEssentials[assetName]) then
+				attached += 1
+				continue
+			end
 			if not detailOrder[assetName] then
 				detailKinds += 1
 				detailOrder[assetName] = detailKinds
 			end
-			if not detailAllowed or detailOrder[assetName] > detailLimit then
+			if detailOrder[assetName] > detailLimit then
 				attached += 1
 				continue
 			end
@@ -834,7 +864,10 @@ function Pose.applyRegisteredMobOutfit(model)
 				or profile == "citizen_sailor_female" or profile == "citizen_artisan_female"
 				or profile == "companion_female"
 			local preferred = NPC_REGISTERED_HAIR[profile]
-			local candidate = preferred and preferred[hairstyle or "short"]
+			local options = preferred and preferred[hairstyle or "short"]
+			local persona = math.clamp(tonumber(model:GetAttribute("MotionPersonality")) or 1, 1, 3)
+			local candidate = if type(options) == "table" and #options > 0
+				then options[(math.floor(persona) - 1) % #options + 1] else options
 			if candidate and AssetIds["People/" .. candidate] then
 				assetName = candidate
 			elseif femaleLong and hairstyle == "long" then
@@ -892,20 +925,31 @@ function Pose.applyRegisteredMobOutfit(model)
 					local hair = meshName:find("hair_", 1, true)
 					local hide = meshName:find("hood", 1, true)
 					local tunic = meshName:find("peasant", 1, true)
-					part.Material = if armor then Enum.Material.Metal elseif hair or hide or tunic then Enum.Material.Fabric else Enum.Material.Leather
+					local badge = meshName:find("acc_guild_badge", 1, true)
+					local hairpin = meshName:find("acc_pearl_hairpin", 1, true)
+					local ribbon = meshName:find("acc_ribbon_bow", 1, true)
+					local headwear = meshName:find("acc_feather_hat", 1, true) or meshName:find("acc_sailor_headband", 1, true)
+					-- [실물 장신구] 텍스처가 없는 모델만 소재 보정한다. 배지는 금속, 머리핀은 진주,
+					-- 리본·선원 머리띠는 천으로 표시하고 PBR 원본은 절대 덮지 않는다.
+					part.Material = if armor or badge or hairpin then Enum.Material.Metal
+						elseif hair or hide or tunic or ribbon or headwear then Enum.Material.Fabric else Enum.Material.Leather
 					local tint = if armor then Color3.fromRGB(108, 117, 124)
+						elseif badge then Color3.fromRGB(188, 151, 80)
+						elseif hairpin then Color3.fromRGB(230, 216, 190)
+						elseif ribbon then Color3.fromRGB(137, 66, 79)
+						elseif headwear then Color3.fromRGB(91, 78, 64)
 						elseif hair then (if npcOutfit then model:GetAttribute("NpcHairTint") else nil) or Color3.fromRGB(69, 52, 41)
 						elseif hide then Color3.fromRGB(71, 78, 71)
 						elseif npcOutfit and (tunic or meshName:find("ranger_body", 1, true)) then target.Color
 						elseif tunic then Color3.fromRGB(126, 108, 86)
 						else Color3.fromRGB(96, 79, 65)
-					-- 원본 메시 색을 최대한 유지한다. 흰색 단색 메시일 때만 실제 소재색을 분명히 준다.
 					local neutral = math.max(part.Color.R, part.Color.G, part.Color.B)
 						- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.11
 					part.Color = part.Color:Lerp(tint,
 						if hair and npcOutfit and model:GetAttribute("NpcHairTint") then 0.72
+						elseif (badge or hairpin or ribbon) and neutral then 0.54
 						elseif neutral and part.Color.R > 0.72 then 0.78 else 0.14)
-					part.Reflectance = if armor then 0.025 else 0
+					part.Reflectance = if armor or badge or hairpin then 0.025 else 0
 				end
 				local weld = Instance.new("WeldConstraint")
 				weld.Part0, weld.Part1, weld.Parent = target, part, part
@@ -914,10 +958,13 @@ function Pose.applyRegisteredMobOutfit(model)
 		end)
 		if ok then
 			attached += 1
-			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" then
-				-- 실물 모발 메시에 가짜 예비 머리 파츠가 겹쳐 보이지 않게 한다.
+			if npcOutfit and (string.sub(assetName, 1, 5) == "hair_"
+				or assetName == "acc_feather_hat" or assetName == "acc_sailor_headband") then
+				-- [실제 메시 우선] 기등록 머리·모자가 장착된 뒤에만 과거 도형 예비품을 숨긴다.
+				-- 원본 에셋이 미로드 상태라면 예비 외형을 유지해 NPC가 순간적으로 사라지지 않는다.
+				local fallbackName = if string.sub(assetName, 1, 5) == "hair_" then "Hair" else "Hat"
 				for _, piece in model:GetChildren() do
-					if piece:IsA("BasePart") and piece.Name == "Hair" then piece.Transparency = 1 end
+					if piece:IsA("BasePart") and piece.Name == fallbackName then piece.Transparency = 1 end
 				end
 			end
 		else skin:Destroy() end
