@@ -10366,11 +10366,11 @@ function RENDERERS.gwent()
 		return H.tileGrid({
 			{ icon = "codex", title = "덱 짜기", sub = "카드를 골라 덱 구성", btn = "열기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
 			{ icon = "cc0_shield", title = "연습전", sub = "기본 카드로 규칙 배우기", btn = "시작", color = COLORS.green, onClick = function()
-				if H.openDeck then H.openDeck() end
+				if H.openDeck then H.openDeck(true) end
 				task.defer(function() if H.devCards and H.devCards.practice then H.devCards.practice() end end)
 			end },
 			{ icon = "cc0_sword", title = "카드 대결", sub = "이기면 새 지식 카드", btn = "대결", color = COLORS.red, onClick = function()
-				if H.openDeck then H.openDeck() end
+				if H.openDeck then H.openDeck(true) end
 				task.defer(function() if H.devCards and H.devCards.duel then H.devCards.duel() end end)
 			end },
 		}, content, 176, 150)
