@@ -427,7 +427,7 @@ test('무료 디자인 AI는 건축·주민·선박·교역품·무기·재질�
     assert.equal(chosen.filter(name => name.startsWith('cargo_') || name.startsWith('tab_trade') || name.startsWith('ui_trade_')).length, 1);
     assert.equal(chosen.filter(name => name.startsWith('weapon_') || name.startsWith('harbor_motion_') || name.startsWith('field_npc_')).length, 1);
     assert.equal(chosen.filter(name => name.startsWith('material_') || name.startsWith('town_library_') || name.startsWith('field_entry')).length, 1);
-    assert.equal(chosen.filter(name => name.startsWith('vfx_') || name.startsWith('ui_') || name.startsWith('tab_')).length, 1);
+    assert.equal(chosen.filter(name => name.startsWith('vfx_') || name.startsWith('ui_') || name.startsWith('tab_') || name.startsWith('b1_') || name.startsWith('b2_')).length, 1);
     rounds.add(chosen.join('|'));
   }
   assert.equal(rounds.size, 5);
