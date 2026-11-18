@@ -19,7 +19,7 @@ const root = path.resolve(options.root || 'main');
 const framesRoot = path.resolve(options.frames || '.');
 const reportPath = path.resolve(options.out || path.join(framesRoot, 'nemotron-design-review.json'));
 const protectedCode = /\b(?:DataStore|RemoteEvent|RemoteFunction|FireServer|FireClient|OnServerEvent|OnClientEvent|SetAttribute|GetAttribute|GetService|HttpService|require|loadstring|setfenv|getfenv|Humanoid|WalkSpeed|JumpPower|Health|Damage|Hitbox|CanCollide|CanTouch|CanQuery|Anchored|Currency|Reward|Experience|Purchase|MarketplaceService|TeleportService)\b/i;
-const visualCode = /Color3\.(?:new|fromRGB|fromHSV)\(|Enum\.(?:Material|Font|EasingStyle|TextXAlignment|TextYAlignment)\.|\.(?:Color|Color3|TextColor3|BackgroundColor3|ImageColor3|Transparency|TextTransparency|BackgroundTransparency|ImageTransparency|LightInfluence|Material|Font|TextSize|Size|Position|Rotation|Scale|Brightness|Contrast|Saturation|FieldOfView|Ambient|OutdoorAmbient|Reflectance|Emission|StrokeThickness)\s*=|(?:UDim2|UDim)\.new\(/;
+const visualCode = /Color3\.(?:new|fromRGB|fromHSV)\(|Enum\.(?:Material|Font|EasingStyle|TextXAlignment|TextYAlignment)\.|\.(?:Color|Color3|TextColor3|BackgroundColor3|ImageColor3|Transparency|TextTransparency|BackgroundTransparency|ImageTransparency|LightInfluence|Material|Font|TextSize|Size|Position|Rotation|Scale|Brightness|Contrast|Saturation|FieldOfView|Ambient|OutdoorAmbient|Reflectance|Emission|StrokeThickness)\s*=|(?:UDim2|UDim)\.new\(|\btint\s*=\s*\{\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\}/;
 const quoted = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g;
 
 // [무료 디자인 전문 모델] 고정 무료 모델만 허용하고, 모델이 응답으로 경로/제공자를 선택하지 못한다.
@@ -352,6 +352,12 @@ export function visualEditLooksSafe(before, after) {
   const numbers = line => [...line.matchAll(/(?<![A-Za-z_0-9])-?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?(?![A-Za-z_0-9])/g)]
     .map(m => Number(m[0]));
   const oldNums = numbers(before), newNums = numbers(after);
+  if (/\btint\s*=/.test(before + after)) {
+    const palette = /\btint\s*=\s*\{\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\}/;
+    const oldColor = before.match(palette), nextColor = after.match(palette);
+    if (!oldColor || !nextColor || nextColor.slice(1).some(x => Number(x) > 255))
+      return false;
+  }
   if (oldNums.length !== newNums.length ||
     newNums.some((n, i) => !Number.isFinite(n) || Math.abs(n) > Math.max(1024, Math.abs(oldNums[i]) * 2 + 1)))
     return false;
@@ -413,9 +419,36 @@ function cleanAnchor(line) {
     !/--|[;]|https?:\/\/|(?:api[_-]?key|secret|token|password)/i.test(line) &&
     !line.trimStart().startsWith('--');
 }
-function visualAnchors(files) {
+// [분야별 코드 선별] 허용된 실제 Luau 시각 책임 파일만 순서를 바꾼다. 없는 파일이나 새 에셋을 만들지 않는다.
+export function rankVisualSourceFiles(files, role = 'GENERAL') {
+  const preferred = {
+    NPC: ['Pose.luau', 'PortScene.luau', 'TownMood.client.luau',
+      'FieldScene.luau', 'CommonMotion.luau', 'FieldMotion.luau'],
+    WORLD: ['PortScene.luau', 'PortBuildings.luau', 'VoyageScene.luau',
+      'FieldScene.luau', 'WonderScenes.luau', 'TownMood.client.luau'],
+    UI: ['Game.client.luau', 'VisualLadder.client.luau', 'CardArt.luau',
+      'CardGallery.luau', 'Flags.luau', 'PortScene.luau'],
+    MOTION: ['CommonMotion.luau', 'FieldMotion.luau', 'Pose.luau',
+      'CommonVFX.luau', 'TownMood.client.luau', 'FieldScene.luau'],
+    GENERAL: ['PortScene.luau', 'Pose.luau', 'Game.client.luau',
+      'VoyageScene.luau', 'CardArt.luau', 'FieldScene.luau']
+  }[role] || [];
+  const scoped = preferred.map(name => files.find(file => file.endsWith('/' + name)))
+    .filter(Boolean);
+  return (scoped.length >= 2 ? scoped : files).slice(0, 6);
+}
+
+function visualAnchors(files, role = 'GENERAL') {
   const result = [];
-  for (const file of files) {
+  const patterns = {
+    NPC: /hair|scalp|skirt|belt|face|eye|head|skin|fabric|shirt|robe|collar|outfit|neck|arm|leg|lightInfluence/i,
+    WORLD: /roof|house|building|dock|market|tint|port|harbor|ship|sail|wood|stone|wall|window|boat|lamp|arch|town|pier|sea/i,
+    UI: /text|color|font|image|card|ui|background|scale|shadow|stroke|button|menu|transparency/i,
+    MOTION: /motion|animation|rotation|tween|easing|walk|idle|attack|shoot|velocity|swing|pose|tilt/i,
+    GENERAL: /color|material|brightness|transparency|size|position|scale/i
+  };
+  const focusedPattern = patterns[role] || patterns.GENERAL;
+  for (const file of rankVisualSourceFiles(files, role)) {
     const target = path.resolve(root, file);
     if (!target.startsWith(root + path.sep) || !fs.existsSync(target) ||
       !fs.statSync(target).isFile()) continue;
@@ -423,16 +456,15 @@ function visualAnchors(files) {
     const counts = new Map();
     for (const line of lines) counts.set(line, (counts.get(line) || 0) + 1);
     const possible = lines.filter(line => cleanAnchor(line) && counts.get(line) === 1);
-    // 얼굴과 머리/옷을 먼저, 나머지 건물·선박·UI는 파일 전체 구간을 고르게 표본화한다.
-    const focused = file.endsWith('/Pose.luau')
-      ? possible.filter(line => /LightInfluence|scalp|skirt|belt|hair|q\.Size|Fabric/i.test(line)).slice(0, 4)
-      : [];
-    const sampled = Array.from({length: 8}, (_, index) =>
-      possible[Math.floor(index * Math.max(0, possible.length - 1) / 7)]).filter(Boolean);
-    for (const line of [...new Set([...focused, ...sampled])].slice(0, 7))
+    const focused = possible.filter(line => focusedPattern.test(line));
+    const selected = Array.from({length: 6}, (_, index) =>
+      focused[Math.floor(index * Math.max(0, focused.length - 1) / 5)]).filter(Boolean);
+    const others = Array.from({length: 3}, (_, index) =>
+      possible[Math.floor(index * Math.max(0, possible.length - 1) / 2)]).filter(Boolean);
+    for (const line of [...new Set([...selected, ...others])].slice(0, 9))
       result.push({anchor: result.length, path: file, before: line});
   }
-  return result.slice(0, 112);
+  return result.slice(0, 54);
 }
 
 // [메인] 후보는 검증된 브랜치에서만 쓰며 모델 원문/명령은 실행하지 않는다.
@@ -518,7 +550,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   }
   if (!authorizedCandidateBranch(branch, process.env.GITHUB_RUN_ID))
     return record('BLOCKED_NOT_ISOLATED_CANDIDATE_BRANCH', {frames: proofs});
-  const anchors = visualAnchors(contract.allowedSourceFiles);
+  const anchors = visualAnchors(contract.allowedSourceFiles, designRuntime.selectedRole);
   if (!anchors.length) return record('SKIPPED_NO_EXISTING_VISUAL_ANCHORS', {frames: proofs});
   const prompt = 'You are a visual art director for the existing Roblox sea-voyage game. ' +
     'Study the verified real Studio screenshots and improve face, hair, clothing, ships, buildings, ' +
