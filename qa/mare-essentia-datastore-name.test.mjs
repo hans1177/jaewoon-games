@@ -1466,8 +1466,17 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   for(const name of names)
     assert.ok(pose.includes(name+' = { Color3.new('),'원본 주색 누락: '+name);
   assert.match(pose,/if not textured and string\.sub\(assetName, 1, 7\) == "outfit_"/);
-  assert.match(pose,/if bestError < 0\.045 then/);
-  assert.match(pose,/if color\.R > 0\.88 and color\.G > 0\.88 and color\.B > 0\.88 then/);
+  // [선형·감마 색상] 원본 금속/직물은 엄격하게 대조하고 임의 수입색은 덮지 않는다.
+  assert.match(pose,/for _, sourceColor in \{ candidate\[1\], candidate\[3\] \} do/);
+  assert.match(pose,/if bestError < 0\.0064 then/);
+  assert.match(pose,/elseif fallback and color\.R > 0\.94 and color\.G > 0\.94 and color\.B > 0\.94 then/);
+  assert.match(pose,/surface\.ColorMap ~= ""/);
+  assert.match(pose,/surface\.MetalnessMap ~= ""/);
+  assert.match(pose,/part\.MaterialVariant ~= ""/);
+  // [실제 로블록스 Studio 입력 검증] 자산 로더는 9개 복식의 흰색 유실/원본 재질 개수를 계측한다.
+  assert.match(loader,/MareOutfitMaterialAudit/);
+  assert.match(loader,/outfitWhite == 0 then "PASS" else "FAIL"/);
+  assert.match(loader,/local importedPeople = library:FindFirstChild\("People"\)/);
   assert.match(pose,/elseif hair or pearlWhite then Enum\.Material\.SmoothPlastic/);
   assert.match(pose,/part\.Material = fallback\[2\]/);
   assert.doesNotMatch(pose,/else Color3\.fromRGB\(96, 79, 65\)/);
