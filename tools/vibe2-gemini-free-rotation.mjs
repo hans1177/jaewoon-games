@@ -280,15 +280,34 @@ export async function requestGeminiFreePair({
       }
       if(!response.ok){
         const status=response.status;
-        if([401,402,403].includes(status))
+        // [모델별 인증 실패] 잘못된 키 한 개 때문에 다른 무료 모델까지 중단하지 않는다.
+        // 결제 요구 및 안전/권한 차단은 기존대로 전체 요청을 중단한다.
+        if(status===401){
+          cooldownUntil.set(slot,Date.now()+21600000);
+          failures.push(slot+':HTTP_401');
+          console.log('VIBE2_EXTERNAL_FREE_ROTATE='+slot+':HTTP_401');
+          continue;
+        }
+        if([402,403].includes(status))
           throw infrastructureFailure(provider==='GEMINI'
             ?'GEMINI_AUTH_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:'+status
             :provider+'_AUTH_OR_BILLING_BLOCKED_NO_PAID_FALLBACK:'+status);
-        if(provider==='GEMINI'&&[404,429,500,502,503,504].includes(status)){
+        if(provider==='GEMINI'&&[400,404,429,500,502,503,504].includes(status)){
           let errorBody=null;
-          if(status===429&&typeof response.json==='function')
-            try{errorBody=await response.json();}catch{/* status is authoritative */}
-          cooldownUntil.set(slot,Date.now()+retryDelayMs(response,status,errorBody,{provider:'GEMINI'}));
+          if([400,429].includes(status)&&typeof response.json==='function')
+            try{errorBody=await response.json();}catch{/* 상태 코드가 우선 */}
+          const detail=[errorBody?.error?.status,errorBody?.error?.message]
+            .map(clean).join(' ');
+          if(status===400&&/content[-_ ]?(policy|filter)|safety|moderation|disallowed|policy[-_ ]?violation|prohibited|prompt[-_ ]?blocked/i.test(detail))
+            throw infrastructureFailure('GEMINI_CONTENT_POLICY_BLOCKED_NO_FALLBACK');
+          const contextError=status===400&&/context[_ -]?length|maximum context|too many tokens|prompt[^.]{0,80}too (?:long|large)|input[^.]{0,80}token[^.]{0,80}(?:limit|exceed)/i.test(detail);
+          if(!contextError){
+            const delay=status===400
+              ?Math.max(1800000,retryDelayMs(response,status,errorBody,{provider:'GEMINI'}))
+              :retryDelayMs(response,status,errorBody,{provider:'GEMINI'});
+            cooldownUntil.set(slot,Date.now()+delay);
+          }
+          if(contextError)console.log('VIBE2_EXTERNAL_FREE_REQUEST_CONTEXT_REJECTED='+slot);
           failures.push(slot+':HTTP_'+status);
           console.log('VIBE2_GEMINI_FREE_ROTATE='+model+':HTTP_'+status);
           continue;
