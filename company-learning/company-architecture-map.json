@@ -1,5 +1,5 @@
 {
-  "version": 340,
+  "version": 339,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6994,32 +6994,7 @@
       "WEB"
     ],
     "webCandidatePlanner": "tools/vibe2-auto-planner.mjs",
-    "detailedDesign": "robloxStudioProductionFlowContract.detailedDesign",
-    "freeVisualSpecialists": {
-      "sourcePolicy": "robloxStudioProductionFlowContract.externalFreeVisualSpecialists",
-      "entrypoint": ".github/workflows/devloop-studio.yml",
-      "responsibleCode": "tools/company-nemotron-design-review.mjs",
-      "providerPolicy": "company-learning/external-ai-distillation-policy.json#directVisualDesign.freeSpecialistPool",
-      "routing": "ROLE_FIRST_FREE_ONLY_QUOTA_AND_COOLDOWN_AWARE",
-      "roles": [
-        "NPC",
-        "WORLD",
-        "UI",
-        "MOTION",
-        "GENERAL"
-      ],
-      "preflight": "LATEST_MAIN_SHARED_CONTEXT_AND_LOCK",
-      "capture": "OFFICIAL_STUDIO_MCP_REAL_IMAGES",
-      "candidate": "EXISTING_NEMOTRON_RUN_SCOPED_ISOLATED_BRANCH",
-      "qa": "EXACT_STUDIO_SOURCE_BEFORE_AFTER_INDEPENDENT_VISUAL_PLUS_NATIVE_SECURITY",
-      "merge": "EXISTING_CANONICAL_MAIN_ONLY_AFTER_ALL_APPLICABLE_GATES",
-      "postMerge": "EXISTING_ROBLOX_SOURCE_DRIFT_SYNC_F0_TO_F9_PUBLICATION",
-      "log": "EXISTING_STUDIO_EVIDENCE_ONLY",
-      "newQueue": false,
-      "newWorkflow": false,
-      "visualAidDoesNotGrantReleasePass": true,
-      "otherGameOrPlatformWrite": false
-    }
+    "detailedDesign": "robloxStudioProductionFlowContract.detailedDesign"
   },
   "assetQualityFirstDevelopment": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.qualityFirstDevelopment",
