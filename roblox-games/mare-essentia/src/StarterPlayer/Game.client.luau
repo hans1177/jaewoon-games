@@ -1289,14 +1289,14 @@ function H.tileGrid(items, parent, cellW, cellH)
 		ic.AnchorPoint = Vector2.new(0.5, 0)
 		ic.Position = UDim2.new(0.5, 0, 0, 8)
 		local textY = iconPx + 14
-		local nm = mkLabel(tile, it.title, 19, INK, true)
+		local nm = mkLabel(tile, it.title, 21, INK, true)
 		nm.AutomaticSize = Enum.AutomaticSize.None
 		nm.Position = UDim2.fromOffset(4, textY)
 		nm.Size = UDim2.new(1, -8, 0, 26)
 		nm.TextXAlignment = Enum.TextXAlignment.Center
 		nm.TextTruncate = Enum.TextTruncate.AtEnd
 		if it.sub then
-			local sb = mkLabel(tile, it.sub, 15, INK_SOFT, false)
+			local sb = mkLabel(tile, it.sub, 17, INK_SOFT, false)
 			sb.AutomaticSize = Enum.AutomaticSize.None
 			sb.Position = UDim2.fromOffset(4, textY + 28)
 			sb.Size = UDim2.new(1, -8, 0, 40)
@@ -1305,7 +1305,7 @@ function H.tileGrid(items, parent, cellW, cellH)
 			sb.TextTruncate = Enum.TextTruncate.AtEnd
 		end
 		if it.desc then
-			local ds = mkLabel(tile, it.desc, 14, INK, false)
+			local ds = mkLabel(tile, it.desc, 16, INK, false)
 			ds.AutomaticSize = Enum.AutomaticSize.None
 			ds.Position = UDim2.fromOffset(8, textY + 69)
 			ds.Size = UDim2.new(1, -16, 0, 58)
@@ -2037,6 +2037,28 @@ function H.layoutBook()
   H.bookSpine.Visible = false
   H.facilityGallery.Visible = gallery
   H.menuActionDock.Visible = gallery
+  -- [첫 판단 카드] 기존 버튼 하나를 가로 모드의 오른쪽 첫 카드에 배치한다.
+  -- 폰 세로에서는 버튼을 기존 하단 도크로 복귀시켜 터치 동작을 보존한다.
+  if H.menuFocusBanner and H.menuFocusBanner.Parent and currentTab ~= "codex" then
+    local firstCardAction = width >= 740
+    local compactHeight = height < 500
+    H.menuFocusBanner.Size = UDim2.new(1, -6, 0, if firstCardAction then (if compactHeight then 210 else 242) else (if compactHeight then 140 else 178))
+    local heading = H.menuFocusBanner:FindFirstChild("MenuFocusHeading")
+    if heading then heading.TextSize = if firstCardAction then 20 else 18 end
+    local number = H.menuFocusBanner:FindFirstChild("MenuFocusValue")
+    if number then number.TextSize = if firstCardAction then 24 else 22 end
+    local explanation = H.menuFocusBanner:FindFirstChild("MenuFocusDescription")
+    if explanation then
+      explanation.Position = UDim2.fromOffset(14, if firstCardAction then 88 else 84)
+      explanation.Size = UDim2.new(1, -28, 0, if firstCardAction then (if compactHeight then 59 else 85) else (if compactHeight then 49 else 86))
+      explanation.TextSize = if firstCardAction then 18 else 17
+    end
+    H.menuActionButton.Parent = if firstCardAction then H.menuFocusBanner else H.menuActionDock
+    H.menuActionButton.Position = if firstCardAction then UDim2.new(0, 12, 1, -60) else UDim2.fromOffset(6, 6)
+    H.menuActionButton.Size = if firstCardAction then UDim2.new(1, -24, 0, 52) else UDim2.new(1, -12, 0, 54)
+    H.menuActionButton.TextSize = if firstCardAction then 19 else 20
+    H.menuActionDock.Visible = gallery and not firstCardAction
+  end
   if three then
     -- [가로 공통] 왼쪽 17% 시설 선택 / 가운데 31% 대형 원화 / 오른쪽 정보와 실제 행동 버튼.
     local navW = math.clamp(math.floor(width * 0.17), 138, 184)
@@ -3242,6 +3264,11 @@ menuToggle:GetPropertyChangedSignal("Visible"):Connect(function()
 end)
 
 function H.clearContent()
+	-- [시설 메뉴] 첫 판단 카드의 실행 버튼을 보존한 뒤 이전 화면을 정리한다.
+	if H.menuActionButton and H.menuActionDock and H.menuActionButton.Parent ~= H.menuActionDock then
+		H.menuActionButton.Parent = H.menuActionDock
+	end
+	H.menuFocusBanner = nil
 	for _, child in content:GetChildren() do
 		if not child:IsA("UIListLayout") then
 			child:Destroy()
@@ -10676,8 +10703,8 @@ function H.renderTabs()
 				caption.TextWrapped = false
 				caption.TextScaled = true
 				local textLimit = Instance.new("UITextSizeConstraint")
-				textLimit.MinTextSize = 14
-				textLimit.MaxTextSize = 18
+				textLimit.MinTextSize = 16
+				textLimit.MaxTextSize = 19
 				textLimit.Parent = caption
 			else
 				b.TextXAlignment = Enum.TextXAlignment.Right
@@ -12237,35 +12264,43 @@ function render()
 		-- [서재 중복 제거] 백과 표지에 발견 진행도가 있으므로 같은 숫자·설명 배너를 다시 넣지 않는다.
 		if currentTab ~= "codex" then
 		add(function()
-			-- [작은 모바일 가로화면] 큰 숫자와 조건은 유지하되 카드 높이만 적응한다.
+			-- [전 시설 공통 첫 카드] 제목 → 핵심 수치 → 조건 → 정본 실행 버튼 순으로 읽는다.
+			local wide = mainInner.AbsoluteSize.X >= 740
 			local short = mainInner.AbsoluteSize.Y < 500
-			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, if short then 120 else 172), Color3.fromRGB(64, 48, 35))
+			local bannerH = if wide then (if short then 210 else 242) else (if short then 140 else 178)
+			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, bannerH), Color3.fromRGB(64, 48, 35))
 			banner.Name = "MenuFocus_" .. currentTab
-            corner(banner, 8)
-            -- [판단 장부] 경고는 붉은 밀랍, 일반 정보는 황동 책갈피.
-            local bookmark = Instance.new("Frame")
-            bookmark.Name = "MenuFocusBookmark"
-            bookmark.BackgroundColor3 = if urgent then WAX else UI_BRASS
-            bookmark.BorderSizePixel = 0
-            bookmark.Position = UDim2.fromOffset(4, 10)
-            bookmark.Size = UDim2.new(0, 4, 1, -20)
-            bookmark.Parent = banner
-            local heading = mkLabel(banner, "◆ 핵심 판단", 19, Color3.fromRGB(255, 222, 144), true)
-			heading.Position = UDim2.fromOffset(12, 7)
-			heading.Size = UDim2.new(1, -24, 0, 26)
+			corner(banner, 8)
+			local bookmark = Instance.new("Frame")
+			bookmark.Name = "MenuFocusBookmark"
+			bookmark.BackgroundColor3 = if urgent then WAX else UI_BRASS
+			bookmark.BorderSizePixel = 0
+			bookmark.Position = UDim2.fromOffset(4, 10)
+			bookmark.Size = UDim2.new(0, 5, 1, -20)
+			bookmark.Parent = banner
+			local heading = mkLabel(banner, "◆ " .. (TAB_NAME[currentTab] or "시설") .. " · 핵심 정보", if wide then 20 else 18, Color3.fromRGB(255, 222, 144), true)
+			heading.Name = "MenuFocusHeading"
+			heading.Position = UDim2.fromOffset(14, 7)
+			heading.Size = UDim2.new(1, -28, 0, 26)
 			heading.AutomaticSize = Enum.AutomaticSize.None
-			local highlight = mkLabel(banner, fact, 23, if urgent then Color3.fromRGB(255, 142, 128) else Color3.fromRGB(255, 238, 187), true)
-			highlight.Position = UDim2.fromOffset(12, 31)
-			highlight.Size = UDim2.new(1, -24, 0, if short then 43 else 48)
+			heading.TextTruncate = Enum.TextTruncate.AtEnd
+			local highlight = mkLabel(banner, fact, if wide then 24 else 22, if urgent then Color3.fromRGB(255, 142, 128) else Color3.fromRGB(255, 238, 187), true)
+			highlight.Name = "MenuFocusValue"
+			highlight.Position = UDim2.fromOffset(14, 34)
+			highlight.Size = UDim2.new(1, -28, 0, 48)
 			highlight.AutomaticSize = Enum.AutomaticSize.None
 			highlight.TextWrapped = true
-			local explanation = mkLabel(banner, context, 17, Color3.fromRGB(249, 232, 207), true)
-			explanation.Position = UDim2.fromOffset(12, if short then 76 else 84)
-			explanation.Size = UDim2.new(1, -24, 0, if short then 39 else 82)
+			local explanation = mkLabel(banner, context, if wide then 18 else 17, Color3.fromRGB(249, 232, 207), true)
+			explanation.Name = "MenuFocusDescription"
+			explanation.Position = UDim2.fromOffset(14, if wide then 88 else 84)
+			explanation.Size = UDim2.new(1, -28, 0, if wide then (if short then 59 else 85) else (if short then 49 else 86))
 			explanation.TextTruncate = Enum.TextTruncate.AtEnd
 			explanation.AutomaticSize = Enum.AutomaticSize.None
 			explanation.TextWrapped = true
 			explanation.TextYAlignment = Enum.TextYAlignment.Top
+			-- [단일 행동] 클릭/검사 이름/서버 호출을 가진 기존 버튼을 이동한다.
+			H.menuFocusBanner = banner
+			H.layoutBook()
 			return banner
 		end)
 		end
