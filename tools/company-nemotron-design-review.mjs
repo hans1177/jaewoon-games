@@ -37,6 +37,12 @@ export const DESIGN_FREE_MODELS = Object.freeze([
   {id: 'OPENROUTER_NEMOTRON', provider: 'OPENROUTER', model: 'nvidia/nemotron-3.5-super-vl:free',
     role: 'NPC', keyName: 'OPENROUTER_API_KEY', verifiedName: 'OPENROUTER_DESIGN_FREE_TIER_VERIFIED',
     endpoint: 'https://openrouter.ai/api/v1/chat/completions'},
+  {id: 'OPENROUTER_GEMMA26', provider: 'OPENROUTER', model: 'google/gemma-4-26b-a4b-it:free',
+    role: 'WORLD', keyName: 'OPENROUTER_API_KEY', verifiedName: 'OPENROUTER_DESIGN_FREE_TIER_VERIFIED',
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions'},
+  {id: 'OPENROUTER_OMNI', provider: 'OPENROUTER', model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
+    role: 'MOTION', keyName: 'OPENROUTER_API_KEY', verifiedName: 'OPENROUTER_DESIGN_FREE_TIER_VERIFIED',
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions'},
   {id: 'GEMINI_LITE', provider: 'GEMINI', model: 'gemini-2.5-flash-lite',
     role: 'GENERAL', keyName: 'GEMINI_API_KEY', verifiedName: 'GEMINI_DESIGN_FREE_TIER_VERIFIED',
     endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent'}
@@ -60,6 +66,7 @@ export function designRoleForFrames(frameNames = []) {
   const names = frameNames.join(' ').toLowerCase();
   if (/(npc|face|hair|outfit|villager|resident|skin|citizen)/.test(names)) return 'NPC';
   if (/(hud|menu|gui|card|map_ui|inventory|font|interface)/.test(names)) return 'UI';
+  if (/(animation|motion|idle|run|walk|attack|swing|movement)/.test(names)) return 'MOTION';
   if (/(harbor|sea|ship|port|island|landscape|world|voyage|town|lighting|field)/.test(names)) return 'WORLD';
   return 'GENERAL';
 }
@@ -75,26 +82,21 @@ export function selectFreeDesignModels({
   const role = designRoleForFrames(frameNames);
   const today = new Date(now).toISOString().slice(0, 10);
   const spent = previous?.usageWindow?.day === today ? previous.usageWindow.calls || {} : {};
-  return DESIGN_FREE_MODELS.filter(model =>
-    approved.has(model.id) && trim(env[model.keyName]) &&
-    trim(env[model.verifiedName]) === 'YES' &&
-    (model.provider !== 'OPENROUTER' || model.model.endsWith(':free')) &&
-    Number(spent[model.provider] || 0) < DAILY_LIMIT[model.provider] &&
-    Date.parse(previous?.cooldowns?.[model.id] || '') <= now ||
-    // A missing persisted cooldown must be treated as eligible, not as an invalid date.
-    approved.has(model.id) && trim(env[model.keyName]) &&
-    trim(env[model.verifiedName]) === 'YES' &&
-    (model.provider !== 'OPENROUTER' || model.model.endsWith(':free')) &&
-    Number(spent[model.provider] || 0) < DAILY_LIMIT[model.provider] &&
-    !previous?.cooldowns?.[model.id]
-  ).sort((left, right) => {
-    const score = model => (model.role === role ? 100 : model.role === 'GENERAL' ? 50 : 70) +
-      (role === 'NPC' && model.id === 'NVIDIA_VL' ? 8 : 0) +
-      (role === 'UI' && model.id === 'OPENROUTER_GEMMA' ? 8 : 0) +
-      (role === 'WORLD' && model.id === 'GEMINI_FLASH' ? 8 : 0);
-    return score(right) - score(left) || DESIGN_FREE_MODELS.indexOf(left) - DESIGN_FREE_MODELS.indexOf(right);
+  const eligible = DESIGN_FREE_MODELS.filter(model => {
+    const cooling = Date.parse(previous?.cooldowns?.[model.id] || '');
+    return approved.has(model.id) && trim(env[model.keyName]) &&
+      trim(env[model.verifiedName]) === 'YES' &&
+      (model.provider !== 'OPENROUTER' || model.model.endsWith(':free')) &&
+      Number(spent[model.provider] || 0) < DAILY_LIMIT[model.provider] &&
+      (!Number.isFinite(cooling) || cooling <= now);
   });
+  const preference = config.roles?.[role] || [];
+  return eligible.sort((left, right) =>
+    (preference.indexOf(left.id) < 0 ? 999 : preference.indexOf(left.id)) -
+    (preference.indexOf(right.id) < 0 ? 999 : preference.indexOf(right.id)) ||
+    DESIGN_FREE_MODELS.indexOf(left) - DESIGN_FREE_MODELS.indexOf(right));
 }
+
 function cooldownAfter(response, status, error = null) {
   const raw = trim(response?.headers?.get?.('retry-after'));
   const seconds = Number(raw);
