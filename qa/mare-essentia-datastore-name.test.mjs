@@ -2556,3 +2556,60 @@ test('오픈라우터 공식 무료 계정 상태를 조회하고 미공개 호�
       data: {free_model_daily_requests: {used: 1, limit: 50, remaining: 49}}
     })})}), null, '공식 명세에 없는 필드는 무료 잔량 증거로 사용 금지');
 });
+
+// [네모트론 빈 답변 방지] 2026-11-18 실제 무료 호출이 EMPTY_OUTPUT으로 끝난 증거에 대응한다.
+// 공식 NVIDIA 추론 비활성 옵션을 실전 요청 본문에 직접 싣고, 다른 무료 제공자 요청은 보존한다.
+test('네모트론 3.5 실제 이미지 API 요청은 추론 토큰 낭비 없이 JSON 본문을 받는다', async () => {
+  const {DESIGN_FREE_MODELS, callFreeDesignModel} =
+    await import('../tools/company-nemotron-design-review.mjs');
+  const nvidia = DESIGN_FREE_MODELS.find(row => row.id === 'NVIDIA_VL');
+  const router = DESIGN_FREE_MODELS.find(row => row.id === 'OPENROUTER_GEMMA');
+  assert.ok(nvidia && router);
+  const env = {NVIDIA_API_KEY: 'fixture-key', OPENROUTER_API_KEY: 'fixture-other-key'};
+  const frame = {name: 'harbor_npc_face_front-0.jpg', url: 'data:image/jpeg;base64,YWJj'};
+  let calls = 0;
+  const stub = async (url, request) => {
+    calls++;
+    assert.equal(request.method, 'POST');
+    const body = JSON.parse(request.body);
+    assert.equal(body.stream, false);
+    assert.equal(body.messages[0].content[1].image_url.url, frame.url);
+    if (body.model === nvidia.model) {
+      assert.equal(url, nvidia.endpoint);
+      assert.equal(request.headers.Authorization, 'Bearer fixture-key');
+      assert.deepEqual(body.chat_template_kwargs, {enable_thinking: false},
+        'NVIDIA 공식 직접 답변 모드로 빈 추론 출력 차단');
+    } else {
+      assert.equal(url, router.endpoint);
+      assert.equal(request.headers.Authorization, 'Bearer fixture-other-key');
+      assert.equal(body.chat_template_kwargs, undefined,
+        '다른 제공자 전용 요청 구조를 임의 변경하지 않는다');
+    }
+    return {ok: true, json: async () => ({
+      usage: {cost: 0},
+      choices: [{finish_reason: 'stop', message: {content: '{"issues":[],"edits":[]}'}}]
+    })};
+  };
+  const result = await callFreeDesignModel(nvidia, 'Inspect verified photo', [frame], stub, env);
+  assert.equal(result.status, 'OK');
+  assert.equal(JSON.parse(result.text).edits.length, 0);
+  assert.equal((await callFreeDesignModel(router, 'Inspect photo', [frame], stub, env)).status, 'OK');
+  assert.equal(calls, 2);
+  const exceeded = await callFreeDesignModel(nvidia, 'Inspect photo', [frame],
+    async () => ({ok: true, json: async () => ({
+      choices: [{finish_reason: 'length', message: {content: ''}}]
+    })}), env);
+  assert.equal(exceeded.status, 'EMPTY_OUTPUT_TOKEN_LIMIT',
+    '토큰 소진을 정상 검증이나 수정 성공으로 위장하지 않는다');
+  const empty = await callFreeDesignModel(nvidia, 'Inspect photo', [frame],
+    async () => ({ok: true, json: async () => ({
+      choices: [{finish_reason: 'stop', message: {content: ''}}]
+    })}), env);
+  assert.equal(empty.status, 'EMPTY_OUTPUT');
+  const paid = await callFreeDesignModel(nvidia, 'Inspect photo', [frame],
+    async () => ({ok: true, json: async () => ({
+      usage: {cost: 0.01}, choices: [{message: {content: '{}'}}]
+    })}), env);
+  assert.equal(paid.status, 'NONZERO_COST_BLOCKED',
+    '유료 호출 결과는 어떤 모델의 답변이라도 후보로 수용하지 않는다');
+});
