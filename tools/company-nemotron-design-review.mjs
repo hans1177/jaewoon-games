@@ -22,14 +22,159 @@ const protectedCode = /\b(?:DataStore|RemoteEvent|RemoteFunction|FireServer|Fire
 const visualCode = /Color3\.(?:new|fromRGB|fromHSV)\(|Enum\.(?:Material|Font|EasingStyle|TextXAlignment|TextYAlignment)\.|\.(?:Color|Color3|TextColor3|BackgroundColor3|ImageColor3|Transparency|TextTransparency|BackgroundTransparency|ImageTransparency|LightInfluence|Material|Font|TextSize|Size|Position|Rotation|Scale|Brightness|Contrast|Saturation|FieldOfView|Ambient|OutdoorAmbient|Reflectance|Emission|StrokeThickness)\s*=|(?:UDim2|UDim)\.new\(/;
 const quoted = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g;
 
+// [무료 디자인 전문 모델] 고정 무료 모델만 허용하고, 모델이 응답으로 경로/제공자를 선택하지 못한다.
+// 기능별 순위는 검사 전 고정한다. 실제 검증된 성과가 없으면 학습 점수를 만들지 않는다.
+export const DESIGN_FREE_MODELS = Object.freeze([
+  {id: 'NVIDIA_VL', provider: 'NVIDIA', model: 'nvidia/nemotron-3.5-super-vl-120b-a12b',
+    role: 'NPC', keyName: 'NVIDIA_API_KEY', verifiedName: 'NVIDIA_FREE_TIER_VERIFIED',
+    endpoint: 'https://integrate.api.nvidia.com/v1/chat/completions'},
+  {id: 'GEMINI_FLASH', provider: 'GEMINI', model: 'gemini-2.5-flash',
+    role: 'WORLD', keyName: 'GEMINI_API_KEY', verifiedName: 'GEMINI_DESIGN_FREE_TIER_VERIFIED',
+    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'},
+  {id: 'OPENROUTER_GEMMA', provider: 'OPENROUTER', model: 'google/gemma-4-31b-it:free',
+    role: 'UI', keyName: 'OPENROUTER_API_KEY', verifiedName: 'OPENROUTER_DESIGN_FREE_TIER_VERIFIED',
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions'},
+  {id: 'OPENROUTER_NEMOTRON', provider: 'OPENROUTER', model: 'nvidia/nemotron-3.5-super-vl:free',
+    role: 'NPC', keyName: 'OPENROUTER_API_KEY', verifiedName: 'OPENROUTER_DESIGN_FREE_TIER_VERIFIED',
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions'},
+  {id: 'GEMINI_LITE', provider: 'GEMINI', model: 'gemini-2.5-flash-lite',
+    role: 'GENERAL', keyName: 'GEMINI_API_KEY', verifiedName: 'GEMINI_DESIGN_FREE_TIER_VERIFIED',
+    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent'}
+]);
+const DAILY_LIMIT = Object.freeze({NVIDIA: 12, GEMINI: 12, OPENROUTER: 30});
+const designRuntime = {usageWindow: null, cooldowns: {}, attempts: []};
+const currentDay = () => new Date().toISOString().slice(0, 10);
+function loadPreviousDesignUsage(previous = {}) {
+  const nowDay = currentDay();
+  designRuntime.usageWindow = {day: nowDay, calls: previous?.usageWindow?.day === nowDay
+    ? Object.fromEntries(Object.entries(previous.usageWindow.calls || {})
+      .filter(([name, count]) => Object.hasOwn(DAILY_LIMIT, name) &&
+        Number.isInteger(count) && count >= 0 && count <= 1000))
+    : {}};
+  designRuntime.cooldowns = Object.fromEntries(Object.entries(previous?.cooldowns || {})
+    .filter(([id, until]) => DESIGN_FREE_MODELS.some(model => model.id === id) &&
+      Number.isFinite(Date.parse(until)) && Date.parse(until) > Date.now()));
+  designRuntime.attempts = [];
+}
+export function designRoleForFrames(frameNames = []) {
+  const names = frameNames.join(' ').toLowerCase();
+  if (/(npc|face|hair|outfit|villager|resident|skin|citizen)/.test(names)) return 'NPC';
+  if (/(hud|menu|gui|card|map_ui|inventory|font|interface)/.test(names)) return 'UI';
+  if (/(harbor|sea|ship|port|island|landscape|world|voyage|town|lighting|field)/.test(names)) return 'WORLD';
+  return 'GENERAL';
+}
+export function selectFreeDesignModels({
+  frameNames = [], policy, env = process.env, previous = {}, now = Date.now()
+} = {}) {
+  const config = policy?.directVisualDesign?.freeSpecialistPool;
+  if (config?.enabled !== true || config?.paidFallbackForbidden !== true ||
+    config?.maxCallsPerCapture < 1 || config?.maxCallsPerCapture > 3 ||
+    config?.accountTierProofRequired !== true)
+    throw Error('FREE_SPECIALIST_POLICY_DENIED');
+  const approved = new Set(config.modelIds || []);
+  const role = designRoleForFrames(frameNames);
+  const today = new Date(now).toISOString().slice(0, 10);
+  const spent = previous?.usageWindow?.day === today ? previous.usageWindow.calls || {} : {};
+  return DESIGN_FREE_MODELS.filter(model =>
+    approved.has(model.id) && trim(env[model.keyName]) &&
+    trim(env[model.verifiedName]) === 'YES' &&
+    (model.provider !== 'OPENROUTER' || model.model.endsWith(':free')) &&
+    Number(spent[model.provider] || 0) < DAILY_LIMIT[model.provider] &&
+    Date.parse(previous?.cooldowns?.[model.id] || '') <= now ||
+    // A missing persisted cooldown must be treated as eligible, not as an invalid date.
+    approved.has(model.id) && trim(env[model.keyName]) &&
+    trim(env[model.verifiedName]) === 'YES' &&
+    (model.provider !== 'OPENROUTER' || model.model.endsWith(':free')) &&
+    Number(spent[model.provider] || 0) < DAILY_LIMIT[model.provider] &&
+    !previous?.cooldowns?.[model.id]
+  ).sort((left, right) => {
+    const score = model => (model.role === role ? 100 : model.role === 'GENERAL' ? 50 : 70) +
+      (role === 'NPC' && model.id === 'NVIDIA_VL' ? 8 : 0) +
+      (role === 'UI' && model.id === 'OPENROUTER_GEMMA' ? 8 : 0) +
+      (role === 'WORLD' && model.id === 'GEMINI_FLASH' ? 8 : 0);
+    return score(right) - score(left) || DESIGN_FREE_MODELS.indexOf(left) - DESIGN_FREE_MODELS.indexOf(right);
+  });
+}
+function cooldownAfter(response, status, error = null) {
+  const raw = trim(response?.headers?.get?.('retry-after'));
+  const seconds = Number(raw);
+  let delay = Number.isFinite(seconds) && seconds > 0 ? seconds * 1000 : Date.parse(raw) - Date.now();
+  if (!Number.isFinite(delay) || delay < 1000) {
+    const detail = trim(error?.error?.message);
+    delay = status === 429 && /daily|per day|requestsperday|free.?tier quota/i.test(detail)
+      ? 86400000 : status === 429 ? 60000 : status === 404 ? 86400000 : 30000;
+  }
+  return Math.min(86400000, Math.max(1000, delay));
+}
+function modelAttempt(id, status, details = {}) {
+  const row = {id, status, ...details};
+  designRuntime.attempts.push(row);
+  console.log('DESIGN_FREE_MODEL_ATTEMPT=' + id + ':' + status);
+}
+async function callFreeDesignModel(model, prompt, photos, fetchImpl) {
+  const key = trim(process.env[model.keyName]);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 90000);
+  try {
+    const body = model.provider === 'GEMINI'
+      ? {contents: [{role: 'user', parts: [
+          {text: prompt}, ...photos.map(photo => {
+            const [header, data] = photo.url.split(',');
+            return {inlineData: {mimeType: header.includes('image/png') ? 'image/png' : 'image/jpeg', data}};
+          })
+        ]}], generationConfig: {temperature: 0.1, maxOutputTokens: 3500, responseMimeType: 'application/json'}}
+      : {model: model.model, stream: false, max_tokens: 3500, temperature: 0.1,
+          messages: [{role: 'user', content: [{type: 'text', text: prompt},
+            ...photos.map(photo => ({type: 'image_url', image_url: {url: photo.url}}))]}]};
+    const headers = model.provider === 'GEMINI'
+      ? {'content-type': 'application/json', 'x-goog-api-key': key}
+      : {'content-type': 'application/json', Authorization: 'Bearer ' + key};
+    const response = await fetchImpl(model.endpoint, {
+      method: 'POST', signal: controller.signal, headers, body: JSON.stringify(body)
+    });
+    if (!response.ok) {
+      let failure = null;
+      if ([400, 429].includes(response.status)) {
+        try {failure = await response.json();} catch {/* status is authoritative */}
+      }
+      const reason = trim(failure?.error?.message);
+      if (response.status === 402) return {status: 'BILLING_BLOCKED'};
+      if ([400, 403].includes(response.status) &&
+        /safety|content policy|moderation|disallowed|blocked content/i.test(reason))
+        return {status: 'CONTENT_POLICY_BLOCKED'};
+      if ([401, 403].includes(response.status)) return {status: 'AUTH_BLOCKED'};
+      return {status: 'HTTP_' + response.status,
+        retryAfterMs: cooldownAfter(response, response.status, failure)};
+    }
+    const payload = await response.json();
+    if (Number(payload?.usage?.cost || 0) > 0) return {status: 'NONZERO_COST_BLOCKED'};
+    const content = model.provider === 'GEMINI'
+      ? (payload?.candidates?.[0]?.content?.parts || []).filter(x => typeof x?.text === 'string')
+          .map(x => x.text).join('')
+      : payload?.choices?.[0]?.message?.content;
+    const text = typeof content === 'string' ? content
+      : Array.isArray(content) ? content.map(x => trim(x?.text)).join('') : '';
+    return text.trim() ? {status: 'OK', text} : {status: 'EMPTY_OUTPUT', retryAfterMs: 30000};
+  } catch (error) {
+    if (error?.name === 'AbortError' || error instanceof TypeError || error instanceof SyntaxError)
+      return {status: 'TRANSPORT_OR_TIMEOUT', retryAfterMs: 30000};
+    return {status: 'INTERNAL_ERROR', retryAfterMs: 30000};
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+
 export function authorizedCandidateBranch(name, runId) {
   return /^[0-9]{5,}$/.test(String(runId ?? '')) &&
     name === 'nemotron-mare-design-' + String(runId);
 }
 
 function record(status, fields = {}) {
-  const report = {version: 2, provider: 'NVIDIA', model: MODEL, gameId: 'mare-essentia',
-    sourceRevision: trim(process.env.GITHUB_SHA), status, ...fields};
+  const report = {version: 3, provider: 'MULTI_FREE_VISUAL', gameId: 'mare-essentia',
+    sourceRevision: trim(process.env.GITHUB_SHA), status,
+    usageWindow: designRuntime.usageWindow, cooldowns: designRuntime.cooldowns,
+    attempts: designRuntime.attempts, ...fields};
   fs.mkdirSync(path.dirname(reportPath), {recursive: true});
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n');
   console.log('NEMOTRON_DESIGN_STATUS=' + status);
@@ -219,10 +364,18 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     return record('SKIPPED_STUDIO_SOURCE_EVIDENCE_MISMATCH', {frames: proofs});
   if (trim(process.env.COMPANY_EXTERNAL_AI_ENABLED) !== 'YES')
     return record('SKIPPED_EXTERNAL_AI_OPT_IN_REQUIRED', {frames: proofs});
-  if (trim(process.env.NVIDIA_FREE_TIER_VERIFIED) !== 'YES')
-    return record('SKIPPED_FREE_TIER_UNVERIFIED', {frames: proofs});
-  if (!trim(process.env.NVIDIA_API_KEY))
-    return record('SKIPPED_API_KEY_MISSING', {frames: proofs});
+  // [재사용 이력] 기존 Studio 증거 브랜치에 저장된 호출 한도와 제공자 쿨다운.
+  let previous = {};
+  try {
+    if (options.previous && fs.existsSync(path.resolve(options.previous)))
+      previous = JSON.parse(fs.readFileSync(path.resolve(options.previous), 'utf8'));
+  } catch {/* 손상된 이력은 권한을 주지 않고 신규 증거로만 처리한다. */}
+  loadPreviousDesignUsage(previous);
+  const freeModels = selectFreeDesignModels({
+    frameNames: photos.map(photo => photo.name), policy, previous
+  });
+  if (!freeModels.length)
+    return record('SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE', {frames: proofs});
   if (trim(process.env.NEMOTRON_DESIGN_CANDIDATE) !== 'YES')
     return record('SKIPPED_CANDIDATE_EDIT_NOT_ENABLED', {frames: proofs});
   let branch = '';
@@ -252,39 +405,57 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
       maxReplacementBytes: contract.maximumReplacementBytes}) + '. ' +
     'Screenshots: ' + JSON.stringify(photos.map(x => x.name)) + '. ' +
     'Existing verified source anchors: ' + JSON.stringify(anchors);
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 90000);
-  try {
-    const response = await fetchImpl(ENDPOINT, {
-      method: 'POST', signal: controller.signal,
-      headers: {Authorization: 'Bearer ' + trim(process.env.NVIDIA_API_KEY),
-        'Content-Type': 'application/json'},
-      body: JSON.stringify({model: MODEL, stream: false, max_tokens: 3500,
-        messages: [{role: 'user', content: [{type: 'text', text: prompt},
-          ...photos.map(photo => ({type: 'image_url', image_url: {url: photo.url}}))]}]})
-    });
-    if (!response.ok) return record('UNVERIFIED_HTTP_' + response.status, {frames: proofs});
-    const payload = await response.json();
-    const raw = payload?.choices?.[0]?.message?.content;
-    const reviewed = validateReview(raw, photos.map(photo => photo.name), contract, anchors);
+  // [메인] 가장 적합한 무료 전문가부터 시도하고 한도/출력 오류면 다른 무료 전문가에게 넘긴다.
+  // 유료/안전 거부가 발견되면 중단. 동일 모델에 재시도 폭증·유료 전환 없음.
+  const routeLimit = policy.directVisualDesign.freeSpecialistPool.maxCallsPerCapture;
+  for (const model of freeModels.slice(0, routeLimit)) {
+    const previousCount = designRuntime.usageWindow.calls[model.provider] || 0;
+    if (previousCount >= DAILY_LIMIT[model.provider]) continue;
+    designRuntime.usageWindow.calls[model.provider] = previousCount + 1;
+    const result = await callFreeDesignModel(model, prompt, photos, fetchImpl);
+    modelAttempt(model.id, result.status, {provider: model.provider, model: model.model});
+    if (['BILLING_BLOCKED', 'NONZERO_COST_BLOCKED', 'CONTENT_POLICY_BLOCKED'].includes(result.status))
+      return record('BLOCKED_FREE_POLICY_OR_CONTENT', {frames: proofs, lastModel: model.id});
+    if (result.status !== 'OK') {
+      if (result.retryAfterMs)
+        designRuntime.cooldowns[model.id] = new Date(Date.now() + result.retryAfterMs).toISOString();
+      continue;
+    }
+    let reviewed;
+    try {
+      reviewed = validateReview(result.text, photos.map(photo => photo.name), contract, anchors);
+    } catch (error) {
+      modelAttempt(model.id, 'REVIEW_INVALID', {
+        failureSignature: trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 90)});
+      continue;
+    }
     const originals = Object.fromEntries([...new Set(reviewed.edits.map(edit => edit.path))]
       .map(file => [file, fs.readFileSync(path.join(root, file), 'utf8')]));
-    const candidate = applyVisualReplacements(originals, reviewed.edits, contract);
-    const evidence = {frames: proofs, rawResponseSha256: digest(trim(raw)),
+    let candidate;
+    try {
+      candidate = applyVisualReplacements(originals, reviewed.edits, contract);
+    } catch (error) {
+      modelAttempt(model.id, 'SOURCE_ANCHOR_INVALID', {
+        failureSignature: trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 90)});
+      continue;
+    }
+    const evidence = {frames: proofs, provider: model.provider, model: model.model,
+      selectedRole: designRoleForFrames(photos.map(photo => photo.name)),
+      rawResponseSha256: digest(result.text),
       issues: reviewed.issues, edits: candidate.changes,
       sourceHashes: [...candidate.files].map(([file, content]) =>
         ({path: file, beforeSha256: digest(originals[file]), afterSha256: digest(content)})),
       candidateOnly: true, independentQaPassed: false, afterStudioPassed: false,
       releasePassed: false};
-    if (!candidate.changes.length) return record('REVIEWED_NO_EDIT', evidence);
+    if (!candidate.changes.length) {
+      modelAttempt(model.id, 'NO_VALID_EDIT');
+      continue;
+    }
     for (const [file, content] of candidate.files) fs.writeFileSync(path.join(root, file), content);
     return record('CANDIDATE_EDITED', evidence);
-  } catch (error) {
-    return record('UNVERIFIED_REVIEW_ERROR', {frames: proofs,
-      reason: trim(error?.message).slice(0, 120).replace(/[^\w:.-]/g, '_')});
-  } finally {
-    clearTimeout(timeout);
   }
+  return record('REVIEWED_NO_VERIFIED_EDIT', {frames: proofs,
+    independentQaPassed: false, afterStudioPassed: false, releasePassed: false});
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   reviewNemotron().catch(error => {
