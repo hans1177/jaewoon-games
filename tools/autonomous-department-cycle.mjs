@@ -76,7 +76,10 @@ async function callRole(role,ctx){
       const response=await requestGeminiFreePair({
         apiKey,contents:[{role:'user',parts:[{text:rolePrompt({role,...ctx})}]}],
         maxOutputTokens:MAX_PREDICT,temperature:.1,timeoutMs:TIMEOUT_MS,
-        responseMimeType:'application/json'
+        responseMimeType:'application/json',
+        specialistDepartment:role===FINAL_ROLE?'PLANNING':role.toUpperCase(),
+        specialistTask:ctx.order?.goal||'',
+        specialistFiles:ctx.order?.responsibilityFiles||[]
       });
       const value=JSON.parse(clean(response.text));
       if(!SCHEMA.properties.decision.enum.includes(value.decision)||!clean(value.nextAction))
@@ -85,7 +88,9 @@ async function callRole(role,ctx){
       return {role,department:ROLE_NAME[role],workState:'DONE',decision:value.decision,summary:clean(value.summary),
         nextAction:clean(value.nextAction),checks:Array.isArray(value.checks)?value.checks.map(clean).filter(Boolean).slice(0,4):[],
         risks:Array.isArray(value.risks)?value.risks.map(clean).filter(Boolean).slice(0,4):[],
-        model:response.model,attempt,startedAt,completedAt,modelMetrics:null};
+        model:response.model,provider:response.provider,
+        specialistDomain:role===FINAL_ROLE?'PLANNING':role.toUpperCase(),
+        attempt,startedAt,completedAt,modelMetrics:null};
     }catch(error){
       lastError=error;
       if(error?.vibe2InfrastructureFailure===true)break;
