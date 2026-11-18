@@ -127,7 +127,7 @@ test('Studio 완료와 System AI 완료로 10분 예약 누락을 복구하고 5
   assert.match(y, /if: env\.AUTOPILOT_SKIP != 'true'/);
   assert.match(fs.readFileSync('tools/vibe-autopilot.mjs', 'utf8'), /ledger\.lastDecisionAt = decisionAt/);
   const b = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
-  assert.match(b, /workflows: \['Vibe Autopilot'\]/);
+  assert.match(b, /workflows: \['Vibe Autopilot', 'Devloop Studio Capture'\]/);
   const now = Date.now();
   let L = emptyLedger();
   L = markDispatched(L, { game: 'fantasy-survival', kind: 'health' }, now - 2 * 60000, 'a');
