@@ -1319,6 +1319,14 @@ function FieldScene.start(opts)
 		UDim2.new(1, -12, 0, 12), Vector2.new(1, 0))
 	cameraBtn.Name = "FieldCameraMode"
 	cameraBtn.TextSize = 14
+	-- [시야 버튼] 전투 아이콘용 장식을 걷어 텍스트 대비를 확보한다.
+	cameraBtn.TextYAlignment = Enum.TextYAlignment.Center
+	cameraBtn.TextStrokeTransparency = 1
+	cameraBtn:FindFirstChildOfClass("UIStroke").ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	local cameraGradient = cameraBtn:FindFirstChildOfClass("UIGradient")
+	if cameraGradient then cameraGradient:Destroy() end
+	local cameraGrain = cameraBtn:FindFirstChild("FieldLeatherTexture")
+	if cameraGrain then cameraGrain:Destroy() end
 	cameraBtn.Activated:Connect(function()
 		if finished then return end
 		local nextIndex = cameraIndex % #cameraModes + 1
@@ -2472,7 +2480,7 @@ function FieldScene.start(opts)
 			dialogueFrame.Name = "FieldCompanionDialogue"
 			dialogueFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 			dialogueFrame.Position = UDim2.fromScale(0.5, if workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.Y < 350 then 0.68 else 0.57)
-			dialogueFrame.Size = UDim2.new(0.62, 0, 0, if compactTouch then 76 else 70)
+			dialogueFrame.Size = UDim2.new(if compactTouch then 0.62 else 0.45, 0, 0, if compactTouch then 76 else 70)
 			dialogueFrame.BackgroundColor3 = Color3.fromRGB(29, 35, 47)
 			dialogueFrame.BackgroundTransparency = 0.13
 			dialogueFrame.BorderSizePixel = 0
@@ -6805,9 +6813,10 @@ function FieldScene.start(opts)
 				elseif visualMobile then 80 else 82),
 			if compactTouch then UDim2.new(1, -68, 1, -315)
 				elseif visualMobile then UDim2.new(1,
-					if workspace.CurrentCamera.ViewportSize.X < 780 then -90 else -175,
+					-175,
 					1, if workspace.CurrentCamera.ViewportSize.Y < 330 then -181 else -225)
-				else UDim2.new(1, attackBtn.Position.X.Offset - 12, 1, attackBtn.Position.Y.Offset - 182),
+				else UDim2.new(1, if workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.Y < 440
+					then -175 else attackBtn.Position.X.Offset - 12, 1, attackBtn.Position.Y.Offset - 182),
 			Vector2.new(0.5, 0.5))
 		wbtn.Name = "FieldWeapon"
 		wbtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
