@@ -480,3 +480,25 @@ test('Groq header quota is model-scoped and exhaustion suppresses next free call
     assert.equal(groqCalls,1,'잔량 0 응답 뒤에는 추가 그록 요청이 없어야 한다');
   });
 });
+
+
+// [무료 충원 시각 회귀] Gemini만 태평양 자정에 맞추고 타 공급자 쿨다운은 변경하지 않는다.
+test('Gemini daily quota auto-refill observes Pacific midnight and daylight saving',async()=>{
+  const {geminiPacificDailyRefillDelayMs,retryDelayMs}=await import(
+    '../tools/vibe2-gemini-free-rotation.mjs?pacific-reset='+Date.now());
+  const winter=Date.parse('2026-11-18T07:59:00Z');
+  const summer=Date.parse('2026-07-18T06:59:00Z');
+  assert.equal(geminiPacificDailyRefillDelayMs(winter),60000);
+  assert.equal(geminiPacificDailyRefillDelayMs(summer),60000);
+  assert.equal(geminiPacificDailyRefillDelayMs(Date.parse('2026-11-18T08:01:00Z')),
+    (23*60+59)*60000);
+  const daily={error:{message:'GenerateRequestsPerDayPerProjectPerModel-FreeTier reached'}};
+  const noHeader={headers:{get:()=>null}};
+  assert.equal(retryDelayMs(noHeader,429,daily,{provider:'GEMINI',now:winter}),60000);
+  assert.equal(retryDelayMs(noHeader,429,daily,{provider:'GEMINI',now:summer}),60000);
+  assert.equal(retryDelayMs(noHeader,429,daily,{provider:'GENERIC',now:winter}),86400000,
+    '그록/오픈라우터에 제미나이 리셋 시각을 적용하지 않는다');
+  assert.equal(retryDelayMs({headers:{get:name=>name==='retry-after'?'75':null}},
+    429,daily,{provider:'GEMINI',now:winter}),75000,
+  '공식 재시도 시각이 존재하면 그 값을 우선한다');
+});
