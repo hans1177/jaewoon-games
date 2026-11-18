@@ -252,8 +252,12 @@ local function addHair(model, kind, color)
 		local w = Instance.new("WeldConstraint")
 		w.Part0, w.Part1 = head, q
 		w.Parent = q
+		return q
 	end
-	piece(Enum.PartType.Ball, Vector3.new(h.X * 1.12, h.Y * 0.8, h.X * 1.12), Vector3.new(0, h.Y * 0.25, h.X * 0.06))
+	-- [주민 실제 두피] 등록 헤어가 부분 메시여도 머리가 대머리처럼 드러나지 않게 머리 윗부분은 유지한다.
+	-- 기존 Hair 장식은 등록 메시가 로드되면 숨기되, 얇은 모발 베이스는 관절에 계속 붙인다.
+	local scalp = piece(Enum.PartType.Ball, Vector3.new(h.X * 1.03, h.Y * 0.42, h.X * 1.03), Vector3.new(0, h.Y * 0.41, h.X * 0.04))
+	scalp.Name = "HairScalp"
 	if kind == "long" then
 		piece(Enum.PartType.Block, Vector3.new(h.X * 1.0, h.Y * 1.5, h.X * 0.35), Vector3.new(0, -h.Y * 0.2, h.X * 0.5))
 	elseif kind == "bun" then
