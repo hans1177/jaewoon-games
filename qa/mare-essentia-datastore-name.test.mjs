@@ -1500,6 +1500,57 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.match(pose,/part\.CanCollide, part\.CanTouch, part\.CanQuery = false, false, false, false/);
 });
 
+// [항구별 3D 랜드마크] 현재 Ports 원본의 모든 항구에 개별 대표경관을 연결한다.
+test('모든 항구가 항구별 역사 경관 메시 배치를 갖고 발전도 단계가 유지된다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const ports=read('ReplicatedStorage/Shared/Ports.luau');
+ const portSection=ports.slice(ports.indexOf('local Ports:'),ports.indexOf('local Nations:'));
+ const portIds=[...portSection.matchAll(/^\t([a-z][a-z0-9_]*)\s*=\s*\{\s*\n\s*id = /gm)].map(row=>row[1]);
+ const sigIds=new Set([...scene.matchAll(/\bSIG\.([a-z][a-z0-9_]*)\s*=/g)].map(row=>row[1]));
+ assert.ok(portIds.length>=181,'기존 항구 데이터가 유지돼야 한다');
+ assert.deepEqual(portIds.filter(id=>!sigIds.has(id)),[],'개별 랜드마크가 없는 항구');
+ assert.match(scene,/local list = SIG\[info\.portId\]/);
+ assert.match(scene,/if sceneLevel < 3 then/);
+ assert.match(scene,/if sceneLevel == 2 then/);
+ assert.match(scene,/if list then/);
+ assert.match(scene,/local function placeSignature\(folder, info\)/);
+ assert.match(scene,/SIG\.tainan = cat\(one\("Town", "eastasia-base"/);
+ assert.match(scene,/one\("Town", "eastasia-roof", 28, -9, 0, 11\)/);
+});
+
+// [건축·가축 재질] 원본 색상맵이 있을 때 색을 한 번만 반영하고 무텍스처 모델만 재질을 보완한다.
+test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR 색 중복을 막는다',()=>{
+ const port=read('ReplicatedStorage/Shared/PortScene.luau');
+ const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+ const cultures=read('ReplicatedStorage/Shared/PortCultures.luau');
+ for(const [name,scene] of [['항구',port],['탐험',field]]){
+  const start=scene.indexOf('if textured and not detail then');
+  const stop=scene.indexOf('elseif not textured and not sa',start);
+  assert.ok(start>0&&stop>start,name+' 가축 자연 재질 처리 경로');
+  const block=scene.slice(start,stop);
+  assert.match(block,/if sa and sa\.ColorMap ~= "" then/);
+  assert.match(block,/sa\.Color = sa\.Color:Lerp\(tint, 0\.16\)/);
+  assert.match(block,/elseif not sa then/);
+  assert.match(block,/Enum\.Material\.Fabric/);
+  assert.match(block,/Enum\.Material\.Leather/);
+  assert.match(block,/Enum\.Material\.Concrete/);
+  assert.match(block,/Enum\.Material\.SmoothPlastic/);
+  assert.match(block,/if not sa then/);
+  assert.doesNotMatch(block,/Lerp\(tint, 0\.24\)/,'PBR 색 중복 혼합 복원 금지');
+ }
+ assert.match(port,/local textured = sa ~= nil or \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\)/);
+ assert.match(port,/if not textured then[\s\S]*?p\.Material = selected/);
+ for(const name of ['Plaster','ClayRoofTiles','RoofShingles','WoodPlanks','Limestone']){
+  assert.ok(port.includes('Enum.Material.'+name)||cultures.includes('Enum.Material.'+name),'건축 재질 누락 '+name);
+ }
+ assert.match(cultures,/STYLE\.iberia\.mat, STYLE\.italy\.mat/);
+ assert.match(cultures,/Enum\.Material\.ClayRoofTiles/);
+ assert.match(cultures,/Enum\.Material\.Plaster/);
+ assert.match(cultures,/Enum\.Material\.RoofShingles/);
+ assert.match(port,/local lastDecorationGrowth = \{\}/);
+ assert.match(port,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
+});
+
 // [가축 실물 비율·자연 품종색] 목장/동물원/왕궁 기마병/탐험 현장 공통 규격 회귀.
 test('성체 말과 주요 가축의 크기·품종색은 항구와 탐험이 공유하고 원본 텍스처를 보존한다',()=>{
  const scene=read('ReplicatedStorage/Shared/PortScene.luau');
