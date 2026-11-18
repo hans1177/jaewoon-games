@@ -35,6 +35,20 @@ test('growth marketing fetches only the canonical runtime refs it consumes',()=>
   assert.match(workflow,/"\$CONTROL_BRANCH:refs\/remotes\/origin\/\$CONTROL_BRANCH"/);
 });
 
+test('System AI workers reuse only the canonical verified free-model rotation',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-system-ai-workers.yml',import.meta.url),'utf8');
+  const begin=workflow.indexOf('      - name: Execute external AI assignment');
+  const end=workflow.indexOf('      - name: Verify no-change assignment',begin);
+  assert.ok(begin>=0&&end>begin,'existing System AI model step must remain the only free-route owner');
+  const modelStep=workflow.slice(begin,end);
+  assert.match(modelStep,/GEMINI_API_KEY: \\\$\\{\\{ secrets\\.GEMINI_API_KEY \\}\\}/);
+  assert.match(modelStep,/GROQ_API_KEY: \\\$\\{\\{ secrets\\.GROQ_API_KEY \\}\\}/);
+  assert.match(modelStep,/OPENROUTER_API_KEY: \\\$\\{\\{ secrets\\.OPENROUTER_API_KEY \\}\\}/);
+  assert.match(modelStep,/VIBE2_GROQ_FREE_PLAN_VERIFIED: \\\$\\{\\{ vars\\.VIBE2_GROQ_FREE_PLAN_VERIFIED \\|\\| 'NO' \\}\\}/);
+  assert.match(modelStep,/VIBE2_EXTERNAL_FREE_ROTATION: 'YES'/);
+  assert.doesNotMatch(modelStep,/VIBE2_GROQ_FREE_PLAN_VERIFIED \\|\\| 'YES'/);
+});
+
 test('shared System AI worker loads latest main without downloading repository history',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-system-ai-workers.yml',import.meta.url),'utf8');
   const worker=workflow.slice(workflow.indexOf('\n  worker:'),workflow.indexOf('\n  fan_in:'));
