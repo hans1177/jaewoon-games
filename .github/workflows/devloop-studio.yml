@@ -678,6 +678,21 @@ jobs:
                 if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $visualProof)) {
                   Write-Host 'DESIGN_AUTO_MERGE=BLOCKED_VISUAL_REVIEW_EXECUTION'
                 } else {
+                  # [검증 증거 보존] 성공·실패 모두 기존 7일 Studio 기록 브랜치에 저장한다.
+                  # 기존 QA 저장소 외 별도 로그/큐를 만들지 않는다.
+                  $proofDir = Join-Path (Join-Path $dst 'runs') $env:GITHUB_RUN_ID
+                  if (-not (Test-Path -LiteralPath $proofDir -PathType Container)) { throw 'DESIGN_STUDIO_PROOF_ARCHIVE_MISSING' }
+                  Copy-Item -LiteralPath $visualProof -Destination (Join-Path $dst 'design-visual-comparison.json') -Force
+                  Copy-Item -LiteralPath $visualProof -Destination (Join-Path $proofDir 'design-visual-comparison.json') -Force
+                  Push-Location $dst
+                  try {
+                    & git add -- 'design-visual-comparison.json' "runs/$env:GITHUB_RUN_ID/design-visual-comparison.json"
+                    & git commit -q -m "Studio independent design comparison $env:GITHUB_RUN_ID"
+                    if ($LASTEXITCODE -ne 0) { throw 'DESIGN_STUDIO_PROOF_COMMIT_FAILED' }
+                    & git push -q $remote "HEAD:refs/heads/$($env:CAP_GAME)-studio-frames"
+                    if ($LASTEXITCODE -ne 0) { throw 'DESIGN_STUDIO_PROOF_PUSH_FAILED' }
+                    Write-Host 'DESIGN_STUDIO_COMPARISON_ARCHIVED=YES'
+                  } finally { Pop-Location }
                   $visual = Get-Content -LiteralPath $visualProof -Encoding UTF8 -Raw | ConvertFrom-Json
                   if ([string]$visual.status -ne 'VISUAL_BEFORE_AFTER_PASS' -or
                       $visual.independentQaPassed -ne $true -or $visual.afterStudioPassed -ne $true -or
