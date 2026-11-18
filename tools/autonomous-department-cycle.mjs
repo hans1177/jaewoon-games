@@ -85,7 +85,8 @@ async function callRole(role,ctx){
   const specialistDomain=selectVibe59FreeExperts({department:specialistDepartment,
     taskText:specialistTask,responsibleFiles:specialistFiles,includeUnconfigured:true}).domain;
   if(!apiKey&&!selectVibe59FreeExperts({department:specialistDepartment,
-    taskText:specialistTask,responsibleFiles:specialistFiles}).expertCandidates.length)
+    taskText:specialistTask,responsibleFiles:specialistFiles,includeUnconfigured:true})
+    .expertCandidates.some(row=>row.available))
     throw new Error('DEPARTMENT_GEMINI_KEY_REQUIRED_NO_LOCAL_FALLBACK');
   for(let attempt=1;attempt<=2;attempt++){
     try{
