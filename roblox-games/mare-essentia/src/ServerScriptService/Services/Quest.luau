@@ -7,7 +7,7 @@ return function(D, S)
 	local MAX_ACTIVE = 5
 
 	-- 발견·방문·연구처럼 플레이어 상태만으로 진행도가 정해지는 퀘스트는 수락하지 않아도 자동으로 보고된다.
-	local AUTO_KINDS = { discover_card = true, discover = true, field = true, visit = true, research = true, understand = true, understand_card = true, present = true, expo = true, joint = true, port_tech = true, landmark = true, launch = true, era = true, stock = true, dividend = true, history = true, people = true, people_talk = true, order_patrol = true }
+	local AUTO_KINDS = { discover_card = true, discover = true, field = true, visit = true, research = true, understand = true, understand_card = true, present = true, expo = true, joint = true, port_tech = true, landmark = true, launch = true, era = true, stock = true, dividend = true, saga_chapters = true, history = true, people = true, people_talk = true, order_patrol = true }
 
 	local function isAuto(quest)
 		return AUTO_KINDS[quest.kind] == true
@@ -17,6 +17,16 @@ return function(D, S)
 	local function progressWith(state, quest, a)
 		if not a then
 			return 0
+		end
+		-- [대항해 연대기] 세계 현장에 지식을 제출해야 전문 항로의 다음 장이 열린다.
+		if quest.sagaPort and quest.sagaPort ~= state.portId then return 0 end
+		if quest.minYear and S.State.year(state) < quest.minYear then return 0 end
+		if quest.kind == "saga_chapters" then
+			local done = 0
+			for _, id in { "pirate", "navy", "trade", "guild", "scholar", "explorer", "diplomat", "shipwright", "navigator", "culture" } do
+				if state.story and state.story["epic_" .. id] then done += 1 end
+			end
+			return done
 		end
 		if quest.kind == "deliver" then
 			return a.delivered
@@ -202,9 +212,9 @@ return function(D, S)
 		table.insert(msgs, "「" .. quest.name .. "」 " .. ending)
 		-- [첫 카드] '첫 발견' 보상·일지는 유지하지만 자동 퀘스트 컷신을 재생하지 않는다.
 		-- [도시 자동 이벤트] 자동 달성 퀘스트는 같은 방문에서 한 편만 연출한다.
-		-- 플레이어가 수동으로 수행한 일반 의뢰 완료 장면은 종전처럼 모두 재생한다.
-		if quest.id ~= "q_first_discovery" and (not AUTO_KINDS[quest.kind]
-			or (state._autoEventPort ~= state.portId and not (state.history and state.history.pending))) then
+		-- 일반 의뢰는 일지/로그에만 기록한다. 서막·동료·대서사 분기점만 특별 장면을 연다.
+		if quest.id ~= "q_first_discovery" and (quest.major or quest.strand == "main" or quest.strand == "companion")
+			and (not AUTO_KINDS[quest.kind] or (state._autoEventPort ~= state.portId and not (state.history and state.history.pending))) then
 			state._scenes = state._scenes or {}
 			table.insert(state._scenes, { kind = "end", name = quest.name, text = ending })
 			if AUTO_KINDS[quest.kind] then state._autoEventPort = state.portId end
@@ -283,8 +293,10 @@ return function(D, S)
 		end
 		state.quests.active[pick.id] = { delivered = 0, baseWins = state.stats.battlesWon }
 		local hook = storyOf(pick)
-		state._scenes = state._scenes or {}
-		table.insert(state._scenes, { kind = "start", name = pick.name, text = hook, summary = pick.summary })
+		if pick.major or pick.strand == "main" or pick.strand == "companion" then
+			state._scenes = state._scenes or {}
+			table.insert(state._scenes, { kind = "start", name = pick.name, text = hook, summary = pick.summary })
+		end
 		table.insert(msgs, string.format("%s — 일지에 새 이야기가 적혔다: 「%s」\n%s\n(%s)", how, pick.name, hook, pick.summary))
 		return pick
 	end
@@ -306,6 +318,11 @@ return function(D, S)
 		-- 이야기 듣기·의뢰 수락처럼 플레이어가 직접 누른 액션은 기존 흐름을 유지한다.
 		-- 기록/보상은 선택된 사건의 기존 함수만 처리하며, 밀린 사건을 완료 처리하지 않는다.
 		if S.History and S.History.tick(state) then
+			return
+		end
+		-- [대서사 사건] 일반 의뢰나 사소한 도시 사건보다 먼저 중요한 분기점 확인.
+		if S.Story and S.Story.autoTrigger and S.Story.autoTrigger(state, msgs, true) then
+			state._autoEventPort = state.portId
 			return
 		end
 		-- 항구와 날짜로 정해지는 기존 확률(70%): 같은 도착이면 같은 소문
