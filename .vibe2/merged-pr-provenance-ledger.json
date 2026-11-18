@@ -276850,11 +276850,151 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_a0a87ce5c17b9140f80c01e0",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13675",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "2c4e924a004c96190612a5005f849f488250e4be",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13675,
+        "baseBranch": "main",
+        "headBranch": "vibe/mare-outfit-rgb-regression-2c4e924a",
+        "baseSha": "2c4e924a004c96190612a5005f849f488250e4be",
+        "headSha": "c21d99302967b6e142b26f175d12079e03b8a379",
+        "mergeCommitSha": "9bc1c2359aef4e8096765547a28b9dde01847300",
+        "mergedAt": "2026-11-18T01:34:52Z",
+        "authorLogin": "hans1177",
+        "titleHash": "6f16828d3aa528f9aed5b5b7cc435adcba052febf7e61a89c143eee4eb6f523a",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe/mare-outfit-rgb-regression-2c4e924a",
+        "candidateSha": "c21d99302967b6e142b26f175d12079e03b8a379"
+      },
+      "changeStats": {
+        "changedFileCount": 13,
+        "codingRelevantFileCount": 13,
+        "addedLineCount": 40,
+        "deletedLineCount": 34,
+        "changedFiles": [
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets/people/outfit_apron.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_belt.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_boot.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_coat.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_cuff.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_guard.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_sash.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_stole.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_vest.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortBuildings.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets/people/outfit_apron.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_belt.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_boot.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_coat.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_cuff.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_guard.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_sash.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_stole.glb.license.json",
+          "roblox-games/mare-essentia/assets/people/outfit_vest.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortBuildings.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13675",
+        "merge-commit:9bc1c2359aef4e8096765547a28b9dde01847300",
+        "base-main:2c4e924a004c96190612a5005f849f488250e4be"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2209
+    "total": 2210
   }
 }
