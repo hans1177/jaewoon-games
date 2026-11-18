@@ -1779,7 +1779,18 @@ test('항구 특산품 공방은 생산품별 7가지 형태를 쓰고 랜드마
  assert.match(block,/local candidates = \{/);
  assert.match(block,/not onStreet\(candidate\.X, 27\) and not reserved\(candidate\.X, candidate\.Z, 27\)/);
  assert.match(block,/local bounds, ext = staged:GetBoundingBox\(\)/);
- assert.match(block,/not reserved\(chosen\.X, chosen\.Z, hx, hz\)/);
+ assert.match(block,/not reserved\(candidate\.X, candidate\.Z, hx, hz\)/);
+ assert.match(block,/local industryLimitZ = 360 \+ lvl \* 80 - 8/);
+ assert.match(block,/math\.abs\(candidate\.Z\) \+ 27 <= industryLimitZ/);
+ assert.match(block,/math\.abs\(candidate\.Z\) \+ hz <= industryLimitZ/);
+ assert.match(block,/local safeSite/);
+ assert.match(block,/for _, candidate in candidates do[\s\S]*?safeSite = candidate/);
+ assert.match(block,/staged:PivotTo\(CFrame\.new\(safeSite - chosen\) \* staged:GetPivot\(\)\)/);
+ assert.match(block,/specialtyReflowed \+= 1/);
+ assert.match(block,/CitySpecialtyReflowed", specialtyReflowed/);
+ assert.match(block,/CitySpecialtyBoundaryZ", industryLimitZ/);
+ assert.match(block,/BuildPhase", 4/);
+ assert.match(block,/BuildState", "complete"/);
  assert.match(block,/BuildingFootprintX", hx \* 2/);
  assert.match(block,/BuildingFootprintZ", hz \* 2/);
  assert.match(block,/staged:Destroy\(\)/);
@@ -1791,6 +1802,40 @@ test('항구 특산품 공방은 생산품별 7가지 형태를 쓰고 랜드마
  assert.match(source,/MarketSpecialtyDisplay_/,'시장에 지역 생산품 전시 연결');
  assert.match(source,/if game:GetService\("UserInputService"\)\.TouchEnabled then 1 else 2/);
  assert.match(source,/CityBuildingMode", "AUTO_VISUAL_READ_ONLY"/,'경제 시스템 불변');
+});
+
+// [특산품 전체 재배치] 제철소/목재소/어시장 등 실측 지붕과 시가지 경계를 함께 보호한다.
+test('181개 항구의 1~5단계 특산품 후보는 외곽 경계와 실제 크기로 재검사한다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const ports=read('ReplicatedStorage/Shared/Ports.luau');
+ const ids=[...ports.slice(ports.indexOf('local Ports:'),ports.indexOf('local Nations:'))
+  .matchAll(/^\t([a-z][a-z0-9_]*)\s*=\s*\{\s*\n\s*id = /gm)].map(m=>m[1]);
+ assert.equal(ids.length,181);
+ const block=scene.slice(scene.indexOf('local SPECIAL_NAME = {'),scene.indexOf('-- 문화권 소품:'));
+ assert.match(block,/local industryLimitZ = 360 \+ lvl \* 80 - 8/);
+ assert.match(block,/if safeSite ~= chosen then/);
+ assert.match(block,/local safeSite/);
+ assert.match(block,/specialtyReflowed \+= 1/);
+ assert.match(block,/CitySpecialtyReflowed", specialtyReflowed/);
+ assert.match(block,/CitySpecialtyBoundaryZ", industryLimitZ/);
+ let samples=0;
+ for(const id of ids)for(let lvl=1;lvl<=5;lvl++)for(let k=1;k<=3;k++){
+  const bound=360+lvl*80-8;
+  const candidates=[
+   [-(178+(k-2)*30),-86],
+   [-90-(k-1)*58,-234],
+   [-90-(k-1)*58,234],
+   [-101,-317-(k-1)*54],
+   [-101,317+(k-1)*54],
+   [-172,-345],[-172,345],
+  ];
+  assert.equal(candidates.length,7);
+  assert.ok(candidates.some(([,z])=>Math.abs(z)+27<=bound),id+' 최소 후보 미확보');
+  assert.ok(candidates.every(([x])=>x>=-615&&x<=35),id+' 후보 마을 바닥판 이탈');
+  samples++;
+ }
+ assert.equal(samples,2715,'181항구 × 발전5 × 특산품 최대3');
+ assert.match(scene,/CityBuildingMode", "AUTO_VISUAL_READ_ONLY"/);
 });
 
 // [주야·겨울·지형·모바일] 기존 조명과 해안선 시스템을 재사용하고 새 갱신 루프를 만들지 않는다.
@@ -1812,6 +1857,10 @@ test('도시 골목·눈 지붕·밤 창문은 기존 기후·해안 분류와 �
  assert.match(s,/window\.CanCollide, window\.CanTouch, window\.CanQuery, window\.CastShadow = false, false, false, false/);
  assert.match(s,/glow\.Parent = window/);
  assert.match(s,/CityNightWindowCount", nightWindows/);
+ assert.match(s,/bounds\.Position\.Z \+ streetFront \* \(dimensions\.Z \* 0\.5 \+ 0\.15\)/,'빛나는 창은 외벽 바깥');
+ assert.match(s,/window\.Transparency = 0\.92/,'낮에는 창문 빛 약화');
+ assert.match(s,/entry\.light\.Enabled = night > 0\.15/,'밤에만 창문 조명 켬');
+ assert.match(s,/window\.Transparency = math\.clamp\(0\.92 - night \* 0\.78, 0\.14, 0\.92\)/);
  assert.match(s,/local lightConn = folder\.DescendantAdded:Connect\(registerLight\)/);
  assert.match(s,/entry\.light\.Brightness = entry\.brightness \* \(0\.16 \+ 2\.15 \* night\)/);
  assert.match(s,/m\.LevelOfDetail = Enum\.ModelLevelOfDetail\.Automatic/);
