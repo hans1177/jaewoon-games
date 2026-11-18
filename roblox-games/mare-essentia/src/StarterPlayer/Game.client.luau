@@ -1914,11 +1914,11 @@ H.tabStrip.ScrollingDirection = Enum.ScrollingDirection.X
 H.tabStrip.CanvasSize = UDim2.new()
 H.tabStrip.ClipsDescendants = true
 H.tabStrip.Parent = tabBar
-local tabLayout = Instance.new("UIGridLayout")
+-- [모바일 한 줄 고정] 그리드는 좁은 부모 폭에서 자동 줄바꿈하므로 기존 탭 정렬을 가로 목록으로 바꾼다.
+local tabLayout = Instance.new("UIListLayout")
 tabLayout.FillDirection = Enum.FillDirection.Horizontal
-tabLayout.FillDirectionMaxCells = 4
-tabLayout.CellSize = UDim2.fromOffset(166, 54)
-tabLayout.CellPadding = UDim2.fromOffset(6, 0)
+tabLayout.Wraps = false
+tabLayout.Padding = UDim.new(0, 6)
 tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
 tabLayout.Parent = H.tabStrip
 
@@ -2069,9 +2069,11 @@ function H.layoutBook()
   local visibleTabsWidth = math.min(math.max(1, width - 16), allTabsWidth)
   tabBar.Position = UDim2.new(1, -8, 0, 68)
   tabBar.Size = UDim2.fromOffset(visibleTabsWidth, 58)
-  tabLayout.CellSize = UDim2.fromOffset(tabWidth, 54)
-  tabLayout.CellPadding = UDim2.fromOffset(tabGap, 0)
-  tabLayout.FillDirectionMaxCells = tabCount
+  -- [폰 너비 변경] 기존 버튼을 재생성하지 않고 현재 폭만 갱신한다.
+  H.tabWidth = tabWidth
+  for _, button in H.tabStrip:GetChildren() do
+    if button:IsA("TextButton") then button.Size = UDim2.fromOffset(tabWidth, 54) end
+  end
   H.tabStrip.CanvasSize = UDim2.fromOffset(allTabsWidth, 0)
   local selectedIndex = table.find(groupOf(currentTab).tabs, currentTab) or 1
   local desiredScroll = (selectedIndex - 1) * (tabWidth + tabGap)
@@ -11007,7 +11009,7 @@ function H.renderTabs()
 	local g = groupOf(currentTab)
 	for i, id in g.tabs do
 		local selected = currentTab == id
-		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 54), function()
+		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 166, 54), function()
 			-- [시설 탭 정본] 모든 시설은 같은 탭 전환 함수를 사용하며 별도 전체창은 만들지 않는다.
 			openTab(id)
 		end, true)

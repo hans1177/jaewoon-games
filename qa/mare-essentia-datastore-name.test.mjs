@@ -105,8 +105,12 @@ test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본
   assert.match(source,/H\.tabStrip\.Name = "FacilityTabStrip"/);
   assert.match(source,/H\.tabStrip\.ScrollingDirection = Enum\.ScrollingDirection\.X/);
   assert.match(layout,/tabBar\.Position = UDim2\.new\(1, -8, 0, 68\)/);
-  assert.match(layout,/tabLayout\.FillDirectionMaxCells = tabCount/);
+  assert.match(layout,/H\.tabWidth = tabWidth/);
   assert.match(layout,/H\.tabStrip\.CanvasSize = UDim2\.fromOffset\(allTabsWidth, 0\)/);
+  assert.match(source,/local tabLayout = Instance\.new\("UIListLayout"\)/);
+  assert.match(source,/tabLayout\.FillDirection = Enum\.FillDirection\.Horizontal/);
+  assert.match(source,/tabLayout\.Wraps = false/);
+  assert.doesNotMatch(source,/local tabLayout = Instance\.new\("UIGridLayout"\)/);
   assert.match(layout,/content\.Position = UDim2\.fromOffset\(8, bodyTop\)/);
   assert.match(layout,/content\.Size = UDim2\.new\(1, -16, 1, -bodyTop - 8\)/);
   assert.match(layout,/H\.facilityGallery\.Position = UDim2\.fromOffset\(8, bodyTop\)/);
@@ -115,7 +119,7 @@ test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본
   assert.match(tabs,/mkButton\(H\.tabStrip, TAB_NAME\[id\]/);
   assert.equal(capture.length,241);
   assert.equal(capture[88].name,'ui_mobile_tabs_topright');
-  for(const claim of ['MOBILE_TABS_NOT_ONE_ROW','MOBILE_TABS_NOT_TOP_RIGHT','MOBILE_LEFT_SPACE_NOT_RECLAIMED','MOBILE_LAST_TAB_NOT_REACHABLE']){
+  for(const claim of ['MOBILE_TABS_NOT_ONE_ROW','MOBILE_TABS_NOT_TOP_RIGHT','MOBILE_LEFT_SPACE_NOT_RECLAIMED','MOBILE_TABS_WRAPPED_TO_SECOND_ROW','MOBILE_LAST_TAB_NOT_REACHABLE']){
     assert.ok(capture[87].code.includes(claim),claim);
   }
 });
