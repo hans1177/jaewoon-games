@@ -1,0 +1,64 @@
+{
+  "version": 3,
+  "provider": "MULTI_FREE_VISUAL",
+  "gameId": "mare-essentia",
+  "sourceRevision": "01bc9a199bae2ecb31625e139f440029efc8665a",
+  "status": "REVIEWED_NO_VERIFIED_EDIT",
+  "selectedRole": "WORLD",
+  "usageWindow": {
+    "day": "2026-11-18",
+    "calls": {
+      "NVIDIA": 1,
+      "GEMINI": 0,
+      "OPENROUTER": 0
+    }
+  },
+  "cooldowns": {
+    "NVIDIA_VL": "2026-11-18T06:35:12.826Z"
+  },
+  "attempts": [
+    {
+      "id": "NVIDIA_VL",
+      "status": "EMPTY_OUTPUT",
+      "provider": "NVIDIA",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    }
+  ],
+  "frames": [
+    {
+      "name": "cb0_deck-0.jpg",
+      "sha256": "8132e501937c818173f15a3f624c662176d2d01ab971adc26e436b4730b6874d"
+    },
+    {
+      "name": "cb1-0.jpg",
+      "sha256": "520ce19f95a4619311c85c2a8520804d7655baf23f9b123b0c6fa27381d222fd"
+    },
+    {
+      "name": "cb2-0.jpg",
+      "sha256": "a7ea12f6e9768e6cca657cee7bd7bbbfed1133bbfa158d879d29ca4956db29a5"
+    },
+    {
+      "name": "field_entry-0.jpg",
+      "sha256": "a66398f4cb77ba284530c0042f43e998c183c6363e93bb096a85079428fd0f29"
+    },
+    {
+      "name": "qa_click_trade_to_harbor-0.jpg",
+      "sha256": "cd6f0753a6deda74cfb4bc77b72a3fb5126fc1b7bb4917a6ebc52078d2923659"
+    },
+    {
+      "name": "v1_start-0.jpg",
+      "sha256": "f56468164fddd97410f986cd0f03cf2440b3df510d20ef087227784626add02f"
+    },
+    {
+      "name": "v2_event-0.jpg",
+      "sha256": "48596e0a58c79aff23e8d3ec5936b353fed2f7d4b63b58a3413a36c1fcaa9559"
+    },
+    {
+      "name": "v3_event2-0.jpg",
+      "sha256": "dd943e006475245609e2714ab0e28a23531c77ef42da0ef87fdc02ce36c0d4e2"
+    }
+  ],
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
