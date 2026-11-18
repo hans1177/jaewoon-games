@@ -8,12 +8,18 @@ on:
       - '.github/workflows/vibe2-24h-canary.yml'
       - 'tools/vibe2-autonomous-operations.mjs'
       - 'qa/vibe2-autonomous-operations.test.mjs'
+      - 'tools/vibe2-auto-planner.mjs'
+      - 'qa/vibe2-auto-planner.test.mjs'
+      - 'qa/mare-essentia-datastore-name.test.mjs'
   push:
     branches: [main]
     paths:
       - '.github/workflows/vibe2-24h-canary.yml'
       - 'tools/vibe2-autonomous-operations.mjs'
       - 'qa/vibe2-autonomous-operations.test.mjs'
+      - 'tools/vibe2-auto-planner.mjs'
+      - 'qa/vibe2-auto-planner.test.mjs'
+      - 'qa/mare-essentia-datastore-name.test.mjs'
   schedule:
     - cron: '23 * * * *'
   workflow_dispatch:
@@ -71,6 +77,10 @@ jobs:
           node --check tools/vibe2-queue-control.mjs
           node --check tools/vibe2-autonomous-operations.mjs
           node --test qa/vibe2-autonomous-operations.test.mjs
+          # [대항해시대] 기존 시작·모바일·저장·전투 정본 회귀검사
+          node --test qa/mare-essentia-datastore-name.test.mjs
+          # [자동 지휘] 최신 정책의 로블록스 1개 집중 범위만 검증
+          node --test --test-name-pattern='current owner exact focus selects only approved Mare Essentia Roblox game' qa/vibe2-auto-planner.test.mjs
           node --test qa/vibe-work-lock.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
