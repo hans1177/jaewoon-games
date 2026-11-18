@@ -8062,7 +8062,11 @@ function FieldScene.start(opts)
 							elseif visualMobile and screen.Y < 330 then 82
 							elseif visualMobile then 106 else 120
 						local allyX = 226 + miniSize + 12
-						local partyWidth = if landscape then math.min(202, math.max(110, screen.X - allyX - 12)) else 202
+						-- [좁은 가로화면] 두 번째 동료창이 회피/공격/무기교체 터치 영역을 가리지 않도록 가로폭 제한.
+						local partyWidth = if landscape then math.min(202, math.max(55, screen.X - allyX - 12)) else 202
+						if landscape and screen.X < 650 and screen.Y < 330 then
+							partyWidth = math.min(partyWidth, math.max(40, screen.X - allyX - 144))
+						end
 						local narrowParty = partyWidth < 190
 						local shortHud = screen.Y < 380 and landscape
 						status.Position = if landscape then UDim2.fromOffset(allyX, 74 + (i - 1) * (if shortHud then 48 else 56))
