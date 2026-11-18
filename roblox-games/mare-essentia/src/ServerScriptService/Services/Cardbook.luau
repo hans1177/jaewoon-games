@@ -26,11 +26,20 @@ return function(D, S)
 	-- [지식카드 보상] 일반 지식 카드는 전투 카드 획득과 함께 도감 등록한다.
 	-- 선행 학자 보고가 필요한 문헌·비교 연구는 전투 카드 보상만 유지하고
 	-- 기존 StudyKnowledgeCard에서 직접 연구한 경우에만 도감에 등록한다.
-	local function markDiscovered(state, id)
+	local function markDiscovered(state, id, source, questId)
 		local d = id and (D.BoardingCards.Units[id] or D.BoardingCards.Specials[id])
 		local knowledge = id and D.Cards.ById[id]
 		if d and d.knowledge and state.discovered and not (knowledge and knowledge.research and knowledge.research.reported) then
-			state.discovered[id] = true
+			if not state.discovered[id] then
+				state.discovered[id] = true
+				-- [개인 백과] 카드게임 경로는 기존 발견 서비스의 보상을 다시 지급하지 않는다.
+				state.cardOrigins = state.cardOrigins or {}
+				state.cardOrigins[id] = {
+					portId = state.portId, day = state.day,
+					method = if source == "quest" and questId then "quest" else "card",
+					questId = if source == "quest" then questId else nil,
+				}
+			end
 		end
 	end
 
@@ -96,11 +105,11 @@ return function(D, S)
 	end
 
 	-- 새 카드 보상. 안내 문구를 msgs 에 붙인다.
-	function C.reward(state, source, msgs, rng, field)
+	function C.reward(state, source, msgs, rng, field, questId)
 		local book = C.get(state)
 		local r = rng or (state.rng) or math.random
 		local id, text = CB.drop(book, source, r, field)
-		markDiscovered(state, id)
+		markDiscovered(state, id, source, questId)
 		if msgs then table.insert(msgs, text) end
 		return text
 	end
@@ -129,7 +138,7 @@ return function(D, S)
 		if not i then return false, "잘못된 요청" end
 		local book = C.get(state)
 		local ok, msg = CB.choose(book, math.floor(i))
-		if ok then markDiscovered(state, book.lastGranted) end
+		if ok then markDiscovered(state, book.lastGranted, "card") end
 		return ok, msg
 	end
 
