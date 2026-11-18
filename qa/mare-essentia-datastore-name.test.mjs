@@ -2268,7 +2268,7 @@ test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치�
 
 // [무료 디자인 전문가 회귀] 전문 분야, 일일 한도, 쿨다운, 독립 전후 판정.
 test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다운을 지킨다', async () => {
-  const {DESIGN_FREE_MODELS, designRoleForFrames, selectFreeDesignModels,
+  const {DESIGN_FREE_MODELS, designRoleForFrames, selectFreeDesignModels, selectDesignFrameRole,
     validateVisualComparison} = await import('../tools/company-nemotron-design-review.mjs');
   const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
   const config = policy.directVisualDesign.freeSpecialistPool;
@@ -2290,6 +2290,13 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
   assert.equal(designRoleForFrames(['ship_harbor-0.jpg']), 'WORLD');
   assert.equal(designRoleForFrames(['menu_ui-0.jpg']), 'UI');
   assert.equal(designRoleForFrames(['run_motion-0.jpg']), 'MOTION');
+  const captures = JSON.parse(fs.readFileSync(
+    'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', 'utf8'))
+    .filter(step => step.type === 'capture').map(step => step.name + '-0.jpg');
+  const roles = ['NPC', 'WORLD', 'UI', 'MOTION', 'GENERAL'];
+  assert.deepEqual(roles.map(role => selectDesignFrameRole(captures, role)),
+    ['WORLD', 'UI', 'MOTION', 'GENERAL', 'NPC']);
+  assert.equal(selectDesignFrameRole(captures), 'NPC');
   const models = opts => selectFreeDesignModels({policy, env, now, ...opts});
   assert.equal(models({frameNames: ['npc_face-0.jpg']})[0].id, 'NVIDIA_VL');
   assert.equal(models({frameNames: ['ship-0.jpg']})[0].id, 'GEMINI_FLASH');
