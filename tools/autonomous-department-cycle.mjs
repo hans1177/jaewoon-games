@@ -1,7 +1,7 @@
 // 파일명: tools/autonomous-department-cycle.mjs
 // 역할: 실제 코드 후보를 만들기 전에 Vibe 공용 제작 엔진 제안과 AI 부서별 독립 검토를 실행하고 기획부가 최종 통합한다.
 import fs from 'node:fs';
-import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
+import {requestGeminiFreePair,selectVibe59FreeExperts} from './vibe2-gemini-free-rotation.mjs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { planCompanyDevelopmentTask } from '../assets/vibe-company-orchestration-bridge.js';
@@ -71,15 +71,27 @@ async function callRole(role,ctx){
   let lastError=null;const startedAt=new Date().toISOString();console.log('DEPARTMENT_STATE='+role+':ACTIVE');
   const apiKey=clean(process.env.GEMINI_API_KEY);
   if(!apiKey)throw new Error('DEPARTMENT_GEMINI_KEY_REQUIRED_NO_LOCAL_FALLBACK');
+  // [Vibe5.9 전문 배정] 실제 QA가 통과한 과거 부서 결과만 다음 모델 점수에 전달한다.
+  const specialistDepartment=role===FINAL_ROLE?'PLANNING':role.toUpperCase();
+  const specialistTask=ctx.order?.goal||'';
+  const specialistFiles=ctx.order?.responsibilityFiles||[];
+  const verifiedOutcomes=(Array.isArray(ctx.vibeCore?.departmentLearning?.byRole?.[role])
+    ?ctx.vibeCore.departmentLearning.byRole[role]:[]).filter(row=>
+    row?.verified===true&&row?.independentQa==='PASS'&&row.provider&&row.model&&
+    row.sourceRevision&&['SUCCESS','FAILURE'].includes(row.outcome)).map(row=>({
+      verified:true,independentQa:'PASS',sourceRevision:row.sourceRevision,
+      provider:row.provider,model:row.model,role:row.role,
+      specialistDomain:row.specialistDomain,outcome:row.outcome
+    }));
+  const specialistDomain=selectVibe59FreeExperts({department:specialistDepartment,
+    taskText:specialistTask,responsibleFiles:specialistFiles,includeUnconfigured:true}).domain;
   for(let attempt=1;attempt<=2;attempt++){
     try{
       const response=await requestGeminiFreePair({
         apiKey,contents:[{role:'user',parts:[{text:rolePrompt({role,...ctx})}]}],
         maxOutputTokens:MAX_PREDICT,temperature:.1,timeoutMs:TIMEOUT_MS,
         responseMimeType:'application/json',
-        specialistDepartment:role===FINAL_ROLE?'PLANNING':role.toUpperCase(),
-        specialistTask:ctx.order?.goal||'',
-        specialistFiles:ctx.order?.responsibilityFiles||[]
+        specialistDepartment,specialistTask,specialistFiles,verifiedOutcomes
       });
       const value=JSON.parse(clean(response.text));
       if(!SCHEMA.properties.decision.enum.includes(value.decision)||!clean(value.nextAction))
@@ -89,7 +101,7 @@ async function callRole(role,ctx){
         nextAction:clean(value.nextAction),checks:Array.isArray(value.checks)?value.checks.map(clean).filter(Boolean).slice(0,4):[],
         risks:Array.isArray(value.risks)?value.risks.map(clean).filter(Boolean).slice(0,4):[],
         model:response.model,provider:response.provider,
-        specialistDomain:role===FINAL_ROLE?'PLANNING':role.toUpperCase(),
+        specialistDomain,
         attempt,startedAt,completedAt,modelMetrics:null};
     }catch(error){
       lastError=error;
