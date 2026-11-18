@@ -1856,22 +1856,16 @@ H.galleryImage = Instance.new("ImageLabel")
 H.galleryImage.Name = "ApprovedFacilityArt"
 H.galleryImage.BackgroundTransparency = 1
 H.galleryImage.Position = UDim2.fromOffset(8, 8)
-H.galleryImage.Size = UDim2.new(1, -16, 1, -120)
+H.galleryImage.Size = UDim2.new(1, -16, 1, -50)
 H.galleryImage.ScaleType = Enum.ScaleType.Fit
 H.galleryImage.ZIndex = 3
 H.galleryImage.Parent = H.facilityGallery
 H.galleryTitle = mkLabel(H.facilityGallery, "", 21, INK, true)
 H.galleryTitle.Name = "FacilityGalleryHeading"
-H.galleryTitle.Position = UDim2.new(0, 12, 1, -108)
+H.galleryTitle.Position = UDim2.new(0, 12, 1, -40)
 H.galleryTitle.Size = UDim2.new(1, -24, 0, 30)
 H.galleryTitle.AutomaticSize = Enum.AutomaticSize.None
 H.galleryTitle.ZIndex = 3
-H.galleryHint = mkLabel(H.facilityGallery, "", 17, INK_SOFT, false)
-H.galleryHint.Name = "FacilityGalleryGuide"
-H.galleryHint.Position = UDim2.new(0, 12, 1, -76)
-H.galleryHint.Size = UDim2.new(1, -24, 0, 70)
-H.galleryHint.AutomaticSize = Enum.AutomaticSize.None
-H.galleryHint.ZIndex = 3
 -- [기존 승인 원화] 외부 유료 자료나 임의 메시 대신 백과·사건 카드 그림을 직접 재사용한다.
 H.FACILITY_GALLERY_ART = {
   board = "event_royal_charter", quest = "event_cook_voyage", recruit = "event_merchant_lamu",
@@ -1887,7 +1881,6 @@ function H.renderFacilityGallery()
   local approved = AssetIds["CardArt/" .. artName] or AssetIds["CardArt/event_calm_seas"]
   H.galleryImage.Image = if approved then "rbxassetid://" .. tostring(approved) else ""
   H.galleryTitle.Text = if focus then focus[1] else TAB_NAME[currentTab] or "시설 안내"
-  H.galleryHint.Text = if focus then focus[2] else "왼쪽에서 시설을 선택하고 오른쪽에서 확인해."
 end
 
 -- [교역소 기준] 가로는 3열, 세로는 큰 원화를 메뉴와 조작 사이에 놓는다.
@@ -1915,11 +1908,9 @@ function H.layoutBook()
     H.facilityGallery.Position = UDim2.fromOffset(navW + 16, 68)
     H.facilityGallery.Size = UDim2.fromOffset(artW, math.max(100, height - 76))
     H.galleryImage.Position = UDim2.fromOffset(8, 8)
-    H.galleryImage.Size = UDim2.new(1, -16, 1, -120)
-    H.galleryTitle.Position = UDim2.new(0, 12, 1, -108)
+    H.galleryImage.Size = UDim2.new(1, -16, 1, -50)
+    H.galleryTitle.Position = UDim2.new(0, 12, 1, -40)
     H.galleryTitle.Size = UDim2.new(1, -24, 0, 30)
-    H.galleryHint.Position = UDim2.new(0, 12, 1, -76)
-    H.galleryHint.Size = UDim2.new(1, -24, 0, 70)
     content.Position = UDim2.fromOffset(navW + artW + 24, 68)
     content.Size = UDim2.new(1, -navW - artW - 32, 1, -138)
     H.menuActionDock.Position = UDim2.new(0, navW + artW + 24, 1, -66)
@@ -1939,11 +1930,10 @@ function H.layoutBook()
     H.facilityGallery.Size = UDim2.new(1, -16, 0, artH)
     -- [모바일 세로] 원화를 왼쪽에 키우고 제목·설명은 오른쪽에 둬 스크롤 높이 소모를 줄인다.
     H.galleryImage.Position = UDim2.fromOffset(8, 8)
-    H.galleryImage.Size = UDim2.new(0.42, -12, 1, -16)
-    H.galleryTitle.Position = UDim2.new(0.42, 2, 0, 12)
-    H.galleryTitle.Size = UDim2.new(0.58, -14, 0, 32)
-    H.galleryHint.Position = UDim2.new(0.42, 2, 0, 50)
-    H.galleryHint.Size = UDim2.new(0.58, -14, 1, -56)
+    H.galleryImage.Size = UDim2.new(0.62, -12, 1, -16)
+    H.galleryTitle.Position = UDim2.new(0.62, 0, 0.5, -32)
+    H.galleryTitle.Size = UDim2.new(0.38, -12, 0, 64)
+    H.galleryTitle.TextWrapped = true
     local contentY = top + (if showArt then artH + 8 else 0)
     content.Position = UDim2.fromOffset(8, contentY)
     content.Size = UDim2.new(1, -16, 1, -contentY - (if gallery then 70 else 8))
@@ -4496,67 +4486,62 @@ end
 -- items = { { label, value, tone = "good" | "bad" | "key" | nil }, ... }
 H.TONE = { good = Color3.fromRGB(47, 122, 58), bad = Color3.fromRGB(166, 42, 31), key = Color3.fromRGB(154, 79, 10) }
 -- 지갑 줄: 가운데에 내 코인을 크게, 양옆에 지금 한 번에 처리할 일 (채우기·수리·납품)
+-- [메뉴 중복 정리] 코인·선박 숫자는 상단 현황에 한 번만 표시한다.
+-- 보급·수리·납품은 기존 서버 요청 그대로, 실제 실행할 일이 있을 때만 노출한다.
 function H.walletBar(mode)
+	local sh, sy = view.ship, view.shipyard
+	local needCrew = math.max(0, sh.maxCrew - sh.crew)
+	local needSup = math.max(0, (view.supplyMax or 100) - sh.supplies)
+	local cost = needCrew * sy.hireCost + needSup * sy.supplyCost
+	local turnIns = 0
+	if mode == "tavern" then
+		for _, q in view.quests.active do
+			if q.kind == "deliver" and q.progress >= q.amount then turnIns += 1 end
+		end
+	end
+	local repair = mode ~= "tavern" and (sy.missing or 0) > 0
+	if cost <= 0 and turnIns == 0 and not repair then return end
+
 	add(function()
-		local sh, sy, p = view.ship, view.shipyard, view.player
-		local f = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 70), Color3.fromRGB(58, 42, 28))
-		corner(f, 10)
-		local coin = mkLabel(f, "💰 " .. H.commas(p.coins), 24, Color3.fromRGB(255, 226, 120), true)
-		coin.AnchorPoint = Vector2.new(0.5, 0)
-		coin.Position = UDim2.new(0.5, 0, 0, 6)
-		coin.Size = UDim2.fromOffset(220, 30)
-		coin.AutomaticSize = Enum.AutomaticSize.None
-		coin.TextXAlignment = Enum.TextXAlignment.Center
-		local needCrew = math.max(0, sh.maxCrew - sh.crew)
-		local needSup = math.max(0, (view.supplyMax or 100) - sh.supplies)
-		local info = mkLabel(f, string.format("선원 %d/%d · 보급 %d/%d · 선체 %d%%", sh.crew, sh.maxCrew, sh.supplies, view.supplyMax or 100, math.floor(sh.hull / math.max(1, sh.maxHull) * 100 + 0.5)), 12, Color3.fromRGB(230, 214, 180), false)
-		info.AnchorPoint = Vector2.new(0.5, 0)
-		info.Position = UDim2.new(0.5, 0, 0, 40)
-		info.Size = UDim2.fromOffset(300, 22)
-		info.AutomaticSize = Enum.AutomaticSize.None
-		info.TextXAlignment = Enum.TextXAlignment.Center
-		local cost = needCrew * sy.hireCost + needSup * sy.supplyCost
-		local fill = mkButton(f, if cost > 0 then string.format("채우기\n%d", cost) else "준비 완료", COLORS.gold, UDim2.fromOffset(86, 54), function() call("Resupply", { what = "both" }) end, cost > 0)
-		fill.Position = UDim2.fromOffset(8, 8)
-		local right
-		if mode == "tavern" then
-			local n = 0
-			for _, q in view.quests.active do
-				if q.kind == "deliver" and q.progress >= q.amount then
-					n += 1
-				end
-			end
-			-- 납품할 퀘스트가 없을 땐 버튼 자체를 숨겨 화면을 비운다
-			right = if n == 0 then nil else mkButton(f, string.format("의뢰 납품\n%d건", n), COLORS.green, UDim2.fromOffset(86, 54), function()
-				task.spawn(function()
-					for _, q in view.quests.active do
-						if q.kind == "deliver" and q.progress >= q.amount then
-							call("TurnIn", { questId = q.id })
+		local f = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 56), Color3.fromRGB(58, 42, 28))
+		f.Name = "MenuQuickActions"
+		corner(f, 8)
+		local caption = mkLabel(f, "필요한 정비", 16, Color3.fromRGB(255, 231, 179), true)
+		caption.Position = UDim2.fromOffset(10, 12)
+		caption.Size = UDim2.new(0.28, -12, 0, 30)
+		caption.AutomaticSize = Enum.AutomaticSize.None
+		local buttons = {}
+		if cost > 0 then
+			table.insert(buttons, mkButton(f, string.format("보급·선원 채우기 %s코인", H.commas(cost)), COLORS.gold,
+				UDim2.fromOffset(88, 48), function() call("Resupply", { what = "both" }) end, true))
+		end
+		if turnIns > 0 then
+			table.insert(buttons, mkButton(f, string.format("의뢰 납품 %d건", turnIns), COLORS.green,
+				UDim2.fromOffset(88, 48), function()
+					task.spawn(function()
+						for _, q in view.quests.active do
+							if q.kind == "deliver" and q.progress >= q.amount then
+								call("TurnIn", { questId = q.id })
+							end
 						end
-					end
-				end)
-			end, n > 0)
-		else
-			right = mkButton(f, if (sy.missing or 0) > 0 then string.format("%s\n%d", if sy.field then "응급 수리" else "수리", sy.repairTotal) else "선체 튼튼", COLORS.green, UDim2.fromOffset(86, 54), function() call("Repair") end, (sy.missing or 0) > 0)
+					end)
+				end, true))
+		elseif repair then
+			table.insert(buttons, mkButton(f, string.format("%s %s코인",
+				if sy.field then "응급 수리" else "선체 수리", H.commas(sy.repairTotal or 0)),
+				COLORS.green, UDim2.fromOffset(88, 48), function() call("Repair") end, true))
 		end
-		if right then
-			right.AnchorPoint = Vector2.new(1, 0)
-			right.Position = UDim2.new(1, -8, 0, 8)
-		end
-		-- [모바일] 재화와 선체 상태 위, 정비·납품 버튼 아래의 2단 배치.
 		local function fitWallet()
-			local compact = f.AbsoluteSize.X > 0 and f.AbsoluteSize.X < 460
-			f.Size = UDim2.new(1, -6, 0, if compact then 122 else 70)
-			coin.Size = if compact then UDim2.new(1, -24, 0, 30) else UDim2.fromOffset(220, 30)
-			coin.TextSize = if compact then 22 else 24
-			info.Size = if compact then UDim2.new(1, -20, 0, 22) else UDim2.fromOffset(300, 22)
-			info.Position = UDim2.new(0.5, 0, 0, if compact then 37 else 40)
-			fill.Position = if compact then UDim2.fromOffset(8, 68) else UDim2.fromOffset(8, 8)
-			fill.Size = if compact then UDim2.new(if right then 0.5 else 1, if right then -12 else -16, 0, 46) else UDim2.fromOffset(86, 54)
-			if right then
-				right.AnchorPoint = if compact then Vector2.new(0, 0) else Vector2.new(1, 0)
-				right.Position = if compact then UDim2.new(0.5, 4, 0, 68) else UDim2.new(1, -8, 0, 8)
-				right.Size = if compact then UDim2.new(0.5, -12, 0, 46) else UDim2.fromOffset(86, 54)
+			local width = f.AbsoluteSize.X
+			if width <= 0 then return end
+			local compact = width < 430
+			caption.Visible = not compact
+			local begin = if compact then 0 else 0.28
+			for i, button in buttons do
+				button.AnchorPoint = Vector2.zero
+				button.Position = UDim2.new(begin + (i - 1) * (1 - begin) / #buttons, 5, 0, 4)
+				button.Size = UDim2.new((1 - begin) / #buttons, -10, 0, 48)
+				button.TextSize = 16
 			end
 		end
 		f:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitWallet)
@@ -4982,9 +4967,7 @@ function RENDERERS.crew()
 		if st.seatId then filled += 1; if st.matched then matched += 1 end end
 	end
 	H.statStrip({
-		{ "승선 동료", tostring(joined) .. "명", tone = "key" },
 		{ "직책 배치", tostring(filled) .. "/" .. tostring(#(view.companions.stations or {})), tone = "good" },
-		{ "적합 직책", tostring(matched) .. "자리", tone = "good" },
 		{ "미배치", tostring(math.max(0, joined - filled)) .. "명", tone = if joined > filled then "bad" else "good" },
 	})
 	add(function() return mkHeader(content, "동료와 대화") end)
@@ -5114,14 +5097,9 @@ function RENDERERS.status()
 	H.counselRows(1)
 	add(function() return mkHeader(content, "선박") end)
 	H.statStrip({
-		{ ship.name .. (if ship.steam then " (증기)" else ""), string.format("선체 %d/%d", ship.hull, ship.maxHull), tone = if ship.hull < ship.maxHull * 0.5 then "bad" else "good" },
-		{ "선원", string.format("%d/%d", ship.crew, ship.maxCrew), tone = "key" },
-		{ "포 · 속도", string.format("%d · %d", ship.cannons, ship.speed), tone = "key" },
-	})
-	H.statStrip({
-		{ "화물", string.format("%d/%d", ship.cargoUsed, ship.cargoCapacity), tone = "key" },
-		{ "보급품", tostring(ship.supplies), tone = if ship.supplies <= 8 then "bad" else "key" },
-		{ "석탄", tostring(ship.coal), tone = "key" },
+		{ "항해 속도", tostring(ship.speed), tone = "key" },
+		{ "선체 보강", tostring(ship.plating or 0) .. "단계", tone = "good" },
+		{ "석탄", tostring(ship.coal or 0), tone = "key" },
 	})
 	-- [선장 현황] 현재 배의 역할·갑판 대포·개조 효과를 숫자와 설명으로 연결한다.
 	add(function()
@@ -6331,16 +6309,7 @@ end
 
 function RENDERERS.route()
 	local ship = view.ship
-	local possible = 0
-	for _, r in (view.routes or {}) do
-		if not r.locked and r.supplies <= ship.supplies and (r.coal or 0) <= (ship.coal or 0) then possible += 1 end
-	end
-	H.statStrip({
-		{ "보급품", tostring(ship.supplies), tone = if ship.supplies <= 5 then "bad" else "key" },
-		{ "석탄", tostring(ship.coal or 0), tone = "key" },
-		{ "준비된 항로", tostring(possible) .. "/" .. tostring(#(view.routes or {})), tone = "good" },
-	})
-	if view.weather then
+if view.weather then
 		add(function()
 			local fc = ""
 			if view.forecast and #view.forecast > 0 then
@@ -6364,9 +6333,6 @@ function RENDERERS.route()
 			}, content, 176, 150)
 		end)
 	end
-	add(function()
-		return mkLabel(content, string.format("보급품 %d · 석탄 %d%s", ship.supplies, ship.coal, if ship.steam then " (증기선은 석탄을 태워요)" else ""), 13, COLORS.muted, false)
-	end)
 	-- 정렬: 가까운 순(기본) · 의뢰 목적지 · 조선소 · 이름 · 해역
 	H.routeSort = H.routeSort or "near"
 	add(function()
@@ -9155,9 +9121,7 @@ function RENDERERS.tech()
 	end
 	H.statStrip({
 		{ "연구 완료", tostring(completed), tone = "good" },
-		{ "지금 가능", tostring(affordable), tone = "good" },
 		{ "조건 잠금", tostring(blocked), tone = "key" },
-		{ "보유 코인", H.commas(view.player.coins), tone = "key" },
 	})
 	add(function()
 		return mkLabel(content, "기술은 선행 지식과 보유 코인을 확인해 연구해. 증기 장비는 석탄을 사용해.", 14, COLORS.muted, false)
@@ -9415,8 +9379,6 @@ end
 function RENDERERS.battle()
 	H.walletBar("battle")
 	H.statStrip({
-		{ "선체", string.format("%d/%d", view.ship.hull, view.ship.maxHull), tone = if view.ship.hull < view.ship.maxHull * 0.5 then "bad" else "good" },
-		{ "포문", tostring(view.ship.cannons), tone = "key" },
 		{ "승조원", string.format("%d/%d", view.ship.crew, view.ship.maxCrew), tone = "key" },
 		{ "속도", string.format("%.1f", view.ship.speed), tone = "key" },
 	})
@@ -11354,8 +11316,8 @@ function render()
 				local safe = (ship.supplies or 0) >= (nearest.supplies or 0) and (ship.coal or 0) >= (nearest.coal or 0)
 				local risk = if view.weather and view.weather.id == "storm" then "폭풍 주의"
 					elseif view.weather and view.weather.id == "rain" then "비·시야 주의" else "항해 중 해적·돌발 사건 가능"
-				context = string.format("가까운 항구: %s · 석탄 %d개 필요\n현재 보급 %d · 석탄 %d · %s",
-					nearest.name, nearest.coal or 0, ship.supplies or 0, ship.coal or 0, risk)
+				context = string.format("가까운 항구 %s · 석탄 %d개 필요\n출항 가능 %d항로 · 현재 석탄 %d · %s",
+					nearest.name, nearest.coal or 0, ready, ship.coal or 0, risk)
 				urgent = not safe
 				H.menuPrimaryRoute = if safe then nearest else nil
 				actionText = if safe then "가까운 항구 출항 확인" else "보급 부족 · 항로 확인"
@@ -11460,10 +11422,10 @@ function render()
 		add(function()
 			-- [작은 모바일 가로화면] 큰 숫자와 조건은 유지하되 카드 높이만 적응한다.
 			local short = mainInner.AbsoluteSize.Y < 500
-			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, if short then 188 else 218), Color3.fromRGB(64, 48, 35))
+			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, if short then 154 else 180), Color3.fromRGB(64, 48, 35))
 			banner.Name = "MenuFocus_" .. currentTab
 			corner(banner, 8)
-			local heading = mkLabel(banner, "◆ " .. focus[1] .. " · 핵심 정보", 19, Color3.fromRGB(255, 222, 144), true)
+			local heading = mkLabel(banner, "◆ 핵심 판단", 19, Color3.fromRGB(255, 222, 144), true)
 			heading.Position = UDim2.fromOffset(12, 7)
 			heading.Size = UDim2.new(1, -24, 0, 26)
 			heading.AutomaticSize = Enum.AutomaticSize.None
@@ -11474,15 +11436,10 @@ function render()
 			highlight.TextWrapped = true
 			local explanation = mkLabel(banner, context, 17, Color3.fromRGB(249, 232, 207), true)
 			explanation.Position = UDim2.fromOffset(12, 84)
-			explanation.Size = UDim2.new(1, -24, 0, if short then 63 else 86)
+			explanation.Size = UDim2.new(1, -24, 0, if short then 65 else 90)
 			explanation.AutomaticSize = Enum.AutomaticSize.None
 			explanation.TextWrapped = true
 			explanation.TextYAlignment = Enum.TextYAlignment.Top
-			local guide = mkLabel(banner, focus[2], 16, Color3.fromRGB(236, 205, 148), false)
-			guide.Position = UDim2.fromOffset(12, if short then 151 else 178)
-			guide.Size = UDim2.new(1, -24, 0, 29)
-			guide.AutomaticSize = Enum.AutomaticSize.None
-			guide.TextTruncate = Enum.TextTruncate.AtEnd
 			return banner
 		end)
 		-- [고정 하단 버튼] 기존 실행 함수를 재사용한다. 출항만 기존 확인 창으로 보낸다.
@@ -11502,11 +11459,21 @@ function render()
 			if currentTab == "war" and view.war and view.war.next then call("WarNext") return end
 			if currentTab == "battle" then call("Hunt") return end
 			-- 연구·전투 작전·수락 후보가 여러 개면 플레이어가 목록에서 직접 고른다.
-			for _, element in content:GetDescendants() do
-				if element:IsA("TextButton") and element.Interactable and element.Visible then
-					local y = element.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 12
-					content.CanvasPosition = Vector2.new(0, math.max(0, y))
-					break
+			local tile = content:FindFirstChild("BookTile", true)
+			if tile then
+				local y = tile.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 8
+				content.CanvasPosition = Vector2.new(0, math.max(0, y))
+			else
+				for _, section in content:GetChildren() do
+					if section.Name ~= "MenuQuickActions" and section.Name ~= "CaptainPriorityAdvice"
+						and section.Name ~= "MenuSummaryMetrics" and not string.find(section.Name, "^MenuFocus_") then
+						local button = section:FindFirstChildWhichIsA("TextButton", true)
+						if button and button.Interactable and button.Visible then
+							local y = section.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 8
+							content.CanvasPosition = Vector2.new(0, math.max(0, y))
+							break
+						end
+					end
 				end
 			end
 		end
