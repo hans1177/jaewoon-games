@@ -2349,7 +2349,11 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
   assert.match(designSource, /visualAnchors\(contract\.allowedSourceFiles, designRuntime\.selectedRole\)/);
   assert.match(designSource, /SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE[\s\S]*modelAvailability: diagnostics/);
 
-  const models = opts => selectFreeDesignModels({policy, env, now, ...opts});
+  // [무료 플래그와 별개] 공식 /key 조회로 확인한 무료 계정 증거를 흉내 낸다.
+  const freeAccount = {scope: 'OPENROUTER_ACCOUNT_TIER', isFreeTier: true};
+  const models = opts => selectFreeDesignModels({
+    policy, env, now, accountQuota: freeAccount, ...opts
+  });
   assert.equal(models({frameNames: ['npc_face-0.jpg']})[0].id, 'NVIDIA_VL');
   assert.equal(models({frameNames: ['ship-0.jpg']})[0].id, 'GEMINI_FLASH');
   assert.equal(models({frameNames: ['menu_ui-0.jpg']})[0].id, 'OPENROUTER_GEMMA');
@@ -2512,6 +2516,7 @@ test('무료 디자인 한도 예측은 계정 전체 잔량을 주장하지 않
     OPENROUTER_API_KEY: 'fixture', OPENROUTER_DESIGN_FREE_TIER_VERIFIED: 'YES'
   };
   const reserveFirst = selectFreeDesignModels({policy, env, now: time,
+    accountQuota: {scope: 'OPENROUTER_ACCOUNT_TIER', isFreeTier: true},
     frameNames: ['npc_face-0.jpg'],
     previous: {usageWindow: {day: '2026-11-18', calls: {NVIDIA: 10}}}});
   assert.equal(reserveFirst[0].provider, 'OPENROUTER',
@@ -2553,6 +2558,18 @@ test('오픈라우터 공식 무료 계정 상태를 조회하고 미공개 호�
   assert.equal(forecast.OPENROUTER.accountWideFreeRemaining, null);
   assert.equal(forecast.OPENROUTER.accountFreeTierVerified, true);
   const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
+  const missingProof = [];
+  assert.ok(!selectFreeDesignModels({policy, env, now, diagnostics: missingProof})
+    .some(model => model.provider === 'OPENROUTER'),
+    '무료 플래그만 있고 공식 계정 확인이 없으면 디자인 외부 호출 차단');
+  assert.equal(missingProof.find(row => row.modelId === 'OPENROUTER_GEMMA').status,
+    'ACCOUNT_TIER_PROOF_MISSING');
+  const unreadableTier = await inspectOpenRouterFreeTier({env,
+    fetchImpl: async () => ({ok: false, status: 503})});
+  assert.equal(unreadableTier, null);
+  assert.ok(!selectFreeDesignModels({policy, env, now, accountQuota: unreadableTier})
+    .some(model => model.provider === 'OPENROUTER'),
+    '공식 계정 검증 API 오류를 무료 계정으로 간주하면 안 된다');
   assert.ok(selectFreeDesignModels({policy, env, now, accountQuota: tier})
     .some(model => model.provider === 'OPENROUTER'),
     '무료 인증 키와 무료 모델 고정 규칙을 함께 충족할 때만 배정');
