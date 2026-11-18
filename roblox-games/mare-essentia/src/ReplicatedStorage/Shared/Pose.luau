@@ -102,6 +102,8 @@ local function drawFace(head, role, skin, rng, gender)
 	gui.SizingMode = Enum.SurfaceGuiSizingMode.FixedSize
 	gui.CanvasSize = Vector2.new(200, 200)
 	gui.LightInfluence = 0.6
+	-- [실물 얼굴] R15 곡면 머리에서 표면 UI가 메시 안에 가려지지 않도록 전면 렌더링한다.
+	gui.AlwaysOnTop = true
 	gui.Parent = head
 	local function box(x, y, w, h, color, rot, round)
 		local f = Instance.new("Frame")
@@ -265,15 +267,15 @@ local function addSkirt(model, color, long)
 	if not (lower and lower:IsA("BasePart")) then
 		return
 	end
-	local len = if long then lower.Size.Y * 2.6 else lower.Size.Y * 1.7
+	local len = if long then lower.Size.Y * 2.15 else lower.Size.Y * 1.55
 	local q = Instance.new("Part")
 	q.Name = "Skirt"
 	q.Shape = Enum.PartType.Cylinder
-	q.Size = Vector3.new(len, lower.Size.X * 1.55, lower.Size.X * 1.4)
+	q.Size = Vector3.new(len, lower.Size.X * 1.18, lower.Size.X * 1.12)
 	q.Color = color
 	q.Material = Enum.Material.Fabric
 	q.CanCollide, q.CanTouch, q.CanQuery, q.Massless = false, false, false, true
-	q.CFrame = lower.CFrame * CFrame.new(0, -len * 0.38, 0) * CFrame.Angles(0, 0, math.pi / 2)
+	q.CFrame = lower.CFrame * CFrame.new(0, -len * 0.43, 0) * CFrame.Angles(0, 0, math.pi / 2)
 	q.Parent = model
 	local w = Instance.new("WeldConstraint")
 	w.Part0, w.Part1 = lower, q
@@ -1038,10 +1040,12 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		local ok = pcall(function()
 			local bounds, ext = skin:GetBoundingBox()
 			if ext.X < 0.01 or ext.Y < 0.01 or ext.Z < 0.01 then error("empty mesh") end
+			-- [허리띠 바렐링 방지] 원본 복식의 재질·형태는 살리고 R15 허리 높이만 슬림하게 맞춘다.
+			local belt = npcOutfit and assetName == "outfit_belt"
 			local ratio = math.min(
-				target.Size.X * spec[3] / ext.X,
-				target.Size.Y * spec[4] / ext.Y,
-				target.Size.Z * spec[5] / ext.Z
+				target.Size.X * (if belt then 1.04 else spec[3]) / ext.X,
+				target.Size.Y * (if belt then 0.38 else spec[4]) / ext.Y,
+				target.Size.Z * (if belt then 1.04 else spec[5]) / ext.Z
 			)
 			if ratio <= 0 or ratio ~= ratio or ratio > 100 then error("invalid scale") end
 			skin:ScaleTo(ratio)
@@ -1080,8 +1084,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					-- 애매한 수입 모델까지 대표색 하나로 덮지 않아 소매·안감·단추를 보존한다.
 					if bestError < 0.0064 then
 						part.Material = bestMaterial
-					elseif fallback and color.R > 0.94 and color.G > 0.94 and color.B > 0.94 then
-						-- 실제 GLB 원본에 완전한 흰색은 없다. 색상을 전부 잃은 부품만 주색으로 구제한다.
+					elseif fallback and color.R > 0.80 and color.G > 0.80 and color.B > 0.80
+						and math.max(color.R, color.G, color.B) - math.min(color.R, color.G, color.B) < 0.09 then
+						-- [수입기 무채색 복구] 미지의 회백색 기본 재질만 승인 GLB 주색으로 되돌린다.
+						-- 실제 색차가 큰 원본 소매·안감·단추 및 PBR 텍스처는 보호한다.
 						part.Material = fallback[2]
 						part.Color = fallback[1]
 					end
