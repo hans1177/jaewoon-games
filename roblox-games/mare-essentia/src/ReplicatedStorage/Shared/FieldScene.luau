@@ -272,6 +272,11 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 					or partName:find("hoof", 1, true) or partName:find("horn", 1, true)
 					or partName:find("mane", 1, true) or partName:find("tail", 1, true)
 					or partName:find("beak", 1, true) or partName:find("saddle", 1, true)
+						or partName:find("muzzle", 1, true) or partName:find("nose", 1, true)
+						or partName:find("snout", 1, true) or partName:find("ear", 1, true)
+						or partName:find("udder", 1, true) or partName:find("tusk", 1, true)
+						or partName:find("patch", 1, true) or partName:find("spot", 1, true)
+						or partName:find("stripe", 1, true) or partName:find("whisker", 1, true)
 				if textured and not detail then
 					-- [가축/야생 공통 PBR] 원본 지도는 보존하고 중복 색 곱셈을 한 채널로 줄인다.
 					if sa and sa.ColorMap ~= "" then
@@ -281,7 +286,13 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 					end
 				elseif not textured and not detail then
 					local light = math.max(d.Color.R, d.Color.G, d.Color.B)
-					d.Color = d.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
+					-- [원본 PBR 재질] 색상 지도가 없어도 법선/거칠기 맵을 사용할 수 있다.
+					-- 원본 파츠 색과 PBR 색을 동시에 착색하지 않는다.
+					if sa and sa.ColorMap == "" then
+						sa.Color = sa.Color:Lerp(tint, if light > 0.55 then 0.52 else 0.30)
+					else
+						d.Color = d.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
+					end
 					-- [종별 자연 재질] 양털/단모 가죽/돼지 피부. 원본 PBR은 절대 덮지 않는다.
 					if not sa then
 						d.Material = if asset == "sheep" or asset == "llama" or asset == "chicken"
@@ -291,7 +302,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 							else Enum.Material.SmoothPlastic
 						d.Reflectance = 0
 					end
-					if sa and sa.ColorMap == "" then sa.Color = d.Color end
+					-- PBR 색은 위에서 한 채널만 보정했다.
 				elseif not textured and not sa and (partName:find("mane", 1, true) or partName:find("tail", 1, true)) then
 					d.Material = Enum.Material.Fabric
 				end
