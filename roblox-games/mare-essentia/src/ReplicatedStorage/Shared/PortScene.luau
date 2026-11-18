@@ -3009,6 +3009,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 								and surface.Material ~= Enum.Material.Metal and surface.Material ~= Enum.Material.Neon then
 								local appearance = surface:FindFirstChildOfClass("SurfaceAppearance")
 								local painted = appearance ~= nil or (surface:IsA("MeshPart") and surface.TextureID ~= "")
+								for _, child in surface:GetChildren() do
+									if child:IsA("SpecialMesh") and child.TextureId ~= "" then painted = true break end
+								end
 								if not painted then
 									local winterRoof = (math.abs((port and port.lat) or 0) >= 39) and not palm
 										and folder:GetAttribute("CitySeasonIndex") == 1
