@@ -2145,3 +2145,44 @@ test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox
   assert.match(uploader,/const outfitUvUpgrade = item.kind === 'People'/);
   assert.match(uploader,/ORIGINAL_MODEL_SOURCE_CHANGED_REUPLOAD/);
 });
+
+
+// [무료 네모트론 디자인 검증] 외부 모델이 값을 제시해도 기존 R15 책임 파일의 다섯 숫자만 수정한다.
+test('무료 네모트론 Studio 디자인 후보는 격리 브랜치와 허용 숫자만 사용한다',async()=>{
+  const {validateReview,applyVisualParameters}=await import('../tools/company-nemotron-design-review.mjs');
+  const contract=JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json','utf8')).directVisualDesign;
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  assert.equal(contract.enabled,true);
+  assert.equal(contract.directCandidateSourceEditAllowed,true);
+  assert.equal(contract.directMainWriteForbidden,true);
+  assert.equal(contract.independentQaRequiredBeforePromotion,true);
+  assert.deepEqual(contract.allowedSourceFiles,['roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau']);
+  assert.equal(contract.allowedEdits.length,5);
+  assert.match(workflow,/NVIDIA_FREE_TIER_VERIFIED/);
+  assert.match(workflow,/nemotron-mare-design-/);
+  assert.match(workflow,/gh pr create --base main/);
+  assert.match(workflow,/node --test qa\/mare-essentia-datastore-name\.test\.mjs/);
+  const images=['harbor_npc_face_front-0.jpg','harbor_motion_idle-0.jpg'];
+  const valid={
+    issues:[{category:'npc-clothing',severity:'medium',screenshot:images[0],
+      evidence:'The waist garment appears much wider than the torso in this screenshot.'}],
+    edits:[{key:'belt_height',value:0.35}]
+  };
+  const checked=validateReview(JSON.stringify(valid),images);
+  assert.equal(checked.edits.length,1);
+  const original=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
+  const patch=applyVisualParameters(original,checked.edits);
+  assert.equal(patch.changed.length,1);
+  assert.match(patch.content,/if belt then 0\.35 else spec\[4\]/);
+  assert.match(original,/if belt then 0\.38 else spec\[4\]/);
+  assert.match(patch.content,/function Pose\.createR15\(/);
+  assert.match(patch.content,/function Pose\.applyRegisteredMobOutfit\(/);
+  assert.throws(()=>validateReview({issues:valid.issues,edits:[{key:'damage',value:99}]},images),/EDIT_NOT_IN_WHITELIST/);
+  assert.throws(()=>validateReview({issues:valid.issues,edits:[{key:'belt_height',value:0.82}]},images),/EDIT_NOT_IN_WHITELIST/);
+  assert.throws(()=>validateReview({issues:valid.issues,edits:[{key:'belt_height',value:0.35},{key:'belt_height',value:0.36}]},images),/EDIT_NOT_IN_WHITELIST/);
+  assert.throws(()=>validateReview({issues:valid.issues,edits:[{key:'belt_height',value:0.35},{key:'skirt_width',value:0.97},{key:'skirt_depth',value:1},{key:'face_light_influence',value:0.3}]},images),/REVIEW_SCHEMA_INVALID/);
+  assert.throws(()=>validateReview({issues:valid.issues,edits:[{key:'belt_height',value:0.35}]},['not-real.jpg']),/ISSUE_EVIDENCE_INVALID/);
+  assert.equal(applyVisualParameters(original,[]).content,original);
+  const corrupted=original.replace('if belt then 0.38 else spec[4]','if belt then BROKEN else spec[4]');
+  assert.throws(()=>applyVisualParameters(corrupted,checked.edits),/SOURCE_ANCHOR_NOT_UNIQUE/);
+});
