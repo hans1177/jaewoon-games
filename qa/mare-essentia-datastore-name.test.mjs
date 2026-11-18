@@ -1582,6 +1582,8 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.match(pose,/math\.max\(color\.R, color\.G, color\.B\) - math\.min\(color\.R, color\.G, color\.B\) < 0\.09/);
   // [실물 스크린샷 회귀] 얼굴·치마·허리띠·중첩 상의가 다시 원통/흰 갑옷으로 돌아가지 않도록 고정.
   assert.match(pose,/gui\.AlwaysOnTop = true/);
+  assert.match(pose,/scalp\.Name = "HairScalp"/);
+  assert.match(pose,/piece\.Name == fallbackName then piece\.Transparency = 1/);
   assert.match(pose,/lower\.Size\.X \* 1\.18, lower\.Size\.X \* 1\.12/);
   assert.match(pose,/local belt = npcOutfit and assetName == "outfit_belt"/);
   assert.match(pose,/if belt then 0\.38 else spec\[4\]/);
