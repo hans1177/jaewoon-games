@@ -2153,59 +2153,100 @@ test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox
 });
 
 
-// [무료 네모트론 디자인 검증] 외부 모델이 값을 제시해도 기존 R15 책임 파일의 다섯 숫자만 수정한다.
-test('무료 네모트론 Studio 디자인 후보는 격리 브랜치와 허용 숫자만 사용한다',async()=>{
-  const {validateReview,applyVisualParameters,authorizedCandidateBranch,verifiedStudioCapture}=await import('../tools/company-nemotron-design-review.mjs');
-  const contract=JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json','utf8')).directVisualDesign;
-  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
-  assert.equal(contract.enabled,true);
-  assert.equal(contract.directCandidateSourceEditAllowed,true);
-  assert.equal(contract.directMainWriteForbidden,true);
-  assert.equal(contract.independentQaRequiredBeforePromotion,true);
-  assert.deepEqual(contract.allowedSourceFiles,['roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau']);
-  assert.equal(contract.allowedEdits.length,5);
-  assert.match(workflow,/NVIDIA_FREE_TIER_VERIFIED/);
-  assert.match(workflow,/nemotron-mare-design-/);
-  assert.match(workflow,/gh pr create --base main/);
-  assert.equal(authorizedCandidateBranch('nemotron-mare-design-44238657398','44238657398'),true);
-  assert.equal(authorizedCandidateBranch('main','44238657398'),false);
-  assert.equal(authorizedCandidateBranch('nemotron-mare-design-44238657398','44238657399'),false);
-  assert.equal(authorizedCandidateBranch('nemotron-mare-design-../main','44238657398'),false);
-  // 사진 이름/JPEG 파일만이 아니라 실제 Studio MCP report의 샤·캡처 기록까지 대조한다.
-  const revision='a'.repeat(40);
-  const photographed=[{name:'harbor_npc_face_front-0.jpg'},{name:'harbor_motion_idle-0.jpg'}];
-  const studio={sourceRevision:revision,summary:{capturedFrames:2},
-    log:[{capture:'harbor_npc_face_front'},{capture:'harbor_motion_idle'}]};
-  assert.equal(verifiedStudioCapture(studio,photographed,revision),true);
-  assert.equal(verifiedStudioCapture(studio,photographed,'b'.repeat(40)),false);
-  assert.equal(verifiedStudioCapture({...studio,log:[]},photographed,revision),false);
-  assert.equal(verifiedStudioCapture({...studio,summary:{capturedFrames:1}},photographed,revision),false);
-  assert.match(workflow,/node --test qa\/mare-essentia-datastore-name\.test\.mjs/);
-  const images=['harbor_npc_face_front-0.jpg','harbor_motion_idle-0.jpg'];
-  const valid={
-    issues:[{category:'npc-clothing',severity:'medium',screenshot:images[0],
-      evidence:'The waist garment appears much wider than the torso in this screenshot.'}],
-    edits:[{key:'belt_height',value:0.35}]
-  };
-  const checked=validateReview(JSON.stringify(valid),images);
-  assert.equal(checked.edits.length,1);
-  assert.equal(checked.issues[0].evidence,undefined,'원문 모델 증거는 저장하지 않음');
-  assert.match(checked.issues[0].evidenceSha256,/^[a-f0-9]{64}$/);
-  const original=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
-  // [격리 후보와 재실행] 후보에 이미 적용된 값에서도 회귀 테스트가 PASS할 수 있어야 한다.
-  const fixture=original.replace(/if belt then [0-9.]+ else spec\[4\]/,'if belt then 0.38 else spec[4]');
-  const patch=applyVisualParameters(fixture,checked.edits);
-  assert.equal(patch.changed.length,1);
-  assert.match(patch.content,/if belt then 0\.35 else spec\[4\]/);
-  assert.match(fixture,/if belt then 0\.38 else spec\[4\]/);
-  assert.match(patch.content,/function Pose\.createR15\(/);
-  assert.match(patch.content,/function Pose\.applyRegisteredMobOutfit\(/);
-  assert.throws(()=>validateReview({issues:valid.issues,edits:[{key:'damage',value:99}]},images),/EDIT_NOT_IN_WHITELIST/);
-  assert.throws(()=>validateReview({issues:valid.issues,edits:[{key:'belt_height',value:0.82}]},images),/EDIT_NOT_IN_WHITELIST/);
-  assert.throws(()=>validateReview({issues:valid.issues,edits:[{key:'belt_height',value:0.35},{key:'belt_height',value:0.36}]},images),/EDIT_NOT_IN_WHITELIST/);
-  assert.throws(()=>validateReview({issues:valid.issues,edits:[{key:'belt_height',value:0.35},{key:'skirt_width',value:0.97},{key:'skirt_depth',value:1},{key:'face_light_influence',value:0.3}]},images),/REVIEW_SCHEMA_INVALID/);
-  assert.throws(()=>validateReview({issues:valid.issues,edits:[{key:'belt_height',value:0.35}]},['not-real.jpg']),/ISSUE_EVIDENCE_INVALID/);
-  assert.equal(applyVisualParameters(original,[]).content,original);
-  const corrupted=fixture.replace('if belt then 0.38 else spec[4]','if belt then BROKEN else spec[4]');
-  assert.throws(()=>applyVisualParameters(corrupted,checked.edits),/SOURCE_ANCHOR_NOT_UNIQUE/);
+// [무료 네모트론 디자인 검증] Studio 사진과 책임 코드에서 전 시각 범주를 안전하게 수정한다.
+test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치·다중 파일 소스 변경', async () => {
+  const {validateReview, visualEditLooksSafe, applyVisualReplacements,
+    authorizedCandidateBranch, verifiedStudioCapture} =
+    await import('../tools/company-nemotron-design-review.mjs');
+  const contract = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8')).directVisualDesign;
+  const workflow = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  const pose = 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau';
+  const port = 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau';
+  assert.equal(contract.enabled, true);
+  assert.equal(contract.directCandidateSourceEditAllowed, true);
+  assert.equal(contract.directMainWriteForbidden, true);
+  assert.equal(contract.independentQaRequiredBeforePromotion, true);
+  assert.ok(contract.visualCategories.length >= 20);
+  assert.ok(contract.allowedSourceFiles.length >= 16);
+  assert.ok(contract.allowedSourceFiles.includes(pose));
+  assert.ok(contract.allowedSourceFiles.includes(port));
+  assert.ok(contract.allowedSourceFiles.every(file => fs.existsSync(file)),
+    '정책에 없는 파일을 모델이 상상해서 수정하면 안 된다');
+  assert.equal(contract.maximumCandidateFilesPerRun, 4);
+  assert.equal(contract.maximumSourceEditsPerRun, 10);
+  assert.equal(contract.maximumReplacementBytes, 1800);
+  assert.match(workflow, /NVIDIA_FREE_TIER_VERIFIED/);
+  assert.match(workflow, /nemotron-mare-design-/);
+  assert.match(workflow, /gh pr create --base main/);
+  assert.match(workflow, /NEMOTRON_CANDIDATE=BLOCKED_UNAUTHORIZED_FILE_CHANGE/);
+  assert.match(workflow, /node --test qa\/mare-essentia-datastore-name\.test\.mjs/);
+  assert.equal(authorizedCandidateBranch('nemotron-mare-design-44238657398', '44238657398'), true);
+  assert.equal(authorizedCandidateBranch('main', '44238657398'), false);
+  assert.equal(authorizedCandidateBranch('nemotron-mare-design-44238657398', '44238657399'), false);
+  assert.equal(authorizedCandidateBranch('nemotron-mare-design-../main', '44238657398'), false);
+
+  // [Studio 캡처 진위] 해시/파일명만으로는 화면 실행 통과를 인정하지 않는다.
+  const revision = 'a'.repeat(40);
+  const images = ['harbor_npc_face_front-0.jpg', 'harbor_motion_idle-0.jpg'];
+  const photos = images.map(name => ({name}));
+  const studio = {sourceRevision: revision, errors: [], summary: {capturedFrames: 2},
+    log: [{capture: 'harbor_npc_face_front'}, {capture: 'harbor_motion_idle'}]};
+  assert.equal(verifiedStudioCapture(studio, photos, revision), true);
+  assert.equal(verifiedStudioCapture({...studio, errors: ['failed']}, photos, revision), false);
+  assert.equal(verifiedStudioCapture(studio, photos, 'b'.repeat(40)), false);
+  assert.equal(verifiedStudioCapture({...studio, log: []}, photos, revision), false);
+  assert.equal(verifiedStudioCapture({...studio, summary: {capturedFrames: 1}}, photos, revision), false);
+
+  // [디자인 특화 AI] 정확히 존재하는 원본 한 줄을 동일 문맥의 시각 표현으로만 교체한다.
+  const oldPose = '\tgui.LightInfluence = 0.6';
+  const newPose = '\tgui.LightInfluence = 0.35';
+  const oldPort = '\tlocal harborColor = Color3.fromRGB(51, 40, 30)';
+  const newPort = '\tlocal harborColor = Color3.fromRGB(60, 45, 32)';
+  const issue = (category, screenshot) => ({category, screenshot, severity: 'medium',
+    evidence: 'The exact source-backed visual element is too bright and lacks contrast.'});
+  const response = {issues: [issue('npc-face', images[0]), issue('environment', images[1])],
+    edits: [
+      {path: pose, category: 'npc-face', screenshot: images[0], before: oldPose, after: newPose},
+      {path: port, category: 'environment', screenshot: images[1], before: oldPort, after: newPort}
+    ]};
+  const reviewed = validateReview(JSON.stringify(response), images, contract);
+  assert.equal(reviewed.edits.length, 2);
+  assert.match(reviewed.issues[0].evidenceSha256, /^[0-9a-f]{64}$/);
+  assert.equal(reviewed.issues[0].evidence, undefined);
+  assert.ok(visualEditLooksSafe(oldPose, newPose));
+  assert.ok(visualEditLooksSafe(oldPort, newPort));
+  assert.equal(visualEditLooksSafe('\tgui.LightInfluence = 0.6',
+    '\tgui.LightInfluence = 0.35; game:Shutdown()'), false);
+  assert.equal(visualEditLooksSafe('\tgui.LightInfluence = 0.6',
+    '\tgui.LightInfluence = 0.35\nlocal evil = true'), false);
+  assert.equal(visualEditLooksSafe('\tlocal color = Color3.fromRGB(1,2,3)',
+    '\tlocal color = Color3.fromRGB(1,2,3) or require(42)'), false);
+  assert.equal(visualEditLooksSafe('\tq.Material = Enum.Material.Fabric',
+    '\tq.Material = Enum.Material.Metal'), true);
+  assert.equal(visualEditLooksSafe('\tgameGold = 100', '\tgameGold = 999'), false);
+  assert.equal(visualEditLooksSafe('\tq.CanCollide = false', '\tq.CanCollide = true'), false);
+  assert.equal(visualEditLooksSafe('\tlocal icon = "rbxassetid://123"',
+    '\tlocal icon = "rbxassetid://456"'), false);
+
+  const sources = {[pose]: oldPose + '\n', [port]: oldPort + '\n'};
+  const candidate = applyVisualReplacements(sources, reviewed.edits, contract);
+  assert.equal(candidate.files.size, 2);
+  assert.equal(candidate.changes.length, 2);
+  assert.equal(candidate.files.get(pose), newPose + '\n');
+  assert.equal(candidate.files.get(port), newPort + '\n');
+  assert.equal(fs.readFileSync(pose, 'utf8').includes(oldPose), true,
+    '원본 책임 게임 파일의 기존 기준선은 변경하지 않는다');
+  assert.throws(() => validateReview({...response,
+    edits: [{...response.edits[0], path: 'roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau'}]},
+    images, contract), /EDIT_NOT_VISUAL_OR_NOT_IN_POLICY/);
+  assert.throws(() => validateReview({...response,
+    edits: [response.edits[0], response.edits[0]]}, images, contract),
+  /DUPLICATE_SOURCE_ANCHOR/);
+  assert.throws(() => validateReview({...response,
+    edits: [{...response.edits[0], before: '\tDamage = 5', after: '\tDamage = 50'}]},
+    images, contract), /EDIT_NOT_VISUAL_OR_NOT_IN_POLICY/);
+  assert.throws(() => applyVisualReplacements({[pose]: oldPose + '\n' + oldPose},
+    [reviewed.edits[0]], contract), /SOURCE_ANCHOR_NOT_UNIQUE/);
+  assert.throws(() => applyVisualReplacements({}, [reviewed.edits[0]], contract),
+    /SOURCE_FILE_NOT_FOUND/);
 });
