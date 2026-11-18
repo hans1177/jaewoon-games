@@ -1584,9 +1584,15 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.match(pose,/gui\.AlwaysOnTop = true/);
   assert.match(pose,/scalp\.Name = "HairScalp"/);
   assert.match(pose,/piece\.Name == fallbackName then piece\.Transparency = 1/);
-  assert.match(pose,/lower\.Size\.X \* 1\.18, lower\.Size\.X \* 1\.12/);
+  // [모델 후보 안전범위] 원래 시각 기준 대신 중앙정책에 허용된 정확한 숫자 범위와 수정을 검증한다.
+  const skirt=pose.match(/q\.Size = Vector3\.new\(len, lower\.Size\.X \* ([0-9.]+), lower\.Size\.X \* ([0-9.]+)\)/);
+  assert.ok(skirt,'실제 주민 치마 비율 존재');
+  assert.ok(Number(skirt[1])>=0.94 && Number(skirt[1])<=1.24,'치마 가로 범위');
+  assert.ok(Number(skirt[2])>=0.90 && Number(skirt[2])<=1.18,'치마 깊이 범위');
   assert.match(pose,/local belt = npcOutfit and assetName == "outfit_belt"/);
-  assert.match(pose,/if belt then 0\.38 else spec\[4\]/);
+  const belt=pose.match(/if belt then ([0-9.]+) else spec\[4\]/);
+  assert.ok(belt,'주민 허리띠 스케일 존재');
+  assert.ok(Number(belt[1])>=0.24 && Number(belt[1])<=0.50,'허리띠 시각 범위');
   assert.match(pose,/local fittedUpperReady = false/);
   assert.match(pose,/if fittedUpperReady and boneName == "UpperTorso"/);
   assert.match(pose,/surface\.ColorMap ~= ""/);
@@ -2171,10 +2177,12 @@ test('무료 네모트론 Studio 디자인 후보는 격리 브랜치와 허용 
   const checked=validateReview(JSON.stringify(valid),images);
   assert.equal(checked.edits.length,1);
   const original=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
-  const patch=applyVisualParameters(original,checked.edits);
+  // [격리 후보와 재실행] 후보에 이미 적용된 값에서도 회귀 테스트가 PASS할 수 있어야 한다.
+  const fixture=original.replace(/if belt then [0-9.]+ else spec\[4\]/,'if belt then 0.38 else spec[4]');
+  const patch=applyVisualParameters(fixture,checked.edits);
   assert.equal(patch.changed.length,1);
   assert.match(patch.content,/if belt then 0\.35 else spec\[4\]/);
-  assert.match(original,/if belt then 0\.38 else spec\[4\]/);
+  assert.match(fixture,/if belt then 0\.38 else spec\[4\]/);
   assert.match(patch.content,/function Pose\.createR15\(/);
   assert.match(patch.content,/function Pose\.applyRegisteredMobOutfit\(/);
   assert.throws(()=>validateReview({issues:valid.issues,edits:[{key:'damage',value:99}]},images),/EDIT_NOT_IN_WHITELIST/);
@@ -2183,6 +2191,6 @@ test('무료 네모트론 Studio 디자인 후보는 격리 브랜치와 허용 
   assert.throws(()=>validateReview({issues:valid.issues,edits:[{key:'belt_height',value:0.35},{key:'skirt_width',value:0.97},{key:'skirt_depth',value:1},{key:'face_light_influence',value:0.3}]},images),/REVIEW_SCHEMA_INVALID/);
   assert.throws(()=>validateReview({issues:valid.issues,edits:[{key:'belt_height',value:0.35}]},['not-real.jpg']),/ISSUE_EVIDENCE_INVALID/);
   assert.equal(applyVisualParameters(original,[]).content,original);
-  const corrupted=original.replace('if belt then 0.38 else spec[4]','if belt then BROKEN else spec[4]');
+  const corrupted=fixture.replace('if belt then 0.38 else spec[4]','if belt then BROKEN else spec[4]');
   assert.throws(()=>applyVisualParameters(corrupted,checked.edits),/SOURCE_ANCHOR_NOT_UNIQUE/);
 });
