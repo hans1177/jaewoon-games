@@ -53,6 +53,9 @@ test('서재 백과 책 판면·모바일 넘기기·교역 평균가 회귀', (
   assert.match(source,/CodexBookSpine/);
   assert.match(source,/책 펼치기/);
   assert.match(source,/showingNotes = not showingNotes/);
+  // 서재의 발견 현황은 백과 표지에만, 최근 메뉴는 다른 시설에서만 보여 준다.
+  assert.match(source,/H\.menuActionButton\.Text = actionText\n\s*-- \[서재 중복 제거\]/);
+  assert.match(source,/if currentTab ~= "codex" and H\.recentTab/);
   assert.equal(capture.length,241);
   assert.match(capture[123].code,/TRADE_AVERAGE_DIRECTION_NOT_RENDERED/);
   assert.match(capture[123].code,/TRADE_WORLD_AVERAGE_PRICE_NOT_RENDERED/);
