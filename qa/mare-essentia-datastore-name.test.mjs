@@ -1467,7 +1467,8 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
     assert.ok(pose.includes(name+' = { Color3.new('),'원본 주색 누락: '+name);
   assert.match(pose,/if not textured and string\.sub\(assetName, 1, 7\) == "outfit_"/);
   // [선형·감마 색상] 원본 금속/직물은 엄격하게 대조하고 임의 수입색은 덮지 않는다.
-  assert.match(pose,/for _, sourceColor in \{ candidate\[1\], candidate\[3\] \} do/);
+  assert.match(pose,/for colorIndex = 1, 3, 2 do/);
+  assert.match(pose,/local sourceColor = candidate\[colorIndex\]/);
   assert.match(pose,/if bestError < 0\.0064 then/);
   assert.match(pose,/elseif fallback and color\.R > 0\.94 and color\.G > 0\.94 and color\.B > 0\.94 then/);
   assert.match(pose,/surface\.ColorMap ~= ""/);
