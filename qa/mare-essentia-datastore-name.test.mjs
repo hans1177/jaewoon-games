@@ -2269,7 +2269,8 @@ test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치�
 // [무료 디자인 전문가 회귀] 전문 분야, 일일 한도, 쿨다운, 독립 전후 판정.
 test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다운을 지킨다', async () => {
   const {DESIGN_FREE_MODELS, designRoleForFrames, selectFreeDesignModels, selectDesignFrameRole,
-    validateVisualComparison, verifiedDesignFeedback, mergeFreeVisualUsage} =
+    validateVisualComparison, verifiedDesignFeedback, mergeFreeVisualUsage,
+    rankVisualSourceFiles, visualEditLooksSafe} =
       await import('../tools/company-nemotron-design-review.mjs');
   const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
   const config = policy.directVisualDesign.freeSpecialistPool;
@@ -2298,6 +2299,40 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
   assert.deepEqual(roles.map(role => selectDesignFrameRole(captures, role)),
     ['WORLD', 'UI', 'MOTION', 'GENERAL', 'NPC']);
   assert.equal(selectDesignFrameRole(captures), 'NPC');
+  const modelAvailability = [];
+  assert.equal(selectFreeDesignModels({policy, env: {}, now, diagnostics: modelAvailability}).length, 0);
+  assert.equal(modelAvailability.length, 7);
+  assert.ok(modelAvailability.every(row => row.status === 'KEY_MISSING'));
+  assert.ok(modelAvailability.every(row =>
+    Object.keys(row).join(',') === 'modelId,provider,status'),
+  '키 원문, 플래그 값, 계정 정보는 증거 파일에 노출하지 않는다');
+  const unverified = [];
+  selectFreeDesignModels({policy, now, env: {NVIDIA_API_KEY: 'private-key'},
+    diagnostics: unverified});
+  assert.equal(unverified.find(row => row.modelId === 'NVIDIA_VL').status,
+    'FREE_TIER_NOT_VERIFIED', '무료 확인 플래그 없이 실제 AI 호출 금지');
+  const files = policy.directVisualDesign.allowedSourceFiles;
+  const npcSources = rankVisualSourceFiles(files, 'NPC');
+  const worldSources = rankVisualSourceFiles(files, 'WORLD');
+  const uiSources = rankVisualSourceFiles(files, 'UI');
+  assert.match(npcSources[0], /\/Pose\.luau$/);
+  assert.match(worldSources[0], /\/PortScene\.luau$/);
+  assert.match(worldSources[1], /\/PortBuildings\.luau$/);
+  assert.match(uiSources[0], /\/Game\.client\.luau$/);
+  for (const paths of [npcSources, worldSources, uiSources]) {
+    assert.ok(paths.length <= 6 && paths.every(file => files.includes(file)));
+  }
+  const tintBefore = '\tmineral = { building = "workshop", name = "광물 제련소", kind = "Town", asset = "workbench-anvil", tint = { 145, 133, 122 } },';
+  const tintAfter = tintBefore.replace('145, 133, 122', '150, 130, 120');
+  assert.equal(visualEditLooksSafe(tintBefore, tintAfter), true);
+  assert.equal(visualEditLooksSafe(tintBefore,
+    tintBefore.replace('145, 133, 122', '256, 130, 120')), false);
+  assert.equal(visualEditLooksSafe(tintBefore,
+    tintBefore.replace('workbench-anvil', 'unlicensed-new-asset')), false);
+  const designSource = fs.readFileSync('tools/company-nemotron-design-review.mjs', 'utf8');
+  assert.match(designSource, /visualAnchors\(contract\.allowedSourceFiles, designRuntime\.selectedRole\)/);
+  assert.match(designSource, /SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE[\s\S]*modelAvailability: diagnostics/);
+
   const models = opts => selectFreeDesignModels({policy, env, now, ...opts});
   assert.equal(models({frameNames: ['npc_face-0.jpg']})[0].id, 'NVIDIA_VL');
   assert.equal(models({frameNames: ['ship-0.jpg']})[0].id, 'GEMINI_FLASH');
