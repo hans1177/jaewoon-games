@@ -6995,11 +6995,10 @@ local function renderYard()
 		add(function()
 			local pay = math.max(0, s.netCost)
 			local refund = if s.netCost < 0 then " · 차액 환급 " .. H.commas(-s.netCost) else ""
-			local diffCargo = s.capacityAfter - sh.cargoCapacity
-			local sub = string.format("%s\n정가 %s - 기함 보상 %s = 실결제 %s%s\n화물 %+d칸 · 속도 %+.1f · 선체 %+d · 포 %+d\n승조원 정원 %+d · 교체 후 적재 한도 %d칸",
-				s.summary, H.commas(s.price), H.commas(s.tradeIn), H.commas(pay), refund,
-				diffCargo, s.speed - sh.speed, s.hull - sh.maxHull, s.cannons - sh.cannons,
-				s.crew - sh.maxCrew, s.capacityAfter)
+			-- [선박 비교 중복 제거] 화물·속도·내구·포문·승조원은 바로 아래 5개 비교 막대에서 확인.
+			-- 상세 글에는 실제 구매 판단을 좌우하는 정가·보상·실결제와 필수 적재 한도만 남긴다.
+			local sub = string.format("%s\n실결제 %s코인%s\n정가 %s · 기함 보상 %s\n교체 후 적재 한도 %d칸",
+				s.summary, H.commas(pay), refund, H.commas(s.price), H.commas(s.tradeIn), s.capacityAfter)
 			if s.trait then
 				local t = s.trait
 				sub ..= string.format("\n특화: %s · 약점: %s", t.role or "일반", t.weak or "없음")
@@ -11587,8 +11586,8 @@ function render()
 				end
 			end
 			fact = string.format("선체 %d/%d · 동료 %d명", ship.hull or 0, ship.maxHull or 0, joined)
-			context = string.format("적합 직책 %d/%d · 포 %d문 · 선원 %d명\n보급 %d개 · 화물 %d/%d",
-				matched, filled, ship.cannons or 0, ship.crew or 0, ship.supplies or 0, ship.cargoUsed or 0, ship.cargoCapacity or 0)
+			context = string.format("적합 직책 %d/%d · 포 %d문 · 선원 %d명\n보급 %d개 · 선체와 적재 조건 확인",
+				matched, filled, ship.cannons or 0, ship.crew or 0, ship.supplies or 0)
 			urgent = (ship.maxHull or 0) > 0 and (ship.hull or 0) < (ship.maxHull or 1) * 0.4
 			actionText = if currentTab == "crew" or currentTab == "status" then "동료 직책 배치"
 				elseif currentTab == "yard" then "조선소 관리 열기" else "동료 영입 조건 확인"
@@ -11624,7 +11623,7 @@ function render()
 			fact = string.format("탐험 가능 %d / %d지역", available, #(view.sites or {}))
 			context = string.format("보급품 %d개 · 장소별 위험과 남은 발견물 확인", ship.supplies or 0)
 		elseif currentTab == "gwent" then
-			fact = string.format("내 카드 %d장 · 보유 %s코인", #((view.deck and view.deck.cards) or {}), H.commas(p.coins))
+			fact = string.format("내 카드 %d장 · 병종 상성 확인", #((view.deck and view.deck.cards) or {}))
 			context = "병종 배치와 카드 효과 확인 · 기존 카드 대결 규칙 유지"
 		elseif currentTab == "scholar" or currentTab == "codex" then
 			local cx = view.codex or {}
@@ -11653,7 +11652,7 @@ function render()
 					end
 				end
 			end
-			fact = string.format("연구 가능 %d개 · 보유 %s코인", researchable, H.commas(p.coins))
+			fact = string.format("연구 가능 %d개 · 다음 기술 선택", researchable)
 			if candidate then
 				local reason = if candidate.blocked then tostring(candidate.blocked)
 					elseif (candidate.cost or 0) > p.coins then string.format("코인 %s 부족", H.commas((candidate.cost or 0) - p.coins))
