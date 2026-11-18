@@ -216,6 +216,14 @@ return function(D, S)
 			S.Discovery.grantCard(state, quest.rewardCardId, msgs, { method = "quest", questId = quest.id })
 		end
 		S.Cardbook.reward(state, "quest", msgs, nil, nil, quest.id)
+		-- [중요 퀘스트만 사건화] 각 항로의 제5장 완료 시 기존 스토리 선택 화면으로 결말을 잇는다.
+		-- 이미 다른 사건이 예약됐으면 덮어쓰지 않으며, 스토리 실행과 선택·보상은 기존 서비스만 처리한다.
+		if quest.journal and quest.journal.stage == 5 and not state.autoStory and S.Story then
+			local finale = D.Story.ById["journal_" .. quest.routeId]
+			if finale and not S.Story.blockReason(state, finale) then
+				state.autoStory = finale.id
+			end
+		end
 		-- 어려운 기술 퀘스트(연속 퀘스트·지식 이해)를 해내면 역사가 앞당겨진다
 		if quest.after or quest.kind == "understand_card" or quest.kind == "understand" then
 			S.Pace.addMsg(state, 5 + math.floor(quest.rewardFame / 10), msgs, "퀘스트 완수")
