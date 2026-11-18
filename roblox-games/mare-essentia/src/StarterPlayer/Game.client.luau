@@ -55,7 +55,22 @@ function H.placeCharacterOnSpawn(character)
 	if not root then return end
 	-- [항구 스폰] 바닥이 생기기 전에는 보이지 않게 고정하고, 준비되면 실제 항구 위치로 이동한다.
 	root.Anchored = true
-	if sceneSpawn then character:PivotTo(sceneSpawn) end
+	if sceneSpawn then
+		local groundedSpawn = sceneSpawn
+		local humanoid = character:FindFirstChildOfClass("Humanoid")
+		if humanoid then
+			-- [지면 고정] 항구 실제 바닥과 R6/R15 발 높이를 맞춘다.
+			local params = RaycastParams.new()
+			params.FilterType = Enum.RaycastFilterType.Exclude
+			params.FilterDescendantsInstances = { character }
+			local ground = workspace:Raycast(sceneSpawn.Position + Vector3.new(0, 16, 0), Vector3.new(0, -48, 0), params)
+			if ground then
+				local targetY = ground.Position.Y + humanoid.HipHeight + root.Size.Y * 0.5 + 0.05
+				groundedSpawn = sceneSpawn + Vector3.new(0, targetY - sceneSpawn.Position.Y, 0)
+			end
+		end
+		character:PivotTo(groundedSpawn)
+	end
 	for _, part in character:GetDescendants() do
 		if part:IsA("BasePart") then
 			part.LocalTransparencyModifier = if sceneSpawn then 0 else 1
@@ -9702,10 +9717,6 @@ syncScene = function()
 	sceneCtl = res.controls
 	arriveNext = false
 	sceneSpawn = res.spawn
-	local char = player.Character
-	if char and char:FindFirstChild("HumanoidRootPart") then
-		H.placeCharacterOnSpawn(char)
-	end
 	applyView()
 	-- [준비 완료] 실제 항구가 설치된 뒤에만 시작 배경을 닫는다.
 	if H.setTitleMode then H.setTitleMode(not view or newGameMode) end
@@ -9725,9 +9736,8 @@ do
 			camera.CameraType = Enum.CameraType.Scriptable
 			camera.FieldOfView = 62
 			if root and sceneSpawn then
-				-- 전경에서도 캐릭터를 실제 항구 바닥에 세운다. 허공(-200, 8, 0) 대기를 금지한다.
-				char:PivotTo(sceneSpawn)
-				root.Anchored = true
+				-- [전경] 실제 항구 바닥에 맞춘 캐릭터를 고정한다.
+				H.placeCharacterOnSpawn(char)
 			end
 		else
 			camera.CameraType = Enum.CameraType.Custom
@@ -9737,8 +9747,8 @@ do
 				camera.CameraSubject = hum
 			end
 			if char and root and sceneSpawn then
-				char:PivotTo(sceneSpawn)
-				root.Anchored = false -- 실제 항구 바닥에 옮긴 뒤 걷기 조작 복구
+				-- [걷기] 발을 지면에 맞춘 뒤 이동을 복구한다.
+				H.placeCharacterOnSpawn(char)
 			end
 		end
 	end
@@ -9766,7 +9776,7 @@ do
 				local p = root.Position
 				if p.Y < -3 and p.X < 400 and p.X > -900 then
 					root.AssemblyLinearVelocity = Vector3.zero
-					char:PivotTo(sceneSpawn)
+					H.placeCharacterOnSpawn(char)
 				end
 			end
 		end
