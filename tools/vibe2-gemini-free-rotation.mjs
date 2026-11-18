@@ -176,7 +176,6 @@ export async function requestGeminiFreePair({
   responseMimeType=null,fetchImpl=globalThis.fetch,geminiRetryAt=null,preferredRole='',
   specialistDepartment='',specialistTask='',specialistFiles=[],verifiedOutcomes=[]
 }={}){
-  if(!clean(apiKey))throw infrastructureFailure('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK');
   const models=verifiedFreeGeminiModels();
   const knownRetryAt=Date.parse(clean(geminiRetryAt));
   if(Number.isFinite(knownRetryAt)&&knownRetryAt>Date.now())
@@ -185,9 +184,11 @@ export async function requestGeminiFreePair({
   if(role&&!['TRIAGE','CODE_REPAIR','VERIFY'].includes(role))
     throw infrastructureFailure('VIBE2_FREE_AI_ROLE_INVALID');
   const first=role==='TRIAGE'?1:role?0:nextSlot++%models.length;
-  const geminiRoutes=Array.from({length:models.length},(_,offset)=>({
+  // [무료 전문팀 자동 교대] Gemini 키가 비어도 명시 승인된 무료 대체 제공자는 사용한다.
+  // Gemini 키가 없는 상태에서 Gemini 엔드포인트를 호출하거나 유료 경로로 확장하지 않는다.
+  const geminiRoutes=clean(apiKey)?Array.from({length:models.length},(_,offset)=>({
     provider:'GEMINI',model:models[(first+offset)%models.length],key:clean(apiKey)
-  }));
+  })):[];
   // 기존 승인된 무료 공급자만 채택한다. 인증키 보유와 무료 요금제 증거는 구분한다.
   const externalRotation=clean(process.env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES';
   const extras=externalRotation?[
@@ -198,6 +199,8 @@ export async function requestGeminiFreePair({
       ?[{provider:'OPENROUTER',model:VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER,key:clean(process.env.OPENROUTER_API_KEY),
          endpoint:'https://openrouter.ai/api/v1/chat/completions'}]:[])
   ]:[];
+  if(!geminiRoutes.length&&!extras.length)
+    throw infrastructureFailure('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK');
   const normalRoutes=[...geminiRoutes,...extras];
   const observedGroq=groqQuotaByModel.get('GROQ:'+VERIFIED_FREE_FALLBACK_MODELS.GROQ);
   const capacity=observedGroq?{['GROQ:'+VERIFIED_FREE_FALLBACK_MODELS.GROQ]:{
