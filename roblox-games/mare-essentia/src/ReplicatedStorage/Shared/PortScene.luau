@@ -3134,6 +3134,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	folder:SetAttribute("CityHousingShifted", homeShifted)
 	folder:SetAttribute("CityHousingPlotRejected", homePlotRejected)
 	folder:SetAttribute("CityHousingModelRejected", homeModelRejected)
+	folder:SetAttribute("CityHousingPlacedPercent", if homeCandidates > 0
+		then math.floor(homePlaced * 100 / homeCandidates + 0.5) else 0)
 	folder:SetAttribute("CityHousingLayoutState", if homeCandidates == 0 then "NO_ECONOMIC_CANDIDATE"
 		elseif homePlaced == 0 then "NO_SAFE_HOUSING_PLOT" else "COMPUTED_NOT_VISUALLY_VERIFIED")
 	for sizeClass = 1, 5 do
