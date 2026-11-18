@@ -10323,6 +10323,8 @@ function H.renderTabs()
 	for i, id in g.tabs do
 		local selected = currentTab == id
 		local b = mkButton(tabBar, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 38), function()
+			-- [최근 메뉴] 시설 내부 탭 전환도 기존 단일 직전 메뉴 기억을 갱신한다.
+			if currentTab ~= id and TAB_NAME[currentTab] then H.recentTab = currentTab end
 			currentTab = id
 			Sfx.facilityCue(id)
 			message = "" -- 지난 탭의 안내 문구가 새 탭 맨 위에 남지 않게
@@ -12297,6 +12299,10 @@ function H.goAdvice(tab)
 	-- [동료 바로가기] 산책 HUD와 시설 책의 표시 상태를 먼저 정리한다.
 	H.hideBubble()
 	menuToggle.Visible = false
+	-- [최근 메뉴] 전용 교역소·조선소도 바로 이전 시설을 잃지 않게 한다.
+	if (tab == "yard" or tab == "trade") and currentTab ~= tab and TAB_NAME[currentTab] then
+		H.recentTab = currentTab
+	end
 	if tab == "yard" then
 		currentTab = "yard"
 		openYardHall()
