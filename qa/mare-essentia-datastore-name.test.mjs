@@ -2506,3 +2506,46 @@ test('무료 디자인 한도 예측은 계정 전체 잔량을 주장하지 않
     .NVIDIA.estimatedHoursToLocalCap, null,
   '호출 속도 관측이 부족하면 소진 시간을 지어내지 않는다');
 });
+
+ 
+// [공식 한도 검증] 모의 응답으로 무료 계정 공유 잔량 조회·소진 차단을 재현한다.
+test('오픈라우터 공식 무료 잔량을 실제 요청 없이 검증한다', async () => {
+  const {readOpenRouterFreeQuota, forecastFreeDesignQuota, selectFreeDesignModels} =
+    await import('../tools/company-nemotron-design-review.mjs');
+  const secret = 'private-key-should-not-appear';
+  const env = {OPENROUTER_API_KEY: secret, OPENROUTER_DESIGN_FREE_TIER_VERIFIED: 'YES'};
+  let calls = 0;
+  const balance = await readOpenRouterFreeQuota({env, fetchImpl: async (url, options) => {
+    calls++;
+    assert.equal(url, 'https://openrouter.ai/api/v1/key');
+    assert.equal(options.method, 'GET');
+    assert.equal(options.headers.Authorization, 'Bearer ' + secret);
+    return {ok: true, json: async () => ({data: {
+      free_model_daily_requests: {used: 50, limit: 50, remaining: 0}
+    }})};
+  }});
+  assert.equal(calls, 1);
+  assert.equal(balance.scope, 'ACCOUNT_FREE_MODELS_DAILY');
+  assert.equal(balance.remaining, 0);
+  assert.ok(!JSON.stringify(balance).includes(secret), '키나 계정 인증정보 노출 금지');
+  const now = Date.parse('2026-11-18T08:30:00Z');
+  const forecast = forecastFreeDesignQuota({day: '2026-11-18',
+    calls: {OPENROUTER: 0}}, now, balance);
+  assert.equal(forecast.OPENROUTER.remainingLocal, 30, '내부 디자인 한도는 별도로 유지');
+  assert.equal(forecast.OPENROUTER.effectiveRemaining, 0, '실제 계정 무료 잔량 우선');
+  assert.equal(forecast.OPENROUTER.accountWideBalanceVerified, true);
+  const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
+  const diagnostics = [];
+  assert.ok(!selectFreeDesignModels({policy, env, now, accountQuota: balance, diagnostics})
+    .some(model => model.provider === 'OPENROUTER'));
+  assert.equal(diagnostics.find(row => row.modelId === 'OPENROUTER_GEMMA').status,
+    'ACCOUNT_FREE_DAILY_CAP');
+  assert.equal(await readOpenRouterFreeQuota({
+    env: {OPENROUTER_API_KEY: secret},
+    fetchImpl: async () => {throw Error('unverified account request');}
+  }), null, '무료 요금 확인 전 계정 조회 금지');
+  assert.equal(await readOpenRouterFreeQuota({env,
+    fetchImpl: async () => ({ok: true, json: async () => ({
+      data: {free_model_daily_requests: {used: 1, limit: 50, remaining: 999}}
+    })})}), null, '잘못된 잔량 값은 신뢰 금지');
+});
