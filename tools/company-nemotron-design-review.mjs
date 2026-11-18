@@ -64,6 +64,21 @@ export function freeQuotaDay(provider, now = Date.now()) {
   const part = key => parts.find(row => row.type === key)?.value;
   return part('year')+'-'+part('month')+'-'+part('day');
 }
+// [계정 재충원 시각] 다음 공식 일일 창을 계산한다. 계정별로 알 수 없는 NVIDIA 한도는 추정하지 않는다.
+export function freeQuotaNextReset(provider, now=Date.now()) {
+  if (!['GEMINI','OPENROUTER'].includes(provider)) return null;
+  const day=freeQuotaDay(provider,now);
+  let lo=now,hi=now+3600000;
+  for(let i=0;i<27&&freeQuotaDay(provider,hi)===day;i++){
+    lo=hi;hi+=3600000;
+  }
+  if(freeQuotaDay(provider,hi)===day)return null;
+  while(hi-lo>1000){
+    const mid=lo+Math.floor((hi-lo)/2);
+    if(freeQuotaDay(provider,mid)===day)lo=mid;else hi=mid;
+  }
+  return new Date(hi).toISOString();
+}
 export function freeQuotaStatus(provider, usageWindow = {}, quotaSnapshot = null, now = Date.now()) {
   const day = freeQuotaDay(provider, now), cap = DAILY_LIMIT[provider];
   if (!cap) return {provider, day, localRemaining:0, actualRemaining:null, remaining:0};
@@ -313,16 +328,18 @@ export function selectFreeDesignModels({
   return [...selected,...fallback];
 }
 
-function cooldownAfter(response, status, error = null) {
-  const raw = trim(response?.headers?.get?.('retry-after'));
-  const seconds = Number(raw);
-  let delay = Number.isFinite(seconds) && seconds > 0 ? seconds * 1000 : Date.parse(raw) - Date.now();
-  if (!Number.isFinite(delay) || delay < 1000) {
-    const detail = trim(error?.error?.message);
-    delay = status === 429 && /daily|per day|requestsperday|free.?tier quota/i.test(detail)
-      ? 86400000 : status === 429 ? 60000 : status === 404 ? 86400000 : 30000;
+function cooldownAfter(response, status, error = null, provider = '') {
+  const raw=trim(response?.headers?.get?.('retry-after'));
+  const seconds=Number(raw);
+  let delay=Number.isFinite(seconds)&&seconds>0?seconds*1000:Date.parse(raw)-Date.now();
+  if(!Number.isFinite(delay)||delay<1000){
+    const message=trim(error?.error?.message);
+    if(status===429 && /daily|per day|requestsperday|rpd|free.?tier quota/i.test(message)){
+      const reset=freeQuotaNextReset(provider);
+      delay=reset ? Date.parse(reset)-Date.now()+60000 : 86400000;
+    }else delay=status===429?60000:status===404?86400000:30000;
   }
-  return Math.min(86400000, Math.max(1000, delay));
+  return Math.min(86400000,Math.max(1000,delay));
 }
 function modelAttempt(id, status, details = {}) {
   const row = {id, status, ...details};
@@ -362,7 +379,7 @@ async function callFreeDesignModel(model, prompt, photos, fetchImpl) {
         return {status: 'CONTENT_POLICY_BLOCKED'};
       if ([401, 403].includes(response.status)) return {status: 'AUTH_BLOCKED'};
       return {status: 'HTTP_' + response.status,
-        retryAfterMs: cooldownAfter(response, response.status, failure)};
+        retryAfterMs: cooldownAfter(response, response.status, failure, model.provider)};
     }
     const payload = await response.json();
     if (Number(payload?.usage?.cost || 0) > 0) return {status: 'NONZERO_COST_BLOCKED'};
