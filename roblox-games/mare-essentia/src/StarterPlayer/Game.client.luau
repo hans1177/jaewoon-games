@@ -1185,7 +1185,8 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	-- 한 카드 안에서 '내용 위 / 버튼 아래'로 배치한다. 넓은 화면의 오른쪽 버튼 배치는 유지.
 	local function fitRow()
 		local width = row.AbsoluteSize.X
-		local narrow = width > 0 and width < 450 and btnCount > 0
+		-- [모바일 장부] 버튼이 많은 정보 카드에서는 글과 조작 영역을 세로로 나눈다.
+        local narrow = width > 0 and btnCount > 0 and (width < 520 or width < btnWidth + 230)
 		local left = textBox.Position.X.Offset
 		local buttonSpace = if narrow then 0 else btnWidth
 		textBox.Size = UDim2.new(1, -(left + buttonSpace + 12), if narrow then 0 else 1, if narrow then math.max(30, layout.AbsoluteContentSize.Y + 10) else -8)
@@ -1315,12 +1316,14 @@ function H.tileGrid(items, parent, cellW, cellH)
 end
 
 local function mkHeader(parent, text)
-	local l = mkLabel(parent, "◆ " .. text, 17, INK, true)
-	l.Size = UDim2.new(1, -8, 0, 30)
+	-- [항해 장부 목차] 소제목과 본문을 명확히 구분한다.
+    local l = mkLabel(parent, "◆ " .. text, 19, INK, true)
+    l.Size = UDim2.new(1, -8, 0, 34)
 	l.AutomaticSize = Enum.AutomaticSize.Y -- 좁은 화면에서 긴 소제목이 두 줄이 되어도 잘리지 않게 (26은 최소 높이)
 	l.TextYAlignment = Enum.TextYAlignment.Center
 	l.BackgroundTransparency = 0
 	l.BackgroundColor3 = Color3.fromRGB(218, 190, 139)
+    l.TextWrapped = true
 	corner(l, 3)
 	local headingWash = Instance.new("UIGradient")
 	headingWash.Color = ColorSequence.new(Color3.fromRGB(239, 218, 174), Color3.fromRGB(191, 155, 105))
@@ -2036,12 +2039,13 @@ function H.layoutBook()
     H.menuActionDock.Size = UDim2.new(1, -navW - artW - 32, 0, 68)
   else
     -- [세로 화면] 기존 목록 탐색과 버튼은 유지하며, 세로 공간이 넉넉할 때만 원화를 표시한다.
-    local compact = tabs and tabCount >= 4 and width < 480
+    -- [세로 책갈피] 세 항목부터 두 줄, 터치 높이 최소 48px 확보.
+    local compact = tabs and tabCount >= 3 and width < 420
     tabBar.Position = UDim2.fromOffset(8, 68)
-    tabBar.Size = UDim2.new(1, -16, 0, if compact then 85 else 40)
-    tabLayout.CellSize = UDim2.new(1 / (if compact then 2 else math.max(1, math.min(4, tabCount))), -5, 0, 40)
+    tabBar.Size = UDim2.new(1, -16, 0, if compact then 101 else 48)
+    tabLayout.CellSize = UDim2.new(1 / (if compact then 2 else math.max(1, math.min(4, tabCount))), -5, 0, 48)
     tabLayout.CellPadding = UDim2.fromOffset(5, if compact then 5 else 0)
-    local top = if tabs then (if compact then 161 else 116) else 68
+    local top = if tabs then (if compact then 177 else 124) else 68
     local showArt = gallery and height >= 550
     H.facilityGallery.Visible = showArt
     local artH = if showArt then math.clamp(math.floor(height * 0.25), 136, 206) else 0
@@ -2050,11 +2054,12 @@ function H.layoutBook()
     -- [모바일 세로] 원화를 왼쪽에 키우고 제목·설명은 오른쪽에 둬 스크롤 높이 소모를 줄인다.
     H.galleryImage.Position = UDim2.fromOffset(8, 8)
     H.galleryImage.Size = UDim2.new(0.62, -12, 1, -16)
-    H.galleryTitle.Position = UDim2.new(0.62, 0, 0.5, -42)
-    H.galleryTitle.Size = UDim2.new(0.38, -12, 0, 56)
+    -- [원화 제목/설명] 작은 원화에서도 제목과 설명을 위에서부터 읽도록 한다.
+    H.galleryTitle.Position = UDim2.new(0.62, 0, 0, 8)
+    H.galleryTitle.Size = UDim2.new(0.38, -12, 0, 42)
     H.galleryTitle.TextWrapped = true
-    H.galleryCaption.Position = UDim2.new(0.62, 0, 0.5, 15)
-    H.galleryCaption.Size = UDim2.new(0.38, -12, 0, 64)
+    H.galleryCaption.Position = UDim2.new(0.62, 0, 0, 54)
+    H.galleryCaption.Size = UDim2.new(0.38, -12, 1, -62)
     H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Left
     local contentY = top + (if showArt then artH + 8 else 0)
     content.Position = UDim2.fromOffset(8, contentY)
@@ -5649,7 +5654,7 @@ local function openTradeHall()
 		local heroW = math.max(140, availableW - listWidth - detailWidth - 8)
 		local compactList = not narrow
 		-- [교역 장부] 목록 24% · 승인 원화·백과 약 42% · 판단 수치·거래 약 34%. 세로는 목록/상세 전환.
-		local headH = if narrow then 146 elseif width < 1160 then 108 else 62
+		local headH = if narrow then 146 elseif width < 1160 then 108 else 70
 		local menuY = headH + 12
 
 		-- 윗줄: 항구 이름, 코인, 화물칸, 나가기
@@ -5670,10 +5675,19 @@ local function openTradeHall()
 			else math.clamp(math.floor(width * 0.36), 220, 315)
 		local groupWidth = cashWidth + (if showRecent then recentWidth + 8 else 0)
 		local groupX = math.max(8, math.floor((width - 16 - groupWidth) / 2))
-		local rowY = if narrow then 64 elseif width < 1160 then 38 else 28
+		local rowY = if narrow then 64 elseif width < 1160 then 38 else 32
 		local commonStatus = mkLabel(top, H.statusMoneyCargo(p, ship, narrow), if narrow then 15 else 18, INK, true)
 		commonStatus.Name = "TradeGlobalMoneyCargo"
-		commonStatus.AnchorPoint = Vector2.zero
+        -- [교역 자금] 황동 테두리로 상단의 거래 자금을 별도 현판 처리.
+        commonStatus.BackgroundColor3 = PARCHMENT_TOP
+        commonStatus.BackgroundTransparency = 0.08
+        corner(commonStatus, 5)
+        local moneyEdge = Instance.new("UIStroke")
+        moneyEdge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        moneyEdge.Color = UI_BRASS_DARK
+        moneyEdge.Thickness = 1.4
+        moneyEdge.Parent = commonStatus
+        commonStatus.AnchorPoint = Vector2.zero
 		commonStatus.Position = UDim2.fromOffset(groupX, rowY)
 		commonStatus.Size = UDim2.fromOffset(cashWidth, 34)
 		commonStatus.AutomaticSize = Enum.AutomaticSize.None
@@ -5870,7 +5884,20 @@ local function openTradeHall()
 					H.hallFilter = id
 					build()
 				end)
-				c.TextSize = 16
+				-- [교역 필터] 활성화된 분류는 황동 책갈피로 표식한다.
+                c.Name = "TradeFilter_" .. id
+                c:SetAttribute("SelectedFilter", H.hallFilter == id)
+                if H.hallFilter == id then
+                    local selectedRule = Instance.new("Frame")
+                    selectedRule.Name = "SelectedFilterRule"
+                    selectedRule.BackgroundColor3 = UI_BRASS_DARK
+                    selectedRule.BorderSizePixel = 0
+                    selectedRule.Position = UDim2.new(0, 8, 1, -5)
+                    selectedRule.Size = UDim2.new(1, -16, 0, 3)
+                    selectedRule.ZIndex = c.ZIndex + 3
+                    selectedRule.Parent = c
+                end
+                c.TextSize = 16
 				if compactList then c.Position = UDim2.new(chipIndex * 0.25, 2, 0, 0) end
 				chipIndex += 1
 			end
@@ -5909,8 +5936,9 @@ local function openTradeHall()
 			local row = Instance.new("TextButton")
 			row.Text = ""
 			row.LayoutOrder = i
-			row.Size = UDim2.new(1, -8, 0, 164)
-			row:SetAttribute("SelectedGood", g.id == hallGood)
+			-- [물품 목록] 거래 정보·보유 손익·특산 도장이 서로 침범하지 않도록 아래 여백을 넓힌다.
+            row.Size = UDim2.new(1, -8, 0, 190)
+            row:SetAttribute("SelectedGood", g.id == hallGood)
 			row.BackgroundColor3 = if g.id == hallGood then Color3.fromRGB(236, 210, 156) else COLORS.paper
 			row.BorderSizePixel = 0
 			row.AutoButtonColor = true
@@ -5919,10 +5947,20 @@ local function openTradeHall()
 			table.insert(indexed, { name = string.lower(g.name .. " " .. (g.category or "") .. " " .. (g.purpose or "")), row = row })
 			local rule = Instance.new("UIStroke")
 			rule.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-			rule.Color = INK_EDGE
-			rule.Thickness = if g.id == hallGood then 2 else 1
-			rule.Parent = row
-			row.Activated:Connect(function()
+			rule.Color = if g.id == hallGood then UI_BRASS_DARK else INK_EDGE
+            rule.Thickness = if g.id == hallGood then 2.4 else 1
+            rule.Parent = row
+            -- [선택한 물품] 페이지 가장자리의 황동 책갈피로 표시한다.
+            if g.id == hallGood then
+                local mark = Instance.new("Frame")
+                mark.Name = "SelectedGoodBookmark"
+                mark.BackgroundColor3 = UI_BRASS_DARK
+                mark.BorderSizePixel = 0
+                mark.Position = UDim2.fromOffset(2, 8)
+                mark.Size = UDim2.new(0, 5, 1, -16)
+                mark.Parent = row
+            end
+            row.Activated:Connect(function()
 				hallGood = g.id
 				detailOpen = true
 				detailScroll = 0
@@ -5983,8 +6021,9 @@ local function openTradeHall()
 			pr.AutomaticSize = Enum.AutomaticSize.None
 			local ownedLine = mkLabel(row,
 				string.format("보유 %d개 · %s", g.owned, profitText), 16, if profit and profit < 0 then COLORS.red else INK_SOFT, true)
-			ownedLine.Position = UDim2.fromOffset(10, 121)
-			ownedLine.Size = UDim2.new(1, -20, 0, 35)
+			ownedLine.Position = UDim2.fromOffset(10, 150)
+            ownedLine.Size = UDim2.new(1, -20, 0, 32)
+            ownedLine.TextSize = if listWidth < 230 then 14 else 16
 			ownedLine.AutomaticSize = Enum.AutomaticSize.None
 			ownedLine.TextTruncate = Enum.TextTruncate.AtEnd
 			if g.tag ~= "" then
@@ -5992,11 +6031,12 @@ local function openTradeHall()
 				badge.Text = g.tag
 				badge.TextSize = 16
 				badge.Font = Enum.Font.GothamBold
-				badge.TextColor3 = Color3.new(1, 1, 1)
-				badge.BackgroundColor3 = if g.tag == "특산" then COLORS.green else COLORS.gold
+				-- [특산·수요 도장] 어두운 잉크/밝은 황동으로 밝은 양피지와 대비.
+                badge.TextColor3 = INK
+                badge.BackgroundColor3 = if g.tag == "특산" then Color3.fromRGB(216, 197, 143) else Color3.fromRGB(236, 201, 139)
 				badge.Size = UDim2.fromOffset(56, 26)
 				badge.AnchorPoint = Vector2.new(1, 0)
-				badge.Position = UDim2.new(1, -10, 0, 116)
+				badge.Position = UDim2.new(1, -10, 0, 117)
 				corner(badge, 6)
 				badge.Parent = row
 			end
@@ -6195,7 +6235,7 @@ local function openTradeHall()
 			buyPrice.AutomaticSize = Enum.AutomaticSize.None
 			buyPrice.TextWrapped = true
 			local sellPrice = mkLabel(prices, "판매가\n" .. H.commas(sel.sell) .. "코인",
-				22, Color3.fromRGB(167, 245, 178), true)
+				22, Color3.fromRGB(246, 217, 161), true)
 			sellPrice.Position = UDim2.new(0.5, 4, 0, 10)
 			sellPrice.Size = UDim2.new(0.5, -12, 0, 78)
 			sellPrice.AutomaticSize = Enum.AutomaticSize.None
@@ -6222,7 +6262,7 @@ local function openTradeHall()
 			local profitLabel = mkLabel(profitBox,
 				"1개 세후 예상손익\n" .. (if profit == nil then "매입 기록 없음" else profitText .. "코인"),
 				22, if profit and profit < 0 then Color3.fromRGB(177, 47, 57)
-					else Color3.fromRGB(37, 111, 64), true)
+					else Color3.fromRGB(96, 78, 41), true)
 			profitLabel.Position = UDim2.fromOffset(10, 5)
 			profitLabel.Size = UDim2.new(1, -20, 0, 64)
 			profitLabel.AutomaticSize = Enum.AutomaticSize.None
@@ -7354,8 +7394,17 @@ function openYardHall()
 		local cashText = if width < 480 then "돈 " .. H.commas(p.coins)
 			else H.statusMoneyCargo(p, ship, width < 740)
 		local hold = mkLabel(top, cashText, if width < 480 then 14 else 17, INK_SOFT, true)
-		hold.AnchorPoint = Vector2.zero
-		hold.Position = UDim2.fromOffset(groupX, 36)
+		-- [조선소 자금] 교역소와 같은 황동 양피지 현판.
+        hold.BackgroundColor3 = PARCHMENT_TOP
+        hold.BackgroundTransparency = 0.08
+        corner(hold, 5)
+        local moneyEdge = Instance.new("UIStroke")
+        moneyEdge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        moneyEdge.Color = UI_BRASS_DARK
+        moneyEdge.Thickness = 1.4
+        moneyEdge.Parent = hold
+        hold.AnchorPoint = Vector2.zero
+        hold.Position = UDim2.fromOffset(groupX, 36)
 		hold.Size = UDim2.fromOffset(cashWidth, 34)
 		hold.AutomaticSize = Enum.AutomaticSize.None
 		hold.TextTruncate = Enum.TextTruncate.AtEnd
@@ -7422,7 +7471,7 @@ function openYardHall()
 		label.AutomaticSize = Enum.AutomaticSize.None
 		label.TextTruncate = Enum.TextTruncate.AtEnd
 		label.TextXAlignment = Enum.TextXAlignment.Center
-		local inspect = mkButton(gallery, "3D 확대", COLORS.gold, UDim2.fromOffset(128, 44), function() zoomOpen = true; build() end, shipArt ~= nil)
+		local inspect = mkButton(gallery, "선박 확대", COLORS.gold, UDim2.fromOffset(128, 44), function() zoomOpen = true; build() end, shipArt ~= nil)
 		inspect.AnchorPoint = Vector2.new(0.5, 1)
 		inspect.Position = UDim2.new(0.5, 0, 1, -5)
 		local left = mkBox(root, UDim2.fromOffset(8, 128), UDim2.new(0, 240, 1, -136), COLORS.leather)
@@ -7498,7 +7547,7 @@ function openYardHall()
 				art.AnchorPoint = Vector2.new(0.5, 0.5)
 				art.Position = UDim2.fromScale(0.5, 0.5)
 			end
-			local title = mkLabel(shade, shipName .. " · 손가락으로 회전", 20, COLORS.paper, true)
+			local title = mkLabel(shade, "선박 도감 · " .. shipName, 20, COLORS.paper, true)
 			title.Position = UDim2.fromOffset(12, 8)
 			title.Size = UDim2.new(1, -130, 0, 32)
 			title.AutomaticSize = Enum.AutomaticSize.None
