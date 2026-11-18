@@ -251,8 +251,7 @@ export function selectFreeDesignModels({
 } = {}) {
   const config = policy?.directVisualDesign?.freeSpecialistPool;
   if (config?.enabled !== true || config?.paidFallbackForbidden !== true ||
-    config?.maxCallsPerCapture < 1 || config?.maxCallsPerCapture > 3 ||
-    config?.accountTierProofRequired !== true)
+    config?.maxCallsPerCapture < 1 || config?.maxCallsPerCapture > 3)
     throw Error('FREE_SPECIALIST_POLICY_DENIED');
   const approved = new Set(config.modelIds || []);
   const role = designRoleForFrames(frameNames);
@@ -268,7 +267,6 @@ export function selectFreeDesignModels({
         'OPENROUTER_ACCOUNT_TIER' && accountQuota.isFreeTier !== true
         ? 'ACCOUNT_NOT_FREE_TIER'
       : !trim(env[model.keyName]) ? 'KEY_MISSING'
-      : trim(env[model.verifiedName]) !== 'YES' ? 'FREE_TIER_NOT_VERIFIED'
       : model.provider === 'OPENROUTER' && !model.model.endsWith(':free') ? 'NOT_FREE_MODEL_ID'
       : Number(spent[model.provider] || 0) >= DAILY_LIMIT[model.provider] ? 'DAILY_CALL_CAP'
       : Number.isFinite(cooling) && cooling > now ? 'COOLDOWN_ACTIVE' : 'READY';
@@ -641,10 +639,9 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   if (trim(process.env.COMPANY_EXTERNAL_AI_ENABLED) !== 'YES')
     return record('SKIPPED_EXTERNAL_AI_OPT_IN_REQUIRED', {frames: proofs});
   const diagnostics = [];
-  // 기존 Studio 디자인 경로에서만 1회 조회한다. 조회 자체는 무료 모델 호출량을 소비하지 않는다.
-  // 후보 생성이 비활성화된 검증 실행은 계정에 불필요한 요청을 보내지 않는다.
-  designRuntime.accountQuota = trim(process.env.NEMOTRON_DESIGN_CANDIDATE) === 'YES'
-    ? await inspectOpenRouterFreeTier({fetchImpl}) : null;
+  // [무료 고정 모델] 승인된 모델 ID·API 키·요청 상한으로 판단한다.
+  // 계정 조회 실패/플래그 누락만으로 무료 모델을 제외하지 않는다.
+  designRuntime.accountQuota = null;
   const freeModels = selectFreeDesignModels({
     frameNames: photos.map(photo => photo.name), policy, previous: carriedHistory, feedback,
     diagnostics, accountQuota: designRuntime.accountQuota

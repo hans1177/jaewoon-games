@@ -2291,7 +2291,7 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
   const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
   const config = policy.directVisualDesign.freeSpecialistPool;
   assert.equal(config.paidFallbackForbidden, true);
-  assert.equal(config.accountTierProofRequired, true);
+  assert.equal(config.accountTierProofRequired, false);
   assert.equal(config.maxCallsPerCapture, 3);
   assert.equal(DESIGN_FREE_MODELS.length, 7);
   assert.ok(DESIGN_FREE_MODELS.every(model => config.modelIds.includes(model.id)));
@@ -2322,11 +2322,12 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
   assert.ok(modelAvailability.every(row =>
     Object.keys(row).join(',') === 'modelId,provider,status'),
   '키 원문, 플래그 값, 계정 정보는 증거 파일에 노출하지 않는다');
-  const unverified = [];
-  selectFreeDesignModels({policy, now, env: {NVIDIA_API_KEY: 'private-key'},
-    diagnostics: unverified});
-  assert.equal(unverified.find(row => row.modelId === 'NVIDIA_VL').status,
-    'FREE_TIER_NOT_VERIFIED', '무료 확인 플래그 없이 실제 AI 호출 금지');
+  const keyed = [];
+  const keyedModels = selectFreeDesignModels({policy, now,
+    env: {NVIDIA_API_KEY: 'private-key'}, diagnostics: keyed});
+  assert.ok(keyedModels.some(row => row.id === 'NVIDIA_VL'),
+    '무료 허용 모델과 키가 있으면 불필요한 확인 플래그 없이 배정');
+  assert.equal(keyed.find(row => row.modelId === 'NVIDIA_VL').status, 'READY');
   const files = policy.directVisualDesign.allowedSourceFiles;
   const npcSources = rankVisualSourceFiles(files, 'NPC');
   const worldSources = rankVisualSourceFiles(files, 'WORLD');
@@ -2362,9 +2363,10 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
   assert.ok(models({frameNames: ['npc_face-0.jpg'],
     previous: {cooldowns: {NVIDIA_VL: '2026-11-18T08:00:00Z'}}})
     .every(model => model.id !== 'NVIDIA_VL'));
-  assert.equal(selectFreeDesignModels({policy, env: {
+  assert.ok(selectFreeDesignModels({policy, env: {
     NVIDIA_API_KEY: 'test-key', NVIDIA_FREE_TIER_VERIFIED: 'NO'
-  }}).length, 0);
+  }}).some(model => model.id === 'NVIDIA_VL'),
+  '무료 모델은 예전 플래그가 NO여도 사용');
   assert.throws(() => selectFreeDesignModels({
     policy: {directVisualDesign: {freeSpecialistPool: {...config, paidFallbackForbidden: false}}},
     env
