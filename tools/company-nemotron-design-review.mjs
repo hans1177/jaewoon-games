@@ -86,10 +86,8 @@ export function forecastFreeDesignQuota(usageWindow = {}, now = Date.now(), acco
     const elapsedHours = (now - startedAt) / 3600000;
     const hourlyRate = used >= 2 && Number.isFinite(elapsedHours) && elapsedHours > 0
       ? Math.round((used - 1) / Math.max(0.25, elapsedHours) * 100) / 100 : null;
-    const official = provider === 'OPENROUTER' && accountQuota?.scope ===
-      'ACCOUNT_FREE_MODELS_DAILY' && Number.isInteger(accountQuota.remaining) &&
-      accountQuota.remaining >= 0 ? accountQuota.remaining : null;
-    const available = official === null ? remaining : Math.min(remaining, official);
+    // OpenRouter 키 조회는 무료 계정 여부만 제공한다. 일일 무료 요청 잔량 필드는 공식 계약에 없다.
+    const available = remaining;
     quotas[provider] = {
       scope: 'STUDIO_VISUAL_ONLY', localDailyLimit: limit, localUsed: used,
       remainingLocal: remaining, effectiveRemaining: available,
@@ -100,34 +98,30 @@ export function forecastFreeDesignQuota(usageWindow = {}, now = Date.now(), acco
         ? Math.round(remaining / hourlyRate * 10) / 10 : null,
       nextLocalWindowAt: nextFreeDesignWindow(provider, now),
       resetBasis: provider === 'GEMINI' ? 'PACIFIC_DAILY' : 'INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED',
-      accountWideBalanceVerified: official !== null &&
-        accountQuota?.source === 'OPENROUTER_KEY_API',
-      accountWideFreeRemaining: official,
-      accountBalanceSource: official === null ? 'UNVERIFIED' : accountQuota.source
+      accountWideBalanceVerified: false,
+      accountWideFreeRemaining: null,
+      accountFreeTierVerified: provider === 'OPENROUTER' && accountQuota?.scope ===
+        'OPENROUTER_ACCOUNT_TIER' ? accountQuota.isFreeTier : null,
+      accountBalanceSource: 'NOT_EXPOSED_BY_PROVIDER'
     };
   }
   return quotas;
 }
-// [공식 무료 사용량] OpenRouter :free 전체 공유 일일 잔량은 /api/v1/key에서 읽는다.
-// 키 원문·크레딧·청구정보를 기록하지 않고, 호출 실패나 불명확한 응답은 '미확인'으로 유지한다.
-export async function readOpenRouterFreeQuota({env = process.env, fetchImpl = globalThis.fetch} = {}) {
+// [공식 무료 계정 검증] /api/v1/key는 계정 무료 여부(is_free_tier)를 제공한다.
+// 공식적으로 제공하지 않는 일일 무료 요청 잔량을 만들어 내거나 크레딧 사용량을 요청 수로 환산하지 않는다.
+export async function inspectOpenRouterFreeTier({env = process.env, fetchImpl = globalThis.fetch} = {}) {
   const key = trim(env.OPENROUTER_API_KEY);
   if (!key || trim(env.OPENROUTER_DESIGN_FREE_TIER_VERIFIED) !== 'YES') return null;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
   try {
     const response = await fetchImpl('https://openrouter.ai/api/v1/key', {
-      method: 'GET', signal: controller.signal,
-      headers: {Authorization: 'Bearer ' + key}
+      method: 'GET', signal: controller.signal, headers: {Authorization: 'Bearer ' + key}
     });
     if (!response.ok) return null;
     const result = await response.json();
-    const quota = result?.data?.free_model_daily_requests;
-    const used = quota?.used, limit = quota?.limit, remaining = quota?.remaining;
-    if (![used, limit, remaining].every(Number.isInteger) ||
-      used < 0 || limit < 0 || remaining < 0 || remaining > limit ||
-      used > limit || used + remaining > limit) return null;
-    return {scope: 'ACCOUNT_FREE_MODELS_DAILY', used, limit, remaining,
+    if (typeof result?.data?.is_free_tier !== 'boolean') return null;
+    return {scope: 'OPENROUTER_ACCOUNT_TIER', isFreeTier: result.data.is_free_tier,
       observedAt: new Date().toISOString(), source: 'OPENROUTER_KEY_API'};
   } catch {
     return null;
@@ -271,8 +265,8 @@ export function selectFreeDesignModels({
     // [장애 원인] 키 값, 무료 요금제 설정값, 원문 응답은 기록하지 않는다.
     const status = !approved.has(model.id) ? 'MODEL_NOT_POLICY_APPROVED'
       : model.provider === 'OPENROUTER' && accountQuota?.scope ===
-        'ACCOUNT_FREE_MODELS_DAILY' && accountQuota.remaining === 0
-        ? 'ACCOUNT_FREE_DAILY_CAP'
+        'OPENROUTER_ACCOUNT_TIER' && accountQuota.isFreeTier !== true
+        ? 'ACCOUNT_NOT_FREE_TIER'
       : !trim(env[model.keyName]) ? 'KEY_MISSING'
       : trim(env[model.verifiedName]) !== 'YES' ? 'FREE_TIER_NOT_VERIFIED'
       : model.provider === 'OPENROUTER' && !model.model.endsWith(':free') ? 'NOT_FREE_MODEL_ID'
@@ -641,7 +635,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   // 기존 Studio 디자인 경로에서만 1회 조회한다. 조회 자체는 무료 모델 호출량을 소비하지 않는다.
   // 후보 생성이 비활성화된 검증 실행은 계정에 불필요한 요청을 보내지 않는다.
   designRuntime.accountQuota = trim(process.env.NEMOTRON_DESIGN_CANDIDATE) === 'YES'
-    ? await readOpenRouterFreeQuota({fetchImpl}) : null;
+    ? await inspectOpenRouterFreeTier({fetchImpl}) : null;
   const freeModels = selectFreeDesignModels({
     frameNames: photos.map(photo => photo.name), policy, previous: carriedHistory, feedback,
     diagnostics, accountQuota: designRuntime.accountQuota
@@ -685,14 +679,9 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   for (const model of freeModels.slice(0, routeLimit)) {
     const previousCount = designRuntime.usageWindow.calls[model.provider] || 0;
     if (previousCount >= DAILY_LIMIT[model.provider]) continue;
-    if (model.provider === 'OPENROUTER' && designRuntime.accountQuota?.remaining === 0) continue;
+    if (model.provider === 'OPENROUTER' && designRuntime.accountQuota?.isFreeTier === false) continue;
     designRuntime.usageWindow.calls[model.provider] = previousCount + 1;
-    if (model.provider === 'OPENROUTER' && designRuntime.accountQuota) {
-      designRuntime.accountQuota.remaining = Math.max(0, designRuntime.accountQuota.remaining - 1);
-      designRuntime.accountQuota.used = Math.min(designRuntime.accountQuota.limit,
-        designRuntime.accountQuota.used + 1);
-      designRuntime.accountQuota.source = 'OPENROUTER_KEY_API_PLUS_LOCAL_ATTEMPTS';
-    }
+    // 무료 계정 검증값은 유지한다. 정확한 계정 전체 잔량은 공급자가 노출하지 않는다.
     designRuntime.usageWindow.firstCallAtByProvider ||= {};
     designRuntime.usageWindow.firstCallAtByProvider[model.provider] ||= new Date().toISOString();
     const result = await callFreeDesignModel(model, prompt, photos, fetchImpl);
