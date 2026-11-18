@@ -597,6 +597,11 @@ test('Vibe59 source worker sends source-based NPC routing to the existing free m
     taskText:'WebSocket 버그 수정',responsibleFiles:['server/main.js'],env});
   assert.equal(code.domain,'DEVELOPMENT');
   assert.equal(code.expertCandidates[0].provider,'GROQ');
+  const building=selectVibe59FreeExperts({department:'AUTO',
+    taskText:'건축 배치 로직 오류 수정',
+    responsibleFiles:['server/Building.server.luau'],env});
+  assert.equal(building.domain,'DEVELOPMENT',
+    '영문 Building에 포함된 ui 때문에 게임 규칙 수정을 UI 디자인으로 보내면 안 된다');
   const ui=selectVibe59FreeExperts({department:'AUTO',
     taskText:'모바일 HUD 화면 수정',responsibleFiles:['Game.client.luau'],env});
   assert.equal(ui.domain,'UI');
