@@ -1242,11 +1242,16 @@ local function mkRow(parent, title, subtitle, buttons, height)
 end
 
 -- [시설 공통 카드] 기존 그림·양피지·황동 디자인을 모바일과 PC에 같은 비율로 배치한다.
-function H.tileGrid(items, parent, cellW, cellH)
-	cellW, cellH = math.floor((cellW or 176) * 1.3), math.max(296, math.floor((cellH or 156) * 1.55))
-	for _, it in items do
-		if it.desc then cellH = math.max(cellH, 366)
-		elseif it.portrait then cellH = math.max(cellH, 322) end
+function H.tileGrid(items, parent, cellW, cellH, quick)
+	-- [방문 메뉴] 주점의 원화 카드 문법을 유지하면서 시설 바로가기는 모바일 한눈형으로 압축한다.
+	if quick then
+		cellW, cellH = 216, 166
+	else
+		cellW, cellH = math.floor((cellW or 176) * 1.3), math.max(296, math.floor((cellH or 156) * 1.55))
+		for _, it in items do
+			if it.desc then cellH = math.max(cellH, 366)
+			elseif it.portrait then cellH = math.max(cellH, 322) end
+		end
 	end
 	local grid = Instance.new("Frame")
 	grid.BackgroundTransparency = 1
@@ -1284,22 +1289,23 @@ function H.tileGrid(items, parent, cellW, cellH)
 		seal.Size = UDim2.new(1, -12, 0, 3)
 		seal.Parent = tile
 		-- 초상(주점 동료 등)은 더 크게. 아래 글자는 그만큼 내려간다.
-		local iconPx = if it.portrait then 148 else 128
+		local iconPx = if quick then 66 elseif it.portrait then 148 else 128
 		local ic = modelIcon(tile, if it.portrait then "Portraits" else (it.kind or "Menu"), if it.portrait then it.portrait.atlas else it.icon, nil, iconPx, it.title, nil, if it.portrait then it.portrait.offset else nil)
-		ic.AnchorPoint = Vector2.new(0.5, 0)
-		ic.Position = UDim2.new(0.5, 0, 0, 8)
+		ic.AnchorPoint = if quick then Vector2.zero else Vector2.new(0.5, 0)
+		ic.Position = if quick then UDim2.fromOffset(10, 12) else UDim2.new(0.5, 0, 0, 8)
 		local textY = iconPx + 14
-		local nm = mkLabel(tile, it.title, 21, INK, true)
+		local nm = mkLabel(tile, it.title, if quick then 19 else 21, INK, true)
 		nm.AutomaticSize = Enum.AutomaticSize.None
-		nm.Position = UDim2.fromOffset(4, textY)
-		nm.Size = UDim2.new(1, -8, 0, 26)
+		nm.Position = if quick then UDim2.fromOffset(82, 12) else UDim2.fromOffset(4, textY)
+		nm.Size = if quick then UDim2.new(1, -90, 0, 28) else UDim2.new(1, -8, 0, 26)
 		nm.TextXAlignment = Enum.TextXAlignment.Center
 		nm.TextTruncate = Enum.TextTruncate.AtEnd
 		if it.sub then
 			local sb = mkLabel(tile, it.sub, 17, INK_SOFT, false)
 			sb.AutomaticSize = Enum.AutomaticSize.None
-			sb.Position = UDim2.fromOffset(4, textY + 28)
-			sb.Size = UDim2.new(1, -8, 0, 40)
+			sb.Position = if quick then UDim2.fromOffset(82, 42) else UDim2.fromOffset(4, textY + 28)
+			sb.Size = if quick then UDim2.new(1, -90, 0, 54) else UDim2.new(1, -8, 0, 40)
+			sb.TextSize = if quick then 14 else 17
 			sb.TextWrapped = true
 			sb.TextXAlignment = Enum.TextXAlignment.Center
 			sb.TextTruncate = Enum.TextTruncate.AtEnd
@@ -1314,14 +1320,15 @@ function H.tileGrid(items, parent, cellW, cellH)
 			ds.TextXAlignment = Enum.TextXAlignment.Center
 			ds.TextTruncate = Enum.TextTruncate.AtEnd
 		end
+		local buttonHeight = if quick then 48 else 54
 		if it.btn and it.btn2 then
-			local b1 = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(0.5, -12, 0, 54), it.onClick, on)
-			b1.Position = UDim2.new(0, 8, 1, -62)
-			local b2 = mkButton(tile, it.btn2.text, it.btn2.color or COLORS.red, UDim2.new(0.5, -12, 0, 54), it.btn2.onClick, it.btn2.enabled ~= false)
-			b2.Position = UDim2.new(0.5, 4, 1, -62)
+			local b1 = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(0.5, -12, 0, buttonHeight), it.onClick, on)
+			b1.Position = UDim2.new(0, 8, 1, -buttonHeight - 8)
+			local b2 = mkButton(tile, it.btn2.text, it.btn2.color or COLORS.red, UDim2.new(0.5, -12, 0, buttonHeight), it.btn2.onClick, it.btn2.enabled ~= false)
+			b2.Position = UDim2.new(0.5, 4, 1, -buttonHeight - 8)
 		elseif it.btn then
-			local b = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(1, -16, 0, 54), it.onClick, on)
-			b.Position = UDim2.new(0, 8, 1, -62)
+			local b = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(1, -16, 0, buttonHeight), it.onClick, on)
+			b.Position = UDim2.new(0, 8, 1, -buttonHeight - 8)
 		end
 	end
 	grid.Parent = parent
@@ -2086,12 +2093,17 @@ function H.layoutBook()
   else
     -- [세로 화면] 기존 목록 탐색과 버튼은 유지하며, 세로 공간이 넉넉할 때만 원화를 표시한다.
     -- [세로 책갈피] 세 항목부터 두 줄, 터치 높이 최소 48px 확보.
-    local compact = tabs and tabCount >= 3 and width < 420
+    -- [모바일 방문 메뉴] 3~4개 항목을 억지로 한 줄에 밀지 않고 넓은 두 칸 카드로 배치한다.
+    local compact = tabs and tabCount >= 3 and width < 740
+    local columns = if compact then 2 else math.max(1, math.min(4, tabCount))
+    local rows = if tabs then math.ceil(tabCount / columns) else 0
+    local tabHeight = 54
+    local tabsHeight = rows * tabHeight + math.max(0, rows - 1) * 6
     tabBar.Position = UDim2.fromOffset(8, 68)
-    tabBar.Size = UDim2.new(1, -16, 0, if compact then 101 else 48)
-    tabLayout.CellSize = UDim2.new(1 / (if compact then 2 else math.max(1, math.min(4, tabCount))), -5, 0, 48)
-    tabLayout.CellPadding = UDim2.fromOffset(5, if compact then 5 else 0)
-    local top = if tabs then (if compact then 177 else 124) else 68
+    tabBar.Size = UDim2.new(1, -16, 0, tabsHeight)
+    tabLayout.CellSize = UDim2.new(1 / columns, -6, 0, tabHeight)
+    tabLayout.CellPadding = UDim2.fromOffset(6, 6)
+    local top = if tabs then 68 + tabsHeight + 8 else 68
     local showArt = gallery and height >= 550
     H.facilityGallery.Visible = showArt
     local artH = if showArt then math.clamp(math.floor(height * 0.25), 136, 206) else 0
@@ -6463,11 +6475,12 @@ function RENDERERS.trade()
 		})
 	end
 	add(function()
+		-- [교역소 방문] 미작동 장식 카드 대신 기존 교역·항구·밀수 기능까지 한 번에 이동한다.
 		return H.tileGrid({
-			{ icon = "trade", title = "교역 장부", sub = "용도 · 시세 · 예산 · 자동 흥정", btn = "열기", color = COLORS.gold, onClick = function() openTradeHall() end },
-			{ icon = "cc0_chest", title = "특산품", sub = "싸게 사서 비싼 곳에 팔기", enabled = false },
-			{ icon = "cc0_goldcoins", title = "암시장", sub = "관세 없음 +10% · 압수 위험", enabled = false },
-		}, content)
+			{ icon = "trade", title = "교역 장부", sub = "매입·판매·흥정\n시세와 손익 확인", btn = "거래하기", color = COLORS.gold, onClick = function() openTradeHall() end },
+			{ icon = "cc0_chest", title = "항구 특산품", sub = "지역 수요·공급\n항구 발전 확인", btn = "항구 정보", color = COLORS.blue, onClick = function() openTab("harbor") end },
+			{ icon = "cc0_goldcoins", title = "암시장 거래", sub = "교역 장부의 상품 선택 후\n위험을 확인하고 밀수", btn = "거래 장부", color = COLORS.red, onClick = function() openTradeHall() end },
+		}, content, nil, nil, true)
 	end)
 	-- 프롤로그는 저널의 이야기 기록으로 이동했다.
 	if view.news and #view.news > 0 then
@@ -10667,7 +10680,7 @@ function H.renderTabs()
 	local g = groupOf(currentTab)
 	for i, id in g.tabs do
 		local selected = currentTab == id
-		local b = mkButton(tabBar, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 38), function()
+		local b = mkButton(tabBar, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 54), function()
 			-- [최근 메뉴] 시설 내부 탭 전환도 기존 단일 직전 메뉴 기억을 갱신한다.
 			if currentTab ~= id and TAB_NAME[currentTab] then H.recentTab = currentTab end
 			currentTab = id
@@ -10698,10 +10711,11 @@ function H.renderTabs()
 			pad.Parent = b
 			local caption = b:FindFirstChild("PrintedCaption")
 			if caption and caption:IsA("TextLabel") then
-				caption.Position = UDim2.fromOffset(35, 1)
-				caption.Size = UDim2.new(1, -39, 1, -2)
+				caption.Position = UDim2.fromOffset(35, 3)
+				caption.Size = UDim2.new(1, -39, 0, 26)
 				caption.TextWrapped = false
 				caption.TextScaled = true
+				caption.TextXAlignment = Enum.TextXAlignment.Left
 				local textLimit = Instance.new("UITextSizeConstraint")
 				textLimit.MinTextSize = 16
 				textLimit.MaxTextSize = 19
@@ -10710,6 +10724,20 @@ function H.renderTabs()
 				b.TextXAlignment = Enum.TextXAlignment.Right
 				b.TextSize = 14
 			end
+		end
+		-- [시설 탭] 주점과 같은 선택형 카드: 큰 메뉴명 + 실제 방문 목적을 두 줄로 표시한다.
+		local purpose = H.MENU_FOCUS[id]
+		if purpose then
+			local hint = mkLabel(b, purpose[1], 12, if selected then INK_SOFT else Color3.fromRGB(238, 218, 183), false)
+			hint.Name = "FacilityTabHint"
+			hint.AutomaticSize = Enum.AutomaticSize.None
+			hint.Position = UDim2.fromOffset(35, 30)
+			hint.Size = UDim2.new(1, -39, 0, 18)
+			hint.TextTruncate = Enum.TextTruncate.AtEnd
+			hint.TextWrapped = false
+			hint.TextXAlignment = Enum.TextXAlignment.Left
+			hint.Active = false
+			hint.ZIndex = b.ZIndex + 2
 		end
 		if selected then
             -- [선택한 책갈피] 황동 가장자리와 얇은 가죽 표식을 더해 색면 없이 위치를 구분한다.
