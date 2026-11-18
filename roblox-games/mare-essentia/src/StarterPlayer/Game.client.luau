@@ -8915,8 +8915,64 @@ if string.sub(codexField, 1, 2) == "r:" then
 		}, 52) end)
 		local cardById = {}
 		for _, card in view.codex.cards do cardById[card.id] = card end
+		-- [교역에서 서재로] 책 페이지는 기존 자원 분류 안에만 표시한다.
+		-- 원화·분류·원산지·발견한 카드 기록만 사용하며 새 저장 항목을 만들지 않는다.
 		for _, item in view.codex.resources or {} do
-			if item.category == selected then
+			if item.id == H.tradeBookGood and item.category == selected then
+				add(function()
+					local page = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 270), COLORS.paper)
+					page.Name = "ScholarTradeEncyclopediaBook"
+					corner(page, 8)
+					bookMaterial(page, "parchment", 192)
+					local cover = mkLabel(page, "세계 산업 백과 · " .. item.name, 22, INK, true)
+					cover.Position = UDim2.fromOffset(14, 10)
+					cover.Size = UDim2.new(1, -28, 0, 34)
+					cover.AutomaticSize = Enum.AutomaticSize.None
+					local artId = AssetIds["Goods/" .. item.id]
+					if artId and not RESTRICTED_CARGO_ICON[item.id] then
+						local picture = Instance.new("ImageLabel")
+						picture.Name = "ScholarTradeArt"
+						picture.Image = "rbxassetid://" .. tostring(artId)
+						picture.ScaleType = Enum.ScaleType.Fit
+						picture.BackgroundTransparency = 1
+						picture.Position = UDim2.fromOffset(12, 52)
+						picture.Size = UDim2.fromOffset(154, 154)
+						picture.Parent = page
+					end
+					local card = item.cardId and cardById[item.cardId]
+					local description = "분류 " .. (item.categoryName or "자원")
+						.. "\n연관 학문 " .. (item.discipline or "기타")
+					if item.origin then description ..= "\n원산지 " .. item.origin end
+					if item.appliedDiscipline then description ..= "\n가공 학문 " .. item.appliedDiscipline end
+					if item.chain then
+						description ..= "\n산업 경로 " .. tostring(item.chain.raw or "원료")
+							.. " → " .. tostring(item.chain.processed or "가공품")
+					end
+					if card and card.found and type(card.description) == "string" then
+						description ..= "\n발견 지식 " .. card.description
+					elseif item.cardId then
+						description ..= "\n연관 지식은 아직 발견되지 않았어."
+					else
+						description ..= "\n등록된 상품 정보로 구성한 기본 백과 기록이야."
+					end
+					local body = mkLabel(page, description, 17, INK_SOFT, false)
+					body.Position = UDim2.fromOffset(176, 53)
+					body.Size = UDim2.new(1, -190, 0, 154)
+					body.AutomaticSize = Enum.AutomaticSize.None
+					body.TextWrapped = true
+					body.TextTruncate = Enum.TextTruncate.AtEnd
+					body.TextYAlignment = Enum.TextYAlignment.Top
+					local cardButton = mkButton(page, "연관 지식 열기", COLORS.blue,
+						UDim2.new(1, -24, 0, 46), function() if card and card.found then H.showCardDetail(card) end end,
+						card ~= nil and card.found == true)
+					cardButton.Position = UDim2.new(0, 12, 1, -55)
+					return page
+				end)
+				break
+			end
+		end
+		for _, item in view.codex.resources or {} do
+			if item.category == selected and item.id ~= H.tradeBookGood then
 				add(function()
 					local card = item.cardId and cardById[item.cardId]
 					local detail = "연결 학문: " .. item.discipline
