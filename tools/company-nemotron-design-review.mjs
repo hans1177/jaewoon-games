@@ -233,99 +233,98 @@ export function verifiedDesignFeedback(previous = {}, feedback = {}, now = Date.
 
 // [호출 한도 회계] 동일 공식 Studio 촬영 세대의 '초안 생성 + 독립 검수' 사용량을 합산한다.
 // 회차별 카운터는 누적이므로 합계가 아닌 각 제공자별 최대값을 사용한다. 요금 한도를 낮추는 방향으로만 병합.
-export function mergeFreeVisualUsage(previous={},feedback={},now=Date.now()) {
-  const day=currentDay(now),origin=previous?.usageWindow||{};
-  const valid=/^[a-f0-9]{40}$/i.test(String(previous?.sourceRevision||'')) &&
+// [사용량 통합] 동일 원본에 대한 초안/독립검사 계수만 합친다. 실시간 한도는 절대 증가시키지 않는다.
+export function mergeFreeVisualUsage(previous = {}, feedback = {}, now = Date.now()) {
+  const day=currentDay(now), origin=previous?.usageWindow||{};
+  const validFollowup=/^[a-f0-9]{40}$/i.test(String(previous?.sourceRevision||'')) &&
     feedback?.beforeRevision===previous.sourceRevision &&
     /^[a-f0-9]{40}$/i.test(String(feedback?.candidateRevision||'')) &&
     feedback?.sourceRevision===feedback.candidateRevision &&
     feedback?.gameId==='mare-essentia' && feedback?.usageWindow?.day===day;
-  const follow=valid?feedback.usageWindow:{};
+  const follow=validFollowup?feedback.usageWindow:{};
   const calls={},days={};
   for(const provider of Object.keys(DAILY_LIMIT)){
-    const pd=freeQuotaDay(provider,now);
-    const isActive=(usage)=>usage?.days?.[provider]?
-      usage.days[provider]===pd:usage?.day===day;
-    const count=usage=>isActive(usage)&&Number.isInteger(usage?.calls?.[provider])?
-      Math.max(0,Math.min(1000,usage.calls[provider])):0;
-    days[provider]=pd;
-    calls[provider]=Math.max(count(origin),count(follow));
+    const expected=freeQuotaDay(provider,now);
+    const oldValid=origin.days?.[provider] ? origin.days[provider]===expected : origin.day===day;
+    const followValid=follow.days?.[provider] ? follow.days[provider]===expected : follow.day===day;
+    const old=oldValid?Number(origin.calls?.[provider]||0):0;
+    const newer=followValid?Number(follow.calls?.[provider]||0):0;
+    calls[provider]=Math.max(Number.isInteger(old)&&old>=0?Math.min(old,1000):0,
+      Number.isInteger(newer)&&newer>=0?Math.min(newer,1000):0);
+    days[provider]=expected;
   }
   const cooldowns={...previous?.cooldowns},providerCooldowns={...previous?.providerCooldowns};
-  if(valid){
-    for(const [id,until] of Object.entries(feedback?.cooldowns||{})){
-      if(!(DESIGN_FREE_MODELS.some(model=>model.id===id)||
-        /^OPENROUTER_DISCOVERED_[a-f0-9]{12}$/.test(id))) continue;
-      if(Date.parse(until)>now &&
-        (!Number.isFinite(Date.parse(cooldowns[id]))||Date.parse(until)>Date.parse(cooldowns[id])))
-        cooldowns[id]=until;
+  if(validFollowup){
+    for(const [id,value] of Object.entries(feedback?.cooldowns||{})){
+      if(!(DESIGN_FREE_MODELS.some(m=>m.id===id) || /^OPENROUTER_DISCOVERED_[a-f0-9]{12}$/.test(id)))continue;
+      const until=Date.parse(value),old=Date.parse(cooldowns[id]||'');
+      if(Number.isFinite(until)&&until>now&&(!Number.isFinite(old)||until>old))cooldowns[id]=value;
     }
     for(const provider of Object.keys(DAILY_LIMIT)){
-      const until=feedback?.providerCooldowns?.[provider];
-      if(Date.parse(until)>now &&
-        (!Number.isFinite(Date.parse(providerCooldowns[provider]))||
-        Date.parse(until)>Date.parse(providerCooldowns[provider])))
-        providerCooldowns[provider]=until;
+      const value=feedback?.providerCooldowns?.[provider];
+      const until=Date.parse(value||''),old=Date.parse(providerCooldowns[provider]||'');
+      if(Number.isFinite(until)&&until>now&&(!Number.isFinite(old)||until>old))providerCooldowns[provider]=value;
     }
   }
   return {...previous,usageWindow:{day,calls,days},cooldowns,providerCooldowns};
 }
 
+// [실시간 배치] 가격·이미지 지원·계정 잔여횟수·무료 인증·최근 독립 QA 결과를 함께 판단.
 export function selectFreeDesignModels({
   frameNames=[],role='',policy,env=process.env,previous={},feedback={},
   extraModels=[],quotaSnapshot=null,diagnostics=[],now=Date.now()
-}={}) {
+}={}){
   const config=policy?.directVisualDesign?.freeSpecialistPool;
   if(config?.enabled!==true || config?.paidFallbackForbidden!==true ||
     config?.maxCallsPerCapture<1 || config?.maxCallsPerCapture>3 ||
     config?.accountTierProofRequired!==true)
     throw Error('FREE_SPECIALIST_POLICY_DENIED');
   const approved=new Set(config.modelIds||[]);
-  const dynamic=config.liveDiscoveryEnabled===true && Number.isInteger(config.maxVerifiedFreeVisionModels)
-    ? extraModels.filter(model=>model?.discoveredFree===true &&
+  const additional=config.liveDiscoveryEnabled===true && Array.isArray(extraModels)
+    ?extraModels.filter(model=>model?.discoveredFree===true &&
       /^OPENROUTER_DISCOVERED_[a-f0-9]{12}$/.test(model.id) &&
       /^[a-z0-9][a-z0-9._/-]{2,110}:free$/.test(model.model) &&
       model.provider==='OPENROUTER' &&
       model.keyName==='OPENROUTER_API_KEY' &&
       model.verifiedName==='OPENROUTER_DESIGN_FREE_TIER_VERIFIED' &&
       model.endpoint==='https://openrouter.ai/api/v1/chat/completions')
-      .slice(0,Math.min(12,Math.max(0,config.maxVerifiedFreeVisionModels))) : [];
-  const models=[...DESIGN_FREE_MODELS.filter(model=>approved.has(model.id)),...dynamic];
+      .slice(0,Math.min(12,config.maxVerifiedFreeVisionModels||0))
+    :[];
+  const models=[...DESIGN_FREE_MODELS.filter(m=>approved.has(m.id)),...additional];
   const assignedRole=role||designRoleForFrames(frameNames);
   const carried=mergeFreeVisualUsage(previous,feedback,now);
-  const preference=config.roles?.[assignedRole]||[];
-  const verified=verifiedDesignFeedback(previous,feedback,now),eligible=[];
+  const verified=verifiedDesignFeedback(previous,feedback,now);
+  const preference=config.roles?.[assignedRole]||[],available=[];
   for(const model of models){
-    const modelCooldown=Date.parse(carried?.cooldowns?.[model.id]||'');
-    const providerCooldown=Date.parse(carried?.providerCooldowns?.[model.provider]||'');
+    const cooling=Date.parse(carried?.cooldowns?.[model.id]||'');
+    const providerCooling=Date.parse(carried?.providerCooldowns?.[model.provider]||'');
     const remaining=freeQuotaStatus(model.provider,carried.usageWindow,quotaSnapshot,now).remaining;
     const status=!trim(env[model.keyName])?'KEY_MISSING'
       :trim(env[model.verifiedName])!=='YES'?'FREE_TIER_NOT_VERIFIED'
       :model.provider==='OPENROUTER'&&!model.model.endsWith(':free')?'NONFREE_MODEL'
-      :Number.isFinite(modelCooldown)&&modelCooldown>now?'MODEL_COOLDOWN'
-      :Number.isFinite(providerCooldown)&&providerCooldown>now?'PROVIDER_COOLDOWN'
+      :Number.isFinite(cooling)&&cooling>now?'MODEL_COOLDOWN'
+      :Number.isFinite(providerCooling)&&providerCooling>now?'PROVIDER_COOLDOWN'
       :remaining<=0?'QUOTA_EXHAUSTED':'AVAILABLE';
     if(Array.isArray(diagnostics))diagnostics.push({modelId:model.id,provider:model.provider,status});
-    if(status==='AVAILABLE')eligible.push(model);
+    if(status==='AVAILABLE')available.push(model);
   }
   const score=model=>{
-    if(verified?.role===assignedRole && verified.provider===model.provider &&
+    if(verified?.role===assignedRole&&verified.provider===model.provider &&
       verified.model===model.model)return -1;
-    const order=preference.indexOf(model.id);
-    const invalid=previous?.selectedRole===assignedRole &&
-      (previous?.attempts||[]).some(row=>row?.id===model.id &&
-        ['REVIEW_INVALID','SOURCE_ANCHOR_INVALID'].includes(row.status));
-    return (order<0?999:order)+(invalid?2:0);
+    const idx=preference.indexOf(model.id);
+    const bad=previous?.selectedRole===assignedRole&&
+      Array.isArray(previous?.attempts)&&previous.attempts.some(row=>
+        row?.id===model.id&&['REVIEW_INVALID','SOURCE_ANCHOR_INVALID'].includes(row?.status));
+    return (idx<0?999:idx)+(bad?2:0);
   };
-  eligible.sort((a,b)=>score(a)-score(b)||
-    DESIGN_FREE_MODELS.indexOf(a)-DESIGN_FREE_MODELS.indexOf(b)||
-    a.model.localeCompare(b.model));
-  const selected=[],fallback=[],seen=new Set();
-  for(const model of eligible){
-    if(seen.has(model.provider))fallback.push(model);
-    else{seen.add(model.provider);selected.push(model);}
+  available.sort((a,b)=>score(a)-score(b)||
+    models.indexOf(a)-models.indexOf(b));
+  const primary=[],backup=[],seen=new Set();
+  for(const model of available){
+    if(seen.has(model.provider))backup.push(model);
+    else{seen.add(model.provider);primary.push(model);}
   }
-  return [...selected,...fallback];
+  return [...primary,...backup];
 }
 
 function cooldownAfter(response, status, error = null, provider = '') {
