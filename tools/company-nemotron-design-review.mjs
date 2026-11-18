@@ -272,7 +272,10 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   const contract = policy.directVisualDesign;
   const coverage = contract?.studioEvidenceSelection;
   const townLayout = contract?.townLayoutEdit;
-  if (!coverage || coverage.expectedCoverageFrames !== 83 ||
+  if (!coverage || coverage.expectedCoverageFrames !== 93 ||
+    coverage.shipCargoWeaponVfxMaterialFrames !== 10 ||
+    coverage.materialAuditMarker !== 'STUDIO_MATERIAL_AUDIT' ||
+    coverage.domainRotation?.length !== 8 ||
     coverage.maxImagesPerFreeCall !== 8 || coverage.rotationPhases !== 5 ||
     !coverage.sourcesMustBeExactStudioCaptureAndCodeRevision ||
     !townLayout?.enabled || townLayout.sourceFile !==
@@ -281,7 +284,13 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     !townLayout.sameStreetSideRequired ||
     townLayout.minimumPlazaDistanceFromCenterlineStuds !== 32 ||
     !townLayout.sizeFloorsEconomyRoutesAndSaveUnchanged ||
-    !townLayout.exactSourceAnchorAndIndependentStudioBeforeAfterQaRequired)
+    !townLayout.exactSourceAnchorAndIndependentStudioBeforeAfterQaRequired ||
+    policy.directVisualDesign.designQualityStandards?.style !==
+      'HISTORICALLY_GROUNDED_SEMI_REALISTIC_AGE_OF_SAIL' ||
+    !policy.directVisualDesign.designQualityStandards.preserveImportedPbrTextureUvAndSource ||
+    !policy.directVisualDesign.designQualityStandards.noRuntimeSurfaceAppearancePropertyChanges ||
+    !policy.directVisualDesign.designQualityStandards.externalGameExamplesAreStyleReferencesOnly ||
+    !policy.directVisualDesign.designQualityStandards.noAutomaticMainMergeWithoutCanonicalCodeAndFreshStudioGate)
     throw Error('CANONICAL_STUDIO_DESIGN_POLICY_DENIED');
   if (!contract?.enabled || contract.model !== MODEL ||
     !contract.gameIds?.includes('mare-essentia') ||
