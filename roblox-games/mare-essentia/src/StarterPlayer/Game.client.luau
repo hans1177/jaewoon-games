@@ -208,6 +208,7 @@ local TABS = {
 	{ id = "quest", name = "진행 일지" },
 	{ id = "route", name = "항해" },
 	{ id = "trade", name = "교역" },
+	{ id = "market", name = "거래소·우편" },
 	{ id = "status", name = "현황" },
 	{ id = "harbor", name = "항구 정보" },
 	{ id = "crew", name = "동료 관리" },
@@ -226,7 +227,7 @@ local TABS = {
 
 -- 시설별 창: 건물에 들어가면 그 시설의 탭만 열린다
 local GROUPS = {
-	{ name = "교역소", keeper = "상인 길드", tabs = { "trade", "harbor" } },
+	{ name = "교역소", keeper = "상인 길드", tabs = { "trade", "market", "harbor" } },
 	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map" } },
 	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
 	{ name = "주점", keeper = "주점 주인", tabs = { "board", "quest", "recruit" } }, -- 주점: 의뢰·동료
@@ -2040,7 +2041,7 @@ function H.layoutBook()
   local tabCount = #groupOf(currentTab).tabs
   -- [시설 탭 본문] 교역·조선 기존 상세 화면은 같은 책의 탭에서 표시한다.
   local facilityDetail = currentTab == "trade" or currentTab == "yard"
-  local gallery = not facilityDetail and view ~= nil and not newGameMode and currentTab ~= "map" and currentTab ~= "codex" and currentTab ~= "encyclopedia"
+  local gallery = not facilityDetail and view ~= nil and not newGameMode and currentTab ~= "map" and currentTab ~= "codex" and currentTab ~= "encyclopedia" and currentTab ~= "market"
   local three = gallery and width >= 740
   local tabs = tabBar.Visible
   H.bookSpine.Visible = false
@@ -6489,208 +6490,28 @@ local function openTradeHall()
 end
 H.tradeHall = openTradeHall
 
-function RENDERERS.trade()
-	H.counselRows(1)
-	add(function() return mkLabel(content, "파랑 ▼ 세계 평균보다 저렴 · 빨강 ▲ 평균보다 비쌈 · － 비슷함\n일별 변동이 아니야. 예상 판매손익은 원가·관세 반영.", 17, COLORS.gold, true) end)
-	if view.rep then
-		local r = view.rep
-		H.statStrip({
-			{ r.name .. " 우호", string.format("%d/100", r.value), tone = if r.value >= 50 then "good" else "key" },
-			{ "되파는 비율", string.format("+%.1f%%", r.bonus * 100), tone = "good" },
-			{ "관세", string.format("%.1f%%", r.tariff * 100), tone = if r.tariff > 0.1 then "bad" else "key" },
-			{ "동료 감각", intelName(view.intel or 0), tone = "key" },
-		})
-	end
-	-- [주점형 교역소] 방문 즉시 같은 시설 목록에서 상품을 골라 매입·판매·암시장을 이용한다.
-	add(function() return mkHeader(content, "상품 거래 · 바로 구매 / 판매") end)
-	add(function() return mkLabel(content, "상품 카드에서 가격·보유량·세후손익을 확인해. 암시장 거래는 압수 위험이 있어.", 14, COLORS.muted, false) end)
+-- [교역소 서비스 탭] 실제 교역은 기존 장부 탭에서, 게시판·시장 소식·우편은 별도 탭에서 사용한다.
+-- 서버 거래·저장·우편·게시물 처리 로직은 기존 호출을 그대로 유지한다.
+function RENDERERS.market()
+	-- 거래소 등록 수량은 기존 공통 선택값을 사용한다.
 	add(function()
 		local frame = Instance.new("Frame")
 		frame.BackgroundTransparency = 1
 		frame.Size = UDim2.new(1, -6, 0, 40)
-		local lbl = mkLabel(frame, string.format("수량 선택 (되파는 비율 %d%%)", math.floor(view.sellRate * 100 + 0.5)), 12, COLORS.muted, false)
-		lbl.Size = UDim2.new(0.5, 0, 1, 0)
-		lbl.AutomaticSize = Enum.AutomaticSize.None
-		lbl.TextYAlignment = Enum.TextYAlignment.Center
-		for i, a in AMOUNTS do
-			local b = mkButton(frame, tostring(a), if i == amountIndex then COLORS.gold else COLORS.grey, UDim2.fromOffset(52, 34), function()
+		local label = mkLabel(frame, "게시 수량", 14, COLORS.muted, false)
+		label.Size = UDim2.new(0.4, 0, 1, 0)
+		label.AutomaticSize = Enum.AutomaticSize.None
+		label.TextYAlignment = Enum.TextYAlignment.Center
+		for i, qty in AMOUNTS do
+			local button = mkButton(frame, tostring(qty), if i == amountIndex then COLORS.gold else COLORS.grey, UDim2.fromOffset(52, 34), function()
 				amountIndex = i
 				render()
 			end, true)
-			b.AnchorPoint = Vector2.new(1, 0.5)
-			b.Position = UDim2.new(1, -6 - (#AMOUNTS - i) * 58, 0.5, 0)
+			button.AnchorPoint = Vector2.new(1, 0.5)
+			button.Position = UDim2.new(1, -6 - (#AMOUNTS - i) * 58, 0.5, 0)
 		end
 		frame.Parent = content
 		return frame
-	end)
-	-- [교역 정렬] 실제 세계 평균시세·서버 판매견적·보유 수량으로 화면 순서만 바꾼다.
-	H.tradeSort = H.tradeSort or "price"
-	add(function()
-		local buttons = {}
-		for _, option in { { "싼 순", "price" }, { "판매이익", "profit" }, { "보유순", "owned" }, { "이름순", "name" } } do
-			local key = option[2]
-			table.insert(buttons, { text = option[1], color = if H.tradeSort == key then COLORS.gold else COLORS.blue,
-				onClick = function() H.tradeSort = key; render() end })
-		end
-		return mkRow(content, "교역품 정렬", "평균 대비 매입 할인과 내 보유분 세후손익은 다른 기준이야.", buttons, 72)
-	end)
-	local sortedGoods = table.clone(view.goods)
-	table.sort(sortedGoods, function(a, b)
-		local function score(g)
-			if H.tradeSort == "profit" then return H.tradeProfit(g, 1) or -math.huge end
-			if H.tradeSort == "owned" then return tonumber(g.owned) or 0 end
-			if H.tradeSort == "name" then return 0 end
-			local _, pct = H.marketPriceSignal(g)
-			return pct
-		end
-		local left, right = score(a), score(b)
-		if left ~= right then return if H.tradeSort == "price" then left < right else left > right end
-		return a.name < b.name
-	end)
-	-- 우편·거래소 (아래쪽에서 이어서 그린다)
-	-- [주점형 거래] 별도 큰 화면 없이 이 시설의 상품 카드에서 거래한다.
-	add(function()
-		local grid = Instance.new("Frame")
-		grid.Name = "TradeGoodsGrid"
-		grid.BackgroundTransparency = 1
-		grid.Size = UDim2.new(1, -6, 0, 0)
-		grid.AutomaticSize = Enum.AutomaticSize.Y
-		local gl = Instance.new("UIGridLayout")
-		gl.CellSize = UDim2.new(1, -6, 0, 292)
-		gl.CellPadding = UDim2.fromOffset(6, 6)
-		gl.SortOrder = Enum.SortOrder.LayoutOrder
-		gl.Parent = grid
-		for i, g in sortedGoods do
-			local priceIcon, deviation = H.marketPriceSignal(g)
-			local cardF = Instance.new("Frame")
-			cardF.LayoutOrder = i
-			cardF.BackgroundColor3 = COLORS.row
-			cardF.BorderSizePixel = 0
-			corner(cardF, 10)
-			cardF.Parent = grid
-			local st = Instance.new("UIStroke")
-			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-			st.Color = if priceIcon == "▼" then Color3.fromRGB(35, 107, 177) elseif priceIcon == "▲" then Color3.fromRGB(177, 47, 57) else Color3.fromRGB(70, 84, 104)
-			st.Thickness = 1.5
-			st.Parent = cardF
-			local gi = GOOD_ICON[g.id]
-			if AssetIds["Goods/" .. g.id] and not RESTRICTED_CARGO_ICON[g.id]
-				and not (gi and gi[1] == "Cargo" and gi[2] == "barrel") then gi = { "Goods", g.id } end
-			local icon = if gi then modelIcon(cardF, gi[1], gi[2], gi[3], 96, g.name, gi[4])
-				else modelIcon(cardF, nil, nil, nil, 96, g.name)
-			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(cardF, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else ""), 19, COLORS.text, true)
-			nm.RichText = true
-			nm.Text = '<font color="' .. (if deviation > 0.5 then "#F27D81" elseif deviation < -0.5 then "#77C1FF" else "#DFD0B0") .. '"><b>' .. priceIcon .. '</b></font> ' .. nm.Text
-			nm.Position = UDim2.fromOffset(112, 6)
-			nm.Size = UDim2.new(1, -170, 0, 24)
-			nm.AutomaticSize = Enum.AutomaticSize.None
-			if g.tag ~= "" then
-				local badge = Instance.new("TextLabel")
-				badge.Text = g.tag
-				badge.TextSize = 15
-				badge.Font = Enum.Font.GothamBold
-				badge.TextColor3 = Color3.new(1, 1, 1)
-				badge.BackgroundColor3 = if g.tag == "특산" then COLORS.green else COLORS.gold
-				badge.Size = UDim2.fromOffset(52, 24)
-				badge.AnchorPoint = Vector2.new(1, 0)
-				badge.Position = UDim2.new(1, -8, 0, 6)
-				corner(badge, 6)
-				badge.Parent = cardF
-			end
-			local profit = H.tradeProfit(g, 1)
-			local profitLabel = if profit == nil then "세후손익 미확인"
-				elseif profit >= 0 then "세후이익 +" .. H.commas(profit) else "세후손실 -" .. H.commas(-profit)
-			local info = mkLabel(cardF, string.format("매입 %s · 판매 %s\n%s 평균 %s (%+.1f%%)\n보유 %d · %s",
-				H.commas(g.buyTotals and g.buyTotals[1] or g.buy), H.commas(g.sell),
-				priceIcon, H.commas(g.avgPrice or g.basePrice or 0), deviation, g.owned, profitLabel), 14, COLORS.text, false)
-			info.RichText = true
-			info.Text = info.Text:gsub("▲", '<font color="#F27D81"><b>▲</b></font>'):gsub("▼", '<font color="#77C1FF"><b>▼</b></font>')
-			info.TextWrapped = true
-			info.Position = UDim2.fromOffset(112, 34)
-			info.Size = UDim2.new(1, -120, 0, 70)
-			info.AutomaticSize = Enum.AutomaticSize.None
-			-- [교역 카드 가격 비교] 중앙 표식은 모든 항구의 현재 평균 매입가, 채움은 이 항구 매입가다.
-			local average = tonumber(g.avgPrice) or tonumber(g.basePrice) or 0
-			if average > 0 then
-				local price = tonumber(g.buyTotals and g.buyTotals[1]) or tonumber(g.buy) or 0
-				local track = Instance.new("Frame")
-				track.Name = "WorldAverageBar"
-				track.Position = UDim2.fromOffset(112, 114)
-				track.Size = UDim2.new(1, -120, 0, 9)
-				track.BorderSizePixel = 0
-				track.BackgroundColor3 = Color3.fromRGB(118, 99, 76)
-				track.Parent = cardF
-				corner(track, 4)
-				local fill = Instance.new("Frame")
-				fill.Name = "PortPriceFill"
-				fill.Size = UDim2.fromScale(math.clamp(price / average - 0.5, 0, 1), 1)
-				fill.BackgroundColor3 = if deviation < -0.5 then COLORS.green elseif deviation > 0.5 then COLORS.gold else COLORS.grey
-				fill.BorderSizePixel = 0
-				fill.Parent = track
-				corner(fill, 4)
-				local mid = Instance.new("Frame")
-				mid.Name = "WorldAverageMark"
-				mid.Position = UDim2.new(0.5, -1, -0.25, 0)
-				mid.Size = UDim2.new(0, 2, 1.5, 0)
-				mid.BackgroundColor3 = INK
-				mid.BorderSizePixel = 0
-				mid.Parent = track
-				local legend = mkLabel(cardF, if deviation < -0.5 then "● 저렴 · 중앙선=세계평균" elseif deviation > 0.5 then "● 비쌈 · 중앙선=세계평균" else "● 평균 근처 · 중앙선=세계평균", 11, INK_SOFT, false)
-				legend.Position = UDim2.fromOffset(112, 126)
-				legend.Size = UDim2.new(1, -120, 0, 18)
-				legend.AutomaticSize = Enum.AutomaticSize.None
-				legend.TextTruncate = Enum.TextTruncate.AtEnd
-			end
-			-- [실거래 조건] 선택 수량·현재 재고·선창·자금·판매한도 안내.
-			local qty = amount()
-			local freeCargo = math.max(0, view.ship.cargoCapacity - view.ship.cargoUsed)
-			local buyCost = if g.buyTotals and g.buyTotals[qty] then g.buyTotals[qty] else (g.buy or 0) * qty
-			local canBuy = qty <= math.min(freeCargo, view.orderCap or qty, g.supply or qty) and buyCost <= view.player.coins
-			local canSell = qty <= math.min(g.owned or 0, view.orderCap or qty, g.absorb or qty)
-			local buyReason = if canBuy then "매입 가능" elseif freeCargo < qty then "화물칸 부족"
-				elseif (g.supply or qty) < qty then "항구 재고 부족"
-				elseif (view.orderCap or qty) < qty then "거래한도 초과" else "코인 부족"
-			local sellReason = if canSell then "판매 가능" elseif (g.owned or 0) < qty then "보유 수량 부족" else "판매한도 초과"
-			local observed = view.compare and view.compare[g.id]
-			local bestName, bestPrice, fromMemory = nil, -math.huge, false
-			for _, dest in observed or {} do
-				if dest.sell and dest.sell > bestPrice then
-					bestName, bestPrice, fromMemory = dest.name, dest.sell, dest.memory == true
-				end
-			end
-			local destination = mkLabel(cardF, if bestName then string.format("관측 최고 매각: %s %s%s", bestName, H.commas(bestPrice), if fromMemory then " (거래 기억)" else "")
-				else "다른 항구 시세: 장부에서 확인", 12, COLORS.muted, false)
-			destination.Position = UDim2.fromOffset(112, 147)
-			destination.Size = UDim2.new(1, -120, 0, 19)
-			destination.AutomaticSize = Enum.AutomaticSize.None
-			destination.TextTruncate = Enum.TextTruncate.AtEnd
-			local condition = mkLabel(cardF, "매입: " .. buyReason .. " · 매각: " .. sellReason, 12, if canBuy or canSell then COLORS.text else COLORS.red, true)
-			condition.Position = UDim2.fromOffset(10, 171)
-			condition.Size = UDim2.new(1, -20, 0, 19)
-			condition.AutomaticSize = Enum.AutomaticSize.None
-			condition.TextTruncate = Enum.TextTruncate.AtEnd
-			local buy = mkButton(cardF, if canBuy then "구매 " .. tostring(qty) else buyReason, COLORS.blue, UDim2.new(0.5, -10, 0, 44), function() call("Buy", { goodId = g.id, amount = amount() }) end, canBuy)
-			buy.Position = UDim2.new(0, 6, 1, -50)
-			local sell = mkButton(cardF, if canSell then "판매 " .. tostring(qty) else sellReason, COLORS.green, UDim2.new(0.5, -10, 0, 36), function() call("Sell", { goodId = g.id, amount = amount() }) end, canSell)
-			sell.Position = UDim2.new(0.5, 4, 1, -50)
-			if g.owned > 0 then
-				-- [암시장] 작고 알아보기 어려운 '암' 버튼을 같은 상품 카드의 큰 위험표시 버튼으로 바꾼다.
-				local sm = mkButton(cardF, "암시장 거래 · 압수 위험", COLORS.red, UDim2.new(1, -16, 0, 32),
-					function() call("Smuggle", { goodId = g.id, amount = amount() }) end, true)
-				sm.Position = UDim2.new(0, 8, 1, -88)
-			end
-		end
-		-- [모바일 교역 카드] 좁은 화면은 1열, 중간은 2열, 넓은 화면은 3열로 글자가 잘리지 않게 한다.
-		local function fitGrid()
-			local width = grid.AbsoluteSize.X
-			if width <= 0 then return end
-			local columns = if width < 460 then 1 elseif width < 910 then 2 else 3
-			gl.CellSize = UDim2.new(1 / columns, -6 * (columns - 1) / columns, 0, 292)
-		end
-		grid:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitGrid)
-		task.defer(fitGrid)
-		return grid
 	end)
 	-- [교역소 부가 정보] 소문과 시장 소식은 즉시 거래할 상품 아래에 정리한다.
 	if view.news and #view.news > 0 then
@@ -11140,7 +10961,7 @@ H.TAB_ICON = {
 	-- [의미 통일] 등록된 투명 황동 원화 우선. 별도 원화가 없는 메뉴만 기존 렌더러의 황동 도형을 쓴다.
 	-- 주점: 의뢰판/퀘스트/동료, 전투: 전투/탐험/함대전/카드, 서재: 보고/백과/연구.
 	board = { "Glyph", "board" }, quest = { "Menu", "quest" }, recruit = { "Glyph", "recruit" }, explore = { "Menu", "explore" },
-	route = { "Menu", "route" }, map = { "Menu", "map" }, trade = { "Menu", "trade" }, harbor = { "Menu", "harbor" },
+	route = { "Menu", "route" }, map = { "Menu", "map" }, trade = { "Menu", "trade" }, market = { "Menu", "trade" }, harbor = { "Menu", "harbor" },
 	yard = { "Menu", "yard" }, battle = { "Menu", "battle" }, war = { "Glyph", "war" }, gwent = { "Glyph", "gwent" },
 	scholar = { "Glyph", "scholar" }, codex = { "Menu", "codex" }, encyclopedia = { "Menu", "codex" }, tech = { "Glyph", "research" },
 	status = { "Glyph", "captain" }, crew = { "Glyph", "crew" },
