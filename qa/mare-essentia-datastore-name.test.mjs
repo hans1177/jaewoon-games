@@ -2155,7 +2155,7 @@ test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox
 
 // [무료 네모트론 디자인 검증] 외부 모델이 값을 제시해도 기존 R15 책임 파일의 다섯 숫자만 수정한다.
 test('무료 네모트론 Studio 디자인 후보는 격리 브랜치와 허용 숫자만 사용한다',async()=>{
-  const {validateReview,applyVisualParameters}=await import('../tools/company-nemotron-design-review.mjs');
+  const {validateReview,applyVisualParameters,authorizedCandidateBranch}=await import('../tools/company-nemotron-design-review.mjs');
   const contract=JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json','utf8')).directVisualDesign;
   const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
   assert.equal(contract.enabled,true);
@@ -2167,6 +2167,10 @@ test('무료 네모트론 Studio 디자인 후보는 격리 브랜치와 허용 
   assert.match(workflow,/NVIDIA_FREE_TIER_VERIFIED/);
   assert.match(workflow,/nemotron-mare-design-/);
   assert.match(workflow,/gh pr create --base main/);
+  assert.equal(authorizedCandidateBranch('nemotron-mare-design-44238657398','44238657398'),true);
+  assert.equal(authorizedCandidateBranch('main','44238657398'),false);
+  assert.equal(authorizedCandidateBranch('nemotron-mare-design-44238657398','44238657399'),false);
+  assert.equal(authorizedCandidateBranch('nemotron-mare-design-../main','44238657398'),false);
   assert.match(workflow,/node --test qa\/mare-essentia-datastore-name\.test\.mjs/);
   const images=['harbor_npc_face_front-0.jpg','harbor_motion_idle-0.jpg'];
   const valid={
