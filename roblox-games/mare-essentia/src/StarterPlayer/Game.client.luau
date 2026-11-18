@@ -80,8 +80,9 @@ gui:SetAttribute("StartupStage", "require-Geo")
 local Geo = require(Shared:WaitForChild("Geo"))
 gui:SetAttribute("StartupStage", "require-SeaRoutes")
 local SeaRoutes = require(Shared:WaitForChild("SeaRoutes"))
-gui:SetAttribute("StartupStage", "require-PortScene")
-local PortScene = require(Shared:WaitForChild("PortScene"))
+-- [로딩 분리] 시작 메뉴/서버 상태는 무거운 3D 항구 장면과 독립적으로 표시한다.
+-- 단일 PortScene 정본을 계속 사용하고, 3D 장면은 같은 모듈을 비동기로 준비한다.
+local PortScene = nil
 gui:SetAttribute("StartupStage", "require-VoyageScene")
 local VoyageScene = require(Shared:WaitForChild("VoyageScene"))
 gui:SetAttribute("StartupStage", "require-FieldScene")
@@ -3352,6 +3353,12 @@ local epilogueMessage = nil
 
 local function sail(portId)
 	if sailingNow or sceneHold or inField or not (view and view.player and view.ship) then return end
+	-- 항구 모델이 준비되기 전에는 서버의 출항 판정을 발생시키지 않는다.
+	if not PortScene then
+		message, messageOk = "항구 장면을 불러오는 중이야. 잠시 후 다시 눌러 줘.", false
+		render()
+		return
+	end
 	sailingNow = true
 	-- [출항 순서] 현재 지역·역사·중요 인물 이벤트를 끝내야 항해를 시작할 수 있다.
 	-- 기존 이벤트 큐를 그대로 사용하며 선택/보상/서버 저장 흐름은 바꾸지 않는다.
@@ -3863,9 +3870,9 @@ local function playEpilogue(msg, opts)
 		naval:WaitForChild("ship-large", 6)
 	end
 	-- placeModel은 기존 등록 Mesh를 복제하며, 없으면 nil을 반환한다.
-	local vessel = PortScene.placeModel(shipWorld, "Naval", "ship-large", Vector3.zero, 44)
+	local vessel = if PortScene then PortScene.placeModel(shipWorld, "Naval", "ship-large", Vector3.zero, 44)
 		or PortScene.placeModel(shipWorld, "Naval", "ship-medium", Vector3.zero, 38)
-		or PortScene.placeModel(shipWorld, "Naval", "boat-sail-a", Vector3.zero, 34)
+		or PortScene.placeModel(shipWorld, "Naval", "boat-sail-a", Vector3.zero, 34) else nil
 	if vessel then
 		local cf, size = vessel:GetBoundingBox()
 		local focus = cf.Position + Vector3.new(0, size.Y * 0.06, 0)
@@ -9544,6 +9551,7 @@ end)
 
 -- 3D 항구 장면: 항구나 배가 바뀔 때만 다시 만든다
 syncScene = function()
+	if not PortScene then return end -- 메뉴·저장 상태는 3D 항구 준비와 무관하게 정상 응답한다.
 	if sceneHold or inField then
 		return -- 항해 중·지상 탐험 중에는 항구 장면을 다시 짓거나 캐릭터를 항구로 되돌리지 않는다
 	end
@@ -11034,6 +11042,22 @@ function H.showTitle()
 end
 
 -- 시작 --------------------------------------------------------------------
+-- [3D 항구 모듈] 실제 항구 장면은 기존 정본을 한 번만 비동기로 불러온다.
+-- 첫 시작 화면은 저장 응답을 우선 표시하고, 완료 후 현재 항구를 그대로 그린다.
+gui:SetAttribute("PortSceneLoadState", "loading")
+task.spawn(function()
+	local ok, scene = pcall(function()
+		return require(Shared:WaitForChild("PortScene"))
+	end)
+	if ok and type(scene) == "table" then
+		PortScene = scene
+		gui:SetAttribute("PortSceneLoadState", "ready")
+		if view and syncScene then task.defer(syncScene) end
+	else
+		gui:SetAttribute("PortSceneLoadState", "failed")
+		warn("[MareEssentia] 항구 장면 초기화 실패", scene)
+	end
+end)
 gui:SetAttribute("StartupStage", "server-state-request")
 
 task.spawn(function()
