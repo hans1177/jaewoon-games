@@ -1,5 +1,5 @@
 {
- "sourceRevision": "866a1b3febc777f6de6ef97dff0f67876f5ef67a",
+ "sourceRevision": "c6eb1e74af22be3744e1445df0e4c1efb0d298ee",
  "log": [
   {
    "step": 1,
@@ -390,25 +390,203 @@
    "step": 85,
    "ctx": "Client",
    "out": "UI_MOBILE_420PX_SIMULATED\ntext"
+  },
+  {
+   "step": 87,
+   "ctx": "Client",
+   "out": "UI_MOBILE_2X2_PASS width=406 tabs=4\ntext"
+  },
+  {
+   "step": 88,
+   "capture": "ui_mobile_battle_2x2",
+   "files": 1
+  },
+  {
+   "step": 89,
+   "ctx": "Client",
+   "out": "UI_MOBILE_LAYOUT_RESTORED\ntext"
+  },
+  {
+   "step": 91,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 전투 교관 · 해적 사냥 | 전투 본부 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 지상 탐험 | 해적 사냥 | 전투 준비 | 지상 탐험 | 지상 탐험 | 함대전\ntext"
+  },
+  {
+   "step": 92,
+   "ctx": "Client",
+   "out": "tab codex\ntext"
+  },
+  {
+   "step": 94,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:codex\ntext"
+  },
+  {
+   "step": 95,
+   "capture": "tab_codex",
+   "files": 1
+  },
+  {
+   "step": 96,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 학자 · 지식 백과 | 학자의 서재 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 해적 사냥 | 지식 보고 | 학자와 보고 | 지식 백과 | 지식 백과 | 연구\ntext"
+  },
+  {
+   "step": 97,
+   "click": "qa_tab_codex_to_tech",
+   "at": "646,110",
+   "out": "646,110 CLICK=FACILITY_TAB_codex_TO_tech\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 646,
+      "y": 110
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 99,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:codex_TO_tech\ntext"
+  },
+  {
+   "step": 100,
+   "capture": "qa_click_codex_to_tech",
+   "files": 1
+  },
+  {
+   "step": 101,
+   "ctx": "Client",
+   "out": "tab tech\ntext"
+  },
+  {
+   "step": 103,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:tech\ntext"
+  },
+  {
+   "step": 104,
+   "capture": "tab_tech",
+   "files": 1
+  },
+  {
+   "step": 105,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 학자 · 연구 | 학자의 서재 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 지식 백과 | 지식 보고 | 학자와 보고 | 지식 백과 | 지식 백과 | 연구\ntext"
+  },
+  {
+   "step": 106,
+   "ctx": "Client",
+   "out": "tab status\ntext"
+  },
+  {
+   "step": 108,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:status\ntext"
+  },
+  {
+   "step": 109,
+   "capture": "tab_status",
+   "files": 1
+  },
+  {
+   "step": 110,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 연구 | 현황 | 선장 현황 | 동료 관리 | 동료 관리 | ◆ 현황 · 핵심 정보\ntext"
+  },
+  {
+   "step": 111,
+   "click": "qa_tab_status_to_crew",
+   "at": "107,161",
+   "out": "107,161 CLICK=FACILITY_TAB_status_TO_crew\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 107,
+      "y": 161
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 113,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:status_TO_crew\ntext"
+  },
+  {
+   "step": 114,
+   "capture": "qa_click_status_to_crew",
+   "files": 1
+  },
+  {
+   "step": 115,
+   "ctx": "Client",
+   "out": "tab crew\ntext"
+  },
+  {
+   "step": 117,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:crew\ntext"
+  },
+  {
+   "step": 118,
+   "capture": "tab_crew",
+   "files": 1
+  },
+  {
+   "step": 119,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 · 동료 관리 | 선장실 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 현황 | 현황 | 선장 현황 | 동료 관리 | 동료 관리 | ◆ 동료 관리 · 핵심 정보\ntext"
+  },
+  {
+   "step": 120,
+   "ctx": "Client",
+   "out": "QA_TRADE_INLINE_OPEN\ntext"
+  },
+  {
+   "step": 122,
+   "ctx": "Client",
+   "out": "TRADE_INLINE_MENU_PASS\ntext"
   }
  ],
  "errors": [
-  "step87:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:1: MOBILE_TAB_HEIGHT=114 | text"
+  "step123:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:12: TRADE_INLINE_PRICE_OR_ACTION_MISSI"
  ],
  "consoleCapture": {
   "captured": true,
-  "errorCount": 0,
-  "warningCount": 0,
-  "errors": []
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 1,
+  "warningCount": 12,
+  "errors": [
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "AssistantCommand:12: TRADE_INLINE_PRICE_OR_ACTION_MISSING"
+   }
+  ]
  },
  "summary": {
   "plannedSteps": 241,
-  "completedSteps": 88,
+  "completedSteps": 124,
   "plannedClicks": 10,
-  "successfulClicks": 5,
+  "successfulClicks": 7,
   "skippedOptionalClicks": 0,
   "plannedFrames": 62,
-  "capturedFrames": 20,
+  "capturedFrames": 27,
   "abortedEarly": true
  },
  "visualSamples": [
@@ -418,7 +596,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 251282,
+      "bytes": 251370,
       "width": 0,
       "height": 0,
       "pass": true
@@ -441,7 +619,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 250707,
+      "bytes": 250779,
       "width": 0,
       "height": 0,
       "pass": true
@@ -456,7 +634,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195481,
+      "bytes": 195204,
       "width": 0,
       "height": 0,
       "pass": true
@@ -471,7 +649,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 153118,
+      "bytes": 153122,
       "width": 0,
       "height": 0,
       "pass": true
@@ -483,8 +661,8 @@
     "camera": true,
     "sky": false,
     "departing": false,
-    "atmosphere": false,
-    "brightness": 1,
+    "atmosphere": true,
+    "brightness": 2.01371693611145,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -495,7 +673,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 157007,
+      "bytes": 130486,
       "width": 0,
       "height": 0,
       "pass": true
@@ -508,7 +686,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0150766372680664,
+    "brightness": 2.0178840160369873,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -519,7 +697,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163026,
+      "bytes": 95731,
       "width": 0,
       "height": 0,
       "pass": true
@@ -532,7 +710,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0186355113983154,
+    "brightness": 2.02022647857666,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -543,7 +721,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 112494,
+      "bytes": 120607,
       "width": 0,
       "height": 0,
       "pass": true
@@ -556,7 +734,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.022735118865967,
+    "brightness": 2.023707628250122,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -567,7 +745,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 159185,
+      "bytes": 159097,
       "width": 0,
       "height": 0,
       "pass": true
@@ -580,7 +758,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.02809739112854,
+    "brightness": 2.0285637378692627,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -591,7 +769,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 161347,
+      "bytes": 161356,
       "width": 0,
       "height": 0,
       "pass": true
@@ -606,7 +784,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163293,
+      "bytes": 163362,
       "width": 0,
       "height": 0,
       "pass": true
@@ -621,7 +799,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 160580,
+      "bytes": 160820,
       "width": 0,
       "height": 0,
       "pass": true
@@ -636,7 +814,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 162753,
+      "bytes": 163371,
       "width": 0,
       "height": 0,
       "pass": true
@@ -651,7 +829,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 131988,
+      "bytes": 131595,
       "width": 0,
       "height": 0,
       "pass": true
@@ -666,7 +844,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 132360,
+      "bytes": 131817,
       "width": 0,
       "height": 0,
       "pass": true
@@ -681,7 +859,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 149800,
+      "bytes": 150247,
       "width": 0,
       "height": 0,
       "pass": true
@@ -696,7 +874,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167858,
+      "bytes": 168155,
       "width": 0,
       "height": 0,
       "pass": true
@@ -711,7 +889,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 174386,
+      "bytes": 174433,
       "width": 0,
       "height": 0,
       "pass": true
@@ -726,7 +904,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170861,
+      "bytes": 170647,
       "width": 0,
       "height": 0,
       "pass": true
@@ -741,7 +919,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 170549,
+      "bytes": 170467,
       "width": 0,
       "height": 0,
       "pass": true
@@ -756,7 +934,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 239997,
+      "bytes": 239778,
       "width": 0,
       "height": 0,
       "pass": true
@@ -764,10 +942,115 @@
     ]
    },
    "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "ui_mobile_battle_2x2",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 185614,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_codex",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 168108,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "qa_click_codex_to_tech",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 175405,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "tab_tech",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 175740,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "tab_status",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 154944,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "qa_click_status_to_crew",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 170210,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "tab_crew",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 169846,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
   }
  ],
  "visualEvidence": {
-  "framesChecked": 20,
+  "framesChecked": 27,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
