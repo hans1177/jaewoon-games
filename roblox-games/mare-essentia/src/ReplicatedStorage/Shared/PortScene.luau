@@ -2372,15 +2372,15 @@ do
 	SIG.paramaribo = cat(one("Town", "house", 23, -11, 0), one("Town", "house", 21, 10, 6), one("Naval", "tower-watch", 24, -22, 12))
 	SIG.belem = cat(one("Town", "church", 28, -8, 0), one("Naval", "palm-detailed-straight", 16, 18, 8), one("Terrain", "column", 13, -24, 12))
 	SIG.recife = cat(one("Town", "house", 24, -9, 0), one("Town", "church", 26, 18, 9), one("Naval", "palm-detailed-straight", 12, -23, 12))
-	SIG.hobart = cat(one("Castle", "tower-square-base", 25, -9, 0), one("Town", "house", 21, 18, 9), one("Town", "tree-pinedefaulta", 15, -24, 14))
+	SIG.hobart = cat(one("Castle", "tower-square-base", 25, -9, 0), one("Town", "house", 21, 18, 9), one("Terrain", "tree-pinedefaulta", 15, -24, 14))
 	SIG.perth = cat(one("Naval", "tower-watch", 28, -8, 0), one("Castle", "tower-square-roof", 21, 17, 8), one("Town", "house", 18, -23, 12))
 	SIG.darwin = cat(one("Naval", "tower-watch", 27, -10, 0), one("Naval", "palm-detailed-straight", 19, 20, 6), one("Town", "house", 21, -23, 13))
 	SIG.port_moresby = cat(one("Town", "house", 26, -9, 0), one("Naval", "palm-detailed-straight", 20, 18, 9), one("Town", "bench_A", 9, -24, 13))
 	SIG.suva = cat(one("Terrain", "statue-ring", 19, -10, 0), one("Naval", "palm-detailed-straight", 17, 18, 8), one("Town", "house", 21, -23, 12))
 	SIG.guam = cat(one("Castle", "fortress", 26, -8, 0), one("Naval", "palm-detailed-straight", 17, 19, 8), one("Naval", "tower-watch", 19, -24, 12))
 	SIG.guayaquil = cat(one("Naval", "tower-watch", 27, -8, 0), one("Town", "house", 22, 19, 8), one("Town", "bell-tower", 17, -23, 12))
-	SIG.sitka = cat(one("Town", "house", 23, -9, 0), one("Town", "tree-pinedefaulta", 18, 19, 8), one("Naval", "tower-watch", 27, -23, 13))
-	SIG.vancouver = cat(one("Town", "house", 24, -11, 0), one("Town", "tree-pinedefaulta", 18, 17, 10), one("Naval", "tower-watch", 26, -23, 12))
+	SIG.sitka = cat(one("Town", "house", 23, -9, 0), one("Terrain", "tree-pinedefaulta", 18, 19, 8), one("Naval", "tower-watch", 27, -23, 13))
+	SIG.vancouver = cat(one("Town", "house", 24, -11, 0), one("Terrain", "tree-pinedefaulta", 18, 17, 10), one("Naval", "tower-watch", 26, -23, 12))
 	SIG.oslo = cat(one("Castle", "fortress", 28, 0, 0), one("Town", "house", 17, -24, 0, 0, C(184, 78, 58)), one("Town", "house", 17, 24, 0, 0, C(214, 190, 119)))
 end
 
