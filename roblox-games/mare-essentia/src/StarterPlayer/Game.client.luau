@@ -10517,10 +10517,13 @@ titleGui.Enabled = false
 			curtain.BackgroundTransparency = math.clamp(t / 1.1, 0, 1)
 			rayFade.Offset = Vector2.new(math.sin(t * 0.31) * 0.24, 0)
 			if layered then
-				local swell = t * 0.91
-				local pitch = math.sin(swell - 0.68) * 1.05 + math.sin(t * 1.44) * 0.22
+				-- [표지 배] 원본 이미지는 유지하고, 빠른 떨림 대신 긴 파도와 미세한 수평 이동만 적용한다.
+				local slowWave = t * 0.48
+				local pitch = math.sin(slowWave - 0.68) * 0.72 + math.sin(t * 0.29) * 0.15
+				local drift = math.sin(t * 0.23) * math.min(18, ship.AbsoluteSize.X * 0.034)
 				local pivotShift = math.sin(math.rad(pitch)) * ship.AbsoluteSize.Y * 0.34
-				ship.Position = UDim2.fromOffset(shipX + pivotShift, shipY + math.sin(swell) * waveHeight)
+				local bob = math.sin(t * 0.76) * waveHeight * 0.68 + math.sin(t * 0.41 + 0.8) * waveHeight * 0.22
+				ship.Position = UDim2.fromOffset(shipX + drift + pivotShift, shipY + bob)
 				ship.Rotation = pitch
 			end
 		end)
@@ -10623,6 +10626,7 @@ local function tLabel(parent, text, size, color, bold, order)
 end
 
 renderTitle = function()
+	local previousScroll = titleScroll.CanvasPosition.Y
 	for _, c in titleScroll:GetChildren() do
 		if not c:IsA("UIListLayout") and not c:IsA("UIPadding") then
 			c:Destroy()
@@ -10665,6 +10669,63 @@ renderTitle = function()
 	end
 	if message ~= "" then
 		tLabel(titleScroll, message, 17, if messageOk then GOLD else COLORS.red, true, nxt())
+	end
+
+	-- [첫 화면 단일화] 저장된 항해와 새 항해 준비를 기존 표지의 같은 페이지에서 선택한다.
+	local setupOpen = not view or newGameMode or H.titleSetupOpen
+	if view then
+		local current = view.player
+		tLabel(titleScroll, string.format("기존 항해 · %s · %d년 · %s코인",
+			current.portName, current.year, H.commas(current.coins)), 16, INK_SOFT, false, nxt())
+		local firstActions = Instance.new("Frame")
+		firstActions.Name = "TitleQuickActions"
+		firstActions.BackgroundTransparency = 1
+		firstActions.Size = UDim2.new(1, 0, 0, 58)
+		firstActions.LayoutOrder = nxt()
+		firstActions.ZIndex = 12
+		firstActions.Parent = titleScroll
+		local resume = mkButton(firstActions, "▶ 이어하기", COLORS.gold, UDim2.new(0.55, -4, 1, 0), function()
+			H.titleMenuOpen = false
+			H.titleSetupOpen = false
+			H.titleConfirmRestart = false
+			newGameMode = false
+			render()
+			menuToggle.Visible = false
+		end, true)
+		resume.Position = UDim2.new(0, 0, 0, 0)
+		resume.ZIndex = 13
+		local prepare = mkButton(firstActions, if setupOpen then "설정 접기" else "＋ 새 항해", COLORS.blue, UDim2.new(0.45, -4, 1, 0), function()
+			H.titleSetupOpen = not setupOpen
+			newGameMode = H.titleSetupOpen
+			H.titleConfirmRestart = false
+			renderTitle()
+		end, true)
+		prepare.Position = UDim2.new(0.55, 4, 0, 0)
+		prepare.ZIndex = 13
+		if not setupOpen then
+			tLabel(titleScroll, "새 항해를 준비해도 기존 기록은 출항 확인 전까지 유지돼.", 15, INK_SOFT, false, nxt())
+		end
+	end
+	local optionRow = Instance.new("Frame")
+	optionRow.Name = "TitleControls"
+	optionRow.BackgroundTransparency = 1
+	optionRow.Size = UDim2.new(1, 0, 0, 46)
+	optionRow.LayoutOrder = nxt()
+	optionRow.ZIndex = 12
+	optionRow.Parent = titleScroll
+	local settings = mkButton(optionRow, "설정", COLORS.paper, UDim2.new(0.5, -4, 1, 0), openOptions, true)
+	settings.ZIndex = 13
+	local music
+	music = mkButton(optionRow, if Sfx.state() then "음악 켜짐" else "음악 꺼짐", COLORS.paper,
+		UDim2.new(0.5, -4, 1, 0), function()
+			Sfx.setMusicEnabled(not Sfx.state())
+			music.Text = if Sfx.state() then "음악 켜짐" else "음악 꺼짐"
+		end, true)
+	music.Position = UDim2.new(0.5, 4, 0, 0)
+	music.ZIndex = 13
+	if not setupOpen then
+		titleScroll.CanvasPosition = Vector2.new(0, previousScroll)
+		return
 	end
 
 	-- ① 나라
@@ -10853,45 +10914,47 @@ renderTitle = function()
 		row.ZIndex = 12
 	end
 
-	-- 출발
-	local actions = Instance.new("Frame")
-	actions.BackgroundTransparency = 1
-	actions.Size = UDim2.new(1, 0, 0, 68)
-	actions.LayoutOrder = nxt()
-	actions.ZIndex = 12
-	actions.Parent = titleScroll
-	local al = Instance.new("UIListLayout")
-	al.FillDirection = Enum.FillDirection.Horizontal
-	al.Padding = UDim.new(0, 8)
-	al.Parent = actions
+	-- [새 항해 출항] 저장된 기록이 있으면 기존 확인 절차를 같은 화면의 버튼에서 수행한다.
 	if view then
-		local cancel = mkButton(actions, "이어서 하기", Color3.fromRGB(44, 56, 74), UDim2.new(0.28, 0, 1, 0), function()
-			newGameMode = false
-			render()
+		tLabel(titleScroll, "주의 · 새 항해를 출항하면 현재 저장 기록을 교체해.", 16, COLORS.red, true, nxt())
+	end
+	local go = mkButton(titleScroll,
+		if view and H.titleConfirmRestart then "기존 기록 교체 · 출항 확인"
+			elseif view then "⚓ 새 항해 출항" else "⚓ 출항하기",
+		if view and H.titleConfirmRestart then COLORS.red else COLORS.gold,
+		UDim2.new(1, 0, 0, 62), function()
+			if view and not H.titleConfirmRestart then
+				H.titleConfirmRestart = true
+				renderTitle()
+				return
+			end
+			H.titleMenuOpen = false
+			H.titleSetupOpen = false
+			H.titleConfirmRestart = false
+			H.startNewGame()
 		end, true)
-		cancel.ZIndex = 13
-		cancel.TextSize = 18
-	end
-	local go = mkButton(actions, "⚓  출항하기", Color3.fromRGB(206, 154, 56), UDim2.new(if view then 0.72 else 1, if view then -8 else 0, 1, 0), H.startNewGame, true)
+	go.LayoutOrder = nxt()
 	go.ZIndex = 13
-	go.TextSize = 26
+	go.TextSize = 22
 	go.TextColor3 = INK
-	do
-		local gst = Instance.new("UIStroke")
-		gst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		gst.Color = Color3.fromRGB(255, 226, 150)
-		gst.Thickness = 2
-		gst.Parent = go
-	end
+	-- 선택 항목을 바꿔 다시 그려도 사용자가 보던 위치를 유지한다.
+	task.defer(function()
+		if titleScroll.Parent then
+			titleScroll.CanvasPosition = Vector2.new(0, previousScroll)
+		end
+	end)
 end
 
 H.wasTitle = false
 H.titleMenuOpen = false
+H.titleSetupOpen = false -- 이어하기와 새 항해 준비를 같은 화면에서 펼친다.
+H.titleConfirmRestart = false -- 기존 진행 데이터 교체는 출항 버튼 재확인 후에만 진행한다.
 function H.setTitleMode(on)
 	-- [공중 캐릭터 방지] 서버 스냅샷만 왔다고 3D 항구가 준비된 것은 아니다.
-	local waitingPort = view ~= nil and not inField and sceneSpawn == nil and not on
-	titleGui.Enabled = on or H.titleMenuOpen or waitingPort
-	titlePanel.Visible = on and not H.titleMenuOpen
+	local waitingPort = view ~= nil and not inField and sceneSpawn == nil and not on and not H.titleMenuOpen
+	local titleVisible = on or H.titleMenuOpen
+	titleGui.Enabled = titleVisible or waitingPort
+	titlePanel.Visible = titleVisible
 	if H.portLoadingLabel then H.portLoadingLabel.Visible = waitingPort and not H.titleMenuOpen end
 	local currentCamera = workspace.CurrentCamera
 	local screen = if currentCamera then currentCamera.ViewportSize else Vector2.new(1280, 720)
@@ -10899,12 +10962,12 @@ function H.setTitleMode(on)
 	titlePanel.AnchorPoint = if portrait then Vector2.new(0.5, 1) else Vector2.new(1, 0.5)
 	titlePanel.Position = if portrait then UDim2.new(0.5, 0, 1, -8) else UDim2.new(1, -14, 0.5, 0)
 	titlePanel.Size = if portrait then UDim2.new(0.94, 0, 0.70, 0) else UDim2.new(0.58, 0, 1, -28)
-	if on then
+	if titleVisible then
 		main.Visible = false
 	elseif H.wasTitle then
 		main.Visible = true
 	end
-	H.wasTitle = on
+	H.wasTitle = titleVisible
 end
 
 function render()
@@ -11049,180 +11112,16 @@ function render()
 	RENDERERS[currentTab]()
 end
 
--- 시작 화면: 이어하기 / 새 게임 / 소리 ---------------------------------------------
-
+-- [단일 시작 화면] 기존 항해 일지 팝업을 새로 생성하지 않고 한 장의 타이틀을 연다.
+-- 상태·나라·집안·이어하기·음악 설정은 위 renderTitle의 정본 UI를 사용한다.
 function H.showTitle()
-	local layer = overlayGui("TitleGui", 40)
-	local wasMain = main.Visible
-	main.Visible = false
-	menuToggle.Visible = false
 	H.titleMenuOpen = true
-	titleGui.Enabled = true
-	titlePanel.Visible = false
-	local visibility = main:GetPropertyChangedSignal("Visible"):Connect(function()
-		if H.titleMenuOpen and main.Visible then main.Visible = false end
-	end)
-	layer.Destroying:Connect(function() visibility:Disconnect() end)
-	local function leave()
-		H.titleMenuOpen = false
-		layer:Destroy()
-	end
-
-	local root = Instance.new("Frame")
-	root.Size = UDim2.fromScale(1, 1)
-	root.BackgroundTransparency = 1
-	root.Parent = layer
-	-- 한 장의 항해 기록. 종이결은 본문과 조작 뒤에만 깐다.
-	local box = Instance.new("Frame")
-	box.Name = "VoyageLogPage"
-	box.BackgroundColor3 = COLORS.paper
-	box.BorderSizePixel = 0
-	box.Parent = root
-	corner(box, 5)
-	local paperId = AssetIds["CardArt/event_title_parchment"]
-	if paperId then
-		box.BackgroundTransparency = 1
-		local sheet = Instance.new("ImageLabel")
-		sheet.Name = "TornParchment"
-		sheet.BackgroundTransparency = 1
-		sheet.Size = UDim2.fromScale(1, 1)
-		sheet.Image = "rbxassetid://" .. tostring(paperId)
-		sheet.Parent = box
-	else
-		local grain = bookMaterial(box, "parchment", 360)
-		if grain then grain.ImageTransparency = 0.22 end
-	end
-	local bounds = Instance.new("UISizeConstraint")
-	-- [첫 화면 가독성] 모바일/가로 화면에서 이어하기·새 항해·설정 세 동작을 한눈에 보여 준다.
-	bounds.MaxSize = Vector2.new(500, if view then 440 else 350)
-	bounds.Parent = box
-
-	local pages = Instance.new("ScrollingFrame")
-	pages.Size = UDim2.fromScale(1, 1)
-	pages.BackgroundTransparency = 1
-	pages.BorderSizePixel = 0
-	pages.ScrollBarThickness = 3
-	pages.ScrollBarImageColor3 = COLORS.brown
-	pages.ScrollingDirection = Enum.ScrollingDirection.Y
-	pages.AutomaticCanvasSize = Enum.AutomaticSize.Y
-	pages.CanvasSize = UDim2.new()
-	pages.ZIndex = box.ZIndex + 1
-	pages.Parent = box
-	local pad = Instance.new("UIPadding")
-	pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 18), UDim.new(0, 18)
-	pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 25), UDim.new(0, 25)
-	pad.Parent = pages
-	local list = Instance.new("UIListLayout")
-	list.Padding = UDim.new(0, 8)
-	list.SortOrder = Enum.SortOrder.LayoutOrder
-	list.Parent = pages
-
-	local function placeMenu()
-		local portrait = root.AbsoluteSize.Y > root.AbsoluteSize.X
-		box.AnchorPoint = if portrait then Vector2.new(0.5, 1) else Vector2.new(1, 0.5)
-		box.Position = if portrait then UDim2.new(0.5, 0, 1, -16) else UDim2.new(1, -22, 0.5, 0)
-		box.Size = if portrait then UDim2.fromScale(0.94, 0.68) else UDim2.new(0.46, 0, 0.88, 0)
-	end
-	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(placeMenu)
-	placeMenu()
-
-	local head = Instance.new("Frame")
-	head.LayoutOrder = 1
-	head.Size = UDim2.new(1, 0, 0, 62)
-	head.BackgroundTransparency = 1
-	head.BorderSizePixel = 0
-	head.Parent = pages
-	pageRule(head, UDim2.new(0, 2, 1, -3), UDim2.new(1, -4, 0, 1))
-	local seal = Instance.new("ImageLabel")
-	seal.Size = UDim2.fromOffset(34, 34)
-	seal.Position = UDim2.fromOffset(10, 9)
-	seal.BackgroundTransparency = 1
-	seal.ScaleType = Enum.ScaleType.Fit
-	seal.Image = "rbxassetid://" .. AssetIds["Menu/chart_compass"]
-	seal.ImageColor3 = COLORS.brown
-	seal.Parent = head
-	local title = mkLabel(head, "선장의 항해 일지", 27, COLORS.ink, true)
-	title.Position = UDim2.fromOffset(53, 0)
-	title.Size = UDim2.new(1, -60, 1, 0)
-	title.AutomaticSize = Enum.AutomaticSize.None
-	title.TextYAlignment = Enum.TextYAlignment.Center
-	title.Font = Enum.Font.Antique
-	title.TextStrokeColor3 = INK_SOFT
-	title.TextStrokeTransparency = 0.75
-
-	local function action(parent, text, size, primary, callback)
-		local b = Instance.new("TextButton")
-		b.Size = size
-		b.Text = text
-		b.Font = if primary then Enum.Font.GothamBold else Enum.Font.GothamMedium
-		b.TextSize = if primary then 23 else 19
-		b.TextColor3 = if primary then Color3.fromRGB(250, 232, 193) else INK
-		b.BackgroundColor3 = if primary then Color3.fromRGB(35, 54, 59) else Color3.fromRGB(225, 204, 166)
-		b.BackgroundTransparency = if primary then 0 else 0.06
-		b.BorderSizePixel = 0
-		b.TextWrapped = true
-		b.Parent = parent
-		corner(b, 9)
-		local stroke = Instance.new("UIStroke")
-		stroke.Color = if primary then Color3.fromRGB(235, 195, 118) else INK_EDGE
-		stroke.Thickness = if primary then 2.2 else 1.5
-		stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		stroke.Parent = b
-		b.Activated:Connect(function()
-			Sfx.play("sfx_click")
-			callback()
-		end)
-		return b
-	end
-	if view then
-		local log = mkLabel(pages, string.format("진행 중인 항해 · %s · %d년\n소지금 %d코인", view.player.portName, view.player.year, view.player.coins), 18, INK_SOFT, false, 2)
-		log.Size = UDim2.new(1, 0, 0, 0)
-		local resume = action(pages, "▶ 이어하기 · 기존 항해", UDim2.new(1, 0, 0, 60), true, function()
-			leave()
-			H.setTitleMode(false)
-			main.Visible = wasMain
-			menuToggle.Visible = not wasMain
-		end)
-		resume.LayoutOrder = 3
-	end
-	if not view then
-		local guide = mkLabel(pages, "나라와 집안을 고르고, 출발 무기를 확인한 뒤 항해해.", 18, INK_SOFT, false, 2)
-		guide.TextWrapped = true
-		guide.Size = UDim2.new(1, 0, 0, 50)
-	end
-	local confirmed = false
-	local newBtn
-	newBtn = action(pages, if view then "＋ 새 항해 시작" else "⚓ 새 게임 시작", UDim2.new(1, 0, 0, 60), not view, function()
-		if view and not confirmed then
-			confirmed = true
-			newBtn.Text = "저장을 지우고 새로 시작"
-			newBtn.TextColor3 = COLORS.text
-			newBtn.BackgroundColor3 = COLORS.red
-			newBtn.BackgroundTransparency = 0
-			return
-		end
-		leave()
-		newGameMode = true
-		render()
-	end)
-	newBtn.LayoutOrder = 4
-
-	local controls = Instance.new("Frame")
-	controls.BackgroundTransparency = 1
-	controls.Size = UDim2.new(1, 0, 0, 60)
-	controls.LayoutOrder = 5
-	controls.Parent = pages
-	pageRule(controls, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1))
-	action(controls, "⚙ 설정", UDim2.new(0.48, 0, 1, 0), false, openOptions)
-	local function musicLabel()
-		return if Sfx.state() then "음악 켜짐" else "음악 꺼짐"
-	end
-	local musicBtn
-	musicBtn = action(controls, musicLabel(), UDim2.new(0.48, 0, 1, 0), false, function()
-		Sfx.setMusicEnabled(not Sfx.state())
-		musicBtn.Text = musicLabel()
-	end)
-	musicBtn.Position = UDim2.fromScale(0.52, 0)
+	H.titleSetupOpen = not view
+	H.titleConfirmRestart = false
+	titleScroll.CanvasPosition = Vector2.zero
+	H.setTitleMode(true)
+	renderTitle()
+	menuToggle.Visible = false
 	Sfx.music("music_harbor")
 end
 
