@@ -396,6 +396,61 @@ test('System AI repair result carries multi-hypothesis falsification and known-g
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
 
+test('free Gemini system worker retries invalid repair schema once and keeps deterministic gates',async()=>{
+  const cwd=root(),prev=process.cwd(),priorFetch=globalThis.fetch;
+  const saved=Object.fromEntries(['GEMINI_API_KEY','SYSTEM_AI_GEMINI_MODEL','VIBE2_GEMINI_MODEL','VIBE2_GEMINI_BACKUP_MODEL']
+    .map(key=>[key,process.env[key]]));
+  process.chdir(cwd);
+  try{
+    write('tools/demo.mjs',"export const value=1;\\n");
+    write('task.json',JSON.stringify({
+      id:'schema-retry',status:'running',taskType:'bottleneck-repair',
+      goal:'repair source generation failure',responsibleFiles:['tools/demo.mjs'],
+      failureStage:'SOURCE_CANDIDATE_GENERATION',failureSignature:'EDIT_MATCH',
+      acceptanceCriteria:['value becomes 2']
+    }));
+    const valid={
+      summary:'repair exact assigned source',
+      selectedHypothesisId:'source-generation-path',falsifiedHypothesisIds:[],
+      knownGoodComparison:'NO_KNOWN_GOOD_REFERENCE',
+      strategyOptions:[
+        {id:'minimal',summary:'replace exact value',risk:'LOW',files:['tools/demo.mjs']},
+        {id:'alternative',summary:'replace source declaration',risk:'MEDIUM',files:['tools/demo.mjs']}
+      ],
+      selectedStrategyId:'minimal',
+      edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}],
+      newFiles:[],recommendedTests:['node --check tools/demo.mjs'],risks:[]
+    };
+    const answers=[{...valid,selectedHypothesisId:'2',strategyOptions:[]},valid,
+      {verdict:'PASS',preferredStrategyId:'minimal',weakPoints:[],requiredCorrections:[],revisedAnswer:null}];
+    const prompts=[];
+    process.env.GEMINI_API_KEY='test-fixture-no-network';
+    process.env.SYSTEM_AI_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_BACKUP_MODEL='gemini-3.5-flash-lite';
+    globalThis.fetch=async(_url,request)=>{
+      prompts.push(JSON.parse(request.body).contents[0].parts[0].text);
+      assert.ok(answers.length>0,'only the expected three offline model requests');
+      return {ok:true,status:200,json:async()=>({
+        candidates:[{content:{parts:[{text:JSON.stringify(answers.shift())}]}}]
+      })};
+    };
+    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json'});
+    assert.equal(result.provider,'GEMINI');
+    assert.equal(result.selectedHypothesisId,'source-generation-path');
+    assert.equal(result.criticVerdict,'PASS');
+    assert.equal(result.strategyOptions.length,2);
+    assert.equal(prompts.length,3);
+    assert.match(prompts[1],/STRICT SCHEMA REPAIR/);
+    assert.match(prompts[1],/source-generation-path/);
+    assert.match(fs.readFileSync('tools/demo.mjs','utf8'),/value=2/);
+  }finally{
+    globalThis.fetch=priorFetch;
+    for(const [key,value] of Object.entries(saved))if(value===undefined)delete process.env[key];else process.env[key]=value;
+    process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});
+  }
+});
+
 test('System AI refuses a hypothesis that prior evidence already rejected',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
