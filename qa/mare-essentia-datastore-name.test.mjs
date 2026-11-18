@@ -1584,7 +1584,7 @@ test('모든 항구 시장·종교·농장에 경계 검사와 안전 재배치 
   'CityDistrictPlaced", #districts',
   'CityDistrictMoved", districtMoved',
   'CityDistrictRejectedCandidates", districtRejected',
-  'd.hx + half','d.hz + half',
+  'd.hx + halfX','d.hz + halfZ',
   'CityBuildingMode", "AUTO_VISUAL_READ_ONLY"'
  ])assert.ok(scene.includes(token),'항구별 구역 안전 검사 누락: '+token);
  // 후보 좌표가 허용 최대 지터로 흔들려도 주요 랜드마크·왕궁·도시 경계를 침범하지 않아야 한다.
@@ -1629,15 +1629,58 @@ test('마을 주택은 5개 크기 등급을 발전도별로 혼합하고 도로
  assert.match(home,/math\.max\(sz \* 0\.62, projectedHalf\)/,'기존 점유 반경을 축소하지 않음');
  assert.match(home,/not onStreet\(pos\.X, half\)/);
  assert.match(home,/not reserved\(pos\.X, pos\.Z, half\)/);
- assert.match(home,/table\.insert\(placedLots, \{ X = pos\.X, Z = pos\.Z, H = half \}\)/);
+ assert.match(home,/table\.insert\(placedLots, \{ X = pos\.X, Z = pos\.Z,/);
+ assert.match(home,/HX = actualHalfX, HZ = actualHalfZ/);
  assert.match(home,/BuildingSizeClass", sizeClass/);
  assert.match(home,/BuildingSizeScale", sizeScale/);
- assert.match(home,/BuildingClearance", half/);
+ assert.match(home,/BuildingClearance", math\.max\(actualHalfX, actualHalfZ\)/);
  assert.match(home,/math\.clamp\(fl, 1, P\.flMax\)/,'문화권별 최대 층수 유지');
  assert.match(port,/local roof = importedModel\(parent, "Town", "eastasia-roof"/);
  assert.match(buildings,/plotScale = \{ 1\.5, 1\.65, 1\.8, 2\.0, 2\.2 \}/);
  assert.match(port,/CityBuildingMode", "AUTO_VISUAL_READ_ONLY"/);
  assert.match(port,/SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
+});
+
+// [지역 주택 실측] 모든 문화권은 소형~대형 5종 비율을 가지며 실제 메시 외곽으로 배치한다.
+test('항구별 주택은 지역 비율과 실제 외곽 측정 후 겹침 없는 자리만 사용한다',()=>{
+ const port=read('ReplicatedStorage/Shared/PortScene.luau');
+ const cultures=read('ReplicatedStorage/Shared/PortCultures.luau');
+ const ports=read('ReplicatedStorage/Shared/Ports.luau');
+ const section=ports.slice(ports.indexOf('local Ports:'),ports.indexOf('local Nations:'));
+ const ids=[...section.matchAll(/^\t([a-z][a-z0-9_]*)\s*=\s*\{\s*\n\s*id = /gm)].map(x=>x[1]);
+ assert.equal(ids.length,181,'181개 항구에 동일한 정본 배치 함수 적용');
+ const sizes=[...cultures.matchAll(/^\t([a-z]+) = \{ S = .*sizeWeights = \{ (\d+), (\d+), (\d+), (\d+), (\d+) \}/gm)];
+ assert.equal(sizes.length,23,'모든 문화권에 고유 주택 크기 비율');
+ for(const [row,key,...weightStrings] of sizes){
+  const weights=weightStrings.map(Number);
+  assert.equal(weights.reduce((a,b)=>a+b,0),100,key+' 지역별 비율 총합');
+  assert.ok(weights.every(x=>x>0),key+' 작은 집과 큰 집 모두 남겨야 함');
+ }
+ assert.notDeepEqual(sizes.find(x=>x[1]==='nordic')?.slice(2),sizes.find(x=>x[1]==='italy')?.slice(2),'지역 비율 차별화');
+ const start=port.indexOf('local function fillRow(');
+ const end=port.indexOf('for _, side in { 1, -1 } do',start);
+ const home=port.slice(start,end);
+ assert.match(home,/local mix = P\.sizeWeights/);
+ assert.match(home,/local widthBase = fw \* \(sz \/ S\) \* \(P\.wMul or 1\)/);
+ assert.match(home,/local depthBase = math\.max\(widthBase \* 0\.72, widthBase \+ \(P\.dAdd or 0\)\)/);
+ assert.match(home,/local staged = Instance\.new\("Model"\)/);
+ assert.match(home,/local body = house\(staged, pos, ww, dd, fl, style, rng\)/);
+ assert.match(home,/local bounds, dimensions = staged:GetBoundingBox\(\)/);
+ assert.match(home,/actualHalfX = math\.max\(half,/);
+ assert.match(home,/actualHalfZ = math\.max\(half,/);
+ assert.match(home,/laneNear = 152 \+ laneOffset \+ laneIndex \* laneL/);
+ assert.match(home,/clearRoad and not onStreet\(at\.X, actualHalfX\)/);
+ assert.match(home,/not reserved\(at\.X, at\.Z, actualHalfX, actualHalfZ\)/);
+ assert.match(home,/if chosenShift then[\s\S]*?for _, object in staged:GetChildren\(\) do object\.Parent = folder end/);
+ assert.match(home,/staged:Destroy\(\)/,'실패한 후보 자산 삭제');
+ assert.match(home,/BuildingFootprintX", actualHalfX \* 2/);
+ assert.match(home,/BuildingFootprintZ", actualHalfZ \* 2/);
+ assert.match(home,/HX = actualHalfX, HZ = actualHalfZ/);
+ assert.match(port,/local function reserved\(x, z, halfX, halfZ\)/);
+ assert.match(port,/halfZ = halfZ or halfX/);
+ assert.match(port,/lot\.HX or lot\.H/);
+ assert.match(port,/lot\.HZ or lot\.H/);
+ assert.match(port,/CityBuildingMode", "AUTO_VISUAL_READ_ONLY"/);
 });
 
 // [가축 PBR 자연 색] 기존 원본 코·귀·얼룩과 색상지도 없는 표면 중복 착색 회귀 방지.
