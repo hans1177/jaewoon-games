@@ -122300,7 +122300,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -122334,7 +122334,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 29,
-      "previousReservationId": "system-ai:44392311432:1",
+      "previousReservationId": "system-ai:44395113610:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -122342,12 +122342,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44395113610:1",
-      "reservedAt": "2026-11-18T20:57:01.686Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -125460,7 +125460,8 @@
         "repair-strategy-fingerprint:af7cea9d61228baba4c7f28f598c22624416102b24df6f46aac432a975f7f7e6",
         "failed-strategy-fingerprint:af7cea9d61228baba4c7f28f598c22624416102b24df6f46aac432a975f7f7e6",
         "model-output-sha256:bac998c06dc6f7b2f02c29e8b8d253378bcacb8802bffd8e16cb32724f01fb9b",
-        "system-ai-handoff-to-reservation:system-ai:44395113610:1"
+        "system-ai-handoff-to-reservation:system-ai:44395113610:1",
+        "actions-run:44395113610"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 302,
@@ -125475,7 +125476,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-18T20:57:01.686Z"
+      "updatedAt": "2026-11-18T21:02:59.116Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -154125,7 +154126,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -154159,7 +154160,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 8,
-      "previousReservationId": "system-ai:44312177280:1",
+      "previousReservationId": "system-ai:44395113610:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -154167,12 +154168,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44395113610:1",
-      "reservedAt": "2026-11-18T20:57:01.686Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -154449,7 +154450,13 @@
         "model-output-sha256:8d6b1bfa375be5c8433b07948c8df2556552e477d0278fb33b356ac4a926108a",
         "system-ai-handoff-to-reservation:system-ai:44312177280:1",
         "actions-run:44312177280",
-        "system-ai-handoff-to-reservation:system-ai:44395113610:1"
+        "system-ai-handoff-to-reservation:system-ai:44395113610:1",
+        "actions-run:44395113610",
+        "external-ai-raw-output-sha256:d9920f68dd5843c039b556f5f24a2a5aa5530601db09b28a670249f89e39552e",
+        "system-ai-applied-answer-sha256:408809c54f9bfadbec8f275d84081fedb617f8146be7cbb5796c9d40edb51adf",
+        "repair-strategy-fingerprint:fec1a706f576877a4c011833421866fae616350b9da01c4f19ec5c8892fd4822",
+        "failed-strategy-fingerprint:fec1a706f576877a4c011833421866fae616350b9da01c4f19ec5c8892fd4822",
+        "model-output-sha256:d9920f68dd5843c039b556f5f24a2a5aa5530601db09b28a670249f89e39552e"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1862,
@@ -154464,7 +154471,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-18T20:57:01.686Z"
+      "updatedAt": "2026-11-18T21:02:59.116Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
