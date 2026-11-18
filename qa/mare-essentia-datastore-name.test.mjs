@@ -2782,3 +2782,25 @@ test('네모트론 후보와 독립 검수는 동일 무료 호출에서 다른 
   assert.equal(validateVisualComparison(result.text,[frame.name]).status,'UNVERIFIED',
     'JSON 구조 성공은 시각 개선 성공과 구분');
 });
+
+
+// [지상·해상·동료·카드 연출] 게임 판정과 저장 계약을 건드리지 않는 표시 전용 회귀.
+test('지상·해상 전투 아이콘 쿨타임과 탐험 동료 중앙 대화·카드 습득 등급 연출을 유지한다',()=>{
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  const naval=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  assert.match(field,/scale\.Scale = 0\.84/);
+  assert.match(field,/math\.min\(216, screen\.X - MM - 12\)/);
+  assert.match(field,/FieldCompanionDialogue/);
+  assert.match(field,/local party = opts\.allies or \{\}/);
+  assert.match(field,/FieldEvidence/);
+  assert.match(field,/timer\.Visible = false/);
+  assert.match(field,/icon\.ImageColor3 = if left > 0/);
+  assert.match(naval,/NavalCooldownShade/);
+  assert.match(naval,/UDim2\.fromOffset\(96, 96\)/);
+  assert.match(naval,/shade\.Size = UDim2\.fromScale\(1, math\.clamp\(left \/ math\.max\(sk\.cd, 0\.1\)/);
+  assert.doesNotMatch(naval,/string\.format\("%s\\n%d초", sk\.text/);
+  assert.match(naval,/l\.Name = "NavalBattleAnnouncement"\n\s*l\.Font = Enum\.Font\.GothamBold/);
+  assert.match(client,/전설의 지식 발견!/);
+  assert.match(client,/sparkleCount/);
+});
