@@ -65,9 +65,9 @@ function loadPreviousDesignUsage(previous = {}) {
 export function designRoleForFrames(frameNames = []) {
   const names = frameNames.join(' ').toLowerCase();
   if (/(npc|face|hair|outfit|villager|resident|skin|citizen)/.test(names)) return 'NPC';
-  if (/(hud|menu|gui|card|tab_|map_ui|inventory|font|interface)/.test(names)) return 'UI';
+  if (/(hud|menu|gui|card|tab_|ui_|map_ui|inventory|font|interface)/.test(names)) return 'UI';
   if (/(animation|motion|idle|run|walk|attack|swing|movement)/.test(names)) return 'MOTION';
-  if (/(harbor|sea|ship|port|island|landscape|world|voyage|town|lighting|field)/.test(names)) return 'WORLD';
+  if (/(harbor|sea|ship|port|island|landscape|world|voyage|town|lighting|field)|^(?:v[0-9]+_|cb[0-9]+(?:_|-))/.test(names)) return 'WORLD';
   return 'GENERAL';
 }
 // [분야별 자동 순환] 실제 캡처에 2장 이상 있는 분야만 우선 배정한다.
