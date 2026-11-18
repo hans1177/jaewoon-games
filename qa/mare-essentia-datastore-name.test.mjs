@@ -1206,7 +1206,7 @@ test('항구 주민·동료 남녀 4계열은 등록된 실제 3D 의상 메시�
   }
   assert.match(pose,/Pose\.applyRegisteredMobOutfit\(model\)/);
   assert.match(pose,/model:SetAttribute\("NpcAssetProfile"/);
-  assert.match(pose,/gender ~= "female" and beard == 2/);
+  assert.match(pose,/pcall\(drawFace, headPart\)/);
   assert.match(port,/extra\.female = female/);
   assert.match(port,/c\.id == "c_merian"/);
   assert.match(port,/people\.ChildAdded:Connect\(function\(asset\)/);
@@ -1639,7 +1639,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.match(pose,/elseif fallback and color\.R > 0\.80 and color\.G > 0\.80 and color\.B > 0\.80/);
   assert.match(pose,/math\.max\(color\.R, color\.G, color\.B\) - math\.min\(color\.R, color\.G, color\.B\) < 0\.09/);
   // [실물 스크린샷 회귀] 얼굴·치마·허리띠·중첩 상의가 다시 원통/흰 갑옷으로 돌아가지 않도록 고정.
-  assert.match(pose,/gui\.AlwaysOnTop = true/);
+  assert.doesNotMatch(pose,/MareFaceSurface/);
   assert.match(pose,/scalp\.Name = "HairScalp"/);
   assert.match(pose,/piece\.Name == fallbackName then piece\.Transparency = 1/);
   // [모델 후보 안전범위] 원래 시각 기준 대신 중앙정책에 허용된 정확한 숫자 범위와 수정을 검증한다.
@@ -2271,8 +2271,8 @@ test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치�
   assert.equal(verifiedStudioCapture({...studio, summary: {capturedFrames: 1}}, photos, revision), false);
 
   // [디자인 특화 AI] 정확히 존재하는 원본 한 줄을 동일 문맥의 시각 표현으로만 교체한다.
-  const oldPose = '\tgui.LightInfluence = 0.6';
-  const newPose = '\tgui.LightInfluence = 0.35';
+  const oldPose = '\tdecal.Transparency = 0';
+  const newPose = '\tdecal.Transparency = 0.05';
   const oldPort = '\tlocal harborColor = Color3.fromRGB(51, 40, 30)';
   const newPort = '\tlocal harborColor = Color3.fromRGB(60, 45, 32)';
   const issue = (category, screenshot) => ({category, screenshot, severity: 'medium',
