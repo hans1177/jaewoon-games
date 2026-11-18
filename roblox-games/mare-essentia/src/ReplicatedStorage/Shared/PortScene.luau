@@ -2951,6 +2951,11 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				local sizeClass = if roll <= mix[1] then 1 elseif roll <= mix[1] + mix[2] then 2
 					elseif roll <= mix[1] + mix[2] + mix[3] then 3
 					elseif roll <= mix[1] + mix[2] + mix[3] + mix[4] then 4 else 5
+				-- [시장·창고 성장] 실제 상업시설이 늘어난 신시가지에서만 일부 상가를 한 등급 크게 만든다.
+				local built = info.sim and info.sim.buildings
+				local merchantGrowth = built and ((built.market or 0) >= 3 or (built.warehouse or 0) >= 4)
+				if merchantGrowth and lvl >= 3 and quarter == "new"
+					and sizeClass == 3 and roll % 3 == 0 then sizeClass = 4 end
 				local sizeJitter = sizeRng:NextNumber(0.97, 1.03)
 				-- 폭/깊이도 지역 프로필을 재사용해 운하 상가·목조 민가·중정 주택의 실루엣을 구분한다.
 				local widthBase = fw * (sz / S) * (P.wMul or 1)
@@ -3056,6 +3061,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							body:SetAttribute("CityResidenceType", if sizeClass <= 2 then "cottage"
 								elseif sizeClass >= 4 then "merchant_manor" else "town_house")
 							body:SetAttribute("CityArchitectureCulture", key)
+							body:SetAttribute("CityMerchantGrowth", merchantGrowth == true)
 							-- [밤이 밝아지는 창] 기존 주야 조명의 PointLight 갱신 경로에 자동 연결된다.
 							-- 모바일 5곳/PC 11곳만 만들고 야간 시간에만 조도가 강해진다.
 							if lvl >= 2 and nightWindows < nightWindowLimit and homePlaced % 13 == 1 then
@@ -3166,6 +3172,19 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				canal.CanQuery = false
 			else
 				strip(folder, style, (X_END - 235) / 2, side * laneZ, 235 - X_END, laneWidth)
+				-- [해안선과 거리] 강·삼각주에는 목재 보행 가장자리, 언덕은 석조 가장자리를 얹는다.
+				-- 기존 골목 중심·폭·보행판정은 그대로 유지하는 가벼운 비충돌 시각 경계다.
+				if coastForm == "hill" or coastForm == "strait" or coastForm == "river"
+					or coastForm == "delta" or coastForm == "lagoon" then
+					local riverEdge = coastForm == "river" or coastForm == "delta" or coastForm == "lagoon"
+					local edge = part(folder, Vector3.new(235 - X_END, 0.14, 1.05),
+						CFrame.new((X_END - 235) / 2, 0.27, side * (laneZ + laneWidth * 0.36)),
+						if riverEdge then C(146, 112, 78) else C(148, 143, 135),
+						if riverEdge then Enum.Material.WoodPlanks else Enum.Material.Cobblestone)
+					edge.Name = "CityTerrainStreetEdge"
+					edge.CanCollide, edge.CanQuery, edge.CanTouch = false, false, false
+					edge.CastShadow = false
+				end
 			end
 			if p < pairsN then
 				local t = (p + 0.5) / math.max(1, pairsN)
@@ -3233,6 +3252,22 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				put("Cargo", "box-open", 2.4, cx + 12, cz - 2, false)
 				put("Town", "bench_A", 3.6, cx, cz, false)
 				put("Town", "fountain-round", 7, cx, cz + (if cz > 0 then -15 else 15), true)
+				-- [상품별 시장] 현지 실제 생산품 3D 전시는 모바일 1개, PC 2개만.
+				-- 기존 거래 가격·재고·시장 건물 수는 읽기 전용으로 보존한다.
+				local marketGoods = Chains.showcaseGoods(info.portId, made,
+					if game:GetService("UserInputService").TouchEnabled then 1 else 2)
+				for i, good in marketGoods do
+					local mesh = GOOD_MESH[good]
+					if mesh and AssetIds[mesh[1] .. "/" .. mesh[2]] then
+						local item = put(mesh[1], mesh[2], goodSize(good, 2.5),
+							cx - 12 + (i - 1) * 22, cz + 2, false)
+						if item then
+							item.Name = "MarketSpecialtyDisplay_" .. good
+							item:SetAttribute("LocalProduct", good)
+							item:SetAttribute("ShowcaseOnly", true)
+						end
+					end
+				end
 			else -- farm
 				-- 지역에 맞는 작물: 동아시아는 벼·양배추·가지, 더운 지방은 옥수수·호박·멜론, 그 밖은 밀·양배추·당근
 				local crops
@@ -5770,6 +5805,9 @@ function PortScene.build(info, onFacility)
 		if seasonIndex == index then return end
 		seasonIndex = index
 		season = seasons[index]
+		-- [기존 계절 흐름] 항구 구역과 같은 계절 단계로 눈·거리·주택 연출이 동기화된다.
+		folder:SetAttribute("CitySeasonIndex", index)
+		folder:SetAttribute("CityWinterRoofTone", if cold and index == 1 then "SNOW" else "REGIONAL_MATERIAL")
 		if ground and ground:IsA("BasePart") then
 			local frosted = cold and index == 1
 			-- 잔디 질감은 멀리서 어두운 회색으로 보여서 매끈한 재질에 밝은 풀색을 쓴다(눈 덮인 계절만 눈 질감)
