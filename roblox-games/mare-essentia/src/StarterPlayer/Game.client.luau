@@ -5846,7 +5846,7 @@ local function openTradeHall()
 			local openBook = mkButton(sheet, "서재 백과사전에서 읽기", COLORS.blue,
 				UDim2.new(1, -24, 0, 46), function()
 					H.tradeBookGood = sel.id -- [세션 한정] 저장 키를 바꾸지 않는다.
-					codexField = "r:" .. (bookResource and bookResource.category or "all")
+					H.tradeBookOpenRequested = true
 					closeTradeHall()
 					openTab("codex")
 				end, true)
@@ -5922,7 +5922,7 @@ local function openTradeHall()
 				summary.TextTruncate = Enum.TextTruncate.AtEnd
 				local openBook = mkButton(sheet, "서재 백과사전", COLORS.blue, UDim2.new(1, -16, 0, 38), function()
 					H.tradeBookGood = sel.id
-					codexField = "r:" .. (bookResource and bookResource.category or "all")
+					H.tradeBookOpenRequested = true
 					closeTradeHall()
 					openTab("codex")
 				end, true)
@@ -12044,6 +12044,18 @@ function H.goAdvice(tab)
 end
 
 openTab = function(tabId, mapPage)
+	-- [교역 장부→서재] 선택한 상품의 분류는 백과 상태 변수 선언 이후,
+	-- 기존 탭 전환 함수에서만 지정한다. 별도 화면·저장 키를 생성하지 않는다.
+	if tabId == "codex" and H.tradeBookOpenRequested then
+		H.tradeBookOpenRequested = nil
+		codexField = "r:all"
+		for _, resource in ((view and view.codex and view.codex.resources) or {}) do
+			if resource.id == H.tradeBookGood then
+				codexField = "r:" .. resource.category
+				break
+			end
+		end
+	end
 	-- [최근 사용] 영구 저장 키 변경 없이 이 실행 중 직전 메뉴만 기억한다.
 	if currentTab ~= tabId and TAB_NAME[currentTab] then H.recentTab = currentTab end
 	currentTab = tabId
