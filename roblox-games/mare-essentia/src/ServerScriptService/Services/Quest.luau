@@ -370,10 +370,8 @@ return function(D, S)
 			state._autoEventPort = state.portId
 			return
 		end
-		if S.Story and S.Story.autoTrigger then
-			S.Story.autoTrigger(state, msgs)
-			if state.autoStory then state._autoEventPort = state.portId end
-		end
+		-- 소규모 항구 인물 사연은 기존 이야기 메뉴에서 직접 선택할 수 있다.
+		-- 자동 연출은 앞에서 우선 처리한 중요 연대기·국가·동료 이야기만 허용한다.
 	end
 
 	-- 항구에 도착하면 받아 둔 납품 퀘스트의 물건을 자동으로 넘긴다. 조건을 채운 퀘스트는 알려 준다.
