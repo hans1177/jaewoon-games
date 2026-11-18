@@ -1,23 +1,48 @@
 {
-  "version": 1,
-  "provider": "NVIDIA",
-  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "version": 3,
+  "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceFile": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
-  "sourceRevision": "0d078541176fad050e0ee1fa6977b92bb2d23362",
-  "status": "SKIPPED_FREE_TIER_UNVERIFIED",
+  "sourceRevision": "ebb420c4d8db5c9d44c4800483f59aed47aa7840",
+  "status": "SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE",
+  "selectedRole": "NPC",
+  "usageWindow": {
+    "day": "2026-11-18",
+    "calls": {}
+  },
+  "cooldowns": {},
+  "attempts": [],
   "frames": [
     {
-      "name": "harbor_npc_face_front-0.jpg",
-      "sha256": "103b35d50c934308a174360fce87bb6dd87c40e8f10ada785f99e516be78f004"
+      "name": "field_npc_ally_mob-0.jpg",
+      "sha256": "1d038846545b02fe04adbe2339cb4fbe773eb3f1d52f6fa47abef5d982d2cbbf"
     },
     {
-      "name": "harbor_motion_idle-0.jpg",
-      "sha256": "152e0757aed59c538a63ab8c1fdfa3f43310fa0a8d6a0ab7b4f21bddfabad402"
+      "name": "harbor_npc_face_front-0.jpg",
+      "sha256": "68d6e22258b865461dc5bc2cbdf7a73d62aa7166ca45b0d4432d0baa94ce4ac3"
+    },
+    {
+      "name": "harbor_npc_sparring_01-0.jpg",
+      "sha256": "ce068f0f325e3b10632d6ab6232547403cf608a1a27755f40e44b9f949945211"
+    },
+    {
+      "name": "harbor_npc_sparring_02-0.jpg",
+      "sha256": "813782a10dfd5d684270dbdc86397550c42685a82d1118dfe8d000b7479b05dc"
     },
     {
       "name": "harbor_npc_sparring_03-0.jpg",
-      "sha256": "809e383d9d7fd8ecf252eb27787c242ca694229b6e2d9f040dcf0fac31c92065"
+      "sha256": "4db7f3f096f6ceff54683f3c021e79f57ab35d262f1b735aa31c136aff497868"
+    },
+    {
+      "name": "harbor_npc_sparring_04-0.jpg",
+      "sha256": "7fbbfcc201f271b041db751410dbad7d6d06bffe648fde937f4325685dd1307c"
+    },
+    {
+      "name": "harbor_npc_sparring_05-0.jpg",
+      "sha256": "301e5d68879c05ff29a21fb8c6d3ee5e0a05f0f964ec2d820afbebb847e73df5"
+    },
+    {
+      "name": "harbor_npc_sparring_06-0.jpg",
+      "sha256": "b55095fdfd7d45b1ae1a84b770d7c596c946f8d8a2934631a68b11626fd25d77"
     }
   ]
 }
