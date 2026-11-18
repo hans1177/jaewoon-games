@@ -122329,7 +122329,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -122363,7 +122363,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 29,
-      "previousReservationId": "system-ai:44414170594:1",
+      "previousReservationId": "system-ai:44416191613:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -122371,12 +122371,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44416191613:1",
-      "reservedAt": "2026-11-18T23:03:07.188Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -125515,7 +125515,8 @@
         "model-output-sha256:34a2bb5f4eb6c255d260a904346b84b8086b73264cc2c8b2ab2838411aff0045",
         "system-ai-handoff-to-reservation:system-ai:44414170594:1",
         "actions-run:44414170594",
-        "system-ai-handoff-to-reservation:system-ai:44416191613:1"
+        "system-ai-handoff-to-reservation:system-ai:44416191613:1",
+        "actions-run:44416191613"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1862,
@@ -125530,7 +125531,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-18T23:03:07.188Z"
+      "updatedAt": "2026-11-18T23:08:19.160Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -154554,7 +154555,7 @@
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -154588,7 +154589,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 6,
-      "previousReservationId": "system-ai:44414170594:1",
+      "previousReservationId": "system-ai:44416191613:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -154596,12 +154597,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44416191613:1",
-      "reservedAt": "2026-11-18T23:03:07.188Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -154816,7 +154817,13 @@
         "repair-strategy-fingerprint:f6ce396a096af675fcc340c1372728d171f90a375444c1880817d6a4defc76cf",
         "failed-strategy-fingerprint:f6ce396a096af675fcc340c1372728d171f90a375444c1880817d6a4defc76cf",
         "model-output-sha256:82c5e643c19e41f5187dd9ebf4c5cda3c61406829b3971f6074eb6018438aae6",
-        "system-ai-handoff-to-reservation:system-ai:44416191613:1"
+        "system-ai-handoff-to-reservation:system-ai:44416191613:1",
+        "actions-run:44416191613",
+        "external-ai-raw-output-sha256:3c083f21d9b0b7b63b1b3aba890a9a9661cb830841805ef67a19af417b0cae81",
+        "system-ai-applied-answer-sha256:3c083f21d9b0b7b63b1b3aba890a9a9661cb830841805ef67a19af417b0cae81",
+        "repair-strategy-fingerprint:b8adf2aed7b3676a73f967d2f14d3bddaad5f7d67a87609d8e4cfef84a941c43",
+        "failed-strategy-fingerprint:b8adf2aed7b3676a73f967d2f14d3bddaad5f7d67a87609d8e4cfef84a941c43",
+        "model-output-sha256:3c083f21d9b0b7b63b1b3aba890a9a9661cb830841805ef67a19af417b0cae81"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 302,
@@ -154831,7 +154838,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-18T23:03:07.188Z"
+      "updatedAt": "2026-11-18T23:08:19.160Z"
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
