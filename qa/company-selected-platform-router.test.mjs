@@ -225,3 +225,14 @@ test('released native platforms re-enter only for real next-cycle work and never
   assert.equal(platformDevelopmentEligible({...unity,canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'},'UNITY'),false);
   assert.equal(platformDevelopmentEligible({...unity,nextEscalationRequired:true,buildUpDirectiveId:'released-unity:g3'},'FORTNITE_UEFN'),false);
 });
+
+test('owner Mare-only priority permits only Mare and leaves other queue source data unchanged',()=>{
+  const roadmap={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
+    enabled:true,ownerFocusedGameIds:['mare-essentia'],
+    ownerFocusedGamePlatforms:{'mare-essentia':'ROBLOX'},
+    completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:false}
+  }}};
+  const input=[nativeItem('deep-diver','ROBLOX'),nativeItem('mare-essentia','ROBLOX'),nativeItem('fantasy-survival','ROBLOX')];
+  assert.deepEqual(selectTargetPlatformDevelopmentWindow(input,10,roadmap).map(item=>item.gameId),['mare-essentia']);
+  assert.equal(input.length,3,'planner must not delete persisted development records');
+});

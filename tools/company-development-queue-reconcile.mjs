@@ -432,6 +432,11 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   const roadmap=readJson(p(MACHINE_POLICY_SOURCE),{});
   const dedicatedRegistry=readJson(p(DEDICATED_TARGET_REGISTRY),{version:1,targets:[]});
   assertDirectNativePolicy(roadmap);
+  // [메인: 마레 집중 개발] 다른 게임의 기존 소스·시드·완료 증빙은 보존하고 개발 대기열만 정리한다.
+  const focus=roadmap.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
+  const exclusiveFocus=focus.enabled===true&&focus.completionPursuit?.enabled===true
+    &&focus.completionPursuit.nonFocusedDevelopmentContinues===false
+    ?new Set((focus.ownerFocusedGameIds||[]).map(clean).filter(Boolean)):null;
   if(intake.admitted.length)writeJson(p('game-catalog.json'),catalog);
 
   catalog.games ||= [];
@@ -440,7 +445,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   const stamp=new Date().toISOString();
   let ownerDirectSeedRepairs=0;
   for(const seed of seedState.seeds){
-    const gameId=clean(seed?.gameId);if(!gameId)continue;
+    const gameId=clean(seed?.gameId);if(!gameId||(exclusiveFocus&&!exclusiveFocus.has(gameId)))continue;
     const game=(catalog.games||[]).find(row=>clean(row?.id)===gameId);
     const design=latestMinimumDesign(root,gameId);
     const staleCatalogPause=upper(seed?.status)==='PAUSED'
@@ -471,7 +476,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   const seen=new Set();
 
   for(const game of catalog.games){
-    const gameId=clean(game?.id);if(!gameId)continue;
+    const gameId=clean(game?.id);if(!gameId||(exclusiveFocus&&!exclusiveFocus.has(gameId)))continue;
     const lifecycle=upper(game?.lifecycleState||'ACTIVE');
     const seed=seeds.get(gameId)||null;
     const seedActive=Boolean(seed)&&ACTIVE_SEED_STATUS.has(upper(seed?.status));

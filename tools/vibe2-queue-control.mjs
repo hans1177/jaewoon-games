@@ -770,6 +770,11 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
 
 export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task = {}) {
   const id=clean(gameId), exclusive=policy.ownerCanonicalRules?.ownerExclusiveDevelopment;
+  // [메인: 오너 집중] 개별 게임의 신규 자동 개발은 현재 선택한 게임만 허용한다.
+  const gameFocus=policy?.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
+  if(id&&gameFocus?.enabled===true&&gameFocus.completionPursuit?.enabled===true
+    &&gameFocus.completionPursuit.nonFocusedDevelopmentContinues===false
+    &&Array.isArray(gameFocus.ownerFocusedGameIds)&&!gameFocus.ownerFocusedGameIds.includes(id))return true;
   // [오너 자동개발 중지] 웹게임 제작만 제외한다. 웹 관련 학습과 기존 게임·저장 자료는 유지한다.
   if(process.env.VIBE2_WEB_AUTO_DEV_DISABLED==='1'
     &&clean(target||task?.target||task?.selectedTask?.target).toLowerCase()==='web'
@@ -917,6 +922,9 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
   const focusedIds=new Set(focus.enabled===true&&focus.completionPursuit?.enabled===true
     ?(focus.ownerFocusedGameIds||[]).map(clean):[]);
   const platforms=focus.ownerFocusedGamePlatforms||{};
+  const exclusiveFocus=focus.enabled===true&&focus.completionPursuit?.enabled===true
+    &&focus.completionPursuit.nonFocusedDevelopmentContinues===false
+    ?focusedIds:null;
   const games=new Map((Array.isArray(catalog?.games)?catalog.games:[]).map(game=>[clean(game?.id),game]));
   const ownerStoppedIds=new Set((catalog?.ownerStoppedGameIds||[]).map(clean).filter(Boolean));
   const permanentlyDeletedIds=new Set((catalog?.permanentRemovalPolicy?.ids||[]).map(clean).filter(Boolean));
@@ -924,6 +932,9 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
   // 현재 실행 큐에서는 해당 항목을 제거해 재예약을 막고, 기존 packVibeQueueStorage가
   // 더 이상 참조되지 않는 활성 task 조각을 안전하게 정리하도록 한다.
   const runnableTasks=queue.tasks.filter(task=>{
+    // [대기목록 정리] 실행 중 작업과 종료 기록은 유지하고 마레 외 신규/차단 대기 작업을 제거한다.
+    if(exclusiveFocus&&clean(task.gameId)&&!exclusiveFocus.has(clean(task.gameId))
+      &&['queued','pending','waiting','blocked','failed'].includes(clean(task.status).toLowerCase()))return false;
     if(process.env.VIBE2_WEB_AUTO_DEV_DISABLED!=='1'
       ||clean(task.target).toLowerCase()!=='web'
       ||clean(task.department).toLowerCase()!=='development'
@@ -1638,6 +1649,14 @@ export function runQueueCommand(args = {}) {
   if(queueStateRecovered)writeJson(file,queue);
   const reservationPolicy=readJson(CANONICAL_RESERVATION_POLICY);
   const webGameFlowTarget=reservationPolicy?.developmentSpeedExecution?.webGameFlow?.enabled===true?reservationPolicy.developmentSpeedExecution.webGameFlow.targetConcurrentGames:0;
+  // [대기 작업 영속 삭제] 예약 진입 시 기존 정식 queue 저장 경로를 사용한다.
+  if(['reserve','reserve-batch'].includes(command)){
+    const filtered=synchronizeOwnerDevelopmentHolds(queue,reservationPolicy);
+    if(filtered.tasks.length!==queue.tasks.length){
+      queue=filtered;
+      writeJson(file,queue);
+    }
+  }
   const transientLockRecovery=['reserve','reserve-batch','neuron-complete'].includes(command)?recoverTransientWorkLockBlocks(queue):{recovered:0,queue};
   queue=transientLockRecovery.queue;
   let automaticMaintenance={cancelled:[],rerouted:[],cooled:[],resumed:[]};

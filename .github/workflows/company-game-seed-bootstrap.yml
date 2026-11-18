@@ -145,6 +145,9 @@ jobs:
               if [ "$busy" != true ]; then model=true;reason=IDLE_24H_AUTONOMOUS_PRODUCTION;count=3;fi
             fi
           fi
+          # [신규 게임 생성 보류] 단일 게임 집중 기간에는 자동 신작 GAME_SEED를 생성하지 않는다.
+          focused="$(node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));const f=p.developmentLifecycleMachine?.focusedDevelopmentCaretakers;process.stdout.write(String(f?.enabled===true&&f?.completionPursuit?.enabled===true&&f.completionPursuit.nonFocusedDevelopmentContinues===false))")"
+          if [ "$focused" = true ]; then model=false;reason=OWNER_FOCUSED_GAME_ONLY;count=0;fi
           echo "model=$model" >> "$GITHUB_OUTPUT"
           echo "reason=$reason" >> "$GITHUB_OUTPUT"
           echo "request_count=$count" >> "$GITHUB_OUTPUT"

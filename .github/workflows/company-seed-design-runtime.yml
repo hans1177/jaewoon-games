@@ -377,7 +377,13 @@ jobs:
             if(['DISCARDED','REMOVED'].includes(status))return false;
             return status==='ACTIVE'||seed?.promotion?.strictDesignReviewContinuesInParallel===true;
           };
-          const active=(state.seeds||[]).filter(designReviewEligible);
+          // [마레 단독 설계] 다른 게임 시드·설계 기록을 지우지 않고 신규 실행 대상에서 제외한다.
+          const gameFocus=roadmap?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
+          const exclusiveFocus=gameFocus.enabled===true&&gameFocus.completionPursuit?.enabled===true
+            &&gameFocus.completionPursuit.nonFocusedDevelopmentContinues===false
+            ?new Set(gameFocus.ownerFocusedGameIds||[]):null;
+          const active=(state.seeds||[]).filter(designReviewEligible)
+            .filter(seed=>!exclusiveFocus||exclusiveFocus.has(String(seed?.gameId||'').trim()));
           const resetTimestamp=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetGameIds=new Set((Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds:[])
             .map(value=>String(value||'').trim()).filter(Boolean));
