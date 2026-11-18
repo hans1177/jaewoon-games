@@ -176,7 +176,12 @@ test('폐기된 웹 경로는 계획에서 제외하고 정상 웹게임은 계�
     status:'ACTIVE',selectedPlatform:'WEB',webSourcePath:'web-games/'+game.id}));
   const projects=collectProjects({}, {games}, root, {items});
   assert.equal(projects.some(p=>p.gameId==='bug-defense'&&p.engine==='web'),false);
-  assert.equal(projects.some(p=>p.gameId==='fantasy-survival'&&p.engine==='web'),true);
+  // [현재 오너 집중 범위] 대항해시대 단독 개발 중에는 다른 웹게임을 예약하지 않는다.
+  const focus=JSON.parse(fs.readFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),'utf8'))
+    .developmentLifecycleMachine.focusedDevelopmentCaretakers;
+  const fantasyWebAllowed=focus.completionPursuit?.nonFocusedDevelopmentContinues!==false
+    ||(focus.ownerFocusedGameIds?.includes('fantasy-survival')&&focus.ownerFocusedGamePlatforms?.['fantasy-survival']==='WEB');
+  assert.equal(projects.some(p=>p.gameId==='fantasy-survival'&&p.engine==='web'),fantasyWebAllowed);
 });
 
 test('backlog preserves existing game-primary reservation and confines focused recovery to deferred lanes',()=>{
@@ -5660,6 +5665,14 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   }]};
   const projects=collectProjects({},catalog,repoRoot,developmentQueue);
   const robloxProject=projects.find(project=>project.gameId==='fantasy-survival'&&project.engine==='roblox');
+  const currentFocus=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),'utf8'))
+    .developmentLifecycleMachine.focusedDevelopmentCaretakers;
+  if(currentFocus.completionPursuit?.nonFocusedDevelopmentContinues===false
+    &&!currentFocus.ownerFocusedGameIds?.includes('fantasy-survival')){
+    // [격리 회귀] 소유자 집중 대상 밖의 게임은 백로그가 가득해도 자동 복구·재예약하지 않는다.
+    assert.equal(robloxProject,undefined);
+    return;
+  }
   assert.ok(robloxProject);
   assert.equal(robloxProject.ownerResumableBuildUp,true);
 
@@ -5746,8 +5759,17 @@ test('actual fantasy-survival resumes Web and Roblox while preserving owner-held
   assert.ok(game);
   const projects=collectProjects({projects:[]},{games:[game]},root,{items:[]});
   assert.equal(projects.some(row=>row.engine==='unity'),false,'Unity remains owner-held');
-  assert.equal(projects.some(row=>row.engine==='web'),true,'ordinary Web resumes under the owner scope');
-  assert.ok(projects.some(row=>row.gameId==='fantasy-survival'&&row.engine==='roblox'));
+  const focused=JSON.parse(fs.readFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),'utf8'))
+    .developmentLifecycleMachine.focusedDevelopmentCaretakers;
+  const fantasyAllowed=focused.completionPursuit?.nonFocusedDevelopmentContinues!==false
+    ||focused.ownerFocusedGameIds?.includes('fantasy-survival');
+  assert.equal(projects.some(row=>row.engine==='web'),fantasyAllowed&&(
+    focused.completionPursuit?.nonFocusedDevelopmentContinues!==false
+    ||focused.ownerFocusedGamePlatforms?.['fantasy-survival']==='WEB'),'non-focused Web remains held by owner focus');
+  assert.equal(projects.some(row=>row.gameId==='fantasy-survival'&&row.engine==='roblox'),
+    fantasyAllowed&&(focused.completionPursuit?.nonFocusedDevelopmentContinues!==false
+    ||focused.ownerFocusedGamePlatforms?.['fantasy-survival']==='ROBLOX'),
+    'non-focused Roblox also remains held');
 });
 
 test('queued Web assessment with PRESENTATION generation is repaired into graphics BUILD_UP',()=>{
@@ -6330,6 +6352,9 @@ test('owner CC0 action replacement covers active Web games through the existing 
 test('all-platform library CC0 replacement uses registered responsible sources and keeps held targets pending',t=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'all-cc0-plan-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ const focus=policy.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
+ const nonFocusedHold=focus?.enabled===true&&focus.completionPursuit?.nonFocusedDevelopmentContinues===false
+   &&!focus.ownerFocusedGameIds?.includes('demo');
  fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
  fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(policy));
  fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[{id:'demo',lifecycleState:'ACTIVE'}]}));
@@ -6337,8 +6362,11 @@ test('all-platform library CC0 replacement uses registered responsible sources a
   fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});fs.writeFileSync(path.join(root,file),'original presentation source');
   const project={gameId:'demo',engine,projectPath:engine==='unity'?'unity-games/demo':engine==='roblox'?'roblox-games/demo':'web-games/demo',releaseState:'development-confirmed'};
   const next=findPresentationQualityTask(project,root,{tasks:[]});
-  if(engine==='unity')assert.ok(!next?.evidence?.includes('owner-library-cc0-replacement:v1'),'held Unity must not be resumed');
-  else{
+  if(engine==='unity'||nonFocusedHold){
+   // [집중 개발 격리] 승인되지 않은 demo 게임에는 CC0 에셋 작업 권한도 주지 않는다.
+   assert.ok(!next?.evidence?.includes('owner-library-cc0-replacement:v1'),'held target must not be resumed');
+   if(nonFocusedHold)assert.notEqual(next?.id,'demo-'+engine+'-library-cc0-replacement-v1');
+  }else{
    assert.equal(next.id,'demo-'+engine+'-library-cc0-replacement-v1');
    assert.equal(next.ownerDirective,true);assert.ok(next.responsibleFiles.includes(file));
    assert.match(next.goal,/CC0 라이선스·원본 SHA256/);assert.match(next.goal,/같은 빌드/);
