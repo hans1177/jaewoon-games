@@ -8228,6 +8228,13 @@ function H.showCardDetail(card)
 			mkLabel(body, "개인 발견 기록: 이전에 획득한 카드 · 당시 항구와 인물 정보 없음", 12, brown, false, 4)
 		end
 	end
+	-- [지식→후속 이야기] 카드 하나가 연속 퀘스트의 다음 원인이 된 경우만 표시한다.
+	if card.found and card.nextClue then
+		local clue = card.nextClue
+		mkLabel(body, "이 발견으로 열린 다음 이야기: " .. clue.quest
+			.. "\n다음 목적지: " .. (clue.port or "항해 지도 확인")
+			.. " · 단서: " .. (clue.source or "지역 탐험"), 14, ink, true, 4)
+	end
 	if card.found and card.entityType then
 		mkLabel(body, "백과 개체: " .. card.entityType, 13, brown, false, 4)
 		-- [세계 백과 14영역] 소재·연구 학문과 독립된 주제 및 근거 분류.
