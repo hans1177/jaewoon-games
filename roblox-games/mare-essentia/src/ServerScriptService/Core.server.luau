@@ -6,9 +6,12 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
 
+-- [초기화 진단] 서버가 어느 기존 초기화 단계에서 대기하는지 확인한다.
+ReplicatedStorage:SetAttribute("MareCoreStartStage", "require-shared")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local ServicesFolder = script.Parent:WaitForChild("Services")
 
+ReplicatedStorage:SetAttribute("MareCoreStartStage", "require-game-data")
 local D = {
 	Ports = require(Shared:WaitForChild("Ports")),
 	PortEras = require(Shared:WaitForChild("PortEras")),
@@ -60,6 +63,7 @@ local D = {
 	Economy = require(Shared:WaitForChild("Economy")),
 }
 
+ReplicatedStorage:SetAttribute("MareCoreStartStage", "require-services")
 local Registry = require(ServicesFolder:WaitForChild("Registry"))(D)
 local S = Registry.S
 local QUEST_WATCH = { Explore = true, Hunt = true, ChallengeBoss = true, Research = true, StartResearch = true, Buy = true, ReportKnowledge = true, HistoryChoose = true, StockBuy = true, BuildStage = true, StockSell = true, Present = true, Expo = true, JointPresent = true, BuildLandmark = true, Launch = true, PeopleTalk = true, PeopleClaim = true, OrderPatrol = true }
@@ -82,6 +86,7 @@ local ctx = {
 	market = market,
 }
 
+ReplicatedStorage:SetAttribute("MareCoreStartStage", "require-social")
 local Social = require(script.Parent:WaitForChild("Social"))(D, S)
 
 -- 플레이어별 세션. state가 nil이면 새 게임 선택 전이다.
@@ -245,6 +250,7 @@ local function keyFor(player)
 end
 
 local function loadSession(player)
+	ReplicatedStorage:SetAttribute("MareCoreStartStage", "loading-save")
 	local session = { state = nil, lastAction = 0, canSave = true, ready = false }
 	if store then
 		local ok, saved
@@ -275,6 +281,7 @@ local function loadSession(player)
 	end
 	session.ready = true
 	sessions[player] = session
+	ReplicatedStorage:SetAttribute("MareCoreStartStage", "session-ready")
 	if player.Character then task.defer(applyCaptainAppearance, player, player.Character) end
 end
 
@@ -443,6 +450,7 @@ local function onInvoke(player, action, payload)
 	return reply(state, success, message)
 end
 remote.OnServerInvoke = onInvoke
+ReplicatedStorage:SetAttribute("MareCoreStartStage", "remote-ready")
 
 -- Studio 전용: 자동 점검(StudioQA)이 같은 서버 함수를 호출할 수 있게 하는 통로. 라이브 서버에는 만들지 않는다.
 if game:GetService("RunService"):IsStudio() then
