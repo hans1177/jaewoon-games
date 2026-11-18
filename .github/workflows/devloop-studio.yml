@@ -2,7 +2,7 @@
 # 기존 Studio MCP 도구(tools/company-development-roblox-studio-local-play.mjs, studio-script 모드)를 그대로 쓴다.
 # 결과 사진·리포트는 브랜치 <game>-studio-frames (예: mare-essentia-studio-frames)에 올라간다 (바이브 복구가 실패 증거를 읽는다).
 name: Devloop Studio Capture
-run-name: Devloop Studio Capture · ${{ inputs.game || 'mare-essentia' }} · ${{ github.sha }}
+run-name: Devloop Studio Capture · ${{ inputs.game || 'mare-essentia' }} · ${{ inputs.candidate_ref || github.sha }}
 on:
   # push 트리거는 뺐다: 병합마다 Studio가 줄을 서서 서로 취소되던 문제. 점검은 vibe-autopilot(주기 실행)과 수동 실행이 맡는다.
   workflow_dispatch:
@@ -12,6 +12,11 @@ on:
         required: false
         default: mare-essentia
         type: string
+      candidate_ref:
+        description: 격리 시각 후보 PR만 동일 스튜디오에서 독립 재검증 (main 개발은 변경하지 않음)
+        required: false
+        default: ''
+        type: string
       script:
         description: Studio script JSON path in repo (비우면 게임의 tools/devloop/studio-scripts/default.json, 없으면 opening-capture)
         required: false
@@ -20,6 +25,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 concurrency:
   group: roblox-studio-shared-host
   cancel-in-progress: false
@@ -33,6 +39,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: main
+          ref: ${{ inputs.candidate_ref || github.sha }}
           fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
@@ -41,9 +48,1490 @@ jobs:
         shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           GAME_IN: ${{ github.event_name == 'push' && 'mare-essentia' || inputs.game }}
-          SCRIPT_IN: ${{ github.event_name == 'push' && 'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json' || inputs.script }}
+          SCRIPT_IN: ${{ github.event_name == 'push' && 'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json' || inputs.candidate_ref != '' && 'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json' || inputs.script }}
+          DESIGN_CANDIDATE_IN: ${{ inputs.candidate_ref || '' }}
         run: |
           $g = $env:GAME_IN
+          $candidateRef = [string]$env:DESIGN_CANDIDATE_IN
+          if ($candidateRef -ne '' -and $candidateRef -notmatch '^nemotron-mare-design-[0-9]{5,}          if ($g -notmatch '^[a-z0-9-]+$') { throw "bad game id" }
+          if (-not (Test-Path "main/roblox-games/$g/default.project.json")) { throw "no project for $g" }
+          $sc = $env:SCRIPT_IN
+          if ($sc -eq '') {
+            $d = "roblox-games/$g/tools/devloop/studio-scripts/default.json"
+            if (Test-Path "main/$d") { $sc = $d } elseif ($g -eq 'mare-essentia') { $sc = "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-town.json" } else { $sc = '' }
+          }
+          if ($sc -ne '' -and $sc -notmatch '^roblox-games/[a-z0-9-]+/[A-Za-z0-9_./-]+\.json$') { throw "bad script path" }
+          "CAP_GAME=$g" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "CAP_SCRIPT=$sc" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Build place with pinned Rojo
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # [메인] 자동개발 빌드 임시 파일은 기존 E: 인증 실행기 작업 경로만 사용한다.
+          $jobTemp = [IO.Path]::GetFullPath($env:RUNNER_TEMP)
+          if ([IO.Path]::GetPathRoot($jobTemp) -ne 'E:\') { throw 'ROBLOX_STUDIO_E_RUNNER_TEMP_REQUIRED' }
+          if (([IO.DriveInfo]::new('E:\')).AvailableFreeSpace -lt 2GB) { throw 'ROBLOX_STUDIO_E_DRIVE_FREE_SPACE_REQUIRED' }
+          $env:TEMP = $jobTemp
+          $env:TMP = $jobTemp
+          Write-Host 'ROBLOX_STUDIO_BUILD_TEMP_DRIVE=E'
+          $rojoZip = Join-Path $env:RUNNER_TEMP 'rojo.zip'
+          $rojoDir = Join-Path $env:RUNNER_TEMP 'rojo-bin'
+          Remove-Item -Recurse -Force $rojoDir -ErrorAction SilentlyContinue
+          & curl.exe -fL --retry 3 -o $rojoZip 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip'
+          $h = (Get-FileHash $rojoZip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($h -ne '2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949') { throw "rojo hash $h" }
+          Expand-Archive $rojoZip -DestinationPath $rojoDir -Force
+          $rojo = (Get-ChildItem $rojoDir -Recurse -Filter rojo.exe | Select-Object -First 1).FullName
+          $place = Join-Path $env:RUNNER_TEMP 'marecheck.rbxl'
+          Remove-Item $place -ErrorAction SilentlyContinue
+          & $rojo build "main/roblox-games/$($env:CAP_GAME)/default.project.json" -o $place
+          if ($LASTEXITCODE -ne 0) { throw 'rojo build failed' }
+          "MARE_PLACE=$place" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Launch Studio, run script, capture frames
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          NVIDIA_FREE_TIER_VERIFIED: ${{ vars.NVIDIA_FREE_TIER_VERIFIED || 'NO' }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_DESIGN_FREE_TIER_VERIFIED: ${{ vars.GEMINI_DESIGN_FREE_TIER_VERIFIED || 'NO' }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_DESIGN_FREE_TIER_VERIFIED: ${{ vars.OPENROUTER_DESIGN_FREE_TIER_VERIFIED || 'NO' }}
+          # [오너 허용] 이 Studio 디자인 검사에만 외부 무료 AI 사용을 명시적으로 허용한다.
+          COMPANY_EXTERNAL_AI_ENABLED: 'YES'
+          NEMOTRON_DESIGN_CANDIDATE: 'YES'
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # [브랜치 진위] 후보 PR은 본 저장소 main 대상, 오직 네모트론 격리 브랜치만 사용한다.
+          $sourceSha = (& git -C 'main' rev-parse HEAD).Trim()
+          if ($env:STUDIO_CANDIDATE_REF -ne '') {
+            $prJson = & gh pr view $env:STUDIO_CANDIDATE_REF --repo $env:GITHUB_REPOSITORY --json headRefName,headRefOid,baseRefName,state,headRepositoryOwner
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_CANDIDATE_PR_NOT_FOUND' }
+            $pr = $prJson | ConvertFrom-Json
+            if ($pr.state -ne 'OPEN' -or $pr.baseRefName -ne 'main' -or
+                $pr.headRefName -ne $env:STUDIO_CANDIDATE_REF -or $pr.headRefOid -ne $sourceSha -or
+                $pr.headRepositoryOwner.login -ne 'hans1177') { throw 'STUDIO_CANDIDATE_PR_IDENTITY_MISMATCH' }
+          }
+          # 실제 Studio 체크아웃 리비전과 보고서 리비전을 동일하게 고정한다.
+          $env:GITHUB_SHA = $sourceSha
+          Write-Host "STUDIO_EXACT_SOURCE_SHA=$sourceSha"
+          # [메인] 공식 Studio·MCP·Node의 사용자 임시 파일은 기존 E: 러너 작업 폴더에서 생성한다.
+          # LOCALAPPDATA·로블록스 설치·계정/저장 경로는 이동하지 않는다.
+          $jobTemp = [IO.Path]::GetFullPath($env:RUNNER_TEMP)
+          if ([IO.Path]::GetPathRoot($jobTemp) -ne 'E:\') { throw 'ROBLOX_STUDIO_E_RUNNER_TEMP_REQUIRED' }
+          if (([IO.DriveInfo]::new('E:\')).AvailableFreeSpace -lt 2GB) { throw 'ROBLOX_STUDIO_E_DRIVE_FREE_SPACE_REQUIRED' }
+          $env:TEMP = $jobTemp
+          $env:TMP = $jobTemp
+          Write-Host 'ROBLOX_STUDIO_PROCESS_TEMP_DRIVE=E'
+          if (@(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue).Count) { Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Seconds 5 }
+          # [로그] Studio 실행 전 시스템 드라이브 압박만 해소한다. 오래된 Roblox 로그 외에는 삭제하지 않는다.
+          $studioVolume = [IO.DriveInfo]::new([IO.Path]::GetPathRoot($env:LOCALAPPDATA))
+          Write-Host "STUDIO_SYSTEM_DISK_FREE_MB_BEFORE=$([math]::Round($studioVolume.AvailableFreeSpace/1MB,1))"
+          if ($studioVolume.AvailableFreeSpace -lt 128MB) {
+            $robloxLogRoot = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+            if (Test-Path -LiteralPath $robloxLogRoot -PathType Container) {
+              $logRootInfo = Get-Item -LiteralPath $robloxLogRoot -Force
+              if (-not ($logRootInfo.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+                $cutoff = (Get-Date).AddHours(-1)
+                $cleared = 0
+                foreach ($log in @(Get-ChildItem -LiteralPath $robloxLogRoot -File -ErrorAction Stop |
+                  Where-Object { $_.LastWriteTime -lt $cutoff -and $_.Extension -in @('.log','.txt') -and
+                    -not ($_.Attributes -band [IO.FileAttributes]::ReparsePoint) })) {
+                  try {
+                    Remove-Item -LiteralPath $log.FullName -Force -ErrorAction Stop
+                    $cleared++
+                  } catch {
+                    Write-Warning 'STUDIO_OLD_LOG_LOCKED_OR_UNAVAILABLE'
+                  }
+                }
+                Write-Host "STUDIO_OLD_ROBLOX_LOGS_CLEARED=$cleared"
+              }
+            }
+          }
+          $studioVolume = [IO.DriveInfo]::new([IO.Path]::GetPathRoot($env:LOCALAPPDATA))
+          Write-Host "STUDIO_SYSTEM_DISK_FREE_MB_AFTER=$([math]::Round($studioVolume.AvailableFreeSpace/1MB,1))"
+          if ($studioVolume.AvailableFreeSpace -lt 32MB) { throw 'STUDIO_SYSTEM_DISK_SPACE_REQUIRED' }
+          $roots = @((Join-Path $env:LOCALAPPDATA 'Roblox\Versions'), (Join-Path ${env:ProgramFiles(x86)} 'Roblox\Versions'))
+          $studio = $roots | Where-Object { Test-Path $_ } | ForEach-Object { Get-ChildItem $_ -Recurse -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue } | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+          $mcp = Join-Path (Split-Path $studio -Parent) 'StudioMCP.exe'
+          if (-not (Test-Path $mcp)) { $mcp = Join-Path $env:LOCALAPPDATA 'Roblox\mcp.bat' }
+          if (-not (Test-Path $mcp)) { throw 'StudioMCP not found' }
+          Write-Host "STUDIO=$studio MCP=$mcp"
+          $out = Join-Path $env:RUNNER_TEMP 'mare-frames'
+          $reportFile = Join-Path $out 'report.json'
+          $studioNodeExitCode = 1
+          # [메인] MCP 통신이 끊긴 경우에만 같은 빌드·같은 작업을 새 Studio 세션으로 한 번 재시도한다.
+          # 게임 코드 오류, 클릭 실패, 화면 불일치는 재시도하지 않고 기존 QA 실패로 남긴다.
+          for ($studioAttempt = 1; $studioAttempt -le 2; $studioAttempt++) {
+            Remove-Item -Recurse -Force $out -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory $out -Force | Out-Null
+            Write-Host "STUDIO_MCP_CAPTURE_ATTEMPT=$studioAttempt"
+            try {
+              Start-Process -FilePath $studio -ArgumentList @($env:MARE_PLACE) -PassThru | Out-Null
+              if ($env:CAP_SCRIPT -ne '') {
+                & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=studio-script "--script=main/$($env:CAP_SCRIPT)" "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
+              } else {
+                & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=opening-capture "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
+              }
+              $studioNodeExitCode = [int]$LASTEXITCODE
+            } catch {
+              $studioNodeExitCode = 1
+              Write-Warning ("STUDIO_MCP_CAPTURE_PROCESS_ERROR=" + $_.Exception.GetType().Name)
+            } finally {
+              Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+            }
+            Write-Host "NODE_EXIT=$studioNodeExitCode"
+            Write-Host "STUDIO_SCRIPT_PROCESS_EXIT=$studioNodeExitCode"
+            if ($studioAttempt -ge 2) { break }
+            $attemptReport = $null
+            if (Test-Path -LiteralPath $reportFile) {
+              try { $attemptReport = Get-Content -LiteralPath $reportFile -Encoding UTF8 -Raw | ConvertFrom-Json } catch {}
+            }
+            $attemptErrors = @($attemptReport.errors | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+            $rpcStalled = $attemptErrors.Count -gt 0 -and
+              @($attemptErrors | Where-Object { [string]$_ -notmatch 'MCP timeout: tools/call|MCP process exited code=|ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action .*Target is not reachable' }).Count -eq 0
+            if (-not $rpcStalled) { break }
+            Write-Warning 'STUDIO_MCP_TRANSPORT_RETRY=FRESH_OFFICIAL_STUDIO_SESSION_ONCE'
+            Start-Sleep -Seconds 8
+          }
+          # [실증 검증] 성공처럼 보이는 빈 캡처·스크립트 오류는 실패로 처리한다.
+          $reportFile = Join-Path $out 'report.json'
+          # [오류 증거] Node가 먼저 실패해도 원인 기록을 남겨 기존 복구 작업으로 전달한다.
+          if (-not (Test-Path $reportFile)) {
+            [ordered]@{
+              log = @()
+              errors = @('STUDIO_REPORT_MISSING')
+              evidenceScope = 'WORKFLOW_FAILURE_DIAGNOSTIC_ONLY_NOT_STUDIO_PLAY'
+            } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $reportFile -Encoding UTF8
+          }
+          # Windows PowerShell only consumes fields needed for routing. Keep the full UTF-8 evidence intact.
+          $triageFile = Join-Path $env:RUNNER_TEMP 'mare-studio-triage.json'
+          Remove-Item -LiteralPath $triageFile -ErrorAction SilentlyContinue
+          $readReport = @'
+          const fs = require('node:fs');
+          const [source, output] = process.argv.slice(2);
+          const report = JSON.parse(fs.readFileSync(source, 'utf8').replace(/^\uFEFF/, ''));
+          if (!report || !Array.isArray(report.errors) || !Array.isArray(report.log)) {
+            throw new Error('STUDIO_REPORT_SHAPE_INVALID');
+          }
+          const audit = report.assetAudit;
+          const capture = report.consoleCapture;
+          fs.writeFileSync(output, JSON.stringify({
+            sourceRevision: report.sourceRevision,
+            errors: report.errors,
+            log: report.log.filter(row => row?.ctx === 'Client' || row?.ctx === 'Server')
+              .map(row => ({ctx: row.ctx, out: row.out})),
+            assetAudit: audit ? {
+              models: {status: audit.models?.status},
+              registered: {status: audit.registered?.status},
+              features: {status: audit.features?.status}
+            } : null,
+            consoleCapture: capture ? {captured: capture.captured,
+              errors: (Array.isArray(capture.errors) ? capture.errors : [])
+                .map(row => ({type: row?.type, signature: row?.signature}))} : null
+          }), 'utf8');
+          '@
+          try {
+            $readReport | & node - $reportFile $triageFile
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_REPORT_INVALID_JSON' }
+            $report = Get-Content -LiteralPath $triageFile -Encoding UTF8 -Raw | ConvertFrom-Json
+          } catch {
+            Write-Warning 'STUDIO_REPORT_TRIAGE_FAILED_RAW_EVIDENCE_RETAINED'
+            $report = [pscustomobject]@{ log = @(); errors = @('STUDIO_REPORT_INVALID_JSON') }
+          }
+          # [런타임 진단] 실제 Studio 결과만 사용한다. 실패해도 증거를 먼저 저장한다.
+          $qaStage = ''
+          $qaSignature = ''
+          if ($studioNodeExitCode -ne 0) {
+            $qaStage = 'STUDIO_EXECUTION'
+            $qaSignature = 'STUDIO_SCRIPT_REPORTED_ERRORS'
+          }
+          if (@($report.errors).Count -gt 0) {
+            # [상세 복구] 중복·폭증을 막고 실제 실패한 단계만 최대 5건 기록한다.
+            foreach ($failure in @($report.errors | Select-Object -First 5)) {
+              $detail = ([string]$failure -replace '[\r\n]',' ')
+              Write-Host ('STUDIO_QA_STEP_FAILURE=' + $detail.Substring(0,[Math]::Min(230,$detail.Length)))
+            }
+            $qaStage = 'STUDIO_EXECUTION'
+            $qaSignature = 'STUDIO_SCRIPT_REPORTED_ERRORS'
+            # [복구 분류] Studio MCP 통신 타임아웃을 게임 소스 오류로 위장하지 않는다.
+            if (@($report.errors | Where-Object { [string]$_ -match 'MCP timeout: tools/call|MCP process exited code=' }).Count -gt 0) {
+              $qaSignature = 'STUDIO_MCP_TOOL_TIMEOUT'
+            } elseif (@($report.errors | Where-Object { [string]$_ -match 'ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action .*Target is not reachable' }).Count -gt 0) {
+              $qaSignature = 'STUDIO_MCP_PLAYCLIENT_UNREACHABLE'
+            }
+          }
+          # [실증 분류] 버튼·실제 자산·게임 기능을 독립 판정하고 실패를 기존 복구 엔진에 전달한다.
+          if (@($report.errors | Where-Object { [string]$_ -eq 'STUDIO_ASSET_AUDIT_FAILED' }).Count -gt 0) {
+            $qaStage = 'STUDIO_GAME_RUNTIME'
+            $qaSignature = 'STUDIO_ASSET_AUDIT_FAILED'
+          } elseif (@($report.errors | Where-Object { [string]$_ -eq 'STUDIO_FEATURE_AUDIT_FAILED' }).Count -gt 0) {
+            $qaStage = 'STUDIO_GAME_RUNTIME'
+            $qaSignature = 'STUDIO_FEATURE_AUDIT_FAILED'
+          } elseif (@($report.errors | Where-Object { [string]$_ -eq 'STUDIO_FULL_AUDIT_INCOMPLETE' }).Count -gt 0) {
+            $qaStage = 'STUDIO_EXECUTION'
+            $qaSignature = 'STUDIO_FULL_AUDIT_INCOMPLETE'
+          }
+          if ($report.assetAudit) {
+            Write-Host ("STUDIO_MARE_ASSET_AUDIT_MODELS=" + [string]$report.assetAudit.models.status)
+            Write-Host ("STUDIO_MARE_ASSET_AUDIT_MEDIA=" + [string]$report.assetAudit.registered.status)
+            Write-Host ("STUDIO_MARE_FEATURE_AUDIT=" + [string]$report.assetAudit.features.status)
+          }
+          $runtimeRows = @($report.log | Where-Object {
+            $_.ctx -in @('Client','Server') -and [string]$_.out -match 'LOGS\(([1-9][0-9]*)\):'
+          } | Where-Object {
+            # [환경 경고 제외] 로컬 Studio 는 게시된 유니버스 없이 열려 rbxassethash 로딩이 "Place universe not found"로 남는다.
+            # 이 문구만으로 이뤄진 로그 묶음은 게임 오류가 아니다(이미지 로딩은 Client 전수 IsLoaded 검사가 따로 확정).
+            $msgs = @(([string]$_.out -replace '^[^:]*LOGS\([0-9]+\):\s*','') -split ' // ' | Where-Object { $_.Trim() })
+            # [서버 선로딩 정지] Client 전수 IsLoaded 검사가 이미지를 확정해 media 가 PASS 면, 서버 PreloadAsync 의 TIMEOUT_16S 기록도 제외한다.
+            $mediaOk = ([string]$report.assetAudit.registered.status -eq 'PASS')
+            $benign = @($msgs | Where-Object {
+              $_ -match 'Place universe not found' -or
+              ($mediaOk -and ($_ -match '^\[QA\] FAIL asset .* status=TIMEOUT_16S' -or $_ -match 'SERVER_PRELOAD_UNRESPONSIVE'))
+            })
+            -not ($msgs.Count -gt 0 -and $benign.Count -eq $msgs.Count)
+          })
+          # [자동 복구] 콘솔에서 확인한 게임 코드 오류를 기존 복구 마커로 넘긴다.
+          $consoleErrors = @($report.consoleCapture.errors | Where-Object {
+            $_.type -eq 'studio-console-error' -and -not [string]::IsNullOrWhiteSpace([string]$_.signature)
+          })
+          Write-Host "STUDIO_QA_CONSOLE_CAPTURED=$($report.consoleCapture.captured)"
+          Write-Host "STUDIO_QA_CONSOLE_ERRORS=$($consoleErrors.Count)"
+          $evidence = @($consoleErrors | ForEach-Object { [string]$_.signature })
+          if (-not $qaStage) { $evidence += @($runtimeRows | ForEach-Object { [string]$_.out }) }
+          $sourceFile = ''
+          if ($evidence.Count -gt 0) {
+            $prefix = "roblox-games/$($env:CAP_GAME)/"
+            $paths = @($evidence | ForEach-Object {
+              [regex]::Matches($_, [regex]::Escape($prefix) + '[A-Za-z0-9_./-]+\.luau:[0-9]+') |
+                ForEach-Object { $_.Value -replace ':[0-9]+$','' }
+            } | Sort-Object -Unique)
+            # Studio 스택의 인스턴스 경로는 동일 프로젝트의 Rojo 소스맵으로만 변환한다.
+            $scriptPaths = @($consoleErrors | ForEach-Object {
+              [regex]::Matches([string]$_.signature, "(?:Script '([A-Za-z0-9_.-]+)', Line [0-9]+|(?<![A-Za-z0-9_./-])((?:Players|ReplicatedStorage|ServerScriptService|StarterPlayer)\.[A-Za-z0-9_.-]+):[0-9]+)") |
+                ForEach-Object { if ($_.Groups[1].Success) { $_.Groups[1].Value } else { $_.Groups[2].Value } }
+            } | ForEach-Object { $_ -replace '^Players\.[^.]+\.PlayerScripts\.', 'StarterPlayer.StarterPlayerScripts.' } | Sort-Object -Unique)
+            if ($scriptPaths.Count -gt 0) {
+              $rojo = Get-ChildItem (Join-Path $env:RUNNER_TEMP 'rojo-bin') -Recurse -Filter rojo.exe | Select-Object -First 1 -ExpandProperty FullName
+              if ($rojo) {
+                $mapFile = Join-Path $env:RUNNER_TEMP 'studio-repair-sourcemap.json'
+                $gameRoot = (Resolve-Path -LiteralPath ("main/" + $prefix)).Path
+                Push-Location -LiteralPath $gameRoot
+                try {
+                  & $rojo sourcemap default.project.json --output $mapFile
+                  if ($LASTEXITCODE -eq 0) {
+                    $tree = Get-Content -LiteralPath $mapFile -Raw | ConvertFrom-Json
+                    $nodes = [Collections.Generic.Queue[object]]::new()
+                    foreach ($child in $tree.children) { $nodes.Enqueue(@{ node = $child; name = [string]$child.name }) }
+                    while ($nodes.Count -gt 0) {
+                      $entry = $nodes.Dequeue()
+                      if ($scriptPaths -ccontains $entry.name) {
+                        foreach ($file in $entry.node.filePaths) {
+                          $relative = ([string]$file).Replace('\','/')
+                          if ($relative -match '^[A-Za-z0-9_./-]+\.luau$' -and -not $relative.Contains('..')) {
+                            $paths += $prefix + $relative
+                          }
+                        }
+                      }
+                      foreach ($child in $entry.node.children) {
+                        $nodes.Enqueue(@{ node = $child; name = $entry.name + '.' + $child.name })
+                      }
+                    }
+                  }
+                } catch {
+                  Write-Warning 'STUDIO_REPAIR_SOURCEMAP_UNAVAILABLE'
+                } finally { Pop-Location }
+              }
+            }
+            $paths = @($paths | Sort-Object -Unique)
+            if ($paths.Count -eq 1 -and $scriptPaths.Count -le 1 -and $paths[0].Length -le 160 -and -not $paths[0].Contains('..') -and
+                [string]$report.sourceRevision -eq $env:GITHUB_SHA -and (Test-Path -LiteralPath ("main/" + $paths[0]) -PathType Leaf)) {
+              $qaStage = 'STUDIO_GAME_SOURCE'
+              $qaSignature = 'STUDIO_OBSERVED_SOURCE_RUNTIME_ERROR'
+              $sourceFile = $paths[0]
+            } elseif (-not $qaStage) {
+              $qaStage = 'STUDIO_GAME_RUNTIME'
+              $qaSignature = 'STUDIO_OBSERVED_RUNTIME_WARNINGS'
+            }
+          }
+          # [검사] 실제 스크린샷과 보고서 단계·클릭·자산 감사 항목을 각각 기록한다.
+          $frames = @(Get-ChildItem -Path $out -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -in @('.png', '.jpg', '.jpeg') } | Sort-Object FullName)
+          $rawReport = Get-Content -LiteralPath $reportFile -Raw -Encoding UTF8 | ConvertFrom-Json
+          $sum = $rawReport.summary
+          $runId = [string]$env:GITHUB_RUN_ID
+          if ($runId -notmatch '^[0-9]+$') { throw 'STUDIO_RUN_ID_INVALID' }
+          $kind = 'other'
+          if ([string]$env:CAP_SCRIPT -match 'mare-qa-click\.json$') { $kind = 'full' }
+          elseif ([string]$env:CAP_SCRIPT -match 'autopilot') { $kind = 'autopilot' }
+          $stepsState = 'NOT_CHECKED'
+          if ([int]$sum.plannedSteps -gt 0) {
+            $stepsState = 'FAIL'
+            if ([int]$sum.completedSteps -eq [int]$sum.plannedSteps -and $studioNodeExitCode -eq 0) { $stepsState = 'PASS' }
+          }
+          $clicksState = 'NOT_CHECKED'
+          if ([int]$sum.plannedClicks -gt 0) {
+            $clicksState = 'FAIL'
+            if (([int]$sum.successfulClicks + [int]$sum.skippedOptionalClicks) -eq [int]$sum.plannedClicks) { $clicksState = 'PASS' }
+          }
+          $framesState = 'NOT_CHECKED'
+          if ([int]$sum.plannedFrames -gt 0) {
+            $framesState = 'FAIL'
+            if ([int]$sum.capturedFrames -ge [int]$sum.plannedFrames -and $frames.Count -ge [int]$sum.plannedFrames) { $framesState = 'PASS' }
+          }
+          if ($frames.Count -lt 1 -or $framesState -eq 'FAIL') {
+            if (-not $qaStage) { $qaStage = 'STUDIO_EXECUTION'; $qaSignature = 'STUDIO_SCREENSHOTS_INCOMPLETE' }
+          }
+          $consoleState = 'NOT_CHECKED'
+          if ($rawReport.consoleCapture -and $rawReport.consoleCapture.captured -eq $true) {
+            $consoleState = 'PASS'
+            if ([int]$rawReport.consoleCapture.errorCount -gt 0 -or @($rawReport.consoleCapture.errors).Count -gt 0) { $consoleState = 'FAIL' }
+          }
+          $modelState = 'NOT_CHECKED'
+          $mediaState = 'NOT_CHECKED'
+          $featureState = 'NOT_CHECKED'
+          if ($rawReport.assetAudit) {
+            if ($rawReport.assetAudit.models.status) { $modelState = [string]$rawReport.assetAudit.models.status }
+            if ($rawReport.assetAudit.registered.status) { $mediaState = [string]$rawReport.assetAudit.registered.status }
+            if ($rawReport.assetAudit.features.status) { $featureState = [string]$rawReport.assetAudit.features.status }
+          }
+          if ($kind -eq 'full' -and ($modelState -eq 'NOT_CHECKED' -or $mediaState -eq 'NOT_CHECKED' -or $featureState -eq 'NOT_CHECKED')) {
+            if (-not $qaStage) { $qaStage = 'STUDIO_EXECUTION'; $qaSignature = 'STUDIO_FULL_AUDIT_INCOMPLETE' }
+          }
+          $captureChecks = @()
+          foreach ($entry in @($rawReport.log | Where-Object { $_.capture })) {
+            $captureName = [string]$entry.capture
+            $matches = @($frames | Where-Object { $_.BaseName -eq $captureName -or $_.BaseName.StartsWith($captureName + '-') })
+            $captureChecks += [ordered]@{ name = $captureName; status = $(if ($matches.Count -gt 0) { 'PASS' } else { 'FAIL' }); files = @($matches | ForEach-Object { $_.Name }) }
+          }
+          if (@($captureChecks | Where-Object { $_.status -eq 'FAIL' }).Count -gt 0 -and -not $qaStage) {
+            $qaStage = 'STUDIO_EXECUTION'
+            $qaSignature = 'STUDIO_CAPTURE_STEP_MISSING'
+          }
+          Write-Host "STUDIO_QA_FRAMES=$($frames.Count)"
+          Write-Host "STUDIO_QA_CHECKLIST_STEPS=$stepsState CLICKS=$clicksState FRAMES=$framesState CONSOLE=$consoleState MODELS=$modelState MEDIA=$mediaState FEATURES=$featureState"
+          
+          # [기존 촬영 아카이브] 과거 같은 Studio 브랜치를 먼저 읽고 무료 사용량을 재사용한다.
+          $designBranch = "nemotron-mare-design-$env:GITHUB_RUN_ID"
+          # [저장] 기존 최신 파일 경로(report.json·jpg)는 유지하고, 같은 브랜치의 runs/에 회차별 증거를 보존한다.
+          # [저장] 기존 Studio 증거 브랜치를 이어받아 과거 사진과 검사 결과를 보존한다.
+          # 기존 브랜치와 러너만 사용한다. 최근 정밀 4회·그외 6회만 보존해 용량 폭증을 막는다.
+          $dst = Join-Path $env:RUNNER_TEMP 'mare-publish'
+          $remote = "https://x-access-token:$($env:GH_TOKEN)@github.com/$($env:GITHUB_REPOSITORY).git"
+          Remove-Item -Recurse -Force $dst -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory $dst | Out-Null
+          Push-Location $dst
+          try {
+            git init -q
+            git config user.name 'mare-capture-bot'
+            git config user.email 'mare-capture-bot@users.noreply.github.com'
+            & git fetch -q --depth=1 $remote "refs/heads/$($env:CAP_GAME)-studio-frames"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_FETCH_FAILED' }
+            & git checkout -q --detach FETCH_HEAD
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_CHECKOUT_FAILED' }
+            # [디자인 전문가 자동 섭외] 이전 사용량·쿨다운을 현행 촬영 브랜치에서 가져온다.
+            # 후보 재검증에서는 추가 외부 AI 소스 변경을 하지 않는다.
+            $priorDesign = Join-Path $dst 'nemotron-design-review.json'
+            if ($env:STUDIO_CANDIDATE_REF -eq '' -and $qaStage -eq '' -and $env:CAP_GAME -eq 'mare-essentia' -and
+                [string]$env:CAP_SCRIPT -match 'mare-qa-click\.json Join-Path $env:GITHUB_WORKSPACE ("main/" + $env:CAP_SCRIPT)
+            # [증거] 단계별 통과·실패, 감사 판정, 촬영 파일과 SHA256 비교를 원본 report에 연결한다.
+            # SHA256 비교는 파일 변경 탐지이며 사진 품질의 개선·악화 판정으로 표시하지 않는다.
+            $archive = @'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const crypto = require('node:crypto');
+          const [dst, out, runId, scriptName, scriptFile, repo, qaStage, qaSignature] = process.argv.slice(2);
+          if (!/^\d{5,}$/.test(runId)) throw Error('STUDIO_ARCHIVE_RUN_ID_INVALID');
+          const imageExt = /\.(?:png|jpe?g)$/i;
+          const indexFile = path.join(dst, 'index.json');
+          const prior = fs.existsSync(indexFile) ? JSON.parse(fs.readFileSync(indexFile, 'utf8')) : {runs: []};
+          const history = Array.isArray(prior.runs) ? prior.runs : [];
+          const deep = /\/mare-qa-click\.json$/.test(scriptName.replace(/\\/g, '/'));
+          const kind = deep ? 'deep' : (/autopilot/i.test(scriptName) ? 'autopilot' : 'studio');
+          const previous = history.find(row => row.kind === kind);
+          const report = JSON.parse(fs.readFileSync(path.join(out, 'report.json'), 'utf8').replace(/^\uFEFF/, ''));
+          const summary = report.summary || {};
+          const errors = Array.isArray(report.errors) ? report.errors : ['STUDIO_ERRORS_INVALID'];
+          const script = fs.existsSync(scriptFile) && fs.statSync(scriptFile).isFile()
+            ? JSON.parse(fs.readFileSync(scriptFile, 'utf8')) : [];
+          const frames = fs.readdirSync(out).filter(name => imageExt.test(name)).sort();
+          // [스크린샷 실물 검증] JPG/PNG 실제 바이트에서 해상도를 읽는다. 파일명/해시만으로 화면 통과 처리 금지.
+          const imageDimensions = name => {
+            const bytes = fs.readFileSync(path.join(out, name));
+            let width = 0, height = 0;
+            if (bytes.length >= 24 && bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) {
+              width = bytes.readUInt32BE(16); height = bytes.readUInt32BE(20);
+            } else if (bytes.length >= 8 && bytes[0] === 255 && bytes[1] === 216) {
+              for (let pos = 2; pos + 7 < bytes.length;) {
+                if (bytes[pos] !== 255) { pos++; continue; }
+                while (pos < bytes.length && bytes[pos] === 255) pos++;
+                if (pos >= bytes.length) break;
+                const marker = bytes[pos++];
+                if (marker === 0xDA || marker === 0xD9) break;
+                if (marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) continue;
+                if (pos + 2 > bytes.length) break;
+                const len = bytes.readUInt16BE(pos);
+                if (len < 2 || pos + len > bytes.length) break;
+                if ((marker >= 0xC0 && marker <= 0xC3 || marker >= 0xC5 && marker <= 0xC7 ||
+                     marker >= 0xC9 && marker <= 0xCB || marker >= 0xCD && marker <= 0xCF) && len >= 7) {
+                  height = bytes.readUInt16BE(pos + 3);
+                  width = bytes.readUInt16BE(pos + 5);
+                  break;
+                }
+                pos += len;
+              }
+            }
+            return {name, bytes: bytes.length, width, height,
+              status: bytes.length >= 4096 && width >= 320 && height >= 180 ? 'PASS' : 'FAIL'};
+          };
+          const frameIntegrity = frames.map(imageDimensions);
+          const badFrames = frameIntegrity.filter(row => row.status !== 'PASS');
+
+          const digest = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+          const previousDir = previous && /^runs\/[0-9]+$/.test(previous.path || '')
+            ? path.join(dst, previous.path) : dst;
+          const comparisons = frames.map(name => {
+            const oldFile = path.join(previousDir, name);
+            const currentHash = digest(path.join(out, name));
+            const baseline = fs.existsSync(oldFile) ? digest(oldFile) : '';
+            return {name, sha256: currentHash, comparison: baseline
+              ? (baseline === currentHash ? 'SAME_BYTES' : 'CHANGED_BYTES') : 'NO_BASELINE'};
+          });
+          const rows = script.map((step, n) => {
+            const executed = n < Number(summary.completedSteps || 0);
+            const failed = errors.some(value => String(value).startsWith('step' + n + ':'));
+            const skipped = (report.log || []).some(row => row.step === n && row.at === 'OPTIONAL_SKIPPED');
+            const captures = step.type === 'capture'
+              ? frames.filter(name => name.startsWith(String(step.name || 'cap' + n) + '-')) : [];
+            return {step: n, type: step.type, name: step.name || step.label || step.text || '',
+              status: !executed ? 'NOT_RUN' : failed || (step.type === 'capture' && !captures.length) ? 'FAIL' : skipped ? 'SKIPPED' : 'PASS',
+              screenshots: captures};
+          });
+          const audits = Object.fromEntries(['models', 'registered', 'features'].map(key =>
+            [key, report.assetAudit?.[key]?.status || (deep ? 'UNVERIFIED' : 'NOT_RUN')]));
+          audits.registry = report.assetRegistryAudit?.status || (deep ? 'UNVERIFIED' : 'NOT_RUN');
+          const requiredDone = frameIntegrity.every(row => row.status === 'PASS') && frames.length > 0 && frames.length >= Number(summary.plannedFrames)
+            && Number(summary.completedSteps) === Number(summary.plannedSteps)
+            && Number(summary.capturedFrames) >= Number(summary.plannedFrames)
+            && Number(summary.successfulClicks || 0) + Number(summary.skippedOptionalClicks || 0)
+              === Number(summary.plannedClicks || 0);
+          let result = qaStage || errors.length || !requiredDone || rows.some(row => row.status === 'FAIL') ? 'FAIL' : 'PASS';
+          if (deep && result === 'PASS' && Object.values(audits).some(status => status !== 'PASS'))
+            result = 'UNVERIFIED';
+          const link = 'https://github.com/' + repo + '/blob/mare-essentia-studio-frames/runs/' + runId + '/';
+          const checks = {runId, kind, sourceRevision: report.sourceRevision || '', result,
+            failureStage: qaStage || null, failureSignature: qaSignature || null,
+            summary, errors, audits, steps: rows,
+            screenshotComparison: comparisons.map(row => ({...row, url: link + encodeURIComponent(row.name)})),
+            screenshotFrameAudit: {checked: frameIntegrity.length, invalid: badFrames.length,
+              images: frameIntegrity, meaning: 'Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review'},
+            comparisonMeaning: 'SHA256 byte equality only; not visual quality evidence',
+            previousRunId: previous?.runId || null};
+          const folder = path.join(dst, 'runs', runId);
+          fs.mkdirSync(folder, {recursive: true});
+          fs.cpSync(out, folder, {recursive: true, force: true});
+          fs.writeFileSync(path.join(folder, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
+          for (const entry of fs.readdirSync(dst, {withFileTypes: true})) {
+            if (entry.isFile() && (imageExt.test(entry.name) || ['report.json', 'checks.json'].includes(entry.name)))
+              fs.rmSync(path.join(dst, entry.name));
+          }
+          for (const entry of fs.readdirSync(out, {withFileTypes: true})) {
+            if (entry.isFile()) fs.copyFileSync(path.join(out, entry.name), path.join(dst, entry.name));
+          }
+          fs.writeFileSync(path.join(dst, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
+          const record = {runId, kind, at: new Date().toISOString(), sourceRevision: checks.sourceRevision,
+            result, frames: frames.length, changedFrames: comparisons.filter(row => row.comparison === 'CHANGED_BYTES').length,
+            summary, path: 'runs/' + runId};
+          const merged = [record, ...history.filter(row => row.runId !== runId)];
+          const kept = [];
+          const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+          for (const row of merged) {
+            if (Date.parse(row.at) >= cutoff &&
+                ((row.kind === 'deep' && kept.filter(item => item.kind === 'deep').length < 4) ||
+                 (row.kind !== 'deep' && kept.filter(item => item.kind !== 'deep').length < 6)))
+              kept.push(row);
+            else if (/^runs\/[0-9]+$/.test(row.path || ''))
+              fs.rmSync(path.join(dst, row.path), {recursive: true, force: true});
+          }
+          fs.writeFileSync(indexFile, JSON.stringify({version: 1, retentionDays: 7, latest: record,
+            lastDeepAt: kept.find(row => row.kind === 'deep')?.at || null, runs: kept}, null, 2) + '\n');
+          const gallery = ['# Studio QA screenshot history', '', 'Latest: [screenshots](./) | [checklist](checks.json) | [history](index.json)', 'Retention: 7 days, full 4 runs and others 6 runs', '',
+            '| Run | Type | Status | Frames | Changed files |', '|---|---|---|---:|---:|',
+            ...kept.map(row => '| [' + row.runId + '](runs/' + row.runId + '/) | ' + row.kind + ' | ' + row.result + ' | ' + row.frames + ' | ' + row.changedFrames + ' |')];
+          fs.writeFileSync(path.join(dst, 'README.md'), gallery.join('\n') + '\n');
+          console.log('STUDIO_QA_CHECKS=' + JSON.stringify({result, steps: rows.length, audits}));
+          console.log('STUDIO_SCREENSHOT_ARCHIVE=' + JSON.stringify({runId, kind, frames: frames.length,
+            retained: kept.length, previous: previous?.runId || null}));
+          '@
+            $archive | & node - $dst $out $env:GITHUB_RUN_ID $env:CAP_SCRIPT $scriptFile $env:GITHUB_REPOSITORY $qaStage $qaSignature
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_REPORT_FAILED' }
+            $storedChecks = Get-Content -LiteralPath (Join-Path $dst 'checks.json') -Encoding UTF8 -Raw | ConvertFrom-Json
+            Write-Host ("STUDIO_SCREENSHOT_REAL_IMAGES=" + [string]$storedChecks.screenshotFrameAudit.checked + " INVALID=" + [string]$storedChecks.screenshotFrameAudit.invalid)
+            if ([int]$storedChecks.screenshotFrameAudit.invalid -gt 0 -and -not $qaStage) {
+              $qaStage = 'STUDIO_EXECUTION'
+              $qaSignature = 'STUDIO_SCREENSHOT_INVALID_IMAGE'
+            }
+            # [완료 확정] 실제 저장한 검사 증거가 PASS가 아니면 Actions 성공으로 덮지 않는다.
+            if ([string]$storedChecks.result -ne 'PASS' -and -not $qaStage) {
+              $qaStage = 'STUDIO_EXECUTION'
+              $qaSignature = 'STUDIO_FULL_AUDIT_INCOMPLETE'
+            }
+            git add -A
+            git commit -q -m "studio frames $($env:CAP_GAME) run $env:GITHUB_RUN_ID"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_COMMIT_FAILED' }
+            # 이력 보존 브랜치는 강제 갱신하지 않는다. 동시 변경이 있으면 안전하게 실패한다.
+            & git push -q $remote "HEAD:refs/heads/$($env:CAP_GAME)-studio-frames"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_PUSH_FAILED' }
+            Write-Host 'STUDIO_ARCHIVE_PUBLISHED=1'
+          } finally {
+            Pop-Location
+          }
+          # [디자인 후보] 정식 Studio 증거에 연결된 시각 소스 변경만 격리 브랜치에 올린다.
+          # 중앙정책 전체 시각 파일 중 실제 수정한 파일만 검사한다. 외부 AI의 main 직접 반영은 금지.
+          $designReport = Join-Path $out 'nemotron-design-review.json'
+          if ($env:CAP_GAME -eq 'mare-essentia' -and (Test-Path -LiteralPath $designReport)) {
+            $design = Get-Content -LiteralPath $designReport -Encoding UTF8 -Raw | ConvertFrom-Json
+            if ([string]$design.status -eq 'CANDIDATE_EDITED') {
+              Push-Location 'main'
+              try {
+                $designPolicy = (Get-Content -LiteralPath 'company-learning/external-ai-distillation-policy.json' -Encoding UTF8 -Raw | ConvertFrom-Json).directVisualDesign
+                $allowlist = @($designPolicy.allowedSourceFiles)
+                $expectedFiles = @($design.edits | ForEach-Object { [string]$_.path } | Sort-Object -Unique)
+                $changedFiles = @(& git diff --name-only | Sort-Object -Unique)
+                $expectedKey = [string]::Join('|', @($expectedFiles | Sort-Object))
+                $changedKey = [string]::Join('|', @($changedFiles | Sort-Object))
+                $invalidPaths = @($expectedFiles | Where-Object { $_ -notin $allowlist -or -not (Test-Path -LiteralPath $_ -PathType Leaf) })
+                if ($expectedFiles.Count -eq 0 -or $expectedFiles.Count -gt [int]$designPolicy.maximumCandidateFilesPerRun -or
+                    @($design.edits).Count -gt [int]$designPolicy.maximumSourceEditsPerRun -or
+                    $invalidPaths.Count -gt 0 -or $expectedKey -ne $changedKey -or
+                    $changedFiles.Count -ne $expectedFiles.Count) {
+                  Write-Host 'NEMOTRON_CANDIDATE=BLOCKED_UNAUTHORIZED_FILE_CHANGE'
+                } else {
+                  & node --check tools/company-nemotron-design-review.mjs
+                  if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_REVIEWER_SYNTAX_FAILED' }
+                  & node --test qa/mare-essentia-datastore-name.test.mjs
+                  if ($LASTEXITCODE -ne 0) {
+                    Write-Host 'NEMOTRON_CANDIDATE=BLOCKED_REGRESSION_FAILED'
+                  } else {
+                    # [정적 게임 검사] 동일 게임의 기존 Rojo 정의로 후보를 재빌드한다.
+                    $rojo = Get-ChildItem (Join-Path $env:RUNNER_TEMP 'rojo-bin') -Recurse -Filter rojo.exe |
+                      Select-Object -First 1 -ExpandProperty FullName
+                    $candidatePlace = Join-Path $env:RUNNER_TEMP 'mare-nemotron-candidate.rbxl'
+                    & $rojo build 'roblox-games/mare-essentia/default.project.json' -o $candidatePlace
+                    $buildExit = [int]$LASTEXITCODE
+                    Remove-Item -LiteralPath $candidatePlace -ErrorAction SilentlyContinue
+                    if ($buildExit -ne 0) {
+                      Write-Host 'NEMOTRON_CANDIDATE=BLOCKED_ROJO_BUILD_FAILED'
+                    } else {
+                      git config user.name 'mare-capture-bot'
+                      git config user.email 'mare-capture-bot@users.noreply.github.com'
+                      & git add -- $expectedFiles
+                      & git commit -q -m "design(mare): Nemotron visual candidate from Studio $env:GITHUB_RUN_ID"
+                      if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_COMMIT_FAILED' }
+                      & git push -q $remote "HEAD:refs/heads/$designBranch"
+                      if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_PUSH_FAILED' }
+                      & gh pr create --base main --head $designBranch --title "design(mare): Free visual specialist candidate $env:GITHUB_RUN_ID" --body "Source-bound free visual specialists from exact Studio source $env:GITHUB_SHA. Exact visual expressions only. Node regression and Rojo build passed. Independent candidate Studio evidence and native security QA required before canonical main integration; F0-F9 and publish remain independent."
+                      if ($LASTEXITCODE -ne 0) {
+                        Write-Host 'NEMOTRON_CANDIDATE=BRANCH_PUSHED_PR_NOT_VERIFIED'
+                      } else {
+                        Write-Host 'NEMOTRON_CANDIDATE=PR_OPENED_AWAITING_STUDIO_QA'
+                        # [자동 검증 의뢰] 기존 Studio Capture 워크플로를 같은 후보 커밋에서 다시 실행한다.
+                        & gh workflow run devloop-studio.yml --repo $env:GITHUB_REPOSITORY --ref main -f game=mare-essentia -f candidate_ref=$designBranch
+                        if ($LASTEXITCODE -ne 0) { Write-Host 'NEMOTRON_CANDIDATE=STUDIO_RECHECK_DISPATCH_UNVERIFIED' }
+                        else { Write-Host 'NEMOTRON_CANDIDATE=STUDIO_RECHECK_DISPATCHED' }
+                      }
+                    }
+                  }
+                }
+              } finally { Pop-Location }
+            }
+          }
+          # [자동 판단] 별도 autopilot-report 브랜치는 기존처럼 최신 1회만 유지한다.
+          if ([string]$env:CAP_SCRIPT -match 'autopilot') {
+            $autoDst = Join-Path $env:RUNNER_TEMP 'mare-autopilot-publish'
+            Remove-Item -Recurse -Force $autoDst -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory $autoDst | Out-Null
+            Copy-Item "$out\*" $autoDst -Recurse
+            Push-Location $autoDst
+            try {
+              git init -q
+              git config user.name 'mare-capture-bot'
+              git config user.email 'mare-capture-bot@users.noreply.github.com'
+              git add -A
+              git commit -q -m "autopilot report $($env:CAP_GAME) run $env:GITHUB_RUN_ID"
+              if ($LASTEXITCODE -ne 0) { throw 'AUTOPILOT_REPORT_COMMIT_FAILED' }
+              & git push -q -f $remote "HEAD:refs/heads/$($env:CAP_GAME)-autopilot-report"
+              if ($LASTEXITCODE -ne 0) { throw 'AUTOPILOT_REPORT_PUBLISH_FAILED' }
+              Write-Host 'AUTOPILOT_REPORT_PUBLISHED=1'
+            } finally {
+              Pop-Location
+            }
+          }
+          if ($qaStage -ne '') {
+            Write-Host "STUDIO_QA_GAME_ID=$($env:CAP_GAME)"
+            Write-Host "STUDIO_QA_FAILURE_STAGE=$qaStage"
+            Write-Host "STUDIO_QA_FAILURE_SIGNATURE=$qaSignature"
+            if ($qaStage -eq 'STUDIO_GAME_SOURCE' -and $sourceFile) {
+              Write-Host "STUDIO_QA_SOURCE_FILE=$sourceFile"
+            }
+            throw 'STUDIO_QA_FAILED_EVIDENCE_PUBLISHED'
+          }
+          Write-Host 'STUDIO_QA_RESULT=PASS'
+) { throw 'STUDIO_CANDIDATE_REF_INVALID' }
+          "STUDIO_CANDIDATE_REF=$candidateRef" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          if ($g -notmatch '^[a-z0-9-]+$') { throw "bad game id" }
+          if (-not (Test-Path "main/roblox-games/$g/default.project.json")) { throw "no project for $g" }
+          $sc = $env:SCRIPT_IN
+          if ($sc -eq '') {
+            $d = "roblox-games/$g/tools/devloop/studio-scripts/default.json"
+            if (Test-Path "main/$d") { $sc = $d } elseif ($g -eq 'mare-essentia') { $sc = "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-town.json" } else { $sc = '' }
+          }
+          if ($sc -ne '' -and $sc -notmatch '^roblox-games/[a-z0-9-]+/[A-Za-z0-9_./-]+\.json$') { throw "bad script path" }
+          "CAP_GAME=$g" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "CAP_SCRIPT=$sc" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Build place with pinned Rojo
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # [메인] 자동개발 빌드 임시 파일은 기존 E: 인증 실행기 작업 경로만 사용한다.
+          $jobTemp = [IO.Path]::GetFullPath($env:RUNNER_TEMP)
+          if ([IO.Path]::GetPathRoot($jobTemp) -ne 'E:\') { throw 'ROBLOX_STUDIO_E_RUNNER_TEMP_REQUIRED' }
+          if (([IO.DriveInfo]::new('E:\')).AvailableFreeSpace -lt 2GB) { throw 'ROBLOX_STUDIO_E_DRIVE_FREE_SPACE_REQUIRED' }
+          $env:TEMP = $jobTemp
+          $env:TMP = $jobTemp
+          Write-Host 'ROBLOX_STUDIO_BUILD_TEMP_DRIVE=E'
+          $rojoZip = Join-Path $env:RUNNER_TEMP 'rojo.zip'
+          $rojoDir = Join-Path $env:RUNNER_TEMP 'rojo-bin'
+          Remove-Item -Recurse -Force $rojoDir -ErrorAction SilentlyContinue
+          & curl.exe -fL --retry 3 -o $rojoZip 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip'
+          $h = (Get-FileHash $rojoZip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($h -ne '2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949') { throw "rojo hash $h" }
+          Expand-Archive $rojoZip -DestinationPath $rojoDir -Force
+          $rojo = (Get-ChildItem $rojoDir -Recurse -Filter rojo.exe | Select-Object -First 1).FullName
+          $place = Join-Path $env:RUNNER_TEMP 'marecheck.rbxl'
+          Remove-Item $place -ErrorAction SilentlyContinue
+          & $rojo build "main/roblox-games/$($env:CAP_GAME)/default.project.json" -o $place
+          if ($LASTEXITCODE -ne 0) { throw 'rojo build failed' }
+          "MARE_PLACE=$place" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Launch Studio, run script, capture frames
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          NVIDIA_FREE_TIER_VERIFIED: ${{ vars.NVIDIA_FREE_TIER_VERIFIED || 'NO' }}
+          # [오너 허용] 이 Studio 디자인 검사에만 외부 무료 AI 사용을 명시적으로 허용한다.
+          COMPANY_EXTERNAL_AI_ENABLED: 'YES'
+          NEMOTRON_DESIGN_CANDIDATE: 'YES'
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # [메인] 공식 Studio·MCP·Node의 사용자 임시 파일은 기존 E: 러너 작업 폴더에서 생성한다.
+          # LOCALAPPDATA·로블록스 설치·계정/저장 경로는 이동하지 않는다.
+          $jobTemp = [IO.Path]::GetFullPath($env:RUNNER_TEMP)
+          if ([IO.Path]::GetPathRoot($jobTemp) -ne 'E:\') { throw 'ROBLOX_STUDIO_E_RUNNER_TEMP_REQUIRED' }
+          if (([IO.DriveInfo]::new('E:\')).AvailableFreeSpace -lt 2GB) { throw 'ROBLOX_STUDIO_E_DRIVE_FREE_SPACE_REQUIRED' }
+          $env:TEMP = $jobTemp
+          $env:TMP = $jobTemp
+          Write-Host 'ROBLOX_STUDIO_PROCESS_TEMP_DRIVE=E'
+          if (@(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue).Count) { Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Seconds 5 }
+          # [로그] Studio 실행 전 시스템 드라이브 압박만 해소한다. 오래된 Roblox 로그 외에는 삭제하지 않는다.
+          $studioVolume = [IO.DriveInfo]::new([IO.Path]::GetPathRoot($env:LOCALAPPDATA))
+          Write-Host "STUDIO_SYSTEM_DISK_FREE_MB_BEFORE=$([math]::Round($studioVolume.AvailableFreeSpace/1MB,1))"
+          if ($studioVolume.AvailableFreeSpace -lt 128MB) {
+            $robloxLogRoot = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+            if (Test-Path -LiteralPath $robloxLogRoot -PathType Container) {
+              $logRootInfo = Get-Item -LiteralPath $robloxLogRoot -Force
+              if (-not ($logRootInfo.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+                $cutoff = (Get-Date).AddHours(-1)
+                $cleared = 0
+                foreach ($log in @(Get-ChildItem -LiteralPath $robloxLogRoot -File -ErrorAction Stop |
+                  Where-Object { $_.LastWriteTime -lt $cutoff -and $_.Extension -in @('.log','.txt') -and
+                    -not ($_.Attributes -band [IO.FileAttributes]::ReparsePoint) })) {
+                  try {
+                    Remove-Item -LiteralPath $log.FullName -Force -ErrorAction Stop
+                    $cleared++
+                  } catch {
+                    Write-Warning 'STUDIO_OLD_LOG_LOCKED_OR_UNAVAILABLE'
+                  }
+                }
+                Write-Host "STUDIO_OLD_ROBLOX_LOGS_CLEARED=$cleared"
+              }
+            }
+          }
+          $studioVolume = [IO.DriveInfo]::new([IO.Path]::GetPathRoot($env:LOCALAPPDATA))
+          Write-Host "STUDIO_SYSTEM_DISK_FREE_MB_AFTER=$([math]::Round($studioVolume.AvailableFreeSpace/1MB,1))"
+          if ($studioVolume.AvailableFreeSpace -lt 32MB) { throw 'STUDIO_SYSTEM_DISK_SPACE_REQUIRED' }
+          $roots = @((Join-Path $env:LOCALAPPDATA 'Roblox\Versions'), (Join-Path ${env:ProgramFiles(x86)} 'Roblox\Versions'))
+          $studio = $roots | Where-Object { Test-Path $_ } | ForEach-Object { Get-ChildItem $_ -Recurse -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue } | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+          $mcp = Join-Path (Split-Path $studio -Parent) 'StudioMCP.exe'
+          if (-not (Test-Path $mcp)) { $mcp = Join-Path $env:LOCALAPPDATA 'Roblox\mcp.bat' }
+          if (-not (Test-Path $mcp)) { throw 'StudioMCP not found' }
+          Write-Host "STUDIO=$studio MCP=$mcp"
+          $out = Join-Path $env:RUNNER_TEMP 'mare-frames'
+          $reportFile = Join-Path $out 'report.json'
+          $studioNodeExitCode = 1
+          # [메인] MCP 통신이 끊긴 경우에만 같은 빌드·같은 작업을 새 Studio 세션으로 한 번 재시도한다.
+          # 게임 코드 오류, 클릭 실패, 화면 불일치는 재시도하지 않고 기존 QA 실패로 남긴다.
+          for ($studioAttempt = 1; $studioAttempt -le 2; $studioAttempt++) {
+            Remove-Item -Recurse -Force $out -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory $out -Force | Out-Null
+            Write-Host "STUDIO_MCP_CAPTURE_ATTEMPT=$studioAttempt"
+            try {
+              Start-Process -FilePath $studio -ArgumentList @($env:MARE_PLACE) -PassThru | Out-Null
+              if ($env:CAP_SCRIPT -ne '') {
+                & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=studio-script "--script=main/$($env:CAP_SCRIPT)" "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
+              } else {
+                & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=opening-capture "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
+              }
+              $studioNodeExitCode = [int]$LASTEXITCODE
+            } catch {
+              $studioNodeExitCode = 1
+              Write-Warning ("STUDIO_MCP_CAPTURE_PROCESS_ERROR=" + $_.Exception.GetType().Name)
+            } finally {
+              Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+            }
+            Write-Host "NODE_EXIT=$studioNodeExitCode"
+            Write-Host "STUDIO_SCRIPT_PROCESS_EXIT=$studioNodeExitCode"
+            if ($studioAttempt -ge 2) { break }
+            $attemptReport = $null
+            if (Test-Path -LiteralPath $reportFile) {
+              try { $attemptReport = Get-Content -LiteralPath $reportFile -Encoding UTF8 -Raw | ConvertFrom-Json } catch {}
+            }
+            $attemptErrors = @($attemptReport.errors | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+            $rpcStalled = $attemptErrors.Count -gt 0 -and
+              @($attemptErrors | Where-Object { [string]$_ -notmatch 'MCP timeout: tools/call|MCP process exited code=|ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action .*Target is not reachable' }).Count -eq 0
+            if (-not $rpcStalled) { break }
+            Write-Warning 'STUDIO_MCP_TRANSPORT_RETRY=FRESH_OFFICIAL_STUDIO_SESSION_ONCE'
+            Start-Sleep -Seconds 8
+          }
+          # [실증 검증] 성공처럼 보이는 빈 캡처·스크립트 오류는 실패로 처리한다.
+          $reportFile = Join-Path $out 'report.json'
+          # [오류 증거] Node가 먼저 실패해도 원인 기록을 남겨 기존 복구 작업으로 전달한다.
+          if (-not (Test-Path $reportFile)) {
+            [ordered]@{
+              log = @()
+              errors = @('STUDIO_REPORT_MISSING')
+              evidenceScope = 'WORKFLOW_FAILURE_DIAGNOSTIC_ONLY_NOT_STUDIO_PLAY'
+            } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $reportFile -Encoding UTF8
+          }
+          # Windows PowerShell only consumes fields needed for routing. Keep the full UTF-8 evidence intact.
+          $triageFile = Join-Path $env:RUNNER_TEMP 'mare-studio-triage.json'
+          Remove-Item -LiteralPath $triageFile -ErrorAction SilentlyContinue
+          $readReport = @'
+          const fs = require('node:fs');
+          const [source, output] = process.argv.slice(2);
+          const report = JSON.parse(fs.readFileSync(source, 'utf8').replace(/^\uFEFF/, ''));
+          if (!report || !Array.isArray(report.errors) || !Array.isArray(report.log)) {
+            throw new Error('STUDIO_REPORT_SHAPE_INVALID');
+          }
+          const audit = report.assetAudit;
+          const capture = report.consoleCapture;
+          fs.writeFileSync(output, JSON.stringify({
+            sourceRevision: report.sourceRevision,
+            errors: report.errors,
+            log: report.log.filter(row => row?.ctx === 'Client' || row?.ctx === 'Server')
+              .map(row => ({ctx: row.ctx, out: row.out})),
+            assetAudit: audit ? {
+              models: {status: audit.models?.status},
+              registered: {status: audit.registered?.status},
+              features: {status: audit.features?.status}
+            } : null,
+            consoleCapture: capture ? {captured: capture.captured,
+              errors: (Array.isArray(capture.errors) ? capture.errors : [])
+                .map(row => ({type: row?.type, signature: row?.signature}))} : null
+          }), 'utf8');
+          '@
+          try {
+            $readReport | & node - $reportFile $triageFile
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_REPORT_INVALID_JSON' }
+            $report = Get-Content -LiteralPath $triageFile -Encoding UTF8 -Raw | ConvertFrom-Json
+          } catch {
+            Write-Warning 'STUDIO_REPORT_TRIAGE_FAILED_RAW_EVIDENCE_RETAINED'
+            $report = [pscustomobject]@{ log = @(); errors = @('STUDIO_REPORT_INVALID_JSON') }
+          }
+          # [런타임 진단] 실제 Studio 결과만 사용한다. 실패해도 증거를 먼저 저장한다.
+          $qaStage = ''
+          $qaSignature = ''
+          if ($studioNodeExitCode -ne 0) {
+            $qaStage = 'STUDIO_EXECUTION'
+            $qaSignature = 'STUDIO_SCRIPT_REPORTED_ERRORS'
+          }
+          if (@($report.errors).Count -gt 0) {
+            # [상세 복구] 중복·폭증을 막고 실제 실패한 단계만 최대 5건 기록한다.
+            foreach ($failure in @($report.errors | Select-Object -First 5)) {
+              $detail = ([string]$failure -replace '[\r\n]',' ')
+              Write-Host ('STUDIO_QA_STEP_FAILURE=' + $detail.Substring(0,[Math]::Min(230,$detail.Length)))
+            }
+            $qaStage = 'STUDIO_EXECUTION'
+            $qaSignature = 'STUDIO_SCRIPT_REPORTED_ERRORS'
+            # [복구 분류] Studio MCP 통신 타임아웃을 게임 소스 오류로 위장하지 않는다.
+            if (@($report.errors | Where-Object { [string]$_ -match 'MCP timeout: tools/call|MCP process exited code=' }).Count -gt 0) {
+              $qaSignature = 'STUDIO_MCP_TOOL_TIMEOUT'
+            } elseif (@($report.errors | Where-Object { [string]$_ -match 'ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action .*Target is not reachable' }).Count -gt 0) {
+              $qaSignature = 'STUDIO_MCP_PLAYCLIENT_UNREACHABLE'
+            }
+          }
+          # [실증 분류] 버튼·실제 자산·게임 기능을 독립 판정하고 실패를 기존 복구 엔진에 전달한다.
+          if (@($report.errors | Where-Object { [string]$_ -eq 'STUDIO_ASSET_AUDIT_FAILED' }).Count -gt 0) {
+            $qaStage = 'STUDIO_GAME_RUNTIME'
+            $qaSignature = 'STUDIO_ASSET_AUDIT_FAILED'
+          } elseif (@($report.errors | Where-Object { [string]$_ -eq 'STUDIO_FEATURE_AUDIT_FAILED' }).Count -gt 0) {
+            $qaStage = 'STUDIO_GAME_RUNTIME'
+            $qaSignature = 'STUDIO_FEATURE_AUDIT_FAILED'
+          } elseif (@($report.errors | Where-Object { [string]$_ -eq 'STUDIO_FULL_AUDIT_INCOMPLETE' }).Count -gt 0) {
+            $qaStage = 'STUDIO_EXECUTION'
+            $qaSignature = 'STUDIO_FULL_AUDIT_INCOMPLETE'
+          }
+          if ($report.assetAudit) {
+            Write-Host ("STUDIO_MARE_ASSET_AUDIT_MODELS=" + [string]$report.assetAudit.models.status)
+            Write-Host ("STUDIO_MARE_ASSET_AUDIT_MEDIA=" + [string]$report.assetAudit.registered.status)
+            Write-Host ("STUDIO_MARE_FEATURE_AUDIT=" + [string]$report.assetAudit.features.status)
+          }
+          $runtimeRows = @($report.log | Where-Object {
+            $_.ctx -in @('Client','Server') -and [string]$_.out -match 'LOGS\(([1-9][0-9]*)\):'
+          } | Where-Object {
+            # [환경 경고 제외] 로컬 Studio 는 게시된 유니버스 없이 열려 rbxassethash 로딩이 "Place universe not found"로 남는다.
+            # 이 문구만으로 이뤄진 로그 묶음은 게임 오류가 아니다(이미지 로딩은 Client 전수 IsLoaded 검사가 따로 확정).
+            $msgs = @(([string]$_.out -replace '^[^:]*LOGS\([0-9]+\):\s*','') -split ' // ' | Where-Object { $_.Trim() })
+            # [서버 선로딩 정지] Client 전수 IsLoaded 검사가 이미지를 확정해 media 가 PASS 면, 서버 PreloadAsync 의 TIMEOUT_16S 기록도 제외한다.
+            $mediaOk = ([string]$report.assetAudit.registered.status -eq 'PASS')
+            $benign = @($msgs | Where-Object {
+              $_ -match 'Place universe not found' -or
+              ($mediaOk -and ($_ -match '^\[QA\] FAIL asset .* status=TIMEOUT_16S' -or $_ -match 'SERVER_PRELOAD_UNRESPONSIVE'))
+            })
+            -not ($msgs.Count -gt 0 -and $benign.Count -eq $msgs.Count)
+          })
+          # [자동 복구] 콘솔에서 확인한 게임 코드 오류를 기존 복구 마커로 넘긴다.
+          $consoleErrors = @($report.consoleCapture.errors | Where-Object {
+            $_.type -eq 'studio-console-error' -and -not [string]::IsNullOrWhiteSpace([string]$_.signature)
+          })
+          Write-Host "STUDIO_QA_CONSOLE_CAPTURED=$($report.consoleCapture.captured)"
+          Write-Host "STUDIO_QA_CONSOLE_ERRORS=$($consoleErrors.Count)"
+          $evidence = @($consoleErrors | ForEach-Object { [string]$_.signature })
+          if (-not $qaStage) { $evidence += @($runtimeRows | ForEach-Object { [string]$_.out }) }
+          $sourceFile = ''
+          if ($evidence.Count -gt 0) {
+            $prefix = "roblox-games/$($env:CAP_GAME)/"
+            $paths = @($evidence | ForEach-Object {
+              [regex]::Matches($_, [regex]::Escape($prefix) + '[A-Za-z0-9_./-]+\.luau:[0-9]+') |
+                ForEach-Object { $_.Value -replace ':[0-9]+$','' }
+            } | Sort-Object -Unique)
+            # Studio 스택의 인스턴스 경로는 동일 프로젝트의 Rojo 소스맵으로만 변환한다.
+            $scriptPaths = @($consoleErrors | ForEach-Object {
+              [regex]::Matches([string]$_.signature, "(?:Script '([A-Za-z0-9_.-]+)', Line [0-9]+|(?<![A-Za-z0-9_./-])((?:Players|ReplicatedStorage|ServerScriptService|StarterPlayer)\.[A-Za-z0-9_.-]+):[0-9]+)") |
+                ForEach-Object { if ($_.Groups[1].Success) { $_.Groups[1].Value } else { $_.Groups[2].Value } }
+            } | ForEach-Object { $_ -replace '^Players\.[^.]+\.PlayerScripts\.', 'StarterPlayer.StarterPlayerScripts.' } | Sort-Object -Unique)
+            if ($scriptPaths.Count -gt 0) {
+              $rojo = Get-ChildItem (Join-Path $env:RUNNER_TEMP 'rojo-bin') -Recurse -Filter rojo.exe | Select-Object -First 1 -ExpandProperty FullName
+              if ($rojo) {
+                $mapFile = Join-Path $env:RUNNER_TEMP 'studio-repair-sourcemap.json'
+                $gameRoot = (Resolve-Path -LiteralPath ("main/" + $prefix)).Path
+                Push-Location -LiteralPath $gameRoot
+                try {
+                  & $rojo sourcemap default.project.json --output $mapFile
+                  if ($LASTEXITCODE -eq 0) {
+                    $tree = Get-Content -LiteralPath $mapFile -Raw | ConvertFrom-Json
+                    $nodes = [Collections.Generic.Queue[object]]::new()
+                    foreach ($child in $tree.children) { $nodes.Enqueue(@{ node = $child; name = [string]$child.name }) }
+                    while ($nodes.Count -gt 0) {
+                      $entry = $nodes.Dequeue()
+                      if ($scriptPaths -ccontains $entry.name) {
+                        foreach ($file in $entry.node.filePaths) {
+                          $relative = ([string]$file).Replace('\','/')
+                          if ($relative -match '^[A-Za-z0-9_./-]+\.luau$' -and -not $relative.Contains('..')) {
+                            $paths += $prefix + $relative
+                          }
+                        }
+                      }
+                      foreach ($child in $entry.node.children) {
+                        $nodes.Enqueue(@{ node = $child; name = $entry.name + '.' + $child.name })
+                      }
+                    }
+                  }
+                } catch {
+                  Write-Warning 'STUDIO_REPAIR_SOURCEMAP_UNAVAILABLE'
+                } finally { Pop-Location }
+              }
+            }
+            $paths = @($paths | Sort-Object -Unique)
+            if ($paths.Count -eq 1 -and $scriptPaths.Count -le 1 -and $paths[0].Length -le 160 -and -not $paths[0].Contains('..') -and
+                [string]$report.sourceRevision -eq $env:GITHUB_SHA -and (Test-Path -LiteralPath ("main/" + $paths[0]) -PathType Leaf)) {
+              $qaStage = 'STUDIO_GAME_SOURCE'
+              $qaSignature = 'STUDIO_OBSERVED_SOURCE_RUNTIME_ERROR'
+              $sourceFile = $paths[0]
+            } elseif (-not $qaStage) {
+              $qaStage = 'STUDIO_GAME_RUNTIME'
+              $qaSignature = 'STUDIO_OBSERVED_RUNTIME_WARNINGS'
+            }
+          }
+          # [검사] 실제 스크린샷과 보고서 단계·클릭·자산 감사 항목을 각각 기록한다.
+          $frames = @(Get-ChildItem -Path $out -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -in @('.png', '.jpg', '.jpeg') } | Sort-Object FullName)
+          $rawReport = Get-Content -LiteralPath $reportFile -Raw -Encoding UTF8 | ConvertFrom-Json
+          $sum = $rawReport.summary
+          $runId = [string]$env:GITHUB_RUN_ID
+          if ($runId -notmatch '^[0-9]+$') { throw 'STUDIO_RUN_ID_INVALID' }
+          $kind = 'other'
+          if ([string]$env:CAP_SCRIPT -match 'mare-qa-click\.json$') { $kind = 'full' }
+          elseif ([string]$env:CAP_SCRIPT -match 'autopilot') { $kind = 'autopilot' }
+          $stepsState = 'NOT_CHECKED'
+          if ([int]$sum.plannedSteps -gt 0) {
+            $stepsState = 'FAIL'
+            if ([int]$sum.completedSteps -eq [int]$sum.plannedSteps -and $studioNodeExitCode -eq 0) { $stepsState = 'PASS' }
+          }
+          $clicksState = 'NOT_CHECKED'
+          if ([int]$sum.plannedClicks -gt 0) {
+            $clicksState = 'FAIL'
+            if (([int]$sum.successfulClicks + [int]$sum.skippedOptionalClicks) -eq [int]$sum.plannedClicks) { $clicksState = 'PASS' }
+          }
+          $framesState = 'NOT_CHECKED'
+          if ([int]$sum.plannedFrames -gt 0) {
+            $framesState = 'FAIL'
+            if ([int]$sum.capturedFrames -ge [int]$sum.plannedFrames -and $frames.Count -ge [int]$sum.plannedFrames) { $framesState = 'PASS' }
+          }
+          if ($frames.Count -lt 1 -or $framesState -eq 'FAIL') {
+            if (-not $qaStage) { $qaStage = 'STUDIO_EXECUTION'; $qaSignature = 'STUDIO_SCREENSHOTS_INCOMPLETE' }
+          }
+          $consoleState = 'NOT_CHECKED'
+          if ($rawReport.consoleCapture -and $rawReport.consoleCapture.captured -eq $true) {
+            $consoleState = 'PASS'
+            if ([int]$rawReport.consoleCapture.errorCount -gt 0 -or @($rawReport.consoleCapture.errors).Count -gt 0) { $consoleState = 'FAIL' }
+          }
+          $modelState = 'NOT_CHECKED'
+          $mediaState = 'NOT_CHECKED'
+          $featureState = 'NOT_CHECKED'
+          if ($rawReport.assetAudit) {
+            if ($rawReport.assetAudit.models.status) { $modelState = [string]$rawReport.assetAudit.models.status }
+            if ($rawReport.assetAudit.registered.status) { $mediaState = [string]$rawReport.assetAudit.registered.status }
+            if ($rawReport.assetAudit.features.status) { $featureState = [string]$rawReport.assetAudit.features.status }
+          }
+          if ($kind -eq 'full' -and ($modelState -eq 'NOT_CHECKED' -or $mediaState -eq 'NOT_CHECKED' -or $featureState -eq 'NOT_CHECKED')) {
+            if (-not $qaStage) { $qaStage = 'STUDIO_EXECUTION'; $qaSignature = 'STUDIO_FULL_AUDIT_INCOMPLETE' }
+          }
+          $captureChecks = @()
+          foreach ($entry in @($rawReport.log | Where-Object { $_.capture })) {
+            $captureName = [string]$entry.capture
+            $matches = @($frames | Where-Object { $_.BaseName -eq $captureName -or $_.BaseName.StartsWith($captureName + '-') })
+            $captureChecks += [ordered]@{ name = $captureName; status = $(if ($matches.Count -gt 0) { 'PASS' } else { 'FAIL' }); files = @($matches | ForEach-Object { $_.Name }) }
+          }
+          if (@($captureChecks | Where-Object { $_.status -eq 'FAIL' }).Count -gt 0 -and -not $qaStage) {
+            $qaStage = 'STUDIO_EXECUTION'
+            $qaSignature = 'STUDIO_CAPTURE_STEP_MISSING'
+          }
+          Write-Host "STUDIO_QA_FRAMES=$($frames.Count)"
+          Write-Host "STUDIO_QA_CHECKLIST_STEPS=$stepsState CLICKS=$clicksState FRAMES=$framesState CONSOLE=$consoleState MODELS=$modelState MEDIA=$mediaState FEATURES=$featureState"
+          
+          # [디자인] Studio 실물 사진을 무료 Nemotron으로 분석하고 격리 후보에서만 수정한다.
+          $designBranch = "nemotron-mare-design-$env:GITHUB_RUN_ID"
+          if ($env:CAP_GAME -eq 'mare-essentia' -and [string]$env:CAP_SCRIPT -match 'mare-qa-click\.json$') {
+            & git -C 'main' switch -q -c $designBranch
+            if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_BRANCH_INVALID' }
+            & node 'main/tools/company-nemotron-design-review.mjs' '--root=main' "--frames=$out" "--out=$(Join-Path $out 'nemotron-design-review.json')"
+            if ($LASTEXITCODE -ne 0) { Write-Host 'NEMOTRON_DESIGN_REVIEW=UNVERIFIED' }
+          }
+          # [저장] 기존 최신 파일 경로(report.json·jpg)는 유지하고, 같은 브랜치의 runs/에 회차별 증거를 보존한다.
+          # [저장] 기존 Studio 증거 브랜치를 이어받아 과거 사진과 검사 결과를 보존한다.
+          # 기존 브랜치와 러너만 사용한다. 최근 정밀 4회·그외 6회만 보존해 용량 폭증을 막는다.
+          $dst = Join-Path $env:RUNNER_TEMP 'mare-publish'
+          $remote = "https://x-access-token:$($env:GH_TOKEN)@github.com/$($env:GITHUB_REPOSITORY).git"
+          Remove-Item -Recurse -Force $dst -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory $dst | Out-Null
+          Push-Location $dst
+          try {
+            git init -q
+            git config user.name 'mare-capture-bot'
+            git config user.email 'mare-capture-bot@users.noreply.github.com'
+            & git fetch -q --depth=1 $remote "refs/heads/$($env:CAP_GAME)-studio-frames"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_FETCH_FAILED' }
+            & git checkout -q --detach FETCH_HEAD
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_CHECKOUT_FAILED' }
+            $scriptFile = Join-Path $env:GITHUB_WORKSPACE ("main/" + $env:CAP_SCRIPT)
+            # [증거] 단계별 통과·실패, 감사 판정, 촬영 파일과 SHA256 비교를 원본 report에 연결한다.
+            # SHA256 비교는 파일 변경 탐지이며 사진 품질의 개선·악화 판정으로 표시하지 않는다.
+            $archive = @'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const crypto = require('node:crypto');
+          const [dst, out, runId, scriptName, scriptFile, repo, qaStage, qaSignature] = process.argv.slice(2);
+          if (!/^\d{5,}$/.test(runId)) throw Error('STUDIO_ARCHIVE_RUN_ID_INVALID');
+          const imageExt = /\.(?:png|jpe?g)$/i;
+          const indexFile = path.join(dst, 'index.json');
+          const prior = fs.existsSync(indexFile) ? JSON.parse(fs.readFileSync(indexFile, 'utf8')) : {runs: []};
+          const history = Array.isArray(prior.runs) ? prior.runs : [];
+          const deep = /\/mare-qa-click\.json$/.test(scriptName.replace(/\\/g, '/'));
+          const kind = deep ? 'deep' : (/autopilot/i.test(scriptName) ? 'autopilot' : 'studio');
+          const previous = history.find(row => row.kind === kind);
+          const report = JSON.parse(fs.readFileSync(path.join(out, 'report.json'), 'utf8').replace(/^\uFEFF/, ''));
+          const summary = report.summary || {};
+          const errors = Array.isArray(report.errors) ? report.errors : ['STUDIO_ERRORS_INVALID'];
+          const script = fs.existsSync(scriptFile) && fs.statSync(scriptFile).isFile()
+            ? JSON.parse(fs.readFileSync(scriptFile, 'utf8')) : [];
+          const frames = fs.readdirSync(out).filter(name => imageExt.test(name)).sort();
+          // [스크린샷 실물 검증] JPG/PNG 실제 바이트에서 해상도를 읽는다. 파일명/해시만으로 화면 통과 처리 금지.
+          const imageDimensions = name => {
+            const bytes = fs.readFileSync(path.join(out, name));
+            let width = 0, height = 0;
+            if (bytes.length >= 24 && bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) {
+              width = bytes.readUInt32BE(16); height = bytes.readUInt32BE(20);
+            } else if (bytes.length >= 8 && bytes[0] === 255 && bytes[1] === 216) {
+              for (let pos = 2; pos + 7 < bytes.length;) {
+                if (bytes[pos] !== 255) { pos++; continue; }
+                while (pos < bytes.length && bytes[pos] === 255) pos++;
+                if (pos >= bytes.length) break;
+                const marker = bytes[pos++];
+                if (marker === 0xDA || marker === 0xD9) break;
+                if (marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) continue;
+                if (pos + 2 > bytes.length) break;
+                const len = bytes.readUInt16BE(pos);
+                if (len < 2 || pos + len > bytes.length) break;
+                if ((marker >= 0xC0 && marker <= 0xC3 || marker >= 0xC5 && marker <= 0xC7 ||
+                     marker >= 0xC9 && marker <= 0xCB || marker >= 0xCD && marker <= 0xCF) && len >= 7) {
+                  height = bytes.readUInt16BE(pos + 3);
+                  width = bytes.readUInt16BE(pos + 5);
+                  break;
+                }
+                pos += len;
+              }
+            }
+            return {name, bytes: bytes.length, width, height,
+              status: bytes.length >= 4096 && width >= 320 && height >= 180 ? 'PASS' : 'FAIL'};
+          };
+          const frameIntegrity = frames.map(imageDimensions);
+          const badFrames = frameIntegrity.filter(row => row.status !== 'PASS');
+
+          const digest = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+          const previousDir = previous && /^runs\/[0-9]+$/.test(previous.path || '')
+            ? path.join(dst, previous.path) : dst;
+          const comparisons = frames.map(name => {
+            const oldFile = path.join(previousDir, name);
+            const currentHash = digest(path.join(out, name));
+            const baseline = fs.existsSync(oldFile) ? digest(oldFile) : '';
+            return {name, sha256: currentHash, comparison: baseline
+              ? (baseline === currentHash ? 'SAME_BYTES' : 'CHANGED_BYTES') : 'NO_BASELINE'};
+          });
+          const rows = script.map((step, n) => {
+            const executed = n < Number(summary.completedSteps || 0);
+            const failed = errors.some(value => String(value).startsWith('step' + n + ':'));
+            const skipped = (report.log || []).some(row => row.step === n && row.at === 'OPTIONAL_SKIPPED');
+            const captures = step.type === 'capture'
+              ? frames.filter(name => name.startsWith(String(step.name || 'cap' + n) + '-')) : [];
+            return {step: n, type: step.type, name: step.name || step.label || step.text || '',
+              status: !executed ? 'NOT_RUN' : failed || (step.type === 'capture' && !captures.length) ? 'FAIL' : skipped ? 'SKIPPED' : 'PASS',
+              screenshots: captures};
+          });
+          const audits = Object.fromEntries(['models', 'registered', 'features'].map(key =>
+            [key, report.assetAudit?.[key]?.status || (deep ? 'UNVERIFIED' : 'NOT_RUN')]));
+          audits.registry = report.assetRegistryAudit?.status || (deep ? 'UNVERIFIED' : 'NOT_RUN');
+          const requiredDone = frameIntegrity.every(row => row.status === 'PASS') && frames.length > 0 && frames.length >= Number(summary.plannedFrames)
+            && Number(summary.completedSteps) === Number(summary.plannedSteps)
+            && Number(summary.capturedFrames) >= Number(summary.plannedFrames)
+            && Number(summary.successfulClicks || 0) + Number(summary.skippedOptionalClicks || 0)
+              === Number(summary.plannedClicks || 0);
+          let result = qaStage || errors.length || !requiredDone || rows.some(row => row.status === 'FAIL') ? 'FAIL' : 'PASS';
+          if (deep && result === 'PASS' && Object.values(audits).some(status => status !== 'PASS'))
+            result = 'UNVERIFIED';
+          const link = 'https://github.com/' + repo + '/blob/mare-essentia-studio-frames/runs/' + runId + '/';
+          const checks = {runId, kind, sourceRevision: report.sourceRevision || '', result,
+            failureStage: qaStage || null, failureSignature: qaSignature || null,
+            summary, errors, audits, steps: rows,
+            screenshotComparison: comparisons.map(row => ({...row, url: link + encodeURIComponent(row.name)})),
+            screenshotFrameAudit: {checked: frameIntegrity.length, invalid: badFrames.length,
+              images: frameIntegrity, meaning: 'Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review'},
+            comparisonMeaning: 'SHA256 byte equality only; not visual quality evidence',
+            previousRunId: previous?.runId || null};
+          const folder = path.join(dst, 'runs', runId);
+          fs.mkdirSync(folder, {recursive: true});
+          fs.cpSync(out, folder, {recursive: true, force: true});
+          fs.writeFileSync(path.join(folder, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
+          for (const entry of fs.readdirSync(dst, {withFileTypes: true})) {
+            if (entry.isFile() && (imageExt.test(entry.name) || ['report.json', 'checks.json'].includes(entry.name)))
+              fs.rmSync(path.join(dst, entry.name));
+          }
+          for (const entry of fs.readdirSync(out, {withFileTypes: true})) {
+            if (entry.isFile()) fs.copyFileSync(path.join(out, entry.name), path.join(dst, entry.name));
+          }
+          fs.writeFileSync(path.join(dst, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
+          const record = {runId, kind, at: new Date().toISOString(), sourceRevision: checks.sourceRevision,
+            result, frames: frames.length, changedFrames: comparisons.filter(row => row.comparison === 'CHANGED_BYTES').length,
+            summary, path: 'runs/' + runId};
+          const merged = [record, ...history.filter(row => row.runId !== runId)];
+          const kept = [];
+          const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+          for (const row of merged) {
+            if (Date.parse(row.at) >= cutoff &&
+                ((row.kind === 'deep' && kept.filter(item => item.kind === 'deep').length < 4) ||
+                 (row.kind !== 'deep' && kept.filter(item => item.kind !== 'deep').length < 6)))
+              kept.push(row);
+            else if (/^runs\/[0-9]+$/.test(row.path || ''))
+              fs.rmSync(path.join(dst, row.path), {recursive: true, force: true});
+          }
+          fs.writeFileSync(indexFile, JSON.stringify({version: 1, retentionDays: 7, latest: record,
+            lastDeepAt: kept.find(row => row.kind === 'deep')?.at || null, runs: kept}, null, 2) + '\n');
+          const gallery = ['# Studio QA screenshot history', '', 'Latest: [screenshots](./) | [checklist](checks.json) | [history](index.json)', 'Retention: 7 days, full 4 runs and others 6 runs', '',
+            '| Run | Type | Status | Frames | Changed files |', '|---|---|---|---:|---:|',
+            ...kept.map(row => '| [' + row.runId + '](runs/' + row.runId + '/) | ' + row.kind + ' | ' + row.result + ' | ' + row.frames + ' | ' + row.changedFrames + ' |')];
+          fs.writeFileSync(path.join(dst, 'README.md'), gallery.join('\n') + '\n');
+          console.log('STUDIO_QA_CHECKS=' + JSON.stringify({result, steps: rows.length, audits}));
+          console.log('STUDIO_SCREENSHOT_ARCHIVE=' + JSON.stringify({runId, kind, frames: frames.length,
+            retained: kept.length, previous: previous?.runId || null}));
+          '@
+            $archive | & node - $dst $out $env:GITHUB_RUN_ID $env:CAP_SCRIPT $scriptFile $env:GITHUB_REPOSITORY $qaStage $qaSignature
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_REPORT_FAILED' }
+            $storedChecks = Get-Content -LiteralPath (Join-Path $dst 'checks.json') -Encoding UTF8 -Raw | ConvertFrom-Json
+            Write-Host ("STUDIO_SCREENSHOT_REAL_IMAGES=" + [string]$storedChecks.screenshotFrameAudit.checked + " INVALID=" + [string]$storedChecks.screenshotFrameAudit.invalid)
+            if ([int]$storedChecks.screenshotFrameAudit.invalid -gt 0 -and -not $qaStage) {
+              $qaStage = 'STUDIO_EXECUTION'
+              $qaSignature = 'STUDIO_SCREENSHOT_INVALID_IMAGE'
+            }
+            # [완료 확정] 실제 저장한 검사 증거가 PASS가 아니면 Actions 성공으로 덮지 않는다.
+            if ([string]$storedChecks.result -ne 'PASS' -and -not $qaStage) {
+              $qaStage = 'STUDIO_EXECUTION'
+              $qaSignature = 'STUDIO_FULL_AUDIT_INCOMPLETE'
+            }
+            git add -A
+            git commit -q -m "studio frames $($env:CAP_GAME) run $env:GITHUB_RUN_ID"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_COMMIT_FAILED' }
+            # 이력 보존 브랜치는 강제 갱신하지 않는다. 동시 변경이 있으면 안전하게 실패한다.
+            & git push -q $remote "HEAD:refs/heads/$($env:CAP_GAME)-studio-frames"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_PUSH_FAILED' }
+            Write-Host 'STUDIO_ARCHIVE_PUBLISHED=1'
+          } finally {
+            Pop-Location
+          }
+          # [디자인 후보] 정식 Studio 증거에 연결된 시각 소스 변경만 격리 브랜치에 올린다.
+          # 중앙정책 전체 시각 파일 중 실제 수정한 파일만 검사한다. 외부 AI의 main 직접 반영은 금지.
+          $designReport = Join-Path $out 'nemotron-design-review.json'
+          if ($env:CAP_GAME -eq 'mare-essentia' -and (Test-Path -LiteralPath $designReport)) {
+            $design = Get-Content -LiteralPath $designReport -Encoding UTF8 -Raw | ConvertFrom-Json
+            if ([string]$design.status -eq 'CANDIDATE_EDITED') {
+              Push-Location 'main'
+              try {
+                $designPolicy = (Get-Content -LiteralPath 'company-learning/external-ai-distillation-policy.json' -Encoding UTF8 -Raw | ConvertFrom-Json).directVisualDesign
+                $allowlist = @($designPolicy.allowedSourceFiles)
+                $expectedFiles = @($design.edits | ForEach-Object { [string]$_.path } | Sort-Object -Unique)
+                $changedFiles = @(& git diff --name-only | Sort-Object -Unique)
+                $expectedKey = [string]::Join('|', @($expectedFiles | Sort-Object))
+                $changedKey = [string]::Join('|', @($changedFiles | Sort-Object))
+                $invalidPaths = @($expectedFiles | Where-Object { $_ -notin $allowlist -or -not (Test-Path -LiteralPath $_ -PathType Leaf) })
+                if ($expectedFiles.Count -eq 0 -or $expectedFiles.Count -gt [int]$designPolicy.maximumCandidateFilesPerRun -or
+                    @($design.edits).Count -gt [int]$designPolicy.maximumSourceEditsPerRun -or
+                    $invalidPaths.Count -gt 0 -or $expectedKey -ne $changedKey -or
+                    $changedFiles.Count -ne $expectedFiles.Count) {
+                  Write-Host 'NEMOTRON_CANDIDATE=BLOCKED_UNAUTHORIZED_FILE_CHANGE'
+                } else {
+                  & node --check tools/company-nemotron-design-review.mjs
+                  if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_REVIEWER_SYNTAX_FAILED' }
+                  & node --test qa/mare-essentia-datastore-name.test.mjs
+                  if ($LASTEXITCODE -ne 0) {
+                    Write-Host 'NEMOTRON_CANDIDATE=BLOCKED_REGRESSION_FAILED'
+                  } else {
+                    # [정적 게임 검사] 동일 게임의 기존 Rojo 정의로 후보를 재빌드한다.
+                    $rojo = Get-ChildItem (Join-Path $env:RUNNER_TEMP 'rojo-bin') -Recurse -Filter rojo.exe |
+                      Select-Object -First 1 -ExpandProperty FullName
+                    $candidatePlace = Join-Path $env:RUNNER_TEMP 'mare-nemotron-candidate.rbxl'
+                    & $rojo build 'roblox-games/mare-essentia/default.project.json' -o $candidatePlace
+                    $buildExit = [int]$LASTEXITCODE
+                    Remove-Item -LiteralPath $candidatePlace -ErrorAction SilentlyContinue
+                    if ($buildExit -ne 0) {
+                      Write-Host 'NEMOTRON_CANDIDATE=BLOCKED_ROJO_BUILD_FAILED'
+                    } else {
+                      git config user.name 'mare-capture-bot'
+                      git config user.email 'mare-capture-bot@users.noreply.github.com'
+                      & git add -- $expectedFiles
+                      & git commit -q -m "design(mare): Nemotron visual candidate from Studio $env:GITHUB_RUN_ID"
+                      if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_COMMIT_FAILED' }
+                      & git push -q $remote "HEAD:refs/heads/$designBranch"
+                      if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_PUSH_FAILED' }
+                      & gh pr create --base main --head $designBranch --title "design(mare): Nemotron Studio candidate $env:GITHUB_RUN_ID" --body "Free NVIDIA visual design candidate from verified Studio source $env:GITHUB_SHA. Source edits are limited to exact visual expressions in the central file allowlist. Node regression and Rojo build passed. Candidate AFTER Studio visual verification, native security QA and existing F0-F9 release gates remain pending; no auto-merge."
+                      if ($LASTEXITCODE -ne 0) {
+                        Write-Host 'NEMOTRON_CANDIDATE=BRANCH_PUSHED_PR_NOT_VERIFIED'
+                      } else {
+                        Write-Host 'NEMOTRON_CANDIDATE=PR_OPENED_AWAITING_STUDIO_QA'
+                      }
+                    }
+                  }
+                }
+              } finally { Pop-Location }
+            }
+          }
+          # [자동 판단] 별도 autopilot-report 브랜치는 기존처럼 최신 1회만 유지한다.
+          if ([string]$env:CAP_SCRIPT -match 'autopilot') {
+            $autoDst = Join-Path $env:RUNNER_TEMP 'mare-autopilot-publish'
+            Remove-Item -Recurse -Force $autoDst -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory $autoDst | Out-Null
+            Copy-Item "$out\*" $autoDst -Recurse
+            Push-Location $autoDst
+            try {
+              git init -q
+              git config user.name 'mare-capture-bot'
+              git config user.email 'mare-capture-bot@users.noreply.github.com'
+              git add -A
+              git commit -q -m "autopilot report $($env:CAP_GAME) run $env:GITHUB_RUN_ID"
+              if ($LASTEXITCODE -ne 0) { throw 'AUTOPILOT_REPORT_COMMIT_FAILED' }
+              & git push -q -f $remote "HEAD:refs/heads/$($env:CAP_GAME)-autopilot-report"
+              if ($LASTEXITCODE -ne 0) { throw 'AUTOPILOT_REPORT_PUBLISH_FAILED' }
+              Write-Host 'AUTOPILOT_REPORT_PUBLISHED=1'
+            } finally {
+              Pop-Location
+            }
+          }
+          if ($qaStage -ne '') {
+            Write-Host "STUDIO_QA_GAME_ID=$($env:CAP_GAME)"
+            Write-Host "STUDIO_QA_FAILURE_STAGE=$qaStage"
+            Write-Host "STUDIO_QA_FAILURE_SIGNATURE=$qaSignature"
+            if ($qaStage -eq 'STUDIO_GAME_SOURCE' -and $sourceFile) {
+              Write-Host "STUDIO_QA_SOURCE_FILE=$sourceFile"
+            }
+            throw 'STUDIO_QA_FAILED_EVIDENCE_PUBLISHED'
+          }
+          Write-Host 'STUDIO_QA_RESULT=PASS'
+) {
+              & git -C (Join-Path $env:GITHUB_WORKSPACE 'main') switch -q -c $designBranch
+              if ($LASTEXITCODE -ne 0) { throw 'DESIGN_FREE_CANDIDATE_BRANCH_INVALID' }
+              & node (Join-Path $env:GITHUB_WORKSPACE 'main/tools/company-nemotron-design-review.mjs') "--root=$(Join-Path $env:GITHUB_WORKSPACE 'main')" "--frames=$out" "--previous=$priorDesign" "--out=$(Join-Path $out 'nemotron-design-review.json')"
+              if ($LASTEXITCODE -ne 0) { Write-Host 'DESIGN_FREE_REVIEW=UNVERIFIED' }
+            }
+            $scriptFile = Join-Path $env:GITHUB_WORKSPACE ("main/" + $env:CAP_SCRIPT)
+            # [증거] 단계별 통과·실패, 감사 판정, 촬영 파일과 SHA256 비교를 원본 report에 연결한다.
+            # SHA256 비교는 파일 변경 탐지이며 사진 품질의 개선·악화 판정으로 표시하지 않는다.
+            $archive = @'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const crypto = require('node:crypto');
+          const [dst, out, runId, scriptName, scriptFile, repo, qaStage, qaSignature] = process.argv.slice(2);
+          if (!/^\d{5,}$/.test(runId)) throw Error('STUDIO_ARCHIVE_RUN_ID_INVALID');
+          const imageExt = /\.(?:png|jpe?g)$/i;
+          const indexFile = path.join(dst, 'index.json');
+          const prior = fs.existsSync(indexFile) ? JSON.parse(fs.readFileSync(indexFile, 'utf8')) : {runs: []};
+          const history = Array.isArray(prior.runs) ? prior.runs : [];
+          const deep = /\/mare-qa-click\.json$/.test(scriptName.replace(/\\/g, '/'));
+          const kind = deep ? 'deep' : (/autopilot/i.test(scriptName) ? 'autopilot' : 'studio');
+          const previous = history.find(row => row.kind === kind);
+          const report = JSON.parse(fs.readFileSync(path.join(out, 'report.json'), 'utf8').replace(/^\uFEFF/, ''));
+          const summary = report.summary || {};
+          const errors = Array.isArray(report.errors) ? report.errors : ['STUDIO_ERRORS_INVALID'];
+          const script = fs.existsSync(scriptFile) && fs.statSync(scriptFile).isFile()
+            ? JSON.parse(fs.readFileSync(scriptFile, 'utf8')) : [];
+          const frames = fs.readdirSync(out).filter(name => imageExt.test(name)).sort();
+          // [스크린샷 실물 검증] JPG/PNG 실제 바이트에서 해상도를 읽는다. 파일명/해시만으로 화면 통과 처리 금지.
+          const imageDimensions = name => {
+            const bytes = fs.readFileSync(path.join(out, name));
+            let width = 0, height = 0;
+            if (bytes.length >= 24 && bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) {
+              width = bytes.readUInt32BE(16); height = bytes.readUInt32BE(20);
+            } else if (bytes.length >= 8 && bytes[0] === 255 && bytes[1] === 216) {
+              for (let pos = 2; pos + 7 < bytes.length;) {
+                if (bytes[pos] !== 255) { pos++; continue; }
+                while (pos < bytes.length && bytes[pos] === 255) pos++;
+                if (pos >= bytes.length) break;
+                const marker = bytes[pos++];
+                if (marker === 0xDA || marker === 0xD9) break;
+                if (marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) continue;
+                if (pos + 2 > bytes.length) break;
+                const len = bytes.readUInt16BE(pos);
+                if (len < 2 || pos + len > bytes.length) break;
+                if ((marker >= 0xC0 && marker <= 0xC3 || marker >= 0xC5 && marker <= 0xC7 ||
+                     marker >= 0xC9 && marker <= 0xCB || marker >= 0xCD && marker <= 0xCF) && len >= 7) {
+                  height = bytes.readUInt16BE(pos + 3);
+                  width = bytes.readUInt16BE(pos + 5);
+                  break;
+                }
+                pos += len;
+              }
+            }
+            return {name, bytes: bytes.length, width, height,
+              status: bytes.length >= 4096 && width >= 320 && height >= 180 ? 'PASS' : 'FAIL'};
+          };
+          const frameIntegrity = frames.map(imageDimensions);
+          const badFrames = frameIntegrity.filter(row => row.status !== 'PASS');
+
+          const digest = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+          const previousDir = previous && /^runs\/[0-9]+$/.test(previous.path || '')
+            ? path.join(dst, previous.path) : dst;
+          const comparisons = frames.map(name => {
+            const oldFile = path.join(previousDir, name);
+            const currentHash = digest(path.join(out, name));
+            const baseline = fs.existsSync(oldFile) ? digest(oldFile) : '';
+            return {name, sha256: currentHash, comparison: baseline
+              ? (baseline === currentHash ? 'SAME_BYTES' : 'CHANGED_BYTES') : 'NO_BASELINE'};
+          });
+          const rows = script.map((step, n) => {
+            const executed = n < Number(summary.completedSteps || 0);
+            const failed = errors.some(value => String(value).startsWith('step' + n + ':'));
+            const skipped = (report.log || []).some(row => row.step === n && row.at === 'OPTIONAL_SKIPPED');
+            const captures = step.type === 'capture'
+              ? frames.filter(name => name.startsWith(String(step.name || 'cap' + n) + '-')) : [];
+            return {step: n, type: step.type, name: step.name || step.label || step.text || '',
+              status: !executed ? 'NOT_RUN' : failed || (step.type === 'capture' && !captures.length) ? 'FAIL' : skipped ? 'SKIPPED' : 'PASS',
+              screenshots: captures};
+          });
+          const audits = Object.fromEntries(['models', 'registered', 'features'].map(key =>
+            [key, report.assetAudit?.[key]?.status || (deep ? 'UNVERIFIED' : 'NOT_RUN')]));
+          audits.registry = report.assetRegistryAudit?.status || (deep ? 'UNVERIFIED' : 'NOT_RUN');
+          const requiredDone = frameIntegrity.every(row => row.status === 'PASS') && frames.length > 0 && frames.length >= Number(summary.plannedFrames)
+            && Number(summary.completedSteps) === Number(summary.plannedSteps)
+            && Number(summary.capturedFrames) >= Number(summary.plannedFrames)
+            && Number(summary.successfulClicks || 0) + Number(summary.skippedOptionalClicks || 0)
+              === Number(summary.plannedClicks || 0);
+          let result = qaStage || errors.length || !requiredDone || rows.some(row => row.status === 'FAIL') ? 'FAIL' : 'PASS';
+          if (deep && result === 'PASS' && Object.values(audits).some(status => status !== 'PASS'))
+            result = 'UNVERIFIED';
+          const link = 'https://github.com/' + repo + '/blob/mare-essentia-studio-frames/runs/' + runId + '/';
+          const checks = {runId, kind, sourceRevision: report.sourceRevision || '', result,
+            failureStage: qaStage || null, failureSignature: qaSignature || null,
+            summary, errors, audits, steps: rows,
+            screenshotComparison: comparisons.map(row => ({...row, url: link + encodeURIComponent(row.name)})),
+            screenshotFrameAudit: {checked: frameIntegrity.length, invalid: badFrames.length,
+              images: frameIntegrity, meaning: 'Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review'},
+            comparisonMeaning: 'SHA256 byte equality only; not visual quality evidence',
+            previousRunId: previous?.runId || null};
+          const folder = path.join(dst, 'runs', runId);
+          fs.mkdirSync(folder, {recursive: true});
+          fs.cpSync(out, folder, {recursive: true, force: true});
+          fs.writeFileSync(path.join(folder, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
+          for (const entry of fs.readdirSync(dst, {withFileTypes: true})) {
+            if (entry.isFile() && (imageExt.test(entry.name) || ['report.json', 'checks.json'].includes(entry.name)))
+              fs.rmSync(path.join(dst, entry.name));
+          }
+          for (const entry of fs.readdirSync(out, {withFileTypes: true})) {
+            if (entry.isFile()) fs.copyFileSync(path.join(out, entry.name), path.join(dst, entry.name));
+          }
+          fs.writeFileSync(path.join(dst, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
+          const record = {runId, kind, at: new Date().toISOString(), sourceRevision: checks.sourceRevision,
+            result, frames: frames.length, changedFrames: comparisons.filter(row => row.comparison === 'CHANGED_BYTES').length,
+            summary, path: 'runs/' + runId};
+          const merged = [record, ...history.filter(row => row.runId !== runId)];
+          const kept = [];
+          const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+          for (const row of merged) {
+            if (Date.parse(row.at) >= cutoff &&
+                ((row.kind === 'deep' && kept.filter(item => item.kind === 'deep').length < 4) ||
+                 (row.kind !== 'deep' && kept.filter(item => item.kind !== 'deep').length < 6)))
+              kept.push(row);
+            else if (/^runs\/[0-9]+$/.test(row.path || ''))
+              fs.rmSync(path.join(dst, row.path), {recursive: true, force: true});
+          }
+          fs.writeFileSync(indexFile, JSON.stringify({version: 1, retentionDays: 7, latest: record,
+            lastDeepAt: kept.find(row => row.kind === 'deep')?.at || null, runs: kept}, null, 2) + '\n');
+          const gallery = ['# Studio QA screenshot history', '', 'Latest: [screenshots](./) | [checklist](checks.json) | [history](index.json)', 'Retention: 7 days, full 4 runs and others 6 runs', '',
+            '| Run | Type | Status | Frames | Changed files |', '|---|---|---|---:|---:|',
+            ...kept.map(row => '| [' + row.runId + '](runs/' + row.runId + '/) | ' + row.kind + ' | ' + row.result + ' | ' + row.frames + ' | ' + row.changedFrames + ' |')];
+          fs.writeFileSync(path.join(dst, 'README.md'), gallery.join('\n') + '\n');
+          console.log('STUDIO_QA_CHECKS=' + JSON.stringify({result, steps: rows.length, audits}));
+          console.log('STUDIO_SCREENSHOT_ARCHIVE=' + JSON.stringify({runId, kind, frames: frames.length,
+            retained: kept.length, previous: previous?.runId || null}));
+          '@
+            $archive | & node - $dst $out $env:GITHUB_RUN_ID $env:CAP_SCRIPT $scriptFile $env:GITHUB_REPOSITORY $qaStage $qaSignature
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_REPORT_FAILED' }
+            $storedChecks = Get-Content -LiteralPath (Join-Path $dst 'checks.json') -Encoding UTF8 -Raw | ConvertFrom-Json
+            Write-Host ("STUDIO_SCREENSHOT_REAL_IMAGES=" + [string]$storedChecks.screenshotFrameAudit.checked + " INVALID=" + [string]$storedChecks.screenshotFrameAudit.invalid)
+            if ([int]$storedChecks.screenshotFrameAudit.invalid -gt 0 -and -not $qaStage) {
+              $qaStage = 'STUDIO_EXECUTION'
+              $qaSignature = 'STUDIO_SCREENSHOT_INVALID_IMAGE'
+            }
+            # [완료 확정] 실제 저장한 검사 증거가 PASS가 아니면 Actions 성공으로 덮지 않는다.
+            if ([string]$storedChecks.result -ne 'PASS' -and -not $qaStage) {
+              $qaStage = 'STUDIO_EXECUTION'
+              $qaSignature = 'STUDIO_FULL_AUDIT_INCOMPLETE'
+            }
+            git add -A
+            git commit -q -m "studio frames $($env:CAP_GAME) run $env:GITHUB_RUN_ID"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_COMMIT_FAILED' }
+            # 이력 보존 브랜치는 강제 갱신하지 않는다. 동시 변경이 있으면 안전하게 실패한다.
+            & git push -q $remote "HEAD:refs/heads/$($env:CAP_GAME)-studio-frames"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_PUSH_FAILED' }
+            Write-Host 'STUDIO_ARCHIVE_PUBLISHED=1'
+          } finally {
+            Pop-Location
+          }
+          # [디자인 후보] 정식 Studio 증거에 연결된 시각 소스 변경만 격리 브랜치에 올린다.
+          # 중앙정책 전체 시각 파일 중 실제 수정한 파일만 검사한다. 외부 AI의 main 직접 반영은 금지.
+          $designReport = Join-Path $out 'nemotron-design-review.json'
+          if ($env:CAP_GAME -eq 'mare-essentia' -and (Test-Path -LiteralPath $designReport)) {
+            $design = Get-Content -LiteralPath $designReport -Encoding UTF8 -Raw | ConvertFrom-Json
+            if ([string]$design.status -eq 'CANDIDATE_EDITED') {
+              Push-Location 'main'
+              try {
+                $designPolicy = (Get-Content -LiteralPath 'company-learning/external-ai-distillation-policy.json' -Encoding UTF8 -Raw | ConvertFrom-Json).directVisualDesign
+                $allowlist = @($designPolicy.allowedSourceFiles)
+                $expectedFiles = @($design.edits | ForEach-Object { [string]$_.path } | Sort-Object -Unique)
+                $changedFiles = @(& git diff --name-only | Sort-Object -Unique)
+                $expectedKey = [string]::Join('|', @($expectedFiles | Sort-Object))
+                $changedKey = [string]::Join('|', @($changedFiles | Sort-Object))
+                $invalidPaths = @($expectedFiles | Where-Object { $_ -notin $allowlist -or -not (Test-Path -LiteralPath $_ -PathType Leaf) })
+                if ($expectedFiles.Count -eq 0 -or $expectedFiles.Count -gt [int]$designPolicy.maximumCandidateFilesPerRun -or
+                    @($design.edits).Count -gt [int]$designPolicy.maximumSourceEditsPerRun -or
+                    $invalidPaths.Count -gt 0 -or $expectedKey -ne $changedKey -or
+                    $changedFiles.Count -ne $expectedFiles.Count) {
+                  Write-Host 'NEMOTRON_CANDIDATE=BLOCKED_UNAUTHORIZED_FILE_CHANGE'
+                } else {
+                  & node --check tools/company-nemotron-design-review.mjs
+                  if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_REVIEWER_SYNTAX_FAILED' }
+                  & node --test qa/mare-essentia-datastore-name.test.mjs
+                  if ($LASTEXITCODE -ne 0) {
+                    Write-Host 'NEMOTRON_CANDIDATE=BLOCKED_REGRESSION_FAILED'
+                  } else {
+                    # [정적 게임 검사] 동일 게임의 기존 Rojo 정의로 후보를 재빌드한다.
+                    $rojo = Get-ChildItem (Join-Path $env:RUNNER_TEMP 'rojo-bin') -Recurse -Filter rojo.exe |
+                      Select-Object -First 1 -ExpandProperty FullName
+                    $candidatePlace = Join-Path $env:RUNNER_TEMP 'mare-nemotron-candidate.rbxl'
+                    & $rojo build 'roblox-games/mare-essentia/default.project.json' -o $candidatePlace
+                    $buildExit = [int]$LASTEXITCODE
+                    Remove-Item -LiteralPath $candidatePlace -ErrorAction SilentlyContinue
+                    if ($buildExit -ne 0) {
+                      Write-Host 'NEMOTRON_CANDIDATE=BLOCKED_ROJO_BUILD_FAILED'
+                    } else {
+                      git config user.name 'mare-capture-bot'
+                      git config user.email 'mare-capture-bot@users.noreply.github.com'
+                      & git add -- $expectedFiles
+                      & git commit -q -m "design(mare): Nemotron visual candidate from Studio $env:GITHUB_RUN_ID"
+                      if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_COMMIT_FAILED' }
+                      & git push -q $remote "HEAD:refs/heads/$designBranch"
+                      if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_PUSH_FAILED' }
+                      & gh pr create --base main --head $designBranch --title "design(mare): Nemotron Studio candidate $env:GITHUB_RUN_ID" --body "Free NVIDIA visual design candidate from verified Studio source $env:GITHUB_SHA. Source edits are limited to exact visual expressions in the central file allowlist. Node regression and Rojo build passed. Candidate AFTER Studio visual verification, native security QA and existing F0-F9 release gates remain pending; no auto-merge."
+                      if ($LASTEXITCODE -ne 0) {
+                        Write-Host 'NEMOTRON_CANDIDATE=BRANCH_PUSHED_PR_NOT_VERIFIED'
+                      } else {
+                        Write-Host 'NEMOTRON_CANDIDATE=PR_OPENED_AWAITING_STUDIO_QA'
+                      }
+                    }
+                  }
+                }
+              } finally { Pop-Location }
+            }
+          }
+          # [자동 판단] 별도 autopilot-report 브랜치는 기존처럼 최신 1회만 유지한다.
+          if ([string]$env:CAP_SCRIPT -match 'autopilot') {
+            $autoDst = Join-Path $env:RUNNER_TEMP 'mare-autopilot-publish'
+            Remove-Item -Recurse -Force $autoDst -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory $autoDst | Out-Null
+            Copy-Item "$out\*" $autoDst -Recurse
+            Push-Location $autoDst
+            try {
+              git init -q
+              git config user.name 'mare-capture-bot'
+              git config user.email 'mare-capture-bot@users.noreply.github.com'
+              git add -A
+              git commit -q -m "autopilot report $($env:CAP_GAME) run $env:GITHUB_RUN_ID"
+              if ($LASTEXITCODE -ne 0) { throw 'AUTOPILOT_REPORT_COMMIT_FAILED' }
+              & git push -q -f $remote "HEAD:refs/heads/$($env:CAP_GAME)-autopilot-report"
+              if ($LASTEXITCODE -ne 0) { throw 'AUTOPILOT_REPORT_PUBLISH_FAILED' }
+              Write-Host 'AUTOPILOT_REPORT_PUBLISHED=1'
+            } finally {
+              Pop-Location
+            }
+          }
+          if ($qaStage -ne '') {
+            Write-Host "STUDIO_QA_GAME_ID=$($env:CAP_GAME)"
+            Write-Host "STUDIO_QA_FAILURE_STAGE=$qaStage"
+            Write-Host "STUDIO_QA_FAILURE_SIGNATURE=$qaSignature"
+            if ($qaStage -eq 'STUDIO_GAME_SOURCE' -and $sourceFile) {
+              Write-Host "STUDIO_QA_SOURCE_FILE=$sourceFile"
+            }
+            throw 'STUDIO_QA_FAILED_EVIDENCE_PUBLISHED'
+          }
+          Write-Host 'STUDIO_QA_RESULT=PASS'
+) { throw 'STUDIO_CANDIDATE_REF_INVALID' }
+          "STUDIO_CANDIDATE_REF=$candidateRef" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           if ($g -notmatch '^[a-z0-9-]+$') { throw "bad game id" }
           if (-not (Test-Path "main/roblox-games/$g/default.project.json")) { throw "no project for $g" }
           $sc = $env:SCRIPT_IN
