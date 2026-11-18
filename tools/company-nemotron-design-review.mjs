@@ -264,11 +264,13 @@ export function selectFreeDesignModels({
     const cooling = Date.parse(carried?.cooldowns?.[model.id] || '');
     // [장애 원인] 키 값, 무료 요금제 설정값, 원문 응답은 기록하지 않는다.
     const status = !approved.has(model.id) ? 'MODEL_NOT_POLICY_APPROVED'
-      : model.provider === 'OPENROUTER' && accountQuota?.scope ===
-        'OPENROUTER_ACCOUNT_TIER' && accountQuota.isFreeTier !== true
-        ? 'ACCOUNT_NOT_FREE_TIER'
       : !trim(env[model.keyName]) ? 'KEY_MISSING'
       : trim(env[model.verifiedName]) !== 'YES' ? 'FREE_TIER_NOT_VERIFIED'
+      // [무료 계정 검증] 공식 조회가 실패하거나 계정이 무료가 아니면 호출 자체를 제외한다.
+      : model.provider === 'OPENROUTER' && accountQuota?.scope !== 'OPENROUTER_ACCOUNT_TIER'
+        ? 'ACCOUNT_PROOF_UNAVAILABLE'
+      : model.provider === 'OPENROUTER' && accountQuota?.isFreeTier !== true
+        ? 'ACCOUNT_NOT_FREE_TIER'
       : model.provider === 'OPENROUTER' && !model.model.endsWith(':free') ? 'NOT_FREE_MODEL_ID'
       : Number(spent[model.provider] || 0) >= DAILY_LIMIT[model.provider] ? 'DAILY_CALL_CAP'
       : Number.isFinite(cooling) && cooling > now ? 'COOLDOWN_ACTIVE' : 'READY';

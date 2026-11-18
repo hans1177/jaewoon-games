@@ -2333,7 +2333,8 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
   assert.match(designSource, /visualAnchors\(contract\.allowedSourceFiles, designRuntime\.selectedRole\)/);
   assert.match(designSource, /SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE[\s\S]*modelAvailability: diagnostics/);
 
-  const models = opts => selectFreeDesignModels({policy, env, now, ...opts});
+  const accountQuota = {scope: 'OPENROUTER_ACCOUNT_TIER', isFreeTier: true};
+  const models = opts => selectFreeDesignModels({policy, env, now, accountQuota, ...opts});
   assert.equal(models({frameNames: ['npc_face-0.jpg']})[0].id, 'NVIDIA_VL');
   assert.equal(models({frameNames: ['ship-0.jpg']})[0].id, 'GEMINI_FLASH');
   assert.equal(models({frameNames: ['menu_ui-0.jpg']})[0].id, 'OPENROUTER_GEMMA');
@@ -2496,6 +2497,7 @@ test('무료 디자인 한도 예측은 계정 전체 잔량을 주장하지 않
     OPENROUTER_API_KEY: 'fixture', OPENROUTER_DESIGN_FREE_TIER_VERIFIED: 'YES'
   };
   const reserveFirst = selectFreeDesignModels({policy, env, now: time,
+    accountQuota: {scope: 'OPENROUTER_ACCOUNT_TIER', isFreeTier: true},
     frameNames: ['npc_face-0.jpg'],
     previous: {usageWindow: {day: '2026-11-18', calls: {NVIDIA: 10}}}});
   assert.equal(reserveFirst[0].provider, 'OPENROUTER',
@@ -2540,6 +2542,18 @@ test('오픈라우터 공식 무료 계정 상태를 조회하고 미공개 호�
   assert.ok(selectFreeDesignModels({policy, env, now, accountQuota: tier})
     .some(model => model.provider === 'OPENROUTER'),
     '무료 인증 키와 무료 모델 고정 규칙을 함께 충족할 때만 배정');
+  // [무료 계정 조회 실패] 무료 플래그나 ':free' 이름만으로는 비용 안전성을 입증하지 않는다.
+  const unknownDiagnostics = [];
+  const unverifiedModels = selectFreeDesignModels({policy, env, now,
+    accountQuota: null, diagnostics: unknownDiagnostics});
+  assert.ok(!unverifiedModels.some(model => model.provider === 'OPENROUTER'));
+  assert.equal(unknownDiagnostics.find(row => row.modelId === 'OPENROUTER_GEMMA').status,
+    'ACCOUNT_PROOF_UNAVAILABLE');
+  const verifiedFree = selectFreeDesignModels({policy, env: {
+    ...env, GEMINI_API_KEY: 'fixture', GEMINI_DESIGN_FREE_TIER_VERIFIED: 'YES'
+  }, now, accountQuota: null});
+  assert.ok(verifiedFree.some(model => model.provider === 'GEMINI'),
+    '공식 계정 조회 실패는 다른 승인된 무료 모델까지 막지 않는다');
   const paid = await inspectOpenRouterFreeTier({env,
     fetchImpl: async () => ({ok: true, json: async () => ({data: {is_free_tier: false}})})});
   const diagnostics = [];
