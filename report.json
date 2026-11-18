@@ -1,5 +1,5 @@
 {
- "sourceRevision": "325862c5b0082611436abec5f8d8f4bc7d498293",
+ "sourceRevision": "9de9da5ce720398e0c2e8a9fffbf0c78218e0288",
  "log": [
   {
    "step": 1,
@@ -136,7 +136,7 @@
   {
    "step": 29,
    "ctx": "Client",
-   "out": "INTRO_RUNTIME_STATE_PASS\ntext"
+   "out": "INTRO_RUNTIME_STATE_PASS_NO_DECK_POPUP\ntext"
   },
   {
    "step": 30,
@@ -161,7 +161,7 @@
   {
    "step": 35,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 상인 길드 · 항구 정보 | 교역소 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 교역 | 항구 정보 | ◆ 핵심 판단 | 시세 비교 · 실제 판매손익 확인 | 자금·화물은 상단에서, 매입·판매가는 장부에서 확인해. | ↶ 최근 메뉴: 현황\ntext"
+   "out": "TEXTS: 이스탄불 · 상인 길드 · 항구 정보 | 교역소 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 현황 | 교역 | 항구 정보 | ◆ 핵심 판단 | 시세 비교 · 실제 판매손익 확인 | 자금·화물은 상단에서, 매입·판매가는 장부에서 확인해.\ntext"
   },
   {
    "step": 36,
@@ -186,7 +186,7 @@
   {
    "step": 41,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 상인 길드 · 교역 | 교역소 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 교역 | 항구 정보 | ◆ 핵심 판단 | 시세 비교 · 실제 판매손익 확인 | 자금·화물은 상단에서, 매입·판매가는 장부에서 확인해. | ↶ 최근 메뉴: 항구 정보\ntext"
+   "out": "TEXTS: 이스탄불 · 상인 길드 · 교역 | 교역소 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 항구 정보 | 교역 | 항구 정보 | ◆ 핵심 판단 | 시세 비교 · 실제 판매손익 확인 | 자금·화물은 상단에서, 매입·판매가는 장부에서 확인해.\ntext"
   },
   {
    "step": 42,
@@ -235,7 +235,7 @@
   {
    "step": 50,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 항만 관리관 · 항해 | 항만청 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 항해 | 지도 | ◆ 핵심 판단 | 534 km · 4일 · 보급 8개 | 가까운 항구 이즈미르 · 석탄 0개 필요\n출항 가능 20항로 · 현재 석 | ↶ 최근 메뉴: 항구 정보\ntext"
+   "out": "TEXTS: 이스탄불 · 항만 관리관 · 항해 | 항만청 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 항구 정보 | 항해 | 지도 | ◆ 핵심 판단 | 534 km · 4일 · 보급 8개 | 가까운 항구 이즈미르 · 석탄 0개 필요\n출항 가능 20항로 · 현재 석\ntext"
   },
   {
    "step": 51,
@@ -284,7 +284,7 @@
   {
    "step": 59,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 항만 관리관 · 지도 | 항만청 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 항해 | 지도 | ◆ 핵심 판단 | 534 km · 4일 · 보급 8개 | 가까운 항구 이즈미르 · 석탄 0개 필요\n출항 가능 20항로 · 현재 석 | ↶ 최근 메뉴: 항구 정보\ntext"
+   "out": "TEXTS: 이스탄불 · 항만 관리관 · 지도 | 항만청 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 항해 | 항해 | 지도 | ◆ 핵심 판단 | 534 km · 4일 · 보급 8개 | 가까운 항구 이즈미르 · 석탄 0개 필요\n출항 가능 20항로 · 현재 석\ntext"
   },
   {
    "step": 60,
@@ -304,7 +304,7 @@
   {
    "step": 64,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 조선 장인 · 조선소 | 조선소 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 조선소 | ◆ 핵심 판단 | 선체 100/100 · 동료 1명 | 적합 직책 1/1 · 포 4문 · 선원 20명\n보급 30개 · 선체와 적 | ↶ 최근 메뉴: 지도 | 필요한 정비\ntext"
+   "out": "TEXTS: 이스탄불 · 조선 장인 · 조선소 | 조선소 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 지도 | 조선소 | ◆ 핵심 판단 | 선체 100/100 · 동료 1명 | 적합 직책 1/1 · 포 4문 · 선원 20명\n보급 30개 · 선체와 적 | 필요한 정비\ntext"
   },
   {
    "step": 65,
@@ -324,7 +324,7 @@
   {
    "step": 69,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 주점 주인 · 진행 일지 | 주점 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 의뢰 받기 | 진행 일지 | 동료 영입 | ◆ 핵심 판단 | 진행 중 5건 · 새 의뢰 87건 | 현재 목표: 강변의 버드나무\n난이도 1/5 · 조건과 보상은 일지에서 확\ntext"
+   "out": "TEXTS: 이스탄불 · 주점 주인 · 진행 일지 | 주점 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 조선소 | 의뢰 받기 | 진행 일지 | 동료 영입 | ◆ 핵심 판단 | 진행 중 5건 · 새 의뢰 87건\ntext"
   },
   {
    "step": 70,
@@ -344,7 +344,7 @@
   {
    "step": 74,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 전투 교관 · 지상 탐험 | 전투 본부 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | ◆ 핵심 판단 | 탐험 가능 0 / 5지역\ntext"
+   "out": "TEXTS: 이스탄불 · 전투 교관 · 지상 탐험 | 전투 본부 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 진행 일지 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | ◆ 핵심 판단\ntext"
   },
   {
    "step": 75,
@@ -409,7 +409,7 @@
   {
    "step": 91,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 전투 교관 · 해적 사냥 | 전투 본부 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | ◆ 핵심 판단 | 대포 4문 · 선체 100/100\ntext"
+   "out": "TEXTS: 이스탄불 · 전투 교관 · 해적 사냥 | 전투 본부 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 지상 탐험 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | ◆ 핵심 판단\ntext"
   },
   {
    "step": 92,
@@ -429,7 +429,7 @@
   {
    "step": 96,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 학자 · 지식 백과 | 학자의 서재 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 지식 보고 | 지식 백과 | 연구 | 세계 백과 | 발견 0 / 924 | 이름 검색\ntext"
+   "out": "TEXTS: 이스탄불 · 학자 · 지식 백과 | 학자의 서재 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 해적 사냥 | 지식 보고 | 지식 백과 | 연구 | 세계 백과 | 발견 0 / 924\ntext"
   },
   {
    "step": 97,
@@ -478,7 +478,7 @@
   {
    "step": 105,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 학자 · 연구 | 학자의 서재 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 지식 보고 | 지식 백과 | 연구 | ◆ 핵심 판단 | 연구 가능 0개 · 다음 기술 선택 | 증기 펌프 효과: 침수 피해 감소 (선체 피해 -10%)\n해금: 필요한 \ntext"
+   "out": "TEXTS: 이스탄불 · 학자 · 연구 | 학자의 서재 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 지식 백과 | 지식 보고 | 지식 백과 | 연구 | ◆ 핵심 판단 | 연구 가능 0개 · 다음 기술 선택\ntext"
   },
   {
    "step": 106,
@@ -498,7 +498,7 @@
   {
    "step": 110,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 현황 | 동료 관리 | ◆ 핵심 판단 | 선체 100/100 · 동료 1명 | 적합 직책 1/1 · 포 4문 · 선원 20명\n보급 30개 · 선체와 적 | ↶ 최근 메뉴: 연구\ntext"
+   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 연구 | 현황 | 동료 관리 | ◆ 핵심 판단 | 선체 100/100 · 동료 1명 | 적합 직책 1/1 · 포 4문 · 선원 20명\n보급 30개 · 선체와 적\ntext"
   },
   {
    "step": 111,
@@ -547,7 +547,7 @@
   {
    "step": 119,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 선장 · 동료 관리 | 선장실 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | 현황 | 동료 관리 | ◆ 핵심 판단 | 선체 100/100 · 동료 1명 | 적합 직책 1/1 · 포 4문 · 선원 20명\n보급 30개 · 선체와 적 | ↶ 최근 메뉴: 연구\ntext"
+   "out": "TEXTS: 이스탄불 · 선장 · 동료 관리 | 선장실 | 999997738 | 자금 999,997,738코인 · 화물 19/19 | ↶ 현황 | 현황 | 동료 관리 | ◆ 핵심 판단 | 선체 100/100 · 동료 1명 | 적합 직책 1/1 · 포 4문 · 선원 20명\n보급 30개 · 선체와 적\ntext"
   },
   {
    "step": 120,
@@ -627,397 +627,11 @@
    "step": 136,
    "ctx": "Client",
    "out": "VOYAGE_QA_EVENT_GATE_PASS\ntext"
-  },
-  {
-   "step": 137,
-   "ctx": "Client",
-   "out": "VOYAGE_QA_RESUMED_AFTER_EVENT:false:이미 이 항구에 있어요\ntext"
-  },
-  {
-   "step": 138,
-   "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
-  },
-  {
-   "step": 140,
-   "ctx": "Client",
-   "out": "DEV Deck\ntext"
-  },
-  {
-   "step": 142,
-   "ctx": "Client",
-   "out": "CARD_DECK_RUNTIME_PASS\ntext"
-  },
-  {
-   "step": 143,
-   "capture": "cb0_deck",
-   "files": 1
-  },
-  {
-   "step": 144,
-   "ctx": "Client",
-   "out": "CARD_BOOK_RUNTIME_PASS\ntext"
-  },
-  {
-   "step": 145,
-   "ctx": "Client",
-   "out": "DEV Practice\ntext"
-  },
-  {
-   "step": 147,
-   "ctx": "Client",
-   "out": "CARD_PRACTICE_RUNTIME_PASS\ntext"
-  },
-  {
-   "step": 148,
-   "capture": "cb1",
-   "files": 1
-  },
-  {
-   "step": 149,
-   "ctx": "Client",
-   "out": "CARD_BOARD_RUNTIME_PASS\ntext"
-  },
-  {
-   "step": 151,
-   "capture": "cb2",
-   "files": 1
-  },
-  {
-   "step": 152,
-   "click": "card_practice_exit",
-   "at": "76,292",
-   "out": "76,292 CARD_PRACTICE_EXIT_REAL_CLICK\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 76,
-      "y": 292
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 153,
-   "ctx": "Client",
-   "out": "started\ntext"
-  },
-  {
-   "step": 155,
-   "capture": "v1_start",
-   "files": 1
-  },
-  {
-   "step": 157,
-   "capture": "v2_event",
-   "files": 1
-  },
-  {
-   "step": 158,
-   "ctx": "Client",
-   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.5070190429688, 219.44107055664062, 36.4462890625 on=true parent=VoyageScene fog=632.2672119140625 brightness=1.9868645668029785 atmo=0.3700000047683716 camdist=36.659629821777344\ntext"
-  },
-  {
-   "step": 160,
-   "capture": "v3_event2",
-   "files": 1
-  },
-  {
-   "step": 162,
-   "capture": "v4_late",
-   "files": 1
-  },
-  {
-   "step": 163,
-   "ctx": "Client",
-   "out": "nil\ntext"
-  },
-  {
-   "step": 164,
-   "ctx": "Client",
-   "out": "play ok=true nil\ntext"
-  },
-  {
-   "step": 166,
-   "capture": "b1_start",
-   "files": 1
-  },
-  {
-   "step": 167,
-   "ctx": "Client",
-   "out": "NAVAL_BATTLE_RUNTIME_PASS\ntext"
-  },
-  {
-   "step": 169,
-   "capture": "b2_mid",
-   "files": 1
-  },
-  {
-   "step": 170,
-   "ctx": "Client",
-   "out": "LOGS(0): \ntext"
-  },
-  {
-   "step": 171,
-   "ctx": "Server",
-   "out": "LOGS(12): [QA] FAIL asset AssetIds.CardArt/af_03 rbxassetid://72489040757878 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/af_15 rbxassetid://77023165428158 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_herbarium rbxassetid://76486492447366 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_plant_anatomy rbxassetid://135648768778892 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/bot_potato rbxassetid://97023606015316 status=TIMEOUT_16S\ntext"
-  },
-  {
-   "step": 172,
-   "ctx": "Client",
-   "out": "build ok=true nil\ntext"
-  },
-  {
-   "step": 174,
-   "ctx": "Client",
-   "out": "bound\ntext"
-  },
-  {
-   "step": 175,
-   "ctx": "Client",
-   "out": "NPC_ROUTE_AUDIT_PASS checked=39 relocated=6 fallback=1\ntext"
-  },
-  {
-   "step": 176,
-   "ctx": "Client",
-   "out": "HARBOR_NPC_STAGE_PAIR_FOUND distance=5\ntext"
-  },
-  {
-   "step": 178,
-   "capture": "harbor_npc_sparring_01",
-   "files": 1
-  },
-  {
-   "step": 180,
-   "capture": "harbor_npc_sparring_02",
-   "files": 1
-  },
-  {
-   "step": 182,
-   "capture": "harbor_npc_sparring_03",
-   "files": 1
-  },
-  {
-   "step": 184,
-   "capture": "harbor_npc_sparring_04",
-   "files": 1
-  },
-  {
-   "step": 186,
-   "capture": "harbor_npc_sparring_05",
-   "files": 1
-  },
-  {
-   "step": 188,
-   "capture": "harbor_npc_sparring_06",
-   "files": 1
-  },
-  {
-   "step": 190,
-   "capture": "harbor_npc_sparring_07",
-   "files": 1
-  },
-  {
-   "step": 192,
-   "capture": "harbor_npc_sparring_08",
-   "files": 1
-  },
-  {
-   "step": 193,
-   "ctx": "Client",
-   "out": "R15_MOTION_IDLE\ntext"
-  },
-  {
-   "step": 195,
-   "capture": "harbor_motion_idle",
-   "files": 1
-  },
-  {
-   "step": 196,
-   "ctx": "Client",
-   "out": "R15_MOTION_WALK\ntext"
-  },
-  {
-   "step": 198,
-   "capture": "harbor_motion_walk",
-   "files": 1
-  },
-  {
-   "step": 199,
-   "ctx": "Client",
-   "out": "MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2 ACTIVE_WALKERS=8 CARRY_FORWARD=true\ntext"
-  },
-  {
-   "step": 200,
-   "ctx": "Client",
-   "out": "R15_MOTION_RUN\ntext"
-  },
-  {
-   "step": 202,
-   "capture": "harbor_motion_run",
-   "files": 1
-  },
-  {
-   "step": 203,
-   "ctx": "Client",
-   "out": "MOTION_RUN_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2\ntext"
-  },
-  {
-   "step": 204,
-   "ctx": "Client",
-   "out": "R15_MOTION_ATTACK\ntext"
-  },
-  {
-   "step": 206,
-   "capture": "harbor_motion_attack",
-   "files": 1
-  },
-  {
-   "step": 207,
-   "ctx": "Client",
-   "out": "R15_MOTION_SHOOT\ntext"
-  },
-  {
-   "step": 209,
-   "capture": "harbor_motion_shoot",
-   "files": 1
-  },
-  {
-   "step": 210,
-   "ctx": "Client",
-   "out": "R15_MOTION_RELOAD\ntext"
-  },
-  {
-   "step": 212,
-   "capture": "harbor_motion_reload",
-   "files": 1
-  },
-  {
-   "step": 213,
-   "ctx": "Client",
-   "out": "R15_MOTION_GUARD\ntext"
-  },
-  {
-   "step": 215,
-   "capture": "harbor_motion_guard",
-   "files": 1
-  },
-  {
-   "step": 216,
-   "ctx": "Client",
-   "out": "R15_MOTION_HURT\ntext"
-  },
-  {
-   "step": 218,
-   "capture": "harbor_motion_hurt",
-   "files": 1
-  },
-  {
-   "step": 219,
-   "ctx": "Client",
-   "out": "R15_MOTION_CHEER\ntext"
-  },
-  {
-   "step": 221,
-   "capture": "harbor_motion_cheer",
-   "files": 1
-  },
-  {
-   "step": 222,
-   "ctx": "Client",
-   "out": "R15_MOTION_TALK\ntext"
-  },
-  {
-   "step": 224,
-   "capture": "harbor_motion_talk",
-   "files": 1
-  },
-  {
-   "step": 225,
-   "ctx": "Client",
-   "out": "MOTION_VILLAGER_GESTURES_PASS KINDS=9 DISTINCT=9 WALKING_WORK=2\ntext"
-  },
-  {
-   "step": 226,
-   "ctx": "Client",
-   "out": "NPC_FACE_FRONT_PASS R15=50 BACKWARDS=0\ntext"
-  },
-  {
-   "step": 227,
-   "capture": "harbor_npc_face_front",
-   "files": 1
-  },
-  {
-   "step": 228,
-   "ctx": "Client",
-   "out": "FIELD_QA_OPEN_EXPLORE_TAB GUI_ENABLED=true UNLOCKED_BEFORE=0\ntext"
-  },
-  {
-   "step": 230,
-   "ctx": "Client",
-   "out": "FIELD_QA_ENTRY_AVAILABLE=12 LOCKED_LABELS=0 REAL_UI_ONLY=true\ntext"
-  },
-  {
-   "step": 231,
-   "click": "field_entry",
-   "at": "788,155",
-   "out": "788,155 CLICK=지상맵 입장 HITBOX=VISIBLE BLOCKER=none\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 788,
-      "y": 155
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 233,
-   "capture": "field_entry",
-   "files": 1
-  },
-  {
-   "step": 234,
-   "ctx": "Client",
-   "out": "FIELD_QA_ENTRY_PASS MOVEMENT_READY: x=2998 screen=FieldGui\ntext"
-  },
-  {
-   "step": 235,
-   "capture": "field_npc_ally_mob",
-   "files": 1
-  },
-  {
-   "step": 236,
-   "ctx": "Client",
-   "out": "FIELD_MOTION_STABLE actors=21 maxStep=0.64 twoWeapons=PASS skillArt=PASS\ntext"
-  },
-  {
-   "step": 237,
-   "capture": "field_motion_smooth_icons",
-   "files": 1
-  },
-  {
-   "step": 239,
-   "ctx": "Client",
-   "out": "MOTION_FIELD_ACTORS_PASS ENEMY_ROLES=3 ALLIES=1 ENEMY_JOINTS=6 ALLY_JOINTS=6 DISTINCT_ROLE_POSES=3 DISTINCT_SUPPORT_POSES=4\ntext"
-  },
-  {
-   "step": 240,
-   "capture": "field_actor_after_motion",
-   "files": 1
   }
  ],
- "errors": [],
+ "errors": [
+  "step137:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action ExecuteLuau.runCode sent to DMN_ID_PLAYCLIENT failed - Target is not reachable (ExecuteLuau.runCode, DMN_ID_PLAYCLIENT). No OnInvoke handler responded for this action. Sender: DMN_ID_STANDALONE. | text"
+ ],
  "consoleCapture": {
   "captured": true,
   "contexts": [
@@ -1025,18 +639,18 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 13,
+  "warningCount": 12,
   "errors": []
  },
  "summary": {
   "plannedSteps": 241,
-  "completedSteps": 241,
+  "completedSteps": 138,
   "plannedClicks": 10,
-  "successfulClicks": 10,
+  "successfulClicks": 8,
   "skippedOptionalClicks": 0,
   "plannedFrames": 62,
-  "capturedFrames": 62,
-  "abortedEarly": false
+  "capturedFrames": 30,
+  "abortedEarly": true
  },
  "visualSamples": [
   {
@@ -1045,7 +659,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 249537,
+      "bytes": 249628,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1068,7 +682,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 250250,
+      "bytes": 250400,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1083,7 +697,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195378,
+      "bytes": 195327,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1098,7 +712,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 152902,
+      "bytes": 152980,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1110,8 +724,8 @@
     "camera": true,
     "sky": false,
     "departing": false,
-    "atmosphere": false,
-    "brightness": 1,
+    "atmosphere": true,
+    "brightness": 2.0155346393585205,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1122,7 +736,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 132573,
+      "bytes": 176256,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1135,7 +749,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0167770385742188,
+    "brightness": 2.018768310546875,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1146,7 +760,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 156013,
+      "bytes": 92142,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1159,7 +773,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0196034908294678,
+    "brightness": 2.0206689834594727,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1170,7 +784,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 111327,
+      "bytes": 127009,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1183,7 +797,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0230813026428223,
+    "brightness": 2.0243217945098877,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1194,7 +808,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 171869,
+      "bytes": 171808,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1207,7 +821,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.028381824493408,
+    "brightness": 2.0291686058044434,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1218,7 +832,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 182235,
+      "bytes": 181142,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1233,7 +847,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 184853,
+      "bytes": 185412,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1248,7 +862,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 179963,
+      "bytes": 181020,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1263,7 +877,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 184544,
+      "bytes": 183172,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1278,7 +892,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 141611,
+      "bytes": 132562,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1293,7 +907,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 141850,
+      "bytes": 132843,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1308,7 +922,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 169226,
+      "bytes": 168641,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1323,7 +937,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 188175,
+      "bytes": 187792,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1338,7 +952,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 197246,
+      "bytes": 197179,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1353,7 +967,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 188083,
+      "bytes": 187847,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1368,7 +982,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 188233,
+      "bytes": 187966,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1383,7 +997,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 242443,
+      "bytes": 241278,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1398,7 +1012,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 193260,
+      "bytes": 188766,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1413,7 +1027,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 166378,
+      "bytes": 167089,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1428,7 +1042,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 191346,
+      "bytes": 190402,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1443,7 +1057,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 191333,
+      "bytes": 190233,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1458,7 +1072,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 173376,
+      "bytes": 171928,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1473,7 +1087,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 197067,
+      "bytes": 195993,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1488,7 +1102,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 197625,
+      "bytes": 195993,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1503,7 +1117,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 175082,
+      "bytes": 174689,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1518,7 +1132,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 184566,
+      "bytes": 182456,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1533,7 +1147,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 197194,
+      "bytes": 195999,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1541,1027 +1155,10 @@
     ]
    },
    "interaction": "나가기"
-  },
-  {
-   "name": "cb0_deck",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 207297,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "cb1",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 217612,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "cb2",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 213180,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "나가기"
-  },
-  {
-   "name": "v1_start",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 256192,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "v2_event",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 252773,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "v3_event2",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 241325,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "v4_late",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 254413,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "b1_start",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 147428,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "b2_mid",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 152317,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_01",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 105861,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_02",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 106150,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_03",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 106121,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_04",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 106133,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_05",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 106088,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_06",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 106172,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_07",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 106151,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_08",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 104634,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_idle",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 103097,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_walk",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 103759,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_run",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 106663,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_attack",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 106126,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_shoot",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 105915,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_reload",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 105535,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_guard",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 106067,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_hurt",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 104604,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_cheer",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 106087,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_talk",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 104523,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_face_front",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 86470,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "field_entry",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 154871,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
-  },
-  {
-   "name": "field_npc_ally_mob",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 216174,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
-  },
-  {
-   "name": "field_motion_smooth_icons",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 220061,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
-  },
-  {
-   "name": "field_actor_after_motion",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 218450,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
   }
  ],
- "assetAudit": {
-  "models": {
-   "status": "PASS",
-   "loaded": 799,
-   "errors": [],
-   "failed": 0,
-   "registered": 799
-  },
-  "registered": {
-   "status": "PASS",
-   "failed": 0,
-   "imagesSounds": 473,
-   "models": 808,
-   "elapsedSeconds": 16,
-   "timedOut": false,
-   "registered": 1281,
-   "serverPreloadUnresponsive": true,
-   "failedMedia": [],
-   "fetchCallbacks": 0,
-   "currentBatch": 1,
-   "serverPreloadEvidence": {
-    "status": "FAIL",
-    "failed": 12,
-    "failedMedia": [
-     {
-      "id": "rbxassetid://72489040757878",
-      "key": "AssetIds.CardArt/af_03",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://77023165428158",
-      "key": "AssetIds.CardArt/af_15",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://107877140385634",
-      "key": "AssetIds.CardArt/ast_aurora",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://127370718437030",
-      "key": "AssetIds.CardArt/ast_comet",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://105991549101223",
-      "key": "AssetIds.CardArt/ast_halley_comet",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://114650000468629",
-      "key": "AssetIds.CardArt/ast_halley_prediction",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://125327803198600",
-      "key": "AssetIds.CardArt/ast_jupiter_moons",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://120956229711846",
-      "key": "AssetIds.CardArt/ast_saturn_rings",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://114615121747571",
-      "key": "AssetIds.CardArt/ast_venus",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://76486492447366",
-      "key": "AssetIds.CardArt/bot_herbarium",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://135648768778892",
-      "key": "AssetIds.CardArt/bot_plant_anatomy",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://97023606015316",
-      "key": "AssetIds.CardArt/bot_potato",
-      "status": "TIMEOUT_16S"
-     }
-    ],
-    "timedOut": false,
-    "fetchCallbacks": 0
-   },
-   "clientVerified": true,
-   "soundClientVerified": true,
-   "authority": "OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED"
-  },
-  "features": {
-   "status": "PASS",
-   "progress": "2044:DONE",
-   "coverage": {
-    "Visit": {
-     "invalid": 0,
-     "rejected": 54,
-     "accepted": 0,
-     "calls": 54
-    },
-    "BuyFleetShip": {
-     "invalid": 0,
-     "rejected": 48,
-     "accepted": 3,
-     "calls": 51
-    },
-    "VoyageBonus": {
-     "invalid": 0,
-     "rejected": 181,
-     "accepted": 0,
-     "calls": 181
-    },
-    "PlayStory": {
-     "invalid": 0,
-     "rejected": 225,
-     "accepted": 3,
-     "calls": 228
-    },
-    "Hunt": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Audience": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "BuyGear": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 6,
-     "calls": 6
-    },
-    "BuyShip": {
-     "invalid": 0,
-     "rejected": 49,
-     "accepted": 2,
-     "calls": 51
-    },
-    "HireCrew": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyPlating": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyMap": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "NewGame": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "WaitDay": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "SetSpecialty": {
-     "invalid": 0,
-     "rejected": 10,
-     "accepted": 5,
-     "calls": 15
-    },
-    "Talk": {
-     "invalid": 0,
-     "rejected": 47,
-     "accepted": 2,
-     "calls": 49
-    },
-    "Borrow": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "QAGrant": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Sell": {
-     "invalid": 0,
-     "rejected": 98,
-     "accepted": 20,
-     "calls": 118
-    },
-    "Buy": {
-     "invalid": 0,
-     "rejected": 98,
-     "accepted": 20,
-     "calls": 118
-    },
-    "Repair": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "Sail": {
-     "invalid": 0,
-     "rejected": 174,
-     "accepted": 7,
-     "calls": 181
-    },
-    "Research": {
-     "invalid": 0,
-     "rejected": 6,
-     "accepted": 0,
-     "calls": 6
-    },
-    "Withdraw": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuySupplies": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "DismissEscort": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "ToggleGear": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 6,
-     "calls": 6
-    },
-    "VoyageChoice": {
-     "invalid": 0,
-     "rejected": 180,
-     "accepted": 1,
-     "calls": 181
-    },
-    "ResolveBattle": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Repay": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Recruit": {
-     "invalid": 0,
-     "rejected": 48,
-     "accepted": 1,
-     "calls": 49
-    },
-    "Accept": {
-     "invalid": 0,
-     "rejected": 3,
-     "accepted": 5,
-     "calls": 8
-    },
-    "Feast": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "TalkChoice": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "BuyInsurance": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyEscort": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "State": {
-     "invalid": 0,
-     "rejected": 2,
-     "accepted": 0,
-     "calls": 2
-    },
-    "Rumor": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "ChallengeBoss": {
-     "invalid": 0,
-     "rejected": 4,
-     "accepted": 0,
-     "calls": 4
-    },
-    "Deposit": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyLicense": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "Haggle": {
-     "invalid": 0,
-     "rejected": 74,
-     "accepted": 43,
-     "calls": 117
-    },
-    "Explore": {
-     "invalid": 0,
-     "rejected": 592,
-     "accepted": 0,
-     "calls": 592
-    },
-    "BuyCannon": {
-     "invalid": 0,
-     "rejected": 3,
-     "accepted": 2,
-     "calls": 5
-    }
-   },
-   "observed": {
-    "naval-resolved": 1,
-    "quest-accepted": 5,
-    "voyage-arrived": 7,
-    "naval-encounter": 1
-   },
-   "calls": 2044,
-   "issues": [],
-   "rejected": 1898,
-   "failed": 0,
-   "accepted": 143
-  }
- },
- "assetRegistryAudit": {
-  "registered": 1181,
-  "activeIds": 1181,
-  "mismatched": [],
-  "missing": [],
-  "unverifiedPermissions": [],
-  "status": "PASS"
- },
- "clientImageAudit": {
-  "mode": "VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED",
-  "expected": 373,
-  "soundExpected": 100,
-  "missing": [],
-  "soundMissing": [],
-  "batches": 8,
-  "loaded": 373,
-  "soundLoaded": 100
- },
- "assetOwnership": {
-  "reportedFailedIds": [
-   "72489040757878",
-   "77023165428158",
-   "107877140385634",
-   "127370718437030",
-   "105991549101223",
-   "114650000468629",
-   "125327803198600",
-   "120956229711846",
-   "114615121747571",
-   "76486492447366",
-   "135648768778892",
-   "97023606015316"
-  ],
-  "contexts": {
-   "Server": {
-    "owners": {
-     "127370718437030": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_comet"
-      ]
-     },
-     "125327803198600": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_jupiter_moons"
-      ]
-     },
-     "107877140385634": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_aurora"
-      ]
-     },
-     "114650000468629": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_halley_prediction"
-      ]
-     },
-     "97023606015316": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/bot_potato"
-      ]
-     },
-     "114615121747571": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_venus"
-      ]
-     },
-     "135648768778892": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/bot_plant_anatomy"
-      ]
-     },
-     "120956229711846": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_saturn_rings"
-      ]
-     },
-     "77023165428158": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/af_15"
-      ]
-     },
-     "76486492447366": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/bot_herbarium"
-      ]
-     },
-     "105991549101223": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_halley_comet"
-      ]
-     },
-     "72489040757878": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/af_03"
-      ]
-     }
-    },
-    "scanned": 23483,
-    "contentRefs": 5142,
-    "complete": true
-   },
-   "Client": {
-    "owners": {
-     "127370718437030": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_comet"
-      ]
-     },
-     "125327803198600": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_jupiter_moons"
-      ]
-     },
-     "107877140385634": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_aurora"
-      ]
-     },
-     "114650000468629": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_halley_prediction"
-      ]
-     },
-     "97023606015316": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/bot_potato"
-      ]
-     },
-     "114615121747571": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_venus"
-      ]
-     },
-     "135648768778892": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/bot_plant_anatomy"
-      ]
-     },
-     "120956229711846": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_saturn_rings"
-      ]
-     },
-     "77023165428158": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/af_15"
-      ]
-     },
-     "76486492447366": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/bot_herbarium"
-      ]
-     },
-     "105991549101223": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_halley_comet"
-      ]
-     },
-     "72489040757878": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/af_03"
-      ]
-     }
-    },
-    "scanned": 25001,
-    "contentRefs": 4582,
-    "complete": false
-   }
-  }
- },
  "visualEvidence": {
-  "framesChecked": 62,
+  "framesChecked": 30,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
