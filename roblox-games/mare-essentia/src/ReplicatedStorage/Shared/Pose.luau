@@ -856,7 +856,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	local mobileEssentials = nil
 	if UserInputService.TouchEnabled and detailAllowed then
 		local camera, torso = workspace.CurrentCamera, model:FindFirstChild("UpperTorso")
-		local distance = if camera and torso then (camera.CFrame.Position - torso.Position).Magnitude else 0
+		-- [초상화 보호] WorldModel의 로컬 좌표를 월드 카메라 거리로 오인해
+		-- 동료 상세 복식이 2종으로 줄어드는 일을 막는다.
+		local distance = if model.Parent:IsA("WorldModel") then 0
+			elseif camera and torso then (camera.CFrame.Position - torso.Position).Magnitude else 0
 		local previous = model:GetAttribute("NpcOutfitDetailLimit") or 4
 		if distance > (if previous > 2 then 85 else 70)
 			or (mobileDetailFps < 38 and distance > (if previous > 2 then 48 else 38)) then
