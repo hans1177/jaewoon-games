@@ -5210,8 +5210,8 @@ export function buildVibeAssetProductionPlan({
       }
     }
   }
-  // [마리 교역품 3D] 기존 자산 장부의 정확한 품목 공백을 Vibe2 기존 제작 요구에 전달한다.
-  // 불충분한 자산은 후보일 뿐이다. 런타임 검증 이전에 게임 자산으로 승격하지 않는다.
+  // [마리 교역품 3D] 현행 69종의 정확한 부족 자산과 런타임 미검증 원본을 기존 자산 제작 분야에 연결한다.
+  // [품질 보호] 등록·권한 PASS는 외형 품질 PASS가 아니다. 승인된 원본은 전후 시각 검증 없이 교체하지 않는다.
   const tradeGoodsSourceRequirements=[];
   let tradeGoods3DPractice=null;
   if(resolvedTarget==='roblox'&&gameId==='mare-essentia'
@@ -5221,18 +5221,32 @@ export function buildVibeAssetProductionPlan({
     const stats=practice?.stats||{};
     const coverage=Number(stats.registeredSourceChecked||0)+Number(stats.missingExactModel||0)
       +Number(stats.unverified||0)+Number(stats.visualRestricted||0);
-    if(Number(stats.targetCount)>=70&&rows.length===Number(stats.targetCount)
+    // 현재 실제 Ports.luau 범위는 69종. 옛 '>=70' 조건은 제작 대기열 전체를 숨겼다.
+    if(Number(stats.targetCount)>=69&&rows.length===Number(stats.targetCount)
       &&coverage===rows.length&&practice?.authority==='EXISTING_MARE_ASSET_PIPELINE_PRACTICE_ONLY'){
-      const missing=rows.filter(row=>row?.state==='MISSING_EXACT_MODEL'
-        &&/^[a-z][a-z0-9_]{1,60}$/.test(clean(row?.id)));
+      const validId=row=>/^[a-z][a-z0-9_]{1,60}$/.test(clean(row?.id));
+      const missing=rows.filter(row=>row?.state==='MISSING_EXACT_MODEL'&&validId(row));
+      const qualityReview=rows.filter(row=>row?.state==='REGISTERED_SOURCE_CHECKED_RUNTIME_PENDING'
+        &&row?.license==='PROJECT_ORIGINAL_ART'&&row?.nativeRuntimeVerified!==true
+        &&row?.visualQualityPass!==true&&validId(row));
+      // [화면 영향 우선] 석탄·식량·직물·고가 교역품을 먼저 실물 평가한다. 수치·거래 룰은 무관하다.
+      const priority=['coal','rice','silk','cotton','porcelain','spice','sugar','carpet'];
+      qualityReview.sort((a,b)=>{
+        const left=priority.indexOf(a.id),right=priority.indexOf(b.id);
+        return (left<0?priority.length:left)-(right<0?priority.length:right)
+          ||String(a.id).localeCompare(String(b.id));
+      });
+      const candidates=[...missing,...qualityReview].slice(0,4);
       tradeGoods3DPractice=freeze({gameId,platform:'ROBLOX',targetCount:rows.length,
         sourceChecked:Number(stats.registeredSourceChecked||0),
-        missingCount:missing.length,visualRestricted:Number(stats.visualRestricted||0),
+        missingCount:missing.length,qualityReviewPending:qualityReview.length,
+        visualRestricted:Number(stats.visualRestricted||0),
         runtimeVerified:false,autoReplaceWithoutRuntimeReview:false,
-        nextExistingAssetTasks:freezeList(missing.slice(0,4).map(row=>clean(row.id)))});
-      for(const row of missing.slice(0,4))tradeGoodsSourceRequirements.push({
+        nextExistingAssetTasks:freezeList(candidates.map(row=>clean(row.id)))});
+      for(const row of candidates)tradeGoodsSourceRequirements.push({
         family:'PROP',role:clean(row.id),assetRole:clean(row.id),
-        source:'CURRENT_MARE_TRADE_GOODS_3D_PRACTICE',
+        source:row.state==='MISSING_EXACT_MODEL'
+          ?'CURRENT_MARE_TRADE_GOODS_3D_PRACTICE':'CURRENT_MARE_TRADE_GOODS_3D_VISUAL_REVIEW',
         sourcePath:'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Ports.luau',
         sourceConsumer:'roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau',
         required:true,licenseRequirement:'CC0-1.0',
