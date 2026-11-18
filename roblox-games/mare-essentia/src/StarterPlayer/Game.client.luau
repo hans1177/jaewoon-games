@@ -8014,52 +8014,154 @@ local GAIN_RARITY = { Common = "흔함", Uncommon = "보통", Rare = "희귀", E
 
 function H.showCardGain(card, moreCount)
 	if not card then return end
-	-- [스튜디오 수동 미리보기] 카드 획득 자동 호출은 하지 않는다. 다른 화면의 터치를 가리지 않는다.
+	-- [카드 습득] 별도 이벤트씬·암전·선택 강제 없이 승인된 도감 원화가 중앙에서 빛나며 나타난다.
+	-- 부드러운 황동 광륜과 별빛이 퍼진 뒤, 실제 서재 도크 아이콘으로 작아지며 페이드 아웃한다.
 	local pg = player:WaitForChild("PlayerGui")
 	local previous = pg:FindFirstChild("CardGain")
 	if previous then previous:Destroy() end
 	local g = overlayGui("CardGain", 95)
-	local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
-	local badge = Instance.new("Frame")
-	badge.Name = "CardDiscoveryNotice"
-	badge.AnchorPoint = Vector2.new(0.5, 0)
-	badge.Position = UDim2.new(0.5, 0, 0, if vp.Y < 500 then 66 else 78)
-	badge.Size = UDim2.fromOffset(math.min(320, math.max(180, vp.X - 32)), 54)
-	badge.BackgroundColor3 = Color3.fromRGB(27, 35, 43)
-	badge.BackgroundTransparency = 0.08
-	badge.BorderSizePixel = 0
-	badge.Parent = g
-	corner(badge, 10)
-	local edge = Instance.new("UIStroke")
-	edge.Color = GAIN_COLOR[card.rarity] or GAIN_COLOR.Common
-	edge.Thickness = 1.5
-	edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	edge.Parent = badge
-	local title = Instance.new("TextLabel")
-	title.BackgroundTransparency = 1
-	title.Position = UDim2.fromOffset(12, 5)
-	title.Size = UDim2.new(1, -24, 0, 23)
-	title.Font = Enum.Font.GothamBold
-	title.TextSize = 15
-	title.TextXAlignment = Enum.TextXAlignment.Left
-	title.TextTruncate = Enum.TextTruncate.AtEnd
-	title.TextColor3 = Color3.fromRGB(246, 238, 221)
-	title.TextStrokeTransparency = 1
-	title.Text = tostring(card.name or "지식 카드")
-	title.Parent = badge
-	local detail = Instance.new("TextLabel")
-	detail.BackgroundTransparency = 1
-	detail.Position = UDim2.fromOffset(12, 29)
-	detail.Size = UDim2.new(1, -24, 0, 19)
-	detail.Font = Enum.Font.Gotham
-	detail.TextSize = 12
-	detail.TextXAlignment = Enum.TextXAlignment.Left
-	detail.TextTruncate = Enum.TextTruncate.AtEnd
-	detail.TextColor3 = Color3.fromRGB(189, 204, 214)
-	detail.TextStrokeTransparency = 1
-	detail.Text = "도감 등록 · " .. (GAIN_RARITY[card.rarity] or tostring(card.rarity or "일반"))
-	detail.Parent = badge
-	task.delay(3, function()
+	g:SetAttribute("NonBlockingCardNotice", true)
+	local TS = game:GetService("TweenService")
+	local tone = GAIN_COLOR[card.rarity] or GAIN_COLOR.Common
+	local center = UDim2.fromScale(0.5, 0.46)
+	local frame = Instance.new("Frame")
+	frame.Name = "KnowledgeCardReveal"
+	frame.AnchorPoint = Vector2.new(0.5, 0.5)
+	frame.Position = center
+	frame.Size = UDim2.fromOffset(58, 76)
+	frame.BackgroundColor3 = Color3.fromRGB(234, 212, 166)
+	frame.BorderSizePixel = 0
+	frame.Rotation = -5
+	frame.ZIndex = 8
+	frame.Parent = g
+	corner(frame, 10)
+	local rim = Instance.new("UIStroke")
+	rim.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	rim.Color = tone
+	rim.Thickness = 3
+	rim.Parent = frame
+	local paper = Instance.new("UIGradient")
+	paper.Color = ColorSequence.new(Color3.fromRGB(252, 238, 205), Color3.fromRGB(173, 136, 88))
+	paper.Rotation = 90
+	paper.Parent = frame
+	local art = Instance.new("ImageLabel")
+	art.Name = "ApprovedCardArt"
+	art.BackgroundTransparency = 1
+	art.Position = UDim2.fromOffset(10, 12)
+	art.Size = UDim2.new(1, -20, 1, -71)
+	art.Image = if AssetIds["CardArt/" .. tostring(card.id)] then
+		"rbxassetid://" .. tostring(AssetIds["CardArt/" .. tostring(card.id)]) else ""
+	art.ScaleType = Enum.ScaleType.Fit
+	art.ZIndex = 9
+	art.Parent = frame
+	local name = Instance.new("TextLabel")
+	name.Name = "CardName"
+	name.BackgroundTransparency = 1
+	name.Position = UDim2.new(0, 6, 1, -56)
+	name.Size = UDim2.new(1, -12, 0, 29)
+	name.Font = Enum.Font.GothamBold
+	name.TextSize = 17
+	name.TextColor3 = Color3.fromRGB(52, 36, 24)
+	name.TextTruncate = Enum.TextTruncate.AtEnd
+	name.Text = tostring(card.name or "새 지식")
+	name.ZIndex = 9
+	name.Parent = frame
+	local rarity = Instance.new("TextLabel")
+	rarity.BackgroundTransparency = 1
+	rarity.Position = UDim2.new(0, 6, 1, -28)
+	rarity.Size = UDim2.new(1, -12, 0, 22)
+	rarity.Font = Enum.Font.GothamBold
+	rarity.TextSize = 15
+	rarity.TextColor3 = Color3.fromRGB(75, 54, 34)
+	rarity.Text = (GAIN_RARITY[card.rarity] or "지식") .. " · 서재에 보관"
+	rarity.ZIndex = 9
+	rarity.Parent = frame
+	local rings = {}
+	for i = 1, 2 do
+		local ring = Instance.new("Frame")
+		ring.Name = "DiscoveryHalo"
+		ring.AnchorPoint = Vector2.new(0.5, 0.5)
+		ring.Position = center
+		ring.Size = UDim2.fromOffset(85, 85)
+		ring.BackgroundTransparency = 1
+		ring.ZIndex = 6
+		ring.Parent = g
+		corner(ring, 100)
+		local stroke = Instance.new("UIStroke")
+		stroke.Color = tone
+		stroke.Thickness = if i == 1 then 3 else 1.5
+		stroke.Transparency = 0.08
+		stroke.Parent = ring
+		table.insert(rings, { ring, stroke })
+	end
+	local caption = Instance.new("TextLabel")
+	caption.Name = "KnowledgeAcquired"
+	caption.AnchorPoint = Vector2.new(0.5, 0)
+	caption.Position = UDim2.fromScale(0.5, 0.46)
+	caption.Size = UDim2.fromOffset(260, 36)
+	caption.BackgroundTransparency = 1
+	caption.Font = Enum.Font.GothamBold
+	caption.TextSize = 19
+	caption.TextColor3 = tone
+	caption.TextStrokeColor3 = Color3.fromRGB(18, 15, 12)
+	caption.TextStrokeTransparency = 0.2
+	caption.Text = if (moreCount or 0) > 0 then
+		string.format("지식 발견! · 추가 %d장", moreCount) else "새 지식 발견!"
+	caption.ZIndex = 10
+	caption.Parent = g
+	for i = 1, 8 do
+		local angle = (i - 1) * math.pi / 4
+		local glint = Instance.new("TextLabel")
+		glint.Name = "CardSparkle"
+		glint.AnchorPoint = Vector2.new(0.5, 0.5)
+		glint.Position = center
+		glint.Size = UDim2.fromOffset(23, 23)
+		glint.BackgroundTransparency = 1
+		glint.Font = Enum.Font.GothamBold
+		glint.Text = "✦"
+		glint.TextSize = if i % 2 == 0 then 18 else 25
+		glint.TextColor3 = tone
+		glint.ZIndex = 7
+		glint.Parent = g
+		TS:Create(glint, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+			Position = UDim2.new(0.5, math.cos(angle) * 130, 0.46, math.sin(angle) * 115),
+			TextTransparency = 1,
+		}):Play()
+	end
+	Sfx.play("sfx_card_coin", 0.75)
+	TS:Create(frame, TweenInfo.new(0.46, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Size = UDim2.fromOffset(170, 208), Rotation = 0,
+	}):Play()
+	for i, pair in rings do
+		TS:Create(pair[1], TweenInfo.new(0.85 + i * 0.13, Enum.EasingStyle.Quart), {
+			Size = UDim2.fromOffset(210 + i * 40, 210 + i * 40),
+		}):Play()
+		TS:Create(pair[2], TweenInfo.new(0.9 + i * 0.15), { Transparency = 1 }):Play()
+	end
+	TS:Create(caption, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.5, 0, 0.46, 115),
+	}):Play()
+	task.delay(1.4, function()
+		if not g.Parent then return end
+		Sfx.play("sfx_book_turn", 0.32)
+		local icon = H.dockButtons and H.dockButtons.codex
+		local destination = UDim2.new(1, -44, 0, 70)
+		if icon and icon.Parent and icon.Visible and icon.AbsoluteSize.X > 0 then
+			destination = UDim2.fromOffset(
+				icon.AbsolutePosition.X + icon.AbsoluteSize.X * 0.5,
+				icon.AbsolutePosition.Y + icon.AbsoluteSize.Y * 0.5)
+		end
+		TS:Create(frame, TweenInfo.new(0.75, Enum.EasingStyle.Quint, Enum.EasingDirection.In), {
+			Position = destination, Size = UDim2.fromOffset(26, 34),
+			Rotation = 9, BackgroundTransparency = 1,
+		}):Play()
+		TS:Create(art, TweenInfo.new(0.66), { ImageTransparency = 1 }):Play()
+		TS:Create(rim, TweenInfo.new(0.68), { Transparency = 1 }):Play()
+		TS:Create(name, TweenInfo.new(0.5), { TextTransparency = 1 }):Play()
+		TS:Create(rarity, TweenInfo.new(0.5), { TextTransparency = 1 }):Play()
+		TS:Create(caption, TweenInfo.new(0.55), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+	end)
+	task.delay(2.3, function()
 		if g.Parent then g:Destroy() end
 	end)
 end
@@ -8186,12 +8288,38 @@ end)
 function H.checkNewCards()
 	local cards = view and view.codex and view.codex.cards
 	if not cards then return end
+	-- [저장 보호] 첫 서버 스냅샷은 기존 도감 상태만 기준선으로 읽어 재접속 때 획득 연출을 반복하지 않는다.
+	local firstSnapshot = H.seenCards == nil
 	H.seenCards = H.seenCards or {}
+	local acquired = {}
 	for _, c in cards do
 		if c.found and not H.seenCards[c.id] then
 			H.seenCards[c.id] = true
+			if not firstSnapshot then table.insert(acquired, c) end
 		end
 	end
+	if #acquired == 0 then return end
+	-- [알림 절제] 같은 서버 응답의 카드 여러 장은 대표 카드 1장으로 연출하고 수량을 표시한다.
+	-- 각 응답은 순서대로 처리하지만 터치와 게임 조작을 막지 않는다.
+	H.cardGainQueue = H.cardGainQueue or {}
+	table.insert(H.cardGainQueue, { card = acquired[1], extra = #acquired - 1 })
+	if H.cardGainPlaying then return end
+	H.cardGainPlaying = true
+	task.spawn(function()
+		while #H.cardGainQueue > 0 and player.Parent do
+			local pg = player:WaitForChild("PlayerGui")
+			while player.Parent and (newGameMode or inField or sceneHold or H.sceneBusy
+				or H.questScenesPlaying or pg:FindFirstChild("StoryScene", true)
+				or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("HistoryEvent", true)) do
+				task.wait(0.2)
+			end
+			if not player.Parent then break end
+			local found = table.remove(H.cardGainQueue, 1)
+			H.showCardGain(found.card, found.extra)
+			task.wait(2.4)
+		end
+		H.cardGainPlaying = false
+	end)
 end
 
 local function tierRows(list: { any }, scope: string, labelFmt: string)

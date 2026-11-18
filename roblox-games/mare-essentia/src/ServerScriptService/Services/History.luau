@@ -25,6 +25,9 @@ return function(D, S)
 		if h.pending then
 			return h.pending
 		end
+		-- [도시 자동 사건] 이미 이 방문에서 다른 사건을 보여 줬다면 다음 도시까지 새 사건을 보류한다.
+		-- 선택·시세·보상·기존 저장 필드는 그대로 둔다.
+		if state._autoEventPort == state.portId then return nil end
 		local best, bestDay = nil, math.huge
 		for _, ev in E.Events do
 			if ev.year >= state.startYear and h.seen[ev.id] == nil then
@@ -37,6 +40,7 @@ return function(D, S)
 		end
 		if best then
 			h.pending = best.id
+			state._autoEventPort = state.portId
 		end
 		return h.pending
 	end
@@ -177,7 +181,8 @@ return function(D, S)
 		h.seen[ev.id] = math.floor(idx)
 		h.pending = nil
 		h.count = nil
-		-- 다음 사건이 이미 와 있으면 이어서 기다리게 한다
+		-- [도시 자동 사건] 방금 역사 선택을 끝냈다면 다른 자동 사건은 다음 방문에 노출한다.
+		state._autoEventPort = state.portId
 		tick(state)
 		return true, table.concat(msgs, "\n")
 	end

@@ -292,19 +292,31 @@ return function(D, S)
 		if first then
 			return
 		end
-		-- 항구와 날짜로 정해지는 결정적 확률(70%): 같은 도착이면 같은 소문
+		-- [도시 자동 사건] 역사 사건·우연한 의뢰·관찰·인물 방문 중 이번 항구에서 하나만 자연 발동한다.
+		-- 이야기 듣기·의뢰 수락처럼 플레이어가 직접 누른 액션은 기존 흐름을 유지한다.
+		-- 기록/보상은 선택된 사건의 기존 함수만 처리하며, 밀린 사건을 완료 처리하지 않는다.
+		if S.History and S.History.tick(state) then
+			return
+		end
+		-- 항구와 날짜로 정해지는 기존 확률(70%): 같은 도착이면 같은 소문
 		local h = 0
 		for i = 1, #state.portId do
 			h += string.byte(state.portId, i) * i
 		end
 		if (h + state.day * 7) % 10 < 7 then
-			offer(state, msgs, "주점에서 소문을 들었다")
+			local offered = offer(state, msgs, "주점에서 소문을 들었다")
+			if offered then
+				state._autoEventPort = state.portId
+				return
+			end
 		end
-		if S.Chronicle then
-			S.Chronicle.arrive(state, msgs)
+		if S.Chronicle and S.Chronicle.arrive(state, msgs) then
+			state._autoEventPort = state.portId
+			return
 		end
 		if S.Story and S.Story.autoTrigger then
 			S.Story.autoTrigger(state, msgs)
+			if state.autoStory then state._autoEventPort = state.portId end
 		end
 	end
 
