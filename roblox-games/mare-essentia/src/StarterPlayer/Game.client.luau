@@ -249,11 +249,11 @@ end
 
 -- [전체 메뉴 리뉴얼] 기존 시설 동작은 유지하고 메뉴마다 목적·순서를 짧게 표시한다.
 H.MENU_FOCUS = {
-	trade = { "교역 장부", "시세 비교 → 수량 선택 → 매입·판매" , "교역 장부 열기" },
+	trade = { "교역 장부", "시세 비교 → 수량 선택 → 매입·판매" , "상품 거래 보기" },
 	harbor = { "항구 정보", "특산품·수요 → 시장·시설 → 발전 현황" , "항구 살펴보기" },
 	route = { "항로 선택", "거리·위험 → 보급 확인 → 출항" , "항로 살펴보기" },
 	map = { "세계 지도", "목적지 탐색 → 항구 정보 → 항로 연결" , "지도 살펴보기" },
-	yard = { "선박 관리", "선체·보급 → 선단·대포 → 새 배 비교" , "새 배 비교" },
+	yard = { "선박 관리", "선체·보급 → 선단·대포 → 새 배 비교" , "선박 비교 보기" },
 	board = { "주점 의뢰", "의뢰 조건 → 위험·보상 → 수락·납품" , "의뢰 살펴보기" },
 	quest = { "진행 일지", "현재 목표 → 달성 조건 → 보상 받기" , "진행 목표 보기" },
 	recruit = { "동료 영입", "직업·특기 → 영입 조건 → 선원 배치" , "동료 비교하기" },
@@ -6474,20 +6474,9 @@ function RENDERERS.trade()
 			{ "동료 감각", intelName(view.intel or 0), tone = "key" },
 		})
 	end
-	add(function()
-		-- [교역소 방문] 미작동 장식 카드 대신 기존 교역·항구·밀수 기능까지 한 번에 이동한다.
-		return H.tileGrid({
-			{ icon = "trade", title = "교역 장부", sub = "매입·판매·흥정\n시세와 손익 확인", btn = "거래하기", color = COLORS.gold, onClick = function() openTradeHall() end },
-			{ icon = "cc0_chest", title = "항구 특산품", sub = "지역 수요·공급\n항구 발전 확인", btn = "항구 정보", color = COLORS.blue, onClick = function() openTab("harbor") end },
-			{ icon = "cc0_goldcoins", title = "암시장 거래", sub = "교역 장부의 상품 선택 후\n위험을 확인하고 밀수", btn = "거래 장부", color = COLORS.red, onClick = function() openTradeHall() end },
-		}, content, nil, nil, true)
-	end)
-	-- 프롤로그는 저널의 이야기 기록으로 이동했다.
-	if view.news and #view.news > 0 then
-		add(function() return mkHeader(content, "시장 소식") end)
-		add(function() return mkLabel(content, table.concat(view.news, "\n"), 16, COLORS.gold, true) end)
-	end
-	addRumorPanel()
+	-- [주점형 교역소] 방문 즉시 같은 시설 목록에서 상품을 골라 매입·판매·암시장을 이용한다.
+	add(function() return mkHeader(content, "상품 거래 · 바로 구매 / 판매") end)
+	add(function() return mkLabel(content, "상품 카드에서 가격·보유량·세후손익을 확인해. 암시장 거래는 압수 위험이 있어.", 14, COLORS.muted, false) end)
 	add(function()
 		local frame = Instance.new("Frame")
 		frame.BackgroundTransparency = 1
@@ -6532,14 +6521,15 @@ function RENDERERS.trade()
 		return a.name < b.name
 	end)
 	-- 우편·거래소 (아래쪽에서 이어서 그린다)
-	-- 상품 카드 격자: 한눈에 보고 바로 사고판다 (대항해시대 온라인 교역소처럼)
+	-- [주점형 거래] 별도 큰 화면 없이 이 시설의 상품 카드에서 거래한다.
 	add(function()
 		local grid = Instance.new("Frame")
+		grid.Name = "TradeGoodsGrid"
 		grid.BackgroundTransparency = 1
 		grid.Size = UDim2.new(1, -6, 0, 0)
 		grid.AutomaticSize = Enum.AutomaticSize.Y
 		local gl = Instance.new("UIGridLayout")
-		gl.CellSize = UDim2.new(1, -6, 0, 244)
+		gl.CellSize = UDim2.new(1, -6, 0, 292)
 		gl.CellPadding = UDim2.fromOffset(6, 6)
 		gl.SortOrder = Enum.SortOrder.LayoutOrder
 		gl.Parent = grid
@@ -6658,9 +6648,10 @@ function RENDERERS.trade()
 			local sell = mkButton(cardF, if canSell then "판매 " .. tostring(qty) else sellReason, COLORS.green, UDim2.new(0.5, -10, 0, 36), function() call("Sell", { goodId = g.id, amount = amount() }) end, canSell)
 			sell.Position = UDim2.new(0.5, 4, 1, -50)
 			if g.owned > 0 then
-				local sm = mkButton(cardF, "암", COLORS.red, UDim2.fromOffset(34, 24), function() call("Smuggle", { goodId = g.id, amount = amount() }) end, true)
-				sm.AnchorPoint = Vector2.new(1, 0)
-				sm.Position = UDim2.new(1, -8, 0, 34)
+				-- [암시장] 작고 알아보기 어려운 '암' 버튼을 같은 상품 카드의 큰 위험표시 버튼으로 바꾼다.
+				local sm = mkButton(cardF, "암시장 거래 · 압수 위험", COLORS.red, UDim2.new(1, -16, 0, 32),
+					function() call("Smuggle", { goodId = g.id, amount = amount() }) end, true)
+				sm.Position = UDim2.new(0, 8, 1, -88)
 			end
 		end
 		-- [모바일 교역 카드] 좁은 화면은 1열, 중간은 2열, 넓은 화면은 3열로 글자가 잘리지 않게 한다.
@@ -6668,12 +6659,18 @@ function RENDERERS.trade()
 			local width = grid.AbsoluteSize.X
 			if width <= 0 then return end
 			local columns = if width < 460 then 1 elseif width < 910 then 2 else 3
-			gl.CellSize = UDim2.new(1 / columns, -6 * (columns - 1) / columns, 0, 228)
+			gl.CellSize = UDim2.new(1 / columns, -6 * (columns - 1) / columns, 0, 292)
 		end
 		grid:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitGrid)
 		task.defer(fitGrid)
 		return grid
 	end)
+	-- [교역소 부가 정보] 소문과 시장 소식은 즉시 거래할 상품 아래에 정리한다.
+	if view.news and #view.news > 0 then
+		add(function() return mkHeader(content, "시장 소식") end)
+		add(function() return mkLabel(content, table.concat(view.news, "\n"), 16, COLORS.gold, true) end)
+	end
+	addRumorPanel()
 
 	-- 거래소 게시판: 다른 항해자와 고정가로 사고판다 (수수료 5%)
 	local function mkInput(parent, placeholder, text, width, onChanged)
@@ -6949,10 +6946,8 @@ function H.counselRows(n)
 			local buttons = {}
 			if cs.tab ~= currentTab then
 				table.insert(buttons, { text = cs.label or "이동", color = COLORS.green, onClick = function() H.goAdvice(cs.tab) end })
-			elseif currentTab == "trade" then
-				table.insert(buttons, { text = "교역 장부", color = COLORS.green, onClick = function() if H.tradeHall then H.tradeHall() end end })
-			elseif currentTab == "yard" then
-				table.insert(buttons, { text = "선박 관리", color = COLORS.green, onClick = function() if H.yardHall then H.yardHall() end end })
+			elseif currentTab == "trade" or currentTab == "yard" then
+				table.insert(buttons, { text = "상세 보기", color = COLORS.green, onClick = function() if H.invokeMenuPrimary then H.invokeMenuPrimary() end end })
 			elseif currentTab == "route" then
 				table.insert(buttons, { text = "지도", color = COLORS.green, onClick = function() openTab("map", "chart") end })
 			elseif currentTab == "map" then
@@ -7057,8 +7052,7 @@ local function renderYard()
 				btn = if need then "수리" else "불필요", color = COLORS.green, enabled = need, onClick = function() call("Repair") end },
 			{ icon = "cc0_helmet", title = "선원 고용", sub = string.format("%d코인/명 · %d/%d", yard.hireCost, sh.crew, sh.maxCrew), btn = "+5명", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 5 }) end },
 			{ icon = "cc0_chest", title = "보급품", sub = string.format("%d코인/개 · 보유 %d", yard.supplyCost, sh.supplies), btn = "+20", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 20 }) end },
-			{ icon = "harbor", title = "조선소 입장", sub = "배·대포·보강 고르기", btn = "입장", color = COLORS.gold, enabled = yard.available, onClick = function() openYardHall() end },
-		}, content)
+		}, content, nil, nil, true)
 	end)
 	if not yard.available then
 		add(function() return mkLabel(content, "이 항구엔 조선소가 없어 배 구매·수리가 안 돼요.", 13, COLORS.gold, false) end)
@@ -7335,7 +7329,7 @@ local function renderYard()
 			if si then withIcon(row, si[1], si[2], si[3], 100) end
 			-- [오른쪽 선박 목록] 배 이름·사진을 누르면 기존 중앙 3D 갤러리에 연결한다.
 			-- 교체/구매는 원래 버튼만 실행하고 제목 선택은 결제를 호출하지 않는다.
-			if H.yardHallActive then
+			if not H.yardHallActive then
 				local selectArea = Instance.new("TextButton")
 				selectArea.Name = "SelectShip3D_" .. tostring(s.id)
 				selectArea.Text = ""
@@ -7347,7 +7341,7 @@ local function renderYard()
 				selectArea.Parent = row
 				selectArea.Activated:Connect(function()
 					H.shipPreviewId = s.id
-					if tradeHallRefresh then tradeHallRefresh() else render() end
+					render()
 				end)
 			end
 			-- [선박 시각 비교] 실제 교체 후 화물칸·속도·선체를 표시한다.
@@ -8830,10 +8824,10 @@ workspace:GetAttributeChangedSignal("DevStory"):Connect(function()
 	end
 end)
 
--- 개발 확인용: workspace 속성 DevTradeHall 를 켜면 교역소 화면을 연다
+-- 개발 확인용: 별도 큰 창 대신 현재 교역소의 방문 화면을 연다.
 workspace:GetAttributeChangedSignal("DevTradeHall"):Connect(function()
 	if workspace:GetAttribute("DevTradeHall") and view then
-		openTradeHall()
+		openTab("trade")
 	end
 end)
 
@@ -10929,17 +10923,8 @@ syncScene = function()
 		voyagers = view.diplo and view.diplo.voyagers,
 		arrive = arriveNext,
 	}, function(tab)
-		currentTab = tab
-		H.mapPage = nil
-		menuToggle.Visible = false
-		if tab == "trade" then
-			openTradeHall()
-		elseif tab == "yard" then
-			openYardHall()
-		else
-			main.Visible = true
-			render()
-		end
+		-- [방문 단일화] 항구 건물 방문도 주점처럼 기존 시설 창으로 연다.
+		if TAB_NAME[tab] then openTab(tab) end
 	end)
 	if not ok then
 		warn("[Game] 항구 장면 오류", res)
@@ -12334,8 +12319,15 @@ function render()
 		end
 		-- [고정 하단 버튼] 기존 실행 함수를 재사용한다. 출항만 기존 확인 창으로 보낸다.
 		H.invokeMenuPrimary = function()
-			if currentTab == "trade" and H.tradeHall then H.tradeHall() return end
-			if currentTab == "yard" and H.yardHall then H.yardHall() return end
+			-- [시설 내 바로가기] 새 큰 화면을 띄우지 않고 현재 목록의 실제 상품·선박으로 이동한다.
+			if currentTab == "trade" or currentTab == "yard" then
+				local target = content:FindFirstChild(if currentTab == "trade" then "TradeGoodsGrid" else "YardSectionShips", true)
+				if target then
+					local y = target.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 8
+					content.CanvasPosition = Vector2.new(0, math.max(0, y))
+				end
+				return
+			end
 			if currentTab == "scholar" then openTab("tech") return end
 			if (currentTab == "crew" or currentTab == "status") and H.openCabin then H.openCabin() return end
 			if currentTab == "route" and H.menuPrimaryRoute then confirmSail(H.menuPrimaryRoute) return end
@@ -12731,24 +12723,11 @@ function H.openCabin()
 	build()
 end
 
--- 조언을 눌렀을 때 그 화면으로 바로 간다 (조선소·교역소는 전용 큰 화면)
+-- [방문 단일화] 조언 바로가기도 주점과 같은 시설 책을 연다.
 function H.goAdvice(tab)
-	-- [동료 바로가기] 산책 HUD와 시설 책의 표시 상태를 먼저 정리한다.
 	H.hideBubble()
 	menuToggle.Visible = false
-	-- [최근 메뉴] 전용 교역소·조선소도 바로 이전 시설을 잃지 않게 한다.
-	if (tab == "yard" or tab == "trade") and currentTab ~= tab and TAB_NAME[currentTab] then
-		H.recentTab = currentTab
-	end
-	if tab == "yard" then
-		currentTab = "yard"
-		openYardHall()
-	elseif tab == "trade" then
-		currentTab = "trade"
-		openTradeHall()
-	else
-		openTab(tab)
-	end
+	openTab(tab)
 end
 
 openTab = function(tabId, mapPage)
@@ -13629,7 +13608,7 @@ task.spawn(function()
 		end
 		if workspace:GetAttribute("DevCall") == "Hall" then
 			workspace:SetAttribute("DevCall", nil)
-			openTradeHall()
+			openTab("trade")
 		end
 		local dc = workspace:GetAttribute("DevCall")
 		if type(dc) == "string" and dc:sub(1, 4) == "Tab:" then
@@ -13649,7 +13628,7 @@ task.spawn(function()
 			workspace:SetAttribute("DevResult", dc .. " " .. tostring(okTab) .. " " .. tostring(errTab))
 		elseif dc == "Yard" then
 			workspace:SetAttribute("DevCall", nil)
-			openYardHall()
+			openTab("yard")
 		elseif dc == "Deck" then
 			workspace:SetAttribute("DevCall", nil)
 			pcall(function() H.openDeck() end)
