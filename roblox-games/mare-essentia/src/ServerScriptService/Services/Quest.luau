@@ -226,7 +226,7 @@ return function(D, S)
 			S.State.gainXp(state, quest.rewardCareer, quest.rewardXp, msgs)
 		end
 		if quest.rewardCardId then
-			S.Discovery.grantCard(state, quest.rewardCardId, msgs)
+			S.Discovery.grantCard(state, quest.rewardCardId, msgs, { method = "quest", questId = quest.id })
 		end
 		S.Cardbook.reward(state, "quest", msgs)
 		-- 어려운 기술 퀘스트(연속 퀘스트·지식 이해)를 해내면 역사가 앞당겨진다
@@ -335,6 +335,25 @@ return function(D, S)
 		if S.Story and S.Story.autoTrigger and S.Story.autoTrigger(state, msgs, true) then
 			state._autoEventPort = state.portId
 			return
+		end
+		-- [10대 항로] 해당 항구에서 첫 번째로 마주친 중요한 지역 단서만 이야기 장면을 연다.
+		-- 별도 보상/진행도는 만들지 않으며, 기존 storySeen 저장으로 중복 연출을 막는다.
+		for _, quest in D.Quests.Quests do
+			if quest.routeId and (not quest.after or quest.difficulty == 5) and quest.portId == state.portId and not state.quests.done[quest.id]
+				and (not quest.after or state.quests.done[quest.after])
+				and not state.storySeen["route_clue:" .. quest.id] then
+				state.storySeen["route_clue:" .. quest.id] = true
+				state._scenes = state._scenes or {}
+				local source = quest.leadSource or "현지 제보"
+				local detail = quest.story or quest.summary
+				table.insert(state._scenes, {
+					kind = "start", name = quest.name .. " · " .. source,
+					text = source .. ": " .. detail, summary = quest.summary,
+				})
+				table.insert(msgs, string.format("%s에서 %s 단서를 확인했다: %s", D.Ports.Ports[state.portId].name, source, quest.name))
+				state._autoEventPort = state.portId
+				return
+			end
 		end
 		-- [전 세계 사건의 시작] 새 항구에 닿으면 실제 지역의 미해결 사건·유적·생물 소식 중 하나를 일지로 전한다.
 		-- 소문/현장 발견/상단 문서/학술 편지 등 출처를 구분하되, 일반 소식만으로는 컷신을 띄우지 않는다.
