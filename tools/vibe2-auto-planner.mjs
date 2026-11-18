@@ -852,14 +852,17 @@ function ownerResumableCatalogGame(game={}){
 }
 function focusedCaretakerPolicy(repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot)?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
-  // [오너 집중 개발] 3개는 목표/최대 슬롯이지, 아직 지정하지 않은 게임의 자동 선택 허가가 아니다.
-  // 지정된 1~3개만 원래 승인된 플랫폼으로 즉시 작업하고 빈 슬롯은 미배정 상태로 남긴다.
-  // 중복 지정·목표 수 변경·플랫폼 누락은 계속 실패 처리하며 설계/QA 게이트는 유지한다.
+  // [오너 집중 개발] 현재 중앙정책의 목표/최대 슬롯을 그대로 따른다.
+  // 명시된 게임만 승인 플랫폼에 배정하며, 빈 슬롯 자동 선택과 중복 지정을 허용하지 않는다.
+  // 목표/최대 슬롯의 불일치·빈 선택·중복 선택은 실패 처리하고 기존 QA 게이트를 유지한다.
   const selectedIds=Array.isArray(policy.ownerFocusedGameIds)?policy.ownerFocusedGameIds:[];
+  const target=Number(policy.targetFocusedGames),maximum=Number(policy.maxFocusedGames);
   if(policy.enabled===true&&policy.completionPursuit?.enabled===true
-    &&(policy.targetFocusedGames!==3||policy.maxFocusedGames!==3
-      ||selectedIds.length<1||selectedIds.length>policy.maxFocusedGames
-      ||new Set(selectedIds).size!==selectedIds.length))
+    &&(!Number.isSafeInteger(target)||target<1
+      ||!Number.isSafeInteger(maximum)||maximum<target
+      ||selectedIds.length<1||selectedIds.length>target
+      ||selectedIds.some(id=>!clean(id))
+      ||new Set(selectedIds.map(clean)).size!==selectedIds.length))
     throw new Error('FOCUSED_BUILD_COMPLETION_OWNER_SELECTION_INVALID');
   const platforms=policy.ownerFocusedGamePlatforms||{};
   const ownerIds=new Set((Array.isArray(policy.ownerFocusedGameIds)?policy.ownerFocusedGameIds:[]).map(clean).filter(Boolean));
