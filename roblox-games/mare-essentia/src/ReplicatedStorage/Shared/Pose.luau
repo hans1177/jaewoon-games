@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau
 -- 뼈대가 있는 사람 모델의 T자 자세를 풀어 팔을 내린다 (클라이언트 전용).
 -- 팔 방향을 월드 좌표로 계산해서, 뼈의 로컬 축 방향과 상관없이 아래쪽으로 돌린다.
 
@@ -104,6 +105,22 @@ local function drawFace(head, role, skin, rng, gender)
 	gui.LightInfluence = 0.6
 	-- [실물 얼굴] R15 곡면 머리에서 표면 UI가 메시 안에 가려지지 않도록 전면 렌더링한다.
 	gui.AlwaysOnTop = true
+	-- [실물 화면 복구] 곡면 R15 Head의 바운딩 면이 실제 피부 메시 뒤로 들어가
+	-- 눈·입이 전부 사라지는 현상을 막는다. 투명한 전면 캔버스만 머리에 고정한다.
+	-- 기존 MareFace SurfaceGui와 눈/입/수염 표현은 그대로 재사용한다.
+	local canvas = Instance.new("Part")
+	canvas.Name = "MareFaceCanvas"
+	canvas.Size = Vector3.new(head.Size.X * 0.86, head.Size.Y * 0.85, 0.02)
+	canvas.CFrame = head.CFrame * CFrame.new(0, 0, -head.Size.Z * 0.54)
+	canvas.Transparency = 1
+	canvas.CastShadow = false
+	canvas.Anchored = false
+	canvas.CanCollide, canvas.CanTouch, canvas.CanQuery, canvas.Massless = false, false, false, true
+	canvas.Parent = head
+	local faceJoint = Instance.new("WeldConstraint")
+	faceJoint.Part0, faceJoint.Part1 = head, canvas
+	faceJoint.Parent = canvas
+	gui.Adornee = canvas
 	gui.Parent = head
 	local function box(x, y, w, h, color, rot, round)
 		local f = Instance.new("Frame")
@@ -378,6 +395,10 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	local jacket = coat or coats[role] or Color3.fromRGB(140, 108, 80)
 	for _, descendant in model:GetDescendants() do
 		if descendant:IsA("BasePart") then
+			-- [원본 R15 재질] 빈 HumanoidDescription에서 복제한 기본 바디의
+			-- 기본 텍스처가 피부·직업별 옷 색상을 하얗게 덮지 않게 한다.
+			-- 아래에서 부착하는 승인 People 메시/PBR 텍스처는 건드리지 않는다.
+			if descendant:IsA("MeshPart") then descendant.TextureID = "" end
 			descendant.Anchored = descendant == root
 			descendant.CanCollide = false
 			descendant.CanTouch = false
