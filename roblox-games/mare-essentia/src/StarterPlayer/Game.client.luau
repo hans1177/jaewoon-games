@@ -1160,8 +1160,9 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	-- 한 카드 안에서 '내용 위 / 버튼 아래'로 배치한다. 넓은 화면의 오른쪽 버튼 배치는 유지.
 	local function fitRow()
 		local width = row.AbsoluteSize.X
-		local narrow = width > 0 and width < 450 and btnCount > 0
+		-- [메뉴 공통] 버튼 3~5개가 있는 중간 가로 화면에서도 텍스트가 눌리지 않게 하단으로 분리한다.
 		local left = textBox.Position.X.Offset
+		local narrow = width > 0 and btnCount > 0 and width < math.max(450, left + btnWidth + 240)
 		local buttonSpace = if narrow then 0 else btnWidth
 		textBox.Size = UDim2.new(1, -(left + buttonSpace + 12), if narrow then 0 else 1, if narrow then math.max(30, layout.AbsoluteContentSize.Y + 10) else -8)
 		local textHeight = layout.AbsoluteContentSize.Y + 12
@@ -1193,10 +1194,11 @@ end
 
 -- [시설 공통 카드] 기존 그림·양피지·황동 디자인을 모바일과 PC에 같은 비율로 배치한다.
 function H.tileGrid(items, parent, cellW, cellH)
-	cellW, cellH = math.floor((cellW or 176) * 1.3), math.max(286, math.floor((cellH or 156) * 1.55))
+	-- [메뉴 공통] 기존 승인 원화·초상을 더 크게 쓰되 설명과 하단 동작 버튼 공간은 보존한다.
+	cellW, cellH = math.floor((cellW or 176) * 1.3), math.max(306, math.floor((cellH or 156) * 1.55))
 	for _, it in items do
-		if it.desc then cellH = math.max(cellH, 326)
-		elseif it.portrait then cellH = math.max(cellH, 322) end
+		if it.desc then cellH = math.max(cellH, 356)
+		elseif it.portrait then cellH = math.max(cellH, 342) end
 	end
 	local grid = Instance.new("Frame")
 	grid.BackgroundTransparency = 1
@@ -1234,7 +1236,7 @@ function H.tileGrid(items, parent, cellW, cellH)
 		seal.Size = UDim2.new(1, -12, 0, 3)
 		seal.Parent = tile
 		-- 초상(주점 동료 등)은 더 크게. 아래 글자는 그만큼 내려간다.
-		local iconPx = if it.portrait then 148 else 128
+		local iconPx = if it.portrait then 164 else 148
 		local ic = modelIcon(tile, if it.portrait then "Portraits" else (it.kind or "Menu"), if it.portrait then it.portrait.atlas else it.icon, nil, iconPx, it.title, nil, if it.portrait then it.portrait.offset else nil)
 		ic.AnchorPoint = Vector2.new(0.5, 0)
 		ic.Position = UDim2.new(0.5, 0, 0, 8)
@@ -5338,8 +5340,9 @@ local function openTradeHall()
 		local showMerchant = width >= 1550
 		local inset = if showMerchant then 258 else 8
 		local availableW = width - inset - 16
-		local listWidth = if narrow then availableW else math.max(185, math.floor(availableW * 0.25))
-		local detailWidth = if narrow then availableW else math.max(246, math.floor(availableW * 0.30))
+		-- [교역소] 넓은 화면은 실물 3D 전시를 중앙에 절반 가까이 확보하고 목록·거래 창은 유지한다.
+		local listWidth = if narrow then availableW else math.max(180, math.floor(availableW * 0.22))
+		local detailWidth = if narrow then availableW else math.max(240, math.floor(availableW * 0.28))
 		local heroX = inset + listWidth + 4
 		local heroW = math.max(140, availableW - listWidth - detailWidth - 8)
 		local compactList = not narrow
@@ -5586,7 +5589,8 @@ local function openTradeHall()
 				build()
 			end)
 			local gi = GOOD_ICON[g.id]
-			if gi and gi[4] == "Goods/" .. g.id then gi = { "Goods", g.id } end
+			-- [교역품 목록] 선택 품목은 승인된 3D로 보여 주고 나머지는 원화로 유지해 모바일 부하를 제한한다.
+			if gi and gi[4] == "Goods/" .. g.id and g.id ~= hallGood then gi = { "Goods", g.id } end
 			local icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], if compactList then 62 else 78, g.name, gi[4]) else modelIcon(row, nil, nil, nil, if compactList then 62 else 78, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
 			local indicator, pct = H.marketPriceSignal(g)
@@ -5702,9 +5706,11 @@ local function openTradeHall()
 			local exhibit = mkBox(root, UDim2.fromOffset(heroX, menuY), UDim2.new(0, heroW, 1, -menuY - 8), Color3.fromRGB(230, 209, 171))
 			corner(exhibit, 8)
 			bookMaterial(exhibit, "parchment", 220)
-			local heroPx = math.floor(math.max(92, math.min(heroW - 24, root.AbsoluteSize.Y - menuY - 83, 410)))
+			local heroPx = math.floor(math.max(92, math.min(heroW - 22, root.AbsoluteSize.Y - menuY - 94, 620)))
 			local gi = GOOD_ICON[sel.id]
 			local art = if gi then modelIcon(exhibit, gi[1], gi[2], gi[3], heroPx, sel.name, gi[4]) else modelIcon(exhibit, nil, nil, nil, heroPx, sel.name)
+			-- [교역 전시장] 세로 확대뿐 아니라 빈 가로 공간도 실제 모델 뷰포트에 배정한다.
+			art.Size = UDim2.new(1, -20, 0, heroPx)
 			art.AnchorPoint = Vector2.new(0.5, 0.5)
 			art.Position = UDim2.new(0.5, 0, 0.5, -14)
 			local title = mkLabel(exhibit, sel.name .. (if sel.tag ~= "" then " · " .. sel.tag else ""), 19, INK, true)
@@ -5726,7 +5732,7 @@ local function openTradeHall()
 		detail.BackgroundColor3 = COLORS.paper
 		detail.BorderSizePixel = 0
 		detail.ScrollBarThickness = 4
-		local bigPx = if narrow then math.floor(math.min(width - 54, math.max(170, root.AbsoluteSize.Y * 0.48), 330)) else 0
+		local bigPx = if narrow then math.floor(math.min(width - 34, math.max(190, root.AbsoluteSize.Y * 0.56), 370)) else 0
 		local artShift = if narrow then bigPx + 42 else -36
 		detail.CanvasSize = UDim2.fromOffset(0, 760 + artShift)
 		detail.ScrollingDirection = Enum.ScrollingDirection.Y
@@ -6924,9 +6930,11 @@ function openYardHall()
 		local shipName = preview and preview.name or ship.name
 		local shipId = preview and preview.id or ship.id
 		local shipArt = SHIP_ICON[shipId]
-		local px = math.floor(math.max(90, math.min(heroWidth - 20, heroHeight - 62, 430)))
+		local px = math.floor(math.max(90, math.min(heroWidth - 20, heroHeight - 62, 620)))
 		if shipArt then
 			local model = modelIcon(gallery, shipArt[1], shipArt[2], shipArt[3], px, shipName)
+			-- [조선소 전시장] 돛과 선체가 잘리지 않도록 가로로 넓은 원본 모델 공간을 사용한다.
+			model.Size = UDim2.new(1, -20, 0, px)
 			model.AnchorPoint = Vector2.new(0.5, 0.5)
 			model.Position = UDim2.new(0.5, 0, 0.48, -8)
 		end
