@@ -369,6 +369,23 @@ function readStudioVisualOrder(ref, coverage = {}) {
       if (images.length === 3) break;
     }
     if (!images.length) return null;
+    // [화면→코드] 동일 Studio 회차의 콘솔·오류 근거에서 실제 존재하는 소스만 연결한다.
+    // 임의 파일명이나 로블록스 인스턴스명은 소스 경로로 취급하지 않는다.
+    const evidence = [
+      ...(Array.isArray(report.consoleCapture?.errors) ? report.consoleCapture.errors
+        .filter(e => e?.type === 'studio-console-error').map(e => String(e.signature || '')) : []),
+      ...(Array.isArray(report.errors) ? report.errors.map(e => String(e)) : [])
+    ];
+    const knownFiles = new Set();
+    for (const row of evidence) {
+      for (const match of row.matchAll(/roblox-games\/mare-essentia\/src\/[A-Za-z0-9_./-]+\.luau(?=:\d+|\b)/g)) {
+        const candidate = match[0];
+        if (!ALLOWED.test(candidate) || candidate.includes('..') || !fs.existsSync(path.join(process.cwd(), candidate))) continue;
+        const st = fs.lstatSync(path.join(process.cwd(), candidate));
+        if (st.isFile() && !st.isSymbolicLink()) knownFiles.add(candidate);
+      }
+    }
+    const sourceFile = knownFiles.size === 1 ? [...knownFiles][0] : '';
     return {
       images,
       labels,
@@ -376,8 +393,11 @@ function readStudioVisualOrder(ref, coverage = {}) {
       order: {
         game,
         kind: 'visual',
+        sourceFile,
         fingerprint: game + ':visual:' + digest.digest('hex'),
-        text: 'Studio capture steps: ' + labels.join(', ') + '. Inspect visible TextButton, ScreenGui, UIListLayout, Position, Lighting and Material defects.'
+        text: 'Studio capture steps: ' + labels.join(', ') +
+          (sourceFile ? '. Verified failing source: ' + sourceFile + '. Evidence: ' + evidence[0]?.slice(0, 300) : '') +
+          '. Inspect visible character proportions, clothing, TextButton, ScreenGui, UIListLayout, Position, Lighting and Material defects. Fix only a defect supported by this source.'
       }
     };
   } catch {
