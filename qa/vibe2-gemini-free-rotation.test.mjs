@@ -746,3 +746,63 @@ test('Vibe59 specialist classification ignores misleading embedded English words
   assert.equal(domain('건물 배치 로직 오류 수정',['src/Building.server.luau']),'DEVELOPMENT');
   assert.equal(domain('게임 규칙 수정',['src/interface.server.luau']),'DEVELOPMENT');
 });
+
+
+// [실호출 복구 회귀] 한 무료 모델의 400/401은 다른 공급자 사용을 막지 않는다.
+// 402 결제 요청과 403 권한/안전 차단은 기존 정책처럼 중단한다.
+test('Gemini request format 400 rotates to next pinned free model, without retry storm', async () => {
+  await withExternalFixture(async () => {
+    const {requestGeminiFreePair:isolated} = await import(
+      '../tools/vibe2-gemini-free-rotation.mjs?gemini-bad-request='+Date.now());
+    const called = [];
+    const fetchImpl = async (url) => {
+      called.push(String(url));
+      if (called.length === 1) return {ok:false,status:400,
+        json:async()=>({error:{status:'INVALID_ARGUMENT',message:'unsupported output argument'}})};
+      return fixtureResponse('{"edits":[]}');
+    };
+    const first = await isolated({apiKey:'test',contents:[{role:'user',parts:[{text:'source code'}]}],fetchImpl});
+    assert.equal(first.provider, 'GEMINI');
+    assert.equal(first.model, GEMINI_FREE_MODELS[1]);
+    assert.equal(called.length, 2);
+    const second = await isolated({apiKey:'test',contents:[{role:'user',parts:[{text:'next source'}]}],fetchImpl});
+    assert.equal(second.provider, 'GEMINI');
+    assert.equal(called.length, 3, '400 모델은 쿨다운되어 다시 호출하지 않는다');
+  });
+});
+
+test('one free provider 401 rotates to independent free provider; 402 and safety 400 never bypass',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.GROQ_API_KEY='fixture-groq';
+    process.env.OPENROUTER_API_KEY='fixture-router';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    const {requestGeminiFreePair:isolated}=await import(
+      '../tools/vibe2-gemini-free-rotation.mjs?provider-auth-'+Date.now());
+    const called=[];
+    const result=await isolated({
+      apiKey:'test',specialistDepartment:'DEVELOPMENT',specialistTask:'code review',
+      contents:[{role:'user',parts:[{text:'repair only'}]}],
+      fetchImpl:async url=>{
+        const dest=String(url);called.push(dest);
+        if(dest.includes('api.groq.com'))return{ok:false,status:401};
+        return{ok:true,json:async()=>({choices:[{message:{content:'{"edits":[]}'}}],
+          candidates:[{content:{parts:[{text:'{"edits":[]}'}]}}],
+          usage:{cost:0}})};
+      }
+    });
+    assert.notEqual(result.provider,'GROQ');
+    assert.equal(called.filter(x=>x.includes('api.groq.com')).length,1);
+    const second=await isolated({
+      apiKey:'test',specialistDepartment:'DEVELOPMENT',specialistTask:'code review again',
+      contents:[{role:'user',parts:[{text:'other change'}]}],
+      fetchImpl:async url=>{
+        called.push(String(url));
+        return{ok:true,json:async()=>({choices:[{message:{content:'{"edits":[]}'}}],
+          candidates:[{content:{parts:[{text:'{"edits":[]}'}]}}]})};
+      }
+    });
+    assert.notEqual(second.provider,'GROQ');
+    assert.equal(called.filter(x=>x.includes('api.groq.com')).length,1,
+      '401 공급자를 다음 호출에 다시 쓰지 않는다');
+  });
+});
