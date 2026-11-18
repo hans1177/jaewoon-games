@@ -221,6 +221,42 @@ test('impact prediction rejects stale failure context and cannot fabricate focus
  assert.deepEqual(irrelevant.tests,['source-syntax-and-security','game-runtime:other','full-release-fan-in-unchanged']);
 });
 
+// [자동 감시] 기존 실제 QA 권한·F0~F9 진행 순서는 유지한다.
+test('Roblox autonomous source risk identifies startup mobile visuals economy and performance',()=>{
+  const changed=[
+    'roblox-games/demo/client/StartMenu.client.luau',
+    'roblox-games/demo/client/HUD.client.luau',
+    'roblox-games/demo/server/Reward.server.luau',
+    'roblox-games/demo/shared/WorldModel.luau',
+    'roblox-games/demo/shared/Performance.luau'
+  ];
+  const found=automaticImpactedChecks(changed);
+  for(const signal of ['ROBLOX_STARTUP_FIRST_PLAY_TOUCHPOINT','ROBLOX_MOBILE_INPUT_UI_TOUCHPOINT',
+    'ROBLOX_ECONOMY_BALANCE_TOUCHPOINT','ROBLOX_NATIVE_ASSET_BINDING_TOUCHPOINT',
+    'ROBLOX_PERFORMANCE_BUDGET_TOUCHPOINT'])assert.ok(found.riskPrediction.signals.includes(signal),signal);
+  assert.equal(found.riskPrediction.level,'HIGH');
+  assert.equal(found.canReplaceFinalQA,false);
+  assert.equal(found.riskPrediction.runtimeProbabilityKnown,false);
+  assert.equal(found.focusedTargetsExecuted,false);
+});
+
+test('Roblox owned repair prioritizes generic save and multiplayer without stale cross game claims',()=>{
+  const files=['roblox-games/demo/server/Main.server.luau'];
+  const repair={required:true,responsibleFiles:['server/Main.server.luau'],
+    saveMigration:{required:true,testTargets:['qa/save-rejoin.test.mjs']},
+    multiplayerLifecycle:{required:true,testTargets:['qa/two-clients.test.mjs']}};
+  const own=automaticImpactedChecks(files,{sourceRoot:'roblox-games/demo',gameRepair:repair});
+  assert.ok(own.riskPrediction.signals.includes('PERSISTENCE_SOURCE_CHANGE'));
+  assert.ok(own.riskPrediction.signals.includes('ROBLOX_MULTIPLAYER_CONTRACT_TOUCHPOINT'));
+  assert.deepEqual(own.focusedTargets.map(row=>row.target),[
+    'qa/save-rejoin.test.mjs','qa/two-clients.test.mjs']);
+  const other=automaticImpactedChecks(['roblox-games/other/server/Main.server.luau'],
+    {sourceRoot:'roblox-games/demo',gameRepair:repair});
+  assert.ok(!other.riskPrediction.signals.includes('PERSISTENCE_SOURCE_CHANGE'));
+  assert.ok(!other.riskPrediction.signals.includes('ROBLOX_MULTIPLAYER_CONTRACT_TOUCHPOINT'));
+  assert.deepEqual(other.focusedTargets,[]);
+});
+
 test('maintenance takes over only after exact published source and QA are both proven',()=>{
  const proof={published:true,independentQA:true,regression:true,
    sourceRevision:sha,verifiedSourceRevision:sha};
