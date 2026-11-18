@@ -2045,7 +2045,7 @@ function H.layoutBook()
   else
     -- [세로 화면] 기존 목록 탐색과 버튼은 유지하며, 세로 공간이 넉넉할 때만 원화를 표시한다.
     -- [세로 책갈피] 세 항목부터 두 줄, 터치 높이 최소 48px 확보.
-    local compact = tabs and tabCount >= 3 and width < 420
+    local compact = tabs and tabCount >= 3 and width < 600
     tabBar.Position = UDim2.fromOffset(8, 68)
     tabBar.Size = UDim2.new(1, -16, 0, if compact then 101 else 48)
     tabLayout.CellSize = UDim2.new(1 / (if compact then 2 else math.max(1, math.min(4, tabCount))), -5, 0, 48)
@@ -5671,7 +5671,7 @@ local function openTradeHall()
 		bookMaterial(top, "parchment", 220)
 		local title = mkLabel(top, "교역 장부 · " .. p.portName, if narrow then 15 else 19, INK, true)
 		title.Position = UDim2.fromOffset(12, 7)
-		title.Size = if narrow then UDim2.new(1, -110, 0, 25) else UDim2.new(0.32, 0, 0, 25)
+		title.Size = if narrow then UDim2.new(1, -132, 0, 25) else UDim2.new(0.32, 0, 0, 25)
 		title.AutomaticSize = Enum.AutomaticSize.None
 		title.TextTruncate = Enum.TextTruncate.AtEnd
 		-- [교역 상단] 자금과 직전 메뉴를 이웃한 한 줄로 배치하고 거래 안내 중복은 숨긴다.
@@ -5725,7 +5725,7 @@ local function openTradeHall()
 		toastLbl.TextWrapped = true
 		toastLbl.TextTruncate = Enum.TextTruncate.AtEnd
 		local backToList = narrow and detailOpen
-		local leave = mkButton(top, if backToList then "목록" else "나가기", COLORS.leather, UDim2.fromOffset(78, 44), function()
+		local leave = mkButton(top, if backToList then "목록" else "나가기", COLORS.leather, UDim2.fromOffset(78, if narrow then 40 else 44), function()
 			if backToList then
 				detailOpen = false
 				build()
@@ -5734,7 +5734,7 @@ local function openTradeHall()
 			end
 		end, true)
 		leave.AnchorPoint = Vector2.new(1, 0.5)
-		leave.Position = if narrow then UDim2.new(1, -9, 0, 32) else UDim2.new(1, -9, 0.5, 0)
+		leave.Position = if narrow then UDim2.new(1, -9, 0, 26) else UDim2.new(1, -9, 0.5, 0)
 
 		-- 왼쪽: 상인 초상과 말풍선
 		local left = mkBox(root, UDim2.fromOffset(8, 78), UDim2.new(0, 240, 1, -86), Color3.fromRGB(46, 34, 26))
@@ -7378,14 +7378,15 @@ function openYardHall()
 		-- [조선소도 교역소형] 가로: 왼쪽 18% 항목 / 중앙 36% 선박 / 오른쪽 실제 정비·구매.
 		-- [세로] 기존 항목 버튼 두 줄 → 배 그림 → 정비 목록 순서를 유지한다.
 		local navWidth = if landscape then math.clamp(math.floor((width - inset - 16) * 0.18), 136, 230) else 0
-		local heroTop = if landscape then 92 else 206
+		-- [조선소] 상단 표제지와 자금·이동 버튼 사이의 겹침을 없앤 후 목록·선박을 시작한다.
+		local heroTop = if landscape then 104 else 220
 		local heroWidth = if landscape then math.floor((width - inset - navWidth - 24) * 0.46) else width - inset - 8
 		local heroHeight = if landscape then availableH - heroTop - 8 else math.clamp(math.floor(availableH * 0.30), 160, 260)
 		scroll.Position = if landscape then UDim2.fromOffset(inset + navWidth + heroWidth + 16, heroTop)
 			else UDim2.fromOffset(inset, heroTop + heroHeight + 8)
 		scroll.Size = if landscape then UDim2.new(1, -inset - navWidth - heroWidth - 24, 1, -heroTop - 8)
 			else UDim2.new(1, -inset - 8, 1, -heroTop - heroHeight - 16)
-		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, 74), COLORS.paper)
+		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, 88), COLORS.paper)
         corner(top, 6)
         bookMaterial(top, "parchment", 220)
         local title = mkLabel(top, "조선 도감 · " .. p.portName, 19, INK, true)
@@ -7415,7 +7416,7 @@ function openYardHall()
         moneyEdge.Thickness = 1.4
         moneyEdge.Parent = hold
         hold.AnchorPoint = Vector2.zero
-        hold.Position = UDim2.fromOffset(groupX, 36)
+        hold.Position = UDim2.fromOffset(groupX, 45)
 		hold.Size = UDim2.fromOffset(cashWidth, 34)
 		hold.AutomaticSize = Enum.AutomaticSize.None
 		hold.TextTruncate = Enum.TextTruncate.AtEnd
@@ -7428,15 +7429,16 @@ function openYardHall()
 					openTab(recent, if recent == "map" then "chart" else nil)
 				end, true)
 			recentBtn.Name = "YardRecentFacility"
-			recentBtn.Position = UDim2.fromOffset(groupX + cashWidth + 8, 36)
+			recentBtn.Position = UDim2.fromOffset(groupX + cashWidth + 8, 45)
 			recentBtn.TextSize = if width < 480 then 13 else 15
 		end
-		local leave = mkButton(top, "나가기", COLORS.leather, UDim2.fromOffset(78, 44), closeTradeHall, true)
-		leave.AnchorPoint = Vector2.new(1, 0.5)
-		leave.Position = UDim2.new(1, -9, 0.5, 0)
+		-- [상단 오른쪽] 나가기는 1행, 현황·최근 메뉴는 2행. 터치 영역이 서로 겹치지 않는다.
+        local leave = mkButton(top, "나가기", COLORS.leather, UDim2.fromOffset(78, 36), closeTradeHall, true)
+        leave.AnchorPoint = Vector2.new(1, 0)
+        leave.Position = UDim2.new(1, -9, 0, 6)
 
 		-- [시설 왼쪽 목록] 기존 조선소 섹션으로 스크롤만 이동한다. 구매/재화 판정은 변경하지 않는다.
-		local nav = mkBox(root, if landscape then UDim2.fromOffset(inset, heroTop) else UDim2.fromOffset(inset, 90),
+		local nav = mkBox(root, if landscape then UDim2.fromOffset(inset, heroTop) else UDim2.fromOffset(inset, 104),
 			if landscape then UDim2.new(0, navWidth, 1, -heroTop - 8) else UDim2.new(1, -inset - 8, 0, 108), COLORS.leather)
 		local navColumns = if landscape then 1 else 3
 		for i, entry in { { "내 배·정비", "YardSectionShip" }, { "선단", "YardSectionFleet" }, { "대포·보강", "YardSectionRefit" }, { "7대륙 설계", "YardSectionBlueprints" }, { "새 배 비교", "YardSectionShips" } } do
@@ -7476,7 +7478,7 @@ function openYardHall()
 			model.AnchorPoint = Vector2.new(0.5, 0.5)
 			model.Position = UDim2.new(0.5, 0, 0.48, -8)
 		end
-		local label = mkLabel(gallery, shipName .. (if preview and preview.owned then " · 현재 기함" else ""), 21, INK, true)
+		local label = mkLabel(gallery, shipName .. (if shipId == ship.id then " · 현재 기함" elseif preview and preview.owned then " · 보유" else " · 미보유"), 21, INK, true)
 		label.Position = UDim2.new(0, 12, 1, -60)
 		label.Size = UDim2.new(1, -24, 0, 22)
 		label.AutomaticSize = Enum.AutomaticSize.None
