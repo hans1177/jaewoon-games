@@ -60,11 +60,11 @@ test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가
   assert.match(source,/recentBtn\.Name = "YardRecentFacility"/);
   assert.doesNotMatch(source,/mkButton\(content, "↶ 최근 메뉴:/);
   // [주점형 단일 시설] 기존 전체화면 전제 대신 실제 상품 카드의 가격·구매·판매 검증을 유지한다.
-  assert.match(source,/grid\\.Name = "TradeGoodsGrid"/);
-  assert.match(source,/H\\.marketPriceSignal\\(g\\)/);
-  assert.match(source,/H\\.tradeProfit\\(g, 1\\)/);
-  assert.match(source,/call\\("Buy", \\{ goodId = g\\.id, amount = amount\\(\\) \\}\\)/);
-  assert.match(source,/call\\("Sell", \\{ goodId = g\\.id, amount = amount\\(\\) \\}\\)/);
+  assert.match(source,/grid\.Name = "TradeGoodsGrid"/);
+  assert.match(source,/H\.marketPriceSignal\(g\)/);
+  assert.match(source,/H\.tradeProfit\(g, 1\)/);
+  assert.match(source,/call\("Buy", \{ goodId = g\.id, amount = amount\(\) \}\)/);
+  assert.match(source,/call\("Sell", \{ goodId = g\.id, amount = amount\(\) \}\)/);
   assert.equal(capture.length,241);
   assert.match(capture[122].code,/TRADE_INLINE_MENU_PASS/);
   assert.match(capture[123].code,/TRADE_INLINE_PRICE_OR_ACTION_MISSING/);
