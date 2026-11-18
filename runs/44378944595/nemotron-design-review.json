@@ -1,0 +1,142 @@
+{
+  "version": 3,
+  "provider": "MULTI_FREE_VISUAL",
+  "gameId": "mare-essentia",
+  "sourceRevision": "4b93c39b825f8207d017fdf9a78b552b7860c4db",
+  "status": "REVIEWED_NO_VERIFIED_EDIT",
+  "selectedRole": "NPC",
+  "usageWindow": {
+    "day": "2026-11-18",
+    "calls": {
+      "NVIDIA": 12,
+      "GEMINI": 9,
+      "OPENROUTER": 14
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-18",
+      "GEMINI": "2026-11-18",
+      "OPENROUTER": "2026-11-18"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-18T07:06:56.348Z",
+      "GEMINI": "2026-11-18T08:10:06.345Z",
+      "OPENROUTER": "2026-11-18T07:45:41.208Z"
+    }
+  },
+  "cooldowns": {
+    "GEMINI_FLASH": "2026-11-19T11:48:03.823Z",
+    "OPENROUTER_NEMOTRON": "2026-11-18T19:57:28.273Z",
+    "GEMINI_LITE": "2026-11-18T19:57:32.311Z",
+    "NVIDIA_VL": "2026-11-18T19:57:36.696Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 12,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 0.89,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-19T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 9,
+      "remainingLocal": 3,
+      "effectiveRemaining": 3,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": 0.71,
+      "estimatedHoursToLocalCap": 4.2,
+      "nextLocalWindowAt": "2026-11-19T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 14,
+      "remainingLocal": 16,
+      "effectiveRemaining": 16,
+      "regularWorkRemaining": 10,
+      "emergencyReserveRemaining": 6,
+      "estimatedCallsPerHour": 1.11,
+      "estimatedHoursToLocalCap": 14.4,
+      "nextLocalWindowAt": "2026-11-19T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [
+    {
+      "id": "OPENROUTER_NEMOTRON",
+      "status": "OK",
+      "provider": "OPENROUTER",
+      "model": "nvidia/nemotron-3.5-super-vl:free"
+    },
+    {
+      "id": "OPENROUTER_NEMOTRON",
+      "status": "SOURCE_ANCHOR_INVALID",
+      "failureSignature": "SOURCE_ANCHOR_NOT_UNIQUE:roblox-games_mare-essentia_src_ReplicatedStorage_Shared_PortScene"
+    },
+    {
+      "id": "GEMINI_LITE",
+      "status": "OK",
+      "provider": "GEMINI",
+      "model": "gemini-3.5-flash-lite"
+    },
+    {
+      "id": "GEMINI_LITE",
+      "status": "SOURCE_ANCHOR_INVALID",
+      "failureSignature": "SOURCE_ANCHOR_NOT_UNIQUE:roblox-games_mare-essentia_src_StarterPlayer_TownMood.client.luau"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "OK",
+      "provider": "NVIDIA",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "SOURCE_ANCHOR_INVALID",
+      "failureSignature": "SOURCE_ANCHOR_NOT_UNIQUE:roblox-games_mare-essentia_src_ReplicatedStorage_Shared_PortScene"
+    }
+  ],
+  "frames": [
+    {
+      "name": "field_npc_ally_mob-0.jpg",
+      "sha256": "783e979f03756564eea9b1dd582b95c1ec894833126dfa73ad71dc3293cf3e88"
+    },
+    {
+      "name": "harbor_npc_face_front-0.jpg",
+      "sha256": "e154a320f7e20f67faa8256cbf793ae81b6632fd0648373b42f4451b906e5464"
+    },
+    {
+      "name": "harbor_npc_sparring_01-0.jpg",
+      "sha256": "64401c1e4a700d604d694e8c78416cac1c0e5371df6e9c229e2cbed77d98a465"
+    },
+    {
+      "name": "harbor_npc_sparring_02-0.jpg",
+      "sha256": "61363aa1aa3d73757147635813858f80bb9726a3cbefece7ed4274a06ab80823"
+    }
+  ],
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
