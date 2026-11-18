@@ -42,7 +42,7 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
   assert.match(core,/return "P_" \.\. player.UserId/);
 });
 
-test('서재 백과 책 판면·모바일 넘기기·교역 평균가 회귀', () => {
+test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가 회귀', () => {
   const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.match(source,/currentTab ~= "map" and currentTab ~= "codex"/);
@@ -59,10 +59,17 @@ test('서재 백과 책 판면·모바일 넘기기·교역 평균가 회귀', (
   assert.match(source,/recentBtn\.Name = "TradeRecentFacility"/);
   assert.match(source,/recentBtn\.Name = "YardRecentFacility"/);
   assert.doesNotMatch(source,/mkButton\(content, "↶ 최근 메뉴:/);
+  // [주점형 단일 시설] 기존 전체화면 전제 대신 실제 상품 카드의 가격·구매·판매 검증을 유지한다.
+  assert.match(source,/grid\.Name = "TradeGoodsGrid"/);
+  assert.match(source,/H\.marketPriceSignal\(g\)/);
+  assert.match(source,/H\.tradeProfit\(g, 1\)/);
+  assert.match(source,/call\("Buy", \{ goodId = g\.id, amount = amount\(\) \}\)/);
+  assert.match(source,/call\("Sell", \{ goodId = g\.id, amount = amount\(\) \}\)/);
   assert.equal(capture.length,241);
-  assert.match(capture[123].code,/TRADE_AVERAGE_DIRECTION_NOT_RENDERED/);
-  assert.match(capture[123].code,/TRADE_WORLD_AVERAGE_PRICE_NOT_RENDERED/);
-  assert.match(capture[123].code,/TRADE_NET_PROFIT_NOT_RENDERED/);
+  assert.match(capture[122].code,/TRADE_INLINE_MENU_PASS/);
+  assert.match(capture[123].code,/TRADE_INLINE_PRICE_OR_ACTION_MISSING/);
+  assert.match(capture[127].code,/YARD_INLINE_MENU_PASS/);
+  assert.match(capture[128].code,/SHIP_INLINE_COMPARISON_PASS/);
 });
 
 test('새 항해 첫 카드 창 오발동 차단과 가죽·양피지 버튼 계약', () => {
