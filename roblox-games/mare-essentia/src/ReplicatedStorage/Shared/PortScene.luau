@@ -2626,7 +2626,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	for x = -235, X_END, -(S * 2.7 + laneWidth + 12) do
 		table.insert(streetsOuter, x)
 	end
-	-- 구역(상업·주거·종교·농장): 항구마다 네 자리에 종류를 무작위로 배정한다. 시설 거리(큰길 양옆)는 집을 비운다.
+	-- [항구별 구역 재배치] 기존 시드를 보존하고 시장·종교·농장 3종이 서로 겹칠 때만 이동한다.
+	-- 랜드마크·왕궁·큰길과 실제 장식 범위를 먼저 확인한다. 시설 숫자·경제·저장은 변경하지 않는다.
 	local dz = seeded(info.portId .. "district")
 	local slots = {
 		Vector3.new(-134 + districtOffset, 0, 86 + laneOffset * 0.4),
@@ -2638,14 +2639,78 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		local j = dz:NextInteger(1, i)
 		slots[i], slots[j] = slots[j], slots[i]
 	end
-	local districts = { { kind = "religious", at = slots[1] }, { kind = "market", at = slots[2] }, { kind = "farm", at = slots[3] } } -- slots[4] 는 주거지 그대로
+	local districts = {}
+	local districtMoved, districtRejected = 0, 0
+	local districtSeed = seeded(info.portId .. ":district-safe-layout")
+	local firstSide = if districtSeed:NextInteger(1, 2) == 1 then 1 else -1
+	local farmSide = if districtSeed:NextInteger(1, 2) == 1 then 1 else -1
+	local districtKinds = { "religious", "market", "farm" }
+	for index, kind in districtKinds do
+		-- 농장 7x17 밭·풍차·장식과 시장·사원 부속물을 포함한 필지 보호 반경.
+		local hx, hz = if kind == "farm" then 82 else 41, if kind == "farm" then 51 else 43
+		local side = if index == 1 then firstSide elseif index == 2 then -firstSide else farmSide
+		local proposedZ = if kind == "farm" then 385 + laneOffset * 0.12 else 266 + laneOffset * 0.2
+		local proposedX = if kind == "farm" then -115 + districtOffset * 0.2 else -141 + districtOffset * 0.3
+		local candidates = {
+			slots[index],
+			Vector3.new(proposedX, 0, side * proposedZ),
+			Vector3.new(proposedX + (if kind == "farm" then 5 else -7), 0, -side * proposedZ),
+		}
+		for candidateIndex, at in candidates do
+			local x, z = at.X, at.Z
+			local clear = math.abs(z) + hz <= 440
+			-- 기존 시가지 시설·왕궁·세로 도로를 보수적인 건물 외곽 기준으로 피한다.
+			if clear and x > -108 - hx and math.abs(z) > 17 - hz and math.abs(z) < 59 + hz then clear = false end
+			if clear and isRoyalCity and x - hx < -235 and x + hx > -570 and math.abs(z) < 265 + hz then clear = false end
+			if clear and math.abs(z) < 165 + hz and math.abs(x + 212) < hx + 9 then clear = false end
+			if clear and math.abs(z) < 68 + hz then
+				for _, sx in streetsX do
+					if math.abs(x - sx) < hx + 7 then clear = false break end
+				end
+			end
+			if clear then
+				for _, sx in streetsOuter do
+					if math.abs(x - sx) < hx + laneWidth * 0.5 + 4 then clear = false break end
+				end
+			end
+			if clear then
+				for _, landmark in LM_SITES do
+					if math.abs(x - landmark.X) < hx + 35 and math.abs(z - landmark.Z) < hz + 35 then
+						clear = false
+						break
+					end
+				end
+			end
+			if clear then
+				for _, other in districts do
+					if math.abs(x - other.at.X) < hx + other.hx + 6
+						and math.abs(z - other.at.Z) < hz + other.hz + 6 then
+						clear = false
+						break
+					end
+				end
+			end
+			if clear then
+				table.insert(districts, { kind = kind, at = at, hx = hx, hz = hz })
+				if candidateIndex > 1 then districtMoved += 1 end
+				break
+			end
+			districtRejected += 1
+		end
+	end
+	-- 기존 장면에만 기록하는 진단 값이며 신규 저장·교역·마을경제 데이터는 생성하지 않는다.
+	folder:SetAttribute("CityDistrictLayoutMode", "PORT_SEEDED_COLLISION_CHECK")
+	folder:SetAttribute("CityDistrictPlaced", #districts)
+	folder:SetAttribute("CityDistrictMoved", districtMoved)
+	folder:SetAttribute("CityDistrictRejectedCandidates", districtRejected)
 	local function reserved(x, z, half)
 		-- 시설·지역별 시장/농장·랜드마크·문명 산업 필지를 주택과 분리한다.
 		if x > -108 - half and math.abs(z) > 17 - half and math.abs(z) < 59 + half then return true end
 		if x < -211 + half and math.abs(z) < 145 + half then return true end
 		if isRoyalCity and x < -235 + half and x > -570 - half and math.abs(z) < 265 + half then return true end
 		for _, d in districts do
-			if math.abs(x - d.at.X) < (if d.kind == "farm" then 69 else 28) + half and math.abs(z - d.at.Z) < (if d.kind == "farm" then 33 else 26) + half then return true end
+			-- 풍차·처마·시장 장식 등 부속물까지 포함한 실제 필지 여유로 주택을 막는다.
+			if math.abs(x - d.at.X) < d.hx + half and math.abs(z - d.at.Z) < d.hz + half then return true end
 		end
 		for _, a in LM_SITES do
 			if math.abs(x - a.X) < 29 + half and math.abs(z - a.Z) < 29 + half then return true end
