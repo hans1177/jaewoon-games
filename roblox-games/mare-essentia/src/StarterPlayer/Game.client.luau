@@ -1903,24 +1903,24 @@ tabBar.Position = UDim2.new(1, -8, 0, 68)
 tabBar.Size = UDim2.fromOffset(0, 58)
 tabBar.Parent = mainInner
 -- [모바일] 탭이 많으면 줄바꿈 대신 같은 상단 줄을 좌우로 밀어 모든 항목에 접근한다.
-local tabStrip = Instance.new("ScrollingFrame")
-tabStrip.Name = "FacilityTabStrip"
-tabStrip.BackgroundTransparency = 1
-tabStrip.BorderSizePixel = 0
-tabStrip.Size = UDim2.fromScale(1, 1)
-tabStrip.ScrollBarThickness = 2
-tabStrip.ScrollBarImageColor3 = UI_BRASS
-tabStrip.ScrollingDirection = Enum.ScrollingDirection.X
-tabStrip.CanvasSize = UDim2.new()
-tabStrip.ClipsDescendants = true
-tabStrip.Parent = tabBar
+H.tabStrip = Instance.new("ScrollingFrame")
+H.tabStrip.Name = "FacilityTabStrip"
+H.tabStrip.BackgroundTransparency = 1
+H.tabStrip.BorderSizePixel = 0
+H.tabStrip.Size = UDim2.fromScale(1, 1)
+H.tabStrip.ScrollBarThickness = 2
+H.tabStrip.ScrollBarImageColor3 = UI_BRASS
+H.tabStrip.ScrollingDirection = Enum.ScrollingDirection.X
+H.tabStrip.CanvasSize = UDim2.new()
+H.tabStrip.ClipsDescendants = true
+H.tabStrip.Parent = tabBar
 local tabLayout = Instance.new("UIGridLayout")
 tabLayout.FillDirection = Enum.FillDirection.Horizontal
 tabLayout.FillDirectionMaxCells = 4
 tabLayout.CellSize = UDim2.fromOffset(166, 54)
 tabLayout.CellPadding = UDim2.fromOffset(6, 0)
 tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-tabLayout.Parent = tabStrip
+tabLayout.Parent = H.tabStrip
 
 local content = Instance.new("ScrollingFrame")
 content.BackgroundTransparency = 1
@@ -2072,11 +2072,11 @@ function H.layoutBook()
   tabLayout.CellSize = UDim2.fromOffset(tabWidth, 54)
   tabLayout.CellPadding = UDim2.fromOffset(tabGap, 0)
   tabLayout.FillDirectionMaxCells = tabCount
-  tabStrip.CanvasSize = UDim2.fromOffset(allTabsWidth, 0)
+  H.tabStrip.CanvasSize = UDim2.fromOffset(allTabsWidth, 0)
   local selectedIndex = table.find(groupOf(currentTab).tabs, currentTab) or 1
   local desiredScroll = (selectedIndex - 1) * (tabWidth + tabGap)
     - math.floor((visibleTabsWidth - tabWidth) / 2)
-  tabStrip.CanvasPosition = Vector2.new(math.clamp(desiredScroll, 0, math.max(0, allTabsWidth - visibleTabsWidth)), 0)
+  H.tabStrip.CanvasPosition = Vector2.new(math.clamp(desiredScroll, 0, math.max(0, allTabsWidth - visibleTabsWidth)), 0)
   local bodyTop = if tabs then 134 else 68
   H.bookSpine.Visible = false
   H.facilityGallery.Visible = gallery
@@ -10996,10 +10996,10 @@ H.TAB_ICON = {
 function H.renderTabs()
 	-- [중복 렌더 제거] 같은 탭의 상태/재화가 바뀌어도 메뉴 버튼과 원화를 매번 파괴하지 않는다.
 	-- 탭 전환 시에만 다시 만들고, 화면 크기 변경은 기존 UIGridLayout이 맡는다.
-	if H.renderedTabId == currentTab and tabStrip:FindFirstChild("FacilityTab_" .. currentTab) then
+	if H.renderedTabId == currentTab and H.tabStrip:FindFirstChild("FacilityTab_" .. currentTab) then
 		return
 	end
-	for _, child in tabStrip:GetChildren() do
+	for _, child in H.tabStrip:GetChildren() do
 		if child:IsA("TextButton") then
 			child:Destroy()
 		end
@@ -11007,7 +11007,7 @@ function H.renderTabs()
 	local g = groupOf(currentTab)
 	for i, id in g.tabs do
 		local selected = currentTab == id
-		local b = mkButton(tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 54), function()
+		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 54), function()
 			-- [시설 탭 정본] 모든 시설은 같은 탭 전환 함수를 사용하며 별도 전체창은 만들지 않는다.
 			openTab(id)
 		end, true)
