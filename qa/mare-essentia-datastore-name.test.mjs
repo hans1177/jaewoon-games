@@ -1945,7 +1945,9 @@ test('도시 골목·눈 지붕·밤 창문은 기존 기후·해안 분류와 �
  assert.match(s,/window\.Transparency = math\.clamp\(0\.92 - night \* 0\.78, 0\.14, 0\.92\)/);
  assert.match(s,/local lightConn = folder\.DescendantAdded:Connect\(registerLight\)/);
  assert.match(s,/entry\.light\.Brightness = entry\.brightness \* \(0\.16 \+ 2\.15 \* night\)/);
- assert.match(s,/m\.LevelOfDetail = Enum\.ModelLevelOfDetail\.Automatic/);
+ // [스튜디오 실물 회귀] Model.LevelOfDetail은 실행 중 쓰기 권한이 없어 항구 장면을 중단한다.
+ assert.doesNotMatch(s,/m\.LevelOfDetail\s*=/,'런타임 금지 LOD 쓰기 복귀 금지');
+ assert.match(s,/m:SetAttribute\("ArchitectureCulture", currentKey\)/,'원본 지역 건축 설정 유지');
  assert.match(s,/folder\.Destroying:Connect\(function\(\)/,'갱신 연결 정리');
 });
 
