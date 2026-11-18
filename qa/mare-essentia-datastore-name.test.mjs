@@ -2703,3 +2703,37 @@ test('무료 디자인 7개 모델 전체는 지정 엔드포인트로만 이미
   }
   assert.equal(seen.size, 7);
 });
+
+
+// [디자인 AI 실호출 회귀] 인증·잘못된 요청은 모델별로 교대하며 결제 요구는 무조건 차단.
+test('디자인 무료 공급자별 인증 실패·형식 오류·결제 요구는 별도 처리한다', async () => {
+  const {DESIGN_FREE_MODELS, callFreeDesignModel, selectFreeDesignModels} =
+    await import('../tools/company-nemotron-design-review.mjs');
+  const env={NVIDIA_API_KEY:'fixture-nvidia', GEMINI_API_KEY:'fixture-gemini',
+    OPENROUTER_API_KEY:'fixture-router'};
+  const frame={name:'harbor_npc_face_front-0.jpg',url:'data:image/jpeg;base64,YWJj'};
+  for(const model of DESIGN_FREE_MODELS){
+    const unauthorized=await callFreeDesignModel(model,'visual review',[frame],
+      async()=>({ok:false,status:401}),env);
+    assert.equal(unauthorized.status,'AUTH_BLOCKED',model.id);
+    assert.equal(unauthorized.retryAfterMs,21600000,model.id);
+    const malformed=await callFreeDesignModel(model,'visual review',[frame],
+      async()=>({ok:false,status:400,json:async()=>({error:{message:'invalid request'}})}),env);
+    assert.equal(malformed.status,'HTTP_400',model.id);
+    assert.ok(malformed.retryAfterMs>=1800000,model.id);
+    const billing=await callFreeDesignModel(model,'visual review',[frame],
+      async()=>({ok:false,status:402}),env);
+    assert.equal(billing.status,'BILLING_BLOCKED',model.id);
+  }
+  const policy=JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json','utf8'));
+  const previous={selectedRole:'NPC',cooldowns:{
+    NVIDIA_VL:new Date(Date.now()+1800000).toISOString()
+  },attempts:[{id:'NVIDIA_VL',status:'REVIEW_INVALID'}]};
+  const alternatives=selectFreeDesignModels({frameNames:['harbor_npc_face_front-0.jpg'],
+    policy,env,previous});
+  assert.ok(alternatives.length>0);
+  assert.ok(alternatives.every(model=>model.id!=='NVIDIA_VL'),
+    '무효 응답 모델은 다음 회차에서 제외하고 다른 무료 모델로 교대');
+  assert.ok(alternatives.some(model=>model.provider==='GEMINI'));
+  assert.ok(alternatives.some(model=>model.provider==='OPENROUTER'));
+});
