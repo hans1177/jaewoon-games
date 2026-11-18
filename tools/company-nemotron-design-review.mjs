@@ -28,9 +28,9 @@ export const DESIGN_FREE_MODELS = Object.freeze([
   {id: 'NVIDIA_VL', provider: 'NVIDIA', model: 'nvidia/nemotron-3.5-super-vl-120b-a12b',
     role: 'NPC', keyName: 'NVIDIA_API_KEY', verifiedName: 'NVIDIA_FREE_TIER_VERIFIED',
     endpoint: 'https://integrate.api.nvidia.com/v1/chat/completions'},
-  {id: 'GEMINI_FLASH', provider: 'GEMINI', model: 'gemini-2.5-flash',
+  {id: 'GEMINI_FLASH', provider: 'GEMINI', model: 'gemini-3.8-flash',
     role: 'WORLD', keyName: 'GEMINI_API_KEY', verifiedName: 'GEMINI_DESIGN_FREE_TIER_VERIFIED',
-    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'},
+    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent'},
   {id: 'OPENROUTER_GEMMA', provider: 'OPENROUTER', model: 'google/gemma-4-31b-it:free',
     role: 'UI', keyName: 'OPENROUTER_API_KEY', verifiedName: 'OPENROUTER_DESIGN_FREE_TIER_VERIFIED',
     endpoint: 'https://openrouter.ai/api/v1/chat/completions'},
@@ -43,9 +43,9 @@ export const DESIGN_FREE_MODELS = Object.freeze([
   {id: 'OPENROUTER_OMNI', provider: 'OPENROUTER', model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
     role: 'MOTION', keyName: 'OPENROUTER_API_KEY', verifiedName: 'OPENROUTER_DESIGN_FREE_TIER_VERIFIED',
     endpoint: 'https://openrouter.ai/api/v1/chat/completions'},
-  {id: 'GEMINI_LITE', provider: 'GEMINI', model: 'gemini-2.5-flash-lite',
+  {id: 'GEMINI_LITE', provider: 'GEMINI', model: 'gemini-3.5-flash-lite',
     role: 'GENERAL', keyName: 'GEMINI_API_KEY', verifiedName: 'GEMINI_DESIGN_FREE_TIER_VERIFIED',
-    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent'}
+    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent'}
 ]);
 const DAILY_LIMIT = Object.freeze({NVIDIA: 12, GEMINI: 12, OPENROUTER: 30});
 const designRuntime = {usageWindow: null, cooldowns: {}, attempts: []};
