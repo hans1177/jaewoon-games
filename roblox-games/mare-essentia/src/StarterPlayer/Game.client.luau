@@ -9843,7 +9843,7 @@ function RENDERERS.quest()
 					end
 					return mkRow(content, q.name,
 						string.format("%s · %d/5장\n확인한 지식: %s · 근거 분류: %s", q.routeName or "지역 기록", q.grade or 1,
-							q.cardId or "기록", q.evidence or "미검증"),
+							q.cardName or "기록", q.evidence or "근거 미분류"),
 						buttons, 110)
 				end
 				return mkLabel(content, string.format("(완료 · %d/5단) ", q.grade or 1) .. q.name .. " — " .. q.summary .. (if q.ending then "\n   " .. q.ending else ""), 12, COLORS.muted, true)
