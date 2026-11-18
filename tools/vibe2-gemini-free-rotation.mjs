@@ -122,8 +122,8 @@ export function selectVibe59FreeExperts({
   const ids=VIBE59_EXPERT_PRIORS[role];
   const geminiModels=verifiedFreeGeminiModels(env);
   const choices=[
-    {id:'GEMINI_FLASH',provider:'GEMINI',model:geminiModels[0],available:true},
-    {id:'GEMINI_LITE',provider:'GEMINI',model:geminiModels[1],available:true},
+    {id:'GEMINI_FLASH',provider:'GEMINI',model:geminiModels[0],available:!!clean(env.GEMINI_API_KEY)},
+    {id:'GEMINI_LITE',provider:'GEMINI',model:geminiModels[1],available:!!clean(env.GEMINI_API_KEY)},
     {id:'GROQ',provider:'GROQ',model:VERIFIED_FREE_FALLBACK_MODELS.GROQ,
       available:clean(env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES'&&
         !!clean(env.GROQ_API_KEY)&&clean(env.VIBE2_GROQ_FREE_PLAN_VERIFIED)==='YES'},
@@ -188,19 +188,20 @@ export async function requestGeminiFreePair({
          endpoint:'https://openrouter.ai/api/v1/chat/completions'}]:[])
   ]:[];
   const normalRoutes=[...geminiRoutes,...extras];
+  const observedGroq=groqQuotaByModel.get('GROQ:'+VERIFIED_FREE_FALLBACK_MODELS.GROQ);
+  const capacity=observedGroq?{'GROQ:'+VERIFIED_FREE_FALLBACK_MODELS.GROQ:{
+    verified:true,remaining:observedGroq.requestsPerDayRemaining,
+    limit:observedGroq.requestsPerDayLimit,observedAt:observedGroq.observedAt}}:{};
   const expert=clean(specialistDepartment)?selectVibe59FreeExperts({
     department:specialistDepartment,taskText:specialistTask,
-    responsibleFiles:specialistFiles,verifiedOutcomes,
+    responsibleFiles:specialistFiles,verifiedOutcomes,freeCapacity:capacity,
     env:{...process.env,GEMINI_API_KEY:clean(apiKey)}
   }):null;
   // Vibe5.9의 분야별 전문가 우선순위를 기존 요청 함수의 실제 호출 순서에 적용.
   // 신규 큐·워커·API 공급자 추가 없이 기존 엔드포인트/출력 계약을 그대로 사용한다.
-  const routes=expert?.expertCandidates?.length?[
-    ...expert.expertCandidates.flatMap(item=>normalRoutes.filter(route=>
-      route.provider===item.provider&&route.model===item.model)),
-    ...normalRoutes.filter(route=>!expert.expertCandidates.some(item=>
-      route.provider===item.provider&&route.model===item.model))
-  ]:normalRoutes;
+  // [차단] 검증된 잔량 0·쿨다운·무료 요금제 미확인 슬롯은 끝에 다시 붙이지 않는다.
+  const routes=expert?expert.expertCandidates.flatMap(item=>normalRoutes.filter(route=>
+    route.provider===item.provider&&route.model===item.model)):normalRoutes;
   const failures=[];
   for(const route of routes){
     const model=route.model,provider=route.provider;
