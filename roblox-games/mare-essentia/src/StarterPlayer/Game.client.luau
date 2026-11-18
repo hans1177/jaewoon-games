@@ -1839,11 +1839,14 @@ H.menuStatusLabel.BackgroundTransparency = 0
 H.menuStatusLabel.BackgroundColor3 = Color3.fromRGB(236, 213, 168)
 H.menuStatusLabel.ZIndex = 5
 corner(H.menuStatusLabel, 6)
-local statusEdge = Instance.new("UIStroke")
-statusEdge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-statusEdge.Color = INK_EDGE
-statusEdge.Thickness = 1.4
-statusEdge.Parent = H.menuStatusLabel
+do
+	-- [로컬 레지스터 예산] 장식 인스턴스는 여기서만 필요하며 장기 보유하지 않는다.
+	local statusEdge = Instance.new("UIStroke")
+	statusEdge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	statusEdge.Color = INK_EDGE
+	statusEdge.Thickness = 1.4
+	statusEdge.Parent = H.menuStatusLabel
+end
 H.menuStatusLabel.Position = UDim2.new(1, -388, 0, 15)
 H.menuStatusLabel.Size = UDim2.fromOffset(330, 34)
 
