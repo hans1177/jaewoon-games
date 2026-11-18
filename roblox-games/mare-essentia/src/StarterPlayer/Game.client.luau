@@ -1429,9 +1429,10 @@ mastheadSize.Parent = headerLabel
 headerLabel.Text = "불러오는 중..."
 headerLabel.Parent = mainInner
 
+-- [초상화 위치] 표제지 y=4~62 안쪽에 52px 초상을 y=7~59로 정렬한다.
 -- 시설 주인 초상화 (대항해시대 온라인의 NPC 얼굴 창처럼)
 local portraitFrame = Instance.new("ViewportFrame")
-portraitFrame.Position = UDim2.fromOffset(11, 12)
+portraitFrame.Position = UDim2.fromOffset(11, 7)
 portraitFrame.Size = UDim2.fromOffset(52, 52)
 portraitFrame.BackgroundColor3 = Color3.fromRGB(40, 56, 80)
 portraitFrame.Ambient = Color3.fromRGB(190, 190, 200)
@@ -1454,7 +1455,7 @@ portraitFrame.CurrentCamera = portraitCam
 -- 등록된 실사 NPC 초상화가 있으면 기존 3D 초상 위에 표시한다.
 local portraitImage = Instance.new("ImageLabel")
 portraitImage.Name = "NpcPortrait"
-portraitImage.Position = UDim2.fromOffset(11, 12)
+portraitImage.Position = UDim2.fromOffset(11, 7)
 portraitImage.Size = UDim2.fromOffset(52, 52)
 portraitImage.BackgroundColor3 = Color3.fromRGB(40, 56, 80)
 portraitImage.BorderSizePixel = 0
@@ -1474,7 +1475,7 @@ end
 -- [선장실] 초상화가 완성되기 전에는 파란 물음표를 표시한다.
 local captainPlaceholder = Instance.new("TextLabel")
 captainPlaceholder.Name = "CaptainPortraitPending"
-captainPlaceholder.Position = UDim2.fromOffset(11, 12)
+captainPlaceholder.Position = UDim2.fromOffset(11, 7)
 captainPlaceholder.Size = UDim2.fromOffset(52, 52)
 captainPlaceholder.BackgroundColor3 = Color3.fromRGB(35, 88, 150)
 captainPlaceholder.BorderSizePixel = 0
