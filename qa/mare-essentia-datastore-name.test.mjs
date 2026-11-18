@@ -38,6 +38,20 @@ test('항구 장면의 소품 선택은 Luau 복수 반환 조건식 없이 실�
   assert.match(port,/propGroup, propName = "Cargo", "box-open"/);
 });
 
+// [시작 캐릭터 실증 회귀] 항구가 없는 공중 스폰은 숨기고, 바닥·카메라가 준비된 뒤에만 원복한다.
+test('항구 시작과 재생성에서 공중 캐릭터가 노출되지 않는다', () => {
+  const client=read('StarterPlayer/Game.client.luau');
+  const spawn=client.slice(client.indexOf('function H.placeCharacterOnSpawn(character)'),client.indexOf('player.CharacterAdded:Connect(H.placeCharacterOnSpawn)'));
+  assert.match(spawn,/root.Anchored = true/);
+  assert.match(spawn,/if sceneSpawn then character:PivotTo\\(sceneSpawn\\) end/);
+  assert.match(spawn,/part.LocalTransparencyModifier = if sceneSpawn then 0 else 1/);
+  assert.match(client,/player.CharacterAppearanceLoaded:Connect\\(H.placeCharacterOnSpawn\\)/);
+  assert.match(client,/titleGui.Enabled = on or H.titleMenuOpen or waitingPort/);
+  assert.match(client,/if H.portLoadingLabel then H.portLoadingLabel.Visible = waitingPort and not H.titleMenuOpen end/);
+  assert.match(client,/if H.setTitleMode then H.setTitleMode\\(not view or newGameMode\\) end/);
+  assert.match(client,/H.setTitleMode\\(false\\)/);
+});
+
 test('게임 시작 메뉴는 PortScene 정본을 기다리지 않고 서버 상태를 표시한다', () => {
   const port=read('ReplicatedStorage/Shared/PortScene.luau');
   assert.ok(client.indexOf('gui:SetAttribute("StartupStage", "server-state-request")')>client.indexOf('gui:SetAttribute("PortSceneLoadState", "loading")'));
