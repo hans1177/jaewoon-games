@@ -2,60 +2,125 @@
   "version": 3,
   "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "01bc9a199bae2ecb31625e139f440029efc8665a",
+  "sourceRevision": "ebc5a458e0e5de0d127d330ee197c567d67d52f9",
   "status": "REVIEWED_NO_VERIFIED_EDIT",
-  "selectedRole": "WORLD",
+  "selectedRole": "UI",
   "usageWindow": {
     "day": "2026-11-18",
     "calls": {
-      "NVIDIA": 1,
+      "NVIDIA": 2,
       "GEMINI": 0,
       "OPENROUTER": 0
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-18",
+      "GEMINI": "2026-11-17",
+      "OPENROUTER": "2026-11-18"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-18T07:06:56.348Z"
     }
   },
-  "cooldowns": {
-    "NVIDIA_VL": "2026-11-18T06:35:12.826Z"
+  "cooldowns": {},
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 2,
+      "remainingLocal": 10,
+      "effectiveRemaining": 10,
+      "regularWorkRemaining": 7,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": 4,
+      "estimatedHoursToLocalCap": 2.5,
+      "nextLocalWindowAt": "2026-11-19T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 0,
+      "remainingLocal": 12,
+      "effectiveRemaining": 12,
+      "regularWorkRemaining": 9,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": null,
+      "estimatedHoursToLocalCap": null,
+      "nextLocalWindowAt": "2026-11-18T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 0,
+      "remainingLocal": 30,
+      "effectiveRemaining": 30,
+      "regularWorkRemaining": 24,
+      "emergencyReserveRemaining": 6,
+      "estimatedCallsPerHour": null,
+      "estimatedHoursToLocalCap": null,
+      "nextLocalWindowAt": "2026-11-19T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
   },
+  "accountQuota": null,
   "attempts": [
     {
       "id": "NVIDIA_VL",
-      "status": "EMPTY_OUTPUT",
+      "status": "OK",
       "provider": "NVIDIA",
       "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "REVIEW_INVALID",
+      "failureSignature": "Expected_____or_____after_property_value_in_JSON_at_position_1357__line_1_column_1358_"
     }
   ],
   "frames": [
     {
-      "name": "cb0_deck-0.jpg",
-      "sha256": "8132e501937c818173f15a3f624c662176d2d01ab971adc26e436b4730b6874d"
+      "name": "tab_battle-0.jpg",
+      "sha256": "cef06c41e80972c143da9a1620f69a1ed1b12b95e83be3a8e49f51cfcccd07eb"
     },
     {
-      "name": "cb1-0.jpg",
-      "sha256": "520ce19f95a4619311c85c2a8520804d7655baf23f9b123b0c6fa27381d222fd"
+      "name": "tab_codex-0.jpg",
+      "sha256": "061f99eb7d5f3da915e4a14ebe1f9cefb5a3f246a8c917e9abeb998c9e300f94"
     },
     {
-      "name": "cb2-0.jpg",
-      "sha256": "a7ea12f6e9768e6cca657cee7bd7bbbfed1133bbfa158d879d29ca4956db29a5"
+      "name": "tab_crew-0.jpg",
+      "sha256": "9f2713a462225edda03cd2994bc8951c201c8181a75913e6016df36e89889b2b"
     },
     {
-      "name": "field_entry-0.jpg",
-      "sha256": "a66398f4cb77ba284530c0042f43e998c183c6363e93bb096a85079428fd0f29"
+      "name": "tab_explore-0.jpg",
+      "sha256": "6264d2a901a76549f354443033ab343908ff1566317bd3aa481d7274126a5de8"
     },
     {
-      "name": "qa_click_trade_to_harbor-0.jpg",
-      "sha256": "cd6f0753a6deda74cfb4bc77b72a3fb5126fc1b7bb4917a6ebc52078d2923659"
+      "name": "tab_harbor-0.jpg",
+      "sha256": "3824deccd2040748ee28709d296eaf875d85fbe3c5a8a2dfeeaa2ba4722e7706"
     },
     {
-      "name": "v1_start-0.jpg",
-      "sha256": "f56468164fddd97410f986cd0f03cf2440b3df510d20ef087227784626add02f"
+      "name": "tab_map-0.jpg",
+      "sha256": "a14969913920ba65b7c8da2354b5caf84b215ea56686bd07ab2ebea303e0f0c7"
     },
     {
-      "name": "v2_event-0.jpg",
-      "sha256": "48596e0a58c79aff23e8d3ec5936b353fed2f7d4b63b58a3413a36c1fcaa9559"
+      "name": "tab_quest-0.jpg",
+      "sha256": "603fcda9102ce3f5d2725ad2296792a15828bb213f7312abf9b2937268e6147d"
     },
     {
-      "name": "v3_event2-0.jpg",
-      "sha256": "dd943e006475245609e2714ab0e28a23531c77ef42da0ef87fdc02ce36c0d4e2"
+      "name": "tab_route-0.jpg",
+      "sha256": "4d703fb4368ce63217c5d5213f0c453cca12f3131d1780c4715b4f9fc494275a"
     }
   ],
   "independentQaPassed": false,
