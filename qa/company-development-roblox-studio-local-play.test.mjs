@@ -3755,6 +3755,8 @@ test('Studio Auto QA dispatches only Mare and cancels older Forest-only captures
   assert.ok(workflow.includes('  schedule:'));
   assert.ok(workflow.includes("cron: '*/10 * * * *'"));
   assert.ok(workflow.includes('roblox-games/mare-essentia/src/**'));
+  assert.ok(workflow.includes("      - 'tools/company-nemotron-design-review.mjs'"));
+  assert.ok(workflow.includes("      - 'company-learning/external-ai-distillation-policy.json'"));
   assert.ok(!workflow.includes('roblox-games/fantasy-survival/'));
   assert.ok(workflow.includes('workflows: ["Owner Mare Essentia Direct Publish"]'));
   assert.ok(workflow.includes("github.event.workflow_run.path == '.github/workflows/owner-mare-essentia-direct-publish.yml'"));
