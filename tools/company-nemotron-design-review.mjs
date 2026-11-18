@@ -52,9 +52,9 @@ export function selectStudioDesignPhotoNames(names, sequence = 0, limit = 8) {
     ['harbor_npc_face_close','harbor_npc_hair_left','harbor_npc_hair_right','harbor_npc_hair_back','harbor_npc_face_front'],
     ['harbor_npc_outfit_front','harbor_npc_outfit_side','harbor_npc_outfit_back','harbor_npc_pair_diagonal','harbor_npc_port_street_reverse'],
     ['ship_hull_detail','ship_sails_rigging','cb0_deck','v1_start','v2_event'],
-    ['cargo_warehouse_close','cargo_trade_crates','tab_trade','ui_trade_hall_no_hud','town_market_facade'],
-    ['weapon_blade_close','weapon_ranged_close','harbor_motion_attack','harbor_motion_shoot','field_npc_ally_mob'],
-    ['material_stone_roof','material_wood_dock','town_library_street','town_facility_row_wide','field_entry']
+    ['cargo_warehouse_close','cargo_trade_crates','cargo_warehouse_close','cargo_trade_crates','cargo_warehouse_close'],
+    ['weapon_blade_close','weapon_ranged_close','harbor_motion_attack','harbor_motion_shoot','weapon_blade_close'],
+    ['material_stone_roof','material_wood_dock','material_stone_roof','material_wood_dock','material_stone_roof']
   ];
   const finish = [
     ['vfx_battle_mid_action','vfx_battle_late_action','b1_start','b2_mid','v3_event2'],
