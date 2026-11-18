@@ -125282,7 +125282,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -125325,12 +125325,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44300393580:1",
+      "reservedAt": "2026-11-18T12:11:24.771Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -125973,14 +125973,15 @@
         "system-ai-handoff-to-reservation:system-ai:44267289779:1",
         "system-ai-handoff-from-reservation:system-ai:44267289779:1",
         "system-ai-handoff-to-reservation:system-ai:44276037522:1",
-        "actions-run:44276037522"
+        "actions-run:44276037522",
+        "system-ai-handoff-to-reservation:system-ai:44300393580:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 402,
+      "impactScore": 1806,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 2,
-        "recurrenceCount": 2,
+        "blockedTaskCount": 38,
+        "recurrenceCount": 38,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -125988,7 +125989,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-18T09:42:13.725Z"
+      "updatedAt": "2026-11-18T12:11:24.771Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
@@ -155279,7 +155280,7 @@
     },
     {
       "id": "marketing-card-grid-duel-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -155321,12 +155322,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44300393580:1",
+      "reservedAt": "2026-11-18T12:11:24.771Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-verification-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -155508,14 +155509,18 @@
         "system-ai-applied-answer-sha256:73ea0580efd039f0dce9c4f78fb569c339d844bb4239b3617cbc068bc0a9887d",
         "repair-strategy-fingerprint:24ff09cff9dcb24a339172c1846e6ff7524f37792535949967e527211da644ed",
         "failed-strategy-fingerprint:24ff09cff9dcb24a339172c1846e6ff7524f37792535949967e527211da644ed",
-        "model-output-sha256:8ac3888cc7f250d36c527830aac5a39dba6e0da0b5e44d4f39233874abf23d6d"
+        "model-output-sha256:8ac3888cc7f250d36c527830aac5a39dba6e0da0b5e44d4f39233874abf23d6d",
+        "system-ai-impact-score:402",
+        "system-ai-blocked-task-count:2",
+        "system-ai-representative-canary:system-ai-verification-failed",
+        "system-ai-handoff-to-reservation:system-ai:44300393580:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1722,
+      "impactScore": 402,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 35,
-        "recurrenceCount": 35,
+        "blockedTaskCount": 2,
+        "recurrenceCount": 2,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -155523,7 +155528,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T14:21:40.195Z",
-      "updatedAt": "2026-11-18T07:54:16.279Z"
+      "updatedAt": "2026-11-18T12:11:24.771Z"
     },
     {
       "id": "marketing-cat-step-pre-release-v1",
