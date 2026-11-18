@@ -258,9 +258,16 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
   state.seeds=Array.isArray(state.seeds)?state.seeds:[];
   const removed=new Set((catalog?.permanentRemovalPolicy?.ids||[]).map(clean).filter(Boolean));
   const targetId=clean(gameId);
+  // [자동등록 제한] 다른 게임의 기존 GAME_SEED 이력은 보존하고 새 자동 설계 등록만 제외한다.
+  const roadmap=readJson(path.join(root,'company-learning/platform-release-roadmap.json'),{});
+  const gameFocus=roadmap?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
+  const exclusiveFocus=gameFocus.enabled===true&&gameFocus.completionPursuit?.enabled===true
+    &&gameFocus.completionPursuit.nonFocusedDevelopmentContinues===false
+    ?new Set(gameFocus.ownerFocusedGameIds||[]):null;
   const games=(catalog.games||[]).filter(game=>{
     const id=clean(game?.id),life=clean(game?.lifecycleState||game?.canonical?.lifecycle?.state||'ACTIVE').toUpperCase();
-    return id&&!removed.has(id)&&['ACTIVE','REBUILD'].includes(life)&&(!targetId||id===targetId);
+    return id&&!removed.has(id)&&['ACTIVE','REBUILD'].includes(life)
+      &&(!targetId||id===targetId)&&(!exclusiveFocus||exclusiveFocus.has(id));
   });
   const created=[],reactivated=[],alreadySeeded=[],designPresent=[],grammarUpgraded=[],grammarAlreadyCurrent=[],grammarPending=[];
   for(const game of games){
