@@ -10689,6 +10689,7 @@ renderTitle = function()
 			H.titleSetupOpen = false
 			H.titleConfirmRestart = false
 			newGameMode = false
+			H.setTitleMode(false) -- [이어하기] 기존 항구가 준비될 때까지는 로딩 표지를 유지한다.
 			render()
 			menuToggle.Visible = false
 		end, true)
@@ -10953,7 +10954,8 @@ function H.setTitleMode(on)
 	-- [공중 캐릭터 방지] 서버 스냅샷만 왔다고 3D 항구가 준비된 것은 아니다.
 	local waitingPort = view ~= nil and not inField and sceneSpawn == nil and not on and not H.titleMenuOpen
 	local titleVisible = on or H.titleMenuOpen
-	titleGui.Enabled = titleVisible or waitingPort
+	-- [항구 시작] 표지·메뉴·항구 준비 중 하나를 노출해 로딩 중 공중 캐릭터가 보이지 않게 한다.
+	titleGui.Enabled = on or H.titleMenuOpen or waitingPort
 	titlePanel.Visible = titleVisible
 	if H.portLoadingLabel then H.portLoadingLabel.Visible = waitingPort and not H.titleMenuOpen end
 	local currentCamera = workspace.CurrentCamera
