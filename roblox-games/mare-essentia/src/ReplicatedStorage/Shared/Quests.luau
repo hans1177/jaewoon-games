@@ -33,6 +33,9 @@ export type Quest = {
 	ending: string?, -- 이 이야기만의 결말
 	newsSource: string?, -- 선술집 소문·인쇄물·현장 발견·역사 사건·학자 편지 등 시작 방식
 	story: string?, -- 왜 이 일을 하는가 (이야기)
+	routeId: string?, -- 10대 이야기 항로의 안정된 식별자
+	routeName: string?, -- 지역별 연속 탐험 갈래
+	leadSource: string?, -- 소문·발견·사건·기록 등 단서가 전해진 형태
 	cat: string?, -- kind "people": 이 분야(People.Cats)의 기록한 인물 수 (없으면 전체)
 }
 
@@ -460,7 +463,37 @@ end
 
 -- [지역 현장 탐험 1~5단] 기존 지점·카드·서버 보상/저장 규칙을 그대로 사용한다.
 -- 각 단계는 해당 항구에서만 열리고, 이전 단계의 기록을 완료해야 다음 항구 의뢰가 열린다.
+-- [항로별 역사 단서] 10개 이야기 항로는 기존 6개 해역 해금 규칙과 별도로 분류한다.
+-- 같은 지역에서도 소문·발견·인물 증언·기록·역사 사건이 서로 다른 진입점이 된다.
+local RouteLeads: { [string]: { string } } = {
+	north_sea = { "선술집 소문", "고대 유적 발견", "항구 기록", "지역 증언", "항해 일지" },
+	baltic = { "교역소 소식", "선원의 구술", "광산 장부", "천문 관측", "현장 발견" },
+	red_sea = { "항구 소문", "고대 화폐 발견", "낡은 해도", "선원의 증언", "역사 유적" },
+	west_africa = { "계절풍 관측", "생태 조사", "역사 기록", "항구 사건", "내륙 탐험" },
+	east_africa = { "어민 제보", "현지 구술", "고문서", "박물학자의 요청", "항해 지도" },
+	south_asia = { "장인의 증언", "향신료 거래 소식", "사원 기록", "보석상 제보", "내륙 여행기" },
+	southeast_asia = { "항구 사건", "장인의 기록", "종교 유적", "상인 소문", "현장 목격" },
+	east_asia = { "갯벌 관찰", "교역소 소식", "외교 교류 기록", "측량 일지", "기상 경보" },
+	americas = { "선원의 증언", "식물 표본", "고대 문명 기록", "항해 지도", "탐험가의 일지" },
+	pacific = { "항구 소문", "원주민의 전승", "식물학 발견", "포경선 소식", "원정대의 기록" },
+}
 local RegionalFieldQuests: { { any } } = {
+-- [북해·브리튼] 바다의 소문이 고대 유적·조수 관측·로마 방벽 조사로 이어진다.
+	{ "north_sea", "북해·브리튼", {
+		{ "포스 만의 증언", "edinburgh_coast", "edinburgh", "zoo_seal", "포스 만 해안", "물범", "에든버러 부두에 어부가 나타나 물범이 사라진 물길을 묻는다. 실제로 해안을 살펴 해류와 생태의 첫 증거를 기록해." },
+		{ "솔즈베리의 돌", "salisbury_plain", "london", "site_stonehenge", "솔즈베리 평원", "스톤헨지", "바다에서 모은 기록을 확인하던 중 고대 돌기둥의 방향을 표시한 지도가 발견된다. 런던에서 내륙으로 들어가 배치와 전승을 구별해 조사해." },
+		{ "조수의 계산", "auto_geography_london_low", "london", "geo_tides", "런던 해안 관찰", "조수", "유적의 방향을 두고 논쟁이 벌어진다. 런던의 조수 기록과 관측값을 모아 실제 바다의 주기를 먼저 확인해." },
+		{ "방벽 뒤의 이름", "hadrian_hills", "edinburgh", "site_hadrian_wall", "북쪽 로마 방벽", "하드리아누스 방벽", "북쪽 경계에 남은 로마의 돌과 항해 기록이 같은 지도를 가리킨다. 권력의 흔적과 유적의 실제 역사를 조사해." },
+		{ "바다를 재는 도구", "auto_relic_london_low", "london", "relic_sextant", "런던 유물 조사", "육분의", "서로 다른 시대의 해안 기록을 맞춰 보려면 도구 자체의 원리를 확인해야 한다. 런던에서 측량 기구를 조사해 항로의 마지막 빈칸을 채워." },
+	} },
+	-- [발트·스칸디나비아] 교역 소문에서 바이킹 유산과 광산·천문 관측으로 확대된다.
+	{ "baltic", "발트·스칸디나비아", {
+		{ "호박이 흘러온 곳", "copenhagen_shore", "copenhagen", "min_amber", "외레순 해안", "호박", "코펜하겐 교역소의 호박 장부에 원산지가 빠져 있다. 해안에서 실제 표본을 찾아 바닷길의 출발점을 기록해." },
+		{ "바이킹의 뱃머리", "viking_harbor", "bergen", "relic_viking_ship", "옛 바이킹 항구", "바이킹 배", "호박 운송 이야기를 따라간 선원이 오래된 북쪽 항구의 배를 증언한다. 베르겐에서 선박 구조와 역사 기록을 비교해." },
+		{ "철의 가격표", "stockholm_mine", "stockholm", "min_swedish_iron", "스톡홀름 철광", "스웨덴 철", "선박 장인의 증언은 철 공급과 연결된다. 스톡홀름 광산을 조사해 무역의 변화가 실제 기술에 미친 영향을 기록해." },
+		{ "북쪽 밤의 별", "auto_astronomy_copenhagen_low", "copenhagen", "ast_orion", "코펜하겐 천문 관측", "오리온자리", "장거리 항로를 설명하려면 광산과 바닷길뿐 아니라 밤하늘의 기준이 필요하다. 별을 관측하고 이전 항해 일지를 대조해." },
+		{ "붉은 광산의 증거", "falun_mine", "stockholm", "min_falun_copper", "팔룬 광산", "팔룬 구리", "상인에게서 오래된 광산 장부가 도착한다. 팔룬에서 구리의 흔적을 확인하고 북쪽 세계의 교역·자원·항해 기록을 완성해." },
+	} },
 	{ "red_sea", "홍해·북아프리카", {
 		{ "절벽의 홍학", "oran_cliffs", "oran", "zoo_flamingo", "오랑 해안 절벽", "홍학", "오랑 해안에서 물새 무리의 이동과 먹이활동을 조사해." },
 		{ "카르타고 항구의 동전", "tunis_ruins2", "tunis", "relic_carthage_coin", "카르타고 항구 터", "카르타고 동전", "카르타고 옛 항구에 남은 동전의 무늬와 거래 흔적을 기록해." },
@@ -524,6 +557,8 @@ for _, route in RegionalFieldQuests do
 		local id = "q_field_" .. route[1] .. "_" .. tostring(stage)
 		local quest: Quest = {
 			id = id, name = route[2] .. " · " .. mission[1],
+			routeId = route[1], routeName = route[2],
+			leadSource = (RouteLeads[route[1]] or {})[stage] or "탐험 소식",
 			kind = "discover_card", exploreSite = mission[2], portId = mission[3], cardId = mission[4],
 			amount = 1, after = prev, difficulty = stage, strand = "history",
 			summary = string.format("지역 현장 %d/5 · %s에서 %s 발견", stage, mission[5], mission[6]),
