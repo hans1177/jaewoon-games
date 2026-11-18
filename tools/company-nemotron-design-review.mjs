@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {pathToFileURL} from 'node:url';
+import {execFileSync} from 'node:child_process';
 
 // [정책] NVIDIA 무료 시험 엔드포인트. 결제·유료 대체·로컬 우회 금지.
 const MODEL='nvidia/nemotron-3.5-super-vl-120b-a12b';
@@ -25,6 +26,11 @@ const framesRoot=path.resolve(options.frames||'.');
 const reportPath=path.resolve(options.out||path.join(framesRoot,'nemotron-design-review.json'));
 const sourcePath=path.resolve(root,FILE);
 const categories=new Set(['npc-face','npc-hair','npc-clothing','material','ui','camera']);
+// [격리 후보 권한] API 자체 호출이 source 수정 권한을 주지 않는다.
+export function authorizedCandidateBranch(name,runId) {
+  return /^[0-9]{5,}$/.test(String(runId??'')) &&
+    name==='nemotron-mare-design-'+String(runId);
+}
 
 function record(status,fields={}) {
   const report={version:1,provider:'NVIDIA',model:MODEL,gameId:'mare-essentia',
@@ -154,6 +160,16 @@ export async function reviewNemotron({fetchImpl=globalThis.fetch}={}) {
     if(!candidate.changed.length)return record('REVIEWED_NO_EDIT',details);
     if(trim(process.env.NEMOTRON_DESIGN_CANDIDATE)!=='YES')
       return record('REVIEWED_EDIT_NOT_ENABLED',details);
+    // [메인 쓰기 금지] 실제 git 참조 이름까지 확인한 후 격리 후보에서만 쓴다.
+    let branch='';
+    try {
+      branch=execFileSync('git',['-C',root,'symbolic-ref','--quiet','--short','HEAD'],
+        {encoding:'utf8',timeout:5000}).trim();
+    } catch {
+      return record('BLOCKED_NO_CANDIDATE_BRANCH',details);
+    }
+    if(!authorizedCandidateBranch(branch,process.env.GITHUB_RUN_ID))
+      return record('BLOCKED_NOT_ISOLATED_CANDIDATE_BRANCH',details);
     fs.writeFileSync(sourcePath,candidate.content);
     return record('CANDIDATE_EDITED',details);
   }catch(err){
