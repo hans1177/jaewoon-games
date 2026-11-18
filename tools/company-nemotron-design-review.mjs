@@ -218,80 +218,99 @@ export function verifiedDesignFeedback(previous = {}, feedback = {}, now = Date.
 
 // [호출 한도 회계] 동일 공식 Studio 촬영 세대의 '초안 생성 + 독립 검수' 사용량을 합산한다.
 // 회차별 카운터는 누적이므로 합계가 아닌 각 제공자별 최대값을 사용한다. 요금 한도를 낮추는 방향으로만 병합.
-export function mergeFreeVisualUsage(previous = {}, feedback = {}, now = Date.now()) {
-  const day = new Date(now).toISOString().slice(0, 10);
-  const origin = previous?.usageWindow?.day === day ? previous.usageWindow.calls || {} : {};
-  const validFollowup = /^[a-f0-9]{40}$/i.test(String(previous?.sourceRevision || '')) &&
-    feedback?.beforeRevision === previous.sourceRevision &&
-    /^[a-f0-9]{40}$/i.test(String(feedback?.candidateRevision || '')) &&
-    feedback?.sourceRevision === feedback.candidateRevision &&
-    feedback?.gameId === 'mare-essentia' &&
-    feedback?.usageWindow?.day === day;
-  const followup = validFollowup ? feedback.usageWindow.calls || {} : {};
-  const calls = {};
-  for (const provider of Object.keys(DAILY_LIMIT)) {
-    const old = Number(origin[provider] || 0), added = Number(followup[provider] || 0);
-    calls[provider] = Math.max(
-      Number.isInteger(old) && old >= 0 ? Math.min(old, 1000) : 0,
-      Number.isInteger(added) && added >= 0 ? Math.min(added, 1000) : 0);
+export function mergeFreeVisualUsage(previous={},feedback={},now=Date.now()) {
+  const day=currentDay(now),origin=previous?.usageWindow||{};
+  const valid=/^[a-f0-9]{40}$/i.test(String(previous?.sourceRevision||'')) &&
+    feedback?.beforeRevision===previous.sourceRevision &&
+    /^[a-f0-9]{40}$/i.test(String(feedback?.candidateRevision||'')) &&
+    feedback?.sourceRevision===feedback.candidateRevision &&
+    feedback?.gameId==='mare-essentia' && feedback?.usageWindow?.day===day;
+  const follow=valid?feedback.usageWindow:{};
+  const calls={},days={};
+  for(const provider of Object.keys(DAILY_LIMIT)){
+    const pd=freeQuotaDay(provider,now);
+    const isActive=(usage)=>usage?.days?.[provider]?
+      usage.days[provider]===pd:usage?.day===day;
+    const count=usage=>isActive(usage)&&Number.isInteger(usage?.calls?.[provider])?
+      Math.max(0,Math.min(1000,usage.calls[provider])):0;
+    days[provider]=pd;
+    calls[provider]=Math.max(count(origin),count(follow));
   }
-  const cooldowns = {...previous?.cooldowns};
-  if (validFollowup) for (const model of DESIGN_FREE_MODELS) {
-    const newer = Date.parse(feedback?.cooldowns?.[model.id] || '');
-    const older = Date.parse(cooldowns?.[model.id] || '');
-    if (Number.isFinite(newer) && newer > now &&
-      (!Number.isFinite(older) || newer > older))
-      cooldowns[model.id] = new Date(newer).toISOString();
+  const cooldowns={...previous?.cooldowns},providerCooldowns={...previous?.providerCooldowns};
+  if(valid){
+    for(const [id,until] of Object.entries(feedback?.cooldowns||{})){
+      if(!(DESIGN_FREE_MODELS.some(model=>model.id===id)||
+        /^OPENROUTER_DISCOVERED_[a-f0-9]{12}$/.test(id))) continue;
+      if(Date.parse(until)>now &&
+        (!Number.isFinite(Date.parse(cooldowns[id]))||Date.parse(until)>Date.parse(cooldowns[id])))
+        cooldowns[id]=until;
+    }
+    for(const provider of Object.keys(DAILY_LIMIT)){
+      const until=feedback?.providerCooldowns?.[provider];
+      if(Date.parse(until)>now &&
+        (!Number.isFinite(Date.parse(providerCooldowns[provider]))||
+        Date.parse(until)>Date.parse(providerCooldowns[provider])))
+        providerCooldowns[provider]=until;
+    }
   }
-  return {...previous, usageWindow: {day, calls}, cooldowns};
+  return {...previous,usageWindow:{day,calls,days},cooldowns,providerCooldowns};
 }
 
 export function selectFreeDesignModels({
-  frameNames = [], role = '', policy, env = process.env, previous = {}, feedback = {}, now = Date.now()
-} = {}) {
-  const config = policy?.directVisualDesign?.freeSpecialistPool;
-  if (config?.enabled !== true || config?.paidFallbackForbidden !== true ||
-    config?.maxCallsPerCapture < 1 || config?.maxCallsPerCapture > 3 ||
-    config?.accountTierProofRequired !== true)
+  frameNames=[],role='',policy,env=process.env,previous={},feedback={},
+  extraModels=[],quotaSnapshot=null,diagnostics=[],now=Date.now()
+}={}) {
+  const config=policy?.directVisualDesign?.freeSpecialistPool;
+  if(config?.enabled!==true || config?.paidFallbackForbidden!==true ||
+    config?.maxCallsPerCapture<1 || config?.maxCallsPerCapture>3 ||
+    config?.accountTierProofRequired!==true)
     throw Error('FREE_SPECIALIST_POLICY_DENIED');
-  const approved = new Set(config.modelIds || []);
-  const assignedRole = role || designRoleForFrames(frameNames);
-  const today = new Date(now).toISOString().slice(0, 10);
-  const carried = mergeFreeVisualUsage(previous, feedback, now);
-  const spent = carried.usageWindow.calls;
-  const eligible = DESIGN_FREE_MODELS.filter(model => {
-    const cooling = Date.parse(carried?.cooldowns?.[model.id] || '');
-    return approved.has(model.id) && trim(env[model.keyName]) &&
-      trim(env[model.verifiedName]) === 'YES' &&
-      (model.provider !== 'OPENROUTER' || model.model.endsWith(':free')) &&
-      Number(spent[model.provider] || 0) < DAILY_LIMIT[model.provider] &&
-      (!Number.isFinite(cooling) || cooling <= now);
-  });
-  const preference = config.roles?.[assignedRole] || [];
-  const verified = verifiedDesignFeedback(previous, feedback, now);
-  const score = model => {
-    // [성공] 검증된 같은 전문 역할 + 정확한 모델에 한해서만 다음 호출에 우선권을 준다.
-    if (verified?.role === assignedRole && verified.provider === model.provider &&
-      verified.model === model.model) return -1;
-    const order = preference.indexOf(model.id);
-    // [실패] 기존 같은 분야의 잘못된 JSON/존재하지 않는 앵커 제안만 한 단계 후순위.
-    const invalid = previous?.selectedRole === assignedRole &&
-      Array.isArray(previous?.attempts) &&
-      previous.attempts.some(row => row?.id === model.id &&
-        ['REVIEW_INVALID', 'SOURCE_ANCHOR_INVALID'].includes(row?.status));
-    return (order < 0 ? 999 : order) + (invalid ? 2 : 0);
-  };
-  eligible.sort((left, right) =>
-    score(left) - score(right) ||
-    DESIGN_FREE_MODELS.indexOf(left) - DESIGN_FREE_MODELS.indexOf(right));
-  // [복구] 세 공급자가 모두 허용되면 각 공급자의 전문 모델 1개씩 먼저, 동일 공급자의 대체 모델은 뒤에 배정.
-  const firstProviders = new Set();
-  const primary = [], backups = [];
-  for (const model of eligible) {
-    if (firstProviders.has(model.provider)) backups.push(model);
-    else {firstProviders.add(model.provider); primary.push(model);}
+  const approved=new Set(config.modelIds||[]);
+  const dynamic=config.liveDiscoveryEnabled===true && Number.isInteger(config.maxVerifiedFreeVisionModels)
+    ? extraModels.filter(model=>model?.discoveredFree===true &&
+      /^OPENROUTER_DISCOVERED_[a-f0-9]{12}$/.test(model.id) &&
+      /^[a-z0-9][a-z0-9._/-]{2,110}:free$/.test(model.model) &&
+      model.provider==='OPENROUTER' &&
+      model.keyName==='OPENROUTER_API_KEY' &&
+      model.verifiedName==='OPENROUTER_DESIGN_FREE_TIER_VERIFIED' &&
+      model.endpoint==='https://openrouter.ai/api/v1/chat/completions')
+      .slice(0,Math.min(12,Math.max(0,config.maxVerifiedFreeVisionModels))) : [];
+  const models=[...DESIGN_FREE_MODELS.filter(model=>approved.has(model.id)),...dynamic];
+  const assignedRole=role||designRoleForFrames(frameNames);
+  const carried=mergeFreeVisualUsage(previous,feedback,now);
+  const preference=config.roles?.[assignedRole]||[];
+  const verified=verifiedDesignFeedback(previous,feedback,now),eligible=[];
+  for(const model of models){
+    const modelCooldown=Date.parse(carried?.cooldowns?.[model.id]||'');
+    const providerCooldown=Date.parse(carried?.providerCooldowns?.[model.provider]||'');
+    const remaining=freeQuotaStatus(model.provider,carried.usageWindow,quotaSnapshot,now).remaining;
+    const status=!trim(env[model.keyName])?'KEY_MISSING'
+      :trim(env[model.verifiedName])!=='YES'?'FREE_TIER_NOT_VERIFIED'
+      :model.provider==='OPENROUTER'&&!model.model.endsWith(':free')?'NONFREE_MODEL'
+      :Number.isFinite(modelCooldown)&&modelCooldown>now?'MODEL_COOLDOWN'
+      :Number.isFinite(providerCooldown)&&providerCooldown>now?'PROVIDER_COOLDOWN'
+      :remaining<=0?'QUOTA_EXHAUSTED':'AVAILABLE';
+    if(Array.isArray(diagnostics))diagnostics.push({modelId:model.id,provider:model.provider,status});
+    if(status==='AVAILABLE')eligible.push(model);
   }
-  return [...primary, ...backups];
+  const score=model=>{
+    if(verified?.role===assignedRole && verified.provider===model.provider &&
+      verified.model===model.model)return -1;
+    const order=preference.indexOf(model.id);
+    const invalid=previous?.selectedRole===assignedRole &&
+      (previous?.attempts||[]).some(row=>row?.id===model.id &&
+        ['REVIEW_INVALID','SOURCE_ANCHOR_INVALID'].includes(row.status));
+    return (order<0?999:order)+(invalid?2:0);
+  };
+  eligible.sort((a,b)=>score(a)-score(b)||
+    DESIGN_FREE_MODELS.indexOf(a)-DESIGN_FREE_MODELS.indexOf(b)||
+    a.model.localeCompare(b.model));
+  const selected=[],fallback=[],seen=new Set();
+  for(const model of eligible){
+    if(seen.has(model.provider))fallback.push(model);
+    else{seen.add(model.provider);selected.push(model);}
+  }
+  return [...selected,...fallback];
 }
 
 function cooldownAfter(response, status, error = null) {
