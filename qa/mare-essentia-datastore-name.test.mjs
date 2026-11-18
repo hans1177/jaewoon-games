@@ -2211,21 +2211,14 @@ test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox
 });
 
 
-// [실물 NPC 얼굴 회귀] 3D 얼굴 UI가 렌더되지 않아도 원본 R15 얼굴 데칼을 삭제하지 않는다.
+// 주민의 원본 얼굴 데칼을 보존하고 덧붙인 가면을 금지한다.
 test('R15 주민 얼굴은 공식 Studio 흰 얼굴 회귀를 막도록 기본 데칼을 보존한다',()=>{
   const source=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
   const start=source.indexOf('local function drawFace(');
   const end=source.indexOf('local function addHat(',start);
   assert.ok(start>=0 && end>start,'기존 책임 함수 확인');
   const face=source.slice(start,end);
-  assert.match(face,/gui\.Face\s*=\s*Enum\.NormalId\.Front/);
-  assert.match(face,/gui\.AlwaysOnTop\s*=\s*true/);
-  // [주민 실물] R15 곡면 UV와 분리된 용접 얼굴면·수염 크기를 유지한다.
-  assert.match(face,/surface\.Name\s*=\s*"MareFaceSurface"/);
-  assert.match(face,/surface\.Shape\s*=\s*Enum\.PartType\.Ball/);
-  assert.match(face,/gui\.Adornee\s*=\s*surface/);
-  assert.match(face,/w\.Part0, w\.Part1\s*=\s*head, surface/);
-  assert.match(face,/box\(100, 162, 56, 24, hair, 0, true\)/);
+  assert.doesNotMatch(face,/MareFaceSurface|SurfaceGui|WeldConstraint|Enum\.PartType\.Ball/);
   assert.match(face,/if not decal then[\s\S]*Instance\.new\("Decal"\)/);
   assert.match(face,/decal\.Face\s*=\s*Enum\.NormalId\.Front/);
   assert.match(face,/decal\.Texture\s*=\s*"rbxasset:\/\/textures\/face\.png"/);

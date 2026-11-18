@@ -697,6 +697,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   const prompt = 'You are a visual art director for the existing Roblox sea-voyage game. ' +
     'Study the verified real Studio screenshots and improve face, hair, clothing, ships, buildings, ' +
     'materials, lighting, HUD, cards, portraits, motion and composition where visually justified. ' +
+    'For visible trade cargo, check whether the item is recognizable, correctly scaled, grounded without clipping, and has believable materials. Flag weak models as issues tied to the actual frame for source review. Skip cargo that is not shown. ' +
     'Never create primitives, placeholder models, new art assets, URLs or unlicensed assets. ' +
     'Only change visual constants on EXISTING exact source lines shown in anchors. ' +
     'Never modify gameplay, economy, save, combat, physics, networking, or script control flow. ' +

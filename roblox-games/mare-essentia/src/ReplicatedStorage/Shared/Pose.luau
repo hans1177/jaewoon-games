@@ -90,107 +90,9 @@ if UserInputService.TouchEnabled then
 	end)
 end
 
--- 얼굴: 기본 얼굴 데칼 대신 눈썹·눈·입·수염·흉터를 UI 로 그려, 사람마다 표정과 생김새가 다르게 한다.
--- (뷰포트 초상화는 SurfaceGui 를 그리지 못하므로 그때는 기본 얼굴을 그대로 둔다)
-local function drawFace(head, role, skin, rng, gender)
+-- 주민 얼굴은 머리 메시의 원본 데칼을 사용한다.
+local function drawFace(head)
 	local decal = head:FindFirstChildWhichIsA("Decal")
-	-- [주민 얼굴] R15 곡면 Head에 UI를 직접 붙이면 표정이 크게 늘어나는 문제를 막는다.
-	-- 기존 책임 함수 안에서 얼굴 피부면을 머리 관절에 용접하고, 저장·전투에는 관여하지 않는다.
-	local h = head.Size
-	local surface = Instance.new("Part")
-	surface.Name = "MareFaceSurface"
-	surface.Shape = Enum.PartType.Ball
-	surface.Size = Vector3.new(h.X * 0.82, h.Y * 0.82, math.max(0.08, h.Z * 0.14))
-	surface.CFrame = head.CFrame * CFrame.new(0, -h.Y * 0.025, -h.Z * 0.50)
-	surface.Color = skin
-	surface.Material = Enum.Material.SmoothPlastic
-	surface.CastShadow = false
-	surface.Anchored, surface.CanCollide, surface.CanTouch, surface.CanQuery, surface.Massless = false, false, false, false, true
-	surface.Parent = head
-	local w = Instance.new("WeldConstraint")
-	w.Part0, w.Part1 = head, surface
-	w.Parent = surface
-	local gui = Instance.new("SurfaceGui")
-	gui.Name = "MareFace"
-	gui.Adornee = surface
-	gui.MaxDistance = 65
-	-- [주민 얼굴 정면] 기존 머리 데칼의 Face가 Back인 아바타에서도
-	-- 몸통 전면과 같은 로컬 -Z에만 얼굴을 그린다. 필요 시 목 관절의 180도 교정은 아래 한 곳에서 한다.
-	gui.Face = Enum.NormalId.Front
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.FixedSize
-	gui.CanvasSize = Vector2.new(200, 200)
-	gui.LightInfluence = 0.6
-	-- [실물 얼굴] R15 곡면 머리에서 표면 UI가 메시 안에 가려지지 않도록 전면 렌더링한다.
-	gui.AlwaysOnTop = true
-	gui.Parent = head
-	local function box(x, y, w, h, color, rot, round)
-		local f = Instance.new("Frame")
-		f.AnchorPoint = Vector2.new(0.5, 0.5)
-		f.Position = UDim2.fromOffset(x, y)
-		f.Size = UDim2.fromOffset(w, h)
-		f.BackgroundColor3 = color
-		f.BorderSizePixel = 0
-		f.Rotation = rot or 0
-		f.Parent = gui
-		if round then
-			local c = Instance.new("UICorner")
-			c.CornerRadius = UDim.new(0.5, 0)
-			c.Parent = f
-		end
-		return f
-	end
-	local dark = Color3.fromRGB(34, 26, 22)
-	local hair = ({ Color3.fromRGB(40, 28, 20), Color3.fromRGB(92, 60, 34), Color3.fromRGB(150, 112, 60), Color3.fromRGB(120, 120, 120), Color3.fromRGB(24, 22, 22) })[rng:NextInteger(1, 5)]
-	local angry = role == "Barbarian" or role == "Rogue" or role == "Rogue_Hooded"
-	local eyeY = 84
-	-- 눈썹: 험상궂은 사람은 안쪽이 내려가고, 점잖은 사람은 부드럽게 올라간다
-	local tilt = if angry then 16 else -6
-	box(66, eyeY - 22, 36, 8, hair, tilt)
-	box(134, eyeY - 22, 36, 8, hair, -tilt)
-	-- 눈
-	local eyeW = rng:NextInteger(14, 20)
-	box(66, eyeY, eyeW, eyeW * (if angry then 0.7 else 1), Color3.fromRGB(245, 245, 240), 0, true)
-	box(134, eyeY, eyeW, eyeW * (if angry then 0.7 else 1), Color3.fromRGB(245, 245, 240), 0, true)
-	box(66 + 1, eyeY, eyeW * 0.55, eyeW * 0.55 * (if angry then 1.1 else 1), dark, 0, true)
-	box(134 - 1, eyeY, eyeW * 0.55, eyeW * 0.55 * (if angry then 1.1 else 1), dark, 0, true)
-	-- 코 그림자
-	box(100, 108, 10, 17, skin:Lerp(Color3.new(0, 0, 0), 0.18), 0, true)
-	-- 입
-	local mouth = rng:NextInteger(1, 3)
-	if role == "Knight" then
-		box(100, 137, 32, 5, dark, 0)
-	elseif angry then
-		box(100, 139, 38, 6, dark, 0)
-		box(82, 144, 6, 5, dark, 30)
-		box(118, 144, 6, 5, dark, -30)
-	elseif mouth == 1 then
-		box(100, 137, 31, 6, dark, 0, true)
-		box(84, 133, 6, 6, dark, 25, true)
-		box(116, 133, 6, 6, dark, -25, true)
-	else
-		box(100, 139, 28, 5, dark, 0, true)
-	end
-	-- 수염과 콧수염
-	local beard = rng:NextInteger(1, 4)
-	if gender ~= "female" and (role == "Barbarian" or beard == 1) then
-		box(100, 162, 56, 24, hair, 0, true)
-		box(100, 132, 42, 8, hair, 0, true)
-	elseif gender ~= "female" and beard == 2 then
-		box(100, 132, 42, 8, hair, 0, true)
-	end
-	-- 흉터와 안대
-	if role == "Rogue" or role == "Rogue_Hooded" then
-		if rng:NextInteger(1, 2) == 1 then
-			box(66, eyeY, 30, 20, dark, 0, true)
-			box(100, eyeY - 14, 90, 3, dark, -8)
-		else
-			box(140, 100, 5, 46, Color3.fromRGB(150, 70, 62), 14)
-		end
-	end
-	-- [실물 얼굴 복구] 공식 Studio 정면 캡처에서 R15 표면 UI의 눈·입이 보이지 않았다.
-	-- 등록된 기본 얼굴 데칼을 제거하지 않고 정면에 유지해 흰 무표정 머리로 사라지는 회귀를 막는다.
-	-- [기본 얼굴 결손 복구] 원본 데칼이 없는 R15에도 로블록스 내장 얼굴을 사용한다.
-	-- 기존 승인 얼굴 텍스처는 절대 교체하지 않으며, 새 외부 자산 요청은 없다.
 	if not decal then
 		decal = Instance.new("Decal")
 		decal.Name = "face"
@@ -490,7 +392,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	end
 	local headPart = model:FindFirstChild("Head")
 	if headPart and headPart:IsA("BasePart") and not parent:IsA("WorldModel") then
-		pcall(drawFace, headPart, role, skin, rng, outfit and outfit.gender)
+		pcall(drawFace, headPart)
 	end
 	humanoid.AutoRotate = false
 	humanoid.WalkSpeed = 0
