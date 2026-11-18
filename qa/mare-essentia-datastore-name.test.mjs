@@ -2153,6 +2153,22 @@ test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox
 });
 
 
+// [실물 NPC 얼굴 회귀] 3D 얼굴 UI가 렌더되지 않아도 원본 R15 얼굴 데칼을 삭제하지 않는다.
+test('R15 주민 얼굴은 공식 Studio 흰 얼굴 회귀를 막도록 기본 데칼을 보존한다',()=>{
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
+  const start=source.indexOf('local function drawFace(');
+  const end=source.indexOf('local function addHat(',start);
+  assert.ok(start>=0 && end>start,'기존 책임 함수 확인');
+  const face=source.slice(start,end);
+  assert.match(face,/gui\.Face\s*=\s*Enum\.NormalId\.Front/);
+  assert.match(face,/gui\.AlwaysOnTop\s*=\s*true/);
+  assert.match(face,/if not decal then[\s\S]*Instance\.new\("Decal"\)/);
+  assert.match(face,/decal\.Face\s*=\s*Enum\.NormalId\.Front/);
+  assert.match(face,/decal\.Texture\s*=\s*"rbxasset:\/\/textures\/face\.png"/);
+  assert.match(face,/decal\.Transparency\s*=\s*0/);
+  assert.doesNotMatch(face,/decal:Destroy\(\)/);
+});
+
 // [무료 네모트론 디자인 검증] Studio 사진과 책임 코드에서 전 시각 범주를 안전하게 수정한다.
 test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치·다중 파일 소스 변경', async () => {
   const {validateReview, visualEditLooksSafe, applyVisualReplacements,

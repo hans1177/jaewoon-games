@@ -169,9 +169,20 @@ local function drawFace(head, role, skin, rng, gender)
 			box(140, 100, 5, 46, Color3.fromRGB(150, 70, 62), 14)
 		end
 	end
-	if decal and gui.Parent then
-		decal:Destroy()
+	-- [실물 얼굴 복구] 공식 Studio 정면 캡처에서 R15 표면 UI의 눈·입이 보이지 않았다.
+	-- 등록된 기본 얼굴 데칼을 제거하지 않고 정면에 유지해 흰 무표정 머리로 사라지는 회귀를 막는다.
+	-- [기본 얼굴 결손 복구] 원본 데칼이 없는 R15에도 로블록스 내장 얼굴을 사용한다.
+	-- 기존 승인 얼굴 텍스처는 절대 교체하지 않으며, 새 외부 자산 요청은 없다.
+	if not decal then
+		decal = Instance.new("Decal")
+		decal.Name = "face"
+		decal.Parent = head
 	end
+	decal.Face = Enum.NormalId.Front
+	if decal.Texture == "" then
+		decal.Texture = "rbxasset://textures/face.png"
+	end
+	decal.Transparency = 0
 end
 
 
