@@ -62,6 +62,7 @@ test('actual Vibe2 game source function invokes only approved external AI and pr
     assert.equal(calls.length,1);
     assert.match(calls[0].url,/^https:\/\/generativelanguage\.googleapis\.com\//);
     assert.ok(GEMINI_FREE_MODELS.some(model=>calls[0].url.includes(model)));
+    assert.ok(calls[0].url.includes(GEMINI_FREE_MODELS[0]),'game code edits prioritize the verified free Flash slot');
     assert.equal(JSON.parse(calls[0].options.body).contents[0].parts[0].text,'SOURCE_FIXTURE_PROMPT');
     process.env.VIBE2_GAME_SOURCE_PROVIDER='OLLAMA';
     await assert.rejects(requestLocalModel('x'),/LOCAL_AI_PERMANENTLY_FORBIDDEN/);
