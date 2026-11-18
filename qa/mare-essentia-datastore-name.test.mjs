@@ -2342,6 +2342,7 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
     provider: 'GEMINI', model: 'gemini-3.8-flash', selectedRole: 'NPC'};
   const frameA = 'harbor_npc_sparring_01-0.jpg', frameB = 'harbor_npc_sparring_02-0.jpg';
   const comparison = {
+    verifiedAt: new Date(now - 60000).toISOString(),
     status: 'VISUAL_BEFORE_AFTER_PASS', sourceRevision: 'b'.repeat(40),
     beforeRevision: original.sourceRevision, candidateRevision: 'b'.repeat(40),
     authorProvider: 'GEMINI', authorModel: 'gemini-3.8-flash',
@@ -2358,23 +2359,26 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
       {name: frameA, sha256: '3'.repeat(64)}, {name: frameB, sha256: '4'.repeat(64)}
     ]
   };
-  assert.equal(verifiedDesignFeedback(original, comparison)?.model, original.model);
+  assert.equal(verifiedDesignFeedback(original, comparison, now)?.model, original.model);
   assert.equal(models({frameNames: [frameA], previous: original, feedback: comparison})[0].id,
     'GEMINI_FLASH', '다른 제공자의 실물 전후 검증이 확인된 모델만 우선 선택');
   assert.equal(verifiedDesignFeedback(original, {
-    ...comparison, reviewerProvider: 'GEMINI'}), null,
+    ...comparison, verifiedAt: new Date(now - 8 * 86400000).toISOString()
+  }, now), null, '7일 지난 디자인 결과 재학습 금지');
+  assert.equal(verifiedDesignFeedback(original, {
+    ...comparison, reviewerProvider: 'GEMINI'}, now), null,
     '동일 제공자 자기 평가만으로 긍정 학습 금지');
   assert.equal(verifiedDesignFeedback(original, {
-    ...comparison, beforeRevision: 'f'.repeat(40)}), null,
+    ...comparison, beforeRevision: 'f'.repeat(40)}, now), null,
     '과거 기준선과 다른 사진 검증을 재사용하면 안 된다');
   assert.equal(verifiedDesignFeedback(original, {
-    ...comparison, afterStudioPassed: false}), null);
+    ...comparison, afterStudioPassed: false}, now), null);
   assert.equal(verifiedDesignFeedback(original, {
     ...comparison, comparison: {...comparison.comparison, regressions: [{
       screenshot: frameA, evidenceSha256: 'e'.repeat(64)
-    }]}}), null);
+    }]}}, now), null);
   assert.equal(verifiedDesignFeedback(original, {
-    ...comparison, afterFrames: comparison.beforeFrames}), null,
+    ...comparison, afterFrames: comparison.beforeFrames}, now), null,
     '사진이 모두 같으면 디자인 개선 성공이라 할 수 없다');
   assert.equal(models({frameNames: [frameA], previous: {
     ...original, attempts: [{id: 'NVIDIA_VL', status: 'REVIEW_INVALID'}]}
