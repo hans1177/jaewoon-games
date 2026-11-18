@@ -211,7 +211,7 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.match(field,/combatBtns\.dodge = \{ btn = b, label = "회피" \}/);
   assert.equal((field.match(/bindPress\(b, function\(\) useMove\("dodge"\) end\)/g)||[]).length,1,'회피 입력 중복 금지');
   assert.doesNotMatch(field,/FieldSkillCaption|Name = "FieldSkill_|local function mkSkill\(/);
-  assert.match(field,/timer\.Visible = false -- \[아이콘 전용\]/);
+  assert.match(field,/if timer then timer\.Visible = false end -- \[아이콘 전용\]/, "쿨타임 숫자는 기존 버튼에서도 숨긴다");
   assert.match(field,/equipped\.heavy, equipped\.sweep = true, false/);
   assert.match(field,/pl\.autoNormalHits % 5 == 0/);
   // [빠른 연타] 0.14초 지연된 이전 평타도 명중 당시 새 입력 여부와 관계없이 충전해야 한다.
