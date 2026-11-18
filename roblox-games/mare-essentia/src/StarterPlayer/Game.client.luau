@@ -2519,8 +2519,65 @@ do
 			card.Parent = body
 			return card
 		end
-		-- 1) 지금 할 일
+		-- [첫 항해 목표] 기존 튜토리얼 단계와 실제 서버 진행 상태를 저널의 한 카드에서 확인한다.
+		head("첫 항해 목표")
+		do
+			local captain, p, ship = view.captain, view.player, view.ship
+			local sailed = (p.day or 0) > 0
+			if captain and not H.tutorialHidden and (captain.step ~= "done" or not sailed) then
+				local steps = {
+					{ done = captain.step ~= "name", text = "상인 길드 서기에게 이름 올리기" },
+					{ done = captain.step == "portrait" or captain.step == "done", text = "주점 동료 맞이하기" },
+					{ done = captain.step == "done", text = "떠돌이 화가에게 초상 받기" },
+					{ done = sailed or (ship.cargoUsed or 0) > 0, text = "항구 특산품 구매하기" },
+					{ done = sailed, text = "지도에서 다른 항구로 출항하기" },
+				}
+				local count, lines = 0, {}
+				for _, step in steps do
+					if step.done then count += 1 end
+					table.insert(lines, (if step.done then "✓ " else "○ ") .. step.text)
+				end
+				goal(string.format("첫걸음 %d/%d", count, #steps), table.concat(lines, "\n"), count / #steps, COLORS.gold)
+			elseif view.guide then
+				local lines = {}
+				for _, step in (view.guide.steps or {}) do
+					table.insert(lines, tostring(step.mark or "○") .. " " .. tostring(step.text or ""))
+				end
+				goal(view.guide.title or "항해 목표", table.concat(lines, "\n"), nil)
+			elseif view.actIntro or view.act then
+				local mission = view.actIntro or view.act
+				goal(mission.title or "항해 목표", tostring(mission.goal or "기록된 목표를 확인해"), nil)
+			else
+				goal("첫 항해 완료", "진행 중인 의뢰와 새로운 항해 목표는 아래에서 확인해.", nil)
+			end
+		end
+		-- [메뉴 조언 단일화] 원래 항구 화면에 있던 선장 비서 경고를 저널에서만 보여 준다.
 		head("지금 할 일")
+		do
+			local ship = view.ship
+			local cue, detail, tab = nil, nil, nil
+			if ship.maxHull > 0 and ship.hull < ship.maxHull * 0.4 then
+				cue, detail, tab = "선체 수리 필요", string.format("내구도 %d/%d · 항해 전 수리 확인", ship.hull, ship.maxHull), "yard"
+			elseif ship.supplies <= 5 then
+				cue, detail, tab = "보급품 부족", "보급 " .. tostring(ship.supplies) .. "개 · 출항 전 보급 확인", "yard"
+			elseif ship.cargoCapacity > 0 and ship.cargoUsed >= ship.cargoCapacity then
+				cue, detail, tab = "화물칸 가득 참", string.format("%d/%d칸 · 거래 전 화물 정리", ship.cargoUsed, ship.cargoCapacity), "trade"
+			end
+			if cue then
+				local covered = false
+				for _, advice in (view.counsel or {}) do
+					if advice.tab == tab then covered = true; break end
+				end
+				if not covered then
+					local card = goal("주의 · " .. cue, detail, nil)
+					local go = mkButton(card, "해당 메뉴로 이동", COLORS.red, UDim2.new(1, 0, 0, 46), function()
+						close()
+						H.goAdvice(tab)
+					end, true)
+					go.LayoutOrder = 4
+				end
+			end
+		end
 		local todo = 0
 		for _, c in view.counsel or {} do
 			if todo >= 3 then break end
@@ -2560,8 +2617,16 @@ do
 		if cx then
 			goal("백과 도감", string.format("발견 %d / %d", cx.found, cx.total), cx.found / math.max(1, cx.total), COLORS.green)
 		end
-		-- 3) 이야기 기록: 겪은 일을 일기처럼 자세히 남긴다 (최근 것이 위)
+		-- [교역소 프롤로그 이동] 서버의 원문을 변경하지 않고 저널 이야기 기록에 보존한다.
 		head("이야기 기록")
+		if view.prologue then
+			goal("프롤로그 · " .. tostring(view.prologue.title or "첫 항해"), tostring(view.prologue.text or ""), nil)
+		end
+		if view.actIntro then
+			goal(tostring(view.actIntro.title or "시대의 시작"), tostring(view.actIntro.text or ""), nil)
+		elseif view.act and view.act.text then
+			goal(tostring(view.act.title or "항해 이야기"), tostring(view.act.text), nil)
+		end
 		local logged = 0
 		local hv = view.history
 		for i = #(hv and hv.recent or {}), 1, -1 do
