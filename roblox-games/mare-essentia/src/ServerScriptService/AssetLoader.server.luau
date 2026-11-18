@@ -305,9 +305,10 @@ for _ = 1, 12 do
 			if studioAudit and pending == 0 then
 				-- [원본 복식 수입 상태] 재질·텍스처 맵이 실제로 살아 있는지 검증한다.
 				-- 9종이 모두 로드돼도 색상이 흰색으로 유실됐다면 성공으로 보고하지 않는다.
+				local importedPeople = library:FindFirstChild("People")
 				for _, garment in { "outfit_vest", "outfit_coat", "outfit_guard", "outfit_apron",
 					"outfit_sash", "outfit_belt", "outfit_cuff", "outfit_boot", "outfit_stole" } do
-					if not library:FindFirstChild("People"):FindFirstChild(garment) then
+					if not importedPeople or not importedPeople:FindFirstChild(garment) then
 						table.insert(outfitMissing, garment)
 					end
 				end
