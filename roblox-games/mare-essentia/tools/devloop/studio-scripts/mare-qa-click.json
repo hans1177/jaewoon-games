@@ -132,7 +132,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "-- [시작 진행] 화면 전환만으로 성공 처리하지 않고 게임 상태를 확인한다.\nlocal r=game:GetService('ReplicatedStorage'):WaitForChild('GameAction')\nlocal state=r:InvokeServer('State',{})\nassert(state and state.ok and state.view and state.view.player and state.view.player.portId,'INTRO_STATE_PORT_MISSING')\nassert(state.view.captain and state.view.captain.step=='done','INTRO_STATE_NOT_COMPLETE')\nreturn 'INTRO_RUNTIME_STATE_PASS'"
+  "code": "-- [시작 진행] 화면 전환만으로 성공 처리하지 않고 게임 상태를 확인한다.\nlocal r=game:GetService('ReplicatedStorage'):WaitForChild('GameAction')\nlocal state=r:InvokeServer('State',{})\nassert(state and state.ok and state.view and state.view.player and state.view.player.portId,'INTRO_STATE_PORT_MISSING')\nassert(state.view.captain and state.view.captain.step=='done','INTRO_STATE_NOT_COMPLETE')\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal deck=pg:FindFirstChild('DeckWindow')\nassert(not (deck and deck.Enabled),'INTRO_UNEXPECTED_DECK_WINDOW')\nreturn 'INTRO_RUNTIME_STATE_PASS_NO_DECK_POPUP'"
  },
  {
   "type": "luau",
