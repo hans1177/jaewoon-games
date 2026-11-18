@@ -9086,19 +9086,38 @@ if string.sub(codexField, 1, 2) == "r:" then
 		}, 52) end)
 		local cardById = {}
 		for _, card in view.codex.cards do cardById[card.id] = card end
-		-- [교역에서 서재로] 책 페이지는 기존 자원 분류 안에만 표시한다.
-		-- 원화·분류·원산지·발견한 카드 기록만 사용하며 새 저장 항목을 만들지 않는다.
+		-- [책 판면] 기존 자원·도감 데이터를 두 페이지로 읽는다. 모바일은 손가락으로 한 쪽씩 넘긴다.
+		-- 다른 품목도 같은 책을 열며, 자원·카드·가격·저장 구조는 변경하지 않는다.
 		for _, item in view.codex.resources or {} do
 			if item.id == H.tradeBookGood and item.category == selected then
 				add(function()
-					local page = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 270), COLORS.paper)
-					page.Name = "ScholarTradeEncyclopediaBook"
-					corner(page, 8)
-					bookMaterial(page, "parchment", 192)
-					local cover = mkLabel(page, "세계 산업 백과 · " .. item.name, 22, INK, true)
-					cover.Position = UDim2.fromOffset(14, 10)
-					cover.Size = UDim2.new(1, -28, 0, 34)
-					cover.AutomaticSize = Enum.AutomaticSize.None
+					local book = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 396), COLORS.leather)
+					book.Name = "ScholarTradeEncyclopediaBook"
+					corner(book, 9)
+					bookMaterial(book, "leather", 192)
+					local heading = mkLabel(book, "세계 산업 백과  ·  " .. item.name, 23, Color3.fromRGB(255, 232, 177), true)
+					heading.Position = UDim2.fromOffset(14, 9)
+					heading.Size = UDim2.new(1, -28, 0, 30)
+					heading.AutomaticSize = Enum.AutomaticSize.None
+					local left = mkBox(book, UDim2.fromOffset(12, 48), UDim2.new(0.5, -17, 1, -116), COLORS.paper)
+					left.Name = "CodexBookLeftPage"
+					corner(left, 4)
+					bookMaterial(left, "parchment", 180)
+					local right = mkBox(book, UDim2.new(0.5, 5, 0, 48), UDim2.new(0.5, -17, 1, -116), COLORS.paper)
+					right.Name = "CodexBookRightPage"
+					corner(right, 4)
+					bookMaterial(right, "parchment", 180)
+					local spine = Instance.new("Frame")
+					spine.Name = "CodexBookSpine"
+					spine.BackgroundColor3 = INK_EDGE
+					spine.BorderSizePixel = 0
+					spine.Position = UDim2.new(0.5, -3, 0, 49)
+					spine.Size = UDim2.new(0, 6, 1, -119)
+					spine.Parent = book
+					local figureHead = mkLabel(left, "01  ·  그림과 분류", 19, INK, true)
+					figureHead.Position = UDim2.fromOffset(12, 10)
+					figureHead.Size = UDim2.new(1, -24, 0, 25)
+					figureHead.AutomaticSize = Enum.AutomaticSize.None
 					local artId = AssetIds["Goods/" .. item.id]
 					if artId and not RESTRICTED_CARGO_ICON[item.id] then
 						local picture = Instance.new("ImageLabel")
@@ -9106,38 +9125,90 @@ if string.sub(codexField, 1, 2) == "r:" then
 						picture.Image = "rbxassetid://" .. tostring(artId)
 						picture.ScaleType = Enum.ScaleType.Fit
 						picture.BackgroundTransparency = 1
-						picture.Position = UDim2.fromOffset(12, 52)
-						picture.Size = UDim2.fromOffset(154, 154)
-						picture.Parent = page
-					end
-					local card = item.cardId and cardById[item.cardId]
-					local description = "분류 " .. (item.categoryName or "자원")
-						.. "\n연관 학문 " .. (item.discipline or "기타")
-					if item.origin then description ..= "\n원산지 " .. item.origin end
-					if item.appliedDiscipline then description ..= "\n가공 학문 " .. item.appliedDiscipline end
-					if item.chain then
-						description ..= "\n산업 경로 " .. tostring(item.chain.raw or "원료")
-							.. " → " .. tostring(item.chain.processed or "가공품")
-					end
-					if card and card.found and type(card.description) == "string" then
-						description ..= "\n발견 지식 " .. card.description
-					elseif item.cardId then
-						description ..= "\n연관 지식은 아직 발견되지 않았어."
+						picture.Position = UDim2.fromOffset(12, 41)
+						picture.Size = UDim2.new(1, -24, 1, -116)
+						picture.Parent = left
 					else
-						description ..= "\n등록된 상품 정보로 구성한 기본 백과 기록이야."
+						local noArt = mkLabel(left, "등록된 대표 원화가 없어요", 17, INK_SOFT, false)
+						noArt.Position = UDim2.fromOffset(12, 90)
+						noArt.Size = UDim2.new(1, -24, 0, 70)
+						noArt.AutomaticSize = Enum.AutomaticSize.None
 					end
-					local body = mkLabel(page, description, 17, INK_SOFT, false)
-					body.Position = UDim2.fromOffset(176, 53)
-					body.Size = UDim2.new(1, -190, 0, 154)
-					body.AutomaticSize = Enum.AutomaticSize.None
-					body.TextWrapped = true
-					body.TextTruncate = Enum.TextTruncate.AtEnd
-					body.TextYAlignment = Enum.TextYAlignment.Top
-					local cardButton = mkButton(page, "연관 지식 열기", COLORS.blue,
-						UDim2.new(1, -24, 0, 46), function() if card and card.found then H.showCardDetail(card) end end,
+					local caption = mkLabel(left, "분류  " .. (item.categoryName or "자원")
+						.. "\n연관 학문  " .. (item.discipline or "기타"), 16, INK_SOFT, true)
+					caption.Position = UDim2.new(0, 12, 1, -66)
+					caption.Size = UDim2.new(1, -24, 0, 62)
+					caption.AutomaticSize = Enum.AutomaticSize.None
+					caption.TextWrapped = true
+					local card = item.cardId and cardById[item.cardId]
+					local definition = if item.id == "coal" then
+						"석탄은 오래된 식물이 퇴적돼 오랜 시간 열과 압력을 받아 형성된 탄소질 화석 연료야. 증기선과 제련 산업의 열원으로 쓰여."
+						elseif card and card.found and type(card.description) == "string" and card.description ~= "" then card.description
+						else "이 품목에 연결된 지식은 아직 발견되지 않았어. 현재는 분류와 생산 기록만 확인할 수 있어."
+					local noteHead = mkLabel(right, "02  ·  뜻과 활용", 19, INK, true)
+					noteHead.Position = UDim2.fromOffset(12, 10)
+					noteHead.Size = UDim2.new(1, -24, 0, 26)
+					noteHead.AutomaticSize = Enum.AutomaticSize.None
+					local detail = mkLabel(right, definition, 18, INK, false)
+					detail.Position = UDim2.fromOffset(12, 42)
+					detail.Size = UDim2.new(1, -24, 0, 145)
+					detail.AutomaticSize = Enum.AutomaticSize.None
+					detail.TextWrapped = true
+					detail.TextTruncate = Enum.TextTruncate.AtEnd
+					local source = "기록 원산지  " .. (item.origin or "기록 없음")
+					if item.chain then
+						source ..= "\n가공 경로  " .. tostring(item.chain.raw or "원료")
+							.. " → " .. tostring(item.chain.processed or "가공품")
+					elseif item.appliedDiscipline then
+						source ..= "\n가공 학문  " .. item.appliedDiscipline
+					end
+					local sourceText = mkLabel(right, source, 16, INK_SOFT, false)
+					sourceText.Position = UDim2.new(0, 12, 1, -78)
+					sourceText.Size = UDim2.new(1, -24, 0, 72)
+					sourceText.AutomaticSize = Enum.AutomaticSize.None
+					sourceText.TextWrapped = true
+					local back = mkButton(book, "목록", COLORS.leather, UDim2.fromOffset(110, 46), function()
+						H.tradeBookGood = nil
+						render()
+					end, true)
+					local showingNotes = false
+					local flip = mkButton(book, "다음 쪽", COLORS.gold, UDim2.fromOffset(120, 46), function()
+						showingNotes = not showingNotes
+						left.Visible = not showingNotes
+						right.Visible = showingNotes
+						flip.Text = if showingNotes then "이전 쪽" else "다음 쪽"
+					end, true)
+					local open = mkButton(book, "연관 지식", COLORS.blue, UDim2.fromOffset(160, 46),
+						function() if card and card.found then H.showCardDetail(card) end end,
 						card ~= nil and card.found == true)
-					cardButton.Position = UDim2.new(0, 12, 1, -55)
-					return page
+					local function layoutPages()
+						local spread = book.AbsoluteSize.X >= 620
+						local width = if spread then UDim2.new(0.5, -18, 1, -116) else UDim2.new(1, -24, 1, -116)
+						left.Position = UDim2.fromOffset(12, 48)
+						left.Size = width
+						right.Position = if spread then UDim2.new(0.5, 6, 0, 48) else UDim2.fromOffset(12, 48)
+						right.Size = width
+						spine.Visible = spread
+						left.Visible = spread or not showingNotes
+						right.Visible = spread or showingNotes
+						back.Position = UDim2.new(0, 12, 1, -55)
+						if spread then
+							back.Size = UDim2.fromOffset(122, 46)
+							flip.Visible = false
+							open.Position = UDim2.new(1, -191, 1, -55)
+							open.Size = UDim2.fromOffset(179, 46)
+						else
+							back.Size = UDim2.new(0.25, -12, 0, 46)
+							flip.Visible = true
+							flip.Position = UDim2.new(0.25, 4, 1, -55)
+							flip.Size = UDim2.new(0.38, -11, 0, 46)
+							open.Position = UDim2.new(0.63, 4, 1, -55)
+							open.Size = UDim2.new(0.37, -16, 0, 46)
+						end
+					end
+					book:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutPages)
+					task.defer(layoutPages)
+					return book
 				end)
 				break
 			end
@@ -9146,28 +9217,18 @@ if string.sub(codexField, 1, 2) == "r:" then
 			if item.category == selected and item.id ~= H.tradeBookGood then
 				add(function()
 					local card = item.cardId and cardById[item.cardId]
-					local detail = "연결 학문: " .. item.discipline
-						.. (if item.appliedDiscipline then " · 가공법: " .. item.appliedDiscipline else "")
-						.. " · 연관 지식: " .. item.cardName
-					if item.chain then
-						local destinations = item.chain.markets or {}
-						if #destinations > 0 then
-							detail ..= string.format("\n%s → %s → 지역 명품\n원산지 %s · 관련 학문 %s\n수출 목표 %s%s",
-								item.chain.raw, item.chain.processed, item.chain.port, item.chain.research,
-								destinations[1], if #destinations > 1 then " 외 " .. tostring(#destinations - 1) .. "개 항구" else "")
-						else
-							detail ..= string.format("\n원료 %s → 가공품 %s\n생산 항구 %s · 관련 학문 %s",
-								item.chain.raw, item.chain.processed, item.chain.port, item.chain.research)
-						end
-					elseif item.origin then
-						detail ..= "\n생산 항구: " .. item.origin
-					end
-					return mkRow(content, item.name, detail, {
-						{ text = if card then "지식" else "미등록", color = COLORS.blue, enabled = card ~= nil,
-							onClick = function() if card then H.showCardDetail(card) end end },
-					}, if item.chain then 114 elseif item.origin then 82 else 62)
+					local hint = (item.origin and "원산지 " .. item.origin or "원산지 기록 없음")
+						.. " · " .. (item.discipline or "관련 학문 없음")
+						.. " · " .. (if card and card.found then "지식 발견" else "지식 미발견")
+					return mkRow(content, item.name, hint, {
+						{ text = "책 펼치기", color = COLORS.blue, onClick = function()
+							H.tradeBookGood = item.id
+							render()
+						end },
+					}, 76)
 				end)
 			end
+		end
 		end
 	end
 	return
