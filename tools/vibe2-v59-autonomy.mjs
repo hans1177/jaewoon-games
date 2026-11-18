@@ -13,6 +13,7 @@ import {createVibe59OneShotVolumeCandidate} from './vibe59-one-shot-volume.mjs';
 import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeVibe59RobloxDomainAction,verifyVibe59RobloxDomainScenarios} from './vibe59-roblox-coding.mjs';
 import {buildVibe59CreativityPlan} from './vibe59-creative-engine.mjs';
 import {retrieveVerifiedAlgorithmConcepts,preferVerifiedAlgorithmStrategy} from './vibe2-learning-motor.mjs';
+import {selectVibe59FreeExperts} from './vibe2-gemini-free-rotation.mjs';
 import {VIBE59_LUAU_CODING_SKILLS_109,synthesizeVibe59LuauSkill,verifyVibe59LuauSkillScenarios} from './vibe59-luau-skills109.mjs';
 import {VIBE59_QUALITY_GAMEPLAY_ACTIONS,synthesizeVibe59QualityGameplay,verifyVibe59QualityScenarios} from './vibe59-quality-gameplay.mjs';
 import {synthesizeVibe59Pathfinding,verifyVibe59PathfindingScenarios} from './vibe59-pathfinding.mjs';
@@ -1533,8 +1534,19 @@ export function buildVibe59AutonomyPlan({order={},target='web',codeFlow=null,sou
     existingMechanics:creativeInput.existingMechanics,verifiedPatterns:creativeInput.verifiedPatterns,
     feedback:creativeInput.feedback,seed:clean(order.gameId)||'vibe59',
     ownerApproved:false}):null;
+  // [외부 무료 전문가] Vibe5.9 개발 계획은 기존 라우터의 실시간 배정 후보만 표시한다.
+  // 실제 호출은 소스 작업자/부서 작업자의 기존 API 책임 함수가 수행한다.
+  const sourceFiles=Array.isArray(order.source?.responsibleFiles)?order.source.responsibleFiles:
+    Array.isArray(order.responsibilityFiles)?order.responsibilityFiles:[];
+  const scope=(clean(order.originalGoal||order.goal)+' '+sourceFiles.slice(0,16).join(' ')).toLowerCase();
+  const department=/(외형|머리|의상|그래픽|디자인|재질|조명|아트|visual|texture|hair|clothing|graphics|portrait)/.test(scope)
+    ?'GRAPHICS':/(테스트|검수|검증|품질|회귀|regression|test|qa)/.test(scope)?'QA'
+    :/(밸런스|보상|경제|난이도|balance|economy|reward)/.test(scope)?'BALANCE'
+    :/(기획|설계|계획|planning|design doc)/.test(scope)?'PLANNING':'DEVELOPMENT';
+  const freeAiSpecialists=selectVibe59FreeExperts({
+    department,taskText:requirement.goal,responsibleFiles:sourceFiles,includeUnconfigured:true});
   return Object.freeze({version:'5.9',sourceWrite:false,runtimeVerified:false,
-    requirement,assembly,repair,memory,completion,creativity,
+    requirement,assembly,repair,memory,completion,creativity,freeAiSpecialists,
     skillCatalog:{total:VIBE59_LUAU_CODING_SKILLS_109.length,
       systems:[...new Set(VIBE59_LUAU_CODING_SKILLS_109.map(x=>x.system))],
       codegen:'existing-owner-approved-server-state-only',runtimeVerified:false},
