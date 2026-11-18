@@ -777,17 +777,17 @@ function Pose.applyRegisteredMobOutfit(model)
 	-- 먼저 보여준다. 좌우 부위는 같은 실물 메시 종류로 계산해 추가 메모리를 쓰지 않는다.
 	local mobileEssentials = nil
 	if UserInputService.TouchEnabled then
-		if string.find(profile, "^citizen_guard_") then
+		if string.find(profile, "citizen_guard_", 1, true) == 1 then
 			mobileEssentials = { outfit_guard = true, outfit_boot = true }
-		elseif string.find(profile, "^citizen_official_") then
+		elseif string.find(profile, "citizen_official_", 1, true) == 1 then
 			mobileEssentials = { outfit_coat = true, outfit_cuff = true }
-		elseif string.find(profile, "^citizen_sailor_") then
+		elseif string.find(profile, "citizen_sailor_", 1, true) == 1 then
 			mobileEssentials = { outfit_sash = true, outfit_boot = true }
-		elseif string.find(profile, "^citizen_artisan_") then
+		elseif string.find(profile, "citizen_artisan_", 1, true) == 1 then
 			mobileEssentials = { outfit_vest = true, outfit_apron = true }
-		elseif string.find(profile, "^companion_clergy_") then
+		elseif string.find(profile, "companion_clergy_", 1, true) == 1 then
 			mobileEssentials = { outfit_stole = true, outfit_belt = true }
-		elseif string.find(profile, "^companion_") then
+		elseif string.find(profile, "companion_", 1, true) == 1 then
 			mobileEssentials = { outfit_coat = true, outfit_boot = true }
 		end
 	end
