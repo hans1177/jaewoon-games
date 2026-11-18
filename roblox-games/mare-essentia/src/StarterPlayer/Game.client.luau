@@ -1878,7 +1878,7 @@ function H.layoutBook()
   local width, height = mainInner.AbsoluteSize.X, mainInner.AbsoluteSize.Y
   local tabCount = #groupOf(currentTab).tabs
   local gallery = view ~= nil and not newGameMode and currentTab ~= "map"
-  local three = gallery and width >= 850
+  local three = gallery and width >= 740
   local tabs = tabBar.Visible
   H.bookSpine.Visible = false
   H.facilityGallery.Visible = gallery
@@ -11065,7 +11065,7 @@ function render()
 	end
 
 	-- [공통 3열] 가로 화면에서는 단일 시설도 왼쪽 분류 칸에 표시한다.
-	tabBar.Visible = #groupOf(currentTab).tabs > 1 or (mainInner.AbsoluteSize.X >= 850 and currentTab ~= "map")
+	tabBar.Visible = #groupOf(currentTab).tabs > 1 or (mainInner.AbsoluteSize.X >= 740 and currentTab ~= "map")
 	H.layoutBook()
 	H.renderFacilityGallery() -- [공통 원화] 시설/메뉴 전환 때 선택된 승인 원화와 읽기 순서 갱신.
 
