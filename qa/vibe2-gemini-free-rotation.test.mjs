@@ -425,3 +425,58 @@ test('known Gemini cooldown skips its slots but still runs approved free fallbac
       err=>err.nextRetryAt===geminiRetryAt);
   });
 });
+
+
+// [그록 실측 회귀] 공식 RPD/TPM 헤더만 신뢰하며 실제 소진 후 재호출을 차단한다.
+test('Groq header quota is model-scoped and exhaustion suppresses next free call',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.GROQ_API_KEY='fixture-groq-secret';
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    const {requestGeminiFreePair:request,groqQuotaFromHeaders,latestGroqModelQuota}=
+      await import('../tools/vibe2-gemini-free-rotation.mjs?groq-ratelimit='+Date.now());
+    const now=Date.parse('2026-11-18T08:00:00Z');
+    const headers=new Map([
+      ['x-ratelimit-limit-requests','1000'],
+      ['x-ratelimit-remaining-requests','0'],
+      ['x-ratelimit-limit-tokens','8000'],
+      ['x-ratelimit-remaining-tokens','5700'],
+      ['x-ratelimit-reset-requests','2m59.56s'],
+      ['x-ratelimit-reset-tokens','7.66s']
+    ]);
+    const quota=groqQuotaFromHeaders({headers},now);
+    assert.equal(quota.requestsPerDayLimit,1000);
+    assert.equal(quota.requestsPerDayRemaining,0);
+    assert.equal(quota.tokensPerMinuteRemaining,5700);
+    assert.equal(quota.requestsResetAt,'2026-11-18T08:02:59.560Z');
+    assert.equal(quota.tokensResetAt,'2026-11-18T08:00:07.660Z');
+    assert.equal(quota.accountWideBalanceVerified,false);
+    assert.equal(groqQuotaFromHeaders({headers:new Map([
+      ...headers,['x-ratelimit-remaining-requests','1001']
+    ])},now),null,'모순된 공급자 잔량은 받아들이지 않는다');
+    assert.equal(groqQuotaFromHeaders({},now),null,'헤더가 없으면 사용량을 추정하지 않는다');
+    let groqCalls=0,geminiCalls=0;
+    const result=await request({apiKey:'fixture-gemini',
+      contents:[{role:'user',parts:[{text:'source'}]}],
+      fetchImpl:async url=>{
+        if(String(url).includes('googleapis.com')){
+          geminiCalls++;
+          return{ok:false,status:429,headers:{get:()=> '120'}};
+        }
+        groqCalls++;
+        assert.equal(String(url),'https://api.groq.com/openai/v1/chat/completions');
+        return{ok:true,headers,json:async()=>({
+          choices:[{message:{content:'{"edits":[]}'}}],usage:{cost:0}
+        })};
+      }});
+    assert.equal(groqCalls,1);
+    assert.equal(geminiCalls,2);
+    assert.equal(result.freeQuota?.requestsPerDayRemaining,0);
+    assert.equal(latestGroqModelQuota(VERIFIED_FREE_FALLBACK_MODELS.GROQ)?.requestsPerDayRemaining,0);
+    await assert.rejects(request({apiKey:'fixture-gemini',
+      contents:[{role:'user',parts:[{text:'next'}]}],
+      fetchImpl:async()=>{throw Error('exhausted free model must never be called');}
+    }),/GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE/);
+    assert.equal(groqCalls,1,'잔량 0 응답 뒤에는 추가 그록 요청이 없어야 한다');
+  });
+});
