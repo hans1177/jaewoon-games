@@ -1741,3 +1741,81 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 | `materials/` | Beige Wall 001: Color/NormalGL/Roughness 1K | Dimitrios Savva·Rico Cilliers / CC0 | https://polyhaven.com/a/beige_wall_001 |
 | `materials/` | Weathered Brown Planks: Color/NormalGL/Roughness 1K | Dimitrios Savva·Rico Cilliers / CC0 | https://polyhaven.com/a/weathered_brown_planks |
 | `materials/` | PavingStones150: Color/NormalGL/Roughness 1K | ambientCG / CC0 | https://ambientcg.com/view?id=PavingStones150 |
+
+
+## 2026-11-19 ChatGPT 워크 교역품 원화 66종 (프로젝트 자체 원화)
+
+- 원본: 2026-11-18 저녁~11-19 초반 ChatGPT Library Work에서 소유자 지시로 생성한 교역품 PNG. 소유자 직접 게임 사용 승인.
+- Git 소스: `assets/goods/<id>.png`, 각각 512×512 RGBA, 완전 투명 알파를 포함. 정식 로블록스 `Image` 자산으로만 등록.
+- 권리: `PROJECT_ORIGINAL_ART`; 외부 사진/브랜드/유료 에셋 미사용. 승인 해시는 `assets/APPROVED_IMAGES.json`과 동일.
+- 대상: 기존 항구 교역 원품 30종과 기존 생산/지역 브랜드 교역품 36종. 기존 상품 ID/가격/저장 구조는 변경하지 않는다.
+- 보류: 주류 묘사 16종 및 기존 상품 ID가 없는 보석 개별 시안 5종. 실물 표시/게임 배포는 로블록스 권한·QA 뒤 확인.
+
+| 교역품 이미지 | SHA-256 |
+|---|---|
+| `b_amsterdam_aged_cheese.png` | `0dbb3a7e7327bb45a422c0c96c4c1d15c6e8cbee60dfd2abcd2236f0bef39851` |
+| `b_batavia_tea_cure.png` | `b41d2965ed19ff385b0f1fc7c65b1ba692e35044b26978646b11d4f6ff6bbaee` |
+| `b_busan_ginseng_medicine.png` | `01f194519a7483772a1bf80f90d6c698810605d007f0c9959ca6e74ae443b787` |
+| `b_calicut_cloth_cotton.png` | `c6db201151f7c4004408e68f01a86fecb4fa894d8040357448d51020d0202d0d` |
+| `b_goa_spice_blend.png` | `82d2656ca1143f3f8da604735ef2425d94151ff663f0556e5cbe4ac76935ae31` |
+| `b_london_cloth_wool.png` | `ae3e553296e0a63e9f72dae49e93b655354fa6c2e5b0cc238c226006b94e2250` |
+| `b_nagasaki_smelt_copper.png` | `489a1facf0f6a9bf500b0c6b3652e15b4f7bd96c07eb1c5d2a8286b0d12f0640` |
+| `b_seville_leather.png` | `94628a4a61be5cfb8b634549eaa0ba826ad75090db066e6cb4e5db3aaa7645a8` |
+| `b_venice_fine_glass.png` | `89c6ef9f71579c988ec5c8963787ef8e5a53da636b1ba3a0a3ef2ae1fcb942a9` |
+| `brazilwood.png` | `6b524348e3c7d8d38214b4c8620f608be229fd21e98dc6ab3ffc775c7cfa3bc4` |
+| `cheese.png` | `129a421df2e52a1e426796ef3dcad2861c3e7fc1165b61a423f954615d952461` |
+| `cloth.png` | `ea9ee94411127db9d4a9dfde2d9759dbab17162e331abc55898bac16c3365b27` |
+| `coffee.png` | `3566e3477dd0b7daafae9e858b36f7de54922fb5d6bb0a06d82a9a8f08f45c9a` |
+| `copper.png` | `3266d6bba4dba36bf930436629117b33617c8a7dcf71033647e5c11034eb3990` |
+| `cotton.png` | `5f8fef6c9750dbb28594ae59adced41f0169cba2fbd3ff8a1ef12c4bf7c52f63` |
+| `ebony.png` | `778157f7cbf3c0d4cea56c387abc6b1c63e5817ee67c2c7b62b169010c994511` |
+| `fish.png` | `ae55b8de4d49f9113d666a7ea3d2d4b5e3774fd927062e936d7a91e050ab75e5` |
+| `fur.png` | `2772d6bf6493b2a669f980194e99de7825a53e51a313e58f24f8bf3a7a595d7c` |
+| `gems.png` | `30d43e13297a44ad06017a6610511cc795c2566b37fb2eb1e69b945e14da9d80` |
+| `ginseng.png` | `7bd23d480fb9529148d2f0a5221c4157ba06f71d931fddaef957e8fb9261a2f0` |
+| `glass.png` | `d748cfba8cebd4d662d132b1a8a852989042eab4f212a3bc0dd353e7c45f72fc` |
+| `indigo.png` | `62787d2a2afd7eb2dcf90be3fb889e08cc6db1e7646fe1e5404a8712b4a96cf6` |
+| `ivory.png` | `a183f17fdd6db6ebeab23daae24ea869978272537a71f891cbc558d334351fc3` |
+| `jade.png` | `0842cee328c76f2337bffdf589739cff36d9a76bbcaeb48ff7ced152b94dd9d3` |
+| `kauri.png` | `ab24b419bcdd0114632d0905d05206c830e421c243302c7646c7ee7d195a7af6` |
+| `leather.png` | `343ff51528c73c5015b166c2f21c551ea28224c3a4c6027186b0aa6d6f21780b` |
+| `logwood.png` | `6bc38492e744eb45f1280a1e727a06d816be573eb63b891cb0df461095788881` |
+| `mahogany.png` | `6ded7fba64f5fdc508a5a616951a78534ac328cb675d717bcca1a081eb5a9b1f` |
+| `maize.png` | `0ab6631904adb763f68ea84f5b0741c80477dd944c9d19387b0d01024bdb04a4` |
+| `marble.png` | `67d8b5a73a30568ec1b766becd96909fdabde558021ddbad4c54ab33c26ed564` |
+| `p_aged_cheese.png` | `101f3271ea6994c0b45f9a00083ee08f51daade093cb0757395fdd2cd5b280b1` |
+| `p_amber_craft.png` | `4524a2c665ef6e8b7b7474ba8d744f1be637a55ce36b9faf0be0cba12b290d40` |
+| `p_cloth_cotton.png` | `f9a34cf8dcc1136d16e1d60fdd30f3960a3d028dff0a4c4a0c66b4a2fc2634b6` |
+| `p_cloth_wool.png` | `34ef63c892a3c2c99015e940388aac5fe2d7fee5b4f1b16e78dc143816ffe21f` |
+| `p_dye.png` | `9e9b2e3a2f0bee7d8d6749cf23ddabd72c17ff4ac0057f1ad97b10907eb00d6e` |
+| `p_fertilizer.png` | `798ef7fb10a3d3903810e70d5c117bdf50716e4ff78e4a75eb5040babb60763c` |
+| `p_fine_glass.png` | `a3922653e65b1f0f3501851c2555033bbd740a68f29ecbd91e969dca1b5afbec` |
+| `p_fine_wood.png` | `132a3e8d99b7460e513cd0ccb8ee7adb956bd372b4ac775073556c1c4a94dc9b` |
+| `p_fish_cure.png` | `540b6f2152b6ffb9a2b85741800f3baafab640165635e1b69cc98bb9fb76586e` |
+| `p_fur_goods.png` | `0508117ffb41a63c0208e0df1c5d6134df8cc9eb74034905324b44a272db2752` |
+| `p_ginseng_medicine.png` | `becd74567fabe169993f7cf68a15a407a12324d3887e73e86f29455dc5453e46` |
+| `p_glass.png` | `b95ffbedc9a56202585d283196964edab1b145784a0072f48182061068075d48` |
+| `p_gunpowder.png` | `797eee46e624a2ec5240143e759f0015b6c3d3e8f16e546b99c8252ae8050020` |
+| `p_ivory_carving.png` | `c5d21e625da5ac815601b0afc4c4589a9c0281d6a16e932e9b90b5d8c68b9729` |
+| `p_jewelry.png` | `072a352354b384effba5c5a75405ff75ddc8e9dcc4bf3ca0d3f2f5dd90299090` |
+| `p_leather.png` | `ef704aa844f891614535e0c89f2f7452b4ad14d0a353240e1fc1fadb4729b3d0` |
+| `p_marble_carving.png` | `ded569cbfaf836eed1fc26afb5d9012a8a73ae44a7de8d2331f0b3cfdbb9b7c3` |
+| `p_olive.png` | `208ae6738561e48619545839ac852879397c0645e94b55f2c13ce137152f787e` |
+| `p_perfume.png` | `57c7ee24b400e3f54223fda2e8a5c775bf669eaf9babd1cf432dd27c2b35f4ba` |
+| `p_resin.png` | `c32037f48024d127ba470e9c5b26a1b3f3fc08d12365dbaf10f0e975bdc6d8b1` |
+| `p_silver_coin.png` | `2605f74f08d06b5672eace74cbe53c6acfbd1fcde4bacd348ec5457bcf76112d` |
+| `p_smelt_copper.png` | `e92eaee9e9a6a05b6d78468a568225d85cf338231d05003bb0842a312351e79f` |
+| `p_smelt_iron.png` | `fc18da7ad50f0e2b0d5b5d565a7c2cda889bda9d58da22a0e3f8c6d74e97bbe9` |
+| `p_spice_blend.png` | `d16de6568668a457959e97ac712b00835f6dbd876df30fef7943f089fe7f7610` |
+| `p_tea_cure.png` | `5bd1f5e1a32935e9b94b2e2dadef11aef98099a1c25ca32b15b50a71aa0fd61d` |
+| `p_timber_plank.png` | `0cb3f0e26e5a08600d29087366428c43ae58e15a756fcb16677727ddc3915fe2` |
+| `p_whale_oil.png` | `83a8e4fd0ca503ec07d103cf14543039c4f67aaf13cf27b062a1aff94cb365cd` |
+| `palm_oil.png` | `9b46820f462df7d4c6b972b103f6cb9804f48671d581b803cfed5ed95c56acb6` |
+| `pearl_shell.png` | `7255f3d25b99ab423e6c69024c8916233167f138c0e574f1cec24ace589c2f1b` |
+| `rice.png` | `af0025b8829db2b72e4ddd6534be0b4b4f86bea358b144b1f1fc9e8ac69192b4` |
+| `sandalwood.png` | `8ddda83748370e13b1a70041ad0ace5c0eda09ab5f5819f04af92cb7b7cfd88e` |
+| `sandalwood_hi.png` | `58a2748494bbaae85673481eabe7e79bce65f7fbd07555063c34ffd16c4cb6ba` |
+| `silver.png` | `6d504fb815e5863ad8c9734cf0c087c5f4c8343024ef71dbd3ca454d9bc4c31d` |
+| `spice.png` | `559de65e3cc3436a851483911c463a60fc8ccf5e3c6b4a5f0499a44813f4e9ba` |
+| `timber.png` | `0765c93f26388e40421a8158fd1c84e59bebd224b78e5ceb6df22d311fca49b7` |
+| `wool.png` | `e32e2c7afb61fe3f0fda4a76c6309e68ed8072dd190571b5d9f81ee31f70b446` |
