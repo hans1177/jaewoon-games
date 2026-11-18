@@ -389,8 +389,8 @@ test('실물 Studio 마을과 주민을 다각도로 촬영하고 기존 게임 
   const scenario = JSON.parse(fs.readFileSync(
     'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', 'utf8'));
   const captures = scenario.filter(step => step.type === 'capture').map(step => step.name);
-  assert.equal(captures.length, 83);
-  assert.equal(new Set(captures).size, 83);
+  assert.equal(captures.length, 93);
+  assert.equal(new Set(captures).size, 93);
   const town = captures.filter(name => name.startsWith('town_'));
   const npc = captures.filter(name => name.startsWith('harbor_npc_hair_') ||
     name.startsWith('harbor_npc_outfit_') || name === 'harbor_npc_face_close' ||
@@ -399,16 +399,20 @@ test('실물 Studio 마을과 주민을 다각도로 촬영하고 기존 게임 
   assert.equal(npc.length, 9);
   for (const name of ['town_aerial_grid', 'town_market_facade', 'town_street_roofline',
     'town_outer_district_south', 'harbor_npc_face_close', 'harbor_npc_outfit_back',
-    'harbor_npc_face_front', 'field_actor_after_motion', 'ui_mobile_battle_2x2']) {
+    'harbor_npc_face_front', 'field_actor_after_motion', 'ui_mobile_battle_2x2',
+    'ship_hull_detail','ship_sails_rigging','cargo_trade_crates','weapon_blade_close',
+    'weapon_ranged_close','vfx_battle_late_action','material_wood_dock']) {
     assert.ok(captures.includes(name), '실물 필수 촬영 누락: ' + name);
   }
   assert.ok(scenario.some(step => step.type === 'luau' &&
     step.code?.includes('ShotDesignHead') && step.code?.includes('NPC_FACE_FRONT_PASS')));
   assert.ok(scenario.some(step => step.type === 'luau' &&
     step.code?.includes('ShotDesignHead') && step.code?.includes('SetAttribute(key,nil)')));
+  assert.ok(scenario.some(step => step.type === 'luau' &&
+    step.code?.includes('STUDIO_MATERIAL_AUDIT') && step.code?.includes('SurfaceAppearance')));
 });
 
-test('무료 디자인 AI 사진 배치는 마을 4·주민 2·UI 1·선박 1장을 5회차 각도로 교대한다', () => {
+test('무료 디자인 AI는 건축·주민·선박·교역품·무기·재질을 매회 분석하고 VFX/UI를 교대로 분석한다', () => {
   const scenario = JSON.parse(fs.readFileSync(
     'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', 'utf8'));
   const names = scenario.filter(step => step.type === 'capture').map(step => step.name + '-0.jpg');
@@ -417,10 +421,13 @@ test('무료 디자인 AI 사진 배치는 마을 4·주민 2·UI 1·선박 1장
     const chosen = selectStudioDesignPhotoNames(names, phase, 8);
     assert.equal(chosen.length, 8);
     assert.equal(new Set(chosen).size, 8);
-    assert.equal(chosen.filter(name => name.startsWith('town_')).length, 4);
+    assert.equal(chosen.filter(name => name.startsWith('town_')).length, 1);
     assert.equal(chosen.filter(name => name.startsWith('harbor_npc_')).length, 2);
-    assert.equal(chosen.filter(name => name.startsWith('ui_') || name.startsWith('tab_') || name.startsWith('field_')).length, 1);
-    assert.equal(chosen.filter(name => name.startsWith('cb') || name.startsWith('v1_') || name.startsWith('v2_')).length, 1);
+    assert.equal(chosen.filter(name => name.startsWith('ship_') || name.startsWith('cb') || name.startsWith('v1_') || name.startsWith('v2_')).length, 1);
+    assert.equal(chosen.filter(name => name.startsWith('cargo_') || name.startsWith('tab_trade') || name.startsWith('ui_trade_')).length, 1);
+    assert.equal(chosen.filter(name => name.startsWith('weapon_') || name.startsWith('harbor_motion_') || name.startsWith('field_npc_')).length, 1);
+    assert.equal(chosen.filter(name => name.startsWith('material_') || name.startsWith('town_library_') || name.startsWith('field_entry')).length, 1);
+    assert.equal(chosen.filter(name => name.startsWith('vfx_') || name.startsWith('ui_') || name.startsWith('tab_')).length, 1);
     rounds.add(chosen.join('|'));
   }
   assert.equal(rounds.size, 5);
@@ -452,7 +459,11 @@ test('네모트론이 마을 시설 배치 5칸 내에서만 수정하고 게임
     'architecture', target), false);
   const policy = JSON.parse(fs.readFileSync(
     'company-learning/external-ai-distillation-policy.json','utf8')).directVisualDesign;
-  assert.equal(policy.studioEvidenceSelection.expectedCoverageFrames, 83);
+  assert.equal(policy.studioEvidenceSelection.expectedCoverageFrames, 93);
+  assert.equal(policy.studioEvidenceSelection.shipCargoWeaponVfxMaterialFrames, 10);
+  assert.equal(policy.studioEvidenceSelection.domainRotation.length, 8);
+  assert.equal(policy.designQualityStandards.preserveImportedPbrTextureUvAndSource, true);
+  assert.equal(policy.designQualityStandards.externalGameExamplesAreStyleReferencesOnly, true);
   assert.equal(policy.studioEvidenceSelection.maxImagesPerFreeCall, 8);
   assert.equal(policy.townLayoutEdit.maximumHorizontalShiftStuds, 5);
   const screenshot = 'town_market_facade-0.jpg';
