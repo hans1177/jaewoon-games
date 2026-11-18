@@ -1767,7 +1767,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			local skin = animalVisual[asset]
 			-- [품종별 코트] 직업·서식지·사육량을 바꾸지 않도록 기존 RNG 소비 없이 좌표로만 품종을 선택한다.
 			local coatIndex = if skin then 1 + math.floor(math.abs(pos.X * 0.21 + pos.Z * 0.39 + #walkers * 0.67)) % #skin.coats else 0
-			local coat = if skin then skin.coats[coatIndex] else nil
+			local coat = if skin then Color3.fromRGB(table.unpack(skin.coats[coatIndex])) else nil
 			local m = if species == "duck" then nil else k and importedModel(folder, "Animals", asset, pos, k[1], false, coat)
 			if species == "duck" then
 				-- 오리: 승인된 외부 메시가 아직 없으므로 기존 파트로 가벼운 입체 모델을 직접 제작한다.
@@ -4421,7 +4421,7 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 					local visual = PortBuildings.AnimalVisual[species]
 					local m = importedModel(folder, "Animals", species,
 						Vector3.new(x - 9 + (k % 2) * 18, 0, z - 9 + (k // 2) * 14),
-						visual.size, false, visual.coats[(k - 1) % #visual.coats + 1])
+						visual.size, false, Color3.fromRGB(table.unpack(visual.coats[(k - 1) % #visual.coats + 1])))
 					if m then rotateAround(m, Vector3.new(x - 9 + (k % 2) * 18, 0, z - 9 + (k // 2) * 14), rng:NextNumber(0, math.pi * 2)) end
 				end
 				put("Town", "stall-red", 6, x, z + front * 19, false, face)
@@ -5341,7 +5341,7 @@ function PortScene.build(info, onFacility)
 			local at = Vector3.new(frontX + 62, 0, side * 49)
 			-- [성체 군마] 기마 근위는 사람보다 작은 말이 아닌 실제 성체 실루엣·서로 다른 털색을 쓴다.
 			local cavalryHorse = PortBuildings.AnimalVisual.horse
-			local coat = cavalryHorse.coats[if i == 1 then 2 else 4]
+			local coat = Color3.fromRGB(table.unpack(cavalryHorse.coats[if i == 1 then 2 else 4]))
 			local horse = if AssetIds["Animals/horse"] then importedModel(folder, "Animals", "horse", at,
 				cavalryHorse.size, false, coat) else nil
 			local saddleY = 0
