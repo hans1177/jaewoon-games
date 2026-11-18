@@ -2493,7 +2493,7 @@ function FieldScene.start(opts)
 			talkBox.Name = "FieldCompanionDialogue"
 			-- [동료 전투 대화] 가로형은 체력·미니맵 위쪽 빈 칸, 세로형은 왼쪽 보조 정보열만 사용한다.
 			talkBox.AnchorPoint = if compactTouch then Vector2.zero else Vector2.new(0.5, 0)
-			talkBox.Position = if compactTouch then UDim2.fromOffset(12, 148) else UDim2.new(0.5, 0, 0, 4)
+			talkBox.Position = if compactTouch then UDim2.fromOffset(12, 164) else UDim2.new(0.5, 0, 0, 4)
 			talkBox.Size = UDim2.fromOffset(if compactTouch then math.clamp(screen.X - 140, 170, 246)
 				else math.min(440, math.max(206, screen.X - 260)), if compactTouch then 106 else 60)
 			talkBox.BackgroundColor3 = Color3.fromRGB(27, 38, 54)
