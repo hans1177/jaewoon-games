@@ -1160,11 +1160,15 @@ test('Studio QA failure uses exact source evidence and canonical source intake b
       'STUDIO_QA_FAILURE_SIGNATURE=STUDIO_OBSERVED_SOURCE_RUNTIME_ERROR',
       'STUDIO_QA_SOURCE_FILE='+sourceFile
     ]};
-  const a=escalateDeploymentFailure({event:{workflow_run:run},jobsInput:jobs,catalogInput:{games:[]}});
+  const actualGitHubName={...run,name:run.display_title};
+  const a=escalateDeploymentFailure({event:{workflow_run:actualGitHubName},jobsInput:jobs,catalogInput:{games:[]}});
   assert.equal(a.gameId,'mare-essentia');
   assert.equal(a.owner,'VIBE2_VIBE3');
   assert.deepEqual(a.queue.tasks[0].responsibleFiles,[sourceFile]);
   assert.equal(a.queue.tasks[0].failureStage,'STUDIO_GAME_SOURCE');
+  const forgedRunName={...actualGitHubName,name:'Devloop Studio Capture · wrong-game · '+run.head_sha};
+  assert.equal(escalateDeploymentFailure({event:{workflow_run:forgedRunName},jobsInput:jobs,catalogInput:{games:[]}}).ignored,
+    'NOT_VERIFIED_CANONICAL_DEPLOYMENT_FAILURE');
   const dispatched=dispatchRecovery({recoveryInput:a.queue,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
   assert.equal(dispatched.gameQueue.tasks.length,1);
   assert.deepEqual(dispatched.gameQueue.tasks[0].responsibleFiles,[sourceFile]);
@@ -1261,6 +1265,9 @@ test('Studio QA evidence feeds the existing recovery queue and preserves reports
   assert.ok(studio.indexOf('PUBLISHED=$LASTEXITCODE')<studio.indexOf('STUDIO_QA_FAILED_EVIDENCE_PUBLISHED'));
   assert.match(recovery,/      - Devloop Studio Capture/);
   assert.match(recovery,/studioMarkers/);
+  assert.match(recovery,/workflow_path/);
+  assert.match(recovery,/STUDIO_BACKFILL_PREPARED=/);
+  assert.match(recovery,/studio-backfill-\*\.event\.json/);
   assert.match(recovery,/--deployment-event=\$GITHUB_EVENT_PATH/);
 });
 

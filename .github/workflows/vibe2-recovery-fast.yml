@@ -130,7 +130,8 @@ jobs:
               fi
               # [Studio 진단] 서버·클라이언트 오류와 실행기 오류를 기계 마커로 분리한다.
               # 원본 콘솔 텍스트는 큐에 넣지 않고 이미 저장된 Studio 증거 브랜치에서만 검토한다.
-              if [ "$workflow_name" = 'Devloop Studio Capture' ]; then
+              workflow_path="$(node -e 'const e=require(process.env.GITHUB_EVENT_PATH);process.stdout.write(String(e.workflow_run?.path||""))')"
+              if [ "$workflow_path" = '.github/workflows/devloop-studio.yml' ]; then
                 failed_job_id="$(node -e 'const fs=require("fs");const d=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));const j=(d.jobs||[]).find(x=>x.conclusion==="failure"&&Number.isSafeInteger(x.id));process.stdout.write(j?String(j.id):"")' /tmp/vibe2-recovery-fast/deployment-jobs.json)"
                 if [[ "$failed_job_id" =~ ^[0-9]+$ ]]; then
                   studio_markers="$(curl --location --fail-with-body --silent --show-error \
@@ -186,6 +187,69 @@ jobs:
               deployment_args=("--deployment-event=$GITHUB_EVENT_PATH" "--deployment-jobs=/tmp/vibe2-recovery-fast/deployment-jobs.json")
             fi
             node tools/company-recovery-escalation.mjs --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" --catalog=game-catalog.json "${deployment_args[@]}" | tee /tmp/vibe2-recovery-fast/escalation.log
+
+            # [누락된 Studio 완료 이벤트] 동시성 병합으로 사라진 알림을 같은 기존 복구 엔진에서 회수한다.
+            # GitHub의 최근 실제 실패 실행과 원본 작업 로그의 엄격한 QA 마커만 허용한다.
+            rm -f /tmp/vibe2-recovery-fast/studio-backfill-*.event.json /tmp/vibe2-recovery-fast/studio-backfill-*.jobs.json
+            STUDIO_BACKFILL_QUEUE="$control/.vibe2/recovery-queue.json" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const repo=String(process.env.GITHUB_REPOSITORY||'');
+          const token=String(process.env.GH_TOKEN||'');
+          const dir='/tmp/vibe2-recovery-fast';
+          const headers={Accept:'application/vnd.github+json',Authorization:'Bearer '+token,'X-GitHub-Api-Version':'2022-11-28'};
+          const get=async url=>{
+            const response=await fetch(url,{headers,signal:AbortSignal.timeout(12000)});
+            if(!response.ok)throw new Error('GITHUB_HTTP_'+response.status);
+            return response.json();
+          };
+          let prepared=0;
+          if(repo==='hans1177/jaewoon-games'&&token){
+            try{
+              const queue=JSON.parse(fs.readFileSync(process.env.STUDIO_BACKFILL_QUEUE,'utf8'));
+              const seen=new Set((queue.tasks||[]).flatMap(row=>(row.evidence||[])
+                .filter(e=>String(e).startsWith('deployment-failure-run:'))
+                .map(e=>String(e).slice('deployment-failure-run:'.length))));
+              const recent=await get('https://api.github.com/repos/'+repo+'/actions/workflows/devloop-studio.yml/runs?status=failure&per_page=25');
+              const missing=(recent.workflow_runs||[]).filter(run=>
+                run.conclusion==='failure'&&run.path==='.github/workflows/devloop-studio.yml'
+                &&run.head_repository?.full_name===repo
+                &&/^[0-9a-f]{40}$/.test(String(run.head_sha||''))
+                &&/^Devloop Studio Capture · [a-z0-9-]+ · [a-f0-9]{40}$/.test(String(run.name||''))
+                &&run.name===run.display_title
+                &&Date.parse(run.created_at)>Date.now()-86400000
+                &&!seen.has(String(run.id)+':'+String(run.run_attempt||1))
+              ).slice(0,3).reverse();
+              for(const run of missing){
+                try{
+                  const jobs=await get('https://api.github.com/repos/'+repo+'/actions/runs/'+run.id+'/jobs?per_page=100');
+                  const job=(jobs.jobs||[]).find(row=>row.conclusion==='failure'&&Number.isSafeInteger(row.id));
+                  if(!job)continue;
+                  const response=await fetch('https://api.github.com/repos/'+repo+'/actions/jobs/'+job.id+'/logs',{
+                    headers,signal:AbortSignal.timeout(15000)});
+                  if(!response.ok||Number(response.headers.get('content-length')||0)>2000000)continue;
+                  const log=await response.text();
+                  if(log.length>2000000)continue;
+                  const marks=[...log.matchAll(/STUDIO_QA_(?:GAME_ID|FAILURE_STAGE|FAILURE_SIGNATURE|SOURCE_FILE)=[A-Za-z0-9_./-]{1,160}/g)].map(m=>m[0]);
+                  const fields=['GAME_ID','FAILURE_STAGE','FAILURE_SIGNATURE','SOURCE_FILE'];
+                  const filtered=fields.map(field=>[...marks].reverse().find(m=>m.startsWith('STUDIO_QA_'+field+'='))).filter(Boolean);
+                  if(fields.slice(0,3).some(field=>!filtered.some(m=>m.startsWith('STUDIO_QA_'+field+'='))))continue;
+                  const file=dir+'/studio-backfill-'+run.id;
+                  fs.writeFileSync(file+'.event.json',JSON.stringify({workflow_run:run,repository:{full_name:repo}}));
+                  fs.writeFileSync(file+'.jobs.json',JSON.stringify({jobs:[{
+                    id:job.id,name:job.name,conclusion:'failure',steps:job.steps||[]
+                  }],studioMarkers:filtered}));
+                  prepared++;
+                }catch(error){console.log('STUDIO_BACKFILL_RUN_UNAVAILABLE='+run.id+':'+String(error.message).slice(0,65));}
+              }
+            }catch(error){console.log('STUDIO_BACKFILL_SCAN_UNAVAILABLE='+String(error.message).slice(0,80));}
+          }
+          console.log('STUDIO_BACKFILL_PREPARED='+prepared);
+          NODE
+            for studio_event in /tmp/vibe2-recovery-fast/studio-backfill-*.event.json; do
+              [ -f "$studio_event" ] || break
+              studio_jobs="${studio_event%.event.json}.jobs.json"
+              node tools/company-recovery-escalation.mjs --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" --catalog=game-catalog.json "--deployment-event=$studio_event" "--deployment-jobs=$studio_jobs" | tee -a /tmp/vibe2-recovery-fast/escalation.log
+            done
             node tools/company-recovery-dispatch.mjs --route=all --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" | tee /tmp/vibe2-recovery-fast/dispatch.log
 
             system_ai_recovery_dispatched="$(grep -Ec '^RECOVERY_DISPATCH=.*:SYSTEM_AI:[1-9][0-9]*$' /tmp/vibe2-recovery-fast/dispatch.log || true)"

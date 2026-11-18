@@ -186,7 +186,13 @@ function deploymentSourceFiles(platform,gameId,linkedTask,diagnosticFiles=[]){
 export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput={},recoveryInput={},catalogInput={}}={}){
   const queue=normalizeRecoveryQueue(recoveryInput);
   const run=event?.workflow_run||event;
-  const definition=DEPLOYMENT_WORKFLOWS.get(clean(run?.name));
+  // [실제 GitHub 실행명] run-name에는 게임 ID와 SHA가 붙는다.
+  // 검증된 워크플로 경로·저장소·실행명·SHA가 모두 일치할 때만 canonical Studio로 분류한다.
+  const runName=clean(run?.name);
+  const studioLabel=/^Devloop Studio Capture · ([a-z0-9][a-z0-9-]*) · ([a-f0-9]{40})$/.exec(runName);
+  const canonicalName=studioLabel&&studioLabel[2]===clean(run?.head_sha).toLowerCase()
+    &&clean(run?.display_title)===runName?'Devloop Studio Capture':runName;
+  const definition=DEPLOYMENT_WORKFLOWS.get(canonicalName);
   const repository=clean(run?.head_repository?.full_name||event?.repository?.full_name);
   const runId=Number(run?.id),attempt=Math.max(1,Math.floor(Number(run?.run_attempt)||1));
   const sha=clean(run?.head_sha).toLowerCase();
@@ -195,7 +201,7 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
     return{queue,added:[],reactivated:[],ignored:'NOT_VERIFIED_CANONICAL_DEPLOYMENT_FAILURE'};
   }
   const [platform,workflowFile]=definition;
-  const studio=clean(run.name)==='Devloop Studio Capture';
+  const studio=canonicalName==='Devloop Studio Capture';
   // [공식 소스 인수] 누락된 기존 Rojo 게임은 허가된 기존 소스 인수 로직으로만 판정한다.
   const scopedCatalog=studio?discoverExistingRobloxGames(catalogInput).catalog:catalogInput;
   const studioMarkers=uniq(jobsInput.studioMarkers).filter(v=>
