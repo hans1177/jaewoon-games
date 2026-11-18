@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import {runInNewContext} from 'node:vm';
@@ -13,6 +14,16 @@ import {
   ensureRobloxExperiencePrivate,
   publishRobloxDedicatedPlace,
 } from '../tools/company-roblox-dedicated-experience.mjs';
+
+// [교역품 3D] 기존 생성기를 실행해 8종의 서로 다른 메시와 모바일 삼각면 예산을 검증한다.
+test('Mare trade cargo eight distinct 3D model silhouettes stay within mobile budget',()=>{
+  const output=execFileSync(process.execPath,['roblox-games/mare-essentia/tools/make_cargo.mjs','--check'],{
+    cwd:process.cwd(),encoding:'utf8',timeout:20000,
+  });
+  for(const id of ['amber','ambergris','camphor','coal','guano','gum_arabic','jade','nitrate'])
+    assert.match(output,new RegExp('CARGO_3D_QUALITY_CHECK='+id+' TRIANGLES=\\\\d+'));
+  assert.match(output,/CARGO_3D_UNIQUE_SHAPES=8 PASS/);
+});
 
 test('forest model registration fails closed when cached creator does not match the API key owner',()=>{
   const uploader=fs.readFileSync(new URL('../tools/baeksu-war-upload-meshes.mjs',import.meta.url),'utf8');
