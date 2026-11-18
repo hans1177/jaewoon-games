@@ -1075,14 +1075,14 @@ function NavalBattle.play(opts)
 	-- 좁은 폰에서는 왼편 해역에 배치해 우측 지원 카드·하단 기술 버튼과 겹치지 않는다.
 	local comboLabel = label(gui, "", if battleViewport.X < 480 then 26 else 37, Color3.fromRGB(255, 226, 120))
 	comboLabel.Name = "NavalHitStreak"
-	comboLabel.Font = Enum.Font.Bangers
+	comboLabel.Font = Enum.Font.GothamBold
 	comboLabel.AnchorPoint = if battleViewport.X < 480 then Vector2.new(0, 0) else Vector2.new(0.5, 0)
 	comboLabel.Position = if battleViewport.X < 480 then UDim2.fromOffset(12, 179)
 		else UDim2.new(0.5, 0, 0, 202)
 	comboLabel.Size = if battleViewport.X < 480 then UDim2.fromOffset(166, 42)
 		else UDim2.fromOffset(math.min(380, battleViewport.X - 40), 48)
 	comboLabel.TextStrokeColor3 = Color3.fromRGB(11, 17, 27)
-	comboLabel.TextStrokeTransparency = 0.24
+	comboLabel.TextStrokeTransparency = 0.88
 	comboLabel.TextTransparency = 1
 	comboLabel.TextXAlignment = if battleViewport.X < 480 then Enum.TextXAlignment.Left else Enum.TextXAlignment.Center
 	comboLabel.ZIndex = 19
@@ -1253,7 +1253,8 @@ function NavalBattle.play(opts)
 		b.BackgroundColor3 = Color3.fromRGB(50, 83, 106)
 		b.TextColor3 = Color3.fromRGB(250, 236, 200)
 		b.Font = Enum.Font.GothamBold
-		b.TextSize = 26
+		b.TextSize = 22
+		b.ClipsDescendants = true
 		b.BorderSizePixel = 0
 		b.Parent = gui
 		local c = Instance.new("UICorner")
@@ -1267,9 +1268,9 @@ function NavalBattle.play(opts)
 		if assetId then
 			b.BackgroundTransparency = 1
 			b.TextTransparency = 1
-			b.ClipsDescendants = false
+			b.ClipsDescendants = true
 			b.AutoButtonColor = false
-			st.Transparency = 1
+			st.Transparency = 0.08
 			local art = Instance.new("ImageLabel")
 			art.Name = "NavalButtonArtwork"
 			art.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -1297,6 +1298,20 @@ function NavalBattle.play(opts)
 			caption.ZIndex = b.ZIndex + 2
 			caption.Parent = b
 		end
+		-- [해상 기술 쿨타임] 숫자 대신 원형 아이콘 위 음영으로만 남은 비율을 표현한다.
+		local cooling = Instance.new("Frame")
+		cooling.Name = "NavalCooldownShade"
+		cooling.Size = UDim2.fromScale(1, 1)
+		cooling.BackgroundColor3 = Color3.fromRGB(12, 20, 32)
+		cooling.BackgroundTransparency = 0.26
+		cooling.BorderSizePixel = 0
+		cooling.ZIndex = b.ZIndex + 3
+		cooling.Visible = false
+		cooling.Active = false
+		cooling.Parent = b
+		local mask = Instance.new("UICorner")
+		mask.CornerRadius = UDim.new(1, 0)
+		mask.Parent = cooling
 		return b
 	end
 	local steerDir, throttle = 0, 1
@@ -1385,12 +1400,12 @@ function NavalBattle.play(opts)
 		if battleViewport.X < 480 then
 			-- [세로 폰 우측 열] 기술 2개를 가속 위로 쌓아 왼쪽 조타와 겹치지 않게 한다.
 			sk.x = -72
-			sk.y = if i == 1 then -250 else -170
+			sk.y = if i == 1 then -300 else -184
 		else
 			local n = #SKILLS
 			local ang = math.rad(if n == 1 then 135 else 120 + (i - 1) * (55 / (n - 1)))
-			sk.x = -72 + math.floor(math.cos(ang) * 104)
-			sk.y = -72 - math.floor(math.sin(ang) * 104)
+			sk.x = -72 + math.floor(math.cos(ang) * 132)
+			sk.y = -72 - math.floor(math.sin(ang) * 132)
 		end
 	end
 	local skillPop = function(_text, _color) end -- popText 가 만들어진 뒤 연결된다
@@ -1440,7 +1455,9 @@ function NavalBattle.play(opts)
 		end
 	end
 	for _, sk in SKILLS do
-		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, sk.y), UDim2.fromOffset(70, 70), Vector2.new(0.5, 0.5),
+		local actionSize = if battleViewport.X < 520 or (MOBILE_VFX and battleViewport.Y < 330) then 104
+			elseif MOBILE_VFX then 116 else 112
+		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, sk.y), UDim2.fromOffset(actionSize, actionSize), Vector2.new(0.5, 0.5),
 			if sk.id == "fire" then "Menu/naval_fire" else "Menu/naval_skill")
 		b.TextSize = 14
 		b.TextWrapped = true
@@ -3848,13 +3865,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local l = label(gui, text, if battleViewport.X < 480 then 24 else 33, color)
 		currentAnnouncement = l
 		l.Name = "NavalBattleAnnouncement"
-		l.Font = Enum.Font.Bangers
+		l.Font = Enum.Font.GothamBold
 		l.AnchorPoint = Vector2.new(0.5, 0.5)
 		l.Position = UDim2.fromScale(0.5, if battleViewport.X < 480 then 0.25 else 0.27)
 		l.Size = UDim2.fromOffset(math.min(410, battleViewport.X - 24), if battleViewport.X < 480 then 50 else 58)
 		l.TextWrapped = true
 		l.TextStrokeColor3 = Color3.fromRGB(13, 20, 29)
-		l.TextStrokeTransparency = 0.18
+		l.TextStrokeTransparency = 0.92
 		l.ZIndex = 28
 		game:GetService("TweenService"):Create(l, TweenInfo.new(1.20, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 			Position = l.Position - UDim2.fromOffset(0, 30),
@@ -3895,9 +3912,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		l.AnchorPoint = Vector2.new(0.5, 0.5)
 		l.Size = UDim2.fromOffset(120, 36)
 		l.Position = UDim2.fromOffset(v.X - inset.X, v.Y - inset.Y)
-		l.Font = Enum.Font.Bangers
+		l.Font = Enum.Font.GothamBold
 		l.TextStrokeColor3 = Color3.fromRGB(16, 22, 30)
-		l.TextStrokeTransparency = 0.25
+		l.TextStrokeTransparency = 0.82
 		l.ZIndex = 22
 		local TS = game:GetService("TweenService")
 		TS:Create(l, TweenInfo.new(1.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Position = l.Position - UDim2.fromOffset(0, 54), TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
@@ -5241,31 +5258,42 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local left = skillReady[sk.id] - now
 			local active = now < skillUntil[sk.id]
 			local ready = left <= 0
-			if active then
-				b.Text = sk.text .. "\n발동 중"
-				b.BackgroundColor3 = sk.col
-			elseif not ready then
-				b.Text = string.format("%s\n%d초", sk.text, math.ceil(left))
-				b.BackgroundColor3 = Color3.fromRGB(60, 62, 70)
-			else
-				b.Text = sk.text .. "\n준비"
-				b.BackgroundColor3 = sk.col
+			local ratio = math.clamp(left / math.max(sk.cd, 0.1), 0, 1)
+			local shade = b:FindFirstChild("NavalCooldownShade")
+			if shade then
+				shade.Visible = not ready
+				shade.BackgroundTransparency = 0.22 + (1 - ratio) * 0.70
 			end
+			-- [한글 선명도] 초 숫자·그림자 제거. 아이콘은 어두운 상태에서 점점 원래 색으로 복귀한다.
+			b.Text = sk.text
+			b.BackgroundColor3 = sk.col:Lerp(Color3.fromRGB(49, 59, 75), ratio)
 			local art = b:FindFirstChild("NavalButtonArtwork")
 			if art and art:IsA("ImageLabel") then
-				art.ImageTransparency = if ready then 0 else 0.32
+				art.ImageTransparency = if ready then 0 else ratio * 0.28
+				art.ImageColor3 = Color3.fromRGB(255, 255, 255):Lerp(Color3.fromRGB(84, 96, 110), ratio)
 				local caption = b:FindFirstChild("NavalButtonCaption")
 				if caption and caption:IsA("TextLabel") then
-					caption.Text = if active then "발동 중" elseif not ready then string.format("%d초", math.ceil(left)) else sk.text
+					caption.Text = sk.text
+					caption.TextStrokeTransparency = 0.85
 				end
+			end
+			if not ready then
+				if not b:GetAttribute("NavalWasCooling") then b:SetAttribute("NavalWasCooling", true) end
+			elseif b:GetAttribute("NavalWasCooling") then
+				b:SetAttribute("NavalWasCooling", false)
+				b:SetAttribute("NavalReadyPulseUntil", now + 0.42)
 			end
 			b.Interactable = ready and phase == "duel" and not opts.cardOnly and not opts.card
 			b.Active = b.Interactable
 			b.AutoButtonColor = b.Interactable
 			local rim = b:FindFirstChildOfClass("UIStroke")
 			if rim then
-				rim.Color = if active then Color3.fromRGB(255, 234, 148) elseif ready then Color3.fromRGB(190, 244, 198) else Color3.fromRGB(92, 99, 109)
-				rim.Transparency = if art then 1 elseif active or ready then 0 else 0.35
+				local pulse = math.clamp(((b:GetAttribute("NavalReadyPulseUntil") or 0) - now) / 0.42, 0, 1)
+				local baseColor = if active then Color3.fromRGB(255, 234, 148)
+					elseif ready then Color3.fromRGB(190, 244, 198) else Color3.fromRGB(96, 108, 123)
+				rim.Color = baseColor:Lerp(Color3.fromRGB(255, 244, 153), pulse)
+				rim.Thickness = 2 + 2 * pulse
+				rim.Transparency = if ready or active then 0.06 else 0.28
 			end
 		end
 		-- 배 카드: 기함은 전체 막대를, 선단 배는 피해의 절반만 받은 것으로 보여 준다
