@@ -544,7 +544,8 @@ test('Mare trade cards use registered 3D Cargo viewports even at compact mobile 
   assert.match(client,/local listPx = if listWidth < 230 then 82 else 102/);
   assert.match(client,/icon\.Name = "TradeIndexArt"/);
   assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], listPx, g\.name, gi\[4\]\)/);
-  assert.match(client,/modelIcon\(cardF, gi\[1\], gi\[2\], gi\[3\], 96, g\.name, gi\[4\]\)/);
+  // [현행 탭 교역] 제거된 별도 cardF 화면 대신 목록의 실제 상품 ID와 원화 바인딩을 확인한다.
+  assert.match(client,/local listArtId = AssetIds\["Goods\/" \.\. g\.id\]/);
   // 현행 디자인은 별도 음영 이미지 대신 종이 프레임 안에 승인 원화를 직접 표시한다.
   assert.match(client,/art\.Name = "OriginalArt"/);
   assert.match(client,/art\.Image = "rbxassetid:\/\/" \.\. tostring\(assetId\)/);
