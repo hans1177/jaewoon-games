@@ -213,8 +213,8 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.ok(field.includes('map.Position = UDim2.fromOffset(226, 74)'));
   assert.ok(field.includes('if compactTouch then UDim2.new(1, -68, 1, -315)'));
   assert.ok(field.includes('if compactTouch then UDim2.new(1, -62, 1, -202)'));
-  assert.ok(field.includes('local partyWidth = if landscape then math.min(202, math.max(55, screen.X - allyX - 12)) else 202'));
-  assert.ok(field.includes('partyWidth = math.min(partyWidth, math.max(40, screen.X - allyX - 144))'));
+  assert.ok(field.includes('local partyWidth = heroPanel.Size.X.Offset'));
+  assert.ok(field.includes('heroPanel.Position.Y.Offset + heroPanel.Size.Y.Offset + 6'));
   assert.ok(field.includes('lastTouchEnded = os.clock()'));
   assert.ok(field.includes('touchActive = true'));
   assert.ok(field.includes('if touchActive or os.clock() - lastTouchEnded < 0.45 then return end'));
@@ -232,22 +232,17 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
       height-(portrait?85:short?70:88),portrait||short?104:116,10);
     const dodge=rect(width-(portrait?62:235),
       height-(portrait?202:short?67:106),portrait?86:short?88:96);
-    const weapon=rect(width-(portrait?68:width<780?90:175),
+    const weapon=rect(width-(portrait?68:175),
       height-(portrait?315:short?181:225),portrait?76:short?72:80);
     const mapSize=width<520?92:short?82:106;
     const map=box(226,74,mapSize,mapSize);
-    const landscape=width>height && width>=470;
-    const allyX=226+mapSize+12;
-    let partyWidth=landscape?Math.min(202,Math.max(55,width-allyX-12)):202;
-    if(landscape && width<650 && height<330)
-      partyWidth=Math.min(partyWidth,Math.max(40,width-allyX-144));
-    const shortHud=landscape && height<380;
-    const allies=landscape?
-      [box(allyX,74,partyWidth,shortHud?44:52),
-       box(allyX,74+(shortHud?48:56),partyWidth,shortHud?44:52)]:
-      [box(12,282,202,52),box(12,338,202,52)];
+    const landscape=width>height;
+    const padSize=landscape?Math.min(150,Math.max(44,height-272)):150;
+    const pad=box(landscape&&height<316?226:28,height-(padSize<150?12:28)-padSize,padSize,padSize);
+    const allies=[box(12,162,202,44),box(12,210,202,44)];
+    assert.equal(overlaps(pad,allies[1]),false,width+'×'+height+' 동료/이동패드 HUD 겹침');
     const rest=[
-      ['이동패드',box(28,height-178,150,150)],
+      ['이동패드',pad],
       ['미니맵',map],['주인공',box(12,74,202,82)],
       ['카메라',box(width-120,12,108,44)],
       ['동료1',allies[0]],['동료2',allies[1]],
@@ -430,9 +425,9 @@ test('원거리 화살 석궁은 실제 긴 축을 바로 세우고 3D 탄도·�
 test('유적 상호작용과 발견 화면의 모바일 잘림·조사 키 충돌을 방지한다',()=>{
   assert.ok(field.includes('note.Name = "FieldInteractionNote"'));
   assert.ok(field.includes('local expanded = duration ~= nil and duration > 2.2'));
-  assert.ok(field.includes('note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 244 else 256, 64)'));
-  assert.ok(field.includes('elseif narrowLandscape then UDim2.fromOffset(184, screen.Y - 108)'));
-  assert.ok(field.includes('elseif visualMobile then UDim2.fromOffset(184, 202)'));
+  assert.ok(field.includes('note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 elseif narrowLandscape then math.min(244, screen.X - 404) elseif visualMobile then 244 else 256, 64)'));
+  assert.ok(field.includes('elseif narrowLandscape then UDim2.fromOffset(226, screen.Y - 108)'));
+  assert.ok(field.includes('elseif visualMobile then UDim2.fromOffset(226, 210)'));
   assert.ok(field.includes('if questHud then questHud.Visible = not expanded end'));
   assert.ok(field.includes('if weatherHud then weatherHud.Visible = not expanded end'));
   assert.ok(field.includes('if questHud and questHud.Parent then questHud.Visible = true end'));
@@ -440,7 +435,7 @@ test('유적 상호작용과 발견 화면의 모바일 잘림·조사 키 충�
   // [모바일 가로] 유적 설명 3줄이 실제 공격/회피 터치 영역과 겹치지 않는지 확인한다.
   for(const [width,height] of [[600,340],[720,384],[832,384],[960,540]]){
     const narrow = width < 740;
-    const x = 184, y = narrow ? height - 108 : 202, w = 244, h = 64;
+    const x = 226, y = narrow ? height - 108 : 210, w = narrow ? Math.min(244,width-404) : 244, h = 64;
     const rect=(left,top,rw,rh)=>({left,top,right:left+rw,bottom:top+rh});
     const note=rect(x,y,w,h);
     const dodge=rect(width-98-146-53,height-98-66-53,106,106);

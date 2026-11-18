@@ -1495,7 +1495,7 @@ function FieldScene.start(opts)
 				elseif visualMobile then UDim2.fromOffset(226, 210)
 				else UDim2.new(0.5, 0, 0, 190))
 			elseif compactTouch then UDim2.fromOffset(12, 260) else UDim2.new(0.5, 0, 0, 46)
-		note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 244 else 256, 64)
+		note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 elseif narrowLandscape then math.min(244, screen.X - 404) elseif visualMobile then 244 else 256, 64)
 			else UDim2.fromOffset(if compactTouch then 206 else 320, 22)
 		note.TextWrapped = expanded
 		note.TextYAlignment = Enum.TextYAlignment.Center
@@ -8354,7 +8354,8 @@ function FieldScene.start(opts)
 			local viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
 			-- 짧은 가로 화면에서도 동료 카드 두 장 아래에 이동패드를 확보한다.
 			local padSize = if viewport.X > viewport.Y then math.clamp(viewport.Y - 272, 44, 150) else 150
-			pad.Position = UDim2.new(0, 28, 1, if padSize < 150 then -12 else -28)
+			pad.Position = UDim2.new(0, if viewport.X > viewport.Y and viewport.Y < 316 then 226 else 28,
+				1, if padSize < 150 then -12 else -28)
 			pad.Size = UDim2.fromOffset(padSize, padSize)
 			pad.BackgroundColor3 = Color3.fromRGB(20, 28, 40)
 			pad.BackgroundTransparency = 0.55
