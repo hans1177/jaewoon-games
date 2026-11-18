@@ -908,3 +908,35 @@ test('portal RPG canonical title wins over stale seed and queue without changing
   assert.equal(reconcileDevelopmentQueue({root}).changed,false);
  }finally{fs.rmSync(root,{recursive:true,force:true})}
 });
+
+test('owner Mare-only development removes every other game from canonical waiting queue without deleting sources or saves',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'mare-only-queue-'));
+  try{
+    writePolicy(root);
+    const policyFile='company-learning/platform-release-roadmap.json';
+    const policy=JSON.parse(fs.readFileSync(path.join(root,policyFile),'utf8'));
+    policy.developmentLifecycleMachine.focusedDevelopmentCaretakers={
+      enabled:true,ownerFocusedGameIds:['mare-essentia'],
+      completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:false}
+    };
+    write(root,policyFile,policy);
+    const make=id=>({id,name:id,productionClass:'DEVELOPMENT_CONFIRMED',
+      productionClassSource:'EXISTING_ROBLOX_SOURCE_INTAKE',lifecycleState:'ACTIVE',
+      sourceIntake:{kind:'EXISTING_ROJO_PROJECT'}});
+    write(root,'game-catalog.json',{games:[make('mare-essentia'),make('other-game')]});
+    write(root,'development-queue.json',{items:[
+      {gameId:'other-game',status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'},
+      {gameId:'mare-essentia',status:'PENDING',currentStep:'TARGET_PLATFORM_SOURCE_BIND'}
+    ]});
+    for(const id of ['mare-essentia','other-game']){
+      write(root,`roblox-games/${id}/default.project.json`,{name:id,tree:{$className:'DataModel'}});
+      write(root,`roblox-games/${id}/server/Game.server.luau`,'local savedProgress = 123\n');
+    }
+    const result=reconcileDevelopmentQueue({root});
+    assert.equal(result.changed,true);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'))).items.map(x=>x.gameId),['mare-essentia']);
+    assert.equal(fs.readFileSync(path.join(root,'roblox-games/other-game/server/Game.server.luau'),'utf8'),'local savedProgress = 123\n');
+    assert.equal(JSON.parse(fs.readFileSync(path.join(root,'game-catalog.json'))).games.length,2);
+    assert.equal(reconcileDevelopmentQueue({root}).changed,false,'no automatic re-admission');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
