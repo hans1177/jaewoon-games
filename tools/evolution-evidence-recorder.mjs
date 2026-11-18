@@ -39,6 +39,10 @@ export function extractDepartmentLearningFromEvidenceRefs(evidenceRefs=[]){
             nextAction:compactText(row.nextAction)||null,
             checks:compactList(row.checks),
             risks:compactList(row.risks),
+            // [전문 모델 검증 근거] 독립 QA에 도달한 부서의 고정 무료 모델 정보만 전달한다.
+            provider:clean(row.provider).toUpperCase()||null,
+            model:clean(row.model)||null,
+            specialistDomain:clean(row.specialistDomain).toUpperCase()||null,
             skippedFast:row.skippedFast===true
           };
         })
