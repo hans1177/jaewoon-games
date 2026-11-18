@@ -928,13 +928,10 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
   const games=new Map((Array.isArray(catalog?.games)?catalog.games:[]).map(game=>[clean(game?.id),game]));
   const ownerStoppedIds=new Set((catalog?.ownerStoppedGameIds||[]).map(clean).filter(Boolean));
   const permanentlyDeletedIds=new Set((catalog?.permanentRemovalPolicy?.ids||[]).map(clean).filter(Boolean));
-  // [대기열 경량화] 구형 웹 자동개발의 상세 기록은 Git 이전 커밋에 보존한다.
-  // 현재 실행 큐에서는 해당 항목을 제거해 재예약을 막고, 기존 packVibeQueueStorage가
-  // 더 이상 참조되지 않는 활성 task 조각을 안전하게 정리하도록 한다.
+  // [기존 대기열 정리] 마레 외 게임의 실행/대기/차단 작업을 취소하고 예약을 해제한다.
+  // 완료·기존 취소 이력, 다른 게임 소스/저장 데이터, 게임 미지정 공용 학습은 그대로 보존한다.
+  // 분할 저장은 기존 packVibeQueueStorage에 맡겨 인덱스와 SHA 무결성을 유지한다.
   const runnableTasks=queue.tasks.filter(task=>{
-    // [대기목록 정리] 실행 중 작업과 종료 기록은 유지하고 마레 외 신규/차단 대기 작업을 제거한다.
-    if(exclusiveFocus&&clean(task.gameId)&&!exclusiveFocus.has(clean(task.gameId))
-      &&['queued','pending','waiting','blocked','failed'].includes(clean(task.status).toLowerCase()))return false;
     if(process.env.VIBE2_WEB_AUTO_DEV_DISABLED!=='1'
       ||clean(task.target).toLowerCase()!=='web'
       ||clean(task.department).toLowerCase()!=='development'
@@ -943,6 +940,9 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
       ||(task.status==='cancelled'&&task.blocker==='owner-web-auto-development-disabled'));
   });
   return createVibeContinuousQueue({...queue,tasks:runnableTasks.map(task=>{
+    const nonFocusedGame=exclusiveFocus?.size>0&&clean(task.gameId)
+      &&!exclusiveFocus.has(clean(task.gameId));
+    const cancel=nonFocusedGame&&!['verified','cancelled'].includes(clean(task.status).toLowerCase());
     const game=games.get(clean(task.gameId));
     const ownerStopped=ownerStoppedIds.has(clean(task.gameId))||permanentlyDeletedIds.has(clean(task.gameId))||game?.ownerDevelopmentStopped===true
       ||['OWNER_STOPPED','STOPPED'].includes(clean(game?.lifecycleState||game?.canonical?.lifecycle?.state).toUpperCase());
@@ -956,7 +956,14 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
       &&focusedIds.has(clean(task.gameId))
       &&clean(platforms[task.gameId]).toLowerCase()===clean(task.target).toLowerCase();
     return {
-      ...task,ownerDevelopmentHold,
+      ...task,
+      // [오너 마레 집중] 이미 예약된 실행도 취소 처리해 다시 재배정되지 않도록 한다.
+      ...(cancel?{
+        status:'cancelled',lastOutcome:'CANCELLED',blocker:'OWNER_FOCUS_MARE_ONLY',
+        reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,
+        evidence:[...new Set([...(task.evidence||[]),'owner-cancel:nonfocused-game-queue'])]
+      }:{}),
+      ownerDevelopmentHold:ownerDevelopmentHold||Boolean(nonFocusedGame),
       ...(exactFocus?{ownerFocusedCaretaker:true,focusedCaretaker:true,
         priority:task.priority==='owner-immediate'?'owner-immediate':'critical'}:{})
     };

@@ -4009,7 +4009,7 @@ test('오너 웹게임 자동개발 중지는 막힌 웹 작업을 이력으로 
   }
 });
 
-test('owner Mare-only queue deletes other game waiting jobs but preserves running and completed history',()=>{
+test('owner Mare-only queue cancels every other game task, clears reservations and preserves history',()=>{
   const policy={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
     enabled:true,ownerFocusedGameIds:['mare-essentia'],
     ownerFocusedGamePlatforms:{'mare-essentia':'ROBLOX'},
@@ -4024,15 +4024,33 @@ test('owner Mare-only queue deletes other game waiting jobs but preserves runnin
     task('other-blocked','other-game','blocked'),
     task('other-research','other-game','queued','learning','research'),
     task('other-architecture','other-game','queued','system-architecture','implementation'),
-    task('other-running','other-game','running'),
+    {...task('other-running','other-game','running'),reservationId:'old:1',reservationRunId:'old',reservationRunAttempt:1,reservedAt:'2026-11-18T00:00:00Z'},
     task('other-cancelled','other-game','cancelled'),
+    task('other-verified','other-game','verified'),
     task('shared-learning',null,'queued','learning','research')
   ]});
   const after=synchronizeOwnerDevelopmentHolds(initial,policy,{catalog:{games:[]}});
-  assert.deepEqual(after.tasks.map(t=>t.id).sort(),['mare','other-running','other-cancelled','shared-learning'].sort());
-  assert.equal(after.tasks.find(t=>t.id==='mare').ownerDevelopmentHold,false);
-  assert.equal(after.tasks.find(t=>t.id==='other-running').status,'running');
-  assert.equal(after.tasks.find(t=>t.id==='other-running').ownerDevelopmentHold,true);
-  assert.deepEqual(synchronizeOwnerDevelopmentHolds(after,policy,{catalog:{games:[]}}).tasks.map(t=>t.id),
-    after.tasks.map(t=>t.id),'queue cleanup must be repeat-safe');
+  const byId=new Map(after.tasks.map(t=>[t.id,t]));
+  assert.deepEqual([...byId.keys()].sort(),initial.tasks.map(t=>t.id).sort(),'cancel must not erase history');
+  for(const id of ['other-queued','other-blocked','other-research','other-architecture','other-running']){
+    const row=byId.get(id);
+    assert.equal(row.status,'cancelled',id);
+    assert.equal(row.blocker,'OWNER_FOCUS_MARE_ONLY',id);
+    assert.equal(row.lastOutcome,'CANCELLED',id);
+    assert.equal(row.ownerDevelopmentHold,true,id);
+    assert.equal(row.reservationId,null,id);
+    assert.equal(row.reservationRunId,null,id);
+    assert.ok(row.evidence.includes('owner-cancel:nonfocused-game-queue'),id);
+  }
+  assert.equal(byId.get('other-cancelled').status,'cancelled');
+  assert.equal(byId.get('other-verified').status,'verified');
+  assert.equal(byId.get('mare').status,'queued');
+  assert.equal(byId.get('shared-learning').status,'queued');
+  const next=synchronizeOwnerDevelopmentHolds(after,policy,{catalog:{games:[]}});
+  assert.deepEqual(next.tasks.map(t=>[t.id,t.status,t.blocker,t.evidence]),
+    after.tasks.map(t=>[t.id,t.status,t.blocker,t.evidence]),'repeated cleanup must not mutate history');
+  const delayed=finishVibeQueueTask(after,{taskId:'other-running',outcome:'PASS'});
+  assert.equal(delayed.updated,false,'late worker PASS must not overwrite owner cancellation');
+  assert.equal(delayed.outcome,'CANCELLED');
+  assert.equal(delayed.queue.tasks.find(t=>t.id==='other-running').status,'cancelled');
 });

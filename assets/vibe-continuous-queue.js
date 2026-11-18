@@ -1192,9 +1192,15 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
   const id = clean(taskId);
   const normalizedOutcome = ['PASS', 'FAIL', 'BLOCKED', 'CANCELLED'].includes(clean(outcome).toUpperCase()) ? clean(outcome).toUpperCase() : 'FAIL';
   let found = false;
+  let alreadyCancelled = false;
   const tasks = queue.tasks.map((task) => {
     if (task.id !== id) return task;
     found = true;
+    // [늦게 도착한 결과 보호] 취소된 작업은 이전 실행 결과로 완료/재대기할 수 없다.
+    if (task.status === 'cancelled') {
+      alreadyCancelled = true;
+      return task;
+    }
     const mergedEvidence = freezeList([...(task.evidence || []), ...(evidence || [])]);
     if (normalizedOutcome === 'PASS') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'verified', evidence: freezeList([...mergedEvidence,'signal-state:VERIFIED_CHECKPOINT','signal-continuity:NEXT_CAUSAL_INPUT']), lastOutcome: 'PASS', blocker: null });
     if (normalizedOutcome === 'BLOCKED') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'blocked', evidence: mergedEvidence, lastOutcome: 'BLOCKED', blocker: clean(blocker) || 'blocked' });
@@ -1220,19 +1226,20 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
   });
   const nextQueue = createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });
   const completedIds=new Set(nextQueue.tasks.filter(task=>task.status==='verified').map(task=>task.id));
-  const dependencyReadyTaskIds=normalizedOutcome==='PASS'
+  const appliedOutcome=alreadyCancelled?'CANCELLED':normalizedOutcome;
+  const dependencyReadyTaskIds=appliedOutcome==='PASS'
     ? freezeList(nextQueue.tasks
       .filter(task=>task.status==='queued'&&(task.dependencies||[]).includes(id)&&(task.dependencies||[]).every(dep=>completedIds.has(dep)))
       .map(task=>task.id))
     : freeze([]);
   const next = selectVibeQueueBatch(nextQueue);
   return freeze({
-    updated: found,
-    outcome: normalizedOutcome,
+    updated: found&&!alreadyCancelled,
+    outcome: appliedOutcome,
     queue: nextQueue,
     next,
     dependencyReadyTaskIds,
-    dependencyEventRequired:Boolean(found&&normalizedOutcome==='PASS'&&dependencyReadyTaskIds.length),
+    dependencyEventRequired:Boolean(found&&!alreadyCancelled&&appliedOutcome==='PASS'&&dependencyReadyTaskIds.length),
     dispatchNext: next.continueRequired,
     longRunningProcessRequired: false
   });
