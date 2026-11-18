@@ -1855,7 +1855,7 @@ H.galleryHint.Size = UDim2.new(1, -24, 0, 70)
 H.galleryHint.AutomaticSize = Enum.AutomaticSize.None
 H.galleryHint.ZIndex = 3
 -- [기존 승인 원화] 외부 유료 자료나 임의 메시 대신 백과·사건 카드 그림을 직접 재사용한다.
-local FACILITY_GALLERY_ART = {
+H.FACILITY_GALLERY_ART = {
   board = "event_royal_charter", quest = "event_cook_voyage", recruit = "event_merchant_lamu",
   crew = "event_merchant_coromandel", status = "event_title_ship",
   route = "event_new_route", harbor = "event_canton_system", map = "event_chart_world",
@@ -1865,7 +1865,7 @@ local FACILITY_GALLERY_ART = {
 }
 function H.renderFacilityGallery()
   local focus = H.MENU_FOCUS[currentTab]
-  local artName = FACILITY_GALLERY_ART[currentTab] or "event_calm_seas"
+  local artName = H.FACILITY_GALLERY_ART[currentTab] or "event_calm_seas"
   local approved = AssetIds["CardArt/" .. artName] or AssetIds["CardArt/event_calm_seas"]
   H.galleryImage.Image = if approved then "rbxassetid://" .. tostring(approved) else ""
   H.galleryTitle.Text = if focus then focus[1] else TAB_NAME[currentTab] or "시설 안내"
