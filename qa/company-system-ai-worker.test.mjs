@@ -104,6 +104,169 @@ test('owner-exclusive games are neither planned nor reserved by System AI',()=>{
   assert.match(select,/!excluded\.has\(String\(t\.gameId\|\|''\)\)/);
 });
 
+test('live free-model deep repair retries missing strategies before critic without weakening the gate',async()=>{
+  const cwd=root(),prev=process.cwd(),priorFetch=globalThis.fetch;
+  const envNames=['GEMINI_API_KEY','SYSTEM_AI_GEMINI_MODEL','VIBE2_GEMINI_MODEL','VIBE2_GEMINI_BACKUP_MODEL'];
+  const previousEnv=Object.fromEntries(envNames.map(name=>[name,process.env[name]]));
+  let calls=0;
+  try{
+    process.chdir(cwd);
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('task.json',JSON.stringify({
+      id:'missing-options',status:'running',taskType:'bottleneck-repair',
+      goal:'fix exact source defect',responsibleFiles:['tools/demo.mjs'],
+      acceptanceCriteria:['value becomes 2'],failureSignature:'REPAIR_REQUIRED',
+      evidence:['failure-cause:REPAIR_REQUIRED']
+    }));
+    process.env.GEMINI_API_KEY='TEST_ONLY_NOT_SENT_TO_NETWORK';
+    process.env.SYSTEM_AI_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_BACKUP_MODEL='gemini-3.5-flash-lite';
+    const initial={
+      summary:'initial source repair with missing strategies',
+      edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}],
+      newFiles:[],recommendedTests:['node --check tools/demo.mjs'],risks:[]
+    };
+    const corrected={
+      ...initial,
+      summary:'scope-bound alternatives and direct source repair',
+      strategyOptions:[
+        {id:'wide',summary:'rewrite the assigned module',risk:'HIGH',files:['tools/demo.mjs']},
+        {id:'narrow',summary:'replace the single source value',risk:'LOW',files:['tools/demo.mjs']}
+      ],
+      selectedStrategyId:'narrow'
+    };
+    const critic={verdict:'PASS',preferredStrategyId:'narrow',weakPoints:[],requiredCorrections:[],revisedAnswer:null};
+    globalThis.fetch=async()=>{
+      const response=[initial,corrected,critic][calls++];
+      if(!response)throw new Error('UNEXPECTED_EXTRA_MODEL_REQUEST');
+      return{ok:true,status:200,json:async()=>({
+        candidates:[{content:{parts:[{text:JSON.stringify(response)}]}}]
+      })};
+    };
+    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json'});
+    assert.equal(calls,3,'one corrective model attempt and one critic pass');
+    assert.equal(result.provider,'GEMINI');
+    assert.equal(result.deepReasoningUsed,true);
+    assert.equal(result.strategyOptions.length,2);
+    assert.equal(result.selectedStrategyId,'narrow');
+    assert.equal(result.criticVerdict,'PASS');
+    assert.deepEqual(result.changedFiles,['tools/demo.mjs']);
+    assert.equal(fs.readFileSync('tools/demo.mjs','utf8'),"export const value=2;\n");
+    assert.equal(result.workerSelfAcceptance,false);
+    assert.equal(result.qaGateWeakening,false);
+    assert.equal(result.rawModelOutputStored,false);
+  }finally{
+    globalThis.fetch=priorFetch;
+    for(const name of envNames){
+      if(previousEnv[name]===undefined)delete process.env[name];
+      else process.env[name]=previousEnv[name];
+    }
+    process.chdir(prev);
+    fs.rmSync(cwd,{recursive:true,force:true});
+  }
+});
+
+test('live free-model critic REVISE retries missing strategies before applying edits',async()=>{
+  const cwd=root(),prev=process.cwd(),priorFetch=globalThis.fetch;
+  const envNames=['GEMINI_API_KEY','SYSTEM_AI_GEMINI_MODEL','VIBE2_GEMINI_MODEL','VIBE2_GEMINI_BACKUP_MODEL'];
+  const previousEnv=Object.fromEntries(envNames.map(name=>[name,process.env[name]]));
+  let calls=0;
+  try{
+    process.chdir(cwd);
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('task.json',JSON.stringify({id:'critic-missing-options',status:'running',
+      taskType:'bottleneck-repair',goal:'repair exact acceptance source',
+      responsibleFiles:['tools/demo.mjs'],acceptanceCriteria:['value becomes 3']}));
+    process.env.GEMINI_API_KEY='TEST_ONLY_NOT_SENT_TO_NETWORK';
+    process.env.SYSTEM_AI_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_BACKUP_MODEL='gemini-3.5-flash-lite';
+    const strategies=[
+      {id:'wide',summary:'module rewrite',risk:'HIGH',files:['tools/demo.mjs']},
+      {id:'narrow',summary:'single exact value edit',risk:'LOW',files:['tools/demo.mjs']}
+    ];
+    const original={summary:'proposal to refine',strategyOptions:strategies,
+      selectedStrategyId:'wide',edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}]};
+    const invalidCritic={verdict:'REVISE',preferredStrategyId:'narrow',
+      weakPoints:['acceptance is 3'],requiredCorrections:['use narrow repair'],
+      revisedAnswer:{...original,summary:'incomplete review',strategyOptions:[],
+        selectedStrategyId:'narrow',edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=3'}]}};
+    const fixedCritic={...invalidCritic,revisedAnswer:{...invalidCritic.revisedAnswer,
+      summary:'verified exact acceptance repair',strategyOptions:strategies}};
+    globalThis.fetch=async()=>{
+      const response=[original,invalidCritic,fixedCritic][calls++];
+      if(!response)throw new Error('UNEXPECTED_EXTRA_MODEL_REQUEST');
+      return{ok:true,status:200,json:async()=>({
+        candidates:[{content:{parts:[{text:JSON.stringify(response)}]}}]
+      })};
+    };
+    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json'});
+    assert.equal(calls,3,'original proposal, critic and one correction only');
+    assert.equal(result.deepReasoningUsed,true);
+    assert.equal(result.criticVerdict,'REVISE');
+    assert.equal(result.selectedStrategyId,'narrow');
+    assert.equal(result.strategyOptions.length,2);
+    assert.equal(fs.readFileSync('tools/demo.mjs','utf8'),"export const value=3;\n");
+    assert.equal(result.workerSelfAcceptance,false);
+    assert.equal(result.qaGateWeakening,false);
+  }finally{
+    globalThis.fetch=priorFetch;
+    for(const name of envNames){
+      if(previousEnv[name]===undefined)delete process.env[name];
+      else process.env[name]=previousEnv[name];
+    }
+    process.chdir(prev);
+    fs.rmSync(cwd,{recursive:true,force:true});
+  }
+});
+
+test('live free-model retries cannot promote duplicate strategy ids or write source',async()=>{
+  const cwd=root(),prev=process.cwd(),priorFetch=globalThis.fetch;
+  const envNames=['GEMINI_API_KEY','SYSTEM_AI_GEMINI_MODEL','VIBE2_GEMINI_MODEL','VIBE2_GEMINI_BACKUP_MODEL'];
+  const previousEnv=Object.fromEntries(envNames.map(name=>[name,process.env[name]]));
+  let calls=0;
+  try{
+    process.chdir(cwd);
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('task.json',JSON.stringify({id:'duplicate-strategies',status:'running',
+      taskType:'bottleneck-repair',goal:'repair exact source',
+      responsibleFiles:['tools/demo.mjs'],acceptanceCriteria:['value becomes 2']}));
+    process.env.GEMINI_API_KEY='TEST_ONLY_NOT_SENT_TO_NETWORK';
+    process.env.SYSTEM_AI_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_BACKUP_MODEL='gemini-3.5-flash-lite';
+    const edit={path:'tools/demo.mjs',find:'value=1',replace:'value=2'};
+    const initial={summary:'missing alternatives',edits:[edit]};
+    const repeated={summary:'invalid repeated strategy ids',edits:[edit],
+      strategyOptions:[
+        {id:'same',summary:'option A',risk:'LOW',files:['tools/demo.mjs']},
+        {id:'same',summary:'option B',risk:'HIGH',files:['tools/demo.mjs']}
+      ],selectedStrategyId:'same'};
+    const critic={verdict:'PASS',preferredStrategyId:'same',weakPoints:[],requiredCorrections:[]};
+    globalThis.fetch=async()=>{
+      const answer=[initial,repeated,critic][calls++];
+      if(!answer)throw new Error('UNEXPECTED_EXTRA_MODEL_REQUEST');
+      return{ok:true,status:200,json:async()=>({
+        candidates:[{content:{parts:[{text:JSON.stringify(answer)}]}}]
+      })};
+    };
+    await assert.rejects(runSystemAiWorker({taskFile:'task.json',outputFile:'result.json'}),
+      /SYSTEM_AI_DEEP_STRATEGY_OPTIONS_REQUIRED/);
+    assert.equal(calls,3);
+    assert.equal(fs.readFileSync('tools/demo.mjs','utf8'),"export const value=1;\n");
+    assert.equal(fs.existsSync('result.json'),false);
+  }finally{
+    globalThis.fetch=priorFetch;
+    for(const name of envNames){
+      if(previousEnv[name]===undefined)delete process.env[name];
+      else process.env[name]=previousEnv[name];
+    }
+    process.chdir(prev);
+    fs.rmSync(cwd,{recursive:true,force:true});
+  }
+});
+
 test('system AI edits only assigned system file and leaves completion for supervisor',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
