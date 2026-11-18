@@ -2813,3 +2813,20 @@ test('대항해시대 교역품 3D·선박 전시장·공통 방문 메뉴가 �
     assert.ok(source.includes('call("'+op+'"'),'기존 거래·조선 서버 호출 유지: '+op);
   assert.doesNotMatch(trade,/Instance\.new\("Part"\)/,'UI에 새 임시 3D 도형 금지');
 });
+
+
+// [무료 AI 디자인 검수] 실사 캡처의 메뉴 분야를 모두 기존 UI 역할로 분류한다.
+test('AI 디자인 3D 교역품·조선·모든 방문 메뉴 화면을 UI 검수한다',async()=>{
+  const {designRoleForFrames,selectDesignFrameRole}=await import('../tools/company-nemotron-design-review.mjs');
+  const targets=['trade_goods_3d-0.jpg','market_trade-0.jpg','cargo_inventory-0.jpg',
+    'shipyard_preview-0.jpg','research_tech-0.jpg','quest_journal-0.jpg',
+    'codex_book-0.jpg','recruit_crew-0.jpg','status_wallet-0.jpg','merchant_dialog-0.jpg'];
+  for(const name of targets)assert.equal(designRoleForFrames([name]),'UI',name);
+  assert.equal(designRoleForFrames(['ship_harbor-0.jpg']),'WORLD','일반 항해 풍경은 WORLD 유지');
+  assert.equal(designRoleForFrames(['npc_face-0.jpg']),'NPC','초상·인물은 NPC 유지');
+  assert.equal(selectDesignFrameRole(targets),'UI','UI 화면 2장 이상이면 기존 순환에서 검수');
+  const source=fs.readFileSync('tools/company-nemotron-design-review.mjs','utf8');
+  assert.match(source,/trade goods 3D previews, shipyard/,'무료 디자인 검수 프롬프트 영역');
+  assert.match(source,/Only change visual constants on EXISTING exact source lines shown in anchors/,
+    '기존 안전한 단일 코드 앵커 변경만 허용');
+});
