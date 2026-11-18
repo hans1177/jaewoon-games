@@ -3,7 +3,8 @@
 // 기존 게임 루트만 사용하며, 소유자 지시가 명시된 Web 프로토타입은 같은 index 파일 전체 교체를 허용한다.
 
 import fs from 'node:fs';
-import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
+import {requestGeminiFreePair,selectVibe59FreeExperts} from './vibe2-gemini-free-rotation.mjs';
+import {selectVerifiedDepartmentLearning} from './department-learning-memory.mjs';
 import {requestVibe4LoopbackModel} from './vibe2-v4-loopback-model.mjs';
 import crypto from 'node:crypto';
 import { inflateSync } from 'node:zlib';
@@ -8359,7 +8360,7 @@ export function modelResponseComplete(output,mode='JSON_EDIT'){
     return Boolean(parsed&&typeof parsed==='object'&&!Array.isArray(parsed));
   }catch{return false;}
 }
-export async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,exploration=null,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary',systemAtomicPairRequired=false,multiFilePairRequired=false,verifiedExternalLearningContract=null,singleMotionWorkUnit=false,focusedDevelopmentBudget=null}={}){
+export async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,exploration=null,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary',systemAtomicPairRequired=false,multiFilePairRequired=false,verifiedExternalLearningContract=null,singleMotionWorkUnit=false,focusedDevelopmentBudget=null,specialistTask='',specialistFiles=[],specialistDepartment='',verifiedOutcomes=[]}={}){
   const blueprintFields=requiredBlueprintFieldsFromPrompt(prompt);
   let lastError=null;
   let lastRaw='';
@@ -8686,7 +8687,10 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       }
       // 이번 요청의 무출력 시간 초과를 이전 응답의 출력으로 잘못 기록하지 않는다.
       lastRaw='';
-      const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,firstOutputTimeoutMs,contextWindow,temperature,completionMode,rejectSourceControlTokens:target==='roblox'&&completionMode==='JSON_REPLACE_ONLY'});
+      const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,
+        firstOutputTimeoutMs,contextWindow,temperature,completionMode,
+        rejectSourceControlTokens:target==='roblox'&&completionMode==='JSON_REPLACE_ONLY',
+        specialistTask,specialistFiles,specialistDepartment,verifiedOutcomes});
       lastRaw=raw;
       const fullWebClosedHtmlEarlyStop=completionMode==='FULL_WEB'
         && String(raw).trimStart().startsWith(FULL_FILE_PREFIX)
@@ -9012,7 +9016,8 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   }
   throw lastError||new Error('candidate generation failed');
 }
-export async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){
+export async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false,
+  specialistTask='',specialistFiles=[],specialistDepartment='',verifiedOutcomes=[]}={}){
   const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'GEMINI_API').toUpperCase();
   // Strictly test-only fixtures. Live candidates must come from a selected provider.
   if(clean(responseFile)){
@@ -9047,7 +9052,9 @@ export async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile
     apiKey:key,
     contents:[{role:'user',parts:[{text:String(prompt)}]}],
     maxOutputTokens:maxPredict,timeoutMs,temperature,preferredRole:'CODE_REPAIR',
-    specialistDepartment:'DEVELOPMENT',specialistTask:String(prompt).slice(0,1600)
+    specialistDepartment:specialistDepartment||'DEVELOPMENT',
+    specialistTask:specialistTask||String(prompt).slice(0,1600),
+    specialistFiles,verifiedOutcomes
   });
   if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&(/no_think|think|```/i).test(text))
     throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');
@@ -9468,6 +9475,27 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const sourceRootRelative=assertSourceRoot(order?.source?.root,target,order);
   const sourceRoot=path.resolve(cwd,sourceRootRelative);
   const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative,target);
+  // [Vibe5.9 전문 배정] 실제 사용자 목표와 원본 책임 파일만 입력해 모델을 선택한다.
+  // 기존 부서 학습 장부의 독립 QA 근거만 후보 점수에 반영하며 기록을 변경하지 않는다.
+  const specialistTask=clean(order.selectedTask?.goal||order.originalGoal||order.goal).slice(0,1600);
+  const specialistFiles=responsibleFiles;
+  const specialistDepartment='AUTO';
+  const specialistRoute=selectVibe59FreeExperts({department:specialistDepartment,
+    taskText:specialistTask,responsibleFiles:specialistFiles,includeUnconfigured:true});
+  const specialistRole=['NPC','WORLD','UI','MOTION','GRAPHICS'].includes(specialistRoute.domain)
+    ?'graphics':({PLANNING:'planning',QA:'qa',BALANCE:'balance'}[specialistRoute.domain]||'development');
+  const learned=selectVerifiedDepartmentLearning(
+    readJson(path.join(cwd,'department-experience.json'),{}),
+    {role:specialistRole,gameId:order.gameId,gameSlug:order.gameSlug,
+      sourcePath:sourceRootRelative,workLane:order.workLane||'FULL'},24);
+  const verifiedOutcomes=learned.filter(row=>row?.verified===true&&
+    row?.independentQa==='PASS'&&row?.provider&&row?.model&&
+    row.sourceRevision&&['SUCCESS','FAILURE'].includes(row.outcome))
+    .map(row=>({verified:true,independentQa:'PASS',sourceRevision:row.sourceRevision,
+      provider:row.provider,model:row.model,role:row.role,
+      specialistDomain:row.specialistDomain,outcome:row.outcome}));
+  console.log('VIBE59_GAME_SOURCE_SPECIALIST='+specialistRoute.domain+
+    ':VERIFIED_HISTORY='+verifiedOutcomes.length);
   // Existing Vibe agent assignment is checked before generation or candidate writes.
   const agentHandoffPreflight=order?.agentHandoff
     ?assertVibeAgentHandoffScope({plan:order.agentHandoff,task:order.selectedTask||{id:order.taskId,gameId:order.gameId,target:order.target},
@@ -10071,7 +10099,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       generationSourceRoot=generationBootstrapRoot;
     }
     try{
-      generated=await generateCandidateWithRecovery({prompt,model:effectiveModel,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot:generationSourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract,singleMotionWorkUnit:singleMotionPreflight.required,focusedDevelopmentBudget});
+      generated=await generateCandidateWithRecovery({prompt,model:effectiveModel,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot:generationSourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract,singleMotionWorkUnit:singleMotionPreflight.required,focusedDevelopmentBudget,
+        specialistTask,specialistFiles,specialistDepartment,verifiedOutcomes});
     }finally{
       if(generationBootstrapRoot)fs.rmSync(generationBootstrapRoot,{recursive:true,force:true});
     }
