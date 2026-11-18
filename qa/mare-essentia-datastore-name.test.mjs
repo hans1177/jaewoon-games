@@ -1443,6 +1443,10 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
     assert.equal(gltf.asset.version,'2.0');
     assert.ok(gltf.meshes[0].primitives.length>0 && gltf.meshes[0].primitives.length<=12,'모바일 모델 부품 초과: '+name);
     assert.ok(gltf.materials.length>=4,'원본 복식 소재 구분 누락: '+name);
+    // [재질 복원 근거] 실제 GLB 프리미티브에 무광 직물·가죽·황동/강철이 구분돼 있어야 한다.
+    const sourceMaterials=gltf.meshes[0].primitives.map(p=>gltf.materials[p.material].pbrMetallicRoughness);
+    assert.ok(sourceMaterials.some(m=>m.metallicFactor>=0.65),'GLB 원본 금속 재질 누락: '+name);
+    assert.ok(sourceMaterials.some(m=>m.metallicFactor<0.1),'GLB 원본 비금속 재질 누락: '+name);
     const proof=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
     const actualSha=crypto.createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
     assert.equal(proof.sourceGitBlobSha1,actualSha,'원본 메시 SHA-1 오류: '+name);
@@ -1456,6 +1460,17 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
     'citizen_sailor_male','citizen_sailor_female','citizen_artisan_male','citizen_artisan_female',
     'companion_male','companion_female','companion_clergy_male','companion_clergy_female'])
     assert.ok(pose.includes(profile+' = {'),'NPC 16종 복식 프로필 누락: '+profile);
+  // [재질 회귀] 임포트된 GLB PBR 색상 보존, 실물 색 누락만 보정하고 검게 덮어쓰지 않는다.
+  assert.match(pose,/local OUTFIT_SOURCE_MATERIALS = \{/);
+  assert.match(pose,/local OUTFIT_PRIMARY_MATERIALS = \{/);
+  for(const name of names)
+    assert.ok(pose.includes(name+' = { Color3.new('),'원본 주색 누락: '+name);
+  assert.match(pose,/if not textured and string\.sub\(assetName, 1, 7\) == "outfit_"/);
+  assert.match(pose,/if bestError < 0\.045 then/);
+  assert.match(pose,/if color\.R > 0\.88 and color\.G > 0\.88 and color\.B > 0\.88 then/);
+  assert.match(pose,/elseif hair or pearlWhite then Enum\.Material\.SmoothPlastic/);
+  assert.match(pose,/part\.Material = fallback\[2\]/);
+  assert.doesNotMatch(pose,/else Color3\.fromRGB\(96, 79, 65\)/);
   assert.match(pose,/EUROPEAN_DETAIL_CULTURES\[culture\] == true/);
   assert.match(pose,/year >= 1500 and year < 1800/);
   // [모바일 정밀 복식] 모든 남녀 직업은 4종 이상, 고성능 근접 인물은 전체 상세 메시를 유지한다.
