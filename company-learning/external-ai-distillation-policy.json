@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "kind": "vibe2-external-ai-distillation-policy",
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Owner permits external AI to directly edit all visual design categories in isolated code candidate branches. Raw external knowledge still cannot self-promote or be accepted as verified QA, main, gameplay, save, security, or release authority.",
@@ -171,7 +171,7 @@
     "modelGeneratedSourceCannotExecuteUntilBoundedCandidateQa": true,
     "modelCannotMutateCanonicalCentralPolicy": true,
     "freeSpecialistPool": {
-      "version": 1,
+      "version": 2,
       "enabled": true,
       "authority": "OWNER_DIRECTIVE_2026_11_18_AUTOMATIC_FREE_VISUAL_SPECIALISTS",
       "scope": "MARE_ESSENTIA_VISUAL_ONLY_EXISTING_STUDIO_AND_VIBE_FLOW",
@@ -252,6 +252,43 @@
         "endDate": "2026-11-28",
         "automatedGameAssetPublication": false,
         "reason": "Temporary free API and owner approved asset provenance + license checks required"
+      },
+      "liveDiscoveryEnabled": true,
+      "maxVerifiedFreeVisionModels": 12,
+      "discoverySource": "https://openrouter.ai/api/v1/models",
+      "freeAccountLimitSource": "https://openrouter.ai/api/v1/key",
+      "dynamicModelRequirements": {
+        "modelIdEndsWithFree": true,
+        "zeroPromptAndCompletionPrice": true,
+        "requiresImageAndTextInput": true,
+        "requiresTextOutput": true,
+        "officialApiVerified": true,
+        "existingAccountKeyAndFreeTierProof": true,
+        "untrustedMetadataNeverExecutes": true
+      },
+      "quotaManagement": {
+        "enabled": true,
+        "priority": "REAL_ACCOUNT_REMAINING_THEN_CONSERVATIVE_INTERNAL_CAP",
+        "sharedOpenRouterAccountBudget": true,
+        "openRouterFreeVariantsAccountCapCannotBeMultipliedByModelCount": true,
+        "geminiQuotaDailyReset": "AMERICA_LOS_ANGELES_MIDNIGHT",
+        "openRouterQuotaDailyReset": "UTC_MIDNIGHT",
+        "nvidiaQuotaReset": "ACCOUNT_UNKNOWN_REQUIRE_COOLDOWN",
+        "resetDoesNotCircumventPaidBilling": true,
+        "quotaExhaustionRotatesOnlyOtherAvailableProvider": true,
+        "provider429CooldownSharedAcrossModels": true,
+        "failedAttemptsConsumeQuota": true,
+        "accountSecretsNeverPersisted": true,
+        "mergedVerifierUsageNeverSubtracted": true
+      },
+      "modelQualitySelection": {
+        "roleSpecializationFirst": true,
+        "verifiedIndependentStudioBeforeAfterPassFirst": true,
+        "sourceConfirmedExistingFilesOnly": true,
+        "modelCountIsNotCapacity": true,
+        "addProvidersOnlyWithVerifiedFreeAccount": true,
+        "neverCreateExtraAccountsForQuota": true,
+        "doNotAssumeUnlimitedFreeCredits": true
       }
     },
     "studioEvidenceSelection": {
