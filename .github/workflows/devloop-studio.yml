@@ -659,8 +659,8 @@ jobs:
           if ($env:STUDIO_CANDIDATE_REF -ne '') {
             if ($qaStage -ne '' -or [string]$storedChecks.result -ne 'PASS' -or
                 [string]$storedChecks.sourceRevision -ne [string]$env:STUDIO_SOURCE_SHA -or
-                @($storedChecks.audits.models, $storedChecks.audits.registered,
-                  $storedChecks.audits.features, $storedChecks.audits.registry | Where-Object { $_ -ne 'PASS' }).Count -gt 0) {
+                @(@($storedChecks.audits.models, $storedChecks.audits.registered,
+                  $storedChecks.audits.features, $storedChecks.audits.registry) | Where-Object { $_ -ne 'PASS' }).Count -gt 0) {
               Write-Host 'DESIGN_AUTO_MERGE=BLOCKED_STUDIO_QA_NOT_PASS'
             } else {
               $priorIndex = Get-Content -LiteralPath (Join-Path $dst 'index.json') -Encoding UTF8 -Raw | ConvertFrom-Json
