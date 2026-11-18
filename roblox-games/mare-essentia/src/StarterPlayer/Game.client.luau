@@ -9822,7 +9822,7 @@ function RENDERERS.encyclopedia()
 	-- [해전 원화 화첩] 기존 소장 목록과 등록된 동일 ID의 승인 원화만 가져온다.
 	-- 백과 발견 수, 전투 카드 수, 강화, 보상, 저장 구조에는 영향을 주지 않는다.
 	local owned = (view.cardbook and view.cardbook.owned) or {}
-	local units = require(Shared:WaitForChild("BoardingCards")).Units
+	local boarding = require(Shared:WaitForChild("BoardingCards"))
 	local registeredArt = require(Shared:WaitForChild("CardArt")).Art
 	local motionCards = { ea_03 = true, ea_04 = true, ea_05 = true, ea_08 = true, ea_09 = true,
 		ea_10 = true, ea_12 = true, ea_13 = true, ea_14 = true, ea_15 = true, ea_16 = true, ea_17 = true }
@@ -9843,7 +9843,7 @@ function RENDERERS.encyclopedia()
 	for cardId, quantity in owned do
 		if type(cardId) == "string" and type(quantity) == "number" and quantity > 0
 			and string.match(cardId, "^%a%a_%d%d$") and not byId[cardId] then
-			local unit = units[cardId]
+			local unit = boarding.Units[cardId] or boarding.Specials[cardId]
 			local art = registeredArt[cardId]
 			if unit and art and type(art.image) == "string" and art.image ~= "" then
 				-- [24프레임 전용] 시트는 기존 승인·업로드 경로에서 등록된 경우에만 사용.
