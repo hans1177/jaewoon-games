@@ -82,8 +82,32 @@ def build_mare():
     S = [{"type": "wait", "ms": 28000}, {"type": "capture", "name": "c00_start"},
          {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('QAAutoIntro', true) return 'QAAutoIntro on'"}]
     for i, label in enumerate(["새 게임", "프랑스", "출항하기"], 1):
-        S += [{"type": "luau", "ctx": "Client", "code": pick([label], 'scroll')}, {"type": "wait", "ms": 400},
-              {"type": "click_from_luau", "ctx": "Client", "label": "title%02d" % i, "code": pick([label], 'click')},
+        scroll_code, click_code = pick([label], 'scroll'), pick([label], 'click')
+        scroll_step = {"type": "luau", "ctx": "Client", "code": scroll_code}
+        if i == 1:
+            # [실제 시작 화면] 고정 28초 캡처 이후 로딩 화면이 남아 있으면 최대 50초까지
+            # 새 게임 버튼의 실제 가시성을 기다린다. 미도착·저장 재시작 확인 화면은 실패 처리한다.
+            readiness = (
+                "local PG=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') "
+                "local ready=false local loading=false "
+                "for _=1,100 do "
+                "local title=PG:FindFirstChild('TitleGui') "
+                "local root=PG:FindFirstChild('MareEssentiaGui') "
+                "loading=root and root:FindFirstChild('StartLoading')~=nil "
+                "if title and title.Enabled and not loading then "
+                "for _,button in ipairs(title:GetDescendants()) do "
+                "if button:IsA('TextButton') and button.Visible and button.AbsoluteSize.X>8 and button.AbsoluteSize.Y>8 "
+                "and string.find(button.Text,'새 게임',1,true) then ready=true break end "
+                "end end "
+                "if ready then break end task.wait(0.5) end "
+                "if not ready then return 'MARE_TITLE_NOT_READY_AFTER_50S;LOADING='..tostring(loading) end "
+            )
+            strict = "if not best or bs<=0 then return 'NONE' end"
+            scroll_step["code"] = readiness + scroll_code.replace("if not best then return 'NONE' end", strict)
+            scroll_step["timeoutMs"] = 85000
+            click_code = click_code.replace("if not best then return 'NONE' end", strict)
+        S += [scroll_step, {"type": "wait", "ms": 400},
+              {"type": "click_from_luau", "ctx": "Client", "label": "title%02d" % i, "code": click_code},
               {"type": "wait", "ms": (9000 if i == 3 else 2000)}, {"type": "capture", "name": "t%02d" % i}]
     S += [{"type": "luau", "ctx": "Client", "code": INTRO_CHECK}, {"type": "wait", "ms": 2500},
           {"type": "capture", "name": "intro_done"}, {"type": "luau", "ctx": "Client", "code": TEXTS}]
