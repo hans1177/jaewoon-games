@@ -110,24 +110,37 @@ export function selectVibe59FreeExperts({
   freeCapacity={},env=process.env,includeUnconfigured=false,now=Date.now()
 }={}){
   const requested=clean(department).toUpperCase().replaceAll('-','_');
-  const source=(clean(taskText).slice(0,1600)+' '+
-    (Array.isArray(responsibleFiles)?responsibleFiles.slice(0,16).join(' '):'')).toLowerCase();
-  // [Vibe5.9 게임 작업] 작업자의 실제 목표·책임 파일에 따라 코드/인물/UI/동작을 자동 구분한다.
-  // AI가 제안한 문자열이 아니라 기존 워크오더의 책임 범위만 분류에 사용한다.
+  const goal=clean(taskText).slice(0,1600).toLowerCase();
+  const files=(Array.isArray(responsibleFiles)?responsibleFiles.slice(0,16).join(' '):'').toLowerCase();
+  // [Vibe5.9 분야 분류] 사용자 목표가 1차 근거, 책임 파일 경로는 2차 근거다.
+  // 'interface' 속 'face', 'ownership' 속 'ship', 'runner' 속 'run'처럼 부분 문자열을 오인하지 않는다.
+  const visualGoal=/머리|얼굴|의상|외형|옷|표정|피부|색상|질감|텍스처|재질|조명|그래픽|디자인|아트|초상|이미지|아이콘|메뉴|버튼|화면|애니메이션|움직임|동작|모션|시각|풍경|꾸미|멋있|외관|\b(?:face|hair|outfit|clothing|portrait|visual|graphics|texture|material|lighting|render|animation|motion|hud|ui|menu|layout|skin)\b/i.test(goal);
+  const technicalGoal=/로직|규칙|구현|버그|오류|동기화|저장|전투|공격|피격|데미지|경로탐색|패스파인딩|인벤토리|데이터베이스|서버|코드|함수|성능|스크립트|\b(?:bug|logic|save|sync|combat|damage|pathfinding|inventory|server|script|code|function|physics|network|database)\b/i.test(goal);
+  const graphicFiles=/\b(?:gui|ui|hud|menu|portrait|texture|material|lighting|animation|motion|visual)\b|\.client\.(?:lua|luau)\b|pose\.luau|townmood/i.test(files);
+  const source=goal+' '+files;
+  // 작업 내용이 코드·규칙 수정임을 명시한 경우 단순 NPC/선박 파일명만으로 그래픽에 보내지 않는다.
   const dept=requested!=='AUTO'?requested:
-    /npc|head|face|hair|outfit|clothing|portrait|주민|캐릭터|얼굴|머리|의상|외형|옷|표정|피부|pose\.luau|townmood/i.test(source)||
-    /hud|interface|menu|버튼|화면|\bui\b|gui|카드|font|visual|graphics|texture|material|lighting|조명|재질|그래픽|디자인|아트|배경|항구|마을|선박|건물|모션|애니메이션|움직임|animation|motion|ship|portscene/i.test(source)
-      ?'GRAPHICS'
-      :/음향|효과음|음악|오디오|사운드|sound|audio|music/.test(source)?'AUDIO'
-      :/회귀|검증|품질|테스트|qa|regression|test/.test(source)?'QA'
-      :/밸런스|보상|경제|난이도|balance|economy|reward/.test(source)?'BALANCE'
-      :/기획|설계|계획|planning/.test(source)?'PLANNING':'DEVELOPMENT';
+    visualGoal?'GRAPHICS'
+      :technicalGoal?'DEVELOPMENT'
+      :/음향|효과음|음악|오디오|사운드|\b(?:sound|audio|music)\b/.test(goal)?'AUDIO'
+      :/회귀|검증|품질|테스트|\b(?:qa|regression|test)\b/.test(goal)?'QA'
+      :/밸런스|보상|경제|난이도|\b(?:balance|economy|reward)\b/.test(goal)?'BALANCE'
+      :/기획|설계|계획|\bplanning\b/.test(goal)?'PLANNING'
+      :graphicFiles?'GRAPHICS':'DEVELOPMENT';
   const graphic=dept==='GRAPHICS';
+  const motion=/애니메이션|동작|움직임|모션|\b(?:motion|animation|walk|run|running|pose)\b/i;
+  const npc=/주민|캐릭터|얼굴|머리|의상|외형|옷|표정|피부|\b(?:npc|head|face|hair|outfit|clothing|portrait)\b/i;
+  const ui=/버튼|화면|메뉴|아이콘|\b(?:hud|interface|menu|ui|gui|font|layout)\b/i;
+  const world=/항구|마을|선박|건물|배경|풍경|\b(?:port|ship|harbor|landscape|town|world|scenery)\b/i;
   const role=graphic
-    ?/npc|head|face|hair|옷|머리|얼굴|주민|캐릭터/.test(source)?'NPC'
-      :/hud|interface|\.client|menu|\bui\b|버튼|화면/.test(source)?'UI'
-      :/motion|animation|walk|run|애니|동작/.test(source)?'MOTION'
-      :/port|ship|harbor|landscape|town|world|마을|배경|항구|선박/.test(source)?'WORLD':'GRAPHICS'
+    ?motion.test(goal)?'MOTION'
+      :npc.test(goal)?'NPC'
+      :ui.test(goal)?'UI'
+      :world.test(goal)?'WORLD'
+      :motion.test(files)?'MOTION'
+      :npc.test(files)?'NPC'
+      :ui.test(files)?'UI'
+      :world.test(files)?'WORLD':'GRAPHICS'
     :Object.hasOwn(VIBE59_EXPERT_PRIORS,dept)?dept:'DEVELOPMENT';
   const ids=VIBE59_EXPERT_PRIORS[role];
   const geminiModels=verifiedFreeGeminiModels(env);
