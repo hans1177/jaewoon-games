@@ -107,7 +107,7 @@ jobs:
           # [후보 PR 검사] 본 저장소 main 대상의 네모트론 격리 브랜치인지 사전 검증.
           $sourceSha = (& git -C 'main' rev-parse HEAD).Trim()
           if ($env:STUDIO_CANDIDATE_REF -ne '') {
-            $prJson = & gh pr view $env:STUDIO_CANDIDATE_REF --repo $env:GITHUB_REPOSITORY --json headRefName,headRefOid,baseRefName,state,headRepositoryOwner
+            $prJson = & gh pr view $env:STUDIO_CANDIDATE_REF --repo $env:GITHUB_REPOSITORY --json headRefName,headRefOid,baseRefName,baseRefOid,state,headRepositoryOwner
             if ($LASTEXITCODE -ne 0) { throw 'STUDIO_CANDIDATE_PR_NOT_FOUND' }
             $pr = $prJson | ConvertFrom-Json
             if ($pr.state -ne 'OPEN' -or $pr.baseRefName -ne 'main' -or
@@ -115,6 +115,8 @@ jobs:
                 $pr.headRepositoryOwner.login -ne 'hans1177') { throw 'STUDIO_CANDIDATE_PR_IDENTITY_MISMATCH' }
           }
           $env:GITHUB_SHA = $sourceSha
+          $env:STUDIO_SOURCE_SHA = $sourceSha
+          if ($env:STUDIO_CANDIDATE_REF -ne '') { $env:STUDIO_BASE_SHA = [string]$pr.baseRefOid }
           Write-Host "STUDIO_EXACT_SOURCE_SHA=$sourceSha"
           # [메인] 공식 Studio·MCP·Node의 사용자 임시 파일은 기존 E: 러너 작업 폴더에서 생성한다.
           # LOCALAPPDATA·로블록스 설치·계정/저장 경로는 이동하지 않는다.
