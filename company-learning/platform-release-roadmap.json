@@ -1,5 +1,5 @@
 {
-  "version": 610,
+  "version": 611,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -32215,6 +32215,44 @@
         "colorOnlyIsNotStyleFit": true,
         "sameBuildVisualEvidenceRequired": true
       }
+    },
+    "externalFreeVisualSpecialists": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026_11_18_FREE_AUTOMATIC_VISUAL_SPECIALISTS",
+      "scope": "mare-essentia ROBLOX existing approved visual design only",
+      "implementation": "tools/company-nemotron-design-review.mjs",
+      "workflow": ".github/workflows/devloop-studio.yml",
+      "providerPolicy": "company-learning/external-ai-distillation-policy.json#directVisualDesign.freeSpecialistPool",
+      "studioEvidenceRequired": true,
+      "roleBasedSelection": [
+        "NPC",
+        "WORLD",
+        "UI",
+        "MOTION",
+        "GENERAL"
+      ],
+      "providerModelsAllowlistOnly": true,
+      "verifiedFreeTierAndCredentialRequired": true,
+      "paidModelsOrAutoBillingForbidden": true,
+      "rotateFreeSlotsOnRateLimitOrTransientFailure": true,
+      "keepCooldownAndUseCountInExistingStudioEvidence": true,
+      "sourceBoundExactVisualAnchorsOnly": true,
+      "previousOwnerApprovedDesignAndAssetsPreserved": true,
+      "unlicensedAndUnapprovedNewAssetsForbidden": true,
+      "externalAiDirectMainWrite": false,
+      "externalAiSelfAccept": false,
+      "sourceChangeOnIsolatedCandidateOnly": true,
+      "independentVisualBeforeAfterReviewRequired": true,
+      "studioCandidateSameSourceRuntimeRequired": true,
+      "securityAndRegressionGateBeforeAutoMerge": true,
+      "canonicalSourceIntegrationAfterValidatedCandidate": true,
+      "postMergeAutomaticExistingRobloxSourceDriftSync": true,
+      "canonicalF0F9StageOrderUnchanged": true,
+      "privatePublicationOnlyAfterExactF9AndExistingPublishGate": true,
+      "failedOrUnverifiedVisualMustNotAutoMerge": true,
+      "missingApiKeyMustNotBlockVibeSoloDevelopment": true,
+      "noNewQueueOrShadowWorkflow": true,
+      "verifiedPositiveAndNegativeLearningUsesExistingMotor": true
     }
   },
   "ownerActiveDevelopmentScope20261009": {
