@@ -658,49 +658,24 @@ return function(D, S)
 		end
 
 		-- 퀘스트
-		view.quests = { active = {}, available = {}, doneCount = 0, otherPortDeliver = 0, done = {}, historyThreads = {} }
+		view.quests = { active = {}, available = {}, doneCount = 0, otherPortDeliver = 0, done = {} }
 		local shownDeliver = 0
 		for id in state.quests.done do
 			view.quests.doneCount += 1
 			local dq = D.Quests.ById[id]
 			if dq then
-				local ending = if dq.routeId then nil else select(2, S.Quest.storyOf(dq))
-				-- [저널은 이야기 / 백과는 기록지식] 긴 지역 본문은 기존 공유 퀘스트에서만 읽어 스냅샷 낭비를 막는다.
-				table.insert(view.quests.done, {
-					id = dq.id, name = dq.name, summary = dq.summary, strand = dq.strand,
-					grade = D.Quests.Grade(dq), ending = ending,
-					routeId = dq.routeId, routeName = dq.routeName,
-					cardId = if dq.routeId then dq.cardId else nil,
-					cardName = if dq.routeId and dq.cardId and D.Cards.ById[dq.cardId] then D.Cards.ById[dq.cardId].name else nil,
-					evidence = if dq.routeId and dq.cardId and D.Cards.ById[dq.cardId]
-						then D.Cards.EvidenceNames[D.Cards.evidenceOf(D.Cards.ById[dq.cardId])] else nil,
-				})
-				if dq.journal and dq.journal.stage == 5 then
-					-- [마지막 판단] 기존 스토리 선택 결과를 저널에 읽기 전용으로 반영한다.
-					local finaleId = "journal_" .. dq.routeId
-					local event = D.Story.ById[finaleId]
-					local selected = state.story and state.story[finaleId]
-					local chosen = event and selected and event.choices[selected] or nil
-					local lastPort = dq.portId and D.Ports.Ports[dq.portId]
-					table.insert(view.quests.historyThreads, {
-						route = dq.routeName, theme = dq.journal.theme, question = dq.journal.question,
-						verdict = chosen and chosen.text or nil,
-						port = lastPort and lastPort.name or "현재 항로",
-						here = dq.portId == state.portId,
-					})
-				end
+				local _, ending = S.Quest.storyOf(dq)
+				table.insert(view.quests.done, { name = dq.name, summary = dq.summary, strand = dq.strand, grade = D.Quests.Grade(dq), ending = ending })
 			end
 		end
 		table.sort(view.quests.done, function(a, b) return a.name < b.name end)
-		table.sort(view.quests.historyThreads, function(a, b) return a.route < b.route end)
 		for _, q in D.Quests.Quests do
 			if state.quests.active[q.id] then
 				table.insert(view.quests.active, {
 					id = q.id,
 					name = q.name,
 					summary = q.summary,
-					story = if q.routeId then nil else (S.Quest.storyOf(q)),
-					routeId = q.routeId, routeName = q.routeName,
+					story = (S.Quest.storyOf(q)),
 					strand = q.strand or (if q.companionId then "companion" else nil),
 					kind = q.kind,
 					grade = D.Quests.Grade(q),
@@ -716,7 +691,7 @@ return function(D, S)
 				if q.kind == "deliver" then
 					shownDeliver += 1
 				end
-				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary .. (if q.rewardCardId and D.Cards.ById[q.rewardCardId] then " · 지식카드 보상: " .. D.Cards.ById[q.rewardCardId].name else ""), story = if q.routeId then nil else (S.Quest.storyOf(q)), routeId = q.routeId, routeName = q.routeName, strand = q.strand or (if q.companionId then "companion" else nil), grade = D.Quests.Grade(q), rewardCoins = q.rewardCoins, rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
+				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary .. (if q.rewardCardId and D.Cards.ById[q.rewardCardId] then " · 지식카드 보상: " .. D.Cards.ById[q.rewardCardId].name else ""), story = (S.Quest.storyOf(q)), strand = q.strand or (if q.companionId then "companion" else nil), grade = D.Quests.Grade(q), rewardCoins = q.rewardCoins, rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
 			end
 		end
 
@@ -729,12 +704,10 @@ return function(D, S)
 			if q.exploreSite and not state.quests.done[q.id] and (not q.after or state.quests.done[q.after]) then
 				local destination = D.Ports.Ports[q.portId]
 				table.insert(view.quests.fieldRoutes, {
-					id = q.id, name = q.name, grade = D.Quests.Grade(q),
+					name = q.name, grade = D.Quests.Grade(q),
 					port = destination and destination.name or q.portId,
 					summary = q.summary, here = q.portId == state.portId,
 					routeId = q.routeId, routeName = q.routeName, leadSource = q.leadSource,
-					theme = q.journal and q.journal.theme or nil,
-					question = q.journal and q.journal.question or nil,
 				})
 			end
 		end
