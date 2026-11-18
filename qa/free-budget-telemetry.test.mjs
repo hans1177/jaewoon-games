@@ -107,7 +107,7 @@ test('CLI cannot override a paid portfolio or disguise malformed cash and usage'
     run=spawnSync(process.execPath,[script,...args,'--cash-krw=invalid'],{cwd:dir,encoding:'utf8'});
     assert.equal(run.status,2,run.stderr);
     assert.ok(JSON.parse(fs.readFileSync(output,'utf8')).failures.includes('CASH_BUDGET_FORBIDDEN'));
-    run=spawnSync(process.execPath,[script,...args,'--model-calls=invalid'],{cwd:dir,encoding:'utf8'});
+    run=spawnSync(process.execPath,[script,...args.map(value=>value.startsWith('--model-calls=')?'--model-calls=invalid':value)],{cwd:dir,encoding:'utf8'});
     assert.equal(run.status,2,run.stderr);
     assert.ok(JSON.parse(fs.readFileSync(output,'utf8')).failures.includes('MODEL_CALL_CAP_EXCEEDED'));
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
