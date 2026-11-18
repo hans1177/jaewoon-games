@@ -4649,7 +4649,7 @@ function H.statStrip(items)
 		local strip = Instance.new("Frame")
 		strip.Name = "MenuSummaryMetrics"
 		strip.BackgroundTransparency = 1
-		strip.Size = UDim2.new(1, -6, 0, 50)
+		strip.Size = UDim2.new(1, -6, 0, 56)
 		local lay = Instance.new("UIGridLayout")
 		lay.CellPadding = UDim2.fromOffset(6, 6)
 		lay.SortOrder = Enum.SortOrder.LayoutOrder
@@ -4671,7 +4671,7 @@ function H.statStrip(items)
 			lb.Position = UDim2.fromOffset(8, 4)
 			lb.Size = UDim2.new(1, -16, 0, 16)
 			lb.Font = Enum.Font.Gotham
-			lb.TextSize = 12
+			lb.TextSize = 14
 			lb.TextXAlignment = Enum.TextXAlignment.Left
 			lb.TextTruncate = Enum.TextTruncate.AtEnd
 			lb.TextColor3 = INK_SOFT
@@ -4682,7 +4682,7 @@ function H.statStrip(items)
 			vl.Position = UDim2.fromOffset(8, 20)
 			vl.Size = UDim2.new(1, -16, 0, 26)
 			vl.Font = Enum.Font.GothamBold
-			vl.TextSize = 18
+			vl.TextSize = 20
 			vl.TextXAlignment = Enum.TextXAlignment.Left
 			vl.TextTruncate = Enum.TextTruncate.AtEnd
 			vl.TextColor3 = H.TONE[it.tone or "key"] or INK
@@ -4694,8 +4694,8 @@ function H.statStrip(items)
 			if width <= 0 then return end
 			local cols = if width < 460 and #items >= 3 then 2 else math.max(1, #items)
 			local rows = math.ceil(#items / cols)
-			lay.CellSize = UDim2.new(1 / cols, -6 * (cols - 1) / cols, 0, 50)
-			local height = rows * 50 + (rows - 1) * 6
+			lay.CellSize = UDim2.new(1 / cols, -6 * (cols - 1) / cols, 0, 56)
+			local height = rows * 56 + (rows - 1) * 6
 			if strip.Size.Y.Offset ~= height then
 				strip.Size = UDim2.new(1, -6, 0, height)
 			end
@@ -7025,13 +7025,23 @@ local function renderYard()
 			if not s.canCarry then sub ..= "\n화물 부족: 교체 전에 짐을 내려야 해" end
 			if s.locked then sub ..= "\n" .. s.locked end
 			if not s.owned and s.netCost > view.player.coins then sub ..= "\n자금 부족 " .. H.commas(s.netCost - view.player.coins) .. "코인" end
-			local row = mkRow(content, string.format("[등급%d] %s%s", s.class, s.name, if s.owned then " · 현재 기함" elseif s.steam then " · 증기" else ""),
+			local row = mkRow(content, string.format("[등급%d] %s%s", s.class, s.name, if s.id == H.shipPreviewId then " · 중앙 3D 선택" elseif s.owned then " · 현재 기함" elseif s.steam then " · 증기" else ""),
 				sub, {
 					{ text = if s.owned then "현재 배" elseif s.locked then "잠김" elseif not s.canCarry then "화물 초과" elseif s.netCost > view.player.coins then "코인 부족" else "교체\n" .. H.commas(pay),
 						color = if s.steam then COLORS.steam else COLORS.blue,
 						enabled = yard.available and not s.owned and not s.locked and s.canCarry and s.netCost <= view.player.coins,
 						onClick = function() call("BuyShip", { shipId = s.id }) end },
 				}, if s.id == "galleon" and AssetIds["Naval/galleon-heritage"] then 236 else 210)
+			-- [선택 강조] 중앙 3D로 연결된 선박만 황동 선·두꺼운 테두리로 표시한다.
+			if s.id == H.shipPreviewId then
+				local border = row:FindFirstChildOfClass("UIStroke")
+				if border then
+					border.Color = UI_BRASS_DARK
+					border.Thickness = 2.5
+				end
+				local accent = row:FindFirstChild("AccentBar")
+				if accent then accent.BackgroundColor3 = COLORS.gold end
+			end
 			local si = SHIP_ICON[s.id]
 			if si then withIcon(row, si[1], si[2], si[3], 100) end
 			-- [오른쪽 선박 목록] 배 이름·사진을 누르면 기존 중앙 3D 갤러리에 연결한다.
@@ -7166,7 +7176,7 @@ function openYardHall()
 		-- [조선소도 교역소형] 가로: 왼쪽 18% 항목 / 중앙 36% 선박 / 오른쪽 실제 정비·구매.
 		-- [세로] 기존 항목 버튼 두 줄 → 배 그림 → 정비 목록 순서를 유지한다.
 		local navWidth = if landscape then math.clamp(math.floor((width - inset - 16) * 0.18), 136, 230) else 0
-		local heroTop = if landscape then 76 else 172
+		local heroTop = if landscape then 76 else 190
 		local heroWidth = if landscape then math.floor((width - inset - navWidth - 24) * 0.46) else width - inset - 8
 		local heroHeight = if landscape then availableH - heroTop - 8 else math.clamp(math.floor(availableH * 0.30), 160, 260)
 		scroll.Position = if landscape then UDim2.fromOffset(inset + navWidth + heroWidth + 16, heroTop)
@@ -7192,17 +7202,17 @@ function openYardHall()
 
 		-- [시설 왼쪽 목록] 기존 조선소 섹션으로 스크롤만 이동한다. 구매/재화 판정은 변경하지 않는다.
 		local nav = mkBox(root, if landscape then UDim2.fromOffset(inset, heroTop) else UDim2.fromOffset(inset, 76),
-			if landscape then UDim2.new(0, navWidth, 1, -heroTop - 8) else UDim2.new(1, -inset - 8, 0, 88), COLORS.leather)
+			if landscape then UDim2.new(0, navWidth, 1, -heroTop - 8) else UDim2.new(1, -inset - 8, 0, 108), COLORS.leather)
 		local navColumns = if landscape then 1 else 3
 		for i, entry in { { "내 배·정비", "YardSectionShip" }, { "선단", "YardSectionFleet" }, { "대포·보강", "YardSectionRefit" }, { "7대륙 설계", "YardSectionBlueprints" }, { "새 배 비교", "YardSectionShips" } } do
-			local btn0 = mkButton(nav, entry[1], COLORS.paper, if landscape then UDim2.new(1, -8, 0, 48) else UDim2.new(1 / navColumns, -6, 0, 40), function()
+			local btn0 = mkButton(nav, entry[1], COLORS.paper, if landscape then UDim2.new(1, -8, 0, 52) else UDim2.new(1 / navColumns, -6, 0, 48), function()
 				local target = scroll:FindFirstChild(entry[2])
 				if target then
 					scroll.CanvasPosition = Vector2.new(0, math.max(0, target.AbsolutePosition.Y - scroll.AbsolutePosition.Y + scroll.CanvasPosition.Y))
 				end
 			end, true)
-			btn0.Position = if landscape then UDim2.fromOffset(4, 4 + (i - 1) * 54)
-				else UDim2.new(((i - 1) % navColumns) / navColumns, 4, 0, 2 + math.floor((i - 1) / navColumns) * 44)
+			btn0.Position = if landscape then UDim2.fromOffset(4, 4 + (i - 1) * 56)
+				else UDim2.new(((i - 1) % navColumns) / navColumns, 4, 0, 2 + math.floor((i - 1) / navColumns) * 52)
 			btn0.TextSize = 17
 		end
 		-- [선박 전시장] 기존 등록된 함종에만 적용, 함선 성능·구매 규칙 불변.
@@ -10129,7 +10139,7 @@ function H.renderTabs()
 		b.Name = "FacilityTab_" .. id
 		b.LayoutOrder = i
 		b:SetAttribute("SelectedTab", selected)
-		b.TextColor3 = if selected then INK else INK_SOFT
+		b.TextColor3 = if selected then INK else Color3.fromRGB(255, 241, 210)
 		b.TextSize = 18
 		local ti = H.TAB_ICON[id]
 		if ti then
