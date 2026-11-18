@@ -2642,120 +2642,120 @@ end
 
 -- [7대륙 지역 사건] 중요한 조사 15편에서만 독립 선택형 역사/신화 장면을 연다.
 	table.insert(Events, {
-		id = "region_event_eu_pompeii", title = "화산재 아래의 마지막 하루", chapter = "지역 연대기 · eu_pompeii", portId = "livorno", art = "ruins", npc = "나폴리 발굴 책임자", major = true, evidence = "documented", requiresQuests = { "q_region_eu_pompeii_2" },
-		lines = { "유물의 소유권과 피해자 기록 중 무엇을 먼저 살필 것인가?", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_eu_pompeii", title = "화산재 아래의 마지막 하루", chapter = "이탈리아 로마 유산", portId = "livorno", art = "ruins", npc = "나폴리 발굴 책임자", major = true, continent = "유럽", evidence = "documented", requiresQuests = { "q_region_eu_pompeii_2" },
+		lines = { "유물의 소유권과 피해자 기록 중 무엇을 먼저 살필 것인가?", "리보르노의 수집가가 발굴품을 숨기고 있다. 석재와 거래 기록을 비교한다." },
 		choices = {
 			{ text = "발굴된 물건의 원래 위치를 복원한다", effect = { fame = 15 }, result = "유물에 남은 일상의 흔적이 역사로 되살아났다." },
 			{ text = "주민들의 일상과 이름을 먼저 기록한다", effect = { fame = 12 }, result = "기념품보다 사람들의 삶이 먼저 연대기에 실렸다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_eu_brittany", title = "바다에서 울린다는 종", chapter = "지역 연대기 · eu_brittany", portId = "rouen", art = "storm", npc = "브르타뉴의 늙은 어부", major = true, evidence = "legend", requiresQuests = { "q_region_eu_brittany_2" },
-		lines = { "거석은 눈앞에 있다. 이스의 종소리는 아직 증언뿐이다.", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_eu_brittany", title = "바다에서 울린다는 종", chapter = "브르타뉴 고대 신화", portId = "rouen", art = "storm", npc = "브르타뉴의 늙은 어부", major = true, continent = "유럽", evidence = "legend", requiresQuests = { "q_region_eu_brittany_2" },
+		lines = { "거석은 눈앞에 있다. 이스의 종소리는 아직 증언뿐이다.", "어부가 물에 잠긴 도시의 종소리를 들었다고 한다. 고대 유산과 전설을 구별한다." },
 		choices = {
 			{ text = "거석 유산을 실측해 기록한다", effect = { fame = 15 }, result = "선사시대 유산의 기록과 그림이 완성됐다." },
 			{ text = "이스의 전설은 전설로 남긴다", effect = { fame = 12 }, result = "신화의 아름다움은 남았지만 사실로 둔갑하지 않았다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_as_malacca", title = "해협의 주인은 누구인가", chapter = "지역 연대기 · as_malacca", portId = "batavia", art = "harbor", npc = "말라카의 도선사", major = true, evidence = "documented", requiresQuests = { "q_region_as_malacca_2" },
-		lines = { "항구를 지나려는 선박들이 서로 다른 통행권을 주장한다.", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_as_malacca", title = "해협의 주인은 누구인가", chapter = "말라카와 동남아시아", portId = "batavia", art = "harbor", npc = "말라카의 도선사", major = true, continent = "아시아", evidence = "documented", requiresQuests = { "q_region_as_malacca_2" },
+		lines = { "항구를 지나려는 선박들이 서로 다른 통행권을 주장한다.", "바타비아 운하에서 사라진 화물의 장부가 발견됐다. 해협과 도시의 교역을 연결한다." },
 		choices = {
 			{ text = "옛 항로 지도를 모두에게 공개한다", effect = { fame = 15 }, result = "해협에서 길을 잃는 배가 줄어들었다." },
 			{ text = "독점 계약의 실제 문서를 조사한다", effect = { fame = 12 }, result = "상인의 소문보다 계약의 실체가 드러났다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_as_korea", title = "바다를 읽는 사람들", chapter = "지역 연대기 · as_korea", portId = "incheon", art = "harbor", npc = "조선의 수군 기록관", major = true, evidence = "documented", requiresQuests = { "q_region_as_korea_2" },
-		lines = { "군사 기록에는 포와 화차가 있지만 바다의 물때도 같은 만큼 중요했다.", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_as_korea", title = "바다를 읽는 사람들", chapter = "조선 해전과 해안", portId = "incheon", art = "harbor", npc = "조선의 수군 기록관", major = true, continent = "아시아", evidence = "documented", requiresQuests = { "q_region_as_korea_2" },
+		lines = { "군사 기록에는 포와 화차가 있지만 바다의 물때도 같은 만큼 중요했다.", "인천에는 옛 화차를 그린 문서가 전해진다. 전설보다 병기의 구조를 살핀다." },
 		choices = {
 			{ text = "조수와 바람의 기록을 보존한다", effect = { fame = 15 }, result = "바다 지형을 읽는 지식이 다음 항해자에게 전해졌다." },
 			{ text = "당대 무기와 전술의 증거를 정리한다", effect = { fame = 12 }, result = "영웅담보다 무기의 실제 구조가 정확히 기록됐다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_as_spice", title = "향신료보다 무거운 계약", chapter = "지역 연대기 · as_spice", portId = "ternate", art = "market", npc = "테르나테의 상인 대표", major = true, evidence = "documented", requiresQuests = { "q_region_as_spice_2" },
-		lines = { "섬의 향신료 값은 올랐지만 생산자의 삶은 나아지지 않았다.", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_as_spice", title = "향신료보다 무거운 계약", chapter = "향신료 제도", portId = "ternate", art = "market", npc = "테르나테의 상인 대표", major = true, continent = "아시아", evidence = "documented", requiresQuests = { "q_region_as_spice_2" },
+		lines = { "섬의 향신료 값은 올랐지만 생산자의 삶은 나아지지 않았다.", "테르나테의 항해사는 계절풍 때문에 거래 시기가 바뀐다고 말한다. 지리와 독점 거래를 확인하자." },
 		choices = {
 			{ text = "현지 상인의 목소리를 장부에 기록한다", effect = { fame = 15 }, result = "가격표 뒤에 있던 사람들의 이야기가 역사에 남았다." },
 			{ text = "독점 거래의 실제 조건을 검증한다", effect = { fame = 12 }, result = "누구의 계약이었는지 확인됐다. 의혹은 더는 소문만이 아니었다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_af_goree", title = "이름 없는 항해 기록", chapter = "지역 연대기 · af_goree", portId = "bissau", art = "library", npc = "역사 기록 조사관", major = true, evidence = "documented", requiresQuests = { "q_region_af_goree_2" },
-		lines = { "부두의 장부는 사람을 숫자로 적었다. 희생된 이들의 이름을 어떻게 돌려놓을까?", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_af_goree", title = "이름 없는 항해 기록", chapter = "세네갈과 비사고스", portId = "bissau", art = "library", npc = "역사 기록 조사관", major = true, continent = "아프리카", evidence = "documented", requiresQuests = { "q_region_af_goree_2" },
+		lines = { "부두의 장부는 사람을 숫자로 적었다. 희생된 이들의 이름을 어떻게 돌려놓을까?", "비사우의 맹그로브 숲에는 물때에 따라 길이 나타난다. 주민들이 지켜 온 해안 지식을 배우자." },
 		choices = {
 			{ text = "생존자와 후손의 증언을 보존한다", effect = { fame = 15 }, result = "숫자가 아닌 사람의 이름을 다시 읽었다." },
 			{ text = "강제 이송의 기록을 사실대로 공개한다", effect = { fame = 12 }, result = "바다 건너 강제 이송의 역사가 지워지지 않게 됐다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_af_elmina", title = "요새의 열쇠가 가리킨 곳", chapter = "지역 연대기 · af_elmina", portId = "ouidah", art = "ruins", npc = "요새 기록관", major = true, evidence = "documented", requiresQuests = { "q_region_af_elmina_2" },
-		lines = { "오래된 쇠열쇠의 주인이 아니라, 그 문 너머에 있던 사람들을 기억해야 한다.", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_af_elmina", title = "요새의 열쇠가 가리킨 곳", chapter = "서아프리카 요새의 기록", portId = "ouidah", art = "ruins", npc = "요새 기록관", major = true, continent = "아프리카", evidence = "documented", requiresQuests = { "q_region_af_elmina_2" },
+		lines = { "오래된 쇠열쇠의 주인이 아니라, 그 문 너머에 있던 사람들을 기억해야 한다.", "위다에 도착한 쇠열쇠의 출처를 확인하자. 억압의 역사를 거래 이야기로 가릴 수 없다." },
 		choices = {
 			{ text = "피해자와 지역사회의 증언을 먼저 적는다", effect = { fame = 15 }, result = "유물은 인간의 고통을 증언하는 역사 자료가 됐다." },
 			{ text = "요새 문서의 책임과 거래를 조사한다", effect = { fame = 12 }, result = "권력의 장부에 남은 폭력이 사실대로 기록됐다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_na_maya", title = "종말을 예언한다는 돌", chapter = "지역 연대기 · na_maya", portId = "campeche", art = "ruins", npc = "마야 문자 연구자", major = true, evidence = "documented", requiresQuests = { "q_region_na_maya_2" },
-		lines = { "태양석과 석비를 두고 세상의 끝이 적혀 있다는 소문이 떠돈다.", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_na_maya", title = "종말을 예언한다는 돌", chapter = "멕시코와 마야", portId = "campeche", art = "ruins", npc = "마야 문자 연구자", major = true, continent = "북아메리카", evidence = "documented", requiresQuests = { "q_region_na_maya_2" },
+		lines = { "태양석과 석비를 두고 세상의 끝이 적혀 있다는 소문이 떠돈다.", "캄페체 밀림에서 마야 석비가 발견됐다. 해독할 수 없는 글을 저주로 부르는 상인을 막아야 한다." },
 		choices = {
 			{ text = "유물의 달력과 문자를 해석한다", effect = { fame = 15 }, result = "고대 문명의 실제 천문·기록 지식이 보존됐다." },
 			{ text = "후대의 종말 소문을 따로 분류한다", effect = { fame = 12 }, result = "증명되지 않은 예언은 미확인으로 표시했다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_na_pirates", title = "해적과 가라앉은 도시", chapter = "지역 연대기 · na_pirates", portId = "kingston", art = "harbor", npc = "킹스턴의 잠수부", major = true, evidence = "documented", requiresQuests = { "q_region_na_pirates_2" },
-		lines = { "바다 아래에 남은 포트로열의 유적은 보물 소문보다 많은 것을 말한다.", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_na_pirates", title = "해적과 가라앉은 도시", chapter = "바하마와 포트로열", portId = "kingston", art = "harbor", npc = "킹스턴의 잠수부", major = true, continent = "북아메리카", evidence = "documented", requiresQuests = { "q_region_na_pirates_2" },
+		lines = { "바다 아래에 남은 포트로열의 유적은 보물 소문보다 많은 것을 말한다.", "킹스턴에서는 1692년 지진으로 무너진 포트로열의 유적이 드러났다. 보물 소문과 실제 재난을 비교하자." },
 		choices = {
 			{ text = "1692년 재난의 실제 기록을 남긴다", effect = { fame = 15 }, result = "지진의 피해와 도시의 역사가 기록됐다." },
 			{ text = "해적의 유물과 전설의 출처를 비교한다", effect = { fame = 12 }, result = "유물은 실재하고 무한한 보물 이야기는 미확인이었다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_na_republic", title = "누구의 독립인가", chapter = "지역 연대기 · na_republic", portId = "philadelphia", art = "palace", npc = "독립기록 서기관", major = true, evidence = "documented", requiresQuests = { "q_region_na_republic_2" },
-		lines = { "같은 회의장에 서로 다른 시민의 희망과 불안이 남았다.", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_na_republic", title = "누구의 독립인가", chapter = "미국 동부의 혁명", portId = "philadelphia", art = "palace", npc = "독립기록 서기관", major = true, continent = "북아메리카", evidence = "documented", requiresQuests = { "q_region_na_republic_2" },
+		lines = { "같은 회의장에 서로 다른 시민의 희망과 불안이 남았다.", "필라델피아의 회의장에는 새 나라의 정치적 선택을 둘러싼 기록이 남았다." },
 		choices = {
 			{ text = "정치 문서의 원문을 공개한다", effect = { fame = 15 }, result = "사건의 시기와 정책이 정확하게 보존됐다." },
 			{ text = "당시 주민들의 서로 다른 증언을 기록한다", effect = { fame = 12 }, result = "역사는 하나의 목소리가 아닌 여러 기록으로 남았다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_sa_inca", title = "매듭 속에 숨겨진 기억", chapter = "지역 연대기 · sa_inca", portId = "callao", art = "ruins", npc = "안데스의 기록자", major = true, evidence = "documented", requiresQuests = { "q_region_sa_inca_2" },
-		lines = { "매듭과 돌로 만든 기록을 단순한 보물 지도로 보는 사람도 있다.", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_sa_inca", title = "매듭 속에 숨겨진 기억", chapter = "안데스와 잉카", portId = "callao", art = "ruins", npc = "안데스의 기록자", major = true, continent = "남아메리카", evidence = "documented", requiresQuests = { "q_region_sa_inca_2" },
+		lines = { "매듭과 돌로 만든 기록을 단순한 보물 지도로 보는 사람도 있다.", "카야오의 선주는 산 위에 잊힌 황금 도시가 있다고 주장한다. 실재 유적과 금의 전설을 분리한다." },
 		choices = {
 			{ text = "키푸의 기록 방식을 연구한다", effect = { fame = 15 }, result = "잉카의 기록체계가 학문의 한 장에 실렸다." },
 			{ text = "유적을 남긴 공동체의 역사를 보존한다", effect = { fame = 12 }, result = "황금 전설 대신 사람의 생활과 도시가 기록됐다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_sa_silver", title = "은광석의 무게", chapter = "지역 연대기 · sa_silver", portId = "portobelo", art = "harbor", npc = "포르토벨로의 운송 서기관", major = true, evidence = "documented", requiresQuests = { "q_region_sa_silver_2" },
-		lines = { "장부에는 은의 무게만 있고 그것을 캐낸 사람들의 이름은 없다.", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_sa_silver", title = "은광석의 무게", chapter = "카르타헤나와 포토시 은", portId = "portobelo", art = "harbor", npc = "포르토벨로의 운송 서기관", major = true, continent = "남아메리카", evidence = "documented", requiresQuests = { "q_region_sa_silver_2" },
+		lines = { "장부에는 은의 무게만 있고 그것을 캐낸 사람들의 이름은 없다.", "포르토벨로의 은 장터에서 포토시 광산의 강제 노동을 기록한 장부를 찾는다." },
 		choices = {
 			{ text = "광산 노동자들의 기록을 복원한다", effect = { fame = 15 }, result = "수익 뒤에 감춰진 노동의 역사도 남았다." },
 			{ text = "식민지 은 무역의 흐름을 밝힌다", effect = { fame = 12 }, result = "은의 이동 경로와 무역 권력이 확인됐다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_oc_islands", title = "섬의 이름을 지킨 사람들", chapter = "지역 연대기 · oc_islands", portId = "suva", art = "harbor", npc = "수바의 식물학 안내인", major = true, evidence = "documented", requiresQuests = { "q_region_oc_islands_2" },
-		lines = { "같은 식물에도 지역마다 이름이 다르다. 누가 먼저 기록했는지를 기억해야 한다.", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_oc_islands", title = "섬의 이름을 지킨 사람들", chapter = "뉴질랜드와 피지", portId = "suva", art = "harbor", npc = "수바의 식물학 안내인", major = true, continent = "오세아니아", evidence = "documented", requiresQuests = { "q_region_oc_islands_2" },
+		lines = { "같은 식물에도 지역마다 이름이 다르다. 누가 먼저 기록했는지를 기억해야 한다.", "수바 주민은 같은 꽃에도 여러 이름이 있다고 말한다. 식물을 현지 지식과 대조해 분류한다." },
 		choices = {
 			{ text = "주민의 식물 이름을 함께 보존한다", effect = { fame = 15 }, result = "지역사회의 지식이 백과사전에 함께 실렸다." },
 			{ text = "식물의 분류와 서식지를 검증한다", effect = { fame = 12 }, result = "식물학적 특징과 현지 명칭이 나란히 기록됐다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_oc_moai", title = "돌 얼굴을 만든 사람들", chapter = "지역 연대기 · oc_moai", portId = "honolulu", art = "ruins", npc = "라파누이 유물 조사관", major = true, evidence = "documented", requiresQuests = { "q_region_oc_moai_2" },
-		lines = { "소문은 외계인을 말하지만 석상은 실제 사람들이 만든 문화유산이다.", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_oc_moai", title = "돌 얼굴을 만든 사람들", chapter = "라파누이 모아이", portId = "honolulu", art = "ruins", npc = "라파누이 유물 조사관", major = true, continent = "오세아니아", evidence = "documented", requiresQuests = { "q_region_oc_moai_2" },
+		lines = { "소문은 외계인을 말하지만 석상은 실제 사람들이 만든 문화유산이다.", "호놀룰루의 유물상은 라파누이에서 왔다는 흑요석을 내민다. 재료의 산지와 제작법을 조사한다." },
 		choices = {
 			{ text = "현지 공동체의 설명을 기록한다", effect = { fame = 15 }, result = "라파누이 사람들의 이름이 유산의 주인으로 기록됐다." },
 			{ text = "유물의 제작과 이동 근거를 조사한다", effect = { fame = 12 }, result = "미확인설과 실제 제작 기술이 구분됐다." },
 		},
 	})
 	table.insert(Events, {
-		id = "region_event_an_ice", title = "지도 끝의 얼음벽", chapter = "지역 연대기 · an_ice", portId = "hobart", art = "storm", npc = "남극권 항해 기록관", major = true, evidence = "documented", requiresQuests = { "q_region_an_ice_2" },
-		lines = { "남방 대륙의 황금 전설과 실제 1773년 남극권 항해를 같은 기록으로 적을 수는 없다.", "조사한 두 항구의 기록이 이곳에서 합쳐졌다." },
+		id = "region_event_an_ice", title = "지도 끝의 얼음벽", chapter = "남극권과 남방 대륙", portId = "hobart", art = "storm", npc = "남극권 항해 기록관", major = true, continent = "남극", evidence = "documented", requiresQuests = { "q_region_an_ice_2" },
+		lines = { "남방 대륙의 황금 전설과 실제 1773년 남극권 항해를 같은 기록으로 적을 수는 없다.", "호바트의 서고에 1773년 남극권을 넘은 항해 기록이 도착했다. 얼음을 본 것과 대륙에 닿은 것은 다르다." },
 		choices = {
 			{ text = "실제 남극권 항해를 역사로 남긴다", effect = { fame = 15 }, result = "남극권 항해가 실증 자료로 분류됐다." },
 			{ text = "황금 대륙 가설과 관측을 비교한다", effect = { fame = 12 }, result = "전설은 남았지만 실재 대륙의 사실과 혼동되지 않았다." },
