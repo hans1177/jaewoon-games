@@ -84,7 +84,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           NVIDIA_FREE_TIER_VERIFIED: ${{ vars.NVIDIA_FREE_TIER_VERIFIED || 'NO' }}
-          COMPANY_EXTERNAL_AI_ENABLED: ${{ vars.COMPANY_EXTERNAL_AI_ENABLED || 'NO' }}
+          # [오너 허용] 이 Studio 디자인 검사에만 외부 무료 AI 사용을 명시적으로 허용한다.
+          COMPANY_EXTERNAL_AI_ENABLED: 'YES'
           NEMOTRON_DESIGN_CANDIDATE: 'YES'
         run: |
           $ErrorActionPreference = 'Stop'
