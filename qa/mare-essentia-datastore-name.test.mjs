@@ -1666,10 +1666,13 @@ test('항구별 주택은 지역 비율과 실제 외곽 측정 후 겹침 없�
  assert.match(home,/local staged = Instance\.new\("Model"\)/);
  assert.match(home,/local body = house\(staged, pos, ww, dd, fl, style, rng\)/);
  assert.match(home,/local bounds, dimensions = staged:GetBoundingBox\(\)/);
- assert.match(home,/actualHalfX = math\.max\(half,/);
- assert.match(home,/actualHalfZ = math\.max\(half,/);
+ assert.match(home,/measuredHalfX = math\.abs\(bounds\.Position\.X - pos\.X\)/);
+ assert.match(home,/measuredHalfZ = math\.abs\(bounds\.Position\.Z - pos\.Z\)/);
+ assert.match(home,/actualHalfX = math\.max\(half, measuredHalfX\)/);
+ assert.match(home,/actualHalfZ = math\.max\(half, measuredHalfZ\)/);
+ assert.match(home,/clearRoad = math\.abs\(math\.abs\(at\.Z\) - laneNear\) > measuredHalfZ/,'도로 판정은 실제 건물 외곽');
  assert.match(home,/laneNear = 152 \+ laneOffset \+ laneIndex \* laneL/);
- assert.match(home,/clearRoad and not onStreet\(at\.X, actualHalfX\)/);
+ assert.match(home,/clearRoad and not onStreet\(at\.X, measuredHalfX\)/);
  assert.match(home,/not reserved\(at\.X, at\.Z, actualHalfX, actualHalfZ\)/);
  assert.match(home,/if chosenShift then[\s\S]*?for _, object in staged:GetChildren\(\) do object\.Parent = folder end/);
  assert.match(home,/staged:Destroy\(\)/,'실패한 후보 자산 삭제');
