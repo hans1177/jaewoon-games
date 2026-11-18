@@ -19,7 +19,7 @@ const root = path.resolve(options.root || 'main');
 const framesRoot = path.resolve(options.frames || '.');
 const reportPath = path.resolve(options.out || path.join(framesRoot, 'nemotron-design-review.json'));
 const protectedCode = /\b(?:DataStore|RemoteEvent|RemoteFunction|FireServer|FireClient|OnServerEvent|OnClientEvent|SetAttribute|GetAttribute|GetService|HttpService|require|loadstring|setfenv|getfenv|Humanoid|WalkSpeed|JumpPower|Health|Damage|Hitbox|CanCollide|CanTouch|CanQuery|Anchored|Currency|Reward|Experience|Purchase|MarketplaceService|TeleportService)\b/i;
-const visualCode = /Color3\.(?:new|fromRGB|fromHSV)\(|Enum\.(?:Material|Font|EasingStyle|TextXAlignment|TextYAlignment)\.|\.(?:Color|Color3|TextColor3|BackgroundColor3|ImageColor3|Transparency|TextTransparency|BackgroundTransparency|ImageTransparency|LightInfluence|Material|Font|TextSize|Size|Position|Rotation|Scale|Brightness|Contrast|Saturation|FieldOfView|Ambient|OutdoorAmbient|Reflectance|Emission|StrokeThickness)\s*=|(?:UDim2|UDim|Vector3|Vector2)\.new\(/;
+const visualCode = /Color3\.(?:new|fromRGB|fromHSV)\(|Enum\.(?:Material|Font|EasingStyle|TextXAlignment|TextYAlignment)\.|\.(?:Color|Color3|TextColor3|BackgroundColor3|ImageColor3|Transparency|TextTransparency|BackgroundTransparency|ImageTransparency|LightInfluence|Material|Font|TextSize|Size|Position|Rotation|Scale|Brightness|Contrast|Saturation|FieldOfView|Ambient|OutdoorAmbient|Reflectance|Emission|StrokeThickness)\s*=|(?:UDim2|UDim)\.new\(/;
 const quoted = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g;
 
 export function authorizedCandidateBranch(name, runId) {
@@ -96,7 +96,7 @@ export function visualEditLooksSafe(before, after) {
   return true;
 }
 
-export function validateReview(value, frameNames, contract) {
+export function validateReview(value, frameNames, contract, availableAnchors = null) {
   const raw = typeof value === 'string' ? value.trim() : value;
   if (typeof raw === 'string' && Buffer.byteLength(raw) > 90000) throw Error('RESPONSE_INVALID_SIZE');
   const response = typeof raw === 'string'
@@ -117,20 +117,29 @@ export function validateReview(value, frameNames, contract) {
     return {category: row.category, severity: row.severity, screenshot: row.screenshot,
       evidenceSha256: digest(row.evidence.trim())};
   });
-  const files = new Set(), anchors = new Set();
+  const files = new Set(), usedAnchors = new Set();
   const edits = response.edits.map(row => {
-    if (!row || !allowedFiles.has(row.path) || !categories.has(row.category) ||
+    // 실제 소스에서 뽑은 색인만 허용해 없는 파일/가짜 원본을 제안해도 적용되지 않는다.
+    const pinned = Array.isArray(availableAnchors)
+      ? (Number.isInteger(row?.anchor) ? availableAnchors[row.anchor] : undefined)
+      : null;
+    const sourcePath = Array.isArray(availableAnchors) ? pinned?.path : row?.path;
+    const before = Array.isArray(availableAnchors) ? pinned?.before : row?.before;
+    if (!row || (Array.isArray(availableAnchors) && (!pinned ||
+      (row.path !== undefined && row.path !== sourcePath) ||
+      (row.before !== undefined && row.before !== before))) ||
+      !allowedFiles.has(sourcePath) || !categories.has(row.category) ||
       !frames.has(row.screenshot) || !issues.some(issue =>
         issue.category === row.category && issue.screenshot === row.screenshot &&
         issue.severity !== 'low') ||
-      !visualEditLooksSafe(row.before, row.after))
+      !visualEditLooksSafe(before, row.after))
       throw Error('EDIT_NOT_VISUAL_OR_NOT_IN_POLICY');
-    const key = row.path + '\0' + row.before;
-    if (anchors.has(key)) throw Error('DUPLICATE_SOURCE_ANCHOR');
-    anchors.add(key);
-    files.add(row.path);
-    return {path: row.path, category: row.category, screenshot: row.screenshot,
-      before: row.before, after: row.after};
+    const key = sourcePath + '\0' + before;
+    if (usedAnchors.has(key)) throw Error('DUPLICATE_SOURCE_ANCHOR');
+    usedAnchors.add(key);
+    files.add(sourcePath);
+    return {path: sourcePath, category: row.category, screenshot: row.screenshot,
+      before, after: row.after};
   });
   if (files.size > (contract.maximumCandidateFilesPerRun || 4))
     throw Error('CANDIDATE_FILE_LIMIT');
@@ -149,12 +158,17 @@ function visualAnchors(files) {
     if (!target.startsWith(root + path.sep) || !fs.existsSync(target) ||
       !fs.statSync(target).isFile()) continue;
     const lines = fs.readFileSync(target, 'utf8').split(/\r?\n/);
-    let taken = 0;
-    for (const line of lines) {
-      if (!cleanAnchor(line) || lines.filter(x => x === line).length !== 1) continue;
-      result.push({path: file, before: line});
-      if (++taken >= 8) break;
-    }
+    const counts = new Map();
+    for (const line of lines) counts.set(line, (counts.get(line) || 0) + 1);
+    const possible = lines.filter(line => cleanAnchor(line) && counts.get(line) === 1);
+    // 얼굴과 머리/옷을 먼저, 나머지 건물·선박·UI는 파일 전체 구간을 고르게 표본화한다.
+    const focused = file.endsWith('/Pose.luau')
+      ? possible.filter(line => /LightInfluence|scalp|skirt|belt|hair|q\.Size|Fabric/i.test(line)).slice(0, 4)
+      : [];
+    const sampled = Array.from({length: 8}, (_, index) =>
+      possible[Math.floor(index * Math.max(0, possible.length - 1) / 7)]).filter(Boolean);
+    for (const line of [...new Set([...focused, ...sampled])].slice(0, 7))
+      result.push({anchor: result.length, path: file, before: line});
   }
   return result.slice(0, 112);
 }
@@ -231,8 +245,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     'Return STRICT JSON: {"issues":[{"category":"one policy category","severity":"low|medium|high",' +
     '"screenshot":"existing image name","evidence":"specific visible evidence"}],' +
     '"edits":[{"category":"matching medium or high issue category","screenshot":"same photo",' +
-    '"path":"exact allowlisted path","before":"exact ONE original line including whitespace",' +
-    '"after":"same line with ONLY numerical color/size/visual values or existing visual enum changed"}]}. ' +
+    '"anchor":number,"after":"same referenced line with ONLY numerical visual values or existing visual enum changed"}]}. ' +
     'At most 10 edits across 4 files. Never add/remove functions, statements, assets, text, ' +
     'commands, identifiers, property targets or line breaks. Empty edits when uncertain. ' +
     'Policies: ' + JSON.stringify({categories: contract.visualCategories,
@@ -253,7 +266,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     if (!response.ok) return record('UNVERIFIED_HTTP_' + response.status, {frames: proofs});
     const payload = await response.json();
     const raw = payload?.choices?.[0]?.message?.content;
-    const reviewed = validateReview(raw, photos.map(photo => photo.name), contract);
+    const reviewed = validateReview(raw, photos.map(photo => photo.name), contract, anchors);
     const originals = Object.fromEntries([...new Set(reviewed.edits.map(edit => edit.path))]
       .map(file => [file, fs.readFileSync(path.join(root, file), 'utf8')]));
     const candidate = applyVisualReplacements(originals, reviewed.edits, contract);
