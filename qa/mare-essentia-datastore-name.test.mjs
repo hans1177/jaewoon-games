@@ -153,7 +153,7 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   // [세 원형 버튼·파티 HUD] 실제 터치 사각형은 가장자리까지 클릭되므로 12가지 화면 크기에서
   // 버튼끼리, 파티창·미니맵·조이스틱·카메라와 겹치지 않아야 한다. 실제 명중/스킬 판정은 보존한다.
   assert.ok(field.includes('addIcon(wbtn, "Menu/field_weapon")'));
-  assert.ok(field.includes('map.Position = if compactTouch then UDim2.fromOffset(226, 90)'));
+  assert.ok(field.includes('map.Position = UDim2.fromOffset(if compactTouch then math.min(216, screen.X - MM - 12)'));
   assert.ok(field.includes('if compactTouch then UDim2.new(1, -68, 1, -315)'));
   assert.ok(field.includes('if compactTouch then UDim2.new(1, -62, 1, -202)'));
   assert.ok(field.includes('local partyWidth = if narrowParty then math.clamp(screen.X - 500, 100, 170) else 202'));
@@ -176,8 +176,9 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
       height-(portrait?202:short?67:106),portrait?86:short?88:96);
     const weapon=rect(width-(portrait?68:width<780?90:175),
       height-(portrait?315:short?181:225),portrait?76:short?72:80);
-    const map=box(portrait?226:236,portrait?90:74,
-      portrait?92:short?82:106,portrait?92:short?82:106);
+    // [탐험 반응형] 미니맵 축소·좌상단 위치를 12개 화면에서 직접 계산한다.
+    const mm=portrait?Math.max(64,Math.min(88,Math.floor((width-214)*0.78))):short?82:94;
+    const map=box(portrait?Math.min(216,width-mm-12):226,66,mm,mm);
     const narrowParty=width>=600 && width<720 && width>height;
     const partyWidth=narrowParty?Math.max(100,Math.min(170,width-500)):202;
     const allies=width>=600 && width>height?
@@ -186,7 +187,7 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
       [box(12,282,202,52),box(12,338,202,52)];
     const rest=[
       ['이동패드',box(28,height-178,150,150)],
-      ['미니맵',map],['주인공',box(12,74,202,82)],
+      ['미니맵',map],['주인공',box(12,66,portrait?202*0.84:202,portrait?82*0.84:82)],
       ['카메라',box(width-120,12,108,44)],
       ['동료1',allies[0]],['동료2',allies[1]],
     ];
