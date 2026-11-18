@@ -3373,23 +3373,94 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		local goods = Chains.showcaseGoods(info.portId, made, if lvl >= 5 then 3 elseif lvl >= 3 then 2 else 1)
 		local n = #goods
 		local origin = Vector3.new(-178, 0, -86)
-		local face = math.pi
+		local specialtyPlaced, specialtyRejected = 0, 0
 		for k = 1, n do
 			local good = goods[k]
-			local at = origin + Vector3.new((k - (n + 1) / 2) * 20, 0, 0)
-			local wall = Color3.fromRGB(190, 170, 140):Lerp(Color3.fromRGB(150, 120, 90), rng:NextNumber(0, 0.5))
-			local body = house(folder, at, 14, 11, if lvl >= 4 then 2 else 1, style, rng, wall)
 			local mesh = GOOD_MESH[good]
-			-- 문 앞 진열: 상품 3D 모델 더미와 통
-			for j = -1, 1 do
-				importedModel(folder, mesh[1], mesh[2], at + Vector3.new(j * 3.2, 0, 8.6), goodSize(good, 2.8), false, mesh[3])
+			-- [생산품별 건축] 기존 항구 생산품만 읽어 어업·직물·광산·목재·농산·공예·무역 건축형을 선택한다.
+			local family = if table.find({ "fish", "pearls", "whale_oil", "pearl_shell" }, good) then "fishery"
+				elseif table.find({ "wool", "cloth", "linen", "silk", "cotton" }, good) then "textile"
+				elseif table.find({ "coal", "iron", "tin", "copper", "silver", "gold", "marble" }, good) then "mineral"
+				elseif table.find({ "timber", "mahogany", "kauri", "ebony", "brazilwood" }, good) then "timber"
+				elseif table.find({ "porcelain", "glass", "lacquer", "gems" }, good) then "craft"
+				elseif table.find({ "rice", "tea", "coffee", "spice", "sugar", "maize", "pepper", "cocoa" }, good) then "farm"
+				else "trade"
+			local width = if family == "fishery" then 13 elseif family == "mineral" then 18
+				elseif family == "textile" then 16 elseif family == "timber" then 17 else 15
+			local depth = if family == "mineral" or family == "craft" then 14
+				elseif family == "farm" then 12 else 11
+			local floorCount = if lvl >= 4 and (family == "trade" or family == "textile" or family == "craft") then 2 else 1
+			local baseColor = if family == "fishery" then C(149, 171, 166)
+				elseif family == "mineral" then C(138, 129, 123)
+				elseif family == "textile" then C(183, 160, 128)
+				elseif family == "timber" then C(150, 118, 89)
+				elseif family == "farm" then C(187, 173, 128)
+				elseif family == "craft" then C(193, 177, 155) else C(190, 170, 140)
+			local wall = baseColor:Lerp(style.walls[1], rng:NextNumber(0.18, 0.34))
+			-- [산업 구역 재배치] 기존 시장·농장·왕궁·랜드마크 및 먼저 지어진 주택과 실제 외곽이 겹치지 않는 위치만 사용.
+			local candidates = {
+				origin + Vector3.new((k - (n + 1) / 2) * 30, 0, 0),
+				Vector3.new(-90 - (k - 1) * 58, 0, -234),
+				Vector3.new(-90 - (k - 1) * 58, 0, 234),
+				Vector3.new(-101, 0, -317 - (k - 1) * 54),
+				Vector3.new(-101, 0, 317 + (k - 1) * 54),
+				Vector3.new(-172, 0, -345),
+				Vector3.new(-172, 0, 345),
+			}
+			local chosen
+			for _, candidate in candidates do
+				if not onStreet(candidate.X, 27) and not reserved(candidate.X, candidate.Z, 27) then
+					chosen = candidate
+					break
+				end
 			end
-			importedModel(folder, "Cargo", "barrel", at + Vector3.new(7.6, 0, 7.4), 2.6, false)
-			importedModel(folder, "Cargo", "box-open", at + Vector3.new(-7.6, 0, 7.4), 2.4, false)
-			if body then
-				sign(folder, body, SPECIAL_NAME[good] or "특산품 공방", Color3.fromRGB(150, 110, 40), (if lvl >= 4 then 2 else 1) * 3 + 6, false, { mesh[1], mesh[2] })
+			if chosen and mesh and AssetIds[mesh[1] .. "/" .. mesh[2]] then
+				local staged = Instance.new("Model")
+				staged.Name = "PortScene"
+				local body = house(staged, chosen, width, depth, floorCount, style, rng, wall)
+				if body then
+					local bounds, ext = staged:GetBoundingBox()
+					local hx = math.max(27, math.abs(bounds.Position.X - chosen.X) + ext.X * 0.5 + 2)
+					local hz = math.max(27, math.abs(bounds.Position.Z - chosen.Z) + ext.Z * 0.5 + 2)
+					if not onStreet(chosen.X, hx) and not reserved(chosen.X, chosen.Z, hx, hz) then
+						for _, object in staged:GetChildren() do object.Parent = folder end
+						body:SetAttribute("BuildPlotId", ("%s:specialty:%d"):format(info.portId, k))
+						body:SetAttribute("BuildType", "specialty")
+						body:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+						body:SetAttribute("IndustryGood", good)
+						body:SetAttribute("IndustryFamily", family)
+						body:SetAttribute("BuildingFootprintX", hx * 2)
+						body:SetAttribute("BuildingFootprintZ", hz * 2)
+						table.insert(placedLots, { X = chosen.X, Z = chosen.Z, HX = hx, HZ = hz, H = math.max(hx, hz) })
+						specialtyPlaced += 1
+						-- 기존 생산품 3D 전시·간판과 동일한 수량 상한을 유지한다.
+						for j = -1, 1 do
+							importedModel(folder, mesh[1], mesh[2], chosen + Vector3.new(j * 3.2, 0, 8.6),
+								goodSize(good, 2.8), false, mesh[3])
+						end
+						local propGroup, propName = if family == "fishery" then "Town", "stall-green"
+							elseif family == "mineral" then "Cargo", "iron-bars"
+							elseif family == "timber" then "Cargo", "resource-planks"
+							elseif family == "textile" or family == "craft" then "Town", "workbench-anvil"
+							elseif family == "farm" then "Cargo", "bag" else "Cargo", "box-open"
+						importedModel(folder, propGroup, propName, chosen + Vector3.new(7, 0, 7.4), 3.2, false)
+						importedModel(folder, "Cargo", "box-open", chosen + Vector3.new(-7.6, 0, 7.4), 2.4, false)
+						sign(folder, body, SPECIAL_NAME[good] or "특산품 공방",
+							C(150, 110, 40), floorCount * 3 + 6, false, { mesh[1], mesh[2] })
+					else
+						specialtyRejected += 1
+					end
+				else
+					specialtyRejected += 1
+				end
+				staged:Destroy()
+			else
+				specialtyRejected += 1
 			end
 		end
+		folder:SetAttribute("CitySpecialtyPlaced", specialtyPlaced)
+		folder:SetAttribute("CitySpecialtyRejected", specialtyRejected)
+		folder:SetAttribute("CitySpecialtyBuildingMode", "PRODUCTION_VISUAL_READ_ONLY")
 	end
 	-- 문화권 소품: 지역 건축·생활에 맞는 오브젝트 (발전도가 오를수록 늘어난다)
 	do
