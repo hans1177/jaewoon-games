@@ -94,6 +94,32 @@ test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가
   assert.match(capture[128].code,/SHIP_INLINE_COMPARISON_PASS/);
 });
 
+// [공통 시설 메뉴 회귀] 기존 게임 기능·본문 유지, 상단 오른쪽 가로탭과 모바일 전체폭을 확인한다.
+test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본문 공간을 복구한다', () => {
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const layout=source.slice(source.indexOf('function H.layoutBook()'),source.indexOf('mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)'));
+  const tabs=source.slice(source.indexOf('function H.renderTabs()'),source.indexOf('-- 모든 시설 창 오른쪽 위 모서리의 × 닫기 버튼'));
+  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  assert.match(source,/tabBar\.Name = "FacilityTabBar"/);
+  assert.match(source,/tabBar\.AnchorPoint = Vector2\.new\(1, 0\)/);
+  assert.match(source,/tabStrip\.Name = "FacilityTabStrip"/);
+  assert.match(source,/tabStrip\.ScrollingDirection = Enum\.ScrollingDirection\.X/);
+  assert.match(layout,/tabBar\.Position = UDim2\.new\(1, -8, 0, 68\)/);
+  assert.match(layout,/tabLayout\.FillDirectionMaxCells = tabCount/);
+  assert.match(layout,/tabStrip\.CanvasSize = UDim2\.fromOffset\(allTabsWidth, 0\)/);
+  assert.match(layout,/content\.Position = UDim2\.fromOffset\(8, bodyTop\)/);
+  assert.match(layout,/content\.Size = UDim2\.new\(1, -16, 1, -bodyTop - 8\)/);
+  assert.match(layout,/H\.facilityGallery\.Position = UDim2\.fromOffset\(8, bodyTop\)/);
+  assert.match(layout,/content\.Position = UDim2\.fromOffset\(artW \+ 16, bodyTop\)/);
+  assert.doesNotMatch(layout,/local navW\s*=/);
+  assert.match(tabs,/mkButton\(tabStrip, TAB_NAME\[id\]/);
+  assert.equal(capture.length,241);
+  assert.equal(capture[88].name,'ui_mobile_tabs_topright');
+  for(const claim of ['MOBILE_TABS_NOT_ONE_ROW','MOBILE_TABS_NOT_TOP_RIGHT','MOBILE_LEFT_SPACE_NOT_RECLAIMED','MOBILE_LAST_TAB_NOT_REACHABLE']){
+    assert.ok(capture[87].code.includes(claim),claim);
+  }
+});
+
 test('새 항해 첫 카드 창 오발동 차단과 가죽·양피지 버튼 계약', () => {
   const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
