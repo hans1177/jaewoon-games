@@ -934,8 +934,6 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
   const runnableTasks=queue.tasks.filter(task=>{
     // [대기목록 정리] 실행 중 작업과 종료 기록은 유지하고 마레 외 신규/차단 대기 작업을 제거한다.
     if(exclusiveFocus&&clean(task.gameId)&&!exclusiveFocus.has(clean(task.gameId))
-      &&clean(task.department).toLowerCase()==='development'
-      &&clean(task.type).toLowerCase()==='implementation'
       &&['queued','pending','waiting','blocked','failed'].includes(clean(task.status).toLowerCase()))return false;
     if(process.env.VIBE2_WEB_AUTO_DEV_DISABLED!=='1'
       ||clean(task.target).toLowerCase()!=='web'
