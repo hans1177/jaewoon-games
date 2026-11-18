@@ -1,0 +1,89 @@
+{
+ "sourceRevision": "1a158465bc8dc97fc7c908109e9950b8a94b3b79",
+ "log": [
+  {
+   "step": 1,
+   "capture": "c00_start",
+   "files": 1
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "QAAutoIntro on\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "INTRO_CENTER_QA_MONITOR_READY\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "MARE_TITLE_NOT_READY_AFTER_50S;LOADING=true;CORE=require-game-data;REMOTE=false;CLIENT=await-GameAction;ASSETS=true;PORT=nil;SCENE=nil\ntext"
+  },
+  {
+   "step": 6,
+   "click": "title01",
+   "at": "NOT_FOUND",
+   "out": "NONE\ntext"
+  }
+ ],
+ "errors": [
+  "step6:STUDIO_UI_TARGET_NOT_FOUND:title01"
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 1,
+  "warningCount": 0,
+  "errors": [
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "ReplicatedStorage.Shared.Quests:576: Expected '}' (to close '{' at line 546), got 'local' Requested module experienced an error while loading Stack Begin Script 'ServerScriptService.Server.Core', Line 27 Stack End Infinite yield possible on 'ReplicatedStorage:WaitForChild(\"GameAction\")' Stack Begin Script 'Players.Anyanguy1980.PlayerScripts.Client.Game', Line 129 Stack End [MareEssentia] village-well unavailable textures removed=9 [QA] FAIL asset AssetIds.CardArt/af_03 rbxassetid://7248904075787"
+   }
+  ]
+ },
+ "summary": {
+  "plannedSteps": 241,
+  "completedSteps": 7,
+  "plannedClicks": 10,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 62,
+  "capturedFrames": 1,
+  "abortedEarly": true
+ },
+ "visualSamples": [
+  {
+   "name": "c00_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 43708,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  }
+ ],
+ "visualEvidence": {
+  "framesChecked": 1,
+  "framesWithInvalidSize": 0,
+  "voyageSceneObserved": false,
+  "departureObserved": false,
+  "voyageDiagnostics": [],
+  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
+ }
+}
