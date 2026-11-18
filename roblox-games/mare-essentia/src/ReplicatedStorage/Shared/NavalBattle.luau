@@ -1333,6 +1333,7 @@ function NavalBattle.play(opts)
 		UDim2.fromOffset(if battleViewport.X < 480 then 56 else 96, if battleViewport.X < 480 then 36 else 30), Vector2.new(0, 0)) -- [좌상단] 전술판·우측 카드 지원·왼쪽 조타와 분리
 	skip.TextSize = if battleViewport.X < 480 then 11 else 14
 	skip.TextWrapped = battleViewport.X < 480
+	skip:FindFirstChildOfClass("UIStroke").ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	skip.Activated:Connect(finish)
 	local phase = "duel" -- duel → board → end (도주 중엔 fleeing)
 	-- [함선 특화 2스킬] 기존 Ships.trait에서 선박 역할을 읽는다. 모든 기함은 포 사격(Q) + 특화(E) 정확히 두 개.
@@ -3894,10 +3895,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
         edge.Color = Color3.fromRGB(216, 177, 104)
         edge.Thickness = 1.5
         edge.Parent = l
-        -- [중앙 안내 선명도] 글자 자체를 움직이며 보간하지 않고 명도만 부드럽게 낮춘다.
-        game:GetService("TweenService"):Create(l, TweenInfo.new(1.20, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            TextTransparency = 1, BackgroundTransparency = 1,
-        }):Play()
+        -- 글자·배경·테두리를 함께 지워 빈 알림 테두리가 남지 않게 한다.
+        task.delay(0.92, function()
+            if not l.Parent then return end
+            local fade = TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            TS:Create(l, fade, { TextTransparency = 1, BackgroundTransparency = 1 }):Play()
+            TS:Create(edge, fade, { Transparency = 1 }):Play()
+        end)
 		task.delay(1.28, function()
 			if l.Parent then l:Destroy() end
 			if currentAnnouncement == l then currentAnnouncement = nil end
