@@ -2038,12 +2038,46 @@ function H.layoutBook()
     else math.max(100, math.floor((width - statusWidth) * 0.5) - 82), 18)
   H.pageDetails.Visible = width >= 740
   local tabCount = #groupOf(currentTab).tabs
-  local gallery = view ~= nil and not newGameMode and currentTab ~= "map" and currentTab ~= "codex" and currentTab ~= "encyclopedia"
+  -- [시설 탭 본문] 교역·조선 기존 상세 화면은 같은 책의 탭에서 표시한다.
+  local facilityDetail = currentTab == "trade" or currentTab == "yard"
+  local gallery = not facilityDetail and view ~= nil and not newGameMode and currentTab ~= "map" and currentTab ~= "codex" and currentTab ~= "encyclopedia"
   local three = gallery and width >= 740
   local tabs = tabBar.Visible
   H.bookSpine.Visible = false
   H.facilityGallery.Visible = gallery
   H.menuActionDock.Visible = gallery
+  if facilityDetail then
+    -- [교역·조선] 기존 전용 거래·정비 내용을 탭 아래 본문으로 넣는다. 별도 전체창 없음.
+    tabBar.Visible = true
+    if width >= 740 then
+      local navW = math.clamp(math.floor(width * 0.17), 138, 184)
+      tabBar.Position = UDim2.fromOffset(8, 68)
+      tabBar.Size = UDim2.fromOffset(navW, math.max(100, height - 76))
+      tabLayout.CellSize = UDim2.new(1, -4, 0, 48)
+      tabLayout.CellPadding = UDim2.fromOffset(0, 6)
+      content.Position = UDim2.fromOffset(navW + 16, 68)
+      content.Size = UDim2.new(1, -navW - 24, 1, -76)
+    else
+      local columns = math.max(1, math.min(2, tabCount))
+      local rows = math.ceil(tabCount / columns)
+      local tabsHeight = rows * 54 + math.max(0, rows - 1) * 6
+      tabBar.Position = UDim2.fromOffset(8, 68)
+      tabBar.Size = UDim2.new(1, -16, 0, tabsHeight)
+      tabLayout.CellSize = UDim2.new(1 / columns, -6, 0, 54)
+      tabLayout.CellPadding = UDim2.fromOffset(6, 6)
+      content.Position = UDim2.fromOffset(8, 68 + tabsHeight + 8)
+      content.Size = UDim2.new(1, -16, 1, -76 - tabsHeight - 8)
+    end
+    content.Visible = false
+    H.menuActionDock.Visible = false
+    local detail = mainInner:FindFirstChild("FacilityDetail")
+    if detail then
+      detail.Position = content.Position
+      detail.Size = content.Size
+    end
+    return
+  end
+  content.Visible = true
   -- [첫 판단 카드] 기존 버튼 하나를 가로 모드의 오른쪽 첫 카드에 배치한다.
   -- 폰 세로에서는 버튼을 기존 하단 도크로 복귀시켜 터치 동작을 보존한다.
   if H.menuFocusBanner and H.menuFocusBanner.Parent and currentTab ~= "codex" then
@@ -5665,17 +5699,10 @@ function H.commas(n)
 end
 local hallGood = nil
 local function closeTradeHall()
-	local g = player.PlayerGui:FindFirstChild("TradeHallGui")
-	if g then
-		g:Destroy()
-	end
-	tradeHallRefresh = nil
-	-- [탭 직행 복귀] 거래·정비 창을 닫으면 중간 시설 책이 아니라 항구 도크 메뉴로 돌아간다.
-	-- 거래·정비 및 저장 상태는 변경하지 않는다.
-	main.Visible = false
-	menuToggle.Visible = true
-	hud.Visible = true
-	hudTopGui.Enabled = true
+  -- [시설 탭 정리] 탭의 상세 본문만 제거한다. 공통 시설 책은 그대로 둔다.
+  local detail = mainInner:FindFirstChild("FacilityDetail")
+  if detail then detail:Destroy() end
+  tradeHallRefresh = nil
 end
 
 -- 비주얼 래더가 켜 준 기능인지 (Shared.VisualLadderState.Features[분야][이름])
@@ -5697,22 +5724,20 @@ local function openTradeHall()
 	if view and view.player then
 		Sfx.merchantGreeting(PortData.Ports[view.player.portId])
 	end
-	local layer = overlayGui("TradeHallGui", 15)
-	main.Visible = false
-	-- [전용 화면] 교역·조선소 위로 이전 HUD 및 도크 아이콘이 남지 않게 숨긴다.
-	hud.Visible = false
-	hudTopGui.Enabled = false
+	-- [교역 탭] 기존 3열 교역 장부를 시설 책 본문에 사용한다.
 	local root = Instance.new("Frame")
-	root.Size = UDim2.fromScale(1, 1)
+	root.Name = "FacilityDetail"
 	root.BackgroundColor3 = Color3.fromRGB(34, 26, 20)
 	root.BorderSizePixel = 0
-	root.Parent = layer
+	root.ClipsDescendants = true
+	root.Parent = mainInner
+	H.layoutBook()
 	local lastScroll, detailScroll = 0, 0
 	local detailOpen = false
 	local query = ""
 
 	local function build()
-		if not layer.Parent or not view then
+		if not root.Parent or not view then
 			return
 		end
 		for _, c in root:GetChildren() do
@@ -5811,12 +5836,14 @@ local function openTradeHall()
 		toastLbl.TextWrapped = true
 		toastLbl.TextTruncate = Enum.TextTruncate.AtEnd
 		local backToList = narrow and detailOpen
-		local leave = mkButton(top, if backToList then "목록" else "나가기", COLORS.leather, UDim2.fromOffset(78, 44), function()
+		local leave = mkButton(top, if backToList then "목록" else "닫기", COLORS.leather, UDim2.fromOffset(78, 44), function()
 			if backToList then
 				detailOpen = false
 				build()
 			else
 				closeTradeHall()
+				main.Visible = false
+				menuToggle.Visible = true
 			end
 		end, true)
 		leave.AnchorPoint = Vector2.new(1, 0.5)
@@ -7407,16 +7434,14 @@ function openYardHall()
 	Sfx.play("sfx_creak")
 	Sfx.facilityCue("yard")
 	closeTradeHall()
-	local layer = overlayGui("TradeHallGui", 15)
-	main.Visible = false
-	-- [전용 화면] 교역·조선소 위로 이전 HUD 및 도크 아이콘이 남지 않게 숨긴다.
-	hud.Visible = false
-	hudTopGui.Enabled = false
+	-- [조선 탭] 기존 선박 비교·정비·구매 내용 그대로 시설 책 본문에 사용한다.
 	local root = Instance.new("Frame")
-	root.Size = UDim2.fromScale(1, 1)
+	root.Name = "FacilityDetail"
 	root.BackgroundColor3 = COLORS.cover
 	root.BorderSizePixel = 0
-	root.Parent = layer
+	root.ClipsDescendants = true
+	root.Parent = mainInner
+	H.layoutBook()
 	local scroll = Instance.new("ScrollingFrame")
 	scroll.Position = UDim2.fromOffset(258, 62)
 	scroll.Size = UDim2.new(1, -266, 1, -70)
@@ -7434,7 +7459,7 @@ function openYardHall()
 	local zoomOpen = false
 
 	local function build()
-		if not layer.Parent or not view then
+		if not root.Parent or not view then
 			return
 		end
 		lastScroll = scroll.CanvasPosition.Y
@@ -7512,7 +7537,11 @@ function openYardHall()
 			recentBtn.Position = UDim2.fromOffset(groupX + cashWidth + 8, 36)
 			recentBtn.TextSize = if width < 480 then 13 else 15
 		end
-		local leave = mkButton(top, "나가기", COLORS.leather, UDim2.fromOffset(78, 44), closeTradeHall, true)
+		local leave = mkButton(top, "닫기", COLORS.leather, UDim2.fromOffset(78, 44), function()
+			closeTradeHall()
+			main.Visible = false
+			menuToggle.Visible = true
+		end, true)
 		leave.AnchorPoint = Vector2.new(1, 0.5)
 		leave.Position = UDim2.new(1, -9, 0.5, 0)
 
@@ -11131,7 +11160,7 @@ function H.renderTabs()
 	for i, id in g.tabs do
 		local selected = currentTab == id
 		local b = mkButton(tabBar, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 54), function()
-			-- [시설 탭 정본] 도크와 탭이 같은 진입 함수로 이동한다. 교역·조선은 기존 전체창으로 직행한다.
+			-- [시설 탭 정본] 모든 시설은 같은 탭 전환 함수를 사용하며 별도 전체창은 만들지 않는다.
 			openTab(id)
 		end, true)
 		b.Name = "FacilityTab_" .. id
@@ -12574,7 +12603,7 @@ function render()
 	end
 	-- [오른쪽 상단 판단 정보] 교역소 기준: 실제 서버 값 → 조건 → 실행을 순서대로 읽는다.
 	-- 보상·위험·연구 효과·선박 능력은 표시만 하며 기존 규칙과 서버 판정을 바꾸지 않는다.
-	local focus = H.MENU_FOCUS[currentTab]
+	local focus = if currentTab == "trade" or currentTab == "yard" then nil else H.MENU_FOCUS[currentTab]
 	H.menuPrimaryRoute = nil
 	if focus then
 		local fact, context, urgent = "현재 항구 " .. tostring(p.portName), "실제 진행 상태와 조건을 아래에서 확인해.", false
@@ -12811,9 +12840,16 @@ function render()
 		H.invokeMenuPrimary = nil
 		H.menuActionDock.Visible = false
 	end
-	-- [권고 단일화] 동료 조언은 저널, 최근 메뉴는 공통 자금 표시 옆 한 곳에서만 확인한다.
-	H.counselRows(1)
-	RENDERERS[currentTab]()
+	-- [시설별 기존 콘텐츠] 교역·조선은 기존 상세 렌더러를 탭 본문에 바로 표시한다.
+	-- 서재의 보고·도감·연구·백과는 기존 탭 렌더러를 그대로 사용한다.
+	if currentTab == "trade" then
+		if not mainInner:FindFirstChild("FacilityDetail") then H.tradeHall() end
+	elseif currentTab == "yard" then
+		if not mainInner:FindFirstChild("FacilityDetail") then H.yardHall() end
+	else
+		H.counselRows(1)
+		RENDERERS[currentTab]()
+	end
 end
 
 -- [단일 시작 화면] 기존 항해 일지 팝업을 새로 생성하지 않고 한 장의 타이틀을 연다.
@@ -13205,19 +13241,11 @@ openTab = function(tabId, mapPage)
 	if tabId ~= "battle" then
 		equipped = nil
 	end
-	-- [탭 바로 열기] 교역소·조선소는 별도 입장 버튼 없이 기존 전체 거래·정비창을 연다.
-	-- 다른 시설로 이동할 때 이전 전체창을 정리하고, 해당 시설의 기존 탭 상태를 갱신한다.
-	if player.PlayerGui:FindFirstChild("TradeHallGui") then
-		closeTradeHall()
-	end
+	-- [시설 탭 이동] 이전 탭 본문을 정리하고 같은 시설 책 안에서 표시한다.
+	closeTradeHall()
 	main.Visible = true
 	menuToggle.Visible = false
 	render()
-	if tabId == "trade" then
-		H.tradeHall()
-	elseif tabId == "yard" then
-		H.yardHall()
-	end
 end
 
 menuToggle.Activated:Connect(function()
