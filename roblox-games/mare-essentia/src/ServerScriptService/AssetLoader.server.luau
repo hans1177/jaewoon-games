@@ -297,28 +297,20 @@ for _ = 1, 12 do
 							end
 						end
 					end
-					-- [원본 모델 재질] 가옥 회벽·목재 벤치·돌바닥·돌다리는 원본에 UV가 있고
-					-- 색 지도/외부 텍스처가 없는 GLB로 사전 확인됐다. 등록된 CC0 맵만 사용한다.
-					local finish = MATERIAL_FINISHES[item.key]
-					if finish then
-						local colorId = finish.color and ids["Materials/" .. finish.color]
-						local normalId = ids["Materials/" .. finish.normal]
-						local roughId = ids["Materials/" .. finish.rough]
-						-- 등록 및 Universe 권한이 아직 없다면 변경 없이 기존 게임을 유지한다.
-						if type(normalId) == "number" and normalId > 0
-							and type(roughId) == "number" and roughId > 0
-							and (not finish.color or (type(colorId) == "number" and colorId > 0)) then
-							for _, mesh in model:GetDescendants() do
-								if mesh:IsA("MeshPart") and mesh.TextureID == ""
-									and mesh.MaterialVariant == ""
-									and not mesh:FindFirstChildOfClass("SurfaceAppearance") then
-									local surface = Instance.new("SurfaceAppearance")
-									if finish.color then surface.ColorMap = "rbxassetid://" .. colorId end
-									surface.NormalMap = "rbxassetid://" .. normalId
-									surface.RoughnessMap = "rbxassetid://" .. roughId
-									surface.Parent = mesh
-								end
+					-- [원본 PBR 보존] 로블록스 서버 실행 중 SurfaceAppearance 맵 쓰기는 권한 오류를 낸다.
+					-- 기존 등록 모델의 원본 맵/MaterialVariant는 보존하며 런타임에 새 맵을 만들지 않는다.
+					-- 승인된 재질 맵 연결은 기존 자산 제작·재등록 경로에서 완료해야 한다.
+					if MATERIAL_FINISHES[item.key] then
+						local authoredFinish = false
+						for _, mesh in model:GetDescendants() do
+							if mesh:IsA("MeshPart") and (mesh.TextureID ~= "" or mesh.MaterialVariant ~= ""
+								or mesh:FindFirstChildOfClass("SurfaceAppearance")) then
+								authoredFinish = true
+								break
 							end
+						end
+						if not authoredFinish then
+							model:SetAttribute("PBRFinishPending", item.key)
 						end
 					end
 					model.Name = item.name
