@@ -19,12 +19,16 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "-- [기존 교역 루프] 거래를 위해 새 전체화면을 띄우지 않고 시설 책의 상품 카드가 보이는지 확인한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"),\"TRADE_INLINE_GUI_MISSING\")\nlocal grid=assert(gui:FindFirstChild(\"TradeGoodsGrid\",true),\"TRADE_INLINE_GOODS_MISSING\")\nassert(not pg:FindFirstChild(\"TradeHallGui\"),\"TRADE_FULLSCREEN_SHOULD_NOT_OPEN\")\nreturn \"TRADE_INLINE_SMOKE_PASS\""
+    "code": "workspace:SetAttribute('DevTradeHall', true) return 'open'"
+  },
+  {
+    "type": "wait",
+    "ms": 1000
   },
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "workspace:SetAttribute('DevTradeHall', true) return 'open'"
+    "code": "-- [기존 교역 루프] 거래를 위해 새 전체화면을 띄우지 않고 시설 책의 상품 카드가 보이는지 확인한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"),\"TRADE_INLINE_GUI_MISSING\")\nlocal grid=assert(gui:FindFirstChild(\"TradeGoodsGrid\",true),\"TRADE_INLINE_GOODS_MISSING\")\nassert(not pg:FindFirstChild(\"TradeHallGui\"),\"TRADE_FULLSCREEN_SHOULD_NOT_OPEN\")\nreturn \"TRADE_INLINE_SMOKE_PASS\""
   },
   {
     "type": "capture",
