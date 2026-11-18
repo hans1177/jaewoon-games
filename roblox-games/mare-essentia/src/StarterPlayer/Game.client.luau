@@ -53,6 +53,8 @@ end
 function H.placeCharacterOnSpawn(character)
 	local root = character:WaitForChild("HumanoidRootPart", 10)
 	if not root then return end
+	-- [탐험·항해 보호] 다른 실제 장면이 캐릭터를 관리할 때는 항구로 돌려놓지 않는다.
+	if workspace:FindFirstChild("FieldScene") or workspace:GetAttribute("VoyageActive") then return end
 	-- [항구 스폰] 바닥이 생기기 전에는 보이지 않게 고정하고, 준비되면 실제 항구 위치로 이동한다.
 	root.Anchored = true
 	if sceneSpawn then
@@ -65,7 +67,13 @@ function H.placeCharacterOnSpawn(character)
 			params.FilterDescendantsInstances = { character }
 			local ground = workspace:Raycast(sceneSpawn.Position + Vector3.new(0, 16, 0), Vector3.new(0, -48, 0), params)
 			if ground then
-				local targetY = ground.Position.Y + humanoid.HipHeight + root.Size.Y * 0.5 + 0.05
+				-- [높이 계산] R6는 다리 높이를 더해야 하고, R15는 HipHeight만 사용한다.
+				local rootHeight = root.Size.Y * 0.5 + humanoid.HipHeight
+				if humanoid.RigType == Enum.HumanoidRigType.R6 then
+					local leg = character:FindFirstChild("Left Leg")
+					if leg and leg:IsA("BasePart") then rootHeight += leg.Size.Y end
+				end
+				local targetY = ground.Position.Y + rootHeight + 0.05
 				groundedSpawn = sceneSpawn + Vector3.new(0, targetY - sceneSpawn.Position.Y, 0)
 			end
 		end
