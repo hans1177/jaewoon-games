@@ -5670,12 +5670,12 @@ local function closeTradeHall()
 		g:Destroy()
 	end
 	tradeHallRefresh = nil
-	-- [복귀 화면 단일화] 조언 바로가기 취소 후 책 메뉴와 도크 아이콘이 동시에 남지 않도록 한다.
-	-- 교역·조선소에서 돌아올 때는 시설 책만 연다. 거래·저장 데이터는 그대로 둔다.
-	menuToggle.Visible = false
-	hud.Visible = false
-	hudTopGui.Enabled = false
-	main.Visible = true
+	-- [탭 직행 복귀] 거래·정비 창을 닫으면 중간 시설 책이 아니라 항구 도크 메뉴로 돌아간다.
+	-- 거래·정비 및 저장 상태는 변경하지 않는다.
+	main.Visible = false
+	menuToggle.Visible = true
+	hud.Visible = true
+	hudTopGui.Enabled = true
 end
 
 -- 비주얼 래더가 켜 준 기능인지 (Shared.VisualLadderState.Features[분야][이름])
