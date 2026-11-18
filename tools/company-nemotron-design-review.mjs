@@ -89,7 +89,7 @@ export function applyVisualParameters(source,edits) {
     const before=Number(matches[0][2]);
     if(!Number.isFinite(before))throw Error('SOURCE_ANCHOR_INVALID');
     if(Math.abs(before-edit.value)<0.005)continue;
-    content=content.replace(rule.expression,(match,a,b,c)=>a+edit.value+(c||''));
+    content=content.replace(rule.expression,(match,a,b,c)=>a+edit.value+(typeof c==='string'?c:''));
     changed.push({key:edit.key,before,after:edit.value});
   }
   if(changed.length&&(!content.includes('function Pose.createR15(')||
