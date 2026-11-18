@@ -130,6 +130,44 @@ do
 	end
 	check("최초 저널 10대 항로 다음 장 표시", visibleRoutes == 10, tostring(visibleRoutes))
 	check("연속 사건·저널 단서 구조", #issues == 0, table.concat(issues, ", "))
+	-- [선택의 의미] 10개 결말은 모든 5장 완수 뒤 열리고 별도 보상 없이 기존 이야기 저장에 남는다.
+	local finales, badFinales = 0, {}
+	for _, q in D.Quests.Quests do
+		if q.journal and q.journal.stage == 5 then
+			local ev = D.Story.ById["journal_" .. q.routeId]
+			if not ev or not ev.requiresQuests or ev.requiresQuests[1] ~= q.id
+				or not ev.requiresCards or ev.requiresCards[1] ~= q.cardId
+				or #ev.choices ~= 2 or #ev.lines < 3
+				or ev.choices[1].effect.coins or ev.choices[1].effect.fame
+				or ev.choices[2].effect.coins or ev.choices[2].effect.fame then
+				table.insert(badFinales, q.id)
+			else
+				finales += 1
+			end
+		end
+	end
+	check("10대 항로 최종 역사 판단 10종", finales == 10 and #badFinales == 0, table.concat(badFinales, ", "))
+	local e = D.Story.ById.journal_north_sea
+	local storyState = S.State.new("england", 1700)
+	storyState.portId = "london"
+	storyState.discovered.relic_sextant = true
+	check("최종 판단: 이전 5장 완수 전 잠금", S.Story.blockReason(storyState, e) ~= nil)
+	storyState.quests.done.q_field_north_sea_5 = true
+	check("최종 판단: 카드와 5장 완수 후 선택 가능", S.Story.blockReason(storyState, e) == nil)
+	local beforeCoins, beforeFame = storyState.coins, storyState.fame
+	local picked = S.Story.handlers.PlayStory(storyState, { eventId = e.id, choice = 1 })
+	check("최종 판단: 선택 번호 저장과 보상 불변", picked == true and storyState.story[e.id] == 1
+		and storyState.coins == beforeCoins and storyState.fame == beforeFame)
+	check("최종 판단: 선택 중복 방지", S.Story.handlers.PlayStory(storyState, { eventId = e.id, choice = 2 }) == false)
+	local storyRestored = S.State.sanitize(S.State.serialize(storyState))
+	check("최종 판단: 저장/불러오기", storyRestored.story[e.id] == 1)
+	local alternative = S.State.new("england", 1700)
+	alternative.portId, alternative.discovered.relic_sextant = "london", true
+	alternative.quests.done.q_field_north_sea_5 = true
+	local alternateOk = S.Story.handlers.PlayStory(alternative, { eventId = e.id, choice = 2 })
+	check("최종 판단: 다른 선택도 별도 결말로 기록", alternateOk == true and alternative.story[e.id] == 2
+		and e.choices[1].result ~= e.choices[2].result)
+
 
 
 	local first = S.State.new("england", 1700)
