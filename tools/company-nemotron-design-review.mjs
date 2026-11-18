@@ -266,6 +266,19 @@ export function applyVisualReplacements(files, edits, contract) {
 export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   const policy = JSON.parse(fs.readFileSync(path.join(root, POLICY), 'utf8'));
   const contract = policy.directVisualDesign;
+  const coverage = contract?.studioEvidenceSelection;
+  const townLayout = contract?.townLayoutEdit;
+  if (!coverage || coverage.expectedCoverageFrames !== 83 ||
+    coverage.maxImagesPerFreeCall !== 8 || coverage.rotationPhases !== 5 ||
+    !coverage.sourcesMustBeExactStudioCaptureAndCodeRevision ||
+    !townLayout?.enabled || townLayout.sourceFile !==
+      'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau' ||
+    townLayout.maximumHorizontalShiftStuds !== 5 || townLayout.verticalShiftStuds !== 0 ||
+    !townLayout.sameStreetSideRequired ||
+    townLayout.minimumPlazaDistanceFromCenterlineStuds !== 32 ||
+    !townLayout.sizeFloorsEconomyRoutesAndSaveUnchanged ||
+    !townLayout.exactSourceAnchorAndIndependentStudioBeforeAfterQaRequired)
+    throw Error('CANONICAL_STUDIO_DESIGN_POLICY_DENIED');
   if (!contract?.enabled || contract.model !== MODEL ||
     !contract.gameIds?.includes('mare-essentia') ||
     !contract.isolatedCandidateBranchRequired || !contract.directCandidateSourceEditAllowed ||
