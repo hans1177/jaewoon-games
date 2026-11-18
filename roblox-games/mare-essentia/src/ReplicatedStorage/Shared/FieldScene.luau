@@ -1477,7 +1477,7 @@ function FieldScene.start(opts)
 		-- [유적 상호작용] 읽는 동안에도 공격·회피·이동 패드가 가려지지 않게 전투 HUD 밖에 표시한다.
 		local expanded = duration ~= nil and duration > 2.2
 		local screen = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(832, 384)
-		local narrowLandscape = visualMobile and not compactTouch and screen.X < 740 and screen.X > screen.Y
+		local narrowLandscape = visualMobile and not compactTouch and screen.X < 780 and screen.X > screen.Y
 		-- 폭 740 미만 가로형에서는 긴 안내가 퀘스트·날씨와 같은 영역을 사용하므로 잠깐 숨긴다.
 		-- 새 전투 알림이 덮어쓰더라도 마지막 메시지의 종료 시점에 원래 정보열을 복원한다.
 		local questHud = if narrowLandscape then gui:FindFirstChild("FieldQuestHint") else nil
