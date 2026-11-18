@@ -1721,13 +1721,15 @@ function FieldScene.start(opts)
 
 	local questHint = label(gui, "", 13, Color3.fromRGB(254, 229, 162))
 	questHint.Name = "FieldQuestHint"
-	-- [모바일 퀘스트] 가로 화면에서는 이동 조이스틱 및 동료 HUD와 분리한다.
+	-- [탐험 목표] 짧은 가로 폰에서도 화면 밖으로 내려가지 않고 조이스틱·회피 버튼 사이 빈칸을 사용한다.
+	local questScreen = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(832, 384)
+	local questLandscape = visualMobile and not compactTouch and questScreen.X < 780 and questScreen.X > questScreen.Y
 	questHint.Position = if compactTouch then UDim2.fromOffset(12, 186)
-		elseif visualMobile and not compactTouch and workspace.CurrentCamera
-			and workspace.CurrentCamera.ViewportSize.X < 720
-			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 256)
+		elseif questLandscape then UDim2.fromOffset(184, if questScreen.Y < 330 then 148 else 166)
 		elseif visualMobile then UDim2.fromOffset(12, 158) else UDim2.fromOffset(12, 173)
-	questHint.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 212 else 230, 42)
+	questHint.Size = UDim2.fromOffset(if compactTouch then 206
+		elseif questLandscape then math.clamp(questScreen.X - 471, 128, 212)
+		elseif visualMobile then 212 else 230, if questLandscape then 48 else 42)
 	questHint.TextWrapped = true
 	questHint.TextXAlignment = Enum.TextXAlignment.Left
 	if targetCard then
@@ -2446,6 +2448,14 @@ function FieldScene.start(opts)
 		ms.Color = Color3.fromRGB(232, 190, 96)
 		ms.Thickness = 2
 		ms.Parent = map
+		-- [미니맵 나침반] 북쪽 고정 지도를 글자 하나로 구분한다. 추적 점·좌표 판정은 그대로.
+		local north = label(map, "북", 13, Color3.fromRGB(247, 222, 157))
+		north.Name = "FieldMiniMapNorth"
+		north.AnchorPoint = Vector2.new(0.5, 0)
+		north.Position = UDim2.new(0.5, 0, 0, 2)
+		north.Size = UDim2.fromOffset(25, 17)
+		north.ZIndex = 7
+		north.TextStrokeTransparency = 1
 		local dots = {}
 		local function dot(i: number, color: Color3, size: number)
 			local d = dots[i]
