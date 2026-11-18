@@ -930,6 +930,20 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	local shelf = ReplicatedStorage:FindFirstChild("MareAssets")
 	local people = shelf and shelf:FindFirstChild("People")
 
+	-- [중복 상의 방지] 승인된 재단 상의가 준비된 주민만 기존 전신 메쉬의 상의 중첩을 없앤다.
+	-- 원본 자산이 늦거나 다른 문화권이면 기본 의상을 그대로 유지한다.
+	local fittedUpperReady = false
+	if npcOutfit and detailAllowed and people then
+		for _, entry in specs do
+			local garment = entry[1]
+			if entry[2] == "UpperTorso" and (garment == "outfit_vest" or garment == "outfit_coat" or garment == "outfit_guard")
+				and AssetIds["People/" .. garment] and people:FindFirstChild(garment) then
+				fittedUpperReady = true
+				break
+			end
+		end
+	end
+
 	-- [기본 복식 재질] 실제 GLB가 지연될 때도 병종별 실루엣·소재가 다르게 보인다.
 	-- 얼굴·피부·R15 관절은 원본 그대로, 몸통·장갑·장화의 표시용 재질만 한 번 교정한다.
 	if not npcOutfit and model:GetAttribute("MobMaterialProfileApplied") ~= profile then
@@ -969,6 +983,16 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	local attached = 0
 	for _, spec in specs do
 		local assetName, boneName = spec[1], spec[2]
+		-- [주민 상의 1겹] 재단복이 준비된 직업만 구형 통짜 몸통을 제거한다.
+		-- 고유 문화권·지연 자산·전투 몹의 복장은 변경하지 않는다.
+		if fittedUpperReady and boneName == "UpperTorso" and (assetName == "male_peasant_body"
+			or assetName == "female_peasant_body" or assetName == "male_ranger_body"
+			or assetName == "female_ranger_body") then
+			local duplicate = model:FindFirstChild("R15Asset_" .. assetName .. "_" .. boneName)
+			if duplicate then duplicate:Destroy() end
+			attached += 1
+			continue
+		end
 		-- [입체 복식 거리 제어] 근접 시 추가 메시를 장착하고 멀어지면 보이는 부품만 숨긴다.
 		-- 이미 생성된 원본은 재복제하지 않으므로 LOD 왕복 시 메시/메모리가 중복되지 않는다.
 		if string.sub(assetName, 1, 7) == "outfit_" then
