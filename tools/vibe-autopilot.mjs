@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// 파일명: tools/vibe-autopilot.mjs
 // 바이브 자동 판단기: Studio 점검 결과(신호)를 읽고 "지금 무엇을 점검·조치할지" 스스로 고른다.
 // 외부 AI 없이 규칙 + 점수 + 지난 결과 학습(원장)으로 정한다. 고른 일은 기존 워크플로(Studio 캡처, 에셋 재등록)로 실행한다.
 // 코드 수정이 필요한 발견은 "작업 지시서(orders)"로 남겨 사람이나 Claude 세션이 이어받는다(여기서 코드를 마구 고치지 않는다).
@@ -93,11 +94,24 @@ export function parseReport(report) {
   s.aborted = !!report.summary?.abortedEarly;
   s.captured = Number(report.summary?.capturedFrames || 0);
   s.studioErrors = (report.errors || []).map(e => String(e).slice(0, 200)).slice(0, 5);
+  // [실물 Studio] HEALTH_* 로그가 없는 241단계 점검도 콘솔 오류를 작업으로 인식한다.
+  const capturedConsole = Array.isArray(report.consoleCapture?.errors)
+    ? report.consoleCapture.errors.filter(e => e?.type === 'studio-console-error' && String(e.signature || '').trim())
+    : [];
+  if (capturedConsole.length && s.captured > 0 && report.consoleCapture?.captured === true) {
+    s.ok = true;
+    s.err = capturedConsole.length;
+    s.errFirst = String(capturedConsole[0].signature).slice(0, 200);
+  }
   const text = (report.log || []).map(r => (typeof r.out === 'string' ? r.out : '')).join('\n');
   // 마지막 값(두 번 측정했으면 나중 값)을 쓴다
   const last = re => { let m, v = null; const g = new RegExp(re, 'g'); while ((m = g.exec(text))) v = m; return v; };
   let m = last('HEALTH_ERR n=(\\d+) first=([^\\n]*)');
-  if (m) { s.ok = true; s.err = +m[1]; s.errFirst = m[2].trim(); }
+  if (m) {
+    s.ok = true;
+    // [중복 제외] 같은 콘솔 실패를 HEALTH_ERR와 공식 콘솔에서 두 번 세지 않는다.
+    if (+m[1] > s.err) { s.err = +m[1]; s.errFirst = m[2].trim(); }
+  }
   for (const mm of text.matchAll(/CHK (\w+) view=(\S+) texts=\d+ issues=(\d+)([^\n]*)/g)) {
     s.ok = true;
     if (+mm[3] > 0) s.cardIssues.push(`${mm[1]}(${mm[2]}): ${mm[4].replace(/^\s*;\s*/, '').slice(0, 160)}`);
@@ -121,6 +135,10 @@ export function findingsFrom(game, s) {
   if (s.aborted || (!s.ok && s.captured === 0 && s.studioErrors.length))
     f.push({ id: 'studio-unreachable', kind: 'infra', task: 'health', text: 'Studio 점검이 중간에 멈춤: ' + (s.studioErrors[0] || '원인 불명') });
   if (s.err > 0) f.push({ id: 'console-errors', kind: 'error', task: 'health', text: `콘솔 오류 ${s.err}건. 첫 오류: ${s.errFirst}` });
+  // [0건 방지] 외부 AI로 수리할 수 없는 Studio 실행 실패도 기존 점검 복구 지시서로 보존한다.
+  if (!s.ok && !s.aborted && s.studioErrors.length && s.captured > 0)
+    f.push({ id: 'studio-qa-incomplete', kind: 'infra', task: 'health',
+      text: 'Studio 원본 보고서에 정상 판정 없음: ' + s.studioErrors[0] });
   if (s.cardErr > 0) f.push({ id: 'card-console-errors', kind: 'error', task: 'cards', text: `카드 화면 점검 중 콘솔 오류 ${s.cardErr}건` });
   if (s.cardIssues.length) f.push({ id: 'card-ui-issues', kind: 'ui', task: 'cards', text: '카드 화면 글자 잘림/겹침: ' + s.cardIssues.slice(0, 3).join(' | ') });
   if (s.assetFail > 0) f.push({ id: 'asset-fail', kind: 'asset_link', task: 'health', text: `화면 이미지 ${s.assetFail}/${s.assetTotal} 불러오기 실패. ID: ${s.failedIds.slice(0, 8).join(',')}`, ids: s.failedIds });
@@ -219,7 +237,18 @@ export function learn({ ledger, reports, signals, now = Date.now() }) {
     // 새 지시서 등록(같은 지문은 한 번만, 해결되면 사라짐)
     const now_ids = new Set(found.map(x => x.fingerprint));
     for (const x of found) if (!out.orders[x.fingerprint]) out.orders[x.fingerprint] = { ...x, firstAt: now, lastAt: now, seen: 1 }; else { out.orders[x.fingerprint].lastAt = now; out.orders[x.fingerprint].seen++; out.orders[x.fingerprint].text = x.text; }
-    for (const [fp, o] of Object.entries(out.orders)) if (o.game === game && !now_ids.has(fp) && !o.resolvedAt) o.resolvedAt = now;
+    // [성공 학습] 실패·중단·사진 없는 결과는 이전 오류를 해결한 근거가 아니다.
+    const report = reports[game] || {};
+    const summary = report.summary || {};
+    const complete = s.ok && !s.aborted && s.captured > 0
+      && !(Array.isArray(report.errors) && report.errors.length)
+      && !(Number(summary.plannedSteps || 0) > Number(summary.completedSteps || 0))
+      && !(Number(summary.plannedFrames || 0) > s.captured)
+      && !['models', 'registered', 'features'].some(key =>
+        String(report.assetAudit?.[key]?.status || '').toUpperCase() === 'FAIL');
+    if (complete)
+      for (const [fp, o] of Object.entries(out.orders))
+        if (o.game === game && !now_ids.has(fp) && !o.resolvedAt) o.resolvedAt = now;
     if (pending) {
       const [k, rec] = pending;
       const hit = found.length > 0 ? 1 : 0;

@@ -119,9 +119,9 @@ test('한 바퀴: 관련 코드를 찾아 가짜 LLM 수정안을 검증·적용
   assert.match(r3.skipped, /LLM 실패/);
 });
 
-test('워크플로: 1시간 주기, 끄는 변수, Gemini 는 무료 확인 변수가 있을 때만, 검증 통과 뒤에만 PR, 병합은 VIBE_BRAIN_MERGE=on 일 때만', () => {
+test('워크플로: 10분 주기, 끄는 변수, Gemini 는 무료 확인 변수가 있을 때만, 검증 통과 뒤에만 PR, 병합은 VIBE_BRAIN_MERGE=on 일 때만', () => {
   const y = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
-  assert.match(y, /cron: '23,53 \* \* \* \*'/);
+  assert.match(y, /cron: '3-53\/10 \* \* \* \*'/);
   assert.match(y, /vars\.VIBE_BRAIN != 'off'/);
   assert.match(y, /GEMINI_API_KEY: \$\{\{ vars\.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets\.GEMINI_API_KEY \|\| '' \}\}/);
   assert.match(y, /GITHUB_MODELS_TOKEN: \$\{\{ github\.token \}\}/);
@@ -319,3 +319,54 @@ test('무료 외부 AI는 10분마다 다른 Studio 스크린샷을 분석하고
     "VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'"
   ]) assert.ok(workflow.includes(needle), '예약·무료 보장 누락: ' + needle);
 });
+
+test('스튜디오 실존 파일만 수정하고 다른 실제 파일·가짜 경로는 원자적으로 거부한다', async () => {
+  const other = 'roblox-games/fantasy-survival/client/Other.client.luau';
+  const missing = 'roblox-games/fantasy-survival/client/Ghost.client.luau';
+  const root = mkRoot({ [GAME]: SRC, [other]: 'local another = 1\n' });
+  const excerpt = findContext(root, { ...order, sourceFile: GAME });
+  assert.equal(excerpt[0].file, GAME);
+  const goodEdit = { file: GAME, search: 'local x = 1', replace: 'local x = 2' };
+  const invalidExtra = { file: missing, search: 'local a = 1', replace: 'local a = 2' };
+  const original = fs.readFileSync(path.join(root, GAME), 'utf8');
+  assert.match(validateEdits(root, order, { edits: [invalidExtra] }).join(','), /FILE_MISSING/);
+  assert.match(validateEdits(root, order, { edits: [{ file: other, search: 'local another = 1', replace: 'local another = 2' }] }, [GAME]).join(','), /FILE_NOT_IN_EVIDENCE/);
+  assert.throws(() => applyEdits(root, { edits: [goodEdit, invalidExtra] }, order, [GAME, missing]), /BRAIN_EDIT_PREFLIGHT/);
+  assert.equal(fs.readFileSync(path.join(root, GAME), 'utf8'), original);
+  let calls = 0;
+  const fake = async () => {
+    calls++;
+    return { provider: 'fake', trace: [{ name: 'fake', ok: true }], text: JSON.stringify({ summary: '가짜 파일', edits: [invalidExtra] }) };
+  };
+  const failed = await runBrain({ orders: [order], ledger: emptyBrainLedger(), root, llm: fake });
+  assert.equal(failed.ok, false);
+  assert.equal(calls, 2);
+  assert.ok(failed.rejected.some(x => /FILE_NOT_IN_EVIDENCE/.test(x)));
+  assert.equal(fs.readFileSync(path.join(root, GAME), 'utf8'), original);
+});
+
+test('무료 AI 역할별 배치는 실제 검수 성공만 학습하고 할당 시 무료·화면 제약을 유지한다', () => {
+  const providers = [
+    { name: 'gemini:flash', acceptsImages: true },
+    { name: 'codestral:code' },
+    { name: 'groq:code' }
+  ];
+  assert.deepEqual(rankProviders(providers, {}, 0, 'VISUAL').map(p => p.name), ['gemini:flash']);
+  assert.equal(rankProviders(providers, {}, 0, 'CODE')[0].name, 'codestral:code');
+  const now = Date.now();
+  let ledger = recordMerged(emptyBrainLedger(), {
+    order: { fingerprint: order.fingerprint, kind: 'error' },
+    files: [GAME], provider: 'groq:code', sig: signature(order)
+  }, 42, now - 60000);
+  const outcomes = labelOutcomes({
+    ledger, playbook: emptyPlaybook(),
+    orders: [{ ...order, resolvedAt: now - 30000 }], now
+  });
+  assert.deepEqual(outcomes.ledger.providers['groq:code'].verified.DEBUG, { ok: 1, fail: 0 });
+  assert.equal(rankProviders(providers, outcomes.ledger.providers, now, 'DEBUG')[0].name, 'groq:code');
+  const repeat = labelOutcomes({ ...outcomes, orders: [{ ...order, resolvedAt: now - 30000 }], now: now + 1000 });
+  assert.equal(repeat.ledger.providers['groq:code'].verified.DEBUG.ok, 1);
+  const quota = { ...outcomes.ledger.providers, 'groq:code': { ...outcomes.ledger.providers['groq:code'], quotaUntil: now + 3600000 } };
+  assert.notEqual(rankProviders(providers, quota, now, 'DEBUG')[0].name, 'groq:code');
+});
+

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// 파일명: tools/vibe-brain.mjs
 // 바이브 두뇌: 자동 판단기가 남긴 작업 지시서(orders) 중 코드로 고칠 수 있는 것을 하나 골라, 무료 LLM 에게 "찾아 바꾸기" 수정안을 받아 검증하고 적용한다.
 // 이 도구는 파일만 고친다. 브랜치·검사·병합은 워크플로가 하며, 검사에 실패하면 버린다.
 // 안전장치: 두 게임의 소스 폴더 안 .luau 만, 파일 3개·변경 80줄 이하, 정확히 한 번 나오는 문장만 교체, 위험한 API·새 에셋 ID 금지, 하루 횟수·간격 제한.
@@ -46,7 +47,7 @@ function listLuau(dir, out = []) {
   if (!fs.existsSync(dir)) return out;
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
-    if (e.isDirectory()) listLuau(p, out); else if (e.name.endsWith('.luau')) out.push(p);
+    if (e.isDirectory()) listLuau(p, out); else if (e.isFile() && e.name.endsWith('.luau')) out.push(p);
   }
   return out;
 }
@@ -60,6 +61,12 @@ export function findContext(root, order) {
     .filter(f => ALLOWED.test(path.relative(root, f).replace(/\\/g, '/')));
   const text = String(order.text || '');
   const hits = [];
+  // [스튜디오 원본] 실패 증거가 지정한 실존 파일만 소스 후보로 넣는다.
+  const bound = String(order.sourceFile || '').replace(/\\/g, '/');
+  if (bound && ALLOWED.test(bound) && bound.startsWith('roblox-games/' + order.game + '/') &&
+      files.some(f => path.relative(root, f).replace(/\\/g, '/') === bound)) {
+    hits.push({ f: path.join(root, bound), line: 1, score: 1000 });
+  }
   const m = text.match(/\b([A-Za-z_][\w]*):(\d+)\b/);                 // "Game:12462: ..." 같은 스크립트:줄
   if (m) for (const f of files) if (path.basename(f).replace(/\.(client|server)?\.?luau$/, '').toLowerCase() === m[1].toLowerCase()) hits.push({ f, line: +m[2], score: 100 });
   const words = [...new Set((text.match(/[A-Za-z_]{4,}|[가-힣]{2,}/g) || []).filter(w => !/^(attempt|index|with|first|nil|오류|콘솔|없음|있음|건|월드|화면)$/i.test(w)))].slice(0, 8);
@@ -115,7 +122,7 @@ export function parseEdits(text) {
   return { summary: String(j.summary || '').slice(0, 200), edits: j.edits.map(e => ({ file: String(e.file || ''), search: String(e.search ?? ''), replace: String(e.replace ?? '') })) };
 }
 
-export function validateEdits(root, order, parsed) {
+export function validateEdits(root, order, parsed, contextFiles = null) {
   const errs = [];
   const { edits } = parsed;
   if (!edits.length) return ['BRAIN_NO_EDITS'];
@@ -126,8 +133,11 @@ export function validateEdits(root, order, parsed) {
   for (const e of edits) {
     const rel = e.file.replace(/\\/g, '/');
     if (!ALLOWED.test(rel) || !rel.startsWith(`roblox-games/${order.game}/`)) { errs.push('FILE_NOT_ALLOWED:' + rel); continue; }
+    // [모델 범위] 실제 제공한 소스 외 파일은 존재하더라도 변경 금지.
+    if (contextFiles && !contextFiles.includes(rel)) { errs.push('FILE_NOT_IN_EVIDENCE:' + rel); continue; }
     const abs = path.join(root, rel);
     if (!fs.existsSync(abs)) { errs.push('FILE_MISSING:' + rel); continue; }
+    if (!fs.lstatSync(abs).isFile() || fs.lstatSync(abs).isSymbolicLink()) { errs.push('FILE_UNSAFE:' + rel); continue; }
     cache[rel] ??= fs.readFileSync(abs, 'utf8');
     const src = cache[rel];
     if (!e.search) { errs.push('EMPTY_SEARCH'); continue; }
@@ -144,15 +154,23 @@ export function validateEdits(root, order, parsed) {
   return errs;
 }
 
-export function applyEdits(root, parsed) {
-  const touched = [];
-  for (const e of parsed.edits) {
-    const abs = path.join(root, e.file);
-    const src = fs.readFileSync(abs, 'utf8');
-    fs.writeFileSync(abs, src.replace(e.search, () => e.replace));
-    if (!touched.includes(e.file)) touched.push(e.file);
+export function applyEdits(root, parsed, order = null, contextFiles = null) {
+  // [원본 보존] 모든 수정 경로·검색어를 먼저 검증하고 메모리에 구성한다.
+  if (order) {
+    const failures = validateEdits(root, order, parsed, contextFiles);
+    if (failures.length) throw new Error('BRAIN_EDIT_PREFLIGHT:' + failures.join(','));
   }
-  return touched;
+  const staged = new Map();
+  for (const e of parsed.edits) {
+    const rel = e.file.replace(/\\/g, '/');
+    if (!ALLOWED.test(rel) || !fs.existsSync(path.join(root, rel)) ||
+        fs.lstatSync(path.join(root, rel)).isSymbolicLink()) throw new Error('BRAIN_EDIT_TARGET_MISSING_OR_UNSAFE:' + rel);
+    const before = staged.has(rel) ? staged.get(rel) : fs.readFileSync(path.join(root, rel), 'utf8');
+    if (!e.search || before.split(e.search).length !== 2) throw new Error('BRAIN_EDIT_SOURCE_CHANGED:' + rel);
+    staged.set(rel, before.replace(e.search, () => e.replace));
+  }
+  for (const [rel, content] of staged) fs.writeFileSync(path.join(root, rel), content);
+  return [...staged.keys()];
 }
 
 
@@ -161,10 +179,21 @@ const QUOTA_REST_MS = 6 * 3600000;        // 한도 초과(429)면 6시간 쉰�
 const OUTAGE_REST_MS = 15 * 60000;        // 일시 장애(5xx)면 15분 쉰다
 
 // 한도가 끝난 모델은 건너뛰고, 계속 실패(3번 이상, 성공률 30% 미만)하는 모델은 순서 맨 뒤로 보낸다. 나머지는 원래 우선순위를 지킨다.
-export function rankProviders(providers, stats = {}, now = Date.now()) {
+export function rankProviders(providers, stats = {}, now = Date.now(), role = '') {
   const idx = new Map(providers.map((p, i) => [p.name, i]));
   const demoted = p => { const s = stats[p.name]; return s && s.ok + s.fail >= 3 && s.ok / (s.ok + s.fail) < 0.3 ? 1 : 0; };
-  return providers.filter(p => !(stats[p.name]?.quotaUntil > now)).sort((a, b) => demoted(a) - demoted(b) || idx.get(a.name) - idx.get(b.name));
+  // [무료 모델 역할 배치] 실제 재검증된 역할별 성공률만 우선순위 학습에 사용한다.
+  const rate = p => {
+    const row = stats[p.name]?.verified?.[role] || {};
+    const ok = Number(row.ok || 0), fail = Number(row.fail || 0);
+    return (ok + 1) / (ok + fail + 2);
+  };
+  const preferred = p => role === 'VISUAL' ? (p.acceptsImages ? 0 : 1)
+    : role === 'DEBUG' || role === 'CODE' ? (/^(?:codestral|groq|openrouter):/.test(p.name) ? 0 : 1)
+      : role === 'UI' ? (/^(?:gemini|codestral):/.test(p.name) ? 0 : 1) : 0;
+  return providers.filter(p => !(stats[p.name]?.quotaUntil > now) && (role !== 'VISUAL' || p.acceptsImages))
+    .sort((a, b) => demoted(a) - demoted(b) ||
+      (role ? rate(b) - rate(a) || preferred(a) - preferred(b) : 0) || idx.get(a.name) - idx.get(b.name));
 }
 
 // trace: askChain 의 시도 기록. validProvider: 수정안이 검증까지 통과한 공급자 이름(없으면 null)
@@ -237,6 +266,15 @@ export function labelOutcomes({ ledger, playbook, orders, now = Date.now() }) {
     const o = byFp[m.fp], entry = P.entries[m.pbKey];
     if (o && o.resolvedAt && o.resolvedAt > m.at) { m.label = 'RESOLVED'; if (entry) { entry.successes++; entry.state = 'proven'; } changed++; }
     else if ((!o || !o.resolvedAt) && now - m.at > 6 * 3600000) { m.label = 'NOT_RESOLVED'; if (entry) { entry.failures++; if (entry.failures >= 3 || entry.successes === 0 && entry.failures >= 2) entry.state = 'bad'; } changed++; }
+    // [역할별 성공률] 단순 응답·수정 초안은 성공으로 기록하지 않는다.
+    if (m.label && m.provider && m.provider !== 'playbook') {
+      const role = m.role || (m.kind === 'visual' ? 'VISUAL' : m.kind === 'error' ? 'DEBUG' : m.kind === 'ui' ? 'UI' : 'CODE');
+      L.providers ||= {};
+      const stat = L.providers[m.provider] ||= { ok: 0, fail: 0 };
+      stat.verified ||= {};
+      const row = stat.verified[role] ||= { ok: 0, fail: 0 };
+      if (m.label === 'RESOLVED') row.ok++; else row.fail++;
+    }
   }
   return { ledger: L, playbook: P, changed };
 }
@@ -261,24 +299,24 @@ export async function runBrain({ orders, ledger, root, llm, playbook = emptyPlay
   if (order.kind === 'visual' && !images?.length) return { ok: false, order, skipped: 'Studio 화면 증거 없음' };
   const replay = images ? null : playbookReplay({ order, playbook, root });
   if (replay) {
-    const files = applyEdits(root, replay.parsed);
+    const files = applyEdits(root, replay.parsed, order);
     return { ok: true, order, provider: 'playbook', summary: replay.parsed.summary, files, edits: replay.parsed.edits, pbKey: replay.key, sig: signature(order), replayed: true };
   }
   const ctx = findContext(root, order);
   if (!ctx.length) return { ok: false, order, skipped: '관련 코드를 찾지 못했다', attempted: true };
   const prompt = buildPrompt(order, ctx, examplesFor(order, playbook));
   let res, parsed;
-  try { res = await llm(prompt, images); } catch (e) { return { ok: false, order, skipped: 'LLM 실패: ' + e.message, attempted: true, trace: e.trace || [], prompt }; }
+  try { res = await llm(prompt, images, { role: order.kind === 'visual' ? 'VISUAL' : order.kind === 'error' ? 'DEBUG' : order.kind === 'ui' ? 'UI' : 'CODE' }); } catch (e) { return { ok: false, order, skipped: 'LLM 실패: ' + e.message, attempted: true, trace: e.trace || [], prompt }; }
   let errs;
-  try { parsed = parseEdits(res.text); errs = validateEdits(root, order, parsed); } catch (e) { errs = [e.message]; }
+  try { parsed = parseEdits(res.text); errs = validateEdits(root, order, parsed, ctx.map(c => c.file)); } catch (e) { errs = [e.message]; }
   if (errs.length) {
     // 수정안이 원본과 어긋나면(검색 문구 불일치 등) 오류를 알려 주고 한 번만 다시 받는다
     log('REJECTED(1차) ' + errs.join(','));
     const fb = prompt + '\n\nYOUR PREVIOUS ANSWER WAS REJECTED: ' + errs.join('; ') + '\nFix it: every "search" must be copied EXACTLY (same spaces, same text) from the code above, WITHOUT the "123| " line-number prefixes, and must occur exactly once. Return only the JSON.';
-    try { const res2 = await llm(fb, images); res = { ...res2, trace: [...(res.trace || []), ...(res2.trace || [])] }; parsed = parseEdits(res.text); errs = validateEdits(root, order, parsed); } catch (e) { errs = [...errs, 'RETRY:' + e.message.slice(0, 120)]; }
+    try { const res2 = await llm(fb, images, { role: order.kind === 'visual' ? 'VISUAL' : order.kind === 'error' ? 'DEBUG' : order.kind === 'ui' ? 'UI' : 'CODE' }); res = { ...res2, trace: [...(res.trace || []), ...(res2.trace || [])] }; parsed = parseEdits(res.text); errs = validateEdits(root, order, parsed, ctx.map(c => c.file)); } catch (e) { errs = [...errs, 'RETRY:' + e.message.slice(0, 120)]; }
   }
   if (errs.length) { log('REJECTED ' + errs.join(',')); return { ok: false, order, provider: res.provider, trace: res.trace, prompt, responseText: res.text, rejected: errs, attempted: true }; }
-  const files = applyEdits(root, parsed);
+  const files = applyEdits(root, parsed, order, ctx.map(c => c.file));
   return { ok: true, order, provider: res.provider, trace: res.trace, prompt, responseText: res.text, summary: parsed.summary, files, edits: parsed.edits, sig: signature(order) };
 }
 
@@ -293,7 +331,7 @@ export function recordAttempt(ledger, result, now = Date.now()) {
 
 export function recordMerged(ledger, result, pr, now = Date.now()) {
   const out = JSON.parse(JSON.stringify(ledger));
-  out.merged = [...(out.merged || []), { at: now, fp: result.order.fingerprint, pr, files: result.files, provider: result.provider, sig: result.sig || '', pbKey: result.pbKey || '' }].slice(-30);
+  out.merged = [...(out.merged || []), { at: now, fp: result.order.fingerprint, pr, files: result.files, provider: result.provider, kind: result.order?.kind || '', role: result.order?.kind === 'visual' ? 'VISUAL' : result.order?.kind === 'error' ? 'DEBUG' : result.order?.kind === 'ui' ? 'UI' : 'CODE', sig: result.sig || '', pbKey: result.pbKey || '' }].slice(-30);
   out.day = out.day?.date === today(now) ? { date: today(now), count: out.day.count + 1 } : { date: today(now), count: 1 };
   return out;
 }
@@ -332,6 +370,23 @@ function readStudioVisualOrder(ref, coverage = {}) {
       if (images.length === 3) break;
     }
     if (!images.length) return null;
+    // [화면→코드] 동일 Studio 회차의 콘솔·오류 근거에서 실제 존재하는 소스만 연결한다.
+    // 임의 파일명이나 로블록스 인스턴스명은 소스 경로로 취급하지 않는다.
+    const evidence = [
+      ...(Array.isArray(report.consoleCapture?.errors) ? report.consoleCapture.errors
+        .filter(e => e?.type === 'studio-console-error').map(e => String(e.signature || '')) : []),
+      ...(Array.isArray(report.errors) ? report.errors.map(e => String(e)) : [])
+    ];
+    const knownFiles = new Set();
+    for (const row of evidence) {
+      for (const match of row.matchAll(/roblox-games\/mare-essentia\/src\/[A-Za-z0-9_./-]+\.luau(?=:\d+|\b)/g)) {
+        const candidate = match[0];
+        if (!ALLOWED.test(candidate) || candidate.includes('..') || !fs.existsSync(path.join(process.cwd(), candidate))) continue;
+        const st = fs.lstatSync(path.join(process.cwd(), candidate));
+        if (st.isFile() && !st.isSymbolicLink()) knownFiles.add(candidate);
+      }
+    }
+    const sourceFile = knownFiles.size === 1 ? [...knownFiles][0] : '';
     return {
       images,
       labels,
@@ -339,8 +394,11 @@ function readStudioVisualOrder(ref, coverage = {}) {
       order: {
         game,
         kind: 'visual',
+        sourceFile,
         fingerprint: game + ':visual:' + digest.digest('hex'),
-        text: 'Studio capture steps: ' + labels.join(', ') + '. Inspect visible TextButton, ScreenGui, UIListLayout, Position, Lighting and Material defects.'
+        text: 'Studio capture steps: ' + labels.join(', ') +
+          (sourceFile ? '. Verified failing source: ' + sourceFile + '. Evidence: ' + evidence[0]?.slice(0, 300) : '') +
+          '. Inspect visible character proportions, clothing, TextButton, ScreenGui, UIListLayout, Position, Lighting and Material defects. Fix only a defect supported by this source.'
       }
     };
   } catch {
@@ -357,7 +415,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const save = (f, v) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, typeof v === 'string' ? v : JSON.stringify(v, null, 2) + '\n'); };
   if (arg('record-merged')) {          // 병합이 끝난 뒤 워크플로가 호출: 하루 횟수·간격 장부에 기록
     const r = readJson(outFile, {});
-    const L = recordMerged(readJson(ledgerFile, emptyBrainLedger()), { order: { fingerprint: r.fingerprint }, files: r.files || [], provider: r.provider, sig: r.sig, pbKey: r.pbKey }, Number(arg('record-merged')));
+    const L = recordMerged(readJson(ledgerFile, emptyBrainLedger()), { order: { fingerprint: r.fingerprint, kind: r.kind }, files: r.files || [], provider: r.provider, sig: r.sig, pbKey: r.pbKey }, Number(arg('record-merged')));
     save(ledgerFile, L);
     console.log('병합 기록 완료');
     process.exit(0);
@@ -375,7 +433,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const ranked = rankProviders(providers, ledger.providers);
   console.log('모델 순서:', ranked.map(p => p.name).join(' → ') || '(없음)', providers.length - ranked.length ? `(한도로 쉬는 모델 ${providers.length - ranked.length}개)` : '');
   const visual = ranked.some(p => p.acceptsImages) && arg('studio-ref') ? readStudioVisualOrder(arg('studio-ref'), ledger.visualCoverage) : null;
-  const llm = (prompt, images) => askChain({ prompt, images, providers: ranked, log: m => console.log(m) });
+  const llm = (prompt, images, { role = 'CODE' } = {}) => {
+    const assigned = rankProviders(providers, ledger.providers, Date.now(), role);
+    console.log('VIBE59_FREE_AI_ROLE=' + role + ' MODEL=' + (assigned[0]?.name || 'NONE'));
+    return askChain({ prompt, images, providers: assigned, log: m => console.log(m) });
+  };
   const result = await runBrain({ orders, ledger, root: process.cwd(), llm, playbook, visual, log: m => console.log(m) });
   // 3) 실제 외부 이미지 AI가 응답한 장면만 소스별 분석 이력에 기록한다. 오류·호출 실패 시 재시도 가능.
   if (visual && result.order?.fingerprint === visual.order.fingerprint && result.trace?.some(row => row.ok)) {

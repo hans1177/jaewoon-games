@@ -127,7 +127,7 @@ test('Studio 완료와 System AI 완료로 10분 예약 누락을 복구하고 5
   assert.match(y, /if: env\.AUTOPILOT_SKIP != 'true'/);
   assert.match(fs.readFileSync('tools/vibe-autopilot.mjs', 'utf8'), /ledger\.lastDecisionAt = decisionAt/);
   const b = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
-  assert.match(b, /workflows: \['Vibe Autopilot'\]/);
+  assert.match(b, /workflows: \['Vibe Autopilot', 'Devloop Studio Capture'\]/);
   const now = Date.now();
   let L = emptyLedger();
   L = markDispatched(L, { game: 'fantasy-survival', kind: 'health' }, now - 2 * 60000, 'a');
@@ -156,3 +156,32 @@ test('대항해시대 Studio 10분 자동점검은 7대륙·36척 선박·무기
     assert.ok(dispatchPlan({ game: 'mare-essentia', kind }).includes('inputs[script]=' + m[kind]));
   }
 });
+
+test('실제 Studio 콘솔 실패는 HEALTH 없이도 지시서를 만들고 실패 결과로 해결 처리하지 않는다', () => {
+  const report = {
+    summary: { capturedFrames: 2, abortedEarly: false },
+    log: [{ capture: 'start' }],
+    consoleCapture: { captured: true, errors: [{ type: 'studio-console-error', signature: 'Game:45: index nil' }] },
+    errors: []
+  };
+  const state = parseReport(report);
+  assert.equal(state.err, 1);
+  assert.equal(state.errFirst, 'Game:45: index nil');
+  assert.ok(findingsFrom('mare-essentia', state).some(x => x.id === 'console-errors'));
+  const now = Date.now();
+  let ledger = learn({
+    ledger: emptyLedger(), reports: { 'mare-essentia': report }, signals: { 'mare-essentia': state }, now
+  });
+  assert.equal(openOrders(ledger).length, 1);
+  const incomplete = {
+    summary: { capturedFrames: 0, abortedEarly: true },
+    log: [], errors: ['STUDIO_MCP_TOOL_TIMEOUT']
+  };
+  ledger = learn({
+    ledger, reports: { 'mare-essentia': incomplete },
+    signals: { 'mare-essentia': parseReport(incomplete) }, now: now + 1000
+  });
+  assert.ok(openOrders(ledger).some(x => x.id === 'console-errors'));
+  assert.ok(openOrders(ledger).some(x => x.id === 'studio-unreachable'));
+});
+

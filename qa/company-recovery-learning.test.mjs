@@ -1184,7 +1184,7 @@ test('Studio QA failure uses exact source evidence and canonical source intake b
       'STUDIO_QA_FAILURE_SIGNATURE=STUDIO_OBSERVED_RUNTIME_WARNINGS'
     ]}});
   assert.equal(runtime.owner,'SYSTEM_AI');
-  assert.deepEqual(runtime.queue.tasks[0].responsibleFiles,[]);
+  assert.deepEqual(runtime.queue.tasks[0].responsibleFiles,['.github/workflows/devloop-studio.yml']);
   // [전체 검증] Studio 모델·이미지·미구현 기능 실패를 기존 복구 큐로 직접 연결한다.
   for (const signature of ['STUDIO_ASSET_AUDIT_FAILED','STUDIO_FEATURE_AUDIT_FAILED']) {
     const result=escalateDeploymentFailure({event:{workflow_run:run},catalogInput:{games:[]},
@@ -1195,7 +1195,7 @@ test('Studio QA failure uses exact source evidence and canonical source intake b
       ]}});
     assert.equal(result.owner,'SYSTEM_AI');
     assert.equal(result.queue.tasks[0].failureSignature,signature);
-    assert.deepEqual(result.queue.tasks[0].responsibleFiles,[]);
+    assert.deepEqual(result.queue.tasks[0].responsibleFiles,['.github/workflows/devloop-studio.yml']);
   }
 
   // [스튜디오 통신 장애] MCP 타임아웃은 게임 소스 오류로 처리하지 않는다.
@@ -1325,3 +1325,28 @@ test('recovery summary preserves legacy counts and adds read-only measured evide
     assert.equal(recoveryVerificationMetrics({tasks:[]}).reviewedAttemptPassPct,null);
   }finally{fs.rmSync(cwd,{recursive:true,force:true});}
 });
+
+test('Studio 런타임 원인 미확정은 작업 배치 0건을 막되 게임 파일을 추정하지 않는다',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const sha='c'.repeat(40);
+  const run={name:'Devloop Studio Capture',path:'.github/workflows/devloop-studio.yml',
+    conclusion:'failure',id:42749129999,run_attempt:1,head_sha:sha,head_branch:'main',
+    display_title:'Devloop Studio Capture · mare-essentia · '+sha,
+    head_repository:{full_name:'hans1177/jaewoon-games'}};
+  const result=escalateDeploymentFailure({event:{workflow_run:run},catalogInput:{games:[]},
+    jobsInput:{jobs:[{name:'capture',conclusion:'failure'}],studioMarkers:[
+      'STUDIO_QA_GAME_ID=mare-essentia',
+      'STUDIO_QA_FAILURE_STAGE=STUDIO_GAME_RUNTIME',
+      'STUDIO_QA_FAILURE_SIGNATURE=STUDIO_OBSERVED_RUNTIME_WARNINGS']}});
+  assert.equal(result.owner,'SYSTEM_AI');
+  assert.deepEqual(result.queue.tasks[0].responsibleFiles,['.github/workflows/devloop-studio.yml']);
+  assert.ok(result.queue.tasks[0].goal.includes('do not treat unknown game source as an infrastructure defect'));
+  assert.ok(result.queue.tasks[0].evidence.some(x=>x.startsWith('studio-qa-screenshots:')));
+  const dispatched=dispatchRecovery({recoveryInput:result.queue,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
+  assert.equal(dispatched.dispatched.length,1);
+  assert.equal(dispatched.systemAi.tasks.length,1);
+  assert.ok(dispatched.systemAi.tasks[0].responsibleFiles.every(x=>x==='.github/workflows/devloop-studio.yml'));
+  assert.ok(dispatched.systemAi.tasks[0].responsibleFiles.every(x=>!x.endsWith('.luau')));
+});
+
