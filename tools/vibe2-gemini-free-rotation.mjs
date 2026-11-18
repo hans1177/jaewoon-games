@@ -253,7 +253,9 @@ export async function requestGeminiFreePair({
       if(!response.ok){
         const status=response.status;
         if([401,402,403].includes(status))
-          throw infrastructureFailure(provider+'_AUTH_OR_BILLING_BLOCKED_NO_PAID_FALLBACK:'+status);
+          throw infrastructureFailure(provider==='GEMINI'
+            ?'GEMINI_AUTH_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:'+status
+            :provider+'_AUTH_OR_BILLING_BLOCKED_NO_PAID_FALLBACK:'+status);
         if(provider==='GEMINI'&&[404,429,500,502,503,504].includes(status)){
           let errorBody=null;
           if(status===429&&typeof response.json==='function')
@@ -290,7 +292,9 @@ export async function requestGeminiFreePair({
           console.log('VIBE2_EXTERNAL_FREE_ROTATE='+slot+':HTTP_'+status);
           continue;
         }
-        throw infrastructureFailure(provider+'_HTTP_ERROR_NO_PAID_FALLBACK:'+status);
+        throw infrastructureFailure(provider==='GEMINI'
+          ?'GEMINI_HTTP_ERROR_NO_LOCAL_FALLBACK:'+status
+          :provider+'_HTTP_ERROR_NO_PAID_FALLBACK:'+status);
       }
       const payload=await response.json();
       if(provider!=='GEMINI'&&Number(payload?.usage?.cost||0)>0)
