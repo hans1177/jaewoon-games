@@ -19,7 +19,7 @@ const root = path.resolve(options.root || 'main');
 const framesRoot = path.resolve(options.frames || '.');
 const reportPath = path.resolve(options.out || path.join(framesRoot, 'nemotron-design-review.json'));
 const protectedCode = /\b(?:DataStore|RemoteEvent|RemoteFunction|FireServer|FireClient|OnServerEvent|OnClientEvent|SetAttribute|GetAttribute|GetService|HttpService|require|loadstring|setfenv|getfenv|Humanoid|WalkSpeed|JumpPower|Health|Damage|Hitbox|CanCollide|CanTouch|CanQuery|Anchored|Currency|Reward|Experience|Purchase|MarketplaceService|TeleportService)\b/i;
-const visualCode = /Color3\.(?:new|fromRGB|fromHSV)\(|Enum\.(?:Material|Font|EasingStyle|TextXAlignment|TextYAlignment)\.|\.(?:Color|Color3|TextColor3|BackgroundColor3|ImageColor3|Transparency|TextTransparency|BackgroundTransparency|ImageTransparency|LightInfluence|Material|Font|TextSize|Size|Position|Rotation|Scale|Brightness|Contrast|Saturation|FieldOfView|Ambient|OutdoorAmbient|Reflectance|Emission|StrokeThickness)\s*=|(?:UDim2|UDim)\.new\(/;
+const visualCode = /Color3\.(?:new|fromRGB|fromHSV)\(|Enum\.(?:Material|Font|EasingStyle|TextXAlignment|TextYAlignment)\.|\.(?:Color|Color3|TextColor3|BackgroundColor3|ImageColor3|Transparency|TextTransparency|BackgroundTransparency|ImageTransparency|LightInfluence|Material|Font|TextSize|Size|Position|Rotation|Scale|Brightness|Contrast|Saturation|FieldOfView|Ambient|OutdoorAmbient|Reflectance|Emission|StrokeThickness)\s*=|(?:UDim2|UDim)\.new\(|\btint\s*=\s*\{\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\}/;
 const quoted = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g;
 
 // [무료 디자인 전문 모델] 고정 무료 모델만 허용하고, 모델이 응답으로 경로/제공자를 선택하지 못한다.
@@ -663,6 +663,12 @@ export function visualEditLooksSafe(before, after, category = '', sourcePath = '
   const numbers = line => [...line.matchAll(/(?<![A-Za-z_0-9])-?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?(?![A-Za-z_0-9])/g)]
     .map(m => Number(m[0]));
   const oldNums = numbers(before), newNums = numbers(after);
+  // [상용 재질] 최신 main 의 기존 등록 건물 틴트 범위를 그대로 보존한다.
+  if (/\btint\s*=/.test(before + after)) {
+    const palette = /\btint\s*=\s*\{\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\}/;
+    const original = before.match(palette), next = after.match(palette);
+    if (!original || !next || next.slice(1).some(x=>Number(x)>255)) return false;
+  }
   if (oldNums.length !== newNums.length ||
     newNums.some((n, i) => !Number.isFinite(n) || Math.abs(n) > Math.max(1024, Math.abs(oldNums[i]) * 2 + 1)))
     return false;
@@ -728,37 +734,56 @@ function cleanAnchor(line, file = '') {
     !/--|[;]|https?:\/\/|(?:api[_-]?key|secret|token|password)/i.test(line) &&
     !line.trimStart().startsWith('--');
 }
-function visualAnchors(files, role = '') {
+// [분야별 코드 선별] 허용된 실제 Luau 시각 책임 파일만 순서를 바꾼다. 없는 파일이나 새 에셋을 만들지 않는다.
+export function rankVisualSourceFiles(files, role = 'GENERAL') {
+  const preferred = {
+    NPC: ['Pose.luau', 'PortScene.luau', 'TownMood.client.luau',
+      'FieldScene.luau', 'CommonMotion.luau', 'FieldMotion.luau'],
+    WORLD: ['PortScene.luau', 'PortBuildings.luau', 'VoyageScene.luau',
+      'FieldScene.luau', 'WonderScenes.luau', 'TownMood.client.luau'],
+    UI: ['Game.client.luau', 'VisualLadder.client.luau', 'CardArt.luau',
+      'CardGallery.luau', 'Flags.luau', 'PortScene.luau'],
+    MOTION: ['CommonMotion.luau', 'FieldMotion.luau', 'Pose.luau',
+      'CommonVFX.luau', 'TownMood.client.luau', 'FieldScene.luau'],
+    AUDIO: ['Sfx.luau'],
+    GENERAL: ['PortScene.luau', 'Pose.luau', 'Game.client.luau',
+      'VoyageScene.luau', 'CardArt.luau', 'FieldScene.luau']
+  }[role] || [];
+  const scoped = preferred.map(name => files.find(file => file.endsWith('/' + name)))
+    .filter(Boolean);
+  return (scoped.length >= 2 ? scoped : files).slice(0, 6);
+}
+
+function visualAnchors(files, role = 'GENERAL') {
   const result = [];
-  const owners = {
-    NPC: ['Pose.luau','PortScene.luau','CommonMotion.luau','FieldMotion.luau'],
-    WORLD: ['PortScene.luau','PortBuildings.luau','VoyageScene.luau','FieldScene.luau','TownMood.client.luau'],
-    UI: ['Game.client.luau','CardGallery.luau','Flags.luau','CardArt.luau','VisualLadder.client.luau'],
-    MOTION: ['CommonMotion.luau','FieldMotion.luau','CommonVFX.luau','FieldScene.luau','Pose.luau'],
-    AUDIO: ['Sfx.luau']
+  const patterns = {
+    NPC: /hair|scalp|skirt|belt|face|eye|head|skin|fabric|shirt|robe|collar|outfit|neck|arm|leg|lightInfluence/i,
+    WORLD: /roof|house|building|dock|market|tint|port|harbor|ship|sail|wood|stone|wall|window|boat|lamp|arch|town|pier|sea/i,
+    UI: /text|color|font|image|card|ui|background|scale|shadow|stroke|button|menu|transparency/i,
+    MOTION: /motion|animation|rotation|tween|easing|walk|idle|attack|shoot|velocity|swing|pose|tilt/i,
+    AUDIO: /sfx_|sound|audio|trade|yard|harbor|quest|battle/i,
+    GENERAL: /color|material|brightness|transparency|size|position|scale/i
   };
-  for (const file of files) {
-    if (owners[role] && !owners[role].some(name => file.endsWith('/'+name))) continue;
+  const focusedPattern = patterns[role] || patterns.GENERAL;
+  for (const file of rankVisualSourceFiles(files, role)) {
     const target = path.resolve(root, file);
     if (!target.startsWith(root + path.sep) || !fs.existsSync(target) ||
       !fs.lstatSync(target).isFile() || fs.lstatSync(target).isSymbolicLink()) continue;
     const lines = fs.readFileSync(target, 'utf8').split(/\r?\n/);
     const counts = new Map();
     for (const line of lines) counts.set(line, (counts.get(line) || 0) + 1);
-    const possible = lines.filter(line => cleanAnchor(line, file) && counts.get(line) === 1);
-    // 얼굴과 머리/옷을 먼저, 나머지 건물·선박·UI는 파일 전체 구간을 고르게 표본화한다.
-    const focused = file.endsWith('/Pose.luau')
-      ? possible.filter(line => /LightInfluence|scalp|skirt|belt|hair|q\.Size|Fabric/i.test(line)).slice(0, 4)
-      : file.endsWith('/PortScene.luau')
-        ? possible.filter(line => /^\s*\{\s*name\s*=\s*"/.test(line) &&
-          /\bpos\s*=\s*Vector3\.new\(/.test(line) && /\bcolor\s*=\s*Color3\.fromRGB\(/.test(line)).slice(0, 7)
-        : [];
-    const sampled = Array.from({length: 8}, (_, index) =>
-      possible[Math.floor(index * Math.max(0, possible.length - 1) / 7)]).filter(Boolean);
-    for (const line of [...new Set([...focused, ...sampled])].slice(0, file.endsWith('/PortScene.luau') ? 13 : 7))
+    const possible = lines.filter(line => cleanAnchor(line,file) && counts.get(line) === 1);
+    // [마을 시설] 해당 실제 이름·좌표 한 줄을 우선한다. 가짜 경로 또는 시설 생성 불가.
+    const facility = file.endsWith('/PortScene.luau') ? possible.filter(line => /^\s*\{\s*name\s*=\s*"/.test(line) && /\bpos\s*=\s*Vector3\.new\(/.test(line)).slice(0,7) : [];
+    const focused = [...facility,...possible.filter(line => focusedPattern.test(line))];
+    const selected = Array.from({length: 6}, (_, index) =>
+      focused[Math.floor(index * Math.max(0, focused.length - 1) / 5)]).filter(Boolean);
+    const others = Array.from({length: 3}, (_, index) =>
+      possible[Math.floor(index * Math.max(0, possible.length - 1) / 2)]).filter(Boolean);
+    for (const line of [...new Set([...selected, ...others])].slice(0, 9))
       result.push({anchor: result.length, path: file, before: line});
   }
-  return result.slice(0, 112);
+  return result.slice(0, 54);
 }
 
 // [메인] 후보는 검증된 브랜치에서만 쓰며 모델 원문/명령은 실행하지 않는다.
