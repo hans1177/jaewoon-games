@@ -8298,7 +8298,7 @@ function H.showCardGain(card, moreCount)
 	name.Position = UDim2.new(0, 6, 1, -56)
 	name.Size = UDim2.new(1, -12, 0, 29)
 	name.Font = Enum.Font.GothamBold
-	name.TextSize = 17
+	name.TextSize = if card.rarity == "Legendary" or card.rarity == "Epic" then 19 else 17
 	name.TextColor3 = Color3.fromRGB(52, 36, 24)
 	name.TextTruncate = Enum.TextTruncate.AtEnd
 	name.Text = tostring(card.name or "새 지식")
@@ -8342,13 +8342,18 @@ function H.showCardGain(card, moreCount)
 	caption.TextSize = 19
 	caption.TextColor3 = tone
 	caption.TextStrokeColor3 = Color3.fromRGB(18, 15, 12)
-	caption.TextStrokeTransparency = 0.2
+	caption.TextStrokeTransparency = 1
 	caption.Text = if (moreCount or 0) > 0 then
-		string.format("지식 발견! · 추가 %d장", moreCount) else "새 지식 발견!"
+		string.format("지식 발견! · 추가 %d장", moreCount)
+		elseif card.rarity == "Legendary" then "전설의 지식 발견!"
+		elseif card.rarity == "Epic" or card.rarity == "Rare" then "희귀 지식 발견!"
+		else "새 지식 발견!"
 	caption.ZIndex = 10
 	caption.Parent = g
-	for i = 1, 8 do
-		local angle = (i - 1) * math.pi / 4
+	-- [등급별 카드 획득] 희귀 등급만 광점 수를 늘린다. 기존 카드 원화와 저장은 그대로.
+	local sparkleCount = if card.rarity == "Legendary" or card.rarity == "Epic" then 12 else 8
+	for i = 1, sparkleCount do
+		local angle = (i - 1) * math.pi * 2 / sparkleCount
 		local glint = Instance.new("TextLabel")
 		glint.Name = "CardSparkle"
 		glint.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -8368,7 +8373,7 @@ function H.showCardGain(card, moreCount)
 	end
 	Sfx.play("sfx_card_coin", 0.75)
 	TS:Create(frame, TweenInfo.new(0.46, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-		Size = UDim2.fromOffset(170, 208), Rotation = 0,
+		Size = if card.rarity == "Legendary" or card.rarity == "Epic" then UDim2.fromOffset(188, 226) else UDim2.fromOffset(170, 208), Rotation = 0,
 	}):Play()
 	for i, pair in rings do
 		TS:Create(pair[1], TweenInfo.new(0.85 + i * 0.13, Enum.EasingStyle.Quart), {

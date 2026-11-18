@@ -455,8 +455,7 @@ local function btn(parent, text, color, size, pos, anchor)
 	shade.Active = false
 	shade.ZIndex = b.ZIndex + 4
 	shade.Parent = b
-	-- [스킬 재사용 시각화] 원형 메달 안에서는 마스킹과 초 단위 숫자,
-	-- 아래에서는 남은 시간 비율을 표시한다. 빠른 화면에서도 글자 크기는 고정한다.
+	-- [스킬 재사용 시각화] 남은 초 대신 아이콘에 어두운 막을 씌우고 금빛 테두리로 준비 상태를 표시한다.
 	local ring = Instance.new("UICorner")
 	ring.CornerRadius = UDim.new(1, 0)
 	ring.Parent = shade
@@ -1363,7 +1362,13 @@ function FieldScene.start(opts)
 	local heroPanel = Instance.new("Frame")
 	heroPanel.Name = "FieldHeroStatus"
 	heroPanel.Size = UDim2.fromOffset(202, 82)
-	heroPanel.Position = UDim2.fromOffset(12, 74)
+	-- [탐험 상단] 작은 화면에서는 영웅 상태창 전체를 축소해 미니맵과 나란히 고정한다.
+	heroPanel.Position = UDim2.fromOffset(12, if visualMobile then 66 else 74)
+	if compactTouch then
+		local scale = Instance.new("UIScale")
+		scale.Scale = 0.84
+		scale.Parent = heroPanel
+	end
 	heroPanel.BackgroundColor3 = Color3.fromRGB(23, 32, 47)
 	heroPanel.BackgroundTransparency = 0.12
 	heroPanel.BorderSizePixel = 0
@@ -1472,7 +1477,7 @@ function FieldScene.start(opts)
 		-- [유적 상호작용] 읽는 동안에도 공격·회피·이동 패드가 가려지지 않게 전투 HUD 밖에 표시한다.
 		local expanded = duration ~= nil and duration > 2.2
 		local screen = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(832, 384)
-		local narrowLandscape = visualMobile and not compactTouch and screen.X < 740 and screen.X > screen.Y
+		local narrowLandscape = visualMobile and not compactTouch and screen.X < 780 and screen.X > screen.Y
 		-- 폭 740 미만 가로형에서는 긴 안내가 퀘스트·날씨와 같은 영역을 사용하므로 잠깐 숨긴다.
 		-- 새 전투 알림이 덮어쓰더라도 마지막 메시지의 종료 시점에 원래 정보열을 복원한다.
 		local questHud = if narrowLandscape then gui:FindFirstChild("FieldQuestHint") else nil
@@ -1716,13 +1721,15 @@ function FieldScene.start(opts)
 
 	local questHint = label(gui, "", 13, Color3.fromRGB(254, 229, 162))
 	questHint.Name = "FieldQuestHint"
-	-- [모바일 퀘스트] 가로 화면에서는 이동 조이스틱 및 동료 HUD와 분리한다.
+	-- [탐험 목표] 짧은 가로 폰에서도 화면 밖으로 내려가지 않고 조이스틱·회피 버튼 사이 빈칸을 사용한다.
+	local questScreen = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(832, 384)
+	local questLandscape = visualMobile and not compactTouch and questScreen.X < 780 and questScreen.X > questScreen.Y
 	questHint.Position = if compactTouch then UDim2.fromOffset(12, 186)
-		elseif visualMobile and not compactTouch and workspace.CurrentCamera
-			and workspace.CurrentCamera.ViewportSize.X < 720
-			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 256)
+		elseif questLandscape then UDim2.fromOffset(184, if questScreen.Y < 330 then 148 else 166)
 		elseif visualMobile then UDim2.fromOffset(12, 158) else UDim2.fromOffset(12, 173)
-	questHint.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 212 else 230, 42)
+	questHint.Size = UDim2.fromOffset(if compactTouch then 206
+		elseif questLandscape then math.clamp(questScreen.X - 471, 128, 212)
+		elseif visualMobile then 212 else 230, if questLandscape then 48 else 42)
 	questHint.TextWrapped = true
 	questHint.TextXAlignment = Enum.TextXAlignment.Left
 	if targetCard then
@@ -2419,12 +2426,15 @@ function FieldScene.start(opts)
 
 	-- 미니맵: 주변 약 130스터드를 보여 준다(북쪽이 위). 흰 점=나, 금색=발견물(멀면 가장자리에 표시), 빨강=적, 큰 주황=두목
 	do
-		local MM, RADIUS = if compactTouch then 92
-			elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 82
-			elseif visualMobile then 106 else 120, 130
+		local screen = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(832, 384)
+		local MM, RADIUS = if compactTouch then math.clamp(math.floor((screen.X - 214) * 0.78), 64, 88)
+			elseif visualMobile and screen.Y < 330 then 82
+			elseif visualMobile then 94 else 120, 130
 		local map = Instance.new("Frame")
 		map.AnchorPoint = Vector2.new(0, 0)
-		map.Position = if compactTouch then UDim2.fromOffset(226, 90) else UDim2.fromOffset(236, 74)
+		-- [탐험 미니맵] 영웅 창 옆 정렬, 작은 폰에서는 화면 밖으로 이탈하지 않는다.
+		map.Position = UDim2.fromOffset(if compactTouch then math.min(216, screen.X - MM - 12)
+			elseif visualMobile then 226 else 236, if visualMobile then 66 else 74)
 		map.Size = UDim2.fromOffset(MM, MM)
 		map.BackgroundColor3 = Color3.fromRGB(16, 24, 30)
 		map.BackgroundTransparency = 0.35
@@ -2438,6 +2448,14 @@ function FieldScene.start(opts)
 		ms.Color = Color3.fromRGB(232, 190, 96)
 		ms.Thickness = 2
 		ms.Parent = map
+		-- [미니맵 나침반] 북쪽 고정 지도를 글자 하나로 구분한다. 추적 점·좌표 판정은 그대로.
+		local north = label(map, "북", 13, Color3.fromRGB(247, 222, 157))
+		north.Name = "FieldMiniMapNorth"
+		north.AnchorPoint = Vector2.new(0.5, 0)
+		north.Position = UDim2.new(0.5, 0, 0, 2)
+		north.Size = UDim2.fromOffset(25, 17)
+		north.ZIndex = 7
+		north.TextStrokeTransparency = 1
 		local dots = {}
 		local function dot(i: number, color: Color3, size: number)
 			local d = dots[i]
@@ -2466,6 +2484,106 @@ function FieldScene.start(opts)
 		mec.CornerRadius = UDim.new(1, 0)
 		mec.Parent = me
 		me.Parent = map
+
+		-- [탐험 동료 대화] 실제 합류 동료만 등장한다. 방향 안내는 생성된 발견물·희귀 단서의 실제 좌표를 읽는다.
+		local party = opts.allies or {}
+		local talkBox, talkWho, talkText = nil, nil, nil
+		if #party > 0 then
+			talkBox = Instance.new("Frame")
+			talkBox.Name = "FieldCompanionDialogue"
+			-- [동료 전투 대화] 가로형은 체력·미니맵 위쪽 빈 칸, 세로형은 왼쪽 보조 정보열만 사용한다.
+			talkBox.AnchorPoint = if compactTouch then Vector2.zero else Vector2.new(0.5, 0)
+			talkBox.Position = if compactTouch then UDim2.fromOffset(12, 164) else UDim2.new(0.5, 0, 0, 4)
+			talkBox.Size = UDim2.fromOffset(if compactTouch then math.clamp(screen.X - 140, 170, 246)
+				else math.min(440, math.max(206, screen.X - 260)), if compactTouch then 106 else 60)
+			talkBox.BackgroundColor3 = Color3.fromRGB(27, 38, 54)
+			talkBox.BackgroundTransparency = 0.15
+			talkBox.BorderSizePixel = 0
+			talkBox.ZIndex = 14
+			talkBox.Active = false
+			talkBox.Visible = false
+			talkBox.Parent = gui
+			Instance.new("UICorner", talkBox).CornerRadius = UDim.new(0, 11)
+			local rim = Instance.new("UIStroke")
+			rim.Color = Color3.fromRGB(229, 189, 113)
+			rim.Thickness = 1.5
+			rim.Parent = talkBox
+			talkWho = label(talkBox, "", 16, Color3.fromRGB(255, 226, 156))
+			talkWho.Position = UDim2.fromOffset(12, 5)
+			talkWho.Size = UDim2.new(1, -24, 0, 23)
+			talkWho.TextXAlignment = Enum.TextXAlignment.Left
+			talkWho.TextStrokeTransparency = 1
+			talkWho.ZIndex = 15
+			talkText = label(talkBox, "", 15, Color3.fromRGB(243, 235, 219))
+			talkText.Position = UDim2.fromOffset(12, 27)
+			talkText.Size = UDim2.new(1, -24, 0, if compactTouch then 76 else 30)
+			talkText.TextWrapped = true
+			talkText.TextXAlignment = Enum.TextXAlignment.Left
+			talkText.TextYAlignment = Enum.TextYAlignment.Top
+			talkText.TextStrokeTransparency = 1
+			talkText.ZIndex = 15
+		end
+		local nextTalkAt, lastKind, talkToken = os.clock() + 8, 0, 0
+		local function showCompanionHint(pos)
+			if not talkBox or finished or os.clock() < nextTalkAt then return end
+			local target, nearest, evidence = nil, math.huge, false
+			for _, obj in folder:GetChildren() do
+				if obj:IsA("BasePart") and string.sub(obj.Name, 1, 13) == "FieldEvidence" then
+					evidence = true
+					local distance = (pos - obj.Position).Magnitude
+					if distance < nearest then target, nearest = obj, distance end
+				end
+			end
+			if not evidence then
+				for _, obj in folder:GetChildren() do
+					if obj:IsA("BasePart") and string.sub(obj.Name, 1, 9) == "Discovery" then
+						local distance = (pos - obj.Position).Magnitude
+						if distance < nearest then target, nearest = obj, distance end
+					end
+				end
+			end
+			local ally = party[rng:NextInteger(1, #party)]
+			local person = if type(ally) == "table" then tostring(ally.name or "동료") else tostring(ally)
+			local role = if type(ally) == "table" then tostring(ally.role or "동료") else "동료"
+			local kind = rng:NextInteger(1, 6)
+			if kind == lastKind then kind = kind % 6 + 1 end
+			lastKind = kind
+			local line
+			if kind <= 2 and target then
+				local delta = target.Position - pos
+				local direction = if math.abs(delta.X) > math.abs(delta.Z)
+					then (if delta.X > 0 then "동쪽" else "서쪽")
+					else (if delta.Z > 0 then "남쪽" else "북쪽")
+				line = if nearest < 30 then "가까워요. " .. direction .. "에 조사할 흔적이 있어요."
+					else direction .. "으로 걸어 봐요. 지도의 흔적이 그쪽이에요."
+			elseif kind == 3 then
+				line = "첫 항해 때는 작은 지도 한 장뿐이었죠. 지금도 낯선 길은 설레요."
+			elseif kind == 4 then
+				line = "조금 긴장돼요. 그래도 함께라면 끝까지 가 볼 수 있겠죠?"
+			elseif kind == 5 then
+				line = if role == "항해사" then "길을 잃으면 지도를 봐요. 북쪽부터 차근차근 확인하죠."
+					elseif role == "포수" then "적이 가까이 오기 전에 지형과 거리를 살피는 게 좋아요."
+					else "발견물은 조사한 뒤 항구로 돌아가 기록을 확인해야 해요."
+			else
+				line = "고향의 저녁 풍경이 가끔 생각나요. 이 여정도 언젠가 이야기로 남겠죠."
+			end
+			talkWho.Text, talkText.Text = person .. " · " .. role, line
+			-- [대화 정보 우선순위] 가로는 위쪽 탐험 제목, 세로는 목표 문구만 잠깐 접는다.
+			-- 대화가 끝나면 기존 정보 표시를 복원하며 전투 버튼은 그대로 유지한다.
+			local previousInfoVisible = if compactTouch then questHint.Visible else title.Visible
+			if compactTouch then questHint.Visible = false else title.Visible = false end
+			talkBox.Visible = true
+			talkToken += 1
+			local token = talkToken
+			nextTalkAt = os.clock() + rng:NextNumber(36, 54)
+			task.delay(5, function()
+				if talkBox.Parent and token == talkToken then
+					talkBox.Visible = false
+					if compactTouch then questHint.Visible = previousInfoVisible
+					else title.Visible = previousInfoVisible end
+				end
+			end)
+		end
 		local acc = 0
 		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
 			acc += dt
@@ -2478,6 +2596,7 @@ function FieldScene.start(opts)
 				return
 			end
 			local p0 = hrp0.Position
+			showCompanionHint(p0)
 			local used = 0
 			local function place(worldPos: Vector3, color: Color3, size: number, clampEdge: boolean): boolean
 				local off = Vector2.new(worldPos.X - p0.X, worldPos.Z - p0.Z) / RADIUS
@@ -7091,10 +7210,15 @@ function FieldScene.start(opts)
 			local left = (pl.cd[key] or 0) - now
 			local shade = sb.btn:FindFirstChild("FieldCooldownShade")
 			local timer = sb.btn:FindFirstChild("FieldCooldownTime")
+			local icon = sb.btn:FindFirstChild("FieldButtonIcon")
+			if icon and icon:IsA("ImageLabel") then
+				icon.ImageTransparency = if left > 0 then 0.24 else 0
+				icon.ImageColor3 = if left > 0 then Color3.fromRGB(135, 150, 165) else Color3.new(1, 1, 1)
+			end
 			local duration = if string.sub(key, 1, 4) == "card" then 8 else (AC.Moves[key] and AC.Moves[key].cooldown) or 4
-			if shade and timer then
+			if shade then
 				shade.Visible = left > 0
-				timer.Visible = false -- [아이콘 전용] 재사용 숫자 대신 기존 진행 막대만 표시한다.
+				if timer then timer.Visible = false end -- [아이콘 전용] 어떤 상태에서도 초 숫자는 보여주지 않는다.
 				shade.Size = UDim2.fromScale(1, math.clamp(left / math.max(duration, 0.1), 0, 1))
 				local track = sb.btn:FindFirstChild("FieldCooldownTrack")
 				local fill = track and track:FindFirstChild("FieldCooldownProgress")

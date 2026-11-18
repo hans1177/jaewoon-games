@@ -164,7 +164,7 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   // [세 원형 버튼·파티 HUD] 실제 터치 사각형은 가장자리까지 클릭되므로 12가지 화면 크기에서
   // 버튼끼리, 파티창·미니맵·조이스틱·카메라와 겹치지 않아야 한다. 실제 명중/스킬 판정은 보존한다.
   assert.ok(field.includes('addIcon(wbtn, "Menu/field_weapon")'));
-  assert.ok(field.includes('map.Position = if compactTouch then UDim2.fromOffset(226, 90)'));
+  assert.ok(field.includes('map.Position = UDim2.fromOffset(if compactTouch then math.min(216, screen.X - MM - 12)'));
   assert.ok(field.includes('if compactTouch then UDim2.new(1, -68, 1, -315)'));
   assert.ok(field.includes('if compactTouch then UDim2.new(1, -62, 1, -202)'));
   assert.ok(field.includes('local partyWidth = if narrowParty then math.clamp(screen.X - 500, 100, 170) else 202'));
@@ -187,8 +187,9 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
       height-(portrait?202:short?67:106),portrait?86:short?88:96);
     const weapon=rect(width-(portrait?68:width<780?90:175),
       height-(portrait?315:short?181:225),portrait?76:short?72:80);
-    const map=box(portrait?226:236,portrait?90:74,
-      portrait?92:short?82:106,portrait?92:short?82:106);
+    // [탐험 반응형] 미니맵 축소·좌상단 위치를 12개 화면에서 직접 계산한다.
+    const mm=portrait?Math.max(64,Math.min(88,Math.floor((width-214)*0.78))):short?82:94;
+    const map=box(portrait?Math.min(216,width-mm-12):226,66,mm,mm);
     const narrowParty=width>=600 && width<720 && width>height;
     const partyWidth=narrowParty?Math.max(100,Math.min(170,width-500)):202;
     const allies=width>=600 && width>height?
@@ -197,7 +198,7 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
       [box(12,282,202,52),box(12,338,202,52)];
     const rest=[
       ['이동패드',box(28,height-178,150,150)],
-      ['미니맵',map],['주인공',box(12,74,202,82)],
+      ['미니맵',map],['주인공',box(12,66,portrait?202*0.84:202,portrait?82*0.84:82)],
       ['카메라',box(width-120,12,108,44)],
       ['동료1',allies[0]],['동료2',allies[1]],
     ];
@@ -221,7 +222,7 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.match(field,/combatBtns\.dodge = \{ btn = b, label = "회피" \}/);
   assert.equal((field.match(/bindPress\(b, function\(\) useMove\("dodge"\) end\)/g)||[]).length,1,'회피 입력 중복 금지');
   assert.doesNotMatch(field,/FieldSkillCaption|Name = "FieldSkill_|local function mkSkill\(/);
-  assert.match(field,/timer\.Visible = false -- \[아이콘 전용\]/);
+  assert.match(field,/if timer then timer\.Visible = false end -- \[아이콘 전용\]/, "쿨타임 숫자는 기존 버튼에서도 숨긴다");
   assert.match(field,/equipped\.heavy, equipped\.sweep = true, false/);
   assert.match(field,/pl\.autoNormalHits % 5 == 0/);
   // [빠른 연타] 0.14초 지연된 이전 평타도 명중 당시 새 입력 여부와 관계없이 충전해야 한다.
@@ -2792,4 +2793,115 @@ test('네모트론 후보와 독립 검수는 동일 무료 호출에서 다른 
   assert.equal(result.status,'OK');
   assert.equal(validateVisualComparison(result.text,[frame.name]).status,'UNVERIFIED',
     'JSON 구조 성공은 시각 개선 성공과 구분');
+});
+
+
+// [지상·해상·동료·카드 연출] 게임 판정과 저장 계약을 건드리지 않는 표시 전용 회귀.
+test('지상·해상 전투 아이콘 쿨타임과 탐험 동료 중앙 대화·카드 습득 등급 연출을 유지한다',()=>{
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  const naval=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  assert.match(field,/scale\.Scale = 0\.84/);
+  assert.match(field,/math\.min\(216, screen\.X - MM - 12\)/);
+  assert.match(field,/FieldCompanionDialogue/);
+  assert.match(field,/local party = opts\.allies or \{\}/);
+  assert.match(field,/FieldEvidence/);
+  assert.match(field,/timer\.Visible = false/);
+  assert.match(field,/icon\.ImageColor3 = if left > 0/);
+  assert.match(naval,/NavalCooldownShade/);
+  assert.match(naval,/UDim2\.fromOffset\(96, 96\)/);
+  assert.match(naval,/shade\.Size = UDim2\.fromScale\(1, math\.clamp\(left \/ math\.max\(sk\.cd, 0\.1\)/);
+  assert.doesNotMatch(naval,/string\.format\("%s\\n%d초", sk\.text/);
+  assert.match(naval,/l\.Name = "NavalBattleAnnouncement"\n\s*l\.Font = Enum\.Font\.GothamBold/);
+  assert.match(client,/전설의 지식 발견!/);
+  assert.match(client,/sparkleCount/);
+});
+
+
+// [모바일 전투 HUD 배치] 화면 높이가 짧아도 터치 버튼과 정보가 겹치지 않게 기존 배치를 검증한다.
+test('해전 전술·연타·알림과 탐험 목표의 모바일 영역을 분리한다',()=>{
+  const naval=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  assert.match(naval,/f\.Visible = \(star or battleViewport\.X >= 720\) and battleViewport\.Y >= 340/);
+  assert.match(naval,/tactic\.Position = UDim2\.new\(0\.5, 0, 0, if battleViewport\.Y < 340 then 64 else 119\)/);
+  assert.match(naval,/comboLabel\.Position = if battleViewport\.X < 480 then UDim2\.fromOffset\(12, 250\)/);
+  assert.match(naval,/sk\.x = if i == 1 then -126 else -230/);
+  assert.match(naval,/l\.Position = if battleViewport\.Y < 340 then UDim2\.new\(0\.5, 0, 0, 122\)/);
+  assert.match(naval,/l\.TextTruncate = Enum\.TextTruncate\.AtEnd/);
+  assert.match(field,/FieldMiniMapNorth/);
+  assert.match(field,/questLandscape = visualMobile and not compactTouch/);
+  assert.match(field,/math\.clamp\(questScreen\.X - 471, 128, 212\)/);
+  const rect=(x,y,w,h)=>({l:x,r:x+w,t:y,b:y+h});
+  const overlap=(a,b)=>a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b;
+  for(const [w,h] of [[320,540],[384,832],[600,280],[680,380],[720,320],[720,384],[832,384],[960,440]]){
+    const short=h<340,portrait=w<480,landscape=!portrait;
+    const tW=w*(portrait?0.52:w<720?0.48:0.46);
+    const tactical=rect((w-tW)/2,short?64:119,tW,short?32:46);
+    const pW=portrait?Math.min(340,w-24):Math.min(370,Math.max(190,w-500));
+    const pH=short?38:portrait?40:46;
+    const pY=short?122:portrait?190:h*0.55;
+    const popup=rect((w-pW)/2,pY-pH/2,pW,pH);
+    assert.equal(overlap(tactical,popup),false,`${w}×${h}: 전술/중앙 알림 겹침`);
+    const speed=rect(w-120,h-120,96,96);
+    const fire=portrait?rect(w-120,h-276-48,96,96):short?rect(w-126-48,h-168-48,96,96):rect(w-136-48,h-183-48,96,96);
+    const skill=portrait?rect(w-120,h-176-48,96,96):short?rect(w-230-48,h-83-48,96,96):rect(w-199-48,h-83-48,96,96);
+    const joy=rect(28,h-198,170,170);
+    for(const [n,a] of [['가속',speed],['포사격',fire],['함선기술',skill]]){
+      for(const [n2,b] of [['조타',joy],['가속',speed],['포사격',fire],['함선기술',skill]]){
+        if(n===n2)continue;
+        assert.equal(overlap(a,b),false,`${w}×${h}: ${n}/${n2} 터치 겹침`);
+      }
+      assert.equal(overlap(a,popup),false,`${w}×${h}: ${n}/중앙 알림 겹침`);
+    }
+    assert.equal(overlap(joy,popup),false,`${w}×${h}: 조타/중앙 알림 겹침`);
+    if(h>=340 && (portrait || w>=720)){
+      const cW=portrait?166:Math.min(300,Math.max(180,w-520));
+      const combo=portrait?rect(12,250,cW,42):rect((w-cW)/2,Math.floor(h*0.55+39),cW,38);
+      assert.equal(overlap(combo,popup),false,`${w}×${h}: 연타/중앙 알림 겹침`);
+      for(const b of [joy,speed,fire,skill])assert.equal(overlap(combo,b),false,`${w}×${h}: 연타/조작 겹침`);
+    }
+    if(w>=600 && w<780 && w>h){
+      const qW=Math.max(128,Math.min(212,w-471));
+      const quest=rect(184,h<330?148:166,qW,48);
+      const dodge=rect(w-235-(h<330?88:96)/2,h-(h<330?67:106)-(h<330?88:96)/2,h<330?88:96,h<330?88:96);
+      const groundJoy=rect(28,h-178,150,150);
+      assert.equal(overlap(quest,dodge),false,`${w}×${h}: 탐험 목표/회피 겹침`);
+      assert.equal(overlap(quest,groundJoy),false,`${w}×${h}: 탐험 목표/이동 겹침`);
+      assert.equal(quest.b<=h,true,`${w}×${h}: 탐험 목표 화면 밖`);
+    }
+  }
+});
+
+
+// [지상 동료 HUD] 동료의 말은 화면을 막지 않아야 하며 종료 후 기본 정보가 복구되어야 한다.
+test('지상 동료 말풍선은 가로·세로 화면에서 지도와 터치 버튼을 가리지 않는다',()=>{
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  assert.match(source,/talkBox\.Position = if compactTouch then UDim2\.fromOffset\(12, 164\) else UDim2\.new\(0\.5, 0, 0, 4\)/);
+  assert.match(source,/talkBox\.Size = UDim2\.fromOffset\(if compactTouch then math\.clamp\(screen\.X - 140, 170, 246\)/);
+  assert.match(source,/local previousInfoVisible = if compactTouch then questHint\.Visible else title\.Visible/);
+  assert.match(source,/if compactTouch then questHint\.Visible = false else title\.Visible = false end/);
+  assert.match(source,/if compactTouch then questHint\.Visible = previousInfoVisible/);
+  const box=(x,y,w,h)=>({l:x,r:x+w,t:y,b:y+h});
+  const overlap=(a,b)=>a.l<b.r && b.l<a.r && a.t<b.b && b.t<a.b;
+  for(const [width,height] of [[320,540],[384,832],[428,926],[600,280],[720,320],[832,384],[960,440]]){
+    const compact=width<520 || width<=height;
+    const talk=compact?box(12,164,Math.max(170,Math.min(246,width-140)),106):
+      box((width-Math.min(440,Math.max(206,width-260)))/2,4,
+        Math.min(440,Math.max(206,width-260)),60);
+    const camera=box(width-120,12,108,44);
+    const hero=box(12,66,compact?202*0.84:202,compact?82*0.84:82);
+    const mm=compact?Math.max(64,Math.min(88,Math.floor((width-214)*0.78))):height<330?82:94;
+    const map=box(compact?Math.min(216,width-mm-12):226,66,mm,mm);
+    assert.equal(overlap(talk,camera),false,`${width}×${height} 동료/카메라 겹침`);
+    assert.equal(overlap(talk,hero),false,`${width}×${height} 동료/주인공 겹침`);
+    assert.equal(overlap(talk,map),false,`${width}×${height} 동료/미니맵 겹침`);
+    if(compact){
+      const weapon=box(width-68-38,height-315-38,76,76);
+      const dodge=box(width-62-43,height-202-43,86,86);
+      const allies=box(12,282,202,52);
+      assert.equal(overlap(talk,weapon),false,`${width}×${height} 동료/무기교체 겹침`);
+      assert.equal(overlap(talk,dodge),false,`${width}×${height} 동료/회피 겹침`);
+      assert.equal(overlap(talk,allies),false,`${width}×${height} 동료/지원 상태 겹침`);
+    }
+  }
 });
