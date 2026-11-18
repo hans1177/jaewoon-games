@@ -169,8 +169,11 @@ local function drawFace(head, role, skin, rng, gender)
 			box(140, 100, 5, 46, Color3.fromRGB(150, 70, 62), 14)
 		end
 	end
-	if decal and gui.Parent then
-		decal:Destroy()
+	-- [실물 얼굴 복구] 공식 Studio 정면 캡처에서 R15 표면 UI의 눈·입이 보이지 않았다.
+	-- 등록된 기본 얼굴 데칼을 제거하지 않고 정면에 유지해 흰 무표정 머리로 사라지는 회귀를 막는다.
+	if decal then
+		decal.Face = Enum.NormalId.Front
+		decal.Transparency = 0
 	end
 end
 
