@@ -967,18 +967,16 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 	local good = active and color == COLORS.green
 	local travel = active and color == COLORS.blue
 	local back = active and color == COLORS.leather
-	-- [공통 색상 규칙] 금색=주요 실행, 초록=이득·확인, 파랑=이동·선택,
-	-- 빨강=위험, 갈색=돌아가기, 회색=비활성. 장정·서버 호출은 그대로 둔다.
+	-- [장정 색채] 실행은 황동, 선택·확인은 양피지, 돌아가기는 가죽, 위험은 붉은 인주.
+	-- 기존 color 식별값은 행동 의미 구분에만 사용하고 파랑·초록 단색 채움은 없앤다.
 	local inkTint = if back then Color3.fromRGB(255, 241, 210)
 		elseif danger then Color3.fromRGB(94, 25, 23)
-		elseif good then Color3.fromRGB(23, 70, 37)
-		elseif travel then Color3.fromRGB(25, 60, 98) else INK
+		else INK
 	b.BackgroundColor3 = if not active then Color3.fromRGB(174, 169, 159)
-		elseif danger then Color3.fromRGB(238, 173, 153)
-		elseif good then Color3.fromRGB(183, 226, 177)
-		elseif travel then Color3.fromRGB(183, 215, 236)
+		elseif danger then Color3.fromRGB(225, 184, 155)
 		elseif back then Color3.fromRGB(91, 67, 47)
-		elseif highlighted then Color3.fromRGB(239, 202, 123) else COLORS.paper
+		elseif highlighted then Color3.fromRGB(239, 202, 123)
+		else Color3.fromRGB(232, 211, 174)
 	b.TextColor3 = if active then inkTint else Color3.fromRGB(97, 93, 89)
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = math.clamp(math.floor((size.Y.Offset > 0 and size.Y.Offset or 40) * 0.47), 17, 23)
@@ -997,14 +995,12 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		grad.Color = ColorSequence.new(
 			if not active then Color3.fromRGB(211, 206, 196)
 				elseif danger then Color3.fromRGB(248, 209, 194)
-				elseif good then Color3.fromRGB(218, 244, 198)
-				elseif travel then Color3.fromRGB(218, 237, 249)
+				elseif good or travel then Color3.fromRGB(251, 237, 208)
 				elseif back then Color3.fromRGB(131, 99, 69)
 				elseif highlighted then Color3.fromRGB(254, 224, 158) else Color3.fromRGB(238, 219, 183),
 			if not active then Color3.fromRGB(166, 157, 143)
 				elseif danger then Color3.fromRGB(211, 127, 107)
-				elseif good then Color3.fromRGB(135, 188, 136)
-				elseif travel then Color3.fromRGB(127, 174, 203)
+				elseif good or travel then Color3.fromRGB(204, 169, 115)
 				elseif back then Color3.fromRGB(74, 51, 35)
 				elseif highlighted then Color3.fromRGB(193, 146, 72) else Color3.fromRGB(193, 156, 103)
 		)
@@ -1013,8 +1009,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		local grain = bookMaterial(b, "parchment", 148)
 		if grain then
 			grain.ImageColor3 = if danger then Color3.fromRGB(248, 185, 169)
-				elseif good then Color3.fromRGB(206, 236, 190)
-				elseif travel then Color3.fromRGB(205, 225, 243)
+				elseif good or travel then Color3.fromRGB(242, 217, 175)
 				elseif back then Color3.fromRGB(138, 111, 78)
 				elseif highlighted then Color3.fromRGB(252, 220, 148)
 				elseif active then Color3.fromRGB(251, 238, 212) else Color3.fromRGB(193, 183, 168)
@@ -1030,8 +1025,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		edge.Color = if not active then Color3.fromRGB(125, 121, 115)
 			elseif danger then Color3.fromRGB(154, 47, 42)
-			elseif good then Color3.fromRGB(48, 116, 66)
-			elseif travel then Color3.fromRGB(48, 103, 157)
+			elseif good or travel then Color3.fromRGB(158, 108, 47)
 			elseif back then Color3.fromRGB(205, 163, 93) else INK_EDGE
 		edge.Thickness = if highlighted or danger or good or travel then 2.3 else 1.6
 		edge.Transparency = if active then 0.02 else 0.4
@@ -1055,7 +1049,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		inner.Parent = bevel
 		local mark = Instance.new("Frame")
 		mark.Name = "BookRibbon"
-		mark.BackgroundColor3 = if not active then COLORS.grey else (color or INK_EDGE)
+		mark.BackgroundColor3 = if not active then COLORS.grey elseif danger then Color3.fromRGB(154, 47, 42) elseif highlighted then UI_BRASS else UI_BRASS_DARK
 		mark.BackgroundTransparency = if active then 0.16 else 0.55
 		mark.BorderSizePixel = 0
 		mark.Position = UDim2.fromOffset(5, 8)
@@ -3170,6 +3164,9 @@ local function call(action, payload)
 	if gap < 0.13 then
 		task.wait(0.13 - gap)
 	end
+	-- [첫 게임 카드 팝업] 서버 요청 이전에 실제 카드 선택 보상이 있었는지 기억한다.
+	local oldPick = view and view.cardbook and view.cardbook.pick
+	local pickBefore = if type(oldPick) == "table" and #oldPick > 0 then table.concat(oldPick, ",") else nil
 	busy = true
 	local done, ok, result = false, false, nil
 	task.spawn(function()
@@ -3319,18 +3316,25 @@ local function call(action, payload)
 	if H.cabinRefresh then
 		H.cabinRefresh()
 	end
-	-- 이긴 뒤 카드 고르기 보상이 생기면 덱 창을 열어 준다
-	-- (같은 보상은 한 번만 연다: 안 고르고 다른 행동을 해도 창이 계속 뜨지 않게)
+	-- [카드 보상 창] 새로 획득한 3장 선택 보상만 자동으로 연다.
+	-- 첫 접속 State·NewGame·시작 안내 중 기존 선택 보상을 다시 띄우지 않는다.
 	local pickIds = view and view.cardbook and view.cardbook.pick
-	if pickIds == nil then
+	if type(pickIds) ~= "table" or #pickIds == 0 then
 		H.deckPickShown = nil
-	end
-	if result.ok and action ~= "CardPick" and pickIds and H.openDeck and not inField then
+	elseif result.ok and action ~= "State" and action ~= "NewGame" and action ~= "CardPick"
+		and H.openDeck and not inField and not sceneHold and not newGameMode
+		and not H.titleMenuOpen and not H.openingPending then
 		local pickKey = table.concat(pickIds, ",")
-		if H.deckPickShown ~= pickKey then
+		if pickBefore ~= pickKey and H.deckPickShown ~= pickKey then
 			H.deckPickShown = pickKey
 			task.delay(1.5, function()
-				if view and view.cardbook and view.cardbook.pick and not inField then H.openDeck(true) end
+				local currentPick = view and view.cardbook and view.cardbook.pick
+				if type(currentPick) == "table" and #currentPick > 0
+					and table.concat(currentPick, ",") == pickKey
+					and not inField and not sceneHold and not newGameMode
+					and not H.titleMenuOpen and not H.openingPending then
+					H.openDeck(true)
+				end
 			end)
 		end
 	end
