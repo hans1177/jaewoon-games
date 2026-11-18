@@ -142,6 +142,9 @@ return function(D, S)
 		-- [지역 탐험] 신규 현장 의뢰는 지정된 항구에서만 보여 주고 자동 완료한다.
 		-- 기존 퀘스트와 이미 저장된 도감·완료 기록에는 영향을 주지 않는다.
 		if quest.exploreSite and quest.portId ~= state.portId then return false end
+		-- [연대기] 현장 조사 의뢰는 해당 대륙의 항구에 도착했을 때만 나타난다.
+		if quest.sagaPort and quest.sagaPort ~= state.portId then return false end
+		if quest.minYear and S.State.year(state) < quest.minYear then return false end
 		if quest.after and not state.quests.done[quest.after] then
 			return false
 		end
@@ -213,7 +216,7 @@ return function(D, S)
 		-- [첫 카드] '첫 발견' 보상·일지는 유지하지만 자동 퀘스트 컷신을 재생하지 않는다.
 		-- [도시 자동 이벤트] 자동 달성 퀘스트는 같은 방문에서 한 편만 연출한다.
 		-- 일반 의뢰는 일지/로그에만 기록한다. 서막·동료·대서사 분기점만 특별 장면을 연다.
-		if quest.id ~= "q_first_discovery" and (quest.major or quest.strand == "main" or quest.strand == "companion")
+		if quest.id ~= "q_first_discovery" and (quest.strand == "main" or quest.strand == "companion" or (quest.major and not quest.arc))
 			and (not AUTO_KINDS[quest.kind] or (state._autoEventPort ~= state.portId and not (state.history and state.history.pending))) then
 			state._scenes = state._scenes or {}
 			table.insert(state._scenes, { kind = "end", name = quest.name, text = ending })
@@ -263,6 +266,14 @@ return function(D, S)
 			end
 			if not again then
 				break
+			end
+		end
+		-- [연대기 교차] 중요 조사 완료 시 해당 항구에서 선택형 역사/신화 사건을 단 한 번 연다.
+		-- 기존 역사 사건 우선순위와 같은 방문 중복 장면 제한은 유지한다.
+		if reported > 0 and S.Story and S.Story.autoTrigger and not state.autoStory
+			and not (state.history and state.history.pending) and state._autoEventPort ~= state.portId then
+			if S.Story.autoTrigger(state, msgs, true) then
+				state._autoEventPort = state.portId
 			end
 		end
 		return reported
