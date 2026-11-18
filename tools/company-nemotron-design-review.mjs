@@ -80,10 +80,13 @@ export function selectDesignFrameRole(frameNames = [], previousRole = '') {
 }
 // [검증된 모델 성공 학습] 오직 공식 Studio 전후 사진·독립 모델·정확한 소스 SHA가 일치할 때만 긍정 배치 신호를 발급한다.
 // 모델 본인의 자기 평가, 소스 정적 PASS 또는 사진 해시가 다른 사실만으로 성공을 학습하지 않는다.
-export function verifiedDesignFeedback(previous = {}, feedback = {}) {
+export function verifiedDesignFeedback(previous = {}, feedback = {}, now = Date.now()) {
   const sha = value => /^[a-f0-9]{40}$/i.test(String(value ?? ''));
   const imageSha = value => /^[a-f0-9]{64}$/i.test(String(value ?? ''));
-  if (previous?.status !== 'CANDIDATE_EDITED' ||
+  const reviewedAt = Date.parse(feedback.verifiedAt);
+  if (!Number.isFinite(reviewedAt) || reviewedAt > now ||
+    now - reviewedAt > 7 * 24 * 60 * 60 * 1000 ||
+    previous?.status !== 'CANDIDATE_EDITED' ||
     !sha(previous.sourceRevision) || !sha(feedback.candidateRevision) ||
     previous.sourceRevision === feedback.candidateRevision ||
     feedback.beforeRevision !== previous.sourceRevision ||
@@ -143,7 +146,7 @@ export function selectFreeDesignModels({
       (!Number.isFinite(cooling) || cooling <= now);
   });
   const preference = config.roles?.[role] || [];
-  const verified = verifiedDesignFeedback(previous, feedback);
+  const verified = verifiedDesignFeedback(previous, feedback, now);
   const score = model => {
     // [성공] 검증된 같은 전문 역할 + 정확한 모델에 한해서만 다음 호출에 우선권을 준다.
     if (verified?.role === role && verified.provider === model.provider &&
@@ -641,6 +644,7 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
     return record(verdict.status === 'PASS' ? 'VISUAL_BEFORE_AFTER_PASS' : 'VISUAL_BEFORE_AFTER_UNVERIFIED', {
       beforeRevision, candidateRevision, beforeFrames: baseline.map(x => ({name: x.name, sha256: x.sha256})),
       afterFrames: after.map(x => ({name: x.name, sha256: x.sha256})),
+      verifiedAt: new Date().toISOString(),
       authorProvider: previous.provider, authorModel: previous.model,
       selectedRole: previous.selectedRole, reviewerProvider: reviewer.provider,
       reviewerModel: reviewer.model, comparison: verdict, rawResponseSha256: digest(result.text),
