@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'tools/free-budget-telemetry.mjs'
+      - 'tools/vibe2-gemini-free-rotation.mjs'
+      - 'qa/vibe2-gemini-free-rotation.test.mjs'
       - 'autonomous-portfolio.json'
       - 'qa/free-budget-telemetry.test.mjs'
       - 'tools/company-bridge-export.mjs'
@@ -15,6 +17,8 @@ on:
   pull_request:
     paths:
       - 'tools/free-budget-telemetry.mjs'
+      - 'tools/vibe2-gemini-free-rotation.mjs'
+      - 'qa/vibe2-gemini-free-rotation.test.mjs'
       - 'autonomous-portfolio.json'
       - 'qa/free-budget-telemetry.test.mjs'
       - 'tools/company-bridge-export.mjs'
@@ -42,6 +46,10 @@ jobs:
           node --check tools/company-game-seed-bootstrap.mjs
           node --test qa/free-budget-telemetry.test.mjs
           node --test qa/company-bridge-export.test.mjs
+      - name: Verify pinned free AI role routing
+        run: |
+          node --check tools/vibe2-gemini-free-rotation.mjs
+          node --test qa/vibe2-gemini-free-rotation.test.mjs
       - name: Live public-repository free-budget verification
         shell: bash
         run: |
