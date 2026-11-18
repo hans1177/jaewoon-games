@@ -257,6 +257,48 @@ test('Roblox owned repair prioritizes generic save and multiplayer without stale
   assert.deepEqual(other.focusedTargets,[]);
 });
 
+// [24시간 회귀] 실제 Rojo src 파일 책임과 게시·플레이 영향은 정적 힌트로만 보고한다.
+test('Mare source paths classify startup mobile field economy save multiplayer and publish target',()=>{
+ const changed=[
+  'roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau',
+  'roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau',
+  'roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau',
+  'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau',
+  'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortBuildings.luau',
+  'roblox-games/mare-essentia/src/ServerScriptService/Services/Trade.luau',
+  'roblox-games/mare-essentia/src/ServerScriptService/Services/PlayerSession.luau',
+  'roblox-games/mare-essentia/experience-target.json'
+ ];
+ const got=automaticImpactedChecks(changed);
+ assert.deepEqual(got.gameIds,['mare-essentia']);
+ for(const signal of ['ROBLOX_CLIENT_SERVER_BOUNDARY','PERSISTENCE_SOURCE_CHANGE',
+  'ROBLOX_ECONOMY_BALANCE_TOUCHPOINT','ROBLOX_STARTUP_FIRST_PLAY_TOUCHPOINT',
+  'ROBLOX_MOBILE_INPUT_UI_TOUCHPOINT','ROBLOX_NATIVE_ASSET_BINDING_TOUCHPOINT',
+  'ROBLOX_PERFORMANCE_BUDGET_TOUCHPOINT','ROBLOX_MULTIPLAYER_CONTRACT_TOUCHPOINT',
+  'ROBLOX_PUBLISH_TARGET_TOUCHPOINT'])assert.ok(got.riskPrediction.signals.includes(signal),signal);
+ assert.equal(got.riskPrediction.level,'HIGH');
+ assert.equal(got.focusedTargetsExecuted,false);
+ assert.equal(got.riskPrediction.runtimeProbabilityKnown,false);
+ assert.equal(got.fullRegressionStillRequired,true);
+ assert.equal(got.canReplaceFinalQA,false);
+});
+test('Mare source risk ignores other game repair and never fabricates runtime PASS',()=>{
+ const out=automaticImpactedChecks(
+  ['roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau'],{
+  sourceRoot:'roblox-games/simple-rpg',
+  gameRepair:{required:true,prePatchReproduced:true,repeatCount:4,
+   failureSignature:'unrelated-old-failure',responsibleFiles:['server/Game.server.luau'],
+   multiplayerLifecycle:{required:true,testTargets:['qa/old-game.test.mjs']},
+   saveMigration:{required:true,testTargets:['qa/old-save.test.mjs']}}
+ });
+ assert.deepEqual(out.gameIds,['mare-essentia']);
+ assert.ok(out.riskPrediction.signals.includes('ROBLOX_PERFORMANCE_BUDGET_TOUCHPOINT'));
+ assert.equal(out.riskPrediction.signals.includes('REPEATED_DECLARED_FAILURE'),false);
+ assert.deepEqual(out.focusedTargets,[]);
+ assert.equal(out.focusedTargetsExecuted,false);
+ assert.equal(out.canReplaceFinalQA,false);
+});
+
 test('maintenance takes over only after exact published source and QA are both proven',()=>{
  const proof={published:true,independentQA:true,regression:true,
    sourceRevision:sha,verifiedSourceRevision:sha};
