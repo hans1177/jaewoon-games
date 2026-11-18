@@ -187,6 +187,9 @@ end)
 local cursor = 1
 local pending, loaded, failed = #queue, 0, 0
 local shipColorModels, shipColorParts, shipUnknownParts, shipColorExpected = 0, 0, 0, 0
+-- [스튜디오 실물 재질 점검] 등록 원본 9종을 한 번만 집계한다. 게임 저장/선적/재질은 건드리지 않는다.
+local outfitModels, outfitParts, outfitWhite, outfitMapped, outfitMaterialized = 0, 0, 0, 0, 0
+local outfitMissing = {}
 for _, item in queue do
 	if item.kind == "Naval" and (item.name:match("%-v5$") or item.name:match("%-v5%-mobile$")) then
 		shipColorExpected += 1
@@ -198,6 +201,7 @@ local failedKeys = {}
 if studioAudit then
 	ReplicatedStorage:SetAttribute("MareModelAuditState", "RUNNING")
 	ReplicatedStorage:SetAttribute("MareModelAuditTotals", "")
+	ReplicatedStorage:SetAttribute("MareOutfitMaterialAuditState", "RUNNING")
 end
 local priorityPending = 0
 for _, asset in queue do
@@ -258,6 +262,29 @@ for _ = 1, 12 do
 						shipColorParts += colored
 						shipUnknownParts += unknown
 					end
+					-- [실제 수입 재질 감사] GLB 9종이 Roblox에 들어온 상태 그대로 판별한다.
+					-- Runtime 모델에 임의 색을 칠하지 않으며 오직 Studio 진단값만 수집한다.
+					if studioAudit and item.kind == "People"
+						and string.sub(item.name, 1, 7) == "outfit_" then
+						outfitModels += 1
+						for _, piece in model:GetDescendants() do
+							if piece:IsA("MeshPart") then
+								outfitParts += 1
+								local color = piece.Color
+								if color.R > 0.94 and color.G > 0.94 and color.B > 0.94 then
+									outfitWhite += 1
+								end
+								if piece.Material == Enum.Material.Metal or piece.Material == Enum.Material.Fabric
+									or piece.Material == Enum.Material.Leather then
+									outfitMaterialized += 1
+								end
+								local surface = piece:FindFirstChildOfClass("SurfaceAppearance")
+								if piece.TextureID ~= "" or (surface and surface.ColorMap ~= "") then
+									outfitMapped += 1
+								end
+							end
+						end
+					end
 					model.Name = item.name
 					model.Parent = group
 					if model ~= container then container:Destroy() end
@@ -276,6 +303,21 @@ for _ = 1, 12 do
 			pending -= 1
 			if (order[item.kind] or 99) <= 3 or earlyScenery[item.key] then priorityPending -= 1 end
 			if studioAudit and pending == 0 then
+				-- [원본 복식 수입 상태] 재질·텍스처 맵이 실제로 살아 있는지 검증한다.
+				-- 9종이 모두 로드돼도 색상이 흰색으로 유실됐다면 성공으로 보고하지 않는다.
+				for _, garment in { "outfit_vest", "outfit_coat", "outfit_guard", "outfit_apron",
+					"outfit_sash", "outfit_belt", "outfit_cuff", "outfit_boot", "outfit_stole" } do
+					if not library:FindFirstChild("People"):FindFirstChild(garment) then
+						table.insert(outfitMissing, garment)
+					end
+				end
+				ReplicatedStorage:SetAttribute("MareOutfitMaterialAudit", HttpService:JSONEncode({
+					expected = 9, loaded = outfitModels, meshParts = outfitParts,
+					whiteParts = outfitWhite, mappedParts = outfitMapped,
+					nativeMaterialParts = outfitMaterialized, missing = outfitMissing,
+				}))
+				ReplicatedStorage:SetAttribute("MareOutfitMaterialAuditState",
+					if outfitModels == 9 and outfitParts >= 9 and outfitWhite == 0 then "PASS" else "FAIL")
 				-- [스튜디오 독립 진단] 미복원 메시가 남았는지 확인할 수 있도록 집계만 기록한다.
 				ReplicatedStorage:SetAttribute("MareShipV5ColorAudit", HttpService:JSONEncode({
 					expected = shipColorExpected, models = shipColorModels,
