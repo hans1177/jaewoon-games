@@ -1,3 +1,4 @@
+// 파일명: tools/vibe-llm.mjs
 // 바이브 두뇌의 모델 연결부: 무료 모델을 순서대로 시도하고, 한도 초과·장애면 다음 모델로 넘어간다.
 // 순서: Gemini(무료 Flash 계열, 모델 이름은 목록 API 로 찾음) → GitHub Models(GITHUB_TOKEN, 추가 키 없음) → 선택: OpenRouter 무료 모델.
 // 키가 없는 공급자는 건너뛴다. 키 값은 로그에 남기지 않는다.
@@ -38,6 +39,8 @@ export async function geminiCall({ key, model, prompt, images = [], fetchFn = fe
   });
   if (!r.ok) throw new LlmError(`GEMINI_${model}_HTTP_${r.status}`, { status: r.status, retryable: true });
   const j = await r.json();
+  if (Number(j?.usage?.cost || 0) > 0)
+    throw new LlmError('GEMINI_'+model+'_NONZERO_COST_RESPONSE_BLOCKED', {status: 402});
   const text = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
   if (!text.trim()) throw new LlmError(`GEMINI_${model}_EMPTY`, { retryable: true });
   return text;
@@ -52,6 +55,8 @@ export async function openaiCompatCall({ url, key, model, prompt, fetchFn = fetc
   });
   if (!r.ok) throw new LlmError(`${name}_${model}_HTTP_${r.status}`, { status: r.status, retryable: true });
   let body; try { body = await r.json(); } catch { throw new LlmError(`${name}_${model}_NOT_JSON`, { status: r.status, retryable: true }); }
+  if (Number(body?.usage?.cost || 0) > 0)
+    throw new LlmError(`${name}_${model}_NONZERO_COST_RESPONSE_BLOCKED`, {status: 402});
   const text = body.choices?.[0]?.message?.content || '';
   if (!String(text).trim()) throw new LlmError(`${name}_${model}_EMPTY`, { retryable: true });
   return text;
@@ -70,6 +75,12 @@ export async function askChain({ prompt, images = [], providers, log = () => {} 
     } catch (e) {
       trace.push({ name: p.name, ok: false, status: e.status || 0, message: e.message });
       log(`LLM_FAIL ${p.name} ${e.message}`);
+      // [무료 강제] 결제 요구·비용 양수 응답을 다음 모델로 우회하지 않는다.
+      if (e.status === 402) {
+        const blocked = new LlmError('FREE_AI_BILLING_BLOCKED_NO_FALLBACK', {status: 402});
+        blocked.trace = trace;
+        throw blocked;
+      }
     }
   }
   const err = new LlmError('ALL_PROVIDERS_FAILED ' + trace.map(t => `${t.name}:${t.message}`).join(' | '));
@@ -107,8 +118,10 @@ export async function buildProviders({ env = process.env, allowGemini = true, fe
   const providers = [];
   if (allowGemini && env.GEMINI_API_KEY) {
     let models = [];
-    const forced = String(env.VIBE_BRAIN_GEMINI_MODELS || '').split(',').map(s => s.trim()).filter(Boolean);
-    try { models = forced.length ? forced : pickGeminiModels(await listGeminiModels({ key: env.GEMINI_API_KEY, fetchFn })); } catch (e) { log('GEMINI_MODEL_LIST_FAILED ' + e.message); }
+    const configured = String(env.VIBE_BRAIN_GEMINI_MODELS || '').split(',').map(s => s.trim()).filter(Boolean);
+    const forced = configured.filter(m => /^gemini-\d+(?:\.\d+)?-flash(?:-lite)?$/.test(m));
+    if (forced.length !== configured.length) log('GEMINI_NONFREE_FORCED_MODEL_BLOCKED');
+    try { models = configured.length ? forced : pickGeminiModels(await listGeminiModels({ key: env.GEMINI_API_KEY, fetchFn })); } catch (e) { log('GEMINI_MODEL_LIST_FAILED ' + e.message); }
     for (const m of models) providers.push({ name: 'gemini:' + m, acceptsImages: true, call: (prompt, images) => geminiCall({ key: env.GEMINI_API_KEY, model: m, prompt, images, fetchFn }) });
   }
   // 2순위: Mistral Codestral(코드 전용, 무료 하루 약 2000회, 전화번호 인증 필요). 키(MISTRAL_CODESTRAL_API_KEY)가 있을 때만.
@@ -130,8 +143,10 @@ export async function buildProviders({ env = process.env, allowGemini = true, fe
   }
   // 5순위: OpenRouter 무료 Qwen3 Coder(하루 50회, 키 필요)
   if (env.OPENROUTER_API_KEY) {
-    let ms = String(env.VIBE_BRAIN_OPENROUTER_MODEL || '').split(',').map(x => x.trim()).filter(Boolean);
-    if (!ms.length) { try { ms = pickOpenRouterModels(await listIds(fetchFn, 'https://openrouter.ai/api/v1/models')); } catch (e) { log('OPENROUTER_MODEL_LIST_FAILED ' + e.message); } }
+    const configured = String(env.VIBE_BRAIN_OPENROUTER_MODEL || '').split(',').map(x => x.trim()).filter(Boolean);
+    let ms = configured.filter(m => m === 'openrouter/free' || m.endsWith(':free'));
+    if (ms.length !== configured.length) log('OPENROUTER_NONFREE_FORCED_MODEL_BLOCKED');
+    if (!configured.length) { try { ms = pickOpenRouterModels(await listIds(fetchFn, 'https://openrouter.ai/api/v1/models')); } catch (e) { log('OPENROUTER_MODEL_LIST_FAILED ' + e.message); } }
     if (!ms.length) ms = ['openrouter/free'];
     for (const m of ms) providers.push({ name: 'openrouter:' + m, call: prompt => openaiCompatCall({ url: 'https://openrouter.ai/api/v1/chat/completions', key: env.OPENROUTER_API_KEY, model: m, prompt, fetchFn, name: 'OPENROUTER' }) });
   }
