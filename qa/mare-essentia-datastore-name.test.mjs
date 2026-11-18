@@ -1427,7 +1427,26 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
     assert.ok(pose.includes(profile+' = {'),'NPC 16종 복식 프로필 누락: '+profile);
   assert.match(pose,/EUROPEAN_DETAIL_CULTURES\[culture\] == true/);
   assert.match(pose,/year >= 1500 and year < 1800/);
-  assert.match(pose,/UserInputService\.TouchEnabled then 2 else 4/);
+  // [모바일 정밀 복식] 모든 남녀 직업은 4종 이상, 고성능 근접 인물은 전체 상세 메시를 유지한다.
+  for(const profile of ['citizen_male','citizen_female','citizen_worker_male','citizen_worker_female',
+    'citizen_guard_male','citizen_guard_female','citizen_official_male','citizen_official_female',
+    'citizen_sailor_male','citizen_sailor_female','citizen_artisan_male','citizen_artisan_female',
+    'companion_male','companion_female','companion_clergy_male','companion_clergy_female']){
+    const section=pose.match(new RegExp('\\t'+profile+' = \\{\\n([\\s\\S]*?)\\n\\t\\},'));
+    assert.ok(section,'복식 프로필 누락: '+profile);
+    const kinds=new Set([...section[1].matchAll(/"outfit_([^"]+)"/g)].map(m=>m[1]));
+    assert.ok(kinds.size>=4,'모바일 기본 상세 복식 4종 미만: '+profile);
+  }
+  assert.match(pose,/local detailLimit = 99/);
+  assert.match(pose,/mobileDetailFps >= 52 and distance <=/);
+  assert.match(pose,/detailLimit = 4/);
+  assert.match(pose,/detailLimit = 2/);
+  assert.match(pose,/part\.LocalTransparencyModifier = 1/);
+  assert.match(pose,/part\.LocalTransparencyModifier = 0/);
+  assert.match(pose,/Pose\.applyRegisteredMobOutfit\(model, true\)/);
+  assert.match(pose,/NpcOutfitNextCheckAt/);
+  const port=read('ReplicatedStorage/Shared/PortScene.luau');
+  assert.match(port,/string\.sub\(asset\.Name, 1, 7\) == "outfit_"/);
   assert.match(pose,/slotName = "R15Asset_" \.\. assetName \.\. "_" \.\. boneName/);
   assert.match(pose,/string\.sub\(assetName, 1, 7\) ~= "outfit_"/);
   assert.match(field,/companion = true, gender = if ad\.female then "female" else "male", culture = ad\.nation/);
