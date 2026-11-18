@@ -538,7 +538,8 @@ test('Vibe 사운드 역할은 Studio 실제 재생 증거 뒤에만 열리고 �
   const live = studioAudioEvidence({log:[{out:'STUDIO_AUDIO_AUDIT registered=90 active=4 last_loaded=sfx_bell last_failed=none'}]});
   assert.equal(live.validated,true);
   const photos = ['npc_face-0.jpg','ship_harbor-0.jpg','menu_ui-0.jpg','walk_motion-0.jpg',
-    'generic-0.jpg','town-0.jpg','tab_harbor-0.jpg','harbor_npc_hair_left-0.jpg'];
+    'generic-0.jpg','generic_alt-0.jpg','town-0.jpg','tab_harbor-0.jpg',
+    'harbor_npc_hair_left-0.jpg','walk_motion_alt-0.jpg'];
   assert.notEqual(selectDesignFrameRole(photos,'GENERAL',false),'AUDIO');
   assert.equal(selectDesignFrameRole(photos,'GENERAL',true),'AUDIO');
   const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json','utf8'));
