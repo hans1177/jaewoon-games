@@ -260,27 +260,7 @@ local arriveNext = false -- 다음 장면은 입항 연출로 시작
 local amountIndex = 1
 local message = ""
 local messageOk = true
--- [항구 장면 원래 모듈] 첫 메뉴와 무관한 3D 컴파일·수입을 분리한다.
--- 읽기가 끝난 뒤 기존 syncScene을 재사용하며 진행 데이터·항구 수치는 바꾸지 않는다.
-task.spawn(function()
-    local ok, loaded = pcall(function()
-        return require(Shared:WaitForChild("PortScene"))
-    end)
-    if ok and type(loaded) == "table" and type(loaded.build) == "function"
-        and type(loaded.makeShip) == "function" and type(loaded.placeModel) == "function" then
-        PortScene = loaded
-        gui:SetAttribute("PortSceneStatus", "ready")
-        if view and syncScene then
-            sceneKey = nil
-            syncScene()
-        end
-    else
-        gui:SetAttribute("PortSceneStatus", "failed")
-        warn("[MareEssentia] 항구 장면 초기화 실패", tostring(loaded))
-    end
-end)
 
-local ranking = nil
 local mailBox, marketList = nil, nil
 local mailDraft = { to = "", coins = "", text = "" }
 local postPrice = {}
@@ -11101,6 +11081,28 @@ task.spawn(function()
 				H.startupCover = nil
 			end
 			gui:SetAttribute("StartupStage", "title-ready")
+			-- [시작 후 3D 장면] 먼저 제목 화면을 실제로 표시한 다음 기존 항구 모듈을 읽는다.
+			-- [항구 장면 원래 모듈] 첫 메뉴와 무관한 3D 컴파일·수입을 분리한다.
+			-- 읽기가 끝난 뒤 기존 syncScene을 재사용하며 진행 데이터·항구 수치는 바꾸지 않는다.
+			task.spawn(function()
+			    local ok, loaded = pcall(function()
+			        return require(Shared:WaitForChild("PortScene"))
+			    end)
+			    if ok and type(loaded) == "table" and type(loaded.build) == "function"
+			        and type(loaded.makeShip) == "function" and type(loaded.placeModel) == "function" then
+			        PortScene = loaded
+			        gui:SetAttribute("PortSceneStatus", "ready")
+			        if view and syncScene then
+			            sceneKey = nil
+			            syncScene()
+			        end
+			    else
+			        gui:SetAttribute("PortSceneStatus", "failed")
+			        warn("[MareEssentia] 항구 장면 초기화 실패", tostring(loaded))
+			    end
+			end)
+
+			local ranking = nil
 			return
 		end
 		-- 그 밖의 응답(너무 빨라요 등)은 멈추지 말고 다시 시도한다

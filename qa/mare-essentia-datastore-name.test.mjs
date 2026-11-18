@@ -31,6 +31,7 @@ test('로블록스 시작 화면은 3D 항구 장면 로딩과 분리되고 저�
   assert.match(client,/local PortScene = nil/);
   assert.match(client,/task\.spawn\(function\(\)[\s\S]*?return require\(Shared:WaitForChild\("PortScene"\)\)/);
   assert.match(client,/gui:SetAttribute\("PortSceneStatus", "ready"\)/);
+  assert.ok(client.indexOf('gui:SetAttribute("StartupStage", "title-ready")') < client.indexOf('return require(Shared:WaitForChild("PortScene"))'),'3D 로딩이 시작 메뉴보다 먼저 실행되면 안 된다');
   assert.match(client,/if view and syncScene then[\s\S]*?sceneKey = nil[\s\S]*?syncScene\(\)/);
   assert.match(client,/syncScene = function\(\)\n\s*--[^\n]*\n\s*if not PortScene then return end/);
   assert.match(client,/local function sail\(portId\)[\s\S]*?if not PortScene then[\s\S]*?return[\s\S]*?sailingNow = true/);
