@@ -336,6 +336,24 @@ return function(D, S)
 			state._autoEventPort = state.portId
 			return
 		end
+		-- [전 세계 사건의 시작] 새 항구에 닿으면 실제 지역의 미해결 사건·유적·생물 소식 중 하나를 일지로 전한다.
+		-- 소문/현장 발견/상단 문서/학술 편지 등 출처를 구분하되, 일반 소식만으로는 컷신을 띄우지 않는다.
+		-- 중요한 연대기 장면은 위의 S.Story.autoTrigger에서 먼저 처리한다.
+		local regionalNews = {}
+		for _, quest in D.Quests.Quests do
+			if quest.newsSource and not state.quests.done[quest.id] and visible(state, quest) then
+				table.insert(regionalNews, quest)
+			end
+		end
+		if #regionalNews > 0 then
+			local seed = state.day
+			for i = 1, #state.portId do
+				seed += string.byte(state.portId, i) * i
+			end
+			local news = regionalNews[seed % #regionalNews + 1]
+			table.insert(msgs, string.format("새 소식 · %s — 「%s」\\n%s", news.newsSource, news.name, news.summary))
+			return
+		end
 		-- 항구와 날짜로 정해지는 기존 확률(70%): 같은 도착이면 같은 소문
 		local h = 0
 		for i = 1, #state.portId do
