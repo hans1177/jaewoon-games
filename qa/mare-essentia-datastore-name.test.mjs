@@ -45,7 +45,10 @@ test('항구 시작과 재생성에서 공중 캐릭터가 노출되지 않는�
   assert.match(spawn,/root.Anchored = true/);
   assert.match(spawn,/character:PivotTo\(groundedSpawn\)/);
   assert.match(spawn,/workspace:Raycast\(sceneSpawn.Position/);
-  assert.match(spawn,/ground.Position.Y \+ humanoid.HipHeight \+ root.Size.Y \* 0.5/);
+  assert.match(spawn,/root.Size.Y \* 0.5 \+ humanoid.HipHeight/);
+  assert.match(spawn,/humanoid.RigType == Enum.HumanoidRigType.R6/);
+  assert.match(spawn,/rootHeight \+= leg.Size.Y/);
+  assert.match(spawn,/workspace:FindFirstChild\("FieldScene"\) or workspace:GetAttribute\("VoyageActive"\)/);
   assert.match(client,/H.placeCharacterOnSpawn\(char\)/);
   assert.match(spawn,/part.LocalTransparencyModifier = if sceneSpawn then 0 else 1/);
   assert.match(client,/player.CharacterAppearanceLoaded:Connect\(H.placeCharacterOnSpawn\)/);
