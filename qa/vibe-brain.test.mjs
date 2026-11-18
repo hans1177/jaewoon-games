@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { pickGeminiModels, askChain, buildProviders, LlmError } from '../tools/vibe-llm.mjs';
-import {selectStudioDesignPhotoNames, visualEditLooksSafe, validateReview, mareDesignAssetInventory, audioCueEditLooksSafe, studioAudioEvidence, selectDesignFrameRole, selectFreeDesignModels} from '../tools/company-nemotron-design-review.mjs';
+import {selectStudioDesignPhotoNames, visualEditLooksSafe, validateReview, mareDesignAssetInventory, audioCueEditLooksSafe, studioAudioEvidence, selectDesignFrameRole, selectFreeDesignModels, freeQuotaDay, freeQuotaStatus, readOpenRouterFreeQuota, discoverFreeVisionModels} from '../tools/company-nemotron-design-review.mjs';
 import { rankProviders, updateProviderStats, signature, similarity, playbookReplay, examplesFor, addCandidate, labelOutcomes, sanitize, datasetLine, emptyPlaybook, pickOrder, gate, findContext, buildPrompt, parseEdits, validateEdits, applyEdits, runBrain, recordAttempt, recordMerged, emptyBrainLedger, LIMITS } from '../tools/vibe-brain.mjs';
 
 const mkRoot = files => {
@@ -549,4 +549,66 @@ test('Vibe 사운드 역할은 Studio 실제 재생 증거 뒤에만 열리고 �
   const env={GEMINI_API_KEY:'test',GEMINI_DESIGN_FREE_TIER_VERIFIED:'YES'};
   const models=selectFreeDesignModels({policy,role:'AUDIO',frameNames:['tab_harbor-0.jpg'],env});
   assert.equal(models[0]?.id,'GEMINI_LITE');
+});
+
+test('무료 AI 실제 잔여 횟수와 태평양 자정/UTC 초기화를 구분한다',async()=>{
+  const at=Date.parse('2026-11-18T07:50:00Z');
+  assert.equal(freeQuotaDay('GEMINI',at),'2026-11-17');
+  assert.equal(freeQuotaDay('GEMINI',at+20*60000),'2026-11-18');
+  assert.equal(freeQuotaDay('OPENROUTER',at),'2026-11-18');
+  const usage={day:'2026-11-18',calls:{GEMINI:12,OPENROUTER:3},
+    days:{GEMINI:'2026-11-17',OPENROUTER:'2026-11-18'}};
+  assert.equal(freeQuotaStatus('GEMINI',usage,null,at).remaining,0);
+  assert.equal(freeQuotaStatus('GEMINI',usage,null,at+20*60000).remaining,12);
+  const remote={provider:'OPENROUTER',day:'2026-11-18',remaining:2,limit:50};
+  assert.equal(freeQuotaStatus('OPENROUTER',usage,remote,at).remaining,2);
+  assert.equal(freeQuotaStatus('OPENROUTER',usage,{...remote,remaining:0},at).remaining,0);
+  let path='',keyName='';
+  const observed=await readOpenRouterFreeQuota('PRIVATE_TOKEN',async(url,req)=>{
+    path=url; keyName=req.headers.authorization;
+    return {ok:true,json:async()=>({data:{free_model_daily_requests:{
+      used:48,limit:50,remaining:2},creditBalance:0}})};
+  },at);
+  assert.equal(path,'https://openrouter.ai/api/v1/key');
+  assert.equal(keyName,'Bearer PRIVATE_TOKEN');
+  assert.deepEqual(Object.keys(observed).sort(),
+    ['checkedAt','day','limit','provider','remaining']);
+  assert.equal(observed.remaining,2);
+  assert.equal(JSON.stringify(observed).includes('PRIVATE_TOKEN'),false);
+  assert.equal(await readOpenRouterFreeQuota('PRIVATE_TOKEN',async()=>({ok:true,
+    json:async()=>({data:{free_model_daily_requests:{remaining:-1,limit:50}}})}),at),null);
+});
+
+test('무료 AI 자동 충원은 공식 0원 이미지 모델만 수용하며 결제나 임의 모델을 거부한다',async()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json','utf8'));
+  const env={OPENROUTER_API_KEY:'KEY',OPENROUTER_DESIGN_FREE_TIER_VERIFIED:'YES'};
+  const free=id=>({id,pricing:{prompt:'0',completion:'0'},
+    architecture:{input_modalities:['text','image'],output_modalities:['text']}});
+  const checked=[
+    free('example/vision-coder:free'),
+    free('example/design-vl:free'),
+    {...free('bad/pay-model'),id:'bad/pay-model'},
+    {...free('bad/paid:free'),pricing:{prompt:'0.5',completion:'0'}},
+    {...free('bad/text-only:free'),architecture:{
+      input_modalities:['text'],output_modalities:['text']}},
+    {...free('bad/audio-out:free'),architecture:{
+      input_modalities:['text','image'],output_modalities:['audio']}}
+  ];
+  const models=await discoverFreeVisionModels({env,policy,
+    fetchImpl:async()=>({ok:true,json:async()=>({data:checked})})});
+  assert.equal(models.length,2);
+  assert.ok(models.every(m=>m.provider==='OPENROUTER'&&m.model.endsWith(':free')&&
+    m.discoveredFree&&m.endpoint==='https://openrouter.ai/api/v1/chat/completions'));
+  assert.deepEqual(await discoverFreeVisionModels({env:{},policy}),[]);
+  const frozen={provider:'OPENROUTER',day:new Date().toISOString().slice(0,10),limit:50,remaining:0};
+  const diag=[];
+  assert.equal(selectFreeDesignModels({policy,env,extraModels:models,
+    quotaSnapshot:frozen,diagnostics:diag}).length,0);
+  assert.ok(diag.every(row=>row.status==='QUOTA_EXHAUSTED'&&
+    Object.keys(row).sort().join(',')==='modelId,provider,status'));
+  const unblocked=selectFreeDesignModels({policy,env,extraModels:models,
+    quotaSnapshot:{...frozen,remaining:5}});
+  assert.ok(unblocked.some(x=>x.id.startsWith('OPENROUTER_DISCOVERED_')));
+  assert.ok(unblocked.every(x=>x.model.endsWith(':free')));
+  assert.ok(unblocked.length>=3);
 });
