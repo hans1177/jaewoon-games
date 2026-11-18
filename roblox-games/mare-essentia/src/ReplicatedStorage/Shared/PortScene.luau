@@ -3520,11 +3520,21 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							importedModel(folder, mesh[1], mesh[2], chosen + Vector3.new(j * 3.2, 0, 8.6),
 								goodSize(good, 2.8), false, mesh[3])
 						end
-						local propGroup, propName = if family == "fishery" then "Town", "stall-green"
-							elseif family == "mineral" then "Cargo", "iron-bars"
-							elseif family == "timber" then "Cargo", "resource-planks"
-							elseif family == "textile" or family == "craft" then "Town", "workbench-anvil"
-							elseif family == "farm" then "Cargo", "bag" else "Cargo", "box-open"
+						-- [항구 특산품 소품] Luau 조건식은 복수 반환값을 허용하지 않으므로 기존 선택 순서를 직접 분기한다.
+						local propGroup, propName
+						if family == "fishery" then
+							propGroup, propName = "Town", "stall-green"
+						elseif family == "mineral" then
+							propGroup, propName = "Cargo", "iron-bars"
+						elseif family == "timber" then
+							propGroup, propName = "Cargo", "resource-planks"
+						elseif family == "textile" or family == "craft" then
+							propGroup, propName = "Town", "workbench-anvil"
+						elseif family == "farm" then
+							propGroup, propName = "Cargo", "bag"
+						else
+							propGroup, propName = "Cargo", "box-open"
+						end
 						importedModel(folder, propGroup, propName, chosen + Vector3.new(7, 0, 7.4), 3.2, false)
 						importedModel(folder, "Cargo", "box-open", chosen + Vector3.new(-7.6, 0, 7.4), 2.4, false)
 						sign(folder, body, SPECIAL_NAME[good] or "특산품 공방",
