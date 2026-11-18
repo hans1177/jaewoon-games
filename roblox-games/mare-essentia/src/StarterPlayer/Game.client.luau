@@ -886,8 +886,8 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		currentModel = model
 		if fallback then fallback:Destroy(); fallback = nil end
 		if readyConnection then readyConnection:Disconnect(); readyConnection = nil end
-		-- [모바일 성능] 52/60px 목록 카드는 정지 표본, 상세(96px)만 회전한다.
-		if px >= 90 then
+		-- [모바일 성능] 작은 거래 카드(96px 포함)는 정지 표본, 큰 전시장(144px 이상)만 회전한다.
+		if px >= 144 then
 			addItemMotion({ gui = vf, model = model, center = cf.Position, base = model:GetPivot() })
 		end
 		return true
