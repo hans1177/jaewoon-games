@@ -99,9 +99,12 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets.GEMINI_API_KEY || '' }}
           MISTRAL_CODESTRAL_API_KEY: ${{ secrets.MISTRAL_CODESTRAL_API_KEY }}
+          VIBE_BRAIN_CODESTRAL_FREE_TIER_VERIFIED: ${{ vars.VIBE_BRAIN_CODESTRAL_FREE_TIER_VERIFIED || 'NO' }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'NO' }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_MODELS_TOKEN: ${{ github.token }}
+          VIBE_BRAIN_GITHUB_MODELS_FREE_TIER_VERIFIED: ${{ vars.VIBE_BRAIN_GITHUB_MODELS_FREE_TIER_VERIFIED || 'NO' }}
           BRAIN_RETRY_NOW: ${{ github.event.inputs.retry_now || '0' }}
         run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --studio-ref refs/vibe/brain-studio-report --ledger build/brain-ledger.json --playbook build/brain-playbook.json --dataset build/brain-dataset.jsonl --out build/brain-result.json
       - name: Verify the change (syntax and game tests)
