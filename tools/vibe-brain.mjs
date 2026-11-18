@@ -47,7 +47,7 @@ function listLuau(dir, out = []) {
   if (!fs.existsSync(dir)) return out;
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
-    if (e.isDirectory()) listLuau(p, out); else if (e.name.endsWith('.luau')) out.push(p);
+    if (e.isDirectory()) listLuau(p, out); else if (e.isFile() && e.name.endsWith('.luau')) out.push(p);
   }
   return out;
 }
@@ -137,6 +137,7 @@ export function validateEdits(root, order, parsed, contextFiles = null) {
     if (contextFiles && !contextFiles.includes(rel)) { errs.push('FILE_NOT_IN_EVIDENCE:' + rel); continue; }
     const abs = path.join(root, rel);
     if (!fs.existsSync(abs)) { errs.push('FILE_MISSING:' + rel); continue; }
+    if (!fs.lstatSync(abs).isFile() || fs.lstatSync(abs).isSymbolicLink()) { errs.push('FILE_UNSAFE:' + rel); continue; }
     cache[rel] ??= fs.readFileSync(abs, 'utf8');
     const src = cache[rel];
     if (!e.search) { errs.push('EMPTY_SEARCH'); continue; }
