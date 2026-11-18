@@ -1445,7 +1445,7 @@ function FieldScene.start(opts)
 	local note = label(gui, "", 14, Color3.fromRGB(255, 220, 160))
 	note.Name = "FieldInteractionNote"
 	note.AnchorPoint = if compactTouch then Vector2.zero else Vector2.new(0.5, 0)
-	note.Position = if compactTouch then UDim2.fromOffset(12, 158) else UDim2.new(0.5, 0, 0, 46)
+	note.Position = if compactTouch then UDim2.fromOffset(12, 260) else UDim2.new(0.5, 0, 0, 46)
 	note.Size = UDim2.fromOffset(if compactTouch then 206 else 320, 22)
 	note.BackgroundColor3 = Color3.fromRGB(19, 29, 40)
 	note.TextStrokeTransparency = 0.16
@@ -1476,17 +1476,17 @@ function FieldScene.start(opts)
 		local narrowLandscape = visualMobile and not compactTouch and screen.X < 740 and screen.X > screen.Y
 		-- 폭 740 미만 가로형에서는 긴 안내가 퀘스트·날씨와 같은 영역을 사용하므로 잠깐 숨긴다.
 		-- 새 전투 알림이 덮어쓰더라도 마지막 메시지의 종료 시점에 원래 정보열을 복원한다.
-		local questHud = if narrowLandscape then gui:FindFirstChild("FieldQuestHint") else nil
-		local weatherHud = if narrowLandscape then gui:FindFirstChild("FieldWeatherClock") else nil
+		local questHud = if visualMobile and not compactTouch then gui:FindFirstChild("FieldQuestHint") else nil
+		local weatherHud = if visualMobile and not compactTouch then gui:FindFirstChild("FieldWeatherClock") else nil
 		if questHud then questHud.Visible = not expanded end
 		if weatherHud then weatherHud.Visible = not expanded end
 		note.AnchorPoint = if compactTouch or (expanded and visualMobile) then Vector2.zero else Vector2.new(0.5, 0)
 		note.Position = if expanded then
 			(if compactTouch then UDim2.fromOffset(12, 398)
-				elseif narrowLandscape then UDim2.fromOffset(184, screen.Y - 108)
-				elseif visualMobile then UDim2.fromOffset(184, 202)
+				elseif narrowLandscape then UDim2.fromOffset(226, screen.Y - 108)
+				elseif visualMobile then UDim2.fromOffset(226, 210)
 				else UDim2.new(0.5, 0, 0, 190))
-			elseif compactTouch then UDim2.fromOffset(12, 158) else UDim2.new(0.5, 0, 0, 46)
+			elseif compactTouch then UDim2.fromOffset(12, 260) else UDim2.new(0.5, 0, 0, 46)
 		note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 244 else 256, 64)
 			else UDim2.fromOffset(if compactTouch then 206 else 320, 22)
 		note.TextWrapped = expanded
@@ -1717,12 +1717,8 @@ function FieldScene.start(opts)
 
 	local questHint = label(gui, "", 13, Color3.fromRGB(254, 229, 162))
 	questHint.Name = "FieldQuestHint"
-	-- [모바일 퀘스트] 가로 화면에서는 이동 조이스틱 및 동료 HUD와 분리한다.
-	questHint.Position = if compactTouch then UDim2.fromOffset(12, 186)
-		elseif visualMobile and not compactTouch and workspace.CurrentCamera
-			and workspace.CurrentCamera.ViewportSize.X < 720
-			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 175)
-		elseif visualMobile then UDim2.fromOffset(12, 158) else UDim2.fromOffset(12, 173)
+	-- [퀘스트 HUD] 주인공과 동료의 왼쪽 상태열을 비워 둔다.
+	questHint.Position = if compactTouch then UDim2.fromOffset(12, 286) else UDim2.fromOffset(226, 210)
 	questHint.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 212 else 230, 42)
 	questHint.TextWrapped = true
 	questHint.TextXAlignment = Enum.TextXAlignment.Left
@@ -2152,12 +2148,8 @@ function FieldScene.start(opts)
 		local flashUntil, flashNext = 0, clockStart + 16
 		local timeLabel = label(gui, "", 13, Color3.fromRGB(231, 239, 244))
 		timeLabel.Name = "FieldWeatherClock"
-		-- [기후 HUD] 모바일 가로에서 왼쪽 이동패드를 덮지 않게 오른쪽 정보열로 이동.
-		timeLabel.Position = if compactTouch then UDim2.fromOffset(12, 232)
-			elseif visualMobile and not compactTouch and workspace.CurrentCamera
-			and workspace.CurrentCamera.ViewportSize.X < 720
-			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 225)
-			elseif visualMobile then UDim2.fromOffset(184, 270) else UDim2.fromOffset(12, 216)
+		-- [기후 HUD] 퀘스트 바로 아래에 배치한다.
+		timeLabel.Position = if compactTouch then UDim2.fromOffset(12, 332) else UDim2.fromOffset(226, 256)
 		timeLabel.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 252 else 300, 26)
 		timeLabel.TextSize = 12
 		timeLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -8070,23 +8062,11 @@ function FieldScene.start(opts)
 						-- 고정 체력 표시를 두고 실제 공격·스킬 사용량에 따른 전투 에너지만 시각적으로 갱신한다.
 						local status = Instance.new("Frame")
 						status.Name = "FieldAllyStatus" .. i
-						-- [파티 HUD] 가로형은 미니맵 옆의 상단 상태열, 세로형은 퀘스트 아래.
-						-- 600~719 너비에서는 좌측 미니맵·우측 무기교체 사이의 실제 가용폭만 사용한다.
-						local screen = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
-						local landscape = screen.X > screen.Y and screen.X >= 470
-						local miniSize = if screen.X < 520 then 92
-							elseif visualMobile and screen.Y < 330 then 82
-							elseif visualMobile then 106 else 120
-						local allyX = 226 + miniSize + 12
-						-- [좁은 가로화면] 두 번째 동료창이 회피/공격/무기교체 터치 영역을 가리지 않도록 가로폭 제한.
-						local partyWidth = if landscape then math.min(202, math.max(55, screen.X - allyX - 12)) else 202
-						if landscape and screen.X < 650 and screen.Y < 330 then
-							partyWidth = math.min(partyWidth, math.max(40, screen.X - allyX - 144))
-						end
-						local narrowParty = partyWidth < 190
-						local shortHud = screen.Y < 380 and landscape
-						status.Position = if landscape then UDim2.fromOffset(allyX, 74 + (i - 1) * (if shortHud then 48 else 56))
-							else UDim2.fromOffset(12, 282 + (i - 1) * 56)
+						-- [파티 HUD] 화면 방향에 상관없이 주인공 아래에 같은 폭으로 쌓는다.
+						local partyWidth = heroPanel.Size.X.Offset
+						local shortHud = visualMobile
+						status.Position = UDim2.fromOffset(heroPanel.Position.X.Offset,
+							heroPanel.Position.Y.Offset + heroPanel.Size.Y.Offset + 6 + (i - 1) * (if shortHud then 48 else 56))
 						status.Size = UDim2.fromOffset(partyWidth, if shortHud then 44 else 52)
 						status.Visible = true
 						status.BackgroundColor3 = Color3.fromRGB(24, 33, 49)
@@ -8102,8 +8082,8 @@ function FieldScene.start(opts)
 						frame.Parent = status
 						local face = Instance.new("ImageLabel")
 						face.Name = "FieldAllyPortrait"
-						face.Size = UDim2.fromOffset(if narrowParty or shortHud then 29 else 39, if narrowParty or shortHud then 35 else 43)
-						face.Position = UDim2.fromOffset(if narrowParty then 4 else 6, 5)
+						face.Size = UDim2.fromOffset(if shortHud then 29 else 39, if shortHud then 35 else 43)
+						face.Position = UDim2.fromOffset(6, 5)
 						face.BackgroundColor3 = Color3.fromRGB(56, 70, 82)
 						face.BorderSizePixel = 0
 						face.ScaleType = Enum.ScaleType.Crop
@@ -8119,23 +8099,22 @@ function FieldScene.start(opts)
 						faceRound.Parent = face
 						local nameText = label(status, ad.name, 13)
 						nameText.Name = "FieldAllyName"
-						nameText.Position = UDim2.fromOffset(if narrowParty then 37 else 51, 3)
-						nameText.Size = UDim2.fromOffset(if narrowParty then math.max(60, partyWidth - 42) else 143, 18)
-						nameText.TextSize = if narrowParty then 11 else 13
+						nameText.Position = UDim2.fromOffset(51, 3)
+						nameText.Size = UDim2.fromOffset(143, 18)
 						nameText.TextXAlignment = Enum.TextXAlignment.Left
 						nameText.TextTruncate = Enum.TextTruncate.AtEnd
 						local hpLine = Instance.new("Frame")
 						hpLine.Name = "FieldAllyHealth"
-						hpLine.Size = UDim2.fromOffset(if narrowParty then math.max(55, partyWidth - 43) else 140, 6)
-						hpLine.Position = UDim2.fromOffset(if narrowParty then 37 else 51, 24)
+						hpLine.Size = UDim2.fromOffset(140, 6)
+						hpLine.Position = UDim2.fromOffset(51, 24)
 						hpLine.BackgroundColor3 = Color3.fromRGB(82, 181, 117)
 						hpLine.BorderSizePixel = 0
 						hpLine.Parent = status
 						local manaAlly = JobSkills.categoryOf(ad.job) == "clergy"
 						local energyLine = Instance.new("Frame")
 						energyLine.Name = if manaAlly then "FieldAllyMana" else "FieldAllyStamina"
-						energyLine.Size = UDim2.fromOffset(if narrowParty then math.max(55, partyWidth - 43) else 140, 7)
-						energyLine.Position = UDim2.fromOffset(if narrowParty then 37 else 51, 36)
+						energyLine.Size = UDim2.fromOffset(140, 7)
+						energyLine.Position = UDim2.fromOffset(51, 36)
 						energyLine.BackgroundColor3 = Color3.fromRGB(42, 52, 68)
 						energyLine.BorderSizePixel = 0
 						energyLine.Parent = status
@@ -8150,7 +8129,6 @@ function FieldScene.start(opts)
 						energyCaption.TextXAlignment = Enum.TextXAlignment.Right
 						energyCaption.Position = UDim2.fromOffset(153, 34)
 						energyCaption.Size = UDim2.fromOffset(38, 12)
-						energyCaption.Visible = not narrowParty -- 좁은 파티 상태열에서는 진행선만 사용
 						energyCaption.ZIndex = 6
 						local ally = { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now,
 							footOffset = m:GetPivot().Position.Y - pos0.Y,
@@ -8364,8 +8342,11 @@ function FieldScene.start(opts)
 			local pad = Instance.new("Frame")
 			pad.Name = "FieldMovePad" -- [모바일 입력] 실제 이동 조작을 검사할 수 있도록 기존 패드에 이름만 부여한다.
 			pad.AnchorPoint = Vector2.new(0, 1)
-			pad.Position = UDim2.new(0, 28, 1, -28)
-			pad.Size = UDim2.fromOffset(150, 150)
+			local viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
+			-- 짧은 가로 화면에서도 동료 카드 두 장 아래에 이동패드를 확보한다.
+			local padSize = if viewport.X > viewport.Y then math.clamp(viewport.Y - 272, 44, 150) else 150
+			pad.Position = UDim2.new(0, 28, 1, if padSize < 150 then -12 else -28)
+			pad.Size = UDim2.fromOffset(padSize, padSize)
 			pad.BackgroundColor3 = Color3.fromRGB(20, 28, 40)
 			pad.BackgroundTransparency = 0.55
 			pad.BorderSizePixel = 0
@@ -8378,7 +8359,7 @@ function FieldScene.start(opts)
 			knob.Name = "FieldMoveKnob"
 			knob.AnchorPoint = Vector2.new(0.5, 0.5)
 			knob.Position = UDim2.fromScale(0.5, 0.5)
-			knob.Size = UDim2.fromOffset(60, 60)
+			knob.Size = UDim2.fromScale(0.4, 0.4)
 			knob.BackgroundColor3 = Color3.fromRGB(235, 220, 170)
 			knob.BackgroundTransparency = 0.2
 			knob.BorderSizePixel = 0
@@ -8417,7 +8398,7 @@ function FieldScene.start(opts)
 						end
 					end
 				end
-				knob.Position = UDim2.new(0.5, vec.X * 48, 0.5, vec.Y * 48)
+				knob.Position = UDim2.fromScale(0.5 + vec.X * 0.32, 0.5 + vec.Y * 0.32)
 			end
 			-- 화면 왼쪽 절반 아무 데나 누르면 거기가 스틱 중심이 된다(패드 바깥에서도 조작 가능). 손을 떼면 제자리로 돌아간다.
 			local homePos = pad.Position

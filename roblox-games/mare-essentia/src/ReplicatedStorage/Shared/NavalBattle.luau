@@ -1020,6 +1020,8 @@ function NavalBattle.play(opts)
 	tacticCorner.CornerRadius = UDim.new(0, 9)
 	tacticCorner.Parent = tactic
 	local tacticStroke = Instance.new("UIStroke")
+	-- 전술판 테두리만 그려 한글 획이 두꺼워지는 현상을 막는다.
+	tacticStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	tacticStroke.Color = Color3.fromRGB(178, 153, 106)
 	tacticStroke.Thickness = 1.5
 	tacticStroke.Parent = tactic
