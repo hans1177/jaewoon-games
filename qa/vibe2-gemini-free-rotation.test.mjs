@@ -2,7 +2,7 @@
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import {GEMINI_FREE_MODELS,VERIFIED_FREE_FALLBACK_MODELS,verifiedFreeGeminiModels,requestGeminiFreePair,retryDelayMs} from '../tools/vibe2-gemini-free-rotation.mjs';
+import {GEMINI_FREE_MODELS,VERIFIED_FREE_FALLBACK_MODELS,verifiedFreeGeminiModels,requestGeminiFreePair,retryDelayMs,selectVibe59FreeExperts} from '../tools/vibe2-gemini-free-rotation.mjs';
 import {requestLocalModel,generateCandidateWithRecovery,buildPrompt} from '../tools/vibe2-source-worker.mjs';
 import os from 'node:os';
 import path from 'node:path';
@@ -716,4 +716,26 @@ test('OpenRouter pinned free model is usable without Gemini or Groq when explici
     assert.equal(result.model,VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER);
     assert.deepEqual(urls,['https://openrouter.ai/api/v1/chat/completions']);
   });
+});
+
+
+// [Vibe5.9 분야 분류 회귀] UI, 모델, NPC 단어가 다른 일반 단어에 포함된 경우 오분류 금지.
+test('Vibe59 specialist classification ignores misleading embedded English words',()=>{
+  const select=selectVibe59FreeExperts;
+  const env={GEMINI_API_KEY:'mock',GROQ_API_KEY:'mock',
+    VIBE2_GROQ_FREE_PLAN_VERIFIED:'YES',VIBE2_EXTERNAL_FREE_ROTATION:'YES'};
+  const domain=(taskText,responsibleFiles=['server/main.js'])=>select({
+    department:'AUTO',taskText,responsibleFiles,env
+  }).domain;
+  assert.equal(domain('인터페이스 메뉴 디자인','src/ui/Main.client.luau'),'UI');
+  assert.equal(domain('Fix the interface menu layout'),'UI');
+  assert.equal(domain('Fix HTTP header parsing bug'),'DEVELOPMENT');
+  assert.equal(domain('Repair ownership sync bug in server'),'DEVELOPMENT');
+  assert.equal(domain('Repair runner state bug'),'DEVELOPMENT');
+  assert.equal(domain('NPC pathfinding logic bug',['src/NpcController.server.luau']),'DEVELOPMENT');
+  assert.equal(domain('NPC walk animation quality',['src/NpcMotion.server.luau']),'MOTION');
+  assert.equal(domain('주민 얼굴 머리와 의상 개선',['src/Shared/Pose.luau']),'NPC');
+  assert.equal(domain('항구 조명과 재질 개선',['src/Harbor.server.luau']),'WORLD');
+  assert.equal(domain('건물 배치 로직 오류 수정',['src/Building.server.luau']),'DEVELOPMENT');
+  assert.equal(domain('게임 규칙 수정',['src/interface.server.luau']),'DEVELOPMENT');
 });
