@@ -264,11 +264,13 @@ export function selectFreeDesignModels({
     const cooling = Date.parse(carried?.cooldowns?.[model.id] || '');
     // [장애 원인] 키 값, 무료 요금제 설정값, 원문 응답은 기록하지 않는다.
     const status = !approved.has(model.id) ? 'MODEL_NOT_POLICY_APPROVED'
-      : model.provider === 'OPENROUTER' && accountQuota?.scope ===
-        'OPENROUTER_ACCOUNT_TIER' && accountQuota.isFreeTier !== true
-        ? 'ACCOUNT_NOT_FREE_TIER'
       : !trim(env[model.keyName]) ? 'KEY_MISSING'
       : trim(env[model.verifiedName]) !== 'YES' ? 'FREE_TIER_NOT_VERIFIED'
+      // [무료 계정 강제] 확인 API가 실패하거나 무료가 아니면 호출 후보에서 제외한다.
+      : model.provider === 'OPENROUTER' && accountQuota?.scope !== 'OPENROUTER_ACCOUNT_TIER'
+        ? 'ACCOUNT_TIER_PROOF_MISSING'
+      : model.provider === 'OPENROUTER' && accountQuota.isFreeTier !== true
+        ? 'ACCOUNT_NOT_FREE_TIER'
       : model.provider === 'OPENROUTER' && !model.model.endsWith(':free') ? 'NOT_FREE_MODEL_ID'
       : Number(spent[model.provider] || 0) >= DAILY_LIMIT[model.provider] ? 'DAILY_CALL_CAP'
       : Number.isFinite(cooling) && cooling > now ? 'COOLDOWN_ACTIVE' : 'READY';
@@ -688,7 +690,9 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   for (const model of freeModels.slice(0, routeLimit)) {
     const previousCount = designRuntime.usageWindow.calls[model.provider] || 0;
     if (previousCount >= DAILY_LIMIT[model.provider]) continue;
-    if (model.provider === 'OPENROUTER' && designRuntime.accountQuota?.isFreeTier === false) continue;
+    if (model.provider === 'OPENROUTER' &&
+      (designRuntime.accountQuota?.scope !== 'OPENROUTER_ACCOUNT_TIER' ||
+        designRuntime.accountQuota.isFreeTier !== true)) continue;
     designRuntime.usageWindow.calls[model.provider] = previousCount + 1;
     // 무료 계정 검증값은 유지한다. 정확한 계정 전체 잔량은 공급자가 노출하지 않는다.
     designRuntime.usageWindow.firstCallAtByProvider ||= {};
@@ -806,7 +810,11 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
     names.length < 2 || !baseline.some((photo, index) => photo.sha256 !== after[index].sha256))
     return unavailable('BLOCKED_VISUAL_STUDIO_CAPTURE_MISMATCH');
   loadPreviousDesignUsage(previous);
-  const allModels = selectFreeDesignModels({frameNames: names, policy, previous});
+  // [독립 시각 QA] 검수 모델도 실제 무료 계정 증거가 없으면 절대 호출하지 않는다.
+  designRuntime.accountQuota = await inspectOpenRouterFreeTier({fetchImpl});
+  const allModels = selectFreeDesignModels({
+    frameNames: names, policy, previous, accountQuota: designRuntime.accountQuota
+  });
   // 후보 모델 스스로 최종 수용을 결정할 수 없다.
   const reviewers = allModels.filter(model => model.provider !== previous.provider);
   if (!reviewers.length)
