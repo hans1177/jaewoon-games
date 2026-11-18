@@ -2,15 +2,15 @@
   "version": 3,
   "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "a3971ecc2dd38a85329d09bd4d7209c768de5fd3",
+  "sourceRevision": "ab28a1b0cd4644951a1523ee3cc23d7faeea2f13",
   "status": "REVIEWED_NO_VERIFIED_EDIT",
-  "selectedRole": "WORLD",
+  "selectedRole": "UI",
   "usageWindow": {
     "day": "2026-11-18",
     "calls": {
       "NVIDIA": 12,
-      "GEMINI": 9,
-      "OPENROUTER": 17
+      "GEMINI": 10,
+      "OPENROUTER": 19
     },
     "windowIds": {
       "NVIDIA": "2026-11-18",
@@ -25,12 +25,9 @@
   },
   "cooldowns": {
     "GEMINI_FLASH": "2026-11-19T11:48:03.823Z",
-    "OPENROUTER_NEMOTRON": "2026-11-18T19:57:28.273Z",
-    "GEMINI_LITE": "2026-11-18T19:57:32.311Z",
-    "NVIDIA_VL": "2026-11-18T19:57:36.696Z",
-    "OPENROUTER_GEMMA26": "2026-11-18T19:53:32.034Z",
-    "OPENROUTER_GEMMA": "2026-11-18T19:53:32.431Z",
-    "OPENROUTER_OMNI": "2026-11-18T19:54:16.999Z"
+    "OPENROUTER_GEMMA": "2026-11-18T23:31:19.567Z",
+    "GEMINI_LITE": "2026-11-19T00:00:28.075Z",
+    "OPENROUTER_GEMMA26": "2026-11-18T23:31:28.833Z"
   },
   "quotaForecast": {
     "NVIDIA": {
@@ -41,7 +38,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 0.86,
+      "estimatedCallsPerHour": 0.67,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-19T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -53,13 +50,13 @@
     "GEMINI": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 9,
-      "remainingLocal": 3,
-      "effectiveRemaining": 3,
+      "localUsed": 10,
+      "remainingLocal": 2,
+      "effectiveRemaining": 2,
       "regularWorkRemaining": 0,
-      "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 0.68,
-      "estimatedHoursToLocalCap": 4.4,
+      "emergencyReserveRemaining": 2,
+      "estimatedCallsPerHour": 0.59,
+      "estimatedHoursToLocalCap": 3.4,
       "nextLocalWindowAt": "2026-11-19T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
       "accountWideBalanceVerified": false,
@@ -70,13 +67,13 @@
     "OPENROUTER": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 30,
-      "localUsed": 17,
-      "remainingLocal": 13,
-      "effectiveRemaining": 13,
-      "regularWorkRemaining": 7,
+      "localUsed": 19,
+      "remainingLocal": 11,
+      "effectiveRemaining": 11,
+      "regularWorkRemaining": 5,
       "emergencyReserveRemaining": 6,
-      "estimatedCallsPerHour": 1.32,
-      "estimatedHoursToLocalCap": 9.8,
+      "estimatedCallsPerHour": 1.14,
+      "estimatedHoursToLocalCap": 9.6,
       "nextLocalWindowAt": "2026-11-19T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -88,40 +85,45 @@
   "accountQuota": null,
   "attempts": [
     {
-      "id": "OPENROUTER_GEMMA26",
-      "status": "HTTP_429",
-      "provider": "OPENROUTER",
-      "model": "google/gemma-4-26b-a4b-it:free"
-    },
-    {
       "id": "OPENROUTER_GEMMA",
       "status": "HTTP_429",
       "provider": "OPENROUTER",
       "model": "google/gemma-4-31b-it:free"
     },
     {
-      "id": "OPENROUTER_OMNI",
-      "status": "EMPTY_OUTPUT_TOKEN_LIMIT",
+      "id": "GEMINI_LITE",
+      "status": "OK",
+      "provider": "GEMINI",
+      "model": "gemini-3.5-flash-lite"
+    },
+    {
+      "id": "GEMINI_LITE",
+      "status": "SOURCE_ANCHOR_INVALID",
+      "failureSignature": "SOURCE_ANCHOR_NOT_UNIQUE:roblox-games_mare-essentia_src_ReplicatedStorage_Shared_CardGalle"
+    },
+    {
+      "id": "OPENROUTER_GEMMA26",
+      "status": "HTTP_429",
       "provider": "OPENROUTER",
-      "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
+      "model": "google/gemma-4-26b-a4b-it:free"
     }
   ],
   "frames": [
     {
-      "name": "cb0_deck-0.jpg",
-      "sha256": "84d84b16af256e4bd80c010e1674b6c1bcea75e9d0d623702cbb156a892e7443"
+      "name": "tab_battle-0.jpg",
+      "sha256": "5ca7cc18ac7d34deb7721d8480650509e6606cea9673eb2515904f039d1be285"
     },
     {
-      "name": "cb1-0.jpg",
-      "sha256": "576a676e68c4f42e0ccda05043d00fb711864c8e32d2d2c6b162002c820288f3"
+      "name": "tab_codex-0.jpg",
+      "sha256": "65b3f53af8332264d40161f52dd958dd4e2c0cd267329cde88bffe221a953b15"
     },
     {
-      "name": "cb2-0.jpg",
-      "sha256": "1d13d80f3a27990f2def4dd696609c3942d278abcae7679f6d180f97ed65a3f2"
+      "name": "tab_crew-0.jpg",
+      "sha256": "c9c724de8304d22bd483ca078f35d91318a7452179f216df6d41635fa51a5268"
     },
     {
-      "name": "field_entry-0.jpg",
-      "sha256": "26badebde2a95201b585a80ab83941bb79349d2131fb53e54cf86ed036fd3a61"
+      "name": "tab_explore-0.jpg",
+      "sha256": "1fb365835b221891082a7c8160fa01cea2eb511b9b98ff26c692a081bd6d54dc"
     }
   ],
   "independentQaPassed": false,
