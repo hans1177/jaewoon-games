@@ -245443,7 +245443,9 @@
         "system-ai-handoff-to-reservation:system-ai:44243665096:1",
         "actions-run:44243665096",
         "system-ai-handoff-to-reservation:system-ai:44244743516:1",
-        "actions-run:44244743516"
+        "actions-run:44244743516",
+        "system-ai-handoff-to-reservation:system-ai:44244934935:1",
+        "actions-run:44244934935"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -245461,7 +245463,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-11-18T05:41:18.983Z"
+      "updatedAt": "2026-11-18T05:48:40.120Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -250907,7 +250909,9 @@
         "system-ai-handoff-to-reservation:system-ai:44243665096:1",
         "actions-run:44243665096",
         "system-ai-handoff-to-reservation:system-ai:44244743516:1",
-        "actions-run:44244743516"
+        "actions-run:44244743516",
+        "system-ai-handoff-to-reservation:system-ai:44244934935:1",
+        "actions-run:44244934935"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -250925,7 +250929,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-11-18T05:41:18.941Z"
+      "updatedAt": "2026-11-18T05:48:40.089Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -256832,7 +256836,14 @@
         "failed-strategy-fingerprint:48a16394a7f91cf2a501286c32907fa5a080ef404e36e0c0ff99486c1b0a9b88",
         "model-output-sha256:d3a814572cde2c222181ec70fb17834fbdff216d677ae76090386c96d0df61bd",
         "system-ai-handoff-to-reservation:system-ai:44244743516:1",
-        "actions-run:44244743516"
+        "actions-run:44244743516",
+        "system-ai-handoff-to-reservation:system-ai:44244934935:1",
+        "actions-run:44244934935",
+        "external-ai-raw-output-sha256:f46694c4e0188476814b75a97053959f2d205eb4bd0496678126bfc818601159",
+        "system-ai-applied-answer-sha256:8e45d0082954a2d710b33c52a9b13c34e8d32f4a6d1f4e5db504b05526771465",
+        "repair-strategy-fingerprint:8de427135193c2e70d7c841f329d67694b3cc295deca77c933a3d31458060600",
+        "failed-strategy-fingerprint:8de427135193c2e70d7c841f329d67694b3cc295deca77c933a3d31458060600",
+        "model-output-sha256:f46694c4e0188476814b75a97053959f2d205eb4bd0496678126bfc818601159"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -256850,7 +256861,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-11-18T05:41:19.063Z"
+      "updatedAt": "2026-11-18T05:48:40.182Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -271500,7 +271511,9 @@
         "system-ai-handoff-to-reservation:system-ai:44243665096:1",
         "actions-run:44243665096",
         "system-ai-handoff-to-reservation:system-ai:44244743516:1",
-        "actions-run:44244743516"
+        "actions-run:44244743516",
+        "system-ai-handoff-to-reservation:system-ai:44244934935:1",
+        "actions-run:44244934935"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -271518,7 +271531,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-30T03:07:30.585Z",
-      "updatedAt": "2026-11-18T05:41:19.261Z"
+      "updatedAt": "2026-11-18T05:48:40.312Z"
     },
     {
       "id": "recovery-00b462d32b871dc8e70a",
@@ -282615,6 +282628,104 @@
       "maxRetries": null,
       "createdAt": "2026-11-18T05:29:39.400Z",
       "updatedAt": "2026-11-18T05:29:44.865Z"
+    },
+    {
+      "id": "recovery-6876950cbd1252250c56",
+      "status": "dispatched",
+      "priority": "high",
+      "sourceQueue": "system-ai",
+      "sourceTaskId": "recovery-recovery-ad89d6a6bbf42a8096fd",
+      "gameId": "mare-essentia",
+      "responsibleFiles": [
+        ".github/workflows/devloop-studio.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/devloop-studio.yml",
+        "roblox-games/mare-essentia"
+      ],
+      "goal": "Studio runtime source is unresolved. Inspect the exact official Studio run and archived evidence first. The assigned workflow file is for diagnostic and capture-reliability repair only; do not treat unknown game source as an infrastructure defect, invent source files, or change gameplay to hide the failure. Preserve unresolved evidence for canonical Vibe game-source intake. Analyze the exact failed ROBLOX deployment stage LAUNCH_STUDIO_RUN_SCRIPT_CAPTURE_FRAMES for mare-essentia using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [],
+      "failureStage": "STUDIO_EXECUTION",
+      "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
+      "blastRadius": "single-task",
+      "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
+      "evidence": [
+        "deployment-failure-run:44233435770:1",
+        "deployment-workflow:.github/workflows/devloop-studio.yml",
+        "deployment-platform:ROBLOX",
+        "deployment-game:mare-essentia",
+        "deployment-head-sha:b5596e4a36a3925e63e98a87c5fe9292ca5cabb6",
+        "studio-qa-run:44233435770",
+        "studio-qa-checks:https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44233435770/checks.json",
+        "studio-qa-screenshots:https://github.com/hans1177/jaewoon-games/tree/mare-essentia-studio-frames/runs/44233435770",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:CAPTURE",
+        "deployment-failed-step:LAUNCH_STUDIO_RUN_SCRIPT_CAPTURE_FRAMES",
+        "deployment-confirmed-failure-stage:STUDIO_EXECUTION",
+        "deployment-confirmed-failure-signature:STUDIO_SCRIPT_REPORTED_ERRORS",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/44233435770",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED",
+        "recovery-queue:recovery-ad89d6a6bbf42a8096fd",
+        "recovery-exact-stage:STUDIO_EXECUTION",
+        "system-ai-scoped-game-repair:NO",
+        "game-repair-mode:FOCUSED_REPAIR",
+        "game-repair-repeat-count:1",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "learning-route:existing-vibe-learning-motor",
+        "primary-ai-collaboration-task:recovery-recovery-ad89d6a6bbf42a8096fd",
+        "system-ai-impact-score:470",
+        "system-ai-blocked-task-count:2",
+        "system-ai-common-bottleneck:YES",
+        "system-ai-representative-canary:STUDIO_SCRIPT_REPORTED_ERRORS",
+        "actions-run:44244743516",
+        "preflight:success",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:skipped",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "source-mutation-gate:BLOCKED_UNCHANGED_SOURCE_REVALIDATION",
+        "system-ai-failure-class:SECURITY_OR_AUTHORITY_BOUNDARY",
+        "system-ai-failure-route:SECURITY_IMMUNE_SYSTEM",
+        "retry-budget-consumed:YES",
+        "learning-penalty:YES",
+        "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
+        "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
+        "actions-run:44244934935",
+        "recovery-escalated-from:system-ai",
+        "recovery-route:SYSTEM_AI",
+        "primary-ai-collaboration-reason:REPEATED_FAILURE_SIGNATURE"
+      ],
+      "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
+      "verificationPlan": [
+        "RERUN_EXACT_FAILED_STAGE",
+        "INDEPENDENT_QA_WHEN_APPLICABLE",
+        "REGRESSION_WHEN_APPLICABLE",
+        "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-11-18T05:48:40.335Z",
+      "updatedAt": "2026-11-18T05:48:44.683Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-11-18T05:48:44.683Z"
+      ]
     }
   ]
 }
