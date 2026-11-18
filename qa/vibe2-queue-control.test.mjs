@@ -4027,7 +4027,8 @@ test('owner Mare-only queue cancels every other game task, clears reservations a
     {...task('other-running','other-game','running'),reservationId:'old:1',reservationRunId:'old',reservationRunAttempt:1,reservedAt:'2026-11-18T00:00:00Z'},
     task('other-cancelled','other-game','cancelled'),
     task('other-verified','other-game','verified'),
-    task('shared-learning',null,'queued','learning','research')
+    task('shared-learning',null,'queued','learning','research'),
+    task('shared-system','__vibe_system__','queued','system-architecture','implementation')
   ]});
   const after=synchronizeOwnerDevelopmentHolds(initial,policy,{catalog:{games:[]}});
   const byId=new Map(after.tasks.map(t=>[t.id,t]));
@@ -4046,6 +4047,7 @@ test('owner Mare-only queue cancels every other game task, clears reservations a
   assert.equal(byId.get('other-verified').status,'verified');
   assert.equal(byId.get('mare').status,'queued');
   assert.equal(byId.get('shared-learning').status,'queued');
+  assert.equal(byId.get('shared-system').status,'queued','global Vibe system work must remain');
   const next=synchronizeOwnerDevelopmentHolds(after,policy,{catalog:{games:[]}});
   assert.deepEqual(next.tasks.map(t=>[t.id,t.status,t.blocker,t.evidence]),
     after.tasks.map(t=>[t.id,t.status,t.blocker,t.evidence]),'repeated cleanup must not mutate history');

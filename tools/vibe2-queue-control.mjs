@@ -941,6 +941,7 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
   });
   return createVibeContinuousQueue({...queue,tasks:runnableTasks.map(task=>{
     const nonFocusedGame=exclusiveFocus?.size>0&&clean(task.gameId)
+      &&clean(task.gameId)!=='__vibe_system__'
       &&!exclusiveFocus.has(clean(task.gameId));
     const cancel=nonFocusedGame&&!['verified','cancelled'].includes(clean(task.status).toLowerCase());
     const game=games.get(clean(task.gameId));
