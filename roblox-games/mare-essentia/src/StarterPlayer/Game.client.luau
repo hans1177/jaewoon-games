@@ -53,14 +53,18 @@ end
 function H.placeCharacterOnSpawn(character)
 	local root = character:WaitForChild("HumanoidRootPart", 10)
 	if not root then return end
-	if sceneSpawn and not overview then
-		character:PivotTo(sceneSpawn)
-		root.Anchored = false
-	else
-		root.Anchored = true
+	-- [항구 스폰] 바닥이 생기기 전에는 보이지 않게 고정하고, 준비되면 실제 항구 위치로 이동한다.
+	root.Anchored = true
+	if sceneSpawn then character:PivotTo(sceneSpawn) end
+	for _, part in character:GetDescendants() do
+		if part:IsA("BasePart") then
+			part.LocalTransparencyModifier = if sceneSpawn then 0 else 1
+		end
 	end
+	if sceneSpawn and not overview then root.Anchored = false end
 end
 player.CharacterAdded:Connect(H.placeCharacterOnSpawn)
+player.CharacterAppearanceLoaded:Connect(H.placeCharacterOnSpawn)
 if player.Character then
 	task.defer(H.placeCharacterOnSpawn, player.Character)
 end
@@ -9691,6 +9695,7 @@ syncScene = function()
 	end)
 	if not ok then
 		warn("[Game] 항구 장면 오류", res)
+		if H.portLoadingLabel then H.portLoadingLabel.Text = "항구 준비 오류 · 다시 접속해 줘." end
 		return
 	end
 	sceneKey = key
@@ -9699,9 +9704,11 @@ syncScene = function()
 	sceneSpawn = res.spawn
 	local char = player.Character
 	if char and char:FindFirstChild("HumanoidRootPart") then
-		char:PivotTo(res.spawn)
+		H.placeCharacterOnSpawn(char)
 	end
 	applyView()
+	-- [준비 완료] 실제 항구가 설치된 뒤에만 시작 배경을 닫는다.
+	if H.setTitleMode then H.setTitleMode(not view or newGameMode) end
 end
 
 -- 항구 전경: 대항해시대 온라인처럼 항구 전체를 보여 주는 고정 시점 (천천히 흔들린다)
@@ -10195,6 +10202,9 @@ function H.startNewGame()
 	if result and result.ok then
 		arriveNext = false
 		sceneKey = nil
+		-- [새 항해] 이전 항구 스폰을 재사용해 공중에 나타나는 일을 막는다.
+		sceneSpawn = nil
+		if player.Character then H.placeCharacterOnSpawn(player.Character) end
 		sceneHold = false
 		main.Visible = true
 		menuToggle.Visible = false
@@ -10212,6 +10222,22 @@ titleGui.Enabled = false
 ;(function()
 	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(40, 76, 98))
 	root.ClipsDescendants = true
+	-- [바닥 준비 대기] 원본 표지 배경 위에 상태만 표시한다. 새 화면·우회 로딩 파이프라인은 만들지 않는다.
+	H.portLoadingLabel = Instance.new("TextLabel")
+	H.portLoadingLabel.Name = "PortLoadingMessage"
+	H.portLoadingLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+	H.portLoadingLabel.Position = UDim2.fromScale(0.5, 0.55)
+	H.portLoadingLabel.Size = UDim2.new(0.84, 0, 0, 58)
+	H.portLoadingLabel.BackgroundColor3 = Color3.fromRGB(42, 32, 25)
+	H.portLoadingLabel.BackgroundTransparency = 0.16
+	H.portLoadingLabel.Text = "항구를 준비하는 중..."
+	H.portLoadingLabel.TextColor3 = Color3.fromRGB(247, 220, 172)
+	H.portLoadingLabel.TextScaled = true
+	H.portLoadingLabel.TextWrapped = true
+	H.portLoadingLabel.Font = Enum.Font.Antique
+	H.portLoadingLabel.ZIndex = 20
+	H.portLoadingLabel.Visible = false
+	H.portLoadingLabel.Parent = root
 	local seaId = AssetIds["CardArt/event_title_sea"]
 	local shipId = AssetIds["CardArt/event_title_ship"]
 	local layered = seaId ~= nil and shipId ~= nil
@@ -10706,8 +10732,11 @@ end
 H.wasTitle = false
 H.titleMenuOpen = false
 function H.setTitleMode(on)
-	titleGui.Enabled = on or H.titleMenuOpen
+	-- [공중 캐릭터 방지] 서버 스냅샷만 왔다고 3D 항구가 준비된 것은 아니다.
+	local waitingPort = view ~= nil and not inField and sceneSpawn == nil and not on
+	titleGui.Enabled = on or H.titleMenuOpen or waitingPort
 	titlePanel.Visible = on and not H.titleMenuOpen
+	if H.portLoadingLabel then H.portLoadingLabel.Visible = waitingPort and not H.titleMenuOpen end
 	local currentCamera = workspace.CurrentCamera
 	local screen = if currentCamera then currentCamera.ViewportSize else Vector2.new(1280, 720)
 	local portrait = screen.Y > screen.X
@@ -10994,7 +11023,7 @@ function H.showTitle()
 		log.Size = UDim2.new(1, 0, 0, 0)
 		local resume = action(pages, "▶ 이어하기 · 기존 항해", UDim2.new(1, 0, 0, 60), true, function()
 			leave()
-			titleGui.Enabled = false
+			H.setTitleMode(false)
 			main.Visible = wasMain
 			menuToggle.Visible = not wasMain
 		end)
