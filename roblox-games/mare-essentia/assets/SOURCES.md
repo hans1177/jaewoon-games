@@ -1738,3 +1738,6 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 - 원본 위치: `assets/people/outfit_*.glb`; 개별 원본 증빙: `outfit_*.glb.license.json`. 제작자 Mare Essentia / GPT-6, 무료 CC0-1.0, 원본 Git 바이너리 SHA-1, 실제 정점·삼각형·부분 개수 기록.
 - 16종 직업별 남녀 복식에서 시기(1500~1799년)/서유럽 문화권을 검사하고, 모바일에는 2종·PC에는 4종의 상세 복식 메시만 표시. 동료 출신 국적을 외형 전용 문화권으로 전달.
 - 모델 업로드·사용권 확인은 기존 로블록스 자산 등록 경로를 사용. 실제 Studio 착용·부착 크기·관절·모바일 렌더 검증 전에는 품질 인증 미완료.
+| `materials/` | Beige Wall 001: Color/NormalGL/Roughness 1K | Dimitrios Savva·Rico Cilliers / CC0 | https://polyhaven.com/a/beige_wall_001 |
+| `materials/` | Weathered Brown Planks: Color/NormalGL/Roughness 1K | Dimitrios Savva·Rico Cilliers / CC0 | https://polyhaven.com/a/weathered_brown_planks |
+| `materials/` | PavingStones150: Color/NormalGL/Roughness 1K | ambientCG / CC0 | https://ambientcg.com/view?id=PavingStones150 |

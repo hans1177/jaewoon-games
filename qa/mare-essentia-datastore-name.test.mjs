@@ -1738,3 +1738,35 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
  assert.match(field,/if not textured and light >= 0\.80 and chroma <= 0\.13 then/);
  assert.match(field,/culture = ad\.nation/);
 });
+
+
+test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox 등록기 연결을 지킨다',()=>{
+  const crypto=require('node:crypto');
+  const root='roblox-games/mare-essentia/assets/materials/';
+  const approvals=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json','utf8')).approved;
+  const names=['mat_wall_plaster_beige','mat_wood_planks_worn','mat_stone_paving_historic'];
+  for(const base of names)for(const suffix of ['bc','n','r']){
+    const name=base+'_'+suffix;
+    const file=root+name+'.jpg';
+    const data=fs.readFileSync(file);
+    assert.ok(data.length>=30000,'실제 CC0 지도 파일 누락: '+name);
+    assert.equal(data[0],0xff,'JPEG 파일 형식 오류: '+name);
+    assert.equal(data[1],0xd8,'JPEG 파일 형식 오류: '+name);
+    const meta=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
+    const hash=crypto.createHash('sha256').update(data).digest('hex');
+    assert.equal(meta.sourceSha256,hash,'재질 원본 해시 오류: '+name);
+    assert.equal(meta.license,'CC0-1.0','무료 상업 이용 라이선스 누락: '+name);
+    assert.ok(meta.source.startsWith('https://'),'원본 공식 주소 누락: '+name);
+    assert.equal(approvals['Materials/'+name],hash,'바이브 이미지 검수 해시 불일치: '+name);
+  }
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  const loader=read('ServerScriptService/AssetLoader.server.luau');
+  assert.match(uploader,/\['materials', 'Materials'\]/);
+  assert.match(uploader,/kind === 'Materials'/);
+  assert.match(uploader,/CC0_MATERIAL_SOURCE_METADATA_REQUIRED/);
+  assert.match(loader,/local MATERIAL_FINISHES = \{/);
+  for(const name of ['Town/house','Town/bench_A','Town/bench_B','Town/cobblestones','Terrain/bridge-stone'])
+    assert.ok(loader.includes('["'+name+'"] = {'),'UV 확인된 건축물에만 재질 적용: '+name);
+  assert.match(loader,/not mesh:FindFirstChildOfClass\("SurfaceAppearance"\)/);
+  assert.match(loader,/and kind ~= "Materials"/);
+});

@@ -18,6 +18,17 @@ if not ok or type(ids) ~= "table" then
 	return
 end
 
+-- [승인된 무료 PBR 원본] 등록 Image ID가 모두 확인된 경우에만 원본 UV 메시의 표면을 보강한다.
+-- 원래 TextureID/SurfaceAppearance/MaterialVariant가 있는 메시, 복식 UV 없는 GLB는 손대지 않는다.
+-- 모델을 기존 MareAssets에 넣기 전 1회 적용하므로 클론·NPC 거리 갱신 비용은 증가하지 않는다.
+local MATERIAL_FINISHES = {
+	["Town/house"] = { normal = "mat_wall_plaster_beige_n", rough = "mat_wall_plaster_beige_r" },
+	["Town/bench_A"] = { color = "mat_wood_planks_worn_bc", normal = "mat_wood_planks_worn_n", rough = "mat_wood_planks_worn_r" },
+	["Town/bench_B"] = { color = "mat_wood_planks_worn_bc", normal = "mat_wood_planks_worn_n", rough = "mat_wood_planks_worn_r" },
+	["Town/cobblestones"] = { color = "mat_stone_paving_historic_bc", normal = "mat_stone_paving_historic_n", rough = "mat_stone_paving_historic_r" },
+	["Terrain/bridge-stone"] = { normal = "mat_stone_paving_historic_n", rough = "mat_stone_paving_historic_r" },
+}
+
 -- [로블록스 선박 재질 복구] 등록된 36척의 원본·모바일 GLB는 같은 팔레트와 재질별 메시를 사용한다.
 -- 수입기가 GLB의 baseColorFactor를 흰색으로 놓쳐도 메시 이름 끝의 원본 재질명으로 복원한다.
 -- 원본 모델, 기존 텍스처 맵, 자산번호, 외부 업로드 경로는 변경하지 않는다.
@@ -167,7 +178,7 @@ local queue = {}
 for key, assetId in ids do
 	local kind, name = string.match(key, "^(%w+)/(.+)$")
 	-- UI 이미지(메뉴·교역품·초상화·도감/이벤트 원화)는 모델이 아니므로 InsertService에서 제외한다.
-	if kind and name and kind ~= "Menu" and kind ~= "Goods" and kind ~= "Portraits" and kind ~= "CardArt" and type(assetId) == "number" and assetId > 0 then
+	if kind and name and kind ~= "Menu" and kind ~= "Goods" and kind ~= "Portraits" and kind ~= "CardArt" and kind ~= "Materials" and type(assetId) == "number" and assetId > 0 then
 		table.insert(queue, { kind = kind, name = name, id = assetId, key = key })
 	end
 end
@@ -282,6 +293,30 @@ for _ = 1, 12 do
 								local surface = piece:FindFirstChildOfClass("SurfaceAppearance")
 								if piece.TextureID ~= "" or (surface and surface.ColorMap ~= "") then
 									outfitMapped += 1
+								end
+							end
+						end
+					end
+					-- [원본 모델 재질] 가옥 회벽·목재 벤치·돌바닥·돌다리는 원본에 UV가 있고
+					-- 색 지도/외부 텍스처가 없는 GLB로 사전 확인됐다. 등록된 CC0 맵만 사용한다.
+					local finish = MATERIAL_FINISHES[item.key]
+					if finish then
+						local colorId = finish.color and ids["Materials/" .. finish.color]
+						local normalId = ids["Materials/" .. finish.normal]
+						local roughId = ids["Materials/" .. finish.rough]
+						-- 등록 및 Universe 권한이 아직 없다면 변경 없이 기존 게임을 유지한다.
+						if type(normalId) == "number" and normalId > 0
+							and type(roughId) == "number" and roughId > 0
+							and (not finish.color or (type(colorId) == "number" and colorId > 0)) then
+							for _, mesh in model:GetDescendants() do
+								if mesh:IsA("MeshPart") and mesh.TextureID == ""
+									and mesh.MaterialVariant == ""
+									and not mesh:FindFirstChildOfClass("SurfaceAppearance") then
+									local surface = Instance.new("SurfaceAppearance")
+									if finish.color then surface.ColorMap = "rbxassetid://" .. colorId end
+									surface.NormalMap = "rbxassetid://" .. normalId
+									surface.RoughnessMap = "rbxassetid://" .. roughId
+									surface.Parent = mesh
 								end
 							end
 						end
