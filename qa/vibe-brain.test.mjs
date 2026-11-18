@@ -370,3 +370,16 @@ test('무료 AI 역할별 배치는 실제 검수 성공만 학습하고 할당 
   assert.notEqual(rankProviders(providers, quota, now, 'DEBUG')[0].name, 'groq:code');
 });
 
+
+test('Studio 사진 참조는 뒤이은 원본 fetch 에 의해 바뀌지 않는다', () => {
+  const workflow = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
+  const capture = workflow.indexOf('frames_sha=$(git rev-parse --verify "FETCH_HEAD^{commit}"');
+  const sourceFetch = workflow.indexOf('git fetch --no-tags --depth=1 origin "$source_sha"');
+  const pin = workflow.indexOf('git update-ref refs/vibe/brain-studio-report "$frames_sha"');
+  assert.ok(capture >= 0 && sourceFetch > capture && pin > sourceFetch,
+    'Studio 증거 SHA 를 코드 SHA 재조회 전에 고정해야 한다');
+  assert.match(workflow, /git show "\$frames_sha:report\.json"/);
+  assert.match(workflow, /git ls-tree --name-only "\$frames_sha" \| grep -Eq/);
+  assert.match(workflow, /STUDIO_SCREENSHOT_EVIDENCE_COMMIT=/);
+  assert.doesNotMatch(workflow, /git update-ref refs\/vibe\/brain-studio-report FETCH_HEAD/);
+});
