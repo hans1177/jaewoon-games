@@ -122107,7 +122107,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -122141,7 +122141,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 29,
-      "previousReservationId": "system-ai:44254060075:1",
+      "previousReservationId": "system-ai:44260751052:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -122149,12 +122149,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44260751052:1",
-      "reservedAt": "2026-11-18T07:48:17.630Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -125123,7 +125123,8 @@
         "system-ai-handoff-from-reservation:system-ai:44254060075:1",
         "system-ai-impact-score:602",
         "system-ai-blocked-task-count:6",
-        "system-ai-handoff-to-reservation:system-ai:44260751052:1"
+        "system-ai-handoff-to-reservation:system-ai:44260751052:1",
+        "actions-run:44260751052"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 602,
@@ -125138,7 +125139,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-18T07:48:17.630Z"
+      "updatedAt": "2026-11-18T07:54:16.279Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -154943,7 +154944,7 @@
     },
     {
       "id": "marketing-card-grid-duel-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -154977,7 +154978,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 1,
-      "previousReservationId": "system-ai:40003881394:1",
+      "previousReservationId": "system-ai:44260751052:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -154985,12 +154986,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44260751052:1",
-      "reservedAt": "2026-11-18T07:48:17.630Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -155162,7 +155163,17 @@
         "actions-run:40003881394",
         "system-ai-impact-score:1722",
         "system-ai-blocked-task-count:35",
-        "system-ai-handoff-to-reservation:system-ai:44260751052:1"
+        "system-ai-handoff-to-reservation:system-ai:44260751052:1",
+        "actions-run:44260751052",
+        "external-ai-provider:GEMINI",
+        "external-ai-model:gemini-3.5-flash-lite",
+        "external-ai-raw-output-sha256:8ac3888cc7f250d36c527830aac5a39dba6e0da0b5e44d4f39233874abf23d6d",
+        "selected-strategy:responsible-source-defect",
+        "system-ai-critic-decision-sha256:fd38896fc3a15c292015cbdbea3d45f3a3d75a90659b51af979d96ec6be51e8b",
+        "system-ai-applied-answer-sha256:73ea0580efd039f0dce9c4f78fb569c339d844bb4239b3617cbc068bc0a9887d",
+        "repair-strategy-fingerprint:24ff09cff9dcb24a339172c1846e6ff7524f37792535949967e527211da644ed",
+        "failed-strategy-fingerprint:24ff09cff9dcb24a339172c1846e6ff7524f37792535949967e527211da644ed",
+        "model-output-sha256:8ac3888cc7f250d36c527830aac5a39dba6e0da0b5e44d4f39233874abf23d6d"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1722,
@@ -155177,7 +155188,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T14:21:40.195Z",
-      "updatedAt": "2026-11-18T07:48:17.630Z"
+      "updatedAt": "2026-11-18T07:54:16.279Z"
     },
     {
       "id": "marketing-cat-step-pre-release-v1",
