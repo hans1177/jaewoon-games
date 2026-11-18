@@ -720,6 +720,8 @@ return function(D, S)
 
 		-- 도감
 		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {}, methods = {}, kinds = {}, rarities = {}, resources = {}, resourceCounts = {}, worldCounts = {}, topicCounts = {}, evidenceCounts = {} }
+		-- [독서 기록] 서버에서 검증된 현재 책갈피만 클라이언트에 전달한다.
+		view.codex.bookmarkId = if state.encyclopediaBookmarkId and state.discovered[state.encyclopediaBookmarkId] then state.encyclopediaBookmarkId else nil
 		local fieldDiscipline = {}
 		for _, disc in D.KnowledgeTree.Disciplines do
 			fieldDiscipline[disc.field] = disc

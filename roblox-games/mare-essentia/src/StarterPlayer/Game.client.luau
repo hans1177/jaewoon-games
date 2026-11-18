@@ -9813,6 +9813,8 @@ end
 -- 금지된 외부 그림 자동 수집은 하지 않으며 보상·저장·게임 규칙은 변경하지 않는다.
 function RENDERERS.encyclopedia()
 	local cx = view.codex or {}
+	-- [계정별 책갈피] 이전 접속의 서버 저장을 진실값으로 쓴다.
+	H.encyclopediaBookmarkId = cx.bookmarkId
 	local articles = require(Shared:WaitForChild("KnowledgeCards")).Articles
 	local all, groups, known, byId = {}, { { id = "all", name = "전체" } }, {}, {}
 	local fieldCounts, explained, pictured = {}, 0, 0
@@ -9982,6 +9984,12 @@ function RENDERERS.encyclopedia()
 		end)
 		return
 	end
+	-- [이어 읽기] 새 접속에서 책갈피가 있으면 해당 장을 처음 펼친다.
+	if not H.encyclopediaPage and H.encyclopediaBookmarkId then
+		for i, entry in found do
+			if entry.id == H.encyclopediaBookmarkId then H.encyclopediaPage = i; break end
+		end
+	end
 	H.encyclopediaPage = math.clamp(H.encyclopediaPage or 1, 1, #found)
 	local current = found[H.encyclopediaPage]
 	local category = findField(current.field) or { name = tostring(current.field or "세계 지식"), color = { 122, 89, 48 } }
@@ -10047,7 +10055,10 @@ function RENDERERS.encyclopedia()
 		order += 1
 		corner(art, 5)
 		art.Parent = sheet
-		paintCardArt(art, current, category, true)
+		-- [그림은 빈칸 유지] 기존 승인 도판만 표시한다. 그림이 없으면 파츠·대체 이미지도 만들지 않는다.
+		if type(current.image) == "string" and current.image ~= "" then
+			paintCardArt(art, current, category, true)
+		end
 		line(if type(current.image) == "string" and current.image ~= ""
 			then "대표 그림 · " .. current.name
 			else "대표 그림 미등록 · 확인된 원화만 표시해", 14, false, INK_SOFT)
@@ -10067,8 +10078,33 @@ function RENDERERS.encyclopedia()
 				line(article.history, 17, false)
 			end
 		else
-			line("추가 해설 준비 중", 19, true)
-			line("검증된 장문 해설이 아직 등록되지 않았어. 추측한 역사를 자동으로 보태지 않아.", 16, false)
+			-- [전 항목 독서 본문] 장문 원고가 없는 항목도 기존 정규 설명·분야 사료·탐구 경로로 장을 구성한다.
+			-- 해당 개체만의 고유 역사나 효과를 임의로 생성하지 않는다.
+			line("Ⅱ. 이 분야의 학문적·역사적 배경", 19, true)
+			line(category.detail or category.summary or "이 지식은 현장에서 발견한 원본 기록을 통해 연구할 수 있어.", 17, false)
+			line("Ⅲ. 조사와 기록 방법", 19, true)
+			line((category.tip or "관찰 자료와 문헌을 대조해 기록을 정리한다.")
+				.. (if current.source and current.source ~= "" then "\n원본 카드의 확인 경로: " .. current.source else ""), 17, false)
+			local notes = {}
+			if current.era then
+				table.insert(notes, "시대: " .. current.era .. " · 이 항목에 부여된 시대 분류를 따라 읽어야 해.")
+			end
+			if current.region then
+				table.insert(notes, "지역: " .. current.region .. " · 기록에 연결된 대표 지역이야.")
+			end
+			if current.domain then
+				table.insert(notes, "연구 계통: " .. current.domain)
+			end
+			if current.relatedDisciplines and #current.relatedDisciplines > 0 then
+				table.insert(notes, "연계 학문: " .. table.concat(current.relatedDisciplines, " · "))
+			end
+			if current.path and current.path ~= "" then
+				table.insert(notes, "탐구 경로: " .. tostring(current.path))
+			end
+			if #notes > 0 then
+				line("Ⅳ. 시대·지역·연계 연구", 19, true)
+				line(table.concat(notes, "\n"), 17, false)
+			end
 		end
 		line("분류와 시대", 19, true)
 		line("대분류: " .. (current.worldGroup or "세계 지식")
@@ -10104,6 +10140,29 @@ function RENDERERS.encyclopedia()
 		line(if article and article.topic then "본문 참고: 위키백과 · " .. string.gsub(article.topic, "_", " ")
 			.. "\n해설은 게임에 편집·수록된 자료야. 실시간 연동은 아니야."
 			else "본문: 게임 지식카드 · 외부 참고 자료 확인 대기", 15, false, INK_SOFT)
+		-- [외부 참고 주소] Roblox 안에서 외부 페이지를 강제로 띄우지 않는다.
+		-- 승인된 상세 원고는 위키백과 원문 주소를, 그 외는 검색 주소를 구별하여 표시한다.
+		if current.evidenceId ~= "fiction" then
+			local referenceUrl = if article and article.topic and article.topic ~= ""
+				then "https://en.wikipedia.org/wiki/" .. article.topic
+				else "https://ko.wikipedia.org/w/index.php?search=" .. game:GetService("HttpService"):UrlEncode(current.name)
+			line(if article and article.topic then "참고 원문 주소" else "위키백과 검색 주소 · 내용 미검증", 18, true)
+			local reference = Instance.new("TextBox")
+			reference.Name = "EncyclopediaReferenceUrl"
+			reference.Size = UDim2.new(1, -12, 0, 55)
+			reference.BackgroundColor3 = Color3.fromRGB(249, 236, 208)
+			reference.TextColor3 = INK
+			reference.TextWrapped = true
+			reference.TextXAlignment = Enum.TextXAlignment.Left
+			reference.Font = Enum.Font.Gotham
+			reference.TextSize = 15
+			reference.TextEditable = false
+			reference.ClearTextOnFocus = false
+			reference.Text = referenceUrl
+			reference.LayoutOrder = order
+			order += 1
+			reference.Parent = sheet
+		end
 		if current.wikidata then line("위키데이터 항목: " .. tostring(current.wikidata), 15, false, INK_SOFT) end
 		if current.nextClue then
 			line("이어지는 탐구 단서", 19, true)
@@ -10170,10 +10229,11 @@ function RENDERERS.encyclopedia()
 			render()
 		end, H.encyclopediaPage < #found)
 		nextPage.Position = UDim2.new(0.65, 5, 0, 3)
-		local save = mkButton(nav, "책갈피 꽂기", COLORS.leather, UDim2.new(0.5, -5, 0, 44), function()
-			H.encyclopediaBookmarkId = current.id
-			render()
-		end, true)
+		local save = mkButton(nav, if H.encyclopediaBookmarkId == current.id then "책갈피 빼기" else "책갈피 꽂기",
+			COLORS.leather, UDim2.new(0.5, -5, 0, 44), function()
+				local result = call("SetEncyclopediaBookmark", { id = current.id })
+				if result and result.ok then Sfx.play("sfx_book_turn", 0.3) end
+			end, true)
 		save.Position = UDim2.fromOffset(0, 59)
 		save.TextSize = 16
 		local saved = H.encyclopediaBookmarkId and byId[H.encyclopediaBookmarkId]

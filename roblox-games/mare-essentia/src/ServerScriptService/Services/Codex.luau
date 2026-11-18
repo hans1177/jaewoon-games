@@ -82,6 +82,21 @@ return function(D, S)
 		return true, msg
 	end
 
+	-- [서재 · 영구 책갈피] 기존 발견/저장 모델에 포함되는 단일 카드 ID만 갱신한다.
+	-- 같은 카드를 다시 누르면 제거한다. 미발견/존재하지 않는 카드는 저장하지 않는다.
+	function handlers.SetEncyclopediaBookmark(state, p)
+		local id = if type(p) == "table" then p.id else nil
+		if type(id) ~= "string" or not D.Cards.ById[id] or not state.discovered[id] then
+			return false, "발견한 지식에만 책갈피를 꽂을 수 있어요"
+		end
+		if state.encyclopediaBookmarkId == id then
+			state.encyclopediaBookmarkId = nil
+			return true, "책갈피를 뺐어요"
+		end
+		state.encyclopediaBookmarkId = id
+		return true, "지식 백과 책갈피를 저장했어요"
+	end
+
 	function handlers.ClaimCollection(state, p)
 		local scope = p.scope
 		local tier = type(p.tier) == "number" and math.floor(p.tier)

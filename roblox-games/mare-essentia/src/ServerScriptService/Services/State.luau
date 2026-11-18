@@ -45,6 +45,7 @@ return function(D)
 			discovered = {},
 			cardOrigins = {}, -- [개인 탐험 백과] 최초 카드 획득의 항구·날짜·현장·전수자·퀘스트
 			codexLevel = {},
+			encyclopediaBookmarkId = nil, -- [서재] 선택한 지식 1개의 책갈피. 기존 저장에는 없어도 된다.
 			tech = {},
 			careers = D.Careers.new(),
 			loadout = table.clone(D.Skills.DefaultLoadout),
@@ -317,6 +318,13 @@ return function(D)
 					s.codexLevel[id] = math.clamp(math.floor(v), 0, 3)
 				end
 			end
+		end
+		-- [기존 세이브 호환] 새 책갈피는 이미 발견한 실재 카드 ID일 때만 복원한다.
+		-- 옛 세이브에는 키가 없으므로 빈 책갈피로 읽는다.
+		if type(saved.encyclopediaBookmarkId) == "string"
+			and D.Cards.ById[saved.encyclopediaBookmarkId]
+			and s.discovered[saved.encyclopediaBookmarkId] then
+			s.encyclopediaBookmarkId = saved.encyclopediaBookmarkId
 		end
 		if type(saved.tech) == "table" then
 			for id, v in saved.tech do
@@ -932,6 +940,7 @@ return function(D)
 			discovered = state.discovered,
 			cardOrigins = state.cardOrigins, -- 개인 백과 최초 발견 이력을 기존 저장 경로로 보존
 			codexLevel = state.codexLevel,
+			encyclopediaBookmarkId = state.encyclopediaBookmarkId, -- [서재] 한 항목만 저장해 폭증을 막는다.
 			tech = state.tech,
 			careers = state.careers,
 			loadout = state.loadout,
