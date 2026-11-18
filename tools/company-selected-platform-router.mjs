@@ -211,10 +211,14 @@ export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_G
   const requested=Number(max);
   const limit=Number.isFinite(requested)&&requested>=0?requested:Number.POSITIVE_INFINITY;
   const focus=roadmap?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
+  const exclusiveFocus=focus.enabled===true&&focus.completionPursuit?.enabled===true
+    &&focus.completionPursuit.nonFocusedDevelopmentContinues===false
+    ?new Set((focus.ownerFocusedGameIds||[]).map(clean).filter(Boolean)):null;
   const focusedRobloxGameIds=new Set(focus.enabled===true&&focus.completionPursuit?.enabled===true
     ?(focus.ownerFocusedGameIds||[]).filter(id=>focus.ownerFocusedGamePlatforms?.[id]==='ROBLOX'):[]);
   return Object.freeze(items
-    .filter(item=>DEFAULT_CONCURRENT_PLATFORMS.some(platform=>platformDevelopmentEligible(item,platform)))
+    .filter(item=>(!exclusiveFocus||exclusiveFocus.has(clean(item.gameId)))
+      &&DEFAULT_CONCURRENT_PLATFORMS.some(platform=>platformDevelopmentEligible(item,platform)))
     .map(item=>({...item,concurrentTargetPlatforms:[...concurrentTargetPlatforms(item)],platformExecutionMode:'ROBLOX_ONLY_OWNER_ACTIVE'}))
     .sort((a,b)=>{
       // 명시적인 최신 오너 요청: 마력숲 Roblox을 기존 집중 대상보다 먼저 개발한다.
