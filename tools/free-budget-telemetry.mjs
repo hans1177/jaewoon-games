@@ -1,3 +1,4 @@
+// 파일명: tools/free-budget-telemetry.mjs
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -167,11 +168,11 @@ async function main(){
     visibility:resolved.visibility,
     visibilitySource:resolved.visibilitySource,
     runner:arg('runner',process.env.JAEWOON_RUNNER_LABEL||'unknown'),
-    cashKRW:finite(arg('cash-krw','0'),0),
-    paidApi:String(arg('paid-api',String(portfolio.paidApi!==false)))==='true',
-    modelCalls:finite(arg('model-calls','0'),0),
+    cashKRW:finite(arg('cash-krw','0'),NaN),
+    paidApi:portfolio.paidApi!==false||arg('paid-api','false')!=='false',
+    modelCalls:finite(arg('model-calls','0'),Infinity),
     maxModelCalls:finite(portfolio.maxModelCallsPerRun,0),
-    runnerMinutes:finite(arg('runner-minutes',String(portfolio.maxRunnerMinutesPerRun??0)),0),
+    runnerMinutes:finite(arg('runner-minutes',String(portfolio.maxRunnerMinutesPerRun??0)),Infinity),
     maxRunnerMinutes:finite(portfolio.maxRunnerMinutesPerRun,0),
   });
   const output=arg('output','.autonomous/free-budget-telemetry.json');
