@@ -3010,8 +3010,20 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 								local appearance = surface:FindFirstChildOfClass("SurfaceAppearance")
 								local painted = appearance ~= nil or (surface:IsA("MeshPart") and surface.TextureID ~= "")
 								if not painted then
-									surface.Color = if quarter == "old" then surface.Color:Lerp(C(139, 130, 117), 0.16)
-										elseif quarter == "new" then surface.Color:Lerp(style.walls[1], 0.12) else surface.Color
+									local winterRoof = (math.abs((port and port.lat) or 0) >= 39) and not palm
+										and folder:GetAttribute("CitySeasonIndex") == 1
+									local roofSurface = surface:IsA("WedgePart") or surface.Name == "FlatRoof"
+										or surface:FindFirstAncestor("HarborRoof") ~= nil
+									if winterRoof and roofSurface then
+										-- [겨울 기와·석조 지붕] 원본 PBR이 없는 부분만 얇게 눈색을 덮는다.
+										-- 문화권 기와 모델의 텍스처·ColorMap은 그대로 남긴다.
+										surface.Material = Enum.Material.Snow
+										surface.Color = surface.Color:Lerp(C(230, 237, 241), 0.76)
+										surface:SetAttribute("CityWinterRoof", true)
+									else
+										surface.Color = if quarter == "old" then surface.Color:Lerp(C(139, 130, 117), 0.16)
+											elseif quarter == "new" then surface.Color:Lerp(style.walls[1], 0.12) else surface.Color
+									end
 								end
 							end
 						end
