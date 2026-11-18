@@ -1191,13 +1191,18 @@ local function mkRow(parent, title, subtitle, buttons, height)
 		local buttonSpace = if narrow then 0 else btnWidth
 		textBox.Size = UDim2.new(1, -(left + buttonSpace + 12), if narrow then 0 else 1, if narrow then math.max(30, layout.AbsoluteContentSize.Y + 10) else -8)
 		local textHeight = layout.AbsoluteContentSize.Y + 12
-		local targetHeight = math.max(minH, textHeight + (row:GetAttribute("FooterHeight") or 0) + (if narrow then 66 else 0))
+		-- [모바일 조작] 좁은 화면의 3~4개 버튼을 두 줄로 나눠 읽기 쉬운 너비 확보.
+        local buttonColumns = if narrow and width < 480 then math.min(2, btnCount) else btnCount
+        local buttonRows = if narrow then math.ceil(btnCount / math.max(1, buttonColumns)) else 0
+        local targetHeight = math.max(minH, textHeight + (row:GetAttribute("FooterHeight") or 0) + (if narrow then buttonRows * 60 + 6 else 0))
 		if row.Size.Y.Offset ~= targetHeight then row.Size = UDim2.new(1, -6, 0, targetHeight) end
 		for i, button in buttonRefs do
 			if narrow then
 				button.AnchorPoint = Vector2.new(0, 1)
-				button.Position = UDim2.new((i - 1) / btnCount, 5, 1, -5)
-				button.Size = UDim2.new(1 / btnCount, -10, 0, 54)
+                local rowIndex = math.floor((i - 1) / buttonColumns)
+                local columnIndex = (i - 1) % buttonColumns
+                button.Position = UDim2.new(columnIndex / buttonColumns, 5, 1, -5 - (buttonRows - rowIndex - 1) * 60)
+                button.Size = UDim2.new(1 / buttonColumns, -10, 0, 54)
 			else
 				button.AnchorPoint = Vector2.new(1, 0.5)
 				button.Position = UDim2.new(1, -6 - (btnCount - i) * 112, 0.5, 0)
@@ -1221,7 +1226,7 @@ end
 function H.tileGrid(items, parent, cellW, cellH)
 	cellW, cellH = math.floor((cellW or 176) * 1.3), math.max(296, math.floor((cellH or 156) * 1.55))
 	for _, it in items do
-		if it.desc then cellH = math.max(cellH, 340)
+		if it.desc then cellH = math.max(cellH, 366)
 		elseif it.portrait then cellH = math.max(cellH, 322) end
 	end
 	local grid = Instance.new("Frame")
@@ -1284,7 +1289,7 @@ function H.tileGrid(items, parent, cellW, cellH)
 			local ds = mkLabel(tile, it.desc, 14, INK, false)
 			ds.AutomaticSize = Enum.AutomaticSize.None
 			ds.Position = UDim2.fromOffset(8, textY + 69)
-			ds.Size = UDim2.new(1, -16, 0, 40)
+			ds.Size = UDim2.new(1, -16, 0, 58)
 			ds.TextWrapped = true
 			ds.TextYAlignment = Enum.TextYAlignment.Top
 			ds.TextXAlignment = Enum.TextXAlignment.Center
@@ -5645,6 +5650,8 @@ local function openTradeHall()
 		local width = root.AbsoluteSize.X
 		if width <= 0 and workspace.CurrentCamera then width = workspace.CurrentCamera.ViewportSize.X end
 		local narrow = width < 680
+        -- [작은 가로폰] 헤더와 고정 거래판을 줄여 읽을 수 있는 장부 공간을 확보한다.
+        local shortScreen = root.AbsoluteSize.Y > 0 and root.AbsoluteSize.Y < 530
 		local showMerchant = width >= 1550
 		local inset = if showMerchant then 258 else 8
 		local availableW = width - inset - 16
@@ -5654,7 +5661,8 @@ local function openTradeHall()
 		local heroW = math.max(140, availableW - listWidth - detailWidth - 8)
 		local compactList = not narrow
 		-- [교역 장부] 목록 24% · 승인 원화·백과 약 42% · 판단 수치·거래 약 34%. 세로는 목록/상세 전환.
-		local headH = if narrow then 146 elseif width < 1160 then 108 else 70
+		local headH = if narrow then (if shortScreen then 128 else 146)
+            elseif width < 1160 then (if shortScreen then 94 else 108) else 70
 		local menuY = headH + 12
 
 		-- 윗줄: 항구 이름, 코인, 화물칸, 나가기
@@ -5675,7 +5683,8 @@ local function openTradeHall()
 			else math.clamp(math.floor(width * 0.36), 220, 315)
 		local groupWidth = cashWidth + (if showRecent then recentWidth + 8 else 0)
 		local groupX = math.max(8, math.floor((width - 16 - groupWidth) / 2))
-		local rowY = if narrow then 64 elseif width < 1160 then 38 else 32
+		local rowY = if narrow then (if shortScreen then 52 else 64)
+            elseif width < 1160 then (if shortScreen then 30 else 38) else 32
 		local commonStatus = mkLabel(top, H.statusMoneyCargo(p, ship, narrow), if narrow then 15 else 18, INK, true)
 		commonStatus.Name = "TradeGlobalMoneyCargo"
         -- [교역 자금] 황동 테두리로 상단의 거래 자금을 별도 현판 처리.
@@ -5707,8 +5716,9 @@ local function openTradeHall()
 		-- [중복 설명 제거] 조언은 저널에서, 거래 알림은 결과가 있을 때만 보여 준다.
 		local toastLbl = mkLabel(top, message, 15, INK_SOFT, true)
 		toastLbl.Visible = message ~= ""
-		toastLbl.Position = if narrow then UDim2.fromOffset(12, 112)
-            elseif width < 1160 then UDim2.fromOffset(12, 80) else UDim2.fromOffset(12, 36)
+		toastLbl.Position = if narrow then UDim2.fromOffset(12, if shortScreen then 94 else 112)
+            elseif width < 1160 then UDim2.fromOffset(12, if shortScreen then 68 else 80)
+            else UDim2.fromOffset(12, 36)
         toastLbl.Size = if narrow then UDim2.new(1, -30, 0, 22)
             elseif width < 1160 then UDim2.new(1, -24, 0, 22) else UDim2.new(0.24, -10, 0, 24)
 		toastLbl.AutomaticSize = Enum.AutomaticSize.None
@@ -5822,7 +5832,7 @@ local function openTradeHall()
 		search.Font = Enum.Font.GothamMedium
 		search.TextSize = 17
 		search.ClearTextOnFocus = false
-		search.PlaceholderText = "상품 이름 검색"
+		search.PlaceholderText = "상품 이름·분류 검색"
 		search.Text = query
 		search.Visible = list.Visible
 		search.Parent = root
@@ -5937,7 +5947,7 @@ local function openTradeHall()
 			row.Text = ""
 			row.LayoutOrder = i
 			-- [물품 목록] 거래 정보·보유 손익·특산 도장이 서로 침범하지 않도록 아래 여백을 넓힌다.
-            row.Size = UDim2.new(1, -8, 0, 190)
+            row.Size = UDim2.new(1, -8, 0, 204)
             row:SetAttribute("SelectedGood", g.id == hallGood)
 			row.BackgroundColor3 = if g.id == hallGood then Color3.fromRGB(236, 210, 156) else COLORS.paper
 			row.BorderSizePixel = 0
@@ -6020,14 +6030,15 @@ local function openTradeHall()
 			pr.TextSize = if listWidth < 230 then 15 else 17
 			pr.AutomaticSize = Enum.AutomaticSize.None
 			local ownedLine = mkLabel(row,
-				string.format("보유 %d개 · %s", g.owned, profitText), 16, if profit and profit < 0 then COLORS.red else INK_SOFT, true)
-			ownedLine.Position = UDim2.fromOffset(10, 150)
-            ownedLine.Size = UDim2.new(1, -20, 0, 32)
+				string.format("보유 %d개 · 구매 가능 %d개\n%s", g.owned, budgetQty, profitText), 16, if profit and profit < 0 then COLORS.red else INK_SOFT, true)
+			ownedLine.Position = UDim2.fromOffset(10, 147)
+            ownedLine.Size = UDim2.new(1, -20, 0, 50)
+            ownedLine.TextWrapped = true
             ownedLine.TextSize = if listWidth < 230 then 14 else 16
 			ownedLine.AutomaticSize = Enum.AutomaticSize.None
 			ownedLine.TextTruncate = Enum.TextTruncate.AtEnd
-			if g.tag ~= "" then
-				local badge = Instance.new("TextLabel")
+			if g.tag and g.tag ~= "" then
+                local badge = Instance.new("TextLabel")
 				badge.Text = g.tag
 				badge.TextSize = 16
 				badge.Font = Enum.Font.GothamBold
@@ -6137,7 +6148,7 @@ local function openTradeHall()
 		detail.Name = "TradeSpecimen"
 		detail.Position = if narrow then UDim2.fromOffset(8, menuY) else UDim2.fromOffset(width - detailWidth - 8, menuY)
 		detail.Size = if narrow then UDim2.new(1, -16, 1, -menuY - 8) else UDim2.new(0, detailWidth, 1, -menuY - 8)
-		if sel then detail.Size = detail.Size - UDim2.fromOffset(0, 190) end
+		if sel then detail.Size = detail.Size - UDim2.fromOffset(0, if shortScreen then 158 else 190) end
 		detail.BackgroundColor3 = COLORS.paper
 		detail.BorderSizePixel = 0
 		detail.ScrollBarThickness = 4
@@ -6274,13 +6285,13 @@ local function openTradeHall()
 			inventory.AutomaticSize = Enum.AutomaticSize.None
 			inventory.TextWrapped = true
 			-- 상세 페이지를 스크롤해도 수량과 거래 버튼은 화면 아래에 남긴다.
-			local desk = mkBox(root, UDim2.new(detail.Position.X.Scale, detail.Position.X.Offset, 1, -182),
-				UDim2.new(detail.Size.X.Scale, detail.Size.X.Offset, 0, 174), COLORS.leather)
+			local desk = mkBox(root, UDim2.new(detail.Position.X.Scale, detail.Position.X.Offset, 1, if shortScreen then -150 else -182),
+                UDim2.new(detail.Size.X.Scale, detail.Size.X.Offset, 0, if shortScreen then 142 else 174), COLORS.leather)
 			corner(desk, 7)
 			bookMaterial(desk, "leather", 144)
 			local receipt = mkLabel(desk, "", 17, COLORS.text, false)
-			receipt.Position = UDim2.fromOffset(8, 5)
-			receipt.Size = UDim2.new(1, -16, 0, 38)
+			receipt.Position = UDim2.fromOffset(8, if shortScreen then 3 else 5)
+            receipt.Size = UDim2.new(1, -16, 0, if shortScreen then 34 else 38)
 			receipt.AutomaticSize = Enum.AutomaticSize.None
 			receipt.TextXAlignment = Enum.TextXAlignment.Center
 			local function refreshReceipt()
@@ -6300,8 +6311,8 @@ local function openTradeHall()
 				build()
 			end
 			local function quantityButton(index, label, action, enabled)
-				local b = mkButton(desk, label, COLORS.paper, UDim2.new(0.25, -8, 0, 50), action, enabled)
-				b.Position = UDim2.new((index - 1) / 4, 4, 0, 47)
+				local b = mkButton(desk, label, COLORS.paper, UDim2.new(0.25, -8, 0, if shortScreen then 40 else 50), action, enabled)
+                b.Position = UDim2.new((index - 1) / 4, 4, 0, if shortScreen then 39 else 47)
 				b.TextSize = 17
 			end
 			quantityButton(1, "−", function() setQuantity(qty - 1) end)
@@ -6309,11 +6320,11 @@ local function openTradeHall()
 			quantityButton(3, "10개", function() setQuantity(10) end)
 			quantityButton(4, "최대 구매", function() setQuantity(maxBuy) end, maxBuy > 0)
 			refreshReceipt()
-			local buy = mkButton(desk, if maxBuy >= qty then "구매 " .. tostring(qty) .. "개" elseif free < qty then "화물 부족" elseif (sel.supply or 20) < qty then "재고 부족" else "코인·한도 부족", COLORS.gold, UDim2.new(0.5, -8, 0, 60), function() call("Buy", { goodId = sel.id, amount = qty }) end, maxBuy >= qty)
-			buy.Position = UDim2.fromOffset(4, 106)
+			local buy = mkButton(desk, if maxBuy >= qty then "구매 " .. tostring(qty) .. "개" elseif free < qty then "화물 부족" elseif (sel.supply or 20) < qty then "재고 부족" else "코인·한도 부족", COLORS.gold, UDim2.new(0.5, -8, 0, if shortScreen then 52 else 60), function() call("Buy", { goodId = sel.id, amount = qty }) end, maxBuy >= qty)
+			buy.Position = UDim2.fromOffset(4, if shortScreen then 84 else 106)
 			buy.TextSize = 21
-			local sell = mkButton(desk, if maxSell >= qty then "판매 " .. tostring(qty) .. "개" elseif maxSell > 0 then "판매 가능 " .. tostring(maxSell) else "보유·한도 부족", COLORS.green, UDim2.new(0.5, -8, 0, 60), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
-			sell.Position = UDim2.new(0.5, 4, 0, 106)
+			local sell = mkButton(desk, if maxSell >= qty then "판매 " .. tostring(qty) .. "개" elseif maxSell > 0 then "판매 가능 " .. tostring(maxSell) else "보유·한도 부족", COLORS.green, UDim2.new(0.5, -8, 0, if shortScreen then 52 else 60), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
+			sell.Position = UDim2.new(0.5, 4, 0, if shortScreen then 84 else 106)
 			sell.TextSize = 21
 			-- [자동 흥정] 수동 버튼 없이 상인 전문/승선 동료가 구매 순간 협상한다.
 			local bargain = view.haggle or {}
