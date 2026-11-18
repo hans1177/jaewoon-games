@@ -48,7 +48,7 @@ export const DESIGN_FREE_MODELS = Object.freeze([
     endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent'}
 ]);
 const DAILY_LIMIT = Object.freeze({NVIDIA: 12, GEMINI: 12, OPENROUTER: 30});
-const designRuntime = {usageWindow: null, cooldowns: {}, attempts: [], selectedRole: '', verifiedRoleOutcomes: []};
+const designRuntime = {usageWindow: null, cooldowns: {}, attempts: [], selectedRole: ''};
 const currentDay = () => new Date().toISOString().slice(0, 10);
 function loadPreviousDesignUsage(previous = {}) {
   const nowDay = currentDay();
@@ -61,17 +61,13 @@ function loadPreviousDesignUsage(previous = {}) {
     .filter(([id, until]) => DESIGN_FREE_MODELS.some(model => model.id === id) &&
       Number.isFinite(Date.parse(until)) && Date.parse(until) > Date.now()));
   designRuntime.attempts = [];
-  designRuntime.verifiedRoleOutcomes = (previous?.verifiedRoleOutcomes || []).filter(row =>
-    row && ['PASS','FAIL'].includes(row.outcome) &&
-    ['NPC','WORLD','UI','MOTION','GENERAL','AUDIO'].includes(row.role) &&
-    DESIGN_FREE_MODELS.some(model=>model.id===row.modelId)).slice(-50);
 }
 export function designRoleForFrames(frameNames = []) {
   const names = frameNames.join(' ').toLowerCase();
   if (/(npc|face|hair|outfit|villager|resident|skin|citizen)/.test(names)) return 'NPC';
   if (/(hud|menu|gui|card|tab_|ui_|map_ui|inventory|font|interface)/.test(names)) return 'UI';
-  if (/(animation|motion|idle|run|walk|attack|swing|movement|weapon|vfx|particle|battle|cannon)/.test(names)) return 'MOTION';
-  if (/(harbor|sea|ship|port|island|landscape|world|voyage|town|lighting|field|cargo|material|wood|stone|dock|roof)|^(?:v[0-9]+_|cb[0-9]+(?:_|-))/.test(names)) return 'WORLD';
+  if (/(animation|motion|idle|run|walk|attack|swing|movement)/.test(names)) return 'MOTION';
+  if (/(harbor|sea|ship|port|island|landscape|world|voyage|town|lighting|field)|^(?:v[0-9]+_|cb[0-9]+(?:_|-))/.test(names)) return 'WORLD';
   return 'GENERAL';
 }
 // [분야별 자동 순환] 실제 캡처에 2장 이상 있는 분야만 우선 배정한다.
@@ -83,8 +79,83 @@ export function selectDesignFrameRole(frameNames = [], previousRole = '', audioE
   const previous = available.indexOf(previousRole);
   return available.length ? available[(previous + 1) % available.length] : 'GENERAL';
 }
+export function verifiedDesignFeedback(previous = {}, feedback = {}, now = Date.now()) {
+  const sha = value => /^[a-f0-9]{40}$/i.test(String(value ?? ''));
+  const imageSha = value => /^[a-f0-9]{64}$/i.test(String(value ?? ''));
+  const reviewedAt = Date.parse(feedback.verifiedAt);
+  if (!Number.isFinite(reviewedAt) || reviewedAt > now ||
+    now - reviewedAt > 7 * 24 * 60 * 60 * 1000 ||
+    previous?.status !== 'CANDIDATE_EDITED' ||
+    !sha(previous.sourceRevision) || !sha(feedback.candidateRevision) ||
+    previous.sourceRevision === feedback.candidateRevision ||
+    feedback.beforeRevision !== previous.sourceRevision ||
+    feedback.sourceRevision !== feedback.candidateRevision ||
+    feedback.authorProvider !== previous.provider ||
+    feedback.authorModel !== previous.model ||
+    feedback.selectedRole !== previous.selectedRole ||
+    feedback.reviewerProvider === previous.provider ||
+    !feedback.reviewerProvider ||
+    feedback.status !== 'VISUAL_BEFORE_AFTER_PASS' ||
+    feedback.independentQaPassed !== true || feedback.afterStudioPassed !== true ||
+    feedback.comparison?.status !== 'PASS' ||
+    !Array.isArray(feedback.comparison?.improvements) ||
+    feedback.comparison.improvements.length < 2 ||
+    !Array.isArray(feedback.comparison?.regressions) ||
+    feedback.comparison.regressions.length > 0 ||
+    !Array.isArray(feedback.beforeFrames) || !Array.isArray(feedback.afterFrames) ||
+    feedback.beforeFrames.length < 2 ||
+    feedback.beforeFrames.length !== feedback.afterFrames.length)
+    return null;
+  const pairs = feedback.beforeFrames.every((entry, i) => {
+    const after = feedback.afterFrames[i];
+    return entry?.name === after?.name &&
+      imageSha(entry.sha256) && imageSha(after?.sha256);
+  });
+  if (!pairs ||
+    !feedback.beforeFrames.some((entry, i) => entry.sha256 !== feedback.afterFrames[i].sha256))
+    return null;
+  const photoNames = new Set(feedback.beforeFrames.map(entry => entry.name));
+  const improvedNames = new Set(feedback.comparison.improvements
+    .map(entry => entry?.screenshot).filter(name => photoNames.has(name)));
+  if (improvedNames.size < 2 ||
+    feedback.comparison.improvements.some(entry => !imageSha(entry.evidenceSha256)))
+    return null;
+  return {provider: previous.provider, model: previous.model, role: previous.selectedRole,
+    sourceRevision: previous.sourceRevision, candidateRevision: feedback.candidateRevision};
+}
+
+// [호출 한도 회계] 동일 공식 Studio 촬영 세대의 '초안 생성 + 독립 검수' 사용량을 합산한다.
+// 회차별 카운터는 누적이므로 합계가 아닌 각 제공자별 최대값을 사용한다. 요금 한도를 낮추는 방향으로만 병합.
+export function mergeFreeVisualUsage(previous = {}, feedback = {}, now = Date.now()) {
+  const day = new Date(now).toISOString().slice(0, 10);
+  const origin = previous?.usageWindow?.day === day ? previous.usageWindow.calls || {} : {};
+  const validFollowup = /^[a-f0-9]{40}$/i.test(String(previous?.sourceRevision || '')) &&
+    feedback?.beforeRevision === previous.sourceRevision &&
+    /^[a-f0-9]{40}$/i.test(String(feedback?.candidateRevision || '')) &&
+    feedback?.sourceRevision === feedback.candidateRevision &&
+    feedback?.gameId === 'mare-essentia' &&
+    feedback?.usageWindow?.day === day;
+  const followup = validFollowup ? feedback.usageWindow.calls || {} : {};
+  const calls = {};
+  for (const provider of Object.keys(DAILY_LIMIT)) {
+    const old = Number(origin[provider] || 0), added = Number(followup[provider] || 0);
+    calls[provider] = Math.max(
+      Number.isInteger(old) && old >= 0 ? Math.min(old, 1000) : 0,
+      Number.isInteger(added) && added >= 0 ? Math.min(added, 1000) : 0);
+  }
+  const cooldowns = {...previous?.cooldowns};
+  if (validFollowup) for (const model of DESIGN_FREE_MODELS) {
+    const newer = Date.parse(feedback?.cooldowns?.[model.id] || '');
+    const older = Date.parse(cooldowns?.[model.id] || '');
+    if (Number.isFinite(newer) && newer > now &&
+      (!Number.isFinite(older) || newer > older))
+      cooldowns[model.id] = new Date(newer).toISOString();
+  }
+  return {...previous, usageWindow: {day, calls}, cooldowns};
+}
+
 export function selectFreeDesignModels({
-  frameNames = [], role = '', policy, env = process.env, previous = {}, now = Date.now()
+  frameNames = [], role = '', policy, env = process.env, previous = {}, feedback = {}, now = Date.now()
 } = {}) {
   const config = policy?.directVisualDesign?.freeSpecialistPool;
   if (config?.enabled !== true || config?.paidFallbackForbidden !== true ||
@@ -94,9 +165,10 @@ export function selectFreeDesignModels({
   const approved = new Set(config.modelIds || []);
   const assignedRole = role || designRoleForFrames(frameNames);
   const today = new Date(now).toISOString().slice(0, 10);
-  const spent = previous?.usageWindow?.day === today ? previous.usageWindow.calls || {} : {};
+  const carried = mergeFreeVisualUsage(previous, feedback, now);
+  const spent = carried.usageWindow.calls;
   const eligible = DESIGN_FREE_MODELS.filter(model => {
-    const cooling = Date.parse(previous?.cooldowns?.[model.id] || '');
+    const cooling = Date.parse(carried?.cooldowns?.[model.id] || '');
     return approved.has(model.id) && trim(env[model.keyName]) &&
       trim(env[model.verifiedName]) === 'YES' &&
       (model.provider !== 'OPENROUTER' || model.model.endsWith(':free')) &&
@@ -104,17 +176,30 @@ export function selectFreeDesignModels({
       (!Number.isFinite(cooling) || cooling <= now);
   });
   const preference = config.roles?.[assignedRole] || [];
-  const evidence = (previous?.verifiedRoleOutcomes || []).filter(row =>
-    row?.role === assignedRole && ['PASS','FAIL'].includes(row?.outcome) &&
-    DESIGN_FREE_MODELS.some(model => model.id === row?.modelId)).slice(-50);
-  const verifiedRate = model => {
-    const rows = evidence.filter(row => row.modelId === model.id);
-    return rows.length >= 3 ? rows.filter(row => row.outcome === 'PASS').length / rows.length : -1;
+  const verified = verifiedDesignFeedback(previous, feedback, now);
+  const score = model => {
+    // [성공] 검증된 같은 전문 역할 + 정확한 모델에 한해서만 다음 호출에 우선권을 준다.
+    if (verified?.role === assignedRole && verified.provider === model.provider &&
+      verified.model === model.model) return -1;
+    const order = preference.indexOf(model.id);
+    // [실패] 기존 같은 분야의 잘못된 JSON/존재하지 않는 앵커 제안만 한 단계 후순위.
+    const invalid = previous?.selectedRole === assignedRole &&
+      Array.isArray(previous?.attempts) &&
+      previous.attempts.some(row => row?.id === model.id &&
+        ['REVIEW_INVALID', 'SOURCE_ANCHOR_INVALID'].includes(row?.status));
+    return (order < 0 ? 999 : order) + (invalid ? 2 : 0);
   };
-  return eligible.sort((left, right) => verifiedRate(right) - verifiedRate(left) ||
-    (preference.indexOf(left.id) < 0 ? 999 : preference.indexOf(left.id)) -
-    (preference.indexOf(right.id) < 0 ? 999 : preference.indexOf(right.id)) ||
+  eligible.sort((left, right) =>
+    score(left) - score(right) ||
     DESIGN_FREE_MODELS.indexOf(left) - DESIGN_FREE_MODELS.indexOf(right));
+  // [복구] 세 공급자가 모두 허용되면 각 공급자의 전문 모델 1개씩 먼저, 동일 공급자의 대체 모델은 뒤에 배정.
+  const firstProviders = new Set();
+  const primary = [], backups = [];
+  for (const model of eligible) {
+    if (firstProviders.has(model.provider)) backups.push(model);
+    else {firstProviders.add(model.provider); primary.push(model);}
+  }
+  return [...primary, ...backups];
 }
 
 function cooldownAfter(response, status, error = null) {
@@ -196,8 +281,7 @@ function record(status, fields = {}) {
   const report = {version: 3, provider: 'MULTI_FREE_VISUAL', gameId: 'mare-essentia',
     sourceRevision: trim(process.env.GITHUB_SHA), status, selectedRole: designRuntime.selectedRole,
     usageWindow: designRuntime.usageWindow, cooldowns: designRuntime.cooldowns,
-    attempts: designRuntime.attempts, verifiedRoleOutcomes: designRuntime.verifiedRoleOutcomes,
-    ...fields};
+    attempts: designRuntime.attempts, ...fields};
   fs.mkdirSync(path.dirname(reportPath), {recursive: true});
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n');
   console.log('NEMOTRON_DESIGN_STATUS=' + status);
@@ -608,14 +692,21 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     if (options.previous && fs.existsSync(path.resolve(options.previous)))
       previous = JSON.parse(fs.readFileSync(path.resolve(options.previous), 'utf8'));
   } catch {/* 손상된 이력은 권한을 주지 않고 신규 증거로만 처리한다. */}
-  loadPreviousDesignUsage(previous);
+  // [학습] 동일 Studio 브랜치의 독립 전후 비교 증거만 불러온다.
+  let feedback = {};
+  try {
+    if (options.feedback && fs.existsSync(path.resolve(options.feedback)))
+      feedback = JSON.parse(fs.readFileSync(path.resolve(options.feedback), 'utf8'));
+  } catch {/* 손상되거나 없는 전후 증거는 성공으로 간주하지 않는다. */}
+  const carriedHistory = mergeFreeVisualUsage(previous, feedback);
+  loadPreviousDesignUsage(carriedHistory);
   const pictures = fs.existsSync(framesRoot) ? fs.readdirSync(framesRoot)
     .filter(name => /-[0-9]+\.(?:jpe?g|png)$/i.test(name)) : [];
-  // [사운드 역할] 실제 Studio 로딩 감사가 없는 회차에 오디오 코드를 추정 수정하지 않는다.
-  let preliminary;
-  try { preliminary = JSON.parse(fs.readFileSync(path.join(framesRoot, 'report.json'), 'utf8').replace(/^\uFEFF/, '')); }
-  catch { preliminary = null; }
-  const audioEvidence = studioAudioEvidence(preliminary);
+  // [증거] 기존 Studio 원본 보고서에서 실제 소리 로딩을 확인한 경우에만 오디오 역할을 허용.
+  let liveReport = null;
+  try { liveReport = JSON.parse(fs.readFileSync(path.join(framesRoot,'report.json'),'utf8').replace(/^\uFEFF/,'')); }
+  catch {/* 없는 화면/사운드를 만들지 않는다 */}
+  const audioEvidence = studioAudioEvidence(liveReport);
   designRuntime.selectedRole = selectDesignFrameRole(pictures, previous.selectedRole, audioEvidence.validated);
   const photos = photosFromStudio(framesRoot, designRuntime.selectedRole);
   const proofs = photos.map(({name, sha256}) => ({name, sha256}));
@@ -631,7 +722,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   if (trim(process.env.COMPANY_EXTERNAL_AI_ENABLED) !== 'YES')
     return record('SKIPPED_EXTERNAL_AI_OPT_IN_REQUIRED', {frames: proofs});
   const freeModels = selectFreeDesignModels({
-    frameNames: photos.map(photo => photo.name), role: designRuntime.selectedRole, policy, previous
+    frameNames: photos.map(photo => photo.name), role: designRuntime.selectedRole, policy, previous: carriedHistory, feedback
   });
   if (!freeModels.length)
     return record('SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE', {frames: proofs});
@@ -792,12 +883,12 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
   } catch {
     return unavailable('BLOCKED_VISUAL_BASELINE_EVIDENCE_MISSING');
   }
-  const exactNames = (previous.frames || []).map(row => row?.name)
-    .filter(name => typeof name === 'string').slice(0, 8);
-  if (new Set(exactNames).size !== exactNames.length || exactNames.length < 2)
+  const pinnedNames = (previous?.frames || []).map(row=>row?.name)
+    .filter(name=>typeof name==='string').slice(0,8);
+  if (pinnedNames.length < 2 || new Set(pinnedNames).size !== pinnedNames.length)
     return unavailable('BLOCKED_VISUAL_BASELINE_FRAME_SELECTION');
-  const beforePhotos = photosFromStudio(beforeDir, previous.selectedRole, exactNames);
-  const afterPhotos = photosFromStudio(framesRoot, previous.selectedRole, exactNames);
+  const beforePhotos = photosFromStudio(beforeDir, previous.selectedRole, pinnedNames);
+  const afterPhotos = photosFromStudio(framesRoot, previous.selectedRole, pinnedNames);
   const beforeByName = new Map(beforePhotos.map(photo => [photo.name, photo]));
   const names = afterPhotos.map(photo => photo.name).filter(name => beforeByName.has(name)).slice(0, 4);
   const baseline = names.map(name => beforeByName.get(name));
@@ -809,13 +900,10 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
     !verifiedStudioCapture(afterReport, after, candidateRevision) ||
     names.length < 2 || !baseline.some((photo, index) => photo.sha256 !== after[index].sha256))
     return unavailable('BLOCKED_VISUAL_STUDIO_CAPTURE_MISMATCH');
-  if (previous?.edits?.some(edit => edit.category === 'sound-presentation'))
+  if (previous?.edits?.some(edit=>edit.category==='sound-presentation'))
     return unavailable('BLOCKED_AUDIO_ARTISTIC_QUALITY_NOT_PROVABLE_FROM_SCREENSHOTS');
   loadPreviousDesignUsage(previous);
-  // 기존 모델과 무관한 독립 전문 모델만 전후 사진을 검토한다.
-  const allModels = selectFreeDesignModels({
-    frameNames: names, role: previous.selectedRole, policy, previous
-  });
+  const allModels = selectFreeDesignModels({frameNames: names, role: previous.selectedRole, policy, previous});
   // 후보 모델 스스로 최종 수용을 결정할 수 없다.
   const reviewers = allModels.filter(model => model.provider !== previous.provider);
   if (!reviewers.length)
@@ -850,20 +938,12 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
         reason: trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 90)});
       continue;
     }
-    const author = DESIGN_FREE_MODELS.find(model =>
-      model.provider === previous.provider && model.model === previous.model);
-    if (author && ['NPC','WORLD','UI','MOTION','GENERAL'].includes(previous.selectedRole) &&
-      verdict.status === 'PASS') {
-      designRuntime.verifiedRoleOutcomes.push({
-        modelId: author.id, role: previous.selectedRole, outcome: 'PASS',
-        beforeRevision, candidateRevision
-      });
-      designRuntime.verifiedRoleOutcomes = designRuntime.verifiedRoleOutcomes.slice(-50);
-    }
     return record(verdict.status === 'PASS' ? 'VISUAL_BEFORE_AFTER_PASS' : 'VISUAL_BEFORE_AFTER_UNVERIFIED', {
       beforeRevision, candidateRevision, beforeFrames: baseline.map(x => ({name: x.name, sha256: x.sha256})),
       afterFrames: after.map(x => ({name: x.name, sha256: x.sha256})),
-      authorProvider: previous.provider, reviewerProvider: reviewer.provider,
+      verifiedAt: new Date().toISOString(),
+      authorProvider: previous.provider, authorModel: previous.model,
+      selectedRole: previous.selectedRole, reviewerProvider: reviewer.provider,
       reviewerModel: reviewer.model, comparison: verdict, rawResponseSha256: digest(result.text),
       independentQaPassed: verdict.status === 'PASS',
       afterStudioPassed: verdict.status === 'PASS', releasePassed: false

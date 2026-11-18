@@ -434,12 +434,13 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_CHECKOUT_FAILED' }
             # [디자인 자동 배치] 기존 Studio 브랜치에서 직전 모델 사용량과 쿨다운을 읽는다.
             $priorDesign = Join-Path $dst 'nemotron-design-review.json'
+            $priorVisualFeedback = Join-Path $dst 'design-visual-comparison.json'
             if ($env:STUDIO_CANDIDATE_REF -eq '' -and $qaStage -eq '' -and $env:CAP_GAME -eq 'mare-essentia' -and
                 [string]$env:CAP_SCRIPT -match 'mare-qa-click\.json$') {
               $checkoutRoot = Join-Path $env:GITHUB_WORKSPACE 'main'
               & git -C $checkoutRoot switch -q -c $designBranch
               if ($LASTEXITCODE -ne 0) { throw 'DESIGN_FREE_CANDIDATE_BRANCH_INVALID' }
-              & node (Join-Path $checkoutRoot 'tools/company-nemotron-design-review.mjs') "--root=$checkoutRoot" "--frames=$out" "--previous=$priorDesign" "--out=$(Join-Path $out 'nemotron-design-review.json')"
+              & node (Join-Path $checkoutRoot 'tools/company-nemotron-design-review.mjs') "--root=$checkoutRoot" "--frames=$out" "--previous=$priorDesign" "--feedback=$priorVisualFeedback" "--out=$(Join-Path $out 'nemotron-design-review.json')"
               if ($LASTEXITCODE -ne 0) { Write-Host 'DESIGN_FREE_REVIEW=UNVERIFIED' }
             }
             $scriptFile = Join-Path $env:GITHUB_WORKSPACE ("main/" + $env:CAP_SCRIPT)

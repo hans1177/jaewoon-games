@@ -3837,9 +3837,7 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   assert.match(slowIntro[0].code,/stable>=3/);
   assert.doesNotMatch(slowIntro[0].code,/for attempt=1,120 do/);
   assert.doesNotMatch(slowIntro[0].code,/InvokeServer\("Intro(?:Name|Companion|Portrait)"/);
-  // [실물 Studio] 새 게임 준비 85초와 탐험 재진입 90초만 허용한다.
-  const timed = steps.filter(step=>step.timeoutMs!==undefined);
-  assert.deepEqual(timed.map(step=>step.timeoutMs),[85000,90000]);
+  assert.deepEqual(steps.filter(step=>step.timeoutMs!==undefined).map(x=>x.timeoutMs),[85000,90000]);
   assert.equal(steps.filter(step=>step.type==='click_from_luau').length,10);
   assert.equal(steps.filter(step=>step.type==='capture').length,93);
   // [장면 생명주기] 카드판 스킵은 실제 입력으로 종료하고 전투 잠금이 해제된 뒤 항해/지상맵을 실행한다.

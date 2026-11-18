@@ -340,15 +340,6 @@
       "noAutomaticMainMergeWithoutCanonicalCodeAndFreshStudioGate": true,
       "mobilePerformanceAndDistanceReadabilityMandatory": true
     },
-    "verifiedRoleLearning": {
-      "enabled": true,
-      "historyMaxRecords": 50,
-      "minimumVerifiedRoleSamples": 3,
-      "outcomeAuthority": "INDEPENDENT_STUDIO_BEFORE_AFTER_VISUAL_REVIEW_ONLY",
-      "notEquivalentToPublishedOrMobileQa": true,
-      "unverifiedOrSelfReviewedCandidatesNeverCountAsSuccess": true,
-      "neverOverridesFreeQuotaSecurityOrStudioGates": true
-    },
     "assetCreationAndQuality": {
       "ownerDirective": "2026-11-18_ALL_GAME_PRESENTATION",
       "ownerIntentCategories": [
@@ -404,6 +395,15 @@
       "requireRealStudioAudioLoadAudit": true,
       "screenshotsDoNotProveSoundQuality": true,
       "promotionBlockedUntilIndependentAudioQualityEvidence": true
+    },
+    "verifiedRoleLearning": {
+      "enabled": true,
+      "historyMaxRecords": 50,
+      "minimumVerifiedRoleSamples": 3,
+      "outcomeAuthority": "INDEPENDENT_STUDIO_BEFORE_AFTER_VISUAL_REVIEW_ONLY",
+      "notEquivalentToPublishedOrMobileQa": true,
+      "unverifiedOrSelfReviewedCandidatesNeverCountAsSuccess": true,
+      "neverOverridesFreeQuotaSecurityOrStudioGates": true
     }
   }
 }
