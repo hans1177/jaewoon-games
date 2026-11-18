@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "kind": "vibe2-external-ai-distillation-policy",
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Owner permits external AI to directly edit all visual design categories in isolated code candidate branches. Raw external knowledge still cannot self-promote or be accepted as verified QA, main, gameplay, save, security, or release authority.",
@@ -212,6 +212,12 @@
           "OPENROUTER_OMNI",
           "OPENROUTER_NEMOTRON",
           "GEMINI_FLASH"
+        ],
+        "AUDIO": [
+          "GEMINI_LITE",
+          "OPENROUTER_GEMMA",
+          "OPENROUTER_GEMMA26",
+          "NVIDIA_VL"
         ]
       },
       "actualFreeTierAndApiKeyRequired": true,
@@ -270,7 +276,10 @@
         "vfx-or-ui"
       ],
       "materialAuditMarker": "STUDIO_MATERIAL_AUDIT",
-      "vfxAndMobileUiAlternateByRun": true
+      "vfxAndMobileUiAlternateByRun": true,
+      "expectedScriptSteps": 336,
+      "audioAuditMarker": "STUDIO_AUDIO_AUDIT",
+      "audioAuditCannotProveArtisticQuality": true
     },
     "townLayoutEdit": {
       "enabled": true,
@@ -330,6 +339,71 @@
       "noSyntheticStudioQaOrImagePass": true,
       "noAutomaticMainMergeWithoutCanonicalCodeAndFreshStudioGate": true,
       "mobilePerformanceAndDistanceReadabilityMandatory": true
+    },
+    "verifiedRoleLearning": {
+      "enabled": true,
+      "historyMaxRecords": 50,
+      "minimumVerifiedRoleSamples": 3,
+      "outcomeAuthority": "INDEPENDENT_STUDIO_BEFORE_AFTER_VISUAL_REVIEW_ONLY",
+      "notEquivalentToPublishedOrMobileQa": true,
+      "unverifiedOrSelfReviewedCandidatesNeverCountAsSuccess": true,
+      "neverOverridesFreeQuotaSecurityOrStudioGates": true
+    },
+    "assetCreationAndQuality": {
+      "ownerDirective": "2026-11-18_ALL_GAME_PRESENTATION",
+      "ownerIntentCategories": [
+        "audio",
+        "music",
+        "fonts",
+        "icons",
+        "ui",
+        "hud",
+        "cargo",
+        "3d-objects",
+        "ships",
+        "terrain",
+        "buildings",
+        "weapons",
+        "outfits",
+        "characters",
+        "animations",
+        "rigging",
+        "joints",
+        "materials",
+        "pbr",
+        "vfx"
+      ],
+      "existingAssetReuseFirst": true,
+      "assetInventoryAuthority": [
+        "roblox-games/mare-essentia/assets-registered.json",
+        "roblox-games/mare-essentia/audio/manifest.json",
+        "roblox-games/mare-essentia/audio/uploaded.json",
+        "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau"
+      ],
+      "sourceBasedAssetCandidateOnly": true,
+      "existingOwnersAndNativeRegistrationPipelinesRequired": true,
+      "cannotInventRobloxAssetIdsOrRuntimePassingEvidence": true,
+      "freeOnly": true,
+      "paidFallbackForbidden": true,
+      "newAssetImportRequiresLicenseAndSecurityAndNativeRuntime": true,
+      "nativeOrApprovedCC0OnlyUntilOwnerAuthoredAssetProof": true,
+      "noIndependentShadowPipeline": true,
+      "keepExistingReferencesAnimationIdsRigBindingsAndSave": true,
+      "preserveStyleAndMobilePerformance": true,
+      "verifySameStudioScenarioBeforeAfter": true,
+      "automaticMainPromotionOnlyThroughExistingIndependentStudioAndSecurityGates": true
+    },
+    "audioCueAssignment": {
+      "enabled": true,
+      "source": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sfx.luau",
+      "approvedKeysFrom": "roblox-games/mare-essentia/audio/uploaded.json",
+      "audioIdAuthority": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau",
+      "exactExistingFacilityCueLineOnly": true,
+      "mayChangeOnlyRegisteredCueNames": true,
+      "mustKeepVolumesDelaysAndGameTriggers": true,
+      "requireRealStudioAudioLoadAudit": true,
+      "screenshotsDoNotProveSoundQuality": true,
+      "promotionBlockedUntilIndependentAudioQualityEvidence": true
     }
   }
 }
