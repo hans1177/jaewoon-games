@@ -1720,7 +1720,7 @@ function FieldScene.start(opts)
 	questHint.Position = if compactTouch then UDim2.fromOffset(12, 186)
 		elseif visualMobile and not compactTouch and workspace.CurrentCamera
 			and workspace.CurrentCamera.ViewportSize.X < 720
-			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 256)
+			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 175)
 		elseif visualMobile then UDim2.fromOffset(12, 158) else UDim2.fromOffset(12, 173)
 	questHint.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 212 else 230, 42)
 	questHint.TextWrapped = true
@@ -2155,7 +2155,7 @@ function FieldScene.start(opts)
 		timeLabel.Position = if compactTouch then UDim2.fromOffset(12, 232)
 			elseif visualMobile and not compactTouch and workspace.CurrentCamera
 			and workspace.CurrentCamera.ViewportSize.X < 720
-			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 304)
+			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 225)
 			elseif visualMobile then UDim2.fromOffset(184, 270) else UDim2.fromOffset(12, 216)
 		timeLabel.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 252 else 300, 26)
 		timeLabel.TextSize = 12
@@ -2478,7 +2478,7 @@ function FieldScene.start(opts)
 			dialogueFrame = Instance.new("Frame")
 			dialogueFrame.Name = "FieldCompanionDialogue"
 			dialogueFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-			dialogueFrame.Position = UDim2.fromScale(0.5, 0.43)
+			dialogueFrame.Position = UDim2.fromScale(0.5, if workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.Y < 350 then 0.68 else 0.57)
 			dialogueFrame.Size = UDim2.new(0.62, 0, 0, if compactTouch then 76 else 70)
 			dialogueFrame.BackgroundColor3 = Color3.fromRGB(29, 35, 47)
 			dialogueFrame.BackgroundTransparency = 0.13
@@ -8082,7 +8082,7 @@ function FieldScene.start(opts)
 						frame.Parent = status
 						local face = Instance.new("ImageLabel")
 						face.Name = "FieldAllyPortrait"
-						face.Size = UDim2.fromOffset(if narrowParty then 29 else 39, if narrowParty then 35 else 43)
+						face.Size = UDim2.fromOffset(if narrowParty or shortHud then 29 else 39, if narrowParty or shortHud then 35 else 43)
 						face.Position = UDim2.fromOffset(if narrowParty then 4 else 6, 5)
 						face.BackgroundColor3 = Color3.fromRGB(56, 70, 82)
 						face.BorderSizePixel = 0
