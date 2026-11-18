@@ -567,7 +567,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "-- [평균 시세 화살표] 실물 교역 화면에서 3방향 기호와 세후 손익 라벨을 확인한다.\nlocal hall=assert(game:GetService(\"Players\").LocalPlayer.PlayerGui:FindFirstChild(\"TradeHallGui\"),\"TRADE_HALL_MISSING\")\nlocal arrow,profit=false,false\nfor _,v in hall:GetDescendants() do\n if v:IsA(\"TextLabel\") then\n  if string.find(v.Text,\"세계평균\",1,true)\n   and (string.find(v.Text,\"⬇️\",1,true) or string.find(v.Text,\"⬆️\",1,true) or string.find(v.Text,\"➖\",1,true)) then arrow=true end\n  if string.find(v.Text,\"세후\",1,true) then profit=true end\n end\nend\nassert(arrow,\"TRADE_AVERAGE_EMOJI_NOT_RENDERED\")\nassert(profit,\"TRADE_NET_PROFIT_NOT_RENDERED\")\nreturn \"TRADE_HALL_AVERAGE_AND_PROFIT_PASS\""
+  "code": "-- [교역 장부 실제 시각] 빨강 ▲ / 파랑 ▼ / 중립 －, 세계 평균 매입가와 세후 예상손익을 검사한다.\nlocal hall=assert(game:GetService(\"Players\").LocalPlayer.PlayerGui:FindFirstChild(\"TradeHallGui\"),\"TRADE_HALL_MISSING\")\nlocal direction,average,profit=false,false,false\nfor _,v in hall:GetDescendants() do\n if v:IsA(\"TextLabel\") then\n  local text=v.Text\n  if (string.find(text,\"평균보다\",1,true)\n    and (string.find(text,\"▲\",1,true) or string.find(text,\"▼\",1,true)))\n    or string.find(text,\"－ 세계 평균과 비슷함\",1,true) then direction=true end\n  if string.find(text,\"세계 평균 매입가\",1,true) then average=true end\n  if string.find(text,\"세후 예상손익\",1,true) then profit=true end\n end\nend\nassert(direction,\"TRADE_AVERAGE_DIRECTION_NOT_RENDERED\")\nassert(average,\"TRADE_WORLD_AVERAGE_PRICE_NOT_RENDERED\")\nassert(profit,\"TRADE_NET_PROFIT_NOT_RENDERED\")\nreturn \"TRADE_HALL_AVERAGE_AND_PROFIT_PASS\""
  },
  {
   "type": "capture",

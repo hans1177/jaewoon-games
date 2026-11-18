@@ -42,6 +42,23 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
   assert.match(core,/return "P_" \.\. player.UserId/);
 });
 
+test('서재 백과 책 판면·모바일 넘기기·교역 평균가 회귀', () => {
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  assert.match(source,/currentTab ~= "map" and currentTab ~= "codex"/);
+  assert.match(source,/CodexQuickNavigation/);
+  assert.match(source,/ScholarTradeEncyclopediaBook/);
+  assert.match(source,/CodexBookLeftPage/);
+  assert.match(source,/CodexBookRightPage/);
+  assert.match(source,/CodexBookSpine/);
+  assert.match(source,/책 펼치기/);
+  assert.match(source,/showingNotes = not showingNotes/);
+  assert.equal(capture.length,241);
+  assert.match(capture[123].code,/TRADE_AVERAGE_DIRECTION_NOT_RENDERED/);
+  assert.match(capture[123].code,/TRADE_WORLD_AVERAGE_PRICE_NOT_RENDERED/);
+  assert.match(capture[123].code,/TRADE_NET_PROFIT_NOT_RENDERED/);
+});
+
 test('항구 장면의 소품 선택은 Luau 복수 반환 조건식 없이 실행된다', () => {
   const port=read('ReplicatedStorage/Shared/PortScene.luau');
   assert.doesNotMatch(port,/local propGroup, propName\s*=\s*if/);
