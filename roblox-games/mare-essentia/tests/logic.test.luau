@@ -61,6 +61,16 @@ end
 local ctx = { rng = rng, market = S.MarketClass.new() }
 
 local passed, failed = 0, 0
+-- [기존 검증 함수] 첫 세계 탐험 검사에서도 같은 책임 함수를 쓰도록 사용 전 선언한다.
+local function check(name, cond, detail)
+	if cond then
+		passed += 1
+	else
+		failed += 1
+		print("FAIL: " .. name .. (detail and (" -> " .. tostring(detail)) or ""))
+	end
+end
+
 -- [개인 세계 탐험 백과 회귀] 10대 항로 × 5장 단서와 실제 카드·항구·탐험지를 대조한다.
 do
 	local counts, total, issues = {}, 0, {}
@@ -128,14 +138,6 @@ local function macroOf(st, portId, goodId)
 end
 local function near(a, b)
 	return math.abs(a - b) < 1e-9
-end
-local function check(name, cond, detail)
-	if cond then
-		passed += 1
-	else
-		failed += 1
-		print("FAIL: " .. name .. (detail and (" -> " .. tostring(detail)) or ""))
-	end
 end
 
 -- 왕궁 종사자 수는 기존 경제 거주자 표본 이내에서만 변한다(실제 시민/저장 구조 불변).
