@@ -9843,21 +9843,39 @@ function RENDERERS.encyclopedia()
 	for _, g in groups do
 		if g.id == fieldId then groupName = g.name; break end
 	end
-	local queryText = string.lower(H.encyclopediaSearchText or "")
+	-- [정규 본문 검색] 실제 장문 해설까지 찾는다. 여러 단어는 모두 일치해야 한다.
+	local queryWords = {}
+	for term in string.gmatch(string.lower(string.sub(H.encyclopediaSearchText or "", 1, 120)), "%S+") do
+		if #queryWords >= 6 then break end
+		table.insert(queryWords, term)
+	end
 	local found = {}
 	for _, card in all do
 		if fieldId == "all" or card.field == fieldId then
+			local article = articles[card.id]
 			local words = { card.name or "", card.description or "", card.discipline or "",
-				card.era or "", card.region or "", card.topic or "" }
+				card.era or "", card.region or "", card.topic or "", card.kindName or "",
+				card.source or "", card.evidence or "", card.worldGroup or "" }
+			if article then
+				table.insert(words, article.details or "")
+				table.insert(words, article.context or "")
+				table.insert(words, article.history or "")
+			end
 			for _, tag in (card.tags or {}) do table.insert(words, tostring(tag)) end
 			for _, alias in (card.aliases or {}) do table.insert(words, tostring(alias)) end
-			if queryText == "" or string.find(string.lower(table.concat(words, " ")), queryText, 1, true) then
-				table.insert(found, card)
+			local haystack = string.lower(table.concat(words, " "))
+			local matches = true
+			for _, term in queryWords do
+				if not string.find(haystack, term, 1, true) then matches = false; break end
 			end
+			if matches then table.insert(found, card) end
 		end
 	end
 	add(function() return mkHeader(content, string.format("대항해 지식 대백과 · 발견 %d / %d", #all, cx.total or #all)) end)
 	add(function() return mkLabel(content, string.format("장문 해설 %d장 · 등록 도판 %d장 · 미발견 지식은 비공개", explained, pictured), 15, INK_SOFT, false) end)
+	if #queryWords > 0 or fieldId ~= "all" then
+		add(function() return mkLabel(content, string.format("분야 · %s / 검색 결과 %d장", groupName, #found), 16, INK, true) end)
+	end
 	-- [목차] 검색과 분야 선택은 이 접속의 UI에만 기억한다.
 	add(function()
 		local panel = mkBox(content, UDim2.new(), UDim2.new(1, -8, 0, 107), COLORS.paper)
@@ -9870,7 +9888,7 @@ function RENDERERS.encyclopedia()
 		search.BackgroundColor3 = Color3.fromRGB(249, 236, 208)
 		search.TextColor3 = INK
 		search.PlaceholderColor3 = INK_SOFT
-		search.PlaceholderText = "지식 이름 · 시대 · 학문"
+		search.PlaceholderText = "이름 · 본문 · 역사 · 지역"
 		search.Text = H.encyclopediaSearchText or ""
 		search.ClearTextOnFocus = false
 		search.Font = Enum.Font.Gotham
@@ -10048,7 +10066,7 @@ function RENDERERS.encyclopedia()
 			.. (if current.era then " · " .. current.era else ""), 16, true, INK_SOFT)
 		local art = Instance.new("Frame")
 		art.Name = "EncyclopediaIllustration"
-		art.Size = UDim2.new(1, -8, 0, if content.AbsoluteSize.X >= 620 then 270 else 225)
+		art.Size = UDim2.new(1, -8, 0, if type(current.image) ~= "string" or current.image == "" then 115 elseif content.AbsoluteSize.X >= 620 then 270 else 200)
 		art.BackgroundColor3 = Color3.fromRGB(208, 185, 146)
 		art.BorderSizePixel = 0
 		art.LayoutOrder = order
@@ -10061,7 +10079,7 @@ function RENDERERS.encyclopedia()
 		end
 		line(if type(current.image) == "string" and current.image ~= ""
 			then "대표 그림 · " .. current.name
-			else "대표 그림 미등록 · 확인된 원화만 표시해", 14, false, INK_SOFT)
+			else "대표 그림 자리 · 추후 등록", 14, false, INK_SOFT)
 		line("Ⅰ. 개요", 19, true)
 		line(current.description or "등록된 개요가 없어.", 17, false)
 		if article then
@@ -10120,6 +10138,8 @@ function RENDERERS.encyclopedia()
 			line("※ 이 항목은 실제 역사 자료가 아닌 게임 속 가상 설정이야.", 16, true, INK_SOFT)
 		elseif current.evidenceId == "legend" or current.evidenceId == "hypothesis" then
 			line("※ 전승 또는 가설을 다룬 자료로, 사실로 확정되지 않은 내용이 포함돼.", 16, false, INK_SOFT)
+		elseif current.evidenceId == "unreviewed" then
+			line("※ 개별 자료의 검증이 아직 완료되지 않았어. 기록과 해석을 구분해서 읽어 줘.", 16, false, INK_SOFT)
 		end
 		if current.relatedDisciplines and #current.relatedDisciplines > 0 then
 			local disciplines = {}
@@ -10135,6 +10155,10 @@ function RENDERERS.encyclopedia()
 		local first = current.provenance
 		line(if first then "첫 발견: " .. tostring(first.port or "위치 미상")
 			.. " · 항해 " .. tostring(first.day or 0) .. "일째 · " .. tostring(first.method or "발견")
+			.. (if first.person then "\n전수한 인물: " .. first.person else "")
+			.. (if first.site then "\n탐험 현장: " .. first.site else "")
+			.. (if first.quest then "\n관련 의뢰: " .. first.quest else "")
+			.. (if first.event then "\n관련 사건: " .. first.event else "")
 			else "이전에 획득한 지식 · 자세한 발견 위치는 기록되지 않았어.", 16, false)
 		line("자료·저작권", 19, true)
 		line(if article and article.topic then "본문 참고: 위키백과 · " .. string.gsub(article.topic, "_", " ")
@@ -10173,29 +10197,33 @@ function RENDERERS.encyclopedia()
 		if current.credit and current.credit ~= "" then
 			line("대표 그림 출처: " .. current.credit, 15, false, INK_SOFT)
 		end
-		-- [관련 지식] 기존 연관 카드만 연결한다. 미발견 정보는 열지 않는다.
-		local linked = 0
+		-- [관련 항목] 발견된 다른 지식도 백과 안에서 계속 읽고, 장소/상품은 별도 텍스트로 보여 준다.
+		local linked, places = 0, {}
 		for _, rel in (current.relations or {}) do
 			local target = rel.cardId and byId[rel.cardId]
 			if target and rel.found and linked < 5 then
 				if linked == 0 then line("이어 읽을 지식", 19, true) end
 				linked += 1
-				local related = mkButton(sheet, target.name .. " · 관련 항목", COLORS.blue,
+				local related = mkButton(sheet, target.name .. " · " .. tostring(rel.relation or "관련 항목"), COLORS.blue,
 					UDim2.new(1, -12, 0, 42), function()
-						for i, shown in found do
-							if shown.id == target.id then
-								H.encyclopediaPage = i
-								Sfx.play("sfx_book_turn", 0.3)
-								render()
-								return
-							end
+						H.encyclopediaCategoryId = "all"
+						H.encyclopediaSearchText = ""
+						for i, discovered in all do
+							if discovered.id == target.id then H.encyclopediaPage = i; break end
 						end
-						H.showCardDetail(target)
+						Sfx.play("sfx_book_turn", 0.3)
+						render()
 					end, true)
 				related.LayoutOrder = order
 				order += 1
 				related.TextSize = 16
+			elseif not rel.cardId and rel.name and #places < 4 then
+				table.insert(places, tostring(rel.name) .. " · " .. tostring(rel.relation or "연관 장소·상품"))
 			end
+		end
+		if #places > 0 then
+			line("연관된 장소·상품·사료", 19, true)
+			line(table.concat(places, "\n"), 16, false)
 		end
 		local more = mkButton(sheet, "카드 원문 · 추가 연구 기록", COLORS.gold,
 			UDim2.new(1, -12, 0, 46), function() H.showCardDetail(current) end, true)
@@ -10204,7 +10232,7 @@ function RENDERERS.encyclopedia()
 		return book
 	end)
 	-- [책 하단 고정] 본문을 읽는 동안 이전/다음 장과 책갈피 버튼은 제자리에 둔다.
-	-- 기존 저장 구조는 바꾸지 않고 접속 중에만 책갈피를 유지한다.
+	-- 기존 저장 키에 책갈피 카드 1개만 추가하며 발견 여부를 서버에서 검증한다.
 	do
 		local nav = Instance.new("Frame")
 		nav.Parent = bookFrame
