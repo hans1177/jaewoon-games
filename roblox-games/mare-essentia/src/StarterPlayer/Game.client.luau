@@ -9748,18 +9748,32 @@ end
 
 function RENDERERS.quest()
 	H.walletBar("tavern")
-	-- 일지: 모든 퀘스트가 여기 기록된다. 소문을 듣거나 사람을 만나 이야기하면 저절로 올라오고, 조건을 채우면 저절로 보상이 들어온다.
+	-- [저널=이야기] 사건·인물·의문·반전·결말을 읽는다. 지식의 사실성과 분류는 백과 카드가 맡는다.
 	local STRAND = { main = "서막", companion = "동료 이야기", history = "역사의 현장", person = "인물과 연구" }
 	local GRADE = { "입문", "일반", "숙련", "위험", "전설" }
+	local journalData = nil -- 첫 저널 열람 시에만 기존 공유 퀘스트를 읽는다. 서버 스냅샷에 긴 이야기 50개를 싣지 않는다.
+	local function readChapter(id, finished)
+		journalData = journalData or require(Shared:WaitForChild("Quests"))
+		local source = journalData.ById[id]
+		if not source or not source.journal then return end
+		local opening, ending = journalData.Story(source)
+		local text = opening
+		if finished then text ..= "\n\n[사건의 결말]\n" .. ending end
+		text ..= "\n\n[기록 구분] " .. source.journal.basis .. " · 등장인물과 대화·사건 전개는 창작. 사실·전승·가설의 분류는 백과 카드에서 확인."
+		H.playQuestScenes({ { kind = if finished then "end" else "start", name = source.name, text = text, summary = source.summary } })
+	end
 	local function strandText(q)
 		local grade = math.clamp(math.floor(tonumber(q.grade) or 1), 1, 5)
 		return string.format("[난이도 %d/5 · %s] ", grade, GRADE[grade])
 			.. (if q.strand then "[" .. (STRAND[q.strand] or "이야기") .. "] " else "")
 			.. q.summary .. (if q.story then "\n" .. q.story else "")
 	end
-	add(function() return mkHeader(content, string.format("일지 · 진행 중 %d", #view.quests.active)) end)
+	add(function() return mkHeader(content, string.format("저널 · 진행 중 %d", #view.quests.active)) end)
+	add(function()
+		return mkLabel(content, "저널: 사건과 선택의 이야기 · 백과사전: 발견한 지식, 근거와 출처", 13, COLORS.muted, false)
+	end)
 	if #view.quests.active == 0 then
-		add(function() return mkLabel(content, "아직 기록이 없어요. 소문을 듣거나 사람과 이야기해 보세요.", 13, COLORS.muted, true) end)
+		add(function() return mkLabel(content, "아직 진행 중인 기록이 없어. 항구의 소문과 인물의 이야기를 살펴봐.", 13, COLORS.muted, true) end)
 	end
 	for _, q in view.quests.active do
 		add(function()
@@ -9767,49 +9781,80 @@ function RENDERERS.quest()
 			if q.kind == "deliver" then
 				table.insert(buttons, { text = "납품", color = COLORS.blue, onClick = function() call("TurnIn", { questId = q.id }) end })
 			end
+			if q.routeId then
+				table.insert(buttons, { text = "이야기", color = COLORS.steam, onClick = function() readChapter(q.id, false) end })
+			end
 			local done, total = math.min(q.progress, q.amount), math.max(1, q.amount)
 			local filled = math.clamp(math.floor(done / total * 10 + 0.5), 0, 10)
 			local progress = string.rep("▰", filled) .. string.rep("▱", 10 - filled)
-			return mkRow(content, q.name, string.format("%s\n%s  %d/%d · 보상 %d코인", strandText(q), progress, done, q.amount, q.rewardCoins), buttons, if q.story then 136 else 92)
+			return mkRow(content, q.name, string.format("%s\n%s  %d/%d · 보상 %d코인", strandText(q), progress, done, q.amount, q.rewardCoins), buttons, if q.routeId then 124 elseif q.story then 136 else 92)
 		end)
 	end
-	-- 자동으로 기록되는 발견·방문·연구 목표 (진행도만 보여 준다)
+	-- 현장 이야기와 일반 자동 임무는 분리한다. 지역 사건을 도감 수량 목표 사이에 묻지 않는다.
 	local autos = {}
 	for _, q in view.quests.available do
-		if q.auto then table.insert(autos, q) end
+		if q.auto and not q.routeId then table.insert(autos, q) end
 	end
 	if #autos > 0 then
-		add(function() return mkHeader(content, "자동 기록 중인 목표") end)
+		add(function() return mkHeader(content, "일반 연구·관찰 목표") end)
 		for _, q in autos do
 			add(function()
 				return mkRow(content, q.name, string.format("%s\n진행 %d/%d · 보상 %d코인", strandText(q), math.min(q.progress or 0, q.amount or 0), q.amount or 0, q.rewardCoins), nil, if q.story then 116 else 64)
 			end)
 		end
 	end
-	-- [세계 현장 탐험] 10대 이야기 항로의 다음 1~5단 목적지와 단서 출처 표시.
-	-- 현지라면 탐험 탭으로, 먼 지역이면 기존 항해 지도로 안내한다.
+	-- [10대 항로] 실제 역사적 배경과 창작 사건을 구별하며 한 항로 한 장씩 이어 읽는다.
 	if view.quests.fieldRoutes and #view.quests.fieldRoutes > 0 then
-		add(function() return mkHeader(content, string.format("세계 탐험 · %d대 항로", view.quests.routeCount or 10)) end)
+		add(function() return mkHeader(content, string.format("세계의 이야기 · %d대 항로", view.quests.routeCount or 10)) end)
 		for _, route in view.quests.fieldRoutes do
 			add(function()
 				local action = if route.here then "탐험지" else "항해 지도"
 				local targetTab = if route.here then "explore" else "map"
-				return mkRow(content, route.name,
-					string.format("%d/5단 · %s · 단서: %s\n%s", route.grade or 1, route.port, route.leadSource or "현지 탐험", route.summary),
-					{ { text = action, color = COLORS.blue, onClick = function() openTab(targetTab) end } }, 112)
+				local buttons = { { text = action, color = COLORS.blue, onClick = function() openTab(targetTab) end } }
+				if route.routeId then
+					table.insert(buttons, { text = "이야기", color = COLORS.steam, onClick = function() readChapter(route.id, false) end })
+				end
+				local subtitle = if route.routeId then
+					string.format("%d/5장 · %s · %s\n%s", route.grade or 1, route.port, route.leadSource or "현지 단서", route.question or route.summary)
+					else string.format("%d/5단 · %s · %s", route.grade or 1, route.port, route.summary)
+				return mkRow(content, route.name, subtitle, buttons, if route.routeId then 130 else 94)
 			end)
 		end
 	end
 	if (view.quests.otherPortDeliver or 0) > 0 or #view.quests.available > #autos then
 		add(function()
-			return mkLabel(content, "다른 항구의 소문과 사람들에게서 더 많은 의뢰를 들을 수 있어요.", 12, COLORS.muted, true)
+			return mkLabel(content, "다른 항구에서 들려오는 소문과 발견이 새로운 이야기를 연다.", 12, COLORS.muted, true)
 		end)
 	end
 	if #view.quests.done > 0 then
-		add(function() return mkHeader(content, string.format("완료한 기록 %d", #view.quests.done)) end)
+		add(function() return mkHeader(content, string.format("완결된 저널 · %d장", #view.quests.done)) end)
 		for _, q in view.quests.done do
 			add(function()
+				if q.routeId then
+					local buttons = {
+						{ text = "이야기", color = COLORS.steam, onClick = function() readChapter(q.id, true) end },
+					}
+					if q.cardId then
+						table.insert(buttons, { text = "백과 카드", color = COLORS.blue, onClick = function()
+							for _, c in (view.codex and view.codex.cards) or {} do
+								if c.id == q.cardId and c.found then H.showCardDetail(c); break end
+							end
+						end })
+					end
+					return mkRow(content, q.name,
+						string.format("%s · %d/5장\n확인한 지식: %s · 근거 분류: %s", q.routeName or "지역 기록", q.grade or 1,
+							q.cardId or "기록", q.evidence or "미검증"),
+						buttons, 110)
+				end
 				return mkLabel(content, string.format("(완료 · %d/5단) ", q.grade or 1) .. q.name .. " — " .. q.summary .. (if q.ending then "\n   " .. q.ending else ""), 12, COLORS.muted, true)
+			end)
+		end
+	end
+	if view.quests.historyThreads and #view.quests.historyThreads > 0 then
+		add(function() return mkHeader(content, "연결된 세계사 · 완결한 항로") end)
+		for _, thread in view.quests.historyThreads do
+			add(function()
+				return mkLabel(content, thread.route .. " · " .. thread.theme .. "\n" .. thread.question, 13, COLORS.muted, false)
 			end)
 		end
 	end
