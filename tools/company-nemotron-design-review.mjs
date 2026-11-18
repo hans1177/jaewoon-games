@@ -22,14 +22,169 @@ const protectedCode = /\b(?:DataStore|RemoteEvent|RemoteFunction|FireServer|Fire
 const visualCode = /Color3\.(?:new|fromRGB|fromHSV)\(|Enum\.(?:Material|Font|EasingStyle|TextXAlignment|TextYAlignment)\.|\.(?:Color|Color3|TextColor3|BackgroundColor3|ImageColor3|Transparency|TextTransparency|BackgroundTransparency|ImageTransparency|LightInfluence|Material|Font|TextSize|Size|Position|Rotation|Scale|Brightness|Contrast|Saturation|FieldOfView|Ambient|OutdoorAmbient|Reflectance|Emission|StrokeThickness)\s*=|(?:UDim2|UDim)\.new\(/;
 const quoted = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g;
 
+// [무료 디자인 전문 모델] 고정 무료 모델만 허용하고, 모델이 응답으로 경로/제공자를 선택하지 못한다.
+// 기능별 순위는 검사 전 고정한다. 실제 검증된 성과가 없으면 학습 점수를 만들지 않는다.
+export const DESIGN_FREE_MODELS = Object.freeze([
+  {id: 'NVIDIA_VL', provider: 'NVIDIA', model: 'nvidia/nemotron-3.5-super-vl-120b-a12b',
+    role: 'NPC', keyName: 'NVIDIA_API_KEY', verifiedName: 'NVIDIA_FREE_TIER_VERIFIED',
+    endpoint: 'https://integrate.api.nvidia.com/v1/chat/completions'},
+  {id: 'GEMINI_FLASH', provider: 'GEMINI', model: 'gemini-3.8-flash',
+    role: 'WORLD', keyName: 'GEMINI_API_KEY', verifiedName: 'GEMINI_DESIGN_FREE_TIER_VERIFIED',
+    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent'},
+  {id: 'OPENROUTER_GEMMA', provider: 'OPENROUTER', model: 'google/gemma-4-31b-it:free',
+    role: 'UI', keyName: 'OPENROUTER_API_KEY', verifiedName: 'OPENROUTER_DESIGN_FREE_TIER_VERIFIED',
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions'},
+  {id: 'OPENROUTER_NEMOTRON', provider: 'OPENROUTER', model: 'nvidia/nemotron-3.5-super-vl:free',
+    role: 'NPC', keyName: 'OPENROUTER_API_KEY', verifiedName: 'OPENROUTER_DESIGN_FREE_TIER_VERIFIED',
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions'},
+  {id: 'OPENROUTER_GEMMA26', provider: 'OPENROUTER', model: 'google/gemma-4-26b-a4b-it:free',
+    role: 'WORLD', keyName: 'OPENROUTER_API_KEY', verifiedName: 'OPENROUTER_DESIGN_FREE_TIER_VERIFIED',
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions'},
+  {id: 'OPENROUTER_OMNI', provider: 'OPENROUTER', model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
+    role: 'MOTION', keyName: 'OPENROUTER_API_KEY', verifiedName: 'OPENROUTER_DESIGN_FREE_TIER_VERIFIED',
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions'},
+  {id: 'GEMINI_LITE', provider: 'GEMINI', model: 'gemini-3.5-flash-lite',
+    role: 'GENERAL', keyName: 'GEMINI_API_KEY', verifiedName: 'GEMINI_DESIGN_FREE_TIER_VERIFIED',
+    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent'}
+]);
+const DAILY_LIMIT = Object.freeze({NVIDIA: 12, GEMINI: 12, OPENROUTER: 30});
+const designRuntime = {usageWindow: null, cooldowns: {}, attempts: [], selectedRole: ''};
+const currentDay = () => new Date().toISOString().slice(0, 10);
+function loadPreviousDesignUsage(previous = {}) {
+  const nowDay = currentDay();
+  designRuntime.usageWindow = {day: nowDay, calls: previous?.usageWindow?.day === nowDay
+    ? Object.fromEntries(Object.entries(previous.usageWindow.calls || {})
+      .filter(([name, count]) => Object.hasOwn(DAILY_LIMIT, name) &&
+        Number.isInteger(count) && count >= 0 && count <= 1000))
+    : {}};
+  designRuntime.cooldowns = Object.fromEntries(Object.entries(previous?.cooldowns || {})
+    .filter(([id, until]) => DESIGN_FREE_MODELS.some(model => model.id === id) &&
+      Number.isFinite(Date.parse(until)) && Date.parse(until) > Date.now()));
+  designRuntime.attempts = [];
+}
+export function designRoleForFrames(frameNames = []) {
+  const names = frameNames.join(' ').toLowerCase();
+  if (/(npc|face|hair|outfit|villager|resident|skin|citizen)/.test(names)) return 'NPC';
+  if (/(hud|menu|gui|card|tab_|ui_|map_ui|inventory|font|interface)/.test(names)) return 'UI';
+  if (/(animation|motion|idle|run|walk|attack|swing|movement|weapon|vfx|particle|battle|cannon)/.test(names)) return 'MOTION';
+  if (/(harbor|sea|ship|port|island|landscape|world|voyage|town|lighting|field|cargo|material|wood|stone|dock|roof)|^(?:v[0-9]+_|cb[0-9]+(?:_|-))/.test(names)) return 'WORLD';
+  return 'GENERAL';
+}
+// [분야별 자동 순환] 실제 캡처에 2장 이상 있는 분야만 우선 배정한다.
+export function selectDesignFrameRole(frameNames = [], previousRole = '') {
+  const roles = ['NPC', 'WORLD', 'UI', 'MOTION', 'GENERAL'];
+  const available = roles.filter(role =>
+    frameNames.filter(name => designRoleForFrames([name]) === role).length >= 2);
+  const previous = available.indexOf(previousRole);
+  return available.length ? available[(previous + 1) % available.length] : 'GENERAL';
+}
+export function selectFreeDesignModels({
+  frameNames = [], policy, env = process.env, previous = {}, now = Date.now()
+} = {}) {
+  const config = policy?.directVisualDesign?.freeSpecialistPool;
+  if (config?.enabled !== true || config?.paidFallbackForbidden !== true ||
+    config?.maxCallsPerCapture < 1 || config?.maxCallsPerCapture > 3 ||
+    config?.accountTierProofRequired !== true)
+    throw Error('FREE_SPECIALIST_POLICY_DENIED');
+  const approved = new Set(config.modelIds || []);
+  const role = designRoleForFrames(frameNames);
+  const today = new Date(now).toISOString().slice(0, 10);
+  const spent = previous?.usageWindow?.day === today ? previous.usageWindow.calls || {} : {};
+  const eligible = DESIGN_FREE_MODELS.filter(model => {
+    const cooling = Date.parse(previous?.cooldowns?.[model.id] || '');
+    return approved.has(model.id) && trim(env[model.keyName]) &&
+      trim(env[model.verifiedName]) === 'YES' &&
+      (model.provider !== 'OPENROUTER' || model.model.endsWith(':free')) &&
+      Number(spent[model.provider] || 0) < DAILY_LIMIT[model.provider] &&
+      (!Number.isFinite(cooling) || cooling <= now);
+  });
+  const preference = config.roles?.[role] || [];
+  return eligible.sort((left, right) =>
+    (preference.indexOf(left.id) < 0 ? 999 : preference.indexOf(left.id)) -
+    (preference.indexOf(right.id) < 0 ? 999 : preference.indexOf(right.id)) ||
+    DESIGN_FREE_MODELS.indexOf(left) - DESIGN_FREE_MODELS.indexOf(right));
+}
+
+function cooldownAfter(response, status, error = null) {
+  const raw = trim(response?.headers?.get?.('retry-after'));
+  const seconds = Number(raw);
+  let delay = Number.isFinite(seconds) && seconds > 0 ? seconds * 1000 : Date.parse(raw) - Date.now();
+  if (!Number.isFinite(delay) || delay < 1000) {
+    const detail = trim(error?.error?.message);
+    delay = status === 429 && /daily|per day|requestsperday|free.?tier quota/i.test(detail)
+      ? 86400000 : status === 429 ? 60000 : status === 404 ? 86400000 : 30000;
+  }
+  return Math.min(86400000, Math.max(1000, delay));
+}
+function modelAttempt(id, status, details = {}) {
+  const row = {id, status, ...details};
+  designRuntime.attempts.push(row);
+  console.log('DESIGN_FREE_MODEL_ATTEMPT=' + id + ':' + status);
+}
+async function callFreeDesignModel(model, prompt, photos, fetchImpl) {
+  const key = trim(process.env[model.keyName]);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 90000);
+  try {
+    const body = model.provider === 'GEMINI'
+      ? {contents: [{role: 'user', parts: [
+          {text: prompt}, ...photos.map(photo => {
+            const [header, data] = photo.url.split(',');
+            return {inlineData: {mimeType: header.includes('image/png') ? 'image/png' : 'image/jpeg', data}};
+          })
+        ]}], generationConfig: {temperature: 0.1, maxOutputTokens: 3500, responseMimeType: 'application/json'}}
+      : {model: model.model, stream: false, max_tokens: 3500, temperature: 0.1,
+          messages: [{role: 'user', content: [{type: 'text', text: prompt},
+            ...photos.map(photo => ({type: 'image_url', image_url: {url: photo.url}}))]}]};
+    const headers = model.provider === 'GEMINI'
+      ? {'content-type': 'application/json', 'x-goog-api-key': key}
+      : {'content-type': 'application/json', Authorization: 'Bearer ' + key};
+    const response = await fetchImpl(model.endpoint, {
+      method: 'POST', signal: controller.signal, headers, body: JSON.stringify(body)
+    });
+    if (!response.ok) {
+      let failure = null;
+      if ([400, 429].includes(response.status)) {
+        try {failure = await response.json();} catch {/* status is authoritative */}
+      }
+      const reason = trim(failure?.error?.message);
+      if (response.status === 402) return {status: 'BILLING_BLOCKED'};
+      if ([400, 403].includes(response.status) &&
+        /safety|content policy|moderation|disallowed|blocked content/i.test(reason))
+        return {status: 'CONTENT_POLICY_BLOCKED'};
+      if ([401, 403].includes(response.status)) return {status: 'AUTH_BLOCKED'};
+      return {status: 'HTTP_' + response.status,
+        retryAfterMs: cooldownAfter(response, response.status, failure)};
+    }
+    const payload = await response.json();
+    if (Number(payload?.usage?.cost || 0) > 0) return {status: 'NONZERO_COST_BLOCKED'};
+    const content = model.provider === 'GEMINI'
+      ? (payload?.candidates?.[0]?.content?.parts || []).filter(x => typeof x?.text === 'string')
+          .map(x => x.text).join('')
+      : payload?.choices?.[0]?.message?.content;
+    const text = typeof content === 'string' ? content
+      : Array.isArray(content) ? content.map(x => trim(x?.text)).join('') : '';
+    return text.trim() ? {status: 'OK', text} : {status: 'EMPTY_OUTPUT', retryAfterMs: 30000};
+  } catch (error) {
+    if (error?.name === 'AbortError' || error instanceof TypeError || error instanceof SyntaxError)
+      return {status: 'TRANSPORT_OR_TIMEOUT', retryAfterMs: 30000};
+    return {status: 'INTERNAL_ERROR', retryAfterMs: 30000};
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+
 export function authorizedCandidateBranch(name, runId) {
   return /^[0-9]{5,}$/.test(String(runId ?? '')) &&
     name === 'nemotron-mare-design-' + String(runId);
 }
 
 function record(status, fields = {}) {
-  const report = {version: 2, provider: 'NVIDIA', model: MODEL, gameId: 'mare-essentia',
-    sourceRevision: trim(process.env.GITHUB_SHA), status, ...fields};
+  const report = {version: 3, provider: 'MULTI_FREE_VISUAL', gameId: 'mare-essentia',
+    sourceRevision: trim(process.env.GITHUB_SHA), status, selectedRole: designRuntime.selectedRole,
+    usageWindow: designRuntime.usageWindow, cooldowns: designRuntime.cooldowns,
+    attempts: designRuntime.attempts, ...fields};
   fs.mkdirSync(path.dirname(reportPath), {recursive: true});
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n');
   console.log('NEMOTRON_DESIGN_STATUS=' + status);
@@ -37,17 +192,15 @@ function record(status, fields = {}) {
 }
 
 // [스튜디오 증거] 실제 캡처 이름, 원본 리비전, 이미지 바이트 형식을 모두 대조한다.
-// [화면 근거 배치] 마을 배치 4장·주민 2장·선박 1장·모바일 UI 1장을 우선한다.
-// 같은 무료 호출 안에서는 분야가 겹치지 않고, 다음 Studio 회차에서 각도를 순환한다.
-export function selectStudioDesignPhotoNames(names, sequence = 0, limit = 8) {
+// [실물 사진 우선순위] 93장 중 무료 AI 분야에 맞는 8장을 선택, 5회차에 촬영 각도를 순환한다.
+export function selectStudioDesignPhotoNames(names, sequence = 0, limit = 8, role = '') {
   const available = new Map();
   for (const name of names) {
     if (!/^[A-Za-z0-9_.-]+-[0-9]+\.(?:jpe?g|png)$/i.test(name)) continue;
     const label = name.replace(/-[0-9]+\.(?:jpe?g|png)$/i, '');
     if (!available.has(label)) available.set(label, name);
   }
-  // [전 시각 계열] 항구·사람·선박·교역·무기·재질을 매 회차 포함하고, 전투 VFX와 UI는 교대한다.
-  const groups = [
+  const broad = [
     ['town_aerial_grid','town_plaza_full','town_market_facade','town_street_roofline','town_outer_district_north'],
     ['harbor_npc_face_close','harbor_npc_hair_left','harbor_npc_hair_right','harbor_npc_hair_back','harbor_npc_face_front'],
     ['harbor_npc_outfit_front','harbor_npc_outfit_side','harbor_npc_outfit_back','harbor_npc_pair_diagonal','harbor_npc_port_street_reverse'],
@@ -56,37 +209,88 @@ export function selectStudioDesignPhotoNames(names, sequence = 0, limit = 8) {
     ['weapon_blade_close','weapon_ranged_close','harbor_motion_attack','harbor_motion_shoot','weapon_blade_close'],
     ['material_stone_roof','material_wood_dock','material_stone_roof','material_wood_dock','material_stone_roof']
   ];
-  const finish = [
-    ['vfx_battle_mid_action','vfx_battle_late_action','b1_start','b2_mid','v3_event2'],
+  const alternates = [
+    ['vfx_battle_mid_action','vfx_battle_late_action','b1_start','b2_mid','vfx_battle_mid_action'],
     ['ui_mobile_battle_2x2','ui_main_menu_icons','tab_harbor','tab_crew','field_motion_smooth_icons']
   ];
-  const selected = [];
-  const used = new Set();
   const phase = Number.isSafeInteger(Number(sequence)) ? Math.abs(Number(sequence)) % 5 : 0;
-  for (const group of [...groups, finish[phase % 2]]) {
+  const roles = {
+    NPC: [
+      ['harbor_npc_face_close','harbor_npc_face_front','harbor_npc_face_close','harbor_npc_face_front','harbor_npc_face_close'],
+      ['harbor_npc_hair_left','harbor_npc_hair_right','harbor_npc_hair_back','harbor_npc_hair_left','harbor_npc_hair_right'],
+      ['harbor_npc_hair_right','harbor_npc_hair_back','harbor_npc_hair_left','harbor_npc_hair_right','harbor_npc_hair_back'],
+      ['harbor_npc_face_front','harbor_npc_face_close','harbor_npc_hair_left','harbor_npc_hair_back','harbor_npc_face_front'],
+      ['harbor_npc_outfit_front','harbor_npc_outfit_side','harbor_npc_outfit_back','harbor_npc_outfit_front','harbor_npc_outfit_side'],
+      ['harbor_npc_outfit_side','harbor_npc_outfit_back','harbor_npc_outfit_front','harbor_npc_outfit_side','harbor_npc_outfit_back'],
+      ['harbor_npc_outfit_back','harbor_npc_outfit_front','harbor_npc_outfit_side','harbor_npc_outfit_back','harbor_npc_outfit_front'],
+      ['harbor_npc_pair_diagonal','harbor_npc_port_street_reverse','harbor_npc_sparring_01','harbor_npc_sparring_02','harbor_npc_sparring_03']
+    ],
+    WORLD: [
+      ['town_aerial_grid','town_plaza_full','town_plaza_center','town_outer_district_north','town_outer_district_south'],
+      ['town_market_facade','town_guild_facade','town_street_roofline','town_library_street','town_harbor_to_market'],
+      ['ship_hull_detail','ship_sails_rigging','cb0_deck','v1_start','v2_event'],
+      ['ship_sails_rigging','ship_hull_detail','cb1','v3_event2','v4_late'],
+      ['cargo_trade_crates','cargo_warehouse_close','cargo_trade_crates','cargo_warehouse_close','cargo_trade_crates'],
+      ['cargo_warehouse_close','cargo_trade_crates','cargo_warehouse_close','cargo_trade_crates','cargo_warehouse_close'],
+      ['material_stone_roof','material_wood_dock','material_stone_roof','material_wood_dock','material_stone_roof'],
+      ['material_wood_dock','material_stone_roof','material_wood_dock','material_stone_roof','material_wood_dock']
+    ],
+    UI: [
+      ['ui_mobile_battle_2x2','ui_main_menu_icons','tab_harbor','tab_trade','tab_route'],
+      ['ui_main_menu_icons','ui_mobile_battle_2x2','ui_battle_unified','tab_map','tab_crew'],
+      ['ui_battle_unified','ui_mobile_battle_2x2','ui_main_menu_icons','tab_codex','tab_tech'],
+      ['ui_trade_hall_no_hud','ui_yard_hall_no_hud','ui_hall_return_clean','tab_status','tab_quest'],
+      ['tab_harbor','tab_trade','tab_route','tab_map','tab_yard'],
+      ['tab_crew','tab_status','tab_quest','tab_explore','tab_battle'],
+      ['tab_codex','tab_tech','tab_harbor','tab_map','tab_route'],
+      ['ui_mobile_battle_2x2','ui_main_menu_icons','ui_battle_unified','ui_trade_hall_no_hud','ui_yard_hall_no_hud']
+    ],
+    MOTION: [
+      ['weapon_blade_close','weapon_ranged_close','harbor_motion_attack','harbor_motion_shoot','weapon_blade_close'],
+      ['weapon_ranged_close','weapon_blade_close','harbor_motion_shoot','harbor_motion_reload','weapon_ranged_close'],
+      ['vfx_battle_mid_action','vfx_battle_late_action','b1_start','b2_mid','vfx_battle_mid_action'],
+      ['vfx_battle_late_action','vfx_battle_mid_action','b2_mid','b1_start','vfx_battle_late_action'],
+      ['harbor_motion_attack','harbor_motion_shoot','harbor_motion_reload','harbor_motion_guard','harbor_motion_run'],
+      ['harbor_motion_shoot','harbor_motion_attack','harbor_motion_hurt','harbor_motion_cheer','harbor_motion_talk'],
+      ['harbor_motion_walk','harbor_motion_run','harbor_motion_idle','harbor_motion_guard','harbor_motion_hurt'],
+      ['field_motion_smooth_icons','field_actor_after_motion','harbor_motion_idle','harbor_motion_run','harbor_motion_walk']
+    ]
+  };
+  const groups = roles[role] || [...broad, alternates[phase % 2]];
+  const selected = [], used = new Set();
+  for (const group of groups) {
     for (let offset = 0; offset < group.length; offset++) {
-      const name = available.get(group[(phase + offset) % group.length]);
-      if (!name || used.has(name)) continue;
-      selected.push(name);
-      used.add(name);
+      const chosen = available.get(group[(phase + offset) % group.length]);
+      if (!chosen || used.has(chosen)) continue;
+      used.add(chosen);
+      selected.push(chosen);
       break;
     }
     if (selected.length >= limit) return selected;
   }
   for (const name of [...available.values()].sort()) {
-    if (!used.has(name)) selected.push(name);
+    if (used.has(name) || (role && designRoleForFrames([name]) !== role)) continue;
+    used.add(name);
+    selected.push(name);
     if (selected.length >= limit) break;
   }
   return selected;
 }
 
-function photosFromStudio() {
-  if (!fs.existsSync(framesRoot)) return [];
-  const names = fs.readdirSync(framesRoot).sort();
-  const chosen = selectStudioDesignPhotoNames(names, process.env.GITHUB_RUN_ID, 8);
+function photosFromStudio(directory = framesRoot, selectedRole = '', pinnedNames = null) {
+  if (!fs.existsSync(directory)) return [];
+  const names = fs.readdirSync(directory).sort().filter(name =>
+    /^[A-Za-z0-9_.-]+-[0-9]+\.(?:jpe?g|png)$/i.test(name));
+  const relevant = selectedRole ? names.filter(name =>
+    designRoleForFrames([name]) === selectedRole) : names;
+  // [실물 전후] 후보를 만든 정확한 8장만 다시 비교한다. 다른 회차 사진을 성공 근거로 쓰지 않는다.
+  const chosen = Array.isArray(pinnedNames) && pinnedNames.length
+    ? pinnedNames.filter(name => names.includes(name)).slice(0, 8)
+    : selectStudioDesignPhotoNames(relevant.length >= 2 ? relevant : names,
+      process.env.GITHUB_RUN_ID, 8, selectedRole);
   const found = [];
   for (const name of chosen) {
-    const file = path.join(framesRoot, name);
+    const file = path.join(directory, name);
     if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) continue;
     const bytes = fs.readFileSync(file);
     if (bytes.length < 4096 || bytes.length > 2000000) continue;
@@ -302,7 +506,17 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     contract.allowedSourceFiles.length < 2 ||
     contract.allowedSourceFiles.some(file => !/^roblox-games\/mare-essentia\/src\/[A-Za-z0-9_./-]+\.luau$/.test(file)))
     throw Error('CANONICAL_DESIGN_POLICY_DENIED');
-  const photos = photosFromStudio();
+  // [재사용 이력] 기존 Studio 증거 브랜치에 저장된 호출 한도와 제공자 쿨다운.
+  let previous = {};
+  try {
+    if (options.previous && fs.existsSync(path.resolve(options.previous)))
+      previous = JSON.parse(fs.readFileSync(path.resolve(options.previous), 'utf8'));
+  } catch {/* 손상된 이력은 권한을 주지 않고 신규 증거로만 처리한다. */}
+  loadPreviousDesignUsage(previous);
+  const pictures = fs.existsSync(framesRoot) ? fs.readdirSync(framesRoot)
+    .filter(name => /-[0-9]+\.(?:jpe?g|png)$/i.test(name)) : [];
+  designRuntime.selectedRole = selectDesignFrameRole(pictures, previous.selectedRole);
+  const photos = photosFromStudio(framesRoot, designRuntime.selectedRole);
   const proofs = photos.map(({name, sha256}) => ({name, sha256}));
   if (photos.length < 2) return record('SKIPPED_STUDIO_IMAGES_UNAVAILABLE', {frames: proofs});
   let studio;
@@ -315,10 +529,11 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     return record('SKIPPED_STUDIO_SOURCE_EVIDENCE_MISMATCH', {frames: proofs});
   if (trim(process.env.COMPANY_EXTERNAL_AI_ENABLED) !== 'YES')
     return record('SKIPPED_EXTERNAL_AI_OPT_IN_REQUIRED', {frames: proofs});
-  if (trim(process.env.NVIDIA_FREE_TIER_VERIFIED) !== 'YES')
-    return record('SKIPPED_FREE_TIER_UNVERIFIED', {frames: proofs});
-  if (!trim(process.env.NVIDIA_API_KEY))
-    return record('SKIPPED_API_KEY_MISSING', {frames: proofs});
+  const freeModels = selectFreeDesignModels({
+    frameNames: photos.map(photo => photo.name), policy, previous
+  });
+  if (!freeModels.length)
+    return record('SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE', {frames: proofs});
   if (trim(process.env.NEMOTRON_DESIGN_CANDIDATE) !== 'YES')
     return record('SKIPPED_CANDIDATE_EDIT_NOT_ENABLED', {frames: proofs});
   let branch = '';
@@ -361,42 +576,179 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     'Real Studio material audit (not a quality PASS): ' + materialAudit + '. ' +
     'Screenshots: ' + JSON.stringify(photos.map(x => x.name)) + '. ' +
     'Existing verified source anchors: ' + JSON.stringify(anchors);
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 90000);
-  try {
-    const response = await fetchImpl(ENDPOINT, {
-      method: 'POST', signal: controller.signal,
-      headers: {Authorization: 'Bearer ' + trim(process.env.NVIDIA_API_KEY),
-        'Content-Type': 'application/json'},
-      body: JSON.stringify({model: MODEL, stream: false, max_tokens: 3500,
-        messages: [{role: 'user', content: [{type: 'text', text: prompt},
-          ...photos.map(photo => ({type: 'image_url', image_url: {url: photo.url}}))]}]})
-    });
-    if (!response.ok) return record('UNVERIFIED_HTTP_' + response.status, {frames: proofs});
-    const payload = await response.json();
-    const raw = payload?.choices?.[0]?.message?.content;
-    const reviewed = validateReview(raw, photos.map(photo => photo.name), contract, anchors);
+  // [메인] 가장 적합한 무료 전문가부터 시도하고 한도/출력 오류면 다른 무료 전문가에게 넘긴다.
+  // 유료/안전 거부가 발견되면 중단. 동일 모델에 재시도 폭증·유료 전환 없음.
+  const routeLimit = policy.directVisualDesign.freeSpecialistPool.maxCallsPerCapture;
+  for (const model of freeModels.slice(0, routeLimit)) {
+    const previousCount = designRuntime.usageWindow.calls[model.provider] || 0;
+    if (previousCount >= DAILY_LIMIT[model.provider]) continue;
+    designRuntime.usageWindow.calls[model.provider] = previousCount + 1;
+    const result = await callFreeDesignModel(model, prompt, photos, fetchImpl);
+    modelAttempt(model.id, result.status, {provider: model.provider, model: model.model});
+    if (['BILLING_BLOCKED', 'NONZERO_COST_BLOCKED', 'CONTENT_POLICY_BLOCKED'].includes(result.status))
+      return record('BLOCKED_FREE_POLICY_OR_CONTENT', {frames: proofs, lastModel: model.id});
+    if (result.status !== 'OK') {
+      if (result.retryAfterMs)
+        designRuntime.cooldowns[model.id] = new Date(Date.now() + result.retryAfterMs).toISOString();
+      continue;
+    }
+    let reviewed;
+    try {
+      reviewed = validateReview(result.text, photos.map(photo => photo.name), contract, anchors);
+    } catch (error) {
+      modelAttempt(model.id, 'REVIEW_INVALID', {
+        failureSignature: trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 90)});
+      continue;
+    }
     const originals = Object.fromEntries([...new Set(reviewed.edits.map(edit => edit.path))]
       .map(file => [file, fs.readFileSync(path.join(root, file), 'utf8')]));
-    const candidate = applyVisualReplacements(originals, reviewed.edits, contract);
-    const evidence = {frames: proofs, rawResponseSha256: digest(trim(raw)),
+    let candidate;
+    try {
+      candidate = applyVisualReplacements(originals, reviewed.edits, contract);
+    } catch (error) {
+      modelAttempt(model.id, 'SOURCE_ANCHOR_INVALID', {
+        failureSignature: trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 90)});
+      continue;
+    }
+    const evidence = {frames: proofs, provider: model.provider, model: model.model,
+      selectedRole: designRoleForFrames(photos.map(photo => photo.name)),
+      rawResponseSha256: digest(result.text),
       issues: reviewed.issues, edits: candidate.changes,
       sourceHashes: [...candidate.files].map(([file, content]) =>
         ({path: file, beforeSha256: digest(originals[file]), afterSha256: digest(content)})),
       candidateOnly: true, independentQaPassed: false, afterStudioPassed: false,
       releasePassed: false};
-    if (!candidate.changes.length) return record('REVIEWED_NO_EDIT', evidence);
+    if (!candidate.changes.length) {
+      modelAttempt(model.id, 'NO_VALID_EDIT');
+      continue;
+    }
     for (const [file, content] of candidate.files) fs.writeFileSync(path.join(root, file), content);
     return record('CANDIDATE_EDITED', evidence);
-  } catch (error) {
-    return record('UNVERIFIED_REVIEW_ERROR', {frames: proofs,
-      reason: trim(error?.message).slice(0, 120).replace(/[^\w:.-]/g, '_')});
-  } finally {
-    clearTimeout(timeout);
   }
+  return record('REVIEWED_NO_VERIFIED_EDIT', {frames: proofs,
+    independentQaPassed: false, afterStudioPassed: false, releasePassed: false});
 }
+
+// [자동 검증] 다른 제공자의 무료 영상 분석으로 전후 사진을 독립 비교한다.
+// Studio/보안/회귀 검사와 별개의 질적 보완 검토이며 단독 PASS 권한이 없다.
+export function validateVisualComparison(value, frameNames) {
+  let result = value;
+  if (typeof result === 'string') {
+    if (Buffer.byteLength(result) > 18000) throw Error('VISUAL_COMPARISON_TOO_LARGE');
+    result = JSON.parse(result.trim().replace(/^```(?:json)?\s*\n/i, '').replace(/\n```\s*$/, ''));
+  }
+  const names = new Set(frameNames);
+  if (!result || !['PASS', 'FAIL', 'UNKNOWN'].includes(result.verdict) ||
+    !Array.isArray(result.improvements) || !Array.isArray(result.regressions) ||
+    result.improvements.length > 8 || result.regressions.length > 8)
+    throw Error('VISUAL_COMPARISON_SCHEMA_INVALID');
+  for (const item of [...result.improvements, ...result.regressions]) {
+    if (!names.has(item?.screenshot) || typeof item.evidence !== 'string' ||
+      item.evidence.trim().length < 24 || item.evidence.length > 600)
+      throw Error('VISUAL_COMPARISON_EVIDENCE_INVALID');
+  }
+  return {status: result.verdict === 'PASS' && result.regressions.length === 0 &&
+    result.improvements.length >= 2 &&
+    new Set(result.improvements.map(item => item.screenshot)).size >= 2
+    ? 'PASS' : 'UNVERIFIED',
+    improvements: result.improvements.map(item => ({
+      screenshot: item.screenshot, evidenceSha256: digest(item.evidence.trim())
+    })),
+    regressions: result.regressions.map(item => ({
+      screenshot: item.screenshot, evidenceSha256: digest(item.evidence.trim())
+    }))};
+}
+
+export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {}) {
+  const policy = JSON.parse(fs.readFileSync(path.join(root, POLICY), 'utf8'));
+  const beforeDir = path.resolve(options.before || '');
+  const beforeRevision = trim(process.env.STUDIO_BASE_SHA);
+  const candidateRevision = trim(process.env.GITHUB_SHA);
+  const unavailable = status => record(status, {
+    beforeRevision, candidateRevision, independentQaPassed: false,
+    afterStudioPassed: false, releasePassed: false
+  });
+  if (!options.before || beforeDir === framesRoot ||
+    !/^[a-f0-9]{40}$/i.test(beforeRevision) ||
+    !/^[a-f0-9]{40}$/i.test(candidateRevision) ||
+    beforeRevision === candidateRevision ||
+    !policy?.directVisualDesign?.freeSpecialistPool?.enabled)
+    return unavailable('BLOCKED_VISUAL_BEFORE_AFTER_IDENTITY');
+  let beforeReport, afterReport, previous;
+  try {
+    beforeReport = JSON.parse(fs.readFileSync(path.join(beforeDir, 'report.json'), 'utf8').replace(/^\uFEFF/, ''));
+    afterReport = JSON.parse(fs.readFileSync(path.join(framesRoot, 'report.json'), 'utf8').replace(/^\uFEFF/, ''));
+    previous = JSON.parse(fs.readFileSync(path.join(beforeDir, 'nemotron-design-review.json'), 'utf8'));
+  } catch {
+    return unavailable('BLOCKED_VISUAL_BASELINE_EVIDENCE_MISSING');
+  }
+  const exactNames = (previous.frames || []).map(row => row?.name)
+    .filter(name => typeof name === 'string').slice(0, 8);
+  if (new Set(exactNames).size !== exactNames.length || exactNames.length < 2)
+    return unavailable('BLOCKED_VISUAL_BASELINE_FRAME_SELECTION');
+  const beforePhotos = photosFromStudio(beforeDir, previous.selectedRole, exactNames);
+  const afterPhotos = photosFromStudio(framesRoot, previous.selectedRole, exactNames);
+  const beforeByName = new Map(beforePhotos.map(photo => [photo.name, photo]));
+  const names = afterPhotos.map(photo => photo.name).filter(name => beforeByName.has(name)).slice(0, 4);
+  const baseline = names.map(name => beforeByName.get(name));
+  const after = names.map(name => afterPhotos.find(photo => photo.name === name));
+  if (previous?.sourceRevision !== beforeRevision ||
+    previous?.status !== 'CANDIDATE_EDITED' ||
+    !previous?.model || !previous?.rawResponseSha256 ||
+    !verifiedStudioCapture(beforeReport, baseline, beforeRevision) ||
+    !verifiedStudioCapture(afterReport, after, candidateRevision) ||
+    names.length < 2 || !baseline.some((photo, index) => photo.sha256 !== after[index].sha256))
+    return unavailable('BLOCKED_VISUAL_STUDIO_CAPTURE_MISMATCH');
+  loadPreviousDesignUsage(previous);
+  const allModels = selectFreeDesignModels({frameNames: names, policy, previous});
+  // 후보 모델 스스로 최종 수용을 결정할 수 없다.
+  const reviewers = allModels.filter(model => model.provider !== previous.provider);
+  if (!reviewers.length)
+    return unavailable('BLOCKED_NO_INDEPENDENT_FREE_VISUAL_REVIEWER');
+  const prompt = 'Independently compare the same official Roblox Studio screenshots BEFORE and AFTER a visual-only source edit. ' +
+    'Pairs follow strictly in order: BEFORE then AFTER for each screenshot name. ' +
+    'Reject regressions in character appearance, clothing, architecture, readability, art-style consistency or image sharpness. ' +
+    'No gameplay, code, remote commands, credentials or new assets. ' +
+    'Return STRICT JSON only: {"verdict":"PASS|FAIL|UNKNOWN",' +
+    '"improvements":[{"screenshot":"exact name","evidence":"specific visible change comparing both images"}],' +
+    '"regressions":[{"screenshot":"exact name","evidence":"specific visible regression"}]}. ' +
+    'PASS only when at least two distinct screenshots show actual improvements without any regression; ' +
+    'uncertain/no visual improvement -> UNKNOWN. File names: ' + JSON.stringify(names);
+  const pairs = names.flatMap((name, index) => [baseline[index], after[index]]);
+  for (const reviewer of reviewers.slice(0, policy.directVisualDesign.freeSpecialistPool.maxCallsPerCapture)) {
+    const previousCalls = designRuntime.usageWindow.calls[reviewer.provider] || 0;
+    if (previousCalls >= DAILY_LIMIT[reviewer.provider]) continue;
+    designRuntime.usageWindow.calls[reviewer.provider] = previousCalls + 1;
+    const result = await callFreeDesignModel(reviewer, prompt, pairs, fetchImpl);
+    modelAttempt(reviewer.id, result.status);
+    if (['CONTENT_POLICY_BLOCKED', 'BILLING_BLOCKED', 'NONZERO_COST_BLOCKED'].includes(result.status))
+      return unavailable('BLOCKED_VISUAL_REVIEW_FREE_POLICY');
+    if (result.status !== 'OK') {
+      if (result.retryAfterMs) designRuntime.cooldowns[reviewer.id] =
+        new Date(Date.now() + result.retryAfterMs).toISOString();
+      continue;
+    }
+    let verdict;
+    try {verdict = validateVisualComparison(result.text, names);}
+    catch (error) {
+      modelAttempt(reviewer.id, 'VISUAL_COMPARISON_INVALID', {
+        reason: trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 90)});
+      continue;
+    }
+    return record(verdict.status === 'PASS' ? 'VISUAL_BEFORE_AFTER_PASS' : 'VISUAL_BEFORE_AFTER_UNVERIFIED', {
+      beforeRevision, candidateRevision, beforeFrames: baseline.map(x => ({name: x.name, sha256: x.sha256})),
+      afterFrames: after.map(x => ({name: x.name, sha256: x.sha256})),
+      authorProvider: previous.provider, reviewerProvider: reviewer.provider,
+      reviewerModel: reviewer.model, comparison: verdict, rawResponseSha256: digest(result.text),
+      independentQaPassed: verdict.status === 'PASS',
+      afterStudioPassed: verdict.status === 'PASS', releasePassed: false
+    });
+  }
+  return unavailable('BLOCKED_VISUAL_REVIEW_FREE_POOL_EXHAUSTED');
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
-  reviewNemotron().catch(error => {
+  (options.mode === 'verify' ? verifyVisualCandidate() : reviewNemotron()).catch(error => {
     console.log('NEMOTRON_DESIGN_STATUS=UNVERIFIED_INTERNAL_ERROR');
     console.log('NEMOTRON_DESIGN_FAILURE=' + trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 100));
     process.exitCode = 1;

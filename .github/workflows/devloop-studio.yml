@@ -2,7 +2,7 @@
 # 기존 Studio MCP 도구(tools/company-development-roblox-studio-local-play.mjs, studio-script 모드)를 그대로 쓴다.
 # 결과 사진·리포트는 브랜치 <game>-studio-frames (예: mare-essentia-studio-frames)에 올라간다 (바이브 복구가 실패 증거를 읽는다).
 name: Devloop Studio Capture
-run-name: Devloop Studio Capture · ${{ inputs.game || 'mare-essentia' }} · ${{ github.sha }}
+run-name: Devloop Studio Capture · ${{ inputs.game || 'mare-essentia' }} · ${{ inputs.candidate_ref || github.sha }}
 on:
   # push 트리거는 뺐다: 병합마다 Studio가 줄을 서서 서로 취소되던 문제. 점검은 vibe-autopilot(주기 실행)과 수동 실행이 맡는다.
   workflow_dispatch:
@@ -12,6 +12,11 @@ on:
         required: false
         default: mare-essentia
         type: string
+      candidate_ref:
+        description: 격리 디자인 PR 동일 Studio 재검증 (main 변경 없음)
+        required: false
+        default: ''
+        type: string
       script:
         description: Studio script JSON path in repo (비우면 게임의 tools/devloop/studio-scripts/default.json, 없으면 opening-capture)
         required: false
@@ -20,6 +25,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 concurrency:
   group: roblox-studio-shared-host
   cancel-in-progress: false
@@ -33,6 +39,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: main
+          ref: ${{ inputs.candidate_ref || github.sha }}
           fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
@@ -41,9 +48,13 @@ jobs:
         shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           GAME_IN: ${{ github.event_name == 'push' && 'mare-essentia' || inputs.game }}
-          SCRIPT_IN: ${{ github.event_name == 'push' && 'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json' || inputs.script }}
+          SCRIPT_IN: ${{ github.event_name == 'push' && 'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json' || inputs.candidate_ref != '' && 'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json' || inputs.script }}
+          DESIGN_CANDIDATE_IN: ${{ inputs.candidate_ref || '' }}
         run: |
           $g = $env:GAME_IN
+          $candidateRef = [string]$env:DESIGN_CANDIDATE_IN
+          if ($candidateRef -ne '' -and $candidateRef -notmatch '^nemotron-mare-design-[0-9]{5,}$') { throw 'STUDIO_CANDIDATE_REF_INVALID' }
+          "STUDIO_CANDIDATE_REF=$candidateRef" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           if ($g -notmatch '^[a-z0-9-]+$') { throw "bad game id" }
           if (-not (Test-Path "main/roblox-games/$g/default.project.json")) { throw "no project for $g" }
           $sc = $env:SCRIPT_IN
@@ -84,11 +95,29 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           NVIDIA_FREE_TIER_VERIFIED: ${{ vars.NVIDIA_FREE_TIER_VERIFIED || 'NO' }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_DESIGN_FREE_TIER_VERIFIED: ${{ vars.GEMINI_DESIGN_FREE_TIER_VERIFIED || 'NO' }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_DESIGN_FREE_TIER_VERIFIED: ${{ vars.OPENROUTER_DESIGN_FREE_TIER_VERIFIED || 'NO' }}
           # [오너 허용] 이 Studio 디자인 검사에만 외부 무료 AI 사용을 명시적으로 허용한다.
           COMPANY_EXTERNAL_AI_ENABLED: 'YES'
           NEMOTRON_DESIGN_CANDIDATE: 'YES'
         run: |
           $ErrorActionPreference = 'Stop'
+          # [후보 PR 검사] 본 저장소 main 대상의 네모트론 격리 브랜치인지 사전 검증.
+          $sourceSha = (& git -C 'main' rev-parse HEAD).Trim()
+          if ($env:STUDIO_CANDIDATE_REF -ne '') {
+            $prJson = & gh pr view $env:STUDIO_CANDIDATE_REF --repo $env:GITHUB_REPOSITORY --json headRefName,headRefOid,baseRefName,baseRefOid,state,headRepositoryOwner
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_CANDIDATE_PR_NOT_FOUND' }
+            $pr = $prJson | ConvertFrom-Json
+            if ($pr.state -ne 'OPEN' -or $pr.baseRefName -ne 'main' -or
+                $pr.headRefName -ne $env:STUDIO_CANDIDATE_REF -or $pr.headRefOid -ne $sourceSha -or
+                $pr.headRepositoryOwner.login -ne 'hans1177') { throw 'STUDIO_CANDIDATE_PR_IDENTITY_MISMATCH' }
+          }
+          $env:GITHUB_SHA = $sourceSha
+          $env:STUDIO_SOURCE_SHA = $sourceSha
+          if ($env:STUDIO_CANDIDATE_REF -ne '') { $env:STUDIO_BASE_SHA = [string]$pr.baseRefOid }
+          Write-Host "STUDIO_EXACT_SOURCE_SHA=$sourceSha"
           # [메인] 공식 Studio·MCP·Node의 사용자 임시 파일은 기존 E: 러너 작업 폴더에서 생성한다.
           # LOCALAPPDATA·로블록스 설치·계정/저장 경로는 이동하지 않는다.
           $jobTemp = [IO.Path]::GetFullPath($env:RUNNER_TEMP)
@@ -385,14 +414,8 @@ jobs:
           Write-Host "STUDIO_QA_FRAMES=$($frames.Count)"
           Write-Host "STUDIO_QA_CHECKLIST_STEPS=$stepsState CLICKS=$clicksState FRAMES=$framesState CONSOLE=$consoleState MODELS=$modelState MEDIA=$mediaState FEATURES=$featureState"
           
-          # [디자인] Studio 실물 사진을 무료 Nemotron으로 분석하고 격리 후보에서만 수정한다.
+          # [기존 아카이브] 이전 무료 모델의 사용량과 재시도 제한을 보존한다.
           $designBranch = "nemotron-mare-design-$env:GITHUB_RUN_ID"
-          if ($env:CAP_GAME -eq 'mare-essentia' -and [string]$env:CAP_SCRIPT -match 'mare-qa-click\.json$') {
-            & git -C 'main' switch -q -c $designBranch
-            if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_BRANCH_INVALID' }
-            & node 'main/tools/company-nemotron-design-review.mjs' '--root=main' "--frames=$out" "--out=$(Join-Path $out 'nemotron-design-review.json')"
-            if ($LASTEXITCODE -ne 0) { Write-Host 'NEMOTRON_DESIGN_REVIEW=UNVERIFIED' }
-          }
           # [저장] 기존 최신 파일 경로(report.json·jpg)는 유지하고, 같은 브랜치의 runs/에 회차별 증거를 보존한다.
           # [저장] 기존 Studio 증거 브랜치를 이어받아 과거 사진과 검사 결과를 보존한다.
           # 기존 브랜치와 러너만 사용한다. 최근 정밀 4회·그외 6회만 보존해 용량 폭증을 막는다.
@@ -409,6 +432,16 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_FETCH_FAILED' }
             & git checkout -q --detach FETCH_HEAD
             if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_CHECKOUT_FAILED' }
+            # [디자인 자동 배치] 기존 Studio 브랜치에서 직전 모델 사용량과 쿨다운을 읽는다.
+            $priorDesign = Join-Path $dst 'nemotron-design-review.json'
+            if ($env:STUDIO_CANDIDATE_REF -eq '' -and $qaStage -eq '' -and $env:CAP_GAME -eq 'mare-essentia' -and
+                [string]$env:CAP_SCRIPT -match 'mare-qa-click\.json$') {
+              $checkoutRoot = Join-Path $env:GITHUB_WORKSPACE 'main'
+              & git -C $checkoutRoot switch -q -c $designBranch
+              if ($LASTEXITCODE -ne 0) { throw 'DESIGN_FREE_CANDIDATE_BRANCH_INVALID' }
+              & node (Join-Path $checkoutRoot 'tools/company-nemotron-design-review.mjs') "--root=$checkoutRoot" "--frames=$out" "--previous=$priorDesign" "--out=$(Join-Path $out 'nemotron-design-review.json')"
+              if ($LASTEXITCODE -ne 0) { Write-Host 'DESIGN_FREE_REVIEW=UNVERIFIED' }
+            }
             $scriptFile = Join-Path $env:GITHUB_WORKSPACE ("main/" + $env:CAP_SCRIPT)
             # [증거] 단계별 통과·실패, 감사 판정, 촬영 파일과 SHA256 비교를 원본 report에 연결한다.
             # SHA256 비교는 파일 변경 탐지이며 사진 품질의 개선·악화 판정으로 표시하지 않는다.
@@ -606,16 +639,116 @@ jobs:
                       if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_COMMIT_FAILED' }
                       & git push -q $remote "HEAD:refs/heads/$designBranch"
                       if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_PUSH_FAILED' }
-                      & gh pr create --base main --head $designBranch --title "design(mare): Nemotron Studio candidate $env:GITHUB_RUN_ID" --body "Free NVIDIA visual design candidate from verified Studio source $env:GITHUB_SHA. Source edits are limited to exact visual expressions in the central file allowlist. Node regression and Rojo build passed. Candidate AFTER Studio visual verification, native security QA and existing F0-F9 release gates remain pending; no auto-merge."
+                      & gh pr create --base main --head $designBranch --title "design(mare): Free visual specialist candidate $env:GITHUB_RUN_ID" --body "Source-bound free visual specialists from exact Studio source $env:GITHUB_SHA. Exact visual expressions only. Node regression and Rojo build passed. Independent candidate Studio evidence and native security QA required before canonical main integration; F0-F9 and publish remain independent."
                       if ($LASTEXITCODE -ne 0) {
                         Write-Host 'NEMOTRON_CANDIDATE=BRANCH_PUSHED_PR_NOT_VERIFIED'
                       } else {
                         Write-Host 'NEMOTRON_CANDIDATE=PR_OPENED_AWAITING_STUDIO_QA'
+                        & gh workflow run devloop-studio.yml --repo $env:GITHUB_REPOSITORY --ref main -f game=mare-essentia -f candidate_ref=$designBranch
+                        if ($LASTEXITCODE -ne 0) { Write-Host 'NEMOTRON_CANDIDATE=STUDIO_RECHECK_DISPATCH_UNVERIFIED' }
+                        else { Write-Host 'NEMOTRON_CANDIDATE=STUDIO_RECHECK_DISPATCHED' }
                       }
                     }
                   }
                 }
               } finally { Pop-Location }
+            }
+          }
+          # [독립 수용] 후보 실제 Studio PASS + 동일 기준선 + 다른 무료 제공자 전후 검증 뒤 기존 PR을 병합한다.
+          # 미검증이거나 코딩/보안/출시 조건이 빠졌으면 격리 후보로 남긴다.
+          if ($env:STUDIO_CANDIDATE_REF -ne '') {
+            if ($qaStage -ne '' -or [string]$storedChecks.result -ne 'PASS' -or
+                [string]$storedChecks.sourceRevision -ne [string]$env:STUDIO_SOURCE_SHA -or
+                @(@($storedChecks.audits.models, $storedChecks.audits.registered,
+                  $storedChecks.audits.features, $storedChecks.audits.registry) | Where-Object { $_ -ne 'PASS' }).Count -gt 0) {
+              Write-Host 'DESIGN_AUTO_MERGE=BLOCKED_STUDIO_QA_NOT_PASS'
+            } else {
+              $priorIndex = Get-Content -LiteralPath (Join-Path $dst 'index.json') -Encoding UTF8 -Raw | ConvertFrom-Json
+              $baseline = @($priorIndex.runs | Where-Object {
+                $_.runId -ne $env:GITHUB_RUN_ID -and $_.kind -eq 'deep' -and
+                $_.result -eq 'PASS' -and $_.sourceRevision -eq $env:STUDIO_BASE_SHA -and
+                [string]$_.path -match '^runs/[0-9]+$'
+              } | Select-Object -First 1)
+              if ($baseline.Count -ne 1) {
+                Write-Host 'DESIGN_AUTO_MERGE=BLOCKED_EXACT_BASELINE_MISSING'
+              } else {
+                $baselineDir = Join-Path $dst ([string]$baseline[0].path)
+                $visualProof = Join-Path $out 'design-visual-comparison.json'
+                & node 'main/tools/company-nemotron-design-review.mjs' '--mode=verify' '--root=main' "--frames=$out" "--before=$baselineDir" "--out=$visualProof"
+                if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $visualProof)) {
+                  Write-Host 'DESIGN_AUTO_MERGE=BLOCKED_VISUAL_REVIEW_EXECUTION'
+                } else {
+                  # [검증 증거 보존] 성공·실패 모두 기존 7일 Studio 기록 브랜치에 저장한다.
+                  # 기존 QA 저장소 외 별도 로그/큐를 만들지 않는다.
+                  $proofDir = Join-Path (Join-Path $dst 'runs') $env:GITHUB_RUN_ID
+                  if (-not (Test-Path -LiteralPath $proofDir -PathType Container)) { throw 'DESIGN_STUDIO_PROOF_ARCHIVE_MISSING' }
+                  Copy-Item -LiteralPath $visualProof -Destination (Join-Path $dst 'design-visual-comparison.json') -Force
+                  Copy-Item -LiteralPath $visualProof -Destination (Join-Path $proofDir 'design-visual-comparison.json') -Force
+                  Push-Location $dst
+                  try {
+                    & git add -- 'design-visual-comparison.json' "runs/$env:GITHUB_RUN_ID/design-visual-comparison.json"
+                    & git commit -q -m "Studio independent design comparison $env:GITHUB_RUN_ID"
+                    if ($LASTEXITCODE -ne 0) { throw 'DESIGN_STUDIO_PROOF_COMMIT_FAILED' }
+                    & git push -q $remote "HEAD:refs/heads/$($env:CAP_GAME)-studio-frames"
+                    if ($LASTEXITCODE -ne 0) { throw 'DESIGN_STUDIO_PROOF_PUSH_FAILED' }
+                    Write-Host 'DESIGN_STUDIO_COMPARISON_ARCHIVED=YES'
+                  } finally { Pop-Location }
+                  $visual = Get-Content -LiteralPath $visualProof -Encoding UTF8 -Raw | ConvertFrom-Json
+                  if ([string]$visual.status -ne 'VISUAL_BEFORE_AFTER_PASS' -or
+                      $visual.independentQaPassed -ne $true -or $visual.afterStudioPassed -ne $true -or
+                      [string]$visual.candidateRevision -ne [string]$env:STUDIO_SOURCE_SHA -or
+                      [string]$visual.beforeRevision -ne [string]$env:STUDIO_BASE_SHA) {
+                    Write-Host ('DESIGN_AUTO_MERGE=BLOCKED_VISUAL_QA:' + [string]$visual.status)
+                  } else {
+                    Push-Location 'main'
+                    try {
+                      & node --check tools/company-nemotron-design-review.mjs
+                      if ($LASTEXITCODE -ne 0) { throw 'DESIGN_CANDIDATE_NODE_SYNTAX_FAILED' }
+                      & node --test qa/mare-essentia-datastore-name.test.mjs
+                      if ($LASTEXITCODE -ne 0) { throw 'DESIGN_CANDIDATE_REGRESSION_FAILED' }
+                      # [기존 보안] 보안/메인 가드는 별도 GitHub Actions의 후보 SHA 결과만 수용한다.
+                      $checksStart = (Get-Date).ToUniversalTime().AddSeconds(-10)
+                      foreach ($workflowName in @('company-security-immune.yml', 'main-write-guard.yml')) {
+                        & gh workflow run $workflowName --repo $env:GITHUB_REPOSITORY --ref $env:STUDIO_CANDIDATE_REF
+                        if ($LASTEXITCODE -ne 0) { throw ('DESIGN_SECURITY_DISPATCH_FAILED:' + $workflowName) }
+                        $matched = $null
+                        for ($attempt = 0; $attempt -lt 15; $attempt++) {
+                          $listed = & gh run list --repo $env:GITHUB_REPOSITORY --workflow $workflowName --branch $env:STUDIO_CANDIDATE_REF --event workflow_dispatch --json databaseId,headSha,createdAt --limit 10
+                          if ($LASTEXITCODE -ne 0) { throw 'DESIGN_SECURITY_RUN_LIST_FAILED' }
+                          $runs = @($listed | ConvertFrom-Json)
+                          $matched = $runs | Where-Object {
+                            $_.headSha -eq $env:STUDIO_SOURCE_SHA -and
+                            [DateTimeOffset]::Parse([string]$_.createdAt).UtcDateTime -ge $checksStart
+                          } | Sort-Object createdAt -Descending | Select-Object -First 1
+                          if ($matched) { break }
+                          Start-Sleep -Seconds 4
+                        }
+                        if (-not $matched) { throw ('DESIGN_SECURITY_RUN_NOT_FOUND:' + $workflowName) }
+                        & gh run watch $matched.databaseId --repo $env:GITHUB_REPOSITORY --exit-status
+                        if ($LASTEXITCODE -ne 0) { throw ('DESIGN_SECURITY_QA_FAILED:' + $workflowName) }
+                      }
+                      # [병합 권한] 체크아웃·PR·중앙 main이 정확히 동일한 F0 전 기준선일 때만 병합.
+                      $prJson = & gh pr view $env:STUDIO_CANDIDATE_REF --repo $env:GITHUB_REPOSITORY --json headRefOid,baseRefOid,state
+                      if ($LASTEXITCODE -ne 0) { throw 'DESIGN_PR_READ_FAILED' }
+                      $pr = $prJson | ConvertFrom-Json
+                      $mainSha = & gh api "repos/$env:GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha'
+                      if ($LASTEXITCODE -ne 0 -or [string]$pr.state -ne 'OPEN' -or
+                          [string]$pr.headRefOid -ne [string]$env:STUDIO_SOURCE_SHA -or
+                          [string]$pr.baseRefOid -ne [string]$env:STUDIO_BASE_SHA -or
+                          ([string]$mainSha).Trim() -ne [string]$env:STUDIO_BASE_SHA) {
+                        throw 'DESIGN_AUTO_MERGE_STALE_BASE_OR_HEAD'
+                      }
+                      & gh pr merge $env:STUDIO_CANDIDATE_REF --repo $env:GITHUB_REPOSITORY --merge
+                      if ($LASTEXITCODE -ne 0) { throw 'DESIGN_AUTO_MERGE_FAILED' }
+                      Write-Host 'DESIGN_AUTO_MERGE=MERGED_AFTER_STUDIO_VISUAL_SECURITY_QA'
+                      # Actions 토큰으로 병합하면 main push가 하위 작업을 깨우지 못할 수 있어 기존 source sync를 명시 호출한다.
+                      & gh workflow run company-roblox-source-drift-sync.yml --repo $env:GITHUB_REPOSITORY --ref main -f game_id=mare-essentia -f restart_from_f0=true
+                      if ($LASTEXITCODE -ne 0) { throw 'DESIGN_F0_SYNC_DISPATCH_UNVERIFIED' }
+                      Write-Host 'DESIGN_F0_F9_HANDOFF=DISPATCHED_EXISTING_CANONICAL_WORKFLOW'
+                    } finally { Pop-Location }
+                  }
+                }
+              }
             }
           }
           # [자동 판단] 별도 autopilot-report 브랜치는 기존처럼 최신 1회만 유지한다.

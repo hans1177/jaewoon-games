@@ -170,6 +170,84 @@
     "autoMergeOrReleaseWithoutOwnerDefinedGate": false,
     "modelGeneratedSourceCannotExecuteUntilBoundedCandidateQa": true,
     "modelCannotMutateCanonicalCentralPolicy": true,
+    "freeSpecialistPool": {
+      "version": 1,
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026_11_18_AUTOMATIC_FREE_VISUAL_SPECIALISTS",
+      "scope": "MARE_ESSENTIA_VISUAL_ONLY_EXISTING_STUDIO_AND_VIBE_FLOW",
+      "modelIds": [
+        "NVIDIA_VL",
+        "GEMINI_FLASH",
+        "OPENROUTER_GEMMA",
+        "OPENROUTER_NEMOTRON",
+        "OPENROUTER_GEMMA26",
+        "OPENROUTER_OMNI",
+        "GEMINI_LITE"
+      ],
+      "roles": {
+        "NPC": [
+          "NVIDIA_VL",
+          "OPENROUTER_NEMOTRON",
+          "OPENROUTER_GEMMA",
+          "GEMINI_FLASH"
+        ],
+        "WORLD": [
+          "GEMINI_FLASH",
+          "OPENROUTER_GEMMA26",
+          "OPENROUTER_GEMMA",
+          "NVIDIA_VL"
+        ],
+        "UI": [
+          "OPENROUTER_GEMMA",
+          "GEMINI_FLASH",
+          "OPENROUTER_GEMMA26",
+          "NVIDIA_VL"
+        ],
+        "GENERAL": [
+          "GEMINI_LITE",
+          "OPENROUTER_GEMMA26",
+          "NVIDIA_VL"
+        ],
+        "MOTION": [
+          "OPENROUTER_OMNI",
+          "OPENROUTER_NEMOTRON",
+          "GEMINI_FLASH"
+        ]
+      },
+      "actualFreeTierAndApiKeyRequired": true,
+      "accountTierProofRequired": true,
+      "paidFallbackForbidden": true,
+      "freeOnlyModelIdSuffixRequiredForOpenRouter": ":free",
+      "roleBasedAutomaticRecruitment": true,
+      "providerQuotaOrTimeoutRotatesOncePerEligibleSlot": true,
+      "modelCountNotQualityProof": true,
+      "maxCallsPerCapture": 3,
+      "conservativeDailyCallCaps": {
+        "NVIDIA": 12,
+        "GEMINI": 12,
+        "OPENROUTER": 30
+      },
+      "freeQuotaResetsOnlyAfterDateChange": true,
+      "cooldownAndDailyUseStoredInExistingStudioEvidence": true,
+      "rawResponsesStored": false,
+      "credentialsNotLogged": true,
+      "privateOrPersonalScreenshotsForbidden": true,
+      "pathsAndEditsFromCurrentVerifiedSourceOnly": true,
+      "independentSourceAndStudioQaBeforePromotion": true,
+      "successfulCandidateDoesNotEqualVisualPass": true,
+      "autoMergeOnlyAfterIndependentActualStudioVisualAndSecurityEvidence": true,
+      "releaseViaExistingF0F9AndAuthorizedRobloxPublishOnly": true,
+      "existingStudioWorkflow": ".github/workflows/devloop-studio.yml",
+      "existingReviewer": "tools/company-nemotron-design-review.mjs",
+      "noNewQueueWorkflowOrShadowPipeline": true,
+      "experimentalImageGeneration": {
+        "status": "UNBOUND_LICENSE_HOLD",
+        "exampleModel": "recraft/recraft-v4.1-flash-v2:free",
+        "endDate": "2026-11-28",
+        "automatedGameAssetPublication": false,
+        "reason": "Temporary free API and owner approved asset provenance + license checks required"
+      }
+    },
     "studioEvidenceSelection": {
       "officialCaptureScenario": "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json",
       "expectedCoverageFrames": 93,
