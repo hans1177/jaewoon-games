@@ -484,6 +484,11 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						or partName:find("hoof", 1, true) or partName:find("horn", 1, true)
 						or partName:find("mane", 1, true) or partName:find("tail", 1, true)
 						or partName:find("beak", 1, true) or partName:find("saddle", 1, true)
+						or partName:find("muzzle", 1, true) or partName:find("nose", 1, true)
+						or partName:find("snout", 1, true) or partName:find("ear", 1, true)
+						or partName:find("udder", 1, true) or partName:find("tusk", 1, true)
+						or partName:find("patch", 1, true) or partName:find("spot", 1, true)
+						or partName:find("stripe", 1, true) or partName:find("whisker", 1, true)
 					if textured and not detail then
 						-- [PBR 털색] ColorMap/메시 원본을 보존하고 단 한 채널만 약하게 보정한다.
 						-- 기존 Part.Color와 SurfaceAppearance.Color의 중복 곱셈으로 검게 변하던 문제 방지.
@@ -494,7 +499,13 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						end
 					elseif not textured and not detail then
 						local light = math.max(p.Color.R, p.Color.G, p.Color.B)
-						p.Color = p.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
+						-- [원본 PBR 재질] 색상 지도가 없어도 법선/거칠기 맵을 사용할 수 있다.
+						-- 원본 파츠 색과 PBR 색을 동시에 착색하지 않는다.
+						if sa and sa.ColorMap == "" then
+							sa.Color = sa.Color:Lerp(tint, if light > 0.55 then 0.52 else 0.30)
+						else
+							p.Color = p.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
+						end
 						-- [종별 촉감] 양/라마 양털, 소/말/당나귀 가죽, 돼지 피부, 코끼리 주름을 기본 재질로 표현.
 						-- PBR 맵이 일부라도 있으면 원본 표면을 그대로 둔다.
 						if not sa then
@@ -505,7 +516,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 							else Enum.Material.SmoothPlastic
 							p.Reflectance = 0
 						end
-						if sa and sa.ColorMap == "" then sa.Color = p.Color end
+						-- PBR 색은 위에서 한 채널만 보정했다.
 						-- SpecialMesh.VertexColor 이중 곱셈은 털색을 검게 만들므로 건드리지 않는다.
 					elseif not textured and not sa and (partName:find("mane", 1, true) or partName:find("tail", 1, true)) then
 						p.Material = Enum.Material.Fabric
