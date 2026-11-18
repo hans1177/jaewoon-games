@@ -11,6 +11,13 @@ const core=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/C
 test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증거를 남긴다',()=>{
   const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.equal(capture.length,241);
+  // [통합 표지 QA] 실제 시작 화면과 클릭 순서를 검사해 이전 버튼명 회귀를 차단한다.
+  assert.match(capture[4].code,/FindFirstChild\('TitleBackdrop'\)/);
+  assert.match(capture[4].code,/FindFirstChild\('TitlePanel'\)/);
+  assert.match(capture[6].code,/local pref=\{"프랑스"\}/);
+  assert.match(capture[9].code,/local pref=\{"상인 집안"\}/);
+  assert.match(capture[11].code,/local pref=\{"상인 집안"\}/);
+  assert.match(capture[16].code,/local pref=\{"출항하기"\}/);
   assert.match(capture[4].code,/MARE_TITLE_NOT_READY_AFTER_50S;LOADING=/);
   assert.match(capture[4].code,/MareCoreStartStage/);
   assert.match(capture[4].code,/StartupStage/);
