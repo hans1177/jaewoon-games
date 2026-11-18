@@ -1443,6 +1443,32 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
     assert.equal(gltf.asset.version,'2.0');
     assert.ok(gltf.meshes[0].primitives.length>0 && gltf.meshes[0].primitives.length<=12,'모바일 모델 부품 초과: '+name);
     assert.ok(gltf.materials.length>=4,'원본 복식 소재 구분 누락: '+name);
+    // [UV 원본 보존 검증] 원본 메시/법선/인덱스 바이너리는 전부 동일하고, 재질별 UV0만 뒤에 더했다.
+    const uvProof=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
+    const binOffset=20+bytes.readUInt32LE(12)+8;
+    assert.equal(uvProof.uvVersion,1,'UV 갱신 누락: '+name);
+    assert.equal(bytes.readUInt32LE(binOffset-4),0x004e4942,'GLB 바이너리 누락: '+name);
+    assert.equal(uvProof.sourceSha256,crypto.createHash('sha256').update(bytes).digest('hex'),'UV 원본 해시 오류: '+name);
+    assert.equal(uvProof.sourceSizeBytes,bytes.length,'원본 갱신 크기 오류: '+name);
+    assert.equal(gltf.accessors.length,uvProof.originalAccessorCount+gltf.meshes[0].primitives.length);
+    assert.equal(gltf.bufferViews.length,uvProof.originalBufferViewCount+gltf.meshes[0].primitives.length);
+    assert.equal(crypto.createHash('sha256').update(bytes.subarray(binOffset,binOffset+uvProof.originalGeometryByteLength)).digest('hex'),
+      uvProof.originalGeometrySha256,'기존 정점·인덱스·법선 변경 감지: '+name);
+    for(const primitive of gltf.meshes[0].primitives){
+      const uvIndex=primitive.attributes.TEXCOORD_0;
+      assert.ok(Number.isInteger(uvIndex),'원본 재질별 UV0 누락: '+name);
+      const uv=gltf.accessors[uvIndex],position=gltf.accessors[primitive.attributes.POSITION];
+      assert.equal(uv.type,'VEC2','UV 좌표 형식 오류: '+name);
+      assert.equal(uv.componentType,5126,'UV 정밀도 오류: '+name);
+      assert.equal(uv.count,position.count,'UV 정점 개수 오류: '+name);
+      const view=gltf.bufferViews[uv.bufferView];
+      assert.ok(view.byteOffset>=uvProof.originalGeometryByteLength,'원본 메시 바이너리 덮어쓰기: '+name);
+      for(let v=0;v<uv.count;v++){
+        const at=binOffset+view.byteOffset+v*8;
+        const u=bytes.readFloatLE(at),t=bytes.readFloatLE(at+4);
+        assert.ok(Number.isFinite(u)&&Number.isFinite(t)&&u>=0&&u<=1&&t>=0&&t<=1,'UV 범위 오류: '+name);
+      }
+    }
     // [재질 복원 근거] 실제 GLB 프리미티브에 무광 직물·가죽·황동/강철이 구분돼 있어야 한다.
     const sourceMaterials=gltf.meshes[0].primitives.map(p=>gltf.materials[p.material].pbrMetallicRoughness);
     assert.ok(sourceMaterials.some(m=>m.metallicFactor>=0.65),'GLB 원본 금속 재질 누락: '+name);
@@ -1883,4 +1909,7 @@ test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox
     assert.ok(loader.includes('["'+name+'"] = {'),'UV 확인된 건축물에만 재질 적용: '+name);
   assert.match(loader,/not mesh:FindFirstChildOfClass\("SurfaceAppearance"\)/);
   assert.match(loader,/and kind ~= "Materials"/);
+  assert.match(uploader,/R15_OUTFIT_UV_AND_SOURCE_PROOF_REQUIRED/);
+  assert.match(uploader,/const outfitUvUpgrade = item.kind === 'People'/);
+  assert.match(uploader,/ORIGINAL_MODEL_SOURCE_CHANGED_REUPLOAD/);
 });
