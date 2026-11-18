@@ -1845,6 +1845,18 @@ do
 end
 H.menuStatusLabel.Position = UDim2.new(0.5, 0, 0, 15)
 H.menuStatusLabel.Size = UDim2.fromOffset(330, 34)
+-- [최근 메뉴] 기존 직전 탭 기억을 재사용. 모든 시설의 자금·화물 현황 바로 옆에 둔다.
+H.menuRecentButton = mkButton(mainInner, "↶ 최근 메뉴", COLORS.leather,
+	UDim2.fromOffset(126, 34), function()
+		local recent = H.recentTab
+		if recent and TAB_NAME[recent] and recent ~= currentTab then
+			openTab(recent, if recent == "map" then "chart" else nil)
+		end
+	end, true)
+H.menuRecentButton.Name = "RecentFacilityShortcut"
+H.menuRecentButton.Visible = false
+H.menuRecentButton.TextSize = 15
+H.menuRecentButton.ZIndex = 9
 
 local tabBar = Instance.new("Frame")
 tabBar.BackgroundTransparency = 1
@@ -1941,9 +1953,28 @@ function H.layoutBook()
   local statusWidth = if width < 480 then math.max(168, math.min(252, width - 142))
     elseif width < 740 then math.min(290, width - 156)
     else math.clamp(math.floor(width * 0.36), 280, 380)
-  H.menuStatusLabel.Position = UDim2.new(0.5, 0, 0, if width < 740 then 38 else 15)
+  local recent = view ~= nil and not newGameMode and H.recentTab ~= nil
+    and H.recentTab ~= currentTab and TAB_NAME[H.recentTab] ~= nil
+  local recentWidth = if width < 480 then 90 elseif width < 740 then 116 else 142
+  if recent and width < 740 then
+    -- [좁은 폰] 자금과 최근 메뉴를 한 줄의 묶음으로 중앙 정렬해 겹침을 막는다.
+    statusWidth = math.min(statusWidth, math.max(140, width - recentWidth - 34))
+    local groupWidth = statusWidth + recentWidth + 8
+    local startX = math.max(8, math.floor((width - groupWidth) / 2))
+    H.menuStatusLabel.AnchorPoint = Vector2.zero
+    H.menuStatusLabel.Position = UDim2.fromOffset(startX, 38)
+    H.menuRecentButton.Position = UDim2.fromOffset(startX + statusWidth + 8, 32)
+    H.menuRecentButton.Size = UDim2.fromOffset(recentWidth, 34)
+  else
+    H.menuStatusLabel.AnchorPoint = Vector2.new(0.5, 0)
+    H.menuStatusLabel.Position = UDim2.new(0.5, 0, 0, if width < 740 then 38 else 15)
+    H.menuRecentButton.Position = UDim2.fromOffset(math.floor(width * 0.5 + statusWidth * 0.5 + 10), 15)
+    H.menuRecentButton.Size = UDim2.fromOffset(recentWidth, 34)
+  end
   H.menuStatusLabel.Size = UDim2.fromOffset(statusWidth, if width < 740 then 22 else 34)
   H.menuStatusLabel.TextSize = if width < 480 then 14 elseif width < 740 then 16 else 18
+  H.menuRecentButton.Visible = recent
+  H.menuRecentButton.Text = if recent then "↶ " .. TAB_NAME[H.recentTab] else ""
   headerLabel.Size = UDim2.fromOffset(if width < 740 then math.max(86, width - 152)
     else math.max(108, math.floor((width - statusWidth) * 0.5) - 82), 29)
   H.pageDetails.Size = UDim2.fromOffset(if width < 740 then 0
@@ -11860,18 +11891,7 @@ function render()
 		H.invokeMenuPrimary = nil
 		H.menuActionDock.Visible = false
 	end
-	-- [권고 단일화] 자동 우선순위 경고는 개인 저널에서 확인한다.
-	if currentTab ~= "codex" and H.recentTab and H.recentTab ~= currentTab and TAB_NAME[H.recentTab] then
-		local recent = H.recentTab
-		add(function()
-			local b = mkButton(content, "↶ 최근 메뉴: " .. TAB_NAME[recent], COLORS.grey, UDim2.new(1, -6, 0, 36), function()
-				openTab(recent, if recent == "map" then "chart" else nil)
-			end)
-			b.Name = "RecentFacilityShortcut"
-			b.TextSize = 14
-			return b
-		end)
-	end
+	-- [권고 단일화] 동료 조언은 저널, 최근 메뉴는 공통 자금 표시 옆 한 곳에서만 확인한다.
 	H.counselRows(1)
 	RENDERERS[currentTab]()
 end
