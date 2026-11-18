@@ -1211,23 +1211,16 @@ test('선원·장인 직업별 실물 복장과 여성 헤어 스타일을 원�
   assert.match(pose,/part\.CanCollide, part\.CanTouch, part\.CanQuery = false, false, false, false/);
 });
 
-// [실물 화면 회귀] 곡면 머리에 가려진 얼굴과 기본 R15 흰색 재질을 같은 책임 함수에서 교정한다.
-test('주민 얼굴 캔버스와 기본 피부·의상 색상은 렌더 가능하고 등록 원본 메시를 보존한다',()=>{
+// [기본 R15 복장 재질 회귀] 외부 3D 메시를 건드리지 않고 빈 리그만 채색한다.
+test('기본 주민 R15 흰색 텍스처 제거는 피부·복장 색상과 등록 People 원본을 보존한다',()=>{
   const pose=read('ReplicatedStorage/Shared/Pose.luau');
-  const face=pose.slice(pose.indexOf('local function drawFace('),pose.indexOf('-- 지역 복식:'));
-  assert.match(face,/gui\.Face = Enum\.NormalId\.Front/);
-  assert.match(face,/gui\.AlwaysOnTop = true/);
-  assert.match(face,/canvas\.Name = "MareFaceCanvas"/);
-  assert.match(face,/canvas\.Transparency = 1/);
-  assert.match(face,/canvas\.CanCollide, canvas\.CanTouch, canvas\.CanQuery, canvas\.Massless = false, false, false, true/);
-  assert.match(face,/faceJoint\.Part0, faceJoint\.Part1 = head, canvas/);
-  assert.match(face,/gui\.Adornee = canvas/);
-  assert.match(face,/gui\.Parent = head/);
   const generated=pose.slice(pose.indexOf('local model = r15Template:Clone()'),pose.indexOf('-- [R15 몹 실물 외형]'));
   assert.match(generated,/if descendant:IsA\("MeshPart"\) then descendant\.TextureID = "" end/);
-  assert.match(generated,/pcall\(drawFace, headPart, role, skin, rng, outfit and outfit\.gender\)/);
+  assert.match(generated,/descendant\.Color = skin/);
+  assert.match(generated,/descendant\.Material = Enum\.Material\.Fabric/);
   assert.match(pose,/local surface = part:FindFirstChildOfClass\("SurfaceAppearance"\)/,
-    '승인된 People 모델의 원본 PBR 텍스처 보존');
+    '승인된 3D People PBR은 별도의 원본 부착 경로에서 보호');
+  assert.match(pose,/if not textured and string\.sub\(assetName, 1, 7\) == "outfit_"/);
 });
 
 // [항구 7구획 확장] 기존 경제/자산 정본을 유지하며 왕궁 경기병/창고/식료품/직업 모션을 검사한다.
