@@ -11105,45 +11105,106 @@ function render()
 	if message ~= "" then
 		add(function() return mkLabel(content, message, 17, if messageOk then COLORS.gold else COLORS.red, true) end)
 	end
-	-- [전체 메뉴 1순위 행동] 단계 안내와 핵심 진입 버튼을 첫 화면에 둔다.
+	-- [모든 시설 오른쪽 핵심 정보] 교역소처럼 실제 숫자 → 판단 근거 → 조작 버튼을 먼저 읽는다.
+	-- 서버 스냅샷을 읽기만 하며, 각 시설의 기존 호출·결제·보상·저장 흐름은 변경하지 않는다.
 	local focus = H.MENU_FOCUS[currentTab]
 	if focus then
+		local fact, context, urgent = "현재 항구 " .. tostring(p.portName), "실제 진행 상태와 조건을 아래에서 확인해.", false
+		if currentTab == "board" or currentTab == "quest" then
+			local qs = view.quests or {}
+			fact = string.format("진행 중 %d건 · 새 의뢰 %d건", #(qs.active or {}), #(qs.available or {}))
+			context = string.format("완료 기록 %d건 · 보상은 원래 의뢰 조건 충족 후 수령", qs.doneCount or 0)
+		elseif currentTab == "route" or currentTab == "map" then
+			local ready = 0
+			for _, r in (view.routes or {}) do
+				if not r.locked and (r.supplies or 0) <= (ship.supplies or 0) and (r.coal or 0) <= (ship.coal or 0) then ready += 1 end
+			end
+			fact = string.format("출항 준비 %d / %d항로", ready, #(view.routes or {}))
+			context = string.format("보급품 %d개 · 석탄 %d개 · 항로별 위험·거리 확인", ship.supplies or 0, ship.coal or 0)
+			urgent = ready == 0
+		elseif currentTab == "recruit" or currentTab == "crew" then
+			local joined, available = 0, 0
+			for _, c in ((view.companions and view.companions.list) or {}) do
+				if c.joined then joined += 1 elseif c.role and not c.blocked then available += 1 end
+			end
+			fact = string.format("승선 %d / %d명 · 영입 가능 %d명", joined, (view.companions and view.companions.max) or 0, available)
+			context = string.format("빈 자리 %d명 · 보유 %s코인", math.max(0, ((view.companions and view.companions.max) or 0) - joined), H.commas(p.coins))
+		elseif currentTab == "status" or currentTab == "yard" then
+			fact = string.format("선체 %d / %d · 화물 %d / %d", ship.hull or 0, ship.maxHull or 0, ship.cargoUsed or 0, ship.cargoCapacity or 0)
+			context = string.format("보급품 %d개 · 기함 %s · 보유 %s코인", ship.supplies or 0, ship.name or "", H.commas(p.coins))
+			urgent = (ship.maxHull or 0) > 0 and (ship.hull or 0) < (ship.maxHull or 1) * 0.4
+		elseif currentTab == "trade" or currentTab == "harbor" then
+			fact = string.format("보유 %s코인 · 화물 %d / %d", H.commas(p.coins), ship.cargoUsed or 0, ship.cargoCapacity or 0)
+			context = "세계 평균과 세후손익은 다름 · 실제 매입/판매 수량 확인"
+		elseif currentTab == "battle" or currentTab == "war" then
+			fact = string.format("선체 %d / %d · 대포 %d문", ship.hull or 0, ship.maxHull or 0, ship.cannons or 0)
+			context = string.format("승조원 %d명 · 호위함 %d척 · 출전 전 전력 확인", ship.crew or 0, (view.fleet and view.fleet.escorts) or 0)
+			urgent = (ship.maxHull or 0) > 0 and (ship.hull or 0) < (ship.maxHull or 1) * 0.4
+		elseif currentTab == "explore" then
+			local openSites = 0
+			for _, site in (view.sites or {}) do
+				if site.unlocked and (site.left or 0) > 0 then openSites += 1 end
+			end
+			fact = string.format("탐험 가능 %d / %d지역", openSites, #(view.sites or {}))
+			context = string.format("보급품 %d개 · 장소별 위험과 남은 발견물 확인", ship.supplies or 0)
+		elseif currentTab == "gwent" then
+			fact = string.format("내 카드 %d장 · 보유 %s코인", #((view.deck and view.deck.cards) or {}), H.commas(p.coins))
+			context = "병종 배치와 카드 효과 확인 · 대전은 기존 규칙 유지"
+		elseif currentTab == "scholar" or currentTab == "codex" then
+			local cx = view.codex or {}
+			fact = string.format("지식 발견 %d / %d장", cx.found or 0, cx.total or 0)
+			context = string.format("만난 학자 %d명 · 미발견 카드 내용은 공개하지 않음", #(view.scholars or {}))
+		elseif currentTab == "tech" then
+			local researchable = 0
+			for _, t in (view.tech or {}) do
+				if not t.owned and not t.blocked and (t.cost or 0) <= p.coins then researchable += 1 end
+			end
+			fact = string.format("지금 연구 가능 %d개", researchable)
+			context = string.format("보유 %s코인 · 선행 지식/비용 충족 시 해금", H.commas(p.coins))
+		end
 		add(function()
-			local compact = mainInner.AbsoluteSize.X < 480
-			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, if compact then 104 else 64), Color3.fromRGB(64, 48, 35))
+			-- [좁은 오른쪽 정보창] 화면 전체가 아니라 실제 상세 패널 너비로 행 구성을 판단한다.
+			local compact = content.AbsoluteSize.X < 520
+			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, if compact then 192 else 166), Color3.fromRGB(64, 48, 35))
 			banner.Name = "MenuFocus_" .. currentTab
 			corner(banner, 8)
-			local heading = mkLabel(banner, "◆ " .. focus[1], 18, Color3.fromRGB(255, 222, 144), true)
-			heading.Position = UDim2.fromOffset(12, 5)
-			heading.Size = UDim2.new(1, if compact then -24 else -142, 0, 25)
+			local heading = mkLabel(banner, "◆ " .. focus[1] .. " · 핵심 정보", 19, Color3.fromRGB(255, 222, 144), true)
+			heading.Position = UDim2.fromOffset(12, 7)
+			heading.Size = UDim2.new(1, -24, 0, 26)
 			heading.AutomaticSize = Enum.AutomaticSize.None
-			local stages = string.split(focus[2], " → ")
-			local guide = if compact and #stages >= 3
-				then "① " .. stages[1] .. "   ② " .. stages[2] .. "\n③ " .. stages[3]
-				else "① " .. table.concat(stages, "   →   ")
-			local steps = mkLabel(banner, guide, if compact then 13 else 14, Color3.fromRGB(243, 231, 204), false)
-			steps.Position = UDim2.fromOffset(12, 34)
-			steps.Size = UDim2.new(1, if compact then -24 else -132, 0, if compact then 32 else 25)
-			steps.AutomaticSize = Enum.AutomaticSize.None
-			steps.TextWrapped = true
-			local action = mkButton(banner, focus[3] or "바로 보기",
-				COLORS.gold, if compact then UDim2.new(1, -24, 0, 35) else UDim2.fromOffset(110, 42), function()
-					if currentTab == "trade" and H.tradeHall then H.tradeHall() return end
-					if currentTab == "yard" and H.yardHall then H.yardHall() return end
-					-- 다른 메뉴는 실제 화면의 첫 조작 버튼으로 스크롤한다. 구매·보상 판정은 실행하지 않는다.
-					for _, element in content:GetDescendants() do
-						if element:IsA("TextButton") and element.Interactable
-							and not element:FindFirstAncestor("MenuFocus_" .. currentTab)
-							and not element:FindFirstAncestor("MenuAdvice_" .. currentTab) then
-							local y = element.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 12
-							content.CanvasPosition = Vector2.new(0, math.max(0, y))
-							break
-						end
+			local highlight = mkLabel(banner, fact, if compact then 20 else 23, if urgent then Color3.fromRGB(255, 142, 128) else Color3.fromRGB(255, 238, 187), true)
+			highlight.Position = UDim2.fromOffset(12, 36)
+			highlight.Size = UDim2.new(1, -24, 0, if compact then 48 else 30)
+			highlight.AutomaticSize = Enum.AutomaticSize.None
+			highlight.TextWrapped = true
+			local explanation = mkLabel(banner, context, 17, Color3.fromRGB(249, 232, 207), true)
+			explanation.Position = UDim2.fromOffset(12, if compact then 82 else 69)
+			explanation.Size = UDim2.new(1, -24, 0, if compact then 43 else 30)
+			explanation.AutomaticSize = Enum.AutomaticSize.None
+			explanation.TextWrapped = true
+			local guide = mkLabel(banner, focus[2], 16, Color3.fromRGB(236, 205, 148), false)
+			guide.Position = UDim2.fromOffset(12, if compact then 123 else 98)
+			guide.Size = UDim2.new(1, -24, 0, 24)
+			guide.AutomaticSize = Enum.AutomaticSize.None
+			guide.TextTruncate = Enum.TextTruncate.AtEnd
+			local action = mkButton(banner, focus[3] or "바로 보기", COLORS.gold, UDim2.new(1, -24, 0, 40), function()
+				if currentTab == "trade" and H.tradeHall then H.tradeHall() return end
+				if currentTab == "yard" and H.yardHall then H.yardHall() return end
+				-- [기존 이동] 다른 시설은 현재 메뉴 첫 동작으로 스크롤만 이동하고 실제 액션은 실행하지 않는다.
+				for _, element in content:GetDescendants() do
+					if element:IsA("TextButton") and element.Interactable
+						and not element:FindFirstAncestor("MenuFocus_" .. currentTab)
+						and not element:FindFirstAncestor("MenuAdvice_" .. currentTab) then
+						local y = element.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 12
+						content.CanvasPosition = Vector2.new(0, math.max(0, y))
+						break
 					end
-				end, true)
+				end
+			end, true)
 			action.Name = "MenuPrimaryAction_" .. currentTab
-			action.AnchorPoint = if compact then Vector2.new(0, 0) else Vector2.new(1, 0.5)
-			action.Position = if compact then UDim2.fromOffset(12, 65) else UDim2.new(1, -10, 0.5, 0)
+			action.AnchorPoint = Vector2.new(0, 1)
+			action.Position = UDim2.new(0, 12, 1, -8)
+			action.TextSize = 18
 			return banner
 		end)
 	end
