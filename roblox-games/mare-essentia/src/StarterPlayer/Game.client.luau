@@ -1824,31 +1824,96 @@ contentLayout.Padding = UDim.new(0, 5)
 contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 contentLayout.Parent = content
 
--- 넓은 화면은 왼쪽 책갈피, 좁은 화면은 상단 한 줄 목차를 사용한다.
+-- [전체 시설 공통 전시장] 기존 시설별 content 렌더러는 그대로 보존하고, 교역소처럼 목록·원화·정보로 분리한다.
+H.facilityGallery = Instance.new("Frame")
+H.facilityGallery.Name = "FacilityGallery"
+H.facilityGallery.BackgroundColor3 = COLORS.paper
+H.facilityGallery.BorderSizePixel = 0
+H.facilityGallery.Visible = false
+H.facilityGallery.ClipsDescendants = true
+H.facilityGallery.Parent = mainInner
+corner(H.facilityGallery, 8)
+bookMaterial(H.facilityGallery, "parchment", 204)
+H.galleryImage = Instance.new("ImageLabel")
+H.galleryImage.Name = "ApprovedFacilityArt"
+H.galleryImage.BackgroundTransparency = 1
+H.galleryImage.Position = UDim2.fromOffset(8, 8)
+H.galleryImage.Size = UDim2.new(1, -16, 1, -120)
+H.galleryImage.ScaleType = Enum.ScaleType.Fit
+H.galleryImage.ZIndex = 3
+H.galleryImage.Parent = H.facilityGallery
+H.galleryTitle = mkLabel(H.facilityGallery, "", 21, INK, true)
+H.galleryTitle.Name = "FacilityGalleryHeading"
+H.galleryTitle.Position = UDim2.new(0, 12, 1, -108)
+H.galleryTitle.Size = UDim2.new(1, -24, 0, 30)
+H.galleryTitle.AutomaticSize = Enum.AutomaticSize.None
+H.galleryTitle.ZIndex = 3
+H.galleryHint = mkLabel(H.facilityGallery, "", 17, INK_SOFT, false)
+H.galleryHint.Name = "FacilityGalleryGuide"
+H.galleryHint.Position = UDim2.new(0, 12, 1, -76)
+H.galleryHint.Size = UDim2.new(1, -24, 0, 70)
+H.galleryHint.AutomaticSize = Enum.AutomaticSize.None
+H.galleryHint.ZIndex = 3
+-- [기존 승인 원화] 외부 유료 자료나 임의 메시 대신 백과·사건 카드 그림을 직접 재사용한다.
+local FACILITY_GALLERY_ART = {
+  board = "event_royal_charter", quest = "event_cook_voyage", recruit = "event_merchant_lamu",
+  crew = "event_merchant_coromandel", status = "event_title_ship",
+  route = "event_new_route", harbor = "event_canton_system", map = "event_chart_world",
+  trade = "event_trade_boom", yard = "event_title_ship",
+  battle = "event_piracy", explore = "event_angkor", war = "event_anglo_dutch_war", gwent = "event_royal_charter",
+  scholar = "event_principia", codex = "bot_herbarium", tech = "event_industrial_start",
+}
+function H.renderFacilityGallery()
+  local focus = H.MENU_FOCUS[currentTab]
+  local artName = FACILITY_GALLERY_ART[currentTab] or "event_calm_seas"
+  local approved = AssetIds["CardArt/" .. artName] or AssetIds["CardArt/event_calm_seas"]
+  H.galleryImage.Image = if approved then "rbxassetid://" .. tostring(approved) else ""
+  H.galleryTitle.Text = if focus then focus[1] else TAB_NAME[currentTab] or "시설 안내"
+  H.galleryHint.Text = if focus then focus[2] else "왼쪽에서 시설을 선택하고 오른쪽에서 확인해."
+end
+
+-- [교역소 기준] 가로는 3열, 세로는 큰 원화를 메뉴와 조작 사이에 놓는다.
 H.bookSpine = pageRule(mainInner, UDim2.fromOffset(132, 68), UDim2.new(0, 1, 1, -76))
 function H.layoutBook()
-	local wide = mainInner.AbsoluteSize.X >= 1050
-	local tabs = tabBar.Visible
-	H.bookSpine.Visible = tabs and wide
-	if tabs and wide then
-		tabBar.Position = UDim2.fromOffset(8, 68)
-		tabBar.Size = UDim2.new(0, 116, 1, -76)
-		tabLayout.CellSize = UDim2.new(1, 0, 0, 44)
-		tabLayout.CellPadding = UDim2.fromOffset(0, 6)
-		content.Position = UDim2.fromOffset(142, 68)
-		content.Size = UDim2.new(1, -150, 1, -76)
-	else
-		tabBar.Position = UDim2.fromOffset(8, 68)
-		-- [모바일] 좁은 세로 화면의 전투 본부 4개 탭은 2열×2행으로 읽기 쉽게 표시한다.
-		local tabCount = #groupOf(currentTab).tabs
-		local compact = tabs and tabCount >= 4 and mainInner.AbsoluteSize.X < 480
-		tabBar.Size = UDim2.new(1, -16, 0, if compact then 85 else 40)
-		tabLayout.CellSize = UDim2.new(1 / (if compact then 2 else math.max(1, math.min(4, tabCount))), -5, 0, 40)
-		tabLayout.CellPadding = UDim2.fromOffset(5, if compact then 5 else 0)
-		local top = if tabs then (if compact then 161 else 116) else 68
-		content.Position = UDim2.fromOffset(8, top)
-		content.Size = UDim2.new(1, -16, 1, -top - 8)
-	end
+  local width, height = mainInner.AbsoluteSize.X, mainInner.AbsoluteSize.Y
+  local tabCount = #groupOf(currentTab).tabs
+  local gallery = view ~= nil and not newGameMode and currentTab ~= "map"
+  local three = gallery and width >= 850
+  local tabs = tabBar.Visible
+  H.bookSpine.Visible = false
+  H.facilityGallery.Visible = gallery
+  if three then
+    -- [가로 공통] 왼쪽 17% 시설 선택 / 가운데 31% 대형 원화 / 오른쪽 정보와 실제 행동 버튼.
+    local navW = math.clamp(math.floor(width * 0.17), 138, 184)
+    local artW = math.clamp(math.floor(width * 0.31), 218, 440)
+    if not tabs then
+      tabBar.Visible = true
+    end
+    tabBar.Position = UDim2.fromOffset(8, 68)
+    tabBar.Size = UDim2.fromOffset(navW, math.max(100, height - 76))
+    tabLayout.CellSize = UDim2.new(1, -4, 0, 48)
+    tabLayout.CellPadding = UDim2.fromOffset(0, 6)
+    H.facilityGallery.Position = UDim2.fromOffset(navW + 16, 68)
+    H.facilityGallery.Size = UDim2.fromOffset(artW, math.max(100, height - 76))
+    content.Position = UDim2.fromOffset(navW + artW + 24, 68)
+    content.Size = UDim2.new(1, -navW - artW - 32, 1, -76)
+  else
+    -- [세로 화면] 기존 목록 탐색과 버튼은 유지하며, 세로 공간이 넉넉할 때만 원화를 표시한다.
+    local compact = tabs and tabCount >= 4 and width < 480
+    tabBar.Position = UDim2.fromOffset(8, 68)
+    tabBar.Size = UDim2.new(1, -16, 0, if compact then 85 else 40)
+    tabLayout.CellSize = UDim2.new(1 / (if compact then 2 else math.max(1, math.min(4, tabCount))), -5, 0, 40)
+    tabLayout.CellPadding = UDim2.fromOffset(5, if compact then 5 else 0)
+    local top = if tabs then (if compact then 161 else 116) else 68
+    local showArt = gallery and height >= 550
+    H.facilityGallery.Visible = showArt
+    local artH = if showArt then math.clamp(math.floor(height * 0.25), 136, 206) else 0
+    H.facilityGallery.Position = UDim2.fromOffset(8, top)
+    H.facilityGallery.Size = UDim2.new(1, -16, 0, artH)
+    local contentY = top + (if showArt then artH + 8 else 0)
+    content.Position = UDim2.fromOffset(8, contentY)
+    content.Size = UDim2.new(1, -16, 1, -contentY - 8)
+  end
 end
 mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)
 tabBar:GetPropertyChangedSignal("Visible"):Connect(H.layoutBook)
@@ -9645,7 +9710,7 @@ function H.renderTabs()
 		b.LayoutOrder = i
 		b:SetAttribute("SelectedTab", selected)
 		b.TextColor3 = if selected then INK else INK_SOFT
-		b.TextSize = 16
+		b.TextSize = 18
 		local ti = H.TAB_ICON[id]
 		if ti then
 			-- [공통 규격] 도크는 36px, 시설별 탭은 26px. 아이콘과 인쇄 글자를 겹치지 않게 나눈다.
@@ -9665,8 +9730,8 @@ function H.renderTabs()
 				caption.TextWrapped = false
 				caption.TextScaled = true
 				local textLimit = Instance.new("UITextSizeConstraint")
-				textLimit.MinTextSize = 10
-				textLimit.MaxTextSize = 14
+				textLimit.MinTextSize = 14
+				textLimit.MaxTextSize = 18
 				textLimit.Parent = caption
 			else
 				b.TextXAlignment = Enum.TextXAlignment.Right
@@ -10994,8 +11059,10 @@ function render()
 		return
 	end
 
-	tabBar.Visible = #groupOf(currentTab).tabs > 1 -- 탭이 하나뿐이면 시설 이름과 겹치므로 탭 줄을 숨긴다
+	-- [공통 3열] 가로 화면에서는 단일 시설도 왼쪽 분류 칸에 표시한다.
+	tabBar.Visible = #groupOf(currentTab).tabs > 1 or (mainInner.AbsoluteSize.X >= 850 and currentTab ~= "map")
 	H.layoutBook()
+	H.renderFacilityGallery() -- [공통 원화] 시설/메뉴 전환 때 선택된 승인 원화와 읽기 순서 갱신.
 
 	local p, ship = view.player, view.ship
 	local grp = groupOf(currentTab)
