@@ -11131,16 +11131,8 @@ function H.renderTabs()
 	for i, id in g.tabs do
 		local selected = currentTab == id
 		local b = mkButton(tabBar, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 54), function()
-			-- [최근 메뉴] 시설 내부 탭 전환도 기존 단일 직전 메뉴 기억을 갱신한다.
-			if currentTab ~= id and TAB_NAME[currentTab] then H.recentTab = currentTab end
-			currentTab = id
-			Sfx.facilityCue(id)
-			message = "" -- 지난 탭의 안내 문구가 새 탭 맨 위에 남지 않게
-			H.mapPage = nil
-			if id ~= "battle" then
-				equipped = nil
-			end
-			render()
+			-- [시설 탭 정본] 도크와 탭이 같은 진입 함수로 이동한다. 교역·조선은 기존 전체창으로 직행한다.
+			openTab(id)
 		end, true)
 		b.Name = "FacilityTab_" .. id
 		b.LayoutOrder = i
@@ -13213,9 +13205,19 @@ openTab = function(tabId, mapPage)
 	if tabId ~= "battle" then
 		equipped = nil
 	end
+	-- [탭 바로 열기] 교역소·조선소는 별도 입장 버튼 없이 기존 전체 거래·정비창을 연다.
+	-- 다른 시설로 이동할 때 이전 전체창을 정리하고, 해당 시설의 기존 탭 상태를 갱신한다.
+	if player.PlayerGui:FindFirstChild("TradeHallGui") then
+		closeTradeHall()
+	end
 	main.Visible = true
 	menuToggle.Visible = false
 	render()
+	if tabId == "trade" then
+		H.tradeHall()
+	elseif tabId == "yard" then
+		H.yardHall()
+	end
 end
 
 menuToggle.Activated:Connect(function()
