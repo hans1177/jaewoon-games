@@ -125,6 +125,36 @@ export function verifiedDesignFeedback(previous = {}, feedback = {}, now = Date.
     sourceRevision: previous.sourceRevision, candidateRevision: feedback.candidateRevision};
 }
 
+// [호출 한도 회계] 동일 공식 Studio 촬영 세대의 '초안 생성 + 독립 검수' 사용량을 합산한다.
+// 회차별 카운터는 누적이므로 합계가 아닌 각 제공자별 최대값을 사용한다. 요금 한도를 낮추는 방향으로만 병합.
+export function mergeFreeVisualUsage(previous = {}, feedback = {}, now = Date.now()) {
+  const day = new Date(now).toISOString().slice(0, 10);
+  const origin = previous?.usageWindow?.day === day ? previous.usageWindow.calls || {} : {};
+  const validFollowup = /^[a-f0-9]{40}$/i.test(String(previous?.sourceRevision || '')) &&
+    feedback?.beforeRevision === previous.sourceRevision &&
+    /^[a-f0-9]{40}$/i.test(String(feedback?.candidateRevision || '')) &&
+    feedback?.sourceRevision === feedback.candidateRevision &&
+    feedback?.gameId === 'mare-essentia' &&
+    feedback?.usageWindow?.day === day;
+  const followup = validFollowup ? feedback.usageWindow.calls || {} : {};
+  const calls = {};
+  for (const provider of Object.keys(DAILY_LIMIT)) {
+    const old = Number(origin[provider] || 0), added = Number(followup[provider] || 0);
+    calls[provider] = Math.max(
+      Number.isInteger(old) && old >= 0 ? Math.min(old, 1000) : 0,
+      Number.isInteger(added) && added >= 0 ? Math.min(added, 1000) : 0);
+  }
+  const cooldowns = {...previous?.cooldowns};
+  if (validFollowup) for (const model of DESIGN_FREE_MODELS) {
+    const newer = Date.parse(feedback?.cooldowns?.[model.id] || '');
+    const older = Date.parse(cooldowns?.[model.id] || '');
+    if (Number.isFinite(newer) && newer > now &&
+      (!Number.isFinite(older) || newer > older))
+      cooldowns[model.id] = new Date(newer).toISOString();
+  }
+  return {...previous, usageWindow: {day, calls}, cooldowns};
+}
+
 export function selectFreeDesignModels({
   frameNames = [], policy, env = process.env, previous = {}, feedback = {}, now = Date.now()
 } = {}) {
@@ -136,9 +166,10 @@ export function selectFreeDesignModels({
   const approved = new Set(config.modelIds || []);
   const role = designRoleForFrames(frameNames);
   const today = new Date(now).toISOString().slice(0, 10);
-  const spent = previous?.usageWindow?.day === today ? previous.usageWindow.calls || {} : {};
+  const carried = mergeFreeVisualUsage(previous, feedback, now);
+  const spent = carried.usageWindow.calls;
   const eligible = DESIGN_FREE_MODELS.filter(model => {
-    const cooling = Date.parse(previous?.cooldowns?.[model.id] || '');
+    const cooling = Date.parse(carried?.cooldowns?.[model.id] || '');
     return approved.has(model.id) && trim(env[model.keyName]) &&
       trim(env[model.verifiedName]) === 'YES' &&
       (model.provider !== 'OPENROUTER' || model.model.endsWith(':free')) &&
@@ -159,9 +190,17 @@ export function selectFreeDesignModels({
         ['REVIEW_INVALID', 'SOURCE_ANCHOR_INVALID'].includes(row?.status));
     return (order < 0 ? 999 : order) + (invalid ? 2 : 0);
   };
-  return eligible.sort((left, right) =>
+  eligible.sort((left, right) =>
     score(left) - score(right) ||
     DESIGN_FREE_MODELS.indexOf(left) - DESIGN_FREE_MODELS.indexOf(right));
+  // [복구] 세 공급자가 모두 허용되면 각 공급자의 전문 모델 1개씩 먼저, 동일 공급자의 대체 모델은 뒤에 배정.
+  const firstProviders = new Set();
+  const primary = [], backups = [];
+  for (const model of eligible) {
+    if (firstProviders.has(model.provider)) backups.push(model);
+    else {firstProviders.add(model.provider); primary.push(model);}
+  }
+  return [...primary, ...backups];
 }
 
 function cooldownAfter(response, status, error = null) {
@@ -429,13 +468,14 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     if (options.previous && fs.existsSync(path.resolve(options.previous)))
       previous = JSON.parse(fs.readFileSync(path.resolve(options.previous), 'utf8'));
   } catch {/* 손상된 이력은 권한을 주지 않고 신규 증거로만 처리한다. */}
-  loadPreviousDesignUsage(previous);
   // [학습] 동일 Studio 브랜치의 독립 전후 비교 증거만 불러온다.
   let feedback = {};
   try {
     if (options.feedback && fs.existsSync(path.resolve(options.feedback)))
       feedback = JSON.parse(fs.readFileSync(path.resolve(options.feedback), 'utf8'));
   } catch {/* 손상되거나 없는 전후 증거는 성공으로 간주하지 않는다. */}
+  const carriedHistory = mergeFreeVisualUsage(previous, feedback);
+  loadPreviousDesignUsage(carriedHistory);
   const pictures = fs.existsSync(framesRoot) ? fs.readdirSync(framesRoot)
     .filter(name => /-[0-9]+\.(?:jpe?g|png)$/i.test(name)) : [];
   designRuntime.selectedRole = selectDesignFrameRole(pictures, previous.selectedRole);
@@ -453,7 +493,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   if (trim(process.env.COMPANY_EXTERNAL_AI_ENABLED) !== 'YES')
     return record('SKIPPED_EXTERNAL_AI_OPT_IN_REQUIRED', {frames: proofs});
   const freeModels = selectFreeDesignModels({
-    frameNames: photos.map(photo => photo.name), policy, previous, feedback
+    frameNames: photos.map(photo => photo.name), policy, previous: carriedHistory, feedback
   });
   if (!freeModels.length)
     return record('SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE', {frames: proofs});
