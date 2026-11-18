@@ -448,15 +448,15 @@ local function btn(parent, text, color, size, pos, anchor)
 	shade.AnchorPoint = Vector2.new(0, 1)
 	shade.Position = UDim2.fromScale(0, 1)
 	shade.Size = UDim2.fromScale(1, 1)
-	shade.BackgroundColor3 = Color3.fromRGB(13, 22, 32)
+	shade.BackgroundColor3 = Color3.fromRGB(43, 33, 25)
 	shade.BackgroundTransparency = 0.24
 	shade.BorderSizePixel = 0
 	shade.Visible = false
 	shade.Active = false
 	shade.ZIndex = b.ZIndex + 4
 	shade.Parent = b
-	-- [스킬 재사용 시각화] 원형 메달 안에서는 마스킹과 초 단위 숫자,
-	-- 아래에서는 남은 시간 비율을 표시한다. 빠른 화면에서도 글자 크기는 고정한다.
+	-- [지상 재사용 연출] 초 숫자를 표시하지 않고 음영·아이콘·가장자리 빛으로 충전 상태를 알린다.
+    -- 기존 쿨타임 판정·모션 버튼은 그대로 사용한다.
 	local ring = Instance.new("UICorner")
 	ring.CornerRadius = UDim.new(1, 0)
 	ring.Parent = shade
@@ -486,6 +486,7 @@ local function btn(parent, text, color, size, pos, anchor)
 	timer.TextStrokeColor3 = Color3.fromRGB(11, 17, 25)
 	timer.TextStrokeTransparency = 0.24
 	timer.Visible = false
+    timer.Text = ""
 	timer.ZIndex = b.ZIndex + 5
 	timer.Parent = b
 	local pressScale = Instance.new("UIScale")
@@ -7218,7 +7219,9 @@ function FieldScene.start(opts)
 				if track then track.Visible = false end
 				local icon = sb.btn:FindFirstChild("FieldButtonIcon")
 				if icon and icon:IsA("ImageLabel") then
-					icon.ImageTransparency = if left > 0 then fraction * 0.38 else 0
+					icon.ImageTransparency = if left > 0 then fraction * 0.42 else 0
+                    icon.ImageColor3 = if left > 0 then Color3.fromRGB(208, 190, 160):Lerp(Color3.fromRGB(97, 88, 83), fraction)
+                        else Color3.fromRGB(255, 251, 224)
 				end
 				if left > 0 then
 					sb.wasCooling = true
@@ -7227,11 +7230,24 @@ function FieldScene.start(opts)
 					local stroke = sb.btn:FindFirstChildOfClass("UIStroke")
 					if stroke then
 						stroke.Color = Color3.fromRGB(255, 247, 164)
-						stroke.Thickness = 4
-						TweenService:Create(stroke, TweenInfo.new(0.36), {
-							Color = if key == "dodge" then Color3.fromRGB(114, 244, 228) else Color3.fromRGB(224, 184, 105),
-							Thickness = if key == "dodge" then 3.2 else 2,
-						}):Play()
+                        stroke.Thickness = 5
+                        TweenService:Create(stroke, TweenInfo.new(0.48, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                            Color = if key == "dodge" then Color3.fromRGB(114, 244, 228) else Color3.fromRGB(224, 184, 105),
+                            Thickness = if key == "dodge" then 3.2 else 2,
+                        }):Play()
+                    end
+                    -- [지상 준비 완료] 엄지 위치에서 한 번 크게 숨쉬듯 확대 후 복귀한다.
+                    local readyScale = sb.btn:FindFirstChildOfClass("UIScale")
+                    if readyScale then
+                        readyScale.Scale = 1.12
+                        TweenService:Create(readyScale, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+                    end
+                    local readyIcon = sb.btn:FindFirstChild("FieldButtonIcon")
+                    if readyIcon and readyIcon:IsA("ImageLabel") then
+                        readyIcon.ImageColor3 = Color3.fromRGB(255, 245, 180)
+                        TweenService:Create(readyIcon, TweenInfo.new(0.48), {
+                            ImageColor3 = Color3.fromRGB(255, 251, 224),
+                        }):Play()
 					end
 				end
 			end
