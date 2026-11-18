@@ -3873,6 +3873,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- 이전에는 매 프레임 TextSize를 바꿔 한글 윤곽이 뭉개지고 알림이 겹쳤다.
 	local currentAnnouncement = nil
 	local function popText(text, color)
+		-- [해전 알림] 이 함수의 트윈 서비스는 함수 안에서 가져와 미정의 변수 오류를 막는다.
+		local tweenService = game:GetService("TweenService")
 		if currentAnnouncement and currentAnnouncement.Parent then currentAnnouncement:Destroy() end
 		local l = label(gui, text, if battleViewport.X < 480 then 23 else 30, color)
         currentAnnouncement = l
@@ -3899,8 +3901,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
         task.delay(0.92, function()
             if not l.Parent then return end
             local fade = TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            TS:Create(l, fade, { TextTransparency = 1, BackgroundTransparency = 1 }):Play()
-            TS:Create(edge, fade, { Transparency = 1 }):Play()
+            tweenService:Create(l, fade, { TextTransparency = 1, BackgroundTransparency = 1 }):Play()
+            tweenService:Create(edge, fade, { Transparency = 1 }):Play()
         end)
 		task.delay(1.28, function()
 			if l.Parent then l:Destroy() end
