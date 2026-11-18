@@ -179,7 +179,7 @@ const QUOTA_REST_MS = 6 * 3600000;        // 한도 초과(429)면 6시간 쉰�
 const OUTAGE_REST_MS = 15 * 60000;        // 일시 장애(5xx)면 15분 쉰다
 
 // 한도가 끝난 모델은 건너뛰고, 계속 실패(3번 이상, 성공률 30% 미만)하는 모델은 순서 맨 뒤로 보낸다. 나머지는 원래 우선순위를 지킨다.
-export function rankProviders(providers, stats = {}, now = Date.now(), role = '') {
+export function rankProviders(providers, stats = {}, now = Date.now(), role = '', retryAfterInvalid = '') {
   const idx = new Map(providers.map((p, i) => [p.name, i]));
   const demoted = p => { const s = stats[p.name]; return s && s.ok + s.fail >= 3 && s.ok / (s.ok + s.fail) < 0.3 ? 1 : 0; };
   // [무료 모델 역할 배치] 실제 재검증된 역할별 성공률만 우선순위 학습에 사용한다.
@@ -192,7 +192,9 @@ export function rankProviders(providers, stats = {}, now = Date.now(), role = ''
     : role === 'DEBUG' || role === 'CODE' ? (/^(?:codestral|groq|openrouter):/.test(p.name) ? 0 : 1)
       : role === 'UI' ? (/^(?:gemini|codestral):/.test(p.name) ? 0 : 1) : 0;
   return providers.filter(p => !(stats[p.name]?.quotaUntil > now) && (role !== 'VISUAL' || p.acceptsImages))
-    .sort((a, b) => demoted(a) - demoted(b) ||
+    // [자동 순환] 응답이 무효였던 모델은 재요청에서 마지막으로 미루되 예비 후보로 유지한다.
+    .sort((a, b) => Number(a.name === retryAfterInvalid) - Number(b.name === retryAfterInvalid) ||
+      demoted(a) - demoted(b) ||
       (role ? rate(b) - rate(a) || preferred(a) - preferred(b) : 0) || idx.get(a.name) - idx.get(b.name));
 }
 
@@ -313,7 +315,7 @@ export async function runBrain({ orders, ledger, root, llm, playbook = emptyPlay
     // 수정안이 원본과 어긋나면(검색 문구 불일치 등) 오류를 알려 주고 한 번만 다시 받는다
     log('REJECTED(1차) ' + errs.join(','));
     const fb = prompt + '\n\nYOUR PREVIOUS ANSWER WAS REJECTED: ' + errs.join('; ') + '\nFix it: every "search" must be copied EXACTLY (same spaces, same text) from the code above, WITHOUT the "123| " line-number prefixes, and must occur exactly once. Return only the JSON.';
-    try { const res2 = await llm(fb, images, { role: order.kind === 'visual' ? 'VISUAL' : order.kind === 'error' ? 'DEBUG' : order.kind === 'ui' ? 'UI' : 'CODE' }); res = { ...res2, trace: [...(res.trace || []), ...(res2.trace || [])] }; parsed = parseEdits(res.text); errs = validateEdits(root, order, parsed, ctx.map(c => c.file)); } catch (e) { errs = [...errs, 'RETRY:' + e.message.slice(0, 120)]; }
+    try { const res2 = await llm(fb, images, { role: order.kind === 'visual' ? 'VISUAL' : order.kind === 'error' ? 'DEBUG' : order.kind === 'ui' ? 'UI' : 'CODE', retryAfterInvalid: res.provider }); res = { ...res2, trace: [...(res.trace || []), ...(res2.trace || [])] }; parsed = parseEdits(res.text); errs = validateEdits(root, order, parsed, ctx.map(c => c.file)); } catch (e) { errs = [...errs, 'RETRY:' + e.message.slice(0, 120)]; }
   }
   if (errs.length) { log('REJECTED ' + errs.join(',')); return { ok: false, order, provider: res.provider, trace: res.trace, prompt, responseText: res.text, rejected: errs, attempted: true }; }
   const files = applyEdits(root, parsed, order, ctx.map(c => c.file));
@@ -433,9 +435,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const ranked = rankProviders(providers, ledger.providers);
   console.log('모델 순서:', ranked.map(p => p.name).join(' → ') || '(없음)', providers.length - ranked.length ? `(한도로 쉬는 모델 ${providers.length - ranked.length}개)` : '');
   const visual = ranked.some(p => p.acceptsImages) && arg('studio-ref') ? readStudioVisualOrder(arg('studio-ref'), ledger.visualCoverage) : null;
-  const llm = (prompt, images, { role = 'CODE' } = {}) => {
-    const assigned = rankProviders(providers, ledger.providers, Date.now(), role);
-    console.log('VIBE59_FREE_AI_ROLE=' + role + ' MODEL=' + (assigned[0]?.name || 'NONE'));
+  const llm = (prompt, images, { role = 'CODE', retryAfterInvalid = '' } = {}) => {
+    const assigned = rankProviders(providers, ledger.providers, Date.now(), role, retryAfterInvalid);
+    console.log('VIBE59_FREE_AI_ROLE=' + role + ' MODEL=' + (assigned[0]?.name || 'NONE') +
+      (retryAfterInvalid ? ' ROTATED_AFTER_INVALID=' + retryAfterInvalid : ''));
     return askChain({ prompt, images, providers: assigned, log: m => console.log(m) });
   };
   const result = await runBrain({ orders, ledger, root: process.cwd(), llm, playbook, visual, log: m => console.log(m) });
