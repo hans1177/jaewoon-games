@@ -27,6 +27,13 @@ return function(D, S)
 				return "아직 때가 아니에요"
 			end
 		end
+		-- [세계사 저널 최종 판단] 핵심 5장 전체를 마친 뒤에만 사건을 연다.
+		-- 기존 완료 기록을 판정하고 별도 저장·보상·우회 해금은 만들지 않는다.
+		for _, questId in e.requiresQuests or {} do
+			if not (state.quests and state.quests.done and state.quests.done[questId]) then
+				return "해당 항로의 마지막 저널을 먼저 완성해야 해요"
+			end
+		end
 		for _, cardId in e.requiresCards or {} do
 			if not state.discovered[cardId] then
 				return "필요한 카드가 없어요"
