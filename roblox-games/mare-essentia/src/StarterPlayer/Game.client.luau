@@ -8314,8 +8314,8 @@ function H.showCombatCard(unit, origin, skill)
 	})
 end
 
--- [카드 습득 화면] 도감/보상은 별도 정본으로 유지한다. 디버그 미리보기만 작은 비차단 알림으로 남긴다.
--- 첫 카드부터 자동 팝업·뒤집기·광선·팡파르·화면 암전은 재생하지 않는다.
+-- [카드 습득] 실제 서버 신규 발견 시 중앙 공개 → 등급별 금빛·효과음 → 이름 강조 → 서재 도크 귀속.
+-- 서버 보상·도감 저장은 그대로 사용하며 장면·전투 중에는 기존 대기열에서 안전하게 재생한다.
 local GAIN_COLOR = {
 	Common = Color3.fromRGB(190, 170, 130), Uncommon = Color3.fromRGB(110, 190, 120),
 	Rare = Color3.fromRGB(90, 150, 230), Epic = Color3.fromRGB(180, 110, 230),
@@ -8334,7 +8334,11 @@ function H.showCardGain(card, moreCount)
 	g:SetAttribute("NonBlockingCardNotice", true)
 	local TS = game:GetService("TweenService")
 	local tone = GAIN_COLOR[card.rarity] or GAIN_COLOR.Common
+	local rarityLevel = ({ Common = 0, Uncommon = 1, Rare = 2, Epic = 3, Legendary = 4 })[card.rarity] or 0
+	local gold = Color3.fromRGB(255, 217, 124):Lerp(tone, if rarityLevel >= 2 then 0.22 else 0.50)
 	local center = UDim2.fromScale(0.5, 0.46)
+	local revealWidth = if rarityLevel >= 3 then 208 else 186
+	local revealHeight = if rarityLevel >= 3 then 246 else 226
 	local frame = Instance.new("Frame")
 	frame.Name = "KnowledgeCardReveal"
 	frame.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -8348,8 +8352,8 @@ function H.showCardGain(card, moreCount)
 	corner(frame, 10)
 	local rim = Instance.new("UIStroke")
 	rim.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	rim.Color = tone
-	rim.Thickness = 3
+	rim.Color = gold
+	rim.Thickness = if rarityLevel >= 3 then 4 else 3
 	rim.Parent = frame
 	local paper = Instance.new("UIGradient")
 	paper.Color = ColorSequence.new(Color3.fromRGB(252, 238, 205), Color3.fromRGB(173, 136, 88))
@@ -8371,12 +8375,29 @@ function H.showCardGain(card, moreCount)
 	name.Position = UDim2.new(0, 6, 1, -56)
 	name.Size = UDim2.new(1, -12, 0, 29)
 	name.Font = Enum.Font.GothamBold
-	name.TextSize = 17
+	name.TextSize = 19
 	name.TextColor3 = Color3.fromRGB(52, 36, 24)
 	name.TextTruncate = Enum.TextTruncate.AtEnd
 	name.Text = tostring(card.name or "새 지식")
 	name.ZIndex = 9
 	name.Parent = frame
+	-- [카드 이름] 중심 원화와 별개로 큰 한글 제목을 유지하여 긴 카드명도 알아볼 수 있게 한다.
+	local spotlightName = Instance.new("TextLabel")
+	spotlightName.Name = "CardGainTitle"
+	spotlightName.AnchorPoint = Vector2.new(0.5, 0)
+	spotlightName.Position = UDim2.new(0.5, 0, 0.46, 123)
+	spotlightName.Size = UDim2.new(0.88, 0, 0, 38)
+	spotlightName.BackgroundTransparency = 1
+	spotlightName.Font = Enum.Font.GothamBold
+	spotlightName.TextSize = if rarityLevel >= 2 then 25 else 22
+	spotlightName.TextColor3 = gold
+	spotlightName.TextStrokeColor3 = Color3.fromRGB(33, 25, 18)
+	spotlightName.TextStrokeTransparency = 0.74
+	spotlightName.TextWrapped = true
+	spotlightName.Text = tostring(card.name or "새 지식")
+	spotlightName.TextTransparency = 1
+	spotlightName.ZIndex = 12
+	spotlightName.Parent = g
 	local rarity = Instance.new("TextLabel")
 	rarity.BackgroundTransparency = 1
 	rarity.Position = UDim2.new(0, 6, 1, -28)
@@ -8388,7 +8409,7 @@ function H.showCardGain(card, moreCount)
 	rarity.ZIndex = 9
 	rarity.Parent = frame
 	local rings = {}
-	for i = 1, 2 do
+	for i = 1, 2 + (if rarityLevel >= 3 then 2 elseif rarityLevel >= 2 then 1 else 0) do
 		local ring = Instance.new("Frame")
 		ring.Name = "DiscoveryHalo"
 		ring.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -8399,8 +8420,8 @@ function H.showCardGain(card, moreCount)
 		ring.Parent = g
 		corner(ring, 100)
 		local stroke = Instance.new("UIStroke")
-		stroke.Color = tone
-		stroke.Thickness = if i == 1 then 3 else 1.5
+		stroke.Color = gold
+		stroke.Thickness = if i == 1 then 3.5 else 1.5
 		stroke.Transparency = 0.08
 		stroke.Parent = ring
 		table.insert(rings, { ring, stroke })
@@ -8408,20 +8429,21 @@ function H.showCardGain(card, moreCount)
 	local caption = Instance.new("TextLabel")
 	caption.Name = "KnowledgeAcquired"
 	caption.AnchorPoint = Vector2.new(0.5, 0)
-	caption.Position = UDim2.fromScale(0.5, 0.46)
+	caption.Position = UDim2.new(0.5, 0, 0.46, -166)
 	caption.Size = UDim2.fromOffset(260, 36)
 	caption.BackgroundTransparency = 1
 	caption.Font = Enum.Font.GothamBold
 	caption.TextSize = 19
-	caption.TextColor3 = tone
+	caption.TextColor3 = gold
 	caption.TextStrokeColor3 = Color3.fromRGB(18, 15, 12)
-	caption.TextStrokeTransparency = 0.2
+	caption.TextStrokeTransparency = 0.82
 	caption.Text = if (moreCount or 0) > 0 then
 		string.format("지식 발견! · 추가 %d장", moreCount) else "새 지식 발견!"
 	caption.ZIndex = 10
 	caption.Parent = g
-	for i = 1, 8 do
-		local angle = (i - 1) * math.pi / 4
+	local sparkleCount = 4 + rarityLevel * 4
+	for i = 1, sparkleCount do
+		local angle = (i - 1) * math.pi * 2 / sparkleCount
 		local glint = Instance.new("TextLabel")
 		glint.Name = "CardSparkle"
 		glint.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -8431,26 +8453,32 @@ function H.showCardGain(card, moreCount)
 		glint.Font = Enum.Font.GothamBold
 		glint.Text = "✦"
 		glint.TextSize = if i % 2 == 0 then 18 else 25
-		glint.TextColor3 = tone
+		glint.TextColor3 = gold
 		glint.ZIndex = 7
 		glint.Parent = g
 		TS:Create(glint, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-			Position = UDim2.new(0.5, math.cos(angle) * 130, 0.46, math.sin(angle) * 115),
+			Position = UDim2.new(0.5, math.cos(angle) * (115 + rarityLevel * 13), 0.46, math.sin(angle) * (95 + rarityLevel * 9)),
 			TextTransparency = 1,
 		}):Play()
 	end
-	Sfx.play("sfx_card_coin", 0.75)
+	-- [등급별 효과음] 등록된 게임 사운드만 재사용. 높은 등급일수록 2차 울림이 추가된다.
+	Sfx.play("sfx_card_coin", if rarityLevel >= 2 then 0.75 else 0.46, 1 + rarityLevel * 0.035)
+	if rarityLevel >= 2 then Sfx.play("sfx_bell", 0.22 + rarityLevel * 0.09, 1.12) end
+	if rarityLevel >= 3 then Sfx.play("sfx_fanfare", if rarityLevel == 4 then 0.72 else 0.38, 1.02) end
 	TS:Create(frame, TweenInfo.new(0.46, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-		Size = UDim2.fromOffset(170, 208), Rotation = 0,
+		Size = UDim2.fromOffset(revealWidth, revealHeight), Rotation = 0,
+	}):Play()
+	TS:Create(spotlightName, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		TextTransparency = 0,
 	}):Play()
 	for i, pair in rings do
 		TS:Create(pair[1], TweenInfo.new(0.85 + i * 0.13, Enum.EasingStyle.Quart), {
-			Size = UDim2.fromOffset(210 + i * 40, 210 + i * 40),
+			Size = UDim2.fromOffset(190 + i * (32 + rarityLevel * 6), 190 + i * (32 + rarityLevel * 6)),
 		}):Play()
 		TS:Create(pair[2], TweenInfo.new(0.9 + i * 0.15), { Transparency = 1 }):Play()
 	end
 	TS:Create(caption, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-		Position = UDim2.new(0.5, 0, 0.46, 115),
+		Position = UDim2.new(0.5, 0, 0.46, -148),
 	}):Play()
 	task.delay(1.4, function()
 		if not g.Parent then return end
@@ -8471,6 +8499,7 @@ function H.showCardGain(card, moreCount)
 		TS:Create(name, TweenInfo.new(0.5), { TextTransparency = 1 }):Play()
 		TS:Create(rarity, TweenInfo.new(0.5), { TextTransparency = 1 }):Play()
 		TS:Create(caption, TweenInfo.new(0.55), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+		TS:Create(spotlightName, TweenInfo.new(0.45), { TextTransparency = 1 }):Play()
 	end)
 	task.delay(2.3, function()
 		if g.Parent then g:Destroy() end
@@ -8610,10 +8639,12 @@ function H.checkNewCards()
 		end
 	end
 	if #acquired == 0 then return end
-	-- [알림 절제] 같은 서버 응답의 카드 여러 장은 대표 카드 1장으로 연출하고 수량을 표시한다.
-	-- 각 응답은 순서대로 처리하지만 터치와 게임 조작을 막지 않는다.
+	-- [등급 보존] 같은 응답에서 여러 장을 얻었더라도 각각 실제 등급과 이름으로 보여 준다.
+	-- 게임 조작은 막지 않고 장면이 끝난 뒤 기존 큐에서 순서대로 공개한다.
 	H.cardGainQueue = H.cardGainQueue or {}
-	table.insert(H.cardGainQueue, { card = acquired[1], extra = #acquired - 1 })
+	for _, gainedCard in acquired do
+		table.insert(H.cardGainQueue, { card = gainedCard, extra = 0 })
+	end
 	if H.cardGainPlaying then return end
 	H.cardGainPlaying = true
 	task.spawn(function()
