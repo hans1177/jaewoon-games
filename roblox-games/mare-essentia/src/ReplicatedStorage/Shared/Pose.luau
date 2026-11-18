@@ -1065,7 +1065,9 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					for _, candidate in OUTFIT_SOURCE_MATERIALS do
 						-- [GLB 원색] Blender/glTF의 선형색과 Roblox 수입기의 감마색을
 						-- 모두 비교한다. 비슷한 녹색 천을 녹슨 금속으로 오분류하지 않는다.
-						for _, sourceColor in { candidate[1], candidate[3] } do
+						-- [모바일 CPU] 색상 비교 중 임시 배열을 매번 만들지 않는다.
+						for colorIndex = 1, 3, 2 do
+							local sourceColor = candidate[colorIndex]
 							local err = (color.R - sourceColor.R) ^ 2
 								+ (color.G - sourceColor.G) ^ 2 + (color.B - sourceColor.B) ^ 2
 							if err < bestError then
