@@ -153812,7 +153812,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -153854,12 +153854,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44270878015:1",
+      "reservedAt": "2026-11-18T08:58:53.477Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -154088,14 +154088,15 @@
         "system-ai-blocked-task-count:6",
         "system-ai-representative-canary:system-ai-verification-failed",
         "system-ai-handoff-to-reservation:system-ai:44268335139:1",
-        "actions-run:44268335139"
+        "actions-run:44268335139",
+        "system-ai-handoff-to-reservation:system-ai:44270878015:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 602,
+      "impactScore": 1694,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 6,
-        "recurrenceCount": 6,
+        "blockedTaskCount": 34,
+        "recurrenceCount": 34,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -154103,7 +154104,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-18T08:53:15.302Z"
+      "updatedAt": "2026-11-18T08:58:53.477Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
@@ -154366,7 +154367,7 @@
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -154408,12 +154409,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44270878015:1",
+      "reservedAt": "2026-11-18T08:58:53.477Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-verification-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -154505,14 +154506,18 @@
         "system-ai-applied-answer-sha256:dbf4a4fded371fed1b6a9a87c46cca363886f464e8390ae327d358523a3f6252",
         "repair-strategy-fingerprint:4e84a81f888a562e2c42198d410db403e850a4cfff429935869e3486f28b71bd",
         "failed-strategy-fingerprint:4e84a81f888a562e2c42198d410db403e850a4cfff429935869e3486f28b71bd",
-        "model-output-sha256:6f1ee3c22bda81a6256bef0ea28f891db4f27bca87c40c1005eea9f218846247"
+        "model-output-sha256:6f1ee3c22bda81a6256bef0ea28f891db4f27bca87c40c1005eea9f218846247",
+        "system-ai-impact-score:502",
+        "system-ai-blocked-task-count:4",
+        "system-ai-representative-canary:system-ai-verification-failed",
+        "system-ai-handoff-to-reservation:system-ai:44270878015:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 402,
+      "impactScore": 502,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 2,
-        "recurrenceCount": 2,
+        "blockedTaskCount": 4,
+        "recurrenceCount": 4,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -154520,7 +154525,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-18T08:27:40.956Z"
+      "updatedAt": "2026-11-18T08:58:53.477Z"
     },
     {
       "id": "marketing-seed-roblox-survival-horror-es-doors-pre-release-v1",
