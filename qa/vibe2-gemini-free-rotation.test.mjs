@@ -502,3 +502,64 @@ test('Gemini daily quota auto-refill observes Pacific midnight and daylight savi
     429,daily,{provider:'GEMINI',now:winter}),75000,
   '공식 재시도 시각이 존재하면 그 값을 우선한다');
 });
+
+
+// [Vibe5.9 전문 분야] 기존 무료 모델만 사용하고 원본 작업의 분야에 맞춰 실제 호출 순서를 변경.
+test('Vibe59 specialist routing assigns actual free model by domain',async()=>{
+  const {selectVibe59FreeExperts,requestGeminiFreePair:route}=await import(
+    '../tools/vibe2-gemini-free-rotation.mjs?v59-real-routing='+Date.now());
+  const env={GEMINI_API_KEY:'gemini-fixture',GROQ_API_KEY:'groq-fixture',
+    VIBE2_GROQ_FREE_PLAN_VERIFIED:'YES',OPENROUTER_API_KEY:'router-fixture',
+    VIBE2_EXTERNAL_FREE_ROTATION:'YES'};
+  const config={env,includeUnconfigured:false};
+  assert.equal(selectVibe59FreeExperts({...config,department:'GRAPHICS',
+    taskText:'주민 얼굴 머리 옷',responsibleFiles:['Pose.luau']}).domain,'NPC');
+  assert.equal(selectVibe59FreeExperts({...config,department:'GRAPHICS',
+    taskText:'주민 얼굴 머리 옷'}).expertCandidates[0].id,'GEMINI_FLASH');
+  assert.equal(selectVibe59FreeExperts({...config,department:'GRAPHICS',
+    taskText:'모바일 HUD 메뉴'}).expertCandidates[0].id,'OPENROUTER');
+  assert.equal(selectVibe59FreeExperts({...config,department:'PLANNING'})
+    .expertCandidates[0].id,'GEMINI_LITE');
+  assert.equal(selectVibe59FreeExperts({...config,department:'DEVELOPMENT'})
+    .expertCandidates[0].id,'GROQ');
+  assert.equal(selectVibe59FreeExperts({...config,department:'QA'})
+    .expertCandidates[0].id,'GROQ');
+  const prior=selectVibe59FreeExperts({...config,department:'DEVELOPMENT'});
+  assert.ok(prior.expertCandidates.every(row=>row.evidence==='ROLE_PRIOR_UNVERIFIED'));
+  const verifiedOutcomes=Array.from({length:20},(_,index)=>({
+    verified:true,independentQa:'PASS',sourceRevision:'revision-'+index,
+    provider:'GEMINI',model:GEMINI_FREE_MODELS[1],role:'DEVELOPMENT',outcome:'SUCCESS'
+  }));
+  const promoted=selectVibe59FreeExperts({...config,department:'DEVELOPMENT',verifiedOutcomes});
+  assert.equal(promoted.expertCandidates[0].id,'GEMINI_LITE',
+    '독립 QA 통과 기록으로 낮은 초기 순위의 모델도 승격한다');
+  assert.equal(promoted.expertCandidates[0].evidence,'INDEPENDENT_QA');
+  assert.equal(selectVibe59FreeExperts({...config,department:'QA',verifiedOutcomes})
+    .expertCandidates[0].id,'GROQ','개발부의 성적을 품질검사부 실적으로 복제 금지');
+  const cooldown=selectVibe59FreeExperts({...config,department:'DEVELOPMENT',
+    freeCapacity:{['GROQ:'+VERIFIED_FREE_FALLBACK_MODELS.GROQ]:{
+      verified:true,limit:100,remaining:0,observedAt:new Date().toISOString()
+    }}});
+  assert.ok(!cooldown.expertCandidates.some(row=>row.provider==='GROQ'),
+    '검증된 무료 잔량 0 슬롯은 다음 배정에서 제외');
+  assert.ok(!selectVibe59FreeExperts({department:'DEVELOPMENT',
+    env:{...env,VIBE2_GROQ_FREE_PLAN_VERIFIED:'NO'}}).expertCandidates
+    .some(row=>row.provider==='GROQ'),'그록 무료 요금제 확인 없이 호출 금지');
+  await withExternalFixture(async()=>{
+    process.env.GROQ_API_KEY='groq-fixture';
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    const urls=[];
+    const result=await route({apiKey:'gemini-fixture',
+      specialistDepartment:'DEVELOPMENT',specialistTask:'코드 버그 수정',
+      contents:[{role:'user',parts:[{text:'{"edits":[]}'}]}],
+      fetchImpl:async url=>{
+        urls.push(String(url));
+        return{ok:true,json:async()=>({choices:[{message:{content:'{"edits":[]}'}}],usage:{cost:0}})};
+      }});
+    assert.equal(urls.length,1);
+    assert.equal(urls[0],'https://api.groq.com/openai/v1/chat/completions');
+    assert.equal(result.provider,'GROQ');
+    assert.equal(result.text,'{"edits":[]}');
+  });
+});
