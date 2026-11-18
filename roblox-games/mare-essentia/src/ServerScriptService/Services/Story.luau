@@ -102,7 +102,7 @@ return function(D, S)
 			return false
 		end
 		for _, e in D.Story.Events do
-			if (not onlyMajor or e.major) and not blockReason(state, e) then
+			if (not onlyMajor or e.major or e.nation or e.chapter == "주점의 사람들") and not blockReason(state, e) then
 				state.autoStory = e.id
 				table.insert(msgs, string.format("[%s] %s이(가) 당신을 찾는다", e.title, e.npc))
 				return true
