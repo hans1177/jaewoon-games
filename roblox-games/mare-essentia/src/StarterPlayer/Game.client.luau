@@ -5614,7 +5614,7 @@ local function openTradeHall()
 		local heroW = math.max(140, availableW - listWidth - detailWidth - 8)
 		local compactList = not narrow
 		-- [교역 장부] 목록 24% · 승인 원화·백과 약 42% · 판단 수치·거래 약 34%. 세로는 목록/상세 전환.
-		local headH = if narrow then 108 else 62
+		local headH = if narrow then 146 else 62
 		local menuY = headH + 12
 
 		-- 윗줄: 항구 이름, 코인, 화물칸, 나가기
@@ -5626,18 +5626,36 @@ local function openTradeHall()
 		title.Size = if narrow then UDim2.new(1, -110, 0, 25) else UDim2.new(0.32, 0, 0, 25)
 		title.AutomaticSize = Enum.AutomaticSize.None
 		title.TextTruncate = Enum.TextTruncate.AtEnd
-		-- [공통 상단 자금·화물] 교역 중에도 한 자리에서만 실측값을 확인한다.
-		local commonStatus = mkLabel(top, H.statusMoneyCargo(p, ship, narrow), if narrow then 18 else 20, INK, true)
+		-- [교역 상단] 자금과 직전 메뉴를 이웃한 한 줄로 배치하고 거래 안내 중복은 숨긴다.
+		local recent = H.recentTab
+		local showRecent = recent and TAB_NAME[recent] ~= nil and recent ~= "trade"
+		local recentWidth = if narrow then 106 else 140
+		local cashWidth = if narrow then math.max(142, top.AbsoluteSize.X - recentWidth - 30)
+			else math.clamp(math.floor(width * 0.36), 220, 315)
+		local commonStatus = mkLabel(top, H.statusMoneyCargo(p, ship, narrow), if narrow then 15 else 18, INK, true)
 		commonStatus.Name = "TradeGlobalMoneyCargo"
-		commonStatus.Position = UDim2.fromOffset(12, if narrow then 42 else 33)
-		commonStatus.Size = UDim2.new(1, -112, 0, 32)
+		commonStatus.AnchorPoint = if narrow then Vector2.zero else Vector2.new(0.5, 0)
+		commonStatus.Position = if narrow then UDim2.fromOffset(12, 64) else UDim2.new(0.45, 0, 0, 30)
+		commonStatus.Size = UDim2.fromOffset(cashWidth, 30)
 		commonStatus.AutomaticSize = Enum.AutomaticSize.None
 		commonStatus.TextTruncate = Enum.TextTruncate.AtEnd
-		-- [교역소 동료 조언] 전용 매매 화면에서도 관련 조언이 사라지지 않게 표시한다.
-		local tradeHint = "매입가·판매가·세후 손익을 비교해." -- [거래창] 동료 조언은 저널에서만 읽는다.
-		local toastLbl = mkLabel(top, if message ~= "" then message else tradeHint, 13, Color3.fromRGB(60, 100, 50), true)
-		toastLbl.Position = if narrow then UDim2.fromOffset(12, 78) else UDim2.new(0.50, 30, 0, 8)
-		toastLbl.Size = if narrow then UDim2.new(1, -30, 0, 20) else UDim2.new(0.50, -130, 0, 42)
+		commonStatus.TextXAlignment = if narrow then Enum.TextXAlignment.Left else Enum.TextXAlignment.Center
+		if showRecent then
+			local recentBtn = mkButton(top, "↶ " .. TAB_NAME[recent], COLORS.leather,
+				UDim2.fromOffset(recentWidth, 36), function()
+					closeTradeHall()
+					openTab(recent, if recent == "map" then "chart" else nil)
+				end, true)
+			recentBtn.Name = "TradeRecentFacility"
+			recentBtn.TextSize = 15
+			recentBtn.Position = if narrow then UDim2.fromOffset(12 + cashWidth + 8, 59)
+				else UDim2.new(0.45, math.floor(cashWidth * 0.5) + 8, 0, 27)
+		end
+		-- [중복 설명 제거] 조언은 저널에서, 거래 알림은 결과가 있을 때만 보여 준다.
+		local toastLbl = mkLabel(top, message, 15, INK_SOFT, true)
+		toastLbl.Visible = message ~= ""
+		toastLbl.Position = if narrow then UDim2.fromOffset(12, 112) else UDim2.fromOffset(12, 36)
+		toastLbl.Size = if narrow then UDim2.new(1, -30, 0, 22) else UDim2.new(0.24, -10, 0, 24)
 		toastLbl.AutomaticSize = Enum.AutomaticSize.None
 		toastLbl.TextWrapped = true
 		toastLbl.TextTruncate = Enum.TextTruncate.AtEnd
@@ -7283,11 +7301,31 @@ function openYardHall()
 		title.Size = UDim2.new(1, -104, 0, 25)
 		title.AutomaticSize = Enum.AutomaticSize.None
 		title.TextTruncate = Enum.TextTruncate.AtEnd
-		local hold = mkLabel(top, H.statusMoneyCargo(p, ship, width < 740) .. " · 기함 " .. ship.name, 17, INK_SOFT, true)
-		hold.Position = UDim2.fromOffset(12, 34)
-		hold.Size = UDim2.new(1, -100, 0, 20)
+		-- [조선소 상단] 기함 이름의 중복 표기를 빼고 자금·최근 메뉴를 나란히 둔다.
+		local recent = H.recentTab
+		local showRecent = recent and TAB_NAME[recent] ~= nil and recent ~= "yard"
+		local recentWidth = if width < 380 then 78 elseif width < 740 then 94 else 132
+		local cashWidth = if width < 740 then math.max(108, width - recentWidth - 132)
+			else math.clamp(math.floor(width * 0.38), 230, 330)
+		local cashText = if width < 480 then "돈 " .. H.commas(p.coins)
+			else H.statusMoneyCargo(p, ship, width < 740)
+		local hold = mkLabel(top, cashText, if width < 480 then 14 else 17, INK_SOFT, true)
+		hold.AnchorPoint = if width >= 740 then Vector2.new(0.5, 0) else Vector2.zero
+		hold.Position = if width >= 740 then UDim2.new(0.44, 0, 0, 33) else UDim2.fromOffset(12, 34)
+		hold.Size = UDim2.fromOffset(cashWidth, 22)
 		hold.AutomaticSize = Enum.AutomaticSize.None
 		hold.TextTruncate = Enum.TextTruncate.AtEnd
+		if showRecent then
+			local recentBtn = mkButton(top, "↶ " .. TAB_NAME[recent], COLORS.leather,
+				UDim2.fromOffset(recentWidth, 34), function()
+					closeTradeHall()
+					openTab(recent, if recent == "map" then "chart" else nil)
+				end, true)
+			recentBtn.Name = "YardRecentFacility"
+			recentBtn.Position = if width >= 740 then UDim2.new(0.44, math.floor(cashWidth * 0.5) + 8, 0, 29)
+				else UDim2.fromOffset(12 + cashWidth + 8, 30)
+			recentBtn.TextSize = if width < 480 then 13 else 15
+		end
 		local leave = mkButton(top, "나가기", COLORS.leather, UDim2.fromOffset(78, 44), closeTradeHall, true)
 		leave.AnchorPoint = Vector2.new(1, 0.5)
 		leave.Position = UDim2.new(1, -9, 0.5, 0)
