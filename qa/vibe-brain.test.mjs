@@ -121,7 +121,7 @@ test('한 바퀴: 관련 코드를 찾아 가짜 LLM 수정안을 검증·적용
 
 test('워크플로: 10분 주기, 끄는 변수, Gemini 는 무료 확인 변수가 있을 때만, 검증 통과 뒤에만 PR, 병합은 VIBE_BRAIN_MERGE=on 일 때만', () => {
   const y = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
-  assert.match(y, /cron: '3-53\\/10 \* \* \* \*'/);
+  assert.match(y, /cron: '3-53\/10 \* \* \* \*'/);
   assert.match(y, /vars\.VIBE_BRAIN != 'off'/);
   assert.match(y, /GEMINI_API_KEY: \$\{\{ vars\.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets\.GEMINI_API_KEY \|\| '' \}\}/);
   assert.match(y, /GITHUB_MODELS_TOKEN: \$\{\{ github\.token \}\}/);
