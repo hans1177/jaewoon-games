@@ -1670,12 +1670,44 @@ test('항구별 주거 생성은 인접 빈자리 재시도와 실제 크기 결
  for(const name of [
   'CityHousingPort','CityHousingCulture','CityHousingCandidates','CityHousingPlaced',
   'CityHousingShifted','CityHousingPlotRejected','CityHousingModelRejected',
+  'CityHousingPlacedPercent',
   'CityHousingLayoutState','CityHousingSize'
  ])assert.ok(result.includes(name),'항구별 읽기 전용 진단 누락: '+name);
  assert.match(result,/NO_ECONOMIC_CANDIDATE/);
  assert.match(result,/NO_SAFE_HOUSING_PLOT/);
  assert.match(result,/COMPUTED_NOT_VISUALLY_VERIFIED/,'런타임 확인 전 합격 표시 금지');
  assert.match(port,/CityBuildingMode", "AUTO_VISUAL_READ_ONLY"/);
+});
+
+// [문화권 23종×발전도 5단계] 어떤 지역도 사전 필지 판정에서 최소 주택까지 무조건 배제하지 않는다.
+test('모든 문화권과 발전도에 최소 주택 배치 공간이 남는다',()=>{
+ const port=read('ReplicatedStorage/Shared/PortScene.luau');
+ const cultures=read('ReplicatedStorage/Shared/PortCultures.luau');
+ const begin=port.indexOf('local houseSizeBands = {'),end=port.indexOf('-- [항구별 진단]',begin);
+ assert.ok(begin>=0&&end>begin,'주택 등급표와 진단 연결');
+ const bands=[...port.slice(begin,end).matchAll(/\{ ([\d.]+), ([\d.]+), ([\d.]+), ([\d.]+), ([\d.]+) \}/g)]
+  .map(m=>m.slice(1).map(Number));
+ assert.equal(bands.length,5,'발전도 5단계');
+ const profiles=[...cultures.matchAll(/^\t([a-z]+) = \{ S = ([\d.]+).*?wMul = ([\d.]+), dAdd = (-?[\d.]+).*sizeWeights = \{ (\d+), (\d+), (\d+), (\d+), (\d+) \}/gm)]
+  .map(m=>({name:m[1],size:Number(m[2]),width:Number(m[3]),depth:Number(m[4]),weights:m.slice(5).map(Number)}));
+ assert.equal(profiles.length,23,'문화권 23종을 모두 검사');
+ const lotGrowth=[1.5,1.65,1.8,2,2.2];
+ let count=0;
+ for(const p of profiles){
+  assert.equal(p.weights.reduce((a,b)=>a+b,0),100,p.name+' 크기 비율');
+  for(let i=0;i<5;i++){
+   // 기존 최소 구획 배율(0.94)과 최대 처마 보정(동아시아 1.62)을 준수하는 보수적 크기 검사.
+   const clear=p.size*lotGrowth[i]*0.94*0.5+4;
+   const width=p.size/(1.28*1.08)*p.width;
+   const depth=Math.max(width*0.72,width+p.depth);
+   const roof=['japan','china','korea'].includes(p.name)?1.62:1.46;
+   const projected=Math.max(width,depth)*bands[i][0]*1.28*roof*0.5+3.5;
+   assert.ok(projected<=clear,p.name+' 발전 '+(i+1)+'단계: 최소 주택 공간 부족');
+   count++;
+  }
+ }
+ assert.equal(count,115,'전체 지역·발전도 조합');
+ assert.match(port,/CityHousingPlacedPercent", if homeCandidates > 0/,'항구별 배치율 진단');
 });
 
 // [지역 주택 실측] 모든 문화권은 소형~대형 5종 비율을 가지며 실제 메시 외곽으로 배치한다.
