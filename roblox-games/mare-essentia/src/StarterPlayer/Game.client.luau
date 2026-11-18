@@ -10151,8 +10151,8 @@ function RENDERERS.encyclopedia()
 			line("현재 소장한 해전 카드에 등록된 원화를 보여 주고 있어. 실제 역사적 고증과 게임 속 전투 설정은 구분해서 읽어야 해.", 17, false)
 			line("Ⅲ. 카드 수집 정보", 19, true)
 			line("분류: " .. tostring(current.topic or "해전 카드")
-				.. "\\n원화 출처: " .. tostring(current.credit or "기존 등록 자료")
-				.. "\\n등록 방식: " .. (if current.motionSheet then "24프레임 애니메이션"
+				.. "\n원화 출처: " .. tostring(current.credit or "기존 등록 자료")
+				.. "\n등록 방식: " .. (if current.motionSheet then "24프레임 애니메이션"
 					elseif current.motionCandidate then "정지 원화 · 24프레임 시트 등록 대기" else "정지 원화"), 16, false)
 		elseif article then
 			if article.details and article.details ~= "" then
