@@ -323,8 +323,8 @@ function modelAttempt(id, status, details = {}) {
   designRuntime.attempts.push(row);
   console.log('DESIGN_FREE_MODEL_ATTEMPT=' + id + ':' + status);
 }
-async function callFreeDesignModel(model, prompt, photos, fetchImpl) {
-  const key = trim(process.env[model.keyName]);
+export async function callFreeDesignModel(model, prompt, photos, fetchImpl, env = process.env) {
+  const key = trim(env[model.keyName]);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 90000);
   try {
@@ -336,6 +336,10 @@ async function callFreeDesignModel(model, prompt, photos, fetchImpl) {
           })
         ]}], generationConfig: {temperature: 0.1, maxOutputTokens: 3500, responseMimeType: 'application/json'}}
       : {model: model.model, stream: false, max_tokens: 3500, temperature: 0.1,
+          // [네모트론 공식 API] 기본 추론이 답변 토큰을 모두 소진해 빈 content가 되는 오류 예방.
+          // 유료 크레딧이나 호출 수를 늘리지 않고 직접 답변 모드를 요청한다.
+          ...(model.provider === 'NVIDIA'
+            ? {chat_template_kwargs: {enable_thinking: false}} : {}),
           messages: [{role: 'user', content: [{type: 'text', text: prompt},
             ...photos.map(photo => ({type: 'image_url', image_url: {url: photo.url}}))]}]};
     const headers = model.provider === 'GEMINI'
@@ -366,7 +370,9 @@ async function callFreeDesignModel(model, prompt, photos, fetchImpl) {
       : payload?.choices?.[0]?.message?.content;
     const text = typeof content === 'string' ? content
       : Array.isArray(content) ? content.map(x => trim(x?.text)).join('') : '';
-    return text.trim() ? {status: 'OK', text} : {status: 'EMPTY_OUTPUT', retryAfterMs: 30000};
+    return text.trim() ? {status: 'OK', text} : {
+      status: payload?.choices?.[0]?.finish_reason === 'length' ?
+        'EMPTY_OUTPUT_TOKEN_LIMIT' : 'EMPTY_OUTPUT', retryAfterMs: 30000};
   } catch (error) {
     if (error?.name === 'AbortError' || error instanceof TypeError || error instanceof SyntaxError)
       return {status: 'TRANSPORT_OR_TIMEOUT', retryAfterMs: 30000};
