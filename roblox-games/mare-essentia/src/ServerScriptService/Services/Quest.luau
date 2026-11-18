@@ -142,8 +142,8 @@ return function(D, S)
 		-- [지역 탐험] 신규 현장 의뢰는 지정된 항구에서만 보여 주고 자동 완료한다.
 		-- 기존 퀘스트와 이미 저장된 도감·완료 기록에는 영향을 주지 않는다.
 		if quest.exploreSite and quest.portId ~= state.portId then return false end
-		-- [연대기] 현장 조사 의뢰는 해당 대륙의 항구에 도착했을 때만 나타난다.
-		if quest.sagaPort and quest.sagaPort ~= state.portId then return false end
+		-- [지역 연대기] 첫 소식은 현장 항구에서만, 이어지는 장은 어디서든 일지에 보여 다음 항구를 안내한다.
+		if quest.sagaPort and quest.sagaPort ~= state.portId and not (quest.after or quest.kind == "saga_chapters") then return false end
 		if quest.minYear and S.State.year(state) < quest.minYear then return false end
 		if quest.after and not state.quests.done[quest.after] then
 			return false
