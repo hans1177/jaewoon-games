@@ -4196,7 +4196,7 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
     scene.includes('aw.family == "axe", true, false, nil, aw'),
     'automatic skill must use original cooldown stamina and keep ally damage outside owner streak');
   // [모바일 반원형 3메달] 기존 공격·회피 두 행동 + 주·보조 무기교체. 별도 스킬/방어 버튼 없음.
-  assert.ok(scene.includes('workspace.CurrentCamera.ViewportSize.X < 450')&&
+  assert.ok(scene.includes('and (workspace.CurrentCamera.ViewportSize.X < 520')&&
     scene.includes('UDim2.fromOffset(if compactTouch then 104 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 104')&&
     scene.includes('if compactTouch then 86 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 88')&&
     scene.includes('if compactTouch then -76')&&
