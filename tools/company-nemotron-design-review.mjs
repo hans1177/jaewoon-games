@@ -49,14 +49,59 @@ export const DESIGN_FREE_MODELS = Object.freeze([
 ]);
 const DAILY_LIMIT = Object.freeze({NVIDIA: 12, GEMINI: 12, OPENROUTER: 30});
 const designRuntime = {usageWindow: null, cooldowns: {}, attempts: [], selectedRole: ''};
-const currentDay = () => new Date().toISOString().slice(0, 10);
+// [무료 자원 회계] 업체별 날짜를 분리한다. Gemini의 공식 일일 초기화는 미 태평양 시간 기준이다.
+// 다른 업체의 UTC 일자는 기존 로컬 안전 상한의 갱신 시점일 뿐, 실제 계정 한도 초기화의 증거가 아니다.
+const currentDay = (now = Date.now()) => new Date(now).toISOString().slice(0, 10);
+export function freeDesignWindowId(provider, now = Date.now()) {
+  if (provider !== 'GEMINI') return currentDay(now);
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(new Date(now));
+  const date = Object.fromEntries(parts.filter(part => part.type !== 'literal')
+    .map(part => [part.type, part.value]));
+  return date.year + '-' + date.month + '-' + date.day;
+}
+function nextFreeDesignWindow(provider, now) {
+  const current = freeDesignWindowId(provider, now);
+  const hour = Math.floor(now / 3600000) * 3600000;
+  for (let step = 1; step <= 49; step++) {
+    const at = hour + step * 3600000;
+    if (freeDesignWindowId(provider, at) !== current) return new Date(at).toISOString();
+  }
+  return null;
+}
+// 예측치는 이 Studio 디자인 실행에서 확인된 소비량에 한정한다.
+// 다른 작업/프로젝트의 실제 계정 전체 잔량을 알 수 없는 상태를 0원 또는 전체 가용량으로 오인하지 않는다.
+export function forecastFreeDesignQuota(usageWindow = {}, now = Date.now()) {
+  const quotas = {};
+  for (const [provider, limit] of Object.entries(DAILY_LIMIT)) {
+    const windowId = freeDesignWindowId(provider, now);
+    const sameWindow = usageWindow?.windowIds?.[provider] === windowId ||
+      (usageWindow?.windowIds?.[provider] === undefined && usageWindow?.day === currentDay(now));
+    const count = sameWindow ? Number(usageWindow?.calls?.[provider] || 0) : 0;
+    const used = Number.isInteger(count) && count >= 0 ? Math.min(count, 1000) : 0;
+    const remaining = Math.max(0, limit - used);
+    const reserve = Math.ceil(limit * 0.2);
+    const startedAt = sameWindow ? Date.parse(usageWindow?.firstCallAtByProvider?.[provider]) : NaN;
+    const elapsedHours = (now - startedAt) / 3600000;
+    const hourlyRate = used >= 2 && Number.isFinite(elapsedHours) && elapsedHours > 0
+      ? Math.round((used - 1) / Math.max(0.25, elapsedHours) * 100) / 100 : null;
+    quotas[provider] = {
+      scope: 'STUDIO_VISUAL_ONLY', localDailyLimit: limit, localUsed: used,
+      remainingLocal: remaining, regularWorkRemaining: Math.max(0, remaining - reserve),
+      emergencyReserveRemaining: Math.min(remaining, reserve),
+      estimatedCallsPerHour: hourlyRate,
+      estimatedHoursToLocalCap: hourlyRate > 0
+        ? Math.round(remaining / hourlyRate * 10) / 10 : null,
+      nextLocalWindowAt: nextFreeDesignWindow(provider, now),
+      resetBasis: provider === 'GEMINI' ? 'PACIFIC_DAILY' : 'INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED',
+      accountWideBalanceVerified: false
+    };
+  }
+  return quotas;
+}
 function loadPreviousDesignUsage(previous = {}) {
-  const nowDay = currentDay();
-  designRuntime.usageWindow = {day: nowDay, calls: previous?.usageWindow?.day === nowDay
-    ? Object.fromEntries(Object.entries(previous.usageWindow.calls || {})
-      .filter(([name, count]) => Object.hasOwn(DAILY_LIMIT, name) &&
-        Number.isInteger(count) && count >= 0 && count <= 1000))
-    : {}};
+  designRuntime.usageWindow = mergeFreeVisualUsage(previous).usageWindow;
   designRuntime.cooldowns = Object.fromEntries(Object.entries(previous?.cooldowns || {})
     .filter(([id, until]) => DESIGN_FREE_MODELS.some(model => model.id === id) &&
       Number.isFinite(Date.parse(until)) && Date.parse(until) > Date.now()));
@@ -128,21 +173,36 @@ export function verifiedDesignFeedback(previous = {}, feedback = {}, now = Date.
 // [호출 한도 회계] 동일 공식 Studio 촬영 세대의 '초안 생성 + 독립 검수' 사용량을 합산한다.
 // 회차별 카운터는 누적이므로 합계가 아닌 각 제공자별 최대값을 사용한다. 요금 한도를 낮추는 방향으로만 병합.
 export function mergeFreeVisualUsage(previous = {}, feedback = {}, now = Date.now()) {
-  const day = new Date(now).toISOString().slice(0, 10);
-  const origin = previous?.usageWindow?.day === day ? previous.usageWindow.calls || {} : {};
+  const day = currentDay(now);
+  const originWindow = previous?.usageWindow || {};
   const validFollowup = /^[a-f0-9]{40}$/i.test(String(previous?.sourceRevision || '')) &&
     feedback?.beforeRevision === previous.sourceRevision &&
     /^[a-f0-9]{40}$/i.test(String(feedback?.candidateRevision || '')) &&
     feedback?.sourceRevision === feedback.candidateRevision &&
     feedback?.gameId === 'mare-essentia' &&
     feedback?.usageWindow?.day === day;
-  const followup = validFollowup ? feedback.usageWindow.calls || {} : {};
-  const calls = {};
+  const followingWindow = validFollowup ? feedback.usageWindow : {};
+  const calls = {}, windowIds = {}, firstCallAtByProvider = {};
   for (const provider of Object.keys(DAILY_LIMIT)) {
-    const old = Number(origin[provider] || 0), added = Number(followup[provider] || 0);
+    const windowId = freeDesignWindowId(provider, now);
+    windowIds[provider] = windowId;
+    const sameWindow = window => window?.windowIds?.[provider] === windowId ||
+      (window?.windowIds?.[provider] === undefined && window?.day === day);
+    const originValid = sameWindow(originWindow);
+    const nextValid = validFollowup && sameWindow(followingWindow);
+    const safeCount = value => Number.isInteger(Number(value)) && Number(value) >= 0
+      ? Math.min(Number(value), 1000) : 0;
     calls[provider] = Math.max(
-      Number.isInteger(old) && old >= 0 ? Math.min(old, 1000) : 0,
-      Number.isInteger(added) && added >= 0 ? Math.min(added, 1000) : 0);
+      originValid ? safeCount(originWindow?.calls?.[provider] || 0) : 0,
+      nextValid ? safeCount(followingWindow?.calls?.[provider] || 0) : 0
+    );
+    const candidates = [
+      originValid ? originWindow?.firstCallAtByProvider?.[provider] : null,
+      nextValid ? followingWindow?.firstCallAtByProvider?.[provider] : null
+    ].filter(value => typeof value === 'string' && Number.isFinite(Date.parse(value)) &&
+      Date.parse(value) <= now && Date.parse(value) >= now - 48 * 3600000);
+    if (candidates.length) firstCallAtByProvider[provider] =
+      new Date(Math.min(...candidates.map(Date.parse))).toISOString();
   }
   const cooldowns = {...previous?.cooldowns};
   if (validFollowup) for (const model of DESIGN_FREE_MODELS) {
@@ -152,7 +212,7 @@ export function mergeFreeVisualUsage(previous = {}, feedback = {}, now = Date.no
       (!Number.isFinite(older) || newer > older))
       cooldowns[model.id] = new Date(newer).toISOString();
   }
-  return {...previous, usageWindow: {day, calls}, cooldowns};
+  return {...previous, usageWindow: {day, calls, windowIds, firstCallAtByProvider}, cooldowns};
 }
 
 export function selectFreeDesignModels({
@@ -169,6 +229,7 @@ export function selectFreeDesignModels({
   const today = new Date(now).toISOString().slice(0, 10);
   const carried = mergeFreeVisualUsage(previous, feedback, now);
   const spent = carried.usageWindow.calls;
+  const quotaForecast = forecastFreeDesignQuota(carried.usageWindow, now);
   const eligible = DESIGN_FREE_MODELS.filter(model => {
     const cooling = Date.parse(carried?.cooldowns?.[model.id] || '');
     // [장애 원인] 키 값, 무료 요금제 설정값, 원문 응답은 기록하지 않는다.
@@ -196,7 +257,11 @@ export function selectFreeDesignModels({
         ['REVIEW_INVALID', 'SOURCE_ANCHOR_INVALID'].includes(row?.status));
     return (order < 0 ? 999 : order) + (invalid ? 2 : 0);
   };
+  // [자동 배치] 일반 작업에는 예비 20%를 가진 업체를 우선 배정한다.
+  // 모든 업체가 예비 구간이어도 사용 가능한 무료 슬롯 자체는 폐쇄하지 않는다.
   eligible.sort((left, right) =>
+    Number(quotaForecast[left.provider].regularWorkRemaining === 0) -
+      Number(quotaForecast[right.provider].regularWorkRemaining === 0) ||
     score(left) - score(right) ||
     DESIGN_FREE_MODELS.indexOf(left) - DESIGN_FREE_MODELS.indexOf(right));
   // [복구] 세 공급자가 모두 허용되면 각 공급자의 전문 모델 1개씩 먼저, 동일 공급자의 대체 모델은 뒤에 배정.
@@ -288,6 +353,7 @@ function record(status, fields = {}) {
   const report = {version: 3, provider: 'MULTI_FREE_VISUAL', gameId: 'mare-essentia',
     sourceRevision: trim(process.env.GITHUB_SHA), status, selectedRole: designRuntime.selectedRole,
     usageWindow: designRuntime.usageWindow, cooldowns: designRuntime.cooldowns,
+    quotaForecast: forecastFreeDesignQuota(designRuntime.usageWindow),
     attempts: designRuntime.attempts, ...fields};
   fs.mkdirSync(path.dirname(reportPath), {recursive: true});
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n');
@@ -575,6 +641,8 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     const previousCount = designRuntime.usageWindow.calls[model.provider] || 0;
     if (previousCount >= DAILY_LIMIT[model.provider]) continue;
     designRuntime.usageWindow.calls[model.provider] = previousCount + 1;
+    designRuntime.usageWindow.firstCallAtByProvider ||= {};
+    designRuntime.usageWindow.firstCallAtByProvider[model.provider] ||= new Date().toISOString();
     const result = await callFreeDesignModel(model, prompt, photos, fetchImpl);
     modelAttempt(model.id, result.status, {provider: model.provider, model: model.model});
     if (['BILLING_BLOCKED', 'NONZERO_COST_BLOCKED', 'CONTENT_POLICY_BLOCKED'].includes(result.status))
