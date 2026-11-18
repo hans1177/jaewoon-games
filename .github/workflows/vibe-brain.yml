@@ -61,7 +61,13 @@ jobs:
             if ! git fetch --no-tags --depth=1 origin "refs/heads/$frames_branch"; then
               continue
             fi
-            source_sha=$(git show FETCH_HEAD:report.json 2>/dev/null | jq -r '.sourceRevision // empty' || true)
+            # [화면 근거 고정] source SHA 재조회가 FETCH_HEAD 를 바꾸더라도 사진 커밋을 보존한다.
+            frames_sha=$(git rev-parse --verify "FETCH_HEAD^{commit}" 2>/dev/null || true)
+            if [[ ! "$frames_sha" =~ ^[a-f0-9]{40}$ ]]; then
+              echo "STUDIO_SCREENSHOT_COMMIT_INVALID=$frames_branch"
+              continue
+            fi
+            source_sha=$(git show "$frames_sha:report.json" 2>/dev/null | jq -r '.sourceRevision // empty' || true)
             if [[ ! "$source_sha" =~ ^[a-f0-9]{40}$ ]]; then
               echo "STUDIO_SCREENSHOT_REPORT_INVALID=$frames_branch"
               continue
@@ -70,8 +76,17 @@ jobs:
             source_tree=$(git rev-parse "$source_sha:roblox-games/mare-essentia" 2>/dev/null || true)
             head_tree=$(git rev-parse "HEAD:roblox-games/mare-essentia" 2>/dev/null || true)
             if [[ -n "$source_tree" && "$source_tree" == "$head_tree" ]]; then
-              git update-ref refs/vibe/brain-studio-report FETCH_HEAD
+              # [실물 근거] 사진이 없으면 선택하지 않고, 동일 사진 커밋만 분석에 전달한다.
+              if ! git ls-tree --name-only "$frames_sha" | grep -Eq -- '-0\.(png|jpg)$'; then
+                echo "STUDIO_SCREENSHOT_IMAGES_MISSING=$frames_branch"
+                continue
+              fi
+              if ! git update-ref refs/vibe/brain-studio-report "$frames_sha"; then
+                echo "STUDIO_SCREENSHOT_REF_UPDATE_FAILED=$frames_branch"
+                continue
+              fi
               echo "STUDIO_SCREENSHOT_SOURCE_MATCH=$frames_branch:$source_sha"
+              echo "STUDIO_SCREENSHOT_EVIDENCE_COMMIT=$frames_sha"
               break
             fi
             echo "STUDIO_SCREENSHOT_STALE=$frames_branch:$source_sha"

@@ -4,8 +4,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { pickGeminiModels, askChain, buildProviders, LlmError } from '../tools/vibe-llm.mjs';
-import { rankProviders, updateProviderStats, signature, similarity, playbookReplay, examplesFor, addCandidate, labelOutcomes, sanitize, datasetLine, emptyPlaybook, pickOrder, gate, findContext, buildPrompt, parseEdits, validateEdits, applyEdits, runBrain, recordAttempt, recordMerged, emptyBrainLedger, LIMITS } from '../tools/vibe-brain.mjs';
 import {selectStudioDesignPhotoNames, visualEditLooksSafe, validateReview} from '../tools/company-nemotron-design-review.mjs';
+import { rankProviders, updateProviderStats, signature, similarity, playbookReplay, examplesFor, addCandidate, labelOutcomes, sanitize, datasetLine, emptyPlaybook, pickOrder, gate, findContext, buildPrompt, parseEdits, validateEdits, applyEdits, runBrain, recordAttempt, recordMerged, emptyBrainLedger, LIMITS } from '../tools/vibe-brain.mjs';
 
 const mkRoot = files => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'brain-'));
@@ -372,6 +372,18 @@ test('무료 AI 역할별 배치는 실제 검수 성공만 학습하고 할당 
 });
 
 
+test('Studio 사진 참조는 뒤이은 원본 fetch 에 의해 바뀌지 않는다', () => {
+  const workflow = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
+  const capture = workflow.indexOf('frames_sha=$(git rev-parse --verify "FETCH_HEAD^{commit}"');
+  const sourceFetch = workflow.indexOf('git fetch --no-tags --depth=1 origin "$source_sha"');
+  const pin = workflow.indexOf('git update-ref refs/vibe/brain-studio-report "$frames_sha"');
+  assert.ok(capture >= 0 && sourceFetch > capture && pin > sourceFetch,
+    'Studio 증거 SHA 를 코드 SHA 재조회 전에 고정해야 한다');
+  assert.match(workflow, /git show "\$frames_sha:report\.json"/);
+  assert.match(workflow, /git ls-tree --name-only "\$frames_sha" \| grep -Eq/);
+  assert.match(workflow, /STUDIO_SCREENSHOT_EVIDENCE_COMMIT=/);
+  assert.doesNotMatch(workflow, /git update-ref refs\/vibe\/brain-studio-report FETCH_HEAD/);
+});
 
 test('실물 Studio 마을과 주민을 다각도로 촬영하고 기존 게임 검사 62장을 보존한다', () => {
   const scenario = JSON.parse(fs.readFileSync(
