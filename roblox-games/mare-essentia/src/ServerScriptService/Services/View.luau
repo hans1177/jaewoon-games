@@ -835,8 +835,8 @@ return function(D, S)
 			local origin = found and state.cardOrigins and state.cardOrigins[c.id] or nil
 			local originPort = origin and origin.portId and D.Ports.Ports[origin.portId] or nil
 			local originQuest = origin and origin.questId and D.Quests.ById[origin.questId] or nil
-			local originEvent = origin and origin.eventId and D.Story.ById[origin.eventId] or nil
-			local originNames = { explore = "현장 탐험", learn = "인물 전수", quest = "퀘스트 완료", visit = "항구 발견", research = "문헌 연구", event = "이야기 사건", discover = "발견" }
+			local originEvent = origin and origin.eventId and (D.Story.ById[origin.eventId] or D.HistoryEvents.ById[origin.eventId]) or nil
+			local originNames = { explore = "현장 탐험", learn = "인물 전수", quest = "퀘스트 완료", visit = "항구 발견", research = "문헌 연구", event = "이야기 사건", discover = "발견", card = "카드 보상" }
 			table.insert(view.codex.cards, {
 				id = c.id,
 				field = c.field,
