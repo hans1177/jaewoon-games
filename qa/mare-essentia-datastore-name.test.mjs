@@ -2822,7 +2822,9 @@ test('AI 디자인 3D 교역품·조선·모든 방문 메뉴 화면을 UI 검�
   const {designRoleForFrames,selectDesignFrameRole}=await import('../tools/company-nemotron-design-review.mjs');
   const targets=['trade_goods_3d-0.jpg','market_trade-0.jpg','cargo_inventory-0.jpg',
     'shipyard_preview-0.jpg','research_tech-0.jpg','quest_journal-0.jpg',
-    'codex_book-0.jpg','recruit_crew-0.jpg','status_wallet-0.jpg','merchant_dialog-0.jpg'];
+    'codex_book-0.jpg','recruit_crew-0.jpg','status_wallet-0.jpg','merchant_dialog-0.jpg',
+    'bank-vault-0.jpg','tavern_board-0.jpg','palace_audience-0.jpg','guild_exchange-0.jpg',
+    'museum_academy-0.jpg','diplomacy_chart-0.jpg'];
   for(const name of targets)assert.equal(designRoleForFrames([name]),'UI',name);
   assert.equal(designRoleForFrames(['ship_harbor-0.jpg']),'WORLD','일반 항해 풍경은 WORLD 유지');
   assert.equal(designRoleForFrames(['npc_face-0.jpg']),'NPC','초상·인물은 NPC 유지');
