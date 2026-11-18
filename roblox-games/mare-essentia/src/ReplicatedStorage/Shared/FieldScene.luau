@@ -2491,9 +2491,11 @@ function FieldScene.start(opts)
 		if #party > 0 then
 			talkBox = Instance.new("Frame")
 			talkBox.Name = "FieldCompanionDialogue"
-			talkBox.AnchorPoint = Vector2.new(0.5, 0.5)
-			talkBox.Position = UDim2.fromScale(0.5, 0.34)
-			talkBox.Size = UDim2.fromOffset(math.min(440, math.max(206, screen.X - 26)), 78)
+			-- [동료 전투 대화] 가로형은 체력·미니맵 위쪽 빈 칸, 세로형은 왼쪽 보조 정보열만 사용한다.
+			talkBox.AnchorPoint = if compactTouch then Vector2.zero else Vector2.new(0.5, 0)
+			talkBox.Position = if compactTouch then UDim2.fromOffset(12, 148) else UDim2.new(0.5, 0, 0, 4)
+			talkBox.Size = UDim2.fromOffset(if compactTouch then math.clamp(screen.X - 140, 170, 246)
+				else math.min(440, math.max(206, screen.X - 260)), if compactTouch then 106 else 60)
 			talkBox.BackgroundColor3 = Color3.fromRGB(27, 38, 54)
 			talkBox.BackgroundTransparency = 0.15
 			talkBox.BorderSizePixel = 0
@@ -2513,10 +2515,11 @@ function FieldScene.start(opts)
 			talkWho.TextStrokeTransparency = 1
 			talkWho.ZIndex = 15
 			talkText = label(talkBox, "", 15, Color3.fromRGB(243, 235, 219))
-			talkText.Position = UDim2.fromOffset(12, 29)
-			talkText.Size = UDim2.new(1, -24, 0, 43)
+			talkText.Position = UDim2.fromOffset(12, 27)
+			talkText.Size = UDim2.new(1, -24, 0, if compactTouch then 76 else 30)
 			talkText.TextWrapped = true
 			talkText.TextXAlignment = Enum.TextXAlignment.Left
+			talkText.TextYAlignment = Enum.TextYAlignment.Top
 			talkText.TextStrokeTransparency = 1
 			talkText.ZIndex = 15
 		end
@@ -2565,12 +2568,20 @@ function FieldScene.start(opts)
 				line = "고향의 저녁 풍경이 가끔 생각나요. 이 여정도 언젠가 이야기로 남겠죠."
 			end
 			talkWho.Text, talkText.Text = person .. " · " .. role, line
+			-- [대화 정보 우선순위] 가로는 위쪽 탐험 제목, 세로는 목표 문구만 잠깐 접는다.
+			-- 대화가 끝나면 기존 정보 표시를 복원하며 전투 버튼은 그대로 유지한다.
+			local previousInfoVisible = if compactTouch then questHint.Visible else title.Visible
+			if compactTouch then questHint.Visible = false else title.Visible = false end
 			talkBox.Visible = true
 			talkToken += 1
 			local token = talkToken
 			nextTalkAt = os.clock() + rng:NextNumber(36, 54)
 			task.delay(5, function()
-				if talkBox.Parent and token == talkToken then talkBox.Visible = false end
+				if talkBox.Parent and token == talkToken then
+					talkBox.Visible = false
+					if compactTouch then questHint.Visible = previousInfoVisible
+					else title.Visible = previousInfoVisible end
+				end
 			end)
 		end
 		local acc = 0
