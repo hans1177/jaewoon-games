@@ -11466,7 +11466,7 @@ function render()
 			else
 				for _, section in content:GetChildren() do
 					if section.Name ~= "MenuQuickActions" and section.Name ~= "CaptainPriorityAdvice"
-						and section.Name ~= "MenuSummaryMetrics" and not string.find(section.Name, "^MenuFocus_") then
+						and section.Name ~= "MenuSummaryMetrics" and string.sub(section.Name, 1, 10) ~= "MenuFocus_" then
 						local button = section:FindFirstChildWhichIsA("TextButton", true)
 						if button and button.Interactable and button.Visible then
 							local y = section.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 8
