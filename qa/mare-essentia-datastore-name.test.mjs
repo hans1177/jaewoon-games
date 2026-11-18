@@ -1561,6 +1561,25 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  assert.match(port,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
 });
 
+// [가축 PBR 자연 색] 기존 원본 코·귀·얼룩과 색상지도 없는 표면 중복 착색 회귀 방지.
+test('항구·탐험 가축의 PBR 단일 채널과 눈·코·얼룩 보호',()=>{
+ for(const name of ['PortScene.luau','FieldScene.luau']){
+  const scene=read('ReplicatedStorage/Shared/'+name);
+  const start=scene.indexOf('if textured and not detail then');
+  const end=scene.indexOf('elseif not textured and not sa',start);
+  assert.ok(start>0&&end>start,name+' 기존 가축 처리 경로');
+  const block=scene.slice(start,end);
+  for(const role of ['muzzle','nose','snout','ear','udder','tusk','patch','spot','stripe','whisker']){
+   assert.ok(scene.includes('partName:find("'+role+'", 1, true)'),name+'의 '+role+' 보호');
+  }
+  assert.match(block,/if sa and sa\.ColorMap ~= "" then/,'원본 색상 지도 보호');
+  assert.match(block,/if sa and sa\.ColorMap == "" then\s+sa\.Color = sa\.Color:Lerp\(tint,/,'색상 지도 없는 PBR만 단일 채널 보정');
+  assert.doesNotMatch(block,/sa\.Color = [pd]\.Color/,'PBR/파츠 중복 착색 금지');
+  assert.match(block,/if not sa then\s+[pd]\.Material =/,'원본 재질 보존');
+  for(const material of ['Fabric','Leather','Concrete','SmoothPlastic'])assert.ok(block.includes('Enum.Material.'+material),material+' 가축 재질');
+ }
+});
+
 // [가축 실물 비율·자연 품종색] 목장/동물원/왕궁 기마병/탐험 현장 공통 규격 회귀.
 test('성체 말과 주요 가축의 크기·품종색은 항구와 탐험이 공유하고 원본 텍스처를 보존한다',()=>{
  const scene=read('ReplicatedStorage/Shared/PortScene.luau');
