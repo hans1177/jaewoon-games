@@ -664,13 +664,14 @@ return function(D, S)
 			view.quests.doneCount += 1
 			local dq = D.Quests.ById[id]
 			if dq then
-				local _, ending = S.Quest.storyOf(dq)
+				local ending = if dq.routeId then nil else select(2, S.Quest.storyOf(dq))
 				-- [저널은 이야기 / 백과는 기록지식] 긴 지역 본문은 기존 공유 퀘스트에서만 읽어 스냅샷 낭비를 막는다.
 				table.insert(view.quests.done, {
 					id = dq.id, name = dq.name, summary = dq.summary, strand = dq.strand,
-					grade = D.Quests.Grade(dq), ending = if dq.routeId then nil else ending,
+					grade = D.Quests.Grade(dq), ending = ending,
 					routeId = dq.routeId, routeName = dq.routeName,
 					cardId = if dq.routeId then dq.cardId else nil,
+					cardName = if dq.routeId and dq.cardId and D.Cards.ById[dq.cardId] then D.Cards.ById[dq.cardId].name else nil,
 					evidence = if dq.routeId and dq.cardId and D.Cards.ById[dq.cardId]
 						then D.Cards.EvidenceNames[D.Cards.evidenceOf(D.Cards.ById[dq.cardId])] else nil,
 				})
