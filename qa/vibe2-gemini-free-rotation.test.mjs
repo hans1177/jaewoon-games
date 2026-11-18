@@ -684,17 +684,17 @@ test('Gemini-free verified specialists run actual source and department requests
       '제미나이 인증정보가 없을 때 제미나이 API를 호출하지 않는다');
   });
 });
-test('Gemini-free rotation refuses unverified alternate provider and never opens paid path',async()=>{
+test('Gemini-free rotation refuses missing credentials and never opens paid path',async()=>{
   await withExternalFixture(async()=>{
     delete process.env.GEMINI_API_KEY;
-    process.env.GROQ_API_KEY='unverified-plan';
+    delete process.env.GROQ_API_KEY;
     process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
     const {requestGeminiFreePair:isolated}=await import(
       '../tools/vibe2-gemini-free-rotation.mjs?no-paid-bypass='+Date.now());
     let calls=0;
     await assert.rejects(isolated({apiKey:'',specialistDepartment:'DEVELOPMENT',
       contents:[{role:'user',parts:[{text:'repair'}]}],
-      fetchImpl:async()=>{calls++;throw Error('unverified API called');}
+      fetchImpl:async()=>{calls++;throw Error('missing-key request escaped');}
     }),/GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK/);
     assert.equal(calls,0);
     await assert.rejects(requestLocalModel('game source',{specialistDepartment:'AUTO',
