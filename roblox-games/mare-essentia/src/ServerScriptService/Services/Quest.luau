@@ -351,7 +351,7 @@ return function(D, S)
 				seed += string.byte(state.portId, i) * i
 			end
 			local news = regionalNews[seed % #regionalNews + 1]
-			table.insert(msgs, string.format("새 소식 · %s — 「%s」\\n%s", news.newsSource, news.name, news.summary))
+			table.insert(msgs, string.format("새 소식 · %s — 「%s」\n%s", news.newsSource, news.name, news.summary))
 			return
 		end
 		-- 항구와 날짜로 정해지는 기존 확률(70%): 같은 도착이면 같은 소문
