@@ -1741,7 +1741,6 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
 
 
 test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox 등록기 연결을 지킨다',()=>{
-  const crypto=require('node:crypto');
   const root='roblox-games/mare-essentia/assets/materials/';
   const approvals=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json','utf8')).approved;
   const names=['mat_wall_plaster_beige','mat_wood_planks_worn','mat_stone_paving_historic'];
