@@ -53,15 +53,10 @@ test('항구 시작과 재생성에서 공중 캐릭터가 노출되지 않는�
   assert.match(client,/H.placeCharacterOnSpawn\(char\)/);
   assert.match(spawn,/part.LocalTransparencyModifier = if sceneSpawn then 0 else 1/);
   assert.match(client,/player.CharacterAppearanceLoaded:Connect\(H.placeCharacterOnSpawn\)/);
-  assert.match(client,/local titleVisible = on or H.titleMenuOpen/);
-  assert.ok(/titleGui\.Enabled = titleVisible or waitingPort/.test(client) ||
-    /titleGui\.Enabled = on or H\.titleMenuOpen or waitingPort/.test(client),
-    '두 표현 모두 타이틀 열림과 항구 대기 화면을 같은 조건으로 보존해야 한다');
-  assert.match(client,/titlePanel.Visible = titleVisible/);
+  assert.match(client,/titleGui.Enabled = on or H.titleMenuOpen or waitingPort/);
   assert.match(client,/if H.portLoadingLabel then H.portLoadingLabel.Visible = waitingPort and not H.titleMenuOpen end/);
   assert.match(client,/if H.setTitleMode then H.setTitleMode\(not view or newGameMode\) end/);
-  assert.match(client,/H\.setTitleMode\(not view or newGameMode\)/,
-    '서버 상태가 도착하면 타이틀 표시 여부를 실제 게임 상태로 결정해야 한다');
+  assert.match(client,/H.setTitleMode\(false\)/);
 });
 
 test('게임 시작 메뉴는 PortScene 정본을 기다리지 않고 서버 상태를 표시한다', () => {
@@ -2790,50 +2785,40 @@ test('네모트론 후보와 독립 검수는 동일 무료 호출에서 다른 
 });
 
 
-// [교역·조선소·방문 메뉴 회귀] 실물 미리보기와 모바일 버튼 정렬은 기존 렌더러만 사용한다.
-test('대항해시대 교역품 3D·선박 전시장·공통 방문 메뉴가 화면 공간을 활용한다',()=>{
+// [교역 장부·조선소·시설 공통 회귀] 최신 메인의 원화·백과·거래 흐름을 보존한 상태에서 메뉴 가독성을 개선한다.
+test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 배치를 유지한다', () => {
   const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
-  const goods=source.slice(source.indexOf('local GOOD_ICON = {}'),source.indexOf('-- 줄 제목·부제'));
   const trade=source.slice(source.indexOf('local function openTradeHall()'),source.indexOf('H.tradeHall = openTradeHall'));
   const yard=source.slice(source.indexOf('function openYardHall()'),source.indexOf('H.yardHall = openYardHall'));
-  assert.ok(goods.includes('GOOD_ICON[goodsId] = { "Cargo", cargoAsset, nil, "Goods/" .. goodsId }'),
-    '실제 등록된 Cargo 모델만 상품 원화와 연결');
-  assert.match(trade,/g\.id ~= hallGood then gi = \{ "Goods", g\.id \} end/,
-    '선택 상품만 3D로 표시하고 나머지 목록은 원화로 남겨 화면 부하 제한');
-  assert.match(trade,/math\.min\(heroW - 22, root\.AbsoluteSize\.Y - menuY - 94, 620\)/,
-    '넓은 화면에서 선택 교역품의 3D 높이 확대');
-  assert.match(trade,/art\.Size = UDim2\.new\(1, -20, 0, heroPx\)/,
-    '교역품 전시대의 가로 여백 활용');
-  assert.match(trade,/math\.min\(width - 34, math\.max\(190, root\.AbsoluteSize\.Y \* 0\.56\), 370\)/,
-    '모바일 교역품 상세 화면도 원본 확대');
-  assert.match(yard,/model\.Size = UDim2\.new\(1, -20, 0, px\)/,
-    '선체가 긴 실제 함선의 가로 3D 전시 공간');
-  assert.match(yard,/math\.min\(heroWidth - 20, heroHeight - 62, 620\)/,
-    '선박 3D 높이 최대치 확대');
-  assert.match(source,/width < math\.max\(450, left \+ btnWidth \+ 240\)/,
-    '방문 메뉴의 3~5개 버튼과 설명이 중간 화면 폭에서 겹치지 않게 재배치');
-  assert.match(source,/local iconPx = if it\.portrait then 164 else 148/,
-    '공통 시설 메뉴 원화와 인물 초상 확대');
-  for(const op of ['Buy','Sell','BuyShip','Repair','BuySupplies'])
-    assert.ok(source.includes('call("'+op+'"'),'기존 거래·조선 서버 호출 유지: '+op);
-  assert.doesNotMatch(trade,/Instance\.new\("Part"\)/,'UI에 새 임시 3D 도형 금지');
+  assert.match(source,/width < math\.max\(450, left \+ btnWidth \+ 240\)/,'중간 폭 메뉴에서도 버튼과 설명 분리');
+  assert.match(source,/local iconPx = if it\.portrait then 164 else 148/,'기존 시설 원화·초상 확대');
+  assert.match(trade,/art\.Name = "TradeHighResArt"/,'승인 고화질 교역품 원화 유지');
+  assert.match(trade,/local artId = AssetIds\["Goods\/" \.\. sel\.id\]/,'기존 등록 원화만 사용');
+  assert.match(trade,/modelIcon\(pages, gi\[1\], gi\[2\]/,'원화가 없는 교역품은 기존 3D 렌더러 유지');
+  assert.match(trade,/세계 교역 · 산업 백과/,'서재 백과사전 정보 연결 유지');
+  assert.match(trade,/H\.marketPriceSignal\(sel\)/,'교역 판단 정보 연결 유지');
+  assert.match(yard,/math\.min\(heroWidth - 20, heroHeight - 62, 620\)/,'기존 선박 전시장 크기 확대');
+  assert.match(yard,/model\.Size = UDim2\.new\(1, -20, 0, px\)/,'모델을 가로로 넓게 전시');
+  for(const action of ['Buy','Sell','BuyShip','Repair','BuySupplies'])
+    assert.ok(source.includes('call("'+action+'"'),'기존 서버 호출 유지: '+action);
+  assert.doesNotMatch(trade,/Instance\.new\("Part"\)/,'새 임시 3D 도형 금지');
 });
 
-
-// [무료 AI 디자인 검수] 실사 캡처의 메뉴 분야를 모두 기존 UI 역할로 분류한다.
-test('AI 디자인 3D 교역품·조선·모든 방문 메뉴 화면을 UI 검수한다',async()=>{
+// [무료 AI 디자인 검수] 실제 스튜디오 화면의 시설 UI 범위를 빠짐없이 분류한다.
+test('AI 디자인이 교역·선박·서재·주점·선장실 등 방문 메뉴를 검사한다',async()=>{
   const {designRoleForFrames,selectDesignFrameRole}=await import('../tools/company-nemotron-design-review.mjs');
-  const targets=['trade_goods_3d-0.jpg','market_trade-0.jpg','cargo_inventory-0.jpg',
+  const targets=['trade_goods-0.jpg','market_trade-0.jpg','cargo_inventory-0.jpg',
     'shipyard_preview-0.jpg','research_tech-0.jpg','quest_journal-0.jpg',
-    'codex_book-0.jpg','recruit_crew-0.jpg','status_wallet-0.jpg','merchant_dialog-0.jpg',
-    'bank-vault-0.jpg','tavern_board-0.jpg','palace_audience-0.jpg','guild_exchange-0.jpg',
-    'museum_academy-0.jpg','diplomacy_chart-0.jpg'];
+    'codex_book-0.jpg','recruit_crew-0.jpg','status_wallet-0.jpg',
+    'tavern_board-0.jpg','palace_audience-0.jpg','guild_exchange-0.jpg',
+    'museum_academy-0.jpg','diplomacy_chart-0.jpg','captain_room-0.jpg',
+    'harbor_authority-0.jpg','combat_headquarters-0.jpg','library_book-0.jpg'];
   for(const name of targets)assert.equal(designRoleForFrames([name]),'UI',name);
-  assert.equal(designRoleForFrames(['ship_harbor-0.jpg']),'WORLD','일반 항해 풍경은 WORLD 유지');
-  assert.equal(designRoleForFrames(['npc_face-0.jpg']),'NPC','초상·인물은 NPC 유지');
-  assert.equal(selectDesignFrameRole(targets),'UI','UI 화면 2장 이상이면 기존 순환에서 검수');
+  assert.equal(designRoleForFrames(['ship_harbor-0.jpg']),'WORLD','일반 항해는 WORLD로 유지');
+  assert.equal(designRoleForFrames(['npc_face-0.jpg']),'NPC','인물은 NPC로 유지');
+  assert.equal(selectDesignFrameRole(targets),'UI','다수 UI 촬영본은 기존 UI 검수로 배정');
   const source=fs.readFileSync('tools/company-nemotron-design-review.mjs','utf8');
-  assert.match(source,/trade goods 3D previews, shipyard/,'무료 디자인 검수 프롬프트 영역');
+  assert.match(source,/trade goods previews, shipyard/,'무료 AI 디자인 검수 확장');
   assert.match(source,/Only change visual constants on EXISTING exact source lines shown in anchors/,
-    '기존 안전한 단일 코드 앵커 변경만 허용');
+    '게임 규칙 변경을 막는 기존 검수 경계 유지');
 });

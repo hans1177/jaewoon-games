@@ -200,8 +200,15 @@ return function(D, S)
 		table.insert(msgs, string.format("%s: %s (+%d코인, 명성 +%d)", label, quest.name, quest.rewardCoins, quest.rewardFame))
 		local _, ending = storyOf(quest)
 		table.insert(msgs, "「" .. quest.name .. "」 " .. ending)
-		state._scenes = state._scenes or {}
-		table.insert(state._scenes, { kind = "end", name = quest.name, text = ending })
+		-- [첫 카드] '첫 발견' 보상·일지는 유지하지만 자동 퀘스트 컷신을 재생하지 않는다.
+		-- [도시 자동 이벤트] 자동 달성 퀘스트는 같은 방문에서 한 편만 연출한다.
+		-- 플레이어가 수동으로 수행한 일반 의뢰 완료 장면은 종전처럼 모두 재생한다.
+		if quest.id ~= "q_first_discovery" and (not AUTO_KINDS[quest.kind]
+			or (state._autoEventPort ~= state.portId and not (state.history and state.history.pending))) then
+			state._scenes = state._scenes or {}
+			table.insert(state._scenes, { kind = "end", name = quest.name, text = ending })
+			if AUTO_KINDS[quest.kind] then state._autoEventPort = state.portId end
+		end
 		if quest.rewardCareer then
 			S.State.gainXp(state, quest.rewardCareer, quest.rewardXp, msgs)
 		end
@@ -289,22 +296,37 @@ return function(D, S)
 		end
 		local first = state._hookPort == nil
 		state._hookPort = state.portId
+		-- [방문 주기] 항구가 바뀐 경우에만 자동 연출 한도를 초기화한다.
+		-- 잠시 떠났다가 같은 항구로 돌아오는 정상 방문도 새 방문으로 처리한다.
+		state._autoEventPort = nil
 		if first then
 			return
 		end
-		-- 항구와 날짜로 정해지는 결정적 확률(70%): 같은 도착이면 같은 소문
+		-- [도시 자동 사건] 역사 사건·우연한 의뢰·관찰·인물 방문 중 이번 항구에서 하나만 자연 발동한다.
+		-- 이야기 듣기·의뢰 수락처럼 플레이어가 직접 누른 액션은 기존 흐름을 유지한다.
+		-- 기록/보상은 선택된 사건의 기존 함수만 처리하며, 밀린 사건을 완료 처리하지 않는다.
+		if S.History and S.History.tick(state) then
+			return
+		end
+		-- 항구와 날짜로 정해지는 기존 확률(70%): 같은 도착이면 같은 소문
 		local h = 0
 		for i = 1, #state.portId do
 			h += string.byte(state.portId, i) * i
 		end
 		if (h + state.day * 7) % 10 < 7 then
-			offer(state, msgs, "주점에서 소문을 들었다")
+			local offered = offer(state, msgs, "주점에서 소문을 들었다")
+			if offered then
+				state._autoEventPort = state.portId
+				return
+			end
 		end
-		if S.Chronicle then
-			S.Chronicle.arrive(state, msgs)
+		if S.Chronicle and S.Chronicle.arrive(state, msgs) then
+			state._autoEventPort = state.portId
+			return
 		end
 		if S.Story and S.Story.autoTrigger then
 			S.Story.autoTrigger(state, msgs)
+			if state.autoStory then state._autoEventPort = state.portId end
 		end
 	end
 

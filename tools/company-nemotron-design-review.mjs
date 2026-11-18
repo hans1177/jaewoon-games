@@ -140,9 +140,9 @@ function loadPreviousDesignUsage(previous = {}) {
 export function designRoleForFrames(frameNames = []) {
   const names = frameNames.join(' ').toLowerCase();
   if (/(npc|face|hair|outfit|villager|resident|skin|citizen)/.test(names)) return 'NPC';
-  // [전체 방문 메뉴] 교역·화물·조선·연구·도감·의뢰 화면은 3D 모델이 있어도 UI 검수로 배정한다.
-  // 일반 항해 장면의 ship/port는 기존 WORLD 분류를 유지한다.
-  if (/(hud|menu|gui|card|tab_|ui_|map_ui|inventory|font|interface|trade|market|goods|cargo|warehouse|shop|yard|shipwright|codex|quest|journal|diary|research|tech|recruit|crew|dialog|status|merchant|treasury|bank|tavern|palace|guild|museum|academy|facility|exchange|diplomacy|equipment|chart)/.test(names)) return 'UI';
+  // [방문 메뉴 검수] 실촬영 교역·조선·서재·주점·선장실·전투본부 등은 기존 UI 흐름으로 분류한다.
+  // ship/port 단독 항해 장면은 기존 WORLD 분류에 남긴다.
+  if (/(hud|menu|gui|card|tab_|ui_|map_ui|inventory|font|interface|trade|market|goods|cargo|warehouse|shop|yard|shipwright|codex|quest|journal|diary|research|tech|recruit|crew|dialog|status|merchant|treasury|bank|tavern|palace|guild|museum|academy|facility|exchange|diplomacy|equipment|chart|library|headquarters|captain_room|harbor_authority)/.test(names)) return 'UI';
   if (/(animation|motion|idle|run|walk|attack|swing|movement)/.test(names)) return 'MOTION';
   if (/(harbor|sea|ship|port|island|landscape|world|voyage|town|lighting|field)|^(?:v[0-9]+_|cb[0-9]+(?:_|-))/.test(names)) return 'WORLD';
   return 'GENERAL';
@@ -698,7 +698,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   if (!anchors.length) return record('SKIPPED_NO_EXISTING_VISUAL_ANCHORS', {frames: proofs});
   const prompt = 'You are a visual art director for the existing Roblox sea-voyage game. ' +
     'Study the verified real Studio screenshots and improve face, hair, clothing, ships, buildings, ' +
-    'materials, lighting, HUD, cards, portraits, motion, trade goods 3D previews, shipyard, ' +
+    'materials, lighting, HUD, cards, portraits, motion, trade goods previews, shipyard, ' +
     'cargo, inventory, quests, codex, research and every captured facility menu composition where visually justified. ' +
     'Never create primitives, placeholder models, new art assets, URLs or unlicensed assets. ' +
     'Only change visual constants on EXISTING exact source lines shown in anchors. ' +
