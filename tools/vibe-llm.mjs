@@ -1,3 +1,4 @@
+// 파일명: tools/vibe-llm.mjs
 // 바이브 두뇌의 모델 연결부: 무료 모델을 순서대로 시도하고, 한도 초과·장애면 다음 모델로 넘어간다.
 // 순서: Gemini(무료 Flash 계열, 모델 이름은 목록 API 로 찾음) → GitHub Models(GITHUB_TOKEN, 추가 키 없음) → 선택: OpenRouter 무료 모델.
 // 키가 없는 공급자는 건너뛴다. 키 값은 로그에 남기지 않는다.
@@ -107,22 +108,24 @@ export async function buildProviders({ env = process.env, allowGemini = true, fe
   const providers = [];
   if (allowGemini && env.GEMINI_API_KEY) {
     let models = [];
-    const forced = String(env.VIBE_BRAIN_GEMINI_MODELS || '').split(',').map(s => s.trim()).filter(Boolean);
+    const configured = String(env.VIBE_BRAIN_GEMINI_MODELS || '').split(',').map(s => s.trim()).filter(Boolean);
+    const forced = configured.filter(m => /^gemini-\d+(?:\.\d+)?-flash(?:-lite)?$/.test(m));
+    if (forced.length !== configured.length) log('GEMINI_NONFREE_FORCED_MODEL_BLOCKED');
     try { models = forced.length ? forced : pickGeminiModels(await listGeminiModels({ key: env.GEMINI_API_KEY, fetchFn })); } catch (e) { log('GEMINI_MODEL_LIST_FAILED ' + e.message); }
     for (const m of models) providers.push({ name: 'gemini:' + m, acceptsImages: true, call: (prompt, images) => geminiCall({ key: env.GEMINI_API_KEY, model: m, prompt, images, fetchFn }) });
   }
-  // 2순위: Mistral Codestral(코드 전용, 무료 하루 약 2000회, 전화번호 인증 필요). 키(MISTRAL_CODESTRAL_API_KEY)가 있을 때만.
-  if (env.MISTRAL_CODESTRAL_API_KEY) {
+  // 2순위: Codestral은 키 외에 무료 계정 확인 설정이 있을 때만 호출한다.
+  if (env.MISTRAL_CODESTRAL_API_KEY && env.VIBE_BRAIN_CODESTRAL_FREE_TIER_VERIFIED === 'YES') {
     const m = env.VIBE_BRAIN_CODESTRAL_MODEL || 'codestral-latest';
     providers.push({ name: 'codestral:' + m, call: prompt => openaiCompatCall({ url: 'https://codestral.mistral.ai/v1/chat/completions', key: env.MISTRAL_CODESTRAL_API_KEY, model: m, prompt, fetchFn, name: 'CODESTRAL' }) });
   }
   // 3순위: GitHub Models(추가 키 없음, GITHUB_TOKEN. 한도가 매우 빡빡해서 마지막 보루에 가깝다)
-  if (env.GITHUB_MODELS_TOKEN) {
+  if (env.GITHUB_MODELS_TOKEN && env.VIBE_BRAIN_GITHUB_MODELS_FREE_TIER_VERIFIED === 'YES') {
     const m = env.VIBE_BRAIN_GITHUB_MODEL || 'openai/gpt-4.1-mini';
     providers.push({ name: 'github-models:' + m, call: prompt => openaiCompatCall({ url: 'https://models.github.ai/inference/chat/completions', key: env.GITHUB_MODELS_TOKEN, model: m, prompt, fetchFn, name: 'GHMODELS' }) });
   }
-  // 4순위: Groq 무료 한도(큰 오픈 모델을 빠르게). 키(GROQ_API_KEY)가 있을 때만. 모델 이름은 바뀔 수 있어 변수로 바꿀 수 있다.
-  if (env.GROQ_API_KEY) {
+  // 4순위: 키만으로 무료 요금제는 추정하지 않는다. 검증되지 않은 계정은 호출 차단.
+  if (env.GROQ_API_KEY && env.VIBE2_GROQ_FREE_PLAN_VERIFIED === 'YES') {
     let ms = String(env.VIBE_BRAIN_GROQ_MODEL || '').split(',').map(x => x.trim()).filter(Boolean);
     if (!ms.length) { try { ms = pickGroqModels((await listIds(fetchFn, 'https://api.groq.com/openai/v1/models', env.GROQ_API_KEY)).map(m => m.id)); } catch (e) { log('GROQ_MODEL_LIST_FAILED ' + e.message); } }
     if (!ms.length) ms = ['llama-3.3-70b-versatile'];
@@ -130,8 +133,10 @@ export async function buildProviders({ env = process.env, allowGemini = true, fe
   }
   // 5순위: OpenRouter 무료 Qwen3 Coder(하루 50회, 키 필요)
   if (env.OPENROUTER_API_KEY) {
-    let ms = String(env.VIBE_BRAIN_OPENROUTER_MODEL || '').split(',').map(x => x.trim()).filter(Boolean);
-    if (!ms.length) { try { ms = pickOpenRouterModels(await listIds(fetchFn, 'https://openrouter.ai/api/v1/models')); } catch (e) { log('OPENROUTER_MODEL_LIST_FAILED ' + e.message); } }
+    const configured = String(env.VIBE_BRAIN_OPENROUTER_MODEL || '').split(',').map(x => x.trim()).filter(Boolean);
+    let ms = configured.filter(id => id === 'openrouter/free' || id.endsWith(':free'));
+    if (ms.length !== configured.length) log('OPENROUTER_NONFREE_FORCED_MODEL_BLOCKED');
+    if (!configured.length) { try { ms = pickOpenRouterModels(await listIds(fetchFn, 'https://openrouter.ai/api/v1/models')); } catch (e) { log('OPENROUTER_MODEL_LIST_FAILED ' + e.message); } }
     if (!ms.length) ms = ['openrouter/free'];
     for (const m of ms) providers.push({ name: 'openrouter:' + m, call: prompt => openaiCompatCall({ url: 'https://openrouter.ai/api/v1/chat/completions', key: env.OPENROUTER_API_KEY, model: m, prompt, fetchFn, name: 'OPENROUTER' }) });
   }
