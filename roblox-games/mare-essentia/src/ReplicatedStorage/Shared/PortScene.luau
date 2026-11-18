@@ -485,16 +485,30 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						or partName:find("mane", 1, true) or partName:find("tail", 1, true)
 						or partName:find("beak", 1, true) or partName:find("saddle", 1, true)
 					if textured and not detail then
-						-- 원본 털무늬/노멀맵은 살리고, 품종별 색은 약하게만 반영한다.
-						p.Color = p.Color:Lerp(tint, 0.24)
-						if sa then sa.Color = sa.Color:Lerp(tint, 0.24) end
+						-- [PBR 털색] ColorMap/메시 원본을 보존하고 단 한 채널만 약하게 보정한다.
+						-- 기존 Part.Color와 SurfaceAppearance.Color의 중복 곱셈으로 검게 변하던 문제 방지.
+						if sa and sa.ColorMap ~= "" then
+							sa.Color = sa.Color:Lerp(tint, 0.16)
+						elseif not sa then
+							p.Color = p.Color:Lerp(tint, 0.16)
+						end
 					elseif not textured and not detail then
 						local light = math.max(p.Color.R, p.Color.G, p.Color.B)
 						p.Color = p.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
-						p.Material = if asset == "elephant" then Enum.Material.Slate
-							elseif asset == "pig" then Enum.Material.SmoothPlastic else Enum.Material.Fabric
+						-- [종별 촉감] 양/라마 양털, 소/말/당나귀 가죽, 돼지 피부, 코끼리 주름을 기본 재질로 표현.
+						-- PBR 맵이 일부라도 있으면 원본 표면을 그대로 둔다.
+						if not sa then
+							p.Material = if asset == "sheep" or asset == "llama" or asset == "chicken"
+								or asset == "cat" or asset == "dog-pug" then Enum.Material.Fabric
+							elseif asset == "cow" or asset == "horse" or asset == "donkey" then Enum.Material.Leather
+							elseif asset == "elephant" then Enum.Material.Concrete
+							else Enum.Material.SmoothPlastic
+							p.Reflectance = 0
+						end
 						if sa and sa.ColorMap == "" then sa.Color = p.Color end
-						-- SpecialMesh.VertexColor 이중 곱셈은 털색을 검게 만들므로 이 경로에서는 건드리지 않는다.
+						-- SpecialMesh.VertexColor 이중 곱셈은 털색을 검게 만들므로 건드리지 않는다.
+					elseif not textured and not sa and (partName:find("mane", 1, true) or partName:find("tail", 1, true)) then
+						p.Material = Enum.Material.Fabric
 					end
 				else
 					p.Color = tint
@@ -527,9 +541,13 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					-- 벽/지붕/문틀/돌계단을 구별한다. 원본 무늬 메시와 문화권별 집 색은 보존한다.
 					local name = (asset .. " " .. p.Name):lower()
 					local material, paint = Enum.Material.Brick, wallColor
+					if sandy or mediterranean then material = Enum.Material.Plaster end
 					if name:find("roof", 1, true) or name:find("tile", 1, true)
 						or name:find("gable", 1, true) or name:find("shingle", 1, true) then
 						material, paint = Enum.Material.Slate, roofColor
+						if sandy then material = Enum.Material.Plaster
+						elseif east or mediterranean then material = Enum.Material.ClayRoofTiles
+						else material = Enum.Material.RoofShingles end
 						if tint then paint = paint:Lerp(tint, 0.8) end
 					elseif name:find("wood", 1, true) or name:find("timber", 1, true)
 						or name:find("beam", 1, true) or name:find("door", 1, true)
@@ -541,7 +559,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						or name:find("column", 1, true) or name:find("castle", 1, true)
 						or name:find("tower", 1, true) or name:find("ruin", 1, true)
 						or name:find("bridge", 1, true) or name:find("ground-", 1, true) then
-						material = if sandy then Enum.Material.Sandstone else Enum.Material.Cobblestone
+						material = if sandy then Enum.Material.Sandstone elseif mediterranean then Enum.Material.Limestone else Enum.Material.Cobblestone
 						paint = wallColor:Lerp(C(122, 119, 113), if sandy then 0.18 else 0.48)
 						if tint then paint = paint:Lerp(tint, 0.42) end
 					elseif tint then
@@ -766,10 +784,28 @@ local function uniformMaterial(m, style, surface)
 		else style.mat
 	if not (m and mat) then return end
 	for _, p in m:GetDescendants() do
-		-- 수입 원본의 유리창·금속 장식·발광등을 석조/목조로 덮지 않는다.
+		-- [수입 건물 원본 재질] 유리·금속·발광/원본 PBR·컬러맵·OBJ 텍스처는 덮지 않는다.
 		if p:IsA("BasePart") and p.Material ~= Enum.Material.Glass
 			and p.Material ~= Enum.Material.Metal and p.Material ~= Enum.Material.Neon then
-			p.Material = mat
+			local sa = p:FindFirstChildOfClass("SurfaceAppearance")
+			local textured = sa ~= nil or (p:IsA("MeshPart") and p.TextureID ~= "")
+			for _, ch in p:GetChildren() do
+				if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
+			end
+			if not textured then
+				local role = p.Name:lower()
+				local selected = mat
+				if not surface then
+					if role:find("roof", 1, true) or role:find("tile", 1, true) then
+						selected = (architecture and architecture.roofMat) or Enum.Material.RoofShingles
+					elseif role:find("beam", 1, true) or role:find("timber", 1, true) or role:find("wood", 1, true) then
+						selected = (architecture and architecture.trimMat) or Enum.Material.WoodPlanks
+					elseif role:find("door", 1, true) or role:find("frame", 1, true) then
+						selected = (architecture and architecture.entryMat) or Enum.Material.WoodPlanks
+					end
+				end
+				p.Material = selected
+			end
 		end
 	end
 end
@@ -2292,6 +2328,59 @@ do
 	SIG.livorno = cat(lighthouse, one("Castle", "wall", 18, 18, 12))
 	SIG.trieste = cat(one("Town", "church", 26, 0, 0), spire(SQ, 9, -16, 0))
 	SIG.ancona = cat(spire(SQ, 10, 0, 0), one("Town", "church", 24, 18, 4))
+	-- [항구별 빠진 52개 대표경관] 현재 등록된 실물 모델을 각 항구에 다른 배치·높이로 재조합한다.
+	SIG.athens = cat(one("Terrain", "greek-ruins-a", 27, -6, 0), one("Terrain", "column", 14, 17, 1), one("Town", "church", 20, -20, 9))
+	SIG.tangier = cat(one("Castle", "fortress", 27, -8, 0), one("Town", "temple-stone", 25, 19, 7), one("Terrain", "column", 10, -20, 13))
+	SIG.las_palmas = cat(one("Naval", "tower-watch", 26, -6, 0), one("Naval", "palm-detailed-straight", 15, 17, 3), one("Castle", "wall", 16, -20, 12))
+	SIG.funchal = cat(one("Town", "church", 28, -7, 0), one("Town", "windmill", 19, 21, 10), one("Naval", "palm-detailed-straight", 11, -25, 13))
+	SIG.ponta_delgada = cat(one("Town", "bell-tower", 28, -8, -2), one("Castle", "wall", 22, 15, 10), one("Town", "church", 19, -20, 12))
+	SIG.palma = cat(one("Town", "church", 31, -10, 0), one("Castle", "tower-hexagon-roof", 15, 19, 3), one("Terrain", "column", 12, -22, 12))
+	SIG.cagliari = cat(one("Castle", "fortress", 29, -9, 2), one("Town", "bell-tower", 24, 18, 0), one("Castle", "wall", 18, -22, 12))
+	SIG.ajaccio = cat(one("Castle", "wall", 26, -6, 2), one("Naval", "tower-watch", 25, 17, 8), one("Town", "church", 19, -21, 12))
+	SIG.thessaloniki = cat(one("Town", "temple-stone", 29, -7, 0), one("Castle", "tower-hexagon-base", 19, 19, 6), one("Castle", "gate", 17, -22, 14))
+	SIG.rhodes = cat(one("Castle", "fortress", 31, -6, 0), one("Castle", "wall", 24, 20, 6), one("Naval", "tower-watch", 18, -22, 12))
+	SIG.famagusta = cat(one("Castle", "gate", 26, -5, 0), one("Castle", "wall", 24, 20, 10), one("Town", "church", 19, -21, 8))
+	SIG.oran = cat(one("Town", "temple-stone", 28, -11, 0), one("Castle", "fortress", 22, 19, 9), one("Terrain", "column", 11, -24, 13))
+	SIG.benghazi = cat(one("Town", "temple-stone", 26, -6, 0), one("Castle", "gate", 22, 19, 10), one("Naval", "palm-detailed-straight", 13, -22, 8))
+	SIG.gibraltar = cat(one("Town", "rock-wide", 42, -8, 0), one("Castle", "fortress", 29, 11, 5), one("Naval", "tower-watch", 17, -25, 9))
+	SIG.messina = cat(one("Town", "church", 28, -8, 0), one("Town", "bell-tower", 31, 17, 6), one("Town", "fountain-round", 8, -19, 14))
+	SIG.damietta = cat(one("Naval", "tower-watch", 29, -7, 0), one("Town", "temple-stone", 23, 18, 7), one("Castle", "wall", 20, -18, 13))
+	SIG.bone = cat(one("Castle", "fortress", 26, -8, 0), one("Town", "temple-stone", 23, 18, 6), one("Terrain", "column", 10, -21, 14))
+	SIG.safi = cat(one("Castle", "fortress", 28, -9, 0), one("Castle", "wall", 24, 16, 9), one("Town", "temple-stone", 18, -23, 12))
+	SIG.agadir = cat(one("Castle", "fortress", 27, -8, 0), one("Castle", "gate", 21, 20, 5), one("Naval", "palm-detailed-straight", 12, -24, 13))
+	SIG.praia = cat(one("Town", "rock-wide", 32, -11, 0), one("Town", "bell-tower", 24, 17, 7), one("Naval", "palm-detailed-straight", 12, -22, 10))
+	SIG.saint_louis = cat(one("Town", "house", 22, -12, 0), one("Naval", "tower-watch", 23, 15, 6), one("Naval", "palm-detailed-straight", 12, -23, 11))
+	SIG.bissau = cat(one("Town", "house", 24, -8, 0), one("Naval", "palm-detailed-straight", 16, 19, 4), one("Castle", "wall", 18, -23, 12))
+	SIG.freetown = cat(one("Town", "church", 26, -8, 0), one("Naval", "tower-watch", 25, 19, 9), one("Naval", "palm-detailed-straight", 11, -24, 13))
+	SIG.ouidah = cat(one("Town", "temple-stone", 24, -8, 0), one("Naval", "palm-detailed-straight", 16, 18, 7), one("Castle", "wall", 20, -24, 12))
+	SIG.calabar = cat(one("Town", "house", 23, -9, 0), one("Naval", "tower-watch", 22, 18, 7), one("Town", "bench_A", 9, -22, 13))
+	SIG.sao_tome = cat(one("Town", "church", 26, -8, 0), one("Naval", "palm-detailed-straight", 15, 16, 5), one("Castle", "fortress", 18, -23, 12))
+	SIG.benguela = cat(one("Castle", "fortress", 28, -10, 0), one("Town", "bell-tower", 25, 19, 8), one("Naval", "palm-detailed-straight", 12, -22, 11))
+	SIG.st_helena = cat(one("Town", "rock-wide", 36, -12, 0), one("Castle", "fortress", 24, 12, 7), one("Naval", "tower-watch", 20, -25, 13))
+	SIG.mozambique = cat(one("Castle", "fortress", 29, -8, 0), one("Town", "temple-stone", 24, 20, 6), one("Naval", "palm-detailed-straight", 13, -23, 12))
+	SIG.mocha = cat(one("Town", "temple-stone", 29, -11, 0), one("Castle", "tower-hexagon-mid", 22, 18, 5), one("Town", "bench_B", 9, -22, 13))
+	SIG.bandar_abbas = cat(one("Town", "temple-stone", 29, -8, 0), one("Castle", "fortress", 22, 19, 10), one("Castle", "tower-hexagon-roof", 16, -20, 12))
+	SIG.diu = cat(one("Castle", "fortress", 30, -10, 0), one("Town", "temple-stone", 23, 19, 10), one("Town", "church", 17, -23, 12))
+	SIG.port_louis = cat(one("Castle", "fortress", 27, -9, 0), one("Town", "church", 24, 18, 6), one("Naval", "palm-detailed-straight", 13, -22, 12))
+	SIG.tainan = cat(one("Town", "eastasia-base", 26, -9, 0), one("Town", "eastasia-roof", 28, -9, 0, 11), one("Terrain", "gate-overhang", 16, 20, 11))
+	SIG.makassar = cat(one("Castle", "fortress", 27, -8, 0), one("Town", "temple-stone", 22, 19, 9), one("Naval", "palm-detailed-straight", 13, -24, 12))
+	SIG.ambon = cat(one("Castle", "fortress", 25, -10, 0), one("Naval", "palm-detailed-straight", 17, 19, 5), one("Terrain", "statue-ring", 12, -24, 13))
+	SIG.campeche = cat(one("Castle", "fortress", 29, -8, 0), one("Town", "church", 24, 19, 9), one("Castle", "wall", 18, -22, 12))
+	SIG.port_of_spain = cat(one("Town", "church", 26, -8, 0), one("Naval", "palm-detailed-straight", 15, 18, 9), one("Castle", "flag-banner-long", 13, -22, 12))
+	SIG.la_guaira = cat(one("Castle", "fortress", 27, -8, 0), one("Town", "church", 24, 20, 7), one("Naval", "tower-watch", 17, -23, 13))
+	SIG.portobelo = cat(one("Castle", "gate", 27, -8, 0), one("Castle", "fortress", 24, 17, 7), one("Town", "bell-tower", 18, -23, 13))
+	SIG.paramaribo = cat(one("Town", "house", 23, -11, 0), one("Town", "house", 21, 10, 6), one("Naval", "tower-watch", 24, -22, 12))
+	SIG.belem = cat(one("Town", "church", 28, -8, 0), one("Naval", "palm-detailed-straight", 16, 18, 8), one("Terrain", "column", 13, -24, 12))
+	SIG.recife = cat(one("Town", "house", 24, -9, 0), one("Town", "church", 26, 18, 9), one("Naval", "palm-detailed-straight", 12, -23, 12))
+	SIG.hobart = cat(one("Castle", "tower-square-base", 25, -9, 0), one("Town", "house", 21, 18, 9), one("Terrain", "tree-pinedefaulta", 15, -24, 14))
+	SIG.perth = cat(one("Naval", "tower-watch", 28, -8, 0), one("Castle", "tower-square-roof", 21, 17, 8), one("Town", "house", 18, -23, 12))
+	SIG.darwin = cat(one("Naval", "tower-watch", 27, -10, 0), one("Naval", "palm-detailed-straight", 19, 20, 6), one("Town", "house", 21, -23, 13))
+	SIG.port_moresby = cat(one("Town", "house", 26, -9, 0), one("Naval", "palm-detailed-straight", 20, 18, 9), one("Town", "bench_A", 9, -24, 13))
+	SIG.suva = cat(one("Terrain", "statue-ring", 19, -10, 0), one("Naval", "palm-detailed-straight", 17, 18, 8), one("Town", "house", 21, -23, 12))
+	SIG.guam = cat(one("Castle", "fortress", 26, -8, 0), one("Naval", "palm-detailed-straight", 17, 19, 8), one("Naval", "tower-watch", 19, -24, 12))
+	SIG.guayaquil = cat(one("Naval", "tower-watch", 27, -8, 0), one("Town", "house", 22, 19, 8), one("Town", "bell-tower", 17, -23, 12))
+	SIG.sitka = cat(one("Town", "house", 23, -9, 0), one("Terrain", "tree-pinedefaulta", 18, 19, 8), one("Naval", "tower-watch", 27, -23, 13))
+	SIG.vancouver = cat(one("Town", "house", 24, -11, 0), one("Terrain", "tree-pinedefaulta", 18, 17, 10), one("Naval", "tower-watch", 26, -23, 12))
 	SIG.oslo = cat(one("Castle", "fortress", 28, 0, 0), one("Town", "house", 17, -24, 0, 0, C(184, 78, 58)), one("Town", "house", 17, 24, 0, 0, C(214, 190, 119)))
 end
 
