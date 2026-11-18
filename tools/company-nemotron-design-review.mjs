@@ -100,8 +100,10 @@ export function forecastFreeDesignQuota(usageWindow = {}, now = Date.now(), acco
         ? Math.round(remaining / hourlyRate * 10) / 10 : null,
       nextLocalWindowAt: nextFreeDesignWindow(provider, now),
       resetBasis: provider === 'GEMINI' ? 'PACIFIC_DAILY' : 'INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED',
-      accountWideBalanceVerified: official !== null,
-      accountWideFreeRemaining: official
+      accountWideBalanceVerified: official !== null &&
+        accountQuota?.source === 'OPENROUTER_KEY_API',
+      accountWideFreeRemaining: official,
+      accountBalanceSource: official === null ? 'UNVERIFIED' : accountQuota.source
     };
   }
   return quotas;
