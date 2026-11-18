@@ -156,7 +156,8 @@ export function mergeFreeVisualUsage(previous = {}, feedback = {}, now = Date.no
 }
 
 export function selectFreeDesignModels({
-  frameNames = [], policy, env = process.env, previous = {}, feedback = {}, now = Date.now()
+  frameNames = [], policy, env = process.env, previous = {}, feedback = {},
+  diagnostics = [], now = Date.now()
 } = {}) {
   const config = policy?.directVisualDesign?.freeSpecialistPool;
   if (config?.enabled !== true || config?.paidFallbackForbidden !== true ||
@@ -170,11 +171,16 @@ export function selectFreeDesignModels({
   const spent = carried.usageWindow.calls;
   const eligible = DESIGN_FREE_MODELS.filter(model => {
     const cooling = Date.parse(carried?.cooldowns?.[model.id] || '');
-    return approved.has(model.id) && trim(env[model.keyName]) &&
-      trim(env[model.verifiedName]) === 'YES' &&
-      (model.provider !== 'OPENROUTER' || model.model.endsWith(':free')) &&
-      Number(spent[model.provider] || 0) < DAILY_LIMIT[model.provider] &&
-      (!Number.isFinite(cooling) || cooling <= now);
+    // [장애 원인] 키 값, 무료 요금제 설정값, 원문 응답은 기록하지 않는다.
+    const status = !approved.has(model.id) ? 'MODEL_NOT_POLICY_APPROVED'
+      : !trim(env[model.keyName]) ? 'KEY_MISSING'
+      : trim(env[model.verifiedName]) !== 'YES' ? 'FREE_TIER_NOT_VERIFIED'
+      : model.provider === 'OPENROUTER' && !model.model.endsWith(':free') ? 'NOT_FREE_MODEL_ID'
+      : Number(spent[model.provider] || 0) >= DAILY_LIMIT[model.provider] ? 'DAILY_CALL_CAP'
+      : Number.isFinite(cooling) && cooling > now ? 'COOLDOWN_ACTIVE' : 'READY';
+    if (Array.isArray(diagnostics))
+      diagnostics.push({modelId: model.id, provider: model.provider, status});
+    return status === 'READY';
   });
   const preference = config.roles?.[role] || [];
   const verified = verifiedDesignFeedback(previous, feedback, now);
@@ -492,11 +498,15 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     return record('SKIPPED_STUDIO_SOURCE_EVIDENCE_MISMATCH', {frames: proofs});
   if (trim(process.env.COMPANY_EXTERNAL_AI_ENABLED) !== 'YES')
     return record('SKIPPED_EXTERNAL_AI_OPT_IN_REQUIRED', {frames: proofs});
+  const diagnostics = [];
   const freeModels = selectFreeDesignModels({
-    frameNames: photos.map(photo => photo.name), policy, previous: carriedHistory, feedback
+    frameNames: photos.map(photo => photo.name), policy, previous: carriedHistory, feedback,
+    diagnostics
   });
   if (!freeModels.length)
-    return record('SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE', {frames: proofs});
+    return record('SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE', {frames: proofs,
+      // [운영 증거] 불능 원인만 공개한다. API 키와 계정 상태의 원문은 출력하지 않는다.
+      modelAvailability: diagnostics});
   if (trim(process.env.NEMOTRON_DESIGN_CANDIDATE) !== 'YES')
     return record('SKIPPED_CANDIDATE_EDIT_NOT_ENABLED', {frames: proofs});
   let branch = '';
