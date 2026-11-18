@@ -162,7 +162,7 @@ test('Vibe reuses exact queued game primary work for unverified per-game bottlen
 // 소스 구조 검사 전용 3D fixture. 실행 성공이나 런타임 검증을 뜻하지 않는다.
 const spatialFixture=`<script>const camera=new THREE.PerspectiveCamera();const mesh=new THREE.Mesh();const renderer=new THREE.WebGLRenderer();renderer.render(scene,camera);</script>`;
 
-test('폐기된 웹 경로는 계획에서 제외하고 정상 웹게임은 계속 계획한다',()=>{
+test('폐기된 웹 경로와 현재 집중개발 대상 밖의 웹게임은 계획에서 제외한다',()=>{
   const root=process.cwd();
   const games=[
     {id:'bug-defense',name:'곤충 디펜스',productionClass:'DEVELOPMENT_CONFIRMED',
@@ -176,7 +176,8 @@ test('폐기된 웹 경로는 계획에서 제외하고 정상 웹게임은 계�
     status:'ACTIVE',selectedPlatform:'WEB',webSourcePath:'web-games/'+game.id}));
   const projects=collectProjects({}, {games}, root, {items});
   assert.equal(projects.some(p=>p.gameId==='bug-defense'&&p.engine==='web'),false);
-  assert.equal(projects.some(p=>p.gameId==='fantasy-survival'&&p.engine==='web'),true);
+  assert.equal(projects.some(p=>p.gameId==='fantasy-survival'&&p.engine==='web'),false);
+  assert.equal(focusedCaretakerProject({gameId:'mare-essentia',engine:'roblox'},root),true);
 });
 
 test('backlog preserves existing game-primary reservation and confines focused recovery to deferred lanes',()=>{
@@ -216,44 +217,38 @@ test('backlog preserves existing game-primary reservation and confines focused r
 });
 
 
-test('current owner exact focus keeps one approved Web game active and two slots unassigned',()=>{
+test('current owner exact focus keeps only Mare Roblox eligible without restoring removed games',()=>{
   const repoRoot=process.cwd();
   const focus=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),'utf8'))
     .developmentLifecycleMachine.focusedDevelopmentCaretakers;
-  // [중앙정책 검증] 목표 3개와 실제 지정된 1개를 구분한다. 삭제된 게임은 자동 복원하지 않는다.
+  // [중앙정책 검증] 한 게임의 실제 지정 상태를 검사한다. 다른 게임과 플랫폼은 자동 선택하지 않는다.
   assert.equal(focus.enabled,true);
-  assert.equal(focus.targetFocusedGames,3);
-  assert.equal(focus.maxFocusedGames,3);
-  assert.deepEqual(focus.ownerFocusedGameIds,['insect-survival']);
-  assert.deepEqual(focus.ownerFocusedGamePlatforms,{'insect-survival':'WEB'});
-  assert.equal(focus.targetFocusedGames-focus.ownerFocusedGameIds.length,2);
+  assert.equal(focus.targetFocusedGames,1);
+  assert.equal(focus.maxFocusedGames,1);
+  assert.deepEqual(focus.ownerFocusedGameIds,['mare-essentia']);
+  assert.deepEqual(focus.ownerFocusedGamePlatforms,{'mare-essentia':'ROBLOX'});
   assert.equal(focus.focusScope,'OWNER_EXACT_GAME_AND_PLATFORM_ONLY');
-  assert.equal(focus.completionPursuit.nonFocusedDevelopmentContinues,true);
+  assert.equal(focus.completionPursuit.nonFocusedDevelopmentContinues,false);
   const liveCatalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
   for(const removedId of ['simple-rpg','cozy-island','horror-escape-room']){
     assert.ok(liveCatalog.permanentRemovalPolicy?.ids?.includes(removedId),'owner-deleted game may not return: '+removedId);
   }
-  const realProjects=collectProjects({},liveCatalog,repoRoot,{items:[]});
-  assert.ok(realProjects.every(project=>!liveCatalog.permanentRemovalPolicy?.ids?.includes(project.gameId)),
+  const projects=collectProjects({},liveCatalog,repoRoot,{items:[]});
+  assert.ok(projects.every(project=>!liveCatalog.permanentRemovalPolicy?.ids?.includes(project.gameId)),
     'no deleted project may reappear through focused planning');
-  const insect=liveCatalog.games.find(game=>game.id==='insect-survival');
-  assert.ok(insect,'current focused game must remain in the catalog');
-  assert.equal(focusedCaretakerProject({gameId:insect.id,engine:'web'},repoRoot),true);
-  assert.equal(focusedCaretakerProject({gameId:insect.id,engine:'roblox'},repoRoot),false);
-  if(insect.productionClass==='DESIGN_ONLY'&&!latestVerifiedDesign(repoRoot,insect.id)){
-    assert.equal(realProjects.some(project=>project.gameId===insect.id&&project.engine==='web'),false,
-      'design-reset owner focus must not bypass a missing verified design');
-  }
-  assert.ok(realProjects.some(project=>project.gameId==='fantasy-survival'&&project.engine==='web'
-    &&!focusedCaretakerProject(project,repoRoot)),
-    'ordinary game development continues outside unfilled focus slots');
+  const mare=liveCatalog.games.find(game=>game.id==='mare-essentia');
+  assert.ok(mare,'current focused game must remain in the catalog');
+  assert.equal(focusedCaretakerProject({gameId:mare.id,engine:'roblox'},repoRoot),true);
+  assert.equal(focusedCaretakerProject({gameId:mare.id,engine:'web'},repoRoot),false);
+  assert.equal(focusedCaretakerProject({gameId:'fantasy-survival',engine:'web'},repoRoot),false);
   const fixture=collectProjects({}, {games:[
-    {id:'insect-survival',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/insect-survival/'},
+    {id:'mare-essentia',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',robloxProjectPath:'roblox-games/mare-essentia'},
     {id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/fantasy-survival/'}
   ]},repoRoot,{items:[]});
   assert.deepEqual(fixture.filter(project=>focusedCaretakerProject(project,repoRoot))
-    .map(project=>project.gameId+'|'+project.engine).sort(),['insect-survival|web']);
+    .map(project=>project.gameId+'|'+project.engine).sort(),['mare-essentia|roblox']);
 });
+
 test('exact focus lanes remain visible when generic backlog is full without bypassing work-package gates',()=>{
   const root=tempRepo();
   try{
@@ -5745,7 +5740,7 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   }
 });
 
-test('actual fantasy-survival resumes Web and Roblox while preserving owner-held Unity sources',()=>{
+test('current Mare-only focus preserves fantasy-survival source while excluding its development assignments',()=>{
   const root=path.resolve(process.cwd());
   const oldWeb=path.join(root,'web-games','fantasy-survival','index.html');
   const unitySource=path.join(root,'unity-games','fantasy-survival','Assets','Scripts','UnityWebFloorGame.cs');
@@ -5756,8 +5751,9 @@ test('actual fantasy-survival resumes Web and Roblox while preserving owner-held
   assert.ok(game);
   const projects=collectProjects({projects:[]},{games:[game]},root,{items:[]});
   assert.equal(projects.some(row=>row.engine==='unity'),false,'Unity remains owner-held');
-  assert.equal(projects.some(row=>row.engine==='web'),true,'ordinary Web resumes under the owner scope');
-  assert.ok(projects.some(row=>row.gameId==='fantasy-survival'&&row.engine==='roblox'));
+  assert.equal(projects.some(row=>row.engine==='web'),false,'nonfocused Web assignment remains held');
+  assert.equal(projects.some(row=>row.engine==='roblox'),false,'nonfocused Roblox assignment remains held');
+  assert.equal(focusedCaretakerProject({gameId:'mare-essentia',engine:'roblox'},root),true);
 });
 
 test('queued Web assessment with PRESENTATION generation is repaired into graphics BUILD_UP',()=>{
