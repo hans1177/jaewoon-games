@@ -442,12 +442,12 @@ local function btn(parent, text, color, size, pos, anchor)
 		grain.ZIndex = b.ZIndex + 1
 		grain.Parent = b
 	end
-	-- 스킬만 사용: 원형/직사각 버튼 모두 실제 남은 재사용 시간을 그림 위에 보여 준다.
+	-- [쿨타임] 버튼 아이콘 자체가 어두워졌다 서서히 밝아지며 준비 시 테두리만 반짝인다.
 	local shade = Instance.new("Frame")
 	shade.Name = "FieldCooldownShade"
 	shade.AnchorPoint = Vector2.new(0, 1)
 	shade.Position = UDim2.fromScale(0, 1)
-	shade.Size = UDim2.fromScale(1, 0)
+	shade.Size = UDim2.fromScale(1, 1)
 	shade.BackgroundColor3 = Color3.fromRGB(13, 22, 32)
 	shade.BackgroundTransparency = 0.24
 	shade.BorderSizePixel = 0
@@ -2424,7 +2424,8 @@ function FieldScene.start(opts)
 			elseif visualMobile then 106 else 120, 130
 		local map = Instance.new("Frame")
 		map.AnchorPoint = Vector2.new(0, 0)
-		map.Position = if compactTouch then UDim2.fromOffset(226, 90) else UDim2.fromOffset(236, 74)
+		map.Name = "FieldMiniMap"
+		map.Position = UDim2.fromOffset(226, 74)
 		map.Size = UDim2.fromOffset(MM, MM)
 		map.BackgroundColor3 = Color3.fromRGB(16, 24, 30)
 		map.BackgroundTransparency = 0.35
@@ -7090,17 +7091,19 @@ function FieldScene.start(opts)
 			end
 			local left = (pl.cd[key] or 0) - now
 			local shade = sb.btn:FindFirstChild("FieldCooldownShade")
-			local timer = sb.btn:FindFirstChild("FieldCooldownTime")
 			local duration = if string.sub(key, 1, 4) == "card" then 8 else (AC.Moves[key] and AC.Moves[key].cooldown) or 4
-			if shade and timer then
+			if shade then
+				local fraction = math.clamp(left / math.max(duration, 0.1), 0, 1)
 				shade.Visible = left > 0
-				timer.Visible = false -- [아이콘 전용] 재사용 숫자 대신 기존 진행 막대만 표시한다.
-				shade.Size = UDim2.fromScale(1, math.clamp(left / math.max(duration, 0.1), 0, 1))
+				shade.Size = UDim2.fromScale(1, 1)
+				shade.BackgroundTransparency = 0.24 + (1 - fraction) * 0.68
+				local timer = sb.btn:FindFirstChild("FieldCooldownTime")
+				if timer then timer.Visible = false end
 				local track = sb.btn:FindFirstChild("FieldCooldownTrack")
-				local fill = track and track:FindFirstChild("FieldCooldownProgress")
-				if track and fill then
-					track.Visible = left > 0
-					fill.Size = UDim2.fromScale(1 - math.clamp(left / math.max(duration, 0.1), 0, 1), 1)
+				if track then track.Visible = false end
+				local icon = sb.btn:FindFirstChild("FieldButtonIcon")
+				if icon and icon:IsA("ImageLabel") then
+					icon.ImageTransparency = if left > 0 then fraction * 0.38 else 0
 				end
 				if left > 0 then
 					sb.wasCooling = true
@@ -7108,13 +7111,15 @@ function FieldScene.start(opts)
 					sb.wasCooling = false
 					local stroke = sb.btn:FindFirstChildOfClass("UIStroke")
 					if stroke then
-						stroke.Color = Color3.fromRGB(100, 248, 178)
-						stroke.Thickness = 3
-						TweenService:Create(stroke, TweenInfo.new(0.45), { Color = Color3.fromRGB(224, 184, 105), Thickness = 2 }):Play()
+						stroke.Color = Color3.fromRGB(255, 247, 164)
+						stroke.Thickness = 4
+						TweenService:Create(stroke, TweenInfo.new(0.36), {
+							Color = if key == "dodge" then Color3.fromRGB(114, 244, 228) else Color3.fromRGB(224, 184, 105),
+							Thickness = if key == "dodge" then 3.2 else 2,
+						}):Play()
 					end
 				end
 			end
-			sb.btn.BackgroundTransparency = if left > 0 then 0.14 else 0
 			sb.btn:SetAttribute("CooldownRemaining", math.max(0, left))
 		end
 	end))
@@ -7937,13 +7942,18 @@ function FieldScene.start(opts)
 						-- [파티 HUD] 가로형은 미니맵 옆의 상단 상태열, 세로형은 퀘스트 아래.
 						-- 600~719 너비에서는 좌측 미니맵·우측 무기교체 사이의 실제 가용폭만 사용한다.
 						local screen = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
-						local narrowParty = screen.X >= 600 and screen.X < 720 and screen.X > screen.Y
-						local partyWidth = if narrowParty then math.clamp(screen.X - 500, 100, 170) else 202
-						status.Position = if screen.X >= 600 and screen.X > screen.Y then
-							UDim2.fromOffset(356, 74 + (i - 1) * (if screen.Y < 350 then 46 else 56))
+						local landscape = screen.X > screen.Y and screen.X >= 470
+						local miniSize = if screen.X < 520 then 92
+							elseif visualMobile and screen.Y < 330 then 82
+							elseif visualMobile then 106 else 120
+						local allyX = 226 + miniSize + 12
+						local partyWidth = if landscape then math.min(202, math.max(110, screen.X - allyX - 12)) else 202
+						local narrowParty = partyWidth < 190
+						local shortHud = screen.Y < 380 and landscape
+						status.Position = if landscape then UDim2.fromOffset(allyX, 74 + (i - 1) * (if shortHud then 48 else 56))
 							else UDim2.fromOffset(12, 282 + (i - 1) * 56)
-						status.Size = UDim2.fromOffset(partyWidth, if screen.Y < 350 and screen.X > screen.Y then 44 else 52)
-						status.Visible = (screen.X >= 600 and screen.X > screen.Y) or screen.Y >= 540
+						status.Size = UDim2.fromOffset(partyWidth, if shortHud then 44 else 52)
+						status.Visible = true
 						status.BackgroundColor3 = Color3.fromRGB(24, 33, 49)
 						status.BackgroundTransparency = 0.12
 						status.BorderSizePixel = 0
