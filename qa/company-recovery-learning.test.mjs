@@ -1090,6 +1090,58 @@ test('held web game recovery remains queued instead of reactivating it',async()=
   assert.deepEqual(result.gameRequeuedTaskIds,[]);
 });
 
+test('Studio asset audit binds only the unique existing game Studio task and keeps screenshot evidence',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const run={name:'Devloop Studio Capture',path:'.github/workflows/devloop-studio.yml',
+    conclusion:'failure',id:42749091900,run_attempt:1,head_sha:'a'.repeat(40),
+    head_branch:'main',display_title:'Devloop Studio Capture · mare-essentia · '+'a'.repeat(40),
+    head_repository:{full_name:'hans1177/jaewoon-games'}};
+  const studioTask={id:'mare-essentia-studio-evolution-roblox-presentation-v1',gameId:'mare-essentia',
+    target:'roblox',assetProductionLane:true,status:'queued',priority:'normal',evidence:[]};
+  const unrelated={...studioTask,id:'mare-essentia-cardart-roblox'};
+  const jobs=sig=>({jobs:[{name:'capture',conclusion:'failure'}],studioMarkers:[
+    'STUDIO_QA_GAME_ID=mare-essentia','STUDIO_QA_FAILURE_STAGE=STUDIO_GAME_RUNTIME',
+    'STUDIO_QA_FAILURE_SIGNATURE='+sig]});
+  for(const sig of ['STUDIO_ASSET_AUDIT_FAILED','STUDIO_FEATURE_AUDIT_FAILED']){
+    const result=escalateDeploymentFailure({event:{workflow_run:run},jobsInput:jobs(sig),
+      gameQueueInput:{tasks:[studioTask,unrelated]},catalogInput:{games:[]}});
+    assert.equal(result.owner,'VIBE2_VIBE3');
+    assert.deepEqual(result.queue.tasks[0].relatedTaskIds,[studioTask.id]);
+    assert.deepEqual(result.queue.tasks[0].responsibleFiles,[]);
+    const dispatched=dispatchRecovery({recoveryInput:result.queue,gameQueueInput:{tasks:[studioTask,unrelated]}});
+    assert.equal(dispatched.dispatched.length,1);
+    assert.equal(dispatched.gameQueue.tasks[0].priority,'critical');
+    assert.ok(dispatched.gameQueue.tasks[0].evidence.some(x=>x.startsWith('studio-qa-checks:')));
+    assert.deepEqual(dispatched.gameQueue.tasks[1],unrelated);
+    assert.deepEqual(dispatched.gameRequeuedTaskIds,[studioTask.id]);
+  }
+  const held=escalateDeploymentFailure({event:{workflow_run:run},jobsInput:jobs('STUDIO_ASSET_AUDIT_FAILED'),
+    gameQueueInput:{tasks:[{...studioTask,ownerDevelopmentHold:true}]},catalogInput:{games:[]}});
+  assert.equal(held.owner,'SYSTEM_AI');
+  const forged=escalateDeploymentFailure({event:{workflow_run:{...run,display_title:'Unknown'}},
+    jobsInput:jobs('STUDIO_ASSET_AUDIT_FAILED'),gameQueueInput:{tasks:[studioTask]},catalogInput:{games:[]}});
+  assert.equal(forged.owner,'SYSTEM_AI');
+});
+
+test('Studio MCP PlayClient unreachable cannot become a game source repair',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const run={name:'Devloop Studio Capture',path:'.github/workflows/devloop-studio.yml',
+    conclusion:'failure',id:42749091901,run_attempt:1,head_sha:'b'.repeat(40),
+    head_branch:'main',display_title:'Devloop Studio Capture · mare-essentia · '+'b'.repeat(40),
+    head_repository:{full_name:'hans1177/jaewoon-games'}};
+  const result=escalateDeploymentFailure({event:{workflow_run:run},catalogInput:{games:[]},
+    jobsInput:{jobs:[{name:'capture',conclusion:'failure'}],studioMarkers:[
+      'STUDIO_QA_GAME_ID=mare-essentia','STUDIO_QA_FAILURE_STAGE=STUDIO_EXECUTION',
+      'STUDIO_QA_FAILURE_SIGNATURE=STUDIO_MCP_PLAYCLIENT_UNREACHABLE']}});
+  assert.equal(result.owner,'SYSTEM_AI');
+  assert.deepEqual(result.queue.tasks[0].responsibleFiles,['.github/workflows/devloop-studio.yml']);
+  assert.equal(result.queue.tasks[0].failureSignature,'STUDIO_MCP_PLAYCLIENT_UNREACHABLE');
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  assert.match(workflow,/STUDIO_MCP_PLAYCLIENT_UNREACHABLE/);
+  assert.match(workflow,/ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action .*Target is not reachable/);
+});
+
 test('Studio QA failure uses exact source evidence and canonical source intake before Vibe repair',async()=>{
   const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');

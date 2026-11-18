@@ -35,6 +35,14 @@ test('growth marketing fetches only the canonical runtime refs it consumes',()=>
   assert.match(workflow,/"\$CONTROL_BRANCH:refs\/remotes\/origin\/\$CONTROL_BRANCH"/);
 });
 
+test('free worker exposes missing assigned files to the model without relaxing path enforcement',()=>{
+  const worker=fs.readFileSync(new URL('../tools/company-system-ai-worker.mjs',import.meta.url),'utf8');
+  assert.match(worker,/MISSING ASSIGNED FILES \(edits forbidden\)/);
+  assert.match(worker,/\[FILE_MISSING_IN_CHECKOUT\]/);
+  assert.match(worker,/SYSTEM_AI_EDIT_FILE_MISSING/);
+  assert.match(worker,/preferredRole:'VERIFY'/);
+});
+
 test('System AI workers reuse only the canonical verified free-model rotation',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-system-ai-workers.yml',import.meta.url),'utf8');
   const begin=workflow.indexOf('      - name: Execute external AI assignment');

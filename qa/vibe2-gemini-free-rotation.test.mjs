@@ -27,6 +27,23 @@ async function withExternalFixture(fn){
   }
 }
 
+test('free AI roles choose Lite for quick triage and Flash for code and review',async()=>{
+  await withExternalFixture(async()=>{
+    for(const [role,wanted] of [['TRIAGE',GEMINI_FREE_MODELS[1]],['CODE_REPAIR',GEMINI_FREE_MODELS[0]],['VERIFY',GEMINI_FREE_MODELS[0]]]){
+      const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?role='+role);
+      const calls=[];
+      const result=await isolated({apiKey:'test-key-not-real',preferredRole:role,
+        contents:[{role:'user',parts:[{text:'task'}]}],
+        fetchImpl:async url=>{calls.push(String(url));return fixtureResponse('{"ok":true}');}});
+      assert.equal(result.model,wanted);
+      assert.equal(calls.length,1);
+      assert.ok(calls[0].includes(wanted));
+    }
+    await assert.rejects(requestGeminiFreePair({apiKey:'test-key-not-real',preferredRole:'PAID',contents:[],
+      fetchImpl:async()=>{throw Error('unexpected network');}}),/VIBE2_FREE_AI_ROLE_INVALID/);
+  });
+});
+
 test('free route pins exactly two published Gemini model IDs and rejects unapproved paid routes',async()=>{
   assert.deepEqual([...GEMINI_FREE_MODELS],['gemini-3.8-flash','gemini-3.5-flash-lite']);
   assert.deepEqual(verifiedFreeGeminiModels({}),[...GEMINI_FREE_MODELS]);

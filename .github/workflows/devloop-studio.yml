@@ -158,7 +158,7 @@ jobs:
             }
             $attemptErrors = @($attemptReport.errors | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
             $rpcStalled = $attemptErrors.Count -gt 0 -and
-              @($attemptErrors | Where-Object { [string]$_ -notmatch 'MCP timeout: tools/call|MCP process exited code=' }).Count -eq 0
+              @($attemptErrors | Where-Object { [string]$_ -notmatch 'MCP timeout: tools/call|MCP process exited code=|ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action .*Target is not reachable' }).Count -eq 0
             if (-not $rpcStalled) { break }
             Write-Warning 'STUDIO_MCP_TRANSPORT_RETRY=FRESH_OFFICIAL_STUDIO_SESSION_ONCE'
             Start-Sleep -Seconds 8
@@ -224,8 +224,10 @@ jobs:
             $qaStage = 'STUDIO_EXECUTION'
             $qaSignature = 'STUDIO_SCRIPT_REPORTED_ERRORS'
             # [복구 분류] Studio MCP 통신 타임아웃을 게임 소스 오류로 위장하지 않는다.
-            if (@($report.errors | Where-Object { [string]$_ -match 'MCP timeout: tools/call' }).Count -gt 0) {
+            if (@($report.errors | Where-Object { [string]$_ -match 'MCP timeout: tools/call|MCP process exited code=' }).Count -gt 0) {
               $qaSignature = 'STUDIO_MCP_TOOL_TIMEOUT'
+            } elseif (@($report.errors | Where-Object { [string]$_ -match 'ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action .*Target is not reachable' }).Count -gt 0) {
+              $qaSignature = 'STUDIO_MCP_PLAYCLIENT_UNREACHABLE'
             }
           }
           # [실증 분류] 버튼·실제 자산·게임 기능을 독립 판정하고 실패를 기존 복구 엔진에 전달한다.

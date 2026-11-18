@@ -42,7 +42,7 @@ export function verifiedFreeGeminiModels(env=process.env){
   return models;
 }
 export async function requestGeminiFreePair({
-  apiKey,contents,maxOutputTokens=3072,temperature=.08,timeoutMs=240000,responseMimeType=null,fetchImpl=globalThis.fetch,geminiRetryAt=null
+  apiKey,contents,maxOutputTokens=3072,temperature=.08,timeoutMs=240000,responseMimeType=null,fetchImpl=globalThis.fetch,geminiRetryAt=null,preferredRole=''
 }={}){
   if(!clean(apiKey))throw infrastructureFailure('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK');
   const models=verifiedFreeGeminiModels();
@@ -51,7 +51,11 @@ export async function requestGeminiFreePair({
   if(Number.isFinite(knownRetryAt)&&knownRetryAt>Date.now()){
     for(const model of models)cooldownUntil.set(model,Math.max(cooldownUntil.get(model)||0,knownRetryAt));
   }
-  const first=nextSlot++%models.length,failures=[];
+  // [무료 AI 역할] 분석은 Lite, 구현과 검수는 Flash. 실패 시 승인된 무료 슬롯만 순환.
+  const role=clean(preferredRole).toUpperCase();
+  if(role&&!['TRIAGE','CODE_REPAIR','VERIFY'].includes(role))
+    throw infrastructureFailure('VIBE2_FREE_AI_ROLE_INVALID');
+  const first=role==='TRIAGE'?1:role?0:nextSlot++%models.length,failures=[];
   for(let offset=0;offset<models.length;offset++){
     const model=models[(first+offset)%models.length];
     const cooldown=cooldownUntil.get(model)||0;

@@ -204,7 +204,8 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
   const studioStage=['STUDIO_EXECUTION','STUDIO_GAME_RUNTIME','STUDIO_GAME_SOURCE'].includes(studioValue('FAILURE_STAGE'))?studioValue('FAILURE_STAGE'):'';
   const studioSignature=['STUDIO_SCRIPT_REPORTED_ERRORS','STUDIO_MCP_TOOL_TIMEOUT','STUDIO_SCREENSHOTS_MISSING',
     'STUDIO_OBSERVED_RUNTIME_WARNINGS','STUDIO_OBSERVED_SOURCE_RUNTIME_ERROR',
-    'STUDIO_ASSET_AUDIT_FAILED','STUDIO_FEATURE_AUDIT_FAILED','STUDIO_FULL_AUDIT_INCOMPLETE'].includes(studioValue('FAILURE_SIGNATURE'))?studioValue('FAILURE_SIGNATURE'):'';
+    'STUDIO_ASSET_AUDIT_FAILED','STUDIO_FEATURE_AUDIT_FAILED','STUDIO_FULL_AUDIT_INCOMPLETE',
+    'STUDIO_MCP_PLAYCLIENT_UNREACHABLE'].includes(studioValue('FAILURE_SIGNATURE'))?studioValue('FAILURE_SIGNATURE'):'';
   const tasks=Array.isArray(gameQueueInput.tasks)?gameQueueInput.tasks:[];
   const failedJobs=(Array.isArray(jobsInput.jobs)?jobsInput.jobs:[]).filter(job=>clean(job?.conclusion)==='failure');
   const failedStep=failedJobs.flatMap(job=>(Array.isArray(job.steps)?job.steps:[])
@@ -256,7 +257,19 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
   const catalogGame=(Array.isArray(scopedCatalog.games)?scopedCatalog.games:[]).find(item=>clean(item?.id)===gameId);
   const productionClass=clean(catalogGame?.productionClass||linkedTask?.productionClass).toUpperCase();
   const releaseEligible=['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass);
-  const sourceRepair=sourceFailure&&codeFiles.length>0&&releaseEligible;
+  // [Studio 원인별 배치] 확인된 자산/기능 오류는 유일한 기존 Studio 자산 작업으로만 전달한다.
+  const studioAssetTasks=studio&&studioStage==='STUDIO_GAME_RUNTIME'&&gameId
+    &&['STUDIO_ASSET_AUDIT_FAILED','STUDIO_FEATURE_AUDIT_FAILED','STUDIO_OBSERVED_RUNTIME_WARNINGS'].includes(studioSignature)
+    ?tasks.filter(task=>clean(task.gameId)===gameId&&clean(task.target).toLowerCase()==='roblox'
+      &&task.assetProductionLane===true&&clean(task.id).includes('studio-evolution')
+      &&['queued','failed'].includes(clean(task.status).toLowerCase())
+      &&task.ownerDevelopmentHold!==true&&task.ownerDevelopmentStopped!==true
+      &&task.requiresOwnerDecision!==true&&task.protectedChange!==true
+      &&task.paidResourceRequired!==true&&task.securityReviewRequired!==true
+      &&task.securityQuarantined!==true):[];
+  const studioAssetTask=studioAssetTasks.length===1?studioAssetTasks[0]:null;
+  const studioAssetRepair=Boolean(studioAssetTask)&&releaseEligible;
+  const sourceRepair=(sourceFailure&&codeFiles.length>0&&releaseEligible)||studioAssetRepair;
   const owner=sourceRepair?'VIBE2_VIBE3':'SYSTEM_AI';
   const runMarker='deployment-failure-run:'+runId+':'+attempt;
   const sourceKey='deployment:'+workflowFile+':'+sha+':'+(gameId||'unresolved-run-'+runId);
@@ -267,23 +280,28 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
   // A fresh failure must not silently reuse a previously verified repair as success.
   if(previous?.status==='verified'||previous?.status==='awaiting-primary-ai-review')sourceTaskId+=':new-'+runId+'-'+attempt;
   // [실패 안전] 게임 소스가 확인되지 않은 실행 오류는 게임 원본 자동 수정 금지.
-  const responsibleFiles=sourceRepair?codeFiles:(studio&&studioStage==='STUDIO_GAME_RUNTIME'?[]:[workflowFile]);
+  const responsibleFiles=studioAssetRepair?[]:sourceRepair?codeFiles:(studio&&studioStage==='STUDIO_GAME_RUNTIME'?[]:[workflowFile]);
   const result=enqueueRecovery(queue,{
-    sourceQueue:'deployment',sourceTaskId,gameId:gameId||null,relatedTaskIds:sourceRepair&&linkedTask?[clean(linkedTask.id)]:[],
+    sourceQueue:'deployment',sourceTaskId,gameId:gameId||null,relatedTaskIds:studioAssetRepair?[clean(studioAssetTask.id)]:sourceRepair&&linkedTask?[clean(linkedTask.id)]:[],
     responsibleFiles,contextFiles:uniq([workflowFile,...(gameId?[(platform==='UNITY_WEB'?'unity':platform.toLowerCase())+'-games/'+gameId]:[])]),
     priority:'critical',failureStage:stage,failureSignature:signature,checkpoint:sha,
     blastRadius:sourceRepair?'game:'+gameId:'deployment-workflow:'+workflowFile,
     recoveryOwner:owner,
-    goal:'Analyze the exact failed '+platform+' deployment stage '+stepKey+' for '+(gameId||'an unresolved game')+
+    goal:(studioAssetRepair?'Inspect the actual archived Studio screenshots and model/feature checklist for run '+runId+', verify the failing asset responsibility within the existing assigned game task before changing it, then rerun the identical Studio scenario. ': '')+
+      'Analyze the exact failed '+platform+' deployment stage '+stepKey+' for '+(gameId||'an unresolved game')+
       ' using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.',
-    recoveryStrategy:sourceRepair?'VIBE_GAME_SOURCE_CAUSAL_REPAIR_EXACT_QA_THEN_CANONICAL_REDEPLOY'
+    recoveryStrategy:studioAssetRepair?'VIBE_EXISTING_STUDIO_ASSET_REPAIR_WITH_SCREENSHOT_QA_THEN_RECAPTURE'
+      :sourceRepair?'VIBE_GAME_SOURCE_CAUSAL_REPAIR_EXACT_QA_THEN_CANONICAL_REDEPLOY'
       :'SYSTEM_AI_CANONICAL_DEPLOYMENT_INFRASTRUCTURE_CAUSAL_REPAIR_THEN_VERIFIED_REDEPLOY',
-    verificationPlan:['IDENTIFY_EXACT_FAILURE_CAUSE','VERIFY_RESPONSIBLE_SOURCE_MUTATION',
+    verificationPlan:['IDENTIFY_EXACT_FAILURE_CAUSE',...(studioAssetRepair?['REVIEW_SAME_RUN_STUDIO_SCREENSHOT_CHECKS_AND_APPROVED_ASSETS']:[]),'VERIFY_RESPONSIBLE_SOURCE_MUTATION',
       'RERUN_EXACT_FAILED_STAGE','REVALIDATE_RELEVANT_QA_AND_REGRESSION',
       'CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES','VERIFY_ACTUAL_DEPLOYMENT_RESULT'],
     recurrenceCount:Math.max(1,Number(previous?.recurrenceCount||0)+1),
     evidence:uniq([runMarker,'deployment-workflow:'+workflowFile,'deployment-platform:'+platform,
       'deployment-game:'+(gameId||'UNRESOLVED'),'deployment-head-sha:'+sha,
+      ...(studioAssetRepair?['studio-asset-task:'+clean(studioAssetTask.id),'studio-qa-run:'+runId,
+        'studio-qa-checks:https://github.com/hans1177/jaewoon-games/blob/'+gameId+'-studio-frames/runs/'+runId+'/checks.json',
+        'studio-qa-screenshots:https://github.com/hans1177/jaewoon-games/tree/'+gameId+'-studio-frames/runs/'+runId]:[]),
       'deployment-production-class:'+(releaseEligible?productionClass:'UNVERIFIED'),
       'deployment-failed-job:'+deploymentStepKey(failedStep.job),'deployment-failed-step:'+stepKey,
       ...(diagnosticClass?['deployment-causal-error:'+diagnosticClass]:[]),

@@ -102,7 +102,7 @@ export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseF
     :[{role:'user',parts:[{text:String(prompt)}]}];
   const {text}=await requestGeminiFreePair({
     apiKey:key,contents,timeoutMs,maxOutputTokens:maxPredict,
-    temperature:Number(inference?.temperature)||.12,responseMimeType:'application/json'
+    temperature:Number(inference?.temperature)||.12,responseMimeType:'application/json',preferredRole:'TRIAGE'
   });
   return text;
 }

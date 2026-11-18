@@ -137,6 +137,12 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
           &&(!recordedSignature||recordedSignature===clean(rec.failureSignature));
       }):[];
     const sourceBoundCandidate=inferredCandidates.length===1?inferredCandidates[0]:null;
+    const studioAssetTaskId=uniq(rec.evidence).find(value=>value.startsWith('studio-asset-task:'))?.slice('studio-asset-task:'.length)||'';
+    const studioAssetRoute=owner==='VIBE2_VIBE3'&&clean(rec.sourceQueue)==='deployment'
+      &&clean(rec.failureStage)==='STUDIO_GAME_RUNTIME'
+      &&['STUDIO_ASSET_AUDIT_FAILED','STUDIO_FEATURE_AUDIT_FAILED','STUDIO_OBSERVED_RUNTIME_WARNINGS'].includes(clean(rec.failureSignature))
+      &&normalizedFiles.length===0&&uniq(rec.relatedTaskIds).includes(studioAssetTaskId)
+      &&/^[a-z0-9][a-z0-9-]*$/.test(clean(rec.gameId));
     const gameSourceFiles=explicitlyBoundFiles.length?explicitlyBoundFiles
       :sourceBoundCandidate?uniq(sourceBoundCandidate.responsibleFiles)
         .map(file=>file.replaceAll('\\','/').replace(/^\.\//,'')):[];
@@ -214,7 +220,14 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
             const primary=clean(task.id)===clean(rec.sourceTaskId);
             if(!primary&&(!taskFiles.length||!taskFiles.some(file=>gameSourceFiles.includes(file))))return task;
             if(primary&&!taskRoot&&!taskFiles.length&&taskTarget!==scopePlatform)return task;
-          }else if(clean(task.id)!==clean(rec.sourceTaskId))return task;
+          }else if(clean(task.id)!==clean(rec.sourceTaskId)
+            &&!(studioAssetRoute&&clean(task.id)===studioAssetTaskId
+              &&task.assetProductionLane===true&&clean(task.target).toLowerCase()==='roblox'
+              &&clean(task.id).includes('studio-evolution')
+              &&task.ownerDevelopmentHold!==true&&task.ownerDevelopmentStopped!==true
+              &&task.requiresOwnerDecision!==true&&task.protectedChange!==true
+              &&task.paidResourceRequired!==true&&task.securityReviewRequired!==true
+              &&task.securityQuarantined!==true))return task;
         }
         // 결정권·유료 자원·보호 정책 변경은 일반 게임별 자동복구 권한 밖이다.
         if(task.ownerDevelopmentHold===true||task.ownerDevelopmentStopped===true
@@ -256,7 +269,8 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
           },
           evidence:uniq([
             ...(task.evidence||[]),
-            ...uniq(rec.evidence).filter(value=>value.startsWith('system-ai-external-application-')),
+            ...uniq(rec.evidence).filter(value=>value.startsWith('system-ai-external-application-')
+              ||value.startsWith('studio-qa-')||value.startsWith('studio-asset-task:')),
             ...(requestedOwner!==owner?['recovery-owner-routing:VIBE_GAME_SOURCE']:[]),
             'recovery-queue:'+clean(rec.id),
             ...(sourceBoundCandidate?['recovery-source-bound-from-canonical-game-task:'+clean(sourceBoundCandidate.id)]:[]),
