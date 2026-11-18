@@ -2838,3 +2838,51 @@ test('네모트론 후보와 독립 검수는 동일 무료 호출에서 다른 
   assert.equal(validateVisualComparison(result.text,[frame.name]).status,'UNVERIFIED',
     'JSON 구조 성공은 시각 개선 성공과 구분');
 });
+
+
+// [지역 대서사 QA] 실제 항구·연속 퀘스트·카드·중요 이벤트 참조를 하나의 기존 회귀 테스트로 검증한다.
+test('세계 지역 사건·백과 연결을 검증하고 기존 저장 키와 주요 이벤트만 유지한다', () => {
+  const root='roblox-games/mare-essentia/src/';
+  const quests=fs.readFileSync(root+'ReplicatedStorage/Shared/Quests.luau','utf8');
+  const cards=fs.readFileSync(root+'ReplicatedStorage/Shared/KnowledgeCards.luau','utf8');
+  const military=fs.readFileSync(root+'ReplicatedStorage/Shared/MilitaryCards.luau','utf8');
+  const ports=fs.readFileSync(root+'ReplicatedStorage/Shared/Ports.luau','utf8');
+  const story=fs.readFileSync(root+'ReplicatedStorage/Shared/Story.luau','utf8');
+  const questService=fs.readFileSync(root+'ServerScriptService/Services/Quest.luau','utf8');
+  const storyService=fs.readFileSync(root+'ServerScriptService/Services/Story.luau','utf8');
+  const rows=[...quests.matchAll(/^\s*table\.insert\(Quests, \{ id = "(q_region_[a-z0-9_]+)".*$/gm)];
+  const cardIds=new Set([...cards.matchAll(/\{ "([a-z0-9_]+)", "/g)].map(m=>m[1]));
+  const militaryIds=new Set([...military.matchAll(/id = "([a-z0-9_]+)"/g)].map(m=>m[1]));
+  const portIds=new Set([...ports.matchAll(/id = "([a-z_]+)", name = "[^"]+", country = /g)].map(m=>m[1]));
+  const continents=new Set();
+  const questsById=new Map();
+  assert.ok(rows.length>=72,'7대륙 지역 사건은 36개의 연속 조사에 걸쳐 분포해야 한다');
+  for(const [,id] of rows){
+    const line=quests.split('\n').find(v=>v.includes('id = "'+id+'"'));
+    assert.ok(line,'지역 퀘스트가 목록에 등록돼야 한다: '+id);
+    assert.ok(!questsById.has(id),'지역 ID 중복: '+id);
+    questsById.set(id,line);
+    const continent=line.match(/continent = "([^"]+)"/)?.[1];
+    const portId=line.match(/portId = "([^"]+)"/)?.[1];
+    const cardId=line.match(/cardId = "([^"]+)"/)?.[1];
+    const rewardId=line.match(/rewardCardId = "([^"]+)"/)?.[1];
+    assert.ok(continent&&portIds.has(portId),'대륙·실제 항구 필수: '+id);
+    assert.ok(cardIds.has(cardId)||militaryIds.has(cardId),'기존 지식카드 참조 필수: '+id);
+    assert.match(line,/newsSource = "/,'사건별 소식 출처 필수: '+id);
+    if(rewardId)assert.ok(cardIds.has(rewardId),'완료 후 백과 카드가 실제로 존재해야 한다: '+id);
+    continents.add(continent);
+  }
+  assert.deepEqual([...continents].sort(),['남극','남아메리카','북아메리카','아시아','아프리카','오세아니아','유럽'].sort());
+  for(const [id,line] of questsById){
+    if(id.endsWith('_2')){
+      assert.ok(questsById.has(id.slice(0,-1)+'1'),'연속 이야기의 첫 단계 누락: '+id);
+      assert.match(line,/rewardCardId = "region_/,'사건 종결 시 백과 기록 카드 획득: '+id);
+    }
+  }
+  assert.ok((cards.match(/\{ "region_[a-z0-9_]+"/g)||[]).length>=36,'지역 백과 카드 36장 이상');
+  assert.ok((story.match(/id = "region_event_/g)||[]).length>=15,'중요 사건만 선택형 장면');
+  assert.match(questService,/새 소식 · %s/);
+  assert.match(questService,/quest\.major/);
+  assert.match(storyService,/e\.requiresQuests/);
+  assert.doesNotMatch(quests,/q_case_dracula_/,'드라큘라는 예시일 뿐 지역 개발의 우선 구현 대상이 아님');
+});
