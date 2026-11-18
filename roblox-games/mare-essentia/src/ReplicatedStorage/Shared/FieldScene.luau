@@ -1751,7 +1751,7 @@ function FieldScene.start(opts)
 			local animal = if isWildlife then animalModels[targetCard.id] else nil
 			if animal and AssetIds["Animals/" .. animal[1]] then
 				local coats = PortBuildings.AnimalVisual[animal[1]].coats
-				local placed = placeModel(folder, "Animals", animal[1], pos, animal[2], false, coats[1])
+				local placed = placeModel(folder, "Animals", animal[1], pos, animal[2], false, Color3.fromRGB(table.unpack(coats[1])))
 				if placed then
 					placed.Name = "FieldWildlife"
 					placed:SetAttribute("ObservedSpecies", targetCard.id)
@@ -1765,7 +1765,7 @@ function FieldScene.start(opts)
 							task.defer(function()
 								if finished or not anchor.Parent then return end
 								local coats = PortBuildings.AnimalVisual[animal[1]].coats
-								local readyModel = placeModel(folder, "Animals", animal[1], pos, animal[2], false, coats[1])
+								local readyModel = placeModel(folder, "Animals", animal[1], pos, animal[2], false, Color3.fromRGB(table.unpack(coats[1])))
 								if readyModel then
 									readyModel.Name = "FieldWildlife"
 									readyModel:SetAttribute("ObservedSpecies", targetCard.id)
@@ -2356,7 +2356,7 @@ function FieldScene.start(opts)
 			if root0 and (root0.Position - pos).Magnitude < 32 then return end
 			local visual = sizes[species]
 			local coatIndex = 1 + math.floor(math.abs(pos.X * 0.21 + pos.Z * 0.39)) % #visual.coats
-			local model = placeModel(folder, "Animals", species, pos, visual.size, false, visual.coats[coatIndex])
+			local model = placeModel(folder, "Animals", species, pos, visual.size, false, Color3.fromRGB(table.unpack(visual.coats[coatIndex])))
 			if not model then return end
 			model:SetAttribute("AnimalVisualSize", visual.size)
 			model:SetAttribute("AnimalCoatIndex", coatIndex)

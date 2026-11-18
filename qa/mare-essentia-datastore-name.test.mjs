@@ -1894,6 +1894,8 @@ test('성체 말과 주요 가축의 크기·품종색은 항구와 탐험이 �
   assert.ok(config.includes(sp+' = { size = ')||config.includes('["'+sp+'"] = { size = '),'단일 실물 크기 규격: '+sp);
  }
  assert.match(config,/horse = \{ size = 8\.8,/);
+ assert.doesNotMatch(config,/Color3\.fromRGB/,'공유 설정에서 Roblox 전용 Color3 생성 금지');
+ assert.match(config,/coats = \{ \{ 132, 78, 45 \},/,'원래 말 RGB 팔레트 보존');
  assert.match(config,/cow = \{ size = 7\.3,/);
  assert.match(config,/donkey = \{ size = 6\.5,/);
  assert.match(config,/sheep = \{ size = 3\.8,/);
@@ -1903,6 +1905,8 @@ test('성체 말과 주요 가축의 크기·품종색은 항구와 탐험이 �
  assert.match(scene,/horse = \{ animalVisual\.horse\.size, "graze" \}/);
  assert.match(scene,/local cavalryHorse = PortBuildings\.AnimalVisual\.horse/);
  assert.match(scene,/cavalryHorse\.size, false, coat/);
+ assert.match(scene,/Color3\.fromRGB\(table\.unpack\(cavalryHorse\.coats\[/);
+ assert.match(scene,/Color3\.fromRGB\(table\.unpack\(visual\.coats\[/);
  assert.match(scene,/horse:SetAttribute\("AnimalVisualSize", cavalryHorse\.size\)/);
  assert.match(scene,/if horse then mountedVisible \+= 1 end/);
  assert.match(scene,/local coatIndex = if skin then 1 \+ math\.floor/);
@@ -1913,7 +1917,8 @@ test('성체 말과 주요 가축의 크기·품종색은 항구와 탐험이 �
  assert.match(scene,/if math\.abs\(actualAxis - desiredSize\) > desiredSize \* 0\.2 then/);
  assert.match(field,/local PortBuildings = require\(script\.Parent:WaitForChild\("PortBuildings"\)\)/);
  assert.match(field,/local sizes = PortBuildings\.AnimalVisual/);
- assert.match(field,/placeModel\(folder, "Animals", species, pos, visual\.size, false, visual\.coats\[coatIndex\]\)/);
+ assert.match(field,/placeModel\(folder, "Animals", species, pos, visual\.size, false, Color3\.fromRGB\(table\.unpack\(visual\.coats\[coatIndex\]\)\)\)/);
+ assert.match(field,/Color3\.fromRGB\(table\.unpack\(coats\[1\]\)\)/);
  assert.match(field,/if not textured and not detail then/);
  assert.match(field,/placed:SetAttribute\("ObservedSpecies", targetCard\.id\)/);
  assert.match(scene,/for k = 1, grazeCount do/);
