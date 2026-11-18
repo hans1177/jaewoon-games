@@ -1,8 +1,8 @@
 {
-  "version": 2,
+  "version": 3,
   "kind": "vibe2-external-ai-distillation-policy",
   "authority": "MACHINE_EXECUTION_CONTRACT",
-  "purpose": "Use external AI only as a knowledge source. Raw external model output never becomes game source, production evidence, Mastery credit, or canonical training data directly.",
+  "purpose": "External AI learning remains advisory. The owner explicitly permits independently checked, design-only code edits on isolated game candidate branches; no external model may write main, change gameplay, or declare its own QA/release PASS.",
   "ingestion": {
     "rawExternalAiOutputDirectDevelopment": false,
     "rawExternalAiOutputPersistentRetrieval": false,
@@ -45,7 +45,8 @@
     ],
     "freshProjectOutcomeAttributionRequired": true,
     "infrastructureFailureMayPenalizeKnowledge": false,
-    "retiredKnowledgeRetrievalForbidden": true
+    "retiredKnowledgeRetrievalForbidden": true,
+    "designOnlyCandidateWriteException": "directVisualDesign ONLY, with exact-anchor patch and independent verification"
   },
   "retrieval": {
     "distilledKnowledgePath": ".vibe2/external-ai-distilled-knowledge.json",
@@ -67,5 +68,55 @@
     "singleSuccessDoesNotProveGeneralization": true,
     "holdoutEvidenceRequiredForStrongGeneralization": true,
     "authorityExpanded": false
+  },
+  "directVisualDesign": {
+    "enabled": true,
+    "authority": "OWNER_DIRECTIVE_2026-11-18",
+    "provider": "NVIDIA",
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "freeTrialOnly": true,
+    "requiresNoPaidBilling": true,
+    "missingKeyAction": "SKIP_WITH_EVIDENCE_NO_LOCAL_OR_PAID_FALLBACK",
+    "gameIds": [
+      "mare-essentia"
+    ],
+    "responsibility": "STUDIO_SCREENSHOT_VISUAL_REVIEW_AND_BOUNDED_VISUAL_PARAMETER_EDIT",
+    "existingStudioWorkflow": ".github/workflows/devloop-studio.yml",
+    "executor": "tools/company-nemotron-design-review.mjs",
+    "input": "VERIFIED_OFFICIAL_STUDIO_MCP_JPEG_OR_PNG",
+    "allowedSourceFiles": [
+      "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau"
+    ],
+    "allowedEdits": [
+      "face_light_influence",
+      "skirt_width",
+      "skirt_depth",
+      "belt_height",
+      "scalp_height"
+    ],
+    "changesMustUseExactCurrentSourceAnchors": true,
+    "modelMayProposeValuesOnly": true,
+    "modelCannotSelectPathsOrCommands": true,
+    "directCandidateSourceEditAllowed": true,
+    "isolatedCandidateBranchRequired": true,
+    "directMainWriteForbidden": true,
+    "independentQaRequiredBeforePromotion": true,
+    "freshStudioBeforeAfterEvidenceRequiredBeforeCompletion": true,
+    "nativeSecurityAndReleaseGatesMandatory": true,
+    "protected": [
+      "combat",
+      "economy",
+      "save",
+      "remote",
+      "server",
+      "progression",
+      "security",
+      "release-workflow"
+    ],
+    "untrustedModelTextNeverExecuted": true,
+    "sensitiveContentOrCredentialsMayNotBeUploaded": true,
+    "rawModelOutputPersistence": "HASH_ONLY",
+    "output": "SANITIZED_STRUCTURED_VISUAL_REVIEW_AND_BOUNDED_CANDIDATE_DIFF",
+    "learningAndProductionTrustUnchanged": true
   }
 }
