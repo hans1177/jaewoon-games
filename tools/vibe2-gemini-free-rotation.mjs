@@ -190,7 +190,7 @@ export async function requestGeminiFreePair({
   ]:[];
   const normalRoutes=[...geminiRoutes,...extras];
   const observedGroq=groqQuotaByModel.get('GROQ:'+VERIFIED_FREE_FALLBACK_MODELS.GROQ);
-  const capacity=observedGroq?{'GROQ:'+VERIFIED_FREE_FALLBACK_MODELS.GROQ:{
+  const capacity=observedGroq?{['GROQ:'+VERIFIED_FREE_FALLBACK_MODELS.GROQ]:{
     verified:true,remaining:observedGroq.requestsPerDayRemaining,
     limit:observedGroq.requestsPerDayLimit,observedAt:observedGroq.observedAt}}:{};
   const expert=clean(specialistDepartment)?selectVibe59FreeExperts({
