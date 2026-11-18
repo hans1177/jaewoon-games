@@ -435,7 +435,7 @@ test('무효 수정안 재시도는 다른 무료 공급자를 우선한다', as
     return {provider: selected, trace: [{name: selected, ok: true}],
       text: attempts.length === 1 ? 'invalid-json' : JSON.stringify({summary: 'nil 방어',
         edits: [{file: GAME, search: 'local p = ui.target.AbsolutePosition',
-          replace: 'if not ui.target then return nil end\\n\\tlocal p = ui.target.AbsolutePosition'}]})};
+          replace: 'if not ui.target then return nil end\n\tlocal p = ui.target.AbsolutePosition'}]})};
   };
   const root = mkRoot({[GAME]: SRC});
   const result = await runBrain({orders: [order], ledger: emptyBrainLedger(), root, llm});
@@ -443,5 +443,5 @@ test('무효 수정안 재시도는 다른 무료 공급자를 우선한다', as
   assert.deepEqual(attempts.map(row => row.selected), ['groq:free-code', 'openrouter:free-code']);
   assert.equal(attempts[1].retryAfterInvalid, 'groq:free-code');
   assert.equal(result.provider, 'openrouter:free-code');
-  assert.match(fs.readFileSync(path.join(root, GAME), 'utf8'), /if not ui\\.target then return nil end/);
+  assert.match(fs.readFileSync(path.join(root, GAME), 'utf8'), /if not ui\.target then return nil end/);
 });
