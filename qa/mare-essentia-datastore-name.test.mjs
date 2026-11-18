@@ -2635,3 +2635,71 @@ test('네모트론 3.5 실제 이미지 API 요청은 추론 토큰 낭비 없�
   assert.equal(paid.status, 'NONZERO_COST_BLOCKED',
     '유료 호출 결과는 어떤 모델의 답변이라도 후보로 수용하지 않는다');
 });
+
+
+// [외부 무료 AI 7종] 실제 사용자 키 없이 같은 요청 함수를 통해 요청/무료/비용 차단 회귀검사.
+test('무료 디자인 7개 모델 전체는 지정 엔드포인트로만 이미지 요청하고 과금 응답을 차단한다', async () => {
+  const {DESIGN_FREE_MODELS, callFreeDesignModel} =
+    await import('../tools/company-nemotron-design-review.mjs');
+  const env = {
+    NVIDIA_API_KEY: 'test-nvidia-key',
+    GEMINI_API_KEY: 'test-gemini-key',
+    OPENROUTER_API_KEY: 'test-router-key'
+  };
+  const frame = {name: 'harbor_npc_face_front-0.jpg', url: 'data:image/jpeg;base64,YWJj'};
+  assert.equal(DESIGN_FREE_MODELS.length, 7);
+  const seen = new Set();
+  for (const model of DESIGN_FREE_MODELS) {
+    assert.ok(!seen.has(model.id), '중복 모델 배치 금지: ' + model.id);
+    seen.add(model.id);
+    let calls = 0;
+    const fakeFetch = async (url, request) => {
+      calls++;
+      assert.equal(url, model.endpoint);
+      assert.equal(request.method, 'POST');
+      const body = JSON.parse(request.body);
+      assert.ok(!request.body.includes(env[model.keyName]),
+        'API 키를 본문에 포함하지 않는다: ' + model.id);
+      if (model.provider === 'GEMINI') {
+        assert.equal(request.headers['x-goog-api-key'], env.GEMINI_API_KEY);
+        assert.equal(body.contents[0].parts[0].text, 'inspect approved image');
+        assert.deepEqual(body.contents[0].parts[1].inlineData,
+          {mimeType: 'image/jpeg', data: 'YWJj'});
+        assert.equal(body.generationConfig.responseMimeType, 'application/json');
+        return {ok: true, json: async () => ({
+          candidates: [{content: {parts: [{text: '{"issues":[],"edits":[]}' }]}}]
+        })};
+      }
+      assert.equal(request.headers.Authorization, 'Bearer ' + env[model.keyName]);
+      assert.equal(body.model, model.model);
+      assert.equal(body.stream, false);
+      assert.equal(body.messages[0].content[1].image_url.url, frame.url);
+      if (model.provider === 'OPENROUTER')
+        assert.ok(model.model.endsWith(':free'), '무료 ID만 허용: ' + model.id);
+      if (model.provider === 'NVIDIA') {
+        assert.deepEqual(body.chat_template_kwargs, {enable_thinking: false});
+        assert.deepEqual(body.response_format, {type: 'json_object'});
+      }
+      return {ok: true, json: async () => ({
+        usage: {cost: 0},
+        choices: [{message: {content: '{"issues":[],"edits":[]}'}}]
+      })};
+    };
+    const response = await callFreeDesignModel(model, 'inspect approved image', [frame], fakeFetch, env);
+    assert.equal(response.status, 'OK', '모델 요청 스키마: ' + model.id);
+    assert.deepEqual(JSON.parse(response.text), {issues: [], edits: []});
+    assert.equal(calls, 1, '중복 요청 금지: ' + model.id);
+    const paymentBlocked = await callFreeDesignModel(model, 'verify cost', [frame],
+      async () => ({ok: false, status: 402}), env);
+    assert.equal(paymentBlocked.status, 'BILLING_BLOCKED', '결제 요구 차단: ' + model.id);
+    const unexpectedCost = await callFreeDesignModel(model, 'verify usage cost', [frame],
+      async () => ({ok: true, json: async () => ({
+        usage: {cost: 1},
+        candidates: [{content: {parts: [{text: '{}'}]}}],
+        choices: [{message: {content: '{}'}}]
+      })}), env);
+    assert.equal(unexpectedCost.status, 'NONZERO_COST_BLOCKED',
+      '유료 응답 사용 차단: ' + model.id);
+  }
+  assert.equal(seen.size, 7);
+});
