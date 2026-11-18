@@ -2211,6 +2211,20 @@ test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치�
     ]};
   const reviewed = validateReview(JSON.stringify(response), images, contract);
   assert.equal(reviewed.edits.length, 2);
+  // [모델 허위 파일 차단] 원문은 모델이 다시 작성하지 않고 Studio 촬영 후 고정한 색인에서 조회.
+  const pinnedAnchors = [{anchor: 0, path: pose, before: oldPose},
+    {anchor: 1, path: port, before: oldPort}];
+  const anchored = validateReview({issues: response.issues,
+    edits: response.edits.map((row, anchor) =>
+      ({anchor, category: row.category, screenshot: row.screenshot, after: row.after}))},
+  images, contract, pinnedAnchors);
+  assert.deepEqual(anchored.edits, reviewed.edits);
+  assert.throws(() => validateReview({issues: response.issues,
+    edits: [{anchor: 10, category: 'npc-face', screenshot: images[0], after: newPose}]},
+  images, contract, pinnedAnchors), /EDIT_NOT_VISUAL_OR_NOT_IN_POLICY/);
+  assert.throws(() => validateReview({issues: response.issues,
+    edits: [{anchor: 0, path: port, category: 'npc-face', screenshot: images[0], after: newPose}]},
+  images, contract, pinnedAnchors), /EDIT_NOT_VISUAL_OR_NOT_IN_POLICY/);
   assert.match(reviewed.issues[0].evidenceSha256, /^[0-9a-f]{64}$/);
   assert.equal(reviewed.issues[0].evidence, undefined);
   assert.ok(visualEditLooksSafe(oldPose, newPose));
