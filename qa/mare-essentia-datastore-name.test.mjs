@@ -468,6 +468,12 @@ test('스튜디오 탐험 실증은 현재 공격·회피 메달과 집안별 �
   const live=script[239].code;
   assert.ok(entry.includes('FIELD_QA_ENTRY_FAIL:'),'실제 UI로 탐험 입장 검증 필수');
   assert.ok(entry.includes('FieldCombatReady'),'실제 전투 준비 검증 필수');
+  // [승인 원화 회귀] 새 공격 원화는 완성형 PNG를 검증하고, 구형 아이콘만 메달 테두리를 검증한다.
+  assert.ok(entry.includes('FIELD_APPROVED_ATTACK_ART_INVALID'),'승인 원화·출처 이미지 검사 필수');
+  assert.ok(entry.includes('FIELD_GOLD_BUTTON_BORDER_INVALID'),'실제 공격 버튼의 금색 테두리 활성화·색상·두께 검증 필수');
+  assert.ok(field.includes('if outline then outline.Enabled = button.Name == "FieldAttack" end'),'승인 공격 원화에서도 금색 테두리 유지 필수');
+  assert.ok(entry.includes('FIELD_PREMIUM_RIM_MISSING'),'기존 메달 원화의 링 검증 유지');
+  assert.ok(field.includes('if string.sub(key, 1, 11) == "Menu/field_" then'),'승인 완성형 아이콘 전용 렌더 경로 유지');
   assert.ok(entry.includes('FIELD_DODGE_ICON_UNAPPROVED'),'회피 원화 실증 검증 필수');
   assert.ok(entry.includes('FIELD_WEAPON_CHOICES_NOT_TWO'),'두 무기 교체 검증 필수');
   assert.ok(motion.includes('FIELD_ATTACK_WEAPON_ICON_UNAPPROVED'),'선택 무기별 원화 실증 검증 필수');
