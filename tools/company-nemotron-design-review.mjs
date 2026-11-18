@@ -316,9 +316,70 @@ export function verifiedStudioCapture(report, photos, expectedRevision) {
     captured.has(photo.name.replace(/-[0-9]+\.(?:jpe?g|png)$/i, '')));
 }
 
+// [기존 자산 목록] 이미 등록된 음원·아이콘·교역품·재질만 AI에 제공한다.
+export function mareDesignAssetInventory(repositoryRoot = root) {
+  const fromGame = name => path.join(repositoryRoot, 'roblox-games/mare-essentia/', name);
+  const registry = JSON.parse(fs.readFileSync(fromGame('assets-registered.json'), 'utf8')).assets;
+  const tracks = JSON.parse(fs.readFileSync(fromGame('audio/manifest.json'), 'utf8')).tracks;
+  const uploads = JSON.parse(fs.readFileSync(fromGame('audio/uploaded.json'), 'utf8'));
+  const luau = fs.readFileSync(fromGame('src/ReplicatedStorage/Shared/AudioIds.luau'), 'utf8');
+  const ids = new Map([...luau.matchAll(/^\s*([a-z0-9_]+)\s*=\s*"rbxassetid:\/\/(\d+)"/gm)]
+    .map(match => [match[1],match[2]]));
+  const registered = tracks.filter(track => {
+    const asset = uploads[track.name];
+    return asset?.granted === true && ids.get(track.name) === String(asset.assetId) &&
+      /^[0-9]+$/.test(String(asset.assetId));
+  });
+  const assets = Object.entries(registry);
+  return {
+    authority: 'EXISTING_ROBLOX_REGISTRY_AND_LICENSE',
+    models: assets.filter(([,v]) => v.assetType === 'Model').length,
+    images: assets.filter(([,v]) => v.assetType === 'Image').length,
+    icons: assets.filter(([k,v]) => k.startsWith('Menu/') && v.assetType === 'Image').length,
+    tradeGoods: assets.filter(([k]) => k.startsWith('Goods/')).length,
+    materialTextures: assets.filter(([k,v]) => k.startsWith('Materials/') && v.assetType === 'Image').length,
+    registeredAudio: registered.length,
+    listedAudio: tracks.length,
+    approvedCues: registered.map(x => x.name).filter(name => /^sfx_[a-z0-9_]+$/.test(name)).sort(),
+    missingAudio: tracks.filter(t => !registered.some(x => x.name === t.name))
+      .map(t => t.name).slice(0,20),
+    inventedIdsForbidden: true, registrationAndStudioQaRequired: true
+  };
+}
+
+// [기존 Sfx] 한 줄에 등록된 효과음 이름만 교체 가능. 파일·시설·음량·딜레이 불변.
+export function audioCueEditLooksSafe(before, after, sourcePath, registeredCues) {
+  if (sourcePath !== 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sfx.luau' ||
+    typeof before !== 'string' || typeof after !== 'string' || before === after ||
+    Buffer.byteLength(after) > 320 || /[\r\n;]/.test(before+after)) return false;
+  const heading = /^\s*(?:trade|yard|harbor|scholar|board|quest|route|cards|gwent|status|crew|recruit|tech|codex|map|explore|battle|war)\s*=\s*\{\s*\{/;
+  if (!heading.test(before) || !heading.test(after)) return false;
+  const names = row => [...row.matchAll(/"(sfx_[a-z0-9_]+)"/g)].map(x=>x[1]);
+  const old = names(before), next = names(after);
+  if (!old.length || old.length !== next.length ||
+    !next.some((name,i) => name !== old[i]) || !next.every(name => registeredCues.includes(name)))
+    return false;
+  return before.replace(/"sfx_[a-z0-9_]+"/g, '"#SFX#"') ===
+    after.replace(/"sfx_[a-z0-9_]+"/g, '"#SFX#"');
+}
+
+// [사운드 실제 증거] 로딩 결과와 등록 ID만 확인. 녹음 없는 음질·화풍 PASS는 금지.
+export function studioAudioEvidence(report) {
+  const audit = (report?.log || []).filter(row =>
+    typeof row?.out === 'string' && row.out.includes('STUDIO_AUDIO_AUDIT ')).at(-1)?.out || '';
+  const match = /STUDIO_AUDIO_AUDIT registered=(\d+) active=(\d+) last_loaded=([a-z0-9_]+|none) last_failed=([a-z0-9_]+|none)/.exec(audit);
+  return match && Number(match[1]) > 0 && match[3] !== 'none' && match[4] === 'none'
+    ? {registered: +match[1], active: +match[2], lastLoaded: match[3], validated: true}
+    : {validated: false};
+}
+
 // [검사] 원본 소스 구조와 문맥을 유지하는 시각 상수·표현 변경만 허용한다.
 // 게임플레이 수치·제어 흐름·문자열/에셋 ID·실행문 신규 삽입은 막는다.
 export function visualEditLooksSafe(before, after, category = '', sourcePath = '') {
+  if (category === 'sound-presentation') {
+    try { return audioCueEditLooksSafe(before, after, sourcePath,
+      mareDesignAssetInventory().approvedCues); } catch { return false; }
+  }
   if (typeof before !== 'string' || typeof after !== 'string' || before === after ||
     !before.trim() || /[\r\n]/.test(before + after) ||
     Buffer.byteLength(before) > 1800 || Buffer.byteLength(after) > 1800 ||
@@ -421,21 +482,33 @@ export function validateReview(value, frameNames, contract, availableAnchors = n
   return {issues, edits};
 }
 
-function cleanAnchor(line) {
+function cleanAnchor(line, file = '') {
+  if (file.endsWith('/Sfx.luau'))
+    return line.length <= 320 &&
+      /^\s*(?:trade|yard|harbor|scholar|board|quest|route|cards|gwent|status|crew|recruit|tech|codex|map|explore|battle|war)\s*=\s*\{\s*\{/.test(line) &&
+      !/--|[;]/.test(line);
   return line.length <= 260 && visualCode.test(line) && !protectedCode.test(line) &&
     !/--|[;]|https?:\/\/|(?:api[_-]?key|secret|token|password)/i.test(line) &&
     !line.trimStart().startsWith('--');
 }
-function visualAnchors(files) {
+function visualAnchors(files, role = '') {
   const result = [];
+  const owners = {
+    NPC: ['Pose.luau','PortScene.luau','CommonMotion.luau','FieldMotion.luau'],
+    WORLD: ['PortScene.luau','PortBuildings.luau','VoyageScene.luau','FieldScene.luau','TownMood.client.luau'],
+    UI: ['Game.client.luau','CardGallery.luau','Flags.luau','CardArt.luau','VisualLadder.client.luau'],
+    MOTION: ['CommonMotion.luau','FieldMotion.luau','CommonVFX.luau','FieldScene.luau','Pose.luau'],
+    AUDIO: ['Sfx.luau']
+  };
   for (const file of files) {
+    if (owners[role] && !owners[role].some(name => file.endsWith('/'+name))) continue;
     const target = path.resolve(root, file);
     if (!target.startsWith(root + path.sep) || !fs.existsSync(target) ||
       !fs.lstatSync(target).isFile() || fs.lstatSync(target).isSymbolicLink()) continue;
     const lines = fs.readFileSync(target, 'utf8').split(/\r?\n/);
     const counts = new Map();
     for (const line of lines) counts.set(line, (counts.get(line) || 0) + 1);
-    const possible = lines.filter(line => cleanAnchor(line) && counts.get(line) === 1);
+    const possible = lines.filter(line => cleanAnchor(line, file) && counts.get(line) === 1);
     // 얼굴과 머리/옷을 먼저, 나머지 건물·선박·UI는 파일 전체 구간을 고르게 표본화한다.
     const focused = file.endsWith('/Pose.luau')
       ? possible.filter(line => /LightInfluence|scalp|skirt|belt|hair|q\.Size|Fabric/i.test(line)).slice(0, 4)
