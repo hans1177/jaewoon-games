@@ -184,12 +184,12 @@ function record(status, fields = {}) {
 }
 
 // [스튜디오 증거] 실제 캡처 이름, 원본 리비전, 이미지 바이트 형식을 모두 대조한다.
-function photosFromStudio() {
-  if (!fs.existsSync(framesRoot)) return [];
+function photosFromStudio(directory = framesRoot) {
+  if (!fs.existsSync(directory)) return [];
   const found = [];
-  for (const name of fs.readdirSync(framesRoot).sort()) {
+  for (const name of fs.readdirSync(directory).sort()) {
     if (!/^[A-Za-z0-9_.-]+-[0-9]+\.(?:jpe?g|png)$/i.test(name)) continue;
-    const file = path.join(framesRoot, name);
+    const file = path.join(directory, name);
     if (!fs.statSync(file).isFile()) continue;
     const bytes = fs.readFileSync(file);
     if (bytes.length < 4096 || bytes.length > 2000000) continue;
@@ -459,8 +459,123 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   return record('REVIEWED_NO_VERIFIED_EDIT', {frames: proofs,
     independentQaPassed: false, afterStudioPassed: false, releasePassed: false});
 }
+
+// [자동 검증] 다른 제공자의 무료 영상 분석으로 전후 사진을 독립 비교한다.
+// Studio/보안/회귀 검사와 별개의 질적 보완 검토이며 단독 PASS 권한이 없다.
+export function validateVisualComparison(value, frameNames) {
+  let result = value;
+  if (typeof result === 'string') {
+    if (Buffer.byteLength(result) > 18000) throw Error('VISUAL_COMPARISON_TOO_LARGE');
+    result = JSON.parse(result.trim().replace(/^```(?:json)?\s*\n/i, '').replace(/\n```\s*$/, ''));
+  }
+  const names = new Set(frameNames);
+  if (!result || !['PASS', 'FAIL', 'UNKNOWN'].includes(result.verdict) ||
+    !Array.isArray(result.improvements) || !Array.isArray(result.regressions) ||
+    result.improvements.length > 8 || result.regressions.length > 8)
+    throw Error('VISUAL_COMPARISON_SCHEMA_INVALID');
+  for (const item of [...result.improvements, ...result.regressions]) {
+    if (!names.has(item?.screenshot) || typeof item.evidence !== 'string' ||
+      item.evidence.trim().length < 24 || item.evidence.length > 600)
+      throw Error('VISUAL_COMPARISON_EVIDENCE_INVALID');
+  }
+  return {status: result.verdict === 'PASS' && result.regressions.length === 0 &&
+    result.improvements.length >= 2 &&
+    new Set(result.improvements.map(item => item.screenshot)).size >= 2
+    ? 'PASS' : 'UNVERIFIED',
+    improvements: result.improvements.map(item => ({
+      screenshot: item.screenshot, evidenceSha256: digest(item.evidence.trim())
+    })),
+    regressions: result.regressions.map(item => ({
+      screenshot: item.screenshot, evidenceSha256: digest(item.evidence.trim())
+    }))};
+}
+
+export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {}) {
+  const policy = JSON.parse(fs.readFileSync(path.join(root, POLICY), 'utf8'));
+  const beforeDir = path.resolve(options.before || '');
+  const beforeRevision = trim(process.env.STUDIO_BASE_SHA);
+  const candidateRevision = trim(process.env.GITHUB_SHA);
+  const unavailable = status => record(status, {
+    beforeRevision, candidateRevision, independentQaPassed: false,
+    afterStudioPassed: false, releasePassed: false
+  });
+  if (!options.before || beforeDir === framesRoot ||
+    !/^[a-f0-9]{40}$/i.test(beforeRevision) ||
+    !/^[a-f0-9]{40}$/i.test(candidateRevision) ||
+    beforeRevision === candidateRevision ||
+    !policy?.directVisualDesign?.freeSpecialistPool?.enabled)
+    return unavailable('BLOCKED_VISUAL_BEFORE_AFTER_IDENTITY');
+  let beforeReport, afterReport, previous;
+  try {
+    beforeReport = JSON.parse(fs.readFileSync(path.join(beforeDir, 'report.json'), 'utf8').replace(/^\uFEFF/, ''));
+    afterReport = JSON.parse(fs.readFileSync(path.join(framesRoot, 'report.json'), 'utf8').replace(/^\uFEFF/, ''));
+    previous = JSON.parse(fs.readFileSync(path.join(beforeDir, 'nemotron-design-review.json'), 'utf8'));
+  } catch {
+    return unavailable('BLOCKED_VISUAL_BASELINE_EVIDENCE_MISSING');
+  }
+  const beforePhotos = photosFromStudio(beforeDir);
+  const afterPhotos = photosFromStudio(framesRoot);
+  const beforeByName = new Map(beforePhotos.map(photo => [photo.name, photo]));
+  const names = afterPhotos.map(photo => photo.name).filter(name => beforeByName.has(name)).slice(0, 4);
+  const baseline = names.map(name => beforeByName.get(name));
+  const after = names.map(name => afterPhotos.find(photo => photo.name === name));
+  if (previous?.sourceRevision !== beforeRevision ||
+    previous?.status !== 'CANDIDATE_EDITED' ||
+    !previous?.model || !previous?.rawResponseSha256 ||
+    !verifiedStudioCapture(beforeReport, baseline, beforeRevision) ||
+    !verifiedStudioCapture(afterReport, after, candidateRevision) ||
+    names.length < 2 || !baseline.some((photo, index) => photo.sha256 !== after[index].sha256))
+    return unavailable('BLOCKED_VISUAL_STUDIO_CAPTURE_MISMATCH');
+  loadPreviousDesignUsage(previous);
+  const allModels = selectFreeDesignModels({frameNames: names, policy, previous});
+  // 후보 모델 스스로 최종 수용을 결정할 수 없다.
+  const reviewers = allModels.filter(model => model.provider !== previous.provider);
+  if (!reviewers.length)
+    return unavailable('BLOCKED_NO_INDEPENDENT_FREE_VISUAL_REVIEWER');
+  const prompt = 'Independently compare the same official Roblox Studio screenshots BEFORE and AFTER a visual-only source edit. ' +
+    'Pairs follow strictly in order: BEFORE then AFTER for each screenshot name. ' +
+    'Reject regressions in character appearance, clothing, architecture, readability, art-style consistency or image sharpness. ' +
+    'No gameplay, code, remote commands, credentials or new assets. ' +
+    'Return STRICT JSON only: {"verdict":"PASS|FAIL|UNKNOWN",' +
+    '"improvements":[{"screenshot":"exact name","evidence":"specific visible change comparing both images"}],' +
+    '"regressions":[{"screenshot":"exact name","evidence":"specific visible regression"}]}. ' +
+    'PASS only when at least two distinct screenshots show actual improvements without any regression; ' +
+    'uncertain/no visual improvement -> UNKNOWN. File names: ' + JSON.stringify(names);
+  const pairs = names.flatMap((name, index) => [baseline[index], after[index]]);
+  for (const reviewer of reviewers.slice(0, policy.directVisualDesign.freeSpecialistPool.maxCallsPerCapture)) {
+    const previousCalls = designRuntime.usageWindow.calls[reviewer.provider] || 0;
+    if (previousCalls >= DAILY_LIMIT[reviewer.provider]) continue;
+    designRuntime.usageWindow.calls[reviewer.provider] = previousCalls + 1;
+    const result = await callFreeDesignModel(reviewer, prompt, pairs, fetchImpl);
+    modelAttempt(reviewer.id, result.status);
+    if (['CONTENT_POLICY_BLOCKED', 'BILLING_BLOCKED', 'NONZERO_COST_BLOCKED'].includes(result.status))
+      return unavailable('BLOCKED_VISUAL_REVIEW_FREE_POLICY');
+    if (result.status !== 'OK') {
+      if (result.retryAfterMs) designRuntime.cooldowns[reviewer.id] =
+        new Date(Date.now() + result.retryAfterMs).toISOString();
+      continue;
+    }
+    let verdict;
+    try {verdict = validateVisualComparison(result.text, names);}
+    catch (error) {
+      modelAttempt(reviewer.id, 'VISUAL_COMPARISON_INVALID', {
+        reason: trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 90)});
+      continue;
+    }
+    return record(verdict.status === 'PASS' ? 'VISUAL_BEFORE_AFTER_PASS' : 'VISUAL_BEFORE_AFTER_UNVERIFIED', {
+      beforeRevision, candidateRevision, beforeFrames: baseline.map(x => ({name: x.name, sha256: x.sha256})),
+      afterFrames: after.map(x => ({name: x.name, sha256: x.sha256})),
+      authorProvider: previous.provider, reviewerProvider: reviewer.provider,
+      reviewerModel: reviewer.model, comparison: verdict, rawResponseSha256: digest(result.text),
+      independentQaPassed: verdict.status === 'PASS',
+      afterStudioPassed: verdict.status === 'PASS', releasePassed: false
+    });
+  }
+  return unavailable('BLOCKED_VISUAL_REVIEW_FREE_POOL_EXHAUSTED');
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
-  reviewNemotron().catch(error => {
+  (options.mode === 'verify' ? verifyVisualCandidate() : reviewNemotron()).catch(error => {
     console.log('NEMOTRON_DESIGN_STATUS=UNVERIFIED_INTERNAL_ERROR');
     console.log('NEMOTRON_DESIGN_FAILURE=' + trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 100));
     process.exitCode = 1;
