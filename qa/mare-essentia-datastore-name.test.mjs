@@ -1763,7 +1763,7 @@ test('항구 특산품 공방은 생산품별 7가지 형태를 쓰고 랜드마
  assert.match(block,/CitySpecialtyPlaced", specialtyPlaced/);
  assert.match(block,/CitySpecialtyRejected", specialtyRejected/);
  assert.match(source,/MarketSpecialtyDisplay_/,'시장에 지역 생산품 전시 연결');
- assert.match(market,/if game:GetService\("UserInputService"\)\.TouchEnabled then 1 else 2/);
+ assert.match(source,/if game:GetService\("UserInputService"\)\.TouchEnabled then 1 else 2/);
  assert.match(source,/CityBuildingMode", "AUTO_VISUAL_READ_ONLY"/,'경제 시스템 불변');
 });
 
