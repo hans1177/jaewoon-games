@@ -94,8 +94,26 @@ end
 -- (뷰포트 초상화는 SurfaceGui 를 그리지 못하므로 그때는 기본 얼굴을 그대로 둔다)
 local function drawFace(head, role, skin, rng, gender)
 	local decal = head:FindFirstChildWhichIsA("Decal")
+	-- [주민 얼굴] R15 곡면 Head에 UI를 직접 붙이면 표정이 크게 늘어나는 문제를 막는다.
+	-- 기존 책임 함수 안에서 얼굴 피부면을 머리 관절에 용접하고, 저장·전투에는 관여하지 않는다.
+	local h = head.Size
+	local surface = Instance.new("Part")
+	surface.Name = "MareFaceSurface"
+	surface.Shape = Enum.PartType.Ball
+	surface.Size = Vector3.new(h.X * 0.82, h.Y * 0.82, math.max(0.08, h.Z * 0.14))
+	surface.CFrame = head.CFrame * CFrame.new(0, -h.Y * 0.025, -h.Z * 0.50)
+	surface.Color = skin
+	surface.Material = Enum.Material.SmoothPlastic
+	surface.CastShadow = false
+	surface.Anchored, surface.CanCollide, surface.CanTouch, surface.CanQuery, surface.Massless = false, false, false, false, true
+	surface.Parent = head
+	local w = Instance.new("WeldConstraint")
+	w.Part0, w.Part1 = head, surface
+	w.Parent = surface
 	local gui = Instance.new("SurfaceGui")
 	gui.Name = "MareFace"
+	gui.Adornee = surface
+	gui.MaxDistance = 65
 	-- [주민 얼굴 정면] 기존 머리 데칼의 Face가 Back인 아바타에서도
 	-- 몸통 전면과 같은 로컬 -Z에만 얼굴을 그린다. 필요 시 목 관절의 180도 교정은 아래 한 곳에서 한다.
 	gui.Face = Enum.NormalId.Front
@@ -124,7 +142,7 @@ local function drawFace(head, role, skin, rng, gender)
 	local dark = Color3.fromRGB(34, 26, 22)
 	local hair = ({ Color3.fromRGB(40, 28, 20), Color3.fromRGB(92, 60, 34), Color3.fromRGB(150, 112, 60), Color3.fromRGB(120, 120, 120), Color3.fromRGB(24, 22, 22) })[rng:NextInteger(1, 5)]
 	local angry = role == "Barbarian" or role == "Rogue" or role == "Rogue_Hooded"
-	local eyeY = 92
+	local eyeY = 84
 	-- 눈썹: 험상궂은 사람은 안쪽이 내려가고, 점잖은 사람은 부드럽게 올라간다
 	local tilt = if angry then 16 else -6
 	box(66, eyeY - 22, 36, 8, hair, tilt)
@@ -136,35 +154,35 @@ local function drawFace(head, role, skin, rng, gender)
 	box(66 + 1, eyeY, eyeW * 0.55, eyeW * 0.55 * (if angry then 1.1 else 1), dark, 0, true)
 	box(134 - 1, eyeY, eyeW * 0.55, eyeW * 0.55 * (if angry then 1.1 else 1), dark, 0, true)
 	-- 코 그림자
-	box(100, 112, 10, 18, skin:Lerp(Color3.new(0, 0, 0), 0.18), 0, true)
+	box(100, 108, 10, 17, skin:Lerp(Color3.new(0, 0, 0), 0.18), 0, true)
 	-- 입
 	local mouth = rng:NextInteger(1, 3)
 	if role == "Knight" then
-		box(100, 148, 40, 6, dark, 0)
+		box(100, 137, 32, 5, dark, 0)
 	elseif angry then
-		box(100, 150, 44, 8, dark, 0)
-		box(80, 156, 8, 6, dark, 30)
-		box(120, 156, 8, 6, dark, -30)
+		box(100, 139, 38, 6, dark, 0)
+		box(82, 144, 6, 5, dark, 30)
+		box(118, 144, 6, 5, dark, -30)
 	elseif mouth == 1 then
-		box(100, 148, 38, 7, dark, 0, true)
-		box(80, 144, 7, 7, dark, 25, true)
-		box(120, 144, 7, 7, dark, -25, true)
+		box(100, 137, 31, 6, dark, 0, true)
+		box(84, 133, 6, 6, dark, 25, true)
+		box(116, 133, 6, 6, dark, -25, true)
 	else
-		box(100, 150, 30, 6, dark, 0, true)
+		box(100, 139, 28, 5, dark, 0, true)
 	end
 	-- 수염과 콧수염
 	local beard = rng:NextInteger(1, 4)
 	if gender ~= "female" and (role == "Barbarian" or beard == 1) then
-		box(100, 176, 100, 40, hair, 0, true)
-		box(100, 132, 56, 12, hair, 0, true)
+		box(100, 162, 56, 24, hair, 0, true)
+		box(100, 132, 42, 8, hair, 0, true)
 	elseif gender ~= "female" and beard == 2 then
-		box(100, 132, 60, 12, hair, 0, true)
+		box(100, 132, 42, 8, hair, 0, true)
 	end
 	-- 흉터와 안대
 	if role == "Rogue" or role == "Rogue_Hooded" then
 		if rng:NextInteger(1, 2) == 1 then
-			box(66, eyeY, 40, 30, dark, 0, true)
-			box(100, eyeY - 14, 130, 4, dark, -8)
+			box(66, eyeY, 30, 20, dark, 0, true)
+			box(100, eyeY - 14, 90, 3, dark, -8)
 		else
 			box(140, 100, 5, 46, Color3.fromRGB(150, 70, 62), 14)
 		end
@@ -267,7 +285,7 @@ local function addHair(model, kind, color)
 	end
 	-- [주민 실제 두피] 등록 헤어가 부분 메시여도 머리가 대머리처럼 드러나지 않게 머리 윗부분은 유지한다.
 	-- 기존 Hair 장식은 등록 메시가 로드되면 숨기되, 얇은 모발 베이스는 관절에 계속 붙인다.
-	local scalp = piece(Enum.PartType.Ball, Vector3.new(h.X * 1.03, h.Y * 0.42, h.X * 1.03), Vector3.new(0, h.Y * 0.41, h.X * 0.04))
+	local scalp = piece(Enum.PartType.Ball, Vector3.new(h.X * 1.04, h.Y * 0.32, h.Z * 1.04), Vector3.new(0, h.Y * 0.44, 0))
 	scalp.Name = "HairScalp"
 	if kind == "long" then
 		piece(Enum.PartType.Block, Vector3.new(h.X * 1.0, h.Y * 1.5, h.X * 0.35), Vector3.new(0, -h.Y * 0.2, h.X * 0.5))

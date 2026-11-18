@@ -2162,6 +2162,12 @@ test('R15 주민 얼굴은 공식 Studio 흰 얼굴 회귀를 막도록 기본 �
   const face=source.slice(start,end);
   assert.match(face,/gui\.Face\s*=\s*Enum\.NormalId\.Front/);
   assert.match(face,/gui\.AlwaysOnTop\s*=\s*true/);
+  // [주민 실물] R15 곡면 UV와 분리된 용접 얼굴면·수염 크기를 유지한다.
+  assert.match(face,/surface\.Name\s*=\s*"MareFaceSurface"/);
+  assert.match(face,/surface\.Shape\s*=\s*Enum\.PartType\.Ball/);
+  assert.match(face,/gui\.Adornee\s*=\s*surface/);
+  assert.match(face,/w\.Part0, w\.Part1\s*=\s*head, surface/);
+  assert.match(face,/box\(100, 162, 56, 24, hair, 0, true\)/);
   assert.match(face,/if not decal then[\s\S]*Instance\.new\("Decal"\)/);
   assert.match(face,/decal\.Face\s*=\s*Enum\.NormalId\.Front/);
   assert.match(face,/decal\.Texture\s*=\s*"rbxasset:\/\/textures\/face\.png"/);
