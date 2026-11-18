@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { pickGeminiModels, askChain, buildProviders, LlmError } from '../tools/vibe-llm.mjs';
-import {selectStudioDesignPhotoNames, visualEditLooksSafe, validateReview} from '../tools/company-nemotron-design-review.mjs';
+import {selectStudioDesignPhotoNames, visualEditLooksSafe, validateReview, mareDesignAssetInventory, audioCueEditLooksSafe, studioAudioEvidence, selectDesignFrameRole, selectFreeDesignModels} from '../tools/company-nemotron-design-review.mjs';
 import { rankProviders, updateProviderStats, signature, similarity, playbookReplay, examplesFor, addCandidate, labelOutcomes, sanitize, datasetLine, emptyPlaybook, pickOrder, gate, findContext, buildPrompt, parseEdits, validateEdits, applyEdits, runBrain, recordAttempt, recordMerged, emptyBrainLedger, LIMITS } from '../tools/vibe-brain.mjs';
 
 const mkRoot = files => {
@@ -504,4 +504,48 @@ test('무료 전문 AI 역할별로 실제 PBR·선박·화물·무기·이펙�
       }
     }
   }
+});
+
+
+test('Vibe 자산 관리: 등록 사운드·아이콘·모델만 배정하고 가짜 ID를 차단한다', () => {
+  const inventory = mareDesignAssetInventory();
+  assert.ok(inventory.models > 20 && inventory.images > 20);
+  assert.ok(inventory.icons > 0 && inventory.tradeGoods > 0);
+  assert.ok(inventory.registeredAudio > 15 && inventory.listedAudio >= inventory.registeredAudio);
+  assert.ok(inventory.approvedCues.includes('sfx_bell'));
+  const source = 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sfx.luau';
+  const original = fs.readFileSync(source,'utf8').split(/\r?\n/)
+    .find(line => line.trimStart().startsWith('trade = { { "sfx_bell"'));
+  assert.ok(original);
+  const updated = original.replace('"sfx_bell"','"sfx_book_turn"');
+  assert.equal(audioCueEditLooksSafe(original,updated,source,inventory.approvedCues),true);
+  assert.equal(audioCueEditLooksSafe(original,original.replace('"sfx_bell"','"sfx_fake_id"'),
+    source,inventory.approvedCues),false);
+  assert.equal(audioCueEditLooksSafe(original,original.replace('0.5','0.8'),
+    source,inventory.approvedCues),false);
+  assert.equal(audioCueEditLooksSafe(original,updated,
+    'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau',
+    inventory.approvedCues),false);
+  assert.equal(visualEditLooksSafe(original,updated,'sound-presentation',source),true);
+  assert.equal(visualEditLooksSafe(original,updated,'ui',source),false);
+});
+
+test('Vibe 사운드 역할은 Studio 실제 재생 증거 뒤에만 열리고 화면 품질로 자동 승인하지 않는다', () => {
+  const missing = studioAudioEvidence({log:[]});
+  assert.equal(missing.validated,false);
+  const fake = studioAudioEvidence({log:[{out:'STUDIO_AUDIO_AUDIT registered=90 active=0 last_loaded=none last_failed=none'}]});
+  assert.equal(fake.validated,false);
+  const live = studioAudioEvidence({log:[{out:'STUDIO_AUDIO_AUDIT registered=90 active=4 last_loaded=sfx_bell last_failed=none'}]});
+  assert.equal(live.validated,true);
+  const photos = ['npc_face-0.jpg','ship_harbor-0.jpg','menu_ui-0.jpg','walk_motion-0.jpg',
+    'generic-0.jpg','town-0.jpg','tab_harbor-0.jpg','harbor_npc_hair_left-0.jpg'];
+  assert.notEqual(selectDesignFrameRole(photos,'GENERAL',false),'AUDIO');
+  assert.equal(selectDesignFrameRole(photos,'GENERAL',true),'AUDIO');
+  const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json','utf8'));
+  assert.equal(policy.directVisualDesign.studioEvidenceSelection.expectedScriptSteps,336);
+  assert.equal(policy.directVisualDesign.audioCueAssignment.promotionBlockedUntilIndependentAudioQualityEvidence,true);
+  assert.equal(policy.directVisualDesign.assetCreationAndQuality.paidFallbackForbidden,true);
+  const env={GEMINI_API_KEY:'test',GEMINI_DESIGN_FREE_TIER_VERIFIED:'YES'};
+  const models=selectFreeDesignModels({policy,role:'AUDIO',frameNames:['tab_harbor-0.jpg'],env});
+  assert.equal(models[0]?.id,'GEMINI_LITE');
 });
