@@ -3825,7 +3825,7 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   const gen=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.ok(gen.includes('("mare-cardbattle", "mare-voyage", "mare-battle")'));
-  assert.equal(steps.length,241);
+  assert.equal(steps.length,335);
   assert.equal(steps.filter(step=>step.code?.includes('NPC_ROUTE_AUDIT_PASS checked=')).length,1);
   const slowIntro=steps.filter(step=>step.code?.includes('FIELD_QA_INTRO_MODAL_NOT_FINISHED'));
   assert.equal(slowIntro.length,1);
@@ -3839,7 +3839,7 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   assert.doesNotMatch(slowIntro[0].code,/InvokeServer\("Intro(?:Name|Companion|Portrait)"/);
   assert.equal(steps.filter(step=>step.timeoutMs!==undefined).length,1);
   assert.equal(steps.filter(step=>step.type==='click_from_luau').length,10);
-  assert.equal(steps.filter(step=>step.type==='capture').length,62);
+  assert.equal(steps.filter(step=>step.type==='capture').length,93);
   // [장면 생명주기] 카드판 스킵은 실제 입력으로 종료하고 전투 잠금이 해제된 뒤 항해/지상맵을 실행한다.
   const cardExitIndex=steps.findIndex(step=>step.label==='card_practice_exit');
   assert.ok(cardExitIndex>steps.findIndex(step=>step.type==='capture'&&step.name==='cb2'));
