@@ -137,7 +137,8 @@ export function selectVibe59FreeExperts({
     const observed=(Array.isArray(verifiedOutcomes)?verifiedOutcomes:[]).slice(-100)
       .filter(row=>row?.verified===true&&row?.independentQa==='PASS'&&
         clean(row.sourceRevision)&&row.provider===item.provider&&row.model===item.model&&
-        clean(row.role).toUpperCase()===role&&['SUCCESS','FAILURE'].includes(row.outcome));
+        clean(row.specialistDomain||row.role).toUpperCase()===role&&
+        ['SUCCESS','FAILURE'].includes(row.outcome));
     const success=observed.filter(row=>row.outcome==='SUCCESS').length;
     const quality=observed.length?(success+2)/(observed.length+4):.5;
     const capacity=freeCapacity?.[item.provider+':'+item.model];
