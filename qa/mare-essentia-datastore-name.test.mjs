@@ -1627,8 +1627,8 @@ test('마을 주택은 5개 크기 등급을 발전도별로 혼합하고 도로
  assert.match(home,/projectedHalf <= rowClearance/,'도로 침범 전 등급 축소 또는 생략');
  assert.match(home,/while sizeClass > 1 and projectedHalf > rowClearance do/);
  assert.match(home,/math\.max\(sz \* 0\.62, projectedHalf\)/,'기존 점유 반경을 축소하지 않음');
- assert.match(home,/not onStreet\(pos\.X, half\)/);
- assert.match(home,/not reserved\(pos\.X, pos\.Z, half\)/);
+ assert.match(home,/not onStreet\(at\.X, half\)/);
+ assert.match(home,/not reserved\(at\.X, at\.Z, half\)/);
  assert.match(home,/table\.insert\(placedLots, \{ X = pos\.X, Z = pos\.Z,/);
  assert.match(home,/HX = actualHalfX, HZ = actualHalfZ/);
  assert.match(home,/BuildingSizeClass", sizeClass/);
@@ -1639,6 +1639,75 @@ test('마을 주택은 5개 크기 등급을 발전도별로 혼합하고 도로
  assert.match(buildings,/plotScale = \{ 1\.5, 1\.65, 1\.8, 2\.0, 2\.2 \}/);
  assert.match(port,/CityBuildingMode", "AUTO_VISUAL_READ_ONLY"/);
  assert.match(port,/SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
+});
+
+// [181개 항구 배치 진단] 필지별 재배치 실패를 추적하며 불필요한 임시 모델 생성 없이 검사한다.
+test('항구별 주거 생성은 인접 빈자리 재시도와 실제 크기 결과를 읽기 전용으로 집계한다',()=>{
+ const port=read('ReplicatedStorage/Shared/PortScene.luau');
+ const ports=read('ReplicatedStorage/Shared/Ports.luau');
+ const section=ports.slice(ports.indexOf('local Ports:'),ports.indexOf('local Nations:'));
+ const ids=[...section.matchAll(/^\t([a-z][a-z0-9_]*)\s*=\s*\{\s*\n\s*id = /gm)].map(x=>x[1]);
+ assert.equal(ids.length,181,'항구 전역 동일 배치 경로');
+ const start=port.indexOf('local function fillRow('),end=port.indexOf('for _, side in { 1, -1 } do',start);
+ const fill=port.slice(start,end);
+ for(const needle of [
+  'local homeShifts = { Vector3.zero',
+  'for _, shift in homeShifts do',
+  'for _, direction in homeShifts do',
+  'local at = pos + Vector3.new(shift.X, 0, shift.Z * side)',
+  'if not onStreet(at.X, half) and not reserved(at.X, at.Z, half) then',
+  'if canFitPlot then',
+  'local bounds, dimensions = staged:GetBoundingBox()',
+  'if chosenShift then',
+  'homeCandidates += 1','homePlaced += 1','homeShifted += 1',
+  'homeSizeCounts[sizeClass] += 1',
+  'homeModelRejected += 1','homePlotRejected += 1',
+  'staged:Destroy()'
+ ])assert.ok(port.includes(needle),'주거 생성 진단 조건 누락: '+needle);
+ const idxPre=fill.indexOf('if canFitPlot then'),idxBuild=fill.indexOf('local staged = Instance.new("Model")');
+ assert.ok(idxPre>=0&&idxBuild>idxPre,'사전 빈자리 검사가 주택 모델 복제보다 먼저 실행');
+ const result=port.slice(port.indexOf('CityHousingPort", info.portId')-28);
+ for(const name of [
+  'CityHousingPort','CityHousingCulture','CityHousingCandidates','CityHousingPlaced',
+  'CityHousingShifted','CityHousingPlotRejected','CityHousingModelRejected',
+  'CityHousingPlacedPercent',
+  'CityHousingLayoutState','CityHousingSize'
+ ])assert.ok(result.includes(name),'항구별 읽기 전용 진단 누락: '+name);
+ assert.match(result,/NO_ECONOMIC_CANDIDATE/);
+ assert.match(result,/NO_SAFE_HOUSING_PLOT/);
+ assert.match(result,/COMPUTED_NOT_VISUALLY_VERIFIED/,'런타임 확인 전 합격 표시 금지');
+ assert.match(port,/CityBuildingMode", "AUTO_VISUAL_READ_ONLY"/);
+});
+
+// [문화권 23종×발전도 5단계] 어떤 지역도 사전 필지 판정에서 최소 주택까지 무조건 배제하지 않는다.
+test('모든 문화권과 발전도에 최소 주택 배치 공간이 남는다',()=>{
+ const port=read('ReplicatedStorage/Shared/PortScene.luau');
+ const cultures=read('ReplicatedStorage/Shared/PortCultures.luau');
+ const begin=port.indexOf('local houseSizeBands = {'),end=port.indexOf('-- [항구별 진단]',begin);
+ assert.ok(begin>=0&&end>begin,'주택 등급표와 진단 연결');
+ const bands=[...port.slice(begin,end).matchAll(/\{ ([\d.]+), ([\d.]+), ([\d.]+), ([\d.]+), ([\d.]+) \}/g)]
+  .map(m=>m.slice(1).map(Number));
+ assert.equal(bands.length,5,'발전도 5단계');
+ const profiles=[...cultures.matchAll(/^\t([a-z]+) = \{ S = ([\d.]+).*?wMul = ([\d.]+), dAdd = (-?[\d.]+).*sizeWeights = \{ (\d+), (\d+), (\d+), (\d+), (\d+) \}/gm)]
+  .map(m=>({name:m[1],size:Number(m[2]),width:Number(m[3]),depth:Number(m[4]),weights:m.slice(5).map(Number)}));
+ assert.equal(profiles.length,23,'문화권 23종을 모두 검사');
+ const lotGrowth=[1.5,1.65,1.8,2,2.2];
+ let count=0;
+ for(const p of profiles){
+  assert.equal(p.weights.reduce((a,b)=>a+b,0),100,p.name+' 크기 비율');
+  for(let i=0;i<5;i++){
+   // 기존 최소 구획 배율(0.94)과 최대 처마 보정(동아시아 1.62)을 준수하는 보수적 크기 검사.
+   const clear=p.size*lotGrowth[i]*0.94*0.5+4;
+   const width=p.size/(1.28*1.08)*p.width;
+   const depth=Math.max(width*0.72,width+p.depth);
+   const roof=['japan','china','korea'].includes(p.name)?1.62:1.46;
+   const projected=Math.max(width,depth)*bands[i][0]*1.28*roof*0.5+3.5;
+   assert.ok(projected<=clear,p.name+' 발전 '+(i+1)+'단계: 최소 주택 공간 부족');
+   count++;
+  }
+ }
+ assert.equal(count,115,'전체 지역·발전도 조합');
+ assert.match(port,/CityHousingPlacedPercent", if homeCandidates > 0/,'항구별 배치율 진단');
 });
 
 // [지역 주택 실측] 모든 문화권은 소형~대형 5종 비율을 가지며 실제 메시 외곽으로 배치한다.
