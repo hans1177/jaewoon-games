@@ -4008,3 +4008,31 @@ test('오너 웹게임 자동개발 중지는 막힌 웹 작업을 이력으로 
     else process.env.VIBE2_WEB_AUTO_DEV_DISABLED=previous;
   }
 });
+
+test('owner Mare-only queue deletes other game waiting jobs but preserves running and completed history',()=>{
+  const policy={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
+    enabled:true,ownerFocusedGameIds:['mare-essentia'],
+    ownerFocusedGamePlatforms:{'mare-essentia':'ROBLOX'},
+    completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:false}
+  }},developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED'}};
+  const task=(id,gameId,status='queued',department='development',type='implementation')=>({
+    id,gameId,target:'roblox',department,type,status,goal:'preserve game work',
+    sourceRoot:`roblox-games/${gameId||'common'}`,responsibleFiles:[id+'.luau']
+  });
+  const initial=createVibeContinuousQueue({maxConcurrentTasks:8,tasks:[
+    task('mare','mare-essentia'),task('other-queued','other-game'),
+    task('other-blocked','other-game','blocked'),
+    task('other-research','other-game','queued','learning','research'),
+    task('other-architecture','other-game','queued','system-architecture','implementation'),
+    task('other-running','other-game','running'),
+    task('other-cancelled','other-game','cancelled'),
+    task('shared-learning',null,'queued','learning','research')
+  ]});
+  const after=synchronizeOwnerDevelopmentHolds(initial,policy,{catalog:{games:[]}});
+  assert.deepEqual(after.tasks.map(t=>t.id).sort(),['mare','other-running','other-cancelled','shared-learning'].sort());
+  assert.equal(after.tasks.find(t=>t.id==='mare').ownerDevelopmentHold,false);
+  assert.equal(after.tasks.find(t=>t.id==='other-running').status,'running');
+  assert.equal(after.tasks.find(t=>t.id==='other-running').ownerDevelopmentHold,true);
+  assert.deepEqual(synchronizeOwnerDevelopmentHolds(after,policy,{catalog:{games:[]}}).tasks.map(t=>t.id),
+    after.tasks.map(t=>t.id),'queue cleanup must be repeat-safe');
+});
