@@ -70,7 +70,6 @@ function rolePrompt({role,order,book,previous,vibeCore}){
 async function callRole(role,ctx){
   let lastError=null;const startedAt=new Date().toISOString();console.log('DEPARTMENT_STATE='+role+':ACTIVE');
   const apiKey=clean(process.env.GEMINI_API_KEY);
-  if(!apiKey)throw new Error('DEPARTMENT_GEMINI_KEY_REQUIRED_NO_LOCAL_FALLBACK');
   // [Vibe5.9 전문 배정] 실제 QA가 통과한 과거 부서 결과만 다음 모델 점수에 전달한다.
   const specialistDepartment=role===FINAL_ROLE?'PLANNING':role.toUpperCase();
   const specialistTask=ctx.order?.goal||'';
@@ -85,6 +84,9 @@ async function callRole(role,ctx){
     }));
   const specialistDomain=selectVibe59FreeExperts({department:specialistDepartment,
     taskText:specialistTask,responsibleFiles:specialistFiles,includeUnconfigured:true}).domain;
+  if(!apiKey&&!selectVibe59FreeExperts({department:specialistDepartment,
+    taskText:specialistTask,responsibleFiles:specialistFiles}).expertCandidates.length)
+    throw new Error('DEPARTMENT_GEMINI_KEY_REQUIRED_NO_LOCAL_FALLBACK');
   for(let attempt=1;attempt<=2;attempt++){
     try{
       const response=await requestGeminiFreePair({
