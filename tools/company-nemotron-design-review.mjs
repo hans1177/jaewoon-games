@@ -142,7 +142,7 @@ export function designRoleForFrames(frameNames = []) {
   if (/(npc|face|hair|outfit|villager|resident|skin|citizen)/.test(names)) return 'NPC';
   // [전체 방문 메뉴] 교역·화물·조선·연구·도감·의뢰 화면은 3D 모델이 있어도 UI 검수로 배정한다.
   // 일반 항해 장면의 ship/port는 기존 WORLD 분류를 유지한다.
-  if (/(hud|menu|gui|card|tab_|ui_|map_ui|inventory|font|interface|trade|market|goods|cargo|warehouse|shop|yard|shipwright|codex|quest|journal|diary|research|tech|recruit|crew|dialog|status|merchant|treasury)/.test(names)) return 'UI';
+  if (/(hud|menu|gui|card|tab_|ui_|map_ui|inventory|font|interface|trade|market|goods|cargo|warehouse|shop|yard|shipwright|codex|quest|journal|diary|research|tech|recruit|crew|dialog|status|merchant|treasury|bank|tavern|palace|guild|museum|academy|facility|exchange|diplomacy|equipment|chart)/.test(names)) return 'UI';
   if (/(animation|motion|idle|run|walk|attack|swing|movement)/.test(names)) return 'MOTION';
   if (/(harbor|sea|ship|port|island|landscape|world|voyage|town|lighting|field)|^(?:v[0-9]+_|cb[0-9]+(?:_|-))/.test(names)) return 'WORLD';
   return 'GENERAL';
