@@ -46,20 +46,24 @@ export function selectStudioDesignPhotoNames(names, sequence = 0, limit = 8) {
     const label = name.replace(/-[0-9]+\.(?:jpe?g|png)$/i, '');
     if (!available.has(label)) available.set(label, name);
   }
+  // [전 시각 계열] 항구·사람·선박·교역·무기·재질을 매 회차 포함하고, 전투 VFX와 UI는 교대한다.
   const groups = [
-    ['town_aerial_grid','town_plaza_full','town_outer_district_north','town_outer_district_south','town_plaza_center'],
-    ['town_facility_row_wide','town_market_facade','town_guild_facade','town_scholar_library','town_library_street'],
-    ['town_harbor_to_market','town_street_roofline','town_outer_district_north','town_plaza_center','town_plaza_full'],
-    ['town_outer_district_south','town_facility_row_wide','town_library_street','town_harbor_to_market','town_aerial_grid'],
+    ['town_aerial_grid','town_plaza_full','town_market_facade','town_street_roofline','town_outer_district_north'],
     ['harbor_npc_face_close','harbor_npc_hair_left','harbor_npc_hair_right','harbor_npc_hair_back','harbor_npc_face_front'],
     ['harbor_npc_outfit_front','harbor_npc_outfit_side','harbor_npc_outfit_back','harbor_npc_pair_diagonal','harbor_npc_port_street_reverse'],
-    ['ui_mobile_battle_2x2','ui_main_menu_icons','tab_harbor','field_npc_ally_mob','tab_crew'],
-    ['cb0_deck','cb1','cb2','v1_start','v2_event']
+    ['ship_hull_detail','ship_sails_rigging','cb0_deck','v1_start','v2_event'],
+    ['cargo_warehouse_close','cargo_trade_crates','tab_trade','ui_trade_hall_no_hud','town_market_facade'],
+    ['weapon_blade_close','weapon_ranged_close','harbor_motion_attack','harbor_motion_shoot','field_npc_ally_mob'],
+    ['material_stone_roof','material_wood_dock','town_library_street','town_facility_row_wide','field_entry']
+  ];
+  const finish = [
+    ['vfx_battle_mid_action','vfx_battle_late_action','b1_start','b2_mid','v3_event2'],
+    ['ui_mobile_battle_2x2','ui_main_menu_icons','tab_harbor','tab_crew','field_motion_smooth_icons']
   ];
   const selected = [];
   const used = new Set();
   const phase = Number.isSafeInteger(Number(sequence)) ? Math.abs(Number(sequence)) % 5 : 0;
-  for (const group of groups) {
+  for (const group of [...groups, finish[phase % 2]]) {
     for (let offset = 0; offset < group.length; offset++) {
       const name = available.get(group[(phase + offset) % group.length]);
       if (!name || used.has(name)) continue;
@@ -319,9 +323,18 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     return record('BLOCKED_NOT_ISOLATED_CANDIDATE_BRANCH', {frames: proofs});
   const anchors = visualAnchors(contract.allowedSourceFiles);
   if (!anchors.length) return record('SKIPPED_NO_EXISTING_VISUAL_ANCHORS', {frames: proofs});
+  // [Studio PBR] 스튜디오가 측정한 실제 물체/맵 개수는 참고 증거일 뿐 PASS 증명이 아니다.
+  const materialAudit = (studio.log || []).filter(row => typeof row?.out === 'string' &&
+    row.out.includes('STUDIO_MATERIAL_AUDIT ')).slice(-1)[0]?.out?.slice(0, 700) || '';
   const prompt = 'You are a visual art director for the existing Roblox sea-voyage game. ' +
-    'Study the verified real Studio screenshots and improve face, hair, clothing, ships, buildings, ' +
-    'materials, lighting, HUD, cards, portraits, motion and composition where visually justified. ' +
+    'Study the verified real Studio screenshots and improve face, hair, clothing, cargo goods, ship rigging, ' +
+    'sails, hull, period buildings, materials, lighting, weapons, hit VFX, HUD, portraits and composition. ' +
+    'Art direction: historically grounded semi-realistic Age of Sail; distinct cloth/leather/stone/wood/metal, ' +
+    'no toy gloss, avoid flat muddy colors or bright white imported models. Review real game aesthetic only, ' +
+    'do not copy copyrighted art, designs or asset IDs from other games. ' +
+    'PBR: prefer preserved original ColorMap/NormalMap/RoughnessMap/MetalnessMap/UV and mesh texture; ' +
+    'never fabricate maps, alter their IDs or mutate SurfaceAppearance during runtime. ' +
+    'Use original region/climate/year/role materials; preserve registered CC0 provenance and mobile readability. ' +
     'Never create primitives, placeholder models, new art assets, URLs or unlicensed assets. ' +
     'Only change visual constants on EXISTING exact source lines shown in anchors. ' +
     'Town layout may adjust ONLY EXISTING named facility pos Vector3 coordinates on the existing PortScene line, ' +
@@ -336,6 +349,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     'commands, identifiers, property targets or line breaks. Empty edits when uncertain. ' +
     'Policies: ' + JSON.stringify({categories: contract.visualCategories,
       maxReplacementBytes: contract.maximumReplacementBytes}) + '. ' +
+    'Real Studio material audit (not a quality PASS): ' + materialAudit + '. ' +
     'Screenshots: ' + JSON.stringify(photos.map(x => x.name)) + '. ' +
     'Existing verified source anchors: ' + JSON.stringify(anchors);
   const controller = new AbortController();
