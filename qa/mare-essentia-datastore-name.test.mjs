@@ -2264,3 +2264,75 @@ test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치�
   assert.throws(() => applyVisualReplacements({}, [reviewed.edits[0]], contract),
     /SOURCE_FILE_NOT_FOUND/);
 });
+
+
+// [무료 디자인 전문가 회귀] 전문 분야, 일일 한도, 쿨다운, 독립 전후 판정.
+test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다운을 지킨다', async () => {
+  const {DESIGN_FREE_MODELS, designRoleForFrames, selectFreeDesignModels,
+    validateVisualComparison} = await import('../tools/company-nemotron-design-review.mjs');
+  const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
+  const config = policy.directVisualDesign.freeSpecialistPool;
+  assert.equal(config.paidFallbackForbidden, true);
+  assert.equal(config.accountTierProofRequired, true);
+  assert.equal(config.maxCallsPerCapture, 3);
+  assert.equal(DESIGN_FREE_MODELS.length, 7);
+  assert.ok(DESIGN_FREE_MODELS.every(model => config.modelIds.includes(model.id)));
+  assert.ok(DESIGN_FREE_MODELS.every(model => model.provider !== 'OPENROUTER' ||
+    model.model.endsWith(':free')));
+  const env = {
+    NVIDIA_API_KEY: 'test-key', NVIDIA_FREE_TIER_VERIFIED: 'YES',
+    GEMINI_API_KEY: 'test-key', GEMINI_DESIGN_FREE_TIER_VERIFIED: 'YES',
+    OPENROUTER_API_KEY: 'test-key', OPENROUTER_DESIGN_FREE_TIER_VERIFIED: 'YES'
+  };
+  const now = Date.parse('2026-11-18T07:00:00Z');
+  const day = new Date(now).toISOString().slice(0, 10);
+  assert.equal(designRoleForFrames(['npc_face-0.jpg']), 'NPC');
+  assert.equal(designRoleForFrames(['ship_harbor-0.jpg']), 'WORLD');
+  assert.equal(designRoleForFrames(['menu_ui-0.jpg']), 'UI');
+  assert.equal(designRoleForFrames(['run_motion-0.jpg']), 'MOTION');
+  const models = opts => selectFreeDesignModels({policy, env, now, ...opts});
+  assert.equal(models({frameNames: ['npc_face-0.jpg']})[0].id, 'NVIDIA_VL');
+  assert.equal(models({frameNames: ['ship-0.jpg']})[0].id, 'GEMINI_FLASH');
+  assert.equal(models({frameNames: ['menu_ui-0.jpg']})[0].id, 'OPENROUTER_GEMMA');
+  assert.equal(models({frameNames: ['walk_motion-0.jpg']})[0].id, 'OPENROUTER_OMNI');
+  assert.ok(!models({frameNames: ['npc_face-0.jpg'],
+    previous: {usageWindow: {day, calls: {NVIDIA: 12, GEMINI: 12, OPENROUTER: 30}}}}).length);
+  assert.ok(models({frameNames: ['npc_face-0.jpg'],
+    previous: {usageWindow: {day, calls: {NVIDIA: 12}}}})
+    .every(model => model.provider !== 'NVIDIA'));
+  assert.ok(models({frameNames: ['npc_face-0.jpg'],
+    previous: {cooldowns: {NVIDIA_VL: '2026-11-18T08:00:00Z'}}})
+    .every(model => model.id !== 'NVIDIA_VL'));
+  assert.equal(selectFreeDesignModels({policy, env: {
+    NVIDIA_API_KEY: 'test-key', NVIDIA_FREE_TIER_VERIFIED: 'NO'
+  }}).length, 0);
+  assert.throws(() => selectFreeDesignModels({
+    policy: {directVisualDesign: {freeSpecialistPool: {...config, paidFallbackForbidden: false}}},
+    env
+  }), /FREE_SPECIALIST_POLICY_DENIED/);
+  const evidence = name => ({
+    screenshot: name, evidence: 'Compared with the actual baseline, this visible feature has noticeably improved.'
+  });
+  const pass = validateVisualComparison({
+    verdict: 'PASS', improvements: [evidence('npc_face-0.jpg'), evidence('npc_hair-0.jpg')],
+    regressions: []
+  }, ['npc_face-0.jpg', 'npc_hair-0.jpg']);
+  assert.equal(pass.status, 'PASS');
+  assert.match(pass.improvements[0].evidenceSha256, /^[a-f0-9]{64}$/);
+  assert.equal(pass.improvements[0].evidence, undefined);
+  assert.equal(validateVisualComparison({
+    verdict: 'PASS', improvements: [evidence('npc_face-0.jpg')], regressions: []
+  }, ['npc_face-0.jpg']).status, 'UNVERIFIED');
+  assert.equal(validateVisualComparison({
+    verdict: 'PASS', improvements: [evidence('npc_face-0.jpg'), evidence('npc_hair-0.jpg')],
+    regressions: [evidence('npc_face-0.jpg')]
+  }, ['npc_face-0.jpg', 'npc_hair-0.jpg']).status, 'UNVERIFIED');
+  assert.throws(() => validateVisualComparison({
+    verdict: 'PASS', improvements: [evidence('invented.jpg')], regressions: []
+  }, ['npc_face-0.jpg']), /VISUAL_COMPARISON_EVIDENCE_INVALID/);
+  const workflow = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  assert.match(workflow, /--mode=verify/);
+  assert.match(workflow, /DESIGN_AUTO_MERGE=MERGED_AFTER_STUDIO_VISUAL_SECURITY_QA/);
+  assert.match(workflow, /company-roblox-source-drift-sync\.yml/);
+  assert.match(workflow, /STUDIO_CANDIDATE_REF/);
+});
