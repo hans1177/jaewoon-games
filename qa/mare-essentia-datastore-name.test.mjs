@@ -2155,7 +2155,7 @@ test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox
 
 // [무료 네모트론 디자인 검증] 외부 모델이 값을 제시해도 기존 R15 책임 파일의 다섯 숫자만 수정한다.
 test('무료 네모트론 Studio 디자인 후보는 격리 브랜치와 허용 숫자만 사용한다',async()=>{
-  const {validateReview,applyVisualParameters,authorizedCandidateBranch}=await import('../tools/company-nemotron-design-review.mjs');
+  const {validateReview,applyVisualParameters,authorizedCandidateBranch,verifiedStudioCapture}=await import('../tools/company-nemotron-design-review.mjs');
   const contract=JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json','utf8')).directVisualDesign;
   const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
   assert.equal(contract.enabled,true);
@@ -2171,6 +2171,15 @@ test('무료 네모트론 Studio 디자인 후보는 격리 브랜치와 허용 
   assert.equal(authorizedCandidateBranch('main','44238657398'),false);
   assert.equal(authorizedCandidateBranch('nemotron-mare-design-44238657398','44238657399'),false);
   assert.equal(authorizedCandidateBranch('nemotron-mare-design-../main','44238657398'),false);
+  // 사진 이름/JPEG 파일만이 아니라 실제 Studio MCP report의 샤·캡처 기록까지 대조한다.
+  const revision='a'.repeat(40);
+  const photographed=[{name:'harbor_npc_face_front-0.jpg'},{name:'harbor_motion_idle-0.jpg'}];
+  const studio={sourceRevision:revision,summary:{capturedFrames:2},
+    log:[{capture:'harbor_npc_face_front'},{capture:'harbor_motion_idle'}]};
+  assert.equal(verifiedStudioCapture(studio,photographed,revision),true);
+  assert.equal(verifiedStudioCapture(studio,photographed,'b'.repeat(40)),false);
+  assert.equal(verifiedStudioCapture({...studio,log:[]},photographed,revision),false);
+  assert.equal(verifiedStudioCapture({...studio,summary:{capturedFrames:1}},photographed,revision),false);
   assert.match(workflow,/node --test qa\/mare-essentia-datastore-name\.test\.mjs/);
   const images=['harbor_npc_face_front-0.jpg','harbor_motion_idle-0.jpg'];
   const valid={
@@ -2180,6 +2189,8 @@ test('무료 네모트론 Studio 디자인 후보는 격리 브랜치와 허용 
   };
   const checked=validateReview(JSON.stringify(valid),images);
   assert.equal(checked.edits.length,1);
+  assert.equal(checked.issues[0].evidence,undefined,'원문 모델 증거는 저장하지 않음');
+  assert.match(checked.issues[0].evidenceSha256,/^[a-f0-9]{64}$/);
   const original=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
   // [격리 후보와 재실행] 후보에 이미 적용된 값에서도 회귀 테스트가 PASS할 수 있어야 한다.
   const fixture=original.replace(/if belt then [0-9.]+ else spec\[4\]/,'if belt then 0.38 else spec[4]');
