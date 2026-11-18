@@ -5630,7 +5630,7 @@ local function openTradeHall()
 		local recent = H.recentTab
 		local showRecent = recent and TAB_NAME[recent] ~= nil and recent ~= "trade"
 		local recentWidth = if narrow then 106 else 140
-		local cashWidth = if narrow then math.max(142, top.AbsoluteSize.X - recentWidth - 30)
+		local cashWidth = if narrow then math.max(142, width - 16 - recentWidth - 30)
 			else math.clamp(math.floor(width * 0.36), 220, 315)
 		local commonStatus = mkLabel(top, H.statusMoneyCargo(p, ship, narrow), if narrow then 15 else 18, INK, true)
 		commonStatus.Name = "TradeGlobalMoneyCargo"
