@@ -104,6 +104,69 @@ test('owner-exclusive games are neither planned nor reserved by System AI',()=>{
   assert.match(select,/!excluded\.has\(String\(t\.gameId\|\|''\)\)/);
 });
 
+test('live free-model deep repair retries missing strategies before critic without weakening the gate',async()=>{
+  const cwd=root(),prev=process.cwd(),priorFetch=globalThis.fetch;
+  const envNames=['GEMINI_API_KEY','SYSTEM_AI_GEMINI_MODEL','VIBE2_GEMINI_MODEL','VIBE2_GEMINI_BACKUP_MODEL'];
+  const previousEnv=Object.fromEntries(envNames.map(name=>[name,process.env[name]]));
+  let calls=0;
+  try{
+    process.chdir(cwd);
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('task.json',JSON.stringify({
+      id:'missing-options',status:'running',taskType:'bottleneck-repair',
+      goal:'fix exact source defect',responsibleFiles:['tools/demo.mjs'],
+      acceptanceCriteria:['value becomes 2'],failureSignature:'REPAIR_REQUIRED',
+      evidence:['failure-cause:REPAIR_REQUIRED']
+    }));
+    process.env.GEMINI_API_KEY='TEST_ONLY_NOT_SENT_TO_NETWORK';
+    process.env.SYSTEM_AI_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_BACKUP_MODEL='gemini-3.5-flash-lite';
+    const initial={
+      summary:'initial source repair with missing strategies',
+      edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}],
+      newFiles:[],recommendedTests:['node --check tools/demo.mjs'],risks:[]
+    };
+    const corrected={
+      ...initial,
+      summary:'scope-bound alternatives and direct source repair',
+      strategyOptions:[
+        {id:'wide',summary:'rewrite the assigned module',risk:'HIGH',files:['tools/demo.mjs']},
+        {id:'narrow',summary:'replace the single source value',risk:'LOW',files:['tools/demo.mjs']}
+      ],
+      selectedStrategyId:'narrow'
+    };
+    const critic={verdict:'PASS',preferredStrategyId:'narrow',weakPoints:[],requiredCorrections:[],revisedAnswer:null};
+    globalThis.fetch=async()=>{
+      const response=[initial,corrected,critic][calls++];
+      if(!response)throw new Error('UNEXPECTED_EXTRA_MODEL_REQUEST');
+      return{ok:true,status:200,json:async()=>({
+        candidates:[{content:{parts:[{text:JSON.stringify(response)}]}}]
+      })};
+    };
+    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json'});
+    assert.equal(calls,3,'one corrective model attempt and one critic pass');
+    assert.equal(result.provider,'GEMINI');
+    assert.equal(result.deepReasoningUsed,true);
+    assert.equal(result.strategyOptions.length,2);
+    assert.equal(result.selectedStrategyId,'narrow');
+    assert.equal(result.criticVerdict,'PASS');
+    assert.deepEqual(result.changedFiles,['tools/demo.mjs']);
+    assert.equal(fs.readFileSync('tools/demo.mjs','utf8'),"export const value=2;\n");
+    assert.equal(result.workerSelfAcceptance,false);
+    assert.equal(result.qaGateWeakening,false);
+    assert.equal(result.rawModelOutputStored,false);
+  }finally{
+    globalThis.fetch=priorFetch;
+    for(const name of envNames){
+      if(previousEnv[name]===undefined)delete process.env[name];
+      else process.env[name]=previousEnv[name];
+    }
+    process.chdir(prev);
+    fs.rmSync(cwd,{recursive:true,force:true});
+  }
+});
+
 test('system AI edits only assigned system file and leaves completion for supervisor',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
