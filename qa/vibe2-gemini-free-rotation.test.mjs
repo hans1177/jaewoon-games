@@ -563,3 +563,21 @@ test('Vibe59 specialist routing assigns actual free model by domain',async()=>{
     assert.equal(result.text,'{"edits":[]}');
   });
 });
+
+
+test('Vibe59 main plan classifies Roblox visual work without model calling',async()=>{
+  const {buildVibe59AutonomyPlan}=await import('../tools/vibe2-v59-autonomy.mjs');
+  const plan=buildVibe59AutonomyPlan({target:'roblox',order:{
+    gameId:'mare-essentia',goal:'대항해시대 주민 얼굴 머리 의상 디자인 개선',
+    source:{responsibleFiles:['roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau']}
+  }});
+  assert.equal(plan.version,'5.9');
+  assert.equal(plan.freeAiSpecialists.domain,'NPC');
+  assert.equal(plan.freeAiSpecialists.source,'EXISTING_FREE_MODEL_ROTATION');
+  assert.equal(plan.freeAiSpecialists.externalModelCalled,false);
+  assert.equal(plan.sourceWrite,false);
+  assert.equal(plan.runtimeVerified,false);
+  assert.ok(plan.freeAiSpecialists.expertCandidates.every(x=>
+    GEMINI_FREE_MODELS.includes(x.model)||
+    Object.values(VERIFIED_FREE_FALLBACK_MODELS).includes(x.model)));
+});
