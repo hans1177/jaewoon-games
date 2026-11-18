@@ -2909,6 +2909,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		{ 0.71, 0.88, 1.07, 1.31, 1.53 },
 		{ 0.73, 0.92, 1.14, 1.42, 1.72 },
 	}
+	-- [항구별 진단] 주택 배치 수량은 화면용 정수만 장면에 기록한다. DB·경제·전투 수치에는 영향이 없다.
+	local homeCandidates, homePlaced, homeShifted, homePlotRejected, homeModelRejected = 0, 0, 0, 0, 0
+	local homeSizeCounts = { 0, 0, 0, 0, 0 }
+	-- 한 항구의 주택 후보 전부가 같은 5개 인접 위치를 사용해 재방문 배치를 재현한다.
+	local homeShifts = { Vector3.zero, Vector3.new(-2.4, 0, 0), Vector3.new(2.4, 0, 0),
+		Vector3.new(0, 0, -2.4), Vector3.new(0, 0, 2.4) }
 	-- 한 줄 채우기: z = 줄의 중심, t = 0(항구 쪽)~1(성벽 쪽)
 	-- [주거 구획] 항구·대로 측면·주거 행·칸 번호 조합으로 재진입 시 같은 필지 키를 쓴다.
 	local residentialDecorationPlaced = false
@@ -2919,6 +2925,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			slotIndex += 1
 			local plotId = ("%s:home:%d:%d:%d:%d"):format(info.portId, side, laneIndex, rowIndex, slotIndex)
 			if rng:NextNumber() < dens then
+				homeCandidates += 1
 				local sz = S * rng:NextNumber(0.9, 1.08)
 				local pos = Vector3.new(x + rng:NextNumber(-1, 1) * P.jx, 0, z + rng:NextNumber(-1, 1) * P.jz)
 				-- 같은 필지는 같은 크기 등급을 선택한다. 공용 랜덤 흐름을 소비하지 않아 다른 건물 배치를 흔들지 않는다.
@@ -2949,8 +2956,19 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						* roofFactor * 0.5 + 3.5
 				end
 				local half = math.max(sz * 0.62, projectedHalf)
-				if projectedHalf <= rowClearance and not onStreet(pos.X, half)
-					and not reserved(pos.X, pos.Z, half) then
+				-- [기존 필지 내 재배치] 중앙 자리만 사전 검사하면 옆자리 2.4칸이 비어도 주택이 사라진다.
+				-- 전체 모델을 복제하기 전에 가까운 5곳의 기존 예약 경계부터 가볍게 검사한다.
+				local canFitPlot = false
+				if projectedHalf <= rowClearance then
+					for _, shift in homeShifts do
+						local at = pos + Vector3.new(shift.X, 0, shift.Z * side)
+						if not onStreet(at.X, half) and not reserved(at.X, at.Z, half) then
+							canFitPlot = true
+							break
+						end
+					end
+				end
+				if canFitPlot then
 				local fl = P.fl0 + math.floor(t * P.flGrow + 0.5) + (if lvl >= 4 then 1 else 0) - (if lvl <= 1 then 1 else 0)
 				if rng:NextNumber() < 0.15 then fl += (if rng:NextNumber() < 0.5 then -1 else 1) end
 				-- 대형 저택 옆에 단층 작은 집이 남도록 지붕 높이도 크기 등급에 맞춘다.
@@ -2977,9 +2995,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					local laneFar = laneNear + laneL
 					local chosenShift
 					-- 원래 자리에서 시작해 같은 필지 안에서만 조금 이동한다. 다른 건물은 건드리지 않는다.
-					for _, shift in { Vector3.zero, Vector3.new(-2.4, 0, 0),
-						Vector3.new(2.4, 0, 0), Vector3.new(0, 0, -2.4 * side),
-						Vector3.new(0, 0, 2.4 * side) } do
+					for _, direction in homeShifts do
+						local shift = Vector3.new(direction.X, 0, direction.Z * side)
 						local at = pos + shift
 						local clearRoad = math.abs(math.abs(at.Z) - laneNear) > measuredHalfZ + laneWidth * 0.5 + 1.5
 							and math.abs(math.abs(at.Z) - laneFar) > measuredHalfZ + laneWidth * 0.5 + 1.5
@@ -2993,6 +3010,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						if chosenShift.Magnitude > 0 then staged:PivotTo(CFrame.new(chosenShift) * staged:GetPivot()) end
 						pos += chosenShift
 						for _, object in staged:GetChildren() do object.Parent = folder end
+						homePlaced += 1
+						if chosenShift.Magnitude > 0 then homeShifted += 1 end
+						homeSizeCounts[sizeClass] += 1
 						-- 실제 주거 입주·증축 판단은 기존 경제의 주택 수·발전도가 담당한다.
 						body:SetAttribute("BuildPlotId", plotId)
 						body:SetAttribute("BuildType", "house")
@@ -3036,9 +3056,15 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							smokers += 1
 							smokeOn(folder, pos + Vector3.new(ww * 0.2, fl * 6 + 4, 0))
 						end
+					else
+						homeModelRejected += 1
 					end -- [실제 외곽 검사] 안전한 경우만 본 장면으로 반영
+				else
+					homeModelRejected += 1
 				end
 				staged:Destroy()
+				else
+					homePlotRejected += 1
 				end
 			else
 				-- 빈 구획: 아직 경제 시뮬에서 주택이 건설되지 않은 부분에 자연물을 남긴다.
@@ -3098,6 +3124,20 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				fillRow(side * (laneZ + laneL - laneWidth / 2 - 6 - S / 2), t, -260, side, p, 2)
 			end
 		end
+	end
+	-- [항구별 시각 QA] 배치 성공·이동·실패 사유를 기존 PortScene 폴더에만 공개한다.
+	-- 모바일에서는 추가 스캔·영구 저장 없이 이 집계만 읽어 항구별 빈집/밀집 원인을 확인한다.
+	folder:SetAttribute("CityHousingPort", info.portId)
+	folder:SetAttribute("CityHousingCulture", key)
+	folder:SetAttribute("CityHousingCandidates", homeCandidates)
+	folder:SetAttribute("CityHousingPlaced", homePlaced)
+	folder:SetAttribute("CityHousingShifted", homeShifted)
+	folder:SetAttribute("CityHousingPlotRejected", homePlotRejected)
+	folder:SetAttribute("CityHousingModelRejected", homeModelRejected)
+	folder:SetAttribute("CityHousingLayoutState", if homeCandidates == 0 then "NO_ECONOMIC_CANDIDATE"
+		elseif homePlaced == 0 then "NO_SAFE_HOUSING_PLOT" else "COMPUTED_NOT_VISUALLY_VERIFIED")
+	for sizeClass = 1, 5 do
+		folder:SetAttribute("CityHousingSize" .. sizeClass, homeSizeCounts[sizeClass])
 	end
 	for _, sx in streetsOuter do
 		strip(folder, style, sx, 0, laneWidth, 2 * (152 + pairsN * laneL) + 6)
