@@ -178,6 +178,18 @@ export function applyEdits(root, parsed, order = null, contextFiles = null) {
 const QUOTA_REST_MS = 6 * 3600000;        // 한도 초과(429)면 6시간 쉰다
 const OUTAGE_REST_MS = 15 * 60000;        // 일시 장애(5xx)면 15분 쉰다
 
+// [기존 두뇌 라우팅] 동일한 수정·병합·학습 파이프라인에서 역할만 구분한다.
+export function brainRoleForOrder(order = {}) {
+  if (order.kind === 'visual') return 'VISUAL';
+  const words = String(order.text || '').toLowerCase();
+  if (/(audio|sound|sfx|music|effect.?sound|음원|효과음|음악|사운드)/.test(words)) return 'AUDIO';
+  if (/(rig|bone|joint|motor6d|animation|motion|skeleton|관절|리깅|애니메이션|모션)/.test(words)) return 'MOTION';
+  if (/(asset|mesh|texture|pbr|material|model|icon|font|glb|uv|에셋|자산|재질|메시|아이콘|폰트|텍스처)/.test(words)) return 'ASSET';
+  if (order.kind === 'error') return 'DEBUG';
+  if (order.kind === 'ui') return 'UI';
+  return 'CODE';
+}
+
 // 한도가 끝난 모델은 건너뛰고, 계속 실패(3번 이상, 성공률 30% 미만)하는 모델은 순서 맨 뒤로 보낸다. 나머지는 원래 우선순위를 지킨다.
 export function rankProviders(providers, stats = {}, now = Date.now(), role = '') {
   const idx = new Map(providers.map((p, i) => [p.name, i]));
@@ -189,7 +201,7 @@ export function rankProviders(providers, stats = {}, now = Date.now(), role = ''
     return (ok + 1) / (ok + fail + 2);
   };
   const preferred = p => role === 'VISUAL' ? (p.acceptsImages ? 0 : 1)
-    : role === 'DEBUG' || role === 'CODE' ? (/^(?:codestral|groq|openrouter):/.test(p.name) ? 0 : 1)
+    : ['DEBUG','CODE','AUDIO','MOTION','ASSET'].includes(role) ? (/^(?:codestral|groq|openrouter):/.test(p.name) ? 0 : 1)
       : role === 'UI' ? (/^(?:gemini|codestral):/.test(p.name) ? 0 : 1) : 0;
   return providers.filter(p => !(stats[p.name]?.quotaUntil > now) && (role !== 'VISUAL' || p.acceptsImages))
     .sort((a, b) => demoted(a) - demoted(b) ||
@@ -305,15 +317,16 @@ export async function runBrain({ orders, ledger, root, llm, playbook = emptyPlay
   const ctx = findContext(root, order);
   if (!ctx.length) return { ok: false, order, skipped: '관련 코드를 찾지 못했다', attempted: true };
   const prompt = buildPrompt(order, ctx, examplesFor(order, playbook));
+  const role = brainRoleForOrder(order);
   let res, parsed;
-  try { res = await llm(prompt, images, { role: order.kind === 'visual' ? 'VISUAL' : order.kind === 'error' ? 'DEBUG' : order.kind === 'ui' ? 'UI' : 'CODE' }); } catch (e) { return { ok: false, order, skipped: 'LLM 실패: ' + e.message, attempted: true, trace: e.trace || [], prompt }; }
+  try { res = await llm(prompt, images, { role }); } catch (e) { return { ok: false, order, skipped: 'LLM 실패: ' + e.message, attempted: true, trace: e.trace || [], prompt }; }
   let errs;
   try { parsed = parseEdits(res.text); errs = validateEdits(root, order, parsed, ctx.map(c => c.file)); } catch (e) { errs = [e.message]; }
   if (errs.length) {
     // 수정안이 원본과 어긋나면(검색 문구 불일치 등) 오류를 알려 주고 한 번만 다시 받는다
     log('REJECTED(1차) ' + errs.join(','));
     const fb = prompt + '\n\nYOUR PREVIOUS ANSWER WAS REJECTED: ' + errs.join('; ') + '\nFix it: every "search" must be copied EXACTLY (same spaces, same text) from the code above, WITHOUT the "123| " line-number prefixes, and must occur exactly once. Return only the JSON.';
-    try { const res2 = await llm(fb, images, { role: order.kind === 'visual' ? 'VISUAL' : order.kind === 'error' ? 'DEBUG' : order.kind === 'ui' ? 'UI' : 'CODE' }); res = { ...res2, trace: [...(res.trace || []), ...(res2.trace || [])] }; parsed = parseEdits(res.text); errs = validateEdits(root, order, parsed, ctx.map(c => c.file)); } catch (e) { errs = [...errs, 'RETRY:' + e.message.slice(0, 120)]; }
+    try { const res2 = await llm(fb, images, { role }); res = { ...res2, trace: [...(res.trace || []), ...(res2.trace || [])] }; parsed = parseEdits(res.text); errs = validateEdits(root, order, parsed, ctx.map(c => c.file)); } catch (e) { errs = [...errs, 'RETRY:' + e.message.slice(0, 120)]; }
   }
   if (errs.length) { log('REJECTED ' + errs.join(',')); return { ok: false, order, provider: res.provider, trace: res.trace, prompt, responseText: res.text, rejected: errs, attempted: true }; }
   const files = applyEdits(root, parsed, order, ctx.map(c => c.file));
@@ -331,7 +344,7 @@ export function recordAttempt(ledger, result, now = Date.now()) {
 
 export function recordMerged(ledger, result, pr, now = Date.now()) {
   const out = JSON.parse(JSON.stringify(ledger));
-  out.merged = [...(out.merged || []), { at: now, fp: result.order.fingerprint, pr, files: result.files, provider: result.provider, kind: result.order?.kind || '', role: result.order?.kind === 'visual' ? 'VISUAL' : result.order?.kind === 'error' ? 'DEBUG' : result.order?.kind === 'ui' ? 'UI' : 'CODE', sig: result.sig || '', pbKey: result.pbKey || '' }].slice(-30);
+  out.merged = [...(out.merged || []), { at: now, fp: result.order.fingerprint, pr, files: result.files, provider: result.provider, kind: result.order?.kind || '', role: brainRoleForOrder(result.order), sig: result.sig || '', pbKey: result.pbKey || '' }].slice(-30);
   out.day = out.day?.date === today(now) ? { date: today(now), count: out.day.count + 1 } : { date: today(now), count: 1 };
   return out;
 }
@@ -415,7 +428,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const save = (f, v) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, typeof v === 'string' ? v : JSON.stringify(v, null, 2) + '\n'); };
   if (arg('record-merged')) {          // 병합이 끝난 뒤 워크플로가 호출: 하루 횟수·간격 장부에 기록
     const r = readJson(outFile, {});
-    const L = recordMerged(readJson(ledgerFile, emptyBrainLedger()), { order: { fingerprint: r.fingerprint, kind: r.kind }, files: r.files || [], provider: r.provider, sig: r.sig, pbKey: r.pbKey }, Number(arg('record-merged')));
+    const L = recordMerged(readJson(ledgerFile, emptyBrainLedger()), { order: { fingerprint: r.fingerprint, kind: r.kind, text: r.text || '' }, files: r.files || [], provider: r.provider, sig: r.sig, pbKey: r.pbKey }, Number(arg('record-merged')));
     save(ledgerFile, L);
     console.log('병합 기록 완료');
     process.exit(0);
