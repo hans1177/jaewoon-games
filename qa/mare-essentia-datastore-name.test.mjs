@@ -1561,6 +1561,50 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  assert.match(port,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
 });
 
+// [181개 항구 구역 재배치] 기존 시드와 모든 문화권의 경계가 동일 생성 함수에 적용된다.
+test('모든 항구 시장·종교·농장에 경계 검사와 안전 재배치 후보가 있다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const ports=read('ReplicatedStorage/Shared/Ports.luau');
+ const section=ports.slice(ports.indexOf('local Ports:'),ports.indexOf('local Nations:'));
+ const ids=[...section.matchAll(/^\t([a-z][a-z0-9_]*)\s*=\s*\{\s*\n\s*id = /gm)].map(x=>x[1]);
+ assert.equal(ids.length,181,'등록된 181개 항구 모두 적용');
+ assert.equal(new Set(ids).size,181,'항구 중복 없음');
+ for(const token of [
+  'seeded(info.portId .. ":district-safe-layout")',
+  'local districtKinds = { "religious", "market", "farm" }',
+  'for candidateIndex, at in candidates do',
+  'if clear and isRoyalCity',
+  'for _, sx in streetsX do',
+  'for _, sx in streetsOuter do',
+  'for _, landmark in LM_SITES do',
+  'for _, other in districts do',
+  'hx + other.hx + 6','hz + other.hz + 6',
+  'math.abs(z) + hz <= 440',
+  'CityDistrictLayoutMode", "PORT_SEEDED_COLLISION_CHECK"',
+  'CityDistrictPlaced", #districts',
+  'CityDistrictMoved", districtMoved',
+  'CityDistrictRejectedCandidates", districtRejected',
+  'd.hx + half','d.hz + half',
+  'CityBuildingMode", "AUTO_VISUAL_READ_ONLY"'
+ ])assert.ok(scene.includes(token),'항구별 구역 안전 검사 누락: '+token);
+ // 후보 좌표가 허용 최대 지터로 흔들려도 주요 랜드마크·왕궁·도시 경계를 침범하지 않아야 한다.
+ const marks=[[-112,166],[-112,-166],[-160,166],[-160,-166],[-208,181],[-208,-181],[-263,181],[-263,-181]];
+ for(const id of ids){
+  for(const side of [-1,1]){
+   for(const kind of ['religious','market','farm']){
+    const hx=kind==='farm'?82:41,hz=kind==='farm'?51:43;
+    const x=kind==='farm'?-115:-141;
+    const z=side*(kind==='farm'?385:266);
+    assert.ok(Math.abs(z)+hz<=440,id+' 외곽 경계');
+    assert.ok(x-hx>-235,id+' 왕궁 서쪽 구역');
+    for(const [lx,lz] of marks){
+     assert.ok(Math.abs(x-lx)>=hx+35||Math.abs(z-lz)>=hz+35,id+' 랜드마크 경계');
+    }
+   }
+  }
+ }
+});
+
 // [주택 배치] 실제 수입 건물의 처마·별채 점유 폭까지 보수적으로 계산하며 등급은 필지별로 고정한다.
 test('마을 주택은 5개 크기 등급을 발전도별로 혼합하고 도로·시설·이웃 주택을 피한다',()=>{
  const port=read('ReplicatedStorage/Shared/PortScene.luau');
