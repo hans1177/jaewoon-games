@@ -1,0 +1,137 @@
+{
+  "version": 3,
+  "provider": "MULTI_FREE_VISUAL",
+  "gameId": "mare-essentia",
+  "sourceRevision": "70e758fdc76ecf64eaa66868607c54f7dcfb2248",
+  "status": "REVIEWED_NO_VERIFIED_EDIT",
+  "selectedRole": "MOTION",
+  "usageWindow": {
+    "day": "2026-11-18",
+    "calls": {
+      "NVIDIA": 10,
+      "GEMINI": 7,
+      "OPENROUTER": 12
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-18",
+      "GEMINI": "2026-11-18",
+      "OPENROUTER": "2026-11-18"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-18T07:06:56.348Z",
+      "GEMINI": "2026-11-18T08:10:06.345Z",
+      "OPENROUTER": "2026-11-18T07:45:41.208Z"
+    }
+  },
+  "cooldowns": {
+    "GEMINI_FLASH": "2026-11-19T11:48:03.823Z",
+    "OPENROUTER_OMNI": "2026-11-18T16:26:09.058Z",
+    "GEMINI_LITE": "2026-11-18T16:55:43.990Z",
+    "NVIDIA_VL": "2026-11-18T16:55:47.481Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 10,
+      "remainingLocal": 2,
+      "effectiveRemaining": 2,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 2,
+      "estimatedCallsPerHour": 0.97,
+      "estimatedHoursToLocalCap": 2.1,
+      "nextLocalWindowAt": "2026-11-19T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 7,
+      "remainingLocal": 5,
+      "effectiveRemaining": 5,
+      "regularWorkRemaining": 2,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": 0.73,
+      "estimatedHoursToLocalCap": 6.8,
+      "nextLocalWindowAt": "2026-11-19T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 12,
+      "remainingLocal": 18,
+      "effectiveRemaining": 18,
+      "regularWorkRemaining": 12,
+      "emergencyReserveRemaining": 6,
+      "estimatedCallsPerHour": 1.27,
+      "estimatedHoursToLocalCap": 14.2,
+      "nextLocalWindowAt": "2026-11-19T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [
+    {
+      "id": "OPENROUTER_OMNI",
+      "status": "EMPTY_OUTPUT_TOKEN_LIMIT",
+      "provider": "OPENROUTER",
+      "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
+    },
+    {
+      "id": "GEMINI_LITE",
+      "status": "OK",
+      "provider": "GEMINI",
+      "model": "gemini-3.5-flash-lite"
+    },
+    {
+      "id": "GEMINI_LITE",
+      "status": "SOURCE_ANCHOR_INVALID",
+      "failureSignature": "SOURCE_ANCHOR_NOT_UNIQUE:roblox-games_mare-essentia_src_StarterPlayer_TownMood.client.luau"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "OK",
+      "provider": "NVIDIA",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "SOURCE_ANCHOR_INVALID",
+      "failureSignature": "SOURCE_ANCHOR_NOT_UNIQUE:roblox-games_mare-essentia_src_ReplicatedStorage_Shared_FieldScen"
+    }
+  ],
+  "frames": [
+    {
+      "name": "field_actor_after_motion-0.jpg",
+      "sha256": "1c44a7902d5855a218a5dfbd5cb8136ef763dbc633f746299d33353186ac04a8"
+    },
+    {
+      "name": "field_motion_smooth_icons-0.jpg",
+      "sha256": "ca9b2923648826cbb44617ea5617daf000f52f09f751da66eaf0b4aff5b3a13c"
+    },
+    {
+      "name": "harbor_motion_attack-0.jpg",
+      "sha256": "7503638cde819874ccf7a3e5e66e34465f8222aae638a6b34b218a35b3e9c42f"
+    },
+    {
+      "name": "harbor_motion_cheer-0.jpg",
+      "sha256": "436765da5c2d091bd4d84f3a6d4fa2683ef7008672441922afa3ccf1e5390c10"
+    }
+  ],
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
