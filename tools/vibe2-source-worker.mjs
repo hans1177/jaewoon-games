@@ -9052,7 +9052,7 @@ export async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile
   const eligible=selectVibe59FreeExperts({department:specialistDepartment||'DEVELOPMENT',
     taskText:specialistTask||String(prompt).slice(0,1600),
     responsibleFiles:specialistFiles,env:{...process.env,GEMINI_API_KEY:key}});
-  if(!eligible.expertCandidates.length)
+  if(!key&&!eligible.expertCandidates.length)
     throw Object.assign(new Error('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK'),
       {vibe2InfrastructureFailure:true});
   const {text}=await requestGeminiFreePair({
