@@ -1736,6 +1736,88 @@ test('모든 문화권과 발전도에 최소 주택 배치 공간이 남는다'
  assert.match(port,/CityHousingPlacedPercent", if homeCandidates > 0/,'항구별 배치율 진단');
 });
 
+// [항구 181곳 지역 발전도 실루엣] 옛 도시·신도시·서민층·부유층 구획과 원본 건축 재질을 재사용한다.
+test('항구별 구시가지와 신시가지는 문화권 지붕·외벽·시장 성장에 따라 구분된다',()=>{
+ const source=read('ReplicatedStorage/Shared/PortScene.luau');
+ const culture=read('ReplicatedStorage/Shared/PortCultures.luau');
+ const ports=read('ReplicatedStorage/Shared/Ports.luau');
+ const portData=ports.slice(ports.indexOf('local Ports:'),ports.indexOf('local Nations:'));
+ const ids=[...portData.matchAll(/^\t([a-z][a-z0-9_]*)\s*=\s*\{\s*\n\s*id = /gm)].map(x=>x[1]);
+ assert.equal(ids.length,181,'181개 항구 모두 기존 정본 마을 생성 함수를 공유');
+ const start=source.indexOf('local function fillRow(');
+ const end=source.indexOf('for _, side in { 1, -1 } do',start);
+ const row=source.slice(start,end);
+ assert.match(row,/local quarter = if laneIndex == 0 then "old" elseif lvl >= 3 then "new" else "edge"/);
+ assert.match(row,/local merchantGrowth = built and/);
+ assert.match(row,/\(built\.market or 0\) >= 3/);
+ assert.match(row,/\(built\.warehouse or 0\) >= 4/);
+ assert.match(row,/sizeClass == 3 and roll % 3 == 0 then sizeClass = 4/);
+ assert.match(row,/CityQuarter", quarter/);
+ assert.match(row,/CityResidenceType"/);
+ assert.match(row,/CityMerchantGrowth", merchantGrowth == true/);
+ assert.match(row,/painted = appearance ~= nil or/,'원본 PBR·텍스처를 건드리지 않아야 함');
+ assert.match(source,/CityOldTownHomes", oldTownHomes/);
+ assert.match(source,/CityNewTownHomes", newTownHomes/);
+ assert.match(source,/local roofSpan = if currentKey == "china" then 1\.32 elseif currentKey == "japan" then 1\.15 else 1\.22/);
+ for(const part of ['STYLE.japan','STYLE.korea','STYLE.china','HOUSE_ARCH','HOUSE_FORM']){
+  assert.ok(culture.includes(part),'기존 지역 건축 형식 복구 누락: '+part);
+ }
+ assert.match(source,/CityBuildingMode", "AUTO_VISUAL_READ_ONLY"/,'기존 경제/저장 흐름 유지');
+});
+
+// [생산품별 건축] 어업·산업·농산품·교역의 현물 구조를 기존 항구 생산 목록만 읽어서 선택한다.
+test('항구 특산품 공방은 생산품별 7가지 형태를 쓰고 랜드마크·주택과 실측 충돌을 검사한다',()=>{
+ const source=read('ReplicatedStorage/Shared/PortScene.luau');
+ const start=source.indexOf('local SPECIAL_NAME = {');
+ const end=source.indexOf('-- 문화권 소품:',start);
+ assert.ok(start>=0&&end>start,'기존 특산품 전시 구역');
+ const block=source.slice(start,end);
+ assert.match(block,/Chains\.showcaseGoods\(info\.portId, made,/);
+ for(const family of ['fishery','textile','mineral','timber','craft','farm','trade']){
+  assert.ok(block.includes('"'+family+'"'),'생산품 건축 종류 누락 '+family);
+ }
+ assert.match(block,/local candidates = \{/);
+ assert.match(block,/not onStreet\(candidate\.X, 27\) and not reserved\(candidate\.X, candidate\.Z, 27\)/);
+ assert.match(block,/local bounds, ext = staged:GetBoundingBox\(\)/);
+ assert.match(block,/not reserved\(chosen\.X, chosen\.Z, hx, hz\)/);
+ assert.match(block,/BuildingFootprintX", hx \* 2/);
+ assert.match(block,/BuildingFootprintZ", hz \* 2/);
+ assert.match(block,/staged:Destroy\(\)/);
+ assert.match(block,/IndustryGood", good/);
+ assert.match(block,/IndustryFamily", family/);
+ assert.match(block,/CitySpecialtyBuildingMode", "PRODUCTION_VISUAL_READ_ONLY"/);
+ assert.match(block,/CitySpecialtyPlaced", specialtyPlaced/);
+ assert.match(block,/CitySpecialtyRejected", specialtyRejected/);
+ assert.match(source,/MarketSpecialtyDisplay_/,'시장에 지역 생산품 전시 연결');
+ assert.match(source,/if game:GetService\("UserInputService"\)\.TouchEnabled then 1 else 2/);
+ assert.match(source,/CityBuildingMode", "AUTO_VISUAL_READ_ONLY"/,'경제 시스템 불변');
+});
+
+// [주야·겨울·지형·모바일] 기존 조명과 해안선 시스템을 재사용하고 새 갱신 루프를 만들지 않는다.
+test('도시 골목·눈 지붕·밤 창문은 기존 기후·해안 분류와 모바일 예산을 공유한다',()=>{
+ const s=read('ReplicatedStorage/Shared/PortScene.luau');
+ assert.match(s,/local coastForm = folder:GetAttribute\("CoastForm"\) or "plain"/);
+ assert.match(s,/local terrainLaneShift = if coastForm == "hill"/);
+ assert.match(s,/CityRoadTerrain", coastForm/);
+ assert.match(s,/CityTerrainStreetEdge/);
+ assert.match(s,/edge\.CanCollide, edge\.CanQuery, edge\.CanTouch = false, false, false/);
+ assert.match(s,/folder:SetAttribute\("CitySeasonIndex", index\)/);
+ assert.match(s,/folder:SetAttribute\("CityWinterRoofTone"/);
+ assert.match(s,/folder:GetAttribute\("CitySeasonIndex"\) == 1/);
+ assert.match(s,/surface\.Material = Enum\.Material\.Snow/);
+ assert.match(s,/surface:SetAttribute\("CityWinterRoof", true\)/);
+ assert.match(s,/if not painted then/,'원본 PBR 무손상 보호');
+ assert.match(s,/local nightWindowLimit = if touchHousing then 5 else 11/);
+ assert.match(s,/if lvl >= 2 and nightWindows < nightWindowLimit/);
+ assert.match(s,/window\.CanCollide, window\.CanTouch, window\.CanQuery, window\.CastShadow = false, false, false, false/);
+ assert.match(s,/glow\.Parent = window/);
+ assert.match(s,/CityNightWindowCount", nightWindows/);
+ assert.match(s,/local lightConn = folder\.DescendantAdded:Connect\(registerLight\)/);
+ assert.match(s,/entry\.light\.Brightness = entry\.brightness \* \(0\.16 \+ 2\.15 \* night\)/);
+ assert.match(s,/m\.LevelOfDetail = Enum\.ModelLevelOfDetail\.Automatic/);
+ assert.match(s,/folder\.Destroying:Connect\(function\(\)/,'갱신 연결 정리');
+});
+
 // [지역 주택 실측] 모든 문화권은 소형~대형 5종 비율을 가지며 실제 메시 외곽으로 배치한다.
 test('항구별 주택은 지역 비율과 실제 외곽 측정 후 겹침 없는 자리만 사용한다',()=>{
  const port=read('ReplicatedStorage/Shared/PortScene.luau');

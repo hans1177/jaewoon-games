@@ -591,6 +591,8 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 	if architecture then
 		m:SetAttribute("ArchitectureRestoredSurfaces", restoredSurfaces)
 		m:SetAttribute("ArchitectureCulture", currentKey)
+		-- [모바일 거리별 건축] 원본 모델의 자동 LOD만 켜고 새 루프·에셋은 만들지 않는다.
+		m.LevelOfDetail = Enum.ModelLevelOfDetail.Automatic
 	end
 	local ok, err = pcall(function()
 		m.Parent = parent
@@ -865,7 +867,9 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				local _, e2 = upper:GetBoundingBox()
 				top += e2.Y
 			end
-			local roof = importedModel(parent, "Town", "eastasia-roof", Vector3.new(pos.X, top, pos.Z), size * 1.22, false, style.roofs[rng:NextInteger(1, #style.roofs)])
+			-- [한중일 차별화] 같은 기와라도 처마 폭과 지붕 실루엣은 지역마다 다르다.
+			local roofSpan = if currentKey == "china" then 1.32 elseif currentKey == "japan" then 1.15 else 1.22
+			local roof = importedModel(parent, "Town", "eastasia-roof", Vector3.new(pos.X, top, pos.Z), size * roofSpan, false, style.roofs[rng:NextInteger(1, #style.roofs)])
 			if roof then
 				roof.Name = "HarborRoof"
 				uniformMaterial(roof, style, "roof")
@@ -2582,7 +2586,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local districtSeed = seeded(info.portId .. ":city-plan")
 	local districtOffset = districtSeed:NextNumber(-7, 7)
 	local lotVariance = districtSeed:NextNumber(0.94, 1.06)
-	local laneOffset = districtSeed:NextNumber(-9, 9)
+	local coastForm = folder:GetAttribute("CoastForm") or "plain"
+	-- [지형 맞춤 골목] 기존 해안선·운하·언덕 분류를 마을 골목 방향에 재사용한다.
+	local terrainLaneShift = if coastForm == "hill" then 3.5 elseif coastForm == "river" or coastForm == "delta" then -2.5
+		elseif coastForm == "lagoon" or coastForm == "canal" then 2 else 0
+	local laneOffset = districtSeed:NextNumber(-9, 9) + terrainLaneShift
+	folder:SetAttribute("CityRoadTerrain", coastForm)
 	local streetsX = P.streets
 	local function nearStreet(x, w)
 		for _, sx in streetsX do
@@ -2912,6 +2921,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	-- [항구별 진단] 주택 배치 수량은 화면용 정수만 장면에 기록한다. DB·경제·전투 수치에는 영향이 없다.
 	local homeCandidates, homePlaced, homeShifted, homePlotRejected, homeModelRejected = 0, 0, 0, 0, 0
 	local homeSizeCounts = { 0, 0, 0, 0, 0 }
+	local oldTownHomes, newTownHomes, nightWindows = 0, 0, 0
+	local touchHousing = game:GetService("UserInputService").TouchEnabled
+	local nightWindowLimit = if touchHousing then 5 else 11
 	-- 한 항구의 주택 후보 전부가 같은 5개 인접 위치를 사용해 재방문 배치를 재현한다.
 	local homeShifts = { Vector3.zero, Vector3.new(-2.4, 0, 0), Vector3.new(2.4, 0, 0),
 		Vector3.new(0, 0, -2.4), Vector3.new(0, 0, 2.4) }
@@ -2924,6 +2936,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		while x > X_END do
 			slotIndex += 1
 			local plotId = ("%s:home:%d:%d:%d:%d"):format(info.portId, side, laneIndex, rowIndex, slotIndex)
+			-- [도시 성장] 항구 쪽 오래된 구획과 발전 후 새로 열린 외곽 구획을 구분한다.
+			local quarter = if laneIndex == 0 then "old" elseif lvl >= 3 then "new" else "edge"
 			if rng:NextNumber() < dens then
 				homeCandidates += 1
 				local sz = S * rng:NextNumber(0.9, 1.08)
@@ -2937,6 +2951,11 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				local sizeClass = if roll <= mix[1] then 1 elseif roll <= mix[1] + mix[2] then 2
 					elseif roll <= mix[1] + mix[2] + mix[3] then 3
 					elseif roll <= mix[1] + mix[2] + mix[3] + mix[4] then 4 else 5
+				-- [시장·창고 성장] 실제 상업시설이 늘어난 신시가지에서만 일부 상가를 한 등급 크게 만든다.
+				local built = info.sim and info.sim.buildings
+				local merchantGrowth = built and ((built.market or 0) >= 3 or (built.warehouse or 0) >= 4)
+				if merchantGrowth and lvl >= 3 and quarter == "new"
+					and sizeClass == 3 and roll % 3 == 0 then sizeClass = 4 end
 				local sizeJitter = sizeRng:NextNumber(0.97, 1.03)
 				-- 폭/깊이도 지역 프로필을 재사용해 운하 상가·목조 민가·중정 주택의 실루엣을 구분한다.
 				local widthBase = fw * (sz / S) * (P.wMul or 1)
@@ -2984,6 +3003,33 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					staged.Name = "PortScene"
 					local body = house(staged, pos, ww, dd, fl, style, rng)
 					if body then
+						-- [구시가지 회백색 풍화·신시가지 회칠] PBR 및 원본 텍스처는 유지.
+						for _, surface in staged:GetDescendants() do
+							if surface:IsA("BasePart") and surface.Material ~= Enum.Material.Glass
+								and surface.Material ~= Enum.Material.Metal and surface.Material ~= Enum.Material.Neon then
+								local appearance = surface:FindFirstChildOfClass("SurfaceAppearance")
+								local painted = appearance ~= nil or (surface:IsA("MeshPart") and surface.TextureID ~= "")
+								for _, child in surface:GetChildren() do
+									if child:IsA("SpecialMesh") and child.TextureId ~= "" then painted = true break end
+								end
+								if not painted then
+									local winterRoof = (math.abs((port and port.lat) or 0) >= 39) and not palm
+										and folder:GetAttribute("CitySeasonIndex") == 1
+									local roofSurface = surface:IsA("WedgePart") or surface.Name == "FlatRoof"
+										or surface:FindFirstAncestor("HarborRoof") ~= nil
+									if winterRoof and roofSurface then
+										-- [겨울 기와·석조 지붕] 원본 PBR이 없는 부분만 얇게 눈색을 덮는다.
+										-- 문화권 기와 모델의 텍스처·ColorMap은 그대로 남긴다.
+										surface.Material = Enum.Material.Snow
+										surface.Color = surface.Color:Lerp(C(230, 237, 241), 0.76)
+										surface:SetAttribute("CityWinterRoof", true)
+									else
+										surface.Color = if quarter == "old" then surface.Color:Lerp(C(139, 130, 117), 0.16)
+											elseif quarter == "new" then surface.Color:Lerp(style.walls[1], 0.12) else surface.Color
+									end
+								end
+							end
+						end
 						local bounds, dimensions = staged:GetBoundingBox()
 						local measuredHalfX = math.abs(bounds.Position.X - pos.X) + dimensions.X * 0.5 + 2.5
 						local measuredHalfZ = math.abs(bounds.Position.Z - pos.Z) + dimensions.Z * 0.5 + 2.5
@@ -3013,6 +3059,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							homePlaced += 1
 							if chosenShift.Magnitude > 0 then homeShifted += 1 end
 							homeSizeCounts[sizeClass] += 1
+							if quarter == "old" then oldTownHomes += 1 elseif quarter == "new" then newTownHomes += 1 end
 							-- 실제 주거 입주·증축 판단은 기존 경제의 주택 수·발전도가 담당한다.
 							body:SetAttribute("BuildPlotId", plotId)
 							body:SetAttribute("BuildType", "house")
@@ -3025,6 +3072,29 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							body:SetAttribute("BuildingClearance", math.max(actualHalfX, actualHalfZ))
 							body:SetAttribute("BuildingFootprintX", actualHalfX * 2)
 							body:SetAttribute("BuildingFootprintZ", actualHalfZ * 2)
+							body:SetAttribute("CityQuarter", quarter)
+							body:SetAttribute("CityResidenceType", if sizeClass <= 2 then "cottage"
+								elseif sizeClass >= 4 then "merchant_manor" else "town_house")
+							body:SetAttribute("CityArchitectureCulture", key)
+							body:SetAttribute("CityMerchantGrowth", merchantGrowth == true)
+							-- [밤이 밝아지는 창] 기존 주야 조명의 PointLight 갱신 경로에 자동 연결된다.
+							-- 모바일 5곳/PC 11곳만 만들고 야간 시간에만 조도가 강해진다.
+							if lvl >= 2 and nightWindows < nightWindowLimit and homePlaced % 13 == 1 then
+								local streetFront = if pos.Z > 0 then -1 else 1
+								local lampAt = Vector3.new(bounds.Position.X, pos.Y + math.min(4.5, dimensions.Y * 0.37),
+									bounds.Position.Z + streetFront * dimensions.Z * 0.31) + chosenShift
+								local window = part(folder, Vector3.new(1.15, 1.35, 0.12), CFrame.new(lampAt),
+									C(243, 200, 135), Enum.Material.Neon)
+								window.Name = "CityNightWindow"
+								window.CanCollide, window.CanTouch, window.CanQuery, window.CastShadow = false, false, false, false
+								window.Transparency = 0.2
+								window:SetAttribute("CityQuarter", quarter)
+								local glow = Instance.new("PointLight")
+								glow.Color, glow.Range, glow.Brightness = C(255, 204, 134), 12, 0.48
+								glow.Shadows = false
+								glow.Parent = window
+								nightWindows += 1
+							end
 							-- [주거 성장] 이미 존재하는 주택 앞에 주민 휴식 시설·우물을 하나만 건설한다.
 							-- 첫 세대에 보이면 완공 상태로, 도시 발전 중 새로 해금된 경우에만 설치 모션을 사용한다.
 							if not residentialDecorationPlaced and decor.residential > 0 and decorPlaced < decorLimit then
@@ -3117,6 +3187,19 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				canal.CanQuery = false
 			else
 				strip(folder, style, (X_END - 235) / 2, side * laneZ, 235 - X_END, laneWidth)
+				-- [해안선과 거리] 강·삼각주에는 목재 보행 가장자리, 언덕은 석조 가장자리를 얹는다.
+				-- 기존 골목 중심·폭·보행판정은 그대로 유지하는 가벼운 비충돌 시각 경계다.
+				if coastForm == "hill" or coastForm == "strait" or coastForm == "river"
+					or coastForm == "delta" or coastForm == "lagoon" then
+					local riverEdge = coastForm == "river" or coastForm == "delta" or coastForm == "lagoon"
+					local edge = part(folder, Vector3.new(235 - X_END, 0.14, 1.05),
+						CFrame.new((X_END - 235) / 2, 0.27, side * (laneZ + laneWidth * 0.36)),
+						if riverEdge then C(146, 112, 78) else C(148, 143, 135),
+						if riverEdge then Enum.Material.WoodPlanks else Enum.Material.Cobblestone)
+					edge.Name = "CityTerrainStreetEdge"
+					edge.CanCollide, edge.CanQuery, edge.CanTouch = false, false, false
+					edge.CastShadow = false
+				end
 			end
 			if p < pairsN then
 				local t = (p + 0.5) / math.max(1, pairsN)
@@ -3131,6 +3214,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	folder:SetAttribute("CityHousingCulture", key)
 	folder:SetAttribute("CityHousingCandidates", homeCandidates)
 	folder:SetAttribute("CityHousingPlaced", homePlaced)
+	folder:SetAttribute("CityOldTownHomes", oldTownHomes)
+	folder:SetAttribute("CityNewTownHomes", newTownHomes)
+	folder:SetAttribute("CityNightWindowCount", nightWindows)
 	folder:SetAttribute("CityHousingShifted", homeShifted)
 	folder:SetAttribute("CityHousingPlotRejected", homePlotRejected)
 	folder:SetAttribute("CityHousingModelRejected", homeModelRejected)
@@ -3181,6 +3267,22 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				put("Cargo", "box-open", 2.4, cx + 12, cz - 2, false)
 				put("Town", "bench_A", 3.6, cx, cz, false)
 				put("Town", "fountain-round", 7, cx, cz + (if cz > 0 then -15 else 15), true)
+				-- [상품별 시장] 현지 실제 생산품 3D 전시는 모바일 1개, PC 2개만.
+				-- 기존 거래 가격·재고·시장 건물 수는 읽기 전용으로 보존한다.
+				local marketGoods = Chains.showcaseGoods(info.portId, made,
+					if game:GetService("UserInputService").TouchEnabled then 1 else 2)
+				for i, good in marketGoods do
+					local mesh = GOOD_MESH[good]
+					if mesh and AssetIds[mesh[1] .. "/" .. mesh[2]] then
+						local item = put(mesh[1], mesh[2], goodSize(good, 2.5),
+							cx - 12 + (i - 1) * 22, cz + 2, false)
+						if item then
+							item.Name = "MarketSpecialtyDisplay_" .. good
+							item:SetAttribute("LocalProduct", good)
+							item:SetAttribute("ShowcaseOnly", true)
+						end
+					end
+				end
 			else -- farm
 				-- 지역에 맞는 작물: 동아시아는 벼·양배추·가지, 더운 지방은 옥수수·호박·멜론, 그 밖은 밀·양배추·당근
 				local crops
@@ -3321,23 +3423,94 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		local goods = Chains.showcaseGoods(info.portId, made, if lvl >= 5 then 3 elseif lvl >= 3 then 2 else 1)
 		local n = #goods
 		local origin = Vector3.new(-178, 0, -86)
-		local face = math.pi
+		local specialtyPlaced, specialtyRejected = 0, 0
 		for k = 1, n do
 			local good = goods[k]
-			local at = origin + Vector3.new((k - (n + 1) / 2) * 20, 0, 0)
-			local wall = Color3.fromRGB(190, 170, 140):Lerp(Color3.fromRGB(150, 120, 90), rng:NextNumber(0, 0.5))
-			local body = house(folder, at, 14, 11, if lvl >= 4 then 2 else 1, style, rng, wall)
 			local mesh = GOOD_MESH[good]
-			-- 문 앞 진열: 상품 3D 모델 더미와 통
-			for j = -1, 1 do
-				importedModel(folder, mesh[1], mesh[2], at + Vector3.new(j * 3.2, 0, 8.6), goodSize(good, 2.8), false, mesh[3])
+			-- [생산품별 건축] 기존 항구 생산품만 읽어 어업·직물·광산·목재·농산·공예·무역 건축형을 선택한다.
+			local family = if table.find({ "fish", "pearls", "whale_oil", "pearl_shell" }, good) then "fishery"
+				elseif table.find({ "wool", "cloth", "linen", "silk", "cotton" }, good) then "textile"
+				elseif table.find({ "coal", "iron", "tin", "copper", "silver", "gold", "marble" }, good) then "mineral"
+				elseif table.find({ "timber", "mahogany", "kauri", "ebony", "brazilwood" }, good) then "timber"
+				elseif table.find({ "porcelain", "glass", "lacquer", "gems" }, good) then "craft"
+				elseif table.find({ "rice", "tea", "coffee", "spice", "sugar", "maize", "pepper", "cocoa" }, good) then "farm"
+				else "trade"
+			local width = if family == "fishery" then 13 elseif family == "mineral" then 18
+				elseif family == "textile" then 16 elseif family == "timber" then 17 else 15
+			local depth = if family == "mineral" or family == "craft" then 14
+				elseif family == "farm" then 12 else 11
+			local floorCount = if lvl >= 4 and (family == "trade" or family == "textile" or family == "craft") then 2 else 1
+			local baseColor = if family == "fishery" then C(149, 171, 166)
+				elseif family == "mineral" then C(138, 129, 123)
+				elseif family == "textile" then C(183, 160, 128)
+				elseif family == "timber" then C(150, 118, 89)
+				elseif family == "farm" then C(187, 173, 128)
+				elseif family == "craft" then C(193, 177, 155) else C(190, 170, 140)
+			local wall = baseColor:Lerp(style.walls[1], rng:NextNumber(0.18, 0.34))
+			-- [산업 구역 재배치] 기존 시장·농장·왕궁·랜드마크 및 먼저 지어진 주택과 실제 외곽이 겹치지 않는 위치만 사용.
+			local candidates = {
+				origin + Vector3.new((k - (n + 1) / 2) * 30, 0, 0),
+				Vector3.new(-90 - (k - 1) * 58, 0, -234),
+				Vector3.new(-90 - (k - 1) * 58, 0, 234),
+				Vector3.new(-101, 0, -317 - (k - 1) * 54),
+				Vector3.new(-101, 0, 317 + (k - 1) * 54),
+				Vector3.new(-172, 0, -345),
+				Vector3.new(-172, 0, 345),
+			}
+			local chosen
+			for _, candidate in candidates do
+				if not onStreet(candidate.X, 27) and not reserved(candidate.X, candidate.Z, 27) then
+					chosen = candidate
+					break
+				end
 			end
-			importedModel(folder, "Cargo", "barrel", at + Vector3.new(7.6, 0, 7.4), 2.6, false)
-			importedModel(folder, "Cargo", "box-open", at + Vector3.new(-7.6, 0, 7.4), 2.4, false)
-			if body then
-				sign(folder, body, SPECIAL_NAME[good] or "특산품 공방", Color3.fromRGB(150, 110, 40), (if lvl >= 4 then 2 else 1) * 3 + 6, false, { mesh[1], mesh[2] })
+			if chosen and mesh and AssetIds[mesh[1] .. "/" .. mesh[2]] then
+				local staged = Instance.new("Model")
+				staged.Name = "PortScene"
+				local body = house(staged, chosen, width, depth, floorCount, style, rng, wall)
+				if body then
+					local bounds, ext = staged:GetBoundingBox()
+					local hx = math.max(27, math.abs(bounds.Position.X - chosen.X) + ext.X * 0.5 + 2)
+					local hz = math.max(27, math.abs(bounds.Position.Z - chosen.Z) + ext.Z * 0.5 + 2)
+					if not onStreet(chosen.X, hx) and not reserved(chosen.X, chosen.Z, hx, hz) then
+						for _, object in staged:GetChildren() do object.Parent = folder end
+						body:SetAttribute("BuildPlotId", ("%s:specialty:%d"):format(info.portId, k))
+						body:SetAttribute("BuildType", "specialty")
+						body:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+						body:SetAttribute("IndustryGood", good)
+						body:SetAttribute("IndustryFamily", family)
+						body:SetAttribute("BuildingFootprintX", hx * 2)
+						body:SetAttribute("BuildingFootprintZ", hz * 2)
+						table.insert(placedLots, { X = chosen.X, Z = chosen.Z, HX = hx, HZ = hz, H = math.max(hx, hz) })
+						specialtyPlaced += 1
+						-- 기존 생산품 3D 전시·간판과 동일한 수량 상한을 유지한다.
+						for j = -1, 1 do
+							importedModel(folder, mesh[1], mesh[2], chosen + Vector3.new(j * 3.2, 0, 8.6),
+								goodSize(good, 2.8), false, mesh[3])
+						end
+						local propGroup, propName = if family == "fishery" then "Town", "stall-green"
+							elseif family == "mineral" then "Cargo", "iron-bars"
+							elseif family == "timber" then "Cargo", "resource-planks"
+							elseif family == "textile" or family == "craft" then "Town", "workbench-anvil"
+							elseif family == "farm" then "Cargo", "bag" else "Cargo", "box-open"
+						importedModel(folder, propGroup, propName, chosen + Vector3.new(7, 0, 7.4), 3.2, false)
+						importedModel(folder, "Cargo", "box-open", chosen + Vector3.new(-7.6, 0, 7.4), 2.4, false)
+						sign(folder, body, SPECIAL_NAME[good] or "특산품 공방",
+							C(150, 110, 40), floorCount * 3 + 6, false, { mesh[1], mesh[2] })
+					else
+						specialtyRejected += 1
+					end
+				else
+					specialtyRejected += 1
+				end
+				staged:Destroy()
+			else
+				specialtyRejected += 1
 			end
 		end
+		folder:SetAttribute("CitySpecialtyPlaced", specialtyPlaced)
+		folder:SetAttribute("CitySpecialtyRejected", specialtyRejected)
+		folder:SetAttribute("CitySpecialtyBuildingMode", "PRODUCTION_VISUAL_READ_ONLY")
 	end
 	-- 문화권 소품: 지역 건축·생활에 맞는 오브젝트 (발전도가 오를수록 늘어난다)
 	do
@@ -5647,6 +5820,9 @@ function PortScene.build(info, onFacility)
 		if seasonIndex == index then return end
 		seasonIndex = index
 		season = seasons[index]
+		-- [기존 계절 흐름] 항구 구역과 같은 계절 단계로 눈·거리·주택 연출이 동기화된다.
+		folder:SetAttribute("CitySeasonIndex", index)
+		folder:SetAttribute("CityWinterRoofTone", if cold and index == 1 then "SNOW" else "REGIONAL_MATERIAL")
 		if ground and ground:IsA("BasePart") then
 			local frosted = cold and index == 1
 			-- 잔디 질감은 멀리서 어두운 회색으로 보여서 매끈한 재질에 밝은 풀색을 쓴다(눈 덮인 계절만 눈 질감)
