@@ -832,7 +832,17 @@ test('source intake registers unfinished Rojo once without inventing design or r
     const added=saved.games.find(game=>game.id==='new-game');
     assert.equal(added.sourceIntake.designVerified,false);assert.equal(added.sourceIntake.runtimeVerified,false);
     assert.equal(added.sourceIntake.externalReleaseApproved,false);
-    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'))).items,[{...old,sourceContinuationPendingAdmission:true}]);
+    const pending=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'))).items;
+    assert.deepEqual(pending[0],{...old,sourceContinuationPendingAdmission:true});
+    assert.equal(pending.length,2);
+    assert.equal(pending[1].gameId,'new-game');
+    assert.equal(pending[1].status,'PENDING');
+    assert.equal(pending[1].selectedPlatform,'ROBLOX');
+    assert.deepEqual(pending[1].concurrentTargetPlatforms,['ROBLOX']);
+    assert.equal(pending[1].sourceContinuationPendingAdmission,true);
+    assert.equal(pending[1].productionClassSource,'EXISTING_ROBLOX_SOURCE_INTAKE');
+    assert.equal(pending[1].minimumDesignContract,undefined);
+    assert.equal(pending[1].robloxRuntimePassed,undefined);
     assert.equal(reconcileDevelopmentQueue({root}).changed,false);
     assert.equal(fs.readFileSync(path.join(root,'roblox-games/new-game/server/Game.server.luau'),'utf8'),'local savedProgress = 12\n');
     write(root,'game-seed-state.json',{seeds:[{id:'owner-game',gameId:'owner-game',status:'PAUSED',productionClass:'DEVELOPMENT_CONFIRMED'}]});
