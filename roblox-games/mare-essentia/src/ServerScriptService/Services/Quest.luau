@@ -200,8 +200,15 @@ return function(D, S)
 		table.insert(msgs, string.format("%s: %s (+%d코인, 명성 +%d)", label, quest.name, quest.rewardCoins, quest.rewardFame))
 		local _, ending = storyOf(quest)
 		table.insert(msgs, "「" .. quest.name .. "」 " .. ending)
-		state._scenes = state._scenes or {}
-		table.insert(state._scenes, { kind = "end", name = quest.name, text = ending })
+		-- [첫 카드] '첫 발견' 보상·일지는 유지하지만 자동 퀘스트 컷신을 재생하지 않는다.
+		-- [도시 자동 이벤트] 자동 달성 퀘스트는 같은 방문에서 한 편만 연출한다.
+		-- 플레이어가 수동으로 수행한 일반 의뢰 완료 장면은 종전처럼 모두 재생한다.
+		if quest.id ~= "q_first_discovery" and (not AUTO_KINDS[quest.kind]
+			or (state._autoEventPort ~= state.portId and not (state.history and state.history.pending))) then
+			state._scenes = state._scenes or {}
+			table.insert(state._scenes, { kind = "end", name = quest.name, text = ending })
+			if AUTO_KINDS[quest.kind] then state._autoEventPort = state.portId end
+		end
 		if quest.rewardCareer then
 			S.State.gainXp(state, quest.rewardCareer, quest.rewardXp, msgs)
 		end
@@ -289,6 +296,9 @@ return function(D, S)
 		end
 		local first = state._hookPort == nil
 		state._hookPort = state.portId
+		-- [방문 주기] 항구가 바뀐 경우에만 자동 연출 한도를 초기화한다.
+		-- 잠시 떠났다가 같은 항구로 돌아오는 정상 방문도 새 방문으로 처리한다.
+		state._autoEventPort = nil
 		if first then
 			return
 		end
