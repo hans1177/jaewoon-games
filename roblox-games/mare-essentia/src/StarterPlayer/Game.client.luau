@@ -1434,7 +1434,7 @@ headerLabel.Parent = mainInner
 local portraitFrame = Instance.new("ViewportFrame")
 portraitFrame.Position = UDim2.fromOffset(11, 7)
 portraitFrame.Size = UDim2.fromOffset(52, 52)
-portraitFrame.BackgroundColor3 = Color3.fromRGB(40, 56, 80)
+portraitFrame.BackgroundTransparency = 1 -- [인물 초상] 회색 판 제거
 portraitFrame.Ambient = Color3.fromRGB(190, 190, 200)
 portraitFrame.LightColor = Color3.fromRGB(255, 244, 220)
 portraitFrame.Parent = mainInner
@@ -1457,7 +1457,7 @@ local portraitImage = Instance.new("ImageLabel")
 portraitImage.Name = "NpcPortrait"
 portraitImage.Position = UDim2.fromOffset(11, 7)
 portraitImage.Size = UDim2.fromOffset(52, 52)
-portraitImage.BackgroundColor3 = Color3.fromRGB(40, 56, 80)
+portraitImage.BackgroundTransparency = 1 -- [인물 초상] 원화 뒤 회색 판 제거
 portraitImage.BorderSizePixel = 0
 portraitImage.ScaleType = Enum.ScaleType.Crop
 portraitImage.Visible = false
@@ -1477,7 +1477,7 @@ local captainPlaceholder = Instance.new("TextLabel")
 captainPlaceholder.Name = "CaptainPortraitPending"
 captainPlaceholder.Position = UDim2.fromOffset(11, 7)
 captainPlaceholder.Size = UDim2.fromOffset(52, 52)
-captainPlaceholder.BackgroundColor3 = Color3.fromRGB(35, 88, 150)
+captainPlaceholder.BackgroundTransparency = 1 -- [선장 미완성] 배경 없이 기호만 표시
 captainPlaceholder.BorderSizePixel = 0
 captainPlaceholder.Text = "?"
 captainPlaceholder.Font = Enum.Font.GothamBlack
@@ -1830,25 +1830,26 @@ coinChip.Position = UDim2.new(1, -56, 0, 15)
 coinChip.Parent = mainInner
 coinChip.Visible = false -- [중복 정리] 상단 공통 현황으로 통합, 코인 갱신 참조는 보존.
 -- [공통 상단 현황] 양피지에 진한 잉크와 경계선을 둬 모든 시설에서 같은 위치·대비를 유지한다.
-H.menuStatusLabel = mkLabel(mainInner, "", 18, INK, true)
+H.menuStatusLabel = mkLabel(mainInner, "", 18, Color3.fromRGB(255, 239, 183), true)
 H.menuStatusLabel.Name = "MenuGlobalMoneyCargo"
+H.menuStatusLabel.AnchorPoint = Vector2.new(0.5, 0)
 H.menuStatusLabel.AutomaticSize = Enum.AutomaticSize.None
 H.menuStatusLabel.TextXAlignment = Enum.TextXAlignment.Center
 H.menuStatusLabel.TextYAlignment = Enum.TextYAlignment.Center
 H.menuStatusLabel.TextTruncate = Enum.TextTruncate.AtEnd
 H.menuStatusLabel.BackgroundTransparency = 0
-H.menuStatusLabel.BackgroundColor3 = Color3.fromRGB(236, 213, 168)
+H.menuStatusLabel.BackgroundColor3 = Color3.fromRGB(55, 40, 27) -- [자금·화물] 어두운 가죽판에 금빛 글씨
 H.menuStatusLabel.ZIndex = 5
 corner(H.menuStatusLabel, 6)
 do
 	-- [로컬 레지스터 예산] 장식 인스턴스는 여기서만 필요하며 장기 보유하지 않는다.
 	local statusEdge = Instance.new("UIStroke")
 	statusEdge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	statusEdge.Color = INK_EDGE
-	statusEdge.Thickness = 1.4
+	statusEdge.Color = Color3.fromRGB(229, 181, 95)
+	statusEdge.Thickness = 2
 	statusEdge.Parent = H.menuStatusLabel
 end
-H.menuStatusLabel.Position = UDim2.new(1, -388, 0, 15)
+H.menuStatusLabel.Position = UDim2.new(0.5, 0, 0, 15)
 H.menuStatusLabel.Size = UDim2.fromOffset(330, 34)
 
 local tabBar = Instance.new("Frame")
@@ -1942,15 +1943,18 @@ H.bookSpine = pageRule(mainInner, UDim2.fromOffset(132, 68), UDim2.new(0, 1, 1, 
 function H.layoutBook()
   local width, height = mainInner.AbsoluteSize.X, mainInner.AbsoluteSize.Y
   -- [공통 현황] 제목과 자금·화물칸이 작은 폰에서도 서로 겹치지 않게 한다.
-  H.menuStatusLabel.Position = UDim2.new(1, if width < 480 then -219 elseif width < 740 then -234 else -388,
-    0, if width < 480 then 34 else 15)
-  H.menuStatusLabel.Size = UDim2.fromOffset(if width < 480 then 192 elseif width < 740 then 192 else 330,
-    if width < 480 then 24 else 34)
-  H.menuStatusLabel.TextSize = if width < 480 then 14 elseif width < 740 then 15 else 18
-  -- [제목 가독성] 기존 상단 제목과 보유자금 판이 같은 자리에서 겹치지 않게 폭 분리.
-  headerLabel.Size = UDim2.new(1, if width < 480 then -92 elseif width < 740 then -310 else -460, 0, 29)
-  H.pageDetails.Size = UDim2.new(1, if width < 740 then -310 else -460, 0, 18)
-  H.pageDetails.Visible = width >= 480
+  -- [상단 중앙] 모든 시설에서 자금·화물을 가로 중앙에 표시. 작은 폰은 두 번째 줄을 쓴다.
+  local statusWidth = if width < 480 then math.max(168, math.min(252, width - 142))
+    elseif width < 740 then math.min(290, width - 156)
+    else math.clamp(math.floor(width * 0.36), 280, 380)
+  H.menuStatusLabel.Position = UDim2.new(0.5, 0, 0, if width < 740 then 38 else 15)
+  H.menuStatusLabel.Size = UDim2.fromOffset(statusWidth, if width < 740 then 22 else 34)
+  H.menuStatusLabel.TextSize = if width < 480 then 14 elseif width < 740 then 16 else 18
+  headerLabel.Size = UDim2.fromOffset(if width < 740 then math.max(86, width - 152)
+    else math.max(108, math.floor((width - statusWidth) * 0.5) - 82), 29)
+  H.pageDetails.Size = UDim2.fromOffset(if width < 740 then 0
+    else math.max(100, math.floor((width - statusWidth) * 0.5) - 82), 18)
+  H.pageDetails.Visible = width >= 740
   local tabCount = #groupOf(currentTab).tabs
   local gallery = view ~= nil and not newGameMode and currentTab ~= "map"
   local three = gallery and width >= 740
@@ -2515,19 +2519,105 @@ do
 			card.Parent = body
 			return card
 		end
-		-- 1) 지금 할 일
+		-- [첫 항해 목표] 기존 튜토리얼 단계와 실제 서버 진행 상태를 저널의 한 카드에서 확인한다.
+		head("첫 항해 목표")
+		do
+			local captain, p, ship = view.captain, view.player, view.ship
+			local sailed = (p.day or 0) > 0
+			if captain and not H.tutorialHidden and (captain.step ~= "done" or not sailed) then
+				local steps = {
+					{ done = captain.step ~= "name", text = "상인 길드 서기에게 이름 올리기" },
+					{ done = captain.step == "portrait" or captain.step == "done", text = "주점 동료 맞이하기" },
+					{ done = captain.step == "done", text = "떠돌이 화가에게 초상 받기" },
+					{ done = sailed or (ship.cargoUsed or 0) > 0, text = "항구 특산품 구매하기" },
+					{ done = sailed, text = "지도에서 다른 항구로 출항하기" },
+				}
+				local count, lines = 0, {}
+				for _, step in steps do
+					if step.done then count += 1 end
+					table.insert(lines, (if step.done then "✓ " else "○ ") .. step.text)
+				end
+				goal(string.format("첫걸음 %d/%d", count, #steps), table.concat(lines, "\n"), count / #steps, COLORS.gold)
+			elseif view.guide then
+				local lines = {}
+				for _, step in (view.guide.steps or {}) do
+					table.insert(lines, tostring(step.mark or "○") .. " " .. tostring(step.text or ""))
+				end
+				goal(view.guide.title or "항해 목표", table.concat(lines, "\n"), nil)
+			elseif view.actIntro or view.act then
+				local mission = view.actIntro or view.act
+				goal(mission.title or "항해 목표", tostring(mission.goal or "기록된 목표를 확인해"), nil)
+			else
+				goal("첫 항해 완료", "진행 중인 의뢰와 새로운 항해 목표는 아래에서 확인해.", nil)
+			end
+		end
+		-- [메뉴 조언 단일화] 비서의 긴급·진행 권고는 저널에서만 보여 준다.
 		head("지금 할 일")
 		local todo = 0
+		do
+			local ship = view.ship
+			local cue, detail, tab = nil, nil, nil
+			if ship.maxHull > 0 and ship.hull < ship.maxHull * 0.4 then
+				cue, detail, tab = "선체 수리 필요", string.format("내구도 %d/%d · 항해 전 수리 확인", ship.hull, ship.maxHull), "yard"
+			elseif ship.supplies <= 5 then
+				cue, detail, tab = "보급품 부족", "보급 " .. tostring(ship.supplies) .. "개 · 출항 전 보급 확인", "yard"
+			elseif ship.cargoCapacity > 0 and ship.cargoUsed >= ship.cargoCapacity then
+				cue, detail, tab = "화물칸 가득 참", string.format("%d/%d칸 · 거래 전 화물 정리", ship.cargoUsed, ship.cargoCapacity), "trade"
+			end
+			if not cue then
+				for _, q in (view.quests and view.quests.active) or {} do
+					if q.kind == "deliver" and q.progress >= q.amount then
+						cue, detail, tab = "납품 가능한 의뢰", q.name .. " · 보상 수령 조건 확인", "quest"
+						break
+					end
+				end
+			end
+			if not cue then
+				for _, t in (view.tech or {}) do
+					if not t.owned and not t.blocked and (t.cost or 0) <= view.player.coins then
+						cue, detail, tab = "연구 가능한 기술", t.name .. " · 비용 " .. tostring(t.cost or 0) .. "코인", "tech"
+						break
+					end
+				end
+			end
+			if cue then
+				local covered = false
+				for _, advice in (view.counsel or {}) do
+					if advice.tab == tab then covered = true; break end
+				end
+				if not covered then
+					todo += 1
+					local urgent = tab == "yard" or tab == "trade"
+					local card = goal((if urgent then "주의 · " else "다음 할 일 · ") .. cue, detail, nil)
+					local go = mkButton(card, "해당 메뉴로 이동", if urgent then COLORS.red else COLORS.green,
+						UDim2.new(1, 0, 0, 46), function()
+							close()
+							H.goAdvice(tab)
+						end, true)
+					go.LayoutOrder = 4
+				end
+			end
+		end
 		for _, c in view.counsel or {} do
 			if todo >= 3 then break end
+			-- [중복 제거] 튜토리얼 길잡이 문장은 바로 위 첫 항해 체크리스트와 중복 표시하지 않는다.
+			if H.tutorialGoalActive and string.sub(tostring(c.id or ""), 1, 2) == "g_" then continue end
 			todo += 1
 			local card = goal(string.format("%s의 조언", c.who and c.who.name or "동료"), c.text, nil)
 			if c.tab then
-				local go = mkButton(card, c.label or "가 보기", COLORS.green, UDim2.new(1, 0, 0, 40), function()
+				local go = mkButton(card, c.label or "가 보기", COLORS.green, UDim2.new(1, 0, 0, 46), function()
 					close()
 					H.goAdvice(c.tab)
 				end, true)
 				go.LayoutOrder = 4
+			end
+			if c.dismissable and c.id then
+				-- [기존 서버 동작 보존] 메뉴에서 없어진 '알겠어요'를 저널에 그대로 연결한다.
+				local done = mkButton(card, "알겠어요 · 조언 닫기", COLORS.grey, UDim2.new(1, 0, 0, 46), function()
+					close()
+					call("AdviceDone", { id = c.id })
+				end, true)
+				done.LayoutOrder = 5
 			end
 		end
 		if todo == 0 then
@@ -2556,8 +2646,16 @@ do
 		if cx then
 			goal("백과 도감", string.format("발견 %d / %d", cx.found, cx.total), cx.found / math.max(1, cx.total), COLORS.green)
 		end
-		-- 3) 이야기 기록: 겪은 일을 일기처럼 자세히 남긴다 (최근 것이 위)
+		-- [교역소 프롤로그 이동] 서버의 원문을 변경하지 않고 저널 이야기 기록에 보존한다.
 		head("이야기 기록")
+		if view.prologue then
+			goal("프롤로그 · " .. tostring(view.prologue.title or "첫 항해"), tostring(view.prologue.text or ""), nil)
+		end
+		if view.actIntro then
+			goal(tostring(view.actIntro.title or "시대의 시작"), tostring(view.actIntro.text or ""), nil)
+		elseif view.act and view.act.text then
+			goal(tostring(view.act.title or "항해 이야기"), tostring(view.act.text), nil)
+		end
 		local logged = 0
 		local hv = view.history
 		for i = #(hv and hv.recent or {}), 1, -1 do
@@ -2787,23 +2885,9 @@ function H.updateHud(p, ship)
 	local season = calendar.seasons[calendar.voyage.season(day, port and port.lat or 0)]
 	H.hudName.Text = string.format("%d년 %d월 %d일 · %s", p.year, month, monthDay, season)
 	H.hudPort.Text = tostring(p.portName) .. " · " .. tostring(ship.name)
-	-- [첫 항해 목표] 이미 표시되는 게임 중앙 현판을 재사용한다.
-	local guide = view and view.guide
-	local mission = view and (view.actIntro or view.act)
-	local objective = if guide then tostring(guide.title or "첫 항해")
-		elseif mission then tostring(mission.title or "항해 목표") else ""
-	if guide then
-		for _, step in (guide.steps or {}) do
-			if step.mark ~= "✓" and step.mark ~= "✔" and step.mark ~= "완료" then
-				objective ..= " · " .. tostring(step.text or "")
-				break
-			end
-		end
-	elseif mission and mission.goal then
-		objective ..= " · " .. tostring(mission.goal)
-	end
-	hudBanner.Text = objective
-	H.goalBanner.Visible = objective ~= ""
+	-- [첫 항해 목표 단일화] 항구 현판의 목표 중복 노출을 막고 저널에서만 진행도를 보여 준다.
+	hudBanner.Text = ""
+	H.goalBanner.Visible = false
 	hullFill.Size = UDim2.fromScale(math.clamp(ship.hull / math.max(1, ship.maxHull), 0, 1), 1)
 	hullText.Text = string.format("선체 %d/%d", math.floor(ship.hull), math.floor(ship.maxHull))
 	hullFill.BackgroundColor3 = if ship.hull / math.max(1, ship.maxHull) < 0.35 then Color3.fromRGB(255, 80, 40) else Color3.fromRGB(214, 40, 36)
@@ -5391,32 +5475,7 @@ function intelName(level)
 	return "감만 잡는 힌트"
 end
 
--- 이야기와 조언: 프롤로그, 새 해역의 막, 동료의 한마디
-function H.addStoryPanel()
-	if view.prologue then
-		add(function() return mkHeader(content, view.prologue.title) end)
-		add(function() return mkLabel(content, view.prologue.text, 16, COLORS.gold, true) end)
-	end
-	if view.actIntro and currentTab ~= "trade" then
-		add(function() return mkHeader(content, view.actIntro.title) end)
-		add(function() return mkLabel(content, view.actIntro.text .. "\n목표: " .. view.actIntro.goal, 16, COLORS.gold, true) end)
-	elseif view.act and currentTab ~= "trade" then
-		add(function() return mkLabel(content, view.act.title .. " — 목표: " .. view.act.goal, 15, COLORS.gold, true) end)
-	end
-	if view.guide and currentTab ~= "trade" then
-		add(function() return mkHeader(content, "🧭 " .. view.guide.title) end)
-		add(function()
-			local lines = {}
-			for _, st in view.guide.steps do
-				table.insert(lines, st.mark .. " " .. st.text)
-			end
-			return mkLabel(content, table.concat(lines, "\n"), 15, COLORS.text, true)
-		end)
-	end
-	if view.advice then
-		add(function() return mkLabel(content, string.format("💬 %s의 조언\n\"%s\"", view.advice.who, view.advice.text), 16, COLORS.gold, true) end)
-	end
-end
+-- [프롤로그·시대 이야기] 교역 메뉴가 아니라 개인 저널의 이야기 기록에서만 표시한다.
 
 -- 뱃사람 귀띔: 크게, 눈에 잘 띄게
 function addRumorPanel()
@@ -5540,13 +5599,7 @@ local function openTradeHall()
 		commonStatus.AutomaticSize = Enum.AutomaticSize.None
 		commonStatus.TextTruncate = Enum.TextTruncate.AtEnd
 		-- [교역소 동료 조언] 전용 매매 화면에서도 관련 조언이 사라지지 않게 표시한다.
-		local tradeHint = "시세와 화물칸을 비교한 뒤 매입·판매하세요."
-		for _, counsel in (view.counsel or {}) do
-			if counsel.id == "menu_trade" then
-				tradeHint = (counsel.who and counsel.who.name or "동료") .. ": 특산품 시세를 비교하세요."
-				break
-			end
-		end
+		local tradeHint = "매입가·판매가·세후 손익을 비교해." -- [거래창] 동료 조언은 저널에서만 읽는다.
 		local toastLbl = mkLabel(top, if message ~= "" then message else tradeHint, 13, Color3.fromRGB(60, 100, 50), true)
 		toastLbl.Position = if narrow then UDim2.fromOffset(12, 78) else UDim2.new(0.50, 30, 0, 8)
 		toastLbl.Size = if narrow then UDim2.new(1, -30, 0, 20) else UDim2.new(0.50, -130, 0, 42)
@@ -6197,7 +6250,7 @@ function RENDERERS.trade()
 			{ icon = "cc0_goldcoins", title = "암시장", sub = "관세 없음 +10% · 압수 위험", enabled = false },
 		}, content)
 	end)
-	H.addStoryPanel()
+	-- 프롤로그는 저널의 이야기 기록으로 이동했다.
 	if view.news and #view.news > 0 then
 		add(function() return mkHeader(content, "시장 소식") end)
 		add(function() return mkLabel(content, table.concat(view.news, "\n"), 16, COLORS.gold, true) end)
@@ -6567,7 +6620,8 @@ end
 local openYardHall
 -- 동료 조언 줄: 말하는 동료의 초상과 말, 그리고 바로 가는 버튼 (최대 n개)
 function H.counselRows(n)
-	if H.contextAdviceShown or not view then return end
+	-- [중복 방지] 핵심 판단이 있는 시설의 동료 조언은 저널에서만 보여 준다.
+	if H.MENU_FOCUS[currentTab] or H.contextAdviceShown or not view then return end
 	local relevant = {}
 	for _, counsel in (view.counsel or {}) do
 		-- 교역 화면에는 교역, 조선소에는 선박 조언만 표시한다.
@@ -11722,7 +11776,7 @@ function render()
 				content.CanvasPosition = Vector2.new(0, math.max(0, y))
 			else
 				for _, section in content:GetChildren() do
-					if section.Name ~= "MenuQuickActions" and section.Name ~= "CaptainPriorityAdvice"
+					if section.Name ~= "MenuQuickActions"
 						and section.Name ~= "MenuSummaryMetrics" and string.sub(section.Name, 1, 10) ~= "MenuFocus_" then
 						local button = section:FindFirstChildWhichIsA("TextButton", true)
 						if button and button.Interactable and button.Visible then
@@ -11738,39 +11792,7 @@ function render()
 		H.invokeMenuPrimary = nil
 		H.menuActionDock.Visible = false
 	end
-	-- [선장 항해 비서] 서버 실측 상태에서 가장 시급한 일 한 개만 추천. 자원 조작은 실행하지 않는다.
-	local cue, detail, target = nil, nil, nil
-	if ship.maxHull > 0 and ship.hull < ship.maxHull * 0.4 then
-		cue, detail, target = "선체 수리 필요", string.format("내구도 %d/%d · 항해 전 수리 상태를 확인해.", ship.hull, ship.maxHull), "yard"
-	elseif ship.supplies <= 5 then
-		cue, detail, target = "보급품 부족", "현재 보유 " .. tostring(ship.supplies) .. "개 · 필요한 보급과 비용을 확인해.", "yard"
-	elseif ship.cargoCapacity > 0 and ship.cargoUsed >= ship.cargoCapacity then
-		cue, detail, target = "화물칸 가득 참", string.format("%d/%d칸 · 거래 전에 적재 화물을 정리해.", ship.cargoUsed, ship.cargoCapacity), "trade"
-	else
-		for _, q in (view.quests and view.quests.active) or {} do
-			if q.kind == "deliver" and q.progress >= q.amount then
-				cue, detail, target = "납품 가능한 의뢰", q.name .. " · 보상 수령 조건을 확인해.", "quest"
-				break
-			end
-		end
-		if not cue then
-			for _, t in (view.tech or {}) do
-				if not t.owned and not t.blocked and (t.cost or 0) <= p.coins then
-					cue, detail, target = "연구 가능한 기술", t.name .. " · 비용 " .. H.commas(t.cost or 0) .. "코인", "tech"
-					break
-				end
-			end
-		end
-	end
-	if cue and target ~= currentTab then
-		add(function()
-			local row = mkRow(content, "🧭 항해 비서 · " .. cue, detail, {
-				{ text = TAB_NAME[target] .. " 보기", color = COLORS.green, onClick = function() openTab(target) end },
-			}, 76)
-			row.Name = "CaptainPriorityAdvice"
-			return row
-		end)
-	end
+	-- [권고 단일화] 자동 우선순위 경고는 개인 저널에서 확인한다.
 	if H.recentTab and H.recentTab ~= currentTab and TAB_NAME[H.recentTab] then
 		local recent = H.recentTab
 		add(function()
@@ -12960,72 +12982,16 @@ end
 			end)
 	end
 
-	-- 첫걸음 안내 띠: 지금 할 일을 한 줄로 보여 준다 (끝나면 사라진다)
-	local goalGui = overlayGui("TutorialGoal", 11)
-	local goalBar = Instance.new("TextButton")
-	goalBar.AnchorPoint = Vector2.new(0.5, 0)
-	goalBar.Position = UDim2.new(0.5, 0, 0, 8)
-	goalBar.Size = UDim2.new(1, -20, 0, 48)
-	local goalMax = Instance.new("UISizeConstraint")
-	goalMax.MaxSize = Vector2.new(430, 48)
-	goalMax.Parent = goalBar
-	goalBar.BackgroundColor3 = COLORS.cover
-	goalBar.BackgroundTransparency = 0.1
-	goalBar.AutoButtonColor = false
-	goalBar.Font = Enum.Font.GothamBold
-	goalBar.TextSize = 15
-	goalBar.TextWrapped = true
-	goalBar.TextColor3 = Color3.fromRGB(246, 208, 130)
-	goalBar.TextStrokeTransparency = 1 -- 작은 글자에 테두리가 겹쳐 번져 보이던 문제
-	goalBar.TextTruncate = Enum.TextTruncate.AtEnd
-	goalBar.Text = ""
-	goalBar.Visible = false
-	goalBar.Parent = goalGui
-	corner(goalBar, 14)
-	do
-		local gs = Instance.new("UIStroke")
-		gs.Color = BRASS
-		gs.Thickness = 1.5
-		gs.ApplyStrokeMode = Enum.ApplyStrokeMode.Border -- 기본값(Contextual)은 버튼 글자에도 테두리를 입혀 번져 보인다
-		gs.Parent = goalBar
-	end
-	goalBar.Activated:Connect(function()
-		-- [안내 통합] 첫걸음을 누르면 별도 팝업 대신 기존 저널의 상세 조언을 보여 준다.
-		H.openJournal()
-	end)
+	-- [첫 항해 목표] 기존 튜토리얼 상태만 갱신한다. 목표와 행동 단계는 저널 한 곳에 표시.
 	local function refreshGoal()
 		local c = view and view.captain
 		if not c or newGameMode or H.tutorialHidden then
 			H.tutorialGoalActive = false
-			goalBar.Visible = false
 			return
 		end
-		local p, ship = view.player, view.ship
-		local sailed = p and (p.day or 0) > 0
-		local goals = {
-			{ done = c.step ~= "name", text = "상인 길드 서기에게 이름을 올리세요" },
-			{ done = c.step == "portrait" or c.step == "done", text = "주점 동료를 맞이하세요" },
-			{ done = c.step == "done", text = "떠돌이 화가에게 초상을 받으세요" },
-			{ done = sailed or (ship and ship.cargoUsed or 0) > 0, text = "교역 탭에서 이 항구의 특산품을 사세요" },
-			{ done = sailed, text = "지도 탭에서 다른 항구로 출항하세요" },
-		}
-		local n, next_ = 0, nil
-		for _, g in goals do
-			if g.done then n += 1 elseif not next_ then next_ = g end
-		end
-		if not next_ then
-			H.tutorialHidden = true
-			H.tutorialGoalActive = false
-			goalBar.Visible = false
-			return
-		end
-		H.tutorialGoalActive = true
-		-- [첫걸음 전용 위치] 책 메뉴·대화 중에는 숨기고, 모바일에서는 도크 아이콘 아래에 둔다.
-		goalBar.Visible = not main.Visible and hud.Visible and not bubble.Visible
-			and not H.openingPending and not dlg and not inField and not sceneHold
-		local width = hud.AbsoluteSize.X
-		goalBar.Position = UDim2.new(0.5, 0, 0, if width < 610 then 260 elseif width < 1050 then 142 else 8)
-		goalBar.Text = string.format("첫걸음 %d/%d · %s\n눌러서 동료 조언·일지 보기", n, #goals, next_.text)
+		local sailed = view.player and (view.player.day or 0) > 0
+		H.tutorialGoalActive = c.step ~= "done" or not sailed
+		if not H.tutorialGoalActive then H.tutorialHidden = true end
 	end
 
 	task.spawn(function()
