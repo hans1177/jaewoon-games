@@ -277702,11 +277702,147 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_829baaf1612fa57d4fc0a5cf",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13683",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "9e149962a38d6980c238a73f259705ff001a568a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13683,
+        "baseBranch": "main",
+        "headBranch": "focus/mare-only-auto-development-20261118",
+        "baseSha": "9e149962a38d6980c238a73f259705ff001a568a",
+        "headSha": "2b08e88f8a8b36e46f232f033cfa03b9931548fd",
+        "mergeCommitSha": "9036e09faf6f31c54d32db95b894dfaa52b251cc",
+        "mergedAt": "2026-11-18T02:06:12Z",
+        "authorLogin": "hans1177",
+        "titleHash": "6fdb37340496ee1aefb46865c46aeb0dc5d019884a3c5b496beeb569435ccdfb",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "focus/mare-only-auto-development-20261118",
+        "candidateSha": "2b08e88f8a8b36e46f232f033cfa03b9931548fd"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 134,
+        "deletedLineCount": 16,
+        "changedFiles": [
+          ".github/workflows/company-development-confirmed-runtime.yml",
+          ".github/workflows/company-game-seed-bootstrap.yml",
+          ".github/workflows/company-seed-design-runtime.yml",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-development-queue-reconcile.test.mjs",
+          "qa/company-selected-platform-router.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "tools/company-all-games-design-reset.mjs",
+          "tools/company-development-queue-reconcile.mjs",
+          "tools/company-selected-platform-router.mjs",
+          "tools/vibe2-queue-control.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-confirmed-runtime.yml",
+          ".github/workflows/company-game-seed-bootstrap.yml",
+          ".github/workflows/company-seed-design-runtime.yml",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-development-queue-reconcile.test.mjs",
+          "qa/company-selected-platform-router.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "tools/company-all-games-design-reset.mjs",
+          "tools/company-development-queue-reconcile.mjs",
+          "tools/company-selected-platform-router.mjs",
+          "tools/vibe2-queue-control.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13683",
+        "merge-commit:9036e09faf6f31c54d32db95b894dfaa52b251cc",
+        "base-main:9e149962a38d6980c238a73f259705ff001a568a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2216
+    "total": 2217
   }
 }
