@@ -51,6 +51,15 @@ function images() {
   }
   return rows;
 }
+// [Studio MCP 증거] 파일 이름이나 JPEG 헤더만으로 실물 캡처를 인정하지 않는다.
+export function verifiedStudioCapture(report,photos,expectedRevision) {
+  if(!/^[a-f0-9]{40}$/i.test(String(expectedRevision??'')) ||
+    report?.sourceRevision!==expectedRevision || !Array.isArray(report.log) ||
+    !Number.isInteger(Number(report?.summary?.capturedFrames)) ||
+    Number(report.summary.capturedFrames)<photos.length)return false;
+  const captured=new Set(report.log.filter(row=>typeof row?.capture==='string').map(row=>row.capture));
+  return photos.every(row=>captured.has(row.name.replace(/-[0-9]+\.(?:jpe?g|png)$/i,'')));
+}
 function strictJson(text) {
   if(typeof text!=='string'||Buffer.byteLength(text)>30000)throw Error('RESPONSE_INVALID_SIZE');
   const raw=text.trim(),tick=String.fromCharCode(96).repeat(3);
@@ -72,7 +81,7 @@ export function validateReview(value,frameNames) {
       !allowed.has(row.screenshot)||typeof row.evidence!=='string'||
       row.evidence.trim().length<12||row.evidence.length>500)throw Error('ISSUE_EVIDENCE_INVALID');
     return {category:row.category,severity:row.severity,screenshot:row.screenshot,
-      evidence:row.evidence.trim().slice(0,240)};
+      evidenceSha256:digest(row.evidence.trim())};
   });
   if(response.edits.length&&!issues.some(row=>row.severity!=='low'))throw Error('EDIT_WITHOUT_VISIBLE_ISSUE');
   const keys=new Set();
@@ -119,6 +128,12 @@ export async function reviewNemotron({fetchImpl=globalThis.fetch}={}) {
   const photos=images();
   const proofs=photos.map(({name,sha256})=>({name,sha256}));
   if(photos.length<2)return record('SKIPPED_STUDIO_IMAGES_UNAVAILABLE',{frames:proofs});
+  let studio;
+  try {
+    studio=JSON.parse(fs.readFileSync(path.join(framesRoot,'report.json'),'utf8').replace(/^\uFEFF/,''));
+  } catch { return record('SKIPPED_OFFICIAL_STUDIO_REPORT_MISSING',{frames:proofs}); }
+  if(!verifiedStudioCapture(studio,photos,process.env.GITHUB_SHA))
+    return record('SKIPPED_STUDIO_SOURCE_EVIDENCE_MISMATCH',{frames:proofs});
   if(trim(process.env.COMPANY_EXTERNAL_AI_ENABLED)!=='YES')
     return record('SKIPPED_CENTRAL_EXTERNAL_AI_OPT_IN_REQUIRED',{frames:proofs});
   if(trim(process.env.NVIDIA_FREE_TIER_VERIFIED)!=='YES')
