@@ -1,3 +1,4 @@
+// 파일명: qa/vibe-brain.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -414,4 +415,33 @@ test('자동 개발 두뇌는 비무료 강제 모델을 제외하고 결제 요
   await assert.rejects(()=>geminiCall({
     key:'fixture',model:'gemini-3.8-flash',prompt:'x',fetchFn:respondCost
   }),/NONZERO_COST_RESPONSE_BLOCKED/);
+});
+
+
+// [무료 모델 자동 순환] 무효한 출력 뒤에는 같은 모델을 반복하지 않고 다른 승인 모델을 우선한다.
+test('무효 수정안 재시도는 다른 무료 공급자를 우선한다', async () => {
+  const providers = [{name: 'groq:free-code'}, {name: 'openrouter:free-code'}];
+  const now = Date.now();
+  assert.deepEqual(rankProviders(providers, {}, now, 'DEBUG').map(p => p.name),
+    ['groq:free-code', 'openrouter:free-code']);
+  assert.deepEqual(rankProviders(providers, {}, now, 'DEBUG', 'groq:free-code').map(p => p.name),
+    ['openrouter:free-code', 'groq:free-code']);
+  assert.deepEqual(rankProviders(providers.slice(0, 1), {}, now, 'DEBUG', 'groq:free-code')
+    .map(p => p.name), ['groq:free-code'], '다른 무료 모델이 없으면 기존 모델을 유지');
+  const attempts = [];
+  const llm = async (_prompt, _images, {role = '', retryAfterInvalid = ''} = {}) => {
+    const selected = rankProviders(providers, {}, now, role, retryAfterInvalid)[0].name;
+    attempts.push({selected, retryAfterInvalid});
+    return {provider: selected, trace: [{name: selected, ok: true}],
+      text: attempts.length === 1 ? 'invalid-json' : JSON.stringify({summary: 'nil 방어',
+        edits: [{file: GAME, search: 'local p = ui.target.AbsolutePosition',
+          replace: 'if not ui.target then return nil end\n\tlocal p = ui.target.AbsolutePosition'}]})};
+  };
+  const root = mkRoot({[GAME]: SRC});
+  const result = await runBrain({orders: [order], ledger: emptyBrainLedger(), root, llm});
+  assert.equal(result.ok, true);
+  assert.deepEqual(attempts.map(row => row.selected), ['groq:free-code', 'openrouter:free-code']);
+  assert.equal(attempts[1].retryAfterInvalid, 'groq:free-code');
+  assert.equal(result.provider, 'openrouter:free-code');
+  assert.match(fs.readFileSync(path.join(root, GAME), 'utf8'), /if not ui\.target then return nil end/);
 });
