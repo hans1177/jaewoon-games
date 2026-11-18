@@ -254,11 +254,12 @@ H.MENU_FOCUS = {
 function H.marketPriceSignal(g)
 	local average = tonumber(g.avgPrice) or tonumber(g.basePrice) or 0
 	local buying = tonumber(g.buyTotals and g.buyTotals[1]) or tonumber(g.buy) or 0
-	if average <= 0 then return "➖", 0, "key" end
+	if average <= 0 then return "－", 0, "key" end
 	local delta = (buying / average - 1) * 100
-	if delta < -0.5 then return "⬇️", delta, "good" end
-	if delta > 0.5 then return "⬆️", delta, "key" end
-	return "➖", delta, "key"
+	-- [시세] 세계 평균 매입가보다 비싸면 빨강 ▲, 저렴하면 파랑 ▼. 하루 등락을 뜻하지 않는다.
+	if delta < -0.5 then return "▼", delta, "good" end
+	if delta > 0.5 then return "▲", delta, "key" end
+	return "－", delta, "key"
 end
 
 -- [실제 예상 손익] 보유분 평균 매입가와 관세가 반영된 서버 판매 견적만 비교한다.
@@ -331,7 +332,7 @@ function H.rich(text: string): string
 end
 H.richParent = nil -- 시설 창 본문(content)이 만들어지면 지정된다
 
-local UI_MIN_TEXT = 15
+local UI_MIN_TEXT = 17
 local function mkLabel(parent, text, size, color, bold, order)
 	local l = Instance.new("TextLabel")
 	l.BackgroundTransparency = 1
@@ -968,7 +969,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		elseif danger then Color3.fromRGB(224, 166, 138) elseif highlighted then Color3.fromRGB(232, 198, 140) else COLORS.paper
 	b.TextColor3 = if active then inkTint else Color3.fromRGB(94, 88, 81)
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = math.clamp(math.floor((size.Y.Offset > 0 and size.Y.Offset or 40) * 0.44), 16, 21)
+	b.TextSize = math.clamp(math.floor((size.Y.Offset > 0 and size.Y.Offset or 40) * 0.47), 17, 23)
 	b.TextWrapped = true
 	-- [모바일 실제 입력] 장식용 종이·황동 테두리가 클릭을 가리지 않도록 버튼이 카드보다 앞에서 입력을 받는다.
 	b.AutoButtonColor = active
@@ -2744,7 +2745,7 @@ do
 end
 -- [글씨 하한] 화면 어디서 만든 글씨든 15보다 작으면 15로 올린다 (대화·이벤트·시작 화면 포함).
 do
-	local FLOOR = 15
+	local FLOOR = 16
 	local function lift(obj)
 		if (obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox")) and not obj.TextScaled and obj.TextSize < FLOOR then
 			obj.TextSize = FLOOR
@@ -5307,7 +5308,6 @@ local function openTradeHall()
 	root.Parent = layer
 	local lastScroll, detailScroll = 0, 0
 	local detailOpen = false
-	local zoomOpen = false
 	local query = ""
 
 	local function build()
@@ -5339,7 +5339,7 @@ local function openTradeHall()
 		local inset = if showMerchant then 258 else 8
 		local availableW = width - inset - 16
 		local listWidth = if narrow then availableW else math.max(185, math.floor(availableW * 0.25))
-		local detailWidth = if narrow then availableW else math.max(246, math.floor(availableW * 0.30))
+		local detailWidth = if narrow then availableW else math.max(270, math.floor(availableW * 0.38))
 		local heroX = inset + listWidth + 4
 		local heroW = math.max(140, availableW - listWidth - detailWidth - 8)
 		local compactList = not narrow
@@ -5492,9 +5492,9 @@ local function openTradeHall()
 		search.PlaceholderColor3 = INK_SOFT
 		search.TextXAlignment = Enum.TextXAlignment.Left
 		search.Font = Enum.Font.GothamMedium
-		search.TextSize = 14
+		search.TextSize = 17
 		search.ClearTextOnFocus = false
-		search.PlaceholderText = "품목 검색 · ⬇️ 평균보다 저렴 · ⬆️ 비쌈"
+		search.PlaceholderText = "품목 검색 · 파랑 ▼ 저렴 / 빨강 ▲ 비쌈"
 		search.Text = query
 		search.Visible = list.Visible
 		search.Parent = root
@@ -5579,18 +5579,21 @@ local function openTradeHall()
 				hallGood = g.id
 				detailOpen = true
 				detailScroll = 0
-				zoomOpen = false
 				local oldDetail = root:FindFirstChild("TradeSpecimen")
 				if oldDetail then oldDetail.CanvasPosition = Vector2.zero end
 				Sfx.play("sfx_click")
 				build()
 			end)
 			local gi = GOOD_ICON[g.id]
-			if gi and gi[4] == "Goods/" .. g.id then gi = { "Goods", g.id } end
+			-- [교역품 2D] 승인된 큰 원화 우선. 표현 제한 화물의 중립 외형은 바꾸지 않는다.
+			if AssetIds["Goods/" .. g.id] and not RESTRICTED_CARGO_ICON[g.id]
+				and not (gi and gi[1] == "Cargo" and gi[2] == "barrel") then gi = { "Goods", g.id } end
 			local icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], if compactList then 62 else 78, g.name, gi[4]) else modelIcon(row, nil, nil, nil, if compactList then 62 else 78, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
 			local indicator, pct = H.marketPriceSignal(g)
-			local nm = mkLabel(row, indicator .. " " .. g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.scarcity and ladderHas("goods", "scarcity") then " 〔" .. g.scarcity .. "〕" else ""), 17, INK, true)
+			local nm = mkLabel(row, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.scarcity and ladderHas("goods", "scarcity") then " 〔" .. g.scarcity .. "〕" else ""), 19, INK, true)
+			nm.RichText = true
+			nm.Text = '<font color="' .. (if pct > 0.5 then "#B12F39" elseif pct < -0.5 then "#236BAC" else "#655849") .. '"><b>' .. indicator .. '</b></font> ' .. nm.Text
 			nm.Position = UDim2.fromOffset(if compactList then 78 else 94, 8)
 			nm.Size = UDim2.new(1, if compactList then -84 else (if g.tag ~= "" then -150 else -104), 0, 26)
 			nm.TextTruncate = Enum.TextTruncate.AtEnd
@@ -5607,13 +5610,15 @@ local function openTradeHall()
 			local priceText = if compactList then string.format("매입 %s\n판매 %s · 보유 %d", H.commas(unitBuyOf(g)), H.commas(g.sell), g.owned) else string.format("매입 %s · 판매 %s\n%s 세계평균 %s (%+.1f%%)\n보유 %d · 구매 가능 %d\n%s",
 				H.commas(unitBuyOf(g)), H.commas(g.sell), indicator, H.commas(g.avgPrice or g.basePrice or 0), pct,
 				g.owned, budgetQty, profitText)
-			local pr = mkLabel(row, priceText, 14, INK, false)
+			local pr = mkLabel(row, priceText, 17, INK, false)
+			pr.RichText = true
+			pr.Text = priceText:gsub("▲", '<font color="#B12F39"><b>▲</b></font>'):gsub("▼", '<font color="#236BAC"><b>▼</b></font>')
 			pr.TextWrapped = true
 			pr.Position = UDim2.fromOffset(if compactList then 78 else 94, 34)
 			pr.Size = UDim2.new(1, if compactList then -84 else -102, 0, 76)
 			pr.AutomaticSize = Enum.AutomaticSize.None
 			if not compactList then
-			local use = mkLabel(row, (g.category or "교역품") .. " · " .. (g.purpose or "항구 간 판매"), 12, INK_SOFT, false)
+			local use = mkLabel(row, (g.category or "교역품") .. " · " .. (g.purpose or "항구 간 판매"), 17, INK_SOFT, false)
 			use.Position = UDim2.fromOffset(94, 116)
 			use.Size = UDim2.new(1, -102, 0, 20)
 			use.AutomaticSize = Enum.AutomaticSize.None
@@ -5633,7 +5638,7 @@ local function openTradeHall()
 				local fill = Instance.new("Frame")
 				fill.BorderSizePixel = 0
 				fill.Size = UDim2.fromScale(ratio, 1)
-				fill.BackgroundColor3 = if pct < -0.5 then COLORS.green elseif pct > 0.5 then COLORS.gold else Color3.fromRGB(150, 140, 120)
+				fill.BackgroundColor3 = if pct < -0.5 then Color3.fromRGB(35, 107, 177) elseif pct > 0.5 then Color3.fromRGB(177, 47, 57) else Color3.fromRGB(150, 140, 120)
 				corner(fill, 3)
 				fill.Parent = gauge
 				local tick = Instance.new("Frame")
@@ -5658,7 +5663,7 @@ local function openTradeHall()
 			bl.Parent = bar
 			local function quick(text, color, enabled, fn, w)
 				local b = mkButton(bar, text, color, UDim2.new(w or 0.25, -3, 1, 0), fn, enabled)
-				b.TextSize = 12
+				b.TextSize = 17
 			end
 			quick("구매 1", COLORS.gold, canBuy >= 1, function() call("Buy", { goodId = g.id, amount = 1 }) end)
 			quick("구매 5", COLORS.gold, canBuy >= 5, function() call("Buy", { goodId = g.id, amount = 5 }) end)
@@ -5704,6 +5709,9 @@ local function openTradeHall()
 			bookMaterial(exhibit, "parchment", 220)
 			local heroPx = math.floor(math.max(92, math.min(heroW - 24, root.AbsoluteSize.Y - menuY - 83, 410)))
 			local gi = GOOD_ICON[sel.id]
+			-- [중앙 전시장] 작은 뷰포트의 흐릿한 3D 대신 승인 2D 원본을 우선 사용한다.
+			if AssetIds["Goods/" .. sel.id] and not RESTRICTED_CARGO_ICON[sel.id]
+				and not (gi and gi[1] == "Cargo" and gi[2] == "barrel") then gi = { "Goods", sel.id } end
 			local art = if gi then modelIcon(exhibit, gi[1], gi[2], gi[3], heroPx, sel.name, gi[4]) else modelIcon(exhibit, nil, nil, nil, heroPx, sel.name)
 			art.AnchorPoint = Vector2.new(0.5, 0.5)
 			art.Position = UDim2.new(0.5, 0, 0.5, -14)
@@ -5712,9 +5720,7 @@ local function openTradeHall()
 			title.Size = UDim2.new(1, -24, 0, 22)
 			title.AutomaticSize = Enum.AutomaticSize.None
 			title.TextXAlignment = Enum.TextXAlignment.Center
-			local expand = mkButton(exhibit, "크게 보기", COLORS.gold, UDim2.fromOffset(116, 38), function() zoomOpen = true; build() end, true)
-			expand.AnchorPoint = Vector2.new(0.5, 1)
-			expand.Position = UDim2.new(0.5, 0, 1, -6)
+			-- [교역 확대 제거] 이미 큰 전시 이미지가 있으므로 별도 보기 버튼은 표시하지 않는다.
 		end
 
 		-- 오른쪽: 선택한 물품의 거래 상자
@@ -5737,6 +5743,8 @@ local function openTradeHall()
 		bookMaterial(right, "parchment", 220)
 		if sel and detail.Visible then
 			local gi = GOOD_ICON[sel.id]
+			if AssetIds["Goods/" .. sel.id] and not RESTRICTED_CARGO_ICON[sel.id]
+				and not (gi and gi[1] == "Cargo" and gi[2] == "barrel") then gi = { "Goods", sel.id } end
 			local detailIcon, diff = H.marketPriceSignal(sel)
 			local hn = mkLabel(right, detailIcon .. " " .. sel.name, 21, INK, true)
 			hn.Position = UDim2.fromOffset(12, 8)
@@ -5751,9 +5759,7 @@ local function openTradeHall()
 				local big = if gi then modelIcon(right, gi[1], gi[2], gi[3], bigPx, sel.name, gi[4]) else modelIcon(right, nil, nil, nil, bigPx, sel.name)
 				big.AnchorPoint = Vector2.new(0.5, 0)
 				big.Position = UDim2.new(0.5, 0, 0, 42)
-				local expand = mkButton(right, "상품 확대", COLORS.gold, UDim2.fromOffset(116, 38), function() zoomOpen = true; build() end, true)
-				expand.AnchorPoint = Vector2.new(1, 0)
-				expand.Position = UDim2.new(1, -12, 0, bigPx + 10)
+				-- [교역 확대 제거] 상세 카드 안의 상품 원화를 바로 보여 준다.
 			end
 			local qty = math.clamp(hallQty, 1, 20)
 			local free = ship.cargoCapacity - ship.cargoUsed
@@ -5855,23 +5861,7 @@ local function openTradeHall()
 			hint.AutomaticSize = Enum.AutomaticSize.None
 		end
 		detail.CanvasPosition = Vector2.new(0, detailScroll)
-		-- [확대 화면] 손가락 회전은 기존 modelIcon 동작 재사용.
-		if zoomOpen and sel then
-			local shade = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(35, 26, 19))
-			shade.ZIndex = 50
-			local px = math.floor(math.min(root.AbsoluteSize.X * 0.72, root.AbsoluteSize.Y * 0.76, 500))
-			local gi = GOOD_ICON[sel.id]
-			local art = if gi then modelIcon(shade, gi[1], gi[2], gi[3], px, sel.name, gi[4]) else modelIcon(shade, nil, nil, nil, px, sel.name)
-			art.AnchorPoint = Vector2.new(0.5, 0.5)
-			art.Position = UDim2.fromScale(0.5, 0.5)
-			local title = mkLabel(shade, sel.name .. " · 손가락으로 회전", 20, COLORS.paper, true)
-			title.Position = UDim2.fromOffset(12, 8)
-			title.Size = UDim2.new(1, -130, 0, 32)
-			title.AutomaticSize = Enum.AutomaticSize.None
-			local done = mkButton(shade, "닫기", COLORS.gold, UDim2.fromOffset(94, 44), function() zoomOpen = false; build() end, true)
-			done.AnchorPoint = Vector2.new(1, 0)
-			done.Position = UDim2.new(1, -10, 0, 8)
-		end
+		-- [교역] 전체 화면 확대는 제거하고 원화·정보·거래를 한 화면에 유지한다.
 	end
 	local lastWidth
 	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
@@ -5973,14 +5963,18 @@ function RENDERERS.trade()
 			cardF.Parent = grid
 			local st = Instance.new("UIStroke")
 			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-			st.Color = if priceIcon == "⬇️" then COLORS.green elseif priceIcon == "⬆️" then COLORS.gold else Color3.fromRGB(70, 84, 104)
+			st.Color = if priceIcon == "▼" then Color3.fromRGB(35, 107, 177) elseif priceIcon == "▲" then Color3.fromRGB(177, 47, 57) else Color3.fromRGB(70, 84, 104)
 			st.Thickness = 1.5
 			st.Parent = cardF
 			local gi = GOOD_ICON[g.id]
+			if AssetIds["Goods/" .. g.id] and not RESTRICTED_CARGO_ICON[g.id]
+				and not (gi and gi[1] == "Cargo" and gi[2] == "barrel") then gi = { "Goods", g.id } end
 			local icon = if gi then modelIcon(cardF, gi[1], gi[2], gi[3], 96, g.name, gi[4])
 				else modelIcon(cardF, nil, nil, nil, 96, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(cardF, priceIcon .. " " .. g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else ""), 18, COLORS.text, true)
+			local nm = mkLabel(cardF, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else ""), 19, COLORS.text, true)
+			nm.RichText = true
+			nm.Text = '<font color="' .. (if deviation > 0.5 then "#F27D81" elseif deviation < -0.5 then "#77C1FF" else "#DFD0B0") .. '"><b>' .. priceIcon .. '</b></font> ' .. nm.Text
 			nm.Position = UDim2.fromOffset(112, 6)
 			nm.Size = UDim2.new(1, -170, 0, 24)
 			nm.AutomaticSize = Enum.AutomaticSize.None
@@ -6003,6 +5997,8 @@ function RENDERERS.trade()
 			local info = mkLabel(cardF, string.format("매입 %s · 판매 %s\n%s 평균 %s (%+.1f%%)\n보유 %d · %s",
 				H.commas(g.buyTotals and g.buyTotals[1] or g.buy), H.commas(g.sell),
 				priceIcon, H.commas(g.avgPrice or g.basePrice or 0), deviation, g.owned, profitLabel), 14, COLORS.text, false)
+			info.RichText = true
+			info.Text = info.Text:gsub("▲", '<font color="#F27D81"><b>▲</b></font>'):gsub("▼", '<font color="#77C1FF"><b>▼</b></font>')
 			info.TextWrapped = true
 			info.Position = UDim2.fromOffset(112, 34)
 			info.Size = UDim2.new(1, -120, 0, 70)
