@@ -9815,10 +9815,14 @@ function RENDERERS.encyclopedia()
 	local cx = view.codex or {}
 	local articles = require(Shared:WaitForChild("KnowledgeCards")).Articles
 	local all, groups, known, byId = {}, { { id = "all", name = "전체" } }, {}, {}
+	local fieldCounts, explained, pictured = {}, 0, 0
 	for _, card in (cx.cards or {}) do
 		if card.found then
 			table.insert(all, card)
 			byId[card.id] = card
+			fieldCounts[card.field or ""] = (fieldCounts[card.field or ""] or 0) + 1
+			if articles[card.id] then explained += 1 end
+			if type(card.image) == "string" and card.image ~= "" then pictured += 1 end
 			if card.field and not known[card.field] then
 				known[card.field] = true
 				local group = findField(card.field)
@@ -9833,13 +9837,9 @@ function RENDERERS.encyclopedia()
 	table.sort(groups, function(a, b) return a.name < b.name end)
 	local fieldId = H.encyclopediaCategoryId or "all"
 	if fieldId ~= "all" and not known[fieldId] then fieldId = "all"; H.encyclopediaCategoryId = fieldId end
-	local groupName, nextId = "전체", "all"
-	for i, g in groups do
-		if g.id == fieldId then
-			groupName = g.name
-			nextId = groups[if i < #groups then i + 1 else 1].id
-			break
-		end
+	local groupName = "전체"
+	for _, g in groups do
+		if g.id == fieldId then groupName = g.name; break end
 	end
 	local queryText = string.lower(H.encyclopediaSearchText or "")
 	local found = {}
@@ -9855,6 +9855,7 @@ function RENDERERS.encyclopedia()
 		end
 	end
 	add(function() return mkHeader(content, string.format("대항해 지식 대백과 · 발견 %d / %d", #all, cx.total or #all)) end)
+	add(function() return mkLabel(content, string.format("장문 해설 %d장 · 등록 도판 %d장 · 미발견 지식은 비공개", explained, pictured), 15, INK_SOFT, false) end)
 	-- [목차] 검색과 분야 선택은 이 접속의 UI에만 기억한다.
 	add(function()
 		local panel = mkBox(content, UDim2.new(), UDim2.new(1, -8, 0, 107), COLORS.paper)
@@ -9884,10 +9885,10 @@ function RENDERERS.encyclopedia()
 			render()
 		end, true)
 		submit.Position = UDim2.new(1, -98, 0, 8)
-		local group = mkButton(panel, "분야 · " .. groupName, COLORS.leather,
+		local group = mkButton(panel, (if H.encyclopediaIndexOpen then "목차 닫기 · " else "목차 열기 · ") .. groupName, COLORS.leather,
 			UDim2.new(0.62, -12, 0, 42), function()
-				H.encyclopediaCategoryId = nextId
-				H.encyclopediaPage = 1
+				H.encyclopediaIndexOpen = not H.encyclopediaIndexOpen
+				H.encyclopediaIndexPage = 1
 				render()
 			end, true)
 		group.Position = UDim2.fromOffset(8, 58)
@@ -9896,12 +9897,83 @@ function RENDERERS.encyclopedia()
 			H.encyclopediaCategoryId = "all"
 			H.encyclopediaSearchText = ""
 			H.encyclopediaPage = 1
+			H.encyclopediaIndexPage = 1
 			render()
 		end, true)
 		reset.Position = UDim2.new(0.62, 0, 0, 58)
 		reset.TextSize = 15
 		return panel
 	end)
+
+	-- [분야/장 목차] 발견 기록을 재활용하며 12장 단위로만 표시해 모바일 부하를 줄인다.
+	if H.encyclopediaIndexOpen then
+		add(function() return mkLabel(content, "분야별 목차 · 발견한 지식", 18, INK, true) end)
+		add(function()
+			local columns = if content.AbsoluteSize.X >= 620 then 3 else 2
+			local frame = Instance.new("Frame")
+			frame.Name = "EncyclopediaFieldIndex"
+			frame.BackgroundTransparency = 1
+			frame.Size = UDim2.new(1, -8, 0, math.ceil(#groups / columns) * 49 + 6)
+			for i, g in groups do
+				local col = (i - 1) % columns
+				local row = math.floor((i - 1) / columns)
+				local total = if g.id == "all" then #all else fieldCounts[g.id] or 0
+				local selectedField = g.id
+				local button = mkButton(frame, g.name .. " · " .. tostring(total),
+					if g.id == fieldId then COLORS.gold else COLORS.blue,
+					UDim2.new(1 / columns, -7, 0, 43), function()
+						H.encyclopediaCategoryId = selectedField
+						H.encyclopediaPage = 1
+						H.encyclopediaIndexPage = 1
+						render()
+					end, true)
+				button.Position = UDim2.new(col / columns, 3, 0, row * 49 + 3)
+				button.TextSize = 15
+			end
+			return frame
+		end)
+		if #found > 0 then
+			local pageCount = math.ceil(#found / 12)
+			H.encyclopediaIndexPage = math.clamp(H.encyclopediaIndexPage or 1, 1, pageCount)
+			local indexPage = H.encyclopediaIndexPage
+			add(function()
+				return mkLabel(content, string.format("장 제목 목록 · %d건 중 %d쪽 / %d쪽", #found, indexPage, pageCount), 17, INK, true)
+			end)
+			for i = (indexPage - 1) * 12 + 1, math.min(#found, indexPage * 12) do
+				local entryIndex, entry = i, found[i]
+				add(function()
+					local button = mkButton(content, string.format("%03d. %s", entryIndex, entry.name),
+						if H.encyclopediaPage == entryIndex then COLORS.gold else COLORS.blue,
+						UDim2.new(1, -8, 0, 42), function()
+							H.encyclopediaPage = entryIndex
+							H.encyclopediaIndexOpen = false
+							Sfx.play("sfx_book_turn", 0.3)
+							render()
+						end, true)
+					button.Name = "EncyclopediaIndexEntry"
+					button.TextSize = 17
+					return button
+				end)
+			end
+			add(function()
+				local nav = Instance.new("Frame")
+				nav.Name = "EncyclopediaIndexPages"
+				nav.BackgroundTransparency = 1
+				nav.Size = UDim2.new(1, -8, 0, 46)
+				local previous = mkButton(nav, "◀ 앞 목차", COLORS.leather, UDim2.new(0.5, -4, 0, 44), function()
+					H.encyclopediaIndexPage = math.max(1, indexPage - 1)
+					render()
+				end, indexPage > 1)
+				previous.Position = UDim2.fromOffset(0, 1)
+				local following = mkButton(nav, "뒤 목차 ▶", COLORS.leather, UDim2.new(0.5, -4, 0, 44), function()
+					H.encyclopediaIndexPage = math.min(pageCount, indexPage + 1)
+					render()
+				end, indexPage < pageCount)
+				following.Position = UDim2.new(0.5, 4, 0, 1)
+				return nav
+			end)
+		end
+	end
 	if #found == 0 then
 		add(function()
 			local hint = if #all == 0 then "탐험과 학자 보고로 발견하면 이곳에 기록돼."
@@ -9915,9 +9987,11 @@ function RENDERERS.encyclopedia()
 	local category = findField(current.field) or { name = tostring(current.field or "세계 지식"), color = { 122, 89, 48 } }
 	local article = articles[current.id]
 	-- [가죽 표지·양피지] 한 장의 사진과 전체 길이 해설. 말줄임 없이 책 안에서 읽는다.
+	local bookFrame
 	add(function()
 		local book = Instance.new("Frame")
 		book.Name = "EncyclopediaBookPage"
+		bookFrame = book
 		book.Size = UDim2.new(1, -8, 0, math.clamp(math.max(content.AbsoluteSize.Y, 530) - 120, 410, 690))
 		book.BackgroundColor3 = COLORS.leather
 		book.BorderSizePixel = 0
@@ -9927,7 +10001,7 @@ function RENDERERS.encyclopedia()
 		border.Color = UI_BRASS
 		border.Thickness = 2
 		border.Parent = book
-		local paper = mkBox(book, UDim2.fromOffset(9, 9), UDim2.new(1, -18, 1, -18), COLORS.paper)
+		local paper = mkBox(book, UDim2.fromOffset(9, 9), UDim2.new(1, -18, 1, -137), COLORS.paper)
 		corner(paper, 5)
 		bookMaterial(paper, "parchment", 192)
 		local sheet = Instance.new("ScrollingFrame")
@@ -9997,21 +10071,46 @@ function RENDERERS.encyclopedia()
 			line("검증된 장문 해설이 아직 등록되지 않았어. 추측한 역사를 자동으로 보태지 않아.", 16, false)
 		end
 		line("분류와 시대", 19, true)
-		line("주제: " .. (current.topic or "기타")
+		line("대분류: " .. (current.worldGroup or "세계 지식")
+			.. "\n주제: " .. (current.topic or "기타")
+			.. "\n자료 유형: " .. (current.kindName or "기타")
+			.. "\n존재 형태: " .. (current.entityType or "기록")
 			.. "\n학문: " .. (current.discipline or "미분류")
 			.. (if current.era then "\n시대: " .. current.era else "")
-			.. (if current.region then "\n지역: " .. current.region else "")
-			.. (if current.evidence then "\n자료 구분: " .. current.evidence else ""), 16, false)
+			.. (if current.region then "\n관련 지역: " .. current.region else "")
+			.. (if current.evidence then "\n자료 검증 구분: " .. current.evidence else "")
+			.. (if current.fromYear then "\n게임 내 등장 가능 연도: " .. tostring(current.fromYear) else ""), 16, false)
+		if current.evidenceId == "fiction" then
+			line("※ 이 항목은 실제 역사 자료가 아닌 게임 속 가상 설정이야.", 16, true, INK_SOFT)
+		elseif current.evidenceId == "legend" or current.evidenceId == "hypothesis" then
+			line("※ 전승 또는 가설을 다룬 자료로, 사실로 확정되지 않은 내용이 포함돼.", 16, false, INK_SOFT)
+		end
+		if current.relatedDisciplines and #current.relatedDisciplines > 0 then
+			local disciplines = {}
+			for _, name in current.relatedDisciplines do table.insert(disciplines, tostring(name)) end
+			line("함께 살펴볼 학문", 19, true)
+			line(table.concat(disciplines, " · "), 16, false)
+		end
+		if current.source and current.source ~= "" then
+			line("원본 기록의 발견 경로", 19, true)
+			line(current.source, 16, false)
+		end
 		line("내 항해 기록", 19, true)
 		local first = current.provenance
 		line(if first then "첫 발견: " .. tostring(first.port or "위치 미상")
 			.. " · 항해 " .. tostring(first.day or 0) .. "일째 · " .. tostring(first.method or "발견")
 			else "이전에 획득한 지식 · 자세한 발견 위치는 기록되지 않았어.", 16, false)
 		line("자료·저작권", 19, true)
-		line(if article and article.topic then "본문 참고: 위키백과 · " .. article.topic
+		line(if article and article.topic then "본문 참고: 위키백과 · " .. string.gsub(article.topic, "_", " ")
 			.. "\n해설은 게임에 편집·수록된 자료야. 실시간 연동은 아니야."
 			else "본문: 게임 지식카드 · 외부 참고 자료 확인 대기", 15, false, INK_SOFT)
-		if current.wikidata then line("위키데이터: " .. tostring(current.wikidata), 15, false, INK_SOFT) end
+		if current.wikidata then line("위키데이터 항목: " .. tostring(current.wikidata), 15, false, INK_SOFT) end
+		if current.nextClue then
+			line("이어지는 탐구 단서", 19, true)
+			line((current.nextClue.quest or "관련 연구")
+				.. (if current.nextClue.port then " · " .. current.nextClue.port else "")
+				.. (if current.nextClue.source then "\n" .. current.nextClue.source else ""), 16, false)
+		end
 		if current.credit and current.credit ~= "" then
 			line("대표 그림 출처: " .. current.credit, 15, false, INK_SOFT)
 		end
@@ -10045,9 +10144,12 @@ function RENDERERS.encyclopedia()
 		more.TextSize = 16
 		return book
 	end)
-	-- [장 넘기기·책갈피] 세션 상태만 유지하고 기존 저장 구조는 그대로 둔다.
-	add(function()
+	-- [책 하단 고정] 본문을 읽는 동안 이전/다음 장과 책갈피 버튼은 제자리에 둔다.
+	-- 기존 저장 구조는 바꾸지 않고 접속 중에만 책갈피를 유지한다.
+	do
 		local nav = Instance.new("Frame")
+		nav.Parent = bookFrame
+		nav.Position = UDim2.new(0, 9, 1, -117)
 		nav.Name = "EncyclopediaPageNavigation"
 		nav.BackgroundTransparency = 1
 		nav.Size = UDim2.new(1, -8, 0, 108)
@@ -10088,8 +10190,7 @@ function RENDERERS.encyclopedia()
 			end, saved ~= nil)
 		jump.Position = UDim2.new(0.5, 5, 0, 59)
 		jump.TextSize = 15
-		return nav
-	end)
+	end
 end
 function RENDERERS.scholar()
 	H.exploreScholarView = true
