@@ -548,6 +548,11 @@
  {
   "type": "luau",
   "ctx": "Client",
+  "code": "-- [효과음 재생 검증] 공식 Studio 클라이언트에서 기존 등록 ID와 실제 로딩 상태만 조회한다.\n-- 재생 자체를 만들거나 음량·소스·저장·게임 조작을 변경하지 않는다.\nlocal RS=game:GetService(\"ReplicatedStorage\")\nlocal SS=game:GetService(\"SoundService\")\nlocal shared=assert(RS:FindFirstChild(\"Shared\"),\"STUDIO_AUDIO_SHARED_MISSING\")\nlocal ids=require(assert(shared:FindFirstChild(\"AudioIds\"),\"STUDIO_AUDIO_IDS_MISSING\"))\nlocal registered=0\nfor name,assetId in pairs(ids) do\n if type(name)==\"string\" and type(assetId)==\"string\" and assetId:match(\"^rbxassetid://%d+$\") then\n  registered+=1\n end\nend\nlocal group=SS:FindFirstChild(\"MareAudio\")\nlocal lastLoaded=group and group:GetAttribute(\"AudioLastLoaded\") or \"none\"\nlocal lastFailed=group and group:GetAttribute(\"AudioLastFailed\") or \"none\"\nlocal active=0\nfor _,obj in SS:GetDescendants() do\n if obj:IsA(\"Sound\") and obj.SoundId~=\"\" and obj.IsLoaded then active+=1 end\nend\nlocal function safeName(value)\n local text=tostring(value)\n return text:match(\"^[a-z0-9_]+$\") and text or \"none\"\nend\nreturn string.format(\"STUDIO_AUDIO_AUDIT registered=%d active=%d last_loaded=%s last_failed=%s\",\n registered,active,safeName(lastLoaded),safeName(lastFailed))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
   "code": "-- [아이콘 의미 QA] 선장실: 모든 메뉴 탭이 같은 투명 황동 계열이고, 이름과 그림이 일치한다.\nlocal g=assert(game:GetService(\"Players\").LocalPlayer.PlayerGui:FindFirstChild(\"MareEssentiaGui\"),\"MENU_MAIN_GUI_MISSING\")\nlocal assets=require(game:GetService(\"ReplicatedStorage\"):WaitForChild(\"Shared\"):WaitForChild(\"AssetIds\"))\nlocal expected={\n  status = {\"Glyph\", \"captain\"},\n  crew = {\"Glyph\", \"crew\"},\n}\nfor id,choice in expected do\n local b=assert(g:FindFirstChild(\"FacilityTab_\"..id,true),\"MENU_TAB_MISSING:\"..id)\n local ico=assert(b:FindFirstChild(\"TabIcon\"),\"MENU_ICON_MISSING:\"..id)\n assert(ico.BackgroundTransparency==1,\"MENU_ICON_OPAQUE:\"..id)\n assert(ico.Size.X.Offset==26 and ico.Size.Y.Offset==26,\"MENU_ICON_SIZE_NOT_26:\"..id)\n assert(ico.Position.X.Offset==7 and ico.Position.Y.Scale==0.5,\"MENU_ICON_OUTSIDE_TAB:\"..id)\n if choice[1]==\"Glyph\" then\n  assert(ico:IsA(\"Frame\") and ico:GetAttribute(\"MenuGlyph\")==choice[2],\"MENU_ICON_WRONG_MEANING:\"..id)\n  assert(ico:FindFirstChild(\"GlyphShape\") or ico:FindFirstChild(\"GlyphOutline\"),\"MENU_ICON_NO_VISIBLE_SHAPE:\"..id)\n else\n  local art=assert(ico:FindFirstChild(\"OriginalArt\"),\"MENU_ORIGINAL_ART_MISSING:\"..id)\n  assert(art:IsA(\"ImageLabel\") and art.BackgroundTransparency==1 and art.Image==\"rbxassetid://\"..tostring(assets[\"Menu/\"..choice[2]]),\"MENU_ICON_ART_MISMATCH:\"..id)\n end\nend\nfor id,label in { status=\"현황\", crew=\"동료 관리\" } do\n local tab=assert(g:FindFirstChild(\"FacilityTab_\"..id,true))\n assert(tab.Text==label,\"CAPTAIN_TAB_LABEL_NOT_DISTINCT:\"..id)\nend\nlocal P=game:GetService('Players').LocalPlayer.PlayerGui local out={} for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Visible then local value=d.Text if value~='' and #value>3 then local cut=utf8.offset(value,41) out[#out+1]=cut and string.sub(value,1,cut-1) or value if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')"
  },
  {
@@ -777,6 +782,22 @@
   "name": "b2_mid"
  },
  {
+  "type": "wait",
+  "ms": 1100
+ },
+ {
+  "type": "capture",
+  "name": "vfx_battle_mid_action"
+ },
+ {
+  "type": "wait",
+  "ms": 1100
+ },
+ {
+  "type": "capture",
+  "name": "vfx_battle_late_action"
+ },
+ {
   "type": "luau",
   "ctx": "Client",
   "code": "local out={} for _,m in ipairs(game:GetService('LogService'):GetLogHistory()) do if (m.messageType==Enum.MessageType.MessageError or m.messageType==Enum.MessageType.MessageWarning) and #out<25 then out[#out+1]=string.sub(m.message,1,160) end end return 'LOGS('..#out..'): '..table.concat(out,' // ')"
@@ -799,6 +820,245 @@
   "type": "luau",
   "ctx": "Client",
   "code": "local RS=game:GetService(\"RunService\") pcall(function() RS:UnbindFromRenderStep(\"MareShot\") end) RS:BindToRenderStep(\"MareShot\",Enum.RenderPriority.Last.Value+1,function() local cam=workspace.CurrentCamera local cf=workspace:GetAttribute(\"ShotCF\") if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=workspace:GetAttribute(\"ShotFov\") or 65 end end) return \"bound\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [스튜디오 마을 디자인] 기존 PortScene 건물 배치와 거리 시야만 촬영한다. 장면·저장 상태를 변경하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"STUDIO_TOWN_SCENE_MISSING\")\nlocal from=Vector3.new(-20,65,115)\nlocal focus=Vector3.new(-40,2,0)\nworkspace:SetAttribute(\"ShotFov\",57)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(from,focus))\nreturn \"TOWN_DESIGN_FRAME:town_plaza_full DISTRICTS=\"..tostring(scene:GetAttribute(\"CityDistrictPlaced\"))..\" ROUTE=\"..tostring(scene:GetAttribute(\"NpcRouteAudit\"))"
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "town_plaza_full"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [스튜디오 마을 디자인] 기존 PortScene 건물 배치와 거리 시야만 촬영한다. 장면·저장 상태를 변경하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"STUDIO_TOWN_SCENE_MISSING\")\nlocal from=Vector3.new(-6,20,75)\nlocal focus=Vector3.new(-6,3,0)\nworkspace:SetAttribute(\"ShotFov\",52)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(from,focus))\nreturn \"TOWN_DESIGN_FRAME:town_plaza_center DISTRICTS=\"..tostring(scene:GetAttribute(\"CityDistrictPlaced\"))..\" ROUTE=\"..tostring(scene:GetAttribute(\"NpcRouteAudit\"))"
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "town_plaza_center"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [스튜디오 마을 디자인] 기존 PortScene 건물 배치와 거리 시야만 촬영한다. 장면·저장 상태를 변경하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"STUDIO_TOWN_SCENE_MISSING\")\nlocal from=Vector3.new(-49,14,7)\nlocal focus=Vector3.new(-49,5,36)\nworkspace:SetAttribute(\"ShotFov\",48)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(from,focus))\nreturn \"TOWN_DESIGN_FRAME:town_market_facade DISTRICTS=\"..tostring(scene:GetAttribute(\"CityDistrictPlaced\"))..\" ROUTE=\"..tostring(scene:GetAttribute(\"NpcRouteAudit\"))"
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "town_market_facade"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [스튜디오 마을 디자인] 기존 PortScene 건물 배치와 거리 시야만 촬영한다. 장면·저장 상태를 변경하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"STUDIO_TOWN_SCENE_MISSING\")\nlocal from=Vector3.new(-49,14,-7)\nlocal focus=Vector3.new(-49,5,-36)\nworkspace:SetAttribute(\"ShotFov\",48)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(from,focus))\nreturn \"TOWN_DESIGN_FRAME:town_guild_facade DISTRICTS=\"..tostring(scene:GetAttribute(\"CityDistrictPlaced\"))..\" ROUTE=\"..tostring(scene:GetAttribute(\"NpcRouteAudit\"))"
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "town_guild_facade"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [스튜디오 마을 디자인] 기존 PortScene 건물 배치와 거리 시야만 촬영한다. 장면·저장 상태를 변경하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"STUDIO_TOWN_SCENE_MISSING\")\nlocal from=Vector3.new(-90,22,5)\nlocal focus=Vector3.new(-90,6,36)\nworkspace:SetAttribute(\"ShotFov\",52)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(from,focus))\nreturn \"TOWN_DESIGN_FRAME:town_scholar_library DISTRICTS=\"..tostring(scene:GetAttribute(\"CityDistrictPlaced\"))..\" ROUTE=\"..tostring(scene:GetAttribute(\"NpcRouteAudit\"))"
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "town_scholar_library"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [스튜디오 마을 디자인] 기존 PortScene 건물 배치와 거리 시야만 촬영한다. 장면·저장 상태를 변경하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"STUDIO_TOWN_SCENE_MISSING\")\nlocal from=Vector3.new(-90,16,-5)\nlocal focus=Vector3.new(-90,6,-36)\nworkspace:SetAttribute(\"ShotFov\",50)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(from,focus))\nreturn \"TOWN_DESIGN_FRAME:town_library_street DISTRICTS=\"..tostring(scene:GetAttribute(\"CityDistrictPlaced\"))..\" ROUTE=\"..tostring(scene:GetAttribute(\"NpcRouteAudit\"))"
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "town_library_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [스튜디오 마을 디자인] 기존 PortScene 건물 배치와 거리 시야만 촬영한다. 장면·저장 상태를 변경하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"STUDIO_TOWN_SCENE_MISSING\")\nlocal from=Vector3.new(-110,40,109)\nlocal focus=Vector3.new(-120,4,0)\nworkspace:SetAttribute(\"ShotFov\",57)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(from,focus))\nreturn \"TOWN_DESIGN_FRAME:town_street_roofline DISTRICTS=\"..tostring(scene:GetAttribute(\"CityDistrictPlaced\"))..\" ROUTE=\"..tostring(scene:GetAttribute(\"NpcRouteAudit\"))"
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "town_street_roofline"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [스튜디오 마을 디자인] 기존 PortScene 건물 배치와 거리 시야만 촬영한다. 장면·저장 상태를 변경하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"STUDIO_TOWN_SCENE_MISSING\")\nlocal from=Vector3.new(-174,138,180)\nlocal focus=Vector3.new(-150,5,0)\nworkspace:SetAttribute(\"ShotFov\",63)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(from,focus))\nreturn \"TOWN_DESIGN_FRAME:town_aerial_grid DISTRICTS=\"..tostring(scene:GetAttribute(\"CityDistrictPlaced\"))..\" ROUTE=\"..tostring(scene:GetAttribute(\"NpcRouteAudit\"))"
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "town_aerial_grid"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [스튜디오 마을 디자인] 기존 PortScene 건물 배치와 거리 시야만 촬영한다. 장면·저장 상태를 변경하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"STUDIO_TOWN_SCENE_MISSING\")\nlocal from=Vector3.new(-155,85,335)\nlocal focus=Vector3.new(-145,6,235)\nworkspace:SetAttribute(\"ShotFov\",60)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(from,focus))\nreturn \"TOWN_DESIGN_FRAME:town_outer_district_north DISTRICTS=\"..tostring(scene:GetAttribute(\"CityDistrictPlaced\"))..\" ROUTE=\"..tostring(scene:GetAttribute(\"NpcRouteAudit\"))"
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "town_outer_district_north"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [스튜디오 마을 디자인] 기존 PortScene 건물 배치와 거리 시야만 촬영한다. 장면·저장 상태를 변경하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"STUDIO_TOWN_SCENE_MISSING\")\nlocal from=Vector3.new(-155,85,-335)\nlocal focus=Vector3.new(-145,6,-235)\nworkspace:SetAttribute(\"ShotFov\",60)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(from,focus))\nreturn \"TOWN_DESIGN_FRAME:town_outer_district_south DISTRICTS=\"..tostring(scene:GetAttribute(\"CityDistrictPlaced\"))..\" ROUTE=\"..tostring(scene:GetAttribute(\"NpcRouteAudit\"))"
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "town_outer_district_south"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [스튜디오 마을 디자인] 기존 PortScene 건물 배치와 거리 시야만 촬영한다. 장면·저장 상태를 변경하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"STUDIO_TOWN_SCENE_MISSING\")\nlocal from=Vector3.new(65,38,80)\nlocal focus=Vector3.new(-40,6,0)\nworkspace:SetAttribute(\"ShotFov\",58)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(from,focus))\nreturn \"TOWN_DESIGN_FRAME:town_harbor_to_market DISTRICTS=\"..tostring(scene:GetAttribute(\"CityDistrictPlaced\"))..\" ROUTE=\"..tostring(scene:GetAttribute(\"NpcRouteAudit\"))"
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "town_harbor_to_market"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [스튜디오 마을 디자인] 기존 PortScene 건물 배치와 거리 시야만 촬영한다. 장면·저장 상태를 변경하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"STUDIO_TOWN_SCENE_MISSING\")\nlocal from=Vector3.new(-90,40,92)\nlocal focus=Vector3.new(-53,7,22)\nworkspace:SetAttribute(\"ShotFov\",53)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(from,focus))\nreturn \"TOWN_DESIGN_FRAME:town_facility_row_wide DISTRICTS=\"..tostring(scene:GetAttribute(\"CityDistrictPlaced\"))..\" ROUTE=\"..tostring(scene:GetAttribute(\"NpcRouteAudit\"))"
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "town_facility_row_wide"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [공식 Studio 재질 집계] 화면 품질 판정 대용이 아닌 근거 값. 기존 속성 변경 없음.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_MATERIAL_SCENE_MISSING\")\nlocal n={part=0,mesh=0,pbr=0,color=0,normal=0,rough=0,metal=0,texture=0,plain=0,wood=0,stone=0,fabric=0,metalPart=0}\nfor _,d in scene:GetDescendants() do\n if d:IsA(\"BasePart\") then\n  n.part+=1\n  local m=d.Material.Name\n  if m==\"Wood\" or m==\"WoodPlanks\" then n.wood+=1\n  elseif m==\"Slate\" or m==\"Rock\" or m==\"Granite\" or m==\"Cobblestone\" or m==\"Marble\" then n.stone+=1\n  elseif m==\"Fabric\" then n.fabric+=1\n  elseif m==\"Metal\" or m==\"CorrodedMetal\" then n.metalPart+=1 end\n  if d:IsA(\"MeshPart\") then\n   n.mesh+=1\n   local p=d:FindFirstChildOfClass(\"SurfaceAppearance\")\n   if p then\n    n.pbr+=1\n    if p.ColorMap~=\"\" then n.color+=1 end\n    if p.NormalMap~=\"\" then n.normal+=1 end\n    if p.RoughnessMap~=\"\" then n.rough+=1 end\n    if p.MetalnessMap~=\"\" then n.metal+=1 end\n   end\n   if d.TextureID~=\"\" then n.texture+=1 end\n   if not p and d.TextureID==\"\" then n.plain+=1 end\n  end\n end\nend\nassert(n.part>0,\"DESIGN_MATERIAL_NO_SCENE_PARTS\")\nreturn string.format(\"STUDIO_MATERIAL_AUDIT parts=%d mesh=%d pbr=%d color=%d normal=%d roughness=%d metalness=%d texture=%d untextured_mesh=%d wood=%d stone=%d fabric=%d metal=%d\",n.part,n.mesh,n.pbr,n.color,n.normal,n.rough,n.metal,n.texture,n.plain,n.wood,n.stone,n.fabric,n.metalPart)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 외형 근거] 실제 항구 원본만 촬영한다. 게임 오브젝트 변경 금지.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_SCENE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",37)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-98,26,78),Vector3.new(-88,12,36)))\nreturn \"DESIGN_MATERIAL_FRAME:material_stone_roof\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "material_stone_roof"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 외형 근거] 실제 항구 원본만 촬영한다. 게임 오브젝트 변경 금지.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_SCENE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",45)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(28,13,51),Vector3.new(22,3,13)))\nreturn \"DESIGN_MATERIAL_FRAME:material_wood_dock\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "material_wood_dock"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 외형 근거] 실제 항구 원본만 촬영한다. 게임 오브젝트 변경 금지.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_SCENE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",38)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(50,12,17),Vector3.new(30,2,4)))\nreturn \"DESIGN_MATERIAL_FRAME:cargo_warehouse_close\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "cargo_warehouse_close"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 외형 근거] 실제 항구 원본만 촬영한다. 게임 오브젝트 변경 금지.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_SCENE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",38)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(44,17,-6),Vector3.new(32,2,-3)))\nreturn \"DESIGN_MATERIAL_FRAME:cargo_trade_crates\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "cargo_trade_crates"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 외형 근거] 실제 항구 원본만 촬영한다. 게임 오브젝트 변경 금지.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_SCENE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",40)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(65,15,44),Vector3.new(50,7,16)))\nreturn \"DESIGN_MATERIAL_FRAME:ship_hull_detail\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "ship_hull_detail"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 외형 근거] 실제 항구 원본만 촬영한다. 게임 오브젝트 변경 금지.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_SCENE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",43)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(14,39,55),Vector3.new(50,22,16)))\nreturn \"DESIGN_MATERIAL_FRAME:ship_sails_rigging\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "ship_sails_rigging"
  },
  {
   "type": "luau",
@@ -939,6 +1199,24 @@
  {
   "type": "luau",
   "ctx": "Client",
+  "code": "-- [무기 실증] 기존 대련 무기 실물 근접 촬영.\nlocal s=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_WEAPON_SCENE_MISSING\")\nlocal p=assert(s:GetAttribute(\"R15SparringStage\"),\"DESIGN_WEAPON_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(0,3.3,8),p+Vector3.new(0,1.8,0)))\nworkspace:SetAttribute(\"ShotFov\",32)\nreturn \"DESIGN_WEAPON_FRAME:weapon_blade_close\""
+ },
+ {
+  "type": "wait",
+  "ms": 320
+ },
+ {
+  "type": "capture",
+  "name": "weapon_blade_close"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [기존 모션 카메라 복구] 이동/공격 프레임의 원래 시야를 유지한다.\nlocal s=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_WEAPON_SCENE_MISSING\")\nlocal p=assert(s:GetAttribute(\"R15SparringStage\"),\"DESIGN_WEAPON_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(0,5,16),p+Vector3.new(0,1.5,0)))\nworkspace:SetAttribute(\"ShotFov\",45)\nreturn \"DESIGN_WEAPON_CAMERA_RESTORED\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
   "code": "local scene=assert(workspace:FindFirstChild(\"PortScene\")) scene:SetAttribute(\"R15MotionShowcase\",true) scene:SetAttribute(\"R15MotionState\",\"shoot\") return \"R15_MOTION_SHOOT\""
  },
  {
@@ -948,6 +1226,24 @@
  {
   "type": "capture",
   "name": "harbor_motion_shoot"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [무기 실증] 기존 대련 무기 실물 근접 촬영.\nlocal s=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_WEAPON_SCENE_MISSING\")\nlocal p=assert(s:GetAttribute(\"R15SparringStage\"),\"DESIGN_WEAPON_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(0,3.3,8),p+Vector3.new(0,1.8,0)))\nworkspace:SetAttribute(\"ShotFov\",32)\nreturn \"DESIGN_WEAPON_FRAME:weapon_ranged_close\""
+ },
+ {
+  "type": "wait",
+  "ms": 320
+ },
+ {
+  "type": "capture",
+  "name": "weapon_ranged_close"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [기존 모션 카메라 복구] 이동/공격 프레임의 원래 시야를 유지한다.\nlocal s=assert(workspace:FindFirstChild(\"PortScene\"),\"DESIGN_WEAPON_SCENE_MISSING\")\nlocal p=assert(s:GetAttribute(\"R15SparringStage\"),\"DESIGN_WEAPON_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(0,5,16),p+Vector3.new(0,1.5,0)))\nworkspace:SetAttribute(\"ShotFov\",45)\nreturn \"DESIGN_WEAPON_CAMERA_RESTORED\""
  },
  {
   "type": "luau",
@@ -1022,7 +1318,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "-- [R15 얼굴 정면 실증] 현재 항구에서 실제 생성된 사람의 얼굴 면이 몸통 정면과 반대로 붙지 않았는지 검증한다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"NPC_FACE_SCENE_MISSING\")\nlocal checked, missing, reversed = 0, 0, {}\nlocal normals={\n [Enum.NormalId.Front]=Vector3.new(0,0,-1), [Enum.NormalId.Back]=Vector3.new(0,0,1),\n [Enum.NormalId.Right]=Vector3.new(1,0,0), [Enum.NormalId.Left]=Vector3.new(-1,0,0),\n [Enum.NormalId.Top]=Vector3.new(0,1,0), [Enum.NormalId.Bottom]=Vector3.new(0,-1,0)\n}\nfor _,m in scene:GetDescendants() do\n if m:IsA(\"Model\") and m:GetAttribute(\"RigType\")==\"R15\" then\n  local head=m:FindFirstChild(\"Head\")\n  local root=m:FindFirstChild(\"HumanoidRootPart\")\n  local face=head and head:FindFirstChild(\"MareFace\")\n  checked+=1\n  if not (head and root and face and face:IsA(\"SurfaceGui\") and normals[face.Face]) then\n   missing+=1\n  else\n   local forward=head.CFrame:VectorToWorldSpace(normals[face.Face])\n   local alignment=forward:Dot(root.CFrame.LookVector)\n   if alignment<0.5 then\n    if #reversed<8 then table.insert(reversed,m.Name..\":\"..string.format(\"%.2f\",alignment)) end\n   end\n  end\n end\nend\nassert(checked>=10,\"NPC_FACE_R15_SAMPLE_TOO_SMALL:\"..checked)\nassert(missing==0,\"NPC_FACE_MISSING:\"..missing..\"/\"..checked)\nassert(#reversed==0,\"NPC_FACE_REVERSED:\"..table.concat(reversed,\",\"))\n-- [실제 정면 촬영] 기존 대련 주민의 Head.LookVector 정면에 카메라를 옮겨 눈·머리·재단 상의를 증거로 남긴다.\nlocal stage=assert(scene:GetAttribute(\"R15SparringStage\"),\"NPC_FACE_SHOWCASE_STAGE_MISSING\")\nlocal subject\nfor _,m in scene:GetDescendants() do\n if m:IsA(\"Model\") and m.Name==\"Villager\" and m:FindFirstChild(\"Head\") and m:FindFirstChild(\"HumanoidRootPart\")\n    and (m:GetPivot().Position-stage).Magnitude<12 then subject=m break end\nend\nassert(subject,\"NPC_FACE_FRONT_SUBJECT_MISSING\")\nlocal head=subject:FindFirstChild(\"Head\")\nlocal face=head:FindFirstChild(\"MareFace\")\nassert(face and face:IsA(\"SurfaceGui\") and face.AlwaysOnTop,\"NPC_FACE_VISIBILITY_NOT_PROVEN\")\nlocal focus=head.Position-Vector3.new(0,0.32,0)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(focus+head.CFrame.LookVector*7.5+Vector3.new(0,0.65,0),focus))\nworkspace:SetAttribute(\"ShotFov\",34)\nreturn \"NPC_FACE_FRONT_PASS R15=\"..checked..\" BACKWARDS=0\""
+  "code": "-- [R15 얼굴 정면 실증] 현재 항구에서 실제 생성된 사람의 얼굴 면이 몸통 정면과 반대로 붙지 않았는지 검증한다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"NPC_FACE_SCENE_MISSING\")\nlocal checked, missing, reversed = 0, 0, {}\nlocal normals={\n [Enum.NormalId.Front]=Vector3.new(0,0,-1), [Enum.NormalId.Back]=Vector3.new(0,0,1),\n [Enum.NormalId.Right]=Vector3.new(1,0,0), [Enum.NormalId.Left]=Vector3.new(-1,0,0),\n [Enum.NormalId.Top]=Vector3.new(0,1,0), [Enum.NormalId.Bottom]=Vector3.new(0,-1,0)\n}\nfor _,m in scene:GetDescendants() do\n if m:IsA(\"Model\") and m:GetAttribute(\"RigType\")==\"R15\" then\n  local head=m:FindFirstChild(\"Head\")\n  local root=m:FindFirstChild(\"HumanoidRootPart\")\n  local face=head and head:FindFirstChild(\"MareFace\")\n  checked+=1\n  if not (head and root and face and face:IsA(\"SurfaceGui\") and normals[face.Face]) then\n   missing+=1\n  else\n   local forward=head.CFrame:VectorToWorldSpace(normals[face.Face])\n   local alignment=forward:Dot(root.CFrame.LookVector)\n   if alignment<0.5 then\n    if #reversed<8 then table.insert(reversed,m.Name..\":\"..string.format(\"%.2f\",alignment)) end\n   end\n  end\n end\nend\nassert(checked>=10,\"NPC_FACE_R15_SAMPLE_TOO_SMALL:\"..checked)\nassert(missing==0,\"NPC_FACE_MISSING:\"..missing..\"/\"..checked)\nassert(#reversed==0,\"NPC_FACE_REVERSED:\"..table.concat(reversed,\",\"))\n-- [실제 정면 촬영] 기존 대련 주민의 Head.LookVector 정면에 카메라를 옮겨 눈·머리·재단 상의를 증거로 남긴다.\nlocal stage=assert(scene:GetAttribute(\"R15SparringStage\"),\"NPC_FACE_SHOWCASE_STAGE_MISSING\")\nlocal subject\nfor _,m in scene:GetDescendants() do\n if m:IsA(\"Model\") and m.Name==\"Villager\" and m:FindFirstChild(\"Head\") and m:FindFirstChild(\"HumanoidRootPart\")\n    and (m:GetPivot().Position-stage).Magnitude<12 then subject=m break end\nend\nassert(subject,\"NPC_FACE_FRONT_SUBJECT_MISSING\")\nlocal head=subject:FindFirstChild(\"Head\")\nlocal face=head:FindFirstChild(\"MareFace\")\nassert(face and face:IsA(\"SurfaceGui\") and face.AlwaysOnTop,\"NPC_FACE_VISIBILITY_NOT_PROVEN\")\nlocal focus=head.Position-Vector3.new(0,0.32,0)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(focus+head.CFrame.LookVector*7.5+Vector3.new(0,0.65,0),focus))\nworkspace:SetAttribute(\"ShotFov\",34)\n-- [디자인 검증] 실존 R15 주민의 머리·복식·방향을 다각도 근거로 고정한다.\nworkspace:SetAttribute(\"ShotDesignHead\",focus)\nworkspace:SetAttribute(\"ShotDesignBody\",subject:GetPivot().Position+Vector3.new(0,2.2,0))\nworkspace:SetAttribute(\"ShotDesignForward\",head.CFrame.LookVector)\nworkspace:SetAttribute(\"ShotDesignRight\",head.CFrame.RightVector)\nworkspace:SetAttribute(\"ShotDesignStage\",stage)\nreturn \"NPC_FACE_FRONT_PASS R15=\"..checked..\" BACKWARDS=0\""
  },
  {
   "type": "capture",
@@ -1031,8 +1327,125 @@
  {
   "type": "luau",
   "ctx": "Client",
+  "code": "-- [디자인 주민] 눈·머리·모자·상의·실루엣 각도별 실물 사진. 기존 R15 움직임과 의상은 수정하지 않는다.\nlocal focus=assert(workspace:GetAttribute(\"ShotDesignHead\"),\"NPC_DESIGN_HEAD_MISSING\")\nlocal body=assert(workspace:GetAttribute(\"ShotDesignBody\"),\"NPC_DESIGN_BODY_MISSING\")\nlocal forward=assert(workspace:GetAttribute(\"ShotDesignForward\"),\"NPC_DESIGN_FORWARD_MISSING\")\nlocal right=assert(workspace:GetAttribute(\"ShotDesignRight\"),\"NPC_DESIGN_RIGHT_MISSING\")\nlocal stage=assert(workspace:GetAttribute(\"ShotDesignStage\"),\"NPC_DESIGN_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",32)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(focus+forward*3.4+Vector3.new(0,0.1,0),focus))\nreturn \"NPC_DESIGN_FRAME:harbor_npc_face_close\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "harbor_npc_face_close"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 주민] 눈·머리·모자·상의·실루엣 각도별 실물 사진. 기존 R15 움직임과 의상은 수정하지 않는다.\nlocal focus=assert(workspace:GetAttribute(\"ShotDesignHead\"),\"NPC_DESIGN_HEAD_MISSING\")\nlocal body=assert(workspace:GetAttribute(\"ShotDesignBody\"),\"NPC_DESIGN_BODY_MISSING\")\nlocal forward=assert(workspace:GetAttribute(\"ShotDesignForward\"),\"NPC_DESIGN_FORWARD_MISSING\")\nlocal right=assert(workspace:GetAttribute(\"ShotDesignRight\"),\"NPC_DESIGN_RIGHT_MISSING\")\nlocal stage=assert(workspace:GetAttribute(\"ShotDesignStage\"),\"NPC_DESIGN_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",35)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(focus+right*4.9+forward*1.0,focus))\nreturn \"NPC_DESIGN_FRAME:harbor_npc_hair_left\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "harbor_npc_hair_left"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 주민] 눈·머리·모자·상의·실루엣 각도별 실물 사진. 기존 R15 움직임과 의상은 수정하지 않는다.\nlocal focus=assert(workspace:GetAttribute(\"ShotDesignHead\"),\"NPC_DESIGN_HEAD_MISSING\")\nlocal body=assert(workspace:GetAttribute(\"ShotDesignBody\"),\"NPC_DESIGN_BODY_MISSING\")\nlocal forward=assert(workspace:GetAttribute(\"ShotDesignForward\"),\"NPC_DESIGN_FORWARD_MISSING\")\nlocal right=assert(workspace:GetAttribute(\"ShotDesignRight\"),\"NPC_DESIGN_RIGHT_MISSING\")\nlocal stage=assert(workspace:GetAttribute(\"ShotDesignStage\"),\"NPC_DESIGN_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",35)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(focus-right*4.9+forward*1.0,focus))\nreturn \"NPC_DESIGN_FRAME:harbor_npc_hair_right\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "harbor_npc_hair_right"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 주민] 눈·머리·모자·상의·실루엣 각도별 실물 사진. 기존 R15 움직임과 의상은 수정하지 않는다.\nlocal focus=assert(workspace:GetAttribute(\"ShotDesignHead\"),\"NPC_DESIGN_HEAD_MISSING\")\nlocal body=assert(workspace:GetAttribute(\"ShotDesignBody\"),\"NPC_DESIGN_BODY_MISSING\")\nlocal forward=assert(workspace:GetAttribute(\"ShotDesignForward\"),\"NPC_DESIGN_FORWARD_MISSING\")\nlocal right=assert(workspace:GetAttribute(\"ShotDesignRight\"),\"NPC_DESIGN_RIGHT_MISSING\")\nlocal stage=assert(workspace:GetAttribute(\"ShotDesignStage\"),\"NPC_DESIGN_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",36)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(focus-forward*4.5+Vector3.new(0,0.8,0),focus))\nreturn \"NPC_DESIGN_FRAME:harbor_npc_hair_back\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "harbor_npc_hair_back"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 주민] 눈·머리·모자·상의·실루엣 각도별 실물 사진. 기존 R15 움직임과 의상은 수정하지 않는다.\nlocal focus=assert(workspace:GetAttribute(\"ShotDesignHead\"),\"NPC_DESIGN_HEAD_MISSING\")\nlocal body=assert(workspace:GetAttribute(\"ShotDesignBody\"),\"NPC_DESIGN_BODY_MISSING\")\nlocal forward=assert(workspace:GetAttribute(\"ShotDesignForward\"),\"NPC_DESIGN_FORWARD_MISSING\")\nlocal right=assert(workspace:GetAttribute(\"ShotDesignRight\"),\"NPC_DESIGN_RIGHT_MISSING\")\nlocal stage=assert(workspace:GetAttribute(\"ShotDesignStage\"),\"NPC_DESIGN_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",48)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(body+forward*9.1+Vector3.new(0,0.7,0),body))\nreturn \"NPC_DESIGN_FRAME:harbor_npc_outfit_front\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "harbor_npc_outfit_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 주민] 눈·머리·모자·상의·실루엣 각도별 실물 사진. 기존 R15 움직임과 의상은 수정하지 않는다.\nlocal focus=assert(workspace:GetAttribute(\"ShotDesignHead\"),\"NPC_DESIGN_HEAD_MISSING\")\nlocal body=assert(workspace:GetAttribute(\"ShotDesignBody\"),\"NPC_DESIGN_BODY_MISSING\")\nlocal forward=assert(workspace:GetAttribute(\"ShotDesignForward\"),\"NPC_DESIGN_FORWARD_MISSING\")\nlocal right=assert(workspace:GetAttribute(\"ShotDesignRight\"),\"NPC_DESIGN_RIGHT_MISSING\")\nlocal stage=assert(workspace:GetAttribute(\"ShotDesignStage\"),\"NPC_DESIGN_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",48)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(body+right*8.1+forward*2.5,body))\nreturn \"NPC_DESIGN_FRAME:harbor_npc_outfit_side\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "harbor_npc_outfit_side"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 주민] 눈·머리·모자·상의·실루엣 각도별 실물 사진. 기존 R15 움직임과 의상은 수정하지 않는다.\nlocal focus=assert(workspace:GetAttribute(\"ShotDesignHead\"),\"NPC_DESIGN_HEAD_MISSING\")\nlocal body=assert(workspace:GetAttribute(\"ShotDesignBody\"),\"NPC_DESIGN_BODY_MISSING\")\nlocal forward=assert(workspace:GetAttribute(\"ShotDesignForward\"),\"NPC_DESIGN_FORWARD_MISSING\")\nlocal right=assert(workspace:GetAttribute(\"ShotDesignRight\"),\"NPC_DESIGN_RIGHT_MISSING\")\nlocal stage=assert(workspace:GetAttribute(\"ShotDesignStage\"),\"NPC_DESIGN_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",48)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(body-forward*8.6+Vector3.new(0,0.5,0),body))\nreturn \"NPC_DESIGN_FRAME:harbor_npc_outfit_back\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "harbor_npc_outfit_back"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 주민] 눈·머리·모자·상의·실루엣 각도별 실물 사진. 기존 R15 움직임과 의상은 수정하지 않는다.\nlocal focus=assert(workspace:GetAttribute(\"ShotDesignHead\"),\"NPC_DESIGN_HEAD_MISSING\")\nlocal body=assert(workspace:GetAttribute(\"ShotDesignBody\"),\"NPC_DESIGN_BODY_MISSING\")\nlocal forward=assert(workspace:GetAttribute(\"ShotDesignForward\"),\"NPC_DESIGN_FORWARD_MISSING\")\nlocal right=assert(workspace:GetAttribute(\"ShotDesignRight\"),\"NPC_DESIGN_RIGHT_MISSING\")\nlocal stage=assert(workspace:GetAttribute(\"ShotDesignStage\"),\"NPC_DESIGN_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",50)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(stage+Vector3.new(8,5,10),stage+Vector3.new(0,2,0)))\nreturn \"NPC_DESIGN_FRAME:harbor_npc_pair_diagonal\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "harbor_npc_pair_diagonal"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [디자인 주민] 눈·머리·모자·상의·실루엣 각도별 실물 사진. 기존 R15 움직임과 의상은 수정하지 않는다.\nlocal focus=assert(workspace:GetAttribute(\"ShotDesignHead\"),\"NPC_DESIGN_HEAD_MISSING\")\nlocal body=assert(workspace:GetAttribute(\"ShotDesignBody\"),\"NPC_DESIGN_BODY_MISSING\")\nlocal forward=assert(workspace:GetAttribute(\"ShotDesignForward\"),\"NPC_DESIGN_FORWARD_MISSING\")\nlocal right=assert(workspace:GetAttribute(\"ShotDesignRight\"),\"NPC_DESIGN_RIGHT_MISSING\")\nlocal stage=assert(workspace:GetAttribute(\"ShotDesignStage\"),\"NPC_DESIGN_STAGE_MISSING\")\nworkspace:SetAttribute(\"ShotFov\",50)\nworkspace:SetAttribute(\"ShotCF\",CFrame.lookAt(stage+Vector3.new(-8,5,-10),stage+Vector3.new(0,2,0)))\nreturn \"NPC_DESIGN_FRAME:harbor_npc_port_street_reverse\""
+ },
+ {
+  "type": "wait",
+  "ms": 360
+ },
+ {
+  "type": "capture",
+  "name": "harbor_npc_port_street_reverse"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
   "timeoutMs": 90000,
-  "code": "-- 대련 촬영이 숨긴 실제 게임 UI/고정 카메라를 복구하고 정상적인 화면 전환으로 검증한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"),\"FIELD_MAIN_GUI_MISSING\")\nlocal rs=game:GetService(\"RunService\")\nrs:UnbindFromRenderStep(\"MareShot\")\nworkspace:SetAttribute(\"ShotCF\",nil)\nworkspace:SetAttribute(\"ShotFov\",nil)\nlocal stage=workspace:FindFirstChild(\"PortScene\")\nif stage then stage:SetAttribute(\"R15MotionShowcase\",false) end\nfor _,g in pg:GetChildren() do if g:IsA(\"ScreenGui\") and g.Name~=\"MareEssentiaGui\" then g.Enabled=false end end\ngui.Enabled=true\nworkspace:SetAttribute(\"DevAllies\",true)\n-- 선택한 국가의 항구가 모두 모험 2레벨 이상이라면 그 상태는 정상 잠금이다.\n-- 실제 지상맵 입장을 검증할 때만 Studio의 기존 새 게임 흐름으로 런던 1레벨 탐험 지점을 준비한다.\nlocal remote=game:GetService(\"ReplicatedStorage\"):WaitForChild(\"GameAction\")\nlocal state=remote:InvokeServer(\"State\",{})\nlocal available=0\nfor _,site in (state and state.view and state.view.sites) or {} do\n if site.unlocked and site.left>0 then available+=1 end\nend\nif available==0 then\n assert(rs:IsStudio(),\"FIELD_QA_RESTART_ONLY_IN_STUDIO\")\n task.wait(0.20)\n -- [Studio 재시도] 직전 실제 게임 동작과 요청 간격이 겹칠 때만 재시도한다.\n -- 서버의 0.1초 속도 제한·새 게임 조건·저장 규칙은 그대로 검증한다.\n local fresh\n for attempt=1,5 do\n  fresh=remote:InvokeServer(\"NewGame\",{nationId=\"england\",restart=true})\n  if not (fresh and fresh.message==\"너무 빨라요\") then break end\n  task.wait(0.30)\n end\n assert(fresh and fresh.ok and fresh.view and fresh.view.player.portId==\"london\",\"FIELD_QA_LONDON_SCENARIO_FAILED:\"..tostring(fresh and fresh.message))\n local london=0\n for _,site in fresh.view.sites or {} do\n  if site.unlocked and site.left>0 then london+=1 end\n end\n assert(london>0,\"FIELD_QA_LONDON_HAS_NO_LEVEL1_SITE\")\nend\n-- 앞선 테스트에서 NewGame을 서버에 직접 요청했을 수 있다.\n-- 탐험 지점 수와 실제 UI가 같은 State를 쓰도록 매번 동기화한다.\nworkspace:SetAttribute(\"DevCall\",\"State\")\nfor i=1,20 do\n if workspace:GetAttribute(\"DevCall\")==nil then break end\n task.wait(0.20)\nend\nassert(workspace:GetAttribute(\"DevCall\")==nil,\"FIELD_QA_STATE_REFRESH_TIMEOUT\")\n-- [정상 클라이언트 진입] 서버 재시작 뒤 숨겨진 항구 책을 기존 Tab_harbor 동작으로 연다.\n-- 단순 ScreenGui.Enabled 변경만으로는 Main.Visible이 복구되지 않아 실제 안내창이 시작되지 않는다.\nworkspace:SetAttribute(\"DevCall\",\"Tab_harbor\")\nfor i=1,20 do\n if workspace:GetAttribute(\"DevCall\")==nil then break end\n task.wait(0.20)\nend\nassert(workspace:GetAttribute(\"DevCall\")==nil,\"FIELD_QA_HARBOR_TAB_REFRESH_TIMEOUT\")\nlocal book=gui:FindFirstChild(\"Main\",true)\nassert(book and book.Visible,\"FIELD_QA_MAIN_BOOK_NOT_VISIBLE\")\n-- [정상 UI 검증] 이름·동료·화가 창의 서버 요청과 표시 종료를 둘 다 확인한다.\n-- 기존 QAAutoIntro가 실제 버튼 콜백을 사용한다. 직접 RPC로 안내를 건너뛰지 않는다.\n-- 매 프레임 서버에 State를 호출하지 않아 실제 Studio 통신 지연이 누적되지 않게 한다.\nlocal introReady, introStep, stable = false, \"unknown\", 0\nfor attempt=1,50 do\n if attempt%4==1 then\n  local snapshot=remote:InvokeServer(\"State\",{})\n  local captain=snapshot and snapshot.view and snapshot.view.captain\n  introStep=captain and captain.step or \"missing\"\n end\n local intro=pg:FindFirstChild(\"IntroDialog\")\n local reveal=pg:FindFirstChild(\"PortraitReveal\")\n if introStep==\"done\" and (not intro or not intro.Enabled) and (not reveal or not reveal.Enabled) then\n  stable+=1\n  if stable>=3 then introReady=true break end\n else\n  stable=0\n end\n task.wait(0.40)\nend\nassert(introReady,\"FIELD_QA_INTRO_MODAL_NOT_FINISHED:step=\"..tostring(introStep)..\n \" intro=\"..tostring(pg:FindFirstChild(\"IntroDialog\")~=nil)..\n \" reveal=\"..tostring(pg:FindFirstChild(\"PortraitReveal\")~=nil))\nworkspace:SetAttribute(\"DevCall\",\"Tab_explore\")\nreturn \"FIELD_QA_OPEN_EXPLORE_TAB GUI_ENABLED=\"..tostring(gui.Enabled)..\" UNLOCKED_BEFORE=\"..available"
+  "code": "-- 대련 촬영이 숨긴 실제 게임 UI/고정 카메라를 복구하고 정상적인 화면 전환으로 검증한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"),\"FIELD_MAIN_GUI_MISSING\")\nlocal rs=game:GetService(\"RunService\")\nrs:UnbindFromRenderStep(\"MareShot\")\nworkspace:SetAttribute(\"ShotCF\",nil)\nworkspace:SetAttribute(\"ShotFov\",nil)\n-- [복원] 디자인 사진용 임시 위치 정보는 플레이어 세계에 남기지 않는다.\nfor _,key in {\"ShotDesignHead\",\"ShotDesignBody\",\"ShotDesignForward\",\"ShotDesignRight\",\"ShotDesignStage\"} do\n workspace:SetAttribute(key,nil)\nend\nlocal stage=workspace:FindFirstChild(\"PortScene\")\nif stage then stage:SetAttribute(\"R15MotionShowcase\",false) end\nfor _,g in pg:GetChildren() do if g:IsA(\"ScreenGui\") and g.Name~=\"MareEssentiaGui\" then g.Enabled=false end end\ngui.Enabled=true\nworkspace:SetAttribute(\"DevAllies\",true)\n-- 선택한 국가의 항구가 모두 모험 2레벨 이상이라면 그 상태는 정상 잠금이다.\n-- 실제 지상맵 입장을 검증할 때만 Studio의 기존 새 게임 흐름으로 런던 1레벨 탐험 지점을 준비한다.\nlocal remote=game:GetService(\"ReplicatedStorage\"):WaitForChild(\"GameAction\")\nlocal state=remote:InvokeServer(\"State\",{})\nlocal available=0\nfor _,site in (state and state.view and state.view.sites) or {} do\n if site.unlocked and site.left>0 then available+=1 end\nend\nif available==0 then\n assert(rs:IsStudio(),\"FIELD_QA_RESTART_ONLY_IN_STUDIO\")\n task.wait(0.20)\n -- [Studio 재시도] 직전 실제 게임 동작과 요청 간격이 겹칠 때만 재시도한다.\n -- 서버의 0.1초 속도 제한·새 게임 조건·저장 규칙은 그대로 검증한다.\n local fresh\n for attempt=1,5 do\n  fresh=remote:InvokeServer(\"NewGame\",{nationId=\"england\",restart=true})\n  if not (fresh and fresh.message==\"너무 빨라요\") then break end\n  task.wait(0.30)\n end\n assert(fresh and fresh.ok and fresh.view and fresh.view.player.portId==\"london\",\"FIELD_QA_LONDON_SCENARIO_FAILED:\"..tostring(fresh and fresh.message))\n local london=0\n for _,site in fresh.view.sites or {} do\n  if site.unlocked and site.left>0 then london+=1 end\n end\n assert(london>0,\"FIELD_QA_LONDON_HAS_NO_LEVEL1_SITE\")\nend\n-- 앞선 테스트에서 NewGame을 서버에 직접 요청했을 수 있다.\n-- 탐험 지점 수와 실제 UI가 같은 State를 쓰도록 매번 동기화한다.\nworkspace:SetAttribute(\"DevCall\",\"State\")\nfor i=1,20 do\n if workspace:GetAttribute(\"DevCall\")==nil then break end\n task.wait(0.20)\nend\nassert(workspace:GetAttribute(\"DevCall\")==nil,\"FIELD_QA_STATE_REFRESH_TIMEOUT\")\n-- [정상 클라이언트 진입] 서버 재시작 뒤 숨겨진 항구 책을 기존 Tab_harbor 동작으로 연다.\n-- 단순 ScreenGui.Enabled 변경만으로는 Main.Visible이 복구되지 않아 실제 안내창이 시작되지 않는다.\nworkspace:SetAttribute(\"DevCall\",\"Tab_harbor\")\nfor i=1,20 do\n if workspace:GetAttribute(\"DevCall\")==nil then break end\n task.wait(0.20)\nend\nassert(workspace:GetAttribute(\"DevCall\")==nil,\"FIELD_QA_HARBOR_TAB_REFRESH_TIMEOUT\")\nlocal book=gui:FindFirstChild(\"Main\",true)\nassert(book and book.Visible,\"FIELD_QA_MAIN_BOOK_NOT_VISIBLE\")\n-- [정상 UI 검증] 이름·동료·화가 창의 서버 요청과 표시 종료를 둘 다 확인한다.\n-- 기존 QAAutoIntro가 실제 버튼 콜백을 사용한다. 직접 RPC로 안내를 건너뛰지 않는다.\n-- 매 프레임 서버에 State를 호출하지 않아 실제 Studio 통신 지연이 누적되지 않게 한다.\nlocal introReady, introStep, stable = false, \"unknown\", 0\nfor attempt=1,50 do\n if attempt%4==1 then\n  local snapshot=remote:InvokeServer(\"State\",{})\n  local captain=snapshot and snapshot.view and snapshot.view.captain\n  introStep=captain and captain.step or \"missing\"\n end\n local intro=pg:FindFirstChild(\"IntroDialog\")\n local reveal=pg:FindFirstChild(\"PortraitReveal\")\n if introStep==\"done\" and (not intro or not intro.Enabled) and (not reveal or not reveal.Enabled) then\n  stable+=1\n  if stable>=3 then introReady=true break end\n else\n  stable=0\n end\n task.wait(0.40)\nend\nassert(introReady,\"FIELD_QA_INTRO_MODAL_NOT_FINISHED:step=\"..tostring(introStep)..\n \" intro=\"..tostring(pg:FindFirstChild(\"IntroDialog\")~=nil)..\n \" reveal=\"..tostring(pg:FindFirstChild(\"PortraitReveal\")~=nil))\nworkspace:SetAttribute(\"DevCall\",\"Tab_explore\")\nreturn \"FIELD_QA_OPEN_EXPLORE_TAB GUI_ENABLED=\"..tostring(gui.Enabled)..\" UNLOCKED_BEFORE=\"..available"
  },
  {
   "type": "wait",

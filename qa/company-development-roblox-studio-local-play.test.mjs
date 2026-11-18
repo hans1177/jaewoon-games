@@ -3825,7 +3825,7 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   const gen=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.ok(gen.includes('("mare-cardbattle", "mare-voyage", "mare-battle")'));
-  assert.equal(steps.length,241);
+  assert.equal(steps.length,336);
   assert.equal(steps.filter(step=>step.code?.includes('NPC_ROUTE_AUDIT_PASS checked=')).length,1);
   const slowIntro=steps.filter(step=>step.code?.includes('FIELD_QA_INTRO_MODAL_NOT_FINISHED'));
   assert.equal(slowIntro.length,1);
@@ -3837,9 +3837,9 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   assert.match(slowIntro[0].code,/stable>=3/);
   assert.doesNotMatch(slowIntro[0].code,/for attempt=1,120 do/);
   assert.doesNotMatch(slowIntro[0].code,/InvokeServer\("Intro(?:Name|Companion|Portrait)"/);
-  assert.equal(steps.filter(step=>step.timeoutMs!==undefined).length,1);
+  assert.deepEqual(steps.filter(step=>step.timeoutMs!==undefined).map(x=>x.timeoutMs),[85000,90000]);
   assert.equal(steps.filter(step=>step.type==='click_from_luau').length,10);
-  assert.equal(steps.filter(step=>step.type==='capture').length,62);
+  assert.equal(steps.filter(step=>step.type==='capture').length,93);
   // [장면 생명주기] 카드판 스킵은 실제 입력으로 종료하고 전투 잠금이 해제된 뒤 항해/지상맵을 실행한다.
   const cardExitIndex=steps.findIndex(step=>step.label==='card_practice_exit');
   assert.ok(cardExitIndex>steps.findIndex(step=>step.type==='capture'&&step.name==='cb2'));
@@ -4196,12 +4196,15 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
     scene.includes('aw.family == "axe", true, false, nil, aw'),
     'automatic skill must use original cooldown stamina and keep ally damage outside owner streak');
   // [모바일 반원형 3메달] 기존 공격·회피 두 행동 + 주·보조 무기교체. 별도 스킬/방어 버튼 없음.
-  assert.ok(scene.includes('workspace.CurrentCamera.ViewportSize.X < 450')&&
-    scene.includes('UDim2.fromOffset(if compactTouch then 118 elseif visualMobile then 128 else 112,')&&
-    scene.includes('if compactTouch then 96 elseif visualMobile then 106 else 94')&&
-    scene.includes('if compactTouch then UDim2.new(0, math.max(226, workspace.CurrentCamera.ViewportSize.X - 120), 1, -211)')&&
+  assert.ok(scene.includes('and (workspace.CurrentCamera.ViewportSize.X < 520')&&
+    scene.includes('UDim2.fromOffset(if compactTouch then 104 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 104')&&
+    scene.includes('if compactTouch then 86 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 88')&&
+    scene.includes('if compactTouch then -76')&&
+    scene.includes('if compactTouch then -85 elseif visualMobile')&&
+    scene.includes('if compactTouch then UDim2.new(1, -62, 1, -202)')&&
     scene.includes('else UDim2.new(1, attackBtn.Position.X.Offset - 146, 1, attackBtn.Position.Y.Offset - 66)')&&
-    scene.includes('combatBtns.dodge = { btn = b, label = "회피" }'),
+    scene.includes('combatBtns.dodge = { btn = b, label = "회피" }')&&
+    Math.hypot(14,117)-(104+86)/2>=20,
     'large dodge and attack must be separated for thumb reach on portrait mobile');
   assert.ok(scene.includes('button.Name == "FieldAttack" or button.Name == "FieldDodge"')&&
     scene.includes('attackCaption.Name = "FieldAttackCaption"')&&
@@ -4220,7 +4223,9 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
   assert.ok(scene.includes('comboLabel.Font = Enum.Font.Bangers')&&
     scene.includes('comboLabel.TextStrokeColor3 = Color3.fromRGB(22, 22, 37)')&&
     scene.includes('if visualMobile then 63 else 76')&&
-    scene.includes('TextSize = targetSize, Rotation = 0')&&
+    scene.includes('comboLabel.TextSize = targetSize')&&
+    scene.includes('comboLabel.Rotation = 0')&&
+    scene.includes('TweenService:Create(comboPopScale, TweenInfo.new(0.13, Enum.EasingStyle.Back')&&
     scene.includes('comboInfo.Font = Enum.Font.GothamBlack')&&
     scene.includes('초당 %.1f타'),
     'large high-contrast combo lettering and speed HUD must preserve real hit-count logic');
@@ -4387,7 +4392,7 @@ test('Mare official Studio QA records complete registered media, model loading a
   const activeSource=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
   const active=new Map([...activeSource.matchAll(/\["([^"]+)"\]\s*=\s*([0-9]+)/g)].map(m=>[m[1],m[2]]));
   assert.equal(active.size,Object.keys(registered).length);
-  const imageKinds=new Set(['Menu','Goods','Portraits','CardArt']);
+  const imageKinds=new Set(['Menu','Goods','Portraits','CardArt','Materials']);
   const originals=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json','utf8')).approved;
   const cardKeys=Object.keys(registered).filter(key=>key.startsWith('CardArt/'));
   assert.ok(cardKeys.length>=17,'Mare approved discovery/event illustrations must be registered');

@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { pickGeminiModels, askChain, buildProviders, LlmError } from '../tools/vibe-llm.mjs';
+import {selectStudioDesignPhotoNames, visualEditLooksSafe, validateReview, mareDesignAssetInventory, audioCueEditLooksSafe, studioAudioEvidence, selectDesignFrameRole, selectFreeDesignModels, freeQuotaDay, freeQuotaStatus, readOpenRouterFreeQuota, discoverFreeVisionModels} from '../tools/company-nemotron-design-review.mjs';
 import { rankProviders, updateProviderStats, signature, similarity, playbookReplay, examplesFor, addCandidate, labelOutcomes, sanitize, datasetLine, emptyPlaybook, pickOrder, gate, findContext, buildPrompt, parseEdits, validateEdits, applyEdits, runBrain, recordAttempt, recordMerged, emptyBrainLedger, LIMITS } from '../tools/vibe-brain.mjs';
 
 const mkRoot = files => {
@@ -382,4 +383,232 @@ test('Studio 사진 참조는 뒤이은 원본 fetch 에 의해 바뀌지 않는
   assert.match(workflow, /git ls-tree --name-only "\$frames_sha" \| grep -Eq/);
   assert.match(workflow, /STUDIO_SCREENSHOT_EVIDENCE_COMMIT=/);
   assert.doesNotMatch(workflow, /git update-ref refs\/vibe\/brain-studio-report FETCH_HEAD/);
+});
+
+test('실물 Studio 마을과 주민을 다각도로 촬영하고 기존 게임 검사 62장을 보존한다', () => {
+  const scenario = JSON.parse(fs.readFileSync(
+    'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', 'utf8'));
+  const captures = scenario.filter(step => step.type === 'capture').map(step => step.name);
+  assert.equal(captures.length, 93);
+  assert.equal(new Set(captures).size, 93);
+  const town = captures.filter(name => name.startsWith('town_'));
+  const npc = captures.filter(name => name.startsWith('harbor_npc_hair_') ||
+    name.startsWith('harbor_npc_outfit_') || name === 'harbor_npc_face_close' ||
+    name === 'harbor_npc_pair_diagonal' || name === 'harbor_npc_port_street_reverse');
+  assert.equal(town.length, 12);
+  assert.equal(npc.length, 9);
+  for (const name of ['town_aerial_grid', 'town_market_facade', 'town_street_roofline',
+    'town_outer_district_south', 'harbor_npc_face_close', 'harbor_npc_outfit_back',
+    'harbor_npc_face_front', 'field_actor_after_motion', 'ui_mobile_battle_2x2',
+    'ship_hull_detail','ship_sails_rigging','cargo_trade_crates','weapon_blade_close',
+    'weapon_ranged_close','vfx_battle_late_action','material_wood_dock']) {
+    assert.ok(captures.includes(name), '실물 필수 촬영 누락: ' + name);
+  }
+  assert.ok(scenario.some(step => step.type === 'luau' &&
+    step.code?.includes('ShotDesignHead') && step.code?.includes('NPC_FACE_FRONT_PASS')));
+  assert.ok(scenario.some(step => step.type === 'luau' &&
+    step.code?.includes('ShotDesignHead') && step.code?.includes('SetAttribute(key,nil)')));
+  assert.ok(scenario.some(step => step.type === 'luau' &&
+    step.code?.includes('STUDIO_MATERIAL_AUDIT') && step.code?.includes('SurfaceAppearance')));
+});
+
+test('무료 디자인 AI는 건축·주민·선박·교역품·무기·재질을 매회 분석하고 VFX/UI를 교대로 분석한다', () => {
+  const scenario = JSON.parse(fs.readFileSync(
+    'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', 'utf8'));
+  const names = scenario.filter(step => step.type === 'capture').map(step => step.name + '-0.jpg');
+  const rounds = new Set();
+  for (let phase = 0; phase < 5; phase++) {
+    const chosen = selectStudioDesignPhotoNames(names, phase, 8);
+    assert.equal(chosen.length, 8);
+    assert.equal(new Set(chosen).size, 8);
+    assert.equal(chosen.filter(name => name.startsWith('town_')).length, 1);
+    assert.equal(chosen.filter(name => name.startsWith('harbor_npc_')).length, 2);
+    assert.equal(chosen.filter(name => name.startsWith('ship_') || name.startsWith('cb') || name.startsWith('v1_') || name.startsWith('v2_')).length, 1);
+    assert.equal(chosen.filter(name => name.startsWith('cargo_') || name.startsWith('tab_trade') || name.startsWith('ui_trade_')).length, 1);
+    assert.equal(chosen.filter(name => name.startsWith('weapon_') || name.startsWith('harbor_motion_') || name.startsWith('field_npc_')).length, 1);
+    assert.equal(chosen.filter(name => name.startsWith('material_') || name.startsWith('town_library_') || name.startsWith('field_entry')).length, 1);
+    assert.equal(chosen.filter(name => name.startsWith('vfx_') || name.startsWith('ui_') || name.startsWith('tab_') || name.startsWith('b1_') || name.startsWith('b2_')).length, 1);
+    rounds.add(chosen.join('|'));
+  }
+  assert.equal(rounds.size, 5);
+});
+
+test('네모트론이 마을 시설 배치 5칸 내에서만 수정하고 게임 경제·기능·장소 이동을 차단한다', () => {
+  const target = 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau';
+  const original = fs.readFileSync(target, 'utf8').split(/\r?\n/)
+    .find(line => line.includes('name = "교역소"') && line.includes('pos = Vector3.new('));
+  assert.ok(original);
+  const after = original.replace('Vector3.new(-12, 0, 36)', 'Vector3.new(-15, 0, 38)');
+  assert.notEqual(after, original);
+  assert.equal(visualEditLooksSafe(original, after, 'architecture', target), true);
+  assert.equal(visualEditLooksSafe(original, after, 'ui', target), false);
+  assert.equal(visualEditLooksSafe(original, after, 'architecture',
+    'roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau'), false);
+  assert.equal(visualEditLooksSafe(original,
+    original.replace('Vector3.new(-12, 0, 36)', 'Vector3.new(-22, 0, 38)'),
+    'architecture', target), false);
+  assert.equal(visualEditLooksSafe(original,
+    original.replace('Vector3.new(-12, 0, 36)', 'Vector3.new(-15, 1, 38)'),
+    'architecture', target), false);
+  assert.equal(visualEditLooksSafe(original,
+    original.replace('Vector3.new(-12, 0, 36)', 'Vector3.new(-15, 0, 28)'),
+    'architecture', target), false);
+  assert.equal(visualEditLooksSafe(original, after.replace('w = 20', 'w = 28'),
+    'architecture', target), false);
+  assert.equal(visualEditLooksSafe(original, original.replace('w = 20', 'w = 28'),
+    'architecture', target), false);
+  const policy = JSON.parse(fs.readFileSync(
+    'company-learning/external-ai-distillation-policy.json','utf8')).directVisualDesign;
+  assert.equal(policy.studioEvidenceSelection.expectedCoverageFrames, 93);
+  assert.equal(policy.studioEvidenceSelection.shipCargoWeaponVfxMaterialFrames, 10);
+  assert.equal(policy.studioEvidenceSelection.domainRotation.length, 8);
+  assert.equal(policy.designQualityStandards.preserveImportedPbrTextureUvAndSource, true);
+  assert.equal(policy.designQualityStandards.externalGameExamplesAreStyleReferencesOnly, true);
+  assert.equal(policy.studioEvidenceSelection.maxImagesPerFreeCall, 8);
+  assert.equal(policy.townLayoutEdit.maximumHorizontalShiftStuds, 5);
+  const screenshot = 'town_market_facade-0.jpg';
+  const evidence = '실제 시장 건물과 진입로가 부분적으로 겹쳐 보여 건물의 가로 배치 미세 조정이 필요함';
+  const review = {issues: [{category:'architecture',severity:'high',screenshot,evidence}],
+    edits:[{category:'architecture',screenshot,anchor:0,after}]};
+  const valid = validateReview(review,[screenshot],policy,[{anchor:0,path:target,before:original}]);
+  assert.equal(valid.edits.length,1);
+  assert.throws(() => validateReview({...review, edits:[{...review.edits[0], anchor:1}]},
+    [screenshot],policy,[{anchor:0,path:target,before:original}]),/EDIT_NOT_VISUAL_OR_NOT_IN_POLICY/);
+});
+
+
+test('무료 전문 AI 역할별로 실제 PBR·선박·화물·무기·이펙트 사진을 교차 수집한다', () => {
+  const scenario = JSON.parse(fs.readFileSync(
+    'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', 'utf8'));
+  const files = scenario.filter(step => step.type === 'capture')
+    .map(step => step.name + '-0.jpg');
+  for (let cycle = 0; cycle < 5; cycle++) {
+    for (const role of ['NPC','WORLD','UI','MOTION']) {
+      const result = selectStudioDesignPhotoNames(files, cycle, 8, role);
+      assert.equal(result.length,8, '실물 화면 부족: '+role+' '+cycle);
+      assert.equal(new Set(result).size,8);
+      if (role === 'WORLD') {
+        assert.equal(result.filter(name => name.startsWith('town_')).length,2);
+        assert.equal(result.filter(name => name.startsWith('cargo_')).length,2);
+        assert.equal(result.filter(name => name.startsWith('material_')).length,2);
+        assert.equal(result.filter(name => name.startsWith('ship_') || name.startsWith('cb') ||
+          name.startsWith('v1_') || name.startsWith('v2_') || name.startsWith('v3_') ||
+          name.startsWith('v4_')).length,2);
+      } else if (role === 'NPC') {
+        assert.ok(result.every(name => name.startsWith('harbor_npc_')));
+      } else if (role === 'MOTION') {
+        assert.ok(result.some(name => name.startsWith('weapon_')));
+        assert.ok(result.some(name => name.startsWith('vfx_')));
+      } else {
+        assert.ok(result.every(name => name.startsWith('ui_') || name.startsWith('tab_')));
+      }
+    }
+  }
+});
+
+
+test('Vibe 자산 관리: 등록 사운드·아이콘·모델만 배정하고 가짜 ID를 차단한다', () => {
+  const inventory = mareDesignAssetInventory();
+  assert.ok(inventory.models > 20 && inventory.images > 20);
+  assert.ok(inventory.icons > 0 && inventory.tradeGoods > 0);
+  assert.ok(inventory.registeredAudio > 15 && inventory.listedAudio >= inventory.registeredAudio);
+  assert.ok(inventory.approvedCues.includes('sfx_bell'));
+  const source = 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sfx.luau';
+  const original = fs.readFileSync(source,'utf8').split(/\r?\n/)
+    .find(line => line.trimStart().startsWith('trade = { { "sfx_bell"'));
+  assert.ok(original);
+  const updated = original.replace('"sfx_bell"','"sfx_book_turn"');
+  assert.equal(audioCueEditLooksSafe(original,updated,source,inventory.approvedCues),true);
+  assert.equal(audioCueEditLooksSafe(original,original.replace('"sfx_bell"','"sfx_fake_id"'),
+    source,inventory.approvedCues),false);
+  assert.equal(audioCueEditLooksSafe(original,original.replace('0.5','0.8'),
+    source,inventory.approvedCues),false);
+  assert.equal(audioCueEditLooksSafe(original,updated,
+    'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau',
+    inventory.approvedCues),false);
+  assert.equal(visualEditLooksSafe(original,updated,'sound-presentation',source),true);
+  assert.equal(visualEditLooksSafe(original,updated,'ui',source),false);
+});
+
+test('Vibe 사운드 역할은 Studio 실제 재생 증거 뒤에만 열리고 화면 품질로 자동 승인하지 않는다', () => {
+  const missing = studioAudioEvidence({log:[]});
+  assert.equal(missing.validated,false);
+  const fake = studioAudioEvidence({log:[{out:'STUDIO_AUDIO_AUDIT registered=90 active=0 last_loaded=none last_failed=none'}]});
+  assert.equal(fake.validated,false);
+  const live = studioAudioEvidence({log:[{out:'STUDIO_AUDIO_AUDIT registered=90 active=4 last_loaded=sfx_bell last_failed=none'}]});
+  assert.equal(live.validated,true);
+  const photos = ['npc_face-0.jpg','ship_harbor-0.jpg','menu_ui-0.jpg','walk_motion-0.jpg',
+    'generic-0.jpg','generic_alt-0.jpg','town-0.jpg','tab_harbor-0.jpg',
+    'harbor_npc_hair_left-0.jpg','walk_motion_alt-0.jpg'];
+  assert.notEqual(selectDesignFrameRole(photos,'GENERAL',false),'AUDIO');
+  assert.equal(selectDesignFrameRole(photos,'GENERAL',true),'AUDIO');
+  const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json','utf8'));
+  assert.equal(policy.directVisualDesign.studioEvidenceSelection.expectedScriptSteps,336);
+  assert.equal(policy.directVisualDesign.audioCueAssignment.promotionBlockedUntilIndependentAudioQualityEvidence,true);
+  assert.equal(policy.directVisualDesign.assetCreationAndQuality.paidFallbackForbidden,true);
+  const env={GEMINI_API_KEY:'test',GEMINI_DESIGN_FREE_TIER_VERIFIED:'YES'};
+  const models=selectFreeDesignModels({policy,role:'AUDIO',frameNames:['tab_harbor-0.jpg'],env});
+  assert.equal(models[0]?.id,'GEMINI_LITE');
+});
+
+test('무료 AI 실제 잔여 횟수와 태평양 자정/UTC 초기화를 구분한다',async()=>{
+  const at=Date.parse('2026-11-18T07:50:00Z');
+  assert.equal(freeQuotaDay('GEMINI',at),'2026-11-17');
+  assert.equal(freeQuotaDay('GEMINI',at+20*60000),'2026-11-18');
+  assert.equal(freeQuotaDay('OPENROUTER',at),'2026-11-18');
+  const usage={day:'2026-11-18',calls:{GEMINI:12,OPENROUTER:3},
+    days:{GEMINI:'2026-11-17',OPENROUTER:'2026-11-18'}};
+  assert.equal(freeQuotaStatus('GEMINI',usage,null,at).remaining,0);
+  assert.equal(freeQuotaStatus('GEMINI',usage,null,at+20*60000).remaining,12);
+  const remote={provider:'OPENROUTER',day:'2026-11-18',remaining:2,limit:50};
+  assert.equal(freeQuotaStatus('OPENROUTER',usage,remote,at).remaining,2);
+  assert.equal(freeQuotaStatus('OPENROUTER',usage,{...remote,remaining:0},at).remaining,0);
+  let path='',keyName='';
+  const observed=await readOpenRouterFreeQuota('PRIVATE_TOKEN',async(url,req)=>{
+    path=url; keyName=req.headers.authorization;
+    return {ok:true,json:async()=>({data:{free_model_daily_requests:{
+      used:48,limit:50,remaining:2},creditBalance:0}})};
+  },at);
+  assert.equal(path,'https://openrouter.ai/api/v1/key');
+  assert.equal(keyName,'Bearer PRIVATE_TOKEN');
+  assert.deepEqual(Object.keys(observed).sort(),
+    ['checkedAt','day','limit','provider','remaining']);
+  assert.equal(observed.remaining,2);
+  assert.equal(JSON.stringify(observed).includes('PRIVATE_TOKEN'),false);
+  assert.equal(await readOpenRouterFreeQuota('PRIVATE_TOKEN',async()=>({ok:true,
+    json:async()=>({data:{free_model_daily_requests:{remaining:-1,limit:50}}})}),at),null);
+});
+
+test('무료 AI 자동 충원은 공식 0원 이미지 모델만 수용하며 결제나 임의 모델을 거부한다',async()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json','utf8'));
+  const env={OPENROUTER_API_KEY:'KEY',OPENROUTER_DESIGN_FREE_TIER_VERIFIED:'YES'};
+  const free=id=>({id,pricing:{prompt:'0',completion:'0'},
+    architecture:{input_modalities:['text','image'],output_modalities:['text']}});
+  const checked=[
+    free('example/vision-coder:free'),
+    free('example/design-vl:free'),
+    {...free('bad/pay-model'),id:'bad/pay-model'},
+    {...free('bad/paid:free'),pricing:{prompt:'0.5',completion:'0'}},
+    {...free('bad/text-only:free'),architecture:{
+      input_modalities:['text'],output_modalities:['text']}},
+    {...free('bad/audio-out:free'),architecture:{
+      input_modalities:['text','image'],output_modalities:['audio']}}
+  ];
+  const models=await discoverFreeVisionModels({env,policy,
+    fetchImpl:async()=>({ok:true,json:async()=>({data:checked})})});
+  assert.equal(models.length,2);
+  assert.ok(models.every(m=>m.provider==='OPENROUTER'&&m.model.endsWith(':free')&&
+    m.discoveredFree&&m.endpoint==='https://openrouter.ai/api/v1/chat/completions'));
+  assert.deepEqual(await discoverFreeVisionModels({env:{},policy}),[]);
+  const frozen={provider:'OPENROUTER',day:new Date().toISOString().slice(0,10),limit:50,remaining:0};
+  const diag=[];
+  assert.equal(selectFreeDesignModels({policy,env,extraModels:models,
+    quotaSnapshot:frozen,diagnostics:diag}).length,0);
+  assert.ok(diag.every(row=>row.status==='QUOTA_EXHAUSTED'&&
+    Object.keys(row).sort().join(',')==='modelId,provider,status'));
+  const unblocked=selectFreeDesignModels({policy,env,extraModels:models,
+    quotaSnapshot:{...frozen,remaining:5}});
+  assert.ok(unblocked.some(x=>x.id.startsWith('OPENROUTER_DISCOVERED_')));
+  assert.ok(unblocked.every(x=>x.model.endsWith(':free')));
+  assert.ok(unblocked.length>=3);
 });
