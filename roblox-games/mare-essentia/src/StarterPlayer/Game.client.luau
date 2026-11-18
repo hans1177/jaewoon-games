@@ -964,10 +964,22 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 	local active = enabled ~= false
 	local highlighted = color == COLORS.gold or color == UI_BRASS
 	local danger = active and color == COLORS.red
-	local inkTint = if danger then Color3.fromRGB(97, 34, 24) else INK
-	b.BackgroundColor3 = if not active then Color3.fromRGB(174, 151, 116)
-		elseif danger then Color3.fromRGB(224, 166, 138) elseif highlighted then Color3.fromRGB(232, 198, 140) else COLORS.paper
-	b.TextColor3 = if active then inkTint else Color3.fromRGB(94, 88, 81)
+	local good = active and color == COLORS.green
+	local travel = active and color == COLORS.blue
+	local back = active and color == COLORS.leather
+	-- [공통 색상 규칙] 금색=주요 실행, 초록=이득·확인, 파랑=이동·선택,
+	-- 빨강=위험, 갈색=돌아가기, 회색=비활성. 장정·서버 호출은 그대로 둔다.
+	local inkTint = if back then Color3.fromRGB(255, 241, 210)
+		elseif danger then Color3.fromRGB(94, 25, 23)
+		elseif good then Color3.fromRGB(23, 70, 37)
+		elseif travel then Color3.fromRGB(25, 60, 98) else INK
+	b.BackgroundColor3 = if not active then Color3.fromRGB(174, 169, 159)
+		elseif danger then Color3.fromRGB(238, 173, 153)
+		elseif good then Color3.fromRGB(183, 226, 177)
+		elseif travel then Color3.fromRGB(183, 215, 236)
+		elseif back then Color3.fromRGB(91, 67, 47)
+		elseif highlighted then Color3.fromRGB(239, 202, 123) else COLORS.paper
+	b.TextColor3 = if active then inkTint else Color3.fromRGB(97, 93, 89)
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = math.clamp(math.floor((size.Y.Offset > 0 and size.Y.Offset or 40) * 0.47), 17, 23)
 	b.TextWrapped = true
@@ -983,16 +995,30 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 	do
 		local grad = Instance.new("UIGradient")
 		grad.Color = ColorSequence.new(
-			if not active then Color3.fromRGB(210, 204, 192) elseif highlighted then Color3.fromRGB(241, 210, 146) else Color3.fromRGB(231, 207, 166),
-			if not active then Color3.fromRGB(166, 157, 143) elseif highlighted then Color3.fromRGB(187, 142, 77) else Color3.fromRGB(192, 153, 100)
+			if not active then Color3.fromRGB(211, 206, 196)
+				elseif danger then Color3.fromRGB(248, 209, 194)
+				elseif good then Color3.fromRGB(218, 244, 198)
+				elseif travel then Color3.fromRGB(218, 237, 249)
+				elseif back then Color3.fromRGB(131, 99, 69)
+				elseif highlighted then Color3.fromRGB(254, 224, 158) else Color3.fromRGB(238, 219, 183),
+			if not active then Color3.fromRGB(166, 157, 143)
+				elseif danger then Color3.fromRGB(211, 127, 107)
+				elseif good then Color3.fromRGB(135, 188, 136)
+				elseif travel then Color3.fromRGB(127, 174, 203)
+				elseif back then Color3.fromRGB(74, 51, 35)
+				elseif highlighted then Color3.fromRGB(193, 146, 72) else Color3.fromRGB(193, 156, 103)
 		)
 		grad.Rotation = 90
 		grad.Parent = b
 		local grain = bookMaterial(b, "parchment", 148)
 		if grain then
-			grain.ImageColor3 = if danger then Color3.fromRGB(237, 171, 145)
-				elseif highlighted then Color3.fromRGB(249, 218, 148)
-				elseif active then Color3.fromRGB(251, 238, 212) else Color3.fromRGB(193, 172, 139)
+			grain.ImageColor3 = if danger then Color3.fromRGB(248, 185, 169)
+				elseif good then Color3.fromRGB(206, 236, 190)
+				elseif travel then Color3.fromRGB(205, 225, 243)
+				elseif back then Color3.fromRGB(138, 111, 78)
+				elseif highlighted then Color3.fromRGB(252, 220, 148)
+				elseif active then Color3.fromRGB(251, 238, 212) else Color3.fromRGB(193, 183, 168)
+			grain.ImageTransparency = if back then 0.38 elseif danger or good or travel then 0.43 else 0.12
 		end
 		if grain then
 			-- 저장 초기화 재확인처럼 상태가 붉게 바뀌는 경우 종이가 경고색을 가리지 않게 한다.
@@ -1002,9 +1028,13 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		end
 		local edge = Instance.new("UIStroke")
 		edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		edge.Color = if active then INK_EDGE else Color3.fromRGB(128, 108, 82)
-		edge.Thickness = if highlighted then 2.3 else 1.6
-		edge.Transparency = if active then 0.06 else 0.38
+		edge.Color = if not active then Color3.fromRGB(125, 121, 115)
+			elseif danger then Color3.fromRGB(154, 47, 42)
+			elseif good then Color3.fromRGB(48, 116, 66)
+			elseif travel then Color3.fromRGB(48, 103, 157)
+			elseif back then Color3.fromRGB(205, 163, 93) else INK_EDGE
+		edge.Thickness = if highlighted or danger or good or travel then 2.3 else 1.6
+		edge.Transparency = if active then 0.02 else 0.4
 		edge.Parent = b
 		-- 깊이를 주는 안쪽 인쇄 테두리
 		local bevel = Instance.new("Frame")
@@ -1128,7 +1158,7 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	end
 
 	local btnCount = buttons and #buttons or 0
-	local btnWidth = btnCount * 100 + 8 -- 넓은 화면에서는 기존 오른쪽 행동 칸을 유지한다
+	local btnWidth = btnCount * 112 + 8 -- [넓은 메뉴] 버튼마다 손가락 영역 확보
 	local buttonRefs = {}
 
 	local textBox = Instance.new("Frame")
@@ -1146,9 +1176,9 @@ local function mkRow(parent, title, subtitle, buttons, height)
 
 	if buttons then
 		for i, spec in buttons do
-			local b = mkButton(row, spec.text, spec.color or COLORS.blue, UDim2.fromOffset(92, 48), spec.onClick, spec.enabled)
+			local b = mkButton(row, spec.text, spec.color or COLORS.blue, UDim2.fromOffset(104, 54), spec.onClick, spec.enabled)
 			b.AnchorPoint = Vector2.new(1, 0.5)
-			b.Position = UDim2.new(1, -6 - (btnCount - i) * 100, 0.5, 0)
+			b.Position = UDim2.new(1, -6 - (btnCount - i) * 112, 0.5, 0)
 			table.insert(buttonRefs, b)
 		end
 	end
@@ -1166,17 +1196,17 @@ local function mkRow(parent, title, subtitle, buttons, height)
 		local buttonSpace = if narrow then 0 else btnWidth
 		textBox.Size = UDim2.new(1, -(left + buttonSpace + 12), if narrow then 0 else 1, if narrow then math.max(30, layout.AbsoluteContentSize.Y + 10) else -8)
 		local textHeight = layout.AbsoluteContentSize.Y + 12
-		local targetHeight = math.max(minH, textHeight + (row:GetAttribute("FooterHeight") or 0) + (if narrow then 54 else 0))
+		local targetHeight = math.max(minH, textHeight + (row:GetAttribute("FooterHeight") or 0) + (if narrow then 66 else 0))
 		if row.Size.Y.Offset ~= targetHeight then row.Size = UDim2.new(1, -6, 0, targetHeight) end
 		for i, button in buttonRefs do
 			if narrow then
 				button.AnchorPoint = Vector2.new(0, 1)
 				button.Position = UDim2.new((i - 1) / btnCount, 5, 1, -5)
-				button.Size = UDim2.new(1 / btnCount, -10, 0, 44)
+				button.Size = UDim2.new(1 / btnCount, -10, 0, 54)
 			else
 				button.AnchorPoint = Vector2.new(1, 0.5)
-				button.Position = UDim2.new(1, -6 - (btnCount - i) * 100, 0.5, 0)
-				button.Size = UDim2.fromOffset(92, 48)
+				button.Position = UDim2.new(1, -6 - (btnCount - i) * 112, 0.5, 0)
+				button.Size = UDim2.fromOffset(104, 54)
 			end
 		end
 		local rowIcon = row:FindFirstChild("RowIcon")
@@ -1194,9 +1224,9 @@ end
 
 -- [시설 공통 카드] 기존 그림·양피지·황동 디자인을 모바일과 PC에 같은 비율로 배치한다.
 function H.tileGrid(items, parent, cellW, cellH)
-	cellW, cellH = math.floor((cellW or 176) * 1.3), math.max(286, math.floor((cellH or 156) * 1.55))
+	cellW, cellH = math.floor((cellW or 176) * 1.3), math.max(296, math.floor((cellH or 156) * 1.55))
 	for _, it in items do
-		if it.desc then cellH = math.max(cellH, 326)
+		if it.desc then cellH = math.max(cellH, 340)
 		elseif it.portrait then cellH = math.max(cellH, 322) end
 	end
 	local grid = Instance.new("Frame")
@@ -1250,14 +1280,15 @@ function H.tileGrid(items, parent, cellW, cellH)
 			local sb = mkLabel(tile, it.sub, 15, INK_SOFT, false)
 			sb.AutomaticSize = Enum.AutomaticSize.None
 			sb.Position = UDim2.fromOffset(4, textY + 28)
-			sb.Size = UDim2.new(1, -8, 0, 20)
+			sb.Size = UDim2.new(1, -8, 0, 40)
+			sb.TextWrapped = true
 			sb.TextXAlignment = Enum.TextXAlignment.Center
 			sb.TextTruncate = Enum.TextTruncate.AtEnd
 		end
 		if it.desc then
 			local ds = mkLabel(tile, it.desc, 14, INK, false)
 			ds.AutomaticSize = Enum.AutomaticSize.None
-			ds.Position = UDim2.fromOffset(8, textY + 50)
+			ds.Position = UDim2.fromOffset(8, textY + 69)
 			ds.Size = UDim2.new(1, -16, 0, 40)
 			ds.TextWrapped = true
 			ds.TextYAlignment = Enum.TextYAlignment.Top
@@ -1265,13 +1296,13 @@ function H.tileGrid(items, parent, cellW, cellH)
 			ds.TextTruncate = Enum.TextTruncate.AtEnd
 		end
 		if it.btn and it.btn2 then
-			local b1 = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(0.5, -12, 0, 44), it.onClick, on)
-			b1.Position = UDim2.new(0, 8, 1, -52)
-			local b2 = mkButton(tile, it.btn2.text, it.btn2.color or COLORS.red, UDim2.new(0.5, -12, 0, 44), it.btn2.onClick, it.btn2.enabled ~= false)
-			b2.Position = UDim2.new(0.5, 4, 1, -52)
+			local b1 = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(0.5, -12, 0, 54), it.onClick, on)
+			b1.Position = UDim2.new(0, 8, 1, -62)
+			local b2 = mkButton(tile, it.btn2.text, it.btn2.color or COLORS.red, UDim2.new(0.5, -12, 0, 54), it.btn2.onClick, it.btn2.enabled ~= false)
+			b2.Position = UDim2.new(0.5, 4, 1, -62)
 		elseif it.btn then
-			local b = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(1, -16, 0, 44), it.onClick, on)
-			b.Position = UDim2.new(0, 8, 1, -52)
+			local b = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(1, -16, 0, 54), it.onClick, on)
+			b.Position = UDim2.new(0, 8, 1, -62)
 		end
 	end
 	grid.Parent = parent
@@ -1797,11 +1828,22 @@ coinChip.AnchorPoint = Vector2.new(1, 0)
 coinChip.Position = UDim2.new(1, -56, 0, 15)
 coinChip.Parent = mainInner
 coinChip.Visible = false -- [중복 정리] 상단 공통 현황으로 통합, 코인 갱신 참조는 보존.
-H.menuStatusLabel = mkLabel(mainInner, "", 18, Color3.fromRGB(249, 225, 162), true)
+-- [공통 상단 현황] 양피지에 진한 잉크와 경계선을 둬 모든 시설에서 같은 위치·대비를 유지한다.
+H.menuStatusLabel = mkLabel(mainInner, "", 18, INK, true)
 H.menuStatusLabel.Name = "MenuGlobalMoneyCargo"
 H.menuStatusLabel.AutomaticSize = Enum.AutomaticSize.None
-H.menuStatusLabel.TextXAlignment = Enum.TextXAlignment.Right
+H.menuStatusLabel.TextXAlignment = Enum.TextXAlignment.Center
+H.menuStatusLabel.TextYAlignment = Enum.TextYAlignment.Center
 H.menuStatusLabel.TextTruncate = Enum.TextTruncate.AtEnd
+H.menuStatusLabel.BackgroundTransparency = 0
+H.menuStatusLabel.BackgroundColor3 = Color3.fromRGB(236, 213, 168)
+H.menuStatusLabel.ZIndex = 5
+corner(H.menuStatusLabel, 6)
+local statusEdge = Instance.new("UIStroke")
+statusEdge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+statusEdge.Color = INK_EDGE
+statusEdge.Thickness = 1.4
+statusEdge.Parent = H.menuStatusLabel
 H.menuStatusLabel.Position = UDim2.new(1, -388, 0, 15)
 H.menuStatusLabel.Size = UDim2.fromOffset(330, 34)
 
@@ -1842,7 +1884,7 @@ H.menuActionDock.ZIndex = 9
 H.menuActionDock.Visible = false
 H.menuActionDock.Parent = mainInner
 corner(H.menuActionDock, 7)
-H.menuActionButton = mkButton(H.menuActionDock, "행동 확인", COLORS.gold, UDim2.new(1, -12, 0, 46), function()
+H.menuActionButton = mkButton(H.menuActionDock, "행동 확인", COLORS.gold, UDim2.new(1, -12, 0, 54), function()
 	if H.invokeMenuPrimary then H.invokeMenuPrimary() end
 end, true)
 H.menuActionButton.Name = "MenuPrimaryAction"
@@ -1896,9 +1938,15 @@ H.bookSpine = pageRule(mainInner, UDim2.fromOffset(132, 68), UDim2.new(0, 1, 1, 
 function H.layoutBook()
   local width, height = mainInner.AbsoluteSize.X, mainInner.AbsoluteSize.Y
   -- [공통 현황] 제목과 자금·화물칸이 작은 폰에서도 서로 겹치지 않게 한다.
-  H.menuStatusLabel.Position = UDim2.new(1, if width < 740 then -234 else -388, 0, 15)
-  H.menuStatusLabel.Size = UDim2.fromOffset(if width < 740 then 192 else 330, 34)
-  H.menuStatusLabel.TextSize = if width < 740 then 15 else 18
+  H.menuStatusLabel.Position = UDim2.new(1, if width < 480 then -219 elseif width < 740 then -234 else -388,
+    0, if width < 480 then 34 else 15)
+  H.menuStatusLabel.Size = UDim2.fromOffset(if width < 480 then 192 elseif width < 740 then 192 else 330,
+    if width < 480 then 24 else 34)
+  H.menuStatusLabel.TextSize = if width < 480 then 14 elseif width < 740 then 15 else 18
+  -- [제목 가독성] 기존 상단 제목과 보유자금 판이 같은 자리에서 겹치지 않게 폭 분리.
+  headerLabel.Size = UDim2.new(1, if width < 480 then -92 elseif width < 740 then -310 else -460, 0, 29)
+  H.pageDetails.Size = UDim2.new(1, if width < 740 then -310 else -460, 0, 18)
+  H.pageDetails.Visible = width >= 480
   local tabCount = #groupOf(currentTab).tabs
   local gallery = view ~= nil and not newGameMode and currentTab ~= "map"
   local three = gallery and width >= 740
@@ -1924,9 +1972,9 @@ function H.layoutBook()
     H.galleryTitle.Position = UDim2.new(0, 12, 1, -40)
     H.galleryTitle.Size = UDim2.new(1, -24, 0, 30)
     content.Position = UDim2.fromOffset(navW + artW + 24, 68)
-    content.Size = UDim2.new(1, -navW - artW - 32, 1, -138)
-    H.menuActionDock.Position = UDim2.new(0, navW + artW + 24, 1, -66)
-    H.menuActionDock.Size = UDim2.new(1, -navW - artW - 32, 0, 58)
+    content.Size = UDim2.new(1, -navW - artW - 32, 1, -148)
+    H.menuActionDock.Position = UDim2.new(0, navW + artW + 24, 1, -76)
+    H.menuActionDock.Size = UDim2.new(1, -navW - artW - 32, 0, 68)
   else
     -- [세로 화면] 기존 목록 탐색과 버튼은 유지하며, 세로 공간이 넉넉할 때만 원화를 표시한다.
     local compact = tabs and tabCount >= 4 and width < 480
@@ -1948,9 +1996,9 @@ function H.layoutBook()
     H.galleryTitle.TextWrapped = true
     local contentY = top + (if showArt then artH + 8 else 0)
     content.Position = UDim2.fromOffset(8, contentY)
-    content.Size = UDim2.new(1, -16, 1, -contentY - (if gallery then 70 else 8))
-    H.menuActionDock.Position = UDim2.new(0, 8, 1, -66)
-    H.menuActionDock.Size = UDim2.new(1, -16, 0, 58)
+    content.Size = UDim2.new(1, -16, 1, -contentY - (if gallery then 80 else 8))
+    H.menuActionDock.Position = UDim2.new(0, 8, 1, -76)
+    H.menuActionDock.Size = UDim2.new(1, -16, 0, 68)
   end
 end
 mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)
@@ -5584,8 +5632,8 @@ local function openTradeHall()
 		-- 가운데: 물품 목록
 		local list = Instance.new("ScrollingFrame")
 		list.Name = "TradeIndex"
-		list.Position = UDim2.fromOffset(inset, menuY + (if compactList then 136 else 92))
-		list.Size = UDim2.new(0, listWidth, 1, -menuY - (if compactList then 144 else 100))
+		list.Position = UDim2.fromOffset(inset, menuY + (if compactList then 150 else 98))
+		list.Size = UDim2.new(0, listWidth, 1, -menuY - (if compactList then 158 else 106))
 		list.Visible = not narrow or not detailOpen
 		list.BackgroundTransparency = 1
 		list.BorderSizePixel = 0
@@ -5609,7 +5657,7 @@ local function openTradeHall()
 		search.Font = Enum.Font.GothamMedium
 		search.TextSize = 17
 		search.ClearTextOnFocus = false
-		search.PlaceholderText = "품목 검색 · 파랑 ▼ 저렴 / 빨강 ▲ 비쌈"
+		search.PlaceholderText = "상품 이름 검색"
 		search.Text = query
 		search.Visible = list.Visible
 		search.Parent = root
@@ -5658,7 +5706,7 @@ local function openTradeHall()
 		end
 		do
 			-- 걸러 보기 칩 + 보유 전부 팔기 (일괄)
-			local chips = mkBox(root, UDim2.fromOffset(inset, menuY + 46), UDim2.new(0, listWidth, 0, if compactList then 84 else 40), Color3.fromRGB(34, 26, 20))
+			local chips = mkBox(root, UDim2.fromOffset(inset, menuY + 46), UDim2.new(0, listWidth, 0, if compactList then 96 else 46), Color3.fromRGB(34, 26, 20))
 			chips.BackgroundTransparency = 1
 			chips.Visible = list.Visible
 			local cl = Instance.new("UIListLayout")
@@ -5667,7 +5715,7 @@ local function openTradeHall()
 			if not compactList then cl.Parent = chips end
 			local chipIndex = 0
 			local function chip(id, text)
-				local c = mkButton(chips, text, if H.hallFilter == id then COLORS.gold else COLORS.paper, if compactList then UDim2.new(0.25, -4, 0, 38) else UDim2.new(0.17, -4, 1, 0), function()
+				local c = mkButton(chips, text, if H.hallFilter == id then COLORS.gold else COLORS.paper, if compactList then UDim2.new(0.25, -4, 0, 44) else UDim2.new(0.17, -4, 1, 0), function()
 					H.hallFilter = id
 					build()
 				end)
@@ -5686,7 +5734,7 @@ local function openTradeHall()
 					ownedValue += g.sell * g.owned
 				end
 			end
-			local sellAll = mkButton(chips, if narrow then "일괄 판매" else string.format("보유 전부 팔기 (+%d)", ownedValue), COLORS.green, if compactList then UDim2.new(1, -4, 0, 38) else UDim2.new(0.32, -4, 1, 0), function()
+			local sellAll = mkButton(chips, if narrow then "일괄 판매" else string.format("보유 전부 팔기 (+%d)", ownedValue), COLORS.green, if compactList then UDim2.new(1, -4, 0, 44) else UDim2.new(0.32, -4, 1, 0), function()
 				task.spawn(function()
 					for _, g in goods do
 						local left = g.owned
@@ -5699,7 +5747,7 @@ local function openTradeHall()
 				end)
 			end, ownedCount > 0)
 			sellAll.TextSize = 16
-			if compactList then sellAll.Position = UDim2.fromOffset(2, 44) end
+			if compactList then sellAll.Position = UDim2.fromOffset(2, 50) end
 		end
 		local indexed = {}
 		for i, g in (if list.Visible then goods else {}) do
@@ -5710,7 +5758,8 @@ local function openTradeHall()
 			local row = Instance.new("TextButton")
 			row.Text = ""
 			row.LayoutOrder = i
-			row.Size = UDim2.new(1, -8, 0, 152)
+			row.Size = UDim2.new(1, -8, 0, 164)
+			row:SetAttribute("SelectedGood", g.id == hallGood)
 			row.BackgroundColor3 = if g.id == hallGood then Color3.fromRGB(236, 210, 156) else COLORS.paper
 			row.BorderSizePixel = 0
 			row.AutoButtonColor = true
@@ -5736,6 +5785,7 @@ local function openTradeHall()
 			if AssetIds["Goods/" .. g.id] and not RESTRICTED_CARGO_ICON[g.id]
 				and not (gi and gi[1] == "Cargo" and gi[2] == "barrel") then gi = { "Goods", g.id } end
 			local listArtId = AssetIds["Goods/" .. g.id]
+			local listPx = if listWidth < 230 then 82 else 102
 			local icon
 			if listArtId and not RESTRICTED_CARGO_ICON[g.id] and not (gi and gi[1] == "Cargo" and gi[2] == "barrel") then
 				-- [상품 사진] 원본 512px 승인 원화를 102px로 선명하게 표시한다.
@@ -5744,18 +5794,18 @@ local function openTradeHall()
 				icon.Image = "rbxassetid://" .. tostring(listArtId)
 				icon.ScaleType = Enum.ScaleType.Fit
 				icon.BackgroundTransparency = 1
-				icon.Size = UDim2.fromOffset(102, 102)
+				icon.Size = UDim2.fromOffset(listPx, listPx)
 				icon.Parent = row
 			else
-				icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], 102, g.name, gi[4]) else modelIcon(row, nil, nil, nil, 102, g.name)
+				icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], listPx, g.name, gi[4]) else modelIcon(row, nil, nil, nil, listPx, g.name)
 			end
 			icon.Position = UDim2.fromOffset(8, 8)
 			local indicator, pct = H.marketPriceSignal(g)
 			local nm = mkLabel(row, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.scarcity and ladderHas("goods", "scarcity") then " 〔" .. g.scarcity .. "〕" else ""), 19, INK, true)
 			nm.RichText = true
 			nm.Text = '<font color="' .. (if pct > 0.5 then "#B12F39" elseif pct < -0.5 then "#236BAC" else "#655849") .. '"><b>' .. indicator .. '</b></font> ' .. nm.Text
-			nm.Position = UDim2.fromOffset(116, 8)
-			nm.Size = UDim2.new(1, -122, 0, 44)
+			nm.Position = UDim2.fromOffset(listPx + 16, 8)
+			nm.Size = UDim2.new(1, -listPx - 22, 0, 44)
 			nm.TextSize = 18
 			nm.TextWrapped = true
 			nm.TextTruncate = Enum.TextTruncate.AtEnd
@@ -5776,13 +5826,14 @@ local function openTradeHall()
 			pr.RichText = true
 			pr.Text = priceText:gsub("▲", '<font color="#B12F39"><b>▲</b></font>'):gsub("▼", '<font color="#236BAC"><b>▼</b></font>')
 			pr.TextWrapped = true
-			pr.Position = UDim2.fromOffset(116, 56)
-			pr.Size = UDim2.new(1, -122, 0, 57)
+			pr.Position = UDim2.fromOffset(listPx + 16, 55)
+			pr.Size = UDim2.new(1, -listPx - 22, 0, 58)
+			pr.TextSize = if listWidth < 230 then 15 else 17
 			pr.AutomaticSize = Enum.AutomaticSize.None
 			local ownedLine = mkLabel(row,
 				string.format("보유 %d개 · %s", g.owned, profitText), 16, if profit and profit < 0 then COLORS.red else INK_SOFT, true)
-			ownedLine.Position = UDim2.fromOffset(10, 120)
-			ownedLine.Size = UDim2.new(1, -20, 0, 26)
+			ownedLine.Position = UDim2.fromOffset(10, 121)
+			ownedLine.Size = UDim2.new(1, -20, 0, 35)
 			ownedLine.AutomaticSize = Enum.AutomaticSize.None
 			ownedLine.TextTruncate = Enum.TextTruncate.AtEnd
 			if g.tag ~= "" then
@@ -11609,7 +11660,7 @@ function render()
 		add(function()
 			-- [작은 모바일 가로화면] 큰 숫자와 조건은 유지하되 카드 높이만 적응한다.
 			local short = mainInner.AbsoluteSize.Y < 500
-			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, if short then 154 else 180), Color3.fromRGB(64, 48, 35))
+			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, if short then 120 else 172), Color3.fromRGB(64, 48, 35))
 			banner.Name = "MenuFocus_" .. currentTab
 			corner(banner, 8)
 			local heading = mkLabel(banner, "◆ 핵심 판단", 19, Color3.fromRGB(255, 222, 144), true)
@@ -11617,13 +11668,14 @@ function render()
 			heading.Size = UDim2.new(1, -24, 0, 26)
 			heading.AutomaticSize = Enum.AutomaticSize.None
 			local highlight = mkLabel(banner, fact, 23, if urgent then Color3.fromRGB(255, 142, 128) else Color3.fromRGB(255, 238, 187), true)
-			highlight.Position = UDim2.fromOffset(12, 36)
-			highlight.Size = UDim2.new(1, -24, 0, 48)
+			highlight.Position = UDim2.fromOffset(12, 31)
+			highlight.Size = UDim2.new(1, -24, 0, if short then 43 else 48)
 			highlight.AutomaticSize = Enum.AutomaticSize.None
 			highlight.TextWrapped = true
 			local explanation = mkLabel(banner, context, 17, Color3.fromRGB(249, 232, 207), true)
-			explanation.Position = UDim2.fromOffset(12, 84)
-			explanation.Size = UDim2.new(1, -24, 0, if short then 65 else 90)
+			explanation.Position = UDim2.fromOffset(12, if short then 76 else 84)
+			explanation.Size = UDim2.new(1, -24, 0, if short then 39 else 82)
+			explanation.TextTruncate = Enum.TextTruncate.AtEnd
 			explanation.AutomaticSize = Enum.AutomaticSize.None
 			explanation.TextWrapped = true
 			explanation.TextYAlignment = Enum.TextYAlignment.Top
