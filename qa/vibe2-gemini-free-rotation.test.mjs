@@ -629,3 +629,91 @@ test('Vibe59 source worker sends source-based NPC routing to the existing free m
   assert.ok(source.includes("selectVerifiedDepartmentLearning("));
   assert.ok(source.includes("VIBE59_GAME_SOURCE_SPECIALIST="));
 });
+
+
+// [Vibe5.9 무료 자원 지속] Gemini 키가 없어도 승인된 무료 공급자를 기존 호출기에서 재사용한다.
+test('Gemini-free verified specialists run actual source and department requests',async()=>{
+  await withExternalFixture(async()=>{
+    delete process.env.GEMINI_API_KEY;
+    process.env.GROQ_API_KEY='test-free-groq-secret';
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    const {requestGeminiFreePair:isolated}=await import(
+      '../tools/vibe2-gemini-free-rotation.mjs?no-gemini='+Date.now());
+    const calls=[];
+    const fetchImpl=async(url,options)=>{
+      calls.push(String(url));
+      assert.equal(String(url),'https://api.groq.com/openai/v1/chat/completions');
+      const request=JSON.parse(options.body);
+      assert.equal(request.model,VERIFIED_FREE_FALLBACK_MODELS.GROQ);
+      return {ok:true,json:async()=>({choices:[{message:{content:
+        '{"decision":"PROCEED","summary":"ok","nextAction":"test","checks":[],"risks":[]}'}}],
+        usage:{cost:0}})};
+    };
+    const request={apiKey:'',specialistDepartment:'DEVELOPMENT',
+      contents:[{role:'user',parts:[{text:'fix the game source'}]}],
+      fetchImpl};
+    const result=await isolated(request);
+    assert.equal(result.provider,'GROQ');
+    assert.equal(calls.length,1);
+    globalThis.fetch=fetchImpl;
+    const source=await requestLocalModel('game source changes',{
+      specialistDepartment:'AUTO',specialistTask:'게임 코드 기능 수정',
+      specialistFiles:['src/server/Gameplay.server.luau']});
+    assert.match(source,/"decision":"PROCEED"/);
+    assert.equal(calls.length,2);
+    const {runDepartmentRole}=await import('../tools/autonomous-department-cycle.mjs');
+    const review=await runDepartmentRole({
+      role:'development',order:{run:true,workLane:'FULL',gameId:'mare-essentia',
+        gameName:'대항해시대',sourcePath:'roblox-games/mare-essentia',
+        goal:'게임 서버 코드 오류 수정',responsibilityFiles:['server/Gameplay.luau']},
+      book:null,vibeCore:{departmentLearning:{byRole:{development:[]}}}
+    });
+    assert.equal(review.provider,'GROQ');
+    assert.equal(review.workState,'DONE');
+    assert.equal(review.decision,'PROCEED');
+    assert.equal(calls.length,3);
+    assert.ok(!calls.some(url=>url.includes('googleapis.com')),
+      '제미나이 인증정보가 없을 때 제미나이 API를 호출하지 않는다');
+  });
+});
+test('Gemini-free rotation refuses unverified alternate provider and never opens paid path',async()=>{
+  await withExternalFixture(async()=>{
+    delete process.env.GEMINI_API_KEY;
+    process.env.GROQ_API_KEY='unverified-plan';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    const {requestGeminiFreePair:isolated}=await import(
+      '../tools/vibe2-gemini-free-rotation.mjs?no-paid-bypass='+Date.now());
+    let calls=0;
+    await assert.rejects(isolated({apiKey:'',specialistDepartment:'DEVELOPMENT',
+      contents:[{role:'user',parts:[{text:'repair'}]}],
+      fetchImpl:async()=>{calls++;throw Error('unverified API called');}
+    }),/GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK/);
+    assert.equal(calls,0);
+    await assert.rejects(requestLocalModel('game source',{specialistDepartment:'AUTO',
+      specialistTask:'code patch',specialistFiles:['server/main.js']}),
+      /GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK/);
+    assert.equal(calls,0);
+  });
+});
+test('OpenRouter pinned free model is usable without Gemini or Groq when explicitly enabled',async()=>{
+  await withExternalFixture(async()=>{
+    delete process.env.GEMINI_API_KEY;
+    process.env.OPENROUTER_API_KEY='test-router-secret';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    const {requestGeminiFreePair:isolated}=await import(
+      '../tools/vibe2-gemini-free-rotation.mjs?router-only='+Date.now());
+    const urls=[];
+    const result=await isolated({apiKey:'',specialistDepartment:'GRAPHICS',
+      specialistTask:'모바일 화면 UI 개선',
+      contents:[{role:'user',parts:[{text:'review ui'}]}],
+      fetchImpl:async url=>{
+        urls.push(String(url));
+        return{ok:true,json:async()=>({choices:[{message:{content:'{"ok":true}'}}],
+          usage:{cost:0}})};
+      }});
+    assert.equal(result.provider,'OPENROUTER');
+    assert.equal(result.model,VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER);
+    assert.deepEqual(urls,['https://openrouter.ai/api/v1/chat/completions']);
+  });
+});
