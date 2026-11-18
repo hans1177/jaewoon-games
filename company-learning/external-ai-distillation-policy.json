@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "kind": "vibe2-external-ai-distillation-policy",
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Owner permits external AI to directly edit all visual design categories in isolated code candidate branches. Raw external knowledge still cannot self-promote or be accepted as verified QA, main, gameplay, save, security, or release authority.",
@@ -172,14 +172,27 @@
     "modelCannotMutateCanonicalCentralPolicy": true,
     "studioEvidenceSelection": {
       "officialCaptureScenario": "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json",
-      "expectedCoverageFrames": 83,
+      "expectedCoverageFrames": 93,
       "architectureAndStreetsFrames": 12,
       "residentFaceAndOutfitFrames": 9,
       "maxImagesPerFreeCall": 8,
       "rotationPhases": 5,
       "sourcesMustBeExactStudioCaptureAndCodeRevision": true,
       "preserveOriginalQASteps": true,
-      "noImageGenerationOrSyntheticPass": true
+      "noImageGenerationOrSyntheticPass": true,
+      "shipCargoWeaponVfxMaterialFrames": 10,
+      "domainRotation": [
+        "town-architecture",
+        "npc-face-and-hair",
+        "npc-clothing",
+        "ship",
+        "trade-cargo",
+        "weapon",
+        "pbr-material",
+        "vfx-or-ui"
+      ],
+      "materialAuditMarker": "STUDIO_MATERIAL_AUDIT",
+      "vfxAndMobileUiAlternateByRun": true
     },
     "townLayoutEdit": {
       "enabled": true,
@@ -192,6 +205,53 @@
       "sizeFloorsEconomyRoutesAndSaveUnchanged": true,
       "exactSourceAnchorAndIndependentStudioBeforeAfterQaRequired": true,
       "cannotCreateDestroyOrMoveGameplayFacilityIdentity": true
+    },
+    "designQualityStandards": {
+      "authority": "roblox-games/mare-essentia/docs/RULES.md",
+      "style": "HISTORICALLY_GROUNDED_SEMI_REALISTIC_AGE_OF_SAIL",
+      "coverage": [
+        "world",
+        "coast",
+        "buildings",
+        "town-layout",
+        "ships",
+        "sails",
+        "cargo",
+        "3d-props",
+        "characters",
+        "clothing",
+        "weapons",
+        "animations",
+        "particles",
+        "vfx",
+        "lighting",
+        "materials",
+        "textures",
+        "ui",
+        "hud",
+        "camera"
+      ],
+      "physicalMaterials": [
+        "linen",
+        "wool",
+        "canvas",
+        "leather",
+        "iron",
+        "bronze",
+        "wood",
+        "stone",
+        "plaster",
+        "terracotta",
+        "water"
+      ],
+      "preserveImportedPbrTextureUvAndSource": true,
+      "preserveMaterialVariantAndRegisteredTextures": true,
+      "noRuntimeSurfaceAppearancePropertyChanges": true,
+      "prohibitUnauthorisedGeneratedOrCopyrightedAssets": true,
+      "externalGameExamplesAreStyleReferencesOnly": true,
+      "noSyntheticStudioQaOrImagePass": true,
+      "noAutomaticMainMergeWithoutCanonicalCodeAndFreshStudioGate": true,
+      "mobilePerformanceAndDistanceReadabilityMandatory": true
     }
   }
 }
