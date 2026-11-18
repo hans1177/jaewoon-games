@@ -581,3 +581,46 @@ test('Vibe59 main plan classifies Roblox visual work without model calling',asyn
     GEMINI_FREE_MODELS.includes(x.model)||
     Object.values(VERIFIED_FREE_FALLBACK_MODELS).includes(x.model)));
 });
+
+
+// [실제 소스 작업] 프롬프트 첫머리 대신 게임 목표·책임 파일로 무료 전문가를 배치한다.
+test('Vibe59 source worker sends source-based NPC routing to the existing free model',async()=>{
+  const {selectVibe59FreeExperts}=await import('../tools/vibe2-gemini-free-rotation.mjs');
+  const env={GEMINI_API_KEY:'test-key-not-real',GROQ_API_KEY:'test-groq',
+    VIBE2_GROQ_FREE_PLAN_VERIFIED:'YES',VIBE2_EXTERNAL_FREE_ROTATION:'YES'};
+  const npc=selectVibe59FreeExperts({department:'AUTO',
+    taskText:'대항해시대 주민 머리와 의상 개선',
+    responsibleFiles:['ReplicatedStorage/Shared/Pose.luau'],env});
+  assert.equal(npc.domain,'NPC');
+  assert.equal(npc.expertCandidates[0].id,'GEMINI_FLASH');
+  const code=selectVibe59FreeExperts({department:'AUTO',
+    taskText:'WebSocket 버그 수정',responsibleFiles:['server/main.js'],env});
+  assert.equal(code.domain,'DEVELOPMENT');
+  assert.equal(code.expertCandidates[0].provider,'GROQ');
+  const ui=selectVibe59FreeExperts({department:'AUTO',
+    taskText:'모바일 HUD 화면 수정',responsibleFiles:['Game.client.luau'],env});
+  assert.equal(ui.domain,'UI');
+  await withExternalFixture(async()=>{
+    process.env.GROQ_API_KEY='fixture-groq';
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    const requests=[];
+    globalThis.fetch=async url=>{
+      requests.push(String(url));
+      return fixtureResponse('{"edits":[]}');
+    };
+    const text=await requestLocalModel('READ_ONLY_CONTEXT placeholder',{
+      maxPredict:2048,specialistDepartment:'AUTO',
+      specialistTask:'주민 머리와 옷 디테일 개선',
+      specialistFiles:['roblox-games/mare-essentia/src/Shared/Pose.luau']
+    });
+    assert.equal(text,'{"edits":[]}');
+    assert.equal(requests.length,1);
+    assert.ok(requests[0].includes(GEMINI_FREE_MODELS[0]),
+      'NPC 그래픽 수정은 소스 워커에서 Gemini 시각 전문 우선순위를 사용');
+  });
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.ok(source.includes('specialistTask,specialistFiles,specialistDepartment,verifiedOutcomes'));
+  assert.ok(source.includes("selectVerifiedDepartmentLearning("));
+  assert.ok(source.includes("VIBE59_GAME_SOURCE_SPECIALIST="));
+});
