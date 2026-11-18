@@ -2508,48 +2508,51 @@ test('무료 디자인 한도 예측은 계정 전체 잔량을 주장하지 않
 });
 
  
-// [공식 한도 검증] 모의 응답으로 무료 계정 공유 잔량 조회·소진 차단을 재현한다.
-test('오픈라우터 공식 무료 잔량을 실제 요청 없이 검증한다', async () => {
-  const {readOpenRouterFreeQuota, forecastFreeDesignQuota, selectFreeDesignModels} =
+// [공식 계약 회귀] OpenRouter는 무료 계정 여부를 검증하지만 무료 모델 잔량을 제공하지 않는다.
+test('오픈라우터 공식 무료 계정 상태를 조회하고 미공개 호출 잔량은 추정하지 않는다', async () => {
+  const {inspectOpenRouterFreeTier, forecastFreeDesignQuota, selectFreeDesignModels} =
     await import('../tools/company-nemotron-design-review.mjs');
   const secret = 'private-key-should-not-appear';
   const env = {OPENROUTER_API_KEY: secret, OPENROUTER_DESIGN_FREE_TIER_VERIFIED: 'YES'};
   let calls = 0;
-  const balance = await readOpenRouterFreeQuota({env, fetchImpl: async (url, options) => {
+  const tier = await inspectOpenRouterFreeTier({env, fetchImpl: async (url, options) => {
     calls++;
     assert.equal(url, 'https://openrouter.ai/api/v1/key');
     assert.equal(options.method, 'GET');
     assert.equal(options.headers.Authorization, 'Bearer ' + secret);
     return {ok: true, json: async () => ({data: {
-      free_model_daily_requests: {used: 50, limit: 50, remaining: 0}
+      is_free_tier: true, usage_daily: 0, limit_remaining: 0
     }})};
   }});
   assert.equal(calls, 1);
-  assert.equal(balance.scope, 'ACCOUNT_FREE_MODELS_DAILY');
-  assert.equal(balance.remaining, 0);
-  assert.ok(!JSON.stringify(balance).includes(secret), '키나 계정 인증정보 노출 금지');
+  assert.equal(tier.scope, 'OPENROUTER_ACCOUNT_TIER');
+  assert.equal(tier.isFreeTier, true);
+  assert.ok(!JSON.stringify(tier).includes(secret), '원문 키와 계정 결제정보는 증거에서 제거');
   const now = Date.parse('2026-11-18T08:30:00Z');
   const forecast = forecastFreeDesignQuota({day: '2026-11-18',
-    calls: {OPENROUTER: 0}}, now, balance);
-  assert.equal(forecast.OPENROUTER.remainingLocal, 30, '내부 디자인 한도는 별도로 유지');
-  assert.equal(forecast.OPENROUTER.effectiveRemaining, 0, '실제 계정 무료 잔량 우선');
-  assert.equal(forecast.OPENROUTER.accountWideBalanceVerified, true);
-  assert.equal(forecastFreeDesignQuota({day: '2026-11-18',
-    calls: {OPENROUTER: 1}}, now, {...balance, remaining: 0,
-      source: 'OPENROUTER_KEY_API_PLUS_LOCAL_ATTEMPTS'}).OPENROUTER.accountWideBalanceVerified,
-    false, '실제 조회 후 로컬 호출을 차감한 잔량은 검증 실측치로 표시하지 않는다');
+    calls: {OPENROUTER: 1}}, now, tier);
+  assert.equal(forecast.OPENROUTER.remainingLocal, 29);
+  assert.equal(forecast.OPENROUTER.effectiveRemaining, 29);
+  assert.equal(forecast.OPENROUTER.accountWideBalanceVerified, false);
+  assert.equal(forecast.OPENROUTER.accountWideFreeRemaining, null);
+  assert.equal(forecast.OPENROUTER.accountFreeTierVerified, true);
   const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
+  assert.ok(selectFreeDesignModels({policy, env, now, accountQuota: tier})
+    .some(model => model.provider === 'OPENROUTER'),
+    '무료 인증 키와 무료 모델 고정 규칙을 함께 충족할 때만 배정');
+  const paid = await inspectOpenRouterFreeTier({env,
+    fetchImpl: async () => ({ok: true, json: async () => ({data: {is_free_tier: false}})})});
   const diagnostics = [];
-  assert.ok(!selectFreeDesignModels({policy, env, now, accountQuota: balance, diagnostics})
+  assert.ok(!selectFreeDesignModels({policy, env, now, accountQuota: paid, diagnostics})
     .some(model => model.provider === 'OPENROUTER'));
   assert.equal(diagnostics.find(row => row.modelId === 'OPENROUTER_GEMMA').status,
-    'ACCOUNT_FREE_DAILY_CAP');
-  assert.equal(await readOpenRouterFreeQuota({
+    'ACCOUNT_NOT_FREE_TIER', '계정이 유료 상태라면 요청하지 않는다');
+  assert.equal(await inspectOpenRouterFreeTier({
     env: {OPENROUTER_API_KEY: secret},
     fetchImpl: async () => {throw Error('unverified account request');}
-  }), null, '무료 요금 확인 전 계정 조회 금지');
-  assert.equal(await readOpenRouterFreeQuota({env,
+  }), null, '명시적인 무료 확인 전에는 조회하지 않는다');
+  assert.equal(await inspectOpenRouterFreeTier({env,
     fetchImpl: async () => ({ok: true, json: async () => ({
-      data: {free_model_daily_requests: {used: 1, limit: 50, remaining: 999}}
-    })})}), null, '잘못된 잔량 값은 신뢰 금지');
+      data: {free_model_daily_requests: {used: 1, limit: 50, remaining: 49}}
+    })})}), null, '공식 명세에 없는 필드는 무료 잔량 증거로 사용 금지');
 });
