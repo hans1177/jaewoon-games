@@ -102,17 +102,17 @@ test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본
   const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.match(source,/tabBar\.Name = "FacilityTabBar"/);
   assert.match(source,/tabBar\.AnchorPoint = Vector2\.new\(1, 0\)/);
-  assert.match(source,/tabStrip\.Name = "FacilityTabStrip"/);
-  assert.match(source,/tabStrip\.ScrollingDirection = Enum\.ScrollingDirection\.X/);
+  assert.match(source,/H\.tabStrip\.Name = "FacilityTabStrip"/);
+  assert.match(source,/H\.tabStrip\.ScrollingDirection = Enum\.ScrollingDirection\.X/);
   assert.match(layout,/tabBar\.Position = UDim2\.new\(1, -8, 0, 68\)/);
   assert.match(layout,/tabLayout\.FillDirectionMaxCells = tabCount/);
-  assert.match(layout,/tabStrip\.CanvasSize = UDim2\.fromOffset\(allTabsWidth, 0\)/);
+  assert.match(layout,/H\.tabStrip\.CanvasSize = UDim2\.fromOffset\(allTabsWidth, 0\)/);
   assert.match(layout,/content\.Position = UDim2\.fromOffset\(8, bodyTop\)/);
   assert.match(layout,/content\.Size = UDim2\.new\(1, -16, 1, -bodyTop - 8\)/);
   assert.match(layout,/H\.facilityGallery\.Position = UDim2\.fromOffset\(8, bodyTop\)/);
   assert.match(layout,/content\.Position = UDim2\.fromOffset\(artW \+ 16, bodyTop\)/);
   assert.doesNotMatch(layout,/local navW\s*=/);
-  assert.match(tabs,/mkButton\(tabStrip, TAB_NAME\[id\]/);
+  assert.match(tabs,/mkButton\(H\.tabStrip, TAB_NAME\[id\]/);
   assert.equal(capture.length,241);
   assert.equal(capture[88].name,'ui_mobile_tabs_topright');
   for(const claim of ['MOBILE_TABS_NOT_ONE_ROW','MOBILE_TABS_NOT_TOP_RIGHT','MOBILE_LEFT_SPACE_NOT_RECLAIMED','MOBILE_LAST_TAB_NOT_REACHABLE']){
