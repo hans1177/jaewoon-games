@@ -2664,7 +2664,9 @@ function FieldScene.start(opts)
 	if reserveWeapon.id == wpn.id then
 		reserveWeapon = Weapons.get(if wpn.ranged then "sword" else "bow")
 	end
-	if attackIcon then
+	-- [공격 원화 정본] 초기 장비별 아이콘은 승인된 완성형 PNG가 없을 때만 지정한다.
+	-- 무기 정보·교체·전투 판정은 그대로 두고 완성형 공격 원화를 덮어쓰지 않는다.
+	if attackIcon and attackBtn:GetAttribute("IconArtKey") ~= "Menu/field_attack" then
 		local iconKey = if wpn.family == "fist" then "Menu/cc0_glove" elseif wpn.family == "axe" then "Menu/cc0_axe"
 			elseif wpn.ranged then "Menu/cc0_crossbow" else "Menu/cc0_sword"
 		attackIcon.Image = "rbxassetid://" .. tostring(AssetIds[iconKey])
