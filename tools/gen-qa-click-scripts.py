@@ -100,7 +100,7 @@ def build_mare():
                 "and string.find(button.Text,'새 게임',1,true) then ready=true break end "
                 "end end "
                 "if ready then break end task.wait(0.5) end "
-                "if not ready then return 'MARE_TITLE_NOT_READY_AFTER_50S;LOADING='..tostring(loading) end "
+                "if not ready then local RS=game:GetService('ReplicatedStorage') local ui=PG:FindFirstChild('MareEssentiaGui') return 'MARE_TITLE_NOT_READY_AFTER_50S;LOADING='..tostring(loading)..';CORE='..tostring(RS:GetAttribute('MareCoreStartStage'))..';REMOTE='..tostring(RS:FindFirstChild('GameAction')~=nil)..';CLIENT='..tostring(ui and ui:GetAttribute('StartupStage'))..';ASSETS='..tostring(RS:GetAttribute('MareAssetsReady')) end "
             )
             strict = "if not best or bs<=0 then return 'NONE' end"
             scroll_step["code"] = readiness + scroll_code.replace("if not best then return 'NONE' end", strict)

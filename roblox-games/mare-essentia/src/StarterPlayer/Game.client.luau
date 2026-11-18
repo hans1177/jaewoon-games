@@ -16,6 +16,8 @@ gui.Name = "MareEssentiaGui"
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
+-- [시작 진단] 로딩 지연 위치를 실제 스튜디오에서 확인한다. 저장·게임 상태에는 영향이 없다.
+gui:SetAttribute("StartupStage", "cover-created")
 
 -- [시작 화면] 서버 상태를 받는 동안 공중 캐릭터와 빈 하늘이 노출되지 않도록 UI를 즉시 덮는다.
 -- 월드/저장 데이터는 손대지 않고 서버 응답 직후 기존 시작 메뉴로 넘긴다.
@@ -64,23 +66,40 @@ if player.Character then
 end
 
 
+gui:SetAttribute("StartupStage", "await-Shared")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+gui:SetAttribute("StartupStage", "require-CommonUI")
 local CommonUI = require(Shared:WaitForChild("Common"):WaitForChild("RobloxCommonUI"))
+gui:SetAttribute("StartupStage", "require-Ports")
 local PortData = require(Shared:WaitForChild("Ports"))
+gui:SetAttribute("StartupStage", "require-Ships")
 local ShipsData = require(Shared:WaitForChild("Ships"))
+gui:SetAttribute("StartupStage", "require-PortEras")
 local PortEras = require(Shared:WaitForChild("PortEras"))
+gui:SetAttribute("StartupStage", "require-Geo")
 local Geo = require(Shared:WaitForChild("Geo"))
+gui:SetAttribute("StartupStage", "require-SeaRoutes")
 local SeaRoutes = require(Shared:WaitForChild("SeaRoutes"))
+gui:SetAttribute("StartupStage", "require-PortScene")
 local PortScene = require(Shared:WaitForChild("PortScene"))
+gui:SetAttribute("StartupStage", "require-VoyageScene")
 local VoyageScene = require(Shared:WaitForChild("VoyageScene"))
+gui:SetAttribute("StartupStage", "require-FieldScene")
 local FieldScene = require(Shared:WaitForChild("FieldScene"))
+gui:SetAttribute("StartupStage", "require-Weapons")
 local Weapons = require(Shared:WaitForChild("Weapons"))
+gui:SetAttribute("StartupStage", "require-Pose")
 local Pose = require(Shared:WaitForChild("Pose"))
+gui:SetAttribute("StartupStage", "require-Sfx")
 local Sfx = require(Shared:WaitForChild("Sfx"))
 local audioLock = false -- 해전·항해 중에는 장면이 음악을 정한다
+gui:SetAttribute("StartupStage", "require-NavalBattle")
 local NavalBattle = require(Shared:WaitForChild("NavalBattle"))
+gui:SetAttribute("StartupStage", "require-AssetIds")
 local AssetIds = require(Shared:WaitForChild("AssetIds"))
+gui:SetAttribute("StartupStage", "await-GameAction")
 local remote = ReplicatedStorage:WaitForChild("GameAction")
+gui:SetAttribute("StartupStage", "client-ui-build")
 local DEBUG_LOG = true -- 개발 중에는 서버 응답을 출력창에 남긴다 (출시 전에 false)
 
 -- 기본 채팅창이 게임 창 위 탭을 가려서 끈다 (이 게임은 채팅이 필요 없다)
@@ -11015,6 +11034,7 @@ function H.showTitle()
 end
 
 -- 시작 --------------------------------------------------------------------
+gui:SetAttribute("StartupStage", "server-state-request")
 
 task.spawn(function()
 	-- 서버가 늦으면 얼마나 기다렸는지 화면에 보여 준다(멈춘 것처럼 보이지 않게)
@@ -11027,7 +11047,8 @@ task.spawn(function()
 			end
 		end
 	end)
-	for _ = 1, 30 do
+	for attempt = 1, 30 do
+		gui:SetAttribute("StartupStage", "server-state-" .. tostring(attempt))
 		local result = call("State")
 		if result and (result.view or result.needsNewGame) then
 			H.roomInfo = result.room
@@ -11049,11 +11070,13 @@ task.spawn(function()
 				H.startupCover:Destroy()
 				H.startupCover = nil
 			end
+			gui:SetAttribute("StartupStage", "title-ready")
 			return
 		end
 		-- 그 밖의 응답(너무 빨라요 등)은 멈추지 말고 다시 시도한다
 		task.wait(0.5)
 	end
+	gui:SetAttribute("StartupStage", "state-failed")
 	message, messageOk = "서버에 연결하지 못했어요", false
 	if H.startupLabel then
 		H.startupLabel.Text = "서버 연결에 실패했어.\n재접속해서 다시 시도해 줘."

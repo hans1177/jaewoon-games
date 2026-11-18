@@ -7,6 +7,24 @@ import crypto from 'node:crypto';
 // (2026-11-08: 새 유니버스에서 MareEssentia_v2로 저장이 시작됨.) 바꿔야 한다면 기존 저장 이전(마이그레이션)을 먼저 구현하고 이 테스트를 의도적으로 갱신한다.
 const core=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau','utf8');
 
+// [시작 로딩 회귀] 저장을 건드리지 않는 진단만 노출하고, 실제 서버/클라이언트 어느 단계에서 멈췄는지 증명한다.
+test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증거를 남긴다',()=>{
+  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  assert.equal(capture.length,241);
+  assert.match(capture[4].code,/MARE_TITLE_NOT_READY_AFTER_50S;LOADING=/);
+  assert.match(capture[4].code,/MareCoreStartStage/);
+  assert.match(capture[4].code,/StartupStage/);
+  assert.match(capture[4].code,/MareAssetsReady/);
+  assert.match(client,/gui:SetAttribute\("StartupStage", "require-PortScene"\)/);
+  assert.match(client,/gui:SetAttribute\("StartupStage", "server-state-request"\)/);
+  assert.match(client,/gui:SetAttribute\("StartupStage", "title-ready"\)/);
+  assert.match(core,/MareCoreStartStage", "require-services"/);
+  assert.match(core,/MareCoreStartStage", "remote-ready"/);
+  assert.match(core,/MareCoreStartStage", "session-ready"/);
+  assert.match(core,/local STORE_NAME = "MareEssentia_v2"/);
+  assert.match(core,/return "P_" \.\. player.UserId/);
+});
+
 test('Mare Essentia 저장소 이름은 MareEssentia_v2로 고정된다', () => {
   const m=core.match(/^local STORE_NAME = "([^"]+)"/m);
   assert.ok(m,'STORE_NAME 선언을 찾지 못함');
