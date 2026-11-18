@@ -1561,6 +1561,41 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  assert.match(port,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
 });
 
+// [주택 배치] 실제 수입 건물의 처마·별채 점유 폭까지 보수적으로 계산하며 등급은 필지별로 고정한다.
+test('마을 주택은 5개 크기 등급을 발전도별로 혼합하고 도로·시설·이웃 주택을 피한다',()=>{
+ const port=read('ReplicatedStorage/Shared/PortScene.luau');
+ const buildings=read('ReplicatedStorage/Shared/PortBuildings.luau');
+ const start=port.indexOf('local houseSizeBands = {');
+ const end=port.indexOf('-- 한 줄 채우기: z = 줄의 중심',start);
+ assert.ok(start>0&&end>start,'기존 주거 생성 함수에 등급표가 있어야 한다');
+ const bands=port.slice(start,end);
+ for(const tier of [
+  '{ 0.62, 0.73, 0.84, 0.94, 1.02 }',
+  '{ 0.66, 0.79, 0.92, 1.08, 1.18 }',
+  '{ 0.69, 0.84, 1.00, 1.19, 1.36 }',
+  '{ 0.71, 0.88, 1.07, 1.31, 1.53 }',
+  '{ 0.73, 0.92, 1.14, 1.42, 1.72 }'
+ ])assert.ok(bands.includes(tier),'발전 단계별 작은 집~큰 집의 크기 혼합');
+ const home=port.slice(port.indexOf('local function fillRow('),port.indexOf('for _, side in { 1, -1 } do',port.indexOf('local function fillRow(')));
+ assert.match(home,/seeded\(plotId \.\. ":house-size"\)/,'다른 랜덤 흐름을 소비하지 않는 고정 필지 규모');
+ assert.match(home,/sizeScale = houseSizeBands\[lvl\]\[sizeClass\] \* sizeJitter/);
+ assert.match(home,/roofFactor = if style\.kit == "eastasia" then 1\.62 else 1\.46/);
+ assert.match(home,/projectedHalf <= rowClearance/,'도로 침범 전 등급 축소 또는 생략');
+ assert.match(home,/while sizeClass > 1 and projectedHalf > rowClearance do/);
+ assert.match(home,/math\.max\(sz \* 0\.62, projectedHalf\)/,'기존 점유 반경을 축소하지 않음');
+ assert.match(home,/not onStreet\(pos\.X, half\)/);
+ assert.match(home,/not reserved\(pos\.X, pos\.Z, half\)/);
+ assert.match(home,/table\.insert\(placedLots, \{ X = pos\.X, Z = pos\.Z, H = half \}\)/);
+ assert.match(home,/BuildingSizeClass", sizeClass/);
+ assert.match(home,/BuildingSizeScale", sizeScale/);
+ assert.match(home,/BuildingClearance", half/);
+ assert.match(home,/math\.clamp\(fl, 1, P\.flMax\)/,'문화권별 최대 층수 유지');
+ assert.match(port,/local roof = importedModel\(parent, "Town", "eastasia-roof"/);
+ assert.match(buildings,/plotScale = \{ 1\.5, 1\.65, 1\.8, 2\.0, 2\.2 \}/);
+ assert.match(port,/CityBuildingMode", "AUTO_VISUAL_READ_ONLY"/);
+ assert.match(port,/SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
+});
+
 // [가축 PBR 자연 색] 기존 원본 코·귀·얼룩과 색상지도 없는 표면 중복 착색 회귀 방지.
 test('항구·탐험 가축의 PBR 단일 채널과 눈·코·얼룩 보호',()=>{
  for(const name of ['PortScene.luau','FieldScene.luau']){
