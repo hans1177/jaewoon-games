@@ -153820,7 +153820,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -153854,7 +153854,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 8,
-      "previousReservationId": "system-ai:44268335139:1",
+      "previousReservationId": "system-ai:44270878015:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -153862,12 +153862,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44270878015:1",
-      "reservedAt": "2026-11-18T08:58:53.477Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -154097,7 +154097,8 @@
         "system-ai-representative-canary:system-ai-verification-failed",
         "system-ai-handoff-to-reservation:system-ai:44268335139:1",
         "actions-run:44268335139",
-        "system-ai-handoff-to-reservation:system-ai:44270878015:1"
+        "system-ai-handoff-to-reservation:system-ai:44270878015:1",
+        "actions-run:44270878015"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1694,
@@ -154112,7 +154113,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-18T08:58:53.477Z"
+      "updatedAt": "2026-11-18T09:06:35.119Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
@@ -154381,7 +154382,7 @@
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -154415,7 +154416,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 3,
-      "previousReservationId": "system-ai:44264749845:1",
+      "previousReservationId": "system-ai:44270878015:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -154423,12 +154424,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44270878015:1",
-      "reservedAt": "2026-11-18T08:58:53.477Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -154524,7 +154525,21 @@
         "system-ai-impact-score:502",
         "system-ai-blocked-task-count:4",
         "system-ai-representative-canary:system-ai-verification-failed",
-        "system-ai-handoff-to-reservation:system-ai:44270878015:1"
+        "system-ai-handoff-to-reservation:system-ai:44270878015:1",
+        "actions-run:44270878015",
+        "external-ai-model:gemini-3.5-flash-lite",
+        "external-ai-raw-output-sha256:439df6c4681659319d28f24af2477726cd69e99fc13ad9ab814825ecb5d80cf2",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_3f9ed1eaf8c7ed00c283e5c3",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_f22782671545193f22176195",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_5f8b04f2525a6688fa6853c7",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_107b55ca6e8e05ede28f9b9f",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_31bc6402f5611fd66c298fb4",
+        "learning-knowledge-id:CODE_PATTERN:pat_r3a1fy",
+        "learning-knowledge-id:CODE_PATTERN:pat_vzhsq4",
+        "system-ai-applied-answer-sha256:fb552cb5b70419e2bf20466625ea6d996448f4c7e6fa4b512b9f1532b3569d2c",
+        "repair-strategy-fingerprint:dbe4af85c994000cdeb4d8be01331fc60d6bf2ee1fb2ae7e52c88cdeb72521fa",
+        "failed-strategy-fingerprint:dbe4af85c994000cdeb4d8be01331fc60d6bf2ee1fb2ae7e52c88cdeb72521fa",
+        "model-output-sha256:439df6c4681659319d28f24af2477726cd69e99fc13ad9ab814825ecb5d80cf2"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 502,
@@ -154539,7 +154554,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-18T08:58:53.477Z"
+      "updatedAt": "2026-11-18T09:06:35.119Z"
     },
     {
       "id": "marketing-seed-roblox-survival-horror-es-doors-pre-release-v1",
