@@ -216,44 +216,62 @@ test('backlog preserves existing game-primary reservation and confines focused r
 });
 
 
-test('current owner exact focus keeps one approved Web game active and two slots unassigned',()=>{
+test('current owner exact focus selects only Mare Roblox under the latest central policy',()=>{
   const repoRoot=process.cwd();
   const focus=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),'utf8'))
     .developmentLifecycleMachine.focusedDevelopmentCaretakers;
-  // [중앙정책 검증] 목표 3개와 실제 지정된 1개를 구분한다. 삭제된 게임은 자동 복원하지 않는다.
+  // [중앙정책 검증] 현재 1개 집중 대상과 플랫폼만 인정한다. 삭제된 게임은 자동 복원하지 않는다.
   assert.equal(focus.enabled,true);
-  assert.equal(focus.targetFocusedGames,3);
-  assert.equal(focus.maxFocusedGames,3);
-  assert.deepEqual(focus.ownerFocusedGameIds,['insect-survival']);
-  assert.deepEqual(focus.ownerFocusedGamePlatforms,{'insect-survival':'WEB'});
-  assert.equal(focus.targetFocusedGames-focus.ownerFocusedGameIds.length,2);
+  assert.equal(focus.targetFocusedGames,1);
+  assert.equal(focus.maxFocusedGames,1);
+  assert.deepEqual(focus.ownerFocusedGameIds,['mare-essentia']);
+  assert.deepEqual(focus.ownerFocusedGamePlatforms,{'mare-essentia':'ROBLOX'});
+  assert.equal(focus.targetFocusedGames-focus.ownerFocusedGameIds.length,0);
   assert.equal(focus.focusScope,'OWNER_EXACT_GAME_AND_PLATFORM_ONLY');
-  assert.equal(focus.completionPursuit.nonFocusedDevelopmentContinues,true);
+  assert.equal(focus.completionPursuit.nonFocusedDevelopmentContinues,false);
   const liveCatalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
-  for(const removedId of ['simple-rpg','cozy-island','horror-escape-room']){
-    assert.ok(liveCatalog.permanentRemovalPolicy?.ids?.includes(removedId),'owner-deleted game may not return: '+removedId);
-  }
   const realProjects=collectProjects({},liveCatalog,repoRoot,{items:[]});
   assert.ok(realProjects.every(project=>!liveCatalog.permanentRemovalPolicy?.ids?.includes(project.gameId)),
     'no deleted project may reappear through focused planning');
-  const insect=liveCatalog.games.find(game=>game.id==='insect-survival');
-  assert.ok(insect,'current focused game must remain in the catalog');
-  assert.equal(focusedCaretakerProject({gameId:insect.id,engine:'web'},repoRoot),true);
-  assert.equal(focusedCaretakerProject({gameId:insect.id,engine:'roblox'},repoRoot),false);
-  if(insect.productionClass==='DESIGN_ONLY'&&!latestVerifiedDesign(repoRoot,insect.id)){
-    assert.equal(realProjects.some(project=>project.gameId===insect.id&&project.engine==='web'),false,
-      'design-reset owner focus must not bypass a missing verified design');
-  }
-  assert.ok(realProjects.some(project=>project.gameId==='fantasy-survival'&&project.engine==='web'
-    &&!focusedCaretakerProject(project,repoRoot)),
-    'ordinary game development continues outside unfilled focus slots');
-  const fixture=collectProjects({}, {games:[
-    {id:'insect-survival',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/insect-survival/'},
-    {id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/fantasy-survival/'}
-  ]},repoRoot,{items:[]});
-  assert.deepEqual(fixture.filter(project=>focusedCaretakerProject(project,repoRoot))
-    .map(project=>project.gameId+'|'+project.engine).sort(),['insect-survival|web']);
+  const mare=liveCatalog.games.find(game=>game.id==='mare-essentia');
+  assert.ok(mare,'current owner-selected game must remain in the catalog');
+  assert.equal(focusedCaretakerProject({gameId:mare.id,engine:'roblox'},repoRoot),true);
+  assert.equal(focusedCaretakerProject({gameId:mare.id,engine:'web'},repoRoot),false);
+  assert.equal(focusedCaretakerProject({gameId:'insect-survival',engine:'web'},repoRoot),false);
+  assert.ok(realProjects.every(project=>!project.ownerFocusedCaretaker
+    ||(project.gameId==='mare-essentia'&&project.engine==='roblox')),
+  'the current owner focus must not promote unrelated games');
 });
+
+test('focused owner selection validates the exact current target, duplicates and owner platform',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'mare-focused-policy-'));
+  const policyPath=path.join(root,'company-learning/platform-release-roadmap.json');
+  const base={enabled:true,targetFocusedGames:1,maxFocusedGames:1,
+    completionPursuit:{enabled:true},focusScope:'OWNER_EXACT_GAME_AND_PLATFORM_ONLY',
+    ownerFocusedGameIds:['mare-essentia'],ownerFocusedGamePlatforms:{'mare-essentia':'ROBLOX'}};
+  try{
+    fs.mkdirSync(path.dirname(policyPath),{recursive:true});
+    const write=policy=>fs.writeFileSync(policyPath,JSON.stringify({
+      developmentLifecycleMachine:{focusedDevelopmentCaretakers:policy}
+    }));
+    write(base);
+    assert.equal(focusedCaretakerProject({gameId:'mare-essentia',engine:'roblox'},root),true);
+    assert.equal(focusedCaretakerProject({gameId:'mare-essentia',engine:'web'},root),false);
+    write({...base,ownerFocusedGameIds:['mare-essentia','other']});
+    assert.throws(()=>focusedCaretakerProject({gameId:'mare-essentia',engine:'roblox'},root),
+      /FOCUSED_BUILD_COMPLETION_OWNER_SELECTION_INVALID/);
+    write({...base,targetFocusedGames:3,maxFocusedGames:3,ownerFocusedGameIds:['mare-essentia','mare-essentia']});
+    assert.throws(()=>focusedCaretakerProject({gameId:'mare-essentia',engine:'roblox'},root),
+      /FOCUSED_BUILD_COMPLETION_OWNER_SELECTION_INVALID/);
+    write({...base,maxFocusedGames:3});
+    assert.throws(()=>focusedCaretakerProject({gameId:'mare-essentia',engine:'roblox'},root),
+      /FOCUSED_BUILD_COMPLETION_OWNER_SELECTION_INVALID/);
+    write({...base,ownerFocusedGamePlatforms:{}});
+    assert.throws(()=>focusedCaretakerProject({gameId:'mare-essentia',engine:'roblox'},root),
+      /FOCUSED_GAME_PLATFORM_MAPPING_INCOMPLETE/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('exact focus lanes remain visible when generic backlog is full without bypassing work-package gates',()=>{
   const root=tempRepo();
   try{
