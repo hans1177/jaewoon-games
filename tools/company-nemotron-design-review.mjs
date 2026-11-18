@@ -37,13 +37,53 @@ function record(status, fields = {}) {
 }
 
 // [스튜디오 증거] 실제 캡처 이름, 원본 리비전, 이미지 바이트 형식을 모두 대조한다.
+// [화면 근거 배치] 마을 배치 4장·주민 2장·선박 1장·모바일 UI 1장을 우선한다.
+// 같은 무료 호출 안에서는 분야가 겹치지 않고, 다음 Studio 회차에서 각도를 순환한다.
+export function selectStudioDesignPhotoNames(names, sequence = 0, limit = 8) {
+  const available = new Map();
+  for (const name of names) {
+    if (!/^[A-Za-z0-9_.-]+-[0-9]+\.(?:jpe?g|png)$/i.test(name)) continue;
+    const label = name.replace(/-[0-9]+\.(?:jpe?g|png)$/i, '');
+    if (!available.has(label)) available.set(label, name);
+  }
+  const groups = [
+    ['town_aerial_grid','town_plaza_full','town_outer_district_north','town_outer_district_south','town_plaza_center'],
+    ['town_facility_row_wide','town_market_facade','town_guild_facade','town_scholar_library','town_library_street'],
+    ['town_harbor_to_market','town_street_roofline','town_outer_district_north','town_plaza_center','town_plaza_full'],
+    ['town_outer_district_south','town_facility_row_wide','town_library_street','town_harbor_to_market','town_aerial_grid'],
+    ['harbor_npc_face_close','harbor_npc_hair_left','harbor_npc_hair_right','harbor_npc_hair_back','harbor_npc_face_front'],
+    ['harbor_npc_outfit_front','harbor_npc_outfit_side','harbor_npc_outfit_back','harbor_npc_pair_diagonal','harbor_npc_port_street_reverse'],
+    ['ui_mobile_battle_2x2','ui_main_menu_icons','tab_harbor','field_npc_ally_mob','tab_crew'],
+    ['cb0_deck','cb1','cb2','v1_start','v2_event']
+  ];
+  const selected = [];
+  const used = new Set();
+  const phase = Number.isSafeInteger(Number(sequence)) ? Math.abs(Number(sequence)) % 5 : 0;
+  for (const group of groups) {
+    for (let offset = 0; offset < group.length; offset++) {
+      const name = available.get(group[(phase + offset) % group.length]);
+      if (!name || used.has(name)) continue;
+      selected.push(name);
+      used.add(name);
+      break;
+    }
+    if (selected.length >= limit) return selected;
+  }
+  for (const name of [...available.values()].sort()) {
+    if (!used.has(name)) selected.push(name);
+    if (selected.length >= limit) break;
+  }
+  return selected;
+}
+
 function photosFromStudio() {
   if (!fs.existsSync(framesRoot)) return [];
+  const names = fs.readdirSync(framesRoot).sort();
+  const chosen = selectStudioDesignPhotoNames(names, process.env.GITHUB_RUN_ID, 8);
   const found = [];
-  for (const name of fs.readdirSync(framesRoot).sort()) {
-    if (!/^[A-Za-z0-9_.-]+-[0-9]+\.(?:jpe?g|png)$/i.test(name)) continue;
+  for (const name of chosen) {
     const file = path.join(framesRoot, name);
-    if (!fs.statSync(file).isFile()) continue;
+    if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) continue;
     const bytes = fs.readFileSync(file);
     if (bytes.length < 4096 || bytes.length > 2000000) continue;
     const jpeg = bytes[0] === 255 && bytes[1] === 216;
@@ -51,10 +91,10 @@ function photosFromStudio() {
     if (!jpeg && !png) continue;
     found.push({name, sha256: digest(bytes), url: 'data:image/' +
       (jpeg ? 'jpeg' : 'png') + ';base64,' + bytes.toString('base64')});
-    if (found.length === 8) break;
   }
   return found;
 }
+
 export function verifiedStudioCapture(report, photos, expectedRevision) {
   if (!/^[a-f0-9]{40}$/i.test(String(expectedRevision ?? '')) ||
     report?.sourceRevision !== expectedRevision ||
@@ -70,7 +110,7 @@ export function verifiedStudioCapture(report, photos, expectedRevision) {
 
 // [검사] 원본 소스 구조와 문맥을 유지하는 시각 상수·표현 변경만 허용한다.
 // 게임플레이 수치·제어 흐름·문자열/에셋 ID·실행문 신규 삽입은 막는다.
-export function visualEditLooksSafe(before, after) {
+export function visualEditLooksSafe(before, after, category = '', sourcePath = '') {
   if (typeof before !== 'string' || typeof after !== 'string' || before === after ||
     !before.trim() || /[\r\n]/.test(before + after) ||
     Buffer.byteLength(before) > 1800 || Buffer.byteLength(after) > 1800 ||
@@ -87,6 +127,27 @@ export function visualEditLooksSafe(before, after) {
       token => token.slice(0, token.lastIndexOf('.') + 1) + '#')
     .replace(/(?<![A-Za-z_0-9])-?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?(?![A-Za-z_0-9])/g, '#');
   if (skeleton(before) !== skeleton(after)) return false;
+  // [건축물 배치] 기존 PortScene 시설 좌표만 제한적으로 수정한다.
+  // UI·경제·저장·지형 충돌 판정과 분리하고 원본 시설의 이름/기능/크기는 그대로 둔다.
+  const location = /\bpos\s*=\s*Vector3\.new\(\s*(-?(?:\d+(?:\.\d*)?|\.\d+))\s*,\s*(-?(?:\d+(?:\.\d*)?|\.\d+))\s*,\s*(-?(?:\d+(?:\.\d*)?|\.\d+))\s*\)/;
+  const oldPlacement = before.match(location), newPlacement = after.match(location);
+  if (oldPlacement || newPlacement) {
+    if (!oldPlacement || !newPlacement) return false;
+    if (oldPlacement[0] !== newPlacement[0]) {
+      if (category !== 'architecture' ||
+        sourcePath !== 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau' ||
+        !/^\s*\{\s*name\s*=\s*"/.test(before) ||
+        !/\btab\s*=\s*"/.test(before) || !/\beconomy\s*=\s*"/.test(before) ||
+        before.replace(oldPlacement[0], '#POSITION#') !==
+        after.replace(newPlacement[0], '#POSITION#')) return false;
+      const oldXYZ = oldPlacement.slice(1).map(Number), nextXYZ = newPlacement.slice(1).map(Number);
+      if (oldXYZ.some(n => !Number.isFinite(n)) || nextXYZ.some(n => !Number.isFinite(n)) ||
+        Math.abs(nextXYZ[0] - oldXYZ[0]) > 5 || nextXYZ[1] !== oldXYZ[1] ||
+        Math.abs(nextXYZ[2] - oldXYZ[2]) > 5 ||
+        Math.sign(nextXYZ[2]) !== Math.sign(oldXYZ[2]) || Math.abs(nextXYZ[2]) < 32)
+        return false;
+    }
+  }
   const numbers = line => [...line.matchAll(/(?<![A-Za-z_0-9])-?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?(?![A-Za-z_0-9])/g)]
     .map(m => Number(m[0]));
   const oldNums = numbers(before), newNums = numbers(after);
@@ -132,7 +193,7 @@ export function validateReview(value, frameNames, contract, availableAnchors = n
       !frames.has(row.screenshot) || !issues.some(issue =>
         issue.category === row.category && issue.screenshot === row.screenshot &&
         issue.severity !== 'low') ||
-      !visualEditLooksSafe(before, row.after))
+      !visualEditLooksSafe(before, row.after, row.category, sourcePath))
       throw Error('EDIT_NOT_VISUAL_OR_NOT_IN_POLICY');
     const key = sourcePath + '\0' + before;
     if (usedAnchors.has(key)) throw Error('DUPLICATE_SOURCE_ANCHOR');
@@ -156,7 +217,7 @@ function visualAnchors(files) {
   for (const file of files) {
     const target = path.resolve(root, file);
     if (!target.startsWith(root + path.sep) || !fs.existsSync(target) ||
-      !fs.statSync(target).isFile()) continue;
+      !fs.lstatSync(target).isFile() || fs.lstatSync(target).isSymbolicLink()) continue;
     const lines = fs.readFileSync(target, 'utf8').split(/\r?\n/);
     const counts = new Map();
     for (const line of lines) counts.set(line, (counts.get(line) || 0) + 1);
@@ -164,10 +225,13 @@ function visualAnchors(files) {
     // 얼굴과 머리/옷을 먼저, 나머지 건물·선박·UI는 파일 전체 구간을 고르게 표본화한다.
     const focused = file.endsWith('/Pose.luau')
       ? possible.filter(line => /LightInfluence|scalp|skirt|belt|hair|q\.Size|Fabric/i.test(line)).slice(0, 4)
-      : [];
+      : file.endsWith('/PortScene.luau')
+        ? possible.filter(line => /^\s*\{\s*name\s*=\s*"/.test(line) &&
+          /\bpos\s*=\s*Vector3\.new\(/.test(line) && /\bcolor\s*=\s*Color3\.fromRGB\(/.test(line)).slice(0, 7)
+        : [];
     const sampled = Array.from({length: 8}, (_, index) =>
       possible[Math.floor(index * Math.max(0, possible.length - 1) / 7)]).filter(Boolean);
-    for (const line of [...new Set([...focused, ...sampled])].slice(0, 7))
+    for (const line of [...new Set([...focused, ...sampled])].slice(0, file.endsWith('/PortScene.luau') ? 13 : 7))
       result.push({anchor: result.length, path: file, before: line});
   }
   return result.slice(0, 112);
@@ -178,7 +242,7 @@ export function applyVisualReplacements(files, edits, contract) {
   const output = new Map(), changes = [];
   for (const edit of edits) {
     if (!contract.allowedSourceFiles.includes(edit.path) ||
-      !visualEditLooksSafe(edit.before, edit.after)) throw Error('EDIT_NOT_AUTHORIZED');
+      !visualEditLooksSafe(edit.before, edit.after, edit.category, edit.path)) throw Error('EDIT_NOT_AUTHORIZED');
     if (!Object.hasOwn(files, edit.path)) throw Error('SOURCE_FILE_NOT_FOUND:' + edit.path);
     const source = output.get(edit.path) || files[edit.path];
     const lines = source.split('\n');
@@ -241,6 +305,9 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     'materials, lighting, HUD, cards, portraits, motion and composition where visually justified. ' +
     'Never create primitives, placeholder models, new art assets, URLs or unlicensed assets. ' +
     'Only change visual constants on EXISTING exact source lines shown in anchors. ' +
+    'Town layout may adjust ONLY EXISTING named facility pos Vector3 coordinates on the existing PortScene line, ' +
+    'category architecture, max 5 studs per horizontal axis, unchanged height, no center plaza or route obstruction. ' +
+    'Inspect plaza, streets, houses, market, library and rooftop composition from the actual captured town shots. ' +
     'Never modify gameplay, economy, save, combat, physics, networking, or script control flow. ' +
     'Return STRICT JSON: {"issues":[{"category":"one policy category","severity":"low|medium|high",' +
     '"screenshot":"existing image name","evidence":"specific visible evidence"}],' +
