@@ -1963,6 +1963,14 @@ test('Mare first card has no forced wonder and spontaneous port events are limit
   assert.match(history,/if state\._autoEventPort == state\.portId then return nil end/);
   assert.match(history,/h\.seen\[ev\.id\] = math\.floor\(idx\)[\s\S]*?state\._autoEventPort = state\.portId/);
   assert.match(history,/h\.pending = best\.id/,'unseen history is deferred, not marked as seen');
+  const payout=quest.slice(quest.indexOf('local function payout('),quest.indexOf('function handlers.Claim('));
+  assert.match(payout,/quest\.id ~= "q_first_discovery"/,'first discovered card pays rewards without the passive First Discovery quest movie');
+  assert.match(payout,/state\.quests\.done\[quest\.id\] = true/,'auto quest still completes');
+  assert.match(payout,/state\.coins \+= quest\.rewardCoins/,'coins are still granted');
+  assert.match(payout,/state\.fame \+= quest\.rewardFame/,'fame is still granted');
+  assert.match(payout,/not AUTO_KINDS\[quest\.kind\]/,'manual quest completion cutscenes remain unchanged');
+  assert.match(payout,/state\._autoEventPort ~= state\.portId and not \(state\.history and state\.history\.pending\)/,'spontaneous end scenes yield to queued history and obey one per visit');
+  assert.match(arrive,/state\._autoEventPort = nil/,'leaving then reentering a port resets only the transient one-visit throttle');
   const story=fs.readFileSync(root+'Story.luau','utf8');
   assert.match(story,/function handlers\.PlayStory\(state, p\)/,'player-initiated story stays intact');
   assert.match(quest,/local function offer\(state, msgs, how, personId\)/,'player initiated quests preserved');
