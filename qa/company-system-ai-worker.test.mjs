@@ -167,6 +167,60 @@ test('live free-model deep repair retries missing strategies before critic witho
   }
 });
 
+test('live free-model critic REVISE retries missing strategies before applying edits',async()=>{
+  const cwd=root(),prev=process.cwd(),priorFetch=globalThis.fetch;
+  const envNames=['GEMINI_API_KEY','SYSTEM_AI_GEMINI_MODEL','VIBE2_GEMINI_MODEL','VIBE2_GEMINI_BACKUP_MODEL'];
+  const previousEnv=Object.fromEntries(envNames.map(name=>[name,process.env[name]]));
+  let calls=0;
+  try{
+    process.chdir(cwd);
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('task.json',JSON.stringify({id:'critic-missing-options',status:'running',
+      taskType:'bottleneck-repair',goal:'repair exact acceptance source',
+      responsibleFiles:['tools/demo.mjs'],acceptanceCriteria:['value becomes 3']}));
+    process.env.GEMINI_API_KEY='TEST_ONLY_NOT_SENT_TO_NETWORK';
+    process.env.SYSTEM_AI_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_BACKUP_MODEL='gemini-3.5-flash-lite';
+    const strategies=[
+      {id:'wide',summary:'module rewrite',risk:'HIGH',files:['tools/demo.mjs']},
+      {id:'narrow',summary:'single exact value edit',risk:'LOW',files:['tools/demo.mjs']}
+    ];
+    const original={summary:'proposal to refine',strategyOptions:strategies,
+      selectedStrategyId:'wide',edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}]};
+    const invalidCritic={verdict:'REVISE',preferredStrategyId:'narrow',
+      weakPoints:['acceptance is 3'],requiredCorrections:['use narrow repair'],
+      revisedAnswer:{...original,summary:'incomplete review',strategyOptions:[],
+        selectedStrategyId:'narrow',edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=3'}]}};
+    const fixedCritic={...invalidCritic,revisedAnswer:{...invalidCritic.revisedAnswer,
+      summary:'verified exact acceptance repair',strategyOptions:strategies}};
+    globalThis.fetch=async()=>{
+      const response=[original,invalidCritic,fixedCritic][calls++];
+      if(!response)throw new Error('UNEXPECTED_EXTRA_MODEL_REQUEST');
+      return{ok:true,status:200,json:async()=>({
+        candidates:[{content:{parts:[{text:JSON.stringify(response)}]}}]
+      })};
+    };
+    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json'});
+    assert.equal(calls,3,'original proposal, critic and one correction only');
+    assert.equal(result.deepReasoningUsed,true);
+    assert.equal(result.criticVerdict,'REVISE');
+    assert.equal(result.selectedStrategyId,'narrow');
+    assert.equal(result.strategyOptions.length,2);
+    assert.equal(fs.readFileSync('tools/demo.mjs','utf8'),"export const value=3;\n");
+    assert.equal(result.workerSelfAcceptance,false);
+    assert.equal(result.qaGateWeakening,false);
+  }finally{
+    globalThis.fetch=priorFetch;
+    for(const name of envNames){
+      if(previousEnv[name]===undefined)delete process.env[name];
+      else process.env[name]=previousEnv[name];
+    }
+    process.chdir(prev);
+    fs.rmSync(cwd,{recursive:true,force:true});
+  }
+});
+
 test('system AI edits only assigned system file and leaves completion for supervisor',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
