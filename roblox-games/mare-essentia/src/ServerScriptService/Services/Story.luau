@@ -27,6 +27,12 @@ return function(D, S)
 				return "아직 때가 아니에요"
 			end
 		end
+		-- [대서사 분기점] 필요한 연속 퀘스트가 완료되어야 사건 장면을 볼 수 있다.
+		for _, questId in e.requiresQuests or {} do
+			if not (state.quests and state.quests.done and state.quests.done[questId]) then
+				return "이전 이야기를 먼저 완료해야 해요"
+			end
+		end
 		for _, cardId in e.requiresCards or {} do
 			if not state.discovered[cardId] then
 				return "필요한 카드가 없어요"
@@ -84,24 +90,25 @@ return function(D, S)
 
 	-- 항구에 닿았을 때 그 항구에 있는 중요 인물이 이야기를 걸어온다 (60%, 항구·날짜로 정해지는 결정적 확률).
 	-- 화면은 view.autoStory 를 보고 일러스트 연출 장면을 자동으로 연다.
-	local function autoTrigger(state, msgs)
+	local function autoTrigger(state, msgs, onlyMajor)
 		if state.autoStory then
-			return
+			return false
 		end
 		local seed = 0
 		for i = 1, #state.portId do
 			seed += string.byte(state.portId, i) * (i + 3)
 		end
-		if (seed + state.day * 13) % 10 >= 6 then
-			return
+		if not onlyMajor and (seed + state.day * 13) % 10 >= 6 then
+			return false
 		end
 		for _, e in D.Story.Events do
-			if not blockReason(state, e) then
+			if (not onlyMajor or e.major or e.nation or e.chapter == "주점의 사람들") and not blockReason(state, e) then
 				state.autoStory = e.id
 				table.insert(msgs, string.format("[%s] %s이(가) 당신을 찾는다", e.title, e.npc))
-				return
+				return true
 			end
 		end
+		return false
 	end
 
 	return { handlers = handlers, blockReason = blockReason, autoTrigger = autoTrigger }

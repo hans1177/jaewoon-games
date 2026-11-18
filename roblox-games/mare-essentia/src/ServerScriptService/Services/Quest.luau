@@ -7,7 +7,7 @@ return function(D, S)
 	local MAX_ACTIVE = 5
 
 	-- 발견·방문·연구처럼 플레이어 상태만으로 진행도가 정해지는 퀘스트는 수락하지 않아도 자동으로 보고된다.
-	local AUTO_KINDS = { discover_card = true, discover = true, field = true, visit = true, research = true, understand = true, understand_card = true, present = true, expo = true, joint = true, port_tech = true, landmark = true, launch = true, era = true, stock = true, dividend = true, history = true, people = true, people_talk = true, order_patrol = true }
+	local AUTO_KINDS = { discover_card = true, discover = true, field = true, visit = true, research = true, understand = true, understand_card = true, present = true, expo = true, joint = true, port_tech = true, landmark = true, launch = true, era = true, stock = true, dividend = true, saga_chapters = true, history = true, people = true, people_talk = true, order_patrol = true }
 
 	local function isAuto(quest)
 		return AUTO_KINDS[quest.kind] == true
@@ -17,6 +17,16 @@ return function(D, S)
 	local function progressWith(state, quest, a)
 		if not a then
 			return 0
+		end
+		-- [대항해 연대기] 세계 현장에 지식을 제출해야 전문 항로의 다음 장이 열린다.
+		if quest.sagaPort and quest.sagaPort ~= state.portId then return 0 end
+		if quest.minYear and S.State.year(state) < quest.minYear then return 0 end
+		if quest.kind == "saga_chapters" then
+			local done = 0
+			for _, id in { "pirate", "navy", "trade", "guild", "scholar", "explorer", "diplomat", "shipwright", "navigator", "culture" } do
+				if state.story and state.story["epic_" .. id] then done += 1 end
+			end
+			return done
 		end
 		if quest.kind == "deliver" then
 			return a.delivered
@@ -132,6 +142,9 @@ return function(D, S)
 		-- [지역 탐험] 신규 현장 의뢰는 지정된 항구에서만 보여 주고 자동 완료한다.
 		-- 기존 퀘스트와 이미 저장된 도감·완료 기록에는 영향을 주지 않는다.
 		if quest.exploreSite and quest.portId ~= state.portId then return false end
+		-- [지역 연대기] 첫 소식은 현장 항구에서만, 이어지는 장은 어디서든 일지에 보여 다음 항구를 안내한다.
+		if quest.sagaPort and quest.sagaPort ~= state.portId and not (quest.after or quest.kind == "saga_chapters") then return false end
+		if quest.minYear and S.State.year(state) < quest.minYear then return false end
 		if quest.after and not state.quests.done[quest.after] then
 			return false
 		end
@@ -202,9 +215,9 @@ return function(D, S)
 		table.insert(msgs, "「" .. quest.name .. "」 " .. ending)
 		-- [첫 카드] '첫 발견' 보상·일지는 유지하지만 자동 퀘스트 컷신을 재생하지 않는다.
 		-- [도시 자동 이벤트] 자동 달성 퀘스트는 같은 방문에서 한 편만 연출한다.
-		-- 플레이어가 수동으로 수행한 일반 의뢰 완료 장면은 종전처럼 모두 재생한다.
-		if quest.id ~= "q_first_discovery" and (not AUTO_KINDS[quest.kind]
-			or (state._autoEventPort ~= state.portId and not (state.history and state.history.pending))) then
+		-- 일반 의뢰는 일지/로그에만 기록한다. 서막·동료·대서사 분기점만 특별 장면을 연다.
+		if quest.id ~= "q_first_discovery" and (quest.strand == "main" or quest.strand == "companion" or (quest.major and not quest.arc))
+			and (not AUTO_KINDS[quest.kind] or (state._autoEventPort ~= state.portId and not (state.history and state.history.pending))) then
 			state._scenes = state._scenes or {}
 			table.insert(state._scenes, { kind = "end", name = quest.name, text = ending })
 			if AUTO_KINDS[quest.kind] then state._autoEventPort = state.portId end
@@ -255,6 +268,14 @@ return function(D, S)
 				break
 			end
 		end
+		-- [연대기 교차] 중요 조사 완료 시 해당 항구에서 선택형 역사/신화 사건을 단 한 번 연다.
+		-- 기존 역사 사건 우선순위와 같은 방문 중복 장면 제한은 유지한다.
+		if reported > 0 and S.Story and S.Story.autoTrigger and not state.autoStory
+			and not (state.history and state.history.pending) and state._autoEventPort ~= state.portId then
+			if S.Story.autoTrigger(state, msgs, true) then
+				state._autoEventPort = state.portId
+			end
+		end
 		return reported
 	end
 
@@ -283,8 +304,10 @@ return function(D, S)
 		end
 		state.quests.active[pick.id] = { delivered = 0, baseWins = state.stats.battlesWon }
 		local hook = storyOf(pick)
-		state._scenes = state._scenes or {}
-		table.insert(state._scenes, { kind = "start", name = pick.name, text = hook, summary = pick.summary })
+		if pick.major or pick.strand == "main" or pick.strand == "companion" then
+			state._scenes = state._scenes or {}
+			table.insert(state._scenes, { kind = "start", name = pick.name, text = hook, summary = pick.summary })
+		end
 		table.insert(msgs, string.format("%s — 일지에 새 이야기가 적혔다: 「%s」\n%s\n(%s)", how, pick.name, hook, pick.summary))
 		return pick
 	end
@@ -308,6 +331,29 @@ return function(D, S)
 		if S.History and S.History.tick(state) then
 			return
 		end
+		-- [대서사 사건] 일반 의뢰나 사소한 도시 사건보다 먼저 중요한 분기점 확인.
+		if S.Story and S.Story.autoTrigger and S.Story.autoTrigger(state, msgs, true) then
+			state._autoEventPort = state.portId
+			return
+		end
+		-- [전 세계 사건의 시작] 새 항구에 닿으면 실제 지역의 미해결 사건·유적·생물 소식 중 하나를 일지로 전한다.
+		-- 소문/현장 발견/상단 문서/학술 편지 등 출처를 구분하되, 일반 소식만으로는 컷신을 띄우지 않는다.
+		-- 중요한 연대기 장면은 위의 S.Story.autoTrigger에서 먼저 처리한다.
+		local regionalNews = {}
+		for _, quest in D.Quests.Quests do
+			if quest.newsSource and quest.sagaPort == state.portId and not state.quests.done[quest.id] and visible(state, quest) then
+				table.insert(regionalNews, quest)
+			end
+		end
+		if #regionalNews > 0 then
+			local seed = state.day
+			for i = 1, #state.portId do
+				seed += string.byte(state.portId, i) * i
+			end
+			local news = regionalNews[seed % #regionalNews + 1]
+			table.insert(msgs, string.format("새 소식 · %s — 「%s」\n%s", news.newsSource, news.name, news.summary))
+			return
+		end
 		-- 항구와 날짜로 정해지는 기존 확률(70%): 같은 도착이면 같은 소문
 		local h = 0
 		for i = 1, #state.portId do
@@ -324,10 +370,8 @@ return function(D, S)
 			state._autoEventPort = state.portId
 			return
 		end
-		if S.Story and S.Story.autoTrigger then
-			S.Story.autoTrigger(state, msgs)
-			if state.autoStory then state._autoEventPort = state.portId end
-		end
+		-- 소규모 항구 인물 사연은 기존 이야기 메뉴에서 직접 선택할 수 있다.
+		-- 자동 연출은 앞에서 우선 처리한 중요 연대기·국가·동료 이야기만 허용한다.
 	end
 
 	-- 항구에 도착하면 받아 둔 납품 퀘스트의 물건을 자동으로 넘긴다. 조건을 채운 퀘스트는 알려 준다.
