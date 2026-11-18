@@ -280008,11 +280008,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_271cb3e63196019d889b1f22",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13724",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "505802cda51a9f93377d72292df31f7e851c9376",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13724,
+        "baseBranch": "main",
+        "headBranch": "simplify-free-model-admission-20261118",
+        "baseSha": "505802cda51a9f93377d72292df31f7e851c9376",
+        "headSha": "d3a00aee568e86d7208d7ffb08d82a0deda1c1b5",
+        "mergeCommitSha": "b54da63081e9c8340f47688f0dc7ed2c0f5d4521",
+        "mergedAt": "2026-11-18T07:27:21Z",
+        "authorLogin": "hans1177",
+        "titleHash": "69a0386c5a72d8b8dd7ce0da3ab10e3fc5cacd2438d39ad53511782682b9f69c",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "simplify-free-model-admission-20261118",
+        "candidateSha": "d3a00aee568e86d7208d7ffb08d82a0deda1c1b5"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 36,
+        "deletedLineCount": 30,
+        "changedFiles": [
+          "company-learning/external-ai-distillation-policy.json",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/vibe2-gemini-free-rotation.test.mjs",
+          "tools/company-nemotron-design-review.mjs",
+          "tools/vibe2-gemini-free-rotation.mjs"
+        ],
+        "codingRelevantFiles": [
+          "company-learning/external-ai-distillation-policy.json",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/vibe2-gemini-free-rotation.test.mjs",
+          "tools/company-nemotron-design-review.mjs",
+          "tools/vibe2-gemini-free-rotation.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13724",
+        "merge-commit:b54da63081e9c8340f47688f0dc7ed2c0f5d4521",
+        "base-main:505802cda51a9f93377d72292df31f7e851c9376"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2235
+    "total": 2236
   }
 }
