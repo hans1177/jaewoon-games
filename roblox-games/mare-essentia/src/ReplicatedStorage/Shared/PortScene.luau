@@ -2967,8 +2967,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				local body = house(staged, pos, ww, dd, fl, style, rng)
 				if body then
 					local bounds, dimensions = staged:GetBoundingBox()
-					local actualHalfX = math.max(half, math.abs(bounds.Position.X - pos.X) + dimensions.X * 0.5 + 2.5)
-					local actualHalfZ = math.max(half, math.abs(bounds.Position.Z - pos.Z) + dimensions.Z * 0.5 + 2.5)
+					local measuredHalfX = math.abs(bounds.Position.X - pos.X) + dimensions.X * 0.5 + 2.5
+					local measuredHalfZ = math.abs(bounds.Position.Z - pos.Z) + dimensions.Z * 0.5 + 2.5
+					-- 이웃 필지는 기존 여유 폭을 보존하지만, 도로는 실제 처마 외곽으로만 판정한다.
+					-- 필지 예약 반경을 도로 판정에 중복 적용하면 모든 주택이 사라질 수 있다.
+					local actualHalfX = math.max(half, measuredHalfX)
+					local actualHalfZ = math.max(half, measuredHalfZ)
 					local laneNear = 152 + laneOffset + laneIndex * laneL
 					local laneFar = laneNear + laneL
 					local chosenShift
@@ -2977,9 +2981,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						Vector3.new(2.4, 0, 0), Vector3.new(0, 0, -2.4 * side),
 						Vector3.new(0, 0, 2.4 * side) } do
 						local at = pos + shift
-						local clearRoad = math.abs(math.abs(at.Z) - laneNear) > actualHalfZ + laneWidth * 0.5 + 2.5
-							and math.abs(math.abs(at.Z) - laneFar) > actualHalfZ + laneWidth * 0.5 + 2.5
-						if clearRoad and not onStreet(at.X, actualHalfX)
+						local clearRoad = math.abs(math.abs(at.Z) - laneNear) > measuredHalfZ + laneWidth * 0.5 + 1.5
+							and math.abs(math.abs(at.Z) - laneFar) > measuredHalfZ + laneWidth * 0.5 + 1.5
+						if clearRoad and not onStreet(at.X, measuredHalfX)
 							and not reserved(at.X, at.Z, actualHalfX, actualHalfZ) then
 							chosenShift = shift
 							break
@@ -2990,48 +2994,48 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						pos += chosenShift
 						for _, object in staged:GetChildren() do object.Parent = folder end
 						-- 실제 주거 입주·증축 판단은 기존 경제의 주택 수·발전도가 담당한다.
-					body:SetAttribute("BuildPlotId", plotId)
-					body:SetAttribute("BuildType", "house")
-					body:SetAttribute("BuildPhase", 4)
-					body:SetAttribute("BuildState", "complete")
-					body:SetAttribute("BuildTier", fl)
-					body:SetAttribute("BuildAuthority", "VISUAL_ONLY")
-					body:SetAttribute("BuildingSizeClass", sizeClass)
-					body:SetAttribute("BuildingSizeScale", sizeScale)
-					body:SetAttribute("BuildingClearance", math.max(actualHalfX, actualHalfZ))
-					body:SetAttribute("BuildingFootprintX", actualHalfX * 2)
-					body:SetAttribute("BuildingFootprintZ", actualHalfZ * 2)
-					-- [주거 성장] 이미 존재하는 주택 앞에 주민 휴식 시설·우물을 하나만 건설한다.
-					-- 첫 세대에 보이면 완공 상태로, 도시 발전 중 새로 해금된 경우에만 설치 모션을 사용한다.
-					if not residentialDecorationPlaced and decor.residential > 0 and decorPlaced < decorLimit then
-						local newGrade = previousDecor and decor.residential > (previousDecor.residential or 0)
-							and decorAnimated < animationLimit
-						local itemName = if decor.residential >= 3 then "village-well" else "bench_A"
-						local front = if pos.Z > 0 then -1 else 1
-						local placeAt = pos + Vector3.new(ww * 0.28, 0, front * (ww * 0.45 + 4))
-						local delay = if newGrade then 0.28 + decorAnimated * 0.36 else nil
-						local detail = importedModel(folder, "Town", itemName, placeAt, 4.5, false, nil, delay)
-						if detail then
-							residentialDecorationPlaced = true
-							decorPlaced += 1
-							if newGrade then decorAnimated += 1 end
-							detail.Name = "CityGrowthDecoration_residential"
-							detail:SetAttribute("BuildPlotId", plotId .. ":decor")
-							detail:SetAttribute("BuildType", "decoration")
-							detail:SetAttribute("BuildTier", decor.residential)
-							detail:SetAttribute("BuildPhase", 4)
-							detail:SetAttribute("BuildState", "complete")
-							detail:SetAttribute("BuildAuthority", "VISUAL_ONLY")
-							detail:SetAttribute("ShowcaseOnly", true)
-							if newGrade then stageDecoration(detail, placeAt, delay) end
+						body:SetAttribute("BuildPlotId", plotId)
+						body:SetAttribute("BuildType", "house")
+						body:SetAttribute("BuildPhase", 4)
+						body:SetAttribute("BuildState", "complete")
+						body:SetAttribute("BuildTier", fl)
+						body:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+						body:SetAttribute("BuildingSizeClass", sizeClass)
+						body:SetAttribute("BuildingSizeScale", sizeScale)
+						body:SetAttribute("BuildingClearance", math.max(actualHalfX, actualHalfZ))
+						body:SetAttribute("BuildingFootprintX", actualHalfX * 2)
+						body:SetAttribute("BuildingFootprintZ", actualHalfZ * 2)
+						-- [주거 성장] 이미 존재하는 주택 앞에 주민 휴식 시설·우물을 하나만 건설한다.
+						-- 첫 세대에 보이면 완공 상태로, 도시 발전 중 새로 해금된 경우에만 설치 모션을 사용한다.
+						if not residentialDecorationPlaced and decor.residential > 0 and decorPlaced < decorLimit then
+							local newGrade = previousDecor and decor.residential > (previousDecor.residential or 0)
+								and decorAnimated < animationLimit
+							local itemName = if decor.residential >= 3 then "village-well" else "bench_A"
+							local front = if pos.Z > 0 then -1 else 1
+							local placeAt = pos + Vector3.new(ww * 0.28, 0, front * (ww * 0.45 + 4))
+							local delay = if newGrade then 0.28 + decorAnimated * 0.36 else nil
+							local detail = importedModel(folder, "Town", itemName, placeAt, 4.5, false, nil, delay)
+							if detail then
+								residentialDecorationPlaced = true
+								decorPlaced += 1
+								if newGrade then decorAnimated += 1 end
+								detail.Name = "CityGrowthDecoration_residential"
+								detail:SetAttribute("BuildPlotId", plotId .. ":decor")
+								detail:SetAttribute("BuildType", "decoration")
+								detail:SetAttribute("BuildTier", decor.residential)
+								detail:SetAttribute("BuildPhase", 4)
+								detail:SetAttribute("BuildState", "complete")
+								detail:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+								detail:SetAttribute("ShowcaseOnly", true)
+								if newGrade then stageDecoration(detail, placeAt, delay) end
+							end
 						end
-					end
-					table.insert(placedLots, { X = pos.X, Z = pos.Z,
-						H = math.max(actualHalfX, actualHalfZ), HX = actualHalfX, HZ = actualHalfZ })
-					if smokers < 28 and rng:NextNumber() < 0.22 then
-						smokers += 1
-						smokeOn(folder, pos + Vector3.new(ww * 0.2, fl * 6 + 4, 0))
-					end
+						table.insert(placedLots, { X = pos.X, Z = pos.Z,
+							H = math.max(actualHalfX, actualHalfZ), HX = actualHalfX, HZ = actualHalfZ })
+						if smokers < 28 and rng:NextNumber() < 0.22 then
+							smokers += 1
+							smokeOn(folder, pos + Vector3.new(ww * 0.2, fl * 6 + 4, 0))
+						end
 					end -- [실제 외곽 검사] 안전한 경우만 본 장면으로 반영
 				end
 				staged:Destroy()
