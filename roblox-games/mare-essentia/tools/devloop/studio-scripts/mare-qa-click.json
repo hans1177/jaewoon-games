@@ -179,7 +179,7 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "-- [교역 메뉴 시각 검증] 첫 행동 버튼과 기준가격 안내가 실제 플레이 UI에 존재한다.\nlocal gui=assert(game:GetService(\"Players\").LocalPlayer.PlayerGui:FindFirstChild(\"MareEssentiaGui\"),\"TRADE_GUI_MISSING\")\nlocal action=assert(gui:FindFirstChild(\"MenuPrimaryAction_trade\",true),\"TRADE_PRIMARY_ACTION_MISSING\")\nassert(action:IsA(\"TextButton\") and action.Visible and action.Interactable,\"TRADE_PRIMARY_ACTION_NOT_CLICKABLE\")\nlocal legend=false\nfor _,v in gui:GetDescendants() do\n if v:IsA(\"TextLabel\") and string.find(v.Text,\"세계 평균보다 저렴\",1,true) then legend=true break end\nend\nassert(legend,\"TRADE_AVERAGE_LEGEND_MISSING\")\nreturn \"TRADE_MENU_CONTEXT_PRICE_UI_PASS\""
+    "code": "-- [교역 탭] 기존 교역 장부를 별도 화면 없이 시설 책 안에서 확인한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer.PlayerGui\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"),\"TRADE_GUI_MISSING\")\nlocal main=assert(gui:FindFirstChild(\"Main\",true),\"TRADE_MAIN_MISSING\")\nlocal detail=assert(gui:FindFirstChild(\"FacilityDetail\",true),\"TRADE_TAB_DETAIL_MISSING\")\nlocal list=assert(detail:FindFirstChild(\"TradeIndex\"),\"TRADE_INDEX_MISSING\")\nassert(main.Visible and detail.Visible and list.Visible,\"TRADE_TAB_DETAIL_NOT_VISIBLE\")\nassert(not pg:FindFirstChild(\"TradeHallGui\"),\"TRADE_EXTRA_WINDOW_RETURNED\")\nreturn \"TRADE_MENU_CONTEXT_PRICE_UI_PASS\""
   },
   {
     "type": "capture",
@@ -562,12 +562,12 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "-- [주점형 교역 방문] 기존 시설 책 한 창에서 실제 상품 목록과 행동 버튼이 보여야 한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"),\"TRADE_BOOK_MISSING\")\nlocal main=assert(gui:FindFirstChild(\"Main\",true),\"TRADE_BOOK_MAIN_MISSING\")\nlocal goods=assert(gui:FindFirstChild(\"TradeGoodsGrid\",true),\"TRADE_INLINE_GOODS_MISSING\")\nlocal action=assert(gui:FindFirstChild(\"MenuPrimaryAction_trade\",true),\"TRADE_INLINE_ACTION_MISSING\")\nassert(main.Visible and goods.Visible and action.Visible,\"TRADE_INLINE_NOT_VISIBLE\")\nassert(not pg:FindFirstChild(\"TradeHallGui\"),\"TRADE_OLD_FULLSCREEN_RETURNED\")\nreturn \"TRADE_INLINE_MENU_PASS\""
+    "code": "-- [교역 탭 직접 거래] 기존 상품 목록·상세·검색을 같은 시설 책 본문에 유지한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"),\"TRADE_BOOK_MISSING\")\nlocal main=assert(gui:FindFirstChild(\"Main\",true),\"TRADE_BOOK_MAIN_MISSING\")\nlocal detail=assert(gui:FindFirstChild(\"FacilityDetail\",true),\"TRADE_TAB_DETAIL_MISSING\")\nlocal goods=assert(detail:FindFirstChild(\"TradeIndex\"),\"TRADE_TAB_GOODS_MISSING\")\nlocal search=assert(detail:FindFirstChild(\"TradeSearch\"),\"TRADE_TAB_SEARCH_MISSING\")\nassert(main.Visible and detail.Visible and goods.Visible and search.Visible,\"TRADE_TAB_NOT_VISIBLE\")\nassert(not pg:FindFirstChild(\"TradeHallGui\"),\"TRADE_EXTRA_WINDOW_RETURNED\")\nreturn \"TRADE_TAB_MENU_PASS\""
   },
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "-- [교역 원화·시세] 상품 카드에서 직접 매입/매각하고 세계 평균·세후손익을 확인한다.\nlocal gui=assert(game:GetService(\"Players\").LocalPlayer.PlayerGui:FindFirstChild(\"MareEssentiaGui\"))\nlocal grid=assert(gui:FindFirstChild(\"TradeGoodsGrid\",true))\nlocal hasBuy,hasSell,hasAverage,hasProfit=false,false,false,false\nfor _,v in grid:GetDescendants() do\n if v:IsA(\"TextButton\") and v.Position.Y.Scale==1 and v.Position.Y.Offset==-50 then\n  -- [거래 버튼] 재고·코인 부족일 때 문구가 바뀌어도 실제 매입/매각 버튼 위치를 검증한다.\n  if v.Position.X.Scale==0 then hasBuy=true end\n  if v.Position.X.Scale==0.5 then hasSell=true end\n elseif v:IsA(\"TextLabel\") and string.find(v.Text,\"세후\",1,true) then hasProfit=true end\n if v.Name==\"WorldAverageBar\" then hasAverage=true end\nend\nassert(hasBuy and hasSell and hasAverage and hasProfit,\"TRADE_INLINE_PRICE_OR_ACTION_MISSING\")\nreturn \"TRADE_INLINE_PRICES_AND_ACTIONS_PASS\""
+    "code": "-- [교역 기존 기능] 원래 선택 장부와 구매/판매·시세·수익 기능이 탭 본문에 남아 있는지 검사한다.\nlocal gui=assert(game:GetService(\"Players\").LocalPlayer.PlayerGui:FindFirstChild(\"MareEssentiaGui\"))\nlocal tab=assert(gui:FindFirstChild(\"FacilityDetail\",true))\nlocal index=assert(tab:FindFirstChild(\"TradeIndex\"))\nlocal detail=assert(tab:FindFirstChild(\"TradeSpecimen\"))\nassert(index.Visible or detail.Visible,\"TRADE_TAB_LIST_AND_DETAIL_BOTH_HIDDEN\")\nif detail.Visible then\n local prices=assert(detail:FindFirstChild(\"TradeDecisionPrices\",true),\"TRADE_TAB_PRICES_MISSING\")\n local profit=assert(detail:FindFirstChild(\"TradeDecisionProfit\",true),\"TRADE_TAB_PROFIT_MISSING\")\n local buy,sell=false,false\n for _,button in detail:GetDescendants() do\n  if button:IsA(\"TextButton\") then\n   if string.find(button.Text,\"구매\",1,true) then buy=true end\n   if string.find(button.Text,\"판매\",1,true) then sell=true end\n  end\n end\n assert(buy and sell,\"TRADE_TAB_BUY_SELL_MISSING\")\nend\nreturn \"TRADE_TAB_PRICES_AND_ACTIONS_PASS\""
   },
   {
     "type": "capture",
@@ -585,7 +585,7 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "-- [주점형 조선소 방문] 원래 시설 책에서 수리·보급·선박 선택을 모두 사용한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"),\"YARD_BOOK_MISSING\")\nlocal main=assert(gui:FindFirstChild(\"Main\",true),\"YARD_BOOK_MAIN_MISSING\")\nlocal compare=assert(gui:FindFirstChild(\"YardSectionShips\",true),\"YARD_INLINE_SHIP_LIST_MISSING\")\nlocal refit=assert(gui:FindFirstChild(\"YardSectionRefit\",true),\"YARD_INLINE_REFIT_MISSING\")\nassert(main.Visible and compare.Visible and refit.Visible,\"YARD_INLINE_NOT_VISIBLE\")\nassert(not pg:FindFirstChild(\"TradeHallGui\"),\"YARD_OLD_FULLSCREEN_RETURNED\")\nreturn \"YARD_INLINE_MENU_PASS\""
+    "code": "-- [조선소 탭] 기존 선박 비교·정비·구매를 같은 시설 책 본문에서 확인한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"),\"YARD_BOOK_MISSING\")\nlocal main=assert(gui:FindFirstChild(\"Main\",true),\"YARD_MAIN_MISSING\")\nlocal detail=assert(gui:FindFirstChild(\"FacilityDetail\",true),\"YARD_TAB_DETAIL_MISSING\")\nlocal compare=assert(detail:FindFirstChild(\"YardSectionShips\",true),\"YARD_TAB_SHIPS_MISSING\")\nlocal refit=assert(detail:FindFirstChild(\"YardSectionRefit\",true),\"YARD_TAB_REFIT_MISSING\")\nassert(main.Visible and detail.Visible and compare.Visible and refit.Visible,\"YARD_TAB_NOT_VISIBLE\")\nassert(not pg:FindFirstChild(\"TradeHallGui\"),\"YARD_EXTRA_WINDOW_RETURNED\")\nreturn \"YARD_TAB_MENU_PASS\""
   },
   {
     "type": "luau",
@@ -609,7 +609,7 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "-- [시설 책 닫기] 더 이상 교역·조선소 전체화면 창이 없어야 한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"))\nlocal main=assert(gui:FindFirstChild(\"Main\",true))\nlocal toggle=assert(gui:FindFirstChild(\"MenuToggle\",true))\nassert(not main.Visible and toggle.Visible,\"FACILITY_BOOK_CLOSE_FAILED\")\nassert(not pg:FindFirstChild(\"TradeHallGui\"),\"OLD_FULLSCREEN_STILL_PRESENT\")\nreturn \"FACILITY_INLINE_CLOSE_PASS\""
+    "code": "-- [시설 책 닫기] 더 이상 교역·조선소의 별도 전체창이 없어야 한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"))\nlocal main=assert(gui:FindFirstChild(\"Main\",true))\nlocal toggle=assert(gui:FindFirstChild(\"MenuToggle\",true))\nassert(not main.Visible and toggle.Visible,\"FACILITY_BOOK_CLOSE_FAILED\")\nassert(not pg:FindFirstChild(\"TradeHallGui\"),\"OLD_FULLSCREEN_STILL_PRESENT\")\nreturn \"FACILITY_TAB_CLOSE_PASS\""
   },
   {
     "type": "capture",
