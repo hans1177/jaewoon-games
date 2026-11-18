@@ -78,8 +78,85 @@ export function selectDesignFrameRole(frameNames = [], previousRole = '') {
   const previous = available.indexOf(previousRole);
   return available.length ? available[(previous + 1) % available.length] : 'GENERAL';
 }
+// [검증된 모델 성공 학습] 오직 공식 Studio 전후 사진·독립 모델·정확한 소스 SHA가 일치할 때만 긍정 배치 신호를 발급한다.
+// 모델 본인의 자기 평가, 소스 정적 PASS 또는 사진 해시가 다른 사실만으로 성공을 학습하지 않는다.
+export function verifiedDesignFeedback(previous = {}, feedback = {}, now = Date.now()) {
+  const sha = value => /^[a-f0-9]{40}$/i.test(String(value ?? ''));
+  const imageSha = value => /^[a-f0-9]{64}$/i.test(String(value ?? ''));
+  const reviewedAt = Date.parse(feedback.verifiedAt);
+  if (!Number.isFinite(reviewedAt) || reviewedAt > now ||
+    now - reviewedAt > 7 * 24 * 60 * 60 * 1000 ||
+    previous?.status !== 'CANDIDATE_EDITED' ||
+    !sha(previous.sourceRevision) || !sha(feedback.candidateRevision) ||
+    previous.sourceRevision === feedback.candidateRevision ||
+    feedback.beforeRevision !== previous.sourceRevision ||
+    feedback.sourceRevision !== feedback.candidateRevision ||
+    feedback.authorProvider !== previous.provider ||
+    feedback.authorModel !== previous.model ||
+    feedback.selectedRole !== previous.selectedRole ||
+    feedback.reviewerProvider === previous.provider ||
+    !feedback.reviewerProvider ||
+    feedback.status !== 'VISUAL_BEFORE_AFTER_PASS' ||
+    feedback.independentQaPassed !== true || feedback.afterStudioPassed !== true ||
+    feedback.comparison?.status !== 'PASS' ||
+    !Array.isArray(feedback.comparison?.improvements) ||
+    feedback.comparison.improvements.length < 2 ||
+    !Array.isArray(feedback.comparison?.regressions) ||
+    feedback.comparison.regressions.length > 0 ||
+    !Array.isArray(feedback.beforeFrames) || !Array.isArray(feedback.afterFrames) ||
+    feedback.beforeFrames.length < 2 ||
+    feedback.beforeFrames.length !== feedback.afterFrames.length)
+    return null;
+  const pairs = feedback.beforeFrames.every((entry, i) => {
+    const after = feedback.afterFrames[i];
+    return entry?.name === after?.name &&
+      imageSha(entry.sha256) && imageSha(after?.sha256);
+  });
+  if (!pairs ||
+    !feedback.beforeFrames.some((entry, i) => entry.sha256 !== feedback.afterFrames[i].sha256))
+    return null;
+  const photoNames = new Set(feedback.beforeFrames.map(entry => entry.name));
+  const improvedNames = new Set(feedback.comparison.improvements
+    .map(entry => entry?.screenshot).filter(name => photoNames.has(name)));
+  if (improvedNames.size < 2 ||
+    feedback.comparison.improvements.some(entry => !imageSha(entry.evidenceSha256)))
+    return null;
+  return {provider: previous.provider, model: previous.model, role: previous.selectedRole,
+    sourceRevision: previous.sourceRevision, candidateRevision: feedback.candidateRevision};
+}
+
+// [호출 한도 회계] 동일 공식 Studio 촬영 세대의 '초안 생성 + 독립 검수' 사용량을 합산한다.
+// 회차별 카운터는 누적이므로 합계가 아닌 각 제공자별 최대값을 사용한다. 요금 한도를 낮추는 방향으로만 병합.
+export function mergeFreeVisualUsage(previous = {}, feedback = {}, now = Date.now()) {
+  const day = new Date(now).toISOString().slice(0, 10);
+  const origin = previous?.usageWindow?.day === day ? previous.usageWindow.calls || {} : {};
+  const validFollowup = /^[a-f0-9]{40}$/i.test(String(previous?.sourceRevision || '')) &&
+    feedback?.beforeRevision === previous.sourceRevision &&
+    /^[a-f0-9]{40}$/i.test(String(feedback?.candidateRevision || '')) &&
+    feedback?.sourceRevision === feedback.candidateRevision &&
+    feedback?.gameId === 'mare-essentia' &&
+    feedback?.usageWindow?.day === day;
+  const followup = validFollowup ? feedback.usageWindow.calls || {} : {};
+  const calls = {};
+  for (const provider of Object.keys(DAILY_LIMIT)) {
+    const old = Number(origin[provider] || 0), added = Number(followup[provider] || 0);
+    calls[provider] = Math.max(
+      Number.isInteger(old) && old >= 0 ? Math.min(old, 1000) : 0,
+      Number.isInteger(added) && added >= 0 ? Math.min(added, 1000) : 0);
+  }
+  const cooldowns = {...previous?.cooldowns};
+  if (validFollowup) for (const model of DESIGN_FREE_MODELS) {
+    const newer = Date.parse(feedback?.cooldowns?.[model.id] || '');
+    const older = Date.parse(cooldowns?.[model.id] || '');
+    if (Number.isFinite(newer) && newer > now &&
+      (!Number.isFinite(older) || newer > older))
+      cooldowns[model.id] = new Date(newer).toISOString();
+  }
+  return {...previous, usageWindow: {day, calls}, cooldowns};
+}
+
 export function selectFreeDesignModels({
-  frameNames = [], policy, env = process.env, previous = {}, now = Date.now()
+  frameNames = [], policy, env = process.env, previous = {}, feedback = {}, now = Date.now()
 } = {}) {
   const config = policy?.directVisualDesign?.freeSpecialistPool;
   if (config?.enabled !== true || config?.paidFallbackForbidden !== true ||
@@ -89,9 +166,10 @@ export function selectFreeDesignModels({
   const approved = new Set(config.modelIds || []);
   const role = designRoleForFrames(frameNames);
   const today = new Date(now).toISOString().slice(0, 10);
-  const spent = previous?.usageWindow?.day === today ? previous.usageWindow.calls || {} : {};
+  const carried = mergeFreeVisualUsage(previous, feedback, now);
+  const spent = carried.usageWindow.calls;
   const eligible = DESIGN_FREE_MODELS.filter(model => {
-    const cooling = Date.parse(previous?.cooldowns?.[model.id] || '');
+    const cooling = Date.parse(carried?.cooldowns?.[model.id] || '');
     return approved.has(model.id) && trim(env[model.keyName]) &&
       trim(env[model.verifiedName]) === 'YES' &&
       (model.provider !== 'OPENROUTER' || model.model.endsWith(':free')) &&
@@ -99,10 +177,30 @@ export function selectFreeDesignModels({
       (!Number.isFinite(cooling) || cooling <= now);
   });
   const preference = config.roles?.[role] || [];
-  return eligible.sort((left, right) =>
-    (preference.indexOf(left.id) < 0 ? 999 : preference.indexOf(left.id)) -
-    (preference.indexOf(right.id) < 0 ? 999 : preference.indexOf(right.id)) ||
+  const verified = verifiedDesignFeedback(previous, feedback, now);
+  const score = model => {
+    // [성공] 검증된 같은 전문 역할 + 정확한 모델에 한해서만 다음 호출에 우선권을 준다.
+    if (verified?.role === role && verified.provider === model.provider &&
+      verified.model === model.model) return -1;
+    const order = preference.indexOf(model.id);
+    // [실패] 기존 같은 분야의 잘못된 JSON/존재하지 않는 앵커 제안만 한 단계 후순위.
+    const invalid = previous?.selectedRole === role &&
+      Array.isArray(previous?.attempts) &&
+      previous.attempts.some(row => row?.id === model.id &&
+        ['REVIEW_INVALID', 'SOURCE_ANCHOR_INVALID'].includes(row?.status));
+    return (order < 0 ? 999 : order) + (invalid ? 2 : 0);
+  };
+  eligible.sort((left, right) =>
+    score(left) - score(right) ||
     DESIGN_FREE_MODELS.indexOf(left) - DESIGN_FREE_MODELS.indexOf(right));
+  // [복구] 세 공급자가 모두 허용되면 각 공급자의 전문 모델 1개씩 먼저, 동일 공급자의 대체 모델은 뒤에 배정.
+  const firstProviders = new Set();
+  const primary = [], backups = [];
+  for (const model of eligible) {
+    if (firstProviders.has(model.provider)) backups.push(model);
+    else {firstProviders.add(model.provider); primary.push(model);}
+  }
+  return [...primary, ...backups];
 }
 
 function cooldownAfter(response, status, error = null) {
@@ -370,7 +468,14 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     if (options.previous && fs.existsSync(path.resolve(options.previous)))
       previous = JSON.parse(fs.readFileSync(path.resolve(options.previous), 'utf8'));
   } catch {/* 손상된 이력은 권한을 주지 않고 신규 증거로만 처리한다. */}
-  loadPreviousDesignUsage(previous);
+  // [학습] 동일 Studio 브랜치의 독립 전후 비교 증거만 불러온다.
+  let feedback = {};
+  try {
+    if (options.feedback && fs.existsSync(path.resolve(options.feedback)))
+      feedback = JSON.parse(fs.readFileSync(path.resolve(options.feedback), 'utf8'));
+  } catch {/* 손상되거나 없는 전후 증거는 성공으로 간주하지 않는다. */}
+  const carriedHistory = mergeFreeVisualUsage(previous, feedback);
+  loadPreviousDesignUsage(carriedHistory);
   const pictures = fs.existsSync(framesRoot) ? fs.readdirSync(framesRoot)
     .filter(name => /-[0-9]+\.(?:jpe?g|png)$/i.test(name)) : [];
   designRuntime.selectedRole = selectDesignFrameRole(pictures, previous.selectedRole);
@@ -388,7 +493,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   if (trim(process.env.COMPANY_EXTERNAL_AI_ENABLED) !== 'YES')
     return record('SKIPPED_EXTERNAL_AI_OPT_IN_REQUIRED', {frames: proofs});
   const freeModels = selectFreeDesignModels({
-    frameNames: photos.map(photo => photo.name), policy, previous
+    frameNames: photos.map(photo => photo.name), policy, previous: carriedHistory, feedback
   });
   if (!freeModels.length)
     return record('SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE', {frames: proofs});
@@ -579,7 +684,9 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
     return record(verdict.status === 'PASS' ? 'VISUAL_BEFORE_AFTER_PASS' : 'VISUAL_BEFORE_AFTER_UNVERIFIED', {
       beforeRevision, candidateRevision, beforeFrames: baseline.map(x => ({name: x.name, sha256: x.sha256})),
       afterFrames: after.map(x => ({name: x.name, sha256: x.sha256})),
-      authorProvider: previous.provider, reviewerProvider: reviewer.provider,
+      verifiedAt: new Date().toISOString(),
+      authorProvider: previous.provider, authorModel: previous.model,
+      selectedRole: previous.selectedRole, reviewerProvider: reviewer.provider,
       reviewerModel: reviewer.model, comparison: verdict, rawResponseSha256: digest(result.text),
       independentQaPassed: verdict.status === 'PASS',
       afterStudioPassed: verdict.status === 'PASS', releasePassed: false
