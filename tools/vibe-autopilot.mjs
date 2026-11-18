@@ -238,7 +238,15 @@ export function learn({ ledger, reports, signals, now = Date.now() }) {
     const now_ids = new Set(found.map(x => x.fingerprint));
     for (const x of found) if (!out.orders[x.fingerprint]) out.orders[x.fingerprint] = { ...x, firstAt: now, lastAt: now, seen: 1 }; else { out.orders[x.fingerprint].lastAt = now; out.orders[x.fingerprint].seen++; out.orders[x.fingerprint].text = x.text; }
     // [성공 학습] 실패·중단·사진 없는 결과는 이전 오류를 해결한 근거가 아니다.
-    if (s.ok && !s.aborted && s.captured > 0)
+    const report = reports[game] || {};
+    const summary = report.summary || {};
+    const complete = s.ok && !s.aborted && s.captured > 0
+      && !(Array.isArray(report.errors) && report.errors.length)
+      && !(Number(summary.plannedSteps || 0) > Number(summary.completedSteps || 0))
+      && !(Number(summary.plannedFrames || 0) > s.captured)
+      && !['models', 'registered', 'features'].some(key =>
+        String(report.assetAudit?.[key]?.status || '').toUpperCase() === 'FAIL');
+    if (complete)
       for (const [fp, o] of Object.entries(out.orders))
         if (o.game === game && !now_ids.has(fp) && !o.resolvedAt) o.resolvedAt = now;
     if (pending) {
