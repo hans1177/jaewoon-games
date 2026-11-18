@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { pickGeminiModels, askChain, buildProviders, LlmError } from '../tools/vibe-llm.mjs';
 import { rankProviders, updateProviderStats, signature, similarity, playbookReplay, examplesFor, addCandidate, labelOutcomes, sanitize, datasetLine, emptyPlaybook, pickOrder, gate, findContext, buildPrompt, parseEdits, validateEdits, applyEdits, runBrain, recordAttempt, recordMerged, emptyBrainLedger, LIMITS } from '../tools/vibe-brain.mjs';
+import {selectStudioDesignPhotoNames, visualEditLooksSafe, validateReview} from '../tools/company-nemotron-design-review.mjs';
 
 const mkRoot = files => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'brain-'));
@@ -370,3 +371,79 @@ test('무료 AI 역할별 배치는 실제 검수 성공만 학습하고 할당 
   assert.notEqual(rankProviders(providers, quota, now, 'DEBUG')[0].name, 'groq:code');
 });
 
+
+
+test('실물 Studio 마을과 주민을 다각도로 촬영하고 기존 게임 검사 62장을 보존한다', () => {
+  const scenario = JSON.parse(fs.readFileSync(
+    'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', 'utf8'));
+  const captures = scenario.filter(step => step.type === 'capture').map(step => step.name);
+  assert.equal(captures.length, 83);
+  assert.equal(new Set(captures).size, 83);
+  const town = captures.filter(name => name.startsWith('town_'));
+  const npc = captures.filter(name => name.startsWith('harbor_npc_hair_') ||
+    name.startsWith('harbor_npc_outfit_') || name === 'harbor_npc_face_close' ||
+    name === 'harbor_npc_pair_diagonal' || name === 'harbor_npc_port_street_reverse');
+  assert.equal(town.length, 12);
+  assert.equal(npc.length, 9);
+  for (const name of ['town_aerial_grid', 'town_market_facade', 'town_street_roofline',
+    'town_outer_district_south', 'harbor_npc_face_close', 'harbor_npc_outfit_back',
+    'harbor_npc_face_front', 'field_actor_after_motion', 'ui_mobile_battle_2x2']) {
+    assert.ok(captures.includes(name), '실물 필수 촬영 누락: ' + name);
+  }
+  assert.ok(scenario.some(step => step.type === 'luau' &&
+    step.code?.includes('ShotDesignHead') && step.code?.includes('NPC_FACE_FRONT_PASS')));
+  assert.ok(scenario.some(step => step.type === 'luau' &&
+    step.code?.includes('ShotDesignHead') && step.code?.includes('SetAttribute(key,nil)')));
+});
+
+test('무료 디자인 AI 사진 배치는 마을 4·주민 2·UI 1·선박 1장을 5회차 각도로 교대한다', () => {
+  const scenario = JSON.parse(fs.readFileSync(
+    'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', 'utf8'));
+  const names = scenario.filter(step => step.type === 'capture').map(step => step.name + '-0.jpg');
+  const rounds = new Set();
+  for (let phase = 0; phase < 5; phase++) {
+    const chosen = selectStudioDesignPhotoNames(names, phase, 8);
+    assert.equal(chosen.length, 8);
+    assert.equal(new Set(chosen).size, 8);
+    assert.equal(chosen.filter(name => name.startsWith('town_')).length, 4);
+    assert.equal(chosen.filter(name => name.startsWith('harbor_npc_')).length, 2);
+    assert.equal(chosen.filter(name => name.startsWith('ui_') || name.startsWith('tab_') || name.startsWith('field_')).length, 1);
+    assert.equal(chosen.filter(name => name.startsWith('cb') || name.startsWith('v1_') || name.startsWith('v2_')).length, 1);
+    rounds.add(chosen.join('|'));
+  }
+  assert.equal(rounds.size, 5);
+});
+
+test('네모트론이 마을 시설 배치 5칸 내에서만 수정하고 게임 경제·기능·장소 이동을 차단한다', () => {
+  const target = 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau';
+  const original = fs.readFileSync(target, 'utf8').split(/\r?\n/)
+    .find(line => line.includes('name = "교역소"') && line.includes('pos = Vector3.new('));
+  assert.ok(original);
+  const after = original.replace('Vector3.new(-12, 0, 36)', 'Vector3.new(-15, 0, 38)');
+  assert.notEqual(after, original);
+  assert.equal(visualEditLooksSafe(original, after, 'architecture', target), true);
+  assert.equal(visualEditLooksSafe(original, after, 'ui', target), false);
+  assert.equal(visualEditLooksSafe(original, after, 'architecture',
+    'roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau'), false);
+  assert.equal(visualEditLooksSafe(original,
+    original.replace('Vector3.new(-12, 0, 36)', 'Vector3.new(-22, 0, 38)'),
+    'architecture', target), false);
+  assert.equal(visualEditLooksSafe(original,
+    original.replace('Vector3.new(-12, 0, 36)', 'Vector3.new(-15, 1, 38)'),
+    'architecture', target), false);
+  assert.equal(visualEditLooksSafe(original,
+    original.replace('Vector3.new(-12, 0, 36)', 'Vector3.new(-15, 0, 28)'),
+    'architecture', target), false);
+  assert.equal(visualEditLooksSafe(original, after.replace('w = 20', 'w = 28'),
+    'architecture', target), false);
+  const policy = JSON.parse(fs.readFileSync(
+    'company-learning/external-ai-distillation-policy.json','utf8')).directVisualDesign;
+  const screenshot = 'town_market_facade-0.jpg';
+  const evidence = '실제 시장 건물과 진입로가 부분적으로 겹쳐 보여 건물의 가로 배치 미세 조정이 필요함';
+  const review = {issues: [{category:'architecture',severity:'high',screenshot,evidence}],
+    edits:[{category:'architecture',screenshot,anchor:0,after}]};
+  const valid = validateReview(review,[screenshot],policy,[{anchor:0,path:target,before:original}]);
+  assert.equal(valid.edits.length,1);
+  assert.throws(() => validateReview({...review, edits:[{...review.edits[0], anchor:1}]},
+    [screenshot],policy,[{anchor:0,path:target,before:original}]),/EDIT_NOT_VISUAL_OR_NOT_IN_POLICY/);
+});
