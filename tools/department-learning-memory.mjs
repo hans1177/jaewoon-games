@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import {GEMINI_FREE_MODELS,VERIFIED_FREE_FALLBACK_MODELS} from './vibe2-gemini-free-rotation.mjs';
 
 export const CORE_DEPARTMENT_ROLES=Object.freeze(['planning','development','graphics','qa','balance']);
 const DECISIONS=new Set(['PROCEED','ADJUST','BLOCK']);
@@ -37,10 +38,23 @@ export function normalizeVerifiedDepartmentLearning(evidence={}){
     if(clean(result.workState).toUpperCase()!=='DONE'||!DECISIONS.has(decision))continue;
     const summary=clean(result.summary),nextAction=clean(result.nextAction);
     if(!summary&&!nextAction)continue;
+    // [독립 검증 보존] 성적은 실제 사용된 승인 무료 모델의 정확한 ID와 분야에만 귀속한다.
+    // 키·계정정보, 모델 자체 평가, 불명확한 외부 ID는 학습 대상에서 제외한다.
+    const provider=clean(result.provider).toUpperCase(),model=clean(result.model);
+    const approved=provider==='GEMINI'&&GEMINI_FREE_MODELS.includes(model)||
+      provider==='GROQ'&&model===VERIFIED_FREE_FALLBACK_MODELS.GROQ||
+      provider==='OPENROUTER'&&model===VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER;
+    const claimedDomain=clean(result.specialistDomain).toUpperCase();
+    const domain=role==='graphics'
+      ?['GRAPHICS','NPC','UI','MOTION','WORLD'].includes(claimedDomain)?claimedDomain:null
+      :claimedDomain===role.toUpperCase()?claimedDomain:null;
     rows.push({
       id:`${sourceEvidenceId}:${role}`,
       sourceEvidenceId,
       role,
+      provider:approved&&domain?provider:null,
+      model:approved&&domain?model:null,
+      specialistDomain:approved&&domain?domain:null,
       gameId,
       gameSlug:gameSlug||null,
       sourcePath:sourcePath||null,
@@ -111,6 +125,9 @@ export function selectVerifiedDepartmentLearning(ledger={},context={},max=4){
     .slice(0,Math.max(0,finite(max,4)))
     .map(({row,relevance})=>({
       role,
+      provider:row.provider||null,model:row.model||null,
+      specialistDomain:row.specialistDomain||null,
+      verified:true,independentQa:'PASS',
       gameId:row.gameId||null,
       gameSlug:row.gameSlug||null,
       sourcePath:row.sourcePath||null,
