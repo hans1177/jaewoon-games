@@ -10,15 +10,23 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 
+-- [3D 초기화 진단] 엔진에서 모듈 로딩이 지연되는 정확한 하위 모듈을 기록한다.
+ReplicatedStorage:SetAttribute("MarePortSceneStage", "require-Pose")
 local Pose = require(script.Parent:WaitForChild("Pose"))
+ReplicatedStorage:SetAttribute("MarePortSceneStage", "require-Voyage")
 local Voyage = require(script.Parent:WaitForChild("Voyage"))
+ReplicatedStorage:SetAttribute("MarePortSceneStage", "require-Ports")
 local PortData = require(script.Parent:WaitForChild("Ports"))
+ReplicatedStorage:SetAttribute("MarePortSceneStage", "require-AssetIds")
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
+ReplicatedStorage:SetAttribute("MarePortSceneStage", "require-PortBuildings")
 local PortBuildings = require(script.Parent:WaitForChild("PortBuildings"))
+ReplicatedStorage:SetAttribute("MarePortSceneStage", "require-ProductionChains")
 local Chains = require(script.Parent:WaitForChild("ProductionChains"))
 
 local PortScene = {}
 
+ReplicatedStorage:SetAttribute("MarePortSceneStage", "require-PortCultures")
 local Cultures = require(script.Parent:WaitForChild("PortCultures"))
 local MED, STYLE, REGION, PROFILE, OUTFIT = Cultures.MED, Cultures.STYLE, Cultures.REGION, Cultures.PROFILE, Cultures.OUTFIT
 local C = Color3.fromRGB
@@ -331,6 +339,7 @@ end
 -- 원본: roblox-games/mare-essentia/assets/, 수입본: ReplicatedStorage/MareAssets
 local BLUEPRINT_SHIP_SIZE = {} -- 제작 전용 선박 외형 크기. 구매·능력치·저장 정보는 건드리지 않는다.
 local V5_SHIP_LENGTH = {} -- 5차 원본의 검증된 목표 길이. 기존 선박 외형 크기는 유지한다.
+ReplicatedStorage:SetAttribute("MarePortSceneStage", "ship-setup")
 local SHIP_MESH = {
 	caravel = "ship-small", fluyt = "ship-medium",
 	frigate = "ship-pirate-medium", galleon = "ship-large",
@@ -2161,6 +2170,7 @@ local COUNTRY_PLAN = {
 	denmark = { lot = 1.02, gap = 1.08, density = 0.95 }, finland = { lot = 1.05, gap = 1.14, density = 0.92 },
 	russia = { lot = 1.02, gap = 1.08, density = 0.95 }, malta = { lot = 0.96, gap = 0.98, density = 1.01 },
 }
+ReplicatedStorage:SetAttribute("MarePortSceneStage", "port-signatures")
 local SIG = {}
 do
 	local function one(kind, asset, size, dx, dz, y, tint)
@@ -2399,6 +2409,7 @@ do
 	SIG.oslo = cat(one("Castle", "fortress", 28, 0, 0), one("Town", "house", 17, -24, 0, 0, C(184, 78, 58)), one("Town", "house", 17, 24, 0, 0, C(214, 190, 119)))
 end
 
+ReplicatedStorage:SetAttribute("MarePortSceneStage", "defining-build")
 local function placeSignature(folder, info)
 	local list = SIG[info.portId]
 	local port = PortData.Ports[info.portId]
@@ -6759,5 +6770,6 @@ function PortScene.placeModel(parent, kind, asset, pos, size)
 	return importedModel(parent, kind, asset, pos, size, false)
 end
 
+ReplicatedStorage:SetAttribute("MarePortSceneStage", "ready")
 return PortScene
 

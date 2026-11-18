@@ -15,7 +15,13 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
   assert.match(capture[4].code,/MareCoreStartStage/);
   assert.match(capture[4].code,/StartupStage/);
   assert.match(capture[4].code,/MareAssetsReady/);
-  assert.match(client,/gui:SetAttribute\("StartupStage", "require-PortScene"\)/);
+  assert.match(capture[4].code,/MarePortSceneStage/);
+  assert.match(capture[4].code,/PortSceneLoadState/);
+  assert.match(client,/local PortScene = nil/);
+  assert.match(client,/gui:SetAttribute\("PortSceneLoadState", "loading"\)/);
+  assert.match(client,/gui:SetAttribute\("PortSceneLoadState", "ready"\)/);
+  assert.match(client,/if not PortScene then return end/);
+  assert.match(client,/return require\(Shared:WaitForChild\("PortScene"\)\)/);
   assert.match(client,/gui:SetAttribute\("StartupStage", "server-state-request"\)/);
   assert.match(client,/gui:SetAttribute\("StartupStage", "title-ready"\)/);
   assert.match(core,/MareCoreStartStage", "require-services"/);
@@ -23,6 +29,17 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
   assert.match(core,/MareCoreStartStage", "session-ready"/);
   assert.match(core,/local STORE_NAME = "MareEssentia_v2"/);
   assert.match(core,/return "P_" \.\. player.UserId/);
+});
+
+test('게임 시작 메뉴는 PortScene 정본을 기다리지 않고 서버 상태를 표시한다', () => {
+  const port=read('ReplicatedStorage/Shared/PortScene.luau');
+  assert.ok(client.indexOf('gui:SetAttribute("StartupStage", "server-state-request")')>client.indexOf('gui:SetAttribute("PortSceneLoadState", "loading")'));
+  assert.ok(client.indexOf('gui:SetAttribute("PortSceneLoadState", "loading")')>client.indexOf('local PortScene = nil'));
+  assert.match(port,/MarePortSceneStage", "require-Pose"/);
+  assert.match(port,/MarePortSceneStage", "port-signatures"/);
+  assert.match(port,/MarePortSceneStage", "ready"/);
+  assert.match(client,/if not PortScene then[\s\S]*?return[\s\S]*?end[\s\S]*?sailingNow = true/);
+  assert.match(client,/if not PortScene then return end/);
 });
 
 test('Mare Essentia 저장소 이름은 MareEssentia_v2로 고정된다', () => {
