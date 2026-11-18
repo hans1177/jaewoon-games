@@ -676,8 +676,17 @@ return function(D, S)
 						then D.Cards.EvidenceNames[D.Cards.evidenceOf(D.Cards.ById[dq.cardId])] else nil,
 				})
 				if dq.journal and dq.journal.stage == 5 then
+					-- [마지막 판단] 기존 스토리 선택 결과를 저널에 읽기 전용으로 반영한다.
+					local finaleId = "journal_" .. dq.routeId
+					local event = D.Story.ById[finaleId]
+					local selected = state.story and state.story[finaleId]
+					local chosen = event and selected and event.choices[selected] or nil
+					local lastPort = dq.portId and D.Ports.Ports[dq.portId]
 					table.insert(view.quests.historyThreads, {
 						route = dq.routeName, theme = dq.journal.theme, question = dq.journal.question,
+						verdict = chosen and chosen.text or nil,
+						port = lastPort and lastPort.name or "현재 항로",
+						here = dq.portId == state.portId,
 					})
 				end
 			end
