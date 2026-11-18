@@ -59,16 +59,38 @@ test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가
   assert.match(source,/recentBtn\.Name = "TradeRecentFacility"/);
   assert.match(source,/recentBtn\.Name = "YardRecentFacility"/);
   assert.doesNotMatch(source,/mkButton\(content, "↶ 최근 메뉴:/);
-  // [주점형 단일 시설] 기존 전체화면 전제 대신 실제 상품 카드의 가격·구매·판매 검증을 유지한다.
-  assert.match(source,/grid\.Name = "TradeGoodsGrid"/);
-  assert.match(source,/H\.marketPriceSignal\(g\)/);
+  // [탭 본문 복구] 기존 교역·조선 상세 렌더러를 새 창 없이 같은 책의 탭에 배치한다.
+  assert.match(source,/local facilityDetail = currentTab == "trade" or currentTab == "yard"/);
+  assert.match(source,/root\.Name = "FacilityDetail"/);
+  assert.match(source,/detail\.Position = content\.Position/);
+  assert.match(source,/detail\.Size = content\.Size/);
+  assert.match(source,/if currentTab == "trade" then\s*if not mainInner:FindFirstChild\("FacilityDetail"\) then H\.tradeHall\(\) end/);
+  assert.match(source,/elseif currentTab == "yard" then\s*if not mainInner:FindFirstChild\("FacilityDetail"\) then H\.yardHall\(\) end/);
+  assert.doesNotMatch(source,/overlayGui\("TradeHallGui"/);
+  assert.match(source,/call\("Buy", \{ goodId = sel\.id, amount = qty \}\)/);
+  assert.match(source,/call\("Sell", \{ goodId = sel\.id, amount = math\.min\(qty, maxSell\) \}\)/);
+  assert.match(source,/root:GetPropertyChangedSignal\("AbsoluteSize"\)/);
+  assert.match(source,/chart\.Name = "ShipComparisonBars"/);
+  assert.match(source,/sortBar\.Name = "TradeSort"/);
   assert.match(source,/H\.tradeProfit\(g, 1\)/);
-  assert.match(source,/call\("Buy", \{ goodId = g\.id, amount = amount\(\) \}\)/);
-  assert.match(source,/call\("Sell", \{ goodId = g\.id, amount = amount\(\) \}\)/);
+  // 게시판과 우편, 시장 소식은 거래 장부 바로 옆 '거래소·우편' 탭에서 유지한다.
+  assert.match(source,/id = "market", name = "거래소·우편"/);
+  assert.match(source,/tabs = \{ "trade", "market", "harbor" \}/);
+  assert.match(source,/function RENDERERS\.market\(\)/);
+  for(const action of ['MarketList','MarketPost','MarketBuy','MarketCancel','MailInbox','MailClaim','MailSend']){
+    assert.match(source,new RegExp('call\\("'+action+'"'));
+  }
+  // [서재] 보고·지식 백과·연구·세계 백과가 동일 탭창에서 전환되어야 한다.
+  assert.match(source,/tabs = \{ "scholar", "codex", "tech", "encyclopedia" \}/);
+  assert.match(source,/function RENDERERS\.scholar\(\)/);
+  assert.match(source,/function RENDERERS\.codex\(\)/);
+  assert.match(source,/function RENDERERS\.tech\(\)/);
+  assert.match(source,/function RENDERERS\.encyclopedia\(\)/);
   assert.equal(capture.length,241);
-  assert.match(capture[122].code,/TRADE_INLINE_MENU_PASS/);
-  assert.match(capture[123].code,/TRADE_INLINE_PRICE_OR_ACTION_MISSING/);
-  assert.match(capture[127].code,/YARD_INLINE_MENU_PASS/);
+  assert.match(capture[39].code,/TRADE_TAB_DETAIL_NOT_VISIBLE/);
+  assert.match(capture[122].code,/TRADE_TAB_MENU_PASS/);
+  assert.match(capture[123].code,/TRADE_TAB_PRICES_AND_ACTIONS_PASS/);
+  assert.match(capture[127].code,/YARD_TAB_MENU_PASS/);
   assert.match(capture[128].code,/SHIP_INLINE_COMPARISON_PASS/);
 });
 
