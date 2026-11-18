@@ -470,6 +470,12 @@ test('스튜디오 탐험 실증은 현재 공격·회피 메달과 집안별 �
   assert.ok(entry.includes('FieldCombatReady'),'실제 전투 준비 검증 필수');
   // [승인 원화 회귀] 새 공격 원화는 완성형 PNG를 검증하고, 구형 아이콘만 메달 테두리를 검증한다.
   assert.ok(entry.includes('FIELD_APPROVED_ATTACK_ART_INVALID'),'승인 원화·출처 이미지 검사 필수');
+  // [실물 실패 회귀] 최초 무기 선정·교체가 승인 공격 원화를 덮어쓰지 않으며 회피도 승인된 두 원화만 허용한다.
+  const init=field.slice(field.indexOf('local reserveWeapon = Weapons.get('),field.indexOf('local function char3()',field.indexOf('local reserveWeapon = Weapons.get(')));
+  assert.match(init,/if attackIcon and attackBtn:GetAttribute\("IconArtKey"\) ~= "Menu\/field_attack" then/,'시작 무기 설정이 완성형 공격 원화를 덮어쓰면 안 된다');
+  assert.ok(entry.includes('local dodgeKey=dodge:GetAttribute("IconArtKey")'),'입장 검사도 실제 등록 회피 원화의 키를 사용해야 한다');
+  assert.ok(motion.includes('"Menu/field_attack","Menu/cc0_sword"'),'모션 검사에서도 승인 공격 원화를 정상 인식해야 한다');
+  assert.ok(motion.includes('local dodgeKey=dodge:GetAttribute("IconArtKey")'),'모션 검사에서 승인 회피 원화를 정상 인식해야 한다');
   assert.ok(entry.includes('FIELD_GOLD_BUTTON_BORDER_INVALID'),'실제 공격 버튼의 금색 테두리 활성화·색상·두께 검증 필수');
   assert.ok(field.includes('if outline then outline.Enabled = button.Name == "FieldAttack" end'),'승인 공격 원화에서도 금색 테두리 유지 필수');
   assert.ok(entry.includes('FIELD_PREMIUM_RIM_MISSING'),'기존 메달 원화의 링 검증 유지');
