@@ -3081,13 +3081,14 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							-- 모바일 5곳/PC 11곳만 만들고 야간 시간에만 조도가 강해진다.
 							if lvl >= 2 and nightWindows < nightWindowLimit and homePlaced % 13 == 1 then
 								local streetFront = if pos.Z > 0 then -1 else 1
-								local lampAt = Vector3.new(bounds.Position.X, pos.Y + math.min(4.5, dimensions.Y * 0.37),
-									bounds.Position.Z + streetFront * dimensions.Z * 0.31) + chosenShift
+								-- 창을 건물 중앙이 아닌 전면 실제 외곽 바로 앞에 놓아 외벽 속에 묻히지 않게 한다.
+								local lampAt = Vector3.new(bounds.Position.X, pos.Y + math.clamp(dimensions.Y * 0.37, 2.5, 4.8),
+									bounds.Position.Z + streetFront * (dimensions.Z * 0.5 + 0.15)) + chosenShift
 								local window = part(folder, Vector3.new(1.15, 1.35, 0.12), CFrame.new(lampAt),
 									C(243, 200, 135), Enum.Material.Neon)
 								window.Name = "CityNightWindow"
 								window.CanCollide, window.CanTouch, window.CanQuery, window.CastShadow = false, false, false, false
-								window.Transparency = 0.2
+								window.Transparency = 0.92 -- 기존 밤낮 갱신에서 해질 때만 밝아지는 창
 								window:SetAttribute("CityQuarter", quarter)
 								local glow = Instance.new("PointLight")
 								glow.Color, glow.Range, glow.Brightness = C(255, 204, 134), 12, 0.48
@@ -3423,7 +3424,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		local goods = Chains.showcaseGoods(info.portId, made, if lvl >= 5 then 3 elseif lvl >= 3 then 2 else 1)
 		local n = #goods
 		local origin = Vector3.new(-178, 0, -86)
-		local specialtyPlaced, specialtyRejected = 0, 0
+		local specialtyPlaced, specialtyRejected, specialtyReflowed = 0, 0
+		-- [도시 경계] 발전도 1~5단계의 기존 마을 바닥판 끝보다 8스터드 안쪽으로만 공방을 배치한다.
+		local industryLimitZ = 360 + lvl * 80 - 8
 		for k = 1, n do
 			local good = goods[k]
 			local mesh = GOOD_MESH[good]
@@ -3459,7 +3462,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			}
 			local chosen
 			for _, candidate in candidates do
-				if not onStreet(candidate.X, 27) and not reserved(candidate.X, candidate.Z, 27) then
+				if math.abs(candidate.Z) + 27 <= industryLimitZ
+					and not onStreet(candidate.X, 27) and not reserved(candidate.X, candidate.Z, 27) then
 					chosen = candidate
 					break
 				end
@@ -3472,10 +3476,27 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					local bounds, ext = staged:GetBoundingBox()
 					local hx = math.max(27, math.abs(bounds.Position.X - chosen.X) + ext.X * 0.5 + 2)
 					local hz = math.max(27, math.abs(bounds.Position.Z - chosen.Z) + ext.Z * 0.5 + 2)
-					if not onStreet(chosen.X, hx) and not reserved(chosen.X, chosen.Z, hx, hz) then
+					-- [실측 재탐색] 처음 선택한 위치에 지붕·별채가 걸려도 나머지 항구 후보를 모두 재검사한다.
+					-- 건물은 한 번만 생성하고 임시 모델만 이동해 비용 증가 없이 안전한 곳을 찾는다.
+					local safeSite
+					for _, candidate in candidates do
+						if math.abs(candidate.Z) + hz <= industryLimitZ
+							and not onStreet(candidate.X, hx) and not reserved(candidate.X, candidate.Z, hx, hz) then
+							safeSite = candidate
+							break
+						end
+					end
+					if safeSite then
+						if safeSite ~= chosen then
+							staged:PivotTo(CFrame.new(safeSite - chosen) * staged:GetPivot())
+							specialtyReflowed += 1
+						end
+						chosen = safeSite
 						for _, object in staged:GetChildren() do object.Parent = folder end
 						body:SetAttribute("BuildPlotId", ("%s:specialty:%d"):format(info.portId, k))
 						body:SetAttribute("BuildType", "specialty")
+						body:SetAttribute("BuildPhase", 4)
+						body:SetAttribute("BuildState", "complete")
 						body:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 						body:SetAttribute("IndustryGood", good)
 						body:SetAttribute("IndustryFamily", family)
@@ -3510,6 +3531,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		end
 		folder:SetAttribute("CitySpecialtyPlaced", specialtyPlaced)
 		folder:SetAttribute("CitySpecialtyRejected", specialtyRejected)
+		folder:SetAttribute("CitySpecialtyReflowed", specialtyReflowed)
+		folder:SetAttribute("CitySpecialtyBoundaryZ", industryLimitZ)
 		folder:SetAttribute("CitySpecialtyBuildingMode", "PRODUCTION_VISUAL_READ_ONLY")
 	end
 	-- 문화권 소품: 지역 건축·생활에 맞는 오브젝트 (발전도가 오를수록 늘어난다)
@@ -5886,6 +5909,12 @@ function PortScene.build(info, onFacility)
 			if entry.light.Parent then
 				entry.light.Brightness = entry.brightness * (0.16 + 2.15 * night)
 				entry.light.Range = entry.range * (0.82 + 0.6 * night)
+				-- [밤에만 창문 발광] 기존 0.1초 주야 갱신에 편승하며 일반 등불에는 영향을 주지 않는다.
+				local window = entry.light.Parent
+				if window and window:IsA("BasePart") and window.Name == "CityNightWindow" then
+					entry.light.Enabled = night > 0.15
+					window.Transparency = math.clamp(0.92 - night * 0.78, 0.14, 0.92)
+				end
 			end
 		end
 		if snow then
