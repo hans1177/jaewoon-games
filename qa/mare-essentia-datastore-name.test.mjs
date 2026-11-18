@@ -1119,7 +1119,7 @@ test('선원·장인 직업별 실물 복장과 여성 헤어 스타일을 원�
   assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
   assert.match(pose,/elseif femaleLong and hairstyle == "long" then/);
   assert.match(pose,/elseif femaleLong and hairstyle == "bun" then/);
-  assert.match(pose,/if hair and npcOutfit and model:GetAttribute\("NpcHairTint"\) then 0\.72/);
+  assert.match(pose,/if hair and model:GetAttribute\("NpcHairTint"\) then 0\.40/);
   for(const mesh of ['hair_long','hair_simpleparted','hair_buzzed','hair_buzzedfemale']) {
     assert.ok(loader.includes('["People/'+mesh+'"] = true'),'로더 우선순위 누락: '+mesh);
   }
@@ -1494,7 +1494,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   const port=read('ReplicatedStorage/Shared/PortScene.luau');
   assert.match(port,/string\.sub\(asset\.Name, 1, 7\) == "outfit_"/);
   assert.match(pose,/slotName = "R15Asset_" \.\. assetName \.\. "_" \.\. boneName/);
-  assert.match(pose,/string\.sub\(assetName, 1, 7\) ~= "outfit_"/);
+  assert.match(pose,/if not textured and string\.sub\(assetName, 1, 7\) == "outfit_"/);
   assert.match(field,/companion = true, gender = if ad\.female then "female" else "male", culture = ad\.nation/);
   assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
   assert.match(pose,/part\.CanCollide, part\.CanTouch, part\.CanQuery = false, false, false, false/);
