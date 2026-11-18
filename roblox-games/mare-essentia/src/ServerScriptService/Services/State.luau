@@ -296,7 +296,7 @@ return function(D)
 			local scholarIds, siteIds = {}, {}
 			for _, scholar in D.Scholars.Scholars do scholarIds[scholar.id] = true end
 			for _, site in D.Sites.Sites do siteIds[site.id] = true end
-			local methods = { discover = true, explore = true, research = true, visit = true, learn = true, quest = true, event = true }
+			local methods = { discover = true, explore = true, research = true, visit = true, learn = true, quest = true, event = true, card = true }
 			for cardId, record in saved.cardOrigins do
 				if s.discovered[cardId] and type(record) == "table" then
 					s.cardOrigins[cardId] = {
@@ -306,7 +306,7 @@ return function(D)
 						scholarId = type(record.scholarId) == "string" and scholarIds[record.scholarId] and record.scholarId or nil,
 						questId = type(record.questId) == "string" and D.Quests.ById[record.questId] and record.questId or nil,
 						siteId = type(record.siteId) == "string" and siteIds[record.siteId] and record.siteId or nil,
-						eventId = type(record.eventId) == "string" and D.Story.ById[record.eventId] and record.eventId or nil,
+						eventId = type(record.eventId) == "string" and (D.Story.ById[record.eventId] or D.HistoryEvents.ById[record.eventId]) and record.eventId or nil,
 					}
 				end
 			end
