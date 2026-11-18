@@ -539,9 +539,9 @@ test('Mare trade cards use registered 3D Cargo viewports even at compact mobile 
   assert.doesNotMatch(client,/kind == "Cargo" and px < 64/);
   assert.match(client,/local assetId = AssetIds\[kind \.\. "\/" \.\. asset\]/);
   assert.match(client,/local vf = Instance\.new\("ViewportFrame"\)/);
-  assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], 96, sel\.name, gi\[4\]\)/);
-  assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], 78, g\.name, gi\[4\]\)/);
-  assert.match(client,/modelIcon\(cardF, gi\[1\], gi\[2\], gi\[3\], 60, g\.name, gi\[4\]\)/);
+  assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], bigPx, sel\.name, gi\[4\]\)/);
+  assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], if compactList then 62 else 78, g\.name, gi\[4\]\)/);
+  assert.match(client,/modelIcon\(cardF, gi\[1\], gi\[2\], gi\[3\], 96, g\.name, gi\[4\]\)/);
   // 현행 디자인은 별도 음영 이미지 대신 종이 프레임 안에 승인 원화를 직접 표시한다.
   assert.match(client,/art\.Name = "OriginalArt"/);
   assert.match(client,/art\.Image = "rbxassetid:\/\/" \.\. tostring\(assetId\)/);
@@ -560,7 +560,7 @@ test('Mare trade cards use registered 3D Cargo viewports even at compact mobile 
   assert.match(client,/if kind == "Cargo" and px < 90 then/);
   assert.match(client,/cf:VectorToWorldSpace\(Vector3\.new\(half\.X \* x, half\.Y \* y, half\.Z \* z\)\)/);
   assert.match(client,/reach = fitted \* 1\.06/);
-  assert.match(client,/if px >= 90 then\s+addItemMotion/);
+  assert.match(client,/if px >= 144 then\s+addItemMotion/,'realtime spin only on enlarged 3D showcase');
   assert.doesNotMatch(client.slice(client.indexOf('local function modelIcon('),client.indexOf('-- 줄(row) 왼쪽에 아이콘')),/Instance\.new\("Part"\)|Instance\.new\("MeshPart"\)/);
 });
 
@@ -740,7 +740,8 @@ test('Mare harbor animals preserve imported mesh scale and verify final bounds',
   assert.match(scene,/if not isAnimal and \(ratio < 0\.01 or ratio > 100\)/);
   assert.match(scene,/m:GetScale\(\) \* ratio/);
   assert.match(scene,/math\.abs\(actualAxis - desiredSize\) > desiredSize \* 0\.2/);
-  assert.match(scene,/local m = if species == "duck" then nil else k and importedModel\(folder, "Animals", if species == "dog" then "dog-pug" else species/);
+  assert.match(scene,/local asset = if species == "dog" then "dog-pug" else species/);
+  assert.match(scene,/local m = if species == "duck" then nil else k and importedModel\(folder, "Animals", asset, pos, k\[1\], false, coat/);
   assert.match(scene,/if isAnimal then m:GetScale\(\) \* ratio else ratio/);
 });
 
@@ -807,9 +808,10 @@ test('Mare Quaternius donkey is an immutable CC0 source-derived static model, no
 test('Mare R15 faces use their native head front and stationary villagers greet nearby players',()=>{
   const pose=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
   const port=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
-  assert.match(pose,/gui\.Face = if decal then decal\.Face else Enum\.NormalId\.Front/);
+  assert.match(pose,/gui\.Face = Enum\.NormalId\.Front/);
+  assert.match(pose,/decal\.Face = Enum\.NormalId\.Front/);
   assert.doesNotMatch(pose,/head\.CFrame:VectorToObjectSpace\(root\.CFrame\.LookVector\)/);
-  assert.match(pose,/pcall\(drawFace, headPart, role, skin, rng\)/);
+  assert.match(pose,/pcall\(drawFace, headPart, role, skin, rng, outfit and outfit\.gender\)/);
   assert.match(port,/local guestRoot = character and character:FindFirstChild\("HumanoidRootPart"\)/);
   assert.match(port,/elseif guestRoot then guestRoot\.Position elseif cam then cam\.CFrame\.Position else nil/);
   assert.match(port,/local nearGuest = flat\.Magnitude > 1 and flat\.Magnitude < 26/);
@@ -838,7 +840,8 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
     assert.equal(assets[key]?.assetType,'Image',key);
     assert.equal(assets[key]?.usePermissionGranted,true,key);
   }
-  assert.ok(field.includes('local dodgeIcon = addIcon(b, "Menu/chart_compass")'));
+  assert.ok(field.includes('local dodgeIcon = if AssetIds["Menu/field_dodge"] then addIcon(b, "Menu/field_dodge")'));
+  assert.ok(field.includes('else addIcon(b, "Menu/chart_compass")'),'registered dodge art has safe compass fallback');
   assert.ok(field.includes('img.ScaleType = Enum.ScaleType.Fit'));
   // 아이콘 전용 버튼은 원화의 중앙 배치·잘림 방지를 위해 별도 크기를 사용한다.
   assert.ok(field.includes('img.Position = UDim2.fromScale(0.5, if iconOnly then 0.5 else 0.385)'));
@@ -914,7 +917,7 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/b\.Name = "FieldDodge"/);
   assert.match(field,/bindPress\(b, function\(\) useMove\("dodge"\) end\)/);
   assert.match(field,/attackBtn\.Position\.X\.Offset - 146/);
-  assert.match(field,/local dodgeIcon = addIcon\(b, "Menu\/chart_compass"\)/);
+  assert.match(field,/local dodgeIcon = if AssetIds\["Menu\/field_dodge"\] then addIcon\(b, "Menu\/field_dodge"\)/);
   assert.doesNotMatch(field,/slotPos\("heavy"\), skillSize/);
   assert.match(field,/local observedCardId = nil/);
   assert.ok(field.indexOf('local observedCardId = nil')<field.indexOf('local function finish(result)'));
@@ -957,11 +960,12 @@ test('Mare selected family shows and equips its original historical weapon with 
   assert.match(ui,/local originWeapon = Weapons\.originWeapon\(o\.id, chosenYear\)/);
   assert.match(ui,/ogl\.CellSize = UDim2\.new\(0\.5, -4, 0, 120\)/);
   assert.match(ui,/first|intro|menu/i);
-  assert.match(ui,/bounds\.MaxSize = Vector2\.new\(500, if view then 440 else 350\)/);
-  assert.match(ui,/b\.TextSize = if primary then 23 else 19/);
-  assert.match(ui,/resume = action\(pages, "▶ 이어하기 · 기존 항해", UDim2\.new\(1, 0, 0, 60\)/);
-  assert.match(ui,/newBtn = action\(pages, if view then "＋ 새 항해 시작" else "⚓ 새 게임 시작", UDim2\.new\(1, 0, 0, 60\)/);
-  assert.match(ui,/controls\.Size = UDim2\.new\(1, 0, 0, 60\)/);
+  assert.match(ui,/titlePanel\.Size = UDim2\.new\(0\.58, 0, 1, -28\)/,'single-start-screen title selection stays within viewport');
+  assert.match(ui,/lim\.MaxSize = Vector2\.new\(720, 9999\)/);
+  assert.match(ui,/go\.TextSize = 22/,'main start button stays legible');
+  assert.match(ui,/H\.titleSetupOpen = false -- 이어하기와 새 항해 준비를 같은 화면에서 펼친다/);
+  assert.match(ui,/elseif view then "⚓ 새 항해 출항" else "⚓ 출항하기"/);
+  assert.match(ui,/go\.LayoutOrder = nxt\(\)/);
 });
 
 test('Mare existing Quaternius outfit originals remain source-verifiable without claiming native animation QA',()=> {
@@ -1057,7 +1061,8 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/function FX\.flame\(pos, scale, profile\)[\s\S]*?FX\.burst\(/,'sinking flames use profile-based particles');
 
   assert.match(battle,/trail\.Attachment0, trail\.Attachment1 = a0, a1/,'trajectory has a continuous trail');
-  assert.match(battle,/shadow\.CFrame = CFrame\.new\(bpos\.X/,'PC ballistic water shadow follows the real cannonball');
+  assert.match(battle,/local bpos = from:Lerp\(to, u\) \+ Vector3\.new\(0, math\.sin\(u \* math\.pi\) \* nc\.arc, 0\)/,'actual ballistic arc remains consistent');
+  assert.doesNotMatch(battle,/shadow\.CFrame/,'removed fake water shadow does not obstruct projectile');
   assert.match(battle,/function FX\.shipFire\(sh, key, hp, now\)/,'ship damage keeps attached flames/smoke');
   assert.match(battle,/vent\.Position = root\.CFrame:PointToObjectSpace\(origin\)/,'damage fire follows actual moving ships');
   assert.match(battle,/vent\.fire\.Rate = if hp < 0\.42/,'fire intensity must reflect the unchanged hull fraction');
@@ -1068,7 +1073,7 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 2 else 4\) do/,'card-only mobile crew remains bounded');
   assert.match(battle,/function FX\.boarding\(\)/);
   assert.match(battle,/FX\.boardZoom \+=/,'boarding cinematic transitions smoothly');
-  assert.match(battle,/cam\.FieldOfView = 76 .* - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom is visual-only and scales by tier');
+  assert.match(battle,/cam\.FieldOfView = \(if MOBILE_VFX then 73 else 75\) - kick \* 0\.6 \+ math\.min\(shake, 2\.5\) \* 2 \+ \(me\.speed \/ myTop\) \* 5 \+ killZoom - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom stays tier-scaled while mobile and desktop preserve independent camera limits');
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/,'mobile deck fires stay capped and desktop ship tiers scale');
   assert.match(battle,/if MOBILE_VFX then 28 else 40/,'mobile range outline has bounded parts');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun-fire range is unchanged');
@@ -1088,7 +1093,7 @@ test('Mare naval steering, smooth hulls, aiming and battle presentation stay con
   assert.ok(battle.includes('elseif i.KeyCode == Enum.KeyCode.D or i.KeyCode == Enum.KeyCode.Right then\n\t\t\tsteerDir = 1'));
   assert.ok(battle.includes('me.theta += steerDir * turnSign * (if now < skillUntil.evade then 2.6 else 1.5) * dt'));
   assert.ok(battle.includes('local turnSign = if rightTurn:Dot(cam.CFrame.RightVector) < -0.05 then -1 else 1'));
-  assert.doesNotMatch(battle,/TextStrokeTransparency\s*=\s*0\./,'battle labels are clean fonts without stroke blur');
+  assert.match(battle,/l\.TextStrokeTransparency = 1 -- \[해전 글씨\]/,'main text is clean; tiny contextual combat badges can retain contrast outlines');
   assert.ok(battle.includes('f.Visible = star or battleViewport.X >= 720'));
   assert.ok(battle.includes('skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, 119)'));
   assert.ok(battle.includes('local coasts = {'));
@@ -1105,7 +1110,7 @@ test('Mare naval steering, smooth hulls, aiming and battle presentation stay con
   assert.ok(battle.includes('if trailAngle < 1.45'));
   assert.ok(battle.includes('nextSmoke = now + 0.18'));
   assert.ok(battle.includes('n = if MOBILE_VFX then 5 else 11'));
-  assert.ok(battle.includes('s1 = 19 + k * 13'));
+  assert.ok(battle.includes('s0 = 3.8 + k * 2, s1 = 11 + k * 9'),'sinking smoke scales with progress but avoids obscuring the hull');
   assert.ok(battle.includes('FX.flame(ORIGIN + sunk.pos + Vector3.new(0, 6 - k * 8, 0), 4.8, sunk.fx)'));
   assert.ok(battle.includes('Sfx.play("sfx_naval_splash"'));
   assert.ok(battle.includes('Sfx.play("sfx_naval_wood"'));
@@ -1133,7 +1138,7 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/if battleViewport\.X < 720 then 173 else 122/);
   assert.match(src,/tactic\.Size = UDim2\.new\(if battleViewport\.X < 480 then 0\.52/);
   assert.match(src,/l\.TextStrokeTransparency = 1/);
-  for(const key of ['east-bamboo-grove','greek-ruins-a','haunted-pine-crooked','land-floating-island']){
+  for(const key of ['east-bamboo-grove','greek-ruins-a','haunted-pine-crooked','cliff-waterfall-rock']){
     assert.ok(src.includes('"'+key+'",'),key+' has a registered-region background binding');
   }
   // [16해역 회귀] 지역 풀을 유지하고 시간·날씨·모바일 예산은 전투 판정과 분리한다.
@@ -1147,8 +1152,8 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/folder:SetAttribute\("NavalTimePhase", phase\)/);
   assert.match(src,/folder:SetAttribute\("NavalWeatherMode", mode\)/);
   assert.match(src,/local portLat, portLon = tonumber\(opts\.portLat\), tonumber\(opts\.portLon\)/);
-  assert.match(src,/for i = 1, \(if MOBILE_VFX then 11 else 26\) do/);
-  assert.match(src,/if MOBILE_VFX and index > 2 then break end/);
+  assert.match(src,/for i = 1, \(if MOBILE_VFX then 12 else 20\) do/,'foam attachments remain bounded on mobile and desktop');
+  assert.match(src,/if MOBILE_VFX and index > 3 then break end/,'mobile shore models retain the three-object cap');
   assert.match(src,/folder\.Destroying:Connect\(function\(\)[\s\S]*?colorGrade:Destroy\(\)/);
   const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   assert.match(client,/portLat = view\.player and PortData\.Ports\[view\.player\.portId\]/);
@@ -1174,7 +1179,7 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
     'if battleViewport.X < 480 then 56 else 96',
     'sailLabel.Position = UDim2.new(0.5, 0, 0, if battleViewport.X < 480 then 69 else 44)',
     'f.Visible = star or battleViewport.X >= 720',
-    'comboLabel.Visible = battleViewport.X >= 720',
+    'comboLabel.Visible = not opts.cardOnly',
     'subtitle.Visible = opts.cardOnly or battleViewport.X >= 1000',
     'rangeLabel.Visible = battleViewport.X >= 720',
     'distLabel.Visible = not opts.cardOnly and battleViewport.X >= 720',
@@ -1209,7 +1214,14 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
   const discovered=game.slice(seenStart,seenEnd);
   assert.ok(seenStart>0 && seenEnd>seenStart);
   assert.match(discovered,/H\.seenCards\[c\.id\] = true/,'real codex discovery bookkeeping remains');
-  assert.doesNotMatch(discovered,/H\.showCardGain\(|H\.gainQueue|H\.gainBusy|Sfx\.play/,'new cards cannot launch blocking events');
+  assert.match(discovered,/local firstSnapshot = H\.seenCards == nil/,'reconnect preserves existing found-card baseline');
+  assert.match(discovered,/H\.showCardGain\(found\.card, found\.extra\)/,'only genuine new discovery starts UI reveal');
+  assert.match(discovered,/H\.cardGainQueue = H\.cardGainQueue or \{\}/,'multiple simultaneous gains are queued without modal scenes');
+  assert.match(discovered,/extra = #acquired - 1/,'one reveal summarizes same-response additional cards');
+  assert.match(game,/g:SetAttribute\("NonBlockingCardNotice", true\)/,'card reveal is cosmetic and nonblocking');
+  assert.match(game,/H\.dockButtons and H\.dockButtons\.codex/,'card shrinks to real library dock icon');
+  assert.match(game,/Name = "CardSparkle"/,'rarity-colored sparkles');
+  assert.match(game,/Name = "DiscoveryHalo"/,'card acquisition light rings');
   assert.match(game,/local previous = pg:FindFirstChild\("CardGain"\)/,'Studio card preview remains opt-in');
   assert.doesNotMatch(game,/새 지식 카드 발견!|TweenInfo\.new\(20, Enum\.EasingStyle\.Sine\)/,'dated reveal and 14%-zoomed blurry illustration removed');
   assert.match(game,/local portraitWidth = math\.min\(256,/,'low-res portrait atlas must not be upscaled to 330px');
@@ -1246,14 +1258,15 @@ test('Mare registered 36 ship models have seven regional battle signatures and s
   assert.match(battle,/blueprint\.existingId and not FX_PROFILES\[blueprint\.existingId\]/,'legacy save id is preserved');
   assert.match(battle,/AssetIds\["Naval\/" \.\. shipId \.\. "-v5"\]/,'only registered V5 IDs can select combat models');
   assert.match(battle,/if MOBILE_VFX and AssetIds\["Naval\/" \.\. light\] then light/,'touch devices prefer registered light model');
-  assert.match(battle,/FX\.muzzle\(from, \(to - from\)\.Unit, style\)/);
-  assert.match(battle,/FX\.impact\(to, nc\.ball, style\)/);
+  assert.match(battle,/FX\.muzzle\(from, \(to - from\)\.Unit, style, nc\)/,'existing cannon profile is passed to visual effect');
+  assert.match(battle,/FX\.impact\(to, nc\.ball, style, nc\)/,'impact uses current weapon profile');
   assert.match(battle,/FX\.splash\(to, style, nc\.ball\)/);
   assert.match(battle,/FX\.flame\(ORIGIN \+ sunk\.pos \+ Vector3\.new\(0, 6 - k \* 8, 0\), 4\.8, sunk\.fx\)/);
   assert.match(battle,/function FX\.waterColumn\(pos, profile, power\)/);
   assert.match(battle,/function FX\.shipFire\(sh, key, hp, now\)/);
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/);
-  assert.match(battle,/local density = if MOBILE_VFX then 0\.55 else 1/,'mobile density is bounded');
+  assert.match(battle,/local density = if MOBILE_VFX then 0\.56 else 1/,'mobile cannon particle budget stays below desktop');
+  assert.match(battle,/local density = if MOBILE_VFX then 0\.5 else 1/,'secondary mobile particle budget remains at half desktop');
   assert.match(battle,/FX\.wake\(me, "me", now\)/,'existing wake loop remains in place');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun range remains untouched');
   assert.match(battle,/rtDamage\(false, base \* acc\)/,'actual damage computation remains untouched');
@@ -1925,4 +1938,40 @@ test('Mare naval battle uses three approved original circular HUD images without
   assert.match(naval,/b\.Interactable = ready and phase == "duel"/);
   assert.match(naval,/if now < skillReady\[sk\.id\] or opts\.cardOnly/);
   assert.match(naval,/local art = b:FindFirstChild\("NavalButtonArtwork"\)/);
+});
+
+
+// [도시 자동 사건·카드 원더 차단] 수동으로 듣는 이야기는 유지하고 같은 방문의 자동 씬만 절제한다.
+test('Mare first card has no forced wonder and spontaneous port events are limited to one',()=>{
+  const root='roblox-games/mare-essentia/src/ServerScriptService/Services/';
+  const discovery=fs.readFileSync(root+'Discovery.luau','utf8');
+  const cardGrant=discovery.slice(discovery.indexOf('local function grantCard('),discovery.indexOf('-- [발견] 항구 도착만으로'));
+  assert.ok(cardGrant.includes('state.discovered[cardId] = true'),'card rewards still update canonical discovery');
+  assert.ok(cardGrant.includes('S.Cardbook.reward(state, "discover"'),'card-drop probability unchanged');
+  assert.doesNotMatch(cardGrant,/state\.pendingScene\s*=\s*cardId/,'first and later cards do not summon a blocking wonder movie');
+  const quest=fs.readFileSync(root+'Quest.luau','utf8');
+  const arrive=quest.slice(quest.indexOf('local function arrivalHooks('),quest.indexOf('-- 항구에 도착하면 받아 둔'));
+  for(const token of ['S.History.tick(state)','local offered = offer(state, msgs, "주점에서 소문을 들었다")',
+    'S.Chronicle.arrive(state, msgs)','S.Story.autoTrigger(state, msgs)','state._autoEventPort = state.portId'])
+    assert.ok(arrive.includes(token),'arrival keeps existing responsibility: '+token);
+  assert.ok(arrive.indexOf('S.History.tick(state)')<arrive.indexOf('local offered = offer('));
+  assert.ok(arrive.indexOf('local offered = offer(')<arrive.indexOf('S.Chronicle.arrive(state, msgs)'));
+  assert.ok(arrive.indexOf('S.Chronicle.arrive(state, msgs)')<arrive.indexOf('S.Story.autoTrigger(state, msgs)'));
+  assert.match(arrive,/if offered then[\s\S]*?state\._autoEventPort = state\.portId[\s\S]*?return/);
+  assert.match(arrive,/if S\.Chronicle and S\.Chronicle\.arrive\(state, msgs\) then[\s\S]*?return/);
+  const history=fs.readFileSync(root+'History.luau','utf8');
+  assert.match(history,/if state\._autoEventPort == state\.portId then return nil end/);
+  assert.match(history,/h\.seen\[ev\.id\] = math\.floor\(idx\)[\s\S]*?state\._autoEventPort = state\.portId/);
+  assert.match(history,/h\.pending = best\.id/,'unseen history is deferred, not marked as seen');
+  const payout=quest.slice(quest.indexOf('local function payout('),quest.indexOf('function handlers.Claim('));
+  assert.match(payout,/quest\.id ~= "q_first_discovery"/,'first discovered card pays rewards without the passive First Discovery quest movie');
+  assert.match(payout,/state\.quests\.done\[quest\.id\] = true/,'auto quest still completes');
+  assert.match(payout,/state\.coins \+= quest\.rewardCoins/,'coins are still granted');
+  assert.match(payout,/state\.fame \+= quest\.rewardFame/,'fame is still granted');
+  assert.match(payout,/not AUTO_KINDS\[quest\.kind\]/,'manual quest completion cutscenes remain unchanged');
+  assert.match(payout,/state\._autoEventPort ~= state\.portId and not \(state\.history and state\.history\.pending\)/,'spontaneous end scenes yield to queued history and obey one per visit');
+  assert.match(arrive,/state\._autoEventPort = nil/,'leaving then reentering a port resets only the transient one-visit throttle');
+  const story=fs.readFileSync(root+'Story.luau','utf8');
+  assert.match(story,/function handlers\.PlayStory\(state, p\)/,'player-initiated story stays intact');
+  assert.match(quest,/local function offer\(state, msgs, how, personId\)/,'player initiated quests preserved');
 });

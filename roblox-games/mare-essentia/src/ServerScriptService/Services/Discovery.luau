@@ -109,9 +109,8 @@ return function(D, S)
 			return false
 		end
 		state.discovered[cardId] = true
-		if D.WonderScenes.Scenes[cardId] then
-			state.pendingScene = cardId -- 원더 연출 (저장하지 않는 임시 값)
-		end
+		-- [최초 카드] 카드 습득은 클라이언트의 비차단 카드 출현 연출만 쓴다.
+		-- 다른 항해·유적 원더 장면은 기존 전용 경로에 남겨 둔다.
 		local coins = math.floor(card.reward.coins * S.Perk.coinMult(state, card.field))
 		state.coins += coins
 		state.fame += card.reward.fame
