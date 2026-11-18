@@ -657,8 +657,9 @@ test('real production Roblox auto-coding preflight binds central policy and exac
   const repoRoot=path.resolve(new URL('..',import.meta.url).pathname);
   const snapshot=loadCentralPolicySnapshot({repoRoot,required:true});
   assert.equal(snapshot.valid,true,snapshot.errors.join('|'));
-  const responsibleFile='roblox-games/simple-rpg/server/Game.server.luau';
-  const task={id:'owner-policy-bound-autocoding',gameId:'simple-rpg',target:'ROBLOX',department:'development'};
+  // [현재 승인된 소스] 영구 제외된 simple-rpg를 정상개발 fixture로 사용하지 않는다.
+  const responsibleFile='roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau';
+  const task={id:'owner-policy-bound-autocoding',gameId:'mare-essentia',target:'ROBLOX',department:'development'};
   const contract=compileVibeCentralWorkContract({
     snapshot,task,plan:{target:'ROBLOX',qa:['CODE_QA','STATIC_QA']},
     route:{route:'text-source-worker'},responsibleFiles:[responsibleFile]
@@ -669,8 +670,12 @@ test('real production Roblox auto-coding preflight binds central policy and exac
   assert.equal(contract.workLock.requiredBeforeSourceWrite,true);
   assert.deepEqual(contract.workLock.files,[responsibleFile]);
   assert.doesNotThrow(()=>assertOwnerDevelopmentAvailable({cwd:repoRoot,order:{
-    ...task,source:{root:'roblox-games/simple-rpg'}
+    ...task,source:{root:'roblox-games/mare-essentia'}
   }}));
+  // [보호 회귀] 영구 제외된 게임에 대한 오너 개발 차단은 기존대로 유지한다.
+  assert.throws(()=>assertOwnerDevelopmentAvailable({cwd:repoRoot,order:{
+    gameId:'simple-rpg',target:'ROBLOX',source:{root:'roblox-games/simple-rpg'}
+  }}),/OWNER_DIRECT_DEVELOPMENT_HELD:simple-rpg/);
   assert.equal(assertCompiledWorkContractFresh({cwd:repoRoot,contract,phase:'PRE_SOURCE_GENERATION'}).status,'PASS');
   assert.throws(()=>assertCompiledWorkContractFresh({cwd:repoRoot,contract:{},phase:'PRE_SOURCE_GENERATION'}),
     /CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_SOURCE_GENERATION/);
