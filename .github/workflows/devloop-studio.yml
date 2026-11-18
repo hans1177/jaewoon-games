@@ -19,6 +19,7 @@ on:
         type: string
 permissions:
   contents: write
+  pull-requests: write
 concurrency:
   group: roblox-studio-shared-host
   cancel-in-progress: false
@@ -81,6 +82,9 @@ jobs:
         shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           GH_TOKEN: ${{ github.token }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          NVIDIA_FREE_TIER_VERIFIED: ${{ vars.NVIDIA_FREE_TIER_VERIFIED || 'NO' }}
+          NEMOTRON_DESIGN_CANDIDATE: 'YES'
         run: |
           $ErrorActionPreference = 'Stop'
           # [메인] 공식 Studio·MCP·Node의 사용자 임시 파일은 기존 E: 러너 작업 폴더에서 생성한다.
@@ -379,6 +383,215 @@ jobs:
           Write-Host "STUDIO_QA_FRAMES=$($frames.Count)"
           Write-Host "STUDIO_QA_CHECKLIST_STEPS=$stepsState CLICKS=$clicksState FRAMES=$framesState CONSOLE=$consoleState MODELS=$modelState MEDIA=$mediaState FEATURES=$featureState"
           
+          # [디자인] Studio 실물 사진 2장 이상인 경우 무료 Nemotron이 외형만 진단한다.
+          # 독립 PR 후보 브랜치만 생성하며 main·배포·전투 데이터는 변경하지 않는다.
+          $designBranch = "nemotron-mare-design-$env:GITHUB_RUN_ID"
+          if ($env:CAP_GAME -eq 'mare-essentia' -and [string]$env:CAP_SCRIPT -match 'mare-qa-click\.json
+          # [저장] 기존 Studio 증거 브랜치를 이어받아 과거 사진과 검사 결과를 보존한다.
+          # 기존 브랜치와 러너만 사용한다. 최근 정밀 4회·그외 6회만 보존해 용량 폭증을 막는다.
+          $dst = Join-Path $env:RUNNER_TEMP 'mare-publish'
+          $remote = "https://x-access-token:$($env:GH_TOKEN)@github.com/$($env:GITHUB_REPOSITORY).git"
+          Remove-Item -Recurse -Force $dst -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory $dst | Out-Null
+          Push-Location $dst
+          try {
+            git init -q
+            git config user.name 'mare-capture-bot'
+            git config user.email 'mare-capture-bot@users.noreply.github.com'
+            & git fetch -q --depth=1 $remote "refs/heads/$($env:CAP_GAME)-studio-frames"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_FETCH_FAILED' }
+            & git checkout -q --detach FETCH_HEAD
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_CHECKOUT_FAILED' }
+            $scriptFile = Join-Path $env:GITHUB_WORKSPACE ("main/" + $env:CAP_SCRIPT)
+            # [증거] 단계별 통과·실패, 감사 판정, 촬영 파일과 SHA256 비교를 원본 report에 연결한다.
+            # SHA256 비교는 파일 변경 탐지이며 사진 품질의 개선·악화 판정으로 표시하지 않는다.
+            $archive = @'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const crypto = require('node:crypto');
+          const [dst, out, runId, scriptName, scriptFile, repo, qaStage, qaSignature] = process.argv.slice(2);
+          if (!/^\d{5,}$/.test(runId)) throw Error('STUDIO_ARCHIVE_RUN_ID_INVALID');
+          const imageExt = /\.(?:png|jpe?g)$/i;
+          const indexFile = path.join(dst, 'index.json');
+          const prior = fs.existsSync(indexFile) ? JSON.parse(fs.readFileSync(indexFile, 'utf8')) : {runs: []};
+          const history = Array.isArray(prior.runs) ? prior.runs : [];
+          const deep = /\/mare-qa-click\.json$/.test(scriptName.replace(/\\/g, '/'));
+          const kind = deep ? 'deep' : (/autopilot/i.test(scriptName) ? 'autopilot' : 'studio');
+          const previous = history.find(row => row.kind === kind);
+          const report = JSON.parse(fs.readFileSync(path.join(out, 'report.json'), 'utf8').replace(/^\uFEFF/, ''));
+          const summary = report.summary || {};
+          const errors = Array.isArray(report.errors) ? report.errors : ['STUDIO_ERRORS_INVALID'];
+          const script = fs.existsSync(scriptFile) && fs.statSync(scriptFile).isFile()
+            ? JSON.parse(fs.readFileSync(scriptFile, 'utf8')) : [];
+          const frames = fs.readdirSync(out).filter(name => imageExt.test(name)).sort();
+          // [스크린샷 실물 검증] JPG/PNG 실제 바이트에서 해상도를 읽는다. 파일명/해시만으로 화면 통과 처리 금지.
+          const imageDimensions = name => {
+            const bytes = fs.readFileSync(path.join(out, name));
+            let width = 0, height = 0;
+            if (bytes.length >= 24 && bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) {
+              width = bytes.readUInt32BE(16); height = bytes.readUInt32BE(20);
+            } else if (bytes.length >= 8 && bytes[0] === 255 && bytes[1] === 216) {
+              for (let pos = 2; pos + 7 < bytes.length;) {
+                if (bytes[pos] !== 255) { pos++; continue; }
+                while (pos < bytes.length && bytes[pos] === 255) pos++;
+                if (pos >= bytes.length) break;
+                const marker = bytes[pos++];
+                if (marker === 0xDA || marker === 0xD9) break;
+                if (marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) continue;
+                if (pos + 2 > bytes.length) break;
+                const len = bytes.readUInt16BE(pos);
+                if (len < 2 || pos + len > bytes.length) break;
+                if ((marker >= 0xC0 && marker <= 0xC3 || marker >= 0xC5 && marker <= 0xC7 ||
+                     marker >= 0xC9 && marker <= 0xCB || marker >= 0xCD && marker <= 0xCF) && len >= 7) {
+                  height = bytes.readUInt16BE(pos + 3);
+                  width = bytes.readUInt16BE(pos + 5);
+                  break;
+                }
+                pos += len;
+              }
+            }
+            return {name, bytes: bytes.length, width, height,
+              status: bytes.length >= 4096 && width >= 320 && height >= 180 ? 'PASS' : 'FAIL'};
+          };
+          const frameIntegrity = frames.map(imageDimensions);
+          const badFrames = frameIntegrity.filter(row => row.status !== 'PASS');
+
+          const digest = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+          const previousDir = previous && /^runs\/[0-9]+$/.test(previous.path || '')
+            ? path.join(dst, previous.path) : dst;
+          const comparisons = frames.map(name => {
+            const oldFile = path.join(previousDir, name);
+            const currentHash = digest(path.join(out, name));
+            const baseline = fs.existsSync(oldFile) ? digest(oldFile) : '';
+            return {name, sha256: currentHash, comparison: baseline
+              ? (baseline === currentHash ? 'SAME_BYTES' : 'CHANGED_BYTES') : 'NO_BASELINE'};
+          });
+          const rows = script.map((step, n) => {
+            const executed = n < Number(summary.completedSteps || 0);
+            const failed = errors.some(value => String(value).startsWith('step' + n + ':'));
+            const skipped = (report.log || []).some(row => row.step === n && row.at === 'OPTIONAL_SKIPPED');
+            const captures = step.type === 'capture'
+              ? frames.filter(name => name.startsWith(String(step.name || 'cap' + n) + '-')) : [];
+            return {step: n, type: step.type, name: step.name || step.label || step.text || '',
+              status: !executed ? 'NOT_RUN' : failed || (step.type === 'capture' && !captures.length) ? 'FAIL' : skipped ? 'SKIPPED' : 'PASS',
+              screenshots: captures};
+          });
+          const audits = Object.fromEntries(['models', 'registered', 'features'].map(key =>
+            [key, report.assetAudit?.[key]?.status || (deep ? 'UNVERIFIED' : 'NOT_RUN')]));
+          audits.registry = report.assetRegistryAudit?.status || (deep ? 'UNVERIFIED' : 'NOT_RUN');
+          const requiredDone = frameIntegrity.every(row => row.status === 'PASS') && frames.length > 0 && frames.length >= Number(summary.plannedFrames)
+            && Number(summary.completedSteps) === Number(summary.plannedSteps)
+            && Number(summary.capturedFrames) >= Number(summary.plannedFrames)
+            && Number(summary.successfulClicks || 0) + Number(summary.skippedOptionalClicks || 0)
+              === Number(summary.plannedClicks || 0);
+          let result = qaStage || errors.length || !requiredDone || rows.some(row => row.status === 'FAIL') ? 'FAIL' : 'PASS';
+          if (deep && result === 'PASS' && Object.values(audits).some(status => status !== 'PASS'))
+            result = 'UNVERIFIED';
+          const link = 'https://github.com/' + repo + '/blob/mare-essentia-studio-frames/runs/' + runId + '/';
+          const checks = {runId, kind, sourceRevision: report.sourceRevision || '', result,
+            failureStage: qaStage || null, failureSignature: qaSignature || null,
+            summary, errors, audits, steps: rows,
+            screenshotComparison: comparisons.map(row => ({...row, url: link + encodeURIComponent(row.name)})),
+            screenshotFrameAudit: {checked: frameIntegrity.length, invalid: badFrames.length,
+              images: frameIntegrity, meaning: 'Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review'},
+            comparisonMeaning: 'SHA256 byte equality only; not visual quality evidence',
+            previousRunId: previous?.runId || null};
+          const folder = path.join(dst, 'runs', runId);
+          fs.mkdirSync(folder, {recursive: true});
+          fs.cpSync(out, folder, {recursive: true, force: true});
+          fs.writeFileSync(path.join(folder, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
+          for (const entry of fs.readdirSync(dst, {withFileTypes: true})) {
+            if (entry.isFile() && (imageExt.test(entry.name) || ['report.json', 'checks.json'].includes(entry.name)))
+              fs.rmSync(path.join(dst, entry.name));
+          }
+          for (const entry of fs.readdirSync(out, {withFileTypes: true})) {
+            if (entry.isFile()) fs.copyFileSync(path.join(out, entry.name), path.join(dst, entry.name));
+          }
+          fs.writeFileSync(path.join(dst, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
+          const record = {runId, kind, at: new Date().toISOString(), sourceRevision: checks.sourceRevision,
+            result, frames: frames.length, changedFrames: comparisons.filter(row => row.comparison === 'CHANGED_BYTES').length,
+            summary, path: 'runs/' + runId};
+          const merged = [record, ...history.filter(row => row.runId !== runId)];
+          const kept = [];
+          const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+          for (const row of merged) {
+            if (Date.parse(row.at) >= cutoff &&
+                ((row.kind === 'deep' && kept.filter(item => item.kind === 'deep').length < 4) ||
+                 (row.kind !== 'deep' && kept.filter(item => item.kind !== 'deep').length < 6)))
+              kept.push(row);
+            else if (/^runs\/[0-9]+$/.test(row.path || ''))
+              fs.rmSync(path.join(dst, row.path), {recursive: true, force: true});
+          }
+          fs.writeFileSync(indexFile, JSON.stringify({version: 1, retentionDays: 7, latest: record,
+            lastDeepAt: kept.find(row => row.kind === 'deep')?.at || null, runs: kept}, null, 2) + '\n');
+          const gallery = ['# Studio QA screenshot history', '', 'Latest: [screenshots](./) | [checklist](checks.json) | [history](index.json)', 'Retention: 7 days, full 4 runs and others 6 runs', '',
+            '| Run | Type | Status | Frames | Changed files |', '|---|---|---|---:|---:|',
+            ...kept.map(row => '| [' + row.runId + '](runs/' + row.runId + '/) | ' + row.kind + ' | ' + row.result + ' | ' + row.frames + ' | ' + row.changedFrames + ' |')];
+          fs.writeFileSync(path.join(dst, 'README.md'), gallery.join('\n') + '\n');
+          console.log('STUDIO_QA_CHECKS=' + JSON.stringify({result, steps: rows.length, audits}));
+          console.log('STUDIO_SCREENSHOT_ARCHIVE=' + JSON.stringify({runId, kind, frames: frames.length,
+            retained: kept.length, previous: previous?.runId || null}));
+          '@
+            $archive | & node - $dst $out $env:GITHUB_RUN_ID $env:CAP_SCRIPT $scriptFile $env:GITHUB_REPOSITORY $qaStage $qaSignature
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_REPORT_FAILED' }
+            $storedChecks = Get-Content -LiteralPath (Join-Path $dst 'checks.json') -Encoding UTF8 -Raw | ConvertFrom-Json
+            Write-Host ("STUDIO_SCREENSHOT_REAL_IMAGES=" + [string]$storedChecks.screenshotFrameAudit.checked + " INVALID=" + [string]$storedChecks.screenshotFrameAudit.invalid)
+            if ([int]$storedChecks.screenshotFrameAudit.invalid -gt 0 -and -not $qaStage) {
+              $qaStage = 'STUDIO_EXECUTION'
+              $qaSignature = 'STUDIO_SCREENSHOT_INVALID_IMAGE'
+            }
+            # [완료 확정] 실제 저장한 검사 증거가 PASS가 아니면 Actions 성공으로 덮지 않는다.
+            if ([string]$storedChecks.result -ne 'PASS' -and -not $qaStage) {
+              $qaStage = 'STUDIO_EXECUTION'
+              $qaSignature = 'STUDIO_FULL_AUDIT_INCOMPLETE'
+            }
+            git add -A
+            git commit -q -m "studio frames $($env:CAP_GAME) run $env:GITHUB_RUN_ID"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_COMMIT_FAILED' }
+            # 이력 보존 브랜치는 강제 갱신하지 않는다. 동시 변경이 있으면 안전하게 실패한다.
+            & git push -q $remote "HEAD:refs/heads/$($env:CAP_GAME)-studio-frames"
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_PUSH_FAILED' }
+            Write-Host 'STUDIO_ARCHIVE_PUBLISHED=1'
+          } finally {
+            Pop-Location
+          }
+          # [자동 판단] 별도 autopilot-report 브랜치는 기존처럼 최신 1회만 유지한다.
+          if ([string]$env:CAP_SCRIPT -match 'autopilot') {
+            $autoDst = Join-Path $env:RUNNER_TEMP 'mare-autopilot-publish'
+            Remove-Item -Recurse -Force $autoDst -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory $autoDst | Out-Null
+            Copy-Item "$out\*" $autoDst -Recurse
+            Push-Location $autoDst
+            try {
+              git init -q
+              git config user.name 'mare-capture-bot'
+              git config user.email 'mare-capture-bot@users.noreply.github.com'
+              git add -A
+              git commit -q -m "autopilot report $($env:CAP_GAME) run $env:GITHUB_RUN_ID"
+              if ($LASTEXITCODE -ne 0) { throw 'AUTOPILOT_REPORT_COMMIT_FAILED' }
+              & git push -q -f $remote "HEAD:refs/heads/$($env:CAP_GAME)-autopilot-report"
+              if ($LASTEXITCODE -ne 0) { throw 'AUTOPILOT_REPORT_PUBLISH_FAILED' }
+              Write-Host 'AUTOPILOT_REPORT_PUBLISHED=1'
+            } finally {
+              Pop-Location
+            }
+          }
+          if ($qaStage -ne '') {
+            Write-Host "STUDIO_QA_GAME_ID=$($env:CAP_GAME)"
+            Write-Host "STUDIO_QA_FAILURE_STAGE=$qaStage"
+            Write-Host "STUDIO_QA_FAILURE_SIGNATURE=$qaSignature"
+            if ($qaStage -eq 'STUDIO_GAME_SOURCE' -and $sourceFile) {
+              Write-Host "STUDIO_QA_SOURCE_FILE=$sourceFile"
+            }
+            throw 'STUDIO_QA_FAILED_EVIDENCE_PUBLISHED'
+          }
+          Write-Host 'STUDIO_QA_RESULT=PASS'
+) {
+            & git -C 'main' switch -q -c $designBranch
+            if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_BRANCH_INVALID' }
+            & node 'main/tools/company-nemotron-design-review.mjs' '--root=main' "--frames=$out" "--out=$(Join-Path $out 'nemotron-design-review.json')"
+            if ($LASTEXITCODE -ne 0) { Write-Host 'NEMOTRON_DESIGN_REVIEW=UNVERIFIED' }
+          }
           # [저장] 기존 최신 파일 경로(report.json·jpg)는 유지하고, 같은 브랜치의 runs/에 회차별 증거를 보존한다.
           # [저장] 기존 Studio 증거 브랜치를 이어받아 과거 사진과 검사 결과를 보존한다.
           # 기존 브랜치와 러너만 사용한다. 최근 정밀 4회·그외 6회만 보존해 용량 폭증을 막는다.
