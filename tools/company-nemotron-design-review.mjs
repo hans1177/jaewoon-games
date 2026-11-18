@@ -765,7 +765,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     'Return STRICT JSON: {"issues":[{"category":"one policy category","severity":"low|medium|high",' +
     '"screenshot":"existing image name","evidence":"specific visible evidence"}],' +
     '"edits":[{"category":"matching medium or high issue category","screenshot":"same photo",' +
-    '"anchor":number,"after":"same referenced line with ONLY numerical visual values or existing visual enum changed"}]}. ' +
+    '"anchor":number,"after":"same referenced line; AUDIO only approved registered cue name, otherwise only numerical visual values or existing visual enum"}]}. ' +
     'At most 10 edits across 4 files. Never add/remove functions, statements, assets, text, ' +
     'commands, identifiers, property targets or line breaks. Empty edits when uncertain. ' +
     'Policies: ' + JSON.stringify({categories: contract.visualCategories,
