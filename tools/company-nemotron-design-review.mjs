@@ -48,7 +48,7 @@ export const DESIGN_FREE_MODELS = Object.freeze([
     endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent'}
 ]);
 const DAILY_LIMIT = Object.freeze({NVIDIA: 12, GEMINI: 12, OPENROUTER: 30});
-const designRuntime = {usageWindow: null, cooldowns: {}, attempts: [], selectedRole: ''};
+const designRuntime = {usageWindow: null, cooldowns: {}, attempts: [], selectedRole: '', accountQuota: null};
 // [무료 자원 회계] 업체별 날짜를 분리한다. Gemini의 공식 일일 초기화는 미 태평양 시간 기준이다.
 // 다른 업체의 UTC 일자는 기존 로컬 안전 상한의 갱신 시점일 뿐, 실제 계정 한도 초기화의 증거가 아니다.
 const currentDay = (now = Date.now()) => new Date(now).toISOString().slice(0, 10);
@@ -72,7 +72,7 @@ function nextFreeDesignWindow(provider, now) {
 }
 // 예측치는 이 Studio 디자인 실행에서 확인된 소비량에 한정한다.
 // 다른 작업/프로젝트의 실제 계정 전체 잔량을 알 수 없는 상태를 0원 또는 전체 가용량으로 오인하지 않는다.
-export function forecastFreeDesignQuota(usageWindow = {}, now = Date.now()) {
+export function forecastFreeDesignQuota(usageWindow = {}, now = Date.now(), accountQuota = null) {
   const quotas = {};
   for (const [provider, limit] of Object.entries(DAILY_LIMIT)) {
     const windowId = freeDesignWindowId(provider, now);
@@ -86,19 +86,52 @@ export function forecastFreeDesignQuota(usageWindow = {}, now = Date.now()) {
     const elapsedHours = (now - startedAt) / 3600000;
     const hourlyRate = used >= 2 && Number.isFinite(elapsedHours) && elapsedHours > 0
       ? Math.round((used - 1) / Math.max(0.25, elapsedHours) * 100) / 100 : null;
+    const official = provider === 'OPENROUTER' && accountQuota?.scope ===
+      'ACCOUNT_FREE_MODELS_DAILY' && Number.isInteger(accountQuota.remaining) &&
+      accountQuota.remaining >= 0 ? accountQuota.remaining : null;
+    const available = official === null ? remaining : Math.min(remaining, official);
     quotas[provider] = {
       scope: 'STUDIO_VISUAL_ONLY', localDailyLimit: limit, localUsed: used,
-      remainingLocal: remaining, regularWorkRemaining: Math.max(0, remaining - reserve),
-      emergencyReserveRemaining: Math.min(remaining, reserve),
+      remainingLocal: remaining, effectiveRemaining: available,
+      regularWorkRemaining: Math.max(0, available - reserve),
+      emergencyReserveRemaining: Math.min(available, reserve),
       estimatedCallsPerHour: hourlyRate,
       estimatedHoursToLocalCap: hourlyRate > 0
         ? Math.round(remaining / hourlyRate * 10) / 10 : null,
       nextLocalWindowAt: nextFreeDesignWindow(provider, now),
       resetBasis: provider === 'GEMINI' ? 'PACIFIC_DAILY' : 'INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED',
-      accountWideBalanceVerified: false
+      accountWideBalanceVerified: official !== null,
+      accountWideFreeRemaining: official
     };
   }
   return quotas;
+}
+// [공식 무료 사용량] OpenRouter :free 전체 공유 일일 잔량은 /api/v1/key에서 읽는다.
+// 키 원문·크레딧·청구정보를 기록하지 않고, 호출 실패나 불명확한 응답은 '미확인'으로 유지한다.
+export async function readOpenRouterFreeQuota({env = process.env, fetchImpl = globalThis.fetch} = {}) {
+  const key = trim(env.OPENROUTER_API_KEY);
+  if (!key || trim(env.OPENROUTER_DESIGN_FREE_TIER_VERIFIED) !== 'YES') return null;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  try {
+    const response = await fetchImpl('https://openrouter.ai/api/v1/key', {
+      method: 'GET', signal: controller.signal,
+      headers: {Authorization: 'Bearer ' + key}
+    });
+    if (!response.ok) return null;
+    const result = await response.json();
+    const quota = result?.data?.free_model_daily_requests;
+    const used = quota?.used, limit = quota?.limit, remaining = quota?.remaining;
+    if (![used, limit, remaining].every(Number.isInteger) ||
+      used < 0 || limit < 0 || remaining < 0 || remaining > limit ||
+      used > limit || used + remaining > limit) return null;
+    return {scope: 'ACCOUNT_FREE_MODELS_DAILY', used, limit, remaining,
+      observedAt: new Date().toISOString(), source: 'OPENROUTER_KEY_API'};
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 function loadPreviousDesignUsage(previous = {}) {
   designRuntime.usageWindow = mergeFreeVisualUsage(previous).usageWindow;
@@ -106,6 +139,7 @@ function loadPreviousDesignUsage(previous = {}) {
     .filter(([id, until]) => DESIGN_FREE_MODELS.some(model => model.id === id) &&
       Number.isFinite(Date.parse(until)) && Date.parse(until) > Date.now()));
   designRuntime.attempts = [];
+  designRuntime.accountQuota = null;
 }
 export function designRoleForFrames(frameNames = []) {
   const names = frameNames.join(' ').toLowerCase();
@@ -217,7 +251,7 @@ export function mergeFreeVisualUsage(previous = {}, feedback = {}, now = Date.no
 
 export function selectFreeDesignModels({
   frameNames = [], policy, env = process.env, previous = {}, feedback = {},
-  diagnostics = [], now = Date.now()
+  diagnostics = [], accountQuota = null, now = Date.now()
 } = {}) {
   const config = policy?.directVisualDesign?.freeSpecialistPool;
   if (config?.enabled !== true || config?.paidFallbackForbidden !== true ||
@@ -229,11 +263,14 @@ export function selectFreeDesignModels({
   const today = new Date(now).toISOString().slice(0, 10);
   const carried = mergeFreeVisualUsage(previous, feedback, now);
   const spent = carried.usageWindow.calls;
-  const quotaForecast = forecastFreeDesignQuota(carried.usageWindow, now);
+  const quotaForecast = forecastFreeDesignQuota(carried.usageWindow, now, accountQuota);
   const eligible = DESIGN_FREE_MODELS.filter(model => {
     const cooling = Date.parse(carried?.cooldowns?.[model.id] || '');
     // [장애 원인] 키 값, 무료 요금제 설정값, 원문 응답은 기록하지 않는다.
     const status = !approved.has(model.id) ? 'MODEL_NOT_POLICY_APPROVED'
+      : model.provider === 'OPENROUTER' && accountQuota?.scope ===
+        'ACCOUNT_FREE_MODELS_DAILY' && accountQuota.remaining === 0
+        ? 'ACCOUNT_FREE_DAILY_CAP'
       : !trim(env[model.keyName]) ? 'KEY_MISSING'
       : trim(env[model.verifiedName]) !== 'YES' ? 'FREE_TIER_NOT_VERIFIED'
       : model.provider === 'OPENROUTER' && !model.model.endsWith(':free') ? 'NOT_FREE_MODEL_ID'
@@ -353,7 +390,9 @@ function record(status, fields = {}) {
   const report = {version: 3, provider: 'MULTI_FREE_VISUAL', gameId: 'mare-essentia',
     sourceRevision: trim(process.env.GITHUB_SHA), status, selectedRole: designRuntime.selectedRole,
     usageWindow: designRuntime.usageWindow, cooldowns: designRuntime.cooldowns,
-    quotaForecast: forecastFreeDesignQuota(designRuntime.usageWindow),
+    quotaForecast: forecastFreeDesignQuota(designRuntime.usageWindow,
+      Date.now(), designRuntime.accountQuota),
+    accountQuota: designRuntime.accountQuota,
     attempts: designRuntime.attempts, ...fields};
   fs.mkdirSync(path.dirname(reportPath), {recursive: true});
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n');
@@ -597,9 +636,13 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   if (trim(process.env.COMPANY_EXTERNAL_AI_ENABLED) !== 'YES')
     return record('SKIPPED_EXTERNAL_AI_OPT_IN_REQUIRED', {frames: proofs});
   const diagnostics = [];
+  // 기존 Studio 디자인 경로에서만 1회 조회한다. 조회 자체는 무료 모델 호출량을 소비하지 않는다.
+  // 후보 생성이 비활성화된 검증 실행은 계정에 불필요한 요청을 보내지 않는다.
+  designRuntime.accountQuota = trim(process.env.NEMOTRON_DESIGN_CANDIDATE) === 'YES'
+    ? await readOpenRouterFreeQuota({fetchImpl}) : null;
   const freeModels = selectFreeDesignModels({
     frameNames: photos.map(photo => photo.name), policy, previous: carriedHistory, feedback,
-    diagnostics
+    diagnostics, accountQuota: designRuntime.accountQuota
   });
   if (!freeModels.length)
     return record('SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE', {frames: proofs,
@@ -640,7 +683,14 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   for (const model of freeModels.slice(0, routeLimit)) {
     const previousCount = designRuntime.usageWindow.calls[model.provider] || 0;
     if (previousCount >= DAILY_LIMIT[model.provider]) continue;
+    if (model.provider === 'OPENROUTER' && designRuntime.accountQuota?.remaining === 0) continue;
     designRuntime.usageWindow.calls[model.provider] = previousCount + 1;
+    if (model.provider === 'OPENROUTER' && designRuntime.accountQuota) {
+      designRuntime.accountQuota.remaining = Math.max(0, designRuntime.accountQuota.remaining - 1);
+      designRuntime.accountQuota.used = Math.min(designRuntime.accountQuota.limit,
+        designRuntime.accountQuota.used + 1);
+      designRuntime.accountQuota.source = 'OPENROUTER_KEY_API_PLUS_LOCAL_ATTEMPTS';
+    }
     designRuntime.usageWindow.firstCallAtByProvider ||= {};
     designRuntime.usageWindow.firstCallAtByProvider[model.provider] ||= new Date().toISOString();
     const result = await callFreeDesignModel(model, prompt, photos, fetchImpl);
