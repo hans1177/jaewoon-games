@@ -2551,8 +2551,9 @@ do
 				goal("첫 항해 완료", "진행 중인 의뢰와 새로운 항해 목표는 아래에서 확인해.", nil)
 			end
 		end
-		-- [메뉴 조언 단일화] 원래 항구 화면에 있던 선장 비서 경고를 저널에서만 보여 준다.
+		-- [메뉴 조언 단일화] 비서의 긴급·진행 권고는 저널에서만 보여 준다.
 		head("지금 할 일")
+		local todo = 0
 		do
 			local ship = view.ship
 			local cue, detail, tab = nil, nil, nil
@@ -2563,32 +2564,60 @@ do
 			elseif ship.cargoCapacity > 0 and ship.cargoUsed >= ship.cargoCapacity then
 				cue, detail, tab = "화물칸 가득 참", string.format("%d/%d칸 · 거래 전 화물 정리", ship.cargoUsed, ship.cargoCapacity), "trade"
 			end
+			if not cue then
+				for _, q in (view.quests and view.quests.active) or {} do
+					if q.kind == "deliver" and q.progress >= q.amount then
+						cue, detail, tab = "납품 가능한 의뢰", q.name .. " · 보상 수령 조건 확인", "quest"
+						break
+					end
+				end
+			end
+			if not cue then
+				for _, t in (view.tech or {}) do
+					if not t.owned and not t.blocked and (t.cost or 0) <= view.player.coins then
+						cue, detail, tab = "연구 가능한 기술", t.name .. " · 비용 " .. tostring(t.cost or 0) .. "코인", "tech"
+						break
+					end
+				end
+			end
 			if cue then
 				local covered = false
 				for _, advice in (view.counsel or {}) do
 					if advice.tab == tab then covered = true; break end
 				end
 				if not covered then
-					local card = goal("주의 · " .. cue, detail, nil)
-					local go = mkButton(card, "해당 메뉴로 이동", COLORS.red, UDim2.new(1, 0, 0, 46), function()
-						close()
-						H.goAdvice(tab)
-					end, true)
+					todo += 1
+					local urgent = tab == "yard" or tab == "trade"
+					local card = goal((if urgent then "주의 · " else "다음 할 일 · ") .. cue, detail, nil)
+					local go = mkButton(card, "해당 메뉴로 이동", if urgent then COLORS.red else COLORS.green,
+						UDim2.new(1, 0, 0, 46), function()
+							close()
+							H.goAdvice(tab)
+						end, true)
 					go.LayoutOrder = 4
 				end
 			end
 		end
-		local todo = 0
 		for _, c in view.counsel or {} do
 			if todo >= 3 then break end
+			-- [중복 제거] 튜토리얼 길잡이 문장은 바로 위 첫 항해 체크리스트와 중복 표시하지 않는다.
+			if H.tutorialGoalActive and string.sub(tostring(c.id or ""), 1, 2) == "g_" then continue end
 			todo += 1
 			local card = goal(string.format("%s의 조언", c.who and c.who.name or "동료"), c.text, nil)
 			if c.tab then
-				local go = mkButton(card, c.label or "가 보기", COLORS.green, UDim2.new(1, 0, 0, 40), function()
+				local go = mkButton(card, c.label or "가 보기", COLORS.green, UDim2.new(1, 0, 0, 46), function()
 					close()
 					H.goAdvice(c.tab)
 				end, true)
 				go.LayoutOrder = 4
+			end
+			if c.dismissable and c.id then
+				-- [기존 서버 동작 보존] 메뉴에서 없어진 '알겠어요'를 저널에 그대로 연결한다.
+				local done = mkButton(card, "알겠어요 · 조언 닫기", COLORS.grey, UDim2.new(1, 0, 0, 46), function()
+					close()
+					call("AdviceDone", { id = c.id })
+				end, true)
+				done.LayoutOrder = 5
 			end
 		end
 		if todo == 0 then
