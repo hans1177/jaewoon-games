@@ -317,7 +317,7 @@ return function(D, S)
 				state.storySeen["route_clue:" .. quest.id] = true
 				state._scenes = state._scenes or {}
 				local source = quest.leadSource or "현지 제보"
-				local detail = quest.story or quest.summary
+				local detail = (storyOf(quest)) -- 해당 항로의 실제 집필한 저널 첫 장을 연다.
 				table.insert(state._scenes, {
 					kind = "start", name = quest.name .. " · " .. source,
 					text = source .. ": " .. detail, summary = quest.summary,
