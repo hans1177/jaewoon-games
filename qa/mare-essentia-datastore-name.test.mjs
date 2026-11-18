@@ -2865,16 +2865,16 @@ test('해전 전술·연타·알림과 탐험 목표의 모바일 영역을 분�
 // [지상 동료 HUD] 동료의 말은 화면을 막지 않아야 하며 종료 후 기본 정보가 복구되어야 한다.
 test('지상 동료 말풍선은 가로·세로 화면에서 지도와 터치 버튼을 가리지 않는다',()=>{
   const source=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
-  assert.match(source,/talkBox\.Position = if compactTouch then UDim2\.fromOffset\(12, 148\) else UDim2\.new\(0\.5, 0, 0, 4\)/);
+  assert.match(source,/talkBox\.Position = if compactTouch then UDim2\.fromOffset\(12, 164\) else UDim2\.new\(0\.5, 0, 0, 4\)/);
   assert.match(source,/talkBox\.Size = UDim2\.fromOffset\(if compactTouch then math\.clamp\(screen\.X - 140, 170, 246\)/);
   assert.match(source,/local previousInfoVisible = if compactTouch then questHint\.Visible else title\.Visible/);
   assert.match(source,/if compactTouch then questHint\.Visible = false else title\.Visible = false end/);
   assert.match(source,/if compactTouch then questHint\.Visible = previousInfoVisible/);
   const box=(x,y,w,h)=>({l:x,r:x+w,t:y,b:y+h});
-  const overlap=(a,b)=>a.l<b.r && b.l<a.r && a.t<b.b && b.t<a.t+b.b-a.t && b.t<a.b;
+  const overlap=(a,b)=>a.l<b.r && b.l<a.r && a.t<b.b && b.t<a.b;
   for(const [width,height] of [[320,540],[384,832],[428,926],[600,280],[720,320],[832,384],[960,440]]){
     const compact=width<520 || width<=height;
-    const talk=compact?box(12,148,Math.max(170,Math.min(246,width-140)),106):
+    const talk=compact?box(12,164,Math.max(170,Math.min(246,width-140)),106):
       box((width-Math.min(440,Math.max(206,width-260)))/2,4,
         Math.min(440,Math.max(206,width-260)),60);
     const camera=box(width-120,12,108,44);
