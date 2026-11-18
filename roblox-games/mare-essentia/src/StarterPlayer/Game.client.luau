@@ -1956,7 +1956,7 @@ function H.layoutBook()
     else math.max(100, math.floor((width - statusWidth) * 0.5) - 82), 18)
   H.pageDetails.Visible = width >= 740
   local tabCount = #groupOf(currentTab).tabs
-  local gallery = view ~= nil and not newGameMode and currentTab ~= "map"
+  local gallery = view ~= nil and not newGameMode and currentTab ~= "map" and currentTab ~= "codex"
   local three = gallery and width >= 740
   local tabs = tabBar.Visible
   H.bookSpine.Visible = false
@@ -8616,30 +8616,41 @@ local function renderCodexOverview()
 		return cover
 	end)
 
+	-- [서재 빠른 길] 긴 설명 카드 대신 네 가지 목적지를 손가락 두 번 이내에 연다.
 	add(function()
-		local row = mkRow(content, "접현 전투 카드", "병종·영웅·특수 카드의 위력과 효과", {
-			{ text = "열기", color = COLORS.blue, onClick = function() codexField = "boarding"; render() end },
+		local quick = Instance.new("Frame")
+		quick.Name = "CodexQuickNavigation"
+		quick.BackgroundTransparency = 1
+		local compact = content.AbsoluteSize.X < 600
+		quick.Size = UDim2.new(1, -6, 0, if compact then 122 else 56)
+		local layout = Instance.new("UIGridLayout")
+		layout.CellSize = UDim2.new(if compact then 0.5 else 0.25, -6, 0, 54)
+		layout.CellPadding = UDim2.fromOffset(6, 6)
+		layout.SortOrder = Enum.SortOrder.LayoutOrder
+		layout.Parent = quick
+		for index, action in {
+			{ "이름 검색", "search" },
+			{ "자원 도감", "r:all" },
+			{ "14개 주제", "o:all" },
+			{ "근거 보기", "e:all" },
+		} do
+			local button = mkButton(quick, action[1], if index == 1 then COLORS.gold else COLORS.blue,
+				UDim2.new(), function()
+					codexField = action[2]
+					H.tradeBookGood = nil
+					render()
+				end, true)
+			button.LayoutOrder = index
+		end
+		return quick
+	end)
+	add(function() return mkHeader(content, "지식 탐색 · 7개 영역") end)
+	add(function()
+		local row = mkRow(content, "접현 전투 카드", "병종·영웅·특수 카드 효과", {
+			{ text = "카드 보기", color = COLORS.blue, onClick = function() codexField = "boarding"; render() end },
 		}, 60)
 		withIcon(row, "Menu", "battle", nil, 44)
 		return row
-	end)
-	-- [지구·인류 오브젝트] 기존 7개 세계 영역·42종 소재와 독립된 백과 14대 주제를 제공한다.
-	add(function() return mkHeader(content, "지구·인류 전체 오브젝트") end)
-	add(function()
-		return mkRow(content, "백과 통합 검색", "카드 이름·별칭·소재 태그·학문을 한곳에서 찾기", {
-			{ text = "검색", color = COLORS.blue, onClick = function() codexField = "search"; render() end },
-		}, 54)
-	end)
-	-- [모바일 백과] 한 번 탭해 14대 주제를 연다. 기존 7대 세계 분류·학문/소재 탐색은 유지.
-	add(function()
-		return mkRow(content, "세계 백과 · 14대 주제", "인물·국가·역사·경제부터 우주·수학까지", {
-			{ text = "주제별 보기", color = COLORS.blue, onClick = function() codexField = "o:all"; render() end },
-		}, 54)
-	end)
-	add(function()
-		return mkRow(content, "사실·가설·전설·창작", "발견한 지식의 근거 분류별 보기", {
-			{ text = "근거별 보기", color = COLORS.blue, onClick = function() codexField = "e:all"; render() end },
-		}, 54)
 	end)
 	for _, group in cx.worldGroups or {} do
 		add(function()
@@ -8648,11 +8659,6 @@ local function renderCodexOverview()
 			}, 52)
 		end)
 	end
-	add(function()
-		return mkRow(content, "세계 교역·자원 목록 · " .. tostring(#(cx.resources or {})) .. "종", "광석·금속·목재·식량·섬유·연료·가공품까지 기존 상품 원본 연결", {
-			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "r:all"; render() end },
-		}, 58)
-	end)
 	-- [새 분류] 습득 방식은 카드 종류·희귀도·학문과 독립된다. 기존 학문 화면도 그대로 유지한다.
 	add(function() return mkHeader(content, "습득 방식 · 3가지") end)
 	for _, row in { { id = "discover", name = "발견", hint = "항구 방문·항해 중 관찰·단순 사건" },
