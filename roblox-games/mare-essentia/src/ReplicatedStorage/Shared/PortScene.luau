@@ -2833,6 +2833,15 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			end
 		end
 	end
+	-- [시각 전용 주택 등급] 같은 지역도 작은 민가부터 큰 상가·저택까지 섞는다.
+	-- 상위 발전도에서도 작은 집이 남고, 승인된 기존 모델·필지 수·경제 값은 그대로 쓴다.
+	local houseSizeBands = {
+		{ 0.62, 0.73, 0.84, 0.94, 1.02 },
+		{ 0.66, 0.79, 0.92, 1.08, 1.18 },
+		{ 0.69, 0.84, 1.00, 1.19, 1.36 },
+		{ 0.71, 0.88, 1.07, 1.31, 1.53 },
+		{ 0.73, 0.92, 1.14, 1.42, 1.72 },
+	}
 	-- 한 줄 채우기: z = 줄의 중심, t = 0(항구 쪽)~1(성벽 쪽)
 	-- [주거 구획] 항구·대로 측면·주거 행·칸 번호 조합으로 재진입 시 같은 필지 키를 쓴다.
 	local residentialDecorationPlaced = false
@@ -2845,12 +2854,37 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			if rng:NextNumber() < dens then
 				local sz = S * rng:NextNumber(0.9, 1.08)
 				local pos = Vector3.new(x + rng:NextNumber(-1, 1) * P.jx, 0, z + rng:NextNumber(-1, 1) * P.jz)
-				local half = sz * 0.62
-				if not onStreet(pos.X, half) and not reserved(pos.X, pos.Z, half) then
+				-- 같은 필지는 같은 크기 등급을 선택한다. 공용 랜덤 흐름을 소비하지 않아 다른 건물 배치를 흔들지 않는다.
+				local sizeRng = seeded(plotId .. ":house-size")
+				local roll = sizeRng:NextInteger(1, 100)
+				local sizeClass = if roll <= 20 then 1 elseif roll <= 48 then 2
+					elseif roll <= 74 then 3 elseif roll <= 92 then 4 else 5
+				local sizeJitter = sizeRng:NextNumber(0.97, 1.03)
+				local widthBase = fw * (sz / S)
+				local sizeScale = houseSizeBands[lvl][sizeClass] * sizeJitter
+				-- 집 본체뿐 아니라 동아시아 처마·서양 별채·베란다·계단도 여유 폭에 포함한다.
+				-- 기존 필지 점유 반경보다 작게 잡지 않아 모바일 건물 수가 증가하지 않는다.
+				local roofFactor = if style.kit == "eastasia" then 1.62 else 1.46
+				local projectedHalf = widthBase * sizeScale * HOUSE_SCALE * (style.sizeMul or 1)
+					* roofFactor * 0.5 + 3.5
+				local rowClearance = S * 0.5 + 4
+				-- 도로와 맞닿는 대형 주택은 같은 필지에서 한 단계 작은 형태를 선택한다.
+				while sizeClass > 1 and projectedHalf > rowClearance do
+					sizeClass -= 1
+					sizeScale = houseSizeBands[lvl][sizeClass] * sizeJitter
+					projectedHalf = widthBase * sizeScale * HOUSE_SCALE * (style.sizeMul or 1)
+						* roofFactor * 0.5 + 3.5
+				end
+				local half = math.max(sz * 0.62, projectedHalf)
+				if projectedHalf <= rowClearance and not onStreet(pos.X, half)
+					and not reserved(pos.X, pos.Z, half) then
 				local fl = P.fl0 + math.floor(t * P.flGrow + 0.5) + (if lvl >= 4 then 1 else 0) - (if lvl <= 1 then 1 else 0)
 				if rng:NextNumber() < 0.15 then fl += (if rng:NextNumber() < 0.5 then -1 else 1) end
+				-- 대형 저택 옆에 단층 작은 집이 남도록 지붕 높이도 크기 등급에 맞춘다.
+				if sizeClass == 1 and lvl >= 3 then fl -= 1 end
+				if sizeClass == 5 and lvl >= 3 then fl += 1 end
 				fl = math.clamp(fl, 1, P.flMax)
-				local ww = fw * (sz / S)
+				local ww = widthBase * sizeScale
 				local body = house(folder, pos, ww, ww * rng:NextNumber(0.85, 1), fl, style, rng)
 				if body then
 					-- 실제 주거 입주·증축 판단은 기존 경제의 주택 수·발전도가 담당한다.
@@ -2860,6 +2894,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					body:SetAttribute("BuildState", "complete")
 					body:SetAttribute("BuildTier", fl)
 					body:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+					body:SetAttribute("BuildingSizeClass", sizeClass)
+					body:SetAttribute("BuildingSizeScale", sizeScale)
+					body:SetAttribute("BuildingClearance", half)
 					-- [주거 성장] 이미 존재하는 주택 앞에 주민 휴식 시설·우물을 하나만 건설한다.
 					-- 첫 세대에 보이면 완공 상태로, 도시 발전 중 새로 해금된 경우에만 설치 모션을 사용한다.
 					if not residentialDecorationPlaced and decor.residential > 0 and decorPlaced < decorLimit then
