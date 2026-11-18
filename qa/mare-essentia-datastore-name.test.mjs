@@ -184,10 +184,12 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   // [세 원형 버튼·파티 HUD] 실제 터치 사각형은 가장자리까지 클릭되므로 12가지 화면 크기에서
   // 버튼끼리, 파티창·미니맵·조이스틱·카메라와 겹치지 않아야 한다. 실제 명중/스킬 판정은 보존한다.
   assert.ok(field.includes('addIcon(wbtn, "Menu/field_weapon")'));
-  assert.ok(field.includes('map.Position = if compactTouch then UDim2.fromOffset(226, 90)'));
+  assert.ok(field.includes('map.Name = "FieldMiniMap"'));
+  assert.ok(field.includes('map.Position = UDim2.fromOffset(226, 74)'));
   assert.ok(field.includes('if compactTouch then UDim2.new(1, -68, 1, -315)'));
   assert.ok(field.includes('if compactTouch then UDim2.new(1, -62, 1, -202)'));
-  assert.ok(field.includes('local partyWidth = if narrowParty then math.clamp(screen.X - 500, 100, 170) else 202'));
+  assert.ok(field.includes('local partyWidth = if landscape then math.min(202, math.max(55, screen.X - allyX - 12)) else 202'));
+  assert.ok(field.includes('partyWidth = math.min(partyWidth, math.max(40, screen.X - allyX - 144))'));
   assert.ok(field.includes('lastTouchEnded = os.clock()'));
   assert.ok(field.includes('touchActive = true'));
   assert.ok(field.includes('if touchActive or os.clock() - lastTouchEnded < 0.45 then return end'));
@@ -207,13 +209,17 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
       height-(portrait?202:short?67:106),portrait?86:short?88:96);
     const weapon=rect(width-(portrait?68:width<780?90:175),
       height-(portrait?315:short?181:225),portrait?76:short?72:80);
-    const map=box(portrait?226:236,portrait?90:74,
-      portrait?92:short?82:106,portrait?92:short?82:106);
-    const narrowParty=width>=600 && width<720 && width>height;
-    const partyWidth=narrowParty?Math.max(100,Math.min(170,width-500)):202;
-    const allies=width>=600 && width>height?
-      [box(356,74,partyWidth,height<350?44:52),
-       box(356,height<350?120:130,partyWidth,height<350?44:52)]:
+    const mapSize=width<520?92:short?82:106;
+    const map=box(226,74,mapSize,mapSize);
+    const landscape=width>height && width>=470;
+    const allyX=226+mapSize+12;
+    let partyWidth=landscape?Math.min(202,Math.max(55,width-allyX-12)):202;
+    if(landscape && width<650 && height<330)
+      partyWidth=Math.min(partyWidth,Math.max(40,width-allyX-144));
+    const shortHud=landscape && height<380;
+    const allies=landscape?
+      [box(allyX,74,partyWidth,shortHud?44:52),
+       box(allyX,74+(shortHud?48:56),partyWidth,shortHud?44:52)]:
       [box(12,282,202,52),box(12,338,202,52)];
     const rest=[
       ['이동패드',box(28,height-178,150,150)],
@@ -241,7 +247,8 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.match(field,/combatBtns\.dodge = \{ btn = b, label = "회피" \}/);
   assert.equal((field.match(/bindPress\(b, function\(\) useMove\("dodge"\) end\)/g)||[]).length,1,'회피 입력 중복 금지');
   assert.doesNotMatch(field,/FieldSkillCaption|Name = "FieldSkill_|local function mkSkill\(/);
-  assert.match(field,/timer\.Visible = false -- \[아이콘 전용\]/);
+  assert.match(field,/if timer then timer\.Visible = false end/);
+  assert.match(field,/shade\.BackgroundTransparency = 0\.24 \+ \(1 - fraction\) \* 0\.68/);
   assert.match(field,/equipped\.heavy, equipped\.sweep = true, false/);
   assert.match(field,/pl\.autoNormalHits % 5 == 0/);
   // [빠른 연타] 0.14초 지연된 이전 평타도 명중 당시 새 입력 여부와 관계없이 충전해야 한다.
