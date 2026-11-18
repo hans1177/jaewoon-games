@@ -167,8 +167,8 @@ export function selectVibe59FreeExperts({
   }).sort((a,b)=>b.score-a.score||ids.indexOf(a.id)-ids.indexOf(b.id));
   return Object.freeze({version:'5.9',domain:role,source:'EXISTING_FREE_MODEL_ROTATION',
     expertCandidates:scored.filter(x=>includeUnconfigured||x.eligible)
-      .map(({id,provider,model,score,eligible,verifiedSamples,evidence})=>
-        ({id,provider,model,score,eligible,verifiedSamples,evidence})),
+      .map(({id,provider,model,score,available,eligible,verifiedSamples,evidence})=>
+        ({id,provider,model,score,available,eligible,verifiedSamples,evidence})),
     sourceWrite:false,externalModelCalled:false,independentQaRequired:true});
 }
 export async function requestGeminiFreePair({
