@@ -829,6 +829,35 @@ local NPC_REGISTERED_ACCESSORY = {
 	companion_female = { "acc_pearl_hairpin", "Head", 0.55, 0.58, 0.60, 0.28, 0.33, -0.06 },
 }
 
+-- [원본 GLB 재질] 복식 9종에 포함된 glTF 색상 12개와 금속/가죽/직물 구분을 그대로 사용한다.
+-- 실제 ColorMap/SurfaceAppearance가 있으면 우선 보존하고, 누락된 색만 원본 기준으로 복원한다.
+local OUTFIT_SOURCE_MATERIALS = {
+	{ Color3.new(0.14, 0.21, 0.28), Enum.Material.Fabric },
+	{ Color3.new(0.58, 0.42, 0.26), Enum.Material.Fabric },
+	{ Color3.new(0.88, 0.79, 0.65), Enum.Material.Fabric },
+	{ Color3.new(0.72, 0.49, 0.19), Enum.Material.Metal },
+	{ Color3.new(0.32, 0.18, 0.11), Enum.Material.Leather },
+	{ Color3.new(0.44, 0.16, 0.18), Enum.Material.Fabric },
+	{ Color3.new(0.47, 0.53, 0.57), Enum.Material.Metal },
+	{ Color3.new(0.23, 0.27, 0.31), Enum.Material.Metal },
+	{ Color3.new(0.25, 0.36, 0.31), Enum.Material.Fabric },
+	{ Color3.new(0.78, 0.76, 0.70), Enum.Material.Fabric },
+	{ Color3.new(0.09, 0.11, 0.15), Enum.Material.Fabric },
+	{ Color3.new(0.83, 0.66, 0.34), Enum.Material.Metal },
+}
+-- [GLB 무채색 가져오기 보정] 인덱스를 잃어버린 메시만 역할별 원본 주재질 사용.
+local OUTFIT_PRIMARY_MATERIALS = {
+	outfit_vest = { Color3.new(0.14, 0.21, 0.28), Enum.Material.Fabric },
+	outfit_coat = { Color3.new(0.14, 0.21, 0.28), Enum.Material.Fabric },
+	outfit_guard = { Color3.new(0.47, 0.53, 0.57), Enum.Material.Metal },
+	outfit_apron = { Color3.new(0.58, 0.42, 0.26), Enum.Material.Fabric },
+	outfit_sash = { Color3.new(0.25, 0.36, 0.31), Enum.Material.Fabric },
+	outfit_belt = { Color3.new(0.32, 0.18, 0.11), Enum.Material.Leather },
+	outfit_cuff = { Color3.new(0.88, 0.79, 0.65), Enum.Material.Fabric },
+	outfit_boot = { Color3.new(0.32, 0.18, 0.11), Enum.Material.Leather },
+	outfit_stole = { Color3.new(0.78, 0.76, 0.70), Enum.Material.Fabric },
+}
+
 -- 이미 생성된 R15 몹에 승인 실물 외형을 적용한다. People 지연 로드·거리 갱신을 같은 함수에서 처리한다.
 function Pose.applyRegisteredMobOutfit(model, throttled)
 	if not model or not model.Parent or model:GetAttribute("RigType") ~= "R15" then return false end
@@ -1025,38 +1054,72 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				part.Massless = true
 				local textured = part:FindFirstChildOfClass("SurfaceAppearance") ~= nil
 					or (part:IsA("MeshPart") and part.TextureID ~= "")
-				-- [PBR 보존] 직접 제작한 옷의 황동·가죽·천 원본 색과 재질은 덮지 않는다.
-				if not textured and string.sub(assetName, 1, 7) ~= "outfit_" then
+				-- [원본 재질 복원] 9개 복식 GLB는 ColorMap 없이 glTF baseColorFactor로
+				-- 금속·가죽·직물을 나눴다. 텍스처가 없다는 이유로 Roblox의 기본 플라스틱을
+				-- 방치하지 않고 실제 GLB 주재질에 가까운 색·표면으로 복원한다.
+				if not textured and string.sub(assetName, 1, 7) == "outfit_" then
+					local color = part.Color
+					local bestMaterial, bestError = nil, math.huge
+					for _, candidate in OUTFIT_SOURCE_MATERIALS do
+						local sourceColor = candidate[1]
+						local err = (color.R - sourceColor.R) ^ 2
+							+ (color.G - sourceColor.G) ^ 2 + (color.B - sourceColor.B) ^ 2
+						if err < bestError then
+							bestMaterial, bestError = candidate[2], err
+						end
+					end
+					local fallback = OUTFIT_PRIMARY_MATERIALS[assetName]
+					if bestError < 0.045 then
+						part.Material = bestMaterial
+					elseif fallback then
+						part.Material = fallback[2]
+						-- 색상을 잃고 흰색으로 업로드된 경우에만 원본 주색을 복원한다.
+						-- 멀쩡한 GLB의 재단 부위별 색상 차이는 절대로 일괄 덮지 않는다.
+						if color.R > 0.88 and color.G > 0.88 and color.B > 0.88 then
+							part.Color = fallback[1]
+						end
+					end
+					part.Reflectance = if part.Material == Enum.Material.Metal then 0.025 else 0
+				elseif not textured then
 					local meshName = (assetName .. "_" .. part.Name):lower()
 					local armor = meshName:find("pauldron", 1, true) or meshName:find("plate", 1, true)
 					local hair = meshName:find("hair_", 1, true)
-					local hide = meshName:find("hood", 1, true)
+					local hood = meshName:find("hood", 1, true)
 					local tunic = meshName:find("peasant", 1, true)
 					local badge = meshName:find("acc_guild_badge", 1, true)
-					local hairpin = meshName:find("acc_pearl_hairpin", 1, true)
+					local pearl = meshName:find("acc_pearl_hairpin", 1, true)
 					local ribbon = meshName:find("acc_ribbon_bow", 1, true)
-					local headwear = meshName:find("acc_feather_hat", 1, true) or meshName:find("acc_sailor_headband", 1, true)
-					-- [실물 장신구] 텍스처가 없는 모델만 소재 보정한다. 배지는 금속, 머리핀은 진주,
-					-- 리본·선원 머리띠는 천으로 표시하고 PBR 원본은 절대 덮지 않는다.
-					part.Material = if armor or badge or hairpin then Enum.Material.Metal
-						elseif hair or hide or tunic or ribbon or headwear then Enum.Material.Fabric else Enum.Material.Leather
+					local headwear = meshName:find("acc_feather_hat", 1, true)
+						or meshName:find("acc_sailor_headband", 1, true)
+					local pearlWhite = pearl and part.Color.R > 0.72 and part.Color.G > 0.70
+					-- [머리·진주·장식] 머리는 직물 무늬가 아닌 매끈한 섬유광,
+					-- 진주 부분은 금속광이 아닌 무광 유백색. 금속 부위만 Metal로 표시.
+					part.Material = if armor or badge or (pearl and not pearlWhite) then Enum.Material.Metal
+						elseif hair or pearlWhite then Enum.Material.SmoothPlastic
+						elseif hood or tunic or ribbon or headwear then Enum.Material.Fabric
+						else Enum.Material.Leather
 					local tint = if armor then Color3.fromRGB(108, 117, 124)
 						elseif badge then Color3.fromRGB(188, 151, 80)
-						elseif hairpin then Color3.fromRGB(230, 216, 190)
+						elseif pearlWhite then Color3.fromRGB(235, 226, 211)
+						elseif pearl then Color3.fromRGB(188, 151, 80)
 						elseif ribbon then Color3.fromRGB(137, 66, 79)
 						elseif headwear then Color3.fromRGB(91, 78, 64)
-						elseif hair then (if npcOutfit then model:GetAttribute("NpcHairTint") else nil) or Color3.fromRGB(69, 52, 41)
-						elseif hide then Color3.fromRGB(71, 78, 71)
+						elseif hair then (if npcOutfit then model:GetAttribute("NpcHairTint") else nil)
+							or Color3.fromRGB(69, 52, 41)
+						elseif hood then Color3.fromRGB(71, 78, 71)
 						elseif npcOutfit and (tunic or meshName:find("ranger_body", 1, true)) then target.Color
 						elseif tunic then Color3.fromRGB(126, 108, 86)
-						else Color3.fromRGB(96, 79, 65)
+						else target.Color
 					local neutral = math.max(part.Color.R, part.Color.G, part.Color.B)
 						- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.11
-					part.Color = part.Color:Lerp(tint,
-						if hair and npcOutfit and model:GetAttribute("NpcHairTint") then 0.72
-						elseif (badge or hairpin or ribbon) and neutral then 0.54
-						elseif neutral and part.Color.R > 0.72 then 0.78 else 0.14)
-					part.Reflectance = if armor or badge or hairpin then 0.025 else 0
+					local faded = neutral and part.Color.R > 0.87
+					-- [기존 채색 보존] 이미 컬러가 들어간 메시를 황토색으로 몰아넣지 않는다.
+					-- 원본 색상 누락 또는 인물의 실제 머리색에 필요한 부분만 최소 보정한다.
+					if faded or (hair and npcOutfit and model:GetAttribute("NpcHairTint")) then
+						part.Color = part.Color:Lerp(tint,
+							if hair and model:GetAttribute("NpcHairTint") then 0.40 else 0.78)
+					end
+					part.Reflectance = if part.Material == Enum.Material.Metal then 0.025 else 0
 				end
 				local weld = Instance.new("WeldConstraint")
 				weld.Part0, weld.Part1, weld.Parent = target, part, part
