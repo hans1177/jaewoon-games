@@ -9818,6 +9818,14 @@ function RENDERERS.encyclopedia()
 	local articles = require(Shared:WaitForChild("KnowledgeCards")).Articles
 	local all, groups, known, byId = {}, { { id = "all", name = "전체" } }, {}, {}
 	local fieldCounts, explained, pictured = {}, 0, 0
+	local collectedOriginals = 0
+	-- [해전 원화 화첩] 기존 소장 목록과 등록된 동일 ID의 승인 원화만 가져온다.
+	-- 백과 발견 수, 전투 카드 수, 강화, 보상, 저장 구조에는 영향을 주지 않는다.
+	local owned = (view.cardbook and view.cardbook.owned) or {}
+	local units = require(Shared:WaitForChild("BoardingCards")).Units
+	local registeredArt = require(Shared:WaitForChild("CardArt")).Art
+	local motionCards = { ea_03 = true, ea_04 = true, ea_05 = true, ea_08 = true, ea_09 = true,
+		ea_10 = true, ea_12 = true, ea_13 = true, ea_14 = true, ea_15 = true, ea_16 = true, ea_17 = true }
 	for _, card in (cx.cards or {}) do
 		if card.found then
 			table.insert(all, card)
@@ -9831,6 +9839,36 @@ function RENDERERS.encyclopedia()
 				table.insert(groups, { id = card.field, name = if group then group.name else tostring(card.field) })
 			end
 		end
+	end
+	for cardId, quantity in owned do
+		if type(cardId) == "string" and type(quantity) == "number" and quantity > 0
+			and string.match(cardId, "^%a%a_%d%d$") and not byId[cardId] then
+			local unit = units[cardId]
+			local art = registeredArt[cardId]
+			if unit and art and type(art.image) == "string" and art.image ~= "" then
+				-- [24프레임 전용] 시트는 기존 승인·업로드 경로에서 등록된 경우에만 사용.
+				-- 미등록된 JPG 시안을 로컬/외부 주소로 불러오거나 원화를 대체하지 않는다.
+				local sheetId = if motionCards[cardId] then AssetIds["CardArt/" .. cardId .. "_24f"] else nil
+				local item = {
+					id = cardId, name = unit.name, description = unit.lore or "해전 카드에서 수집한 원화야.",
+					field = "ArtGallery", found = true, combatArt = true, motionCandidate = motionCards[cardId] == true,
+					motionSheet = if type(sheetId) == "number" and sheetId > 0 then sheetId else nil,
+					topic = unit.category or "전투 카드", kindName = unit.category or "해전 카드",
+					worldGroup = "해전 수집 원화", entityType = "보유 전투 카드",
+					discipline = "해양 문화·전투 카드", source = "내 카드 수집책 · 현재 보유 중",
+					image = art.image, credit = art.credit, tags = { unit.category or "해전 카드" },
+				}
+				table.insert(all, item)
+				byId[cardId] = item
+				collectedOriginals += 1
+				pictured += 1
+			end
+		end
+	end
+	if collectedOriginals > 0 then
+		fieldCounts.ArtGallery = collectedOriginals
+		table.insert(groups, { id = "ArtGallery", name = "해전 원화 화첩" })
+		known.ArtGallery = true
 	end
 	table.sort(all, function(a, b)
 		if a.field ~= b.field then return tostring(a.field) < tostring(b.field) end
@@ -9871,7 +9909,8 @@ function RENDERERS.encyclopedia()
 			if matches then table.insert(found, card) end
 		end
 	end
-	add(function() return mkHeader(content, string.format("대항해 지식 대백과 · 발견 %d / %d", #all, cx.total or #all)) end)
+	add(function() return mkHeader(content, string.format("대항해 지식 대백과 · 지식 %d / %d · 해전 원화 %d",
+		cx.found or (#all - collectedOriginals), cx.total or #all, collectedOriginals)) end)
 	add(function() return mkLabel(content, string.format("장문 해설 %d장 · 등록 도판 %d장 · 미발견 지식은 비공개", explained, pictured), 15, INK_SOFT, false) end)
 	if #queryWords > 0 or fieldId ~= "all" then
 		add(function() return mkLabel(content, string.format("분야 · %s / 검색 결과 %d장", groupName, #found), 16, INK, true) end)
@@ -10010,7 +10049,11 @@ function RENDERERS.encyclopedia()
 	end
 	H.encyclopediaPage = math.clamp(H.encyclopediaPage or 1, 1, #found)
 	local current = found[H.encyclopediaPage]
-	local category = findField(current.field) or { name = tostring(current.field or "세계 지식"), color = { 122, 89, 48 } }
+	local category = if current.combatArt then {
+		name = "해전 원화 화첩", color = { 122, 89, 48 },
+		detail = "해전 카드에서 수집한 물건·배·유물의 원화를 정리한 도판이야. 실제 역사 지식과 게임 카드 설정을 구분해 읽어 줘.",
+		tip = "내 카드 수집책에서 보유 중인 원화만 여기에 나타나.",
+	} else findField(current.field) or { name = tostring(current.field or "세계 지식"), color = { 122, 89, 48 } }
 	local article = articles[current.id]
 	-- [가죽 표지·양피지] 한 장의 사진과 전체 길이 해설. 말줄임 없이 책 안에서 읽는다.
 	local bookFrame
@@ -10073,16 +10116,45 @@ function RENDERERS.encyclopedia()
 		order += 1
 		corner(art, 5)
 		art.Parent = sheet
-		-- [그림은 빈칸 유지] 기존 승인 도판만 표시한다. 그림이 없으면 파츠·대체 이미지도 만들지 않는다.
-		if type(current.image) == "string" and current.image ~= "" then
+		-- [원화 표시 규칙] 정확히 24프레임으로 등록된 원화만 시트 애니메이션.
+		-- 나머지는 기존 등록 원화를 정지 상태 그대로 보여 주며 미등록은 빈칸이다.
+		if current.combatArt and current.motionSheet then
+			local image = Instance.new("ImageLabel")
+			image.Name = "Encyclopedia24FrameArt"
+			image.BackgroundTransparency = 1
+			image.Size = UDim2.fromScale(1, 1)
+			image.ScaleType = Enum.ScaleType.Fit
+			image.Image = "rbxassetid://" .. tostring(current.motionSheet)
+			image.ImageRectSize = Vector2.new(256, 256)
+			image.ImageRectOffset = Vector2.new(0, 0)
+			image.Parent = art
+			-- [모바일 성능] 현재 펼쳐 놓은 장에서만 6열×4행, 24장의 원본 프레임을 순환한다.
+			task.spawn(function()
+				local frame = 0
+				while image.Parent and image:IsDescendantOf(game) do
+					image.ImageRectOffset = Vector2.new((frame % 6) * 256, math.floor(frame / 6) * 256)
+					frame = (frame + 1) % 24
+					task.wait(0.15)
+				end
+			end)
+		elseif type(current.image) == "string" and current.image ~= "" then
 			paintCardArt(art, current, category, true)
 		end
-		line(if type(current.image) == "string" and current.image ~= ""
-			then "대표 그림 · " .. current.name
+		line(if current.combatArt and current.motionSheet then "24프레임 움직이는 원화 · " .. current.name
+			elseif current.combatArt and current.motionCandidate then "24프레임 시트 미등록 · 정지 원화 표시"
+			elseif type(current.image) == "string" and current.image ~= "" then "정지 원화 · " .. current.name
 			else "대표 그림 자리 · 추후 등록", 14, false, INK_SOFT)
 		line("Ⅰ. 개요", 19, true)
 		line(current.description or "등록된 개요가 없어.", 17, false)
-		if article then
+		if current.combatArt then
+			line("Ⅱ. 원화 기록", 19, true)
+			line("현재 소장한 해전 카드에 등록된 원화를 보여 주고 있어. 실제 역사적 고증과 게임 속 전투 설정은 구분해서 읽어야 해.", 17, false)
+			line("Ⅲ. 카드 수집 정보", 19, true)
+			line("분류: " .. tostring(current.topic or "해전 카드")
+				.. "\\n원화 출처: " .. tostring(current.credit or "기존 등록 자료")
+				.. "\\n등록 방식: " .. (if current.motionSheet then "24프레임 애니메이션"
+					elseif current.motionCandidate then "정지 원화 · 24프레임 시트 등록 대기" else "정지 원화"), 16, false)
+		elseif article then
 			if article.details and article.details ~= "" then
 				line("Ⅱ. 특징과 구조", 19, true)
 				line(article.details, 17, false)
@@ -10166,7 +10238,7 @@ function RENDERERS.encyclopedia()
 			else "본문: 게임 지식카드 · 외부 참고 자료 확인 대기", 15, false, INK_SOFT)
 		-- [외부 참고 주소] Roblox 안에서 외부 페이지를 강제로 띄우지 않는다.
 		-- 승인된 상세 원고는 위키백과 원문 주소를, 그 외는 검색 주소를 구별하여 표시한다.
-		if current.evidenceId ~= "fiction" then
+		if not current.combatArt and current.evidenceId ~= "fiction" then
 			local referenceUrl = if article and article.topic and article.topic ~= ""
 				then "https://en.wikipedia.org/wiki/" .. article.topic
 				else "https://ko.wikipedia.org/w/index.php?search=" .. game:GetService("HttpService"):UrlEncode(current.name)
@@ -10225,10 +10297,12 @@ function RENDERERS.encyclopedia()
 			line("연관된 장소·상품·사료", 19, true)
 			line(table.concat(places, "\n"), 16, false)
 		end
-		local more = mkButton(sheet, "카드 원문 · 추가 연구 기록", COLORS.gold,
-			UDim2.new(1, -12, 0, 46), function() H.showCardDetail(current) end, true)
-		more.LayoutOrder = order
-		more.TextSize = 16
+		if not current.combatArt then
+			local more = mkButton(sheet, "카드 원문 · 추가 연구 기록", COLORS.gold,
+				UDim2.new(1, -12, 0, 46), function() H.showCardDetail(current) end, true)
+			more.LayoutOrder = order
+			more.TextSize = 16
+		end
 		return book
 	end)
 	-- [책 하단 고정] 본문을 읽는 동안 이전/다음 장과 책갈피 버튼은 제자리에 둔다.
@@ -10257,11 +10331,11 @@ function RENDERERS.encyclopedia()
 			render()
 		end, H.encyclopediaPage < #found)
 		nextPage.Position = UDim2.new(0.65, 5, 0, 3)
-		local save = mkButton(nav, if H.encyclopediaBookmarkId == current.id then "책갈피 빼기" else "책갈피 꽂기",
+		local save = mkButton(nav, if current.combatArt then "지식 책갈피 전용" elseif H.encyclopediaBookmarkId == current.id then "책갈피 빼기" else "책갈피 꽂기",
 			COLORS.leather, UDim2.new(0.5, -5, 0, 44), function()
 				local result = call("SetEncyclopediaBookmark", { id = current.id })
 				if result and result.ok then Sfx.play("sfx_book_turn", 0.3) end
-			end, true)
+			end, not current.combatArt)
 		save.Position = UDim2.fromOffset(0, 59)
 		save.TextSize = 16
 		local saved = H.encyclopediaBookmarkId and byId[H.encyclopediaBookmarkId]
