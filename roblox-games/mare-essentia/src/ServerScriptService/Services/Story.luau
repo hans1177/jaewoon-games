@@ -76,7 +76,7 @@ return function(D, S)
 			table.insert(msgs, string.format("명성 +%d", fx.fame))
 		end
 		if fx.cardId then
-			S.Discovery.grantCard(state, fx.cardId, msgs)
+			S.Discovery.grantCard(state, fx.cardId, msgs, { method = "event", eventId = e.id })
 		end
 		if fx.affinity then
 			S.Perk.addAffinity(state, fx.affinity, msgs)
