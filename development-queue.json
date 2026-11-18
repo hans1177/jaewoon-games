@@ -2,6 +2,29 @@
   "version": 1,
   "items": [
     {
+      "gameId": "mare-essentia",
+      "gameName": "대항해시대",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
+      "status": "PENDING",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/mare-essentia"
+      },
+      "robloxProjectPath": "roblox-games/mare-essentia",
+      "sourcePath": "roblox-games/mare-essentia",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "sourceContinuationPendingAdmission": true,
+      "enqueuedAt": "2026-11-18T01:58:08.500Z",
+      "updatedAt": "2026-11-18T01:58:08.500Z"
+    },
+    {
       "gameId": "deep-diver",
       "seedId": "AUTO-MISSING-DESIGN-DEEP-DIVER",
       "gameName": "심해 잠수부 · 검은 바다의 보물",
@@ -3094,9 +3117,32 @@
         "restartedAt": "2026-11-04T14:28:26.007Z",
         "authority": "canonical-main-f0-restart"
       }
+    },
+    {
+      "gameId": "card-grid-duel",
+      "gameName": "card-grid-duel",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
+      "status": "PENDING",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/card-grid-duel"
+      },
+      "robloxProjectPath": "roblox-games/card-grid-duel",
+      "sourcePath": "roblox-games/card-grid-duel",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "sourceContinuationPendingAdmission": true,
+      "enqueuedAt": "2026-11-18T01:58:08.500Z",
+      "updatedAt": "2026-11-18T01:58:08.500Z"
     }
   ],
-  "updatedAt": "2026-11-18T01:53:03.599Z",
+  "updatedAt": "2026-11-18T01:58:08.500Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
