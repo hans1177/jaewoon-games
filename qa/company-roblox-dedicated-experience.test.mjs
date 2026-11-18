@@ -21,7 +21,7 @@ test('Mare trade cargo eight distinct 3D model silhouettes stay within mobile bu
     cwd:process.cwd(),encoding:'utf8',timeout:20000,
   });
   for(const id of ['amber','ambergris','camphor','coal','guano','gum_arabic','jade','nitrate'])
-    assert.match(output,new RegExp('CARGO_3D_QUALITY_CHECK='+id+' TRIANGLES=\\\\d+'));
+    assert.match(output,new RegExp('CARGO_3D_QUALITY_CHECK='+id+' TRIANGLES=\\d+'));
   assert.match(output,/CARGO_3D_UNIQUE_SHAPES=8 PASS/);
 });
 
