@@ -3,7 +3,10 @@ name: Devloop Gates (Mare Essentia)
 on:
   push:
     branches: [main]
-    paths: ['roblox-games/mare-essentia/**']
+    paths:
+      - 'roblox-games/mare-essentia/**'
+      - 'qa/mare-essentia-datastore-name.test.mjs'
+      - '.github/workflows/devloop-gates.yml'
   workflow_dispatch:
 permissions:
   contents: read
