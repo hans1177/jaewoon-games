@@ -139,6 +139,8 @@ function loadPreviousDesignUsage(previous = {}) {
 }
 export function designRoleForFrames(frameNames = []) {
   const names = frameNames.join(' ').toLowerCase();
+  // [카드 전용 장면 제외] 외부 무료 디자인 검수는 카드 전투·덱·카드 그림을 다루지 않는다.
+  if (/(?:^cb[0-9]+(?:[_-]|\.)|(?:^|[_-])(?:card(?:s|art)?|deck|duel|battle_board)(?:[_-]|\.))/i.test(names)) return 'EXCLUDED_CARD';
   if (/(npc|face|hair|outfit|villager|resident|skin|citizen)/.test(names)) return 'NPC';
   // [교역품과 시설 메뉴] 실제 교역·조선·서재·주점 촬영본을 기존 UI 검수에 포함한다.
   if (/(hud|menu|gui|card|tab_|ui_|map_ui|inventory|font|interface|trade|market|goods|cargo|warehouse|shop|yard|shipwright|codex|quest|journal|diary|research|tech|recruit|crew|dialog|status|merchant|treasury|bank|tavern|palace|guild|museum|academy|facility|exchange|diplomacy|equipment|chart|library|headquarters|captain_room|harbor_authority)/.test(names)) return 'UI';
@@ -439,7 +441,7 @@ function photosFromStudio(directory = framesRoot, selectedRole = '') {
   if (!fs.existsSync(directory)) return [];
   const found = [];
   const names = fs.readdirSync(directory).sort().filter(name =>
-    /^[A-Za-z0-9_.-]+-[0-9]+\.(?:jpe?g|png)$/i.test(name));
+    /^[A-Za-z0-9_.-]+-[0-9]+\.(?:jpe?g|png)$/i.test(name) && designRoleForFrames([name]) !== 'EXCLUDED_CARD');
   const relevant = selectedRole ? names.filter(name =>
     designRoleForFrames([name]) === selectedRole) : names;
   // [교역품 실증] UI 대표 4장에 실제 교역 캡처를 우선 넣되 다른 영역도 기존 한도 내에서 검사한다.
@@ -577,9 +579,12 @@ export function rankVisualSourceFiles(files, role = 'GENERAL') {
     GENERAL: ['PortScene.luau', 'Pose.luau', 'Game.client.luau',
       'VoyageScene.luau', 'CardArt.luau', 'FieldScene.luau']
   }[role] || [];
-  const scoped = preferred.map(name => files.find(file => file.endsWith('/' + name)))
+  // [사용자 범위] 카드 아트·카드 전용 Luau는 외부 AI 수정 후보에서 제외한다.
+  const scoped = preferred.filter(name => !/^(?:CardArt|CardGallery|BoardingCards|CardBook|KnowledgeBattle)\.luau$/.test(name))
+    .map(name => files.find(file => file.endsWith('/' + name)))
     .filter(Boolean);
-  return (scoped.length >= 2 ? scoped : files).slice(0, 6);
+  return (scoped.length >= 2 ? scoped : files.filter(file =>
+    !/(?:CardArt|CardGallery|BoardingCards|CardBook|KnowledgeBattle)\.luau$/.test(file))).slice(0, 6);
 }
 
 function visualAnchors(files, role = 'GENERAL') {
@@ -587,7 +592,7 @@ function visualAnchors(files, role = 'GENERAL') {
   const patterns = {
     NPC: /hair|scalp|skirt|belt|face|eye|head|skin|fabric|shirt|robe|collar|outfit|neck|arm|leg|lightInfluence/i,
     WORLD: /roof|house|building|dock|market|tint|port|harbor|ship|sail|wood|stone|wall|window|boat|lamp|arch|town|pier|sea/i,
-    UI: /text|color|font|image|card|ui|background|scale|shadow|stroke|button|menu|transparency/i,
+    UI: /text|color|font|image|ui|background|scale|shadow|stroke|button|menu|transparency/i,
     MOTION: /motion|animation|rotation|tween|easing|walk|idle|attack|shoot|velocity|swing|pose|tilt/i,
     GENERAL: /color|material|brightness|transparency|size|position|scale/i
   };
@@ -599,7 +604,8 @@ function visualAnchors(files, role = 'GENERAL') {
     const lines = fs.readFileSync(target, 'utf8').split(/\r?\n/);
     const counts = new Map();
     for (const line of lines) counts.set(line, (counts.get(line) || 0) + 1);
-    const possible = lines.filter(line => cleanAnchor(line) && counts.get(line) === 1);
+    const possible = lines.filter(line => cleanAnchor(line) && counts.get(line) === 1 &&
+      !/(?:\bcard\b|\bcards\b|cardOnly|CardArt|CardBook|CardGallery|BoardingCards|KnowledgeBattle|\bdeck\b|\bduel\b)/i.test(line));
     const focused = possible.filter(line => focusedPattern.test(line));
     const selected = Array.from({length: 6}, (_, index) =>
       focused[Math.floor(index * Math.max(0, focused.length - 1) / 5)]).filter(Boolean);
@@ -660,7 +666,8 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   loadPreviousDesignUsage(carriedHistory);
   const pictures = fs.existsSync(framesRoot) ? fs.readdirSync(framesRoot)
     .filter(name => /-[0-9]+\.(?:jpe?g|png)$/i.test(name)) : [];
-  designRuntime.selectedRole = selectDesignFrameRole(pictures, previous.selectedRole);
+  designRuntime.selectedRole = selectDesignFrameRole(pictures.filter(name =>
+    designRoleForFrames([name]) !== 'EXCLUDED_CARD'), previous.selectedRole);
   const photos = photosFromStudio(framesRoot, designRuntime.selectedRole);
   const proofs = photos.map(({name, sha256}) => ({name, sha256}));
   if (photos.length < 2) return record('SKIPPED_STUDIO_IMAGES_UNAVAILABLE', {frames: proofs});
@@ -701,9 +708,10 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   if (!anchors.length) return record('SKIPPED_NO_EXISTING_VISUAL_ANCHORS', {frames: proofs});
   const prompt = 'You are a visual art director for the existing Roblox sea-voyage game. ' +
     'Study the verified real Studio screenshots and improve face, hair, clothing, ships, buildings, ' +
-    'materials, lighting, HUD, cards, portraits, motion, trade goods previews, shipyard, ' +
+    'materials, lighting, HUD, menus, portraits, motion, trade goods previews, shipyard, ' +
     'cargo, inventory, quests, codex, research and facility-menu composition where visually justified. ' +
     'For visible trade cargo, check whether the item is recognizable, correctly scaled, grounded without clipping, and has believable materials. Flag weak models as issues tied to the actual frame for source review. Skip cargo that is not shown. ' +
+    'Exclude standalone card battles, card decks, card art, and card-specific UI from all review and edits. ' +
     'Never create primitives, placeholder models, new art assets, URLs or unlicensed assets. ' +
     'Only change visual constants on EXISTING exact source lines shown in anchors. ' +
     'Never modify gameplay, economy, save, combat, physics, networking, or script control flow. ' +

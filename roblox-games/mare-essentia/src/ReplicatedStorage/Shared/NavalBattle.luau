@@ -1345,7 +1345,7 @@ function NavalBattle.play(opts)
 	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(96, 96), Vector2.new(1, 1), "Menu/naval_speed")
 	speedBtn.TextSize = 20
 	speedBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
-	local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, 119),
+	local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, if battleViewport.X < 480 then 181 else 119),
 		UDim2.fromOffset(if battleViewport.X < 480 then 56 else 96, if battleViewport.X < 480 then 36 else 30), Vector2.new(0, 0)) -- [좌상단] 전술판·우측 카드 지원·왼쪽 조타와 분리
 	skip.TextSize = if battleViewport.X < 480 then 11 else 14
 	skip.TextWrapped = battleViewport.X < 480
@@ -1899,8 +1899,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			skip.Active = true
 			skip.Interactable = true
 			skip.AnchorPoint = Vector2.zero
-			skip.Position = if compactCards then UDim2.new(0.98, -76, 0.012, 0) else UDim2.fromScale(0.02, 0.84)
-			skip.Size = if compactCards then UDim2.new(0, 76, 0.063, 0) else UDim2.fromOffset(112, 44)
+			skip.Position = if compactCards then UDim2.new(0.98, -96, 0.012, 0) else UDim2.fromScale(0.02, 0.84)
+			skip.Size = if compactCards then UDim2.fromOffset(96, 40) else UDim2.fromOffset(112, 44)
 			skip.ZIndex = 30
 		end
 		table.insert(conns, { Disconnect = function()
@@ -2337,14 +2337,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local rowTargets = { me = {}, foe = {} }
 		-- 카드를 고르면 그 카드가 놓일 줄(특수 카드는 판 전체)이 금빛으로 깜빡여 어디에 놓이는지 바로 보이게 한다.
 		local dropGlow
+		local forecastGlows = {}
 		local function clearDropHint()
+			for _, glow in forecastGlows do glow:Destroy() end
+			table.clear(forecastGlows)
 			if dropGlow then
 				pcall(function() dropGlow:Destroy() end)
 				dropGlow = nil
 			end
 		end
 		local function dropHint(c)
-			clearDropHint()
 			local side = if c.ability == "spy" or c.ability == "defect" or c.ability == "feigned" then "foe" else "me"
 			local target = if c.special then boardFrame else (rowTargets[side][BC.lane(c)] and rowTargets[side][BC.lane(c)].Parent)
 			if not target then return end
@@ -2454,12 +2456,30 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					elseif style == "heal" then UDim2.fromOffset(size.X * 0.76, size.Y * 0.45)
 					else UDim2.fromOffset(size.X, size.Y)
 				if style == "hit" then burst.Rotation = -23 end
+				if style == "stakes" then
+					burst.BackgroundColor3 = Color3.fromRGB(71, 161, 199)
+					for tooth = 1, 3 do
+						local stake = Instance.new("Frame")
+						stake.AnchorPoint = Vector2.new(0.5, 1)
+						stake.Position = UDim2.fromScale(tooth / 4, 0.94)
+						stake.Size = UDim2.fromScale(0.055, 0)
+						stake.BackgroundColor3 = Color3.fromRGB(251, 199, 120)
+						stake.BorderSizePixel = 0
+						stake.Rotation = -10
+						stake.ZIndex = 35
+						stake.Parent = burst
+						TweenService:Create(stake, TweenInfo.new(0.22), { Size = UDim2.fromScale(0.055, 0.6), BackgroundTransparency = 0.18 }):Play()
+					end
+				elseif style == "vanish" then
+					burst.BackgroundTransparency = 1
+				end
 				burst.BackgroundColor3 = tint
 				burst.BackgroundTransparency = 0.72
 				burst.BorderSizePixel = 0
 				burst.ZIndex = 35
 				burst.Parent = bg
 				local rim = frameEdge(burst, tint, if style == "guard" then 12 else 5)
+				if style == "vanish" then rim.Thickness = 3 end
 				rim.Thickness = if style == "guard" then 3 else 1
 				TweenService:Create(rim, TweenInfo.new(0.42), { Transparency = 1 }):Play()
 				TweenService:Create(burst, TweenInfo.new(0.42), {
@@ -2491,6 +2511,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local function playBoardEffects(before, order, card, leader)
 			local damage, aid, other = {}, {}, {}
 			local volley = {}
+			local source = card and boardCards[card]
+			local sourceCenter = cardCenter(source)
+			if sourceCenter then
+				local scale = Instance.new("UIScale")
+				scale.Scale = 0.9
+				scale.Parent = source
+				local unfold = TweenService:Create(scale, TweenInfo.new(0.20, Enum.EasingStyle.Back), { Scale = 1 })
+				unfold:Play()
+				task.delay(0.25, function() scale:Destroy() end)
+			end
 			if leader == "elizabeth" and m.armadaShots then
 				for i, shot in m.armadaShots do
 					local at = (i - 1) * 0.14
@@ -2523,8 +2553,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					if delta < 0 then
 						local tag = if card and card.id == "sa_36" then t("말뚝 ", "Stakes ") elseif leader == "elizabeth" then t("포격 ", "Volley ") else ""
 						local caption = tag .. "−" .. tostring(-delta)
+						local stain = if card and card.id == "sa_36" then "stakes" else "hit"
 						local tint = Color3.fromRGB(255, 143, 120)
-						if volley[unit] then effectAt(pos, size, caption, tint, volley[unit], "hit") else add(damage, caption, tint, "hit") end
+						if volley[unit] then effectAt(pos, size, caption, tint, volley[unit], "hit") else add(damage, caption, tint, stain) end
 					elseif delta > 0 then
 						local tag = if old.penalty < 0 and now.penalty == 0 then t("회복 ", "Heal ") else ""
 						add(aid, tag .. "+" .. tostring(delta), Color3.fromRGB(154, 233, 182), "heal")
@@ -2553,7 +2584,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if card and card.id == "eu_36" then
 				local size = boardFrame.AbsoluteSize
 				local pos = boardFrame.AbsolutePosition + size / 2 - bg.AbsolutePosition
-				effectAt(pos, Vector2.new(100, 30), t("잔 다르크 · 소멸", "Joan of Arc · Vanished"), Color3.fromRGB(255, 216, 132), delay)
+				effectAt(pos, Vector2.new(100, 30), t("잔 다르크 · 소멸", "Joan of Arc · Vanished"), Color3.fromRGB(255, 216, 132), delay, "vanish")
 			end
 		end
 		local function afterAction(ok, msg, res, card, side)
@@ -3225,6 +3256,44 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local selectedPlay
 		local focusMotion
 		local leaderPreviewId
+		local function selectionForecast(card)
+			local index = table.find(m.hand.me, card)
+			if not opts.cardOnly or not index then return nil end
+			local result = BC.previewPlay(m, "me", index)
+			if not result then return nil end
+			if result.blocked == "stakes" then
+				return t("예상 · 말뚝과 후열 유인 대상이 필요해. 이미 발동한 말뚝은 다시 쓸 수 없어.",
+					"Preview · Requires unused Stakes and a lured enemy in the back row.")
+			end
+			if result.random then return t("예상 · 징조가 무작위로 정해져.", "Preview · The omen is random.") end
+			if result.roundEnds then return t("예상 · 이 수로 라운드가 끝나.", "Preview · This play ends the round.") end
+			local items = {}
+			for _, target in (result.targets or {}) do
+				local widget = boardCards[target.card]
+				local tint = if target.left or (target.delta or 0) < 0 then Color3.fromRGB(245, 130, 112)
+					elseif (target.delta or 0) > 0 then Color3.fromRGB(146, 222, 175) else Color3.fromRGB(144, 208, 242)
+				if #forecastGlows < 8 and cardCenter(widget) then
+					local glow = Instance.new("UIStroke")
+					glow.Name = "ForecastTarget"
+					glow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+					glow.Thickness = 2
+					glow.Color = tint
+					glow.Parent = widget
+					table.insert(forecastGlows, glow)
+				end
+				if #items < 3 then
+					local change = if target.left then t("이탈", "leaves")
+						elseif target.moved then rowName(target.row) else ""
+					if target.delta and target.delta ~= 0 then
+						change ..= (if change == "" then "" else " ") .. string.format("%+d", target.delta)
+					end
+					table.insert(items, cardName(target.card) .. " " .. change)
+				end
+			end
+			if #items == 0 then return nil end
+			return t("예상 · ", "Preview · ") .. table.concat(items, " / ")
+				.. (if #result.targets > #items then t(" 외 ", " +") .. tostring(#result.targets - #items) else "")
+		end
 		local function showCardCodex(card, readOnly)
 			if focusMotion then
 				focusMotion.stop()
@@ -3288,12 +3357,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local category = if card.category then (if english then englishCategories[card.category] or card.category else card.category) .. " · " else ""
 				local strength = if card.power then t(" · 전투력 ", " · Power ") .. tostring(card.power) else ""
 				local description = cardDescription(card)
+				local forecast = if not readOnly then selectionForecast(card) else nil
 				local lore = cardLore(card)
 				local series = BC.StorySeries[card.id]
 				local kind = if card.cause or card.fuse then t("연쇄·조합", "Combo")
 					elseif card.special then t("전술", "Tactic") elseif card.hero then t("영웅", "Hero") else t("능력", "Ability")
 				focusRule.Text = category .. row .. strength .. (if timing then " · " .. timing else "") .. "\n" .. kind .. " · " .. description
 					.. (if series then "\n" .. t("이야기 · ", "Story · ") .. series[if english then 2 else 1] elseif lore then "\n" .. t("이야기 · ", "Story · ") .. lore else "")
+					.. (if forecast then "\n" .. forecast else "")
 					.. (if cardStatus(card) then "\n" .. t("상태 · ", "Status · ") .. cardStatus(card) else "")
 					.. (if BC.CardLines[card.id] then "\n「" .. BC.CardLines[card.id][if english then 2 else 1] .. "」" else "")
 				focusMotion = animateCardArt(focusArtwork, focusImage, card)
@@ -3755,6 +3826,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						end
 						b:SetAttribute("ArtFocused", true)
 						Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click")
+						clearDropHint()
 						showCardCodex(c)
 						dropHint(c)
 						selected = b
@@ -3810,6 +3882,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		info.Text = if english then string.format("Row advantage: Melee > Cannon > Ranged > Melee. Leader: %s",
 			englishLeaders[m.leader.me] or "Command")
 			else string.format("전열(근접)·후열(사격·포), 한 판 5장. 지도자: %s (%s)", BC.Leaders[m.leader.me].name, BC.Leaders[m.leader.me].text)
+
+		if cfg and cfg.book and cfg.book.practice then
+			local names = {}
+			for _, id in (BC.PracticeOpening[m.faction] or {}) do
+				local card = BC.Units[id] or BC.Specials[id]
+				if card then table.insert(names, cardName(card)) end
+			end
+			if #names > 0 then info.Text = t("연습전 첫 손패 조합 · ", "Practice opening combo · ") .. table.concat(names, " → ") end
+		end
 
 		task.spawn(function()
 			task.wait(1.0)

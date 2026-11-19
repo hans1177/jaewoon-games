@@ -1827,3 +1827,8 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 - 작업: 기존 사용자 원화에서 프레임/버튼/점수판/아이콘을 개별 투명 PNG로 분리 및 화면 크기 최적화. 신규 제작이나 외부 구매 없음. 각 해시는 `assets/APPROVED_IMAGES.json`, 등록 파일은 `assets/cardart/ui_*.png`.
 - 적용: 기존 `NavalBattle.luau`, `DeckBuilder.luau`, `CardGallery.luau` 화면만 개선. 보상·전투 판정·덱 저장·기존 자산은 보존.
 - 로블록스 실제 게시 및 모바일 런타임 표시 검증은 별개로 실시.
+
+## 중립 카드 손오공 원화
+
+- `CardArt/lo_51`: 프로젝트용 ChatGPT 생성 원화 「절벽에 강림한 손오공(1)」. 피·혈흔, 글자, 카드 테두리 없이 단일 장면임을 시각 확인. `PROJECT_ORIGINAL_ART`.
+- 원본 PNG SHA-256: `b496d91ffb0710fd45b06ac006e152ddfde72d4aacf857e8e32a0bc7f0457820`. 등록용 1200×900 JPEG SHA-256: `e37e8ff856eba052618d448e26c773b21a01cdc5219b25364bea7db07121fae3`.

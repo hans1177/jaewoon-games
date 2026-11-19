@@ -2918,9 +2918,12 @@ test('AI 디자인이 교역·선박·서재·주점·선장실 등 방문 메�
   for(const name of targets)assert.equal(designRoleForFrames([name]),'UI',name);
   assert.equal(designRoleForFrames(['ship_harbor-0.jpg']),'WORLD','일반 항해는 WORLD로 유지');
   assert.equal(designRoleForFrames(['npc_face-0.jpg']),'NPC','인물은 NPC로 유지');
+  for(const name of ['cb0_deck-0.jpg','card_battle-0.jpg','ui_card_duel-0.jpg'])
+    assert.equal(designRoleForFrames([name]),'EXCLUDED_CARD','외부 AI 카드 검수 금지: '+name);
   assert.equal(selectDesignFrameRole(targets),'UI','다수 UI 촬영본은 기존 UI 검수로 배정');
   const source=fs.readFileSync('tools/company-nemotron-design-review.mjs','utf8');
   assert.match(source,/trade goods previews, shipyard/,'무료 AI 디자인 검수 확장');
+  assert.match(source,/Exclude standalone card battles, card decks, card art/,'카드 외부 AI 수정 금지');
   assert.match(source,/Only change visual constants on EXISTING exact source lines shown in anchors/,
     '게임 규칙 변경을 막는 기존 검수 경계 유지');
 });

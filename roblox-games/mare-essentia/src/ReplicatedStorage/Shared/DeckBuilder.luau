@@ -25,9 +25,11 @@ local ROW_ORDER = { melee = 1, ranged = 2, cannon = 3 }
 -- [카드 원화] 지역별 박물관 테두리는 카드 ID만 읽으며 카드 수치와 저장에는 관여하지 않는다.
 local REGION_FRAME = { eu = "ui_frame_europe", ea = "ui_frame_east_asia", me = "ui_frame_middle_east", nw = "ui_frame_new_world", af = "ui_frame_africa", sa = "ui_frame_southeast_asia" }
 local FILTERS = {
-	{ id = "owned", text = "보유" }, { id = "all", text = "전체" }, { id = "hero", text = "영웅" }, { id = "special", text = "특수" },
+	{ id = "owned", text = "보유" }, { id = "all", text = "전체" }, { id = "combo", text = "대표 조합" },
+	{ id = "melee", text = "전열" }, { id = "ranged", text = "후열" }, { id = "special", text = "전술" },
+	{ id = "lo", text = "중립" }, { id = "hero", text = "영웅" },
 	{ id = "eu", text = "유럽" }, { id = "ea", text = "동아시아" }, { id = "me", text = "중동" }, { id = "nw", text = "신대륙" },
-	{ id = "af", text = "아프리카" }, { id = "sa", text = "동남아" }, { id = "lo", text = "미지의 땅" },
+	{ id = "af", text = "아프리카" }, { id = "sa", text = "동남아" },
 	{ id = "crew", text = "동료" },
 }
 local PAGE = 60
@@ -78,6 +80,11 @@ local function inFilter(ctx, id, d, f, owned)
 	if f == "all" then return true end
 	if f == "hero" then return d.hero == true end
 	if f == "special" then return ctx.BC.Specials[id] ~= nil end
+	if f == "melee" or f == "ranged" then return not d.special and d.row ~= nil and ctx.BC.lane(d) == f end
+	if f == "combo" then
+		local opening = ctx.BC.PracticeOpening[ctx.getBook().faction]
+		return opening ~= nil and table.find(opening, id) ~= nil
+	end
 	return ctx.BC.cardRegionPrefix(id) == f
 end
 
@@ -181,7 +188,9 @@ function DeckBuilder.build(parent, ctx)
 	bl.HorizontalFlex = Enum.UIFlexAlignment.Fill
 	bl.Parent = bottom
 	local practicePanel
-	local duelBtn = button(bottom, "", Color3.fromRGB(176, 62, 52), 18, function() ctx.startDuel() end)
+	local duelBtn = button(bottom, "", Color3.fromRGB(176, 62, 52), 18, function()
+		if cur.okDeck and not cur.dirty then ctx.startDuel() end
+	end)
 	local practiceBtn = button(bottom, "", Color3.fromRGB(70, 130, 84), 18, function()
 		if practicePanel then practicePanel.Visible = true end
 	end)
@@ -463,7 +472,7 @@ function DeckBuilder.build(parent, ctx)
 		leaderPreview.Visible = true
 	end)
 
-	local balance = Instance.new("Frame") -- 줄 균형 막대 3개
+	local balance = Instance.new("Frame") -- 전열·후열·전술·중립 요약
 	balance.Position = UDim2.fromOffset(6, 56)
 	balance.Size = UDim2.new(1, -12, 0, 20)
 	balance.BackgroundTransparency = 1
@@ -474,14 +483,25 @@ function DeckBuilder.build(parent, ctx)
 	balLayout.HorizontalFlex = Enum.UIFlexAlignment.Fill
 	balLayout.Parent = balance
 	local balLabels = {}
-	for _, row in { "melee", "ranged", "cannon" } do
+	for _, row in { "melee", "ranged", "special", "neutral" } do
 		local l = text(balance, "", 14, Color3.new(1, 1, 1), true)
 		l.BackgroundTransparency = 0
-		l.BackgroundColor3 = ROW_COLOR[row]
-		l.Size = UDim2.new(0, 60, 1, 0)
+		l.BackgroundColor3 = ROW_COLOR[row] or (if row == "neutral" then Color3.fromRGB(91, 63, 119) else Color3.fromRGB(112, 74, 46))
+		l.TextScaled = true
+		local limit = Instance.new("UITextSizeConstraint")
+		limit.MaxTextSize = 13
+		limit.Parent = l
+		l.Size = UDim2.new(0, 42, 1, 0)
 		corner(l, 6)
 		balLabels[row] = l
 	end
+
+	local comboButton = button(right, "", PANEL2, 13)
+	comboButton.Size = UDim2.new(1, -12, 0, 23)
+	comboButton.TextXAlignment = Enum.TextXAlignment.Left
+	local comboInset = Instance.new("UIPadding")
+	comboInset.PaddingLeft = UDim.new(0, 6)
+	comboInset.Parent = comboButton
 
 	local deckScroll = Instance.new("ScrollingFrame")
 	deckScroll.BackgroundTransparency = 1
@@ -510,8 +530,10 @@ function DeckBuilder.build(parent, ctx)
 		prevLeader.Size = if tall then UDim2.fromOffset(36, 34) else UDim2.fromOffset(32, 34)
 		nextLeader.Size = if tall then UDim2.fromOffset(36, 34) else UDim2.fromOffset(32, 34)
 		balance.Position = UDim2.fromOffset(6, if tall then 156 else 56)
-		deckScroll.Position = UDim2.fromOffset(6, if tall then 182 else 82)
-		deckScroll.Size = UDim2.new(1, -12, 1, -(if tall then 182 else 82) - 64)
+		comboButton.Position = UDim2.fromOffset(6, if tall then 179 else 79)
+		local scrollTop = if tall then 207 else 107
+		deckScroll.Position = UDim2.fromOffset(6, scrollTop)
+		deckScroll.Size = UDim2.new(1, -12, 1, -scrollTop - 64)
 	end
 	right:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutLeaderCard)
 	layoutLeaderCard()
@@ -538,7 +560,11 @@ function DeckBuilder.build(parent, ctx)
 			Sfx.play("sfx_error", 0.4, 1)
 		end
 	end)
-	local autoBtn = button(bottom, "자동 덱", Color3.fromRGB(60, 96, 140), 15, function() ctx.act("CardAutoDeck") end)
+	local autoBtn = button(bottom, "기본덱", Color3.fromRGB(60, 96, 140), 15, function()
+		showDeck = true
+		layoutBody()
+		ctx.onReplace(CB.autoDeck(ctx.getBook()))
+	end)
 	local recBtn = button(bottom, "추천 덱", Color3.fromRGB(110, 90, 60), 15, function() recPop.Visible = not recPop.Visible end)
 	for i, b in { saveBtn, autoBtn, recBtn } do
 		b.Size = UDim2.new(0, 100, 1, 0)
@@ -595,7 +621,12 @@ function DeckBuilder.build(parent, ctx)
 	for _, r in { { "rush", "돌격(근접)", Color3.fromRGB(176, 62, 52) }, { "gun", "포격(사격·포)", Color3.fromRGB(60, 96, 140) }, { "balance", "운영(균형)", Color3.fromRGB(70, 130, 84) } } do
 		local b = button(recPop, r[2], r[3], 14, function()
 			recPop.Visible = false
-			ctx.act("CardRecommend", { style = r[1] })
+			local ids = CB.recommend(ctx.getBook(), r[1])
+			if ids then
+				showDeck = true
+				layoutBody()
+				ctx.onReplace(ids)
+			end
 		end)
 		b.Size = UDim2.new(0, 60, 0, 34)
 		b.ZIndex = 31
@@ -819,6 +850,14 @@ function DeckBuilder.build(parent, ctx)
 		chipBtns[f.id] = b
 	end
 
+	comboButton.Activated:Connect(function()
+		showDeck = false
+		state.filter, state.page = "combo", 1
+		layoutBody()
+		paintChips()
+		rebuildGrid()
+	end)
+
 	-- 덱 목록 줄
 	local function rebuildDeckList()
 		for _, ch in deckScroll:GetChildren() do
@@ -940,14 +979,14 @@ function DeckBuilder.build(parent, ctx)
 		local book = ctx.getBook()
 		local ids = wantIds()
 		local okDeck, why = CB.validateDeck(book, ids)
-		local heroes, specials = 0, 0
-		local rowCount = { melee = 0, ranged = 0, cannon = 0 }
-		for _, id in ids do
-			if CB.isHero(id) then heroes += 1 end
-			if CB.isSpecial(id) then specials += 1 end
-			local d = CB.def(id)
-			if d and d.row and rowCount[d.row] then rowCount[d.row] += 1 end
+		local summary = CB.deckOverview(ids, book.faction)
+		local saved = table.clone(book.ids or {})
+		table.sort(saved)
+		local dirty = #saved ~= #ids
+		if not dirty then
+			for i, id in ids do if saved[i] ~= id then dirty = true; break end end
 		end
+		cur.dirty = dirty
 		local have, total = 0, 0
 		for _, id in ctx.catalog do
 			total += 1
@@ -961,10 +1000,14 @@ function DeckBuilder.build(parent, ctx)
 		countPill.Text = string.format("%d / %d", #ids, CB.MAX_DECK)
 		local countOk = #ids >= CB.MIN_DECK and #ids <= CB.MAX_DECK
 		countPill.BackgroundColor3 = if countOk then Color3.fromRGB(150, 225, 150) else Color3.fromRGB(240, 170, 130)
-		balLabels.melee.Text = "근접 " .. rowCount.melee
-		balLabels.ranged.Text = "사격 " .. rowCount.ranged
-		balLabels.cannon.Text = "포격 " .. rowCount.cannon
-		statusLine.Text = if okDeck then string.format("싸울 수 있어요 · 영웅 %d/%d · 특수 %d/%d", heroes, CB.MAX_HEROES, specials, CB.MAX_SPECIALS)
+		balLabels.melee.Text = "전열 " .. summary.melee
+		balLabels.ranged.Text = "후열 " .. summary.ranged
+		balLabels.special.Text = "전술 " .. summary.special .. "/" .. CB.MAX_SPECIALS
+		balLabels.neutral.Text = "중립 " .. summary.neutral .. "/" .. CB.LOST_MAX
+		comboButton.Visible = summary.comboTotal > 0
+		comboButton.Text = string.format("대표 조합 %d/%d · 카드 보기", summary.combo, summary.comboTotal)
+		comboButton.TextColor3 = if summary.combo == summary.comboTotal then Color3.fromRGB(158, 231, 175) else GOLD
+		statusLine.Text = if okDeck then string.format("%s · 영웅 %d/%d", if dirty then "저장 전" else "전투 가능", summary.heroes, CB.MAX_HEROES)
 			else "덱을 고쳐 주세요: " .. tostring(why)
 		statusLine.TextColor3 = if okDeck then Color3.fromRGB(150, 225, 150) else Color3.fromRGB(245, 160, 130)
 
@@ -974,8 +1017,8 @@ function DeckBuilder.build(parent, ctx)
 		saveBtn.AutoButtonColor = okDeck
 		local view = ctx.getView()
 		local duelLeft = (view and view.duelLeft) or 0 -- view = view.cardbook
-		duelBtn.Text = string.format("카드 대결\n(보상 %d회)", duelLeft)
-		duelBtn.BackgroundTransparency = if okDeck then 0 else 0.6
+		duelBtn.Text = if dirty then "저장 후 대결" else string.format("카드 대결\n(보상 %d회)", duelLeft)
+		duelBtn.BackgroundTransparency = if okDeck and not dirty then 0 else 0.6
 		practiceBtn.Text = if book.practiceDone then "연습전\n(보상 받음)" else "연습전\n(규칙 배우기)"
 
 		-- 지도자

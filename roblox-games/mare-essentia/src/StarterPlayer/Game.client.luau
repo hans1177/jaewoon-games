@@ -2939,7 +2939,7 @@ do
 		end
 		local function startPractice()
 			local bk = bookOf()
-			playCardOnly("연습전", "CardPractice", {}, { kind = "boarding", seed = 51, my = {}, foe = {}, book = { ids = bk.practiceIds, tier = {}, bonus = {} } })
+			playCardOnly("연습전", "CardPractice", {}, { kind = "boarding", seed = 51, my = {}, foe = {}, book = { ids = bk.practiceIds, tier = {}, bonus = {}, practice = true } })
 		end
 		local function startDuel()
 			local r = call("CardDuelStart")
@@ -3006,6 +3006,11 @@ do
 			catalog = catalog, galleryCtx = galleryCtx,
 			getBook = bookOf, getView = bookOf, getWant = function() return want end,
 			onWant = onWant, act = act, startPractice = startPractice, startDuel = startDuel,
+			onReplace = function(ids)
+				want = {}
+				for _, id in ids do want[id] = (want[id] or 0) + 1 end
+				ui.refresh(false)
+			end,
 			buildExtra = buildCrew,
 			onClose = function()
 				if open then

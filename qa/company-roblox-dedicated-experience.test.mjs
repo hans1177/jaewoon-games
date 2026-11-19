@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import {runInNewContext} from 'node:vm';
@@ -13,6 +14,16 @@ import {
   ensureRobloxExperiencePrivate,
   publishRobloxDedicatedPlace,
 } from '../tools/company-roblox-dedicated-experience.mjs';
+
+// [교역품 3D] 기존 생성기를 실행해 8종의 서로 다른 메시와 모바일 삼각면 예산을 검증한다.
+test('Mare trade cargo eight distinct 3D model silhouettes stay within mobile budget',()=>{
+  const output=execFileSync(process.execPath,['roblox-games/mare-essentia/tools/make_cargo.mjs','--check'],{
+    cwd:process.cwd(),encoding:'utf8',timeout:20000,
+  });
+  for(const id of ['amber','ambergris','camphor','coal','guano','gum_arabic','jade','nitrate'])
+    assert.match(output,new RegExp('CARGO_3D_QUALITY_CHECK='+id+' TRIANGLES=\\d+'));
+  assert.match(output,/CARGO_3D_UNIQUE_SHAPES=8 PASS/);
+});
 
 test('forest model registration fails closed when cached creator does not match the API key owner',()=>{
   const uploader=fs.readFileSync(new URL('../tools/baeksu-war-upload-meshes.mjs',import.meta.url),'utf8');
@@ -812,10 +823,10 @@ test('Mare Quaternius donkey is an immutable CC0 source-derived static model, no
 test('Mare R15 faces use their native head front and stationary villagers greet nearby players',()=>{
   const pose=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
   const port=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
-  assert.match(pose,/gui\.Face = Enum\.NormalId\.Front/);
+  assert.match(pose,/decal = head:FindFirstChildWhichIsA\("Decal"\)/);
   assert.match(pose,/decal\.Face = Enum\.NormalId\.Front/);
   assert.doesNotMatch(pose,/head\.CFrame:VectorToObjectSpace\(root\.CFrame\.LookVector\)/);
-  assert.match(pose,/pcall\(drawFace, headPart, role, skin, rng, outfit and outfit\.gender\)/);
+  assert.match(pose,/pcall\(drawFace, headPart\)/);
   assert.match(port,/local guestRoot = character and character:FindFirstChild\("HumanoidRootPart"\)/);
   assert.match(port,/elseif guestRoot then guestRoot\.Position elseif cam then cam\.CFrame\.Position else nil/);
   assert.match(port,/local nearGuest = flat\.Magnitude > 1 and flat\.Magnitude < 26/);
@@ -1099,7 +1110,7 @@ test('Mare naval steering, smooth hulls, aiming and battle presentation stay con
   assert.ok(battle.includes('local turnSign = if rightTurn:Dot(cam.CFrame.RightVector) < -0.05 then -1 else 1'));
   assert.match(battle,/l\.TextStrokeTransparency = 1 -- \[해전 글씨\]/,'main text is clean; tiny contextual combat badges can retain contrast outlines');
   assert.ok(battle.includes('f.Visible = star or battleViewport.X >= 720'));
-  assert.ok(battle.includes('skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, 119)'));
+  assert.ok(battle.includes('skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, if battleViewport.X < 480 then 181 else 119)'));
   assert.ok(battle.includes('local coasts = {'));
   for(const id of ['cliff-rock','tropical-palm-tall','ruins-pillar-decorated','north-pine-fall','egypt-obelisk']){
     assert.ok(assetIds.includes('"Terrain/'+id+'"'),'battle coast must use a registered mesh: '+id);
@@ -1140,7 +1151,8 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/me\.theta \+= steerDir \* turnSign \*/);
   assert.match(src,/adviceLine\.Visible = battleViewport\.X >= 1000/);
   assert.match(src,/if battleViewport\.X < 720 then 173 else 122/);
-  assert.match(src,/tactic\.Size = UDim2\.new\(if battleViewport\.X < 480 then 0\.52/);
+  assert.match(src,/tactic\.Size = UDim2\.new\(if battleViewport\.X < 480 then 0\.66/);
+  assert.match(src,/tactic\.TextScaled = false/,'mobile HUD must retain readable fixed-size type');
   assert.match(src,/l\.TextStrokeTransparency = 1/);
   for(const key of ['east-bamboo-grove','greek-ruins-a','haunted-pine-crooked','cliff-waterfall-rock']){
     assert.ok(src.includes('"'+key+'",'),key+' has a registered-region background binding');
@@ -1179,7 +1191,7 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
   const battle=fs.readFileSync(root+'ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   const game=fs.readFileSync(root+'StarterPlayer/Game.client.luau','utf8');
   for(const token of [
-    'local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, 119)',
+    'local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, if battleViewport.X < 480 then 181 else 119)',
     'if battleViewport.X < 480 then 56 else 96',
     'sailLabel.Position = UDim2.new(0.5, 0, 0, if battleViewport.X < 480 then 69 else 44)',
     'f.Visible = star or battleViewport.X >= 720',
@@ -1187,13 +1199,13 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
     'subtitle.Visible = opts.cardOnly or battleViewport.X >= 1000',
     'rangeLabel.Visible = battleViewport.X >= 720',
     'distLabel.Visible = not opts.cardOnly and battleViewport.X >= 720',
-    'if i == 1 then -250 else -170',
+    'skip.Size = if compactCards then UDim2.fromOffset(96, 40) else UDim2.fromOffset(112, 44)',
     'local panel = Instance.new("ScrollingFrame")',
     'panel.CanvasSize = UDim2.fromOffset(0, entriesHeight)',
     'panel.Visible = battleViewport.Y >= 380 and (battleViewport.X >= 720 or battleViewport.Y >= 520)',
     'math.min(entriesHeight, availableHeight)',
     'reloadBack.Visible = not opts.cardOnly and (battleViewport.X >= 720',
-    'string.format("장전 %.1f초", math.max(0, nextMeFire - now))',
+    'reloadText.Text = if not inRange then "포 — 사거리 밖"',
   ]) assert.ok(battle.includes(token),'missing mobile-safe naval HUD binding: '+token);
   const intersects=(a,b)=>a.x<b.x+b.w && b.x<a.x+a.w && a.y<b.y+b.h && b.y<a.y+a.h;
   // [휴대전화 세로] 320~430폭에서 왼쪽 스틱, 2개 기술, 가속·건너뛰기가 서로 터치하지 않는다.
@@ -1202,8 +1214,8 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
     const speed={x:w-120,y:h-120,w:96,h:96};
     const skill1={x:w-107,y:h-285,w:70,h:70};
     const skill2={x:w-107,y:h-205,w:70,h:70};
-    const skip={x:12,y:119,w:56,h:36};
-    const tactic={x:w*.24,y:119,w:w*.52,h:46};
+    const skip={x:12,y:181,w:56,h:36};
+    const tactic={x:w*.17,y:119,w:w*.66,h:54};
     const fleetLeft={x:16,y:66,w:96,h:46},fleetRight={x:w-112,y:66,w:96,h:46};
     const wind={x:(w-Math.max(80,w-240))/2,y:69,w:Math.max(80,w-240),h:20};
     const reload={x:(w-Math.min(260,w-40))/2,y:h-315,w:Math.min(260,w-40),h:20};
@@ -1221,7 +1233,8 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
   assert.match(discovered,/local firstSnapshot = H\.seenCards == nil/,'reconnect preserves existing found-card baseline');
   assert.match(discovered,/H\.showCardGain\(found\.card, found\.extra\)/,'only genuine new discovery starts UI reveal');
   assert.match(discovered,/H\.cardGainQueue = H\.cardGainQueue or \{\}/,'multiple simultaneous gains are queued without modal scenes');
-  assert.match(discovered,/extra = #acquired - 1/,'one reveal summarizes same-response additional cards');
+  assert.match(discovered,/for _, gainedCard in acquired do/,'each genuinely new card retains its own registered grade');
+  assert.match(discovered,/table.insert\(H\.cardGainQueue, \{ card = gainedCard, extra = 0 \}\)/,'multiple gains use the existing nonblocking reveal queue');
   assert.match(game,/g:SetAttribute\("NonBlockingCardNotice", true\)/,'card reveal is cosmetic and nonblocking');
   assert.match(game,/H\.dockButtons and H\.dockButtons\.codex/,'card shrinks to real library dock icon');
   assert.match(game,/Name = "CardSparkle"/,'rarity-colored sparkles');
@@ -1366,21 +1379,23 @@ test('Mare standalone card duel board respects four rendered rows, zoom and appr
   assert.match(source,/AssetIds\["CardArt\/battle_board"\] then "CardArt\/battle_board" else "CardArt\/event_chart_world"/);
   assert.match(source,/boardArt.Name = "NavalCardBattleBoard"/);
   assert.match(source,/boardArt.ScaleType = Enum.ScaleType.Crop/);
-  assert.match(source,/boardArt.ImageTransparency = if opts.cardOnly then 0\.9 elseif cfg then 0\.64/);
+  assert.match(source,/boardArt.ImageTransparency = if opts.cardOnly then \(if regionArtKey and AssetIds\[regionArtKey\] then 0\.25 else 0\.9\)/);
   assert.match(source,/elseif boardArtKey == "CardArt\/battle_board" then 0\.07 else 0\.58/);
   assert.match(source,/boardWash.Name = "BattleBoardContrast"/);
   assert.match(source,/boardShade.Parent = boardWash/);
   assert.match(source,/handTray.Name = "NavalCardHandTray"/);
     // 카드 전용 화면·일반 해전의 좌표를 둘 다 유지하는지 검사한다.
-  assert.match(source,/handFrame.Position = UDim2.fromScale\(if opts\.cardOnly then 0\.215 else 0\.02, if opts\.cardOnly then 0\.665 else 0\.72\)/);
-  assert.match(source,/boardFrame.Position = UDim2.fromScale\(if opts\.cardOnly then 0\.21 else 0\.2, if opts\.cardOnly then 0\.13 else 0\.14\)/);
-  assert.match(source,/boardFrame.Size = UDim2.fromScale\(if opts\.cardOnly then 0\.57 else 0\.78, if opts\.cardOnly then 0\.52 else 0\.56\)/);
+  assert.match(source,/handFrame.Position = if compactCards then UDim2.fromScale\(0\.018, 0\.777\) else UDim2.fromScale\(if opts\.cardOnly then 0\.215 else 0\.02, if opts\.cardOnly then 0\.665 else 0\.72\)/);
+  assert.match(source,/boardFrame.Position = if compactCards then UDim2.fromScale\(0\.012, 0\.233\) else UDim2.fromScale\(if opts\.cardOnly then 0\.21 else 0\.2, if opts\.cardOnly then 0\.13 else 0\.14\)/);
+  assert.match(source,/boardFrame.Size = if compactCards then UDim2.fromScale\(0\.976, 0\.46\) else UDim2.fromScale\(if opts\.cardOnly then 0\.57 else 0\.78, if opts\.cardOnly then 0\.52 else 0\.56\)/);
   assert.match(source,/local order = \{ \{ "foe", "ranged" \}, \{ "foe", "melee" \}, \{ "me", "melee" \}, \{ "me", "ranged" \} \}/);
   assert.match(source,/laneAccent.Name = "SideLaneAccent"/);
   assert.match(source,/laneStroke.Thickness = 1/);
   assert.match(source,/BC.rowMatchup\(m, side, row\)/);
   assert.match(source,/BC.play\(m, "me", i\)/);
-  assert.match(source,/focusFrame.Size = UDim2.fromOffset\(math.floor\(height \* 0\.69\), height\)/);
+  assert.match(source,/focusFrame.Size = UDim2.fromScale\(0\.9, 0\.82\)/);
+  assert.match(source,/focusRatio.AspectRatio = 0\.69/);
+  assert.match(source,/focusBounds.MaxSize = Vector2.new\(430, 620\)/);
   assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,1,'reuse existing render loop');
   // 검증 등록된 개별 카드만 우선, 미등록 카드는 승인된 기존 그림을 유지한다.
   assert.match(source,/local individualArt = "CardArt\/" \.\. card\.id/);
@@ -1394,10 +1409,12 @@ test('Mare standalone card duel board respects four rendered rows, zoom and appr
   assert.match(source,/CARD_DECK\[regionId\]/);
   assert.match(source,/frameEdge\(art, if c\.hero then .* elseif regionDeck then regionDeck\.color/);
   // [이미 낸 카드 확대] 터치로 지역·분류·원화를 읽되 전투 카드 재사용은 막는다.
-  assert.ok(source.includes('local playedCard = chip(cards, c, 62, BC.cardPower(m, side, row, idx)'));
+  assert.ok(source.includes('local power = BC.cardPower(m, side, row, idx)'));
+  assert.ok(source.includes('local playedCard = chip(cards, c, 62, power, c == lastPlayed.me or c == lastPlayed.foe)'));
   assert.ok(source.includes('playedCard.Activated:Connect(function()'));
   assert.ok(source.includes('showCardCodex(c, true)'),'played card must open read-only zoom');
-  assert.ok(source.includes('focusUse.Visible = not readOnly'),'played card must not be playable again');
+  assert.ok(source.includes('focusUse.Visible = if leaderProfile then (leaderPreviewId ~= nil and m.turn == "me" and not m.over and not m.leaderUsed.me and not playing and not auto)'));
+  assert.ok(source.includes('else not readOnly'),'deployed card remains read-only; leader ability only on valid turn');
   assert.ok(source.includes('if selectedPlay then selectedPlay() else closeCardCodex() end'),'read-only art tap must close');
   assert.ok(source.includes('local f = Instance.new("TextButton")'),'deployed card supports touch activation');
   const playedStart=source.indexOf('playedCard.Activated:Connect(function()');
