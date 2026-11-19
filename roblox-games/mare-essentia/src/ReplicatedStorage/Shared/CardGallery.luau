@@ -8,6 +8,8 @@ local Gallery = {}
 
 local TIER_COLOR = { Color3.fromRGB(176, 112, 62), Color3.fromRGB(196, 202, 212), Color3.fromRGB(238, 196, 84) }
 local CONT_NAME = { eu = "유럽", ea = "동아시아", me = "중동", nw = "신대륙", af = "아프리카", sa = "동남아", lo = "미지의 땅" }
+-- [지역 카드] 전투판과 덱 편집기가 공유하는 자산 키, 실제 카드 ID는 유지.
+local REGION_FRAME = { eu = "ui_frame_europe", ea = "ui_frame_east_asia", me = "ui_frame_middle_east", nw = "ui_frame_new_world", af = "ui_frame_africa", sa = "ui_frame_southeast_asia" }
 local FILTERS = {
 	{ id = "owned", text = "보유" },
 	{ id = "all", text = "전체" },
@@ -138,6 +140,19 @@ local function showDetail(ctx, id)
 	art.ImageColor3 = if owned > 0 then Color3.new(1, 1, 1) else Color3.fromRGB(70, 70, 80)
 	art.ZIndex = 52
 	art.Parent = frame
+	local regionPrefix = string.match(id, "^(%a%a)_%d%d$")
+	local frameKey = regionPrefix and REGION_FRAME[regionPrefix]
+	local frameId = frameKey and ctx.AssetIds["CardArt/" .. frameKey]
+	if frameId then
+		local borderArt = Instance.new("ImageLabel")
+		borderArt.Name = "CardDetailRegionFrame"
+		borderArt.Size = UDim2.fromScale(1, 1)
+		borderArt.BackgroundTransparency = 1
+		borderArt.Image = "rbxassetid://" .. tostring(frameId)
+		borderArt.ScaleType = Enum.ScaleType.Stretch
+		borderArt.ZIndex = 53
+		borderArt.Parent = frame
+	end
 
 	local right = Instance.new("ScrollingFrame")
 	right.BorderSizePixel = 0

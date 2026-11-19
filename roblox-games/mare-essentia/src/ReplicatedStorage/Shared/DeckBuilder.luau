@@ -22,6 +22,8 @@ local TIER_COLOR = { Color3.fromRGB(176, 112, 62), Color3.fromRGB(196, 202, 212)
 local ROW_COLOR = { melee = Color3.fromRGB(190, 84, 62), ranged = Color3.fromRGB(96, 150, 84), cannon = Color3.fromRGB(84, 124, 176) }
 local ROW_SHORT = { melee = "근", ranged = "사", cannon = "포" }
 local ROW_ORDER = { melee = 1, ranged = 2, cannon = 3 }
+-- [카드 원화] 지역별 박물관 테두리는 카드 ID만 읽으며 카드 수치와 저장에는 관여하지 않는다.
+local REGION_FRAME = { eu = "ui_frame_europe", ea = "ui_frame_east_asia", me = "ui_frame_middle_east", nw = "ui_frame_new_world", af = "ui_frame_africa", sa = "ui_frame_southeast_asia" }
 local FILTERS = {
 	{ id = "owned", text = "보유" }, { id = "all", text = "전체" }, { id = "hero", text = "영웅" }, { id = "special", text = "특수" },
 	{ id = "eu", text = "유럽" }, { id = "ea", text = "동아시아" }, { id = "me", text = "중동" }, { id = "nw", text = "신대륙" },
@@ -96,6 +98,18 @@ function DeckBuilder.build(parent, ctx)
 	backdrop.Parent = root
 	root.Size = UDim2.fromScale(1, 1)
 	root.Parent = parent
+	-- [배경] 오늘 만든 양피지 원화를 등록된 ID가 있을 때만 표시한다.
+	local parchmentAsset = ctx.AssetIds["CardArt/ui_parchment"] or ctx.AssetIds["CardArt/battle_parchment"]
+	if parchmentAsset then
+		local parchment = Instance.new("ImageLabel")
+		parchment.Name = "CardDeckParchment"
+		parchment.Size = UDim2.fromScale(1, 1)
+		parchment.BackgroundTransparency = 1
+		parchment.ScaleType = Enum.ScaleType.Crop
+		parchment.Image = "rbxassetid://" .. tostring(parchmentAsset)
+		parchment.ImageTransparency = 0.38
+		parchment.Parent = root
+	end
 
 	-- ── 위 상태줄 ──
 	local top = Instance.new("Frame")
@@ -166,12 +180,77 @@ function DeckBuilder.build(parent, ctx)
 	bl.Padding = UDim.new(0, 8)
 	bl.HorizontalFlex = Enum.UIFlexAlignment.Fill
 	bl.Parent = bottom
+	local practicePanel
 	local duelBtn = button(bottom, "", Color3.fromRGB(176, 62, 52), 18, function() ctx.startDuel() end)
-	local practiceBtn = button(bottom, "", Color3.fromRGB(70, 130, 84), 18, function() ctx.startPractice() end)
+	local practiceBtn = button(bottom, "", Color3.fromRGB(70, 130, 84), 18, function()
+		if practicePanel then practicePanel.Visible = true end
+	end)
 	local tavernBtn = button(bottom, "용병 고용 180", Color3.fromRGB(176, 136, 52), 16, function() ctx.act("CardTavern") end)
 	for _, b in { duelBtn, practiceBtn, tavernBtn } do b.Size = UDim2.new(0, 100, 1, 0) end
 	duelBtn.LayoutOrder, practiceBtn.LayoutOrder, tavernBtn.LayoutOrder = 1, 2, 6
 	bl.SortOrder = Enum.SortOrder.LayoutOrder
+
+	-- [연습게임 창] 실제 카드 규칙을 바꾸지 않는 터치 안내·시작 확인 UI.
+	practicePanel = Instance.new("Frame")
+	practicePanel.Name = "CardPracticeWindow"
+	practicePanel.AnchorPoint = Vector2.new(0.5, 0.5)
+	practicePanel.Position = UDim2.fromScale(0.5, 0.49)
+	practicePanel.Size = UDim2.fromScale(0.91, 0.70)
+	practicePanel.BackgroundColor3 = PAPER
+	practicePanel.BorderSizePixel = 0
+	practicePanel.Visible = false
+	practicePanel.ZIndex = 35
+	practicePanel.Parent = root
+	local practiceLimit = Instance.new("UISizeConstraint")
+	practiceLimit.MaxSize = Vector2.new(520, 310)
+	practiceLimit.Parent = practicePanel
+	corner(practicePanel, 12)
+	local practiceArtId = ctx.AssetIds["CardArt/ui_parchment"]
+	if practiceArtId then
+		local practiceArt = Instance.new("ImageLabel")
+		practiceArt.Name = "PracticeParchment"
+		practiceArt.Size = UDim2.fromScale(1, 1)
+		practiceArt.BackgroundTransparency = 1
+		practiceArt.Image = "rbxassetid://" .. tostring(practiceArtId)
+		practiceArt.ScaleType = Enum.ScaleType.Crop
+		practiceArt.ImageTransparency = 0.1
+		practiceArt.ZIndex = 35
+		practiceArt.Parent = practicePanel
+	end
+	local practiceTitle = text(practicePanel, "카드배틀 연습전", 23, SEPIA, true)
+	practiceTitle.Font = Enum.Font.Antique
+	practiceTitle.Position = UDim2.fromScale(0.05, 0.065)
+	practiceTitle.Size = UDim2.fromScale(0.9, 0.15)
+	practiceTitle.ZIndex = 37
+	local practiceHelp = text(practicePanel, "① 내 손패를 누르면 카드 설명을 볼 수 있어요.\n② 다시 눌러 근접·사격 줄에 카드를 놓아요.\n③ 점수와 상대 카드를 보고 '멈추기'를 선택해요.\n④ 3판 중 2판을 먼저 이기면 승리해요.", 17, SEPIA, false)
+	practiceHelp.Position = UDim2.fromScale(0.07, 0.25)
+	practiceHelp.Size = UDim2.fromScale(0.86, 0.48)
+	practiceHelp.TextXAlignment = Enum.TextXAlignment.Left
+	practiceHelp.TextYAlignment = Enum.TextYAlignment.Top
+	practiceHelp.ZIndex = 37
+	local practiceCancel = button(practicePanel, "돌아가기", REMOVE, 16, function() practicePanel.Visible = false end)
+	practiceCancel.Position = UDim2.fromScale(0.07, 0.79)
+	practiceCancel.Size = UDim2.fromScale(0.37, 0.15)
+	practiceCancel.ZIndex = 38
+	local practiceGo = button(practicePanel, "연습전 시작", ADD, 17, function()
+		practicePanel.Visible = false
+		ctx.startPractice()
+	end)
+	practiceGo.Position = UDim2.fromScale(0.52, 0.79)
+	practiceGo.Size = UDim2.fromScale(0.41, 0.15)
+	practiceGo.ZIndex = 38
+	local startAssetId = ctx.AssetIds["CardArt/ui_button_paper"]
+	if startAssetId then
+		local paperButton = Instance.new("ImageLabel")
+		paperButton.Name = "PracticeStartArtwork"
+		paperButton.BackgroundTransparency = 1
+		paperButton.Size = UDim2.fromScale(1, 1)
+		paperButton.Image = "rbxassetid://" .. tostring(startAssetId)
+		paperButton.ScaleType = Enum.ScaleType.Stretch
+		paperButton.ImageTransparency = 0.5
+		paperButton.ZIndex = 38
+		paperButton.Parent = practiceGo
+	end
 
 	-- ── 가운데: 왼쪽 컬렉션 / 오른쪽 덱 ──
 	local body = Instance.new("Frame")
@@ -490,6 +569,20 @@ function DeckBuilder.build(parent, ctx)
 		img.ImageColor3 = if owned > 0 then Color3.new(1, 1, 1) else Color3.fromRGB(55, 55, 65)
 		img.Parent = tile
 		corner(img, 6)
+		-- [6대륙 카드 테두리] 보유 카드 원화 위에 투명 프레임만 얹는다.
+		local regionPrefix = string.match(id, "^(%a%a)_%d%d$")
+		local frameKey = regionPrefix and REGION_FRAME[regionPrefix]
+		local frameId = frameKey and ctx.AssetIds["CardArt/" .. frameKey]
+		if frameId then
+			local borderArt = Instance.new("ImageLabel")
+			borderArt.Name = "RegionCardFrame"
+			borderArt.Size = UDim2.fromScale(1, 1)
+			borderArt.BackgroundTransparency = 1
+			borderArt.Image = "rbxassetid://" .. tostring(frameId)
+			borderArt.ScaleType = Enum.ScaleType.Stretch
+			borderArt.ZIndex = 3
+			borderArt.Parent = tile
+		end
 		local nm = text(tile, if owned > 0 then d.name else "???", 14, Color3.fromRGB(255, 237, 188), true)
 		nm.Position = UDim2.new(0, 3, 0.72, 0)
 		nm.Size = UDim2.new(1, -6, 0.28, 0)
