@@ -1233,7 +1233,8 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
   assert.match(discovered,/local firstSnapshot = H\.seenCards == nil/,'reconnect preserves existing found-card baseline');
   assert.match(discovered,/H\.showCardGain\(found\.card, found\.extra\)/,'only genuine new discovery starts UI reveal');
   assert.match(discovered,/H\.cardGainQueue = H\.cardGainQueue or \{\}/,'multiple simultaneous gains are queued without modal scenes');
-  assert.match(discovered,/extra = #acquired - 1/,'one reveal summarizes same-response additional cards');
+  assert.match(discovered,/for _, gainedCard in acquired do/,'each genuinely new card retains its own registered grade');
+  assert.match(discovered,/table.insert\(H\.cardGainQueue, \{ card = gainedCard, extra = 0 \}\)/,'multiple gains use the existing nonblocking reveal queue');
   assert.match(game,/g:SetAttribute\("NonBlockingCardNotice", true\)/,'card reveal is cosmetic and nonblocking');
   assert.match(game,/H\.dockButtons and H\.dockButtons\.codex/,'card shrinks to real library dock icon');
   assert.match(game,/Name = "CardSparkle"/,'rarity-colored sparkles');
