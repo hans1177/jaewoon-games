@@ -1893,17 +1893,34 @@ H.menuRecentButton.Visible = false
 H.menuRecentButton.TextSize = 15
 H.menuRecentButton.ZIndex = 9
 
+-- [공통 시설 메뉴] 왼쪽 탭 전용 열을 없애고 창 오른쪽 상단에 가로 책갈피를 둔다.
 local tabBar = Instance.new("Frame")
+tabBar.Name = "FacilityTabBar"
 tabBar.BackgroundTransparency = 1
 tabBar.BorderSizePixel = 0
-tabBar.Position = UDim2.fromOffset(8, 52)
-tabBar.Size = UDim2.new(1, -16, 0, 40) -- 시설별로 관련 탭만 한 줄에 보여준다
+tabBar.AnchorPoint = Vector2.new(1, 0)
+tabBar.Position = UDim2.new(1, -8, 0, 68)
+tabBar.Size = UDim2.fromOffset(0, 58)
 tabBar.Parent = mainInner
-local tabLayout = Instance.new("UIGridLayout")
-tabLayout.CellSize = UDim2.new(0.25, -5, 0, 38)
-tabLayout.CellPadding = UDim2.fromOffset(5, 0)
+-- [모바일] 탭이 많으면 줄바꿈 대신 같은 상단 줄을 좌우로 밀어 모든 항목에 접근한다.
+H.tabStrip = Instance.new("ScrollingFrame")
+H.tabStrip.Name = "FacilityTabStrip"
+H.tabStrip.BackgroundTransparency = 1
+H.tabStrip.BorderSizePixel = 0
+H.tabStrip.Size = UDim2.fromScale(1, 1)
+H.tabStrip.ScrollBarThickness = 2
+H.tabStrip.ScrollBarImageColor3 = UI_BRASS
+H.tabStrip.ScrollingDirection = Enum.ScrollingDirection.X
+H.tabStrip.CanvasSize = UDim2.new()
+H.tabStrip.ClipsDescendants = true
+H.tabStrip.Parent = tabBar
+-- [모바일 한 줄 고정] 그리드는 좁은 부모 폭에서 자동 줄바꿈하므로 기존 탭 정렬을 가로 목록으로 바꾼다.
+local tabLayout = Instance.new("UIListLayout")
+tabLayout.FillDirection = Enum.FillDirection.Horizontal
+tabLayout.Wraps = false
+tabLayout.Padding = UDim.new(0, 6)
 tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-tabLayout.Parent = tabBar
+tabLayout.Parent = H.tabStrip
 
 local content = Instance.new("ScrollingFrame")
 content.BackgroundTransparency = 1
@@ -2039,36 +2056,38 @@ function H.layoutBook()
     else math.max(100, math.floor((width - statusWidth) * 0.5) - 82), 18)
   H.pageDetails.Visible = width >= 740
   local tabCount = #groupOf(currentTab).tabs
-  -- [시설 탭 본문] 교역·조선 기존 상세 화면은 같은 책의 탭에서 표시한다.
+  -- [시설 탭 본문] 교역·조선의 기존 상세 화면은 같은 책 안에서 재사용한다.
   local facilityDetail = currentTab == "trade" or currentTab == "yard"
-  local gallery = not facilityDetail and view ~= nil and not newGameMode and currentTab ~= "map" and currentTab ~= "codex" and currentTab ~= "encyclopedia" and currentTab ~= "market"
-  local three = gallery and width >= 740
-  local tabs = tabBar.Visible
+  local gallery = not facilityDetail and view ~= nil and not newGameMode
+    and currentTab ~= "map" and currentTab ~= "codex" and currentTab ~= "encyclopedia" and currentTab ~= "market"
+  local wide = width >= 740
+  local tabs = tabBar.Visible or facilityDetail
+  -- [상단 오른쪽 가로 탭] 데스크톱은 한 줄 전체 표시, 작은 폰은 한 줄 가로 스크롤.
+  local tabWidth = if width < 480 then 146 elseif width < 740 then 160 else 166
+  local tabGap = 6
+  local allTabsWidth = tabCount * tabWidth + math.max(0, tabCount - 1) * tabGap
+  local visibleTabsWidth = math.min(math.max(1, width - 16), allTabsWidth)
+  tabBar.Position = UDim2.new(1, -8, 0, 68)
+  tabBar.Size = UDim2.fromOffset(visibleTabsWidth, 58)
+  -- [폰 너비 변경] 기존 버튼을 재생성하지 않고 현재 폭만 갱신한다.
+  H.tabWidth = tabWidth
+  for _, button in H.tabStrip:GetChildren() do
+    if button:IsA("TextButton") then button.Size = UDim2.fromOffset(tabWidth, 54) end
+  end
+  H.tabStrip.CanvasSize = UDim2.fromOffset(allTabsWidth, 0)
+  local selectedIndex = table.find(groupOf(currentTab).tabs, currentTab) or 1
+  local desiredScroll = (selectedIndex - 1) * (tabWidth + tabGap)
+    - math.floor((visibleTabsWidth - tabWidth) / 2)
+  H.tabStrip.CanvasPosition = Vector2.new(math.clamp(desiredScroll, 0, math.max(0, allTabsWidth - visibleTabsWidth)), 0)
+  local bodyTop = if tabs then 134 else 68
   H.bookSpine.Visible = false
   H.facilityGallery.Visible = gallery
   H.menuActionDock.Visible = gallery
   if facilityDetail then
-    -- [교역·조선] 기존 전용 거래·정비 내용을 탭 아래 본문으로 넣는다. 별도 전체창 없음.
+    -- [교역·조선] 왼쪽 탭 자리까지 기존 장부·선박 본문의 가용 폭으로 돌린다.
     tabBar.Visible = true
-    if width >= 740 then
-      local navW = math.clamp(math.floor(width * 0.17), 138, 184)
-      tabBar.Position = UDim2.fromOffset(8, 68)
-      tabBar.Size = UDim2.fromOffset(navW, math.max(100, height - 76))
-      tabLayout.CellSize = UDim2.new(1, -4, 0, 48)
-      tabLayout.CellPadding = UDim2.fromOffset(0, 6)
-      content.Position = UDim2.fromOffset(navW + 16, 68)
-      content.Size = UDim2.new(1, -navW - 24, 1, -76)
-    else
-      local columns = math.max(1, math.min(2, tabCount))
-      local rows = math.ceil(tabCount / columns)
-      local tabsHeight = rows * 54 + math.max(0, rows - 1) * 6
-      tabBar.Position = UDim2.fromOffset(8, 68)
-      tabBar.Size = UDim2.new(1, -16, 0, tabsHeight)
-      tabLayout.CellSize = UDim2.new(1 / columns, -6, 0, 54)
-      tabLayout.CellPadding = UDim2.fromOffset(6, 6)
-      content.Position = UDim2.fromOffset(8, 68 + tabsHeight + 8)
-      content.Size = UDim2.new(1, -16, 1, -76 - tabsHeight - 8)
-    end
+    content.Position = UDim2.fromOffset(8, bodyTop)
+    content.Size = UDim2.new(1, -16, 1, -bodyTop - 8)
     content.Visible = false
     H.menuActionDock.Visible = false
     local detail = mainInner:FindFirstChild("FacilityDetail")
@@ -2101,19 +2120,11 @@ function H.layoutBook()
     H.menuActionButton.TextSize = if firstCardAction then 19 else 20
     H.menuActionDock.Visible = gallery and not firstCardAction
   end
-  if three then
-    -- [가로 공통] 왼쪽 17% 시설 선택 / 가운데 31% 대형 원화 / 오른쪽 정보와 실제 행동 버튼.
-    local navW = math.clamp(math.floor(width * 0.17), 138, 184)
-    local artW = math.clamp(math.floor(width * 0.34), 218, 460)
-    if not tabs then
-      tabBar.Visible = true
-    end
-    tabBar.Position = UDim2.fromOffset(8, 68)
-    tabBar.Size = UDim2.fromOffset(navW, math.max(100, height - 76))
-    tabLayout.CellSize = UDim2.new(1, -4, 0, 48)
-    tabLayout.CellPadding = UDim2.fromOffset(0, 6)
-    H.facilityGallery.Position = UDim2.fromOffset(navW + 16, 68)
-    H.facilityGallery.Size = UDim2.fromOffset(artW, math.max(100, height - 76))
+  if wide and gallery then
+    -- [가로 공통] 탭을 상단으로 옮겨 되찾은 왼쪽 폭을 원화와 실제 본문에 분배한다.
+    local artW = math.clamp(math.floor(width * 0.38), 220, 460)
+    H.facilityGallery.Position = UDim2.fromOffset(8, bodyTop)
+    H.facilityGallery.Size = UDim2.fromOffset(artW, math.max(100, height - bodyTop - 8))
     H.galleryImage.Position = UDim2.fromOffset(8, 8)
     H.galleryImage.Size = UDim2.new(1, -16, 1, -84)
     H.galleryTitle.Position = UDim2.new(0, 12, 1, -73)
@@ -2121,40 +2132,26 @@ function H.layoutBook()
     H.galleryCaption.Position = UDim2.new(0, 12, 1, -41)
     H.galleryCaption.Size = UDim2.new(1, -24, 0, 34)
     H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Left
-    content.Position = UDim2.fromOffset(navW + artW + 24, 68)
-    content.Size = UDim2.new(1, -navW - artW - 32, 1, -148)
-    H.menuActionDock.Position = UDim2.new(0, navW + artW + 24, 1, -76)
-    H.menuActionDock.Size = UDim2.new(1, -navW - artW - 32, 0, 68)
+    content.Position = UDim2.fromOffset(artW + 16, bodyTop)
+    content.Size = UDim2.new(1, -artW - 24, 1, -bodyTop - 80)
+    H.menuActionDock.Position = UDim2.new(0, artW + 16, 1, -76)
+    H.menuActionDock.Size = UDim2.new(1, -artW - 24, 0, 68)
   else
-    -- [세로 화면] 기존 목록 탐색과 버튼은 유지하며, 세로 공간이 넉넉할 때만 원화를 표시한다.
-    -- [세로 책갈피] 세 항목부터 두 줄, 터치 높이 최소 48px 확보.
-    -- [모바일 방문 메뉴] 3~4개 항목을 억지로 한 줄에 밀지 않고 넓은 두 칸 카드로 배치한다.
-    local compact = tabs and tabCount >= 3 and width < 740
-    local columns = if compact then 2 else math.max(1, math.min(4, tabCount))
-    local rows = if tabs then math.ceil(tabCount / columns) else 0
-    local tabHeight = 54
-    local tabsHeight = rows * tabHeight + math.max(0, rows - 1) * 6
-    tabBar.Position = UDim2.fromOffset(8, 68)
-    tabBar.Size = UDim2.new(1, -16, 0, tabsHeight)
-    tabLayout.CellSize = UDim2.new(1 / columns, -6, 0, tabHeight)
-    tabLayout.CellPadding = UDim2.fromOffset(6, 6)
-    local top = if tabs then 68 + tabsHeight + 8 else 68
+    -- [폰·세로 화면] 탭은 상단 오른쪽 한 줄, 본문과 원화는 전체 폭을 사용한다.
     local showArt = gallery and height >= 550
     H.facilityGallery.Visible = showArt
     local artH = if showArt then math.clamp(math.floor(height * 0.25), 136, 206) else 0
-    H.facilityGallery.Position = UDim2.fromOffset(8, top)
+    H.facilityGallery.Position = UDim2.fromOffset(8, bodyTop)
     H.facilityGallery.Size = UDim2.new(1, -16, 0, artH)
-    -- [모바일 세로] 원화를 왼쪽에 키우고 제목·설명은 오른쪽에 둬 스크롤 높이 소모를 줄인다.
     H.galleryImage.Position = UDim2.fromOffset(8, 8)
     H.galleryImage.Size = UDim2.new(0.62, -12, 1, -16)
-    -- [원화 제목/설명] 작은 원화에서도 제목과 설명을 위에서부터 읽도록 한다.
     H.galleryTitle.Position = UDim2.new(0.62, 0, 0, 8)
     H.galleryTitle.Size = UDim2.new(0.38, -12, 0, 42)
     H.galleryTitle.TextWrapped = true
     H.galleryCaption.Position = UDim2.new(0.62, 0, 0, 54)
     H.galleryCaption.Size = UDim2.new(0.38, -12, 1, -62)
     H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Left
-    local contentY = top + (if showArt then artH + 8 else 0)
+    local contentY = bodyTop + (if showArt then artH + 8 else 0)
     content.Position = UDim2.fromOffset(8, contentY)
     content.Size = UDim2.new(1, -16, 1, -contentY - (if gallery then 80 else 8))
     H.menuActionDock.Position = UDim2.new(0, 8, 1, -76)
@@ -2882,7 +2879,7 @@ do
 		local win = Instance.new("Frame")
 		win.AnchorPoint = Vector2.new(0.5, 0.5)
 		win.Position = UDim2.fromScale(0.5, 0.5)
-		win.Size = UDim2.fromScale(0.98, 0.96)
+		win.Size = UDim2.fromScale(1, 1)
 		win.BackgroundColor3 = NAVY
 		win.BorderSizePixel = 0
 		win.Parent = layer
@@ -10369,11 +10366,11 @@ function RENDERERS.gwent()
 		return H.tileGrid({
 			{ icon = "codex", title = "덱 짜기", sub = "카드를 골라 덱 구성", btn = "열기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
 			{ icon = "cc0_shield", title = "연습전", sub = "기본 카드로 규칙 배우기", btn = "시작", color = COLORS.green, onClick = function()
-				if H.openDeck then H.openDeck() end
+				if H.openDeck then H.openDeck(true) end
 				task.defer(function() if H.devCards and H.devCards.practice then H.devCards.practice() end end)
 			end },
 			{ icon = "cc0_sword", title = "카드 대결", sub = "이기면 새 지식 카드", btn = "대결", color = COLORS.red, onClick = function()
-				if H.openDeck then H.openDeck() end
+				if H.openDeck then H.openDeck(true) end
 				task.defer(function() if H.devCards and H.devCards.duel then H.devCards.duel() end end)
 			end },
 		}, content, 176, 150)
@@ -11001,10 +10998,10 @@ H.TAB_ICON = {
 function H.renderTabs()
 	-- [중복 렌더 제거] 같은 탭의 상태/재화가 바뀌어도 메뉴 버튼과 원화를 매번 파괴하지 않는다.
 	-- 탭 전환 시에만 다시 만들고, 화면 크기 변경은 기존 UIGridLayout이 맡는다.
-	if H.renderedTabId == currentTab and tabBar:FindFirstChild("FacilityTab_" .. currentTab) then
+	if H.renderedTabId == currentTab and H.tabStrip:FindFirstChild("FacilityTab_" .. currentTab) then
 		return
 	end
-	for _, child in tabBar:GetChildren() do
+	for _, child in H.tabStrip:GetChildren() do
 		if child:IsA("TextButton") then
 			child:Destroy()
 		end
@@ -11012,7 +11009,7 @@ function H.renderTabs()
 	local g = groupOf(currentTab)
 	for i, id in g.tabs do
 		local selected = currentTab == id
-		local b = mkButton(tabBar, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 54), function()
+		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 166, 54), function()
 			-- [시설 탭 정본] 모든 시설은 같은 탭 전환 함수를 사용하며 별도 전체창은 만들지 않는다.
 			openTab(id)
 		end, true)

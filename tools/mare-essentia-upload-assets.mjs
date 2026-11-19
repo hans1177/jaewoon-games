@@ -1150,7 +1150,12 @@ const VIBE_DRAWN_GOODS = ['pepper','silk','porcelain','coffee','timber','feather
 const CHATGPT_ORIGINAL_GOODS = ['amber','cloth','coal','cocoa','coffee','coral','dates','fish','fur','glass','gold','iron','ivory','olive','olive_oil','pearls','pepper','porcelain','saffron','salt','silk','spice','sugar','tea','timber','wool','b_amsterdam_aged_cheese','b_batavia_tea_cure','b_busan_ginseng_medicine','b_calicut_cloth_cotton','b_goa_spice_blend','b_london_cloth_wool','b_nagasaki_smelt_copper','b_seville_leather','b_venice_fine_glass','brazilwood','cheese','copper','cotton','ebony','gems','ginseng','indigo','jade','kauri','leather','logwood','mahogany','maize','marble','p_aged_cheese','p_amber_craft','p_cloth_cotton','p_cloth_wool','p_dye','p_fertilizer','p_fine_glass','p_fine_wood','p_fish_cure','p_fur_goods','p_ginseng_medicine','p_glass','p_gunpowder','p_ivory_carving','p_jewelry','p_leather','p_marble_carving','p_olive','p_perfume','p_resin','p_silver_coin','p_smelt_copper','p_smelt_iron','p_spice_blend','p_tea_cure','p_timber_plank','p_whale_oil','palm_oil','pearl_shell','rice','sandalwood','sandalwood_hi','silver'].map(n => n + '.png');
 // [지식카드 51장] 이름 규칙 밖(ast_*, zoo_* 등)이라도 APPROVED_IMAGES에 해시 승인된 카드 jpg는 등록 대상에 포함한다.
 const approvedCardNames = new Set();
-for (const k of Object.keys(cardApprovalDocument.approved || {})) if (k.startsWith('CardArt/')) approvedCardNames.add(k.slice(8) + '.jpg');
+// [사용자 제작 카드배틀 UI] 승인된 ui_ 원화만 기존 PNG 등록 경로를 이용한다.
+for (const k of Object.keys(cardApprovalDocument.approved || {})) {
+  if (!k.startsWith('CardArt/')) continue;
+  approvedCardNames.add(k.slice(8) + '.jpg');
+  if (k.startsWith('CardArt/ui_')) approvedCardNames.add(k.slice(8) + '.png');
+}
 if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['animals', 'Animals'], ['monsters', 'Monsters'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits'], ['cardart', 'CardArt'], ['materials', 'Materials']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     // [원본 리그] 메시 없는 관절계층 GLB는 제작용 원본이다. 단독 Roblox 3D 모델로 등록하지 않는다.
@@ -1344,7 +1349,8 @@ for (const item of plan) {
     registry.assets[id].source = item.file;
     // 구형 등록표는 로컬 승인 원본 해시를 기준으로 다음 이미지 변경을 탐지한다.
     // 이 값만으로 Roblox 원격 바이너리 동일성/Studio 표시를 주장하지 않는다.
-    if ((item.kind === 'Goods' && item.assetType === 'Image') || item.kind === 'Materials' || regionalCardArt)
+    if ((item.kind === 'Goods' && item.assetType === 'Image') || item.kind === 'Materials' || regionalCardArt
+      || (item.kind === 'CardArt' && approvedImages[id] === sourceSha256))
       registry.assets[id].sourceSha256 = sourceSha256;
     if (registry.assets[id].usePermissionGranted !== true) pendingPermissions.push({id, assetId: registry.assets[id].assetId});
     console.log('SKIP_ALREADY_REGISTERED', id);
@@ -1466,7 +1472,8 @@ for (const item of plan) {
     if (!/^[1-9][0-9]*$/.test(assetId || '')) throw new Error('NO_ASSET_ID');
     // 신규 자산도 기존 목록과 함께 일괄 권한 부여한다. 자산별 개별 PATCH 300회 호출 금지.
     registry.assets[id] = {assetId, source: item.file, license: item.license, assetType: item.assetType, usePermissionGranted: false,
-      ...((item.kind === 'Goods' && item.assetType === 'Image') || regionalCardArt || item.sourceLicense ? {sourceSha256} : {})};
+      ...((item.kind === 'Goods' && item.assetType === 'Image') || regionalCardArt
+        || (item.kind === 'CardArt' && approvedImages[id] === sourceSha256) || item.sourceLicense ? {sourceSha256} : {})};
     pendingPermissions.push({id, assetId});
 
     console.log('UPLOADED', id, assetId);

@@ -85,10 +85,26 @@ local CARD_DECK = {
 	me = { ko = "중동", en = "Middle East", color = Color3.fromRGB(220, 165, 101) },
 	nw = { ko = "신대륙", en = "New World", color = Color3.fromRGB(104, 173, 216) },
 	af = { ko = "아프리카", en = "Africa", color = Color3.fromRGB(204, 128, 94) },
+	sa = { ko = "남·동남아", en = "South & Southeast Asia", color = Color3.fromRGB(109, 180, 144) },
+	lo = { ko = "전설", en = "Legends", color = Color3.fromRGB(169, 139, 208) },
+}
+
+-- [지역 카드 프레임] 원화 ID만 조회하고 카드 능력·저장 데이터는 그대로 유지.
+local REGION_FRAME = {
+	eu = "CardArt/ui_frame_europe", ea = "CardArt/ui_frame_east_asia",
+	me = "CardArt/ui_frame_middle_east", nw = "CardArt/ui_frame_new_world",
+	af = "CardArt/ui_frame_africa", sa = "CardArt/ui_frame_southeast_asia",
 }
 
 -- 지도자 얼굴: 등록·업로드된 인물 초상만 연결한다 (없는 지도자는 이름 글자)
 local LEADER_FACE = { napoleon = "Portraits/person_napoleon", elizabeth = "Portraits/person_elizabeth1" }
+-- [오늘의 원화] 등록된 카드배틀 지도자 초상이 있으면 기존 초상보다 우선한다.
+local NEW_LEADER_ART = {
+	caesar = "CardArt/leader_caesar", elizabeth = "CardArt/leader_elizabeth",
+	yisunsin = "CardArt/leader_yisunsin", pachacuti = "CardArt/leader_pachacuti",
+	saladin = "CardArt/leader_saladin", suleiman = "CardArt/leader_suleiman",
+	rajaraja = "CardArt/leader_rajaraja", mansa = "CardArt/leader_mansa",
+}
 
 local PLAYER_SHIP = {
 	caravel = "ship-small", fluyt = "ship-medium",
@@ -1805,6 +1821,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local englishFactions = { europe = "Europe", east_asia = "East Asia", middle_east = "Middle East", new_world = "New World", africa = "Africa" }
 		local englishLeaders = { draw = "Command", clear = "Open Sea Route", snipe = "Snipe", napoleon = "Napoleon", caesar = "Caesar", alexander = "Alexander", charlemagne = "Charlemagne", elizabeth = "Elizabeth I", genghis = "Genghis Khan", qinshi = "Qin Shi Huang", yisunsin = "Yi Sun-sin", nobunaga = "Oda Nobunaga", pachacuti = "Pachacuti", montezuma = "Montezuma II", sittingbull = "Sitting Bull", saladin = "Saladin", suleiman = "Suleiman the Magnificent", cyrus = "Cyrus the Great", mansa = "Mansa Musa", hannibal = "Hannibal", shaka = "Shaka Zulu", rajaraja = "Rajaraja I", tranhungdao = "Tran Hung Dao", akbar = "Akbar" }
 		local function cardName(c)
+			if c.pigForm then return t("돼지", "Pig") end
 			if not english then return c.name end
 			local en = BC.CardEnglish[c.id]
 			return if en then en.name else englishNames[c.id] or c.name
@@ -1813,10 +1830,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local en = english and BC.CardEnglish[c.id]
 			return if en then en.lore else c.lore
 		end
+
 		local function rowName(row)
 			return if english then englishRows[row] or "" else BC.ROW_NAME[row] or ""
 		end
-		local function cardDescription(c)
+		local function baseCardDescription(c)
+			local translation = BC.CardEnglish[c.id]
+			local tactic = if translation and translation.text then (if english then translation.text else c.text) else nil
 			if c.cause or c.fuse then
 				local function nm(id)
 					local d = BC.Units[id] or BC.Specials[id]
@@ -1824,10 +1844,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					return if english and en then en.name else (d and d.name or id)
 				end
 				if c.cause then
-					return if english then "Chain: +2 while " .. nm(c.cause) .. " is on your field" else "연쇄: " .. nm(c.cause) .. "이(가) 내 필드에 있으면 +2"
+					local chain = if english then "Chain: +2 while " .. nm(c.cause) .. " is on your field" else "연쇄: " .. nm(c.cause) .. "이(가) 내 필드에 있으면 +2"
+					return if tactic then tactic .. "\n" .. chain else chain
 				end
-				return if english then "Fuse: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. " merge into one, +3, free play" else "합치기: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. "이(가) 있으면 하나로 합쳐 +3, 낸 수에 안 셈"
+				local fuse = if english then "Fuse: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. " merge into one, +3, free play" else "합치기: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. "이(가) 있으면 하나로 합쳐 +3, 낸 수에 안 셈"
+				return if tactic then tactic .. "\n" .. fuse else fuse
 			end
+			if tactic then return tactic end
 			if c.refuteKind then
 				return if english then "Refute: cut the enemy's " .. c.refuteKind .. " chains" else c.text or "반증"
 			end
@@ -1845,6 +1868,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if c.ability then return englishDetails[c.ability] or "Use in its matching combat row" end
 			return if c.hero then "Hero · Unaffected by weather or Scorch" else "Use row matchups to deploy this card"
 		end
+		local function cardDescription(c)
+			local description = baseCardDescription(c)
+			local role = c.starterRole and BC.StarterText[c.starterRole]
+			if role then
+				local text = role[if english then 2 else 1]
+				if c.cause or c.fuse or c.ability then return text .. "\n" .. description end
+				return text
+			end
+			return description
+		end
 		local function mine(ok, msg, res, act, card)
 			if ok and act then table.insert(actions, act) end
 			return ok, msg, res, card, "me"
@@ -1856,6 +1889,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		g.ResetOnSpawn = false
 		g.DisplayOrder = 40
 		g.Parent = player:WaitForChild("PlayerGui")
+		-- [카드배틀 모바일] 전투 계산은 그대로 두고 표시 구역만 화면 폭에 맞춘다.
+		local compactCards = opts.cardOnly and (battleViewport.X < 720 or battleViewport.X < battleViewport.Y or battleViewport.Y < 480)
 		-- [카드 대전 실조작] 기존 종료 버튼을 카드판 최상위에 표시한다. 전투 판정과 종료 콜백은 그대로 사용한다.
 		if opts.cardOnly then
 			skip.Parent = g
@@ -1864,8 +1899,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			skip.Active = true
 			skip.Interactable = true
 			skip.AnchorPoint = Vector2.zero
-			skip.Position = UDim2.fromScale(0.02, 0.84)
-			skip.Size = UDim2.fromOffset(112, 44)
+			skip.Position = if compactCards then UDim2.new(0.98, -76, 0.012, 0) else UDim2.fromScale(0.02, 0.84)
+			skip.Size = if compactCards then UDim2.new(0, 76, 0.063, 0) else UDim2.fromOffset(112, 44)
 			skip.ZIndex = 30
 		end
 		table.insert(conns, { Disconnect = function()
@@ -1876,7 +1911,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local paper = Color3.fromRGB(224, 205, 163)
 		local ink = Color3.fromRGB(49, 37, 27)
 		local brass = Color3.fromRGB(158, 113, 59)
-		local rowIcons = { melee = "Menu/cc0_sword", ranged = "Menu/cc0_crossbow", cannon = "Menu/cc0_fireball" }
+		local rowIcons = {
+			melee = if opts.cardOnly and AssetIds["CardArt/ui_icon_shield"] then "CardArt/ui_icon_shield" else "Menu/cc0_sword",
+			ranged = if opts.cardOnly and AssetIds["CardArt/ui_icon_bow"] then "CardArt/ui_icon_bow" else "Menu/cc0_crossbow",
+			cannon = "Menu/cc0_fireball",
+		}
 
 		local function frameEdge(gui, color, radius)
 			local curve = Instance.new("UICorner")
@@ -1935,7 +1974,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		wood.Parent = bg
 		-- [전투판 배경] 오너 원화는 기존 CardArt 업로더의 SHA 승인 및 Roblox 등록 후만 표시한다.
 		-- 아직 미등록이면 기존 등록 세계 해도를 은은한 바탕으로 사용하며, 카드 규칙은 그대로 둔다.
-		local boardArtKey = if AssetIds["CardArt/battle_board"] then "CardArt/battle_board" else "CardArt/event_chart_world"
+		local regionBattleArt = {
+			europe = "CardArt/battle_europe", east_asia = "CardArt/battle_east_asia",
+			middle_east = "CardArt/battle_middle_east", new_world = "CardArt/battle_new_world",
+			africa = "CardArt/battle_africa", southeast_asia = "CardArt/battle_southeast_asia",
+		}
+		local regionArtKey = opts.cardOnly and m.faction and regionBattleArt[m.faction.me]
+		local boardArtKey = if regionArtKey and AssetIds[regionArtKey] then regionArtKey
+			elseif AssetIds["CardArt/battle_board"] then "CardArt/battle_board" else "CardArt/event_chart_world"
 		local boardArt = Instance.new("ImageLabel")
 		boardArt.Name = "NavalCardBattleBoard"
 		boardArt.Size = UDim2.fromScale(1, 1)
@@ -1943,7 +1989,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		boardArt.BorderSizePixel = 0
 		boardArt.ScaleType = Enum.ScaleType.Crop
 		boardArt.Image = if AssetIds[boardArtKey] then "rbxassetid://" .. tostring(AssetIds[boardArtKey]) else ""
-		boardArt.ImageTransparency = if opts.cardOnly then 0.9 elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
+		boardArt.ImageTransparency = if opts.cardOnly then (if regionArtKey and AssetIds[regionArtKey] then 0.25 else 0.9)
+			elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
 		boardArt.ZIndex = 1
 		boardArt.Parent = bg
 		-- [가독성] 6개 카드 줄·손패·버튼은 이미지보다 위의 원래 UI 인스턴스를 사용한다.
@@ -1951,7 +1998,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		boardWash.Name = "BattleBoardContrast"
 		boardWash.Size = UDim2.fromScale(1, 1)
 		boardWash.BackgroundColor3 = Color3.fromRGB(15, 24, 40)
-		boardWash.BackgroundTransparency = if opts.cardOnly then 0.8 elseif cfg then 0.84 else 0.73
+		boardWash.BackgroundTransparency = if opts.cardOnly then 0.53 elseif cfg then 0.84 else 0.73
 		boardWash.BorderSizePixel = 0
 		boardWash.ZIndex = 1
 		boardWash.Parent = bg
@@ -1970,13 +2017,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		chartMark.BackgroundTransparency = 1
 		chartMark.ScaleType = Enum.ScaleType.Fit
 		chartMark.Image = "rbxassetid://" .. AssetIds["Menu/chart_compass"]
-		chartMark.ImageTransparency = if boardArtKey == "CardArt/battle_board" then 1 else 0.92
+		chartMark.ImageTransparency = if string.find(boardArtKey, "CardArt/battle_", 1, true) == 1 then 1 else 0.92
 		chartMark.ImageColor3 = Color3.fromRGB(214, 170, 96)
 		chartMark.Parent = bg
 		local battleLine = Instance.new("Frame")
 		battleLine.AnchorPoint = Vector2.new(0, 0.5)
-		battleLine.Position = UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.39 else 0.42)
-		battleLine.Size = UDim2.fromScale(if opts.cardOnly then 0.57 else 0.78, 0.004)
+		battleLine.Position = if compactCards then UDim2.fromScale(0.01, 0.463) else UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.39 else 0.42)
+		battleLine.Size = UDim2.fromScale(if compactCards then 0.98 elseif opts.cardOnly then 0.57 else 0.78, 0.004)
 		battleLine.BackgroundColor3 = Color3.fromRGB(214, 170, 96)
 		battleLine.BorderSizePixel = 0
 		battleLine.ZIndex = 3
@@ -1995,7 +2042,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		emblem(titleBar, "Menu/codex", UDim2.fromScale(0.015, 0.5), UDim2.fromScale(0.065, 0.88))
 		local header = label(titleBar, "", 18, ink)
 		header.Position = UDim2.fromScale(0.09, 0)
-		header.Size = UDim2.fromScale(0.89, 1)
+		header.Size = if compactCards then UDim2.new(0.89, -84, 1, 0) else UDim2.fromScale(0.89, 1)
 		header.TextXAlignment = Enum.TextXAlignment.Left
 		header.TextStrokeTransparency = 1
 		header.TextScaled = true
@@ -2016,28 +2063,52 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local infoPad = Instance.new("UIPadding")
 		infoPad.PaddingLeft = UDim.new(0, 10)
 		infoPad.Parent = info
+		-- [라운드 결과] 승리·무승부·패배 원화는 안내 문자 위에 짧게 표시한다.
+		local roundResult = Instance.new("ImageLabel")
+		roundResult.Name = "CardBattleRoundResult"
+		roundResult.AnchorPoint = Vector2.new(0.5, 0)
+		roundResult.Position = if compactCards then UDim2.fromScale(0.5, 0.235) else UDim2.fromScale(0.5, 0.13)
+		roundResult.Size = UDim2.fromOffset(70, 70)
+		roundResult.BackgroundTransparency = 1
+		roundResult.ScaleType = Enum.ScaleType.Fit
+		roundResult.ZIndex = 27
+		roundResult.Visible = false
+		roundResult.Parent = g
+		local roundResultTick = 0
 
 		local boardFrame = Instance.new("Frame")
-		boardFrame.Position = UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.13 else 0.14)
-		boardFrame.Size = UDim2.fromScale(if opts.cardOnly then 0.57 else 0.78, if opts.cardOnly then 0.52 else 0.56)
+		boardFrame.Position = if compactCards then UDim2.fromScale(0.012, 0.233) else UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.13 else 0.14)
+		boardFrame.Size = if compactCards then UDim2.fromScale(0.976, 0.46) else UDim2.fromScale(if opts.cardOnly then 0.57 else 0.78, if opts.cardOnly then 0.52 else 0.56)
 		boardFrame.BackgroundTransparency = 1
 		boardFrame.Parent = g
 		-- 왼쪽 정보판: 양쪽 합계 원, 목숨 보석, 멈춤 표시, 날씨
 		local panel = Instance.new("Frame")
-		panel.Position = UDim2.fromScale(if opts.cardOnly then 0.79 else 0.02, 0.14)
-		panel.Size = UDim2.fromScale(0.17, 0.56)
+		panel.Position = if compactCards then UDim2.fromScale(0.012, 0.133) else UDim2.fromScale(if opts.cardOnly then 0.79 else 0.02, 0.14)
+		panel.Size = if compactCards then UDim2.fromScale(0.976, 0.091) else UDim2.fromScale(0.17, 0.56)
 		panel.BackgroundColor3 = Color3.fromRGB(30, 23, 19)
 		panel.BorderSizePixel = 0
 		panel.Parent = g
 		frameEdge(panel, brass, 6)
 		local function sidePlate(y, color)
 			local plate = Instance.new("Frame")
-			plate.Position = UDim2.fromScale(0.05, y)
-			plate.Size = UDim2.fromScale(0.9, 0.4)
+			plate.Position = if compactCards then UDim2.fromScale(if y < 0.5 then 0.015 else 0.515, 0.04) else UDim2.fromScale(0.05, y)
+			plate.Size = if compactCards then UDim2.fromScale(0.47, 0.92) else UDim2.fromScale(0.9, 0.4)
 			plate.BackgroundColor3 = color
 			plate.BorderSizePixel = 0
 			plate.Parent = panel
 			frameEdge(plate, brass, 5)
+			-- [실제 점수판 원화] 적은 벽돌색, 내 편은 남색 아카이브 판.
+			local scoreKey = if y < 0.5 then "CardArt/ui_score_enemy" else "CardArt/ui_score_player"
+			if opts.cardOnly and AssetIds[scoreKey] then
+				local scoreArt = Instance.new("ImageLabel")
+				scoreArt.Name = "BattleScoreArtwork"
+				scoreArt.Size = UDim2.fromScale(1, 1)
+				scoreArt.BackgroundTransparency = 1
+				scoreArt.Image = "rbxassetid://" .. tostring(AssetIds[scoreKey])
+				scoreArt.ImageTransparency = 0.22
+				scoreArt.ScaleType = Enum.ScaleType.Stretch
+				scoreArt.Parent = plate
+			end
 			local who = label(plate, "", 14, Color3.fromRGB(250, 236, 200), true)
 			who.Position = UDim2.fromScale(0.04, 0.02)
 			who.Size = UDim2.fromScale(0.92, 0.2)
@@ -2055,21 +2126,25 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			gems.Position = UDim2.fromScale(0.04, 0.78)
 			gems.Size = UDim2.fromScale(0.92, 0.2)
 			gems.TextScaled = true
-			-- 지도자 초상(왼쪽 원)과 덱 더미(오른쪽 겹친 카드 + 남은 장수)
-			local leader = label(plate, "", 16, Color3.fromRGB(46, 33, 22), true)
-			leader.AnchorPoint = Vector2.new(0, 0.5)
-			leader.Position = UDim2.fromScale(0.03, 0.52)
-			leader.Size = UDim2.fromScale(0.27, 0.36)
-			leader.BackgroundColor3 = Color3.fromRGB(214, 176, 104)
-			leader.BackgroundTransparency = 0
-			leader.TextScaled = true
-			leader.TextStrokeTransparency = 1
-			local ar = Instance.new("UIAspectRatioConstraint")
-			ar.Parent = leader
-			local rc = Instance.new("UICorner")
-			rc.CornerRadius = UDim.new(1, 0)
-			rc.Parent = leader
-			frameEdge(leader, Color3.fromRGB(255, 226, 150), 99)
+			-- [카드 전투] 옛 원형 지도자 초상 제거, 비카드 접현전은 기존 기능 유지.
+			local leader
+			if not opts.cardOnly then
+				-- 지도자 초상(왼쪽 원)과 덱 더미(오른쪽 겹친 카드 + 남은 장수)
+				leader = label(plate, "", 16, Color3.fromRGB(46, 33, 22), true)
+				leader.AnchorPoint = Vector2.new(0, 0.5)
+				leader.Position = UDim2.fromScale(0.03, 0.52)
+				leader.Size = UDim2.fromScale(0.27, 0.36)
+				leader.BackgroundColor3 = Color3.fromRGB(214, 176, 104)
+				leader.BackgroundTransparency = 0
+				leader.TextScaled = true
+				leader.TextStrokeTransparency = 1
+				local ar = Instance.new("UIAspectRatioConstraint")
+				ar.Parent = leader
+				local rc = Instance.new("UICorner")
+				rc.CornerRadius = UDim.new(1, 0)
+				rc.Parent = leader
+				frameEdge(leader, Color3.fromRGB(255, 226, 150), 99)
+			end
 			local pile = Instance.new("Frame")
 			pile.AnchorPoint = Vector2.new(1, 0.5)
 			pile.Position = UDim2.fromScale(0.97, 0.52)
@@ -2084,6 +2159,19 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				sheet.BorderSizePixel = 0
 				sheet.Parent = pile
 				frameEdge(sheet, brass, 3)
+				-- [카드 뒷면] 오늘의 항해 나침반 원화는 실제 등록번호가 있을 때만 덮는다.
+				if opts.cardOnly and AssetIds["CardArt/battle_card_back"] then
+					local backArt = Instance.new("ImageLabel")
+					backArt.Name = "CardBackArtwork"
+					backArt.Size = UDim2.fromScale(1, 1)
+					backArt.BackgroundTransparency = 1
+					backArt.ScaleType = Enum.ScaleType.Crop
+					backArt.Image = "rbxassetid://" .. tostring(AssetIds["CardArt/battle_card_back"])
+					backArt.Parent = sheet
+					local backCorner = Instance.new("UICorner")
+					backCorner.CornerRadius = UDim.new(0, 3)
+					backCorner.Parent = backArt
+				end
 			end
 			local deckCount = label(pile, "", 14, Color3.fromRGB(250, 236, 200), true)
 			deckCount.Size = UDim2.fromScale(0.72, 0.82)
@@ -2098,6 +2186,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		weatherTag.Size = UDim2.fromScale(0.92, 0.13)
 		weatherTag.TextScaled = true
 		weatherTag.TextWrapped = true
+		weatherTag.Visible = not compactCards
 		-- 동료 조언·적 정찰 말풍선 (한 판에 한 번, 한 전투에 최대 3번)
 		-- 점수판(panel) 안에 두면 내 점수 칸과 겹치므로, 안내 줄(info) 자리에 잠깐 덮어 보여 준다
 		local adviceTag = label(g, "", 14, Color3.fromRGB(255, 233, 170), true)
@@ -2150,8 +2239,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		-- [손패 받침대] 카드 아이콘·터치 확대 기능은 기존 ScrollingFrame에서 처리한다.
 		local handTray = Instance.new("Frame")
 		handTray.Name = "NavalCardHandTray"
-		handTray.Position = UDim2.fromScale(if opts.cardOnly then 0.21 else 0.015, if opts.cardOnly then 0.66 else 0.715)
-		handTray.Size = UDim2.fromScale(if opts.cardOnly then 0.57 else 0.75, if opts.cardOnly then 0.335 else 0.275)
+		handTray.Position = if compactCards then UDim2.fromScale(0.012, 0.773) else UDim2.fromScale(if opts.cardOnly then 0.21 else 0.015, if opts.cardOnly then 0.66 else 0.715)
+		handTray.Size = if compactCards then UDim2.fromScale(0.976, 0.219) else UDim2.fromScale(if opts.cardOnly then 0.57 else 0.75, if opts.cardOnly then 0.335 else 0.275)
 		handTray.BackgroundColor3 = Color3.fromRGB(18, 39, 58)
 		handTray.BackgroundTransparency = if opts.cardOnly then 0.6 else 0.27
 		handTray.BorderSizePixel = 0
@@ -2167,8 +2256,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		trayGradient.Rotation = 90
 		trayGradient.Parent = handTray
 		local handFrame = Instance.new("ScrollingFrame")
-		handFrame.Position = UDim2.fromScale(if opts.cardOnly then 0.215 else 0.02, if opts.cardOnly then 0.665 else 0.72)
-		handFrame.Size = UDim2.fromScale(if opts.cardOnly then 0.56 else 0.74, if opts.cardOnly then 0.325 else 0.26)
+		handFrame.Position = if compactCards then UDim2.fromScale(0.018, 0.777) else UDim2.fromScale(if opts.cardOnly then 0.215 else 0.02, if opts.cardOnly then 0.665 else 0.72)
+		handFrame.Size = if compactCards then UDim2.fromScale(0.964, 0.211) else UDim2.fromScale(if opts.cardOnly then 0.56 else 0.74, if opts.cardOnly then 0.325 else 0.26)
 		handFrame.BackgroundTransparency = 1
 		handFrame.BorderSizePixel = 0
 		handFrame.ScrollingDirection = Enum.ScrollingDirection.X
@@ -2177,8 +2266,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		handFrame.ScrollBarThickness = 4
 		handFrame.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 73)
 		local handPadding = Instance.new("UIPadding")
-		handPadding.PaddingTop = UDim.new(0, 10)
-		handPadding.PaddingBottom = UDim.new(0, 8)
+		handPadding.PaddingTop = UDim.new(0, if compactCards then 3 else 10)
+		handPadding.PaddingBottom = UDim.new(0, if compactCards then 3 else 8)
 		handPadding.PaddingLeft = UDim.new(0, 3)
 		handPadding.Parent = handFrame
 		handFrame.Parent = g
@@ -2188,16 +2277,35 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		handLay.Padding = UDim.new(0, 5)
 		handLay.Parent = handFrame
 
+		local showLeaderCard -- [전투 중 지도자 카드] 기존 카드 확대 UI를 사용한다.
 		local function mkSide(text, y, color, assetKey, onClick)
 			local b = Instance.new("TextButton")
 			b.Text = ""
-			b.Position = UDim2.fromScale(0.78, y)
-			b.Size = UDim2.fromScale(0.2, 0.058)
+			if compactCards then
+				local index = if y == 0.765 then 0 elseif y == 0.83 then 1 elseif y == 0.70 then 2 else 3
+				b.Position = UDim2.fromScale(0.015 + 0.246 * index, 0.7)
+				b.Size = UDim2.fromScale(0.231, 0.068)
+			else
+				b.Position = UDim2.fromScale(0.78, y)
+				b.Size = UDim2.fromScale(0.2, 0.058)
+			end
 			b.BackgroundColor3 = color
 			b.BorderSizePixel = 0
 			b.Parent = g
+			-- [실제 조작 버튼] 원화는 배경만 담당하며 기존 클릭 입력을 가리지 않는다.
+			local buttonArtId = opts.cardOnly and AssetIds["CardArt/ui_button_ink"]
+			if buttonArtId then
+				local buttonArt = Instance.new("ImageLabel")
+				buttonArt.Name = "CardBattleButtonArtwork"
+				buttonArt.Size = UDim2.fromScale(1, 1)
+				buttonArt.BackgroundTransparency = 1
+				buttonArt.ScaleType = Enum.ScaleType.Stretch
+				buttonArt.Image = "rbxassetid://" .. tostring(buttonArtId)
+				buttonArt.ImageTransparency = 0.28
+				buttonArt.Parent = b
+			end
 			frameEdge(b, brass, 5)
-			emblem(b, assetKey, UDim2.fromScale(0.05, 0.5), UDim2.fromScale(0.25, 0.78))
+			local icon = emblem(b, assetKey, UDim2.fromScale(0.05, 0.5), UDim2.fromScale(0.25, 0.78))
 			local title = label(b, text, 14, Color3.fromRGB(250, 236, 200))
 			title.Name = "Caption"
 			title.Position = UDim2.fromScale(0.34, 0)
@@ -2208,7 +2316,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			limit.MaxTextSize = 15
 			limit.Parent = title
 			b.Activated:Connect(onClick)
-			return b
+			return b, icon
 		end
 
 		local render
@@ -2248,6 +2356,100 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			dropGlow = st
 			TweenService:Create(st, TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Transparency = 0.7 }):Play()
 		end
+		local boardCards, previousBoard, previousOrder, previousLeaders = {}, {}, {}, {}
+		local function effectAt(position, size, caption, tint, delay)
+			task.delay(delay, function()
+				if not g.Parent or not bg.Parent then return end
+				if size.X < 1 or size.Y < 1 then return end
+				local burst = Instance.new("Frame")
+				burst.AnchorPoint = Vector2.new(0.5, 0.5)
+				burst.Position = UDim2.fromOffset(position.X, position.Y)
+				burst.Size = UDim2.fromOffset(size.X, size.Y)
+				burst.BackgroundColor3 = tint
+				burst.BackgroundTransparency = 0.72
+				burst.BorderSizePixel = 0
+				burst.ZIndex = 35
+				burst.Parent = bg
+				local rim = frameEdge(burst, tint, 5)
+				TweenService:Create(rim, TweenInfo.new(0.42), { Transparency = 1 }):Play()
+				TweenService:Create(burst, TweenInfo.new(0.42), {
+					Size = UDim2.fromOffset(size.X + 10, size.Y + 10), BackgroundTransparency = 1,
+				}):Play()
+				local flash = label(bg, caption, 15, tint, true)
+				flash.AnchorPoint = Vector2.new(0.5, 0.5)
+				flash.Position = UDim2.fromOffset(position.X, position.Y)
+				flash.Size = UDim2.fromOffset(math.max(62, size.X), math.max(22, math.min(32, size.Y)))
+				flash.BackgroundColor3 = Color3.fromRGB(38, 28, 22)
+				flash.BackgroundTransparency = 0.15
+				flash.ZIndex = 36
+				flash.TextStrokeTransparency = 0.7
+				frameEdge(flash, tint, 5)
+				TweenService:Create(flash, TweenInfo.new(0.48, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+					Position = UDim2.fromOffset(position.X, position.Y - 17), BackgroundTransparency = 1, TextTransparency = 1,
+				}):Play()
+				task.delay(0.5, function() flash:Destroy(); burst:Destroy() end)
+			end)
+		end
+		local function playBoardEffects(before, order, card, leader)
+			local damage, aid, other = {}, {}, {}
+			local volley = {}
+			if leader == "elizabeth" and m.armadaShots then
+				for i, shot in m.armadaShots do
+					local at = (i - 1) * 0.14
+					volley[shot.target] = at + 0.07
+					local ship = boardCards[shot.ship]
+					if ship then
+						local size = ship.AbsoluteSize
+						effectAt(ship.AbsolutePosition + size / 2 - bg.AbsolutePosition, size, t("포격", "Fire"), Color3.fromRGB(255, 213, 136), at)
+					end
+				end
+			end
+			for _, unit in order do
+				local old, now = before[unit], previousBoard[unit]
+				local dst = if now then boardCards[unit] else nil
+				local size = if dst then dst.AbsoluteSize else old.size
+				local pos = if dst then dst.AbsolutePosition + size / 2 - bg.AbsolutePosition else old.pos
+				if dst then
+					local row = dst.Parent
+					local absolute = dst.AbsolutePosition + size / 2
+					if absolute.X < row.AbsolutePosition.X or absolute.X > row.AbsolutePosition.X + row.AbsoluteSize.X then continue end
+				end
+				local function add(list, name, tint)
+					table.insert(list, { pos, size, name, tint })
+				end
+				if now then
+					local delta = now.power - old.power
+					local blocked = now.blocked - old.blocked
+					if blocked > 0 then add(aid, t("막음 ", "Block ") .. tostring(blocked), Color3.fromRGB(253, 212, 124)) end
+					if delta < 0 then
+						local tag = if card and card.id == "sa_36" then t("말뚝 ", "Stakes ") elseif leader == "elizabeth" then t("포격 ", "Volley ") else ""
+						local caption = tag .. "−" .. tostring(-delta)
+						local tint = Color3.fromRGB(255, 143, 120)
+						if volley[unit] then effectAt(pos, size, caption, tint, volley[unit]) else add(damage, caption, tint) end
+					elseif delta > 0 then
+						local tag = if old.penalty < 0 and now.penalty == 0 then t("회복 ", "Heal ") else ""
+						add(aid, tag .. "+" .. tostring(delta), Color3.fromRGB(154, 233, 182))
+					end
+					if old.row ~= now.row or old.side ~= now.side then
+						add(other, if unit.bachDangRound == m.round then t("유인", "Lured") else t("이동", "Moved"), Color3.fromRGB(142, 213, 244))
+					end
+				else
+					add(other, t("전장 이탈", "Left field"), Color3.fromRGB(214, 191, 153))
+				end
+			end
+			local delay = 0
+			for _, list in { aid, damage, other } do
+				for _, entry in list do
+					effectAt(entry[1], entry[2], entry[3], entry[4], delay)
+					delay = math.min(0.56, delay + (if leader == "elizabeth" then 0.13 else 0.07))
+				end
+			end
+			if card and card.id == "eu_36" then
+				local size = boardFrame.AbsoluteSize
+				local pos = boardFrame.AbsolutePosition + size / 2 - bg.AbsolutePosition
+				effectAt(pos, Vector2.new(100, 30), t("잔 다르크 · 소멸", "Joan of Arc · Vanished"), Color3.fromRGB(255, 216, 132), delay)
+			end
+		end
 		local function afterAction(ok, msg, res, card, side)
 			if ok and card and not card.special then lastPlayed[side] = card end
 			if ok and card and onPlay then onPlay(side, card) end
@@ -2263,6 +2465,19 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			info.Text = if english then (if msg == "멈췄다" then "Passed" else "Card played") else msg or ""
 			if res then
+				if opts.cardOnly then
+					local resultName = if res.winner == "me" then "ui_result_win" elseif res.winner == "foe" then "ui_result_loss" else "ui_result_draw"
+					local resultArtId = AssetIds["CardArt/" .. resultName]
+					if resultArtId then
+						roundResultTick += 1
+						local currentResult = roundResultTick
+						roundResult.Image = "rbxassetid://" .. tostring(resultArtId)
+						roundResult.Visible = true
+						task.delay(1.6, function()
+							if currentResult == roundResultTick and roundResult.Parent then roundResult.Visible = false end
+						end)
+					end
+				end
 				info.Text = if english then string.format("Round %d — You %d : Pirates %d %s", res.round, res.me, res.foe,
 					if res.winner == "me" then "(Victory!)" elseif res.winner == "foe" then "(Defeat)" else "(Draw)")
 					else string.format("%d판 결과 — 우리 %d : 해적 %d  %s", res.round, res.me, res.foe,
@@ -2272,20 +2487,97 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					Sfx.play("sfx_metal_clash", 0.5, 1)
 				end)
 			end
+			local before, order = previousBoard, previousOrder
+			for unit, widget in boardCards do
+				local entry = before[unit]
+				entry.size = widget.AbsoluteSize
+				entry.pos = widget.AbsolutePosition + entry.size / 2 - bg.AbsolutePosition
+			end
+			local leader = if side and not previousLeaders[side] and m.leaderUsed[side] then m.leader[side] else nil
 			render()
+			if opts.cardOnly and not res then
+				local rendered = previousBoard
+				task.defer(function()
+					if g.Parent and rendered == previousBoard then playBoardEffects(before, order, card, leader) end
+				end)
+			end
 		end
-		local passBtn = mkSide(t("멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), "Menu/cc0_shield", function()
+		local passBtn = mkSide(t("멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), if opts.cardOnly and AssetIds["CardArt/ui_icon_hourglass"] then "CardArt/ui_icon_hourglass" else "Menu/cc0_shield", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
 				Sfx.play("sfx_anchor_lower", 0.55, 1.1, "sfx_rope_pull")
 				afterAction(mine(BC.pass(m, "me")))
 			end
 		end)
-		local leaderBtn = mkSide(t("지도자 능력", "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
-			if not playing and not auto and not finished and m.turn == "me" and not m.over then
+		local leaderBtn, leaderIcon = mkSide(t(if opts.cardOnly then "지도자 카드" else "지도자 능력", if opts.cardOnly then "Leader Card" else "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
+			if opts.cardOnly then
+				if not finished and showLeaderCard then showLeaderCard("me") end
+			elseif not playing and not auto and not finished and m.turn == "me" and not m.over then
+				-- 카드 대전이 아닌 접현전은 기존 단일 터치 능력 사용 방식을 보존한다.
 				Sfx.play("sfx_card_spell", 0.7, 1, "sfx_horn")
 				afterAction(mine(BC.useLeader(m, "me")))
 			end
 		end)
+		local leaderPortrait, leaderStatus, foePortrait
+		if opts.cardOnly then
+			local foeBtn, foeIcon = mkSide(t("적장", "Leader"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
+				if not finished and showLeaderCard then showLeaderCard("foe") end
+			end)
+			foeBtn.Name = "OpponentLeader"
+			foeBtn.Position = UDim2.fromScale(0.025, 0.25)
+			foeBtn.Size = UDim2.fromScale(0.25, 0.54)
+			foeBtn.Parent = foePlate.plate
+			foeBtn.Caption.Visible = false
+			foeIcon.Position = UDim2.fromScale(0.06, 0.5)
+			foeIcon.Size = UDim2.fromScale(0.88, 0.88)
+			for _, side in { "me", "foe" } do
+				local icon = if side == "me" then leaderIcon else foeIcon
+				local leaderId = m.leader[side]
+				local portraitKey = NEW_LEADER_ART[leaderId]
+				local portraitId = (portraitKey and AssetIds[portraitKey]) or AssetIds["CardArt/leader_" .. leaderId]
+				local fallbackKey = LEADER_FACE[leaderId]
+				portraitId = portraitId or (fallbackKey and AssetIds[fallbackKey])
+				if portraitId then
+					-- 기존 먹색 버튼에 황동 테두리를 두르고 얼굴과 이름을 나란히 배치한다.
+					icon.ImageTransparency = 1
+					if side == "me" then
+						icon.Position = UDim2.fromScale(0.04, 0.5)
+						icon.Size = UDim2.fromScale(0.28, 0.86)
+					end
+					icon.BackgroundColor3 = Color3.fromRGB(47, 32, 22)
+					icon.BackgroundTransparency = 0
+					icon.ClipsDescendants = true
+
+					-- 세로 원화의 위쪽을 얼굴 창에 맞춰 보여 준다.
+					local portrait = Instance.new("ImageLabel")
+					portrait.Name = "LeaderPortrait"
+					portrait.SizeConstraint = Enum.SizeConstraint.RelativeXX
+					portrait.Size = UDim2.fromScale(1, 4 / 3)
+					portrait.BackgroundTransparency = 1
+					portrait.ScaleType = Enum.ScaleType.Fit
+					portrait.Image = "rbxassetid://" .. tostring(portraitId)
+					portrait.Parent = icon
+					if side == "foe" then
+						foePortrait = portrait
+						continue
+					end
+					leaderPortrait = portrait
+
+					local caption = leaderBtn.Caption
+					caption.Position = UDim2.fromScale(0.38, 0.07)
+					caption.Size = UDim2.fromScale(0.57, 0.53)
+					caption.TextXAlignment = Enum.TextXAlignment.Left
+
+					leaderStatus = label(leaderBtn, "", 10, Color3.fromRGB(219, 185, 119))
+					leaderStatus.Position = UDim2.fromScale(0.38, 0.59)
+					leaderStatus.Size = UDim2.fromScale(0.57, 0.3)
+					leaderStatus.TextXAlignment = Enum.TextXAlignment.Left
+					leaderStatus.TextScaled = true
+					local statusLimit = Instance.new("UITextSizeConstraint")
+					statusLimit.MaxTextSize = 11
+					statusLimit.Parent = leaderStatus
+				end
+			end
+		end
 		local mullBtn
 		mullBtn = mkSide(t("손패 교체", "Swap Card"), 0.70, Color3.fromRGB(70, 58, 38), "Menu/cc0_glove", function()
 			if playing or auto or finished or m.turn ~= "me" or m.over then return end
@@ -2305,7 +2597,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			Sfx.play("sfx_card_deal", 0.6, 1, "sfx_book_turn")
 			render()
 		end)
-		mkSide(t("자동 진행", "Auto Play"), 0.895, Color3.fromRGB(46, 72, 69), "Menu/cc0_yes", function()
+		mkSide(t("자동 진행", "Auto Play"), 0.895, Color3.fromRGB(46, 72, 69), if opts.cardOnly and AssetIds["CardArt/ui_icon_victory"] then "CardArt/ui_icon_victory" else "Menu/cc0_yes", function()
 			Sfx.play("sfx_ui_confirm", 0.5, 1, "sfx_click")
 			auto = true
 		end)
@@ -2328,7 +2620,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			f.Parent = parent
 			-- [전투판 카드] 이미 펼친 소형 카드도 5개 지역의 덱 색상을 유지한다.
-			local regionId = if type(c.id) == "string" then string.match(c.id, "^(%a%a)_%d%d$") else nil
+			local regionId = if type(c.id) == "string" then BC.cardRegionPrefix(c.id) else nil
 			local regionDeck = if regionId then CARD_DECK[regionId] else nil
 			frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) elseif regionDeck then regionDeck.color else brass, 4)
 			local plate = Instance.new("Frame")
@@ -2344,10 +2636,21 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			painting.Size = UDim2.fromScale(1.12, 1.12)
 			painting.BackgroundTransparency = 1
 			painting.ScaleType = Enum.ScaleType.Crop
-			painting.ImageColor3 = Color3.fromRGB(236, 211, 165)
+			painting.ImageColor3 = if type(c.id) == "string" and AssetIds["CardArt/" .. c.id] then Color3.new(1, 1, 1) else Color3.fromRGB(236, 211, 165)
 			local artKey = cardArtworkKey(c)
 			painting.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			painting.Parent = plate
+			local frameArtId = regionId and REGION_FRAME[regionId] and AssetIds[REGION_FRAME[regionId]]
+			if opts.cardOnly and frameArtId then
+				local regionBorder = Instance.new("ImageLabel")
+				regionBorder.Name = "PlayedCardRegionFrame"
+				regionBorder.Size = UDim2.fromScale(1, 1)
+				regionBorder.BackgroundTransparency = 1
+				regionBorder.Image = "rbxassetid://" .. tostring(frameArtId)
+				regionBorder.ScaleType = Enum.ScaleType.Stretch
+				regionBorder.ZIndex = 4
+				regionBorder.Parent = f
+			end
 			if moving then table.insert(cardMotions, animateCardArt(plate, painting, c)) end
 			local blackWash = Instance.new("UIGradient")
 			blackWash.Rotation = 90
@@ -2655,6 +2958,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		if opts.cardOnly then
 			focusFrame.AnchorPoint = Vector2.new(0, 0)
 			focusFrame.Position = UDim2.fromScale(0.01, 0.135)
+			if compactCards then
+				focusFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+				focusFrame.Position = UDim2.fromScale(0.5, 0.5)
+				focusBounds.MinSize = Vector2.new(0, 0)
+			end
 			previewHint = Instance.new("TextLabel")
 			previewHint.Name = "CardPreviewHint"
 			previewHint.Position = UDim2.fromScale(0.01, 0.135)
@@ -2668,6 +2976,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			previewHint.TextWrapped = true
 			previewHint.Text = t("카드를 누르면\n설명이 여기에 나와요.\n\n한 번 더 누르면\n카드를 내요.", "Tap a card to read it here.\n\nTap again to play it.")
 			previewHint.Parent = g
+			previewHint.Visible = not compactCards
 			frameEdge(previewHint, brass, 6)
 			-- 왼쪽 아래: 최근 전황 기록 (안내 띠의 문장이 지나가 버려도 다시 읽을 수 있다)
 			local logBox = Instance.new("TextLabel")
@@ -2685,6 +2994,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			logBox.TextYAlignment = Enum.TextYAlignment.Bottom
 			logBox.Text = ""
 			logBox.Parent = g
+			logBox.Visible = not compactCards
 			local logPad = Instance.new("UIPadding")
 			logPad.PaddingLeft, logPad.PaddingRight, logPad.PaddingBottom = UDim.new(0, 8), UDim.new(0, 6), UDim.new(0, 6)
 			logPad.Parent = logBox
@@ -2720,12 +3030,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local focusPaper = Instance.new("ImageLabel")
 		focusPaper.Size = UDim2.fromScale(1, 1)
 		focusPaper.BackgroundTransparency = 1
-		focusPaper.Image = if AssetIds["Menu/parchment_grain"] then "rbxassetid://" .. tostring(AssetIds["Menu/parchment_grain"]) else ""
-		focusPaper.ImageColor3 = Color3.fromRGB(174, 134, 83)
-		focusPaper.ImageTransparency = 0.43
+		local cardParchment = AssetIds["CardArt/ui_parchment"] or AssetIds["CardArt/battle_parchment"]
+		focusPaper.Image = if cardParchment then "rbxassetid://" .. tostring(cardParchment)
+			elseif AssetIds["Menu/parchment_grain"] then "rbxassetid://" .. tostring(AssetIds["Menu/parchment_grain"]) else ""
+		focusPaper.ImageColor3 = if cardParchment then Color3.new(1, 1, 1) else Color3.fromRGB(174, 134, 83)
+		focusPaper.ImageTransparency = if cardParchment then 0.12 else 0.43
 		focusPaper.ScaleType = Enum.ScaleType.Crop
 		focusPaper.ZIndex = 50
 		focusPaper.Parent = focusFrame
+		local focusBorder = Instance.new("ImageLabel")
+		focusBorder.Name = "EnlargedCardRegionFrame"
+		focusBorder.Size = UDim2.fromScale(1, 1)
+		focusBorder.BackgroundTransparency = 1
+		focusBorder.ScaleType = Enum.ScaleType.Stretch
+		focusBorder.ZIndex = 54
+		focusBorder.Visible = false
+		focusBorder.Parent = focusFrame
 		local focusArtwork = Instance.new("Frame")
 		focusArtwork.Name = "CodexPainting"
 		focusArtwork.Position = UDim2.fromScale(0.035, 0.095)
@@ -2760,8 +3080,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusName.Font = Enum.Font.Antique
 		focusName.ZIndex = 53
 		local focusRule = label(focusFrame, "", 14, ink, true)
-		focusRule.Position = UDim2.fromScale(0.035, 0.75)
-		focusRule.Size = UDim2.fromScale(0.93, 0.17)
+		focusRule.Position = UDim2.fromScale(0.035, if opts.cardOnly then 0.72 else 0.75)
+		focusRule.Size = UDim2.fromScale(0.93, if opts.cardOnly then 0.20 else 0.17)
 		focusRule.BackgroundColor3 = Color3.fromRGB(233, 213, 170)
 		focusRule.BackgroundTransparency = 0.08
 		focusRule.BorderSizePixel = 0
@@ -2797,6 +3117,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		frameEdge(focusClose, brass, 4)
 		local selectedPlay
 		local focusMotion
+		local leaderPreviewId
 		local function showCardCodex(card, readOnly)
 			if focusMotion then
 				focusMotion.stop()
@@ -2806,45 +3127,69 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				focusMotion = nil
 			end
 			if focusTween then focusTween:Cancel(); focusTween = nil end
-			if previewHint then previewHint.Visible = card == nil end
+			if previewHint then previewHint.Visible = card == nil and not compactCards end
 			if not card then
+				leaderPreviewId = nil
 				focusArtwork:SetAttribute("ArtFocused", false)
 				focusFrame.Visible = false
 				focusShade.Visible = false
 				return
 			end
-			-- [배치 카드] 손패가 아닌 전장 카드는 읽기 전용 확대만 허용한다.
-			focusUse.Visible = not readOnly
+			-- [지도자 카드] 원화와 능력을 카드 형태로 보여 주고, 사용은 기존 BC.useLeader 흐름을 따른다.
+			local leaderProfile = card.leaderId and BC.Leaders[card.leaderId]
+			leaderPreviewId = if leaderProfile and card.leaderSide == "me" then card.leaderId else nil
+			focusUse.Visible = if leaderProfile then (leaderPreviewId ~= nil and m.turn == "me" and not m.over and not m.leaderUsed.me and not playing and not auto)
+				else not readOnly
+			focusUse.Text = if leaderProfile then t("지도자 능력 사용", "Use Leader Ability") else t("카드 사용", "Play Card")
 			-- [크기] 화면 가장자리 여백을 남기고 0.69 비율로 최대 620px까지 확대한다.
 			local screenSize = bg.AbsoluteSize
 			local height = math.floor(math.max(210, math.min(screenSize.Y * 0.86, screenSize.X * 0.9 / 0.69, 620)))
 			if opts.cardOnly then
-				height = math.floor(math.max(210, math.min(screenSize.Y * 0.85, screenSize.X * 0.19 / 0.69)))
+				height = if compactCards then math.floor(math.max(1, math.min(screenSize.Y * 0.88, screenSize.X * 0.94 / 0.69, 620)))
+				else math.floor(math.max(210, math.min(screenSize.Y * 0.85, screenSize.X * 0.19 / 0.69)))
 			end
 			focusFrame.Size = UDim2.fromOffset(math.floor(height * 0.69), height)
 			focusScale.Scale = 0.78
 			focusShade.BackgroundTransparency = 1
-			focusShade.Visible = not opts.cardOnly -- 카드 대전에서는 화면을 어둡게 덮지 않는다
+			focusShade.Visible = not opts.cardOnly or compactCards -- 좁은 화면은 카드 설명만 겹쳐 띄운다
 			focusArtwork:SetAttribute("ArtFocused", true)
 			focusFrame.Visible = true
-			if not opts.cardOnly then TweenService:Create(focusShade, TweenInfo.new(0.2), { BackgroundTransparency = 0.3 }):Play() end
+			if not opts.cardOnly or compactCards then TweenService:Create(focusShade, TweenInfo.new(0.2), { BackgroundTransparency = 0.3 }):Play() end
 			focusTween = TweenService:Create(focusScale, TweenInfo.new(0.26, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { Scale = 1 })
 			focusTween:Play()
-			local artKey = cardArtworkKey(card)
-			focusImage.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
-			-- [확대 카드] 지역 덱과 선박·유물·동물·원더 분류를 판독할 수 있게 표시한다.
-			local regionId = if type(card.id) == "string" then string.match(card.id, "^(%a%a)_%d%d$") else nil
+			local artKey = if leaderProfile then (NEW_LEADER_ART[card.leaderId] and AssetIds[NEW_LEADER_ART[card.leaderId]] and NEW_LEADER_ART[card.leaderId]) or (AssetIds["CardArt/leader_" .. card.leaderId] and "CardArt/leader_" .. card.leaderId) or LEADER_FACE[card.leaderId] else cardArtworkKey(card)
+			focusImage.Image = if artKey and AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
+			focusImage.ImageColor3 = if leaderProfile or (type(card.id) == "string" and AssetIds["CardArt/" .. card.id]) then Color3.new(1, 1, 1) else Color3.fromRGB(239, 214, 174)
+			focusImage.ScaleType = if leaderProfile then Enum.ScaleType.Fit else Enum.ScaleType.Crop
+			focusImage.Size = if leaderProfile then UDim2.fromScale(1, 1) else UDim2.fromScale(1.14, 1.14)
+			local regionId = if leaderProfile then m.faction[card.leaderSide] elseif type(card.id) == "string" then BC.cardRegionPrefix(card.id) else nil
 			local regionDeck = if regionId then CARD_DECK[regionId] else nil
+			local focusFrameArtId = regionId and REGION_FRAME[regionId] and AssetIds[REGION_FRAME[regionId]]
+			focusBorder.Image = if focusFrameArtId then "rbxassetid://" .. tostring(focusFrameArtId) else ""
+			focusBorder.Visible = focusFrameArtId ~= nil
 			focusEdge.Color = if regionDeck then regionDeck.color else brass
-			focusName.Text = if regionDeck then (if english then regionDeck.en else regionDeck.ko) .. " · " .. cardName(card) else cardName(card)
-			local row = if card.row then rowName(card.row) else t("전술", "Tactic")
-			local category = if card.category then (if english then englishCategories[card.category] or card.category else card.category) .. " · " else ""
-			local strength = if card.power then t(" · 전투력 ", " · Power ") .. tostring(card.power) else ""
-			local description = cardDescription(card)
-			local lore = cardLore(card)
-			focusRule.Text = category .. row .. strength .. "\n" .. description .. (if lore then "\n" .. lore else "")
-			focusMotion = animateCardArt(focusArtwork, focusImage, card)
-			table.insert(cardMotions, focusMotion)
+			if leaderProfile then
+				focusName.Text = t("지도자 · ", "Leader · ") .. leaderProfile.name
+				focusRule.Text = t("지도자 능력: ", "Leader Ability: ") .. (if english then leaderProfile.textEn or leaderProfile.text else leaderProfile.text)
+					.. t(" · 보급 +", " · Provision +") .. tostring(leaderProfile.provision or 0)
+					.. (if m.leaderUsed[card.leaderSide] then t("\n이번 대결에서 사용함", "\nAlready used in this match") else "")
+					.. (if BC.CardLines[card.leaderId] then "\n「" .. BC.CardLines[card.leaderId][if english then 2 else 1] .. "」" else "")
+			else
+				focusName.Text = if regionDeck then (if english then regionDeck.en else regionDeck.ko) .. " · " .. cardName(card) else cardName(card)
+				local row = if card.row then rowName(card.row) else t("전술", "Tactic")
+				local category = if card.category then (if english then englishCategories[card.category] or card.category else card.category) .. " · " else ""
+				local strength = if card.power then t(" · 전투력 ", " · Power ") .. tostring(card.power) else ""
+				local description = cardDescription(card)
+				local lore = cardLore(card)
+				local series = BC.StorySeries[card.id]
+				local kind = if card.cause or card.fuse then t("연쇄·조합", "Combo")
+					elseif card.special then t("전술", "Tactic") elseif card.hero then t("영웅", "Hero") else t("능력", "Ability")
+				focusRule.Text = category .. row .. strength .. "\n" .. kind .. " · " .. description
+					.. (if series then "\n" .. t("이야기 · ", "Story · ") .. series[if english then 2 else 1] elseif lore then "\n" .. t("이야기 · ", "Story · ") .. lore else "")
+					.. (if BC.CardLines[card.id] then "\n「" .. BC.CardLines[card.id][if english then 2 else 1] .. "」" else "")
+				focusMotion = animateCardArt(focusArtwork, focusImage, card)
+				table.insert(cardMotions, focusMotion)
+			end
 		end
 		local function closeCardCodex()
 			clearDropHint()
@@ -2860,12 +3205,24 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusClose.Activated:Connect(closeCardCodex)
 		focusShade.Activated:Connect(closeCardCodex)
 		focusUse.Activated:Connect(function()
-			if selectedPlay then selectedPlay() end
+			if leaderPreviewId then
+				if playing or auto or finished or m.over or m.turn ~= "me" or m.leaderUsed.me or leaderPreviewId ~= m.leader.me then return end
+				Sfx.play("sfx_card_spell", 0.7, 1, "sfx_horn")
+				afterAction(mine(BC.useLeader(m, "me")))
+			elseif selectedPlay then
+				selectedPlay()
+			end
 		end)
+		showLeaderCard = function(side)
+			closeCardCodex()
+			showCardCodex({ leaderId = m.leader[side], leaderSide = side }, true)
+		end
 		focusTap.Activated:Connect(function()
 			if selectedPlay then selectedPlay() else closeCardCodex() end
 		end)
 		render = function()
+			boardCards, previousBoard, previousOrder = {}, {}, {}
+			previousLeaders = { me = m.leaderUsed.me, foe = m.leaderUsed.foe }
 			clearDropHint()
 			selectedPlay = nil
 			showCardCodex(nil)
@@ -2891,29 +3248,38 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			foePlate.who.Text = (if english then "Pirates" else opts.enemyName or "해적")
 				.. (if foeCulture then " · " .. (if english then englishFactions[m.faction.foe] or foeCulture.name else foeCulture.name) else "")
 				.. (if m.passed.foe then t(" · 멈춤", " · Passed") elseif m.turn == "foe" and not m.over then t(" · 차례", " · Turn") else "")
+				.. (if m.plans and m.plans.foe.falseOrder == m.round then t(" · 후열 유인", " · Rear lure") else "")
 			mePlate.who.Text = (if english then (if opts.cardOnly then "You" else "Your ship") elseif opts.cardOnly then "나" else opts.shipName or "우리 배")
 				.. (if myCulture then " · " .. (if english then englishFactions[m.faction.me] or myCulture.name else myCulture.name) else "")
 				.. (if m.passed.me then t(" · 멈춤", " · Passed") elseif m.turn == "me" and not m.over then t(" · 내 차례", " · Your turn") else "")
-			foePlate.leader.Text = string.sub(BC.Leaders[m.leader.foe] and BC.Leaders[m.leader.foe].name or "적", 1, 3)
-			mePlate.leader.Text = string.sub(BC.Leaders[m.leader.me] and BC.Leaders[m.leader.me].name or "나", 1, 3)
-			-- 등록된 인물 초상이 있는 지도자는 글자 대신 얼굴을 보여 준다
-			for _, pair in { { mePlate, m.leader.me }, { foePlate, m.leader.foe } } do
-				local face = LEADER_FACE[pair[2]]
-				local img = face and AssetIds[face]
-				local old = pair[1].leader:FindFirstChild("Face")
-				if old then old:Destroy() end
-				if img then
-					pair[1].leader.Text = ""
-					local f = Instance.new("ImageLabel")
-					f.Name = "Face"
-					f.Size = UDim2.fromScale(1, 1)
-					f.BackgroundTransparency = 1
-					f.ScaleType = Enum.ScaleType.Crop
-					f.Image = "rbxassetid://" .. tostring(img)
-					local fc = Instance.new("UICorner")
-					fc.CornerRadius = UDim.new(1, 0)
-					fc.Parent = f
-					f.Parent = pair[1].leader
+				.. (if m.plans and m.plans.me.falseOrder == m.round then t(" · 후열 유인", " · Rear lure") else "")
+			-- [카드전] 점수판의 원형 지도자 표시 제거. 접현전만 기존 초상 유지.
+			if not opts.cardOnly then
+				foePlate.leader.Text = string.sub(BC.Leaders[m.leader.foe] and BC.Leaders[m.leader.foe].name or "적", 1, 3)
+				mePlate.leader.Text = string.sub(BC.Leaders[m.leader.me] and BC.Leaders[m.leader.me].name or "나", 1, 3)
+				-- 등록된 인물 초상이 있는 지도자는 글자 대신 얼굴을 보여 준다
+				for _, pair in { { mePlate, m.leader.me }, { foePlate, m.leader.foe } } do
+					local face = NEW_LEADER_ART[pair[2]]
+					local img = face and AssetIds[face]
+					if not img then
+						face = LEADER_FACE[pair[2]]
+						img = face and AssetIds[face]
+					end
+					local old = pair[1].leader:FindFirstChild("Face")
+					if old then old:Destroy() end
+					if img then
+						pair[1].leader.Text = ""
+						local f = Instance.new("ImageLabel")
+						f.Name = "Face"
+						f.Size = UDim2.fromScale(1, 1)
+						f.BackgroundTransparency = 1
+						f.ScaleType = Enum.ScaleType.Crop
+						f.Image = "rbxassetid://" .. tostring(img)
+						local fc = Instance.new("UICorner")
+						fc.CornerRadius = UDim.new(1, 0)
+						fc.Parent = f
+						f.Parent = pair[1].leader
+					end
 				end
 			end
 			foePlate.deck.Text = tostring(#(m.deck and m.deck.foe or {}))
@@ -2982,16 +3348,28 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				laneAccent.BackgroundColor3 = if side == "me" then Color3.fromRGB(88, 170, 212) else Color3.fromRGB(214, 115, 110)
 				laneAccent.BorderSizePixel = 0
 				laneAccent.Parent = rf
-				emblem(rf, rowIcons[row], UDim2.new(0, 4, 0.5, 0), UDim2.new(0, 21, 0.8, 0))
+				if not compactCards then emblem(rf, rowIcons[row], UDim2.new(0, 4, 0.5, 0), UDim2.new(0, 21, 0.8, 0)) end
 				local mult, adv, dis = BC.rowMatchup(m, side, row)
 				local tag = label(rf, string.format("%s\n%d%s", rowName(row), BC.rowTotal(m, side, row), if adv and dis then " ▲▼" elseif adv then t(" ▲상성", " ▲Adv") elseif dis then t(" ▼불리", " ▼Dis") else "") .. (if BC.activeTactic(m.rows[side][row]) then "\n" .. BC.activeTactic(m.rows[side][row]) else ""), 13, Color3.fromRGB(246, 208, 130))
-				tag.Position = UDim2.fromOffset(29, 0)
-				tag.Size = UDim2.new(0, 68, 1, 0)
+				tag.Position = UDim2.fromOffset(if compactCards then 6 else 29, 0)
+				tag.Size = UDim2.new(0, if compactCards then 42 else 68, 1, 0)
+				if compactCards then
+					tag.Text = rowName(row)
+					tag.TextSize = 11
+					tag.TextWrapped = true
+				end
 				tag.TextXAlignment = Enum.TextXAlignment.Left
 				tag.TextColor3 = if adv and not dis then Color3.fromRGB(150, 235, 150) elseif dis and not adv then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(246, 208, 130)
-				local cards = Instance.new("Frame")
-				cards.Position = UDim2.fromOffset(104, 3)
-				cards.Size = UDim2.new(1, if opts.cardOnly then -160 else -108, 1, -6)
+				local cards = if opts.cardOnly then Instance.new("ScrollingFrame") else Instance.new("Frame")
+				cards.Position = UDim2.fromOffset(if compactCards then 48 else 104, 3)
+				cards.Size = UDim2.new(1, if compactCards then -90 elseif opts.cardOnly then -160 else -108, 1, -6)
+				if cards:IsA("ScrollingFrame") then
+					cards.BorderSizePixel = 0
+					cards.ScrollingDirection = Enum.ScrollingDirection.X
+					cards.AutomaticCanvasSize = Enum.AutomaticSize.X
+					cards.CanvasSize = UDim2.new()
+					cards.ScrollBarThickness = 3
+				end
 				cards.BackgroundTransparency = 1
 				cards.Parent = rf
 				rowTargets[side][row] = cards
@@ -3001,7 +3379,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					badge.Name = "RowScoreBadge"
 					badge.AnchorPoint = Vector2.new(1, 0.5)
 					badge.Position = UDim2.new(1, -6, 0.5, 0)
-					badge.Size = UDim2.fromOffset(44, 44)
+					badge.Size = if compactCards then UDim2.new(0, 32, 0.72, 0) else UDim2.fromOffset(44, 44)
 					badge.BackgroundColor3 = if adv and not dis then Color3.fromRGB(60, 120, 70) elseif dis and not adv then Color3.fromRGB(130, 60, 50) else Color3.fromRGB(32, 24, 18)
 					badge.BorderSizePixel = 0
 					badge.Font = Enum.Font.GothamBlack
@@ -3025,7 +3403,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				lay.Padding = UDim.new(0, 4)
 				lay.Parent = cards
 				for idx, c in m.rows[side][row] do
-					local playedCard = chip(cards, c, 62, BC.cardPower(m, side, row, idx), c == lastPlayed.me or c == lastPlayed.foe)
+					local power = BC.cardPower(m, side, row, idx)
+					local playedCard = chip(cards, c, 62, power, c == lastPlayed.me or c == lastPlayed.foe)
+					if opts.cardOnly then
+						boardCards[c] = playedCard
+						previousBoard[c] = { power = power, penalty = c.tacticPower or 0, blocked = c.blockedPower or 0, row = row, side = side, size = Vector2.zero, pos = Vector2.zero }
+						table.insert(previousOrder, c)
+						if c.bachDangRound == m.round then
+							local mark = label(playedCard, t("유인", "Lured"), 10, Color3.fromRGB(163, 224, 252), true)
+							mark.Size = UDim2.fromScale(1, 0.25)
+							mark.Position = UDim2.fromScale(0, 0.65)
+							mark.BackgroundColor3 = Color3.fromRGB(26, 59, 75)
+							mark.BackgroundTransparency = 0.12
+							mark.TextScaled = true
+							mark.ZIndex = 11
+						end
+					end
 					playedCard.Activated:Connect(function()
 						if playing or finished then return end
 						closeCardCodex()
@@ -3040,13 +3433,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			for i, c in m.hand.me do
 				local b = Instance.new("TextButton")
-				b.Size = UDim2.new(0, 140, 1, -10)
+				b.Size = UDim2.new(0, 140, 1, if compactCards then -3 else -10)
 				local cardRatio = Instance.new("UIAspectRatioConstraint")
 				cardRatio.AspectRatio = 0.69
 				cardRatio.DominantAxis = Enum.DominantAxis.Height
 				cardRatio.Parent = b
 				b.LayoutOrder = i
-				local regionId = if type(c.id) == "string" then string.match(c.id, "^(%a%a)_%d%d$") else nil
+				local regionId = if type(c.id) == "string" then BC.cardRegionPrefix(c.id) else nil
 				local regionDeck = if regionId then CARD_DECK[regionId] else nil
 				b.BackgroundColor3 = if c.hero then Color3.fromRGB(107, 72, 40)
 					elseif c.special then Color3.fromRGB(66, 75, 76) else Color3.fromRGB(78, 58, 39)
@@ -3105,8 +3498,19 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				image.ScaleType = Enum.ScaleType.Crop
 				local artKey = cardArtworkKey(c)
 				image.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
-				image.ImageColor3 = Color3.fromRGB(236, 214, 175)
+				image.ImageColor3 = if type(c.id) == "string" and AssetIds["CardArt/" .. c.id] then Color3.new(1, 1, 1) else Color3.fromRGB(236, 214, 175)
 				image.Parent = art
+				local handFrameId = regionId and REGION_FRAME[regionId] and AssetIds[REGION_FRAME[regionId]]
+				if opts.cardOnly and handFrameId then
+					local handBorder = Instance.new("ImageLabel")
+					handBorder.Name = "HandCardRegionFrame"
+					handBorder.Size = UDim2.fromScale(1, 1)
+					handBorder.BackgroundTransparency = 1
+					handBorder.Image = "rbxassetid://" .. tostring(handFrameId)
+					handBorder.ScaleType = Enum.ScaleType.Stretch
+					handBorder.ZIndex = 3
+					handBorder.Parent = b
+				end
 				table.insert(cardMotions, animateCardArt(art, image, c))
 				local caption = label(b, cardName(c), 13, ink, true)
 				caption.Position = UDim2.fromScale(0.25, 0.7)
@@ -3152,8 +3556,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					flight.AnchorPoint = Vector2.new(0.5, 0.5)
 					flight.Size = UDim2.fromOffset(b.AbsoluteSize.X, b.AbsoluteSize.Y)
 					local start = b.AbsolutePosition + b.AbsoluteSize / 2 - bg.AbsolutePosition
+					local rowWidth = if opts.cardOnly then target.AbsoluteSize.Y * 0.74 else 62
+					local canvasOffset = if target:IsA("ScrollingFrame") then target.CanvasPosition.X else 0
 					local finishAt = target.AbsolutePosition - bg.AbsolutePosition + Vector2.new(
-						if c.special then target.AbsoluteSize.X / 2 else math.min(math.max(31, target.AbsoluteSize.X - 31), 31 + 66 * #m.rows[side][c.row]),
+						if c.special then target.AbsoluteSize.X / 2 else math.clamp(rowWidth / 2 + (rowWidth + 4) * #m.rows[side][BC.lane(c)] - canvasOffset, 0, target.AbsoluteSize.X),
 						target.AbsoluteSize.Y / 2
 					)
 					flight.Position = UDim2.fromOffset(start.X, start.Y)
@@ -3163,7 +3569,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					b.Visible = false
 					local flightTween = TweenService:Create(flight, TweenInfo.new(0.34, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
 						Position = UDim2.fromOffset(finishAt.X, finishAt.Y),
-						Size = UDim2.fromOffset(if c.special then 76 else 62, math.min(b.AbsoluteSize.Y, target.AbsoluteSize.Y)),
+						Size = UDim2.fromOffset(if c.special then 76 else rowWidth, math.min(b.AbsoluteSize.Y, target.AbsoluteSize.Y)),
 						Rotation = 0,
 					})
 					flightTween:Play()
@@ -3221,9 +3627,20 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				mullBtn.Caption.Text = if left > 0 then t(string.format("손패 교체 (%d)", left), string.format("Swap Card (%d)", left)) else t("손패 교체 (끝)", "Swap Card (done)")
 				mullBtn.BackgroundTransparency = if left > 0 then 0 else 0.6
 			end
-			leaderBtn.Caption.Text = if m.leaderUsed.me then t("지도자 (사용함)", "Leader (Used)")
+			leaderBtn.Caption.Text = if opts.cardOnly then
+				(if m.leaderUsed.me then t("지도자 카드 (사용함)", "Leader Card (Used)")
+				else t("지도자 카드 · ", "Leader Card · ") .. (if english then englishLeaders[m.leader.me] or "" else BC.Leaders[m.leader.me].name))
+				elseif m.leaderUsed.me then t("지도자 (사용함)", "Leader (Used)")
 				else t("지도자: ", "Leader: ") .. (if english then englishLeaders[m.leader.me] or "" else BC.Leaders[m.leader.me].name)
-			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then 0.6 else 0
+			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then (if opts.cardOnly then 0.34 else 0.6) else 0
+			if leaderPortrait and leaderStatus then
+				leaderBtn.Caption.Text = if english then englishLeaders[m.leader.me] or "Leader" else BC.Leaders[m.leader.me].name
+				leaderStatus.Text = if m.leaderUsed.me then t("사용함", "Used") else t("사용 가능", "Ready")
+				leaderPortrait.ImageColor3 = if m.leaderUsed.me then Color3.fromRGB(165, 165, 165) else Color3.new(1, 1, 1)
+			end
+			if foePortrait then
+				foePortrait.ImageColor3 = if m.leaderUsed.foe then Color3.fromRGB(165, 165, 165) else Color3.new(1, 1, 1)
+			end
 		end
 		render()
 		info.Text = if english then string.format("Row advantage: Melee > Cannon > Ranged > Melee. Leader: %s",

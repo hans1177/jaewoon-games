@@ -1819,3 +1819,11 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 | `spice.png` | `559de65e3cc3436a851483911c463a60fc8ccf5e3c6b4a5f0499a44813f4e9ba` |
 | `timber.png` | `0765c93f26388e40421a8158fd1c84e59bebd224b78e5ceb6df22d311fca49b7` |
 | `wool.png` | `e32e2c7afb61fe3f0fda4a76c6309e68ed8072dd190571b5d9f81ee31f70b446` |
+
+
+## 2026-11-19 카드배틀 UI 원화 18종
+
+- 출처: 사용자가 오늘 ChatGPT 라이브러리에 제작·보관한 전투 UI 원본(6지역 프레임·고전 버튼·점수판·아이콘·양피지·승무패 장식).
+- 작업: 기존 사용자 원화에서 프레임/버튼/점수판/아이콘을 개별 투명 PNG로 분리 및 화면 크기 최적화. 신규 제작이나 외부 구매 없음. 각 해시는 `assets/APPROVED_IMAGES.json`, 등록 파일은 `assets/cardart/ui_*.png`.
+- 적용: 기존 `NavalBattle.luau`, `DeckBuilder.luau`, `CardGallery.luau` 화면만 개선. 보상·전투 판정·덱 저장·기존 자산은 보존.
+- 로블록스 실제 게시 및 모바일 런타임 표시 검증은 별개로 실시.
