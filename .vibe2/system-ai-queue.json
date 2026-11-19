@@ -122641,7 +122641,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -122675,7 +122675,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 30,
-      "previousReservationId": "system-ai:44619541029:1",
+      "previousReservationId": "system-ai:44623186842:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -122683,12 +122683,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44623186842:1",
-      "reservedAt": "2026-11-19T21:56:41.928Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -126010,7 +126010,15 @@
         "actions-run:44617756093",
         "system-ai-handoff-to-reservation:system-ai:44619541029:1",
         "actions-run:44619541029",
-        "system-ai-handoff-to-reservation:system-ai:44623186842:1"
+        "system-ai-handoff-to-reservation:system-ai:44623186842:1",
+        "actions-run:44623186842",
+        "external-ai-raw-output-sha256:fdab3d9f2846205c4fafc8e1b537ef1b544f88e0435e62fc28569b6c8bd8b309",
+        "selected-strategy:direct-marketing-package-creation",
+        "system-ai-critic-decision-sha256:1cc86702a00359b3857d6f409a69f783c6bf617b5187b668e5e1e4578d04bd40",
+        "system-ai-applied-answer-sha256:a902b66c66283f8aa28e2312716862ddce1192e14f5d0150807e138da0147953",
+        "repair-strategy-fingerprint:1c4ea9d99774f3d0c76a6877f8dc50d7281d178604b23a7d5629e9865cfb0aea",
+        "failed-strategy-fingerprint:1c4ea9d99774f3d0c76a6877f8dc50d7281d178604b23a7d5629e9865cfb0aea",
+        "model-output-sha256:fdab3d9f2846205c4fafc8e1b537ef1b544f88e0435e62fc28569b6c8bd8b309"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1890,
@@ -126025,7 +126033,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-19T21:56:41.928Z"
+      "updatedAt": "2026-11-19T22:05:05.747Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -155186,7 +155194,7 @@
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -155220,7 +155228,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 6,
-      "previousReservationId": "system-ai:44620955805:1",
+      "previousReservationId": "system-ai:44623186842:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -155228,12 +155236,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44623186842:1",
-      "reservedAt": "2026-11-19T21:56:41.928Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -155499,7 +155507,15 @@
         "repair-strategy-fingerprint:70ff5f29b0b9c56b16ad39b2ab4271282b3789ec845458effad9208323334644",
         "failed-strategy-fingerprint:70ff5f29b0b9c56b16ad39b2ab4271282b3789ec845458effad9208323334644",
         "model-output-sha256:224c5cfaa768bddfcb789d13eb4fa9e7ebc233e88cb8641a8493de97b4d18233",
-        "system-ai-handoff-to-reservation:system-ai:44623186842:1"
+        "system-ai-handoff-to-reservation:system-ai:44623186842:1",
+        "actions-run:44623186842",
+        "external-ai-raw-output-sha256:9fb23ac888a24c2637ceba9d0d83ab6f504035c2914c298de6fcdc23c466b5eb",
+        "selected-strategy:create-grounded-pre-release-marketing-artifact",
+        "system-ai-critic-decision-sha256:cb35a619759d03d15b610c5d3393f907dc0c4b086bc22e345dc47c800f20a16c",
+        "system-ai-applied-answer-sha256:9fb23ac888a24c2637ceba9d0d83ab6f504035c2914c298de6fcdc23c466b5eb",
+        "repair-strategy-fingerprint:ec2c6579adc54c617da3fae00269434ab45c5ebbd462e097601d64cf0e8b2390",
+        "failed-strategy-fingerprint:ec2c6579adc54c617da3fae00269434ab45c5ebbd462e097601d64cf0e8b2390",
+        "model-output-sha256:9fb23ac888a24c2637ceba9d0d83ab6f504035c2914c298de6fcdc23c466b5eb"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 302,
@@ -155514,7 +155530,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-19T21:56:41.928Z"
+      "updatedAt": "2026-11-19T22:05:05.747Z"
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
