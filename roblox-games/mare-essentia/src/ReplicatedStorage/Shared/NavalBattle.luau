@@ -1893,6 +1893,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local portraitCardRatio = 3 / 4
 		local boardCardWidth = math.round(battleViewport.X * 0.065)
 		local handCardWidth = math.round(battleViewport.X * 0.08)
+		local boardPowerTextSize = math.max(11, math.round(battleViewport.Y * 0.033))
+		local handPowerTextSize = math.max(12, math.round(battleViewport.Y * 0.040))
 		local compactCards = opts.cardOnly and (battleViewport.X < 720 or battleViewport.X < battleViewport.Y or battleViewport.Y < 480)
 		-- [카드 대전 실조작] 기존 종료 버튼을 카드판 최상위에 표시한다. 전투 판정과 종료 콜백은 그대로 사용한다.
 		if opts.cardOnly then
@@ -2796,6 +2798,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			stamp.BackgroundColor3 = paper
 			stamp.BackgroundTransparency = 0
 			frameEdge(stamp, brass, 4)
+			if opts.cardOnly then
+				local sizeLimit = Instance.new("UITextSizeConstraint")
+				sizeLimit.MaxTextSize = boardPowerTextSize
+				sizeLimit.Parent = stamp
+			end
 			return f
 		end
 		-- 선택 전에도 모든 손패 카드에서 움직이는 백과사전 삽화가 동작한다.
@@ -3742,6 +3749,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				power.TextStrokeTransparency = 1
 				power.ZIndex = 4
 				frameEdge(power, brass, 5)
+				if opts.cardOnly then
+					power.Position = UDim2.fromScale(0.05, 0.04)
+					power.Size = UDim2.fromScale(0.38, 0.26)
+					power.TextScaled = true
+					local sizeLimit = Instance.new("UITextSizeConstraint")
+					sizeLimit.MaxTextSize = handPowerTextSize
+					sizeLimit.Parent = power
+				end
 				if hints[i] then
 					local g = hints[i]
 					local tipLabel = label(b, string.format("%s%d", if g >= 0 then "+" else "", g), 13, if g > 0 then Color3.fromRGB(150, 235, 150) elseif g < 0 then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(230, 220, 200), true)
