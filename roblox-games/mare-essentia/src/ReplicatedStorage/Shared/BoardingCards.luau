@@ -475,7 +475,21 @@ B.Units.ea_39 = { id="ea_39", name="한산도 학익진", category="전술", row
 
 B.Specials.lo_47 = { id="lo_47", name="인형의 저주", category="전설", special="dollCurse", text="상대 후열에서 가장 강한 일반 유닛 −2. 다음 자기 행동까지 첫 강화를 막는다." }
 
+B.Units.lo_48 = { id="lo_48", name="첫째 마녀", category="문학", row="ranged", power=3, ability="witchCurse", text="낼 때: 상대 후열 일반 유닛 하나 −1. 세 마녀가 모이면 다음 내 턴에 예언의 환영을 소환한다. 라운드당 한 번." }
+B.Units.lo_49 = { id="lo_49", name="둘째 마녀", category="문학", row="ranged", power=3, ability="witchBind", text="낼 때: 상대 후열 일반 유닛 하나의 다음 강화 1회를 막는다. 세 마녀가 모이면 다음 내 턴에 예언의 환영을 소환한다. 라운드당 한 번." }
+B.Units.lo_50 = { id="lo_50", name="셋째 마녀", category="문학", row="ranged", power=3, ability="witchGuard", text="낼 때: 같은 열의 다른 마녀 한 명에 엄호를 건다. 세 마녀가 모이면 다음 내 턴에 예언의 환영을 소환한다. 라운드당 한 번." }
+B.Units.lo_51 = { id="lo_51", name="손오공", category="문학", row="melee", power=3, ability="monkeyStrike", text="낼 때: 상대 전열 일반 유닛 하나 −2. 세 제자가 모이면 다음 내 턴에 가장 약한 다른 아군을 구출한다. 라운드당 한 번." }
+B.Units.lo_52 = { id="lo_52", name="저팔계", category="문학", row="melee", power=3, ability="pigGuard", text="낼 때: 다른 가장 약한 일반 아군에게 엄호를 건다. 세 제자가 모이면 다음 내 턴에 가장 약한 다른 아군을 구출한다. 라운드당 한 번." }
+B.Units.lo_53 = { id="lo_53", name="사오정", category="문학", row="ranged", power=3, ability="sandCleanse", text="낼 때: 다른 가장 약한 일반 아군의 약화와 이동 제한, 강화 차단을 해제한다. 세 제자가 모이면 다음 내 턴에 가장 약한 다른 아군을 구출한다. 라운드당 한 번." }
+
 B.CardEnglish = {
+	lo_48 = { name="First Witch", text="Deploy: Weaken one enemy ranged non-hero by 1. Gather all three witches to summon a 4-power apparition next turn, once per round." },
+	lo_49 = { name="Second Witch", text="Deploy: Block one enemy ranged non-hero’s first boost through its next action. Gather all three witches to summon a 4-power apparition next turn, once per round." },
+	lo_50 = { name="Third Witch", text="Deploy: Give another witch in this row cover. Gather all three witches to summon a 4-power apparition next turn, once per round." },
+	lo_51 = { name="Sun Wukong", text="Deploy: Weaken one enemy melee non-hero by 2. Gather all three disciples to rescue the weakest other ally next turn, once per round." },
+	lo_52 = { name="Zhu Bajie", text="Deploy: Give your weakest other non-hero cover. Gather all three disciples to rescue the weakest other ally next turn, once per round." },
+	lo_53 = { name="Sha Wujing", text="Deploy: Cleanse penalties, move restrictions and boost block from your weakest other non-hero. Gather all three disciples to rescue the weakest other ally next turn, once per round." },
+	apparition = { name = "Prophetic Apparition" },
 	lo_47 = { name="Doll’s Curse", text="Weaken the strongest enemy ranged non-hero by 2 and block its first boost through its next action." },
 	ea_39 = { name="Hansan Crane Wing", text="An enemy non-hero alone among non-heroes in its row loses 2. Another non-hero in that row removes the penalty." },
 	sa_34 = { name="Bach Dang Stakes", text = "Once per round, give the enemy’s second consecutive non-hero in a row −2, or −4 if you have no non-heroes there. The grounded unit cannot move through its next turn." },
@@ -752,7 +766,7 @@ B.Factions = {
 	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", specialty = "동물", leaders = { "rajaraja", "tranhungdao", "akbar" },
 		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30", "sa_31", "sa_32", "sa_33", "sa_34"} },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
-		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30", "lo_46", "lo_47"} },
+		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30", "lo_46", "lo_47", "lo_48", "lo_49", "lo_50", "lo_51", "lo_52", "lo_53"} },
 	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", specialty = "지형·원더", leaders = { "mansa", "hannibal", "shaka" },
 		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30", "af_31", "af_32", "af_33", "af_34", "af_35", "af_36" } },
 }
@@ -1326,6 +1340,42 @@ local function swapFormation(m: any, side)
 	return true
 end
 
+local function cleanseTactic(card)
+	card.anchored, card.shaken = nil, nil
+	if (card.tacticPower or 0) < 0 then card.tacticPower = nil end
+end
+
+local function resolveLiteraryCombos(m: any, side, state)
+	if not state then return end
+	if state.witches ~= m.round and hasTactic(m, side, "witchCurse")
+		and hasTactic(m, side, "witchBind") and hasTactic(m, side, "witchGuard") then
+		state.witches = m.round
+		table.insert(m.rows[side].ranged, { id = "apparition", name = "예언의 환영", row = "ranged", power = 4 })
+		logLine(m, "마녀의 회합: 예언의 환영 소환")
+	end
+	if state.pilgrims == m.round or not hasTactic(m, side, "monkeyStrike")
+		or not hasTactic(m, side, "pigGuard") or not hasTactic(m, side, "sandCleanse") then return end
+	local target, targetRow, targetIndex, power
+	for _, row in B.ROWS do
+		for index, card in m.rows[side][row] do
+			local current = B.cardPower(m, side, row, index)
+			if not card.hero and card.id ~= "lo_51" and card.id ~= "lo_52" and card.id ~= "lo_53"
+				and (not power or current < power) then
+				target, targetRow, targetIndex, power = card, row, index, current
+			end
+		end
+	end
+	if target then
+		state.pilgrims = m.round
+		cleanseTactic(target)
+		if targetRow == "melee" then
+			table.insert(m.rows[side].ranged, table.remove(m.rows[side].melee, targetIndex))
+			canalArrival(m, side, target)
+		end
+		logLine(m, "서유기 삼제자: " .. target.name .. " 구출")
+	end
+end
+
 local function beginTurn(m: any, side)
 	m.turn = side
 	local state = m.tactics and m.tactics[side]
@@ -1375,6 +1425,7 @@ local function beginTurn(m: any, side)
 			end
 		end
 	end
+	resolveLiteraryCombos(m, side, state)
 end
 
 local function finishTactics(m: any, side, playedCard)
@@ -1852,7 +1903,26 @@ function B.play(m: any, side, handIdx)
 				table.insert(m.hand[side], table.remove(deck, index))
 			end
 		end
-		if c.ability == "relay" then
+		if c.ability == "witchCurse" or c.ability == "witchBind" or c.ability == "monkeyStrike" then
+			local target = strongestInRow(m, foe, if c.ability == "monkeyStrike" then "melee" else "ranged")
+			if target then
+				if c.ability == "witchBind" then target.shaken = true
+				else boostCard(target, if c.ability == "monkeyStrike" then -2 else -1) end
+			end
+		elseif c.ability == "witchGuard" or c.ability == "pigGuard" or c.ability == "sandCleanse" then
+			local ally, power
+			for _, row in B.ROWS do
+				for index, candidate in m.rows[side][row] do
+					local current = B.cardPower(m, side, row, index)
+					local eligible = c.ability ~= "witchGuard" or (row == lane(c) and (candidate.id == "lo_48" or candidate.id == "lo_49" or candidate.id == "lo_50"))
+					if eligible and candidate ~= c and not candidate.hero and (not power or current < power) then ally, power = candidate, current end
+				end
+			end
+			if ally then
+				if c.ability == "sandCleanse" then cleanseTactic(ally)
+				else ally.cover = true end
+			end
+		elseif c.ability == "relay" then
 			if swapFormation(m, side) then msg ..= " (전술 교대!)" end
 		elseif c.ability == "chaski" then
 			if previousDeployment and previousDeployment ~= lane(c) then

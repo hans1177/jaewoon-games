@@ -97,10 +97,7 @@ end
 -- 가중치에 따라 등급을 고른 뒤 그 등급에서 한 장 (이미 가진 카드는 되도록 피한다)
 -- 미지의 땅 카드는 탐험·퀘스트·상자·두목에서 가끔 나온다 (전설 생물·잃어버린 문명). 영웅급은 더 드물다.
 CB.LOST_CHANCE = { discover = 0.04, explore = 0.12, quest = 0.15, chest = 0.30, boss = 0.40 }
-local LOST_IDS = {}
-for i = 1, 30 do
-	table.insert(LOST_IDS, string.format("lo_%02d", i))
-end
+local LOST_IDS = BC.Factions.lost.roster
 local function lostPick(book: any?, rng: () -> number): string?
 	for _ = 1, 20 do
 		local id = LOST_IDS[math.min(#LOST_IDS, math.floor(rng() * #LOST_IDS) + 1)]
