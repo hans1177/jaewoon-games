@@ -2595,7 +2595,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				effectAt(pos, Vector2.new(100, 30), t("잔 다르크 · 소멸", "Joan of Arc · Vanished"), Color3.fromRGB(255, 216, 132), delay, "vanish")
 			end
 		end
+		local cardLineTurn = 0
 		local function afterAction(ok, msg, res, card, side)
+			cardLineTurn += 1
 			if ok and card and not card.special then lastPlayed[side] = card end
 			if ok and card and onPlay then onPlay(side, card) end
 			if not ok then
@@ -2609,6 +2611,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				Sfx.play("sfx_anchor_lower", 0.4, 1.1, "sfx_rope_pull")
 			end
 			info.Text = if english then (if msg == "멈췄다" then "Passed" else "Card played") else msg or ""
+			if opts.cardOnly and not res and card and (card.id == "lo_51" or card.id == "lo_52" or card.id == "lo_53") then
+				local line = BC.CardLines[card.id]
+				local actionText = info.Text
+				local caption = "「" .. line[if english then 2 else 1] .. "」"
+				local shownOnTurn = cardLineTurn
+				info.Text = caption
+				task.delay(1.8, function()
+					if info.Parent and shownOnTurn == cardLineTurn and info.Text == caption then
+						info.Text = actionText
+					end
+				end)
+			end
 			if res then
 				if opts.cardOnly then
 					local resultName = if res.winner == "me" then "ui_result_win" elseif res.winner == "foe" then "ui_result_loss" else "ui_result_draw"
