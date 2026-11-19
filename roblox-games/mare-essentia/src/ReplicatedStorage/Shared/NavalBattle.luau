@@ -2288,7 +2288,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				buttonArt.Parent = b
 			end
 			frameEdge(b, brass, 5)
-			emblem(b, assetKey, UDim2.fromScale(0.05, 0.5), UDim2.fromScale(0.25, 0.78))
+			local icon = emblem(b, assetKey, UDim2.fromScale(0.05, 0.5), UDim2.fromScale(0.25, 0.78))
 			local title = label(b, text, 14, Color3.fromRGB(250, 236, 200))
 			title.Name = "Caption"
 			title.Position = UDim2.fromScale(0.34, 0)
@@ -2299,7 +2299,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			limit.MaxTextSize = 15
 			limit.Parent = title
 			b.Activated:Connect(onClick)
-			return b
+			return b, icon
 		end
 
 		local render
@@ -2384,7 +2384,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				afterAction(mine(BC.pass(m, "me")))
 			end
 		end)
-		local leaderBtn = mkSide(t(if opts.cardOnly then "지도자 카드" else "지도자 능력", if opts.cardOnly then "Leader Card" else "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
+		local leaderBtn, leaderIcon = mkSide(t(if opts.cardOnly then "지도자 카드" else "지도자 능력", if opts.cardOnly then "Leader Card" else "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
 			if opts.cardOnly then
 				if not finished and showLeaderCard then showLeaderCard() end
 			elseif not playing and not auto and not finished and m.turn == "me" and not m.over then
@@ -2393,6 +2393,28 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				afterAction(mine(BC.useLeader(m, "me")))
 			end
 		end)
+		local leaderPortrait
+		if opts.cardOnly then
+			local leaderId = m.leader.me
+			local portraitKey = NEW_LEADER_ART[leaderId]
+			local portraitId = (portraitKey and AssetIds[portraitKey]) or AssetIds["CardArt/leader_" .. leaderId]
+			local fallbackKey = LEADER_FACE[leaderId]
+			portraitId = portraitId or (fallbackKey and AssetIds[fallbackKey])
+			if portraitId then
+				leaderIcon.ImageTransparency = 1
+				leaderIcon.ClipsDescendants = true
+
+				-- 세로 원화의 윗부분을 기존 아이콘 자리에서 보여 준다.
+				leaderPortrait = Instance.new("ImageLabel")
+				leaderPortrait.Name = "LeaderPortrait"
+				leaderPortrait.SizeConstraint = Enum.SizeConstraint.RelativeXX
+				leaderPortrait.Size = UDim2.fromScale(1, 4 / 3)
+				leaderPortrait.BackgroundTransparency = 1
+				leaderPortrait.ScaleType = Enum.ScaleType.Fit
+				leaderPortrait.Image = "rbxassetid://" .. tostring(portraitId)
+				leaderPortrait.Parent = leaderIcon
+			end
+		end
 		local mullBtn
 		mullBtn = mkSide(t("손패 교체", "Swap Card"), 0.70, Color3.fromRGB(70, 58, 38), "Menu/cc0_glove", function()
 			if playing or auto or finished or m.turn ~= "me" or m.over then return end
@@ -3409,6 +3431,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				elseif m.leaderUsed.me then t("지도자 (사용함)", "Leader (Used)")
 				else t("지도자: ", "Leader: ") .. (if english then englishLeaders[m.leader.me] or "" else BC.Leaders[m.leader.me].name)
 			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then (if opts.cardOnly then 0.34 else 0.6) else 0
+			if leaderPortrait then
+				leaderPortrait.ImageColor3 = if m.leaderUsed.me then Color3.fromRGB(165, 165, 165) else Color3.new(1, 1, 1)
+			end
 		end
 		render()
 		info.Text = if english then string.format("Row advantage: Melee > Cannon > Ranged > Melee. Leader: %s",
