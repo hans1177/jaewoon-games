@@ -811,6 +811,26 @@ function DeckBuilder.build(parent, ctx)
 	local pickBanner -- 승리 보상 카드 고르기
 	local chipBtns = {}
 	local rebuildGrid
+	local search = Instance.new("TextBox")
+	search.Name = "CollectionSearch"
+	search.Position = UDim2.fromOffset(6, 48)
+	search.Size = UDim2.new(1, -12, 0, 38)
+	search.BackgroundColor3 = Color3.fromRGB(21, 30, 39)
+	search.TextColor3 = INK
+	search.PlaceholderColor3 = Color3.fromRGB(183, 173, 152)
+	search.PlaceholderText = "카드 이름 검색"
+	search.Text = ""
+	search.Font = Enum.Font.Gotham
+	search.TextSize = 15
+	search.ClearTextOnFocus = false
+	search.Parent = left
+	corner(search, 6)
+	search:GetPropertyChangedSignal("Text"):Connect(function()
+		if selectedTab ~= "collection" or addingToFormation then return end
+		state.page = 1
+		rebuildGrid()
+		gridScroll.CanvasPosition = Vector2.zero
+	end)
 
 	local function wantIds()
 		local ids = {}
@@ -865,8 +885,10 @@ function DeckBuilder.build(parent, ctx)
 		if not selectedCard then return end
 		if selectedTab == "deck" then
 			ctx.onWant(selectedCard, -1)
-		else
+		elseif addingToFormation then
 			addCard(selectedCard)
+		else
+			Gallery.showDetail(ctx.galleryCtx, selectedCard)
 		end
 	end)
 	enlist.AnchorPoint = Vector2.new(0, 1)
@@ -877,32 +899,51 @@ function DeckBuilder.build(parent, ctx)
 		selectedCard = id
 		local d = id and CB.def(id)
 		local book = ctx.getBook()
+		local vault = selectedTab == "collection" and not addingToFormation
+		local owned = if id then book.owned[id] or 0 else 0
+		if vault and owned == 0 then d = nil end
 		local art = d and ctx.AssetIds[ctx.artKey(d)]
 		preview.Image = if art then "rbxassetid://" .. tostring(art) else ""
 		detailTitle.Text = if not d then "카드를 골라요" elseif d.special then d.name else
 			string.format("%s · 전력 %d", d.name, (d.power or 0) + (book.tier[id] or 1) - 1)
-		effect.Text = if d then d.text or "" else ""
+		if vault and d then
+			local lane = if BC.Specials[id] then "전술" elseif BC.lane(d) == "melee" then "전열" else "후열"
+			effect.Text = string.format("보유 %d장 · %s\n%s", owned, lane, d.text or d.lore or "")
+		else
+			effect.Text = if d then d.text or "" else ""
+		end
+		effect.TextColor3 = if vault then INK else SEPIA
+		detailTitle.TextColor3 = effect.TextColor3
 		local count = if id then ctx.getWant()[id] or 0 else 0
-		enlist.Text = if selectedTab == "deck" then "덱에서 빼기" else "편입"
+		enlist.Text = if selectedTab == "deck" then "덱에서 빼기" elseif vault then "카드 상세" else "편입"
 		enlist.Visible = d ~= nil and (if selectedTab == "deck" then count > 0
-			else not d.archiveOnly and (book.owned[id] or 0) > count)
+			elseif vault then true else not d.archiveOnly and owned > count)
 	end
 	layoutPicker = function()
 		local wide = body.AbsoluteSize.X >= 530
 		local formation = selectedTab == "deck"
+		local vault = selectedTab == "collection" and not addingToFormation
 		local showFormationDetail = wide and formation
+		local showVaultDetail = wide and vault and state.filter ~= "crew"
+		local charcoal = Color3.fromRGB(24, 34, 44)
+		left.BackgroundColor3 = if vault then charcoal else PANEL
+		detail.BackgroundColor3 = if vault then charcoal else PAPER
+		search.Visible = vault and state.filter ~= "crew"
 		detail.Parent = if formation then right else left
-		detail.Visible = wide and (formation or addingToFormation)
+		detail.Visible = wide and (formation or addingToFormation) or showVaultDetail
 		detail.Position = if formation then UDim2.new(0.67, 0, 0, 54) else UDim2.fromScale(0.67, 0)
 		detail.Size = if formation then UDim2.new(0.33, -6, 1, -118)
 			else UDim2.new(0.33, -6, 1, -6)
 		deckScroll.Size = UDim2.new(if showFormationDetail then 0.66 else 1, -12, deckScroll.Size.Y.Scale, deckScroll.Size.Y.Offset)
-		local width = if wide and addingToFormation then 0.66 else 1
+		local width = if (wide and addingToFormation) or showVaultDetail then 0.66 else 1
 		chips.Size = UDim2.new(width, -12, 0, 38)
-		gridScroll.Size = UDim2.new(width, -12, 1, -56)
+		search.Size = UDim2.new(width, -12, 0, 38)
+		local gridTop = if search.Visible then 92 else 50
+		gridScroll.Position = UDim2.fromOffset(6, gridTop)
+		gridScroll.Size = UDim2.new(width, -12, 1, -gridTop - 6)
 		if formation then
 			selectCard(if selectedCard and (ctx.getWant()[selectedCard] or 0) > 0 then selectedCard else cur.ids[1])
-		elseif not addingToFormation then
+		elseif not addingToFormation and not vault then
 			selectCard(nil)
 		end
 	end
@@ -1013,7 +1054,7 @@ function DeckBuilder.build(parent, ctx)
 		end
 		tile.Activated:Connect(function()
 			Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click")
-			if detail.Visible then selectCard(id) else Gallery.showDetail(ctx.galleryCtx, id) end
+			if detail.Visible and owned > 0 then selectCard(id) else Gallery.showDetail(ctx.galleryCtx, id) end
 		end)
 		return tile
 	end
@@ -1033,11 +1074,15 @@ function DeckBuilder.build(parent, ctx)
 		end
 		local book = ctx.getBook()
 		local want = ctx.getWant()
+		local query = if selectedTab == "collection" and not addingToFormation
+			then string.lower((search.Text:match("^%s*(.-)%s*$") or "")) else ""
 		local shown, n = 0, 0
 		for _, id in ctx.catalog do
 			local d = CB.def(id)
 			local owned = book.owned[id] or 0
-			if d and inFilter(ctx, id, d, state.filter, owned) and (not addingToFormation or (owned > (want[id] or 0) and not d.archiveOnly and inFilter(ctx, id, d, pickerLane, owned))) then
+			local matches = query == "" or (owned > 0 and d and
+				(string.find(string.lower(d.name), query, 1, true) or string.find(string.lower(d.nameEn or ""), query, 1, true)))
+			if d and matches and inFilter(ctx, id, d, state.filter, owned) and (not addingToFormation or (owned > (want[id] or 0) and not d.archiveOnly and inFilter(ctx, id, d, pickerLane, owned))) then
 				n += 1
 				if n <= state.page * PAGE then
 					shown += 1
@@ -1068,6 +1113,7 @@ function DeckBuilder.build(parent, ctx)
 			Sfx.play("sfx_card_page", 0.5, 1, "sfx_book_turn")
 			if addingToFormation and f.id ~= pickerLane and f.id ~= "lo" and f.id ~= "owned" then return end
 			state.filter, state.page = f.id, 1
+			layoutPicker()
 			paintChips()
 			rebuildGrid()
 		end)
