@@ -3666,7 +3666,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				art.ClipsDescendants = true
 				art.Parent = b
 				frameEdge(art, if c.hero then Color3.fromRGB(231, 188, 104) elseif regionDeck then regionDeck.color else Color3.fromRGB(153, 115, 70), 3)
-				if regionDeck then
+				if regionDeck and not opts.cardOnly then
 					local origin = label(b, if english then regionDeck.en else regionDeck.ko, 10, Color3.fromRGB(255, 248, 222), true)
 					origin.Name = "CardDeckOrigin"
 					origin.Position = UDim2.fromScale(0.57, 0.56)
@@ -3681,41 +3681,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					elseif c.special then t("전술", "Tactic") elseif c.hero then t("영웅", "Hero")
 					elseif c.ability then (if english then englishAbilities[c.ability] or "" else ABIL[c.ability] or "")
 					else rowName(c.row)
-				local badge, badgeColor = cardBadge(c)
-				local kindLabel = label(b, if opts.cardOnly then badge or kindText else kindText, 10, if c.hero then Color3.fromRGB(255, 226, 143) else Color3.fromRGB(238, 220, 180), true)
-				kindLabel.Position = UDim2.fromScale(0.48, 0.03)
-				kindLabel.Size = UDim2.fromScale(0.48, 0.14)
-				kindLabel.TextXAlignment = Enum.TextXAlignment.Right
-				kindLabel.TextStrokeTransparency = 1
-				kindLabel.ZIndex = 8
-				if opts.cardOnly and badgeColor then
-					kindLabel.BackgroundColor3 = badgeColor
-					kindLabel.BackgroundTransparency = 0.1
-					kindLabel.TextScaled = true
-					kindLabel.TextXAlignment = Enum.TextXAlignment.Center
-					local limit = Instance.new("UITextSizeConstraint")
-					limit.MaxTextSize = 12
-					limit.Parent = kindLabel
-					frameEdge(kindLabel, brass, 3)
-				end
-				if opts.cardOnly then
-					kindLabel.Position = UDim2.fromScale(0.48, 0.20)
-					local timing = cardTiming(c)
-					local ribbon = label(b, cardPlacement(c) .. (if timing then " · " .. timing else ""), 11, Color3.fromRGB(250, 232, 197), true)
-					ribbon.Name = "CardPlacementTiming"
-					ribbon.Position = UDim2.fromScale(0.045, 0.50)
-					ribbon.Size = UDim2.fromScale(0.91, 0.15)
-					ribbon.BackgroundColor3 = if c.special then Color3.fromRGB(112, 63, 40)
-						elseif BC.lane(c) == "melee" then Color3.fromRGB(100, 57, 46) else Color3.fromRGB(39, 73, 97)
-					ribbon.BackgroundTransparency = 0.14
-					ribbon.TextScaled = true
-					ribbon.ZIndex = 10
-					local limit = Instance.new("UITextSizeConstraint")
-					limit.MaxTextSize = 12
-					limit.Parent = ribbon
-					frameEdge(ribbon, brass, 3)
-					local origin = b:FindFirstChild("CardDeckOrigin")
-					if origin then origin.Visible = false end
+				if not opts.cardOnly then
+					local kindLabel = label(b, kindText, 10, if c.hero then Color3.fromRGB(255, 226, 143) else Color3.fromRGB(238, 220, 180), true)
+					kindLabel.Position = UDim2.fromScale(0.48, 0.03)
+					kindLabel.Size = UDim2.fromScale(0.48, 0.14)
+					kindLabel.TextXAlignment = Enum.TextXAlignment.Right
+					kindLabel.TextStrokeTransparency = 1
+					kindLabel.ZIndex = 8
 				end
 				-- 정보부는 낡은 양피지 띠, 그림부는 움직이는 판화로 분리한다.
 				local parchmentBand = Instance.new("Frame")
@@ -3754,6 +3726,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				caption.TextScaled = true
 				caption.TextStrokeTransparency = 1
 				caption.Font = Enum.Font.Antique
+				if opts.cardOnly then
+					caption.TextWrapped = true
+					local nameSize = Instance.new("UITextSizeConstraint")
+					nameSize.MaxTextSize = 14
+					nameSize.Parent = caption
+				end
 				local iconKey = if c.special then "Menu/cc0_book" elseif c.ability == "spy" then "Menu/explore" else rowIcons[c.row]
 				emblem(b, iconKey, UDim2.fromScale(0.035, 0.83), UDim2.fromScale(0.20, 0.22))
 				local power = label(b, if c.special then "◆" else tostring(c.power or ""), 13, ink, true)
@@ -3769,10 +3747,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					local tipLabel = label(b, string.format("%s%d", if g >= 0 then "+" else "", g), 13, if g > 0 then Color3.fromRGB(150, 235, 150) elseif g < 0 then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(230, 220, 200), true)
 					tipLabel.AnchorPoint = Vector2.new(1, 0)
 					tipLabel.Position = UDim2.new(1, -4, 0, 5)
-					tipLabel.Size = UDim2.fromOffset(if i == bestHint then 40 else 28, 20)
-					tipLabel.Text = (if i == bestHint then t("추천 ", "Best ") else "") .. tipLabel.Text
+					tipLabel.Size = if opts.cardOnly then UDim2.new(0.40, 0, 0, 18)
+						else UDim2.fromOffset(if i == bestHint then 40 else 28, 20)
+					tipLabel.Text = (if i == bestHint and not opts.cardOnly then t("추천 ", "Best ") else "") .. tipLabel.Text
+					tipLabel.TextScaled = opts.cardOnly == true
 					tipLabel.TextStrokeTransparency = 1
-					tipLabel.BackgroundColor3 = Color3.fromRGB(34, 28, 22)
+					tipLabel.BackgroundColor3 = if opts.cardOnly and i == bestHint then Color3.fromRGB(46, 72, 51)
+						else Color3.fromRGB(34, 28, 22)
 					tipLabel.BackgroundTransparency = 0.2
 					tipLabel.ZIndex = 8
 				end
