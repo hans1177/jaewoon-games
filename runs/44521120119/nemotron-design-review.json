@@ -1,0 +1,136 @@
+{
+  "version": 3,
+  "provider": "MULTI_FREE_VISUAL",
+  "gameId": "mare-essentia",
+  "sourceRevision": "b148efd8f80ff6d9faf6ad991a1b8d56be9a1ba2",
+  "status": "REVIEWED_NO_VERIFIED_EDIT",
+  "selectedRole": "NPC",
+  "usageWindow": {
+    "day": "2026-11-19",
+    "calls": {
+      "NVIDIA": 12,
+      "GEMINI": 11,
+      "OPENROUTER": 30
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-19",
+      "GEMINI": "2026-11-19",
+      "OPENROUTER": "2026-11-19"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-19T02:55:17.481Z",
+      "GEMINI": "2026-11-19T08:05:44.960Z",
+      "OPENROUTER": "2026-11-19T02:54:41.418Z"
+    }
+  },
+  "cooldowns": {
+    "NVIDIA_VL": "2026-11-19T12:51:43.227Z",
+    "GEMINI_FLASH": "2026-11-20T12:21:44.031Z",
+    "GEMINI_LITE": "2026-11-19T12:51:52.240Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 12,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 1.16,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 11,
+      "remainingLocal": 1,
+      "effectiveRemaining": 1,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 1,
+      "estimatedCallsPerHour": 2.34,
+      "estimatedHoursToLocalCap": 0.4,
+      "nextLocalWindowAt": "2026-11-20T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 30,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 3.07,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [
+    {
+      "id": "NVIDIA_VL",
+      "status": "OK",
+      "provider": "NVIDIA",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "REVIEW_INVALID",
+      "failureSignature": "EDIT_NOT_VISUAL_OR_NOT_IN_POLICY"
+    },
+    {
+      "id": "GEMINI_FLASH",
+      "status": "HTTP_429",
+      "provider": "GEMINI",
+      "model": "gemini-3.8-flash"
+    },
+    {
+      "id": "GEMINI_LITE",
+      "status": "OK",
+      "provider": "GEMINI",
+      "model": "gemini-3.5-flash-lite"
+    },
+    {
+      "id": "GEMINI_LITE",
+      "status": "REVIEW_INVALID",
+      "failureSignature": "EDIT_NOT_VISUAL_OR_NOT_IN_POLICY"
+    }
+  ],
+  "frames": [
+    {
+      "name": "field_npc_ally_mob-0.jpg",
+      "sha256": "d37f92dc9001497df93ec0dd783a0dd028ec1176bf4edab4ad230c4216701c66"
+    },
+    {
+      "name": "harbor_npc_face_front-0.jpg",
+      "sha256": "f7a1322242db21583b2acf3709ea6a8072cac4d4e69caf20129dee14d1327e50"
+    },
+    {
+      "name": "harbor_npc_sparring_01-0.jpg",
+      "sha256": "90cb70e7a1fed8a633eb3e779d5e5c202579d6406bca6c5cccedee7871a7f1ae"
+    },
+    {
+      "name": "harbor_npc_sparring_02-0.jpg",
+      "sha256": "1238a8f65f60b7e29924ff9a762c5a1993b9d11f7760c4801e87349951860bd6"
+    }
+  ],
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
