@@ -1890,6 +1890,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		g.DisplayOrder = 40
 		g.Parent = player:WaitForChild("PlayerGui")
 		-- [카드배틀 모바일] 전투 계산은 그대로 두고 표시 구역만 화면 폭에 맞춘다.
+		local portraitCardRatio = 3 / 4
 		local compactCards = opts.cardOnly and (battleViewport.X < 720 or battleViewport.X < battleViewport.Y or battleViewport.Y < 480)
 		-- [카드 대전 실조작] 기존 종료 버튼을 카드판 최상위에 표시한다. 전투 판정과 종료 콜백은 그대로 사용한다.
 		if opts.cardOnly then
@@ -2752,7 +2753,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if opts.cardOnly then
 				-- 줄 높이에 맞춰 커지는 세로 카드(퀜트 느낌)
 				local chipRatio = Instance.new("UIAspectRatioConstraint")
-				chipRatio.AspectRatio = 0.74
+				chipRatio.AspectRatio = portraitCardRatio
 				chipRatio.DominantAxis = Enum.DominantAxis.Height
 				chipRatio.Parent = f
 			end
@@ -3082,7 +3083,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusBounds.MinSize = Vector2.new(145, 210)
 		focusBounds.Parent = focusFrame
 		local focusRatio = Instance.new("UIAspectRatioConstraint")
-		focusRatio.AspectRatio = 0.69
+		focusRatio.AspectRatio = if opts.cardOnly then portraitCardRatio else 0.69
 		focusRatio.DominantAxis = Enum.DominantAxis.Height
 		focusRatio.Parent = focusFrame
 		focusFrame.BackgroundColor3 = Color3.fromRGB(50, 35, 25)
@@ -3638,9 +3639,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			for i, c in m.hand.me do
 				local b = Instance.new("TextButton")
-				b.Size = UDim2.new(0, 140, 1, if compactCards then -3 else -10)
+				b.Size = UDim2.new(0, 140, 1, if opts.cardOnly then -(handPadding.PaddingTop.Offset + handPadding.PaddingBottom.Offset + handFrame.ScrollBarThickness) elseif compactCards then -3 else -10)
 				local cardRatio = Instance.new("UIAspectRatioConstraint")
-				cardRatio.AspectRatio = 0.69
+				cardRatio.AspectRatio = if opts.cardOnly then portraitCardRatio else 0.69
 				cardRatio.DominantAxis = Enum.DominantAxis.Height
 				cardRatio.Parent = b
 				b.LayoutOrder = i
@@ -3791,7 +3792,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					flight.AnchorPoint = Vector2.new(0.5, 0.5)
 					flight.Size = UDim2.fromOffset(b.AbsoluteSize.X, b.AbsoluteSize.Y)
 					local start = b.AbsolutePosition + b.AbsoluteSize / 2 - bg.AbsolutePosition
-					local rowWidth = if opts.cardOnly then target.AbsoluteSize.Y * 0.74 else 62
+					local rowWidth = if opts.cardOnly then target.AbsoluteSize.Y * portraitCardRatio else 62
 					local canvasOffset = if target:IsA("ScrollingFrame") then target.CanvasPosition.X else 0
 					local finishAt = target.AbsolutePosition - bg.AbsolutePosition + Vector2.new(
 						if c.special then target.AbsoluteSize.X / 2 else math.clamp(rowWidth / 2 + (rowWidth + 4) * #m.rows[side][BC.lane(c)] - canvasOffset, 0, target.AbsoluteSize.X),
@@ -3832,7 +3833,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						selected = b
 						selectedPlay = playChosenCard
 						edge.Color = Color3.fromRGB(255, 215, 126)
-						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = -4 }):Play()
+						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = if opts.cardOnly then 0 else -4 }):Play()
 						info.Text = cardName(c) .. " · " .. cardDescription(c)
 							.. (if c.hero then t(" · 영웅: 날씨·소각 면역", " · Hero: weather and Scorch immune") else "")
 							.. t(" · 크게 보고 사용 버튼 또는 다시 눌러 사용", " · Enlarge to inspect; tap again or Play Card")
