@@ -3,6 +3,7 @@
 -- 타일: 그림·이름·점수 동그라미·보유 수·동은금 테두리. 금 카드는 은은히 반짝이고, 큰 카드 그림은 천천히 움직인다.
 local TweenService = game:GetService("TweenService")
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
+local CardSymbols = require(script.Parent:WaitForChild("CardSymbols"))
 
 local Gallery = {}
 
@@ -263,6 +264,20 @@ local function showDetail(ctx, id)
 		effectHeading.TextXAlignment = Enum.TextXAlignment.Left
 		effectHeading.LayoutOrder = 3
 		effectHeading.ZIndex = 52
+		if symbol then
+			local mark = newLabel(effectHeading, "", 15, effectHeading.TextColor3)
+			mark.Size = UDim2.fromOffset(36, 22)
+			mark.ZIndex = 53
+			if CardSymbols.apply(mark, symbol) then
+				local padding = Instance.new("UIPadding")
+				padding.PaddingLeft = UDim.new(0, 39)
+				padding.Parent = effectHeading
+				mark.Position = UDim2.fromOffset(-39, 0)
+				effectHeading.Text = "카드 효과"
+			else
+				mark:Destroy()
+			end
+		end
 		local rule = newLabel(right, effect, 15, Color3.fromRGB(250, 236, 200))
 		rule.Size = UDim2.new(1, -6, 0, 0)
 		rule.AutomaticSize = Enum.AutomaticSize.Y
