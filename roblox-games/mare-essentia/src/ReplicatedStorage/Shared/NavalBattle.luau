@@ -1832,7 +1832,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local function rowName(row)
 			return if english then englishRows[row] or "" else BC.ROW_NAME[row] or ""
 		end
-		local function cardDescription(c)
+		local function baseCardDescription(c)
 			local translation = BC.CardEnglish[c.id]
 			local tactic = if translation and translation.text then (if english then translation.text else c.text) else nil
 			if c.cause or c.fuse then
@@ -1864,6 +1864,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if c.special == "decoy" then return "Return a weak field card to your hand" end
 			if c.ability then return englishDetails[c.ability] or "Use in its matching combat row" end
 			return if c.hero then "Hero · Unaffected by weather or Scorch" else "Use row matchups to deploy this card"
+		end
+		local function cardDescription(c)
+			local description = baseCardDescription(c)
+			local role = c.starterRole and BC.StarterText[c.starterRole]
+			if role then
+				local text = role[if english then 2 else 1]
+				if c.cause or c.fuse or c.ability then return text .. "\n" .. description end
+				return text
+			end
+			return description
 		end
 		local function mine(ok, msg, res, act, card)
 			if ok and act then table.insert(actions, act) end

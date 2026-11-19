@@ -754,6 +754,45 @@ B.Factions = {
 		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30", "af_31", "af_32", "af_33", "af_34", "af_35", "af_36" } },
 }
 B.FactionOrder = { "europe", "east_asia", "new_world", "middle_east", "southeast_asia", "africa", "lost" }
+-- 기본덱의 빈 역할을 병종과 소재에 맞춰 채운다. 기존 능력·연쇄·합치기는 유지한다.
+local starterRoles = {
+	eu_44 = "coverFire",
+	me_11 = "survey",
+	me_13 = "pierce",
+	af_32 = "evacuate",
+	nw_04 = "raid",
+	sa_02 = "bombard",
+	sa_10 = "reinforce",
+}
+B.StarterText = {
+	coverFire = { "교대로 후열에 도착할 때: 상대 전열 일반 유닛 하나 −2.", "On rotating into ranged: Weaken one enemy melee non-hero by 2." },
+	survey = { "낼 때: 덱 위 두 장 중 기본 전투력이 높은 카드를 가져온다.", "Deploy: Draw the higher-base-power card of your top two." },
+	pierce = { "낼 때: 상대 전열 일반 유닛 하나의 보호를 벗기고 −2.", "Deploy: Strip protection from one enemy melee non-hero and weaken it by 2." },
+	evacuate = { "낼 때: 약화된 아군 한 장을 손패로 회수한다.", "Deploy: Return one weakened ally to hand." },
+	raid = { "매 내 턴 시작: 상대 전열 일반 유닛 하나 −1. 최대 두 번.", "Your turn start: Weaken one melee enemy by 1, up to twice." },
+	bombard = { "다음 내 턴 시작: 후열의 상대 일반 유닛 하나 −3.", "Next turn start: Weaken one ranged enemy by 3." },
+	reinforce = { "같은 열 아군이 적에게 처음 제거될 때: 전투력 2 지원병 소환.", "First allied destruction by the enemy in this row: Summon a 2-power reinforcement." },
+	vanguard = { "낼 때: 상대 전열 일반 유닛 하나 −1.", "Deploy: Weaken one enemy melee non-hero by 1." },
+	rearGuard = { "낼 때: 같은 열 다른 일반 아군 한 장에 첫 약화 2까지 막는 엄호.", "Deploy: Give another non-hero in this row cover against up to 2 of its next penalty." },
+	rally = { "낼 때: 같은 열 다른 일반 아군 한 장 +1.", "Deploy: Boost another non-hero in this row by 1." },
+	mobilize = { "낼 때: 아군 열이 비어 있으면 이 카드 +1.", "Deploy: Gain 1 if your other row is empty." },
+}
+for _, factionId in B.FactionOrder do
+	if factionId == "lost" then continue end
+	for _, id in B.Factions[factionId].roster do
+		local card = B.Units[id]
+		if card then
+			card.starterRole = starterRoles[id]
+			if id == "me_11" then card.ability = nil end
+			if not (card.starterRole or card.ability or card.cause or card.fuse or card.hero) then
+				card.starterRole = if card.category == "병종" then (if lane(card) == "melee" then "vanguard" else "rearGuard")
+					elseif card.category == "지형·원더" then "rearGuard"
+					elseif card.category == "선박" or card.category == "동물" then "mobilize" else "rally"
+			end
+		end
+	end
+end
+
 B.NationFaction = {
 	england = "europe", netherlands = "europe", france = "europe", denmark = "europe", sweden = "europe", venice = "europe", spain = "europe", portugal = "europe",
 	ottoman = "middle_east", swahili = "africa",
@@ -1151,8 +1190,17 @@ local function resolveCounter(m: any, side, scores)
 	return false
 end
 
+local function strongestInRow(m: any, side, row)
+	local target, power
+	for i, card in m.rows[side][row] do
+		local current = B.cardPower(m, side, row, i)
+		if not card.hero and (not power or current > power) then target, power = card, current end
+	end
+	return target
+end
+
 local function removeHits(m: any, hits, source)
-	local legacies = {}
+	local legacies, losses = {}, { me = {}, foe = {} }
 	-- 뒤에서부터 지워야 번호가 어긋나지 않는다
 	table.sort(hits, function(a, b)
 		if a[1] ~= b[1] then return a[1] < b[1] end
@@ -1163,9 +1211,11 @@ local function removeHits(m: any, hits, source)
 		local c = table.remove(m.rows[h[1]][h[2]], h[3])
 		if c then
 			table.insert(m.grave[h[1]], c)
+			if h[1] ~= source then losses[h[1]][h[2]] = true end
+			c.starterUsed = nil
 			if h[1] ~= source and c.ability == "legacy" then table.insert(legacies, h) end
 			c.pendingReturn, c.charges = nil, nil
-			if c.sealedAbility then c.ability, c.sealedAbility = c.sealedAbility, nil end
+			if c.sealedAbility then c.ability, c.sealedAbility = (if c.sealedAbility == "starterOnly" then nil else c.sealedAbility), nil end
 			c.tacticPower = nil
 			c.cover, c.anchored, c.shaken, c.ironUsed = nil, nil, nil, nil
 		end
@@ -1173,6 +1223,19 @@ local function removeHits(m: any, hits, source)
 	for _, h in legacies do
 		local target = weakestAlly(m, h[1], h[2], nil)
 		if target then boostCard(target, 2) end
+	end
+	for _, side in { "me", "foe" } do
+		for _, row in B.ROWS do
+			if not losses[side][row] then continue end
+			for _, card in m.rows[side][row] do
+				if card.starterRole == "reinforce" and not card.starterUsed and not card.sealedAbility then
+					card.starterUsed = 1
+					table.insert(m.rows[side][row], { id = "reinforcement", name = "지원병", row = row, power = 2 })
+					logLine(m, "앙코르 청동종: 지원병 소집")
+					break
+				end
+			end
+		end
 	end
 end
 
@@ -1238,6 +1301,10 @@ local function swapFormation(m: any, side)
 	boostCard(front[fi], 2)
 	if hasTactic(m, side, "relay") then front[fi].cover = true end
 	boostCard(back[bi], 1)
+	if back[bi].starterRole == "coverFire" and not back[bi].sealedAbility then
+		local target = strongestInRow(m, other(side), "melee")
+		if target then boostCard(target, -2); logLine(m, "머스킷 부대: 엄호 사격") end
+	end
 	canalArrival(m, side, back[bi])
 	resolveHorns(m, side, "melee")
 	resolveHorns(m, side, "ranged")
@@ -1277,6 +1344,22 @@ local function beginTurn(m: any, side)
 			end
 		end
 	end
+	for _, row in B.ROWS do
+		for _, card in m.rows[side][row] do
+			if card.sealedAbility then continue end
+			local used = card.starterUsed or 0
+			local attack = if card.starterRole == "bombard" and used == 0 then 3
+				elseif card.starterRole == "raid" and row == "melee" and used < 2 then 1 else nil
+			if attack then
+				card.starterUsed = used + 1
+				local target = strongestInRow(m, other(side), if attack == 3 then "ranged" else "melee")
+				if target then
+					boostCard(target, -attack)
+					logLine(m, card.name .. ": " .. target.name .. " −" .. tostring(attack))
+				end
+			end
+		end
+	end
 end
 
 local function finishTactics(m: any, side, playedCard)
@@ -1284,7 +1367,7 @@ local function finishTactics(m: any, side, playedCard)
 		for _, card in m.rows[side][row] do
 			if card ~= playedCard then card.anchored, card.shaken = nil, nil end
 			if card.sealedAbility then
-				card.ability, card.sealedAbility = card.sealedAbility, nil
+				card.ability, card.sealedAbility = (if card.sealedAbility == "starterOnly" then nil else card.sealedAbility), nil
 			elseif playedCard and card.ability == "charge" then
 				card.charges = (card.charges or 0) + 1
 				if card.charges == 3 then
@@ -1359,18 +1442,18 @@ local function roundEnd(m: any)
 		for _, row in B.ROWS do
 			for _, c in m.rows[side][row] do
 				if c ~= keep then
-					c.tacticPower, c.pendingReturn, c.charges = nil, nil, nil
+					c.tacticPower, c.pendingReturn, c.charges, c.starterUsed = nil, nil, nil, nil
 					c.cover, c.anchored, c.shaken, c.ironUsed = nil, nil, nil, nil
-					if c.sealedAbility then c.ability, c.sealedAbility = c.sealedAbility, nil end
+					if c.sealedAbility then c.ability, c.sealedAbility = (if c.sealedAbility == "starterOnly" then nil else c.sealedAbility), nil end
 					table.insert(m.grave[side], c)
 				end
 			end
 			m.rows[side][row] = {}
 		end
 		if keep then
-			keep.tacticPower, keep.pendingReturn, keep.charges = nil, nil, nil
+			keep.tacticPower, keep.pendingReturn, keep.charges, keep.starterUsed = nil, nil, nil, nil
 			keep.cover, keep.anchored, keep.shaken, keep.ironUsed = nil, nil, nil, nil
-			if keep.sealedAbility then keep.ability, keep.sealedAbility = keep.sealedAbility, nil end
+			if keep.sealedAbility then keep.ability, keep.sealedAbility = (if keep.sealedAbility == "starterOnly" then nil else keep.sealedAbility), nil end
 		end
 		if keep and not (m.wins.me >= 2 or m.wins.foe >= 2 or m.round >= 3) then
 			table.insert(m.rows[side][keepRow], keep)
@@ -1505,12 +1588,12 @@ function B.play(m: any, side, handIdx)
 		for _, row in B.ROWS do
 			for i, enemy in m.rows[foe][row] do
 				local current = B.cardPower(m, foe, row, i)
-				if not enemy.hero and enemy.ability and not enemy.sealedAbility and (not power or current > power) then
+				if not enemy.hero and (enemy.ability or enemy.starterRole) and not enemy.sealedAbility and (not power or current > power) then
 					target, power = enemy, current
 				end
 			end
 		end
-		if target then target.sealedAbility, target.ability = target.ability, nil end
+		if target then target.sealedAbility, target.ability = target.ability or "starterOnly", nil end
 		msg = if target then "봉인: " .. target.name else "봉인 — 대상 없음"
 		table.insert(m.grave[side], played)
 	elseif c.special == "ambush" or c.special == "falseOrder" then
@@ -1560,8 +1643,8 @@ function B.play(m: any, side, handIdx)
 			local back = table.remove(m.rows[side][pick.row], pick.i)
 			back.tacticPower = nil
 			back.cover, back.anchored, back.shaken, back.ironUsed = nil, nil, nil, nil
-			back.pendingReturn, back.charges = nil, nil
-			if back.sealedAbility then back.ability, back.sealedAbility = back.sealedAbility, nil end
+			back.pendingReturn, back.charges, back.starterUsed = nil, nil, nil
+			if back.sealedAbility then back.ability, back.sealedAbility = (if back.sealedAbility == "starterOnly" then nil else back.sealedAbility), nil end
 			table.insert(m.hand[side], back)
 			msg = string.format("회군! %s을(를) 손으로 되돌렸다", back.name)
 		else
@@ -1670,6 +1753,47 @@ function B.play(m: any, side, handIdx)
 			msg ..= " (합치기! 재료 둘이 하나가 됐다. 낸 카드 수에 세지 않는다)"
 		elseif c.cause and B.chainActive(m, side, c) then
 			msg ..= " (연쇄! 점수 +2)"
+		end
+		local role = c.starterRole
+		if role == "pierce" or role == "vanguard" then
+			local enemy = strongestInRow(m, foe, "melee")
+			if enemy then
+				if role == "pierce" then enemy.cover, enemy.deployCover, enemy.ironUsed = nil, nil, true end
+				boostCard(enemy, if role == "pierce" then -2 else -1)
+			end
+		elseif role == "rearGuard" or role == "rally" then
+			for _, ally in m.rows[side][lane(c)] do
+				if ally ~= c and not ally.hero then
+					if role == "rearGuard" then ally.cover = true else boostCard(ally, 1) end
+					break
+				end
+			end
+		elseif role == "mobilize" then
+			local otherRow = if lane(c) == "melee" then "ranged" else "melee"
+			if #m.rows[side][otherRow] == 0 then boostCard(c, 1) end
+		elseif role == "evacuate" and #m.hand[side] < B.HAND_MAX then
+			for _, row in B.ROWS do
+				local picked = false
+				for index, ally in m.rows[side][row] do
+					if not ally.hero and (ally.tacticPower or 0) < 0 then
+						ally.tacticPower, ally.anchored, ally.shaken, ally.pendingReturn = nil, nil, nil, nil
+						ally.cover, ally.ironUsed, ally.charges, ally.starterUsed = nil, nil, nil, nil
+						if ally.sealedAbility then ally.ability, ally.sealedAbility = (if ally.sealedAbility == "starterOnly" then nil else ally.sealedAbility), nil end
+						table.insert(m.hand[side], table.remove(m.rows[side][row], index))
+						msg ..= " (대상단 회수: " .. ally.name .. ")"
+						picked = true
+						break
+					end
+				end
+				if picked then break end
+			end
+		elseif role == "survey" and #m.hand[side] < B.HAND_MAX then
+			local deck = m.deck[side]
+			local count = #deck
+			if count > 0 then
+				local index = if count > 1 and (deck[count - 1].power or 0) > (deck[count].power or 0) then count - 1 else count
+				table.insert(m.hand[side], table.remove(deck, index))
+			end
 		end
 		if c.ability == "relay" then
 			if swapFormation(m, side) then msg ..= " (전술 교대!)" end
@@ -1884,8 +2008,10 @@ function B.gainOf(m: any, side, c)
 	elseif c.special == "decoy" then
 		local pick = decoyTarget(m, side)
 		gain = if pick and pick.score >= 100 then 3 else -4
+	elseif c.special then
+		gain = 0
 	else
-		local target = if c.ability == "spy" then foe else side
+		local target = if c.ability == "spy" or c.ability == "feigned" then foe else side
 		local before = B.total(m, side) - B.total(m, foe)
 		table.insert(m.rows[target][lane(c)], c)
 		local after = B.total(m, side) - B.total(m, foe)
