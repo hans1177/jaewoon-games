@@ -3356,7 +3356,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				focusRule.Text = t("지도자 능력: ", "Leader Ability: ") .. (if english then leaderProfile.textEn or leaderProfile.text else leaderProfile.text)
 					.. t(" · 보급 +", " · Provision +") .. tostring(leaderProfile.provision or 0)
 					.. (if m.leaderUsed[card.leaderSide] then t("\n이번 대결에서 사용함", "\nAlready used in this match") else "")
-					.. (if BC.CardLines[card.leaderId] then "\n「" .. BC.CardLines[card.leaderId][if english then 2 else 1] .. "」" else "")
+					.. (if not opts.cardOnly and BC.CardLines[card.leaderId] then "\n「" .. BC.CardLines[card.leaderId][if english then 2 else 1] .. "」" else "")
 			else
 				focusName.Text = if regionDeck then (if english then regionDeck.en else regionDeck.ko) .. " · " .. cardName(card) else cardName(card)
 				local row = cardPlacement(card)
@@ -3369,11 +3369,21 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local series = BC.StorySeries[card.id]
 				local kind = if card.cause or card.fuse then t("연쇄·조합", "Combo")
 					elseif card.special then t("전술", "Tactic") elseif card.hero then t("영웅", "Hero") else t("능력", "Ability")
-				focusRule.Text = category .. row .. strength .. (if timing then " · " .. timing else "") .. "\n" .. kind .. " · " .. description
-					.. (if series then "\n" .. t("이야기 · ", "Story · ") .. series[if english then 2 else 1] elseif lore then "\n" .. t("이야기 · ", "Story · ") .. lore else "")
-					.. (if forecast then "\n" .. forecast else "")
-					.. (if cardStatus(card) then "\n" .. t("상태 · ", "Status · ") .. cardStatus(card) else "")
-					.. (if BC.CardLines[card.id] then "\n「" .. BC.CardLines[card.id][if english then 2 else 1] .. "」" else "")
+				local status = cardStatus(card)
+				if opts.cardOnly then
+					local hasTiming = string.match(description, "^낼 때:") or string.match(description, "^낼 때：") or string.match(description, "^On play:")
+						or string.match(description, "^Deploy:")
+					local trigger = if timing and not hasTiming then timing .. ": " else ""
+					focusRule.Text = row .. strength .. "\n" .. trigger .. description
+						.. (if status then "\n" .. t("상태 · ", "Status · ") .. status else "")
+						.. (if forecast then "\n" .. forecast else "")
+				else
+					focusRule.Text = category .. row .. strength .. (if timing then " · " .. timing else "") .. "\n" .. kind .. " · " .. description
+						.. (if series then "\n" .. t("이야기 · ", "Story · ") .. series[if english then 2 else 1] elseif lore then "\n" .. t("이야기 · ", "Story · ") .. lore else "")
+						.. (if forecast then "\n" .. forecast else "")
+						.. (if status then "\n" .. t("상태 · ", "Status · ") .. status else "")
+						.. (if BC.CardLines[card.id] then "\n「" .. BC.CardLines[card.id][if english then 2 else 1] .. "」" else "")
+				end
 				focusMotion = animateCardArt(focusArtwork, focusImage, card)
 				table.insert(cardMotions, focusMotion)
 			end
