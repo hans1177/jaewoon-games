@@ -15,7 +15,7 @@ CB.PROVISION_BASE = 150 -- 보급 한도 (지도자가 조금 더해 준다)
 -- 카드 id 앞 두 글자 → 대륙. 접두사가 없는 카드(기본 병종·지식 카드)는 어느 덱에서나 쓴다.
 CB.CONTINENT_PREFIX = { eu = "europe", ea = "east_asia", me = "middle_east", nw = "new_world", af = "africa", sa = "southeast_asia", lo = "lost" }
 function CB.continentOf(id: string): string?
-	local pre = string.match(id, "^(%a%a)_%d%d$")
+	local pre = BC.cardRegionPrefix(id)
 	return pre and CB.CONTINENT_PREFIX[pre] or nil
 end
 function CB.provisionLimit(factionId: string?, leaderId: string?): number
@@ -147,7 +147,7 @@ function CB.regionalPick(regionId: string?, book: any, rng: () -> number): strin
 	if not cont then return nil end
 	local list = {}
 	for id, d in BC.Units do
-		if id:sub(1, 3) == cont .. "_" and not d.hero and (book.owned[id] or 0) == 0 then table.insert(list, id) end
+		if BC.cardRegionPrefix(id) == cont and not d.hero and (book.owned[id] or 0) == 0 then table.insert(list, id) end
 	end
 	table.sort(list) -- 순서를 고정해 같은 난수에서 같은 결과가 나오게 한다
 	if #list == 0 then return nil end

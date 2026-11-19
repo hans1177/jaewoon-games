@@ -539,7 +539,16 @@ B.Specials.sa_41 = { id="sa_41", name="팔라파 맹세", category="서사", spe
 
 B.Units.af_37 = { id="af_37", name="아난시", category="전설", row="ranged", power=3, ability="anansi", lore="가나 아칸 설화에 등장하는 꾀 많은 거미", text="낼 때: 아직 발동하지 않은 상대 전술을 하나 훔친다. 말라카 기습 → 마자파힛 깃발 → 전열 매복 순." }
 
+B.Units.af_38 = { id="af_38", name="람세스 2세", category="인물", row="melee", power=5, hero=true, ability="ramesses", text="전장에 있는 동안 이집트 전차대가 돌격하면 상대 후열 일반 유닛 한 장도 −1." }
+B.Units.af_39 = { id="af_39", name="이집트 전차대", category="병종", row="melee", power=4, ability="egyptChariot", text="낼 때: 가장 강한 상대 전열 일반 유닛 −2. 람세스 2세가 있으면 후열 일반 유닛 한 장도 −1." }
+B.Units.af_40 = { id="af_40", name="히타이트 전차대", category="병종", row="melee", power=4, ability="hittiteChariot", text="상대 행동으로 아군 열 점수가 내려가면 가장 강한 상대 전열 일반 유닛 −2. 라운드당 한 번." }
+B.Specials.af_41 = { id="af_41", name="이집트·히타이트 평화조약", category="사건", special="kadeshTreaty", text="이번 라운드에 양쪽의 다음 전차대 반격 또는 철갑 함대 역습을 한 번씩 막는다." }
+
 B.CardEnglish = {
+	af_38 = { name="Ramesses II", text="While deployed, Egyptian Chariots also weaken an enemy ranged non-hero by 1." },
+	af_39 = { name="Egyptian Chariots", text="Deploy: Weaken the strongest enemy melee non-hero by 2. With Ramesses II deployed, also weaken a ranged enemy by 1." },
+	af_40 = { name="Hittite Chariots", text="Once per round, when an enemy action lowers an allied row score, weaken the strongest enemy melee non-hero by 2." },
+	af_41 = { name="Egyptian–Hittite Peace Treaty", text="Block each side’s next chariot retaliation or Ironclad Fleet counter this round." },
 	af_37 = { name="Anansi", text="Deploy: Steal one pending enemy tactic, in this order: Malacca Strike, Majapahit Flag, then melee Ambush." },
 	me_43 = { name="Standard of Ur", text="Deploy in melee on the War side. Rotate into ranged to show Peace." },
 	me_44 = { name="Sumerian Chariots", text="Deploy: Weaken the strongest enemy melee non-hero by 1, or by 3 with the Standard in melee." },
@@ -873,9 +882,34 @@ B.Factions = {
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
 		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30", "lo_46", "lo_47", "lo_48", "lo_49", "lo_50", "lo_51", "lo_52", "lo_53", "lo_54", "lo_55", "lo_56", "lo_57", "lo_58", "lo_59"} },
 	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", specialty = "지형·원더", leaders = { "mansa", "hannibal", "shaka" },
-		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30", "af_31", "af_32", "af_33", "af_34", "af_35", "af_36", "af_37" } },
+		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30", "af_31", "af_32", "af_33", "af_34", "af_35", "af_36", "af_37", "af_38", "af_39", "af_40", "af_41" } },
 }
 B.FactionOrder = { "europe", "east_asia", "new_world", "middle_east", "southeast_asia", "africa", "lost" }
+-- 설화·소설 카드는 기존 ID로 저장하되 중립 기본 목록과 보상에서 다룬다.
+local neutralStoryCards = {
+	eu_46 = true,
+	eu_48 = true, eu_49 = true, eu_50 = true, eu_51 = true,
+	eu_52 = true, eu_53 = true, eu_54 = true,
+	eu_55 = true, eu_56 = true, eu_57 = true, eu_58 = true,
+	ea_36 = true,
+	me_37 = true, me_38 = true, me_39 = true, me_40 = true,
+	af_37 = true,
+}
+function B.cardRegionPrefix(id: string): string?
+	if neutralStoryCards[id] then return "lo" end
+	return string.match(id, "^(%a%a)_%d%d$")
+end
+for _, factionId in B.FactionOrder do
+	if factionId == "lost" then continue end
+	local roster = B.Factions[factionId].roster
+	local regional = {}
+	for _, id in roster do
+		if neutralStoryCards[id] then table.insert(B.Factions.lost.roster, id)
+		else table.insert(regional, id) end
+	end
+	B.Factions[factionId].roster = regional
+end
+
 -- 기본덱의 빈 역할을 병종과 소재에 맞춰 채운다. 기존 능력·연쇄·합치기는 유지한다.
 local starterRoles = {
 	eu_03 = "armadaGalleon",
@@ -1283,34 +1317,13 @@ local function boostCard(card, amount)
 end
 
 local function counterScores(m: any, side)
-	local scores = nil
-	if m.counterRound and m.counterRound[side] == m.round then return nil end
-	for _, row in B.ROWS do
-		for _, card in m.rows[side][row] do
-			if card.ability == "counter" then
-				scores = {}
-				for _, laneId in B.ROWS do scores[laneId] = B.rowTotal(m, side, laneId) end
-				return scores
-			end
-		end
-	end
-	return nil
-end
-
-local function resolveCounter(m: any, side, scores)
-	if not scores then return false end
-	for _, row in B.ROWS do
-		if B.rowTotal(m, side, row) < scores[row] then
-			local target = weakestAlly(m, side, nil, row)
-			if target then
-				boostCard(target, 2)
-				m.counterRound = m.counterRound or {}
-				m.counterRound[side] = m.round
-				return true
-			end
-		end
-	end
-	return false
+	local state = m.tactics and m.tactics[side]
+	local fleetReady = not (m.counterRound and m.counterRound[side] == m.round) and hasTactic(m, side, "counter")
+	local chariotReady = not (state and state.hittite == m.round) and hasTactic(m, side, "hittiteChariot")
+	if not fleetReady and not chariotReady then return nil end
+	local scores = { fleet = fleetReady, chariot = chariotReady }
+	for _, row in B.ROWS do scores[row] = B.rowTotal(m, side, row) end
+	return scores
 end
 
 local function isMusketeer(card)
@@ -1340,6 +1353,35 @@ local function strongestInRow(m: any, side, row, attack)
 	end
 	if attack and index then return m.rows[side][row][interceptAttack(m, side, row, index)] end
 	return target
+end
+
+local function resolveCounter(m: any, side, scores)
+	if not scores then return false end
+	for _, row in B.ROWS do
+		if B.rowTotal(m, side, row) >= scores[row] then continue end
+		local chariot = scores.chariot and hasTactic(m, side, "hittiteChariot") and strongestInRow(m, other(side), "melee")
+		local fleet = scores.fleet and weakestAlly(m, side, nil, row)
+		if not chariot and not fleet then continue end
+		m.tactics = m.tactics or { me = {}, foe = {} }
+		local state = m.tactics[side]
+		if state.kadeshTreaty == m.round then
+			state.kadeshTreaty = nil
+			logLine(m, "이집트·히타이트 평화조약: 반격 차단")
+			return false
+		end
+		if chariot then
+			state.hittite = m.round
+			boostCard(strongestInRow(m, other(side), "melee", true), -2)
+			logLine(m, "히타이트 전차대: 반격 −2")
+		end
+		if fleet then
+			boostCard(fleet, 2)
+			m.counterRound = m.counterRound or {}
+			m.counterRound[side] = m.round
+		end
+		return true
+	end
+	return false
 end
 
 local function removeHits(m: any, hits, source)
@@ -1912,7 +1954,11 @@ function B.play(m: any, side, handIdx)
 		m.lastTactic[side] = { round = m.round, card = c }
 	end
 	local msg
-	if c.special == "urFeast" then
+	if c.special == "kadeshTreaty" then
+		tactics.kadeshTreaty, enemyTactics.kadeshTreaty = m.round, m.round
+		table.insert(m.grave[side], played)
+		msg = "이집트·히타이트 평화조약: 양측 반격 억제"
+	elseif c.special == "urFeast" then
 		local target, loss
 		for _, row in B.ROWS do
 			for _, ally in m.rows[side][row] do
@@ -2325,7 +2371,14 @@ function B.play(m: any, side, handIdx)
 				logLine(m, "가자 마다: 맹세 " .. tostring(tactics.palapaMarks))
 			end
 		end
-		if c.ability == "anansi" then
+		if c.ability == "egyptChariot" then
+			local front = strongestInRow(m, foe, "melee", true)
+			if front then boostCard(front, -2) end
+			if hasTactic(m, side, "ramesses") then
+				local rear = strongestInRow(m, foe, "ranged", true)
+				if rear then boostCard(rear, -1) end
+			end
+		elseif c.ability == "anansi" then
 			local stolen
 			if enemyTactics.strait == m.round and tactics.strait ~= m.round then
 				tactics.strait, enemyTactics.strait = enemyTactics.strait, nil

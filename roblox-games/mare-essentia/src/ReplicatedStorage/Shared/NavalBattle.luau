@@ -2512,7 +2512,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			f.Parent = parent
 			-- [전투판 카드] 이미 펼친 소형 카드도 5개 지역의 덱 색상을 유지한다.
-			local regionId = if type(c.id) == "string" then string.match(c.id, "^(%a%a)_%d%d$") else nil
+			local regionId = if type(c.id) == "string" then BC.cardRegionPrefix(c.id) else nil
 			local regionDeck = if regionId then CARD_DECK[regionId] else nil
 			frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) elseif regionDeck then regionDeck.color else brass, 4)
 			local plate = Instance.new("Frame")
@@ -3054,7 +3054,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			focusImage.ImageColor3 = if leaderProfile or (type(card.id) == "string" and AssetIds["CardArt/" .. card.id]) then Color3.new(1, 1, 1) else Color3.fromRGB(239, 214, 174)
 			focusImage.ScaleType = if leaderProfile then Enum.ScaleType.Fit else Enum.ScaleType.Crop
 			focusImage.Size = if leaderProfile then UDim2.fromScale(1, 1) else UDim2.fromScale(1.14, 1.14)
-			local regionId = if leaderProfile then m.faction[card.leaderSide] elseif type(card.id) == "string" then string.match(card.id, "^(%a%a)_%d%d$") else nil
+			local regionId = if leaderProfile then m.faction[card.leaderSide] elseif type(card.id) == "string" then BC.cardRegionPrefix(card.id) else nil
 			local regionDeck = if regionId then CARD_DECK[regionId] else nil
 			local focusFrameArtId = regionId and REGION_FRAME[regionId] and AssetIds[REGION_FRAME[regionId]]
 			focusBorder.Image = if focusFrameArtId then "rbxassetid://" .. tostring(focusFrameArtId) else ""
@@ -3296,7 +3296,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				cardRatio.DominantAxis = Enum.DominantAxis.Height
 				cardRatio.Parent = b
 				b.LayoutOrder = i
-				local regionId = if type(c.id) == "string" then string.match(c.id, "^(%a%a)_%d%d$") else nil
+				local regionId = if type(c.id) == "string" then BC.cardRegionPrefix(c.id) else nil
 				local regionDeck = if regionId then CARD_DECK[regionId] else nil
 				b.BackgroundColor3 = if c.hero then Color3.fromRGB(107, 72, 40)
 					elseif c.special then Color3.fromRGB(66, 75, 76) else Color3.fromRGB(78, 58, 39)

@@ -78,7 +78,7 @@ local function inFilter(ctx, id, d, f, owned)
 	if f == "all" then return true end
 	if f == "hero" then return d.hero == true end
 	if f == "special" then return ctx.BC.Specials[id] ~= nil end
-	return string.match(id, "^(%a%a)_") == f
+	return ctx.BC.cardRegionPrefix(id) == f
 end
 
 -- parent(창) 전체를 쓰는 화면을 만든다. 반환: { refresh = 다시 그리기 }
@@ -673,7 +673,7 @@ function DeckBuilder.build(parent, ctx)
 		img.Parent = tile
 		corner(img, 6)
 		-- [6대륙 카드 테두리] 보유 카드 원화 위에 투명 프레임만 얹는다.
-		local regionPrefix = string.match(id, "^(%a%a)_%d%d$")
+		local regionPrefix = ctx.BC.cardRegionPrefix(id)
 		local frameKey = regionPrefix and REGION_FRAME[regionPrefix]
 		local frameId = frameKey and ctx.AssetIds["CardArt/" .. frameKey]
 		if frameId then

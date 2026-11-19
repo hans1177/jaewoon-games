@@ -42,7 +42,7 @@ end
 -- 카드를 어디서 얻는지 (코드의 실제 규칙만 안내한다)
 function Gallery.sourceText(ctx, id)
 	local CB, BC = ctx.CB, ctx.BC
-	local prefix = string.match(id, "^(%a%a)_%d%d$")
+	local prefix = BC.cardRegionPrefix(id)
 	if prefix == "lo" then
 		return "미지의 땅 카드: 탐험·퀘스트·보물상자·두목 격파에서 가끔 나와요"
 	end
@@ -71,7 +71,7 @@ local function inFilter(ctx, id, d, f, owned)
 	if f == "all" then return true end
 	if f == "hero" then return d.hero == true end
 	if f == "special" then return ctx.BC.Specials[id] ~= nil end
-	return string.match(id, "^(%a%a)_") == f
+	return ctx.BC.cardRegionPrefix(id) == f
 end
 
 -- 큰 카드 보기 (창 위에 띄운다)
@@ -140,7 +140,7 @@ local function showDetail(ctx, id)
 	art.ImageColor3 = if owned > 0 then Color3.new(1, 1, 1) else Color3.fromRGB(70, 70, 80)
 	art.ZIndex = 52
 	art.Parent = frame
-	local regionPrefix = string.match(id, "^(%a%a)_%d%d$")
+	local regionPrefix = ctx.BC.cardRegionPrefix(id)
 	local frameKey = regionPrefix and REGION_FRAME[regionPrefix]
 	local frameId = frameKey and ctx.AssetIds["CardArt/" .. frameKey]
 	if frameId then
