@@ -488,12 +488,35 @@ B.Units.lo_57 = { id="lo_57", name="키르케", category="문학", journey=true,
 B.Units.lo_58 = { id="lo_58", name="세이렌", category="문학", journey=true, row="ranged", power=3, ability="sirenSong", text="낼 때: 상대 전열과 후열의 모든 유닛에 전투력 −1." }
 B.Specials.lo_59 = { id="lo_59", name="이타카의 활", category="문학", journey=true, special="ithacaBow", maxCopies=1, text="가장 강한 상대 일반 유닛 한 장을 즉시 제거한다. 덱당 한 장." }
 
-B.Units.ea_40 = { id="ea_40", name="제갈량", category="문학", row="ranged", power=3, ability="eastWind", lore="삼국지연의에서 동남풍을 빌었다는 장면", text="전장에 있는 동안 화공선이 후열의 가장 강한 일반 적에게 추가 피해 1을 준다." }
+B.Units.ea_40 = { id="ea_40", name="제갈량", category="문학", row="ranged", power=3, ability="eastWind", lore="삼국지연의에서 동남풍을 빌었다는 장면", text="낼 때: 전열·후열의 악천후를 걷는다. 전장에 있는 동안 화공선이 후열의 가장 강한 일반 적에게 추가 피해 1." }
 B.Units.ea_41 = { id="ea_41", name="주유", category="인물", row="ranged", power=4, ability="fireCommand", text="전장에 있는 동안 화공선이 전열의 가장 강한 일반 적에게 추가 피해 1을 준다." }
 B.Specials.ea_42 = { id="ea_42", name="적벽의 화공선", category="사건", special="redCliffFire", text="가장 강한 상대 전열 일반 유닛 −2. 이번 판 황개가 귀환했다면 가장 강한 후열 유닛도 −2. 주유와 제갈량이 추가 공격을 돕는다." }
 
+B.Units.eu_48 = { id="eu_48", name="달타냥", category="문학", row="melee", power=4, ability="dartagnan", text="다른 총사가 대신 맞으면 다음 내 턴에 상대 전열 일반 유닛 −2." }
+B.Units.eu_49 = { id="eu_49", name="아토스", category="문학", row="melee", power=4, ability="musketeerGuard", text="같은 열 동료 총사가 받을 단일 공격을 대신 맞는다. 라운드당 한 번." }
+B.Units.eu_50 = { id="eu_50", name="포르토스", category="문학", row="melee", power=5, ability="musketeerShield", text="같은 열 동료 총사가 받을 단일 공격을 대신 맞는다. 라운드당 한 번." }
+B.Units.eu_51 = { id="eu_51", name="아라미스", category="문학", row="melee", power=3, ability="musketeerAid", text="낼 때: 같은 열 다른 총사에게 엄호." }
+B.Units.eu_52 = { id="eu_52", name="하멜른의 피리꾼", category="문학", row="ranged", power=3, ability="piper", text="쥐 떼가 있으면 다음 내 턴에 상대 전열의 일반 유닛을 최대 두 장 후열로 유인한다. 라운드당 한 번." }
+B.Units.eu_53 = { id="eu_53", name="하멜른의 쥐 떼", category="문학", row="melee", power=2, ability="rats", text="낼 때: 후열의 가장 약한 일반 적 하나를 전열로 유인한다." }
+B.Specials.eu_54 = { id="eu_54", name="하멜른의 약속", category="문학", special="piperPact", text="덱 위 두 장에서 피리꾼이나 쥐 떼를 찾아 한 장 가져온다." }
+B.Units.eu_55 = { id="eu_55", name="돈키호테", category="문학", row="melee", power=4, ability="quixote", text="낼 때: 상대 전열을 돌격해 가장 강한 일반 적 −2. 상대 풍차가 있으면 풍차에 돌격한다." }
+B.Units.eu_56 = { id="eu_56", name="산초 판사", category="문학", row="ranged", power=3, ability="sancho", text="다음 내 턴에 살아 있는 아군 돈키호테를 손패로 회수한다. 라운드당 한 번." }
+B.Units.eu_57 = { id="eu_57", name="풍차", category="문학", row="melee", power=3, ability="windmill", text="상대 돈키호테의 돌격을 끌어들인다." }
+B.Units.eu_58 = { id="eu_58", name="로시난테", category="문학", row="melee", power=3, ability="rocinante", text="전장에 있으면 돈키호테의 돌격 피해가 1 늘어난다." }
+
 B.CardEnglish = {
-	ea_40 = { name="Zhuge Liang", text="While deployed, Red Cliffs Fire Ships also weaken the strongest enemy ranged non-hero by 1." },
+	eu_48 = { name="D’Artagnan", text="When another musketeer intercepts, weaken an enemy melee unit by 2 on your next turn." },
+	eu_49 = { name="Athos", text="Intercept a single attack on another musketeer in this row, once per round." },
+	eu_50 = { name="Porthos", text="Intercept a single attack on another musketeer in this row, once per round." },
+	eu_51 = { name="Aramis", text="Deploy: Give another musketeer in this row cover." },
+	eu_52 = { name="Pied Piper of Hamelin", text="If rats are present, lure up to two enemy melee non-heroes into ranged at your next turn start, once per round." },
+	eu_53 = { name="Hamelin Rats", text="Deploy: Lure the weakest eligible enemy ranged non-hero into melee." },
+	eu_54 = { name="Hamelin’s Promise", text="Draw a Piper or Rats from your top two cards." },
+	eu_55 = { name="Don Quixote", text="Deploy: Charge the strongest enemy melee non-hero for −2, or charge the enemy windmill if present." },
+	eu_56 = { name="Sancho Panza", text="Recall a surviving allied Don Quixote at your turn start, once per round." },
+	eu_57 = { name="Windmill", text="Redirect the opposing Don Quixote’s charge to this windmill." },
+	eu_58 = { name="Rocinante", text="While deployed, Don Quixote’s charge deals 1 extra power loss." },
+	ea_40 = { name="Zhuge Liang", text="Deploy: Clear weather on both rows. While deployed, Red Cliffs Fire Ships also weaken the strongest enemy ranged non-hero by 1." },
 	ea_41 = { name="Zhou Yu", text="While deployed, Red Cliffs Fire Ships deal 1 extra power loss to the strongest enemy melee non-hero." },
 	ea_42 = { name="Red Cliffs Fire Ships", text="Weaken the strongest enemy melee non-hero by 2. If Huang Gai returned this round, do the same to the strongest enemy ranged non-hero. Zhou Yu and Zhuge Liang add attacks." },
 	lo_54 = { name="Odysseus", text="After two different journey cards this round, recall your weakest non-hero and draw one on your turn start, once per round." },
@@ -774,7 +797,7 @@ B.Units.boss_serpent = { id = "boss_serpent", name = "바다뱀의 이빨", row 
 B.Units.boss_siren = { id = "boss_siren", name = "세이렌의 노래", row = "ranged", power = 5, weapon = "gun", hero = true, ability = "spy" }
 B.Factions = {
 	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "napoleon", specialty = "선박", leaders = { "napoleon", "caesar", "alexander", "charlemagne", "elizabeth" },
-		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45", "eu_46", "eu_47"} },
+		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45", "eu_46", "eu_47", "eu_48", "eu_49", "eu_50", "eu_51", "eu_52", "eu_53", "eu_54", "eu_55", "eu_56", "eu_57", "eu_58"} },
 	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "genghis", specialty = "유물", leaders = { "genghis", "qinshi", "nobunaga", "yisunsin" },
 		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30", "ea_31", "ea_32", "ea_33", "ea_34", "ea_35", "ea_36", "ea_37", "ea_38", "ea_40", "ea_41", "ea_42"} },
 	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "pachacuti", specialty = "동물", leaders = { "pachacuti", "montezuma", "sittingbull" },
@@ -1222,13 +1245,19 @@ local function resolveCounter(m: any, side, scores)
 	return false
 end
 
+local function isMusketeer(card)
+	return card.id == "eu_48" or card.id == "eu_49" or card.id == "eu_50" or card.id == "eu_51"
+end
+
 local function interceptAttack(m: any, side, row, index)
 	local units = m.rows[side][row]
 	if units[index].ability == "cyclops" then return index end
 	for i, ally in units do
-		if i ~= index and ally.ability == "cyclops" and ally.starterUsed ~= m.round then
+		local guard = (ally.ability == "musketeerGuard" or ally.ability == "musketeerShield") and isMusketeer(units[index])
+		if i ~= index and (guard or ally.ability == "cyclops") and ally.starterUsed ~= m.round then
 			ally.starterUsed = m.round
-			logLine(m, "키클롭스: 대신 맞았다")
+			if guard and m.tactics then m.tactics[side].musketeerCounter = m.round end
+			logLine(m, ally.name .. ": 대신 맞았다")
 			return i
 		end
 	end
@@ -1477,6 +1506,42 @@ local function beginTurn(m: any, side)
 			end
 		end
 	end
+	if state then
+		if state.musketeerCounter == m.round then
+			state.musketeerCounter = nil
+			if hasTactic(m, side, "dartagnan") then
+				local target = strongestInRow(m, other(side), "melee", true)
+				if target then boostCard(target, -2); logLine(m, "달타냥: 반격 −2") end
+			end
+		end
+		if state.piper ~= m.round and hasTactic(m, side, "piper") and hasTactic(m, side, "rats") then
+			local foe = other(side)
+			local front = m.rows[foe].melee
+			local moved = 0
+			for i = #front, 1, -1 do
+				local target = front[i]
+				if not target.hero and not target.anchored and not target.pendingReturn then
+					table.insert(m.rows[foe].ranged, table.remove(front, i))
+					moved += 1
+					if moved == 2 then break end
+				end
+			end
+			if moved > 0 then state.piper = m.round; logLine(m, "하멜른: 피리 유인") end
+		end
+		if state.sancho ~= m.round and hasTactic(m, side, "sancho") and #m.hand[side] < B.HAND_MAX then
+			for i, ally in m.rows[side].melee do
+				if ally.ability == "quixote" then
+					state.sancho = m.round
+					local recalled = copy(B.Units[ally.id])
+					recalled.power, recalled.tier = ally.power, ally.tier
+					table.remove(m.rows[side].melee, i)
+					table.insert(m.hand[side], recalled)
+					logLine(m, "산초 판사: 돈키호테 회수")
+					break
+				end
+			end
+		end
+	end
 	resolveLiteraryCombos(m, side, state)
 end
 
@@ -1705,7 +1770,18 @@ function B.play(m: any, side, handIdx)
 		m.lastTactic[side] = { round = m.round, card = c }
 	end
 	local msg
-	if c.special == "redCliffFire" then
+	if c.special == "piperPact" then
+		local deck = m.deck[side]
+		for i = #deck, math.max(1, #deck - 1), -1 do
+			local card = deck[i]
+			if (card.id == "eu_52" or card.id == "eu_53") and #m.hand[side] < B.HAND_MAX then
+				table.insert(m.hand[side], table.remove(deck, i))
+				break
+			end
+		end
+		table.insert(m.grave[side], played)
+		msg = "하멜른의 약속"
+	elseif c.special == "redCliffFire" then
 		local front = strongestInRow(m, foe, "melee", true)
 		local rearDamage = (if tactics.huangReturned == m.round then 2 else 0) + (if hasTactic(m, side, "eastWind") then 1 else 0)
 		if front then boostCard(front, -(if hasTactic(m, side, "fireCommand") then 3 else 2)) end
@@ -1977,7 +2053,30 @@ function B.play(m: any, side, handIdx)
 				table.insert(m.hand[side], table.remove(deck, index))
 			end
 		end
-		if c.ability == "pigHex" then
+		if c.ability == "eastWind" then
+			m.weather = { melee = false, ranged = false, cannon = false }
+			msg ..= " (동남풍: 악천후 해제)"
+		elseif c.ability == "musketeerAid" then
+			for _, ally in m.rows[side][lane(c)] do
+				if ally ~= c and isMusketeer(ally) then ally.cover = true; break end
+			end
+		elseif c.ability == "rats" then
+			local back = m.rows[foe].ranged
+			local index, power
+			for i, ally in back do
+				local current = B.cardPower(m, foe, "ranged", i)
+				if not ally.hero and not ally.anchored and not ally.pendingReturn and (not power or current < power) then index, power = i, current end
+			end
+			if index then table.insert(m.rows[foe].melee, table.remove(back, index)) end
+		elseif c.ability == "quixote" then
+			local front = m.rows[foe].melee
+			local target
+			for _, enemy in front do
+				if enemy.ability == "windmill" then target = enemy; break end
+			end
+			target = target or strongestInRow(m, foe, "melee", true)
+			if target then boostCard(target, if hasTactic(m, side, "rocinante") then -3 else -2) end
+		elseif c.ability == "pigHex" then
 			local target = strongestInRow(m, foe, "ranged")
 			if target and not target.pigForm then
 				target.sealedAbility = target.sealedAbility or target.ability or "starterOnly"
