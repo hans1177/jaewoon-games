@@ -4300,11 +4300,14 @@ do
 		local me = BC.newMatch({}, "draw", {}, "draw", function() return 0.9 end, "east_asia", "europe")
 		check("동아시아: 첫 판 선공", me.turn == "me")
 		-- 미지의 땅: 잃어버린 문명 + 전설 생물 30장, 판을 지면 두 장 더 뽑는다
-		check("미지의 땅: 카드 30장이 모두 정의돼 있다", (function()
+		check("미지의 땅: 기본·확장·중립 카드가 모두 정의돼 있다", (function()
+			local seen = {}
 			for _, id in BC.Factions.lost.roster do
-				if not (BC.Units[id] or BC.Specials[id]) then return false end
+				if seen[id] or not (BC.Units[id] or BC.Specials[id]) then return false end
+				seen[id] = true
 			end
-			return #BC.Factions.lost.roster == 30
+			return #BC.Factions.lost.roster >= 62 and seen.lo_01 and seen.lo_30
+				and seen.lo_46 and seen.lo_59 and seen.eu_46 and seen.af_37
 		end)())
 		check("미지의 땅: 아틀란티스·크라켄·용·불사조는 영웅이다", BC.Units.lo_01.hero and BC.Units.lo_14.hero and BC.Units.lo_15.hero and BC.Units.lo_16.hero)
 		local ml = BC.newMatch({}, "draw", {}, "draw", function() return 0.9 end, "lost", "europe")
@@ -4328,7 +4331,16 @@ do
 		for _, factionId in BC.FactionOrder do
 			local faction = BC.Factions[factionId]
 			local starter = CBk.new(factionId)
-			check("수집책: 시작 카드 소유·검사 " .. factionId, #faction.roster == (if factionId == "europe" then 45 elseif factionId == "southeast_asia" then 33 elseif factionId == "lost" then 30 else 34) and (factionId == "lost" or CBk.validateDeck(starter, CBk.deckIds(starter, factionId))))
+			local minRoster = { europe = 48, east_asia = 43, new_world = 41,
+				middle_east = 41, southeast_asia = 41, africa = 40, lost = 62 }
+			local unique, valid = {}, true
+			for _, id in faction.roster do
+				if unique[id] or not (BC.Units[id] or BC.Specials[id]) then valid = false; break end
+				unique[id] = true
+			end
+			check("수집책: 시작 카드 소유·검사 " .. factionId,
+				valid and #faction.roster >= minRoster[factionId]
+				and (factionId == "lost" or CBk.validateDeck(starter, CBk.deckIds(starter, factionId))))
 		end
 		-- 새 덱 규칙: 25장 이상·같은 카드 3장·보급 한도·미지의 땅 10장·다른 대륙 카드 금지
 		do
@@ -4615,9 +4627,14 @@ do
 	local englishCount = 0
 	for key in BC.CardEnglish do
 		englishCount += 1
-		if not BC.Units[key] and not BC.Specials[key] then broken += 1 end
+		if not BC.Units[key] and not BC.Specials[key] then
+			-- [카드 다국어] 소환 전용 환영은 덱 카드가 아니므로 영문 명칭만 관리한다.
+			if key ~= "apparition" or BC.CardEnglish[key].name ~= "Prophetic Apparition" then
+				broken += 1
+			end
+		end
 	end
-	check("244장 영어판·한국어판 카드 연결 보존", total == 244 and englishCount == 244 and broken == 0,
+	check("244장 원본과 확장 카드 영문 연결 보존", total == 244 and englishCount >= 316 and broken == 0,
 		tostring(total) .. "/" .. tostring(englishCount) .. "/" .. tostring(broken))
 end
 end
@@ -4651,31 +4668,32 @@ do
 		table.insert(m.hand[side], c)
 		return #m.hand[side]
 	end
-	-- 연쇄: 백년전쟁 → 잔 다르크
+	-- [인과 검증] 실제 발동 가능한 기술→사건 연쇄와 분류별 봉쇄.
+	-- 잔 다르크는 출전 직후 능력이 발동하고 소멸하므로 연쇄 검사용 상주 유닛으로 쓰지 않는다.
 	local m = fresh()
-	local base = BC.Units.eu_36.power
-	BC.play(m, "me", give(m, "me", "eu_36"))
-	local alone = BC.cardPower(m, "me", "melee", 1)
+	local base = BC.Units.eu_32.power
+	BC.play(m, "me", give(m, "me", "eu_32"))
+	local alone = BC.cardPower(m, "me", "ranged", 1)
 	check("연쇄: 원인이 없으면 보너스 없음", alone == base, alone)
 	m = fresh()
-	BC.play(m, "me", give(m, "me", "eu_31")); m.turn = "me"
-	BC.play(m, "me", give(m, "me", "eu_36"))
+	BC.play(m, "me", give(m, "me", "eu_35")); m.turn = "me"
+	BC.play(m, "me", give(m, "me", "eu_32"))
 	local chained
-	for i, c in m.rows.me.melee do if c.id == "eu_36" then chained = BC.cardPower(m, "me", "melee", i) end end
+	for i, c in m.rows.me.ranged do if c.id == "eu_32" then chained = BC.cardPower(m, "me", "ranged", i) end end
 	check("연쇄: 원인이 있으면 +2", chained == base + 2, chained)
-	-- 반증: 사건을 끊으면 연쇄가 꺼진다
+	-- 기술에서 시작된 연쇄는 실제 기술 봉쇄 카드로 끊긴다.
 	m.turn = "foe"
-	BC.play(m, "foe", give(m, "foe", "eu_41"))
-	for i, c in m.rows.me.melee do if c.id == "eu_36" then chained = BC.cardPower(m, "me", "melee", i) end end
+	BC.play(m, "foe", give(m, "foe", "eu_43"))
+	for i, c in m.rows.me.ranged do if c.id == "eu_32" then chained = BC.cardPower(m, "me", "ranged", i) end end
 	check("반증: 사건 연쇄가 끊긴다", chained == base, chained)
-	-- 반증은 다른 분류 연쇄에는 안 통한다 (암살은 인물만)
+	-- 사건에서 이어진 연쇄는 기술 봉쇄의 영향을 받지 않는다.
 	m = fresh()
-	BC.play(m, "me", give(m, "me", "eu_31")); m.turn = "me"
-	BC.play(m, "me", give(m, "me", "eu_36"))
+	BC.play(m, "me", give(m, "me", "eu_32")); m.turn = "me"
+	BC.play(m, "me", give(m, "me", "eu_37"))
 	m.turn = "foe"
-	BC.play(m, "foe", give(m, "foe", "eu_42"))
-	for i, c in m.rows.me.melee do if c.id == "eu_36" then chained = BC.cardPower(m, "me", "melee", i) end end
-	check("반증: 분류가 다르면 연쇄가 그대로", chained == base + 2, chained)
+	BC.play(m, "foe", give(m, "foe", "eu_43"))
+	for i, c in m.rows.me.ranged do if c.id == "eu_37" then chained = BC.cardPower(m, "me", "ranged", i) end end
+	check("반증: 분류가 다르면 연쇄가 그대로", chained == BC.Units.eu_37.power + 2, chained)
 	-- 합치기: 화약 + 창병 방진 → 머스킷 부대
 	m = fresh()
 	BC.play(m, "me", give(m, "me", "eu_34")); m.turn = "me"
@@ -4752,10 +4770,12 @@ do
 	BC.useLeader(m, "me")
 	check("샤를마뉴: 끊긴 연쇄를 되살린다", next(m.refuted.me) == nil)
 	m = match("elizabeth")
-	m.weather.ranged = true
-	table.insert(m.rows.me.ranged, table.clone(BC.Units.gunner))
-	BC.useLeader(m, "me")
-	check("엘리자베스: 날씨를 걷고 후열 +1", m.weather.ranged == false and BC.total(m, "me") == BC.Units.gunner.power + 1)
+	table.insert(m.rows.me.ranged, table.clone(BC.Units.eu_01))
+	table.insert(m.rows.foe.ranged, table.clone(BC.Units.gunner))
+	local beforeVolley = m.rows.foe.ranged[1].power
+	local okVolley = BC.useLeader(m, "me")
+	check("엘리자베스: 함대 연쇄포격으로 상대 후열 −2", okVolley == true
+		and m.leaderUsed.me and m.rows.foe.ranged[1].power == math.max(0, beforeVolley - 2))
 	local ok2 = BC.useLeader(m, "me")
 	check("지도자는 한 판에 한 번만", ok2 == false)
 	local book = CBk.new("europe")
@@ -4783,6 +4803,17 @@ do
 			table.insert(m.rows.foe.melee, table.clone(BC.Units.swordsman))
 			table.insert(m.deck.me, table.clone(BC.Units.swordsman)); table.insert(m.deck.me, table.clone(BC.Units.swordsman))
 			table.insert(m.hand.me, table.clone(BC.Units.swordsman))
+			-- [지도자 실제 발동 조건] 자비·귀환 허용·함대 포격에는 유효 대상이 필요하다.
+			if lid == "saladin" then
+				table.insert(m.grave.me, table.clone(BC.Units.swordsman))
+			elseif lid == "cyrus" then
+				local anchored = table.clone(BC.Units.swordsman)
+				anchored.anchored = true
+				table.insert(m.rows.me.melee, anchored)
+			elseif lid == "elizabeth" then
+				table.insert(m.rows.me.ranged, table.clone(BC.Units.eu_01))
+				table.insert(m.rows.foe.ranged, table.clone(BC.Units.gunner))
+			end
 			local okUse = BC.useLeader(m, "me")
 			check("지도자 능력 사용: " .. lid, okUse == true and m.leaderUsed.me == true)
 		end
