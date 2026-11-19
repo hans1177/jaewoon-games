@@ -2077,7 +2077,11 @@ function H.layoutBook()
   -- [폰 너비 변경] 기존 버튼을 재생성하지 않고 현재 폭만 갱신한다.
   H.tabWidth = tabWidth
   for _, button in H.tabStrip:GetChildren() do
-    if button:IsA("TextButton") then button.Size = UDim2.fromOffset(tabWidth, if width < 740 then 46 else 54) end
+    if button:IsA("TextButton") then
+      button.Size = UDim2.fromOffset(tabWidth, if width < 740 then 46 else 54)
+      local hint = button:FindFirstChild("FacilityTabHint")
+      if hint then hint.Visible = width >= 740 end
+    end
   end
   H.tabStrip.CanvasSize = UDim2.fromOffset(allTabsWidth, 0)
   local selectedIndex = table.find(groupOf(currentTab).tabs, currentTab) or 1
@@ -11063,17 +11067,58 @@ H.TAB_ICON = {
 	status = { "Glyph", "captain" }, crew = { "Glyph", "crew" },
 }
 function H.renderTabs()
-	-- [중복 렌더 제거] 같은 탭의 상태/재화가 바뀌어도 메뉴 버튼과 원화를 매번 파괴하지 않는다.
-	-- 탭 전환 시에만 다시 만들고, 화면 크기 변경은 기존 UIGridLayout이 맡는다.
-	if H.renderedTabId == currentTab and H.tabStrip:FindFirstChild("FacilityTab_" .. currentTab) then
+	-- [시설 탭 재사용] 같은 시설 안에서 이동할 때 아이콘·원화를 다시 생성하지 않는다.
+	-- 소속 시설이 바뀌거나 버튼이 없을 때에만 기존 생성 경로를 사용한다.
+	local g = groupOf(currentTab)
+	local cached = H.renderedTabGroup == g.name
+	if cached then
+		for _, id in g.tabs do
+			if not H.tabStrip:FindFirstChild("FacilityTab_" .. id) then cached = false; break end
+		end
+	end
+	if cached then
+		if H.renderedTabId ~= currentTab then
+			for _, id in g.tabs do
+				local b = H.tabStrip:FindFirstChild("FacilityTab_" .. id)
+				local selected = id == currentTab
+				b:SetAttribute("SelectedTab", selected)
+				b.BackgroundColor3 = if selected then Color3.fromRGB(239, 202, 123) else Color3.fromRGB(91, 67, 47)
+				b.TextColor3 = if selected then INK else Color3.fromRGB(255, 241, 210)
+				local gradient = b:FindFirstChildOfClass("UIGradient")
+				if gradient then
+					gradient.Color = ColorSequence.new(
+						if selected then Color3.fromRGB(254, 224, 158) else Color3.fromRGB(131, 99, 69),
+						if selected then Color3.fromRGB(193, 146, 72) else Color3.fromRGB(74, 51, 35))
+				end
+				local grain = b:FindFirstChild("BookMaterial")
+				if grain then
+					grain.ImageColor3 = if selected then Color3.fromRGB(252, 220, 148) else Color3.fromRGB(138, 111, 78)
+					grain.ImageTransparency = if selected then 0.12 else 0.38
+				end
+				local border = b:FindFirstChildOfClass("UIStroke")
+				if border then
+					border.Color = if selected then UI_BRASS_DARK else Color3.fromRGB(205, 163, 93)
+					border.Thickness = if selected then 2.5 else 1.6
+				end
+				local ribbon = b:FindFirstChild("BookRibbon")
+				if ribbon then
+					ribbon.BackgroundColor3 = if selected then UI_BRASS else UI_BRASS_DARK
+					ribbon.BackgroundTransparency = if selected then 0 else 0.16
+					ribbon.Size = if selected then UDim2.new(0, 5, 1, -12) else UDim2.new(0, 4, 1, -16)
+					ribbon.Position = if selected then UDim2.fromOffset(4, 6) else UDim2.fromOffset(5, 8)
+				end
+				local underline = b:FindFirstChild("ActiveTabRule")
+				if underline then underline.Visible = selected end
+				local hint = b:FindFirstChild("FacilityTabHint")
+				if hint then hint.TextColor3 = if selected then INK_SOFT else Color3.fromRGB(238, 218, 183) end
+			end
+		end
+		H.renderedTabId = currentTab
 		return
 	end
 	for _, child in H.tabStrip:GetChildren() do
-		if child:IsA("TextButton") then
-			child:Destroy()
-		end
+		if child:IsA("TextButton") then child:Destroy() end
 	end
-	local g = groupOf(currentTab)
 	for i, id in g.tabs do
 		local selected = currentTab == id
 		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 166, if mainInner.AbsoluteSize.X < 740 then 46 else 54), function()
@@ -11115,8 +11160,9 @@ function H.renderTabs()
 		end
 		-- [시설 탭] 주점과 같은 선택형 카드: 큰 메뉴명 + 실제 방문 목적을 두 줄로 표시한다.
 		local purpose = H.MENU_FOCUS[id]
-		if purpose and mainInner.AbsoluteSize.X >= 740 then
+		if purpose then
 			local hint = mkLabel(b, purpose[1], 12, if selected then INK_SOFT else Color3.fromRGB(238, 218, 183), false)
+			hint.Visible = mainInner.AbsoluteSize.X >= 740
 			hint.Name = "FacilityTabHint"
 			hint.AutomaticSize = Enum.AutomaticSize.None
 			hint.Position = UDim2.fromOffset(35, 30)
@@ -11138,16 +11184,19 @@ function H.renderTabs()
                 ribbon.Position = UDim2.fromOffset(4, 6)
                 ribbon.BackgroundTransparency = 0
             end
-			local rule = Instance.new("Frame")
-			rule.Name = "ActiveTabRule"
-			rule.BackgroundColor3 = UI_BRASS
-			rule.BorderSizePixel = 0
-			rule.Position = UDim2.new(0, 8, 1, -5)
-			rule.Size = UDim2.new(1, -16, 0, 4)
-			rule.ZIndex = b.ZIndex + 3
-			rule.Parent = b
 		end
+		-- [선택 띠 재사용] 모든 탭에 한 번 만들고 선택 시 보이기만 전환한다.
+		local rule = Instance.new("Frame")
+		rule.Name = "ActiveTabRule"
+		rule.BackgroundColor3 = UI_BRASS
+		rule.BorderSizePixel = 0
+		rule.Position = UDim2.new(0, 8, 1, -5)
+		rule.Size = UDim2.new(1, -16, 0, 4)
+		rule.ZIndex = b.ZIndex + 3
+		rule.Visible = selected
+		rule.Parent = b
 	end
+	H.renderedTabGroup = g.name
 	H.renderedTabId = currentTab
 end
 
