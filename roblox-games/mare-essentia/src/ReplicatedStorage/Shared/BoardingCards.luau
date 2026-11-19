@@ -531,7 +531,18 @@ B.Units.sa_37 = { id="sa_37", name="라푸라푸", category="인물", row="melee
 B.Units.sa_38 = { id="sa_38", name="막탄 방어대", category="병종", row="melee", power=3, ability="mactanGuard", text="낼 때: 전열의 가장 약한 다른 일반 아군에 엄호. 대상이 없으면 자신을 엄호." }
 B.Specials.sa_39 = { id="sa_39", name="막탄의 얕은 여울", category="사건", special="mactanShoal", text="이번 라운드에 다음 말라카 기습 또는 촐라 포격을 한 번 차단한다." }
 
+B.Units.me_43 = { id="me_43", name="우르의 군기", category="서사", row="melee", power=3, ability="urStandard", text="전열에서는 전쟁 면, 후열에서는 평화 면. 전열에 배치되며 교대로 면을 바꾼다." }
+B.Units.me_44 = { id="me_44", name="수메르 전차대", category="서사", row="melee", power=4, ability="urChariot", text="낼 때: 가장 강한 상대 전열 일반 유닛 −1. 군기가 전열에 있으면 −3." }
+B.Specials.me_45 = { id="me_45", name="우르의 연회", category="서사", special="urFeast", text="전투력 감소가 가장 큰 일반 아군을 회복. 군기가 후열에 있으면 그 아군에 엄호." }
+B.Units.sa_40 = { id="sa_40", name="가자 마다", category="서사", row="ranged", power=4, ability="gajahMada", text="전장에 있는 동안 이번 라운드에 처음 낸 이름이 다른 아군 함선마다 맹세 표식 1개." }
+B.Specials.sa_41 = { id="sa_41", name="팔라파 맹세", category="서사", special="palapa", text="가자 마다가 있고 표식이 2개 이상이면 2개를 써서 후열 함선 최대 두 척을 전열로 옮기고 각각 +1." }
+
 B.CardEnglish = {
+	me_43 = { name="Standard of Ur", text="Deploy in melee on the War side. Rotate into ranged to show Peace." },
+	me_44 = { name="Sumerian Chariots", text="Deploy: Weaken the strongest enemy melee non-hero by 1, or by 3 with the Standard in melee." },
+	me_45 = { name="Feast of Ur", text="Restore the ally with the largest power penalty. With the Standard in ranged, also give that ally cover." },
+	sa_40 = { name="Gajah Mada", text="While deployed, gain one oath mark for each different allied ship played this round." },
+	sa_41 = { name="Palapa Oath", text="With Gajah Mada deployed, spend 2 oath marks to move up to two ranged ships to melee and boost each by 1." },
 	sa_37 = { name="Lapulapu", text="If Shallows blocked a bombardment, weaken the strongest enemy melee non-hero by 3 at your next turn start." },
 	sa_38 = { name="Mactan Defenders", text="Deploy: Give your weakest other melee non-hero cover, or cover yourself if none is present." },
 	sa_39 = { name="Mactan Shallows", text="Block the next Malacca strike or Chola bombardment this round." },
@@ -853,9 +864,9 @@ B.Factions = {
 	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "pachacuti", specialty = "동물", leaders = { "pachacuti", "montezuma", "sittingbull" },
 		roster = {"nw_01", "nw_02", "nw_03", "nw_04", "nw_05", "nw_06", "nw_07", "nw_08", "nw_09", "nw_10", "nw_11", "nw_12", "nw_13", "nw_14", "nw_15", "nw_16", "nw_17", "nw_18", "nw_19", "nw_20", "nw_21", "nw_22", "nw_23", "nw_24", "nw_25", "nw_26", "nw_27", "nw_28", "nw_29", "nw_30", "nw_31", "nw_32", "nw_33", "nw_34", "nw_35", "nw_36", "nw_37", "nw_38", "nw_39", "nw_40", "nw_41"} },
 	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "saladin", specialty = "지형·원더", leaders = { "saladin", "suleiman", "cyrus" },
-		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30", "me_31", "me_32", "me_33", "me_34", "me_35", "me_36", "me_37", "me_38", "me_39", "me_40", "me_41", "me_42"} },
+		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30", "me_31", "me_32", "me_33", "me_34", "me_35", "me_36", "me_37", "me_38", "me_39", "me_40", "me_41", "me_42", "me_43", "me_44", "me_45"} },
 	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", specialty = "동물", leaders = { "rajaraja", "tranhungdao", "akbar" },
-		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30", "sa_31", "sa_32", "sa_33", "sa_34", "sa_35", "sa_36", "sa_37", "sa_38", "sa_39"} },
+		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30", "sa_31", "sa_32", "sa_33", "sa_34", "sa_35", "sa_36", "sa_37", "sa_38", "sa_39", "sa_40", "sa_41"} },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
 		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30", "lo_46", "lo_47", "lo_48", "lo_49", "lo_50", "lo_51", "lo_52", "lo_53", "lo_54", "lo_55", "lo_56", "lo_57", "lo_58", "lo_59"} },
 	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", specialty = "지형·원더", leaders = { "mansa", "hannibal", "shaka" },
@@ -1898,7 +1909,39 @@ function B.play(m: any, side, handIdx)
 		m.lastTactic[side] = { round = m.round, card = c }
 	end
 	local msg
-	if c.special == "mactanShoal" then
+	if c.special == "urFeast" then
+		local target, loss
+		for _, row in B.ROWS do
+			for _, ally in m.rows[side][row] do
+				local penalty = ally.tacticPower or 0
+				if not ally.hero and penalty < (loss or 0) then target, loss = ally, penalty end
+			end
+		end
+		if target then
+			cleanseTactic(target)
+			for _, ally in m.rows[side].ranged do
+				if ally.ability == "urStandard" then target.cover = true; break end
+			end
+		end
+		table.insert(m.grave[side], played)
+		msg = if target then "우르의 연회: 아군 회복" else "우르의 연회 — 회복할 아군 없음"
+	elseif c.special == "palapa" then
+		local moved = 0
+		if (tactics.palapaMarks or 0) >= 2 and hasTactic(m, side, "gajahMada") then
+			local back = m.rows[side].ranged
+			for index = #back, 1, -1 do
+				local ship = back[index]
+				if ship.category ~= "선박" or ship.hero or ship.anchored or ship.pendingReturn or ship.pigForm then continue end
+				table.insert(m.rows[side].melee, table.remove(back, index))
+				boostCard(ship, 1)
+				moved += 1
+				if moved == 2 then break end
+			end
+			if moved > 0 then tactics.palapaMarks -= 2 end
+		end
+		table.insert(m.grave[side], played)
+		msg = if moved > 0 then "팔라파 맹세: 함대 전열 진군" else "팔라파 맹세 — 발동 조건 미충족"
+	elseif c.special == "mactanShoal" then
 		tactics.mactanShoal = m.round
 		table.insert(m.grave[side], played)
 		msg = "막탄의 얕은 여울: 포격 방어 준비"
@@ -2271,7 +2314,22 @@ function B.play(m: any, side, handIdx)
 				table.insert(m.hand[side], table.remove(deck, index))
 			end
 		end
-		if c.ability == "mactanGuard" then
+		if target == side and c.category == "선박" and hasTactic(m, side, "gajahMada") then
+			local key = "palapa_" .. c.id
+			if not tactics[key] then
+				tactics[key] = true
+				tactics.palapaMarks = (tactics.palapaMarks or 0) + 1
+				logLine(m, "가자 마다: 맹세 " .. tostring(tactics.palapaMarks))
+			end
+		end
+		if c.ability == "urChariot" then
+			local damage = 1
+			for _, ally in m.rows[side].melee do
+				if ally.ability == "urStandard" then damage = 3; break end
+			end
+			local enemy = strongestInRow(m, foe, "melee", true)
+			if enemy then boostCard(enemy, -damage) end
+		elseif c.ability == "mactanGuard" then
 			local target, power = c, nil
 			for index, ally in m.rows[side].melee do
 				local current = B.cardPower(m, side, "melee", index)
