@@ -2073,18 +2073,18 @@ function H.layoutBook()
   local allTabsWidth = tabCount * tabWidth + math.max(0, tabCount - 1) * tabGap
   local visibleTabsWidth = math.min(math.max(1, width - 16), allTabsWidth)
   tabBar.Position = UDim2.new(1, -8, 0, 68)
-  tabBar.Size = UDim2.fromOffset(visibleTabsWidth, 58)
+  tabBar.Size = UDim2.fromOffset(visibleTabsWidth, if width < 740 then 48 else 58)
   -- [폰 너비 변경] 기존 버튼을 재생성하지 않고 현재 폭만 갱신한다.
   H.tabWidth = tabWidth
   for _, button in H.tabStrip:GetChildren() do
-    if button:IsA("TextButton") then button.Size = UDim2.fromOffset(tabWidth, 54) end
+    if button:IsA("TextButton") then button.Size = UDim2.fromOffset(tabWidth, if width < 740 then 46 else 54) end
   end
   H.tabStrip.CanvasSize = UDim2.fromOffset(allTabsWidth, 0)
   local selectedIndex = table.find(groupOf(currentTab).tabs, currentTab) or 1
   local desiredScroll = (selectedIndex - 1) * (tabWidth + tabGap)
     - math.floor((visibleTabsWidth - tabWidth) / 2)
   H.tabStrip.CanvasPosition = Vector2.new(math.clamp(desiredScroll, 0, math.max(0, allTabsWidth - visibleTabsWidth)), 0)
-  local bodyTop = if tabs then 134 else 68
+  local bodyTop = if tabs then (if width < 740 then 124 else 134) else 68
   H.bookSpine.Visible = false
   H.facilityGallery.Visible = gallery
   H.menuActionDock.Visible = gallery
@@ -2520,7 +2520,7 @@ dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Right
 dockGrid.FillDirectionMaxCells = 4
 dockGrid.Parent = dock
 local dockLimit = Instance.new("UISizeConstraint")
-dockLimit.MaxSize = Vector2.new(300, 200)
+dockLimit.MaxSize = Vector2.new(360, 200)
 dockLimit.Parent = dock
 
 -- [시설 목차] 시설 7곳은 기존 도크 그대로, 세부 기능은 각 시설의 탭 안에만 둔다.
@@ -3129,40 +3129,44 @@ corner(bubble, 12)
 hudStroke(bubble, 2)
 do
 	local function layoutBubble()
-		local width, height = hud.AbsoluteSize.X, hud.AbsoluteSize.Y
+		local width = math.max(320, hud.AbsoluteSize.X)
 		local compact = width < 610
-		-- 오른쪽 위: 시설 6개 한 줄, 그 아래 시스템 5개를 같은 칸(오른쪽 4칸)에 맞춰 둔다.
+		-- [모바일 7개 시설] 가로 한 줄을 유지하고 화면보다 넓을 때만 스크롤한다.
 		local CW, CH, GAP = 44, 58, 4
-		local cols = if compact then 3 else 6
-		dockGrid.FillDirectionMaxCells = cols
+		local count = #H.DOCK
+		local dockW = count * CW + math.max(0, count - 1) * GAP
+		dockGrid.FillDirectionMaxCells = count
 		dockGrid.CellSize = UDim2.fromOffset(CW, CH)
 		dockGrid.CellPadding = UDim2.fromOffset(GAP, GAP)
-		local rows = math.ceil(6 / cols)
-		local dockH = rows * CH + (rows - 1) * GAP
-		dock.Position = UDim2.new(1, -8, 0, 6)
-		dock.Size = UDim2.fromOffset(cols * CW + (cols - 1) * GAP, dockH)
-		local sysOrder = { "HelpButton", "OptionsButton", "DeckButton", "JournalButton", "ViewToggle" } -- 저널도 같은 칸에 맞춘다 (빠지면 혼자 제자리에 남아 줄이 어긋난다)
-		for i, n in sysOrder do
-			local b = hudTop:FindFirstChild(n)
+		dock.AutomaticCanvasSize = Enum.AutomaticSize.None
+		dock.ScrollingDirection = Enum.ScrollingDirection.X
+		dock.CanvasSize = UDim2.fromOffset(dockW, CH)
+		dock.AnchorPoint = if compact then Vector2.zero else Vector2.new(1, 0)
+		dock.Position = if compact then UDim2.fromOffset(8, 6) else UDim2.new(1, -8, 0, 6)
+		dock.Size = UDim2.fromOffset(if compact then math.min(dockW, width - 16) else dockW, CH)
+		-- [도구 한 줄] 저널·설정·도움말을 시설 아래에 분리해 터치 충돌을 방지한다.
+		local toolsY = 6 + CH + GAP
+		local sysOrder = { "HelpButton", "OptionsButton", "DeckButton", "JournalButton", "ViewToggle" }
+		for i, name in sysOrder do
+			local b = hudTop:FindFirstChild(name)
 			if b then
 				b.Size = UDim2.fromOffset(CW, CH)
-				b.AnchorPoint = Vector2.new(1, 0)
-				local col = (i - 1) % cols
-				local row = math.floor((i - 1) / cols)
-				b.Position = UDim2.new(1, -8 - col * (CW + GAP), 0, 6 + dockH + GAP + row * (CH + GAP))
+				b.AnchorPoint = if compact then Vector2.zero else Vector2.new(1, 0)
+				b.Position = if compact then UDim2.fromOffset(8 + (i - 1) * (CW + GAP), toolsY)
+					else UDim2.new(1, -8 - (i - 1) * (CW + GAP), 0, toolsY)
 			end
 		end
-		card.Position = UDim2.fromOffset(8, if width < 405 then 51 else 8)
-		card.Size = UDim2.fromOffset(if compact then 252 else 262, 114)
-		-- [모바일 조언] 상단 메뉴 아이콘보다 아래에 한 줄로 펼쳐 작은 화면에서도 읽고 누를 수 있게 한다.
+		-- [작은 폰] 메뉴·선장 카드·조언을 세로로 나눠 눌림 영역이 겹치지 않게 한다.
+		card.Position = UDim2.fromOffset(8, if compact then 134 else 8)
+		card.Size = UDim2.fromOffset(if compact then math.min(252, width - 16) else 262, 114)
 		local left = if width < 1050 then 8 else 282
 		local right = if width < 1050 then 8 else 304
 		local bubbleWidth = math.clamp(width - left - right, 1, 760)
-		bubble.AnchorPoint = Vector2.new(0, 0)
+		bubble.AnchorPoint = Vector2.zero
 		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2),
-			if width < 610 then 310 elseif width < 1050 then 174 else 76)
-		H.goalBanner.Position = UDim2.new(0.5, 0, 0, if width < 610 then 246 elseif width < 790 then 120 else 8)
-		H.goalBanner.Size = UDim2.fromOffset(if width < 610 then math.max(170, width - 16)
+			if compact then 258 elseif width < 1050 then 174 else 76)
+		H.goalBanner.Position = UDim2.new(0.5, 0, 0, if compact then 254 elseif width < 790 then 120 else 8)
+		H.goalBanner.Size = UDim2.fromOffset(if compact then math.max(170, width - 16)
 			elseif width < 790 then math.min(530, width - 24)
 			else math.clamp(width - 590, 204, 480), 54)
 		bubble.Size = UDim2.fromOffset(bubbleWidth, 0)
@@ -11070,7 +11074,7 @@ function H.renderTabs()
 	local g = groupOf(currentTab)
 	for i, id in g.tabs do
 		local selected = currentTab == id
-		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 166, 54), function()
+		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 166, if mainInner.AbsoluteSize.X < 740 then 46 else 54), function()
 			-- [시설 탭 정본] 모든 시설은 같은 탭 전환 함수를 사용하며 별도 전체창은 만들지 않는다.
 			openTab(id)
 		end, true)
@@ -11109,7 +11113,7 @@ function H.renderTabs()
 		end
 		-- [시설 탭] 주점과 같은 선택형 카드: 큰 메뉴명 + 실제 방문 목적을 두 줄로 표시한다.
 		local purpose = H.MENU_FOCUS[id]
-		if purpose then
+		if purpose and mainInner.AbsoluteSize.X >= 740 then
 			local hint = mkLabel(b, purpose[1], 12, if selected then INK_SOFT else Color3.fromRGB(238, 218, 183), false)
 			hint.Name = "FacilityTabHint"
 			hint.AutomaticSize = Enum.AutomaticSize.None
