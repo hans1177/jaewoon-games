@@ -2922,7 +2922,7 @@ do
 					inField = false
 					main.Visible = true
 					render()
-					H.openDeck(true, "battle")
+					H.openDeck(true)
 				end,
 			})
 		end

@@ -154,7 +154,7 @@ function DeckBuilder.build(parent, ctx)
 	countPill.BackgroundTransparency = 0
 	countPill.BackgroundColor3 = Color3.fromRGB(150, 225, 150)
 	corner(countPill, 8)
-	local closeBtn = button(top, "←", SAVE, 20, function() ctx.onClose() end)
+	local closeBtn = button(top, "←", SAVE, 20)
 	closeBtn.AnchorPoint = Vector2.new(1, 0.5)
 	closeBtn.Position = UDim2.new(1, -8, 0.5, 0)
 	closeBtn.Size = UDim2.fromOffset(44, 36)
@@ -289,61 +289,78 @@ function DeckBuilder.build(parent, ctx)
 	right.Parent = body
 	corner(right, 10)
 
-	-- [내 카드] 화면 크기와 관계없이 세 탭을 같은 위치에서 연다.
-	local selectedTab = ctx.initialTab or "collection"
-	local collectionTab = button(body, "보유 카드", SAVE, 16)
-	local deckTab = button(body, "내 덱", SAVE, 16)
-	local battleTab = button(body, "대결", SAVE, 16)
-	local tabs = {
-		{ "collection", collectionTab },
-		{ "deck", deckTab },
-		{ "battle", battleTab },
-	}
+	-- [작전실] 현재 덱을 보고 출항하거나 목적에 맞는 화면으로 이동한다.
+	local selectedTab = ctx.initialTab or "hub"
+	local hub = Instance.new("Frame")
+	hub.Name = "OperationsRoom"
+	hub.BackgroundTransparency = 1
+	hub.Size = UDim2.fromScale(1, 1)
+	hub.Parent = body
+
+	local deckCover = Instance.new("ImageLabel")
+	deckCover.Name = "ActiveDeckCover"
+	deckCover.AnchorPoint = Vector2.new(0.5, 0)
+	deckCover.Position = UDim2.fromScale(0.5, 0.02)
+	deckCover.Size = UDim2.fromScale(0.44, 0.58)
+	deckCover.BackgroundTransparency = 1
+	deckCover.ScaleType = Enum.ScaleType.Fit
+	deckCover.Parent = hub
+
+	local deckSummary = text(hub, "", 17, SEPIA, true)
+	deckSummary.Position = UDim2.fromScale(0.18, 0.61)
+	deckSummary.Size = UDim2.fromScale(0.64, 0.15)
 	local battle = Instance.new("Frame")
-	battle.Name = "BattleTab"
+	battle.Name = "Departure"
 	battle.BackgroundTransparency = 1
-	battle.Position = UDim2.fromOffset(0, 52)
-	battle.Size = UDim2.new(1, 0, 1, -52)
+	battle.Size = UDim2.fromScale(1, 1)
 	battle.Parent = body
 	practiceBtn.Parent = battle
 	duelBtn.Parent = battle
-	practiceBtn.Position = UDim2.new(0, 0, 0.25, 0)
-	duelBtn.Position = UDim2.new(0.5, 4, 0.25, 0)
-	practiceBtn.Size = UDim2.new(0.5, -4, 0, 64)
+	practiceBtn.Position = UDim2.new(0.03, 0, 0.3, 0)
+	duelBtn.Position = UDim2.new(0.52, 0, 0.3, 0)
+	practiceBtn.Size = UDim2.new(0.45, 0, 0.46, 0)
 	duelBtn.Size = practiceBtn.Size
 	buttonArt(practiceBtn, "ui_button_ink")
 	local duelArt = buttonArt(duelBtn, "ui_button_ink")
+	local departureSummary = text(battle, "", 17, SEPIA, true)
+	departureSummary.Position = UDim2.fromScale(0.1, 0.06)
+	departureSummary.Size = UDim2.fromScale(0.8, 0.18)
 
 	local function layoutBody()
+		hub.Visible = selectedTab == "hub"
 		left.Visible = selectedTab == "collection"
 		right.Visible = selectedTab == "deck"
 		battle.Visible = selectedTab == "battle"
 		bottom.Visible = selectedTab == "deck"
-		for _, tab in tabs do
-			local active = tab[1] == selectedTab
-			local control = tab[2]
-			local art = control:FindFirstChild("ButtonArtwork")
-			if art then
-				local asset = ctx.AssetIds[if active then "CardArt/ui_button_ink" else "CardArt/ui_button_paper"]
-				if asset then art.Image = "rbxassetid://" .. tostring(asset) end
-			end
-			control.TextColor3 = if active or not art then INK else SEPIA
-		end
+		title.Text = if hub.Visible then "해상 작전실" elseif left.Visible then "카드 보관소"
+			elseif right.Visible then "함대 편성" else "출항 준비"
+		closeBtn.Text = "←"
+		if recPop then recPop.Visible = false end
 	end
-	for index, tab in tabs do
-		local control = tab[2]
-		control.Position = UDim2.new((index - 1) / 3, 0, 0, 0)
-		control.Size = UDim2.new(1 / 3, -4, 0, 44)
-		buttonArt(control, "ui_button_ink")
-		control.Activated:Connect(function()
-			selectedTab = tab[1]
-			if recPop then recPop.Visible = false end
+	closeBtn.Activated:Connect(function()
+		if selectedTab == "hub" then
+			ctx.onClose()
+		else
+			selectedTab = "hub"
+			practicePanel.Visible = false
+			layoutBody()
+		end
+	end)
+	for _, action in {
+		{ "함대 편성", "deck", 0.03, 0.39, 0.25 },
+		{ "카드 보관소", "collection", 0.72, 0.39, 0.25 },
+		{ "출항", "battle", 0.32, 0.79, 0.36 },
+	} do
+		local control = button(hub, action[1], SAVE, if action[2] == "battle" then 21 else 16, function()
+			selectedTab = action[2]
+			Sfx.play("sfx_card_page", 0.5, 1, "sfx_book_turn")
 			layoutBody()
 		end)
+		control.Position = UDim2.fromScale(action[3], action[4])
+		control.Size = UDim2.new(action[5], 0, 0, 44)
+		buttonArt(control, "ui_button_ink")
 	end
-	left.Position = UDim2.fromOffset(0, 52)
-	right.Position = UDim2.new(1, 0, 0, 52)
-	left.Size = UDim2.new(1, 0, 1, -52)
+	left.Size = UDim2.fromScale(1, 1)
 	right.Size = left.Size
 	layoutBody()
 
@@ -594,7 +611,7 @@ function DeckBuilder.build(parent, ctx)
 		end
 	end)
 	local autoBtn = button(bottom, "기본덱", Color3.fromRGB(60, 96, 140), 15, function()
-		showDeck = true
+		selectedTab = "deck"
 		layoutBody()
 		ctx.onReplace(CB.autoDeck(ctx.getBook()))
 	end)
@@ -660,7 +677,7 @@ function DeckBuilder.build(parent, ctx)
 			recPop.Visible = false
 			local ids = CB.recommend(ctx.getBook(), r[1])
 			if ids then
-				showDeck = true
+				selectedTab = "deck"
 				layoutBody()
 				ctx.onReplace(ids)
 			end
@@ -890,7 +907,7 @@ function DeckBuilder.build(parent, ctx)
 	end
 
 	comboButton.Activated:Connect(function()
-		showDeck = false
+		selectedTab = "collection"
 		state.filter, state.page = "combo", 1
 		layoutBody()
 		paintChips()
@@ -1080,6 +1097,11 @@ function DeckBuilder.build(parent, ctx)
 			local leaderImageId = if artId then "rbxassetid://" .. tostring(artId) else ""
 			leaderImage.Image = leaderImageId
 			leaderFullImage.Image = leaderImageId
+			local coverId = artId or ctx.AssetIds["CardArt/battle_card_back"]
+			deckCover.Image = if coverId then "rbxassetid://" .. tostring(coverId) else ""
+			local label = string.format("%s · %d장", cd and cd.name or "지도자", #saved)
+			deckSummary.Text = label .. (if dirty then " · 저장 전" elseif okDeck then " · 출항 가능" else " · 편성 필요")
+			departureSummary.Text = "사용할 덱  |  " .. label
 			local idx = table.find(fac.leaders, curLeader) or 1
 			cur.leaderStep = function(delta)
 				local nxt = fac.leaders[((idx - 1 + delta) % #fac.leaders) + 1]
