@@ -4,17 +4,37 @@
   {
    "step": 1,
    "ctx": "Client",
-   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=9 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=4 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
+   "out": "play ok=true nil\ntext"
   },
   {
-   "step": 2,
-   "capture": "ap_game",
+   "step": 3,
+   "capture": "rt1",
    "files": 1
   },
   {
-   "step": 4,
-   "ctx": "Client",
-   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=9 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=4 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
+   "step": 5,
+   "capture": "rt2",
+   "files": 1
+  },
+  {
+   "step": 7,
+   "capture": "rt3",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "capture": "rt4",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "capture": "rt5",
+   "files": 1
+  },
+  {
+   "step": 13,
+   "capture": "rt6",
+   "files": 1
   }
  ],
  "errors": [],
@@ -22,27 +42,72 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 35005
+   "elapsedMs": 35001
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 810
+   "elapsedMs": 304
   },
   {
    "step": 2,
-   "type": "capture",
-   "elapsedMs": 1181
+   "type": "wait",
+   "elapsedMs": 7009
   },
   {
    "step": 3,
-   "type": "wait",
-   "elapsedMs": 20016
+   "type": "capture",
+   "elapsedMs": 897
   },
   {
    "step": 4,
-   "type": "luau",
-   "elapsedMs": 320
+   "type": "wait",
+   "elapsedMs": 7007
+  },
+  {
+   "step": 5,
+   "type": "capture",
+   "elapsedMs": 842
+  },
+  {
+   "step": 6,
+   "type": "wait",
+   "elapsedMs": 7013
+  },
+  {
+   "step": 7,
+   "type": "capture",
+   "elapsedMs": 943
+  },
+  {
+   "step": 8,
+   "type": "wait",
+   "elapsedMs": 7008
+  },
+  {
+   "step": 9,
+   "type": "capture",
+   "elapsedMs": 613
+  },
+  {
+   "step": 10,
+   "type": "wait",
+   "elapsedMs": 7013
+  },
+  {
+   "step": 11,
+   "type": "capture",
+   "elapsedMs": 703
+  },
+  {
+   "step": 12,
+   "type": "wait",
+   "elapsedMs": 7003
+  },
+  {
+   "step": 13,
+   "type": "capture",
+   "elapsedMs": 690
   }
  ],
  "consoleCapture": {
@@ -52,13 +117,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 5,
-  "completedSteps": 5,
+  "plannedSteps": 14,
+  "completedSteps": 14,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 1,
-  "capturedFrames": 1,
+  "plannedFrames": 6,
+  "capturedFrames": 6,
   "abortedEarly": false
  }
 }
