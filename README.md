@@ -5,6 +5,7 @@ Retention: 7 days, full 4 runs and others 6 runs
 
 | Run | Type | Status | Frames | Changed files |
 |---|---|---|---:|---:|
+| [44492117519](runs/44492117519/) | studio | PASS | 7 | 0 |
 | [44491261870](runs/44491261870/) | deep | PASS | 62 | 57 |
 | [44488819469](runs/44488819469/) | deep | FAIL | 59 | 57 |
 | [44486392192](runs/44486392192/) | deep | PASS | 62 | 61 |
@@ -14,4 +15,3 @@ Retention: 7 days, full 4 runs and others 6 runs
 | [44422342764](runs/44422342764/) | studio | FAIL | 0 | 0 |
 | [44377908391](runs/44377908391/) | studio | PASS | 11 | 0 |
 | [44363424585](runs/44363424585/) | studio | FAIL | 7 | 0 |
-| [44360709296](runs/44360709296/) | studio | PASS | 2 | 0 |
