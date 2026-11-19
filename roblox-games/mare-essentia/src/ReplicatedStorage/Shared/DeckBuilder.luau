@@ -867,6 +867,7 @@ function DeckBuilder.build(parent, ctx)
 
 	-- [카드 추가] 넓은 화면에서는 선택과 편입을 같은 화면에서 처리한다.
 	local selectedCard
+	local tileStrokes = {}
 	local detail = Instance.new("Frame")
 	detail.BackgroundColor3 = PAPER
 	detail.Position = UDim2.fromScale(0.67, 0)
@@ -900,7 +901,11 @@ function DeckBuilder.build(parent, ctx)
 	enlist.Size = UDim2.new(0.84, 0, 0, 44)
 	buttonArt(enlist, "ui_button_ink")
 	local function selectCard(id)
+		local prior = selectedCard and tileStrokes[selectedCard]
+		if prior then prior.stroke.Color, prior.stroke.Thickness = prior.color, prior.width end
 		selectedCard = id
+		local selected = id and tileStrokes[id]
+		if selected then selected.stroke.Color, selected.stroke.Thickness = GOLD, 3 end
 		local d = id and CB.def(id)
 		local book = ctx.getBook()
 		local vault = selectedTab == "collection" and not addingToFormation
@@ -979,6 +984,7 @@ function DeckBuilder.build(parent, ctx)
 		st.Color = if owned > 0 then TIER_COLOR[tier] else Color3.fromRGB(80, 74, 70)
 		st.Thickness = if owned > 0 and tier == 3 then 3 else 2
 		st.Parent = tile
+		tileStrokes[id] = { stroke = st, color = st.Color, width = st.Thickness }
 		local img = Instance.new("ImageLabel")
 		img.Position = UDim2.fromOffset(4, 4)
 		img.Size = UDim2.new(1, -8, 0.5625, -4)
@@ -1072,7 +1078,7 @@ function DeckBuilder.build(parent, ctx)
 	end
 
 	rebuildGrid = function()
-		if detail.Visible then selectCard(selectedCard) end
+		table.clear(tileStrokes)
 		for _, ch in gridScroll:GetChildren() do
 			if not ch:IsA("UIGridLayout") then ch:Destroy() end
 		end
@@ -1101,6 +1107,9 @@ function DeckBuilder.build(parent, ctx)
 					makeTile(id, shown)
 				end
 			end
+		end
+		if selectedTab == "collection" and detail.Visible then
+			selectCard(if selectedCard and tileStrokes[selectedCard] then selectedCard else nil)
 		end
 		if n > state.page * PAGE then
 			local more = button(gridScroll, string.format("더 보기 (%d장)", n - state.page * PAGE), Color3.fromRGB(60, 80, 100), 15, function()
