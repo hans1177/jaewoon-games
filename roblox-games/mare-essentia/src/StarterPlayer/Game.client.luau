@@ -12464,9 +12464,17 @@ function H.setTitleMode(on)
 end
 
 function render()
+	-- [시설 메뉴 스크롤] 서버 응답으로 같은 탭을 다시 그릴 때 읽던 위치를 유지한다.
+	-- 탭을 바꾸거나 새 게임을 열면 기존처럼 첫 줄부터 시작한다.
+	local retainScroll = view ~= nil and not newGameMode and H.contentRenderedTab == currentTab
+		and currentTab ~= "trade" and currentTab ~= "yard"
+	local savedScroll = if retainScroll then content.CanvasPosition.Y else 0
+	H.contentRenderSerial = (H.contentRenderSerial or 0) + 1
+	local renderSerial = H.contentRenderSerial
 	order = 0
 	H.contextAdviceShown = false
 	H.clearContent()
+	if not retainScroll then content.CanvasPosition = Vector2.zero end
 	if not audioLock then
 		Sfx.portMusic(view and view.player and PortData.Ports[view.player.portId],
 			view ~= nil and currentTab == "trade")
@@ -12477,6 +12485,7 @@ function render()
 
 	H.setTitleMode(not view or newGameMode)
 	if not view or newGameMode then
+		H.contentRenderedTab = nil
 		headerLabel.Text = "새 게임"
 		setPortrait("선장실")
 		tabBar.Visible = false
@@ -12769,8 +12778,9 @@ function render()
 	else
 		H.counselRows(1)
 		RENDERERS[currentTab]()
-		if currentTab == "harbor" and H.visitFacility == "은행" then
-			-- [은행 방문] 항구 정보 안의 기존 금융 메뉴로 바로 이동한다.
+		if currentTab == "harbor" and H.bankVisitPending then
+			H.bankVisitPending = false
+			-- [은행 방문] 실제 건물에서 처음 들어왔을 때만 금융 메뉴로 이동한다.
 			task.defer(function()
 				-- 실제 UIListLayout이 배치된 다음 은행 섹션 위치를 사용한다.
 				game:GetService("RunService").Heartbeat:Wait()
@@ -12782,6 +12792,16 @@ function render()
 				end
 			end)
 		end
+	end
+	H.contentRenderedTab = currentTab
+	if retainScroll and savedScroll > 0 then
+		-- [재배치 후 복원] UIListLayout이 실제 콘텐츠 높이를 계산한 다음 복원한다.
+		task.defer(function()
+			game:GetService("RunService").Heartbeat:Wait()
+			if H.contentRenderSerial ~= renderSerial or H.contentRenderedTab ~= currentTab then return end
+			local limit = math.max(0, content.AbsoluteCanvasSize.Y - content.AbsoluteSize.Y)
+			content.CanvasPosition = Vector2.new(0, math.clamp(savedScroll, 0, limit))
+		end)
 	end
 end
 
@@ -13148,8 +13168,17 @@ function H.goAdvice(tab)
 end
 
 openTab = function(tabId, mapPage, facility)
+	-- [같은 메뉴 재진입] 이미 열린 탭이면 장부·버튼·원화를 불필요하게 다시 만들지 않는다.
+	-- 숨겨진 창 재개방·지도 페이지 변경·건물 방문·백과 연결은 기존 흐름으로 연다.
+	local origin = if facility == "은행" or facility == "상인 길드" then facility else nil
+	if main.Visible and view and not newGameMode and not H.titleMenuOpen
+		and currentTab == tabId and H.mapPage == mapPage
+		and H.visitFacility == origin and not H.tradeBookOpenRequested then
+		return
+	end
 	-- [시설 방문 표시] 출입 건물명은 실행 중 화면에만 사용한다. 저장 구조 변경 없음.
-	H.visitFacility = if facility == "은행" or facility == "상인 길드" then facility else nil
+	H.visitFacility = origin
+	H.bankVisitPending = origin == "은행"
 	-- [교역 장부→서재] 선택한 상품의 분류는 백과 상태 변수 선언 이후,
 	-- 기존 탭 전환 함수에서만 지정한다. 별도 화면·저장 키를 생성하지 않는다.
 	if tabId == "codex" and H.tradeBookOpenRequested then
