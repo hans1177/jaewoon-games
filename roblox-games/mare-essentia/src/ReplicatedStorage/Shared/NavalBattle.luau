@@ -2357,38 +2357,96 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			TweenService:Create(st, TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Transparency = 0.7 }):Play()
 		end
 		local boardCards, previousBoard, previousOrder, previousLeaders = {}, {}, {}, {}
-		local function effectAt(position, size, caption, tint, delay)
+		local function cardBadge(c)
+			if c.hero then return t("영웅", "Hero"), Color3.fromRGB(111, 77, 35) end
+			if c.fuse then return t("합치기", "Fuse"), Color3.fromRGB(90, 58, 116) end
+			if c.cause then return t("연쇄", "Chain"), Color3.fromRGB(90, 58, 116) end
+			if c.special then return t("전술", "Tactic"), Color3.fromRGB(126, 70, 40) end
+			if BC.StorySeries[c.id] then return t("이야기", "Story"), Color3.fromRGB(46, 78, 107) end
+			if c.starterRole == "rearGuard" or c.ability == "armor" then
+				return t("엄호", "Guard"), Color3.fromRGB(78, 79, 42)
+			end
+			return nil
+		end
+		local function cardStatus(c)
+			if c.pigForm then return t("변신", "Shift"), Color3.fromRGB(119, 69, 116) end
+			if c.sealedAbility then return t("봉인", "Seal"), Color3.fromRGB(119, 69, 116) end
+			if c.anchored then return t("이동 제한", "Pinned"), Color3.fromRGB(125, 64, 50) end
+			if c.bachDangRound == m.round then return t("유인", "Lured"), Color3.fromRGB(37, 81, 105) end
+			if c.shaken then return t("강화 차단", "Jam"), Color3.fromRGB(117, 66, 97) end
+			if c.cover or c.deployCover then return t("엄호", "Guard"), Color3.fromRGB(101, 78, 38) end
+			if c.ability == "charge" and (c.charges or 0) < 3 then
+				return t("축적 ", "Charge ") .. tostring(c.charges or 0) .. "/3", Color3.fromRGB(52, 84, 101)
+			end
+			return nil
+		end
+		local function effectTrace(from, to, tint, at)
+			local delta = to - from
+			local length = delta.Magnitude
+			if length < 4 then return end
+			task.delay(at, function()
+				if not bg.Parent then return end
+				local trail = Instance.new("Frame")
+				trail.Size = UDim2.fromOffset(0, 3)
+				trail.Rotation = math.deg(math.atan2(delta.Y, delta.X))
+				-- Roblox rotates around the center; set the midpoint once and extend symmetrically.
+				local midpoint = from + delta / 2
+				trail.AnchorPoint = Vector2.new(0.5, 0.5)
+				trail.Position = UDim2.fromOffset(midpoint.X, midpoint.Y)
+				trail.BackgroundColor3 = tint
+				trail.BorderSizePixel = 0
+				trail.ZIndex = 34
+				trail.Parent = bg
+				TweenService:Create(trail, TweenInfo.new(0.16), {
+					Size = UDim2.fromOffset(length, 2), BackgroundTransparency = 1,
+				}):Play()
+				task.delay(0.18, function() trail:Destroy() end)
+			end)
+		end
+		local function effectAt(position, size, caption, tint, delay, style)
 			task.delay(delay, function()
 				if not g.Parent or not bg.Parent then return end
 				if size.X < 1 or size.Y < 1 then return end
 				local burst = Instance.new("Frame")
 				burst.AnchorPoint = Vector2.new(0.5, 0.5)
 				burst.Position = UDim2.fromOffset(position.X, position.Y)
-				burst.Size = UDim2.fromOffset(size.X, size.Y)
+				burst.Size = if style == "hit" then UDim2.fromOffset(size.X * 0.72, 4)
+					elseif style == "heal" then UDim2.fromOffset(size.X * 0.76, size.Y * 0.45)
+					else UDim2.fromOffset(size.X, size.Y)
+				if style == "hit" then burst.Rotation = -23 end
 				burst.BackgroundColor3 = tint
 				burst.BackgroundTransparency = 0.72
 				burst.BorderSizePixel = 0
 				burst.ZIndex = 35
 				burst.Parent = bg
-				local rim = frameEdge(burst, tint, 5)
+				local rim = frameEdge(burst, tint, if style == "guard" then 12 else 5)
+				rim.Thickness = if style == "guard" then 3 else 1
 				TweenService:Create(rim, TweenInfo.new(0.42), { Transparency = 1 }):Play()
 				TweenService:Create(burst, TweenInfo.new(0.42), {
-					Size = UDim2.fromOffset(size.X + 10, size.Y + 10), BackgroundTransparency = 1,
+					Size = if style == "hit" then UDim2.fromOffset(size.X + 16, 2) else UDim2.fromOffset(size.X + 10, size.Y + 10), BackgroundTransparency = 1,
 				}):Play()
 				local flash = label(bg, caption, 15, tint, true)
+				local captionY = position.Y + (if style == "guard" then 12 elseif style == "hit" then -12 else 0)
 				flash.AnchorPoint = Vector2.new(0.5, 0.5)
-				flash.Position = UDim2.fromOffset(position.X, position.Y)
-				flash.Size = UDim2.fromOffset(math.max(62, size.X), math.max(22, math.min(32, size.Y)))
+				flash.Position = UDim2.fromOffset(position.X, captionY)
+				flash.Size = UDim2.fromOffset(math.max(62, size.X, (utf8.len(caption) or #caption) * 10), math.max(22, math.min(32, size.Y)))
 				flash.BackgroundColor3 = Color3.fromRGB(38, 28, 22)
 				flash.BackgroundTransparency = 0.15
 				flash.ZIndex = 36
 				flash.TextStrokeTransparency = 0.7
 				frameEdge(flash, tint, 5)
 				TweenService:Create(flash, TweenInfo.new(0.48, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-					Position = UDim2.fromOffset(position.X, position.Y - 17), BackgroundTransparency = 1, TextTransparency = 1,
+					Position = UDim2.fromOffset(position.X, captionY - 17), BackgroundTransparency = 1, TextTransparency = 1,
 				}):Play()
 				task.delay(0.5, function() flash:Destroy(); burst:Destroy() end)
 			end)
+		end
+		local function cardCenter(widget)
+			if not widget or not widget.Parent or widget.AbsoluteSize.X < 1 then return nil end
+			local center = widget.AbsolutePosition + widget.AbsoluteSize / 2
+			local lane = widget.Parent
+			if center.X < lane.AbsolutePosition.X or center.X > lane.AbsolutePosition.X + lane.AbsoluteSize.X then return nil end
+			return center - bg.AbsolutePosition
 		end
 		local function playBoardEffects(before, order, card, leader)
 			local damage, aid, other = {}, {}, {}
@@ -2397,10 +2455,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				for i, shot in m.armadaShots do
 					local at = (i - 1) * 0.14
 					volley[shot.target] = at + 0.07
-					local ship = boardCards[shot.ship]
-					if ship then
-						local size = ship.AbsoluteSize
-						effectAt(ship.AbsolutePosition + size / 2 - bg.AbsolutePosition, size, t("포격", "Fire"), Color3.fromRGB(255, 213, 136), at)
+					local ship, target = boardCards[shot.ship], boardCards[shot.target]
+					local source, destination = cardCenter(ship), cardCenter(target)
+					if source then
+						effectAt(source, ship.AbsoluteSize, t("포격", "Fire"), Color3.fromRGB(255, 213, 136), at)
+						if destination then effectTrace(source, destination, Color3.fromRGB(255, 188, 111), at) end
 					end
 				end
 			end
@@ -2414,33 +2473,40 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					local absolute = dst.AbsolutePosition + size / 2
 					if absolute.X < row.AbsolutePosition.X or absolute.X > row.AbsolutePosition.X + row.AbsoluteSize.X then continue end
 				end
-				local function add(list, name, tint)
-					table.insert(list, { pos, size, name, tint })
+				local function add(list, name, tint, style)
+					table.insert(list, { pos, size, name, tint, style })
 				end
 				if now then
 					local delta = now.power - old.power
 					local blocked = now.blocked - old.blocked
-					if blocked > 0 then add(aid, t("막음 ", "Block ") .. tostring(blocked), Color3.fromRGB(253, 212, 124)) end
+					if blocked > 0 then add(aid, t("막음 ", "Block ") .. tostring(blocked), Color3.fromRGB(253, 212, 124), "guard") end
 					if delta < 0 then
 						local tag = if card and card.id == "sa_36" then t("말뚝 ", "Stakes ") elseif leader == "elizabeth" then t("포격 ", "Volley ") else ""
 						local caption = tag .. "−" .. tostring(-delta)
 						local tint = Color3.fromRGB(255, 143, 120)
-						if volley[unit] then effectAt(pos, size, caption, tint, volley[unit]) else add(damage, caption, tint) end
+						if volley[unit] then effectAt(pos, size, caption, tint, volley[unit], "hit") else add(damage, caption, tint, "hit") end
 					elseif delta > 0 then
 						local tag = if old.penalty < 0 and now.penalty == 0 then t("회복 ", "Heal ") else ""
-						add(aid, tag .. "+" .. tostring(delta), Color3.fromRGB(154, 233, 182))
+						add(aid, tag .. "+" .. tostring(delta), Color3.fromRGB(154, 233, 182), "heal")
+					end
+					if now.status and old.status ~= now.status and blocked == 0 then
+						add(other, now.status, Color3.fromRGB(200, 166, 242))
+					end
+					if now.chain and not old.chain then
+						add(other, t("연쇄 발동", "Chain active"), Color3.fromRGB(226, 186, 249))
 					end
 					if old.row ~= now.row or old.side ~= now.side then
+						if pos and old.pos and old.visible then effectTrace(old.pos, pos, Color3.fromRGB(140, 211, 242), 0.1) end
 						add(other, if unit.bachDangRound == m.round then t("유인", "Lured") else t("이동", "Moved"), Color3.fromRGB(142, 213, 244))
 					end
-				else
+				elseif old.visible then
 					add(other, t("전장 이탈", "Left field"), Color3.fromRGB(214, 191, 153))
 				end
 			end
 			local delay = 0
 			for _, list in { aid, damage, other } do
 				for _, entry in list do
-					effectAt(entry[1], entry[2], entry[3], entry[4], delay)
+					effectAt(entry[1], entry[2], entry[3], entry[4], delay, entry[5])
 					delay = math.min(0.56, delay + (if leader == "elizabeth" then 0.13 else 0.07))
 				end
 			end
@@ -2492,6 +2558,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local entry = before[unit]
 				entry.size = widget.AbsoluteSize
 				entry.pos = widget.AbsolutePosition + entry.size / 2 - bg.AbsolutePosition
+				entry.visible = cardCenter(widget) ~= nil
 			end
 			local leader = if side and not previousLeaders[side] and m.leaderUsed[side] then m.leader[side] else nil
 			render()
@@ -3186,6 +3253,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					elseif card.special then t("전술", "Tactic") elseif card.hero then t("영웅", "Hero") else t("능력", "Ability")
 				focusRule.Text = category .. row .. strength .. "\n" .. kind .. " · " .. description
 					.. (if series then "\n" .. t("이야기 · ", "Story · ") .. series[if english then 2 else 1] elseif lore then "\n" .. t("이야기 · ", "Story · ") .. lore else "")
+					.. (if cardStatus(card) then "\n" .. t("상태 · ", "Status · ") .. cardStatus(card) else "")
 					.. (if BC.CardLines[card.id] then "\n「" .. BC.CardLines[card.id][if english then 2 else 1] .. "」" else "")
 				focusMotion = animateCardArt(focusArtwork, focusImage, card)
 				table.insert(cardMotions, focusMotion)
@@ -3407,16 +3475,27 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					local playedCard = chip(cards, c, 62, power, c == lastPlayed.me or c == lastPlayed.foe)
 					if opts.cardOnly then
 						boardCards[c] = playedCard
-						previousBoard[c] = { power = power, penalty = c.tacticPower or 0, blocked = c.blockedPower or 0, row = row, side = side, size = Vector2.zero, pos = Vector2.zero }
+						local status, statusColor = cardStatus(c)
+						local chain = c.cause ~= nil and BC.chainActive(m, side, c)
+						previousBoard[c] = { power = power, penalty = c.tacticPower or 0, blocked = c.blockedPower or 0, row = row, side = side, status = status, chain = chain, size = Vector2.zero, pos = Vector2.zero }
 						table.insert(previousOrder, c)
-						if c.bachDangRound == m.round then
-							local mark = label(playedCard, t("유인", "Lured"), 10, Color3.fromRGB(163, 224, 252), true)
-							mark.Size = UDim2.fromScale(1, 0.25)
-							mark.Position = UDim2.fromScale(0, 0.65)
-							mark.BackgroundColor3 = Color3.fromRGB(26, 59, 75)
-							mark.BackgroundTransparency = 0.12
+						local badge, badgeColor = cardBadge(c)
+						if chain and not status then badge, badgeColor = t("연쇄 켜짐", "Linked"), Color3.fromRGB(112, 72, 144) end
+						local caption = status or badge
+						if caption then
+							playedCard.PlayedCardIdentity.Visible = false
+							local mark = label(playedCard, caption, 10, Color3.fromRGB(255, 243, 221), true)
+							mark.Name = if status then "CardStatus" else "CardRole"
+							mark.Size = UDim2.fromScale(0.94, 0.17)
+							mark.Position = UDim2.fromScale(0.03, 0.47)
+							mark.BackgroundColor3 = statusColor or badgeColor
+							mark.BackgroundTransparency = 0.05
 							mark.TextScaled = true
 							mark.ZIndex = 11
+							local limit = Instance.new("UITextSizeConstraint")
+							limit.MaxTextSize = 11
+							limit.Parent = mark
+							frameEdge(mark, Color3.fromRGB(203, 173, 118), 3)
 						end
 					end
 					playedCard.Activated:Connect(function()
@@ -3475,12 +3554,23 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					elseif c.special then t("전술", "Tactic") elseif c.hero then t("영웅", "Hero")
 					elseif c.ability then (if english then englishAbilities[c.ability] or "" else ABIL[c.ability] or "")
 					else rowName(c.row)
-				local kindLabel = label(b, kindText, 10, if c.hero then Color3.fromRGB(255, 226, 143) else Color3.fromRGB(238, 220, 180), true)
+				local badge, badgeColor = cardBadge(c)
+				local kindLabel = label(b, if opts.cardOnly then badge or kindText else kindText, 10, if c.hero then Color3.fromRGB(255, 226, 143) else Color3.fromRGB(238, 220, 180), true)
 				kindLabel.Position = UDim2.fromScale(0.48, 0.03)
 				kindLabel.Size = UDim2.fromScale(0.48, 0.14)
 				kindLabel.TextXAlignment = Enum.TextXAlignment.Right
 				kindLabel.TextStrokeTransparency = 1
 				kindLabel.ZIndex = 8
+				if opts.cardOnly and badgeColor then
+					kindLabel.BackgroundColor3 = badgeColor
+					kindLabel.BackgroundTransparency = 0.1
+					kindLabel.TextScaled = true
+					kindLabel.TextXAlignment = Enum.TextXAlignment.Center
+					local limit = Instance.new("UITextSizeConstraint")
+					limit.MaxTextSize = 12
+					limit.Parent = kindLabel
+					frameEdge(kindLabel, brass, 3)
+				end
 				-- 정보부는 낡은 양피지 띠, 그림부는 움직이는 판화로 분리한다.
 				local parchmentBand = Instance.new("Frame")
 				parchmentBand.Name = "ParchmentCaption"
