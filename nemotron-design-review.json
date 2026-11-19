@@ -2,15 +2,15 @@
   "version": 3,
   "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "59fd97ae72508a488a0eb910f09928115a97f05f",
+  "sourceRevision": "2be15d0292830c03b1cfa3793a4196da932a9b20",
   "status": "REVIEWED_NO_VERIFIED_EDIT",
-  "selectedRole": "WORLD",
+  "selectedRole": "UI",
   "usageWindow": {
     "day": "2026-11-19",
     "calls": {
       "NVIDIA": 4,
       "GEMINI": 12,
-      "OPENROUTER": 21
+      "OPENROUTER": 24
     },
     "windowIds": {
       "NVIDIA": "2026-11-19",
@@ -25,9 +25,10 @@
   },
   "cooldowns": {
     "GEMINI_FLASH": "2026-11-19T11:48:03.823Z",
-    "OPENROUTER_GEMMA26": "2026-11-19T05:19:57.846Z",
     "NVIDIA_VL": "2026-11-19T05:49:01.271Z",
-    "OPENROUTER_GEMMA": "2026-11-19T05:20:02.137Z"
+    "OPENROUTER_GEMMA": "2026-11-19T05:29:38.051Z",
+    "OPENROUTER_GEMMA26": "2026-11-19T05:29:38.369Z",
+    "OPENROUTER_NEMOTRON": "2026-11-19T05:58:41.731Z"
   },
   "quotaForecast": {
     "NVIDIA": {
@@ -38,8 +39,8 @@
       "effectiveRemaining": 8,
       "regularWorkRemaining": 5,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 1.25,
-      "estimatedHoursToLocalCap": 6.4,
+      "estimatedCallsPerHour": 1.17,
+      "estimatedHoursToLocalCap": 6.8,
       "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -67,13 +68,13 @@
     "OPENROUTER": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 30,
-      "localUsed": 21,
-      "remainingLocal": 9,
-      "effectiveRemaining": 9,
-      "regularWorkRemaining": 3,
+      "localUsed": 24,
+      "remainingLocal": 6,
+      "effectiveRemaining": 6,
+      "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 6,
-      "estimatedCallsPerHour": 8.31,
-      "estimatedHoursToLocalCap": 1.1,
+      "estimatedCallsPerHour": 8.96,
+      "estimatedHoursToLocalCap": 0.7,
       "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -85,45 +86,45 @@
   "accountQuota": null,
   "attempts": [
     {
+      "id": "OPENROUTER_GEMMA",
+      "status": "HTTP_429",
+      "provider": "OPENROUTER",
+      "model": "google/gemma-4-31b-it:free"
+    },
+    {
       "id": "OPENROUTER_GEMMA26",
       "status": "HTTP_429",
       "provider": "OPENROUTER",
       "model": "google/gemma-4-26b-a4b-it:free"
     },
     {
-      "id": "NVIDIA_VL",
+      "id": "OPENROUTER_NEMOTRON",
       "status": "OK",
-      "provider": "NVIDIA",
-      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
-    },
-    {
-      "id": "NVIDIA_VL",
-      "status": "REVIEW_INVALID",
-      "failureSignature": "EDIT_NOT_VISUAL_OR_NOT_IN_POLICY"
-    },
-    {
-      "id": "OPENROUTER_GEMMA",
-      "status": "HTTP_429",
       "provider": "OPENROUTER",
-      "model": "google/gemma-4-31b-it:free"
+      "model": "nvidia/nemotron-3.5-super-vl:free"
+    },
+    {
+      "id": "OPENROUTER_NEMOTRON",
+      "status": "SOURCE_ANCHOR_INVALID",
+      "failureSignature": "SOURCE_ANCHOR_NOT_UNIQUE:roblox-games_mare-essentia_src_StarterPlayer_Game.client.luau"
     }
   ],
   "frames": [
     {
-      "name": "cb0_deck-0.jpg",
-      "sha256": "95f6885cc99f1b3927fe47deec846ba817b4cc4ab460576537dcc3688fc6862e"
+      "name": "tab_battle-0.jpg",
+      "sha256": "a3c035e7d6aac8ff0db11ec60656bfc96526e8e33fd65ab22c6cfba9056f7cf3"
     },
     {
-      "name": "cb1-0.jpg",
-      "sha256": "af719990d3c3f85c1aaa368492e19dce9545cd649a0a4cd3d39550d7a26964b7"
+      "name": "tab_codex-0.jpg",
+      "sha256": "4edff4e37c491de6dac873ea2632b1c960f0a9bafff8e2fed07103e8f5973ba7"
     },
     {
-      "name": "cb2-0.jpg",
-      "sha256": "3c8aa8891725faa2b882a3e3f634d66671897d07268f803827d57a0220e78398"
+      "name": "tab_crew-0.jpg",
+      "sha256": "efbc3d7bd6ffe54b0cceb3e602509299804b8f7edeb450710685105a649f7a8a"
     },
     {
-      "name": "field_entry-0.jpg",
-      "sha256": "c84adfa3415a8f1a472f4246136488320e9d7664a2e63326f952da2a413c8c33"
+      "name": "tab_explore-0.jpg",
+      "sha256": "58e840e041ce6dfb33107899f4c9c5e0e68917e4d6aac22fb90c7609340e1031"
     }
   ],
   "independentQaPassed": false,
