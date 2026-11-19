@@ -504,7 +504,30 @@ B.Units.eu_56 = { id="eu_56", name="산초 판사", category="문학", row="rang
 B.Units.eu_57 = { id="eu_57", name="풍차", category="문학", row="melee", power=3, ability="windmill", text="상대 돈키호테의 돌격을 끌어들인다." }
 B.Units.eu_58 = { id="eu_58", name="로시난테", category="문학", row="melee", power=3, ability="rocinante", text="전장에 있으면 돈키호테의 돌격 피해가 1 늘어난다." }
 
+B.Specials.eu_59 = { id="eu_59", name="루비콘 도하", category="서사", special="rubicon", text="후열의 가장 약한 일반 아군을 전열로 옮겨 +3. 이번 라운드에는 손패로 돌아갈 수 없다." }
+B.Specials.eu_60 = { id="eu_60", name="젤라 전투", category="서사", special="zela", text="낼 때: 상대 후열에서 가장 강한 일반 유닛 −3." }
+B.Units.ea_43 = { id="ea_43", name="도쿠가와 이에야스", category="서사", row="melee", power=4, ability="tokugawa", text="전장에 있으면 고바야카와가 내 전열로 넘어올 때 그에게 +2." }
+B.Units.ea_44 = { id="ea_44", name="이시다 미쓰나리", category="서사", row="ranged", power=3, ability="ishida", text="낼 때: 상대 진영에서 넘어올 준비를 하는 가장 약한 일반 유닛 −2. 그런 적이 없으면 내 전열 아군 하나를 엄호." }
+B.Units.ea_45 = { id="ea_45", name="고바야카와 히데아키", category="서사", row="melee", power=3, ability="defect", text="상대 전열에 들어가고 다음 내 턴까지 살아 있으면 내 전열로 넘어온다." }
+B.Units.me_37 = { id="me_37", name="길가메시", category="서사", row="melee", power=5, ability="gilgamesh", text="낼 때: 엔키두가 전장에 있으면 서로 엄호한다." }
+B.Units.me_38 = { id="me_38", name="엔키두", category="서사", row="melee", power=4, ability="enkidu", text="낼 때: 길가메시가 전장에 있으면 서로 엄호한다." }
+B.Units.me_39 = { id="me_39", name="삼나무 숲의 훔바바", category="서사", row="melee", power=5, ability="humbaba", text="낼 때: 자신의 첫 약화를 2까지 막는 엄호를 얻는다." }
+B.Specials.me_40 = { id="me_40", name="불사의 풀", category="서사", special="lifePlant", text="가장 약한 일반 아군의 전투력 감소를 회복하고 이동 제한과 강화 차단을 해제한다." }
+B.Specials.me_41 = { id="me_41", name="하틴의 포위", category="서사", special="hattin", text="상대 전열의 가장 강한 일반 유닛 −2. 살라딘을 지도자로 골랐다면 대상은 자기 턴이 끝날 때까지 이동할 수 없다." }
+B.Units.me_42 = { id="me_42", name="살라딘의 기병대", category="서사", row="melee", power=4, ability="saladinCavalry", text="낼 때: 이번 라운드에 하틴의 포위를 당했거나 이동 제한에 걸린 가장 강한 상대 전열 일반 유닛 −2." }
+
 B.CardEnglish = {
+	eu_59 = { name="Crossing the Rubicon", text="Move your weakest eligible ranged non-hero to melee and boost by 3. It cannot be recalled this round." },
+	eu_60 = { name="Battle of Zela", text="Deploy: Weaken the strongest enemy ranged non-hero by 3." },
+	ea_43 = { name="Tokugawa Ieyasu", text="When Kobayakawa defects to your melee row, boost him by 2 if Tokugawa is deployed." },
+	ea_44 = { name="Ishida Mitsunari", text="Deploy: Weaken one unit preparing to defect from your side by 2, or cover an allied melee unit." },
+	ea_45 = { name="Kobayakawa Hideaki", text="Deploy in enemy melee. Defect to your own melee row next turn if still in play." },
+	me_37 = { name="Gilgamesh", text="Deploy: If Enkidu is deployed, they cover each other." },
+	me_38 = { name="Enkidu", text="Deploy: If Gilgamesh is deployed, they cover each other." },
+	me_39 = { name="Humbaba of the Cedar Forest", text="Deploy: Gain cover against up to 2 power loss." },
+	me_40 = { name="Plant of Life", text="Cleanse power penalties, movement lock and boost block from your weakest non-hero ally." },
+	me_41 = { name="Encirclement at Hattin", text="Weaken the strongest enemy melee non-hero by 2. With Saladin as leader, it is also anchored through its turn." },
+	me_42 = { name="Saladin’s Cavalry", text="Deploy: Weaken the strongest enemy melee non-hero that is anchored or was hit by Hattin this round by 2." },
 	eu_48 = { name="D’Artagnan", text="When another musketeer intercepts, weaken an enemy melee unit by 2 on your next turn." },
 	eu_49 = { name="Athos", text="Intercept a single attack on another musketeer in this row, once per round." },
 	eu_50 = { name="Porthos", text="Intercept a single attack on another musketeer in this row, once per round." },
@@ -797,13 +820,13 @@ B.Units.boss_serpent = { id = "boss_serpent", name = "바다뱀의 이빨", row 
 B.Units.boss_siren = { id = "boss_siren", name = "세이렌의 노래", row = "ranged", power = 5, weapon = "gun", hero = true, ability = "spy" }
 B.Factions = {
 	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "napoleon", specialty = "선박", leaders = { "napoleon", "caesar", "alexander", "charlemagne", "elizabeth" },
-		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45", "eu_46", "eu_47", "eu_48", "eu_49", "eu_50", "eu_51", "eu_52", "eu_53", "eu_54", "eu_55", "eu_56", "eu_57", "eu_58"} },
+		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45", "eu_46", "eu_47", "eu_48", "eu_49", "eu_50", "eu_51", "eu_52", "eu_53", "eu_54", "eu_55", "eu_56", "eu_57", "eu_58", "eu_59", "eu_60"} },
 	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "genghis", specialty = "유물", leaders = { "genghis", "qinshi", "nobunaga", "yisunsin" },
-		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30", "ea_31", "ea_32", "ea_33", "ea_34", "ea_35", "ea_36", "ea_37", "ea_38", "ea_40", "ea_41", "ea_42"} },
+		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30", "ea_31", "ea_32", "ea_33", "ea_34", "ea_35", "ea_36", "ea_37", "ea_38", "ea_40", "ea_41", "ea_42", "ea_43", "ea_44", "ea_45"} },
 	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "pachacuti", specialty = "동물", leaders = { "pachacuti", "montezuma", "sittingbull" },
 		roster = {"nw_01", "nw_02", "nw_03", "nw_04", "nw_05", "nw_06", "nw_07", "nw_08", "nw_09", "nw_10", "nw_11", "nw_12", "nw_13", "nw_14", "nw_15", "nw_16", "nw_17", "nw_18", "nw_19", "nw_20", "nw_21", "nw_22", "nw_23", "nw_24", "nw_25", "nw_26", "nw_27", "nw_28", "nw_29", "nw_30", "nw_31", "nw_32", "nw_33", "nw_34"} },
 	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "saladin", specialty = "지형·원더", leaders = { "saladin", "suleiman", "cyrus" },
-		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30", "me_31", "me_32", "me_33", "me_34", "me_35", "me_36"} },
+		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30", "me_31", "me_32", "me_33", "me_34", "me_35", "me_36", "me_37", "me_38", "me_39", "me_40", "me_41", "me_42"} },
 	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", specialty = "동물", leaders = { "rajaraja", "tranhungdao", "akbar" },
 		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30", "sa_31", "sa_32", "sa_33", "sa_34"} },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
@@ -1447,7 +1470,7 @@ local function beginTurn(m: any, side)
 		state.straitDelayed = nil
 		if (state.journeyCount or 0) >= 2 and state.homecoming ~= m.round and hasTactic(m, side, "homecoming") then
 			local ally = weakestAlly(m, side, nil, nil)
-			if ally and #m.hand[side] < B.HAND_MAX then
+			if ally and ally.rubiconRound ~= m.round and #m.hand[side] < B.HAND_MAX then
 				for _, row in B.ROWS do
 					local idx = table.find(m.rows[side][row], ally)
 					if not idx then continue end
@@ -1468,8 +1491,14 @@ local function beginTurn(m: any, side)
 		local front = m.rows[owner].melee
 		for i = #front, 1, -1 do
 			local card = front[i]
-			if card.pendingReturn == side and not card.anchored then
+			if card.pendingReturn == side and not card.anchored and not card.sealedAbility then
 				card.pendingReturn = nil
+				if card.ability == "defect" then
+					table.insert(m.rows[side].melee, table.remove(front, i))
+					if hasTactic(m, side, "tokugawa") then boostCard(card, 2) end
+					logLine(m, "세키가하라: 고바야카와가 전열로 합류")
+					continue
+				end
 				table.insert(back, table.remove(front, i))
 				if card.ability == "marathon" then
 					canalArrival(m, side, card)
@@ -1530,7 +1559,7 @@ local function beginTurn(m: any, side)
 		end
 		if state.sancho ~= m.round and hasTactic(m, side, "sancho") and #m.hand[side] < B.HAND_MAX then
 			for i, ally in m.rows[side].melee do
-				if ally.ability == "quixote" then
+				if ally.ability == "quixote" and ally.rubiconRound ~= m.round then
 					state.sancho = m.round
 					local recalled = copy(B.Units[ally.id])
 					recalled.power, recalled.tier = ally.power, ally.tier
@@ -1730,7 +1759,7 @@ local function decoyTarget(m: any, side)
 	local pick
 	for _, row in B.ROWS do
 		for i, c in m.rows[side][row] do
-			if not c.hero then
+			if not c.hero and c.rubiconRound ~= m.round then
 				local score = (if c.ability == "medic" then 100 else 0) - c.power
 				if not pick or score > pick.score then
 					pick = { row = row, i = i, score = score }
@@ -1770,7 +1799,39 @@ function B.play(m: any, side, handIdx)
 		m.lastTactic[side] = { round = m.round, card = c }
 	end
 	local msg
-	if c.special == "piperPact" then
+	if c.special == "rubicon" then
+		local back = m.rows[side].ranged
+		local index, power
+		for i, ally in back do
+			local current = B.cardPower(m, side, "ranged", i)
+			if not ally.hero and not ally.anchored and not ally.pendingReturn and (not power or current < power) then index, power = i, current end
+		end
+		if index then
+			local ally = table.remove(back, index)
+			table.insert(m.rows[side].melee, ally)
+			ally.rubiconRound = m.round
+			boostCard(ally, 3)
+			resolveHorns(m, side, "melee")
+		end
+		table.insert(m.grave[side], played)
+		msg = if index then "루비콘 도하: 주사위는 던져졌다" else "루비콘 도하 — 대상 없음"
+	elseif c.special == "zela" or c.special == "hattin" then
+		local target = strongestInRow(m, foe, if c.special == "zela" then "ranged" else "melee", true)
+		if target then
+			boostCard(target, if c.special == "zela" then -3 else -2)
+			if c.special == "hattin" then
+				target.hattinRound = m.round
+				if m.leader[side] == "saladin" then target.anchored = true end
+			end
+		end
+		table.insert(m.grave[side], played)
+		msg = c.name
+	elseif c.special == "lifePlant" then
+		local target = weakestAlly(m, side, nil, nil)
+		if target then cleanseTactic(target) end
+		table.insert(m.grave[side], played)
+		msg = c.name
+	elseif c.special == "piperPact" then
 		local deck = m.deck[side]
 		for i = #deck, math.max(1, #deck - 1), -1 do
 			local card = deck[i]
@@ -1914,7 +1975,7 @@ function B.play(m: any, side, handIdx)
 		table.insert(m.grave[side], played)
 	else
 		local target = side
-		if c.ability == "spy" or c.ability == "feigned" then
+		if c.ability == "spy" or c.ability == "feigned" or c.ability == "defect" then
 			target = other(side)
 		end
 		local fused = false
@@ -1944,7 +2005,7 @@ function B.play(m: any, side, handIdx)
 			end
 		end
 		table.insert(m.rows[target][lane(c)], c)
-		if c.ability == "marathon" or c.ability == "feigned" then c.pendingReturn = side end
+		if c.ability == "marathon" or c.ability == "feigned" or c.ability == "defect" then c.pendingReturn = side end
 		if target == side and not c.hero then
 			local row = lane(c)
 			if row == "ranged" and not tactics.rangedDeployed then
@@ -2033,7 +2094,7 @@ function B.play(m: any, side, handIdx)
 			for _, row in B.ROWS do
 				local picked = false
 				for index, ally in m.rows[side][row] do
-					if not ally.hero and (ally.tacticPower or 0) < 0 then
+					if not ally.hero and ally.rubiconRound ~= m.round and (ally.tacticPower or 0) < 0 then
 						ally.tacticPower, ally.anchored, ally.shaken, ally.pendingReturn = nil, nil, nil, nil
 						ally.cover, ally.ironUsed, ally.charges, ally.starterUsed = nil, nil, nil, nil
 						if ally.sealedAbility then ally.ability, ally.sealedAbility = (if ally.sealedAbility == "starterOnly" then nil else ally.sealedAbility), nil; ally.pigForm = nil end
@@ -2053,7 +2114,34 @@ function B.play(m: any, side, handIdx)
 				table.insert(m.hand[side], table.remove(deck, index))
 			end
 		end
-		if c.ability == "eastWind" then
+		if c.ability == "gilgamesh" or c.ability == "enkidu" then
+			local partner = if c.ability == "gilgamesh" then "enkidu" else "gilgamesh"
+			for _, row in B.ROWS do
+				for _, ally in m.rows[side][row] do
+					if ally.ability == partner then ally.cover, c.cover = true, true end
+				end
+			end
+		elseif c.ability == "humbaba" then
+			c.cover = true
+		elseif c.ability == "saladinCavalry" then
+			local target, power
+			for i, enemy in m.rows[foe].melee do
+				local current = B.cardPower(m, foe, "melee", i)
+				if not enemy.hero and (enemy.anchored or enemy.hattinRound == m.round) and (not power or current > power) then target, power = enemy, current end
+			end
+			if target then boostCard(target, -2) end
+		elseif c.ability == "ishida" then
+			local target, power
+			for i, enemy in m.rows[side].melee do
+				local current = B.cardPower(m, side, "melee", i)
+				if enemy.pendingReturn == foe and (not power or current < power) then target, power = enemy, current end
+			end
+			if target then boostCard(target, -2)
+			else
+				local ally = weakestAlly(m, side, "melee", nil)
+				if ally then ally.cover = true end
+			end
+		elseif c.ability == "eastWind" then
 			m.weather = { melee = false, ranged = false, cannon = false }
 			msg ..= " (동남풍: 악천후 해제)"
 		elseif c.ability == "musketeerAid" then
@@ -2354,7 +2442,7 @@ function B.gainOf(m: any, side, c)
 	elseif c.special then
 		gain = 0
 	else
-		local target = if c.ability == "spy" or c.ability == "feigned" then foe else side
+		local target = if c.ability == "spy" or c.ability == "feigned" or c.ability == "defect" then foe else side
 		local before = B.total(m, side) - B.total(m, foe)
 		table.insert(m.rows[target][lane(c)], c)
 		local after = B.total(m, side) - B.total(m, foe)
