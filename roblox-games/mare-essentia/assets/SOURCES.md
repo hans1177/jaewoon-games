@@ -1839,3 +1839,9 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 - `CardArt/eu_36` 잔 다르크. 원본 PNG SHA-256 `1fc95a470493f802a982368b2924e40790a2dbe21281512f65c6be1df10be109`. 등록용 900×1200 JPEG SHA-256 `ee389a479d9e2f9b91a09cb1c71e5a5bf3bdf5332781e91d398e9716f15661ac`.
 - `CardArt/ea_43` 도쿠가와 이에야스. 원본 PNG SHA-256 `ed37666de7221183d08d381b50ee8093e9fef06d25cac4fe18acf0d16cd72f72`. 등록용 900×1200 JPEG SHA-256 `9f3a6e9f0654c131ed059749296e886f0ec9fc36d1c07599eadc49b5765ed017`.
 - `CardArt/lo_52` 저팔계. 원본 PNG SHA-256 `43210e17f8b5f72dcff9febee8e5139aa88bab41654227ca745d88cb3cf0f47b`. 등록용 1200×900 JPEG SHA-256 `d6bfa871bd7f818fd6d8e5701198d46c1dc4f1de3b529237d6ba70e1e27ad94b`.
+
+## 해상 작전실
+
+- `ui_ops_chart.png`: 프로젝트용 생성 원화 「촛불빛 제독 책상과 해도」. 화면 글자와 조작 요소를 분리한다.
+- `ui_ops_formation.png`, `ui_ops_vault.png`, `ui_ops_depart.png`: 프로젝트용 생성 원화 「황금 테두리 해군 패널 3종」에서 각각 분리한 투명 그림.
+- 이용 조건: `PROJECT_ORIGINAL_ART`. 배포용 그림의 해시는 `APPROVED_IMAGES.json`에 기록한다.

@@ -309,6 +309,20 @@ function DeckBuilder.build(parent, ctx)
 	local deckSummary = text(hub, "", 17, SEPIA, true)
 	deckSummary.Position = UDim2.fromScale(0.18, 0.61)
 	deckSummary.Size = UDim2.fromScale(0.64, 0.15)
+	local chartId = ctx.AssetIds["CardArt/ui_ops_chart"]
+	local chart = Instance.new("ImageLabel")
+	chart.Name = "OperationsChart"
+	chart.Size = UDim2.fromScale(1, 1)
+	chart.BackgroundTransparency = 1
+	chart.ScaleType = Enum.ScaleType.Crop
+	chart.Image = if chartId then "rbxassetid://" .. tostring(chartId) else ""
+	chart.Parent = root
+	if chartId then
+		top.ZIndex, body.ZIndex = 2, 2
+		deckSummary.BackgroundColor3 = PAPER
+		deckSummary.BackgroundTransparency = 0
+		deckSummary.Font = Enum.Font.Antique
+	end
 	local battle = Instance.new("Frame")
 	battle.Name = "Departure"
 	battle.BackgroundTransparency = 1
@@ -328,6 +342,7 @@ function DeckBuilder.build(parent, ctx)
 
 	local function layoutBody()
 		hub.Visible = selectedTab == "hub"
+		chart.Visible = hub.Visible and chartId ~= nil
 		left.Visible = selectedTab == "collection"
 		right.Visible = selectedTab == "deck"
 		battle.Visible = selectedTab == "battle"
@@ -347,18 +362,37 @@ function DeckBuilder.build(parent, ctx)
 		end
 	end)
 	for _, action in {
-		{ "함대 편성", "deck", 0.03, 0.39, 0.25 },
-		{ "카드 보관소", "collection", 0.72, 0.39, 0.25 },
-		{ "출항", "battle", 0.32, 0.79, 0.36 },
+		{ "함대 편성", "deck", 0.025, 0.45, 0.25, "ui_ops_formation", 420 / 311 },
+		{ "카드 보관소", "collection", 0.725, 0.45, 0.25, "ui_ops_vault", 420 / 311 },
+		{ "출항", "battle", 0.32, 0.96, 0.36, "ui_ops_depart", 550 / 202 },
 	} do
 		local control = button(hub, action[1], SAVE, if action[2] == "battle" then 21 else 16, function()
 			selectedTab = action[2]
 			Sfx.play("sfx_card_page", 0.5, 1, "sfx_book_turn")
 			layoutBody()
 		end)
-		control.Position = UDim2.fromScale(action[3], action[4])
 		control.Size = UDim2.new(action[5], 0, 0, 44)
-		buttonArt(control, "ui_button_ink")
+		local art = buttonArt(control, action[6])
+		if art then
+			local isDeparture = action[2] == "battle"
+			control.AnchorPoint = Vector2.new(0, if isDeparture then 1 else 0)
+			control.Position = UDim2.fromScale(action[3], action[4])
+			control.Size = UDim2.fromScale(action[5], if isDeparture then 0.20 else 0.40)
+			local aspect = Instance.new("UIAspectRatioConstraint")
+			aspect.AspectRatio = action[7]
+			aspect.AspectType = Enum.AspectType.FitWithinMaxSize
+			aspect.Parent = control
+			local label = text(control, action[1], if isDeparture then 23 else 16, INK, true)
+			label.Name = "ActionLabel"
+			label.Font = Enum.Font.Antique
+			label.ZIndex = art.ZIndex + 1
+			label.Position = if isDeparture then UDim2.fromScale(0.23, 0.13) else UDim2.fromScale(0.06, 0.74)
+			label.Size = if isDeparture then UDim2.fromScale(0.61, 0.70) else UDim2.fromScale(0.88, 0.21)
+			control.TextTransparency = 1
+		else
+			control.Position = UDim2.fromScale(action[3], if action[2] == "battle" then 0.79 else 0.39)
+			buttonArt(control, "ui_button_ink")
+		end
 	end
 	left.Size = UDim2.fromScale(1, 1)
 	right.Size = left.Size
