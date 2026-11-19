@@ -2,15 +2,15 @@
   "version": 3,
   "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "726124276f789dc04596042975e6cc6f750fd200",
+  "sourceRevision": "2322f88170fa5679ea162f0027b43e123a3f44fc",
   "status": "REVIEWED_NO_VERIFIED_EDIT",
-  "selectedRole": "MOTION",
+  "selectedRole": "GENERAL",
   "usageWindow": {
     "day": "2026-11-19",
     "calls": {
       "NVIDIA": 1,
       "GEMINI": 11,
-      "OPENROUTER": 1
+      "OPENROUTER": 4
     },
     "windowIds": {
       "NVIDIA": "2026-11-19",
@@ -18,16 +18,18 @@
       "OPENROUTER": "2026-11-19"
     },
     "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-19T02:55:17.481Z",
       "GEMINI": "2026-11-18T08:10:06.345Z",
-      "OPENROUTER": "2026-11-19T02:54:41.418Z",
-      "NVIDIA": "2026-11-19T02:55:17.481Z"
+      "OPENROUTER": "2026-11-19T02:54:41.418Z"
     }
   },
   "cooldowns": {
     "GEMINI_FLASH": "2026-11-19T11:48:03.823Z",
-    "OPENROUTER_OMNI": "2026-11-19T02:55:47.481Z",
     "NVIDIA_VL": "2026-11-19T03:25:21.275Z",
-    "GEMINI_LITE": "2026-11-19T03:25:24.693Z"
+    "GEMINI_LITE": "2026-11-19T03:25:24.693Z",
+    "OPENROUTER_GEMMA26": "2026-11-19T03:11:17.773Z",
+    "OPENROUTER_GEMMA": "2026-11-19T03:11:18.387Z",
+    "OPENROUTER_NEMOTRON": "2026-11-19T03:40:21.947Z"
   },
   "quotaForecast": {
     "NVIDIA": {
@@ -67,13 +69,13 @@
     "OPENROUTER": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 30,
-      "localUsed": 1,
-      "remainingLocal": 29,
-      "effectiveRemaining": 29,
-      "regularWorkRemaining": 23,
+      "localUsed": 4,
+      "remainingLocal": 26,
+      "effectiveRemaining": 26,
+      "regularWorkRemaining": 20,
       "emergencyReserveRemaining": 6,
-      "estimatedCallsPerHour": null,
-      "estimatedHoursToLocalCap": null,
+      "estimatedCallsPerHour": 11.48,
+      "estimatedHoursToLocalCap": 2.3,
       "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -85,50 +87,45 @@
   "accountQuota": null,
   "attempts": [
     {
-      "id": "OPENROUTER_OMNI",
-      "status": "EMPTY_OUTPUT_TOKEN_LIMIT",
+      "id": "OPENROUTER_GEMMA26",
+      "status": "HTTP_429",
       "provider": "OPENROUTER",
-      "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
+      "model": "google/gemma-4-26b-a4b-it:free"
     },
     {
-      "id": "NVIDIA_VL",
+      "id": "OPENROUTER_GEMMA",
+      "status": "HTTP_429",
+      "provider": "OPENROUTER",
+      "model": "google/gemma-4-31b-it:free"
+    },
+    {
+      "id": "OPENROUTER_NEMOTRON",
       "status": "OK",
-      "provider": "NVIDIA",
-      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+      "provider": "OPENROUTER",
+      "model": "nvidia/nemotron-3.5-super-vl:free"
     },
     {
-      "id": "NVIDIA_VL",
+      "id": "OPENROUTER_NEMOTRON",
       "status": "SOURCE_ANCHOR_INVALID",
-      "failureSignature": "SOURCE_ANCHOR_NOT_UNIQUE:roblox-games_mare-essentia_src_ReplicatedStorage_Shared_FieldScen"
-    },
-    {
-      "id": "GEMINI_LITE",
-      "status": "OK",
-      "provider": "GEMINI",
-      "model": "gemini-3.5-flash-lite"
-    },
-    {
-      "id": "GEMINI_LITE",
-      "status": "SOURCE_ANCHOR_INVALID",
-      "failureSignature": "SOURCE_ANCHOR_NOT_UNIQUE:roblox-games_mare-essentia_src_StarterPlayer_TownMood.client.luau"
+      "failureSignature": "SOURCE_ANCHOR_NOT_UNIQUE:roblox-games_mare-essentia_src_ReplicatedStorage_Shared_PortScene"
     }
   ],
   "frames": [
     {
-      "name": "field_actor_after_motion-0.jpg",
-      "sha256": "068edebae098c8a84af694b6d1fec6e635758dbc3a33ac40294c7f55b55823cd"
+      "name": "b1_start-0.jpg",
+      "sha256": "71bd139c35deac2fdaf260451faf88d732e9fd3607e9d2f79e7e286389b71a37"
     },
     {
-      "name": "field_motion_smooth_icons-0.jpg",
-      "sha256": "a112f0bc4f29508d6af31c9ddaf6f7a669046191b48785f9b028d70ffda8c2cb"
+      "name": "b2_mid-0.jpg",
+      "sha256": "1de4fd7d16d141ff5354078482dfd061a846c07279e013da3b002141a09f50f1"
     },
     {
-      "name": "harbor_motion_attack-0.jpg",
-      "sha256": "ba12afcac8ab7cde4afff052a09938073b9f90c9438abcf55f0157362cae7f32"
+      "name": "c00_start-0.jpg",
+      "sha256": "96c4c83002d516c34630f596b7c31c50efd9811e22dbeea8b09e72aac2e9e9de"
     },
     {
-      "name": "harbor_motion_cheer-0.jpg",
-      "sha256": "681b4a8265af0d623e29eb0e5d506582be872905488fe50420fce53072679635"
+      "name": "intro_center_early-0.jpg",
+      "sha256": "b39979e5278d0e82cde2f5e65e39c532c4246e97e34372b362187a87bebaf623"
     }
   ],
   "independentQaPassed": false,
