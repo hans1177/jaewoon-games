@@ -198,7 +198,21 @@ local function showDetail(ctx, id)
 	local src = newLabel(right, Gallery.sourceText(ctx, id), 13, Color3.fromRGB(180, 200, 220))
 	src.Size = UDim2.new(1, -6, 0, 0)
 	src.AutomaticSize = Enum.AutomaticSize.Y
-	local effect = d.text or d.lore
+	local effect = d.text
+	local role = d.starterRole and ctx.BC.StarterText[d.starterRole]
+	if role then effect = role[1] .. (if effect then "\n" .. effect else "") end
+	if d.cause then
+		local linked = ctx.BC.Units[d.cause] or ctx.BC.Specials[d.cause]
+		if linked then effect = (effect and effect .. "\n" or "") .. "연쇄 · " .. linked.name end
+	elseif d.fuse then
+		local first, second = ctx.BC.Units[d.fuse[1]], ctx.BC.Units[d.fuse[2]]
+		if first and second then effect = (effect and effect .. "\n" or "") .. "합치기 · " .. first.name .. " + " .. second.name end
+	end
+	local story = ctx.BC.StorySeries[id]
+	if story then effect = (effect and effect .. "\n" or "") .. "이야기 · " .. story[1]
+	elseif d.lore then effect = (effect and effect .. "\n" or "") .. "이야기 · " .. d.lore end
+	local line = ctx.BC.CardLines[id]
+	if line then effect = (effect and effect .. "\n" or "") .. "「" .. line[1] .. "」" end
 	if effect and effect ~= "" then
 		local rule = newLabel(right, effect, 15, Color3.fromRGB(250, 236, 200))
 		rule.Size = UDim2.new(1, -6, 0, 0)

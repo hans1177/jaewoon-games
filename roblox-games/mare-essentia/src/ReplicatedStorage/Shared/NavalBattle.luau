@@ -1830,6 +1830,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local en = english and BC.CardEnglish[c.id]
 			return if en then en.lore else c.lore
 		end
+
 		local function rowName(row)
 			return if english then englishRows[row] or "" else BC.ROW_NAME[row] or ""
 		end
@@ -2355,6 +2356,100 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			dropGlow = st
 			TweenService:Create(st, TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Transparency = 0.7 }):Play()
 		end
+		local boardCards, previousBoard, previousOrder, previousLeaders = {}, {}, {}, {}
+		local function effectAt(position, size, caption, tint, delay)
+			task.delay(delay, function()
+				if not g.Parent or not bg.Parent then return end
+				if size.X < 1 or size.Y < 1 then return end
+				local burst = Instance.new("Frame")
+				burst.AnchorPoint = Vector2.new(0.5, 0.5)
+				burst.Position = UDim2.fromOffset(position.X, position.Y)
+				burst.Size = UDim2.fromOffset(size.X, size.Y)
+				burst.BackgroundColor3 = tint
+				burst.BackgroundTransparency = 0.72
+				burst.BorderSizePixel = 0
+				burst.ZIndex = 35
+				burst.Parent = bg
+				local rim = frameEdge(burst, tint, 5)
+				TweenService:Create(rim, TweenInfo.new(0.42), { Transparency = 1 }):Play()
+				TweenService:Create(burst, TweenInfo.new(0.42), {
+					Size = UDim2.fromOffset(size.X + 10, size.Y + 10), BackgroundTransparency = 1,
+				}):Play()
+				local flash = label(bg, caption, 15, tint, true)
+				flash.AnchorPoint = Vector2.new(0.5, 0.5)
+				flash.Position = UDim2.fromOffset(position.X, position.Y)
+				flash.Size = UDim2.fromOffset(math.max(62, size.X), math.max(22, math.min(32, size.Y)))
+				flash.BackgroundColor3 = Color3.fromRGB(38, 28, 22)
+				flash.BackgroundTransparency = 0.15
+				flash.ZIndex = 36
+				flash.TextStrokeTransparency = 0.7
+				frameEdge(flash, tint, 5)
+				TweenService:Create(flash, TweenInfo.new(0.48, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+					Position = UDim2.fromOffset(position.X, position.Y - 17), BackgroundTransparency = 1, TextTransparency = 1,
+				}):Play()
+				task.delay(0.5, function() flash:Destroy(); burst:Destroy() end)
+			end)
+		end
+		local function playBoardEffects(before, order, card, leader)
+			local damage, aid, other = {}, {}, {}
+			local volley = {}
+			if leader == "elizabeth" and m.armadaShots then
+				for i, shot in m.armadaShots do
+					local at = (i - 1) * 0.14
+					volley[shot.target] = at + 0.07
+					local ship = boardCards[shot.ship]
+					if ship then
+						local size = ship.AbsoluteSize
+						effectAt(ship.AbsolutePosition + size / 2 - bg.AbsolutePosition, size, t("포격", "Fire"), Color3.fromRGB(255, 213, 136), at)
+					end
+				end
+			end
+			for _, unit in order do
+				local old, now = before[unit], previousBoard[unit]
+				local dst = if now then boardCards[unit] else nil
+				local size = if dst then dst.AbsoluteSize else old.size
+				local pos = if dst then dst.AbsolutePosition + size / 2 - bg.AbsolutePosition else old.pos
+				if dst then
+					local row = dst.Parent
+					local absolute = dst.AbsolutePosition + size / 2
+					if absolute.X < row.AbsolutePosition.X or absolute.X > row.AbsolutePosition.X + row.AbsoluteSize.X then continue end
+				end
+				local function add(list, name, tint)
+					table.insert(list, { pos, size, name, tint })
+				end
+				if now then
+					local delta = now.power - old.power
+					local blocked = now.blocked - old.blocked
+					if blocked > 0 then add(aid, t("막음 ", "Block ") .. tostring(blocked), Color3.fromRGB(253, 212, 124)) end
+					if delta < 0 then
+						local tag = if card and card.id == "sa_36" then t("말뚝 ", "Stakes ") elseif leader == "elizabeth" then t("포격 ", "Volley ") else ""
+						local caption = tag .. "−" .. tostring(-delta)
+						local tint = Color3.fromRGB(255, 143, 120)
+						if volley[unit] then effectAt(pos, size, caption, tint, volley[unit]) else add(damage, caption, tint) end
+					elseif delta > 0 then
+						local tag = if old.penalty < 0 and now.penalty == 0 then t("회복 ", "Heal ") else ""
+						add(aid, tag .. "+" .. tostring(delta), Color3.fromRGB(154, 233, 182))
+					end
+					if old.row ~= now.row or old.side ~= now.side then
+						add(other, if unit.bachDangRound == m.round then t("유인", "Lured") else t("이동", "Moved"), Color3.fromRGB(142, 213, 244))
+					end
+				else
+					add(other, t("전장 이탈", "Left field"), Color3.fromRGB(214, 191, 153))
+				end
+			end
+			local delay = 0
+			for _, list in { aid, damage, other } do
+				for _, entry in list do
+					effectAt(entry[1], entry[2], entry[3], entry[4], delay)
+					delay = math.min(0.56, delay + (if leader == "elizabeth" then 0.13 else 0.07))
+				end
+			end
+			if card and card.id == "eu_36" then
+				local size = boardFrame.AbsoluteSize
+				local pos = boardFrame.AbsolutePosition + size / 2 - bg.AbsolutePosition
+				effectAt(pos, Vector2.new(100, 30), t("잔 다르크 · 소멸", "Joan of Arc · Vanished"), Color3.fromRGB(255, 216, 132), delay)
+			end
+		end
 		local function afterAction(ok, msg, res, card, side)
 			if ok and card and not card.special then lastPlayed[side] = card end
 			if ok and card and onPlay then onPlay(side, card) end
@@ -2392,7 +2487,20 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					Sfx.play("sfx_metal_clash", 0.5, 1)
 				end)
 			end
+			local before, order = previousBoard, previousOrder
+			for unit, widget in boardCards do
+				local entry = before[unit]
+				entry.size = widget.AbsoluteSize
+				entry.pos = widget.AbsolutePosition + entry.size / 2 - bg.AbsolutePosition
+			end
+			local leader = if side and not previousLeaders[side] and m.leaderUsed[side] then m.leader[side] else nil
 			render()
+			if opts.cardOnly and not res then
+				local rendered = previousBoard
+				task.defer(function()
+					if g.Parent and rendered == previousBoard then playBoardEffects(before, order, card, leader) end
+				end)
+			end
 		end
 		local passBtn = mkSide(t("멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), if opts.cardOnly and AssetIds["CardArt/ui_icon_hourglass"] then "CardArt/ui_icon_hourglass" else "Menu/cc0_shield", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
@@ -2972,8 +3080,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusName.Font = Enum.Font.Antique
 		focusName.ZIndex = 53
 		local focusRule = label(focusFrame, "", 14, ink, true)
-		focusRule.Position = UDim2.fromScale(0.035, 0.75)
-		focusRule.Size = UDim2.fromScale(0.93, 0.17)
+		focusRule.Position = UDim2.fromScale(0.035, if opts.cardOnly then 0.72 else 0.75)
+		focusRule.Size = UDim2.fromScale(0.93, if opts.cardOnly then 0.20 else 0.17)
 		focusRule.BackgroundColor3 = Color3.fromRGB(233, 213, 170)
 		focusRule.BackgroundTransparency = 0.08
 		focusRule.BorderSizePixel = 0
@@ -3065,6 +3173,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				focusRule.Text = t("지도자 능력: ", "Leader Ability: ") .. (if english then leaderProfile.textEn or leaderProfile.text else leaderProfile.text)
 					.. t(" · 보급 +", " · Provision +") .. tostring(leaderProfile.provision or 0)
 					.. (if m.leaderUsed[card.leaderSide] then t("\n이번 대결에서 사용함", "\nAlready used in this match") else "")
+					.. (if BC.CardLines[card.leaderId] then "\n「" .. BC.CardLines[card.leaderId][if english then 2 else 1] .. "」" else "")
 			else
 				focusName.Text = if regionDeck then (if english then regionDeck.en else regionDeck.ko) .. " · " .. cardName(card) else cardName(card)
 				local row = if card.row then rowName(card.row) else t("전술", "Tactic")
@@ -3072,7 +3181,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local strength = if card.power then t(" · 전투력 ", " · Power ") .. tostring(card.power) else ""
 				local description = cardDescription(card)
 				local lore = cardLore(card)
-				focusRule.Text = category .. row .. strength .. "\n" .. description .. (if lore then "\n" .. lore else "")
+				local series = BC.StorySeries[card.id]
+				local kind = if card.cause or card.fuse then t("연쇄·조합", "Combo")
+					elseif card.special then t("전술", "Tactic") elseif card.hero then t("영웅", "Hero") else t("능력", "Ability")
+				focusRule.Text = category .. row .. strength .. "\n" .. kind .. " · " .. description
+					.. (if series then "\n" .. t("이야기 · ", "Story · ") .. series[if english then 2 else 1] elseif lore then "\n" .. t("이야기 · ", "Story · ") .. lore else "")
+					.. (if BC.CardLines[card.id] then "\n「" .. BC.CardLines[card.id][if english then 2 else 1] .. "」" else "")
 				focusMotion = animateCardArt(focusArtwork, focusImage, card)
 				table.insert(cardMotions, focusMotion)
 			end
@@ -3107,6 +3221,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if selectedPlay then selectedPlay() else closeCardCodex() end
 		end)
 		render = function()
+			boardCards, previousBoard, previousOrder = {}, {}, {}
+			previousLeaders = { me = m.leaderUsed.me, foe = m.leaderUsed.foe }
 			clearDropHint()
 			selectedPlay = nil
 			showCardCodex(nil)
@@ -3287,7 +3403,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				lay.Padding = UDim.new(0, 4)
 				lay.Parent = cards
 				for idx, c in m.rows[side][row] do
-					local playedCard = chip(cards, c, 62, BC.cardPower(m, side, row, idx), c == lastPlayed.me or c == lastPlayed.foe)
+					local power = BC.cardPower(m, side, row, idx)
+					local playedCard = chip(cards, c, 62, power, c == lastPlayed.me or c == lastPlayed.foe)
+					if opts.cardOnly then
+						boardCards[c] = playedCard
+						previousBoard[c] = { power = power, penalty = c.tacticPower or 0, blocked = c.blockedPower or 0, row = row, side = side, size = Vector2.zero, pos = Vector2.zero }
+						table.insert(previousOrder, c)
+						if c.bachDangRound == m.round then
+							local mark = label(playedCard, t("유인", "Lured"), 10, Color3.fromRGB(163, 224, 252), true)
+							mark.Size = UDim2.fromScale(1, 0.25)
+							mark.Position = UDim2.fromScale(0, 0.65)
+							mark.BackgroundColor3 = Color3.fromRGB(26, 59, 75)
+							mark.BackgroundTransparency = 0.12
+							mark.TextScaled = true
+							mark.ZIndex = 11
+						end
+					end
 					playedCard.Activated:Connect(function()
 						if playing or finished then return end
 						closeCardCodex()

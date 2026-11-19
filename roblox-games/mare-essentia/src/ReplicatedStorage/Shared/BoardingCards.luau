@@ -868,6 +868,37 @@ B.CardEnglish = {
 B.Units.boss_kraken = { id = "boss_kraken", name = "크라켄의 촉수", row = "cannon", power = 8, weapon = "cannon", hero = true }
 B.Units.boss_serpent = { id = "boss_serpent", name = "바다뱀의 이빨", row = "melee", power = 8, weapon = "spear", hero = true }
 B.Units.boss_siren = { id = "boss_siren", name = "세이렌의 노래", row = "ranged", power = 5, weapon = "gun", hero = true, ability = "spy" }
+B.StorySeries = {}
+for _, story in {
+	{ "박당강 전투", "Bach Dang", "sa_34", "sa_35", "sa_36" },
+	{ "막탄 전투", "Mactan", "sa_37", "sa_38", "sa_39" },
+	{ "마자파힛", "Majapahit", "sa_15", "sa_40", "sa_41" },
+	{ "적벽대전", "Red Cliffs", "ea_37", "ea_40", "ea_41", "ea_42" },
+	{ "세키가하라", "Sekigahara", "ea_43", "ea_44", "ea_45" },
+	{ "달타냥과 삼총사", "The Three Musketeers", "eu_48", "eu_49", "eu_50", "eu_51" },
+	{ "하멜른", "Hamelin", "eu_52", "eu_53", "eu_54" },
+	{ "돈키호테", "Don Quixote", "eu_55", "eu_56", "eu_57", "eu_58" },
+	{ "카이사르", "Caesar", "eu_59", "eu_60" },
+	{ "오를레앙 구원", "Relief of Orleans", "eu_31", "eu_36" },
+	{ "길가메시", "Gilgamesh", "me_37", "me_38", "me_39", "me_40" },
+	{ "우르", "Ur", "me_43", "me_44", "me_45" },
+	{ "카데시", "Kadesh", "af_38", "af_39", "af_40", "af_41" },
+	{ "사바나", "Savanna", "af_18", "af_19", "af_20", "af_23" },
+	{ "잉카 의례", "Inca Rite", "nw_35", "nw_36" },
+	{ "아마존 동물", "Amazon Wildlife", "nw_18", "nw_37", "nw_38" },
+	{ "북미 기동", "North American Maneuvers", "nw_39", "nw_40", "nw_41" },
+	{ "맥베스", "Macbeth", "lo_48", "lo_49", "lo_50" },
+	{ "서유기", "Journey to the West", "lo_51", "lo_52", "lo_53" },
+	{ "오디세우스의 귀환", "Odysseus Returns", "lo_54", "lo_55", "lo_56", "lo_57", "lo_58", "lo_59" },
+} do
+	for i = 3, #story do B.StorySeries[story[i]] = story end
+end
+B.CardLines = {
+	eu_36 = { "길을 열겠어. 다친 이들을 데려와.", "I will clear the way. Bring the wounded." },
+	sa_36 = { "물이 빠졌다. 지금이야!", "The tide is out. Now!" },
+	elizabeth = { "함대, 차례로 포격!", "Fleet, fire in succession!" },
+}
+
 B.Factions = {
 	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "napoleon", specialty = "선박", leaders = { "napoleon", "caesar", "alexander", "charlemagne", "elizabeth" },
 		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45", "eu_46", "eu_47", "eu_48", "eu_49", "eu_50", "eu_51", "eu_52", "eu_53", "eu_54", "eu_55", "eu_56", "eu_57", "eu_58", "eu_59", "eu_60"} },
@@ -1302,15 +1333,20 @@ local function boostCard(card, amount)
 	end
 	if amount < 0 then
 		if card.deployCover then
+			card.blockedPower = (card.blockedPower or 0) - amount
 			card.deployCover = nil
 			return
 		end
 		if card.cover then
-			amount += math.min(2, -amount)
+			local blocked = math.min(2, -amount)
+			card.blockedPower = (card.blockedPower or 0) + blocked
+			amount += blocked
 			card.cover = nil
 		elseif card.id == "eu_45" and not card.ironUsed and not card.sealedAbility then
 			card.ironUsed = true
-			amount += math.min(2, -amount)
+			local blocked = math.min(2, -amount)
+			card.blockedPower = (card.blockedPower or 0) + blocked
+			amount += blocked
 		end
 	end
 	card.tacticPower = (card.tacticPower or 0) + amount
@@ -2756,14 +2792,14 @@ function B.useLeader(m: any, side)
 		m.refuted[side] = {}
 		msg = nm .. ": 끊긴 연쇄가 되살아났다"
 	elseif fx == "armadaVolley" then
-		local fleet, galleon = 0, false
+		local fleet, galleon = {}, nil
 		for _, ally in m.rows[side].ranged do
 			if ally.category == "선박" and not ally.pigForm then
-				fleet += 1
-				if ally.starterRole == "armadaGalleon" and not ally.sealedAbility then galleon = true end
+				table.insert(fleet, ally)
+				if ally.starterRole == "armadaGalleon" and not ally.sealedAbility then galleon = ally end
 			end
 		end
-		if fleet == 0 then return false, "후열에 함선이 없어요" end
+		if #fleet == 0 then return false, "후열에 함선이 없어요" end
 		local targets = {}
 		for i, enemy in m.rows[opponent].ranged do
 			if not enemy.hero then
@@ -2776,10 +2812,18 @@ function B.useLeader(m: any, side)
 		end)
 		local front = if galleon then strongestInRow(m, opponent, "melee") else nil
 		if #targets == 0 and not front then return false, "포격할 상대 유닛이 없어요" end
-		for i = 1, math.min(fleet, 3, #targets) do
-			boostCard(m.rows[opponent].ranged[targets[i].index], -2)
+		local shots = {}
+		for i = 1, math.min(#fleet, 3, #targets) do
+			local target = m.rows[opponent].ranged[targets[i].index]
+			boostCard(target, -2)
+			table.insert(shots, { ship = fleet[i], target = target })
 		end
-		if front then boostCard(strongestInRow(m, opponent, "melee", true), -1) end
+		if front then
+			local target = strongestInRow(m, opponent, "melee", true)
+			boostCard(target, -1)
+			table.insert(shots, { ship = galleon, target = target })
+		end
+		m.armadaShots = shots
 		msg = "엘리자베스 1세: 함대 연쇄포격"
 	elseif fx == "clearBonusRanged" then
 		m.weather = { melee = false, ranged = false, cannon = false }
