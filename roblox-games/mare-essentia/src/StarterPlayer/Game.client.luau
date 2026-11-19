@@ -2918,11 +2918,11 @@ do
 					local r = call(action, payload)
 					return if r and r.ok then "a" else "b"
 				end,
-				onDone = function()
+				onDone = function(_, replay)
 					inField = false
 					main.Visible = true
 					render()
-					H.openDeck(true)
+					H.openDeck(true, if replay then "battle" else nil)
 				end,
 			})
 		end
