@@ -2915,8 +2915,17 @@ do
 				deck = view and view.deck,
 				onCards = function(acts)
 					payload.actions = acts
+					local before = table.clone(bookOf().owned)
 					local r = call(action, payload)
-					return if r and r.ok then "a" else "b"
+					if not r or not r.ok then return "b" end
+					local reward
+					for id, count in bookOf().owned do
+						if count > (before[id] or 0) then
+							if reward then return "a" end
+							reward = id
+						end
+					end
+					return "a", reward
 				end,
 				onDone = function(_, replay)
 					inField = false

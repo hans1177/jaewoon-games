@@ -5479,9 +5479,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						if finished then return end
 						startBoarding(opts.card, function(m, acts)
 							-- 서버가 기록을 다시 돌려 확정한 승패를 따른다 (서버가 거부하면 서버의 기존 판정)
-							local okCards, res = true, nil
+							local okCards, res, rewardId = true, nil, nil
 							if opts.onCards then
-								okCards, res = pcall(opts.onCards, acts) -- 서버 호출이 실패해도 장면이 멈추지 않게
+								okCards, res, rewardId = pcall(opts.onCards, acts) -- 서버 호출이 실패해도 장면이 멈추지 않게
 								if not okCards then res = nil end
 							end
 							local w = res or (if m.winner == "me" then "a" elseif m.winner == "foe" then "b" else "draw")
@@ -5532,6 +5532,32 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 									score.Position = UDim2.fromScale(x, 0.68)
 									score.Size = UDim2.fromScale(0.31, 0.09)
 									score.TextScaled = true
+								end
+								local rewardCard = if type(rewardId) == "string" then BC.Units[rewardId] or BC.Specials[rewardId] else nil
+								if rewardCard and w == "a" then
+									local reveal = Instance.new("ImageButton")
+									reveal.Name = "CardRewardReveal"
+									reveal.AnchorPoint = Vector2.new(0.5, 0)
+									reveal.Position = UDim2.fromScale(0.5, 0.30)
+									reveal.Size = UDim2.fromScale(0.17, 0.31)
+									reveal.BackgroundColor3 = Color3.fromRGB(24, 48, 72)
+									reveal.BorderSizePixel = 0
+									reveal.ScaleType = Enum.ScaleType.Fit
+									local back = AssetIds["CardArt/battle_card_back"]
+									reveal.Image = if back then "rbxassetid://" .. tostring(back) else ""
+									reveal.Parent = result
+									local caption = label(result, if korean then "보상 카드 뒤집기" else "Reveal Reward Card", 14)
+									caption.AnchorPoint = Vector2.new(0.5, 0)
+									caption.Position = UDim2.fromScale(0.5, 0.62)
+									caption.Size = UDim2.fromScale(0.17, 0.15)
+									caption.TextScaled = true
+									caption.TextWrapped = true
+									reveal.Activated:Once(function()
+										local artId = AssetIds[cardArtworkKey(rewardCard)]
+										reveal.Image = if artId then "rbxassetid://" .. tostring(artId) else ""
+										caption.Text = if korean then rewardCard.name else rewardCard.nameEn or rewardCard.name
+										Sfx.play("sfx_card_deal", 0.6, 1, "sfx_book_turn")
+									end)
 								end
 								for i, caption in { if korean then "작전실로" else "Operations Room", if korean then "다시 출항" else "Sail Again" } do
 									local replay = i == 2
