@@ -259,7 +259,42 @@ function CB.deckIds(book: any, factionId: string?): { string }
 end
 
 -- 자동 덱: 가진 카드로 균형 잡힌 덱을 짠다 (모자라면 시작 카드)
+-- 문화권별 기본 25장. 앞에서부터 전열 10, 후열 11, 전술 4.
+local STARTER_DECKS = {
+	europe = {
+		"eu_04", "eu_07", "eu_09", "eu_12", "eu_14", "eu_15", "eu_25", "eu_31", "eu_36", "eu_40",
+		"eu_01", "eu_03", "eu_06", "eu_08", "eu_13", "eu_28", "eu_33", "eu_34", "eu_44", "eu_45", "eu_47",
+		"eu_41", "eu_42", "eu_59", "eu_60",
+	},
+	east_asia = {
+		"ea_08", "ea_09", "ea_12", "ea_14", "ea_19", "ea_25", "ea_37", "ea_38", "ea_43", "ea_45",
+		"ea_01", "ea_02", "ea_05", "ea_11", "ea_16", "ea_20", "ea_32", "ea_34", "ea_40", "ea_41", "ea_44",
+		"ea_27", "ea_31", "ea_35", "ea_42",
+	},
+	new_world = {
+		"nw_01", "nw_04", "nw_08", "nw_12", "nw_14", "nw_18", "nw_22", "nw_25", "nw_32", "nw_37",
+		"nw_05", "nw_11", "nw_13", "nw_16", "nw_33", "nw_35", "nw_38", "nw_39", "nw_40", "nw_41", "nw_23",
+		"nw_17", "nw_27", "nw_31", "nw_36",
+	},
+	middle_east = {
+		"me_09", "me_12", "me_14", "me_18", "me_19", "me_21", "me_29", "me_42", "me_43", "me_44",
+		"me_01", "me_04", "me_05", "me_08", "me_11", "me_13", "me_16", "me_20", "me_32", "me_34", "me_36",
+		"me_27", "me_35", "me_41", "me_45",
+	},
+	southeast_asia = {
+		"sa_04", "sa_05", "sa_08", "sa_10", "sa_11", "sa_14", "sa_18", "sa_23", "sa_37", "sa_38",
+		"sa_01", "sa_02", "sa_06", "sa_12", "sa_13", "sa_21", "sa_31", "sa_32", "sa_34", "sa_35", "sa_40",
+		"sa_15", "sa_36", "sa_39", "sa_41",
+	},
+	africa = {
+		"af_01", "af_04", "af_05", "af_07", "af_18", "af_19", "af_22", "af_35", "af_38", "af_39",
+		"af_02", "af_08", "af_11", "af_13", "af_15", "af_16", "af_20", "af_23", "af_26", "af_33", "af_36",
+		"af_17", "af_27", "af_31", "af_41",
+	},
+}
 function CB.autoDeck(book: any): { string }
+	local starter = STARTER_DECKS[book.faction]
+	if starter and CB.validateDeck(book, starter) then return table.clone(starter) end
 	local ids = CB.recommend(book, "balance")
 	if ids then return ids end
 	return table.clone(CB.STARTER)

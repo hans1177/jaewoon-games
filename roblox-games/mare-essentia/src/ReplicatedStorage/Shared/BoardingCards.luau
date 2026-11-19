@@ -1076,10 +1076,13 @@ function B.playerDeck(deckCards, rng, factionId, book)
 end
 
 -- 해적 덱: 두목이면 영웅과 대포가 더 많다
-function B.enemyDeck(isBoss, rng, factionId)
+function B.enemyDeck(isBoss, rng, factionId, practice)
 	local ids = { "swordsman", "swordsman", "axeman", "axeman", "pikeman", "pikeman", "pikeman", "surgeon", "musketeer", "musketeer", "sharpshooter", "scout", "scout", "gunner", "gunner", "swivel", "culverin", "ironclad", "sniper" }
 	local fac = B.Factions[factionId or ""]
-	if fac and not isBoss then
+	if practice then
+		ids = { "swordsman", "shieldman", "boatswain", "surgeon", "ironclad", "swordsman", "shieldman", "ironclad",
+			"swivel", "gunner", "scout", "clear", "decoy", "wind", "clear", "decoy" }
+	elseif fac and not isBoss then
 		ids = fac.roster
 	end
 	local out = {}
@@ -1090,7 +1093,7 @@ function B.enemyDeck(isBoss, rng, factionId)
 		end
 		table.insert(out, card)
 	end
-	table.insert(out, copy(B.Specials.storm))
+	if not practice then table.insert(out, copy(B.Specials.storm)) end
 	if isBoss then
 		table.insert(out, copy(B.Specials.horn))
 		local boss = copy(B.Units.hero_blade)
@@ -3081,16 +3084,26 @@ end
 
 -- 한 판의 시작: 클라이언트(화면)와 서버(검증)가 똑같이 부른다. 시드가 같으면 패·선공이 같다.
 --   kind: "gunnery" | "boarding"   my = { fighter, deckCards }   foe = { fighter, boss }
+B.PracticeOpening = {
+	europe = { "eu_15", "eu_40", "eu_44", "eu_03" },
+	east_asia = { "ea_37", "ea_40", "ea_41", "ea_42" },
+	new_world = { "nw_37", "nw_18", "nw_38" },
+	middle_east = { "me_43", "me_44", "me_45" },
+	southeast_asia = { "sa_35", "sa_34", "sa_36" },
+	africa = { "af_20", "af_23", "af_19", "af_18" },
+}
+
 function B.build(kind, seed, my, foe)
 	local rng = B.seeded(seed)
-	local foeFac = foe.faction or (if foe.boss then nil else B.foeFaction(seed))
+	local practice = kind == "boarding" and my.book and my.book.practice
+	local foeFac = if practice then nil else foe.faction or (if foe.boss then nil else B.foeFaction(seed))
 	local myDeck, myLeader, foeDeck, foeLeader
 	if kind == "gunnery" then
 		myDeck, myLeader = B.gunneryDeck(my.fighter or {}, my.deckCards, B.seeded(seed + 7), false)
 		foeDeck, foeLeader = B.gunneryDeck(foe.fighter or {}, nil, B.seeded(seed + 13), foe.boss == true)
 	else
 		myDeck, myLeader = B.playerDeck(my.deckCards, B.seeded(seed + 7), my.faction, my.book)
-		foeDeck, foeLeader = B.enemyDeck(foe.boss == true, B.seeded(seed + 13), foeFac)
+		foeDeck, foeLeader = B.enemyDeck(foe.boss == true, B.seeded(seed + 13), foeFac, practice)
 	end
 	-- 학문 숙련 보너스: 지식 카드를 모은 만큼 같은 계열 병종 카드의 부대 점수가 오른다 (영웅·특수 카드는 제외)
 	local kb = my.book and my.book.bonus
@@ -3101,8 +3114,21 @@ function B.build(kind, seed, my, foe)
 			end
 		end
 	end
-	local m = B.newMatch(shuffle(myDeck, rng), myLeader, shuffle(foeDeck, rng), foeLeader, rng, my.faction, foeFac)
-	m.sea = B.seaRule(seed)
+	shuffle(myDeck, rng)
+	if practice then
+		local opening = B.PracticeOpening[my.faction]
+		if opening then
+			local picked = {}
+			for _, id in opening do
+				for i, c in myDeck do
+					if c.id == id then table.insert(picked, table.remove(myDeck, i)); break end
+				end
+			end
+			for i = #picked, 1, -1 do table.insert(myDeck, picked[i]) end
+		end
+	end
+	local m = B.newMatch(myDeck, myLeader, shuffle(foeDeck, rng), foeLeader, rng, my.faction, foeFac)
+	m.sea = if practice then B.SEA_RULES[1] else B.seaRule(seed)
 	m.style.foe = B.foeStyle(seed)
 	applySea(m)
 	return m
@@ -3237,6 +3263,52 @@ local function copyMatch(m)
 	n.refuted = { me = table.clone((m.refuted or {}).me or {}), foe = table.clone((m.refuted or {}).foe or {}) }
 	n.log = {}
 	return n
+end
+
+-- Run the real action on independent state so a preview does not alter the match or its random outcome.
+function B.previewPlay(m: any, side, index)
+	local card = m.hand[side][index]
+	if not card then return nil end
+	local n = copyMatch(m)
+	local watched = {}
+	for _, owner in { side, other(side) } do
+		for _, row in B.ROWS do
+			for i, unit in m.rows[owner][row] do
+				table.insert(watched, { card = unit, clone = n.rows[owner][row][i], side = owner, row = row, power = B.cardPower(m, owner, row, i) })
+			end
+		end
+	end
+	local canTrigger = true
+	if card.special == "bachDangTide" then
+		local state = m.tactics and m.tactics[side]
+		canTrigger = hasTactic(m, side, "stakes") and (not state or state.stakes ~= m.round)
+		local marked = false
+		for _, unit in m.rows[other(side)].ranged do
+			if unit.bachDangRound == m.round and unit.bachDangSide == side then marked = true; break end
+		end
+		if not canTrigger or not marked then return { blocked = "stakes" } end
+	end
+	if card.special == "capacocha" then return { random = true } end
+	local ok, _, result = B.play(n, side, index)
+	if not ok then return nil end
+	if result then return { roundEnds = true } end
+	local byClone = {}
+	for _, owner in { side, other(side) } do
+		for _, row in B.ROWS do
+			for i, unit in n.rows[owner][row] do
+				byClone[unit] = { power = B.cardPower(n, owner, row, i), row = row, side = owner }
+			end
+		end
+	end
+	local targets = {}
+	for _, old in watched do
+		local now = byClone[old.clone]
+		local change = now and now.power - old.power or nil
+		if not now or change ~= 0 or now.row ~= old.row or now.side ~= old.side then
+			table.insert(targets, { card = old.card, delta = change, left = now == nil, row = now and now.row, moved = now ~= nil and (now.row ~= old.row or now.side ~= old.side) })
+		end
+	end
+	return { targets = targets }
 end
 
 local PUZZLE_POOL = { "swordsman", "axeman", "pikeman", "pikeman", "shieldman", "boatswain", "surgeon", "musketeer", "musketeer", "sharpshooter", "gunner", "gunner", "swivel", "culverin", "ironclad", "sniper", "horn", "wind", "scorch", "scout" }

@@ -2939,7 +2939,7 @@ do
 		end
 		local function startPractice()
 			local bk = bookOf()
-			playCardOnly("연습전", "CardPractice", {}, { kind = "boarding", seed = 51, my = {}, foe = {}, book = { ids = bk.practiceIds, tier = {}, bonus = {} } })
+			playCardOnly("연습전", "CardPractice", {}, { kind = "boarding", seed = 51, my = {}, foe = {}, book = { ids = bk.practiceIds, tier = {}, bonus = {}, practice = true } })
 		end
 		local function startDuel()
 			local r = call("CardDuelStart")

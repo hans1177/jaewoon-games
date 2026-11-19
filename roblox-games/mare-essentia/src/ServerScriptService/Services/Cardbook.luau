@@ -146,7 +146,7 @@ return function(D, S)
 	local PRACTICE_SEED = 51 -- 기본 덱으로 이길 수 있는 것을 확인한 시드
 	function C.practiceBook(state)
 		local faction = D.BoardingCards.factionOf(state.nationId)
-		return { ids = CB.deckIds(CB.new(faction), faction), tier = {}, bonus = {}, faction = faction }
+		return { ids = CB.deckIds(CB.new(faction), faction), tier = {}, bonus = {}, faction = faction, practice = true }
 	end
 
 	function handlers.CardPractice(state, p)
