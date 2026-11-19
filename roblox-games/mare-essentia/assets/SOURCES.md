@@ -1832,3 +1832,10 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 
 - `CardArt/lo_51`: 프로젝트용 ChatGPT 생성 원화 「절벽에 강림한 손오공(1)」. 피·혈흔, 글자, 카드 테두리 없이 단일 장면임을 시각 확인. `PROJECT_ORIGINAL_ART`.
 - 원본 PNG SHA-256: `b496d91ffb0710fd45b06ac006e152ddfde72d4aacf857e8e32a0bc7f0457820`. 등록용 1200×900 JPEG SHA-256: `e37e8ff856eba052618d448e26c773b21a01cdc5219b25364bea7db07121fae3`.
+
+## 2026-11-19 전투 카드 원화
+
+- 프로젝트용 ChatGPT 생성 원화. 카드 틀이나 글자가 없는 단일 장면을 시각 검수. `PROJECT_ORIGINAL_ART`.
+- `CardArt/eu_36` 잔 다르크. 원본 PNG SHA-256 `1fc95a470493f802a982368b2924e40790a2dbe21281512f65c6be1df10be109`. 등록용 900×1200 JPEG SHA-256 `ee389a479d9e2f9b91a09cb1c71e5a5bf3bdf5332781e91d398e9716f15661ac`.
+- `CardArt/ea_43` 도쿠가와 이에야스. 원본 PNG SHA-256 `ed37666de7221183d08d381b50ee8093e9fef06d25cac4fe18acf0d16cd72f72`. 등록용 900×1200 JPEG SHA-256 `9f3a6e9f0654c131ed059749296e886f0ec9fc36d1c07599eadc49b5765ed017`.
+- `CardArt/lo_52` 저팔계. 원본 PNG SHA-256 `43210e17f8b5f72dcff9febee8e5139aa88bab41654227ca745d88cb3cf0f47b`. 등록용 1200×900 JPEG SHA-256 `d6bfa871bd7f818fd6d8e5701198d46c1dc4f1de3b529237d6ba70e1e27ad94b`.
