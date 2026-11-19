@@ -1,0 +1,264 @@
+{
+ "sourceRevision": "f0085be5cc87c79833f98e91e7a4f91b78ad63c5",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Monsters:4,Naval:196,People:75,Relics:36,Ships:0,Terrain:95,Town:167\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "01_top",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "02_plaza",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "03_street",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "04_dock",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "05_aerial",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "06_backstreet",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "07_wall",
+   "files": 1
+  }
+ ],
+ "errors": [
+  "step26:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:45: PZ:HarborHouse:-6,24|TOWN_CENTRAL_"
+ ],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35005
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 119
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 1077
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 8005
+  },
+  {
+   "step": 4,
+   "type": "luau",
+   "elapsedMs": 217
+  },
+  {
+   "step": 5,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 6,
+   "type": "wait",
+   "elapsedMs": 2510
+  },
+  {
+   "step": 7,
+   "type": "capture",
+   "elapsedMs": 818
+  },
+  {
+   "step": 8,
+   "type": "luau",
+   "elapsedMs": 187
+  },
+  {
+   "step": 9,
+   "type": "wait",
+   "elapsedMs": 2512
+  },
+  {
+   "step": 10,
+   "type": "capture",
+   "elapsedMs": 906
+  },
+  {
+   "step": 11,
+   "type": "luau",
+   "elapsedMs": 198
+  },
+  {
+   "step": 12,
+   "type": "wait",
+   "elapsedMs": 2512
+  },
+  {
+   "step": 13,
+   "type": "capture",
+   "elapsedMs": 894
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 189
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 2514
+  },
+  {
+   "step": 16,
+   "type": "capture",
+   "elapsedMs": 879
+  },
+  {
+   "step": 17,
+   "type": "luau",
+   "elapsedMs": 195
+  },
+  {
+   "step": 18,
+   "type": "wait",
+   "elapsedMs": 2510
+  },
+  {
+   "step": 19,
+   "type": "capture",
+   "elapsedMs": 727
+  },
+  {
+   "step": 20,
+   "type": "luau",
+   "elapsedMs": 164
+  },
+  {
+   "step": 21,
+   "type": "wait",
+   "elapsedMs": 2515
+  },
+  {
+   "step": 22,
+   "type": "capture",
+   "elapsedMs": 735
+  },
+  {
+   "step": 23,
+   "type": "luau",
+   "elapsedMs": 166
+  },
+  {
+   "step": 24,
+   "type": "wait",
+   "elapsedMs": 2510
+  },
+  {
+   "step": 25,
+   "type": "capture",
+   "elapsedMs": 823
+  },
+  {
+   "step": 26,
+   "type": "luau",
+   "elapsedMs": 501
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 45,
+  "completedSteps": 27,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 15,
+  "capturedFrames": 7,
+  "abortedEarly": true
+ },
+ "abortDiagnostics": {
+  "step": 26,
+  "type": "luau",
+  "elapsedMs": 161,
+  "context": "Client",
+  "lastScreenshot": "07_wall",
+  "lastClick": null,
+  "probes": {
+   "Client": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_CLIENT\ntext"
+   },
+   "Server": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_SERVER\ntext"
+   }
+  }
+ }
+}
