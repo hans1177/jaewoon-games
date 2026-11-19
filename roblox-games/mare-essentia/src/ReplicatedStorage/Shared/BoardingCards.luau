@@ -123,7 +123,7 @@ B.Leaders = {
 	caesar = { fx = "draw2", id = "caesar", name = "카이사르", text = "카드를 두 장 뽑는다", provision = 12, faction = "europe", era = "정복자" },
 	alexander = { fx = "bonusMelee", id = "alexander", name = "알렉산드로스", text = "이번 판 전열 일반 카드가 모두 +1", provision = 10, faction = "europe", era = "정복자" },
 	charlemagne = { fx = "restore", id = "charlemagne", name = "샤를마뉴", text = "반증으로 끊긴 내 연쇄를 모두 되살린다", provision = 8, faction = "europe", era = "정복자" },
-	elizabeth = { fx = "armadaDefense", id = "elizabeth", name = "엘리자베스 1세", text = "무적함대 격퇴: 날씨를 걷고 후열 일반 카드 모두 +1. 후열 갈레온이 있으면 그중 한 장에 엄호", textEn = "Armada Defense: Clear weather and give ranged non-heroes +1. Give one ranged Galleon cover if present", provision = 15, faction = "europe", era = "해양" },
+	elizabeth = { fx = "armadaVolley", id = "elizabeth", name = "엘리자베스 1세", text = "함대 연쇄포격: 후열 함선마다 상대 후열 일반 유닛을 한 장씩 −2, 최대 3장. 후열 갈레온이 있으면 상대 전열 한 장도 −1", textEn = "Fleet Volley: For each allied ranged ship, weaken a different enemy ranged non-hero by 2, up to three. A ranged Galleon also strikes one enemy melee non-hero for 1", provision = 15, faction = "europe", era = "해양" },
 	-- 동아시아
 	genghis = { fx = "bonusMelee", id = "genghis", name = "칭기즈 칸", text = "이번 판 전열 일반 카드가 모두 +1", provision = 10, faction = "east_asia", era = "정복자" },
 	qinshi = { fx = "hornMelee", id = "qinshi", name = "진시황", text = "이번 판 전열 점수가 두 배", provision = 10, faction = "east_asia", era = "통일" },
@@ -241,7 +241,7 @@ B.Units.eu_32 = { id="eu_32", name="대항해 시대", category="사건", lore="
 B.Units.eu_33 = { id="eu_33", name="산업혁명", category="사건", lore="증기와 기계가 세상을 바꾼 대변화", stage={ art="CardArt/event_industrial_start", motion="fire", scene="산업혁명" }, row="cannon", power=4, weapon="cannon" }
 B.Units.eu_34 = { id="eu_34", name="화약", category="기술", lore="중국에서 건너와 전쟁을 바꾼 폭발 가루", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="화약", prop={"Naval","cannon"} }, row="cannon", power=3, weapon="cannon" }
 B.Units.eu_35 = { id="eu_35", name="나침반", category="기술", lore="먼바다에서 방향을 잡게 해 준 도구", stage={ art="CardArt/event_chart_west_europe", motion="scout", scene="나침반", prop={"Relics","compass-base"} }, row="ranged", power=3, weapon="gun" }
-B.Units.eu_36 = { id="eu_36", name="잔 다르크", category="인물", lore="백년전쟁에서 프랑스를 이끈 소녀 지도자", stage={ art="CardArt/event_chart_west_europe", motion="board", scene="잔 다르크" }, row="melee", power=5, weapon="sword", cause="eu_31", ability="orleans", text="오를레앙 구원: 낼 때 같은 열의 다른 일반 아군 한 장을 엄호. 백년전쟁이 같은 열에 있으면 다른 한 장도 엄호." }
+B.Units.eu_36 = { id="eu_36", name="잔 다르크", category="인물", lore="백년전쟁에서 프랑스를 이끈 소녀 지도자", stage={ art="CardArt/event_chart_west_europe", motion="board", scene="잔 다르크" }, row="melee", power=5, weapon="sword", ability="orleans", text="낼 때: 같은 열에서 전투력 감소가 가장 큰 아군을 회복하고, 가장 강한 상대 전열 일반 유닛 −2. 백년전쟁이 같은 열에 있으면 −3. 발동 후 소멸." }
 B.Units.eu_37 = { id="eu_37", name="콜럼버스", category="인물", lore="대서양을 건너 신대륙에 닿은 항해가", stage={ art="CardArt/event_chart_west_europe", motion="wind", scene="콜럼버스" }, row="ranged", power=5, weapon="gun", cause="eu_32" }
 B.Units.eu_38 = { id="eu_38", name="웰링턴 공작", category="인물", lore="워털루에서 나폴레옹을 꺾은 영국 장군", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="웰링턴 공작" }, row="cannon", power=6, weapon="cannon", cause="eu_34" }
 B.Units.eu_39 = { id="eu_39", name="넬슨 제독", category="인물", lore="갈레온을 이은 함대로 트라팔가르를 이긴 제독", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="넬슨 제독" }, row="cannon", power=6, weapon="cannon", cause="eu_03" }
@@ -602,7 +602,7 @@ B.CardEnglish = {
 	eu_33 = { name = "Industrial Revolution", lore = "A great change as steam and machines reshaped the world." },
 	eu_34 = { name = "Gunpowder", lore = "An explosive powder that changed warfare across the world." },
 	eu_35 = { name = "Compass", lore = "A tool that let sailors keep their bearing on the open sea." },
-	eu_36 = { text = "Relief of Orléans: On deployment, give another non-hero in this row cover. If Hundred Years’ War is in the row, cover one additional ally.", name = "Joan of Arc", lore = "A young leader who rallied France during the Hundred Years' War." },
+	eu_36 = { text = "Deploy: Restore the ally with the largest power penalty in this row. Weaken the strongest enemy melee non-hero by 2, or by 3 with Hundred Years’ War in this row. Then vanish.", name = "Joan of Arc", lore = "A young leader who rallied France during the Hundred Years' War." },
 	eu_37 = { name = "Columbus", lore = "A navigator who crossed the Atlantic and reached the New World." },
 	eu_38 = { name = "Duke of Wellington", lore = "The British general who defeated Napoleon at Waterloo." },
 	eu_39 = { name = "Admiral Nelson", lore = "An admiral who won at Trafalgar with a galleon-descended fleet." },
@@ -847,7 +847,7 @@ local starterRoles = {
 	sa_10 = "reinforce",
 }
 B.StarterText = {
-	armadaGalleon = { "무적함대 격퇴: 엘리자베스 1세의 지도자 능력이 발동할 때 후열에 있으면 엄호 대상이 된다.", "Armada Defense: Eligible for cover when Elizabeth I uses her leader ability while this card is in ranged." },
+	armadaGalleon = { "엘리자베스 1세가 연쇄포격을 발동할 때 후열에 있으면 상대 전열 한 장도 −1.", "Elizabeth I’s Fleet Volley also strikes an enemy melee non-hero for 1 while this card is in ranged." },
 	coverFire = { "교대로 후열에 도착할 때: 상대 전열 일반 유닛 하나 −2.", "On rotating into ranged: Weaken one enemy melee non-hero by 2." },
 	survey = { "낼 때: 덱 위 두 장 중 기본 전투력이 높은 카드를 가져온다.", "Deploy: Draw the higher-base-power card of your top two." },
 	pierce = { "낼 때: 상대 전열 일반 유닛 하나의 보호를 벗기고 −2.", "Deploy: Strip protection from one enemy melee non-hero and weaken it by 2." },
@@ -2125,17 +2125,17 @@ function B.play(m: any, side, handIdx)
 			end
 		elseif c.ability == "orleans" then
 			local row = m.rows[side][lane(c)]
-			local limit = 1
+			local wounded, loss, attack = nil, 0, 2
 			for _, ally in row do
-				if ally.id == "eu_31" then limit = 2; break end
+				if ally.id == "eu_31" and not ally.sealedAbility then attack = 3 end
+				local penalty = ally.tacticPower or 0
+				if ally ~= c and not ally.hero and penalty < loss then wounded, loss = ally, penalty end
 			end
-			for _, ally in row do
-				if ally ~= c and not ally.hero and not ally.cover then
-					ally.cover = true
-					limit -= 1
-					if limit == 0 then break end
-				end
-			end
+			if wounded then wounded.tacticPower = nil end
+			local target = strongestInRow(m, foe, "melee", true)
+			if target then boostCard(target, -attack) end
+			table.remove(row, table.find(row, c))
+			msg = "오를레앙 구원: 치유와 약화 후 소멸"
 		elseif c.ability == "humbaba" then
 			local target = strongestInRow(m, foe, "melee", true)
 			if target then boostCard(target, -3) end
@@ -2396,19 +2396,36 @@ function B.useLeader(m: any, side)
 	elseif fx == "restore" then
 		m.refuted[side] = {}
 		msg = nm .. ": 끊긴 연쇄가 되살아났다"
-	elseif fx == "clearBonusRanged" or fx == "armadaDefense" then
+	elseif fx == "armadaVolley" then
+		local fleet, galleon = 0, false
+		for _, ally in m.rows[side].ranged do
+			if ally.category == "선박" and not ally.pigForm then
+				fleet += 1
+				if ally.starterRole == "armadaGalleon" and not ally.sealedAbility then galleon = true end
+			end
+		end
+		if fleet == 0 then return false, "후열에 함선이 없어요" end
+		local targets = {}
+		for i, enemy in m.rows[opponent].ranged do
+			if not enemy.hero then
+				table.insert(targets, { index = i, power = B.cardPower(m, opponent, "ranged", i) })
+			end
+		end
+		table.sort(targets, function(a, b)
+			if a.power == b.power then return a.index < b.index end
+			return a.power > b.power
+		end)
+		local front = if galleon then strongestInRow(m, opponent, "melee") else nil
+		if #targets == 0 and not front then return false, "포격할 상대 유닛이 없어요" end
+		for i = 1, math.min(fleet, 3, #targets) do
+			boostCard(m.rows[opponent].ranged[targets[i].index], -2)
+		end
+		if front then boostCard(strongestInRow(m, opponent, "melee", true), -1) end
+		msg = "엘리자베스 1세: 함대 연쇄포격"
+	elseif fx == "clearBonusRanged" then
 		m.weather = { melee = false, ranged = false, cannon = false }
 		m.rowBonus[side].ranged = (m.rowBonus[side].ranged or 0) + 1
 		msg = nm .. ": 날씨가 걷히고 후열이 +1"
-		if fx == "armadaDefense" then
-			for _, ally in m.rows[side].ranged do
-				if ally.starterRole == "armadaGalleon" and not ally.sealedAbility then
-					ally.cover = true
-					msg ..= ", 갈레온 엄호"
-					break
-				end
-			end
-		end
 	else
 		local best, hits = strongestNonHero(m, { other(side) })
 		if best > 0 then
