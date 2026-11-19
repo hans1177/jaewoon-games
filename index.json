@@ -2,12 +2,12 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "44521120119",
+    "runId": "44524840087",
     "kind": "deep",
-    "at": "2026-11-19T12:21:53.267Z",
-    "sourceRevision": "b148efd8f80ff6d9faf6ad991a1b8d56be9a1ba2",
+    "at": "2026-11-19T12:41:48.689Z",
+    "sourceRevision": "d3e7a46fc4c1723758f49ff6ee7d867c5e4a6007",
     "result": "PASS",
-    "frames": 63,
+    "frames": 62,
     "changedFrames": 61,
     "summary": {
       "plannedSteps": 241,
@@ -19,10 +19,30 @@
       "capturedFrames": 62,
       "abortedEarly": false
     },
-    "path": "runs/44521120119"
+    "path": "runs/44524840087"
   },
-  "lastDeepAt": "2026-11-19T12:21:53.267Z",
+  "lastDeepAt": "2026-11-19T12:41:48.689Z",
   "runs": [
+    {
+      "runId": "44524840087",
+      "kind": "deep",
+      "at": "2026-11-19T12:41:48.689Z",
+      "sourceRevision": "d3e7a46fc4c1723758f49ff6ee7d867c5e4a6007",
+      "result": "PASS",
+      "frames": 62,
+      "changedFrames": 61,
+      "summary": {
+        "plannedSteps": 241,
+        "completedSteps": 241,
+        "plannedClicks": 10,
+        "successfulClicks": 10,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 62,
+        "capturedFrames": 62,
+        "abortedEarly": false
+      },
+      "path": "runs/44524840087"
+    },
     {
       "runId": "44521120119",
       "kind": "deep",
@@ -82,26 +102,6 @@
         "abortedEarly": false
       },
       "path": "runs/44516787717"
-    },
-    {
-      "runId": "44514531940",
-      "kind": "deep",
-      "at": "2026-11-19T11:39:57.338Z",
-      "sourceRevision": "422c989d148dfd5b71d74559bcdafb10dd6cfcbb",
-      "result": "PASS",
-      "frames": 63,
-      "changedFrames": 61,
-      "summary": {
-        "plannedSteps": 241,
-        "completedSteps": 241,
-        "plannedClicks": 10,
-        "successfulClicks": 10,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 62,
-        "capturedFrames": 62,
-        "abortedEarly": false
-      },
-      "path": "runs/44514531940"
     },
     {
       "runId": "44492117519",
