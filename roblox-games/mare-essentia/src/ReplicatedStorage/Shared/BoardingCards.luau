@@ -454,7 +454,20 @@ B.Specials.lo_30 = { id="lo_30", name="신비한 등불", category="유물", lor
 
 -- [다국어 카드 도감] 카드 ID와 전투 규칙은 불변. 원본 한국어 이름/설명은 카드 데이터에 보존한다.
 -- 다른 국가 공용 화면에서 사용하는 영어 제목/설명. 이미지에는 문자를 넣지 않는다.
+B.Units.eu_46 = { id="eu_46", name="마라톤의 전령", category="인물", lore="마라톤에서 아테네까지 승전 소식을 전했다는 전령의 전설", row="melee", ability="marathon", power=3, text="다음 내 턴에 전열에서 살아 있으면 후열로 이동. 다른 후열 아군 최대 둘에 +1." }
+B.Specials.me_35 = { id="me_35", name="함무라비의 판결", category="사건", lore="함무라비 법전에서 착안한 판결 전술", row="melee", special="seal", text="능력이 있는 가장 강한 상대 일반 유닛을 상대의 다음 행동까지 봉인." }
+B.Specials.ea_35 = { id="ea_35", name="한신의 배수진", category="사건", lore="한신이 강을 등지고 싸웠다는 전투에서 착안한 매복 전술", row="melee", special="ambush", text="다음에 적이 전열에 내려놓는 일반 유닛의 전투력 −2." }
+B.Units.eu_47 = { id="eu_47", name="아르키메데스의 투석기", category="기술", lore="시라쿠사 방어에 쓰인 공성 장비를 소재로 한 전술", row="ranged", ability="charge", power=3, text="내 카드 사용으로 턴을 세 번 마치면 같은 열의 일반 아군 전체 +2." }
+B.Specials.ea_36 = { id="ea_36", name="공성계", category="사건", lore="삼국지연의에서 적이 의심하도록 유도한 계책", row="melee", special="falseOrder", text="다음에 적이 후열에 유닛을 내면 내 전열·후열 첫 일반 유닛이 교대." }
+B.Units.ea_37 = { id="ea_37", name="황개의 거짓 투항", category="사건", lore="적벽의 거짓 투항 이야기에서 착안한 전술", row="melee", ability="feigned", power=2, text="상대 전열에 들어간다. 다음 내 턴에 살아 있으면 내 후열로 돌아온다." }
+
 B.CardEnglish = {
+	eu_46 = { name="Marathon Messenger", text="If still in melee at your next turn, move to ranged and give up to two other allies there +1." },
+	me_35 = { name="Hammurabi’s Verdict", text="Seal the strongest enemy non-hero with an ability through the opponent’s next action." },
+	ea_35 = { name="Han Xin’s River Formation", text="Give the next non-hero unit the opponent plays in melee −2." },
+	eu_47 = { name="Archimedes’ Catapult", text="After you finish three turns by playing cards, give each non-hero ally in this row +2." },
+	ea_36 = { name="Empty Fort Strategy", text="The next enemy deployment in ranged swaps your first non-heroes in melee and ranged." },
+	ea_37 = { name="Huang Gai’s Feigned Surrender", text="Deploy in enemy melee. If alive at the start of your next turn, return to your ranged row." },
 	eu_01 = { name = "Caravel", lore = "A nimble Portuguese sailing vessel used for ocean exploration." },
 	eu_02 = { name = "Carrack", lore = "A large sailing ship used for long-distance trade and voyages." },
 	eu_03 = { name = "Galleon", lore = "A powerful Atlantic warship built to carry heavy broadside cannon." },
@@ -708,13 +721,13 @@ B.Units.boss_serpent = { id = "boss_serpent", name = "바다뱀의 이빨", row 
 B.Units.boss_siren = { id = "boss_siren", name = "세이렌의 노래", row = "ranged", power = 5, weapon = "gun", hero = true, ability = "spy" }
 B.Factions = {
 	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "napoleon", specialty = "선박", leaders = { "napoleon", "caesar", "alexander", "charlemagne", "elizabeth" },
-		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45"} },
+		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45", "eu_46", "eu_47"} },
 	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "genghis", specialty = "유물", leaders = { "genghis", "qinshi", "nobunaga", "yisunsin" },
-		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30", "ea_31", "ea_32", "ea_33", "ea_34"} },
+		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30", "ea_31", "ea_32", "ea_33", "ea_34", "ea_35", "ea_36", "ea_37"} },
 	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "pachacuti", specialty = "동물", leaders = { "pachacuti", "montezuma", "sittingbull" },
 		roster = {"nw_01", "nw_02", "nw_03", "nw_04", "nw_05", "nw_06", "nw_07", "nw_08", "nw_09", "nw_10", "nw_11", "nw_12", "nw_13", "nw_14", "nw_15", "nw_16", "nw_17", "nw_18", "nw_19", "nw_20", "nw_21", "nw_22", "nw_23", "nw_24", "nw_25", "nw_26", "nw_27", "nw_28", "nw_29", "nw_30", "nw_31", "nw_32", "nw_33", "nw_34"} },
 	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "saladin", specialty = "지형·원더", leaders = { "saladin", "suleiman", "cyrus" },
-		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30", "me_31", "me_32", "me_33", "me_34"} },
+		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30", "me_31", "me_32", "me_33", "me_34", "me_35"} },
 	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", specialty = "동물", leaders = { "rajaraja", "tranhungdao", "akbar" },
 		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30", "sa_31", "sa_32", "sa_33"} },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
@@ -968,7 +981,7 @@ function B.cardPower(m: any, side, row, idx)
 				p = math.max(1, p - 1)
 			end
 		end
-		p += c.tacticPower or 0
+		p = math.max(0, p + (c.tacticPower or 0))
 		if m.horn and m.horn[side][row] then
 			p *= 2
 		end
@@ -1095,6 +1108,8 @@ local function removeHits(m: any, hits, source)
 		if c then
 			table.insert(m.grave[h[1]], c)
 			if h[1] ~= source and c.ability == "legacy" then table.insert(legacies, h) end
+			c.pendingReturn, c.charges = nil, nil
+			if c.sealedAbility then c.ability, c.sealedAbility = c.sealedAbility, nil end
 			c.tacticPower = nil
 		end
 	end
@@ -1109,6 +1124,64 @@ local function drawCards(m: any, side, n)
 		local c = table.remove(m.deck[side])
 		if c then
 			table.insert(m.hand[side], c)
+		end
+	end
+end
+
+local function swapFormation(m: any, side)
+	local front, back = m.rows[side].melee, m.rows[side].ranged
+	local fi, bi
+	for i, unit in front do if not unit.hero then fi = i; break end end
+	for i, unit in back do if not unit.hero then bi = i; break end end
+	if not fi or not bi then return false end
+	front[fi], back[bi] = back[bi], front[fi]
+	boostCard(front[fi], 2)
+	boostCard(back[bi], 1)
+	return true
+end
+
+local function beginTurn(m: any, side)
+	m.turn = side
+	local back = m.rows[side].ranged
+	for _, owner in { side, other(side) } do
+		local front = m.rows[owner].melee
+		for i = #front, 1, -1 do
+			local card = front[i]
+			if card.pendingReturn == side then
+				card.pendingReturn = nil
+				table.insert(back, table.remove(front, i))
+				if card.ability == "marathon" then
+					local delivered = 0
+					for _, ally in back do
+						if ally ~= card and not ally.hero then
+							boostCard(ally, 1)
+							delivered += 1
+							if delivered == 2 then break end
+						end
+					end
+					logLine(m, "마라톤의 전령: 승전 소식 도착")
+				else
+					logLine(m, "거짓 투항: " .. card.name .. " 귀환")
+				end
+			end
+		end
+	end
+end
+
+local function finishTactics(m: any, side, playedCard)
+	for _, row in B.ROWS do
+		for _, card in m.rows[side][row] do
+			if card.sealedAbility then
+				card.ability, card.sealedAbility = card.sealedAbility, nil
+			elseif playedCard and card.ability == "charge" then
+				card.charges = (card.charges or 0) + 1
+				if card.charges == 3 then
+					for _, ally in m.rows[side][row] do
+						if not ally.hero then boostCard(ally, 2) end
+					end
+					logLine(m, "축적: " .. card.name .. " 발동")
+				end
+			end
 		end
 	end
 end
@@ -1170,13 +1243,17 @@ local function roundEnd(m: any)
 		for _, row in B.ROWS do
 			for _, c in m.rows[side][row] do
 				if c ~= keep then
-					c.tacticPower = nil
+					c.tacticPower, c.pendingReturn, c.charges = nil, nil, nil
+					if c.sealedAbility then c.ability, c.sealedAbility = c.sealedAbility, nil end
 					table.insert(m.grave[side], c)
 				end
 			end
 			m.rows[side][row] = {}
 		end
-		if keep then keep.tacticPower = nil end
+		if keep then
+			keep.tacticPower, keep.pendingReturn, keep.charges = nil, nil, nil
+			if keep.sealedAbility then keep.ability, keep.sealedAbility = keep.sealedAbility, nil end
+		end
 		if keep and not (m.wins.me >= 2 or m.wins.foe >= 2 or m.round >= 3) then
 			table.insert(m.rows[side][keepRow], keep)
 		elseif keep then
@@ -1301,7 +1378,25 @@ function B.play(m: any, side, handIdx)
 		m.lastTactic[side] = { round = m.round, card = c }
 	end
 	local msg
-	if c.special == "scorch" then
+	if c.special == "seal" then
+		local target, power
+		for _, row in B.ROWS do
+			for i, enemy in m.rows[foe][row] do
+				local current = B.cardPower(m, foe, row, i)
+				if not enemy.hero and enemy.ability and not enemy.sealedAbility and (not power or current > power) then
+					target, power = enemy, current
+				end
+			end
+		end
+		if target then target.sealedAbility, target.ability = target.ability, nil end
+		msg = if target then "봉인: " .. target.name else "봉인 — 대상 없음"
+		table.insert(m.grave[side], played)
+	elseif c.special == "ambush" or c.special == "falseOrder" then
+		m.plans = m.plans or { me = {}, foe = {} }
+		m.plans[side][c.special] = m.round
+		msg = if c.special == "ambush" then "전열에 매복을 준비했다" else "후열에 거짓 명령 표식을 공개했다"
+		table.insert(m.grave[side], played)
+	elseif c.special == "scorch" then
 		local best, hits = strongestNonHero(m, { "me", "foe" })
 		if best >= 6 then
 			removeHits(m, hits, side)
@@ -1342,6 +1437,8 @@ function B.play(m: any, side, handIdx)
 		if pick then
 			local back = table.remove(m.rows[side][pick.row], pick.i)
 			back.tacticPower = nil
+			back.pendingReturn, back.charges = nil, nil
+			if back.sealedAbility then back.ability, back.sealedAbility = back.sealedAbility, nil end
 			table.insert(m.hand[side], back)
 			msg = string.format("회군! %s을(를) 손으로 되돌렸다", back.name)
 		else
@@ -1353,7 +1450,7 @@ function B.play(m: any, side, handIdx)
 		table.insert(m.grave[side], played)
 	else
 		local target = side
-		if c.ability == "spy" then
+		if c.ability == "spy" or c.ability == "feigned" then
 			target = other(side)
 		end
 		local fused = false
@@ -1382,6 +1479,18 @@ function B.play(m: any, side, handIdx)
 			end
 		end
 		table.insert(m.rows[target][lane(c)], c)
+		if c.ability == "marathon" or c.ability == "feigned" then c.pendingReturn = side end
+		local plans = m.plans and m.plans[foe]
+		if target == side and plans then
+			if lane(c) == "melee" and not c.hero and plans.ambush == m.round then
+				plans.ambush = nil
+				boostCard(c, -2)
+				logLine(m, "매복: " .. c.name .. " −2")
+			elseif lane(c) == "ranged" and plans.falseOrder == m.round then
+				plans.falseOrder = nil
+				if swapFormation(m, foe) then logLine(m, "거짓 명령: 전술 교대!") end
+			end
+		end
 		msg = string.format("%s을(를) %s 줄에 냈다", c.name, B.ROW_NAME[lane(c)])
 		if fused then
 			msg ..= " (합치기! 재료 둘이 하나가 됐다. 낸 카드 수에 세지 않는다)"
@@ -1389,16 +1498,7 @@ function B.play(m: any, side, handIdx)
 			msg ..= " (연쇄! 점수 +2)"
 		end
 		if c.ability == "relay" then
-			local front, back = m.rows[side].melee, m.rows[side].ranged
-			local fi, bi
-			for i, unit in front do if not unit.hero then fi = i; break end end
-			for i, unit in back do if not unit.hero then bi = i; break end end
-			if fi and bi then
-				front[fi], back[bi] = back[bi], front[fi]
-				boostCard(front[fi], 2)
-				boostCard(back[bi], 1)
-				msg ..= " (전술 교대!)"
-			end
+			if swapFormation(m, side) then msg ..= " (전술 교대!)" end
 		elseif c.ability == "spy" then
 			local n = if m.faction and m.faction[side] == "new_world" then 3 else 2
 			drawCards(m, side, n)
@@ -1426,6 +1526,7 @@ function B.play(m: any, side, handIdx)
 	end
 	if played ~= c then msg = "따라 하기: " .. msg end
 	if resolveCounter(m, foe, scores) then msg ..= " (상대 역습!)" end
+	finishTactics(m, side, true)
 	logLine(m, (if side == "me" then "우리: " else "해적: ") .. msg)
 	nextTurn(m, side)
 	local act = { "p", handIdx }
@@ -1440,6 +1541,7 @@ function B.play(m: any, side, handIdx)
 			m.turn = other(side)
 		end
 	end
+	if not result then beginTurn(m, m.turn) end
 	return true, msg, result, act, played
 end
 
@@ -1459,11 +1561,12 @@ function B.pass(m: any, side)
 			end
 		end
 	end
+	finishTactics(m, side, false)
 	logLine(m, (if side == "me" then "우리: " else "해적: ") .. "이번 판은 여기까지")
 	if m.passed[other(side)] then
 		return true, "양쪽이 멈췄다", roundEnd(m), { "s" }
 	end
-	m.turn = other(side)
+	beginTurn(m, other(side))
 	return true, "멈췄다", nil, { "s" }
 end
 
@@ -1860,6 +1963,7 @@ local function copyMatch(m)
 	local n = table.clone(m)
 	n.lastTactic = table.clone(m.lastTactic or {})
 	n.counterRound = table.clone(m.counterRound or {})
+	n.plans = { me = table.clone((m.plans or {}).me or {}), foe = table.clone((m.plans or {}).foe or {}) }
 	n.rows, n.hand, n.deck, n.grave = {}, {}, {}, {}
 	for _, side in { "me", "foe" } do
 		n.rows[side] = {}

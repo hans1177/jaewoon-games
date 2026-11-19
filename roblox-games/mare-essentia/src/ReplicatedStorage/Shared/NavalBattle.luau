@@ -1833,9 +1833,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			return if english then englishRows[row] or "" else BC.ROW_NAME[row] or ""
 		end
 		local function cardDescription(c)
-			local translation = english and BC.CardEnglish[c.id]
-			local tactic = if english then translation and translation.text else
-				(if c.ability == "relay" or c.ability == "counter" or c.ability == "lastOrder" or c.ability == "legacy" or c.special == "echo" then c.text else nil)
+			local translation = BC.CardEnglish[c.id]
+			local tactic = if translation and translation.text then (if english then translation.text else c.text) else nil
 			if c.cause or c.fuse then
 				local function nm(id)
 					local d = BC.Units[id] or BC.Specials[id]
@@ -3121,9 +3120,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			foePlate.who.Text = (if english then "Pirates" else opts.enemyName or "해적")
 				.. (if foeCulture then " · " .. (if english then englishFactions[m.faction.foe] or foeCulture.name else foeCulture.name) else "")
 				.. (if m.passed.foe then t(" · 멈춤", " · Passed") elseif m.turn == "foe" and not m.over then t(" · 차례", " · Turn") else "")
+				.. (if m.plans and m.plans.foe.falseOrder == m.round then t(" · 후열 유인", " · Rear lure") else "")
 			mePlate.who.Text = (if english then (if opts.cardOnly then "You" else "Your ship") elseif opts.cardOnly then "나" else opts.shipName or "우리 배")
 				.. (if myCulture then " · " .. (if english then englishFactions[m.faction.me] or myCulture.name else myCulture.name) else "")
 				.. (if m.passed.me then t(" · 멈춤", " · Passed") elseif m.turn == "me" and not m.over then t(" · 내 차례", " · Your turn") else "")
+				.. (if m.plans and m.plans.me.falseOrder == m.round then t(" · 후열 유인", " · Rear lure") else "")
 			-- [카드전] 점수판의 원형 지도자 표시 제거. 접현전만 기존 초상 유지.
 			if not opts.cardOnly then
 				foePlate.leader.Text = string.sub(BC.Leaders[m.leader.foe] and BC.Leaders[m.leader.foe].name or "적", 1, 3)
