@@ -85,6 +85,11 @@
       "n": 1,
       "lastAt": 1795051364379,
       "last": "FAILED"
+    },
+    "mare-essentia:visual:1dc01ae0818e243d1153556dfc3a97ffc5e93823655a49d0ba3393dd5002cc51": {
+      "n": 1,
+      "lastAt": 1795108700575,
+      "last": "REJECTED"
     }
   },
   "merged": [
@@ -150,9 +155,17 @@
     },
     "gemini:gemini-3.6-flash": {
       "ok": 14,
-      "fail": 14,
-      "lastAt": 1795051364379,
+      "fail": 15,
+      "lastAt": 1795108700574,
       "quotaUntil": 1795052264379
     }
+  },
+  "visualCoverage": {
+    "sourceRevision": "6df3759a218296cff31740b5baeaec956a376412",
+    "labels": [
+      "c00_start",
+      "t01",
+      "t02"
+    ]
   }
 }
