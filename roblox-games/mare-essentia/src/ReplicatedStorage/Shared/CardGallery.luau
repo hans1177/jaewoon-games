@@ -257,7 +257,8 @@ local function showDetail(ctx, id)
 	local line = ctx.BC.CardLines[id]
 	if line then effect = (effect and effect .. "\n" or "") .. "「" .. line[1] .. "」" end
 	if effect and effect ~= "" then
-		local effectHeading = newLabel(right, "카드 효과", 15, Color3.fromRGB(241, 221, 187), true)
+		local symbol = ctx.BC.cardAbilitySymbol(d)
+		local effectHeading = newLabel(right, (if symbol then symbol .. " " else "") .. "카드 효과", 15, Color3.fromRGB(241, 221, 187), true)
 		effectHeading.Size = UDim2.new(1, -6, 0, 22)
 		effectHeading.TextXAlignment = Enum.TextXAlignment.Left
 		effectHeading.LayoutOrder = 3

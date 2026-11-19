@@ -1019,6 +1019,17 @@ function DeckBuilder.build(parent, ctx)
 		lim.MaxTextSize = 15
 		lim.MinTextSize = 10
 		lim.Parent = nm
+		local ability = BC.cardAbilitySymbol(d)
+		if ability then
+			local abilityMark = text(tile, ability, 13, Color3.fromRGB(255, 239, 204), true)
+			abilityMark.AnchorPoint = Vector2.new(0, 1)
+			abilityMark.Position = UDim2.new(0, 5, 0.72, -27)
+			abilityMark.Size = UDim2.fromOffset(34, 20)
+			abilityMark.BackgroundColor3 = Color3.fromRGB(32, 24, 18)
+			abilityMark.BackgroundTransparency = 0.15
+			abilityMark.ZIndex = 5
+			corner(abilityMark, 5)
+		end
 		if owned > 0 then
 			local badge = text(tile, tostring(if BC.Specials[id] then "★" else d.power + tier - 1), 17, Color3.fromRGB(255, 232, 170), true)
 			badge.Position = UDim2.fromOffset(6, 6)
@@ -1388,7 +1399,7 @@ function DeckBuilder.build(parent, ctx)
 			local curLeader = book.leader or fac.leader
 			local cd = BC.Leaders[curLeader]
 			leaderName.Text = "지도자 · " .. (cd and cd.name or "?")
-			leaderText.Text = string.format("%s · 보급 +%d", cd and cd.text or "", cd and cd.provision or 0)
+			leaderText.Text = string.format("%s%s · 보급 +%d", if cd then (BC.cardAbilitySymbol(cd) or "◆") .. " " else "", cd and cd.text or "", cd and cd.provision or 0)
 			leaderCardName.Text = cd and cd.name or "지도자"
 			leaderFullName.Text = leaderName.Text
 			leaderFullText.Text = leaderText.Text
