@@ -21,6 +21,7 @@ local SAVE = Color3.fromRGB(32, 44, 78)
 local TIER_COLOR = { Color3.fromRGB(176, 112, 62), Color3.fromRGB(196, 202, 212), Color3.fromRGB(238, 196, 84) }
 local ROW_COLOR = { melee = Color3.fromRGB(190, 84, 62), ranged = Color3.fromRGB(96, 150, 84), cannon = Color3.fromRGB(84, 124, 176) }
 local ROW_SHORT = { melee = "근", ranged = "사", cannon = "포" }
+local FELT = Color3.fromRGB(21, 48, 49)
 local FORMATION = { { "melee", "전열" }, { "ranged", "후열" }, { "special", "전술" } }
 -- [카드 원화] 지역별 박물관 테두리는 카드 ID만 읽으며 카드 수치와 저장에는 관여하지 않는다.
 local REGION_FRAME = { eu = "ui_frame_europe", ea = "ui_frame_east_asia", me = "ui_frame_middle_east", nw = "ui_frame_new_world", af = "ui_frame_africa", sa = "ui_frame_southeast_asia" }
@@ -345,9 +346,10 @@ function DeckBuilder.build(parent, ctx)
 
 	local function layoutBody()
 		hub.Visible = selectedTab == "hub"
-		chart.Visible = (hub.Visible or selectedTab == "deck" or addingToFormation) and chartId ~= nil
+		chart.Visible = (hub.Visible or addingToFormation) and chartId ~= nil
 		left.Visible = selectedTab == "collection"
 		right.Visible = selectedTab == "deck"
+		right.BackgroundColor3 = FELT
 		battle.Visible = selectedTab == "battle"
 		bottom.Visible = selectedTab == "deck"
 		title.Text = if hub.Visible then "해상 작전실" elseif left.Visible then "카드 보관소"
@@ -623,7 +625,7 @@ function DeckBuilder.build(parent, ctx)
 		comboButton.Position = UDim2.fromOffset(6, if tall then 179 else 79)
 		local scrollTop = if tall then 207 else 107
 		deckScroll.Position = UDim2.fromOffset(6, scrollTop)
-		deckScroll.Size = UDim2.new(1, -12, 1, -scrollTop - 64)
+		deckScroll.Size = UDim2.new(if right.AbsoluteSize.X >= 530 then 0.66 else 1, -12, 1, -scrollTop - 64)
 	end
 	right:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutLeaderCard)
 	layoutLeaderCard()
@@ -804,7 +806,12 @@ function DeckBuilder.build(parent, ctx)
 	effect.Position = UDim2.fromScale(0.05, 0.54)
 	effect.Size = UDim2.fromScale(0.90, 0.23)
 	local enlist = button(detail, "편입", SAVE, 16, function()
-		if selectedCard then addCard(selectedCard) end
+		if not selectedCard then return end
+		if selectedTab == "deck" then
+			ctx.onWant(selectedCard, -1)
+		else
+			addCard(selectedCard)
+		end
 	end)
 	enlist.AnchorPoint = Vector2.new(0, 1)
 	enlist.Position = UDim2.fromScale(0.08, 0.96)
@@ -819,14 +826,29 @@ function DeckBuilder.build(parent, ctx)
 		detailTitle.Text = if not d then "카드를 골라요" elseif d.special then d.name else
 			string.format("%s · 전력 %d", d.name, (d.power or 0) + (book.tier[id] or 1) - 1)
 		effect.Text = if d then d.text or "" else ""
-		enlist.Visible = d ~= nil and not d.archiveOnly and (book.owned[id] or 0) > (ctx.getWant()[id] or 0)
+		local count = if id then ctx.getWant()[id] or 0 else 0
+		enlist.Text = if selectedTab == "deck" then "덱에서 빼기" else "편입"
+		enlist.Visible = d ~= nil and (if selectedTab == "deck" then count > 0
+			else not d.archiveOnly and (book.owned[id] or 0) > count)
 	end
 	layoutPicker = function()
-		detail.Visible = addingToFormation and body.AbsoluteSize.X >= 530
-		local width = if detail.Visible then 0.66 else 1
+		local wide = body.AbsoluteSize.X >= 530
+		local formation = selectedTab == "deck"
+		local showFormationDetail = wide and formation
+		detail.Parent = if formation then right else left
+		detail.Visible = wide and (formation or addingToFormation)
+		detail.Position = if formation then UDim2.new(0.67, 0, 0, 54) else UDim2.fromScale(0.67, 0)
+		detail.Size = if formation then UDim2.new(0.33, -6, 1, -118)
+			else UDim2.new(0.33, -6, 1, -6)
+		deckScroll.Size = UDim2.new(if showFormationDetail then 0.66 else 1, -12, deckScroll.Size.Y.Scale, deckScroll.Size.Y.Offset)
+		local width = if wide and addingToFormation then 0.66 else 1
 		chips.Size = UDim2.new(width, -12, 0, 38)
 		gridScroll.Size = UDim2.new(width, -12, 1, -56)
-		if not addingToFormation then selectCard(nil) end
+		if formation then
+			selectCard(if selectedCard and (ctx.getWant()[selectedCard] or 0) > 0 then selectedCard else cur.ids[1])
+		elseif not addingToFormation then
+			selectCard(nil)
+		end
 	end
 	body:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutPicker)
 	layoutPicker()
@@ -1034,13 +1056,12 @@ function DeckBuilder.build(parent, ctx)
 			order += 1
 			local lanePanel = Instance.new("Frame")
 			lanePanel.LayoutOrder = order
-			lanePanel.Size = UDim2.new(1, -6, 0, 82)
-			lanePanel.BackgroundColor3 = PAPER
+			lanePanel.Size = UDim2.new(1, -6, 0, 104)
+			lanePanel.BackgroundTransparency = 1
 			lanePanel.Parent = deckScroll
-			corner(lanePanel, 8)
-			local heading = text(lanePanel, string.format("%s\n%d장", name, counts[lane]), 14, SEPIA, true)
-			heading.Size = UDim2.fromOffset(52, 82)
-			local add = button(lanePanel, "+ 카드 추가", SAVE, 14, function()
+			local heading = text(lanePanel, string.format("%s\n%d장", name, counts[lane]), 14, INK, true)
+			heading.Size = UDim2.fromOffset(52, 104)
+			local add = button(lanePanel, "+ 추가", SAVE, 14, function()
 				selectedTab, addingToFormation, pickerLane = "collection", true, lane
 				state.filter, state.page = lane, 1
 				selectCard(nil)
@@ -1054,34 +1075,34 @@ function DeckBuilder.build(parent, ctx)
 			add.Size = UDim2.fromOffset(76, 50)
 			buttonArt(add, "ui_button_ink")
 			local strip = Instance.new("ScrollingFrame")
-			strip.Position = UDim2.fromOffset(54, 4)
+			strip.Position = UDim2.fromOffset(54, 2)
 			strip.Size = UDim2.new(1, -138, 1, -8)
 			strip.BackgroundTransparency = 1
 			strip.BorderSizePixel = 0
 			strip.ScrollBarThickness = 3
 			strip.ScrollingDirection = Enum.ScrollingDirection.X
-			strip.AutomaticCanvasSize = Enum.AutomaticSize.X
-			strip.CanvasSize = UDim2.new()
+			strip.CanvasSize = UDim2.fromOffset(if #list == 0 then 0 else (#list - 1) * 52 + 72, 0)
 			strip.Parent = lanePanel
-			local horizontal = Instance.new("UIListLayout")
-			horizontal.FillDirection = Enum.FillDirection.Horizontal
-			horizontal.SortOrder = Enum.SortOrder.LayoutOrder
-			horizontal.Padding = UDim.new(0, 5)
-			horizontal.Parent = strip
 			for index, e in list do
-				local card = button(strip, "", SAVE, 14, function() Gallery.showDetail(ctx.galleryCtx, e.id) end)
-				card.LayoutOrder = index
-				card.Size = UDim2.fromOffset(105, 69)
+				local card = button(strip, "", PAPER, 14, function()
+					if detail.Visible then selectCard(e.id) else Gallery.showDetail(ctx.galleryCtx, e.id) end
+				end)
+				card.Position = UDim2.fromOffset((index - 1) * 52 + 2, 4)
+				card.Size = UDim2.fromOffset(68, 90)
+				card.ZIndex = index + 1
+				card.Rotation = ((index - 1) % 3 - 1) * 2
 				local art = ctx.AssetIds[ctx.artKey(e.d)]
 				local image = Instance.new("ImageLabel")
 				image.BackgroundTransparency = 1
 				image.Size = UDim2.new(1, 0, 1, -19)
 				image.Image = if art then "rbxassetid://" .. tostring(art) else ""
 				image.ScaleType = Enum.ScaleType.Crop
+				image.ZIndex = card.ZIndex
 				image.Parent = card
-				local caption = text(card, e.d.name .. " ×" .. e.n, 12, INK, true)
+				local caption = text(card, e.d.name .. " ×" .. e.n, 11, SEPIA, true)
 				caption.Position = UDim2.new(0, 3, 1, -19)
 				caption.Size = UDim2.new(1, -6, 0, 19)
+				caption.ZIndex = card.ZIndex
 				caption.TextWrapped = false
 				caption.TextTruncate = Enum.TextTruncate.AtEnd
 			end
@@ -1227,6 +1248,9 @@ function DeckBuilder.build(parent, ctx)
 
 		if not keepGrid then rebuildGrid() end
 		rebuildDeckList()
+		if selectedTab == "deck" then
+			selectCard(if selectedCard and (ctx.getWant()[selectedCard] or 0) > 0 then selectedCard else ids[1])
+		end
 		rebuildPick()
 	end
 
