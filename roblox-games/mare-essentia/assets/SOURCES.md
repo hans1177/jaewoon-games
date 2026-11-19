@@ -1849,3 +1849,5 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 - `ui_fleet_table.png`: 자체 생성 해상 함대 편성 배경. 청록색 천과 비스듬한 나무 책상, 왼쪽에서 들어오는 햇빛을 표현했다. `PROJECT_ORIGINAL_ART`. 원본 SHA-256: `e54ca21780477b2d4ce935e13ad1c232a41a266837b83b8cab300a8a9fcccc25`.
 
 - `ui_departure_practice.png`, `ui_departure_duel.png`: 프로젝트용 출항 준비 시안에서 제작한 연습 항구와 대결 함대 원화. `PROJECT_ORIGINAL_ART`. 원본 SHA-256: `7fd63f8267e99ee86962ee9d9c9b2cfd117362bb5790b073e84bb0efaed6d094`.
+
+- `ui_battle_dawn.png`: 카드 전투판용 자체 제작 새벽 바다 원화. `PROJECT_ORIGINAL_ART`. 원본 SHA-256: `a22b1bf46bfe1de17219b0343f97272b48091b80c03ba80db9c511cf083699ef`.

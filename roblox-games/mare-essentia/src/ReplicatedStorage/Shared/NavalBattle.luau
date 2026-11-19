@@ -1981,7 +1981,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			africa = "CardArt/battle_africa", southeast_asia = "CardArt/battle_southeast_asia",
 		}
 		local regionArtKey = opts.cardOnly and m.faction and regionBattleArt[m.faction.me]
-		local boardArtKey = if regionArtKey and AssetIds[regionArtKey] then regionArtKey
+		local dawnBoardKey = "CardArt/ui_battle_dawn"
+		local showDawn = opts.cardOnly and AssetIds[dawnBoardKey] ~= nil
+		local boardArtKey = if showDawn then dawnBoardKey
+			elseif regionArtKey and AssetIds[regionArtKey] then regionArtKey
 			elseif AssetIds["CardArt/battle_board"] then "CardArt/battle_board" else "CardArt/event_chart_world"
 		local boardArt = Instance.new("ImageLabel")
 		boardArt.Name = "NavalCardBattleBoard"
@@ -1990,7 +1993,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		boardArt.BorderSizePixel = 0
 		boardArt.ScaleType = Enum.ScaleType.Crop
 		boardArt.Image = if AssetIds[boardArtKey] then "rbxassetid://" .. tostring(AssetIds[boardArtKey]) else ""
-		boardArt.ImageTransparency = if opts.cardOnly then (if regionArtKey and AssetIds[regionArtKey] then 0.25 else 0.9)
+		boardArt.ImageTransparency = if showDawn then 0 elseif opts.cardOnly then (if regionArtKey and AssetIds[regionArtKey] then 0.25 else 0.9)
 			elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
 		boardArt.ZIndex = 1
 		boardArt.Parent = bg
@@ -1999,7 +2002,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		boardWash.Name = "BattleBoardContrast"
 		boardWash.Size = UDim2.fromScale(1, 1)
 		boardWash.BackgroundColor3 = Color3.fromRGB(15, 24, 40)
-		boardWash.BackgroundTransparency = if opts.cardOnly then 0.53 elseif cfg then 0.84 else 0.73
+		boardWash.BackgroundTransparency = if showDawn then 0.82 elseif opts.cardOnly then 0.53 elseif cfg then 0.84 else 0.73
 		boardWash.BorderSizePixel = 0
 		boardWash.ZIndex = 1
 		boardWash.Parent = bg
