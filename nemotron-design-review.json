@@ -1,15 +1,15 @@
 {
   "version": 3,
-  "provider": "MULTI_FREE_VISUAL",
+  "provider": "GEMINI",
   "gameId": "mare-essentia",
-  "sourceRevision": "475def9eb5228451801a7ea8a22f2032b824cef0",
-  "status": "REVIEWED_NO_VERIFIED_EDIT",
-  "selectedRole": "GENERAL",
+  "sourceRevision": "b70499cef15b15f3713e10a2a528c2d2929ce3c0",
+  "status": "CANDIDATE_EDITED",
+  "selectedRole": "NPC",
   "usageWindow": {
     "day": "2026-11-19",
     "calls": {
       "NVIDIA": 9,
-      "GEMINI": 4,
+      "GEMINI": 5,
       "OPENROUTER": 30
     },
     "windowIds": {
@@ -24,9 +24,7 @@
     }
   },
   "cooldowns": {
-    "GEMINI_FLASH": "2026-11-19T11:48:03.823Z",
-    "NVIDIA_VL": "2026-11-19T10:04:28.974Z",
-    "GEMINI_LITE": "2026-11-19T09:56:14.113Z"
+    "GEMINI_FLASH": "2026-11-19T11:48:03.823Z"
   },
   "quotaForecast": {
     "NVIDIA": {
@@ -37,8 +35,8 @@
       "effectiveRemaining": 3,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 1.17,
-      "estimatedHoursToLocalCap": 2.6,
+      "estimatedCallsPerHour": 0.98,
+      "estimatedHoursToLocalCap": 3.1,
       "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -49,13 +47,13 @@
     "GEMINI": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 4,
-      "remainingLocal": 8,
-      "effectiveRemaining": 8,
-      "regularWorkRemaining": 5,
+      "localUsed": 5,
+      "remainingLocal": 7,
+      "effectiveRemaining": 7,
+      "regularWorkRemaining": 4,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 1.79,
-      "estimatedHoursToLocalCap": 4.5,
+      "estimatedCallsPerHour": 1.32,
+      "estimatedHoursToLocalCap": 5.3,
       "nextLocalWindowAt": "2026-11-20T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
       "accountWideBalanceVerified": false,
@@ -71,7 +69,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 4.23,
+      "estimatedCallsPerHour": 3.53,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -88,30 +86,71 @@
       "status": "OK",
       "provider": "GEMINI",
       "model": "gemini-3.5-flash-lite"
-    },
-    {
-      "id": "GEMINI_LITE",
-      "status": "NO_VALID_EDIT"
     }
   ],
   "frames": [
     {
-      "name": "b1_start-0.jpg",
-      "sha256": "784c923d8afd8752c375fb5bf9370bf6b9ebe94539863a8c569e3678a0da7a79"
+      "name": "field_npc_ally_mob-0.jpg",
+      "sha256": "e3602868d408d753d0f299672995bd96546c5540ebed0190bcfa56343c7568ba"
     },
     {
-      "name": "b2_mid-0.jpg",
-      "sha256": "71ad0d1c3a7e3e0a610e67c4f94d832d8da4c6e026a7a0126bfd77a9a073d7b5"
+      "name": "harbor_npc_face_front-0.jpg",
+      "sha256": "8128c587e8af2b7e5c4a4015b511dae2dd2c76a586b6fadc67003193a8211b5a"
     },
     {
-      "name": "c00_start-0.jpg",
-      "sha256": "323c21ab3fe48725c5f66883c0fd9c9f786bf6f3448bd83074075bcf83aaf0df"
+      "name": "harbor_npc_sparring_01-0.jpg",
+      "sha256": "cc2cde88347f7d0736ef3347be38bbed6c34ad5abfa1deed7f29838a884fa56c"
     },
     {
-      "name": "intro_center_early-0.jpg",
-      "sha256": "4d03eadb9cd372fb4e1b0ec163319a9d318b6351d92ddd154b624630c7153fa8"
+      "name": "harbor_npc_sparring_02-0.jpg",
+      "sha256": "d93ab032e85c6f523051a9f27324359cb12258b6c5bc50152cff97f4e92296d9"
     }
   ],
+  "model": "gemini-3.5-flash-lite",
+  "rawResponseSha256": "6b2bfbcaaa61a5f41849e03ec52a0125d824ef40d5c6a9473309e844ad0cdf1b",
+  "issues": [
+    {
+      "category": "npc-face",
+      "severity": "high",
+      "screenshot": "harbor_npc_face_front-0.jpg",
+      "evidenceSha256": "0065c69bc57981a24b16535eab361fe10284e395ec0ff7721bb0c994f631723e"
+    },
+    {
+      "category": "environment",
+      "severity": "medium",
+      "screenshot": "harbor_npc_sparring_01-0.jpg",
+      "evidenceSha256": "291b7f159a4aae84623c3c13e85852adfd4d3d6d9a1997d279e580c7d6bdea2f"
+    }
+  ],
+  "edits": [
+    {
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+      "category": "npc-face",
+      "screenshot": "harbor_npc_face_front-0.jpg",
+      "beforeSha256": "ea92a1d33db3ba43936269b65fa6236148eca8b8145f9b6e8498e41b098d2d45",
+      "afterSha256": "59d46c6e5fa8b290dbc90a89d9a6c668cd95dfda850a16ffdfc6911b75b12c5b"
+    },
+    {
+      "path": "roblox-games/mare-essentia/src/StarterPlayer/TownMood.client.luau",
+      "category": "environment",
+      "screenshot": "harbor_npc_sparring_01-0.jpg",
+      "beforeSha256": "b7c83d53764d34941338e1c201ca96c4bd5743cf780b4f4aa88765e22f0e13ae",
+      "afterSha256": "591750495e3e72514a2a30aedea3944f32b3fc6dd4d3b02f666c462cadaa4d3a"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+      "beforeSha256": "7c967ff59498455ac62115397f52ca93dadf92a8a46468a389fadca046cb8b61",
+      "afterSha256": "beba3c90855710ef15c23065ae149e0a02a5865da2940d270470a5d0c0fc017d"
+    },
+    {
+      "path": "roblox-games/mare-essentia/src/StarterPlayer/TownMood.client.luau",
+      "beforeSha256": "ae54a8fd159d79fd9d5e70455c1fea3c498337fe24ca1c334cee46619d2108a1",
+      "afterSha256": "5bd485fc9c71e55a54e7b00d9f7e809d95c0ef274160059facf964e79133825b"
+    }
+  ],
+  "candidateOnly": true,
   "independentQaPassed": false,
   "afterStudioPassed": false,
   "releasePassed": false
