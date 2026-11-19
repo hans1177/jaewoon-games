@@ -486,6 +486,7 @@ B.Units.lo_55 = { id="lo_55", name="키클롭스", category="문학", journey=tr
 B.Units.lo_56 = { id="lo_56", name="페넬로페", category="문학", journey=true, row="ranged", power=3, ability="unweave", text="낼 때: 상대가 예고한 말라카 기습 또는 촐라 포격 하나를 한 턴 늦춘다." }
 B.Units.lo_57 = { id="lo_57", name="키르케", category="문학", journey=true, row="ranged", power=3, ability="pigHex", text="낼 때: 가장 강한 후열 일반 적을 전투력 1의 돼지로 바꾼다. 상대 다음 행동이 끝나면 해제." }
 B.Units.lo_58 = { id="lo_58", name="세이렌", category="문학", journey=true, row="ranged", power=3, ability="sirenSong", text="낼 때: 상대 전열과 후열의 모든 유닛에 전투력 −1." }
+B.Units.lo_60 = { id="lo_60", name="삼장법사", category="문학", row="ranged", power=3, ability="sanzangRelief", text="낼 때: 가장 약한 다른 일반 아군의 약화를 해제한다." }
 B.Specials.lo_59 = { id="lo_59", name="이타카의 활", category="문학", journey=true, special="ithacaBow", maxCopies=1, text="가장 강한 상대 일반 유닛 한 장을 즉시 제거한다. 덱당 한 장." }
 
 B.Units.ea_40 = { id="ea_40", name="제갈량", category="문학", row="ranged", power=3, ability="eastWind", lore="삼국지연의에서 동남풍을 빌었다는 장면", text="낼 때: 전열·후열의 악천후를 걷는다. 전장에 있는 동안 화공선이 후열의 가장 강한 일반 적에게 추가 피해 1." }
@@ -597,6 +598,7 @@ B.CardEnglish = {
 	lo_56 = { name="Penelope", text="Deploy: Delay one pending Malacca strike or Chola bombardment by a turn." },
 	lo_57 = { name="Circe", text="Deploy: Transform the strongest enemy ranged non-hero into a 1-power pig through its next action." },
 	lo_58 = { name="Siren", text="Deploy: Weaken every enemy unit in both rows by 1." },
+	lo_60 = { name="Tang Sanzang", text="Deploy: Remove the power penalty from your weakest other non-hero." },
 	lo_59 = { name="Bow of Ithaca", text="Immediately destroy the strongest enemy non-hero. One copy per deck." },
 	lo_48 = { name="First Witch", text="Deploy: Weaken one enemy ranged non-hero by 1. Gather all three witches to summon a 4-power apparition next turn, once per round." },
 	lo_49 = { name="Second Witch", text="Deploy: Block one enemy ranged non-hero’s first boost through its next action. Gather all three witches to summon a 4-power apparition next turn, once per round." },
@@ -922,6 +924,7 @@ B.CardLines = {
 	lo_51 = { "길 막지 마. 나 급해.", "Out of the way. I’m in a hurry." },
 	lo_52 = { "내가 막을게. 밥은 네가 사.", "I’ll cover you. Dinner’s on you." },
 	lo_53 = { "짐은 내려. 여기서부턴 내가 든다.", "Put that down. I’ll carry it." },
+	lo_60 = { "다친 사람부터 챙겨.", "See to the wounded first." },
 	lo_54 = { "저기 이타카다. 노를 저어라.", "There’s Ithaca. Keep rowing." },
 	eu_36 = { "내가 길을 열게. 부상자를 데려가.", "I’ll clear a path. Get the wounded out." },
 	sa_36 = { "물이 빠졌다. 지금이야!", "The tide is out. Now!" },
@@ -940,7 +943,7 @@ B.Factions = {
 	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", specialty = "동물", leaders = { "rajaraja", "tranhungdao", "akbar" },
 		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30", "sa_31", "sa_32", "sa_33", "sa_34", "sa_35", "sa_36", "sa_37", "sa_38", "sa_39", "sa_40", "sa_41"} },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
-		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30", "lo_46", "lo_47", "lo_48", "lo_49", "lo_50", "lo_51", "lo_52", "lo_53", "lo_54", "lo_55", "lo_56", "lo_57", "lo_58", "lo_59"} },
+		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30", "lo_46", "lo_47", "lo_48", "lo_49", "lo_50", "lo_51", "lo_52", "lo_53", "lo_54", "lo_55", "lo_56", "lo_57", "lo_58", "lo_59", "lo_60"} },
 	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", specialty = "지형·원더", leaders = { "mansa", "hannibal", "shaka" },
 		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30", "af_31", "af_32", "af_33", "af_34", "af_35", "af_36", "af_37", "af_38", "af_39", "af_40", "af_41" } },
 }
@@ -2634,7 +2637,7 @@ function B.play(m: any, side, handIdx)
 				if c.ability == "witchBind" then target.shaken = true
 				else boostCard(target, if c.ability == "monkeyStrike" then -2 else -1) end
 			end
-		elseif c.ability == "witchGuard" or c.ability == "pigGuard" or c.ability == "sandCleanse" then
+		elseif c.ability == "witchGuard" or c.ability == "pigGuard" or c.ability == "sandCleanse" or c.ability == "sanzangRelief" then
 			local ally, power
 			for _, row in B.ROWS do
 				for index, candidate in m.rows[side][row] do
@@ -2644,8 +2647,13 @@ function B.play(m: any, side, handIdx)
 				end
 			end
 			if ally then
-				if c.ability == "sandCleanse" then cleanseTactic(ally)
-				else ally.cover = true end
+				if c.ability == "sandCleanse" then
+					cleanseTactic(ally)
+				elseif c.ability == "sanzangRelief" then
+					if (ally.tacticPower or 0) < 0 then ally.tacticPower = nil end
+				else
+					ally.cover = true
+				end
 			end
 		elseif c.ability == "relay" then
 			if swapFormation(m, side) then msg ..= " (전술 교대!)" end

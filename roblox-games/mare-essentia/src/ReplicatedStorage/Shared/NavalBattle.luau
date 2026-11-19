@@ -2371,7 +2371,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			spy = true, medic = true, snipe = true, relay = true, eastWind = true, orleans = true,
 			humbaba = true, egyptChariot = true, urChariot = true, mactanGuard = true, anaconda = true,
 			apache = true, bachDangLure = true, anansi = true, pigHex = true, sirenSong = true,
-			unweave = true, musketeerAid = true, monkeyStrike = true, pigGuard = true, sandCleanse = true,
+			unweave = true, musketeerAid = true, monkeyStrike = true, pigGuard = true, sandCleanse = true, sanzangRelief = true,
 			witchCurse = true, witchBind = true, witchGuard = true, rats = true, quixote = true,
 			savannaLion = true, savannaElephant = true, savannaGiraffe = true, savannaZebra = true,
 			gilgamesh = true, enkidu = true, saladinCavalry = true, ishida = true, chaski = true,
@@ -2611,7 +2611,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				Sfx.play("sfx_anchor_lower", 0.4, 1.1, "sfx_rope_pull")
 			end
 			info.Text = if english then (if msg == "멈췄다" then "Passed" else "Card played") else msg or ""
-			if opts.cardOnly and not res and card and (card.id == "lo_51" or card.id == "lo_52" or card.id == "lo_53") then
+			if opts.cardOnly and not res and card and (card.id == "lo_51" or card.id == "lo_52" or card.id == "lo_53" or card.id == "lo_60") then
 				local line = BC.CardLines[card.id]
 				local actionText = info.Text
 				local caption = "「" .. line[if english then 2 else 1] .. "」"
