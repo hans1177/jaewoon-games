@@ -12515,7 +12515,9 @@ end
 function render()
 	-- [시설 메뉴 스크롤] 서버 응답으로 같은 탭을 다시 그릴 때 읽던 위치를 유지한다.
 	-- 탭을 바꾸거나 새 게임을 열면 기존처럼 첫 줄부터 시작한다.
-	local retainScroll = view ~= nil and not newGameMode and H.contentRenderedTab == currentTab
+	local retainScroll = view ~= nil and not newGameMode and not H.bankVisitPending
+		and H.contentRenderedTab == currentTab
+		and H.contentRenderedPortId == (view.player and view.player.portId)
 		and currentTab ~= "trade" and currentTab ~= "yard"
 	local savedScroll = if retainScroll then content.CanvasPosition.Y else 0
 	H.contentRenderSerial = (H.contentRenderSerial or 0) + 1
@@ -12535,6 +12537,7 @@ function render()
 	H.setTitleMode(not view or newGameMode)
 	if not view or newGameMode then
 		H.contentRenderedTab = nil
+		H.contentRenderedPortId = nil
 		headerLabel.Text = "새 게임"
 		setPortrait("선장실")
 		tabBar.Visible = false
@@ -12843,6 +12846,7 @@ function render()
 		end
 	end
 	H.contentRenderedTab = currentTab
+	H.contentRenderedPortId = view.player and view.player.portId
 	if retainScroll and savedScroll > 0 then
 		-- [재배치 후 복원] UIListLayout이 실제 콘텐츠 높이를 계산한 다음 복원한다.
 		task.defer(function()
