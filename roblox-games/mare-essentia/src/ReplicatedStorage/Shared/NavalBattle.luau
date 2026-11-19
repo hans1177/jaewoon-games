@@ -2393,7 +2393,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				afterAction(mine(BC.useLeader(m, "me")))
 			end
 		end)
-		local leaderPortrait
+		local leaderPortrait, leaderStatus
 		if opts.cardOnly then
 			local leaderId = m.leader.me
 			local portraitKey = NEW_LEADER_ART[leaderId]
@@ -2401,10 +2401,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local fallbackKey = LEADER_FACE[leaderId]
 			portraitId = portraitId or (fallbackKey and AssetIds[fallbackKey])
 			if portraitId then
+				-- 기존 먹색 버튼에 황동 테두리를 두르고 얼굴과 이름을 나란히 배치한다.
 				leaderIcon.ImageTransparency = 1
+				leaderIcon.Position = UDim2.fromScale(0.04, 0.5)
+				leaderIcon.Size = UDim2.fromScale(0.28, 0.86)
+				leaderIcon.BackgroundColor3 = Color3.fromRGB(47, 32, 22)
+				leaderIcon.BackgroundTransparency = 0
 				leaderIcon.ClipsDescendants = true
 
-				-- 세로 원화의 윗부분을 기존 아이콘 자리에서 보여 준다.
+				-- 세로 원화의 위쪽을 얼굴 창에 맞춰 보여 준다.
 				leaderPortrait = Instance.new("ImageLabel")
 				leaderPortrait.Name = "LeaderPortrait"
 				leaderPortrait.SizeConstraint = Enum.SizeConstraint.RelativeXX
@@ -2413,6 +2418,20 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				leaderPortrait.ScaleType = Enum.ScaleType.Fit
 				leaderPortrait.Image = "rbxassetid://" .. tostring(portraitId)
 				leaderPortrait.Parent = leaderIcon
+
+				local caption = leaderBtn.Caption
+				caption.Position = UDim2.fromScale(0.38, 0.07)
+				caption.Size = UDim2.fromScale(0.57, 0.53)
+				caption.TextXAlignment = Enum.TextXAlignment.Left
+
+				leaderStatus = label(leaderBtn, "", 10, Color3.fromRGB(219, 185, 119))
+				leaderStatus.Position = UDim2.fromScale(0.38, 0.59)
+				leaderStatus.Size = UDim2.fromScale(0.57, 0.3)
+				leaderStatus.TextXAlignment = Enum.TextXAlignment.Left
+				leaderStatus.TextScaled = true
+				local statusLimit = Instance.new("UITextSizeConstraint")
+				statusLimit.MaxTextSize = 11
+				statusLimit.Parent = leaderStatus
 			end
 		end
 		local mullBtn
@@ -3431,7 +3450,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				elseif m.leaderUsed.me then t("지도자 (사용함)", "Leader (Used)")
 				else t("지도자: ", "Leader: ") .. (if english then englishLeaders[m.leader.me] or "" else BC.Leaders[m.leader.me].name)
 			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then (if opts.cardOnly then 0.34 else 0.6) else 0
-			if leaderPortrait then
+			if leaderPortrait and leaderStatus then
+				leaderBtn.Caption.Text = if english then englishLeaders[m.leader.me] or "Leader" else BC.Leaders[m.leader.me].name
+				leaderStatus.Text = if m.leaderUsed.me then t("사용함", "Used") else t("지도자 능력", "Leader Ability")
 				leaderPortrait.ImageColor3 = if m.leaderUsed.me then Color3.fromRGB(165, 165, 165) else Color3.new(1, 1, 1)
 			end
 		end
