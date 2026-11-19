@@ -11265,9 +11265,9 @@ syncScene = function()
 		companions = crew,
 		voyagers = view.diplo and view.diplo.voyagers,
 		arrive = arriveNext,
-	}, function(tab)
-		-- [방문 단일화] 항구 건물 방문도 주점처럼 기존 시설 창으로 연다.
-		if TAB_NAME[tab] then openTab(tab) end
+	}, function(tab, facility)
+		-- [방문 단일화] 건물·HUD 이동은 동일한 탭 함수를 사용한다. 건물명만 UI에 전달한다.
+		if TAB_NAME[tab] then openTab(tab, nil, facility) end
 	end)
 	if not ok then
 		warn("[Game] 항구 장면 오류", res)
@@ -12446,8 +12446,11 @@ function render()
 	local p, ship = view.player, view.ship
 	local grp = groupOf(currentTab)
 	setPortrait(grp.name)
-	headerLabel.Text = if mainInner.AbsoluteSize.X < 740 then grp.name .. " · " .. (TAB_NAME[currentTab] or "")
-        else grp.name
+	-- [중복 이름 제거] 화면 제목에서 조선소·은행·길드 이름을 반복하지 않는다.
+	local placeName = H.visitFacility or grp.name
+	local tabName = TAB_NAME[currentTab] or ""
+	headerLabel.Text = if mainInner.AbsoluteSize.X < 740 and placeName ~= tabName
+		then placeName .. " · " .. tabName else placeName
 	-- [현재 위치] 모바일에는 항구·선택 탭만, 넓은 화면에는 담당자까지 표시한다.
 	H.pageDetails.Text = if mainInner.AbsoluteSize.X < 480
 		then string.format("%s · %s", p.portName, TAB_NAME[currentTab])
@@ -12715,6 +12718,17 @@ function render()
 	else
 		H.counselRows(1)
 		RENDERERS[currentTab]()
+		if currentTab == "harbor" and H.visitFacility == "은행" then
+			-- [은행 방문] 항구 정보 안의 기존 금융 메뉴로 바로 이동한다.
+			task.defer(function()
+				if currentTab ~= "harbor" or H.visitFacility ~= "은행" then return end
+				local bank = content:FindFirstChild("BankEntry")
+				if bank then
+					local y = bank.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y
+					content.CanvasPosition = Vector2.new(0, math.max(0, y - 8))
+				end
+			end)
+		end
 	end
 end
 
@@ -13080,7 +13094,9 @@ function H.goAdvice(tab)
 	openTab(tab)
 end
 
-openTab = function(tabId, mapPage)
+openTab = function(tabId, mapPage, facility)
+	-- [시설 방문 표시] 출입 건물명은 실행 중 화면에만 사용한다. 저장 구조 변경 없음.
+	H.visitFacility = if facility == "은행" or facility == "상인 길드" then facility else nil
 	-- [교역 장부→서재] 선택한 상품의 분류는 백과 상태 변수 선언 이후,
 	-- 기존 탭 전환 함수에서만 지정한다. 별도 화면·저장 키를 생성하지 않는다.
 	if tabId == "codex" and H.tradeBookOpenRequested then
