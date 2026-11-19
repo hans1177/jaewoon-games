@@ -1845,3 +1845,5 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 - `ui_ops_chart.png`: 프로젝트용 생성 원화 「촛불빛 제독 책상과 해도」. 화면 글자와 조작 요소를 분리한다.
 - `ui_ops_formation.png`, `ui_ops_vault.png`, `ui_ops_depart.png`: 프로젝트용 생성 원화 「황금 테두리 해군 패널 3종」에서 각각 분리한 투명 그림.
 - 이용 조건: `PROJECT_ORIGINAL_ART`. 배포용 그림의 해시는 `APPROVED_IMAGES.json`에 기록한다.
+
+- `ui_fleet_table.png`: 자체 생성 해상 함대 편성 배경. 청록색 천과 비스듬한 나무 책상, 왼쪽에서 들어오는 햇빛을 표현했다. `PROJECT_ORIGINAL_ART`. 원본 SHA-256: `e54ca21780477b2d4ce935e13ad1c232a41a266837b83b8cab300a8a9fcccc25`.

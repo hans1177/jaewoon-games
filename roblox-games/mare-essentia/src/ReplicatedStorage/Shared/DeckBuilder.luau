@@ -314,6 +314,7 @@ function DeckBuilder.build(parent, ctx)
 	deckSummary.Position = UDim2.fromScale(0.18, 0.61)
 	deckSummary.Size = UDim2.fromScale(0.64, 0.15)
 	local chartId = ctx.AssetIds["CardArt/ui_ops_chart"]
+	local tableId = ctx.AssetIds["CardArt/ui_fleet_table"]
 	local chart = Instance.new("ImageLabel")
 	chart.Name = "OperationsChart"
 	chart.Size = UDim2.fromScale(1, 1)
@@ -321,7 +322,7 @@ function DeckBuilder.build(parent, ctx)
 	chart.ScaleType = Enum.ScaleType.Crop
 	chart.Image = if chartId then "rbxassetid://" .. tostring(chartId) else ""
 	chart.Parent = root
-	if chartId then
+	if chartId or tableId then
 		top.ZIndex, body.ZIndex = 2, 2
 		deckSummary.BackgroundColor3 = PAPER
 		deckSummary.BackgroundTransparency = 0
@@ -346,10 +347,13 @@ function DeckBuilder.build(parent, ctx)
 
 	local function layoutBody()
 		hub.Visible = selectedTab == "hub"
-		chart.Visible = (hub.Visible or addingToFormation) and chartId ~= nil
+		local surface = if selectedTab == "deck" then tableId elseif hub.Visible or addingToFormation then chartId else nil
+		chart.Visible = surface ~= nil
+		chart.Image = if surface then "rbxassetid://" .. tostring(surface) else ""
 		left.Visible = selectedTab == "collection"
 		right.Visible = selectedTab == "deck"
 		right.BackgroundColor3 = FELT
+		right.BackgroundTransparency = if tableId then 1 else 0
 		battle.Visible = selectedTab == "battle"
 		bottom.Visible = selectedTab == "deck"
 		title.Text = if hub.Visible then "해상 작전실" elseif left.Visible then "카드 보관소"
@@ -1089,8 +1093,17 @@ function DeckBuilder.build(parent, ctx)
 				end)
 				card.Position = UDim2.fromOffset((index - 1) * 52 + 2, 4)
 				card.Size = UDim2.fromOffset(68, 90)
-				card.ZIndex = index + 1
-				card.Rotation = ((index - 1) % 3 - 1) * 2
+				card.ZIndex = index * 2 + 1
+				card.Rotation = ((index - 1) % 3 - 1) * 3
+				local shadow = Instance.new("Frame")
+				shadow.BackgroundColor3 = Color3.fromRGB(6, 11, 11)
+				shadow.BackgroundTransparency = 0.42
+				shadow.BorderSizePixel = 0
+				shadow.Position = card.Position + UDim2.fromOffset(3, 4)
+				shadow.Size = card.Size
+				shadow.Rotation = card.Rotation
+				shadow.ZIndex = card.ZIndex - 1
+				shadow.Parent = strip
 				local art = ctx.AssetIds[ctx.artKey(e.d)]
 				local image = Instance.new("ImageLabel")
 				image.BackgroundTransparency = 1
