@@ -346,30 +346,110 @@ function DeckBuilder.build(parent, ctx)
 	extra.Visible = false
 	extra.Parent = left
 
-	-- 오른쪽: 지도자 + 덱 목록 + 균형 + 도구
+	-- [지도자 카드] 일반 카드와 동일한 100×138 도판·이름 띠. 별도 얼굴 아이콘은 사용하지 않는다.
 	local leaderBox = Instance.new("Frame")
 	leaderBox.Position = UDim2.fromOffset(6, 6)
-	leaderBox.Size = UDim2.new(1, -12, 0, 50)
+	leaderBox.Size = UDim2.new(1, -12, 0, 150)
 	leaderBox.BackgroundColor3 = Color3.fromRGB(85, 51, 45)
 	leaderBox.BorderSizePixel = 0
 	leaderBox.Parent = right
 	corner(leaderBox, 8)
+	local leaderCard = button(leaderBox, "", Color3.fromRGB(58, 44, 32), 14, nil)
+	leaderCard.Name = "FullBodyLeaderCard"
+	leaderCard.Size = UDim2.fromOffset(100, 138)
+	leaderCard.Position = UDim2.fromOffset(6, 6)
+	local leaderImage = Instance.new("ImageLabel")
+	leaderImage.Name = "LeaderPainting"
+	leaderImage.Position = UDim2.fromOffset(4, 4)
+	leaderImage.Size = UDim2.new(1, -8, 0.7, -4)
+	leaderImage.BackgroundColor3 = Color3.fromRGB(88, 67, 46)
+	leaderImage.BorderSizePixel = 0
+	leaderImage.ScaleType = Enum.ScaleType.Fit -- 전신 절단 방지
+	leaderImage.Parent = leaderCard
+	corner(leaderImage, 6)
+	local leaderCardName = text(leaderCard, "", 13, INK, true)
+	leaderCardName.Position = UDim2.new(0, 3, 0.72, 0)
+	leaderCardName.Size = UDim2.new(1, -6, 0.28, 0)
+	leaderCardName.TextScaled = true
+	leaderCardName.Font = Enum.Font.Antique
+	local leaderCardNameLimit = Instance.new("UITextSizeConstraint")
+	leaderCardNameLimit.MaxTextSize = 15
+	leaderCardNameLimit.MinTextSize = 9
+	leaderCardNameLimit.Parent = leaderCardName
 	local leaderName = text(leaderBox, "", 16, GOLD, true)
-	leaderName.Position = UDim2.fromOffset(40, 2)
-	leaderName.Size = UDim2.new(1, -80, 0, 20)
+	leaderName.Position = UDim2.fromOffset(114, 7)
+	leaderName.Size = UDim2.new(1, -120, 0, 30)
 	leaderName.TextXAlignment = Enum.TextXAlignment.Left
+	leaderName.Font = Enum.Font.Antique
 	local leaderText = text(leaderBox, "", 12, INK, false)
-	leaderText.Position = UDim2.fromOffset(40, 21)
-	leaderText.Size = UDim2.new(1, -80, 0, 28)
+	leaderText.Position = UDim2.fromOffset(114, 40)
+	leaderText.Size = UDim2.new(1, -120, 0, 62)
 	leaderText.TextXAlignment = Enum.TextXAlignment.Left
 	leaderText.TextYAlignment = Enum.TextYAlignment.Top
-	local prevLeader = button(leaderBox, "<", Color3.fromRGB(90, 72, 52), 16, function() if cur.leaderStep then cur.leaderStep(-1) end end)
-	prevLeader.Position = UDim2.fromOffset(4, 8)
-	prevLeader.Size = UDim2.fromOffset(32, 34)
-	local nextLeader = button(leaderBox, ">", Color3.fromRGB(90, 72, 52), 16, function() if cur.leaderStep then cur.leaderStep(1) end end)
+	local prevLeader = button(leaderBox, "◀", Color3.fromRGB(90, 72, 52), 16, function() if cur.leaderStep then cur.leaderStep(-1) end end)
+	prevLeader.Position = UDim2.fromOffset(114, 108)
+	prevLeader.Size = UDim2.fromOffset(36, 34)
+	local nextLeader = button(leaderBox, "▶", Color3.fromRGB(90, 72, 52), 16, function() if cur.leaderStep then cur.leaderStep(1) end end)
 	nextLeader.AnchorPoint = Vector2.new(1, 0)
-	nextLeader.Position = UDim2.new(1, -4, 0, 8)
-	nextLeader.Size = UDim2.fromOffset(32, 34)
+	nextLeader.Position = UDim2.new(1, -6, 0, 108)
+	nextLeader.Size = UDim2.fromOffset(36, 34)
+
+	-- [전신 확대] 작은 모바일 화면에서도 기존 카드 비율과 원화 전체를 확인한다.
+	local leaderPreview = Instance.new("TextButton")
+	leaderPreview.Name = "LeaderCardDetail"
+	leaderPreview.Size = UDim2.fromScale(1, 1)
+	leaderPreview.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	leaderPreview.BackgroundTransparency = 0.3
+	leaderPreview.Text = ""
+	leaderPreview.AutoButtonColor = false
+	leaderPreview.Visible = false
+	leaderPreview.ZIndex = 40
+	leaderPreview.Parent = root
+	leaderPreview.Activated:Connect(function() leaderPreview.Visible = false end)
+	local leaderFull = Instance.new("TextButton")
+	leaderFull.Name = "EnlargedLeaderCard"
+	leaderFull.AnchorPoint = Vector2.new(0.5, 0.5)
+	leaderFull.Position = UDim2.fromScale(0.5, 0.5)
+	leaderFull.BackgroundColor3 = Color3.fromRGB(60, 43, 30)
+	leaderFull.BorderSizePixel = 0
+	leaderFull.Text = ""
+	leaderFull.ZIndex = 41
+	leaderFull.Parent = leaderPreview
+	corner(leaderFull, 8)
+	local leaderFullImage = Instance.new("ImageLabel")
+	leaderFullImage.Position = UDim2.fromScale(0.03, 0.03)
+	leaderFullImage.Size = UDim2.fromScale(0.94, 0.68)
+	leaderFullImage.BackgroundTransparency = 1
+	leaderFullImage.ScaleType = Enum.ScaleType.Fit
+	leaderFullImage.ZIndex = 42
+	leaderFullImage.Parent = leaderFull
+	local leaderFullName = text(leaderFull, "", 20, GOLD, true)
+	leaderFullName.Position = UDim2.fromScale(0.04, 0.72)
+	leaderFullName.Size = UDim2.fromScale(0.92, 0.09)
+	leaderFullName.Font = Enum.Font.Antique
+	leaderFullName.TextScaled = true
+	leaderFullName.ZIndex = 42
+	local leaderFullText = text(leaderFull, "", 14, INK, false)
+	leaderFullText.Position = UDim2.fromScale(0.05, 0.82)
+	leaderFullText.Size = UDim2.fromScale(0.90, 0.16)
+	leaderFullText.TextScaled = true
+	leaderFullText.ZIndex = 42
+	local leaderClose = button(leaderFull, "×", REMOVE, 20, function() leaderPreview.Visible = false end)
+	leaderClose.AnchorPoint = Vector2.new(1, 0)
+	leaderClose.Position = UDim2.new(1, -5, 0, 5)
+	leaderClose.Size = UDim2.fromOffset(34, 34)
+	leaderClose.ZIndex = 43
+	local function layoutLeaderPreview()
+		local size = root.AbsoluteSize
+		local height = math.floor(math.max(156, math.min(size.Y * 0.81, size.X * 0.78 / 0.69, 480)))
+		leaderFull.Size = UDim2.fromOffset(math.floor(height * 0.69), height)
+	end
+	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutLeaderPreview)
+	layoutLeaderPreview()
+	leaderCard.Activated:Connect(function()
+		Sfx.play("sfx_card_page", 0.5, 1, "sfx_book_turn")
+		leaderPreview.Visible = true
+	end)
 
 	local balance = Instance.new("Frame") -- 줄 균형 막대 3개
 	balance.Position = UDim2.fromOffset(6, 56)
@@ -394,12 +474,35 @@ function DeckBuilder.build(parent, ctx)
 	local deckScroll = Instance.new("ScrollingFrame")
 	deckScroll.BackgroundTransparency = 1
 	deckScroll.BorderSizePixel = 0
-	deckScroll.Position = UDim2.fromOffset(6, 82)
-	deckScroll.Size = UDim2.new(1, -12, 1, -82 - 64)
+	deckScroll.Position = UDim2.fromOffset(6, 182)
+	deckScroll.Size = UDim2.new(1, -12, 1, -182 - 64)
 	deckScroll.ScrollBarThickness = 5
 	deckScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	deckScroll.CanvasSize = UDim2.new()
 	deckScroll.Parent = right
+	-- [모바일] 화면 높이가 낮으면 지도자 카드는 축소 표시하고 눌러 원본 크기로 확대한다.
+	local function layoutLeaderCard()
+		local tall = right.AbsoluteSize.Y >= 390
+		leaderBox.Size = UDim2.new(1, -12, 0, if tall then 150 else 50)
+		leaderCard.Size = if tall then UDim2.fromOffset(100, 138) else UDim2.fromOffset(34, 44)
+		leaderCard.Position = if tall then UDim2.fromOffset(6, 6) else UDim2.fromOffset(4, 3)
+		leaderCardName.Visible = tall
+		leaderName.Position = if tall then UDim2.fromOffset(114, 7) else UDim2.fromOffset(44, 2)
+		leaderName.Size = if tall then UDim2.new(1, -120, 0, 30) else UDim2.new(1, -90, 0, 20)
+		leaderName.TextSize = if tall then 16 else 13
+		leaderText.Position = if tall then UDim2.fromOffset(114, 40) else UDim2.fromOffset(44, 21)
+		leaderText.Size = if tall then UDim2.new(1, -120, 0, 62) else UDim2.new(1, -90, 0, 27)
+		leaderText.TextSize = if tall then 12 else 10
+		prevLeader.Position = if tall then UDim2.fromOffset(114, 108) else UDim2.new(1, -78, 0, 8)
+		nextLeader.Position = if tall then UDim2.new(1, -6, 0, 108) else UDim2.new(1, -4, 0, 8)
+		prevLeader.Size = if tall then UDim2.fromOffset(36, 34) else UDim2.fromOffset(32, 34)
+		nextLeader.Size = if tall then UDim2.fromOffset(36, 34) else UDim2.fromOffset(32, 34)
+		balance.Position = UDim2.fromOffset(6, if tall then 156 else 56)
+		deckScroll.Position = UDim2.fromOffset(6, if tall then 182 else 82)
+		deckScroll.Size = UDim2.new(1, -12, 1, -(if tall then 182 else 82) - 64)
+	end
+	right:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutLeaderCard)
+	layoutLeaderCard()
 	local dl = Instance.new("UIListLayout")
 	dl.Padding = UDim.new(0, 3)
 	dl.SortOrder = Enum.SortOrder.LayoutOrder
@@ -870,6 +973,17 @@ function DeckBuilder.build(parent, ctx)
 			local cd = BC.Leaders[curLeader]
 			leaderName.Text = "지도자 · " .. (cd and cd.name or "?")
 			leaderText.Text = string.format("%s · 보급 +%d", cd and cd.text or "", cd and cd.provision or 0)
+			leaderCardName.Text = cd and cd.name or "지도자"
+			leaderFullName.Text = leaderName.Text
+			leaderFullText.Text = leaderText.Text
+			-- 등록된 지도자 전신 원화를 절단하지 않고 일반 카드의 70% 그림 영역에 표시한다.
+			local artKey = "CardArt/leader_" .. curLeader
+			local artId = ctx.AssetIds[artKey]
+			if not artId and curLeader == "napoleon" then artId = ctx.AssetIds["Portraits/person_napoleon"] end
+			if not artId and curLeader == "elizabeth" then artId = ctx.AssetIds["Portraits/person_elizabeth1"] end
+			local leaderImageId = if artId then "rbxassetid://" .. tostring(artId) else ""
+			leaderImage.Image = leaderImageId
+			leaderFullImage.Image = leaderImageId
 			local idx = table.find(fac.leaders, curLeader) or 1
 			cur.leaderStep = function(delta)
 				local nxt = fac.leaders[((idx - 1 + delta) % #fac.leaders) + 1]
