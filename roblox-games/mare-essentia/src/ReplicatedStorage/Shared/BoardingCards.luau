@@ -527,7 +527,14 @@ B.Units.nw_39 = { id="nw_39", name="코만치 기병", category="병종", row="r
 B.Units.nw_40 = { id="nw_40", name="라코타 기병", category="병종", row="ranged", power=3, ability="lakota", text="상대 카드나 지도자 능력으로 약화된 전열 아군을 후열로 빼낸다. 라운드당 한 번." }
 B.Units.nw_41 = { id="nw_41", name="아파치 정찰대", category="병종", row="ranged", power=3, ability="apache", text="낼 때: 상대의 예고 공격을 전투 기록에 표시하고, 가장 약한 이동 가능한 다른 아군을 반대 열로 옮긴다." }
 
+B.Units.sa_37 = { id="sa_37", name="라푸라푸", category="인물", row="melee", power=4, ability="lapulapu", text="얕은 여울이 적 포격을 막았다면 다음 내 턴 시작에 가장 강한 상대 전열 일반 유닛 −3." }
+B.Units.sa_38 = { id="sa_38", name="막탄 방어대", category="병종", row="melee", power=3, ability="mactanGuard", text="낼 때: 전열의 가장 약한 다른 일반 아군에 엄호. 대상이 없으면 자신을 엄호." }
+B.Specials.sa_39 = { id="sa_39", name="막탄의 얕은 여울", category="사건", special="mactanShoal", text="이번 라운드에 다음 말라카 기습 또는 촐라 포격을 한 번 차단한다." }
+
 B.CardEnglish = {
+	sa_37 = { name="Lapulapu", text="If Shallows blocked a bombardment, weaken the strongest enemy melee non-hero by 3 at your next turn start." },
+	sa_38 = { name="Mactan Defenders", text="Deploy: Give your weakest other melee non-hero cover, or cover yourself if none is present." },
+	sa_39 = { name="Mactan Shallows", text="Block the next Malacca strike or Chola bombardment this round." },
 	nw_35 = { name="Mountain Altar", text="Enables the Capacocha Rite while on the board." },
 	nw_36 = { name="Capacocha Rite", text="With an altar, banish the rightmost remaining card in hand. Randomly cleanse an ally, draw a card, or weaken the strongest enemy non-hero by 3." },
 	nw_37 = { name="Anaconda", text="Deploy: Anchor the strongest enemy melee non-hero through its next action." },
@@ -848,7 +855,7 @@ B.Factions = {
 	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "saladin", specialty = "지형·원더", leaders = { "saladin", "suleiman", "cyrus" },
 		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30", "me_31", "me_32", "me_33", "me_34", "me_35", "me_36", "me_37", "me_38", "me_39", "me_40", "me_41", "me_42"} },
 	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", specialty = "동물", leaders = { "rajaraja", "tranhungdao", "akbar" },
-		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30", "sa_31", "sa_32", "sa_33", "sa_34", "sa_35", "sa_36"} },
+		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30", "sa_31", "sa_32", "sa_33", "sa_34", "sa_35", "sa_36", "sa_37", "sa_38", "sa_39"} },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
 		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30", "lo_46", "lo_47", "lo_48", "lo_49", "lo_50", "lo_51", "lo_52", "lo_53", "lo_54", "lo_55", "lo_56", "lo_57", "lo_58", "lo_59"} },
 	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", specialty = "지형·원더", leaders = { "mansa", "hannibal", "shaka" },
@@ -1517,15 +1524,37 @@ local function resolveLiteraryCombos(m: any, side, state)
 	end
 end
 
+local function blockMactanBombardment(m: any, defender)
+	local state = m.tactics and m.tactics[defender]
+	if not state or state.mactanShoal ~= m.round or not strongestInRow(m, defender, "ranged") then return false end
+	state.mactanShoal = nil
+	if state.mactanCounterUsed ~= m.round then state.mactanCounter = m.round end
+	logLine(m, "막탄의 얕은 여울: 포격 차단")
+	return true
+end
+
 local function beginTurn(m: any, side)
 	m.turn = side
 	local state = m.tactics and m.tactics[side]
 	if state and state.strait == m.round and not state.straitDelayed then
 		state.strait = nil
-		local target = strongestInRow(m, other(side), "ranged", true)
-		if target then boostCard(target, -3); logLine(m, "말라카 해협: 후열 기습 −3") end
+		if not blockMactanBombardment(m, other(side)) then
+			local target = strongestInRow(m, other(side), "ranged", true)
+			if target then boostCard(target, -3); logLine(m, "말라카 해협: 후열 기습 −3") end
+		end
 	end
 	if state then
+		if state.mactanCounter == m.round then
+			state.mactanCounter = nil
+			if hasTactic(m, side, "lapulapu") then
+				local target = strongestInRow(m, other(side), "melee", true)
+				if target then
+					state.mactanCounterUsed = m.round
+					boostCard(target, -3)
+					logLine(m, "라푸라푸: 막탄 반격 −3")
+				end
+			end
+		end
 		state.straitDelayed = nil
 		if (state.journeyCount or 0) >= 2 and state.homecoming ~= m.round and hasTactic(m, side, "homecoming") then
 			local ally = weakestAlly(m, side, nil, nil)
@@ -1595,6 +1624,7 @@ local function beginTurn(m: any, side)
 				elseif card.starterRole == "raid" and row == "melee" and used < 2 then 1 else nil
 			if attack then
 				card.starterUsed = used + 1
+				if attack == 3 and blockMactanBombardment(m, other(side)) then continue end
 				local target = strongestInRow(m, other(side), if attack == 3 then "ranged" else "melee", true)
 				if target then
 					boostCard(target, -attack)
@@ -1868,7 +1898,11 @@ function B.play(m: any, side, handIdx)
 		m.lastTactic[side] = { round = m.round, card = c }
 	end
 	local msg
-	if c.special == "capacocha" then
+	if c.special == "mactanShoal" then
+		tactics.mactanShoal = m.round
+		table.insert(m.grave[side], played)
+		msg = "막탄의 얕은 여울: 포격 방어 준비"
+	elseif c.special == "capacocha" then
 		local offering = if hasTactic(m, side, "mountainAltar") then table.remove(m.hand[side]) else nil
 		if offering then
 			m.omenState = ((m.omenState or 1) * 48271) % 2147483647
@@ -2237,7 +2271,14 @@ function B.play(m: any, side, handIdx)
 				table.insert(m.hand[side], table.remove(deck, index))
 			end
 		end
-		if c.ability == "anaconda" then
+		if c.ability == "mactanGuard" then
+			local target, power = c, nil
+			for index, ally in m.rows[side].melee do
+				local current = B.cardPower(m, side, "melee", index)
+				if ally ~= c and not ally.hero and (not power or current < power) then target, power = ally, current end
+			end
+			target.cover = true
+		elseif c.ability == "anaconda" then
 			local target = strongestInRow(m, foe, "melee", true)
 			if target then target.anchored = true end
 		elseif c.ability == "apache" then
