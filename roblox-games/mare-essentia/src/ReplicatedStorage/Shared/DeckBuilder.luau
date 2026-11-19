@@ -307,6 +307,7 @@ function DeckBuilder.build(parent, ctx)
 	deckSummary.Position = UDim2.fromScale(0.18, 0.61)
 	deckSummary.Size = UDim2.fromScale(0.64, 0.15)
 	local chartId = ctx.AssetIds["CardArt/ui_ops_chart"]
+	local albumId = ctx.AssetIds["CardArt/ui_card_vault_album"]
 	local tableId = ctx.AssetIds["CardArt/ui_fleet_table"]
 	local chart = Instance.new("ImageLabel")
 	chart.Name = "OperationsChart"
@@ -315,7 +316,7 @@ function DeckBuilder.build(parent, ctx)
 	chart.ScaleType = Enum.ScaleType.Crop
 	chart.Image = if chartId then "rbxassetid://" .. tostring(chartId) else ""
 	chart.Parent = root
-	if chartId or tableId then
+	if chartId or tableId or albumId then
 		top.ZIndex, body.ZIndex = 2, 2
 		deckSummary.BackgroundColor3 = PAPER
 		deckSummary.BackgroundTransparency = 0
@@ -398,7 +399,10 @@ function DeckBuilder.build(parent, ctx)
 
 	local function layoutBody()
 		hub.Visible = selectedTab == "hub"
-		local surface = if selectedTab == "deck" or selectedTab == "battle" then tableId elseif hub.Visible or addingToFormation then chartId else nil
+		local vault = selectedTab == "collection" and not addingToFormation
+		local surface = if vault then albumId elseif selectedTab == "deck" or selectedTab == "battle" then tableId
+			elseif hub.Visible or addingToFormation then chartId else nil
+		chart.ScaleType = if vault then Enum.ScaleType.Stretch else Enum.ScaleType.Crop
 		chart.Visible = surface ~= nil
 		chart.Image = if surface then "rbxassetid://" .. tostring(surface) else ""
 		left.Visible = selectedTab == "collection"
@@ -928,14 +932,22 @@ function DeckBuilder.build(parent, ctx)
 		local charcoal = Color3.fromRGB(24, 34, 44)
 		left.BackgroundColor3 = if vault then charcoal else PANEL
 		detail.BackgroundColor3 = if vault then charcoal else PAPER
+		local showAlbum = vault and albumId ~= nil
+		left.BackgroundTransparency = if showAlbum and showVaultDetail then 1 elseif showAlbum then 0.20 else 0
+		detail.BackgroundTransparency = if showAlbum then 1 else 0
+		for _, panel in { left, detail } do
+			local edge = panel:FindFirstChildOfClass("UIStroke")
+			if edge then edge.Enabled = not showAlbum end
+		end
 		search.Visible = vault and state.filter ~= "crew"
 		detail.Parent = if formation then right else left
 		detail.Visible = wide and (formation or addingToFormation) or showVaultDetail
-		detail.Position = if formation then UDim2.new(0.67, 0, 0, 54) else UDim2.fromScale(0.67, 0)
+		detail.Position = if formation then UDim2.new(0.67, 0, 0, 54) else UDim2.fromScale(if showAlbum then 0.65 else 0.67, 0)
 		detail.Size = if formation then UDim2.new(0.33, -6, 1, -118)
 			else UDim2.new(0.33, -6, 1, -6)
 		deckScroll.Size = UDim2.new(if showFormationDetail then 0.66 else 1, -12, deckScroll.Size.Y.Scale, deckScroll.Size.Y.Offset)
-		local width = if (wide and addingToFormation) or showVaultDetail then 0.66 else 1
+		local width = if showAlbum and showVaultDetail then 0.62
+			elseif (wide and addingToFormation) or showVaultDetail then 0.66 else 1
 		chips.Size = UDim2.new(width, -12, 0, 38)
 		search.Size = UDim2.new(width, -12, 0, 38)
 		local gridTop = if search.Visible then 92 else 50
