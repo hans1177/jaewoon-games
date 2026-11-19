@@ -21,7 +21,7 @@ local SAVE = Color3.fromRGB(32, 44, 78)
 local TIER_COLOR = { Color3.fromRGB(176, 112, 62), Color3.fromRGB(196, 202, 212), Color3.fromRGB(238, 196, 84) }
 local ROW_COLOR = { melee = Color3.fromRGB(190, 84, 62), ranged = Color3.fromRGB(96, 150, 84), cannon = Color3.fromRGB(84, 124, 176) }
 local ROW_SHORT = { melee = "근", ranged = "사", cannon = "포" }
-local ROW_ORDER = { melee = 1, ranged = 2, cannon = 3 }
+local FORMATION = { { "melee", "전열" }, { "ranged", "후열" }, { "special", "전술" } }
 -- [카드 원화] 지역별 박물관 테두리는 카드 ID만 읽으며 카드 수치와 저장에는 관여하지 않는다.
 local REGION_FRAME = { eu = "ui_frame_europe", ea = "ui_frame_east_asia", me = "ui_frame_middle_east", nw = "ui_frame_new_world", af = "ui_frame_africa", sa = "ui_frame_southeast_asia" }
 local FILTERS = {
@@ -291,6 +291,7 @@ function DeckBuilder.build(parent, ctx)
 
 	-- [작전실] 현재 덱을 보고 출항하거나 목적에 맞는 화면으로 이동한다.
 	local selectedTab = ctx.initialTab or "hub"
+	local addingToFormation = false
 	local hub = Instance.new("Frame")
 	hub.Name = "OperationsRoom"
 	hub.BackgroundTransparency = 1
@@ -356,7 +357,8 @@ function DeckBuilder.build(parent, ctx)
 		if selectedTab == "hub" then
 			ctx.onClose()
 		else
-			selectedTab = "hub"
+			selectedTab = if addingToFormation then "deck" else "hub"
+			addingToFormation = false
 			practicePanel.Visible = false
 			layoutBody()
 		end
@@ -766,6 +768,7 @@ function DeckBuilder.build(parent, ctx)
 		end
 		Sfx.play("sfx_card_place", 0.5, 1.1, "sfx_click")
 		ctx.onWant(id, 1)
+		if addingToFormation then rebuildGrid() end
 		if tile and tile.Parent then
 			local st = tile:FindFirstChildOfClass("UIStroke")
 			if st then
@@ -898,11 +901,12 @@ function DeckBuilder.build(parent, ctx)
 			return
 		end
 		local book = ctx.getBook()
+		local want = ctx.getWant()
 		local shown, n = 0, 0
 		for _, id in ctx.catalog do
 			local d = CB.def(id)
 			local owned = book.owned[id] or 0
-			if d and inFilter(ctx, id, d, state.filter, owned) then
+			if d and inFilter(ctx, id, d, state.filter, owned) and (not addingToFormation or owned > (want[id] or 0)) then
 				n += 1
 				if n <= state.page * PAGE then
 					shown += 1
@@ -931,6 +935,7 @@ function DeckBuilder.build(parent, ctx)
 	for i, f in FILTERS do
 		local b = button(chips, f.text, Color3.fromRGB(70, 60, 66), 15, function()
 			Sfx.play("sfx_card_page", 0.5, 1, "sfx_book_turn")
+			if state.filter ~= f.id then addingToFormation = false end
 			state.filter, state.page = f.id, 1
 			paintChips()
 			rebuildGrid()
@@ -942,6 +947,7 @@ function DeckBuilder.build(parent, ctx)
 
 	comboButton.Activated:Connect(function()
 		selectedTab = "collection"
+		addingToFormation = false
 		state.filter, state.page = "combo", 1
 		layoutBody()
 		paintChips()
@@ -954,70 +960,85 @@ function DeckBuilder.build(parent, ctx)
 			if not ch:IsA("UIListLayout") then ch:Destroy() end
 		end
 		local want = ctx.getWant()
-		local list = {}
+		local groups = { melee = {}, ranged = {}, special = {} }
+		local counts = { melee = 0, ranged = 0, special = 0 }
 		for id, n in want do
 			local d = CB.def(id)
-			if d then table.insert(list, { id = id, d = d, n = n }) end
-		end
-		table.sort(list, function(a, b)
-			local ka = if a.d.hero then 0 elseif a.d.special then 4 else ROW_ORDER[a.d.row] or 3
-			local kb = if b.d.hero then 0 elseif b.d.special then 4 else ROW_ORDER[b.d.row] or 3
-			if ka ~= kb then return ka < kb end
-			if (a.d.power or 0) ~= (b.d.power or 0) then return (a.d.power or 0) > (b.d.power or 0) end
-			return a.id < b.id
-		end)
-		if #list == 0 then
-			local e = text(deckScroll, "덱이 비었어요.\n카드의 + 버튼을 누르거나 '자동 덱'을 눌러요.", 15, Color3.fromRGB(190, 175, 150), false)
-			e.Size = UDim2.new(1, 0, 0, 60)
-			return
+			if d then
+				local lane = if BC.Specials[id] then "special" else BC.lane(d)
+				table.insert(groups[lane], { id = id, d = d, n = n })
+				counts[lane] += n
+			end
 		end
 		local book = ctx.getBook()
-		for i, e in list do
-			local tier = book.tier[e.id] or 1
-			local row = Instance.new("Frame")
-			row.LayoutOrder = i
-			row.Size = UDim2.new(1, -6, 0, 34)
-			row.BackgroundColor3 = if e.d.hero then Color3.fromRGB(88, 62, 36) else PANEL2
-			row.BorderSizePixel = 0
-			row.Parent = deckScroll
-			corner(row, 6)
-			local bar = Instance.new("Frame") -- 줄 색 띠
-			bar.Size = UDim2.new(0, 5, 1, -8)
-			bar.Position = UDim2.fromOffset(3, 4)
-			bar.BackgroundColor3 = ROW_COLOR[e.d.row] or Color3.fromRGB(150, 120, 190)
-			bar.BorderSizePixel = 0
-			bar.Parent = row
-			local pw = text(row, tostring(if e.d.special then "★" else e.d.power + tier - 1), 16, Color3.fromRGB(255, 232, 170), true)
-			pw.Position = UDim2.fromOffset(12, 4)
-			pw.Size = UDim2.fromOffset(26, 26)
-			pw.BackgroundTransparency = 0
-			pw.BackgroundColor3 = Color3.fromRGB(32, 24, 18)
-			corner(pw, 13)
-			local nm = text(row, e.d.name, 15, TIER_COLOR[tier], true)
-			nm.Position = UDim2.fromOffset(44, 0)
-			nm.Size = UDim2.new(1, -44 - 84, 1, 0)
-			nm.TextXAlignment = Enum.TextXAlignment.Left
-			nm.TextTruncate = Enum.TextTruncate.AtEnd
-			nm.TextWrapped = false
-			local cnt = text(row, "×" .. e.n, 15, INK, true)
-			cnt.AnchorPoint = Vector2.new(1, 0)
-			cnt.Position = UDim2.new(1, -44, 0, 0)
-			cnt.Size = UDim2.fromOffset(34, 34)
-			local minus = button(row, "−", REMOVE, 20, function()
-				Sfx.play("sfx_click", 0.5, 0.9)
-				ctx.onWant(e.id, -1)
-				refresh(true)
+		local order = 0
+		for _, group in FORMATION do
+			local lane, name = group[1], group[2]
+			local list = groups[lane]
+			table.sort(list, function(a, b)
+				if (a.d.power or 0) ~= (b.d.power or 0) then return (a.d.power or 0) > (b.d.power or 0) end
+				return a.id < b.id
 			end)
-			minus.AnchorPoint = Vector2.new(1, 0.5)
-			minus.Position = UDim2.new(1, -4, 0.5, 0)
-			minus.Size = UDim2.fromOffset(36, 28)
-			local clickable = Instance.new("TextButton") -- 이름을 누르면 큰 카드 보기
-			clickable.Text = ""
-			clickable.BackgroundTransparency = 1
-			clickable.Position = nm.Position
-			clickable.Size = nm.Size
-			clickable.Parent = row
-			clickable.Activated:Connect(function() Gallery.showDetail(ctx.galleryCtx, e.id) end)
+			order += 1
+			local heading = button(deckScroll, string.format("%s  ·  %d장     + 카드 추가", name, counts[lane]), SAVE, 16, function()
+				selectedTab, addingToFormation = "collection", true
+				state.filter, state.page = lane, 1
+				layoutBody()
+				paintChips()
+				rebuildGrid()
+				gridScroll.CanvasPosition = Vector2.zero
+			end)
+			heading.LayoutOrder = order
+			heading.Size = UDim2.new(1, -6, 0, 44)
+			buttonArt(heading, "ui_button_ink")
+			for _, e in list do
+				order += 1
+				local tier = book.tier[e.id] or 1
+				local row = Instance.new("Frame")
+				row.LayoutOrder = order
+				row.Size = UDim2.new(1, -6, 0, 34)
+				row.BackgroundColor3 = if e.d.hero then Color3.fromRGB(88, 62, 36) else PANEL2
+				row.BorderSizePixel = 0
+				row.Parent = deckScroll
+				corner(row, 6)
+				local bar = Instance.new("Frame") -- 줄 색 띠
+				bar.Size = UDim2.new(0, 5, 1, -8)
+				bar.Position = UDim2.fromOffset(3, 4)
+				bar.BackgroundColor3 = ROW_COLOR[e.d.row] or Color3.fromRGB(150, 120, 190)
+				bar.BorderSizePixel = 0
+				bar.Parent = row
+				local pw = text(row, tostring(if e.d.special then "★" else e.d.power + tier - 1), 16, Color3.fromRGB(255, 232, 170), true)
+				pw.Position = UDim2.fromOffset(12, 4)
+				pw.Size = UDim2.fromOffset(26, 26)
+				pw.BackgroundTransparency = 0
+				pw.BackgroundColor3 = Color3.fromRGB(32, 24, 18)
+				corner(pw, 13)
+				local nm = text(row, e.d.name, 15, TIER_COLOR[tier], true)
+				nm.Position = UDim2.fromOffset(44, 0)
+				nm.Size = UDim2.new(1, -44 - 84, 1, 0)
+				nm.TextXAlignment = Enum.TextXAlignment.Left
+				nm.TextTruncate = Enum.TextTruncate.AtEnd
+				nm.TextWrapped = false
+				local cnt = text(row, "×" .. e.n, 15, INK, true)
+				cnt.AnchorPoint = Vector2.new(1, 0)
+				cnt.Position = UDim2.new(1, -44, 0, 0)
+				cnt.Size = UDim2.fromOffset(34, 34)
+				local minus = button(row, "−", REMOVE, 20, function()
+					Sfx.play("sfx_click", 0.5, 0.9)
+					ctx.onWant(e.id, -1)
+					refresh(true)
+				end)
+				minus.AnchorPoint = Vector2.new(1, 0.5)
+				minus.Position = UDim2.new(1, -4, 0.5, 0)
+				minus.Size = UDim2.fromOffset(36, 28)
+				local clickable = Instance.new("TextButton") -- 이름을 누르면 큰 카드 보기
+				clickable.Text = ""
+				clickable.BackgroundTransparency = 1
+				clickable.Position = nm.Position
+				clickable.Size = nm.Size
+				clickable.Parent = row
+				clickable.Activated:Connect(function() Gallery.showDetail(ctx.galleryCtx, e.id) end)
+			end
 		end
 	end
 
