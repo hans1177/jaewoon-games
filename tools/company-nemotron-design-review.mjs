@@ -140,8 +140,7 @@ function loadPreviousDesignUsage(previous = {}) {
 export function designRoleForFrames(frameNames = []) {
   const names = frameNames.join(' ').toLowerCase();
   if (/(npc|face|hair|outfit|villager|resident|skin|citizen)/.test(names)) return 'NPC';
-  // [방문 메뉴 검수] 실촬영 교역·조선·서재·주점·선장실·전투본부 등은 기존 UI 흐름으로 분류한다.
-  // ship/port 단독 항해 장면은 기존 WORLD 분류에 남긴다.
+  // [교역품과 시설 메뉴] 실제 교역·조선·서재·주점 촬영본을 기존 UI 검수에 포함한다.
   if (/(hud|menu|gui|card|tab_|ui_|map_ui|inventory|font|interface|trade|market|goods|cargo|warehouse|shop|yard|shipwright|codex|quest|journal|diary|research|tech|recruit|crew|dialog|status|merchant|treasury|bank|tavern|palace|guild|museum|academy|facility|exchange|diplomacy|equipment|chart|library|headquarters|captain_room|harbor_authority)/.test(names)) return 'UI';
   if (/(animation|motion|idle|run|walk|attack|swing|movement)/.test(names)) return 'MOTION';
   if (/(harbor|sea|ship|port|island|landscape|world|voyage|town|lighting|field)|^(?:v[0-9]+_|cb[0-9]+(?:_|-))/.test(names)) return 'WORLD';
@@ -443,7 +442,11 @@ function photosFromStudio(directory = framesRoot, selectedRole = '') {
     /^[A-Za-z0-9_.-]+-[0-9]+\.(?:jpe?g|png)$/i.test(name));
   const relevant = selectedRole ? names.filter(name =>
     designRoleForFrames([name]) === selectedRole) : names;
-  for (const name of (relevant.length >= 2 ? relevant : names)) {
+  // [교역품 실증] UI 대표 4장에 실제 교역 캡처를 우선 넣되 다른 영역도 기존 한도 내에서 검사한다.
+  const cargoFrame = /(?:trade|goods|cargo|market|warehouse|inventory)/i;
+  const ordered = selectedRole === 'UI' ? [...relevant].sort((a, b) =>
+    Number(cargoFrame.test(b)) - Number(cargoFrame.test(a))) : relevant;
+  for (const name of (ordered.length >= 2 ? ordered : names)) {
     const file = path.join(directory, name);
     if (!fs.statSync(file).isFile()) continue;
     const bytes = fs.readFileSync(file);
@@ -699,7 +702,8 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   const prompt = 'You are a visual art director for the existing Roblox sea-voyage game. ' +
     'Study the verified real Studio screenshots and improve face, hair, clothing, ships, buildings, ' +
     'materials, lighting, HUD, cards, portraits, motion, trade goods previews, shipyard, ' +
-    'cargo, inventory, quests, codex, research and every captured facility menu composition where visually justified. ' +
+    'cargo, inventory, quests, codex, research and facility-menu composition where visually justified. ' +
+    'For visible trade cargo, check whether the item is recognizable, correctly scaled, grounded without clipping, and has believable materials. Flag weak models as issues tied to the actual frame for source review. Skip cargo that is not shown. ' +
     'Never create primitives, placeholder models, new art assets, URLs or unlicensed assets. ' +
     'Only change visual constants on EXISTING exact source lines shown in anchors. ' +
     'Never modify gameplay, economy, save, combat, physics, networking, or script control flow. ' +

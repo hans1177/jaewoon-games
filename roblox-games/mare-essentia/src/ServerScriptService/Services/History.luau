@@ -166,6 +166,9 @@ return function(D, S)
 		for _, id in ch.cards or {} do
 			if not state.discovered[id] then
 				state.discovered[id] = true
+				-- [개인 백과] 역사 선택지 보상은 원래의 코인·명성 규칙을 그대로 두고 출처만 기록한다.
+				state.cardOrigins = state.cardOrigins or {}
+				state.cardOrigins[id] = { portId = state.portId, day = state.day, method = "event", eventId = ev.id }
 				local c = D.Cards.ById[id]
 				table.insert(msgs, "도감 발견: " .. (c and c.name or id))
 			end

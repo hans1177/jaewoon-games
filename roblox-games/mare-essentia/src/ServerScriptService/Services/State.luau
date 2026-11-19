@@ -43,7 +43,9 @@ return function(D)
 			cargo = {},
 			basis = {},
 			discovered = {},
+			cardOrigins = {}, -- [개인 탐험 백과] 최초 카드 획득의 항구·날짜·현장·전수자·퀘스트
 			codexLevel = {},
+			encyclopediaBookmarkId = nil, -- [서재] 선택한 지식 1개의 책갈피. 기존 저장에는 없어도 된다.
 			tech = {},
 			careers = D.Careers.new(),
 			loadout = table.clone(D.Skills.DefaultLoadout),
@@ -289,12 +291,40 @@ return function(D)
 				end
 			end
 		end
+		-- [기존 저장 호환] 최초 발견 경위만 복원한다. 예전 카드에는 기록을 꾸며 넣지 않는다.
+		-- 카드마다 최초 1건만 보관하고, 서버에 존재하는 원본 카드·항구·인물·퀘스트·탐험지로 제한한다.
+		if type(saved.cardOrigins) == "table" then
+			local scholarIds, siteIds = {}, {}
+			for _, scholar in D.Scholars.Scholars do scholarIds[scholar.id] = true end
+			for _, site in D.Sites.Sites do siteIds[site.id] = true end
+			local methods = { discover = true, explore = true, research = true, visit = true, learn = true, quest = true, event = true, card = true }
+			for cardId, record in saved.cardOrigins do
+				if s.discovered[cardId] and type(record) == "table" then
+					s.cardOrigins[cardId] = {
+						portId = type(record.portId) == "string" and D.Ports.Ports[record.portId] and record.portId or nil,
+						day = math.floor(num(record.day, 0, 0, 1e6)),
+						method = type(record.method) == "string" and methods[record.method] and record.method or "discover",
+						scholarId = type(record.scholarId) == "string" and scholarIds[record.scholarId] and record.scholarId or nil,
+						questId = type(record.questId) == "string" and D.Quests.ById[record.questId] and record.questId or nil,
+						siteId = type(record.siteId) == "string" and siteIds[record.siteId] and record.siteId or nil,
+						eventId = type(record.eventId) == "string" and (D.Story.ById[record.eventId] or D.HistoryEvents.ById[record.eventId]) and record.eventId or nil,
+					}
+				end
+			end
+		end
 		if type(saved.codexLevel) == "table" then
 			for id, v in saved.codexLevel do
 				if D.Cards.ById[id] and s.discovered[id] and type(v) == "number" then
 					s.codexLevel[id] = math.clamp(math.floor(v), 0, 3)
 				end
 			end
+		end
+		-- [기존 세이브 호환] 새 책갈피는 이미 발견한 실재 카드 ID일 때만 복원한다.
+		-- 옛 세이브에는 키가 없으므로 빈 책갈피로 읽는다.
+		if type(saved.encyclopediaBookmarkId) == "string"
+			and D.Cards.ById[saved.encyclopediaBookmarkId]
+			and s.discovered[saved.encyclopediaBookmarkId] then
+			s.encyclopediaBookmarkId = saved.encyclopediaBookmarkId
 		end
 		if type(saved.tech) == "table" then
 			for id, v in saved.tech do
@@ -908,7 +938,9 @@ return function(D)
 			cargo = state.cargo,
 			basis = state.basis,
 			discovered = state.discovered,
+			cardOrigins = state.cardOrigins, -- 개인 백과 최초 발견 이력을 기존 저장 경로로 보존
 			codexLevel = state.codexLevel,
+			encyclopediaBookmarkId = state.encyclopediaBookmarkId, -- [서재] 한 항목만 저장해 폭증을 막는다.
 			tech = state.tech,
 			careers = state.careers,
 			loadout = state.loadout,

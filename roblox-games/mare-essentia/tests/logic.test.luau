@@ -61,6 +61,70 @@ end
 local ctx = { rng = rng, market = S.MarketClass.new() }
 
 local passed, failed = 0, 0
+-- [기존 검증 함수] 첫 세계 탐험 검사에서도 같은 책임 함수를 쓰도록 사용 전 선언한다.
+local function check(name, cond, detail)
+	if cond then
+		passed += 1
+	else
+		failed += 1
+		print("FAIL: " .. name .. (detail and (" -> " .. tostring(detail)) or ""))
+	end
+end
+
+-- [개인 세계 탐험 백과 회귀] 10대 항로 × 5장 단서와 실제 카드·항구·탐험지를 대조한다.
+do
+	local counts, total, issues = {}, 0, {}
+	local sites = {}
+	for _, site in D.Sites.Sites do sites[site.id] = site end
+	for _, q in D.Quests.Quests do
+		if q.routeId then
+			total += 1
+			counts[q.routeId] = (counts[q.routeId] or 0) + 1
+			local site = sites[q.exploreSite]
+			if not site or site.portId ~= q.portId or not table.find(site.pool, q.cardId) then
+				table.insert(issues, "현장·카드 연결: " .. q.id)
+			end
+			if not q.leadSource or q.leadSource == "" then
+				table.insert(issues, "단서 출처 없음: " .. q.id)
+			end
+			if #("route_clue:" .. q.id) >= 40 then
+				table.insert(issues, "기존 이야기 기록 키 길이 초과: " .. q.id)
+			end
+			local stage = tonumber(string.match(q.id, "_(%d+)$"))
+			if stage and stage > 1 then
+				local prev = q.after and D.Quests.ById[q.after]
+				if not prev or prev.routeId ~= q.routeId or prev.id ~= ("q_field_" .. q.routeId .. "_" .. tostring(stage - 1)) then
+					table.insert(issues, "선행 이야기 연결: " .. q.id)
+				end
+			end
+		end
+	end
+	local regions, correctStages = 0, true
+	for _, count in counts do
+		regions += 1
+		if count ~= 5 then correctStages = false end
+	end
+	check("세계 탐험 10대 항로", regions == 10)
+	check("항로별 연속 퀘스트 50장", total == 50 and correctStages)
+	check("항로별 실제 항구·현장·카드·전후 단서 연결", #issues == 0, table.concat(issues, ", "))
+
+	local first = S.State.new("england", 1700)
+	first.portId = "london"
+	local msgs = {}
+	local got = S.Discovery.grantCard(first, "site_stonehenge", msgs, { method = "explore", siteId = "salisbury_plain" })
+	local record = first.cardOrigins.site_stonehenge
+	check("개인 백과 최초 탐험 항구·탐험지", got == true and record and record.portId == "london" and record.siteId == "salisbury_plain" and record.method == "explore")
+	first.portId = "amsterdam"
+	local repeated = S.Discovery.grantCard(first, "site_stonehenge", {}, { method = "quest", questId = "q_first_discovery" })
+	check("기존 중복 발견 방지·최초 획득 이력 불변", repeated == false and first.cardOrigins.site_stonehenge.portId == "london")
+	local loaded = S.State.sanitize(S.State.serialize(first))
+	check("최초 발견 항구·탐험지 저장 왕복", loaded.cardOrigins.site_stonehenge.portId == "london" and loaded.cardOrigins.site_stonehenge.siteId == "salisbury_plain")
+	local legacy = S.State.serialize(first)
+	legacy.cardOrigins = nil
+	local oldSave = S.State.sanitize(legacy)
+	check("이전 저장 도감 유지·가짜 획득 경위 미생성", oldSave.discovered.site_stonehenge == true and next(oldSave.cardOrigins) == nil)
+end
+
 -- 거시경제 국면·미개발 특산 보정 (History.mult 에 항상 곱해진다)
 local function macroOf(st, portId, goodId)
 	local p = D.Ports.Ports[portId]
@@ -74,14 +138,6 @@ local function macroOf(st, portId, goodId)
 end
 local function near(a, b)
 	return math.abs(a - b) < 1e-9
-end
-local function check(name, cond, detail)
-	if cond then
-		passed += 1
-	else
-		failed += 1
-		print("FAIL: " .. name .. (detail and (" -> " .. tostring(detail)) or ""))
-	end
 end
 
 -- 왕궁 종사자 수는 기존 경제 거주자 표본 이내에서만 변한다(실제 시민/저장 구조 불변).
@@ -190,13 +246,16 @@ local function extraTests()
 	-- 앞당김이 사건 시기에 반영됨
 	local stX = newState("england")
 	stX.day = HE.dayOf(HE.ById.cook_voyage, 1700) - 100
+	-- [사건 검증] 앞선 사건은 완료한 상태로 두고, 쿡의 항해만 예정일 전 100일에 검사한다.
+	-- 현재 게임은 같은 항구에서 여러 자동 사건을 연속 예약하지 않으므로 이력만 임의 초기화하지 않는다.
+	for _, ev in HE.Events do
+		if ev.id ~= "cook_voyage" then stX.history.seen[ev.id] = 1 end
+	end
 	S.History.tick(stX)
 	local before = stX.history.pending
-	stX.history.pending = nil
-	stX.history.seen = {}
-	stX.pace = { days = 365 * 10, window = 0, used = 0 }
+	stX.pace = { days = 100, window = 0, used = 0 }
 	S.History.tick(stX)
-	check("속도: 학문·탐험 사건은 앞당김만큼 일찍 닥침", stX.history.pending ~= nil)
+	check("속도: 학문·탐험 사건은 앞당김만큼 일찍 닥침", before == nil and stX.history.pending == "cook_voyage", tostring(stX.history.pending))
 	local fixedEv = newState("england")
 	fixedEv.day = HE.dayOf(HE.ById.seven_years_war, 1700) - 100
 	fixedEv.pace = { days = 365 * 10, window = 0, used = 0 }
@@ -363,11 +422,14 @@ local function extraTests()
 	check("원더 연출: 모든 장면의 카드·원화·음악 분위기·자막이 있음", badScene == 0 and next(WSd.Scenes) ~= nil)
 	local stW = newState("england")
 	local msgsW: { any } = {}
-	S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
-	check("원더 연출: 원더 카드를 처음 발견하면 장면 예약", stW.pendingScene == "site_stonehenge")
-	stW.pendingScene = nil
-	S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
-	check("원더 연출: 이미 발견한 카드는 다시 예약하지 않음", stW.pendingScene == nil)
+	local coinsW, fameW = stW.coins, stW.fame
+	local gainedW = S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
+	-- [원더 발견] 최초 카드 출현은 비차단 획득 연출이고, 원더 장면은 기존 카드 상세의 다시 보기에서 유지한다.
+	-- 없어진 임시 장면 예약값을 검사하지 않고 실제 등록·보상·중복 방지를 확인한다.
+	check("원더 발견: 처음 획득하면 도감·보상 기록과 다시 보기 장면이 있음", gainedW and stW.discovered.site_stonehenge == true and stW.coins >= coinsW and stW.fame >= fameW and D.WonderScenes.Scenes.site_stonehenge ~= nil and stW.pendingScene == nil)
+	local coinsAfterW, fameAfterW = stW.coins, stW.fame
+	local duplicateW = S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
+	check("원더 발견: 이미 발견한 카드는 중복 보상하지 않음", not duplicateW and stW.pendingScene == nil and stW.coins == coinsAfterW and stW.fame == fameAfterW)
 	local stN = newState("england")
 	S.Discovery.grantCard(stN, "bot_tulip", msgsW)
 	check("원더 연출: 일반 카드는 장면 없음", stN.pendingScene == nil)

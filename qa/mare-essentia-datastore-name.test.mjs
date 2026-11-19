@@ -1,4 +1,3 @@
-// 파일명: qa/mare-essentia-datastore-name.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -12,6 +11,17 @@ const core=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/C
 test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증거를 남긴다',()=>{
   const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.equal(capture.length,241);
+  // [통합 표지 QA] 실제 시작 화면과 클릭 순서를 검사해 이전 버튼명 회귀를 차단한다.
+  assert.match(capture[4].code,/FindFirstChild\('TitleBackdrop'\)/);
+  assert.match(capture[4].code,/FindFirstChild\('TitlePanel'\)/);
+  assert.match(capture[6].code,/local pref=\{"프랑스"\}/);
+  assert.match(capture[9].code,/local pref=\{"상인 집안"\}/);
+  assert.match(capture[11].code,/local pref=\{"상인 집안"\}/);
+  assert.match(capture[16].code,/local pref=\{"출항하기"\}/);
+  // [모바일 큰 원화] 실제 전시 원화의 높이를 반영해 겹침을 검사한다.
+  assert.match(capture[87].code,/FindFirstChild\('FacilityGallery'\)/);
+  assert.match(capture[87].code,/expectedTop=gallery\.Position\.Y\.Offset\+gallery\.AbsoluteSize\.Y\+8/);
+  assert.match(capture[87].code,/content\.Position\.Y\.Offset==expectedTop/);
   assert.match(capture[4].code,/MARE_TITLE_NOT_READY_AFTER_50S;LOADING=/);
   assert.match(capture[4].code,/MareCoreStartStage/);
   assert.match(capture[4].code,/StartupStage/);
@@ -30,6 +40,103 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
   assert.match(core,/MareCoreStartStage", "session-ready"/);
   assert.match(core,/local STORE_NAME = "MareEssentia_v2"/);
   assert.match(core,/return "P_" \.\. player.UserId/);
+});
+
+test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가 회귀', () => {
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  assert.match(source,/currentTab ~= "map" and currentTab ~= "codex"/);
+  assert.match(source,/CodexQuickNavigation/);
+  assert.match(source,/ScholarTradeEncyclopediaBook/);
+  assert.match(source,/CodexBookLeftPage/);
+  assert.match(source,/CodexBookRightPage/);
+  assert.match(source,/CodexBookSpine/);
+  assert.match(source,/책 펼치기/);
+  assert.match(source,/showingNotes = not showingNotes/);
+  // 서재의 발견 현황은 백과 표지에만, 최근 메뉴는 다른 시설에서만 보여 준다.
+  assert.match(source,/H\.menuActionButton\.Text = actionText\n\s*-- \[서재 중복 제거\]/);
+  assert.match(source,/H\.menuRecentButton\.Name = "RecentFacilityShortcut"/);
+  assert.match(source,/recentBtn\.Name = "TradeRecentFacility"/);
+  assert.match(source,/recentBtn\.Name = "YardRecentFacility"/);
+  assert.doesNotMatch(source,/mkButton\(content, "↶ 최근 메뉴:/);
+  // [탭 본문 복구] 기존 교역·조선 상세 렌더러를 새 창 없이 같은 책의 탭에 배치한다.
+  assert.match(source,/local facilityDetail = currentTab == "trade" or currentTab == "yard"/);
+  assert.match(source,/root\.Name = "FacilityDetail"/);
+  assert.match(source,/detail\.Position = content\.Position/);
+  assert.match(source,/detail\.Size = content\.Size/);
+  assert.match(source,/if currentTab == "trade" then\s*if not mainInner:FindFirstChild\("FacilityDetail"\) then H\.tradeHall\(\) end/);
+  assert.match(source,/elseif currentTab == "yard" then\s*if not mainInner:FindFirstChild\("FacilityDetail"\) then H\.yardHall\(\) end/);
+  assert.doesNotMatch(source,/overlayGui\("TradeHallGui"/);
+  assert.match(source,/call\("Buy", \{ goodId = sel\.id, amount = qty \}\)/);
+  assert.match(source,/call\("Sell", \{ goodId = sel\.id, amount = math\.min\(qty, maxSell\) \}\)/);
+  assert.match(source,/root:GetPropertyChangedSignal\("AbsoluteSize"\)/);
+  assert.match(source,/chart\.Name = "ShipComparisonBars"/);
+  assert.match(source,/sortBar\.Name = "TradeSort"/);
+  assert.match(source,/H\.tradeProfit\(g, 1\)/);
+  // 게시판과 우편, 시장 소식은 거래 장부 바로 옆 '거래소·우편' 탭에서 유지한다.
+  assert.match(source,/id = "market", name = "거래소·우편"/);
+  assert.match(source,/tabs = \{ "trade", "market", "harbor" \}/);
+  assert.match(source,/function RENDERERS\.market\(\)/);
+  for(const action of ['MarketList','MarketPost','MarketBuy','MarketCancel','MailInbox','MailClaim','MailSend']){
+    assert.match(source,new RegExp('call\\("'+action+'"'));
+  }
+  // [서재] 보고·지식 백과·연구·세계 백과가 동일 탭창에서 전환되어야 한다.
+  assert.match(source,/tabs = \{ "scholar", "codex", "tech", "encyclopedia" \}/);
+  assert.match(source,/function RENDERERS\.scholar\(\)/);
+  assert.match(source,/function RENDERERS\.codex\(\)/);
+  assert.match(source,/function RENDERERS\.tech\(\)/);
+  assert.match(source,/function RENDERERS\.encyclopedia\(\)/);
+  assert.equal(capture.length,241);
+  assert.match(capture[39].code,/TRADE_TAB_DETAIL_NOT_VISIBLE/);
+  assert.match(capture[122].code,/TRADE_TAB_MENU_PASS/);
+  assert.match(capture[123].code,/TRADE_TAB_PRICES_AND_ACTIONS_PASS/);
+  assert.match(capture[127].code,/YARD_TAB_MENU_PASS/);
+  assert.match(capture[128].code,/SHIP_INLINE_COMPARISON_PASS/);
+});
+
+// [공통 시설 메뉴 회귀] 기존 게임 기능·본문 유지, 상단 오른쪽 가로탭과 모바일 전체폭을 확인한다.
+test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본문 공간을 복구한다', () => {
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const layout=source.slice(source.indexOf('function H.layoutBook()'),source.indexOf('mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)'));
+  const tabs=source.slice(source.indexOf('function H.renderTabs()'),source.indexOf('-- 모든 시설 창 오른쪽 위 모서리의 × 닫기 버튼'));
+  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  assert.match(source,/tabBar\.Name = "FacilityTabBar"/);
+  assert.match(source,/tabBar\.AnchorPoint = Vector2\.new\(1, 0\)/);
+  assert.match(source,/H\.tabStrip\.Name = "FacilityTabStrip"/);
+  assert.match(source,/H\.tabStrip\.ScrollingDirection = Enum\.ScrollingDirection\.X/);
+  assert.match(layout,/tabBar\.Position = UDim2\.new\(1, -8, 0, 68\)/);
+  assert.match(layout,/H\.tabWidth = tabWidth/);
+  assert.match(layout,/H\.tabStrip\.CanvasSize = UDim2\.fromOffset\(allTabsWidth, 0\)/);
+  assert.match(source,/local tabLayout = Instance\.new\("UIListLayout"\)/);
+  assert.match(source,/tabLayout\.FillDirection = Enum\.FillDirection\.Horizontal/);
+  assert.match(source,/tabLayout\.Wraps = false/);
+  assert.doesNotMatch(source,/local tabLayout = Instance\.new\("UIGridLayout"\)/);
+  assert.match(layout,/content\.Position = UDim2\.fromOffset\(8, bodyTop\)/);
+  assert.match(layout,/content\.Size = UDim2\.new\(1, -16, 1, -bodyTop - 8\)/);
+  assert.match(layout,/H\.facilityGallery\.Position = UDim2\.fromOffset\(8, bodyTop\)/);
+  assert.match(layout,/content\.Position = UDim2\.fromOffset\(artW \+ 16, bodyTop\)/);
+  assert.doesNotMatch(layout,/local navW\s*=/);
+  assert.match(tabs,/mkButton\(H\.tabStrip, TAB_NAME\[id\]/);
+  assert.equal(capture.length,241);
+  assert.equal(capture[88].name,'ui_mobile_tabs_topright');
+  for(const claim of ['MOBILE_TABS_NOT_ONE_ROW','MOBILE_TABS_NOT_TOP_RIGHT','MOBILE_LEFT_SPACE_NOT_RECLAIMED','MOBILE_TABS_WRAPPED_TO_SECOND_ROW','MOBILE_LAST_TAB_NOT_REACHABLE']){
+    assert.ok(capture[87].code.includes(claim),claim);
+  }
+});
+
+test('새 항해 첫 카드 창 오발동 차단과 가죽·양피지 버튼 계약', () => {
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  const buttonCode=source.slice(source.indexOf('local function mkButton('),source.indexOf('local function mkRow('));
+  assert.match(source,/pickBefore ~= pickKey/);
+  assert.match(source,/action ~= "State" and action ~= "NewGame" and action ~= "CardPick"/);
+  assert.match(source,/and not H.titleMenuOpen and not H.openingPending/);
+  assert.match(capture[29].code,/INTRO_UNEXPECTED_DECK_WINDOW/);
+  assert.doesNotMatch(buttonCode,/Color3\.fromRGB\(183, 226, 177\)/);
+  assert.doesNotMatch(buttonCode,/Color3\.fromRGB\(183, 215, 236\)/);
+  assert.match(buttonCode,/elseif good or travel then Color3\.fromRGB\(251, 237, 208\)/);
+  assert.match(source,/local groupWidth = statusWidth \+ recentWidth \+ 8/);
+  assert.equal(capture.length,241);
 });
 
 test('항구 장면의 소품 선택은 Luau 복수 반환 조건식 없이 실행된다', () => {
@@ -154,10 +261,12 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   // [세 원형 버튼·파티 HUD] 실제 터치 사각형은 가장자리까지 클릭되므로 12가지 화면 크기에서
   // 버튼끼리, 파티창·미니맵·조이스틱·카메라와 겹치지 않아야 한다. 실제 명중/스킬 판정은 보존한다.
   assert.ok(field.includes('addIcon(wbtn, "Menu/field_weapon")'));
-  assert.ok(field.includes('map.Position = if compactTouch then UDim2.fromOffset(226, 90)'));
+  assert.ok(field.includes('map.Name = "FieldMiniMap"'));
+  assert.ok(field.includes('map.Position = UDim2.fromOffset(226, 74)'));
   assert.ok(field.includes('if compactTouch then UDim2.new(1, -68, 1, -315)'));
   assert.ok(field.includes('if compactTouch then UDim2.new(1, -62, 1, -202)'));
-  assert.ok(field.includes('local partyWidth = if narrowParty then math.clamp(screen.X - 500, 100, 170) else 202'));
+  assert.ok(field.includes('local partyWidth = heroPanel.Size.X.Offset'));
+  assert.ok(field.includes('heroPanel.Position.Y.Offset + heroPanel.Size.Y.Offset + 6'));
   assert.ok(field.includes('lastTouchEnded = os.clock()'));
   assert.ok(field.includes('touchActive = true'));
   assert.ok(field.includes('if touchActive or os.clock() - lastTouchEnded < 0.45 then return end'));
@@ -175,18 +284,17 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
       height-(portrait?85:short?70:88),portrait||short?104:116,10);
     const dodge=rect(width-(portrait?62:235),
       height-(portrait?202:short?67:106),portrait?86:short?88:96);
-    const weapon=rect(width-(portrait?68:width<780?90:175),
+    const weapon=rect(width-(portrait?68:175),
       height-(portrait?315:short?181:225),portrait?76:short?72:80);
-    const map=box(portrait?226:236,portrait?90:74,
-      portrait?92:short?82:106,portrait?92:short?82:106);
-    const narrowParty=width>=600 && width<720 && width>height;
-    const partyWidth=narrowParty?Math.max(100,Math.min(170,width-500)):202;
-    const allies=width>=600 && width>height?
-      [box(356,74,partyWidth,height<350?44:52),
-       box(356,height<350?120:130,partyWidth,height<350?44:52)]:
-      [box(12,282,202,52),box(12,338,202,52)];
+    const mapSize=width<520?92:short?82:106;
+    const map=box(226,74,mapSize,mapSize);
+    const landscape=width>height;
+    const padSize=landscape?Math.min(150,Math.max(44,height-272)):150;
+    const pad=box(landscape&&height<316?226:28,height-(padSize<150?12:28)-padSize,padSize,padSize);
+    const allies=[box(12,162,202,44),box(12,210,202,44)];
+    assert.equal(overlaps(pad,allies[1]),false,width+'×'+height+' 동료/이동패드 HUD 겹침');
     const rest=[
-      ['이동패드',box(28,height-178,150,150)],
+      ['이동패드',pad],
       ['미니맵',map],['주인공',box(12,74,202,82)],
       ['카메라',box(width-120,12,108,44)],
       ['동료1',allies[0]],['동료2',allies[1]],
@@ -211,7 +319,8 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.match(field,/combatBtns\.dodge = \{ btn = b, label = "회피" \}/);
   assert.equal((field.match(/bindPress\(b, function\(\) useMove\("dodge"\) end\)/g)||[]).length,1,'회피 입력 중복 금지');
   assert.doesNotMatch(field,/FieldSkillCaption|Name = "FieldSkill_|local function mkSkill\(/);
-  assert.match(field,/timer\.Visible = false -- \[아이콘 전용\]/);
+  assert.match(field,/if timer then timer\.Visible = false end/);
+  assert.match(field,/shade\.BackgroundTransparency = 0\.24 \+ \(1 - fraction\) \* 0\.68/);
   assert.match(field,/equipped\.heavy, equipped\.sweep = true, false/);
   assert.match(field,/pl\.autoNormalHits % 5 == 0/);
   // [빠른 연타] 0.14초 지연된 이전 평타도 명중 당시 새 입력 여부와 관계없이 충전해야 한다.
@@ -368,9 +477,9 @@ test('원거리 화살 석궁은 실제 긴 축을 바로 세우고 3D 탄도·�
 test('유적 상호작용과 발견 화면의 모바일 잘림·조사 키 충돌을 방지한다',()=>{
   assert.ok(field.includes('note.Name = "FieldInteractionNote"'));
   assert.ok(field.includes('local expanded = duration ~= nil and duration > 2.2'));
-  assert.ok(field.includes('note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 244 else 256, 64)'));
-  assert.ok(field.includes('elseif narrowLandscape then UDim2.fromOffset(184, screen.Y - 108)'));
-  assert.ok(field.includes('elseif visualMobile then UDim2.fromOffset(184, 202)'));
+  assert.ok(field.includes('note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 elseif narrowLandscape then math.min(244, screen.X - 404) elseif visualMobile then 244 else 256, 64)'));
+  assert.ok(field.includes('elseif narrowLandscape then UDim2.fromOffset(226, screen.Y - 108)'));
+  assert.ok(field.includes('elseif visualMobile then UDim2.fromOffset(226, 210)'));
   assert.ok(field.includes('if questHud then questHud.Visible = not expanded end'));
   assert.ok(field.includes('if weatherHud then weatherHud.Visible = not expanded end'));
   assert.ok(field.includes('if questHud and questHud.Parent then questHud.Visible = true end'));
@@ -378,7 +487,7 @@ test('유적 상호작용과 발견 화면의 모바일 잘림·조사 키 충�
   // [모바일 가로] 유적 설명 3줄이 실제 공격/회피 터치 영역과 겹치지 않는지 확인한다.
   for(const [width,height] of [[600,340],[720,384],[832,384],[960,540]]){
     const narrow = width < 740;
-    const x = 184, y = narrow ? height - 108 : 202, w = 244, h = 64;
+    const x = 226, y = narrow ? height - 108 : 210, w = narrow ? Math.min(244,width-404) : 244, h = 64;
     const rect=(left,top,rw,rh)=>({left,top,right:left+rw,bottom:top+rh});
     const note=rect(x,y,w,h);
     const dodge=rect(width-98-146-53,height-98-66-53,106,106);
@@ -1149,7 +1258,7 @@ test('항구 주민·동료 남녀 4계열은 등록된 실제 3D 의상 메시�
   }
   assert.match(pose,/Pose\.applyRegisteredMobOutfit\(model\)/);
   assert.match(pose,/model:SetAttribute\("NpcAssetProfile"/);
-  assert.match(pose,/gender ~= "female" and beard == 2/);
+  assert.match(pose,/pcall\(drawFace, headPart\)/);
   assert.match(port,/extra\.female = female/);
   assert.match(port,/c\.id == "c_merian"/);
   assert.match(port,/people\.ChildAdded:Connect\(function\(asset\)/);
@@ -1582,7 +1691,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.match(pose,/elseif fallback and color\.R > 0\.80 and color\.G > 0\.80 and color\.B > 0\.80/);
   assert.match(pose,/math\.max\(color\.R, color\.G, color\.B\) - math\.min\(color\.R, color\.G, color\.B\) < 0\.09/);
   // [실물 스크린샷 회귀] 얼굴·치마·허리띠·중첩 상의가 다시 원통/흰 갑옷으로 돌아가지 않도록 고정.
-  assert.match(pose,/gui\.AlwaysOnTop = true/);
+  assert.doesNotMatch(pose,/MareFaceSurface/);
   assert.match(pose,/scalp\.Name = "HairScalp"/);
   assert.match(pose,/piece\.Name == fallbackName then piece\.Transparency = 1/);
   // [모델 후보 안전범위] 원래 시각 기준 대신 중앙정책에 허용된 정확한 숫자 범위와 수정을 검증한다.
@@ -2154,21 +2263,14 @@ test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox
 });
 
 
-// [실물 NPC 얼굴 회귀] 3D 얼굴 UI가 렌더되지 않아도 원본 R15 얼굴 데칼을 삭제하지 않는다.
+// 주민의 원본 얼굴 데칼을 보존하고 덧붙인 가면을 금지한다.
 test('R15 주민 얼굴은 공식 Studio 흰 얼굴 회귀를 막도록 기본 데칼을 보존한다',()=>{
   const source=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
   const start=source.indexOf('local function drawFace(');
   const end=source.indexOf('local function addHat(',start);
   assert.ok(start>=0 && end>start,'기존 책임 함수 확인');
   const face=source.slice(start,end);
-  assert.match(face,/gui\.Face\s*=\s*Enum\.NormalId\.Front/);
-  assert.match(face,/gui\.AlwaysOnTop\s*=\s*true/);
-  // [주민 실물] R15 곡면 UV와 분리된 용접 얼굴면·수염 크기를 유지한다.
-  assert.match(face,/surface\.Name\s*=\s*"MareFaceSurface"/);
-  assert.match(face,/surface\.Shape\s*=\s*Enum\.PartType\.Ball/);
-  assert.match(face,/gui\.Adornee\s*=\s*surface/);
-  assert.match(face,/w\.Part0, w\.Part1\s*=\s*head, surface/);
-  assert.match(face,/box\(100, 162, 56, 24, hair, 0, true\)/);
+  assert.doesNotMatch(face,/MareFaceSurface|SurfaceGui|WeldConstraint|Enum\.PartType\.Ball/);
   assert.match(face,/if not decal then[\s\S]*Instance\.new\("Decal"\)/);
   assert.match(face,/decal\.Face\s*=\s*Enum\.NormalId\.Front/);
   assert.match(face,/decal\.Texture\s*=\s*"rbxasset:\/\/textures\/face\.png"/);
@@ -2221,8 +2323,8 @@ test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치�
   assert.equal(verifiedStudioCapture({...studio, summary: {capturedFrames: 1}}, photos, revision), false);
 
   // [디자인 특화 AI] 정확히 존재하는 원본 한 줄을 동일 문맥의 시각 표현으로만 교체한다.
-  const oldPose = '\tgui.LightInfluence = 0.6';
-  const newPose = '\tgui.LightInfluence = 0.35';
+  const oldPose = '\tdecal.Transparency = 0';
+  const newPose = '\tdecal.Transparency = 0.05';
   const oldPort = '\tlocal harborColor = Color3.fromRGB(51, 40, 30)';
   const newPort = '\tlocal harborColor = Color3.fromRGB(60, 45, 32)';
   const issue = (category, screenshot) => ({category, screenshot, severity: 'medium',
@@ -2790,8 +2892,8 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
   const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   const trade=source.slice(source.indexOf('local function openTradeHall()'),source.indexOf('H.tradeHall = openTradeHall'));
   const yard=source.slice(source.indexOf('function openYardHall()'),source.indexOf('H.yardHall = openYardHall'));
-  assert.match(source,/width < math\.max\(450, left \+ btnWidth \+ 240\)/,'중간 폭 메뉴에서도 버튼과 설명 분리');
-  assert.match(source,/local iconPx = if it\.portrait then 164 else 148/,'기존 시설 원화·초상 확대');
+  assert.match(source,/width < math\.max\(520, left \+ btnWidth \+ 240\)/,'중간 폭 메뉴에서도 버튼과 설명 분리');
+  assert.match(source,/local iconPx = if quick then 66 elseif it.portrait then 164 else 148/,'기존 모바일 한눈형은 유지하고 일반 시설 원화·초상 확대');
   assert.match(trade,/art\.Name = "TradeHighResArt"/,'승인 고화질 교역품 원화 유지');
   assert.match(trade,/local artId = AssetIds\["Goods\/" \.\. sel\.id\]/,'기존 등록 원화만 사용');
   assert.match(trade,/modelIcon\(pages, gi\[1\], gi\[2\]/,'원화가 없는 교역품은 기존 3D 렌더러 유지');
@@ -2821,4 +2923,15 @@ test('AI 디자인이 교역·선박·서재·주점·선장실 등 방문 메�
   assert.match(source,/trade goods previews, shipyard/,'무료 AI 디자인 검수 확장');
   assert.match(source,/Only change visual constants on EXISTING exact source lines shown in anchors/,
     '게임 규칙 변경을 막는 기존 검수 경계 유지');
+});
+
+// [교역품 실증] 기존 공식 4장 제한을 유지하되 교역 화면을 대표 사진에서 누락하지 않는다.
+test('무료 AI 디자인 리뷰가 교역품 실촬영을 우선 전송한다',()=>{
+  const source=fs.readFileSync('tools/company-nemotron-design-review.mjs','utf8');
+  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-tradehall.json','utf8'));
+  assert.match(source,/const ordered = selectedRole === 'UI'/);
+  assert.match(source,/Number\(cargoFrame\.test\(b\)\) - Number\(cargoFrame\.test\(a\)\)/);
+  assert.ok(capture.filter(row=>row.type==='capture' && /^trade_goods/.test(row.name)).length>=2,
+    '실제 교역품 화면을 사전·사후로 촬영해야 한다');
+  assert.match(source,/Skip cargo that is not shown/);
 });

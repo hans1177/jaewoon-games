@@ -117,16 +117,20 @@ jobs:
             echo "studio already queued/running for $game on $head, skip duplicate"
             exit 0
           fi
-          # [다섯 분야 교대] 마을·메뉴·탐험·무기·선박을 한 번에 반복 촬영하지 않는다.
+          # [분야별 독립 촬영] 주민·교역·지상전·해전 검사는 각각 새 세션에서 실행한다.
           script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json
           if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
-            slot=$(( ($(date -u +%s) / 600) % 5 ))
+            slot=$(( ($(date -u +%s) / 600) % 9 ))
             case "$slot" in
               0) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-town.json ;;
               1) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json ;;
               2) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-regions.json ;;
               3) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-weapons.json ;;
               4) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json ;;
+              5) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-sparring.json ;;
+              6) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-tradehall.json ;;
+              7) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-fieldcombat.json ;;
+              8) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-navalrt.json ;;
             esac
             echo "STUDIO_ROTATION_SLOT=$slot"
             echo "STUDIO_ROTATION_SCRIPT=$script"

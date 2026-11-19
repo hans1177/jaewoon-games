@@ -695,19 +695,24 @@ return function(D, S)
 			end
 		end
 
-		-- [세계 현장 탐험] 어느 항구에서든 8개 권역의 다음 목적지를 알 수 있게 한다.
+		-- [세계 현장 탐험] 10대 지역별 이야기 항로의 다음 목적지와 단서 유형을 표시한다.
 		-- 서버가 기존 완료 기록과 선행 단계로 계산하므로 새로운 저장 상태는 필요하지 않다.
 		view.quests.fieldRoutes = {}
+		local routeIds = {}
 		for _, q in D.Quests.Quests do
+			if q.routeId then routeIds[q.routeId] = true end
 			if q.exploreSite and not state.quests.done[q.id] and (not q.after or state.quests.done[q.after]) then
 				local destination = D.Ports.Ports[q.portId]
 				table.insert(view.quests.fieldRoutes, {
 					name = q.name, grade = D.Quests.Grade(q),
 					port = destination and destination.name or q.portId,
 					summary = q.summary, here = q.portId == state.portId,
+					routeId = q.routeId, routeName = q.routeName, leadSource = q.leadSource,
 				})
 			end
 		end
+		view.quests.routeCount = 0
+		for _ in routeIds do view.quests.routeCount += 1 end
 		table.sort(view.quests.fieldRoutes, function(a, b)
 			if a.here ~= b.here then return a.here end
 			return a.name < b.name
@@ -715,6 +720,8 @@ return function(D, S)
 
 		-- 도감
 		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {}, methods = {}, kinds = {}, rarities = {}, resources = {}, resourceCounts = {}, worldCounts = {}, topicCounts = {}, evidenceCounts = {} }
+		-- [독서 기록] 서버에서 검증된 현재 책갈피만 클라이언트에 전달한다.
+		view.codex.bookmarkId = if state.encyclopediaBookmarkId and state.discovered[state.encyclopediaBookmarkId] then state.encyclopediaBookmarkId else nil
 		local fieldDiscipline = {}
 		for _, disc in D.KnowledgeTree.Disciplines do
 			fieldDiscipline[disc.field] = disc
@@ -725,6 +732,22 @@ return function(D, S)
 		-- [자동 개체 그래프] 기존 정규 원천(탐험지 카드풀, 실물 상품→지식, 연구 선행 노드)에서 직접 연결한다.
 		-- 새 카드/유적/교역품을 기존 표에 추가하면 관계도 자동 늘어나며 중복 저장/외부 서버 요청이 없다.
 		local linkedSites, resourceLinks, explorationLinks = {}, {}, {}
+		local scholarNames = {}
+		for _, scholar in D.Scholars.Scholars do scholarNames[scholar.id] = scholar.name end
+		-- [지식→다음 이야기] 방금 완수한 지역 카드가 다음 퀘스트를 여는 원인을 역산한다.
+		-- 저장을 늘리거나 보상을 재발급하지 않고 기존 after·done 관계만 사용한다.
+		local nextRouteByQuest, nextRouteByCard = {}, {}
+		for _, q in D.Quests.Quests do
+			if q.routeId and q.after then nextRouteByQuest[q.after] = q end
+		end
+		for _, q in D.Quests.Quests do
+			if q.routeId and q.cardId and state.quests.done[q.id] then
+				local nextQuest = nextRouteByQuest[q.id]
+				if nextQuest and not state.quests.done[nextQuest.id] then
+					nextRouteByCard[q.cardId] = nextQuest
+				end
+			end
+		end
 		for _, site in D.Sites.Sites do
 			linkedSites[site.id] = site.name
 			for _, cardId in site.pool do
@@ -811,6 +834,11 @@ return function(D, S)
 			-- [근거 분류] 미발견 카드는 근거 유형을 공개하지 않고, 완료된 카드만 집계.
 			if found then view.codex.evidenceCounts[evidenceId] = (view.codex.evidenceCounts[evidenceId] or 0) + 1 end
 			local art = D.CardArt.Art[c.id]
+			local origin = found and state.cardOrigins and state.cardOrigins[c.id] or nil
+			local originPort = origin and origin.portId and D.Ports.Ports[origin.portId] or nil
+			local originQuest = origin and origin.questId and D.Quests.ById[origin.questId] or nil
+			local originEvent = origin and origin.eventId and (D.Story.ById[origin.eventId] or D.HistoryEvents.ById[origin.eventId]) or nil
+			local originNames = { explore = "현장 탐험", learn = "인물 전수", quest = "퀘스트 완료", visit = "항구 발견", research = "문헌 연구", event = "이야기 사건", discover = "발견", card = "카드 보상" }
 			table.insert(view.codex.cards, {
 				id = c.id,
 				field = c.field,
@@ -835,6 +863,21 @@ return function(D, S)
 				-- 존재 형태·시대·지역·선행 지식은 카드 종류와 독립적으로 도감에 전달한다.
 				era = c.meta and c.meta.era or nil,
 				region = c.meta and c.meta.region and D.Ports.Ports[c.meta.region] and D.Ports.Ports[c.meta.region].name or (c.visitPort and D.Ports.Ports[c.visitPort] and D.Ports.Ports[c.visitPort].name) or nil,
+				-- [개인 백과] 자료의 대표 지역과 실제 플레이어 최초 습득 장소를 구별한다.
+				nextClue = if found and nextRouteByCard[c.id] then {
+					quest = nextRouteByCard[c.id].name,
+					port = D.Ports.Ports[nextRouteByCard[c.id].portId] and D.Ports.Ports[nextRouteByCard[c.id].portId].name or nil,
+					source = nextRouteByCard[c.id].leadSource,
+				} else nil,
+				provenance = if origin then {
+					port = originPort and originPort.name or "위치 미상",
+					day = origin.day,
+					method = originNames[origin.method] or "발견",
+					person = origin.scholarId and scholarNames[origin.scholarId] or nil,
+					quest = originQuest and originQuest.name or nil,
+					site = origin.siteId and linkedSites[origin.siteId] or nil,
+					event = originEvent and originEvent.title or nil,
+				} else nil,
 				prerequisites = cardNode and cardNode.needs or {},
 				domain = domain and D.KnowledgeTree.DomainById[domain] and D.KnowledgeTree.DomainById[domain].name or "기타",
 				rarityGuide = S.Discovery.rarityGuide(c),

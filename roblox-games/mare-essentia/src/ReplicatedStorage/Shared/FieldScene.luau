@@ -442,21 +442,21 @@ local function btn(parent, text, color, size, pos, anchor)
 		grain.ZIndex = b.ZIndex + 1
 		grain.Parent = b
 	end
-	-- 스킬만 사용: 원형/직사각 버튼 모두 실제 남은 재사용 시간을 그림 위에 보여 준다.
+	-- [쿨타임] 버튼 아이콘 자체가 어두워졌다 서서히 밝아지며 준비 시 테두리만 반짝인다.
 	local shade = Instance.new("Frame")
 	shade.Name = "FieldCooldownShade"
 	shade.AnchorPoint = Vector2.new(0, 1)
 	shade.Position = UDim2.fromScale(0, 1)
-	shade.Size = UDim2.fromScale(1, 0)
-	shade.BackgroundColor3 = Color3.fromRGB(13, 22, 32)
+	shade.Size = UDim2.fromScale(1, 1)
+	shade.BackgroundColor3 = Color3.fromRGB(43, 33, 25)
 	shade.BackgroundTransparency = 0.24
 	shade.BorderSizePixel = 0
 	shade.Visible = false
 	shade.Active = false
 	shade.ZIndex = b.ZIndex + 4
 	shade.Parent = b
-	-- [스킬 재사용 시각화] 원형 메달 안에서는 마스킹과 초 단위 숫자,
-	-- 아래에서는 남은 시간 비율을 표시한다. 빠른 화면에서도 글자 크기는 고정한다.
+	-- [지상 재사용 연출] 초 숫자를 표시하지 않고 음영·아이콘·가장자리 빛으로 충전 상태를 알린다.
+    -- 기존 쿨타임 판정·모션 버튼은 그대로 사용한다.
 	local ring = Instance.new("UICorner")
 	ring.CornerRadius = UDim.new(1, 0)
 	ring.Parent = shade
@@ -486,6 +486,7 @@ local function btn(parent, text, color, size, pos, anchor)
 	timer.TextStrokeColor3 = Color3.fromRGB(11, 17, 25)
 	timer.TextStrokeTransparency = 0.24
 	timer.Visible = false
+    timer.Text = ""
 	timer.ZIndex = b.ZIndex + 5
 	timer.Parent = b
 	local pressScale = Instance.new("UIScale")
@@ -1318,6 +1319,14 @@ function FieldScene.start(opts)
 		UDim2.new(1, -12, 0, 12), Vector2.new(1, 0))
 	cameraBtn.Name = "FieldCameraMode"
 	cameraBtn.TextSize = 14
+	-- [시야 버튼] 전투 아이콘용 장식을 걷어 텍스트 대비를 확보한다.
+	cameraBtn.TextYAlignment = Enum.TextYAlignment.Center
+	cameraBtn.TextStrokeTransparency = 1
+	cameraBtn:FindFirstChildOfClass("UIStroke").ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	local cameraGradient = cameraBtn:FindFirstChildOfClass("UIGradient")
+	if cameraGradient then cameraGradient:Destroy() end
+	local cameraGrain = cameraBtn:FindFirstChild("FieldLeatherTexture")
+	if cameraGrain then cameraGrain:Destroy() end
 	cameraBtn.Activated:Connect(function()
 		if finished then return end
 		local nextIndex = cameraIndex % #cameraModes + 1
@@ -1444,7 +1453,7 @@ function FieldScene.start(opts)
 	local note = label(gui, "", 14, Color3.fromRGB(255, 220, 160))
 	note.Name = "FieldInteractionNote"
 	note.AnchorPoint = if compactTouch then Vector2.zero else Vector2.new(0.5, 0)
-	note.Position = if compactTouch then UDim2.fromOffset(12, 158) else UDim2.new(0.5, 0, 0, 46)
+	note.Position = if compactTouch then UDim2.fromOffset(12, 260) else UDim2.new(0.5, 0, 0, 46)
 	note.Size = UDim2.fromOffset(if compactTouch then 206 else 320, 22)
 	note.BackgroundColor3 = Color3.fromRGB(19, 29, 40)
 	note.TextStrokeTransparency = 0.16
@@ -1475,18 +1484,18 @@ function FieldScene.start(opts)
 		local narrowLandscape = visualMobile and not compactTouch and screen.X < 740 and screen.X > screen.Y
 		-- 폭 740 미만 가로형에서는 긴 안내가 퀘스트·날씨와 같은 영역을 사용하므로 잠깐 숨긴다.
 		-- 새 전투 알림이 덮어쓰더라도 마지막 메시지의 종료 시점에 원래 정보열을 복원한다.
-		local questHud = if narrowLandscape then gui:FindFirstChild("FieldQuestHint") else nil
-		local weatherHud = if narrowLandscape then gui:FindFirstChild("FieldWeatherClock") else nil
+		local questHud = if visualMobile and not compactTouch then gui:FindFirstChild("FieldQuestHint") else nil
+		local weatherHud = if visualMobile and not compactTouch then gui:FindFirstChild("FieldWeatherClock") else nil
 		if questHud then questHud.Visible = not expanded end
 		if weatherHud then weatherHud.Visible = not expanded end
 		note.AnchorPoint = if compactTouch or (expanded and visualMobile) then Vector2.zero else Vector2.new(0.5, 0)
 		note.Position = if expanded then
 			(if compactTouch then UDim2.fromOffset(12, 398)
-				elseif narrowLandscape then UDim2.fromOffset(184, screen.Y - 108)
-				elseif visualMobile then UDim2.fromOffset(184, 202)
+				elseif narrowLandscape then UDim2.fromOffset(226, screen.Y - 108)
+				elseif visualMobile then UDim2.fromOffset(226, 210)
 				else UDim2.new(0.5, 0, 0, 190))
-			elseif compactTouch then UDim2.fromOffset(12, 158) else UDim2.new(0.5, 0, 0, 46)
-		note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 244 else 256, 64)
+			elseif compactTouch then UDim2.fromOffset(12, 260) else UDim2.new(0.5, 0, 0, 46)
+		note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 elseif narrowLandscape then math.min(244, screen.X - 404) elseif visualMobile then 244 else 256, 64)
 			else UDim2.fromOffset(if compactTouch then 206 else 320, 22)
 		note.TextWrapped = expanded
 		note.TextYAlignment = Enum.TextYAlignment.Center
@@ -1716,12 +1725,8 @@ function FieldScene.start(opts)
 
 	local questHint = label(gui, "", 13, Color3.fromRGB(254, 229, 162))
 	questHint.Name = "FieldQuestHint"
-	-- [모바일 퀘스트] 가로 화면에서는 이동 조이스틱 및 동료 HUD와 분리한다.
-	questHint.Position = if compactTouch then UDim2.fromOffset(12, 186)
-		elseif visualMobile and not compactTouch and workspace.CurrentCamera
-			and workspace.CurrentCamera.ViewportSize.X < 720
-			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 256)
-		elseif visualMobile then UDim2.fromOffset(12, 158) else UDim2.fromOffset(12, 173)
+	-- [퀘스트 HUD] 주인공과 동료의 왼쪽 상태열을 비워 둔다.
+	questHint.Position = if compactTouch then UDim2.fromOffset(12, 286) else UDim2.fromOffset(226, 210)
 	questHint.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 212 else 230, 42)
 	questHint.TextWrapped = true
 	questHint.TextXAlignment = Enum.TextXAlignment.Left
@@ -2151,12 +2156,8 @@ function FieldScene.start(opts)
 		local flashUntil, flashNext = 0, clockStart + 16
 		local timeLabel = label(gui, "", 13, Color3.fromRGB(231, 239, 244))
 		timeLabel.Name = "FieldWeatherClock"
-		-- [기후 HUD] 모바일 가로에서 왼쪽 이동패드를 덮지 않게 오른쪽 정보열로 이동.
-		timeLabel.Position = if compactTouch then UDim2.fromOffset(12, 232)
-			elseif visualMobile and not compactTouch and workspace.CurrentCamera
-			and workspace.CurrentCamera.ViewportSize.X < 720
-			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 304)
-			elseif visualMobile then UDim2.fromOffset(184, 270) else UDim2.fromOffset(12, 216)
+		-- [기후 HUD] 퀘스트 바로 아래에 배치한다.
+		timeLabel.Position = if compactTouch then UDim2.fromOffset(12, 332) else UDim2.fromOffset(226, 256)
 		timeLabel.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 252 else 300, 26)
 		timeLabel.TextSize = 12
 		timeLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -2424,7 +2425,8 @@ function FieldScene.start(opts)
 			elseif visualMobile then 106 else 120, 130
 		local map = Instance.new("Frame")
 		map.AnchorPoint = Vector2.new(0, 0)
-		map.Position = if compactTouch then UDim2.fromOffset(226, 90) else UDim2.fromOffset(236, 74)
+		map.Name = "FieldMiniMap"
+		map.Position = UDim2.fromOffset(226, 74)
 		map.Size = UDim2.fromOffset(MM, MM)
 		map.BackgroundColor3 = Color3.fromRGB(16, 24, 30)
 		map.BackgroundTransparency = 0.35
@@ -2466,6 +2468,49 @@ function FieldScene.start(opts)
 		mec.CornerRadius = UDim.new(1, 0)
 		mec.Parent = me
 		me.Parent = map
+		-- [탐험 동료 대화] 영입된 실제 동료의 기존 개인사와 현장 좌표/전투를 엮어 중앙에 한마디씩 보여 준다.
+		-- 게임 보상·호감도·드랍 판정은 건드리지 않는다. 한 번에 한 대사만 비차단으로 표시한다.
+		local companionRows = opts.allies or {}
+		local talkHistory = require(script.Parent:WaitForChild("CompanionTalk")).Talk
+		local talkRng = Random.new(math.floor(os.clock() * 1000) % 2147483647)
+		local dialogueFrame, speakerLabel, speechLabel = nil, nil, nil
+		local nextTalkAt, lastSpeech, dialogueSerial = os.clock() + 3.5, "", 0
+		if #companionRows > 0 then
+			dialogueFrame = Instance.new("Frame")
+			dialogueFrame.Name = "FieldCompanionDialogue"
+			dialogueFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+			dialogueFrame.Position = UDim2.fromScale(0.5, if workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.Y < 350 then 0.68 else 0.57)
+			dialogueFrame.Size = UDim2.new(if compactTouch then 0.62 else 0.45, 0, 0, if compactTouch then 76 else 70)
+			dialogueFrame.BackgroundColor3 = Color3.fromRGB(29, 35, 47)
+			dialogueFrame.BackgroundTransparency = 0.13
+			dialogueFrame.BorderSizePixel = 0
+			dialogueFrame.Active = false
+			dialogueFrame.ZIndex = 10
+			dialogueFrame.Visible = false
+			dialogueFrame.Parent = gui
+			local rounded = Instance.new("UICorner")
+			rounded.CornerRadius = UDim.new(0, 10)
+			rounded.Parent = dialogueFrame
+			local border = Instance.new("UIStroke")
+			border.Color = Color3.fromRGB(222, 184, 112)
+			border.Thickness = 1.7
+			border.Parent = dialogueFrame
+			speakerLabel = label(dialogueFrame, "", 15, Color3.fromRGB(255, 220, 143))
+			speakerLabel.Name = "FieldCompanionSpeaker"
+			speakerLabel.Position = UDim2.fromOffset(12, 5)
+			speakerLabel.Size = UDim2.new(1, -24, 0, 21)
+			speakerLabel.TextXAlignment = Enum.TextXAlignment.Left
+			speakerLabel.TextTruncate = Enum.TextTruncate.AtEnd
+			speakerLabel.ZIndex = 11
+			speechLabel = label(dialogueFrame, "", if compactTouch then 13 else 15, Color3.fromRGB(252, 245, 223))
+			speechLabel.Name = "FieldCompanionLine"
+			speechLabel.Position = UDim2.fromOffset(12, 27)
+			speechLabel.Size = UDim2.new(1, -24, 1, -31)
+			speechLabel.TextXAlignment = Enum.TextXAlignment.Left
+			speechLabel.TextYAlignment = Enum.TextYAlignment.Top
+			speechLabel.TextWrapped = true
+			speechLabel.ZIndex = 11
+		end
 		local acc = 0
 		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
 			acc += dt
@@ -2478,6 +2523,78 @@ function FieldScene.start(opts)
 				return
 			end
 			local p0 = hrp0.Position
+			if dialogueFrame and os.clock() >= nextTalkAt then
+				local speaker = companionRows[talkRng:NextInteger(1, #companionRows)]
+				local speakerId = if type(speaker) == "table" then tostring(speaker.id or "") else ""
+				local speakerName = if type(speaker) == "table" then tostring(speaker.name or "동료") else tostring(speaker)
+				local nearEnemy = false
+				for _, hostile in enemies do
+					if hostile.root and hostile.root.Parent and not hostile.ac.dead
+						and (hostile.root.Position - p0).Magnitude < 35 then
+						nearEnemy = true
+						break
+					end
+				end
+				local nearbyDiscovery, nearestDistance = nil, math.huge
+				for _, point in folder:GetChildren() do
+					if point:IsA("BasePart") and string.sub(point.Name, 1, 9) == "Discovery" then
+						local distance = (point.Position - p0).Magnitude
+						if distance < nearestDistance then
+							nearbyDiscovery, nearestDistance = point, distance
+						end
+					end
+				end
+				local kind = talkRng:NextInteger(1, 6)
+				local speech, category
+				if nearEnemy and kind <= 3 then
+					local battleLines = {
+						"정면에서 무리하지 마세요. 적의 공격 뒤가 빈틈이에요!",
+						"적이 가까워요. 회피하고 빈틈을 노려요.",
+						"지금은 흩어지지 말고 서로의 뒤를 봐요.",
+						"주변을 살펴요. 다른 적이 끼어들 수 있어요.",
+					}
+					speech, category = battleLines[talkRng:NextInteger(1, #battleLines)], "전투 조언"
+				elseif nearbyDiscovery and kind <= 4 then
+					local offset = nearbyDiscovery.Position - p0
+					local direction = if math.abs(offset.X) >= math.abs(offset.Z)
+						then (if offset.X >= 0 then "동쪽" else "서쪽")
+						else (if offset.Z >= 0 then "남쪽" else "북쪽")
+					local rangeText = if nearestDistance < 25 then "바로 근처" elseif nearestDistance < 70 then "조금 앞" else "멀리"
+					speech = string.format("%s %s에 발견물의 흔적이 있어요. 지도를 확인해요.", direction, rangeText)
+					category = "발견물 힌트"
+				else
+					local lines = talkHistory[speakerId] and talkHistory[speakerId][1]
+					if lines and #lines > 0 and kind >= 3 then
+						speech, category = lines[talkRng:NextInteger(1, #lines)], "개인 이야기"
+					else
+							local feelings = {
+							"이곳의 공기는 항구와 전혀 다르네요. 조금 설레요.",
+							"오늘은 낯선 풍경을 오래 기억하고 싶어요.",
+							"멀리 떠나온 가족들이 문득 생각나요.",
+							"함께 걸으니 조금은 마음이 놓여요.",
+							"무사히 돌아가면 따뜻한 식사가 그립겠어요.",
+						}
+							speech, category = feelings[talkRng:NextInteger(1, #feelings)], "동료의 마음"
+					end
+				end
+				if speech == lastSpeech then
+					speech = if nearbyDiscovery then "발견물이 남아 있어요. 금빛 지점을 따라가 봐요."
+						else "함께 탐험하니 새로운 이야기가 쌓이네요."
+				end
+				lastSpeech = speech
+				dialogueSerial += 1
+				local serial = dialogueSerial
+				speakerLabel.Text = speakerName .. " · " .. category
+				speechLabel.Text = speech
+				dialogueFrame:SetAttribute("FieldDialogueKind", category)
+				dialogueFrame.Visible = true
+				nextTalkAt = os.clock() + talkRng:NextNumber(12, 18)
+				task.delay(5.8, function()
+					if dialogueFrame and dialogueFrame.Parent and dialogueSerial == serial then
+						dialogueFrame.Visible = false
+					end
+				end)
+			end
 			local used = 0
 			local function place(worldPos: Vector3, color: Color3, size: number, clampEdge: boolean): boolean
 				local off = Vector2.new(worldPos.X - p0.X, worldPos.Z - p0.Z) / RADIUS
@@ -6696,9 +6813,10 @@ function FieldScene.start(opts)
 				elseif visualMobile then 80 else 82),
 			if compactTouch then UDim2.new(1, -68, 1, -315)
 				elseif visualMobile then UDim2.new(1,
-					if workspace.CurrentCamera.ViewportSize.X < 780 then -90 else -175,
+					-175,
 					1, if workspace.CurrentCamera.ViewportSize.Y < 330 then -181 else -225)
-				else UDim2.new(1, attackBtn.Position.X.Offset - 12, 1, attackBtn.Position.Y.Offset - 182),
+				else UDim2.new(1, if workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.Y < 440
+					then -175 else attackBtn.Position.X.Offset - 12, 1, attackBtn.Position.Y.Offset - 182),
 			Vector2.new(0.5, 0.5))
 		wbtn.Name = "FieldWeapon"
 		wbtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
@@ -7090,17 +7208,21 @@ function FieldScene.start(opts)
 			end
 			local left = (pl.cd[key] or 0) - now
 			local shade = sb.btn:FindFirstChild("FieldCooldownShade")
-			local timer = sb.btn:FindFirstChild("FieldCooldownTime")
 			local duration = if string.sub(key, 1, 4) == "card" then 8 else (AC.Moves[key] and AC.Moves[key].cooldown) or 4
-			if shade and timer then
+			if shade then
+				local fraction = math.clamp(left / math.max(duration, 0.1), 0, 1)
 				shade.Visible = left > 0
-				timer.Visible = false -- [아이콘 전용] 재사용 숫자 대신 기존 진행 막대만 표시한다.
-				shade.Size = UDim2.fromScale(1, math.clamp(left / math.max(duration, 0.1), 0, 1))
+				shade.Size = UDim2.fromScale(1, 1)
+				shade.BackgroundTransparency = 0.24 + (1 - fraction) * 0.68
+				local timer = sb.btn:FindFirstChild("FieldCooldownTime")
+				if timer then timer.Visible = false end
 				local track = sb.btn:FindFirstChild("FieldCooldownTrack")
-				local fill = track and track:FindFirstChild("FieldCooldownProgress")
-				if track and fill then
-					track.Visible = left > 0
-					fill.Size = UDim2.fromScale(1 - math.clamp(left / math.max(duration, 0.1), 0, 1), 1)
+				if track then track.Visible = false end
+				local icon = sb.btn:FindFirstChild("FieldButtonIcon")
+				if icon and icon:IsA("ImageLabel") then
+					icon.ImageTransparency = if left > 0 then fraction * 0.42 else 0
+                    icon.ImageColor3 = if left > 0 then Color3.fromRGB(208, 190, 160):Lerp(Color3.fromRGB(97, 88, 83), fraction)
+                        else Color3.fromRGB(255, 251, 224)
 				end
 				if left > 0 then
 					sb.wasCooling = true
@@ -7108,13 +7230,28 @@ function FieldScene.start(opts)
 					sb.wasCooling = false
 					local stroke = sb.btn:FindFirstChildOfClass("UIStroke")
 					if stroke then
-						stroke.Color = Color3.fromRGB(100, 248, 178)
-						stroke.Thickness = 3
-						TweenService:Create(stroke, TweenInfo.new(0.45), { Color = Color3.fromRGB(224, 184, 105), Thickness = 2 }):Play()
+						stroke.Color = Color3.fromRGB(255, 247, 164)
+                        stroke.Thickness = 5
+                        TweenService:Create(stroke, TweenInfo.new(0.48, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                            Color = if key == "dodge" then Color3.fromRGB(114, 244, 228) else Color3.fromRGB(224, 184, 105),
+                            Thickness = if key == "dodge" then 3.2 else 2,
+                        }):Play()
+                    end
+                    -- [지상 준비 완료] 엄지 위치에서 한 번 크게 숨쉬듯 확대 후 복귀한다.
+                    local readyScale = sb.btn:FindFirstChildOfClass("UIScale")
+                    if readyScale then
+                        readyScale.Scale = 1.12
+                        TweenService:Create(readyScale, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+                    end
+                    local readyIcon = sb.btn:FindFirstChild("FieldButtonIcon")
+                    if readyIcon and readyIcon:IsA("ImageLabel") then
+                        readyIcon.ImageColor3 = Color3.fromRGB(255, 245, 180)
+                        TweenService:Create(readyIcon, TweenInfo.new(0.48), {
+                            ImageColor3 = Color3.fromRGB(255, 251, 224),
+                        }):Play()
 					end
 				end
 			end
-			sb.btn.BackgroundTransparency = if left > 0 then 0.14 else 0
 			sb.btn:SetAttribute("CooldownRemaining", math.max(0, left))
 		end
 	end))
@@ -7934,16 +8071,13 @@ function FieldScene.start(opts)
 						-- 고정 체력 표시를 두고 실제 공격·스킬 사용량에 따른 전투 에너지만 시각적으로 갱신한다.
 						local status = Instance.new("Frame")
 						status.Name = "FieldAllyStatus" .. i
-						-- [파티 HUD] 가로형은 미니맵 옆의 상단 상태열, 세로형은 퀘스트 아래.
-						-- 600~719 너비에서는 좌측 미니맵·우측 무기교체 사이의 실제 가용폭만 사용한다.
-						local screen = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
-						local narrowParty = screen.X >= 600 and screen.X < 720 and screen.X > screen.Y
-						local partyWidth = if narrowParty then math.clamp(screen.X - 500, 100, 170) else 202
-						status.Position = if screen.X >= 600 and screen.X > screen.Y then
-							UDim2.fromOffset(356, 74 + (i - 1) * (if screen.Y < 350 then 46 else 56))
-							else UDim2.fromOffset(12, 282 + (i - 1) * 56)
-						status.Size = UDim2.fromOffset(partyWidth, if screen.Y < 350 and screen.X > screen.Y then 44 else 52)
-						status.Visible = (screen.X >= 600 and screen.X > screen.Y) or screen.Y >= 540
+						-- [파티 HUD] 화면 방향에 상관없이 주인공 아래에 같은 폭으로 쌓는다.
+						local partyWidth = heroPanel.Size.X.Offset
+						local shortHud = visualMobile
+						status.Position = UDim2.fromOffset(heroPanel.Position.X.Offset,
+							heroPanel.Position.Y.Offset + heroPanel.Size.Y.Offset + 6 + (i - 1) * (if shortHud then 48 else 56))
+						status.Size = UDim2.fromOffset(partyWidth, if shortHud then 44 else 52)
+						status.Visible = true
 						status.BackgroundColor3 = Color3.fromRGB(24, 33, 49)
 						status.BackgroundTransparency = 0.12
 						status.BorderSizePixel = 0
@@ -7957,8 +8091,8 @@ function FieldScene.start(opts)
 						frame.Parent = status
 						local face = Instance.new("ImageLabel")
 						face.Name = "FieldAllyPortrait"
-						face.Size = UDim2.fromOffset(if narrowParty then 29 else 39, if narrowParty then 35 else 43)
-						face.Position = UDim2.fromOffset(if narrowParty then 4 else 6, 5)
+						face.Size = UDim2.fromOffset(if shortHud then 29 else 39, if shortHud then 35 else 43)
+						face.Position = UDim2.fromOffset(6, 5)
 						face.BackgroundColor3 = Color3.fromRGB(56, 70, 82)
 						face.BorderSizePixel = 0
 						face.ScaleType = Enum.ScaleType.Crop
@@ -7974,23 +8108,22 @@ function FieldScene.start(opts)
 						faceRound.Parent = face
 						local nameText = label(status, ad.name, 13)
 						nameText.Name = "FieldAllyName"
-						nameText.Position = UDim2.fromOffset(if narrowParty then 37 else 51, 3)
-						nameText.Size = UDim2.fromOffset(if narrowParty then math.max(60, partyWidth - 42) else 143, 18)
-						nameText.TextSize = if narrowParty then 11 else 13
+						nameText.Position = UDim2.fromOffset(51, 3)
+						nameText.Size = UDim2.fromOffset(143, 18)
 						nameText.TextXAlignment = Enum.TextXAlignment.Left
 						nameText.TextTruncate = Enum.TextTruncate.AtEnd
 						local hpLine = Instance.new("Frame")
 						hpLine.Name = "FieldAllyHealth"
-						hpLine.Size = UDim2.fromOffset(if narrowParty then math.max(55, partyWidth - 43) else 140, 6)
-						hpLine.Position = UDim2.fromOffset(if narrowParty then 37 else 51, 24)
+						hpLine.Size = UDim2.fromOffset(140, 6)
+						hpLine.Position = UDim2.fromOffset(51, 24)
 						hpLine.BackgroundColor3 = Color3.fromRGB(82, 181, 117)
 						hpLine.BorderSizePixel = 0
 						hpLine.Parent = status
 						local manaAlly = JobSkills.categoryOf(ad.job) == "clergy"
 						local energyLine = Instance.new("Frame")
 						energyLine.Name = if manaAlly then "FieldAllyMana" else "FieldAllyStamina"
-						energyLine.Size = UDim2.fromOffset(if narrowParty then math.max(55, partyWidth - 43) else 140, 7)
-						energyLine.Position = UDim2.fromOffset(if narrowParty then 37 else 51, 36)
+						energyLine.Size = UDim2.fromOffset(140, 7)
+						energyLine.Position = UDim2.fromOffset(51, 36)
 						energyLine.BackgroundColor3 = Color3.fromRGB(42, 52, 68)
 						energyLine.BorderSizePixel = 0
 						energyLine.Parent = status
@@ -8005,7 +8138,6 @@ function FieldScene.start(opts)
 						energyCaption.TextXAlignment = Enum.TextXAlignment.Right
 						energyCaption.Position = UDim2.fromOffset(153, 34)
 						energyCaption.Size = UDim2.fromOffset(38, 12)
-						energyCaption.Visible = not narrowParty -- 좁은 파티 상태열에서는 진행선만 사용
 						energyCaption.ZIndex = 6
 						local ally = { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now,
 							footOffset = m:GetPivot().Position.Y - pos0.Y,
@@ -8219,8 +8351,12 @@ function FieldScene.start(opts)
 			local pad = Instance.new("Frame")
 			pad.Name = "FieldMovePad" -- [모바일 입력] 실제 이동 조작을 검사할 수 있도록 기존 패드에 이름만 부여한다.
 			pad.AnchorPoint = Vector2.new(0, 1)
-			pad.Position = UDim2.new(0, 28, 1, -28)
-			pad.Size = UDim2.fromOffset(150, 150)
+			local viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
+			-- 짧은 가로 화면에서도 동료 카드 두 장 아래에 이동패드를 확보한다.
+			local padSize = if viewport.X > viewport.Y then math.clamp(viewport.Y - 272, 44, 150) else 150
+			pad.Position = UDim2.new(0, if viewport.X > viewport.Y and viewport.Y < 316 then 226 else 28,
+				1, if padSize < 150 then -12 else -28)
+			pad.Size = UDim2.fromOffset(padSize, padSize)
 			pad.BackgroundColor3 = Color3.fromRGB(20, 28, 40)
 			pad.BackgroundTransparency = 0.55
 			pad.BorderSizePixel = 0
@@ -8233,7 +8369,7 @@ function FieldScene.start(opts)
 			knob.Name = "FieldMoveKnob"
 			knob.AnchorPoint = Vector2.new(0.5, 0.5)
 			knob.Position = UDim2.fromScale(0.5, 0.5)
-			knob.Size = UDim2.fromOffset(60, 60)
+			knob.Size = UDim2.fromScale(0.4, 0.4)
 			knob.BackgroundColor3 = Color3.fromRGB(235, 220, 170)
 			knob.BackgroundTransparency = 0.2
 			knob.BorderSizePixel = 0
@@ -8272,7 +8408,7 @@ function FieldScene.start(opts)
 						end
 					end
 				end
-				knob.Position = UDim2.new(0.5, vec.X * 48, 0.5, vec.Y * 48)
+				knob.Position = UDim2.fromScale(0.5 + vec.X * 0.32, 0.5 + vec.Y * 0.32)
 			end
 			-- 화면 왼쪽 절반 아무 데나 누르면 거기가 스틱 중심이 된다(패드 바깥에서도 조작 가능). 손을 떼면 제자리로 돌아간다.
 			local homePos = pad.Position

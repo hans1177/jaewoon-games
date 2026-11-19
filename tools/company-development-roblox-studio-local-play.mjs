@@ -2698,7 +2698,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
   fs.mkdirSync(outDir,{recursive:true});
   const report={
     sourceRevision:clean(sourceRevision),
-    log:[],errors:[],consoleCapture:{captured:false},
+    log:[],errors:[],stepTimings:[],consoleCapture:{captured:false},
     summary:{
       plannedSteps:steps.length,
       completedSteps:0,
@@ -2752,6 +2752,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
     started=true;
     for(let n=0;n<steps.length;n++){
       const st=steps[n];
+      const stepStarted=Date.now();
       console.log('STUDIO_SCRIPT_PROGRESS='+n+'/'+steps.length+':'+st.type);
       try{
         if(st.type==='wait'){
@@ -2897,7 +2898,24 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         report.summary.completedSteps=n+1;
         report.summary.abortedEarly=true;
         console.log('STUDIO_SCRIPT_ABORT_STEP='+n+':'+st.type);
+        const failedElapsedMs=Date.now()-stepStarted;
+        const lastFrame=report.log.findLast(row=>row.capture&&row.files>0);
+        const lastClick=report.log.findLast(row=>row.click);
+        report.abortDiagnostics={
+          step:n,type:st.type,elapsedMs:failedElapsedMs,context:st.ctx||st.context||null,
+          lastScreenshot:lastFrame?.capture||null,lastClick:lastClick?.click||null,probes:{}
+        };
+        for(const context of ['Client','Server']){
+          try{
+            const output=await luau(context,"local r=game:GetService('RunService') return r:IsClient() and 'STUDIO_CONTEXT_CLIENT' or 'STUDIO_CONTEXT_SERVER'");
+            report.abortDiagnostics.probes[context]={reachable:output.includes('STUDIO_CONTEXT_'+context.toUpperCase()),output:output.slice(0,300)};
+          }catch(probeError){
+            report.abortDiagnostics.probes[context]={reachable:false,error:clean(probeError?.message||probeError).slice(0,300)};
+          }
+        }
         break;
+      }finally{
+        report.stepTimings.push({step:n,type:st.type,elapsedMs:Date.now()-stepStarted});
       }
     }
     // [Mare 실증] 185개 클릭/캡처와 별개로 Studio 전용 모델·이미지/음원·기능 전수검사까지 확인한다.
