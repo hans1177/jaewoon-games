@@ -17,7 +17,7 @@ local PAPER = Color3.fromRGB(211, 187, 149)
 local SEPIA = Color3.fromRGB(56, 38, 29)
 local ADD = Color3.fromRGB(45, 86, 64)
 local REMOVE = Color3.fromRGB(113, 54, 43)
-local SAVE = Color3.fromRGB(119, 83, 37)
+local SAVE = Color3.fromRGB(32, 44, 78)
 local TIER_COLOR = { Color3.fromRGB(176, 112, 62), Color3.fromRGB(196, 202, 212), Color3.fromRGB(238, 196, 84) }
 local ROW_COLOR = { melee = Color3.fromRGB(190, 84, 62), ranged = Color3.fromRGB(96, 150, 84), cannon = Color3.fromRGB(84, 124, 176) }
 local ROW_SHORT = { melee = "근", ranged = "사", cannon = "포" }
@@ -99,10 +99,6 @@ function DeckBuilder.build(parent, ctx)
 	root.BackgroundColor3 = Color3.fromRGB(55, 36, 32)
 	root.BorderSizePixel = 0
 	root.AutoLocalize = true
-	local backdrop = Instance.new("UIGradient")
-	backdrop.Color = ColorSequence.new(Color3.fromRGB(255, 239, 213), Color3.fromRGB(154, 139, 124))
-	backdrop.Rotation = 90
-	backdrop.Parent = root
 	root.Size = UDim2.fromScale(1, 1)
 	root.Parent = parent
 	-- [배경] 오늘 만든 양피지 원화를 등록된 ID가 있을 때만 표시한다.
@@ -114,7 +110,7 @@ function DeckBuilder.build(parent, ctx)
 		parchment.BackgroundTransparency = 1
 		parchment.ScaleType = Enum.ScaleType.Crop
 		parchment.Image = "rbxassetid://" .. tostring(parchmentAsset)
-		parchment.ImageTransparency = 0.38
+		parchment.ImageTransparency = 0
 		parchment.Parent = root
 	end
 
@@ -158,7 +154,7 @@ function DeckBuilder.build(parent, ctx)
 	countPill.BackgroundTransparency = 0
 	countPill.BackgroundColor3 = Color3.fromRGB(150, 225, 150)
 	corner(countPill, 8)
-	local closeBtn = button(top, "닫기", REMOVE, 16, function() ctx.onClose() end)
+	local closeBtn = button(top, "←", SAVE, 20)
 	closeBtn.AnchorPoint = Vector2.new(1, 0.5)
 	closeBtn.Position = UDim2.new(1, -8, 0.5, 0)
 	closeBtn.Size = UDim2.fromOffset(44, 36)
@@ -248,18 +244,28 @@ function DeckBuilder.build(parent, ctx)
 	practiceGo.Position = UDim2.fromScale(0.52, 0.79)
 	practiceGo.Size = UDim2.fromScale(0.41, 0.15)
 	practiceGo.ZIndex = 38
-	local startAssetId = ctx.AssetIds["CardArt/ui_button_paper"]
-	if startAssetId then
-		local paperButton = Instance.new("ImageLabel")
-		paperButton.Name = "PracticeStartArtwork"
-		paperButton.BackgroundTransparency = 1
-		paperButton.Size = UDim2.fromScale(1, 1)
-		paperButton.Image = "rbxassetid://" .. tostring(startAssetId)
-		paperButton.ScaleType = Enum.ScaleType.Stretch
-		paperButton.ImageTransparency = 0.5
-		paperButton.ZIndex = 38
-		paperButton.Parent = practiceGo
+	-- [원화 버튼] 텍스트와 터치 동작은 기존 버튼이 맡는다.
+	local function buttonArt(target, key)
+		local asset = ctx.AssetIds["CardArt/" .. key]
+		if not asset then return nil end
+		local art = Instance.new("ImageLabel")
+		art.Name = "ButtonArtwork"
+		art.BackgroundTransparency = 1
+		art.Size = UDim2.fromScale(1, 1)
+		art.Image = "rbxassetid://" .. tostring(asset)
+		art.ScaleType = Enum.ScaleType.Stretch
+		art.ZIndex = math.max(1, target.ZIndex - 1)
+		art.Parent = target
+		target.BackgroundTransparency = 1
+		local outline = target:FindFirstChildOfClass("UIStroke")
+		if outline then outline:Destroy() end
+		local rounded = target:FindFirstChildOfClass("UICorner")
+		if rounded then rounded:Destroy() end
+		return art
 	end
+	buttonArt(closeBtn, "ui_button_ink")
+	buttonArt(practiceGo, "ui_button_ink")
+	buttonArt(practiceCancel, "ui_button_ink")
 
 	-- ── 가운데: 왼쪽 컬렉션 / 오른쪽 덱 ──
 	local body = Instance.new("Frame")
@@ -283,35 +289,79 @@ function DeckBuilder.build(parent, ctx)
 	right.Parent = body
 	corner(right, 10)
 
-	-- 좁은 화면에서는 컬렉션과 덱을 전체 폭에서 번갈아 읽는다.
-	local showDeck = false
-	local collectionTab = button(body, "보유 카드", PANEL2, 15)
-	collectionTab.Size = UDim2.new(0.5, -4, 0, 42)
-	local deckTab = button(body, "내 덱", PANEL2, 15)
-	deckTab.Position = UDim2.new(0.5, 4, 0, 0)
-	deckTab.Size = collectionTab.Size
+	-- [작전실] 현재 덱을 보고 출항하거나 목적에 맞는 화면으로 이동한다.
+	local selectedTab = ctx.initialTab or "hub"
+	local hub = Instance.new("Frame")
+	hub.Name = "OperationsRoom"
+	hub.BackgroundTransparency = 1
+	hub.Size = UDim2.fromScale(1, 1)
+	hub.Parent = body
+
+	local deckCover = Instance.new("ImageLabel")
+	deckCover.Name = "ActiveDeckCover"
+	deckCover.AnchorPoint = Vector2.new(0.5, 0)
+	deckCover.Position = UDim2.fromScale(0.5, 0.02)
+	deckCover.Size = UDim2.fromScale(0.44, 0.58)
+	deckCover.BackgroundTransparency = 1
+	deckCover.ScaleType = Enum.ScaleType.Fit
+	deckCover.Parent = hub
+
+	local deckSummary = text(hub, "", 17, SEPIA, true)
+	deckSummary.Position = UDim2.fromScale(0.18, 0.61)
+	deckSummary.Size = UDim2.fromScale(0.64, 0.15)
+	local battle = Instance.new("Frame")
+	battle.Name = "Departure"
+	battle.BackgroundTransparency = 1
+	battle.Size = UDim2.fromScale(1, 1)
+	battle.Parent = body
+	practiceBtn.Parent = battle
+	duelBtn.Parent = battle
+	practiceBtn.Position = UDim2.new(0.03, 0, 0.3, 0)
+	duelBtn.Position = UDim2.new(0.52, 0, 0.3, 0)
+	practiceBtn.Size = UDim2.new(0.45, 0, 0.46, 0)
+	duelBtn.Size = practiceBtn.Size
+	buttonArt(practiceBtn, "ui_button_ink")
+	local duelArt = buttonArt(duelBtn, "ui_button_ink")
+	local departureSummary = text(battle, "", 17, SEPIA, true)
+	departureSummary.Position = UDim2.fromScale(0.1, 0.06)
+	departureSummary.Size = UDim2.fromScale(0.8, 0.18)
+
 	local function layoutBody()
-		local size = body.AbsoluteSize
-		local compact = size.X < 600 or size.Y < 295
-		collectionTab.Visible, deckTab.Visible = compact, compact
-		collectionTab.BackgroundColor3 = if showDeck then PANEL2 else SAVE
-		deckTab.BackgroundColor3 = if showDeck then SAVE else PANEL2
-		left.Visible = not compact or not showDeck
-		right.Visible = not compact or showDeck
-		left.Position = if compact then UDim2.fromOffset(0, 48) else UDim2.new()
-		right.Position = if compact then UDim2.new(1, 0, 0, 48) else UDim2.fromScale(1, 0)
-		left.Size = if compact then UDim2.new(1, 0, 1, -48) else UDim2.fromScale(0.6, 1)
-		right.Size = if compact then UDim2.new(1, 0, 1, -48) else UDim2.new(0.4, -8, 1, 0)
+		hub.Visible = selectedTab == "hub"
+		left.Visible = selectedTab == "collection"
+		right.Visible = selectedTab == "deck"
+		battle.Visible = selectedTab == "battle"
+		bottom.Visible = selectedTab == "deck"
+		title.Text = if hub.Visible then "해상 작전실" elseif left.Visible then "카드 보관소"
+			elseif right.Visible then "함대 편성" else "출항 준비"
+		closeBtn.Text = "←"
+		if recPop then recPop.Visible = false end
 	end
-	collectionTab.Activated:Connect(function()
-		showDeck = false
-		layoutBody()
+	closeBtn.Activated:Connect(function()
+		if selectedTab == "hub" then
+			ctx.onClose()
+		else
+			selectedTab = "hub"
+			practicePanel.Visible = false
+			layoutBody()
+		end
 	end)
-	deckTab.Activated:Connect(function()
-		showDeck = true
-		layoutBody()
-	end)
-	body:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutBody)
+	for _, action in {
+		{ "함대 편성", "deck", 0.03, 0.39, 0.25 },
+		{ "카드 보관소", "collection", 0.72, 0.39, 0.25 },
+		{ "출항", "battle", 0.32, 0.79, 0.36 },
+	} do
+		local control = button(hub, action[1], SAVE, if action[2] == "battle" then 21 else 16, function()
+			selectedTab = action[2]
+			Sfx.play("sfx_card_page", 0.5, 1, "sfx_book_turn")
+			layoutBody()
+		end)
+		control.Position = UDim2.fromScale(action[3], action[4])
+		control.Size = UDim2.new(action[5], 0, 0, 44)
+		buttonArt(control, "ui_button_ink")
+	end
+	left.Size = UDim2.fromScale(1, 1)
+	right.Size = left.Size
 	layoutBody()
 
 
@@ -351,7 +401,7 @@ function DeckBuilder.build(parent, ctx)
 		local cell = math.floor((width - (columns - 1) * 8) / columns)
 		if cell < 1 then return end
 		gl.FillDirectionMaxCells = columns
-		gl.CellSize = UDim2.fromOffset(cell, math.floor(cell * 1.38))
+		gl.CellSize = UDim2.fromOffset(cell, math.floor(cell * 4 / 3))
 	end
 	gridScroll:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutCardGrid)
 	layoutCardGrid()
@@ -561,7 +611,7 @@ function DeckBuilder.build(parent, ctx)
 		end
 	end)
 	local autoBtn = button(bottom, "기본덱", Color3.fromRGB(60, 96, 140), 15, function()
-		showDeck = true
+		selectedTab = "deck"
 		layoutBody()
 		ctx.onReplace(CB.autoDeck(ctx.getBook()))
 	end)
@@ -570,10 +620,14 @@ function DeckBuilder.build(parent, ctx)
 		b.Size = UDim2.new(0, 100, 1, 0)
 		b.LayoutOrder = 2 + i
 	end
+	local saveArt = buttonArt(saveBtn, "ui_button_ink")
+	buttonArt(autoBtn, "ui_button_ink")
+	buttonArt(recBtn, "ui_button_ink")
+	buttonArt(tavernBtn, "ui_button_ink")
 	local function layoutFooter()
 		local compact = bottom.AbsoluteSize.X < 490
 		bl.Padding = UDim.new(0, if compact then 4 else 8)
-		for _, b in { duelBtn, practiceBtn, saveBtn, autoBtn, recBtn, tavernBtn } do
+		for _, b in { saveBtn, autoBtn, recBtn, tavernBtn } do
 			b.TextSize = if compact then 12 else 15
 			b.Size = UDim2.new(0, 0, 1, 0)
 		end
@@ -623,7 +677,7 @@ function DeckBuilder.build(parent, ctx)
 			recPop.Visible = false
 			local ids = CB.recommend(ctx.getBook(), r[1])
 			if ids then
-				showDeck = true
+				selectedTab = "deck"
 				layoutBody()
 				ctx.onReplace(ids)
 			end
@@ -697,7 +751,7 @@ function DeckBuilder.build(parent, ctx)
 		tile.Text = ""
 		tile.AutoButtonColor = false
 		tile.LayoutOrder = order
-		tile.BackgroundColor3 = if d.hero then Color3.fromRGB(107, 72, 40) else Color3.fromRGB(58, 44, 32)
+		tile.BackgroundColor3 = PAPER
 		tile.BorderSizePixel = 0
 		tile.Parent = gridScroll
 		corner(tile, 8)
@@ -707,7 +761,7 @@ function DeckBuilder.build(parent, ctx)
 		st.Parent = tile
 		local img = Instance.new("ImageLabel")
 		img.Position = UDim2.fromOffset(4, 4)
-		img.Size = UDim2.new(1, -8, 0.7, -4)
+		img.Size = UDim2.new(1, -8, 0.5625, -4)
 		img.BackgroundColor3 = Color3.fromRGB(88, 67, 46)
 		img.ScaleType = Enum.ScaleType.Crop
 		local key = ctx.artKey(d)
@@ -730,8 +784,10 @@ function DeckBuilder.build(parent, ctx)
 			borderArt.Parent = tile
 		end
 		local nm = text(tile, if owned > 0 then d.name else "???", 14, Color3.fromRGB(255, 237, 188), true)
-		nm.Position = UDim2.new(0, 3, 0.72, 0)
-		nm.Size = UDim2.new(1, -6, 0.28, 0)
+		nm.Position = UDim2.new(0, 3, 0.73, 0)
+		nm.Size = UDim2.new(1, -6, 0.23, 0)
+		nm.TextColor3 = SEPIA
+		nm.ZIndex = 4
 		nm.TextScaled = true
 		local lim = Instance.new("UITextSizeConstraint")
 		lim.MaxTextSize = 15
@@ -851,7 +907,7 @@ function DeckBuilder.build(parent, ctx)
 	end
 
 	comboButton.Activated:Connect(function()
-		showDeck = false
+		selectedTab = "collection"
 		state.filter, state.page = "combo", 1
 		layoutBody()
 		paintChips()
@@ -1011,14 +1067,16 @@ function DeckBuilder.build(parent, ctx)
 			else "덱을 고쳐 주세요: " .. tostring(why)
 		statusLine.TextColor3 = if okDeck then Color3.fromRGB(150, 225, 150) else Color3.fromRGB(245, 160, 130)
 
-		saveBtn.BackgroundTransparency = if okDeck then 0 else 0.6
+		saveBtn.BackgroundTransparency = if saveArt then 1 elseif okDeck then 0 else 0.6
+		if saveArt then saveArt.ImageTransparency = if okDeck then 0 else 0.55 end
 		saveBtn.Text = "덱 저장"
 		saveBtn.Active = okDeck
 		saveBtn.AutoButtonColor = okDeck
 		local view = ctx.getView()
 		local duelLeft = (view and view.duelLeft) or 0 -- view = view.cardbook
 		duelBtn.Text = if dirty then "저장 후 대결" else string.format("카드 대결\n(보상 %d회)", duelLeft)
-		duelBtn.BackgroundTransparency = if okDeck and not dirty then 0 else 0.6
+		duelBtn.BackgroundTransparency = if duelArt then 1 elseif okDeck and not dirty then 0 else 0.6
+		if duelArt then duelArt.ImageTransparency = if okDeck and not dirty then 0 else 0.55 end
 		practiceBtn.Text = if book.practiceDone then "연습전\n(보상 받음)" else "연습전\n(규칙 배우기)"
 
 		-- 지도자
@@ -1039,6 +1097,11 @@ function DeckBuilder.build(parent, ctx)
 			local leaderImageId = if artId then "rbxassetid://" .. tostring(artId) else ""
 			leaderImage.Image = leaderImageId
 			leaderFullImage.Image = leaderImageId
+			local coverId = artId or ctx.AssetIds["CardArt/battle_card_back"]
+			deckCover.Image = if coverId then "rbxassetid://" .. tostring(coverId) else ""
+			local label = string.format("%s · %d장", cd and cd.name or "지도자", #saved)
+			deckSummary.Text = label .. (if dirty then " · 저장 전" elseif okDeck then " · 출항 가능" else " · 편성 필요")
+			departureSummary.Text = "사용할 덱  |  " .. label
 			local idx = table.find(fac.leaders, curLeader) or 1
 			cur.leaderStep = function(delta)
 				local nxt = fac.leaders[((idx - 1 + delta) % #fac.leaders) + 1]

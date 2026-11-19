@@ -2841,7 +2841,7 @@ do
 	deckBtn.AnchorPoint = Vector2.new(1, 0)
 	deckBtn.Position = UDim2.new(1, -120, 0, SYS_Y)
 	local open = nil
-	function H.openDeck(onlyOpen: boolean?)
+	function H.openDeck(onlyOpen: boolean?, initialTab: string?)
 		-- [첫 게임 보호] 시작 화면/선장 소개 중에는 내 카드 창 자동 개봉을 막는다.
 		if not view or newGameMode or H.titleMenuOpen or H.openingPending or sceneHold
 			or (view.captain and view.captain.step ~= "done") then return end
@@ -2863,31 +2863,19 @@ do
             return
         end
         NavalBattle = loaded
-        local layer = overlayGui("DeckWindow", 56)
+		local layer = overlayGui("DeckWindow", 56)
+		layer.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
 		open = layer
-		local dim = Instance.new("TextButton")
-		dim.Size = UDim2.fromScale(1, 1)
-		dim.BackgroundColor3 = Color3.new(0, 0, 0)
-		dim.BackgroundTransparency = 0.5
-		dim.Text = ""
-		dim.AutoButtonColor = false
-		dim.Parent = layer
-		dim.Activated:Connect(function()
-			layer:Destroy()
-			open = nil
+		local mainWasVisible, hudWasEnabled = main.Visible, hudTopGui.Enabled
+		main.Visible, hudTopGui.Enabled = false, false
+		layer.Destroying:Connect(function()
+			main.Visible, hudTopGui.Enabled = mainWasVisible, hudWasEnabled
 		end)
 		local win = Instance.new("Frame")
-		win.AnchorPoint = Vector2.new(0.5, 0.5)
-		win.Position = UDim2.fromScale(0.5, 0.5)
 		win.Size = UDim2.fromScale(1, 1)
 		win.BackgroundColor3 = NAVY
 		win.BorderSizePixel = 0
 		win.Parent = layer
-		corner(win, 14)
-		hudStroke(win, 2)
-		local cons = Instance.new("UISizeConstraint")
-		cons.MaxSize = Vector2.new(4000, 3000)
-		cons.Parent = win
 		local deck = view and view.deck
 		local cards = (deck and deck.cards) or {}
 		local CBk = require(Shared:WaitForChild("CardBook"))
@@ -2934,6 +2922,7 @@ do
 					inField = false
 					main.Visible = true
 					render()
+					H.openDeck(true)
 				end,
 			})
 		end
@@ -3002,6 +2991,7 @@ do
 		}
 		resetWant()
 		ui = DeckBuilder.build(win, {
+			initialTab = initialTab,
 			CB = CBk, BC = BC, AssetIds = AssetIds, artKey = NavalBattle.cardArtworkKey,
 			catalog = catalog, galleryCtx = galleryCtx,
 			getBook = bookOf, getView = bookOf, getWant = function() return want end,
