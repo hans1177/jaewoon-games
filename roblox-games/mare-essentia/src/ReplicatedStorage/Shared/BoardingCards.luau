@@ -488,7 +488,14 @@ B.Units.lo_57 = { id="lo_57", name="키르케", category="문학", journey=true,
 B.Units.lo_58 = { id="lo_58", name="세이렌", category="문학", journey=true, row="ranged", power=3, ability="sirenSong", text="낼 때: 상대 전열과 후열의 모든 유닛에 전투력 −1." }
 B.Specials.lo_59 = { id="lo_59", name="이타카의 활", category="문학", journey=true, special="ithacaBow", maxCopies=1, text="가장 강한 상대 일반 유닛 한 장을 즉시 제거한다. 덱당 한 장." }
 
+B.Units.ea_40 = { id="ea_40", name="제갈량", category="문학", row="ranged", power=3, ability="eastWind", lore="삼국지연의에서 동남풍을 빌었다는 장면", text="전장에 있는 동안 화공선이 후열의 가장 강한 일반 적에게 추가 피해 1을 준다." }
+B.Units.ea_41 = { id="ea_41", name="주유", category="인물", row="ranged", power=4, ability="fireCommand", text="전장에 있는 동안 화공선이 전열의 가장 강한 일반 적에게 추가 피해 1을 준다." }
+B.Specials.ea_42 = { id="ea_42", name="적벽의 화공선", category="사건", special="redCliffFire", text="가장 강한 상대 전열 일반 유닛 −2. 이번 판 황개가 귀환했다면 가장 강한 후열 유닛도 −2. 주유와 제갈량이 추가 공격을 돕는다." }
+
 B.CardEnglish = {
+	ea_40 = { name="Zhuge Liang", text="While deployed, Red Cliffs Fire Ships also weaken the strongest enemy ranged non-hero by 1." },
+	ea_41 = { name="Zhou Yu", text="While deployed, Red Cliffs Fire Ships deal 1 extra power loss to the strongest enemy melee non-hero." },
+	ea_42 = { name="Red Cliffs Fire Ships", text="Weaken the strongest enemy melee non-hero by 2. If Huang Gai returned this round, do the same to the strongest enemy ranged non-hero. Zhou Yu and Zhuge Liang add attacks." },
 	lo_54 = { name="Odysseus", text="After two different journey cards this round, recall your weakest non-hero and draw one on your turn start, once per round." },
 	lo_55 = { name="Cyclops", text="Intercept the first single-target attack on another ally in this row each round." },
 	lo_56 = { name="Penelope", text="Deploy: Delay one pending Malacca strike or Chola bombardment by a turn." },
@@ -769,7 +776,7 @@ B.Factions = {
 	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "napoleon", specialty = "선박", leaders = { "napoleon", "caesar", "alexander", "charlemagne", "elizabeth" },
 		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45", "eu_46", "eu_47"} },
 	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "genghis", specialty = "유물", leaders = { "genghis", "qinshi", "nobunaga", "yisunsin" },
-		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30", "ea_31", "ea_32", "ea_33", "ea_34", "ea_35", "ea_36", "ea_37", "ea_38"} },
+		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30", "ea_31", "ea_32", "ea_33", "ea_34", "ea_35", "ea_36", "ea_37", "ea_38", "ea_40", "ea_41", "ea_42"} },
 	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "pachacuti", specialty = "동물", leaders = { "pachacuti", "montezuma", "sittingbull" },
 		roster = {"nw_01", "nw_02", "nw_03", "nw_04", "nw_05", "nw_06", "nw_07", "nw_08", "nw_09", "nw_10", "nw_11", "nw_12", "nw_13", "nw_14", "nw_15", "nw_16", "nw_17", "nw_18", "nw_19", "nw_20", "nw_21", "nw_22", "nw_23", "nw_24", "nw_25", "nw_26", "nw_27", "nw_28", "nw_29", "nw_30", "nw_31", "nw_32", "nw_33", "nw_34"} },
 	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "saladin", specialty = "지형·원더", leaders = { "saladin", "suleiman", "cyrus" },
@@ -1447,6 +1454,7 @@ local function beginTurn(m: any, side)
 					end
 					logLine(m, "마라톤의 전령: 승전 소식 도착")
 				else
+					if state and card.id == "ea_37" then state.huangReturned = m.round end
 					logLine(m, "거짓 투항: " .. card.name .. " 귀환")
 				end
 			end
@@ -1697,7 +1705,17 @@ function B.play(m: any, side, handIdx)
 		m.lastTactic[side] = { round = m.round, card = c }
 	end
 	local msg
-	if c.special == "ithacaBow" then
+	if c.special == "redCliffFire" then
+		local front = strongestInRow(m, foe, "melee", true)
+		local rearDamage = (if tactics.huangReturned == m.round then 2 else 0) + (if hasTactic(m, side, "eastWind") then 1 else 0)
+		if front then boostCard(front, -(if hasTactic(m, side, "fireCommand") then 3 else 2)) end
+		if rearDamage > 0 then
+			local rear = strongestInRow(m, foe, "ranged", true)
+			if rear then boostCard(rear, -rearDamage) end
+		end
+		table.insert(m.grave[side], played)
+		msg = "적벽의 화공선"
+	elseif c.special == "ithacaBow" then
 		local _, hits = strongestNonHero(m, { foe })
 		if hits[1] then
 			hits[1].single = true
@@ -2217,6 +2235,13 @@ function B.gainOf(m: any, side, c)
 	elseif c.special == "decoy" then
 		local pick = decoyTarget(m, side)
 		gain = if pick and pick.score >= 100 then 3 else -4
+	elseif c.special == "redCliffFire" then
+		local state = m.tactics and m.tactics[side]
+		local front = if strongestInRow(m, foe, "melee") then (if hasTactic(m, side, "fireCommand") then 3 else 2) else 0
+		local rear = if strongestInRow(m, foe, "ranged") then
+			(if state and state.huangReturned == m.round then 2 else 0) + (if hasTactic(m, side, "eastWind") then 1 else 0)
+			else 0
+		gain = if front + rear > 0 then front + rear else -3
 	elseif c.special == "assassinate" then
 		gain = if strongestInRow(m, foe, "melee") then 2 else -3
 	elseif c.special == "strait" then
