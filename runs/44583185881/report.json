@@ -1,0 +1,84 @@
+{
+ "sourceRevision": "b150226f683125a67ddcd8eb2873d945bb6a1bfc",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "ready=true Animals:10,Cargo:168,Castle:31,Interior:17,Monsters:4,Naval:196,People:75,Relics:36,Ships:0,Terrain:95,Town:167\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 4,
+   "capture": "holes_lisbon_port",
+   "files": 1
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "HOLEMAP x=-130..24 step4 (X=nohit S=safetyfloor L=low T=transparent W=water H=high .=ground)\n -70 ....................................H.T\n -66 ......................................T\n -62 .....................H................T\n -58 ......................................T\n -54 ...................................HHHT\n -50 ...................................HHHT\n -46 ..........HH.................HHHH..HHHT\n -42 .........HHHH...H.HHHH......HHHHH..HHHT\n -38 ......T.HHHHHH....HHHHH....HHHHHH.....T\n -34 H.......HHHHHH....HHHHH....HHHHHH...H.T\n -30 .........HHHH.....HHHH......HHHHH...HHT\n -26 ........HHHHHH......T.HH.....HHHH...HHT\n -22 .........H..H.........HH..............T\n -18 ......................................T\n -14 ...HH....H...HH....H.HH...............T\n -10 ...HH....H....H....H.HH...............T\n  -6 .....................H................T\n  -2 ......................................H\n   2 ......................................H\n   6 .......HH............H................T\n  10 ...H...HH.....HH....HHH...............T\n  14 ...HH...HH....HH....HHH...............T\n  18 ...................................H.HT\n  22 ..................HH.HH....HH.......HHT\n  26 .........H........HHTHH....HHHHHHH....T\n  30 .H.....HH..........HHHH....HHHHHHH..H.T\n  34 .H........HH......HHHHH....HHHHHHH..HHT\n  38 ..........HH......HHHHH....HHHHHHH..HHT\n  42 ...................HHHH....HHHHHHH....T\n  46 ............................HHHHHH....T\n  50 ..................................HHHHT\n  54 ..................H..............HHHHHT\n  58 ..................................HHHHT\n  62 .................................HHHHHT\n  66 ..................................HHHHT\n  70 ....................................H.T\nBAD 37\nTRANSP 22,-70 Part\nTRANSP 22,-66 Part\nTRANSP 22,-62 Part\nTRANSP 22,-58 Part\nTRANSP 22,-54 Part\nTRANSP 22,-50 Part\nTRANSP 22,-46 Part\nTRANSP 22,-42 Part\nTRANSP -106,-38 HumanoidRootPart\nTRANSP 22,-38 Part\nTRANSP 22,-34 Part\nTRANSP 22,-30 Part\nTRANSP -50,-26 Part\nTRANSP 22,-26 Part\nTRANSP 22,-22 Part\nTRANSP 22,-18 Part\nTRANSP 22,-14 Part\nTRANSP 22,-10 Part\nTRANSP 22,-6 Part\nTRANSP 22,6 Part\nTRANSP 22,10 Part\nTRANSP 22,14 Part\nTRANSP 22,18 Part\nTRANSP 22,22 Part\nTRANSP -50,26 Part\nTRANSP 22,26 Part\nTRANSP 22,30 Part\nTRANSP 22,34 Part\nTRANSP 22,38 Part\nTRANSP 22,42 Part\nTRANSP 22,46 Part\nTRANSP 22,50 Part\nTRANSP 22,54 Part\nTRANSP 22,58 Part\nTRANSP 22,62 Part\nTRANSP 22,66 Part\nTRANSP 22,70 Part\ntext"
+  },
+  {
+   "step": 6,
+   "capture": "holes_ground_scan",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35015
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 72
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 1077
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 8016
+  },
+  {
+   "step": 4,
+   "type": "capture",
+   "elapsedMs": 1059
+  },
+  {
+   "step": 5,
+   "type": "luau",
+   "elapsedMs": 204
+  },
+  {
+   "step": 6,
+   "type": "capture",
+   "elapsedMs": 1040
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 7,
+  "completedSteps": 7,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
+  "abortedEarly": false
+ }
+}
