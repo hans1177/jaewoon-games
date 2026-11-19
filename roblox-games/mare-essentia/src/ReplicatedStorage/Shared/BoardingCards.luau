@@ -134,9 +134,9 @@ B.Leaders = {
 	montezuma = { fx = "hornMelee", id = "montezuma", name = "몬테수마 2세", text = "이번 판 전열 점수가 두 배", provision = 10, faction = "new_world", era = "제국" },
 	sittingbull = { fx = "clearBonusRanged", id = "sittingbull", name = "시팅 불", text = "날씨를 걷고 이번 판 후열 일반 카드가 모두 +1", provision = 15, faction = "new_world", era = "수호" },
 	-- 중동
-	saladin = { fx = "snipe", id = "saladin", name = "살라딘", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5, faction = "middle_east", era = "수호" },
+	saladin = { fx = "mercy", id = "saladin", name = "살라딘", text = "자비: 버린 카드 더미에서 기본 전투력이 가장 높은 일반 아군 한 장을 손패로 돌려받는다", textEn = "Mercy: Return the highest-base-power ordinary ally from your discard pile to your hand", provision = 5, faction = "middle_east", era = "수호" },
 	suleiman = { fx = "hornRanged", id = "suleiman", name = "술레이만 대제", text = "이번 판 후열(사격·포) 점수가 두 배", provision = 10, faction = "middle_east", era = "제국" },
-	cyrus = { fx = "restore", id = "cyrus", name = "키루스 대왕", text = "반증으로 끊긴 내 연쇄를 모두 되살린다", provision = 8, faction = "middle_east", era = "정복자" },
+	cyrus = { fx = "release", id = "cyrus", name = "키루스 대왕", text = "귀환 허용: 봉인 또는 이동 제한에 걸린 가장 약한 일반 아군을 풀어 반대 열로 옮긴다", textEn = "Release: Free your weakest sealed or anchored ordinary ally and move it to the other row", provision = 8, faction = "middle_east", era = "정복자" },
 	-- 남·동남아
 	rajaraja = { fx = "clearBonusRanged", id = "rajaraja", name = "라자라자 1세", text = "날씨를 걷고 이번 판 후열 일반 카드가 모두 +1", provision = 15, faction = "southeast_asia", era = "해양" },
 	tranhungdao = { fx = "snipe", id = "tranhungdao", name = "쩐흥다오", text = "적의 가장 센 비영웅 카드 하나를 쓰러뜨린다", provision = 5, faction = "southeast_asia", era = "수호" },
@@ -511,7 +511,7 @@ B.Units.ea_44 = { id="ea_44", name="이시다 미쓰나리", category="서사", 
 B.Units.ea_45 = { id="ea_45", name="고바야카와 히데아키", category="서사", row="melee", power=3, ability="defect", text="상대 전열에 들어가고 다음 내 턴까지 살아 있으면 내 전열로 넘어온다." }
 B.Units.me_37 = { id="me_37", name="길가메시", category="서사", row="melee", power=5, ability="gilgamesh", text="낼 때: 엔키두가 전장에 있으면 서로 엄호한다." }
 B.Units.me_38 = { id="me_38", name="엔키두", category="서사", row="melee", power=4, ability="enkidu", text="낼 때: 길가메시가 전장에 있으면 서로 엄호한다." }
-B.Units.me_39 = { id="me_39", name="삼나무 숲의 훔바바", category="서사", row="melee", power=5, ability="humbaba", text="낼 때: 자신의 첫 약화를 2까지 막는 엄호를 얻는다." }
+B.Units.me_39 = { id="me_39", name="삼나무 숲의 훔바바", category="서사", row="melee", power=5, ability="humbaba", text="낼 때: 상대 전열의 가장 강한 일반 유닛을 공격해 전투력 −3." }
 B.Specials.me_40 = { id="me_40", name="불사의 풀", category="서사", special="lifePlant", text="가장 약한 일반 아군의 전투력 감소를 회복하고 이동 제한과 강화 차단을 해제한다." }
 B.Specials.me_41 = { id="me_41", name="하틴의 포위", category="서사", special="hattin", text="상대 전열의 가장 강한 일반 유닛 −2. 살라딘을 지도자로 골랐다면 대상은 자기 턴이 끝날 때까지 이동할 수 없다." }
 B.Units.me_42 = { id="me_42", name="살라딘의 기병대", category="서사", row="melee", power=4, ability="saladinCavalry", text="낼 때: 이번 라운드에 하틴의 포위를 당했거나 이동 제한에 걸린 가장 강한 상대 전열 일반 유닛 −2." }
@@ -524,7 +524,7 @@ B.CardEnglish = {
 	ea_45 = { name="Kobayakawa Hideaki", text="Deploy in enemy melee. Defect to your own melee row next turn if still in play." },
 	me_37 = { name="Gilgamesh", text="Deploy: If Enkidu is deployed, they cover each other." },
 	me_38 = { name="Enkidu", text="Deploy: If Gilgamesh is deployed, they cover each other." },
-	me_39 = { name="Humbaba of the Cedar Forest", text="Deploy: Gain cover against up to 2 power loss." },
+	me_39 = { name="Humbaba of the Cedar Forest", text="Deploy: Weaken the strongest enemy melee non-hero by 3." },
 	me_40 = { name="Plant of Life", text="Cleanse power penalties, movement lock and boost block from your weakest non-hero ally." },
 	me_41 = { name="Encirclement at Hattin", text="Weaken the strongest enemy melee non-hero by 2. With Saladin as leader, it is also anchored through its turn." },
 	me_42 = { name="Saladin’s Cavalry", text="Deploy: Weaken the strongest enemy melee non-hero that is anchored or was hit by Hattin this round by 2." },
@@ -2122,7 +2122,8 @@ function B.play(m: any, side, handIdx)
 				end
 			end
 		elseif c.ability == "humbaba" then
-			c.cover = true
+			local target = strongestInRow(m, foe, "melee", true)
+			if target then boostCard(target, -3) end
 		elseif c.ability == "saladinCavalry" then
 			local target, power
 			for i, enemy in m.rows[foe].melee do
@@ -2322,11 +2323,46 @@ function B.useLeader(m: any, side)
 	local ld = B.Leaders[id]
 	local fx = if ld and ld.fx then ld.fx else id
 	local nm = if ld then ld.name else id
-	m.leaderUsed[side] = true
 	local opponent = other(side)
 	local scores = counterScores(m, opponent)
 	local msg
-	if fx == "draw" then
+	if fx == "mercy" then
+		if #m.hand[side] >= B.HAND_MAX then return false, "손패가 가득 찼어요" end
+		local pile = m.grave[side]
+		local index, power
+		for i, card in pile do
+			if not card.hero and not card.special and B.Units[card.id] and (not power or card.power > power) then
+				index, power = i, card.power
+			end
+		end
+		if not index then return false, "돌려받을 일반 유닛이 없어요" end
+		local fallen = table.remove(pile, index)
+		local recalled = copy(B.Units[fallen.id])
+		recalled.power, recalled.tier = fallen.power, fallen.tier
+		table.insert(m.hand[side], recalled)
+		msg = "살라딘의 자비: " .. recalled.name .. " 회수"
+	elseif fx == "release" then
+		local target, sourceRow, index, power
+		for _, row in B.ROWS do
+			for i, card in m.rows[side][row] do
+				if card.hero or (card.pendingReturn and card.pendingReturn ~= side)
+					or not (card.sealedAbility or card.anchored) then continue end
+				local current = B.cardPower(m, side, row, i)
+				if not power or current < power then target, sourceRow, index, power = card, row, i, current end
+			end
+		end
+		if not target then return false, "봉인되거나 이동이 제한된 아군이 없어요" end
+		if target.sealedAbility then
+			target.ability = if target.sealedAbility == "starterOnly" then nil else target.sealedAbility
+			target.sealedAbility, target.pigForm = nil, nil
+		end
+		target.anchored = nil
+		local destination = if sourceRow == "melee" then "ranged" else "melee"
+		table.insert(m.rows[side][destination], table.remove(m.rows[side][sourceRow], index))
+		if destination == "ranged" then canalArrival(m, side, target) end
+		resolveHorns(m, side, destination)
+		msg = "키루스의 귀환 허용: " .. target.name .. " 이동"
+	elseif fx == "draw" then
 		drawCards(m, side, 1)
 		msg = "지휘: 카드를 한 장 더 뽑았다"
 	elseif fx == "clear" then
@@ -2360,6 +2396,7 @@ function B.useLeader(m: any, side)
 			msg = "저격 — 맞힐 카드가 없었다"
 		end
 	end
+	m.leaderUsed[side] = true
 	if resolveCounter(m, opponent, scores) then msg ..= " (상대 역습!)" end
 	logLine(m, (if side == "me" then "우리 " else "해적 ") .. msg)
 	return true, msg, nil, { "l" }
@@ -2480,7 +2517,8 @@ function B.ai(m: any, side)
 		return B.pass(m, side)
 	end
 	if not m.leaderUsed[side] and #m.hand[side] <= 4 and not m.passed[foe] then
-		return B.useLeader(m, side)
+		local ok, message, result, action = B.useLeader(m, side)
+		if ok then return ok, message, result, action end
 	end
 	-- 점수를 가장 많이 올리는 카드 찾기 (미리 내 보고 계산한 뒤 되돌린다)
 	local bestI, bestGain = nil, -1e9

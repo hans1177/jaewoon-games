@@ -3061,7 +3061,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			focusEdge.Color = if regionDeck then regionDeck.color else brass
 			if leaderProfile then
 				focusName.Text = t("지도자 · ", "Leader · ") .. leaderProfile.name
-				focusRule.Text = t("지도자 능력: ", "Leader Ability: ") .. leaderProfile.text
+				focusRule.Text = t("지도자 능력: ", "Leader Ability: ") .. (if english then leaderProfile.textEn or leaderProfile.text else leaderProfile.text)
 					.. t(" · 보급 +", " · Provision +") .. tostring(leaderProfile.provision or 0)
 					.. (if m.leaderUsed[card.leaderSide] then t("\n이번 대결에서 사용함", "\nAlready used in this match") else "")
 			else
