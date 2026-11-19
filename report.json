@@ -1,5 +1,5 @@
 {
- "sourceRevision": "2322f88170fa5679ea162f0027b43e123a3f44fc",
+ "sourceRevision": "bf9bdcff450a63c7e7d2718ddfe66caf6a6928cd",
  "log": [
   {
    "step": 1,
@@ -627,407 +627,21 @@
    "step": 136,
    "ctx": "Client",
    "out": "VOYAGE_QA_EVENT_GATE_PASS\ntext"
-  },
-  {
-   "step": 137,
-   "ctx": "Client",
-   "out": "VOYAGE_QA_RESUMED_AFTER_EVENT:false:이미 이 항구에 있어요\ntext"
-  },
-  {
-   "step": 138,
-   "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
-  },
-  {
-   "step": 140,
-   "ctx": "Client",
-   "out": "DEV Deck\ntext"
-  },
-  {
-   "step": 142,
-   "ctx": "Client",
-   "out": "CARD_DECK_RUNTIME_PASS\ntext"
-  },
-  {
-   "step": 143,
-   "capture": "cb0_deck",
-   "files": 1
-  },
-  {
-   "step": 144,
-   "ctx": "Client",
-   "out": "CARD_BOOK_RUNTIME_PASS\ntext"
-  },
-  {
-   "step": 145,
-   "ctx": "Client",
-   "out": "DEV Practice\ntext"
-  },
-  {
-   "step": 147,
-   "ctx": "Client",
-   "out": "CARD_PRACTICE_RUNTIME_PASS\ntext"
-  },
-  {
-   "step": 148,
-   "capture": "cb1",
-   "files": 1
-  },
-  {
-   "step": 149,
-   "ctx": "Client",
-   "out": "CARD_BOARD_RUNTIME_PASS\ntext"
-  },
-  {
-   "step": 151,
-   "capture": "cb2",
-   "files": 1
-  },
-  {
-   "step": 152,
-   "click": "card_practice_exit",
-   "at": "76,292",
-   "out": "76,292 CARD_PRACTICE_EXIT_REAL_CLICK\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 76,
-      "y": 292
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 153,
-   "ctx": "Client",
-   "out": "started\ntext"
-  },
-  {
-   "step": 155,
-   "capture": "v1_start",
-   "files": 1
-  },
-  {
-   "step": 157,
-   "capture": "v2_event",
-   "files": 1
-  },
-  {
-   "step": 158,
-   "ctx": "Client",
-   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.5070190429688, 218.89329528808594, 36.4453125 on=true parent=VoyageScene fog=2162.031982421875 brightness=1.9904347658157349 atmo=0.3700000047683716 camdist=36.651329040527344\ntext"
-  },
-  {
-   "step": 160,
-   "capture": "v3_event2",
-   "files": 1
-  },
-  {
-   "step": 162,
-   "capture": "v4_late",
-   "files": 1
-  },
-  {
-   "step": 163,
-   "ctx": "Client",
-   "out": "nil\ntext"
-  },
-  {
-   "step": 164,
-   "ctx": "Client",
-   "out": "play ok=true nil\ntext"
-  },
-  {
-   "step": 166,
-   "capture": "b1_start",
-   "files": 1
-  },
-  {
-   "step": 167,
-   "ctx": "Client",
-   "out": "NAVAL_BATTLE_RUNTIME_PASS\ntext"
-  },
-  {
-   "step": 169,
-   "capture": "b2_mid",
-   "files": 1
-  },
-  {
-   "step": 170,
-   "ctx": "Client",
-   "out": "LOGS(0): \ntext"
-  },
-  {
-   "step": 171,
-   "ctx": "Server",
-   "out": "LOGS(12): [QA] FAIL asset AssetIds.CardArt/af_03 rbxassetid://72489040757878 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/af_15 rbxassetid://77023165428158 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_aurora rbxassetid://107877140385634 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_comet rbxassetid://127370718437030 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_comet rbxassetid://105991549101223 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_halley_prediction rbxassetid://114650000468629 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_jupiter_moons rbxassetid://125327803198600 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_saturn_rings rbxassetid://120956229711846 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/ast_venus rbxassetid://114615121747571 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/battle_africa rbxassetid://92405337443576 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/battle_card_back rbxassetid://91390038338745 status=TIMEOUT_16S // [QA] FAIL asset AssetIds.CardArt/battle_east_asia rbxassetid://113361166465626 status=TIMEOUT_16S\ntext"
-  },
-  {
-   "step": 172,
-   "ctx": "Client",
-   "out": "build ok=true nil\ntext"
-  },
-  {
-   "step": 174,
-   "ctx": "Client",
-   "out": "bound\ntext"
-  },
-  {
-   "step": 175,
-   "ctx": "Client",
-   "out": "NPC_ROUTE_AUDIT_PASS checked=39 relocated=7 fallback=0\ntext"
-  },
-  {
-   "step": 176,
-   "ctx": "Client",
-   "out": "HARBOR_NPC_STAGE_PAIR_FOUND distance=5\ntext"
-  },
-  {
-   "step": 178,
-   "capture": "harbor_npc_sparring_01",
-   "files": 1
-  },
-  {
-   "step": 180,
-   "capture": "harbor_npc_sparring_02",
-   "files": 1
-  },
-  {
-   "step": 182,
-   "capture": "harbor_npc_sparring_03",
-   "files": 1
-  },
-  {
-   "step": 184,
-   "capture": "harbor_npc_sparring_04",
-   "files": 1
-  },
-  {
-   "step": 186,
-   "capture": "harbor_npc_sparring_05",
-   "files": 1
-  },
-  {
-   "step": 188,
-   "capture": "harbor_npc_sparring_06",
-   "files": 1
-  },
-  {
-   "step": 190,
-   "capture": "harbor_npc_sparring_07",
-   "files": 1
-  },
-  {
-   "step": 192,
-   "capture": "harbor_npc_sparring_08",
-   "files": 1
-  },
-  {
-   "step": 193,
-   "ctx": "Client",
-   "out": "R15_MOTION_IDLE\ntext"
-  },
-  {
-   "step": 195,
-   "capture": "harbor_motion_idle",
-   "files": 1
-  },
-  {
-   "step": 196,
-   "ctx": "Client",
-   "out": "R15_MOTION_WALK\ntext"
-  },
-  {
-   "step": 198,
-   "capture": "harbor_motion_walk",
-   "files": 1
-  },
-  {
-   "step": 199,
-   "ctx": "Client",
-   "out": "MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2 ACTIVE_WALKERS=8 CARRY_FORWARD=true\ntext"
-  },
-  {
-   "step": 200,
-   "ctx": "Client",
-   "out": "R15_MOTION_RUN\ntext"
-  },
-  {
-   "step": 202,
-   "capture": "harbor_motion_run",
-   "files": 1
-  },
-  {
-   "step": 203,
-   "ctx": "Client",
-   "out": "MOTION_RUN_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2\ntext"
-  },
-  {
-   "step": 204,
-   "ctx": "Client",
-   "out": "R15_MOTION_ATTACK\ntext"
-  },
-  {
-   "step": 206,
-   "capture": "harbor_motion_attack",
-   "files": 1
-  },
-  {
-   "step": 207,
-   "ctx": "Client",
-   "out": "R15_MOTION_SHOOT\ntext"
-  },
-  {
-   "step": 209,
-   "capture": "harbor_motion_shoot",
-   "files": 1
-  },
-  {
-   "step": 210,
-   "ctx": "Client",
-   "out": "R15_MOTION_RELOAD\ntext"
-  },
-  {
-   "step": 212,
-   "capture": "harbor_motion_reload",
-   "files": 1
-  },
-  {
-   "step": 213,
-   "ctx": "Client",
-   "out": "R15_MOTION_GUARD\ntext"
-  },
-  {
-   "step": 215,
-   "capture": "harbor_motion_guard",
-   "files": 1
-  },
-  {
-   "step": 216,
-   "ctx": "Client",
-   "out": "R15_MOTION_HURT\ntext"
-  },
-  {
-   "step": 218,
-   "capture": "harbor_motion_hurt",
-   "files": 1
-  },
-  {
-   "step": 219,
-   "ctx": "Client",
-   "out": "R15_MOTION_CHEER\ntext"
-  },
-  {
-   "step": 221,
-   "capture": "harbor_motion_cheer",
-   "files": 1
-  },
-  {
-   "step": 222,
-   "ctx": "Client",
-   "out": "R15_MOTION_TALK\ntext"
-  },
-  {
-   "step": 224,
-   "capture": "harbor_motion_talk",
-   "files": 1
-  },
-  {
-   "step": 225,
-   "ctx": "Client",
-   "out": "MOTION_VILLAGER_GESTURES_PASS KINDS=9 DISTINCT=8 WALKING_WORK=2\ntext"
-  },
-  {
-   "step": 226,
-   "ctx": "Client",
-   "out": "NPC_FACE_FRONT_PASS R15=50 BACKWARDS=0\ntext"
-  },
-  {
-   "step": 227,
-   "capture": "harbor_npc_face_front",
-   "files": 1
-  },
-  {
-   "step": 228,
-   "ctx": "Client",
-   "out": "FIELD_QA_OPEN_EXPLORE_TAB GUI_ENABLED=true UNLOCKED_BEFORE=0\ntext"
-  },
-  {
-   "step": 230,
-   "ctx": "Client",
-   "out": "FIELD_QA_ENTRY_AVAILABLE=12 LOCKED_LABELS=0 REAL_UI_ONLY=true\ntext"
-  },
-  {
-   "step": 231,
-   "click": "field_entry",
-   "at": "566,187",
-   "out": "566,187 CLICK=지상맵 입장 HITBOX=VISIBLE BLOCKER=none\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 566,
-      "y": 187
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 233,
-   "capture": "field_entry",
-   "files": 1
-  },
-  {
-   "step": 234,
-   "ctx": "Client",
-   "out": "FIELD_QA_ENTRY_PASS MOVEMENT_READY: x=3000 screen=FieldGui\ntext"
-  },
-  {
-   "step": 235,
-   "capture": "field_npc_ally_mob",
-   "files": 1
-  },
-  {
-   "step": 236,
-   "ctx": "Client",
-   "out": "FIELD_MOTION_STABLE actors=21 maxStep=1.21 twoWeapons=PASS skillArt=PASS\ntext"
-  },
-  {
-   "step": 237,
-   "capture": "field_motion_smooth_icons",
-   "files": 1
-  },
-  {
-   "step": 239,
-   "ctx": "Client",
-   "out": "MOTION_FIELD_ACTORS_PASS ENEMY_ROLES=3 ALLIES=1 ENEMY_JOINTS=6 ALLY_JOINTS=5 DISTINCT_ROLE_POSES=3 DISTINCT_SUPPORT_POSES=4\ntext"
-  },
-  {
-   "step": 240,
-   "capture": "field_actor_after_motion",
-   "files": 1
   }
  ],
- "errors": [],
+ "errors": [
+  "step137:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action ExecuteLuau.runCode sent to DMN_ID_PLAYCLIENT failed - Target is not reachable (ExecuteLuau.runCode, DMN_ID_PLAYCLIENT). No OnInvoke handler responded for this action. Sender: DMN_ID_STANDALONE. | text"
+ ],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28012
+   "elapsedMs": 28013
   },
   {
    "step": 1,
    "type": "capture",
-   "elapsedMs": 1391
+   "elapsedMs": 1028
   },
   {
    "step": 2,
@@ -1037,207 +651,207 @@
   {
    "step": 3,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 184
   },
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 199
+   "elapsedMs": 185
   },
   {
    "step": 5,
    "type": "wait",
-   "elapsedMs": 408
+   "elapsedMs": 402
   },
   {
    "step": 6,
    "type": "click_from_luau",
-   "elapsedMs": 1094
+   "elapsedMs": 964
   },
   {
    "step": 7,
    "type": "wait",
-   "elapsedMs": 2011
+   "elapsedMs": 2006
   },
   {
    "step": 8,
    "type": "capture",
-   "elapsedMs": 1073
+   "elapsedMs": 915
   },
   {
    "step": 9,
    "type": "luau",
-   "elapsedMs": 198
+   "elapsedMs": 179
   },
   {
    "step": 10,
    "type": "wait",
-   "elapsedMs": 402
+   "elapsedMs": 413
   },
   {
    "step": 11,
    "type": "click_from_luau",
-   "elapsedMs": 917
+   "elapsedMs": 850
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 2002
+   "elapsedMs": 2005
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 795
+   "elapsedMs": 840
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 196
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 407
+   "elapsedMs": 411
   },
   {
    "step": 16,
    "type": "click_from_luau",
-   "elapsedMs": 994
+   "elapsedMs": 850
   },
   {
    "step": 17,
    "type": "wait",
-   "elapsedMs": 1708
+   "elapsedMs": 1702
   },
   {
    "step": 18,
    "type": "capture",
-   "elapsedMs": 1159
+   "elapsedMs": 1048
   },
   {
    "step": 19,
    "type": "wait",
-   "elapsedMs": 1815
+   "elapsedMs": 1804
   },
   {
    "step": 20,
    "type": "capture",
-   "elapsedMs": 1021
+   "elapsedMs": 1350
   },
   {
    "step": 21,
    "type": "wait",
-   "elapsedMs": 1801
+   "elapsedMs": 1809
   },
   {
    "step": 22,
    "type": "capture",
-   "elapsedMs": 2384
+   "elapsedMs": 2571
   },
   {
    "step": 23,
    "type": "wait",
-   "elapsedMs": 3704
+   "elapsedMs": 3715
   },
   {
    "step": 24,
    "type": "capture",
-   "elapsedMs": 1425
+   "elapsedMs": 1517
   },
   {
    "step": 25,
    "type": "luau",
-   "elapsedMs": 3015
+   "elapsedMs": 2934
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 336
+   "elapsedMs": 350
   },
   {
    "step": 27,
    "type": "wait",
-   "elapsedMs": 2502
+   "elapsedMs": 2511
   },
   {
    "step": 28,
    "type": "capture",
-   "elapsedMs": 1396
+   "elapsedMs": 1675
   },
   {
    "step": 29,
    "type": "luau",
-   "elapsedMs": 1236
+   "elapsedMs": 1301
   },
   {
    "step": 30,
    "type": "luau",
-   "elapsedMs": 331
+   "elapsedMs": 326
   },
   {
    "step": 31,
    "type": "luau",
-   "elapsedMs": 303
+   "elapsedMs": 337
   },
   {
    "step": 32,
    "type": "wait",
-   "elapsedMs": 2504
+   "elapsedMs": 2507
   },
   {
    "step": 33,
    "type": "luau",
-   "elapsedMs": 310
+   "elapsedMs": 143
   },
   {
    "step": 34,
    "type": "capture",
-   "elapsedMs": 1356
+   "elapsedMs": 1456
   },
   {
    "step": 35,
    "type": "luau",
-   "elapsedMs": 343
+   "elapsedMs": 360
   },
   {
    "step": 36,
    "type": "luau",
-   "elapsedMs": 326
+   "elapsedMs": 351
   },
   {
    "step": 37,
    "type": "wait",
-   "elapsedMs": 2506
+   "elapsedMs": 2503
   },
   {
    "step": 38,
    "type": "luau",
-   "elapsedMs": 353
+   "elapsedMs": 130
   },
   {
    "step": 39,
    "type": "luau",
-   "elapsedMs": 332
+   "elapsedMs": 366
   },
   {
    "step": 40,
    "type": "capture",
-   "elapsedMs": 1072
+   "elapsedMs": 1503
   },
   {
    "step": 41,
    "type": "luau",
-   "elapsedMs": 345
+   "elapsedMs": 397
   },
   {
    "step": 42,
    "type": "click_from_luau",
-   "elapsedMs": 1616
+   "elapsedMs": 1564
   },
   {
    "step": 43,
    "type": "wait",
-   "elapsedMs": 858
+   "elapsedMs": 860
   },
   {
    "step": 44,
@@ -1247,37 +861,37 @@
   {
    "step": 45,
    "type": "capture",
-   "elapsedMs": 1207
+   "elapsedMs": 1323
   },
   {
    "step": 46,
    "type": "luau",
-   "elapsedMs": 277
+   "elapsedMs": 294
   },
   {
    "step": 47,
    "type": "wait",
-   "elapsedMs": 2502
+   "elapsedMs": 2508
   },
   {
    "step": 48,
    "type": "luau",
-   "elapsedMs": 148
+   "elapsedMs": 209
   },
   {
    "step": 49,
    "type": "capture",
-   "elapsedMs": 928
+   "elapsedMs": 997
   },
   {
    "step": 50,
    "type": "luau",
-   "elapsedMs": 197
+   "elapsedMs": 182
   },
   {
    "step": 51,
    "type": "click_from_luau",
-   "elapsedMs": 625
+   "elapsedMs": 571
   },
   {
    "step": 52,
@@ -1287,87 +901,87 @@
   {
    "step": 53,
    "type": "luau",
-   "elapsedMs": 83
+   "elapsedMs": 184
   },
   {
    "step": 54,
    "type": "capture",
-   "elapsedMs": 827
+   "elapsedMs": 720
   },
   {
    "step": 55,
    "type": "luau",
-   "elapsedMs": 240
+   "elapsedMs": 196
   },
   {
    "step": 56,
    "type": "wait",
-   "elapsedMs": 2501
+   "elapsedMs": 2502
   },
   {
    "step": 57,
    "type": "luau",
-   "elapsedMs": 216
+   "elapsedMs": 148
   },
   {
    "step": 58,
    "type": "capture",
-   "elapsedMs": 845
+   "elapsedMs": 893
   },
   {
    "step": 59,
    "type": "luau",
-   "elapsedMs": 205
+   "elapsedMs": 224
   },
   {
    "step": 60,
    "type": "luau",
-   "elapsedMs": 205
+   "elapsedMs": 216
   },
   {
    "step": 61,
    "type": "wait",
-   "elapsedMs": 2499
+   "elapsedMs": 2503
   },
   {
    "step": 62,
    "type": "luau",
-   "elapsedMs": 240
+   "elapsedMs": 214
   },
   {
    "step": 63,
    "type": "capture",
-   "elapsedMs": 878
+   "elapsedMs": 893
   },
   {
    "step": 64,
    "type": "luau",
-   "elapsedMs": 227
+   "elapsedMs": 374
   },
   {
    "step": 65,
    "type": "luau",
-   "elapsedMs": 216
+   "elapsedMs": 217
   },
   {
    "step": 66,
    "type": "wait",
-   "elapsedMs": 2512
+   "elapsedMs": 2501
   },
   {
    "step": 67,
    "type": "luau",
-   "elapsedMs": 122
+   "elapsedMs": 116
   },
   {
    "step": 68,
    "type": "capture",
-   "elapsedMs": 1007
+   "elapsedMs": 1065
   },
   {
    "step": 69,
    "type": "luau",
-   "elapsedMs": 210
+   "elapsedMs": 202
   },
   {
    "step": 70,
@@ -1377,97 +991,97 @@
   {
    "step": 71,
    "type": "wait",
-   "elapsedMs": 2515
+   "elapsedMs": 2508
   },
   {
    "step": 72,
    "type": "luau",
-   "elapsedMs": 152
+   "elapsedMs": 192
   },
   {
    "step": 73,
    "type": "capture",
-   "elapsedMs": 987
+   "elapsedMs": 1048
   },
   {
    "step": 74,
    "type": "luau",
-   "elapsedMs": 182
+   "elapsedMs": 176
   },
   {
    "step": 75,
    "type": "luau",
-   "elapsedMs": 215
+   "elapsedMs": 210
   },
   {
    "step": 76,
    "type": "wait",
-   "elapsedMs": 2504
+   "elapsedMs": 2515
   },
   {
    "step": 77,
    "type": "luau",
-   "elapsedMs": 162
+   "elapsedMs": 202
   },
   {
    "step": 78,
    "type": "capture",
-   "elapsedMs": 972
+   "elapsedMs": 737
   },
   {
    "step": 79,
    "type": "luau",
-   "elapsedMs": 195
+   "elapsedMs": 179
   },
   {
    "step": 80,
    "type": "capture",
-   "elapsedMs": 968
+   "elapsedMs": 1191
   },
   {
    "step": 81,
    "type": "luau",
-   "elapsedMs": 184
+   "elapsedMs": 176
   },
   {
    "step": 82,
    "type": "wait",
-   "elapsedMs": 612
+   "elapsedMs": 614
   },
   {
    "step": 83,
    "type": "capture",
-   "elapsedMs": 815
+   "elapsedMs": 843
   },
   {
    "step": 84,
    "type": "luau",
-   "elapsedMs": 320
+   "elapsedMs": 177
   },
   {
    "step": 85,
    "type": "luau",
-   "elapsedMs": 177
+   "elapsedMs": 285
   },
   {
    "step": 86,
    "type": "wait",
-   "elapsedMs": 1108
+   "elapsedMs": 1103
   },
   {
    "step": 87,
    "type": "luau",
-   "elapsedMs": 266
+   "elapsedMs": 211
   },
   {
    "step": 88,
    "type": "capture",
-   "elapsedMs": 808
+   "elapsedMs": 774
   },
   {
    "step": 89,
    "type": "luau",
-   "elapsedMs": 230
+   "elapsedMs": 176
   },
   {
    "step": 90,
@@ -1477,37 +1091,37 @@
   {
    "step": 91,
    "type": "luau",
-   "elapsedMs": 243
+   "elapsedMs": 143
   },
   {
    "step": 92,
    "type": "luau",
-   "elapsedMs": 245
+   "elapsedMs": 167
   },
   {
    "step": 93,
    "type": "wait",
-   "elapsedMs": 2502
+   "elapsedMs": 2504
   },
   {
    "step": 94,
    "type": "luau",
-   "elapsedMs": 132
+   "elapsedMs": 204
   },
   {
    "step": 95,
    "type": "capture",
-   "elapsedMs": 739
+   "elapsedMs": 797
   },
   {
    "step": 96,
    "type": "luau",
-   "elapsedMs": 194
+   "elapsedMs": 196
   },
   {
    "step": 97,
    "type": "click_from_luau",
-   "elapsedMs": 1066
+   "elapsedMs": 934
   },
   {
    "step": 98,
@@ -1517,82 +1131,82 @@
   {
    "step": 99,
    "type": "luau",
-   "elapsedMs": 116
+   "elapsedMs": 181
   },
   {
    "step": 100,
    "type": "capture",
-   "elapsedMs": 844
+   "elapsedMs": 890
   },
   {
    "step": 101,
    "type": "luau",
-   "elapsedMs": 187
+   "elapsedMs": 183
   },
   {
    "step": 102,
    "type": "wait",
-   "elapsedMs": 2513
+   "elapsedMs": 2501
   },
   {
    "step": 103,
    "type": "luau",
-   "elapsedMs": 173
+   "elapsedMs": 246
   },
   {
    "step": 104,
    "type": "capture",
-   "elapsedMs": 1122
+   "elapsedMs": 741
   },
   {
    "step": 105,
    "type": "luau",
-   "elapsedMs": 211
+   "elapsedMs": 176
   },
   {
    "step": 106,
    "type": "luau",
-   "elapsedMs": 234
+   "elapsedMs": 191
   },
   {
    "step": 107,
    "type": "wait",
-   "elapsedMs": 2507
+   "elapsedMs": 2506
   },
   {
    "step": 108,
    "type": "luau",
-   "elapsedMs": 111
+   "elapsedMs": 82
   },
   {
    "step": 109,
    "type": "capture",
-   "elapsedMs": 511
+   "elapsedMs": 472
   },
   {
    "step": 110,
    "type": "luau",
-   "elapsedMs": 70
+   "elapsedMs": 78
   },
   {
    "step": 111,
    "type": "click_from_luau",
-   "elapsedMs": 700
+   "elapsedMs": 667
   },
   {
    "step": 112,
    "type": "wait",
-   "elapsedMs": 856
+   "elapsedMs": 850
   },
   {
    "step": 113,
    "type": "luau",
-   "elapsedMs": 79
+   "elapsedMs": 84
   },
   {
    "step": 114,
    "type": "capture",
-   "elapsedMs": 553
+   "elapsedMs": 487
   },
   {
    "step": 115,
@@ -1602,627 +1216,112 @@
   {
    "step": 116,
    "type": "wait",
-   "elapsedMs": 2508
+   "elapsedMs": 2504
   },
   {
    "step": 117,
    "type": "luau",
-   "elapsedMs": 74
+   "elapsedMs": 129
   },
   {
    "step": 118,
    "type": "capture",
-   "elapsedMs": 490
+   "elapsedMs": 454
   },
   {
    "step": 119,
    "type": "luau",
-   "elapsedMs": 178
+   "elapsedMs": 79
   },
   {
    "step": 120,
    "type": "luau",
-   "elapsedMs": 83
+   "elapsedMs": 84
   },
   {
    "step": 121,
    "type": "wait",
-   "elapsedMs": 3013
+   "elapsedMs": 3015
   },
   {
    "step": 122,
    "type": "luau",
-   "elapsedMs": 242
+   "elapsedMs": 68
   },
   {
    "step": 123,
    "type": "luau",
-   "elapsedMs": 194
+   "elapsedMs": 334
   },
   {
    "step": 124,
    "type": "capture",
-   "elapsedMs": 971
+   "elapsedMs": 885
   },
   {
    "step": 125,
    "type": "luau",
-   "elapsedMs": 197
+   "elapsedMs": 231
   },
   {
    "step": 126,
    "type": "wait",
-   "elapsedMs": 3007
+   "elapsedMs": 3011
   },
   {
    "step": 127,
    "type": "luau",
-   "elapsedMs": 158
+   "elapsedMs": 138
   },
   {
    "step": 128,
    "type": "luau",
-   "elapsedMs": 185
+   "elapsedMs": 201
   },
   {
    "step": 129,
    "type": "capture",
-   "elapsedMs": 927
+   "elapsedMs": 1018
   },
   {
    "step": 130,
    "type": "click_from_luau",
-   "elapsedMs": 899
+   "elapsedMs": 965
   },
   {
    "step": 131,
    "type": "wait",
-   "elapsedMs": 2008
+   "elapsedMs": 2006
   },
   {
    "step": 132,
    "type": "luau",
-   "elapsedMs": 182
+   "elapsedMs": 203
   },
   {
    "step": 133,
    "type": "capture",
-   "elapsedMs": 792
+   "elapsedMs": 868
   },
   {
    "step": 134,
    "type": "luau",
-   "elapsedMs": 687
+   "elapsedMs": 756
   },
   {
    "step": 135,
    "type": "wait",
-   "elapsedMs": 957
+   "elapsedMs": 952
   },
   {
    "step": 136,
    "type": "luau",
-   "elapsedMs": 181
+   "elapsedMs": 65
   },
   {
    "step": 137,
    "type": "luau",
-   "elapsedMs": 2583
-  },
-  {
-   "step": 138,
-   "type": "luau",
-   "elapsedMs": 2583
-  },
-  {
-   "step": 139,
-   "type": "wait",
-   "elapsedMs": 4015
-  },
-  {
-   "step": 140,
-   "type": "luau",
-   "elapsedMs": 85
-  },
-  {
-   "step": 141,
-   "type": "wait",
-   "elapsedMs": 3007
-  },
-  {
-   "step": 142,
-   "type": "luau",
-   "elapsedMs": 780
-  },
-  {
-   "step": 143,
-   "type": "capture",
-   "elapsedMs": 829
-  },
-  {
-   "step": 144,
-   "type": "luau",
-   "elapsedMs": 724
-  },
-  {
-   "step": 145,
-   "type": "luau",
-   "elapsedMs": 195
-  },
-  {
-   "step": 146,
-   "type": "wait",
-   "elapsedMs": 6004
-  },
-  {
-   "step": 147,
-   "type": "luau",
-   "elapsedMs": 198
-  },
-  {
-   "step": 148,
-   "type": "capture",
-   "elapsedMs": 1119
-  },
-  {
-   "step": 149,
-   "type": "luau",
-   "elapsedMs": 197
-  },
-  {
-   "step": 150,
-   "type": "wait",
-   "elapsedMs": 8002
-  },
-  {
-   "step": 151,
-   "type": "capture",
-   "elapsedMs": 981
-  },
-  {
-   "step": 152,
-   "type": "click_from_luau",
-   "elapsedMs": 983
-  },
-  {
-   "step": 153,
-   "type": "luau",
-   "elapsedMs": 426
-  },
-  {
-   "step": 154,
-   "type": "wait",
-   "elapsedMs": 6004
-  },
-  {
-   "step": 155,
-   "type": "capture",
-   "elapsedMs": 1100
-  },
-  {
-   "step": 156,
-   "type": "wait",
-   "elapsedMs": 6016
-  },
-  {
-   "step": 157,
-   "type": "capture",
-   "elapsedMs": 1022
-  },
-  {
-   "step": 158,
-   "type": "luau",
-   "elapsedMs": 175
-  },
-  {
-   "step": 159,
-   "type": "wait",
-   "elapsedMs": 4007
-  },
-  {
-   "step": 160,
-   "type": "capture",
-   "elapsedMs": 843
-  },
-  {
-   "step": 161,
-   "type": "wait",
-   "elapsedMs": 6011
-  },
-  {
-   "step": 162,
-   "type": "capture",
-   "elapsedMs": 1042
-  },
-  {
-   "step": 163,
-   "type": "luau",
-   "elapsedMs": 180
-  },
-  {
-   "step": 164,
-   "type": "luau",
-   "elapsedMs": 194
-  },
-  {
-   "step": 165,
-   "type": "wait",
-   "elapsedMs": 7007
-  },
-  {
-   "step": 166,
-   "type": "capture",
-   "elapsedMs": 765
-  },
-  {
-   "step": 167,
-   "type": "luau",
-   "elapsedMs": 184
-  },
-  {
-   "step": 168,
-   "type": "wait",
-   "elapsedMs": 9015
-  },
-  {
-   "step": 169,
-   "type": "capture",
-   "elapsedMs": 874
-  },
-  {
-   "step": 170,
-   "type": "luau",
-   "elapsedMs": 162
-  },
-  {
-   "step": 171,
-   "type": "luau",
-   "elapsedMs": 206
-  },
-  {
-   "step": 172,
-   "type": "luau",
-   "elapsedMs": 1303
-  },
-  {
-   "step": 173,
-   "type": "wait",
-   "elapsedMs": 8009
-  },
-  {
-   "step": 174,
-   "type": "luau",
-   "elapsedMs": 136
-  },
-  {
-   "step": 175,
-   "type": "luau",
-   "elapsedMs": 201
-  },
-  {
-   "step": 176,
-   "type": "luau",
-   "elapsedMs": 329
-  },
-  {
-   "step": 177,
-   "type": "wait",
-   "elapsedMs": 465
-  },
-  {
-   "step": 178,
-   "type": "capture",
-   "elapsedMs": 944
-  },
-  {
-   "step": 179,
-   "type": "wait",
-   "elapsedMs": 452
-  },
-  {
-   "step": 180,
-   "type": "capture",
-   "elapsedMs": 874
-  },
-  {
-   "step": 181,
-   "type": "wait",
-   "elapsedMs": 453
-  },
-  {
-   "step": 182,
-   "type": "capture",
-   "elapsedMs": 937
-  },
-  {
-   "step": 183,
-   "type": "wait",
-   "elapsedMs": 452
-  },
-  {
-   "step": 184,
-   "type": "capture",
-   "elapsedMs": 783
-  },
-  {
-   "step": 185,
-   "type": "wait",
-   "elapsedMs": 451
-  },
-  {
-   "step": 186,
-   "type": "capture",
-   "elapsedMs": 910
-  },
-  {
-   "step": 187,
-   "type": "wait",
-   "elapsedMs": 452
-  },
-  {
-   "step": 188,
-   "type": "capture",
-   "elapsedMs": 942
-  },
-  {
-   "step": 189,
-   "type": "wait",
-   "elapsedMs": 456
-  },
-  {
-   "step": 190,
-   "type": "capture",
-   "elapsedMs": 973
-  },
-  {
-   "step": 191,
-   "type": "wait",
-   "elapsedMs": 457
-  },
-  {
-   "step": 192,
-   "type": "capture",
-   "elapsedMs": 824
-  },
-  {
-   "step": 193,
-   "type": "luau",
-   "elapsedMs": 212
-  },
-  {
-   "step": 194,
-   "type": "wait",
-   "elapsedMs": 552
-  },
-  {
-   "step": 195,
-   "type": "capture",
-   "elapsedMs": 787
-  },
-  {
-   "step": 196,
-   "type": "luau",
-   "elapsedMs": 228
-  },
-  {
-   "step": 197,
-   "type": "wait",
-   "elapsedMs": 559
-  },
-  {
-   "step": 198,
-   "type": "capture",
-   "elapsedMs": 927
-  },
-  {
-   "step": 199,
-   "type": "luau",
-   "elapsedMs": 697
-  },
-  {
-   "step": 200,
-   "type": "luau",
-   "elapsedMs": 217
-  },
-  {
-   "step": 201,
-   "type": "wait",
-   "elapsedMs": 553
-  },
-  {
-   "step": 202,
-   "type": "capture",
-   "elapsedMs": 914
-  },
-  {
-   "step": 203,
-   "type": "luau",
-   "elapsedMs": 227
-  },
-  {
-   "step": 204,
-   "type": "luau",
-   "elapsedMs": 226
-  },
-  {
-   "step": 205,
-   "type": "wait",
-   "elapsedMs": 560
-  },
-  {
-   "step": 206,
-   "type": "capture",
-   "elapsedMs": 961
-  },
-  {
-   "step": 207,
-   "type": "luau",
-   "elapsedMs": 221
-  },
-  {
-   "step": 208,
-   "type": "wait",
-   "elapsedMs": 554
-  },
-  {
-   "step": 209,
-   "type": "capture",
-   "elapsedMs": 951
-  },
-  {
-   "step": 210,
-   "type": "luau",
-   "elapsedMs": 209
-  },
-  {
-   "step": 211,
-   "type": "wait",
-   "elapsedMs": 561
-  },
-  {
-   "step": 212,
-   "type": "capture",
-   "elapsedMs": 760
-  },
-  {
-   "step": 213,
-   "type": "luau",
-   "elapsedMs": 202
-  },
-  {
-   "step": 214,
-   "type": "wait",
-   "elapsedMs": 562
-  },
-  {
-   "step": 215,
-   "type": "capture",
-   "elapsedMs": 864
-  },
-  {
-   "step": 216,
-   "type": "luau",
-   "elapsedMs": 210
-  },
-  {
-   "step": 217,
-   "type": "wait",
-   "elapsedMs": 560
-  },
-  {
-   "step": 218,
-   "type": "capture",
-   "elapsedMs": 907
-  },
-  {
-   "step": 219,
-   "type": "luau",
-   "elapsedMs": 196
-  },
-  {
-   "step": 220,
-   "type": "wait",
-   "elapsedMs": 553
-  },
-  {
-   "step": 221,
-   "type": "capture",
-   "elapsedMs": 685
-  },
-  {
-   "step": 222,
-   "type": "luau",
-   "elapsedMs": 196
-  },
-  {
-   "step": 223,
-   "type": "wait",
-   "elapsedMs": 561
-  },
-  {
-   "step": 224,
-   "type": "capture",
-   "elapsedMs": 861
-  },
-  {
-   "step": 225,
-   "type": "luau",
-   "elapsedMs": 4050
-  },
-  {
-   "step": 226,
-   "type": "luau",
-   "elapsedMs": 197
-  },
-  {
-   "step": 227,
-   "type": "capture",
-   "elapsedMs": 866
-  },
-  {
-   "step": 228,
-   "type": "luau",
-   "elapsedMs": 22709
-  },
-  {
-   "step": 229,
-   "type": "wait",
-   "elapsedMs": 1809
-  },
-  {
-   "step": 230,
-   "type": "luau",
-   "elapsedMs": 602
-  },
-  {
-   "step": 231,
-   "type": "click_from_luau",
-   "elapsedMs": 2501
-  },
-  {
-   "step": 232,
-   "type": "wait",
-   "elapsedMs": 1502
-  },
-  {
-   "step": 233,
-   "type": "capture",
-   "elapsedMs": 1143
-  },
-  {
-   "step": 234,
-   "type": "luau",
-   "elapsedMs": 939
-  },
-  {
-   "step": 235,
-   "type": "capture",
-   "elapsedMs": 982
-  },
-  {
-   "step": 236,
-   "type": "luau",
-   "elapsedMs": 1660
-  },
-  {
-   "step": 237,
-   "type": "capture",
-   "elapsedMs": 803
-  },
-  {
-   "step": 238,
-   "type": "wait",
-   "elapsedMs": 812
-  },
-  {
-   "step": 239,
-   "type": "luau",
-   "elapsedMs": 936
-  },
-  {
-   "step": 240,
-   "type": "capture",
-   "elapsedMs": 999
+   "elapsedMs": 3184
   }
  ],
  "consoleCapture": {
@@ -2232,18 +1331,18 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 13,
+  "warningCount": 12,
   "errors": []
  },
  "summary": {
   "plannedSteps": 241,
-  "completedSteps": 241,
+  "completedSteps": 138,
   "plannedClicks": 10,
-  "successfulClicks": 10,
+  "successfulClicks": 8,
   "skippedOptionalClicks": 0,
   "plannedFrames": 62,
-  "capturedFrames": 62,
-  "abortedEarly": false
+  "capturedFrames": 30,
+  "abortedEarly": true
  },
  "visualSamples": [
   {
@@ -2252,7 +1351,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 251284,
+      "bytes": 251325,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2275,7 +1374,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 250741,
+      "bytes": 250815,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2290,7 +1389,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195247,
+      "bytes": 195052,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2305,7 +1404,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 153121,
+      "bytes": 147998,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2329,7 +1428,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 128489,
+      "bytes": 135369,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2342,7 +1441,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.01404070854187,
+    "brightness": 2.0134830474853516,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -2353,7 +1452,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 142574,
+      "bytes": 142513,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2366,7 +1465,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0165727138519287,
+    "brightness": 2.0163164138793945,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -2377,7 +1476,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 103498,
+      "bytes": 98761,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2390,7 +1489,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0200958251953125,
+    "brightness": 2.019728899002075,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -2401,7 +1500,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 138415,
+      "bytes": 138310,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2414,7 +1513,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.024813175201416,
+    "brightness": 2.0245888233184814,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -2425,7 +1524,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 144686,
+      "bytes": 144490,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2440,7 +1539,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 180416,
+      "bytes": 180279,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2455,7 +1554,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 144221,
+      "bytes": 144194,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2470,7 +1569,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 137790,
+      "bytes": 137557,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2485,7 +1584,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 116093,
+      "bytes": 116818,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2500,7 +1599,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 115990,
+      "bytes": 116197,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2515,7 +1614,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164222,
+      "bytes": 164258,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2530,7 +1629,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 145880,
+      "bytes": 145812,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2545,7 +1644,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 150072,
+      "bytes": 149912,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2560,7 +1659,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 149086,
+      "bytes": 148950,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2575,7 +1674,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 149330,
+      "bytes": 148860,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2590,7 +1689,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 241401,
+      "bytes": 240065,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2605,7 +1704,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 179559,
+      "bytes": 180333,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2620,7 +1719,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 162444,
+      "bytes": 162736,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2635,7 +1734,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 150384,
+      "bytes": 149670,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2650,7 +1749,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 149926,
+      "bytes": 150082,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2665,7 +1764,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 137128,
+      "bytes": 136856,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2680,7 +1779,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 141851,
+      "bytes": 141675,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2695,7 +1794,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 141527,
+      "bytes": 141398,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2710,7 +1809,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 179688,
+      "bytes": 179874,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2725,7 +1824,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163791,
+      "bytes": 164013,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2740,7 +1839,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 245833,
+      "bytes": 250107,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2748,1027 +1847,28 @@
     ]
    },
    "interaction": "시설닫기"
-  },
-  {
-   "name": "cb0_deck",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 217266,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "시설닫기"
-  },
-  {
-   "name": "cb1",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 227188,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "시설닫기"
-  },
-  {
-   "name": "cb2",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 222276,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "시설닫기"
-  },
-  {
-   "name": "v1_start",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 254966,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "v2_event",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 250885,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "v3_event2",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 228135,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "v4_late",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 265076,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "b1_start",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 159607,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "b2_mid",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 156808,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_01",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 105813,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_02",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 105781,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_03",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 105825,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_04",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 105797,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_05",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 103941,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_06",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 105631,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_07",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 106328,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_sparring_08",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 106058,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_idle",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 102574,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_walk",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 104472,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_run",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 104120,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_attack",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 104624,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_shoot",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 105093,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_reload",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 105284,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_guard",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 105653,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_hurt",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 103306,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_cheer",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 105479,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_motion_talk",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 103784,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "harbor_npc_face_front",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 107513,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   }
-  },
-  {
-   "name": "field_entry",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 156827,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
-  },
-  {
-   "name": "field_npc_ally_mob",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 217949,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
-  },
-  {
-   "name": "field_motion_smooth_icons",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 218208,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
-  },
-  {
-   "name": "field_actor_after_motion",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 222600,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
   }
  ],
- "assetAudit": {
-  "models": {
-   "status": "PASS",
-   "loaded": 799,
-   "errors": [],
-   "failed": 0,
-   "registered": 799
-  },
-  "registered": {
-   "status": "PASS",
-   "failed": 0,
-   "imagesSounds": 572,
-   "models": 808,
-   "elapsedSeconds": 16,
-   "timedOut": false,
-   "registered": 1380,
-   "serverPreloadUnresponsive": true,
-   "failedMedia": [],
-   "fetchCallbacks": 0,
-   "currentBatch": 1,
-   "serverPreloadEvidence": {
-    "status": "FAIL",
-    "failed": 12,
-    "failedMedia": [
-     {
-      "id": "rbxassetid://72489040757878",
-      "key": "AssetIds.CardArt/af_03",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://77023165428158",
-      "key": "AssetIds.CardArt/af_15",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://107877140385634",
-      "key": "AssetIds.CardArt/ast_aurora",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://127370718437030",
-      "key": "AssetIds.CardArt/ast_comet",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://105991549101223",
-      "key": "AssetIds.CardArt/ast_halley_comet",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://114650000468629",
-      "key": "AssetIds.CardArt/ast_halley_prediction",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://125327803198600",
-      "key": "AssetIds.CardArt/ast_jupiter_moons",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://120956229711846",
-      "key": "AssetIds.CardArt/ast_saturn_rings",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://114615121747571",
-      "key": "AssetIds.CardArt/ast_venus",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://92405337443576",
-      "key": "AssetIds.CardArt/battle_africa",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://91390038338745",
-      "key": "AssetIds.CardArt/battle_card_back",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://113361166465626",
-      "key": "AssetIds.CardArt/battle_east_asia",
-      "status": "TIMEOUT_16S"
-     }
-    ],
-    "timedOut": false,
-    "fetchCallbacks": 0
-   },
-   "clientVerified": true,
-   "soundClientVerified": true,
-   "authority": "OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED"
-  },
-  "features": {
-   "status": "PASS",
-   "progress": "2044:DONE",
-   "coverage": {
-    "Visit": {
-     "invalid": 0,
-     "rejected": 54,
-     "accepted": 0,
-     "calls": 54
-    },
-    "BuyFleetShip": {
-     "invalid": 0,
-     "rejected": 48,
-     "accepted": 3,
-     "calls": 51
-    },
-    "VoyageBonus": {
-     "invalid": 0,
-     "rejected": 181,
-     "accepted": 0,
-     "calls": 181
-    },
-    "PlayStory": {
-     "invalid": 0,
-     "rejected": 225,
-     "accepted": 3,
-     "calls": 228
-    },
-    "Hunt": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Audience": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "BuyGear": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 6,
-     "calls": 6
-    },
-    "BuyShip": {
-     "invalid": 0,
-     "rejected": 49,
-     "accepted": 2,
-     "calls": 51
-    },
-    "HireCrew": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyPlating": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyMap": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "NewGame": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "WaitDay": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "SetSpecialty": {
-     "invalid": 0,
-     "rejected": 10,
-     "accepted": 5,
-     "calls": 15
-    },
-    "Talk": {
-     "invalid": 0,
-     "rejected": 47,
-     "accepted": 2,
-     "calls": 49
-    },
-    "Borrow": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "QAGrant": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Sell": {
-     "invalid": 0,
-     "rejected": 98,
-     "accepted": 20,
-     "calls": 118
-    },
-    "Buy": {
-     "invalid": 0,
-     "rejected": 98,
-     "accepted": 20,
-     "calls": 118
-    },
-    "Repair": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "Sail": {
-     "invalid": 0,
-     "rejected": 168,
-     "accepted": 13,
-     "calls": 181
-    },
-    "Research": {
-     "invalid": 0,
-     "rejected": 6,
-     "accepted": 0,
-     "calls": 6
-    },
-    "Withdraw": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuySupplies": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "DismissEscort": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "ToggleGear": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 6,
-     "calls": 6
-    },
-    "VoyageChoice": {
-     "invalid": 0,
-     "rejected": 176,
-     "accepted": 5,
-     "calls": 181
-    },
-    "ResolveBattle": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Repay": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Recruit": {
-     "invalid": 0,
-     "rejected": 48,
-     "accepted": 1,
-     "calls": 49
-    },
-    "Accept": {
-     "invalid": 0,
-     "rejected": 3,
-     "accepted": 5,
-     "calls": 8
-    },
-    "Feast": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "TalkChoice": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "BuyInsurance": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyEscort": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "State": {
-     "invalid": 0,
-     "rejected": 2,
-     "accepted": 0,
-     "calls": 2
-    },
-    "Rumor": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "ChallengeBoss": {
-     "invalid": 0,
-     "rejected": 4,
-     "accepted": 0,
-     "calls": 4
-    },
-    "Deposit": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyLicense": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "Haggle": {
-     "invalid": 0,
-     "rejected": 70,
-     "accepted": 47,
-     "calls": 117
-    },
-    "Explore": {
-     "invalid": 0,
-     "rejected": 592,
-     "accepted": 0,
-     "calls": 592
-    },
-    "BuyCannon": {
-     "invalid": 0,
-     "rejected": 3,
-     "accepted": 2,
-     "calls": 5
-    }
-   },
-   "observed": {
-    "naval-resolved": 1,
-    "quest-accepted": 5,
-    "voyage-arrived": 13,
-    "naval-encounter": 1
-   },
-   "calls": 2044,
-   "issues": [],
-   "rejected": 1884,
-   "failed": 0,
-   "accepted": 157
-  }
- },
- "assetRegistryAudit": {
-  "registered": 1280,
-  "activeIds": 1280,
-  "mismatched": [],
-  "missing": [],
-  "unverifiedPermissions": [],
-  "status": "PASS"
- },
- "clientImageAudit": {
-  "mode": "VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED",
-  "expected": 472,
-  "soundExpected": 100,
-  "missing": [],
-  "soundMissing": [],
-  "batches": 10,
-  "loaded": 472,
-  "soundLoaded": 100
- },
- "assetOwnership": {
-  "reportedFailedIds": [
-   "72489040757878",
-   "77023165428158",
-   "107877140385634",
-   "127370718437030",
-   "105991549101223",
-   "114650000468629",
-   "125327803198600",
-   "120956229711846",
-   "114615121747571",
-   "92405337443576",
-   "91390038338745",
-   "113361166465626"
-  ],
-  "contexts": {
-   "Server": {
-    "owners": {
-     "127370718437030": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_comet"
-      ]
-     },
-     "125327803198600": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_jupiter_moons"
-      ]
-     },
-     "107877140385634": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_aurora"
-      ]
-     },
-     "114650000468629": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_halley_prediction"
-      ]
-     },
-     "120956229711846": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_saturn_rings"
-      ]
-     },
-     "114615121747571": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_venus"
-      ]
-     },
-     "91390038338745": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/battle_card_back"
-      ]
-     },
-     "92405337443576": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/battle_africa"
-      ]
-     },
-     "77023165428158": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/af_15"
-      ]
-     },
-     "113361166465626": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/battle_east_asia"
-      ]
-     },
-     "105991549101223": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_halley_comet"
-      ]
-     },
-     "72489040757878": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/af_03"
-      ]
-     }
-    },
-    "scanned": 23483,
-    "contentRefs": 5142,
-    "complete": true
-   },
+ "abortDiagnostics": {
+  "step": 137,
+  "type": "luau",
+  "elapsedMs": 2716,
+  "context": "Client",
+  "lastScreenshot": "ui_facility_book_closed",
+  "lastClick": "yard_book_close",
+  "probes": {
    "Client": {
-    "owners": {
-     "127370718437030": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_comet"
-      ]
-     },
-     "125327803198600": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_jupiter_moons"
-      ]
-     },
-     "107877140385634": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_aurora"
-      ]
-     },
-     "114650000468629": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_halley_prediction"
-      ]
-     },
-     "120956229711846": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_saturn_rings"
-      ]
-     },
-     "114615121747571": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_venus"
-      ]
-     },
-     "91390038338745": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/battle_card_back"
-      ]
-     },
-     "92405337443576": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/battle_africa"
-      ]
-     },
-     "77023165428158": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/af_15"
-      ]
-     },
-     "113361166465626": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/battle_east_asia"
-      ]
-     },
-     "105991549101223": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/ast_halley_comet"
-      ]
-     },
-     "72489040757878": {
-      "instances": [],
-      "registry": [
-       "AssetIds.CardArt/af_03"
-      ]
-     }
-    },
-    "scanned": 25001,
-    "contentRefs": 4691,
-    "complete": false
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_CLIENT\ntext"
+   },
+   "Server": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_SERVER\ntext"
    }
   }
  },
  "visualEvidence": {
-  "framesChecked": 62,
+  "framesChecked": 30,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
