@@ -154945,7 +154945,7 @@
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -154979,7 +154979,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 6,
-      "previousReservationId": "system-ai:44513722833:1",
+      "previousReservationId": "system-ai:44539593918:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -154987,12 +154987,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44539593918:1",
-      "reservedAt": "2026-11-19T14:11:13.576Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -155238,7 +155238,13 @@
         "actions-run:44509307772",
         "system-ai-handoff-to-reservation:system-ai:44513722833:1",
         "actions-run:44513722833",
-        "system-ai-handoff-to-reservation:system-ai:44539593918:1"
+        "system-ai-handoff-to-reservation:system-ai:44539593918:1",
+        "actions-run:44539593918",
+        "external-ai-raw-output-sha256:846ca175f6cf809cbfb0eed5f0ce84dbc797e95ba17af46a032a23de795ee6cf",
+        "system-ai-applied-answer-sha256:3ccc8de548ae5c1a810f55f8ed7eeeb7ce91761e3b02f8faffd75b1f9eb316ad",
+        "repair-strategy-fingerprint:96f094f696a4cf463e1f970c64aef66a00d72b0946c244318403fc94aa6cf49c",
+        "failed-strategy-fingerprint:96f094f696a4cf463e1f970c64aef66a00d72b0946c244318403fc94aa6cf49c",
+        "model-output-sha256:846ca175f6cf809cbfb0eed5f0ce84dbc797e95ba17af46a032a23de795ee6cf"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1834,
@@ -155253,7 +155259,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-19T14:11:13.576Z"
+      "updatedAt": "2026-11-19T14:17:15.907Z"
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
