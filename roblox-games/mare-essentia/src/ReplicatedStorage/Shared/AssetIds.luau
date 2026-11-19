@@ -159,7 +159,7 @@ return {
 	["CardArt/lo_25"] = 135996024337744,
 	["CardArt/lo_51"] = 107747671986006,
 	["CardArt/lo_52"] = 80391618632801,
-	["CardArt/lo_60"] = 126708340196565,
+	["CardArt/lo_60"] = 84254813222314,
 	["CardArt/me_12"] = 92430930978168,
 	["CardArt/me_15"] = 113543046632712,
 	["CardArt/med_cell_observation"] = 100804790816353,
