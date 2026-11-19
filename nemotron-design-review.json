@@ -2,14 +2,14 @@
   "version": 3,
   "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "422c989d148dfd5b71d74559bcdafb10dd6cfcbb",
+  "sourceRevision": "9d5906f72626332cea9a4225046f53296bf44fbf",
   "status": "REVIEWED_NO_VERIFIED_EDIT",
-  "selectedRole": "UI",
+  "selectedRole": "MOTION",
   "usageWindow": {
     "day": "2026-11-19",
     "calls": {
-      "NVIDIA": 10,
-      "GEMINI": 7,
+      "NVIDIA": 11,
+      "GEMINI": 8,
       "OPENROUTER": 30
     },
     "windowIds": {
@@ -24,21 +24,21 @@
     }
   },
   "cooldowns": {
-    "GEMINI_FLASH": "2026-11-19T11:48:03.823Z",
-    "NVIDIA_VL": "2026-11-19T11:49:15.627Z",
-    "GEMINI_LITE": "2026-11-19T12:09:56.320Z"
+    "GEMINI_LITE": "2026-11-19T12:09:56.320Z",
+    "GEMINI_FLASH": "2026-11-19T11:50:16.008Z",
+    "NVIDIA_VL": "2026-11-19T12:19:54.592Z"
   },
   "quotaForecast": {
     "NVIDIA": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 10,
-      "remainingLocal": 2,
-      "effectiveRemaining": 2,
+      "localUsed": 11,
+      "remainingLocal": 1,
+      "effectiveRemaining": 1,
       "regularWorkRemaining": 0,
-      "emergencyReserveRemaining": 2,
-      "estimatedCallsPerHour": 1.03,
-      "estimatedHoursToLocalCap": 1.9,
+      "emergencyReserveRemaining": 1,
+      "estimatedCallsPerHour": 1.12,
+      "estimatedHoursToLocalCap": 0.9,
       "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -49,13 +49,13 @@
     "GEMINI": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 7,
-      "remainingLocal": 5,
-      "effectiveRemaining": 5,
-      "regularWorkRemaining": 2,
+      "localUsed": 8,
+      "remainingLocal": 4,
+      "effectiveRemaining": 4,
+      "regularWorkRemaining": 1,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 1.68,
-      "estimatedHoursToLocalCap": 3,
+      "estimatedCallsPerHour": 1.87,
+      "estimatedHoursToLocalCap": 2.1,
       "nextLocalWindowAt": "2026-11-20T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
       "accountWideBalanceVerified": false,
@@ -71,7 +71,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 3.31,
+      "estimatedCallsPerHour": 3.25,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -84,33 +84,39 @@
   "accountQuota": null,
   "attempts": [
     {
-      "id": "GEMINI_LITE",
-      "status": "OK",
+      "id": "GEMINI_FLASH",
+      "status": "HTTP_503",
       "provider": "GEMINI",
-      "model": "gemini-3.5-flash-lite"
+      "model": "gemini-3.8-flash"
     },
     {
-      "id": "GEMINI_LITE",
+      "id": "NVIDIA_VL",
+      "status": "OK",
+      "provider": "NVIDIA",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    },
+    {
+      "id": "NVIDIA_VL",
       "status": "REVIEW_INVALID",
       "failureSignature": "DUPLICATE_SOURCE_ANCHOR"
     }
   ],
   "frames": [
     {
-      "name": "qa_click_trade_to_harbor-0.jpg",
-      "sha256": "9be22fe127cbf083aa221344e55db5eab95f9c49a7e781162a4876cab8686547"
+      "name": "field_actor_after_motion-0.jpg",
+      "sha256": "d939bd873b9e8110dd30a1a8c51c39830b452b4a797b81383bfc25fc3bb45d4c"
     },
     {
-      "name": "tab_trade-0.jpg",
-      "sha256": "52a707114b29563fe733428820e43857bf808289b5345bfd1b17b06c620e3c4c"
+      "name": "field_motion_smooth_icons-0.jpg",
+      "sha256": "dfb241321adb10a2242532ef4d3c60f6183375267dcf6562f18fcca613eac14d"
     },
     {
-      "name": "ui_trade_inline-0.jpg",
-      "sha256": "1ec3225e20c54d641d1b69515243db6efd570b51f0edbf689eec37af6e778b10"
+      "name": "harbor_motion_attack-0.jpg",
+      "sha256": "3e89a58889ff3d9e227add08f216d0f55eb9b536aa1f7012ad589d0b60c62a81"
     },
     {
-      "name": "qa_click_codex_to_tech-0.jpg",
-      "sha256": "e4933d0ea2897c1a96e67bd299ae7ff74c7c828df25150d11f18c821a894f696"
+      "name": "harbor_motion_cheer-0.jpg",
+      "sha256": "3ebd48b80a765f524097fea62c0fe829afb6befc19c2f824cca86e8c661ba893"
     }
   ],
   "independentQaPassed": false,
