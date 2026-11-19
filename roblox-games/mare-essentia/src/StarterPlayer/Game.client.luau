@@ -2529,10 +2529,26 @@ H.DOCK = {
 	{ "board", "주점", "tavern" }, { "battle", "전투", "battle" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
 }
 H.dockButtons = {}
+H.dockNotices = {}
 for i, d in H.DOCK do
 	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[3], d[2], true)
 	b.LayoutOrder = i
 	H.dockButtons[d[1]] = b
+	-- [시설 알림] 고정된 메뉴 아이콘에만 가볍게 표시한다. 인스턴스는 한 번만 만든다.
+	local notice = Instance.new("TextLabel")
+	notice.Name = "FacilityNotice"
+	notice.AnchorPoint = Vector2.new(1, 0)
+	notice.Position = UDim2.new(1, -1, 0, 1)
+	notice.Size = UDim2.fromOffset(33, 17)
+	notice.BackgroundColor3 = Color3.fromRGB(149, 57, 34)
+	notice.TextColor3 = Color3.fromRGB(255, 248, 228)
+	notice.TextSize = 12
+	notice.Font = Enum.Font.GothamBold
+	notice.ZIndex = 7
+	notice.Visible = false
+	notice.Parent = b
+	corner(notice, 7)
+	H.dockNotices[d[1]] = notice
 	b.Activated:Connect(function()
 		openTab(d[1])
 	end)
@@ -3065,6 +3081,35 @@ function H.updateHud(p, ship)
 	H.hudShip.Text = string.format("화물 %d/%d · 명성 %d", ship.cargoUsed, ship.cargoCapacity, p.fame)
 	H.hudCoin.Text = tostring(p.coins) .. " 코인"
 	H.menuStatusLabel.Text = H.statusMoneyCargo(p, ship, mainInner.AbsoluteSize.X < 740)
+	-- [상황별 표시] 실제 서버 스냅샷의 현재 상태만 사용하고 새 저장 키를 만들지 않는다.
+	local lowPrice = false
+	if (ship.cargoCapacity or 0) > (ship.cargoUsed or 0) then
+		for _, goods in (view and view.goods) or {} do
+			local price = tonumber(goods.buyTotals and goods.buyTotals[1]) or tonumber(goods.buy)
+			local average = tonumber(goods.avgPrice)
+			if price and average and average > 0 and price <= average * 0.9
+				and price <= (p.coins or 0) and (tonumber(goods.supply) or 0) >= 1 then
+				lowPrice = true
+				break
+			end
+		end
+	end
+	local readyDelivery = false
+	for _, q in (view and view.quests and view.quests.active) or {} do
+		if q.kind == "deliver" and (q.progress or 0) >= (q.amount or math.huge) then
+			readyDelivery = true
+			break
+		end
+	end
+	local alerts = {
+		trade = if lowPrice then "저가" else nil,
+		yard = if (ship.hull or 0) < (ship.maxHull or 0) then "수리" else nil,
+		board = if readyDelivery then "납품" else nil,
+	}
+	for id, notice in H.dockNotices do
+		notice.Text = alerts[id] or ""
+		notice.Visible = alerts[id] ~= nil
+	end
 end
 
 -- 화면 중앙 상단 동료 말풍선: 게임을 시작하거나 새 항구에 닿으면 동료가 인사하고 앞으로 할 일을 조언한다.
