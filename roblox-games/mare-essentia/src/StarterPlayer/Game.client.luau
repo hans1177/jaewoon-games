@@ -6564,7 +6564,7 @@ H.tradeHall = openTradeHall
 -- 서버 거래·저장·우편·게시물 처리 로직은 기존 호출을 그대로 유지한다.
 function RENDERERS.market()
 	-- [시설 역할 분리] 상인 길드 계약을 거래소 첫 화면으로 이동한다. 기존 서버 호출 유지.
-	if fac.guild then
+	if view.guild and table.find(view.facilities or {}, "guild") then
 		add(function() return mkHeader(content, "상인 길드 계약") end)
 		local g = view.guild
 		if g.contract then
