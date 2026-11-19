@@ -1,0 +1,1878 @@
+{
+ "sourceRevision": "ca8e5745809900b4fee973a9969ea418ba124f49",
+ "log": [
+  {
+   "step": 1,
+   "capture": "c00_start",
+   "files": 1
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "QAAutoIntro on\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "INTRO_CENTER_QA_MONITOR_READY\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "MARE_TITLE_READY:TitleBackdrop:프랑스\ntext"
+  },
+  {
+   "step": 6,
+   "click": "title01",
+   "at": "922,84",
+   "out": "922,84 CLICK=프랑스\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 922,
+      "y": 84
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 8,
+   "capture": "t01",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "SCROLLED 상인 집안\ntext"
+  },
+  {
+   "step": 11,
+   "click": "title02",
+   "at": "585,132",
+   "out": "585,132 CLICK=상인 집안\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 585,
+      "y": 132
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 13,
+   "capture": "t02",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "SCROLLED ⚓ 출항하기\ntext"
+  },
+  {
+   "step": 16,
+   "click": "title03",
+   "at": "730,206",
+   "out": "730,206 CLICK=⚓ 출항하기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 730,
+      "y": 206
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 18,
+   "capture": "intro_center_early",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "capture": "intro_center_next",
+   "files": 1
+  },
+  {
+   "step": 22,
+   "capture": "intro_center_late",
+   "files": 1
+  },
+  {
+   "step": 24,
+   "capture": "t03",
+   "files": 1
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "INTRO_OK\ntext"
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "INTRO_CENTER_SIZE_UNIFIED_PASS stages=3 |길드 서기|대상 상인 카심|떠돌이 화가\ntext"
+  },
+  {
+   "step": 28,
+   "capture": "intro_done",
+   "files": 1
+  },
+  {
+   "step": 29,
+   "ctx": "Client",
+   "out": "INTRO_RUNTIME_STATE_PASS_NO_DECK_POPUP\ntext"
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997752 | 자금 999,997,752코인 · 화물 19/19 | 현황 | 선장 현황 | 동료 관리 | 동료 관리 | 초상화가 완성되었다 | ◆ 현황 · 핵심 정보\ntext"
+  },
+  {
+   "step": 31,
+   "ctx": "Client",
+   "out": "tab harbor\ntext"
+  },
+  {
+   "step": 33,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:harbor\ntext"
+  },
+  {
+   "step": 34,
+   "capture": "tab_harbor",
+   "files": 1
+  },
+  {
+   "step": 35,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 상인 길드 · 항구 정보 | 교역소 | 999997752 | 자금 999,997,752코인 · 화물 19/19 | ↶ 현황 | 교역 | 교역 장부 | 거래소·우편 | 항구 정보 | 항구 정보\ntext"
+  },
+  {
+   "step": 36,
+   "ctx": "Client",
+   "out": "tab trade\ntext"
+  },
+  {
+   "step": 38,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:trade\ntext"
+  },
+  {
+   "step": 39,
+   "ctx": "Client",
+   "out": "TRADE_MENU_CONTEXT_PRICE_UI_PASS\ntext"
+  },
+  {
+   "step": 40,
+   "capture": "tab_trade",
+   "files": 1
+  },
+  {
+   "step": 41,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 상인 길드 · 교역 | 교역소 | 999997752 | 자금 999,997,752코인 · 화물 19/19 | ↶ 항구 정보 | 교역 | 교역 장부 | 거래소·우편 | 항구 정보 | 항구 정보\ntext"
+  },
+  {
+   "step": 42,
+   "click": "qa_tab_trade_to_harbor",
+   "at": "942,110",
+   "out": "942,110 CLICK=FACILITY_TAB_trade_TO_harbor\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 942,
+      "y": 110
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 44,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:trade_TO_harbor\ntext"
+  },
+  {
+   "step": 45,
+   "capture": "qa_click_trade_to_harbor",
+   "files": 1
+  },
+  {
+   "step": 46,
+   "ctx": "Client",
+   "out": "tab route\ntext"
+  },
+  {
+   "step": 48,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:route\ntext"
+  },
+  {
+   "step": 49,
+   "capture": "tab_route",
+   "files": 1
+  },
+  {
+   "step": 50,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 항만 관리관 · 항해 | 항만청 | 999997752 | 자금 999,997,752코인 · 화물 19/19 | ↶ 항구 정보 | 항해 | 항로 선택 | 지도 | 세계 지도 | ◆ 항해 · 핵심 정보\ntext"
+  },
+  {
+   "step": 51,
+   "click": "qa_tab_route_to_map",
+   "at": "942,110",
+   "out": "942,110 CLICK=FACILITY_TAB_route_TO_map\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 942,
+      "y": 110
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 53,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:route_TO_map\ntext"
+  },
+  {
+   "step": 54,
+   "capture": "qa_click_route_to_map",
+   "files": 1
+  },
+  {
+   "step": 55,
+   "ctx": "Client",
+   "out": "tab map\ntext"
+  },
+  {
+   "step": 57,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:map\ntext"
+  },
+  {
+   "step": 58,
+   "capture": "tab_map",
+   "files": 1
+  },
+  {
+   "step": 59,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 항만 관리관 · 지도 | 항만청 | 999997752 | 자금 999,997,752코인 · 화물 19/19 | ↶ 항해 | 항해 | 항로 선택 | 지도 | 세계 지도 | ◆ 지도 · 핵심 정보\ntext"
+  },
+  {
+   "step": 60,
+   "ctx": "Client",
+   "out": "tab yard\ntext"
+  },
+  {
+   "step": 62,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:yard\ntext"
+  },
+  {
+   "step": 63,
+   "capture": "tab_yard",
+   "files": 1
+  },
+  {
+   "step": 64,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 조선 장인 · 조선소 | 조선소 | 999997752 | 자금 999,997,752코인 · 화물 19/19 | ↶ 지도 | 조선소 | 선박 관리 | 가까운 항구 출항 확인 | 선박 관리 | 선체·보급 → 선단·대포 → 새 배 비교\ntext"
+  },
+  {
+   "step": 65,
+   "ctx": "Client",
+   "out": "tab quest\ntext"
+  },
+  {
+   "step": 67,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:quest\ntext"
+  },
+  {
+   "step": 68,
+   "capture": "tab_quest",
+   "files": 1
+  },
+  {
+   "step": 69,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 주점 주인 · 진행 일지 | 주점 | 999997752 | 자금 999,997,752코인 · 화물 19/19 | ↶ 조선소 | 의뢰 받기 | 주점 의뢰 | 진행 일지 | 진행 일지 | 동료 영입\ntext"
+  },
+  {
+   "step": 70,
+   "ctx": "Client",
+   "out": "tab explore\ntext"
+  },
+  {
+   "step": 72,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:explore\ntext"
+  },
+  {
+   "step": 73,
+   "capture": "tab_explore",
+   "files": 1
+  },
+  {
+   "step": 74,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 전투 교관 · 지상 탐험 | 전투 본부 | 999997752 | 자금 999,997,752코인 · 화물 19/19 | ↶ 진행 일지 | 해적 사냥 | 전투 준비 | 지상 탐험 | 지상 탐험 | 함대전\ntext"
+  },
+  {
+   "step": 75,
+   "ctx": "Client",
+   "out": "tab battle\ntext"
+  },
+  {
+   "step": 77,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:battle\ntext"
+  },
+  {
+   "step": 78,
+   "capture": "tab_battle",
+   "files": 1
+  },
+  {
+   "step": 79,
+   "ctx": "Client",
+   "out": "UI_UNIFIED_PASS DOCK=7 BATTLE_TABS=4 TAVERN=MUG DECK=CARD WAR=CANNON\ntext"
+  },
+  {
+   "step": 80,
+   "capture": "ui_battle_unified",
+   "files": 1
+  },
+  {
+   "step": 81,
+   "ctx": "Client",
+   "out": "QA_MENU_ICONS_VISIBLE_FOR_CAPTURE\ntext"
+  },
+  {
+   "step": 83,
+   "capture": "ui_main_menu_icons",
+   "files": 1
+  },
+  {
+   "step": 84,
+   "ctx": "Client",
+   "out": "QA_MENU_ICONS_CAPTURE_RESTORED\ntext"
+  },
+  {
+   "step": 85,
+   "ctx": "Client",
+   "out": "UI_MOBILE_420PX_SIMULATED\ntext"
+  },
+  {
+   "step": 87,
+   "ctx": "Client",
+   "out": "UI_MOBILE_TOP_RIGHT_TABS_PASS width=406 tabs=4\ntext"
+  },
+  {
+   "step": 88,
+   "capture": "ui_mobile_tabs_topright",
+   "files": 1
+  },
+  {
+   "step": 89,
+   "ctx": "Client",
+   "out": "UI_MOBILE_LAYOUT_RESTORED\ntext"
+  },
+  {
+   "step": 91,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 전투 교관 · 해적 사냥 | 전투 본부 | 999997752 | 자금 999,997,752코인 · 화물 19/19 | ↶ 지상 탐험 | 해적 사냥 | 전투 준비 | 지상 탐험 | 지상 탐험 | 함대전\ntext"
+  },
+  {
+   "step": 92,
+   "ctx": "Client",
+   "out": "tab codex\ntext"
+  },
+  {
+   "step": 94,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:codex\ntext"
+  },
+  {
+   "step": 95,
+   "capture": "tab_codex",
+   "files": 1
+  },
+  {
+   "step": 96,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 학자 · 지식 백과 | 학자의 서재 | 999997752 | 자금 999,997,752코인 · 화물 19/19 | ↶ 해적 사냥 | 지식 보고 | 학자와 보고 | 지식 백과 | 지식 백과 | 연구\ntext"
+  },
+  {
+   "step": 97,
+   "click": "qa_tab_codex_to_tech",
+   "at": "770,110",
+   "out": "770,110 CLICK=FACILITY_TAB_codex_TO_tech\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 770,
+      "y": 110
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 99,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:codex_TO_tech\ntext"
+  },
+  {
+   "step": 100,
+   "capture": "qa_click_codex_to_tech",
+   "files": 1
+  },
+  {
+   "step": 101,
+   "ctx": "Client",
+   "out": "tab tech\ntext"
+  },
+  {
+   "step": 103,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:tech\ntext"
+  },
+  {
+   "step": 104,
+   "capture": "tab_tech",
+   "files": 1
+  },
+  {
+   "step": 105,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 학자 · 연구 | 학자의 서재 | 999997752 | 자금 999,997,752코인 · 화물 19/19 | ↶ 지식 백과 | 지식 보고 | 학자와 보고 | 지식 백과 | 지식 백과 | 연구\ntext"
+  },
+  {
+   "step": 106,
+   "ctx": "Client",
+   "out": "tab status\ntext"
+  },
+  {
+   "step": 108,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:status\ntext"
+  },
+  {
+   "step": 109,
+   "capture": "tab_status",
+   "files": 1
+  },
+  {
+   "step": 110,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997752 | 자금 999,997,752코인 · 화물 19/19 | ↶ 연구 | 현황 | 선장 현황 | 동료 관리 | 동료 관리 | ◆ 현황 · 핵심 정보\ntext"
+  },
+  {
+   "step": 111,
+   "click": "qa_tab_status_to_crew",
+   "at": "942,110",
+   "out": "942,110 CLICK=FACILITY_TAB_status_TO_crew\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 942,
+      "y": 110
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 113,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:status_TO_crew\ntext"
+  },
+  {
+   "step": 114,
+   "capture": "qa_click_status_to_crew",
+   "files": 1
+  },
+  {
+   "step": 115,
+   "ctx": "Client",
+   "out": "tab crew\ntext"
+  },
+  {
+   "step": 117,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:crew\ntext"
+  },
+  {
+   "step": 118,
+   "capture": "tab_crew",
+   "files": 1
+  },
+  {
+   "step": 119,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 · 동료 관리 | 선장실 | 999997752 | 자금 999,997,752코인 · 화물 19/19 | ↶ 현황 | 현황 | 선장 현황 | 동료 관리 | 동료 관리 | ◆ 동료 관리 · 핵심 정보\ntext"
+  },
+  {
+   "step": 120,
+   "ctx": "Client",
+   "out": "QA_TRADE_INLINE_OPEN\ntext"
+  },
+  {
+   "step": 122,
+   "ctx": "Client",
+   "out": "TRADE_TAB_MENU_PASS\ntext"
+  },
+  {
+   "step": 123,
+   "ctx": "Client",
+   "out": "TRADE_TAB_PRICES_AND_ACTIONS_PASS\ntext"
+  },
+  {
+   "step": 124,
+   "capture": "ui_trade_inline",
+   "files": 1
+  },
+  {
+   "step": 125,
+   "ctx": "Client",
+   "out": "QA_YARD_INLINE_OPEN\ntext"
+  },
+  {
+   "step": 127,
+   "ctx": "Client",
+   "out": "YARD_TAB_MENU_PASS\ntext"
+  },
+  {
+   "step": 128,
+   "ctx": "Client",
+   "out": "SHIP_INLINE_COMPARISON_PASS\ntext"
+  },
+  {
+   "step": 129,
+   "capture": "ui_yard_inline",
+   "files": 1
+  },
+  {
+   "step": 130,
+   "click": "yard_book_close",
+   "at": "1005,43",
+   "out": "1005,43 CLICK=시설닫기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 1005,
+      "y": 43
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 132,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_CLOSE_PASS\ntext"
+  },
+  {
+   "step": 133,
+   "capture": "ui_facility_book_closed",
+   "files": 1
+  },
+  {
+   "step": 134,
+   "ctx": "Client",
+   "out": "VOYAGE_QA_EVENT_OPEN\ntext"
+  },
+  {
+   "step": 136,
+   "ctx": "Client",
+   "out": "VOYAGE_QA_EVENT_GATE_PASS\ntext"
+  }
+ ],
+ "errors": [
+  "step137:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action ExecuteLuau.runCode sent to DMN_ID_PLAYCLIENT failed - Target is not reachable (ExecuteLuau.runCode, DMN_ID_PLAYCLIENT). No OnInvoke handler responded for this action. Sender: DMN_ID_STANDALONE. | text"
+ ],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 28014
+  },
+  {
+   "step": 1,
+   "type": "capture",
+   "elapsedMs": 1075
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 3,
+   "type": "luau",
+   "elapsedMs": 183
+  },
+  {
+   "step": 4,
+   "type": "luau",
+   "elapsedMs": 182
+  },
+  {
+   "step": 5,
+   "type": "wait",
+   "elapsedMs": 404
+  },
+  {
+   "step": 6,
+   "type": "click_from_luau",
+   "elapsedMs": 803
+  },
+  {
+   "step": 7,
+   "type": "wait",
+   "elapsedMs": 2005
+  },
+  {
+   "step": 8,
+   "type": "capture",
+   "elapsedMs": 1054
+  },
+  {
+   "step": 9,
+   "type": "luau",
+   "elapsedMs": 186
+  },
+  {
+   "step": 10,
+   "type": "wait",
+   "elapsedMs": 404
+  },
+  {
+   "step": 11,
+   "type": "click_from_luau",
+   "elapsedMs": 1012
+  },
+  {
+   "step": 12,
+   "type": "wait",
+   "elapsedMs": 2005
+  },
+  {
+   "step": 13,
+   "type": "capture",
+   "elapsedMs": 924
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 402
+  },
+  {
+   "step": 16,
+   "type": "click_from_luau",
+   "elapsedMs": 869
+  },
+  {
+   "step": 17,
+   "type": "wait",
+   "elapsedMs": 1703
+  },
+  {
+   "step": 18,
+   "type": "capture",
+   "elapsedMs": 1080
+  },
+  {
+   "step": 19,
+   "type": "wait",
+   "elapsedMs": 1810
+  },
+  {
+   "step": 20,
+   "type": "capture",
+   "elapsedMs": 1119
+  },
+  {
+   "step": 21,
+   "type": "wait",
+   "elapsedMs": 1812
+  },
+  {
+   "step": 22,
+   "type": "capture",
+   "elapsedMs": 2442
+  },
+  {
+   "step": 23,
+   "type": "wait",
+   "elapsedMs": 3707
+  },
+  {
+   "step": 24,
+   "type": "capture",
+   "elapsedMs": 1769
+  },
+  {
+   "step": 25,
+   "type": "luau",
+   "elapsedMs": 3148
+  },
+  {
+   "step": 26,
+   "type": "luau",
+   "elapsedMs": 359
+  },
+  {
+   "step": 27,
+   "type": "wait",
+   "elapsedMs": 2512
+  },
+  {
+   "step": 28,
+   "type": "capture",
+   "elapsedMs": 1805
+  },
+  {
+   "step": 29,
+   "type": "luau",
+   "elapsedMs": 1319
+  },
+  {
+   "step": 30,
+   "type": "luau",
+   "elapsedMs": 350
+  },
+  {
+   "step": 31,
+   "type": "luau",
+   "elapsedMs": 334
+  },
+  {
+   "step": 32,
+   "type": "wait",
+   "elapsedMs": 2509
+  },
+  {
+   "step": 33,
+   "type": "luau",
+   "elapsedMs": 338
+  },
+  {
+   "step": 34,
+   "type": "capture",
+   "elapsedMs": 1585
+  },
+  {
+   "step": 35,
+   "type": "luau",
+   "elapsedMs": 433
+  },
+  {
+   "step": 36,
+   "type": "luau",
+   "elapsedMs": 415
+  },
+  {
+   "step": 37,
+   "type": "wait",
+   "elapsedMs": 2508
+  },
+  {
+   "step": 38,
+   "type": "luau",
+   "elapsedMs": 76
+  },
+  {
+   "step": 39,
+   "type": "luau",
+   "elapsedMs": 706
+  },
+  {
+   "step": 40,
+   "type": "capture",
+   "elapsedMs": 1225
+  },
+  {
+   "step": 41,
+   "type": "luau",
+   "elapsedMs": 338
+  },
+  {
+   "step": 42,
+   "type": "click_from_luau",
+   "elapsedMs": 1455
+  },
+  {
+   "step": 43,
+   "type": "wait",
+   "elapsedMs": 850
+  },
+  {
+   "step": 44,
+   "type": "luau",
+   "elapsedMs": 278
+  },
+  {
+   "step": 45,
+   "type": "capture",
+   "elapsedMs": 880
+  },
+  {
+   "step": 46,
+   "type": "luau",
+   "elapsedMs": 250
+  },
+  {
+   "step": 47,
+   "type": "wait",
+   "elapsedMs": 2510
+  },
+  {
+   "step": 48,
+   "type": "luau",
+   "elapsedMs": 209
+  },
+  {
+   "step": 49,
+   "type": "capture",
+   "elapsedMs": 925
+  },
+  {
+   "step": 50,
+   "type": "luau",
+   "elapsedMs": 174
+  },
+  {
+   "step": 51,
+   "type": "click_from_luau",
+   "elapsedMs": 532
+  },
+  {
+   "step": 52,
+   "type": "wait",
+   "elapsedMs": 865
+  },
+  {
+   "step": 53,
+   "type": "luau",
+   "elapsedMs": 136
+  },
+  {
+   "step": 54,
+   "type": "capture",
+   "elapsedMs": 676
+  },
+  {
+   "step": 55,
+   "type": "luau",
+   "elapsedMs": 173
+  },
+  {
+   "step": 56,
+   "type": "wait",
+   "elapsedMs": 2515
+  },
+  {
+   "step": 57,
+   "type": "luau",
+   "elapsedMs": 167
+  },
+  {
+   "step": 58,
+   "type": "capture",
+   "elapsedMs": 679
+  },
+  {
+   "step": 59,
+   "type": "luau",
+   "elapsedMs": 171
+  },
+  {
+   "step": 60,
+   "type": "luau",
+   "elapsedMs": 159
+  },
+  {
+   "step": 61,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 62,
+   "type": "luau",
+   "elapsedMs": 91
+  },
+  {
+   "step": 63,
+   "type": "capture",
+   "elapsedMs": 890
+  },
+  {
+   "step": 64,
+   "type": "luau",
+   "elapsedMs": 178
+  },
+  {
+   "step": 65,
+   "type": "luau",
+   "elapsedMs": 183
+  },
+  {
+   "step": 66,
+   "type": "wait",
+   "elapsedMs": 2506
+  },
+  {
+   "step": 67,
+   "type": "luau",
+   "elapsedMs": 128
+  },
+  {
+   "step": 68,
+   "type": "capture",
+   "elapsedMs": 838
+  },
+  {
+   "step": 69,
+   "type": "luau",
+   "elapsedMs": 161
+  },
+  {
+   "step": 70,
+   "type": "luau",
+   "elapsedMs": 168
+  },
+  {
+   "step": 71,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 72,
+   "type": "luau",
+   "elapsedMs": 191
+  },
+  {
+   "step": 73,
+   "type": "capture",
+   "elapsedMs": 712
+  },
+  {
+   "step": 74,
+   "type": "luau",
+   "elapsedMs": 179
+  },
+  {
+   "step": 75,
+   "type": "luau",
+   "elapsedMs": 183
+  },
+  {
+   "step": 76,
+   "type": "wait",
+   "elapsedMs": 2513
+  },
+  {
+   "step": 77,
+   "type": "luau",
+   "elapsedMs": 86
+  },
+  {
+   "step": 78,
+   "type": "capture",
+   "elapsedMs": 890
+  },
+  {
+   "step": 79,
+   "type": "luau",
+   "elapsedMs": 177
+  },
+  {
+   "step": 80,
+   "type": "capture",
+   "elapsedMs": 892
+  },
+  {
+   "step": 81,
+   "type": "luau",
+   "elapsedMs": 165
+  },
+  {
+   "step": 82,
+   "type": "wait",
+   "elapsedMs": 607
+  },
+  {
+   "step": 83,
+   "type": "capture",
+   "elapsedMs": 884
+  },
+  {
+   "step": 84,
+   "type": "luau",
+   "elapsedMs": 185
+  },
+  {
+   "step": 85,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 86,
+   "type": "wait",
+   "elapsedMs": 1100
+  },
+  {
+   "step": 87,
+   "type": "luau",
+   "elapsedMs": 333
+  },
+  {
+   "step": 88,
+   "type": "capture",
+   "elapsedMs": 794
+  },
+  {
+   "step": 89,
+   "type": "luau",
+   "elapsedMs": 190
+  },
+  {
+   "step": 90,
+   "type": "wait",
+   "elapsedMs": 410
+  },
+  {
+   "step": 91,
+   "type": "luau",
+   "elapsedMs": 173
+  },
+  {
+   "step": 92,
+   "type": "luau",
+   "elapsedMs": 183
+  },
+  {
+   "step": 93,
+   "type": "wait",
+   "elapsedMs": 2509
+  },
+  {
+   "step": 94,
+   "type": "luau",
+   "elapsedMs": 259
+  },
+  {
+   "step": 95,
+   "type": "capture",
+   "elapsedMs": 762
+  },
+  {
+   "step": 96,
+   "type": "luau",
+   "elapsedMs": 197
+  },
+  {
+   "step": 97,
+   "type": "click_from_luau",
+   "elapsedMs": 757
+  },
+  {
+   "step": 98,
+   "type": "wait",
+   "elapsedMs": 862
+  },
+  {
+   "step": 99,
+   "type": "luau",
+   "elapsedMs": 172
+  },
+  {
+   "step": 100,
+   "type": "capture",
+   "elapsedMs": 895
+  },
+  {
+   "step": 101,
+   "type": "luau",
+   "elapsedMs": 192
+  },
+  {
+   "step": 102,
+   "type": "wait",
+   "elapsedMs": 2511
+  },
+  {
+   "step": 103,
+   "type": "luau",
+   "elapsedMs": 85
+  },
+  {
+   "step": 104,
+   "type": "capture",
+   "elapsedMs": 588
+  },
+  {
+   "step": 105,
+   "type": "luau",
+   "elapsedMs": 78
+  },
+  {
+   "step": 106,
+   "type": "luau",
+   "elapsedMs": 83
+  },
+  {
+   "step": 107,
+   "type": "wait",
+   "elapsedMs": 2506
+  },
+  {
+   "step": 108,
+   "type": "luau",
+   "elapsedMs": 77
+  },
+  {
+   "step": 109,
+   "type": "capture",
+   "elapsedMs": 506
+  },
+  {
+   "step": 110,
+   "type": "luau",
+   "elapsedMs": 194
+  },
+  {
+   "step": 111,
+   "type": "click_from_luau",
+   "elapsedMs": 633
+  },
+  {
+   "step": 112,
+   "type": "wait",
+   "elapsedMs": 858
+  },
+  {
+   "step": 113,
+   "type": "luau",
+   "elapsedMs": 76
+  },
+  {
+   "step": 114,
+   "type": "capture",
+   "elapsedMs": 472
+  },
+  {
+   "step": 115,
+   "type": "luau",
+   "elapsedMs": 78
+  },
+  {
+   "step": 116,
+   "type": "wait",
+   "elapsedMs": 2510
+  },
+  {
+   "step": 117,
+   "type": "luau",
+   "elapsedMs": 191
+  },
+  {
+   "step": 118,
+   "type": "capture",
+   "elapsedMs": 954
+  },
+  {
+   "step": 119,
+   "type": "luau",
+   "elapsedMs": 203
+  },
+  {
+   "step": 120,
+   "type": "luau",
+   "elapsedMs": 208
+  },
+  {
+   "step": 121,
+   "type": "wait",
+   "elapsedMs": 3009
+  },
+  {
+   "step": 122,
+   "type": "luau",
+   "elapsedMs": 175
+  },
+  {
+   "step": 123,
+   "type": "luau",
+   "elapsedMs": 199
+  },
+  {
+   "step": 124,
+   "type": "capture",
+   "elapsedMs": 1077
+  },
+  {
+   "step": 125,
+   "type": "luau",
+   "elapsedMs": 207
+  },
+  {
+   "step": 126,
+   "type": "wait",
+   "elapsedMs": 3009
+  },
+  {
+   "step": 127,
+   "type": "luau",
+   "elapsedMs": 75
+  },
+  {
+   "step": 128,
+   "type": "luau",
+   "elapsedMs": 200
+  },
+  {
+   "step": 129,
+   "type": "capture",
+   "elapsedMs": 1031
+  },
+  {
+   "step": 130,
+   "type": "click_from_luau",
+   "elapsedMs": 969
+  },
+  {
+   "step": 131,
+   "type": "wait",
+   "elapsedMs": 2013
+  },
+  {
+   "step": 132,
+   "type": "luau",
+   "elapsedMs": 237
+  },
+  {
+   "step": 133,
+   "type": "capture",
+   "elapsedMs": 1425
+  },
+  {
+   "step": 134,
+   "type": "luau",
+   "elapsedMs": 841
+  },
+  {
+   "step": 135,
+   "type": "wait",
+   "elapsedMs": 951
+  },
+  {
+   "step": 136,
+   "type": "luau",
+   "elapsedMs": 303
+  },
+  {
+   "step": 137,
+   "type": "luau",
+   "elapsedMs": 4127
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 12,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 241,
+  "completedSteps": 138,
+  "plannedClicks": 10,
+  "successfulClicks": 8,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 62,
+  "capturedFrames": 30,
+  "abortedEarly": true
+ },
+ "visualSamples": [
+  {
+   "name": "c00_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 251376,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "t01",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 250784,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "프랑스"
+  },
+  {
+   "name": "t02",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 195208,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "상인 집안"
+  },
+  {
+   "name": "intro_center_early",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 153110,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "intro_center_next",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 133905,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0137739181518555,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "intro_center_late",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 141440,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0166428089141846,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "t03",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 96261,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.020193099975586,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "intro_done",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 138405,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.025301933288574,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "tab_harbor",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 144818,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기"
+  },
+  {
+   "name": "tab_trade",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 180190,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기"
+  },
+  {
+   "name": "qa_click_trade_to_harbor",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 143977,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_trade_TO_harbor"
+  },
+  {
+   "name": "tab_route",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 137620,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_trade_TO_harbor"
+  },
+  {
+   "name": "qa_click_route_to_map",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 116973,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_map",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 116276,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_yard",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 164303,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_quest",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 145834,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_explore",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 150028,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_battle",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 148610,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "ui_battle_unified",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 148943,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "ui_main_menu_icons",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 238221,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "ui_mobile_tabs_topright",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 181575,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_codex",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 162657,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "qa_click_codex_to_tech",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 149974,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "tab_tech",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 149925,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "tab_status",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 137173,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "qa_click_status_to_crew",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 141765,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "tab_crew",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 141466,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "ui_trade_inline",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 179885,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "ui_yard_inline",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 164030,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "ui_facility_book_closed",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 250386,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "시설닫기"
+  }
+ ],
+ "abortDiagnostics": {
+  "step": 137,
+  "type": "luau",
+  "elapsedMs": 3458,
+  "context": "Client",
+  "lastScreenshot": "ui_facility_book_closed",
+  "lastClick": "yard_book_close",
+  "probes": {
+   "Client": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_CLIENT\ntext"
+   },
+   "Server": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_SERVER\ntext"
+   }
+  }
+ },
+ "visualEvidence": {
+  "framesChecked": 30,
+  "framesWithInvalidSize": 0,
+  "voyageSceneObserved": false,
+  "departureObserved": false,
+  "voyageDiagnostics": [],
+  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
+ }
+}
