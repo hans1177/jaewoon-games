@@ -316,7 +316,7 @@ function CB.sanitize(saved: any, factionId: string?): any
 	if type(saved.deck) == "table" then
 		local ids = {}
 		for _, id in saved.deck do
-			if type(id) == "string" then table.insert(ids, id) end
+			if type(id) == "string" and id ~= "ea_39" then table.insert(ids, id) end
 		end
 		if CB.validateDeck(book, ids) then book.deck = ids end
 	end

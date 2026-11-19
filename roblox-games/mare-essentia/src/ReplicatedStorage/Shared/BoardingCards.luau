@@ -471,7 +471,6 @@ B.Units.af_36 = { id="af_36", name="줄루 황소뿔 우익", category="전술",
 
 B.Units.sa_34 = { id="sa_34", name="박당강의 말뚝", category="전술", row="ranged", power=3, ability="stakes", text="상대가 같은 열에 연속으로 낸 두 번째 일반 유닛 −2. 그 열에 내 일반 유닛이 없으면 −4. 라운드당 한 번. 좌초: 대상은 다음 자기 턴 종료까지 이동할 수 없다." }
 
-B.Units.ea_39 = { id="ea_39", name="한산도 학익진", category="전술", row="ranged", power=3, ability="isolate", text="상대 열에 일반 유닛이 홀로 있으면 −2. 같은 열에 일반 유닛이 더 들어오면 해제." }
 
 B.Specials.lo_47 = { id="lo_47", name="인형의 저주", category="전설", special="dollCurse", text="상대 후열에서 가장 강한 일반 유닛 −2. 다음 자기 행동까지 첫 강화를 막는다." }
 
@@ -504,7 +503,6 @@ B.CardEnglish = {
 	lo_53 = { name="Sha Wujing", text="Deploy: Cleanse penalties, move restrictions and boost block from your weakest other non-hero. Gather all three disciples to rescue the weakest other ally next turn, once per round." },
 	apparition = { name = "Prophetic Apparition" },
 	lo_47 = { name="Doll’s Curse", text="Weaken the strongest enemy ranged non-hero by 2 and block its first boost through its next action." },
-	ea_39 = { name="Hansan Crane Wing", text="An enemy non-hero alone among non-heroes in its row loses 2. Another non-hero in that row removes the penalty." },
 	sa_34 = { name="Bach Dang Stakes", text = "Once per round, give the enemy’s second consecutive non-hero in a row −2, or −4 if you have no non-heroes there. The grounded unit cannot move through its next turn." },
 	af_36 = { name="Zulu Right Horn", text = "Gain +2 alongside the left horn. Joining the pair gives the strongest opposing non-hero in that row −2 once per round. The encircled unit cannot move through its next turn." },
 	af_35 = { name="Zulu Left Horn", text = "Gain +2 alongside the right horn. Joining the pair gives the strongest opposing non-hero in that row −2 once per round. The encircled unit cannot move through its next turn." },
@@ -771,7 +769,7 @@ B.Factions = {
 	europe = { id = "europe", name = "유럽 연합", passive = "판을 이기면 카드 한 장을 더 뽑는다", leader = "napoleon", specialty = "선박", leaders = { "napoleon", "caesar", "alexander", "charlemagne", "elizabeth" },
 		roster = {"eu_01", "eu_02", "eu_03", "eu_04", "eu_05", "eu_06", "eu_07", "eu_08", "eu_09", "eu_10", "eu_11", "eu_12", "eu_13", "eu_14", "eu_15", "eu_16", "eu_17", "eu_18", "eu_19", "eu_20", "eu_21", "eu_22", "eu_23", "eu_24", "eu_25", "eu_26", "eu_27", "eu_28", "eu_29", "eu_30", "eu_31", "eu_32", "eu_33", "eu_34", "eu_35", "eu_36", "eu_37", "eu_38", "eu_39", "eu_40", "eu_41", "eu_42", "eu_43", "eu_44", "eu_45", "eu_46", "eu_47"} },
 	east_asia = { id = "east_asia", name = "동아시아", passive = "첫 판 선공, 사기 효과가 2배", leader = "genghis", specialty = "유물", leaders = { "genghis", "qinshi", "nobunaga", "yisunsin" },
-		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30", "ea_31", "ea_32", "ea_33", "ea_34", "ea_35", "ea_36", "ea_37", "ea_38", "ea_39"} },
+		roster = {"ea_01", "ea_02", "ea_03", "ea_04", "ea_05", "ea_06", "ea_07", "ea_08", "ea_09", "ea_10", "ea_11", "ea_12", "ea_13", "ea_14", "ea_15", "ea_16", "ea_17", "ea_18", "ea_19", "ea_20", "ea_21", "ea_22", "ea_23", "ea_24", "ea_25", "ea_26", "ea_27", "ea_28", "ea_29", "ea_30", "ea_31", "ea_32", "ea_33", "ea_34", "ea_35", "ea_36", "ea_37", "ea_38"} },
 	new_world = { id = "new_world", name = "신대륙", passive = "점수가 같으면 우리가 판을 이기고, 첩자는 카드 3장, 시작 손패 +1", leader = "pachacuti", specialty = "동물", leaders = { "pachacuti", "montezuma", "sittingbull" },
 		roster = {"nw_01", "nw_02", "nw_03", "nw_04", "nw_05", "nw_06", "nw_07", "nw_08", "nw_09", "nw_10", "nw_11", "nw_12", "nw_13", "nw_14", "nw_15", "nw_16", "nw_17", "nw_18", "nw_19", "nw_20", "nw_21", "nw_22", "nw_23", "nw_24", "nw_25", "nw_26", "nw_27", "nw_28", "nw_29", "nw_30", "nw_31", "nw_32", "nw_33", "nw_34"} },
 	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "saladin", specialty = "지형·원더", leaders = { "saladin", "suleiman", "cyrus" },
@@ -847,7 +845,9 @@ function B.playerDeck(deckCards, rng, factionId, book)
 	local out = {}
 	local fac = B.Factions[factionId or ""]
 	for _, id in (if book and book.ids then book.ids elseif fac then fac.roster else BASE_ROSTER) do
-		local card = copy(B.Units[id] or B.Specials[id])
+		local def = B.Units[id] or B.Specials[id]
+		if not def then continue end
+		local card = copy(def)
 		local tier = book and book.tier and book.tier[id] or 1
 		if tier > 1 and card.power and not card.hero then
 			card.power += tier - 1
@@ -1084,13 +1084,7 @@ function B.cardPower(m: any, side, row, idx)
 				if ally.ability == partner then p += 2; break end
 			end
 		end
-		local isolated = false
-		if hasTactic(m, other(side), "isolate") then
-			local count = 0
-			for _, unit in list do if not unit.hero then count += 1 end end
-			isolated = count == 1
-		end
-		p = math.max(0, p + (c.tacticPower or 0) - (if isolated then 2 else 0))
+		p = math.max(0, p + (c.tacticPower or 0))
 		if m.horn and m.horn[side][row] then
 			p *= 2
 		end
