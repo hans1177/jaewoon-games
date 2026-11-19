@@ -1843,7 +1843,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					return if english and en then en.name else (d and d.name or id)
 				end
 				if c.cause then
-					return if english then "Chain: +2 while " .. nm(c.cause) .. " is on your field" else "연쇄: " .. nm(c.cause) .. "이(가) 내 필드에 있으면 +2"
+					local chain = if english then "Chain: +2 while " .. nm(c.cause) .. " is on your field" else "연쇄: " .. nm(c.cause) .. "이(가) 내 필드에 있으면 +2"
+					return if tactic then tactic .. "\n" .. chain else chain
 				end
 				local fuse = if english then "Fuse: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. " merge into one, +3, free play" else "합치기: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. "이(가) 있으면 하나로 합쳐 +3, 낸 수에 안 셈"
 				return if tactic then tactic .. "\n" .. fuse else fuse
