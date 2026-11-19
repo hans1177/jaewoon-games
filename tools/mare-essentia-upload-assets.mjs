@@ -1321,6 +1321,19 @@ for (const item of plan) {
       console.log('REGIONAL_CARD_ART_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
     }
   }
+  // [중립 카드 원화] 승인된 원화 변경은 새 이미지 권한이 확인된 뒤에만 등록 번호를 교체한다.
+  if (item.kind === 'CardArt' && /^lo_\d{2}$/.test(item.name)) {
+    const old = registry.assets[id];
+    if (old?.assetId && old.sourceSha256 && old.sourceSha256 !== sourceSha256) {
+      if (approvedImages[id] !== sourceSha256) {
+        failures.push(id + ': NEUTRAL_CARD_ART_APPROVAL_HASH_MISMATCH');
+        continue;
+      }
+      previousTypeAssets.set(id, {...old});
+      delete registry.assets[id];
+      console.log('NEUTRAL_CARD_ART_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
+    }
+  }
   // [선박 원본 교체] 증빙된 모델의 바이너리가 바뀌면 기존 등록번호를 새 모델에 재사용하지 않는다.
   // 새 모델 등록과 Universe 사용 권한이 함께 확인되지 않으면 기존 번호로 복구한다.
   if (item.assetType === 'Model' && item.sourceLicense) {
