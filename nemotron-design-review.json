@@ -2,14 +2,14 @@
   "version": 3,
   "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "b70499cef15b15f3713e10a2a528c2d2929ce3c0",
+  "sourceRevision": "422c989d148dfd5b71d74559bcdafb10dd6cfcbb",
   "status": "REVIEWED_NO_VERIFIED_EDIT",
-  "selectedRole": "WORLD",
+  "selectedRole": "UI",
   "usageWindow": {
     "day": "2026-11-19",
     "calls": {
       "NVIDIA": 10,
-      "GEMINI": 6,
+      "GEMINI": 7,
       "OPENROUTER": 30
     },
     "windowIds": {
@@ -25,8 +25,8 @@
   },
   "cooldowns": {
     "GEMINI_FLASH": "2026-11-19T11:48:03.823Z",
-    "GEMINI_LITE": "2026-11-19T11:29:12.107Z",
-    "NVIDIA_VL": "2026-11-19T11:49:15.627Z"
+    "NVIDIA_VL": "2026-11-19T11:49:15.627Z",
+    "GEMINI_LITE": "2026-11-19T12:09:56.320Z"
   },
   "quotaForecast": {
     "NVIDIA": {
@@ -37,7 +37,7 @@
       "effectiveRemaining": 2,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 2,
-      "estimatedCallsPerHour": 1.07,
+      "estimatedCallsPerHour": 1.03,
       "estimatedHoursToLocalCap": 1.9,
       "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -49,13 +49,13 @@
     "GEMINI": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 6,
-      "remainingLocal": 6,
-      "effectiveRemaining": 6,
-      "regularWorkRemaining": 3,
+      "localUsed": 7,
+      "remainingLocal": 5,
+      "effectiveRemaining": 5,
+      "regularWorkRemaining": 2,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 1.55,
-      "estimatedHoursToLocalCap": 3.9,
+      "estimatedCallsPerHour": 1.68,
+      "estimatedHoursToLocalCap": 3,
       "nextLocalWindowAt": "2026-11-20T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
       "accountWideBalanceVerified": false,
@@ -71,7 +71,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 3.45,
+      "estimatedCallsPerHour": 3.31,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -91,36 +91,26 @@
     },
     {
       "id": "GEMINI_LITE",
-      "status": "NO_VALID_EDIT"
-    },
-    {
-      "id": "NVIDIA_VL",
-      "status": "OK",
-      "provider": "NVIDIA",
-      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
-    },
-    {
-      "id": "NVIDIA_VL",
       "status": "REVIEW_INVALID",
-      "failureSignature": "EDIT_NOT_VISUAL_OR_NOT_IN_POLICY"
+      "failureSignature": "DUPLICATE_SOURCE_ANCHOR"
     }
   ],
   "frames": [
     {
-      "name": "field_entry-0.jpg",
-      "sha256": "db6e59f33d012834fb8bfef93e0807a5d8d9b266414a75bc01defbd4f528f3b8"
+      "name": "qa_click_trade_to_harbor-0.jpg",
+      "sha256": "9be22fe127cbf083aa221344e55db5eab95f9c49a7e781162a4876cab8686547"
     },
     {
-      "name": "v1_start-0.jpg",
-      "sha256": "80c82923d62337a0b1a97fff00787158220eb898572dee4d51ed542c4cd08f70"
+      "name": "tab_trade-0.jpg",
+      "sha256": "52a707114b29563fe733428820e43857bf808289b5345bfd1b17b06c620e3c4c"
     },
     {
-      "name": "v2_event-0.jpg",
-      "sha256": "01f3efe090c32c14fdfe11eac8941a64b6ccbc068deb31040fe1e0ce3695aa6b"
+      "name": "ui_trade_inline-0.jpg",
+      "sha256": "1ec3225e20c54d641d1b69515243db6efd570b51f0edbf689eec37af6e778b10"
     },
     {
-      "name": "v3_event2-0.jpg",
-      "sha256": "bc985fa89ce7776628d7c060914d3322836b0f304b0f5540ef799c8b5e6fe0aa"
+      "name": "qa_click_codex_to_tech-0.jpg",
+      "sha256": "e4933d0ea2897c1a96e67bd299ae7ff74c7c828df25150d11f18c821a894f696"
     }
   ],
   "independentQaPassed": false,
