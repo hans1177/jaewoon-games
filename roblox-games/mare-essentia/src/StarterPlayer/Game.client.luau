@@ -5073,7 +5073,11 @@ function RENDERERS.harbor()
 		return mkLabel(content, string.format("누적 투자 %d · %s\n혜택: 이 항구에서 팔 때 +%d%%, 수리·고용·보급 비용 -%d%%", h.invested, nextText, math.floor(h.sellBonus * 100 + 0.5), math.floor(h.discount * 100 + 0.5)), 13, COLORS.text, false)
 	end)
 	local function section(title)
-		add(function() return mkHeader(content, title) end)
+		add(function()
+			local heading = mkHeader(content, title)
+			if title == "은행" then heading.Name = "BankEntry" end
+			return heading
+		end)
 	end
 	local fac = {}
 	for _, k in view.facilities do
@@ -5129,27 +5133,6 @@ function RENDERERS.harbor()
 				return mkRow(content, ch.name, sub, {
 					{ text = "건축", color = COLORS.gold, onClick = function() call("BuildStage", { chain = ch.id }) end, enabled = ch.next ~= nil and ch.next.can },
 				}, 112)
-			end)
-		end
-	end
-
-	if fac.guild then
-		section("상인 길드")
-		local g = view.guild
-		if g.contract then
-			local c = g.contract
-			add(function()
-				return mkRow(content, string.format("진행 중: %s %d개 → %s", c.goodName, c.amount, c.toPortName), string.format("보상 %d · 남은 %d일 · 보유 %d", c.reward, c.daysLeft, c.have), {
-					{ text = "납품", color = COLORS.green, onClick = function() call("TurnInContract", {}) end },
-					{ text = "포기", color = COLORS.red, onClick = function() call("AbandonContract", {}) end },
-				}, 60)
-			end)
-		end
-		for _, o in g.offers do
-			add(function()
-				return mkRow(content, string.format("%s %d개 → %s", o.goodName, o.amount, o.toPortName), string.format("보상 %d코인 · 명성 +%d", o.reward, o.fame), {
-					{ text = "계약", color = COLORS.blue, onClick = function() call("AcceptContract", { index = o.index }) end },
-				}, 56)
 			end)
 		end
 	end
@@ -6531,6 +6514,28 @@ H.tradeHall = openTradeHall
 -- [교역소 서비스 탭] 실제 교역은 기존 장부 탭에서, 게시판·시장 소식·우편은 별도 탭에서 사용한다.
 -- 서버 거래·저장·우편·게시물 처리 로직은 기존 호출을 그대로 유지한다.
 function RENDERERS.market()
+	-- [시설 역할 분리] 상인 길드 계약을 거래소 첫 화면으로 이동한다. 기존 서버 호출 유지.
+	if fac.guild then
+		add(function() return mkHeader(content, "상인 길드 계약") end)
+		local g = view.guild
+		if g.contract then
+			local c = g.contract
+			add(function()
+				return mkRow(content, string.format("진행 중: %s %d개 → %s", c.goodName, c.amount, c.toPortName), string.format("보상 %d · 남은 %d일 · 보유 %d", c.reward, c.daysLeft, c.have), {
+					{ text = "납품", color = COLORS.green, onClick = function() call("TurnInContract", {}) end },
+					{ text = "포기", color = COLORS.red, onClick = function() call("AbandonContract", {}) end },
+				}, 60)
+			end)
+		end
+		for _, o in g.offers do
+			add(function()
+				return mkRow(content, string.format("%s %d개 → %s", o.goodName, o.amount, o.toPortName), string.format("보상 %d코인 · 명성 +%d", o.reward, o.fame), {
+					{ text = "계약", color = COLORS.blue, onClick = function() call("AcceptContract", { index = o.index }) end },
+				}, 56)
+			end)
+		end
+	end
+
 	-- 거래소 등록 수량은 기존 공통 선택값을 사용한다.
 	add(function()
 		local frame = Instance.new("Frame")
