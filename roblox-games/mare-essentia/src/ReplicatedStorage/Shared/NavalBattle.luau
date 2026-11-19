@@ -2384,8 +2384,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				afterAction(mine(BC.pass(m, "me")))
 			end
 		end)
-		local leaderBtn = mkSide(t("지도자 카드", "Leader Card"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
-			if not finished and showLeaderCard then showLeaderCard() end
+		local leaderBtn = mkSide(t(if opts.cardOnly then "지도자 카드" else "지도자 능력", if opts.cardOnly then "Leader Card" else "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
+			if opts.cardOnly then
+				if not finished and showLeaderCard then showLeaderCard() end
+			elseif not playing and not auto and not finished and m.turn == "me" and not m.over then
+				-- 카드 대전이 아닌 접현전은 기존 단일 터치 능력 사용 방식을 보존한다.
+				Sfx.play("sfx_card_spell", 0.7, 1, "sfx_horn")
+				afterAction(mine(BC.useLeader(m, "me")))
+			end
 		end)
 		local mullBtn
 		mullBtn = mkSide(t("손패 교체", "Swap Card"), 0.70, Color3.fromRGB(70, 58, 38), "Menu/cc0_glove", function()
@@ -3397,10 +3403,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				mullBtn.Caption.Text = if left > 0 then t(string.format("손패 교체 (%d)", left), string.format("Swap Card (%d)", left)) else t("손패 교체 (끝)", "Swap Card (done)")
 				mullBtn.BackgroundTransparency = if left > 0 then 0 else 0.6
 			end
-			leaderBtn.Caption.Text = if m.leaderUsed.me then t("지도자 카드 (사용함)", "Leader Card (Used)")
-				else t("지도자 카드 · ", "Leader Card · ") .. (if english then englishLeaders[m.leader.me] or "" else BC.Leaders[m.leader.me].name)
-			-- 사용한 뒤에도 전신 원화와 효과를 확인할 수 있다.
-			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then 0.34 else 0
+			leaderBtn.Caption.Text = if opts.cardOnly then
+				(if m.leaderUsed.me then t("지도자 카드 (사용함)", "Leader Card (Used)")
+				else t("지도자 카드 · ", "Leader Card · ") .. (if english then englishLeaders[m.leader.me] or "" else BC.Leaders[m.leader.me].name))
+				elseif m.leaderUsed.me then t("지도자 (사용함)", "Leader (Used)")
+				else t("지도자: ", "Leader: ") .. (if english then englishLeaders[m.leader.me] or "" else BC.Leaders[m.leader.me].name)
+			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then (if opts.cardOnly then 0.34 else 0.6) else 0
 		end
 		render()
 		info.Text = if english then string.format("Row advantage: Melee > Cannon > Ranged > Melee. Leader: %s",
