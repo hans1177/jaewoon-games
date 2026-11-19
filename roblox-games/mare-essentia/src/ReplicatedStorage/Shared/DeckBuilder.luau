@@ -4,6 +4,7 @@
 --   카드 누르기 = 큰 카드 보기 · + = 덱에 1장 넣기 · 덱 줄의 − = 1장 빼기
 local TweenService = game:GetService("TweenService")
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
+local CardSymbols = require(script.Parent:WaitForChild("CardSymbols"))
 local Gallery = require(script.Parent:WaitForChild("CardGallery"))
 
 local DeckBuilder = {}
@@ -1029,6 +1030,7 @@ function DeckBuilder.build(parent, ctx)
 			abilityMark.BackgroundTransparency = 0.15
 			abilityMark.ZIndex = 5
 			corner(abilityMark, 5)
+			CardSymbols.apply(abilityMark, ability)
 		end
 		if owned > 0 then
 			local badge = text(tile, tostring(if BC.Specials[id] then "★" else d.power + tier - 1), 17, Color3.fromRGB(255, 232, 170), true)

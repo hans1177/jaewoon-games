@@ -11,6 +11,7 @@ local MOBILE_VFX = game:GetService("UserInputService").TouchEnabled
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
+local CardSymbols = require(script.Parent:WaitForChild("CardSymbols"))
 local Combat = require(script.Parent:WaitForChild("Combat"))
 
 local NavalBattle = {}
@@ -2421,13 +2422,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local function cardStatus(c)
 			local symbols, names = {}, {}
 			local function add(symbol, name)
-				table.insert(symbols, symbol)
+				table.insert(symbols, symbol .. (if symbol == "⏳" then " " .. tostring(c.charges or 0) .. "/3" else ""))
 				table.insert(names, symbol .. " " .. name)
 			end
 			if c.pigForm then add("🐷", t("변신", "Transformed")) end
 			if c.sealedAbility then add("🔒", t("봉인", "Sealed")) end
 			if c.anchored then add("⚓", t("이동 제한", "Pinned")) end
-			if c.bachDangRound == m.round then add("🎣", t("유인", "Lured")) end
+			if c.bachDangRound == m.round then add("↔️", t("썰물 표식", "Ebb mark")) end
 			if c.shaken then add("🚫", t("강화 차단", "Boost blocked")) end
 			if c.pendingReturn then add("↩️", t("복귀 대기", "Return pending")) end
 			if c.cover or c.deployCover then add("🛡️", t("엄호", "Guard")) end
@@ -3666,6 +3667,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 							limit.MaxTextSize = 11
 							limit.Parent = mark
 							frameEdge(mark, Color3.fromRGB(203, 173, 118), 3)
+							CardSymbols.apply(mark, caption)
 						end
 					end
 					playedCard.Activated:Connect(function()
@@ -3790,6 +3792,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					mark.TextScaled = true
 					mark.ZIndex = 9
 					frameEdge(mark, brass, 3)
+					CardSymbols.apply(mark, ability)
 				end
 				local power = label(b, if c.special then "◆" else tostring(c.power or ""), 13, ink, true)
 				power.Position = UDim2.fromOffset(5, 5)
