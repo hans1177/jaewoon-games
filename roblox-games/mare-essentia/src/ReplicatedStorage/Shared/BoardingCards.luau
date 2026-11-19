@@ -537,7 +537,10 @@ B.Specials.me_45 = { id="me_45", name="우르의 연회", category="서사", spe
 B.Units.sa_40 = { id="sa_40", name="가자 마다", category="서사", row="ranged", power=4, ability="gajahMada", text="전장에 있는 동안 이번 라운드에 처음 낸 이름이 다른 아군 함선마다 맹세 표식 1개." }
 B.Specials.sa_41 = { id="sa_41", name="팔라파 맹세", category="서사", special="palapa", text="가자 마다가 있고 표식이 2개 이상이면 2개를 써서 후열 함선 최대 두 척을 전열로 옮기고 각각 +1." }
 
+B.Units.af_37 = { id="af_37", name="아난시", category="전설", row="ranged", power=3, ability="anansi", lore="가나 아칸 설화에 등장하는 꾀 많은 거미", text="낼 때: 아직 발동하지 않은 상대 전술을 하나 훔친다. 말라카 기습 → 마자파힛 깃발 → 전열 매복 순." }
+
 B.CardEnglish = {
+	af_37 = { name="Anansi", text="Deploy: Steal one pending enemy tactic, in this order: Malacca Strike, Majapahit Flag, then melee Ambush." },
 	me_43 = { name="Standard of Ur", text="Deploy in melee on the War side. Rotate into ranged to show Peace." },
 	me_44 = { name="Sumerian Chariots", text="Deploy: Weaken the strongest enemy melee non-hero by 1, or by 3 with the Standard in melee." },
 	me_45 = { name="Feast of Ur", text="Restore the ally with the largest power penalty. With the Standard in ranged, also give that ally cover." },
@@ -870,7 +873,7 @@ B.Factions = {
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
 		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30", "lo_46", "lo_47", "lo_48", "lo_49", "lo_50", "lo_51", "lo_52", "lo_53", "lo_54", "lo_55", "lo_56", "lo_57", "lo_58", "lo_59"} },
 	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", specialty = "지형·원더", leaders = { "mansa", "hannibal", "shaka" },
-		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30", "af_31", "af_32", "af_33", "af_34", "af_35", "af_36" } },
+		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30", "af_31", "af_32", "af_33", "af_34", "af_35", "af_36", "af_37" } },
 }
 B.FactionOrder = { "europe", "east_asia", "new_world", "middle_east", "southeast_asia", "africa", "lost" }
 -- 기본덱의 빈 역할을 병종과 소재에 맞춰 채운다. 기존 능력·연쇄·합치기는 유지한다.
@@ -2322,7 +2325,21 @@ function B.play(m: any, side, handIdx)
 				logLine(m, "가자 마다: 맹세 " .. tostring(tactics.palapaMarks))
 			end
 		end
-		if c.ability == "savannaElephant" or c.ability == "savannaZebra" then
+		if c.ability == "anansi" then
+			local stolen
+			if enemyTactics.strait == m.round and tactics.strait ~= m.round then
+				tactics.strait, enemyTactics.strait = enemyTactics.strait, nil
+				tactics.straitDelayed, enemyTactics.straitDelayed = enemyTactics.straitDelayed, nil
+				stolen = "말라카 기습"
+			elseif enemyTactics.rallyFlag == m.round and tactics.rallyFlag ~= m.round then
+				tactics.rallyFlag, enemyTactics.rallyFlag = enemyTactics.rallyFlag, nil
+				stolen = "마자파힛 깃발"
+			elseif m.plans and m.plans[foe].ambush == m.round and m.plans[side].ambush ~= m.round then
+				m.plans[side].ambush, m.plans[foe].ambush = m.round, nil
+				stolen = "전열 매복"
+			end
+			if stolen then msg ..= " (아난시가 " .. stolen .. "을 가로챘다)" end
+		elseif c.ability == "savannaElephant" or c.ability == "savannaZebra" then
 			local partner
 			for _, ally in m.rows[side][lane(c)] do
 				if ally ~= c and ally.savanna and not ally.pigForm then partner = ally; break end
