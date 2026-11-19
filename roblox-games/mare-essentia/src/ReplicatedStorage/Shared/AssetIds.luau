@@ -189,6 +189,7 @@ return {
 	["CardArt/ui_battle_dawn"] = 138384664300085,
 	["CardArt/ui_button_ink"] = 109214483059616,
 	["CardArt/ui_button_paper"] = 117728669052793,
+	["CardArt/ui_card_vault_album"] = 131342391945745,
 	["CardArt/ui_departure_duel"] = 99902318185084,
 	["CardArt/ui_departure_practice"] = 138972770871158,
 	["CardArt/ui_fleet_table"] = 90389417174349,
