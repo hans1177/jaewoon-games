@@ -1,10 +1,10 @@
 {
   "version": 3,
-  "provider": "GEMINI",
+  "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "195f782c211c03e51cf885682dfed1f0be388994",
-  "status": "CANDIDATE_EDITED",
-  "selectedRole": "MOTION",
+  "sourceRevision": "e87bb2e77ea3d07e16535f353c6429984e914e93",
+  "status": "SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE",
+  "selectedRole": "GENERAL",
   "usageWindow": {
     "day": "2026-11-19",
     "calls": {
@@ -35,7 +35,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 1.08,
+      "estimatedCallsPerHour": 1.04,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -52,7 +52,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 2.19,
+      "estimatedCallsPerHour": 2.05,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-20T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
@@ -69,7 +69,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 2.84,
+      "estimatedCallsPerHour": 2.75,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -80,60 +80,60 @@
     }
   },
   "accountQuota": null,
-  "attempts": [
-    {
-      "id": "GEMINI_LITE",
-      "status": "OK",
-      "provider": "GEMINI",
-      "model": "gemini-3.5-flash-lite"
-    }
-  ],
+  "attempts": [],
   "frames": [
     {
-      "name": "field_actor_after_motion-0.jpg",
-      "sha256": "cd295d3f1b7a4be4ffe363c59bac66803d7a099ad88df8536f46861f1c3d2546"
+      "name": "b1_start-0.jpg",
+      "sha256": "3f430f70f2bd2a56e0dde4dd81528c60237f835895d5983e6112b486cd22a0cb"
     },
     {
-      "name": "field_motion_smooth_icons-0.jpg",
-      "sha256": "6053a390f05e437ec52fbfd753f02457001b134403e60e0835489c3982495156"
+      "name": "b2_mid-0.jpg",
+      "sha256": "2c596ef2c1c51380f2533ff800f3ecc327d2a6e6e818f6d228fb38880440a5a6"
     },
     {
-      "name": "harbor_motion_attack-0.jpg",
-      "sha256": "91c3b40ad6908e9d641d09340bb00ef32635d5be076a558cb3ff93f3bd971953"
+      "name": "c00_start-0.jpg",
+      "sha256": "ae0b74b02bc914d71d0050152d2fd7d87fb5eef5ebfc70c2b3f2f6240d37d4da"
     },
     {
-      "name": "harbor_motion_cheer-0.jpg",
-      "sha256": "edda54407198682b6cb8d07565dc7da2f7efc131c1b2b9357036d69527c1bc6a"
+      "name": "intro_center_early-0.jpg",
+      "sha256": "44713644df6cc489ba7a01b2d846a1d92d29c17f203a84d6a7d5ed172f01dac0"
     }
   ],
-  "model": "gemini-3.5-flash-lite",
-  "rawResponseSha256": "576ccc2ff6593b89d0fbfd6bc9a5fe78265a7bd5aacbe1270df95ee81aca2ab2",
-  "issues": [
+  "modelAvailability": [
     {
-      "category": "lighting",
-      "severity": "medium",
-      "screenshot": "field_actor_after_motion-0.jpg",
-      "evidenceSha256": "5e070a045f645df3c954db196a0225d283ac93c40a5409c1033680664fc11162"
-    }
-  ],
-  "edits": [
+      "modelId": "NVIDIA_VL",
+      "provider": "NVIDIA",
+      "status": "DAILY_CALL_CAP"
+    },
     {
-      "path": "roblox-games/mare-essentia/src/StarterPlayer/TownMood.client.luau",
-      "category": "lighting",
-      "screenshot": "field_actor_after_motion-0.jpg",
-      "beforeSha256": "b7c83d53764d34941338e1c201ca96c4bd5743cf780b4f4aa88765e22f0e13ae",
-      "afterSha256": "79f46a5b8190a9b682c3e194e56887800e0c76c9dd8a13160e0e5e5fa53095b1"
-    }
-  ],
-  "sourceHashes": [
+      "modelId": "GEMINI_FLASH",
+      "provider": "GEMINI",
+      "status": "DAILY_CALL_CAP"
+    },
     {
-      "path": "roblox-games/mare-essentia/src/StarterPlayer/TownMood.client.luau",
-      "beforeSha256": "ae54a8fd159d79fd9d5e70455c1fea3c498337fe24ca1c334cee46619d2108a1",
-      "afterSha256": "8668e05dfb5889e39fdff91a6946861de57f6bdcda08c910779d5cf52ef19932"
+      "modelId": "OPENROUTER_GEMMA",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_NEMOTRON",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_GEMMA26",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_OMNI",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "GEMINI_LITE",
+      "provider": "GEMINI",
+      "status": "DAILY_CALL_CAP"
     }
-  ],
-  "candidateOnly": true,
-  "independentQaPassed": false,
-  "afterStudioPassed": false,
-  "releasePassed": false
+  ]
 }
