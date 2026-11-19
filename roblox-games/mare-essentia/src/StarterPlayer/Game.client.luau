@@ -1206,8 +1206,8 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	local function fitRow()
 		local width = row.AbsoluteSize.X
 		-- [모바일 장부] 버튼이 많은 정보 카드에서는 글과 조작 영역을 세로로 나눈다.
-        local narrow = width > 0 and btnCount > 0 and (width < 520 or width < btnWidth + 230)
-		local left = textBox.Position.X.Offset
+        local left = textBox.Position.X.Offset
+		local narrow = width > 0 and btnCount > 0 and width < math.max(520, left + btnWidth + 240)
 		local buttonSpace = if narrow then 0 else btnWidth
 		textBox.Size = UDim2.new(1, -(left + buttonSpace + 12), if narrow then 0 else 1, if narrow then math.max(30, layout.AbsoluteContentSize.Y + 10) else -8)
 		local textHeight = layout.AbsoluteContentSize.Y + 12
@@ -1248,10 +1248,10 @@ function H.tileGrid(items, parent, cellW, cellH, quick)
 	if quick then
 		cellW, cellH = 216, 166
 	else
-		cellW, cellH = math.floor((cellW or 176) * 1.3), math.max(296, math.floor((cellH or 156) * 1.55))
+		cellW, cellH = math.floor((cellW or 176) * 1.3), math.max(316, math.floor((cellH or 156) * 1.55))
 		for _, it in items do
 			if it.desc then cellH = math.max(cellH, 366)
-			elseif it.portrait then cellH = math.max(cellH, 322) end
+			elseif it.portrait then cellH = math.max(cellH, 342) end
 		end
 	end
 	local grid = Instance.new("Frame")
@@ -1290,7 +1290,7 @@ function H.tileGrid(items, parent, cellW, cellH, quick)
 		seal.Size = UDim2.new(1, -12, 0, 3)
 		seal.Parent = tile
 		-- 초상(주점 동료 등)은 더 크게. 아래 글자는 그만큼 내려간다.
-		local iconPx = if quick then 66 elseif it.portrait then 148 else 128
+		local iconPx = if quick then 66 elseif it.portrait then 164 else 148
 		local ic = modelIcon(tile, if it.portrait then "Portraits" else (it.kind or "Menu"), if it.portrait then it.portrait.atlas else it.icon, nil, iconPx, it.title, nil, if it.portrait then it.portrait.offset else nil)
 		ic.AnchorPoint = if quick then Vector2.zero else Vector2.new(0.5, 0)
 		ic.Position = if quick then UDim2.fromOffset(10, 12) else UDim2.new(0.5, 0, 0, 8)
@@ -7435,9 +7435,11 @@ function openYardHall()
 		local shipName = preview and preview.name or ship.name
 		local shipId = preview and preview.id or ship.id
 		local shipArt = SHIP_ICON[shipId]
-		local px = math.floor(math.max(96, math.min(heroWidth - 14, heroHeight - 78, 440)))
+		local px = math.floor(math.max(96, math.min(heroWidth - 20, heroHeight - 62, 620)))
 		if shipArt then
 			local model = modelIcon(gallery, shipArt[1], shipArt[2], shipArt[3], px, shipName)
+			-- [조선소 전시장] 승인된 선박만 기존 모델 뷰포트에 넓게 전시한다.
+			model.Size = UDim2.new(1, -20, 0, px)
 			model.AnchorPoint = Vector2.new(0.5, 0.5)
 			model.Position = UDim2.new(0.5, 0, 0.48, -8)
 		end

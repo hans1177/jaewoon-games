@@ -995,7 +995,7 @@ B.StarterText = {
 }
 for _, factionId in B.FactionOrder do
 	if factionId == "lost" then continue end
-	for _, id in B.Factions[factionId].roster do
+	for _, id in (B.Factions :: any)[factionId].roster do
 		local card = B.Units[id]
 		if card then
 			card.starterRole = starterRoles[id]

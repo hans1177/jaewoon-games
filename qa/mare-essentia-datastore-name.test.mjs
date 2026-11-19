@@ -2885,3 +2885,56 @@ test('네모트론 후보와 독립 검수는 동일 무료 호출에서 다른 
   assert.equal(validateVisualComparison(result.text,[frame.name]).status,'UNVERIFIED',
     'JSON 구조 성공은 시각 개선 성공과 구분');
 });
+
+
+// [교역 장부·조선소·시설 공통 회귀] 최신 메인의 원화·백과·거래 흐름을 보존한 상태에서 메뉴 가독성을 개선한다.
+test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 배치를 유지한다', () => {
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const trade=source.slice(source.indexOf('local function openTradeHall()'),source.indexOf('H.tradeHall = openTradeHall'));
+  const yard=source.slice(source.indexOf('function openYardHall()'),source.indexOf('H.yardHall = openYardHall'));
+  assert.match(source,/width < math\.max\(520, left \+ btnWidth \+ 240\)/,'중간 폭 메뉴에서도 버튼과 설명 분리');
+  assert.match(source,/local iconPx = if quick then 66 elseif it.portrait then 164 else 148/,'기존 모바일 한눈형은 유지하고 일반 시설 원화·초상 확대');
+  assert.match(trade,/art\.Name = "TradeHighResArt"/,'승인 고화질 교역품 원화 유지');
+  assert.match(trade,/local artId = AssetIds\["Goods\/" \.\. sel\.id\]/,'기존 등록 원화만 사용');
+  assert.match(trade,/modelIcon\(pages, gi\[1\], gi\[2\]/,'원화가 없는 교역품은 기존 3D 렌더러 유지');
+  assert.match(trade,/세계 교역 · 산업 백과/,'서재 백과사전 정보 연결 유지');
+  assert.match(trade,/H\.marketPriceSignal\(sel\)/,'교역 판단 정보 연결 유지');
+  assert.match(yard,/math\.min\(heroWidth - 20, heroHeight - 62, 620\)/,'기존 선박 전시장 크기 확대');
+  assert.match(yard,/model\.Size = UDim2\.new\(1, -20, 0, px\)/,'모델을 가로로 넓게 전시');
+  for(const action of ['Buy','Sell','BuyShip','Repair','BuySupplies'])
+    assert.ok(source.includes('call("'+action+'"'),'기존 서버 호출 유지: '+action);
+  assert.doesNotMatch(trade,/Instance\.new\("Part"\)/,'새 임시 3D 도형 금지');
+});
+
+// [무료 AI 디자인 검수] 실제 스튜디오 화면의 시설 UI 범위를 빠짐없이 분류한다.
+test('AI 디자인이 교역·선박·서재·주점·선장실 등 방문 메뉴를 검사한다',async()=>{
+  const {designRoleForFrames,selectDesignFrameRole}=await import('../tools/company-nemotron-design-review.mjs');
+  const targets=['trade_goods-0.jpg','market_trade-0.jpg','cargo_inventory-0.jpg',
+    'shipyard_preview-0.jpg','research_tech-0.jpg','quest_journal-0.jpg',
+    'codex_book-0.jpg','recruit_crew-0.jpg','status_wallet-0.jpg',
+    'tavern_board-0.jpg','palace_audience-0.jpg','guild_exchange-0.jpg',
+    'museum_academy-0.jpg','diplomacy_chart-0.jpg','captain_room-0.jpg',
+    'harbor_authority-0.jpg','combat_headquarters-0.jpg','library_book-0.jpg'];
+  for(const name of targets)assert.equal(designRoleForFrames([name]),'UI',name);
+  assert.equal(designRoleForFrames(['ship_harbor-0.jpg']),'WORLD','일반 항해는 WORLD로 유지');
+  assert.equal(designRoleForFrames(['npc_face-0.jpg']),'NPC','인물은 NPC로 유지');
+  for(const name of ['cb0_deck-0.jpg','card_battle-0.jpg','ui_card_duel-0.jpg'])
+    assert.equal(designRoleForFrames([name]),'EXCLUDED_CARD','외부 AI 카드 검수 금지: '+name);
+  assert.equal(selectDesignFrameRole(targets),'UI','다수 UI 촬영본은 기존 UI 검수로 배정');
+  const source=fs.readFileSync('tools/company-nemotron-design-review.mjs','utf8');
+  assert.match(source,/trade goods previews, shipyard/,'무료 AI 디자인 검수 확장');
+  assert.match(source,/Exclude standalone card battles, card decks, card art/,'카드 외부 AI 수정 금지');
+  assert.match(source,/Only change visual constants on EXISTING exact source lines shown in anchors/,
+    '게임 규칙 변경을 막는 기존 검수 경계 유지');
+});
+
+// [교역품 실증] 기존 공식 4장 제한을 유지하되 교역 화면을 대표 사진에서 누락하지 않는다.
+test('무료 AI 디자인 리뷰가 교역품 실촬영을 우선 전송한다',()=>{
+  const source=fs.readFileSync('tools/company-nemotron-design-review.mjs','utf8');
+  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-tradehall.json','utf8'));
+  assert.match(source,/const ordered = selectedRole === 'UI'/);
+  assert.match(source,/Number\(cargoFrame\.test\(b\)\) - Number\(cargoFrame\.test\(a\)\)/);
+  assert.ok(capture.filter(row=>row.type==='capture' && /^trade_goods/.test(row.name)).length>=2,
+    '실제 교역품 화면을 사전·사후로 촬영해야 한다');
+  assert.match(source,/Skip cargo that is not shown/);
+});
