@@ -4772,10 +4772,10 @@ do
 	m = match("elizabeth")
 	table.insert(m.rows.me.ranged, table.clone(BC.Units.eu_01))
 	table.insert(m.rows.foe.ranged, table.clone(BC.Units.gunner))
-	local beforeVolley = m.rows.foe.ranged[1].power
+	local beforeVolley = BC.cardPower(m, "foe", "ranged", 1)
 	local okVolley = BC.useLeader(m, "me")
 	check("엘리자베스: 함대 연쇄포격으로 상대 후열 −2", okVolley == true
-		and m.leaderUsed.me and m.rows.foe.ranged[1].power == math.max(0, beforeVolley - 2))
+		and m.leaderUsed.me and BC.cardPower(m, "foe", "ranged", 1) == math.max(0, beforeVolley - 2))
 	local ok2 = BC.useLeader(m, "me")
 	check("지도자는 한 판에 한 번만", ok2 == false)
 	local book = CBk.new("europe")
