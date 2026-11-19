@@ -1345,7 +1345,7 @@ function NavalBattle.play(opts)
 	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(96, 96), Vector2.new(1, 1), "Menu/naval_speed")
 	speedBtn.TextSize = 20
 	speedBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
-	local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, 119),
+	local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, if battleViewport.X < 480 then 181 else 119),
 		UDim2.fromOffset(if battleViewport.X < 480 then 56 else 96, if battleViewport.X < 480 then 36 else 30), Vector2.new(0, 0)) -- [좌상단] 전술판·우측 카드 지원·왼쪽 조타와 분리
 	skip.TextSize = if battleViewport.X < 480 then 11 else 14
 	skip.TextWrapped = battleViewport.X < 480
@@ -1899,8 +1899,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			skip.Active = true
 			skip.Interactable = true
 			skip.AnchorPoint = Vector2.zero
-			skip.Position = if compactCards then UDim2.new(0.98, -76, 0.012, 0) else UDim2.fromScale(0.02, 0.84)
-			skip.Size = if compactCards then UDim2.new(0, 76, 0.063, 0) else UDim2.fromOffset(112, 44)
+			skip.Position = if compactCards then UDim2.new(0.98, -96, 0.012, 0) else UDim2.fromScale(0.02, 0.84)
+			skip.Size = if compactCards then UDim2.fromOffset(96, 40) else UDim2.fromOffset(112, 44)
 			skip.ZIndex = 30
 		end
 		table.insert(conns, { Disconnect = function()
