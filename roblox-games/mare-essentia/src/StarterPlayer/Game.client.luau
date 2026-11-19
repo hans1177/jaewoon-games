@@ -2879,7 +2879,7 @@ do
 		local win = Instance.new("Frame")
 		win.AnchorPoint = Vector2.new(0.5, 0.5)
 		win.Position = UDim2.fromScale(0.5, 0.5)
-		win.Size = UDim2.fromScale(0.98, 0.96)
+		win.Size = UDim2.fromScale(1, 1)
 		win.BackgroundColor3 = NAVY
 		win.BorderSizePixel = 0
 		win.Parent = layer

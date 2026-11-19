@@ -1889,7 +1889,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		g.DisplayOrder = 40
 		g.Parent = player:WaitForChild("PlayerGui")
 		-- [카드배틀 모바일] 전투 계산은 그대로 두고 표시 구역만 화면 폭에 맞춘다.
-		local compactCards = opts.cardOnly and (battleViewport.X < 720 or battleViewport.X < battleViewport.Y)
+		local compactCards = opts.cardOnly and (battleViewport.X < 720 or battleViewport.X < battleViewport.Y or battleViewport.Y < 480)
 		-- [카드 대전 실조작] 기존 종료 버튼을 카드판 최상위에 표시한다. 전투 판정과 종료 콜백은 그대로 사용한다.
 		if opts.cardOnly then
 			skip.Parent = g
@@ -1898,8 +1898,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			skip.Active = true
 			skip.Interactable = true
 			skip.AnchorPoint = Vector2.zero
-			skip.Position = if compactCards then UDim2.fromScale(0.78, 0.084) else UDim2.fromScale(0.02, 0.84)
-			skip.Size = if compactCards then UDim2.fromOffset(76, 34) else UDim2.fromOffset(112, 44)
+			skip.Position = if compactCards then UDim2.new(0.98, -76, 0.012, 0) else UDim2.fromScale(0.02, 0.84)
+			skip.Size = if compactCards then UDim2.new(0, 76, 0.063, 0) else UDim2.fromOffset(112, 44)
 			skip.ZIndex = 30
 		end
 		table.insert(conns, { Disconnect = function()
@@ -2021,7 +2021,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		chartMark.Parent = bg
 		local battleLine = Instance.new("Frame")
 		battleLine.AnchorPoint = Vector2.new(0, 0.5)
-		battleLine.Position = if compactCards then UDim2.fromScale(0.01, 0.485) else UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.39 else 0.42)
+		battleLine.Position = if compactCards then UDim2.fromScale(0.01, 0.463) else UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.39 else 0.42)
 		battleLine.Size = UDim2.fromScale(if compactCards then 0.98 elseif opts.cardOnly then 0.57 else 0.78, 0.004)
 		battleLine.BackgroundColor3 = Color3.fromRGB(214, 170, 96)
 		battleLine.BorderSizePixel = 0
@@ -2041,7 +2041,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		emblem(titleBar, "Menu/codex", UDim2.fromScale(0.015, 0.5), UDim2.fromScale(0.065, 0.88))
 		local header = label(titleBar, "", 18, ink)
 		header.Position = UDim2.fromScale(0.09, 0)
-		header.Size = UDim2.fromScale(0.89, 1)
+		header.Size = if compactCards then UDim2.new(0.89, -84, 1, 0) else UDim2.fromScale(0.89, 1)
 		header.TextXAlignment = Enum.TextXAlignment.Left
 		header.TextStrokeTransparency = 1
 		header.TextScaled = true
@@ -2066,7 +2066,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local roundResult = Instance.new("ImageLabel")
 		roundResult.Name = "CardBattleRoundResult"
 		roundResult.AnchorPoint = Vector2.new(0.5, 0)
-		roundResult.Position = if compactCards then UDim2.fromScale(0.5, 0.294) else UDim2.fromScale(0.5, 0.13)
+		roundResult.Position = if compactCards then UDim2.fromScale(0.5, 0.235) else UDim2.fromScale(0.5, 0.13)
 		roundResult.Size = UDim2.fromOffset(70, 70)
 		roundResult.BackgroundTransparency = 1
 		roundResult.ScaleType = Enum.ScaleType.Fit
@@ -2076,14 +2076,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local roundResultTick = 0
 
 		local boardFrame = Instance.new("Frame")
-		boardFrame.Position = if compactCards then UDim2.fromScale(0.015, 0.302) else UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.13 else 0.14)
-		boardFrame.Size = if compactCards then UDim2.fromScale(0.97, 0.36) else UDim2.fromScale(if opts.cardOnly then 0.57 else 0.78, if opts.cardOnly then 0.52 else 0.56)
+		boardFrame.Position = if compactCards then UDim2.fromScale(0.012, 0.233) else UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.13 else 0.14)
+		boardFrame.Size = if compactCards then UDim2.fromScale(0.976, 0.46) else UDim2.fromScale(if opts.cardOnly then 0.57 else 0.78, if opts.cardOnly then 0.52 else 0.56)
 		boardFrame.BackgroundTransparency = 1
 		boardFrame.Parent = g
 		-- 왼쪽 정보판: 양쪽 합계 원, 목숨 보석, 멈춤 표시, 날씨
 		local panel = Instance.new("Frame")
-		panel.Position = if compactCards then UDim2.fromScale(0.015, 0.141) else UDim2.fromScale(if opts.cardOnly then 0.79 else 0.02, 0.14)
-		panel.Size = if compactCards then UDim2.fromScale(0.97, 0.147) else UDim2.fromScale(0.17, 0.56)
+		panel.Position = if compactCards then UDim2.fromScale(0.012, 0.133) else UDim2.fromScale(if opts.cardOnly then 0.79 else 0.02, 0.14)
+		panel.Size = if compactCards then UDim2.fromScale(0.976, 0.091) else UDim2.fromScale(0.17, 0.56)
 		panel.BackgroundColor3 = Color3.fromRGB(30, 23, 19)
 		panel.BorderSizePixel = 0
 		panel.Parent = g
@@ -2238,8 +2238,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		-- [손패 받침대] 카드 아이콘·터치 확대 기능은 기존 ScrollingFrame에서 처리한다.
 		local handTray = Instance.new("Frame")
 		handTray.Name = "NavalCardHandTray"
-		handTray.Position = if compactCards then UDim2.fromScale(0.012, 0.754) else UDim2.fromScale(if opts.cardOnly then 0.21 else 0.015, if opts.cardOnly then 0.66 else 0.715)
-		handTray.Size = if compactCards then UDim2.fromScale(0.976, 0.238) else UDim2.fromScale(if opts.cardOnly then 0.57 else 0.75, if opts.cardOnly then 0.335 else 0.275)
+		handTray.Position = if compactCards then UDim2.fromScale(0.012, 0.773) else UDim2.fromScale(if opts.cardOnly then 0.21 else 0.015, if opts.cardOnly then 0.66 else 0.715)
+		handTray.Size = if compactCards then UDim2.fromScale(0.976, 0.219) else UDim2.fromScale(if opts.cardOnly then 0.57 else 0.75, if opts.cardOnly then 0.335 else 0.275)
 		handTray.BackgroundColor3 = Color3.fromRGB(18, 39, 58)
 		handTray.BackgroundTransparency = if opts.cardOnly then 0.6 else 0.27
 		handTray.BorderSizePixel = 0
@@ -2255,8 +2255,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		trayGradient.Rotation = 90
 		trayGradient.Parent = handTray
 		local handFrame = Instance.new("ScrollingFrame")
-		handFrame.Position = if compactCards then UDim2.fromScale(0.022, 0.763) else UDim2.fromScale(if opts.cardOnly then 0.215 else 0.02, if opts.cardOnly then 0.665 else 0.72)
-		handFrame.Size = if compactCards then UDim2.fromScale(0.955, 0.217) else UDim2.fromScale(if opts.cardOnly then 0.56 else 0.74, if opts.cardOnly then 0.325 else 0.26)
+		handFrame.Position = if compactCards then UDim2.fromScale(0.018, 0.777) else UDim2.fromScale(if opts.cardOnly then 0.215 else 0.02, if opts.cardOnly then 0.665 else 0.72)
+		handFrame.Size = if compactCards then UDim2.fromScale(0.964, 0.211) else UDim2.fromScale(if opts.cardOnly then 0.56 else 0.74, if opts.cardOnly then 0.325 else 0.26)
 		handFrame.BackgroundTransparency = 1
 		handFrame.BorderSizePixel = 0
 		handFrame.ScrollingDirection = Enum.ScrollingDirection.X
@@ -2265,8 +2265,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		handFrame.ScrollBarThickness = 4
 		handFrame.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 73)
 		local handPadding = Instance.new("UIPadding")
-		handPadding.PaddingTop = UDim.new(0, 10)
-		handPadding.PaddingBottom = UDim.new(0, 8)
+		handPadding.PaddingTop = UDim.new(0, if compactCards then 3 else 10)
+		handPadding.PaddingBottom = UDim.new(0, if compactCards then 3 else 8)
 		handPadding.PaddingLeft = UDim.new(0, 3)
 		handPadding.Parent = handFrame
 		handFrame.Parent = g
@@ -2282,8 +2282,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			b.Text = ""
 			if compactCards then
 				local index = if y == 0.765 then 0 elseif y == 0.83 then 1 elseif y == 0.70 then 2 else 3
-				b.Position = UDim2.fromScale(0.015 + 0.246 * index, 0.682)
-				b.Size = UDim2.fromScale(0.231, 0.063)
+				b.Position = UDim2.fromScale(0.015 + 0.246 * index, 0.7)
+				b.Size = UDim2.fromScale(0.231, 0.068)
 			else
 				b.Position = UDim2.fromScale(0.78, y)
 				b.Size = UDim2.fromScale(0.2, 0.058)
@@ -2852,7 +2852,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			focusFrame.Position = UDim2.fromScale(0.01, 0.135)
 			if compactCards then
 				focusFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-				focusFrame.Position = UDim2.fromScale(0.5, 0.46)
+				focusFrame.Position = UDim2.fromScale(0.5, 0.5)
 				focusBounds.MinSize = Vector2.new(0, 0)
 			end
 			previewHint = Instance.new("TextLabel")
@@ -3037,7 +3037,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local screenSize = bg.AbsoluteSize
 			local height = math.floor(math.max(210, math.min(screenSize.Y * 0.86, screenSize.X * 0.9 / 0.69, 620)))
 			if opts.cardOnly then
-				height = if compactCards then math.floor(math.max(210, math.min(screenSize.Y * 0.75, screenSize.X * 0.76 / 0.69, 520)))
+				height = if compactCards then math.floor(math.max(1, math.min(screenSize.Y * 0.88, screenSize.X * 0.94 / 0.69, 620)))
 				else math.floor(math.max(210, math.min(screenSize.Y * 0.85, screenSize.X * 0.19 / 0.69)))
 			end
 			focusFrame.Size = UDim2.fromOffset(math.floor(height * 0.69), height)
@@ -3232,16 +3232,28 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				laneAccent.BackgroundColor3 = if side == "me" then Color3.fromRGB(88, 170, 212) else Color3.fromRGB(214, 115, 110)
 				laneAccent.BorderSizePixel = 0
 				laneAccent.Parent = rf
-				emblem(rf, rowIcons[row], UDim2.new(0, 4, 0.5, 0), UDim2.new(0, 21, 0.8, 0))
+				if not compactCards then emblem(rf, rowIcons[row], UDim2.new(0, 4, 0.5, 0), UDim2.new(0, 21, 0.8, 0)) end
 				local mult, adv, dis = BC.rowMatchup(m, side, row)
 				local tag = label(rf, string.format("%s\n%d%s", rowName(row), BC.rowTotal(m, side, row), if adv and dis then " ▲▼" elseif adv then t(" ▲상성", " ▲Adv") elseif dis then t(" ▼불리", " ▼Dis") else "") .. (if BC.activeTactic(m.rows[side][row]) then "\n" .. BC.activeTactic(m.rows[side][row]) else ""), 13, Color3.fromRGB(246, 208, 130))
-				tag.Position = UDim2.fromOffset(29, 0)
-				tag.Size = UDim2.new(0, 68, 1, 0)
+				tag.Position = UDim2.fromOffset(if compactCards then 6 else 29, 0)
+				tag.Size = UDim2.new(0, if compactCards then 42 else 68, 1, 0)
+				if compactCards then
+					tag.Text = rowName(row)
+					tag.TextSize = 11
+					tag.TextWrapped = true
+				end
 				tag.TextXAlignment = Enum.TextXAlignment.Left
 				tag.TextColor3 = if adv and not dis then Color3.fromRGB(150, 235, 150) elseif dis and not adv then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(246, 208, 130)
-				local cards = Instance.new("Frame")
-				cards.Position = UDim2.fromOffset(104, 3)
-				cards.Size = UDim2.new(1, if opts.cardOnly then -160 else -108, 1, -6)
+				local cards = if opts.cardOnly then Instance.new("ScrollingFrame") else Instance.new("Frame")
+				cards.Position = UDim2.fromOffset(if compactCards then 48 else 104, 3)
+				cards.Size = UDim2.new(1, if compactCards then -90 elseif opts.cardOnly then -160 else -108, 1, -6)
+				if cards:IsA("ScrollingFrame") then
+					cards.BorderSizePixel = 0
+					cards.ScrollingDirection = Enum.ScrollingDirection.X
+					cards.AutomaticCanvasSize = Enum.AutomaticSize.X
+					cards.CanvasSize = UDim2.new()
+					cards.ScrollBarThickness = 3
+				end
 				cards.BackgroundTransparency = 1
 				cards.Parent = rf
 				rowTargets[side][row] = cards
@@ -3251,7 +3263,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					badge.Name = "RowScoreBadge"
 					badge.AnchorPoint = Vector2.new(1, 0.5)
 					badge.Position = UDim2.new(1, -6, 0.5, 0)
-					badge.Size = UDim2.fromOffset(44, 44)
+					badge.Size = if compactCards then UDim2.new(0, 32, 0.72, 0) else UDim2.fromOffset(44, 44)
 					badge.BackgroundColor3 = if adv and not dis then Color3.fromRGB(60, 120, 70) elseif dis and not adv then Color3.fromRGB(130, 60, 50) else Color3.fromRGB(32, 24, 18)
 					badge.BorderSizePixel = 0
 					badge.Font = Enum.Font.GothamBlack
@@ -3290,7 +3302,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			for i, c in m.hand.me do
 				local b = Instance.new("TextButton")
-				b.Size = UDim2.new(0, 140, 1, -10)
+				b.Size = UDim2.new(0, 140, 1, if compactCards then -3 else -10)
 				local cardRatio = Instance.new("UIAspectRatioConstraint")
 				cardRatio.AspectRatio = 0.69
 				cardRatio.DominantAxis = Enum.DominantAxis.Height
@@ -3413,8 +3425,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					flight.AnchorPoint = Vector2.new(0.5, 0.5)
 					flight.Size = UDim2.fromOffset(b.AbsoluteSize.X, b.AbsoluteSize.Y)
 					local start = b.AbsolutePosition + b.AbsoluteSize / 2 - bg.AbsolutePosition
+					local rowWidth = if opts.cardOnly then target.AbsoluteSize.Y * 0.74 else 62
+					local canvasOffset = if target:IsA("ScrollingFrame") then target.CanvasPosition.X else 0
 					local finishAt = target.AbsolutePosition - bg.AbsolutePosition + Vector2.new(
-						if c.special then target.AbsoluteSize.X / 2 else math.min(math.max(31, target.AbsoluteSize.X - 31), 31 + 66 * #m.rows[side][c.row]),
+						if c.special then target.AbsoluteSize.X / 2 else math.clamp(rowWidth / 2 + (rowWidth + 4) * #m.rows[side][BC.lane(c)] - canvasOffset, 0, target.AbsoluteSize.X),
 						target.AbsoluteSize.Y / 2
 					)
 					flight.Position = UDim2.fromOffset(start.X, start.Y)
@@ -3424,7 +3438,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					b.Visible = false
 					local flightTween = TweenService:Create(flight, TweenInfo.new(0.34, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
 						Position = UDim2.fromOffset(finishAt.X, finishAt.Y),
-						Size = UDim2.fromOffset(if c.special then 76 else 62, math.min(b.AbsoluteSize.Y, target.AbsoluteSize.Y)),
+						Size = UDim2.fromOffset(if c.special then 76 else rowWidth, math.min(b.AbsoluteSize.Y, target.AbsoluteSize.Y)),
 						Rotation = 0,
 					})
 					flightTween:Play()

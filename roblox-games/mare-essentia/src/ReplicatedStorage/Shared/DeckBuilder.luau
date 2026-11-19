@@ -282,7 +282,8 @@ function DeckBuilder.build(parent, ctx)
 	deckTab.Position = UDim2.new(0.5, 4, 0, 0)
 	deckTab.Size = collectionTab.Size
 	local function layoutBody()
-		local compact = body.AbsoluteSize.X < 600
+		local size = body.AbsoluteSize
+		local compact = size.X < 600 or size.Y < 295
 		collectionTab.Visible, deckTab.Visible = compact, compact
 		collectionTab.BackgroundColor3 = if showDeck then PANEL2 else SAVE
 		deckTab.BackgroundColor3 = if showDeck then SAVE else PANEL2
@@ -335,6 +336,17 @@ function DeckBuilder.build(parent, ctx)
 	gl.SortOrder = Enum.SortOrder.LayoutOrder
 	gl.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	gl.Parent = gridScroll
+	local function layoutCardGrid()
+		local width = math.max(1, gridScroll.AbsoluteSize.X - gridScroll.ScrollBarThickness)
+		local columns = math.max(2, math.floor((width + 8) / 128))
+		local cell = math.floor((width - (columns - 1) * 8) / columns)
+		if cell < 1 then return end
+		gl.FillDirectionMaxCells = columns
+		gl.CellSize = UDim2.fromOffset(cell, math.floor(cell * 1.38))
+	end
+	gridScroll:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutCardGrid)
+	layoutCardGrid()
+
 	local extra = Instance.new("ScrollingFrame") -- 동료 카드 칸 (필터 '동료')
 	extra.BackgroundTransparency = 1
 	extra.BorderSizePixel = 0
