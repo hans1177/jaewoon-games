@@ -2656,65 +2656,31 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				afterAction(mine(BC.useLeader(m, "me")))
 			end
 		end)
-		local leaderPortrait, leaderStatus, foePortrait
+		local leaderPortrait, foePortrait
 		if opts.cardOnly then
-			local foeBtn, foeIcon = mkSide(t("적장", "Leader"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
+			local foeBtn, foeIcon = mkSide(t("상대 지도자", "Opponent Leader"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
 				if not finished and showLeaderCard then showLeaderCard("foe") end
 			end)
-			foeBtn.Name = "OpponentLeader"
-			foeBtn.Position = UDim2.fromScale(0.025, 0.25)
-			foeBtn.Size = UDim2.fromScale(0.25, 0.54)
-			foeBtn.Parent = foePlate.plate
-			foeBtn.Caption.Visible = false
-			foeIcon.Position = UDim2.fromScale(0.06, 0.5)
-			foeIcon.Size = UDim2.fromScale(0.88, 0.88)
-			for _, side in { "me", "foe" } do
-				local icon = if side == "me" then leaderIcon else foeIcon
+			for _, entry in { { "me", leaderBtn, leaderIcon, mePlate.plate }, { "foe", foeBtn, foeIcon, foePlate.plate } } do
+				local side, control, icon, scorePlate = table.unpack(entry)
+				control.Name = if side == "me" then "PlayerLeader" else "OpponentLeader"
+				control.AnchorPoint = Vector2.new(0, 0.5)
+				control.Position = UDim2.fromScale(0.035, 0.52)
+				control.Size = UDim2.fromScale(if compactCards then 0.30 else 0.34, if compactCards then 0.88 else 0.65)
+				control.Parent = scorePlate
+				control.Caption.Visible = false
+				icon.Position = UDim2.fromScale(0.05, 0.5)
+				icon.Size = UDim2.fromScale(0.90, 0.96)
 				local leaderId = m.leader[side]
 				local portraitKey = NEW_LEADER_ART[leaderId]
-				local portraitId = (portraitKey and AssetIds[portraitKey]) or AssetIds["CardArt/leader_" .. leaderId]
 				local fallbackKey = LEADER_FACE[leaderId]
-				portraitId = portraitId or (fallbackKey and AssetIds[fallbackKey])
+				local portraitId = (portraitKey and AssetIds[portraitKey]) or AssetIds["CardArt/leader_" .. leaderId]
+					or (fallbackKey and AssetIds[fallbackKey])
 				if portraitId then
-					-- 기존 먹색 버튼에 황동 테두리를 두르고 얼굴과 이름을 나란히 배치한다.
-					icon.ImageTransparency = 1
-					if side == "me" then
-						icon.Position = UDim2.fromScale(0.04, 0.5)
-						icon.Size = UDim2.fromScale(0.28, 0.86)
-					end
-					icon.BackgroundColor3 = Color3.fromRGB(47, 32, 22)
-					icon.BackgroundTransparency = 0
-					icon.ClipsDescendants = true
-
-					-- 세로 원화의 위쪽을 얼굴 창에 맞춰 보여 준다.
-					local portrait = Instance.new("ImageLabel")
-					portrait.Name = "LeaderPortrait"
-					portrait.SizeConstraint = Enum.SizeConstraint.RelativeXX
-					portrait.Size = UDim2.fromScale(1, 4 / 3)
-					portrait.BackgroundTransparency = 1
-					portrait.ScaleType = Enum.ScaleType.Fit
-					portrait.Image = "rbxassetid://" .. tostring(portraitId)
-					portrait.Parent = icon
-					if side == "foe" then
-						foePortrait = portrait
-						continue
-					end
-					leaderPortrait = portrait
-
-					local caption = leaderBtn.Caption
-					caption.Position = UDim2.fromScale(0.38, 0.07)
-					caption.Size = UDim2.fromScale(0.57, 0.53)
-					caption.TextXAlignment = Enum.TextXAlignment.Left
-
-					leaderStatus = label(leaderBtn, "", 10, Color3.fromRGB(219, 185, 119))
-					leaderStatus.Position = UDim2.fromScale(0.38, 0.59)
-					leaderStatus.Size = UDim2.fromScale(0.57, 0.3)
-					leaderStatus.TextXAlignment = Enum.TextXAlignment.Left
-					leaderStatus.TextScaled = true
-					local statusLimit = Instance.new("UITextSizeConstraint")
-					statusLimit.MaxTextSize = 11
-					statusLimit.Parent = leaderStatus
+					icon.Image = "rbxassetid://" .. tostring(portraitId)
+					icon.ScaleType = Enum.ScaleType.Fit
 				end
+				if side == "me" then leaderPortrait = icon else foePortrait = icon end
 			end
 		end
 		local mullBtn
@@ -3870,9 +3836,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				elseif m.leaderUsed.me then t("지도자 (사용함)", "Leader (Used)")
 				else t("지도자: ", "Leader: ") .. (if english then englishLeaders[m.leader.me] or "" else BC.Leaders[m.leader.me].name)
 			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then (if opts.cardOnly then 0.34 else 0.6) else 0
-			if leaderPortrait and leaderStatus then
+			if leaderPortrait then
 				leaderBtn.Caption.Text = if english then englishLeaders[m.leader.me] or "Leader" else BC.Leaders[m.leader.me].name
-				leaderStatus.Text = if m.leaderUsed.me then t("사용함", "Used") else t("사용 가능", "Ready")
 				leaderPortrait.ImageColor3 = if m.leaderUsed.me then Color3.fromRGB(165, 165, 165) else Color3.new(1, 1, 1)
 			end
 			if foePortrait then
