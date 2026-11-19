@@ -1110,7 +1110,7 @@ test('Mare naval steering, smooth hulls, aiming and battle presentation stay con
   assert.ok(battle.includes('local turnSign = if rightTurn:Dot(cam.CFrame.RightVector) < -0.05 then -1 else 1'));
   assert.match(battle,/l\.TextStrokeTransparency = 1 -- \[해전 글씨\]/,'main text is clean; tiny contextual combat badges can retain contrast outlines');
   assert.ok(battle.includes('f.Visible = star or battleViewport.X >= 720'));
-  assert.ok(battle.includes('skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, 119)'));
+  assert.ok(battle.includes('skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, if battleViewport.X < 480 then 181 else 119)'));
   assert.ok(battle.includes('local coasts = {'));
   for(const id of ['cliff-rock','tropical-palm-tall','ruins-pillar-decorated','north-pine-fall','egypt-obelisk']){
     assert.ok(assetIds.includes('"Terrain/'+id+'"'),'battle coast must use a registered mesh: '+id);
@@ -1205,7 +1205,7 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
     'panel.Visible = battleViewport.Y >= 380 and (battleViewport.X >= 720 or battleViewport.Y >= 520)',
     'math.min(entriesHeight, availableHeight)',
     'reloadBack.Visible = not opts.cardOnly and (battleViewport.X >= 720',
-    'string.format("장전 %.1f초", math.max(0, nextMeFire - now))',
+    'reloadText.Text = if not inRange then "포 — 사거리 밖"',
   ]) assert.ok(battle.includes(token),'missing mobile-safe naval HUD binding: '+token);
   const intersects=(a,b)=>a.x<b.x+b.w && b.x<a.x+a.w && a.y<b.y+b.h && b.y<a.y+a.h;
   // [휴대전화 세로] 320~430폭에서 왼쪽 스틱, 2개 기술, 가속·건너뛰기가 서로 터치하지 않는다.
@@ -1408,10 +1408,12 @@ test('Mare standalone card duel board respects four rendered rows, zoom and appr
   assert.match(source,/CARD_DECK\[regionId\]/);
   assert.match(source,/frameEdge\(art, if c\.hero then .* elseif regionDeck then regionDeck\.color/);
   // [이미 낸 카드 확대] 터치로 지역·분류·원화를 읽되 전투 카드 재사용은 막는다.
-  assert.ok(source.includes('local playedCard = chip(cards, c, 62, BC.cardPower(m, side, row, idx)'));
+  assert.ok(source.includes('local power = BC.cardPower(m, side, row, idx)'));
+  assert.ok(source.includes('local playedCard = chip(cards, c, 62, power, c == lastPlayed.me or c == lastPlayed.foe)'));
   assert.ok(source.includes('playedCard.Activated:Connect(function()'));
   assert.ok(source.includes('showCardCodex(c, true)'),'played card must open read-only zoom');
-  assert.ok(source.includes('focusUse.Visible = not readOnly'),'played card must not be playable again');
+  assert.ok(source.includes('focusUse.Visible = if leaderProfile then (leaderPreviewId ~= nil and m.turn == "me" and not m.over and not m.leaderUsed.me and not playing and not auto)'));
+  assert.ok(source.includes('else not readOnly'),'deployed card remains read-only; leader ability only on valid turn');
   assert.ok(source.includes('if selectedPlay then selectedPlay() else closeCardCodex() end'),'read-only art tap must close');
   assert.ok(source.includes('local f = Instance.new("TextButton")'),'deployed card supports touch activation');
   const playedStart=source.indexOf('playedCard.Activated:Connect(function()');
