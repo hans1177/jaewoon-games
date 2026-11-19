@@ -140,7 +140,7 @@ function loadPreviousDesignUsage(previous = {}) {
 export function designRoleForFrames(frameNames = []) {
   const names = frameNames.join(' ').toLowerCase();
   // [카드 전용 장면 제외] 외부 무료 디자인 검수는 카드 전투·덱·카드 그림을 다루지 않는다.
-  if (/(?:^cb[0-9]+(?:[_-]|\.)|(?:^|[_-])(?:card(?:s|art)?|deck|duel|battle_board)(?:[_-]|\.))/i.test(names)) return 'EXCLUDED_CARD';
+  if (/(?:^cb[0-9]+|card|deck|duel|battle_board)/i.test(names)) return 'EXCLUDED_CARD';
   if (/(npc|face|hair|outfit|villager|resident|skin|citizen)/.test(names)) return 'NPC';
   // [교역품과 시설 메뉴] 실제 교역·조선·서재·주점 촬영본을 기존 UI 검수에 포함한다.
   if (/(hud|menu|gui|card|tab_|ui_|map_ui|inventory|font|interface|trade|market|goods|cargo|warehouse|shop|yard|shipwright|codex|quest|journal|diary|research|tech|recruit|crew|dialog|status|merchant|treasury|bank|tavern|palace|guild|museum|academy|facility|exchange|diplomacy|equipment|chart|library|headquarters|captain_room|harbor_authority)/.test(names)) return 'UI';
@@ -605,7 +605,7 @@ function visualAnchors(files, role = 'GENERAL') {
     const counts = new Map();
     for (const line of lines) counts.set(line, (counts.get(line) || 0) + 1);
     const possible = lines.filter(line => cleanAnchor(line) && counts.get(line) === 1 &&
-      !/(?:\bcard\b|\bcards\b|cardOnly|CardArt|CardBook|CardGallery|BoardingCards|KnowledgeBattle|\bdeck\b|\bduel\b)/i.test(line));
+      !/(?:card|deck|duel|knowledgebattle)/i.test(line));
     const focused = possible.filter(line => focusedPattern.test(line));
     const selected = Array.from({length: 6}, (_, index) =>
       focused[Math.floor(index * Math.max(0, focused.length - 1) / 5)]).filter(Boolean);
