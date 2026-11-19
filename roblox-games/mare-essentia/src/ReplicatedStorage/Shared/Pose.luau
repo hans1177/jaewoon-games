@@ -119,7 +119,7 @@ local function addHat(model, kind, color)
 		q.Shape = shape
 		q.Size = size
 		q.Color = color
-		q.Material = mat or Enum.Material.Fabric
+		q.Material = mat or Enum.Material.SmoothPlastic
 		q.CanCollide, q.CanTouch, q.CanQuery, q.Massless = false, false, false, true
 		q.CFrame = head.CFrame * CFrame.new(offset) * (rot or CFrame.identity)
 		q.Parent = model
@@ -176,7 +176,7 @@ local function addHair(model, kind, color)
 		q.Shape = shape
 		q.Size = size
 		q.Color = color
-		q.Material = Enum.Material.Fabric
+		q.Material = Enum.Material.SmoothPlastic
 		q.CanCollide, q.CanTouch, q.CanQuery, q.Massless = false, false, false, true
 		q.CFrame = head.CFrame * CFrame.new(offset)
 		q.Parent = model
@@ -208,7 +208,7 @@ local function addSkirt(model, color, long)
 	q.Shape = Enum.PartType.Cylinder
 	q.Size = Vector3.new(len, lower.Size.X * 1.18, lower.Size.X * 1.12)
 	q.Color = color
-	q.Material = Enum.Material.Fabric
+	q.Material = Enum.Material.SmoothPlastic
 	q.CanCollide, q.CanTouch, q.CanQuery, q.Massless = false, false, false, true
 	q.CFrame = lower.CFrame * CFrame.new(0, -len * 0.43, 0) * CFrame.Angles(0, 0, math.pi / 2)
 	q.Parent = model
@@ -333,18 +333,18 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 					descendant.Material = Enum.Material.SmoothPlastic
 				else
 					descendant.Color = jacket
-					descendant.Material = Enum.Material.Fabric
+					descendant.Material = Enum.Material.SmoothPlastic
 				end
 			elseif string.find(n, "Foot") then
 				descendant.Color = trousers:Lerp(Color3.new(0, 0, 0), 0.4)
 				descendant.Material = if role == "Knight" then Enum.Material.Metal else Enum.Material.Leather
 			elseif string.find(n, "Leg") then
 				descendant.Color = trousers
-				descendant.Material = if role == "Knight" then Enum.Material.Metal else Enum.Material.Fabric
+				descendant.Material = if role == "Knight" then Enum.Material.Metal else Enum.Material.SmoothPlastic
 			elseif string.find(n, "Torso") then
 				-- 윗몸은 겉옷 색, 아랫몸은 조금 어둡게 (허리띠 느낌)
 				descendant.Color = if n == "LowerTorso" then jacket:Lerp(Color3.new(0, 0, 0), 0.22) else jacket
-				descendant.Material = if role == "Knight" then Enum.Material.Metal elseif role == "Barbarian" then Enum.Material.Leather else Enum.Material.Fabric
+				descendant.Material = if role == "Knight" then Enum.Material.Metal elseif role == "Barbarian" then Enum.Material.Leather else Enum.Material.SmoothPlastic
 			end
 		end
 	end
@@ -766,33 +766,34 @@ local NPC_REGISTERED_ACCESSORY = {
 	companion_female = { "acc_pearl_hairpin", "Head", 0.55, 0.58, 0.60, 0.28, 0.33, -0.06 },
 }
 
--- [원본 GLB 재질] 복식 9종에 포함된 glTF 색상 12개와 금속/가죽/직물 구분을 그대로 사용한다.
--- 실제 ColorMap/SurfaceAppearance가 있으면 우선 보존하고, 누락된 색만 원본 기준으로 복원한다.
+-- [원본 GLB 재질] 복식 9종의 glTF 원색과 금속·가죽 구분을 유지한다.
+-- [의상 표면 보정] 텍스처 없는 직물에만 과한 기본 Fabric 반복 무늬 대신 균일한 무광 표면을 쓴다.
+-- 실제 ColorMap/SurfaceAppearance/MaterialVariant는 우선 보존하고, 누락된 색만 원본 기준으로 복원한다.
 local OUTFIT_SOURCE_MATERIALS = {
-	{ Color3.new(0.14, 0.21, 0.28), Enum.Material.Fabric, Color3.new(0.4100, 0.4956, 0.5657) },
-	{ Color3.new(0.58, 0.42, 0.26), Enum.Material.Fabric, Color3.new(0.7858, 0.6800, 0.5469) },
-	{ Color3.new(0.88, 0.79, 0.65), Enum.Material.Fabric, Color3.new(0.9453, 0.9013, 0.8267) },
+	{ Color3.new(0.14, 0.21, 0.28), Enum.Material.SmoothPlastic, Color3.new(0.4100, 0.4956, 0.5657) },
+	{ Color3.new(0.58, 0.42, 0.26), Enum.Material.SmoothPlastic, Color3.new(0.7858, 0.6800, 0.5469) },
+	{ Color3.new(0.88, 0.79, 0.65), Enum.Material.SmoothPlastic, Color3.new(0.9453, 0.9013, 0.8267) },
 	{ Color3.new(0.72, 0.49, 0.19), Enum.Material.Metal, Color3.new(0.8650, 0.7287, 0.4731) },
 	{ Color3.new(0.32, 0.18, 0.11), Enum.Material.Leather, Color3.new(0.6012, 0.4614, 0.3656) },
-	{ Color3.new(0.44, 0.16, 0.18), Enum.Material.Fabric, Color3.new(0.6944, 0.4366, 0.4614) },
+	{ Color3.new(0.44, 0.16, 0.18), Enum.Material.SmoothPlastic, Color3.new(0.6944, 0.4366, 0.4614) },
 	{ Color3.new(0.47, 0.53, 0.57), Enum.Material.Metal, Color3.new(0.7152, 0.7548, 0.7797) },
 	{ Color3.new(0.23, 0.27, 0.31), Enum.Material.Metal, Color3.new(0.5169, 0.5564, 0.5926) },
-	{ Color3.new(0.25, 0.36, 0.31), Enum.Material.Fabric, Color3.new(0.5371, 0.6343, 0.5926) },
-	{ Color3.new(0.78, 0.76, 0.70), Enum.Material.Fabric, Color3.new(0.8962, 0.8860, 0.8543) },
-	{ Color3.new(0.09, 0.11, 0.15), Enum.Material.Fabric, Color3.new(0.3318, 0.3656, 0.4236) },
+	{ Color3.new(0.25, 0.36, 0.31), Enum.Material.SmoothPlastic, Color3.new(0.5371, 0.6343, 0.5926) },
+	{ Color3.new(0.78, 0.76, 0.70), Enum.Material.SmoothPlastic, Color3.new(0.8962, 0.8860, 0.8543) },
+	{ Color3.new(0.09, 0.11, 0.15), Enum.Material.SmoothPlastic, Color3.new(0.3318, 0.3656, 0.4236) },
 	{ Color3.new(0.83, 0.66, 0.34), Enum.Material.Metal, Color3.new(0.9212, 0.8323, 0.6180) },
 }
 -- [GLB 무채색 가져오기 보정] 인덱스를 잃어버린 메시만 역할별 원본 주재질 사용.
 local OUTFIT_PRIMARY_MATERIALS = {
-	outfit_vest = { Color3.new(0.14, 0.21, 0.28), Enum.Material.Fabric },
-	outfit_coat = { Color3.new(0.14, 0.21, 0.28), Enum.Material.Fabric },
+	outfit_vest = { Color3.new(0.14, 0.21, 0.28), Enum.Material.SmoothPlastic },
+	outfit_coat = { Color3.new(0.14, 0.21, 0.28), Enum.Material.SmoothPlastic },
 	outfit_guard = { Color3.new(0.47, 0.53, 0.57), Enum.Material.Metal },
-	outfit_apron = { Color3.new(0.58, 0.42, 0.26), Enum.Material.Fabric },
-	outfit_sash = { Color3.new(0.25, 0.36, 0.31), Enum.Material.Fabric },
+	outfit_apron = { Color3.new(0.58, 0.42, 0.26), Enum.Material.SmoothPlastic },
+	outfit_sash = { Color3.new(0.25, 0.36, 0.31), Enum.Material.SmoothPlastic },
 	outfit_belt = { Color3.new(0.32, 0.18, 0.11), Enum.Material.Leather },
-	outfit_cuff = { Color3.new(0.88, 0.79, 0.65), Enum.Material.Fabric },
+	outfit_cuff = { Color3.new(0.88, 0.79, 0.65), Enum.Material.SmoothPlastic },
 	outfit_boot = { Color3.new(0.32, 0.18, 0.11), Enum.Material.Leather },
-	outfit_stole = { Color3.new(0.78, 0.76, 0.70), Enum.Material.Fabric },
+	outfit_stole = { Color3.new(0.78, 0.76, 0.70), Enum.Material.SmoothPlastic },
 }
 
 -- 이미 생성된 R15 몹에 승인 실물 외형을 적용한다. People 지연 로드·거리 갱신을 같은 함수에서 처리한다.
@@ -902,11 +903,11 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				part.Color = part.Color:Lerp(steel, 0.64)
 				part.Reflectance = 0.025
 			elseif n:find("Torso", 1, true) or n:find("Arm", 1, true) then
-				part.Material = if leather then Enum.Material.Leather else Enum.Material.Fabric
+				part.Material = if leather then Enum.Material.Leather else Enum.Material.SmoothPlastic
 				part.Color = part.Color:Lerp(cloth, 0.56)
 				part.Reflectance = 0
 			elseif n:find("Leg", 1, true) then
-				part.Material = Enum.Material.Fabric
+				part.Material = Enum.Material.SmoothPlastic
 				part.Color = part.Color:Lerp(cloth:Lerp(Color3.new(0, 0, 0), 0.24), 0.45)
 				part.Reflectance = 0
 			end
@@ -1070,7 +1071,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					-- 진주 부분은 금속광이 아닌 무광 유백색. 금속 부위만 Metal로 표시.
 					part.Material = if armor or badge or (pearl and not pearlWhite) then Enum.Material.Metal
 						elseif hair or pearlWhite then Enum.Material.SmoothPlastic
-						elseif hood or tunic or ribbon or headwear then Enum.Material.Fabric
+						elseif hood or tunic or ribbon or headwear then Enum.Material.SmoothPlastic
 						else Enum.Material.Leather
 					local tint = if armor then Color3.fromRGB(108, 117, 124)
 						elseif badge then Color3.fromRGB(188, 151, 80)
