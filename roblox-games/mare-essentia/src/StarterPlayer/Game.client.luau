@@ -12770,6 +12770,8 @@ function render()
 		if currentTab == "harbor" and H.visitFacility == "은행" then
 			-- [은행 방문] 항구 정보 안의 기존 금융 메뉴로 바로 이동한다.
 			task.defer(function()
+				-- 실제 UIListLayout이 배치된 다음 은행 섹션 위치를 사용한다.
+				game:GetService("RunService").Heartbeat:Wait()
 				if currentTab ~= "harbor" or H.visitFacility ~= "은행" then return end
 				local bank = content:FindFirstChild("BankEntry")
 				if bank then
