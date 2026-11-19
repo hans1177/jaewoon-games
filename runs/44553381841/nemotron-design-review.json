@@ -1,0 +1,139 @@
+{
+  "version": 3,
+  "provider": "MULTI_FREE_VISUAL",
+  "gameId": "mare-essentia",
+  "sourceRevision": "f5dde7cef8fee016c1db98d1f8af5a4f880b8926",
+  "status": "SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE",
+  "selectedRole": "WORLD",
+  "usageWindow": {
+    "day": "2026-11-19",
+    "calls": {
+      "NVIDIA": 12,
+      "GEMINI": 12,
+      "OPENROUTER": 30
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-19",
+      "GEMINI": "2026-11-19",
+      "OPENROUTER": "2026-11-19"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-19T02:55:17.481Z",
+      "GEMINI": "2026-11-19T08:05:44.960Z",
+      "OPENROUTER": "2026-11-19T02:54:41.418Z"
+    }
+  },
+  "cooldowns": {
+    "GEMINI_FLASH": "2026-11-20T12:21:44.031Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 12,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 0.87,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 12,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 1.47,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-20T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 30,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 2.29,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [],
+  "frames": [
+    {
+      "name": "field_entry-0.jpg",
+      "sha256": "f2f0569d806b8c9a3e2e6952fdc15e45c406ea5fc37a77c53707fd1633b317ef"
+    },
+    {
+      "name": "v1_start-0.jpg",
+      "sha256": "2c1b4ec009ef643868e11a07425b1cc3dc1662ea3ae9bbf923dcde92977c3b7b"
+    },
+    {
+      "name": "v2_event-0.jpg",
+      "sha256": "1c716ab89d15f7ff63ec51a2ca8699adc0856d4fb611a4b844cadf50fc7e0e39"
+    },
+    {
+      "name": "v3_event2-0.jpg",
+      "sha256": "44754e1fde0aee16b26180c9e3073b0354cc1a6190b92efc1873bc8cfaa1fc24"
+    }
+  ],
+  "modelAvailability": [
+    {
+      "modelId": "NVIDIA_VL",
+      "provider": "NVIDIA",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "GEMINI_FLASH",
+      "provider": "GEMINI",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_GEMMA",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_NEMOTRON",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_GEMMA26",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_OMNI",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "GEMINI_LITE",
+      "provider": "GEMINI",
+      "status": "DAILY_CALL_CAP"
+    }
+  ]
+}
