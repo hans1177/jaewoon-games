@@ -3159,7 +3159,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local focusArtwork = Instance.new("Frame")
 		focusArtwork.Name = "CodexPainting"
 		focusArtwork.Position = UDim2.fromScale(0.035, 0.095)
-		focusArtwork.Size = UDim2.fromScale(0.93, 0.64)
+		focusArtwork.Size = UDim2.fromScale(0.93, if opts.cardOnly then 0.48 else 0.64)
 		focusArtwork.BackgroundColor3 = Color3.fromRGB(77, 58, 43)
 		focusArtwork.BorderSizePixel = 0
 		focusArtwork.ClipsDescendants = true
@@ -3200,12 +3200,39 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusRule.TextStrokeTransparency = 1
 		focusRule.Font = Enum.Font.Antique
 		focusRule.ZIndex = 52
-		frameEdge(focusRule, brass, 4)
+		local ruleScroll
+		if opts.cardOnly then
+			ruleScroll = Instance.new("ScrollingFrame")
+			ruleScroll.Name = "CardEffectDescription"
+			ruleScroll.Position = UDim2.fromScale(0.035, 0.59)
+			ruleScroll.Size = UDim2.fromScale(0.93, 0.26)
+			ruleScroll.BackgroundColor3 = Color3.fromRGB(233, 213, 170)
+			ruleScroll.BorderSizePixel = 0
+			ruleScroll.ZIndex = 52
+			ruleScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+			ruleScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+			ruleScroll.CanvasSize = UDim2.new()
+			ruleScroll.ScrollBarThickness = 4
+			ruleScroll.Parent = focusFrame
+			frameEdge(ruleScroll, brass, 4)
+			focusRule.Parent = ruleScroll
+			focusRule.Position = UDim2.fromOffset(6, 5)
+			focusRule.Size = UDim2.new(1, -17, 0, 0)
+			focusRule.AutomaticSize = Enum.AutomaticSize.Y
+			focusRule.BackgroundTransparency = 1
+			focusRule.TextScaled = false
+			focusRule.TextSize = 14
+			focusRule.Font = Enum.Font.Gotham
+			focusRule.TextXAlignment = Enum.TextXAlignment.Left
+			focusRule.TextYAlignment = Enum.TextYAlignment.Top
+		else
+			frameEdge(focusRule, brass, 4)
+		end
 		-- 확대 도판에서도 기존 두 번 누르기와 동일한 전투 판정을 호출한다.
 		local focusUse = Instance.new("TextButton")
 		focusUse.Name = "UseCard"
-		focusUse.Position = UDim2.fromScale(0.035, 0.926)
-		focusUse.Size = UDim2.fromScale(0.93, 0.067)
+		focusUse.Position = UDim2.fromScale(0.035, if opts.cardOnly then 0.865 else 0.926)
+		focusUse.Size = UDim2.fromScale(0.93, if opts.cardOnly then 0.11 else 0.067)
 		focusUse.Text = t("카드 사용", "Play Card")
 		focusUse.TextScaled = true
 		focusUse.Font = Enum.Font.Antique
@@ -3267,6 +3294,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				.. (if #result.targets > #items then t(" 외 ", " +") .. tostring(#result.targets - #items) else "")
 		end
 		local function showCardCodex(card, readOnly)
+			if ruleScroll then ruleScroll.CanvasPosition = Vector2.zero end
 			if focusMotion then
 				focusMotion.stop()
 				for i = #cardMotions, 1, -1 do
