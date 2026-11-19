@@ -2,14 +2,14 @@
   "version": 3,
   "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "8461c1138452dc1bd2c94f00bea8d150775d2d84",
-  "status": "SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE",
-  "selectedRole": "NPC",
+  "sourceRevision": "9f16a38830c063fc51048457a60977043f2ea253",
+  "status": "REVIEWED_NO_VERIFIED_EDIT",
+  "selectedRole": "WORLD",
   "usageWindow": {
     "day": "2026-11-19",
     "calls": {
-      "NVIDIA": 7,
-      "GEMINI": 1,
+      "NVIDIA": 8,
+      "GEMINI": 2,
       "OPENROUTER": 30
     },
     "windowIds": {
@@ -25,20 +25,20 @@
   },
   "cooldowns": {
     "GEMINI_FLASH": "2026-11-19T11:48:03.823Z",
-    "NVIDIA_VL": "2026-11-19T08:35:44.960Z",
-    "GEMINI_LITE": "2026-11-19T08:35:56.195Z"
+    "NVIDIA_VL": "2026-11-19T09:06:34.075Z",
+    "GEMINI_LITE": "2026-11-19T09:06:46.265Z"
   },
   "quotaForecast": {
     "NVIDIA": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 7,
-      "remainingLocal": 5,
-      "effectiveRemaining": 5,
-      "regularWorkRemaining": 2,
+      "localUsed": 8,
+      "remainingLocal": 4,
+      "effectiveRemaining": 4,
+      "regularWorkRemaining": 1,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 1.09,
-      "estimatedHoursToLocalCap": 4.6,
+      "estimatedCallsPerHour": 1.23,
+      "estimatedHoursToLocalCap": 3.3,
       "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -49,13 +49,13 @@
     "GEMINI": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 1,
-      "remainingLocal": 11,
-      "effectiveRemaining": 11,
-      "regularWorkRemaining": 8,
+      "localUsed": 2,
+      "remainingLocal": 10,
+      "effectiveRemaining": 10,
+      "regularWorkRemaining": 7,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": null,
-      "estimatedHoursToLocalCap": null,
+      "estimatedCallsPerHour": 1.93,
+      "estimatedHoursToLocalCap": 5.2,
       "nextLocalWindowAt": "2026-11-20T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
       "accountWideBalanceVerified": false,
@@ -71,7 +71,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 5.24,
+      "estimatedCallsPerHour": 5.09,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-20T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -82,60 +82,49 @@
     }
   },
   "accountQuota": null,
-  "attempts": [],
-  "frames": [
+  "attempts": [
     {
-      "name": "field_npc_ally_mob-0.jpg",
-      "sha256": "84424343561bc8ffb75b673d824f387bfb808f4c589dde530a0e4992002c881d"
+      "id": "NVIDIA_VL",
+      "status": "OK",
+      "provider": "NVIDIA",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
     },
     {
-      "name": "harbor_npc_face_front-0.jpg",
-      "sha256": "5d7a60a7a81949d3cd511d149a01ab97f64f7da10339ed1f58793ba4b58510e2"
+      "id": "NVIDIA_VL",
+      "status": "REVIEW_INVALID",
+      "failureSignature": "EDIT_NOT_VISUAL_OR_NOT_IN_POLICY"
     },
     {
-      "name": "harbor_npc_sparring_01-0.jpg",
-      "sha256": "bd7f79fd94ef86ebf1b52db51713a7d5dfab551e61aefd55c31541358156a985"
+      "id": "GEMINI_LITE",
+      "status": "OK",
+      "provider": "GEMINI",
+      "model": "gemini-3.5-flash-lite"
     },
     {
-      "name": "harbor_npc_sparring_02-0.jpg",
-      "sha256": "15363e8b3fa72bc26dc2bdf1b88fdf6414ab0cf9b7276a05dd69d27a24378d5c"
+      "id": "GEMINI_LITE",
+      "status": "SOURCE_ANCHOR_INVALID",
+      "failureSignature": "SOURCE_ANCHOR_NOT_UNIQUE:roblox-games_mare-essentia_src_ReplicatedStorage_Shared_VoyageSce"
     }
   ],
-  "modelAvailability": [
+  "frames": [
     {
-      "modelId": "NVIDIA_VL",
-      "provider": "NVIDIA",
-      "status": "COOLDOWN_ACTIVE"
+      "name": "field_entry-0.jpg",
+      "sha256": "2f2b2b1331d647df85b188ed67cde9df997eafaf8c55aa6ef0e9dfdba65bad6e"
     },
     {
-      "modelId": "GEMINI_FLASH",
-      "provider": "GEMINI",
-      "status": "COOLDOWN_ACTIVE"
+      "name": "v1_start-0.jpg",
+      "sha256": "79b44e7cedb854bbc1efaaff4c984ad9b103f933720723bc9db38bd67342342f"
     },
     {
-      "modelId": "OPENROUTER_GEMMA",
-      "provider": "OPENROUTER",
-      "status": "DAILY_CALL_CAP"
+      "name": "v2_event-0.jpg",
+      "sha256": "294b9dde6986438dcef20ab8a34af4edf83b85be5cf488651e8e12a92f8f2af5"
     },
     {
-      "modelId": "OPENROUTER_NEMOTRON",
-      "provider": "OPENROUTER",
-      "status": "DAILY_CALL_CAP"
-    },
-    {
-      "modelId": "OPENROUTER_GEMMA26",
-      "provider": "OPENROUTER",
-      "status": "DAILY_CALL_CAP"
-    },
-    {
-      "modelId": "OPENROUTER_OMNI",
-      "provider": "OPENROUTER",
-      "status": "DAILY_CALL_CAP"
-    },
-    {
-      "modelId": "GEMINI_LITE",
-      "provider": "GEMINI",
-      "status": "COOLDOWN_ACTIVE"
+      "name": "v3_event2-0.jpg",
+      "sha256": "099a70495fbbefd973b170250ea0d14953a1a65fb2240acaeb06aeec5aebb508"
     }
-  ]
+  ],
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
 }
