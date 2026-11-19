@@ -2419,16 +2419,29 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			return nil
 		end
 		local function cardStatus(c)
-			if c.pigForm then return t("변신", "Shift"), Color3.fromRGB(119, 69, 116) end
-			if c.sealedAbility then return t("봉인", "Seal"), Color3.fromRGB(119, 69, 116) end
-			if c.anchored then return t("이동 제한", "Pinned"), Color3.fromRGB(125, 64, 50) end
-			if c.bachDangRound == m.round then return t("유인", "Lured"), Color3.fromRGB(37, 81, 105) end
-			if c.shaken then return t("강화 차단", "Jam"), Color3.fromRGB(117, 66, 97) end
-			if c.cover or c.deployCover then return t("엄호", "Guard"), Color3.fromRGB(101, 78, 38) end
-			if c.ability == "charge" and (c.charges or 0) < 3 then
-				return t("축적 ", "Charge ") .. tostring(c.charges or 0) .. "/3", Color3.fromRGB(52, 84, 101)
+			local symbols, names = {}, {}
+			local function add(symbol, name)
+				table.insert(symbols, symbol)
+				table.insert(names, symbol .. " " .. name)
 			end
-			return nil
+			if c.pigForm then add("🐷", t("변신", "Transformed")) end
+			if c.sealedAbility then add("🔒", t("봉인", "Sealed")) end
+			if c.anchored then add("⚓", t("이동 제한", "Pinned")) end
+			if c.bachDangRound == m.round then add("🎣", t("유인", "Lured")) end
+			if c.shaken then add("🚫", t("강화 차단", "Boost blocked")) end
+			if c.pendingReturn then add("↩️", t("복귀 대기", "Return pending")) end
+			if c.cover or c.deployCover then add("🛡️", t("엄호", "Guard")) end
+			if c.reorganize then add("🔄", t("재정비", "Regrouping")) end
+			local power = c.tacticPower or 0
+			if power < 0 then add("⬇️", t("약화 ", "Weakened ") .. tostring(power)) end
+			if power > 0 then add("⬆️", t("강화 +", "Boosted +") .. tostring(power)) end
+			if c.ability == "charge" then
+				add("⏳", t("충전 ", "Charge ") .. tostring(c.charges or 0) .. "/3")
+			end
+			if #symbols == 0 then return nil, nil, nil end
+			local badge = table.concat(symbols, " ", 1, math.min(#symbols, 2))
+			if #symbols > 2 then badge ..= " +" .. tostring(#symbols - 2) end
+			return badge, table.concat(names, " · "), names[1]
 		end
 		local function effectTrace(from, to, tint, at)
 			local delta = to - from
@@ -3367,7 +3380,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			focusEdge.Color = if regionDeck then regionDeck.color else brass
 			if leaderProfile then
 				focusName.Text = t("지도자 · ", "Leader · ") .. leaderProfile.name
-				focusRule.Text = t("지도자 능력: ", "Leader Ability: ") .. (if english then leaderProfile.textEn or leaderProfile.text else leaderProfile.text)
+				focusRule.Text = (BC.cardAbilitySymbol(leaderProfile) or "◆") .. " " .. t("지도자 능력: ", "Leader Ability: ") .. (if english then leaderProfile.textEn or leaderProfile.text else leaderProfile.text)
 					.. t(" · 보급 +", " · Provision +") .. tostring(leaderProfile.provision or 0)
 					.. (if m.leaderUsed[card.leaderSide] then t("\n이번 대결에서 사용함", "\nAlready used in this match") else "")
 					.. (if not opts.cardOnly and BC.CardLines[card.leaderId] then "\n「" .. BC.CardLines[card.leaderId][if english then 2 else 1] .. "」" else "")
@@ -3383,12 +3396,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local series = BC.StorySeries[card.id]
 				local kind = if card.cause or card.fuse then t("연쇄·조합", "Combo")
 					elseif card.special then t("전술", "Tactic") elseif card.hero then t("영웅", "Hero") else t("능력", "Ability")
-				local status = cardStatus(card)
+				local _, status = cardStatus(card)
+				local ability = BC.cardAbilitySymbol(card)
 				if opts.cardOnly then
 					local hasTiming = string.match(description, "^낼 때:") or string.match(description, "^낼 때：") or string.match(description, "^On play:")
 						or string.match(description, "^Deploy:")
 					local trigger = if timing and not hasTiming then timing .. ": " else ""
-					focusRule.Text = row .. strength .. "\n" .. trigger .. description
+					focusRule.Text = row .. strength .. "\n" .. trigger .. (if ability then ability .. " " else "") .. description
 						.. (if status then "\n" .. t("상태 · ", "Status · ") .. status else "")
 						.. (if forecast then "\n" .. forecast else "")
 				else
@@ -3451,7 +3465,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local weather = {}
 			for _, row in BC.ROWS do
 				if m.weather[row] then
-					table.insert(weather, rowName(row) .. t(" 약화", " weakened"))
+					table.insert(weather, "🌦️ " .. rowName(row) .. t(" 약화", " weakened"))
 				end
 			end
 			local foeCulture = m.faction and m.faction.foe and BC.Factions[m.faction.foe]
@@ -3632,20 +3646,19 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					local playedCard = chip(cards, c, 62, power, c == lastPlayed.me or c == lastPlayed.foe)
 					if opts.cardOnly then
 						boardCards[c] = playedCard
-						local status, statusColor = cardStatus(c)
+						local statusBadge, _, status = cardStatus(c)
 						local chain = c.cause ~= nil and BC.chainActive(m, side, c)
 						previousBoard[c] = { power = power, penalty = c.tacticPower or 0, blocked = c.blockedPower or 0, row = row, side = side, status = status, chain = chain, size = Vector2.zero, pos = Vector2.zero }
 						table.insert(previousOrder, c)
 						local badge, badgeColor = cardBadge(c)
-						if chain and not status then badge, badgeColor = t("연쇄 켜짐", "Linked"), Color3.fromRGB(112, 72, 144) end
-						local caption = status or badge
+						local caption = statusBadge or (if chain then "🔗" else BC.cardAbilitySymbol(c) or badge)
 						if caption then
 							playedCard.PlayedCardIdentity.Visible = false
 							local mark = label(playedCard, caption, 10, Color3.fromRGB(255, 243, 221), true)
 							mark.Name = if status then "CardStatus" else "CardRole"
 							mark.Size = UDim2.fromScale(0.94, 0.17)
 							mark.Position = UDim2.fromScale(0.03, 0.47)
-							mark.BackgroundColor3 = statusColor or badgeColor
+							mark.BackgroundColor3 = if statusBadge then Color3.fromRGB(88, 56, 74) else badgeColor or Color3.fromRGB(63, 61, 49)
 							mark.BackgroundTransparency = 0.05
 							mark.TextScaled = true
 							mark.ZIndex = 11
@@ -3765,6 +3778,19 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 				local iconKey = if c.special then "Menu/cc0_book" elseif c.ability == "spy" then "Menu/explore" else rowIcons[c.row]
 				emblem(b, iconKey, UDim2.fromScale(0.035, 0.83), UDim2.fromScale(0.20, 0.22))
+				local ability = if opts.cardOnly then BC.cardAbilitySymbol(c) else nil
+				if ability then
+					local mark = label(b, ability, 12, Color3.fromRGB(255, 239, 204), true)
+					mark.Name = "CardAbilitySymbol"
+					mark.AnchorPoint = Vector2.new(1, 1)
+					mark.Position = UDim2.fromScale(0.97, 0.68)
+					mark.Size = UDim2.fromScale(0.58, 0.22)
+					mark.BackgroundColor3 = Color3.fromRGB(32, 24, 18)
+					mark.BackgroundTransparency = 0.15
+					mark.TextScaled = true
+					mark.ZIndex = 9
+					frameEdge(mark, brass, 3)
+				end
 				local power = label(b, if c.special then "◆" else tostring(c.power or ""), 13, ink, true)
 				power.Position = UDim2.fromOffset(5, 5)
 				power.Size = UDim2.fromOffset(21, 20)

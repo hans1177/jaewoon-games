@@ -899,6 +899,37 @@ for _, story in {
 	for i = 3, #story do B.StorySeries[story[i]] = story end
 end
 -- 역사 인용문 대신 캐릭터와 발동 상황에 맞춘 게임 내 창작 대사.
+-- 능력 표시는 전투판·손패·보관함에서 같은 기호를 사용한다.
+local abilitySymbols = {
+	monkeyStrike = "⚔️", snipe = "⚔️", assassinate = "⚔️", apache = "⚔️", enkidu = "⚔️", humbaba = "⚔️", musketeerAid = "⚔️", quixote = "⚔️", savannaLion = "⚔️", saladinCavalry = "⚔️", witchCurse = "⚔️", zela = "⚔️", lapulapu = "⚔️",
+	armor = "🛡️", cyclops = "🛡️", mactanGuard = "🛡️", musketeerGuard = "🛡️", musketeerShield = "🛡️", pigGuard = "🛡️", savannaElephant = "🛡️", witchGuard = "🛡️", rearGuard = "🛡️",
+	sandCleanse = "✨", sanzangRelief = "✨", clear = "✨", unweave = "✨",
+	morale = "➕", rallyFlag = "➕", urFeast = "➕", urStandard = "➕", savannaGiraffe = "➕", gilgamesh = "➕", highGround = "➕", rally = "➕", lastOrder = "➕", dartagnan = "➕", capacocha = "➕", ramesses = "➕", mountainAltar = "➕", headhunt = "➕",
+	scorch = "💥", ithacaBow = "💥", redCliffFire = "💥", fireCommand = "💥", bombard = "💥", egyptChariot = "💥", urChariot = "💥", hittiteChariot = "💥", stakes = "💥", bachDangTide = "💥", dollCurse = "💥", sirenSong = "💥", electricEel = "💥", falseOrder = "💥", counter = "💥", pierce = "💥", coverFire = "💥", anaconda = "💥",
+	medic = "🩹", lifePlant = "🩹", orleans = "🩹", reinforce = "🩹", legacy = "🩹", rubicon = "🩹",
+	supply = "🃏", survey = "🃏", chaski = "🃏", quipu = "🃏", dispatch = "🃏", spy = "🃏", gajahMada = "🃏", palapa = "🃏",
+	bond = "🔗", leftHorn = "🔗", rightHorn = "🔗", piperPact = "🔗", piper = "🔗", rats = "🔗", anansi = "🔗", echo = "🔗", rocinante = "🔗", sancho = "🔗",
+	relay = "↔️", canal = "↔️", decoy = "↔️", riverRoute = "↔️", comanche = "↔️", defect = "↔️", feigned = "↔️", falseRetreat = "↔️", rome = "↔️", tokugawa = "↔️", homecoming = "↔️", mobilize = "↔️", evacuate = "↔️", vanguard = "↔️", savannaZebra = "↔️", lakota = "↔️", marathon = "↔️", ishida = "↔️", bachDangLure = "↔️",
+	seal = "🔒", witchBind = "🔒", refute = "🔒", mactanShoal = "🔒", strait = "🔒", truce = "🔒", kadeshTreaty = "🔒", hattin = "🔒",
+	weather = "🌦️", wind = "🌦️", eastWind = "🌦️", windmill = "🌦️",
+	charge = "⏳", ambush = "⏳", amazonJaguar = "⏳", raid = "⏳",
+	pigHex = "🐷",
+	horn = "📯", armadaGalleon = "📯", hornMelee = "📯", hornRanged = "📯",
+	draw = "🃏", draw2 = "🃏", armadaVolley = "💥", bonusMelee = "➕", clearBonusRanged = "✨",
+	mercy = "🩹", release = "✨", restore = "🔗",
+}
+
+function B.cardAbilitySymbol(card)
+	if card.id == "lo_51" then return "⚔️ −2" end
+	if card.fuse or card.cause then return "🔗" end
+	if card.special == "weather" then
+		return if card.row == "cannon" then "⛈️" elseif card.row == "ranged" then "🌫️" else "🌦️"
+	end
+	local kind = card.special or card.starterRole or card.ability
+	if not kind and B.Leaders[card.id] == card then kind = card.fx or card.id end
+	return if kind then (abilitySymbols[kind] or "◆") else nil
+end
+
 B.CardLines = {
 	ea_37 = { "돌아왔다. 화공선을 띄워라.", "I’m back. Launch the fire ships." },
 	ea_40 = { "바람이 돌았다. 불을 붙여라.", "The wind’s turned. Light the ships." },
