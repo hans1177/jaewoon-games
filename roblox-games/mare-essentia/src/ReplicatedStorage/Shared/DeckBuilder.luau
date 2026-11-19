@@ -185,15 +185,8 @@ function DeckBuilder.build(parent, ctx)
 	bl.HorizontalFlex = Enum.UIFlexAlignment.Fill
 	bl.Parent = bottom
 	local practicePanel
-	local duelBtn = button(bottom, "", Color3.fromRGB(176, 62, 52), 18, function()
-		if cur.okDeck and not cur.dirty then ctx.startDuel() end
-	end)
-	local practiceBtn = button(bottom, "", Color3.fromRGB(70, 130, 84), 18, function()
-		if practicePanel then practicePanel.Visible = true end
-	end)
 	local tavernBtn = button(bottom, "용병 고용 180", Color3.fromRGB(176, 136, 52), 16, function() ctx.act("CardTavern") end)
-	for _, b in { duelBtn, practiceBtn, tavernBtn } do b.Size = UDim2.new(0, 100, 1, 0) end
-	duelBtn.LayoutOrder, practiceBtn.LayoutOrder, tavernBtn.LayoutOrder = 1, 2, 6
+	tavernBtn.LayoutOrder = 6
 	bl.SortOrder = Enum.SortOrder.LayoutOrder
 
 	-- [연습게임 창] 실제 카드 규칙을 바꾸지 않는 터치 안내·시작 확인 UI.
@@ -333,21 +326,79 @@ function DeckBuilder.build(parent, ctx)
 	battle.BackgroundTransparency = 1
 	battle.Size = UDim2.fromScale(1, 1)
 	battle.Parent = body
-	practiceBtn.Parent = battle
-	duelBtn.Parent = battle
-	practiceBtn.Position = UDim2.new(0.03, 0, 0.3, 0)
-	duelBtn.Position = UDim2.new(0.52, 0, 0.3, 0)
-	practiceBtn.Size = UDim2.new(0.45, 0, 0.46, 0)
-	duelBtn.Size = practiceBtn.Size
-	buttonArt(practiceBtn, "ui_button_ink")
-	local duelArt = buttonArt(duelBtn, "ui_button_ink")
-	local departureSummary = text(battle, "", 17, SEPIA, true)
-	departureSummary.Position = UDim2.fromScale(0.1, 0.06)
-	departureSummary.Size = UDim2.fromScale(0.8, 0.18)
+	local mode = "practice"
+	local modeCards = {}
+	local deckLabel = ""
+	local modeHint = text(battle, "", 14, INK, true)
+	modeHint.Position = UDim2.fromScale(0.08, 0.77)
+	modeHint.Size = UDim2.new(0.84, 0, 0.10, 0)
+	local departureSummary = text(battle, "", 15, INK, true)
+	departureSummary.Position = UDim2.fromScale(0.05, 0.88)
+	departureSummary.Size = UDim2.new(0.59, 0, 0.12, 0)
+	departureSummary.BackgroundColor3 = PANEL
+	departureSummary.BackgroundTransparency = 0.12
+	local start = button(battle, "시작", SAVE, 19, function()
+		if mode == "practice" then
+			practicePanel.Visible = true
+		elseif cur.okDeck and not cur.dirty then
+			ctx.startDuel()
+		end
+	end)
+	start.AnchorPoint = Vector2.new(0, 1)
+	start.Position = UDim2.fromScale(0.68, 1)
+	start.Size = UDim2.new(0.27, 0, 0, 44)
+	local startArt = buttonArt(start, "ui_button_ink")
+
+	local function updateDeparture()
+		local book = ctx.getBook()
+		local blocked = mode == "duel" and (not cur.okDeck or cur.dirty)
+		for key, card in modeCards do
+			local selected = key == mode
+			card.stroke.Color = if selected then GOLD else BINDING
+			card.stroke.Thickness = if selected then 3 else 1
+			card.art.ImageColor3 = if selected then Color3.new(1, 1, 1) else Color3.fromRGB(182, 182, 182)
+			card.button.Position = UDim2.fromScale(card.x, if selected then 0.02 else 0.055)
+		end
+		modeHint.Text = if mode == "practice" then (if book.practiceDone then "연습전 보상 받음" else "규칙 배우기")
+			elseif cur.dirty then "덱을 저장한 뒤 대결할 수 있어요"
+			elseif not cur.okDeck then "덱 편성을 확인해 주세요"
+			else string.format("대결 보상 %d회", book.duelLeft or 0)
+		departureSummary.Text = if mode == "practice" then string.format("연습용 덱 · %d장", #(book.practiceIds or {}))
+			else "사용할 덱  |  " .. deckLabel
+		start.Active = not blocked
+		start.AutoButtonColor = not blocked
+		if startArt then startArt.ImageTransparency = if blocked then 0.55 else 0 end
+	end
+	for index, option in { { "practice", "연습전", "ui_departure_practice" }, { "duel", "대결", "ui_departure_duel" } } do
+		local key = option[1]
+		local control = button(battle, "", PAPER, 16, function()
+			mode = key
+			updateDeparture()
+		end)
+		control.AnchorPoint = Vector2.new(0.5, 0)
+		control.Size = UDim2.fromScale(0.36, 0.70)
+		control.Rotation = if index == 1 then -4 else 4
+		local aspect = Instance.new("UIAspectRatioConstraint")
+		aspect.AspectRatio = 0.75
+		aspect.AspectType = Enum.AspectType.FitWithinMaxSize
+		aspect.Parent = control
+		local art = Instance.new("ImageLabel")
+		art.BackgroundTransparency = 1
+		art.Size = UDim2.new(1, 0, 1, -28)
+		art.ScaleType = Enum.ScaleType.Crop
+		local asset = ctx.AssetIds["CardArt/" .. option[3]]
+		art.Image = if asset then "rbxassetid://" .. tostring(asset) else ""
+		art.Parent = control
+		local label = text(control, option[2], 17, SEPIA, true)
+		label.Position = UDim2.new(0, 0, 1, -28)
+		label.Size = UDim2.new(1, 0, 0, 28)
+		local stroke = control:FindFirstChildOfClass("UIStroke")
+		modeCards[key] = { button = control, stroke = stroke, art = art, x = if index == 1 then 0.30 else 0.70 }
+	end
 
 	local function layoutBody()
 		hub.Visible = selectedTab == "hub"
-		local surface = if selectedTab == "deck" then tableId elseif hub.Visible or addingToFormation then chartId else nil
+		local surface = if selectedTab == "deck" or selectedTab == "battle" then tableId elseif hub.Visible or addingToFormation then chartId else nil
 		chart.Visible = surface ~= nil
 		chart.Image = if surface then "rbxassetid://" .. tostring(surface) else ""
 		left.Visible = selectedTab == "collection"
@@ -355,6 +406,7 @@ function DeckBuilder.build(parent, ctx)
 		right.BackgroundColor3 = FELT
 		right.BackgroundTransparency = if tableId then 1 else 0
 		battle.Visible = selectedTab == "battle"
+		if battle.Visible then updateDeparture() end
 		bottom.Visible = selectedTab == "deck"
 		title.Text = if hub.Visible then "해상 작전실" elseif left.Visible then "카드 보관소"
 			elseif right.Visible then "함대 편성" else "출항 준비"
@@ -1208,11 +1260,6 @@ function DeckBuilder.build(parent, ctx)
 		saveBtn.Active = okDeck
 		saveBtn.AutoButtonColor = okDeck
 		local view = ctx.getView()
-		local duelLeft = (view and view.duelLeft) or 0 -- view = view.cardbook
-		duelBtn.Text = if dirty then "저장 후 대결" else string.format("카드 대결\n(보상 %d회)", duelLeft)
-		duelBtn.BackgroundTransparency = if duelArt then 1 elseif okDeck and not dirty then 0 else 0.6
-		if duelArt then duelArt.ImageTransparency = if okDeck and not dirty then 0 else 0.55 end
-		practiceBtn.Text = if book.practiceDone then "연습전\n(보상 받음)" else "연습전\n(규칙 배우기)"
 
 		-- 지도자
 		local fac = BC.Factions[book.faction or ""]
@@ -1236,7 +1283,7 @@ function DeckBuilder.build(parent, ctx)
 			deckCover.Image = if coverId then "rbxassetid://" .. tostring(coverId) else ""
 			local label = string.format("%s · %d장", cd and cd.name or "지도자", #saved)
 			deckSummary.Text = label .. (if dirty then " · 저장 전" elseif okDeck then " · 출항 가능" else " · 편성 필요")
-			departureSummary.Text = "사용할 덱  |  " .. label
+			deckLabel = label
 			local idx = table.find(fac.leaders, curLeader) or 1
 			cur.leaderStep = function(delta)
 				local nxt = fac.leaders[((idx - 1 + delta) % #fac.leaders) + 1]
@@ -1255,6 +1302,7 @@ function DeckBuilder.build(parent, ctx)
 			slotBtns[slot].BackgroundColor3 = if sl then Color3.fromRGB(70, 96, 130) else Color3.fromRGB(70, 66, 84)
 		end
 		cur.ids, cur.okDeck, cur.slots = ids, okDeck, slots
+		updateDeparture()
 		slotSaveBtn.Text = if cur.saveMode then "취소" else "칸에 저장"
 		slotSaveBtn.BackgroundColor3 = if cur.saveMode then Color3.fromRGB(176, 120, 52) else Color3.fromRGB(52, 100, 70)
 		if cur.saveMode then statusLine.Text = "저장할 칸을 누르세요"; statusLine.TextColor3 = GOLD end
