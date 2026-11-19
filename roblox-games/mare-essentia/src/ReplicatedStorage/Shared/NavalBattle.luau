@@ -2386,52 +2386,72 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end)
 		local leaderBtn, leaderIcon = mkSide(t(if opts.cardOnly then "지도자 카드" else "지도자 능력", if opts.cardOnly then "Leader Card" else "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
 			if opts.cardOnly then
-				if not finished and showLeaderCard then showLeaderCard() end
+				if not finished and showLeaderCard then showLeaderCard("me") end
 			elseif not playing and not auto and not finished and m.turn == "me" and not m.over then
 				-- 카드 대전이 아닌 접현전은 기존 단일 터치 능력 사용 방식을 보존한다.
 				Sfx.play("sfx_card_spell", 0.7, 1, "sfx_horn")
 				afterAction(mine(BC.useLeader(m, "me")))
 			end
 		end)
-		local leaderPortrait, leaderStatus
+		local leaderPortrait, leaderStatus, foePortrait
 		if opts.cardOnly then
-			local leaderId = m.leader.me
-			local portraitKey = NEW_LEADER_ART[leaderId]
-			local portraitId = (portraitKey and AssetIds[portraitKey]) or AssetIds["CardArt/leader_" .. leaderId]
-			local fallbackKey = LEADER_FACE[leaderId]
-			portraitId = portraitId or (fallbackKey and AssetIds[fallbackKey])
-			if portraitId then
-				-- 기존 먹색 버튼에 황동 테두리를 두르고 얼굴과 이름을 나란히 배치한다.
-				leaderIcon.ImageTransparency = 1
-				leaderIcon.Position = UDim2.fromScale(0.04, 0.5)
-				leaderIcon.Size = UDim2.fromScale(0.28, 0.86)
-				leaderIcon.BackgroundColor3 = Color3.fromRGB(47, 32, 22)
-				leaderIcon.BackgroundTransparency = 0
-				leaderIcon.ClipsDescendants = true
+			local foeBtn, foeIcon = mkSide(t("적장", "Leader"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
+				if not finished and showLeaderCard then showLeaderCard("foe") end
+			end)
+			foeBtn.Name = "OpponentLeader"
+			foeBtn.Position = UDim2.fromScale(0.025, 0.25)
+			foeBtn.Size = UDim2.fromScale(0.25, 0.54)
+			foeBtn.Parent = foePlate.plate
+			foeBtn.Caption.Visible = false
+			foeIcon.Position = UDim2.fromScale(0.06, 0.5)
+			foeIcon.Size = UDim2.fromScale(0.88, 0.88)
+			for _, side in { "me", "foe" } do
+				local icon = if side == "me" then leaderIcon else foeIcon
+				local leaderId = m.leader[side]
+				local portraitKey = NEW_LEADER_ART[leaderId]
+				local portraitId = (portraitKey and AssetIds[portraitKey]) or AssetIds["CardArt/leader_" .. leaderId]
+				local fallbackKey = LEADER_FACE[leaderId]
+				portraitId = portraitId or (fallbackKey and AssetIds[fallbackKey])
+				if portraitId then
+					-- 기존 먹색 버튼에 황동 테두리를 두르고 얼굴과 이름을 나란히 배치한다.
+					icon.ImageTransparency = 1
+					if side == "me" then
+						icon.Position = UDim2.fromScale(0.04, 0.5)
+						icon.Size = UDim2.fromScale(0.28, 0.86)
+					end
+					icon.BackgroundColor3 = Color3.fromRGB(47, 32, 22)
+					icon.BackgroundTransparency = 0
+					icon.ClipsDescendants = true
 
-				-- 세로 원화의 위쪽을 얼굴 창에 맞춰 보여 준다.
-				leaderPortrait = Instance.new("ImageLabel")
-				leaderPortrait.Name = "LeaderPortrait"
-				leaderPortrait.SizeConstraint = Enum.SizeConstraint.RelativeXX
-				leaderPortrait.Size = UDim2.fromScale(1, 4 / 3)
-				leaderPortrait.BackgroundTransparency = 1
-				leaderPortrait.ScaleType = Enum.ScaleType.Fit
-				leaderPortrait.Image = "rbxassetid://" .. tostring(portraitId)
-				leaderPortrait.Parent = leaderIcon
+					-- 세로 원화의 위쪽을 얼굴 창에 맞춰 보여 준다.
+					local portrait = Instance.new("ImageLabel")
+					portrait.Name = "LeaderPortrait"
+					portrait.SizeConstraint = Enum.SizeConstraint.RelativeXX
+					portrait.Size = UDim2.fromScale(1, 4 / 3)
+					portrait.BackgroundTransparency = 1
+					portrait.ScaleType = Enum.ScaleType.Fit
+					portrait.Image = "rbxassetid://" .. tostring(portraitId)
+					portrait.Parent = icon
+					if side == "foe" then
+						foePortrait = portrait
+						continue
+					end
+					leaderPortrait = portrait
 
-				local caption = leaderBtn.Caption
-				caption.Position = UDim2.fromScale(0.38, 0.07)
-				caption.Size = UDim2.fromScale(0.57, 0.53)
-				caption.TextXAlignment = Enum.TextXAlignment.Left
+					local caption = leaderBtn.Caption
+					caption.Position = UDim2.fromScale(0.38, 0.07)
+					caption.Size = UDim2.fromScale(0.57, 0.53)
+					caption.TextXAlignment = Enum.TextXAlignment.Left
 
-				leaderStatus = label(leaderBtn, "", 10, Color3.fromRGB(219, 185, 119))
-				leaderStatus.Position = UDim2.fromScale(0.38, 0.59)
-				leaderStatus.Size = UDim2.fromScale(0.57, 0.3)
-				leaderStatus.TextXAlignment = Enum.TextXAlignment.Left
-				leaderStatus.TextScaled = true
-				local statusLimit = Instance.new("UITextSizeConstraint")
-				statusLimit.MaxTextSize = 11
-				statusLimit.Parent = leaderStatus
+					leaderStatus = label(leaderBtn, "", 10, Color3.fromRGB(219, 185, 119))
+					leaderStatus.Position = UDim2.fromScale(0.38, 0.59)
+					leaderStatus.Size = UDim2.fromScale(0.57, 0.3)
+					leaderStatus.TextXAlignment = Enum.TextXAlignment.Left
+					leaderStatus.TextScaled = true
+					local statusLimit = Instance.new("UITextSizeConstraint")
+					statusLimit.MaxTextSize = 11
+					statusLimit.Parent = leaderStatus
+				end
 			end
 		end
 		local mullBtn
@@ -2993,8 +3013,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			-- [지도자 카드] 원화와 능력을 카드 형태로 보여 주고, 사용은 기존 BC.useLeader 흐름을 따른다.
 			local leaderProfile = card.leaderId and BC.Leaders[card.leaderId]
-			leaderPreviewId = if leaderProfile then card.leaderId else nil
-			focusUse.Visible = if leaderProfile then (card.leaderId == m.leader.me and m.turn == "me" and not m.over and not m.leaderUsed.me and not playing and not auto)
+			leaderPreviewId = if leaderProfile and card.leaderSide == "me" then card.leaderId else nil
+			focusUse.Visible = if leaderProfile then (leaderPreviewId ~= nil and m.turn == "me" and not m.over and not m.leaderUsed.me and not playing and not auto)
 				else not readOnly
 			focusUse.Text = if leaderProfile then t("지도자 능력 사용", "Use Leader Ability") else t("카드 사용", "Play Card")
 			-- [크기] 화면 가장자리 여백을 남기고 0.69 비율로 최대 620px까지 확대한다.
@@ -3013,12 +3033,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if not opts.cardOnly or compactCards then TweenService:Create(focusShade, TweenInfo.new(0.2), { BackgroundTransparency = 0.3 }):Play() end
 			focusTween = TweenService:Create(focusScale, TweenInfo.new(0.26, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { Scale = 1 })
 			focusTween:Play()
-			local artKey = if leaderProfile then NEW_LEADER_ART[card.leaderId] or LEADER_FACE[card.leaderId] else cardArtworkKey(card)
+			local artKey = if leaderProfile then (NEW_LEADER_ART[card.leaderId] and AssetIds[NEW_LEADER_ART[card.leaderId]] and NEW_LEADER_ART[card.leaderId]) or (AssetIds["CardArt/leader_" .. card.leaderId] and "CardArt/leader_" .. card.leaderId) or LEADER_FACE[card.leaderId] else cardArtworkKey(card)
 			focusImage.Image = if artKey and AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			focusImage.ImageColor3 = if leaderProfile or (type(card.id) == "string" and AssetIds["CardArt/" .. card.id]) then Color3.new(1, 1, 1) else Color3.fromRGB(239, 214, 174)
 			focusImage.ScaleType = if leaderProfile then Enum.ScaleType.Fit else Enum.ScaleType.Crop
 			focusImage.Size = if leaderProfile then UDim2.fromScale(1, 1) else UDim2.fromScale(1.14, 1.14)
-			local regionId = if leaderProfile then m.faction.me elseif type(card.id) == "string" then string.match(card.id, "^(%a%a)_%d%d$") else nil
+			local regionId = if leaderProfile then m.faction[card.leaderSide] elseif type(card.id) == "string" then string.match(card.id, "^(%a%a)_%d%d$") else nil
 			local regionDeck = if regionId then CARD_DECK[regionId] else nil
 			local focusFrameArtId = regionId and REGION_FRAME[regionId] and AssetIds[REGION_FRAME[regionId]]
 			focusBorder.Image = if focusFrameArtId then "rbxassetid://" .. tostring(focusFrameArtId) else ""
@@ -3028,7 +3048,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				focusName.Text = t("지도자 · ", "Leader · ") .. leaderProfile.name
 				focusRule.Text = t("지도자 능력: ", "Leader Ability: ") .. leaderProfile.text
 					.. t(" · 보급 +", " · Provision +") .. tostring(leaderProfile.provision or 0)
-					.. (if m.leaderUsed.me and card.leaderId == m.leader.me then t("\n이번 대결에서 사용함", "\nAlready used in this match") else "")
+					.. (if m.leaderUsed[card.leaderSide] then t("\n이번 대결에서 사용함", "\nAlready used in this match") else "")
 			else
 				focusName.Text = if regionDeck then (if english then regionDeck.en else regionDeck.ko) .. " · " .. cardName(card) else cardName(card)
 				local row = if card.row then rowName(card.row) else t("전술", "Tactic")
@@ -3063,9 +3083,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				selectedPlay()
 			end
 		end)
-		showLeaderCard = function()
+		showLeaderCard = function(side)
 			closeCardCodex()
-			showCardCodex({ leaderId = m.leader.me }, true)
+			showCardCodex({ leaderId = m.leader[side], leaderSide = side }, true)
 		end
 		focusTap.Activated:Connect(function()
 			if selectedPlay then selectedPlay() else closeCardCodex() end
@@ -3452,8 +3472,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then (if opts.cardOnly then 0.34 else 0.6) else 0
 			if leaderPortrait and leaderStatus then
 				leaderBtn.Caption.Text = if english then englishLeaders[m.leader.me] or "Leader" else BC.Leaders[m.leader.me].name
-				leaderStatus.Text = if m.leaderUsed.me then t("사용함", "Used") else t("지도자 능력", "Leader Ability")
+				leaderStatus.Text = if m.leaderUsed.me then t("사용함", "Used") else t("사용 가능", "Ready")
 				leaderPortrait.ImageColor3 = if m.leaderUsed.me then Color3.fromRGB(165, 165, 165) else Color3.new(1, 1, 1)
+			end
+			if foePortrait then
+				foePortrait.ImageColor3 = if m.leaderUsed.foe then Color3.fromRGB(165, 165, 165) else Color3.new(1, 1, 1)
 			end
 		end
 		render()
