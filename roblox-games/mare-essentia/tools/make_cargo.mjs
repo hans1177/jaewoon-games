@@ -24,6 +24,8 @@ const colors = {
 if (items.length !== 44 || new Set(items).size !== 44 || Object.keys(colors).length !== 44) throw Error('TRADE_CARGO_COUNT_MISMATCH');
 
 // 유틸: 항목별 유기적 메시의 삼각면·법선·색 재질을 직접 구성한다. Roblox 기본 Part 미사용.
+// [품질검사] 기존 Cargo 8종의 실루엣 재사용 방지 대상.
+const qualityTargets=['amber','ambergris','camphor','coal','guano','gum_arabic','jade','nitrate'];
 const TAU=2*Math.PI;
 let seed=20611112;
 function random(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;}
@@ -48,10 +50,61 @@ class Art {
 }
 
 // 메인: 이름이 같은 교역품의 개별 실물 외형만 제작. 무관한 상자·동물 임의 대체 없음.
-function model(id){const m=new Art(id);
+function model(id){
+ // [동일 원본 재현성] 8종 개량 모델은 다른 품목 제작 순서와 무관하게 같은 GLB를 낸다.
+ if(qualityTargets.includes(id)){
+  seed=20611112;
+  for(let k=0;k<id.length;k++)seed=(Math.imul(seed,1664525)+1013904223+id.charCodeAt(k))>>>0;
+ }
+ const m=new Art(id);
  switch(id){
- case 'amber':case 'ambergris':case 'camphor':case 'coal':case 'guano':case 'gum_arabic':case 'jade':case 'nitrate':
-  for(let i=0;i<24;i++){let a=between(0,TAU),r=between(.03,.57);m.shard(i%5===0?1:0,[r*Math.cos(a),between(.08,.28),r*Math.sin(a)],[between(.08,.19),between(.07,.2),between(.08,.18)]);}break;
+ // [품질] 상품별 전용 실루엣. 같은 돌덩이 모델을 색만 바꿔 재활용하지 않는다.
+ case 'amber':{
+  for(let i=0;i<5;i++){const a=i*TAU/5,r=.27+(i%2)*.08;m.shard(i%3,[r*Math.cos(a),.25,r*Math.sin(a)],[.20+(i%2)*.06,.26+(i%3)*.065,.14]);}
+  for(let i=0;i<9;i++){const a=i*TAU/9;m.orb(i%3,[.39*Math.cos(a),.09,.34*Math.sin(a)],[.045,.065,.052],6);}
+  break;
+ }
+ case 'ambergris':{
+  for(let i=0;i<10;i++){const a=i*TAU/10,r=i%2?.28:.42;m.orb(i%3,[r*Math.cos(a),.19+(i%3)*.04,r*Math.sin(a)],[.20+(i%3)*.035,.19,.15+(i%2)*.04],7);}
+  for(let i=0;i<12;i++){const a=i*TAU/12;m.orb(3,[.49*Math.cos(a),.08,.43*Math.sin(a)],[.048,.035,.052],5);}
+  break;
+ }
+ case 'camphor':{
+  for(let i=0;i<4;i++){const a=i*TAU/4,p=[.31*Math.cos(a),.06,.30*Math.sin(a)];m.lumber(p,add(p,[.12*Math.cos(a),.44,.10*Math.sin(a)]),.075);}
+  for(let i=0;i<9;i++){const a=i*TAU/9;m.shard(i%3===0?1:0,[.39*Math.cos(a),.19,.34*Math.sin(a)],[.085,.22+(i%3)*.06,.075]);}
+  break;
+ }
+ case 'coal':{
+  for(let i=0;i<19;i++){const a=i*TAU/19,r=.18+(i%4)*.085;m.shard(i%4===0?2:0,[r*Math.cos(a),.055+(i%3)*.06,r*Math.sin(a)],[.13+(i%3)*.035,.09+(i%4)*.04,.16]);}
+  break;
+ }
+ case 'guano':{
+  m.cloth(2,.065,.48,.39,3);
+  for(let i=0;i<15;i++){const a=i*TAU/15,r=.10+(i%5)*.074;m.orb(i%4===0?1:0,[r*Math.cos(a),.15+(i%3)*.028,r*Math.sin(a)],[.12,.07,.10],6);}
+  for(let i=0;i<18;i++){const a=i*TAU/18;m.orb(3,[.48*Math.cos(a),.06,.38*Math.sin(a)],[.035,.025,.035],5);}
+  break;
+ }
+ case 'gum_arabic':{
+  m.jar(.27);
+  for(let i=0;i<14;i++){const a=i*TAU/14,r=.06+(i%4)*.082;m.orb(i%3,[r*Math.cos(a),.30+(i%3)*.052,r*Math.sin(a)],[.09,.11+(i%3)*.022,.077],7);}
+  for(let i=0;i<6;i++){const a=i*TAU/6;m.tube(3,[[.27*Math.cos(a),.25,.27*Math.sin(a)],[.29*Math.cos(a),.13,.29*Math.sin(a)]],.012,5);}
+  break;
+ }
+ case 'jade':{
+  for(let i=0;i<4;i++){const a=i*TAU/4;m.shard(i%2,[.27*Math.cos(a),.25,.28*Math.sin(a)],[.22,.27,.19]);}
+  for(let i=0;i<4;i++){const a=i*TAU/4,r=.20;m.tube(2,Array.from({length:25},(_,k)=>{const t=k*TAU/24;return [.27*Math.cos(a)+r*Math.cos(t),.34+.10*Math.sin(t),.28*Math.sin(a)+r*Math.sin(t)];}),.013,5);}
+  break;
+ }
+ case 'nitrate':{
+  for(let i=0;i<13;i++){const a=i*TAU/13,r=.12+(i%4)*.11,x=r*Math.cos(a),z=r*Math.sin(a),h=.20+(i%4)*.08,w=.045+(i%3)*.016;
+   const b=[[x-w,.04,z-w],[x+w,.04,z-w],[x+w,.04,z+w],[x-w,.04,z+w]],t=b.map(p=>[p[0]+.014*Math.cos(a),h,p[2]+.014*Math.sin(a)]);
+   for(let k=0;k<4;k++)m.quad(i%3,b[k],b[(k+1)%4],t[(k+1)%4],t[k]);
+   m.quad(3,t[0],t[1],t[2],t[3]);
+   m.tube(2,[...t,t[0]],.006,4);
+  }
+  for(let i=0;i<5;i++){const a=i*TAU/5;m.shard(1,[.35*Math.cos(a),.08,.31*Math.sin(a)],[.09,.06,.065]);}
+  break;
+ }
  case 'brazilwood':case 'ebony':case 'kauri':case 'logwood':case 'mahogany':case 'sandalwood':case 'sandalwood_hi':
   for(let j=0;j<6;j++){let a=j*TAU/6,p=[.28*Math.cos(a),.08,.28*Math.sin(a)];m.lumber(p,add(p,[between(-.08,.08),between(.55,.82),between(-.1,.1)]),between(.09,.14));}break;
  case 'carpet':{const rows=m.cloth(0,.15,.7,.50,2);for(let k=0;k<=16;k+=2)for(let j of [0,10])m.tube(3,[rows[j][k],add(rows[j][k],[0,-.13,.03])],.006,4);for(let k=0;k<12;k++){let a=k*TAU/12;m.tube(1,[[.27*Math.cos(a),.19,.23*Math.sin(a)],[.31*Math.cos(a+.32),.19,.28*Math.sin(a+.32)]],.011,4);}break;}
@@ -93,6 +146,48 @@ function encode(m){const raw=[],views=[],accessors=[],primitives=[];let offset=0
  const tri=m.m.reduce((sum,g)=>sum+g.p.length/9,0);if(index!==out.length||tri<100||tri>20000||out.length>1900000||primitives.length<2)throw Error('INVALID_OR_TOO_HEAVY:'+m.id+':'+tri);return {out,tri};
 }
 
+// [정적 QA] 제작기에서만 실물 지오메트리를 생성한다. 검사 중 원본/등록번호는 수정하지 않는다.
+if(process.argv.includes('--check')){
+ const signatures=new Set();
+ for(const id of qualityTargets){
+  const mesh=model(id), {out,tri}=encode(mesh);
+  const geometry=crypto.createHash('sha256').update(JSON.stringify(mesh.m.map(p=>p.p))).digest('hex');
+  if(signatures.has(geometry))throw Error('CARGO_GEOMETRY_DUPLICATE:'+id);
+  signatures.add(geometry);
+  if(tri<300||tri>6000||out.length>550000)throw Error('CARGO_MOBILE_MESH_BUDGET:'+id+':'+tri);
+  console.log('CARGO_3D_QUALITY_CHECK='+id+' TRIANGLES='+tri+' BYTES='+out.length);
+ }
+ console.log('CARGO_3D_UNIQUE_SHAPES=8 PASS');
+ process.exit(0);
+}
+// [등록 전 개량] 기존 등록 자산·원본 SHA를 대조한 후 동일 경로의 8종 원화만 재생성한다.
+// 실제 Roblox ID 변경과 사용권한·게시 판정은 기존 등록기/QA가 수행한다.
+if(process.argv.includes('--registered-upgrade')){
+ const liveRoot='roblox-games/mare-essentia';
+ const registry=JSON.parse(fs.readFileSync(path.join(liveRoot,'assets-registered.json'),'utf8'));
+ if(registry.universeId!=='10775310508')throw Error('CARGO_TARGET_UNIVERSE_MISMATCH');
+ for(const id of qualityTargets){
+  const file=path.join(liveRoot,'assets/cargo',id+'.glb'),proofFile=file+'.license.json';
+  const registered=registry.assets['Cargo/'+id];
+  if(!registered||registered.assetType!=='Model'||registered.usePermissionGranted!==true||!registered.assetId)
+   throw Error('CARGO_REGISTERED_BASELINE_MISSING:'+id);
+  const original=fs.readFileSync(file),proof=JSON.parse(fs.readFileSync(proofFile,'utf8'));
+  const oldHash=crypto.createHash('sha256').update(original).digest('hex');
+  if(proof.license!=='PROJECT_ORIGINAL_ART'||proof.sourceSha256!==oldHash
+   ||(registered.sourceSha256 && registered.sourceSha256!==oldHash))
+   throw Error('CARGO_ORIGINAL_INTEGRITY_FAILED:'+id);
+  const {out,tri}=encode(model(id));
+  const nextHash=crypto.createHash('sha256').update(out).digest('hex');
+  if(nextHash===oldHash){console.log('CARGO_3D_QUALITY_ALREADY_CURRENT='+id);continue;}
+  if(tri<300||tri>6000||out.length>550000)throw Error('CARGO_3D_MOBILE_BUDGET_FAILED:'+id);
+  const nextProof={...proof,sourceSha256:nextHash,verification:'AWAITING_ROBLOX_REREGISTRATION',usePermissionGranted:false,nativeRuntimeVerified:false};
+  fs.writeFileSync(file,out);
+  fs.writeFileSync(proofFile,JSON.stringify(nextProof,null,2)+'\n');
+  console.log('CARGO_3D_UPGRADE_READY='+id+' TRIANGLES='+tri+' SHA256='+nextHash);
+ }
+ console.log('CARGO_3D_UPGRADE_PENDING_REGISTERED_ASSET_QA=8');
+ process.exit(0);
+}
 // 메인: 기존 원본 보존, 출처/해시 누락 시 미완료. 이전 6종은 건드리지 않는다.
 fs.mkdirSync(root,{recursive:true});let created=0,total=0;
 for(const id of items){const file=path.join(root,id+'.glb'),meta=file+'.license.json';if(fs.existsSync(file)||fs.existsSync(meta)){if(!fs.existsSync(file)||!fs.existsSync(meta))throw Error('INCOMPLETE_ASSET_PAIR:'+id);console.log('EXISTING_CANDIDATE '+id);continue;}

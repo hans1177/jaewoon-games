@@ -35,6 +35,11 @@ on:
         type: boolean
         required: false
         default: false
+      upgrade_cargo_quality:
+        description: '검증된 3D 교역품 8종을 기존 원본 등록 경로로 재생성'
+        type: boolean
+        required: false
+        default: false
       publish_after_register:
         description: '자산 등록 확인 후 게시까지 할지 (기본: 게시 안 함)'
         type: boolean
@@ -138,6 +143,16 @@ jobs:
               print('MARE_V5_REBUILD_BATCH', start // 6 + 1, ids[start:start + 6], flush=True)
               subprocess.run([sys.executable, source, *ids[start:start + 6]], check=True)
           PY
+
+      # [교역품 3D 개선] 동일한 원본 등록 작업에서만 8종을 재생성한다. 등록 실패 시 기존 로블록스 번호 유지.
+      - name: Rebuild reviewed cargo 3D geometry on the existing registration path
+        id: cargo_quality
+        if: ${{ (github.event_name == 'push' && contains(github.event.head_commit.message, '[mare-cargo-quality-upgrade]')) || (github.event_name == 'workflow_dispatch' && inputs.upgrade_cargo_quality == true) }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node roblox-games/mare-essentia/tools/make_cargo.mjs --check
+          node roblox-games/mare-essentia/tools/make_cargo.mjs --registered-upgrade
 
       - name: Upload licensed models and menu icons to Roblox and write AssetIds
         id: asset_registration
@@ -251,13 +266,17 @@ jobs:
             echo "::error::MARE_EXTERNAL_CC0_HULL_OR_REGISTRATION_QA_FAILED"
             exit 1
           fi
-          for f in roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb.license.json roblox-games/mare-essentia/assets/naval/fishing-net.glb roblox-games/mare-essentia/assets/naval/fishing-net.glb.license.json roblox-games/mare-essentia/assets/naval/net-floats.glb roblox-games/mare-essentia/assets/naval/net-floats.glb.license.json roblox-games/mare-essentia/assets/naval/galleon-heritage.glb roblox-games/mare-essentia/assets/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png roblox-games/mare-essentia/assets/naval/*-v5*.glb*; do
+          for f in roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb.license.json roblox-games/mare-essentia/assets/naval/fishing-net.glb roblox-games/mare-essentia/assets/naval/fishing-net.glb.license.json roblox-games/mare-essentia/assets/naval/net-floats.glb roblox-games/mare-essentia/assets/naval/net-floats.glb.license.json roblox-games/mare-essentia/assets/naval/galleon-heritage.glb roblox-games/mare-essentia/assets/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png roblox-games/mare-essentia/assets/naval/*-v5*.glb* roblox-games/mare-essentia/assets/cargo/{amber,ambergris,camphor,coal,guano,gum_arabic,jade,nitrate}.glb*; do
             if [[ ( "$f" == roblox-games/mare-essentia/assets/naval/nau-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/nau-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/rowboat-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/kotia-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/mtepe-custom.glb* ) && ( "${{ steps.asset_registration.outcome }}" != "success" || "${{ steps.nau_check.outcome }}" != "success" ) ]]; then
               echo "SKIP_UNVERIFIED_EXTERNAL_CC0_HULL $f"
               continue
             fi
             if [[ ( "$f" == roblox-games/mare-essentia/assets/relics/weapon-*.glb* || "$f" == roblox-games/mare-essentia/assets/naval/fishing-net.glb* || "$f" == roblox-games/mare-essentia/assets/naval/net-floats.glb* || "$f" == roblox-games/mare-essentia/assets/naval/galleon-heritage.glb* ) && "${{ steps.asset_registration.outcome }}" != "success" ]]; then
               echo "SKIP_UNVERIFIED_WEAPON_MODEL $f"
+              continue
+            fi
+            if [[ "$f" == roblox-games/mare-essentia/assets/cargo/*.glb* && ( "${{ steps.cargo_quality.outcome }}" != "success" || "${{ steps.asset_registration.outcome }}" != "success" ) ]]; then
+              echo "SKIP_UNREGISTERED_CARGO_QUALITY $f"
               continue
             fi
             if [[ "$f" == roblox-games/mare-essentia/assets/cardart/*.png && "${{ steps.asset_registration.outcome }}" != "success" ]]; then
