@@ -2512,12 +2512,13 @@ dock.ScrollBarThickness = 2
 dock.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 99)
 dock.ScrollingDirection = Enum.ScrollingDirection.Y
 dock.Parent = hudTop
-local dockGrid = Instance.new("UIGridLayout")
-dockGrid.CellSize = UDim2.fromOffset(52, 64)
-dockGrid.CellPadding = UDim2.fromOffset(4, 4)
+-- [시설 도크 정본] 폭에 따라 줄바꿈되는 격자 대신 기존 메뉴의 한 줄 가로 목록.
+local dockGrid = Instance.new("UIListLayout")
+dockGrid.FillDirection = Enum.FillDirection.Horizontal
+dockGrid.Wraps = false
+dockGrid.Padding = UDim.new(0, 4)
 dockGrid.SortOrder = Enum.SortOrder.LayoutOrder
-dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Right
-dockGrid.FillDirectionMaxCells = 4
+dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Left
 dockGrid.Parent = dock
 local dockLimit = Instance.new("UISizeConstraint")
 dockLimit.MaxSize = Vector2.new(360, 200)
@@ -3132,12 +3133,13 @@ do
 		local width = math.max(320, hud.AbsoluteSize.X)
 		local compact = width < 610
 		-- [모바일 7개 시설] 가로 한 줄을 유지하고 화면보다 넓을 때만 스크롤한다.
-		local CW, CH, GAP = 44, 58, 4
+		local CW, CH, GAP = 44, 64, 4
 		local count = #H.DOCK
 		local dockW = count * CW + math.max(0, count - 1) * GAP
-		dockGrid.FillDirectionMaxCells = count
-		dockGrid.CellSize = UDim2.fromOffset(CW, CH)
-		dockGrid.CellPadding = UDim2.fromOffset(GAP, GAP)
+		dockGrid.Padding = UDim.new(0, GAP)
+		for _, dockButton in H.dockButtons do
+			dockButton.Size = UDim2.fromOffset(CW, CH)
+		end
 		dock.AutomaticCanvasSize = Enum.AutomaticSize.None
 		dock.ScrollingDirection = Enum.ScrollingDirection.X
 		dock.CanvasSize = UDim2.fromOffset(dockW, CH)
@@ -3157,14 +3159,14 @@ do
 			end
 		end
 		-- [작은 폰] 메뉴·선장 카드·조언을 세로로 나눠 눌림 영역이 겹치지 않게 한다.
-		card.Position = UDim2.fromOffset(8, if compact then 134 else 8)
+		card.Position = UDim2.fromOffset(8, if compact then toolsY + CH + 6 else 8)
 		card.Size = UDim2.fromOffset(if compact then math.min(252, width - 16) else 262, 114)
 		local left = if width < 1050 then 8 else 282
 		local right = if width < 1050 then 8 else 304
 		local bubbleWidth = math.clamp(width - left - right, 1, 760)
 		bubble.AnchorPoint = Vector2.zero
 		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2),
-			if compact then 258 elseif width < 1050 then 174 else 76)
+			if compact then toolsY + CH + 128 elseif width < 1050 then 174 else 76)
 		H.goalBanner.Position = UDim2.new(0.5, 0, 0, if compact then 254 elseif width < 790 then 120 else 8)
 		H.goalBanner.Size = UDim2.fromOffset(if compact then math.max(170, width - 16)
 			elseif width < 790 then math.min(530, width - 24)
