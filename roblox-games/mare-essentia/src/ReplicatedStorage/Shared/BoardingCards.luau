@@ -370,12 +370,12 @@ B.Units.af_14 = { id="af_14", name="이집트 파피루스 두루마리", catego
 B.Units.af_15 = { id="af_15", name="요루바 구슬 왕관", category="유물", lore="아프리카의 유물 유산 · 요루바 구슬 왕관", stage={ art="CardArt/event_chart_west_africa", motion="scout", scene="요루바 구슬 왕관" }, row="cannon", power=5, weapon="cannon", ability="bond" }
 B.Units.af_16 = { id="af_16", name="누비아 금장식", category="유물", lore="아프리카의 유물 유산 · 누비아 금장식", stage={ art="Goods/gold", motion="scout", scene="누비아 금장식" }, row="ranged", power=3, weapon="gun", ability="spy" }
 B.Specials.af_17 = { id="af_17", name="아샨티 의장 북", category="유물", lore="아프리카의 유물 유산 · 아샨티 의장 북", stage={ art="CardArt/event_chart_west_africa", motion="scout", scene="아샨티 의장 북" }, special="horn", text="내 가장 센 줄의 일반 카드 점수가 두 배" }
-B.Units.af_18 = { id="af_18", name="아프리카 코끼리", category="동물", lore="아프리카의 동물 유산 · 아프리카 코끼리", stage={ art="CardArt/event_chart_west_africa", motion="pounce", scene="아프리카 코끼리", prop={"Animals","elephant"} }, row="melee", power=7, weapon="sword" }
-B.Units.af_19 = { id="af_19", name="아프리카사자", category="동물", lore="아프리카의 동물 유산 · 아프리카사자", stage={ art="CardArt/event_chart_west_africa", motion="gallop", scene="아프리카사자" }, row="melee", power=5, weapon="axe", ability="morale" }
-B.Units.af_20 = { id="af_20", name="기린", category="동물", lore="아프리카의 동물 유산 · 기린", stage={ art="CardArt/event_chart_west_africa", motion="pounce", scene="기린" }, row="ranged", power=4, weapon="gun", ability="spy" }
+B.Units.af_18 = { id="af_18", name="아프리카 코끼리", category="동물", lore="아프리카의 동물 유산 · 아프리카 코끼리", stage={ art="CardArt/event_chart_west_africa", motion="pounce", scene="아프리카 코끼리", prop={"Animals","elephant"} }, row="melee", power=7, weapon="sword", savanna=true, ability="savannaElephant", text="낼 때: 같은 열의 다른 사바나 동물 한 장에 엄호. 없으면 자신에 엄호." }
+B.Units.af_19 = { id="af_19", name="아프리카사자", category="동물", lore="아프리카의 동물 유산 · 아프리카사자", stage={ art="CardArt/event_chart_west_africa", motion="gallop", scene="아프리카사자" }, row="melee", power=5, weapon="axe", savanna=true, ability="savannaLion", text="낼 때: 가장 강한 상대 전열 일반 유닛 −2. 다른 아군 사바나 동물이 있으면 −3." }
+B.Units.af_20 = { id="af_20", name="기린", category="동물", lore="아프리카의 동물 유산 · 기린", stage={ art="CardArt/event_chart_west_africa", motion="pounce", scene="기린" }, row="ranged", power=4, weapon="gun", savanna=true, ability="savannaGiraffe", text="낼 때: 덱 위 두 장에서 사바나 동물 한 장을 손패로 가져온다." }
 B.Units.af_21 = { id="af_21", name="하마", category="동물", lore="아프리카의 동물 유산 · 하마", stage={ art="CardArt/event_chart_west_africa", motion="gallop", scene="하마" }, row="melee", power=6, weapon="sword", cause="af_26" }
 B.Units.af_22 = { id="af_22", name="검은코뿔소", category="동물", lore="아프리카의 동물 유산 · 검은코뿔소", stage={ art="CardArt/event_chart_west_africa", motion="pounce", scene="검은코뿔소" }, row="melee", power=5, weapon="axe", ability="armor" }
-B.Units.af_23 = { id="af_23", name="얼룩말", category="동물", lore="아프리카의 동물 유산 · 얼룩말", stage={ art="CardArt/event_chart_west_africa", motion="gallop", scene="얼룩말" }, row="ranged", power=4, weapon="gun", ability="bond" }
+B.Units.af_23 = { id="af_23", name="얼룩말", category="동물", lore="아프리카의 동물 유산 · 얼룩말", stage={ art="CardArt/event_chart_west_africa", motion="gallop", scene="얼룩말" }, row="ranged", power=4, weapon="gun", savanna=true, ability="savannaZebra", text="낼 때: 같은 열에 다른 아군 사바나 동물이 있으면 자신과 그 동물 한 장 +1." }
 B.Units.af_24 = { id="af_24", name="기자 피라미드", category="지형·원더", lore="고대 이집트 왕국의 거대한 왕릉", stage={ art="CardArt/event_giza", motion="clear", scene="기자 피라미드" }, row="melee", power=9, hero=true }
 B.Units.af_25 = { id="af_25", name="그레이트 짐바브웨", category="지형·원더", lore="남부 아프리카의 거대한 석조 도시 유적", stage={ art="CardArt/event_zimbabwe", motion="clear", scene="그레이트 짐바브웨" }, row="melee", power=5, weapon="axe", ability="armor" }
 B.Units.af_26 = { id="af_26", name="빅토리아 폭포", category="지형·원더", lore="아프리카의 지형·원더 유산 · 빅토리아 폭포", stage={ art="CardArt/event_chart_west_africa", motion="clear", scene="빅토리아 폭포", prop={"Terrain","land-waterfall"} }, row="cannon", power=5, weapon="cannon", ability="morale" }
@@ -769,12 +769,12 @@ B.CardEnglish = {
 	af_15 = { name = "Yoruba Beaded Crown", lore = "A ceremonial crown decorated with intricate beadwork." },
 	af_16 = { name = "Nubian Gold Ornament", lore = "A gold adornment made in the kingdoms of Nubia." },
 	af_17 = { name = "Ashanti Ceremonial Drum", lore = "A decorated drum used in Akan ceremonies." },
-	af_18 = { name = "African Elephant", lore = "The giant long-tusked elephant of the African savanna." },
-	af_19 = { name = "African Lion", lore = "A powerful big cat of the African grasslands." },
-	af_20 = { name = "Giraffe", lore = "A tall browsing mammal with a long neck and spotted coat." },
+	af_18 = { text = "Deploy: Give another Savanna animal in this row cover, or cover yourself.", name = "African Elephant", lore = "The giant long-tusked elephant of the African savanna." },
+	af_19 = { text = "Deploy: Weaken the strongest enemy melee non-hero by 2, or 3 if another allied Savanna animal is deployed.", name = "African Lion", lore = "A powerful big cat of the African grasslands." },
+	af_20 = { text = "Deploy: Draw one Savanna animal from the top two cards of your deck.", name = "Giraffe", lore = "A tall browsing mammal with a long neck and spotted coat." },
 	af_21 = { name = "Hippopotamus", lore = "A massive semi-aquatic animal found in African rivers." },
 	af_22 = { name = "Black Rhinoceros", lore = "A hook-lipped rhinoceros native to Africa." },
-	af_23 = { name = "Zebra", lore = "A striped equid of the African grasslands." },
+	af_23 = { text = "Deploy: If another Savanna animal shares this row, give it and this unit +1.", name = "Zebra", lore = "A striped equid of the African grasslands." },
 	af_24 = { name = "Pyramids of Giza", lore = "The great royal tombs built beside ancient Memphis." },
 	af_25 = { name = "Great Zimbabwe", lore = "The monumental stone ruins of a southern African city." },
 	af_26 = { name = "Victoria Falls", lore = "An immense waterfall on the Zambezi River." },
@@ -2322,7 +2322,36 @@ function B.play(m: any, side, handIdx)
 				logLine(m, "가자 마다: 맹세 " .. tostring(tactics.palapaMarks))
 			end
 		end
-		if c.ability == "urChariot" then
+		if c.ability == "savannaElephant" or c.ability == "savannaZebra" then
+			local partner
+			for _, ally in m.rows[side][lane(c)] do
+				if ally ~= c and ally.savanna and not ally.pigForm then partner = ally; break end
+			end
+			if c.ability == "savannaElephant" then
+				local protected = partner or c
+				protected.cover = true
+			elseif partner then
+				boostCard(c, 1)
+				boostCard(partner, 1)
+			end
+		elseif c.ability == "savannaLion" then
+			local damage = 2
+			for _, row in B.ROWS do
+				for _, ally in m.rows[side][row] do
+					if ally ~= c and ally.savanna and not ally.pigForm then damage = 3; break end
+				end
+			end
+			local enemy = strongestInRow(m, foe, "melee", true)
+			if enemy then boostCard(enemy, -damage) end
+		elseif c.ability == "savannaGiraffe" then
+			local deck = m.deck[side]
+			for index = #deck, math.max(1, #deck - 1), -1 do
+				if deck[index].savanna and #m.hand[side] < B.HAND_MAX then
+					table.insert(m.hand[side], table.remove(deck, index))
+					break
+				end
+			end
+		elseif c.ability == "urChariot" then
 			local damage = 1
 			for _, ally in m.rows[side].melee do
 				if ally.ability == "urStandard" then damage = 3; break end
