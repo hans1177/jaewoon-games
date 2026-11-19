@@ -2345,7 +2345,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end
 		local function dropHint(c)
 			clearDropHint()
-			local side = if c.ability == "spy" then "foe" else "me"
+			local side = if c.ability == "spy" or c.ability == "defect" or c.ability == "feigned" then "foe" else "me"
 			local target = if c.special then boardFrame else (rowTargets[side][BC.lane(c)] and rowTargets[side][BC.lane(c)].Parent)
 			if not target then return end
 			local st = Instance.new("UIStroke")
@@ -2357,6 +2357,46 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			TweenService:Create(st, TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Transparency = 0.7 }):Play()
 		end
 		local boardCards, previousBoard, previousOrder, previousLeaders = {}, {}, {}, {}
+		local deployAbilities = {
+			spy = true, medic = true, snipe = true, relay = true, eastWind = true, orleans = true,
+			humbaba = true, egyptChariot = true, urChariot = true, mactanGuard = true, anaconda = true,
+			apache = true, bachDangLure = true, anansi = true, pigHex = true, sirenSong = true,
+			unweave = true, musketeerAid = true, monkeyStrike = true, pigGuard = true, sandCleanse = true,
+			witchCurse = true, witchBind = true, witchGuard = true, rats = true, quixote = true,
+			savannaLion = true, savannaElephant = true, savannaGiraffe = true, savannaZebra = true,
+			gilgamesh = true, enkidu = true, saladinCavalry = true, ishida = true, chaski = true,
+		}
+		local deployRoles = {
+			pierce = true, survey = true, evacuate = true, vanguard = true,
+			rearGuard = true, rally = true, mobilize = true,
+		}
+		local function cardTiming(c)
+			local ability, role, special = c.ability, c.starterRole, c.special
+			if role == "raid" then return t("매 내 턴", "Each turn") end
+			if ability == "charge" then return t("충전 3회", "3 charges") end
+			if ability == "lastOrder" then return t("패스할 때", "On pass") end
+			if ability == "supply" then return t("다음 라운드", "Next round") end
+			if role == "bombard" or ability == "marathon" or ability == "defect" or ability == "feigned"
+				or ability == "amazonJaguar" or special == "strait" then
+				return t("다음 내 턴", "Next turn")
+			end
+			if ability == "stakes" or ability == "counter" or ability == "hittiteChariot" or ability == "lakota"
+				or ability == "electricEel" or ability == "cyclops" or ability == "musketeerGuard" or ability == "musketeerShield"
+				or ability == "legacy" or role == "reinforce" or special == "ambush" or special == "falseOrder"
+				or special == "rallyFlag" or special == "mactanShoal" or special == "kadeshTreaty" then
+				return t("조건 발동", "Reaction")
+			end
+			if ability == "comanche" or role == "coverFire" then return t("이동할 때", "On move") end
+			if special or deployAbilities[ability] or deployRoles[role] then return t("내는 즉시", "On play") end
+			return nil
+		end
+		local function cardPlacement(c)
+			if c.special then return t("전술", "Tactic") end
+			if c.ability == "spy" or c.ability == "defect" or c.ability == "feigned" then
+				return t("적군 ", "Enemy ") .. rowName(BC.lane(c))
+			end
+			return rowName(BC.lane(c))
+		end
 		local function cardBadge(c)
 			if c.hero then return t("영웅", "Hero"), Color3.fromRGB(111, 77, 35) end
 			if c.fuse then return t("합치기", "Fuse"), Color3.fromRGB(90, 58, 116) end
@@ -3243,7 +3283,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					.. (if BC.CardLines[card.leaderId] then "\n「" .. BC.CardLines[card.leaderId][if english then 2 else 1] .. "」" else "")
 			else
 				focusName.Text = if regionDeck then (if english then regionDeck.en else regionDeck.ko) .. " · " .. cardName(card) else cardName(card)
-				local row = if card.row then rowName(card.row) else t("전술", "Tactic")
+				local row = cardPlacement(card)
+				local timing = cardTiming(card)
 				local category = if card.category then (if english then englishCategories[card.category] or card.category else card.category) .. " · " else ""
 				local strength = if card.power then t(" · 전투력 ", " · Power ") .. tostring(card.power) else ""
 				local description = cardDescription(card)
@@ -3251,7 +3292,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local series = BC.StorySeries[card.id]
 				local kind = if card.cause or card.fuse then t("연쇄·조합", "Combo")
 					elseif card.special then t("전술", "Tactic") elseif card.hero then t("영웅", "Hero") else t("능력", "Ability")
-				focusRule.Text = category .. row .. strength .. "\n" .. kind .. " · " .. description
+				focusRule.Text = category .. row .. strength .. (if timing then " · " .. timing else "") .. "\n" .. kind .. " · " .. description
 					.. (if series then "\n" .. t("이야기 · ", "Story · ") .. series[if english then 2 else 1] elseif lore then "\n" .. t("이야기 · ", "Story · ") .. lore else "")
 					.. (if cardStatus(card) then "\n" .. t("상태 · ", "Status · ") .. cardStatus(card) else "")
 					.. (if BC.CardLines[card.id] then "\n「" .. BC.CardLines[card.id][if english then 2 else 1] .. "」" else "")
@@ -3321,6 +3362,20 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				.. (if myCulture then " · " .. (if english then englishFactions[m.faction.me] or myCulture.name else myCulture.name) else "")
 				.. (if m.passed.me then t(" · 멈춤", " · Passed") elseif m.turn == "me" and not m.over then t(" · 내 차례", " · Your turn") else "")
 				.. (if m.plans and m.plans.me.falseOrder == m.round then t(" · 후열 유인", " · Rear lure") else "")
+			if opts.cardOnly and m.roundStarter then
+				for _, side in { "me", "foe" } do
+					local plate = if side == "me" then mePlate else foePlate
+					local first = side == m.roundStarter
+					plate.who.Text = (if first then t("선공", "First") else t("후공", "Second")) .. " · " .. plate.who.Text
+					plate.who.TextColor3 = if first then Color3.fromRGB(255, 223, 152) else Color3.fromRGB(202, 224, 246)
+					local outline = plate.plate:FindFirstChildOfClass("UIStroke")
+					if outline then
+						local active = m.turn == side and not m.over and not m.passed[side]
+						outline.Color = if active then Color3.fromRGB(255, 221, 132) else brass
+						outline.Thickness = if active then 2 else 1
+					end
+				end
+			end
 			-- [카드전] 점수판의 원형 지도자 표시 제거. 접현전만 기존 초상 유지.
 			if not opts.cardOnly then
 				foePlate.leader.Text = string.sub(BC.Leaders[m.leader.foe] and BC.Leaders[m.leader.foe].name or "적", 1, 3)
@@ -3571,6 +3626,25 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					limit.Parent = kindLabel
 					frameEdge(kindLabel, brass, 3)
 				end
+				if opts.cardOnly then
+					kindLabel.Position = UDim2.fromScale(0.48, 0.20)
+					local timing = cardTiming(c)
+					local ribbon = label(b, cardPlacement(c) .. (if timing then " · " .. timing else ""), 11, Color3.fromRGB(250, 232, 197), true)
+					ribbon.Name = "CardPlacementTiming"
+					ribbon.Position = UDim2.fromScale(0.045, 0.50)
+					ribbon.Size = UDim2.fromScale(0.91, 0.15)
+					ribbon.BackgroundColor3 = if c.special then Color3.fromRGB(112, 63, 40)
+						elseif BC.lane(c) == "melee" then Color3.fromRGB(100, 57, 46) else Color3.fromRGB(39, 73, 97)
+					ribbon.BackgroundTransparency = 0.14
+					ribbon.TextScaled = true
+					ribbon.ZIndex = 10
+					local limit = Instance.new("UITextSizeConstraint")
+					limit.MaxTextSize = 12
+					limit.Parent = ribbon
+					frameEdge(ribbon, brass, 3)
+					local origin = b:FindFirstChild("CardDeckOrigin")
+					if origin then origin.Visible = false end
+				end
 				-- 정보부는 낡은 양피지 띠, 그림부는 움직이는 판화로 분리한다.
 				local parchmentBand = Instance.new("Frame")
 				parchmentBand.Name = "ParchmentCaption"
@@ -3638,7 +3712,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					if playing or auto or finished or m.turn ~= "me" or m.over or selected ~= b or not b.Parent then return end
 					playing = true
 					showCardCodex(nil)
-					local side = if c.ability == "spy" then "foe" else "me"
+					local side = if c.ability == "spy" or c.ability == "defect" or c.ability == "feigned" then "foe" else "me"
 					local target = if c.special then boardFrame else rowTargets[side][BC.lane(c)]
 					local flight = b:Clone()
 					flight.Active = false

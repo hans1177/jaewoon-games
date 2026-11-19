@@ -1178,6 +1178,7 @@ function B.newMatch(myDeck, myLeader, foeDeck, foeLeader, rng, myFaction, foeFac
 	if (m.faction.me == "east_asia") ~= (m.faction.foe == "east_asia") then
 		m.turn = if m.faction.me == "east_asia" then "me" else "foe"
 	end
+	m.roundStarter = m.turn
 	return m
 end
 
@@ -1904,6 +1905,7 @@ local function roundEnd(m: any)
 		m.round += 1
 		-- 이긴 쪽이 다음 판 선공 (무승부면 그대로)
 		m.turn = winner or m.turn
+		m.roundStarter = m.turn
 		-- 한 판 지날 때마다 카드를 보충한다 (손패는 열 장까지)
 		for _, side in { "me", "foe" } do
 			drawCards(m, side, math.max(0, math.min(B.ROUND_DRAW, B.HAND_MAX - #m.hand[side])))
