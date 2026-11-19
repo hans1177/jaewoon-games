@@ -482,7 +482,20 @@ B.Units.lo_51 = { id="lo_51", name="손오공", category="문학", row="melee", 
 B.Units.lo_52 = { id="lo_52", name="저팔계", category="문학", row="melee", power=3, ability="pigGuard", text="낼 때: 다른 가장 약한 일반 아군에게 엄호를 건다. 세 제자가 모이면 다음 내 턴에 가장 약한 다른 아군을 구출한다. 라운드당 한 번." }
 B.Units.lo_53 = { id="lo_53", name="사오정", category="문학", row="ranged", power=3, ability="sandCleanse", text="낼 때: 다른 가장 약한 일반 아군의 약화와 이동 제한, 강화 차단을 해제한다. 세 제자가 모이면 다음 내 턴에 가장 약한 다른 아군을 구출한다. 라운드당 한 번." }
 
+B.Units.lo_54 = { id="lo_54", name="오디세우스", category="문학", journey=true, row="melee", power=5, hero=true, ability="homecoming", text="이번 라운드에 다른 여정 카드 2종을 냈다면, 내 턴 시작에 가장 약한 일반 아군을 회수하고 1장 뽑는다. 라운드당 한 번." }
+B.Units.lo_55 = { id="lo_55", name="키클롭스", category="문학", journey=true, row="melee", power=6, ability="cyclops", text="같은 열의 다른 아군이 받을 첫 단일 공격을 대신 맞는다. 라운드당 한 번." }
+B.Units.lo_56 = { id="lo_56", name="페넬로페", category="문학", journey=true, row="ranged", power=3, ability="unweave", text="낼 때: 상대가 예고한 말라카 기습 또는 촐라 포격 하나를 한 턴 늦춘다." }
+B.Units.lo_57 = { id="lo_57", name="키르케", category="문학", journey=true, row="ranged", power=3, ability="pigHex", text="낼 때: 가장 강한 후열 일반 적을 전투력 1의 돼지로 바꾼다. 상대 다음 행동이 끝나면 해제." }
+B.Units.lo_58 = { id="lo_58", name="세이렌", category="문학", journey=true, row="ranged", power=3, ability="sirenSong", text="낼 때: 상대 전열과 후열의 모든 유닛에 전투력 −1." }
+B.Specials.lo_59 = { id="lo_59", name="이타카의 활", category="문학", journey=true, special="ithacaBow", maxCopies=1, text="가장 강한 상대 일반 유닛 한 장을 즉시 제거한다. 덱당 한 장." }
+
 B.CardEnglish = {
+	lo_54 = { name="Odysseus", text="After two different journey cards this round, recall your weakest non-hero and draw one on your turn start, once per round." },
+	lo_55 = { name="Cyclops", text="Intercept the first single-target attack on another ally in this row each round." },
+	lo_56 = { name="Penelope", text="Deploy: Delay one pending Malacca strike or Chola bombardment by a turn." },
+	lo_57 = { name="Circe", text="Deploy: Transform the strongest enemy ranged non-hero into a 1-power pig through its next action." },
+	lo_58 = { name="Siren", text="Deploy: Weaken every enemy unit in both rows by 1." },
+	lo_59 = { name="Bow of Ithaca", text="Immediately destroy the strongest enemy non-hero. One copy per deck." },
 	lo_48 = { name="First Witch", text="Deploy: Weaken one enemy ranged non-hero by 1. Gather all three witches to summon a 4-power apparition next turn, once per round." },
 	lo_49 = { name="Second Witch", text="Deploy: Block one enemy ranged non-hero’s first boost through its next action. Gather all three witches to summon a 4-power apparition next turn, once per round." },
 	lo_50 = { name="Third Witch", text="Deploy: Give another witch in this row cover. Gather all three witches to summon a 4-power apparition next turn, once per round." },
@@ -766,7 +779,7 @@ B.Factions = {
 	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", specialty = "동물", leaders = { "rajaraja", "tranhungdao", "akbar" },
 		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30", "sa_31", "sa_32", "sa_33", "sa_34"} },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
-		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30", "lo_46", "lo_47", "lo_48", "lo_49", "lo_50", "lo_51", "lo_52", "lo_53"} },
+		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30", "lo_46", "lo_47", "lo_48", "lo_49", "lo_50", "lo_51", "lo_52", "lo_53", "lo_54", "lo_55", "lo_56", "lo_57", "lo_58", "lo_59"} },
 	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", specialty = "지형·원더", leaders = { "mansa", "hannibal", "shaka" },
 		roster = { "af_01", "af_02", "af_03", "af_04", "af_05", "af_06", "af_07", "af_08", "af_09", "af_10", "af_11", "af_12", "af_13", "af_14", "af_15", "af_16", "af_17", "af_18", "af_19", "af_20", "af_21", "af_22", "af_23", "af_24", "af_25", "af_26", "af_27", "af_28", "af_29", "af_30", "af_31", "af_32", "af_33", "af_34", "af_35", "af_36" } },
 }
@@ -1021,6 +1034,7 @@ function B.cardPower(m: any, side, row, idx)
 	if not c then
 		return 0
 	end
+	if c.pigForm then return 1 end
 	local p = c.power
 	if not c.hero then
 		if m.weather[row] and c.ability ~= "armor" and not (c.weatherArmor and not c.sealedAbility) then
@@ -1081,7 +1095,7 @@ function B.cardPower(m: any, side, row, idx)
 			p *= 2
 		end
 	end
-	return p
+	return math.max(0, p + (if c.hero then c.tacticPower or 0 else 0))
 end
 
 function B.rowRaw(m: any, side, row)
@@ -1207,12 +1221,26 @@ local function resolveCounter(m: any, side, scores)
 	return false
 end
 
-local function strongestInRow(m: any, side, row)
-	local target, power
+local function interceptAttack(m: any, side, row, index)
+	local units = m.rows[side][row]
+	if units[index].ability == "cyclops" then return index end
+	for i, ally in units do
+		if i ~= index and ally.ability == "cyclops" and ally.starterUsed ~= m.round then
+			ally.starterUsed = m.round
+			logLine(m, "키클롭스: 대신 맞았다")
+			return i
+		end
+	end
+	return index
+end
+
+local function strongestInRow(m: any, side, row, attack)
+	local target, power, index
 	for i, card in m.rows[side][row] do
 		local current = B.cardPower(m, side, row, i)
-		if not card.hero and (not power or current > power) then target, power = card, current end
+		if not card.hero and (not power or current > power) then target, power, index = card, current, i end
 	end
+	if attack and index then return m.rows[side][row][interceptAttack(m, side, row, index)] end
 	return target
 end
 
@@ -1225,14 +1253,15 @@ local function removeHits(m: any, hits, source)
 		return a[3] > b[3]
 	end)
 	for _, h in hits do
-		local c = table.remove(m.rows[h[1]][h[2]], h[3])
+		local index = if #hits == 1 and h[1] ~= source and h.single then interceptAttack(m, h[1], h[2], h[3]) else h[3]
+		local c = table.remove(m.rows[h[1]][h[2]], index)
 		if c then
 			table.insert(m.grave[h[1]], c)
 			if h[1] ~= source and not c.hero then losses[h[1]][h[2]] = true end
-			c.starterUsed = nil
+			c.starterUsed, c.bombardDelayed = nil, nil
 			if h[1] ~= source and c.ability == "legacy" then table.insert(legacies, h) end
 			c.pendingReturn, c.charges = nil, nil
-			if c.sealedAbility then c.ability, c.sealedAbility = (if c.sealedAbility == "starterOnly" then nil else c.sealedAbility), nil end
+			if c.sealedAbility then c.ability, c.sealedAbility = (if c.sealedAbility == "starterOnly" then nil else c.sealedAbility), nil; c.pigForm = nil end
 			c.tacticPower = nil
 			c.cover, c.anchored, c.shaken, c.ironUsed = nil, nil, nil, nil
 		end
@@ -1325,7 +1354,7 @@ local function swapFormation(m: any, side)
 	if hasTactic(m, side, "relay") then front[fi].cover = true end
 	boostCard(back[bi], 1)
 	if back[bi].starterRole == "coverFire" and not back[bi].sealedAbility then
-		local target = strongestInRow(m, other(side), "melee")
+		local target = strongestInRow(m, other(side), "melee", true)
 		if target then boostCard(target, -2); logLine(m, "머스킷 부대: 엄호 사격") end
 	end
 	canalArrival(m, side, back[bi])
@@ -1379,10 +1408,30 @@ end
 local function beginTurn(m: any, side)
 	m.turn = side
 	local state = m.tactics and m.tactics[side]
-	if state and state.strait == m.round then
+	if state and state.strait == m.round and not state.straitDelayed then
 		state.strait = nil
-		local target = strongestInRow(m, other(side), "ranged")
+		local target = strongestInRow(m, other(side), "ranged", true)
 		if target then boostCard(target, -3); logLine(m, "말라카 해협: 후열 기습 −3") end
+	end
+	if state then
+		state.straitDelayed = nil
+		if (state.journeyCount or 0) >= 2 and state.homecoming ~= m.round and hasTactic(m, side, "homecoming") then
+			local ally = weakestAlly(m, side, nil, nil)
+			if ally and #m.hand[side] < B.HAND_MAX then
+				for _, row in B.ROWS do
+					local idx = table.find(m.rows[side][row], ally)
+					if not idx then continue end
+					table.remove(m.rows[side][row], idx)
+					local recalled = copy(B.Units[ally.id] or ally)
+					recalled.power, recalled.tier = ally.power, ally.tier
+					table.insert(m.hand[side], recalled)
+					drawCards(m, side, 1)
+					state.homecoming = m.round
+					logLine(m, "오디세우스: 귀환")
+					break
+				end
+			end
+		end
 	end
 	local back = m.rows[side].ranged
 	for _, owner in { side, other(side) } do
@@ -1412,12 +1461,13 @@ local function beginTurn(m: any, side)
 	for _, row in B.ROWS do
 		for _, card in m.rows[side][row] do
 			if card.sealedAbility then continue end
+			if card.bombardDelayed then card.bombardDelayed = nil; continue end
 			local used = card.starterUsed or 0
 			local attack = if card.starterRole == "bombard" and used == 0 then 3
 				elseif card.starterRole == "raid" and row == "melee" and used < 2 then 1 else nil
 			if attack then
 				card.starterUsed = used + 1
-				local target = strongestInRow(m, other(side), if attack == 3 then "ranged" else "melee")
+				local target = strongestInRow(m, other(side), if attack == 3 then "ranged" else "melee", true)
 				if target then
 					boostCard(target, -attack)
 					logLine(m, card.name .. ": " .. target.name .. " −" .. tostring(attack))
@@ -1433,7 +1483,7 @@ local function finishTactics(m: any, side, playedCard)
 		for _, card in m.rows[side][row] do
 			if card ~= playedCard then card.anchored, card.shaken = nil, nil end
 			if card.sealedAbility then
-				card.ability, card.sealedAbility = (if card.sealedAbility == "starterOnly" then nil else card.sealedAbility), nil
+				card.ability, card.sealedAbility = (if card.sealedAbility == "starterOnly" then nil else card.sealedAbility), nil; card.pigForm = nil
 			elseif playedCard and card.ability == "charge" then
 				card.charges = (card.charges or 0) + 1
 				if card.charges == 3 then
@@ -1510,7 +1560,7 @@ local function roundEnd(m: any)
 				if c ~= keep then
 					c.tacticPower, c.pendingReturn, c.charges, c.starterUsed = nil, nil, nil, nil
 					c.cover, c.anchored, c.shaken, c.ironUsed = nil, nil, nil, nil
-					if c.sealedAbility then c.ability, c.sealedAbility = (if c.sealedAbility == "starterOnly" then nil else c.sealedAbility), nil end
+					if c.sealedAbility then c.ability, c.sealedAbility = (if c.sealedAbility == "starterOnly" then nil else c.sealedAbility), nil; c.pigForm = nil end
 					table.insert(m.grave[side], c)
 				end
 			end
@@ -1519,7 +1569,7 @@ local function roundEnd(m: any)
 		if keep then
 			keep.tacticPower, keep.pendingReturn, keep.charges, keep.starterUsed = nil, nil, nil, nil
 			keep.cover, keep.anchored, keep.shaken, keep.ironUsed = nil, nil, nil, nil
-			if keep.sealedAbility then keep.ability, keep.sealedAbility = (if keep.sealedAbility == "starterOnly" then nil else keep.sealedAbility), nil end
+			if keep.sealedAbility then keep.ability, keep.sealedAbility = (if keep.sealedAbility == "starterOnly" then nil else keep.sealedAbility), nil; keep.pigForm = nil end
 		end
 		if keep and not (m.wins.me >= 2 or m.wins.foe >= 2 or m.round >= 3) then
 			table.insert(m.rows[side][keepRow], keep)
@@ -1641,6 +1691,10 @@ function B.play(m: any, side, handIdx)
 	local tactics, enemyTactics = m.tactics[side], m.tactics[foe]
 	local frontScore = if tactics.retreat ~= m.round and hasTactic(m, side, "falseRetreat") then B.rowTotal(m, side, "melee") else nil
 	local previousDeployment = tactics.lastDeployment
+	if c.journey and c.id ~= "lo_54" and not tactics[c.id] then
+		tactics[c.id] = true
+		tactics.journeyCount = (tactics.journeyCount or 0) + 1
+	end
 	if c.special == "echo" then
 		local prior = m.lastTactic and m.lastTactic[foe]
 		if prior and prior.round == m.round then c = prior.card end
@@ -1649,12 +1703,20 @@ function B.play(m: any, side, handIdx)
 		m.lastTactic[side] = { round = m.round, card = c }
 	end
 	local msg
-	if c.special == "truce" then
+	if c.special == "ithacaBow" then
+		local _, hits = strongestNonHero(m, { foe })
+		if hits[1] then
+			hits[1].single = true
+			removeHits(m, { hits[1] }, side)
+		end
+		table.insert(m.grave[side], played)
+		msg = if hits[1] then "이타카의 활: 즉시 저격" else "이타카의 활 — 대상 없음"
+	elseif c.special == "truce" then
 		local ally = weakestAlly(m, side, nil, nil)
 		if ally then ally.cover = true end
 		msg = if ally then "휴전 협정: " .. ally.name .. " 엄호" else "휴전 협정 — 대상 없음"
 	elseif c.special == "assassinate" then
-		local target = strongestInRow(m, foe, "melee")
+		local target = strongestInRow(m, foe, "melee", true)
 		if target then boostCard(target, -2) end
 		msg = if target then "암살: " .. target.name .. " −2" else "암살 — 대상 없음"
 	elseif c.special == "dollCurse" then
@@ -1752,7 +1814,7 @@ function B.play(m: any, side, handIdx)
 			back.tacticPower = nil
 			back.cover, back.anchored, back.shaken, back.ironUsed = nil, nil, nil, nil
 			back.pendingReturn, back.charges, back.starterUsed = nil, nil, nil
-			if back.sealedAbility then back.ability, back.sealedAbility = (if back.sealedAbility == "starterOnly" then nil else back.sealedAbility), nil end
+			if back.sealedAbility then back.ability, back.sealedAbility = (if back.sealedAbility == "starterOnly" then nil else back.sealedAbility), nil; back.pigForm = nil end
 			table.insert(m.hand[side], back)
 			msg = string.format("회군! %s을(를) 손으로 되돌렸다", back.name)
 		else
@@ -1864,7 +1926,7 @@ function B.play(m: any, side, handIdx)
 		end
 		local role = c.starterRole
 		if role == "pierce" or role == "vanguard" then
-			local enemy = strongestInRow(m, foe, "melee")
+			local enemy = strongestInRow(m, foe, "melee", true)
 			if enemy then
 				if role == "pierce" then enemy.cover, enemy.deployCover, enemy.ironUsed = nil, nil, true end
 				boostCard(enemy, if role == "pierce" then -2 else -1)
@@ -1886,7 +1948,7 @@ function B.play(m: any, side, handIdx)
 					if not ally.hero and (ally.tacticPower or 0) < 0 then
 						ally.tacticPower, ally.anchored, ally.shaken, ally.pendingReturn = nil, nil, nil, nil
 						ally.cover, ally.ironUsed, ally.charges, ally.starterUsed = nil, nil, nil, nil
-						if ally.sealedAbility then ally.ability, ally.sealedAbility = (if ally.sealedAbility == "starterOnly" then nil else ally.sealedAbility), nil end
+						if ally.sealedAbility then ally.ability, ally.sealedAbility = (if ally.sealedAbility == "starterOnly" then nil else ally.sealedAbility), nil; ally.pigForm = nil end
 						table.insert(m.hand[side], table.remove(m.rows[side][row], index))
 						msg ..= " (대상단 회수: " .. ally.name .. ")"
 						picked = true
@@ -1903,8 +1965,29 @@ function B.play(m: any, side, handIdx)
 				table.insert(m.hand[side], table.remove(deck, index))
 			end
 		end
-		if c.ability == "witchCurse" or c.ability == "witchBind" or c.ability == "monkeyStrike" then
-			local target = strongestInRow(m, foe, if c.ability == "monkeyStrike" then "melee" else "ranged")
+		if c.ability == "pigHex" then
+			local target = strongestInRow(m, foe, "ranged")
+			if target and not target.pigForm then
+				target.sealedAbility = target.sealedAbility or target.ability or "starterOnly"
+				target.ability, target.pigForm = nil, true
+			end
+		elseif c.ability == "sirenSong" then
+			for _, row in B.ROWS do
+				for _, enemy in m.rows[foe][row] do boostCard(enemy, -1) end
+			end
+		elseif c.ability == "unweave" then
+			if enemyTactics.strait == m.round then
+				enemyTactics.straitDelayed = true
+			else
+				for _, enemy in m.rows[foe].ranged do
+					if enemy.starterRole == "bombard" and not enemy.starterUsed then
+						enemy.bombardDelayed = true
+						break
+					end
+				end
+			end
+		elseif c.ability == "witchCurse" or c.ability == "witchBind" or c.ability == "monkeyStrike" then
+			local target = strongestInRow(m, foe, if c.ability == "monkeyStrike" then "melee" else "ranged", c.ability ~= "witchBind")
 			if target then
 				if c.ability == "witchBind" then target.shaken = true
 				else boostCard(target, if c.ability == "monkeyStrike" then -2 else -1) end
@@ -1937,7 +2020,7 @@ function B.play(m: any, side, handIdx)
 			local fside, frow, fi = snipeTarget(m, side)
 			if fside then
 				local dead = m.rows[fside][frow][fi]
-				removeHits(m, { { fside, frow, fi } }, side)
+				removeHits(m, { { fside, frow, fi, single = true } }, side)
 				msg ..= string.format(" (저격: %s 쓰러뜨림)", dead.name)
 			end
 		elseif c.ability == "medic" then
@@ -2071,6 +2154,7 @@ function B.useLeader(m: any, side)
 		local best, hits = strongestNonHero(m, { other(side) })
 		if best > 0 then
 			-- 동점이면 첫 하나만
+			hits[1].single = true
 			removeHits(m, { hits[1] }, side)
 			msg = string.format("%s: 상대의 가장 센 카드(%d)를 쓰러뜨렸다", if fx == "snipe" and nm ~= "snipe" then nm else "저격", best)
 		else

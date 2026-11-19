@@ -1821,6 +1821,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local englishFactions = { europe = "Europe", east_asia = "East Asia", middle_east = "Middle East", new_world = "New World", africa = "Africa" }
 		local englishLeaders = { draw = "Command", clear = "Open Sea Route", snipe = "Snipe", napoleon = "Napoleon", caesar = "Caesar", alexander = "Alexander", charlemagne = "Charlemagne", elizabeth = "Elizabeth I", genghis = "Genghis Khan", qinshi = "Qin Shi Huang", yisunsin = "Yi Sun-sin", nobunaga = "Oda Nobunaga", pachacuti = "Pachacuti", montezuma = "Montezuma II", sittingbull = "Sitting Bull", saladin = "Saladin", suleiman = "Suleiman the Magnificent", cyrus = "Cyrus the Great", mansa = "Mansa Musa", hannibal = "Hannibal", shaka = "Shaka Zulu", rajaraja = "Rajaraja I", tranhungdao = "Tran Hung Dao", akbar = "Akbar" }
 		local function cardName(c)
+			if c.pigForm then return t("돼지", "Pig") end
 			if not english then return c.name end
 			local en = BC.CardEnglish[c.id]
 			return if en then en.name else englishNames[c.id] or c.name

@@ -223,7 +223,8 @@ function CB.validateDeck(book: any, ids: { string }): (boolean, string)
 		if type(id) ~= "string" or not def(id) then return false, "알 수 없는 카드가 있어요" end
 		used[id] = (used[id] or 0) + 1
 		if used[id] > (book.owned[id] or 0) then return false, def(id).name .. "이(가) 모자라요" end
-		if used[id] > CB.MAX_COPIES then return false, string.format("같은 카드는 %d장까지예요", CB.MAX_COPIES) end
+		local copies = def(id).maxCopies or CB.MAX_COPIES
+		if used[id] > copies then return false, string.format("%s은(는) %d장까지예요", def(id).name, copies) end
 		local cont = CB.continentOf(id)
 		if cont == "lost" then
 			lost += 1
@@ -373,7 +374,7 @@ function CB.recommend(book: any, style: string): { string }?
 		local cost = BC.cost(d)
 		local left = CB.MIN_DECK - #ids - 1
 		local okCont = cont == nil or cont == own or (cont == "lost" and lost < 3) -- 자동 덱은 미지의 땅 카드를 세 장까지만 섞는다
-		if okCont and (copies[c.id] or 0) < CB.MAX_COPIES and spent + cost + left * 4 <= limit then
+		if okCont and (copies[c.id] or 0) < (def(c.id).maxCopies or CB.MAX_COPIES) and spent + cost + left * 4 <= limit then
 			if CB.isHero(c.id) then
 				if heroes < 2 then heroes += 1 table.insert(ids, c.id) spent += cost copies[c.id] = (copies[c.id] or 0) + 1 end
 			elseif CB.isSpecial(c.id) then
