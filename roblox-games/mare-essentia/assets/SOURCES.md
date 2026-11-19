@@ -1839,7 +1839,7 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 - `CardArt/eu_36` 잔 다르크. 원본 PNG SHA-256 `1fc95a470493f802a982368b2924e40790a2dbe21281512f65c6be1df10be109`. 등록용 900×1200 JPEG SHA-256 `ee389a479d9e2f9b91a09cb1c71e5a5bf3bdf5332781e91d398e9716f15661ac`.
 - `CardArt/ea_43` 도쿠가와 이에야스. 원본 PNG SHA-256 `ed37666de7221183d08d381b50ee8093e9fef06d25cac4fe18acf0d16cd72f72`. 등록용 900×1200 JPEG SHA-256 `9f3a6e9f0654c131ed059749296e886f0ec9fc36d1c07599eadc49b5765ed017`.
 - `CardArt/lo_52` 저팔계. 원본 PNG SHA-256 `43210e17f8b5f72dcff9febee8e5139aa88bab41654227ca745d88cb3cf0f47b`. 등록용 1200×900 JPEG SHA-256 `d6bfa871bd7f818fd6d8e5701198d46c1dc4f1de3b529237d6ba70e1e27ad94b`.
-- `CardArt/lo_60` 삼장법사. 프로젝트용 ChatGPT 생성 원화, `PROJECT_ORIGINAL_ART`. 원본 PNG SHA-256 `44cabb831ef478b72462ecef19ea8794a4834e862b925a2c4c640178b84320e2`. 등록용 1200×900 JPEG SHA-256 `6fee1dfbf515ecdc5fa98eec0d407def2e0e2cd3e28fa74bed7ad2356cef4255`.
+- `CardArt/lo_60` 삼장법사. 손오공·저팔계 카드 원화를 시각 참고한 프로젝트용 ChatGPT 생성 원화, `PROJECT_ORIGINAL_ART`. 원본 PNG SHA-256 `3d957d2ce59d984f744974d7e2d3f4d986890628f4b42d1c01ec39283dd6cafd`. 등록용 1200×900 JPEG SHA-256 `07e64a2eda276542fc5c27ffcea1617f3d146ec77a9ead36fa612e0bc26c625e`.
 
 ## 해상 작전실
 
