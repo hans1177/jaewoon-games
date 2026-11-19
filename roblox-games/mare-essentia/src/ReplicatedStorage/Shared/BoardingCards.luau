@@ -516,7 +516,12 @@ B.Specials.me_40 = { id="me_40", name="불사의 풀", category="서사", specia
 B.Specials.me_41 = { id="me_41", name="하틴의 포위", category="서사", special="hattin", text="상대 전열의 가장 강한 일반 유닛 −2. 살라딘을 지도자로 골랐다면 대상은 자기 턴이 끝날 때까지 이동할 수 없다." }
 B.Units.me_42 = { id="me_42", name="살라딘의 기병대", category="서사", row="melee", power=4, ability="saladinCavalry", text="낼 때: 이번 라운드에 하틴의 포위를 당했거나 이동 제한에 걸린 가장 강한 상대 전열 일반 유닛 −2." }
 
+B.Units.sa_35 = { id="sa_35", name="박당강의 유인선", category="선박", row="ranged", power=3, ability="bachDangLure", text="낼 때: 상대 전열에서 이동 가능한 가장 약한 일반 유닛을 후열로 옮겨 유인 표식을 남긴다." }
+B.Specials.sa_36 = { id="sa_36", name="박당강의 썰물", category="사건", special="bachDangTide", text="박당강의 말뚝이 아군 전장에 있으면, 후열에 남은 유인 대상 하나 −3 및 다음 행동까지 이동 제한. 말뚝과 공유해 라운드당 한 번." }
+
 B.CardEnglish = {
+	sa_35 = { name="Bach Dang Decoy Boat", text="Deploy: Move the weakest eligible enemy melee non-hero to ranged and mark it as lured." },
+	sa_36 = { name="Ebb Tide at Bach Dang", text="With Stakes deployed, weaken a marked enemy still in ranged by 3 and anchor it through its next action. Shares the Stakes trigger once per round." },
 	eu_59 = { name="Crossing the Rubicon", text="Move your weakest eligible ranged non-hero to melee and boost by 3. It cannot be recalled this round." },
 	eu_60 = { name="Battle of Zela", text="Deploy: Weaken the strongest enemy ranged non-hero by 3." },
 	ea_43 = { name="Tokugawa Ieyasu", text="When Kobayakawa defects to your melee row, boost him by 2 if Tokugawa is deployed." },
@@ -828,7 +833,7 @@ B.Factions = {
 	middle_east = { id = "middle_east", name = "중동", passive = "판이 끝나도 점수 5 이하의 가장 센 일반 카드 하나가 남는다", leader = "saladin", specialty = "지형·원더", leaders = { "saladin", "suleiman", "cyrus" },
 		roster = {"me_01", "me_02", "me_03", "me_04", "me_05", "me_06", "me_07", "me_08", "me_09", "me_10", "me_11", "me_12", "me_13", "me_14", "me_15", "me_16", "me_17", "me_18", "me_19", "me_20", "me_21", "me_22", "me_23", "me_24", "me_25", "me_26", "me_27", "me_28", "me_29", "me_30", "me_31", "me_32", "me_33", "me_34", "me_35", "me_36", "me_37", "me_38", "me_39", "me_40", "me_41", "me_42"} },
 	southeast_asia = { id = "southeast_asia", name = "남·동남아", passive = "시작 손패가 한 장 더 많다", leader = "rajaraja", specialty = "동물", leaders = { "rajaraja", "tranhungdao", "akbar" },
-		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30", "sa_31", "sa_32", "sa_33", "sa_34"} },
+		roster = {"sa_01", "sa_02", "sa_03", "sa_04", "sa_05", "sa_06", "sa_07", "sa_08", "sa_09", "sa_10", "sa_11", "sa_12", "sa_13", "sa_14", "sa_15", "sa_16", "sa_17", "sa_18", "sa_19", "sa_20", "sa_21", "sa_22", "sa_23", "sa_24", "sa_25", "sa_26", "sa_27", "sa_28", "sa_29", "sa_30", "sa_31", "sa_32", "sa_33", "sa_34", "sa_35", "sa_36"} },
 	lost = { id = "lost", name = "미지의 땅", passive = "판을 지면 다음 판에 카드를 두 장 더 뽑는다", leader = "clear",
 		roster = {"lo_01", "lo_02", "lo_03", "lo_04", "lo_05", "lo_06", "lo_07", "lo_08", "lo_09", "lo_10", "lo_11", "lo_12", "lo_13", "lo_14", "lo_15", "lo_16", "lo_17", "lo_18", "lo_19", "lo_20", "lo_21", "lo_22", "lo_23", "lo_24", "lo_25", "lo_26", "lo_27", "lo_28", "lo_29", "lo_30", "lo_46", "lo_47", "lo_48", "lo_49", "lo_50", "lo_51", "lo_52", "lo_53", "lo_54", "lo_55", "lo_56", "lo_57", "lo_58", "lo_59"} },
 	africa = { id = "africa", name = "아프리카", passive = "시작 손패가 한 장 더 많다", leader = "mansa", specialty = "지형·원더", leaders = { "mansa", "hannibal", "shaka" },
@@ -1801,7 +1806,22 @@ function B.play(m: any, side, handIdx)
 		m.lastTactic[side] = { round = m.round, card = c }
 	end
 	local msg
-	if c.special == "rubicon" then
+	if c.special == "bachDangTide" then
+		local struck = false
+		if tactics.stakes ~= m.round and hasTactic(m, side, "stakes") then
+			for _, target in m.rows[foe].ranged do
+				if target.bachDangRound ~= m.round or target.bachDangSide ~= side then continue end
+				target.bachDangRound, target.bachDangSide = nil, nil
+				tactics.stakes = m.round
+				boostCard(target, -3)
+				target.anchored = true
+				struck = true
+				break
+			end
+		end
+		table.insert(m.grave[side], played)
+		msg = if struck then "박당강의 썰물: 말뚝 발동" else "박당강의 썰물 — 발동 조건 미충족"
+	elseif c.special == "rubicon" then
 		local back = m.rows[side].ranged
 		local index, power
 		for i, ally in back do
@@ -2116,7 +2136,21 @@ function B.play(m: any, side, handIdx)
 				table.insert(m.hand[side], table.remove(deck, index))
 			end
 		end
-		if c.ability == "gilgamesh" or c.ability == "enkidu" then
+		if c.ability == "bachDangLure" then
+			local front = m.rows[foe].melee
+			local index, power
+			for i, target in front do
+				if target.hero or target.anchored or target.pendingReturn then continue end
+				local current = B.cardPower(m, foe, "melee", i)
+				if not power or current < power then index, power = i, current end
+			end
+			if index then
+				local target = table.remove(front, index)
+				target.bachDangRound, target.bachDangSide = m.round, side
+				table.insert(m.rows[foe].ranged, target)
+				msg ..= " (적을 후열로 유인)"
+			end
+		elseif c.ability == "gilgamesh" or c.ability == "enkidu" then
 			local partner = if c.ability == "gilgamesh" then "enkidu" else "gilgamesh"
 			for _, row in B.ROWS do
 				for _, ally in m.rows[side][row] do
