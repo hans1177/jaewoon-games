@@ -619,21 +619,32 @@ function visualAnchors(files, role = 'GENERAL') {
 
 // [메인] 후보는 검증된 브랜치에서만 쓰며 모델 원문/명령은 실행하지 않는다.
 export function applyVisualReplacements(files, edits, contract) {
-  const output = new Map(), changes = [];
+  const output = new Map(), changes = [], pending = new Map();
+  // [시각 수정 검증] 수정 전 원본의 고유 행을 모두 검사한다. 순차 적용 중 생기는
+  // 값 충돌을 새 원본으로 오인하지 않고, 기존 혼합 줄바꿈도 그대로 보존한다.
   for (const edit of edits) {
     if (!contract.allowedSourceFiles.includes(edit.path) ||
       !visualEditLooksSafe(edit.before, edit.after)) throw Error('EDIT_NOT_AUTHORIZED');
     if (!Object.hasOwn(files, edit.path)) throw Error('SOURCE_FILE_NOT_FOUND:' + edit.path);
-    const source = output.get(edit.path) || files[edit.path];
-    const lines = source.split('\n');
-    const occurrences = lines.filter(line => line === edit.before).length;
-    if (occurrences !== 1) throw Error('SOURCE_ANCHOR_NOT_UNIQUE:' + edit.path);
-    output.set(edit.path, lines.map(line => line === edit.before ? edit.after : line).join('\n'));
+    if (!pending.has(edit.path)) pending.set(edit.path, []);
+    pending.get(edit.path).push(edit);
     changes.push({path: edit.path, category: edit.category, screenshot: edit.screenshot,
       beforeSha256: digest(edit.before), afterSha256: digest(edit.after)});
   }
   if (changes.length > contract.maximumSourceEditsPerRun ||
-    output.size > contract.maximumCandidateFilesPerRun) throw Error('CANDIDATE_LIMIT');
+    pending.size > contract.maximumCandidateFilesPerRun) throw Error('CANDIDATE_LIMIT');
+  for (const [file, editsForFile] of pending) {
+    const lines = files[file].split(/(\r?\n)/);
+    const replacements = new Map();
+    for (const edit of editsForFile) {
+      if (replacements.has(edit.before)) throw Error('DUPLICATE_SOURCE_ANCHOR');
+      const count = lines.filter((line, index) => index % 2 === 0 && line === edit.before).length;
+      if (count !== 1) throw Error('SOURCE_ANCHOR_NOT_UNIQUE:' + file);
+      replacements.set(edit.before, edit.after);
+    }
+    output.set(file, lines.map((line, index) =>
+      index % 2 === 0 && replacements.has(line) ? replacements.get(line) : line).join(''));
+  }
   return {files: output, changes};
 }
 

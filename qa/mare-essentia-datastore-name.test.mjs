@@ -2373,6 +2373,21 @@ test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치�
   assert.equal(candidate.changes.length, 2);
   assert.equal(candidate.files.get(pose), newPose + '\n');
   assert.equal(candidate.files.get(port), newPort + '\n');
+  // [회귀] 시각값 충돌도 실제 원본 기준으로 일괄 교체하며 CRLF·LF를 섞어도 훼손하지 않는다.
+  const first = '\tgui.LightInfluence = 0.6';
+  const second = '\tgui.LightInfluence = 0.3';
+  const mixed = first + '\r\n' + second + '\n';
+  const batch = applyVisualReplacements({[pose]: mixed}, [
+    {path: pose, before: first, after: second, category: reviewed.edits[0].category,
+      screenshot: reviewed.edits[0].screenshot},
+    {path: pose, before: second, after: '\tgui.LightInfluence = 0.8',
+      category: reviewed.edits[0].category, screenshot: reviewed.edits[0].screenshot}
+  ], contract);
+  assert.equal(batch.files.get(pose), second + '\r\n' + '\tgui.LightInfluence = 0.8\n');
+  assert.throws(() => applyVisualReplacements({[pose]: mixed}, [
+    {...reviewed.edits[0], before: first, after: second},
+    {...reviewed.edits[0], before: first, after: '\tgui.LightInfluence = 0.4'}
+  ], contract), /DUPLICATE_SOURCE_ANCHOR/);
   assert.equal(fs.readFileSync(pose, 'utf8').includes(oldPose), true,
     '원본 책임 게임 파일의 기존 기준선은 변경하지 않는다');
   assert.throws(() => validateReview({...response,
