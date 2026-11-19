@@ -2059,6 +2059,30 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local headerLimit = Instance.new("UITextSizeConstraint")
 		headerLimit.MaxTextSize = 18
 		headerLimit.Parent = header
+		-- 카드 대결은 점수와 라운드 상태를 각각 고정된 칸에서 읽는다.
+		local battleScore, battleRound, battleTurn
+		if opts.cardOnly then
+			header.Visible = false
+			local summary = Instance.new("Frame")
+			summary.Name = "BattleSummary"
+			summary.AnchorPoint = if compactCards then Vector2.zero else Vector2.new(0.5, 0)
+			summary.Position = UDim2.fromScale(if compactCards then 0.08 else 0.5, 0)
+			summary.Size = if compactCards then UDim2.new(0.92, -100, 1, 0) else UDim2.fromScale(0.78, 1)
+			summary.BackgroundTransparency = 1
+			summary.Parent = titleBar
+			for i, spec in { {"BattleRound", 0.25, 14}, {"BattleScore", 0.46, 24}, {"BattleTurn", 0.29, 14} } do
+				local part = label(summary, "", spec[3], ink, true)
+				part.Name = spec[1]
+				part.Position = UDim2.fromScale(if i == 1 then 0 elseif i == 2 then 0.25 else 0.71, 0)
+				part.Size = UDim2.fromScale(spec[2], 1)
+				part.TextScaled = true
+				part.TextStrokeTransparency = 1
+				local limit = Instance.new("UITextSizeConstraint")
+				limit.MaxTextSize = spec[3]
+				limit.Parent = part
+				if i == 1 then battleRound = part elseif i == 2 then battleScore = part else battleTurn = part end
+			end
+		end
 		local info = label(g, "", 15, Color3.fromRGB(250, 236, 200))
 		info.Position = UDim2.fromScale(0.02, 0.08)
 		info.Size = UDim2.fromScale(0.96, 0.05)
@@ -2100,7 +2124,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		frameEdge(panel, brass, 6)
 		local function sidePlate(y, color)
 			local plate = Instance.new("Frame")
-			plate.Position = if compactCards then UDim2.fromScale(if y < 0.5 then 0.015 else 0.515, 0.04) else UDim2.fromScale(0.05, y)
+			plate.Position = if compactCards then UDim2.fromScale(if y < 0.5 then 0.515 else 0.015, 0.04) else UDim2.fromScale(0.05, y)
 			plate.Size = if compactCards then UDim2.fromScale(0.47, 0.92) else UDim2.fromScale(0.9, 0.4)
 			plate.BackgroundColor3 = color
 			plate.BorderSizePixel = 0
@@ -2127,6 +2151,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			total.Position = UDim2.fromScale(0.5, 0.52)
 			total.Size = UDim2.fromScale(0.4, 0.42)
 			total.BackgroundColor3 = Color3.fromRGB(232, 194, 120)
+			if opts.cardOnly then total.Name = "SideHandCount" end
 			total.BackgroundTransparency = 0
 			total.TextScaled = true
 			total.TextStrokeTransparency = 1
@@ -3524,8 +3549,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			foePlate.deck.Text = tostring(#(m.deck and m.deck.foe or {}))
 			mePlate.deck.Text = tostring(#(m.deck and m.deck.me or {}))
-			foePlate.total.Text = tostring(BC.total(m, "foe"))
-			mePlate.total.Text = tostring(BC.total(m, "me"))
+			local myScore, foeScore = BC.total(m, "me"), BC.total(m, "foe")
+			foePlate.total.Text = if opts.cardOnly then t("손패 ", "Hand ") .. tostring(#m.hand.foe) else tostring(foeScore)
+			mePlate.total.Text = if opts.cardOnly then t("손패 ", "Hand ") .. tostring(#m.hand.me) else tostring(myScore)
+			if opts.cardOnly then
+				battleRound.Text = t(tostring(m.round) .. "판", "Round " .. tostring(m.round))
+				battleScore.Text = tostring(myScore) .. " : " .. tostring(foeScore)
+				battleTurn.Text = if m.over then t("종료", "Over") elseif m.turn == "me" then t("내 차례", "Your turn") else t("상대 차례", "Enemy turn")
+				battleTurn.TextColor3 = if m.over then ink elseif m.turn == "me" then Color3.fromRGB(36, 84, 59) else Color3.fromRGB(121, 54, 42)
+			end
 			foePlate.gems.Text = string.rep("◆", 2 - m.wins.me) .. string.rep("◇", m.wins.me)
 			mePlate.gems.Text = string.rep("◆", 2 - m.wins.foe) .. string.rep("◇", m.wins.foe)
 			mePlate.gems.TextColor3 = Color3.fromRGB(120, 220, 140)
@@ -3545,16 +3577,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				info.Text = if m.turn == "me" then t("내 차례 — 카드를 눌러 고르세요 (한 번 더 누르면 냅니다)", "Your turn — tap a card, tap again to play")
 					else t("해적이 생각 중…", "Pirates are thinking…")
 			end
-			header.Text = if english then string.format("%s · Round %d   You %d : %d Pirates · %s",
-				TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
-				if m.over then "Battle Over" elseif m.turn == "me" then "Your Turn" else "Enemy Turn")
-				else string.format("%s · %d판   우리 %d : %d 해적   ·   %s",
+			if not opts.cardOnly then
+				header.Text = if english then string.format("%s · Round %d   You %d : %d Pirates · %s",
 					TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
-					if m.over then "전투 종료" elseif m.turn == "me" then "내 차례" else "해적 차례")
-			header.Text ..= if english then string.format("   ·   Wins %d:%d   Hand %d:%d%s", m.wins.me, m.wins.foe,
-				#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
-				else string.format("   ·   승리 %d:%d   손패 %d:%d%s", m.wins.me, m.wins.foe,
+					if m.over then "Battle Over" elseif m.turn == "me" then "Your Turn" else "Enemy Turn")
+					else string.format("%s · %d판   우리 %d : %d 해적   ·   %s",
+						TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
+						if m.over then "전투 종료" elseif m.turn == "me" then "내 차례" else "해적 차례")
+				header.Text ..= if english then string.format("   ·   Wins %d:%d   Hand %d:%d%s", m.wins.me, m.wins.foe,
 					#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
+					else string.format("   ·   승리 %d:%d   손패 %d:%d%s", m.wins.me, m.wins.foe,
+						#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
+			end
 			-- 줄: 위 2줄은 상대(후열·전열), 아래 2줄은 우리(전열·후열)
 			local order = { { "foe", "ranged" }, { "foe", "melee" }, { "me", "melee" }, { "me", "ranged" } }
 			for k, o in order do
