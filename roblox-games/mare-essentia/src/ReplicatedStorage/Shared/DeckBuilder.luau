@@ -1175,45 +1175,99 @@ function DeckBuilder.build(parent, ctx)
 	end
 
 	-- 승리 보상: 카드 한 장 고르기 (화면 가운데에 큰 안내)
+	-- [선택 보상] 후보 선택과 서버 지급을 별개 터치로 처리한다.
 	local function rebuildPick()
 		if pickBanner then pickBanner:Destroy(); pickBanner = nil end
-		local bk = ctx.getBook()
-		if not bk.pick then return end
-		pickBanner = Instance.new("Frame")
-		pickBanner.AnchorPoint = Vector2.new(0.5, 0.5)
-		pickBanner.Position = UDim2.fromScale(0.5, 0.5)
-		pickBanner.Size = UDim2.new(0.92, 0, 0, 180)
-		pickBanner.BackgroundColor3 = Color3.fromRGB(30, 24, 20)
-		pickBanner.BorderSizePixel = 0
-		pickBanner.ZIndex = 40
-		pickBanner.Parent = root
-		corner(pickBanner, 12)
-		local st = Instance.new("UIStroke")
-		st.Color = GOLD
-		st.Thickness = 3
-		st.Parent = pickBanner
-		local hd = text(pickBanner, "승리 보상! 카드 1장을 고르세요", 20, GOLD, true)
-		hd.Size = UDim2.new(1, 0, 0, 34)
-		hd.ZIndex = 41
-		local rowF = Instance.new("Frame")
-		rowF.BackgroundTransparency = 1
-		rowF.Position = UDim2.fromOffset(10, 40)
-		rowF.Size = UDim2.new(1, -20, 1, -50)
-		rowF.ZIndex = 41
-		rowF.Parent = pickBanner
-		local rl = Instance.new("UIListLayout")
-		rl.FillDirection = Enum.FillDirection.Horizontal
-		rl.Padding = UDim.new(0, 10)
-		rl.HorizontalFlex = Enum.UIFlexAlignment.Fill
-		rl.Parent = rowF
-		for i, id in bk.pick do
-			local cd = CB.def(id)
-			local b = button(rowF, (cd and cd.name or id) .. (if cd and cd.power then string.format("\n점수 %d", cd.power) else ""), Color3.fromRGB(176, 136, 52), 17, function()
-				Sfx.play("sfx_card_coin", 0.7, 1, "sfx_coin")
-				ctx.act("CardPick", { index = i })
+		local candidates = ctx.getBook().pick
+		if not candidates or #candidates == 0 then return end
+		local panel = Instance.new("Frame")
+		pickBanner = panel
+		panel.Name = "RewardCardChoice"
+		panel.Size = UDim2.fromScale(1, 1)
+		panel.BackgroundColor3 = Color3.fromRGB(12, 32, 49)
+		panel.BorderSizePixel = 0
+		panel.Active = true
+		panel.ZIndex = 40
+		panel.Parent = root
+
+		local seaId = ctx.AssetIds["CardArt/ui_battle_dawn"]
+		if seaId then
+			local sea = Instance.new("ImageLabel")
+			sea.BackgroundTransparency = 1
+			sea.Size = UDim2.fromScale(1, 1)
+			sea.Image = "rbxassetid://" .. tostring(seaId)
+			sea.ScaleType = Enum.ScaleType.Crop
+			sea.ZIndex = 40
+			sea.Parent = panel
+		end
+		local heading = text(panel, "보상 카드 선택", 24, INK, true)
+		heading.Position = UDim2.fromScale(0.05, 0.04)
+		heading.Size = UDim2.fromScale(0.90, 0.12)
+		heading.ZIndex = 41
+
+		local selected
+		local confirming = false
+		local highlights = {}
+		local confirm = button(panel, "이 카드 받기", PAPER, 17, function()
+			if not selected or confirming then return end
+			confirming = true
+			Sfx.play("sfx_card_coin", 0.7, 1, "sfx_coin")
+			ctx.act("CardPick", { index = selected })
+			confirming = false
+		end)
+		confirm.AnchorPoint = Vector2.new(0.5, 1)
+		confirm.Position = UDim2.fromScale(0.5, 0.96)
+		confirm.Size = UDim2.new(0.42, 0, 0, 44)
+		confirm.TextColor3 = SEPIA
+		confirm.ZIndex = 42
+		confirm.Active = false
+		confirm.AutoButtonColor = false
+		confirm.BackgroundTransparency = 0.4
+		buttonArt(confirm, "ui_button_paper")
+		local confirmArt = confirm:FindFirstChild("ButtonArtwork")
+		if confirmArt then confirmArt.ImageTransparency = 0.4 end
+
+		for i, id in candidates do
+			local card = CB.def(id)
+			local candidate = button(panel, "", PAPER, 16, function()
+				if confirming then return end
+				selected = i
+				for index, stroke in highlights do
+					stroke.Color = if index == selected then GOLD else BINDING
+					stroke.Thickness = if index == selected then 3 else 1
+				end
+				confirm.Active = true
+				confirm.AutoButtonColor = true
+				confirm.BackgroundTransparency = if confirmArt then 1 else 0
+				if confirmArt then confirmArt.ImageTransparency = 0 end
+				Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click")
 			end)
-			b.ZIndex = 42
-			b.Size = UDim2.new(0, 100, 1, 0)
+			candidate.AnchorPoint = Vector2.new(0.5, 0.5)
+			candidate.Position = UDim2.fromScale(0.05 + 0.90 * (i - 0.5) / #candidates, 0.48)
+			candidate.Size = UDim2.fromScale(0.85 / #candidates, 0.59)
+			candidate.ZIndex = 42
+			highlights[i] = candidate:FindFirstChildOfClass("UIStroke")
+			local ratio = Instance.new("UIAspectRatioConstraint")
+			ratio.AspectRatio = 3 / 4
+			ratio.AspectType = Enum.AspectType.FitWithinMaxSize
+			ratio.Parent = candidate
+			local art = Instance.new("ImageLabel")
+			art.BackgroundTransparency = 1
+			art.Position = UDim2.fromScale(0.025, 0.025)
+			art.Size = UDim2.fromScale(0.95, 0.73)
+			art.ScaleType = Enum.ScaleType.Crop
+			art.ZIndex = 43
+			local artId = card and ctx.AssetIds[ctx.artKey(card)]
+			art.Image = if artId then "rbxassetid://" .. tostring(artId) else ""
+			art.Parent = candidate
+			local name = text(candidate, card and card.name or id, 15, SEPIA, true)
+			name.Position = UDim2.fromScale(0.04, 0.76)
+			name.Size = UDim2.fromScale(0.92, 0.23)
+			name.TextScaled = true
+			name.ZIndex = 43
+			local limit = Instance.new("UITextSizeConstraint")
+			limit.MaxTextSize = 16
+			limit.Parent = name
 		end
 	end
 
