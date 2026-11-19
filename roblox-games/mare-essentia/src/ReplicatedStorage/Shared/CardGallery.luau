@@ -84,6 +84,7 @@ local function showDetail(ctx, id)
 	if not d then return end
 	local owned = book.owned[id] or 0
 	local tier = book.tier[id] or 1
+	local albumId = ctx.AssetIds["CardArt/ui_card_vault_album"]
 
 	local shade = Instance.new("TextButton")
 	shade.Name = "CardDetail"
@@ -114,6 +115,15 @@ local function showDetail(ctx, id)
 	stroke.Color = Color3.fromRGB(158, 112, 88)
 	stroke.Thickness = 3
 	stroke.Parent = card
+	local album = Instance.new("ImageLabel")
+	album.Name = "CardDetailAlbum"
+	album.BackgroundTransparency = 1
+	album.Size = UDim2.fromScale(1, 1)
+	album.ScaleType = Enum.ScaleType.Stretch
+	album.Image = if albumId then "rbxassetid://" .. tostring(albumId) else ""
+	album.Visible = false
+	album.ZIndex = 51
+	album.Parent = card
 	local sink = Instance.new("TextButton") -- 카드 안을 눌러도 닫히지 않게
 	sink.Text = ""
 	sink.BackgroundTransparency = 1
@@ -140,6 +150,17 @@ local function showDetail(ctx, id)
 	art.ImageColor3 = if owned > 0 then Color3.new(1, 1, 1) else Color3.fromRGB(70, 70, 80)
 	art.ZIndex = 52
 	art.Parent = frame
+	local nameplate = newLabel(frame, d.name, 17, Color3.fromRGB(49, 35, 24), true)
+	nameplate.Position = UDim2.fromScale(0.04, 0.67)
+	nameplate.Size = UDim2.fromScale(0.92, 0.27)
+	nameplate.BackgroundColor3 = Color3.fromRGB(227, 202, 157)
+	nameplate.BackgroundTransparency = 0
+	nameplate.TextScaled = true
+	nameplate.ZIndex = 54
+	nameplate.Visible = false
+	local nameLimit = Instance.new("UITextSizeConstraint")
+	nameLimit.MaxTextSize = 19
+	nameLimit.Parent = nameplate
 	local regionPrefix = ctx.BC.cardRegionPrefix(id)
 	local frameKey = regionPrefix and REGION_FRAME[regionPrefix]
 	local frameId = frameKey and ctx.AssetIds["CardArt/" .. frameKey]
@@ -164,7 +185,25 @@ local function showDetail(ctx, id)
 	right.ZIndex = 52
 	right.Parent = card
 	local function layoutDetail()
-		local size = card.AbsoluteSize
+		local viewport = shade.AbsoluteSize
+		local landscape = viewport.X >= 520 and viewport.X > viewport.Y and albumId ~= nil
+		card.Size = if landscape then UDim2.fromScale(1, 1) else UDim2.fromScale(0.94, 0.88)
+		lim.MaxSize = if landscape then Vector2.new(10000, 10000) else Vector2.new(740, 650)
+		album.Visible = landscape
+		stroke.Enabled = not landscape
+		nameplate.Visible = landscape
+		art.Position = if landscape then UDim2.fromScale(0.5, 0.34) else UDim2.fromScale(0.5, 0.5)
+		art.Size = if landscape then UDim2.fromScale(0.92, 0.52) else UDim2.fromScale(1, 1)
+		local size = if landscape then viewport else card.AbsoluteSize
+		if landscape then
+			local available = math.max(1, size.Y - 104)
+			local width = math.min(size.X * 0.52, available * 0.75)
+			frame.Size = UDim2.fromOffset(width, width / 0.75)
+			frame.Position = UDim2.new(0.315, -width / 2, 0, 48)
+			right.Position = UDim2.new(0.65, 0, 0, 47)
+			right.Size = UDim2.new(0.32, 0, 1, -105)
+			return
+		end
 		local stacked = size.X < 520 and size.Y > size.X
 		local footer = if owned > 0 then 58 else 12
 		frame.Position = UDim2.fromOffset(12, 44)
@@ -172,10 +211,11 @@ local function showDetail(ctx, id)
 		right.Position = if stacked then UDim2.new(0, 12, 0.45, 8) else UDim2.new(0.47, 0, 0, 44)
 		right.Size = if stacked then UDim2.new(1, -24, 0.55, -footer - 8) else UDim2.new(0.53, -12, 1, -44 - footer)
 	end
+	shade:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutDetail)
 	card:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutDetail)
 	layoutDetail()
 
-	local heading = newLabel(card, "카드 기록", 19, Color3.fromRGB(241, 221, 187), true)
+	local heading = newLabel(card, "카드 상세", 19, Color3.fromRGB(241, 221, 187), true)
 	heading.Font = Enum.Font.Antique
 	heading.Position = UDim2.fromOffset(12, 0)
 	heading.Size = UDim2.new(1, -80, 0, 44)
@@ -184,17 +224,20 @@ local function showDetail(ctx, id)
 
 	local lay = Instance.new("UIListLayout")
 	lay.Padding = UDim.new(0, 5)
+	lay.SortOrder = Enum.SortOrder.LayoutOrder
 	lay.Parent = right
 	local title = newLabel(right, string.format("[%s] %s", ctx.CB.TIER_NAME[tier], d.name), 20, TIER_COLOR[tier], true)
 	title.Size = UDim2.new(1, -8, 0, 28)
 	title.AutomaticSize = Enum.AutomaticSize.Y
 	title.TextXAlignment = Enum.TextXAlignment.Left
 	title.ZIndex = 52
+	title.LayoutOrder = 1
 	local kind = if ctx.BC.Specials[id] then "특수 카드" elseif d.hero then "영웅" elseif d.row and d.power then string.format("%s 줄 · 점수 %d", ctx.BC.ROW_NAME[d.row] or d.row, d.power + tier - 1) else "카드"
 	local info = newLabel(right, kind .. (if d.category then " · " .. d.category else "") .. string.format("\n보유 %d장 · 덱 %d장", owned, want[id] or 0), 14, Color3.fromRGB(235, 220, 185))
 	info.Size = UDim2.new(1, 0, 0, 40)
 	info.TextXAlignment = Enum.TextXAlignment.Left
 	info.ZIndex = 52
+	info.LayoutOrder = 2
 	local src = newLabel(right, Gallery.sourceText(ctx, id), 13, Color3.fromRGB(180, 200, 220))
 	src.Size = UDim2.new(1, -6, 0, 0)
 	src.AutomaticSize = Enum.AutomaticSize.Y
@@ -214,21 +257,29 @@ local function showDetail(ctx, id)
 	local line = ctx.BC.CardLines[id]
 	if line then effect = (effect and effect .. "\n" or "") .. "「" .. line[1] .. "」" end
 	if effect and effect ~= "" then
+		local effectHeading = newLabel(right, "카드 효과", 15, Color3.fromRGB(241, 221, 187), true)
+		effectHeading.Size = UDim2.new(1, -6, 0, 22)
+		effectHeading.TextXAlignment = Enum.TextXAlignment.Left
+		effectHeading.LayoutOrder = 3
+		effectHeading.ZIndex = 52
 		local rule = newLabel(right, effect, 15, Color3.fromRGB(250, 236, 200))
 		rule.Size = UDim2.new(1, -6, 0, 0)
 		rule.AutomaticSize = Enum.AutomaticSize.Y
 		rule.TextXAlignment = Enum.TextXAlignment.Left
 		rule.ZIndex = 52
+		rule.LayoutOrder = 4
 	end
 	src.TextXAlignment = Enum.TextXAlignment.Left
 	src.TextYAlignment = Enum.TextYAlignment.Top
 	src.ZIndex = 52
+	src.LayoutOrder = 5
 	local up = ctx.CB.upgradeInfo(book, id)
 	if up and owned > 0 then
 		local u = newLabel(right, string.format("강화 → %s: 같은 카드 %d장+1 보유, %d코인", ctx.CB.TIER_NAME[tier + 1], up.copies, up.coins), 13, Color3.fromRGB(240, 210, 130))
 		u.Size = UDim2.new(1, 0, 0, 36)
 		u.TextXAlignment = Enum.TextXAlignment.Left
 		u.ZIndex = 52
+		u.LayoutOrder = 6
 	end
 	if owned > 0 then
 		local row = Instance.new("Frame")
