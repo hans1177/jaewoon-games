@@ -2065,7 +2065,8 @@ function H.layoutBook()
   local gallery = not facilityDetail and view ~= nil and not newGameMode
     and currentTab ~= "map" and currentTab ~= "codex" and currentTab ~= "encyclopedia" and currentTab ~= "market"
   local wide = width >= 740
-  local tabs = tabBar.Visible or facilityDetail
+  -- [중복 탭 제거] 단일 기능 시설(조선소)은 같은 이름의 탭을 다시 보여주지 않는다.
+  local tabs = tabCount > 1 and (tabBar.Visible or facilityDetail)
   -- [상단 오른쪽 가로 탭] 데스크톱은 한 줄 전체 표시, 작은 폰은 한 줄 가로 스크롤.
   local tabWidth = if width < 480 then 146 elseif width < 740 then 160 else 166
   local tabGap = 6
@@ -2089,7 +2090,7 @@ function H.layoutBook()
   H.menuActionDock.Visible = gallery
   if facilityDetail then
     -- [교역·조선] 왼쪽 탭 자리까지 기존 장부·선박 본문의 가용 폭으로 돌린다.
-    tabBar.Visible = true
+    tabBar.Visible = tabCount > 1
     content.Position = UDim2.fromOffset(8, bodyTop)
     content.Size = UDim2.new(1, -16, 1, -bodyTop - 8)
     content.Visible = false
