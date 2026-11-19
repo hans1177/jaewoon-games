@@ -245,12 +245,12 @@ B.Units.eu_36 = { id="eu_36", name="잔 다르크", category="인물", lore="백
 B.Units.eu_37 = { id="eu_37", name="콜럼버스", category="인물", lore="대서양을 건너 신대륙에 닿은 항해가", stage={ art="CardArt/event_chart_west_europe", motion="wind", scene="콜럼버스" }, row="ranged", power=5, weapon="gun", cause="eu_32" }
 B.Units.eu_38 = { id="eu_38", name="웰링턴 공작", category="인물", lore="워털루에서 나폴레옹을 꺾은 영국 장군", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="웰링턴 공작" }, row="cannon", power=6, weapon="cannon", cause="eu_34" }
 B.Units.eu_39 = { id="eu_39", name="넬슨 제독", category="인물", lore="갈레온을 이은 함대로 트라팔가르를 이긴 제독", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="넬슨 제독" }, row="cannon", power=6, weapon="cannon", cause="eu_03" }
-B.Units.eu_40 = { id="eu_40", name="창병 방진", category="병종", lore="창을 촘촘히 세워 기병을 막은 보병 진형", stage={ art="CardArt/event_chart_west_europe", motion="board", scene="창병 방진" }, row="melee", power=4, weapon="spear" }
+B.Units.eu_40 = { id="eu_40", name="창병 방진", category="병종", lore="창을 촘촘히 세워 기병을 막은 보병 진형", stage={ art="CardArt/event_chart_west_europe", motion="board", scene="창병 방진" }, row="melee", power=4, weapon="spear", ability="relay", text="전술 교대: 전열·후열의 첫 일반 유닛을 교대한다. 전열 도착 +2, 후열 도착 +1." }
 B.Specials.eu_41 = { id="eu_41", name="휴전 협정", category="사건", lore="전쟁을 멈추게 한 협정", stage={ art="CardArt/event_chart_west_europe", motion="storm", scene="휴전 협정" }, special="refute", refuteKind="사건", text="상대 카드 중 사건에서 이어진 연쇄 보너스를 끊는다" }
 B.Specials.eu_42 = { id="eu_42", name="암살", category="인물", lore="핵심 인물을 노린 은밀한 공격", stage={ art="CardArt/event_chart_west_europe", motion="storm", scene="암살" }, special="refute", refuteKind="인물", text="상대 카드 중 인물에서 이어진 연쇄 보너스를 끊는다" }
 B.Specials.eu_43 = { id="eu_43", name="봉쇄", category="기술", lore="기술과 물자가 들어오는 길을 막는 작전", stage={ art="CardArt/event_chart_west_europe", motion="storm", scene="봉쇄" }, special="refute", refuteKind="기술", text="상대 카드 중 기술에서 이어진 연쇄 보너스를 끊는다" }
-B.Units.eu_44 = { id="eu_44", name="머스킷 부대", category="병종", lore="화약 무기로 무장한 보병 부대", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="머스킷 부대" }, row="ranged", power=3, weapon="gun", fuse={"eu_34","eu_40"} }
-B.Units.eu_45 = { id="eu_45", name="철갑 함대", category="선박", lore="산업혁명이 낳은 강철 군함 함대", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="철갑 함대" }, row="cannon", power=3, weapon="cannon", fuse={"eu_33","eu_06"} }
+B.Units.eu_44 = { id="eu_44", name="머스킷 부대", category="병종", lore="화약 무기로 무장한 보병 부대", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="머스킷 부대" }, row="ranged", power=3, weapon="gun", fuse={"eu_34","eu_40"}, ability="lastOrder", text="최후 명령: 직접 패스하면 가장 약한 아군 일반 유닛 +3." }
+B.Units.eu_45 = { id="eu_45", name="철갑 함대", category="선박", lore="산업혁명이 낳은 강철 군함 함대", stage={ art="CardArt/event_chart_west_europe", motion="fire", scene="철갑 함대" }, row="cannon", power=3, weapon="cannon", fuse={"eu_33","eu_06"}, ability="counter", text="역습: 상대 행동으로 한 열의 점수가 내려가면 다른 열의 가장 약한 아군 일반 유닛 +2. 라운드당 한 번." }
 B.Units.ea_01 = { id="ea_01", name="판옥선", category="선박", lore="넓은 갑판과 함포를 갖춘 조선 수군 전투선", stage={ art="CardArt/event_chart_east_asia", motion="fire", scene="판옥선" }, row="cannon", power=4, weapon="cannon", ability="spy" }
 B.Units.ea_02 = { id="ea_02", name="거북선", category="선박", lore="덮개형 상갑판이 특징인 조선 전투선", stage={ art="CardArt/event_chart_east_asia", motion="fire", scene="거북선" }, row="cannon", power=5, weapon="cannon", ability="bond", cause="ea_01" }
 B.Units.ea_03 = { id="ea_03", name="조선 세견선", category="선박", lore="동아시아의 선박 유산 · 조선 세견선", stage={ art="CardArt/event_chart_east_asia", motion="wind", scene="조선 세견선" }, row="ranged", power=6, weapon="gun", ability="armor" }
@@ -444,9 +444,9 @@ B.Units.lo_21 = { id="lo_21", name="유령선 플라잉 더치맨", category="�
 B.Units.lo_22 = { id="lo_22", name="사이렌의 노래", category="전설 생물", lore="듣는 이의 마음을 끌어당기는 노래", stage={ art="CardArt/event_calm_seas", motion="scout", scene="사이렌의 노래" }, row="ranged", power=3, weapon="gun", ability="spy" }
 B.Units.lo_23 = { id="lo_23", name="고대 거인", category="전설 생물", lore="돌산처럼 우뚝 선 옛이야기 속의 거인", stage={ art="CardArt/event_stonehenge", motion="pounce", scene="고대 거인" }, row="melee", power=7, weapon="axe", ability="armor" }
 B.Units.lo_24 = { id="lo_24", name="안개의 정령", category="전설 생물", lore="안개 속에서 길을 흐리는 존재", stage={ art="CardArt/event_calm_seas", motion="scout", scene="안개의 정령" }, row="ranged", power=3, weapon="gun", ability="bond" }
-B.Units.lo_46 = { id="lo_46", name="묠니르", category="유물", lore="북유럽 신화에서 천둥의 신 토르가 쓰는 망치. 같은 줄의 다른 아군 일반 카드 점수를 높인다.", row="melee", power=4, ability="morale" }
+B.Units.lo_46 = { id="lo_46", name="묠니르", category="유물", lore="북유럽 신화에서 천둥의 신 토르가 쓰는 망치.", row="melee", power=4, ability="legacy", text="전우의 유언: 상대 효과로 제거되면 같은 열의 가장 약한 아군 일반 유닛 +2." }
 B.Specials.lo_25 = { id="lo_25", name="엑스칼리버", category="유물", lore="아서왕 전설에서 아서가 호수의 여인에게 받은 검", special="horn", text="내 가장 센 줄의 일반 카드 점수가 두 배" }
-B.Specials.lo_26 = { id="lo_26", name="현자의 돌", category="유물", lore="금속을 금으로 바꾸고 생명의 영약을 만드는 데 쓰인다는 연금술 전승의 물질", special="wind", text="날씨를 걷어 내고 카드를 한 장 뽑는다" }
+B.Specials.lo_26 = { id="lo_26", name="현자의 돌", category="유물", lore="금속을 금으로 바꾸고 생명의 영약을 만드는 데 쓰인다는 연금술 전승의 물질", special="echo", text="따라 하기: 상대가 이번 라운드에 마지막으로 낸 전술의 효과를 복제한다." }
 B.Specials.lo_27 = { id="lo_27", name="저주의 안개", category="미스터리", lore="시야를 가리고 힘을 앗아 가는 짙은 안개", stage={ art="CardArt/event_calm_seas", motion="storm", scene="저주의 안개" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="melee", }
 B.Specials.lo_28 = { id="lo_28", name="불의 폭풍", category="미스터리", lore="하늘을 붉게 물들이는 폭풍", stage={ art="CardArt/event_hurricane", motion="storm", scene="불의 폭풍" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="ranged", }
 B.Specials.lo_29 = { id="lo_29", name="깊은 바다의 소용돌이", category="미스터리", lore="모든 것을 삼키는 거대한 소용돌이", stage={ art="CardArt/event_storm", motion="storm", scene="깊은 바다의 소용돌이" }, special="weather", text="해당 전투 줄의 일반 카드 전투력을 1로 낮춘다", row="cannon", }
@@ -494,12 +494,12 @@ B.CardEnglish = {
 	eu_37 = { name = "Columbus", lore = "A navigator who crossed the Atlantic and reached the New World." },
 	eu_38 = { name = "Duke of Wellington", lore = "The British general who defeated Napoleon at Waterloo." },
 	eu_39 = { name = "Admiral Nelson", lore = "An admiral who won at Trafalgar with a galleon-descended fleet." },
-	eu_40 = { name = "Pike Square", lore = "A dense infantry formation of pikes that stopped cavalry." },
+	eu_40 = { text = "Rotation: Swap the oldest non-hero units in melee and ranged. Arrivals gain +2 in melee or +1 in ranged.", name = "Pike Square", lore = "A dense infantry formation of pikes that stopped cavalry." },
 	eu_41 = { name = "Armistice", lore = "An agreement that brought a war to a halt." },
 	eu_42 = { name = "Assassination", lore = "A covert strike aimed at a key figure." },
 	eu_43 = { name = "Blockade", lore = "An operation that cuts off the routes of tech and supplies." },
-	eu_44 = { name = "Musket Regiment", lore = "An infantry regiment armed with gunpowder weapons." },
-	eu_45 = { name = "Ironclad Fleet", lore = "A fleet of steel warships born of the Industrial Revolution." },
+	eu_44 = { text = "Last order: When you pass manually, boost your weakest non-hero unit by 3.", name = "Musket Regiment", lore = "An infantry regiment armed with gunpowder weapons." },
+	eu_45 = { text = "Counter: If an enemy action lowers an allied row score, boost the weakest non-hero in another row by 2. Once per round.", name = "Ironclad Fleet", lore = "A fleet of steel warships born of the Industrial Revolution." },
 	ea_01 = { name = "Panokseon", lore = "A Korean naval warship with a wide upper deck and mounted cannon." },
 	ea_02 = { name = "Turtle Ship", lore = "A Joseon fighting vessel known for its covered upper deck." },
 	ea_03 = { name = "Joseon Segyeonseon", lore = "A Korean diplomatic vessel used for maritime journeys." },
@@ -694,12 +694,12 @@ B.CardEnglish = {
 	lo_23 = { name = "Ancient Giant", lore = "A giant from old tales who stands like a mountain." },
 	lo_24 = { name = "Mist Spirit", lore = "A being that clouds the way within the fog." },
 	lo_25 = { name = "Excalibur", lore = "The sword Arthur receives from the Lady of the Lake." },
-	lo_26 = { name = "Philosopher's Stone", lore = "An alchemical substance said to transmute metals into gold and produce an elixir of life." },
+	lo_26 = { text = "Echo: Copy the last non-Echo tactic the opponent played this round.", name = "Philosopher's Stone", lore = "An alchemical substance said to transmute metals into gold and produce an elixir of life." },
 	lo_27 = { name = "Cursed Fog", lore = "A thick fog that dims sight and saps strength." },
 	lo_28 = { name = "Firestorm", lore = "A storm that turns the sky red." },
 	lo_29 = { name = "Abyssal Whirlpool", lore = "A vast whirlpool that swallows everything." },
 	lo_30 = { name = "Mystic Lantern", lore = "A light that shows the way in darkness." },
-	lo_46 = { name = "Mjolnir", lore = "The hammer wielded by Thor, the Norse god of thunder." },
+	lo_46 = { text = "Legacy: When removed by the opponent, boost the weakest non-hero in this row by 2.", name = "Mjolnir", lore = "The hammer wielded by Thor, the Norse god of thunder." },
 }
 
 -- 두목 전용 영웅: 두목을 쓰러뜨린 뒤 보상 후보에만 나온다 (일반 뽑기에는 나오지 않는다)
@@ -968,6 +968,7 @@ function B.cardPower(m: any, side, row, idx)
 				p = math.max(1, p - 1)
 			end
 		end
+		p += c.tacticPower or 0
 		if m.horn and m.horn[side][row] then
 			p *= 2
 		end
@@ -1031,19 +1032,75 @@ local function strongestNonHero(m: any, sides)
 	return best, hits
 end
 
-local function removeHits(m: any, hits)
+local function weakestAlly(m: any, side, onlyRow, excludeRow)
+	local pick, power
+	for _, row in B.ROWS do
+		if (not onlyRow or onlyRow == row) and row ~= excludeRow then
+			for i, card in m.rows[side][row] do
+				local current = B.cardPower(m, side, row, i)
+				if not card.hero and (not power or current < power) then
+					pick, power = card, current
+				end
+			end
+		end
+	end
+	return pick
+end
+
+local function boostCard(card, amount)
+	card.tacticPower = (card.tacticPower or 0) + amount
+end
+
+local function counterScores(m: any, side)
+	local scores = nil
+	if m.counterRound and m.counterRound[side] == m.round then return nil end
+	for _, row in B.ROWS do
+		for _, card in m.rows[side][row] do
+			if card.ability == "counter" then
+				scores = {}
+				for _, laneId in B.ROWS do scores[laneId] = B.rowTotal(m, side, laneId) end
+				return scores
+			end
+		end
+	end
+	return nil
+end
+
+local function resolveCounter(m: any, side, scores)
+	if not scores then return false end
+	for _, row in B.ROWS do
+		if B.rowTotal(m, side, row) < scores[row] then
+			local target = weakestAlly(m, side, nil, row)
+			if target then
+				boostCard(target, 2)
+				m.counterRound = m.counterRound or {}
+				m.counterRound[side] = m.round
+				return true
+			end
+		end
+	end
+	return false
+end
+
+local function removeHits(m: any, hits, source)
+	local legacies = {}
 	-- 뒤에서부터 지워야 번호가 어긋나지 않는다
 	table.sort(hits, function(a, b)
-		if a[1] ~= b[1] or a[2] ~= b[2] then
-			return false
-		end
+		if a[1] ~= b[1] then return a[1] < b[1] end
+		if a[2] ~= b[2] then return a[2] < b[2] end
 		return a[3] > b[3]
 	end)
 	for _, h in hits do
 		local c = table.remove(m.rows[h[1]][h[2]], h[3])
 		if c then
 			table.insert(m.grave[h[1]], c)
+			if h[1] ~= source and c.ability == "legacy" then table.insert(legacies, h) end
+			c.tacticPower = nil
 		end
+	end
+	for _, h in legacies do
+		local target = weakestAlly(m, h[1], h[2], nil)
+		if target then boostCard(target, 2) end
 	end
 end
 
@@ -1113,11 +1170,13 @@ local function roundEnd(m: any)
 		for _, row in B.ROWS do
 			for _, c in m.rows[side][row] do
 				if c ~= keep then
+					c.tacticPower = nil
 					table.insert(m.grave[side], c)
 				end
 			end
 			m.rows[side][row] = {}
 		end
+		if keep then keep.tacticPower = nil end
 		if keep and not (m.wins.me >= 2 or m.wins.foe >= 2 or m.round >= 3) then
 			table.insert(m.rows[side][keepRow], keep)
 		elseif keep then
@@ -1231,29 +1290,39 @@ function B.play(m: any, side, handIdx)
 		return false, "그 카드가 없어요"
 	end
 	table.remove(m.hand[side], handIdx)
+	local played = c
+	local foe = other(side)
+	local scores = counterScores(m, foe)
+	if c.special == "echo" then
+		local prior = m.lastTactic and m.lastTactic[foe]
+		if prior and prior.round == m.round then c = prior.card end
+	elseif c.special then
+		m.lastTactic = m.lastTactic or {}
+		m.lastTactic[side] = { round = m.round, card = c }
+	end
 	local msg
 	if c.special == "scorch" then
 		local best, hits = strongestNonHero(m, { "me", "foe" })
 		if best >= 6 then
-			removeHits(m, hits)
+			removeHits(m, hits, side)
 			msg = string.format("소각! 가장 센 카드(%d)가 쓰러졌다", best)
 		else
 			msg = "소각 — 쓰러뜨릴 만한 카드가 없었다"
 		end
-		table.insert(m.grave[side], c)
+		table.insert(m.grave[side], played)
 	elseif c.special == "weather" then
 		m.weather[lane(c)] = true
 		msg = string.format("%s! %s 줄이 모두 약해졌다", c.name, B.ROW_NAME[lane(c)])
-		table.insert(m.grave[side], c)
+		table.insert(m.grave[side], played)
 	elseif c.special == "clear" then
 		m.weather = { melee = false, ranged = false, cannon = false }
 		msg = "날씨가 걷혔다"
-		table.insert(m.grave[side], c)
+		table.insert(m.grave[side], played)
 	elseif c.special == "wind" then
 		m.weather = { melee = false, ranged = false, cannon = false }
 		drawCards(m, side, 1)
 		msg = "순풍! 날씨가 걷히고 카드를 한 장 뽑았다"
-		table.insert(m.grave[side], c)
+		table.insert(m.grave[side], played)
 	elseif c.special == "horn" then
 		local row = bestHornRow(m, side)
 		if row then
@@ -1262,22 +1331,26 @@ function B.play(m: any, side, handIdx)
 		else
 			msg = "군기 — 높일 줄이 없었다"
 		end
-		table.insert(m.grave[side], c)
+		table.insert(m.grave[side], played)
 	elseif c.special == "refute" then
 		m.refuted = m.refuted or { me = {}, foe = {} }
 		m.refuted[other(side)][c.refuteKind or ""] = true
 		msg = string.format("반증! 상대의 %s 연쇄가 끊겼다", c.refuteKind or "")
-		table.insert(m.grave[side], c)
+		table.insert(m.grave[side], played)
 	elseif c.special == "decoy" then
 		local pick = decoyTarget(m, side)
 		if pick then
 			local back = table.remove(m.rows[side][pick.row], pick.i)
+			back.tacticPower = nil
 			table.insert(m.hand[side], back)
 			msg = string.format("회군! %s을(를) 손으로 되돌렸다", back.name)
 		else
 			msg = "회군 — 되돌릴 카드가 없었다"
 		end
-		table.insert(m.grave[side], c)
+		table.insert(m.grave[side], played)
+	elseif c.special == "echo" then
+		msg = "따라 하기 — 복제할 전술이 없었다"
+		table.insert(m.grave[side], played)
 	else
 		local target = side
 		if c.ability == "spy" then
@@ -1300,6 +1373,7 @@ function B.play(m: any, side, handIdx)
 				for _, part in parts do
 					sum += part.card.power
 					table.remove(m.rows[side][part.row], table.find(m.rows[side][part.row], part.card))
+					part.card.tacticPower = nil
 					table.insert(m.grave[side], part.card)
 				end
 				c.power = sum + 3
@@ -1314,15 +1388,26 @@ function B.play(m: any, side, handIdx)
 		elseif c.cause and B.chainActive(m, side, c) then
 			msg ..= " (연쇄! 점수 +2)"
 		end
-		if c.ability == "spy" then
+		if c.ability == "relay" then
+			local front, back = m.rows[side].melee, m.rows[side].ranged
+			local fi, bi
+			for i, unit in front do if not unit.hero then fi = i; break end end
+			for i, unit in back do if not unit.hero then bi = i; break end end
+			if fi and bi then
+				front[fi], back[bi] = back[bi], front[fi]
+				boostCard(front[fi], 2)
+				boostCard(back[bi], 1)
+				msg ..= " (전술 교대!)"
+			end
+		elseif c.ability == "spy" then
 			local n = if m.faction and m.faction[side] == "new_world" then 3 else 2
 			drawCards(m, side, n)
 			msg ..= string.format(" (첩자: 카드 %d장을 뽑았다)", n)
 		elseif c.ability == "snipe" then
 			local fside, frow, fi = snipeTarget(m, side)
 			if fside then
-				local dead = table.remove(m.rows[fside][frow], fi)
-				table.insert(m.grave[fside], dead)
+				local dead = m.rows[fside][frow][fi]
+				removeHits(m, { { fside, frow, fi } }, side)
 				msg ..= string.format(" (저격: %s 쓰러뜨림)", dead.name)
 			end
 		elseif c.ability == "medic" then
@@ -1339,6 +1424,8 @@ function B.play(m: any, side, handIdx)
 			end
 		end
 	end
+	if played ~= c then msg = "따라 하기: " .. msg end
+	if resolveCounter(m, foe, scores) then msg ..= " (상대 역습!)" end
 	logLine(m, (if side == "me" then "우리: " else "해적: ") .. msg)
 	nextTurn(m, side)
 	local act = { "p", handIdx }
@@ -1353,7 +1440,7 @@ function B.play(m: any, side, handIdx)
 			m.turn = other(side)
 		end
 	end
-	return true, msg, result, act, c
+	return true, msg, result, act, played
 end
 
 function B.pass(m: any, side)
@@ -1361,6 +1448,17 @@ function B.pass(m: any, side)
 		return false, "지금은 멈출 수 없어요"
 	end
 	m.passed[side] = true
+	for _, row in B.ROWS do
+		for _, c in m.rows[side][row] do
+			if c.ability == "lastOrder" then
+				local target = weakestAlly(m, side, nil, nil)
+				if target then
+					boostCard(target, 3)
+					logLine(m, "최후 명령: " .. target.name .. " +3")
+				end
+			end
+		end
+	end
 	logLine(m, (if side == "me" then "우리: " else "해적: ") .. "이번 판은 여기까지")
 	if m.passed[other(side)] then
 		return true, "양쪽이 멈췄다", roundEnd(m), { "s" }
@@ -1399,6 +1497,8 @@ function B.useLeader(m: any, side)
 	local fx = if ld and ld.fx then ld.fx else id
 	local nm = if ld then ld.name else id
 	m.leaderUsed[side] = true
+	local opponent = other(side)
+	local scores = counterScores(m, opponent)
 	local msg
 	if fx == "draw" then
 		drawCards(m, side, 1)
@@ -1427,12 +1527,13 @@ function B.useLeader(m: any, side)
 		local best, hits = strongestNonHero(m, { other(side) })
 		if best > 0 then
 			-- 동점이면 첫 하나만
-			removeHits(m, { hits[1] })
+			removeHits(m, { hits[1] }, side)
 			msg = string.format("%s: 상대의 가장 센 카드(%d)를 쓰러뜨렸다", if fx == "snipe" and nm ~= "snipe" then nm else "저격", best)
 		else
 			msg = "저격 — 맞힐 카드가 없었다"
 		end
 	end
+	if resolveCounter(m, opponent, scores) then msg ..= " (상대 역습!)" end
 	logLine(m, (if side == "me" then "우리 " else "해적 ") .. msg)
 	return true, msg, nil, { "l" }
 end
@@ -1757,6 +1858,8 @@ local function copyMatch(m)
 		return out
 	end
 	local n = table.clone(m)
+	n.lastTactic = table.clone(m.lastTactic or {})
+	n.counterRound = table.clone(m.counterRound or {})
 	n.rows, n.hand, n.deck, n.grave = {}, {}, {}, {}
 	for _, side in { "me", "foe" } do
 		n.rows[side] = {}

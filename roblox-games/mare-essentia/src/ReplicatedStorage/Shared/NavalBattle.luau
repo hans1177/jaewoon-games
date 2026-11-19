@@ -1833,6 +1833,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			return if english then englishRows[row] or "" else BC.ROW_NAME[row] or ""
 		end
 		local function cardDescription(c)
+			local translation = english and BC.CardEnglish[c.id]
+			local tactic = if english then translation and translation.text else
+				(if c.ability == "relay" or c.ability == "counter" or c.ability == "lastOrder" or c.ability == "legacy" or c.special == "echo" then c.text else nil)
 			if c.cause or c.fuse then
 				local function nm(id)
 					local d = BC.Units[id] or BC.Specials[id]
@@ -1842,8 +1845,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if c.cause then
 					return if english then "Chain: +2 while " .. nm(c.cause) .. " is on your field" else "연쇄: " .. nm(c.cause) .. "이(가) 내 필드에 있으면 +2"
 				end
-				return if english then "Fuse: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. " merge into one, +3, free play" else "합치기: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. "이(가) 있으면 하나로 합쳐 +3, 낸 수에 안 셈"
+				local fuse = if english then "Fuse: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. " merge into one, +3, free play" else "합치기: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. "이(가) 있으면 하나로 합쳐 +3, 낸 수에 안 셈"
+				return if tactic then tactic .. "\n" .. fuse else fuse
 			end
+			if tactic then return tactic end
 			if c.refuteKind then
 				return if english then "Refute: cut the enemy's " .. c.refuteKind .. " chains" else c.text or "반증"
 			end
