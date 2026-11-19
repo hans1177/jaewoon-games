@@ -1,5 +1,5 @@
 {
- "sourceRevision": "f791a60d252096f3181f64ddd9889345e31a0e33",
+ "sourceRevision": "3dc9fc5709dba46afc65a08f03523effe82fe3e2",
  "log": [
   {
    "step": 1,
@@ -720,7 +720,7 @@
   {
    "step": 158,
    "ctx": "Client",
-   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.5070190429688, 218.87802124023438, 36.4453125 on=true parent=VoyageScene fog=2600 brightness=1.9888607263565063 atmo=0.3700000047683716 camdist=36.65119552612305\ntext"
+   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.4929809570312, 218.99151611328125, 36.4658203125 on=true parent=VoyageScene fog=2600 brightness=1.9883267879486084 atmo=0.3700000047683716 camdist=36.672996520996094\ntext"
   },
   {
    "step": 160,
@@ -850,7 +850,7 @@
   {
    "step": 199,
    "ctx": "Client",
-   "out": "MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2 ACTIVE_WALKERS=9 CARRY_FORWARD=true\ntext"
+   "out": "MOTION_WALK_CONTRALATERAL_PASS JOINTS=6 PHASES=2 WORLD_FORWARD=2 ACTIVE_WALKERS=8 CARRY_FORWARD=true\ntext"
   },
   {
    "step": 200,
@@ -951,86 +951,148 @@
    "step": 227,
    "capture": "harbor_npc_face_front",
    "files": 1
+  },
+  {
+   "step": 228,
+   "ctx": "Client",
+   "out": "FIELD_QA_OPEN_EXPLORE_TAB GUI_ENABLED=true UNLOCKED_BEFORE=0\ntext"
+  },
+  {
+   "step": 230,
+   "ctx": "Client",
+   "out": "FIELD_QA_ENTRY_AVAILABLE=12 LOCKED_LABELS=0 REAL_UI_ONLY=true\ntext"
+  },
+  {
+   "step": 231,
+   "click": "field_entry",
+   "at": "566,187",
+   "out": "566,187 CLICK=지상맵 입장 HITBOX=VISIBLE BLOCKER=none\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 566,
+      "y": 187
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 233,
+   "capture": "field_entry",
+   "files": 1
+  },
+  {
+   "step": 234,
+   "ctx": "Client",
+   "out": "FIELD_QA_ENTRY_PASS MOVEMENT_READY: x=3000 screen=FieldGui\ntext"
+  },
+  {
+   "step": 235,
+   "capture": "field_npc_ally_mob",
+   "files": 1
+  },
+  {
+   "step": 236,
+   "ctx": "Client",
+   "out": "FIELD_MOTION_STABLE actors=21 maxStep=1.20 twoWeapons=PASS skillArt=PASS\ntext"
+  },
+  {
+   "step": 237,
+   "capture": "field_motion_smooth_icons",
+   "files": 1
+  },
+  {
+   "step": 239,
+   "ctx": "Client",
+   "out": "MOTION_FIELD_ACTORS_PASS ENEMY_ROLES=3 ALLIES=1 ENEMY_JOINTS=5 ALLY_JOINTS=6 DISTINCT_ROLE_POSES=3 DISTINCT_SUPPORT_POSES=4\ntext"
+  },
+  {
+   "step": 240,
+   "capture": "field_actor_after_motion",
+   "files": 1
   }
  ],
- "errors": [
-  "step228:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Network action ExecuteLuau.runCode sent to DMN_ID_PLAYCLIENT failed - Target is not reachable (ExecuteLuau.runCode, DMN_ID_PLAYCLIENT). No OnInvoke handler responded for this action. Sender: DMN_ID_STANDALONE. | text"
- ],
+ "errors": [],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28009
+   "elapsedMs": 28011
   },
   {
    "step": 1,
    "type": "capture",
-   "elapsedMs": 1226
+   "elapsedMs": 1384
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 217
+   "elapsedMs": 339
   },
   {
    "step": 3,
    "type": "luau",
-   "elapsedMs": 200
+   "elapsedMs": 212
   },
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 199
+   "elapsedMs": 232
   },
   {
    "step": 5,
    "type": "wait",
-   "elapsedMs": 404
+   "elapsedMs": 413
   },
   {
    "step": 6,
    "type": "click_from_luau",
-   "elapsedMs": 913
+   "elapsedMs": 1024
   },
   {
    "step": 7,
    "type": "wait",
-   "elapsedMs": 2006
+   "elapsedMs": 2002
   },
   {
    "step": 8,
    "type": "capture",
-   "elapsedMs": 1200
+   "elapsedMs": 1412
   },
   {
    "step": 9,
    "type": "luau",
-   "elapsedMs": 196
+   "elapsedMs": 283
   },
   {
    "step": 10,
    "type": "wait",
-   "elapsedMs": 407
+   "elapsedMs": 410
   },
   {
    "step": 11,
    "type": "click_from_luau",
-   "elapsedMs": 1100
+   "elapsedMs": 1009
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 2003
+   "elapsedMs": 2010
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 1017
+   "elapsedMs": 1054
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 204
+   "elapsedMs": 233
   },
   {
    "step": 15,
@@ -1040,247 +1102,247 @@
   {
    "step": 16,
    "type": "click_from_luau",
-   "elapsedMs": 1023
+   "elapsedMs": 1141
   },
   {
    "step": 17,
    "type": "wait",
-   "elapsedMs": 1704
+   "elapsedMs": 1701
   },
   {
    "step": 18,
    "type": "capture",
-   "elapsedMs": 2565
+   "elapsedMs": 1584
   },
   {
    "step": 19,
    "type": "wait",
-   "elapsedMs": 1815
+   "elapsedMs": 1805
   },
   {
    "step": 20,
    "type": "capture",
-   "elapsedMs": 3888
+   "elapsedMs": 1560
   },
   {
    "step": 21,
    "type": "wait",
-   "elapsedMs": 1812
+   "elapsedMs": 1811
   },
   {
    "step": 22,
    "type": "capture",
-   "elapsedMs": 1766
+   "elapsedMs": 3021
   },
   {
    "step": 23,
    "type": "wait",
-   "elapsedMs": 3708
+   "elapsedMs": 3703
   },
   {
    "step": 24,
    "type": "capture",
-   "elapsedMs": 1742
+   "elapsedMs": 1547
   },
   {
    "step": 25,
    "type": "luau",
-   "elapsedMs": 2732
+   "elapsedMs": 2689
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 317
+   "elapsedMs": 328
   },
   {
    "step": 27,
    "type": "wait",
-   "elapsedMs": 2510
+   "elapsedMs": 2501
   },
   {
    "step": 28,
    "type": "capture",
-   "elapsedMs": 1373
+   "elapsedMs": 1532
   },
   {
    "step": 29,
    "type": "luau",
-   "elapsedMs": 1218
+   "elapsedMs": 1520
   },
   {
    "step": 30,
    "type": "luau",
-   "elapsedMs": 316
+   "elapsedMs": 417
   },
   {
    "step": 31,
    "type": "luau",
-   "elapsedMs": 300
+   "elapsedMs": 419
   },
   {
    "step": 32,
    "type": "wait",
-   "elapsedMs": 2503
+   "elapsedMs": 2513
   },
   {
    "step": 33,
    "type": "luau",
-   "elapsedMs": 97
+   "elapsedMs": 314
   },
   {
    "step": 34,
    "type": "capture",
-   "elapsedMs": 1239
+   "elapsedMs": 939
   },
   {
    "step": 35,
    "type": "luau",
-   "elapsedMs": 328
+   "elapsedMs": 311
   },
   {
    "step": 36,
    "type": "luau",
-   "elapsedMs": 317
+   "elapsedMs": 300
   },
   {
    "step": 37,
    "type": "wait",
-   "elapsedMs": 2505
+   "elapsedMs": 2511
   },
   {
    "step": 38,
    "type": "luau",
-   "elapsedMs": 637
+   "elapsedMs": 306
   },
   {
    "step": 39,
    "type": "luau",
-   "elapsedMs": 377
+   "elapsedMs": 316
   },
   {
    "step": 40,
    "type": "capture",
-   "elapsedMs": 1242
+   "elapsedMs": 1239
   },
   {
    "step": 41,
    "type": "luau",
-   "elapsedMs": 439
+   "elapsedMs": 311
   },
   {
    "step": 42,
    "type": "click_from_luau",
-   "elapsedMs": 1554
+   "elapsedMs": 1184
   },
   {
    "step": 43,
    "type": "wait",
-   "elapsedMs": 855
+   "elapsedMs": 856
   },
   {
    "step": 44,
    "type": "luau",
-   "elapsedMs": 158
+   "elapsedMs": 109
   },
   {
    "step": 45,
    "type": "capture",
-   "elapsedMs": 1044
+   "elapsedMs": 1007
   },
   {
    "step": 46,
    "type": "luau",
-   "elapsedMs": 238
+   "elapsedMs": 228
   },
   {
    "step": 47,
    "type": "wait",
-   "elapsedMs": 2501
+   "elapsedMs": 2512
   },
   {
    "step": 48,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 153
   },
   {
    "step": 49,
    "type": "capture",
-   "elapsedMs": 786
+   "elapsedMs": 707
   },
   {
    "step": 50,
    "type": "luau",
-   "elapsedMs": 167
+   "elapsedMs": 176
   },
   {
    "step": 51,
    "type": "click_from_luau",
-   "elapsedMs": 563
+   "elapsedMs": 668
   },
   {
    "step": 52,
    "type": "wait",
-   "elapsedMs": 853
+   "elapsedMs": 857
   },
   {
    "step": 53,
    "type": "luau",
-   "elapsedMs": 80
+   "elapsedMs": 110
   },
   {
    "step": 54,
    "type": "capture",
-   "elapsedMs": 707
+   "elapsedMs": 689
   },
   {
    "step": 55,
    "type": "luau",
-   "elapsedMs": 296
+   "elapsedMs": 177
   },
   {
    "step": 56,
    "type": "wait",
-   "elapsedMs": 2506
+   "elapsedMs": 2513
   },
   {
    "step": 57,
    "type": "luau",
-   "elapsedMs": 159
+   "elapsedMs": 170
   },
   {
    "step": 58,
    "type": "capture",
-   "elapsedMs": 796
+   "elapsedMs": 697
   },
   {
    "step": 59,
    "type": "luau",
-   "elapsedMs": 176
+   "elapsedMs": 175
   },
   {
    "step": 60,
    "type": "luau",
-   "elapsedMs": 188
+   "elapsedMs": 198
   },
   {
    "step": 61,
    "type": "wait",
-   "elapsedMs": 2508
+   "elapsedMs": 2511
   },
   {
    "step": 62,
    "type": "luau",
-   "elapsedMs": 81
+   "elapsedMs": 86
   },
   {
    "step": 63,
    "type": "capture",
-   "elapsedMs": 922
+   "elapsedMs": 905
   },
   {
    "step": 64,
    "type": "luau",
-   "elapsedMs": 178
+   "elapsedMs": 195
   },
   {
    "step": 65,
@@ -1290,302 +1352,302 @@
   {
    "step": 66,
    "type": "wait",
-   "elapsedMs": 2504
+   "elapsedMs": 2501
   },
   {
    "step": 67,
    "type": "luau",
-   "elapsedMs": 180
+   "elapsedMs": 182
   },
   {
    "step": 68,
    "type": "capture",
-   "elapsedMs": 837
+   "elapsedMs": 876
   },
   {
    "step": 69,
    "type": "luau",
-   "elapsedMs": 180
+   "elapsedMs": 195
   },
   {
    "step": 70,
    "type": "luau",
-   "elapsedMs": 187
+   "elapsedMs": 188
   },
   {
    "step": 71,
    "type": "wait",
-   "elapsedMs": 2513
+   "elapsedMs": 2509
   },
   {
    "step": 72,
    "type": "luau",
-   "elapsedMs": 264
+   "elapsedMs": 182
   },
   {
    "step": 73,
    "type": "capture",
-   "elapsedMs": 765
+   "elapsedMs": 951
   },
   {
    "step": 74,
    "type": "luau",
-   "elapsedMs": 187
+   "elapsedMs": 181
   },
   {
    "step": 75,
    "type": "luau",
-   "elapsedMs": 200
+   "elapsedMs": 190
   },
   {
    "step": 76,
    "type": "wait",
-   "elapsedMs": 2506
+   "elapsedMs": 2501
   },
   {
    "step": 77,
    "type": "luau",
-   "elapsedMs": 269
+   "elapsedMs": 177
   },
   {
    "step": 78,
    "type": "capture",
-   "elapsedMs": 814
+   "elapsedMs": 1117
   },
   {
    "step": 79,
    "type": "luau",
-   "elapsedMs": 194
+   "elapsedMs": 234
   },
   {
    "step": 80,
    "type": "capture",
-   "elapsedMs": 776
+   "elapsedMs": 1250
   },
   {
    "step": 81,
    "type": "luau",
-   "elapsedMs": 170
+   "elapsedMs": 233
   },
   {
    "step": 82,
    "type": "wait",
-   "elapsedMs": 601
+   "elapsedMs": 610
   },
   {
    "step": 83,
    "type": "capture",
-   "elapsedMs": 812
+   "elapsedMs": 1342
   },
   {
    "step": 84,
    "type": "luau",
-   "elapsedMs": 192
+   "elapsedMs": 248
   },
   {
    "step": 85,
    "type": "luau",
-   "elapsedMs": 199
+   "elapsedMs": 258
   },
   {
    "step": 86,
    "type": "wait",
-   "elapsedMs": 1102
+   "elapsedMs": 1109
   },
   {
    "step": 87,
    "type": "luau",
-   "elapsedMs": 370
+   "elapsedMs": 299
   },
   {
    "step": 88,
    "type": "capture",
-   "elapsedMs": 890
+   "elapsedMs": 1230
   },
   {
    "step": 89,
    "type": "luau",
-   "elapsedMs": 205
+   "elapsedMs": 243
   },
   {
    "step": 90,
    "type": "wait",
-   "elapsedMs": 412
+   "elapsedMs": 408
   },
   {
    "step": 91,
    "type": "luau",
-   "elapsedMs": 332
+   "elapsedMs": 136
   },
   {
    "step": 92,
    "type": "luau",
-   "elapsedMs": 198
+   "elapsedMs": 233
   },
   {
    "step": 93,
    "type": "wait",
-   "elapsedMs": 2506
+   "elapsedMs": 2512
   },
   {
    "step": 94,
    "type": "luau",
-   "elapsedMs": 185
+   "elapsedMs": 172
   },
   {
    "step": 95,
    "type": "capture",
-   "elapsedMs": 957
+   "elapsedMs": 1139
   },
   {
    "step": 96,
    "type": "luau",
-   "elapsedMs": 194
+   "elapsedMs": 230
   },
   {
    "step": 97,
    "type": "click_from_luau",
-   "elapsedMs": 1043
+   "elapsedMs": 1148
   },
   {
    "step": 98,
    "type": "wait",
-   "elapsedMs": 858
+   "elapsedMs": 851
   },
   {
    "step": 99,
    "type": "luau",
-   "elapsedMs": 99
+   "elapsedMs": 115
   },
   {
    "step": 100,
    "type": "capture",
-   "elapsedMs": 940
+   "elapsedMs": 905
   },
   {
    "step": 101,
    "type": "luau",
-   "elapsedMs": 193
+   "elapsedMs": 196
   },
   {
    "step": 102,
    "type": "wait",
-   "elapsedMs": 2506
+   "elapsedMs": 2502
   },
   {
    "step": 103,
    "type": "luau",
-   "elapsedMs": 77
+   "elapsedMs": 113
   },
   {
    "step": 104,
    "type": "capture",
-   "elapsedMs": 504
+   "elapsedMs": 905
   },
   {
    "step": 105,
    "type": "luau",
-   "elapsedMs": 81
+   "elapsedMs": 196
   },
   {
    "step": 106,
    "type": "luau",
-   "elapsedMs": 81
+   "elapsedMs": 182
   },
   {
    "step": 107,
    "type": "wait",
-   "elapsedMs": 2514
+   "elapsedMs": 2503
   },
   {
    "step": 108,
    "type": "luau",
-   "elapsedMs": 70
+   "elapsedMs": 81
   },
   {
    "step": 109,
    "type": "capture",
-   "elapsedMs": 472
+   "elapsedMs": 439
   },
   {
    "step": 110,
    "type": "luau",
-   "elapsedMs": 77
+   "elapsedMs": 78
   },
   {
    "step": 111,
    "type": "click_from_luau",
-   "elapsedMs": 667
+   "elapsedMs": 666
   },
   {
    "step": 112,
    "type": "wait",
-   "elapsedMs": 864
+   "elapsedMs": 859
   },
   {
    "step": 113,
    "type": "luau",
-   "elapsedMs": 70
+   "elapsedMs": 74
   },
   {
    "step": 114,
    "type": "capture",
-   "elapsedMs": 460
+   "elapsedMs": 472
   },
   {
    "step": 115,
    "type": "luau",
-   "elapsedMs": 74
+   "elapsedMs": 78
   },
   {
    "step": 116,
    "type": "wait",
-   "elapsedMs": 2505
+   "elapsedMs": 2501
   },
   {
    "step": 117,
    "type": "luau",
-   "elapsedMs": 177
+   "elapsedMs": 150
   },
   {
    "step": 118,
    "type": "capture",
-   "elapsedMs": 739
+   "elapsedMs": 797
   },
   {
    "step": 119,
    "type": "luau",
-   "elapsedMs": 178
+   "elapsedMs": 175
   },
   {
    "step": 120,
    "type": "luau",
-   "elapsedMs": 184
+   "elapsedMs": 183
   },
   {
    "step": 121,
    "type": "wait",
-   "elapsedMs": 3013
+   "elapsedMs": 3008
   },
   {
    "step": 122,
    "type": "luau",
-   "elapsedMs": 103
+   "elapsedMs": 69
   },
   {
    "step": 123,
    "type": "luau",
-   "elapsedMs": 184
+   "elapsedMs": 167
   },
   {
    "step": 124,
    "type": "capture",
-   "elapsedMs": 898
+   "elapsedMs": 846
   },
   {
    "step": 125,
    "type": "luau",
-   "elapsedMs": 167
+   "elapsedMs": 161
   },
   {
    "step": 126,
@@ -1595,22 +1657,22 @@
   {
    "step": 127,
    "type": "luau",
-   "elapsedMs": 155
+   "elapsedMs": 132
   },
   {
    "step": 128,
    "type": "luau",
-   "elapsedMs": 184
+   "elapsedMs": 200
   },
   {
    "step": 129,
    "type": "capture",
-   "elapsedMs": 857
+   "elapsedMs": 980
   },
   {
    "step": 130,
    "type": "click_from_luau",
-   "elapsedMs": 864
+   "elapsedMs": 941
   },
   {
    "step": 131,
@@ -1620,192 +1682,192 @@
   {
    "step": 132,
    "type": "luau",
-   "elapsedMs": 193
+   "elapsedMs": 178
   },
   {
    "step": 133,
    "type": "capture",
-   "elapsedMs": 936
+   "elapsedMs": 882
   },
   {
    "step": 134,
    "type": "luau",
-   "elapsedMs": 713
+   "elapsedMs": 746
   },
   {
    "step": 135,
    "type": "wait",
-   "elapsedMs": 952
+   "elapsedMs": 957
   },
   {
    "step": 136,
    "type": "luau",
-   "elapsedMs": 84
+   "elapsedMs": 132
   },
   {
    "step": 137,
    "type": "luau",
-   "elapsedMs": 2776
+   "elapsedMs": 2232
   },
   {
    "step": 138,
    "type": "luau",
-   "elapsedMs": 2540
+   "elapsedMs": 2655
   },
   {
    "step": 139,
    "type": "wait",
-   "elapsedMs": 4015
+   "elapsedMs": 4005
   },
   {
    "step": 140,
    "type": "luau",
-   "elapsedMs": 285
+   "elapsedMs": 91
   },
   {
    "step": 141,
    "type": "wait",
-   "elapsedMs": 3005
+   "elapsedMs": 3012
   },
   {
    "step": 142,
    "type": "luau",
-   "elapsedMs": 630
+   "elapsedMs": 653
   },
   {
    "step": 143,
    "type": "capture",
-   "elapsedMs": 742
+   "elapsedMs": 725
   },
   {
    "step": 144,
    "type": "luau",
-   "elapsedMs": 624
+   "elapsedMs": 659
   },
   {
    "step": 145,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 184
   },
   {
    "step": 146,
    "type": "wait",
-   "elapsedMs": 6006
+   "elapsedMs": 6014
   },
   {
    "step": 147,
    "type": "luau",
-   "elapsedMs": 194
+   "elapsedMs": 202
   },
   {
    "step": 148,
    "type": "capture",
-   "elapsedMs": 809
+   "elapsedMs": 796
   },
   {
    "step": 149,
    "type": "luau",
-   "elapsedMs": 316
+   "elapsedMs": 186
   },
   {
    "step": 150,
    "type": "wait",
-   "elapsedMs": 8012
+   "elapsedMs": 8001
   },
   {
    "step": 151,
    "type": "capture",
-   "elapsedMs": 1140
+   "elapsedMs": 1032
   },
   {
    "step": 152,
    "type": "click_from_luau",
-   "elapsedMs": 858
+   "elapsedMs": 1411
   },
   {
    "step": 153,
    "type": "luau",
-   "elapsedMs": 403
+   "elapsedMs": 592
   },
   {
    "step": 154,
    "type": "wait",
-   "elapsedMs": 6002
+   "elapsedMs": 6003
   },
   {
    "step": 155,
    "type": "capture",
-   "elapsedMs": 1103
+   "elapsedMs": 1582
   },
   {
    "step": 156,
    "type": "wait",
-   "elapsedMs": 6011
+   "elapsedMs": 6007
   },
   {
    "step": 157,
    "type": "capture",
-   "elapsedMs": 1048
+   "elapsedMs": 1051
   },
   {
    "step": 158,
    "type": "luau",
-   "elapsedMs": 186
+   "elapsedMs": 188
   },
   {
    "step": 159,
    "type": "wait",
-   "elapsedMs": 4008
+   "elapsedMs": 4013
   },
   {
    "step": 160,
    "type": "capture",
-   "elapsedMs": 1081
+   "elapsedMs": 927
   },
   {
    "step": 161,
    "type": "wait",
-   "elapsedMs": 6008
+   "elapsedMs": 6005
   },
   {
    "step": 162,
    "type": "capture",
-   "elapsedMs": 1074
+   "elapsedMs": 934
   },
   {
    "step": 163,
    "type": "luau",
-   "elapsedMs": 185
+   "elapsedMs": 178
   },
   {
    "step": 164,
    "type": "luau",
-   "elapsedMs": 214
+   "elapsedMs": 223
   },
   {
    "step": 165,
    "type": "wait",
-   "elapsedMs": 7012
+   "elapsedMs": 7008
   },
   {
    "step": 166,
    "type": "capture",
-   "elapsedMs": 963
+   "elapsedMs": 735
   },
   {
    "step": 167,
    "type": "luau",
-   "elapsedMs": 193
+   "elapsedMs": 165
   },
   {
    "step": 168,
    "type": "wait",
-   "elapsedMs": 9006
+   "elapsedMs": 9003
   },
   {
    "step": 169,
    "type": "capture",
-   "elapsedMs": 923
+   "elapsedMs": 1100
   },
   {
    "step": 170,
@@ -1815,92 +1877,92 @@
   {
    "step": 171,
    "type": "luau",
-   "elapsedMs": 200
+   "elapsedMs": 217
   },
   {
    "step": 172,
    "type": "luau",
-   "elapsedMs": 1527
+   "elapsedMs": 1363
   },
   {
    "step": 173,
    "type": "wait",
-   "elapsedMs": 8001
+   "elapsedMs": 8009
   },
   {
    "step": 174,
    "type": "luau",
-   "elapsedMs": 172
+   "elapsedMs": 178
   },
   {
    "step": 175,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 182
   },
   {
    "step": 176,
    "type": "luau",
-   "elapsedMs": 305
+   "elapsedMs": 192
   },
   {
    "step": 177,
    "type": "wait",
-   "elapsedMs": 456
+   "elapsedMs": 451
   },
   {
    "step": 178,
    "type": "capture",
-   "elapsedMs": 854
+   "elapsedMs": 679
   },
   {
    "step": 179,
    "type": "wait",
-   "elapsedMs": 455
+   "elapsedMs": 465
   },
   {
    "step": 180,
    "type": "capture",
-   "elapsedMs": 736
+   "elapsedMs": 936
   },
   {
    "step": 181,
    "type": "wait",
-   "elapsedMs": 456
+   "elapsedMs": 460
   },
   {
    "step": 182,
    "type": "capture",
-   "elapsedMs": 710
+   "elapsedMs": 955
   },
   {
    "step": 183,
    "type": "wait",
-   "elapsedMs": 453
+   "elapsedMs": 463
   },
   {
    "step": 184,
    "type": "capture",
-   "elapsedMs": 836
+   "elapsedMs": 1041
   },
   {
    "step": 185,
    "type": "wait",
-   "elapsedMs": 457
+   "elapsedMs": 455
   },
   {
    "step": 186,
    "type": "capture",
-   "elapsedMs": 703
+   "elapsedMs": 781
   },
   {
    "step": 187,
    "type": "wait",
-   "elapsedMs": 458
+   "elapsedMs": 456
   },
   {
    "step": 188,
    "type": "capture",
-   "elapsedMs": 876
+   "elapsedMs": 897
   },
   {
    "step": 189,
@@ -1910,52 +1972,52 @@
   {
    "step": 190,
    "type": "capture",
-   "elapsedMs": 756
+   "elapsedMs": 738
   },
   {
    "step": 191,
    "type": "wait",
-   "elapsedMs": 454
+   "elapsedMs": 464
   },
   {
    "step": 192,
    "type": "capture",
-   "elapsedMs": 867
+   "elapsedMs": 713
   },
   {
    "step": 193,
    "type": "luau",
-   "elapsedMs": 210
+   "elapsedMs": 277
   },
   {
    "step": 194,
    "type": "wait",
-   "elapsedMs": 555
+   "elapsedMs": 554
   },
   {
    "step": 195,
    "type": "capture",
-   "elapsedMs": 1046
+   "elapsedMs": 1081
   },
   {
    "step": 196,
    "type": "luau",
-   "elapsedMs": 192
+   "elapsedMs": 220
   },
   {
    "step": 197,
    "type": "wait",
-   "elapsedMs": 565
+   "elapsedMs": 561
   },
   {
    "step": 198,
    "type": "capture",
-   "elapsedMs": 845
+   "elapsedMs": 939
   },
   {
    "step": 199,
    "type": "luau",
-   "elapsedMs": 662
+   "elapsedMs": 613
   },
   {
    "step": 200,
@@ -1965,142 +2027,202 @@
   {
    "step": 201,
    "type": "wait",
-   "elapsedMs": 564
+   "elapsedMs": 551
   },
   {
    "step": 202,
    "type": "capture",
-   "elapsedMs": 795
+   "elapsedMs": 1057
   },
   {
    "step": 203,
    "type": "luau",
-   "elapsedMs": 209
+   "elapsedMs": 235
   },
   {
    "step": 204,
    "type": "luau",
-   "elapsedMs": 201
+   "elapsedMs": 239
   },
   {
    "step": 205,
    "type": "wait",
-   "elapsedMs": 564
+   "elapsedMs": 560
   },
   {
    "step": 206,
    "type": "capture",
-   "elapsedMs": 802
+   "elapsedMs": 1129
   },
   {
    "step": 207,
    "type": "luau",
-   "elapsedMs": 195
+   "elapsedMs": 229
   },
   {
    "step": 208,
    "type": "wait",
-   "elapsedMs": 557
+   "elapsedMs": 563
   },
   {
    "step": 209,
    "type": "capture",
-   "elapsedMs": 1000
+   "elapsedMs": 807
   },
   {
    "step": 210,
    "type": "luau",
-   "elapsedMs": 192
+   "elapsedMs": 214
   },
   {
    "step": 211,
    "type": "wait",
-   "elapsedMs": 562
+   "elapsedMs": 561
   },
   {
    "step": 212,
    "type": "capture",
-   "elapsedMs": 804
+   "elapsedMs": 1028
   },
   {
    "step": 213,
    "type": "luau",
-   "elapsedMs": 194
+   "elapsedMs": 228
   },
   {
    "step": 214,
    "type": "wait",
-   "elapsedMs": 552
+   "elapsedMs": 554
   },
   {
    "step": 215,
    "type": "capture",
-   "elapsedMs": 679
+   "elapsedMs": 1017
   },
   {
    "step": 216,
    "type": "luau",
-   "elapsedMs": 198
+   "elapsedMs": 211
   },
   {
    "step": 217,
    "type": "wait",
-   "elapsedMs": 560
+   "elapsedMs": 555
   },
   {
    "step": 218,
    "type": "capture",
-   "elapsedMs": 761
+   "elapsedMs": 784
   },
   {
    "step": 219,
    "type": "luau",
-   "elapsedMs": 195
+   "elapsedMs": 212
   },
   {
    "step": 220,
    "type": "wait",
-   "elapsedMs": 552
+   "elapsedMs": 558
   },
   {
    "step": 221,
    "type": "capture",
-   "elapsedMs": 885
+   "elapsedMs": 908
   },
   {
    "step": 222,
    "type": "luau",
-   "elapsedMs": 187
+   "elapsedMs": 209
   },
   {
    "step": 223,
    "type": "wait",
-   "elapsedMs": 564
+   "elapsedMs": 562
   },
   {
    "step": 224,
    "type": "capture",
-   "elapsedMs": 734
+   "elapsedMs": 828
   },
   {
    "step": 225,
    "type": "luau",
-   "elapsedMs": 3678
+   "elapsedMs": 3518
   },
   {
    "step": 226,
    "type": "luau",
-   "elapsedMs": 185
+   "elapsedMs": 166
   },
   {
    "step": 227,
    "type": "capture",
-   "elapsedMs": 863
+   "elapsedMs": 904
   },
   {
    "step": 228,
    "type": "luau",
-   "elapsedMs": 5333
+   "elapsedMs": 21075
+  },
+  {
+   "step": 229,
+   "type": "wait",
+   "elapsedMs": 1809
+  },
+  {
+   "step": 230,
+   "type": "luau",
+   "elapsedMs": 561
+  },
+  {
+   "step": 231,
+   "type": "click_from_luau",
+   "elapsedMs": 2210
+  },
+  {
+   "step": 232,
+   "type": "wait",
+   "elapsedMs": 1506
+  },
+  {
+   "step": 233,
+   "type": "capture",
+   "elapsedMs": 1211
+  },
+  {
+   "step": 234,
+   "type": "luau",
+   "elapsedMs": 1276
+  },
+  {
+   "step": 235,
+   "type": "capture",
+   "elapsedMs": 891
+  },
+  {
+   "step": 236,
+   "type": "luau",
+   "elapsedMs": 1743
+  },
+  {
+   "step": 237,
+   "type": "capture",
+   "elapsedMs": 872
+  },
+  {
+   "step": 238,
+   "type": "wait",
+   "elapsedMs": 809
+  },
+  {
+   "step": 239,
+   "type": "luau",
+   "elapsedMs": 983
+  },
+  {
+   "step": 240,
+   "type": "capture",
+   "elapsedMs": 1051
   }
  ],
  "consoleCapture": {
@@ -2110,18 +2232,18 @@
    "Server"
   ],
   "errorCount": 0,
-  "warningCount": 12,
+  "warningCount": 13,
   "errors": []
  },
  "summary": {
   "plannedSteps": 241,
-  "completedSteps": 229,
+  "completedSteps": 241,
   "plannedClicks": 10,
-  "successfulClicks": 9,
+  "successfulClicks": 10,
   "skippedOptionalClicks": 0,
   "plannedFrames": 62,
-  "capturedFrames": 58,
-  "abortedEarly": true
+  "capturedFrames": 62,
+  "abortedEarly": false
  },
  "visualSamples": [
   {
@@ -2130,7 +2252,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 251340,
+      "bytes": 251348,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2153,7 +2275,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 250772,
+      "bytes": 250666,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2168,7 +2290,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195298,
+      "bytes": 195409,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2183,7 +2305,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 153142,
+      "bytes": 148016,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2207,7 +2329,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 133574,
+      "bytes": 128547,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2220,7 +2342,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.017335891723633,
+    "brightness": 2.015768051147461,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -2231,7 +2353,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 174947,
+      "bytes": 159887,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2244,7 +2366,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0196475982666016,
+    "brightness": 2.0190203189849854,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -2255,7 +2377,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 113076,
+      "bytes": 105817,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2268,7 +2390,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0229244232177734,
+    "brightness": 2.0224390029907227,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -2279,7 +2401,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 138432,
+      "bytes": 138421,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2292,7 +2414,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0277085304260254,
+    "brightness": 2.02701473236084,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -2303,7 +2425,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 143880,
+      "bytes": 144629,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2318,7 +2440,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 180366,
+      "bytes": 180298,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2333,7 +2455,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 144263,
+      "bytes": 144338,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2348,7 +2470,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 137725,
+      "bytes": 137553,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2363,7 +2485,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 116063,
+      "bytes": 116076,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2378,7 +2500,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 116471,
+      "bytes": 116813,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2393,7 +2515,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164164,
+      "bytes": 164269,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2408,7 +2530,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 146211,
+      "bytes": 146052,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2423,7 +2545,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 150121,
+      "bytes": 150045,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2438,7 +2560,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 149162,
+      "bytes": 148475,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2453,7 +2575,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 149116,
+      "bytes": 148767,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2468,7 +2590,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 242261,
+      "bytes": 240781,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2483,7 +2605,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 179976,
+      "bytes": 179114,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2498,7 +2620,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 162542,
+      "bytes": 162553,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2513,7 +2635,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 149532,
+      "bytes": 149437,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2528,7 +2650,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 150277,
+      "bytes": 150630,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2543,7 +2665,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 137127,
+      "bytes": 137095,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2558,7 +2680,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 141901,
+      "bytes": 141783,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2573,7 +2695,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 141688,
+      "bytes": 141597,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2588,7 +2710,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 180217,
+      "bytes": 180275,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2603,7 +2725,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163997,
+      "bytes": 163754,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2618,7 +2740,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 245173,
+      "bytes": 250193,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2633,7 +2755,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 217470,
+      "bytes": 217698,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2648,7 +2770,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 228518,
+      "bytes": 228646,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2663,7 +2785,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 222502,
+      "bytes": 222467,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2678,7 +2800,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 257310,
+      "bytes": 252231,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2692,7 +2814,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 248718,
+      "bytes": 235371,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2706,7 +2828,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 275391,
+      "bytes": 235439,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2720,7 +2842,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 268565,
+      "bytes": 267261,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2734,7 +2856,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 159018,
+      "bytes": 160053,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2748,7 +2870,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 152143,
+      "bytes": 153430,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2762,7 +2884,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105460,
+      "bytes": 105081,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2776,7 +2898,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105614,
+      "bytes": 105393,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2790,7 +2912,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 103652,
+      "bytes": 105296,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2804,7 +2926,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105971,
+      "bytes": 105396,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2818,7 +2940,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105087,
+      "bytes": 105387,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2832,7 +2954,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105646,
+      "bytes": 103088,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2846,7 +2968,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105428,
+      "bytes": 105404,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2860,7 +2982,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104950,
+      "bytes": 105190,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2874,7 +2996,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 102364,
+      "bytes": 101934,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2888,7 +3010,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104300,
+      "bytes": 104764,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2902,7 +3024,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106258,
+      "bytes": 106345,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2916,7 +3038,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104011,
+      "bytes": 105699,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2930,7 +3052,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105461,
+      "bytes": 105051,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2944,7 +3066,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105048,
+      "bytes": 104762,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2958,7 +3080,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105477,
+      "bytes": 105312,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2972,7 +3094,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 101964,
+      "bytes": 101902,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2986,7 +3108,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104904,
+      "bytes": 104663,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3000,7 +3122,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104636,
+      "bytes": 104325,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3014,32 +3136,460 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 108643,
+      "bytes": 104138,
       "width": 0,
       "height": 0,
       "pass": true
      }
     ]
    }
+  },
+  {
+   "name": "field_entry",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 157497,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
+  },
+  {
+   "name": "field_npc_ally_mob",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 216739,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
+  },
+  {
+   "name": "field_motion_smooth_icons",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 216456,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
+  },
+  {
+   "name": "field_actor_after_motion",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 220990,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
   }
  ],
- "abortDiagnostics": {
-  "step": 228,
-  "type": "luau",
-  "elapsedMs": 4715,
-  "context": "Client",
-  "lastScreenshot": "harbor_npc_face_front",
-  "lastClick": "card_practice_exit",
-  "probes": {
-   "Client": {
-    "reachable": true,
-    "output": "STUDIO_CONTEXT_CLIENT\ntext"
+ "assetAudit": {
+  "models": {
+   "status": "PASS",
+   "loaded": 799,
+   "errors": [],
+   "failed": 0,
+   "registered": 799
+  },
+  "registered": {
+   "status": "PASS",
+   "failed": 0,
+   "imagesSounds": 572,
+   "models": 808,
+   "elapsedSeconds": 16,
+   "timedOut": false,
+   "registered": 1380,
+   "serverPreloadUnresponsive": true,
+   "failedMedia": [],
+   "fetchCallbacks": 0,
+   "currentBatch": 1,
+   "serverPreloadEvidence": {
+    "status": "FAIL",
+    "failed": 12,
+    "failedMedia": [
+     {
+      "id": "rbxassetid://72489040757878",
+      "key": "AssetIds.CardArt/af_03",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://77023165428158",
+      "key": "AssetIds.CardArt/af_15",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://107877140385634",
+      "key": "AssetIds.CardArt/ast_aurora",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://127370718437030",
+      "key": "AssetIds.CardArt/ast_comet",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://105991549101223",
+      "key": "AssetIds.CardArt/ast_halley_comet",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://114650000468629",
+      "key": "AssetIds.CardArt/ast_halley_prediction",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://125327803198600",
+      "key": "AssetIds.CardArt/ast_jupiter_moons",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://120956229711846",
+      "key": "AssetIds.CardArt/ast_saturn_rings",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://114615121747571",
+      "key": "AssetIds.CardArt/ast_venus",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://92405337443576",
+      "key": "AssetIds.CardArt/battle_africa",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://91390038338745",
+      "key": "AssetIds.CardArt/battle_card_back",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://113361166465626",
+      "key": "AssetIds.CardArt/battle_east_asia",
+      "status": "TIMEOUT_16S"
+     }
+    ],
+    "timedOut": false,
+    "fetchCallbacks": 0
    },
-   "Server": {
-    "reachable": true,
-    "output": "STUDIO_CONTEXT_SERVER\ntext"
-   }
+   "clientVerified": true,
+   "soundClientVerified": true,
+   "authority": "OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED"
+  },
+  "features": {
+   "status": "PASS",
+   "progress": "2044:DONE",
+   "coverage": {
+    "Visit": {
+     "invalid": 0,
+     "rejected": 54,
+     "accepted": 0,
+     "calls": 54
+    },
+    "BuyFleetShip": {
+     "invalid": 0,
+     "rejected": 48,
+     "accepted": 3,
+     "calls": 51
+    },
+    "VoyageBonus": {
+     "invalid": 0,
+     "rejected": 181,
+     "accepted": 0,
+     "calls": 181
+    },
+    "PlayStory": {
+     "invalid": 0,
+     "rejected": 225,
+     "accepted": 3,
+     "calls": 228
+    },
+    "Hunt": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Audience": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "BuyGear": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 6,
+     "calls": 6
+    },
+    "BuyShip": {
+     "invalid": 0,
+     "rejected": 49,
+     "accepted": 2,
+     "calls": 51
+    },
+    "HireCrew": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuyPlating": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuyMap": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "NewGame": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "WaitDay": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "SetSpecialty": {
+     "invalid": 0,
+     "rejected": 10,
+     "accepted": 5,
+     "calls": 15
+    },
+    "Talk": {
+     "invalid": 0,
+     "rejected": 47,
+     "accepted": 2,
+     "calls": 49
+    },
+    "Borrow": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "QAGrant": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Sell": {
+     "invalid": 0,
+     "rejected": 98,
+     "accepted": 20,
+     "calls": 118
+    },
+    "Buy": {
+     "invalid": 0,
+     "rejected": 98,
+     "accepted": 20,
+     "calls": 118
+    },
+    "Repair": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "Sail": {
+     "invalid": 0,
+     "rejected": 177,
+     "accepted": 4,
+     "calls": 181
+    },
+    "Research": {
+     "invalid": 0,
+     "rejected": 6,
+     "accepted": 0,
+     "calls": 6
+    },
+    "Withdraw": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuySupplies": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "DismissEscort": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "ToggleGear": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 6,
+     "calls": 6
+    },
+    "VoyageChoice": {
+     "invalid": 0,
+     "rejected": 181,
+     "accepted": 0,
+     "calls": 181
+    },
+    "ResolveBattle": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Repay": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "Recruit": {
+     "invalid": 0,
+     "rejected": 48,
+     "accepted": 1,
+     "calls": 49
+    },
+    "Accept": {
+     "invalid": 0,
+     "rejected": 3,
+     "accepted": 5,
+     "calls": 8
+    },
+    "Feast": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "TalkChoice": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "BuyInsurance": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuyEscort": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "State": {
+     "invalid": 0,
+     "rejected": 2,
+     "accepted": 0,
+     "calls": 2
+    },
+    "Rumor": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "ChallengeBoss": {
+     "invalid": 0,
+     "rejected": 4,
+     "accepted": 0,
+     "calls": 4
+    },
+    "Deposit": {
+     "invalid": 0,
+     "rejected": 0,
+     "accepted": 1,
+     "calls": 1
+    },
+    "BuyLicense": {
+     "invalid": 0,
+     "rejected": 1,
+     "accepted": 0,
+     "calls": 1
+    },
+    "Haggle": {
+     "invalid": 0,
+     "rejected": 66,
+     "accepted": 51,
+     "calls": 117
+    },
+    "Explore": {
+     "invalid": 0,
+     "rejected": 592,
+     "accepted": 0,
+     "calls": 592
+    },
+    "BuyCannon": {
+     "invalid": 0,
+     "rejected": 3,
+     "accepted": 2,
+     "calls": 5
+    }
+   },
+   "observed": {
+    "naval-resolved": 1,
+    "quest-accepted": 5,
+    "voyage-arrived": 4,
+    "naval-encounter": 1
+   },
+   "calls": 2044,
+   "issues": [],
+   "rejected": 1894,
+   "failed": 0,
+   "accepted": 147
   }
+ },
+ "assetRegistryAudit": {
+  "registered": 1280,
+  "activeIds": 1280,
+  "mismatched": [],
+  "missing": [],
+  "unverifiedPermissions": [],
+  "status": "PASS"
+ },
+ "clientImageAudit": {
+  "mode": "VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED",
+  "expected": 472,
+  "soundExpected": 100,
+  "missing": [],
+  "soundMissing": [],
+  "batches": 10,
+  "loaded": 472,
+  "soundLoaded": 100
  },
  "assetOwnership": {
   "reportedFailedIds": [
@@ -3132,7 +3682,7 @@
       ]
      }
     },
-    "scanned": 23458,
+    "scanned": 23483,
     "contentRefs": 5142,
     "complete": true
    },
@@ -3212,13 +3762,13 @@
      }
     },
     "scanned": 25001,
-    "contentRefs": 4631,
+    "contentRefs": 4691,
     "complete": false
    }
   }
  },
  "visualEvidence": {
-  "framesChecked": 58,
+  "framesChecked": 62,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
