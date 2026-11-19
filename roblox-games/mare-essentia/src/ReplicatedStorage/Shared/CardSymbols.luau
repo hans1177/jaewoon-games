@@ -10,25 +10,34 @@ local cells = {
 	["↩️"] = 8, ["⏳"] = 9, ["⬆️"] = 10, ["⬇️"] = 11,
 }
 
+local tacticalCells = {
+	["🔗"] = 0, ["🃏"] = 1, ["🤲"] = 2, ["🔥"] = 3,
+	["🌦️"] = 4, ["🌫️"] = 4, ["⛈️"] = 4,
+}
+
 function CardSymbols.apply(label, caption)
-	local assetId = AssetIds["CardArt/ui_card_symbols"]
-	if not assetId or not caption then return false end
+	local baseId = AssetIds["CardArt/ui_card_symbols"]
+	local tacticsId = AssetIds["CardArt/ui_card_tactics"]
+	if not caption or not (baseId or tacticsId) then return false end
 
 	local parts, hasArt = {}, false
 	for token in string.gmatch(caption, "%S+") do
 		table.insert(parts, token)
-		hasArt = hasArt or cells[token] ~= nil
+		hasArt = hasArt or (baseId ~= nil and cells[token] ~= nil) or (tacticsId ~= nil and tacticalCells[token] ~= nil)
 	end
 	if not hasArt then return false end
 
 	label.Text = ""
 	for index, token in parts do
-		local cell = cells[token]
+		local tactical = tacticalCells[token] ~= nil
+		local cell = if tactical then tacticalCells[token] else cells[token]
+		local assetId = if tactical then tacticsId else baseId
+		local columns = if tactical then 3 else 4
 		local item
-		if cell then
+		if cell and assetId then
 			item = Instance.new("ImageLabel")
 			item.Image = "rbxassetid://" .. tostring(assetId)
-			item.ImageRectOffset = Vector2.new(cell % 4 * CELL, math.floor(cell / 4) * CELL)
+			item.ImageRectOffset = Vector2.new(cell % columns * CELL, math.floor(cell / columns) * CELL)
 			item.ImageRectSize = Vector2.new(CELL, CELL)
 			item.ScaleType = Enum.ScaleType.Fit
 		else
