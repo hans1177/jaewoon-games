@@ -1244,7 +1244,7 @@ function NavalBattle.play(opts)
 		controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")):GetControls()
 		controls:Disable()
 	end)
-	local function finish()
+	local function finish(replay)
 		if finished then
 			return
 		end
@@ -1260,7 +1260,7 @@ function NavalBattle.play(opts)
 		gui:Destroy()
 		folder:Destroy()
 		if opts.onDone then
-			opts.onDone(math.floor(flair))
+			opts.onDone(math.floor(flair), replay == true)
 		end
 	end
 
@@ -5485,6 +5485,73 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 								if not okCards then res = nil end
 							end
 							local w = res or (if m.winner == "me" then "a" elseif m.winner == "foe" then "b" else "draw")
+							if opts.cardOnly and not finished then
+								local korean = string.sub(string.lower(player.LocaleId), 1, 2) == "ko"
+								local result = Instance.new("Frame")
+								result.Name = "CardBattleResult"
+								result.Size = UDim2.fromScale(1, 1)
+								result.BackgroundColor3 = Color3.fromRGB(12, 32, 49)
+								result.BorderSizePixel = 0
+								result.Active = true
+								result.Parent = gui
+								local sea = Instance.new("ImageLabel")
+								sea.BackgroundTransparency = 1
+								sea.Size = UDim2.fromScale(1, 1)
+								sea.ScaleType = Enum.ScaleType.Crop
+								local seaId = AssetIds["CardArt/ui_battle_dawn"]
+								sea.Image = if seaId then "rbxassetid://" .. tostring(seaId) else ""
+								sea.Parent = result
+
+								local verdict = if w == "a" then (if korean then "승리" else "Victory")
+									elseif w == "b" and m.winner ~= "draw" then (if korean then "패배" else "Defeat")
+									else (if korean then "무승부" else "Draw")
+								local title = label(result, verdict, 36)
+								title.Position = UDim2.fromScale(0.18, 0.07)
+								title.Size = UDim2.fromScale(0.64, 0.13)
+								title.TextScaled = true
+								for i, side in { "me", "foe" } do
+									local x = if i == 1 then 0.33 else 0.67
+									local leader = m.leader[side]
+									local artKey = NEW_LEADER_ART[leader]
+									local fallback = LEADER_FACE[leader]
+									local artId = (artKey and AssetIds[artKey]) or AssetIds["CardArt/leader_" .. leader]
+										or (fallback and AssetIds[fallback])
+									local portrait = Instance.new("ImageLabel")
+									portrait.AnchorPoint = Vector2.new(0.5, 0)
+									portrait.Position = UDim2.fromScale(x, 0.24)
+									portrait.Size = UDim2.fromScale(0.26, 0.42)
+									portrait.BackgroundTransparency = 1
+									portrait.ScaleType = Enum.ScaleType.Fit
+									portrait.Image = if artId then "rbxassetid://" .. tostring(artId) else ""
+									portrait.Parent = result
+									local who = if korean then (if i == 1 then "나" else "상대")
+										else (if i == 1 then "You" else "Opponent")
+									local score = label(result, if korean then string.format("%s · %d판 승리", who, m.wins[side])
+										else string.format("%s · %d round wins", who, m.wins[side]), 18)
+									score.AnchorPoint = Vector2.new(0.5, 0)
+									score.Position = UDim2.fromScale(x, 0.68)
+									score.Size = UDim2.fromScale(0.31, 0.09)
+									score.TextScaled = true
+								end
+								for i, caption in { if korean then "작전실로" else "Operations Room", if korean then "다시 출항" else "Sail Again" } do
+									local replay = i == 2
+									local action = Instance.new("TextButton")
+									action.Position = UDim2.fromScale(if replay then 0.52 else 0.18, 0.82)
+									action.Size = UDim2.fromScale(0.30, 0.12)
+									action.Text = caption
+									action.TextScaled = true
+									action.Font = Enum.Font.GothamBold
+									action.TextColor3 = if replay then Color3.fromRGB(25, 36, 48) else Color3.fromRGB(250, 236, 200)
+									action.BackgroundColor3 = if replay then Color3.fromRGB(240, 221, 183) else Color3.fromRGB(17, 39, 59)
+									action.BorderSizePixel = 0
+									action.Parent = result
+									local limits = Instance.new("UITextSizeConstraint")
+									limits.MaxTextSize = 22
+									limits.Parent = action
+									action.Activated:Connect(function() finish(replay) end)
+								end
+								return
+							end
 							opts.winner = if w == "a" or w == "b" then w else nil
 							loser = if w == "a" then "foe" elseif w == "b" then "me" else nil
 							if w == "a" then
