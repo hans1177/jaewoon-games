@@ -1,12 +1,12 @@
 {
  "round": 1,
- "checked": 943,
- "total": 1029,
- "average": 98.7,
+ "checked": 965,
+ "total": 1047,
+ "average": 98.5,
  "byCategory": {
   "cardart": {
-   "n": 256,
-   "avg": 98.9
+   "n": 278,
+   "avg": 97.9
   },
   "goods": {
    "n": 68,
@@ -45,6 +45,14 @@
    ]
   },
   {
+   "path": "cardart/ui_button_ink.png",
+   "score": 65.0,
+   "issues": [
+    "작음 680x93 (<128)",
+    "거의 같은 그림: cardart/event_chart_caribbean.jpg, cardart/event_chart_southeast_asia.jpg"
+   ]
+  },
+  {
    "path": "icons/vfx_light.png",
    "score": 65.0,
    "issues": [
@@ -70,5 +78,5 @@
   }
  ],
  "candidates": 7,
- "updated": 1795044796
+ "updated": 1795062504
 }
