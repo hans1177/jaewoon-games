@@ -155280,7 +155280,7 @@
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -155314,7 +155314,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 3,
-      "previousReservationId": "system-ai:44293935609:1",
+      "previousReservationId": "system-ai:44543490931:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -155322,12 +155322,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44543490931:1",
-      "reservedAt": "2026-11-19T14:31:27.789Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -155451,7 +155451,8 @@
         "model-output-sha256:a01bf7997c99f11ead03219211bcc6869b65723170cf563f2e26b825415e27ad",
         "system-ai-handoff-to-reservation:system-ai:44293935609:1",
         "actions-run:44293935609",
-        "system-ai-handoff-to-reservation:system-ai:44543490931:1"
+        "system-ai-handoff-to-reservation:system-ai:44543490931:1",
+        "actions-run:44543490931"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1806,
@@ -155466,7 +155467,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-19T14:31:27.789Z"
+      "updatedAt": "2026-11-19T14:40:49.172Z"
     },
     {
       "id": "marketing-seed-roblox-survival-horror-es-doors-pre-release-v1",
