@@ -300,6 +300,30 @@ function CB.autoDeck(book: any): { string }
 	return table.clone(CB.STARTER)
 end
 
+-- 편집 중인 덱의 전장 배치, 중립 편입과 대표 조합을 같은 규칙으로 읽는다.
+function CB.deckOverview(ids: { string }, factionId: string?)
+	local summary = { melee = 0, ranged = 0, special = 0, neutral = 0, heroes = 0, combo = 0, comboTotal = 0 }
+	local included = {}
+	for _, id in ids do
+		local card = def(id)
+		if not card then continue end
+		included[id] = true
+		if card.special then
+			summary.special += 1
+		else
+			local lane = BC.lane(card)
+			summary[lane] += 1
+		end
+		if card.hero then summary.heroes += 1 end
+		if CB.continentOf(id) == "lost" then summary.neutral += 1 end
+	end
+	for _, id in (BC.PracticeOpening[factionId or ""] or {}) do
+		summary.comboTotal += 1
+		if included[id] then summary.combo += 1 end
+	end
+	return summary
+end
+
 -- 저장 데이터 정리 (불러올 때): 모르는 카드·이상한 값은 버린다
 function CB.sanitize(saved: any, factionId: string?): any
 	local book = CB.new(factionId)
