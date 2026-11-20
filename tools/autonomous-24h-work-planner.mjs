@@ -201,7 +201,7 @@ export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},qu
 export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={games:[]},diagnostics={},queueState={version:2,attempts:[]},impactHistory={version:1,entries:[]},date=kstDate(),filesystem=fs,priorityGameId='',now=new Date(),isSourceReleased=()=>false}={}){
   // [현재 정식 5부서] 계획·실행·검증에서 동일한 오디오 포함 역할을 사용한다.
   const departmentReviewRoles=['planning','graphics','development','qa','audio'];
-  const implementationRoles=departmentReviewRoles.filter(role=>role!=='planning');
+  const implementationRoles=['development','graphics','qa','audio'];
   const departmentSequence=[...departmentReviewRoles,'planning-final'];
   const active=activeReservations(queueState,{now,isSourceReleased});
   const activeGameIds=new Set(active.map(row=>row.gameId)),activeSourcePaths=new Set(active.map(row=>clean(row.sourcePath)).filter(Boolean));
