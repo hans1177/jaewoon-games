@@ -55,8 +55,13 @@ export function readLocalChatPolicy(root = ROOT) {
     }
     return document;
   });
-  if (docs[1].retained?.unknownOrMissingPolicy !== 'FAIL_CLOSED') throw new Error('LOG_POLICY_NOT_FAIL_CLOSED');
-  if (docs[2].constitutionalEnforcement?.mode !== 'FAIL_CLOSED') throw new Error('ARCHITECTURE_POLICY_NOT_FAIL_CLOSED');
+  // [중앙 4문서] 현행 책임 계약을 확인한다. 폐기된 retained/mode 값으로 검증을 대체하지 않는다.
+  if (docs[1].failureContract?.exactStageRequired !== true ||
+      docs[1].failureContract?.staleFailureMayNotOverrideCurrentRawState !== true)
+    throw new Error('LOG_POLICY_NOT_FAIL_CLOSED');
+  if (docs[2].constitutionalEnforcement?.mode !== 'EXECUTABLE_FAIL_CLOSED_PER_SCOPE_GLOBAL_24H_CONTINUES' ||
+      docs[2].constitutionalEnforcement?.subordinateOverrideForbidden !== true)
+    throw new Error('ARCHITECTURE_POLICY_NOT_FAIL_CLOSED');
   if (docs[3].defaultTrust !== 'DENY_OR_QUARANTINE_UNTIL_VERIFIED') throw new Error('SECURITY_POLICY_NOT_FAIL_CLOSED');
   return validateLocalWebChatPolicy(docs[0]);
 }
