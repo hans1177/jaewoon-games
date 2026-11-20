@@ -1,5 +1,5 @@
 {
- "sourceRevision": "5ecd0d01617fa59bb4b82abbc7d884ac058fe5aa",
+ "sourceRevision": "17114af69246822c15a553768d29e4b8f272e37d",
  "log": [
   {
    "step": 1,
@@ -161,7 +161,7 @@
   {
    "step": 35,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 상인 길드 · 항구 정보 | 교역소 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 현황 | 교역 | 거래소·우편 | 항구 정보 | 항구 정보 | 시세 비교 · 실제 판매손익 확인\ntext"
+   "out": "TEXTS: 이스탄불 · 상인 길드 · 항구 정보 | 교역소 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 선장실 | 교역 | 거래소·우편 | 항구 정보 | 항구 정보 | 시세 비교 · 실제 판매손익 확인\ntext"
   },
   {
    "step": 36,
@@ -186,7 +186,7 @@
   {
    "step": 41,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 상인 길드 · 교역 | 교역소 | 999997749 | ↶ 항구 정보 | 교역 | 거래소·우편 | 항구 정보 | 항구 살펴보기 | 교역 장부 | 교역 장부 · 이스탄불\ntext"
+   "out": "TEXTS: 이스탄불 · 상인 길드 · 교역 | 교역소 | 999997749 | ↶ 선장실 | 교역 | 거래소·우편 | 항구 정보 | 항구 살펴보기 | 교역 장부 | 교역 장부 · 이스탄불\ntext"
   },
   {
    "step": 42,
@@ -235,7 +235,7 @@
   {
    "step": 50,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 항만 관리관 · 항해 | 항만청 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 항구 정보 | 항해 | 지도 | 항해 | 534 km · 4일 · 보급 8개 | 가까운 항구 이즈미르 · 석탄 0개 필요\n출항 가능 20항로 · 현재 석\ntext"
+   "out": "TEXTS: 이스탄불 · 항만 관리관 · 항해 | 항만청 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 교역소 | 항해 | 지도 | 항해 | 534 km · 4일 · 보급 8개 | 가까운 항구 이즈미르 · 석탄 0개 필요\n출항 가능 20항로 · 현재 석\ntext"
   },
   {
    "step": 51,
@@ -284,7 +284,7 @@
   {
    "step": 59,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 항만 관리관 · 지도 | 항만청 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 항해 | 항해 | 지도 | 지도 | 534 km · 4일 · 보급 8개 | 가까운 항구 이즈미르 · 석탄 0개 필요\n출항 가능 20항로 · 현재 석\ntext"
+   "out": "TEXTS: 이스탄불 · 항만 관리관 · 지도 | 항만청 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 교역소 | 항해 | 지도 | 지도 | 534 km · 4일 · 보급 8개 | 가까운 항구 이즈미르 · 석탄 0개 필요\n출항 가능 20항로 · 현재 석\ntext"
   },
   {
    "step": 60,
@@ -304,7 +304,7 @@
   {
    "step": 64,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 조선 장인 · 조선소 | 조선소 | 999997749 | ↶ 지도 | 조선소 | 가까운 항구 출항 확인 | 선박 관리 | 보급·선원 채우기 1,080코인 | ◆ 내 기함 · 소형 상선 | 선체\ntext"
+   "out": "TEXTS: 이스탄불 · 조선 장인 · 조선소 | 조선소 | 999997749 | ↶ 항만청 | 조선소 | 가까운 항구 출항 확인 | 선박 관리 | 보급·선원 채우기 1,080코인 | ◆ 내 기함 · 소형 상선 | 선체\ntext"
   },
   {
    "step": 65,
@@ -344,7 +344,7 @@
   {
    "step": 74,
    "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 전투 교관 · 지상 탐험 | 전투 본부 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 진행 일지 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | 지상 탐험\ntext"
+   "out": "TEXTS: 이스탄불 · 전투 교관 · 지상 탐험 | 전투 본부 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 주점 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | 지상 탐험\ntext"
   },
   {
    "step": 75,
@@ -369,12 +369,12 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28005
+   "elapsedMs": 28008
   },
   {
    "step": 1,
    "type": "capture",
-   "elapsedMs": 1836
+   "elapsedMs": 1760
   },
   {
    "step": 2,
@@ -384,37 +384,37 @@
   {
    "step": 3,
    "type": "luau",
-   "elapsedMs": 233
+   "elapsedMs": 218
   },
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 233
+   "elapsedMs": 235
   },
   {
    "step": 5,
    "type": "wait",
-   "elapsedMs": 415
+   "elapsedMs": 407
   },
   {
    "step": 6,
    "type": "click_from_luau",
-   "elapsedMs": 1176
+   "elapsedMs": 1040
   },
   {
    "step": 7,
    "type": "wait",
-   "elapsedMs": 2003
+   "elapsedMs": 2005
   },
   {
    "step": 8,
    "type": "capture",
-   "elapsedMs": 1540
+   "elapsedMs": 1362
   },
   {
    "step": 9,
    "type": "luau",
-   "elapsedMs": 267
+   "elapsedMs": 389
   },
   {
    "step": 10,
@@ -424,62 +424,62 @@
   {
    "step": 11,
    "type": "click_from_luau",
-   "elapsedMs": 1005
+   "elapsedMs": 930
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 2016
+   "elapsedMs": 2006
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 1069
+   "elapsedMs": 960
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 228
+   "elapsedMs": 218
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 414
+   "elapsedMs": 404
   },
   {
    "step": 16,
    "type": "click_from_luau",
-   "elapsedMs": 1120
+   "elapsedMs": 1178
   },
   {
    "step": 17,
    "type": "wait",
-   "elapsedMs": 1702
+   "elapsedMs": 1706
   },
   {
    "step": 18,
    "type": "capture",
-   "elapsedMs": 3164
+   "elapsedMs": 1261
   },
   {
    "step": 19,
    "type": "wait",
-   "elapsedMs": 1800
+   "elapsedMs": 1806
   },
   {
    "step": 20,
    "type": "capture",
-   "elapsedMs": 3717
+   "elapsedMs": 1868
   },
   {
    "step": 21,
    "type": "wait",
-   "elapsedMs": 1802
+   "elapsedMs": 1812
   },
   {
    "step": 22,
    "type": "capture",
-   "elapsedMs": 1465
+   "elapsedMs": 2243
   },
   {
    "step": 23,
@@ -489,62 +489,62 @@
   {
    "step": 24,
    "type": "capture",
-   "elapsedMs": 1611
+   "elapsedMs": 2132
   },
   {
    "step": 25,
    "type": "luau",
-   "elapsedMs": 2598
+   "elapsedMs": 2889
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 336
+   "elapsedMs": 327
   },
   {
    "step": 27,
    "type": "wait",
-   "elapsedMs": 2514
+   "elapsedMs": 2513
   },
   {
    "step": 28,
    "type": "capture",
-   "elapsedMs": 1534
+   "elapsedMs": 1370
   },
   {
    "step": 29,
    "type": "luau",
-   "elapsedMs": 1249
+   "elapsedMs": 1233
   },
   {
    "step": 30,
    "type": "luau",
-   "elapsedMs": 333
+   "elapsedMs": 317
   },
   {
    "step": 31,
    "type": "luau",
-   "elapsedMs": 318
+   "elapsedMs": 601
   },
   {
    "step": 32,
    "type": "wait",
-   "elapsedMs": 2514
+   "elapsedMs": 2508
   },
   {
    "step": 33,
    "type": "luau",
-   "elapsedMs": 335
+   "elapsedMs": 158
   },
   {
    "step": 34,
    "type": "capture",
-   "elapsedMs": 1323
+   "elapsedMs": 1231
   },
   {
    "step": 35,
    "type": "luau",
-   "elapsedMs": 310
+   "elapsedMs": 302
   },
   {
    "step": 36,
@@ -554,162 +554,162 @@
   {
    "step": 37,
    "type": "wait",
-   "elapsedMs": 2506
+   "elapsedMs": 2510
   },
   {
    "step": 38,
    "type": "luau",
-   "elapsedMs": 452
+   "elapsedMs": 306
   },
   {
    "step": 39,
    "type": "luau",
-   "elapsedMs": 325
+   "elapsedMs": 322
   },
   {
    "step": 40,
    "type": "capture",
-   "elapsedMs": 1007
+   "elapsedMs": 999
   },
   {
    "step": 41,
    "type": "luau",
-   "elapsedMs": 343
+   "elapsedMs": 312
   },
   {
    "step": 42,
    "type": "click_from_luau",
-   "elapsedMs": 1257
+   "elapsedMs": 1369
   },
   {
    "step": 43,
    "type": "wait",
-   "elapsedMs": 854
+   "elapsedMs": 858
   },
   {
    "step": 44,
    "type": "luau",
-   "elapsedMs": 222
+   "elapsedMs": 224
   },
   {
    "step": 45,
    "type": "capture",
-   "elapsedMs": 1208
+   "elapsedMs": 1001
   },
   {
    "step": 46,
    "type": "luau",
-   "elapsedMs": 276
+   "elapsedMs": 216
   },
   {
    "step": 47,
    "type": "wait",
-   "elapsedMs": 2512
+   "elapsedMs": 2502
   },
   {
    "step": 48,
    "type": "luau",
-   "elapsedMs": 88
+   "elapsedMs": 97
   },
   {
    "step": 49,
    "type": "capture",
-   "elapsedMs": 940
+   "elapsedMs": 762
   },
   {
    "step": 50,
    "type": "luau",
-   "elapsedMs": 192
+   "elapsedMs": 171
   },
   {
    "step": 51,
    "type": "click_from_luau",
-   "elapsedMs": 551
+   "elapsedMs": 718
   },
   {
    "step": 52,
    "type": "wait",
-   "elapsedMs": 851
+   "elapsedMs": 859
   },
   {
    "step": 53,
    "type": "luau",
-   "elapsedMs": 166
+   "elapsedMs": 156
   },
   {
    "step": 54,
    "type": "capture",
-   "elapsedMs": 878
+   "elapsedMs": 756
   },
   {
    "step": 55,
    "type": "luau",
-   "elapsedMs": 178
+   "elapsedMs": 177
   },
   {
    "step": 56,
    "type": "wait",
-   "elapsedMs": 2512
+   "elapsedMs": 2509
   },
   {
    "step": 57,
    "type": "luau",
-   "elapsedMs": 131
+   "elapsedMs": 92
   },
   {
    "step": 58,
    "type": "capture",
-   "elapsedMs": 755
+   "elapsedMs": 721
   },
   {
    "step": 59,
    "type": "luau",
-   "elapsedMs": 195
+   "elapsedMs": 229
   },
   {
    "step": 60,
    "type": "luau",
-   "elapsedMs": 200
+   "elapsedMs": 233
   },
   {
    "step": 61,
    "type": "wait",
-   "elapsedMs": 2501
+   "elapsedMs": 2510
   },
   {
    "step": 62,
    "type": "luau",
-   "elapsedMs": 66
+   "elapsedMs": 207
   },
   {
    "step": 63,
    "type": "capture",
-   "elapsedMs": 1031
+   "elapsedMs": 1066
   },
   {
    "step": 64,
    "type": "luau",
-   "elapsedMs": 406
+   "elapsedMs": 184
   },
   {
    "step": 65,
    "type": "luau",
-   "elapsedMs": 660
+   "elapsedMs": 200
   },
   {
    "step": 66,
    "type": "wait",
-   "elapsedMs": 2511
+   "elapsedMs": 2503
   },
   {
    "step": 67,
    "type": "luau",
-   "elapsedMs": 193
+   "elapsedMs": 180
   },
   {
    "step": 68,
    "type": "capture",
-   "elapsedMs": 790
+   "elapsedMs": 823
   },
   {
    "step": 69,
@@ -719,52 +719,52 @@
   {
    "step": 70,
    "type": "luau",
-   "elapsedMs": 200
+   "elapsedMs": 199
   },
   {
    "step": 71,
    "type": "wait",
-   "elapsedMs": 2500
+   "elapsedMs": 2507
   },
   {
    "step": 72,
    "type": "luau",
-   "elapsedMs": 66
+   "elapsedMs": 78
   },
   {
    "step": 73,
    "type": "capture",
-   "elapsedMs": 982
+   "elapsedMs": 1109
   },
   {
    "step": 74,
    "type": "luau",
-   "elapsedMs": 185
+   "elapsedMs": 202
   },
   {
    "step": 75,
    "type": "luau",
-   "elapsedMs": 199
+   "elapsedMs": 206
   },
   {
    "step": 76,
    "type": "wait",
-   "elapsedMs": 2503
+   "elapsedMs": 2514
   },
   {
    "step": 77,
    "type": "luau",
-   "elapsedMs": 132
+   "elapsedMs": 168
   },
   {
    "step": 78,
    "type": "capture",
-   "elapsedMs": 970
+   "elapsedMs": 981
   },
   {
    "step": 79,
    "type": "luau",
-   "elapsedMs": 863
+   "elapsedMs": 986
   }
  ],
  "consoleCapture": {
@@ -790,7 +790,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 251260,
+      "bytes": 251317,
       "width": 0,
       "height": 0,
       "pass": true
@@ -813,7 +813,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 250862,
+      "bytes": 250664,
       "width": 0,
       "height": 0,
       "pass": true
@@ -828,7 +828,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195372,
+      "bytes": 195369,
       "width": 0,
       "height": 0,
       "pass": true
@@ -843,7 +843,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 153076,
+      "bytes": 153119,
       "width": 0,
       "height": 0,
       "pass": true
@@ -855,8 +855,8 @@
     "camera": true,
     "sky": false,
     "departing": false,
-    "atmosphere": true,
-    "brightness": 2.015944480895996,
+    "atmosphere": false,
+    "brightness": 1,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -867,7 +867,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 137934,
+      "bytes": 137769,
       "width": 0,
       "height": 0,
       "pass": true
@@ -880,7 +880,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0195274353027344,
+    "brightness": 2.0156822204589844,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -891,7 +891,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 77893,
+      "bytes": 157896,
       "width": 0,
       "height": 0,
       "pass": true
@@ -904,7 +904,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0216503143310547,
+    "brightness": 2.0179593563079834,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -915,7 +915,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 115718,
+      "bytes": 107192,
       "width": 0,
       "height": 0,
       "pass": true
@@ -928,7 +928,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0251095294952393,
+    "brightness": 2.0221269130706787,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -939,7 +939,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 143824,
+      "bytes": 143795,
       "width": 0,
       "height": 0,
       "pass": true
@@ -952,7 +952,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.029633045196533,
+    "brightness": 2.0267417430877686,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -963,7 +963,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 151336,
+      "bytes": 151291,
       "width": 0,
       "height": 0,
       "pass": true
@@ -978,7 +978,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 175304,
+      "bytes": 175262,
       "width": 0,
       "height": 0,
       "pass": true
@@ -993,7 +993,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 151177,
+      "bytes": 151475,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1008,7 +1008,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 150155,
+      "bytes": 149595,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1023,7 +1023,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 116037,
+      "bytes": 116254,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1038,7 +1038,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 116329,
+      "bytes": 116277,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1053,7 +1053,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 173252,
+      "bytes": 173402,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1068,7 +1068,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 153656,
+      "bytes": 153772,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1083,7 +1083,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 157137,
+      "bytes": 156974,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1098,7 +1098,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 155944,
+      "bytes": 155813,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1111,7 +1111,7 @@
  "abortDiagnostics": {
   "step": 79,
   "type": "luau",
-  "elapsedMs": 429,
+  "elapsedMs": 575,
   "context": "Client",
   "lastScreenshot": "tab_battle",
   "lastClick": "qa_tab_route_to_map",
