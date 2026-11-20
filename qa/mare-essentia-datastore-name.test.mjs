@@ -2044,6 +2044,35 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  assert.match(port,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
 });
 
+// [주민 경로 안전] 집까지 4개 생활 구간 검사·교대근무·현재 시각 초기위치의 실제 코드 유지.
+test('주민 귀가 안전과 시설 업무 종료 시각을 함께 검증한다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const from=scene.indexOf('-- [마을 주민·건축물 간섭]');
+ const to=scene.indexOf('-- [주민 직업 실물 장비]',from);
+ assert.ok(from>=0 && to>from,'기존 NPC 경로 검사 유지');
+ const routes=scene.slice(from,to);
+ for(const token of [
+  'local home = (walker.home or walker.morning) + offset',
+  'not blocked(CFrame.new(home), 0, walker.model)',
+  'clearSegment(home, morning)',
+  'clearSegment(morning, market)',
+  'clearSegment(market, evening)',
+  'clearSegment(evening, home)',
+  'walker.home, walker.morning, walker.market, walker.evening = home, morning, market, evening',
+  'if walker.mode == "schedule" then',
+  'walker.model:PivotTo(CFrame.new(startAt) * (safe - safe.Position))',
+  'walker.lastPos = startAt',
+ ]) assert.ok(routes.includes(token),'주민 실제 귀갓길 검사/초기화 누락: '+token);
+ const district=scene.slice(scene.indexOf('local function npc(dx, dz, yaw, kind, mode, spec)'));
+ assert.ok(district.includes('w.districtDuty = true'),'구역 근무자 근무시간 공통 계약 누락');
+ for(const token of [
+  'local offShift = w.districtDuty and (hour < (w.shiftStart or 6) or hour >= (w.shiftEnd or 20))',
+  'local roster = if offShift then NIGHT_REST',
+  'local routine = if offShift then "rest"',
+ ]) assert.ok(scene.includes(token),'퇴근 후 작업 중단 누락: '+token);
+ assert.ok(!routes.includes('clearSegment(evening, morning)'),'집을 무시한 기존 귀가 동선 재발');
+});
+
 // [주민 하루 생활] 유령 인구를 방지하고 구역별 출퇴근과 미개발 녹지를 회귀 검증한다.
 test('항구는 실제 거주민과 시설 근무표를 따르고 추가 소품 없이 원본 풀·관목을 재사용한다',()=>{
  const scene=read('ReplicatedStorage/Shared/PortScene.luau');
