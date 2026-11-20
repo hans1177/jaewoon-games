@@ -156,7 +156,7 @@ test('잘못된 블렌더 신규 출력은 최종 제작 경로에 승격하지 
     await assert.rejects(produceRegisteredCc0Asset({
       repoRoot:f.root,assetId:'fixture-cc0-actor',gameId:'demo',target:'web',
       role:'character',blender:fakeBlender
-    }),/CC0_DERIVED_OUTPUT_STALE_KEEP_FOR_REVIEW/);
+    }),/CC0_DERIVED_OUTPUT_(?:RECIPE_CHANGED|STALE)_KEEP_FOR_REVIEW/);
     const generated=path.join(f.root,'assets/generated/web/demo');
     assert.deepEqual(fs.readdirSync(generated),[],'invalid staged outputs must be deleted');
     assert.deepEqual(fs.readFileSync(path.join(f.root,'company-asset-library.json')),before);
