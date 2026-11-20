@@ -211,13 +211,41 @@ export function evaluateDepartmentEvidence({ role = '', evidence = [], request =
     blockerCodes.push('BUILD_EVIDENCE_REQUIRED');
     blockers.push(`${standard.name} PASS에는 성공한 컴파일/빌드 증거가 필요함 (현재: ${buildConclusion || 'unknown'})`);
   }
-  // [오디오 검증] 실제 음원/이벤트 변경 요청은 런타임 재생 근거 없이는 PASS를 금지한다.
+  // [오디오 증거] 일반 실행 성공과 실제 음성 출력 관측은 별개로 판정한다.
+  const changedFiles = normalizeDepartmentEvidence([
+    ...(Array.isArray(request.changedFiles) ? request.changedFiles : []),
+    ...(Array.isArray(request.modificationFiles) ? request.modificationFiles : [])
+  ]);
   const audioChange = clean(role).toLowerCase() === 'audio' &&
-    /(?:audio|sound|sfx|music|bgm|\.wav|\.ogg|\.mp3|효과음|오디오|사운드|배경음악|음악)/i.test(clean(request.scope));
-  if ((standard.runtimeRequired || audioChange) && runtimeEvidence.length === 0) {
+    (/(?:audio|sound|sfx|music|bgm|\.wav|\.ogg|\.mp3|효과음|오디오|사운드|배경음악|음악)/i
+      .test([clean(request.scope), ...changedFiles].join(' ')) ||
+      normalizedEvidence.some(item => /(?:\.(?:wav|ogg|mp3)|\baudio[\w./-]*\.(?:js|mjs|ts|cs)\b)/i.test(item) &&
+        !/(?:영향 없음|no audio impact)/i.test(item)));
+  // 게임·수정 리비전·실행 ID·이벤트·비무음 프레임·캡처 해시가 일치해야 한다.
+  // 단순 '재생 확인' 설명 또는 일반 스모크 PASS는 오디오 재생 증거가 아니다.
+  const audioPlaybackEvidence = Array.isArray(request.audioPlaybackEvidence)
+    ? request.audioPlaybackEvidence.filter(item => {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return false;
+      const artifact = clean(item.captureArtifact);
+      return clean(item.gameId) === clean(request.gameId) && !!clean(request.gameId) &&
+        /^[0-9a-f]{40}$/i.test(clean(request.modificationCommit)) &&
+        clean(item.sourceRevision).toLowerCase() === clean(request.modificationCommit).toLowerCase() &&
+        Number.isSafeInteger(item.runId) && item.runId > 0 &&
+        !!clean(item.eventId) && item.eventId.length <= 160 &&
+        Number.isSafeInteger(item.playbackCount) && item.playbackCount > 0 &&
+        Number.isSafeInteger(item.nonSilentFrames) && item.nonSilentFrames > 0 &&
+        artifact.length > 0 && artifact.length <= 500 &&
+        !artifact.includes('..') && !artifact.startsWith('/') &&
+        /^[0-9a-f]{64}$/i.test(clean(item.artifactSha256)) &&
+        clean(item.result).toUpperCase() === 'PASS';
+    }) : [];
+  if (standard.runtimeRequired && runtimeEvidence.length === 0) {
     blockerCodes.push('RUNTIME_PLAY_EVIDENCE_REQUIRED');
-    blockers.push(audioChange ? '오디오 소스 변경에는 실제 사운드 재생/런타임 스모크 근거가 필요함' :
-      'QA PASS에는 실제 게임 실행/플레이 스모크 테스트 증거가 최소 1개 필요함');
+    blockers.push('QA PASS에는 실제 게임 실행/플레이 스모크 테스트 증거가 최소 1개 필요함');
+  }
+  if (audioChange && audioPlaybackEvidence.length === 0) {
+    blockerCodes.push('AUDIO_PLAYBACK_CAPTURE_REQUIRED');
+    blockers.push('오디오 변경에는 동일 게임·리비전의 실행 ID, 사운드 이벤트, 비무음 재생 캡처 및 해시 근거가 필요함');
   }
 
   return Object.freeze({
@@ -232,6 +260,7 @@ export function evaluateDepartmentEvidence({ role = '', evidence = [], request =
     buildPassed,
     runtimeRequired: standard.runtimeRequired || audioChange,
     runtimeEvidence,
+    audioPlaybackCaptureCount: audioPlaybackEvidence.length,
     blockerCodes: freezeList(blockerCodes),
     blockers: freezeList(blockers),
     requiredChecks: standard.requiredChecks
