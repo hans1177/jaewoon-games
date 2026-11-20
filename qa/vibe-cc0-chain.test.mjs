@@ -87,6 +87,28 @@ test('exact pinned CC0 bytes acquire once, then reuse source when Blender stage 
   }finally{f.cleanup();}
 });
 
+test('같은 게임의 다른 CC0 자산은 기존 단일 역할 슬롯을 덮지 않고 독립 제작한다',async()=>{
+  const f=fixture();
+  try{
+    fs.writeFileSync(f.source,binary);
+    const legacy=path.join(f.root,'assets/generated/web/demo/character');
+    fs.mkdirSync(legacy,{recursive:true});
+    fs.writeFileSync(path.join(legacy,'asset.glb'),Buffer.from('legacy-native-model'));
+    fs.writeFileSync(path.join(legacy,'evidence.json'),JSON.stringify({
+      sourceMesh:{libraryParentAssetId:'other-approved-cc0',sourceSha256:'0'.repeat(64)}
+    }));
+    await assert.rejects(request({repoRoot:f.root}),/ENOENT|missing_blender_for_test/);
+    assert.equal(fs.readFileSync(path.join(legacy,'asset.glb'),'utf8'),'legacy-native-model',
+      'another approved source must retain its existing artifact');
+    const slots=fs.readdirSync(path.join(f.root,'assets/generated/web/demo'));
+    assert.deepEqual(slots,['character']);
+    const code=fs.readFileSync(new URL('../tools/vibe2-asset-production-plan.mjs',import.meta.url),'utf8');
+    assert.match(code,/recipeIdentity=JSON\.stringify\(\{sourceAssetId:id,styleFamily:style,reconstruction:recipe\}\)/);
+    assert.match(code,/const slot=type\+'-'\+label\+'-'\+fingerprint/);
+    assert.match(code,/const registeredId='derived-'\+platform\+'-'\+game\+'-'\+\(legacyMatches\?type:slot\)/);
+  }finally{f.cleanup();}
+});
+
 test('wrong downloaded hash is rejected without leaving a source or stage',async()=>{
   const f=fixture({downloadUrl:'https://opengameart.org/sites/default/files/fixture.glb'});
   try{
