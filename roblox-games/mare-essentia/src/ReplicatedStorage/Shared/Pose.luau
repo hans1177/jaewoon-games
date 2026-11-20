@@ -1927,6 +1927,44 @@ function Pose.work(model, kind, t, moving)
 	elseif kind == "lift" or kind == "bell" then
 		add(m.waist, A(0, math.sin(t * 0.9) * 0.06, 0))
 	end
+	-- [직업 작업의 마무리 디테일] 기존 R15 관절만 움직이고 보행 관절의 접지 주기는 유지한다.
+	-- 팔, 허리, 시선, 무릎이 함께 움직여 도구를 든 주민의 동작이 고립되지 않는다.
+	local profession = model:GetAttribute("AppearanceProfession")
+	local busy = kind == "hammer" or kind == "forge" or kind == "saw" or kind == "plane"
+		or kind == "knead" or kind == "sew" or kind == "haul_rope" or kind == "unload"
+		or kind == "weigh" or kind == "pack" or kind == "mend_net" or kind == "harvest"
+		or kind == "water" or kind == "sort_crop" or kind == "seal" or kind == "write"
+	if not moving and busy then
+		local tempo = if profession == "smith" or profession == "carpenter" or profession == "shipwright" then 2.5
+			elseif profession == "tailor" or profession == "clerk" or profession == "royal_scribe" then 1.65
+			elseif profession == "fisher" or profession == "docker" then 1.9 else 2.05
+		local beat = math.sin(t * tempo + (model:GetAttribute("MotionPersonality") or 1) * 0.8)
+		local settle = math.max(0, beat)
+		add(m.root, CFrame.new(0, -0.025 * settle, 0.015 * beat))
+		add(m.waist, A(0.035 * settle, 0.035 * beat, 0))
+		add(m.neck, A(-0.035 * settle, 0.045 * beat, 0))
+		add(m.leftKnee, A(-0.05 * settle, 0, 0))
+		add(m.rightKnee, A(-0.07 * (1 - settle), 0, 0))
+		if profession == "tailor" or profession == "royal_scribe" or profession == "clerk" then
+			add(m.leftElbow, A(-0.12 * settle, 0, 0))
+			add(m.rightElbow, A(-0.16 * settle, 0, 0))
+		elseif profession == "smith" or profession == "carpenter" or profession == "shipwright" then
+			add(m.rightElbow, A(-0.18 * settle, 0, 0))
+			add(m.leftArm, A(0, 0, 0.055 * beat))
+		end
+	elseif not moving and (kind == "talk" or kind == "listen" or kind == "gossip"
+		or kind == "offer" or kind == "receive" or kind == "bargain") then
+		-- [대화] 숨쉬기·끄덕이기·미세 회전을 기존 제스처에 얹는다.
+		local breath = math.sin(t * 1.15 + (model:GetAttribute("MotionPersonality") or 1))
+		add(m.waist, A(0, 0.025 * breath, 0))
+		add(m.neck, A(-0.018 * breath, 0.035 * breath, 0))
+	elseif not moving and (kind == "patrol" or kind == "scan" or kind == "watch"
+		or kind == "scan_horizon" or kind == "guard") then
+		-- [초병] 머리 탐색과 몸통의 느린 관성 차이.
+		local scan = math.sin(t * 0.60 + (model:GetAttribute("MotionPersonality") or 1))
+		add(m.neck, A(-0.025, scan * 0.10, 0))
+		add(m.waist, A(0, scan * 0.035, 0))
+	end
 	if standing then
 		-- 체중을 이쪽저쪽 발로 옮기며 선다
 		local w = math.sin(t * 0.8 + 1.3)
