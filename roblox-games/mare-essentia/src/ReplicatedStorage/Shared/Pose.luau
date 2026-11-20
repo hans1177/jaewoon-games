@@ -471,6 +471,39 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 		neck = model:FindFirstChild("Neck", true),
 		root = model:FindFirstChild("Root", true),
 	}
+	-- [실제 R15 관절 보정] 몸의 전방(-Z)과 실제 어깨/골반/무릎의 부착 축을 비교해
+	-- 주민마다 회전 방향을 한 번만 결정한다. 기존 C0/C1/Attachment는 수정하지 않는다.
+	-- 양팔과 양다리는 서로 거울 축일 수 있으므로 고정 부호 보정보다 실제 축을 우선한다.
+	for _, key in { "leftArm", "rightArm", "leftElbow", "rightElbow",
+		"leftLeg", "rightLeg", "leftKnee", "rightKnee" } do
+		local joint = rigMotors[model][key]
+		if joint then
+			local ok, axisScore = pcall(function()
+				local part0, part1, c0, c1
+				if joint:IsA("Motor6D") then
+					part0, part1, c0, c1 = joint.Part0, joint.Part1, joint.C0, joint.C1
+				elseif joint:IsA("AnimationConstraint") then
+					local a0, a1 = joint.Attachment0, joint.Attachment1
+					if not a0 or not a1 then return 0 end
+					part0, part1, c0, c1 = a0.Parent, a1.Parent, a0.CFrame, a1.CFrame
+				end
+				if not part0 or not part1 or not part0:IsA("BasePart") or not part1:IsA("BasePart") then return 0 end
+				local torso = model:FindFirstChild("UpperTorso")
+				local forward = if torso then torso.CFrame.LookVector else part0.CFrame.LookVector
+				local origin = part0.CFrame * c0
+				local limbDown = Vector3.new(0, -1, 0)
+				local plus = origin * CFrame.Angles(0.32, 0, 0) * c1:Inverse()
+				local minus = origin * CFrame.Angles(-0.32, 0, 0) * c1:Inverse()
+				return (plus:VectorToWorldSpace(limbDown) - minus:VectorToWorldSpace(limbDown)):Dot(forward)
+			end)
+			if ok and math.abs(axisScore) > 0.04 then
+				-- 팔꿈치는 음의 X 동작을 가슴 앞으로 접고, 무릎은 음의 X를 뒤로 접는다.
+				local sign = if axisScore > 0 then 1 else -1
+				if key == "leftElbow" or key == "rightElbow" then sign = -sign end
+				joint:SetAttribute("NpcPitchSign", sign)
+			end
+		end
+	end
 	-- [주민·동료 3D 복식] 원본 R15 15관절과 스케일을 보존한 채 승인된 People 메시를 장착한다.
 	-- 외형 전용 속성만 사용한다. 미로드 시 항구 자산 인입 이벤트에서 원래 장착 함수를 재호출한다.
 	if outfit and (outfit.gender == "female" or outfit.gender == "male") then
@@ -1020,6 +1053,29 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				local textured = (surface ~= nil and (surface.ColorMap ~= ""
 					or surface.MetalnessMap ~= "" or surface.RoughnessMap ~= "" or surface.NormalMap ~= ""))
 					or (part:IsA("MeshPart") and (part.TextureID ~= "" or part.MaterialVariant ~= ""))
+				-- [실물 헤어·직업 복식 구분] PBR 원본 ColorMap/Normal/Roughness는 그대로 두고,
+				-- 수입된 SurfaceAppearance의 보조 색상만 약하게 조절해 헤어색과 직군별 천을 구분한다.
+				-- 장식 금속·진주·장화의 원본 광택 및 원형은 절대 변경하지 않는다.
+				if npcOutfit and surface and surface.ColorMap ~= "" then
+					if string.sub(assetName, 1, 5) == "hair_" then
+						local hairTint = model:GetAttribute("NpcHairTint")
+						if typeof(hairTint) == "Color3" then
+							local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.60)
+							surface.Color = surface.Color:Lerp(softTint, 0.58)
+						end
+					elseif detailAllowed and (assetName == "outfit_vest" or assetName == "outfit_coat"
+						or assetName == "outfit_guard" or assetName == "outfit_apron"
+						or assetName == "outfit_sash" or assetName == "outfit_stole") then
+						local dye = if string.find(profile, "guard", 1, true) then Color3.fromRGB(215, 228, 245)
+							elseif string.find(profile, "official", 1, true) then Color3.fromRGB(247, 221, 215)
+							elseif string.find(profile, "sailor", 1, true) then Color3.fromRGB(205, 239, 233)
+							elseif string.find(profile, "worker", 1, true) or string.find(profile, "artisan", 1, true)
+								then Color3.fromRGB(244, 222, 192)
+							elseif string.find(profile, "clergy", 1, true) then Color3.fromRGB(249, 238, 215)
+							else Color3.fromRGB(236, 232, 220)
+						surface.Color = surface.Color:Lerp(dye, 0.30)
+					end
+				end
 				-- [원본 재질 복원] 9개 복식 GLB는 ColorMap 없이 glTF baseColorFactor로
 				-- 금속·가죽·직물을 나눴다. 텍스처가 없다는 이유로 Roblox의 기본 플라스틱을
 				-- 방치하지 않고 실제 GLB 주재질에 가까운 색·표면으로 복원한다.
@@ -1050,6 +1106,13 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						-- 실제 색차가 큰 원본 소매·안감·단추 및 PBR 텍스처는 보호한다.
 						part.Material = fallback[2]
 						part.Color = fallback[1]
+					end
+					-- [직물·가죽 대비] 실제 PBR이 없는 복식만 Roblox 직물 재질로 표현한다.
+					-- 원본 ColorMap이 있는 옷/금속 및 베이스 부품에는 이 보정을 적용하지 않는다.
+					if npcOutfit and (assetName == "outfit_vest" or assetName == "outfit_coat"
+						or assetName == "outfit_apron" or assetName == "outfit_sash"
+						or assetName == "outfit_stole") and part.Material == Enum.Material.SmoothPlastic then
+						part.Material = Enum.Material.Fabric
 					end
 					-- 원본 금속광을 유지하되 플라스틱 같은 과한 반사는 억제한다.
 					if part.Material == Enum.Material.Metal then
@@ -1149,6 +1212,11 @@ function Pose.work(model, kind, t, moving)
 			if pitch < -0.30 then cf = CFrame.Angles(-pitch, yaw, roll) end
 		elseif motor == m.neck and model:GetAttribute("NpcFaceReversed") then
 			cf = CFrame.Angles(0, math.pi, 0) * cf
+		end
+		-- [관절 실축] 실제 리그의 앞/뒤 부호를 적용해 반대 방향으로 굽는 팔·다리를 방지한다.
+		if motor:GetAttribute("NpcPitchSign") == -1 then
+			local pitch, yaw, roll = cf:ToEulerAnglesXYZ()
+			cf = CFrame.Angles(-pitch, yaw, roll)
 		end
 		motor.Transform = cf
 	end
@@ -1576,6 +1644,11 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 			elseif joint == m.neck and model:GetAttribute("NpcFaceReversed") then
 				cf = CFrame.Angles(0, math.pi, 0) * cf
 			end
+			-- [실제 관절 부호] 주행·작업 시 같은 R15 전방을 바라보도록 정렬한다.
+			if joint:GetAttribute("NpcPitchSign") == -1 then
+				local pitch, yaw, roll = cf:ToEulerAnglesXYZ()
+				cf = CFrame.Angles(-pitch, yaw, roll)
+			end
 			joint.Transform = cf
 		end
 	end
@@ -1609,11 +1682,14 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 		set(m.leftLeg, A(s * amp + (if companionRun then -pushL * 0.10 else 0), 0, 0))
 		set(m.rightLeg, A(-s * amp + (if companionRun then -pushR * 0.10 else 0), 0, 0))
 		-- 무릎은 다리가 앞으로 나올 때 접힌다 (R15 무릎은 음수 방향이 접힘)
-		set(m.leftKnee, A(-(math.max(0, c) * kneeAmp + 0.08), 0, 0))
-		set(m.rightKnee, A(-(math.max(0, -c) * kneeAmp + 0.08), 0, 0))
-		-- [착지 발목] 디딤 발은 지면에 남기고 들린 발끝은 착지를 준비한다.
-		set(m.leftAnkle, A(-s * 0.15 - math.max(0, c) * 0.14 + (if companionRun then pushL * 0.16 else 0), 0, 0))
-		set(m.rightAnkle, A(s * 0.15 - math.max(0, -c) * 0.14 + (if companionRun then pushR * 0.16 else 0), 0, 0))
+		-- [실제 발 내딛기] 다리가 전방으로 스윙할 때만 무릎이 접히고
+		-- 착지·후방 밀기 때는 펴진다. 독립 코사인 위상으로 생기던 역관절을 방지한다.
+		local liftL, liftR = math.max(0, s), math.max(0, -s)
+		set(m.leftKnee, A(-(0.06 + liftL * kneeAmp * 0.78), 0, 0))
+		set(m.rightKnee, A(-(0.06 + liftR * kneeAmp * 0.78), 0, 0))
+		-- [착지 발목] 이동 중 발끝이 지면에 박히지 않도록 들린 발만 더 굽힌다.
+		set(m.leftAnkle, A(-s * 0.13 + liftL * 0.19 + (if companionRun then pushL * 0.12 else 0), 0, 0))
+		set(m.rightAnkle, A(s * 0.13 + liftR * 0.19 + (if companionRun then pushR * 0.12 else 0), 0, 0))
 		-- 반대 다리와 교차하는 팔. 앞팔은 충분히 나가되 뒤팔은 짧게 흔들어
 		-- 뒤로 과하게 꺾이거나 등 뒤에 고정돼 보이지 않게 한다 (R15 전방 = 양의 X 회전).
 		-- [팔-다리 역위상] 짧은 후방 스윙 때문에 교차가 사라진 회귀 수정. 팔 전후 비대칭은 유지한다.
@@ -1631,7 +1707,7 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 		set(m.rightElbow, A(-(elbowBack + (elbowFront - elbowBack) * rightForward), 0, 0))
 		-- [지면 접지] 과도한 수직 바운스를 줄이고 하중 이동은 무릎·발목에 분산한다.
 		local bob = (math.cos(2 * w) * 0.5 + 0.5)
-			* (if companionMove then 0.022 elseif run then 0.12 else 0.075) * stride
+			* (if companionMove then 0.022 elseif run then 0.095 else 0.04) * stride
 		-- 동료는 착지 순간 골반을 높이 띄우지 않는다. 비주얼 요철은 무릎·발목이 담당한다.
 		local lean = if motionStyle == "elder" then 0.12 elseif motionStyle == "nimble" then -0.06 else 0
 		-- [유기적 질주] 발이 지면을 차는 순간 골반 회전·어깨 반작용·시선 안정화를 각기 다른 위상으로 준다.
