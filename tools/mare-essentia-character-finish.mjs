@@ -15,7 +15,7 @@ const ITEMS = [
   'acc_feather_hat','acc_guild_badge','acc_pearl_hairpin','acc_ribbon_bow',
   'acc_sailor_headband',
 ];
-const MAP_SIZE = 128;
+const MAP_SIZE = 256;
 const ROLES = ['fabric','leather','metal','hair','feather','pearl'];
 const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const blobSha = bytes => crypto.createHash('sha1').update('blob ' + bytes.length + '\0').update(bytes).digest('hex');
@@ -57,32 +57,47 @@ function pngRGB(render){
   ]);
 }
 function textureSet(kind){
+  // [기존 원본색 보존] RGB는 GLB 원래 baseColorFactor를 곱하는 2차 표면 무늬다.
+  // [재질 차이 실물화] 256px 직조·가죽 결·브러시 금속·모발 결·깃털·진주를 서로 다른 주파수와 거칠기로 만든다.
   const n=MAP_SIZE,two=Math.PI*2,height=new Float32Array(n*n);
   for(let y=0;y<n;y++)for(let x=0;x<n;x++){
     const u=x/n,v=y/n;
-    const wave = kind==='fabric' ? Math.sin(two*u*36)*Math.cos(two*v*36)*0.5+Math.sin(two*v*36)*0.35
-      : kind==='leather' ? Math.sin(two*u*7+1.3*Math.cos(two*v*13))*Math.sin(two*v*9)*0.35
-        +Math.sin(two*u*31)*0.11+Math.cos(two*v*27)*0.09
-      : kind==='metal' ? Math.sin(two*u*21)*0.17+Math.sin(two*u*55)*0.08
-      : kind==='hair' ? Math.sin(two*u*47+1.2*Math.sin(two*v*4))*0.5+Math.sin(two*u*72)*0.18
-      : kind==='feather' ? Math.sin(two*(u*30+v*15))*0.36+Math.cos(two*(u*6-v*3))*0.12
-      : Math.sin(two*u*3)*Math.cos(two*v*3)*0.05;
+    const wave = kind==='fabric'
+      ? Math.sin(two*u*42)*Math.sin(two*v*42)*0.46+Math.sin(two*u*84)*0.10+Math.sin(two*v*84)*0.10
+      : kind==='leather'
+      ? Math.sin(two*u*9+1.4*Math.cos(two*v*13))*Math.sin(two*v*11)*0.43
+        +Math.sin(two*(u*28+v*13))*0.15+Math.cos(two*(v*36-u*5))*0.11
+      : kind==='metal'
+      ? Math.sin(two*u*36)*0.29+Math.sin(two*u*83+two*v*2)*0.13
+      : kind==='hair'
+      ? Math.sin(two*u*73+0.75*Math.sin(two*v*3))*0.48+Math.sin(two*u*116)*0.20
+      : kind==='feather'
+      ? Math.sin(two*(u*35+v*17))*0.38+Math.cos(two*(u*9-v*8))*0.17
+      : Math.sin(two*u*4)*Math.cos(two*v*4)*0.10;
     height[y*n+x]=wave;
   }
   const at=(x,y)=>height[((y+n)%n)*n+((x+n)%n)];
+  const tint=kind==='fabric'?221:kind==='leather'?202:kind==='metal'?243:
+    kind==='hair'?212:kind==='feather'?237:249;
+  const colorGain=kind==='fabric'?30:kind==='leather'?39:kind==='hair'?35:kind==='feather'?21:7;
+  const relief=kind==='fabric'?0.54:kind==='leather'?0.60:kind==='metal'?0.17:
+    kind==='hair'?0.49:kind==='feather'?0.36:0.035;
+  const rough=kind==='fabric'?238:kind==='leather'?172:kind==='metal'?94:
+    kind==='hair'?169:kind==='feather'?219:113;
+  const roughVariation=kind==='fabric'?13:kind==='leather'?28:kind==='metal'?24:
+    kind==='hair'?21:kind==='feather'?15:8;
   return {
     color:pngRGB((x,y)=>{
-      const value=clamp(250+at(x,y)*(kind==='leather'?6:kind==='metal'||kind==='pearl'?2:5));
-      return [value,value,value]; // 기존 glTF baseColorFactor를 그대로 곱해 원래 색상을 유지한다.
+      const value=clamp(tint+at(x,y)*colorGain);
+      return [value,value,value];
     }),
     normal:pngRGB((x,y)=>{
-      const amount=kind==='pearl'?0.03:kind==='metal'?0.06:kind==='hair'?0.09:0.105;
-      const dx=(at(x+1,y)-at(x-1,y))*amount,dy=(at(x,y+1)-at(x,y-1))*amount;
+      const dx=(at(x+1,y)-at(x-1,y))*relief,dy=(at(x,y+1)-at(x,y-1))*relief;
       const nz=1/Math.sqrt(1+dx*dx+dy*dy);
       return [128-dx*nz*127,128-dy*nz*127,128+nz*127];
     }),
-    rough:pngRGB((x,y)=>[255,(kind==='fabric'?235:kind==='hair'?230:kind==='feather'?241:
-      kind==='leather'?222:kind==='metal'?219:230)+at(x,y)*8,255]),
+    // [glTF 금속-거칠기 채널] G=roughness / B=metallic. 비금속 옷·머리가 금속이 되지 않게 B를 0으로 고정한다.
+    rough:pngRGB((x,y)=>[255,clamp(rough+at(x,y)*roughVariation),kind==='metal'?255:0]),
   };
 }
 function materialRole(name,material){
@@ -134,7 +149,7 @@ function addPbr(bytes,name,maps){
     const group=maps.get(role),ids=[];
     for(const field of ['color','normal','rough']){
       const image=scene.images.length;
-      scene.images.push({name:'mare_'+role+'_'+field+'_128',mimeType:'image/png',bufferView:append(group[field])});
+      scene.images.push({name:'mare_'+role+'_'+field+'_256',mimeType:'image/png',bufferView:append(group[field])});
       const index=scene.textures.length;
       scene.textures.push({source:image,sampler});
       ids.push(index);
@@ -176,7 +191,7 @@ function addPbr(bytes,name,maps){
     material.pbrMetallicRoughness=pbr;
     pbr.baseColorTexture={index:indexes[0]};
     pbr.metallicRoughnessTexture={index:indexes[2]};
-    material.normalTexture={index:indexes[1],scale:role==='pearl'?0.08:role==='metal'?0.22:role==='hair'?0.33:0.4};
+    material.normalTexture={index:indexes[1],scale:role==='metal'?0.46:role==='pearl'?0.13:role==='hair'?0.74:role==='fabric'?0.82:role==='leather'?0.90:0.60};
     // 금속성과 거칠기, 오리지널 색상, 투명도는 바꾸지 않는다.
   }
   if(!primitives||primitives>16||!scene.images.length||name.startsWith('outfit_')&&uvAdded)
@@ -192,6 +207,58 @@ function addPbr(bytes,name,maps){
   if(!full.subarray(at+8,at+8+original).equals(data))
     throw Error('MARE_CHARACTER_ORIGINAL_MESH_CHANGED:'+name);
   return {full,primitives,uvAdded,maps:scene.images.length,roles:[...used.keys()]};
+}
+// [기존 PBR 보존 업그레이드] v2 GLB의 정점·인덱스·UV는 그대로 유지하고 3종 PNG 표면만 교체한다.
+// 같은 glTF bufferView에 새 이미지를 재포장하여 구형 PNG를 이중으로 넣지 않는다.
+function retouchPbr(bytes,name,maps,proof){
+  const {scene,data}=glbParts(bytes,name);
+  const replacements=new Map(),roles=new Set();
+  for(const img of scene.images||[]){
+    const found=/^mare_(fabric|leather|metal|hair|feather|pearl)_(color|normal|rough)_128$/.exec(img.name||'');
+    if(!found||!Number.isInteger(img.bufferView)||replacements.has(img.bufferView))
+      throw Error('MARE_CHARACTER_V2_TEXTURE_LAYOUT_MISMATCH:'+name);
+    const [,role,field]=found,group=maps.get(role);
+    if(!group||!group[field])throw Error('MARE_CHARACTER_V3_ROLE_MISSING:'+name);
+    replacements.set(img.bufferView,group[field]);
+    roles.add(role);
+    img.name='mare_'+role+'_'+field+'_256';
+  }
+  if(replacements.size<3||replacements.size!==(scene.images||[]).length)
+    throw Error('MARE_CHARACTER_V2_PBR_TEXTURES_MISSING:'+name);
+  const ordered=scene.bufferViews.map((view,index)=>({view,index}))
+    .sort((a,b)=>(a.view.byteOffset||0)-(b.view.byteOffset||0));
+  const parts=[];let next=0,oldEnd=0;
+  for(const entry of ordered){
+    const {view,index}=entry,offset=view.byteOffset||0,length=view.byteLength;
+    if(offset<oldEnd||offset<0||!Number.isInteger(length)||length<1||offset+length>data.length)
+      throw Error('MARE_CHARACTER_V3_BUFFERVIEW_OVERLAP:'+name);
+    const block=replacements.get(index)||data.subarray(offset,offset+length);
+    const pad=align(next)-next;
+    if(pad){parts.push(Buffer.alloc(pad));next+=pad;}
+    view.byteOffset=next;
+    view.byteLength=block.length;
+    parts.push(block);next+=block.length;
+    oldEnd=offset+length;
+  }
+  for(const material of scene.materials||[]){
+    if(!material.normalTexture)throw Error('MARE_CHARACTER_V3_NORMAL_MISSING:'+name);
+    const role=materialRole(name,material);
+    material.normalTexture.scale=role==='metal'?0.46:role==='pearl'?0.13:
+      role==='hair'?0.74:role==='fabric'?0.82:role==='leather'?0.90:0.60;
+  }
+  scene.buffers[0].byteLength=next;
+  const json=Buffer.from(JSON.stringify(scene),'utf8'),body=Buffer.concat(parts);
+  const jsonLength=align(json.length),binLength=align(body.length),full=Buffer.alloc(12+8+jsonLength+8+binLength);
+  full.write('glTF',0,'ascii');full.writeUInt32LE(2,4);full.writeUInt32LE(full.length,8);
+  full.writeUInt32LE(jsonLength,12);full.writeUInt32LE(0x4e4f534a,16);
+  json.copy(full,20);full.fill(32,20+json.length,20+jsonLength);
+  const at=20+jsonLength;
+  full.writeUInt32LE(binLength,at);full.writeUInt32LE(0x004e4942,at+4);body.copy(full,at+8);
+  const originalBytes=proof.originalGeometryByteLength||0;
+  if(originalBytes>0&&!body.subarray(0,originalBytes).equals(data.subarray(0,originalBytes)))
+    throw Error('MARE_CHARACTER_V3_GEOMETRY_CHANGED:'+name);
+  return {full,primitives:scene.meshes.reduce((n,m)=>n+(m.primitives||[]).length,0),
+    uvAdded:proof.pbrUvAddedPrimitives||0,maps:scene.images.length,roles:[...roles]};
 }
 export async function prepareCharacterFinishes(root){
   const dir=path.join(root,'assets','people'),maps=new Map(ROLES.map(role=>[role,textureSet(role)]));
@@ -210,7 +277,7 @@ export async function prepareCharacterFinishes(root){
     }
     if(proof.license!=='CC0-1.0'||!proof.author||!proof.source)
       throw Error('MARE_CHARACTER_CC0_PROVENANCE_REQUIRED:'+name);
-    if(proof.pbrVersion===2){
+    if(proof.pbrVersion===3){
       if(proof.sourceSha256!==sha256(original)||proof.sourceGitBlobSha1!==blobSha(original)||
          !glbParts(original,name).scene.images?.length)
         throw Error('MARE_CHARACTER_EXISTING_PBR_MISMATCH:'+name);
@@ -220,8 +287,9 @@ export async function prepareCharacterFinishes(root){
       throw Error('MARE_CHARACTER_ORIGINAL_SHA1_MISMATCH:'+name);
     if(proof.sourceSha256&&proof.sourceSha256!==sha256(original))
       throw Error('MARE_CHARACTER_ORIGINAL_SHA256_MISMATCH:'+name);
-    const rebuilt=addPbr(original,name,maps);
-    proof.pbrVersion=2;proof.pbrMethod='Project-authored PBR textile, leather, hair, pearl, feather and metal maps; source geometry and original colors preserved';
+    const rebuilt=proof.pbrVersion===2
+      ? retouchPbr(original,name,maps,proof) : addPbr(original,name,maps);
+    proof.pbrVersion=3;proof.pbrMethod='Project-authored visibly distinct PBR woven fabric, pebbled leather, brushed metal, hair strands, feathers and pearl maps; original geometry preserved';
     proof.pbrSourceGitBlobSha1=blobSha(original);
     proof.pbrTextureSize=MAP_SIZE;proof.pbrRoles=rebuilt.roles;
     proof.pbrColorMap=true;proof.pbrNormalMap=true;proof.pbrRoughnessMetallicMap=true;
