@@ -107,7 +107,7 @@ test('optional Web testbed work never claims to replace selected-platform valida
   assert.equal(order.selectedReason,'DEVELOPMENT_CONFIRMED_OPTIONAL_WEB_TESTBED');
   assert.equal(order.continuous24h.mode,'DEVELOPMENT_CONFIRMED_OPTIONAL_WEB_TESTBED');
   assert.deepEqual(order.departmentReviewRoles,['planning','graphics','development','qa','audio']);
-  assert.deepEqual(order.implementationRoles,['graphics','development','qa','audio']);
+  assert.deepEqual(order.implementationRoles,['development','graphics','qa','audio']);
   assert.deepEqual(order.continuous24h.departmentSequence,['planning','graphics','development','qa','audio','planning-final']);
   assert.match(order.goal,/선택 플랫폼 기술·게임플레이 검증을 대체하거나 플랫폼 선택을 강제하지 않는다/);
 });
