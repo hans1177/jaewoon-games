@@ -6065,7 +6065,10 @@ export function buildVibeAssetProductionPlan({
         replacesCandidateAssetId:row.replacesCandidateAssetId||null
       });
     }));
-  automaticBindingTargets.push(...detailedBindingTargets,...preparedNativeImportTargets.filter(row=>
+  // [자산 바인딩] 기존 선별 후보를 동일 BUILD_UP 목록에 먼저 편입하고,
+  // 준비된 네이티브 자산은 중복 ID 없이 추가한다. 권리·원본·실게임 QA 권한은 유지.
+  automaticBindingTargets.push(...detailedBindingTargets);
+  automaticBindingTargets.push(...preparedNativeImportTargets.filter(row=>
     !automaticBindingTargets.some(existing=>existing.assetId===row.assetId)));
   const automaticAssetBindingWork=freeze({
     version:1,enabled:Boolean(currentGameId)&&['roblox','unity','web'].includes(resolvedTarget),
