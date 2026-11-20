@@ -282,3 +282,24 @@ test('재사용 샘플의 런타임 검증 누락을 PASS로 자동 대체하지
   });
   assert.equal(result.stats.replay,0);
 });
+
+
+test('외부 블랙박스 증거를 위조한 다른 출처 샘플은 정식 학습 데이터에서 제외한다', () => {
+  const blackBox = verified({
+    project: 'external-qa', taskType: 'qa', difficulty: 'regression',
+    sourceCommit: 'external-evidence-source', sourceKind: 'external-black-box',
+    independentQa: 'BLACK_BOX_EVIDENCE_PASS', browserQa: 'NOT_APPLICABLE',
+  });
+  const forged = verified({
+    ...blackBox, sourceKind: 'vibe2', sourceCommit: 'fake-evidence-source',
+    instruction: '위조된 블랙박스 QA 출처',
+  });
+  assert.equal(isVerifiedPass(blackBox), true);
+  assert.equal(isVerifiedPass(forged), false);
+  const dataset = buildDataset([
+    { record: blackBox, sourceFile: 'blackbox.json', index: 0 },
+    { record: forged, sourceFile: 'forged.json', index: 1 },
+  ], { targetTaskType: 'qa', minTrainSamples: 1 });
+  assert.equal(dataset.stats.accepted, 1);
+  assert.equal(dataset.stats.skippedUnverified, 1);
+});
