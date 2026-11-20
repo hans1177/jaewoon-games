@@ -864,8 +864,8 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		local previous = model:GetAttribute("NpcOutfitDetailLimit") or 4
 		if distance > (if previous > 2 then 85 else 70)
 			or (mobileDetailFps < 38 and distance > (if previous > 2 then 48 else 38)) then
-			-- [원거리·저사양] 실제 메시 2종만 보여 주고 장갑·머리·기본 R15는 그대로 둔다.
-			detailLimit = 2
+			-- [원거리·저사양] 주요 직업 실루엣을 구별하는 복식 3종까지 유지하되 관절·머리·저장은 보존한다.
+			detailLimit = 3
 		elseif mobileDetailFps >= 52 and distance <= (if previous == 2 then 26 else 36) then
 			-- [실측 고성능 근거리] 재단복 전체 표시(장식·소매·허리띠·장화).
 			detailLimit = 99
@@ -873,19 +873,19 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			-- [모바일 기본] 최소 4종을 유지한다. 프레임이 낮아도 근거리 외형은 보호.
 			detailLimit = 4
 		end
-		if detailLimit == 2 then
+		if detailLimit == 3 then
 			if string.find(profile, "citizen_guard_", 1, true) == 1 then
-				mobileEssentials = { outfit_guard = true, outfit_boot = true }
+				mobileEssentials = { outfit_guard = true, outfit_boot = true, outfit_cuff = true }
 			elseif string.find(profile, "citizen_official_", 1, true) == 1 then
-				mobileEssentials = { outfit_coat = true, outfit_cuff = true }
+				mobileEssentials = { outfit_coat = true, outfit_cuff = true, outfit_belt = true }
 			elseif string.find(profile, "citizen_sailor_", 1, true) == 1 then
-				mobileEssentials = { outfit_sash = true, outfit_boot = true }
+				mobileEssentials = { outfit_sash = true, outfit_boot = true, outfit_cuff = true }
 			elseif string.find(profile, "citizen_artisan_", 1, true) == 1 then
-				mobileEssentials = { outfit_vest = true, outfit_apron = true }
+				mobileEssentials = { outfit_vest = true, outfit_apron = true, outfit_cuff = true }
 			elseif string.find(profile, "companion_clergy_", 1, true) == 1 then
-				mobileEssentials = { outfit_stole = true, outfit_belt = true }
+				mobileEssentials = { outfit_stole = true, outfit_belt = true, outfit_cuff = true }
 			elseif string.find(profile, "companion_", 1, true) == 1 then
-				mobileEssentials = { outfit_coat = true, outfit_boot = true }
+				mobileEssentials = { outfit_coat = true, outfit_boot = true, outfit_sash = true }
 			end
 		end
 		if previous ~= detailLimit then model:SetAttribute("NpcOutfitDetailLimit", detailLimit) end

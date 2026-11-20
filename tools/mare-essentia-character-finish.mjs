@@ -16,7 +16,6 @@ const ITEMS = [
   'acc_sailor_headband',
 ];
 const MAP_SIZE = 256;
-const ROLES = ['fabric','leather','metal','hair','feather','pearl'];
 const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const blobSha = bytes => crypto.createHash('sha1').update('blob ' + bytes.length + '\0').update(bytes).digest('hex');
 const align = length => (length + 3) & ~3;
@@ -56,45 +55,97 @@ function pngRGB(render){
     pngChunk('IEND',Buffer.alloc(0)),
   ]);
 }
-function textureSet(kind){
-  // [원본 PBR 직접 개선] 256픽셀 원본 UV/색상 계수를 유지한 채 소재마다 서로 다른 방향·주파수·거칠기를 제작한다.
-  // [모바일 선명도] 미세결 외에 저주파 명암층을 섞어 작은 주민에서도 플라스틱처럼 뭉개지지 않게 한다.
+function textureSet(kind,name){
+  // [원본 제작기] 26종은 소재별 공유 지도가 아닌 의상·헤어·장신구별 독립 256px 지도를 사용한다.
+  // [무손상] 기존 UV, 원본 색상 계수, 관절·메시, 금속성 구분과 모바일 예산을 보존한다.
   const n=MAP_SIZE,two=Math.PI*2,height=new Float32Array(n*n),low=new Float32Array(n*n);
+  const motifs={
+    outfit_vest:'herringbone',outfit_coat:'pinstripe',outfit_guard:'heraldry',
+    outfit_apron:'canvas_patch',outfit_sash:'diagonal_band',outfit_belt:'leather_stamp',
+    outfit_cuff:'lace_stitch',outfit_boot:'reinforced_toe',outfit_stole:'brocade',
+    hair_beard:'short_beard',hair_braided_crown:'crown_braid',hair_buns:'twin_coil',
+    hair_buzzed:'short_stubble',hair_buzzedfemale:'fine_stubble',
+    hair_court_curls:'ringlets',hair_long:'long_strands',hair_low_bun:'low_coil',
+    hair_sailor_ponytail:'swept_tail',hair_shoulder_waves:'shoulder_waves',
+    hair_side_braid:'side_braid',hair_simpleparted:'center_part',
+    acc_feather_hat:'feather_vane',acc_guild_badge:'guild_engraving',
+    acc_pearl_hairpin:'pearl_luster',acc_ribbon_bow:'satin_bow',
+    acc_sailor_headband:'rope_stitch',
+  };
+  const motifName=motifs[name],seed=ITEMS.indexOf(name)+1;
+  if(!motifName||seed<1)throw Error('MARE_CHARACTER_UNKNOWN_FINISH:'+name);
   for(let y=0;y<n;y++)for(let x=0;x<n;x++){
     const u=x/n,v=y/n;
-    const woven=Math.sin(two*u*34)*Math.sin(two*v*34)*0.55
-      +Math.sin(two*u*68)*0.11+Math.sin(two*v*68)*0.11
-      +Math.sin(two*(u*6+v*4))*0.13;
+    const seam=Math.exp(-Math.pow((u-0.075)/0.017,2))
+      +Math.exp(-Math.pow((u-0.925)/0.017,2));
+    const stitches=seam*Math.pow(Math.max(0,Math.cos(two*v*21)),8);
+    const diamond=Math.cos(two*u*7)*Math.cos(two*v*7);
+    const part=Math.exp(-Math.pow((u-0.50)/0.026,2));
+    // [직업별 뚜렷한 무늬] 조끼 헤링본, 제복 문장, 앞치마 패치, 성직 숄 브로케이드.
+    let motif=0;
+    switch(motifName){
+      case 'herringbone': motif=Math.sin(two*(u*9+(Math.floor(v*12)%2)*0.5))*0.30+seam*0.60+stitches*0.30;break;
+      case 'pinstripe': motif=Math.cos(two*u*12)*0.28+part*0.60+seam*0.55;break;
+      case 'heraldry': motif=diamond*0.32+Math.cos(two*(u*4+v*2))*0.25+seam*0.64;break;
+      case 'canvas_patch': motif=((u>0.27&&u<0.73&&v>0.35&&v<0.76)?-0.29:0)
+        +((Math.abs(u-0.27)<0.016||Math.abs(u-0.73)<0.016)&&v>0.34&&v<0.78?0.70:0)
+        +stitches*0.33;break;
+      case 'diagonal_band': motif=Math.cos(two*(u*5+v*7))*0.45+seam*0.77;break;
+      case 'leather_stamp': motif=diamond*0.33+Math.pow(Math.max(0,Math.cos(two*u*7)),10)*0.40+seam*0.56;break;
+      case 'lace_stitch': motif=Math.cos(two*v*12)*0.36+diamond*0.28+seam*0.69+stitches*0.37;break;
+      case 'reinforced_toe': motif=(v>0.68?-0.32:0)+(Math.abs(v-0.68)<0.018?0.70:0)
+        +Math.cos(two*u*12)*0.12+stitches*0.38;break;
+      case 'brocade': motif=Math.cos(two*u*5)*Math.cos(two*v*8)*0.43
+        +Math.cos(two*(u*10-v*6))*0.20+seam*0.80;break;
+      case 'short_beard': motif=Math.cos(two*(u*24-v*5))*0.28;break;
+      case 'crown_braid': motif=Math.cos(two*(u*11+v*9))*0.40+Math.cos(two*(u*11-v*9))*0.33;break;
+      case 'twin_coil': motif=Math.cos(two*(u*6+v*8))*0.40;break;
+      case 'short_stubble': motif=Math.cos(two*u*47)*Math.cos(two*v*41)*0.31;break;
+      case 'fine_stubble': motif=Math.cos(two*u*55)*Math.cos(two*v*49)*0.22;break;
+      case 'ringlets': motif=Math.cos(two*(u*10+Math.sin(two*v*8)*0.35))*0.45;break;
+      case 'long_strands': motif=Math.cos(two*(u*20+Math.sin(two*v*2)*0.08))*0.32;break;
+      case 'low_coil': motif=Math.cos(two*(u*7-v*6))*0.40;break;
+      case 'swept_tail': motif=Math.cos(two*(u*18+v*5))*0.38;break;
+      case 'shoulder_waves': motif=Math.cos(two*(u*13+Math.sin(two*v*3)*0.40))*0.37;break;
+      case 'side_braid': motif=Math.cos(two*(u*11+v*8))*0.48;break;
+      case 'center_part': motif=Math.cos(two*u*22)*0.30-part*0.59;break;
+      case 'feather_vane': motif=Math.cos(two*(u*16+v*9))*0.39+part*0.55;break;
+      case 'guild_engraving': motif=diamond*0.46+Math.cos(two*u*6)*Math.cos(two*v*6)*0.25+seam*0.69;break;
+      case 'pearl_luster': motif=Math.cos(two*(u*2+v*3))*0.14+seam*0.13;break;
+      case 'satin_bow': motif=Math.cos(two*(u*6-v*6))*0.39+seam*0.45;break;
+      case 'rope_stitch': motif=Math.cos(two*(u*8+v*8))*0.29
+        +Math.cos(two*(u*8-v*8))*0.24+seam*0.67;break;
+    }
+    // [큰 문양+미세결] 소재별 주파수를 유지하며 의상별 봉제/조각 높이만 별도 합성한다.
+    motif*=kind==='pearl'?0.12:kind==='metal'?0.55:kind==='hair'?0.74:
+      kind==='feather'?0.77:1;
+    const woven=Math.sin(two*u*34)*Math.sin(two*v*34)*0.48
+      +Math.sin(two*u*68)*0.11+Math.sin(two*v*68)*0.11;
     const pebbled=Math.sin(two*(u*9+0.16*Math.sin(two*v*7)))
       *Math.cos(two*(v*11+0.14*Math.sin(two*u*5)))*0.47
-      +Math.sin(two*(u*27+v*19))*Math.cos(two*(v*31-u*9))*0.24
-      +Math.sin(two*(u*4-v*7))*0.20;
-    const brushed=Math.sin(two*(u*52+0.035*Math.sin(two*v*3)))*0.42
-      +Math.sin(two*(u*91+v*2))*0.17
-      +Math.sin(two*(v*3+u*2))*0.13;
-    const strands=Math.sin(two*(u*39+0.08*Math.sin(two*v*3)))*0.54
-      +Math.sin(two*(u*83+0.04*Math.cos(two*v*5)))*0.24
-      +Math.cos(two*(u*7-v*2))*0.14;
-    const vanes=Math.sin(two*(u*29+v*15))*0.42
-      +Math.sin(two*(u*7-v*6))*0.20;
-    const pearlescence=Math.sin(two*(u*3+v*2))*0.08
-      +Math.cos(two*(v*4-u))*0.06;
-    height[y*n+x]=kind==='fabric'?woven:kind==='leather'?pebbled:kind==='metal'?brushed:
-      kind==='hair'?strands:kind==='feather'?vanes:pearlescence;
-    low[y*n+x]=kind==='fabric'?Math.sin(two*(u*3+v*2))*0.30:
-      kind==='leather'?Math.cos(two*(u*4-v*3))*0.35:
-      kind==='metal'?Math.sin(two*(u*7+v))*0.19:
-      kind==='hair'?Math.sin(two*(u*5+v))*0.26:
-      kind==='feather'?Math.sin(two*(u*2-v*3))*0.24:0.06*Math.sin(two*v*2);
+      +Math.sin(two*(u*27+v*19))*Math.cos(two*(v*31-u*9))*0.23;
+    const brushed=Math.sin(two*(u*52+0.035*Math.sin(two*v*3)))*0.43
+      +Math.sin(two*(u*91+v*2))*0.17;
+    const strands=Math.sin(two*(u*(34+seed%12*2)+0.08*Math.sin(two*v*(2+seed%4))))*0.50
+      +Math.sin(two*(u*(75+seed%15)+0.04*Math.cos(two*v*5)))*0.22;
+    const vanes=Math.sin(two*(u*29+v*15))*0.40+Math.sin(two*(u*7-v*6))*0.20;
+    const pearl=Math.sin(two*(u*3+v*2))*0.08+Math.cos(two*(v*4-u))*0.06;
+    height[y*n+x]=(kind==='fabric'?woven:kind==='leather'?pebbled:
+      kind==='metal'?brushed:kind==='hair'?strands:kind==='feather'?vanes:pearl)+motif*0.58;
+    low[y*n+x]=kind==='fabric'?Math.sin(two*(u*3+v*2))*0.23:
+      kind==='leather'?Math.cos(two*(u*4-v*3))*0.27:
+      kind==='metal'?Math.sin(two*(u*7+v))*0.16:
+      kind==='hair'?Math.sin(two*(u*5+v))*0.22:
+      kind==='feather'?Math.sin(two*(u*2-v*3))*0.24:0.05*Math.sin(two*v*2);
   }
   const at=(x,y)=>height[((y+n)%n)*n+((x+n)%n)];
   const slow=(x,y)=>low[((y+n)%n)*n+((x+n)%n)];
-  const tint=kind==='fabric'?221:kind==='leather'?207:kind==='metal'?241:
-    kind==='hair'?219:kind==='feather'?232:249;
-  const colorGain=kind==='fabric'?43:kind==='leather'?55:kind==='metal'?31:
-    kind==='hair'?52:kind==='feather'?30:8;
-  const relief=kind==='fabric'?0.68:kind==='leather'?0.77:kind==='metal'?0.23:
-    kind==='hair'?0.66:kind==='feather'?0.46:0.035;
+  const tint=kind==='fabric'?218:kind==='leather'?206:kind==='metal'?239:
+    kind==='hair'?216:kind==='feather'?231:249;
+  const colorGain=kind==='fabric'?51:kind==='leather'?57:kind==='metal'?34:
+    kind==='hair'?52:kind==='feather'?33:8;
+  const relief=kind==='fabric'?0.67:kind==='leather'?0.74:kind==='metal'?0.22:
+    kind==='hair'?0.64:kind==='feather'?0.42:0.035;
   const rough=kind==='fabric'?238:kind==='leather'?172:kind==='metal'?94:
     kind==='hair'?169:kind==='feather'?219:113;
   const roughVariation=kind==='fabric'?20:kind==='leather'?42:kind==='metal'?37:
@@ -102,11 +153,13 @@ function textureSet(kind){
   return {
     color:pngRGB((x,y)=>{
       const value=clamp(tint+(at(x,y)+slow(x,y))*colorGain);
-      // [원본색 보존] 채널 차이는 작은 색온도만 부여하고 glTF baseColorFactor를 계속 곱한다.
-      return kind==='metal'?[value,clamp(value-3),clamp(value-8)]:
-        kind==='leather'?[value,clamp(value-4),clamp(value-9)]:
+      // [원본색 보존] 원래 glTF baseColorFactor에 곱할 2차 표현만 바꾼다.
+      const warm=/vest|apron|stole|guild|pearl/.test(name)?1:0;
+      const cool=/guard|coat|sailor/.test(name)?1:0;
+      return kind==='metal'?[value,clamp(value-3-cool),clamp(value-8-cool*3)]:
+        kind==='leather'?[value,clamp(value-4-warm),clamp(value-9-warm*2)]:
         kind==='hair'?[value,clamp(value-2),clamp(value-5)]:
-        kind==='fabric'?[value,clamp(value-2),clamp(value-3)]:
+        kind==='fabric'?[value,clamp(value-2-warm),clamp(value-3-warm*2+cool)]:
         [value,value,value];
     }),
     normal:pngRGB((x,y)=>{
@@ -115,7 +168,7 @@ function textureSet(kind){
       const nz=1/Math.sqrt(1+dx*dx+dy*dy);
       return [128-dx*nz*127,128-dy*nz*127,128+nz*127];
     }),
-    // [실제 물성] 비금속 B=0, 브러시 금속 B=255. 직물은 무광, 가죽은 불균일한 윤기, 모발은 방향성 반사.
+    // [금속성 구분] 비금속 B=0, 브러시 금속 B=255. G는 실제 표면 거칠기다.
     rough:pngRGB((x,y)=>[255,clamp(rough+(at(x,y)+slow(x,y))*roughVariation),kind==='metal'?255:0]),
   };
 }
@@ -227,7 +280,7 @@ function addPbr(bytes,name,maps){
     throw Error('MARE_CHARACTER_ORIGINAL_MESH_CHANGED:'+name);
   return {full,primitives,uvAdded,maps:scene.images.length,roles:[...used.keys()]};
 }
-// [기존 PBR 보존 업그레이드] v2/v3 GLB의 정점·인덱스·UV는 유지하고 3종 PNG 표면만 재포장한다.
+// [기존 PBR 보존 업그레이드] v2/v3/v4 GLB의 정점·인덱스·UV는 유지하고 3종 PNG 표면만 재포장한다.
 // 같은 glTF bufferView에 새 이미지를 재포장하여 구형 PNG를 이중으로 넣지 않는다.
 function retouchPbr(bytes,name,maps,proof){
   const {scene,data}=glbParts(bytes,name);
@@ -285,7 +338,7 @@ function retouchPbr(bytes,name,maps,proof){
     uvAdded:proof.pbrUvAddedPrimitives||0,maps:scene.images.length,roles:[...roles]};
 }
 export async function prepareCharacterFinishes(root){
-  const dir=path.join(root,'assets','people'),maps=new Map(ROLES.map(role=>[role,textureSet(role)]));
+  const dir=path.join(root,'assets','people');
   let generated=0,already=0;
   for(const name of ITEMS){
     const file=path.join(dir,name+'.glb'),proofFile=file+'.license.json';
@@ -301,7 +354,7 @@ export async function prepareCharacterFinishes(root){
     }
     if(proof.license!=='CC0-1.0'||!proof.author||!proof.source)
       throw Error('MARE_CHARACTER_CC0_PROVENANCE_REQUIRED:'+name);
-    if(proof.pbrVersion===4){
+    if(proof.pbrVersion===5){
       if(proof.sourceSha256!==sha256(original)||proof.sourceGitBlobSha1!==blobSha(original)||
          !glbParts(original,name).scene.images?.length)
         throw Error('MARE_CHARACTER_EXISTING_PBR_MISMATCH:'+name);
@@ -311,9 +364,15 @@ export async function prepareCharacterFinishes(root){
       throw Error('MARE_CHARACTER_ORIGINAL_SHA1_MISMATCH:'+name);
     if(proof.sourceSha256&&proof.sourceSha256!==sha256(original))
       throw Error('MARE_CHARACTER_ORIGINAL_SHA256_MISMATCH:'+name);
-    const rebuilt=(proof.pbrVersion===2||proof.pbrVersion===3)
+    // [기존 원본 책임] 이 원본에 실제 쓰인 재질만 만들어 중복 PBR 생성과 메모리 폭증을 방지한다.
+    const scene=glbParts(original,name).scene;
+    const roles=new Set(scene.meshes.flatMap(mesh=>(mesh.primitives||[])
+      .map(primitive=>materialRole(name,scene.materials[primitive.material]))));
+    const maps=new Map([...roles].map(role=>[role,textureSet(role,name)]));
+    const rebuilt=([2,3,4].includes(proof.pbrVersion))
       ? retouchPbr(original,name,maps,proof) : addPbr(original,name,maps);
-    proof.pbrVersion=4;proof.pbrMethod='Project-authored high-contrast woven cloth, irregular leather grain, directional brushed metal, hair strands, feather and pearl 256px PBR; original geometry preserved';
+    proof.pbrVersion=5;proof.pbrDesignProfile=name;
+    proof.pbrMethod='Project-authored individual garment embroidery, seamwork, leather tooling, brushed metal and twelve differentiated hair finishes; 256px PBR; original geometry preserved';
     proof.pbrSourceGitBlobSha1=blobSha(original);
     proof.pbrTextureSize=MAP_SIZE;proof.pbrRoles=rebuilt.roles;
     proof.pbrColorMap=true;proof.pbrNormalMap=true;proof.pbrRoughnessMetallicMap=true;
