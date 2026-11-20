@@ -734,8 +734,12 @@ export function applyVerifiedCodingStrategyOutcomes(stateInput={},queueInput={})
     const target=lower(task.target)||'unknown';
     const taskContextMode=clean(lastEvidenceMarker(evidence,'coding-context-mode:'));
     for(const failure of verifiedCodingStrategyFailures(evidence)){
-      const negativeId='coding_negative_'+hash([clean(task.id),failure.variant,failure.strategy,failure.failureFingerprint,failure.failureClass,failure.runEvidence||''].join('|'));
-      if(seenNegative.has(negativeId))continue;
+      const legacyNegativeId='coding_negative_'+hash([clean(task.id),failure.variant,failure.strategy,failure.failureFingerprint,failure.failureClass,failure.runEvidence||''].join('|'));
+      // [실패 학습 중복 방지] 같은 코드 후보의 동일 결함은 재시도마다 실패 횟수를 올리지 않는다.
+      // 다른 소스 SHA 또는 다른 실패 클래스는 독립적인 실패 증거로 보존한다.
+      const negativeId='coding_negative_'+hash([codingOutcomeIdentity(task,'NEGATIVE'),
+        failure.variant,failure.strategy,failure.failureFingerprint,failure.failureClass].join('|'));
+      if(seenNegative.has(negativeId)||seenNegative.has(legacyNegativeId))continue;
       const row=memory.strategies[failure.strategy]||{verifiedApplications:0,firstCandidatePasses:0,totalGenerationAttempts:0,verifiedFailures:0,games:{},targets:{},contextModes:{},failureFingerprints:{},state:'CANDIDATE',lastEvidence:null,lastFailureEvidence:null,lastUpdatedAt:null};
       row.verifiedFailures=Math.max(0,Number(row.verifiedFailures)||0)+1;
       row.contextModes=row.contextModes||{};
