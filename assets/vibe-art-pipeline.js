@@ -428,7 +428,6 @@ export function createVibeAssetRecompositionPlan({
   }
   const recipes=[],limit=Math.max(0,Math.min(16,Math.floor(Number(maxRecipes)||8)));
   const requestedText=clean(request).toLowerCase();
-  const validOrigins=new Set(approved.map(row=>row.id));
   for(const base of approved){
     for(const donor of approved){
       if(base.id===donor.id||base.sha256===donor.sha256)continue;
