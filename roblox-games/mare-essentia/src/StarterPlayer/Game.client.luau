@@ -2122,7 +2122,12 @@ function H.layoutBook()
   local selectedIndex = table.find(groupOf(currentTab).tabs, currentTab) or 1
   local desiredScroll = (selectedIndex - 1) * (tabWidth + tabGap)
     - math.floor((visibleTabsWidth - tabWidth) / 2)
-  H.tabStrip.CanvasPosition = Vector2.new(math.clamp(desiredScroll, 0, math.max(0, allTabsWidth - visibleTabsWidth)), 0)
+  -- [탭 위치] 같은 화면의 데이터가 갱신될 때는 사용자가 밀어 놓은 위치를 유지한다.
+  local tabViewport = Vector2.new(tabWidth, visibleTabsWidth)
+  if H.lastTabLayoutId ~= currentTab or H.lastTabViewport ~= tabViewport then
+    H.lastTabLayoutId, H.lastTabViewport = currentTab, tabViewport
+    H.tabStrip.CanvasPosition = Vector2.new(math.clamp(desiredScroll, 0, math.max(0, allTabsWidth - visibleTabsWidth)), 0)
+  end
   local bodyTop = if tabs then (if width < 740 then 124 else 134) else 68
   H.bookSpine.Visible = false
   H.facilityGallery.Visible = gallery
@@ -6975,18 +6980,12 @@ function H.counselRows(n)
 		shown += 1
 		add(function()
 			local buttons = {}
-			if cs.tab ~= currentTab then
+			if cs.tab ~= currentTab and TAB_NAME[cs.tab] and groupOf(cs.tab) ~= groupOf(currentTab) then
 				table.insert(buttons, { text = cs.label or "이동", color = COLORS.green, onClick = function() H.goAdvice(cs.tab) end })
-			elseif currentTab == "trade" or currentTab == "yard" then
+			elseif cs.tab == currentTab and (currentTab == "trade" or currentTab == "yard") then
 				table.insert(buttons, { text = "상세 보기", color = COLORS.green, onClick = function() if H.invokeMenuPrimary then H.invokeMenuPrimary() end end })
-			elseif currentTab == "route" then
-				table.insert(buttons, { text = "지도", color = COLORS.green, onClick = function() openTab("map", "chart") end })
-			elseif currentTab == "map" then
-				table.insert(buttons, { text = "항로", color = COLORS.green, onClick = function() openTab("route") end })
-			elseif currentTab == "crew" then
+			elseif cs.tab == currentTab and currentTab == "crew" then
 				table.insert(buttons, { text = "영입", color = COLORS.green, onClick = function() openTab("recruit") end })
-			elseif currentTab == "quest" then
-				table.insert(buttons, { text = "의뢰판", color = COLORS.green, onClick = function() openTab("board") end })
 			end
 			if cs.dismissable then
 				table.insert(buttons, { text = "알겠어요", color = COLORS.grey, onClick = function() call("AdviceDone", { id = cs.id }) end })
