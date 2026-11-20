@@ -1839,10 +1839,21 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			for _, node in m:GetDescendants() do
 				if node:IsA("Motor6D") then
 					if node.Part1 then occupiedParts[node.Part1] = true end
+				elseif node:IsA("AnimationConstraint") then
+					local target = node.Attachment1 and node.Attachment1.Parent
+					if target and target:IsA("BasePart") then occupiedParts[target] = true end
 				end
 			end
+			local _, rigBounds = m:GetBoundingBox()
+			local bodyExtent = math.max(rigBounds.X, rigBounds.Y, rigBounds.Z)
 			for _, node in m:GetDescendants() do
+				-- 관절 자체 이름이 일반적일 때 실제 움직이는 사지의 파츠 이름까지 확인한다.
 				local name = string.lower(node.Name)
+				if node:IsA("Motor6D") and node.Part1 then
+					name = name .. " " .. string.lower(node.Part1.Name)
+				elseif node:IsA("AnimationConstraint") and node.Attachment1 and node.Attachment1.Parent then
+					name = name .. " " .. string.lower(node.Attachment1.Parent.Name)
+				end
 				local leg = name:find("leg", 1, true) or name:find("hoof", 1, true)
 					or name:find("paw", 1, true) or name:find("foot", 1, true)
 				local head = name:find("head", 1, true) or name:find("neck", 1, true)
@@ -1860,10 +1871,13 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 					local side = if left then 1 else -1
 					local phaseOffset = if kind == "leg" then (if rear then (if left then math.pi else 0)
 						else (if left then 0 else math.pi)) else 0
-					if (node:IsA("Bone") or node:IsA("Motor6D")) and #animalJoints < 14 then
+					if (node:IsA("Bone") or node:IsA("Motor6D") or node:IsA("AnimationConstraint"))
+						and #animalJoints < 14 then
 						table.insert(animalJoints, { joint = node, base = node.Transform,
 							kind = kind, side = side, phase = phaseOffset })
-					elseif node:IsA("BasePart") and not occupiedParts[node] and #animalParts < 12 then
+					elseif node:IsA("BasePart") and not occupiedParts[node] and #animalParts < 12
+						and math.max(node.Size.X, node.Size.Y, node.Size.Z) < bodyExtent * 0.77 then
+						-- 외부 원본의 단일 전신 메시를 머리·다리로 잘못 회전시키지 않는다.
 						table.insert(animalParts, { part = node, base = basePivot:ToObjectSpace(node.CFrame),
 							kind = kind, side = side, phase = phaseOffset,
 							hinge = math.min(node.Size.Y * 0.34, 0.65) })
@@ -5746,15 +5760,7 @@ function PortScene.build(info, onFacility)
 				if w.model.Parent then
 					local t = now + w.phase
 					local u = if w.span then t * w.rate else 0
-					local speed = if w.span then math.abs(math.cos(u)) else 0
-					local d = if w.span then -math.sin(u) * w.span else 0
-					-- [실거리 걸음] 위치가 거의 멈춘 곳에서는 다리가 제자리에서 허우적대지 않는다.
-					local walked = math.abs(d - (w.lastD or d))
-					w.lastD = d
-					local moving = w.span ~= nil and speed > 0.26 and walked > 0.004
-					if moving then
-						w.travelPhase += walked * (2 * math.pi / w.stepSize)
-					end
+					local targetD = if w.span then -math.sin(u) * w.span else 0
 					local want = if math.cos(u) < -0.06 then math.pi elseif math.cos(u) > 0.06 then 0 else w.targetHd or 0
 					w.targetHd = want
 					if not w.headingStarted then
@@ -5762,6 +5768,20 @@ function PortScene.build(info, onFacility)
 					end
 					local turn = math.atan2(math.sin(want - w.hd), math.cos(want - w.hd))
 					w.hd += turn * (1 - math.exp(-5.5 * dt))
+					-- [뒤돌기/접지] 실제 몸 방향이 반대로 돌아가는 동안 뒷걸음질하거나 미끄러지지 않도록 감속.
+					local alignment = math.clamp(1 - math.abs(turn) / 1.25, 0, 1)
+					local d = w.travelD or targetD
+					if w.span then
+						d += (targetD - d) * (1 - math.exp(-8 * dt)) * alignment
+						w.travelD = d
+					end
+					local walked = math.abs(d - (w.lastD or d))
+					w.lastD = d
+					local speed = if dt > 0 then walked / dt else 0
+					local moving = w.span ~= nil and alignment > 0.25 and speed > 0.08
+					if moving then
+						w.travelPhase += walked * (2 * math.pi / w.stepSize)
+					end
 					-- [가축별 생활] 정지 시 먹이·물·정리·휴식·귀 움직임, 이동 중 실제 보행.
 					local cycle = (t * 0.56) % 21
 					local action
@@ -5808,7 +5828,9 @@ function PortScene.build(info, onFacility)
 					if close then
 						-- [원본 관절] 다리·목·꼬리·귀·날개가 실제로 분리된 가축만 별도 움직임을 준다.
 						-- 관절이 없는 단일 FBX 메시는 현재 원형을 보존하고 걷기·접지·회전만 적용한다.
-						local swing = if moving then 0.22 else 0
+						local swing = if moving then (if w.animalType == "horse" or w.animalType == "donkey" then 0.26
+							elseif w.animalType == "dog" or w.animalType == "cat" then 0.30 else 0.20)
+							* math.clamp(speed / 2.5, 0.20, 1) else 0
 						local nod = if action == "graze" or action == "drink" then 0.22 + math.sin(t * 1.5) * 0.08
 							elseif action == "peck" then 0.17 + math.max(0, math.sin(t * 5)) * 0.16
 							elseif action == "sniff" then 0.14 + math.sin(t * 3) * 0.06
