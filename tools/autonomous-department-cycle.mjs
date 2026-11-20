@@ -167,7 +167,28 @@ function deterministicFastFinal(order,results){
   return {role:FINAL_ROLE,department:'FAST 결정론적 통합',workState:'DONE',decision:adjusted.length?'ADJUST':'PROCEED',summary:'FAST 복구는 개발부 수정 제약과 QA 재현 조건만 결합한다.',nextAction,checks:(qa?.checks||[]).slice(0,4),risks:[...(dev?.risks||[]),...(qa?.risks||[])].slice(0,4),model:'none',attempt:0,startedAt:now,completedAt:now,deterministicFast:true,integrationMode:'DETERMINISTIC_FAST_LANE'};
 }
 
-export async function finalizeDepartmentCycle({order,book,vibeCore,results}={}){
+export async function finalizeDepartmentCycle({order,book,vibeCore,results,packages=null}={}){
+  // [부서별 원본 결합] 다른 게임·후보·원본·플로어의 완료 결과를 현재 결재에 섞지 않는다.
+  if(packages!==null){
+    if(!Array.isArray(packages)||packages.length!==CORE_ROLES.length)throw new Error('DEPARTMENT_PACKAGE_COUNT_MISMATCH');
+    const candidateId=clean(process.env.AUTONOMOUS_CANDIDATE_ID||order?.candidateId);
+    const revision=clean(order?.sourceCommit||order?.sourceRevision);
+    const lane=laneFor(order);
+    for(let i=0;i<CORE_ROLES.length;i++){
+      const role=CORE_ROLES[i],item=packages[i];
+      if(item?.version!==1||item?.role!==role||item?.result?.role!==role||
+        item?.workState!=='DONE'||item?.result?.workState!=='DONE'||
+        clean(item?.gameId)!==clean(order?.gameId)||
+        clean(item?.gameSlug)!==clean(order?.gameSlug)||
+        clean(item?.candidateId)!==candidateId||
+        clean(item?.sourcePath)!==clean(order?.sourcePath)||
+        clean(item?.workLane)!==lane||
+        (revision&&clean(item?.sourceRevision)!==revision)||
+        item?.vibeCore?.engine!==vibeCore?.engine||
+        item?.vibeCore?.stageId!==vibeCore?.stageId)
+        throw new Error('DEPARTMENT_PACKAGE_PROVENANCE_MISMATCH:'+role);
+    }
+  }
   if(!Array.isArray(results)||results.length!==CORE_ROLES.length)throw new Error('5개 독립 부서 결과가 모두 필요함');
   const byRole=new Map(results.map(row=>[row.role,row]));for(const role of CORE_ROLES)if(!byRole.has(role)||byRole.get(role)?.workState!=='DONE')throw new Error(`${role} 결과 미완료`);
   const ordered=CORE_ROLES.map(role=>byRole.get(role));
@@ -190,11 +211,11 @@ async function main(){
   const {order,book,vibeCore}=loadInputs();const role=clean(process.env.AUTONOMOUS_DEPARTMENT_ROLE);const finalize=clean(process.env.AUTONOMOUS_DEPARTMENT_FINALIZE).toLowerCase()==='true';
   if(role){
     const result=await runDepartmentRole({role,order,book,vibeCore});const output=process.env.AUTONOMOUS_DEPARTMENT_OUTPUT||`.autonomous/department-results/${process.env.AUTONOMOUS_CANDIDATE_ID||order.gameId}/${role}.json`;
-    writeJson(output,{version:1,gameId:order.gameId,gameSlug:order.gameSlug,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID||null,role,workState:'DONE',vibeCore,result});console.log(JSON.stringify({gameId:order.gameId,role,workState:'DONE',decision:result.decision,skippedFast:result.skippedFast===true,output}));return;
+    writeJson(output,{version:1,gameId:order.gameId,gameSlug:order.gameSlug,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID||order.candidateId||null,sourcePath:order.sourcePath,sourceRevision:clean(order.sourceCommit||order.sourceRevision)||null,workLane:laneFor(order),role,workState:'DONE',vibeCore,result});console.log(JSON.stringify({gameId:order.gameId,role,workState:'DONE',decision:result.decision,skippedFast:result.skippedFast===true,output}));return;
   }
   if(finalize){
     const dir=process.env.AUTONOMOUS_DEPARTMENT_RESULTS_DIR||'.autonomous/department-results';const packages=CORE_ROLES.map(role=>readJson(path.join(dir,`${role}.json`))).filter(Boolean);if(packages.length!==CORE_ROLES.length)throw new Error(`부서 결과 ${packages.length}/5`);
-    const cycle=await finalizeDepartmentCycle({order,book,vibeCore,results:packages.map(item=>item.result)});const output=process.env.AUTONOMOUS_DEPARTMENT_CYCLE_OUTPUT||'/tmp/autonomous-department-cycle.json';writeJson(output,cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,finalIntegrationMode:cycle.collaboration.finalIntegrationMode,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount,verifiedDepartmentLearningUsed:cycle.collaboration.verifiedDepartmentLearningUsed,output}));return;
+    const cycle=await finalizeDepartmentCycle({order,book,vibeCore,results:packages.map(item=>item.result),packages});const output=process.env.AUTONOMOUS_DEPARTMENT_CYCLE_OUTPUT||'/tmp/autonomous-department-cycle.json';writeJson(output,cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,finalIntegrationMode:cycle.collaboration.finalIntegrationMode,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount,verifiedDepartmentLearningUsed:cycle.collaboration.verifiedDepartmentLearningUsed,output}));return;
   }
   const artbooks=readJson('game-artbooks.json',{artbooks:[]});const companyDna=readJson('company-learning/company-dna.json',{version:1,items:[],antiPatterns:[]});const departmentExperience=readJson('department-experience.json',{version:1,verifiedLearning:[]});const cycle=await runDepartmentCycle({order,artbooks,companyDna,departmentExperience});writeJson('/tmp/autonomous-department-cycle.json',cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,finalIntegrationMode:cycle.collaboration.finalIntegrationMode,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount,verifiedDepartmentLearningUsed:cycle.collaboration.verifiedDepartmentLearningUsed}));
 }

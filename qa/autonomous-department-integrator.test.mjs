@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { integrateDepartmentCandidates } from '../tools/autonomous-department-integrator.mjs';
-import { canUseDeterministicFinalization, buildDeterministicFinalization } from '../tools/autonomous-department-cycle.mjs';
+import { canUseDeterministicFinalization, buildDeterministicFinalization, finalizeDepartmentCycle } from '../tools/autonomous-department-cycle.mjs';
 
 const legacyRoles=['development','graphics','qa','balance'];
 const canonicalRoles=['development','graphics','qa','audio'];
@@ -154,4 +154,29 @@ test('verified department XP fetches exact QA source revision and parent without
   const workflow=fs.readFileSync(new URL('../.github/workflows/department-experience.yml',import.meta.url),'utf8');
   assert.match(workflow,/git fetch --no-tags --depth=2 origin "\$SOURCE_SHA"/);
   assert.match(workflow,/node tools\/award-department-experience\.mjs "\$SOURCE_SHA"/);
+});
+
+// [실제 부서 결합] 5개 결과의 게임·후보·원본 일치가 깨지면 최종 심사를 실행하지 않는다.
+test('five department packages must belong to exact same game, candidate and source before finalization',async()=>{
+  const order={run:true,gameId:'PTEST',gameSlug:'demo',sourcePath:'web-games/demo',candidateId:'candidate-123',sourceCommit:'a'.repeat(40),goal:'small goal'};
+  const vibeCore={engine:'VIBE2_COMPANY_CORE',stageId:'DEVELOPMENT',routing:{mayDispatch:true,mayExecute:true,requiresOwnerAction:false},
+    learning:{patterns:[],antiPatterns:[]},departmentLearning:{totalUsed:0},qualityBar:{tier:1}};
+  const results=safeReviewResults();
+  const packages=results.map(row=>({version:1,gameId:order.gameId,gameSlug:order.gameSlug,candidateId:order.candidateId,
+    sourcePath:order.sourcePath,sourceRevision:order.sourceCommit,workLane:'FULL',role:row.role,workState:'DONE',
+    vibeCore,result:row}));
+  const input={order,book:null,vibeCore,results,packages};
+  const cycle=await finalizeDepartmentCycle(input);
+  assert.deepEqual(cycle.parallelDepartments,reviewRoles);
+  assert.equal(cycle.finalDecision,'PROCEED');
+  for(const mutation of [
+    {gameId:'other-game'}, {candidateId:'stale-candidate'},
+    {sourceRevision:'b'.repeat(40)}, {sourcePath:'web-games/other'},
+    {workLane:'FAST'}, {role:'balance'},
+    {vibeCore:{...vibeCore,stageId:'STALE'}}
+  ]){
+    const changed=packages.map((row,i)=>i===0?{...row,...mutation}:row);
+    await assert.rejects(finalizeDepartmentCycle({...input,packages:changed}),/DEPARTMENT_PACKAGE_PROVENANCE_MISMATCH/);
+  }
+  await assert.rejects(finalizeDepartmentCycle({...input,packages:packages.slice(1)}),/DEPARTMENT_PACKAGE_COUNT_MISMATCH/);
 });
