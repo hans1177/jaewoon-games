@@ -192,3 +192,18 @@ test('정식 플랫폼 재훈련 준비 판정과 생성 데이터가 합성 및
   const rejected=buildDataset([entry(wrongBrowser,0)],{targetTaskType:'roblox',syntheticRatioCap:0});
   assert.equal(rejected.stats.accepted,0);
 });
+
+test('정적 승인된 참고 자료만으로 정식 가중치 재훈련 준비로 판단하지 않는다',()=>{
+  const record={
+    ...verifiedSample({project:'P0003',index:1,taskType:'coding'}),
+    sourceKind:'authorized-source',independentQa:'AUTHORIZED_SOURCE_EVIDENCE_PASS',
+    browserQa:'NOT_APPLICABLE',verification:{runtime:'STATIC_VERIFIED'},
+  };
+  const status=buildDistillationStatus([{record,sourceFile:'verified-static.json',index:0}],{
+    minTrainSamples:1,minFreshTrainSamples:0,minDistinctProjects:1,maxProjectShare:1,
+    taskPlanMinSamples:1,taskPlanMinProjects:1,
+  });
+  assert.equal(status.tasks.coding.accepted,0);
+  assert.equal(status.tasks.coding.ready,false);
+  assert.equal(status.tasks.coding.skippedUnverified,1);
+});
