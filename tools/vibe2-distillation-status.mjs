@@ -84,7 +84,8 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
       minDistinctProjects,
       minDistinctTaskTypes: 1,
       maxProjectShare,
-      syntheticRatioCap,
+      // [정식 플랫폼 학습] 로컬 가중치 학습기와 동일하게 합성 비율 0을 사용한다.
+      syntheticRatioCap: ['unity', 'roblox', 'fortnite_uefn'].includes(taskType) ? 0 : syntheticRatioCap,
       taskPlanMinSamples,
       taskPlanMinProjects,
       teacherOnlyDifficult: true,
