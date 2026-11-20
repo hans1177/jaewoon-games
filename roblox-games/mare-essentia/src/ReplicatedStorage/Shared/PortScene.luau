@@ -3609,33 +3609,54 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			return m
 		end
 		local hotKey = key == "ottoman" or key == "swahili" or key == "malabar" or key == "colonial" or key == "desert" or key == "tropic" or key == "seasia" or key == "pacific" or key == "wafrica" or key == "creole"
+		-- [실제 도시 구획] 경제의 건물·주민·고용을 읽기만 한다. 기존 필지 좌표 및 시드 유지.
+		-- 1단계부터 동일한 가판대 10개/작물 119개를 뿌리지 않고 시설이 성장할 때 단계적으로 채운다.
+		local districtBuildings = info.sim and info.sim.buildings
+		local districtJobs = info.sim and info.sim.jobs
+		local districtTouch = game:GetService("UserInputService").TouchEnabled
 		for _, d in districts do
 			local cx, cz = d.at.X, d.at.Z
 			local face = if cz > 0 then 0 else math.pi
 			if d.kind == "religious" then
+				-- [종교 시설] 문화권 대표 건물은 유지하고 부속탑·가로등은 발전도와 실제 종사 인력에 맞춰 개방.
+				local clergyAvailable = not districtJobs or (tonumber(districtJobs.clergy) or 0) > 0
 				if key == "japan" or key == "china" or key == "korea" then
 					put("Town", "temple-tower", 26, cx, cz, true, face)
-					put("Town", "temple-stone", 14, cx + 14, cz + (if cz > 0 then -8 else 8), true, face)
+					if lvl >= 3 and clergyAvailable then
+						put("Town", "temple-stone", 14, cx + 14, cz + (if cz > 0 then -8 else 8), true, face)
+					end
 				elseif key == "ottoman" or key == "swahili" or key == "malabar" or key == "desert" or key == "tropic" or key == "seasia" or key == "pacific" or key == "wafrica" then
 					put("Town", "temple-stone", 28, cx, cz, true, face)
-					put("Terrain", "pillar-obelisk", 14, cx + 15, cz, true)
+					if lvl >= 4 and clergyAvailable then put("Terrain", "pillar-obelisk", 14, cx + 15, cz, true) end
 				else
 					put("Town", "church", 30, cx, cz, true, face)
-					put("Town", "bell-tower", 22, cx - 16, cz + (if cz > 0 then -6 else 6), true)
+					if lvl >= 3 and clergyAvailable then
+						put("Town", "bell-tower", 22, cx - 16, cz + (if cz > 0 then -6 else 6), true)
+					end
 				end
-				for k = -1, 1, 2 do
-					lantern(folder, Vector3.new(cx + k * 9, 0, cz + (if cz > 0 then -17 else 17)), 3)
+				if lvl >= 3 and clergyAvailable then
+					for k = -1, 1, 2 do
+						lantern(folder, Vector3.new(cx + k * 9, 0, cz + (if cz > 0 then -17 else 17)), 3)
+					end
 				end
 			elseif d.kind == "market" then
-				for k = -2, 2 do
-					put("Town", if k % 2 == 0 then "stall-red" else "stall-green", 7, cx + k * 8, cz + (if cz > 0 then -8 else 8), false, face)
-					put("Town", if k % 2 == 0 then "stall-green" else "stall-red", 7, cx + k * 8, cz + (if cz > 0 then 8 else -8), false, face + math.pi)
+				-- [시장] 실제 상업 시설이 없는 항구에 가짜 10개 가판대를 배치하지 않는다.
+				local marketBuilt = if districtBuildings then math.max(0, math.floor(tonumber(districtBuildings.market) or 0)) else lvl * 2
+				local warehouseBuilt = if districtBuildings then math.max(0, math.floor(tonumber(districtBuildings.warehouse) or 0)) else lvl
+				local stalls = math.min(if districtTouch then 4 else 6, lvl + 1,
+					if marketBuilt > 0 then 1 + math.floor(math.sqrt(marketBuilt)) else 0)
+				for k = 1, stalls do
+					local x = cx + (k - (stalls + 1) / 2) * 10
+					local side = if k % 2 == 0 then -1 else 1
+					put("Town", if (k + lvl) % 2 == 0 then "stall-red" else "stall-green",
+						7, x, cz + side * 8, false, if side > 0 then face else face + math.pi)
 				end
-				put("Town", "cart", 4, cx - 14, cz, false)
-				put("Cargo", "barrel", 2.6, cx + 14, cz + 2, false)
-				put("Cargo", "box-open", 2.4, cx + 12, cz - 2, false)
-				put("Town", "bench_A", 3.6, cx, cz, false)
-				put("Town", "fountain-round", 7, cx, cz + (if cz > 0 then -15 else 15), true)
+				if stalls >= 2 and warehouseBuilt > 0 then
+					put("Town", "cart", 4, cx - 14, cz, false)
+					put("Cargo", "box-open", 2.4, cx + 13, cz, false)
+				end
+				-- 광장의 이미 설치된 벤치·분수와 중복되지 않도록 추가 분수와 통은 제거.
+				if stalls > 0 then folder:SetAttribute("CityMarketStalls", stalls) end
 				-- [상품별 시장] 현지 실제 생산품 3D 전시는 모바일 1개, PC 2개만.
 				-- 기존 거래 가격·재고·시장 건물 수는 읽기 전용으로 보존한다.
 				local marketGoods = Chains.showcaseGoods(info.portId, made,
@@ -3662,18 +3683,28 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				else
 					crops = { { "Terrain", "crops-wheatstagea", 5 }, { "Cargo", "cabbage", 2.8 }, { "Cargo", "carrot", 2.8 } }
 				end
-				-- 매우 넓은 농경지: 7줄 x 17칸, 줄마다 다른 작물
-				for row = -3, 3 do
-					local cr = crops[(row + 3) % #crops + 1]
-					for k = -8, 8 do
-						put(cr[1], cr[2], cr[3], cx + k * 6, cz + row * 8, false)
+				-- [농업 지구] 실제 경작 농장 수량·도시 발전도에 비례한 경작 줄만 표현한다.
+				-- 과거 고정 119개 작물+19개 울타리를 줄이고 농지 내부의 보행 여백을 확보한다.
+				local farmsBuilt = if districtBuildings then math.max(0, math.floor(tonumber(districtBuildings.farm) or 0)) else lvl * 7
+				local cropRows = math.min(3, lvl, math.floor(math.sqrt(farmsBuilt) / 2))
+				local cropColumns = if districtTouch then math.min(5, 2 + lvl) else math.min(7, 2 + lvl)
+				for row = -cropRows, cropRows do
+					if cropRows > 0 then
+						local cr = crops[(row + 3) % #crops + 1]
+						for k = -cropColumns, cropColumns, 2 do
+							put(cr[1], cr[2], cr[3], cx + k * 7, cz + row * 8, false)
+						end
 					end
 				end
-				for k = -9, 9 do
-					put("Town", "fence", 5, cx + k * 5.5, cz + (if cz > 0 then 29 else -29), false)
+				if farmsBuilt > 0 then
+					for k = -8, 8, 2 do
+						put("Town", "fence", 5, cx + k * 6, cz + (if cz > 0 then 29 else -29), false)
+					end
+					if lvl >= 3 and farmsBuilt >= 5 then
+						put("Town", if key == "iberia" or key == "north" or key == "med" then "windmill" else "watermill", 30, cx + 62, cz, true, face)
+					end
 				end
-				put("Town", if key == "iberia" or key == "north" or key == "med" then "windmill" else "watermill", 30, cx + 62, cz, true, face)
-				put("Terrain", "log-stack", 4, cx - 56, cz + 4, false)
+				folder:SetAttribute("CityFarmRows", if cropRows > 0 then cropRows * 2 + 1 else 0)
 			end
 			-- [구역 자동 장식] 2~5단계의 실제 시설과 번영 기준으로만 장식이 완공된다.
 			-- 나중에 직접 건축할 수 있도록 주거 필지와 구별되는 안정적인 장식 필지 번호를 부여한다.
