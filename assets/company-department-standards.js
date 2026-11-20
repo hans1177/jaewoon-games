@@ -22,7 +22,8 @@ export const COMPANY_DEPARTMENT_STANDARDS = Object.freeze({
       'core loop','gameplay loop','play loop','core fun','story','quest','progression path','game identity',
       'monetization','revenue','pricing','paid item','bundle','subscription','advertising','marketing','promotion','acquisition','retention','conversion','store discovery','target player','launch timing',
       '핵심 루프','플레이 루프','핵심 재미','스토리','퀘스트','진행 흐름','게임 정체성',
-      '수익화','매출','가격','판매 아이템','유료 아이템','번들','구독','광고','마케팅','홍보','유입','유지율','전환','스토어 노출','타깃 플레이어','출시 시기'
+      '수익화','매출','가격','판매 아이템','유료 아이템','번들','구독','광고','마케팅','홍보','유입','유지율','전환','스토어 노출','타깃 플레이어','출시 시기',
+      '밸런스','난이도','보상','성장 속도','경제 수치','드롭률'
     ]),
     requiredChecks: freezeList([
       '핵심 재미와 핵심 루프가 수정 전후 동일한지 확인',
@@ -30,7 +31,8 @@ export const COMPANY_DEPARTMENT_STANDARDS = Object.freeze({
       '수익화/가격/광고/홍보 제안이 플레이어 가치·경제·밸런스·플랫폼 정책과 충돌하지 않는지 확인',
       '적용 범위·적용 시기·측정 지표·중단 또는 롤백 조건이 근거와 함께 정의됐는지 확인',
       '유료 광고비 등 외부 재무 집행이 owner 승인 경계를 우회하지 않는지 확인',
-      '수정 범위 밖의 기획 변경을 임의로 만들지 않았는지 확인'
+      '수정 범위 밖의 기획 변경을 임의로 만들지 않았는지 확인',
+      '기존 난이도·보상·성장·재화·드롭률 수치가 변경되었는지 원본과 비교하고 임의 밸런스 조정을 금지'
     ])
   }),
   development: Object.freeze({
@@ -57,14 +59,16 @@ export const COMPANY_DEPARTMENT_STANDARDS = Object.freeze({
     runtimeRequired: true,
     domainKeywords: freezeList([
       'test','smoke','launch','restart','reproduce','reproduction','expected','actual','bug','crash','touch','input','save','load','run id',
-      '테스트','스모크','실행','재시작','재현','기대 결과','실제 결과','버그','크래시','터치','입력','세이브','로드'
+      '테스트','스모크','실행','재시작','재현','기대 결과','실제 결과','버그','크래시','터치','입력','세이브','로드',
+      '밸런스','데미지','체력','보상','드롭률','난이도','쿨다운'
     ]),
     requiredChecks: freezeList([
       '빌드 또는 컴파일 성공 여부 확인',
       '게임 실행 또는 플레이 스모크 테스트 증거 확인',
       '이동/전투/진행/저장/재시작 중 수정 영향 범위 회귀 확인',
       '발견 오류의 재현 조건과 수정 후 재검증 여부 확인',
-      '모바일 대상이면 터치/UI/화면 비율 문제 확인'
+      '모바일 대상이면 터치/UI/화면 비율 문제 확인',
+      '기존 전투 수치·난이도·성장·보상·드롭률과 저장 키가 수정 전후 보존되는지 검증'
     ])
   }),
   graphics: Object.freeze({
@@ -83,6 +87,27 @@ export const COMPANY_DEPARTMENT_STANDARDS = Object.freeze({
       '영향이 없다면 실제 수정 범위를 근거로 무영향 판정'
     ])
   }),
+  // [현행 정식 오디오부] 다른 부서가 오디오 작업 근거를 대신 승인하지 않는다.
+  audio: Object.freeze({
+    name: '오디오',
+    minEvidence: 1,
+    minSpecificEvidence: 1,
+    buildRequired: false,
+    runtimeRequired: false,
+    domainKeywords: freezeList([
+      'audio','sfx','bgm','music','sound','mixer','volume','mute','playback','audiosource',
+      'audio event','spatial audio','.wav','.ogg','.mp3',
+      '오디오','효과음','배경음','배경음악','음악','사운드','음소거','음량','재생','소리','공간음향','오디오 영향 없음'
+    ]),
+    requiredChecks: freezeList([
+      '실제 수정 파일과 사운드 이벤트·음원·재생 책임 함수의 연결 상태 확인',
+      '게임 행동·입력·피격 시점에 대응하는 SFX/BGM 타이밍과 중복 재생·음량·음소거 확인',
+      '모바일 오디오 재생 제한·성능·파일 라이선스/권리·플랫폼 호환성 확인',
+      '오디오 소스 변경 시 실제 재생/스모크 근거를 확보하고 없으면 미검증으로 기록',
+      '오디오 영향이 없다면 수정한 파일·범위를 근거로 무영향을 확인'
+    ])
+  }),
+  // [과거 기록 호환] balance는 더 이상 독립 실행 부서가 아니며 기존 검증 자료만 읽는다.
   balance: Object.freeze({
     name: '밸런스',
     minEvidence: 1,
@@ -186,9 +211,13 @@ export function evaluateDepartmentEvidence({ role = '', evidence = [], request =
     blockerCodes.push('BUILD_EVIDENCE_REQUIRED');
     blockers.push(`${standard.name} PASS에는 성공한 컴파일/빌드 증거가 필요함 (현재: ${buildConclusion || 'unknown'})`);
   }
-  if (standard.runtimeRequired && runtimeEvidence.length === 0) {
+  // [오디오 검증] 실제 음원/이벤트 변경 요청은 런타임 재생 근거 없이는 PASS를 금지한다.
+  const audioChange = clean(role).toLowerCase() === 'audio' &&
+    /(?:audio|sound|sfx|music|bgm|\.wav|\.ogg|\.mp3|효과음|오디오|사운드|배경음악|음악)/i.test(clean(request.scope));
+  if ((standard.runtimeRequired || audioChange) && runtimeEvidence.length === 0) {
     blockerCodes.push('RUNTIME_PLAY_EVIDENCE_REQUIRED');
-    blockers.push('QA PASS에는 실제 게임 실행/플레이 스모크 테스트 증거가 최소 1개 필요함');
+    blockers.push(audioChange ? '오디오 소스 변경에는 실제 사운드 재생/런타임 스모크 근거가 필요함' :
+      'QA PASS에는 실제 게임 실행/플레이 스모크 테스트 증거가 최소 1개 필요함');
   }
 
   return Object.freeze({
@@ -201,7 +230,7 @@ export function evaluateDepartmentEvidence({ role = '', evidence = [], request =
     minSpecificEvidence: standard.minSpecificEvidence,
     buildRequired: standard.buildRequired,
     buildPassed,
-    runtimeRequired: standard.runtimeRequired,
+    runtimeRequired: standard.runtimeRequired || audioChange,
     runtimeEvidence,
     blockerCodes: freezeList(blockerCodes),
     blockers: freezeList(blockers),
