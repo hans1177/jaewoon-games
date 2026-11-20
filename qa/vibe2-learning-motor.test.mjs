@@ -520,6 +520,34 @@ test('같은 코드 후보의 CI 재실행은 학습·전략·위험 실적으�
   ])assert.equal(fn(state,{tasks:[rerun]})[key],0);
 });
 
+test('자가 복구 과정에서 같은 코드의 동일 실패는 재시도마다 실패 점수를 부풀리지 않는다',()=>{
+  const mk=(run,sha,variant='primary')=>({
+    id:'recovery-same-source',gameId:'repair-game',target:'web',
+    evidence:['candidate-sha:'+sha,
+      'coding-strategy-negative:'+encodeURIComponent(JSON.stringify({
+        version:1,verifiedBy:'IMMUTABLE_WORKER_RESULT',infrastructureFailure:false,
+        strategy:'RESPONSIBILITY_FIRST',variant,
+        failureFingerprint:'web|SAVE_ROLLBACK',failureClass:'EDIT_MATCH',
+        runEvidence:'actions-run:'+run
+      }))]
+  });
+  const tasks={tasks:[
+    mk('run-11','a'.repeat(40)),
+    mk('run-12','a'.repeat(40)),
+    mk('run-13','b'.repeat(40)),
+    mk('run-14','b'.repeat(40),'speculative-1')
+  ]};
+  const learned=applyVerifiedCodingStrategyOutcomes({},tasks);
+  assert.equal(learned.negativeAdded,3);
+  const strategy=learned.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST;
+  assert.equal(strategy.verifiedFailures,3);
+  assert.equal(strategy.failureFingerprints['web|SAVE_ROLLBACK'].verifiedFailures,3);
+  const replay=applyVerifiedCodingStrategyOutcomes(learned.state,{tasks:[
+    mk('run-21','a'.repeat(40)),mk('run-22','b'.repeat(40))
+  ]});
+  assert.equal(replay.negativeAdded,0);
+});
+
 test('verified coding strategy outcomes accumulate, dedupe, and become preferred only after repeated independent evidence',()=>{
   const mk=(id,gameId,first='YES')=>({
     id,gameId,target:'web',evidence:[
