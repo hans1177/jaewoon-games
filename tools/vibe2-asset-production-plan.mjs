@@ -7646,23 +7646,10 @@ export async function produceRegisteredCc0Asset({
   const output=path.resolve(root,derivedPath);
   const producedFiles=['asset.glb','master.glb','preview.png','evidence.json','application.json'];
   const registeredId='derived-'+platform+'-'+game+'-'+(legacyMatches?type:slot);
-  // [단계별 복구] 이미 생성된 디렉터리는 원본/해시 증거가 동일할 때만 재사용한다.
-  let authored=false;
-  if(fs.existsSync(output)){
-    const evidence=readJson(path.join(output,'evidence.json'),{});
-    const application=readJson(path.join(output,'application.json'),{});
-    const prior=evidence?.meshReconstruction;
-    if(clean(application?.style?.sourceStyleFamily).toUpperCase()!==style
-      ||Boolean(prior)!==Boolean(recipe)
-      ||(recipe&&JSON.stringify({bodyPlan:prior?.bodyPlan,morph:prior?.morph,detail:prior?.detail})
-        !==JSON.stringify({bodyPlan:recipe.bodyPlan,morph:recipe.morph||{},detail:recipe.detail||'KEEP'})))
-      throw new Error('CC0_DERIVED_OUTPUT_RECIPE_CHANGED_KEEP_FOR_REVIEW');
-    if(producedFiles.some(file=>!fs.existsSync(path.join(output,file)))
-      ||clean(evidence?.sourceMesh?.sourceSha256)!==declaredHash
-      ||clean(evidence?.sourceMesh?.libraryParentAssetId)!==id
-      ||clean(evidence?.artifactHash)!==exactHash(path.join(output,'asset.glb')))
-      throw new Error('CC0_DERIVED_OUTPUT_STALE_KEEP_FOR_REVIEW');
-  }else{
+  // [검증 후 반영] 신규 제작은 임시 출력물에서 원본·GLB·미리보기를 확인한 뒤만 승격한다.
+  // 이미 있는 파생본도 매번 동일한 검사를 수행하며 변조 시 원본이나 등록부를 건드리지 않는다.
+  let authored=false,stagedOutput=null;
+  if(!fs.existsSync(output)){
     const staging=output+'.cc0-stage-'+process.pid;
     if(fs.existsSync(staging))throw new Error('CC0_DERIVED_STAGE_BUSY');
     try{
@@ -7675,20 +7662,59 @@ export async function produceRegisteredCc0Asset({
         '--style-json',JSON.stringify({sourceStyleFamily:style}),
         ...(recipe?['--reconstruct-json',JSON.stringify(recipe)]:[])];
       execFileSync(blender,args,{cwd:root,stdio:'pipe',timeout:240000,maxBuffer:4*1024*1024});
-      const evidence=readJson(path.join(staging,'evidence.json'),{});
-      if(producedFiles.some(file=>!fs.existsSync(path.join(staging,file)))
-        ||clean(evidence?.sourceMesh?.sourceSha256)!==declaredHash
-        ||clean(evidence?.sourceMesh?.libraryParentAssetId)!==id
-        ||evidence?.pbrMeshQa?.pass!==true
-        ||Boolean(evidence?.meshReconstruction)!==Boolean(recipe)
-        ||(recipe&&(evidence?.meshReconstruction?.meshStaticQaPass!==true
-          ||evidence?.meshReconstruction?.sourceGeometryActuallyChanged!==true))
-        ||clean(evidence?.artifactHash)!==exactHash(path.join(staging,'asset.glb')))
-        throw new Error('CC0_BLENDER_OUTPUT_QA_FAILED');
-      fs.renameSync(staging,output);authored=true;
-    }finally{
+      stagedOutput=staging;
+    }catch(error){
       if(fs.existsSync(staging))fs.rmSync(staging,{recursive:true,force:true});
+      throw error;
     }
+  }
+  try{
+    const candidateOutput=stagedOutput||output;
+    const evidence=readJson(path.join(candidateOutput,'evidence.json'),{});
+    const application=readJson(path.join(candidateOutput,'application.json'),{});
+    const prior=evidence?.meshReconstruction;
+    if(clean(application?.style?.sourceStyleFamily).toUpperCase()!==style
+      ||Boolean(prior)!==Boolean(recipe)
+      ||(recipe&&JSON.stringify({bodyPlan:prior?.bodyPlan,morph:prior?.morph,detail:prior?.detail})
+        !==JSON.stringify({bodyPlan:recipe.bodyPlan,morph:recipe.morph||{},detail:recipe.detail||'KEEP'})))
+      throw new Error('CC0_DERIVED_OUTPUT_RECIPE_CHANGED_KEEP_FOR_REVIEW');
+    if(producedFiles.some(file=>!fs.existsSync(path.join(candidateOutput,file)))
+      ||clean(evidence?.sourceMesh?.sourceSha256)!==declaredHash
+      ||clean(evidence?.sourceMesh?.libraryParentAssetId)!==id
+      ||evidence?.pbrMeshQa?.pass!==true
+      ||Boolean(prior)!==Boolean(recipe)
+      ||(recipe&&(prior?.meshStaticQaPass!==true||prior?.sourceGeometryActuallyChanged!==true))
+      ||clean(evidence?.artifactHash)!==exactHash(path.join(candidateOutput,'asset.glb'))
+      ||clean(evidence?.previewHash)!==exactHash(path.join(candidateOutput,'preview.png'))
+      ||clean(application?.masterSha256)!==clean(evidence?.artifactHash))
+      throw new Error('CC0_DERIVED_OUTPUT_STALE_KEEP_FOR_REVIEW');
+    const relativeCandidate=path.relative(root,candidateOutput).replaceAll('\\','/');
+    const assetHash=exactHash(path.join(candidateOutput,'asset.glb'));
+    const masterHash=exactHash(path.join(candidateOutput,'master.glb'));
+    const assetInspection=inspectVibeSourceGlb({repoRoot:root,source:{
+      path:relativeCandidate+'/asset.glb',sourceHash:assetHash}});
+    const masterInspection=inspectVibeSourceGlb({repoRoot:root,source:{
+      path:relativeCandidate+'/master.glb',sourceHash:masterHash}});
+    if(assetInspection.status!=='INSPECTED_RECONSTRUCTION_INPUT'
+      ||masterInspection.status!=='INSPECTED_RECONSTRUCTION_INPUT'
+      ||!/^[a-f0-9]{64}$/.test(clean(assetInspection.inventory?.visibleGeometrySha256))
+      ||assetInspection.inventory.visibleGeometrySha256!==masterInspection.inventory?.visibleGeometrySha256)
+      throw new Error('CC0_DERIVED_GLB_STATIC_QA_FAILED');
+    if(recipe){
+      const originalInspection=inspectVibeSourceGlb({repoRoot:root,source:{
+        path:sourcePath,sourceHash:declaredHash}});
+      if(originalInspection.status!=='INSPECTED_RECONSTRUCTION_INPUT'
+        ||originalInspection.inventory?.visibleGeometrySha256===assetInspection.inventory.visibleGeometrySha256)
+        throw new Error('CC0_DERIVED_GEOMETRY_RECONSTRUCTION_NOT_OBSERVED');
+    }
+    if(stagedOutput){
+      fs.renameSync(stagedOutput,output);
+      stagedOutput=null;
+      authored=true;
+    }
+  }finally{
+    if(stagedOutput&&fs.existsSync(stagedOutput))
+      fs.rmSync(stagedOutput,{recursive:true,force:true});
   }
   // [원장·실사용 추적] 원본·파생본은 건드리지 않고 기존 동기화 함수만 호출한다.
   const sync=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true,consumerGameIds:[game]});
