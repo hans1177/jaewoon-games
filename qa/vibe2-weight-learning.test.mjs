@@ -227,3 +227,18 @@ test('runtime evidence cannot default to PASS, including Roblox teacher records'
   assert.equal(isTeacherEligible({taskType:'roblox',difficulty:'regression',teacher:true,sourceKind:'teacher'}),true);
   assert.equal(isTeacherEligible({taskType:'roblox',difficulty:'simple',teacher:true,sourceKind:'teacher'}),false);
 });
+
+test('정적 승인 외부 자료는 검증된 참고 증거지만 정식 모델 가중치 학습에서는 제외한다',()=>{
+  const staticSource=verified({
+    instruction:'정적 승인 소스 학습 제외',input:'읽기 전용 참고',output:'승인된 정적 분석',
+    taskType:'coding',project:'P9999',sourceCommit:'static-source',
+    sourceKind:'authorized-source',independentQa:'AUTHORIZED_SOURCE_EVIDENCE_PASS',
+    browserQa:'NOT_APPLICABLE',runtime:'STATIC_VERIFIED',
+  });
+  assert.equal(isVerifiedPass(staticSource),true);
+  const dataset=buildDataset([...rows(50,'P0001','coding'),
+    {record:staticSource,sourceFile:'approved-source.json',index:0}],
+    {targetTaskType:'coding',minTrainSamples:1,minFreshTrainSamples:1,minDistinctProjects:1,minDistinctTaskTypes:1});
+  assert.equal(dataset.stats.skippedUnverified,1);
+  assert.ok([...dataset.train,...dataset.eval,...dataset.holdout].every(row=>row.provenance.sourceKind!=='authorized-source'));
+});
