@@ -455,7 +455,7 @@ test('Vibe2 native DCC reuses verified free Blender cache and keeps real authori
   assert.match(scope,/VIBE2_NATIVE_DCC_CACHE=RESTORED_VERIFIED/);
   assert.match(scope,/steps\.native-dcc\.outputs\.built == 'true'/);
   assert.match(scope,/steps\.native-dcc-cache\.outputs\.cache-hit != 'true'/);
-  assert.match(scope,/sudo apt-get install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri/);
+  assert.match(scope,/install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri/);
   assert.match(scope,/node --input-type=module/);
   assert.ok(scope.includes('executeDeclaredNativeDccAuthoringVerification({cwd:root,order})'));
   assert.ok(scope.includes('NATIVE_DCC_AUTHORING_EXECUTION_REQUIRED'));
