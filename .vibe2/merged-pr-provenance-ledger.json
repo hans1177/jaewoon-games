@@ -294238,11 +294238,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_228e29a6a41d916985acc8ab",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13902",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "93a968020e59d7fad23a3d73ea9e58b56180321b",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13902,
+        "baseBranch": "main",
+        "headBranch": "fix/verified-weight-admission",
+        "baseSha": "93a968020e59d7fad23a3d73ea9e58b56180321b",
+        "headSha": "b472f80ff9fd4a393f0ba7c3442329d9ef677f0e",
+        "mergeCommitSha": "b104dc0dbb5795e471f50bc5059e3ce9228e5725",
+        "mergedAt": "2026-11-20T09:47:23Z",
+        "authorLogin": "hans1177",
+        "titleHash": "9a2b44b6d1b53393a46b32d6b76688cc928d60f0170e284c4ee6c980207a1524",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/verified-weight-admission",
+        "candidateSha": "b472f80ff9fd4a393f0ba7c3442329d9ef677f0e"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 74,
+        "deletedLineCount": 3,
+        "changedFiles": [
+          "qa/vibe2-distillation-status.test.mjs",
+          "qa/vibe2-weight-learning.test.mjs",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/vibe2-weight-learning.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/vibe2-distillation-status.test.mjs",
+          "qa/vibe2-weight-learning.test.mjs",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/vibe2-weight-learning.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13902",
+        "merge-commit:b104dc0dbb5795e471f50bc5059e3ce9228e5725",
+        "base-main:93a968020e59d7fad23a3d73ea9e58b56180321b"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2354
+    "total": 2355
   }
 }
