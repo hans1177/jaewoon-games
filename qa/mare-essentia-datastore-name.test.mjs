@@ -1651,13 +1651,22 @@ test('대항해시대 26종 PBR은 실제 원본에서 안전하게 제작되고
     }
     const first=await prepareCharacterFinishes(folder);
     assert.equal(first.generated+first.verified,26,'원본 26종 재질 빌드 누락');
+    const uniqueColorMaps=new Set();
     for(const name of names){
       const file=path.join(originals,name+'.glb'),bytes=fs.readFileSync(file);
       const proof=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
       const scene=JSON.parse(bytes.toString('utf8',20,20+bytes.readUInt32LE(12)));
-      assert.equal(proof.pbrVersion,4,'재질 제작기 강화 누락: '+name);
+      assert.equal(proof.pbrVersion,5,'재질 제작기 강화 누락: '+name);
+      assert.equal(proof.pbrDesignProfile,name,'실제 의상별 재질 디자인 누락: '+name);
       assert.equal(proof.sourceSha256,crypto.createHash('sha256').update(bytes).digest('hex'),'해시 오류: '+name);
       assert.ok(scene.images?.length>=3&&scene.textures?.length>=3,'PBR 세 맵 누락: '+name);
+      const art=scene.images.find(image=>/^mare_.*_color_256$/.test(image.name));
+      assert.ok(art,'고유 컬러맵 이미지 누락: '+name);
+      const imageView=scene.bufferViews[art.bufferView],binStart=20+bytes.readUInt32LE(12)+8;
+      const colorHash=crypto.createHash('sha256').update(bytes.subarray(
+        binStart+imageView.byteOffset,binStart+imageView.byteOffset+imageView.byteLength)).digest('hex');
+      assert.ok(!uniqueColorMaps.has(colorHash),'서로 다른 주민 의상이 동일한 컬러맵을 사용함: '+name);
+      uniqueColorMaps.add(colorHash);
       for(const primitive of scene.meshes.flatMap(mesh=>mesh.primitives||[])){
         const material=scene.materials[primitive.material];
         assert.ok(Number.isInteger(primitive.attributes.TEXCOORD_0),'UV 누락: '+name);
@@ -1672,6 +1681,7 @@ test('대항해시대 26종 PBR은 실제 원본에서 안전하게 제작되고
           .equals(bytes.subarray(nowStart,nowStart+originalSize)),'원본 복식 삼각형 변경: '+name);
       }
     }
+    assert.equal(uniqueColorMaps.size,26,'26종 독립 색상 지도 제작 실패');
     const second=await prepareCharacterFinishes(folder);
     assert.equal(second.generated,0,'PBR 재실행이 중복 생성됨');
     assert.equal(second.verified,26,'PBR 재실행 원본 불일치');
@@ -1686,7 +1696,11 @@ test('대항해시대 주민 재질은 PBR 금속 채널과 거칠기 차이를 
   assert.match(generator,/kind==='hair'\?169:kind==='feather'\?219:113/);
   assert.match(generator,/kind==='metal'\?255:0/);
   assert.match(generator,/retouchPbr\(original,name,maps,proof\)/);
-  assert.match(generator,/proof\.pbrVersion===2\|\|proof\.pbrVersion===3/);
+  assert.match(generator,/\[2,3,4\]\.includes\(proof\.pbrVersion\)/);
+  assert.match(generator,/textureSet\(role,name\)/);
+  assert.match(generator,/proof\.pbrVersion=5/);
+  assert.match(generator,/outfit_guard:'heraldry'/);
+  assert.match(generator,/outfit_stole:'brocade'/);
   assert.match(generator,/roughVariation=kind==='fabric'\?20:kind==='leather'\?42:kind==='metal'\?37/);
   assert.match(generator,/kind==='hair'\?31:kind==='feather'\?19:8/);
   assert.match(generator,/MARE_CHARACTER_V3_GEOMETRY_CHANGED/);
@@ -1714,7 +1728,7 @@ test('대항해시대 의상·헤어·장신구 26종은 UV/PBR 원본과 등록
     const bytes=fs.readFileSync(base);
     let proof=null;
     try{proof=JSON.parse(fs.readFileSync(base+'.license.json','utf8'));}catch{}
-    if(![2,3,4].includes(proof?.pbrVersion))continue;
+    if(![2,3,4,5].includes(proof?.pbrVersion))continue;
     upgraded.push(name);
     const json=JSON.parse(bytes.toString('utf8',20,20+bytes.readUInt32LE(12)));
     assert.equal(proof.sourceSizeBytes,bytes.length,'PBR 원본 크기 불일치: '+name);
@@ -1762,7 +1776,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
     assert.equal(uvProof.sourceSizeBytes,bytes.length,'원본 갱신 크기 오류: '+name);
     assert.equal(gltf.accessors.length,uvProof.originalAccessorCount+gltf.meshes[0].primitives.length);
     assert.equal(gltf.bufferViews.length,uvProof.originalBufferViewCount+gltf.meshes[0].primitives.length+(gltf.images?.length||0));
-    if([2,3,4].includes(uvProof.pbrVersion)){
+    if([2,3,4,5].includes(uvProof.pbrVersion)){
       assert.ok(gltf.images?.length>=3,'직물·가죽·금속 실제 PNG PBR 맵 누락: '+name);
       for(const source of gltf.images){
         assert.equal(source.mimeType,'image/png','PBR 표면 PNG 형식: '+name);
@@ -1840,7 +1854,9 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.match(pose,/part\.MaterialVariant ~= ""/);
   // [실제 로블록스 Studio 입력 검증] 자산 로더는 9개 복식의 흰색 유실/원본 재질 개수를 계측한다.
   assert.match(loader,/MareOutfitMaterialAudit/);
-  assert.match(loader,/outfitWhite == 0 then "PASS" else "FAIL"/);
+  assert.match(loader,/outfitWhite == 0/);
+  assert.match(loader,/outfitColorMaps >= 9 and outfitNormalMaps >= 9 and outfitRoughnessMaps >= 9/);
+  assert.match(loader,/outfitMetalnessMaps >= 1/);
   assert.match(loader,/local importedPeople = library:FindFirstChild\("People"\)/);
   assert.match(pose,/elseif hair or pearlWhite then Enum\.Material\.SmoothPlastic/);
   assert.match(pose,/part\.Material = fallback\[2\]/);
@@ -1860,7 +1876,8 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.match(pose,/local detailLimit = 99/);
   assert.match(pose,/mobileDetailFps >= 52 and distance <=/);
   assert.match(pose,/detailLimit = 4/);
-  assert.match(pose,/detailLimit = 2/);
+  assert.match(pose,/detailLimit = 3/);
+  assert.match(pose,/mobileEssentials = \{ outfit_vest = true, outfit_apron = true, outfit_cuff = true \}/);
   assert.match(pose,/part\.LocalTransparencyModifier = 1/);
   assert.match(pose,/part\.LocalTransparencyModifier = 0/);
   assert.match(pose,/Pose\.applyRegisteredMobOutfit\(model, true\)/);
