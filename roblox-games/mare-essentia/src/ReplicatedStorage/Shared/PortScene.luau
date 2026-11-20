@@ -1592,7 +1592,14 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			{ job = "guard", role = "Knight", work = { "patrol", "scan", "salute", "scan_horizon", "watch" }, trade = { "guide", "look", "patrol" }, rest = { "warm", "lean", "yawn" } },
 			{ job = "craftsman", role = "Barbarian", work = { "saw", "carve", "inspect", "plane_wood", "repair" }, trade = { "pack", "count", "offer" }, rest = { "stretch", "gossip", "drink" } },
 		}
-		local duty = dayJobs[(i - 1) % #dayJobs + 1]
+		-- [실제 직군 배정] 고용 0명인 직종의 주민을 가짜로 생성하지 않는다.
+		local eligibleJobs = {}
+		for _, candidate in dayJobs do
+			if not employment or (tonumber(employment[candidate.job]) or 0) > 0 then
+				table.insert(eligibleJobs, candidate)
+			end
+		end
+		local duty = eligibleJobs[(i - 1) % #eligibleJobs + 1]
 		local fig = person(work, faceTo(work, market), { role = duty.role, profession = duty.job, hat = "cap" }, duty.job)
 		addTask(fig, { mode = "schedule", morning = work, market = market, evening = evening,
 			job = duty.job, workKinds = duty.work, tradeKinds = duty.trade, leisureKinds = duty.rest,
@@ -1604,8 +1611,10 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			fig:SetAttribute("DailyRoutine", "work")
 			local this = walkers[#walkers]
 			if this and this.model == fig then
-				local previous = scheduledPeople[#scheduledPeople]
-				if previous and #scheduledPeople % 2 == 1 then
+				-- [동선·만남] 같은 시장 골목에서 출퇴근하는 두 직업을 고정 파트너로 묶는다.
+				-- 홀/짝 Z측 골목을 넘어 순간이동하지 않도록 두 칸 떨어진 주민만 짝을 맺는다.
+				local previous = (i % 4 == 3 or i % 4 == 0) and scheduledPeople[i - 2] or nil
+				if previous and previous.model.Parent then
 					this.socialPartner, previous.socialPartner = previous, this
 				end
 				table.insert(scheduledPeople, this)
