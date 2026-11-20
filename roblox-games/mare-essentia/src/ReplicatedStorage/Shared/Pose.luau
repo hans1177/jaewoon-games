@@ -1183,7 +1183,9 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					if part.Material == Enum.Material.Metal then
 						part.Reflectance = math.min(part.Reflectance, 0.025)
 					end
-				elseif not textured then
+				-- [직업 실물 도구] Cargo/Relics 원본 금속·목재·직물과 PBR을 보존한다.
+				-- 기존 People 보조 스킨용 무채색 보정은 작업 도구에는 적용하지 않는다.
+				elseif not textured and not jobProp then
 					local meshName = (assetName .. "_" .. part.Name):lower()
 					local armor = meshName:find("pauldron", 1, true) or meshName:find("plate", 1, true)
 					local hair = meshName:find("hair_", 1, true)
