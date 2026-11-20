@@ -138,7 +138,11 @@ test('world geometry reauthoring uses bounded original CC0 topology and prepared
   assert.match(builder,/body_plan=='WORLD'/);
   assert.match(builder,/VibeSourceEdgeFinish/);
   assert.match(builder,/RECONSTRUCTION_BEVEL_SOURCE_TRIANGLE_BUDGET/);
+  assert.match(builder,/RECONSTRUCTION_VISUAL_CHANGE_REQUIRED/);
+  assert.match(builder,/sourceGeometryActuallyChanged/);
+  assert.match(builder,/actualGeometryTransforms/);
   assert.match(planner,/VERIFIED_SOURCE_MESH_RECONSTRUCTION/);
+  assert.match(planner,/sourceGeometryActuallyChanged!==true/);
   assert.match(planner,/NATIVE_IMPORT_AND_RUNTIME_QA_REQUIRED/);
   assert.match(planner,/nativeApplication:Object\.freeze\(/);
   const f=fixture();
@@ -156,6 +160,15 @@ test('world geometry reauthoring uses bounded original CC0 topology and prepared
       fetchImpl:()=>{throw Error('should-not-download')}
     }),/CC0_STYLE_FAMILY_INVALID/);
   }finally{f.cleanup();}
+});
+
+test('기존 블렌더 제작기 소스는 파이썬 파서가 실제로 읽을 수 있다',()=>{
+  const source=new URL('../assets/native-authoring/build-game-visual.py',import.meta.url).pathname;
+  const check=spawnSync('python3',['-c',
+    'import ast,sys; ast.parse(open(sys.argv[1],encoding="utf-8").read())',source],{
+    encoding:'utf8',timeout:20000
+  });
+  assert.equal(check.status,0,'Blender source syntax invalid: '+String(check.stderr||''));
 });
 
 test('mare story/event audio uses verified CC0 parents and decodable game-specific derivatives',()=>{
