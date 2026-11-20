@@ -701,6 +701,75 @@ test('Vibe59 does not claim an unobserved remote receiver or code location is pr
   assert.equal(report.qualityDirector.existingSaveBalanceAndAuthorityMustBePreserved,true);
 });
 
+// [서버 인과 오탐 회귀] Remote 핸들러 바깥의 저장·응답은 서버 인과 후보에 포함하지 않는다.
+test('Vibe59 separates matched Remote event handler effects from unrelated server code',()=>{
+  const client='client/UI.client.luau',server='server/Routes.server.luau';
+  const report=inspectVibe59RobloxCoding({files:[
+    {path:client,source:'remote:FireServer("open")'},
+    {path:server,source:[
+      'remote.OnServerEvent:Connect(function(player)',
+      '  if player then',
+      '    ack:FireClient(player)',
+      '  end',
+      'end)',
+      'store:UpdateAsync("global", transform)',
+      'other.OnServerEvent:Connect(function(player)',
+      '  store:SetAsync("unrelated", player)',
+      'end)'
+    ].join('\n')}
+  ],responsiblePaths:[client,server]});
+  const candidate=report.actionChains[0].serverCandidates[0];
+  assert.equal(candidate.path,server);
+  assert.equal(candidate.sameHandlerScopeVerified,true);
+  assert.equal(candidate.methodScope,'MATCHED_HANDLER_STATIC_SCOPE');
+  assert.deepEqual(candidate.stateMethods,[]);
+  assert.deepEqual(candidate.responseMethods,['FireClient']);
+  assert.equal(candidate.serverAuthorityConfirmed,false);
+  assert.equal(report.runtimeVerified,false);
+});
+
+test('Vibe59 scopes nested callbacks in matching remote handlers without attaching later effects',()=>{
+  const client='client/Ping.client.luau',server='server/Ping.server.luau';
+  const report=inspectVibe59RobloxCoding({files:[
+    {path:client,source:'remote:InvokeServer("load")'},
+    {path:server,source:[
+      'remote.OnServerInvoke = function(player)',
+      '  if player then',
+      '    local read = function()',
+      '      return store:GetAsync("profile")',
+      '    end',
+      '    return read()',
+      '  end',
+      'end',
+      'store:UpdateAsync("not-handler", change)'
+    ].join('\n')}
+  ],responsiblePaths:[client,server]});
+  const candidate=report.actionChains[0].serverCandidates[0];
+  assert.equal(candidate.sameHandlerScopeVerified,true);
+  assert.deepEqual(candidate.stateMethods,['GetAsync']);
+  assert.deepEqual(candidate.responseMethods,[]);
+  assert.equal(report.actionChains[0].causalProof,'UNVERIFIED_STATIC_CANDIDATE');
+  assert.equal(report.actionChains[0].saveRoundTripVerified,false);
+});
+
+test('Vibe59 leaves effects unknown for non-direct remote handler binding',()=>{
+  const client='client/UI.client.luau',server='server/Routes.server.luau';
+  const report=inspectVibe59RobloxCoding({files:[
+    {path:client,source:'remote:FireServer("open")'},
+    {path:server,source:[
+      'local function onServer(player)',
+      '  store:UpdateAsync("key", update)',
+      'end',
+      'remote.OnServerEvent:Connect(onServer)'
+    ].join('\n')}
+  ],responsiblePaths:[client,server]});
+  const candidate=report.actionChains[0].serverCandidates[0];
+  assert.equal(candidate.sameHandlerScopeVerified,false);
+  assert.equal(candidate.methodScope,'UNVERIFIED_HANDLER_SCOPE');
+  assert.deepEqual(candidate.stateMethods,[]);
+  assert.equal(report.runtimeVerified,false);
+});
+
 // [로블록스 파일 검증] 스캔 상한 초과·경로 누락은 안전하다는 증거가 아니다.
 test('Vibe59 exposes oversized responsible Luau files instead of silently clearing findings',()=>{
   const path='server/Combat.server.luau',source='--'+'.'.repeat(260001);
