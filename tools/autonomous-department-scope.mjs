@@ -57,6 +57,9 @@ function hasFunctionalResponsibility(role,departmentResult,context={}){
   if(role==='development')return true;
   const text=clean(departmentResult?.nextAction||departmentResult?.summary);
   if(!text)return role!=='audio';
+  // [오디오 실행 경계] 적용 여부 검토·제안만으로 효과음 코드 구현권한을 부여하지 않는다.
+  if(role==='audio'&&/(?:검토|확인|점검|제안|평가|측정|분석|review|inspect)/i.test(text)&&
+    !/(?:연결|구현|수정|추가|교체|작성|생성|고치|\b(?:wire|connect|implement|fix|add|replace|create)\b)/i.test(text))return false;
   if(IMPLEMENTATION_ACTION.test(text)&&IMPLEMENTATION_TARGETS[role].test(text))return true;
   if(role==='graphics'){
     const plan=graphicsPlanFor({...context,departmentResult});
