@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildDistillationStatus } from '../tools/vibe2-distillation-status.mjs';
+import { buildDataset, datasetContentFingerprint } from '../tools/vibe2-weight-learning.mjs';
 
 function entry(record, index) {
   return { record, sourceFile: `fixture-${index}.json`, index };
@@ -160,4 +161,29 @@ test('동일한 검증 샘플은 Windows와 Linux 경로에서 동일한 재훈�
   assert.equal(windows.tasks.bugfix.accepted,1);
   assert.equal(windows.tasks.bugfix.datasetSha256,unix.tasks.bugfix.datasetSha256);
   assert.match(windows.tasks.bugfix.datasetSha256,/^[a-f0-9]{64}$/);
+});
+
+test('정식 플랫폼 재훈련 준비 판정과 생성 데이터가 합성 및 외부 샘플을 동일하게 제외한다',()=>{
+  const rows=[];
+  for(const project of ['P0001','P0002']){
+    for(let index=0;index<80;index++){
+      const record=verifiedSample({project,index,taskType:'roblox'});
+      record.browserQa='NOT_APPLICABLE';
+      record.provenance={sourceKind:index%3===0?'licensed-reference':'vibe2'};
+      record.synthetic=index%2===0;
+      rows.push(entry(record,rows.length));
+    }
+  }
+  const status=buildDistillationStatus(rows);
+  const exact=buildDataset(rows,{targetTaskType:'roblox',syntheticRatioCap:0,minTrainSamples:24,
+    minFreshTrainSamples:12,minDistinctProjects:2,maxProjectShare:0.75,
+    taskPlanMinSamples:8,taskPlanMinProjects:2});
+  const permissive=buildDataset(rows,{targetTaskType:'roblox',syntheticRatioCap:0.5,minTrainSamples:24,
+    minFreshTrainSamples:12,minDistinctProjects:2,maxProjectShare:0.75,
+    taskPlanMinSamples:8,taskPlanMinProjects:2});
+  assert.equal(status.tasks.roblox.datasetSha256,datasetContentFingerprint(exact));
+  assert.notEqual(status.tasks.roblox.datasetSha256,datasetContentFingerprint(permissive));
+  assert.equal(status.tasks.roblox.accepted,exact.stats.accepted);
+  assert.ok([...exact.train,...exact.eval,...exact.holdout].every(row=>row.synthetic===false&&row.provenance.sourceKind==='vibe2'));
+  assert.equal(status.tasks.roblox.ready,true);
 });
