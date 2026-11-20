@@ -2149,18 +2149,24 @@ function H.layoutBook()
   -- 폰 세로에서는 버튼을 기존 하단 도크로 복귀시켜 터치 동작을 보존한다.
   if H.menuFocusBanner and H.menuFocusBanner.Parent and currentTab ~= "codex" then
     local firstCardAction = wide and primaryVisible
-    local compactHeight = height < 500
-    H.menuFocusBanner.Size = UDim2.new(1, -6, 0, if firstCardAction then (if compactHeight then 210 else 242) else (if compactHeight then 140 else 178))
+    local bannerH = 84
     local heading = H.menuFocusBanner:FindFirstChild("MenuFocusHeading")
-    if heading then heading.TextSize = if firstCardAction then 20 else 18 end
-    local number = H.menuFocusBanner:FindFirstChild("MenuFocusValue")
-    if number then number.Size = UDim2.new(1, -28, 0, 42) end
+    if heading then heading.TextSize = if wide then 20 else 18 end
     local explanation = H.menuFocusBanner:FindFirstChild("MenuFocusDescription")
     if explanation then
-      explanation.Position = UDim2.fromOffset(14, if firstCardAction then 88 else 84)
-      explanation.Size = UDim2.new(1, -28, 0, if firstCardAction then (if compactHeight then 59 else 85) else (if compactHeight then 49 else 86))
-      explanation.TextSize = if firstCardAction then 18 else 17
+      explanation.Visible = explanation.Text ~= ""
+      if explanation.Visible then
+        local artworkWidth = if wide and gallery then math.clamp(math.floor(width * 0.38), 220, 460) + 8 else 0
+        local textWidth = math.max(1, width - artworkWidth - 50)
+        explanation.TextSize = if wide then 18 else 17
+        local measured = game:GetService("TextService"):GetTextSize(
+          explanation.Text, explanation.TextSize, explanation.Font, Vector2.new(textWidth, 10000))
+        explanation.Position = UDim2.fromOffset(14, 82)
+        explanation.Size = UDim2.new(1, -28, 0, measured.Y + 4)
+        bannerH = 94 + measured.Y
+      end
     end
+    H.menuFocusBanner.Size = UDim2.new(1, -6, 0, bannerH + (if firstCardAction then 60 else 0))
     H.menuActionButton.Parent = if firstCardAction then H.menuFocusBanner else H.menuActionDock
     H.menuActionButton.Position = if firstCardAction then UDim2.new(0, 12, 1, -60) else UDim2.fromOffset(6, 6)
     H.menuActionButton.Size = if firstCardAction then UDim2.new(1, -24, 0, 52) else UDim2.new(1, -12, 0, 54)
