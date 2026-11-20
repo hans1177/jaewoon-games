@@ -37,6 +37,27 @@ function workOrder(){return{
   workPackage:{id:'demo-wp',sharedContext:{diagnosticEvidence:['diagnostic:PLAYER_MOVE']}}
 };}
 
+// [로블록스 소스 누락] 캐시·안내문이 불완전한 정적 검사를 안전 판정으로 취급하지 않는다.
+test('canonical Vibe2 Roblox handoff warns when Vibe59 responsible source is unobserved',()=>{
+  const report=explorationGuidance({
+    reuseKey:'roblox-coverage-contract',
+    responsibleFiles:['server/Large.server.luau'],
+    impactFiles:['server/Large.server.luau'],
+    robloxCoding:{
+      files:[],warnings:[],diagnostics:[],
+      scanCoverage:{
+        requiredResponsibleFiles:1,observedResponsibleFiles:0,responsibleComplete:false,
+        unscanned:[{path:'server/Large.server.luau',reason:'LUAU_SOURCE_LIMIT_EXCEEDED',responsible:true}]
+      },
+      qualityDirector:{priorityFindings:[],remoteLinks:[],functionLinks:[]}
+    }
+  });
+  assert.match(report,/Vibe5\.9 Roblox 책임 소스 검증=0\/1/);
+  assert.match(report,/불완전 · 위험 없음 판정 금지/);
+  assert.match(report,/LUAU_SOURCE_LIMIT_EXCEEDED/);
+  assert.match(report,/실제 Studio 실행 또는 보안 검증 통과의 증거가 아니다/);
+});
+
 test('canonical exploration guidance carries Roblox quality director without granting edit scope',()=>{
   const report=explorationGuidance({
     reuseKey:'roblox-director-contract',
