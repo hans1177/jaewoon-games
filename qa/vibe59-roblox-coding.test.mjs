@@ -493,3 +493,45 @@ test('Vibe59 dedupes repeated invalid remotes so later datastore security findin
   assert.equal(report.runtimeVerified,false);
   assert.equal(report.sourceWrite,false);
 });
+
+// [로블록스 파일 검증] 스캔 상한 초과·경로 누락은 안전하다는 증거가 아니다.
+test('Vibe59 exposes oversized responsible Luau files instead of silently clearing findings',()=>{
+  const path='server/Combat.server.luau',source='--'+'.'.repeat(260001);
+  const files=[{path,source}];
+  const result=inspectVibe59RobloxCoding({files,responsiblePaths:[path]});
+  assert.deepEqual(result.files,[]);
+  assert.deepEqual(result.scanCoverage.unscanned,[
+    {path,reason:'LUAU_SOURCE_LIMIT_EXCEEDED',responsible:true}
+  ]);
+  assert.equal(result.scanCoverage.requiredResponsibleFiles,1);
+  assert.equal(result.scanCoverage.observedResponsibleFiles,0);
+  assert.equal(result.scanCoverage.responsibleComplete,false);
+  assert.equal(result.qualityDirector.responsibleSourceCoverageComplete,false);
+  assert.deepEqual(result.qualityDirector.unscannedResponsiblePaths,[path]);
+  assert.equal(result.qualityDirector.gameplayPass,false);
+  const plan=planVibe59RobloxOfflineRepairs({files,responsiblePaths:[path]});
+  assert.deepEqual(plan.plans,[]);
+  assert.deepEqual(plan.scanCoverage,result.scanCoverage);
+  assert.equal(plan.sourceWrite,false);
+});
+
+test('Vibe59 reports missing owners while preserving ordinary observed Luau findings',()=>{
+  const owner='server/Storage.server.luau',observed='client/Combat.client.luau';
+  const result=inspectVibe59RobloxCoding({
+    files:[{path:observed,source:'humanoid:TakeDamage(10)'}],
+    responsiblePaths:[owner]
+  });
+  assert.deepEqual(result.scanCoverage.unscanned,[
+    {path:owner,reason:'RESPONSIBLE_SOURCE_NOT_OBSERVED',responsible:true}
+  ]);
+  assert.ok(result.diagnostics.some(x=>x.code==='COMBAT_CLIENT_DAMAGE'));
+  assert.equal(result.scanCoverage.responsibleComplete,false);
+  assert.equal(result.qualityDirector.sourceWrite,false);
+  const invalid=inspectVibe59RobloxCoding({
+    files:[{path:'server/Schema.json',source:'{}'}],
+    responsiblePaths:['server/Schema.json']
+  });
+  assert.deepEqual(invalid.scanCoverage.unscanned,[
+    {path:'server/Schema.json',reason:'RESPONSIBLE_SOURCE_NOT_LUAU',responsible:true}
+  ]);
+});
