@@ -7196,13 +7196,26 @@ function PortScene.build(info, onFacility)
 			if safe then
 				if (safe.Position - original.Position).Magnitude > 0.1 then relocated += 1 end
 				walker.base = safe
+				-- [주민 첫 화면] 항구 재입장 시 게임 시각에 맞는 일터·시장·집에서 출발한다.
+				-- 기존 경로 검사에 통과한 위치만 재사용하며 추가 인스턴스는 생성하지 않는다.
+				local startAt = safe.Position
+				if walker.mode == "schedule" then
+					local hour = game:GetService("Lighting").ClockTime
+					local wakeAt, marketAt = walker.wakeAt or 6, walker.marketAt or 10
+					local marketEnd, homeAt = walker.marketEnd or 17, walker.homeAt or 22
+					startAt = if walker.job == "guard" and (hour >= 22.5 or hour < 4.8) then walker.morning
+						elseif hour < wakeAt then walker.home
+						elseif hour < marketAt then walker.morning
+						elseif hour < marketEnd then walker.market
+						elseif hour < homeAt then walker.evening else walker.home
+				end
 				-- [원형 동선 시작점] 첫 프레임 전에 분수 중심이 아닌 검증된 원 바깥 첫 발판에 놓는다.
 				if walker.mode == "circle" then
 					walker.model:PivotTo(CFrame.new(walker.cx + walker.r, safe.Position.Y, walker.cz) * (safe - safe.Position))
 				else
-					walker.model:PivotTo(safe)
+					walker.model:PivotTo(CFrame.new(startAt) * (safe - safe.Position))
 				end
-				walker.lastPos = safe.Position
+				walker.lastPos = startAt
 			else
 				walker.model:Destroy()
 				stopped += 1
