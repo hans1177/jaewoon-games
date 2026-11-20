@@ -2058,7 +2058,7 @@ test('시장·농경·종교 구획은 시설과 인력에 따라 달라지고 �
   'if stalls >= 2 and warehouseBuilt > 0 then',
   'folder:SetAttribute("CityMarketStalls", stalls)',
   'local farmsBuilt = if districtBuildings then',
-  'local cropRows = math.min(3, lvl, math.floor(math.sqrt(farmsBuilt) / 2))',
+  'local cropRows = if farmsBuilt <= 0 then 0 else math.min(3, lvl, math.max(1, math.floor(math.sqrt(farmsBuilt) / 2)))',
   'if farmsBuilt > 0 then',
   'if lvl >= 3 and farmsBuilt >= 5 then',
   'folder:SetAttribute("CityFarmRows"',
