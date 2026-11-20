@@ -1,6 +1,7 @@
 // 파일명: qa/company-dna-learning.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {createDnaStore,recordDnaEvidence,jayApproveCompanyStandard,recomputeDnaItem,validateDnaEvidence} from '../tools/company-dna-learning.mjs';
 
 function success(id,gameId,genre,conditionKey,delta=4){return{id,type:'MOTION',patternId:'heavy-hit-v1',gameId,genre,conditionKey,outcome:'SUCCESS',delta,blockers:[],verified:true,sourceRevision:`${id}-sha`,evidence:[`${id}-evidence`]};}
@@ -34,4 +35,15 @@ test('legacy pre-release Vibe2 success already in DNA no longer counts as positi
   assert.equal(s.items[0].stage,'EXPERIMENTING');
   assert.equal(s.items[0].summary.successEvidence,0);
   assert.equal(s.items[0].summary.incompletePositiveEvidence,1);
+});
+
+// [학습 CI 회귀] 기존 검증 단계는 유지하고 대용량 저장소 전체 이력 다운로드만 피한다.
+test('Company DNA 학습 검사는 담당 영역만 얕게 체크아웃하고 기존 QA 단계는 보존한다',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-dna-learning.yml',import.meta.url),'utf8');
+  assert.match(workflow,/fetch-depth: 1/);
+  assert.doesNotMatch(workflow,/fetch-depth: 0/);
+  assert.match(workflow,/sparse-checkout:[\s\S]*?tools\n\s+qa\n\s+assets\n\s+company-learning/);
+  assert.match(workflow,/node --test qa\/department-learning-memory\.test\.mjs/);
+  assert.match(workflow,/node tools\/department-learning-memory\.mjs/);
+  assert.match(workflow,/Guard company-standard authority/);
 });
