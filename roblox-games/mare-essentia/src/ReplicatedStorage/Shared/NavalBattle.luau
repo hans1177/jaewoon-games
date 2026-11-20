@@ -1004,22 +1004,15 @@ function NavalBattle.play(opts)
 		Sfx.play("sfx_bell", 0.25, 1.4, "sfx_click")
 		return true
 	end
-	local rangeLabel = label(gui, string.format("🎯 %s · 사거리 %d · 탄속 %.1f초", cannon.name, cannon.range, cannon.dur), 13, Color3.fromRGB(255, 226, 150))
-	rangeLabel.AnchorPoint = Vector2.new(0.5, 1)
-	rangeLabel.Position = UDim2.new(0.5, 0, 1, -12)
-	rangeLabel.Size = UDim2.fromOffset(math.min(460, math.max(180, battleViewport.X - 440)), 20)
-	rangeLabel.Visible = battleViewport.X >= 720 -- [모바일] 조타·기술·가속과 겹치는 하단 중복 포각을 숨기고 전술판에 표시.
-	rangeLabel.TextSize = if battleViewport.X < 480 then 11 else 13
-	rangeLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	-- [해전 전술 판넬] 실제 적과의 거리·선측 각·장전 시간으로 다음 행동을 시각화한다.
-	-- 중앙 아래쪽은 기존 장전 게이지, 위쪽은 전술 판단만 표시한다.
-	local tactic = label(gui, "① 적선에 접근 중", 15, Color3.fromRGB(255, 224, 159), true)
+	-- 항해 중 필요한 조타 안내는 아군 선단 아래에 짧게 표시한다.
+	local tactic = label(gui, "", 15, Color3.fromRGB(255, 224, 159), true)
 	tactic.Name = "BattleTacticalReadout"
-	tactic.AnchorPoint = Vector2.new(0.5, 0)
-	tactic.Position = UDim2.new(0.5, 0, 0, 119)
-	-- [중앙 해전 글씨] 축소·외곽선 번짐을 없애고 충분한 폭의 인쇄판에 고정 크기로 표시한다.
-    tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.66 elseif battleViewport.X < 720 then 0.60 else 0.50, 0, 0, 54)
-    tactic.TextSize = if battleViewport.X < 480 then 15 else 18
+	tactic.AnchorPoint = Vector2.zero
+	tactic.Position = UDim2.fromOffset(16, 126)
+	-- [조타 안내] 전장 중앙을 비우고 한 줄만 사용한다.
+    tactic.Size = UDim2.fromOffset(math.min(168, math.floor(battleViewport.X * 0.42)), 26)
+    tactic.TextSize = if battleViewport.X < 480 then 12 else 14
     tactic.Font = Enum.Font.GothamBold
     tactic.TextScaled = false
     tactic.TextStrokeTransparency = 1
@@ -1028,7 +1021,7 @@ function NavalBattle.play(opts)
     tactic.BackgroundColor3 = Color3.fromRGB(21, 29, 35)
     tactic.BackgroundTransparency = 0.04
 	tactic.BorderSizePixel = 0
-	tactic.Visible = not opts.cardOnly
+	tactic.Visible = false
 	tactic.ZIndex = 10
 	local tacticCorner = Instance.new("UICorner")
 	tacticCorner.CornerRadius = UDim.new(0, 9)
@@ -1121,7 +1114,7 @@ function NavalBattle.play(opts)
 	hint.Position = UDim2.new(0.5, 0, 1, -150)
 	hint.Size = UDim2.new(0.8, 0, 0, 36)
 	hint.TextWrapped = true
-	hint.Visible = not MOBILE_VFX or opts.cardOnly -- [폰트 정돈] 긴 도움말 대신 두 줄 전술 패널을 남긴다.
+	hint.Visible = opts.cardOnly or opts.card == true -- [폰트 정돈] 긴 도움말 대신 두 줄 전술 패널을 남긴다.
 
 	local banner = label(gui, "", 44)
 	banner.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -5650,7 +5643,6 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 							end)
 						end
 						for _, segment in rangeRing.segments do segment.Transparency = 1 end
-						rangeLabel.Visible = false
 					end
 					subtitle.Text = "사정거리 안! 카드 대결 시작!"
 					shake = 1.6
@@ -5987,17 +5979,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local heading = Vector3.new(math.cos(me.theta), 0, math.sin(me.theta))
 			local broadside = if dd > 0.1 then math.abs(heading:Cross(direction.Unit).Y) else 0
 			local aligned = broadside > 0.5
-			local sideCross = if dd > 0.1 then heading:Cross(direction.Unit).Y else 0
-			local gunSide = if sideCross < 0 then "우현" else "좌현"
-			local aimAngle = if dd > 0.1 then math.deg(math.acos(math.clamp(heading:Dot(direction.Unit), -1, 1))) else 0
-			local sideDeviation = math.floor(math.abs(90 - aimAngle) + 0.5) -- [실제 포각] 선측 정면 90°, 양옆 60° 이내가 포격 가능
 			-- [조향 가이드] 실제 명중 판정을 바꾸지 않고 가장 가까운 좌/우 선측 90° 위치만 안내한다.
 			local enemyBearing = if dd > 0.1 then math.atan2(direction.Z, direction.X) else me.theta
 			local turnLeft = (enemyBearing + math.pi / 2 - me.theta + math.pi) % (math.pi * 2) - math.pi
 			local turnRight = (enemyBearing - math.pi / 2 - me.theta + math.pi) % (math.pi * 2) - math.pi
 			local turnNeeded = if math.abs(turnRight) < math.abs(turnLeft) then turnRight else turnLeft
-			local steerCue = (if turnNeeded >= 0 then "우로 " else "좌로 ") .. tostring(math.floor(math.abs(math.deg(turnNeeded)) + 0.5)) .. "°"
-			local color = if not inRange then Color3.fromRGB(255, 205, 130) elseif aligned then Color3.fromRGB(124, 236, 161) else Color3.fromRGB(255, 178, 100)
+			local steerCue = if turnNeeded >= 0 then "우현으로 조타" else "좌현으로 조타"
 			local tau = math.pi * 2
 			local scanAngle = (now * 2.45) % tau -- [탐지광] 약 2.6초/회전, 조각 잔광은 점진적으로 감쇠
 			local cd = cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
@@ -6059,39 +6046,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				radar.beam.Color = ColorSequence.new(Color3.fromRGB(135, 223, 210),
 					if inRange and aligned then Color3.fromRGB(120, 255, 170) else Color3.fromRGB(255, 211, 136))
 			end
-			rangeLabel.Text = if battleViewport.X < 480 then
-				string.format("포각 %s %d° · %s", gunSide, math.floor(aimAngle + 0.5),
-					if not inRange then "거리 밖" elseif aligned then "발사 가능" else steerCue)
-				else string.format("%s %dm/%dm · %s %d° · %s", cannon.name, math.floor(dd), cannon.range,
-					gunSide, math.floor(aimAngle + 0.5),
-					if not inRange then "거리 밖" elseif aligned then "발사 가능" else steerCue)
-			rangeLabel.TextColor3 = color
-			-- [전술 단계] 실제 사거리와 기존 시각용 장전 쿨타임만 표시한다.
-			local status, tip, tone
-			if phase == "board" then
-				status, tip, tone = "④ 접현 백병전", "선체 내구도와 승조원 피해를 확인해.", Color3.fromRGB(255, 174, 123)
-			elseif phase == "end" then
-				status, tip, tone = "전투 종료", "확정된 결과를 확인해.", Color3.fromRGB(248, 220, 163)
-			elseif now < skillUntil[SKILLS[2].id] then
-				local sk = SKILLS[2]
-				status = "특화 발동 · " .. sk.text
-				tip = (sk.cue or "전투 기술") .. " · 효과 발동 중"
-				tone = sk.col
-			elseif not inRange then
-				status, tip, tone = "① 적선 접근", string.format("포 사거리까지 %d m · 바람과 조타를 확인해.", math.ceil(dd - cannon.range)), Color3.fromRGB(255, 205, 130)
-			elseif not aligned then
-				status, tip, tone = "② 선측 정렬 · 포각 확인",
-					string.format("%s %d° · 편차 %d° · %s", gunSide, math.floor(aimAngle + 0.5), sideDeviation, steerCue),
-					Color3.fromRGB(255, 185, 123)
-			elseif now < nextMeFire then
-				status, tip, tone = "③ 대포 재장전", string.format("화포 준비 중 · 적선과의 거리 %dm", math.floor(dd)), Color3.fromRGB(242, 212, 138)
-			else
-				status, tip, tone = "③ 포격 준비", string.format("적선 %dm · 사거리 %dm · 자동 포격 대기", math.floor(dd), cannon.range), Color3.fromRGB(130, 237, 172)
-			end
-			local messageText = if battleViewport.X < 480 then status .. "\n" ..
-				(if not inRange then "대포 사거리 밖" elseif not aligned then steerCue .. " 돌려"
-					elseif now < nextMeFire then "장전 중" else "측면 포격 가능")
-				else status .. "\n" .. tip -- [상단 가독성] 세로 폰에서 정보가 잘리지 않게 두 줄 압축
+			-- 진입과 선측 조타만 안내한다. 재장전·포격 가능 여부는 기존 장전 막대에 표시한다.
+			local messageText = if phase == "duel" and not opts.card and not opts.cardOnly
+				then (if not inRange then "적선에 접근" elseif not aligned then steerCue else "") else ""
+			local tone = if not inRange then Color3.fromRGB(255, 205, 130) else Color3.fromRGB(255, 185, 123)
+			tactic.Visible = messageText ~= ""
 			if messageText ~= lastTacticText then
 				tactic.Text, lastTacticText = messageText, messageText
 			end
