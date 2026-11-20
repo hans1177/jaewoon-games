@@ -126253,7 +126253,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -126296,12 +126296,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44719985168:1",
+      "reservedAt": "2026-11-20T10:38:37.187Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-verification-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -127078,14 +127078,15 @@
         "system-ai-applied-answer-sha256:614aa06463ac7f9c772fde45062d81268b97aef434f83261da8fb92c2a7858a6",
         "repair-strategy-fingerprint:ff548516e8117bb293cf664f41cc7f3249effe3a004d3ca1b913685a3161679f",
         "failed-strategy-fingerprint:ff548516e8117bb293cf664f41cc7f3249effe3a004d3ca1b913685a3161679f",
-        "model-output-sha256:614aa06463ac7f9c772fde45062d81268b97aef434f83261da8fb92c2a7858a6"
+        "model-output-sha256:614aa06463ac7f9c772fde45062d81268b97aef434f83261da8fb92c2a7858a6",
+        "system-ai-handoff-to-reservation:system-ai:44719985168:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1862,
+      "impactScore": 352,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 40,
-        "recurrenceCount": 40,
+        "blockedTaskCount": 1,
+        "recurrenceCount": 1,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -127093,7 +127094,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-20T10:21:06.389Z"
+      "updatedAt": "2026-11-20T10:38:37.187Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
@@ -155490,7 +155491,7 @@
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -155532,12 +155533,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44719985168:1",
+      "reservedAt": "2026-11-20T10:38:37.187Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -155824,7 +155825,8 @@
         "system-ai-handoff-to-reservation:system-ai:44711096906:1",
         "actions-run:44711096906",
         "system-ai-handoff-to-reservation:system-ai:44717578683:1",
-        "actions-run:44717578683"
+        "actions-run:44717578683",
+        "system-ai-handoff-to-reservation:system-ai:44719985168:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1834,
@@ -155839,7 +155841,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-20T10:26:35.036Z"
+      "updatedAt": "2026-11-20T10:38:37.187Z"
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
