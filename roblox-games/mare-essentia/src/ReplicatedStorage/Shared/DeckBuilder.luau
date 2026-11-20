@@ -4,25 +4,26 @@
 --   카드 누르기 = 큰 카드 보기 · + = 덱에 1장 넣기 · 덱 줄의 − = 1장 빼기
 local TweenService = game:GetService("TweenService")
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
+local CardTheme = require(script.Parent:WaitForChild("CardTheme"))
 local CardSymbols = require(script.Parent:WaitForChild("CardSymbols"))
 local Gallery = require(script.Parent:WaitForChild("CardGallery"))
 
 local DeckBuilder = {}
 
-local INK = Color3.fromRGB(250, 236, 200)
-local GOLD = Color3.fromRGB(246, 208, 130)
-local PANEL = Color3.fromRGB(34, 27, 22)
-local PANEL2 = Color3.fromRGB(50, 37, 28)
-local BINDING = Color3.fromRGB(126, 90, 73)
-local PAPER = Color3.fromRGB(211, 187, 149)
-local SEPIA = Color3.fromRGB(56, 38, 29)
-local ADD = Color3.fromRGB(45, 86, 64)
-local REMOVE = Color3.fromRGB(113, 54, 43)
+local INK = CardTheme.cream
+local GOLD = CardTheme.gold
+local PANEL = CardTheme.leather
+local PANEL2 = CardTheme.panel
+local BINDING = CardTheme.brass
+local PAPER = CardTheme.parchment
+local SEPIA = CardTheme.ink
+local ADD = CardTheme.confirm
+local REMOVE = CardTheme.danger
 local SAVE = Color3.fromRGB(32, 44, 78)
 local TIER_COLOR = { Color3.fromRGB(176, 112, 62), Color3.fromRGB(196, 202, 212), Color3.fromRGB(238, 196, 84) }
 local ROW_COLOR = { melee = Color3.fromRGB(190, 84, 62), ranged = Color3.fromRGB(96, 150, 84), cannon = Color3.fromRGB(84, 124, 176) }
 local ROW_SHORT = { melee = "근", ranged = "사", cannon = "포" }
-local FELT = Color3.fromRGB(21, 48, 49)
+local FELT = CardTheme.allied
 local FORMATION = { { "melee", "전열" }, { "ranged", "후열" }, { "special", "전술" } }
 -- [카드 원화] 지역별 박물관 테두리는 카드 ID만 읽으며 카드 수치와 저장에는 관여하지 않는다.
 local REGION_FRAME = { eu = "ui_frame_europe", ea = "ui_frame_east_asia", me = "ui_frame_middle_east", nw = "ui_frame_new_world", af = "ui_frame_africa", sa = "ui_frame_southeast_asia" }
@@ -98,7 +99,7 @@ function DeckBuilder.build(parent, ctx)
 	local recPop -- 추천 덱 선택 창 (아래에서 만든다)
 	local root = Instance.new("Frame")
 	root.Name = "DeckBuilder"
-	root.BackgroundColor3 = Color3.fromRGB(55, 36, 32)
+	root.BackgroundColor3 = CardTheme.leather
 	root.BorderSizePixel = 0
 	root.AutoLocalize = true
 	root.Size = UDim2.fromScale(1, 1)
@@ -524,7 +525,7 @@ function DeckBuilder.build(parent, ctx)
 	local leaderBox = Instance.new("Frame")
 	leaderBox.Position = UDim2.fromOffset(6, 6)
 	leaderBox.Size = UDim2.new(1, -12, 0, 150)
-	leaderBox.BackgroundColor3 = Color3.fromRGB(85, 51, 45)
+	leaderBox.BackgroundColor3 = CardTheme.panel
 	leaderBox.BorderSizePixel = 0
 	leaderBox.Parent = right
 	corner(leaderBox, 8)
@@ -584,7 +585,7 @@ function DeckBuilder.build(parent, ctx)
 	leaderFull.Name = "EnlargedLeaderCard"
 	leaderFull.AnchorPoint = Vector2.new(0.5, 0.5)
 	leaderFull.Position = UDim2.fromScale(0.5, 0.5)
-	leaderFull.BackgroundColor3 = Color3.fromRGB(60, 43, 30)
+	leaderFull.BackgroundColor3 = CardTheme.leather
 	leaderFull.BorderSizePixel = 0
 	leaderFull.Text = ""
 	leaderFull.ZIndex = 41
@@ -763,7 +764,7 @@ function DeckBuilder.build(parent, ctx)
 	local recSize = Instance.new("UISizeConstraint")
 	recSize.MaxSize = Vector2.new(480, 44)
 	recSize.Parent = recPop
-	recPop.BackgroundColor3 = Color3.fromRGB(26, 20, 16)
+	recPop.BackgroundColor3 = CardTheme.inset
 	recPop.BorderSizePixel = 0
 	recPop.Visible = false
 	recPop.ZIndex = 30
@@ -820,7 +821,7 @@ function DeckBuilder.build(parent, ctx)
 	search.Name = "CollectionSearch"
 	search.Position = UDim2.fromOffset(6, 48)
 	search.Size = UDim2.new(1, -12, 0, 38)
-	search.BackgroundColor3 = Color3.fromRGB(21, 30, 39)
+	search.BackgroundColor3 = CardTheme.inset
 	search.TextColor3 = INK
 	search.PlaceholderColor3 = Color3.fromRGB(183, 173, 152)
 	search.PlaceholderText = "카드 이름 검색"
@@ -1264,7 +1265,7 @@ function DeckBuilder.build(parent, ctx)
 		pickBanner = panel
 		panel.Name = "RewardCardChoice"
 		panel.Size = UDim2.fromScale(1, 1)
-		panel.BackgroundColor3 = Color3.fromRGB(12, 32, 49)
+		panel.BackgroundColor3 = CardTheme.leather
 		panel.BorderSizePixel = 0
 		panel.Active = true
 		panel.ZIndex = 40

@@ -3,6 +3,7 @@
 -- 타일: 그림·이름·점수 동그라미·보유 수·동은금 테두리. 금 카드는 은은히 반짝이고, 큰 카드 그림은 천천히 움직인다.
 local TweenService = game:GetService("TweenService")
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
+local CardTheme = require(script.Parent:WaitForChild("CardTheme"))
 local CardSymbols = require(script.Parent:WaitForChild("CardSymbols"))
 
 local Gallery = {}
@@ -104,7 +105,7 @@ local function showDetail(ctx, id)
 	card.AnchorPoint = Vector2.new(0.5, 0.5)
 	card.Position = UDim2.fromScale(0.5, 0.5)
 	card.Size = UDim2.fromScale(0.94, 0.88)
-	card.BackgroundColor3 = Color3.fromRGB(62, 42, 37)
+	card.BackgroundColor3 = CardTheme.leather
 	card.BorderSizePixel = 0
 	card.ZIndex = 51
 	card.Parent = shade
@@ -134,7 +135,7 @@ local function showDetail(ctx, id)
 
 	local frame = Instance.new("Frame")
 	frame.BackgroundTransparency = 0
-	frame.BackgroundColor3 = Color3.fromRGB(70, 52, 38)
+	frame.BackgroundColor3 = CardTheme.inset
 	frame.ClipsDescendants = true
 	frame.BorderSizePixel = 0
 	frame.ZIndex = 52
@@ -154,7 +155,7 @@ local function showDetail(ctx, id)
 	local nameplate = newLabel(frame, d.name, 17, Color3.fromRGB(49, 35, 24), true)
 	nameplate.Position = UDim2.fromScale(0.04, 0.67)
 	nameplate.Size = UDim2.fromScale(0.92, 0.27)
-	nameplate.BackgroundColor3 = Color3.fromRGB(227, 202, 157)
+	nameplate.BackgroundColor3 = CardTheme.parchment
 	nameplate.BackgroundTransparency = 0
 	nameplate.TextScaled = true
 	nameplate.ZIndex = 54
@@ -451,14 +452,14 @@ function Gallery.build(parent, ctx, order)
 						badge.Position = UDim2.fromOffset(6, 6)
 						badge.Size = UDim2.fromOffset(26, 26)
 						badge.BackgroundTransparency = 0
-						badge.BackgroundColor3 = Color3.fromRGB(32, 24, 18)
+						badge.BackgroundColor3 = CardTheme.inset
 						corner(badge, 13)
 						local own = newLabel(tile, "×" .. owned, 12, Color3.fromRGB(250, 240, 215), true)
 						own.AnchorPoint = Vector2.new(1, 0)
 						own.Position = UDim2.new(1, -6, 0, 6)
 						own.Size = UDim2.fromOffset(30, 20)
 						own.BackgroundTransparency = 0.2
-						own.BackgroundColor3 = Color3.fromRGB(32, 24, 18)
+						own.BackgroundColor3 = CardTheme.panel
 						corner(own, 6)
 						if (want[id] or 0) > 0 then
 							local dk = newLabel(tile, "덱 " .. want[id], 11, Color3.fromRGB(20, 40, 20), true)
