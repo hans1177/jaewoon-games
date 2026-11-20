@@ -800,6 +800,43 @@ local NPC_REGISTERED_ACCESSORY = {
 	companion_female = { "acc_pearl_hairpin", "Head", 0.68, 0.70, 0.72, 0.30, 0.34, -0.09 },
 }
 
+-- [직업별 실물 휴대품 31종] 기존 등록된 CC0 Relics/Cargo 자산을 주민 R15 관절에만 부착한다.
+-- 각 직업은 독립된 도구·소지품과 착용 위치를 가진다. 공격 판정·경제·저장 속성은 변경하지 않는다.
+-- 표: 원본 자산 키/관절/크기 XYZ/위치 YXZ/기울기 X(도). 미등록 자산은 장착하지 않는다.
+local NPC_PROFESSION_GEAR = {
+	farmer = { "Cargo/corn", "LeftHand", 0.72, 0.76, 0.72, -0.12, 0, -0.55, 12 },
+	docker = { "Relics/rope-bundle-b", "LowerTorso", 0.58, 0.60, 0.60, -0.31, 0.44, 0.10, 0 },
+	herder = { "Relics/rope-bundle-a", "LowerTorso", 0.55, 0.58, 0.55, -0.27, -0.46, 0.14, 0 },
+	laborer = { "Cargo/bag", "LeftHand", 0.82, 0.78, 0.80, -0.18, 0, -0.48, 0 },
+	royal_stablehand = { "Cargo/bucket", "RightHand", 0.66, 0.72, 0.67, -0.26, 0, -0.48, 0 },
+	royal_gardener = { "Cargo/bucket", "LeftHand", 0.60, 0.68, 0.60, -0.25, 0, -0.44, 0 },
+	carpenter = { "Relics/handplane", "RightHand", 0.75, 0.82, 0.74, -0.24, 0, -0.58, 20 },
+	smith = { "Relics/hammer", "RightHand", 0.75, 0.86, 0.74, -0.18, 0, -0.58, 0 },
+	tailor = { "Cargo/linen", "LeftHand", 0.66, 0.62, 0.66, -0.16, 0, -0.55, 0 },
+	baker = { "Cargo/bread", "LeftHand", 0.74, 0.72, 0.75, -0.08, 0, -0.54, 0 },
+	shipwright = { "Relics/saw", "RightHand", 0.75, 0.88, 0.75, -0.24, 0, -0.60, 24 },
+	industry_artisan = { "Relics/chisel", "RightHand", 0.65, 0.82, 0.66, -0.16, 0, -0.57, -15 },
+	fisher = { "Cargo/fish", "RightHand", 0.70, 0.78, 0.72, -0.21, 0, -0.55, 0 },
+	sailor = { "Relics/compass-base", "LowerTorso", 0.42, 0.49, 0.43, -0.23, 0.44, -0.32, 0 },
+	boatswain = { "Relics/rope-bundle-a", "LowerTorso", 0.55, 0.58, 0.55, -0.27, 0.45, 0.17, 0 },
+	guard = { "Relics/weapon-spear", "RightHand", 0.56, 0.88, 0.56, -0.26, 0, -0.54, 0 },
+	royal_guard = { "Relics/weapon-sword", "LowerTorso", 0.48, 0.76, 0.47, -0.32, 0.54, 0.05, 0 },
+	royal_gate_guard = { "Relics/weapon-spear", "RightHand", 0.56, 0.88, 0.56, -0.26, 0, -0.54, 0 },
+	royal_ceremonial_guard = { "Relics/weapon-sword", "LowerTorso", 0.52, 0.80, 0.50, -0.29, 0.52, -0.05, 0 },
+	royal_light_cavalry = { "Relics/weapon-sword", "LowerTorso", 0.50, 0.73, 0.47, -0.35, 0.55, 0.03, 0 },
+	merchant = { "Relics/journal-open", "LeftHand", 0.67, 0.75, 0.66, -0.08, 0, -0.52, 0 },
+	banker = { "Relics/key", "LowerTorso", 0.38, 0.51, 0.38, -0.27, 0.46, -0.35, 0 },
+	clerk = { "Relics/journal-closed", "LeftHand", 0.64, 0.72, 0.65, -0.10, 0, -0.52, 0 },
+	teacher = { "Relics/journal-open", "LeftHand", 0.65, 0.77, 0.65, -0.07, 0, -0.52, 0 },
+	royal_scholar = { "Relics/magnifying-glass", "RightHand", 0.61, 0.75, 0.61, -0.12, 0, -0.55, 0 },
+	royal_scribe = { "Relics/journal-open", "LeftHand", 0.62, 0.73, 0.64, -0.10, 0, -0.54, 0 },
+	royal_archivist = { "Relics/journal-closed", "LeftHand", 0.62, 0.72, 0.64, -0.10, 0, -0.50, 0 },
+	royal_administrator = { "Relics/key", "LowerTorso", 0.40, 0.50, 0.39, -0.24, 0.46, -0.34, 0 },
+	royal_court_officer = { "Relics/map-rolled", "LeftHand", 0.64, 0.75, 0.65, -0.13, 0, -0.56, 0 },
+	royal_servant = { "Cargo/plate", "LeftHand", 0.68, 0.62, 0.70, -0.08, 0, -0.55, 0 },
+	royal_messenger = { "Relics/map-rolled", "LowerTorso", 0.42, 0.58, 0.40, -0.28, 0.47, -0.30, 0 },
+}
+
 -- [원본 GLB 재질] 복식 9종의 glTF 원색과 금속·가죽 구분을 유지한다.
 -- [의상 표면 보정] 텍스처 없는 직물에만 과한 기본 Fabric 반복 무늬 대신 균일한 무광 표면을 쓴다.
 -- 실제 ColorMap/SurfaceAppearance/MaterialVariant는 우선 보존하고, 누락된 색만 원본 기준으로 복원한다.
@@ -893,9 +930,17 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	-- [등록·사용 권한 관문] 기존 AssetIds에 등록된 추가 액세서리만 장착 시도한다.
 	-- 등록 전에는 기등록 복식만 사용한다. 기존 프로필 표는 수정하지 않는다.
 	local accessory = npcOutfit and NPC_REGISTERED_ACCESSORY[profile]
+	local profession = npcOutfit and model:GetAttribute("AppearanceProfession")
+	local jobGear = detailAllowed and profession and NPC_PROFESSION_GEAR[profession]
 	if accessory and AssetIds["People/" .. accessory[1]] then
 		specs = table.clone(specs)
 		table.insert(specs, accessory)
+	end
+	-- [실제 직업 소품] 31개 직업별 기존 Relics/Cargo 등록 모델을 동일한 R15 착용 루프에 넣는다.
+	-- 사람/몬스터/장비의 원본 메시를 복제해서 붙일 뿐 물리·관절·게임 규칙은 바꾸지 않는다.
+	if jobGear and AssetIds[jobGear[1]] then
+		if specs == MOB_OUTFIT_PARTS[profile] then specs = table.clone(specs) end
+		table.insert(specs, jobGear)
 	end
 	local shelf = ReplicatedStorage:FindFirstChild("MareAssets")
 	local people = shelf and shelf:FindFirstChild("People")
@@ -953,6 +998,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	local attached = 0
 	for _, spec in specs do
 		local assetName, boneName = spec[1], spec[2]
+		local propGroup, propName = string.match(assetName, "^(Relics)/(.+)$")
+		if not propGroup then propGroup, propName = string.match(assetName, "^(Cargo)/(.+)$") end
+		local jobProp = propGroup ~= nil
+		local slotName = "R15Asset_" .. string.gsub(assetName, "/", "_") .. "_" .. boneName
 		-- [주민 상의 1겹] 재단복이 준비된 직업만 구형 통짜 몸통을 제거한다.
 		-- 고유 문화권·지연 자산·전투 몹의 복장은 변경하지 않는다.
 		if fittedUpperReady and boneName == "UpperTorso" and (assetName == "male_peasant_body"
@@ -960,6 +1009,18 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			or assetName == "female_ranger_body") then
 			local duplicate = model:FindFirstChild("R15Asset_" .. assetName .. "_" .. boneName)
 			if duplicate then duplicate:Destroy() end
+			attached += 1
+			continue
+		end
+		-- [모바일 원거리] 소형 직업 도구는 렌더링에서만 제외한다.
+		-- 기존 소품은 보관해 가까워질 때 재복제 없이 복구한다.
+		if jobProp and UserInputService.TouchEnabled and detailLimit == 3 then
+			local inactive = model:FindFirstChild(slotName)
+			if inactive then
+				for _, part in inactive:GetDescendants() do
+					if part:IsA("BasePart") then part.LocalTransparencyModifier = 1 end
+				end
+			end
 			attached += 1
 			continue
 		end
@@ -1002,10 +1063,9 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				assetName = "hair_buns"
 			end
 		end
-		local slotName = "R15Asset_" .. assetName .. "_" .. boneName
 		local equipped = model:FindFirstChild(slotName)
 		if equipped then
-			if string.sub(assetName, 1, 7) == "outfit_" then
+			if string.sub(assetName, 1, 7) == "outfit_" or jobProp then
 				for _, part in equipped:GetDescendants() do
 					if part:IsA("BasePart") then part.LocalTransparencyModifier = 0 end
 				end
@@ -1013,8 +1073,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			attached += 1
 			continue
 		end
-		local registeredId = AssetIds["People/" .. assetName]
-		local source = registeredId and people and people:FindFirstChild(assetName)
+		local assetKey = if jobProp then assetName else "People/" .. assetName
+		local registeredId = AssetIds[assetKey]
+		local sourceGroup = if jobProp then shelf and shelf:FindFirstChild(propGroup) else people
+		local source = registeredId and sourceGroup and sourceGroup:FindFirstChild(if jobProp then propName else assetName)
 		local target = model:FindFirstChild(boneName)
 		if not (source and source:IsA("Model") and target and target:IsA("BasePart")) then continue end
 		local skin = source:Clone()
@@ -1044,9 +1106,11 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			if ratio <= 0 or ratio ~= ratio or ratio > 100 then error("invalid scale") end
 			skin:ScaleTo(ratio)
 			bounds = skin:GetBoundingBox()
-			-- 신규 머리핀/길드 배지는 기존 Y축 부착을 보존하면서 R15 상대 X/Z 위치도 반영한다.
+			-- [직업 도구 자연스러운 고정] 기존 부착 좌표에 필요한 도구 기울기만 적용한다.
+			-- 근접 보행·망치질에는 손/허리 R15 관절을 따라가며 접지/충돌 판정이 없다.
 			skin:PivotTo((target.CFrame * CFrame.new(target.Size.X * (spec[7] or 0),
-				target.Size.Y * spec[6], target.Size.Z * (spec[8] or 0))) * bounds:ToObjectSpace(skin:GetPivot()))
+				target.Size.Y * spec[6], target.Size.Z * (spec[8] or 0))
+				* CFrame.Angles(math.rad(spec[9] or 0), 0, 0)) * bounds:ToObjectSpace(skin:GetPivot()))
 			for _, part in parts do
 				part.Anchored, part.CanCollide, part.CanTouch, part.CanQuery = false, false, false, false
 				part.Massless = true
