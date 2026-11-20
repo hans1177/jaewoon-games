@@ -5990,6 +5990,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local cd = cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
 			local reloadProgress = if opts.card or not inRange then 0 else 1 - math.clamp((nextMeFire - now) / math.max(0.1, cd), 0, 1)
 			local firing = now < rangeRing.volleyUntil
+			local broadsideReady = phase == "duel" and not opts.card and not opts.cardOnly
+				and inRange and aligned and nextMeFire - now <= 0.35 and not firing
+			local enemySide = heading:Cross(direction).Y
 			local hitFoe = now < rangeRing.impactUntil
 			local hitMe = now < rangeRing.hitUntil
 			rangeRing.fade = math.clamp(rangeRing.fade + (if phase == "duel" then dt * 3.5 else -dt * 3.5), 0, 1)
@@ -6032,6 +6035,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				elseif hitMe then
 					tint, alpha = Color3.fromRGB(255, 119, 100), math.min(alpha, 0.34)
 				end
+				-- [준비 표시] 적이 있는 선측만 황동빛으로 표시하고, 발사하면 기존 섬광으로 넘긴다.
+				if broadsideReady and not hitMe and not hitFoe and now >= skillUntil.guard and now >= skillUntil.dash then
+					local readyArc = sideArc and heading:Cross(radial).Y * enemySide > 0
+					tint = if readyArc then Color3.fromRGB(249, 201, 126) else Color3.fromRGB(94, 127, 138)
+					alpha = if readyArc then 0.25 else 0.9
+				end
 				seg.Color = tint
 				seg.Transparency = if opts.cardOnly then 1 else 1 - rangeRing.fade * (1 - alpha)
 			end
@@ -6042,7 +6051,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local rim = center + Vector3.new(math.cos(scanAngle), 0, math.sin(scanAngle)) * cannon.range
 				radar.origin.Position = radar.hull.CFrame:PointToObjectSpace(center)
 				radar.edge.Position = rangeRing.segments[1].CFrame:PointToObjectSpace(rim)
-				radar.beam.Enabled = not opts.cardOnly and rangeRing.fade > 0.08 and phase == "duel"
+				radar.beam.Enabled = not opts.cardOnly and not broadsideReady and rangeRing.fade > 0.08 and phase == "duel"
 				radar.beam.Color = ColorSequence.new(Color3.fromRGB(135, 223, 210),
 					if inRange and aligned then Color3.fromRGB(120, 255, 170) else Color3.fromRGB(255, 211, 136))
 			end
