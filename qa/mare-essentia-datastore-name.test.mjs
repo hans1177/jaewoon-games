@@ -2044,6 +2044,27 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  assert.match(port,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
 });
 
+// [주민 하루 생활] 유령 인구를 방지하고 구역별 출퇴근과 미개발 녹지를 회귀 검증한다.
+test('항구는 실제 거주민과 시설 근무표를 따르고 추가 소품 없이 원본 풀·관목을 재사용한다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ for(const token of [
+  'math.floor(math.max(0, tonumber(info.sim.residents) or 0) / 12), 0, 4',
+  'w.districtJob = job',
+  'w.shiftStart = (if job == "farmer" then 5 elseif job == "merchant" then 7 else 6)',
+  'w.shiftEnd = (if job == "farmer" then 18 elseif job == "merchant" then 20 else 21)',
+  'local offDuty = (w.goodId and (hour < 6 or hour >= 20))',
+  'w.model:SetAttribute("DailyRoutine", "rest")',
+  'w.model:SetAttribute("DailyRoutine", "work")',
+  '"Terrain", "Bush_Small", 3.6',
+  '"Terrain", "Grass_Small", 2.5'
+ ]) assert.ok(scene.includes(token),'도시 생활 검증 누락: '+token);
+ assert.ok(!scene.includes('local plazaResidents = if info.sim then math.clamp(math.floor((info.sim.residents or 6) / 12), 1, 4)'),
+  '거주민 0명에도 주민을 강제로 배치하면 안 된다');
+ const woodland=scene.match(/woodland = \{ \{ "Terrain", "tree-oak"[\s\S]*?\} \},/);
+ assert.ok(woodland,'미개발 구획 기존 녹지 팔레트');
+ assert.equal((woodland[0].match(/\{ "Terrain",/g)||[]).length,4,'구획 내 추가 장식 폭증 금지');
+});
+
 // [도시 실체] 구획 표시 밀도가 실제 경제 시설과 발전도에 비례하고 중복 물체가 돌아오지 않는지 검사.
 test('시장·농경·종교 구획은 시설과 인력에 따라 달라지고 불필요한 중복 장식을 배제한다',()=>{
  const scene=read('ReplicatedStorage/Shared/PortScene.luau');
