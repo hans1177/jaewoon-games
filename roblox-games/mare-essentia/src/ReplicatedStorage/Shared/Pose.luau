@@ -788,15 +788,15 @@ local NPC_REGISTERED_HAIR = {
 -- [승인된 헤드·몸통 액세서리 5종] 추가 요소만 분리한다. 위치는 R15 부위의 상대 좌표.
 -- 배열 7/8열: 기존 Y 오프셋 뒤의 X/Z 배율(미지정이면 0). 금속 배지는 겉옷 바깥쪽에 보이게 장착한다.
 local NPC_REGISTERED_ACCESSORY = {
-	citizen_female = { "acc_ribbon_bow", "Head", 0.85, 0.90, 0.90, 0.33, 0.12, -0.08 },
-	citizen_official_male = { "acc_guild_badge", "UpperTorso", 0.45, 0.50, 0.60, 0.12, -0.28, -0.56 },
-	citizen_official_female = { "acc_pearl_hairpin", "Head", 0.55, 0.58, 0.60, 0.28, 0.33, -0.06 },
+	citizen_female = { "acc_ribbon_bow", "Head", 0.93, 0.96, 0.95, 0.34, 0.13, -0.11 },
+	citizen_official_male = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	citizen_official_female = { "acc_pearl_hairpin", "Head", 0.68, 0.70, 0.72, 0.30, 0.34, -0.09 },
 	citizen_sailor_male = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
 	citizen_sailor_female = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
 	citizen_guard_male = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
-	citizen_artisan_male = { "acc_guild_badge", "UpperTorso", 0.45, 0.50, 0.60, 0.12, -0.28, -0.56 },
+	citizen_artisan_male = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
 	companion_male = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
-	companion_female = { "acc_pearl_hairpin", "Head", 0.55, 0.58, 0.60, 0.28, 0.33, -0.06 },
+	companion_female = { "acc_pearl_hairpin", "Head", 0.68, 0.70, 0.72, 0.30, 0.34, -0.09 },
 }
 
 -- [원본 GLB 재질] 복식 9종의 glTF 원색과 금속·가죽 구분을 유지한다.
@@ -1166,6 +1166,12 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		end)
 		if ok then
 			attached += 1
+			-- [실물 확인] 실제 장착된 메시 종류를 읽을 수 있게 남긴다. 저장·경제 데이터와 무관하다.
+			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" then
+				model:SetAttribute("NpcVisibleHairMesh", assetName)
+			elseif npcOutfit and string.sub(assetName, 1, 4) == "acc_" then
+				model:SetAttribute("NpcVisibleAccessoryMesh", assetName)
+			end
 			if npcOutfit and (string.sub(assetName, 1, 5) == "hair_"
 				or (detailAllowed and assetName == "acc_feather_hat")) then
 				-- [지역 복식 보존] 실물 머리와 서유럽 깃털모자만 기존 예비 도형을 가린다.
