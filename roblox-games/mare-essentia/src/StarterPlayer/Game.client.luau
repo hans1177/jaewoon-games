@@ -2089,7 +2089,7 @@ function H.layoutBook()
         if padding then padding.PaddingLeft = UDim.new(0, if compactTabs then 0 else 35) end
         icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 1) else UDim2.new(0, 7, 0.5, -13)
         caption.Position = if compactTabs then UDim2.fromOffset(2, 27) else UDim2.fromOffset(35, 3)
-        caption.Size = if compactTabs then UDim2.new(1, -4, 0, 16) else UDim2.new(1, -39, 0, 26)
+        caption.Size = if compactTabs then UDim2.new(1, -4, 0, 14) else UDim2.new(1, -39, 0, 26)
         caption.TextXAlignment = if compactTabs then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
         local limit = caption:FindFirstChildOfClass("UITextSizeConstraint")
         if limit then
@@ -12605,6 +12605,7 @@ function render()
 
 	-- [공통 3열] 가로 화면에서는 단일 시설도 왼쪽 분류 칸에 표시한다.
 	tabBar.Visible = #groupOf(currentTab).tabs > 1 or (mainInner.AbsoluteSize.X >= 740 and currentTab ~= "map")
+	H.renderTabs()
 	H.layoutBook()
 	H.renderFacilityGallery() -- [공통 원화] 시설/메뉴 전환 때 선택된 승인 원화와 읽기 순서 갱신.
 
@@ -12622,7 +12623,6 @@ function render()
 		else string.format("%s · %s · %s", p.portName, grp.keeper, TAB_NAME[currentTab])
 	coinValue.Text = tostring(p.coins)
 	H.updateHud(p, ship)
-	H.renderTabs()
 	-- [현재 시설 표시] 가죽 도크의 선택 상태와 실제 열려 있는 시설을 동기화한다.
 	for _, spec in H.DOCK do
 		local dockButton = H.dockButtons[spec[1]]
