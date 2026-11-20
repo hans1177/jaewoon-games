@@ -2068,8 +2068,9 @@ function H.layoutBook()
   -- [중복 탭 제거] 단일 기능 시설(조선소)은 같은 이름의 탭을 다시 보여주지 않는다.
   local tabs = tabCount > 1 and (tabBar.Visible or facilityDetail)
   -- [상단 오른쪽 가로 탭] 데스크톱은 한 줄 전체 표시, 작은 폰은 한 줄 가로 스크롤.
-  local tabWidth = if width < 480 then 146 elseif width < 740 then 160 else 166
   local tabGap = 6
+  local compactTabs = width < 740
+  local tabWidth = if compactTabs then math.clamp(math.floor((width - 16 - math.max(0, tabCount - 1) * tabGap) / math.max(1, tabCount)), 70, 160) else 166
   local allTabsWidth = tabCount * tabWidth + math.max(0, tabCount - 1) * tabGap
   local visibleTabsWidth = math.min(math.max(1, width - 16), allTabsWidth)
   tabBar.Position = UDim2.new(1, -8, 0, 68)
@@ -2080,7 +2081,23 @@ function H.layoutBook()
     if button:IsA("TextButton") then
       button.Size = UDim2.fromOffset(tabWidth, if width < 740 then 46 else 54)
       local hint = button:FindFirstChild("FacilityTabHint")
-      if hint then hint.Visible = width >= 740 end
+      if hint then hint.Visible = not compactTabs end
+      local icon = button:FindFirstChild("TabIcon")
+      local caption = button:FindFirstChild("PrintedCaption")
+      if icon and caption then
+        local padding = button:FindFirstChildOfClass("UIPadding")
+        if padding then padding.PaddingLeft = UDim.new(0, if compactTabs then 0 else 35) end
+        icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 1) else UDim2.new(0, 7, 0.5, -13)
+        caption.Position = if compactTabs then UDim2.fromOffset(2, 27) else UDim2.fromOffset(35, 3)
+        caption.Size = if compactTabs then UDim2.new(1, -4, 0, 16) else UDim2.new(1, -39, 0, 26)
+        caption.TextXAlignment = if compactTabs then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
+        local limit = caption:FindFirstChildOfClass("UITextSizeConstraint")
+        if limit then
+          limit.MinTextSize = 11
+          limit.MaxTextSize = if compactTabs then 14 else 19
+          limit.MinTextSize = if compactTabs then 11 else 16
+        end
+      end
     end
   end
   H.tabStrip.CanvasSize = UDim2.fromOffset(allTabsWidth, 0)
@@ -2142,14 +2159,14 @@ function H.layoutBook()
     H.galleryCaption.Size = UDim2.new(1, -24, 0, 34)
     H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Left
     content.Position = UDim2.fromOffset(artW + 16, bodyTop)
-    content.Size = UDim2.new(1, -artW - 24, 1, -bodyTop - 80)
+    content.Size = UDim2.new(1, -artW - 24, 1, -bodyTop - (if H.menuActionDock.Visible then 80 else 8))
     H.menuActionDock.Position = UDim2.new(0, artW + 16, 1, -76)
     H.menuActionDock.Size = UDim2.new(1, -artW - 24, 0, 68)
   else
     -- [폰·세로 화면] 탭은 상단 오른쪽 한 줄, 본문과 원화는 전체 폭을 사용한다.
-    local showArt = gallery and height >= 550
+    local showArt = gallery and height >= 680
     H.facilityGallery.Visible = showArt
-    local artH = if showArt then math.clamp(math.floor(height * 0.25), 136, 206) else 0
+    local artH = if showArt then math.clamp(math.floor(height * 0.17), 108, 146) else 0
     H.facilityGallery.Position = UDim2.fromOffset(8, bodyTop)
     H.facilityGallery.Size = UDim2.new(1, -16, 0, artH)
     H.galleryImage.Position = UDim2.fromOffset(8, 8)
