@@ -381,7 +381,10 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
   })).slice(0,160);
   // [기능 연결 추적] 원격 송신 → 잠재 수신 → 상태 변경 → 응답 송신을 소스 관찰로만 연결한다.
   // 변수명 일치만으로 동일 Remote 인스턴스나 실제 이벤트 인과관계를 증명하지 않는다.
-  const actionChains=remoteLinks.filter(link=>['FireServer','InvokeServer'].includes(link.method))
+  // [원격 호출 권한] 클라이언트 발신만 유효한 행동 연결 후보로 취급한다.
+  // 서버의 잘못된 FireServer/InvokeServer 호출은 기존 권한 경고로만 남긴다.
+  const actionChains=remoteLinks.filter(link=>['FireServer','InvokeServer'].includes(link.method)
+    &&result.some(row=>row.path===link.path&&row.side==='CLIENT'))
     .map(link=>{
       const candidateOwners=link.possibleReceivers.map(path=>result.find(row=>row.path===path)).filter(Boolean);
       return Object.freeze({
@@ -390,14 +393,17 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
           const handlers=(handlerScopesByPath.get(row.path)||[]).filter(event=>event.remote===link.remote
             &&event.signal===link.expectedSignal);
           const scoped=handlers.filter(event=>event.handlerScopeComplete);
+          // [중복 핸들러] 같은 Remote 이름으로 여러 핸들러가 있으면
+          // 파일 내 메서드를 한 행동 결과로 합치지 않고 원인 범위 미확정으로 남긴다.
+          const uniqueScope=handlers.length===1&&scoped.length===1;
           return Object.freeze({
             path:row.path,
             handlerLines:Object.freeze(handlers.map(event=>event.line)),
-            sameHandlerScopeVerified:handlers.length===1&&scoped.length===1,
-            stateMethods:Object.freeze([...new Set(scoped.flatMap(event=>event.handlerStateMethods))].slice(0,8)),
-            responseMethods:Object.freeze([...new Set(scoped.flatMap(event=>event.handlerResponseMethods))].slice(0,8)),
-            methodScope:handlers.length>0&&scoped.length===handlers.length
-              ?'MATCHED_HANDLER_STATIC_SCOPE':'UNVERIFIED_HANDLER_SCOPE',
+            sameHandlerScopeVerified:uniqueScope,
+            stateMethods:Object.freeze(uniqueScope?[...scoped[0].handlerStateMethods]:[]),
+            responseMethods:Object.freeze(uniqueScope?[...scoped[0].handlerResponseMethods]:[]),
+            methodScope:handlers.length>1?'AMBIGUOUS_HANDLER_SCOPE'
+              :uniqueScope?'MATCHED_HANDLER_STATIC_SCOPE':'UNVERIFIED_HANDLER_SCOPE',
             serverAuthorityConfirmed:false
           });
         })),

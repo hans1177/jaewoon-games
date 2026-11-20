@@ -770,6 +770,43 @@ test('Vibe59 leaves effects unknown for non-direct remote handler binding',()=>{
   assert.equal(report.runtimeVerified,false);
 });
 
+// [코딩 경로] 불법 서버 발신과 동일 원격 변수의 중복 서버 핸들러를 인과 증거에서 제외한다.
+test('Vibe59 does not present server-origin FireServer as a client action chain',()=>{
+  const path='server/Broken.server.luau';
+  const result=inspectVibe59RobloxCoding({files:[
+    {path,source:'remote:FireServer("not-client")'}
+  ],responsiblePaths:[path]});
+  assert.equal(result.actionChains.length,0);
+  assert.ok(result.warnings.some(row=>row.code==='CLIENT_REMOTE_CALL_IN_SERVER'));
+  assert.equal(result.sourceWrite,false);
+  assert.equal(result.runtimeVerified,false);
+});
+
+test('Vibe59 does not aggregate effects across duplicate matching Remote handlers',()=>{
+  const client='client/UI.client.luau',server='server/Handlers.server.luau';
+  const report=inspectVibe59RobloxCoding({files:[
+    {path:client,source:'remote:FireServer("open")'},
+    {path:server,source:[
+      'remote.OnServerEvent:Connect(function(player)',
+      '  store:UpdateAsync(key, change)',
+      'end)',
+      'remote.OnServerEvent:Connect(function(player)',
+      '  ack:FireClient(player)',
+      'end)'
+    ].join('\n')}
+  ],responsiblePaths:[client,server]});
+  assert.equal(report.actionChains.length,1);
+  const candidate=report.actionChains[0].serverCandidates[0];
+  assert.equal(candidate.path,server);
+  assert.deepEqual(candidate.handlerLines,[1,4]);
+  assert.equal(candidate.sameHandlerScopeVerified,false);
+  assert.equal(candidate.methodScope,'AMBIGUOUS_HANDLER_SCOPE');
+  assert.deepEqual(candidate.stateMethods,[]);
+  assert.deepEqual(candidate.responseMethods,[]);
+  assert.equal(candidate.serverAuthorityConfirmed,false);
+  assert.equal(report.qualityDirector.gameplayPass,false);
+});
+
 // [로블록스 파일 검증] 스캔 상한 초과·경로 누락은 안전하다는 증거가 아니다.
 test('Vibe59 exposes oversized responsible Luau files instead of silently clearing findings',()=>{
   const path='server/Combat.server.luau',source='--'+'.'.repeat(260001);
