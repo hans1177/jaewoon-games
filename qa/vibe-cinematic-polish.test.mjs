@@ -226,7 +226,7 @@ test('mobile 3D quality uses sustained renderer observations and resets on hidde
  for(let i=0;i<35;i++)quality.sample(.1,{drawCalls:500});
  for(let i=0;i<35;i++)quality.sample(.1,{drawCalls:500});
  assert.equal(quality.tier,'LOW');
- assert.equal(renderer.getPixelRatio(),.9);
+ assert.ok(Math.abs(renderer.getPixelRatio()-.9)<1e-9);
  assert.equal(renderer.shadowMap.enabled,false);
  quality.dispose();
  assert.equal(renderer.getPixelRatio(),1.5);
