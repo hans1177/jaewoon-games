@@ -403,3 +403,8 @@ test('game-primary reserve awakens the existing asset lane only for queued asset
   assert.ok(reserve.includes('VIBE2_ASSET_PRIORITY_WAKE=DEDUPED_OR_UNKNOWN'));
   assert.ok(reserve.includes('VIBE2_ASSET_PRIORITY_WAKE=SKIPPED_STATUS_UNAVAILABLE'));
 });
+
+test('Vibe2 main push rechecks executable department learning imports after their source changes',()=>{
+  const pushScope=core.slice(core.indexOf('  push:'),core.indexOf('\npermissions:'));
+  assert.ok(pushScope.includes("- 'tools/department-learning-memory.mjs'"));
+});
