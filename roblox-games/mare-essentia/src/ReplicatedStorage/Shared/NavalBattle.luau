@@ -1084,7 +1084,32 @@ function NavalBattle.play(opts)
 	sailLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	-- 기동 점수: 포탄 낙하 경고를 피하면 올라간다 (결과와는 별개로 명성 보너스만 준다)
 	local flair, combo, dodged = 0, 0, 0
-	local navalHitStreak, navalHitAt = 0, -100
+	-- [포격 연타 안내] 중앙 전투 숫자 배너와 별개로 실제 연속 명중만 좌측에 크게 표시한다.
+	local navalHitStreak, navalHitAt, navalHitCueSerial = 0, -100, 0
+	local navalHitCue = label(gui, "", if battleViewport.X < 480 then 25 else 32, Color3.fromRGB(255, 223, 133), true)
+	navalHitCue.Name = "NavalHitStreak"
+	navalHitCue.AnchorPoint = Vector2.zero
+	navalHitCue.Position = UDim2.fromOffset(16, if battleViewport.Y < 420 then 199 else 204)
+	navalHitCue.Size = UDim2.fromOffset(if battleViewport.X < 480 then math.min(182, battleViewport.X - 32) else math.min(242, math.floor(battleViewport.X * 0.32)), if battleViewport.X < 480 then 46 else 54)
+	navalHitCue.Font = Enum.Font.GothamBlack
+	navalHitCue.TextScaled = false
+	navalHitCue.TextWrapped = false
+	navalHitCue.TextXAlignment = Enum.TextXAlignment.Center
+	navalHitCue.TextStrokeColor3 = Color3.fromRGB(25, 21, 18)
+	navalHitCue.TextStrokeTransparency = 0.4
+	navalHitCue.BackgroundColor3 = Color3.fromRGB(34, 27, 21)
+	navalHitCue.BackgroundTransparency = 0.18
+	navalHitCue.BorderSizePixel = 0
+	navalHitCue.ZIndex = 29
+	navalHitCue.Visible = false
+	Instance.new("UICorner", navalHitCue).CornerRadius = UDim.new(0, 10)
+	local navalHitCueStroke = Instance.new("UIStroke")
+	navalHitCueStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	navalHitCueStroke.Color = Color3.fromRGB(241, 186, 93)
+	navalHitCueStroke.Thickness = 2
+	navalHitCueStroke.Parent = navalHitCue
+	local navalHitCueScale = Instance.new("UIScale")
+	navalHitCueScale.Parent = navalHitCue
 
 	local subtitle = label(gui, "", 16)
 	subtitle.AnchorPoint = Vector2.new(0.5, 1)
@@ -4711,6 +4736,46 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local facing = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
 		sh.lastHitSide = if facing:Cross(incoming).Y >= 0 then 1 else -1
 		sh.damageHits = (sh.damageHits or 0) + 1
+		-- [포격 연타] 실제 명중은 적선이 카메라 밖에 있어도 집계하며, 중앙 배너 대신 좌측 큐만 갱신한다.
+		if not toPlayer and not opts.cardOnly then
+			local nowHit = os.clock()
+			navalHitStreak = if nowHit - navalHitAt <= 3.2 then navalHitStreak + 1 else 1
+			navalHitAt = nowHit
+			if navalHitStreak >= 2 then
+				navalHitCueSerial += 1
+				local cueSerial = navalHitCueSerial
+				navalHitCue.Text = string.format("포격 %d연타!", navalHitStreak)
+				navalHitCue.TextColor3 = if navalHitStreak >= 10 then Color3.fromRGB(255, 125, 105)
+					elseif navalHitStreak >= 5 then Color3.fromRGB(255, 187, 91)
+					else Color3.fromRGB(255, 235, 154)
+				navalHitCue.Visible = true
+				navalHitCue.TextTransparency = 0
+				navalHitCue.TextStrokeTransparency = 0.4
+				navalHitCue.BackgroundTransparency = 0.18
+				navalHitCueStroke.Transparency = 0
+				navalHitCueScale.Scale = 1.08
+				local tweenService = game:GetService("TweenService")
+				tweenService:Create(navalHitCueScale, TweenInfo.new(0.22, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+				task.delay(1.8, function()
+					if finished or navalHitCueSerial ~= cueSerial or not navalHitCue.Parent then return end
+					local fade = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+					tweenService:Create(navalHitCue, fade, { TextTransparency = 1, TextStrokeTransparency = 1, BackgroundTransparency = 1 }):Play()
+					tweenService:Create(navalHitCueStroke, fade, { Transparency = 1 }):Play()
+					task.delay(0.26, function()
+						if navalHitCue.Parent and navalHitCueSerial == cueSerial then navalHitCue.Visible = false end
+					end)
+				end)
+			end
+			if navalHitStreak == 3 or navalHitStreak == 5 or navalHitStreak == 10 then
+				Sfx.play(if navalHitStreak >= 10 then "sfx_horn" else "sfx_card_ring",
+					if MOBILE_VFX then 0.26 else 0.40,
+					if navalHitStreak >= 10 then 1.12 else 1.30, "sfx_bell")
+			end
+		elseif toPlayer then
+			navalHitStreak = 0
+			navalHitCueSerial += 1
+			navalHitCue.Visible = false
+		end
 		local v, on = cam:WorldToViewportPoint(ORIGIN + sh.pos + Vector3.new((math.random() - 0.5) * 12, 16, 0))
 		if not on then
 			return
@@ -4727,19 +4792,6 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local TS = game:GetService("TweenService")
 		TS:Create(l, TweenInfo.new(1.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Position = l.Position - UDim2.fromOffset(0, 54), TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
 		task.delay(1.2, function() l:Destroy() end)
-		-- [포격 연타] 실명중 때만 집계하는 시각 피드백. 회피 콤보·피해 판정·보상에는 영향 없음.
-		if not toPlayer and not opts.cardOnly then
-			local nowHit = os.clock()
-			navalHitStreak = if nowHit - navalHitAt <= 3.2 then navalHitStreak + 1 else 1
-			navalHitAt = nowHit
-			if navalHitStreak == 3 or navalHitStreak == 5 or navalHitStreak == 10 then
-				Sfx.play(if navalHitStreak >= 10 then "sfx_horn" else "sfx_card_ring",
-					if MOBILE_VFX then 0.26 else 0.40,
-					if navalHitStreak >= 10 then 1.12 else 1.30, "sfx_bell")
-			end
-		elseif toPlayer then
-			navalHitStreak = 0
-		end
 	end
 	-- [맵 보급 안내] 실제 등록 부표/기뢰만 배의 선수 기준 방향·거리를 상단에 보여 준다.
 	local pickupCue = label(gui, "", if battleViewport.X < 480 then 13 else 15, Color3.fromRGB(156, 239, 247))
