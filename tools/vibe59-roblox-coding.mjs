@@ -114,16 +114,26 @@ export function planVibe59RobloxOfflineRepairs({files=[],responsiblePaths=[]}={}
       review:row.repair,exactFind:row.exactAnchor||null,
       exactAnchorUnique:row.exactAnchorUnique===true,
       ownerApprovalRequired:true,sourceChange:false}))
-    .slice(0,120),modelUsed:false,sourceWrite:false,runtimeVerified:false,
+    .slice(0,120),scanCoverage:inspection.scanCoverage,
+    modelUsed:false,sourceWrite:false,runtimeVerified:false,
     authority:'responsible-file-review-plan-only'});
 }
 
 export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
   if(!Array.isArray(files)||files.length>48)throw Error('VIBE59_ROBLOX_SCAN_LIMIT');
-  const owners=new Set(responsiblePaths),result=[],warnings=[],diagnostics=[];
+  const owners=new Set(responsiblePaths),result=[],warnings=[],diagnostics=[],unscanned=[];
   for(const file of files.slice(0,48)){
     const path=String(file?.path||''),source=String(file?.source||'');
-    if(!/\.(?:luau|lua)$/i.test(path)||source.length>260000)continue;
+    if(!/\.(?:luau|lua)$/i.test(path)){
+      if(owners.has(path))unscanned.push({path,reason:'RESPONSIBLE_SOURCE_NOT_LUAU',responsible:true});
+      continue;
+    }
+    // [검사 범위] 긴 책임 파일을 조용히 무시하면 '위험 없음'으로 오인된다.
+    // 검사 상한·읽기 전용 정책은 유지하고 누락된 파일을 명시적으로 보고한다.
+    if(source.length>260000){
+      unscanned.push({path,reason:'LUAU_SOURCE_LIMIT_EXCEEDED',responsible:owners.has(path)});
+      continue;
+    }
     const side=classifyVibe59RobloxScript(path),events=[],calls=[],stateEffects=[],found=new Map(),
       functionDefinitions=[],functionCalls=[];
     // [루아우 정적 흐름] 긴 주석·인용 문자열·인라인 주석 속 가짜 호출은
@@ -204,6 +214,18 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       functionDefinitions,functionCalls,warnings:fileWarnings});
     warnings.push(...fileWarnings.map(x=>({path,...x})));
   }
+  for(const path of owners){
+    if(!result.some(row=>row.path===path)&&!unscanned.some(row=>row.path===path))
+      unscanned.push({path,reason:'RESPONSIBLE_SOURCE_NOT_OBSERVED',responsible:true});
+  }
+  const observedResponsible=result.filter(row=>row.responsible).length;
+  const scanCoverage=Object.freeze({
+    requiredResponsibleFiles:owners.size,
+    observedResponsibleFiles:observedResponsible,
+    responsibleComplete:unscanned.every(row=>!row.responsible),
+    unscanned:unscanned.slice(0,48),
+    sourceWrite:false,runtimeVerified:false
+  });
   // 실제 Remote 인스턴스 ID가 없는 정적 정보이므로 같은 변수명은 연결 '후보'일 뿐이다.
   const expectedSignal={FireServer:'OnServerEvent',InvokeServer:'OnServerInvoke',
     FireClient:'OnClientEvent',FireAllClients:'OnClientEvent',InvokeClient:'OnClientInvoke'};
@@ -245,7 +267,9 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
   const qualityDirector=Object.freeze({
     mode:'SOURCE_GROUNDED_STATIC_ADVISORY',sourceWrite:false,runtimeVerified:false,
     qualityScore:null,gameplayPass:false,completeRepositoryGraph:false,
-    observedFiles:result.length,observedResponsibleFiles:result.filter(row=>row.responsible).length,
+    observedFiles:result.length,observedResponsibleFiles:observedResponsible,
+    responsibleSourceCoverageComplete:scanCoverage.responsibleComplete,
+    unscannedResponsiblePaths:scanCoverage.unscanned.filter(row=>row.responsible).map(row=>row.path),
     priorityFindings,remoteLinks,functionLinks,
     missingReceiverMeansConfirmedDefect:false,
     unobservedClientVisualAndMobileQuality:'UNKNOWN_REQUIRES_REAL_PLAY',
@@ -254,6 +278,7 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
   return Object.freeze({authority:'roblox-luau-static-analysis',runtimeVerified:false,
     sourceWrite:false,completeRepositoryGraph:false,files:result,warnings:warnings.slice(0,32),
     diagnostics:diagnostics.slice(0,200),remoteLinks,functionLinks,qualityDirector,
+    scanCoverage,
     offlineRuleCount:VIBE59_ROBLOX_OFFLINE_RULES.length,modelUsed:false});
 }
 function expression(node,depth=0){
