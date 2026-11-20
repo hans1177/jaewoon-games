@@ -1084,23 +1084,7 @@ function NavalBattle.play(opts)
 	sailLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	-- 기동 점수: 포탄 낙하 경고를 피하면 올라간다 (결과와는 별개로 명성 보너스만 준다)
 	local flair, combo, dodged = 0, 0, 0
-	-- [지상 연타형 해전] 숫자를 매 프레임 늘였다 줄이는 대신 고정 픽셀 서체로 선명하게 표시한다.
-	-- 좁은 폰에서는 왼편 해역에 배치해 우측 지원 카드·하단 기술 버튼과 겹치지 않는다.
-	local comboLabel = label(gui, "", if battleViewport.X < 480 then 26 else 37, Color3.fromRGB(255, 226, 120))
-	comboLabel.Name = "NavalHitStreak"
-	comboLabel.Font = Enum.Font.GothamBold
-	comboLabel.AnchorPoint = if battleViewport.X < 480 then Vector2.new(0, 0) else Vector2.new(0.5, 0)
-	comboLabel.Position = if battleViewport.X < 480 then UDim2.fromOffset(12, 179)
-		else UDim2.new(0.5, 0, 0, 202)
-	comboLabel.Size = if battleViewport.X < 480 then UDim2.fromOffset(166, 42)
-		else UDim2.fromOffset(math.min(380, battleViewport.X - 40), 48)
-	comboLabel.TextStrokeColor3 = Color3.fromRGB(11, 17, 27)
-	comboLabel.TextStrokeTransparency = 0.88
-	comboLabel.TextTransparency = 1
-	comboLabel.TextXAlignment = if battleViewport.X < 480 then Enum.TextXAlignment.Left else Enum.TextXAlignment.Center
-	comboLabel.ZIndex = 19
-	comboLabel.Visible = not opts.cardOnly
-	local navalHitStreak, navalHitAt, streakNoticeToken = 0, -100, 0
+	local navalHitStreak, navalHitAt = 0, -100
 
 	local subtitle = label(gui, "", 16)
 	subtitle.AnchorPoint = Vector2.new(0.5, 1)
@@ -4117,17 +4101,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				dodged += 1
 				combo += 1
 				flair += 10 + combo * 2
-				streakNoticeToken += 1
-				local token = streakNoticeToken
-				comboLabel.Text = string.format("회피 %d연속!", combo)
-				comboLabel.TextColor3 = Color3.fromRGB(144, 243, 226)
-				comboLabel.TextTransparency = 0
 				Sfx.play("sfx_skill_evade", 0.35, 1.15 + math.min(combo, 8) * 0.035, "sfx_click")
-				task.delay(1.2, function()
-					if not finished and streakNoticeToken == token and comboLabel.Parent then
-						game:GetService("TweenService"):Create(comboLabel, TweenInfo.new(0.32), { TextTransparency = 1 }):Play()
-					end
-				end)
 			else
 				combo = 0
 			end
@@ -4683,13 +4657,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		-- [해전 알림] 이 함수의 트윈 서비스는 함수 안에서 가져와 미정의 변수 오류를 막는다.
 		local tweenService = game:GetService("TweenService")
 		if currentAnnouncement and currentAnnouncement.Parent then currentAnnouncement:Destroy() end
-		local l = label(gui, text, if battleViewport.X < 480 then 23 else 30, color)
+		local l = label(gui, text, if battleViewport.X < 480 then 12 else 14, color)
         currentAnnouncement = l
         l.Name = "NavalBattleAnnouncement"
         l.Font = Enum.Font.GothamBold
-        l.AnchorPoint = Vector2.new(0.5, 0.5)
-        l.Position = UDim2.fromScale(0.5, if battleViewport.X < 480 then 0.25 else 0.27)
-        l.Size = UDim2.fromOffset(math.min(410, battleViewport.X - 24), if battleViewport.X < 480 then 50 else 58)
+        l.AnchorPoint = Vector2.zero
+        l.Position = UDim2.fromOffset(16, 158)
+        l.Size = UDim2.fromOffset(math.min(220, math.floor(battleViewport.X * 0.46)), 34)
         l.TextScaled = false
         l.TextWrapped = true
         l.TextStrokeTransparency = 1
@@ -4758,23 +4732,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local nowHit = os.clock()
 			navalHitStreak = if nowHit - navalHitAt <= 3.2 then navalHitStreak + 1 else 1
 			navalHitAt = nowHit
-			streakNoticeToken += 1
-			local token = streakNoticeToken
-			comboLabel.Text = string.format("%d연타! 포격", navalHitStreak)
-			comboLabel.TextColor3 = if navalHitStreak >= 10 then Color3.fromRGB(255, 166, 109)
-				elseif navalHitStreak >= 5 then Color3.fromRGB(255, 233, 137)
-				else Color3.fromRGB(243, 249, 255)
-			comboLabel.TextTransparency = 0
 			if navalHitStreak == 3 or navalHitStreak == 5 or navalHitStreak == 10 then
 				Sfx.play(if navalHitStreak >= 10 then "sfx_horn" else "sfx_card_ring",
 					if MOBILE_VFX then 0.26 else 0.40,
 					if navalHitStreak >= 10 then 1.12 else 1.30, "sfx_bell")
 			end
-			task.delay(1.35, function()
-				if not finished and streakNoticeToken == token and comboLabel.Parent then
-					game:GetService("TweenService"):Create(comboLabel, TweenInfo.new(0.30), { TextTransparency = 1 }):Play()
-				end
-			end)
 		elseif toPlayer then
 			navalHitStreak = 0
 		end
@@ -6154,7 +6116,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			mePct.Text = string.format("%d%%", math.ceil(meHp * 100))
 			foePct.Text = string.format("%d%%", math.ceil(foeHp * 100))
 		end
-		meFill.BackgroundColor3 = if meHp < 0.3 then Color3.fromRGB(214, 82, 76) elseif meHp < 0.6 then Color3.fromRGB(226, 178, 80) else Color3.fromRGB(91, 181, 120)
+		local hullColor = if meHp < 0.3 then Color3.fromRGB(214, 82, 76) elseif meHp < 0.6 then Color3.fromRGB(226, 178, 80) else Color3.fromRGB(91, 181, 120)
+		local allyFlash = math.clamp((rangeRing.hitUntil - now) / 0.55, 0, 1)
+		local enemyFlash = math.clamp((rangeRing.impactUntil - now) / 0.48, 0, 1)
+		meFill.BackgroundColor3 = hullColor:Lerp(Color3.fromRGB(255, 155, 131), allyFlash)
+		foeFill.BackgroundColor3 = Color3.fromRGB(214, 82, 76):Lerp(Color3.fromRGB(255, 218, 153), enemyFlash)
 		-- [선체 숫자 선명도] 버프 문구 때문에 폰트가 10px까지 줄던 문제를 막는다.
 		-- 선체 체력은 항상 14px로, 기존 활성 스킬 시간은 아래 3px 상태 막대로만 표현한다.
 		buffFill.Visible = false
@@ -6238,9 +6204,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 
 		-- [접현 시네마] 포격 중에는 2척을 넓게, 백병전 중에는 갑판 높이로 부드럽게 줌인한다.
 		-- 카드판과 침몰 연출은 종전 카메라 흐름을 유지한다. 화면 효과로만 쓰인다.
-		shake = math.max(0, shake - 0.06)
+		shake = math.max(0, shake - 3.6 * dt)
 		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
-		kick = kick * 0.86
+		kick *= 0.86 ^ (dt * 60)
 		local boardingView = phase == "board" and not cardBusy and not opts.cardOnly and not (rt and rt.sunk) and not sinkStart
 		FX.boardZoom += ((if boardingView then 1 else 0) - FX.boardZoom) * (1 - math.exp(-dt * 4.2))
 		cam.FieldOfView = (if MOBILE_VFX then 73 else 75) - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom - FX.boardZoom * (17 + math.clamp(me.fx.stage or 2, 1, 6) * 0.6)
