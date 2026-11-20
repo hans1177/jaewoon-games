@@ -1848,6 +1848,15 @@ jobs:
           path: ${{ runner.temp }}/vibe2-blender-4.5.15
           key: native-blender-4.5.15-linux-x64-0d2b8bb2efe97e6c8eb57de6b7322f8800e1984e3125b60decca5f6771e4773e-v1
 
+      # [ARM 블렌더] Ubuntu 패키지 다운로드만 캐시하고 OS 설치/검증은 원래 흐름을 사용한다.
+      - name: Restore ARM Blender package archives
+        id: native-dcc-arm-cache
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0' && runner.arch == 'ARM64'
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-blender-arm64-apt
+          key: native-blender-arm64-ubuntu2404-apt-archives-v1
+
       - name: Prepare declared native DCC authoring runtime
         # [블렌더] 공식 SHA 고정 캐시 → 검증된 시스템 → 공식 다운로드 순서. ARM은 기존 무료 apt 경로.
         timeout-minutes: 12
@@ -1892,10 +1901,22 @@ jobs:
               echo 'VIBE2_NATIVE_DCC_CACHE=VERIFIED_OFFICIAL_ARCHIVE'
             fi
           else
-            # [ARM] 공식 x64 실행 파일은 실행하지 않으며 기존 OS 패키지 경로를 유지한다.
+            # [ARM] 실행파일 대신 apt 패키지 아카이브(.deb)만 복원하며 기존 OS 설치를 유지한다.
             if ! command -v blender >/dev/null 2>&1; then
+              apt_cache="$RUNNER_TEMP/vibe2-blender-arm64-apt"
+              sudo mkdir -p "$apt_cache/partial"
               sudo apt-get update -y
-              sudo apt-get install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
+              # [정식 설치] apt가 서명된 저장소의 후보 버전을 선택하며 캐시 파일은 재검증한다.
+              sudo apt-get -o "Dir::Cache::archives=$apt_cache" -o "APT::Keep-Downloaded-Packages=true" \
+                install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
+              # [캐시 소유권] 루트로 저장된 다운로드 파일을 Actions 캐시가 읽게 한다.
+              sudo chown -R "$(id -u):$(id -g)" "$apt_cache"
+              if compgen -G "$apt_cache/*.deb" >/dev/null; then
+                echo 'arm_packages_built=true' >> "$GITHUB_OUTPUT"
+                echo 'VIBE2_NATIVE_DCC_ARM_PACKAGE_CACHE=ARCHIVES_READY'
+              else
+                echo 'VIBE2_NATIVE_DCC_ARM_PACKAGE_CACHE=EMPTY_NO_SAVE'
+              fi
             fi
             blender --background --disable-autoexec --python-expr 'import bpy; assert bpy.ops.export_scene.gltf.get_rna_type()'
             blender_binary="$(command -v blender)"
@@ -1911,6 +1932,14 @@ jobs:
         with:
           path: ${{ runner.temp }}/vibe2-blender-4.5.15
           key: native-blender-4.5.15-linux-x64-0d2b8bb2efe97e6c8eb57de6b7322f8800e1984e3125b60decca5f6771e4773e-v1
+
+      # [ARM 캐시 저장] 실제 OS 설치와 Blender 기능 검증에 성공한 패키지만 저장한다.
+      - name: Save ARM Blender package archives
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0' && runner.arch == 'ARM64' && steps.native-dcc.outputs.arm_packages_built == 'true' && steps.native-dcc-arm-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-blender-arm64-apt
+          key: native-blender-arm64-ubuntu2404-apt-archives-v1
 
       - name: Execute declared native DCC authoring verification
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0'
