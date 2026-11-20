@@ -115,6 +115,11 @@ export function planVibe59RobloxOfflineRepairs({files=[],responsiblePaths=[]}={}
       exactAnchorUnique:row.exactAnchorUnique===true,
       ownerApprovalRequired:true,sourceChange:false}))
     .slice(0,120),scanCoverage:inspection.scanCoverage,
+    // [원인 수리 인계] 기존 검증된 학습모터·원본 책임함수 경로에서만 재사용한다.
+    causalTargets:inspection.qualityDirector.repairTargets,
+    actionChains:inspection.actionChains,
+    performanceFindings:inspection.qualityDirector.performanceFindings,
+    verifiedPatternReuseOwner:'EXISTING_VIBE2_LEARNING_MOTOR_ONLY',
     modelUsed:false,sourceWrite:false,runtimeVerified:false,
     authority:'responsible-file-review-plan-only'});
 }
