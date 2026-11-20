@@ -760,7 +760,8 @@ export function applyVerifiedCodingStrategyOutcomes(stateInput={},queueInput={})
       seenNegative.add(negativeId);
       negativeAdded+=1;
     }
-    if(!evidence.includes('role-result:regression:PASS')||!evidence.includes('role-result:review:PASS')||!evidence.includes('candidate-identity:PASS'))continue;
+    // [실제 개선 학습] 재검증 실패가 함께 기록된 후보는 성공 전략으로 축적하지 않는다.
+    if(codingVerificationOutcome(task)!=='PASS')continue;
     const strategy=lastEvidenceMarker(evidence,'coding-strategy:');
     if(!strategy)continue;
     const id=codingOutcomeIdentity(task,strategy);
@@ -820,8 +821,9 @@ function codingVerificationOutcome(task={}){
   const evidence=(task.evidence||[]).map(clean).filter(Boolean);
   const pass=evidence.includes('role-result:regression:PASS')&&evidence.includes('role-result:review:PASS')&&evidence.includes('candidate-identity:PASS');
   const regressionFail=evidence.some(value=>value==='failure-cause:fan-in-regression-failed'||value.startsWith('failure-cause:fan-in-regression-failed:'));
-  if(pass)return'PASS';
+  // [실패 우선] 소스 후보의 오래된 PASS와 최신 fan-in 실패가 함께 있어도 긍정 학습 금지.
   if(regressionFail)return'REGRESSION_FAIL';
+  if(pass)return'PASS';
   return null;
 }
 function hotspotRisk(row={}){
