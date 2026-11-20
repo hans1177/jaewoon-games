@@ -817,6 +817,7 @@ function DeckBuilder.build(parent, ctx)
 	local pickBanner -- 승리 보상 카드 고르기
 	local chipBtns = {}
 	local rebuildGrid
+	local vaultQuery, pickerQuery = "", ""
 	local search = Instance.new("TextBox")
 	search.Name = "CollectionSearch"
 	search.Position = UDim2.fromOffset(6, 48)
@@ -832,7 +833,8 @@ function DeckBuilder.build(parent, ctx)
 	search.Parent = left
 	corner(search, 6)
 	search:GetPropertyChangedSignal("Text"):Connect(function()
-		if selectedTab ~= "collection" or addingToFormation then return end
+		if selectedTab ~= "collection" or not rebuildGrid then return end
+		if addingToFormation then pickerQuery = search.Text else vaultQuery = search.Text end
 		state.page = 1
 		rebuildGrid()
 		gridScroll.CanvasPosition = Vector2.zero
@@ -946,7 +948,11 @@ function DeckBuilder.build(parent, ctx)
 			local edge = panel:FindFirstChildOfClass("UIStroke")
 			if edge then edge.Enabled = not showAlbum end
 		end
-		search.Visible = vault and state.filter ~= "crew"
+		search.Visible = selectedTab == "collection" and state.filter ~= "crew"
+		if search.Visible then
+			local query = if addingToFormation then pickerQuery else vaultQuery
+			if search.Text ~= query then search.Text = query end
+		end
 		detail.Parent = if formation then right else left
 		detail.Visible = wide and (formation or addingToFormation) or showVaultDetail
 		detail.Position = if formation then UDim2.new(0.67, 0, 0, 54) else UDim2.fromScale(if showAlbum then 0.65 else 0.67, 0)
@@ -1106,13 +1112,12 @@ function DeckBuilder.build(parent, ctx)
 		end
 		local book = ctx.getBook()
 		local want = ctx.getWant()
-		local query = if selectedTab == "collection" and not addingToFormation
-			then string.lower((search.Text:match("^%s*(.-)%s*$") or "")) else ""
+		local query = if search.Visible then string.lower((search.Text:match("^%s*(.-)%s*$") or "")) else ""
 		local shown, n = 0, 0
 		for _, id in ctx.catalog do
 			local d = CB.def(id)
 			local owned = book.owned[id] or 0
-			local matches = query == "" or (owned > 0 and d and
+			local matches = query == "" or (d and
 				(string.find(string.lower(d.name), query, 1, true) or string.find(string.lower(d.nameEn or ""), query, 1, true)))
 			if d and matches and inFilter(ctx, id, d, state.filter, owned) and (not addingToFormation or (owned > (want[id] or 0) and not d.archiveOnly and inFilter(ctx, id, d, pickerLane, owned))) then
 				n += 1
@@ -1132,7 +1137,7 @@ function DeckBuilder.build(parent, ctx)
 			end)
 			more.LayoutOrder = 100000
 		elseif n == 0 then
-			local e = text(gridScroll, "이 분류에는 아직 카드가 없어요", 15, INK, false)
+			local e = text(gridScroll, if query ~= "" then "검색 결과가 없어요" elseif addingToFormation then "추가할 수 있는 카드가 없어요" else "이 분류에는 아직 카드가 없어요", 15, INK, false)
 			e.Size = UDim2.fromOffset(240, 30)
 		end
 	end
@@ -1200,6 +1205,7 @@ function DeckBuilder.build(parent, ctx)
 			heading.Size = UDim2.fromOffset(52, 104)
 			local add = button(lanePanel, "+ 추가", SAVE, 14, function()
 				selectedTab, addingToFormation, pickerLane = "collection", true, lane
+				pickerQuery = ""
 				state.filter, state.page = lane, 1
 				selectCard(nil)
 				layoutBody()
@@ -1391,7 +1397,7 @@ function DeckBuilder.build(parent, ctx)
 
 		saveBtn.BackgroundTransparency = if saveArt then 1 elseif okDeck then 0 else 0.6
 		if saveArt then saveArt.ImageTransparency = if okDeck then 0 else 0.55 end
-		saveBtn.Text = "덱 저장"
+		saveBtn.Text = if okDeck and not dirty then "저장됨" else "덱 저장"
 		saveBtn.Active = okDeck
 		saveBtn.AutoButtonColor = okDeck
 		local view = ctx.getView()
