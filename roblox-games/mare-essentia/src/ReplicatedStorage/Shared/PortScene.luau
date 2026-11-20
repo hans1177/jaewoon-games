@@ -1616,6 +1616,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				local previous = (i % 4 == 3 or i % 4 == 0) and scheduledPeople[i - 2] or nil
 				if previous and previous.model.Parent then
 					this.socialPartner, previous.socialPartner = previous, this
+					this.socialLead, previous.socialLead = false, true
 				end
 				table.insert(scheduledPeople, this)
 			end
@@ -5837,12 +5838,41 @@ function PortScene.build(info, onFacility)
 					else
 						where, routine = w.morning, "rest"
 					end
-					local delta = where - (w.lastPos or where)
+					-- [골목 안 자연 동선] 기존 거리의 양 끝은 그대로, 주민별 최대 1.3스터드만 곡선으로 이동한다.
+					-- 건물 안쪽 임의 이동 대신 시각적으로 좁은 길 위를 지나도록 제한한다.
+					local route, progress
+					if hour >= 10 and hour < 12 then
+						route, progress = w.market - w.morning, (hour - 10) / 2
+					elseif hour >= 17 and hour < 19 then
+						route, progress = w.evening - w.market, (hour - 17) / 2
+					elseif hour >= 22 and hour < 23 then
+						route, progress = w.morning - w.evening, hour - 22
+					end
+					if route and route.Magnitude > 0.05 and progress then
+						local lateral = Vector3.new(-route.Z, 0, route.X).Unit
+						where += lateral * math.sin(progress * math.pi) * (w.travelOffset or 0)
+					end
+					-- [걷기 전환] 시간 동기화가 튀어도 한 프레임에 순간이동하지 않는다.
+					local previous = w.lastPos or where
+					local alpha = 1 - math.exp(-math.max(2.4, (w.travelPace or 1) * 5) * dt)
+					where = previous:Lerp(where, alpha)
+					local delta = where - previous
 					local moving = delta.Magnitude > 0.025
 					-- [마을 주민 정면] 멈춘 사람은 마지막 이동 방향을 유지한다.
 					-- 월드 +Z로 강제 회전하면 일부 주민이 앞서 바라보던 방향과 반대로 서게 된다.
 					local forward = if moving then delta.Unit else (w.lastFacing or w.base.LookVector)
 					if moving then w.lastFacing = forward end
+					-- [만남 동선] 둘 다 장터에 멈춰 있고 서로 가까우면 상대를 바라본다.
+					local partner = w.socialPartner
+					local facingPartner = false
+					if not moving and routine == "trade" and partner and partner.model.Parent then
+						local other = partner.lastPos or partner.market
+						local toward = other - where
+						if toward.Magnitude > 0.5 and toward.Magnitude < 12 then
+							forward = toward.Unit
+							facingPartner = true
+						end
+					end
 					w.model:PivotTo(CFrame.lookAt(where, where + forward))
 					w.lastPos = where
 					if w.lastRoutine ~= routine then
@@ -5861,7 +5891,22 @@ function PortScene.build(info, onFacility)
 							roster = roster or { w.socialKind or "look" }
 							local period = math.floor((now + w.phase * 2.1) / (w.activitySpan or 16))
 							local kind = roster[((period + (w.personality or 0)) % #roster) + 1]
+							if facingPartner then
+								-- [인사→거래→반응→작별] 짝끼리 같은 시계로 동작을 맞추되 역할을 나눠 자연스럽게 연출.
+								local scene = math.floor(now / 4.2) % 6
+								local lead = w.socialLead == true
+								kind = if scene == 0 then (if lead then "wave" else "nod")
+									elseif scene == 1 then (if lead then "offer" else "receive")
+									elseif scene == 2 then (if lead then "bargain" else "inspect")
+									elseif scene == 3 then (if lead then "listen" else "talk")
+									elseif scene == 4 then (if lead then "clap" else "cheer")
+									else (if lead then "talk" else "listen")
+							end
 							if w.lastActivity ~= kind then w.lastActivity = kind; w.model:SetAttribute("Activity", kind) end
+							if w.lastSocialScene ~= facingPartner then
+								w.lastSocialScene = facingPartner
+								w.model:SetAttribute("SocialInteraction", if facingPartner then "market_meeting" else "none")
+							end
 							Pose.work(w.model, kind, now + w.phase)
 						end
 					end
