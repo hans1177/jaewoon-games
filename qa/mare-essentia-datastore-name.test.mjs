@@ -2044,6 +2044,36 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  assert.match(port,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
 });
 
+// [주민 개별 복장·소품] 직업마다 실제 승인 모델을 한 번만 장착하고 근무 중에만 보이게 한다.
+test('개인별 직업 소품·복장·퇴근 표시가 기존 R15 일정에 연결된다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const assets=read('ReplicatedStorage/Shared/AssetIds.luau');
+ for(const key of ['Cargo/box-open','Relics/rope-bundle-a','Relics/weapon-sword',
+  'Relics/hammer','Naval/tool-shovel','Naval/fishing-net','Relics/map-rolled']){
+  assert.ok(assets.includes('["'+key+'"]'),'미등록 직업 소품: '+key);
+ }
+ for(const token of [
+  't.mode == "schedule" and t.job == "sailor"',
+  't.mode == "schedule" and t.job == "guard"',
+  't.mode == "schedule" and t.job == "craftsman"',
+  't.mode == "schedule" and t.job == "farmer"',
+  't.mode == "schedule" and t.job == "fisher"',
+  't.mode == "schedule" and t.job == "official"',
+  't.workProp = held',
+  'mesh:SetAttribute("WorkPropOriginalTransparency", mesh.Transparency)',
+  'local showWorkProp = routine == "work" or routine == "trade" or routine == "commute"',
+  'if w.workProp and w.workProp.Parent and w.workPropVisible ~= showWorkProp then',
+  'mesh.Transparency = if showWorkProp then (mesh:GetAttribute("WorkPropOriginalTransparency") or 0) else 1',
+  'attire.hat = "straw"',
+  'attire.age = "elder"',
+  'outfit.age = if job == "clergy" and districtResidents == 0 then "elder" else "adult"'
+ ]) assert.ok(scene.includes(token),'직업·복장 실체 빠짐: '+token);
+ assert.doesNotMatch(scene,/local fig = person\(work, faceTo\(work, market\), \{ role = duty.role, profession = duty.job, hat = "cap" \}/,
+  '모든 직업이 같은 모자를 사용하면 안 된다');
+ assert.ok(scene.includes('if #parts == 0 or #parts > 12 then error("NPC_PROP_PART_LIMIT") end'),
+  '모바일 직업 소품 12파트 초과 보호 유지');
+});
+
 // [주민 하루 생활] 유령 인구를 방지하고 구역별 출퇴근과 미개발 녹지를 회귀 검증한다.
 test('항구는 실제 거주민과 시설 근무표를 따르고 추가 소품 없이 원본 풀·관목을 재사용한다',()=>{
  const scene=read('ReplicatedStorage/Shared/PortScene.luau');
