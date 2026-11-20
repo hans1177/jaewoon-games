@@ -19,7 +19,8 @@ if (ledger.history.some((event) => event.sourceCommit === sourceCommit)) {
   process.exit(0);
 }
 
-const changed = execFileSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', sourceCommit], { encoding: 'utf8' })
+// [변경 파일] 병합 커밋은 첫 부모와 비교해 실제 main 변경만 집계한다.
+const changed = execFileSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', '-m', '--first-parent', sourceCommit], { encoding: 'utf8' })
   .split(/\r?\n/)
   .map((value) => value.trim())
   .filter(Boolean)
@@ -34,6 +35,7 @@ const matchers = {
     /(^|\/)(balance|progression|economy|d20|game-content)(-|_|\/|\.)/i
   ],
   development: [
+    /^roblox-games\//,
     /^unity-games\//,
     /^godot-games\//,
     /^assets\/.*\.js$/,
