@@ -164,3 +164,18 @@ test('invalid or stale gameplay replay cannot be promoted by canonical training'
       patch,sourceRevision:revision,independentQa:'PASS',browserQa:'PASS'}),/actual replay evidence/);
   }
 });
+
+
+test('외부 블랙박스 QA 예외는 출처까지 일치해야 승인한다', () => {
+  const evidence = {
+    taskType: 'qa', independentQa: 'BLACK_BOX_EVIDENCE_PASS',
+    browserQa: 'NOT_APPLICABLE', runtime: 'PASS',
+  };
+  assert.equal(qaEvidencePasses({ ...evidence, sourceKind: 'external-black-box' }), true);
+  assert.equal(qaEvidencePasses({ ...evidence, sourceKind: 'vibe2' }), false);
+  assert.equal(qaEvidencePasses({ ...evidence }), false);
+  assert.equal(qaEvidencePasses({ ...evidence, sourceKind: 'teacher' }), false);
+  assert.equal(qaEvidencePasses({ ...evidence, sourceKind: 'external-black-box', runtime: 'FAIL' }), false);
+  assert.equal(qaEvidencePasses({ ...evidence, sourceKind: 'external-black-box', taskType: 'coding' }), false);
+  assert.equal(qaEvidencePasses({ taskType: 'qa', sourceKind: 'vibe2', independentQa: 'PASS', browserQa: 'PASS', runtime: 'PASS' }), true);
+});
