@@ -847,7 +847,7 @@ test('자가 개선 학습은 자산 결과 실증 증거만 보존하고 자동
     verifiedObservations:[evidence,{...evidence,parentAssetId:recipe.donorAssetId},{...evidence,outputSha256:'broken'},{...evidence,independentQaPassed:false}]
   });
   assert.equal(next.verifiedObservations.length,1);
-  assert.equal(next.rejectedOrUnanchoredObservations,2);
+  assert.equal(next.rejectedOrUnanchoredObservations,3);
   assert.equal(next.automaticModelWeightUpdate,false);
   assert.equal(next.authority,'GRAPHICS_PRODUCTION_RESEARCH_ADVISORY_ONLY');
   assert.equal(next.recipes[0].status,'COMPOSITION_RECIPE_NEEDS_NATIVE_AUTHORING_AND_RUNTIME_QA');
