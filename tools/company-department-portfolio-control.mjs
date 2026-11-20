@@ -1,3 +1,5 @@
+// 파일명: tools/company-department-portfolio-control.mjs
+// [실행 부서] 5개 정식 부서의 검증된 증거와 과거 밸런스 이력을 구분한다.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -44,15 +46,24 @@ export function evaluatePortfolio({catalog={},developmentQueue={},vibeQueue={},m
     if(previousRow.decision==='REDESIGN'&&structural&&repeated>=5){decision='PAUSE';reason='REPEATED_REDESIGN_WITHOUT_VERIFIED_PROGRESS';}
     if(previousRow.decision==='PAUSE'&&structural&&repeated>=7){decision='RETIRE_REVIEW';reason='REPEATED_STRUCTURAL_FAILURE_AFTER_PAUSE';}
     const marketing=marketingByGame[id]||null;
+    // [역사적 기록] 지난 balance·graphicsAudio 증거는 계속 읽을 수 있지만 신규 부서 표결에 쓰지 않는다.
+    const historicalDepartmentEvidence={
+      ...(previousRow.historicalDepartmentEvidence&&typeof previousRow.historicalDepartmentEvidence==='object'
+        ?previousRow.historicalDepartmentEvidence:{}),
+      ...(previousRow.evidence?.balance?{balance:previousRow.evidence.balance}:{}),
+      ...(previousRow.evidence?.graphicsAudio?{graphicsAudio:previousRow.evidence.graphicsAudio}:{})
+    };
     decisions.push({
       gameId:id,decision,reason,productionClass:cls(game),lifecycleState:life(game),
       evidence:{
         planningGrowthMarketing:marketing?{packagePresent:true,joint:clean(marketing?.decision?.joint)||'UNVERIFIED'}:{packagePresent:false,state:'UNVERIFIED_NOT_NEGATIVE'},
+        planning:{structuralCoreFailure:structural,balanceEconomyAndRewardPreservationRequired:true},
+        graphics:{state:'UNVERIFIED_NOT_NEGATIVE',requiresActualPresentationEvidence:true},
         development:{activeTasks:active,doneTasks:done,failedTasks:failed,repeatedFailureSignal:repeated},
-        qa:{criticalRuntimeOrGateBlocker:critical},
-        balance:{structuralCoreFailure:structural},
-        graphicsAudio:{state:'USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE'}
+        qa:{criticalRuntimeOrGateBlocker:critical,balanceAndSaveRegressionRequired:true},
+        audio:{state:'UNVERIFIED_NOT_NEGATIVE',actualPlaybackEvidenceRequiredForAudioChanges:true}
       },
+      ...(Object.keys(historicalDepartmentEvidence).length?{historicalDepartmentEvidence}:{}),
       jointAuthority:'PRIMARY_AI_AND_VIBE',
       ownerApprovalGate:false
     });
