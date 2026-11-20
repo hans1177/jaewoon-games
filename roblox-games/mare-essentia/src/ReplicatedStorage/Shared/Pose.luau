@@ -2017,8 +2017,8 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 			-s * (if companionRun then 0.20 else 0.13), s * (if companionRun then 0.055 else 0)))
 		set(m.neck, A(if run then 0.085 else 0, s * (if companionRun then 0.052 else 0.035), -s * (if companionRun then 0.028 else 0)))
 		-- [몸 좌우 기울기] 착지한 쪽에 허리 힘을 싣고 목으로 균형을 잡는다.
-		m.waist.Transform = m.waist.Transform * A(0, 0, -s * 0.024)
-		m.neck.Transform = m.neck.Transform * A(0, 0, s * 0.014)
+		if m.waist then m.waist.Transform = m.waist.Transform * A(0, 0, -s * 0.024) end
+		if m.neck then m.neck.Transform = m.neck.Transform * A(0, 0, s * 0.014) end
 	elseif state == "attack" then
 		-- [전투 전신 반작용] 기존 공격 진행률을 유지하고 반대 팔·허리·무릎으로 타격 하중을 전달한다.
 		set(m.rightArm, A(-0.7 - wave * 2.1, 0, -0.3))
