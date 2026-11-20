@@ -1620,6 +1620,48 @@ test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 
 });
 
 
+// [실물 PBR 보존] 기존 26종 재질 업그레이드는 전종 승인·실물 증빙이 함께 반영되어야 한다.
+test('대항해시대 의상·헤어·장신구 26종은 UV/PBR 원본과 등록 경로가 일치한다',()=>{
+  const names=[
+    'outfit_vest','outfit_coat','outfit_guard','outfit_apron','outfit_sash','outfit_belt',
+    'outfit_cuff','outfit_boot','outfit_stole','hair_beard','hair_braided_crown','hair_buns',
+    'hair_buzzed','hair_buzzedfemale','hair_court_curls','hair_long','hair_low_bun',
+    'hair_sailor_ponytail','hair_shoulder_waves','hair_side_braid','hair_simpleparted',
+    'acc_feather_hat','acc_guild_badge','acc_pearl_hairpin','acc_ribbon_bow','acc_sailor_headband',
+  ];
+  const upload=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  const maker=fs.readFileSync('tools/mare-essentia-character-finish.mjs','utf8');
+  assert.match(upload,/await prepareCharacterFinishes\(ROOT\)/);
+  assert.match(upload,/characterPbrUpgrade/);
+  assert.match(maker,/MARE_CHARACTER_PBR_TOTAL=26/);
+  const upgraded=[];
+  for(const name of names){
+    const base='roblox-games/mare-essentia/assets/people/'+name+'.glb';
+    const bytes=fs.readFileSync(base);
+    let proof=null;
+    try{proof=JSON.parse(fs.readFileSync(base+'.license.json','utf8'));}catch{}
+    if(proof?.pbrVersion!==2)continue;
+    upgraded.push(name);
+    const json=JSON.parse(bytes.toString('utf8',20,20+bytes.readUInt32LE(12)));
+    assert.equal(proof.sourceSizeBytes,bytes.length,'PBR 원본 크기 불일치: '+name);
+    assert.equal(proof.sourceSha256,crypto.createHash('sha256').update(bytes).digest('hex'),'PBR 원본 SHA256 불일치: '+name);
+    assert.equal(proof.sourceGitBlobSha1,crypto.createHash('sha1').update('blob '+bytes.length+'\\0').update(bytes).digest('hex'),'PBR 원본 Git SHA1 불일치: '+name);
+    assert.ok(proof.pbrColorMap&&proof.pbrNormalMap&&proof.pbrRoughnessMetallicMap,'실제 3중 PBR 맵 누락: '+name);
+    assert.equal(json.meshes.flatMap(m=>m.primitives||[]).filter(p=>Number.isInteger(p.attributes.TEXCOORD_0)).length,
+      json.meshes.flatMap(m=>m.primitives||[]).length,'UV0 없는 부품: '+name);
+    for(const primitive of json.meshes.flatMap(m=>m.primitives||[])){
+      const material=json.materials[primitive.material];
+      assert.ok(material?.pbrMetallicRoughness?.baseColorTexture && material.pbrMetallicRoughness.metallicRoughnessTexture
+        && material.normalTexture,'실제 메시 PBR 누락: '+name);
+    }
+    assert.ok(json.images?.length>=3,'표면 이미지 누락: '+name);
+    for(const image of json.images)assert.equal(image.mimeType,'image/png','표면 형식: '+name);
+  }
+  // 최초 등록 전 원본 26종은 기존 게임에서 그대로 쓰며, 일부만 바뀐 채 게시되면 실패한다.
+  assert.ok(upgraded.length===0||upgraded.length===names.length,
+    '캐릭터 재질 26종 일부만 main에 반영됨: '+upgraded.length);
+});
+
 // [직접 제작 복식 QA] 실제 GLB 원본·무료 증거·기존 관절 연결 및 모바일 한도 검증.
 test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15 장착 근거를 갖는다',()=>{
   const names=['outfit_vest','outfit_coat','outfit_guard','outfit_apron','outfit_sash','outfit_belt','outfit_cuff','outfit_boot','outfit_stole'];
@@ -1645,7 +1687,19 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
     assert.equal(uvProof.sourceSha256,crypto.createHash('sha256').update(bytes).digest('hex'),'UV 원본 해시 오류: '+name);
     assert.equal(uvProof.sourceSizeBytes,bytes.length,'원본 갱신 크기 오류: '+name);
     assert.equal(gltf.accessors.length,uvProof.originalAccessorCount+gltf.meshes[0].primitives.length);
-    assert.equal(gltf.bufferViews.length,uvProof.originalBufferViewCount+gltf.meshes[0].primitives.length);
+    assert.equal(gltf.bufferViews.length,uvProof.originalBufferViewCount+gltf.meshes[0].primitives.length+(gltf.images?.length||0));
+    if(uvProof.pbrVersion===2){
+      assert.ok(gltf.images?.length>=3,'직물·가죽·금속 실제 PNG PBR 맵 누락: '+name);
+      for(const source of gltf.images){
+        assert.equal(source.mimeType,'image/png','PBR 표면 PNG 형식: '+name);
+        assert.ok(gltf.bufferViews[source.bufferView]?.byteOffset>=uvProof.originalGeometryByteLength,'원본 지오메트리 침범: '+name);
+      }
+      for(const primitive of gltf.meshes[0].primitives){
+        const material=gltf.materials[primitive.material];
+        assert.ok(material.pbrMetallicRoughness.baseColorTexture&&material.pbrMetallicRoughness.metallicRoughnessTexture
+          && material.normalTexture,'복식 부위별 PBR 미적용: '+name);
+      }
+    }
     assert.equal(crypto.createHash('sha256').update(bytes.subarray(binOffset,binOffset+uvProof.originalGeometryByteLength)).digest('hex'),
       uvProof.originalGeometrySha256,'기존 정점·인덱스·법선 변경 감지: '+name);
     for(const primitive of gltf.meshes[0].primitives){
