@@ -620,7 +620,25 @@ local function sheetK(atlasName: string?): number
 end
 H.sheetK = sheetK
 
+H.facilityIconAtlas = AssetIds["CardArt/ui_facility_icons"]
+H.facilityIconCells = {
+	trade = 0, market = 0, tavern = 1, board = 1, route = 2, map = 2, harbor = 2, yard = 3,
+	battle = 4, codex = 5, encyclopedia = 5, status = 6, journal = 7,
+	deck = 8, gwent = 8, view = 9, gear = 10, help = 11, close = 15,
+}
 local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, portraitOffset)
+	local cell = H.facilityIconAtlas and H.facilityIconCells[asset]
+	if kind == "FacilityArt" and cell ~= nil then
+		local icon = Instance.new("ImageLabel")
+		icon.Size = UDim2.fromOffset(px, px)
+		icon.BackgroundTransparency = 1
+		icon.Image = "rbxassetid://" .. tostring(H.facilityIconAtlas)
+		icon.ImageRectOffset = Vector2.new(cell % 4 * 128, math.floor(cell / 4) * 128)
+		icon.ImageRectSize = Vector2.new(128, 128)
+		icon:SetAttribute("FacilityArtKey", asset)
+		icon.Parent = parent
+		return icon
+	end
 	-- [투명 황동 메뉴 아이콘] 미등록·배경이 있는 그림 대신 같은 팔레트의 작은 도형을
 	-- 기존 메뉴 렌더러 안에서 그린다. 클릭·저장·에셋 등록 흐름은 그대로 둔다.
 	if kind == "Glyph" then
@@ -2070,7 +2088,7 @@ function H.layoutBook()
   -- [상단 오른쪽 가로 탭] 데스크톱은 한 줄 전체 표시, 작은 폰은 한 줄 가로 스크롤.
   local tabGap = 6
   local compactTabs = width < 740
-  local tabWidth = if compactTabs then math.clamp(math.floor((width - 16 - math.max(0, tabCount - 1) * tabGap) / math.max(1, tabCount)), 70, 160) else 166
+  local tabWidth = if compactTabs then math.clamp(math.floor((width - 16 - math.max(0, tabCount - 1) * tabGap) / math.max(1, tabCount)), 70, 190) else 166
   local allTabsWidth = tabCount * tabWidth + math.max(0, tabCount - 1) * tabGap
   local visibleTabsWidth = math.min(math.max(1, width - 16), allTabsWidth)
   tabBar.Position = UDim2.new(1, -8, 0, 68)
@@ -2413,7 +2431,13 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	local facility = parent.Name == "Dock" and name:sub(1, 5) == "Menu_"
 	local artSize = if facility then 40 elseif dockItem then 36 else 31
 	local artTop = if dockItem then 3 else 4
-	if specialGlyph then
+	if H.facilityIconAtlas and H.facilityIconCells[key] ~= nil then
+		local icon = modelIcon(button, "FacilityArt", key, nil, artSize, label)
+		icon.Name = "MenuArt"
+		icon.AnchorPoint = Vector2.new(0.5, 0)
+		icon.Position = UDim2.new(0.5, 0, 0, artTop)
+		icon.ZIndex = 2
+	elseif specialGlyph then
 		-- [시설·시스템 통일] 투명 황동 아이콘: 주점 잔/카드/기록장/설정/도움말.
 		local symbol = modelIcon(button, "Glyph", specialGlyph, nil, artSize, label)
 		symbol.Name = "MenuArt"
@@ -11186,7 +11210,8 @@ function H.renderTabs()
 		local ti = H.TAB_ICON[id]
 		if ti then
 			-- [공통 규격] 도크는 40px, 시설별 탭은 26px. 아이콘과 인쇄 글자를 겹치지 않게 나눈다.
-			local icon = modelIcon(b, ti[1], ti[2], nil, 26, TAB_NAME[id])
+			local atlas = H.facilityIconAtlas and H.facilityIconCells[id] ~= nil
+			local icon = modelIcon(b, if atlas then "FacilityArt" else ti[1], if atlas then id else ti[2], nil, 26, TAB_NAME[id])
 			icon.Name = "TabIcon"
 			icon.Position = UDim2.new(0, 7, 0.5, -13)
 			icon.ClipsDescendants = true
@@ -11267,6 +11292,13 @@ H.closeX.TextColor3 = Color3.fromRGB(255, 244, 214)
 H.closeX.AutoButtonColor = true
 H.closeX.ZIndex = 30
 H.closeX.Parent = mainInner
+if H.facilityIconAtlas then
+	local icon = modelIcon(H.closeX, "FacilityArt", "close", nil, 22, "닫기")
+	icon.AnchorPoint = Vector2.new(0.5, 0.5)
+	icon.Position = UDim2.fromScale(0.5, 0.5)
+	icon.ZIndex = H.closeX.ZIndex + 1
+	H.closeX.TextTransparency = 1
+end
 corner(H.closeX, 8)
 hudStroke(H.closeX, 1.5)
 H.closeX.Activated:Connect(function()
@@ -12804,7 +12836,8 @@ function render()
 			bookmark.Parent = banner
 			local tabIcon = H.TAB_ICON[currentTab]
 			if tabIcon then
-				local icon = modelIcon(banner, tabIcon[1], tabIcon[2], nil, 26, TAB_NAME[currentTab])
+				local atlas = H.facilityIconAtlas and H.facilityIconCells[currentTab] ~= nil
+				local icon = modelIcon(banner, if atlas then "FacilityArt" else tabIcon[1], if atlas then currentTab else tabIcon[2], nil, 26, TAB_NAME[currentTab])
 				icon.Name = "MenuFocusIcon"
 				icon.Position = UDim2.fromOffset(14, 7)
 				icon.ZIndex = banner.ZIndex + 1
