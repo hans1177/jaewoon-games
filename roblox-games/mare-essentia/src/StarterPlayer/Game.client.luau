@@ -2029,7 +2029,7 @@ function H.renderFacilityGallery()
   local approved = AssetIds["CardArt/" .. artName] or AssetIds["CardArt/event_calm_seas"]
   H.galleryImage.Image = if approved then "rbxassetid://" .. tostring(approved) else ""
   H.galleryTitle.Text = if focus then focus[1] else TAB_NAME[currentTab] or "시설 안내"
-  H.galleryCaption.Text = if focus then focus[2] else ""
+  H.galleryCaption.Visible = false
 end
 
 -- [교역소 기준] 가로는 3열, 세로는 큰 원화를 메뉴와 조작 사이에 놓는다.
@@ -2126,7 +2126,10 @@ function H.layoutBook()
   local bodyTop = if tabs then (if width < 740 then 124 else 134) else 68
   H.bookSpine.Visible = false
   H.facilityGallery.Visible = gallery
-  H.menuActionDock.Visible = gallery
+  local primaryVisible = gallery and currentTab ~= "board" and currentTab ~= "battle"
+    and currentTab ~= "war" and currentTab ~= "route" and currentTab ~= "status"
+  H.menuActionButton.Visible = primaryVisible
+  H.menuActionDock.Visible = primaryVisible
   if facilityDetail then
     -- [교역·조선] 왼쪽 탭 자리까지 기존 장부·선박 본문의 가용 폭으로 돌린다.
     tabBar.Visible = tabCount > 1
@@ -2145,7 +2148,7 @@ function H.layoutBook()
   -- [첫 판단 카드] 기존 버튼 하나를 가로 모드의 오른쪽 첫 카드에 배치한다.
   -- 폰 세로에서는 버튼을 기존 하단 도크로 복귀시켜 터치 동작을 보존한다.
   if H.menuFocusBanner and H.menuFocusBanner.Parent and currentTab ~= "codex" then
-    local firstCardAction = width >= 740
+    local firstCardAction = wide and primaryVisible
     local compactHeight = height < 500
     H.menuFocusBanner.Size = UDim2.new(1, -6, 0, if firstCardAction then (if compactHeight then 210 else 242) else (if compactHeight then 140 else 178))
     local heading = H.menuFocusBanner:FindFirstChild("MenuFocusHeading")
@@ -2162,7 +2165,7 @@ function H.layoutBook()
     H.menuActionButton.Position = if firstCardAction then UDim2.new(0, 12, 1, -60) else UDim2.fromOffset(6, 6)
     H.menuActionButton.Size = if firstCardAction then UDim2.new(1, -24, 0, 52) else UDim2.new(1, -12, 0, 54)
     H.menuActionButton.TextSize = if firstCardAction then 19 else 20
-    H.menuActionDock.Visible = gallery and not firstCardAction
+    H.menuActionDock.Visible = primaryVisible and not firstCardAction
   end
   if wide and gallery then
     -- [가로 공통] 탭을 상단으로 옮겨 되찾은 왼쪽 폭을 원화와 실제 본문에 분배한다.
@@ -2170,8 +2173,8 @@ function H.layoutBook()
     H.facilityGallery.Position = UDim2.fromOffset(8, bodyTop)
     H.facilityGallery.Size = UDim2.fromOffset(artW, math.max(100, height - bodyTop - 8))
     H.galleryImage.Position = UDim2.fromOffset(8, 8)
-    H.galleryImage.Size = UDim2.new(1, -16, 1, -84)
-    H.galleryTitle.Position = UDim2.new(0, 12, 1, -73)
+    H.galleryImage.Size = UDim2.new(1, -16, 1, -46)
+    H.galleryTitle.Position = UDim2.new(0, 12, 1, -34)
     H.galleryTitle.Size = UDim2.new(1, -24, 0, 30)
     H.galleryCaption.Position = UDim2.new(0, 12, 1, -41)
     H.galleryCaption.Size = UDim2.new(1, -24, 0, 34)
@@ -2190,14 +2193,14 @@ function H.layoutBook()
     H.galleryImage.Position = UDim2.fromOffset(8, 8)
     H.galleryImage.Size = UDim2.new(0.62, -12, 1, -16)
     H.galleryTitle.Position = UDim2.new(0.62, 0, 0, 8)
-    H.galleryTitle.Size = UDim2.new(0.38, -12, 0, 42)
+    H.galleryTitle.Size = UDim2.new(0.38, -12, 1, -16)
     H.galleryTitle.TextWrapped = true
     H.galleryCaption.Position = UDim2.new(0.62, 0, 0, 54)
     H.galleryCaption.Size = UDim2.new(0.38, -12, 1, -62)
     H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Left
     local contentY = bodyTop + (if showArt then artH + 8 else 0)
     content.Position = UDim2.fromOffset(8, contentY)
-    content.Size = UDim2.new(1, -16, 1, -contentY - (if gallery then 80 else 8))
+    content.Size = UDim2.new(1, -16, 1, -contentY - (if H.menuActionDock.Visible then 80 else 8))
     H.menuActionDock.Position = UDim2.new(0, 8, 1, -76)
     H.menuActionDock.Size = UDim2.new(1, -16, 0, 68)
   end
@@ -11235,21 +11238,6 @@ function H.renderTabs()
 				b.TextXAlignment = Enum.TextXAlignment.Right
 				b.TextSize = 14
 			end
-		end
-		-- [시설 탭] 주점과 같은 선택형 카드: 큰 메뉴명 + 실제 방문 목적을 두 줄로 표시한다.
-		local purpose = H.MENU_FOCUS[id]
-		if purpose then
-			local hint = mkLabel(b, purpose[1], 12, if selected then INK_SOFT else Color3.fromRGB(238, 218, 183), false)
-			hint.Visible = mainInner.AbsoluteSize.X >= 740
-			hint.Name = "FacilityTabHint"
-			hint.AutomaticSize = Enum.AutomaticSize.None
-			hint.Position = UDim2.fromOffset(35, 30)
-			hint.Size = UDim2.new(1, -39, 0, 18)
-			hint.TextTruncate = Enum.TextTruncate.AtEnd
-			hint.TextWrapped = false
-			hint.TextXAlignment = Enum.TextXAlignment.Left
-			hint.Active = false
-			hint.ZIndex = b.ZIndex + 2
 		end
 		if selected then
             -- [선택한 책갈피] 황동 가장자리와 얇은 가죽 표식을 더해 색면 없이 위치를 구분한다.
