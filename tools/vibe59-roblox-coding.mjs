@@ -129,7 +129,36 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
     // [루아우 정적 흐름] 긴 주석·인용 문자열·인라인 주석 속 가짜 호출은
     // 실제 Remote/저장 접근으로 오인하지 않는다. 원본 줄 위치는 유지한다.
     const activeSource=stripVibe59LuauComments(source);
+    // [로블록스 원격 이벤트] 문자열·주석을 제거한 전체 소스에서 줄바꿈 호출까지 추적한다.
+    // 함수 의존성 스캔과 독립이며 4천 줄 이후의 권한 오류를 누락하지 않는다.
+    const lineStarts=[0];
+    for(let i=0;i<activeSource.length;i++)if(activeSource.charCodeAt(i)===10)lineStarts.push(i+1);
+    const sourceLineAt=index=>{
+      let low=0,high=lineStarts.length;
+      while(low<high){
+        const mid=(low+high)>>>1;
+        if(lineStarts[mid]<=index)low=mid+1;else high=mid;
+      }
+      return low;
+    };
+    for(const match of activeSource.matchAll(/\b([A-Za-z_]\w*)\s*\.\s*(OnServerEvent|OnClientEvent|OnServerInvoke|OnClientInvoke)\s*(?::\s*Connect\s*\(|=)/g)){
+      if(events.length>=24)break;
+      const line=sourceLineAt(match.index);
+      events.push({remote:match[1],signal:match[2],line});
+      if(side==='CLIENT'&&match[2].startsWith('OnServer'))found.push({code:'SERVER_HANDLER_IN_CLIENT',line});
+      if(side==='SERVER'&&match[2].startsWith('OnClient'))found.push({code:'CLIENT_HANDLER_IN_SERVER',line});
+    }
+    for(const match of activeSource.matchAll(/\b([A-Za-z_]\w*)\s*:\s*(FireServer|FireClient|FireAllClients|InvokeServer|InvokeClient)\s*\(/g)){
+      if(calls.length>=24)break;
+      const line=sourceLineAt(match.index);
+      calls.push({remote:match[1],method:match[2],line});
+      if(side==='CLIENT'&&/^(FireClient|FireAllClients|InvokeClient)$/.test(match[2]))
+        found.push({code:'SERVER_REMOTE_CALL_IN_CLIENT',line});
+      if(side==='SERVER'&&/^(FireServer|InvokeServer)$/.test(match[2]))
+        found.push({code:'CLIENT_REMOTE_CALL_IN_SERVER',line});
+    }
     for(const [i,line] of activeSource.split(/\r?\n/).slice(0,4000).entries()){
+
       if(!line.trim())continue;
       // [함수 의존관계] 기존 Luau 주석·문자열 제거 결과만 사용한다.
       // 동일 파일 심볼의 선언과 호출은 정적 후보이며 실제 실행·스코프 확정이 아니다.
@@ -141,20 +170,6 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
         if(functionCalls.length>=64)break;
         if(invocation[1]==='function'||/\bfunction\s+$/.test(line.slice(0,invocation.index)))continue;
         functionCalls.push({name:invocation[1],line:i+1});
-      }
-      for(const match of line.matchAll(/\b([A-Za-z_]\w*)\.(OnServerEvent|OnClientEvent|OnServerInvoke|OnClientInvoke)\s*(?::Connect\s*\(|=)/g)){
-        if(events.length>=24)break;
-        events.push({remote:match[1],signal:match[2],line:i+1});
-        if(side==='CLIENT'&&match[2].startsWith('OnServer'))found.push({code:'SERVER_HANDLER_IN_CLIENT',line:i+1});
-        if(side==='SERVER'&&match[2].startsWith('OnClient'))found.push({code:'CLIENT_HANDLER_IN_SERVER',line:i+1});
-      }
-      for(const match of line.matchAll(/\b([A-Za-z_]\w*):\s*(FireServer|FireClient|FireAllClients|InvokeServer|InvokeClient)\s*\(/g)){
-        if(calls.length>=24)break;
-        calls.push({remote:match[1],method:match[2],line:i+1});
-        if(side==='CLIENT'&&/^(FireClient|FireAllClients|InvokeClient)$/.test(match[2]))
-          found.push({code:'SERVER_REMOTE_CALL_IN_CLIENT',line:i+1});
-        if(side==='SERVER'&&/^(FireServer|InvokeServer)$/.test(match[2]))
-          found.push({code:'CLIENT_REMOTE_CALL_IN_SERVER',line:i+1});
       }
       for(const match of line.matchAll(/:\s*(GetDataStore|UpdateAsync|SetAsync|GetAsync|SetAttribute)\s*\(/g)){
         if(stateEffects.length<24)stateEffects.push({method:match[1],line:i+1});
@@ -417,7 +432,11 @@ export function synthesizeVibe59RobloxServerAction({machine={},binding={},source
   const handler=identifier(machine.handlerName,'handler'),stateField=identifier(machine.stateVariable,'stateField');
   if([remote,statesTable,authorize,stateField].includes(handler)
     ||[remote,statesTable,authorize].includes(stateField))throw Error('VIBE59_ROBLOX_HANDLER_COLLISION');
-  const unchanged=String(source).replace(String(replaceAnchor),'');
+  // [정확한 함수 수정] 누락·중복된 편집 위치는 후보 생성 전에 차단한다.
+  if(typeof source!=='string'||source.length>260000||typeof replaceAnchor!=='string'
+    ||!replaceAnchor||replaceAnchor.length>1024||source.split(replaceAnchor).length!==2)
+    throw Error('VIBE59_ROBLOX_ANCHOR_REQUIRED');
+  const unchanged=source.replace(replaceAnchor,'');
   if(!declared(unchanged,remote,'variable')||!declared(unchanged,statesTable,'variable')
     ||!declared(unchanged,authorize,'function'))
     throw Error('VIBE59_ROBLOX_EXISTING_BINDING_REQUIRED');

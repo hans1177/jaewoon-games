@@ -340,3 +340,54 @@ test('duplicate Luau declarations remain ambiguous and cross-file names never im
   ]);
   assert.equal(report.functionLinks[0].runtimeVerified,false);
 });
+
+// [로블록스 원격 이벤트] 4천 줄 뒤의 여러 줄 호출도 실제 서버/클라이언트 관계로 추적한다.
+test('Vibe59 remote graph covers multiline Luau calls beyond the bounded function summary',()=>{
+  const filler=Array.from({length:4050},()=>'-- existing game source').join('\n');
+  const client=[
+    'local fake = "remote:FireServer(0)"',
+    filler,
+    'remote',
+    '  :FireServer("attack")',
+    'remote',
+    '  :FireClient(player)'
+  ].join('\n');
+  const server=[
+    'local fake = "remote.OnServerEvent:Connect(function(player) end)"',
+    filler,
+    'remote',
+    '  .OnServerEvent',
+    '  :Connect(function(player) end)'
+  ].join('\n');
+  const files=[
+    {path:'client/Fight.client.luau',source:client},
+    {path:'server/Fight.server.luau',source:server}
+  ];
+  const result=inspectVibe59RobloxCoding({files,responsiblePaths:files.map(x=>x.path)});
+  const call=result.remoteLinks.find(x=>x.method==='FireServer');
+  assert.ok(call,'multiline FireServer call should be detected after line 4000');
+  assert.equal(call.line,4052);
+  assert.deepEqual(call.possibleReceivers,['server/Fight.server.luau']);
+  assert.equal(call.status,'POTENTIAL_RECEIVER');
+  assert.equal(result.files[1].events[0].signal,'OnServerEvent');
+  assert.equal(result.files[1].events[0].line,4052);
+  assert.ok(result.warnings.some(x=>x.code==='SERVER_REMOTE_CALL_IN_CLIENT'&&x.line===4054));
+  assert.equal(result.qualityDirector.runtimeVerified,false);
+  assert.equal(result.qualityDirector.sourceWrite,false);
+});
+
+test('Vibe59 Roblox server synthesis refuses absent or duplicated exact edit anchors',()=>{
+  const machine={handlerName:'handleFight',stateVariable:'phase',states:['idle','fight'],
+    events:['attack'],transitions:[{from:'idle',to:'fight',event:'attack',actions:[]}]};
+  const binding={remoteVariable:'remote',playerStateTable:'states',authorizeFunction:'authorize'};
+  const source='local remote = {}\nlocal states = {}\nlocal function authorize(player,eventName) return true end\n-- ANCHOR\n';
+  const create=(text,anchor)=>synthesizeVibe59RobloxServerAction({
+    machine,binding,source:text,replaceAnchor:anchor,sourcePath:'server/Main.server.luau'
+  });
+  assert.match(create(source,'-- ANCHOR').source,/remote.OnServerEvent:Connect/);
+  for(const [text,anchor] of [
+    [source,'-- DOES NOT EXIST'],
+    [source+'-- ANCHOR\n','-- ANCHOR'],
+    [source,'']
+  ])assert.throws(()=>create(text,anchor),/VIBE59_ROBLOX_ANCHOR_REQUIRED/);
+});
