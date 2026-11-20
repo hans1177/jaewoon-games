@@ -2,6 +2,11 @@
 -- CardTheme.luau
 -- 카드 전투와 보관함에서 공유하는 재질 색. 카드 지역색과 희귀도는 각 화면에서 표시한다.
 return {
+	regionFrames = {
+		eu = "CardArt/ui_frame_europe", ea = "CardArt/ui_frame_east_asia",
+		me = "CardArt/ui_frame_middle_east", nw = "CardArt/ui_frame_north_west",
+		af = "CardArt/ui_frame_africa", sa = "CardArt/ui_frame_southeast_asia",
+	},
 	leather = Color3.fromRGB(21, 29, 39),
 	panel = Color3.fromRGB(30, 42, 54),
 	inset = Color3.fromRGB(13, 22, 32),

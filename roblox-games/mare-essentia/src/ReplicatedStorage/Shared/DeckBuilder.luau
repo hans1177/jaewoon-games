@@ -26,7 +26,7 @@ local ROW_SHORT = { melee = "근", ranged = "사", cannon = "포" }
 local FELT = CardTheme.allied
 local FORMATION = { { "melee", "전열" }, { "ranged", "후열" }, { "special", "전술" } }
 -- [카드 원화] 지역별 박물관 테두리는 카드 ID만 읽으며 카드 수치와 저장에는 관여하지 않는다.
-local REGION_FRAME = { eu = "ui_frame_europe", ea = "ui_frame_east_asia", me = "ui_frame_middle_east", nw = "ui_frame_new_world", af = "ui_frame_africa", sa = "ui_frame_southeast_asia" }
+local REGION_FRAME = CardTheme.regionFrames
 local FILTERS = {
 	{ id = "owned", text = "보유" }, { id = "all", text = "전체" }, { id = "combo", text = "대표 조합" },
 	{ id = "melee", text = "전열" }, { id = "ranged", text = "후열" }, { id = "special", text = "전술" },
@@ -1006,7 +1006,7 @@ function DeckBuilder.build(parent, ctx)
 		-- [6대륙 카드 테두리] 보유 카드 원화 위에 투명 프레임만 얹는다.
 		local regionPrefix = ctx.BC.cardRegionPrefix(id)
 		local frameKey = regionPrefix and REGION_FRAME[regionPrefix]
-		local frameId = frameKey and ctx.AssetIds["CardArt/" .. frameKey]
+		local frameId = frameKey and ctx.AssetIds[frameKey]
 		if frameId then
 			local borderArt = Instance.new("ImageLabel")
 			borderArt.Name = "RegionCardFrame"
@@ -1287,7 +1287,7 @@ function DeckBuilder.build(parent, ctx)
 			sea.ZIndex = 40
 			sea.Parent = panel
 		end
-		local heading = text(panel, "보상 카드 선택", 24, INK, true)
+		local heading = text(panel, "전리품 카드 선택", 24, INK, true)
 		heading.Position = UDim2.fromScale(0.05, 0.04)
 		heading.Size = UDim2.fromScale(0.90, 0.12)
 		heading.ZIndex = 41
@@ -1303,7 +1303,7 @@ function DeckBuilder.build(parent, ctx)
 			confirming = false
 		end)
 		confirm.AnchorPoint = Vector2.new(0.5, 1)
-		confirm.Position = UDim2.fromScale(0.5, 0.96)
+		confirm.Position = UDim2.fromScale(0.68, 0.96)
 		confirm.Size = UDim2.new(0.42, 0, 0, 44)
 		confirm.TextColor3 = SEPIA
 		confirm.ZIndex = 42
@@ -1311,6 +1311,18 @@ function DeckBuilder.build(parent, ctx)
 		confirm.AutoButtonColor = false
 		confirm.BackgroundTransparency = 0.4
 		buttonArt(confirm, "ui_button_paper")
+		local detailButton = button(panel, "효과 보기", PANEL, 16, function()
+			if not selected then return end
+			local rewardContext = table.clone(ctx.galleryCtx)
+			rewardContext.overlay = panel
+			Gallery.showDetail(rewardContext, candidates[selected], true)
+		end)
+		detailButton.AnchorPoint = Vector2.new(0.5, 1)
+		detailButton.Position = UDim2.fromScale(0.27, 0.96)
+		detailButton.Size = UDim2.new(0.33, 0, 0, 44)
+		detailButton.TextColor3 = INK
+		detailButton.ZIndex = 42
+		detailButton.Visible = false
 		local confirmArt = confirm:FindFirstChild("ButtonArtwork")
 		if confirmArt then confirmArt.ImageTransparency = 0.4 end
 
@@ -1319,6 +1331,7 @@ function DeckBuilder.build(parent, ctx)
 			local candidate = button(panel, "", PAPER, 16, function()
 				if confirming then return end
 				selected = i
+				detailButton.Visible = true
 				for index, stroke in highlights do
 					stroke.Color = if index == selected then GOLD else BINDING
 					stroke.Thickness = if index == selected then 3 else 1
@@ -1347,6 +1360,18 @@ function DeckBuilder.build(parent, ctx)
 			local artId = card and ctx.AssetIds[ctx.artKey(card)]
 			art.Image = if artId then "rbxassetid://" .. tostring(artId) else ""
 			art.Parent = candidate
+			local frameKey = REGION_FRAME[BC.cardRegionPrefix(id)]
+			local frameId = frameKey and ctx.AssetIds[frameKey]
+			if frameId then
+				local frameArt = Instance.new("ImageLabel")
+				frameArt.Name = "RegionCardFrame"
+				frameArt.Size = UDim2.fromScale(1, 1)
+				frameArt.BackgroundTransparency = 1
+				frameArt.ScaleType = Enum.ScaleType.Stretch
+				frameArt.Image = "rbxassetid://" .. tostring(frameId)
+				frameArt.ZIndex = 44
+				frameArt.Parent = candidate
+			end
 			local name = text(candidate, card and card.name or id, 15, SEPIA, true)
 			name.Position = UDim2.fromScale(0.04, 0.76)
 			name.Size = UDim2.fromScale(0.92, 0.23)
