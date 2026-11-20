@@ -1324,7 +1324,7 @@ local function palmOk(portId, style)
 end
 
 -- 마을 주민의 일: 직업마다 일터와 모션이 있고, 항구 발전도가 오를수록 일하는 사람이 늘어난다.
-local NIGHT_DUTY = { "patrol", "scan", "look", "warm" }
+local NIGHT_DUTY = { "patrol", "scan", "watch", "scan_horizon", "look", "warm" }
 local NIGHT_REST = { "yawn", "warm", "lean", "look" }
 local EVENING_REST = { "yawn", "warm", "lean" }
 local IDLE_POOL = { "talk", "lean", "point", "wave", "write", "inspect", "count", "stretch", "drink", "listen", "salute", "gossip", "warm", "yawn", "clap", "cheer", "scan" } -- 멈춰 선 주민이 상황과 시간에 따라 다른 동작을 한다
@@ -1546,10 +1546,10 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			else Vector3.new(-18 - i * 2, 0, -24)
 		-- [직업별 실제 생활동선] 기존 소수 인원만 장터·작업장·부두를 오간다.
 		local dayJobs = {
-			{ job = "merchant", role = "Rogue", work = { "pack", "count", "bargain" }, trade = { "offer", "receive", "bargain" }, rest = { "gossip", "drink", "listen" } },
-			{ job = "sailor", role = "Barbarian", work = { "knot", "chart", "scan" }, trade = { "unload", "offer", "inspect" }, rest = { "stretch", "cheer", "talk" } },
-			{ job = "guard", role = "Knight", work = { "patrol", "scan", "salute" }, trade = { "guide", "look", "patrol" }, rest = { "warm", "lean", "yawn" } },
-			{ job = "craftsman", role = "Barbarian", work = { "saw", "carve", "inspect" }, trade = { "pack", "count", "offer" }, rest = { "stretch", "gossip", "drink" } },
+			{ job = "merchant", role = "Rogue", work = { "pack", "count", "bargain", "ledger" }, trade = { "offer", "receive", "bargain" }, rest = { "gossip", "drink", "listen" } },
+			{ job = "sailor", role = "Barbarian", work = { "knot", "chart", "scan", "check_compass", "haul_rope" }, trade = { "unload", "offer", "inspect" }, rest = { "stretch", "cheer", "talk" } },
+			{ job = "guard", role = "Knight", work = { "patrol", "scan", "salute", "scan_horizon", "watch" }, trade = { "guide", "look", "patrol" }, rest = { "warm", "lean", "yawn" } },
+			{ job = "craftsman", role = "Barbarian", work = { "saw", "carve", "inspect", "plane_wood", "repair" }, trade = { "pack", "count", "offer" }, rest = { "stretch", "gossip", "drink" } },
 		}
 		local duty = dayJobs[(i - 1) % #dayJobs + 1]
 		local fig = person(work, faceTo(work, market), { role = duty.role, profession = duty.job, hat = "cap" }, duty.job)
@@ -2028,15 +2028,15 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			elseif made.cloth or made.silk or made.wool then "sew"
 			elseif made.grain or made.beer or made.sugar then "knead" else "hammer"
 		local JOB_YARD = {
-			farmer = { name = "농부", kinds = { "hoe", "harvest", "sow", "weed", "inspect" }, rest = { "stretch", "gossip", "drink", "warm", "yawn" }, spec = { role = "Barbarian", hat = "straw" }, tint = C(110, 125, 76) },
-			fisher = { name = "어부", kinds = { "fish", "net", "reel", "lift", "inspect" }, rest = { "drink", "talk", "stretch", "scan", "warm" }, spec = { role = "Barbarian", hat = "knit" }, tint = C(70, 106, 146) },
-			craftsman = { name = "장인", kinds = { craft, "carve", "plane", "inspect", "count", "hammer" }, rest = { "stretch", "drink", "gossip", "polish" }, spec = { role = "Barbarian", hat = "cap" }, tint = C(146, 99, 57) },
-			merchant = { name = "상인", kinds = { "stall", "weigh", "bargain", "pack", "count", "offer", "receive" }, rest = { "gossip", "drink", "listen", "clap" }, spec = { role = "Rogue" }, prop = { "Town", "stall", 6.5 }, tint = C(121, 71, 132) },
-			sailor = { name = "선원", kinds = { "knot", "chart", "unload", "lift", "carry", "scan", "salute" }, rest = { "drink", "cheer", "talk", "stretch" }, spec = { role = "Barbarian", hat = "cap" }, tint = C(59, 92, 138) },
-			guard = { name = "경비병", kinds = { "patrol", "scan", "drill", "salute", "look", "point" }, rest = { "lean", "warm", "stretch", "yawn" }, spec = { role = "Knight", hat = false }, tint = C(69, 78, 111) },
-			official = { name = "관리", kinds = { "seal", "write", "read", "count", "guide", "point" }, rest = { "talk", "listen", "drink", "gossip" }, spec = { role = "Mage", hat = "wide" }, tint = C(108, 78, 134) },
+			farmer = { name = "농부", kinds = { "hoe", "harvest", "sow", "weed", "inspect", "plant", "water", "sort_crop" }, rest = { "stretch", "gossip", "drink", "warm", "yawn" }, spec = { role = "Barbarian", hat = "straw" }, tint = C(110, 125, 76) },
+			fisher = { name = "어부", kinds = { "fish", "net", "reel", "lift", "inspect", "mend_net", "haul_rope" }, rest = { "drink", "talk", "stretch", "scan", "warm" }, spec = { role = "Barbarian", hat = "knit" }, tint = C(70, 106, 146) },
+			craftsman = { name = "장인", kinds = { craft, "carve", "plane", "inspect", "count", "hammer", "sharpen", "plane_wood", "measure" }, rest = { "stretch", "drink", "gossip", "polish" }, spec = { role = "Barbarian", hat = "cap" }, tint = C(146, 99, 57) },
+			merchant = { name = "상인", kinds = { "stall", "weigh", "bargain", "pack", "count", "offer", "receive", "ledger" }, rest = { "gossip", "drink", "listen", "clap" }, spec = { role = "Rogue" }, prop = { "Town", "stall", 6.5 }, tint = C(121, 71, 132) },
+			sailor = { name = "선원", kinds = { "knot", "chart", "unload", "lift", "carry", "scan", "salute", "haul_rope", "scrub_deck", "check_compass" }, rest = { "drink", "cheer", "talk", "stretch" }, spec = { role = "Barbarian", hat = "cap" }, tint = C(59, 92, 138) },
+			guard = { name = "경비병", kinds = { "patrol", "scan", "drill", "salute", "look", "point", "scan_horizon", "lock_gate", "watch" }, rest = { "lean", "warm", "stretch", "yawn" }, spec = { role = "Knight", hat = false }, tint = C(69, 78, 111) },
+			official = { name = "관리", kinds = { "seal", "write", "read", "count", "guide", "point", "ledger", "roll_call" }, rest = { "talk", "listen", "drink", "gossip" }, spec = { role = "Mage", hat = "wide" }, tint = C(108, 78, 134) },
 			clergy = { name = "성직자", kinds = { "pray", "kneel", "bless", "read", "bell" }, rest = { "talk", "listen", "look", "warm" }, spec = { role = "Mage", hat = false }, tint = C(96, 87, 80) },
-			laborer = { name = "일꾼", kinds = { "unload", "carry", "lift", "scrub", "sweep", "polish" }, rest = { "stretch", "drink", "gossip", "yawn" }, spec = { role = "Rogue", hat = "cap" }, tint = C(119, 104, 79) },
+			laborer = { name = "일꾼", kinds = { "unload", "carry", "lift", "scrub", "sweep", "polish", "stack", "push_cart" }, rest = { "stretch", "drink", "gossip", "yawn" }, spec = { role = "Rogue", hat = "cap" }, tint = C(119, 104, 79) },
 		}
 		local ORDER = { "farmer", "fisher", "craftsman", "merchant", "sailor", "guard", "official", "clergy", "laborer" }
 		local jobs = info.sim and info.sim.jobs
@@ -2111,15 +2111,15 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			return lvl >= stage and (if info.sim then (stock[id] or 0) >= 1 else true)
 		end
 		local available = {
-			{ name = "대장장이", job = "smith", group = "craftsman", need = built("workshop", 2) and (made.iron or made.copper or made.tin), at = Vector3.new(-160, 0, -114), prop = { "Town", "workbench-anvil", 4 }, work = { "forge", "hammer", "carve", "inspect", "seal" }, rest = { "stretch", "drink", "warm" }, color = C(129, 72, 53) },
-			{ name = "재단사", job = "tailor", group = "craftsman", need = built("workshop", 2) and (made.cloth or made.silk or made.wool), at = Vector3.new(-188, 0, -114), prop = { "Cargo", "textiles-stack-large-colored", 3 }, work = { "sew", "fold", "carve", "inspect", "pack" }, rest = { "talk", "drink", "gossip" }, color = C(117, 86, 148) },
-			{ name = "제빵사", job = "baker", group = "craftsman", need = built("workshop", 2) and (made.grain or made.maize or made.beer), at = Vector3.new(-214, 0, -114), prop = { "Cargo", "food-flour", 3 }, work = { "knead", "stir", "pack", "inspect", "offer" }, rest = { "drink", "talk", "warm" }, color = C(180, 130, 85) },
-			{ name = "목수", job = "carpenter", group = "craftsman", need = built("workshop", 2) and (made.timber or made.mahogany or made.kauri), at = Vector3.new(-124, 0, -113), prop = { "Cargo", "resource-planks", 3 }, work = { "saw", "plane", "hammer", "inspect", "lift" }, rest = { "stretch", "drink", "talk" }, color = C(136, 101, 67) },
-			{ name = "조선공", job = "shipwright", group = "sailor", need = lvl >= 3 and info.hasShipyard, at = Vector3.new(-19, 0, -106), prop = { "Cargo", "resource-planks", 3.5 }, work = { "knot", "plane", "hammer", "unload", "inspect" }, rest = { "talk", "stretch", "cheer" }, color = C(79, 103, 134) },
-			{ name = "목장지기", job = "herder", group = "farmer", need = built("farm", 2), at = Vector3.new(-660, 0, 0), prop = { "Cargo", "wood-log-a", 3 }, work = { "look", "milk", "sow", "inspect", "scan" }, rest = { "drink", "lean", "warm" }, color = C(130, 121, 83) },
+			{ name = "대장장이", job = "smith", group = "craftsman", need = built("workshop", 2) and (made.iron or made.copper or made.tin), at = Vector3.new(-160, 0, -114), prop = { "Town", "workbench-anvil", 4 }, work = { "forge", "hammer", "carve", "inspect", "seal", "sharpen" }, rest = { "stretch", "drink", "warm" }, color = C(129, 72, 53) },
+			{ name = "재단사", job = "tailor", group = "craftsman", need = built("workshop", 2) and (made.cloth or made.silk or made.wool), at = Vector3.new(-188, 0, -114), prop = { "Cargo", "textiles-stack-large-colored", 3 }, work = { "sew", "fold", "carve", "inspect", "pack", "measure" }, rest = { "talk", "drink", "gossip" }, color = C(117, 86, 148) },
+			{ name = "제빵사", job = "baker", group = "craftsman", need = built("workshop", 2) and (made.grain or made.maize or made.beer), at = Vector3.new(-214, 0, -114), prop = { "Cargo", "food-flour", 3 }, work = { "knead", "stir", "pack", "inspect", "offer", "serve", "taste" }, rest = { "drink", "talk", "warm" }, color = C(180, 130, 85) },
+			{ name = "목수", job = "carpenter", group = "craftsman", need = built("workshop", 2) and (made.timber or made.mahogany or made.kauri), at = Vector3.new(-124, 0, -113), prop = { "Cargo", "resource-planks", 3 }, work = { "saw", "plane", "hammer", "inspect", "lift", "plane_wood", "repair" }, rest = { "stretch", "drink", "talk" }, color = C(136, 101, 67) },
+			{ name = "조선공", job = "shipwright", group = "sailor", need = lvl >= 3 and info.hasShipyard, at = Vector3.new(-19, 0, -106), prop = { "Cargo", "resource-planks", 3.5 }, work = { "knot", "plane", "hammer", "unload", "inspect", "repair", "haul_rope" }, rest = { "talk", "stretch", "cheer" }, color = C(79, 103, 134) },
+			{ name = "목장지기", job = "herder", group = "farmer", need = built("farm", 2), at = Vector3.new(-660, 0, 0), prop = { "Cargo", "wood-log-a", 3 }, work = { "look", "milk", "sow", "inspect", "scan", "feed" }, rest = { "drink", "lean", "warm" }, color = C(130, 121, 83) },
 			{ name = "교사", job = "teacher", group = "official", need = built("school", 3), at = Vector3.new(-86, 0, 21), prop = { "Interior", "bookcaseclosed", 4.2 }, work = { "teach", "read", "write", "guide", "point" }, rest = { "talk", "listen", "clap" }, color = C(80, 115, 108) },
-			{ name = "서기관", job = "clerk", group = "official", need = built("hall", 3), at = Vector3.new(-110, 0, 21), prop = { "Interior", "bookcaseclosed", 3.8 }, work = { "seal", "write", "count", "read", "inspect" }, rest = { "talk", "listen", "yawn" }, color = C(91, 89, 131) },
-			{ name = "은행원", job = "banker", group = "merchant", need = lvl >= 4 and built("market", 2) and table.find(info.facilities or {}, "bank") ~= nil, at = Vector3.new(-54, 0, 18), prop = { "Cargo", "gold-bars", 2.1 }, work = { "count", "seal", "write", "bargain", "offer" }, rest = { "talk", "read", "gossip" }, color = C(105, 75, 119) },
+			{ name = "서기관", job = "clerk", group = "official", need = built("hall", 3), at = Vector3.new(-110, 0, 21), prop = { "Interior", "bookcaseclosed", 3.8 }, work = { "seal", "write", "count", "read", "inspect", "ledger" }, rest = { "talk", "listen", "yawn" }, color = C(91, 89, 131) },
+			{ name = "은행원", job = "banker", group = "merchant", need = lvl >= 4 and built("market", 2) and table.find(info.facilities or {}, "bank") ~= nil, at = Vector3.new(-54, 0, 18), prop = { "Cargo", "gold-bars", 2.1 }, work = { "count", "seal", "write", "bargain", "offer", "ledger" }, rest = { "talk", "read", "gossip" }, color = C(105, 75, 119) },
 		}
 		local specialistLimit = if info.sim then math.clamp(math.floor((info.sim.residents or 0) / 10), 0, 7) else lvl + 1
 		local specialistCount = 0
@@ -5686,7 +5686,7 @@ function PortScene.build(info, onFacility)
 						Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
 					end
 					-- 궁정·공방은 멀리 있을 때 인구·직업 속성은 유지하되 관절 업데이트만 생략.
-					if not (w.industryDuty or w.royalDuty) or not cam or (cam.CFrame.Position - p0).Magnitude < 170 then
+					if not cam or (cam.CFrame.Position - p0).Magnitude < (if game:GetService("UserInputService").TouchEnabled then 135 else 180) then
 						Pose.work(w.model, kind, now + w.phase)
 					end
 				end
