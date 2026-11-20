@@ -227,3 +227,58 @@ test('runtime evidence cannot default to PASS, including Roblox teacher records'
   assert.equal(isTeacherEligible({taskType:'roblox',difficulty:'regression',teacher:true,sourceKind:'teacher'}),true);
   assert.equal(isTeacherEligible({taskType:'roblox',difficulty:'simple',teacher:true,sourceKind:'teacher'}),false);
 });
+
+test('정적 승인 외부 자료는 검증된 참고 증거지만 정식 모델 가중치 학습에서는 제외한다',()=>{
+  const staticSource=verified({
+    instruction:'정적 승인 소스 학습 제외',input:'읽기 전용 참고',output:'승인된 정적 분석',
+    taskType:'coding',project:'P9999',sourceCommit:'static-source',
+    sourceKind:'authorized-source',independentQa:'AUTHORIZED_SOURCE_EVIDENCE_PASS',
+    browserQa:'NOT_APPLICABLE',runtime:'STATIC_VERIFIED',
+  });
+  assert.equal(isVerifiedPass(staticSource),true);
+  const dataset=buildDataset([...rows(50,'P0001','coding'),
+    {record:staticSource,sourceFile:'approved-source.json',index:0}],
+    {targetTaskType:'coding',minTrainSamples:1,minFreshTrainSamples:1,minDistinctProjects:1,minDistinctTaskTypes:1});
+  assert.equal(dataset.stats.skippedUnverified,1);
+  assert.ok([...dataset.train,...dataset.eval,...dataset.holdout].every(row=>row.provenance.sourceKind!=='authorized-source'));
+});
+
+test('재사용 샘플도 정식 출처와 플랫폼 실증 조건을 우회하지 못한다',()=>{
+  const staticReplay={
+    ...buildDataset(rows(30,'STATIC','coding'),{targetTaskType:'coding',minTrainSamples:1}).train[0],
+    sampleId:'a'.repeat(64),contentHash:'static-replay-unique',
+    provenance:{sourceKind:'authorized-source'},
+    qa:{independentQa:'AUTHORIZED_SOURCE_EVIDENCE_PASS',browserQa:'NOT_APPLICABLE',runtime:'STATIC_VERIFIED'},
+  };
+  const coding=buildDataset(rows(60,'P0001','coding'),{
+    targetTaskType:'coding',replay:[staticReplay],minTrainSamples:1,minFreshTrainSamples:1,
+    minDistinctProjects:1,minDistinctTaskTypes:1,
+  });
+  assert.equal(coding.stats.replay,0);
+  const fakePlatformReplay={
+    ...staticReplay,taskType:'roblox',sampleId:'b'.repeat(64),contentHash:'teacher-roblox-unique',
+    synthetic:true,provenance:{sourceKind:'teacher'},
+    qa:{independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'},
+  };
+  const platformRecords=rows(60,'R0001','roblox').map(item=>({
+    ...item,record:{...item.record,browserQa:'NOT_APPLICABLE',runtime:'PASS'},
+  }));
+  const roblox=buildDataset(platformRecords,{
+    targetTaskType:'roblox',syntheticRatioCap:0,replay:[fakePlatformReplay],
+    minTrainSamples:1,minFreshTrainSamples:1,minDistinctProjects:1,minDistinctTaskTypes:1,
+  });
+  assert.equal(roblox.stats.replay,0);
+});
+
+test('재사용 샘플의 런타임 검증 누락을 PASS로 자동 대체하지 않는다',()=>{
+  const baseline=buildDataset(rows(30,'REPLAY','coding'),{targetTaskType:'coding',minTrainSamples:1});
+  const candidate={...baseline.train[0],
+    sampleId:'c'.repeat(64),contentHash:'missing-runtime-replay',
+    qa:{...baseline.train[0].qa,runtime:undefined},
+  };
+  const result=buildDataset(rows(60,'P0001','coding'),{
+    targetTaskType:'coding',replay:[candidate],minTrainSamples:1,
+    minFreshTrainSamples:1,minDistinctProjects:1,minDistinctTaskTypes:1,
+  });
+  assert.equal(result.stats.replay,0);
+});
