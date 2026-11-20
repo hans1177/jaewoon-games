@@ -2741,9 +2741,42 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		dens *= math.clamp((info.sim.buildings.house or 0) / target, 0.3, 1)
 	end
 	local smokers = 0
-	local wildernessQuota = ({ 36, 29, 23, 17, 12 })[lvl]
-	-- 빈 필지는 건축을 가장하지 않고 원생 숲·수풀·돌밭으로 남겨 둔다. 모바일 자산 수를 단계별로 제한한다.
+	-- [지리적 미개발지] 주택·경제가 빈 구획만 실제 지형별 입체 에셋으로 채운다.
+	-- 기존 필지·도로·왕궁·랜드마크 경계, 방문별 시드, 저장 키는 그대로 유지한다.
+	local wildernessTouch = game:GetService("UserInputService").TouchEnabled
+	local wildernessQuota = math.min(({ 36, 29, 23, 17, 12 })[lvl],
+		if wildernessTouch then ({ 22, 19, 16, 13, 9 })[lvl] else 36)
+	local wildernessPlaced, wildernessDetails, wildernessFringe, wildernessRejected = 0, 0, 0, 0
 	local wildernessRng = seeded(info.portId .. ":open-land")
+	-- [입체 지형 팔레트] 자산 번호가 존재하는 무료 기존 모델만 사용한다. 허허벌판을 건물로 위장하지 않는다.
+	local openLandAssets = {
+		arid = { { "Terrain", "arid-cactus-short", 5 }, { "Terrain", "arid-cactus-tall", 7 },
+			{ "Terrain", "mystic-sand-dune", 8 }, { "Naval", "rocks-sand-a", 7 }, { "Terrain", "Rock_2", 5 } },
+		wetland = { { "Terrain", "river-stone-bank", 7 }, { "Terrain", "coast-grass-patch", 6 },
+			{ "Terrain", "forest-bush-detailed", 5 }, { "Terrain", "Grass_Small", 4 } },
+		coastal = { { "Terrain", "tropical-palm-short", 8 }, { "Terrain", "coast-grass-patch", 6 },
+			{ "Terrain", "forest-flower-yellow", 4 }, { "Naval", "rocks-sand-a", 6 } },
+		hillside = { { "Terrain", "Rock_2", 7 }, { "Terrain", "north-pine-fall", 9 },
+			{ "Terrain", "tree-pinedefaulta", 10 }, { "Terrain", "forest-bush-detailed", 5 } },
+		bamboo = { { "Terrain", "east-bamboo-grove", 9 }, { "Terrain", "coast-grass-patch", 5 },
+			{ "Terrain", "forest-flower-yellow", 4 }, { "Terrain", "forest-bush-detailed", 5 } },
+		orchard = { { "Terrain", "tree-oak", 9 }, { "Terrain", "forest-flower-yellow", 4 },
+			{ "Terrain", "forest-flower-purple", 4 }, { "Terrain", "forest-bush-detailed", 5 } },
+		fallow = { { "Terrain", "crops-wheatstagea", 5 }, { "Terrain", "Grass_Small", 4 },
+			{ "Terrain", "coast-grass-patch", 5 }, { "Terrain", "crops-wheatstageb", 5 } },
+		woodland = { { "Terrain", "tree-oak", 10 }, { "Terrain", "forest-bush-detailed", 5 },
+			{ "Terrain", "forest-flower-purple", 4 }, { "Terrain", "north-pine-fall", 8 } },
+	}
+	local agricultural = table.find(made or {}, "grain") ~= nil or table.find(made or {}, "wheat") ~= nil
+		or table.find(made or {}, "rice") ~= nil or table.find(made or {}, "maize") ~= nil
+	local orchard = table.find(made or {}, "fruit") ~= nil or table.find(made or {}, "grapes") ~= nil
+		or table.find(made or {}, "olive_oil") ~= nil
+	local baseLandBiome = if key == "desert" or key == "ottoman" then "arid"
+		elseif coastForm == "river" or coastForm == "delta" or coastForm == "lagoon" or coastForm == "canal" then "wetland"
+		elseif coastForm == "hill" or coastForm == "strait" then "hillside"
+		elseif palm then "coastal"
+		elseif key == "japan" or key == "china" or key == "korea" or key == "seasia" then "bamboo"
+		else "woodland"
 	-- 도시 전체 외곽을 단계별로 서쪽으로 넓혀 구시가지와 신시가지를 분리한다.
 	local X_END = -math.min(565, 210 + math.floor(130 * math.sqrt(areaGrowth)) + math.floor(districtOffset * 3))
 	local placedLots = {}
@@ -3254,38 +3287,69 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					homePlotRejected += 1
 				end
 			else
-				-- 빈 구획: 아직 경제 시뮬에서 주택이 건설되지 않은 부분에 자연물을 남긴다.
-				-- 미래 건축 구획·왕궁·도로·랜드마크를 비워 놓고 한 구획당 소품 1개 이하.
-				if wildernessQuota > 0 and wildernessRng:NextNumber() < 0.42 then
-					local z0 = z + wildernessRng:NextNumber(-S * 0.16, S * 0.16)
+				-- [미개발 주거 필지] 도시 발전 전에는 지형·농업 생산·해안 위치에 맞는 자연 소품만 표시한다.
+				-- 기존 경제의 주택 수/필지 ID와 실제 건축 가능성은 변경하지 않는다.
+				if wildernessQuota > 0 and wildernessRng:NextNumber() < 0.72 then
+					local plotRng = seeded(plotId .. ":geographic-land")
+					local z0 = z + plotRng:NextNumber(-S * 0.16, S * 0.16)
 					local half = math.min(9, S * 0.27)
 					if not onStreet(x, half) and not reserved(x, z0, half) then
-						local at = Vector3.new(x, 0, z0)
-						local roll = wildernessRng:NextInteger(1, 7)
-						local biome = if key == "desert" or key == "ottoman" then "arid"
-							elseif palm then "coastal" elseif cold then "woodland" else "lowland"
-						local group, asset, size = "Terrain", "tree-oak", 10
-						-- [무료 실물 조경] 기존 빈 구획 한 자리만 사용해 파츠 수·건물 밀도를 늘리지 않는다.
-						if roll == 1 then group, asset, size = "Terrain", "Rock_2", 6
-						elseif roll == 2 and biome ~= "arid" then group, asset, size = "Terrain", "Bush_Small", 3.2
-						elseif roll == 3 and biome ~= "arid" then group, asset, size = "Terrain", "Grass_Small", 2.2
-						elseif biome == "arid" then group, asset, size = "Naval", "rocks-sand-a", 8
-						elseif biome == "coastal" then group, asset, size = "Naval", "palm-detailed-straight", 10
-						elseif biome == "woodland" then group, asset, size = "Terrain", "tree-pinedefaulta", 11
+						-- 강변/구릉/사막/죽림/해안과 마을 외곽 과수원·휴경지를 섞되 지형 정체성을 우선한다.
+						local biome = baseLandBiome
+						if biome == "woodland" and orchard and plotRng:NextInteger(1, 3) == 1 then
+							biome = "orchard"
+						elseif (biome == "woodland" or biome == "bamboo") and agricultural and quarter == "edge"
+							and plotRng:NextInteger(1, 3) == 1 then
+							biome = "fallow"
 						end
-						local model = importedModel(folder, group, asset, at, size, false)
-						if model then
-							model.Name = "Undeveloped_" .. asset
-							-- 미개발지는 건물을 자동으로 짓지 않고 미래 건축 메뉴가 읽을 필지 상태만 공개한다.
-							model:SetAttribute("BuildPlotId", plotId)
-							model:SetAttribute("BuildType", "house")
-							model:SetAttribute("BuildPhase", 0)
-							model:SetAttribute("BuildState", "vacant")
-							model:SetAttribute("BuildTier", 0)
-							model:SetAttribute("BuildAuthority", "VISUAL_ONLY")
-							wildernessQuota -= 1
-							table.insert(placedLots, { X = x, Z = z0, H = half })
+						local palette = openLandAssets[biome]
+						local selectIndex = plotRng:NextInteger(1, #palette)
+						local spec = palette[selectIndex]
+						if AssetIds[spec[1] .. "/" .. spec[2]] then
+							local at = Vector3.new(x, 0, z0)
+							local model = importedModel(folder, spec[1], spec[2], at,
+								spec[3] * plotRng:NextNumber(0.91, 1.09), false)
+							if model then
+								rotateAround(model, at, plotRng:NextNumber(-math.pi, math.pi))
+								model.Name = "Undeveloped_" .. spec[2]
+								model:SetAttribute("BuildPlotId", plotId)
+								model:SetAttribute("BuildType", "house")
+								model:SetAttribute("BuildPhase", 0)
+								model:SetAttribute("BuildState", "vacant")
+								model:SetAttribute("BuildTier", 0)
+								model:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+								model:SetAttribute("CityOpenLandBiome", biome)
+								model:SetAttribute("CityOpenLandTerrain", coastForm)
+								model:SetAttribute("CityOpenLandCulture", key)
+								model:SetAttribute("ShowcaseOnly", true)
+								wildernessQuota -= 1
+								wildernessPlaced += 1
+								table.insert(placedLots, { X = x, Z = z0, H = half })
+								-- [근경 밀도] 고성능 PC는 작은 꽃·풀 한 개만 추가. 모바일은 원본 1개로 제한.
+								if not wildernessTouch and plotRng:NextInteger(1, 3) == 1 then
+									local accent = if biome == "arid" then "arid-cactus-short"
+										elseif biome == "wetland" or biome == "coastal" then "coast-grass-patch"
+										elseif biome == "hillside" then "Grass_Small"
+										else "forest-flower-yellow"
+									if AssetIds["Terrain/" .. accent] then
+										local detailAt = at + Vector3.new(plotRng:NextNumber(-2.8, 2.8), 0,
+											plotRng:NextNumber(-2.8, 2.8))
+										local detail = importedModel(folder, "Terrain", accent, detailAt, 2.8, false)
+										if detail then
+											detail.Name = "UndevelopedDetail_" .. accent
+											detail:SetAttribute("ShowcaseOnly", true)
+											detail:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+											detail:SetAttribute("CityOpenLandBiome", biome)
+											wildernessDetails += 1
+										end
+									end
+								end
+							end
+						else
+							wildernessRejected += 1
 						end
+					else
+						wildernessRejected += 1
 					end
 				end
 			end
@@ -3325,6 +3389,59 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			end
 		end
 	end
+	-- [도시 외곽 자연 완충지] 마지막 주택 골목 바깥의 실제 빈땅만 기존 지형 팔레트로 채운다.
+	-- 근접 건물/도로/시장/왕궁/랜드마크와 겹치면 건너뛰며 주택 건축 슬롯은 점유하지 않는다.
+	local fringeBudget = if wildernessTouch then 7 else 13
+	local outerEdgeZ = 152 + laneOffset + pairsN * laneL + laneWidth * 0.5 + 15
+	if outerEdgeZ < 360 + lvl * 80 - 20 then
+		for side = -1, 1, 2 do
+			for row = 1, 3 do
+				local z = side * (outerEdgeZ + row * 11)
+				if math.abs(z) < 360 + lvl * 80 - 18 then
+					for col = 1, 8 do
+						if fringeBudget <= 0 then break end
+						local x = -262 + (X_END + 262) * (col - 0.5) / 8
+						local half = 6
+						if not onStreet(x, half) and not reserved(x, z, half) then
+							local fringeId = ("%s:fringe:%d:%d:%d"):format(info.portId, side, row, col)
+							local fringeRng = seeded(fringeId .. ":geographic-land")
+							local biome = baseLandBiome
+							if biome == "woodland" and orchard and row == 1 then biome = "orchard"
+							elseif (biome == "woodland" or biome == "bamboo") and agricultural and row == 2 then biome = "fallow" end
+							local palette = openLandAssets[biome]
+							local spec = palette[fringeRng:NextInteger(1, #palette)]
+							if AssetIds[spec[1] .. "/" .. spec[2]] then
+								local at = Vector3.new(x, 0, z)
+								local model = importedModel(folder, spec[1], spec[2], at, spec[3], false)
+								if model then
+									rotateAround(model, at, fringeRng:NextNumber(-math.pi, math.pi))
+									model.Name = "UndevelopedFringe_" .. spec[2]
+									model:SetAttribute("BuildPlotId", fringeId)
+									model:SetAttribute("BuildType", "landscape")
+									model:SetAttribute("BuildPhase", 0)
+									model:SetAttribute("BuildState", "vacant")
+									model:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+									model:SetAttribute("ShowcaseOnly", true)
+									model:SetAttribute("CityOpenLandBiome", biome)
+									table.insert(placedLots, { X = x, Z = z, H = half })
+									fringeBudget -= 1
+									wildernessFringe += 1
+								end
+							end
+						end
+						end
+					end
+				end
+		end
+	end
+	-- [재진입 QA] 경제/세이브를 변경하지 않고 항구 지리·빈땅 피복 상태만 표시한다.
+	folder:SetAttribute("CityOpenLandBaseBiome", baseLandBiome)
+	folder:SetAttribute("CityOpenLandTerrain", coastForm)
+	folder:SetAttribute("CityOpenLandPlots", wildernessPlaced)
+	folder:SetAttribute("CityOpenLandDetails", wildernessDetails)
+	folder:SetAttribute("CityOpenLandFringe", wildernessFringe)
+	folder:SetAttribute("CityOpenLandRejected", wildernessRejected)
+	folder:SetAttribute("CityOpenLandMode", "GEOGRAPHY_VISUAL_ONLY")
 	-- [항구별 시각 QA] 배치 성공·이동·실패 사유를 기존 PortScene 폴더에만 공개한다.
 	-- 모바일에서는 추가 스캔·영구 저장 없이 이 집계만 읽어 항구별 빈집/밀집 원인을 확인한다.
 	folder:SetAttribute("CityHousingPort", info.portId)
