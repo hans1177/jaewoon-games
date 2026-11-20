@@ -2,7 +2,8 @@
 // 역할: 부서 경험치가 올라갈수록 새 초안/테스트의 최소 품질 기준도 단계적으로 강화한다.
 // 원칙: 경험치는 권한을 늘리지 않고 품질 게이트만 강화한다.
 
-const CORE = Object.freeze(['planning','development','qa','graphics','balance']);
+// 현행 5개 부서로 품질 평균을 산정하고 과거 balance XP는 보존한다.
+const CORE = Object.freeze(['planning','graphics','development','qa','audio']);
 const clamp = (value,min,max)=>Math.max(min,Math.min(max,Number(value)||0));
 
 export const COMPANY_QUALITY_BARS = Object.freeze([
