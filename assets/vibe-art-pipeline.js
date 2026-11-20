@@ -463,8 +463,9 @@ export function createVibeAssetRecompositionPlan({
     }
   }
   const observations=Array.isArray(verifiedObservations)?verifiedObservations:[];
-  const evidence=observations.filter(row=>validOrigins.has(clean(row?.parentAssetId))
-    &&recipes.some(recipe=>recipe.id===clean(row?.recipeId))
+  // [실패 학습 차단] 관측 기록은 정확한 부모·조리법에 결합된 경우에만 참조한다.
+  const evidence=observations.filter(row=>recipes.some(recipe=>recipe.id===clean(row?.recipeId)
+    &&recipe.baseAssetId===clean(row?.parentAssetId))
     &&row?.independentQaPassed===true&&row?.runtimeObserved===true
     &&row?.rightsVerified===true&&row?.sourceAndOutputHashesVerified===true
     &&/^[a-f0-9]{40}$/i.test(clean(row?.sourceRevision))
