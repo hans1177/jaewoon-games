@@ -1645,7 +1645,7 @@ test('대항해시대 의상·헤어·장신구 26종은 UV/PBR 원본과 등록
     const json=JSON.parse(bytes.toString('utf8',20,20+bytes.readUInt32LE(12)));
     assert.equal(proof.sourceSizeBytes,bytes.length,'PBR 원본 크기 불일치: '+name);
     assert.equal(proof.sourceSha256,crypto.createHash('sha256').update(bytes).digest('hex'),'PBR 원본 SHA256 불일치: '+name);
-    assert.equal(proof.sourceGitBlobSha1,crypto.createHash('sha1').update('blob '+bytes.length+'\\0').update(bytes).digest('hex'),'PBR 원본 Git SHA1 불일치: '+name);
+    assert.equal(proof.sourceGitBlobSha1,crypto.createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex'),'PBR 원본 Git SHA1 불일치: '+name);
     assert.ok(proof.pbrColorMap&&proof.pbrNormalMap&&proof.pbrRoughnessMetallicMap,'실제 3중 PBR 맵 누락: '+name);
     assert.equal(json.meshes.flatMap(m=>m.primitives||[]).filter(p=>Number.isInteger(p.attributes.TEXCOORD_0)).length,
       json.meshes.flatMap(m=>m.primitives||[]).length,'UV0 없는 부품: '+name);
