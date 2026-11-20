@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildDataset, isVerifiedPass, TASK_TYPES } from './vibe2-weight-learning.mjs';
+import { buildDataset, datasetContentFingerprint, isVerifiedPass, TASK_TYPES } from './vibe2-weight-learning.mjs';
 
 function readRecords(filePath) {
   const raw = fs.readFileSync(filePath, 'utf8').trim();
@@ -99,6 +99,8 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
       eval: dataset.stats.eval,
       holdout: dataset.stats.holdout,
       accepted: dataset.stats.accepted,
+      // 기존 분리된 검증 샘플의 실제 내용 해시: 건수만 같아도 변경 시 재훈련 요청이 달라진다.
+      datasetSha256: datasetContentFingerprint(dataset),
       skippedUnverified: dataset.stats.skippedUnverified,
       skippedIncomplete: dataset.stats.skippedIncomplete,
       skippedQuality: dataset.stats.skippedQuality,
