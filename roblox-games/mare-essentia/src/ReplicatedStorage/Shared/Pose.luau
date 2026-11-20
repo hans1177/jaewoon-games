@@ -209,7 +209,8 @@ local function addSkirt(model, color, long)
 	q.Shape = Enum.PartType.Cylinder
 	q.Size = Vector3.new(len, lower.Size.X * 1.18, lower.Size.X * 1.12)
 	q.Color = color
-	q.Material = Enum.Material.SmoothPlastic
+	-- [기존 치맛자락] 별도 새 장식 대신 원형을 유지하고 무광 천 재질로 조정한다.
+	q.Material, q.Reflectance = Enum.Material.Fabric, 0
 	q.CanCollide, q.CanTouch, q.CanQuery, q.Massless = false, false, false, true
 	q.CFrame = lower.CFrame * CFrame.new(0, -len * 0.43, 0) * CFrame.Angles(0, 0, math.pi / 2)
 	q.Parent = model
@@ -308,6 +309,12 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 		Rogue_Hooded = Color3.fromRGB(80, 90, 106),
 	}
 	local jacket = coat or coats[role] or Color3.fromRGB(140, 108, 80)
+	-- [개인 복식 팔레트] 문화권에서 결정된 옷색·바지색을 이미 있는 실물 재단복에 전달한다.
+	-- NPC 표시 전용 속성이며 경제·저장·전투 능력치는 바꾸지 않는다.
+	if outfit and (outfit.gender == "female" or outfit.gender == "male") then
+		model:SetAttribute("NpcClothTint", jacket)
+		model:SetAttribute("NpcTrouserTint", trousers)
+	end
 	for _, descendant in model:GetDescendants() do
 		if descendant:IsA("BasePart") then
 			descendant.Anchored = descendant == root
@@ -909,6 +916,11 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	local culture = model:GetAttribute("AppearanceCulture")
 	local detailAllowed = npcOutfit and type(year) == "number" and year >= 1500 and year < 1800
 		and EUROPEAN_DETAIL_CULTURES[culture] == true
+	-- [염색과 마감] 개인별 기존 외투·바지 팔레트와 체격 개성만 쓰며 새 파츠/자산을 만들지 않는다.
+	local npcClothTint = if detailAllowed then model:GetAttribute("NpcClothTint") else nil
+	local npcTrouserTint = if detailAllowed then model:GetAttribute("NpcTrouserTint") else nil
+	local clothPersonality = math.clamp(tonumber(model:GetAttribute("MotionPersonality")) or 1, 1, 3)
+	local finishing = if clothPersonality == 1 then 0.88 elseif clothPersonality == 3 then 1.12 else 1
 	local detailLimit = 99 -- PC는 기존 등록 복식 전체. 모바일은 거리·실제 FPS에 맞춰 조절.
 	local detailOrder = {}
 	local detailKinds = 0
@@ -1163,7 +1175,11 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 								then Color3.fromRGB(244, 222, 192)
 							elseif string.find(profile, "clergy", 1, true) then Color3.fromRGB(249, 238, 215)
 							else Color3.fromRGB(236, 232, 220)
-						surface.Color = surface.Color:Lerp(dye, 0.30)
+						-- [천의 염색 차이] 실제 원본 ColorMap 색을 가리지 않도록 30% 이내 보정.
+						if typeof(npcClothTint) == "Color3" and assetName ~= "outfit_guard" then
+							dye = dye:Lerp(npcClothTint, 0.30 * finishing)
+						end
+						surface.Color = surface.Color:Lerp(dye, 0.26)
 					end
 				end
 				-- [원본 재질 복원] 9개 복식 GLB는 ColorMap 없이 glTF baseColorFactor로
@@ -1203,6 +1219,19 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						or assetName == "outfit_apron" or assetName == "outfit_sash"
 						or assetName == "outfit_stole") and part.Material == Enum.Material.SmoothPlastic then
 						part.Material = Enum.Material.Fabric
+					end
+					-- [개인별 천·피혁 마감] 원본 표면 재질과 금속 장식·봉제선은 그대로 둔다.
+					-- 텍스처 없는 이미 분류된 직물만 지역 고유 옷색을 부드럽게 섞는다.
+					if npcOutfit and detailAllowed and part.Material == Enum.Material.Fabric
+						and typeof(npcClothTint) == "Color3" then
+						local tint = if assetName == "outfit_sash" then npcClothTint:Lerp(
+							if typeof(npcTrouserTint) == "Color3" then npcTrouserTint else npcClothTint, 0.45)
+							elseif assetName == "outfit_apron" then npcClothTint:Lerp(Color3.fromRGB(177, 148, 113), 0.48)
+							else npcClothTint
+						-- 무채색으로 유실된 복식에서 색조를 조금 더 복원한다.
+						local neutral = math.max(part.Color.R, part.Color.G, part.Color.B)
+							- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.11
+						part.Color = part.Color:Lerp(tint, (if neutral then 0.28 else 0.14) * finishing)
 					end
 					-- 원본 금속광을 유지하되 플라스틱 같은 과한 반사는 억제한다.
 					if part.Material == Enum.Material.Metal then
