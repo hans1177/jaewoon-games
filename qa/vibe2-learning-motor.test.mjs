@@ -1501,6 +1501,38 @@ test('retired distilled knowledge is excluded from retrieval',()=>{
   assert.equal(ctx.externalAiDistilled.length,0);
 });
 
+test('자가 코딩의 네이티브 성공 학습은 정확한 게임 실행 증거를 요구하고 실패 학습은 유지한다',()=>{
+  const refs='learning-knowledge-ids:'+encodeURIComponent(JSON.stringify(['CODE_PATTERN:native-self-evolution']));
+  const pass=['role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS'];
+  const record=(id,target,goal,extra=[])=>({
+    id,gameId:'native-learning-game',target,goal,
+    evidence:[...pass,refs,'actions-run:'+id,...extra]
+  });
+  const cloud=['roblox-open-cloud-runtime:PASS','roblox-open-cloud-exact-candidate:PASS'];
+  const cases=[
+    {task:record('roblox-static','roblox','Roblox Luau code'),expected:0},
+    {task:record('roblox-cloud-incomplete','roblox','Roblox Luau code',[cloud[0]]),expected:0},
+    {task:record('roblox-cloud-proven','roblox','Roblox Luau code',cloud),expected:1},
+    {task:record('roblox-asset-static','roblox','Roblox asset model',cloud),expected:0},
+    {task:record('roblox-asset-proven','roblox','Roblox asset model',
+      [...cloud,'ROBLOX_OPEN_CLOUD_ASSET_RUNTIME_BINDING_PASS']),expected:1},
+    {task:record('unity-static','unity','Unity runtime code'),expected:0},
+    {task:record('unity-native','unity','Unity runtime code',['unity-runtime-qa:PASS']),expected:1}
+  ];
+  for(const {task,expected} of cases){
+    const outcome=applyVerifiedKnowledgeOutcomes({}, {tasks:[task]});
+    assert.equal(outcome.added,expected,task.id);
+    assert.equal(outcome.positive,expected,task.id);
+  }
+  const regression={id:'native-runtime-regression',gameId:'native-learning-game',
+    target:'roblox',goal:'Roblox asset model',evidence:[
+      refs,'failure-cause:fan-in-regression-failed','actions-run:native-regression'
+    ]};
+  const failed=applyVerifiedKnowledgeOutcomes({}, {tasks:[regression]});
+  assert.equal(failed.negative,1);
+  assert.equal(failed.state.knowledgeAttribution.entries['CODE_PATTERN:native-self-evolution'].verifiedFailures,1);
+});
+
 test('exact knowledge attribution raises production confidence only from verified project outcomes',()=>{
   const ids=encodeURIComponent(JSON.stringify(['CODE_PATTERN:pat-1','EXTERNAL_AI_DISTILLED:ext-1']));
   const pass=(id,gameId)=>({id,gameId,target:'web',goal:'combat mobile input repair',evidence:[
