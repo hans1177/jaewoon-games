@@ -184,3 +184,18 @@ test('과거 밸런스 검증 기록은 그대로 학습·조회되지만 현재
   assert.equal(selectVerifiedDepartmentLearning(ledger,{role:'balance',gameId:'P0001'}).length,1);
   assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'audio',gameId:'P0001'}),[]);
 });
+
+
+test('모든 부서는 출처 리비전과 현재 작업 목표가 맞는 검증 경험만 재사용한다',()=>{
+  const shared={role:'development',verified:true,independentQa:'PASS',
+    sourceRevision:'abc123',outcome:'SUCCESS',workLane:'FULL',verifiedAt:'2026-11-20T00:00:00Z'};
+  const ledger={verifiedLearning:[
+    {...shared,sourceEvidenceId:'ocean',gameId:'OCEAN',sourcePath:'roblox-games/ocean',summary:'선박 전투 포격 처리',nextAction:'포격 회귀 검증'},
+    {...shared,sourceEvidenceId:'menu',gameId:'MENU',sourcePath:'web-games/menu',summary:'상점 목록 버튼 정렬',nextAction:'상점 배치'},
+    {...shared,sourceEvidenceId:'unbound',sourceRevision:'',gameId:'OCEAN',sourcePath:'roblox-games/ocean',summary:'출처 불명 포격 처리'},
+  ]};
+  assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'development',goal:'작업 개선'}),[]);
+  assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'development',goal:'선박 포격 표현'}).map(x=>x.sourceEvidenceId),['ocean']);
+  assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'development',gameId:'OCEAN',goal:'작업 개선'}).map(x=>x.sourceEvidenceId),['ocean']);
+  assert.equal(selectVerifiedDepartmentLearning(ledger,{role:'development'}).length,2,'기존 목표 없는 조회는 검증 출처만 유지');
+});
