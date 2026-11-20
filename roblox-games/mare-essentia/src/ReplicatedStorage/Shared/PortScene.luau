@@ -5234,7 +5234,14 @@ function PortScene.build(info, onFacility)
 	local facilityUpgradeAnimations, facilityUpgradeBuilders = 0, 0
 	local touchFacility = game:GetService("UserInputService").TouchEnabled
 	local facilityAnimationCap = if touchFacility then 1 else 3
-	local facilityBuilderCap = if touchFacility then 1 else 2
+	-- [공정별 공사 인력] 실제 고용·주민·시설 발전 단계에서 정해지는 시각 표시 상한.
+	local facilityJobs = info.sim and info.sim.jobs
+	local facilityWorkers = if info.sim then math.max(0, math.min(
+		math.floor(tonumber(info.sim.residents) or 0),
+		math.floor(tonumber(facilityJobs and facilityJobs.laborer) or 0)
+			+ math.floor(tonumber(facilityJobs and facilityJobs.craftsman) or 0))) else 8
+	local facilityBuilderCap = math.min(facilityWorkers,
+		if touchFacility then math.min(4, sceneLevel + 1) else math.min(8, sceneLevel * 2))
 	-- 시설 건물: { 이름, 탭, 위치, 크기, 벽색 }
 	local facilities = {
 		{ name = "교역소", tab = "trade", pos = Vector3.new(-12, 0, 36), w = 20, d = 12, floors = 1, color = Color3.fromRGB(176, 120, 60), economy = "market", always = true },
@@ -5323,26 +5330,46 @@ function PortScene.build(info, onFacility)
 						scaffold:SetAttribute("BuildState", "constructing")
 						scaffold:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 						facilityUpgradeAnimations += 1
-						local jobs = info.sim and info.sim.jobs
-						local hasWorkers = not info.sim or (jobs and ((jobs.laborer or 0) + (jobs.craftsman or 0)) > 0)
-						if hasWorkers and facilityUpgradeBuilders < facilityBuilderCap then
-							local workerPos = at(-12, 6)
-							local builder = villager(folder, workerPos, faceTo(workerPos, at(-14, 4)),
-								Color3.fromRGB(144, 115, 82), rng, "Barbarian", true, { profession = "construction_worker", hat = "cap" })
-							if builder then
-								facilityUpgradeBuilders += 1
-								builder.Name = "FacilityBuilder_" .. f.tab
-								builder:SetAttribute("Job", "construction_worker")
-								builder:SetAttribute("BuildPlotId", info.portId .. ":facility:" .. f.name)
-								builder:SetAttribute("ShowcaseOnly", true)
-								table.insert(walkers, { model = builder, base = builder:GetPivot(), mode = "stay", kind = "hammer", phase = rng:NextNumber(0, 5) })
-								task.spawn(function()
-									local deadline = os.clock() + 25
-									while builder.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
-									if not folder.Parent then return end
-									task.wait(delay + 3.8)
-									if builder.Parent then builder:Destroy() end
-								end)
+						local hasWorkers = facilityBuilderCap > facilityUpgradeBuilders
+						if hasWorkers then
+							local crewSize = math.min(if touchFacility then 3 else 4,
+								facilityBuilderCap - facilityUpgradeBuilders)
+							for index = 1, crewSize do
+								-- [현장 업무] 골조 망치질, 자재 운반, 목재 다듬기, 완공 점검.
+								local workerPos = if index == 1 then at(-12, 6)
+									elseif index == 2 then at(-18, 7)
+									elseif index == 3 then at(-11, 11) else at(-16, 11)
+								local taskKind = if index == 1 then "hammer" elseif index == 2 then "lift"
+									elseif index == 3 then "plane" else "inspect"
+								local trade = if index == 2 then "laborer"
+									elseif index == 3 then "carpenter" else "construction_worker"
+								local builder = villager(folder, workerPos, faceTo(workerPos, at(-14, 4)),
+									Color3.fromRGB(144, 115, 82), rng, "Barbarian", true,
+									{ profession = trade, hat = "cap", year = info.year or currentYear })
+								if builder then
+									facilityUpgradeBuilders += 1
+									builder.Name = "FacilityBuilder_" .. f.tab .. "_" .. index
+									builder:SetAttribute("Job", "construction_worker")
+									builder:SetAttribute("ConstructionTrade", trade)
+									builder:SetAttribute("BuildPlotId", info.portId .. ":facility:" .. f.name)
+									builder:SetAttribute("Activity", taskKind)
+									builder:SetAttribute("ShowcaseOnly", true)
+									local duty = { model = builder, base = builder:GetPivot(), mode = "stay",
+										kind = taskKind, phase = rng:NextNumber(0, 5) }
+									table.insert(walkers, duty)
+									task.spawn(function()
+										local deadline = os.clock() + 25
+										while builder.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
+										if not folder.Parent then return end
+										task.wait(delay + 2.6)
+										if builder.Parent then
+											duty.kind = "inspect"
+											builder:SetAttribute("Activity", "inspect")
+											task.wait(1.2)
+											if builder.Parent then builder:Destroy() end
+										end
+									end)
+								end
 							end
 						end
 						task.spawn(function()
