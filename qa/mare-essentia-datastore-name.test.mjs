@@ -1429,7 +1429,7 @@ test('발전도 해금 장식은 단계적으로 설치되고 기존 완공물�
  assert.match(scene,/local newGrade = previousDecor and tier > \(previousDecor\[d\.kind\] or 0\)/);
  assert.match(scene,/if info\.sim and info\.sim\.buildings then lastDecorationGrowth\[info\.portId\] = decor end/);
  assert.match(scene,/CityDecorationScaffold/);
- assert.match(scene,/worker:SetAttribute\("Job", "construction_worker"\)/);
+ assert.match(scene,/worker:SetAttribute\("Job", profession\)/);
  assert.match(scene,/duty\.kind = "inspect"/);
  for(const tier of ['residential','harbor'])assert.match(config,new RegExp(tier+' = grade\\('));
  assert.match(scene,/CityGrowthDecoration_residential/);
@@ -1437,7 +1437,7 @@ test('발전도 해금 장식은 단계적으로 설치되고 기존 완공물�
  assert.match(scene,/CityDecorationInstalledThisVisit/);
  assert.match(scene,/CityDecorationBuilders/);
  assert.match(scene,/local animationLimit = if touchDecor then 3 else 6/);
- assert.match(scene,/local builderLimit = if touchDecor then 1 else 2/);
+ assert.match(scene,/local builderLimit = math\.min\(availableBuilders,/);
  assert.match(scene,/BuildAuthority", "VISUAL_ONLY"/);
 });
 
@@ -1455,9 +1455,10 @@ test('주거·항만·공방·행정·시장 장식은 실제 신규 단계에�
  assert.match(stage,/item:SetAttribute\("BuildState", "complete"\)/);
  assert.match(stage,/scaffold.Name = "CityDecorationScaffold"/);
  assert.match(stage,/scaffold:SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
- assert.match(stage,/worker:SetAttribute\("Activity", "hammer"\)/);
- assert.match(stage,/duty.kind = "inspect"/);
- assert.match(stage,/worker:Destroy\(\)/);
+ assert.match(stage,/worker:SetAttribute\("Activity", kind\)/);
+ assert.match(stage,/for index = 1, teamSize do/);
+ assert.match(stage,/member\.duty\.kind = "inspect"/);
+ assert.match(stage,/member\.model:Destroy\(\)/);
  assert.match(stage,/scaffold:Destroy\(\)/);
  assert.match(stage,/while item.Parent and not folder.Parent/);
  for(const call of [
@@ -1468,7 +1469,7 @@ test('주거·항만·공방·행정·시장 장식은 실제 신규 단계에�
  ]) assert.ok(scene.includes('if newGrade then '+call) || scene.includes(call),'신규 해금 장식 미연결: '+call);
  assert.equal((scene.match(/stageDecoration\(/g)||[]).length,5,'4개 배치 경로+단일 책임 함수');
  assert.match(scene,/decorLimit = if game:GetService\("UserInputService"\)\.TouchEnabled then 7 else 13/);
- assert.match(scene,/local builderLimit = if touchDecor then 1 else 2/);
+ assert.match(scene,/local builderLimit = math\.min\(availableBuilders,/);
  assert.match(scene,/if info\.sim and info\.sim\.buildings then lastDecorationGrowth\[info\.portId\] = decor end/);
 });
 
@@ -1558,15 +1559,15 @@ test('경제 시설 증축 연출은 발전 시에만 실행되고 재입항과 
  assert.match(region,/facilityTier > previousFacilityGrowth\[f\.name\]/);
  assert.match(region,/and facilityUpgradeAnimations < facilityAnimationCap/);
  assert.match(region,/local facilityAnimationCap = if touchFacility then 1 else 3/);
- assert.match(region,/local facilityBuilderCap = if touchFacility then 1 else 2/);
+ assert.match(region,/local facilityBuilderCap = math\.min\(facilityWorkers,/);
  assert.match(region,/if upgrade then/);
  assert.ok(ids.includes('["Terrain/wood-structure"]'),'기등록 실제 시공 비계');
  assert.match(region,/importedModel\(folder, "Terrain", "wood-structure", at\(-14, 4\), 6\.5, false, nil, delay\)/);
  assert.match(region,/scaffold:SetAttribute\("BuildState", "constructing"\)/);
  assert.match(region,/scaffold:SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
- assert.match(region,/local hasWorkers = not info\.sim or \(jobs and/);
+ assert.match(region,/local hasWorkers = facilityBuilderCap > facilityUpgradeBuilders/);
  assert.match(region,/builder:SetAttribute\("Job", "construction_worker"\)/);
- assert.match(region,/kind = "hammer", phase = rng:NextNumber\(0, 5\)/);
+ assert.match(region,/kind = taskKind, phase = rng:NextNumber\(0, 5\)/);
  assert.match(region,/while builder\.Parent and not folder\.Parent/);
  assert.match(region,/if builder\.Parent then builder:Destroy\(\) end/);
  assert.match(region,/if scaffold\.Parent then scaffold:Destroy\(\) end/);
@@ -1580,6 +1581,36 @@ test('경제 시설 증축 연출은 발전 시에만 실행되고 재입항과 
 });
 
  
+// [주민 일과·복식] 기존 R15/경제 소스에 직업별 개인 스케줄과 복식 보정이 적용됐는지 확인.
+test('항구 주민은 실제 고용을 넘지 않고 개인별 출퇴근·점심·야경과 등록 복장을 갖는다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const pose=read('ReplicatedStorage/Shared/Pose.luau');
+ const ids=read('ReplicatedStorage/Shared/AssetIds.luau');
+ for(const key of ['merchant','sailor','guard','craftsman','farmer','fisher','official','laborer','clergy']){
+  assert.match(scene,new RegExp('job = "'+key+'"'));
+ }
+ for(const marker of [
+  'remainingJobs[candidate.job] -= 1','wakeAt = duty.wake + shift','marketAt = marketAt',
+  'marketEnd = marketEnd','homeAt = homeAt','breakAt = math.min(',
+  'routine = if hour >= (w.breakAt or 13)','"night_watch"','"commute"',
+  'w.home or w.morning','if t.home then t.home += lift end',
+  'w.lastPos = where','SocialInteraction', 'travelOffset'
+ ]) assert.ok(scene.includes(marker),'개별 시간표 연결 누락: '+marker);
+ for(const marker of ['NPC_PROFESSION_ACCESSORY','NpcClothTint','NpcTrouserTint',
+  'clothPersonality','outfit_apron','outfit_sash','Enum.Material.Fabric',
+  'NPC_PROFESSION_GEAR[profession]','surface.Color = surface.Color:Lerp(dye, 0.26)']){
+   assert.ok(pose.includes(marker),'기등록 재단복 디테일 누락: '+marker);
+ }
+ for(const accessory of ['acc_sailor_headband','acc_guild_badge','acc_feather_hat','acc_pearl_hairpin']){
+  assert.ok(ids.includes('["People/'+accessory+'"]'),'허용되지 않은 장신구: '+accessory);
+ }
+ assert.match(scene,/local livingCount = math\.min\(residents, dayJobCount,/);
+ assert.match(scene,/local facilityBuilderCap = math\.min\(facilityWorkers,/);
+ assert.match(scene,/local builderLimit = math\.min\(availableBuilders,/);
+ assert.match(scene,/facilityBuilderCap - facilityUpgradeBuilders/);
+ assert.match(scene,/for index = 1, teamSize do/);
+});
+
 // [주민 직업 실물 소지품] 35개 실사용 직업 각각 등록된 입체 도구 1개와 모바일 거리 해제를 검증한다.
 test('항구 35개 직업은 등록된 실물 장비를 직접 R15에 착용하고 저상세에서만 숨긴다',()=>{
  const pose=read('ReplicatedStorage/Shared/Pose.luau');
@@ -2000,7 +2031,7 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
   assert.match(block,/if not sa then/);
   assert.doesNotMatch(block,/Lerp\(tint, 0\.24\)/,'PBR 색 중복 혼합 복원 금지');
  }
- assert.match(port,/local textured = sa ~= nil or \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\)/);
+ assert.match(port,/local textured = sa ~= nil or p\.MaterialVariant ~= ""/);
  assert.match(port,/if not textured then[\s\S]*?p\.Material = selected/);
  for(const name of ['Plaster','ClayRoofTiles','RoofShingles','WoodPlanks','Limestone']){
   assert.ok(port.includes('Enum.Material.'+name)||cultures.includes('Enum.Material.'+name),'건축 재질 누락 '+name);
@@ -2011,6 +2042,37 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  assert.match(cultures,/Enum\.Material\.RoofShingles/);
  assert.match(port,/local lastDecorationGrowth = \{\}/);
  assert.match(port,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
+});
+
+// [도시 실체] 구획 표시 밀도가 실제 경제 시설과 발전도에 비례하고 중복 물체가 돌아오지 않는지 검사.
+test('시장·농경·종교 구획은 시설과 인력에 따라 달라지고 불필요한 중복 장식을 배제한다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const start=scene.indexOf('-- [실제 도시 구획] 경제의 건물·주민·고용을 읽기만 한다.');
+ const end=scene.indexOf('-- [항만 창고 장식]',start);
+ assert.ok(start>=0&&end>start,'기존 densify 단일 구획 책임 함수 유지');
+ const district=scene.slice(start,end);
+ for(const key of [
+  'local marketBuilt = if districtBuildings then',
+  'local warehouseBuilt = if districtBuildings then',
+  'local stalls = math.min(if districtTouch then 4 else 6',
+  'if stalls >= 2 and warehouseBuilt > 0 then',
+  'folder:SetAttribute("CityMarketStalls", stalls)',
+  'local farmsBuilt = if districtBuildings then',
+  'local cropRows = if farmsBuilt <= 0 then 0 else math.min(3, lvl, math.max(1, math.floor(math.sqrt(farmsBuilt) / 2)))',
+  'if farmsBuilt > 0 then',
+  'if lvl >= 3 and farmsBuilt >= 5 then',
+  'folder:SetAttribute("CityFarmRows"',
+  'local clergyAvailable = not districtJobs',
+  'local workersLimit = math.min(employed, if districtTouch then 3 else 5',
+  'm:SetAttribute("Job", job)',
+  'm:SetAttribute("Workplace", d.kind)',
+  'w.workKinds, w.tradeKinds, w.leisureKinds = activity, activity, leisure',
+ ]) assert.ok(district.includes(key),'도시 시설·주민 연동 누락: '+key);
+ assert.ok(!district.includes('for k = -2, 2 do'),'도시 시장의 일괄 가판대 복구 금지');
+ assert.ok(!district.includes('for k = -8, 8 do'),'농장 고정 119개 작물 복구 금지');
+ assert.ok(!district.includes('put("Town", "fountain-round", 7, cx'),'중복 시장 분수 금지');
+ assert.match(district,/if lvl >= 3 and clergyAvailable then/);
+ assert.match(district,/districtResidents >= workersLimit/);
 });
 
 // [181개 항구 구역 재배치] 기존 시드와 모든 문화권의 경계가 동일 생성 함수에 적용된다.

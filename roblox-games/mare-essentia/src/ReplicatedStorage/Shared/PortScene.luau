@@ -480,7 +480,23 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			local low = math.min(p.Color.R, p.Color.G, p.Color.B)
 			local high = math.max(p.Color.R, p.Color.G, p.Color.B)
 			local importedWhite = low >= 0.78 and high - low <= 0.14
-			if tint then
+			-- [원본 재질 우선] 이미 텍스처/법선/거칠기/MaterialVariant를 가진 건축 메시에는
+			-- 강제 단색 Tint를 곱하지 않는다. 판넬·기와·벽화의 명암과 원래 광택을 보존한다.
+			local surfaceMap = p:FindFirstChildOfClass("SurfaceAppearance")
+			local preserveArchitectureTexture = architecture and (
+				(p:IsA("MeshPart") and p.TextureID ~= "")
+				or p.MaterialVariant ~= ""
+				or (surfaceMap and (surfaceMap.ColorMap ~= "" or surfaceMap.NormalMap ~= ""
+					or surfaceMap.RoughnessMap ~= "" or surfaceMap.MetalnessMap ~= "")))
+			if architecture and not preserveArchitectureTexture then
+				for _, mesh in p:GetChildren() do
+					if mesh:IsA("SpecialMesh") and mesh.TextureId ~= "" then
+						preserveArchitectureTexture = true
+						break
+					end
+				end
+			end
+			if tint and not preserveArchitectureTexture then
 				if kind == "Animals" then
 					-- [실물 가축 품종색] 기등록 원본 PBR/텍스처와 눈·갈기·발굽 무늬는 보존한다.
 						-- 색이 빠진 단색 몸통 메시만 부드럽게 보정해 생물별 털색을 살린다.
@@ -553,8 +569,9 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 				and p.Material ~= Enum.Material.Glass and p.Material ~= Enum.Material.Metal
 				and p.Material ~= Enum.Material.Neon then
 				local sa = p:FindFirstChildOfClass("SurfaceAppearance")
-				local textured = (p:IsA("MeshPart") and p.TextureID ~= "")
-					or (sa and sa.ColorMap ~= "")
+				local textured = preserveArchitectureTexture or (p:IsA("MeshPart") and p.TextureID ~= "")
+					or p.MaterialVariant ~= "" or (sa and (sa.ColorMap ~= ""
+					or sa.NormalMap ~= "" or sa.RoughnessMap ~= "" or sa.MetalnessMap ~= ""))
 				for _, child in p:GetChildren() do
 					if child:IsA("SpecialMesh") and child.TextureId ~= "" then textured = true end
 				end
@@ -563,7 +580,18 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					local name = (asset .. " " .. p.Name):lower()
 					local material, paint = Enum.Material.Brick, wallColor
 					if sandy or mediterranean then material = Enum.Material.Plaster end
-					if name:find("roof", 1, true) or name:find("tile", 1, true)
+					if name:find("glass", 1, true) or name:find("windowpane", 1, true)
+						or name:find("glazing", 1, true) then
+						-- [유리] 무늬가 없는 수입 흰 창만 원재질을 살린다.
+						material, paint = Enum.Material.Glass, C(194, 218, 222)
+					elseif name:find("hinge", 1, true) or name:find("iron", 1, true)
+						or name:find("metal", 1, true) or name:find("latch", 1, true) then
+						-- [철물] 경첩/문고리/철제 난간은 저반사 철제 표면.
+						material, paint = Enum.Material.Metal, C(100, 105, 108)
+					elseif name:find("awning", 1, true) or name:find("canvas", 1, true)
+						or name:find("cloth", 1, true) then
+						material, paint = Enum.Material.Fabric, if tint then tint else C(171, 125, 88)
+					elseif name:find("roof", 1, true) or name:find("tile", 1, true)
 						or name:find("gable", 1, true) or name:find("shingle", 1, true) then
 						material, paint = Enum.Material.Slate, roofColor
 						if sandy then material = Enum.Material.Plaster
@@ -586,7 +614,10 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					elseif tint then
 						paint = paint:Lerp(tint, 0.86)
 					end
-					p.Material, p.Color, p.Reflectance = material, paint, 0
+					-- [소재별 반사] 유리는 밝은 창빛, 금속은 제한적 광택. 석재·나무·천은 무광.
+					p.Material, p.Color, p.Reflectance = material, paint,
+						if material == Enum.Material.Glass then 0.045
+						elseif material == Enum.Material.Metal then 0.02 else 0
 					if sa and sa.ColorMap == "" then sa.Color = paint end
 					-- 원래 무텍스처 메시의 이중 색 곱셈을 막고 지정된 돌/벽돌 색을 그대로 표시한다.
 					for _, child in p:GetChildren() do
@@ -811,7 +842,8 @@ local function uniformMaterial(m, style, surface)
 		if p:IsA("BasePart") and p.Material ~= Enum.Material.Glass
 			and p.Material ~= Enum.Material.Metal and p.Material ~= Enum.Material.Neon then
 			local sa = p:FindFirstChildOfClass("SurfaceAppearance")
-			local textured = sa ~= nil or (p:IsA("MeshPart") and p.TextureID ~= "")
+			local textured = sa ~= nil or p.MaterialVariant ~= ""
+				or (p:IsA("MeshPart") and p.TextureID ~= "")
 			for _, ch in p:GetChildren() do
 				if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 			end
@@ -1441,7 +1473,21 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		local old = extra.age == "elder"
 		local hairColor = if old then GRAY_HAIR else SKIN_HAIR[rng:NextInteger(1, #SKIN_HAIR)]
 		extra.hairColor = hairColor
-		extra.hair = if female then (if extra.age == "child" then "long" elseif rng:NextNumber() < 0.5 then "bun" else "long") else "short"
+		-- [개인별 외형] 기존 R15 비율·등록 헤어를 쓰면서 같은 직업도 체격, 걸음새, 헤어가 다르다.
+		extra.persona = rng:NextInteger(1, 3)
+		extra.height = spec.height or (if extra.age == "child" then rng:NextNumber(5.55, 5.92)
+			elseif old then rng:NextNumber(5.55, 5.85) else rng:NextNumber(5.54, 6.06))
+		local professionId = extra.profession
+		extra.bodyType = spec.bodyType or (if professionId == "farmer" or professionId == "docker"
+			or professionId == "construction_worker" then "heavy"
+			elseif professionId == "guard" or professionId == "sailor" or professionId == "fisher" then "athletic"
+			elseif professionId == "tailor" or professionId == "teacher" then "slim" else nil)
+		extra.motionStyle = spec.motionStyle or (if professionId == "guard" then "disciplined"
+			elseif professionId == "sailor" or professionId == "docker" then "heavy"
+			elseif professionId == "merchant" or professionId == "official" then "scholar"
+			elseif professionId == "fisher" or professionId == "craftsman" then "nimble" else nil)
+		extra.hair = if female then (if extra.age == "child" then "long"
+			elseif rng:NextNumber() < 0.44 then "bun" else "long") else "short"
 		if female and extra.age ~= "child" then
 			extra.skirt = spec.skirt or (o.coats and o.coats[rng:NextInteger(1, #o.coats)]) or Color3.fromRGB(120, 90, 70)
 			extra.skirtLong = true
@@ -1468,6 +1514,9 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			t.morning += lift
 			t.market += lift
 			t.evening += lift
+			if t.home then t.home += lift end
+			t.lastPos = t.base.Position
+			t.lastFacing = t.base.LookVector
 		end
 		t.phase = t.phase or rng:NextNumber(0, 10)
 		-- [개인 생태] 주민마다 고정된 행동 속도와 사회적 리듬. 경제/저장과 분리.
@@ -1536,27 +1585,87 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 
 	-- [주민 일상 동선] 기존 직업 주민 중 소수만 작업장→시장→주점/광장으로 이동한다.
 	-- 모바일은 2명 상한이며 카메라에서 멀면 관절 연출만 생략한다. 경제 및 저장 상태에는 관여하지 않는다.
-	local livingCount = if game:GetService("UserInputService").TouchEnabled then 2 else math.min(4, 1 + lvl)
-	if info.sim and (info.sim.residents or 0) < 4 then livingCount = 0 end
+	local touchJobs = game:GetService("UserInputService").TouchEnabled
+	local residents = if info.sim then math.max(0, math.floor(tonumber(info.sim.residents) or 0)) else 20 + lvl * 12
+	local employment = info.sim and info.sim.jobs
+	-- [직업별 시간표] 경제 직업 ID와 실제 고용 인원만 사용한다. 생활 단계와 위치는 연출 전용.
+	local dayJobs = {
+		{ job = "merchant", role = "Rogue", wake = 6.6, market = 9.4, leave = 17.2, home = 21.8,
+			work = { "pack", "count", "ledger", "weigh" }, trade = { "offer", "receive", "bargain", "stall" }, rest = { "gossip", "drink", "listen" } },
+		{ job = "sailor", role = "Barbarian", wake = 5.2, market = 9.8, leave = 16.8, home = 21.0,
+			work = { "knot", "chart", "check_compass", "haul_rope" }, trade = { "unload", "offer", "inspect" }, rest = { "stretch", "cheer", "talk" } },
+		{ job = "guard", role = "Knight", wake = 5.8, market = 10.6, leave = 16.4, home = 22.1,
+			work = { "patrol", "scan", "salute", "watch" }, trade = { "guide", "look", "patrol" }, rest = { "warm", "lean", "yawn" } },
+		{ job = "craftsman", role = "Barbarian", wake = 6.2, market = 10.7, leave = 16.7, home = 21.0,
+			work = { "saw", "carve", "inspect", "plane_wood" }, trade = { "pack", "count", "offer" }, rest = { "stretch", "gossip", "drink" } },
+		{ job = "farmer", role = "Barbarian", wake = 5.0, market = 10.4, leave = 15.7, home = 20.7,
+			work = { "hoe", "harvest", "sow", "water" }, trade = { "sort_crop", "offer", "receive" }, rest = { "stretch", "drink", "listen" } },
+		{ job = "fisher", role = "Barbarian", wake = 4.8, market = 10.0, leave = 16.2, home = 20.5,
+			work = { "fish", "net", "reel", "mend_net" }, trade = { "offer", "receive", "weigh" }, rest = { "drink", "talk", "stretch" } },
+		{ job = "official", role = "Mage", wake = 7.0, market = 11.0, leave = 16.3, home = 21.1,
+			work = { "seal", "write", "read", "count" }, trade = { "guide", "ledger", "point" }, rest = { "read", "talk", "listen" } },
+		{ job = "laborer", role = "Rogue", wake = 5.6, market = 10.2, leave = 16.0, home = 20.9,
+			work = { "carry", "lift", "stack", "sweep" }, trade = { "unload", "pack", "offer" }, rest = { "stretch", "drink", "gossip" } },
+		{ job = "clergy", role = "Mage", wake = 6.8, market = 11.2, leave = 16.0, home = 20.6,
+			work = { "pray", "read", "bless", "bell" }, trade = { "listen", "guide", "talk" }, rest = { "read", "warm", "look" } },
+	}
+	local remainingJobs, dayJobCount = {}, 0
+	for _, duty in dayJobs do
+		local employed = if employment then math.max(0, math.floor(tonumber(employment[duty.job]) or 0))
+			else math.max(1, lvl)
+		remainingJobs[duty.job] = employed
+		dayJobCount += employed
+	end
+	local livingCount = math.min(residents, dayJobCount,
+		if touchJobs then math.min(6, 1 + lvl + math.floor(residents / 24))
+		else math.min(12, 2 + lvl * 2 + math.floor(residents / 16)))
+	local scheduledPeople = {}
 	for i = 1, livingCount do
+		-- [고용 명수] 1명을 여러 직업에 재사용하지 않고 각 직업의 실제 보유 슬롯을 소진한다.
+		local duty
+		for offset = 0, #dayJobs - 1 do
+			local candidate = dayJobs[(i + offset - 1) % #dayJobs + 1]
+			if remainingJobs[candidate.job] > 0 then
+				duty = candidate
+				remainingJobs[candidate.job] -= 1
+				break
+			end
+		end
+		if not duty then break end
 		local side = if i % 2 == 0 then 1 else -1
-		local work = Vector3.new(-55 - i * 5, 0, side * 22)
-		local market = Vector3.new(-43 - i * 4, 0, side * 12)
+		local work = Vector3.new(-56 - i * 5, 0, side * 22)
+		local market = Vector3.new(-44 - i * 4, 0, side * 12)
 		local evening = if side > 0 then Vector3.new(-26 - i * 3, 0, 12)
 			else Vector3.new(-18 - i * 2, 0, -24)
-		-- [직업별 실제 생활동선] 기존 소수 인원만 장터·작업장·부두를 오간다.
-		local dayJobs = {
-			{ job = "merchant", role = "Rogue", work = { "pack", "count", "bargain", "ledger" }, trade = { "offer", "receive", "bargain" }, rest = { "gossip", "drink", "listen" } },
-			{ job = "sailor", role = "Barbarian", work = { "knot", "chart", "scan", "check_compass", "haul_rope" }, trade = { "unload", "offer", "inspect" }, rest = { "stretch", "cheer", "talk" } },
-			{ job = "guard", role = "Knight", work = { "patrol", "scan", "salute", "scan_horizon", "watch" }, trade = { "guide", "look", "patrol" }, rest = { "warm", "lean", "yawn" } },
-			{ job = "craftsman", role = "Barbarian", work = { "saw", "carve", "inspect", "plane_wood", "repair" }, trade = { "pack", "count", "offer" }, rest = { "stretch", "gossip", "drink" } },
-		}
-		local duty = dayJobs[(i - 1) % #dayJobs + 1]
+		-- [귀가] 작업장과 분리된 근처 주거 골목. 기존 도로를 횡단하지 않는 같은 쪽 동선.
+		local home = work + Vector3.new(0, 0, side * 10)
+		local shift = rng:NextNumber(-0.32, 0.32)
+		local marketAt = duty.market + shift
+		local marketEnd = duty.leave + shift
+		local homeAt = duty.home + shift
 		local fig = person(work, faceTo(work, market), { role = duty.role, profession = duty.job, hat = "cap" }, duty.job)
-		addTask(fig, { mode = "schedule", morning = work, market = market, evening = evening,
+		addTask(fig, { mode = "schedule", morning = work, market = market, evening = evening, home = home,
 			job = duty.job, workKinds = duty.work, tradeKinds = duty.trade, leisureKinds = duty.rest,
-			phase = rng:NextNumber(0, 10), socialKind = duty.rest[(i - 1) % #duty.rest + 1] })
-		if fig then fig:SetAttribute("Job", duty.job); fig:SetAttribute("DailyRoutine", "work") end
+			phase = rng:NextNumber(0, 10), socialKind = duty.rest[(i - 1) % #duty.rest + 1],
+			wakeAt = duty.wake + shift, marketAt = marketAt, marketEnd = marketEnd, homeAt = homeAt,
+			breakAt = math.min(marketEnd - 1.3, marketAt + 1.8 + rng:NextNumber(0.4, 1.2)),
+			breakSpan = rng:NextNumber(0.5, 0.9),
+			travelPace = rng:NextNumber(0.83, 1.12), travelOffset = rng:NextNumber(-1.3, 1.3) })
+		if fig then
+			fig:SetAttribute("Job", duty.job)
+			fig:SetAttribute("DailyRoutine", "work")
+			local this = walkers[#walkers]
+			if this and this.model == fig then
+				-- [동선·만남] 같은 시장 골목에서 출퇴근하는 두 직업을 고정 파트너로 묶는다.
+				-- 홀/짝 Z측 골목을 넘어 순간이동하지 않도록 두 칸 떨어진 주민만 짝을 맺는다.
+				local previous = (i % 4 == 3 or i % 4 == 0) and scheduledPeople[i - 2] or nil
+				if previous and previous.model.Parent then
+					this.socialPartner, previous.socialPartner = previous, this
+					this.socialLead, previous.socialLead = false, true
+				end
+				table.insert(scheduledPeople, this)
+			end
+		end
 	end
 
 	-- [지역 물류] 현재 항구에서 실제 생산하는 품목만 작업장→시장→부두 보행으로 운송한다.
@@ -2132,12 +2241,17 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		end
 		local total = 0
 		for _, j in ipairs(ORDER) do total += jobs[j] or 0 end
-		local N = if info.sim then math.clamp(math.floor((info.sim.residents or 6) * 0.3), 1, 18) else ({ 6, 8, 10, 12, 14 })[lvl]
+		-- [현지 고용 표본] 주민 수·실제 직종 고용·도시 단계에 따라 표시 인원만 증가.
+		-- 모바일과 PC 별도 인원 상한. 경제 고용 숫자보다 많은 직업 모델을 생성하지 않는다.
+		local residents = if info.sim then math.max(0, math.floor(tonumber(info.sim.residents) or 0)) else 16 + lvl * 14
+		local touch = game:GetService("UserInputService").TouchEnabled
+		local cap = if touch then math.min(30, 9 + lvl * 4) else math.min(48, 12 + lvl * 8)
+		local N = math.min(cap, residents, math.floor(total))
 		local quota, used = {}, 0
 		for _, j in ipairs(ORDER) do
 			local share = (jobs[j] or 0) / math.max(total, 1)
 			if j == "farmer" or j == "laborer" then share = math.min(share, 0.2) end
-			quota[j] = math.floor(N * share + 0.5)
+			quota[j] = math.min(math.max(0, math.floor(tonumber(jobs[j]) or 0)), math.floor(N * share + 0.5))
 			if not info.sim and (jobs[j] or 0) > 0 and quota[j] == 0 then quota[j] = 1 end
 			used += quota[j]
 		end
@@ -2147,7 +2261,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			local yard = JOB_YARD[j]
 			for k = 1, quota[j] do
 				slot += 1
-				if slot > 24 then break end
+				if slot > cap then break end
 				local lane = lanes[(slot - 1) % #lanes + 1]
 				local x = -46 - math.floor((slot - 1) / #lanes) * 22 - ((slot - 1) % 3) * 7
 				local side = if lane > 0 then 1 else -1
@@ -2642,9 +2756,15 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local touchDecor = game:GetService("UserInputService").TouchEnabled
 	local decorLimit = if game:GetService("UserInputService").TouchEnabled then 7 else 13
 	local animationLimit = if touchDecor then 3 else 6
-	local builderLimit = if touchDecor then 1 else 2
+	-- [건설 조직] 실제 고용된 일꾼·장인의 수를 넘지 않고 사이트마다 여러 직무로 분산한다.
+	-- 성능 예산은 도시 등급에 따라 커지지만 모바일은 동시 4명까지만 렌더링한다.
 	local jobs = info.sim and info.sim.jobs
-	local hasBuilders = not info.sim or (jobs and ((jobs.laborer or 0) + (jobs.craftsman or 0)) > 0)
+	local availableBuilders = if info.sim then math.max(0, math.min(
+		math.floor(tonumber(info.sim.residents) or 0),
+		math.floor(tonumber(jobs and jobs.laborer) or 0) + math.floor(tonumber(jobs and jobs.craftsman) or 0)
+	)) else 9
+	local builderLimit = math.min(availableBuilders, if touchDecor then math.min(4, lvl + 1) else math.min(9, lvl * 2))
+	local hasBuilders = builderLimit > 0
 
 	-- [성장 장식 시공] 모든 구역이 동일한 설치·비계 제거·목수 점검 과정을 사용한다.
 	-- 처음 방문한 기존 완공물과 즉시 설치된 대형 메시는 재시공하지 않는다.
@@ -2658,21 +2778,31 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			scaffold:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 			scaffold:SetAttribute("ShowcaseOnly", true)
 		end
-		local worker, duty
+		local crew = {}
 		if hasBuilders and decorBuilders < builderLimit then
-			local workerAt = site + Vector3.new(6, 0, 5)
-			worker = villager(folder, workerAt, faceTo(workerAt, site),
-				C(143, 109, 73), rng, "Barbarian", true,
-				{ profession = "carpenter", hat = "cap", year = info.year or currentYear })
-			if worker then
-				decorBuilders += 1
-				worker:SetAttribute("Job", "construction_worker")
-				worker:SetAttribute("Activity", "hammer")
-				worker:SetAttribute("ShowcaseOnly", true)
-				worker:SetAttribute("BuildPlotId", item:GetAttribute("BuildPlotId"))
-				duty = { model = worker, base = worker:GetPivot(), mode = "stay",
-					kind = "hammer", phase = rng:NextNumber(0, 5) }
-				table.insert(walkers, duty)
+			local teamSize = math.min(if touchDecor then 2 else 3, builderLimit - decorBuilders)
+			for index = 1, teamSize do
+				-- [공정 분담] 목공 조립·자재 운반·안전 점검을 한 현장에 모은다.
+				local offset = if index == 1 then Vector3.new(6, 0, 5)
+					elseif index == 2 then Vector3.new(-6, 0, 5) else Vector3.new(3, 0, -7)
+				local workerAt = site + offset
+				local kind = if index == 1 then "hammer" elseif index == 2 then "lift" else "inspect"
+				local profession = if index == 1 then "carpenter" else "construction_worker"
+				local worker = villager(folder, workerAt, faceTo(workerAt, site),
+					C(143, 109, 73), rng, "Barbarian", true,
+					{ profession = profession, hat = "cap", year = info.year or currentYear })
+				if worker then
+					decorBuilders += 1
+					worker.Name = "CityBuilder_" .. tostring(decorBuilders)
+					worker:SetAttribute("Job", profession)
+					worker:SetAttribute("Activity", kind)
+					worker:SetAttribute("ShowcaseOnly", true)
+					worker:SetAttribute("BuildPlotId", item:GetAttribute("BuildPlotId"))
+					local duty = { model = worker, base = worker:GetPivot(), mode = "stay", kind = kind,
+						phase = rng:NextNumber(0, 5) }
+					table.insert(walkers, duty)
+					table.insert(crew, { model = worker, duty = duty })
+				end
 			end
 		end
 		task.spawn(function()
@@ -2682,19 +2812,24 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			if not item.Parent or not folder.Parent then
 				if item.Parent then item:SetAttribute("BuildState", "complete") end
 				if scaffold and scaffold.Parent then scaffold:Destroy() end
-				if worker and worker.Parent then worker:Destroy() end
+				for _, member in crew do
+					if member.model.Parent then member.model:Destroy() end
+				end
 				return
 			end
-			task.wait((buildDelay or 0) + 0.85)
+			-- [시공 연출] 비계는 공정 완료까지 남고, 점검 후 모든 작업자가 철수한다.
+			task.wait((buildDelay or 0) + 2.5)
 			if item.Parent then item:SetAttribute("BuildState", "complete") end
 			if scaffold and scaffold.Parent then scaffold:Destroy() end
-			if worker and worker.Parent then
-				if item.Parent and folder.Parent then
-					duty.kind = "inspect"
-					worker:SetAttribute("Activity", "inspect")
-					task.wait(1.2)
+			for _, member in crew do
+				if member.model.Parent then
+					member.duty.kind = "inspect"
+					member.model:SetAttribute("Activity", "inspect")
 				end
-				if worker.Parent then worker:Destroy() end
+			end
+			task.wait(1.2)
+			for _, member in crew do
+				if member.model.Parent then member.model:Destroy() end
 			end
 		end)
 	end
@@ -3474,39 +3609,61 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			return m
 		end
 		local hotKey = key == "ottoman" or key == "swahili" or key == "malabar" or key == "colonial" or key == "desert" or key == "tropic" or key == "seasia" or key == "pacific" or key == "wafrica" or key == "creole"
+		-- [실제 도시 구획] 경제의 건물·주민·고용을 읽기만 한다. 기존 필지 좌표 및 시드 유지.
+		-- 1단계부터 동일한 가판대 10개/작물 119개를 뿌리지 않고 시설이 성장할 때 단계적으로 채운다.
+		local districtBuildings = info.sim and info.sim.buildings
+		local districtJobs = info.sim and info.sim.jobs
+		local districtTouch = game:GetService("UserInputService").TouchEnabled
 		for _, d in districts do
 			local cx, cz = d.at.X, d.at.Z
 			local face = if cz > 0 then 0 else math.pi
 			if d.kind == "religious" then
+				-- [종교 시설] 문화권 대표 건물은 유지하고 부속탑·가로등은 발전도와 실제 종사 인력에 맞춰 개방.
+				local clergyAvailable = not districtJobs or (tonumber(districtJobs.clergy) or 0) > 0
 				if key == "japan" or key == "china" or key == "korea" then
 					put("Town", "temple-tower", 26, cx, cz, true, face)
-					put("Town", "temple-stone", 14, cx + 14, cz + (if cz > 0 then -8 else 8), true, face)
+					if lvl >= 3 and clergyAvailable then
+						put("Town", "temple-stone", 14, cx + 14, cz + (if cz > 0 then -8 else 8), true, face)
+					end
 				elseif key == "ottoman" or key == "swahili" or key == "malabar" or key == "desert" or key == "tropic" or key == "seasia" or key == "pacific" or key == "wafrica" then
 					put("Town", "temple-stone", 28, cx, cz, true, face)
-					put("Terrain", "pillar-obelisk", 14, cx + 15, cz, true)
+					if lvl >= 4 and clergyAvailable then put("Terrain", "pillar-obelisk", 14, cx + 15, cz, true) end
 				else
 					put("Town", "church", 30, cx, cz, true, face)
-					put("Town", "bell-tower", 22, cx - 16, cz + (if cz > 0 then -6 else 6), true)
+					if lvl >= 3 and clergyAvailable then
+						put("Town", "bell-tower", 22, cx - 16, cz + (if cz > 0 then -6 else 6), true)
+					end
 				end
-				for k = -1, 1, 2 do
-					lantern(folder, Vector3.new(cx + k * 9, 0, cz + (if cz > 0 then -17 else 17)), 3)
+				if lvl >= 3 and clergyAvailable then
+					for k = -1, 1, 2 do
+						lantern(folder, Vector3.new(cx + k * 9, 0, cz + (if cz > 0 then -17 else 17)), 3)
+					end
 				end
 			elseif d.kind == "market" then
-				for k = -2, 2 do
-					put("Town", if k % 2 == 0 then "stall-red" else "stall-green", 7, cx + k * 8, cz + (if cz > 0 then -8 else 8), false, face)
-					put("Town", if k % 2 == 0 then "stall-green" else "stall-red", 7, cx + k * 8, cz + (if cz > 0 then 8 else -8), false, face + math.pi)
+				-- [시장] 실제 상업 시설이 없는 항구에 가짜 10개 가판대를 배치하지 않는다.
+				local marketBuilt = if districtBuildings then math.max(0, math.floor(tonumber(districtBuildings.market) or 0)) else lvl * 2
+				local warehouseBuilt = if districtBuildings then math.max(0, math.floor(tonumber(districtBuildings.warehouse) or 0)) else lvl
+				local stalls = math.min(if districtTouch then 4 else 6, lvl + 1,
+					if marketBuilt > 0 then 1 + math.floor(math.sqrt(marketBuilt)) else 0)
+				for k = 1, stalls do
+					local x = cx + (k - (stalls + 1) / 2) * 10
+					local side = if k % 2 == 0 then -1 else 1
+					put("Town", if (k + lvl) % 2 == 0 then "stall-red" else "stall-green",
+						7, x, cz + side * 8, false, if side > 0 then face else face + math.pi)
 				end
-				put("Town", "cart", 4, cx - 14, cz, false)
-				put("Cargo", "barrel", 2.6, cx + 14, cz + 2, false)
-				put("Cargo", "box-open", 2.4, cx + 12, cz - 2, false)
-				put("Town", "bench_A", 3.6, cx, cz, false)
-				put("Town", "fountain-round", 7, cx, cz + (if cz > 0 then -15 else 15), true)
+				if stalls >= 2 and warehouseBuilt > 0 then
+					put("Town", "cart", 4, cx - 14, cz, false)
+					put("Cargo", "box-open", 2.4, cx + 13, cz, false)
+				end
+				-- 광장의 이미 설치된 벤치·분수와 중복되지 않도록 추가 분수와 통은 제거.
+				if stalls > 0 then folder:SetAttribute("CityMarketStalls", stalls) end
 				-- [상품별 시장] 현지 실제 생산품 3D 전시는 모바일 1개, PC 2개만.
 				-- 기존 거래 가격·재고·시장 건물 수는 읽기 전용으로 보존한다.
 				local marketGoods = Chains.showcaseGoods(info.portId, made,
 					if game:GetService("UserInputService").TouchEnabled then 1 else 2)
 				for i, good in marketGoods do
-					local mesh = GOOD_MESH[good]
+					-- 실물 시장 0개인 도시에는 교역품이 허공에 진열되지 않는다.
+					local mesh = if stalls > 0 then GOOD_MESH[good] else nil
 					if mesh and AssetIds[mesh[1] .. "/" .. mesh[2]] then
 						local item = put(mesh[1], mesh[2], goodSize(good, 2.5),
 							cx - 12 + (i - 1) * 22, cz + 2, false)
@@ -3527,18 +3684,28 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				else
 					crops = { { "Terrain", "crops-wheatstagea", 5 }, { "Cargo", "cabbage", 2.8 }, { "Cargo", "carrot", 2.8 } }
 				end
-				-- 매우 넓은 농경지: 7줄 x 17칸, 줄마다 다른 작물
-				for row = -3, 3 do
-					local cr = crops[(row + 3) % #crops + 1]
-					for k = -8, 8 do
-						put(cr[1], cr[2], cr[3], cx + k * 6, cz + row * 8, false)
+				-- [농업 지구] 실제 경작 농장 수량·도시 발전도에 비례한 경작 줄만 표현한다.
+				-- 과거 고정 119개 작물+19개 울타리를 줄이고 농지 내부의 보행 여백을 확보한다.
+				local farmsBuilt = if districtBuildings then math.max(0, math.floor(tonumber(districtBuildings.farm) or 0)) else lvl * 7
+				local cropRows = if farmsBuilt <= 0 then 0 else math.min(3, lvl, math.max(1, math.floor(math.sqrt(farmsBuilt) / 2)))
+				local cropColumns = if districtTouch then math.min(5, 2 + lvl) else math.min(7, 2 + lvl)
+				for row = -cropRows, cropRows do
+					if cropRows > 0 then
+						local cr = crops[(row + 3) % #crops + 1]
+						for k = -cropColumns, cropColumns, 2 do
+							put(cr[1], cr[2], cr[3], cx + k * 7, cz + row * 8, false)
+						end
 					end
 				end
-				for k = -9, 9 do
-					put("Town", "fence", 5, cx + k * 5.5, cz + (if cz > 0 then 29 else -29), false)
+				if farmsBuilt > 0 then
+					for k = -8, 8, 2 do
+						put("Town", "fence", 5, cx + k * 6, cz + (if cz > 0 then 29 else -29), false)
+					end
+					if lvl >= 3 and farmsBuilt >= 5 then
+						put("Town", if key == "iberia" or key == "north" or key == "med" then "windmill" else "watermill", 30, cx + 62, cz, true, face)
+					end
 				end
-				put("Town", if key == "iberia" or key == "north" or key == "med" then "windmill" else "watermill", 30, cx + 62, cz, true, face)
-				put("Terrain", "log-stack", 4, cx - 56, cz + 4, false)
+				folder:SetAttribute("CityFarmRows", if cropRows > 0 then cropRows * 2 + 1 else 0)
 			end
 			-- [구역 자동 장식] 2~5단계의 실제 시설과 번영 기준으로만 장식이 완공된다.
 			-- 나중에 직접 건축할 수 있도록 주거 필지와 구별되는 안정적인 장식 필지 번호를 부여한다.
@@ -3585,29 +3752,59 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					end
 				end
 			end
-			-- 구역별 주민: 하는 일이 다르다 (광장에만 몰려 있지 않게)
+			-- [시설 이용 주민] 각 구역을 실제 근무처로 연결한다. 가짜 경제 인원·저장·고용 생성은 하지 않는다.
+			local job = if d.kind == "religious" then "clergy" elseif d.kind == "market" then "merchant" else "farmer"
+			local employed = if districtJobs then math.max(0, math.floor(tonumber(districtJobs[job]) or 0)) else 2 + lvl
+			local buildingCount = if districtBuildings then math.max(0,
+				math.floor(tonumber(districtBuildings[if d.kind == "religious" then "school"
+					elseif d.kind == "market" then "market" else "farm"]) or 0)) else lvl
+			local workersLimit = math.min(employed, if districtTouch then 3 else 5,
+				if buildingCount > 0 then 1 + math.floor(math.sqrt(buildingCount)) else 0)
+			local districtResidents = 0
+			local activity = if d.kind == "religious" then { "pray", "read", "bell", "bless" }
+				elseif d.kind == "market" then { "stall", "weigh", "offer", "receive", "count" }
+				else { "hoe", "harvest", "sow", "water", "inspect" }
+			local leisure = if d.kind == "religious" then { "listen", "talk", "look" }
+				elseif d.kind == "market" then { "talk", "bargain", "gossip" }
+				else { "stretch", "drink", "gossip" }
 			local function npc(dx, dz, yaw, kind, mode, spec)
-				local m = villager(folder, Vector3.new(cx + dx, 0, cz + dz), yaw, Color3.fromRGB(rng:NextInteger(60, 190), rng:NextInteger(60, 150), rng:NextInteger(40, 130)), rng, spec and spec.role or "Rogue", false, spec and spec.extra)
+				if districtResidents >= workersLimit then return end
+				local outfit = if spec and spec.extra then table.clone(spec.extra) else {}
+				outfit.profession, outfit.year = job, info.year or currentYear
+				outfit.female = districtResidents % 2 == 1
+				outfit.persona = (districtResidents % 3) + 1
+				local m = villager(folder, Vector3.new(cx + dx, 0, cz + dz), yaw,
+					Color3.fromRGB(rng:NextInteger(60, 190), rng:NextInteger(60, 150), rng:NextInteger(40, 130)),
+					rng, spec and spec.role or "Rogue", false, outfit)
 				if not m then return end
+				districtResidents += 1
+				m:SetAttribute("Job", job)
+				m:SetAttribute("Workplace", d.kind)
 				local w = { model = m, base = m:GetPivot(), kind = kind, mode = mode, phase = rng:NextNumber(0, 10) }
 				if mode == "path" then
 					w.len = spec.len
 					w.speed = rng:NextNumber(1.2, 1.9)
 					w.idleKind = spec.idle
+				else
+					w.job = job
+					w.workKinds, w.tradeKinds, w.leisureKinds = activity, activity, leisure
+					w.activitySpan = rng:NextNumber(9, 19)
+					w.socialSpan = rng:NextNumber(30, 46)
+					w.personality = rng:NextInteger(0, 4)
 				end
 				table.insert(walkers, w)
 			end
 			if d.kind == "religious" then
 				local doorZ = if cz > 0 then -19 else 19
-				npc(-4, doorZ, face, "bell", "stay", { role = "Knight" })
-				npc(5, doorZ, face + math.pi, "talk", "stay", { role = "Rogue" })
-				npc(-22, doorZ, -math.pi / 2, nil, "path", { role = "Rogue", len = 22, idle = "look" })
+				npc(-4, doorZ, face, "bell", "stay", { role = "Mage" })
+				npc(5, doorZ, face + math.pi, "pray", "stay", { role = "Mage" })
+				npc(-22, doorZ, -math.pi / 2, "look", "path", { role = "Rogue", len = 22, idle = "look" })
 			elseif d.kind == "market" then
 				for k = -2, 2, 2 do
-					npc(k * 8, (if cz > 0 then -11 else 11), face + math.pi, "stall", "stay", { role = "Barbarian" })
+					npc(k * 8, (if cz > 0 then -11 else 11), face + math.pi, "stall", "stay", { role = "Rogue" })
 				end
 				npc(-18, 0, -math.pi / 2, "carry", "path", { role = "Rogue", len = 36, idle = "talk" })
-				npc(18, 3, math.pi / 2, nil, "path", { role = "Rogue", len = 30, idle = "look" })
+				npc(18, 3, math.pi / 2, "look", "path", { role = "Rogue", len = 30, idle = "look" })
 			else
 				for k = -1, 1 do
 					npc(k * 10 - 2, k * 7, face, "hoe", "stay", { role = "Barbarian", extra = { hat = "straw" } })
@@ -5099,7 +5296,14 @@ function PortScene.build(info, onFacility)
 	local facilityUpgradeAnimations, facilityUpgradeBuilders = 0, 0
 	local touchFacility = game:GetService("UserInputService").TouchEnabled
 	local facilityAnimationCap = if touchFacility then 1 else 3
-	local facilityBuilderCap = if touchFacility then 1 else 2
+	-- [공정별 공사 인력] 실제 고용·주민·시설 발전 단계에서 정해지는 시각 표시 상한.
+	local facilityJobs = info.sim and info.sim.jobs
+	local facilityWorkers = if info.sim then math.max(0, math.min(
+		math.floor(tonumber(info.sim.residents) or 0),
+		math.floor(tonumber(facilityJobs and facilityJobs.laborer) or 0)
+			+ math.floor(tonumber(facilityJobs and facilityJobs.craftsman) or 0))) else 8
+	local facilityBuilderCap = math.min(facilityWorkers,
+		if touchFacility then math.min(4, sceneLevel + 1) else math.min(8, sceneLevel * 2))
 	-- 시설 건물: { 이름, 탭, 위치, 크기, 벽색 }
 	local facilities = {
 		{ name = "교역소", tab = "trade", pos = Vector3.new(-12, 0, 36), w = 20, d = 12, floors = 1, color = Color3.fromRGB(176, 120, 60), economy = "market", always = true },
@@ -5188,26 +5392,46 @@ function PortScene.build(info, onFacility)
 						scaffold:SetAttribute("BuildState", "constructing")
 						scaffold:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 						facilityUpgradeAnimations += 1
-						local jobs = info.sim and info.sim.jobs
-						local hasWorkers = not info.sim or (jobs and ((jobs.laborer or 0) + (jobs.craftsman or 0)) > 0)
-						if hasWorkers and facilityUpgradeBuilders < facilityBuilderCap then
-							local workerPos = at(-12, 6)
-							local builder = villager(folder, workerPos, faceTo(workerPos, at(-14, 4)),
-								Color3.fromRGB(144, 115, 82), rng, "Barbarian", true, { profession = "construction_worker", hat = "cap" })
-							if builder then
-								facilityUpgradeBuilders += 1
-								builder.Name = "FacilityBuilder_" .. f.tab
-								builder:SetAttribute("Job", "construction_worker")
-								builder:SetAttribute("BuildPlotId", info.portId .. ":facility:" .. f.name)
-								builder:SetAttribute("ShowcaseOnly", true)
-								table.insert(walkers, { model = builder, base = builder:GetPivot(), mode = "stay", kind = "hammer", phase = rng:NextNumber(0, 5) })
-								task.spawn(function()
-									local deadline = os.clock() + 25
-									while builder.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
-									if not folder.Parent then return end
-									task.wait(delay + 3.8)
-									if builder.Parent then builder:Destroy() end
-								end)
+						local hasWorkers = facilityBuilderCap > facilityUpgradeBuilders
+						if hasWorkers then
+							local crewSize = math.min(if touchFacility then 3 else 4,
+								facilityBuilderCap - facilityUpgradeBuilders)
+							for index = 1, crewSize do
+								-- [현장 업무] 골조 망치질, 자재 운반, 목재 다듬기, 완공 점검.
+								local workerPos = if index == 1 then at(-12, 6)
+									elseif index == 2 then at(-18, 7)
+									elseif index == 3 then at(-11, 11) else at(-16, 11)
+								local taskKind = if index == 1 then "hammer" elseif index == 2 then "lift"
+									elseif index == 3 then "plane" else "inspect"
+								local trade = if index == 2 then "laborer"
+									elseif index == 3 then "carpenter" else "construction_worker"
+								local builder = villager(folder, workerPos, faceTo(workerPos, at(-14, 4)),
+									Color3.fromRGB(144, 115, 82), rng, "Barbarian", true,
+									{ profession = trade, hat = "cap", year = info.year or currentYear })
+								if builder then
+									facilityUpgradeBuilders += 1
+									builder.Name = "FacilityBuilder_" .. f.tab .. "_" .. index
+									builder:SetAttribute("Job", "construction_worker")
+									builder:SetAttribute("ConstructionTrade", trade)
+									builder:SetAttribute("BuildPlotId", info.portId .. ":facility:" .. f.name)
+									builder:SetAttribute("Activity", taskKind)
+									builder:SetAttribute("ShowcaseOnly", true)
+									local duty = { model = builder, base = builder:GetPivot(), mode = "stay",
+										kind = taskKind, phase = rng:NextNumber(0, 5) }
+									table.insert(walkers, duty)
+									task.spawn(function()
+										local deadline = os.clock() + 25
+										while builder.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
+										if not folder.Parent then return end
+										task.wait(delay + 2.6)
+										if builder.Parent then
+											duty.kind = "inspect"
+											builder:SetAttribute("Activity", "inspect")
+											task.wait(1.2)
+											if builder.Parent then builder:Destroy() end
+										end
+									end)
+								end
 							end
 						end
 						task.spawn(function()
@@ -5731,29 +5955,68 @@ function PortScene.build(info, onFacility)
 				end
 			elseif w.mode == "schedule" then
 				if w.model.Parent then
+					-- [개인 하루 흐름] 직업별 시간표와 각자의 시차를 재사용한다.
+					-- 집→일터→시장→여가→귀가, 야간 초병·점심휴식까지 실제 위치와 자세가 함께 변한다.
 					local hour = game:GetService("Lighting").ClockTime
-					local where, routine
-					if hour < 10 then
-						where, routine = w.morning, if hour >= 6 then "work" else "rest"
-					elseif hour < 12 then
-						where, routine = w.morning:Lerp(w.market, (hour - 10) / 2), "trade"
-					elseif hour < 17 then
-						where, routine = w.market, "trade"
-					elseif hour < 19 then
-						where, routine = w.market:Lerp(w.evening, (hour - 17) / 2), "leisure"
-					elseif hour < 22 then
+					local home = w.home or w.morning
+					local wakeAt, marketAt = w.wakeAt or 6, w.marketAt or 10
+					local marketEnd, homeAt = w.marketEnd or 17, w.homeAt or 22
+					local where, routine, route, progress
+					local commuteSpan = 0.8
+					if w.job == "guard" and (hour >= 22.5 or hour < 4.8) then
+						where, routine = w.morning, "night_watch"
+					elseif hour < wakeAt then
+						where, routine = home, "rest"
+					elseif hour < wakeAt + commuteSpan then
+						progress = (hour - wakeAt) / commuteSpan
+						where, routine, route = home:Lerp(w.morning, progress), "commute", w.morning - home
+					elseif hour < marketAt then
+						where, routine = w.morning, "work"
+					elseif hour < marketAt + commuteSpan then
+						progress = (hour - marketAt) / commuteSpan
+						where, routine, route = w.morning:Lerp(w.market, progress), "commute", w.market - w.morning
+					elseif hour < marketEnd then
+						where = w.market
+						routine = if hour >= (w.breakAt or 13) and hour < (w.breakAt or 13) + (w.breakSpan or 0.65)
+							then "break" else "trade"
+					elseif hour < marketEnd + commuteSpan then
+						progress = (hour - marketEnd) / commuteSpan
+						where, routine, route = w.market:Lerp(w.evening, progress), "commute", w.evening - w.market
+					elseif hour < homeAt then
 						where, routine = w.evening, "leisure"
-					elseif hour < 23 then
-						where, routine = w.evening:Lerp(w.morning, hour - 22), "rest"
+					elseif hour < homeAt + commuteSpan then
+						progress = (hour - homeAt) / commuteSpan
+						where, routine, route = w.evening:Lerp(home, progress), "commute", home - w.evening
 					else
-						where, routine = w.morning, "rest"
+						where, routine = home, "rest"
 					end
-					local delta = where - (w.lastPos or where)
+					-- [개인별 골목 폭] 같은 거리에서도 바퀴 자국처럼 미세하게 다른 보행 궤적.
+					-- 통로 양 끝점은 고정, 최대 1.3스터드 오프셋만 허용해 건물 침범 방지.
+					if route and route.Magnitude > 0.05 and progress then
+						local lateral = Vector3.new(-route.Z, 0, route.X).Unit
+						where += lateral * math.sin(progress * math.pi) * (w.travelOffset or 0)
+					end
+					-- [걷기 전환] 시간 동기화가 튀어도 한 프레임에 순간이동하지 않는다.
+					local previous = w.lastPos or where
+					local alpha = 1 - math.exp(-math.max(2.4, (w.travelPace or 1) * 5) * dt)
+					where = previous:Lerp(where, alpha)
+					local delta = where - previous
 					local moving = delta.Magnitude > 0.025
 					-- [마을 주민 정면] 멈춘 사람은 마지막 이동 방향을 유지한다.
 					-- 월드 +Z로 강제 회전하면 일부 주민이 앞서 바라보던 방향과 반대로 서게 된다.
 					local forward = if moving then delta.Unit else (w.lastFacing or w.base.LookVector)
 					if moving then w.lastFacing = forward end
+					-- [만남 동선] 둘 다 장터에 멈춰 있고 서로 가까우면 상대를 바라본다.
+					local partner = w.socialPartner
+					local facingPartner = false
+					if not moving and routine == "trade" and partner and partner.model.Parent then
+						local other = partner.lastPos or partner.market
+						local toward = other - where
+						if toward.Magnitude > 0.5 and toward.Magnitude < 12 then
+							forward = toward.Unit
+							facingPartner = true
+						end
+					end
 					w.model:PivotTo(CFrame.lookAt(where, where + forward))
 					w.lastPos = where
 					if w.lastRoutine ~= routine then
@@ -5768,11 +6031,33 @@ function PortScene.build(info, onFacility)
 						else
 							local roster = if routine == "work" then w.workKinds
 								elseif routine == "trade" then w.tradeKinds
-								elseif routine == "leisure" then w.leisureKinds else EVENING_REST
+								elseif routine == "leisure" or routine == "break" then w.leisureKinds
+								elseif routine == "night_watch" then NIGHT_DUTY else EVENING_REST
 							roster = roster or { w.socialKind or "look" }
 							local period = math.floor((now + w.phase * 2.1) / (w.activitySpan or 16))
 							local kind = roster[((period + (w.personality or 0)) % #roster) + 1]
+							if routine == "break" then
+								-- [점심 휴식] 개인별 휴식 시간을 맞춰 작업복 상태로 물·식사·이웃 대화.
+								local interval = math.floor((now + w.phase) / 5) % 4
+								kind = if interval == 0 then "drink" elseif interval == 1 then "talk"
+									elseif interval == 2 then "stretch" else "listen"
+							end
+							if facingPartner then
+								-- [인사→거래→반응→작별] 짝끼리 같은 시계로 동작을 맞추되 역할을 나눠 자연스럽게 연출.
+								local scene = math.floor(now / 4.2) % 6
+								local lead = w.socialLead == true
+								kind = if scene == 0 then (if lead then "wave" else "nod")
+									elseif scene == 1 then (if lead then "offer" else "receive")
+									elseif scene == 2 then (if lead then "bargain" else "inspect")
+									elseif scene == 3 then (if lead then "listen" else "talk")
+									elseif scene == 4 then (if lead then "clap" else "cheer")
+									else (if lead then "talk" else "listen")
+							end
 							if w.lastActivity ~= kind then w.lastActivity = kind; w.model:SetAttribute("Activity", kind) end
+							if w.lastSocialScene ~= facingPartner then
+								w.lastSocialScene = facingPartner
+								w.model:SetAttribute("SocialInteraction", if facingPartner then "market_meeting" else "none")
+							end
 							Pose.work(w.model, kind, now + w.phase)
 						end
 					end

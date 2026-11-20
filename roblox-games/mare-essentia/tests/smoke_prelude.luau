@@ -71,6 +71,11 @@ CFrame = setmetatable({ new = function() return proxy("CFrame") end, lookAt = fu
 UDim2 = setmetatable({}, { __index = function() return function() return proxy("UDim2") end end })
 UDim = UDim2
 Enum = setmetatable({}, { __index = function(_, k) return setmetatable({}, { __index = function(_, n) return k .. "." .. n end }) end })
+-- [엔진 스모크 목업] 항구 지면 접지의 실제 RaycastParams 생성·속성 지정을 재현한다.
+-- 게임 소스가 아닌 검사용 Roblox API 표면이다. Raycast 결과의 성공 여부는 임의로 만들지 않는다.
+RaycastParams = { new = function()
+	return { FilterType = Enum.RaycastFilterType.Exclude, RespectCanCollide = false }
+end }
 Instance = { new = function(cls) return proxy(cls) end }
 Random = { new = function(seed)
 	local s = (seed or 1) % 2147483647

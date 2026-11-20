@@ -56,6 +56,8 @@ if command -v "$COMPILE" >/dev/null 2>&1 || [ -x "$COMPILE" ]; then
   echo "== 클라이언트·전투 장면 컴파일 검사 =="
   "$COMPILE" --null "$ROOT/src/StarterPlayer/Game.client.luau" >/dev/null
   "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/FieldScene.luau" >/dev/null
+  "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/PortScene.luau" >/dev/null
+  "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/Pose.luau" >/dev/null
   "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/NavalBattle.luau" >/dev/null
   "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/CardSymbols.luau" >/dev/null
   "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/CardTheme.luau" >/dev/null

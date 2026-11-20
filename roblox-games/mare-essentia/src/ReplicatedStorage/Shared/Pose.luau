@@ -209,7 +209,8 @@ local function addSkirt(model, color, long)
 	q.Shape = Enum.PartType.Cylinder
 	q.Size = Vector3.new(len, lower.Size.X * 1.18, lower.Size.X * 1.12)
 	q.Color = color
-	q.Material = Enum.Material.SmoothPlastic
+	-- [기존 치맛자락] 별도 새 장식 대신 원형을 유지하고 무광 천 재질로 조정한다.
+	q.Material, q.Reflectance = Enum.Material.Fabric, 0
 	q.CanCollide, q.CanTouch, q.CanQuery, q.Massless = false, false, false, true
 	q.CFrame = lower.CFrame * CFrame.new(0, -len * 0.43, 0) * CFrame.Angles(0, 0, math.pi / 2)
 	q.Parent = model
@@ -308,6 +309,12 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 		Rogue_Hooded = Color3.fromRGB(80, 90, 106),
 	}
 	local jacket = coat or coats[role] or Color3.fromRGB(140, 108, 80)
+	-- [개인 복식 팔레트] 문화권에서 결정된 옷색·바지색을 이미 있는 실물 재단복에 전달한다.
+	-- NPC 표시 전용 속성이며 경제·저장·전투 능력치는 바꾸지 않는다.
+	if outfit and (outfit.gender == "female" or outfit.gender == "male") then
+		model:SetAttribute("NpcClothTint", jacket)
+		model:SetAttribute("NpcTrouserTint", trousers)
+	end
 	for _, descendant in model:GetDescendants() do
 		if descendant:IsA("BasePart") then
 			descendant.Anchored = descendant == root
@@ -800,11 +807,25 @@ local NPC_REGISTERED_ACCESSORY = {
 	citizen_sailor_male = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
 	citizen_sailor_female = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
 	citizen_guard_male = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
+	citizen_guard_female = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
+	citizen_worker_female = { "acc_ribbon_bow", "Head", 0.93, 0.96, 0.95, 0.34, 0.13, -0.11 },
 	citizen_artisan_male = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	citizen_artisan_female = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
 	companion_male = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
 	companion_female = { "acc_pearl_hairpin", "Head", 0.68, 0.70, 0.72, 0.30, 0.34, -0.09 },
 }
 
+-- [직업별 장신구] 기존 등록·승인된 메시만. 비유럽·중세 복장은 보존한다.
+local NPC_PROFESSION_ACCESSORY = {
+	fisher = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
+	docker = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
+	boatswain = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
+	shipwright = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	carpenter = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	smith = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	tailor = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	merchant = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+}
 -- [직업별 실물 휴대품 35종] 기존 등록된 CC0 Relics/Cargo 자산을 주민 R15 관절에만 부착한다.
 -- 각 직업은 독립된 도구·소지품과 착용 위치를 가진다. 공격 판정·경제·저장 속성은 변경하지 않는다.
 -- 표: 원본 자산 키/관절/크기 XYZ/위치 YXZ/기울기 X(도). 미등록 자산은 장착하지 않는다.
@@ -895,6 +916,11 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	local culture = model:GetAttribute("AppearanceCulture")
 	local detailAllowed = npcOutfit and type(year) == "number" and year >= 1500 and year < 1800
 		and EUROPEAN_DETAIL_CULTURES[culture] == true
+	-- [염색과 마감] 개인별 기존 외투·바지 팔레트와 체격 개성만 쓰며 새 파츠/자산을 만들지 않는다.
+	local npcClothTint = if detailAllowed then model:GetAttribute("NpcClothTint") else nil
+	local npcTrouserTint = if detailAllowed then model:GetAttribute("NpcTrouserTint") else nil
+	local clothPersonality = math.clamp(tonumber(model:GetAttribute("MotionPersonality")) or 1, 1, 3)
+	local finishing = if clothPersonality == 1 then 0.88 elseif clothPersonality == 3 then 1.12 else 1
 	local detailLimit = 99 -- PC는 기존 등록 복식 전체. 모바일은 거리·실제 FPS에 맞춰 조절.
 	local detailOrder = {}
 	local detailKinds = 0
@@ -938,8 +964,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	end
 	-- [등록·사용 권한 관문] 기존 AssetIds에 등록된 추가 액세서리만 장착 시도한다.
 	-- 등록 전에는 기등록 복식만 사용한다. 기존 프로필 표는 수정하지 않는다.
-	local accessory = npcOutfit and NPC_REGISTERED_ACCESSORY[profile]
 	local profession = npcOutfit and model:GetAttribute("AppearanceProfession")
+	local professionAccessory = detailAllowed and profession and NPC_PROFESSION_ACCESSORY[profession]
+	local accessory = professionAccessory and AssetIds["People/" .. professionAccessory[1]]
+		and professionAccessory or (npcOutfit and NPC_REGISTERED_ACCESSORY[profile])
 	local jobGear = detailAllowed and profession and NPC_PROFESSION_GEAR[profession]
 	if accessory and AssetIds["People/" .. accessory[1]] then
 		specs = table.clone(specs)
@@ -1147,7 +1175,11 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 								then Color3.fromRGB(244, 222, 192)
 							elseif string.find(profile, "clergy", 1, true) then Color3.fromRGB(249, 238, 215)
 							else Color3.fromRGB(236, 232, 220)
-						surface.Color = surface.Color:Lerp(dye, 0.30)
+						-- [천의 염색 차이] 실제 원본 ColorMap 색을 가리지 않도록 30% 이내 보정.
+						if typeof(npcClothTint) == "Color3" and assetName ~= "outfit_guard" then
+							dye = dye:Lerp(npcClothTint, 0.30 * finishing)
+						end
+						surface.Color = surface.Color:Lerp(dye, 0.26)
 					end
 				end
 				-- [원본 재질 복원] 9개 복식 GLB는 ColorMap 없이 glTF baseColorFactor로
@@ -1188,9 +1220,28 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						or assetName == "outfit_stole") and part.Material == Enum.Material.SmoothPlastic then
 						part.Material = Enum.Material.Fabric
 					end
+					-- [개인별 천·피혁 마감] 원본 표면 재질과 금속 장식·봉제선은 그대로 둔다.
+					-- 텍스처 없는 이미 분류된 직물만 지역 고유 옷색을 부드럽게 섞는다.
+					if npcOutfit and detailAllowed and part.Material == Enum.Material.Fabric
+						and typeof(npcClothTint) == "Color3" then
+						local tint = if assetName == "outfit_sash" then npcClothTint:Lerp(
+							if typeof(npcTrouserTint) == "Color3" then npcTrouserTint else npcClothTint, 0.45)
+							elseif assetName == "outfit_apron" then npcClothTint:Lerp(Color3.fromRGB(177, 148, 113), 0.48)
+							else npcClothTint
+						-- 무채색으로 유실된 복식에서 색조를 조금 더 복원한다.
+						local neutral = math.max(part.Color.R, part.Color.G, part.Color.B)
+							- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.11
+						part.Color = part.Color:Lerp(tint, (if neutral then 0.28 else 0.14) * finishing)
+					end
 					-- 원본 금속광을 유지하되 플라스틱 같은 과한 반사는 억제한다.
 					if part.Material == Enum.Material.Metal then
 						part.Reflectance = math.min(part.Reflectance, 0.025)
+					elseif part.Material == Enum.Material.Leather then
+						-- [가죽] 원래 버클 금속을 보존하면서 부드러운 피혁광만 남긴다.
+						part.Reflectance = math.min(part.Reflectance, 0.012)
+					elseif part.Material == Enum.Material.Fabric then
+						-- [직물] 재단선과 색상은 원본 그대로, 무광 산란만 보정한다.
+						part.Reflectance = 0
 					end
 				-- [직업 실물 도구] Cargo/Relics 원본 금속·목재·직물과 PBR을 보존한다.
 				-- 기존 People 보조 스킨용 무채색 보정은 작업 도구에는 적용하지 않는다.
@@ -1904,6 +1955,44 @@ function Pose.work(model, kind, t, moving)
 		add(m.waist, A(0, math.sin(t * 3) * 0.14, math.cos(t * 3) * 0.04))
 	elseif kind == "lift" or kind == "bell" then
 		add(m.waist, A(0, math.sin(t * 0.9) * 0.06, 0))
+	end
+	-- [직업 작업의 마무리 디테일] 기존 R15 관절만 움직이고 보행 관절의 접지 주기는 유지한다.
+	-- 팔, 허리, 시선, 무릎이 함께 움직여 도구를 든 주민의 동작이 고립되지 않는다.
+	local profession = model:GetAttribute("AppearanceProfession")
+	local busy = kind == "hammer" or kind == "forge" or kind == "saw" or kind == "plane"
+		or kind == "knead" or kind == "sew" or kind == "haul_rope" or kind == "unload"
+		or kind == "weigh" or kind == "pack" or kind == "mend_net" or kind == "harvest"
+		or kind == "water" or kind == "sort_crop" or kind == "seal" or kind == "write"
+	if not moving and busy then
+		local tempo = if profession == "smith" or profession == "carpenter" or profession == "shipwright" then 2.5
+			elseif profession == "tailor" or profession == "clerk" or profession == "royal_scribe" then 1.65
+			elseif profession == "fisher" or profession == "docker" then 1.9 else 2.05
+		local beat = math.sin(t * tempo + (model:GetAttribute("MotionPersonality") or 1) * 0.8)
+		local settle = math.max(0, beat)
+		add(m.root, CFrame.new(0, -0.025 * settle, 0.015 * beat))
+		add(m.waist, A(0.035 * settle, 0.035 * beat, 0))
+		add(m.neck, A(-0.035 * settle, 0.045 * beat, 0))
+		add(m.leftKnee, A(-0.05 * settle, 0, 0))
+		add(m.rightKnee, A(-0.07 * (1 - settle), 0, 0))
+		if profession == "tailor" or profession == "royal_scribe" or profession == "clerk" then
+			add(m.leftElbow, A(-0.12 * settle, 0, 0))
+			add(m.rightElbow, A(-0.16 * settle, 0, 0))
+		elseif profession == "smith" or profession == "carpenter" or profession == "shipwright" then
+			add(m.rightElbow, A(-0.18 * settle, 0, 0))
+			add(m.leftArm, A(0, 0, 0.055 * beat))
+		end
+	elseif not moving and (kind == "talk" or kind == "listen" or kind == "gossip"
+		or kind == "offer" or kind == "receive" or kind == "bargain") then
+		-- [대화] 숨쉬기·끄덕이기·미세 회전을 기존 제스처에 얹는다.
+		local breath = math.sin(t * 1.15 + (model:GetAttribute("MotionPersonality") or 1))
+		add(m.waist, A(0, 0.025 * breath, 0))
+		add(m.neck, A(-0.018 * breath, 0.035 * breath, 0))
+	elseif not moving and (kind == "patrol" or kind == "scan" or kind == "watch"
+		or kind == "scan_horizon" or kind == "guard") then
+		-- [초병] 머리 탐색과 몸통의 느린 관성 차이.
+		local scan = math.sin(t * 0.60 + (model:GetAttribute("MotionPersonality") or 1))
+		add(m.neck, A(-0.025, scan * 0.10, 0))
+		add(m.waist, A(0, scan * 0.035, 0))
 	end
 	if standing then
 		-- 체중을 이쪽저쪽 발로 옮기며 선다
