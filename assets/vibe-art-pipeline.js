@@ -54,7 +54,7 @@ export const GRAPHICS_PRODUCTION_STAGES=Object.freeze([
 // 팀별 GitHub Organization/개별 main/새 CI·큐·승인 파이프라인을 추가하지 않는다.
 export const VIBE_ENGINE_TEAMS=Object.freeze([
   Object.freeze({id:'vibe-core',name:'바이브 엔진·자동 코딩',specialists:Object.freeze([]),owner:'VIBE2_VIBE3',existingScope:'NATIVE_ENGINE_AND_SOURCE_REFACTOR'}),
-  Object.freeze({id:'vibe-graphics',name:'캐릭터·의상·아이콘·재질',specialists:Object.freeze(['GRAPHICS','CREATURE','ICON','MATERIAL']),owner:'GRAPHICS',existingScope:'GRAPHICS_PRODUCTION_ROOT'}),
+  Object.freeze({id:'vibe-graphics',name:'캐릭터·의상·아이콘·재질',specialists:Object.freeze(['GRAPHICS','CREATURE','ICON','UI','MATERIAL']),owner:'GRAPHICS',existingScope:'GRAPHICS_PRODUCTION_ROOT'}),
   Object.freeze({id:'vibe-world',name:'건축·시설·배경·지형',specialists:Object.freeze(['BUILDING','ENVIRONMENT']),owner:'GRAPHICS',existingScope:'ENVIRONMENT_AND_WORLD_DIRECTOR'}),
   Object.freeze({id:'vibe-motion',name:'리그·모션·애니메이션',specialists:Object.freeze(['MOTION','ANIMATION']),owner:'GRAPHICS',existingScope:'MOTION_DIRECTOR'}),
   Object.freeze({id:'vibe-effects',name:'이펙트·음악·효과음',specialists:Object.freeze(['VFX','MUSIC','SFX']),owner:'GRAPHICS_AND_AUDIO',existingScope:'PRESENTATION_AND_AUDIO'}),
