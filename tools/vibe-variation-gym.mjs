@@ -197,11 +197,18 @@ export function buildPracticeAssetCoverage(registry,repoRoot){
     gameApplied:false,nativeRuntimeVerified:false};
 }
 
-// 부모 후보: CC0 + 소스 파일(obj/glb)이 실제로 있고 + 막힘/격리/게임사용금지/파생이 아닌 등록 에셋
+// 부모 후보: CC0 또는 명시적으로 소유권·권리·실바이트 해시를 확인한 자체/ChatGPT 생성 3D 원본.
+// 외부 생성 문구만으로 저작권과 실제 제작을 추정하지 않는다. 라이선스 미상/NC/파생/격리 에셋은 차단.
 export function pickParents(registry,repoRoot,n,rng,only=null){
   const ok=[],root=fs.realpathSync(repoRoot);
   for(const a of registry.assets||[]){
-    if(!/^CC0(?:-1\.0)?$/i.test(String(a.license||'')))continue;
+    const license=String(a.license||'').toUpperCase();
+    const isCc0=/^CC0(?:-1\.0)?$/.test(license);
+    const owned=['PROJECT-ORIGINAL','CREATED-IN-PROJECT','COMPANY-OWNED'].includes(license)
+      &&a.ownerRightsVerified===true&&a.licenseVerified===true
+      &&a.commercialUseVerified===true&&a.derivativesAllowed===true
+      &&/^[a-f0-9]{64}$/i.test(String(a.sourceSha256||a.sourceHash||''));
+    if(!isCc0&&!owned)continue;
     if(a.securityBlocked||a.quarantined||a.gameUseForbidden||a.parentSourceId||a.derivedFromAssetId||
       a.catalogActive===false||a.corruptSource)continue;
     if(only&&!only.includes(a.id))continue;
@@ -219,7 +226,9 @@ export function pickParents(registry,repoRoot,n,rng,only=null){
       }catch{return false;}
     });
     if(!file)continue;
-    ok.push({id:a.id,family:String(a.family||a.category||'?'),file,license:'CC0',
+    ok.push({id:a.id,family:String(a.family||a.category||'?'),file,
+      license:isCc0?'CC0':license,
+      origin:String(a.origin||'REPOSITORY').toUpperCase(),
       approvedSourceSha256:/^[a-f0-9]{64}$/i.test(a.sourceSha256||a.sourceHash||'')?
         String(a.sourceSha256||a.sourceHash).toLowerCase():null});
   }
