@@ -1906,7 +1906,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			skip.Active = true
 			skip.Interactable = true
 			skip.AnchorPoint = Vector2.zero
-			skip.Position = if compactCards then UDim2.new(0.98, -96, 0.012, 0) else UDim2.fromScale(0.02, 0.84)
+			skip.Position = if compactCards then UDim2.new(0.98, -96, 0.012, 0) else UDim2.new(0.98, -112, 0.012, 0)
 			skip.Size = if compactCards then UDim2.fromOffset(96, 40) else UDim2.fromOffset(112, 44)
 			skip.ZIndex = 30
 		end
@@ -2032,8 +2032,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		chartMark.Parent = bg
 		local battleLine = Instance.new("Frame")
 		battleLine.AnchorPoint = Vector2.new(0, 0.5)
-		battleLine.Position = if compactCards then UDim2.fromScale(0.01, 0.463) else UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.39 else 0.42)
-		battleLine.Size = UDim2.fromScale(if compactCards then 0.98 elseif opts.cardOnly then 0.57 else 0.78, 0.004)
+		battleLine.Position = if compactCards then UDim2.fromScale(0.01, 0.463) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.39 else 0.42)
+		battleLine.Size = UDim2.fromScale(if compactCards then 0.98 elseif opts.cardOnly then 0.76 else 0.78, 0.004)
 		battleLine.BackgroundColor3 = Color3.fromRGB(214, 170, 96)
 		battleLine.BorderSizePixel = 0
 		battleLine.ZIndex = 3
@@ -2068,7 +2068,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			summary.Name = "BattleSummary"
 			summary.AnchorPoint = if compactCards then Vector2.zero else Vector2.new(0.5, 0)
 			summary.Position = UDim2.fromScale(if compactCards then 0.08 else 0.5, 0)
-			summary.Size = if compactCards then UDim2.new(0.92, -100, 1, 0) else UDim2.fromScale(0.78, 1)
+			summary.Size = if compactCards then UDim2.new(0.92, -100, 1, 0) else UDim2.fromScale(0.65, 1)
 			summary.BackgroundTransparency = 1
 			summary.Parent = titleBar
 			for i, spec in { {"BattleRound", 0.25, 14}, {"BattleScore", 0.46, 24}, {"BattleTurn", 0.29, 14} } do
@@ -2111,8 +2111,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local roundResultTick = 0
 
 		local boardFrame = Instance.new("Frame")
-		boardFrame.Position = if compactCards then UDim2.fromScale(0.012, 0.233) else UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.13 else 0.14)
-		boardFrame.Size = if compactCards then UDim2.fromScale(0.976, 0.46) else UDim2.fromScale(if opts.cardOnly then 0.57 else 0.78, if opts.cardOnly then 0.52 else 0.56)
+		boardFrame.Position = if compactCards then UDim2.fromScale(0.012, 0.233) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.13 else 0.14)
+		boardFrame.Size = if compactCards then UDim2.fromScale(0.976, 0.46) else UDim2.fromScale(if opts.cardOnly then 0.76 else 0.78, if opts.cardOnly then 0.52 else 0.56)
 		boardFrame.BackgroundTransparency = 1
 		boardFrame.Parent = g
 		-- 왼쪽 정보판: 양쪽 합계 원, 목숨 보석, 멈춤 표시, 날씨
@@ -2274,8 +2274,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		-- [손패 받침대] 카드 아이콘·터치 확대 기능은 기존 ScrollingFrame에서 처리한다.
 		local handTray = Instance.new("Frame")
 		handTray.Name = "NavalCardHandTray"
-		handTray.Position = if compactCards then UDim2.fromScale(0.012, 0.773) else UDim2.fromScale(if opts.cardOnly then 0.21 else 0.015, if opts.cardOnly then 0.66 else 0.715)
-		handTray.Size = if compactCards then UDim2.fromScale(0.976, 0.219) else UDim2.fromScale(if opts.cardOnly then 0.57 else 0.75, if opts.cardOnly then 0.335 else 0.275)
+		handTray.Position = if compactCards then UDim2.fromScale(0.012, 0.773) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.015, if opts.cardOnly then 0.66 else 0.715)
+		handTray.Size = if compactCards then UDim2.fromScale(0.976, 0.219) else UDim2.fromScale(if opts.cardOnly then 0.76 else 0.75, if opts.cardOnly then 0.335 else 0.275)
 		handTray.BackgroundColor3 = if opts.cardOnly then CardTheme.leather else Color3.fromRGB(18, 39, 58)
 		handTray.BackgroundTransparency = if opts.cardOnly then 0.6 else 0.27
 		handTray.BorderSizePixel = 0
@@ -2291,8 +2291,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		trayGradient.Rotation = 90
 		trayGradient.Parent = handTray
 		local handFrame = Instance.new("ScrollingFrame")
-		handFrame.Position = if compactCards then UDim2.fromScale(0.018, 0.777) else UDim2.fromScale(if opts.cardOnly then 0.215 else 0.02, if opts.cardOnly then 0.665 else 0.72)
-		handFrame.Size = if compactCards then UDim2.fromScale(0.964, 0.211) else UDim2.fromScale(if opts.cardOnly then 0.56 else 0.74, if opts.cardOnly then 0.325 else 0.26)
+		handFrame.Position = if compactCards then UDim2.fromScale(0.018, 0.777) else UDim2.fromScale(if opts.cardOnly then 0.025 else 0.02, if opts.cardOnly then 0.665 else 0.72)
+		handFrame.Size = if compactCards then UDim2.fromScale(0.964, 0.211) else UDim2.fromScale(if opts.cardOnly then 0.75 else 0.74, if opts.cardOnly then 0.325 else 0.26)
 		handFrame.BackgroundTransparency = 1
 		handFrame.BorderSizePixel = 0
 		handFrame.ScrollingDirection = Enum.ScrollingDirection.X
@@ -3125,31 +3125,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusFrame.Visible = false
 		focusFrame.ZIndex = 50
 		-- 카드 대전은 전투판 위에 원화와 설명을 중앙으로 띄운다.
-		local previewHint
 		if opts.cardOnly then
 			focusBounds.MinSize = Vector2.zero
-			previewHint = Instance.new("TextLabel")
-			previewHint.Name = "CardPreviewHint"
-			previewHint.Position = UDim2.fromScale(0.01, 0.135)
-			previewHint.Size = UDim2.fromScale(0.19, 0.5)
-			previewHint.BackgroundColor3 = Color3.fromRGB(30, 23, 19)
-			previewHint.BackgroundTransparency = 0.25
-			previewHint.BorderSizePixel = 0
-			previewHint.Font = Enum.Font.Gotham
-			previewHint.TextColor3 = Color3.fromRGB(226, 208, 170)
-			previewHint.TextSize = 15
-			previewHint.TextWrapped = true
-			previewHint.Text = t("카드를 누르면\n전투판 위에 크게 보여요.\n\n카드 사용을 눌러 내세요.", "Tap a card to enlarge it.\n\nChoose Play Card to deploy it.")
-			previewHint.Parent = g
-			previewHint.Visible = not compactCards
-			frameEdge(previewHint, brass, 6)
-			-- 왼쪽 아래: 최근 전황 기록 (안내 띠의 문장이 지나가 버려도 다시 읽을 수 있다)
+			focusFrame.Position = UDim2.fromScale(boardFrame.Position.X.Scale + boardFrame.Size.X.Scale / 2, 0.5)
+			-- 넓은 전투판에서는 조작 열에서 최근 전황을 펼쳐 본다.
 			local logBox = Instance.new("TextLabel")
 			logBox.Name = "BattleLog"
-			logBox.Position = UDim2.fromScale(0.01, 0.66)
-			logBox.Size = UDim2.fromScale(0.19, 0.325)
-			logBox.BackgroundColor3 = Color3.fromRGB(30, 23, 19)
-			logBox.BackgroundTransparency = 0.25
+			logBox.Position = UDim2.fromScale(0.78, 0.19)
+			logBox.Size = UDim2.fromScale(0.20, 0.50)
+			logBox.BackgroundColor3 = CardTheme.leather
+			logBox.BackgroundTransparency = 0
 			logBox.BorderSizePixel = 0
 			logBox.Font = Enum.Font.Gotham
 			logBox.TextColor3 = Color3.fromRGB(226, 208, 170)
@@ -3159,7 +3144,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			logBox.TextYAlignment = Enum.TextYAlignment.Bottom
 			logBox.Text = ""
 			logBox.Parent = g
-			logBox.Visible = not compactCards
+			logBox.Visible = false
+			logBox.ZIndex = 32
+			if not compactCards then
+				mkSide(t("전황 기록", "Battle Log"), 0.83, CardTheme.leather, "Menu/codex", function()
+					logBox.Visible = not logBox.Visible
+				end)
+			end
 			local logPad = Instance.new("UIPadding")
 			logPad.PaddingLeft, logPad.PaddingRight, logPad.PaddingBottom = UDim.new(0, 8), UDim.new(0, 6), UDim.new(0, 6)
 			logPad.Parent = logBox
@@ -3358,7 +3349,6 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				focusMotion = nil
 			end
 			if focusTween then focusTween:Cancel(); focusTween = nil end
-			if previewHint then previewHint.Visible = card == nil and not compactCards end
 			if not card then
 				leaderPreviewId = nil
 				focusArtwork:SetAttribute("ArtFocused", false)
