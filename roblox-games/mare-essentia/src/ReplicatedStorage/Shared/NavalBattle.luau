@@ -11,6 +11,7 @@ local MOBILE_VFX = game:GetService("UserInputService").TouchEnabled
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
+local CardTheme = require(script.Parent:WaitForChild("CardTheme"))
 local CardSymbols = require(script.Parent:WaitForChild("CardSymbols"))
 local Combat = require(script.Parent:WaitForChild("Combat"))
 
@@ -1914,9 +1915,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				g:Destroy()
 			end
 		end })
-		local paper = Color3.fromRGB(224, 205, 163)
-		local ink = Color3.fromRGB(49, 37, 27)
-		local brass = Color3.fromRGB(158, 113, 59)
+		local paper = if opts.cardOnly then CardTheme.parchment else Color3.fromRGB(224, 205, 163)
+		local ink = if opts.cardOnly then CardTheme.ink else Color3.fromRGB(49, 37, 27)
+		local brass = if opts.cardOnly then CardTheme.brass else Color3.fromRGB(158, 113, 59)
 		local rowIcons = {
 			melee = if opts.cardOnly and AssetIds["CardArt/ui_icon_shield"] then "CardArt/ui_icon_shield" else "Menu/cc0_sword",
 			ranged = if opts.cardOnly and AssetIds["CardArt/ui_icon_bow"] then "CardArt/ui_icon_bow" else "Menu/cc0_crossbow",
@@ -1965,7 +1966,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 		bg.BorderSizePixel = 0
 		bg.Parent = g
-		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = Color3.fromRGB(38, 28, 22) }):Play()
+		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = if opts.cardOnly then CardTheme.inset else Color3.fromRGB(38, 28, 22) }):Play()
 		if cfg then
 			bg.BackgroundTransparency = if opts.cardOnly then 0 else 0.42 -- 뒤로 3D 무대(두 배 또는 술집 탁자와 선원)가 비쳐 보인다
 		end
@@ -2118,7 +2119,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local panel = Instance.new("Frame")
 		panel.Position = if compactCards then UDim2.fromScale(0.012, 0.133) else UDim2.fromScale(if opts.cardOnly then 0.79 else 0.02, 0.14)
 		panel.Size = if compactCards then UDim2.fromScale(0.976, 0.091) else UDim2.fromScale(0.17, 0.56)
-		panel.BackgroundColor3 = Color3.fromRGB(30, 23, 19)
+		panel.BackgroundColor3 = if opts.cardOnly then CardTheme.leather else Color3.fromRGB(30, 23, 19)
 		panel.BorderSizePixel = 0
 		panel.Parent = g
 		frameEdge(panel, brass, 6)
@@ -2213,8 +2214,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			deckCount.ZIndex = 5
 			return { who = who, total = total, gems = gems, plate = plate, leader = leader, deck = deckCount }
 		end
-		local foePlate = sidePlate(0.02, Color3.fromRGB(88, 58, 50))
-		local mePlate = sidePlate(0.58, Color3.fromRGB(58, 74, 62))
+		local foePlate = sidePlate(0.02, if opts.cardOnly then CardTheme.rival else Color3.fromRGB(88, 58, 50))
+		local mePlate = sidePlate(0.58, if opts.cardOnly then CardTheme.allied else Color3.fromRGB(58, 74, 62))
 		local weatherTag = label(panel, "", 13, Color3.fromRGB(192, 212, 239), true)
 		weatherTag.Position = UDim2.fromScale(0.04, 0.435)
 		weatherTag.Size = UDim2.fromScale(0.92, 0.13)
@@ -2275,7 +2276,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		handTray.Name = "NavalCardHandTray"
 		handTray.Position = if compactCards then UDim2.fromScale(0.012, 0.773) else UDim2.fromScale(if opts.cardOnly then 0.21 else 0.015, if opts.cardOnly then 0.66 else 0.715)
 		handTray.Size = if compactCards then UDim2.fromScale(0.976, 0.219) else UDim2.fromScale(if opts.cardOnly then 0.57 else 0.75, if opts.cardOnly then 0.335 else 0.275)
-		handTray.BackgroundColor3 = Color3.fromRGB(18, 39, 58)
+		handTray.BackgroundColor3 = if opts.cardOnly then CardTheme.leather else Color3.fromRGB(18, 39, 58)
 		handTray.BackgroundTransparency = if opts.cardOnly then 0.6 else 0.27
 		handTray.BorderSizePixel = 0
 		handTray.Parent = g
@@ -3117,7 +3118,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusRatio.AspectRatio = if opts.cardOnly then portraitCardRatio else 0.69
 		focusRatio.DominantAxis = Enum.DominantAxis.Height
 		focusRatio.Parent = focusFrame
-		focusFrame.BackgroundColor3 = Color3.fromRGB(50, 35, 25)
+		focusFrame.BackgroundColor3 = if opts.cardOnly then CardTheme.leather else Color3.fromRGB(50, 35, 25)
 		focusFrame.BackgroundTransparency = 0.02
 		focusFrame.BorderSizePixel = 0
 		focusFrame.ClipsDescendants = true
@@ -3220,7 +3221,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusArtwork.Name = "CodexPainting"
 		focusArtwork.Position = UDim2.fromScale(0.035, 0.095)
 		focusArtwork.Size = UDim2.fromScale(0.93, if opts.cardOnly then 0.48 else 0.64)
-		focusArtwork.BackgroundColor3 = Color3.fromRGB(77, 58, 43)
+		focusArtwork.BackgroundColor3 = if opts.cardOnly then CardTheme.inset else Color3.fromRGB(77, 58, 43)
 		focusArtwork.BorderSizePixel = 0
 		focusArtwork.ClipsDescendants = true
 		focusArtwork.ZIndex = 51
@@ -3252,7 +3253,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local focusRule = label(focusFrame, "", 14, ink, true)
 		focusRule.Position = UDim2.fromScale(0.035, if opts.cardOnly then 0.72 else 0.75)
 		focusRule.Size = UDim2.fromScale(0.93, if opts.cardOnly then 0.20 else 0.17)
-		focusRule.BackgroundColor3 = Color3.fromRGB(233, 213, 170)
+		focusRule.BackgroundColor3 = if opts.cardOnly then CardTheme.parchment else Color3.fromRGB(233, 213, 170)
 		focusRule.BackgroundTransparency = 0.08
 		focusRule.BorderSizePixel = 0
 		focusRule.TextScaled = true
@@ -3597,7 +3598,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				rf.Position = UDim2.fromScale(0, (k - 1) / 4)
 				rf.Size = UDim2.fromScale(1, 1 / 4 - 0.016)
 				-- [6열 고급 전장] 적은 진홍, 아군은 남청으로 표시한다. 전투 위치와 계산은 불변.
-				rf.BackgroundColor3 = if side == "me" then Color3.fromRGB(18, 57, 74) else Color3.fromRGB(65, 35, 54)
+				rf.BackgroundColor3 = if opts.cardOnly then (if side == "me" then CardTheme.allied else CardTheme.rival)
+					elseif side == "me" then Color3.fromRGB(18, 57, 74) else Color3.fromRGB(65, 35, 54)
 				rf.BackgroundTransparency = if opts.cardOnly then 0.82 elseif cfg then 0.53 else 0.32
 				rf.BorderSizePixel = 0
 				rf.Parent = boardFrame
