@@ -14,7 +14,9 @@ import {
   loadLatestVerifiedCheckpoint,
 } from './vibe2-development-intelligence.mjs';
 
-const ROLES=['development','graphics','qa','balance'];
+// [현재 실행/이전 증거 호환] 신규 부서는 오디오, 과거 승인된 밸런스 후보는 해당 사이클에서만 재조립한다.
+const ROLES=['development','graphics','qa','audio'];
+const LEGACY_ROLES=['development','graphics','qa','balance'];
 const clean=v=>String(v??'').trim();
 const posix=v=>String(v??'').replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
@@ -66,8 +68,12 @@ export function integrateDepartmentCandidates({order,cycle,implementationsDir,ca
   const finalPath=posix(candidatePath);if(!finalPath.startsWith('web-games/.autonomous-candidates/'))throw new Error('final candidate path must stay in autonomous candidate area');
   copyTree(sourcePath,finalPath);
 
+  const cycleRoles=Array.isArray(cycle?.parallelDepartments)?cycle.parallelDepartments:
+    Array.isArray(cycle?.results)?cycle.results.map(row=>row?.role):[];
+  const legacyCycle=cycleRoles.includes('balance')&&!cycleRoles.includes('audio');
+  const activeRoles=legacyCycle?LEGACY_ROLES:ROLES;
   const proposals=new Map(),components=[];
-  for(const role of ROLES){
+  for(const role of activeRoles){
     const root=path.join(implementationsDir,role),status=readJson(path.join(root,'status.json'),{status:'MISSING'});
     if(status.status!=='PASS'){components.push({role,status:status.status||'NO_SCOPE',reason:status.reason||null});continue;}
     const evidence=readJson(path.join(root,'evidence.json'));

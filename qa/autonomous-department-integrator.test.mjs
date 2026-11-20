@@ -6,18 +6,21 @@ import path from 'node:path';
 import { integrateDepartmentCandidates } from '../tools/autonomous-department-integrator.mjs';
 import { canUseDeterministicFinalization, buildDeterministicFinalization } from '../tools/autonomous-department-cycle.mjs';
 
-const roles=['development','graphics','qa','balance'];
-const reviewRoles=['planning','development','graphics','qa','balance'];
+const legacyRoles=['development','graphics','qa','balance'];
+const canonicalRoles=['development','graphics','qa','audio'];
+const reviewRoles=['planning','graphics','development','qa','audio'];
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');}
-function setup(){
+function setup({legacy=true}={}){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-dept-integrate-'));
   const previous=process.cwd();process.chdir(root);
   fs.mkdirSync('web-games/demo',{recursive:true});
   fs.writeFileSync('web-games/demo/app.js','const a = 1;\nconst b = 2;\n');
   fs.writeFileSync('web-games/demo/style.css','body { margin: 0; }\n');
-  for(const role of roles){fs.mkdirSync(`department-implementations/${role}`,{recursive:true});writeJson(`department-implementations/${role}/status.json`,{role,status:'NO_SCOPE',scope:[]});}
+  const implementationRoles=legacy?legacyRoles:canonicalRoles;
+  for(const role of implementationRoles){fs.mkdirSync(`department-implementations/${role}`,{recursive:true});writeJson(`department-implementations/${role}/status.json`,{role,status:'NO_SCOPE',scope:[]});}
   const order={run:true,gameId:'PTEST',gameSlug:'demo',sourcePath:'web-games/demo',goal:'small goal',repairMode:'MODEL'};
-  const cycle={finalGoal:'integrated goal',results:[],allDepartmentsWorked:true,finalDecision:'PROCEED'};
+  const cycle={finalGoal:'integrated goal',parallelDepartments:implementationRoles,
+    results:[],allDepartmentsWorked:true,finalDecision:'PROCEED'};
   return {root,previous,order,cycle,cleanup(){process.chdir(previous);fs.rmSync(root,{recursive:true,force:true});}};
 }
 function addImplementation(role,sourceCommit,files){
@@ -82,4 +85,36 @@ test('adjustment, reported risk, or owner action keeps planning-final AI require
   assert.equal(canUseDeterministicFinalization({vibeCore,results:risky}),false);
   const owner={routing:{mayDispatch:true,mayExecute:true,requiresOwnerAction:true}};
   assert.equal(canUseDeterministicFinalization({vibeCore:owner,results:safeReviewResults()}),false);
+});
+
+
+test('canonical audio department merges sound code without admitting independent balance implementation',()=>{
+  const t=setup({legacy:false});
+  try{
+    const sourceCommit='sound-source-revision';
+    fs.writeFileSync('web-games/demo/audio.js','const cue = new Audio("./sfx.ogg");\n');
+    addImplementation('development',sourceCommit,{'app.js':'const a = 10;\nconst b = 2;\n'});
+    addImplementation('audio',sourceCommit,{'audio.js':'const cue = new Audio("./sfx.ogg");\ncue.volume = 0.4;\n'});
+    const report=integrateDepartmentCandidates({order:t.order,cycle:t.cycle,
+      implementationsDir:'department-implementations',candidateId:'audio-final',
+      candidatePath:'web-games/.autonomous-candidates/PTEST/audio-final',sourceCommit,
+      evidencePath:'.autonomous/evidence/audio-final.json',reportPath:'department-audio-integration.json'});
+    assert.equal(report.status,'PASS');
+    assert.deepEqual(report.components.filter(row=>row.status==='PASS').map(row=>row.role),['development','audio']);
+    assert.equal(fs.readFileSync('web-games/.autonomous-candidates/PTEST/audio-final/audio.js','utf8'),
+      'const cue = new Audio("./sfx.ogg");\ncue.volume = 0.4;\n');
+    const evidence=JSON.parse(fs.readFileSync('.autonomous/evidence/audio-final.json','utf8'));
+    assert.equal(evidence.saveKeyValidation,'PASS');
+    assert.equal(evidence.departmentCycle.parallelDepartments.includes('audio'),true);
+    assert.equal(evidence.departmentCycle.parallelDepartments.includes('balance'),false);
+  }finally{t.cleanup();}
+});
+
+test('canonical five reviews require audio and do not accept a legacy balance vote as its substitute',()=>{
+  const vibeCore={routing:{mayDispatch:true,mayExecute:true,requiresOwnerAction:false}};
+  const current=safeReviewResults();
+  assert.deepEqual(current.map(row=>row.role),reviewRoles);
+  assert.equal(canUseDeterministicFinalization({vibeCore,results:current}),true);
+  const missing=current.map(row=>row.role==='audio'?{...row,role:'balance'}:row);
+  assert.equal(canUseDeterministicFinalization({vibeCore,results:missing}),false);
 });
