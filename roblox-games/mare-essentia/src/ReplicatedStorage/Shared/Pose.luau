@@ -221,14 +221,14 @@ end
 -- [직업별 실제 복식] 주민 직군만 외형 분류한다. 경제 직업·게임 저장·전투 판정은 원본 그대로다.
 local NPC_PROFESSION_LOOK = {
 	-- [1차 산업/도시 장인/해양직] 기존 직업 ID만 외형 분류한다. 수익·생산량·저장값 불변.
-	farmer = "worker", docker = "worker", herder = "worker", laborer = "worker",
+	farmer = "worker", docker = "worker", herder = "worker", laborer = "worker", construction_worker = "worker",
 	royal_stablehand = "worker", royal_gardener = "worker",
-	carpenter = "artisan", smith = "artisan", tailor = "artisan", baker = "artisan",
+	craftsman = "artisan", carpenter = "artisan", smith = "artisan", tailor = "artisan", baker = "artisan",
 	shipwright = "artisan", industry_artisan = "artisan",
 	fisher = "sailor", sailor = "sailor", boatswain = "sailor",
 	guard = "guard", royal_guard = "guard", royal_gate_guard = "guard",
 	royal_ceremonial_guard = "guard", royal_light_cavalry = "guard",
-	merchant = "official", banker = "official", clerk = "official", teacher = "official",
+	official = "official", clergy = "official", merchant = "official", banker = "official", clerk = "official", teacher = "official",
 	royal_scholar = "official", royal_scribe = "official", royal_archivist = "official",
 	royal_administrator = "official", royal_court_officer = "official", royal_servant = "official",
 	royal_messenger = "official",
@@ -515,8 +515,13 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 				look = "companion_clergy"
 			end
 		else
-			local jobLook = NPC_PROFESSION_LOOK[outfit.profession]
-			if jobLook then look = "citizen_" .. jobLook end
+			-- [항구 성직자] 직업 수치는 그대로 두고 기존 동료 성직 복식 메시만 공유한다.
+			if outfit.profession == "clergy" then
+				look = "companion_clergy"
+			else
+				local jobLook = NPC_PROFESSION_LOOK[outfit.profession]
+				if jobLook then look = "citizen_" .. jobLook end
+			end
 		end
 		model:SetAttribute("NpcAssetProfile", look .. "_" .. outfit.gender)
 		Pose.applyRegisteredMobOutfit(model)
@@ -800,7 +805,7 @@ local NPC_REGISTERED_ACCESSORY = {
 	companion_female = { "acc_pearl_hairpin", "Head", 0.68, 0.70, 0.72, 0.30, 0.34, -0.09 },
 }
 
--- [직업별 실물 휴대품 31종] 기존 등록된 CC0 Relics/Cargo 자산을 주민 R15 관절에만 부착한다.
+-- [직업별 실물 휴대품 35종] 기존 등록된 CC0 Relics/Cargo 자산을 주민 R15 관절에만 부착한다.
 -- 각 직업은 독립된 도구·소지품과 착용 위치를 가진다. 공격 판정·경제·저장 속성은 변경하지 않는다.
 -- 표: 원본 자산 키/관절/크기 XYZ/위치 YXZ/기울기 X(도). 미등록 자산은 장착하지 않는다.
 local NPC_PROFESSION_GEAR = {
@@ -808,8 +813,10 @@ local NPC_PROFESSION_GEAR = {
 	docker = { "Relics/rope-bundle-b", "LowerTorso", 0.58, 0.60, 0.60, -0.31, 0.44, 0.10, 0 },
 	herder = { "Relics/rope-bundle-a", "LowerTorso", 0.55, 0.58, 0.55, -0.27, -0.46, 0.14, 0 },
 	laborer = { "Cargo/bag", "LeftHand", 0.82, 0.78, 0.80, -0.18, 0, -0.48, 0 },
+	construction_worker = { "Relics/hammer", "RightHand", 0.72, 0.84, 0.71, -0.20, 0, -0.55, 0 },
 	royal_stablehand = { "Cargo/bucket", "RightHand", 0.66, 0.72, 0.67, -0.26, 0, -0.48, 0 },
 	royal_gardener = { "Cargo/bucket", "LeftHand", 0.60, 0.68, 0.60, -0.25, 0, -0.44, 0 },
+	craftsman = { "Relics/drafting-compass", "RightHand", 0.68, 0.78, 0.68, -0.13, 0, -0.55, 0 },
 	carpenter = { "Relics/handplane", "RightHand", 0.75, 0.82, 0.74, -0.24, 0, -0.58, 20 },
 	smith = { "Relics/hammer", "RightHand", 0.75, 0.86, 0.74, -0.18, 0, -0.58, 0 },
 	tailor = { "Cargo/linen", "LeftHand", 0.66, 0.62, 0.66, -0.16, 0, -0.55, 0 },
@@ -824,6 +831,8 @@ local NPC_PROFESSION_GEAR = {
 	royal_gate_guard = { "Relics/weapon-spear", "RightHand", 0.56, 0.88, 0.56, -0.26, 0, -0.54, 0 },
 	royal_ceremonial_guard = { "Relics/weapon-sword", "LowerTorso", 0.52, 0.80, 0.50, -0.29, 0.52, -0.05, 0 },
 	royal_light_cavalry = { "Relics/weapon-sword", "LowerTorso", 0.50, 0.73, 0.47, -0.35, 0.55, 0.03, 0 },
+	official = { "Relics/journal-closed", "LeftHand", 0.64, 0.72, 0.65, -0.09, 0, -0.51, 0 },
+	clergy = { "Relics/journal-open", "LeftHand", 0.60, 0.69, 0.61, -0.12, 0, -0.52, 0 },
 	merchant = { "Relics/journal-open", "LeftHand", 0.67, 0.75, 0.66, -0.08, 0, -0.52, 0 },
 	banker = { "Relics/key", "LowerTorso", 0.38, 0.51, 0.38, -0.27, 0.46, -0.35, 0 },
 	clerk = { "Relics/journal-closed", "LeftHand", 0.64, 0.72, 0.65, -0.10, 0, -0.52, 0 },
@@ -936,7 +945,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		specs = table.clone(specs)
 		table.insert(specs, accessory)
 	end
-	-- [실제 직업 소품] 31개 직업별 기존 Relics/Cargo 등록 모델을 동일한 R15 착용 루프에 넣는다.
+	-- [실제 직업 소품] 35개 직업별 기존 Relics/Cargo 등록 모델을 동일한 R15 착용 루프에 넣는다.
 	-- 사람/몬스터/장비의 원본 메시를 복제해서 붙일 뿐 물리·관절·게임 규칙은 바꾸지 않는다.
 	if jobGear and AssetIds[jobGear[1]] then
 		if specs == MOB_OUTFIT_PARTS[profile] then specs = table.clone(specs) end
