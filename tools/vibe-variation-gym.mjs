@@ -164,7 +164,12 @@ export function buildPracticeAssetCoverage(registry,repoRoot){
   for(const asset of assets){
     const info=classifyPracticeAsset(asset),fam=families[info.family]??={catalogued:0,eligible3d:0};
     fam.catalogued++;
-    const licensed=/^CC0(?:-1\.0)?$/i.test(String(asset.license||''));
+    const rightsLabel=String(asset.license||'').toUpperCase();
+    const licensed=/^CC0(?:-1\.0)?$/.test(rightsLabel)
+      ||['PROJECT-ORIGINAL','CREATED-IN-PROJECT','COMPANY-OWNED'].includes(rightsLabel)
+        &&asset.ownerRightsVerified===true&&asset.licenseVerified===true
+        &&asset.commercialUseVerified===true&&asset.derivativesAllowed===true
+        &&/^[a-f0-9]{64}$/i.test(String(asset.sourceSha256||asset.sourceHash||''));
     const approved=!asset.catalogOnly&&licensed&&!asset.securityBlocked&&!asset.quarantined&&!asset.gameUseForbidden&&
       !asset.parentSourceId&&!asset.derivedFromAssetId&&asset.catalogActive!==false&&!asset.corruptSource;
     const sources=Array.isArray(asset.sourceFiles)?asset.sourceFiles:[];
@@ -197,11 +202,18 @@ export function buildPracticeAssetCoverage(registry,repoRoot){
     gameApplied:false,nativeRuntimeVerified:false};
 }
 
-// 부모 후보: CC0 + 소스 파일(obj/glb)이 실제로 있고 + 막힘/격리/게임사용금지/파생이 아닌 등록 에셋
+// 부모 후보: CC0 또는 명시적으로 소유권·권리·실바이트 해시를 확인한 자체/ChatGPT 생성 3D 원본.
+// 외부 생성 문구만으로 저작권과 실제 제작을 추정하지 않는다. 라이선스 미상/NC/파생/격리 에셋은 차단.
 export function pickParents(registry,repoRoot,n,rng,only=null){
   const ok=[],root=fs.realpathSync(repoRoot);
   for(const a of registry.assets||[]){
-    if(!/^CC0(?:-1\.0)?$/i.test(String(a.license||'')))continue;
+    const license=String(a.license||'').toUpperCase();
+    const isCc0=/^CC0(?:-1\.0)?$/.test(license);
+    const owned=['PROJECT-ORIGINAL','CREATED-IN-PROJECT','COMPANY-OWNED'].includes(license)
+      &&a.ownerRightsVerified===true&&a.licenseVerified===true
+      &&a.commercialUseVerified===true&&a.derivativesAllowed===true
+      &&/^[a-f0-9]{64}$/i.test(String(a.sourceSha256||a.sourceHash||''));
+    if(!isCc0&&!owned)continue;
     if(a.securityBlocked||a.quarantined||a.gameUseForbidden||a.parentSourceId||a.derivedFromAssetId||
       a.catalogActive===false||a.corruptSource)continue;
     if(only&&!only.includes(a.id))continue;
@@ -219,7 +231,9 @@ export function pickParents(registry,repoRoot,n,rng,only=null){
       }catch{return false;}
     });
     if(!file)continue;
-    ok.push({id:a.id,family:String(a.family||a.category||'?'),file,license:'CC0',
+    ok.push({id:a.id,family:String(a.family||a.category||'?'),file,
+      license:isCc0?'CC0':license,
+      origin:String(a.origin||'REPOSITORY').toUpperCase(),
       approvedSourceSha256:/^[a-f0-9]{64}$/i.test(a.sourceSha256||a.sourceHash||'')?
         String(a.sourceSha256||a.sourceHash).toLowerCase():null});
   }
@@ -415,12 +429,13 @@ export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=
     for(const j of jobs.filter(j=>j.id.startsWith(slug+'__')&&j.op!=='identity')){
       const res=byId[j.id],m=meta[j.id];
       const params={...j.params};
-      const row={id:j.id,parentId:p.id,parentFile:relOrAbs(repoRoot,p),parentSha256:parentSha,license:p.license,family:p.family,source:p.source||'REGISTRY',op:j.op,arm:m.arm,params,ok:!!res?.ok,registered:false};
+      // [원본 계보] 무료 원본과 소유권 검증된 자체/ChatGPT 제작 자산의 출처를 둘 다 유지한다.
+      const row={id:j.id,parentId:p.id,parentFile:relOrAbs(repoRoot,p),parentSha256:parentSha,license:p.license,family:p.family,source:p.source||'REGISTRY',origin:p.origin||'REPOSITORY',op:j.op,arm:m.arm,params,ok:!!res?.ok,registered:false};
       row.practiceTargets=classifyPracticeAsset(p).targets;
       row.nativeRuntimeVerified=false;row.gameApplied=false;
       if(m.part){ // 두 부모 모두 출처·해시를 남긴다
         delete params.part;
-        row.partParent={id:m.part.id,file:relOrAbs(repoRoot,m.part),sha256:sha256(absOf(repoRoot,m.part)),license:m.part.license};
+        row.partParent={id:m.part.id,file:relOrAbs(repoRoot,m.part),sha256:sha256(absOf(repoRoot,m.part)),license:m.part.license,origin:m.part.origin||'REPOSITORY'};
       }
       if(res?.ok){
         const sc=scoreChild(res.png,parentRes.png);
