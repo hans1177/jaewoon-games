@@ -100,6 +100,11 @@
       "n": 1,
       "lastAt": 1795131624981,
       "last": "APPLIED"
+    },
+    "mare-essentia:visual:8cb16376f7255b69be931cfbc41ffc851538d4beb6eaf322eeb078f3c846844a": {
+      "n": 1,
+      "lastAt": 1795134979817,
+      "last": "REJECTED"
     }
   },
   "merged": [
@@ -165,15 +170,18 @@
     },
     "gemini:gemini-3.6-flash": {
       "ok": 16,
-      "fail": 16,
-      "lastAt": 1795131624981,
+      "fail": 18,
+      "lastAt": 1795134979817,
       "quotaUntil": 1795052264379
     }
   },
   "visualCoverage": {
     "sourceRevision": "0b0d09e0534c0c6828c4542858362d48ba7f2016",
     "labels": [
-      "ap_game"
+      "ap_game",
+      "rt1",
+      "rt2",
+      "rt3"
     ]
   }
 }
