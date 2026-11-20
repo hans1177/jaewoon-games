@@ -92,11 +92,7 @@ local CARD_DECK = {
 }
 
 -- [지역 카드 프레임] 원화 ID만 조회하고 카드 능력·저장 데이터는 그대로 유지.
-local REGION_FRAME = {
-	eu = "CardArt/ui_frame_europe", ea = "CardArt/ui_frame_east_asia",
-	me = "CardArt/ui_frame_middle_east", nw = "CardArt/ui_frame_new_world",
-	af = "CardArt/ui_frame_africa", sa = "CardArt/ui_frame_southeast_asia",
-}
+local REGION_FRAME = CardTheme.regionFrames
 
 -- 지도자 얼굴: 등록·업로드된 인물 초상만 연결한다 (없는 지도자는 이름 글자)
 local LEADER_FACE = { napoleon = "Portraits/person_napoleon", elizabeth = "Portraits/person_elizabeth1" }
@@ -2390,6 +2386,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			st.Name = "DropHint"
 			st.Color = if opts.cardOnly then CardTheme.gold else Color3.fromRGB(255, 218, 120)
 			st.Thickness = 3
+			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 			st.Parent = target
 			dropGlow = st
 			TweenService:Create(st, TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Transparency = 0.7 }):Play()
@@ -2544,6 +2541,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				flash.ZIndex = 36
 				flash.TextStrokeTransparency = 0.7
 				frameEdge(flash, tint, 5)
+				if opts.cardOnly and (style == "hit" or style == "guard" or style == "stakes") then CardSymbols.apply(flash, caption) end
 				TweenService:Create(flash, TweenInfo.new(0.48, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 					Position = UDim2.fromOffset(position.X, captionY - 17), BackgroundTransparency = 1, TextTransparency = 1,
 				}):Play()
@@ -2598,10 +2596,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if now then
 					local delta = now.power - old.power
 					local blocked = now.blocked - old.blocked
-					if blocked > 0 then add(aid, t("막음 ", "Block ") .. tostring(blocked), Color3.fromRGB(253, 212, 124), "guard") end
+					if blocked > 0 then add(aid, (if opts.cardOnly then "🛡️ " else "") .. t("막음 ", "Block ") .. tostring(blocked), Color3.fromRGB(253, 212, 124), "guard") end
 					if delta < 0 then
 						local tag = if card and card.id == "sa_36" then t("말뚝 ", "Stakes ") elseif leader == "elizabeth" then t("포격 ", "Volley ") else ""
-						local caption = tag .. "−" .. tostring(-delta)
+						local caption = (if opts.cardOnly then "⚔️ " else "") .. tag .. "−" .. tostring(-delta)
 						local stain = if card and card.id == "sa_36" then "stakes" else "hit"
 						local tint = Color3.fromRGB(255, 143, 120)
 						if volley[unit] then effectAt(pos, size, caption, tint, volley[unit], "hit") else add(damage, caption, tint, stain) end
@@ -3348,7 +3346,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local widget = boardCards[target.card]
 				local tint = if target.left or (target.delta or 0) < 0 then Color3.fromRGB(245, 130, 112)
 					elseif (target.delta or 0) > 0 then Color3.fromRGB(146, 222, 175) else Color3.fromRGB(144, 208, 242)
-				if #forecastGlows < 8 and cardCenter(widget) then
+				if not opts.cardOnly and #forecastGlows < 8 and cardCenter(widget) then
 					local glow = Instance.new("UIStroke")
 					glow.Name = "ForecastTarget"
 					glow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -3442,8 +3440,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if opts.cardOnly then
 					local hasTiming = string.match(description, "^낼 때:") or string.match(description, "^낼 때：") or string.match(description, "^On play:")
 						or string.match(description, "^Deploy:")
-					local trigger = if timing and not hasTiming then timing .. ": " else ""
-					focusRule.Text = row .. strength .. "\n" .. trigger .. (if ability then ability .. " " else "") .. description
+					local rule = description
+					if hasTiming then
+						rule = description:gsub("^[^:]+: ?","", 1)
+						if rule == description then rule = description:gsub("^낼 때：%s*", "", 1) end
+					end
+					local trigger = if rule ~= description then t("낼 때", "On play") elseif not hasTiming then timing else nil
+					focusRule.Text = row .. strength .. "\n" .. (if ability then ability .. " " else "")
+						.. (if trigger then trigger .. " · " else "") .. rule
 						.. (if status then "\n" .. t("상태 · ", "Status · ") .. status else "")
 						.. (if forecast then "\n" .. forecast else "")
 				else
@@ -3461,6 +3465,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			clearDropHint()
 			if selected and selected.Parent then
 				selected.Rotation = 0
+				selected.SelectedCardScale.Scale = 1
 				selected.UIStroke.Color = brass
 				selected:SetAttribute("ArtFocused", false)
 			end
@@ -3573,9 +3578,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				battleScore.Text = score
 				if displayedScore and displayedRound == m.round and displayedScore ~= score then
 					if scorePulse then scorePulse:Cancel() end
-					battleScore.TextColor3 = CardTheme.confirm
-					scorePulse = TweenService:Create(battleScore, TweenInfo.new(0.45), { TextColor3 = ink })
-					scorePulse:Play()
+					local scoreRound = m.round
+					task.delay(0.34, function()
+						if not g.Parent or battleScore.Text ~= score or m.round ~= scoreRound then return end
+						if scorePulse then scorePulse:Cancel() end
+						battleScore.TextColor3 = CardTheme.confirm
+						scorePulse = TweenService:Create(battleScore, TweenInfo.new(0.45), { TextColor3 = ink })
+						scorePulse:Play()
+					end)
 				end
 				displayedScore, displayedRound = score, m.round
 				battleTurn.Text = if m.over then t("종료", "Over") elseif m.turn == "me" then t("내 차례", "Your turn") else t("상대 차례", "Enemy turn")
@@ -3637,7 +3647,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				})
 				laneGradient.Rotation = 0
 				laneGradient.Parent = rf
-				local laneStroke = frameEdge(rf, Color3.fromRGB(188, 142, 79), 4)
+				local laneStroke = frameEdge(rf, if opts.cardOnly then CardTheme.brass else Color3.fromRGB(188, 142, 79), 4)
 				laneStroke.Transparency = if opts.cardOnly then 0.6 else 0.14
 				laneStroke.Thickness = 1
 				local laneAccent = Instance.new("Frame")
@@ -3646,6 +3656,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				laneAccent.BackgroundColor3 = if side == "me" then Color3.fromRGB(88, 170, 212) else Color3.fromRGB(214, 115, 110)
 				laneAccent.BorderSizePixel = 0
 				laneAccent.Parent = rf
+				if opts.cardOnly then
+					local route = Instance.new("Frame")
+					route.Name = "ChartRoute"
+					route.Position = UDim2.new(0, 6, 1, -2)
+					route.Size = UDim2.new(1, -12, 0, 1)
+					route.BackgroundColor3 = CardTheme.brass
+					route.BackgroundTransparency = 0.40
+					route.BorderSizePixel = 0
+					route.Parent = rf
+				end
 				if not compactCards then emblem(rf, rowIcons[row], UDim2.new(0, 4, 0.5, 0), UDim2.new(0, 21, 0.8, 0)) end
 				local mult, adv, dis = BC.rowMatchup(m, side, row)
 				local tag = label(rf, string.format("%s\n%d%s", rowName(row), BC.rowTotal(m, side, row), if adv and dis then " ▲▼" elseif adv then t(" ▲상성", " ▲Adv") elseif dis then t(" ▼불리", " ▼Dis") else "") .. (if BC.activeTactic(m.rows[side][row]) then "\n" .. BC.activeTactic(m.rows[side][row]) else ""), 13, Color3.fromRGB(246, 208, 130))
@@ -3886,6 +3906,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 				b.Parent = handFrame
 				b:SetAttribute("HandIdx", i)
+				local lift = Instance.new("UIScale")
+				lift.Name = "SelectedCardScale"
+				lift.Parent = b
 				local edge = frameEdge(b, if c.hero then Color3.fromRGB(243, 206, 118) else brass, 6)
 
 				local function playChosenCard()
@@ -3896,6 +3919,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					local target = if c.special then boardFrame else rowTargets[side][BC.lane(c)]
 					local flight = b:Clone()
 					flight.Active = false
+					flight.SelectedCardScale.Scale = 1
 					flight.Interactable = false
 					flight.AnchorPoint = Vector2.new(0.5, 0.5)
 					flight.Size = UDim2.fromOffset(b.AbsoluteSize.X, b.AbsoluteSize.Y)
@@ -3930,6 +3954,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					if selected ~= b then
 						if selected and selected.Parent then
 							selected.Rotation = 0
+							selected.SelectedCardScale.Scale = 1
 							selected.UIStroke.Color = brass
 							selected:SetAttribute("ArtFocused", false)
 						end
@@ -3941,6 +3966,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						selected = b
 						selectedPlay = playChosenCard
 						edge.Color = Color3.fromRGB(255, 215, 126)
+						if opts.cardOnly then lift.Scale = 1.04 end
 						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = if opts.cardOnly then 0 else -4 }):Play()
 						info.Text = cardName(c) .. " · " .. cardDescription(c)
 							.. (if c.hero then t(" · 영웅: 날씨·소각 면역", " · Hero: weather and Scorch immune") else "")
