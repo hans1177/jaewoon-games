@@ -1835,7 +1835,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			-- 원본 한 덩어리 메시의 형상을 무리하게 뒤틀거나 새 관절·메시를 생성하지 않는다.
 			local animalJoints, animalParts = {}, {}
 			local basePivot = m:GetPivot()
-			local occupiedParts = {}
+			local occupiedParts, drivenParts = {}, {}
 			for _, node in m:GetDescendants() do
 				if node:IsA("Motor6D") then
 					if node.Part1 then occupiedParts[node.Part1] = true end
@@ -1869,18 +1869,43 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 					local rear = name:find("hind", 1, true) or name:find("rear", 1, true)
 						or name:find("back", 1, true)
 					local side = if left then 1 else -1
-					local phaseOffset = if kind == "leg" then (if rear then (if left then math.pi else 0)
-						else (if left then 0 else math.pi)) else 0
-					if (node:IsA("Bone") or node:IsA("Motor6D") or node:IsA("AnimationConstraint"))
-						and #animalJoints < 14 then
+					-- [사족 보행] 소·말·양은 네 발 순서대로 딛고, 개·고양이는 대각선 보폭을 사용한다.
+					local fourBeat = species == "cow" or species == "horse" or species == "donkey"
+						or species == "sheep" or species == "llama" or species == "elephant"
+					local phaseOffset = if kind ~= "leg" then 0 elseif fourBeat then
+						(if rear then (if left then math.pi * 1.5 else math.pi * 0.5)
+						else (if left then 0 else math.pi))
+						else (if rear then (if left then math.pi else 0) else (if left then 0 else math.pi))
+					local targetPart = if node:IsA("Motor6D") then node.Part1
+						elseif node:IsA("AnimationConstraint") then node.Attachment1 and node.Attachment1.Parent else nil
+					if node:IsA("Bone") and #animalJoints < 14 then
+						-- 스킨 메시는 원본 Bone.Transform으로만 변형한다.
 						table.insert(animalJoints, { joint = node, base = node.Transform,
 							kind = kind, side = side, phase = phaseOffset })
-					elseif node:IsA("BasePart") and not occupiedParts[node] and #animalParts < 12
+					elseif targetPart and targetPart:IsA("BasePart") then
+						if targetPart.Anchored then
+							-- [외부 FBX 실제 표시] 가져온 동물은 모든 파츠가 고정된다.
+							-- 고정된 Motor6D/AnimationConstraint는 관절값만 갱신해도 사지가 이동하지 않으므로
+							-- 실제 Part1 메시를 기존 Model:PivotTo 뒤에만 보간한다.
+							if not drivenParts[targetPart] and #animalParts < 12
+								and math.max(targetPart.Size.X, targetPart.Size.Y, targetPart.Size.Z) < bodyExtent * 0.77 then
+								table.insert(animalParts, { part = targetPart, base = basePivot:ToObjectSpace(targetPart.CFrame),
+									kind = kind, side = side, phase = phaseOffset,
+									hinge = math.min(targetPart.Size.Y * 0.34, 0.65) })
+								drivenParts[targetPart] = true
+							end
+						elseif #animalJoints < 14 then
+							table.insert(animalJoints, { joint = node, base = node.Transform,
+								kind = kind, side = side, phase = phaseOffset })
+						end
+					elseif node:IsA("BasePart") and not occupiedParts[node] and not drivenParts[node]
+						and #animalParts < 12
 						and math.max(node.Size.X, node.Size.Y, node.Size.Z) < bodyExtent * 0.77 then
-						-- 외부 원본의 단일 전신 메시를 머리·다리로 잘못 회전시키지 않는다.
+						-- 한 덩어리 전신 메시를 다리나 고개로 오인해 회전시키지 않는다.
 						table.insert(animalParts, { part = node, base = basePivot:ToObjectSpace(node.CFrame),
 							kind = kind, side = side, phase = phaseOffset,
 							hinge = math.min(node.Size.Y * 0.34, 0.65) })
+						drivenParts[node] = true
 					end
 				end
 			end
