@@ -109,6 +109,38 @@ test('같은 게임의 다른 CC0 자산은 기존 단일 역할 슬롯을 덮�
   }finally{f.cleanup();}
 });
 
+test('기존 파생본 재사용 시 미리보기 해시와 실제 GLB 구조를 재검증한다',async()=>{
+  const digest=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+  for(const mutation of ['preview-hash','invalid-glb']){
+    const f=fixture();
+    try{
+      fs.writeFileSync(f.source,binary);
+      const dir=path.join(f.root,'assets/generated/web/demo/character');
+      fs.mkdirSync(dir,{recursive:true});
+      const preview=Buffer.from('previous-preview-bytes');
+      fs.writeFileSync(path.join(dir,'asset.glb'),binary);
+      fs.writeFileSync(path.join(dir,'master.glb'),binary);
+      fs.writeFileSync(path.join(dir,'preview.png'),preview);
+      fs.writeFileSync(path.join(dir,'evidence.json'),JSON.stringify({
+        sourceMesh:{libraryParentAssetId:'fixture-cc0-actor',sourceSha256:hash},
+        artifactHash:digest(binary),
+        previewHash:mutation==='preview-hash'?'0'.repeat(64):digest(preview),
+        pbrMeshQa:{pass:true}
+      }));
+      fs.writeFileSync(path.join(dir,'application.json'),JSON.stringify({
+        style:{sourceStyleFamily:'STYLIZED_FANTASY'},masterSha256:digest(binary)
+      }));
+      const registryBefore=fs.readFileSync(path.join(f.root,'company-asset-library.json'));
+      const modelBefore=fs.readFileSync(path.join(dir,'asset.glb'));
+      await assert.rejects(request({repoRoot:f.root}),mutation==='preview-hash'
+        ?/CC0_DERIVED_OUTPUT_STALE_KEEP_FOR_REVIEW/
+        :/CC0_DERIVED_GLB_STATIC_QA_FAILED/);
+      assert.deepEqual(fs.readFileSync(path.join(dir,'asset.glb')),modelBefore);
+      assert.deepEqual(fs.readFileSync(path.join(f.root,'company-asset-library.json')),registryBefore);
+    }finally{f.cleanup();}
+  }
+});
+
 test('wrong downloaded hash is rejected without leaving a source or stage',async()=>{
   const f=fixture({downloadUrl:'https://opengameart.org/sites/default/files/fixture.glb'});
   try{
