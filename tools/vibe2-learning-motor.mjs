@@ -486,23 +486,6 @@ export function applyVerifiedKnowledgeOutcomes(stateInput={},queueInput={}){
     if(!outcome)continue;
     const refs=knowledgeRefsFromEvidence(evidence);if(!refs.length)continue;
     const gameId=clean(task.gameId)||'unknown',target=lower(task.target)||'unknown';
-    // [네이티브 자가 발전] 정적 코딩·리뷰 PASS만으로 자산·플랫폼 노하우를 성공 학습하지 않는다.
-    // 동일 엔진의 실행 증거를 확인한 후에만 기존 지식 귀속·프로덕션 신뢰도를 갱신한다.
-    const nativeDomains=nativeDomainsForEngine(target);
-    if(outcome==='PASS'&&nativeDomains){
-      const taskDomains=inferDomains(clean(task.goal),target);
-      const assetDomain=taskDomains.includes('ASSET_PRODUCTION')?'ASSET_PRODUCTION'
-        :taskDomains.includes('ASSET_ADAPTATION')?'ASSET_ADAPTATION':null;
-      const nativeDomain=assetDomain||[...nativeDomains][0];
-      if(!nativePositiveMasteryAllowed({
-        engine:target,evidence,
-        cloudRuntimeVerified:task?.cloudRuntimeVerified===true,
-        cloudAssetRuntimeBindingPassed:task?.cloudAssetRuntimeBindingPassed===true,
-        engineQaVerified:task?.engineQaVerified===true,
-        nativeRuntimeVerified:task?.nativeRuntimeVerified===true,
-        runtimeVerified:task?.runtimeVerified===true
-      },nativeDomain))continue;
-    }
     const run=evidence.find(x=>x.startsWith('actions-run:'))||evidence.filter(x=>x.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
     const eventId='knowledge_'+hash([clean(task.id),run,outcome,refs.join(',')].join('|'));
     if(seen.has(eventId))continue;
@@ -840,8 +823,25 @@ function codingVerificationOutcome(task={}){
   const regressionFail=evidence.some(value=>value==='failure-cause:fan-in-regression-failed'||value.startsWith('failure-cause:fan-in-regression-failed:'));
   // [실패 우선] 소스 후보의 오래된 PASS와 최신 fan-in 실패가 함께 있어도 긍정 학습 금지.
   if(regressionFail)return'REGRESSION_FAIL';
-  if(pass)return'PASS';
-  return null;
+  if(!pass)return null;
+  // [공통 학습 판정] 코드 전략·지식 귀속·위험 분석 전부 네이티브 실행 증거 없이는
+  // 성공 후보로 등록할 수 없다. 실패 결과는 이 검증과 무관하게 계속 학습한다.
+  const nativeDomains=nativeDomainsForEngine(task?.target||task?.engine);
+  if(nativeDomains){
+    const target=lower(task?.target||task?.engine),domains=inferDomains(clean(task.goal),target);
+    const assetDomain=domains.includes('ASSET_PRODUCTION')?'ASSET_PRODUCTION'
+      :domains.includes('ASSET_ADAPTATION')?'ASSET_ADAPTATION':null;
+    const requiredDomain=assetDomain||[...nativeDomains][0];
+    if(!nativePositiveMasteryAllowed({
+      engine:target,evidence,
+      cloudRuntimeVerified:task?.cloudRuntimeVerified===true,
+      cloudAssetRuntimeBindingPassed:task?.cloudAssetRuntimeBindingPassed===true,
+      engineQaVerified:task?.engineQaVerified===true,
+      nativeRuntimeVerified:task?.nativeRuntimeVerified===true,
+      runtimeVerified:task?.runtimeVerified===true
+    },requiredDomain))return null;
+  }
+  return'PASS';
 }
 function hotspotRisk(row={}){
   const failures=Math.max(0,Number(row.verifiedRegressionFailures)||0),passes=Math.max(0,Number(row.verifiedPasses)||0);
