@@ -2674,9 +2674,15 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local touchDecor = game:GetService("UserInputService").TouchEnabled
 	local decorLimit = if game:GetService("UserInputService").TouchEnabled then 7 else 13
 	local animationLimit = if touchDecor then 3 else 6
-	local builderLimit = if touchDecor then 1 else 2
+	-- [건설 조직] 실제 고용된 일꾼·장인의 수를 넘지 않고 사이트마다 여러 직무로 분산한다.
+	-- 성능 예산은 도시 등급에 따라 커지지만 모바일은 동시 4명까지만 렌더링한다.
 	local jobs = info.sim and info.sim.jobs
-	local hasBuilders = not info.sim or (jobs and ((jobs.laborer or 0) + (jobs.craftsman or 0)) > 0)
+	local availableBuilders = if info.sim then math.max(0, math.min(
+		math.floor(tonumber(info.sim.residents) or 0),
+		math.floor(tonumber(jobs and jobs.laborer) or 0) + math.floor(tonumber(jobs and jobs.craftsman) or 0)
+	)) else 9
+	local builderLimit = math.min(availableBuilders, if touchDecor then math.min(4, lvl + 1) else math.min(9, lvl * 2))
+	local hasBuilders = builderLimit > 0
 
 	-- [성장 장식 시공] 모든 구역이 동일한 설치·비계 제거·목수 점검 과정을 사용한다.
 	-- 처음 방문한 기존 완공물과 즉시 설치된 대형 메시는 재시공하지 않는다.
@@ -2690,21 +2696,31 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			scaffold:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 			scaffold:SetAttribute("ShowcaseOnly", true)
 		end
-		local worker, duty
+		local crew = {}
 		if hasBuilders and decorBuilders < builderLimit then
-			local workerAt = site + Vector3.new(6, 0, 5)
-			worker = villager(folder, workerAt, faceTo(workerAt, site),
-				C(143, 109, 73), rng, "Barbarian", true,
-				{ profession = "carpenter", hat = "cap", year = info.year or currentYear })
-			if worker then
-				decorBuilders += 1
-				worker:SetAttribute("Job", "construction_worker")
-				worker:SetAttribute("Activity", "hammer")
-				worker:SetAttribute("ShowcaseOnly", true)
-				worker:SetAttribute("BuildPlotId", item:GetAttribute("BuildPlotId"))
-				duty = { model = worker, base = worker:GetPivot(), mode = "stay",
-					kind = "hammer", phase = rng:NextNumber(0, 5) }
-				table.insert(walkers, duty)
+			local teamSize = math.min(if touchDecor then 2 else 3, builderLimit - decorBuilders)
+			for index = 1, teamSize do
+				-- [공정 분담] 목공 조립·자재 운반·안전 점검을 한 현장에 모은다.
+				local offset = if index == 1 then Vector3.new(6, 0, 5)
+					elseif index == 2 then Vector3.new(-6, 0, 5) else Vector3.new(3, 0, -7)
+				local workerAt = site + offset
+				local kind = if index == 1 then "hammer" elseif index == 2 then "lift" else "inspect"
+				local profession = if index == 1 then "carpenter" else "construction_worker"
+				local worker = villager(folder, workerAt, faceTo(workerAt, site),
+					C(143, 109, 73), rng, "Barbarian", true,
+					{ profession = profession, hat = "cap", year = info.year or currentYear })
+				if worker then
+					decorBuilders += 1
+					worker.Name = "CityBuilder_" .. tostring(decorBuilders)
+					worker:SetAttribute("Job", profession)
+					worker:SetAttribute("Activity", kind)
+					worker:SetAttribute("ShowcaseOnly", true)
+					worker:SetAttribute("BuildPlotId", item:GetAttribute("BuildPlotId"))
+					local duty = { model = worker, base = worker:GetPivot(), mode = "stay", kind = kind,
+						phase = rng:NextNumber(0, 5) }
+					table.insert(walkers, duty)
+					table.insert(crew, { model = worker, duty = duty })
+				end
 			end
 		end
 		task.spawn(function()
@@ -2714,19 +2730,24 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			if not item.Parent or not folder.Parent then
 				if item.Parent then item:SetAttribute("BuildState", "complete") end
 				if scaffold and scaffold.Parent then scaffold:Destroy() end
-				if worker and worker.Parent then worker:Destroy() end
+				for _, member in crew do
+					if member.model.Parent then member.model:Destroy() end
+				end
 				return
 			end
-			task.wait((buildDelay or 0) + 0.85)
+			-- [시공 연출] 비계는 공정 완료까지 남고, 점검 후 모든 작업자가 철수한다.
+			task.wait((buildDelay or 0) + 2.5)
 			if item.Parent then item:SetAttribute("BuildState", "complete") end
 			if scaffold and scaffold.Parent then scaffold:Destroy() end
-			if worker and worker.Parent then
-				if item.Parent and folder.Parent then
-					duty.kind = "inspect"
-					worker:SetAttribute("Activity", "inspect")
-					task.wait(1.2)
+			for _, member in crew do
+				if member.model.Parent then
+					member.duty.kind = "inspect"
+					member.model:SetAttribute("Activity", "inspect")
 				end
-				if worker.Parent then worker:Destroy() end
+			end
+			task.wait(1.2)
+			for _, member in crew do
+				if member.model.Parent then member.model:Destroy() end
 			end
 		end)
 	end
