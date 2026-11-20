@@ -1619,6 +1619,38 @@ test('항구 35개 직업은 등록된 실물 장비를 직접 R15에 착용하�
  assert.match(port,/readyConn:Disconnect\(\)/);
  assert.doesNotMatch(equipment,/Instance\.new\(/,'임시 파트로 도구 대체 금지');
 });
+// [항구 지리적 빈땅] 기존 주택/경제/저장 키를 유지하면서 지역별 입체 원본만 배치한다.
+test('항구 지리적 미개발 필지는 등록된 18종 실물 에셋과 8종 생태 지형으로 채운다',()=>{
+ const port=read('ReplicatedStorage/Shared/PortScene.luau');
+ const ids=read('ReplicatedStorage/Shared/AssetIds.luau');
+ const terrain=port.match(/local openLandAssets = \{([\s\S]*?)\n\t\}/)?.[1];
+ assert.ok(terrain,'기존 항구 배치 함수의 원본 지형 팔레트');
+ for(const biome of ['arid','wetland','coastal','hillside','bamboo','orchard','fallow','woodland'])
+  assert.ok(terrain.includes(biome+' = {'),'지역 생태 누락: '+biome);
+ const assets=[...terrain.matchAll(/\{\s*"(Terrain|Naval)"\s*,\s*"([^"]+)"/g)]
+  .map(match=>match[1]+'/'+match[2]);
+ assert.ok(new Set(assets).size>=18,'항구별 독립 입체 에셋 부족');
+ for(const asset of assets)assert.ok(ids.includes('["'+asset+'"]'),'미등록 지형 에셋: '+asset);
+ assert.match(port,/local wildernessQuota = math\.min\(/,'모바일·PC 고정 예산');
+ assert.match(port,/wildernessTouch then \(\{ 22, 19, 16, 13, 9 \}\)\[lvl\]/);
+ assert.match(port,/local fringeBudget = if wildernessTouch then 7 else 13/);
+ assert.match(port,/local plotRng = seeded\(plotId \.\. ":geographic-land"\)/);
+ assert.match(port,/local fringeRng = seeded\(fringeId \.\. ":geographic-land"\)/);
+ assert.match(port,/if not onStreet\(x, half\) and not reserved\(x, z0, half\) then/);
+ assert.match(port,/if not onStreet\(x, half\) and not reserved\(x, z, half\) then/);
+ assert.match(port,/model:SetAttribute\("BuildType", "house"\)/,'기존 미개발 주택 필지 식별자 보존');
+ assert.match(port,/model:SetAttribute\("BuildState", "vacant"\)/,'경제 시공 금지');
+ assert.match(port,/model:SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
+ assert.match(port,/model:SetAttribute\("CityOpenLandBiome", biome\)/);
+ for(const key of ['CityOpenLandBaseBiome','CityOpenLandTerrain','CityOpenLandPlots',
+ 'CityOpenLandDetails','CityOpenLandFringe','CityOpenLandRejected','CityOpenLandMode'])
+  assert.ok(port.includes('folder:SetAttribute("'+key+'"'),'지리 QA 누락: '+key);
+ assert.match(port,/UndevelopedFringe_/,'도시 외곽 미개발지 실제 피복');
+ assert.match(port,/model\.Name = "Undeveloped_" \.\. spec\[2\]/);
+ assert.doesNotMatch(terrain,/Instance\.new\("Part"\)/,'임시 도형 자산 금지');
+ assert.ok(!port.slice(port.indexOf('-- [지리적 미개발지]'),port.indexOf('-- [도시 전체 외곽')).includes('SetAsync('),
+  '경제/저장 쓰기 금지');
+});
 // [원본 머리 6종 + 액세서리 5종] 실제 3D 원본 증빙, 등록 후 역할별 장착, R15 관절·저장 불변.
 test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 등록된 경우에만 정밀 장착된다',async()=>{
  const pose=read('ReplicatedStorage/Shared/Pose.luau');
