@@ -163,12 +163,13 @@ local earlyMobParts = {
 	["People/acc_ribbon_bow"] = true,
 	["People/acc_feather_hat"] = true,
 	["People/acc_guild_badge"] = true,
-	-- [직업용 소지품 선입고] 31개 직업의 21종 등록된 원본 도구를 기존 큐의 People 복식과 함께 적재한다.
+	-- [직업용 소지품 선입고] 35개 직업의 22종 등록된 원본 도구를 기존 큐의 People 복식과 함께 적재한다.
 	["Cargo/corn"] = true,
 	["Relics/rope-bundle-b"] = true,
 	["Relics/rope-bundle-a"] = true,
 	["Cargo/bag"] = true,
 	["Cargo/bucket"] = true,
+	["Relics/drafting-compass"] = true,
 	["Relics/handplane"] = true,
 	["Relics/hammer"] = true,
 	["Cargo/linen"] = true,
