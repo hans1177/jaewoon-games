@@ -115,6 +115,11 @@
       "n": 1,
       "lastAt": 1795156093836,
       "last": "REJECTED"
+    },
+    "mare-essentia:visual:d5cef10771fe90dc5ba8aa0bffaa3e1cf111d5d302650d13e7a68493b96d162e": {
+      "n": 1,
+      "lastAt": 1795156302288,
+      "last": "APPLIED"
     }
   },
   "merged": [
@@ -168,29 +173,28 @@
     },
     "gemini:gemini-3.8-flash": {
       "ok": 0,
-      "fail": 11,
-      "quotaUntil": 1795153224981,
-      "lastAt": 1795131624981
+      "fail": 12,
+      "quotaUntil": 1795177902288,
+      "lastAt": 1795156302288
     },
     "gemini:gemini-3.7-flash": {
       "ok": 0,
-      "fail": 11,
-      "quotaUntil": 1795153224981,
-      "lastAt": 1795131624981
+      "fail": 12,
+      "quotaUntil": 1795177902288,
+      "lastAt": 1795156302288
     },
     "gemini:gemini-3.6-flash": {
-      "ok": 16,
+      "ok": 18,
       "fail": 21,
-      "lastAt": 1795156093836,
+      "lastAt": 1795156302288,
       "quotaUntil": 1795052264379
     }
   },
   "visualCoverage": {
-    "sourceRevision": "1eb71e2b0fbacb04688ee45dac6d7068c79d030d",
+    "sourceRevision": "086a4b27b22e8ea6c9c01df5f40a4c73749fd6fe",
     "labels": [
-      "c00_start",
-      "t01",
-      "t02"
+      "holes_lisbon_port",
+      "holes_ground_scan"
     ]
   }
 }
