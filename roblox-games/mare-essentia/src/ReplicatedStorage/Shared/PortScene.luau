@@ -5866,33 +5866,43 @@ function PortScene.build(info, onFacility)
 				end
 			elseif w.mode == "schedule" then
 				if w.model.Parent then
+					-- [개인 하루 흐름] 직업별 시간표와 각자의 시차를 재사용한다.
+					-- 집→일터→시장→여가→귀가, 야간 초병·점심휴식까지 실제 위치와 자세가 함께 변한다.
 					local hour = game:GetService("Lighting").ClockTime
-					local where, routine
-					if hour < 10 then
-						where, routine = w.morning, if hour >= 6 then "work" else "rest"
-					elseif hour < 12 then
-						where, routine = w.morning:Lerp(w.market, (hour - 10) / 2), "trade"
-					elseif hour < 17 then
-						where, routine = w.market, "trade"
-					elseif hour < 19 then
-						where, routine = w.market:Lerp(w.evening, (hour - 17) / 2), "leisure"
-					elseif hour < 22 then
+					local home = w.home or w.morning
+					local wakeAt, marketAt = w.wakeAt or 6, w.marketAt or 10
+					local marketEnd, homeAt = w.marketEnd or 17, w.homeAt or 22
+					local where, routine, route, progress
+					local commuteSpan = 0.8
+					if w.job == "guard" and (hour >= 22.5 or hour < 4.8) then
+						where, routine = w.morning, "night_watch"
+					elseif hour < wakeAt then
+						where, routine = home, "rest"
+					elseif hour < wakeAt + commuteSpan then
+						progress = (hour - wakeAt) / commuteSpan
+						where, routine, route = home:Lerp(w.morning, progress), "commute", w.morning - home
+					elseif hour < marketAt then
+						where, routine = w.morning, "work"
+					elseif hour < marketAt + commuteSpan then
+						progress = (hour - marketAt) / commuteSpan
+						where, routine, route = w.morning:Lerp(w.market, progress), "commute", w.market - w.morning
+					elseif hour < marketEnd then
+						where = w.market
+						routine = if hour >= (w.breakAt or 13) and hour < (w.breakAt or 13) + (w.breakSpan or 0.65)
+							then "break" else "trade"
+					elseif hour < marketEnd + commuteSpan then
+						progress = (hour - marketEnd) / commuteSpan
+						where, routine, route = w.market:Lerp(w.evening, progress), "commute", w.evening - w.market
+					elseif hour < homeAt then
 						where, routine = w.evening, "leisure"
-					elseif hour < 23 then
-						where, routine = w.evening:Lerp(w.morning, hour - 22), "rest"
+					elseif hour < homeAt + commuteSpan then
+						progress = (hour - homeAt) / commuteSpan
+						where, routine, route = w.evening:Lerp(home, progress), "commute", home - w.evening
 					else
-						where, routine = w.morning, "rest"
+						where, routine = home, "rest"
 					end
-					-- [골목 안 자연 동선] 기존 거리의 양 끝은 그대로, 주민별 최대 1.3스터드만 곡선으로 이동한다.
-					-- 건물 안쪽 임의 이동 대신 시각적으로 좁은 길 위를 지나도록 제한한다.
-					local route, progress
-					if hour >= 10 and hour < 12 then
-						route, progress = w.market - w.morning, (hour - 10) / 2
-					elseif hour >= 17 and hour < 19 then
-						route, progress = w.evening - w.market, (hour - 17) / 2
-					elseif hour >= 22 and hour < 23 then
-						route, progress = w.morning - w.evening, hour - 22
-					end
+					-- [개인별 골목 폭] 같은 거리에서도 바퀴 자국처럼 미세하게 다른 보행 궤적.
+					-- 통로 양 끝점은 고정, 최대 1.3스터드 오프셋만 허용해 건물 침범 방지.
 					if route and route.Magnitude > 0.05 and progress then
 						local lateral = Vector3.new(-route.Z, 0, route.X).Unit
 						where += lateral * math.sin(progress * math.pi) * (w.travelOffset or 0)
@@ -5932,10 +5942,17 @@ function PortScene.build(info, onFacility)
 						else
 							local roster = if routine == "work" then w.workKinds
 								elseif routine == "trade" then w.tradeKinds
-								elseif routine == "leisure" then w.leisureKinds else EVENING_REST
+								elseif routine == "leisure" or routine == "break" then w.leisureKinds
+								elseif routine == "night_watch" then NIGHT_DUTY else EVENING_REST
 							roster = roster or { w.socialKind or "look" }
 							local period = math.floor((now + w.phase * 2.1) / (w.activitySpan or 16))
 							local kind = roster[((period + (w.personality or 0)) % #roster) + 1]
+							if routine == "break" then
+								-- [점심 휴식] 개인별 휴식 시간을 맞춰 작업복 상태로 물·식사·이웃 대화.
+								local interval = math.floor((now + w.phase) / 5) % 4
+								kind = if interval == 0 then "drink" elseif interval == 1 then "talk"
+									elseif interval == 2 then "stretch" else "listen"
+							end
 							if facingPartner then
 								-- [인사→거래→반응→작별] 짝끼리 같은 시계로 동작을 맞추되 역할을 나눠 자연스럽게 연출.
 								local scene = math.floor(now / 4.2) % 6
