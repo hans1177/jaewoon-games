@@ -17,7 +17,7 @@ function fixture(){
   fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
     status:'OWNER_DIRECT_LOCKED',developmentAccess:{WEB:'ALWAYS_ALLOWED'},
     ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['WEB']},
-    localVibeWebChat:{enabled:true,platform:'WEB'},
+    localVibeWebChat:{enabled:true,platform:'WEB',webGameAuthoringEnabled:true},
     finalDevelopmentLock:{sequenceLock:{status:'LOCKED'}}
   }));
   fs.mkdirSync(path.join(root,'unity-games','daechung-rpg'),{recursive:true});
