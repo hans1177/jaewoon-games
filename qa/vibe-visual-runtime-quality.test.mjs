@@ -85,6 +85,37 @@ test('새로 제작된 GLB는 실게임 모바일 캡처와 60프레임 측정 �
   assert.equal(pending.status,'RUNTIME_VISUAL_REPAIR_REQUIRED');
   assert.ok(pending.runtimeAudit.reasons.includes('native-mobile-asset-performance-evidence-missing-or-failed'));
   assert.ok(pending.runtimeRepairLoop.defects.some(item=>item.surface==='MOBILE_NATIVE_ASSET'));
+  // 모바일 측정만으로 제작 모델의 게임 적용을 승인해서는 안 된다.
+  const fakeMobileOnly=createVibeGraphicsProduction({
+    gameId:'mare-essentia',request:'3D 에셋 게임 적용 검증',target:'roblox',
+    candidateRevision:rev,sourceRevision:'b'.repeat(40),
+    assetProductionPlan:{
+      kind:'vibe2-asset-production-plan',
+      automaticAssetBindingWork:{targets:[{
+        status:'NATIVE_IMPORT_AND_RUNTIME_QA_REQUIRED',assetId:'derived-roblox-mare-essentia-prop-a',
+        artifactHash:assetHash,sourceBound:true
+      }]}
+    },runtimeEvidence:{
+      stage:'INTERNAL_PLAYTEST',candidateRevision:rev,captures:captures(rev),
+      mobileAssetPerformances:[evidence]
+    }
+  });
+  assert.equal(fakeMobileOnly.runtimeAudit.pass,true,'performance observations alone pass the mobile budget');
+  assert.equal(fakeMobileOnly.status,'RUNTIME_VISUAL_REPAIR_REQUIRED');
+  assert.equal(fakeMobileOnly.runtimeRepairLoop.status,'RUNTIME_VISUAL_REPAIR_REQUIRED');
+  assert.ok(fakeMobileOnly.nativeImportRepairTargets.some(row=>
+    row.findings.includes('PREPARED_NATIVE_ASSET_EXACT_RUNTIME_MODEL_NOT_OBSERVED')));
+  const invalidHash=createVibeGraphicsProduction({
+    gameId:'mare-essentia',request:'네이티브 출처 누락 차단',target:'roblox',
+    assetProductionPlan:{kind:'vibe2-asset-production-plan',
+      automaticAssetBindingWork:{targets:[{
+        status:'NATIVE_IMPORT_AND_RUNTIME_QA_REQUIRED',assetId:'broken-asset',artifactHash:'wrong'
+      }]}},
+    runtimeEvidence:{stage:'INTERNAL_PLAYTEST',candidateRevision:rev,captures:captures(rev)}
+  });
+  assert.equal(invalidHash.status,'RUNTIME_VISUAL_REPAIR_REQUIRED');
+  assert.equal(invalidHash.spatial3dApplication.nativeImportIncompleteHash,true);
+  assert.ok(invalidHash.nativeImportRepairTargets[0].findings.includes('PREPARED_NATIVE_ASSET_ID_OR_HASH_INVALID'));
   const mobilePass=auditVibeRuntimeVisualEvidence({
     candidateRevision:rev,captures:captures(rev),mobileAssetPerformanceRequired:true,
     mobileAssetHashesRequired:[assetHash],mobileAssetPerformances:[evidence]
