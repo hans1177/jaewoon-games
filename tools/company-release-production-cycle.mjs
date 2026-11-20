@@ -1,10 +1,12 @@
+// 파일명: tools/company-release-production-cycle.mjs
+// [정식 부서] 출시 위험은 기획·그래픽·개발·QA·오디오가 검토하며 밸런스 회귀는 기획·QA가 보호한다.
 import fs from 'node:fs';
 import {requestGeminiFreePair,GEMINI_FREE_MODELS} from './vibe2-gemini-free-rotation.mjs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './production-classification.mjs';
 
-const ROLES=['planning','graphics','development','qa','balance'];
+const ROLES=['planning','graphics','development','qa','audio'];
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -212,6 +214,11 @@ async function runRiskWatch(baseline,build,{runtime=null,qa=null,phase='BUILD_PR
   for(const role of ROLES){
     const lead=leadModels[role];
     const models=reviewModels[role];
+    // [영향별 전문 검토] 게임 수치/보상은 기획·QA, 사운드 재생 이벤트는 오디오가 담당한다.
+    const roleFocus=role==='planning'?'핵심루프, 기존 난이도·보상·성장·경제 수치의 변경 위험':
+      role==='qa'?'전투 수치·저장·보상·드롭률 회귀와 같은 빌드의 실제 실행 검증':
+      role==='audio'?'효과음·배경음악 이벤트 동기화, 모바일 재생, 음량·중복 재생과 실재 사운드 재생 증거':
+      role==='graphics'?'모션·UI·자산·모바일 화면 가독성':'소스·빌드·의존성·저장 호환';
     const passes=[];
     for(const model of models){
       const memberRole=model===lead?'LEAD':'ASSISTANT';
@@ -221,7 +228,7 @@ async function runRiskWatch(baseline,build,{runtime=null,qa=null,phase='BUILD_PR
       const result=await callModel(
         model,
         `너는 ${role} 부서의 ${memberRole} 출시 위험 감시 AI다. 새 기능을 기획하지 말고 ${scope}에서 실제 출시 차단 위험만 찾는다. 근거가 불충분하면 blocker로 만들지 않는다.`,
-        `현재 릴리즈 후보의 ${role} 책임영역을 검토하라. blockers는 제공된 실제 근거로 출시를 막아야 함이 명확한 항목만 넣고, 경미하거나 불확실한 항목은 warnings에 둔다.\nEVIDENCE=${clip(evidence,18000)}`,
+        `현재 릴리즈 후보의 ${role} 책임영역(${roleFocus})을 검토하라. blockers는 제공된 실제 근거로 출시를 막아야 함이 명확한 항목만 넣고, 경미하거나 불확실한 항목은 warnings에 둔다.\nEVIDENCE=${clip(evidence,18000)}`,
         RISK,{predict:520}
       );
       passes.push({model,memberRole,result});
