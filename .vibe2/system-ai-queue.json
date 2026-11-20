@@ -126332,7 +126332,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -126367,7 +126367,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 20,
-      "previousReservationId": "system-ai:44735604465:1",
+      "previousReservationId": "system-ai:44740447005:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -126375,12 +126375,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44740447005:1",
-      "reservedAt": "2026-11-20T13:08:49.531Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -127177,7 +127177,8 @@
         "actions-run:44733981748",
         "system-ai-handoff-to-reservation:system-ai:44735604465:1",
         "actions-run:44735604465",
-        "system-ai-handoff-to-reservation:system-ai:44740447005:1"
+        "system-ai-handoff-to-reservation:system-ai:44740447005:1",
+        "actions-run:44740447005"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1890,
@@ -127192,7 +127193,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-20T13:08:49.531Z"
+      "updatedAt": "2026-11-20T13:14:22.998Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
