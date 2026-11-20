@@ -124,7 +124,7 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
   for(const file of files.slice(0,48)){
     const path=String(file?.path||''),source=String(file?.source||'');
     if(!/\.(?:luau|lua)$/i.test(path)||source.length>260000)continue;
-    const side=classifyVibe59RobloxScript(path),events=[],calls=[],stateEffects=[],found=[],
+    const side=classifyVibe59RobloxScript(path),events=[],calls=[],stateEffects=[],found=new Map(),
       functionDefinitions=[],functionCalls=[];
     // [루아우 정적 흐름] 긴 주석·인용 문자열·인라인 주석 속 가짜 호출은
     // 실제 Remote/저장 접근으로 오인하지 않는다. 원본 줄 위치는 유지한다.
@@ -145,17 +145,17 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       if(events.length>=24)break;
       const line=sourceLineAt(match.index);
       events.push({remote:match[1],signal:match[2],line});
-      if(side==='CLIENT'&&match[2].startsWith('OnServer'))found.push({code:'SERVER_HANDLER_IN_CLIENT',line});
-      if(side==='SERVER'&&match[2].startsWith('OnClient'))found.push({code:'CLIENT_HANDLER_IN_SERVER',line});
+      if(side==='CLIENT'&&match[2].startsWith('OnServer'))if(!found.has('SERVER_HANDLER_IN_CLIENT'))found.set('SERVER_HANDLER_IN_CLIENT',{code:'SERVER_HANDLER_IN_CLIENT',line});
+      if(side==='SERVER'&&match[2].startsWith('OnClient'))if(!found.has('CLIENT_HANDLER_IN_SERVER'))found.set('CLIENT_HANDLER_IN_SERVER',{code:'CLIENT_HANDLER_IN_SERVER',line});
     }
     for(const match of activeSource.matchAll(/\b([A-Za-z_]\w*)\s*:\s*(FireServer|FireClient|FireAllClients|InvokeServer|InvokeClient)\s*\(/g)){
       if(calls.length>=24)break;
       const line=sourceLineAt(match.index);
       calls.push({remote:match[1],method:match[2],line});
       if(side==='CLIENT'&&/^(FireClient|FireAllClients|InvokeClient)$/.test(match[2]))
-        found.push({code:'SERVER_REMOTE_CALL_IN_CLIENT',line});
+        if(!found.has('SERVER_REMOTE_CALL_IN_CLIENT'))found.set('SERVER_REMOTE_CALL_IN_CLIENT',{code:'SERVER_REMOTE_CALL_IN_CLIENT',line});
       if(side==='SERVER'&&/^(FireServer|InvokeServer)$/.test(match[2]))
-        found.push({code:'CLIENT_REMOTE_CALL_IN_SERVER',line});
+        if(!found.has('CLIENT_REMOTE_CALL_IN_SERVER'))found.set('CLIENT_REMOTE_CALL_IN_SERVER',{code:'CLIENT_REMOTE_CALL_IN_SERVER',line});
     }
     // [저장·서버 권한] 원격 호출과 동일한 26만 자 한도에서 전체 소스를 검사한다.
     // 여러 줄로 분리된 접근과 4천 줄 이후의 접근도 실제 원본 줄에 연결한다.
@@ -163,14 +163,17 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       const line=sourceLineAt(match.index);
       if(stateEffects.length<24)stateEffects.push({method:match[1],line});
       if(side==='CLIENT'&&match[1]==='GetDataStore')
-        found.push({code:'CLIENT_DATASTORE_ACCESS',line});
+        if(!found.has('CLIENT_DATASTORE_ACCESS'))found.set('CLIENT_DATASTORE_ACCESS',{code:'CLIENT_DATASTORE_ACCESS',line});
     }
     if(side==='CLIENT'){
       for(const match of activeSource.matchAll(/\bGetService\s*\(\s*['"]DataStoreService['"]\s*\)/g)){
-        found.push({code:'CLIENT_DATASTORE_SERVICE',line:sourceLineAt(match.index)});
+        if(!found.has('CLIENT_DATASTORE_SERVICE'))
+          found.set('CLIENT_DATASTORE_SERVICE',{code:'CLIENT_DATASTORE_SERVICE',line:sourceLineAt(match.index)});
       }
     }
-    for(const [i,line] of activeSource.split(/\r?\n/).slice(0,4000).entries()){
+    // [전체 함수 영향] 26만 자의 검증된 상한 안에서 4천 줄 이후 의존성도 확인한다.
+    // 저장되는 함수 선언·호출 수의 기존 48/64개 제한과 읽기 전용 성격은 유지한다.
+    for(const [i,line] of activeSource.split(/\r?\n/).entries()){
       if(!line.trim())continue;
       // [함수 의존관계] 기존 Luau 주석·문자열 제거 결과만 사용한다.
       // 동일 파일 심볼의 선언과 호출은 정적 후보이며 실제 실행·스코프 확정이 아니다.
@@ -195,9 +198,11 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       return {...x,responsible:owners.has(path),
         exactAnchor:uniqueAnchor?original:null,exactAnchorUnique:uniqueAnchor};
     }));
+    // [권한 경고] 반복 호출은 유형별 첫 위치만 보고해 뒤에 있는 저장 오류를 가리지 않는다.
+    const fileWarnings=[...found.values()].slice(0,16);
     result.push({path,side,responsible:owners.has(path),events,calls,stateEffects,
-      functionDefinitions,functionCalls,warnings:found.slice(0,16)});
-    warnings.push(...found.slice(0,16).map(x=>({path,...x})));
+      functionDefinitions,functionCalls,warnings:fileWarnings});
+    warnings.push(...fileWarnings.map(x=>({path,...x})));
   }
   // 실제 Remote 인스턴스 ID가 없는 정적 정보이므로 같은 변수명은 연결 '후보'일 뿐이다.
   const expectedSignal={FireServer:'OnServerEvent',InvokeServer:'OnServerInvoke',
