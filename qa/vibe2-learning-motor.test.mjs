@@ -482,6 +482,44 @@ test('동일 후보의 회귀 실패 증거가 이전 PASS보다 우선하며 �
   assert.equal(deduped.added,0);
 });
 
+test('같은 코드 후보의 CI 재실행은 학습·전략·위험 실적으로 중복 인정하지 않는다',()=>{
+  const refs=encodeURIComponent(JSON.stringify(['CODE_PATTERN:stable-candidate-proof']));
+  const targets=encodeURIComponent(JSON.stringify(['handleCombat']));
+  const systems=encodeURIComponent(JSON.stringify(['COMBAT']));
+  const mk=(run,sha)=>({id:'same-source-candidate',gameId:'game-learning',target:'web',
+    goal:'combat code automatic improvement',
+    evidence:[
+      'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
+      'coding-strategy:RESPONSIBILITY_FIRST','coding-candidate-first-attempt:YES',
+      'coding-responsibility-confidence:HIGH',
+      'coding-primary-targets:'+targets,'coding-primary-systems:'+systems,
+      'architecture-drift-status:ANALYZED','architecture-drift-risk:LOW',
+      'architecture-drift-score:0','architecture-drift-signals:GOD_FUNCTION_GROWTH',
+      'learning-knowledge-ids:'+refs,
+      'candidate-sha:'+sha,'actions-run:'+run
+    ]});
+  const first=mk('qa-101','a'.repeat(40)),rerun=mk('qa-102','a'.repeat(40));
+  const changed=mk('qa-103','b'.repeat(40));
+  const tasks={tasks:[first,rerun,changed]};
+  const strategy=applyVerifiedCodingStrategyOutcomes({},tasks);
+  assert.equal(strategy.added,2);
+  assert.equal(strategy.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST.verifiedApplications,2);
+  const knowledge=applyVerifiedKnowledgeOutcomes({},tasks);
+  assert.equal(knowledge.added,2);
+  assert.equal(knowledge.positive,2);
+  const calibration=applyVerifiedCodingCalibration({},tasks);
+  assert.equal(calibration.added,2);
+  assert.equal(calibration.hotspotEventsAdded,2);
+  const architecture=applyVerifiedArchitectureDriftOutcomes({},tasks);
+  assert.equal(architecture.added,2);
+  for(const [fn,state,key] of [
+    [applyVerifiedCodingStrategyOutcomes,strategy.state,'added'],
+    [applyVerifiedKnowledgeOutcomes,knowledge.state,'added'],
+    [applyVerifiedCodingCalibration,calibration.state,'added'],
+    [applyVerifiedArchitectureDriftOutcomes,architecture.state,'added']
+  ])assert.equal(fn(state,{tasks:[rerun]})[key],0);
+});
+
 test('verified coding strategy outcomes accumulate, dedupe, and become preferred only after repeated independent evidence',()=>{
   const mk=(id,gameId,first='YES')=>({
     id,gameId,target:'web',evidence:[
