@@ -415,6 +415,8 @@
       const before=baseline?.runtimeCapture??{},after=candidate.runtimeCapture??{};
       const runtimeEvidencePass=!requiredRuntime || (
         candidate.runtimeVerified===true && candidate.independentQaPassed===true
+        &&candidate.beforeAfterVisualRegressionPass===true
+        &&/^[a-f0-9]{64}$/i.test(before.sha256??'')&&/^[a-f0-9]{64}$/i.test(after.sha256??'')
         &&typeof before.id==='string'&&before.id.length>0&&typeof after.id==='string'&&after.id.length>0&&before.id!==after.id
         &&typeof before.sourceRevision==='string'&&before.sourceRevision.length>0
         &&typeof after.sourceRevision==='string'&&after.sourceRevision.length>0
