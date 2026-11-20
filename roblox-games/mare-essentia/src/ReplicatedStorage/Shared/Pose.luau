@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: Pose.luau
 -- 뼈대가 있는 사람 모델의 T자 자세를 풀어 팔을 내린다 (클라이언트 전용).
 -- 팔 방향을 월드 좌표로 계산해서, 뼈의 로컬 축 방향과 상관없이 아래쪽으로 돌린다.
 
@@ -1212,10 +1213,10 @@ function Pose.work(model, kind, t, moving)
 	local function set(motor, cf)
 		if not motor then return end
 		if motor == m.leftArm or motor == m.rightArm then
-			-- [주민 팔 정상화] R15 어깨의 음수 X는 등 뒤 방향이다. 기존 작업 동작의
-			-- 큰 음수 전방 제스처만 앞쪽(+X)으로 바꿔 망치질·손짓·집기에서 팔 역관절을 막는다.
+			-- [연속 관절 회전] 후방(-X)으로 작성된 작업 팔 모션을 전방(+X)으로 매끄럽게 매핑한다.
+			-- 음수 -0.30에서만 갑자기 0.60rad 뛰던 임계값 반전을 제거한다.
 			local pitch, yaw, roll = cf:ToEulerAnglesXYZ()
-			if pitch < -0.30 then cf = CFrame.Angles(-pitch, yaw, roll) end
+			if pitch < 0 then cf = CFrame.Angles(-pitch, yaw, roll) end
 		elseif motor == m.neck and model:GetAttribute("NpcFaceReversed") then
 			cf = CFrame.Angles(0, math.pi, 0) * cf
 		end
@@ -1813,9 +1814,11 @@ function Pose.work(model, kind, t, moving)
 		st = { at = now, prev = {} }
 		workSmooth[model] = st
 	end
-	local dt = now - st.at
+	-- [프레임 독립 보간] 갱신이 잠시 중단돼도 이전 자세에서 순간 이동하지 않도록
+	-- 한 프레임의 보간 최대 간격을 제한한다. 30/60fps 모두 동일한 전환 속도를 유지한다.
+	local dt = math.clamp(now - st.at, 0, 1 / 20)
 	st.at = now
-	local alpha = if dt > 0.25 then 1 else 1 - math.exp(-14 * dt)
+	local alpha = 1 - math.exp(-16 * dt)
 	for _, joint in m do
 		if joint and (joint:IsA("Motor6D") or joint:IsA("AnimationConstraint")) then
 			local prev = st.prev[joint]
@@ -1931,12 +1934,12 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 	local wave = math.sin(p * math.pi)
 	local function set(joint, cf)
 		if joint and (joint:IsA("Motor6D") or joint:IsA("AnimationConstraint")) then
-			-- [R15 주민 공통 방향] 보행의 짧은 뒤팔 스윙은 보존하고
-			-- 공격·손짓 등 큰 전방 제스처가 등 뒤로 접히는 역부호만 바로잡는다.
+			-- [전방 제스처] 작업 포즈와 같은 연속 어깨 부호를 사용해 상태 전환의 팔 튐을 방지한다.
+			-- 보행의 짧은 후방 팔 스윙은 그대로 보존한다.
 			if model.Name == "Villager" and state ~= "walk" and state ~= "run"
 				and (joint == m.leftArm or joint == m.rightArm) then
 				local pitch, yaw, roll = cf:ToEulerAnglesXYZ()
-				if pitch < -0.30 then cf = CFrame.Angles(-pitch, yaw, roll) end
+				if pitch < 0 then cf = CFrame.Angles(-pitch, yaw, roll) end
 			elseif joint == m.neck and model:GetAttribute("NpcFaceReversed") then
 				cf = CFrame.Angles(0, math.pi, 0) * cf
 			end
@@ -1971,8 +1974,8 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 		local w = time
 		local s, c = math.sin(w), math.cos(w)
 		local stride = if motionStyle == "heavy" then 0.84 elseif motionStyle == "elder" then 0.7 elseif motionStyle == "nimble" then 1.1 else 1
-		local amp = (if run then 0.96 else 0.74) * stride * (if companionRun then 1.17 else 1) * speedStride
-		local kneeAmp = (if run then 1.22 else 0.91) * stride * (if companionRun then 1.15 else 1) * speedStride
+		local amp = (if run then 0.96 else 0.66) * stride * (if companionRun then 1.17 else 1) * speedStride
+		local kneeAmp = (if run then 1.22 else 0.84) * stride * (if companionRun then 1.15 else 1) * speedStride
 		-- [동료 축발] 관절 각도를 일정하게 왕복시키는 인형식 보행 대신 착지-밀기-들기 위상을 나눈다.
 		local pushL, pushR = math.max(0, -s), math.max(0, s)
 		set(m.leftLeg, A(s * amp + (if companionRun then -pushL * 0.10 else 0), 0, 0))
@@ -1990,8 +1993,8 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 		-- 뒤로 과하게 꺾이거나 등 뒤에 고정돼 보이지 않게 한다 (R15 전방 = 양의 X 회전).
 		-- [팔-다리 역위상] 짧은 후방 스윙 때문에 교차가 사라진 회귀 수정. 팔 전후 비대칭은 유지한다.
 		-- [실제 스튜디오 회귀] 노인·중갑병의 짧은 보폭에서도 팔·반대 다리 교차가 식별되도록 조절한다.
-		local armForward = (if run then 0.90 else 0.78) * stride * (if companionRun then 1.18 else 1) * speedStride
-		local armBack = (if run then 0.49 else 0.50) * stride * (if companionRun then 1.1 else 1) * speedStride
+		local armForward = (if run then 0.90 else 0.68) * stride * (if companionRun then 1.18 else 1) * speedStride
+		local armBack = (if run then 0.49 else 0.42) * stride * (if companionRun then 1.1 else 1) * speedStride
 		local leftForward, rightForward = math.max(0, -s), math.max(0, s)
 		local leftBack, rightBack = math.max(0, s), math.max(0, -s)
 		set(m.leftArm, A(leftForward * armForward - leftBack * armBack, 0, 0.06))
@@ -2014,8 +2017,8 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 			-s * (if companionRun then 0.20 else 0.13), s * (if companionRun then 0.055 else 0)))
 		set(m.neck, A(if run then 0.085 else 0, s * (if companionRun then 0.052 else 0.035), -s * (if companionRun then 0.028 else 0)))
 		-- [몸 좌우 기울기] 착지한 쪽에 허리 힘을 싣고 목으로 균형을 잡는다.
-		set(m.waist, m.waist.Transform * A(0, 0, -s * 0.024))
-		set(m.neck, m.neck.Transform * A(0, 0, s * 0.014))
+		m.waist.Transform = m.waist.Transform * A(0, 0, -s * 0.024)
+		m.neck.Transform = m.neck.Transform * A(0, 0, s * 0.014)
 	elseif state == "attack" then
 		-- [전투 전신 반작용] 기존 공격 진행률을 유지하고 반대 팔·허리·무릎으로 타격 하중을 전달한다.
 		set(m.rightArm, A(-0.7 - wave * 2.1, 0, -0.3))
@@ -2059,10 +2062,10 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 	-- [선행 시선·후행 상체] 역할과 관계없이 기존 이동·대기 자세 위에 작은 회전 반작용만 합성한다.
 	if state == "idle" or state == "walk" or state == "run" then
 		local turn = blend.turn or 0
-		if m.neck then set(m.neck, m.neck.Transform * A(0, -turn * 0.85, 0)) end
-		if m.waist then set(m.waist, m.waist.Transform * A(0, -turn * 0.42, 0)) end
-		if m.leftLeg then set(m.leftLeg, m.leftLeg.Transform * A(0, turn * 0.14, 0)) end
-		if m.rightLeg then set(m.rightLeg, m.rightLeg.Transform * A(0, turn * 0.14, 0)) end
+		if m.neck then m.neck.Transform = m.neck.Transform * A(0, -turn * 0.85, 0) end
+		if m.waist then m.waist.Transform = m.waist.Transform * A(0, -turn * 0.42, 0) end
+		if m.leftLeg then m.leftLeg.Transform = m.leftLeg.Transform * A(0, turn * 0.14, 0) end
+		if m.rightLeg then m.rightLeg.Transform = m.rightLeg.Transform * A(0, turn * 0.14, 0) end
 	end
 	-- 히트/공격은 반응성을 유지하고, 일반 자세만 조금 더 길게 연결한다.
 	local duration = if state == "attack" or state == "hurt" then 0.10 else 0.26
