@@ -7020,243 +7020,246 @@ function H.companionFace(row, id, px)
 	return nil
 end
 
-local function renderYard()
-	local yard = view.shipyard
-	H.walletBar("yard")
-	-- [조선소 첫 화면] 기함 특징과 실측 수치를 가장 먼저 보여준다. 갑판 대포와 승조원을 분리한다.
-	local sh = view.ship
-	local active = add(function() return mkHeader(content, "내 기함 · " .. sh.className) end)
-	active.Name = "YardSectionShip"
-	H.statStrip({
-		{ "선체", string.format("%d / %d", sh.hull, sh.maxHull), tone = if sh.hull < sh.maxHull * 0.5 then "bad" else "good" },
-		{ "화물칸", string.format("%d / %d", sh.cargoUsed, sh.cargoCapacity), tone = "key" },
-		{ "속도 · 포문", string.format("%.1f · %d", sh.speed, sh.cannons), tone = "key" },
-	})
-	add(function()
-		local kind = if sh.steam then "증기 추진 · 석탄 " .. tostring(sh.fuelPerDay) .. "개/일"
-			elseif sh.rowed then "노젓기 병행 · 무풍 항해 특성" else "바람으로 이동하는 범선"
-		local row = mkRow(content, sh.name .. " · 지금 타는 배", sh.summary .. "\n" ..
-			string.format("갑판 승조원 %d/%d · 포 %d문\n%s · %s · 포격 개조 +%d%% · 보강 %d단계",
-			sh.crew, sh.maxCrew, sh.cannons, sh.cannonName, kind, math.floor(sh.cannonBonus * 100 + 0.5), sh.plating), nil, 132)
-		local icon = SHIP_ICON[sh.id]
-		if icon then withIcon(row, icon[1], icon[2], icon[3], 102) end
-		return row
-	end)
-	H.counselRows(1)
-	-- [선박 고유 능력] 현재 기함 성능과 약점을 실제 서버 운용 보정치로 안내한다.
-	if sh.trait then
+local function renderYard(page)
+	local yard, sh = view.shipyard, view.ship
+	if not page or page == "maintenance" then
+		H.walletBar("yard")
+		local active = add(function() return mkHeader(content, "내 기함 · " .. sh.className) end)
+		active.Name = "YardSectionShip"
+		H.statStrip({
+			{ "선체", string.format("%d / %d", sh.hull, sh.maxHull), tone = if sh.hull < sh.maxHull * 0.5 then "bad" else "good" },
+			{ "화물칸", string.format("%d / %d", sh.cargoUsed, sh.cargoCapacity), tone = "key" },
+			{ "속도 · 포문", string.format("%.1f · %d", sh.speed, sh.cannons), tone = "key" },
+		})
 		add(function()
-			local t = sh.trait
-			return mkRow(content, "기함 특화 · " .. t.role,
-				string.format("약점: %s\n항해 %+d%% · 장거리 %+d%% · 역풍대응 %+d%%\n보급 %+d%% · 선창 %+d%% · 관세절감 %+d%%\n포격 %+d%% · 백병 %+d%% · 폭풍피해 감소 %+d%% · 탐사 %+d%%",
-				t.weak or "없음",
-				math.floor((t.sail or 0) * 100 + 0.5), math.floor((t.long or 0) * 100 + 0.5),
-				math.floor((t.wind or 0) * 100 + 0.5), math.floor((t.supplies or 0) * 100 + 0.5),
-				math.floor((t.cargo or 0) * 100 + 0.5), math.floor((t.tariff or 0) * 100 + 0.5),
-				math.floor((t.cannon or 0) * 100 + 0.5), math.floor((t.melee or 0) * 100 + 0.5),
-				math.floor((t.storm or 0) * 100 + 0.5), math.floor((t.explore or 0) * 100 + 0.5)),
-				nil, 125)
+			local kind = if sh.steam then "증기 추진 · 석탄 " .. tostring(sh.fuelPerDay) .. "개/일"
+				elseif sh.rowed then "노젓기 병행 · 무풍 항해 특성" else "바람으로 이동하는 범선"
+			local row = mkRow(content, sh.name .. " · 지금 타는 배", sh.summary .. "\n" ..
+				string.format("갑판 승조원 %d/%d · 포 %d문\n%s · %s · 포격 개조 +%d%% · 보강 %d단계",
+				sh.crew, sh.maxCrew, sh.cannons, sh.cannonName, kind, math.floor(sh.cannonBonus * 100 + 0.5), sh.plating), nil, 132)
+			local icon = SHIP_ICON[sh.id]
+			if icon then withIcon(row, icon[1], icon[2], icon[3], 102) end
+			return row
 		end)
-	end
-	add(function() return mkHeader(content, "정비 · 보급 · 선원") end)
-	if not yard.available and view.nearestYard then
+		H.counselRows(1)
+		-- [선박 고유 능력] 현재 기함 성능과 약점을 실제 서버 운용 보정치로 안내한다.
+		if sh.trait then
+			add(function()
+				local t = sh.trait
+				return mkRow(content, "기함 특화 · " .. t.role,
+					string.format("약점: %s\n항해 %+d%% · 장거리 %+d%% · 역풍대응 %+d%%\n보급 %+d%% · 선창 %+d%% · 관세절감 %+d%%\n포격 %+d%% · 백병 %+d%% · 폭풍피해 감소 %+d%% · 탐사 %+d%%",
+					t.weak or "없음",
+					math.floor((t.sail or 0) * 100 + 0.5), math.floor((t.long or 0) * 100 + 0.5),
+					math.floor((t.wind or 0) * 100 + 0.5), math.floor((t.supplies or 0) * 100 + 0.5),
+					math.floor((t.cargo or 0) * 100 + 0.5), math.floor((t.tariff or 0) * 100 + 0.5),
+					math.floor((t.cannon or 0) * 100 + 0.5), math.floor((t.melee or 0) * 100 + 0.5),
+					math.floor((t.storm or 0) * 100 + 0.5), math.floor((t.explore or 0) * 100 + 0.5)),
+					nil, 125)
+			end)
+		end
+		add(function() return mkHeader(content, "정비 · 보급 · 선원") end)
+		if not yard.available and view.nearestYard then
+			add(function()
+				local ny = view.nearestYard
+				local r
+				for _, x in view.routes do
+					if x.id == ny.id then
+						r = x
+					end
+				end
+				return mkRow(content, "가장 가까운 조선소: " .. ny.name, string.format("%d일 · %d km · 보급품 %d\n여기서는 응급 수리만 돼요", ny.days, ny.distanceKm, ny.supplies), {
+					{ text = "그곳으로 출항", color = COLORS.blue, onClick = function() if r then confirmSail(r) end end },
+				}, 76)
+			end)
+		end
 		add(function()
-			local ny = view.nearestYard
-			local r
-			for _, x in view.routes do
-				if x.id == ny.id then
-					r = x
+			local sh = view.ship
+			local maxH = math.max(1, yard.maxHull or sh.maxHull)
+			local cur = maxH - (yard.fullMissing or yard.missing or 0)
+			local pct = math.floor(cur / maxH * 100 + 0.5)
+			local need = (yard.missing or 0) > 0
+			return H.tileGrid({
+				{ icon = "yard", title = if yard.field then "응급 수리" else "선체 수리", sub = if need then string.format("선체 %d%% · %d코인", pct, yard.repairTotal) else string.format("선체 %d%% 튼튼해요", pct),
+					btn = if need then "수리" else "불필요", color = COLORS.green, enabled = need, onClick = function() call("Repair") end },
+				{ icon = "cc0_helmet", title = "선원 고용", sub = string.format("%d코인/명 · %d/%d", yard.hireCost, sh.crew, sh.maxCrew), btn = "+5명", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 5 }) end },
+				{ icon = "cc0_chest", title = "보급품", sub = string.format("%d코인/개 · 보유 %d", yard.supplyCost, sh.supplies), btn = "+20", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 20 }) end },
+			}, content, nil, nil, true)
+		end)
+		if not yard.available then
+			add(function() return mkLabel(content, "이 항구엔 조선소가 없어 배 구매·수리가 안 돼요.", 13, COLORS.gold, false) end)
+		end
+		local rf = view.refit
+		add(function()
+			return mkRow(content, string.format("선단 · 호위함 %d/3척", view.fleet.escorts), string.format("고용 %d코인 · 명성 %d 필요\n포격 +8%%/척 · 속도 -3%%/척 · 유지 15코인/일", view.fleet.price, view.fleet.needFame), {
+				{ text = "고용", color = COLORS.blue, enabled = yard.available and view.fleet.escorts < 3, onClick = function() call("BuyEscort") end },
+				{ text = "해산", color = COLORS.red, enabled = view.fleet.escorts > 0, onClick = function() call("DismissEscort") end },
+			}, 84)
+		end)
+		-- 선단 편성: 기함 외에 실제 배를 최대 3척 거느린다
+		local fleetHeader = add(function() return mkHeader(content, string.format("선단 편성 (기함 + %d/%d척)", #view.fleet.ships, view.fleet.max)) end)
+		fleetHeader.Name = "YardSectionFleet"
+		add(function()
+			return mkLabel(content, string.format("화물 +%d · 속도 %d(가장 느린 배 기준) · 유지 %d코인/척/일 · 다음 배 명성 %d", view.fleet.cargo, view.fleet.speed, view.fleet.upkeep, view.fleet.fameNeed), 12, COLORS.muted, false)
+		end)
+		for _, f in view.fleet.ships do
+			add(function()
+				local frow = mkRow(content, string.format("%d번함 · %s", f.index, f.name), string.format("선체 %d/%d · 포 %d · 화물 %d · 속도 %d", f.hull, f.maxHull, f.cannons, f.cargo, f.speed), {
+					{ text = "기함으로", color = COLORS.blue, onClick = function() call("SetFlagship", { index = f.index }) end },
+					{ text = string.format("매각 %d", f.sell), color = COLORS.red, onClick = function() call("SellFleetShip", { index = f.index }) end },
+				}, 96)
+				local fsi = SHIP_ICON[f.id or ""] or SHIP_ICON.frigate
+				withIcon(frow, fsi[1], fsi[2], fsi[3], 80)
+				return frow
+			end)
+		end
+		if #view.fleet.ships < view.fleet.max then
+			for _, s in yard.ships do
+				if not s.locked and s.price > 0 then
+					add(function()
+						return mkRow(content, string.format("선단에 추가: %s", s.name), string.format("포 %d · 화물 %d · 속도 %d · 선체 %d", s.cannons, s.cargo, s.speed, s.hull), {
+							{ text = tostring(s.price), color = COLORS.green, enabled = yard.available, onClick = function() call("BuyFleetShip", { shipId = s.id }) end },
+						}, 56)
+					end)
 				end
 			end
-			return mkRow(content, "가장 가까운 조선소: " .. ny.name, string.format("%d일 · %d km · 보급품 %d\n여기서는 응급 수리만 돼요", ny.days, ny.distanceKm, ny.supplies), {
-				{ text = "그곳으로 출항", color = COLORS.blue, onClick = function() if r then confirmSail(r) end end },
-			}, 76)
-		end)
-	end
-	add(function()
-		local sh = view.ship
-		local maxH = math.max(1, yard.maxHull or sh.maxHull)
-		local cur = maxH - (yard.fullMissing or yard.missing or 0)
-		local pct = math.floor(cur / maxH * 100 + 0.5)
-		local need = (yard.missing or 0) > 0
-		return H.tileGrid({
-			{ icon = "yard", title = if yard.field then "응급 수리" else "선체 수리", sub = if need then string.format("선체 %d%% · %d코인", pct, yard.repairTotal) else string.format("선체 %d%% 튼튼해요", pct),
-				btn = if need then "수리" else "불필요", color = COLORS.green, enabled = need, onClick = function() call("Repair") end },
-			{ icon = "cc0_helmet", title = "선원 고용", sub = string.format("%d코인/명 · %d/%d", yard.hireCost, sh.crew, sh.maxCrew), btn = "+5명", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 5 }) end },
-			{ icon = "cc0_chest", title = "보급품", sub = string.format("%d코인/개 · 보유 %d", yard.supplyCost, sh.supplies), btn = "+20", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 20 }) end },
-		}, content, nil, nil, true)
-	end)
-	if not yard.available then
-		add(function() return mkLabel(content, "이 항구엔 조선소가 없어 배 구매·수리가 안 돼요.", 13, COLORS.gold, false) end)
-	end
-	local rf = view.refit
-	add(function()
-		return mkRow(content, string.format("선단 · 호위함 %d/3척", view.fleet.escorts), string.format("고용 %d코인 · 명성 %d 필요\n포격 +8%%/척 · 속도 -3%%/척 · 유지 15코인/일", view.fleet.price, view.fleet.needFame), {
-			{ text = "고용", color = COLORS.blue, enabled = yard.available and view.fleet.escorts < 3, onClick = function() call("BuyEscort") end },
-			{ text = "해산", color = COLORS.red, enabled = view.fleet.escorts > 0, onClick = function() call("DismissEscort") end },
-		}, 84)
-	end)
-	-- 선단 편성: 기함 외에 실제 배를 최대 3척 거느린다
-	local fleetHeader = add(function() return mkHeader(content, string.format("선단 편성 (기함 + %d/%d척)", #view.fleet.ships, view.fleet.max)) end)
-	fleetHeader.Name = "YardSectionFleet"
-	add(function()
-		return mkLabel(content, string.format("화물 +%d · 속도 %d(가장 느린 배 기준) · 유지 %d코인/척/일 · 다음 배 명성 %d", view.fleet.cargo, view.fleet.speed, view.fleet.upkeep, view.fleet.fameNeed), 12, COLORS.muted, false)
-	end)
-	for _, f in view.fleet.ships do
+		end
+		local upgradeHeader = add(function() return mkHeader(content, string.format("대포 · 선체 개조 (등급 %d · %s)", rf.class, rf.className)) end)
+		upgradeHeader.Name = "YardSectionRefit"
 		add(function()
-			local frow = mkRow(content, string.format("%d번함 · %s", f.index, f.name), string.format("선체 %d/%d · 포 %d · 화물 %d · 속도 %d", f.hull, f.maxHull, f.cannons, f.cargo, f.speed), {
-				{ text = "기함으로", color = COLORS.blue, onClick = function() call("SetFlagship", { index = f.index }) end },
-				{ text = string.format("매각 %d", f.sell), color = COLORS.red, onClick = function() call("SellFleetShip", { index = f.index }) end },
-			}, 96)
-			local fsi = SHIP_ICON[f.id or ""] or SHIP_ICON.frigate
-			withIcon(frow, fsi[1], fsi[2], fsi[3], 80)
-			return frow
+			return mkLabel(content, "현재 장착: " .. rf.cannonName .. string.format(" (포격 +%d%%) · 보강 %d단계\n교체 전후 화물·내구·대포 성능과 실제 결제 금액을 확인해. 새 배를 사면 개조가 초기화돼.", math.floor(rf.cannonMult * 100 + 0.5), rf.plating), 14, COLORS.muted, false)
 		end)
+		for _, c in rf.cannons do
+			add(function()
+				local delta = math.floor((c.mult - rf.cannonMult) * 100 + 0.5)
+				local cargoDelta = c.capacityAfter - sh.cargoCapacity
+				local sub = string.format("%s\n포격 보너스 +%d%% (현재 대비 %+d%%)\n화물 %d → %d (%+d칸) · 실결제 %s / 소지금 %s",
+					c.summary, math.floor(c.mult * 100 + 0.5), delta, sh.cargoCapacity, c.capacityAfter, cargoDelta,
+					H.commas(c.netCost), H.commas(view.player.coins))
+				if not c.canCarry then sub ..= "\n화물 초과: 장착 전 짐을 내려야 해" end
+				if c.locked then sub ..= "\n" .. c.locked end
+				local crow = mkRow(content, c.name .. (if c.owned then " · 현재 장착" else ""), sub, {
+					{ text = if c.owned then "장착 중" else "장착\n" .. H.commas(c.netCost), color = COLORS.steam,
+						enabled = yard.available and not c.owned and not c.locked and c.canCarry and view.player.coins >= c.netCost,
+						onClick = function() call("BuyCannon", { cannonId = c.id }) end },
+				}, 144)
+				withIcon(crow, "Naval", if c.id == "basic" then "cannon" else "cannon-mobile", if c.id == "steam_gun" then Color3.fromRGB(150, 110, 70) else nil, 88)
+				return crow
+			end)
+		end
+		if rf.nextPlating then
+			local np = rf.nextPlating
+			add(function()
+				local sub = string.format("최대 선체 %d → %d (%+d) · 속도 %.1f → %.1f\n화물칸 %d → %d (%+d칸)\n실결제 %s / 소지금 %s · 현재 보강 %d단계",
+					sh.maxHull, np.hullAfter, np.hullAfter - sh.maxHull, sh.speed, np.speedAfter,
+					sh.cargoCapacity, np.capacityAfter, np.capacityAfter - sh.cargoCapacity,
+					H.commas(np.price), H.commas(view.player.coins), rf.plating)
+				if not np.canCarry then sub ..= "\n화물이 무거워 보강 불가" end
+				if np.locked then sub ..= "\n" .. np.locked end
+				local row = mkRow(content, "다음 선체 보강 · " .. np.name, sub, {
+					{ text = "보강\n" .. H.commas(np.price), color = COLORS.green,
+						enabled = yard.available and not np.locked and np.canCarry and view.player.coins >= np.price,
+						onClick = function() call("BuyPlating", {}) end },
+				}, 135)
+				withIcon(row, "Naval", "ship-large", Color3.fromRGB(110, 96, 82), 88)
+				return row
+			end)
+		else
+			add(function() return mkLabel(content, "선체 보강: 최고 단계 · 추가 개조 없음", 14, COLORS.green, true) end)
+		end
 	end
-	if #view.fleet.ships < view.fleet.max then
-		for _, s in yard.ships do
-			if not s.locked and s.price > 0 then
+	if not page or page == "blueprints" then
+		-- [7대륙 36척] 지역별 신규 선박은 기존 조선소 구매 목록에 연결하고 지역·면허·모험 제한을 안내한다.
+		-- 모델·구매/저장·전투 구조는 기존 시스템을 재사용한다.
+		local blueprintHead = add(function()
+			return mkHeader(content, string.format("7대륙 선박 %d종 · 3D 원본 설계", #ShipsData.Blueprints))
+		end)
+		blueprintHead.Name = "YardSectionBlueprints"
+		H.shipBlueprintFaction = H.shipBlueprintFaction or "europe"
+		add(function() return mkLabel(content,
+			"실존 6대륙 1~5단계 · 미지의 땅 1~6단계. 36척 모두 3D 원본·개별 항해·교역·전투 성능 적용. 신규 23척은 해당 지역 조선소에서, 미지 선박은 호놀룰루에서 구매해.",
+			13, COLORS.muted, false) end)
+		local stageScenes = {
+			"얇은 포염·가벼운 물보라", "선측 불티·파편 증가", "연장된 포탄 잔상·진한 포연",
+			"확산 섬광·2지점 화재", "무거운 포성·3지점 화재·2중 물결", "미지 선박의 발광 궤적·해무·최종 충격파",
+		}
+		local regionScenes = {
+			europe = "황금 포염·굵은 화약 연기", east_asia = "붉은 화포 불티·노선 거품",
+			new_world = "흰 포탄 잔상·날렵한 항적", middle_east = "황금 포염·연한 물보라",
+			southeast_asia = "청록 파도·기동 항적", africa = "목재 파편·노선 물결",
+			lost = "청록·보라 발광 충격파",
+		}
+		-- [지역 조선소 배색 해설] 실제 38색 원본 재질을 손상 없이 복원했는지 눈으로 비교할 수 있다.
+		local regionMaterials = {
+			europe = "호두빛 판재·황동 장식·상아색 캔버스 돛",
+			east_asia = "짙은 목재·주홍 선체 장식·노선 갑판",
+			new_world = "밝은 목재·미색 돛천·철제 난간",
+			middle_east = "황갈색 목재·삼각돛·황동 선수 장식",
+			southeast_asia = "거친 열대 목재·직물 돛·노",
+			africa = "갈대 편조·무광 목재·천연 섬유 돛",
+			lost = "암청·청록 선체·보라 장식·은빛 금속",
+		}
+		local regionPaint = {
+			europe = Color3.fromRGB(156, 93, 53), east_asia = Color3.fromRGB(142, 59, 45),
+			new_world = Color3.fromRGB(172, 128, 84), middle_east = Color3.fromRGB(205, 158, 89),
+			southeast_asia = Color3.fromRGB(97, 132, 116), africa = Color3.fromRGB(164, 125, 80),
+			lost = Color3.fromRGB(67, 151, 167),
+		}
+		for _, category in ShipsData.BlueprintFactions do
+			add(function()
+				return mkRow(content, category.name .. " · 선박 " .. (if category.id == "lost" then "6" else "5") .. "종",
+				if category.id == "lost" then "호놀룰루 비밀 조선소 · 모험 레벨 필요" else "지역 조선소에서만 구매 · 선박별 운용 특화", {
+					{ text = if H.shipBlueprintFaction == category.id then "선택 중" else "선택", color = if H.shipBlueprintFaction == category.id then COLORS.gold else COLORS.blue,
+						onClick = function() H.shipBlueprintFaction = category.id; if tradeHallRefresh then tradeHallRefresh() else render() end end },
+				}, 70)
+			end)
+		end
+		for _, plan in ShipsData.Blueprints do
+			if plan.faction == H.shipBlueprintFaction then
 				add(function()
-					return mkRow(content, string.format("선단에 추가: %s", s.name), string.format("포 %d · 화물 %d · 속도 %d · 선체 %d", s.cannons, s.cargo, s.speed, s.hull), {
-						{ text = tostring(s.price), color = COLORS.green, enabled = yard.available, onClick = function() call("BuyFleetShip", { shipId = s.id }) end },
-					}, 56)
+					-- 36척 실제 등록번호와 조선소 구매 개방을 따로 보여주고 전투 효과는 시각 전용임을 명시한다.
+					local hasFull = AssetIds["Naval/" .. plan.id .. "-v5"] ~= nil
+					local hasMobile = AssetIds["Naval/" .. plan.id .. "-v5-mobile"] ~= nil
+					local definition = ShipsData.Ships[plan.id]
+					local shop = nil
+					for _, item in yard.ships do
+						if item.id == plan.id then shop = item; break end
+					end
+					local status = if shop then (if shop.owned then "현재 기함" elseif shop.locked then shop.locked else "이 조선소에서 구매 가능")
+						elseif plan.faction == "lost" then "호놀룰루 전용"
+						else "해당 지역의 조선소에서 구매"
+					local visual = if hasFull and hasMobile then "원본·모바일 경량판 등록" elseif hasFull then "원본 등록·경량판 미등록" else "자산 등록 대기"
+					local role = definition and definition.trait and definition.trait.role or "고유 특화"
+					local weak = definition and definition.trait and definition.trait.weak or "없음"
+					local info = string.format("⚓ %s · %s\n🎨 배색·질감: %s\n🪵 선체: %s\n⛵ 돛·노: %s\n갑판: %s\n3D: %s\n전투 연출: %s\n%d단계 포격: %s\n주특화: %s\n약점: %s\n구매 위치·조건: %s",
+						plan.era, plan.sailingZone, regionMaterials[plan.faction] or "원본 배색",
+						plan.hull, plan.rig, plan.deck, visual, regionScenes[plan.faction] or "기본 해전 연출",
+						plan.stage, stageScenes[plan.stage] or "기본 해전 연출", role, weak, status)
+					-- [지역 전용선 바로 구매] 기존 BuyShip 서버 검사만 호출한다. 이 화면에서 우회 구매는 불가능하다.
+					local purchase = nil
+					if shop then
+						local pay = math.max(0, shop.netCost)
+						info ..= string.format("\n정가 %s · 기함 매각 보상 %s · 실결제 %s",
+							H.commas(shop.price), H.commas(shop.tradeIn), H.commas(pay))
+						if not shop.canCarry then info ..= "\n화물을 먼저 내려야 구매 가능" end
+						purchase = {{
+							text = if shop.owned then "현재 기함" elseif shop.locked then "잠김" else "교체\n" .. H.commas(pay),
+							color = if shop.owned then COLORS.gold else COLORS.blue,
+							enabled = yard.available and not shop.owned and not shop.locked and shop.canCarry and shop.netCost <= view.player.coins,
+							onClick = function() call("BuyShip", { shipId = shop.id }) end
+						}}
+					end
+					local row = mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, purchase, 300)
+					-- 설명이 긴 선박도 기존 가변 높이 카드가 끝까지 표시하고, 모바일에서는 정지 3D로 성능을 아낀다.
+					local icon = SHIP_ICON[plan.id]
+					if icon then withIcon(row, icon[1], icon[2], icon[3], 76) end
+					local swatch = row:FindFirstChild("AccentBar")
+					if swatch then swatch.BackgroundColor3 = regionPaint[plan.faction] or UI_BRASS end
+					return row
 				end)
 			end
 		end
 	end
-	local upgradeHeader = add(function() return mkHeader(content, string.format("대포 · 선체 개조 (등급 %d · %s)", rf.class, rf.className)) end)
-	upgradeHeader.Name = "YardSectionRefit"
-	add(function()
-		return mkLabel(content, "현재 장착: " .. rf.cannonName .. string.format(" (포격 +%d%%) · 보강 %d단계\n교체 전후 화물·내구·대포 성능과 실제 결제 금액을 확인해. 새 배를 사면 개조가 초기화돼.", math.floor(rf.cannonMult * 100 + 0.5), rf.plating), 14, COLORS.muted, false)
-	end)
-	for _, c in rf.cannons do
-		add(function()
-			local delta = math.floor((c.mult - rf.cannonMult) * 100 + 0.5)
-			local cargoDelta = c.capacityAfter - sh.cargoCapacity
-			local sub = string.format("%s\n포격 보너스 +%d%% (현재 대비 %+d%%)\n화물 %d → %d (%+d칸) · 실결제 %s / 소지금 %s",
-				c.summary, math.floor(c.mult * 100 + 0.5), delta, sh.cargoCapacity, c.capacityAfter, cargoDelta,
-				H.commas(c.netCost), H.commas(view.player.coins))
-			if not c.canCarry then sub ..= "\n화물 초과: 장착 전 짐을 내려야 해" end
-			if c.locked then sub ..= "\n" .. c.locked end
-			local crow = mkRow(content, c.name .. (if c.owned then " · 현재 장착" else ""), sub, {
-				{ text = if c.owned then "장착 중" else "장착\n" .. H.commas(c.netCost), color = COLORS.steam,
-					enabled = yard.available and not c.owned and not c.locked and c.canCarry and view.player.coins >= c.netCost,
-					onClick = function() call("BuyCannon", { cannonId = c.id }) end },
-			}, 144)
-			withIcon(crow, "Naval", if c.id == "basic" then "cannon" else "cannon-mobile", if c.id == "steam_gun" then Color3.fromRGB(150, 110, 70) else nil, 88)
-			return crow
-		end)
-	end
-	if rf.nextPlating then
-		local np = rf.nextPlating
-		add(function()
-			local sub = string.format("최대 선체 %d → %d (%+d) · 속도 %.1f → %.1f\n화물칸 %d → %d (%+d칸)\n실결제 %s / 소지금 %s · 현재 보강 %d단계",
-				sh.maxHull, np.hullAfter, np.hullAfter - sh.maxHull, sh.speed, np.speedAfter,
-				sh.cargoCapacity, np.capacityAfter, np.capacityAfter - sh.cargoCapacity,
-				H.commas(np.price), H.commas(view.player.coins), rf.plating)
-			if not np.canCarry then sub ..= "\n화물이 무거워 보강 불가" end
-			if np.locked then sub ..= "\n" .. np.locked end
-			local row = mkRow(content, "다음 선체 보강 · " .. np.name, sub, {
-				{ text = "보강\n" .. H.commas(np.price), color = COLORS.green,
-					enabled = yard.available and not np.locked and np.canCarry and view.player.coins >= np.price,
-					onClick = function() call("BuyPlating", {}) end },
-			}, 135)
-			withIcon(row, "Naval", "ship-large", Color3.fromRGB(110, 96, 82), 88)
-			return row
-		end)
-	else
-		add(function() return mkLabel(content, "선체 보강: 최고 단계 · 추가 개조 없음", 14, COLORS.green, true) end)
-	end
-	-- [7대륙 36척] 지역별 신규 선박은 기존 조선소 구매 목록에 연결하고 지역·면허·모험 제한을 안내한다.
-	-- 모델·구매/저장·전투 구조는 기존 시스템을 재사용한다.
-	local blueprintHead = add(function()
-		return mkHeader(content, string.format("7대륙 선박 %d종 · 3D 원본 설계", #ShipsData.Blueprints))
-	end)
-	blueprintHead.Name = "YardSectionBlueprints"
-	H.shipBlueprintFaction = H.shipBlueprintFaction or "europe"
-	add(function() return mkLabel(content,
-		"실존 6대륙 1~5단계 · 미지의 땅 1~6단계. 36척 모두 3D 원본·개별 항해·교역·전투 성능 적용. 신규 23척은 해당 지역 조선소에서, 미지 선박은 호놀룰루에서 구매해.",
-		13, COLORS.muted, false) end)
-	local stageScenes = {
-		"얇은 포염·가벼운 물보라", "선측 불티·파편 증가", "연장된 포탄 잔상·진한 포연",
-		"확산 섬광·2지점 화재", "무거운 포성·3지점 화재·2중 물결", "미지 선박의 발광 궤적·해무·최종 충격파",
-	}
-	local regionScenes = {
-		europe = "황금 포염·굵은 화약 연기", east_asia = "붉은 화포 불티·노선 거품",
-		new_world = "흰 포탄 잔상·날렵한 항적", middle_east = "황금 포염·연한 물보라",
-		southeast_asia = "청록 파도·기동 항적", africa = "목재 파편·노선 물결",
-		lost = "청록·보라 발광 충격파",
-	}
-	-- [지역 조선소 배색 해설] 실제 38색 원본 재질을 손상 없이 복원했는지 눈으로 비교할 수 있다.
-	local regionMaterials = {
-		europe = "호두빛 판재·황동 장식·상아색 캔버스 돛",
-		east_asia = "짙은 목재·주홍 선체 장식·노선 갑판",
-		new_world = "밝은 목재·미색 돛천·철제 난간",
-		middle_east = "황갈색 목재·삼각돛·황동 선수 장식",
-		southeast_asia = "거친 열대 목재·직물 돛·노",
-		africa = "갈대 편조·무광 목재·천연 섬유 돛",
-		lost = "암청·청록 선체·보라 장식·은빛 금속",
-	}
-	local regionPaint = {
-		europe = Color3.fromRGB(156, 93, 53), east_asia = Color3.fromRGB(142, 59, 45),
-		new_world = Color3.fromRGB(172, 128, 84), middle_east = Color3.fromRGB(205, 158, 89),
-		southeast_asia = Color3.fromRGB(97, 132, 116), africa = Color3.fromRGB(164, 125, 80),
-		lost = Color3.fromRGB(67, 151, 167),
-	}
-	for _, category in ShipsData.BlueprintFactions do
-		add(function()
-			return mkRow(content, category.name .. " · 선박 " .. (if category.id == "lost" then "6" else "5") .. "종",
-			if category.id == "lost" then "호놀룰루 비밀 조선소 · 모험 레벨 필요" else "지역 조선소에서만 구매 · 선박별 운용 특화", {
-				{ text = if H.shipBlueprintFaction == category.id then "선택 중" else "선택", color = if H.shipBlueprintFaction == category.id then COLORS.gold else COLORS.blue,
-					onClick = function() H.shipBlueprintFaction = category.id; if tradeHallRefresh then tradeHallRefresh() else render() end end },
-			}, 70)
-		end)
-	end
-	for _, plan in ShipsData.Blueprints do
-		if plan.faction == H.shipBlueprintFaction then
-			add(function()
-				-- 36척 실제 등록번호와 조선소 구매 개방을 따로 보여주고 전투 효과는 시각 전용임을 명시한다.
-				local hasFull = AssetIds["Naval/" .. plan.id .. "-v5"] ~= nil
-				local hasMobile = AssetIds["Naval/" .. plan.id .. "-v5-mobile"] ~= nil
-				local definition = ShipsData.Ships[plan.id]
-				local shop = nil
-				for _, item in yard.ships do
-					if item.id == plan.id then shop = item; break end
-				end
-				local status = if shop then (if shop.owned then "현재 기함" elseif shop.locked then shop.locked else "이 조선소에서 구매 가능")
-					elseif plan.faction == "lost" then "호놀룰루 전용"
-					else "해당 지역의 조선소에서 구매"
-				local visual = if hasFull and hasMobile then "원본·모바일 경량판 등록" elseif hasFull then "원본 등록·경량판 미등록" else "자산 등록 대기"
-				local role = definition and definition.trait and definition.trait.role or "고유 특화"
-				local weak = definition and definition.trait and definition.trait.weak or "없음"
-				local info = string.format("⚓ %s · %s\n🎨 배색·질감: %s\n🪵 선체: %s\n⛵ 돛·노: %s\n갑판: %s\n3D: %s\n전투 연출: %s\n%d단계 포격: %s\n주특화: %s\n약점: %s\n구매 위치·조건: %s",
-					plan.era, plan.sailingZone, regionMaterials[plan.faction] or "원본 배색",
-					plan.hull, plan.rig, plan.deck, visual, regionScenes[plan.faction] or "기본 해전 연출",
-					plan.stage, stageScenes[plan.stage] or "기본 해전 연출", role, weak, status)
-				-- [지역 전용선 바로 구매] 기존 BuyShip 서버 검사만 호출한다. 이 화면에서 우회 구매는 불가능하다.
-				local purchase = nil
-				if shop then
-					local pay = math.max(0, shop.netCost)
-					info ..= string.format("\n정가 %s · 기함 매각 보상 %s · 실결제 %s",
-						H.commas(shop.price), H.commas(shop.tradeIn), H.commas(pay))
-					if not shop.canCarry then info ..= "\n화물을 먼저 내려야 구매 가능" end
-					purchase = {{
-						text = if shop.owned then "현재 기함" elseif shop.locked then "잠김" else "교체\n" .. H.commas(pay),
-						color = if shop.owned then COLORS.gold else COLORS.blue,
-						enabled = yard.available and not shop.owned and not shop.locked and shop.canCarry and shop.netCost <= view.player.coins,
-						onClick = function() call("BuyShip", { shipId = shop.id }) end
-					}}
-				end
-				local row = mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, purchase, 300)
-				-- 설명이 긴 선박도 기존 가변 높이 카드가 끝까지 표시하고, 모바일에서는 정지 3D로 성능을 아낀다.
-				local icon = SHIP_ICON[plan.id]
-				if icon then withIcon(row, icon[1], icon[2], icon[3], 76) end
-				local swatch = row:FindFirstChild("AccentBar")
-				if swatch then swatch.BackgroundColor3 = regionPaint[plan.faction] or UI_BRASS end
-				return row
-			end)
-		end
-	end
+	if page and page ~= "compare" then return end
 	local shipHeader = add(function() return mkHeader(content, "새 배 비교 · 실제 구매 가격") end)
 	shipHeader.Name = "YardSectionShips"
 	add(function() return mkLabel(content, "막대 색=새 배 · 흰 선=현재 기함 · ▲ 향상 / ▼ 감소\n실결제는 기함 매각 보상을 뺀 금액이고, 교체하면 기존 대포·보강은 초기화돼.", 14, COLORS.muted, false) end)
@@ -7462,6 +7465,7 @@ function openYardHall()
 	sl.Parent = scroll
 	local lastScroll = 0
 	local zoomOpen = false
+	local page = "maintenance"
 
 	local function build()
 		if not root.Parent or not view then
@@ -7489,9 +7493,9 @@ function openYardHall()
 		-- [조선소도 교역소형] 가로: 왼쪽 18% 항목 / 중앙 36% 선박 / 오른쪽 실제 정비·구매.
 		-- [세로] 기존 항목 버튼 두 줄 → 배 그림 → 정비 목록 순서를 유지한다.
 		local navWidth = if landscape then math.clamp(math.floor((width - inset - 16) * 0.18), 136, 230) else 0
-		local heroTop = if landscape then 92 else 206
+		local heroTop = if landscape then 92 else 150
 		local heroWidth = if landscape then math.floor((width - inset - navWidth - 24) * 0.46) else width - inset - 8
-		local heroHeight = if landscape then availableH - heroTop - 8 else math.clamp(math.floor(availableH * 0.30), 160, 260)
+		local heroHeight = if landscape then availableH - heroTop - 8 else math.clamp(math.floor(availableH * 0.24), 98, 172)
 		scroll.Position = if landscape then UDim2.fromOffset(inset + navWidth + heroWidth + 16, heroTop)
 			else UDim2.fromOffset(inset, heroTop + heroHeight + 8)
 		scroll.Size = if landscape then UDim2.new(1, -inset - navWidth - heroWidth - 24, 1, -heroTop - 8)
@@ -7550,20 +7554,21 @@ function openYardHall()
 		leave.AnchorPoint = Vector2.new(1, 0.5)
 		leave.Position = UDim2.new(1, -9, 0.5, 0)
 
-		-- [시설 왼쪽 목록] 기존 조선소 섹션으로 스크롤만 이동한다. 구매/재화 판정은 변경하지 않는다.
 		local nav = mkBox(root, if landscape then UDim2.fromOffset(inset, heroTop) else UDim2.fromOffset(inset, 90),
-			if landscape then UDim2.new(0, navWidth, 1, -heroTop - 8) else UDim2.new(1, -inset - 8, 0, 108), COLORS.leather)
-		local navColumns = if landscape then 1 else 3
-		for i, entry in { { "내 배·정비", "YardSectionShip" }, { "선단", "YardSectionFleet" }, { "대포·보강", "YardSectionRefit" }, { "7대륙 설계", "YardSectionBlueprints" }, { "새 배 비교", "YardSectionShips" } } do
-			local btn0 = mkButton(nav, entry[1], COLORS.paper, if landscape then UDim2.new(1, -8, 0, 52) else UDim2.new(1 / navColumns, -6, 0, 48), function()
-				local target = scroll:FindFirstChild(entry[2])
-				if target then
-					scroll.CanvasPosition = Vector2.new(0, math.max(0, target.AbsolutePosition.Y - scroll.AbsolutePosition.Y + scroll.CanvasPosition.Y))
-				end
-			end, true)
-			btn0.Position = if landscape then UDim2.fromOffset(4, 4 + (i - 1) * 56)
-				else UDim2.new(((i - 1) % navColumns) / navColumns, 4, 0, 2 + math.floor((i - 1) / navColumns) * 52)
-			btn0.TextSize = 17
+			if landscape then UDim2.new(0, navWidth, 1, -heroTop - 8) else UDim2.new(1, -inset - 8, 0, 52), COLORS.leather)
+		for i, entry in { { "정비", "maintenance" }, { "선박 비교", "compare" }, { "지역 설계", "blueprints" } } do
+			local selected = page == entry[2]
+			local button = mkButton(nav, entry[1], if selected then COLORS.gold else COLORS.paper,
+				if landscape then UDim2.new(1, -8, 0, 52) else UDim2.new(1 / 3, -6, 0, 46), function()
+					if page == entry[2] then return end
+					page = entry[2]
+					scroll.CanvasPosition = Vector2.zero
+					build()
+				end, true)
+			button.Name = "YardTab_" .. entry[2]
+			button:SetAttribute("SelectedTab", selected)
+			button.Position = if landscape then UDim2.fromOffset(4, 4 + (i - 1) * 56) else UDim2.new((i - 1) / 3, 4, 0, 3)
+			button.TextSize = 16
 		end
 		-- [선박 전시장] 기존 등록된 함종에만 적용, 함선 성능·구매 규칙 불변.
 		local preview = nil
@@ -7659,7 +7664,7 @@ function openYardHall()
 		content = scroll
 		H.contextAdviceShown = false
 		H.yardHallActive = true
-		local ok, err = pcall(renderYard)
+		local ok, err = pcall(renderYard, page)
 		H.yardHallActive = false
 		content, H.contextAdviceShown = saved, previousAdvice
 		if not ok then
@@ -10409,6 +10414,7 @@ function RENDERERS.tech()
 	end
 	H.statStrip({
 		{ "연구 완료", tostring(completed), tone = "good" },
+		{ "연구 가능", tostring(affordable), tone = "key" },
 		{ "조건 잠금", tostring(blocked), tone = "key" },
 	})
 	add(function()
@@ -10445,7 +10451,16 @@ function RENDERERS.quest()
 	if #view.quests.active == 0 then
 		add(function() return mkLabel(content, "아직 기록이 없어요. 소문을 듣거나 사람과 이야기해 보세요.", 13, COLORS.muted, true) end)
 	end
-	for _, q in view.quests.active do
+	local active = table.clone(view.quests.active)
+	local order = {}
+	for index, quest in active do order[quest] = index end
+	table.sort(active, function(a, b)
+		local readyA = a.kind == "deliver" and a.progress >= a.amount
+		local readyB = b.kind == "deliver" and b.progress >= b.amount
+		if readyA ~= readyB then return readyA end
+		return order[a] < order[b]
+	end)
+	for _, q in active do
 		add(function()
 			local buttons = {}
 			if q.kind == "deliver" then
