@@ -2040,7 +2040,7 @@ function H.layoutBook()
   -- [상단 중앙] 모든 시설에서 자금·화물을 가로 중앙에 표시. 작은 폰은 두 번째 줄을 쓴다.
   -- [모든 시설] 공통 자금 표시와 직전 메뉴를 붙이고 두 영역을 동일한 기준선으로 정렬한다.
   local recent = view ~= nil and not newGameMode and H.recentTab ~= nil
-    and H.recentTab ~= currentTab and TAB_NAME[H.recentTab] ~= nil
+    and TAB_NAME[H.recentTab] ~= nil and groupOf(H.recentTab) ~= groupOf(currentTab)
   local recentWidth = if width < 480 then 90 elseif width < 740 then 116 else 142
   local statusWidth = if width < 480 then math.max(140, math.min(252, width - 142))
     elseif width < 740 then math.min(290, width - 156)
@@ -2067,7 +2067,7 @@ function H.layoutBook()
   H.menuRecentButton.Size = UDim2.fromOffset(recentWidth, rowH)
   H.menuRecentButton.TextSize = if width < 480 then 14 else 16
   H.menuRecentButton.Visible = recent
-  H.menuRecentButton.Text = if recent then "↶ " .. TAB_NAME[H.recentTab] else ""
+  H.menuRecentButton.Text = if recent then "↶ " .. groupOf(H.recentTab).name else ""
   headerLabel.Size = UDim2.fromOffset(if width < 740 then math.max(86, width - 152)
     else math.max(108, math.floor((width - statusWidth) * 0.5) - 82), 29)
   H.pageDetails.Size = UDim2.fromOffset(if width < 740 then 0
@@ -5913,7 +5913,7 @@ local function openTradeHall()
 		-- [교역 상단] 자금과 직전 메뉴를 이웃한 한 줄로 배치하고 거래 안내 중복은 숨긴다.
 		-- [교역소] 자금·화물과 최근 메뉴를 중앙 한 줄에 나란히, 같은 높이로 둔다.
 		local recent = H.recentTab
-		local showRecent = recent and TAB_NAME[recent] ~= nil and recent ~= "trade"
+		local showRecent = recent and TAB_NAME[recent] ~= nil and groupOf(recent) ~= groupOf("trade")
 		local recentWidth = if width < 330 then 84 elseif narrow then 104 else 136
 		local cashWidth = if narrow then math.max(110, math.min(274, width - (if showRecent then recentWidth + 44 else 40)))
 			else math.clamp(math.floor(width * 0.36), 220, 315)
@@ -5940,7 +5940,7 @@ local function openTradeHall()
 		commonStatus.TextXAlignment = Enum.TextXAlignment.Center
 		commonStatus.TextYAlignment = Enum.TextYAlignment.Center
 		if showRecent then
-			local recentBtn = mkButton(top, "↶ " .. TAB_NAME[recent], COLORS.leather,
+			local recentBtn = mkButton(top, "↶ " .. groupOf(recent).name, COLORS.leather,
 				UDim2.fromOffset(recentWidth, 34), function()
 					closeTradeHall()
 					openTab(recent, if recent == "map" then "chart" else nil)
@@ -7501,7 +7501,7 @@ function openYardHall()
 		-- [조선소 상단] 기함 이름의 중복 표기를 빼고 자금·최근 메뉴를 나란히 둔다.
 		-- [조선소] 자금 표시 옆으로 최근 시설을 옮기고 교역소와 같은 간격으로 정렬한다.
 		local recent = H.recentTab
-		local showRecent = recent and TAB_NAME[recent] ~= nil and recent ~= "yard"
+		local showRecent = recent and TAB_NAME[recent] ~= nil and groupOf(recent) ~= groupOf("yard")
 		local recentWidth = if width < 380 then 78 elseif width < 740 then 94 else 132
 		local cashWidth = if width < 740 then math.max(100, math.min(260, width - (if showRecent then recentWidth + 44 else 40)))
 			else math.clamp(math.floor(width * 0.38), 230, 330)
@@ -7527,7 +7527,7 @@ function openYardHall()
 		hold.TextXAlignment = Enum.TextXAlignment.Center
 		hold.TextYAlignment = Enum.TextYAlignment.Center
 		if showRecent then
-			local recentBtn = mkButton(top, "↶ " .. TAB_NAME[recent], COLORS.leather,
+			local recentBtn = mkButton(top, "↶ " .. groupOf(recent).name, COLORS.leather,
 				UDim2.fromOffset(recentWidth, 34), function()
 					closeTradeHall()
 					openTab(recent, if recent == "map" then "chart" else nil)
@@ -13326,7 +13326,10 @@ openTab = function(tabId, mapPage, facility)
 		end
 	end
 	-- [최근 사용] 영구 저장 키 변경 없이 이 실행 중 직전 메뉴만 기억한다.
-	if currentTab ~= tabId and TAB_NAME[currentTab] then H.recentTab = currentTab end
+	-- [이전 시설] 같은 창의 탭을 넘겨도 돌아갈 시설과 탭을 보존한다.
+	if TAB_NAME[currentTab] and groupOf(currentTab) ~= groupOf(tabId) then
+		H.recentTab = currentTab
+	end
 	currentTab = tabId
 	message = "" -- 창을 새로 열 때 지난 안내 문구는 지운다
 	H.mapPage = mapPage
