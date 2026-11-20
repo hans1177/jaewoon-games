@@ -5481,16 +5481,13 @@ function RENDERERS.crew()
 	H.statStrip({
 		{ "직책 배치", tostring(filled) .. "/" .. tostring(#(view.companions.stations or {})), tone = "good" },
 		{ "미배치", tostring(math.max(0, joined - filled)) .. "명", tone = if joined > filled then "bad" else "good" },
+		{ "빈 직책", tostring(#(view.companions.stations or {}) - filled) .. "곳", tone = "key" },
 	})
-	add(function() return mkHeader(content, "동료와 대화") end)
-	add(function()
-		return mkLabel(content, "배에 탄 동료의 [대화] 버튼을 누르면 이야기를 나눌 수 있어요. 대화할수록 호감도가 올라 새 이야기와 선물이 열려요.", 13, COLORS.muted, true)
-	end)
 	add(function() return mkHeader(content, string.format("내 배 · 동료 자리 %d칸", view.companions.max)) end)
 	add(function()
 		local sh = view.ship
-		local row = mkRow(content, sh.name .. "  (눌러서 선장실 열기)", string.format("선체 %d/%d · 선원 %d/%d · 포 %d · 속도 %d\n동료를 끌어다 자리에 앉힐 수 있어요", sh.hull, sh.maxHull, sh.crew, sh.maxCrew, sh.cannons, sh.speed), {
-			{ text = "선장실", color = COLORS.gold, onClick = function() H.openCabin() end },
+		local row = mkRow(content, sh.name, string.format("직책 %d개 · 적합 배치 %d명", #(view.companions.stations or {}), matched), {
+			{ text = "직책 배치", color = COLORS.gold, onClick = function() H.openCabin() end },
 			{ text = "자동 배치", color = COLORS.green, onClick = function() call("AutoStations") end },
 		}, 120)
 		local si = SHIP_ICON[sh.id]
@@ -5504,9 +5501,12 @@ function RENDERERS.crew()
 		if vac and (vac.speed < 0 or vac.cannon < 0) then
 			warn = "\n조타수/포술장 자리가 비어 있어 " .. (if vac.speed < 0 then "항해 속도 -2% " else "") .. (if vac.cannon < 0 then "포격 -2%" else "")
 		end
-		return mkLabel(content, "동료는 자기 직책 자리에 앉으면 효과 x1.2, 다른 자리에 앉으면 x0.6이에요. 버튼을 누르면 자리를 바꿔요." .. warn, 12, COLORS.muted, true)
+		return mkLabel(content, "직책 일치 ×1.2 · 다른 직책 ×0.6" .. warn, 12, COLORS.muted, true)
 	end)
-	for _, st in view.companions.stations do
+	local stations = {}
+	for _, st in view.companions.stations do if not st.seatId then table.insert(stations, st) end end
+	for _, st in view.companions.stations do if st.seatId then table.insert(stations, st) end end
+	for _, st in stations do
 		add(function()
 			local joined = {}
 			for _, c in view.companions.list do
@@ -5609,9 +5609,9 @@ function RENDERERS.status()
 	H.counselRows(1)
 	add(function() return mkHeader(content, "선박") end)
 	H.statStrip({
-		{ "항해 속도", tostring(ship.speed), tone = "key" },
-		{ "선체 보강", tostring(ship.plating or 0) .. "단계", tone = "good" },
-		{ "석탄", tostring(ship.coal or 0), tone = "key" },
+		{ "선체", string.format("%d/%d", ship.hull, ship.maxHull), tone = if ship.hull < ship.maxHull * 0.5 then "bad" else "good" },
+		{ "화물", string.format("%d/%d", ship.cargoUsed, ship.cargoCapacity), tone = "key" },
+		{ "명성", tostring(p.fame or 0), tone = "key" },
 	})
 	-- [선장 현황] 현재 배의 역할·갑판 대포·개조 효과를 숫자와 설명으로 연결한다.
 	add(function()
@@ -10514,7 +10514,6 @@ end
 
 -- 주점의 지식 카드 배틀: 카드 덱을 짜고 연습전·오늘의 퍼즐로 카드 대결을 즐긴다 (해상전과는 별개).
 function RENDERERS.gwent()
-	H.walletBar("tavern")
 	local BC = require(Shared:WaitForChild("BoardingCards"))
 	local bk = view and view.cardbook
 	local fac = view and view.deck and BC.Factions[view.deck.faction or ""]
@@ -10527,7 +10526,8 @@ function RENDERERS.gwent()
 	end
 	local total = cnt.melee + cnt.ranged + cnt.cannon + cnt.special
 	H.statStrip({
-		{ "내 덱", string.format("%s · %d장", fac and fac.name or "기본", total), tone = "key" },
+		{ "덱 진영", fac and fac.name or "기본", tone = "key" },
+		{ "보관함", string.format("%d장", total), tone = "key" },
 		{ "근접 · 사격", string.format("%d · %d", cnt.melee, cnt.ranged), tone = "key" },
 		{ "포 · 특수", string.format("%d · %d", cnt.cannon, cnt.special), tone = "key" },
 		{ "오늘 보상", string.format("%d회", (bk and bk.duelLeft) or 0), tone = "good" },
@@ -10657,7 +10657,7 @@ function RENDERERS.war()
 		{ "작전 후보", tostring(#(view.wars or {})) .. "개", tone = "key" },
 	})
 	add(function()
-		return mkRow(content, "대규모 해전 의뢰", "한 번의 출격이 아니라 여러 척을 차례로 상대하는 작전이에요. 파도마다 실시간으로 싸우고, 모두 돌파하면 큰 보상! 한 번이라도 지면 작전 실패예요. 파도 사이에 선체는 회복되지 않으니 아껴 싸우세요.", nil, 92)
+		return mkRow(content, "대규모 해전 의뢰", "전 차수 승리 시 완료 · 차수 사이 선체 회복 없음", nil, 60)
 	end)
 	local w = view.war
 	if w then
@@ -10680,6 +10680,7 @@ end
 function RENDERERS.battle()
 	H.walletBar("battle")
 	H.statStrip({
+		{ "선체", string.format("%d/%d", view.ship.hull, view.ship.maxHull), tone = if view.ship.hull < view.ship.maxHull * 0.5 then "bad" else "good" },
 		{ "승조원", string.format("%d/%d", view.ship.crew, view.ship.maxCrew), tone = "key" },
 		{ "속도", string.format("%.1f", view.ship.speed), tone = "key" },
 	})
@@ -13099,12 +13100,16 @@ function H.openCabin()
 	local UIS = game:GetService("UserInputService")
 	local g = overlayGui("CabinGui", 40)
 	H.cabinGui = g
-	local root = Instance.new("Frame")
+	local root = Instance.new("ScrollingFrame")
 	root.Size = UDim2.fromScale(1, 1)
 	root.BackgroundColor3 = COLORS.cover
 	root.BorderSizePixel = 0
+	root.ScrollingDirection = Enum.ScrollingDirection.Y
+	root.ScrollBarThickness = 4
+	root.CanvasSize = UDim2.new()
 	root.Parent = g
 	local selected = nil -- 눌러서 고른 동료 id
+	local pendingStation = nil
 	local drag = nil -- { id, ghost, startPos, moved }
 	local slotFrames = {}
 	local build
@@ -13117,7 +13122,7 @@ function H.openCabin()
 		end
 	end
 	local function place(id, stationId)
-		selected = nil
+		selected, pendingStation = nil, nil
 		call("Station", { companionId = id, station = stationId })
 	end
 	local function slotAt(pos)
@@ -13146,7 +13151,11 @@ function H.openCabin()
 				build()
 			end
 		else
-			selected = if selected == d.id then nil else d.id -- 누르기만 했으면 선택/해제
+			if pendingStation then
+				place(d.id, pendingStation)
+				return
+			end
+			selected = if selected == d.id then nil else d.id
 			build()
 		end
 	end
@@ -13201,22 +13210,24 @@ function H.openCabin()
 		local sh = view.ship
 		local W = root.AbsoluteSize.X
 		local wide = W >= 760
+		root.ScrollingEnabled = not wide
+		if wide then root.CanvasSize = UDim2.new(); root.CanvasPosition = Vector2.zero end
 
 		-- 윗줄
 		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, 58), COLORS.paper)
 		corner(top, 6)
 		local title = mkLabel(top, "선장실 · " .. sh.name, 19, Color3.fromRGB(50, 36, 24), true)
 		title.Position = UDim2.fromOffset(12, 6)
-		title.Size = UDim2.new(1, -330, 0, 24)
+		title.Size = UDim2.new(1, -184, 0, 24)
 		title.AutomaticSize = Enum.AutomaticSize.None
-		local hint = mkLabel(top, "동료 초상을 끌어서 자리에 놓으세요 (누른 뒤 자리를 눌러도 돼요)", 12, Color3.fromRGB(90, 70, 50), false)
+		local hint = mkLabel(top, "직책을 고르고 동료 선택", 12, Color3.fromRGB(90, 70, 50), false)
 		hint.Position = UDim2.fromOffset(12, 32)
-		hint.Size = UDim2.new(1, -330, 0, 20)
+		hint.Size = UDim2.new(1, -184, 0, 20)
 		hint.AutomaticSize = Enum.AutomaticSize.None
 		local closeBtn = mkButton(top, "닫기", COLORS.leather, UDim2.fromOffset(70, 40), close, true)
 		closeBtn.AnchorPoint = Vector2.new(1, 0.5)
 		closeBtn.Position = UDim2.new(1, -8, 0.5, 0)
-		local autoBtn = mkButton(top, "자동 배치 (추천)", COLORS.green, UDim2.fromOffset(160, 40), function() selected = nil; call("AutoStations") end, #v.stations > 0)
+		local autoBtn = mkButton(top, "자동 배치", COLORS.green, UDim2.fromOffset(88, 40), function() selected, pendingStation = nil, nil; call("AutoStations") end, #v.stations > 0)
 		autoBtn.AnchorPoint = Vector2.new(1, 0.5)
 		autoBtn.Position = UDim2.new(1, -86, 0.5, 0)
 
@@ -13268,7 +13279,7 @@ function H.openCabin()
 			slot.BorderSizePixel = 0
 			slot.Parent = slotsBox
 			corner(slot, 8)
-			if selected then
+			if selected or pendingStation == st.id then
 				local stroke = Instance.new("UIStroke")
 				stroke.Color = COLORS.gold
 				stroke.Thickness = 2
@@ -13278,13 +13289,16 @@ function H.openCabin()
 			slot.Activated:Connect(function()
 				if selected then
 					place(selected, st.id)
+				else
+					pendingStation = if pendingStation == st.id then nil else st.id
+					build()
 				end
 			end)
 			local nm = mkLabel(slot, st.name, 14, COLORS.gold, true)
 			nm.Position = UDim2.fromOffset(78, 6)
 			nm.Size = UDim2.new(1, -84, 0, 20)
 			nm.AutomaticSize = Enum.AutomaticSize.None
-			local desc = mkLabel(slot, if st.seatName then (st.seatName .. (if st.matched then "  (딱 맞음 x1.2)" else "  (다른 직책 x0.6)")) else "비어 있음 — 동료를 놓으세요", 12, COLORS.text, false)
+			local desc = mkLabel(slot, if st.seatName then (st.seatName .. (if st.matched then "  (딱 맞음 x1.2)" else "  (다른 직책 x0.6)")) elseif pendingStation == st.id then "아래에서 동료 선택" else "빈 직책", 12, COLORS.text, false)
 			desc.Position = UDim2.fromOffset(78, 28)
 			desc.Size = UDim2.new(1, -84, 0, 54)
 			desc.AutomaticSize = Enum.AutomaticSize.None
@@ -13299,7 +13313,12 @@ function H.openCabin()
 
 		-- 오른쪽 아래: 함께하는 동료 초상 (끌어서 놓기)
 		local listY = if wide then 74 + slotsH + 8 else 272 + slotsH + 8
-		local listBox = mkBox(root, if wide then UDim2.new(rx, 4, 0, listY) else UDim2.fromOffset(8, listY), if wide then UDim2.new(1 - rx, -12, 1, -listY - 8) else UDim2.new(1, -16, 1, -listY - 8), COLORS.leather)
+		local joined = 0
+		for _, c in v.list do if c.joined then joined += 1 end end
+		local columns = math.max(1, math.floor((W - 28 + 8) / 112))
+		local listHeight = 38 + math.max(1, math.ceil(joined / columns)) * 128
+		if not wide then root.CanvasSize = UDim2.fromOffset(0, listY + listHeight + 8) end
+		local listBox = mkBox(root, if wide then UDim2.new(rx, 4, 0, listY) else UDim2.fromOffset(8, listY), if wide then UDim2.new(1 - rx, -12, 1, -listY - 8) else UDim2.new(1, -16, 0, listHeight), COLORS.leather)
 		corner(listBox, 8)
 		local lt = mkLabel(listBox, string.format("함께하는 동료 (%d/%d)", (function() local n = 0 for _, c in v.list do if c.joined then n += 1 end end return n end)(), v.max), 14, COLORS.gold, true)
 		lt.Position = UDim2.fromOffset(10, 6)
@@ -13310,7 +13329,8 @@ function H.openCabin()
 		sc.Size = UDim2.new(1, -12, 1, -38)
 		sc.BackgroundTransparency = 1
 		sc.BorderSizePixel = 0
-		sc.ScrollBarThickness = 5
+		sc.ScrollBarThickness = if wide then 5 else 0
+		sc.ScrollingEnabled = wide
 		sc.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		sc.CanvasSize = UDim2.new()
 		sc.Parent = listBox
