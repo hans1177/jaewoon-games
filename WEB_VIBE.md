@@ -1,3 +1,13 @@
+# 바이브 엔진 개발 전환 (2026-11-20)
+
+오너 지시에 따라 웹게임 신규 제작은 중지한다. 기존 WEB_VIBE_1 대기 작업은 기록을 보존하며 취소한다.
+기존 웹게임 개발 안내는 과거 운영 설명이며 **현재 신규 작업 접수 절차가 아니다**.
+새 역할은 별도 GitHub 조직/새 큐가 아니라 기존 저장소의 `vibeEngineImprovementContract`와
+`assets/vibe-art-pipeline.js#createVibeEngineSpecialistPlan`으로 연결되는 엔진·무료 에셋·검증 학습 전문 연구다.
+게임 코드 적용과 Roblox 자산 등록은 기존 Vibe 작업자·승인된 Open Cloud·독립 QA를 통과해야 한다.
+
+---
+
 # GitHub cloud and local WEB Vibe: independent development
 
 **GitHub continues to develop in the cloud as before**, even if the
