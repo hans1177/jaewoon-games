@@ -449,3 +449,47 @@ test('Vibe59 Roblox server binding proof requires executable declarations before
   assert.throws(()=>make(valid+'\nremote\n  .OnServerEvent\n  :Connect(function(player) end)\n'+slot),
     /VIBE59_ROBLOX_DUPLICATE_REMOTE_HANDLER/);
 });
+// [바이브5.9 로블록스 함수 영향] 긴 게임 소스도 기존 책임 함수까지 안전하게 추적한다.
+test('Vibe59 preserves late same-file Luau function dependencies after line 4000',()=>{
+  const path='server/Combat.server.luau';
+  const source=[
+    ...Array.from({length:4050},()=>'-- retained existing Lua source'),
+    'local function applyDefense(player)',
+    '  return player ~= nil',
+    'end',
+    'applyDefense(player)'
+  ].join('\n');
+  const report=inspectVibe59RobloxCoding({files:[{path,source}],responsiblePaths:[path]});
+  assert.deepEqual(report.files[0].functionDefinitions,[{name:'applyDefense',line:4051}]);
+  assert.deepEqual(report.functionLinks.map(row=>({
+    symbol:row.symbol,callLine:row.callLine,possibleDefinitions:row.possibleDefinitions,
+    status:row.status,runtimeVerified:row.runtimeVerified
+  })),[{
+    symbol:'applyDefense',callLine:4054,
+    possibleDefinitions:[{path,line:4051}],
+    status:'POTENTIAL_SAME_FILE_FUNCTION',runtimeVerified:false
+  }]);
+  assert.equal(report.qualityDirector.completeRepositoryGraph,false);
+  assert.equal(report.sourceWrite,false);
+});
+
+test('Vibe59 dedupes repeated invalid remotes so later datastore security findings survive',()=>{
+  const path='client/Storage.client.luau';
+  const source=[
+    ...Array.from({length:40},()=>'remote:FireClient(player)'),
+    'local store = game:GetService("DataStoreService")',
+    'store:GetDataStore("profile")'
+  ].join('\n');
+  const report=inspectVibe59RobloxCoding({files:[{path,source}],responsiblePaths:[path]});
+  const expected=[
+    ['SERVER_REMOTE_CALL_IN_CLIENT',1],
+    ['CLIENT_DATASTORE_ACCESS',42],
+    ['CLIENT_DATASTORE_SERVICE',41]
+  ];
+  assert.deepEqual(report.files[0].warnings.map(row=>[row.code,row.line]),expected);
+  assert.deepEqual(report.warnings.map(row=>[row.code,row.line]),expected);
+  assert.ok(report.qualityDirector.priorityFindings.some(row=>row.code==='CLIENT_DATASTORE_ACCESS'));
+  assert.ok(report.qualityDirector.priorityFindings.some(row=>row.code==='CLIENT_DATASTORE_SERVICE'));
+  assert.equal(report.runtimeVerified,false);
+  assert.equal(report.sourceWrite,false);
+});
