@@ -606,6 +606,59 @@ test('Vibe59 skips oversized or incomplete frame callback instead of inventing r
   assert.equal(report.runtimeVerified,false);
 });
 
+// [프레임 과부하 회귀] 기존 정적 분석이 실제 고비용 호출의 원본 줄을 확인한다.
+test('Vibe59 finds instance allocation and path computation in render callbacks',()=>{
+  const path='client/Motion.client.luau',source=[
+    'RunService.RenderStepped:Connect(function(dt)',
+    '  if dt > 0 then',
+    '    local particles = Instance.new("ParticleEmitter")',
+    '    local path = pathService:CreatePath()',
+    '    path:ComputeAsync(startPosition,goalPosition)',
+    '  end',
+    'end)'
+  ].join('\r\n');
+  const report=inspectVibe59RobloxCoding({files:[{path,source}],responsiblePaths:[path]});
+  const findings=new Map(report.warnings.map(row=>[row.code,row.line]));
+  assert.equal(findings.get('FRAME_INSTANCE_ALLOCATION'),3);
+  assert.equal(findings.get('FRAME_PATHFINDING_WORK'),4);
+  for(const code of ['FRAME_INSTANCE_ALLOCATION','FRAME_PATHFINDING_WORK'])
+    assert.ok(report.qualityDirector.priorityFindings.some(row=>row.code===code&&row.priority===3));
+  assert.equal(report.scanCoverage.responsibleComplete,true);
+  assert.equal(report.sourceWrite,false);
+  assert.equal(report.runtimeVerified,false);
+});
+
+test('Vibe59 flags server frame DataStore writes without changing save authority',()=>{
+  const path='server/Save.server.luau',source=[
+    'RunService.Heartbeat:Connect(function()',
+    '  if profile then',
+    '    store:UpdateAsync(key, transform)',
+    '  end',
+    'end)'
+  ].join('\n');
+  const report=inspectVibe59RobloxCoding({files:[{path,source}],responsiblePaths:[path]});
+  assert.equal(report.warnings.find(row=>row.code==='FRAME_DATASTORE_WRITE')?.line,3);
+  assert.ok(report.qualityDirector.priorityFindings.some(row=>row.code==='FRAME_DATASTORE_WRITE'));
+  assert.equal(report.runtimeVerified,false);
+  assert.equal(report.qualityDirector.gameplayPass,false);
+});
+
+test('Vibe59 avoids frame hot-path false positives from comments and one-time calls',()=>{
+  const path='server/Ordinary.server.luau',source=[
+    '-- RunService.Heartbeat:Connect(function() store:UpdateAsync(key, fn) end)',
+    'local sample = "Instance.new(Part)"',
+    'RunService.Heartbeat:Connect(function(dt)',
+    '  local changed = dt',
+    'end)',
+    'local particle = Instance.new("ParticleEmitter")',
+    'local nav = pathService:CreatePath()',
+    'store:SetAsync(key,profile)'
+  ].join('\n');
+  const report=inspectVibe59RobloxCoding({files:[{path,source}],responsiblePaths:[path]});
+  assert.ok(!report.warnings.some(row=>row.code.startsWith('FRAME_')));
+  assert.equal(report.runtimeVerified,false);
+});
+
 // [로블록스 파일 검증] 스캔 상한 초과·경로 누락은 안전하다는 증거가 아니다.
 test('Vibe59 exposes oversized responsible Luau files instead of silently clearing findings',()=>{
   const path='server/Combat.server.luau',source='--'+'.'.repeat(260001);
