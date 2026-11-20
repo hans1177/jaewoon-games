@@ -289235,11 +289235,136 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_e6cbd3c7a90a02bef2920d2b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13846",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "20af6e3183b4afcaa3e2f630e5f2534c558f2478",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13846,
+        "baseBranch": "main",
+        "headBranch": "mare-neutral-wonders-art",
+        "baseSha": "20af6e3183b4afcaa3e2f630e5f2534c558f2478",
+        "headSha": "5cfa103f900c711c4e0800b7afdbfa0eebd635a2",
+        "mergeCommitSha": "14c6580a50a55235f794d8da594500b7eaa7ac0e",
+        "mergedAt": "2026-11-20T02:40:01Z",
+        "authorLogin": "hans1177",
+        "titleHash": "b67d77d3a49593f72b6ce51596ec7167aa75728dbe5b6112d97fb717f7af3303",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-neutral-wonders-art",
+        "candidateSha": "5cfa103f900c711c4e0800b7afdbfa0eebd635a2"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 6,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/assets/cardart/lo_02.jpg",
+          "roblox-games/mare-essentia/assets/cardart/lo_02.jpg.license.json",
+          "roblox-games/mare-essentia/assets/cardart/lo_03.jpg",
+          "roblox-games/mare-essentia/assets/cardart/lo_03.jpg.license.json",
+          "roblox-games/mare-essentia/assets/cardart/lo_04.jpg",
+          "roblox-games/mare-essentia/assets/cardart/lo_04.jpg.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/assets/cardart/lo_02.jpg.license.json",
+          "roblox-games/mare-essentia/assets/cardart/lo_03.jpg.license.json",
+          "roblox-games/mare-essentia/assets/cardart/lo_04.jpg.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13846",
+        "merge-commit:14c6580a50a55235f794d8da594500b7eaa7ac0e",
+        "base-main:20af6e3183b4afcaa3e2f630e5f2534c558f2478"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2313
+    "total": 2314
   }
 }
