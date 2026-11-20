@@ -1831,8 +1831,57 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				else CFrame.new(origin.Position)
 			local yaw = rng:NextNumber(-math.pi, math.pi)
 			m:PivotTo(upright * CFrame.Angles(0, yaw, 0))
-			local gaitOf = { dog = 15, cat = 11, duck = 17, chicken = 17, pig = 9, sheep = 8, cow = 5.5, horse = 6.5, donkey = 7, llama = 7 }
-			table.insert(walkers, { model = m, base = m:GetPivot(), mode = "animal", akind = k[2], phase = rng:NextNumber(0, 10), gait = gaitOf[species] or 7, hd = 0, animalType = species })
+			-- [외부 가축 원본 관절] 스킨 본·모터 또는 분리된 사지 메시만 수집한다.
+			-- 원본 한 덩어리 메시의 형상을 무리하게 뒤틀거나 새 관절·메시를 생성하지 않는다.
+			local animalJoints, animalParts = {}, {}
+			local basePivot = m:GetPivot()
+			local occupiedParts = {}
+			for _, node in m:GetDescendants() do
+				if node:IsA("Motor6D") then
+					if node.Part1 then occupiedParts[node.Part1] = true end
+				end
+			end
+			for _, node in m:GetDescendants() do
+				local name = string.lower(node.Name)
+				local leg = name:find("leg", 1, true) or name:find("hoof", 1, true)
+					or name:find("paw", 1, true) or name:find("foot", 1, true)
+				local head = name:find("head", 1, true) or name:find("neck", 1, true)
+				local tail = name:find("tail", 1, true)
+				local ear = name:find("ear", 1, true) and not name:find("heart", 1, true)
+				local wing = name:find("wing", 1, true)
+				local trunk = name:find("trunk", 1, true)
+				local kind = if leg then "leg" elseif head then "head" elseif tail then "tail"
+					elseif ear then "ear" elseif wing then "wing" elseif trunk then "trunk" else nil
+				if kind then
+					local left = name:find("left", 1, true) or name:find("_l", 1, true)
+						or name:sub(1, 2) == "l_"
+					local rear = name:find("hind", 1, true) or name:find("rear", 1, true)
+						or name:find("back", 1, true)
+					local side = if left then 1 else -1
+					local phaseOffset = if kind == "leg" then (if rear then (if left then math.pi else 0)
+						else (if left then 0 else math.pi)) else 0
+					if (node:IsA("Bone") or node:IsA("Motor6D")) and #animalJoints < 14 then
+						table.insert(animalJoints, { joint = node, base = node.Transform,
+							kind = kind, side = side, phase = phaseOffset })
+					elseif node:IsA("BasePart") and not occupiedParts[node] and #animalParts < 12 then
+						table.insert(animalParts, { part = node, base = basePivot:ToObjectSpace(node.CFrame),
+							kind = kind, side = side, phase = phaseOffset,
+							hinge = math.min(node.Size.Y * 0.34, 0.65) })
+					end
+				end
+			end
+			end
+			local gaitOf = { dog = 15, cat = 11, duck = 17, chicken = 17, pig = 9, sheep = 8,
+				cow = 5.5, horse = 6.5, donkey = 7, llama = 7, elephant = 4 }
+			local stepOf = { dog = 2.2, cat = 1.9, duck = 1.1, chicken = 1.0, pig = 2.5, sheep = 2.6,
+				cow = 3.8, horse = 4.3, donkey = 3.2, llama = 3.4, elephant = 4.8 }
+			m:SetAttribute("AnimalRigParts", #animalParts)
+			m:SetAttribute("AnimalRigJoints", #animalJoints)
+			table.insert(walkers, { model = m, base = basePivot, mode = "animal",
+				akind = k[2], phase = rng:NextNumber(0, 10), gait = gaitOf[species] or 7,
+				stepSize = stepOf[species] or 2.5, hd = 0, animalType = species,
+				animalJoints = animalJoints, animalParts = animalParts, homeFloor = pos.Y,
+				groundOffset = 0, groundTarget = 0, groundCheckAt = 0, travelPhase = 0 })
 		end
 		local lay = zoneLayout(info.portId, lvl, info.hasShipyard, info.sim and info.sim.buildings)
 		local has = {}
@@ -5484,6 +5533,10 @@ function PortScene.build(info, onFacility)
 	elseif RunService:IsStudio() then
 		warn("[MareEssentia] 항구 R15 대련 테스트 불가: 주민 모델 2명 미만")
 	end
+	-- [가축 발 접지] 실제 충돌 지면만 샘플링하고, 모든 가축이 동일한 경로·매 프레임 레이캐스트를 반복하지 않는다.
+	local animalGround = RaycastParams.new()
+	animalGround.FilterType = Enum.RaycastFilterType.Exclude
+	animalGround.RespectCanCollide = true
 	-- 주민이 광장을 천천히 오간다 (끝에서 몸을 돌려 되돌아온다)
 	-- 공식 Motor6D.Transform 적용 시점: Animator 갱신 후, 물리 처리 직전.
 	local walkConn = RunService.PreSimulation:Connect(function(deltaTime)
@@ -5693,24 +5746,109 @@ function PortScene.build(info, onFacility)
 			elseif w.mode == "animal" then
 				if w.model.Parent then
 					local t = now + w.phase
-					-- 가축 전신을 앞뒤로 숙이면 FBX별 기준축 차이 때문에 뒤집히므로 Y축 회전만 사용한다.
-					local bob = math.abs(math.sin(t * (w.gait or 7))) * 0.055
-					if w.akind == "graze" then bob *= 0.35 end
-					if w.span then
-						local u = t * w.rate
-						local v = math.cos(u)
-						local go = math.abs(v)
-						local want = if v < 0 then math.pi else 0
-						-- 최단 회전 호를 사용하여 뒤돌 때 360도 회전/역주행이 생기지 않는다.
-						local hd = w.hd or 0
-						local angle = math.atan2(math.sin(want - hd), math.cos(want - hd))
-						hd += angle * math.clamp(dt * 6, 0, 1)
-						w.hd = hd
-						w.model:PivotTo(w.base * CFrame.new(0, bob * go, -math.sin(u) * w.span) * CFrame.Angles(0, hd, 0))
+					local u = if w.span then t * w.rate else 0
+					local speed = if w.span then math.abs(math.cos(u)) else 0
+					local d = if w.span then -math.sin(u) * w.span else 0
+					-- [실거리 걸음] 위치가 거의 멈춘 곳에서는 다리가 제자리에서 허우적대지 않는다.
+					local walked = math.abs(d - (w.lastD or d))
+					w.lastD = d
+					local moving = w.span ~= nil and speed > 0.26 and walked > 0.004
+					if moving then
+						w.travelPhase += walked * (2 * math.pi / w.stepSize)
+					end
+					local want = if math.cos(u) < -0.06 then math.pi elseif math.cos(u) > 0.06 then 0 else w.targetHd or 0
+					w.targetHd = want
+					if not w.headingStarted then
+						w.hd, w.headingStarted = want, true
+					end
+					local turn = math.atan2(math.sin(want - w.hd), math.cos(want - w.hd))
+					w.hd += turn * (1 - math.exp(-5.5 * dt))
+					-- [가축별 생활] 정지 시 먹이·물·정리·휴식·귀 움직임, 이동 중 실제 보행.
+					local cycle = (t * 0.56) % 21
+					local action
+					if moving then action = "walk"
+					elseif w.akind == "graze" then
+						action = if cycle < 5 then "graze" elseif cycle < 8 then "chew"
+							elseif cycle < 11 then "look" elseif cycle < 14 then "drink"
+							elseif cycle < 17 then "shake" else "rest"
+					elseif w.akind == "peck" then
+						action = if cycle < 6 then "peck" elseif cycle < 10 then "scratch"
+							elseif cycle < 14 then "look" elseif cycle < 18 then "preen" else "rest"
+					elseif w.akind == "tail" then
+						action = if cycle < 5 then "sniff" elseif cycle < 9 then "wag"
+							elseif cycle < 13 then "look" elseif cycle < 17 then "stretch" else "rest"
 					else
-						w.model:PivotTo(w.base * CFrame.new(0, bob * 0.5, 0))
+						action = if cycle < 6 then "look" elseif cycle < 11 then "groom"
+							elseif cycle < 16 then "stretch" else "rest"
+					end
+					if action ~= w.lastAnimalAction then
+						w.lastAnimalAction = action
+						w.model:SetAttribute("AnimalActivity", action)
+					end
+					local destination = (w.base * CFrame.new(0, 0, d)).Position
+					local camera = workspace.CurrentCamera
+					local close = not camera or (camera.CFrame.Position - destination).Magnitude < (if UserInputService.TouchEnabled then 105 else 155)
+					-- [지면 접촉] 타일·경사·부두 높이를 0.18초마다 확인하고 실제 높이로 지수 보간한다.
+					-- 원본 모델 발-몸통 간격과 축은 그대로 보존한다. 레이캐스트 실패 시 원래 높이를 따른다.
+					if close and now >= w.groundCheckAt then
+						w.groundCheckAt = now + 0.18 + (w.phase % 0.08)
+						local ground = workspace:Raycast(
+							Vector3.new(destination.X, w.base.Position.Y + 3.5, destination.Z),
+							Vector3.new(0, -10, 0), animalGround)
+						if ground and ground.Normal.Y > 0.7 and math.abs(ground.Position.Y - w.homeFloor) < 1.4 then
+							w.groundTarget = ground.Position.Y - w.homeFloor
+						end
+					end
+					w.groundOffset += (w.groundTarget - w.groundOffset) * (1 - math.exp(-9 * dt))
+					-- [접지 보행] 몸 전체를 뒤집지 않고 실제 전진 거리로 작은 체중 이동만 준다.
+					local step = w.travelPhase
+					local bob = if moving then math.abs(math.sin(step)) * (if w.akind == "peck" then 0.025 else 0.042)
+						else math.sin(t * 1.3) * 0.009
+					local pivot = w.base * CFrame.new(0, w.groundOffset + bob, d) * CFrame.Angles(0, w.hd, 0)
+					w.model:PivotTo(pivot)
+					if close then
+						-- [원본 관절] 다리·목·꼬리·귀·날개가 실제로 분리된 가축만 별도 움직임을 준다.
+						-- 관절이 없는 단일 FBX 메시는 현재 원형을 보존하고 걷기·접지·회전만 적용한다.
+						local swing = if moving then 0.22 else 0
+						local nod = if action == "graze" or action == "drink" then 0.22 + math.sin(t * 1.5) * 0.08
+							elseif action == "peck" then 0.17 + math.max(0, math.sin(t * 5)) * 0.16
+							elseif action == "sniff" then 0.14 + math.sin(t * 3) * 0.06
+							elseif action == "chew" then math.sin(t * 2.3) * 0.065
+							elseif action == "preen" or action == "groom" then -0.10
+							elseif action == "rest" then -0.05 else math.sin(t * 0.9) * 0.045
+						local headYaw = if action == "look" then math.sin(t * 0.8) * 0.20 else math.sin(t * 0.42) * 0.055
+						local wag = if action == "wag" or action == "walk" then math.sin(t * (w.gait or 7)) * 0.30
+							else math.sin(t * 1.4) * 0.08
+						local blend = 1 - math.exp(-11 * dt)
+						for _, limb in w.animalJoints do
+							local pitch, yaw, roll = 0, 0, 0
+							if limb.kind == "leg" then pitch = math.sin(step + limb.phase) * swing
+							elseif limb.kind == "head" then pitch, yaw = nod, headYaw
+							elseif limb.kind == "tail" or limb.kind == "trunk" then yaw = wag * limb.side
+							elseif limb.kind == "ear" then roll = math.sin(t * 2.1) * 0.07 * limb.side
+							elseif limb.kind == "wing" then roll = if action == "preen" or action == "shake"
+							then math.sin(t * 5) * 0.15 * limb.side else 0
+							end
+							limb.pose = (limb.pose or CFrame.identity):Lerp(CFrame.Angles(pitch, yaw, roll), blend)
+							limb.joint.Transform = limb.base * limb.pose
+						end
+						for _, limb in w.animalParts do
+							local pitch, yaw, roll = 0, 0, 0
+							if limb.kind == "leg" then pitch = math.sin(step + limb.phase) * swing
+							elseif limb.kind == "head" then pitch, yaw = nod, headYaw
+							elseif limb.kind == "tail" or limb.kind == "trunk" then yaw = wag * limb.side
+							elseif limb.kind == "ear" then roll = math.sin(t * 2.1) * 0.07 * limb.side
+							elseif limb.kind == "wing" then roll = if action == "preen" or action == "shake"
+							then math.sin(t * 5) * 0.15 * limb.side else 0
+							end
+							limb.pose = (limb.pose or CFrame.identity):Lerp(CFrame.Angles(pitch, yaw, roll), blend)
+							-- 별도 메시의 윗부분을 축으로 돌려 발·고개·꼬리가 몸체에서 뜨지 않게 한다.
+							limb.part.CFrame = pivot * limb.base * CFrame.new(0, limb.hinge, 0)
+								* limb.pose * CFrame.new(0, -limb.hinge, 0)
+						end
 					end
 				end
+			end
 			elseif w.mode == "circle" then
 				if w.model.Parent then
 					local a = (now + w.phase) * w.speed / w.r
