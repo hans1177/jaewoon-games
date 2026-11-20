@@ -126452,7 +126452,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -126487,7 +126487,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 21,
-      "previousReservationId": "system-ai:44801689120:1",
+      "previousReservationId": "system-ai:44807622004:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -126495,12 +126495,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44807622004:1",
-      "reservedAt": "2026-11-20T20:09:31.172Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -127317,7 +127317,18 @@
         "actions-run:44800881284",
         "system-ai-handoff-to-reservation:system-ai:44801689120:1",
         "actions-run:44801689120",
-        "system-ai-handoff-to-reservation:system-ai:44807622004:1"
+        "system-ai-handoff-to-reservation:system-ai:44807622004:1",
+        "actions-run:44807622004",
+        "external-ai-raw-output-sha256:f9e5e1acaeb5859c2e881000e6a663f74372464b71d6a1ef7dc805b46b5bf7ae",
+        "selected-strategy:territory-war-pre-release-store-positioning",
+        "system-ai-critic-verdict:REVISE",
+        "system-ai-critic-decision-sha256:09ac33516892fc6ea7b12e82106d89b7711447082968a4838342c4f00f8ce289",
+        "system-ai-applied-answer-sha256:01614c6b171de4f93115909c18c1520018b36a56ba05407b3988e4f5191174fb",
+        "system-ai-critic-weak-point:Proposed answer created company-learning/marketing/territory-war/latest.json as a JSON object instead of a JSON array, causing mismatch with target file requirements and acceptance criteria.",
+        "system-ai-critic-weak-point:The prompt acceptance states the artifact must contain FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS keys, but the file content needs to strictly follow the expected repository schema format.",
+        "repair-strategy-fingerprint:36425d7380c9ca0ba4d26b5b722b15f8532f6546dd42a0c6a38bca0bb0b7c607",
+        "failed-strategy-fingerprint:36425d7380c9ca0ba4d26b5b722b15f8532f6546dd42a0c6a38bca0bb0b7c607",
+        "model-output-sha256:f9e5e1acaeb5859c2e881000e6a663f74372464b71d6a1ef7dc805b46b5bf7ae"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1862,
@@ -127332,7 +127343,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-20T20:09:31.172Z"
+      "updatedAt": "2026-11-20T20:16:02.439Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
