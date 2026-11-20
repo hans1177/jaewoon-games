@@ -293635,11 +293635,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-11-20T12:04:41.893Z",
-      "updatedAt": "2026-11-20T12:04:55.885Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:system_ai",
-        "recovery-dispatched-at:2026-11-20T12:04:55.885Z"
-      ]
+      "updatedAt": "2026-11-20T12:04:55.885Z"
     },
     {
       "id": "recovery-195824c83faaf8c83bbc",
@@ -293702,11 +293698,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-11-20T12:04:46.170Z",
-      "updatedAt": "2026-11-20T12:04:55.885Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:system_ai",
-        "recovery-dispatched-at:2026-11-20T12:04:55.885Z"
-      ]
+      "updatedAt": "2026-11-20T12:04:55.885Z"
     },
     {
       "id": "recovery-80d3255fcc3811980757",
@@ -293769,10 +293761,211 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-11-20T12:04:51.390Z",
-      "updatedAt": "2026-11-20T12:04:55.885Z",
+      "updatedAt": "2026-11-20T12:04:55.885Z"
+    },
+    {
+      "id": "recovery-9d094a618b1cb806e6e0",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "deployment",
+      "sourceTaskId": "deployment:.github/workflows/devloop-studio.yml:b6087009acf3fae34b487aebf999d572600c78ad:mare-essentia",
+      "gameId": "mare-essentia",
+      "responsibleFiles": [],
+      "contextFiles": [
+        ".github/workflows/devloop-studio.yml",
+        "roblox-games/mare-essentia"
+      ],
+      "goal": "Inspect the actual archived Studio screenshots and model/feature checklist for run 44726203247, verify the failing asset responsibility within the existing assigned game task before changing it, then rerun the identical Studio scenario. Analyze the exact failed ROBLOX deployment stage LAUNCH_STUDIO_RUN_SCRIPT_CAPTURE_FRAMES for mare-essentia using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [
+        "mare-essentia-studio-evolution-roblox-presentation-v1"
+      ],
+      "failureStage": "STUDIO_GAME_RUNTIME",
+      "failureSignature": "STUDIO_OBSERVED_RUNTIME_WARNINGS",
+      "blastRadius": "game:mare-essentia",
+      "checkpoint": "b6087009acf3fae34b487aebf999d572600c78ad",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "b6087009acf3fae34b487aebf999d572600c78ad",
+      "evidence": [
+        "deployment-failure-run:44726203247:1",
+        "deployment-workflow:.github/workflows/devloop-studio.yml",
+        "deployment-platform:ROBLOX",
+        "deployment-game:mare-essentia",
+        "deployment-head-sha:b6087009acf3fae34b487aebf999d572600c78ad",
+        "studio-qa-run:44726203247",
+        "studio-qa-checks:https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44726203247/checks.json",
+        "studio-qa-screenshots:https://github.com/hans1177/jaewoon-games/tree/mare-essentia-studio-frames/runs/44726203247",
+        "studio-asset-task:mare-essentia-studio-evolution-roblox-presentation-v1",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:CAPTURE",
+        "deployment-failed-step:LAUNCH_STUDIO_RUN_SCRIPT_CAPTURE_FRAMES",
+        "deployment-confirmed-failure-stage:STUDIO_GAME_RUNTIME",
+        "deployment-confirmed-failure-signature:STUDIO_OBSERVED_RUNTIME_WARNINGS",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/44726203247",
+        "deployment-failure-triage:SCOPED_GAME_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED"
+      ],
+      "recoveryStrategy": "VIBE_EXISTING_STUDIO_ASSET_REPAIR_WITH_SCREENSHOT_QA_THEN_RECAPTURE",
+      "verificationPlan": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "REVIEW_SAME_RUN_STUDIO_SCREENSHOT_CHECKS_AND_APPROVED_ASSETS",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "VIBE2_VIBE3",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-11-20T12:11:51.561Z",
+      "updatedAt": "2026-11-20T12:12:08.897Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-11-20T12:12:08.897Z"
+      ]
+    },
+    {
+      "id": "recovery-42f588cb9ce807cbe3f1",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "deployment",
+      "sourceTaskId": "deployment:.github/workflows/devloop-studio.yml:8153e2d07a1da28dab3347d1ddb5acfce059d6d7:mare-essentia",
+      "gameId": "mare-essentia",
+      "responsibleFiles": [
+        ".github/workflows/devloop-studio.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/devloop-studio.yml",
+        "roblox-games/mare-essentia"
+      ],
+      "goal": "Studio runtime source is unresolved. Inspect the exact official Studio run and archived evidence first. The assigned workflow file is for diagnostic and capture-reliability repair only; do not treat unknown game source as an infrastructure defect, invent source files, or change gameplay to hide the failure. Preserve unresolved evidence for canonical Vibe game-source intake. Analyze the exact failed ROBLOX deployment stage LAUNCH_STUDIO_RUN_SCRIPT_CAPTURE_FRAMES for mare-essentia using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [],
+      "failureStage": "STUDIO_EXECUTION",
+      "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
+      "blastRadius": "deployment-workflow:.github/workflows/devloop-studio.yml",
+      "checkpoint": "8153e2d07a1da28dab3347d1ddb5acfce059d6d7",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "8153e2d07a1da28dab3347d1ddb5acfce059d6d7",
+      "evidence": [
+        "deployment-failure-run:44727988983:1",
+        "deployment-workflow:.github/workflows/devloop-studio.yml",
+        "deployment-platform:ROBLOX",
+        "deployment-game:mare-essentia",
+        "deployment-head-sha:8153e2d07a1da28dab3347d1ddb5acfce059d6d7",
+        "studio-qa-run:44727988983",
+        "studio-qa-checks:https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44727988983/checks.json",
+        "studio-qa-screenshots:https://github.com/hans1177/jaewoon-games/tree/mare-essentia-studio-frames/runs/44727988983",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:CAPTURE",
+        "deployment-failed-step:LAUNCH_STUDIO_RUN_SCRIPT_CAPTURE_FRAMES",
+        "deployment-confirmed-failure-stage:STUDIO_EXECUTION",
+        "deployment-confirmed-failure-signature:STUDIO_SCRIPT_REPORTED_ERRORS",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/44727988983",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED"
+      ],
+      "recoveryStrategy": "SYSTEM_AI_CANONICAL_DEPLOYMENT_INFRASTRUCTURE_CAUSAL_REPAIR_THEN_VERIFIED_REDEPLOY",
+      "verificationPlan": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-11-20T12:11:56.983Z",
+      "updatedAt": "2026-11-20T12:12:08.897Z",
       "dispatchEvidence": [
         "recovery-dispatched:system_ai",
-        "recovery-dispatched-at:2026-11-20T12:04:55.885Z"
+        "recovery-dispatched-at:2026-11-20T12:12:08.897Z"
+      ]
+    },
+    {
+      "id": "recovery-94f41165b222756acef4",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "deployment",
+      "sourceTaskId": "deployment:.github/workflows/devloop-studio.yml:d86dc44a621b257e997e0aa5b9cdb4fe7eaac19b:mare-essentia",
+      "gameId": "mare-essentia",
+      "responsibleFiles": [],
+      "contextFiles": [
+        ".github/workflows/devloop-studio.yml",
+        "roblox-games/mare-essentia"
+      ],
+      "goal": "Inspect the actual archived Studio screenshots and model/feature checklist for run 44728237176, verify the failing asset responsibility within the existing assigned game task before changing it, then rerun the identical Studio scenario. Analyze the exact failed ROBLOX deployment stage LAUNCH_STUDIO_RUN_SCRIPT_CAPTURE_FRAMES for mare-essentia using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [
+        "mare-essentia-studio-evolution-roblox-presentation-v1"
+      ],
+      "failureStage": "STUDIO_GAME_RUNTIME",
+      "failureSignature": "STUDIO_OBSERVED_RUNTIME_WARNINGS",
+      "blastRadius": "game:mare-essentia",
+      "checkpoint": "d86dc44a621b257e997e0aa5b9cdb4fe7eaac19b",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "d86dc44a621b257e997e0aa5b9cdb4fe7eaac19b",
+      "evidence": [
+        "deployment-failure-run:44728237176:1",
+        "deployment-workflow:.github/workflows/devloop-studio.yml",
+        "deployment-platform:ROBLOX",
+        "deployment-game:mare-essentia",
+        "deployment-head-sha:d86dc44a621b257e997e0aa5b9cdb4fe7eaac19b",
+        "studio-qa-run:44728237176",
+        "studio-qa-checks:https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44728237176/checks.json",
+        "studio-qa-screenshots:https://github.com/hans1177/jaewoon-games/tree/mare-essentia-studio-frames/runs/44728237176",
+        "studio-asset-task:mare-essentia-studio-evolution-roblox-presentation-v1",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:CAPTURE",
+        "deployment-failed-step:LAUNCH_STUDIO_RUN_SCRIPT_CAPTURE_FRAMES",
+        "deployment-confirmed-failure-stage:STUDIO_GAME_RUNTIME",
+        "deployment-confirmed-failure-signature:STUDIO_OBSERVED_RUNTIME_WARNINGS",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/44728237176",
+        "deployment-failure-triage:SCOPED_GAME_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED"
+      ],
+      "recoveryStrategy": "VIBE_EXISTING_STUDIO_ASSET_REPAIR_WITH_SCREENSHOT_QA_THEN_RECAPTURE",
+      "verificationPlan": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "REVIEW_SAME_RUN_STUDIO_SCREENSHOT_CHECKS_AND_APPROVED_ASSETS",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "VIBE2_VIBE3",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-11-20T12:12:02.253Z",
+      "updatedAt": "2026-11-20T12:12:08.897Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-11-20T12:12:08.897Z"
       ]
     }
   ]
