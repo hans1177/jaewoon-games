@@ -56,6 +56,8 @@ const matchers = {
   // [정식 오디오] 수치/밸런스 XP는 신규 지급하지 않고 기존 기록만 보존한다.
   audio: [
     /(^|\/)(audio|sound|sfx|music|bgm|mixer)(-|_|\/|\.)/i,
+    // [로블록스 오디오] AudioController.client.luau 같은 기존 PascalCase 책임 파일도 인식한다.
+    /(^|\/)(?:Audio|Sound|Sfx|SFX|Music|Bgm|BGM|Mixer)(?:Controller|Manager|Service|System|Handler|Player|Engine|Module)(?=\.|[-_/]|$)/,
     /\.(?:wav|ogg|mp3|flac|aiff?)$/i,
     /^\.github\/agents\/audio\.agent\.md$/
   ],
