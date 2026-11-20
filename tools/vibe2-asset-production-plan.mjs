@@ -7602,10 +7602,33 @@ export async function produceRegisteredCc0Asset({
       fs.renameSync(temp,full);acquired=true;
     }finally{try{fs.unlinkSync(temp);}catch{}}
   }
-  const derivedPath='assets/generated/'+platform+'/'+game+'/'+type;
+  // [다중 원본·변형 제작] 기존 종류별 단일 슬롯은 서로 다른 건물·지형·소품을 덮어쓸 수 있었다.
+  // 원본 ID/스타일/재구성 레시피를 결정론적으로 분리하되, 기존 검증 파생본은 그 경로 그대로 보존한다.
+  const recipeIdentity=JSON.stringify({sourceAssetId:id,styleFamily:style,reconstruction:recipe});
+  const fingerprint=crypto.createHash('sha256').update(recipeIdentity).digest('hex').slice(0,12);
+  const label=id.toLowerCase().slice(0,36);
+  const slot=type+'-'+label+'-'+fingerprint;
+  const legacyPath='assets/generated/'+platform+'/'+game+'/'+type;
+  const legacyEvidence=readJson(path.join(root,legacyPath,'evidence.json'),{});
+  const legacyApplication=readJson(path.join(root,legacyPath,'application.json'),{});
+  const legacyMatches=fs.existsSync(path.join(root,legacyPath,'asset.glb'))
+    &&clean(legacyEvidence?.sourceMesh?.libraryParentAssetId)===id
+    &&clean(legacyEvidence?.sourceMesh?.sourceSha256)===declaredHash
+    &&clean(legacyApplication?.style?.sourceStyleFamily).toUpperCase()===style
+    &&(recipe===null?legacyEvidence?.meshReconstruction==null:
+      JSON.stringify({bodyPlan:legacyEvidence?.meshReconstruction?.bodyPlan,
+        morph:legacyEvidence?.meshReconstruction?.morph||{},
+        detail:legacyEvidence?.meshReconstruction?.detail||'KEEP',
+        additions:legacyEvidence?.meshReconstruction?.additions?.map(row=>({
+          kind:row.kind,mode:row.mode,sourceAssetId:row.sourceAssetId,sourceSha256:row.sourceSha256,
+          attachmentBone:row.attachmentBone
+        }))||[],removals:legacyEvidence?.meshReconstruction?.removals||[]})
+      ===JSON.stringify({bodyPlan:recipe.bodyPlan,morph:recipe.morph||{},
+        detail:recipe.detail||'KEEP',additions:recipe.add||[],removals:recipe.remove||[]}));
+  const derivedPath=legacyMatches?legacyPath:'assets/generated/'+platform+'/'+game+'/'+slot;
   const output=path.resolve(root,derivedPath);
   const producedFiles=['asset.glb','master.glb','preview.png','evidence.json','application.json'];
-  const registeredId='derived-'+platform+'-'+game+'-'+type;
+  const registeredId='derived-'+platform+'-'+game+'-'+(legacyMatches?type:slot);
   // [단계별 복구] 이미 생성된 디렉터리는 원본/해시 증거가 동일할 때만 재사용한다.
   let authored=false;
   if(fs.existsSync(output)){
@@ -7628,7 +7651,7 @@ export async function produceRegisteredCc0Asset({
     try{
       fs.mkdirSync(path.dirname(output),{recursive:true});
       const args=['-b','--python','assets/native-authoring/build-game-visual.py','--',
-        '--output',staging,'--asset-id',game+'-'+type,'--profile',type,
+        '--output',staging,'--asset-id',game+'-'+slot,'--profile',type,
         '--target',platform,'--source-model',sourcePath,'--module','object',
         '--source-license',parent.license,'--source-credit',clean(parent.sourceUrl),
         '--library-parent-id',id,'--library-source-sha256',declaredHash,
@@ -7664,7 +7687,7 @@ export async function produceRegisteredCc0Asset({
   const nativeGamePath=platform==='roblox'?clean(catalogGame?.robloxProjectPath||catalogGame?.canonical?.sources?.roblox?.projectPath):
     platform==='unity'?clean(catalogGame?.unityProjectPath||catalogGame?.canonical?.sources?.unity?.projectPath):null;
   return Object.freeze({assetId:entry.id,sourcePath,sourceHash:declaredHash,
-    output:derivedPath,acquired,authored,registered:true,
+    output:derivedPath,sourceAssetId:id,variantFingerprint:fingerprint,acquired,authored,registered:true,
     artifactPath,artifactSha256,sourceBoundConsumerGameIds:entry.sourceBoundConsumerGameIds||[],
     nativeApplication:Object.freeze({gameId:game,platform:platform.toUpperCase(),nativeGamePath:nativeGamePath||null,
       masterGlbPath:derivedPath+'/master.glb',assetGlbPath:artifactPath,artifactSha256,
