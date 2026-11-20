@@ -2062,6 +2062,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		headerLimit.Parent = header
 		-- 카드 대결은 점수와 라운드 상태를 각각 고정된 칸에서 읽는다.
 		local battleScore, battleRound, battleTurn
+		local displayedScore, displayedRound, scorePulse
 		if opts.cardOnly then
 			header.Visible = false
 			local summary = Instance.new("Frame")
@@ -2221,7 +2222,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		weatherTag.Size = UDim2.fromScale(0.92, 0.13)
 		weatherTag.TextScaled = true
 		weatherTag.TextWrapped = true
-		weatherTag.Visible = not compactCards
+		weatherTag.Visible = not compactCards and not opts.cardOnly
 		-- 동료 조언·적 정찰 말풍선 (한 판에 한 번, 한 전투에 최대 3번)
 		-- 점수판(panel) 안에 두면 내 점수 칸과 겹치므로, 안내 줄(info) 자리에 잠깐 덮어 보여 준다
 		local adviceTag = label(g, "", 14, Color3.fromRGB(255, 233, 170), true)
@@ -2387,7 +2388,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if not target then return end
 			local st = Instance.new("UIStroke")
 			st.Name = "DropHint"
-			st.Color = Color3.fromRGB(255, 218, 120)
+			st.Color = if opts.cardOnly then CardTheme.gold else Color3.fromRGB(255, 218, 120)
 			st.Thickness = 3
 			st.Parent = target
 			dropGlow = st
@@ -2702,7 +2703,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end)
 			end
 		end
-		local passBtn = mkSide(t("멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), if opts.cardOnly and AssetIds["CardArt/ui_icon_hourglass"] then "CardArt/ui_icon_hourglass" else "Menu/cc0_shield", function()
+		local passBtn = mkSide(t(if opts.cardOnly then "패스" else "멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), if opts.cardOnly and AssetIds["CardArt/ui_icon_hourglass"] then "CardArt/ui_icon_hourglass" else "Menu/cc0_shield", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
 				Sfx.play("sfx_anchor_lower", 0.55, 1.1, "sfx_rope_pull")
 				afterAction(mine(BC.pass(m, "me")))
@@ -2763,7 +2764,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			Sfx.play("sfx_card_deal", 0.6, 1, "sfx_book_turn")
 			render()
 		end)
-		mkSide(t("자동 진행", "Auto Play"), 0.895, Color3.fromRGB(46, 72, 69), if opts.cardOnly and AssetIds["CardArt/ui_icon_victory"] then "CardArt/ui_icon_victory" else "Menu/cc0_yes", function()
+		local autoBtn = mkSide(t("자동 진행", "Auto Play"), 0.895, Color3.fromRGB(46, 72, 69), if opts.cardOnly and AssetIds["CardArt/ui_icon_victory"] then "CardArt/ui_icon_victory" else "Menu/cc0_yes", function()
 			Sfx.play("sfx_ui_confirm", 0.5, 1, "sfx_click")
 			auto = true
 		end)
@@ -3131,8 +3132,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			-- 넓은 전투판에서는 조작 열에서 최근 전황을 펼쳐 본다.
 			local logBox = Instance.new("TextLabel")
 			logBox.Name = "BattleLog"
-			logBox.Position = UDim2.fromScale(0.78, 0.19)
-			logBox.Size = UDim2.fromScale(0.20, 0.50)
+			logBox.Position = if compactCards then UDim2.fromScale(0.39, 0.16) else UDim2.fromScale(0.78, 0.19)
+			logBox.Size = if compactCards then UDim2.fromScale(0.59, 0.52) else UDim2.fromScale(0.20, 0.50)
 			logBox.BackgroundColor3 = CardTheme.leather
 			logBox.BackgroundTransparency = 0
 			logBox.BorderSizePixel = 0
@@ -3142,15 +3143,45 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			logBox.TextWrapped = true
 			logBox.TextXAlignment = Enum.TextXAlignment.Left
 			logBox.TextYAlignment = Enum.TextYAlignment.Bottom
-			logBox.Text = ""
+			logBox.Text = t("아직 전황 기록이 없어요", "No battle events yet")
 			logBox.Parent = g
 			logBox.Visible = false
 			logBox.ZIndex = 32
-			if not compactCards then
-				mkSide(t("전황 기록", "Battle Log"), 0.83, CardTheme.leather, "Menu/codex", function()
-					logBox.Visible = not logBox.Visible
-				end)
+			local menu = Instance.new("Frame")
+			menu.Name = "BattleActions"
+			menu.AnchorPoint = Vector2.new(1, 0)
+			menu.Position = UDim2.fromScale(0.98, 0.08)
+			menu.Size = UDim2.fromOffset(if compactCards then 166 else 180, 144)
+			menu.BackgroundColor3 = CardTheme.leather
+			menu.ZIndex = 40
+			menu.Visible = false
+			menu.Parent = g
+			frameEdge(menu, brass, 6)
+			local logBtn = mkSide(t("전황 기록", "Battle Log"), 0.83, CardTheme.leather, "Menu/codex", function()
+				menu.Visible = false
+				logBox.Visible = not logBox.Visible
+			end)
+			for i, control in { logBtn, autoBtn, skip } do
+				control.Parent = menu
+				control.AnchorPoint = Vector2.zero
+				control.Position = UDim2.fromOffset(5, 5 + (i - 1) * 46)
+				control.Size = UDim2.new(1, -10, 0, 42)
+				control.ZIndex = 41
+				for _, child in control:GetDescendants() do
+					if child:IsA("GuiObject") then child.ZIndex = 42 end
+				end
 			end
+			local menuBtn = mkSide(t("메뉴", "Menu"), 0.895, CardTheme.leather, "Menu/codex", function()
+				if logBox.Visible then logBox.Visible = false; return end
+				menu.Visible = not menu.Visible
+			end)
+			menuBtn.Position = UDim2.new(0.98, if compactCards then -96 else -112, 0.012, 0)
+			menuBtn.Size = UDim2.fromOffset(if compactCards then 96 else 112, if compactCards then 40 else 44)
+			menuBtn.ZIndex = 39
+			for _, child in menuBtn:GetDescendants() do
+				if child:IsA("GuiObject") then child.ZIndex = 40 end
+			end
+			autoBtn.Activated:Connect(function() menu.Visible = false end)
 			local logPad = Instance.new("UIPadding")
 			logPad.PaddingLeft, logPad.PaddingRight, logPad.PaddingBottom = UDim.new(0, 8), UDim.new(0, 6), UDim.new(0, 6)
 			logPad.Parent = logBox
@@ -3538,7 +3569,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			mePlate.total.Text = if opts.cardOnly then t("손패 ", "Hand ") .. tostring(#m.hand.me) else tostring(myScore)
 			if opts.cardOnly then
 				battleRound.Text = t(tostring(m.round) .. "판", "Round " .. tostring(m.round))
-				battleScore.Text = tostring(myScore) .. " : " .. tostring(foeScore)
+				local score = t("나 ", "You ") .. tostring(myScore) .. " : " .. tostring(foeScore) .. t(" 상대", " Rival")
+				battleScore.Text = score
+				if displayedScore and displayedRound == m.round and displayedScore ~= score then
+					if scorePulse then scorePulse:Cancel() end
+					battleScore.TextColor3 = CardTheme.confirm
+					scorePulse = TweenService:Create(battleScore, TweenInfo.new(0.45), { TextColor3 = ink })
+					scorePulse:Play()
+				end
+				displayedScore, displayedRound = score, m.round
 				battleTurn.Text = if m.over then t("종료", "Over") elseif m.turn == "me" then t("내 차례", "Your turn") else t("상대 차례", "Enemy turn")
 				battleTurn.TextColor3 = if m.over then ink elseif m.turn == "me" then Color3.fromRGB(36, 84, 59) else Color3.fromRGB(121, 54, 42)
 			end
@@ -3617,6 +3656,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					tag.TextSize = 11
 					tag.TextWrapped = true
 				end
+				if opts.cardOnly and m.weather[row] then tag.Text = "🌦️ " .. tag.Text end
 				tag.TextXAlignment = Enum.TextXAlignment.Left
 				tag.TextColor3 = if adv and not dis then Color3.fromRGB(150, 235, 150) elseif dis and not adv then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(246, 208, 130)
 				local cards = if opts.cardOnly then Instance.new("ScrollingFrame") else Instance.new("Frame")
@@ -3927,10 +3967,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 			end
 			passBtn.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
+			if opts.cardOnly then
+				passBtn.Interactable = m.turn == "me" and not m.over and not m.passed.me and not auto
+			end
 			do
 				local left = if m.round == 1 and (m.played.me or 0) == 0 then (m.mulligan and m.mulligan.me or 0) else 0
 				mullBtn.Caption.Text = if left > 0 then t(string.format("손패 교체 (%d)", left), string.format("Swap Card (%d)", left)) else t("손패 교체 (끝)", "Swap Card (done)")
 				mullBtn.BackgroundTransparency = if left > 0 then 0 else 0.6
+				if opts.cardOnly then mullBtn.Visible = left > 0 and m.turn == "me" and not m.over and not auto end
 			end
 			leaderBtn.Caption.Text = if opts.cardOnly then
 				(if m.leaderUsed.me then t("지도자 카드 (사용함)", "Leader Card (Used)")
