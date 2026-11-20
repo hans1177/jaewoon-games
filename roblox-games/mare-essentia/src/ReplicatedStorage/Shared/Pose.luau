@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau
 -- 뼈대가 있는 사람 모델의 T자 자세를 풀어 팔을 내린다 (클라이언트 전용).
 -- 팔 방향을 월드 좌표로 계산해서, 뼈의 로컬 축 방향과 상관없이 아래쪽으로 돌린다.
 
@@ -309,6 +310,10 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	local jacket = coat or coats[role] or Color3.fromRGB(140, 108, 80)
 	for _, descendant in model:GetDescendants() do
 		if descendant:IsA("BasePart") then
+			-- [원본 R15 재질] 빈 HumanoidDescription에서 복제한 기본 바디의
+			-- 기본 텍스처가 피부·직업별 옷 색상을 하얗게 덮지 않게 한다.
+			-- 아래에서 부착하는 승인 People 메시/PBR 텍스처는 건드리지 않는다.
+			if descendant:IsA("MeshPart") then descendant.TextureID = "" end
 			descendant.Anchored = descendant == root
 			descendant.CanCollide = false
 			descendant.CanTouch = false
