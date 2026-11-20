@@ -408,3 +408,16 @@ test('Vibe2 main push rechecks executable department learning imports after thei
   const pushScope=core.slice(core.indexOf('  push:'),core.indexOf('\npermissions:'));
   assert.ok(pushScope.includes("- 'tools/department-learning-memory.mjs'"));
 });
+
+// [에셋 병목 회귀] 무료 Blender 설치만 안정화하고 기존 실제 DCC 검증은 삭제하지 않는다.
+test('Vibe2 native DCC setup stays free and has enough installation time without skipping verification',()=>{
+  const start=core.indexOf('      - name: Prepare declared native DCC authoring runtime');
+  const end=core.indexOf('      - name: Run isolated learning practice',start);
+  assert.ok(start>=0&&end>start,'VIBE2_CANONICAL_NATIVE_DCC_STEPS_REQUIRED');
+  const scope=core.slice(start,end);
+  assert.match(scope,/timeout-minutes: 12/);
+  assert.match(scope,/sudo apt-get install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri/);
+  assert.match(scope,/node --input-type=module/);
+  assert.ok(scope.includes('executeDeclaredNativeDccAuthoringVerification({cwd:root,order})'));
+  assert.ok(scope.includes("NATIVE_DCC_AUTHORING_EXECUTION_REQUIRED"));
+});
