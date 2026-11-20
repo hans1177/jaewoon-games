@@ -3602,6 +3602,8 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
         '--cinematic-style',cinematicStyle,'--cinematic-quality',cinematicQuality]:[])],
     outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/master.glb`,
       `${outputRoot}/preview.png`,`${outputRoot}/preview-master.png`,
+      // [블렌더 생성물] 실루엣 PNG도 원래 제작기가 항상 출력한다. 검증 복원/Work Lock 범위에 포함한다.
+      `${outputRoot}/preview-silhouette.png`,
       `${outputRoot}/application.json`,`${outputRoot}/evidence.json`,
       ...(spriteAtlas?[`${outputRoot}/sprite-atlas.png`]:[]),
       ...(renderedViews?[0,90,180,270].map(angle=>`${outputRoot}/preview-angle-${String(angle).padStart(3,'0')}.png`):[]),
