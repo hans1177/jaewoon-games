@@ -5847,6 +5847,8 @@ function PortScene.build(info, onFacility)
 					-- [접지 보행] 몸 전체를 뒤집지 않고 실제 전진 거리로 작은 체중 이동만 준다.
 					local step = w.travelPhase
 					local bob = if moving then math.abs(math.sin(step)) * (if w.akind == "peck" then 0.025 else 0.042)
+						elseif action == "peck" then math.sin(t * 5) * 0.009
+						elseif action == "shake" then math.sin(t * 9) * 0.013
 						else math.sin(t * 1.3) * 0.009
 					local pivot = w.base * CFrame.new(0, w.groundOffset + bob, d) * CFrame.Angles(0, w.hd, 0)
 					w.model:PivotTo(pivot)
@@ -5856,38 +5858,76 @@ function PortScene.build(info, onFacility)
 						local swing = if moving then (if w.animalType == "horse" or w.animalType == "donkey" then 0.26
 							elseif w.animalType == "dog" or w.animalType == "cat" then 0.30 else 0.20)
 							* math.clamp(speed / 2.5, 0.20, 1) else 0
-						local nod = if action == "graze" or action == "drink" then 0.22 + math.sin(t * 1.5) * 0.08
+						local nod = if moving then math.sin(step * 2 + 0.4) * 0.035
+							elseif action == "graze" or action == "drink" then 0.22 + math.sin(t * 1.5) * 0.08
 							elseif action == "peck" then 0.17 + math.max(0, math.sin(t * 5)) * 0.16
 							elseif action == "sniff" then 0.14 + math.sin(t * 3) * 0.06
 							elseif action == "chew" then math.sin(t * 2.3) * 0.065
+							elseif action == "shake" then math.sin(t * 9) * 0.12
+							elseif action == "stretch" then -0.14 + math.sin(t * 0.75) * 0.04
 							elseif action == "preen" or action == "groom" then -0.10
 							elseif action == "rest" then -0.05 else math.sin(t * 0.9) * 0.045
-						local headYaw = if action == "look" then math.sin(t * 0.8) * 0.20 else math.sin(t * 0.42) * 0.055
+						local headYaw = if action == "shake" then math.sin(t * 9) * 0.14
+							elseif action == "look" then math.sin(t * 0.8) * 0.20 else math.sin(t * 0.42) * 0.055
 						local wag = if action == "wag" or action == "walk" then math.sin(t * (w.gait or 7)) * 0.30
 							else math.sin(t * 1.4) * 0.08
 						local blend = 1 - math.exp(-11 * dt)
 						for _, limb in w.animalJoints do
-							local pitch, yaw, roll = 0, 0, 0
-							if limb.kind == "leg" then pitch = math.sin(step + limb.phase) * swing
+							local pitch, yaw, roll, footLift = 0, 0, 0, 0
+							if limb.kind == "leg" then
+								-- [발 접지] 60% 지지·40% 들어 올림. 코사인 완화로 발끝 방향과 착지 충격을 부드럽게 이어준다.
+								local gait = ((step + limb.phase) % (math.pi * 2)) / (math.pi * 2)
+								if moving then
+									local stance = 0.6
+									pitch = (if gait < stance then math.cos(gait / stance * math.pi)
+										else -math.cos((gait - stance) / (1 - stance) * math.pi)) * swing
+									if gait >= stance then
+										footLift = math.sin((gait - stance) / (1 - stance) * math.pi)
+											* (if w.animalType == "horse" or w.animalType == "dog" then 0.09 else 0.055)
+									end
+								elseif action == "scratch" then
+									pitch = (if limb.side > 0 then 0.23 + math.sin(t * 6.5) * 0.17 else 0)
+									footLift = if limb.side > 0 then 0.035 else 0
+								elseif action == "stretch" then
+									pitch = math.sin(t * 0.7 + limb.phase) * 0.095
+								end
 							elseif limb.kind == "head" then pitch, yaw = nod, headYaw
 							elseif limb.kind == "tail" or limb.kind == "trunk" then yaw = wag * limb.side
 							elseif limb.kind == "ear" then roll = math.sin(t * 2.1) * 0.07 * limb.side
 							elseif limb.kind == "wing" then roll = if action == "preen" or action == "shake"
 							then math.sin(t * 5) * 0.15 * limb.side else 0
 							end
-							limb.pose = (limb.pose or CFrame.identity):Lerp(CFrame.Angles(pitch, yaw, roll), blend)
+							limb.pose = (limb.pose or CFrame.identity):Lerp(
+								CFrame.new(0, footLift, 0) * CFrame.Angles(pitch, yaw, roll), blend)
 							limb.joint.Transform = limb.base * limb.pose
 						end
 						for _, limb in w.animalParts do
-							local pitch, yaw, roll = 0, 0, 0
-							if limb.kind == "leg" then pitch = math.sin(step + limb.phase) * swing
+							local pitch, yaw, roll, footLift = 0, 0, 0, 0
+							if limb.kind == "leg" then
+								-- [발 접지] 60% 지지·40% 들어 올림. 코사인 완화로 발끝 방향과 착지 충격을 부드럽게 이어준다.
+								local gait = ((step + limb.phase) % (math.pi * 2)) / (math.pi * 2)
+								if moving then
+									local stance = 0.6
+									pitch = (if gait < stance then math.cos(gait / stance * math.pi)
+										else -math.cos((gait - stance) / (1 - stance) * math.pi)) * swing
+									if gait >= stance then
+										footLift = math.sin((gait - stance) / (1 - stance) * math.pi)
+											* (if w.animalType == "horse" or w.animalType == "dog" then 0.09 else 0.055)
+									end
+								elseif action == "scratch" then
+									pitch = (if limb.side > 0 then 0.23 + math.sin(t * 6.5) * 0.17 else 0)
+									footLift = if limb.side > 0 then 0.035 else 0
+								elseif action == "stretch" then
+									pitch = math.sin(t * 0.7 + limb.phase) * 0.095
+								end
 							elseif limb.kind == "head" then pitch, yaw = nod, headYaw
 							elseif limb.kind == "tail" or limb.kind == "trunk" then yaw = wag * limb.side
 							elseif limb.kind == "ear" then roll = math.sin(t * 2.1) * 0.07 * limb.side
 							elseif limb.kind == "wing" then roll = if action == "preen" or action == "shake"
 							then math.sin(t * 5) * 0.15 * limb.side else 0
 							end
-							limb.pose = (limb.pose or CFrame.identity):Lerp(CFrame.Angles(pitch, yaw, roll), blend)
+							limb.pose = (limb.pose or CFrame.identity):Lerp(
+								CFrame.new(0, footLift, 0) * CFrame.Angles(pitch, yaw, roll), blend)
 							-- 별도 메시의 윗부분을 축으로 돌려 발·고개·꼬리가 몸체에서 뜨지 않게 한다.
 							limb.part.CFrame = pivot * limb.base * CFrame.new(0, limb.hinge, 0)
 								* limb.pose * CFrame.new(0, -limb.hinge, 0)
