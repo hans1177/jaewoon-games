@@ -1210,6 +1210,28 @@ function Pose.work(model, kind, t, moving)
 	if UserInputService.TouchEnabled and model:GetAttribute("NpcAssetProfile") then
 		Pose.applyRegisteredMobOutfit(model, true)
 	end
+	-- [관절 모션 전환] 실제 마지막 화면 자세에서 시작한다. 오래된 직업 자세로 되돌아가는 튐을 제거한다.
+	local now = os.clock()
+	local st = workSmooth[model]
+	if not st then
+		st = { at = now, prev = {} }
+		workSmooth[model] = st
+	end
+	local interval = now - st.at
+	local changing = st.kind ~= kind or st.moving ~= (moving == true) or interval > 0.3
+	if changing then
+		for _, joint in m do
+			if joint and (joint:IsA("Motor6D") or joint:IsA("AnimationConstraint")) then
+				st.prev[joint] = joint.Transform
+			end
+		end
+	end
+	st.kind = kind
+	st.moving = moving == true
+	st.at = now
+	local dt = math.clamp(interval, 0, 1 / 20)
+	-- [보행 관절 보호] 이번 작업 모션에서 건드린 관절만 보간해 걷는 팔·발이 끌리지 않도록 한다.
+	local touched = {}
 	local function set(motor, cf)
 		if not motor then return end
 		if motor == m.leftArm or motor == m.rightArm then
@@ -1226,6 +1248,7 @@ function Pose.work(model, kind, t, moving)
 			cf = CFrame.Angles(-pitch, yaw, roll)
 		end
 		motor.Transform = cf
+		touched[motor] = true
 	end
 	local A = CFrame.Angles
 	-- [주민 동작 전환] 정지 자세만 초기화한다. 이동 중에는 보행의 반대 팔·접지 관절을 유지한다.
@@ -1772,13 +1795,18 @@ function Pose.work(model, kind, t, moving)
 	-- [이동-발걸음 동기화] 이동 중에는 초 단위 흔들림을 더하지 않고 거리 기반 체중 이동만 사용한다.
 	if not moving and m.root and kind ~= "sit" and kind ~= "fish" then
 		m.root.Transform = m.root.Transform * CFrame.new(0, math.sin(t * 1.9) * 0.05, 0) * CFrame.Angles(0, math.sin(t * 0.7) * 0.05, math.sin(t * 0.8) * 0.035)
+		touched[m.root] = true
 	end
 	if m.neck and kind ~= "look" and kind ~= "stoop" and kind ~= "carry" then
 		m.neck.Transform = m.neck.Transform * CFrame.Angles(math.sin(t * 0.6) * 0.06, math.sin(t * 0.45) * 0.22, 0)
+		touched[m.neck] = true
 	end
 	-- 온몸 거들기: 팔만 움직이지 않고 무릎·허리·체중도 일에 맞춰 같이 움직인다(더해서 곱한다)
 	local function add(motor, cf)
-		if motor then motor.Transform = motor.Transform * cf end
+		if motor then
+			motor.Transform = motor.Transform * cf
+			touched[motor] = true
+		end
 	end
 	local A = CFrame.Angles
 	local standing = not moving and kind ~= "sit" and kind ~= "fish" and kind ~= "carry" and kind ~= "look" and kind ~= "stoop"
@@ -1807,27 +1835,26 @@ function Pose.work(model, kind, t, moving)
 		add(m.root, CFrame.new(w * 0.05, 0, 0))
 		add(m.waist, A(0, 0, -w * 0.025))
 	end
-	-- 모든 관절을 이전 프레임에서 현재 목표로 부드럽게 잇는다(일이 바뀌거나 사인파가 끊기는 곳의 툭툭 끊김 방지)
-	local now = os.clock()
-	local st = workSmooth[model]
-	if not st then
-		st = { at = now, prev = {} }
-		workSmooth[model] = st
-	end
-	-- [프레임 독립 보간] 갱신이 잠시 중단돼도 이전 자세에서 순간 이동하지 않도록
-	-- 한 프레임의 보간 최대 간격을 제한한다. 30/60fps 모두 동일한 전환 속도를 유지한다.
-	local dt = math.clamp(now - st.at, 0, 1 / 20)
-	st.at = now
-	local alpha = 1 - math.exp(-16 * dt)
+	-- [관절별 감쇠] 큰 각도 변화는 회전 속도를 제한하고, 작은 변위는 프레임 독립 지수보간한다.
+	-- 시선은 천천히, 팔과 무릎은 빠르게 반응하며 보행 중 발목·무릎은 원래 접지 주기를 보존한다.
 	for _, joint in m do
 		if joint and (joint:IsA("Motor6D") or joint:IsA("AnimationConstraint")) then
 			local prev = st.prev[joint]
 			local target = joint.Transform
-			-- [보행 보존] 작업 상체 보간이 이전 제자리 자세를 하체 보행에 덮어쓰지 않도록 한다.
 			local gaitJoint = moving and (joint == m.leftLeg or joint == m.rightLeg
 				or joint == m.leftKnee or joint == m.rightKnee
 				or joint == m.leftAnkle or joint == m.rightAnkle)
-			if prev and not gaitJoint then
+			if prev and not gaitJoint and (not moving or touched[joint]) then
+				local head = joint == m.neck
+				local body = joint == m.waist or joint == m.root
+				local rate = if head then 9 elseif body then 11
+					elseif joint == m.leftArm or joint == m.rightArm then 15 else 14
+				local maxTurnPerSecond = if head then 4.5 elseif body then 5.5 else 9
+				local alpha = 1 - math.exp(-rate * dt)
+				local _, angle = (prev:ToObjectSpace(target)):ToAxisAngle()
+				if math.abs(angle) > 0.0001 then
+					alpha = math.min(alpha, maxTurnPerSecond * dt / math.abs(angle))
+				end
 				target = prev:Lerp(target, alpha)
 				joint.Transform = target
 			end
@@ -1915,11 +1942,20 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 	if not blend then
 		blend = { state = state, applied = {} }
 		r15ActionBlends[model] = blend
-	elseif blend.state ~= state then
-		-- 이전 프레임의 실제 관절 자세에서 새 동작으로 부드럽게 이어진다.
-		blend.from = table.clone(blend.applied)
+	end
+	if blend.state ~= state or not blend.initialized then
+		-- [일·보행 연속성] 이전 액션 캐시가 아닌 현재 실제 관절 자세를 기준으로 전환한다.
+		-- 직전 프레임에 작업 모션이 겹쳐도 팔과 발목이 과거 자세로 되튀지 않는다.
+		local from = {}
+		for _, joint in m do
+			if joint and (joint:IsA("Motor6D") or joint:IsA("AnimationConstraint")) then
+				from[joint] = joint.Transform
+			end
+		end
+		blend.from = from
 		blend.changedAt = blendTime
 		blend.state = state
+		blend.initialized = true
 	end
 	-- [R15 회전 고도화] 이동 방향을 바꾸면 시선·가슴·발이 몸보다 조금 늦게 따라온다.
 	local facing = model:GetPivot().LookVector
