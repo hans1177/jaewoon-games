@@ -3782,14 +3782,15 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				m:SetAttribute("Job", job)
 				m:SetAttribute("Workplace", d.kind)
 				local w = { model = m, base = m:GetPivot(), kind = kind, mode = mode, phase = rng:NextNumber(0, 10) }
+				-- [구역별 교대근무] 정지/이동 근로자 모두 동일한 직업별 근무표를 따른다.
+				w.districtDuty = true
+				w.shiftStart = (if job == "farmer" then 5 elseif job == "merchant" then 7 else 6) + rng:NextNumber(-0.4, 0.4)
+				w.shiftEnd = (if job == "farmer" then 18 elseif job == "merchant" then 20 else 21) + rng:NextNumber(-0.4, 0.4)
 				if mode == "path" then
-					-- [구역별 교대 근무] 기존 직선 왕복 동선을 쓰며 시장·농장·사원 근무 시간을 달리한다.
 					w.len = spec.len
 					w.speed = rng:NextNumber(1.2, 1.9)
 					w.idleKind = spec.idle
 					w.districtJob = job
-					w.shiftStart = (if job == "farmer" then 5 elseif job == "merchant" then 7 else 6) + rng:NextNumber(-0.4, 0.4)
-					w.shiftEnd = (if job == "farmer" then 18 elseif job == "merchant" then 20 else 21) + rng:NextNumber(-0.4, 0.4)
 				else
 					w.job = job
 					w.workKinds, w.tradeKinds, w.leisureKinds = activity, activity, leisure
@@ -6143,28 +6144,30 @@ function PortScene.build(info, onFacility)
 						local night = hour >= 22 or hour < 5
 						local watching = w.royalDuty and w.nightKinds and (hour >= 19 or hour < 6)
 						local royalDay = w.royalDuty and hour >= 6 and hour < 19
+						-- [영업 종료] 고정 시설 직원도 영업시간 이후엔 업무 모션을 멈춘다.
+						local offShift = w.districtDuty and (hour < (w.shiftStart or 6) or hour >= (w.shiftEnd or 20))
 						local nightWorker = w.job == "guard" or w.job == "sailor" or w.job == "royal_guard"
 						local period = math.floor((now + w.phase * 2.1) / (w.activitySpan or 16))
 						local nightRoster = if nightWorker then NIGHT_DUTY else NIGHT_REST
-						local roster = if watching then w.nightKinds elseif night then nightRoster
+						local roster = if offShift then NIGHT_REST elseif watching then w.nightKinds elseif night then nightRoster
 							elseif royalDay or morning then w.workKinds
 							elseif trading then w.tradeKinds or w.workKinds else w.leisureKinds
 						kind = roster[((period + (w.personality or 0)) % #roster) + 1]
 						local pulse = (now + w.phase * 3.7) % (w.socialSpan or 39)
-						if not watching and not night and pulse < 3 and kind ~= "sit" then
+						if not watching and not night and not offShift and pulse < 3 and kind ~= "sit" then
 							kind = if morning then "stretch" elseif trading then "inspect" else "look"
 						end
 						-- 인접 주민끼리만 교환 손짓. 경제·재고·저장·실제 관계 판정에는 미관여.
-						if partner and partner.model.Parent and not watching and not night
+						if partner and partner.model.Parent and not watching and not night and not offShift
 							and (trading or not morning) and pulse >= 3 and pulse < 9 then
 							local speaker = p0.X < partner.base.Position.X
 							kind = if trading then (if speaker then "offer" else "receive")
 								else (if speaker then "gossip" else "listen")
-						elseif nearGuest and (w.job == "merchant" or w.job == "guard" or w.job == "official")
+						elseif nearGuest and not offShift and (w.job == "merchant" or w.job == "guard" or w.job == "official")
 							and pulse >= 9 and pulse < 11 then
 							kind = if w.job == "guard" then "salute" else "guide"
 						end
-						local routine = if watching then "night_watch"
+						local routine = if offShift then "rest" elseif watching then "night_watch"
 							elseif night then (if nightWorker then "night_watch" else "rest")
 							elseif royalDay or morning then "work" elseif trading then "trade" else "leisure"
 						if w.lastRoutine ~= routine then
@@ -7156,18 +7159,21 @@ function PortScene.build(info, onFacility)
 						break
 					end
 				elseif scheduled then
+					-- [집-직장-시장-여가-집] 주거 경유지까지 한 번에 장애물 검사·위치 보정한다.
+					local home = (walker.home or walker.morning) + offset
 					local morning, market, evening = walker.morning + offset, walker.market + offset, walker.evening + offset
 					local function clearSegment(a, b)
 						local step = b - a
 						return step.Magnitude < 0.01 or not blocked(CFrame.lookAt(a, b), step.Magnitude, walker.model)
 					end
-					if not blocked(CFrame.new(morning), 0, walker.model)
+					if not blocked(CFrame.new(home), 0, walker.model)
+						and not blocked(CFrame.new(morning), 0, walker.model)
 						and not blocked(CFrame.new(market), 0, walker.model)
 						and not blocked(CFrame.new(evening), 0, walker.model)
-						and clearSegment(morning, market) and clearSegment(market, evening)
-						and clearSegment(evening, morning) then
+						and clearSegment(home, morning) and clearSegment(morning, market)
+						and clearSegment(market, evening) and clearSegment(evening, home) then
 						safe = candidate
-						walker.morning, walker.market, walker.evening = morning, market, evening
+						walker.home, walker.morning, walker.market, walker.evening = home, morning, market, evening
 						break
 					end
 				elseif not blocked(candidate, if moving then walker.len else 0, walker.model) then
