@@ -46,7 +46,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: company-dna-learning
+  # PRs only validate candidate memory; the main writer keeps its original shared serialization.
+  group: ${{ github.event_name == 'pull_request' && format('company-dna-learning-pr-{0}', github.event.pull_request.number) || 'company-dna-learning' }}
   cancel-in-progress: false
 
 jobs:
