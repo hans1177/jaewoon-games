@@ -193,23 +193,53 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
           found.set('CLIENT_DATASTORE_SERVICE',{code:'CLIENT_DATASTORE_SERVICE',line:sourceLineAt(match.index)});
       }
     }
-    // [프레임 예산] 이미 연결된 RunService 콜백에서 원격 요청·추가 연결이
-    // 매 프레임 반복되는 경우만 정적 검토 대상으로 지정한다. 게임 코드는 수정하지 않는다.
-    // 주석·문자열은 제거된 activeSource를 사용하고, 닫힌 콜백 밖의 호출은 포함하지 않는다.
-    for(const callback of activeSource.matchAll(/\b(?:Heartbeat|RenderStepped|Stepped)\s*:\s*Connect\s*\(\s*function\s*\([^)]*\)/g)){
+    // [프레임 성능] 기존 Luau 정적검사 안에서 실제 프레임 콜백의 종료 범위를 추적한다.
+    // 첫 end)로 자르면 중첩된 함수·if 뒤의 호출을 누락하므로 블록 스택으로 짝을 맞춘다.
+    // 복잡하거나 불완전한 범위는 안전 판정 대신 검토 생략한다. 실제 런타임 PASS가 아니다.
+    let checkedFrameCallbacks=0;
+    for(const callback of activeSource.matchAll(/\b(?:Heartbeat|RenderStepped|Stepped|PreRender|PreSimulation|PostSimulation)\s*:\s*Connect\s*\(\s*function\s*\([^)]*\)/g)){
+      if(++checkedFrameCallbacks>24)break;
       const start=callback.index+callback[0].length;
-      const tail=activeSource.slice(start,start+1600);
-      const close=tail.search(/\bend\s*\)/);
-      if(close<0)continue; // 불완전한 정적 범위로 성급히 경고하지 않는다.
-      const body=tail.slice(0,close);
-      const request=/\b[A-Za-z_]\w*\s*:\s*(?:FireServer|InvokeServer)\s*\(/.exec(body);
-      if(request&&!found.has('FRAME_REMOTE_REQUEST'))
-        found.set('FRAME_REMOTE_REQUEST',{code:'FRAME_REMOTE_REQUEST',line:sourceLineAt(start+request.index)});
+      const frameSource=activeSource.slice(start,start+4096);
+      const blocks=['function'];
+      let pendingLoopHeaders=0,close=-1,invalid=false;
+      for(const token of frameSource.matchAll(/\b(?:function|if|for|while|repeat|do|end|until)\b/g)){
+        const word=token[0];
+        if(word==='function'||word==='if'||word==='repeat')blocks.push(word);
+        else if(word==='for'||word==='while'){
+          blocks.push(word);
+          pendingLoopHeaders++;
+        }else if(word==='do'){
+          if(pendingLoopHeaders>0)pendingLoopHeaders--;
+          else blocks.push('do');
+        }else if(word==='until'){
+          if(blocks.at(-1)!=='repeat'){invalid=true;break;}
+          blocks.pop();
+        }else if(word==='end'){
+          if(!blocks.length||blocks.at(-1)==='repeat'){invalid=true;break;}
+          blocks.pop();
+          if(!blocks.length){close=token.index;break;}
+        }
+      }
+      if(invalid||close<0||!/^\s*\)/.test(activeSource.slice(start+close+3,start+close+24)))continue;
+      const body=frameSource.slice(0,close);
+      // [클라이언트 네트워크] 요청·발행 권한을 변경하지 않고 매 프레임 호출만 경고한다.
+      const remote=side==='CLIENT'
+        ?/\b[A-Za-z_]\w*\s*:\s*(?:FireServer|InvokeServer)\s*\(/.exec(body):null;
+      if(remote&&!found.has('FRAME_REMOTE_REQUEST'))
+        found.set('FRAME_REMOTE_REQUEST',{code:'FRAME_REMOTE_REQUEST',line:sourceLineAt(start+remote.index)});
+      // [서버 네트워크] FireClient/FireAllClients/InvokeClient 과다 호출 역시 감지한다.
+      const broadcast=side==='SERVER'
+        ?/\b[A-Za-z_]\w*\s*:\s*(?:FireClient|FireAllClients|InvokeClient)\s*\(/.exec(body):null;
+      if(broadcast&&!found.has('FRAME_SERVER_BROADCAST'))
+        found.set('FRAME_SERVER_BROADCAST',{code:'FRAME_SERVER_BROADCAST',line:sourceLineAt(start+broadcast.index)});
+      // [연결 누수] 프레임 콜백 안에서 매번 새 연결을 구독하는 패턴.
       const connection=/\b[A-Za-z_]\w*(?:\s*\.\s*[A-Za-z_]\w*)?\s*:\s*Connect\s*\(/.exec(body);
       if(connection&&!found.has('FRAME_CONNECTION_ACCUMULATION'))
         found.set('FRAME_CONNECTION_ACCUMULATION',{
           code:'FRAME_CONNECTION_ACCUMULATION',line:sourceLineAt(start+connection.index)});
-      if(found.has('FRAME_REMOTE_REQUEST')&&found.has('FRAME_CONNECTION_ACCUMULATION'))break;
+      if(found.has('FRAME_REMOTE_REQUEST')&&found.has('FRAME_SERVER_BROADCAST')
+        &&found.has('FRAME_CONNECTION_ACCUMULATION'))break;
     }
     // [전체 함수 영향] 26만 자의 검증된 상한 안에서 4천 줄 이후 의존성도 확인한다.
     // 저장되는 함수 선언·호출 수의 기존 48/64개 제한과 읽기 전용 성격은 유지한다.
@@ -282,7 +312,8 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       status:definitions.length===1?'POTENTIAL_SAME_FILE_FUNCTION':'AMBIGUOUS_SAME_FILE_FUNCTION',
       runtimeVerified:false}];
   })).slice(0,160);
-  const priority=code=>/CLIENT|REMOTE|DATASTORE|SAVE/i.test(code)?3
+  const priority=code=>/^FRAME_/.test(code)?3
+    :/CLIENT|REMOTE|DATASTORE|SAVE/i.test(code)?3
     :/COMBAT|DAMAGE|BUILD|INVENTORY|BESTIARY/i.test(code)?2:1;
   const priorityFindings=[
     ...diagnostics.filter(row=>row.responsible).map(row=>({
