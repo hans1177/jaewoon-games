@@ -3751,29 +3751,59 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					end
 				end
 			end
-			-- 구역별 주민: 하는 일이 다르다 (광장에만 몰려 있지 않게)
+			-- [시설 이용 주민] 각 구역을 실제 근무처로 연결한다. 가짜 경제 인원·저장·고용 생성은 하지 않는다.
+			local job = if d.kind == "religious" then "clergy" elseif d.kind == "market" then "merchant" else "farmer"
+			local employed = if districtJobs then math.max(0, math.floor(tonumber(districtJobs[job]) or 0)) else 2 + lvl
+			local buildingCount = if districtBuildings then math.max(0,
+				math.floor(tonumber(districtBuildings[if d.kind == "religious" then "school"
+					elseif d.kind == "market" then "market" else "farm"]) or 0)) else lvl
+			local workersLimit = math.min(employed, if districtTouch then 3 else 5,
+				if buildingCount > 0 then 1 + math.floor(math.sqrt(buildingCount)) else 0)
+			local districtResidents = 0
+			local activity = if d.kind == "religious" then { "pray", "read", "bell", "bless" }
+				elseif d.kind == "market" then { "stall", "weigh", "offer", "receive", "count" }
+				else { "hoe", "harvest", "sow", "water", "inspect" }
+			local leisure = if d.kind == "religious" then { "listen", "talk", "look" }
+				elseif d.kind == "market" then { "talk", "bargain", "gossip" }
+				else { "stretch", "drink", "gossip" }
 			local function npc(dx, dz, yaw, kind, mode, spec)
-				local m = villager(folder, Vector3.new(cx + dx, 0, cz + dz), yaw, Color3.fromRGB(rng:NextInteger(60, 190), rng:NextInteger(60, 150), rng:NextInteger(40, 130)), rng, spec and spec.role or "Rogue", false, spec and spec.extra)
+				if districtResidents >= workersLimit then return end
+				local outfit = if spec and spec.extra then table.clone(spec.extra) else {}
+				outfit.profession, outfit.year = job, info.year or currentYear
+				outfit.female = districtResidents % 2 == 1
+				outfit.persona = (districtResidents % 3) + 1
+				local m = villager(folder, Vector3.new(cx + dx, 0, cz + dz), yaw,
+					Color3.fromRGB(rng:NextInteger(60, 190), rng:NextInteger(60, 150), rng:NextInteger(40, 130)),
+					rng, spec and spec.role or "Rogue", false, outfit)
 				if not m then return end
+				districtResidents += 1
+				m:SetAttribute("Job", job)
+				m:SetAttribute("Workplace", d.kind)
 				local w = { model = m, base = m:GetPivot(), kind = kind, mode = mode, phase = rng:NextNumber(0, 10) }
 				if mode == "path" then
 					w.len = spec.len
 					w.speed = rng:NextNumber(1.2, 1.9)
 					w.idleKind = spec.idle
+				else
+					w.job = job
+					w.workKinds, w.tradeKinds, w.leisureKinds = activity, activity, leisure
+					w.activitySpan = rng:NextNumber(9, 19)
+					w.socialSpan = rng:NextNumber(30, 46)
+					w.personality = rng:NextInteger(0, 4)
 				end
 				table.insert(walkers, w)
 			end
 			if d.kind == "religious" then
 				local doorZ = if cz > 0 then -19 else 19
-				npc(-4, doorZ, face, "bell", "stay", { role = "Knight" })
-				npc(5, doorZ, face + math.pi, "talk", "stay", { role = "Rogue" })
-				npc(-22, doorZ, -math.pi / 2, nil, "path", { role = "Rogue", len = 22, idle = "look" })
+				npc(-4, doorZ, face, "bell", "stay", { role = "Mage" })
+				npc(5, doorZ, face + math.pi, "pray", "stay", { role = "Mage" })
+				npc(-22, doorZ, -math.pi / 2, "look", "path", { role = "Rogue", len = 22, idle = "look" })
 			elseif d.kind == "market" then
 				for k = -2, 2, 2 do
-					npc(k * 8, (if cz > 0 then -11 else 11), face + math.pi, "stall", "stay", { role = "Barbarian" })
+					npc(k * 8, (if cz > 0 then -11 else 11), face + math.pi, "stall", "stay", { role = "Rogue" })
 				end
 				npc(-18, 0, -math.pi / 2, "carry", "path", { role = "Rogue", len = 36, idle = "talk" })
-				npc(18, 3, math.pi / 2, nil, "path", { role = "Rogue", len = 30, idle = "look" })
+				npc(18, 3, math.pi / 2, "look", "path", { role = "Rogue", len = 30, idle = "look" })
 			else
 				for k = -1, 1 do
 					npc(k * 10 - 2, k * 7, face, "hoe", "stay", { role = "Barbarian", extra = { hat = "straw" } })
