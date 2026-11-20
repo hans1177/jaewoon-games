@@ -135,6 +135,9 @@ export async function askLocalWebModel({ messages, fetchImpl = fetch, signal = A
 }
 
 export function buildExistingOwnerWebDispatch({gameId, goal, root = ROOT, uuid = randomUUID()} = {}) {
+  // [오너 2026-11-20] 기존 웹게임 제작 접수를 중단한다. 읽기 전용 대화는 유지.
+  const policy=JSON.parse(fs.readFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),'utf8'));
+  if(policy?.localVibeWebChat?.webGameAuthoringEnabled===false)throw new Error('LOCAL_WEB_OWNER_GAME_AUTHORING_STOPPED');
   const body = clean(goal);
   const selected = readApprovedWebGame(gameId, root);
   const catalog = JSON.parse(fs.readFileSync(path.join(root, 'game-catalog.json'), 'utf8'));
