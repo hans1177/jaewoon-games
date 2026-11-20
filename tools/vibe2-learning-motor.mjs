@@ -486,6 +486,23 @@ export function applyVerifiedKnowledgeOutcomes(stateInput={},queueInput={}){
     if(!outcome)continue;
     const refs=knowledgeRefsFromEvidence(evidence);if(!refs.length)continue;
     const gameId=clean(task.gameId)||'unknown',target=lower(task.target)||'unknown';
+    // [네이티브 자가 발전] 정적 코딩·리뷰 PASS만으로 자산·플랫폼 노하우를 성공 학습하지 않는다.
+    // 동일 엔진의 실행 증거를 확인한 후에만 기존 지식 귀속·프로덕션 신뢰도를 갱신한다.
+    const nativeDomains=nativeDomainsForEngine(target);
+    if(outcome==='PASS'&&nativeDomains){
+      const taskDomains=inferDomains(clean(task.goal),target);
+      const assetDomain=taskDomains.includes('ASSET_PRODUCTION')?'ASSET_PRODUCTION'
+        :taskDomains.includes('ASSET_ADAPTATION')?'ASSET_ADAPTATION':null;
+      const nativeDomain=assetDomain||[...nativeDomains][0];
+      if(!nativePositiveMasteryAllowed({
+        engine:target,evidence,
+        cloudRuntimeVerified:task?.cloudRuntimeVerified===true,
+        cloudAssetRuntimeBindingPassed:task?.cloudAssetRuntimeBindingPassed===true,
+        engineQaVerified:task?.engineQaVerified===true,
+        nativeRuntimeVerified:task?.nativeRuntimeVerified===true,
+        runtimeVerified:task?.runtimeVerified===true
+      },nativeDomain))continue;
+    }
     const run=evidence.find(x=>x.startsWith('actions-run:'))||evidence.filter(x=>x.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
     const eventId='knowledge_'+hash([clean(task.id),run,outcome,refs.join(',')].join('|'));
     if(seen.has(eventId))continue;
