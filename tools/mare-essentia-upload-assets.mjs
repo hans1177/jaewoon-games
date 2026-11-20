@@ -7,6 +7,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
+import {prepareCharacterFinishes} from './mare-essentia-character-finish.mjs';
 
 const UNIVERSE_ID = process.env.MARE_UNIVERSE_ID || '10775310508';
 const ROOT = 'roblox-games/mare-essentia';
@@ -1156,6 +1157,8 @@ for (const k of Object.keys(cardApprovalDocument.approved || {})) {
   approvedCardNames.add(k.slice(8) + '.jpg');
   if (k.startsWith('CardArt/ui_')) approvedCardNames.add(k.slice(8) + '.png');
 }
+// [기존 원본 등록기] 캐릭터 26종의 GLB UV/PBR 맵과 해시를 등록 전에 직접 제작·검증한다.
+if (!studioRegrantPath) await prepareCharacterFinishes(ROOT);
 if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['animals', 'Animals'], ['monsters', 'Monsters'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits'], ['cardart', 'CardArt'], ['materials', 'Materials']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     // [원본 리그] 메시 없는 관절계층 GLB는 제작용 원본이다. 단독 Roblox 3D 모델로 등록하지 않는다.
@@ -1180,15 +1183,18 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     let sourceLicense = null;
     // [원본 UV 개선] 복식 9종은 반드시 실제 원본 해시·형상 보존 증빙을 보유한다.
     const originalOutfit = kind === 'People' && /^outfit_(?:vest|coat|guard|apron|sash|belt|cuff|boot|stole)\.glb$/.test(sourceFileName);
-    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || originalOutfit) {
+    const characterFinish = kind === 'People' && /^(?:outfit_|hair_|acc_)[a-z0-9_]+\.glb$/.test(sourceFileName);
+    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish) {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
       if (kind === 'Materials' && (!sourceLicense || sourceLicense.license !== 'CC0-1.0'
         || !sourceLicense.author || !sourceLicense.sourceSha256 || !sourceLicense.source))
         throw new Error('CC0_MATERIAL_SOURCE_METADATA_REQUIRED:' + f);
-      if (originalOutfit && (!sourceLicense || sourceLicense.license !== 'CC0-1.0'
-        || sourceLicense.uvVersion !== 1 || !sourceLicense.originalGeometrySha256
-        || !sourceLicense.sourceGitBlobSha1 || !sourceLicense.sourceSha256))
+      if (characterFinish && (!sourceLicense || sourceLicense.license !== 'CC0-1.0'
+        || sourceLicense.pbrVersion !== 2 || !sourceLicense.pbrColorMap || !sourceLicense.pbrNormalMap
+        || !sourceLicense.pbrRoughnessMetallicMap || !sourceLicense.sourceGitBlobSha1 || !sourceLicense.sourceSha256))
+        throw new Error('R15_CHARACTER_PBR_PROOF_REQUIRED:' + f);
+      if (originalOutfit && (!sourceLicense || sourceLicense.uvVersion !== 1 || !sourceLicense.originalGeometrySha256))
         throw new Error('R15_OUTFIT_UV_AND_SOURCE_PROOF_REQUIRED:' + f);
       if (sourceLicense && (!['PROJECT_ORIGINAL_ART', 'CC0-1.0', 'CC-BY-4.0'].includes(sourceLicense.license)
         || !sourceLicense.author || !sourceLicense.sourceSha256 || !sourceLicense.source))
@@ -1198,7 +1204,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       // [실제 Studio 검증] Goods/Menu/Portraits 모두 ImageLabel에서 사용한다. Decal 번호는 Client에서 로딩되지 않았다.
       // 실패 원본을 재업로드하지 않고 승인된 기존 PNG/JPG로 Image 자산을 발급한다.
       assetType: image ? 'Image' : 'Model',
-      license: (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || originalOutfit) && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
+      license: (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish) && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && ['parchment_grain.png', 'leather_grain.png', 'naval_skill.png', 'naval_fire.png', 'naval_speed.png', 'field_attack.png', 'field_dodge.png', 'field_weapon.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && f.startsWith('vfx_') ? 'CC0-1.0'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
@@ -1338,11 +1344,11 @@ for (const item of plan) {
   // 새 모델 등록과 Universe 사용 권한이 함께 확인되지 않으면 기존 번호로 복구한다.
   if (item.assetType === 'Model' && item.sourceLicense) {
     const old = registry.assets[id];
-    const outfitUvUpgrade = item.kind === 'People' && /^outfit_(?:vest|coat|guard|apron|sash|belt|cuff|boot|stole)$/.test(item.name);
+    const characterPbrUpgrade = item.kind === 'People' && /^(?:outfit_|hair_|acc_)[a-z0-9_]+$/.test(item.name);
     // 옛 복식 ID는 해시가 없으므로 새 UV 원본에 재사용하지 않는다.
     // 신규 ID/Universe 권한 실패 시 기존 등록번호로 원자적 롤백한다.
     if (old?.assetId && old.sourceSha256 !== sourceSha256
-      && (outfitUvUpgrade || Boolean(old.sourceSha256))) {
+      && (characterPbrUpgrade || Boolean(old.sourceSha256))) {
       previousTypeAssets.set(id, {...old});
       delete registry.assets[id];
       console.log('ORIGINAL_MODEL_SOURCE_CHANGED_REUPLOAD', id);
