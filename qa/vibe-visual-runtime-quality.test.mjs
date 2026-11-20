@@ -18,6 +18,7 @@ import {
   auditVibeRuntimeBeforeAfterComparison,
   auditVibeArtDirectionReview,
   auditVibeRuntimeVisualEvidence,
+  auditVibeMobileAssetPerformance,
   assertVibeRuntimeVisualQuality,
   GOLDEN_SCENE_ROLES,
   HIGH_END_GOLDEN_SCENE_ROLES,
@@ -46,6 +47,51 @@ function interfaceEvidence(revision){
   elements:[{id:'action',visible:true,interactive:true,hitTestPassed:true,textPresent:true,textFits:true,textReadable:true,rect:{x:16,y:80,width:60,height:52}}]
  }))};
 }
+
+
+test('새로 제작된 GLB는 실게임 모바일 캡처와 60프레임 측정 없이는 그래픽 통과 불가',()=>{
+  const rev='7'.repeat(40),assetHash='8'.repeat(64),imageHash='9'.repeat(64);
+  const evidence={
+    assetGlbSha256:assetHash,
+    capture:{source:'roblox-runtime-capture',runtimeScreenshot:true,
+      observed:true,reviewed:true,candidateRevision:rev,
+      deviceClass:'MOBILE',deviceId:'android-qa',artifactId:'actual-native-scene',
+      imageSha256:imageHash,pixelReview:{pass:true,imageSha256:imageHash},
+      visibleAssetHashes:[assetHash]},
+    measurement:{source:'native-runtime-telemetry',observed:true,reviewed:true,
+      candidateRevision:rev,assetGlbSha256:assetHash,deviceId:'android-qa',
+      artifactId:'perf-samples',sha256:'a'.repeat(64),
+      frameSamplesMs:Array(120).fill(16.7),drawCalls:180,visibleTriangles:80000,memoryPeakMb:280}
+  };
+  assert.equal(auditVibeMobileAssetPerformance(evidence,rev).pass,true);
+  for(const invalid of [
+    {...evidence,capture:{...evidence.capture,visibleAssetHashes:['0'.repeat(64)]}},
+    {...evidence,measurement:{...evidence.measurement,frameSamplesMs:Array(12).fill(16)}},
+    {...evidence,measurement:{...evidence.measurement,frameSamplesMs:Array(120).fill(40)}},
+    {...evidence,measurement:{...evidence.measurement,drawCalls:500}},
+    {...evidence,measurement:{...evidence.measurement,assetGlbSha256:'0'.repeat(64)}},
+    {...evidence,capture:{...evidence.capture,deviceId:'unrelated-device'}}
+  ])assert.equal(auditVibeMobileAssetPerformance(invalid,rev).pass,false);
+  const pending=createVibeGraphicsProduction({
+    gameId:'mare-essentia',request:'마을 에셋 검증',target:'roblox',
+    candidateRevision:rev,assetProductionPlan:{
+      kind:'vibe2-asset-production-plan',
+      automaticAssetBindingWork:{preparedNativeImportCount:1,
+        targets:[{status:'NATIVE_IMPORT_AND_RUNTIME_QA_REQUIRED',artifactHash:assetHash}]}
+    },runtimeEvidence:{stage:'INTERNAL_PLAYTEST',candidateRevision:rev,captures:captures(rev)}
+  });
+  assert.equal(pending.nativeMobileQaRequired,true);
+  assert.deepEqual([...pending.pendingNativeAssetHashes],[assetHash]);
+  assert.equal(pending.status,'RUNTIME_VISUAL_REPAIR_REQUIRED');
+  assert.ok(pending.runtimeAudit.reasons.includes('native-mobile-asset-performance-evidence-missing-or-failed'));
+  assert.ok(pending.runtimeRepairLoop.defects.some(item=>item.surface==='MOBILE_NATIVE_ASSET'));
+  const mobilePass=auditVibeRuntimeVisualEvidence({
+    candidateRevision:rev,captures:captures(rev),mobileAssetPerformanceRequired:true,
+    mobileAssetHashesRequired:[assetHash],mobileAssetPerformances:[evidence]
+  });
+  assert.equal(mobilePass.mobileAssetPerformance.pass,true);
+  assert.equal(mobilePass.pass,true);
+});
 
 test('art pipeline requires CC0 acquisition and golden scenes without primitive fallback',()=>{
   const plan=createVibeArtPipeline({request:'로블록스 카툰 캐릭터 그래픽 고퀄 개선',target:'roblox',quality:2});
