@@ -194,6 +194,7 @@ function reusableArtifact(cwd,order){
     cached.impactAnalysisSchemaVersion!==6
     ||(clean(order.target).toLowerCase()==='roblox'&&(
       cached.robloxCoding?.authority!=='roblox-luau-static-analysis'
+      ||cached.robloxCoding?.scanCoverage?.responsibleComplete===undefined
       ||cached.robloxModuleGraph?.version!==1
       ||cached.codingRepoMap?.version!==1))
     ||cached.sourceImpact?.authority!=='advisory-source-impact-only'
@@ -995,6 +996,12 @@ export function explorationGuidance(handoff={}){
       '로블록스 모듈 함수는 정적 소스 서명만 확인했다. 함수 목록에 없는 동적 API를 존재한다고 추측하지 말고, 호출이 필요한 경우 해당 원본을 추가 조사한다. 실제 실행 통과나 쓰기 권한을 의미하지 않는다.'
     ]:[]),
     ...(handoff.robloxCoding?[
+      ...(handoff.robloxCoding.scanCoverage?[
+        `Vibe5.9 Roblox 책임 소스 검증=${handoff.robloxCoding.scanCoverage.observedResponsibleFiles}/${handoff.robloxCoding.scanCoverage.requiredResponsibleFiles} · ${handoff.robloxCoding.scanCoverage.responsibleComplete?'관측 범위 확보(정적 검사만)':'불완전 · 위험 없음 판정 금지'}`,
+        ...(handoff.robloxCoding.scanCoverage.responsibleComplete?[]:[
+          `Vibe5.9 Roblox 미검사 파일=${handoff.robloxCoding.scanCoverage.unscanned.map(row=>row.path+':'+row.reason).join(' | ')} · 누락 파일 직접 확인 후 판단`
+        ])
+      ]:[]),
       `Vibe5.9 Roblox 책임 경로=${handoff.robloxCoding.files.filter(x=>x.responsible).map(x=>x.path+':'+x.side+':수신 '+x.events.map(e=>e.remote+'.'+e.signal).join('/')+':송신 '+x.calls.map(e=>e.remote+':'+e.method).join('/')+':상태 '+x.stateEffects.map(e=>e.method).join('/')).join(' | ')||'NONE'}`,
       `Vibe5.9 Roblox 점검 신호=${handoff.robloxCoding.warnings.map(x=>x.path+':'+x.code+'@'+x.line).join(',')||'NONE'}`,
       ...(handoff.robloxCoding.qualityDirector?[
