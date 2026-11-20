@@ -120,12 +120,12 @@ test('native graphics comparisons require exact before-after captures and style 
     samePerformanceLimit:true,requireRuntimeEvidence:true,requireStyleLock:true};
   const baseline={evidence:fullEvidence(.55),styleDnaHash:'style-v1',
     runtimeCapture:{id:'before',sourceRevision:'revision-1',sceneId:'boss-room',
-      deviceId:'android-low',sha256:'a'.repeat(64)}};
+      deviceId:'android-low',cameraId:'boss-camera',viewportWidth:393,viewportHeight:852,sha256:'a'.repeat(64)}};
   const ready={id:'candidate',target:'candidate',evidence:fullEvidence(.8),
     styleDnaHash:'style-v1',runtimeVerified:true,independentQaPassed:true,
     beforeAfterVisualRegressionPass:true,
     runtimeCapture:{id:'after',sourceRevision:'revision-2',sceneId:'boss-room',
-      deviceId:'android-low',sha256:'b'.repeat(64)}};
+      deviceId:'android-low',cameraId:'boss-camera',viewportWidth:393,viewportHeight:852,sha256:'b'.repeat(64)}};
   const valid=Graphics.evaluateGraphicsExperiment({baseline,candidates:[ready],conditions});
   assert.equal(valid.pass,true);
   assert.equal(valid.winner.runtimeVerified,true);
@@ -136,7 +136,12 @@ test('native graphics comparisons require exact before-after captures and style 
     {...ready,styleDnaHash:'other'},
     {...ready,runtimeCapture:{...ready.runtimeCapture,id:'before'}},
     {...ready,runtimeCapture:{...ready.runtimeCapture,sha256:''}},
-    {...ready,runtimeCapture:{...ready.runtimeCapture,deviceId:'android-high'}}
+    {...ready,runtimeCapture:{...ready.runtimeCapture,deviceId:'android-high'}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,cameraId:'different-angle'}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,viewportWidth:390}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,viewportHeight:780}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,cameraId:''}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,viewportHeight:NaN}}
   ]){
     const blocked=Graphics.evaluateGraphicsExperiment({baseline,candidates:[candidate],conditions});
     assert.equal(blocked.pass,false);
@@ -199,7 +204,7 @@ test('strict before-after graphics evidence rejects identical frame hashes',()=>
   const conditions={sameDevice:true,sameScene:true,sameCharacter:true,sameInput:true,
     samePerformanceLimit:true,requireRuntimeEvidence:true,requireStyleLock:true};
   const capture={id:'before',sourceRevision:'revision-1',sceneId:'room',
-    deviceId:'mobile',sha256:'a'.repeat(64)};
+    deviceId:'mobile',cameraId:'room-camera',viewportWidth:393,viewportHeight:852,sha256:'a'.repeat(64)};
   const baseline={evidence:{
     readability:.5,identity:.5,actors:.5,environment:.5,uiHud:.5,
     combatVfx:.5,signatureScene:.5,motionStyleMatch:.5,mobilePerformance:.5,
@@ -219,6 +224,37 @@ test('strict before-after graphics evidence rejects identical frame hashes',()=>
   }],conditions});
   assert.equal(changed.pass,true);
   assert.equal(changed.winner.runtimeVerified,true);
+});
+
+// [실제 화면] 동일 장면·기기라도 서로 다른 시점·해상도는 A/B 증거로 혼용 금지.
+test('native graphics cannot validate missing camera or nonmatching viewport even with perfect score',()=>{
+  const evidence=fullEvidence(.5),improved=fullEvidence(.95);
+  const baseCapture={id:'before',sourceRevision:'one',sceneId:'arena',deviceId:'phone',
+    cameraId:'follow-camera',viewportWidth:390,viewportHeight:844,sha256:'a'.repeat(64)};
+  const baseline={evidence,runtimeCapture:baseCapture};
+  const afterCapture={...baseCapture,id:'after',sourceRevision:'two',sha256:'b'.repeat(64)};
+  const candidate={id:'after',target:'candidate',evidence:improved,
+    runtimeVerified:true,independentQaPassed:true,beforeAfterVisualRegressionPass:true,
+    runtimeCapture:afterCapture};
+  const conditions={sameDevice:true,sameScene:true,sameCharacter:true,sameInput:true,
+    samePerformanceLimit:true,requireRuntimeEvidence:true};
+  assert.equal(Graphics.evaluateGraphicsExperiment({baseline,candidates:[candidate],conditions}).pass,true);
+  for(const badCapture of [
+    {...afterCapture,cameraId:'side-camera'},
+    {...afterCapture,cameraId:''},
+    {...afterCapture,viewportWidth:391},
+    {...afterCapture,viewportHeight:0},
+    {...afterCapture,viewportWidth:Infinity}
+  ]){
+    const trial=Graphics.evaluateGraphicsExperiment({
+      baseline,candidates:[{...candidate,runtimeCapture:badCapture}],conditions});
+    assert.equal(trial.pass,false);
+    assert.equal(trial.comparisons[0].runtimeEvidencePass,false);
+  }
+  assert.equal(Graphics.evaluateGraphicsExperiment({
+    baseline:{...baseline,runtimeCapture:{...baseCapture,cameraId:''}},
+    candidates:[candidate],conditions
+  }).pass,false);
 });
 
 test('asset strategy preserves usable originals instead of replacing by default', () => {
