@@ -435,7 +435,7 @@ export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=
       row.nativeRuntimeVerified=false;row.gameApplied=false;
       if(m.part){ // 두 부모 모두 출처·해시를 남긴다
         delete params.part;
-        row.partParent={id:m.part.id,file:relOrAbs(repoRoot,m.part),sha256:sha256(absOf(repoRoot,m.part)),license:m.part.license};
+        row.partParent={id:m.part.id,file:relOrAbs(repoRoot,m.part),sha256:sha256(absOf(repoRoot,m.part)),license:m.part.license,origin:m.part.origin||'REPOSITORY'};
       }
       if(res?.ok){
         const sc=scoreChild(res.png,parentRes.png);
