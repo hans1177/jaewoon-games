@@ -1,5 +1,5 @@
 {
-  "version": 611,
+  "version": 610,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -32437,37 +32437,6 @@
       "localExecution": "ADVISORY_OLLAMA_ONLY",
       "forwardOriginalDirectiveToExistingQueue": true,
       "modelOutputCanAuthorizeWork": false
-    },
-    "webGameAuthoringEnabled": false,
-    "ownerWebProductionStoppedAt": "2026-11-20",
-    "legacyWebQueuePolicy": "CANCEL_PRESERVE_HISTORY_NO_NEW_INGRESS",
-    "replacementMission": "VIBE_ENGINE_ASSET_AND_VERIFIED_LEARNING_RESEARCH_ONLY"
-  },
-  "vibeEngineImprovementContract": {
-    "version": 1,
-    "authority": "OWNER_DIRECTIVE_2026-11-20_VIBE_ENGINE_SPECIALIZATION",
-    "status": "ENGINE_IMPROVEMENT_ACTIVE_WEB_GAME_AUTHORING_STOPPED",
-    "organization": "VIBE_ENGINE_DEVELOPMENT",
-    "repository": "hans1177/jaewoon-games",
-    "scope": ["ROBLOX_NATIVE_ENGINE", "ASSET_ACQUISITION_AND_REFINEMENT", "VERIFIED_CODE_LEARNING", "MOTION_ANIMATION", "MUSIC_VFX_UI", "ASSET_LIBRARY_MANAGEMENT"],
-    "specialists": ["GRAPHICS", "CREATURE", "BUILDING", "ENVIRONMENT", "ICON", "UI", "VFX", "MOTION", "ANIMATION", "MUSIC", "SFX", "STORY", "MATERIAL"],
-    "existingGraphicsRoot": "assets/vibe-art-pipeline.js#createVibeGraphicsProduction",
-    "existingLearningOwner": "tools/vibe2-learning-motor.mjs",
-    "existingAssetPlanner": "tools/vibe2-asset-production-plan.mjs",
-    "existingAudioAuthoringOwner": "audio",
-    "existingDesignAuthorityPreserved": true,
-    "engineCodeOwner": "VIBE2_VIBE3",
-    "nativeAssetRegistration": "EXISTING_AUTHENTICATED_ROBLOX_OPEN_CLOUD_ONLY_AFTER_RIGHTS_AND_SOURCE_HASH_CHECK",
-    "chatgptLibraryAssetImport": "OWNER_EXPLICIT_IMPORT_AND_RIGHTS_VERIFICATION_REQUIRED",
-    "externalLearning": "SANDBOX_REVIEW_PROVENANCE_LICENSE_SECURITY_AND_REGRESSION_BEFORE_APPLY",
-    "autoCodeUpdates": "EXISTING_VIBE_VERIFIED_PR_MAIN_QA_RELEASE_ONLY",
-    "freeOnly": true,
-    "license": "CC0_ONLY_FOR_EXTERNAL_ASSET_GAP_FILL",
-    "webGameAuthoringAllowed": false,
-    "newGitHubOrganizationRequired": false,
-    "newQueueOrShadowPipelineAllowed": false,
-    "singleCanonicalPipeline": true,
-    "nativeQAReleaseAuthorityUnchanged": true,
-    "existingGameRulesSaveBalancesPreserved": true
+    }
   }
 }
