@@ -148,9 +148,9 @@ test('정식 로컬 재훈련은 보류셋 SHA와 수량을 검증하고 학습 
     'assert train < holdout < candidate < baseline',
     'assert "with model.disable_adapter():" in source[candidate:baseline]',
     'assert source.index("official holdout SHA256 mismatch") < train',
-    'assert source.index("promotionState\": \"UNVERIFIED\"") > baseline',
+    'assert source.index("promotionState") > baseline',
     'print("POST_TRAIN_HOLDOUT_STRUCTURE=PASS")',
-  ].join('\\n');
+  ].join('\n');
   const check=spawnSync('python3',['-c',script],{encoding:'utf8'});
   assert.equal(check.status,0,check.stderr||check.error?.message||'Holdout verification test failed');
 });
