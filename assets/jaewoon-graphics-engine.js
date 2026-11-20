@@ -444,6 +444,11 @@
         &&before.sourceRevision!==after.sourceRevision
         &&typeof before.sceneId==='string'&&before.sceneId.length>0&&before.sceneId===after.sceneId
         &&typeof before.deviceId==='string'&&before.deviceId.length>0&&before.deviceId===after.deviceId
+        // [화면 비교 정확도] 장면·기기가 같아도 시점/해상도가 다르면 시각 개선 근거가 아니다.
+        &&typeof before.cameraId==='string'&&before.cameraId.length>0&&before.cameraId===after.cameraId
+        &&Number.isInteger(before.viewportWidth)&&before.viewportWidth>=64&&before.viewportWidth<=16384
+        &&Number.isInteger(before.viewportHeight)&&before.viewportHeight>=64&&before.viewportHeight<=16384
+        &&before.viewportWidth===after.viewportWidth&&before.viewportHeight===after.viewportHeight
       );
       const styleLockPass=!requiredStyleLock||(typeof baseline?.styleDnaHash==='string'
         &&baseline.styleDnaHash.length>0&&candidate.styleDnaHash===baseline.styleDnaHash);
