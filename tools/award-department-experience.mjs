@@ -19,8 +19,8 @@ if (ledger.history.some((event) => event.sourceCommit === sourceCommit)) {
   process.exit(0);
 }
 
-// [변경 파일] 병합 커밋은 첫 부모와 비교해 실제 main 변경만 집계한다.
-const changed = execFileSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', '-m', '--first-parent', sourceCommit], { encoding: 'utf8' })
+// [변경 파일] 일반 커밋·병합 커밋 모두 첫 부모와 실제 소스 변경만 비교한다.
+const changed = execFileSync('git', ['diff', '--name-only', `${sourceCommit}^1`, sourceCommit], { encoding: 'utf8' })
   .split(/\r?\n/)
   .map((value) => value.trim())
   .filter(Boolean)
