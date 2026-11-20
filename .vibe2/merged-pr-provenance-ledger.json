@@ -288763,11 +288763,127 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_7f2672a38ec6f8a0b320e088",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "merged-pr-13842",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "d3d9dbd207fb4b11781da2d3217e124cb68b5c10",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13842,
+        "baseBranch": "main",
+        "headBranch": "vibe2/candidate/mare-studio-tools-layout-20261120",
+        "baseSha": "d3d9dbd207fb4b11781da2d3217e124cb68b5c10",
+        "headSha": "6d02d3876fa1586024f558d1a031b8db98f3554d",
+        "mergeCommitSha": "f40ae02bf8504ea723c96a2fb2bf710fcfef209e",
+        "mergedAt": "2026-11-20T02:17:03Z",
+        "authorLogin": "hans1177",
+        "titleHash": "bb555d3e76c83d0574ef2ed7f3bd262f0c5fe35290bd2a9c859e0ea1ace7cf81",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/candidate/mare-studio-tools-layout-20261120",
+        "candidateSha": "6d02d3876fa1586024f558d1a031b8db98f3554d"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "codingRelevantFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "changedFiles": [
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13842",
+        "merge-commit:f40ae02bf8504ea723c96a2fb2bf710fcfef209e",
+        "base-main:d3d9dbd207fb4b11781da2d3217e124cb68b5c10"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2309
+    "total": 2310
   }
 }
