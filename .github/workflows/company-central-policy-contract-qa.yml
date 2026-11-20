@@ -5,6 +5,11 @@ on:
     paths:
       - 'company-directive.json'
       - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/platform-release-roadmap.brief.json'
+      - 'tools/company-policy-steward.mjs'
+      - 'tools/vibe2-central-work-contract.mjs'
+      - 'qa/company-policy-steward.test.mjs'
+      - 'qa/vibe2-central-work-contract.test.mjs'
       - 'company-learning/company-log-map.json'
       - 'company-learning/company-architecture-map.json'
       - 'company-learning/security-immune-system.json'
@@ -123,6 +128,11 @@ on:
     paths:
       - 'company-directive.json'
       - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/platform-release-roadmap.brief.json'
+      - 'tools/company-policy-steward.mjs'
+      - 'tools/vibe2-central-work-contract.mjs'
+      - 'qa/company-policy-steward.test.mjs'
+      - 'qa/vibe2-central-work-contract.test.mjs'
       - 'company-learning/company-log-map.json'
       - 'company-learning/company-architecture-map.json'
       - 'company-learning/security-immune-system.json'
@@ -343,6 +353,11 @@ jobs:
           node --test qa/company-long-horizon-vision.test.mjs
           node --test qa/other-ai-machine-directive.test.mjs
           node tools/company-constitution-enforcer.mjs --phase=policy-qa
+          # [정본 파생 요약] 원본 SHA-256·버전이 다르면 게시용 표시도 검사 실패.
+          node tools/company-policy-steward.mjs --check-brief
+          node --check tools/vibe2-central-work-contract.mjs
+          node --check tools/company-policy-steward.mjs
+          node --test qa/company-policy-steward.test.mjs qa/vibe2-central-work-contract.test.mjs
           node --test qa/company-constitution-enforcer.test.mjs
           node --check tools/production-classification.mjs
           node --check tools/design-only-promotion-sync.mjs
