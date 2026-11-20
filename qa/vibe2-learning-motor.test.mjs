@@ -458,6 +458,30 @@ test('verified domain mastery continues above legacy level 10 and benchmark diff
   assert.match(save.id,/mastery-save-l15-g6/);
 });
 
+test('동일 후보의 회귀 실패 증거가 이전 PASS보다 우선하며 자동 진화에 성공으로 학습되지 않는다',()=>{
+  const refs=encodeURIComponent(JSON.stringify(['CODE_PATTERN:counterexample-proof']));
+  const task={id:'self-evolution-stale-pass',gameId:'self-evolution-game',
+    target:'web',goal:'전투 코드 자동 개선 검증',evidence:[
+      'candidate-identity:PASS','role-result:regression:PASS','role-result:review:PASS',
+      'failure-cause:fan-in-regression-failed',
+      'coding-strategy:RESPONSIBILITY_FIRST','coding-responsibility-confidence:HIGH',
+      'coding-candidate-first-attempt:YES','coding-primary-systems:'+encodeURIComponent(JSON.stringify(['combat'])),
+      'learning-knowledge-ids:'+refs,'actions-run:verified-regression-failure-101'
+    ]};
+  const queue={tasks:[task]};
+  const strategies=applyVerifiedCodingStrategyOutcomes({},queue);
+  assert.equal(strategies.added,0);
+  assert.equal(strategies.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST,undefined);
+  const knowledge=applyVerifiedKnowledgeOutcomes({},queue);
+  assert.equal(knowledge.positive,0);
+  assert.equal(knowledge.negative,1);
+  assert.equal(knowledge.state.knowledgeAttribution.entries['CODE_PATTERN:counterexample-proof'].verifiedFailures,1);
+  const calibration=applyVerifiedCodingCalibration({},queue);
+  assert.equal(calibration.state.codingCalibration.contexts['target:web'].highConfidenceFailures,1);
+  const deduped=applyVerifiedKnowledgeOutcomes(knowledge.state,queue);
+  assert.equal(deduped.added,0);
+});
+
 test('verified coding strategy outcomes accumulate, dedupe, and become preferred only after repeated independent evidence',()=>{
   const mk=(id,gameId,first='YES')=>({
     id,gameId,target:'web',evidence:[
