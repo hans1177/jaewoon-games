@@ -2357,6 +2357,7 @@ end
 -- 시스템 4개는 시설 6개와 색으로 구분한다(같은 원화를 쓰는 곳은 색을 바꿔 중복처럼 안 보이게).
 -- [항해 도구] 아이콘 데이터는 바로 아래 H.hudShortcut 메서드에만 유지한다.
 do
+local hudTweenService = game:GetService("TweenService")
 local HUD_MENU_TINT = {
 	view = Color3.fromRGB(235, 206, 158), gear = Color3.fromRGB(235, 206, 158),
 	deck = Color3.fromRGB(255, 176, 150), help = Color3.fromRGB(255, 255, 255),
@@ -2391,14 +2392,16 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		elseif key == "journal" then "journal" elseif key == "gear" then "gear"
 		elseif key == "help" then "help" elseif key == "status" then "captain" else nil
 	local artId = if specialGlyph then nil else AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
-	-- [메뉴 공통 규격] 시설/시스템 도크는 36px, 개별 버튼은 31px.
-	local artSize = if dockItem then 36 else 31
+	-- [시설 도크] 40px 원화에 짧은 반응을 주고 시스템 버튼의 크기는 유지한다.
+	local facility = parent.Name == "Dock" and name:sub(1, 5) == "Menu_"
+	local artSize = if facility then 40 elseif dockItem then 36 else 31
 	local artTop = if dockItem then 3 else 4
 	if specialGlyph then
 		-- [시설·시스템 통일] 투명 황동 아이콘: 주점 잔/카드/기록장/설정/도움말.
 		local symbol = modelIcon(button, "Glyph", specialGlyph, nil, artSize, label)
 		symbol.Name = "MenuArt"
-		symbol.Position = UDim2.new(0.5, -artSize / 2, 0, artTop)
+		symbol.AnchorPoint = Vector2.new(0.5, 0)
+		symbol.Position = UDim2.new(0.5, 0, 0, artTop)
 		symbol.ZIndex = 2
 	elseif artId then
 		for i = 1, 2 do
@@ -2426,8 +2429,8 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		local caption = Instance.new("TextLabel")
 		caption.Name = "MenuName"
 		caption.BackgroundTransparency = 1
-		caption.Position = UDim2.fromOffset(0, 42)
-		caption.Size = UDim2.new(1, 0, 0, 19)
+		caption.Position = UDim2.fromOffset(0, if facility then 46 else 42)
+		caption.Size = UDim2.new(1, 0, 0, if facility then 18 else 19)
 		caption.Font = Enum.Font.GothamBold
 		caption.TextSize = 13
 		caption.TextWrapped = false
@@ -2469,6 +2472,16 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	end
 	button:GetAttributeChangedSignal("SelectedFacility"):Connect(paintSelection)
 	paintSelection()
+	local art = button:FindFirstChild("MenuArt")
+	if facility and art then
+		local restPosition = art.Position
+		local pulse = hudTweenService:Create(art, TweenInfo.new(0.16, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, true), {
+			Rotation = if key == "tavern" then -9 elseif key == "route" then 8 else 0,
+			Position = restPosition - UDim2.fromOffset(0, 2),
+			Size = UDim2.fromOffset(if key == "trade" then 44 else 42, if key == "trade" then 44 else 42),
+		})
+		H.dockMotion[name] = pulse
+	end
 	local scale = Instance.new("UIScale")
 	scale.Parent = button
 	button.InputBegan:Connect(function(input)
@@ -2535,6 +2548,7 @@ H.DOCK = {
 }
 H.dockButtons = {}
 H.dockNotices = {}
+H.dockMotion = {}
 for i, d in H.DOCK do
 	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[3], d[2], true)
 	b.LayoutOrder = i
@@ -3114,6 +3128,28 @@ function H.updateHud(p, ship)
 	for id, notice in H.dockNotices do
 		notice.Text = alerts[id] or ""
 		notice.Visible = alerts[id] ~= nil
+	end
+	-- [시설 길잡이] 실제 진행 단계가 바뀔 때만 다음 시설을 한 번 강조한다.
+	local captain = view and view.captain
+	local tutorial = if not H.tutorialHidden and captain then captain.step else nil
+	local destination, cue
+	if tutorial == "companion" then
+		destination, cue = "board", "첫 동료"
+	elseif tutorial == "done" and day == 0 then
+		if (ship.cargoUsed or 0) == 0 then
+			destination, cue = "trade", "첫 특산품"
+		else
+			destination, cue = "route", "첫 출항"
+		end
+	elseif readyDelivery then
+		destination, cue = "board", "납품"
+	end
+	if not cue then
+		H.lastDockCue = nil
+	elseif hudTopGui.Enabled and H.lastDockCue ~= cue then
+		H.lastDockCue = cue
+		local pulse = H.dockMotion["Menu_" .. destination]
+		if pulse and not game:GetService("GuiService").ReducedMotionEnabled then pulse:Play() end
 	end
 end
 
@@ -11132,7 +11168,7 @@ function H.renderTabs()
 		b.TextSize = 18
 		local ti = H.TAB_ICON[id]
 		if ti then
-			-- [공통 규격] 도크는 36px, 시설별 탭은 26px. 아이콘과 인쇄 글자를 겹치지 않게 나눈다.
+			-- [공통 규격] 도크는 40px, 시설별 탭은 26px. 아이콘과 인쇄 글자를 겹치지 않게 나눈다.
 			local icon = modelIcon(b, ti[1], ti[2], nil, 26, TAB_NAME[id])
 			icon.Name = "TabIcon"
 			icon.Position = UDim2.new(0, 7, 0.5, -13)
@@ -12749,10 +12785,17 @@ function render()
 			bookmark.Position = UDim2.fromOffset(4, 10)
 			bookmark.Size = UDim2.new(0, 5, 1, -20)
 			bookmark.Parent = banner
-			local heading = mkLabel(banner, "◆ " .. (TAB_NAME[currentTab] or "시설") .. " · 핵심 정보", if wide then 20 else 18, Color3.fromRGB(255, 222, 144), true)
+			local tabIcon = H.TAB_ICON[currentTab]
+			if tabIcon then
+				local icon = modelIcon(banner, tabIcon[1], tabIcon[2], nil, 26, TAB_NAME[currentTab])
+				icon.Name = "MenuFocusIcon"
+				icon.Position = UDim2.fromOffset(14, 7)
+				icon.ZIndex = banner.ZIndex + 1
+			end
+			local heading = mkLabel(banner, TAB_NAME[currentTab] or "시설", if wide then 20 else 18, Color3.fromRGB(255, 222, 144), true)
 			heading.Name = "MenuFocusHeading"
-			heading.Position = UDim2.fromOffset(14, 7)
-			heading.Size = UDim2.new(1, -28, 0, 26)
+			heading.Position = UDim2.fromOffset(if tabIcon then 46 else 14, 7)
+			heading.Size = UDim2.new(1, if tabIcon then -60 else -28, 0, 26)
 			heading.AutomaticSize = Enum.AutomaticSize.None
 			heading.TextTruncate = Enum.TextTruncate.AtEnd
 			local highlight = mkLabel(banner, fact, if wide then 24 else 22, if urgent then Color3.fromRGB(255, 142, 128) else Color3.fromRGB(255, 238, 187), true)
