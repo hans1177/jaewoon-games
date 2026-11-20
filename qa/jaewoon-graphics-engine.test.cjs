@@ -146,6 +146,81 @@ test('native graphics comparisons require exact before-after captures and style 
   assert.equal(advisory.winner.runtimeVerified,false,'non-strict score cannot claim native runtime validation');
 });
 
+// [모바일 계측 회귀] 평균 FPS가 좋아도 긴 프레임 지연을 감추지 않는다.
+test('graphics visual budget uses observed p90 frame-time rather than optimistic FPS',()=>{
+  const frameTimesMs=[...Array(26).fill(16),...Array(4).fill(100)];
+  const budget=Graphics.deviceVisualBudget('LOW',{
+    runtimeVerified:true,targetFps:60,observedFps:120,
+    samples:frameTimesMs.length,frameTimesMs
+  });
+  assert.equal(budget.validatedRuntimeSample,true);
+  assert.equal(budget.telemetryMethod,'P90_FRAME_TIME');
+  assert.equal(budget.p90FrameMs,100);
+  assert.equal(budget.measuredFps,10);
+  assert.equal(budget.performanceRatio,.35);
+  assert.equal(budget.adaptive,true);
+  assert.equal(budget.coreSilhouette,1);
+  assert.equal(budget.attackReadability,1);
+  assert.equal(budget.uiHud,1);
+  assert.equal(budget.playerFeedback,1);
+  assert.equal(budget.telemetryEvidence,'CALLER_REPORTED_NOT_INDEPENDENTLY_VERIFIED');
+});
+
+test('graphics visual budget rejects incomplete or manipulated runtime frame traces',()=>{
+  const valid=Array(30).fill(20),base=Graphics.deviceVisualBudget('LOW');
+  const candidates=[
+    {frameTimesMs:[...valid.slice(0,29)],samples:29},
+    {frameTimesMs:[...valid.slice(0,29),NaN],samples:30},
+    {frameTimesMs:[...valid.slice(0,29),Infinity],samples:30},
+    {frameTimesMs:[...valid.slice(0,29),-1],samples:30},
+    {frameTimesMs:[...valid.slice(0,29),0],samples:30},
+    {frameTimesMs:valid,samples:999},
+    {frameTimesMs:'not samples',samples:30},
+    {frameTimesMs:valid,samples:30,runtimeVerified:false}
+  ];
+  for(const input of candidates){
+    const result=Graphics.deviceVisualBudget('LOW',{
+      runtimeVerified:true,targetFps:60,observedFps:1,...input
+    });
+    assert.equal(result.validatedRuntimeSample,false);
+    assert.equal(result.adaptive,false);
+    assert.equal(result.decorativeParticles,base.decorativeParticles);
+    assert.equal(result.telemetryMethod,'NONE');
+    assert.equal(result.measuredFps,null);
+  }
+  const legacy=Graphics.deviceVisualBudget('MID',{
+    runtimeVerified:true,targetFps:60,observedFps:30,samples:60
+  });
+  assert.equal(legacy.telemetryMethod,'AGGREGATE_FPS');
+  assert.equal(legacy.performanceRatio,.5);
+});
+
+test('strict before-after graphics evidence rejects identical frame hashes',()=>{
+  const conditions={sameDevice:true,sameScene:true,sameCharacter:true,sameInput:true,
+    samePerformanceLimit:true,requireRuntimeEvidence:true,requireStyleLock:true};
+  const capture={id:'before',sourceRevision:'revision-1',sceneId:'room',
+    deviceId:'mobile',sha256:'a'.repeat(64)};
+  const baseline={evidence:{
+    readability:.5,identity:.5,actors:.5,environment:.5,uiHud:.5,
+    combatVfx:.5,signatureScene:.5,motionStyleMatch:.5,mobilePerformance:.5,
+    licenseRegressionSafety:.5
+  },styleDnaHash:'style',runtimeCapture:capture};
+  const candidate={id:'changed',target:'candidate',
+    evidence:Object.fromEntries(Object.keys(baseline.evidence).map(key=>[key,.8])),
+    styleDnaHash:'style',runtimeVerified:true,independentQaPassed:true,
+    beforeAfterVisualRegressionPass:true,
+    runtimeCapture:{...capture,id:'after',sourceRevision:'revision-2'}
+  };
+  const unchanged=Graphics.evaluateGraphicsExperiment({baseline,candidates:[candidate],conditions});
+  assert.equal(unchanged.pass,false);
+  assert.equal(unchanged.comparisons[0].runtimeEvidencePass,false);
+  const changed=Graphics.evaluateGraphicsExperiment({baseline,candidates:[{
+    ...candidate,runtimeCapture:{...candidate.runtimeCapture,sha256:'b'.repeat(64)}
+  }],conditions});
+  assert.equal(changed.pass,true);
+  assert.equal(changed.winner.runtimeVerified,true);
+});
+
 test('asset strategy preserves usable originals instead of replacing by default', () => {
   assert.equal(Graphics.classifyAsset({currentQuality:.9,readability:.9,identityFit:.9}), 'KEEP');
   assert.equal(Graphics.classifyAsset({currentQuality:.6,readability:.6,identityFit:.7}), 'ENHANCE');
