@@ -1,0 +1,224 @@
+{
+ "sourceRevision": "10b096dd6a84c1618e1ffd06425f99c0f9728917",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "SHIP_36_PREVIEW_PREPARED\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:europe:5\ntext"
+  },
+  {
+   "step": 4,
+   "capture": "ships_europe",
+   "files": 1
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:east_asia:5\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "ships_east_asia",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:new_world:5\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "ships_new_world",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:middle_east:5\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "ships_middle_east",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:southeast_asia:5\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "ships_southeast_asia",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:africa:5\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "ships_africa",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:lost:6\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "ships_lost",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "SHIP_36_PREVIEW_CLEAN_EXIT_PASS\ntext"
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 30001
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 176
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 16516
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 1808
+  },
+  {
+   "step": 4,
+   "type": "capture",
+   "elapsedMs": 884
+  },
+  {
+   "step": 5,
+   "type": "luau",
+   "elapsedMs": 262
+  },
+  {
+   "step": 6,
+   "type": "wait",
+   "elapsedMs": 1813
+  },
+  {
+   "step": 7,
+   "type": "capture",
+   "elapsedMs": 736
+  },
+  {
+   "step": 8,
+   "type": "luau",
+   "elapsedMs": 197
+  },
+  {
+   "step": 9,
+   "type": "wait",
+   "elapsedMs": 1804
+  },
+  {
+   "step": 10,
+   "type": "capture",
+   "elapsedMs": 679
+  },
+  {
+   "step": 11,
+   "type": "luau",
+   "elapsedMs": 202
+  },
+  {
+   "step": 12,
+   "type": "wait",
+   "elapsedMs": 1803
+  },
+  {
+   "step": 13,
+   "type": "capture",
+   "elapsedMs": 893
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 201
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 1802
+  },
+  {
+   "step": 16,
+   "type": "capture",
+   "elapsedMs": 668
+  },
+  {
+   "step": 17,
+   "type": "luau",
+   "elapsedMs": 197
+  },
+  {
+   "step": 18,
+   "type": "wait",
+   "elapsedMs": 1809
+  },
+  {
+   "step": 19,
+   "type": "capture",
+   "elapsedMs": 890
+  },
+  {
+   "step": 20,
+   "type": "luau",
+   "elapsedMs": 192
+  },
+  {
+   "step": 21,
+   "type": "wait",
+   "elapsedMs": 1812
+  },
+  {
+   "step": 22,
+   "type": "capture",
+   "elapsedMs": 721
+  },
+  {
+   "step": 23,
+   "type": "luau",
+   "elapsedMs": 159
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 24,
+  "completedSteps": 24,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 7,
+  "capturedFrames": 7,
+  "abortedEarly": false
+ }
+}
