@@ -171,7 +171,49 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
     for(const match of activeSource.matchAll(/\b([A-Za-z_]\w*)\s*\.\s*(OnServerEvent|OnClientEvent|OnServerInvoke|OnClientInvoke)\s*(?::\s*Connect\s*\(|=)/g)){
       if(events.length>=24)break;
       const line=sourceLineAt(match.index);
-      events.push({remote:match[1],signal:match[2],line});
+      // [네트워크 인과관계] 동일 서버 파일의 무관한 저장·응답 함수는
+      // 해당 Remote 핸들러가 실행한 작업으로 단정하지 않는다.
+      const handlerHeader=/^\s*function\s*\([^)]*\)/.exec(
+        activeSource.slice(match.index+match[0].length,match.index+match[0].length+256));
+      let handlerScopeComplete=false,handlerStateMethods=[],handlerResponseMethods=[],handlerEndLine=null;
+      if(side==='SERVER'&&handlerHeader&&match[2].startsWith('OnServer')){
+        const start=match.index+match[0].length+handlerHeader[0].length;
+        const tail=activeSource.slice(start,start+4096);
+        const blocks=['function'];
+        let pendingLoopHeaders=0,close=-1,invalid=false;
+        for(const token of tail.matchAll(/\b(?:function|if|for|while|repeat|do|end|until)\b/g)){
+          const word=token[0];
+          if(word==='function'||word==='if'||word==='repeat')blocks.push(word);
+          else if(word==='for'||word==='while'){blocks.push(word);pendingLoopHeaders++;}
+          else if(word==='do'){
+            if(pendingLoopHeaders>0)pendingLoopHeaders--;
+            else blocks.push('do');
+          }else if(word==='until'){
+            if(blocks.at(-1)!=='repeat'){invalid=true;break;}
+            blocks.pop();
+          }else if(word==='end'){
+            if(!blocks.length||blocks.at(-1)==='repeat'){invalid=true;break;}
+            blocks.pop();
+            if(!blocks.length){close=token.index;break;}
+          }
+        }
+        const suffix=activeSource.slice(start+close+3,start+close+24);
+        if(!invalid&&close>=0&&
+          (match[2]==='OnServerEvent'?/^\s*\)/.test(suffix):true)){
+          handlerScopeComplete=true;
+          handlerEndLine=sourceLineAt(start+close);
+          const body=tail.slice(0,close);
+          handlerStateMethods=[...new Set(
+            [...body.matchAll(/:\s*(GetAsync|SetAsync|UpdateAsync|SetAttribute)\s*\(/g)]
+              .map(item=>item[1]))].slice(0,8);
+          handlerResponseMethods=[...new Set(
+            [...body.matchAll(/:\s*(FireClient|FireAllClients|InvokeClient)\s*\(/g)]
+              .map(item=>item[1]))].slice(0,8);
+        }
+      }
+      events.push({remote:match[1],signal:match[2],line,
+        handlerScopeComplete,handlerEndLine,
+        handlerStateMethods,handlerResponseMethods});
       if(side==='CLIENT'&&match[2].startsWith('OnServer'))if(!found.has('SERVER_HANDLER_IN_CLIENT'))found.set('SERVER_HANDLER_IN_CLIENT',{code:'SERVER_HANDLER_IN_CLIENT',line});
       if(side==='SERVER'&&match[2].startsWith('OnClient'))if(!found.has('CLIENT_HANDLER_IN_SERVER'))found.set('CLIENT_HANDLER_IN_SERVER',{code:'CLIENT_HANDLER_IN_SERVER',line});
     }
@@ -340,13 +382,21 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       const candidateOwners=link.possibleReceivers.map(path=>result.find(row=>row.path===path)).filter(Boolean);
       return Object.freeze({
         clientPath:link.path,clientLine:link.line,remote:link.remote,
-        serverCandidates:Object.freeze(candidateOwners.map(row=>Object.freeze({
-          path:row.path,
-          stateMethods:Object.freeze([...new Set(row.stateEffects.map(item=>item.method))].slice(0,8)),
-          responseMethods:Object.freeze([...new Set(row.calls.filter(call=>
-            ['FireClient','FireAllClients','InvokeClient'].includes(call.method)).map(call=>call.method))].slice(0,8)),
-          serverAuthorityConfirmed:false
-        }))),
+        serverCandidates:Object.freeze(candidateOwners.map(row=>{
+          const handlers=row.events.filter(event=>event.remote===link.remote
+            &&event.signal===link.expectedSignal);
+          const scoped=handlers.filter(event=>event.handlerScopeComplete);
+          return Object.freeze({
+            path:row.path,
+            handlerLines:Object.freeze(handlers.map(event=>event.line)),
+            sameHandlerScopeVerified:handlers.length===1&&scoped.length===1,
+            stateMethods:Object.freeze([...new Set(scoped.flatMap(event=>event.handlerStateMethods))].slice(0,8)),
+            responseMethods:Object.freeze([...new Set(scoped.flatMap(event=>event.handlerResponseMethods))].slice(0,8)),
+            methodScope:handlers.length>0&&scoped.length===handlers.length
+              ?'MATCHED_HANDLER_STATIC_SCOPE':'UNVERIFIED_HANDLER_SCOPE',
+            serverAuthorityConfirmed:false
+          });
+        })),
         status:link.status,causalProof:'UNVERIFIED_STATIC_CANDIDATE',
         actualGameplayVerified:false,saveRoundTripVerified:false
       });
