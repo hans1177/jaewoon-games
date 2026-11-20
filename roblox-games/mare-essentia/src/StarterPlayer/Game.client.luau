@@ -177,7 +177,7 @@ end)
 
 -- 백과사전 공통 표지와 본문 색
 -- [고서적 UI] 표지=낡은 가죽, 내지=미색 양피지, 버튼=색을 아끼는 황동·잉크 인쇄.
--- 메뉴·상점·전투·지도는 기존 사건/입력 흐름을 그대로 두고 색상만 통일한다.
+-- 메뉴·상점·전투·지도에서 행동의 우선순위를 같은 재질과 색으로 표현한다.
 local COLORS = {
 	cover = Color3.fromRGB(42, 32, 25),
 	coverRaised = Color3.fromRGB(74, 53, 39),
@@ -1017,7 +1017,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		else Color3.fromRGB(232, 211, 174)
 	b.TextColor3 = if active then inkTint else Color3.fromRGB(97, 93, 89)
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = math.clamp(math.floor((size.Y.Offset > 0 and size.Y.Offset or 40) * 0.47), 17, 23)
+	b.TextSize = math.clamp(math.floor((size.Y.Offset > 0 and size.Y.Offset or 40) * 0.37), 14, 20)
 	b.TextWrapped = true
 	-- [모바일 실제 입력] 장식용 종이·황동 테두리가 클릭을 가리지 않도록 버튼이 카드보다 앞에서 입력을 받는다.
 	b.AutoButtonColor = active
@@ -1051,12 +1051,12 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 				elseif back then Color3.fromRGB(138, 111, 78)
 				elseif highlighted then Color3.fromRGB(252, 220, 148)
 				elseif active then Color3.fromRGB(251, 238, 212) else Color3.fromRGB(193, 183, 168)
-			grain.ImageTransparency = if back then 0.38 elseif danger or good or travel then 0.43 else 0.12
+			grain.ImageTransparency = if back then 0.58 elseif danger or good or travel then 0.64 else 0.55
 		end
 		if grain then
 			-- 저장 초기화 재확인처럼 상태가 붉게 바뀌는 경우 종이가 경고색을 가리지 않게 한다.
 			b:GetPropertyChangedSignal("BackgroundColor3"):Connect(function()
-				grain.ImageTransparency = if b.BackgroundColor3 == COLORS.red then 1 else 0.06
+				grain.ImageTransparency = if b.BackgroundColor3 == COLORS.red then 1 else 0.55
 			end)
 		end
 		local edge = Instance.new("UIStroke")
@@ -1119,6 +1119,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 			caption.BackgroundTransparency = 1
 			caption.Position = UDim2.fromOffset(9, 1)
 			caption.Size = UDim2.new(1, -18, 1, -2)
+			caption.TextTruncate = Enum.TextTruncate.AtEnd
 			caption.Text = b.Text
 			caption.TextColor3 = b.TextColor3
 			caption.TextSize = b.TextSize
@@ -1190,7 +1191,7 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	end
 
 	local btnCount = buttons and #buttons or 0
-	local btnWidth = btnCount * 112 + 8 -- [넓은 메뉴] 버튼마다 손가락 영역 확보
+	local btnWidth = if btnCount > 0 then btnCount * 112 + 8 else 0 -- [넓은 메뉴] 버튼마다 손가락 영역 확보
 	local buttonRefs = {}
 
 	local textBox = Instance.new("Frame")
@@ -2045,8 +2046,8 @@ function H.layoutBook()
   local statusWidth = if width < 480 then math.max(140, math.min(252, width - 142))
     elseif width < 740 then math.min(290, width - 156)
     else math.clamp(math.floor(width * 0.36), 280, 380)
-  local topY = if width < 740 then 36 else 15
-  local rowH = if width < 740 then 30 else 34
+  local topY = if width < 740 then 68 else 15
+  local rowH = if width < 740 then 44 else 34
   if width < 740 then
     -- [폰] 두 칸 전체를 가운데 정렬하며 폭이 작을수록 자금 표시만 줄인다.
     local reserve = if recent then recentWidth + 8 else 0
@@ -2070,9 +2071,8 @@ function H.layoutBook()
   H.menuRecentButton.Text = if recent then "↶ " .. groupOf(H.recentTab).name else ""
   headerLabel.Size = UDim2.fromOffset(if width < 740 then math.max(86, width - 152)
     else math.max(108, math.floor((width - statusWidth) * 0.5) - 82), 29)
-  H.pageDetails.Size = UDim2.fromOffset(if width < 740 then 0
+  H.pageDetails.Size = UDim2.fromOffset(if width < 740 then math.max(86, width - 152)
     else math.max(100, math.floor((width - statusWidth) * 0.5) - 82), 18)
-  H.pageDetails.Visible = width >= 740
   local tabCount = #groupOf(currentTab).tabs
   -- [시설 탭 본문] 교역·조선의 기존 상세 화면은 같은 책 안에서 재사용한다.
   local facilityDetail = currentTab == "trade" or currentTab == "yard"
@@ -2080,42 +2080,41 @@ function H.layoutBook()
   -- 공통 헤더 표시만 숨긴다. 거래·정비·최근 이동 동작은 기존 상세장부를 사용한다.
   H.menuStatusLabel.Visible = not facilityDetail
   H.menuRecentButton.Visible = recent and not facilityDetail
-  local gallery = not facilityDetail and view ~= nil and not newGameMode
+  local gallery = H.galleryImage.Image ~= "" and not facilityDetail and view ~= nil and not newGameMode
     and currentTab ~= "map" and currentTab ~= "codex" and currentTab ~= "encyclopedia" and currentTab ~= "market"
   local wide = width >= 740
   -- [중복 탭 제거] 단일 기능 시설(조선소)은 같은 이름의 탭을 다시 보여주지 않는다.
   local tabs = tabCount > 1 and tabBar.Visible
   -- [상단 오른쪽 가로 탭] 데스크톱은 한 줄 전체 표시, 작은 폰은 한 줄 가로 스크롤.
-  local compactTabs = width < 740
+  local compactTabs = not wide
+  local sectionTop = if compactTabs and not facilityDetail then 120 else 68
+  local tabHeight = if compactTabs then 52 else 54
   local tabGap = if width < 340 then 4 else 6
   local tabList = H.tabStrip:FindFirstChildOfClass("UIListLayout")
   if tabList then tabList.Padding = UDim.new(0, tabGap) end
-  local tabWidth = if compactTabs then math.clamp(math.floor((width - 16 - math.max(0, tabCount - 1) * tabGap) / math.max(1, tabCount)), 70, 190) else 166
+  local tabWidth = if compactTabs then math.clamp(math.floor((width - 16 - math.max(0, tabCount - 1) * tabGap) / math.max(1, tabCount)), 82, 190) else 166
   local allTabsWidth = tabCount * tabWidth + math.max(0, tabCount - 1) * tabGap
   local visibleTabsWidth = math.min(math.max(1, width - 16), allTabsWidth)
-  tabBar.Position = UDim2.new(1, -8, 0, 68)
-  tabBar.Size = UDim2.fromOffset(visibleTabsWidth, if width < 740 then 48 else 58)
+  tabBar.Position = UDim2.new(1, -8, 0, sectionTop)
+  tabBar.Size = UDim2.fromOffset(visibleTabsWidth, tabHeight + 3)
   -- [폰 너비 변경] 기존 버튼을 재생성하지 않고 현재 폭만 갱신한다.
   H.tabWidth = tabWidth
   for _, button in H.tabStrip:GetChildren() do
     if button:IsA("TextButton") then
-      button.Size = UDim2.fromOffset(tabWidth, if width < 740 then 46 else 54)
-      local hint = button:FindFirstChild("FacilityTabHint")
-      if hint then hint.Visible = not compactTabs end
+      button.Size = UDim2.fromOffset(tabWidth, tabHeight)
       local icon = button:FindFirstChild("TabIcon")
       local caption = button:FindFirstChild("PrintedCaption")
+      if icon then
+        icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 10, 0.5, -13)
+      end
       if icon and caption then
-        local padding = button:FindFirstChildOfClass("UIPadding")
-        if padding then padding.PaddingLeft = UDim.new(0, if compactTabs then 0 else 35) end
-        icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 1) else UDim2.new(0, 7, 0.5, -13)
-        caption.Position = if compactTabs then UDim2.fromOffset(2, 27) else UDim2.fromOffset(35, 3)
-        caption.Size = if compactTabs then UDim2.new(1, -4, 0, 14) else UDim2.new(1, -39, 0, 26)
+        caption.Position = if compactTabs then UDim2.fromOffset(4, 29) else UDim2.fromOffset(44, 0)
+        caption.Size = if compactTabs then UDim2.new(1, -8, 0, 17) else UDim2.new(1, -54, 1, -4)
         caption.TextXAlignment = if compactTabs then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
         local limit = caption:FindFirstChildOfClass("UITextSizeConstraint")
         if limit then
           limit.MinTextSize = 11
-          limit.MaxTextSize = if compactTabs then 14 else 19
-          limit.MinTextSize = if compactTabs then 11 else 16
+          limit.MaxTextSize = if compactTabs then 14 else 17
         end
       end
     end
@@ -2136,7 +2135,7 @@ function H.layoutBook()
       elseif selectedRight > currentX + visibleTabsWidth then selectedRight - visibleTabsWidth else currentX
     H.tabStrip.CanvasPosition = Vector2.new(math.clamp(desiredScroll, 0, math.max(0, allTabsWidth - visibleTabsWidth)), 0)
   end
-  local bodyTop = if tabs then (if width < 740 then 124 else 134) else 68
+  local bodyTop = sectionTop + (if tabs then tabHeight + 12 else 0)
   H.bookSpine.Visible = false
   H.facilityGallery.Visible = gallery
   local primaryVisible = gallery and currentTab ~= "board" and currentTab ~= "battle"
@@ -2193,6 +2192,7 @@ function H.layoutBook()
     H.facilityGallery.Size = UDim2.fromOffset(artW, math.max(100, height - bodyTop - 8))
     H.galleryImage.Position = UDim2.fromOffset(8, 8)
     H.galleryImage.Size = UDim2.new(1, -16, 1, -46)
+    H.galleryTitle.TextWrapped = false
     H.galleryTitle.Position = UDim2.new(0, 12, 1, -34)
     H.galleryTitle.Size = UDim2.new(1, -24, 0, 30)
     H.galleryCaption.Position = UDim2.new(0, 12, 1, -41)
@@ -2204,7 +2204,7 @@ function H.layoutBook()
     H.menuActionDock.Size = UDim2.new(1, -artW - 24, 0, 68)
   else
     -- [폰·세로 화면] 탭은 상단 오른쪽 한 줄, 본문과 원화는 전체 폭을 사용한다.
-    local showArt = gallery and height >= 680
+    local showArt = gallery and height - bodyTop >= 500
     H.facilityGallery.Visible = showArt
     local artH = if showArt then math.clamp(math.floor(height * 0.17), 108, 146) else 0
     H.facilityGallery.Position = UDim2.fromOffset(8, bodyTop)
@@ -11214,19 +11214,12 @@ function H.renderTabs()
 				local grain = b:FindFirstChild("BookMaterial")
 				if grain then
 					grain.ImageColor3 = if selected then Color3.fromRGB(252, 220, 148) else Color3.fromRGB(138, 111, 78)
-					grain.ImageTransparency = if selected then 0.12 else 0.38
+					grain.ImageTransparency = if selected then 0.55 else 0.58
 				end
 				local border = b:FindFirstChildOfClass("UIStroke")
 				if border then
 					border.Color = if selected then UI_BRASS_DARK else Color3.fromRGB(205, 163, 93)
 					border.Thickness = if selected then 2.5 else 1.6
-				end
-				local ribbon = b:FindFirstChild("BookRibbon")
-				if ribbon then
-					ribbon.BackgroundColor3 = if selected then UI_BRASS else UI_BRASS_DARK
-					ribbon.BackgroundTransparency = if selected then 0 else 0.16
-					ribbon.Size = if selected then UDim2.new(0, 5, 1, -12) else UDim2.new(0, 4, 1, -16)
-					ribbon.Position = if selected then UDim2.fromOffset(4, 6) else UDim2.fromOffset(5, 8)
 				end
 				local underline = b:FindFirstChild("ActiveTabRule")
 				if underline then underline.Visible = selected end
@@ -11237,8 +11230,6 @@ function H.renderTabs()
 						Scale = 1.15,
 					}):Play()
 				end
-				local hint = b:FindFirstChild("FacilityTabHint")
-				if hint then hint.TextColor3 = if selected then INK_SOFT else Color3.fromRGB(238, 218, 183) end
 			end
 		end
 		H.renderedTabId = currentTab
@@ -11258,6 +11249,10 @@ function H.renderTabs()
 		b:SetAttribute("SelectedTab", selected)
 		b.TextColor3 = if selected then INK else Color3.fromRGB(255, 241, 210)
 		b.TextSize = 18
+		for _, name in { "PressedEdge", "BookRibbon", "BrassRivet" } do
+			local decoration = b:FindFirstChild(name)
+			if decoration then decoration.Visible = false end
+		end
 		local ti = H.TAB_ICON[id]
 		if ti then
 			-- [공통 규격] 도크는 40px, 시설별 탭은 26px. 아이콘과 인쇄 글자를 겹치지 않게 나눈다.
@@ -11293,9 +11288,6 @@ function H.renderTabs()
 					Scale = 1.15,
 				}):Play()
 			end
-			local pad = Instance.new("UIPadding")
-			pad.PaddingLeft = UDim.new(0, 35)
-			pad.Parent = b
 			local caption = b:FindFirstChild("PrintedCaption")
 			if caption and caption:IsA("TextLabel") then
 				caption.Position = UDim2.fromOffset(35, 3)
@@ -11316,21 +11308,14 @@ function H.renderTabs()
             -- [선택한 책갈피] 황동 가장자리와 얇은 가죽 표식을 더해 색면 없이 위치를 구분한다.
             local border = b:FindFirstChildOfClass("UIStroke")
             if border then border.Color = UI_BRASS_DARK; border.Thickness = 2.5 end
-            local ribbon = b:FindFirstChild("BookRibbon")
-            if ribbon then
-                ribbon.BackgroundColor3 = UI_BRASS
-                ribbon.Size = UDim2.new(0, 5, 1, -12)
-                ribbon.Position = UDim2.fromOffset(4, 6)
-                ribbon.BackgroundTransparency = 0
-            end
 		end
 		-- [선택 띠 재사용] 모든 탭에 한 번 만들고 선택 시 보이기만 전환한다.
 		local rule = Instance.new("Frame")
 		rule.Name = "ActiveTabRule"
-		rule.BackgroundColor3 = INK
+		rule.BackgroundColor3 = UI_BRASS_DARK
 		rule.BorderSizePixel = 0
-		rule.Position = UDim2.new(0, 8, 1, -5)
-		rule.Size = UDim2.new(1, -16, 0, 4)
+		rule.Position = UDim2.new(0, 8, 1, -4)
+		rule.Size = UDim2.new(1, -16, 0, 2)
 		rule.ZIndex = b.ZIndex + 3
 		rule.Visible = selected
 		rule.Parent = b
@@ -12699,8 +12684,8 @@ function render()
 	-- [시설 탭] 선택지가 두 개 이상인 시설에만 공통 탭을 표시한다.
 	tabBar.Visible = #groupOf(currentTab).tabs > 1
 	H.renderTabs()
+	H.renderFacilityGallery()
 	H.layoutBook()
-	H.renderFacilityGallery() -- [공통 원화] 시설/메뉴 전환 때 선택된 승인 원화와 읽기 순서 갱신.
 
 	local p, ship = view.player, view.ship
 	local grp = groupOf(currentTab)
