@@ -2006,8 +2006,20 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 	local blendTime = os.clock()
 	local blend = r15ActionBlends[model]
 	if not blend then
-		blend = { state = state, applied = {} }
+		blend = { state = state, applied = {}, previous = {} }
 		r15ActionBlends[model] = blend
+	end
+	-- [주민/동료 실관절 연결] 작업 포즈가 방금 적용됐어도 실제 보이는 관절에서 이어받는다.
+	-- 프레임마다 테이블을 새로 만들지 않고 주민별 재사용 캐시에 현재 관절 상태를 기록한다.
+	local previousPose = blend.previous
+	if not previousPose then
+		previousPose = {}
+		blend.previous = previousPose
+	end
+	for _, joint in m do
+		if joint and (joint:IsA("Motor6D") or joint:IsA("AnimationConstraint")) then
+			previousPose[joint] = joint.Transform
+		end
 	end
 	if blend.state ~= state or not blend.initialized then
 		-- [일·보행 연속성] 이전 액션 캐시가 아닌 현재 실제 관절 자세를 기준으로 전환한다.
@@ -2169,16 +2181,42 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 		if m.leftLeg then m.leftLeg.Transform = m.leftLeg.Transform * A(0, turn * 0.14, 0) end
 		if m.rightLeg then m.rightLeg.Transform = m.rightLeg.Transform * A(0, turn * 0.14, 0) end
 	end
-	-- 히트/공격은 반응성을 유지하고, 일반 자세만 조금 더 길게 연결한다.
+	-- [관절별 가속·감속] 일반 보행과 일상 동작의 목/허리/어깨를 실제 직전 자세에서 보간한다.
+	-- 달리기·걷기 다리/무릎/발목은 거리 기반 접지 위상을 잃지 않도록 바로 적용한다.
+	-- 공격·피격은 원래의 빠른 반응을 보존한다.
 	local duration = if state == "attack" or state == "hurt" then 0.10 else 0.26
 	local elapsed = if blend.from then math.clamp((blendTime - blend.changedAt) / duration, 0, 1) else 1
 	local eased = elapsed * elapsed * (3 - 2 * elapsed)
+	local locomotion = state == "walk" or state == "run"
+	local reaction = state == "attack" or state == "hurt" or state == "shoot"
+	local poseDt = math.clamp(turnDt, 0, 1 / 20)
 	for _, joint in m do
 		if joint and (joint:IsA("Motor6D") or joint:IsA("AnimationConstraint")) then
+			local target = joint.Transform
 			if blend.from then
-				joint.Transform = (blend.from[joint] or CFrame.identity):Lerp(joint.Transform, eased)
+				target = (blend.from[joint] or previousPose[joint] or CFrame.identity):Lerp(target, eased)
+			elseif not reaction then
+				local groundJoint = locomotion and (joint == m.leftLeg or joint == m.rightLeg
+					or joint == m.leftKnee or joint == m.rightKnee
+					or joint == m.leftAnkle or joint == m.rightAnkle or joint == m.root)
+				local prev = previousPose[joint]
+				if prev and not groundJoint then
+					local head = joint == m.neck
+					local body = joint == m.waist
+					local rate = if head then 10 elseif body then 12
+						elseif joint == m.leftArm or joint == m.rightArm then 19 else 17
+					local alpha = 1 - math.exp(-rate * poseDt)
+					if head or body then
+						local _, angle = (prev:ToObjectSpace(target)):ToAxisAngle()
+						if math.abs(angle) > 0.0001 then
+							alpha = math.min(alpha, (if head then 4.5 else 5.5) * poseDt / math.abs(angle))
+						end
+					end
+					target = prev:Lerp(target, alpha)
+				end
 			end
-			blend.applied[joint] = joint.Transform
+			joint.Transform = target
+			blend.applied[joint] = target
 		end
 	end
 	if elapsed >= 1 then blend.from = nil end
