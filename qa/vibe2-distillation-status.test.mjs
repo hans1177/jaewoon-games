@@ -155,7 +155,7 @@ test('같은 수량이라도 검증된 학습 내용이 달라지면 새 가중�
 test('동일한 검증 샘플은 Windows와 Linux 경로에서 동일한 재훈련 지문을 생성한다',()=>{
   const record=verifiedSample({project:'P0001',index:7,taskType:'bugfix'});
   const unix=buildDistillationStatus([{record,sourceFile:'company-learning/training-samples/verified.json',index:0}]);
-  const windows=buildDistillationStatus([{record,sourceFile:'company-learning\\\\training-samples\\\\verified.json',index:0}]);
+  const windows=buildDistillationStatus([{record,sourceFile:'company-learning\\training-samples\\verified.json',index:0}]);
   assert.equal(unix.tasks.bugfix.accepted,1);
   assert.equal(windows.tasks.bugfix.accepted,1);
   assert.equal(windows.tasks.bugfix.datasetSha256,unix.tasks.bugfix.datasetSha256);
