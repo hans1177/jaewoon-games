@@ -844,7 +844,7 @@ test('자가 개선 학습은 자산 결과 실증 증거만 보존하고 자동
     sourceAndOutputHashesVerified:true};
   const next=createVibeAssetRecompositionPlan({
     gameId:'mare-essentia',sourceAssets:[a,b],
-    verifiedObservations:[evidence,{...evidence,outputSha256:'broken'},{...evidence,independentQaPassed:false}]
+    verifiedObservations:[evidence,{...evidence,parentAssetId:recipe.donorAssetId},{...evidence,outputSha256:'broken'},{...evidence,independentQaPassed:false}]
   });
   assert.equal(next.verifiedObservations.length,1);
   assert.equal(next.rejectedOrUnanchoredObservations,2);
