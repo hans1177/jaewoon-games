@@ -1610,6 +1610,8 @@ test('항구 31개 직업은 등록된 실물 장비를 직접 R15에 착용하�
  assert.match(pose,/if string\.sub\(assetName, 1, 7\) == "outfit_" or jobProp then/);
  assert.match(pose,/LocalTransparencyModifier = 0/);
  assert.match(pose,/math\.rad\(spec\[9\] or 0\)/);
+ assert.match(pose,/elseif not textured and not jobProp then/);
+ assert.match(pose,/if npcOutfit and surface and surface\.ColorMap ~= "" then/);
  assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
  assert.match(port,/GetAttributeChangedSignal\("MareAssetsReady"\)/);
  assert.match(port,/readyConn:Disconnect\(\)/);
