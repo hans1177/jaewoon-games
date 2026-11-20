@@ -386,3 +386,20 @@ test('existing Vibe2 GAME_PRIMARY executor uses all 128 fixed repeat-development
   assert.ok(!core.includes("== 'game-primary' && '64'"));
   assert.ok(runner.includes("VIBE2_ASSET_DEVELOPMENT_MAX: '63'"));
 });
+
+test('game-primary reserve awakens the existing asset lane only for queued asset priority conflicts',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const start=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
+  const end=workflow.indexOf('      - name: Record asset no-model cache bypass',start);
+  assert.ok(start>=0&&end>start);
+  const reserve=workflow.slice(start,end);
+  assert.ok(reserve.includes("grep -q '=>queued-asset-reservation-priority@'"));
+  assert.ok(reserve.includes('VIBE2_ASSET_PRIORITY_WAKE=DISPATCHED_EXISTING_ASSET_LANE'));
+  assert.ok(reserve.includes('actions/runs?status=queued&per_page=100'));
+  assert.ok(reserve.includes('actions/runs?status=in_progress&per_page=100'));
+  assert.ok(reserve.includes('rows.length>=100'));
+  assert.ok(reserve.includes("run.path==='.github/workflows/vibe2-continuous-core.yml'"));
+  assert.ok(reserve.includes("-f 'inputs[execution_lane]=asset-development'"));
+  assert.ok(reserve.includes('VIBE2_ASSET_PRIORITY_WAKE=DEDUPED_OR_UNKNOWN'));
+  assert.ok(reserve.includes('VIBE2_ASSET_PRIORITY_WAKE=SKIPPED_STATUS_UNAVAILABLE'));
+});

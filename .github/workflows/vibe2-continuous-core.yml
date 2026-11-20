@@ -1333,6 +1333,38 @@ jobs:
           }
           NODE
 
+          # Reuse the existing ASSET_DEVELOPMENT lane when queued asset priority
+          # blocks GAME_PRIMARY and delayed 24H schedule has not awakened it.
+          # Never steal asset file locks or dispatch while an asset run may be active.
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] \
+            && grep -q '=>queued-asset-reservation-priority@' /tmp/vibe2-reserve.log; then
+            if gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=queued&per_page=100" > /tmp/vibe2-asset-wake-queued.json 2>/dev/null \
+              && gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=in_progress&per_page=100" > /tmp/vibe2-asset-wake-running.json 2>/dev/null; then
+              if node - <<'ASSET_WAKE_CHECK'
+          const fs=require('fs');
+          const records=['/tmp/vibe2-asset-wake-queued.json','/tmp/vibe2-asset-wake-running.json']
+            .map(file=>JSON.parse(fs.readFileSync(file,'utf8')).workflow_runs);
+          if(records.some(rows=>!Array.isArray(rows)||rows.length>=100))process.exit(1);
+          const active=records.flat().some(run=>
+            run.path==='.github/workflows/vibe2-continuous-core.yml'
+            &&String(run.display_title||'').endsWith('· asset-development'));
+          process.exit(active?1:0);
+          ASSET_WAKE_CHECK
+              then
+                if gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/vibe2-continuous-core.yml/dispatches" \
+                  -f 'ref=main' -f 'inputs[execution_lane]=asset-development' -f 'inputs[lane_max]=8' >/dev/null; then
+                  echo 'VIBE2_ASSET_PRIORITY_WAKE=DISPATCHED_EXISTING_ASSET_LANE'
+                else
+                  echo 'VIBE2_ASSET_PRIORITY_WAKE=FAILED_GITHUB_DISPATCH' >&2
+                fi
+              else
+                echo 'VIBE2_ASSET_PRIORITY_WAKE=DEDUPED_OR_UNKNOWN'
+              fi
+            else
+              echo 'VIBE2_ASSET_PRIORITY_WAKE=SKIPPED_STATUS_UNAVAILABLE'
+            fi
+          fi
+
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
             --queue="$control_root/.vibe2/queue.json" \
