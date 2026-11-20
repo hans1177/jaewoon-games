@@ -1,11 +1,22 @@
+// 파일명: qa/department-learning-memory.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import { writeEvolutionEvidence } from '../tools/evolution-evidence-recorder.mjs';
 import { CORE_DEPARTMENT_ROLES, ingestVerifiedDepartmentEvidence, normalizeVerifiedDepartmentLearning, selectVerifiedDepartmentLearning } from '../tools/department-learning-memory.mjs';
 import { buildVibeCoreContext } from '../tools/autonomous-department-cycle.mjs';
+
+// [학습 모듈 로딩 회귀] 바이브2 작업자가 평가 코드에서 직접 import해도 CLI 저장을 실행하지 않는다.
+test('department learning memory import from Node module eval does not require argv[1]',()=>{
+  const output=execFileSync(process.execPath,
+    ['--input-type=module','--eval',"await import('./tools/department-learning-memory.mjs')"],
+    {cwd:process.cwd(),encoding:'utf8'});
+  assert.equal(output,'');
+});
 
 const roles=['planning','development','graphics','qa','balance'];
 const resultFor=(role,extra={})=>({role,workState:'DONE',decision:'PROCEED',summary:`${role} summary`,nextAction:`${role} action`,checks:[`${role} check`],risks:[],...extra});
@@ -230,4 +241,32 @@ test('기획·그래픽·개발·QA·오디오의 검증 경험치가 기존 부
   assert.equal(core.departmentReviewRequired,true);
   assert.equal(core.maySelfApprove,false);
   assert.equal(JSON.stringify(ledger),original,'기존 경험치·기록·밸런스는 불변이다');
+});
+
+
+test('department learning direct CLI retains existing XP and history with no unverified evidence',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-department-cli-'));
+  try{
+    const ledgerPath=path.join(dir,'department-experience.json');
+    const evidenceDir=path.join(dir,'evidence');
+    fs.mkdirSync(evidenceDir);
+    const original={version:1,departments:{development:{xp:9320}},history:[{type:'existing-verified'}]};
+    fs.writeFileSync(ledgerPath,JSON.stringify(original),'utf8');
+    const script=fileURLToPath(new URL('../tools/department-learning-memory.mjs',import.meta.url));
+    const output=execFileSync(process.execPath,[script,'--ledger='+ledgerPath,'--evidence-dir='+evidenceDir],{encoding:'utf8'});
+    assert.equal(JSON.parse(output).xpMutation,false);
+    const ledger=JSON.parse(fs.readFileSync(ledgerPath,'utf8'));
+    assert.deepEqual(ledger.departments,original.departments);
+    assert.deepEqual(ledger.history,original.history);
+    assert.equal(ledger.verifiedLearning,undefined,'증거가 없으면 기존 저장 구조에 새 필드를 만들지 않는다');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('read-only pull-request learning QA does not serialize unrelated PRs or the main writer',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-dna-learning.yml',import.meta.url),'utf8');
+  assert.ok(workflow.includes("github.event_name == 'pull_request'"));
+  assert.ok(workflow.includes("format('company-dna-learning-pr-{0}', github.event.pull_request.number)"));
+  assert.ok(workflow.includes("|| 'company-dna-learning'"));
+  assert.ok(workflow.includes("if: github.event_name != 'pull_request'"));
+  assert.ok(workflow.includes('cancel-in-progress: false'));
 });

@@ -1,3 +1,4 @@
+// 파일명: tools/department-learning-memory.mjs
 // 역할: 독립 QA를 통과한 자율개발 5개 부서 결과만 department-experience.json의 구조화 학습 메모리에 누적하고 다음 플로어에서 역할별로 재사용한다.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -180,6 +181,7 @@ function main(){
   console.log(JSON.stringify({...result,ledger:ledgerPath,verifiedLearning:ledger.verifiedLearning?.length??0,xpMutation:false},null,2));
 }
 
-if(import.meta.url===pathToFileURL(process.argv[1]).href){
+// 직접 실행할 때만 학습 자료를 저장한다. 동적 import/평가 코드에는 argv[1]이 없을 수 있다.
+if(typeof process.argv[1]==='string' && import.meta.url===pathToFileURL(process.argv[1]).href){
   try{main();}catch(error){console.error(error?.stack||error);process.exitCode=1;}
 }
