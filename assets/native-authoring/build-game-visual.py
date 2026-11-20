@@ -818,20 +818,24 @@ def reconstruct_verified_source():
     permitted={'bodyPlan','morph','add','remove','detail'}
     if set(recipe)-permitted: raise RuntimeError('RECONSTRUCTION_UNKNOWN_FIELD')
     body_plan=recipe.get('bodyPlan','HUMANOID')
-    if body_plan not in ('HUMANOID','CREATURE'):
+    if body_plan not in ('HUMANOID','CREATURE','WORLD'):
         raise RuntimeError('RECONSTRUCTION_BODY_PLAN_UNSUPPORTED')
+    if body_plan=='WORLD' and (ARGS.profile not in ('environment','building','prop','weapon') or ASSET_ARMATURES):
+        raise RuntimeError('RECONSTRUCTION_WORLD_REQUIRES_STATIC_WORLD_SOURCE')
     morph=recipe.get('morph',{})
-    if not isinstance(morph,dict) or set(morph)-{'head','torso','arms','legs','muscle','monster'}:
+    allowed_morph={'width','depth','height'} if body_plan=='WORLD' else {'head','torso','arms','legs','muscle','monster'}
+    if not isinstance(morph,dict) or set(morph)-allowed_morph:
         raise RuntimeError('RECONSTRUCTION_MORPH_INVALID')
     for value in morph.values():
         if not isinstance(value,(int,float)) or isinstance(value,bool) or not math.isfinite(value):
             raise RuntimeError('RECONSTRUCTION_MORPH_INVALID')
-    if any(not .65<=float(value)<=1.45 for key,value in morph.items() if key not in ('muscle','monster')):
+    if any(not (.85 if body_plan=='WORLD' else .65)<=float(value)<=(1.15 if body_plan=='WORLD' else 1.45)
+           for key,value in morph.items() if key not in ('muscle','monster')):
         raise RuntimeError('RECONSTRUCTION_MORPH_OUT_OF_BOUNDS')
     if any(not 0<=float(morph[key])<=1 for key in ('muscle','monster') if key in morph):
         raise RuntimeError('RECONSTRUCTION_MORPH_OUT_OF_BOUNDS')
     detail=recipe.get('detail','KEEP')
-    if detail not in ('KEEP','LOW_POLY','SMOOTH'):
+    if detail not in ('KEEP','LOW_POLY','SMOOTH','EDGE_BEVEL'):
         raise RuntimeError('RECONSTRUCTION_DETAIL_UNSUPPORTED')
     additions=recipe.get('add',[])
     removals=recipe.get('remove',[])
@@ -867,6 +871,13 @@ def reconstruct_verified_source():
         t=max(0.,min(1.,t))
         return t*t*(3-2*t)
     def transform(pos,intensity):
+        if body_plan=='WORLD':
+            width=1+(float(morph.get('width',1))-1)*intensity
+            depth=1+(float(morph.get('depth',1))-1)*intensity
+            height=1+(float(morph.get('height',1))-1)*intensity
+            return Vector((center.x+(pos.x-center.x)*width,
+                           center.y+(pos.y-center.y)*depth,
+                           lo.z+(pos.z-lo.z)*height))
         height=(pos.z-lo.z)/size.z
         side=abs((pos.x-center.x)/(size.x*.5))
         head=smooth((height-.66)/.23)
@@ -1071,6 +1082,14 @@ def reconstruct_verified_source():
             if detail=='LOW_POLY':
                 modifier=obj.modifiers.new('VibeSourceTopologyLOD','DECIMATE')
                 modifier.ratio=.55
+            elif detail=='EDGE_BEVEL':
+                if len(obj.data.polygons)>18000:
+                    raise RuntimeError('RECONSTRUCTION_BEVEL_SOURCE_TRIANGLE_BUDGET')
+                modifier=obj.modifiers.new('VibeSourceEdgeFinish','BEVEL')
+                modifier.width=.006*min(size.x,size.y,size.z)
+                modifier.segments=1
+                modifier.limit_method='ANGLE'
+                modifier.angle_limit=math.radians(38)
             else:
                 modifier=obj.modifiers.new('VibeSourceSurfaceSmoothing','SUBSURF')
                 modifier.subdivision_type='CATMULL_CLARK'
