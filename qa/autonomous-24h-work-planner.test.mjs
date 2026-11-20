@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { build24hAutonomousWorkOrder, rankDevelopmentFocus, selectContinuousTarget } from '../tools/autonomous-24h-work-planner.mjs';
 import { runDepartmentRole } from '../tools/autonomous-department-cycle.mjs';
 
@@ -105,6 +106,9 @@ test('optional Web testbed work never claims to replace selected-platform valida
   assert.equal(order.gameId,'D');
   assert.equal(order.selectedReason,'DEVELOPMENT_CONFIRMED_OPTIONAL_WEB_TESTBED');
   assert.equal(order.continuous24h.mode,'DEVELOPMENT_CONFIRMED_OPTIONAL_WEB_TESTBED');
+  assert.deepEqual(order.departmentReviewRoles,['planning','graphics','development','qa','audio']);
+  assert.deepEqual(order.implementationRoles,['development','graphics','qa','audio']);
+  assert.deepEqual(order.continuous24h.departmentSequence,['planning','graphics','development','qa','audio','planning-final']);
   assert.match(order.goal,/선택 플랫폼 기술·게임플레이 검증을 대체하거나 플랫폼 선택을 강제하지 않는다/);
 });
 
@@ -146,4 +150,15 @@ test('DESIGN_ONLY runtime issue cannot enter autonomous source-code FAST lane',(
   const order=build24hAutonomousWorkOrder({portfolio,artbooks:designBooks,health,catalog:designCatalog,diagnostics:{},queueState:{version:2,attempts:[]},date:'2026-09-10',filesystem});
   assert.equal(order.run,false);
   assert.notEqual(order.workLane,'FAST');
+});
+
+
+test('portfolio department roles match canonical free audio-inclusive department flow',()=>{
+  const p=JSON.parse(fs.readFileSync(new URL('../autonomous-portfolio.json',import.meta.url),'utf8'));
+  assert.deepEqual(p.departmentDevelopmentCycle,['planning','graphics','development','qa','audio','planning-final']);
+  assert.deepEqual(p.departmentCodeRoles,['development','graphics','qa','audio']);
+  assert.equal(p.departmentDevelopmentCycle.includes('balance'),false);
+  assert.equal(p.departmentCodeRoles.includes('balance'),false);
+  assert.equal(p.departmentReviewMode,'PARALLEL_INDEPENDENT');
+  assert.equal(p.paidApi,false);
 });
