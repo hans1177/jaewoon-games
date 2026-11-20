@@ -391,3 +391,61 @@ test('Vibe59 Roblox server synthesis refuses absent or duplicated exact edit anc
     [source,'']
   ])assert.throws(()=>create(text,anchor),/VIBE59_ROBLOX_ANCHOR_REQUIRED/);
 });
+// [로블록스 저장 흐름] 오프라인 감사가 긴 파일의 실수와 줄바꿈 호출을 놓치지 않는다.
+test('Vibe59 detects late multiline datastore operations without comment or string decoys',()=>{
+  const filler=Array.from({length:4050},()=>'-- existing game logic');
+  const clientSource=[
+    'local text = "game:GetService(\'DataStoreService\')"',
+    ...filler,
+    'local store = game:GetService(',
+    '  "DataStoreService")',
+    'store',
+    '  :GetDataStore("characters")',
+    'store',
+    '  :UpdateAsync("profile", function() end)',
+    '-- store:SetAsync("fake", 5)',
+    'local fake = [[store:GetAsync("fake")]]'
+  ].join('\n');
+  const path='client/Save.client.luau';
+  const report=inspectVibe59RobloxCoding({
+    files:[{path,source:clientSource}],responsiblePaths:[path]
+  });
+  assert.deepEqual(report.files[0].stateEffects,[
+    {method:'GetDataStore',line:4055},
+    {method:'UpdateAsync',line:4057}
+  ]);
+  assert.deepEqual(report.warnings.map(x=>[x.code,x.line]),[
+    ['CLIENT_DATASTORE_ACCESS',4055],
+    ['CLIENT_DATASTORE_SERVICE',4052]
+  ]);
+  assert.equal(report.qualityDirector.runtimeVerified,false);
+  assert.equal(report.qualityDirector.sourceWrite,false);
+});
+
+test('Vibe59 Roblox server binding proof requires executable declarations before edit anchor',()=>{
+  const machine={handlerName:'handleFight',stateVariable:'phase',states:['idle','fight'],
+    events:['attack'],transitions:[{from:'idle',to:'fight',event:'attack',actions:[]}]};
+  const binding={remoteVariable:'remote',playerStateTable:'states',authorizeFunction:'authorize'};
+  const valid=[
+    'local remote = {}',
+    'local states = {}',
+    'local function authorize(player,eventName) return true end'
+  ].join('\n');
+  const slot='-- TARGET SLOT';
+  const make=source=>synthesizeVibe59RobloxServerAction({
+    machine,binding,source,replaceAnchor:slot,sourcePath:'server/Fight.server.luau'
+  });
+  assert.match(make(valid+'\n'+slot).source,/remote.OnServerEvent:Connect/);
+  assert.throws(()=>make(
+    '-- local remote = {}\nlocal states = {}\nlocal function authorize(player,eventName) return true end\n'+slot
+  ),/VIBE59_ROBLOX_EXISTING_BINDING_REQUIRED/);
+  assert.throws(()=>make(
+    'local fake = "local remote = {}"\nlocal states = {}\nlocal function authorize(player,eventName) return true end\n'+slot
+  ),/VIBE59_ROBLOX_EXISTING_BINDING_REQUIRED/);
+  assert.throws(()=>make(slot+'\n'+valid),/VIBE59_ROBLOX_EXISTING_BINDING_REQUIRED/);
+  assert.match(make(valid+'\n-- remote.OnServerEvent:Connect(function(player) end)\n'
+    +'local comment = "remote.OnServerEvent:Connect(function(player) end)"\n'+slot).source,
+    /remote.OnServerEvent:Connect/);
+  assert.throws(()=>make(valid+'\nremote\n  .OnServerEvent\n  :Connect(function(player) end)\n'+slot),
+    /VIBE59_ROBLOX_DUPLICATE_REMOTE_HANDLER/);
+});
