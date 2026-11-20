@@ -2086,8 +2086,10 @@ function H.layoutBook()
   -- [중복 탭 제거] 단일 기능 시설(조선소)은 같은 이름의 탭을 다시 보여주지 않는다.
   local tabs = tabCount > 1 and tabBar.Visible
   -- [상단 오른쪽 가로 탭] 데스크톱은 한 줄 전체 표시, 작은 폰은 한 줄 가로 스크롤.
-  local tabGap = 6
   local compactTabs = width < 740
+  local tabGap = if width < 340 then 4 else 6
+  local tabList = H.tabStrip:FindFirstChildOfClass("UIListLayout")
+  if tabList then tabList.Padding = UDim.new(0, tabGap) end
   local tabWidth = if compactTabs then math.clamp(math.floor((width - 16 - math.max(0, tabCount - 1) * tabGap) / math.max(1, tabCount)), 70, 190) else 166
   local allTabsWidth = tabCount * tabWidth + math.max(0, tabCount - 1) * tabGap
   local visibleTabsWidth = math.min(math.max(1, width - 16), allTabsWidth)
@@ -7570,6 +7572,16 @@ function openYardHall()
 				end, true)
 			button.Name = "YardTab_" .. entry[2]
 			button:SetAttribute("SelectedTab", selected)
+			if selected then
+				local activeRule = Instance.new("Frame")
+				activeRule.Name = "ActiveTabRule"
+				activeRule.BackgroundColor3 = INK
+				activeRule.BorderSizePixel = 0
+				activeRule.Position = UDim2.new(0, 8, 1, -5)
+				activeRule.Size = UDim2.new(1, -16, 0, 3)
+				activeRule.ZIndex = button.ZIndex + 3
+				activeRule.Parent = button
+			end
 			button.Position = if landscape then UDim2.fromOffset(4, 4 + (i - 1) * 56) else UDim2.new((i - 1) / 3, 4, 0, 3)
 			button.TextSize = 16
 		end
@@ -11332,7 +11344,7 @@ H.closeX = Instance.new("TextButton")
 H.closeX.Name = "CloseX"
 H.closeX.AnchorPoint = Vector2.new(1, 0)
 H.closeX.Position = UDim2.new(1, -8, 0, 8)
-H.closeX.Size = UDim2.fromOffset(40, 40)
+H.closeX.Size = UDim2.fromOffset(44, 44)
 H.closeX.BackgroundColor3 = COLORS.leather
 H.closeX.Text = "×"
 H.closeX.Font = Enum.Font.GothamBold
