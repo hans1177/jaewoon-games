@@ -1468,6 +1468,119 @@ function Pose.work(model, kind, t, moving)
 		set(m.neck, A(0.05, s * 0.30, s * 0.07))
 		set(m.waist, A(0, s * 0.08, 0))
 		set(m.leftArm, A(-0.25, 0, 0.2)); set(m.rightArm, A(-0.25, 0, -0.2))
+
+	-- [직업 생태계] 농업·어업·수공업·상업·항만·경비·학문·사교의 추가 R15 몸짓.
+	elseif kind == "sow" then
+		local s = math.sin(t * 2.15)
+		set(m.waist, A(0.46 + s * 0.10, 0.13, 0))
+		set(m.rightArm, A(-0.85 - s * 0.35, 0.15, -0.25)); set(m.rightElbow, A(-0.8, 0, 0))
+		set(m.leftArm, A(-0.72, 0, 0.20)); set(m.leftKnee, A(-0.22, 0, 0))
+	elseif kind == "weed" then
+		local s = (math.sin(t * 1.75) + 1) * 0.5
+		set(m.root, CFrame.new(0, -0.33, 0)); set(m.waist, A(0.48 + s * 0.17, 0, 0))
+		set(m.leftKnee, A(-0.73, 0, 0)); set(m.rightKnee, A(-0.58, 0, 0))
+		set(m.rightArm, A(-0.6 - s * 0.48, 0, -0.24)); set(m.leftArm, A(-0.72, 0, 0.24))
+	elseif kind == "net" then
+		local s = math.sin(t * 1.6)
+		set(m.waist, A(0.16 + s * 0.12, 0, 0))
+		set(m.leftArm, A(-1.30 + s * 0.42, 0, 0.42)); set(m.rightArm, A(-1.30 + s * 0.42, 0, -0.42))
+		set(m.leftElbow, A(-0.68, 0, 0)); set(m.rightElbow, A(-0.68, 0, 0))
+	elseif kind == "reel" then
+		local s = math.sin(t * 3.0)
+		set(m.rightArm, A(-1.02 + s * 0.15, 0, -0.19)); set(m.rightElbow, A(-1.02 - s * 0.24, 0, 0))
+		set(m.leftArm, A(-0.88, 0, 0.25)); set(m.neck, A(0.17, s * 0.09, 0))
+	elseif kind == "saw" then
+		local s = math.sin(t * 3.1)
+		set(m.waist, A(0.24 + s * 0.09, 0, 0))
+		set(m.rightArm, A(-1.15 + s * 0.38, 0, -0.16))
+		set(m.rightElbow, A(-0.68 - s * 0.18, 0, 0)); set(m.leftArm, A(-0.85, 0, 0.22))
+	elseif kind == "plane" then
+		local s = math.sin(t * 2.3)
+		set(m.waist, A(0.28 + s * 0.10, 0, 0))
+		set(m.leftArm, A(-1.03 + s * 0.27, 0, 0.19)); set(m.rightArm, A(-1.03 + s * 0.27, 0, -0.19))
+		set(m.leftElbow, A(-0.85, 0, 0)); set(m.rightElbow, A(-0.85, 0, 0))
+	elseif kind == "carve" then
+		local s = math.sin(t * 3.8)
+		set(m.neck, A(0.24, 0, 0)); set(m.waist, A(0.21, 0, 0))
+		set(m.leftArm, A(-1.06, 0, 0.26)); set(m.rightArm, A(-1.12 + s * 0.12, 0, -0.20))
+		set(m.rightElbow, A(-1.22 + s * 0.13, 0, 0))
+	elseif kind == "bargain" then
+		local s = math.sin(t * 1.65)
+		set(m.rightArm, A(-0.85 - math.max(0, s) * 0.62, 0, -0.32))
+		set(m.leftArm, A(-0.62 - math.max(0, -s) * 0.58, 0, 0.30))
+		set(m.neck, A(0.03, s * 0.16, 0))
+	elseif kind == "pack" then
+		local s = math.sin(t * 2.4)
+		set(m.waist, A(0.22, 0, 0)); set(m.neck, A(0.16, 0, 0))
+		set(m.leftArm, A(-1.12, 0, 0.15 + s * 0.12)); set(m.rightArm, A(-1.12, 0, -0.15 - s * 0.12))
+		set(m.leftElbow, A(-1.0, 0, 0)); set(m.rightElbow, A(-1.0, 0, 0))
+	elseif kind == "chart" then
+		local s = math.sin(t * 1.2)
+		set(m.leftArm, A(-1.2, 0, 0.35)); set(m.rightArm, A(-1.15, 0, -0.30))
+		set(m.rightElbow, A(-0.95 + s * 0.25, 0, 0)); set(m.neck, A(0.15, s * 0.16, 0))
+	elseif kind == "knot" then
+		local s = math.sin(t * 3.3)
+		set(m.leftArm, A(-1.1, 0, 0.18 + s * 0.08)); set(m.rightArm, A(-1.1, 0, -0.18 - s * 0.08))
+		set(m.leftElbow, A(-1.10 + s * 0.2, 0, 0)); set(m.rightElbow, A(-1.10 - s * 0.2, 0, 0))
+		set(m.neck, A(0.22, 0, 0))
+	elseif kind == "scrub" then
+		local s = math.sin(t * 3)
+		set(m.waist, A(0.33, 0.12 * s, 0)); set(m.root, CFrame.new(0, -0.08, 0))
+		set(m.rightArm, A(-0.97 + s * 0.25, 0, -0.18)); set(m.leftArm, A(-0.85, 0, 0.2))
+	elseif kind == "patrol" then
+		local s = math.sin(t * 0.85)
+		set(m.rightArm, A(-0.25, 0, -0.10)); set(m.leftArm, A(-0.25, 0, 0.10))
+		set(m.waist, A(0, s * 0.11, 0)); set(m.neck, A(0, -s * 0.36, 0))
+	elseif kind == "scan" then
+		local s = math.sin(t * 1.15)
+		set(m.rightArm, A(-1.55, 0, -0.28)); set(m.rightElbow, A(-1.10, 0, 0))
+		set(m.leftArm, A(-0.25, 0, 0.14)); set(m.neck, A(-0.10, s * 0.48, 0))
+	elseif kind == "seal" then
+		local s = math.max(0, math.sin(t * 2))
+		set(m.waist, A(0.25, 0, 0)); set(m.leftArm, A(-0.95, 0, 0.2))
+		set(m.rightArm, A(-0.8 - s * 0.65, 0, -0.14)); set(m.rightElbow, A(-0.9, 0, 0))
+	elseif kind == "guide" then
+		local s = math.sin(t * 1.1)
+		set(m.rightArm, A(-1.0 - s * 0.32, 0, -0.60)); set(m.leftArm, A(-0.55, 0, 0.22))
+		set(m.neck, A(0.03, s * 0.26, 0)); set(m.waist, A(0, s * 0.08, 0))
+	elseif kind == "teach" then
+		local s = math.sin(t * 1.8)
+		set(m.leftArm, A(-0.95, 0, 0.23)); set(m.rightArm, A(-1.35 - s * 0.38, 0, -0.28))
+		set(m.neck, A(0.05, s * 0.18, 0)); set(m.waist, A(0.05, 0, 0))
+	elseif kind == "bless" then
+		local s = (math.sin(t * 1.05) + 1) * 0.5
+		set(m.leftArm, A(-1.4 - s * 0.25, 0, 0.30)); set(m.rightArm, A(-1.4 - s * 0.25, 0, -0.30))
+		set(m.neck, A(0.14, 0, 0)); set(m.waist, A(0.12, 0, 0))
+	elseif kind == "cheer" then
+		local s = math.sin(t * 2.5)
+		set(m.leftArm, A(-1.8 - s * 0.3, 0, 0.37)); set(m.rightArm, A(-1.8 + s * 0.3, 0, -0.37))
+		set(m.waist, A(0, s * 0.12, 0)); set(m.root, CFrame.new(0, math.abs(s) * 0.06, 0))
+	elseif kind == "gossip" then
+		local s = math.sin(t * 1.4)
+		set(m.rightArm, A(-0.92, 0, -0.16)); set(m.rightElbow, A(-1.12, 0, 0))
+		set(m.leftArm, A(-0.3 + s * 0.18, 0, 0.18)); set(m.neck, A(0.07, s * 0.23, 0))
+	elseif kind == "yawn" then
+		local s = math.max(0, math.sin(t * 0.82))
+		set(m.rightArm, A(-0.3 - s * 1.28, 0, -0.22)); set(m.rightElbow, A(-0.6 - s * 0.4, 0, 0))
+		set(m.neck, A(-s * 0.15, 0, 0)); set(m.waist, A(-s * 0.10, 0, 0))
+	elseif kind == "warm" then
+		local s = math.sin(t * 2)
+		set(m.leftArm, A(-0.63, 0, -0.32)); set(m.rightArm, A(-0.63, 0, 0.32))
+		set(m.leftElbow, A(-1.35 + s * 0.12, 0, 0)); set(m.rightElbow, A(-1.35 - s * 0.12, 0, 0))
+		set(m.waist, A(0.08, s * 0.07, 0))
+	elseif kind == "clap" then
+		local s = math.sin(t * 3.7)
+		set(m.leftArm, A(-1.24, 0, 0.26 + s * 0.16)); set(m.rightArm, A(-1.24, 0, -0.26 - s * 0.16))
+		set(m.leftElbow, A(-1.12, 0, 0)); set(m.rightElbow, A(-1.12, 0, 0))
+	elseif kind == "drill" then
+		local s = math.sin(t * 1.8)
+		set(m.rightArm, A(-1.05 - s * 0.45, 0, -0.2)); set(m.leftArm, A(-0.30, 0, 0.12))
+		set(m.waist, A(0.05, s * 0.12, 0)); set(m.leftKnee, A(-math.max(0, s) * 0.18, 0, 0))
+	elseif kind == "unload" then
+		local s = (math.sin(t * 1.45) + 1) * 0.5
+		set(m.waist, A(0.55 - s * 0.43, 0, 0)); set(m.root, CFrame.new(0, -0.16 + s * 0.14, 0))
+		set(m.leftArm, A(-0.42 - s * 0.78, 0, 0.18)); set(m.rightArm, A(-0.42 - s * 0.78, 0, -0.18))
+		set(m.leftKnee, A(-0.4 + s * 0.28, 0, 0)); set(m.rightKnee, A(-0.4 + s * 0.28, 0, 0))
 	elseif kind == "bell" then
 		local s = math.max(0, math.sin(t * 1.2))
 		set(m.rightArm, A(-2.2 + s * 0.6, 0, -0.1)); set(m.leftArm, A(-2.2 + s * 0.6, 0, 0.1))
