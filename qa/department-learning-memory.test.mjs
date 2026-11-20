@@ -258,7 +258,7 @@ test('department learning direct CLI retains existing XP and history with no unv
     const ledger=JSON.parse(fs.readFileSync(ledgerPath,'utf8'));
     assert.deepEqual(ledger.departments,original.departments);
     assert.deepEqual(ledger.history,original.history);
-    assert.deepEqual(ledger.verifiedLearning,[]);
+    assert.equal(ledger.verifiedLearning,undefined,'증거가 없으면 기존 저장 구조에 새 필드를 만들지 않는다');
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
