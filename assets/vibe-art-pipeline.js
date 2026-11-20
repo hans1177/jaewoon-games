@@ -727,12 +727,15 @@ export function createVibeGraphicsProduction({
   const runtimeEvidenceBase=runtimeEvidence&&typeof runtimeEvidence==='object'?runtimeEvidence:{};
   // [신규 네이티브 파생 자산] 실제 소스에 반영되기 전이라도 같은 그래픽 루트에서
   // 각 GLB의 실게임 모바일 캡처·측정값이 없으면 GRAPHICS_PASS를 봉쇄한다.
-  const nativeImportHashes=Object.freeze(unique((assetPlanBound
+  const nativeImportTargets=Object.freeze((assetPlanBound
     ?assetProductionPlan?.automaticAssetBindingWork?.targets||[]:[])
-    .filter(row=>row?.status==='NATIVE_IMPORT_AND_RUNTIME_QA_REQUIRED')
+    .filter(row=>row?.status==='NATIVE_IMPORT_AND_RUNTIME_QA_REQUIRED'));
+  const nativeImportHashes=Object.freeze(unique(nativeImportTargets
     .map(row=>clean(row?.artifactHash).toLowerCase())
     .filter(hash=>/^[a-f0-9]{64}$/.test(hash))));
-  const nativeMobileQaRequired=nativeImportHashes.length>0||runtimeEvidenceBase.mobileAssetPerformanceRequired===true;
+  const nativeImportIncompleteHash=nativeImportTargets.some(row=>
+    !/^[a-f0-9]{64}$/.test(clean(row?.artifactHash).toLowerCase()));
+  const nativeMobileQaRequired=nativeImportTargets.length>0||runtimeEvidenceBase.mobileAssetPerformanceRequired===true;
   const runtimeEvidenceBound=(Object.keys(runtimeEvidenceBase).length||requiredInterfaceSurfaces.length||sceneRequirements.length||runtimeBeforeAfterEvidence||nativeMobileQaRequired)?{
     ...runtimeEvidenceBase,
     ...(nativeMobileQaRequired?{mobileAssetPerformanceRequired:true}:{}),
@@ -800,13 +803,33 @@ export function createVibeGraphicsProduction({
       status:issues.length?'3D_BINDING_REPAIR_REQUIRED':'3D_RUNTIME_EVIDENCE_LINKED',
       issues:Object.freeze(issues),gameplayAuthority:false,saveAuthority:false});
   }));
+  // [네이티브 에셋 연결 실증] 모바일 프레임만 잘 나와도 새 GLB가 적용됐다는 뜻은 아니다.
+  // 기존 게임 소스에 실제 연결된 개체와 동일한 GLB의 런타임 캡처가 있어야 한다.
+  const nativeImportBinding=Object.freeze(nativeImportTargets.map(row=>{
+    const id=clean(row?.assetId),hash=clean(row?.artifactHash).toLowerCase();
+    const observed=spatial3dItems.filter(item=>item.id===id&&item.sourceHash===hash);
+    const issues=[];
+    if(!id||!['ROBLOX','UNITY','WEB'].includes(clean(target).toUpperCase())
+      ||!hash||!(/^[a-f0-9]{64}$/.test(hash)))
+      issues.push('PREPARED_NATIVE_ASSET_ID_OR_HASH_INVALID');
+    if(row?.sourceBound!==true)
+      issues.push('PREPARED_NATIVE_GAME_SOURCE_BINDING_REQUIRED');
+    if(observed.length!==1||observed[0].status!=='3D_RUNTIME_EVIDENCE_LINKED')
+      issues.push('PREPARED_NATIVE_ASSET_EXACT_RUNTIME_MODEL_NOT_OBSERVED');
+    return Object.freeze({id,artifactHash:hash,issues:Object.freeze(issues),
+      nativeRuntimeBound:issues.length===0,gameplayAuthority:false});
+  }));
+  const nativeImportRepairTargets=Object.freeze(nativeImportBinding.filter(row=>row.issues.length)
+    .map(row=>Object.freeze({surface:'NATIVE_ASSET_BINDING',id:row.id,artifactHash:row.artifactHash,
+      findings:row.issues,responsibleExistingStage:'HERO_CHARACTER_CREATURE_AND_SIGNATURE_ASSETS',
+      scope:'EXISTING_GAME_SOURCE_AND_VISUAL_ONLY',preserveGameplayAndSave:true})));
   const spatial3dApplication=Object.freeze({
     required:spatial3dItems.length>0,
     requiredCount:spatial3dItems.length,
     runtimeLinkedCount:spatial3dItems.filter(row=>!row.issues.length).length,
     status:spatial3dItems.some(row=>row.issues.length)?'3D_BINDING_REPAIR_REQUIRED':
       spatial3dItems.length?'3D_RUNTIME_EVIDENCE_LINKED':'NO_EXPLICIT_3D_ASSET_DECLARATIONS',
-    items:spatial3dItems,sourceFilesModified:false,
+    items:spatial3dItems,nativeImportBinding,nativeImportIncompleteHash,sourceFilesModified:false,
     applicationOwner:'EXISTING_VIBE_GAME_SOURCE_WORKER',
     verifier:'EXISTING_NATIVE_OR_WEB_RUNTIME_QA',
     cannotClaim3dRuntimePassFromMetadataAlone:true
@@ -825,8 +848,8 @@ export function createVibeGraphicsProduction({
   })));
   const verifiedReferenceStructure=Object.freeze(referenceImageStudies.filter(row=>row.observation?.verifiedAgainstSource===true).map(row=>Object.freeze({sourceId:row.request.sourceId,structuralEvidence:row.observation.features,directSceneCopyAllowed:false})));
   const runtimeRepairLoop=runtimeAudit?Object.freeze({
-    status:runtimeAudit.pass&&spatialRepairTargets.length===0?'VERIFIED_CHECKPOINT':'RUNTIME_VISUAL_REPAIR_REQUIRED',
-    defects:Object.freeze([...(runtimeAudit.repairTargets||[]),...spatialRepairTargets]),
+    status:runtimeAudit.pass&&spatialRepairTargets.length===0&&nativeImportRepairTargets.length===0&&!nativeImportIncompleteHash?'VERIFIED_CHECKPOINT':'RUNTIME_VISUAL_REPAIR_REQUIRED',
+    defects:Object.freeze([...(runtimeAudit.repairTargets||[]),...spatialRepairTargets,...nativeImportRepairTargets]),
     beforeAfter:beforeAfterAudit,
     artDirectionReview,
     preciseArtDirectionRepairTargets:Object.freeze((artDirectionReview?.repairTargets||[]).filter(row=>row.sourcePath&&row.targetId&&row.property)),
@@ -836,7 +859,7 @@ export function createVibeGraphicsProduction({
     gameplaySaveBalanceMutationForbidden:true,
     recaptureAfterEveryRepair:true,
     closeOnlyAfterRuntimeReobservation:true
-  }):Object.freeze({status:'RUNTIME_EVIDENCE_PENDING',defects:spatialRepairTargets,sameCaptureConditionsRequired:true,recaptureAfterEveryRepair:true,closeOnlyAfterRuntimeReobservation:true});
+  }):Object.freeze({status:'RUNTIME_EVIDENCE_PENDING',defects:Object.freeze([...spatialRepairTargets,...nativeImportRepairTargets]),sameCaptureConditionsRequired:true,recaptureAfterEveryRepair:true,closeOnlyAfterRuntimeReobservation:true});
   const measurementCapture=Object.freeze({
     required:Boolean(artSpec.animation?.required||artSpec.highEndVisual?.required),
     provided:Boolean(engineMeasurementCapture&&typeof engineMeasurementCapture==='object'&&Object.keys(engineMeasurementCapture).length),
@@ -849,6 +872,7 @@ export function createVibeGraphicsProduction({
     captureDeclarationAloneCannotCloseDefect:true
   });
   const status=runtimeAudit?(runtimeAudit.pass&&spatial3dApplication.status!=='3D_BINDING_REPAIR_REQUIRED'
+    &&nativeImportRepairTargets.length===0&&!nativeImportIncompleteHash
     ?'GRAPHICS_PASS':'RUNTIME_VISUAL_REPAIR_REQUIRED'):'GRAPHICS_PRODUCTION_ACTIVE';
   const evidence=createVibeGraphicsProductionEvidenceRoot({
     gameId,candidateRevision,sourceRevision,platformEvidenceRefs,assetProvenanceRefs,artBibleRef,visualTargetFramesRef,runtimeAudit
@@ -888,6 +912,7 @@ export function createVibeGraphicsProduction({
     runtimeAudit,
     nativeMobileQaRequired,
     pendingNativeAssetHashes:nativeImportHashes,
+    nativeImportRepairTargets,
     runtimeRepairLoop,
     engineMeasurementCapture:measurementCapture,
     interfaceRequirements:requiredInterfaceSurfaces,
