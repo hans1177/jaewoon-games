@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { writeEvolutionEvidence } from '../tools/evolution-evidence-recorder.mjs';
 import { CORE_DEPARTMENT_ROLES, ingestVerifiedDepartmentEvidence, normalizeVerifiedDepartmentLearning, selectVerifiedDepartmentLearning } from '../tools/department-learning-memory.mjs';
+import { buildVibeCoreContext } from '../tools/autonomous-department-cycle.mjs';
 
 const roles=['planning','development','graphics','qa','balance'];
 const resultFor=(role,extra={})=>({role,workState:'DONE',decision:'PROCEED',summary:`${role} summary`,nextAction:`${role} action`,checks:[`${role} check`],risks:[],...extra});
@@ -198,4 +199,35 @@ test('모든 부서는 출처 리비전과 현재 작업 목표가 맞는 검증
   assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'development',goal:'선박 포격 표현'}).map(x=>x.sourceEvidenceId),['ocean']);
   assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'development',gameId:'OCEAN',goal:'작업 개선'}).map(x=>x.sourceEvidenceId),['ocean']);
   assert.equal(selectVerifiedDepartmentLearning(ledger,{role:'development'}).length,2,'기존 목표 없는 조회는 검증 출처만 유지');
+});
+
+// [Vibe5.9 부서 역량 회귀] 경험치 자체는 바꾸지 않고 기존 품질 심화 지시를 실제 부서 검토에 전달한다.
+test('기획·그래픽·개발·QA·오디오의 검증 경험치가 기존 부서 사이클 품질 지시로 연결된다',()=>{
+  const ledger={version:1,departments:{
+    planning:{xp:400},graphics:{xp:400},development:{xp:9320},qa:{xp:3800},balance:{xp:200}
+  },verifiedLearning:[],history:[{type:'legacy-evidence'}]};
+  const original=JSON.stringify(ledger);
+  const order={run:true,gameId:'DEMO',gameSlug:'demo',sourcePath:'web-games/demo',
+    projectStage:'development',goal:'모바일 UI와 오디오 피드백 점검',
+    responsibilityFiles:['web-games/demo/app.js']};
+  const book={id:'demo-artbook',gameId:'demo',status:'COMPLETED',
+    cuts:Array.from({length:16},(_,i)=>({i})),postprocess:{complete:true},
+    lifecycle:{state:'DESIGN_BASELINE'}};
+  const core=buildVibeCoreContext({order,book,departmentExperience:ledger});
+  assert.deepEqual(Object.keys(core.departmentQualityByRole),[...CORE_DEPARTMENT_ROLES,'planning-final']);
+  assert.equal(core.departmentQualityByRole.planning.level,3);
+  assert.equal(core.departmentQualityByRole.graphics.level,3);
+  assert.equal(core.departmentQualityByRole.development.level,10);
+  assert.equal(core.departmentQualityByRole.qa.level,8);
+  assert.equal(core.departmentQualityByRole.audio.level,1,'오디오 미기록 경험치를 임의 부여하지 않는다');
+  assert.equal(core.departmentQualityByRole['planning-final'].level,3,'최종 기획은 기존 기획 경험치를 재사용한다');
+  assert.match(core.departmentQualityByRole.development.instruction,/부서 경험치 LV10/);
+  assert.match(core.departmentQualityByRole.development.instruction,/회귀 검증 깊이: adversarial/);
+  assert.match(core.departmentQualityByRole.audio.instruction,/부서 경험치 LV1/);
+  assert.ok(core.departmentQualityByRole.audio.focus.includes('모바일 호환/라이선스'));
+  assert.ok(Object.values(core.departmentQualityByRole).every(item=>item.authority==='unchanged-by-experience'));
+  assert.equal(core.departmentLearning.totalUsed,0,'미검증 학습 경험을 생성하지 않는다');
+  assert.equal(core.departmentReviewRequired,true);
+  assert.equal(core.maySelfApprove,false);
+  assert.equal(JSON.stringify(ledger),original,'기존 경험치·기록·밸런스는 불변이다');
 });
