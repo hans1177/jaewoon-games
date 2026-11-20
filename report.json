@@ -1,5 +1,5 @@
 {
- "sourceRevision": "bb9098457771db94212a09b1376d20a0a60cc1e7",
+ "sourceRevision": "25d2e6d0c63752931dcbaced9e6b086ee74029ef",
  "log": [
   {
    "step": 1,
@@ -360,271 +360,484 @@
    "step": 78,
    "capture": "tab_battle",
    "files": 1
+  },
+  {
+   "step": 79,
+   "ctx": "Client",
+   "out": "UI_UNIFIED_PASS DOCK=7 BATTLE_TABS=4 TAVERN=MUG DECK=CARD WAR=CANNON\ntext"
+  },
+  {
+   "step": 80,
+   "capture": "ui_battle_unified",
+   "files": 1
+  },
+  {
+   "step": 81,
+   "ctx": "Client",
+   "out": "QA_MENU_ICONS_VISIBLE_FOR_CAPTURE\ntext"
+  },
+  {
+   "step": 83,
+   "capture": "ui_main_menu_icons",
+   "files": 1
+  },
+  {
+   "step": 84,
+   "ctx": "Client",
+   "out": "QA_MENU_ICONS_CAPTURE_RESTORED\ntext"
+  },
+  {
+   "step": 85,
+   "ctx": "Client",
+   "out": "UI_MOBILE_420PX_SIMULATED\ntext"
+  },
+  {
+   "step": 87,
+   "ctx": "Client",
+   "out": "UI_MOBILE_TOP_RIGHT_TABS_PASS width=406 tabs=4\ntext"
+  },
+  {
+   "step": 88,
+   "capture": "ui_mobile_tabs_topright",
+   "files": 1
+  },
+  {
+   "step": 89,
+   "ctx": "Client",
+   "out": "UI_MOBILE_LAYOUT_RESTORED\ntext"
+  },
+  {
+   "step": 91,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 전투 교관 | 전투 본부 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 주점 | 해적 사냥 | 지상 탐험 | 함대전 | 카드 대결 | 현재 상태\ntext"
+  },
+  {
+   "step": 92,
+   "ctx": "Client",
+   "out": "tab codex\ntext"
+  },
+  {
+   "step": 94,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:codex\ntext"
+  },
+  {
+   "step": 95,
+   "capture": "tab_codex",
+   "files": 1
+  },
+  {
+   "step": 96,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 학자 | 학자의 서재 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 전투 본부 | 지식 보고 | 지식 백과 | 연구 | 백과사전 | 세계 백과\ntext"
+  },
+  {
+   "step": 97,
+   "click": "qa_tab_codex_to_tech",
+   "at": "770,110",
+   "out": "770,110 CLICK=FACILITY_TAB_codex_TO_tech\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 770,
+      "y": 110
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 99,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:codex_TO_tech\ntext"
+  },
+  {
+   "step": 100,
+   "capture": "qa_click_codex_to_tech",
+   "files": 1
+  },
+  {
+   "step": 101,
+   "ctx": "Client",
+   "out": "tab tech\ntext"
+  },
+  {
+   "step": 103,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:tech\ntext"
+  },
+  {
+   "step": 104,
+   "capture": "tab_tech",
+   "files": 1
+  },
+  {
+   "step": 105,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 학자 | 학자의 서재 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 전투 본부 | 지식 보고 | 지식 백과 | 연구 | 백과사전 | 현재 상태\ntext"
+  },
+  {
+   "step": 106,
+   "ctx": "Client",
+   "out": "tab status\ntext"
+  },
+  {
+   "step": 108,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:status\ntext"
+  },
+  {
+   "step": 109,
+   "capture": "tab_status",
+   "files": 1
+  },
+  {
+   "step": 110,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 | 선장실 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 학자의 서재 | 현황 | 동료 관리 | 현재 상태 | 선체 100/100 | 동료 1명\ntext"
+  },
+  {
+   "step": 111,
+   "click": "qa_tab_status_to_crew",
+   "at": "942,110",
+   "out": "942,110 CLICK=FACILITY_TAB_status_TO_crew\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 942,
+      "y": 110
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 113,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:status_TO_crew\ntext"
+  },
+  {
+   "step": 114,
+   "capture": "qa_click_status_to_crew",
+   "files": 1
+  },
+  {
+   "step": 115,
+   "ctx": "Client",
+   "out": "tab crew\ntext"
+  },
+  {
+   "step": 117,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:crew\ntext"
+  },
+  {
+   "step": 118,
+   "capture": "tab_crew",
+   "files": 1
+  },
+  {
+   "step": 119,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 | 선장실 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 학자의 서재 | 현황 | 동료 관리 | 현재 상태 | 선체 100/100 | 동료 1명\ntext"
+  },
+  {
+   "step": 120,
+   "ctx": "Client",
+   "out": "QA_TRADE_INLINE_OPEN\ntext"
+  },
+  {
+   "step": 122,
+   "ctx": "Client",
+   "out": "TRADE_TAB_MENU_PASS\ntext"
+  },
+  {
+   "step": 123,
+   "ctx": "Client",
+   "out": "TRADE_TAB_PRICES_AND_ACTIONS_PASS\ntext"
+  },
+  {
+   "step": 124,
+   "capture": "ui_trade_inline",
+   "files": 1
+  },
+  {
+   "step": 125,
+   "ctx": "Client",
+   "out": "QA_YARD_INLINE_OPEN\ntext"
   }
  ],
  "errors": [
-  "step79:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:99: GWENT_NOT_PLAYING_CARD | text"
+  "step127:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:6: YARD_TAB_SHIPS_MISSING | text"
  ],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28000
+   "elapsedMs": 28004
   },
   {
    "step": 1,
    "type": "capture",
-   "elapsedMs": 1377
+   "elapsedMs": 1281
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 249
+   "elapsedMs": 211
   },
   {
    "step": 3,
    "type": "luau",
-   "elapsedMs": 267
+   "elapsedMs": 166
   },
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 233
+   "elapsedMs": 169
   },
   {
    "step": 5,
    "type": "wait",
-   "elapsedMs": 405
+   "elapsedMs": 407
   },
   {
    "step": 6,
    "type": "click_from_luau",
-   "elapsedMs": 1228
+   "elapsedMs": 1073
   },
   {
    "step": 7,
    "type": "wait",
-   "elapsedMs": 2006
+   "elapsedMs": 2010
   },
   {
    "step": 8,
    "type": "capture",
-   "elapsedMs": 2045
+   "elapsedMs": 982
   },
   {
    "step": 9,
    "type": "luau",
-   "elapsedMs": 349
+   "elapsedMs": 160
   },
   {
    "step": 10,
    "type": "wait",
-   "elapsedMs": 415
+   "elapsedMs": 406
   },
   {
    "step": 11,
    "type": "click_from_luau",
-   "elapsedMs": 1049
+   "elapsedMs": 977
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 2007
+   "elapsedMs": 2008
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 1141
+   "elapsedMs": 876
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 238
+   "elapsedMs": 182
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 414
+   "elapsedMs": 405
   },
   {
    "step": 16,
    "type": "click_from_luau",
-   "elapsedMs": 902
+   "elapsedMs": 958
   },
   {
    "step": 17,
    "type": "wait",
-   "elapsedMs": 1709
+   "elapsedMs": 1708
   },
   {
    "step": 18,
    "type": "capture",
-   "elapsedMs": 1407
+   "elapsedMs": 2217
   },
   {
    "step": 19,
    "type": "wait",
-   "elapsedMs": 1802
+   "elapsedMs": 1811
   },
   {
    "step": 20,
    "type": "capture",
-   "elapsedMs": 1562
+   "elapsedMs": 3252
   },
   {
    "step": 21,
    "type": "wait",
-   "elapsedMs": 1813
+   "elapsedMs": 1806
   },
   {
    "step": 22,
    "type": "capture",
-   "elapsedMs": 3745
+   "elapsedMs": 1399
   },
   {
    "step": 23,
    "type": "wait",
-   "elapsedMs": 3706
+   "elapsedMs": 3703
   },
   {
    "step": 24,
    "type": "capture",
-   "elapsedMs": 1809
+   "elapsedMs": 1410
   },
   {
    "step": 25,
    "type": "luau",
-   "elapsedMs": 3455
+   "elapsedMs": 2787
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 64
+   "elapsedMs": 357
   },
   {
    "step": 27,
    "type": "wait",
-   "elapsedMs": 2512
+   "elapsedMs": 2502
   },
   {
    "step": 28,
    "type": "capture",
-   "elapsedMs": 1701
+   "elapsedMs": 1619
   },
   {
    "step": 29,
    "type": "luau",
-   "elapsedMs": 1257
+   "elapsedMs": 1451
   },
   {
    "step": 30,
    "type": "luau",
-   "elapsedMs": 341
+   "elapsedMs": 383
   },
   {
    "step": 31,
    "type": "luau",
-   "elapsedMs": 333
+   "elapsedMs": 433
   },
   {
    "step": 32,
    "type": "wait",
-   "elapsedMs": 2514
+   "elapsedMs": 2508
   },
   {
    "step": 33,
    "type": "luau",
-   "elapsedMs": 253
+   "elapsedMs": 275
   },
   {
    "step": 34,
    "type": "capture",
-   "elapsedMs": 1296
+   "elapsedMs": 1507
   },
   {
    "step": 35,
    "type": "luau",
-   "elapsedMs": 326
+   "elapsedMs": 393
   },
   {
    "step": 36,
    "type": "luau",
-   "elapsedMs": 328
+   "elapsedMs": 641
   },
   {
    "step": 37,
    "type": "wait",
-   "elapsedMs": 2500
+   "elapsedMs": 2509
   },
   {
    "step": 38,
    "type": "luau",
-   "elapsedMs": 199
+   "elapsedMs": 287
   },
   {
    "step": 39,
    "type": "luau",
-   "elapsedMs": 335
+   "elapsedMs": 279
   },
   {
    "step": 40,
    "type": "capture",
-   "elapsedMs": 1333
+   "elapsedMs": 1408
   },
   {
    "step": 41,
    "type": "luau",
-   "elapsedMs": 316
+   "elapsedMs": 243
   },
   {
    "step": 42,
    "type": "click_from_luau",
-   "elapsedMs": 1300
+   "elapsedMs": 1102
   },
   {
    "step": 43,
    "type": "wait",
-   "elapsedMs": 857
+   "elapsedMs": 864
   },
   {
    "step": 44,
    "type": "luau",
-   "elapsedMs": 467
+   "elapsedMs": 261
   },
   {
    "step": 45,
    "type": "capture",
-   "elapsedMs": 885
+   "elapsedMs": 858
   },
   {
    "step": 46,
    "type": "luau",
-   "elapsedMs": 259
+   "elapsedMs": 200
   },
   {
    "step": 47,
    "type": "wait",
-   "elapsedMs": 2503
+   "elapsedMs": 2509
   },
   {
    "step": 48,
    "type": "luau",
-   "elapsedMs": 194
+   "elapsedMs": 122
   },
   {
    "step": 49,
    "type": "capture",
-   "elapsedMs": 905
+   "elapsedMs": 1018
   },
   {
    "step": 50,
    "type": "luau",
-   "elapsedMs": 179
+   "elapsedMs": 199
   },
   {
    "step": 51,
    "type": "click_from_luau",
-   "elapsedMs": 700
+   "elapsedMs": 767
   },
   {
    "step": 52,
@@ -634,17 +847,17 @@
   {
    "step": 53,
    "type": "luau",
-   "elapsedMs": 149
+   "elapsedMs": 191
   },
   {
    "step": 54,
    "type": "capture",
-   "elapsedMs": 706
+   "elapsedMs": 665
   },
   {
    "step": 55,
    "type": "luau",
-   "elapsedMs": 177
+   "elapsedMs": 193
   },
   {
    "step": 56,
@@ -654,133 +867,388 @@
   {
    "step": 57,
    "type": "luau",
-   "elapsedMs": 180
+   "elapsedMs": 315
   },
   {
    "step": 58,
    "type": "capture",
-   "elapsedMs": 696
+   "elapsedMs": 791
   },
   {
    "step": 59,
    "type": "luau",
-   "elapsedMs": 195
+   "elapsedMs": 197
   },
   {
    "step": 60,
    "type": "luau",
-   "elapsedMs": 277
+   "elapsedMs": 200
   },
   {
    "step": 61,
    "type": "wait",
-   "elapsedMs": 2504
+   "elapsedMs": 2506
   },
   {
    "step": 62,
    "type": "luau",
-   "elapsedMs": 177
+   "elapsedMs": 168
   },
   {
    "step": 63,
    "type": "capture",
-   "elapsedMs": 1490
+   "elapsedMs": 1078
   },
   {
    "step": 64,
    "type": "luau",
-   "elapsedMs": 176
+   "elapsedMs": 190
   },
   {
    "step": 65,
    "type": "luau",
-   "elapsedMs": 184
+   "elapsedMs": 418
   },
   {
    "step": 66,
    "type": "wait",
-   "elapsedMs": 2514
+   "elapsedMs": 2503
   },
   {
    "step": 67,
    "type": "luau",
-   "elapsedMs": 106
+   "elapsedMs": 95
   },
   {
    "step": 68,
    "type": "capture",
-   "elapsedMs": 956
+   "elapsedMs": 889
   },
   {
    "step": 69,
    "type": "luau",
-   "elapsedMs": 191
+   "elapsedMs": 194
   },
   {
    "step": 70,
    "type": "luau",
-   "elapsedMs": 200
+   "elapsedMs": 201
   },
   {
    "step": 71,
    "type": "wait",
-   "elapsedMs": 2507
+   "elapsedMs": 2508
   },
   {
    "step": 72,
    "type": "luau",
-   "elapsedMs": 143
+   "elapsedMs": 176
   },
   {
    "step": 73,
    "type": "capture",
-   "elapsedMs": 794
+   "elapsedMs": 880
   },
   {
    "step": 74,
    "type": "luau",
-   "elapsedMs": 176
+   "elapsedMs": 169
   },
   {
    "step": 75,
    "type": "luau",
-   "elapsedMs": 180
+   "elapsedMs": 152
   },
   {
    "step": 76,
    "type": "wait",
-   "elapsedMs": 2511
+   "elapsedMs": 2505
   },
   {
    "step": 77,
    "type": "luau",
-   "elapsedMs": 91
+   "elapsedMs": 166
   },
   {
    "step": 78,
    "type": "capture",
-   "elapsedMs": 838
+   "elapsedMs": 884
   },
   {
    "step": 79,
    "type": "luau",
-   "elapsedMs": 877
+   "elapsedMs": 531
+  },
+  {
+   "step": 80,
+   "type": "capture",
+   "elapsedMs": 754
+  },
+  {
+   "step": 81,
+   "type": "luau",
+   "elapsedMs": 192
+  },
+  {
+   "step": 82,
+   "type": "wait",
+   "elapsedMs": 602
+  },
+  {
+   "step": 83,
+   "type": "capture",
+   "elapsedMs": 822
+  },
+  {
+   "step": 84,
+   "type": "luau",
+   "elapsedMs": 193
+  },
+  {
+   "step": 85,
+   "type": "luau",
+   "elapsedMs": 194
+  },
+  {
+   "step": 86,
+   "type": "wait",
+   "elapsedMs": 1105
+  },
+  {
+   "step": 87,
+   "type": "luau",
+   "elapsedMs": 101
+  },
+  {
+   "step": 88,
+   "type": "capture",
+   "elapsedMs": 841
+  },
+  {
+   "step": 89,
+   "type": "luau",
+   "elapsedMs": 175
+  },
+  {
+   "step": 90,
+   "type": "wait",
+   "elapsedMs": 401
+  },
+  {
+   "step": 91,
+   "type": "luau",
+   "elapsedMs": 182
+  },
+  {
+   "step": 92,
+   "type": "luau",
+   "elapsedMs": 200
+  },
+  {
+   "step": 93,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 94,
+   "type": "luau",
+   "elapsedMs": 66
+  },
+  {
+   "step": 95,
+   "type": "capture",
+   "elapsedMs": 837
+  },
+  {
+   "step": 96,
+   "type": "luau",
+   "elapsedMs": 162
+  },
+  {
+   "step": 97,
+   "type": "click_from_luau",
+   "elapsedMs": 768
+  },
+  {
+   "step": 98,
+   "type": "wait",
+   "elapsedMs": 856
+  },
+  {
+   "step": 99,
+   "type": "luau",
+   "elapsedMs": 177
+  },
+  {
+   "step": 100,
+   "type": "capture",
+   "elapsedMs": 454
+  },
+  {
+   "step": 101,
+   "type": "luau",
+   "elapsedMs": 80
+  },
+  {
+   "step": 102,
+   "type": "wait",
+   "elapsedMs": 2503
+  },
+  {
+   "step": 103,
+   "type": "luau",
+   "elapsedMs": 80
+  },
+  {
+   "step": 104,
+   "type": "capture",
+   "elapsedMs": 537
+  },
+  {
+   "step": 105,
+   "type": "luau",
+   "elapsedMs": 79
+  },
+  {
+   "step": 106,
+   "type": "luau",
+   "elapsedMs": 83
+  },
+  {
+   "step": 107,
+   "type": "wait",
+   "elapsedMs": 2511
+  },
+  {
+   "step": 108,
+   "type": "luau",
+   "elapsedMs": 72
+  },
+  {
+   "step": 109,
+   "type": "capture",
+   "elapsedMs": 472
+  },
+  {
+   "step": 110,
+   "type": "luau",
+   "elapsedMs": 79
+  },
+  {
+   "step": 111,
+   "type": "click_from_luau",
+   "elapsedMs": 962
+  },
+  {
+   "step": 112,
+   "type": "wait",
+   "elapsedMs": 855
+  },
+  {
+   "step": 113,
+   "type": "luau",
+   "elapsedMs": 169
+  },
+  {
+   "step": 114,
+   "type": "capture",
+   "elapsedMs": 681
+  },
+  {
+   "step": 115,
+   "type": "luau",
+   "elapsedMs": 167
+  },
+  {
+   "step": 116,
+   "type": "wait",
+   "elapsedMs": 2508
+  },
+  {
+   "step": 117,
+   "type": "luau",
+   "elapsedMs": 92
+  },
+  {
+   "step": 118,
+   "type": "capture",
+   "elapsedMs": 809
+  },
+  {
+   "step": 119,
+   "type": "luau",
+   "elapsedMs": 156
+  },
+  {
+   "step": 120,
+   "type": "luau",
+   "elapsedMs": 167
+  },
+  {
+   "step": 121,
+   "type": "wait",
+   "elapsedMs": 3005
+  },
+  {
+   "step": 122,
+   "type": "luau",
+   "elapsedMs": 161
+  },
+  {
+   "step": 123,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 124,
+   "type": "capture",
+   "elapsedMs": 849
+  },
+  {
+   "step": 125,
+   "type": "luau",
+   "elapsedMs": 185
+  },
+  {
+   "step": 126,
+   "type": "wait",
+   "elapsedMs": 3004
+  },
+  {
+   "step": 127,
+   "type": "luau",
+   "elapsedMs": 478
   }
  ],
  "consoleCapture": {
   "captured": true,
-  "errorCount": 0,
-  "warningCount": 0,
-  "errors": []
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 2,
+  "warningCount": 13,
+  "errors": [
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "AssistantCommand:6: YARD_TAB_SHIPS_MISSING"
+   },
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "The current thread cannot read 'ColorMap' (lacking capability Plugin)"
+   }
+  ]
  },
  "summary": {
   "plannedSteps": 243,
-  "completedSteps": 80,
+  "completedSteps": 128,
   "plannedClicks": 11,
-  "successfulClicks": 5,
+  "successfulClicks": 7,
   "skippedOptionalClicks": 0,
   "plannedFrames": 62,
-  "capturedFrames": 18,
+  "capturedFrames": 28,
   "abortedEarly": true
  },
  "visualSamples": [
@@ -790,7 +1258,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 251306,
+      "bytes": 251312,
       "width": 0,
       "height": 0,
       "pass": true
@@ -813,7 +1281,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 250738,
+      "bytes": 250739,
       "width": 0,
       "height": 0,
       "pass": true
@@ -828,7 +1296,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195466,
+      "bytes": 195208,
       "width": 0,
       "height": 0,
       "pass": true
@@ -843,7 +1311,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 153116,
+      "bytes": 153089,
       "width": 0,
       "height": 0,
       "pass": true
@@ -855,8 +1323,8 @@
     "camera": true,
     "sky": false,
     "departing": false,
-    "atmosphere": false,
-    "brightness": 1,
+    "atmosphere": true,
+    "brightness": 2.012897253036499,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -867,7 +1335,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 144853,
+      "bytes": 138599,
       "width": 0,
       "height": 0,
       "pass": true
@@ -880,7 +1348,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.015794277191162,
+    "brightness": 2.016319751739502,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -891,7 +1359,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 150300,
+      "bytes": 79801,
       "width": 0,
       "height": 0,
       "pass": true
@@ -904,7 +1372,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.019011974334717,
+    "brightness": 2.0181899070739746,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -915,7 +1383,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 109404,
+      "bytes": 117603,
       "width": 0,
       "height": 0,
       "pass": true
@@ -928,7 +1396,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0229907035827637,
+    "brightness": 2.0214767456054688,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -939,7 +1407,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 146682,
+      "bytes": 146811,
       "width": 0,
       "height": 0,
       "pass": true
@@ -952,7 +1420,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0280370712280273,
+    "brightness": 2.0264358520507812,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -963,7 +1431,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164296,
+      "bytes": 164147,
       "width": 0,
       "height": 0,
       "pass": true
@@ -978,7 +1446,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 175371,
+      "bytes": 175340,
       "width": 0,
       "height": 0,
       "pass": true
@@ -993,7 +1461,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 164190,
+      "bytes": 164606,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1008,7 +1476,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 155631,
+      "bytes": 155352,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1023,7 +1491,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 123954,
+      "bytes": 124075,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1038,7 +1506,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 124172,
+      "bytes": 124142,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1053,7 +1521,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 172752,
+      "bytes": 172743,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1068,7 +1536,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 161259,
+      "bytes": 161251,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1083,7 +1551,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 166049,
+      "bytes": 166637,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1098,7 +1566,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 161021,
+      "bytes": 160831,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1106,15 +1574,165 @@
     ]
    },
    "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "ui_battle_unified",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 161070,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "ui_main_menu_icons",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 247849,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "ui_mobile_tabs_topright",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 168493,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_codex",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 159383,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "qa_click_codex_to_tech",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 166091,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "tab_tech",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 165406,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "tab_status",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 150394,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "qa_click_status_to_crew",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 161272,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "tab_crew",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 160919,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "ui_trade_inline",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 175674,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
   }
  ],
  "abortDiagnostics": {
-  "step": 79,
+  "step": 127,
   "type": "luau",
-  "elapsedMs": 546,
+  "elapsedMs": 112,
   "context": "Client",
-  "lastScreenshot": "tab_battle",
-  "lastClick": "qa_tab_route_to_map",
+  "lastScreenshot": "ui_trade_inline",
+  "lastClick": "qa_tab_status_to_crew",
   "probes": {
    "Client": {
     "reachable": true,
@@ -1127,7 +1745,7 @@
   }
  },
  "visualEvidence": {
-  "framesChecked": 18,
+  "framesChecked": 28,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
