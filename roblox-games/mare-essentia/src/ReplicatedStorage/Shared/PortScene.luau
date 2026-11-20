@@ -2899,8 +2899,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			{ "Terrain", "forest-flower-purple", 4 }, { "Terrain", "forest-bush-detailed", 5 } },
 		fallow = { { "Terrain", "crops-wheatstagea", 5 }, { "Terrain", "Grass_Small", 4 },
 			{ "Terrain", "coast-grass-patch", 5 }, { "Terrain", "crops-wheatstageb", 5 } },
+		-- [미개발 주거 녹지] 원래의 4개 생태 표본을 나무·관목·풀로 다양화한다. 건축 필지는 그대로.
 		woodland = { { "Terrain", "tree-oak", 10 }, { "Terrain", "forest-bush-detailed", 5 },
-			{ "Terrain", "forest-flower-purple", 4 }, { "Terrain", "north-pine-fall", 8 } },
+			{ "Terrain", "Bush_Small", 3.6 }, { "Terrain", "Grass_Small", 2.5 } },
 	}
 	local agricultural = table.find(made or {}, "grain") ~= nil or table.find(made or {}, "wheat") ~= nil
 		or table.find(made or {}, "rice") ~= nil or table.find(made or {}, "maize") ~= nil
@@ -3782,9 +3783,13 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				m:SetAttribute("Workplace", d.kind)
 				local w = { model = m, base = m:GetPivot(), kind = kind, mode = mode, phase = rng:NextNumber(0, 10) }
 				if mode == "path" then
+					-- [구역별 교대 근무] 기존 직선 왕복 동선을 쓰며 시장·농장·사원 근무 시간을 달리한다.
 					w.len = spec.len
 					w.speed = rng:NextNumber(1.2, 1.9)
 					w.idleKind = spec.idle
+					w.districtJob = job
+					w.shiftStart = (if job == "farmer" then 5 elseif job == "merchant" then 7 else 6) + rng:NextNumber(-0.4, 0.4)
+					w.shiftEnd = (if job == "farmer" then 18 elseif job == "merchant" then 20 else 21) + rng:NextNumber(-0.4, 0.4)
 				else
 					w.job = job
 					w.workKinds, w.tradeKinds, w.leisureKinds = activity, activity, leisure
@@ -5890,7 +5895,8 @@ function PortScene.build(info, onFacility)
 	-- (수상한 손님은 이제 주점에서 만난다)
 	-- 광장 인구는 세계경제 거주자 표본을 그대로 사용한다.
 	local plazaStartIndex = #walkers
-	local plazaResidents = if info.sim then math.clamp(math.floor((info.sim.residents or 6) / 12), 1, 4) else 4
+	-- [현실 주민수] 실제 주민이 없는 항구에 유령 주민을 만들지 않는다.
+	local plazaResidents = if info.sim then math.clamp(math.floor(math.max(0, tonumber(info.sim.residents) or 0) / 12), 0, 4) else 4
 	for _ = 1, plazaResidents do
 		local v = villager(folder, Vector3.new(rng:NextNumber(-60, 8), 0, rng:NextNumber(-14, 14)), rng:NextNumber(0, math.pi * 2), Color3.fromRGB(rng:NextInteger(60, 200), rng:NextInteger(60, 160), rng:NextInteger(40, 140)), rng)
 		if v then
@@ -6355,13 +6361,23 @@ function PortScene.build(info, onFacility)
 					end
 				end
 			elseif w.model.Parent then
-				-- [교역로 생활시간] 실제 화물 짐꾼은 낮에 일하고 야간에는 원래 위치에서 쉰다.
+				-- [작업 교대] 시설 근로자도 출퇴근 시간에 맞춰 원래 위치에서 휴식한다.
 				local hour = game:GetService("Lighting").ClockTime
-				if w.goodId and (hour < 6 or hour >= 20) then
+				local offDuty = (w.goodId and (hour < 6 or hour >= 20))
+					or (w.districtJob and (hour < (w.shiftStart or 6) or hour >= (w.shiftEnd or 20)))
+				if offDuty then
+					if w.districtJob and w.lastRoutine ~= "rest" then
+						w.lastRoutine = "rest"
+						w.model:SetAttribute("DailyRoutine", "rest")
+					end
 					w.model:PivotTo(w.base)
 					Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
 					Pose.work(w.model, "stretch", now + w.phase)
 				else
+				if w.districtJob and w.lastRoutine ~= "work" then
+					w.lastRoutine = "work"
+					w.model:SetAttribute("DailyRoutine", "work")
+				end
 				-- 끝에 닿으면 잠시 멈춰 서서(대화·둘러보기) 천천히 몸을 돌린 뒤 되돌아간다
 				local cycle = w.len / w.speed
 				local dwell = w.dwell or 2.2
