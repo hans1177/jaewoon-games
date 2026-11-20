@@ -3662,7 +3662,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				local marketGoods = Chains.showcaseGoods(info.portId, made,
 					if game:GetService("UserInputService").TouchEnabled then 1 else 2)
 				for i, good in marketGoods do
-					local mesh = GOOD_MESH[good]
+					-- 실물 시장 0개인 도시에는 교역품이 허공에 진열되지 않는다.
+					local mesh = if stalls > 0 then GOOD_MESH[good] else nil
 					if mesh and AssetIds[mesh[1] .. "/" .. mesh[2]] then
 						local item = put(mesh[1], mesh[2], goodSize(good, 2.5),
 							cx - 12 + (i - 1) * 22, cz + 2, false)
@@ -3686,7 +3687,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				-- [농업 지구] 실제 경작 농장 수량·도시 발전도에 비례한 경작 줄만 표현한다.
 				-- 과거 고정 119개 작물+19개 울타리를 줄이고 농지 내부의 보행 여백을 확보한다.
 				local farmsBuilt = if districtBuildings then math.max(0, math.floor(tonumber(districtBuildings.farm) or 0)) else lvl * 7
-				local cropRows = math.min(3, lvl, math.floor(math.sqrt(farmsBuilt) / 2))
+				local cropRows = if farmsBuilt <= 0 then 0 else math.min(3, lvl, math.max(1, math.floor(math.sqrt(farmsBuilt) / 2)))
 				local cropColumns = if districtTouch then math.min(5, 2 + lvl) else math.min(7, 2 + lvl)
 				for row = -cropRows, cropRows do
 					if cropRows > 0 then
