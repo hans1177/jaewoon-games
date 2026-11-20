@@ -675,3 +675,37 @@ test('graphics root consumes the existing family optimization work without a sec
   });
   assert.equal(absent.familyAssetOptimization,null);
 });
+
+test('바이브 엔진 13개 전문팀은 단일 제작 루트에서 무료 원본 검증 후에만 적용 후보를 만든다',async()=>{
+  const {VIBE_ENGINE_SPECIALISTS,createVibeEngineSpecialistPlan}=await import('../assets/vibe-art-pipeline.js');
+  assert.equal(VIBE_ENGINE_SPECIALISTS.length,13);
+  const hash='a'.repeat(64);
+  const plan=createVibeEngineSpecialistPlan({
+    gameId:'mare-essentia',target:'ROBLOX',request:'바이브 엔진 전체 개선',
+    assetGaps:[{family:'BUILDING'},{family:'MOTION'}],
+    externalCandidates:[
+      {id:'cc0-building',family:'BUILDING',license:'CC0',sha256:hash,
+        source:'https://example.invalid/free.glb',licenseVerified:true,commercialUseVerified:true},
+      {id:'unsafe-model',family:'CREATURE',license:'CC-BY-NC',sha256:hash,
+        source:'https://example.invalid/unsafe.glb',licenseVerified:true,commercialUseVerified:false}
+    ]
+  });
+  assert.equal(plan.teams.length,13);
+  assert.equal(plan.singleGraphicsRoot,true);
+  assert.equal(plan.webGameAuthoring,false);
+  assert.equal(plan.freeCc0Only,true);
+  assert.equal(plan.runtimeQaStillRequired,true);
+  const building=plan.teams.find(row=>row.id==='BUILDING');
+  assert.equal(building.externalSources.length,1);
+  assert.equal(building.externalSources[0].status,'VERIFIED_SOURCE_NOT_APPLIED');
+  assert.equal(plan.teams.find(row=>row.id==='CREATURE').externalSources.length,0);
+  assert.equal(plan.teams.find(row=>row.id==='CREATURE').unsafeOrUnverifiedSourceCount,1);
+  assert.equal(plan.teams.find(row=>row.id==='MUSIC').owner,'AUDIO');
+  assert.equal(plan.teams.find(row=>row.id==='STORY').owner,'DESIGN');
+  assert.equal(plan.teams.every(row=>row.qaAuthority===false),true);
+  const root=createVibeGraphicsProduction({gameId:'mare-essentia',target:'roblox',
+    request:'캐릭터 건축 음악 모션 UI 고도화',game:{genre:'ACTION_RPG'}});
+  assert.equal(root.engineImprovement.singleGraphicsRoot,true);
+  assert.equal(root.engineImprovement.runtimeQaStillRequired,true);
+  assert.equal(root.status,'GRAPHICS_PRODUCTION_ACTIVE');
+});
