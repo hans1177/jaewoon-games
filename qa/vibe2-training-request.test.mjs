@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import assert from 'node:assert/strict';
 import { buildTrainingRequest } from '../tools/vibe2-training-request.mjs';
+import { buildDataset } from '../tools/vibe2-weight-learning.mjs';
 
 function status(overrides = {}) {
   return {
@@ -161,8 +162,11 @@ test('로컬 정식 학습기는 보류셋의 독립 QA, 원본 해시, 세 분�
     'spec=importlib.util.spec_from_file_location("vibe_train","tools/vibe2-train.py")',
     'm=importlib.util.module_from_spec(spec)',
     'spec.loader.exec_module(m)',
+    'def reseal(r):',
+    '    r["sampleId"]=hashlib.sha256(m.stable_row({k:v for k,v in r.items() if k!="sampleId"}).encode("utf-8")).hexdigest()',
+    '    return r',
     'def row(i):',
-    '    return {"sampleId":hashlib.sha256(str(i).encode()).hexdigest(),"taskType":"coding","qa":{"independentQa":"PASS","browserQa":"PASS","runtime":"PASS"},"lifecycle":"active","qualityScore":1.0,"synthetic":False}',
+    '    return reseal({"instruction":str(i),"taskType":"coding","qa":{"independentQa":"PASS","browserQa":"PASS","runtime":"PASS"},"lifecycle":"active","qualityScore":1.0,"synthetic":False})',
     'train,ev,held=[row(1)],[row(2)],[row(3)]',
     'manifest={"version":3,"readyForTraining":True,"contamination":{"pass":True,"contaminationRate":0},"diversity":{"pass":True},"batching":{"pass":True},"targetTaskType":"coding","taskTrainingPlan":{"coding":{"ready":True}},"policy":{"teacherOnlyDifficult":True},"stats":{"train":1,"eval":1,"holdout":1,"syntheticTrain":0},"seed":20260910}',
     'def refreshed(h):',
@@ -175,13 +179,15 @@ test('로컬 정식 학습기는 보류셋의 독립 QA, 원본 해시, 세 분�
     '    try: m.validate_manifest(args,p or refreshed(h),train,ev,h)',
     '    except RuntimeError as err: assert marker in str(err),(marker,str(err))',
     '    else: raise AssertionError("unsafe official holdout passed")',
-    'wrong_qa=copy.deepcopy(held); wrong_qa[0]["qa"]["independentQa"]="FAIL"',
+    'wrong_qa=copy.deepcopy(held); wrong_qa[0]["qa"]["independentQa"]="FAIL"; reseal(wrong_qa[0])',
     'rejected(wrong_qa,"independent QA")',
     'wrong_id=copy.deepcopy(held); wrong_id[0]["sampleId"]=train[0]["sampleId"]',
     'rejected(wrong_id,"identity overlap")',
     'rejected(wrong_qa,"holdout SHA256",refreshed(held))',
-    'wrong_task=copy.deepcopy(held); wrong_task[0]["taskType"]="bugfix"',
+    'wrong_task=copy.deepcopy(held); wrong_task[0]["taskType"]="bugfix"; reseal(wrong_task[0])',
     'rejected(wrong_task,"mixed task type")',
+    'poisoned=copy.deepcopy(held); poisoned[0]["instruction"]="changed and forged manifest"',
+    'rejected(poisoned,"identity digest")',
     'p=importlib.util.spec_from_file_location("vibe_practice","tools/vibe2-practice-train.py")',
     'practice=importlib.util.module_from_spec(p)',
     'p.loader.exec_module(practice)',
@@ -190,4 +196,28 @@ test('로컬 정식 학습기는 보류셋의 독립 QA, 원본 해시, 세 분�
   ].join('\n');
   const check=spawnSync('python3',['-c',script],{encoding:'utf8'});
   assert.equal(check.status,0,check.stderr||check.error?.message||'Official holdout verification test failed');
+});
+
+test('공식 JS 데이터셋과 Python 가중치 학습기의 샘플 SHA256 식별자가 동일하다',()=>{
+  const record={
+    instruction:'검증된 버그 수정',input:'화면 입력 회귀 재현',output:'정상 처리 확인',
+    sourceCommit:'a'.repeat(40),project:'P0001',taskType:'bugfix',difficulty:'bug',
+    independentQa:'PASS',browserQa:'PASS',runtime:'PASS',
+    quality:{codeQuality:1,noRegression:true,playImprovement:1,ruleCompliance:1},
+  };
+  const dataset=buildDataset([{record,sourceFile:'company-learning/training-samples/test.json',index:0}],
+    {seed:42,targetTaskType:'bugfix',minTrainSamples:1});
+  const normalized=[...dataset.train,...dataset.eval,...dataset.holdout];
+  assert.equal(normalized.length,1);
+  const script=[
+    'import json,hashlib,sys,importlib.util',
+    'spec=importlib.util.spec_from_file_location("vibe_train","tools/vibe2-train.py")',
+    'm=importlib.util.module_from_spec(spec)',
+    'spec.loader.exec_module(m)',
+    'row=json.loads(sys.stdin.read())',
+    'expected=hashlib.sha256(m.stable_row({k:v for k,v in row.items() if k!="sampleId"}).encode("utf8")).hexdigest()',
+    'assert row["sampleId"]==expected,(row["sampleId"],expected)',
+  ].join('\n');
+  const check=spawnSync('python3',['-c',script],{input:JSON.stringify(normalized[0]),encoding:'utf8'});
+  assert.equal(check.status,0,check.stderr||check.error?.message||'JS/Python sample SHA mismatch');
 });
