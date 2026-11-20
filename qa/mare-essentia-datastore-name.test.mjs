@@ -2044,6 +2044,37 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  assert.match(port,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
 });
 
+// [도시 실체] 구획 표시 밀도가 실제 경제 시설과 발전도에 비례하고 중복 물체가 돌아오지 않는지 검사.
+test('시장·농경·종교 구획은 시설과 인력에 따라 달라지고 불필요한 중복 장식을 배제한다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const start=scene.indexOf('-- [실제 도시 구획] 경제의 건물·주민·고용을 읽기만 한다.');
+ const end=scene.indexOf('-- [항만 창고 장식]',start);
+ assert.ok(start>=0&&end>start,'기존 densify 단일 구획 책임 함수 유지');
+ const district=scene.slice(start,end);
+ for(const key of [
+  'local marketBuilt = if districtBuildings then',
+  'local warehouseBuilt = if districtBuildings then',
+  'local stalls = math.min(if districtTouch then 4 else 6',
+  'if stalls >= 2 and warehouseBuilt > 0 then',
+  'folder:SetAttribute("CityMarketStalls", stalls)',
+  'local farmsBuilt = if districtBuildings then',
+  'local cropRows = math.min(3, lvl, math.floor(math.sqrt(farmsBuilt) / 2))',
+  'if farmsBuilt > 0 then',
+  'if lvl >= 3 and farmsBuilt >= 5 then',
+  'folder:SetAttribute("CityFarmRows"',
+  'local clergyAvailable = not districtJobs',
+  'local workersLimit = math.min(employed, if districtTouch then 3 else 5',
+  'm:SetAttribute("Job", job)',
+  'm:SetAttribute("Workplace", d.kind)',
+  'w.workKinds, w.tradeKinds, w.leisureKinds = activity, activity, leisure',
+ ]) assert.ok(district.includes(key),'도시 시설·주민 연동 누락: '+key);
+ assert.ok(!district.includes('for k = -2, 2 do'),'도시 시장의 일괄 가판대 복구 금지');
+ assert.ok(!district.includes('for k = -8, 8 do'),'농장 고정 119개 작물 복구 금지');
+ assert.ok(!district.includes('put("Town", "fountain-round", 7, cx'),'중복 시장 분수 금지');
+ assert.match(district,/if lvl >= 3 and clergyAvailable then/);
+ assert.match(district,/districtResidents >= workersLimit/);
+});
+
 // [181개 항구 구역 재배치] 기존 시드와 모든 문화권의 경계가 동일 생성 함수에 적용된다.
 test('모든 항구 시장·종교·농장에 경계 검사와 안전 재배치 후보가 있다',()=>{
  const scene=read('ReplicatedStorage/Shared/PortScene.luau');
