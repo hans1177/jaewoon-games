@@ -17,7 +17,7 @@ test('one mixed game micro-task file is owned by exactly one implementation depa
     fs.cpSync(root,source,{recursive:true});
     try{
       const common={sourcePath:source,responsibilityFiles:['index.html'],goal:'runtime 오류 1개를 index.html에서 복구',repairMode:'MODEL'};
-      const roles=['development','graphics','qa','balance'];
+      const roles=['development','graphics','qa','audio'];
       const scopes=roles.map(role=>({role,result:resolveDepartmentScope({...common,role})}));
       const runnable=scopes.filter(row=>row.result.run);
       assert.deepEqual(runnable.map(row=>row.role),['development']);
@@ -97,7 +97,7 @@ test('rule patch stays development-only',()=>{
     assert.equal(resolveDepartmentScope({...common,role:'development'}).run,true);
     assert.equal(resolveDepartmentScope({...common,role:'graphics'}).run,false);
     assert.equal(resolveDepartmentScope({...common,role:'qa'}).run,false);
-    assert.equal(resolveDepartmentScope({...common,role:'balance'}).run,false);
+    assert.equal(resolveDepartmentScope({...common,role:'audio'}).run,false);
   }finally{fs.rmSync(source,{recursive:true,force:true});}
 });
 
@@ -107,7 +107,7 @@ test('FAST lane runs implementation only in development workspace',()=>{
   try{
     const common={sourcePath:source,responsibilityFiles:['index.html'],repairMode:'MODEL',workLane:'FAST',goal:'404 경로 복구'};
     assert.equal(resolveDepartmentScope({...common,role:'development'}).run,true);
-    for(const role of ['graphics','qa','balance']){
+    for(const role of ['graphics','qa','audio']){
       const result=resolveDepartmentScope({...common,role});
       assert.equal(result.run,false);
       assert.equal(result.reason,'FAST_LANE_DEVELOPMENT_ONLY');
@@ -128,7 +128,7 @@ test('review-only department handoffs stay NO_SCOPE even when game files contain
     const rows=[
       ['graphics','개발 워커가 현재 코드와 아트북 기준선에 기반해 반영한 후 자기 파트만 작성하도록 조치'],
       ['qa','기획부와 협의해 저장 의미와 핵심 루프를 재확정하고 테스트 시나리오를 확정한다'],
-      ['balance','현재 전투 수치를 검토하고 다음 라운드 기준을 제안한다']
+      ['audio','기존 전투 이벤트의 효과음 적용 여부를 검토하고 다음 라운드 기준을 제안한다']
     ];
     for(const [role,nextAction] of rows){
       const result=resolveDepartmentScope({...common,role,departmentResult:{nextAction}});
@@ -146,14 +146,17 @@ test('explicit functional department handoffs still receive runnable code scope'
   fs.writeFileSync(path.join(source,'game.html'),`<!doctype html><style>.hud{animation:pulse 1s infinite}</style><canvas id="game"></canvas><script>const enemy={hp:100,damage:10};let wave=1;const c=document.getElementById('game');try{localStorage.getItem('save');c.getContext('2d').fillRect(0,0,10,10)}catch(error){console.error(error)}</script>`);
   fs.writeFileSync(path.join(source,'style.css'),'.hud{transform:scale(1);animation:pulse 1s infinite}');
   fs.writeFileSync(path.join(source,'balance.json'),'{"enemy":{"hp":100,"damage":10},"wave":1}');
+  fs.writeFileSync(path.join(source,'audio.js'),'const cue = new Audio("./sfx.ogg"); function playSfx(){cue.play()}');
   try{
     const common={sourcePath:source,repairMode:'MODEL',workLane:'FULL',goal:'가장 작은 playable vertical slice 1개를 구현한다'};
     const graphics=resolveDepartmentScope({...common,role:'graphics',departmentResult:{nextAction:'HUD CSS 스타일을 수정한다'}});
     const qa=resolveDepartmentScope({...common,role:'qa',departmentResult:{nextAction:'오류 처리 가드를 game.html에 추가한다'}});
-    const balance=resolveDepartmentScope({...common,role:'balance',departmentResult:{nextAction:'enemy damage 수치를 조정한다'}});
+    const audio=resolveDepartmentScope({...common,role:'audio',departmentResult:{nextAction:'전투 효과음 재생 이벤트를 audio.js에서 연결한다'}});
     assert.equal(graphics.run,true);
     assert.equal(qa.run,true);
-    assert.equal(balance.run,true);
+    assert.equal(audio.run,true);
+    assert.ok(audio.scope.includes('audio.js'));
+    assert.throws(()=>resolveDepartmentScope({...common,role:'balance'}),/unsupported department role/);
   }finally{fs.rmSync(source,{recursive:true,force:true});}
 });
 test('deep diagnostic signal selects the correct source file without expanding writable scope',()=>{
@@ -168,5 +171,27 @@ test('deep diagnostic signal selects the correct source file without expanding w
     assert.equal(result.adaptiveContextOrder[0],'z.js');
     assert.equal(result.scope[0],'z.js');
     assert.equal(result.scope.every(file=>['a.js','z.js'].includes(file)),true);
+  }finally{fs.rmSync(source,{recursive:true,force:true});}
+});
+
+
+test('one sound implementation file belongs to audio only when the task explicitly requests audio work',()=>{
+  const source='web-games/__scope-audio-single-test__';
+  fs.rmSync(source,{recursive:true,force:true});fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'sound.js'),'const cue = new Audio("./cue.ogg"); function playSound(){cue.play()}');
+  try{
+    const common={sourcePath:source,responsibilityFiles:['sound.js'],
+      goal:'선박 포격 효과음 재생 이벤트 연결',repairMode:'MODEL'};
+    const audio=resolveDepartmentScope({...common,role:'audio',
+      departmentResult:{nextAction:'포격 효과음 재생을 sound.js에 연결한다'}});
+    const dev=resolveDepartmentScope({...common,role:'development'});
+    assert.equal(audio.run,true);
+    assert.deepEqual(audio.scope,['sound.js']);
+    assert.equal(dev.run,false);
+    assert.equal(dev.reason,'SINGLE_FILE_MICROTASK_OWNED_BY_AUDIO');
+    const unrelated=resolveDepartmentScope({role:'audio',sourcePath:source,
+      goal:'기존 게임 상태 저장 오류 수정',repairMode:'MODEL'});
+    assert.equal(unrelated.run,false);
+    assert.equal(unrelated.reason,'NO_FUNCTIONAL_RESPONSIBILITY');
   }finally{fs.rmSync(source,{recursive:true,force:true});}
 });
