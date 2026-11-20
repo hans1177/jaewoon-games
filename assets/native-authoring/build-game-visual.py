@@ -1106,6 +1106,13 @@ def reconstruct_verified_source():
             raise RuntimeError('RECONSTRUCTION_DEGENERATE_GEOMETRY')
     if not 4<=final_triangles<=max_face_count:
         raise RuntimeError('RECONSTRUCTION_TRIANGLE_BUDGET_EXCEEDED')
+    # [실제 제작 보증] 레시피만 받아 원본과 동일한 메시를 재출력한 경우를 고도화로 기록하지 않는다.
+    geometry_changed=bool(derived or removed) or any(
+        len(obj.data.vertices)!=len(positions) or
+        any((v.co-original).length>1e-7 for v,original in zip(obj.data.vertices,positions))
+        for obj,positions in original_coords if obj in ASSET_OBJECTS)
+    if not geometry_changed:
+        raise RuntimeError('RECONSTRUCTION_VISUAL_CHANGE_REQUIRED')
     SOURCE_ENHANCEMENTS.append({'kind':'VERIFIED_SOURCE_MESH_RECONSTRUCTION',
                                 'morph':morph,'additions':len(derived),'removals':len(removed),
                                 'detail':detail,'staticQa':True})
@@ -1113,6 +1120,7 @@ def reconstruct_verified_source():
         'parentId':ARGS.library_parent_id,'parentSha256':SOURCE_PROVENANCE['sourceSha256'],
         'bodyPlan':body_plan,'morph':morph,'detail':detail,'morphRetries':trials,
         'selectedMorphIntensity':selected_factor,'adjustedRigBoneCount':rig_adjusted,
+        'sourceGeometryActuallyChanged':geometry_changed,
         'additions':derived,'removals':removed,'finalTriangleCount':final_triangles,
         'sourceFileImmutable':True,'externalAiModelUsed':False,
         'meshStaticQaPass':True,'rigRuntimeVerified':False,'runtimeVerified':False}
@@ -1378,7 +1386,8 @@ application={'version':1,'masterSha256':hashlib.sha256(glb.read_bytes()).hexdige
     'internalAsset':{'library':'VIBE_STUDIO_ASSET_UNIVERSE','assetId':ARGS.asset_id,
         'state':'PREPARED_NATIVE_QA_PENDING','providerPartitioned':False,
         'reauthoringAxes':['MESH','PBR_MATERIAL','RIG','MOTION','LOD'],
-        'actualMaterialTransforms':len(SOURCE_ENHANCEMENTS),
+        'actualMaterialTransforms':sum(row['kind'].startswith('PBR_') for row in SOURCE_ENHANCEMENTS),
+        'actualGeometryTransforms':sum(row['kind']=='VERIFIED_SOURCE_MESH_RECONSTRUCTION' for row in SOURCE_ENHANCEMENTS),
         'sourceProvenancePreserved':True,'originalImmutable':True,
         'nativeRuntimePromotionRequired':True},
     'pbrMeshQa':pbr_mesh_qa,
