@@ -453,4 +453,6 @@ test('DESIGN_ONLY five departments review multiple independent gate failures wit
   assert.deepEqual(audio.fix,['효과음 연결 검증','오디오 재생 검증']);
   assert.deepEqual(development.fix,['실제 런타임 검증']);
   assert.deepEqual(qa.risks,['A_FAIL:A','B_FAIL:B','D_FAIL:D']);
+  const duplicate=reviewer('qa',{...scored,rejectionReasons:[failures[0],{axis:'A',code:'LATE_A',requiredAction:'후순위 중복'},...failures.slice(1)]});
+  assert.equal(duplicate.fix[0],'목표 플레이 검증','동일 설계 축의 첫 실패를 보존한다');
 });
