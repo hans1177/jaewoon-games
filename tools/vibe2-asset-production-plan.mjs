@@ -2604,6 +2604,21 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
             const masterQa=inspectVibeSourceGlb({repoRoot,source:{path:masterPath,sourceHash:masterHash}});
             if(staticQa.status!=='INSPECTED_RECONSTRUCTION_INPUT'||masterQa.status!=='INSPECTED_RECONSTRUCTION_INPUT')
               throw new Error('DERIVED_ASSET_GLB_STATIC_QA_FAILED');
+            // [실제 메시 독립 검증] 제작기 자체의 "변경됨" 플래그와 달리
+            // 원본/결과 GLB의 활성 삼각형 지문을 기존 소스 검사기로 직접 비교한다.
+            const authoredGeometryHash=clean(staticQa.inventory?.visibleGeometrySha256);
+            const masterGeometryHash=clean(masterQa.inventory?.visibleGeometrySha256);
+            if(!/^[a-f0-9]{64}$/.test(authoredGeometryHash)
+              ||authoredGeometryHash!==masterGeometryHash)
+              throw new Error('DERIVED_ASSET_GEOMETRY_OPTIMIZATION_MISMATCH');
+            let sourceGeometryHash=null;
+            if(evidence?.meshReconstruction){
+              const parentQa=inspectVibeSourceGlb({repoRoot,source:{path:sourcePath,sourceHash:originalHash}});
+              sourceGeometryHash=clean(parentQa.inventory?.visibleGeometrySha256);
+              if(!/^[a-f0-9]{64}$/.test(sourceGeometryHash)
+                ||sourceGeometryHash===authoredGeometryHash)
+                throw new Error('DERIVED_ASSET_RECONSTRUCTION_GEOMETRY_UNCHANGED');
+            }
             // [중복 정리] 동일한 검증 바이트·권리·패밀리의 파생본은 하나의 정본을 가리킨다.
             // 사용 중인 경로와 게임별 레시피는 삭제하거나 임의로 재연결하지 않는다.
             const dedupFingerprint=[platform,family,license,artifactHash].join(':');
@@ -2618,6 +2633,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
               path:assetPath,masterGlb:masterPath,previewPath,
               sourceFiles:[sourcePath,assetPath,masterPath],nativeArtifacts:[assetPath,masterPath],
               sourceHash:originalHash,sourceSha256:originalHash,artifactHash,masterGlbHash:masterHash,
+              sourceGeometryHash,authoredGeometryHash,
               license:parent.license,sourceUrl:clean(parent.sourceUrl)||null,
               licenseEvidenceUrl:clean(parent.licenseEvidenceUrl)||null,
               duplicateOf,sourceDependencyIds:[clean(parent.id)],
