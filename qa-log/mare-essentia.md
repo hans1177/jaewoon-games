@@ -13,8 +13,9 @@
 
 ## 최근 점검
 - 2026-11-21(KST) 바이브: 소스 0319561(교역품 5종 Cargo 모델 매핑) 이후 게임 코드/자산 변경 없음(이후 커밋은 모두 개발도구/telemetry). Devloop Studio Capture 11-20: 20:02Z 같은 소스에서 success 1회, 이후 같은 소스 failure 다수. 최신 실패(run 44821233230, 21:32Z)는 단계 35 execute_luau 가 Studio 어시스턴트 도구 오류(ROBLOX_STUDIO_MCP_TOOL_ERROR)로 중단된 것이고 콘솔 error 0 → 게임 오류가 아닌 Studio/도구 불안정으로 봄. 코드 수정 없음, 재배포 안 함, Studio GUI 직접 점검은 자동 점검 러너와 충돌(409 busy) 위험으로 이번엔 생략.
+- 2026-11-21(KST) 바이브 2차: 게임 코드/자산 변경 없음. Devloop Studio Capture run 44831380315(22:44Z, 7615e33) success·오류 줄 없음 → 직전 실패는 도구 불안정으로 확정. 자동 러너와 충돌(409) 위험으로 GUI 직접 플레이는 생략. 수정·재배포 없음.
 
 ## 다음에 볼 항목 큐
-1. 같은 소스에서 Studio Capture 실패(execute_luau 도구 오류)가 계속되는지 확인. 계속되면 점검 스크립트 단계 35 luau 재시도/원인 조사.
+1. (해결 11-21) Studio Capture 22:44Z 최신 main(7615e33)에서 success, 도구 오류 재발 없음. 재발 시에만 단계 35 조사.
 2. 교역소 새 Cargo 모델 5종(palm_oil·whale_oil·gum_arabic·pearl_shell·sandalwood_hi) 화면 jpg 확인.
 3. 게임 안 메뉴(퀘스트·항해·지도·기술) 클릭 점검, 수동 항해(설정에서 켜고 스틱/WASD).
