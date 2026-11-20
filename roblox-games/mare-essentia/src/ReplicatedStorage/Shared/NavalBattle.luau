@@ -3124,16 +3124,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusFrame.ClipsDescendants = true
 		focusFrame.Visible = false
 		focusFrame.ZIndex = 50
-		-- 카드 대전(cardOnly): 확대 카드는 화면을 덮지 않고 왼쪽 설명 칸에 고정해 보여 준다 (퀜트식).
+		-- 카드 대전은 전투판 위에 원화와 설명을 중앙으로 띄운다.
 		local previewHint
 		if opts.cardOnly then
-			focusFrame.AnchorPoint = Vector2.new(0, 0)
-			focusFrame.Position = UDim2.fromScale(0.01, 0.135)
-			if compactCards then
-				focusFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-				focusFrame.Position = UDim2.fromScale(0.5, 0.5)
-				focusBounds.MinSize = Vector2.new(0, 0)
-			end
+			focusBounds.MinSize = Vector2.zero
 			previewHint = Instance.new("TextLabel")
 			previewHint.Name = "CardPreviewHint"
 			previewHint.Position = UDim2.fromScale(0.01, 0.135)
@@ -3145,7 +3139,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			previewHint.TextColor3 = Color3.fromRGB(226, 208, 170)
 			previewHint.TextSize = 15
 			previewHint.TextWrapped = true
-			previewHint.Text = t("카드를 누르면\n설명이 여기에 나와요.\n\n한 번 더 누르면\n카드를 내요.", "Tap a card to read it here.\n\nTap again to play it.")
+			previewHint.Text = t("카드를 누르면\n전투판 위에 크게 보여요.\n\n카드 사용을 눌러 내세요.", "Tap a card to enlarge it.\n\nChoose Play Card to deploy it.")
 			previewHint.Parent = g
 			previewHint.Visible = not compactCards
 			frameEdge(previewHint, brass, 6)
@@ -3382,16 +3376,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local screenSize = bg.AbsoluteSize
 			local height = math.floor(math.max(210, math.min(screenSize.Y * 0.86, screenSize.X * 0.9 / 0.69, 620)))
 			if opts.cardOnly then
-				height = if compactCards then math.floor(math.max(1, math.min(screenSize.Y * 0.88, screenSize.X * 0.94 / 0.69, 620)))
-				else math.floor(math.max(210, math.min(screenSize.Y * 0.85, screenSize.X * 0.19 / 0.69)))
+				height = math.floor(math.max(1, math.min(screenSize.Y * 0.88, screenSize.X * 0.94 / 0.69, 620)))
 			end
 			focusFrame.Size = UDim2.fromOffset(math.floor(height * 0.69), height)
 			focusScale.Scale = 0.78
 			focusShade.BackgroundTransparency = 1
-			focusShade.Visible = not opts.cardOnly or compactCards -- 좁은 화면은 카드 설명만 겹쳐 띄운다
+			focusShade.Visible = true
 			focusArtwork:SetAttribute("ArtFocused", true)
 			focusFrame.Visible = true
-			if not opts.cardOnly or compactCards then TweenService:Create(focusShade, TweenInfo.new(0.2), { BackgroundTransparency = 0.3 }):Play() end
+			TweenService:Create(focusShade, TweenInfo.new(0.2), { BackgroundTransparency = if opts.cardOnly then 0.48 else 0.3 }):Play()
 			focusTween = TweenService:Create(focusScale, TweenInfo.new(0.26, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { Scale = 1 })
 			focusTween:Play()
 			local artKey = if leaderProfile then (NEW_LEADER_ART[card.leaderId] and AssetIds[NEW_LEADER_ART[card.leaderId]] and NEW_LEADER_ART[card.leaderId]) or (AssetIds["CardArt/leader_" .. card.leaderId] and "CardArt/leader_" .. card.leaderId) or LEADER_FACE[card.leaderId] else cardArtworkKey(card)
