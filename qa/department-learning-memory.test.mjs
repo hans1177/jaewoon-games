@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { writeEvolutionEvidence } from '../tools/evolution-evidence-recorder.mjs';
-import { ingestVerifiedDepartmentEvidence, normalizeVerifiedDepartmentLearning, selectVerifiedDepartmentLearning } from '../tools/department-learning-memory.mjs';
+import { CORE_DEPARTMENT_ROLES, ingestVerifiedDepartmentEvidence, normalizeVerifiedDepartmentLearning, selectVerifiedDepartmentLearning } from '../tools/department-learning-memory.mjs';
 
 const roles=['planning','development','graphics','qa','balance'];
 const resultFor=(role,extra={})=>({role,workState:'DONE',decision:'PROCEED',summary:`${role} summary`,nextAction:`${role} action`,checks:[`${role} check`],risks:[],...extra});
@@ -137,4 +137,65 @@ test('부서 경험은 현재 목표의 동일 주제를 먼저 검색하고 무
   assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'qa',goal:'선박 포격 물보라 표현 개선'}),[]);
   // 이전 작업자는 목표를 전달하지 않았으므로 기존 방식의 과거 경험 조회를 유지한다.
   assert.equal(selectVerifiedDepartmentLearning(ledger,{role:'graphics'}).length,3);
+});
+
+
+test('현행 5개 부서는 오디오를 포함하며 기존 밸런스 기록도 보존한다',()=>{
+  assert.deepEqual(CORE_DEPARTMENT_ROLES,['planning','graphics','development','qa','audio']);
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-audio-learning-'));
+  try{
+    const candidatePath=path.join(dir,'audio-cycle.json');
+    fs.writeFileSync(candidatePath,JSON.stringify(candidateEvidence({
+      candidateId:'audio-verified-1',departmentCycle:{
+        gameId:'mare-essentia',gameSlug:'mare-essentia',sourcePath:'roblox-games/mare-essentia',
+        workLane:'FULL',finalDecision:'PROCEED',results:CORE_DEPARTMENT_ROLES.map(role=>
+          resultFor(role,{provider:'GROQ',model:'openai/gpt-oss-20b',specialistDomain:role.toUpperCase(),
+            summary:role==='audio'?'선박 포격 효과음 이벤트와 실제 런타임 동기화':'verified '+role})),
+      }
+    }),null,2));
+    const output=path.join(dir,'verified-audio.json');
+    const evidence=writeEvolutionEvidence(output,{
+      id:'vibe2-audio-verified',type:'VIBE2',patternId:'audio-binding',
+      gameId:'mare-essentia',outcome:'SUCCESS',delta:0,sourceRevision:'b'.repeat(40),
+      independentQaPass:true,evidence:[candidatePath,'independent-qa-pass'],
+    });
+    assert.deepEqual(evidence.departmentLearning.results.map(row=>row.role),CORE_DEPARTMENT_ROLES);
+    const ledger={version:1,departments:{audio:{xp:200},balance:{xp:350}},history:[]};
+    const before=JSON.stringify(ledger.departments);
+    assert.equal(ingestVerifiedDepartmentEvidence(ledger,evidence).added,5);
+    assert.equal(ingestVerifiedDepartmentEvidence(ledger,evidence).added,0);
+    assert.equal(JSON.stringify(ledger.departments),before);
+    const audio=selectVerifiedDepartmentLearning(ledger,{role:'audio',gameId:'mare-essentia',
+      goal:'선박 포격 효과음 동기화'},3);
+    assert.equal(audio.length,1);
+    assert.match(audio[0].summary,/효과음/);
+    assert.equal(audio[0].specialistDomain,'AUDIO');
+    assert.equal(audio[0].model,'openai/gpt-oss-20b');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('과거 밸런스 검증 기록은 그대로 학습·조회되지만 현재 오디오 부서를 대신하지 않는다',()=>{
+  const legacy={id:'old-balance',type:'VIBE2',gameId:'P0001',outcome:'SUCCESS',
+    verified:true,independentQa:'PASS',sourceRevision:'abc123',
+    departmentLearning:{gate:'PASS',gameId:'P0001',results:roles.map(resultFor)}};
+  const ledger={version:1,verifiedLearning:[]};
+  assert.deepEqual(normalizeVerifiedDepartmentLearning(legacy).map(row=>row.role),roles);
+  assert.equal(ingestVerifiedDepartmentEvidence(ledger,legacy).added,5);
+  assert.equal(selectVerifiedDepartmentLearning(ledger,{role:'balance',gameId:'P0001'}).length,1);
+  assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'audio',gameId:'P0001'}),[]);
+});
+
+
+test('모든 부서는 출처 리비전과 현재 작업 목표가 맞는 검증 경험만 재사용한다',()=>{
+  const shared={role:'development',verified:true,independentQa:'PASS',
+    sourceRevision:'abc123',outcome:'SUCCESS',workLane:'FULL',verifiedAt:'2026-11-20T00:00:00Z'};
+  const ledger={verifiedLearning:[
+    {...shared,sourceEvidenceId:'ocean',gameId:'OCEAN',sourcePath:'roblox-games/ocean',summary:'선박 전투 포격 처리',nextAction:'포격 회귀 검증'},
+    {...shared,sourceEvidenceId:'menu',gameId:'MENU',sourcePath:'web-games/menu',summary:'상점 목록 버튼 정렬',nextAction:'상점 배치'},
+    {...shared,sourceEvidenceId:'unbound',sourceRevision:'',gameId:'OCEAN',sourcePath:'roblox-games/ocean',summary:'출처 불명 포격 처리'},
+  ]};
+  assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'development',goal:'작업 개선'}),[]);
+  assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'development',goal:'선박 포격 표현'}).map(x=>x.sourceEvidenceId),['ocean']);
+  assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'development',gameId:'OCEAN',goal:'작업 개선'}).map(x=>x.sourceEvidenceId),['ocean']);
+  assert.equal(selectVerifiedDepartmentLearning(ledger,{role:'development'}).length,2,'기존 목표 없는 조회는 검증 출처만 유지');
 });
