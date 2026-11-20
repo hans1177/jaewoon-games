@@ -4,7 +4,7 @@
 return {
 	regionFrames = {
 		eu = "CardArt/ui_frame_europe", ea = "CardArt/ui_frame_east_asia",
-		me = "CardArt/ui_frame_middle_east", nw = "CardArt/ui_frame_north_west",
+		me = "CardArt/ui_frame_middle_east", nw = "CardArt/ui_frame_new_world",
 		af = "CardArt/ui_frame_africa", sa = "CardArt/ui_frame_southeast_asia",
 	},
 	leather = Color3.fromRGB(21, 29, 39),
