@@ -269,3 +269,16 @@ test('재사용 샘플도 정식 출처와 플랫폼 실증 조건을 우회하�
   });
   assert.equal(roblox.stats.replay,0);
 });
+
+test('재사용 샘플의 런타임 검증 누락을 PASS로 자동 대체하지 않는다',()=>{
+  const baseline=buildDataset(rows(30,'REPLAY','coding'),{targetTaskType:'coding',minTrainSamples:1});
+  const candidate={...baseline.train[0],
+    sampleId:'c'.repeat(64),contentHash:'missing-runtime-replay',
+    qa:{...baseline.train[0].qa,runtime:undefined},
+  };
+  const result=buildDataset(rows(60,'P0001','coding'),{
+    targetTaskType:'coding',replay:[candidate],minTrainSamples:1,
+    minFreshTrainSamples:1,minDistinctProjects:1,minDistinctTaskTypes:1,
+  });
+  assert.equal(result.stats.replay,0);
+});
