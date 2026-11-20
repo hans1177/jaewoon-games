@@ -535,3 +535,58 @@ test('Vibe59 reports missing owners while preserving ordinary observed Luau find
     {path:'server/Schema.json',reason:'RESPONSIBLE_SOURCE_NOT_LUAU',responsible:true}
   ]);
 });
+// [로블록스 정적검사 완전성] 비어 있거나 충돌한 소스는 안전 판정 근거가 아니다.
+test('Vibe59 refuses missing or empty responsible Luau source evidence',()=>{
+  const path='server/Actions.server.luau';
+  for(const source of [undefined,null,'','  \n\t']){
+    const report=inspectVibe59RobloxCoding({
+      files:[{path,source}],responsiblePaths:[path]
+    });
+    assert.deepEqual(report.files,[]);
+    assert.deepEqual(report.scanCoverage.unscanned,[
+      {path,reason:'LUAU_SOURCE_UNAVAILABLE_OR_EMPTY',responsible:true}
+    ]);
+    assert.equal(report.scanCoverage.version,2);
+    assert.equal(report.scanCoverage.requiredResponsibleFiles,1);
+    assert.equal(report.scanCoverage.observedResponsibleFiles,0);
+    assert.equal(report.scanCoverage.responsibleComplete,false);
+    assert.equal(report.qualityDirector.responsibleSourceCoverageComplete,false);
+    assert.equal(report.qualityDirector.runtimeVerified,false);
+    const plan=planVibe59RobloxOfflineRepairs({files:[{path,source}],responsiblePaths:[path]});
+    assert.deepEqual(plan.plans,[]);
+    assert.equal(plan.scanCoverage.responsibleComplete,false);
+  }
+});
+
+test('Vibe59 marks duplicated same-path sources as incomplete even if first source was valid',()=>{
+  const path='server/Combat.server.luau';
+  const report=inspectVibe59RobloxCoding({
+    files:[
+      {path,source:'local function fight(player) return player end\nfight(player)'},
+      {path,source:'local function fight(player) return nil end'}
+    ],
+    responsiblePaths:[path]
+  });
+  assert.equal(report.files.length,1);
+  assert.equal(report.scanCoverage.observedResponsibleFiles,1);
+  assert.equal(report.scanCoverage.requiredResponsibleFiles,1);
+  assert.equal(report.scanCoverage.responsibleComplete,false);
+  assert.deepEqual(report.scanCoverage.unscanned,[
+    {path,reason:'LUAU_DUPLICATE_SOURCE_PATH',responsible:true}
+  ]);
+  assert.equal(report.qualityDirector.responsibleSourceCoverageComplete,false);
+  assert.equal(report.functionLinks.length,1);
+  assert.equal(report.runtimeVerified,false);
+});
+
+test('Vibe59 requires an assigned owner to claim complete responsible-source coverage',()=>{
+  const result=inspectVibe59RobloxCoding({
+    files:[{path:'server/Fight.server.luau',source:'local healthy = true'}],
+    responsiblePaths:[]
+  });
+  assert.equal(result.scanCoverage.version,2);
+  assert.equal(result.scanCoverage.requiredResponsibleFiles,0);
+  assert.equal(result.scanCoverage.responsibleComplete,false);
+  assert.equal(result.qualityDirector.gameplayPass,false);
+  assert.equal(result.sourceWrite,false);
+});
