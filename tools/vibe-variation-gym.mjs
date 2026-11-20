@@ -429,7 +429,8 @@ export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=
     for(const j of jobs.filter(j=>j.id.startsWith(slug+'__')&&j.op!=='identity')){
       const res=byId[j.id],m=meta[j.id];
       const params={...j.params};
-      const row={id:j.id,parentId:p.id,parentFile:relOrAbs(repoRoot,p),parentSha256:parentSha,license:p.license,family:p.family,source:p.source||'REGISTRY',op:j.op,arm:m.arm,params,ok:!!res?.ok,registered:false};
+      // [원본 계보] 무료 원본과 소유권 검증된 자체/ChatGPT 제작 자산의 출처를 둘 다 유지한다.
+      const row={id:j.id,parentId:p.id,parentFile:relOrAbs(repoRoot,p),parentSha256:parentSha,license:p.license,family:p.family,source:p.source||'REGISTRY',origin:p.origin||'REPOSITORY',op:j.op,arm:m.arm,params,ok:!!res?.ok,registered:false};
       row.practiceTargets=classifyPracticeAsset(p).targets;
       row.nativeRuntimeVerified=false;row.gameApplied=false;
       if(m.part){ // 두 부모 모두 출처·해시를 남긴다
