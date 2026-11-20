@@ -37,6 +37,7 @@ export function buildTrainingRequest(status) {
     return {
       taskType,
       adapterVersion,
+      datasetSha256: status.tasks?.[taskType]?.datasetSha256 ?? null,
       datasetDir,
       adapterDir,
       datasetCommand: [

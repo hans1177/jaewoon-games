@@ -131,3 +131,23 @@ test('검증된 외부 Android black-box QA 샘플은 브라우저 QA를 위조�
   assert.equal(status.tasks.qa.accepted, 1);
   assert.equal(status.tasks.qa.skippedUnverified, 0);
 });
+
+test('같은 수량이라도 검증된 학습 내용이 달라지면 새 가중치 학습용 지문이 생성된다',()=>{
+  const inputs=[];
+  for(const project of ['P0001','P0002']){
+    for(let index=0;index<80;index++){
+      inputs.push(entry(verifiedSample({project,index,taskType:'bugfix'}),inputs.length));
+    }
+  }
+  const first=buildDistillationStatus(inputs);
+  const replay=buildDistillationStatus([...inputs].reverse());
+  const changed=inputs.map(row=>row);
+  changed[0]={...inputs[0],record:{...inputs[0].record,output:'독립검증된 새 수정 내용'}};
+  const later=buildDistillationStatus(changed);
+  assert.equal(first.tasks.bugfix.ready,true);
+  assert.match(first.tasks.bugfix.datasetSha256,/^[a-f0-9]{64}$/);
+  assert.equal(first.tasks.bugfix.datasetSha256,replay.tasks.bugfix.datasetSha256);
+  assert.notEqual(first.tasks.bugfix.datasetSha256,later.tasks.bugfix.datasetSha256);
+  assert.equal(inputs.length,changed.length);
+  assert.equal(later.tasks.bugfix.ready,true);
+});

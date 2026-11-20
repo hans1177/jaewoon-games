@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildDataset, isVerifiedPass, TASK_TYPES } from './vibe2-weight-learning.mjs';
+import { buildDataset, datasetContentFingerprint, isVerifiedPass, TASK_TYPES } from './vibe2-weight-learning.mjs';
 
 function readRecords(filePath) {
   const raw = fs.readFileSync(filePath, 'utf8').trim();
@@ -99,6 +99,8 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
       eval: dataset.stats.eval,
       holdout: dataset.stats.holdout,
       accepted: dataset.stats.accepted,
+      // 기존 분리된 검증 샘플의 실제 내용 해시: 건수만 같아도 변경 시 재훈련 요청이 달라진다.
+      datasetSha256: datasetContentFingerprint(dataset),
       skippedUnverified: dataset.stats.skippedUnverified,
       skippedIncomplete: dataset.stats.skippedIncomplete,
       skippedQuality: dataset.stats.skippedQuality,
@@ -157,7 +159,8 @@ function main() {
   const evidenceDir = args['evidence-dir'] || 'company-learning/evidence';
   const sampleDir = args['sample-dir'] || 'company-learning/training-samples';
   const out = args.out || 'company-learning/distillation-status.json';
-  const { files, recordsWithSource } = collectTrainingRecords([evidenceDir, sampleDir]);
+  // [기존 정식 학습] 증거 파일은 수집·검증 입력이며, 학습 준비 판정은 실제 학습기가 읽는 샘플과 동일해야 한다.
+  const { files, recordsWithSource } = collectTrainingRecords([sampleDir]);
   const status = buildDistillationStatus(recordsWithSource, {
     minTrainSamples: numberArg(args, 'min-train-samples', 24),
     minFreshTrainSamples: numberArg(args, 'min-fresh-train-samples', 12),
@@ -168,6 +171,7 @@ function main() {
     taskPlanMinProjects: numberArg(args, 'task-plan-min-projects', 2),
   });
   status.sourceFiles = files.map((file) => path.relative(process.cwd(), file).replaceAll('\\', '/'));
+  status.diagnostics.evidenceSourceFiles = collectJsonFiles(evidenceDir).length;
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, `${JSON.stringify(status, null, 2)}\n`);
   console.log(JSON.stringify(status));
