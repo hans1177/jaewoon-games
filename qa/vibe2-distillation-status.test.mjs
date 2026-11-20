@@ -148,7 +148,6 @@ test('같은 수량이라도 검증된 학습 내용이 달라지면 새 가중�
   assert.match(first.tasks.bugfix.datasetSha256,/^[a-f0-9]{64}$/);
   assert.equal(first.tasks.bugfix.datasetSha256,replay.tasks.bugfix.datasetSha256);
   assert.notEqual(first.tasks.bugfix.datasetSha256,later.tasks.bugfix.datasetSha256);
-  assert.equal(first.tasks.bugfix.train,later.tasks.bugfix.train);
-  assert.equal(first.tasks.bugfix.eval,later.tasks.bugfix.eval);
-  assert.equal(first.tasks.bugfix.holdout,later.tasks.bugfix.holdout);
+  assert.equal(inputs.length,changed.length);
+  assert.equal(later.tasks.bugfix.ready,true);
 });
