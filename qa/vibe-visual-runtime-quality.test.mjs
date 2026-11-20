@@ -719,3 +719,61 @@ test('바이브 엔진 13개 전문팀은 단일 제작 루트에서 무료 원�
   assert.equal(root.engineImprovement.runtimeQaStillRequired,true);
   assert.equal(root.status,'GRAPHICS_PRODUCTION_ACTIVE');
 });
+
+test('8개 부서별 실제 기존 모듈과 학습영역·연습·증거 체크를 연결하고 새 파이프라인을 만들지 않는다',async()=>{
+  const {VIBE_ENGINE_TEAMS,createVibeEngineSpecialistPlan}=await import('../assets/vibe-art-pipeline.js');
+  const plan=createVibeEngineSpecialistPlan({gameId:'mare-essentia',
+    request:'바이브 엔진 전체 역량 강화',target:'ROBLOX'});
+  assert.equal(plan.departments.length,8);
+  assert.equal(plan.teams.length,13);
+  assert.equal(plan.departments.reduce((sum,team)=>sum+team.practicePlan.length,0),32);
+  assert.deepEqual(VIBE_ENGINE_TEAMS.map(team=>team.id),plan.departments.map(team=>team.id));
+  for(const team of plan.departments){
+    assert.equal(team.activeForCurrentRequest,true);
+    assert.equal(team.practicePlan.length,4);
+    assert.ok(team.existingModule.startsWith(team.id==='vibe-core'||team.id==='vibe-assets'||team.id==='vibe-research'?'tools/':'assets/'));
+    assert.equal(team.trainingDomains.length,3);
+    assert.equal(team.requiredEvidence.length,4);
+    assert.equal(team.learningRoute,'EXISTING_CANONICAL_VERIFIED_LEARNING_ONLY');
+    assert.equal(team.verifiedTrainingSampleGranted,false);
+    assert.equal(team.externalAssetUploadAuthorized,false);
+    assert.equal(team.newGitHubOrganization,false);
+    assert.equal(team.independentMain,false);
+    assert.equal(team.gameplaySaveAndBalancePreserved,true);
+    assert.ok(team.practicePlan.every(row=>row.status==='PRACTICE_AND_RUNTIME_EVIDENCE_PENDING'));
+  }
+});
+
+test('요청분야만 훈련 후보로 활성화하고 불필요한 팀·서사 권한을 자동 가동하지 않는다',async()=>{
+  const {createVibeEngineSpecialistPlan}=await import('../assets/vibe-art-pipeline.js');
+  const plan=createVibeEngineSpecialistPlan({gameId:'mare-essentia',target:'ROBLOX',
+    request:'모바일 UI 개선',assetGaps:[]});
+  const active=plan.departments.filter(t=>t.activeForCurrentRequest).map(t=>t.id);
+  assert.deepEqual(active,['vibe-graphics']);
+  assert.equal(plan.departments.find(t=>t.id==='vibe-story').practicePlan.length,0);
+  assert.equal(plan.departments.find(t=>t.id==='vibe-research').verifiedTrainingSampleGranted,false);
+  const story=createVibeEngineSpecialistPlan({request:'스토리 세계관 설정 정리',target:'ROBLOX'});
+  assert.equal(story.departments.find(t=>t.id==='vibe-story').activeForCurrentRequest,true);
+  assert.equal(story.departments.find(t=>t.id==='vibe-world').activeForCurrentRequest,false);
+});
+
+test('부서 학습은 원본·버전 불일치 증거를 반려하고 적격 데이터도 QA 승인으로 오인하지 않는다',async()=>{
+  const {createVibeEngineSpecialistPlan}=await import('../assets/vibe-art-pipeline.js');
+  const valid={teamId:'vibe-motion',gameId:'mare-essentia',platform:'ROBLOX',
+    sourceRevision:'a'.repeat(40),artifactSha256:'b'.repeat(64),
+    observed:true,independentQaPassed:true};
+  const plan=createVibeEngineSpecialistPlan({gameId:'mare-essentia',target:'ROBLOX',
+    request:'모션 개선',departmentEvidence:[
+      valid,{...valid,gameId:'different-game'},
+      {...valid,sourceRevision:'old'},
+      {...valid,securityBlocked:true},
+      {...valid,artifactSha256:'fake'},
+      {...valid,independentQaPassed:false}
+    ]});
+  const motion=plan.departments.find(t=>t.id==='vibe-motion');
+  assert.equal(motion.reviewableEvidenceCount,1);
+  assert.equal(motion.rejectedOrUnanchoredEvidenceCount,5);
+  assert.equal(motion.verifiedTrainingSampleGranted,false);
+  assert.equal(motion.status,'DEPARTMENT_CAPABILITY_WORK_PENDING');
+  assert.equal(plan.runtimeQaStillRequired,true);
+});
