@@ -50,6 +50,19 @@ export const GRAPHICS_PRODUCTION_STAGES=Object.freeze([
   'PLATFORM_PERFORMANCE_AND_COHESION_FAN_IN'
 ]);
 
+// [바이브 엔진 8개 전문팀] 하나의 GitHub main을 공유하고 기존 바이브 담당 흐름만 사용한다.
+// 팀별 GitHub Organization/개별 main/새 CI·큐·승인 파이프라인을 추가하지 않는다.
+export const VIBE_ENGINE_TEAMS=Object.freeze([
+  Object.freeze({id:'vibe-core',name:'바이브 엔진·자동 코딩',specialists:Object.freeze([]),owner:'VIBE2_VIBE3',existingScope:'NATIVE_ENGINE_AND_SOURCE_REFACTOR'}),
+  Object.freeze({id:'vibe-graphics',name:'캐릭터·의상·아이콘·재질',specialists:Object.freeze(['GRAPHICS','CREATURE','ICON','MATERIAL']),owner:'GRAPHICS',existingScope:'GRAPHICS_PRODUCTION_ROOT'}),
+  Object.freeze({id:'vibe-world',name:'건축·시설·배경·지형',specialists:Object.freeze(['BUILDING','ENVIRONMENT']),owner:'GRAPHICS',existingScope:'ENVIRONMENT_AND_WORLD_DIRECTOR'}),
+  Object.freeze({id:'vibe-motion',name:'리그·모션·애니메이션',specialists:Object.freeze(['MOTION','ANIMATION']),owner:'GRAPHICS',existingScope:'MOTION_DIRECTOR'}),
+  Object.freeze({id:'vibe-effects',name:'이펙트·음악·효과음',specialists:Object.freeze(['VFX','MUSIC','SFX']),owner:'GRAPHICS_AND_AUDIO',existingScope:'PRESENTATION_AND_AUDIO'}),
+  Object.freeze({id:'vibe-story',name:'스토리·세계관·캐릭터 설정',specialists:Object.freeze(['STORY']),owner:'DESIGN',existingScope:'NARRATIVE_DIRECTION'}),
+  Object.freeze({id:'vibe-assets',name:'무료 자산 수급·재가공·로블록스 등록',specialists:Object.freeze([]),owner:'GRAPHICS_AND_ROBLOX_ASSET_UPLOAD',existingScope:'ASSET_PRODUCTION_AND_VERIFIED_OPEN_CLOUD'}),
+  Object.freeze({id:'vibe-research',name:'외부 코드·엔진 연구·검증 학습',specialists:Object.freeze([]),owner:'CANONICAL_LEARNING_AND_QA',existingScope:'VERIFIED_LEARNING_MOTOR'})
+]);
+
 // [바이브 엔진 전문팀] 기존 그래픽 제작기 내부의 책임을 세분화한다. 독립 큐/승인권 없음.
 export const VIBE_ENGINE_SPECIALISTS=Object.freeze([
   Object.freeze({id:'GRAPHICS',name:'캐릭터·그래픽',family:'CHARACTER',keywords:Object.freeze(["캐릭터","그래픽","초상화","의상","character"]),stage:'HERO_CHARACTER_CREATURE_AND_SIGNATURE_ASSETS',owner:'GRAPHICS',details:Object.freeze(["SILHOUETTE","FACE","GARMENT","LOD"])}),
@@ -85,6 +98,7 @@ export function createVibeEngineSpecialistPlan({gameId='',request='',target='ROB
       && row?.quarantined!==true&&row?.securityBlocked!==true);
     return Object.freeze({id:role.id,name:role.name,family:role.family,owner:role.owner,
       existingStage:role.stage,detailRequirements:role.details,gapCount:needs.length,
+      teamId:VIBE_ENGINE_TEAMS.find(team=>team.specialists.includes(role.id))?.id||null,
       acquisitionOrder:VIBE_ASSET_ACQUISITION_ORDER,
       externalSources:Object.freeze(accepted.map(row=>Object.freeze({
         id:clean(row.id),sourceHash:clean(row.sha256||row.sourceHash),
@@ -100,6 +114,15 @@ export function createVibeEngineSpecialistPlan({gameId='',request='',target='ROB
   });
   return Object.freeze({version:1,kind:'VIBE_ENGINE_SPECIALIST_IMPROVEMENT',
     gameId:clean(gameId)||null,platform,teams:Object.freeze(teams),
+    departments:Object.freeze(VIBE_ENGINE_TEAMS.map(team=>Object.freeze({
+      id:team.id,name:team.name,owner:team.owner,existingScope:team.existingScope,
+      specialistIds:team.specialists,
+      activeSpecialists:Object.freeze(teams.filter(role=>role.teamId===team.id).map(role=>role.id)),
+      independentMain:false,newGitHubOrganization:false,
+      sourceWriteAuthority:'EXISTING_CANONICAL_VIBE_OWNER_ONLY',
+      separateVerifiedWorkBranch:true
+    }))),
+    canonicalRepository:'hans1177/jaewoon-games',canonicalMain:'main',
     status:teams.length?'PLAN_UNVERIFIED':'NO_SPECIALIST_SIGNAL',singleGraphicsRoot:true,
     independentPipelineForbidden:true,newQueueForbidden:true,webGameAuthoring:false,
     freeCc0Only:true,originalAssetImmutable:true,gameplayAndSavePreserved:true,
