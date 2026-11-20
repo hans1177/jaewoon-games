@@ -1324,6 +1324,9 @@ local function palmOk(portId, style)
 end
 
 -- 마을 주민의 일: 직업마다 일터와 모션이 있고, 항구 발전도가 오를수록 일하는 사람이 늘어난다.
+local NIGHT_DUTY = { "patrol", "scan", "look", "warm" }
+local NIGHT_REST = { "yawn", "warm", "lean", "look" }
+local EVENING_REST = { "yawn", "warm", "lean" }
 local IDLE_POOL = { "talk", "lean", "point", "wave", "write", "inspect", "count", "stretch", "drink", "listen", "salute", "gossip", "warm", "yawn", "clap", "cheer", "scan" } -- 멈춰 선 주민이 상황과 시간에 따라 다른 동작을 한다
 local stallSpots = {}
 -- [경제 건축 연출] 현재 세션의 항구별 장식 단계만 기억한다. 게임 저장·서버 경제에는 쓰지 않는다.
@@ -5557,7 +5560,7 @@ function PortScene.build(info, onFacility)
 						else
 							local roster = if routine == "work" then w.workKinds
 								elseif routine == "trade" then w.tradeKinds
-								elseif routine == "leisure" then w.leisureKinds else { "yawn", "warm", "lean" }
+								elseif routine == "leisure" then w.leisureKinds else EVENING_REST
 							roster = roster or { w.socialKind or "look" }
 							local period = math.floor((now + w.phase * 2.1) / (w.activitySpan or 16))
 							local kind = roster[((period + (w.personality or 0)) % #roster) + 1]
@@ -5643,8 +5646,7 @@ function PortScene.build(info, onFacility)
 						local royalDay = w.royalDuty and hour >= 6 and hour < 19
 						local nightWorker = w.job == "guard" or w.job == "sailor" or w.job == "royal_guard"
 						local period = math.floor((now + w.phase * 2.1) / (w.activitySpan or 16))
-						local nightRoster = if nightWorker then { "patrol", "scan", "look", "warm" }
-							else { "yawn", "warm", "lean", "look" }
+						local nightRoster = if nightWorker then NIGHT_DUTY else NIGHT_REST
 						local roster = if watching then w.nightKinds elseif night then nightRoster
 							elseif royalDay or morning then w.workKinds
 							elseif trading then w.tradeKinds or w.workKinds else w.leisureKinds
