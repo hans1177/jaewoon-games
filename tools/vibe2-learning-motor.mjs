@@ -487,8 +487,9 @@ export function applyVerifiedKnowledgeOutcomes(stateInput={},queueInput={}){
     const refs=knowledgeRefsFromEvidence(evidence);if(!refs.length)continue;
     const gameId=clean(task.gameId)||'unknown',target=lower(task.target)||'unknown';
     const run=evidence.find(x=>x.startsWith('actions-run:'))||evidence.filter(x=>x.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
-    const eventId='knowledge_'+hash([clean(task.id),run,outcome,refs.join(',')].join('|'));
-    if(seen.has(eventId))continue;
+    const legacyEventId='knowledge_'+hash([clean(task.id),run,outcome,refs.join(',')].join('|'));
+    const eventId='knowledge_'+hash([codingOutcomeIdentity(task,'KNOWLEDGE'),outcome,refs.join(',')].join('|'));
+    if(seen.has(eventId)||seen.has(legacyEventId))continue;
     for(const ref of refs){
       const at=ref.indexOf(':');const source=at>0?upper(ref.slice(0,at)):'UNKNOWN',id=at>0?ref.slice(at+1):ref;
       if(!id)continue;
@@ -701,7 +702,11 @@ function verifiedCodingStrategyFailures(evidence=[]){
 }
 function codingOutcomeIdentity(task={},strategy=''){
   const evidence=(task.evidence||[]).map(clean);
-  const candidate=evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
+  // [후보 식별] CI 재시도 번호보다 실제 코드 후보 SHA를 우선한다.
+  // 동일 소스를 새 Actions 실행에서 검증해도 독립 개선 횟수로 중복 계산하지 않는다.
+  const candidate=evidence.filter(value=>/^candidate-sha:[a-f0-9]{40}$/i.test(value)).at(-1)
+    ||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)
+    ||clean(task.id);
   return 'coding_'+hash([clean(task.id),clean(strategy),candidate].join('|'));
 }
 function strategyLifecycle(row={}){
@@ -861,8 +866,10 @@ export function applyVerifiedCodingCalibration(stateInput={},queueInput={}){
     const confidence=upper(lastEvidenceMarker(evidence,'coding-responsibility-confidence:'))||'LOW';
     const gameId=clean(task.gameId)||'unknown',target=lower(task.target)||'unknown';
     const run=evidence.find(value=>value.startsWith('actions-run:'))||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
-    const eventId='coding_cal_'+hash([clean(task.id),run,outcome,confidence].join('|'));
-    if(!seen.has(eventId)){
+    const legacyEventId='coding_cal_'+hash([clean(task.id),run,outcome,confidence].join('|'));
+    const candidateIdentity=codingOutcomeIdentity(task,'CALIBRATION');
+    const eventId='coding_cal_'+hash([candidateIdentity,outcome,confidence].join('|'));
+    if(!seen.has(eventId)&&!seen.has(legacyEventId)){
       const contextKeys=['target:'+target,'game:'+gameId];
       for(const key of contextKeys){
         const row=calibration.contexts[key]||{verifiedSamples:0,highConfidenceSamples:0,highConfidenceFailures:0,firstCandidatePasses:0,semanticHardGatePasses:0,lastEvidence:null,lastUpdatedAt:null};
@@ -876,8 +883,9 @@ export function applyVerifiedCodingCalibration(stateInput={},queueInput={}){
     }
     const primaryTargets=decodeEvidenceArray(evidence,'coding-primary-targets:');
     const primarySystems=decodeEvidenceArray(evidence,'coding-primary-systems:');
-    const hotspotEventId='coding_hotspot_'+hash([clean(task.id),run,outcome,primaryTargets.join(','),primarySystems.join(',')].join('|'));
-    if(!hotspotSeen.has(hotspotEventId)){
+    const legacyHotspotEventId='coding_hotspot_'+hash([clean(task.id),run,outcome,primaryTargets.join(','),primarySystems.join(',')].join('|'));
+    const hotspotEventId='coding_hotspot_'+hash([candidateIdentity,outcome,primaryTargets.join(','),primarySystems.join(',')].join('|'));
+    if(!hotspotSeen.has(hotspotEventId)&&!hotspotSeen.has(legacyHotspotEventId)){
       const refs=[...primaryTargets.map(name=>({kind:'SYMBOL',name})),...primarySystems.map(name=>({kind:'SYSTEM',name}))];
       for(const ref of refs){
         const key=[gameId,ref.kind,clean(ref.name)].join('|');
@@ -941,8 +949,9 @@ export function applyVerifiedArchitectureDriftOutcomes(stateInput={},queueInput=
     if(!drift||!outcome||!drift.signals.length)continue;
     const gameId=clean(task.gameId)||'unknown';
     const run=evidence.find(value=>value.startsWith('actions-run:'))||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
-    const eventId='architecture_drift_'+hash([clean(task.id),run,outcome,drift.riskLevel,drift.signals.join(',')].join('|'));
-    if(seen.has(eventId))continue;
+    const legacyEventId='architecture_drift_'+hash([clean(task.id),run,outcome,drift.riskLevel,drift.signals.join(',')].join('|'));
+    const eventId='architecture_drift_'+hash([codingOutcomeIdentity(task,'ARCHITECTURE'),outcome,drift.riskLevel,drift.signals.join(',')].join('|'));
+    if(seen.has(eventId)||seen.has(legacyEventId))continue;
     for(const signal of drift.signals){
       const row=memory.signals[signal]||{observations:0,verifiedRegressionFailures:0,verifiedPasses:0,games:{},failureGames:{},passGames:{},state:'CANDIDATE',lastEvidence:null,lastUpdatedAt:null};
       row.observations+=1;
