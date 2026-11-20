@@ -1158,6 +1158,181 @@ for (const k of Object.keys(cardApprovalDocument.approved || {})) {
   if (k.startsWith('CardArt/ui_')) approvedCardNames.add(k.slice(8) + '.png');
 }
 // [기존 원본 등록기] 캐릭터 26종의 GLB UV/PBR 맵과 해시를 등록 전에 직접 제작·검증한다.
+// [가축 자산 직접 제작] 검증된 CC0 당나귀 정적 원본을 건드리지 않고 새 스킨 메시·키프레임 후보만 생성한다.
+function buildDonkeyRig(source) {
+  // [자산 원본] 기존 Quaternius 8종 재질, 삼각형·정점·법선과 첫 BIN 구간을 보존한다.
+  const raw=source instanceof Uint8Array?source:new Uint8Array(source);
+  const view=new DataView(raw.buffer,raw.byteOffset,raw.byteLength);
+  const read=(i)=>view.getUint32(i,true);
+  if(read(0)!==0x46546c67||read(4)!==2||read(8)!==raw.length||read(16)!==0x4e4f534a)throw Error("DONKEY_SOURCE_GLB_INVALID");
+  const jsonLen=read(12),binStart=20+jsonLen,binLen=read(binStart),binOffset=binStart+8;
+  if(read(binStart+4)!==0x004e4942||binOffset+binLen!==raw.length)throw Error("DONKEY_SOURCE_BIN_INVALID");
+  let documentJson="";
+  for(let i=20;i<20+jsonLen;i++)documentJson+=String.fromCharCode(raw[i]);
+  const gltf=JSON.parse(documentJson);
+  if(gltf.meshes?.length!==1||gltf.meshes[0].primitives?.length!==8||gltf.materials?.length!==8
+      ||gltf.skins?.length||gltf.animations?.length||gltf.nodes?.length!==1)throw Error("DONKEY_SOURCE_LAYOUT_CHANGED");
+  const chunks=[raw.subarray(binOffset,binOffset+binLen)];
+  let nextBin=binLen;
+  const floatData=(numbers)=>{const bytes=new Uint8Array(numbers.length*4),dv=new DataView(bytes.buffer);numbers.forEach((n,i)=>dv.setFloat32(i*4,n,true));return bytes};
+  const shortData=(numbers)=>{const bytes=new Uint8Array(numbers.length*2),dv=new DataView(bytes.buffer);numbers.forEach((n,i)=>dv.setUint16(i*2,n,true));return bytes};
+  function appendView(bytes,target) {
+    const padding=(4-nextBin%4)%4;
+    if(padding){chunks.push(new Uint8Array(padding));nextBin+=padding}
+    const row={buffer:0,byteOffset:nextBin,byteLength:bytes.length};
+    if(target)row.target=target;
+    const index=gltf.bufferViews.push(row)-1;
+    chunks.push(bytes);nextBin+=bytes.length;
+    return index;
+  }
+  const jointSpecs=[
+    ["donkey_body_root",[0,0,0],-1],
+    ["front_left_leg",[0.34,1.78,1.00],0],
+    ["front_left_knee",[0,-0.77,0],1],
+    ["front_right_leg",[-0.34,1.78,1.00],0],
+    ["front_right_knee",[0,-0.77,0],3],
+    ["rear_left_leg",[0.34,1.70,-1.37],0],
+    ["rear_left_knee",[0,-0.75,0],5],
+    ["rear_right_leg",[-0.34,1.70,-1.37],0],
+    ["rear_right_knee",[0,-0.75,0],7],
+    ["donkey_neck",[0,2.60,1.19],0],
+    ["donkey_head",[0,0.47,0.87],9],
+    ["donkey_tail",[0,2.31,-1.52],0]
+  ];
+  const boneIds=[],world=[];
+  for(let i=0;i<jointSpecs.length;i++) {
+    const [name,offset,parent]=jointSpecs[i];
+    const node={name,translation:offset};
+    const id=gltf.nodes.push(node)-1;
+    boneIds.push(id);
+    if(parent>=0) {
+      (gltf.nodes[boneIds[parent]].children??=[]).push(id);
+      world[i]=world[parent].map((x,k)=>x+offset[k]);
+    }else world[i]=offset;
+  }
+  const identityBind=[];
+  for(const t of world)identityBind.push(1,0,0,0,0,1,0,0,0,0,1,0,-t[0],-t[1],-t[2],1);
+  const bindView=appendView(floatData(identityBind));
+  const bindAccessor=gltf.accessors.push({bufferView:bindView,componentType:5126,count:boneIds.length,type:"MAT4"})-1;
+  gltf.skins=[{name:"Donkey_Quadruped_Skin",joints:boneIds,skeleton:boneIds[0],inverseBindMatrices:bindAccessor}];
+  gltf.nodes[0].skin=0;
+  gltf.scenes[gltf.scene??0].nodes.push(boneIds[0]);
+  const smooth=(a,b,v)=>{let u=Math.max(0,Math.min(1,(v-a)/(b-a)));return u*u*(3-2*u)};
+  const used=new Array(boneIds.length).fill(0);
+  const srcData=new DataView(raw.buffer,raw.byteOffset,raw.byteLength);
+  for(const primitive of gltf.meshes[0].primitives) {
+    const acc=gltf.accessors[primitive.attributes.POSITION],bv=gltf.bufferViews[acc.bufferView];
+    if(acc.componentType!==5126||acc.type!=="VEC3")throw Error("DONKEY_POSITION_ACCESSOR_UNSUPPORTED");
+    const offset=binOffset+bv.byteOffset+(acc.byteOffset||0),stride=bv.byteStride||12;
+    const joints=[],weights=[];
+    for(let i=0;i<acc.count;i++) {
+      const x=srcData.getFloat32(offset+i*stride,true);
+      const y=srcData.getFloat32(offset+i*stride+4,true);
+      const z=srcData.getFloat32(offset+i*stride+8,true);
+      let indexes=[0,0,0,0], values=[1,0,0,0];
+      if(y<2.17 && (z>0.45||z< -0.52)) {
+        const rear=z<0,left=x>=0;
+        const upper=rear?(left?5:7):(left?1:3),knee=upper+1;
+        const along=rear?smooth(-0.48,-1.13,z):smooth(0.45,0.85,z);
+        const strength=along*(1-smooth(1.12,2.15,y));
+        const kneeRatio=1-smooth(0.52,1.32,y);
+        indexes=[0,upper,knee,0];
+        values=[1-strength,strength*(1-kneeRatio),strength*kneeRatio,0];
+      }else if(y>2.10 && z>1.15) {
+        const influence=smooth(1.15,1.90,z)*smooth(2.10,2.75,y);
+        const headFactor=smooth(2.1,2.85,z)*smooth(2.50,3.1,y);
+        indexes=[0,9,10,0];
+        values=[1-influence,influence*(1-headFactor),influence*headFactor,0];
+      }else if(y>1.95 && z< -1.27 && Math.abs(x)<0.27) {
+        const influence=smooth(-1.26,-1.60,z)*smooth(1.95,2.27,y);
+        indexes=[0,11,0,0];values=[1-influence,influence,0,0];
+      }
+      for(let k=0;k<4;k++) {
+        if(!Number.isFinite(values[k])||values[k]<-0.00001||values[k]>1.00001)throw Error("DONKEY_INVALID_WEIGHT");
+        joints.push(indexes[k]);weights.push(Math.max(0,Math.min(1,values[k])));
+        if(values[k]>0.05)used[indexes[k]]++;
+      }
+      if(Math.abs(values.reduce((a,b)=>a+b,0)-1)>0.0001)throw Error("DONKEY_UNNORMALIZED_WEIGHTS");
+    }
+    const jv=appendView(shortData(joints),34962);
+    const wv=appendView(floatData(weights),34962);
+    primitive.attributes.JOINTS_0=gltf.accessors.push({bufferView:jv,componentType:5123,count:acc.count,type:"VEC4"})-1;
+    primitive.attributes.WEIGHTS_0=gltf.accessors.push({bufferView:wv,componentType:5126,count:acc.count,type:"VEC4"})-1;
+  }
+  if(used.slice(1).some(n=>n<10))throw Error("DONKEY_SKIN_LIMB_COVERAGE_LOW:"+used.join(","));
+  // [원본 관절 애니메이션] 실제 뼈를 회전시키며 4박자 보행·휴식·풀 뜯기 등을 키프레임으로 보존한다.
+  gltf.animations=[];
+  const clips=[["idle",2.4],["walk",1.4],["trot",0.84],["graze",3.2],["drink",3.2],["shake",1.2]];
+  const qx=(v)=>[Math.sin(v*.5),0,0,Math.cos(v*.5)];
+  const qy=(v)=>[0,Math.sin(v*.5),0,Math.cos(v*.5)];
+  for(const [name,length] of clips) {
+    const frameCount=13,time=[];
+    for(let i=0;i<frameCount;i++)time.push(i*length/(frameCount-1));
+    const clockView=appendView(floatData(time));
+    const clockAccessor=gltf.accessors.push({bufferView:clockView,componentType:5126,count:frameCount,type:"SCALAR",min:[0],max:[length]})-1;
+    const animation={name,channels:[],samplers:[]};
+    for(let joint=1;joint<jointSpecs.length;joint++) {
+      const key=[];
+      for(let i=0;i<frameCount;i++) {
+        const a=i/(frameCount-1)*Math.PI*2;
+        let rotation=[0,0,0,1];
+        if(joint<=8) {
+          const upper=joint%2===1,legPair=Math.floor((joint-1)/2);
+          const fourBeat=[0,Math.PI,Math.PI*1.5,Math.PI*.5][legPair];
+          const diagonal=[0,Math.PI,Math.PI,0][legPair];
+          if(name==="walk"||name==="trot") {
+            const phase=a+(name==="walk"?fourBeat:diagonal);
+            const swing=Math.sin(phase)*(name==="trot"?.40:.28);
+            rotation=qx(upper?swing:Math.max(0,Math.sin(phase+Math.PI*.25))*(name==="trot"?.44:.30));
+          }else if(name==="shake")rotation=qx(Math.sin(a*3+legPair)*.045);
+        } else if(joint===9) {
+          rotation=qx(name==="graze"?.29+.10*Math.sin(a)
+            :name==="drink"?.39+.08*Math.sin(a)
+            :name==="walk"||name==="trot"?.045*Math.sin(a*2)
+            :name==="shake"?.12*Math.sin(a*4):.025*Math.sin(a));
+        } else if(joint===10) {
+          rotation=qx(name==="graze"||name==="drink"?.12+.08*Math.sin(a*2)
+            :name==="shake"?.17*Math.sin(a*4):.045*Math.sin(a));
+        } else if(joint===11)rotation=qy((name==="walk"||name==="trot"?.15:.22)*Math.sin(a*(name==="shake"?4:2)));
+        key.push(...rotation);
+      }
+      const rotationsView=appendView(floatData(key));
+      const rotationsAccessor=gltf.accessors.push({bufferView:rotationsView,componentType:5126,count:frameCount,type:"VEC4"})-1;
+      const sampler=animation.samplers.push({input:clockAccessor,output:rotationsAccessor,interpolation:"LINEAR"})-1;
+      animation.channels.push({sampler,target:{node:boneIds[joint],path:"rotation"}});
+    }
+    gltf.animations.push(animation);
+  }
+  gltf.asset.generator="MareEssentia Direct Animal Skin Authoring v1";
+  gltf.buffers[0].byteLength=nextBin;
+  const jsonText=JSON.stringify(gltf),jsonBytes=new Uint8Array((jsonText.length+3)&~3);
+  for(let i=0;i<jsonText.length;i++){const n=jsonText.charCodeAt(i);if(n>127)throw Error("DONKEY_GLTF_NON_ASCII_JSON");jsonBytes[i]=n}
+  jsonBytes.fill(32,jsonText.length);
+  const binarySize=(nextBin+3)&~3;
+  const result=new Uint8Array(12+8+jsonBytes.length+8+binarySize);
+  const outView=new DataView(result.buffer);
+  outView.setUint32(0,0x46546c67,true);outView.setUint32(4,2,true);outView.setUint32(8,result.length,true);
+  outView.setUint32(12,jsonBytes.length,true);outView.setUint32(16,0x4e4f534a,true);
+  result.set(jsonBytes,20);
+  const binHeader=20+jsonBytes.length;
+  outView.setUint32(binHeader,binarySize,true);outView.setUint32(binHeader+4,0x004e4942,true);
+  let cursor=binHeader+8;
+  for(const segment of chunks){result.set(segment,cursor);cursor+=segment.length}
+  if(cursor!==binHeader+8+nextBin)throw Error("DONKEY_BIN_APPEND_MISMATCH");
+  return result;
+}
+async function prepareDonkeyRig() {
+  const source=await fs.readFile(ROOT+'/assets/animals/donkey.glb');
+  const sha=crypto.createHash('sha1').update('blob '+source.length+'\0').update(source).digest('hex');
+  if(sha!=='408de349a14a3d270441fc61033f09646cdca866')
+    throw new Error('DONKEY_CC0_SOURCE_REVISION_CHANGED');
+  const candidate=buildDonkeyRig(new Uint8Array(source));
+  if(candidate.length<180000||candidate.length>3000000)throw new Error('DONKEY_RIG_SIZE_INVALID');
+  const resultPath=ROOT+'/assets/animals/donkey-rig.glb';
+  await fs.writeFile(resultPath,Buffer.from(candidate));
+  console.log('DONKEY_RIG_CANDIDATE_GENERATED',candidate.length);
+}
+if (!studioRegrantPath) await prepareDonkeyRig();
 if (!studioRegrantPath) await prepareCharacterFinishes(ROOT);
 if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['animals', 'Animals'], ['monsters', 'Monsters'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits'], ['cardart', 'CardArt'], ['materials', 'Materials']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {

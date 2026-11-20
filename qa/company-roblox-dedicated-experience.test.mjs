@@ -819,6 +819,44 @@ test('Mare Quaternius donkey is an immutable CC0 source-derived static model, no
   assert.equal(animals.autoBindWithoutRuntimeProof,false);
 });
 
+// [실제 가축 골격 QA] 정적 Quaternius 원본은 보존하고 스킨 가중치와 전신 관절 클립을 검증한다.
+test('Mare donkey rig candidate keeps original geometry and has real skinned joint animations',()=>{
+  const root='roblox-games/mare-essentia/assets/animals/';
+  const original=fs.readFileSync(root+'donkey.glb');
+  const rig=fs.readFileSync(root+'donkey-rig.glb');
+  const read=bytes=>JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString('utf8'));
+  const src=read(original),doc=read(rig);
+  assert.equal(rig.subarray(0,4).toString('ascii'),'glTF');
+  assert.equal(rig.readUInt32LE(8),rig.length);
+  assert.equal(doc.meshes.length,src.meshes.length);
+  assert.deepEqual(doc.materials,src.materials,'original eight Quaternius materials preserved');
+  assert.deepEqual(doc.meshes[0].primitives.map(p=>p.material),src.meshes[0].primitives.map(p=>p.material));
+  assert.equal(doc.skins.length,1);
+  assert.equal(doc.skins[0].joints.length,12);
+  assert.ok(doc.nodes.some(n=>n.name==='front_left_knee'));
+  assert.ok(doc.nodes.some(n=>n.name==='rear_right_knee'));
+  assert.ok(doc.nodes.some(n=>n.name==='donkey_neck'));
+  assert.ok(doc.nodes.some(n=>n.name==='donkey_tail'));
+  for(const prim of doc.meshes[0].primitives){
+    assert.ok(Number.isInteger(prim.attributes.JOINTS_0));
+    assert.ok(Number.isInteger(prim.attributes.WEIGHTS_0));
+    const pos=doc.accessors[prim.attributes.POSITION];
+    assert.equal(doc.accessors[prim.attributes.JOINTS_0].count,pos.count);
+    assert.equal(doc.accessors[prim.attributes.WEIGHTS_0].count,pos.count);
+  }
+  const staticBin=20+original.readUInt32LE(12)+8;
+  const rigBin=20+rig.readUInt32LE(12)+8;
+  const originalLen=original.readUInt32LE(staticBin);
+  assert.deepEqual(rig.subarray(rigBin+8,rigBin+8+originalLen),original.subarray(staticBin+8,staticBin+8+originalLen),'original mesh BIN must be bit-identical');
+  assert.deepEqual(doc.animations.map(a=>a.name),['idle','walk','trot','graze','drink','shake']);
+  assert.ok(doc.animations.every(a=>a.channels.length>=11));
+  assert.match(fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8'),/await prepareDonkeyRig\(\)/);
+  const license=JSON.parse(fs.readFileSync(root+'donkey-rig.glb.license.json','utf8'));
+  assert.equal(license.license,'CC0-1.0');
+  assert.equal(license.sourceGitBlobSha1,'408de349a14a3d270441fc61033f09646cdca866');
+  assert.equal(license.runtimeVerified,false,'new asset cannot auto-replace existing donkey without Roblox visual QA');
+});
+
 // [주민 정면] 얼굴 표면은 머리의 원본 데칼 면을 따라야 한다. 몸통 축으로 반대쪽에 덧그리지 않는다.
 test('Mare R15 faces use their native head front and stationary villagers greet nearby players',()=>{
   const pose=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
