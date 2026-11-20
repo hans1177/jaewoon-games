@@ -122732,7 +122732,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -122774,12 +122774,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44712566741:1",
+      "reservedAt": "2026-11-20T09:51:53.672Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -126190,14 +126190,15 @@
         "failed-strategy-fingerprint:e6608ad3ec73bc6a8832f62c526eacb46df8cb5060dd77412598e5edb6f6ff94",
         "model-output-sha256:567de1edf8c9fe997435e10919ef8fe176573f0cf9a82e7e639e7c5202ecfde9",
         "system-ai-handoff-to-reservation:system-ai:44711295615:1",
-        "actions-run:44711295615"
+        "actions-run:44711295615",
+        "system-ai-handoff-to-reservation:system-ai:44712566741:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 402,
+      "impactScore": 1862,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 2,
-        "recurrenceCount": 2,
+        "blockedTaskCount": 40,
+        "recurrenceCount": 40,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -126205,7 +126206,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-20T09:44:57.889Z"
+      "updatedAt": "2026-11-20T09:51:53.672Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -154963,7 +154964,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -155005,12 +155006,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44712566741:1",
+      "reservedAt": "2026-11-20T09:51:53.672Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-verification-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -155401,7 +155402,8 @@
         "system-ai-applied-answer-sha256:7ca3840d2b12bf1518dba45270092a7add723878edd475c1c52fdefbbfe5abed",
         "repair-strategy-fingerprint:12100b88887fa866f5ff6fcca59c4b70eb759de01b4e4f241608e0787ae9f3e8",
         "failed-strategy-fingerprint:12100b88887fa866f5ff6fcca59c4b70eb759de01b4e4f241608e0787ae9f3e8",
-        "model-output-sha256:743877a7eb7c8943076e5d4d17dc5dfad9f3ffef140c9ac257e007a970d8a4a6"
+        "model-output-sha256:743877a7eb7c8943076e5d4d17dc5dfad9f3ffef140c9ac257e007a970d8a4a6",
+        "system-ai-handoff-to-reservation:system-ai:44712566741:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 302,
@@ -155416,7 +155418,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-20T09:30:14.063Z"
+      "updatedAt": "2026-11-20T09:51:53.672Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
