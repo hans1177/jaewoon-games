@@ -200,6 +200,13 @@ def validate_manifest(args, manifest, train_rows, eval_rows, holdout_rows=()):
                     raise RuntimeError("official dataset sample identity missing")
                 if sample_id in observed_ids:
                     raise RuntimeError("official train/eval/holdout sample identity overlap")
+                # [샘플 무결성] 기존 JS 데이터셋 생성기가 발급한 식별자를
+                # 로컬 학습기에서 다시 계산해 입력 내용 바꿔치기를 차단한다.
+                sample_identity = hashlib.sha256(stable_row({
+                    key: value for key, value in sample.items() if key != "sampleId"
+                }).encode("utf-8")).hexdigest()
+                if sample_id != sample_identity:
+                    raise RuntimeError("official sample identity digest mismatch")
                 observed_ids.add(sample_id)
 
     for row in train_rows + eval_rows + (list(holdout_rows) if official_training else []):
