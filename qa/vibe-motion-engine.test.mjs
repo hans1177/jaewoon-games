@@ -86,8 +86,9 @@ test('Vibe 5.9 real GLB clips map sprint to authored Run without fabricating a c
 test('Vibe 5.9 desktop 3D preview targets smooth frames while mobile retains its budget',()=>{
  const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  assert.ok(html.includes('if(now-last<(mobileView?33:16))return'));
- assert.ok(html.includes('targetFps:55'));
- assert.ok(html.includes("if(mobileView){"));
+ assert.ok(html.includes('targetFps:mobileView?29:55'));
+ assert.ok(html.includes('mobile:mobileView,maxPixelRatio:Math.min(devicePixelRatio,mobileView?1.5:2)'));
+ assert.ok(html.includes('renderQuality.sample(delta,{drawCalls:renderer.info.render.calls})'));
 });
 
 test('Vibe 5.9 world-space foot locks do not mutate source positions and release on swing',()=>{
