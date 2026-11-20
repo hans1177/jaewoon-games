@@ -238,6 +238,22 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       if(connection&&!found.has('FRAME_CONNECTION_ACCUMULATION'))
         found.set('FRAME_CONNECTION_ACCUMULATION',{
           code:'FRAME_CONNECTION_ACCUMULATION',line:sourceLineAt(start+connection.index)});
+      // [프레임 메모리] 계속 생성되는 인스턴스는 GC·렌더링 부하 검토 대상으로 연결한다.
+      const allocation=/\bInstance\s*\.\s*new\s*\(/.exec(body);
+      if(allocation&&!found.has('FRAME_INSTANCE_ALLOCATION'))
+        found.set('FRAME_INSTANCE_ALLOCATION',{
+          code:'FRAME_INSTANCE_ALLOCATION',line:sourceLineAt(start+allocation.index)});
+      // [프레임 경로 탐색] 경로 생성/재계산은 실행당 비용이 커서 호출 위치를 남긴다.
+      const pathfinding=/\b[A-Za-z_]\w*\s*:\s*(?:CreatePath|ComputeAsync)\s*\(/.exec(body);
+      if(pathfinding&&!found.has('FRAME_PATHFINDING_WORK'))
+        found.set('FRAME_PATHFINDING_WORK',{
+          code:'FRAME_PATHFINDING_WORK',line:sourceLineAt(start+pathfinding.index)});
+      // [프레임 저장] 서버 루프에서의 저장 호출을 발견해도 저장 로직은 직접 변경하지 않는다.
+      const datastore=side==='SERVER'
+        ?/\b[A-Za-z_]\w*\s*:\s*(?:SetAsync|UpdateAsync)\s*\(/.exec(body):null;
+      if(datastore&&!found.has('FRAME_DATASTORE_WRITE'))
+        found.set('FRAME_DATASTORE_WRITE',{
+          code:'FRAME_DATASTORE_WRITE',line:sourceLineAt(start+datastore.index)});
       if(found.has('FRAME_REMOTE_REQUEST')&&found.has('FRAME_SERVER_BROADCAST')
         &&found.has('FRAME_CONNECTION_ACCUMULATION'))break;
     }
