@@ -2569,6 +2569,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
               ||provenance.transformHistory.some(row=>!['PBR_ROUGHNESS_STYLE_REAUTHOR','PBR_BASE_COLOR_STYLE_REAUTHOR','PBR_METALNESS_STYLE_REAUTHOR','PBR_NORMAL_STYLE_REAUTHOR','PBR_WEAR_STYLE_REAUTHOR','VERIFIED_SOURCE_MESH_RECONSTRUCTION'].includes(clean(row?.kind)))
               ||(provenance.transformHistory.some(row=>row?.kind==='VERIFIED_SOURCE_MESH_RECONSTRUCTION')
                 &&(evidence?.meshReconstruction?.meshStaticQaPass!==true
+                  ||evidence?.meshReconstruction?.sourceGeometryActuallyChanged!==true
                   ||evidence?.meshReconstruction?.sourceFileImmutable!==true
                   ||clean(evidence?.meshReconstruction?.parentId)!==expectedParentId
                   ||clean(evidence?.meshReconstruction?.parentSha256)!==clean(provenance?.sourceSha256)
@@ -7664,7 +7665,8 @@ export async function produceRegisteredCc0Asset({
         ||clean(evidence?.sourceMesh?.libraryParentAssetId)!==id
         ||evidence?.pbrMeshQa?.pass!==true
         ||Boolean(evidence?.meshReconstruction)!==Boolean(recipe)
-        ||(recipe&&evidence?.meshReconstruction?.meshStaticQaPass!==true)
+        ||(recipe&&(evidence?.meshReconstruction?.meshStaticQaPass!==true
+          ||evidence?.meshReconstruction?.sourceGeometryActuallyChanged!==true))
         ||clean(evidence?.artifactHash)!==exactHash(path.join(staging,'asset.glb')))
         throw new Error('CC0_BLENDER_OUTPUT_QA_FAILED');
       fs.renameSync(staging,output);authored=true;
