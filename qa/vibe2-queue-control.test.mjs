@@ -4056,3 +4056,20 @@ test('owner Mare-only queue cancels every other game task, clears reservations a
   assert.equal(delayed.outcome,'CANCELLED');
   assert.equal(delayed.queue.tasks.find(t=>t.id==='other-running').status,'cancelled');
 });
+
+test('game-primary reserve awakens the existing asset lane only for queued asset priority conflicts',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const start=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
+  const end=workflow.indexOf('      - name: Record asset no-model cache bypass',start);
+  assert.ok(start>=0&&end>start);
+  const reserve=workflow.slice(start,end);
+  assert.match(reserve,/grep -q '=>queued-asset-reservation-priority@'/);
+  assert.match(reserve,/VIBE2_ASSET_PRIORITY_WAKE=DISPATCHED_EXISTING_ASSET_LANE/);
+  assert.match(reserve,/actions\\/runs\\?status=queued&per_page=100/);
+  assert.match(reserve,/actions\\/runs\\?status=in_progress&per_page=100/);
+  assert.match(reserve,/rows\\.length>=100/);
+  assert.match(reserve,/run\\.path===/);
+  assert.match(reserve,/-f 'inputs\\[execution_lane\\]=asset-development'/);
+  assert.match(reserve,/VIBE2_ASSET_PRIORITY_WAKE=DEDUPED_OR_UNKNOWN/);
+  assert.match(reserve,/VIBE2_ASSET_PRIORITY_WAKE=SKIPPED_STATUS_UNAVAILABLE/);
+});
