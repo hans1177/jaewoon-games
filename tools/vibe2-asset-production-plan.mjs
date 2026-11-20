@@ -2566,7 +2566,13 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
               ||(license==='cc-by'&&!clean(provenance.attribution))
               ||provenance?.sourceFileImmutable!==true
               ||!Array.isArray(provenance?.transformHistory)||provenance.transformHistory.length===0
-              ||provenance.transformHistory.some(row=>!['PBR_ROUGHNESS_STYLE_REAUTHOR','PBR_BASE_COLOR_STYLE_REAUTHOR','PBR_METALNESS_STYLE_REAUTHOR','PBR_NORMAL_STYLE_REAUTHOR','PBR_WEAR_STYLE_REAUTHOR'].includes(clean(row?.kind)))
+              ||provenance.transformHistory.some(row=>!['PBR_ROUGHNESS_STYLE_REAUTHOR','PBR_BASE_COLOR_STYLE_REAUTHOR','PBR_METALNESS_STYLE_REAUTHOR','PBR_NORMAL_STYLE_REAUTHOR','PBR_WEAR_STYLE_REAUTHOR','VERIFIED_SOURCE_MESH_RECONSTRUCTION'].includes(clean(row?.kind)))
+              ||(provenance.transformHistory.some(row=>row?.kind==='VERIFIED_SOURCE_MESH_RECONSTRUCTION')
+                &&(evidence?.meshReconstruction?.meshStaticQaPass!==true
+                  ||evidence?.meshReconstruction?.sourceFileImmutable!==true
+                  ||clean(evidence?.meshReconstruction?.parentId)!==expectedParentId
+                  ||clean(evidence?.meshReconstruction?.parentSha256)!==clean(provenance?.sourceSha256)
+                  ||evidence?.meshReconstruction?.finalTriangleCount>450000))
               ||evidence?.generator!=='assets/native-authoring/build-game-visual.py'
               ||evidence?.internalAsset?.library!=='VIBE_STUDIO_ASSET_UNIVERSE'
               ||evidence?.internalAsset?.state!=='PREPARED_NATIVE_QA_PENDING'
@@ -7478,7 +7484,8 @@ export function assetProductionGuidance(plan={}){
 // 사용자가 지정한 실제 모델 ID/게임/역할만 가공하며, 검증 없는 자동 승격·게임 코드 교체는 하지 않는다.
 export async function produceRegisteredCc0Asset({
   repoRoot=process.cwd(),assetId='',gameId='',target='web',role='',
-  blender='blender',fetchImpl=globalThis.fetch
+  blender='blender',fetchImpl=globalThis.fetch,
+  reconstruction=null,styleFamily='STYLIZED_FANTASY'
 }={}){
   const publicHttps=value=>{
     try{
@@ -7491,6 +7498,13 @@ export async function produceRegisteredCc0Asset({
   };
   const type=clean(role).toLowerCase(),platform=clean(target).toLowerCase();
   const game=clean(gameId),id=clean(assetId);
+  const style=clean(styleFamily).toUpperCase();
+  if(!/^[A-Z][A-Z0-9_]{2,63}$/.test(style))throw new Error('CC0_STYLE_FAMILY_INVALID');
+  const recipe=reconstruction===null?null:reconstruction;
+  if(recipe!==null&&(!recipe||typeof recipe!=='object'||Array.isArray(recipe)
+      ||JSON.stringify(recipe).length>950||!['WORLD','HUMANOID','CREATURE'].includes(recipe.bodyPlan)
+      ||(recipe.bodyPlan==='WORLD'&&!['environment','building','prop','weapon'].includes(clean(role).toLowerCase()))))
+    throw new Error('CC0_RECONSTRUCTION_RECIPE_INVALID');
   const expectedFamilies={character:'CHARACTER',creature:'CREATURE',building:'BUILDING',
     weapon:'WEAPON',environment:'ENVIRONMENT',prop:'PROP'};
   if(!/^[a-z0-9][a-z0-9._-]{1,63}$/.test(game)
@@ -7566,6 +7580,13 @@ export async function produceRegisteredCc0Asset({
   let authored=false;
   if(fs.existsSync(output)){
     const evidence=readJson(path.join(output,'evidence.json'),{});
+    const application=readJson(path.join(output,'application.json'),{});
+    const prior=evidence?.meshReconstruction;
+    if(clean(application?.style?.sourceStyleFamily).toUpperCase()!==style
+      ||Boolean(prior)!==Boolean(recipe)
+      ||(recipe&&JSON.stringify({bodyPlan:prior?.bodyPlan,morph:prior?.morph,detail:prior?.detail})
+        !==JSON.stringify({bodyPlan:recipe.bodyPlan,morph:recipe.morph||{},detail:recipe.detail||'KEEP'})))
+      throw new Error('CC0_DERIVED_OUTPUT_RECIPE_CHANGED_KEEP_FOR_REVIEW');
     if(producedFiles.some(file=>!fs.existsSync(path.join(output,file)))
       ||clean(evidence?.sourceMesh?.sourceSha256)!==declaredHash
       ||clean(evidence?.sourceMesh?.libraryParentAssetId)!==id
@@ -7581,13 +7602,16 @@ export async function produceRegisteredCc0Asset({
         '--target',platform,'--source-model',sourcePath,'--module','object',
         '--source-license',parent.license,'--source-credit',clean(parent.sourceUrl),
         '--library-parent-id',id,'--library-source-sha256',declaredHash,
-        '--style-json',JSON.stringify({sourceStyleFamily:'STYLIZED_FANTASY'})];
+        '--style-json',JSON.stringify({sourceStyleFamily:style}),
+        ...(recipe?['--reconstruct-json',JSON.stringify(recipe)]:[])];
       execFileSync(blender,args,{cwd:root,stdio:'pipe',timeout:240000,maxBuffer:4*1024*1024});
       const evidence=readJson(path.join(staging,'evidence.json'),{});
       if(producedFiles.some(file=>!fs.existsSync(path.join(staging,file)))
         ||clean(evidence?.sourceMesh?.sourceSha256)!==declaredHash
         ||clean(evidence?.sourceMesh?.libraryParentAssetId)!==id
         ||evidence?.pbrMeshQa?.pass!==true
+        ||Boolean(evidence?.meshReconstruction)!==Boolean(recipe)
+        ||(recipe&&evidence?.meshReconstruction?.meshStaticQaPass!==true)
         ||clean(evidence?.artifactHash)!==exactHash(path.join(staging,'asset.glb')))
         throw new Error('CC0_BLENDER_OUTPUT_QA_FAILED');
       fs.renameSync(staging,output);authored=true;
@@ -7601,11 +7625,26 @@ export async function produceRegisteredCc0Asset({
   if(!entry||clean(entry.parentSourceId)!==id
     ||entry.productionVerified===true||entry.verifiedCompanyReusable===true)
     throw new Error('CC0_DERIVATIVE_REGISTRATION_UNVERIFIED');
+  // [기존 게임 바인딩 전달] 해시로 고정된 새 GLB만 기존 개발 워커에 전달한다.
+  // 제작·원장 등록을 Roblox 네이티브 import, 소스 바인딩 또는 런타임 PASS로 오인하지 않는다.
+  const artifactPath=derivedPath+'/asset.glb';
+  const artifactSha256=exactHash(path.join(output,'asset.glb'));
+  const catalog=readJson(path.join(root,'game-catalog.json'),{games:[]});
+  const catalogGame=(catalog.games||[]).find(row=>clean(row.id||row.gameId)===game);
+  const nativeGamePath=platform==='roblox'?clean(catalogGame?.robloxProjectPath||catalogGame?.canonical?.sources?.roblox?.projectPath):
+    platform==='unity'?clean(catalogGame?.unityProjectPath||catalogGame?.canonical?.sources?.unity?.projectPath):null;
   return Object.freeze({assetId:entry.id,sourcePath,sourceHash:declaredHash,
     output:derivedPath,acquired,authored,registered:true,
-    sourceBoundConsumerGameIds:entry.sourceBoundConsumerGameIds||[],
+    artifactPath,artifactSha256,sourceBoundConsumerGameIds:entry.sourceBoundConsumerGameIds||[],
+    nativeApplication:Object.freeze({gameId:game,platform:platform.toUpperCase(),nativeGamePath:nativeGamePath||null,
+      masterGlbPath:derivedPath+'/master.glb',assetGlbPath:artifactPath,artifactSha256,
+      previewPath:derivedPath+'/preview.png',applicationPath:derivedPath+'/application.json',
+      sourceRevision:null,candidateRevision:null,
+      stage:'EXISTING_GAME_SOURCE_BINDING_AND_NATIVE_RUNTIME_QA_REQUIRED',
+      sourceMutationPerformed:false,nativeImportVerified:false,runtimeVerified:false,
+      gameplayAndSaveMutationAllowed:false}),
     runtimeVerified:false,productionVerified:false,gameAutoApplied:false,
-    nextAction:'ACTUAL_GAME_RUNTIME_QA_THEN_EXISTING_APPROVED_BINDING'});
+    nextAction:'EXISTING_GAME_SOURCE_WORKER_NATIVE_IMPORT_BIND_THEN_RUNTIME_VISUAL_MOBILE_QA'});
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
@@ -7614,7 +7653,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   if(args['produce-cc0']){
     produceRegisteredCc0Asset({repoRoot,assetId:args['produce-cc0'],
       gameId:args.game,target:args.target||'web',role:args.role||'creature',
-      blender:clean(args.blender)||'blender'}).then(result=>console.log(JSON.stringify(result,null,2)))
+      blender:clean(args.blender)||'blender',
+      styleFamily:clean(args.style)||'STYLIZED_FANTASY',
+      reconstruction:args.reconstruct?JSON.parse(args.reconstruct):null}).then(result=>console.log(JSON.stringify(result,null,2)))
       .catch(error=>{console.error('CC0_PRODUCTION_FAILED='+clean(error?.message));process.exitCode=1;});
   }else{
   const task={gameId:clean(args.game),goal:clean(args.goal),target:clean(args.target)||'web'};
