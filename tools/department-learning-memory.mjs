@@ -110,17 +110,29 @@ export function selectVerifiedDepartmentLearning(ledger={},context={},max=4){
   const role=clean(context.role);
   if(!CORE_DEPARTMENT_ROLES.includes(role))return [];
   const gameId=clean(context.gameId),gameSlug=clean(context.gameSlug),sourcePath=clean(context.sourcePath),workLane=clean(context.workLane).toUpperCase();
+  // [부서 경험 검색] 현재 작업 목표가 구체적이면 검증된 타게임 사례도 동일 주제일 때만 인용한다.
+  // 범용 동사와 과정 이름으로 우연히 일치한 과거 결론이 모델 선택과 작업 제약을 오염시키지 않도록 한다.
+  const genericWords=new Set(['이번','현재','진행','작업','수정','개선','검토','확인','요청','기능','게임','코드','검증','추가','처리','적용','필요','문제','해결','고도화','실행','개발','완료','test','task','fix','game','code','change','update','check','review']);
+  const taskTerms=new Set((clean(context.goal).toLowerCase().match(/[\p{L}\p{N}]{2,}/gu)||[]).filter(word=>!genericWords.has(word)));
   const rows=(Array.isArray(ledger?.verifiedLearning)?ledger.verifiedLearning:[])
     .filter(row=>row?.verified===true&&clean(row?.independentQa).toUpperCase()==='PASS'&&clean(row?.role)===role)
     .map(row=>{
+      const sameSource=Boolean(sourcePath&&clean(row.sourcePath)===sourcePath);
+      const sameGame=Boolean((gameId&&clean(row.gameId)===gameId)||(gameSlug&&clean(row.gameSlug)===gameSlug));
+      const learnedText=[row.summary,row.nextAction,...(Array.isArray(row.checks)?row.checks:[]),...(Array.isArray(row.risks)?row.risks:[])].map(clean).join(' ').toLowerCase();
+      const learnedTerms=new Set(learnedText.match(/[\p{L}\p{N}]{2,}/gu)||[]);
+      const taskMatches=[...taskTerms].filter(word=>learnedTerms.has(word)).length;
+      if(taskTerms.size>0&&!sameSource&&!sameGame&&taskMatches===0)return null;
       let relevance=0;
-      if(sourcePath&&clean(row.sourcePath)===sourcePath)relevance+=8;
+      if(sameSource)relevance+=8;
       if(gameId&&clean(row.gameId)===gameId)relevance+=5;
       if(gameSlug&&clean(row.gameSlug)===gameSlug)relevance+=5;
       if(workLane&&clean(row.workLane).toUpperCase()===workLane)relevance+=2;
+      relevance+=Math.min(3,taskMatches)*4;
       if(clean(row.outcome).toUpperCase()==='FAILURE')relevance+=1;
       return {row,relevance};
     })
+    .filter(Boolean)
     .sort((a,b)=>b.relevance-a.relevance||String(b.row.verifiedAt||b.row.recordedAt||'').localeCompare(String(a.row.verifiedAt||a.row.recordedAt||'')))
     .slice(0,Math.max(0,finite(max,4)))
     .map(({row,relevance})=>({

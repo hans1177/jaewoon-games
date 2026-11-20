@@ -424,3 +424,35 @@ test('design authoring uses native Vibe functions without model transport or dep
   assert.match(seedDesignWorkflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
   assert.match(seedDesignWorkflow,/DESIGN_AI_REVIEW_LANES=NONE/);
 });
+
+
+// [정식 5개 제작부서] 모든 해당 설계 축의 독립 실패를 작은 상한 안에서 제시한다.
+test('DESIGN_ONLY five departments review multiple independent gate failures without new AI lanes',()=>{
+  const designSource=fs.readFileSync(new URL('../tools/company-design-cycle.mjs',import.meta.url),'utf8');
+  const start=designSource.indexOf('function deterministicDepartmentReview(');
+  const end=designSource.indexOf("\nconsole.log('DESIGN_ONLY_REVIEW_MODE",start);
+  assert.ok(start>0&&end>start);
+  const reviewer=new Function('AXIS_ROLES','clip','clean',designSource.slice(start,end)+'\nreturn deterministicDepartmentReview;')(
+    {A:['planning','qa'],B:['planning','graphics','qa'],C:['graphics','audio'],D:['development','qa'],E:['audio']},
+    value=>String(value??'').slice(0,14000),
+    value=>String(value??'').trim()
+  );
+  const failures=[
+    {axis:'A',code:'A_FAIL',requiredAction:'목표 플레이 검증'},
+    {axis:'B',code:'B_FAIL',requiredAction:'모바일 UI 시각 검증'},
+    {axis:'C',code:'C_FAIL',requiredAction:'효과음 연결 검증'},
+    {axis:'D',code:'D_FAIL',requiredAction:'실제 런타임 검증'},
+    {axis:'E',code:'E_FAIL',requiredAction:'오디오 재생 검증'},
+  ];
+  const scored={rejectionReasons:failures,evidenceLevels:{A:1,B:2,C:3,D:1,E:1}};
+  const planning=reviewer('planning',scored),qa=reviewer('qa',scored),graphics=reviewer('graphics',scored);
+  const audio=reviewer('audio',scored),development=reviewer('development',scored);
+  assert.deepEqual(planning.fix,['목표 플레이 검증','모바일 UI 시각 검증']);
+  assert.deepEqual(qa.fix,['목표 플레이 검증','모바일 UI 시각 검증','실제 런타임 검증']);
+  assert.deepEqual(graphics.fix,['모바일 UI 시각 검증','효과음 연결 검증']);
+  assert.deepEqual(audio.fix,['효과음 연결 검증','오디오 재생 검증']);
+  assert.deepEqual(development.fix,['실제 런타임 검증']);
+  assert.deepEqual(qa.risks,['A_FAIL:A','B_FAIL:B','D_FAIL:D']);
+  const duplicate=reviewer('qa',{...scored,rejectionReasons:[failures[0],{axis:'A',code:'LATE_A',requiredAction:'후순위 중복'},...failures.slice(1)]});
+  assert.equal(duplicate.fix[0],'목표 플레이 검증','동일 설계 축의 첫 실패를 보존한다');
+});

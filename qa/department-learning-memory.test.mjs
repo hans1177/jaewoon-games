@@ -113,3 +113,28 @@ test('Vibe59 independently verified specialist identity survives existing learni
   assert.equal(selected[0].independentQa,'PASS');
   assert.equal(normalizeVerifiedDepartmentLearning({...evidence,independentQa:'FAIL'}).length,0);
 });
+
+
+// [부서 전문성] 현재 목표와 연결된 독립 검증 경험만 다른 게임에서 재사용한다.
+test('부서 경험은 현재 목표의 동일 주제를 먼저 검색하고 무관한 타게임 경험을 제외한다',()=>{
+  const shared={verified:true,independentQa:'PASS',role:'graphics',workLane:'FULL',
+    outcome:'SUCCESS',sourceRevision:'abcdef123456',verifiedAt:'2026-11-20T00:00:00Z'};
+  const ledger={verifiedLearning:[
+    {...shared,sourceEvidenceId:'unrelated',gameId:'P0100',gameSlug:'city-game',
+      sourcePath:'web-games/city-game',summary:'상점 메뉴 버튼 재배치',nextAction:'상점 목록 정렬'},
+    {...shared,sourceEvidenceId:'related',gameId:'P0200',gameSlug:'ocean-battle',
+      sourcePath:'web-games/ocean-battle',summary:'선박 포격 물보라 렌더링',nextAction:'물보라 화면 효과 검증'},
+    {...shared,sourceEvidenceId:'same',gameId:'P0001',gameSlug:'mare-essentia',
+      sourcePath:'roblox-games/mare-essentia',summary:'선박 포격 물보라 시각효과',nextAction:'모바일 선박 물보라 확인'},
+  ]};
+  const selected=selectVerifiedDepartmentLearning(ledger,{
+    role:'graphics',gameId:'P0001',gameSlug:'mare-essentia',
+    sourcePath:'roblox-games/mare-essentia',workLane:'FULL',
+    goal:'선박 포격 물보라 표현 개선',
+  },4);
+  assert.deepEqual(selected.map(row=>row.sourceEvidenceId),['same','related']);
+  assert.ok(selected[0].relevance>selected[1].relevance);
+  assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'qa',goal:'선박 포격 물보라 표현 개선'}),[]);
+  // 이전 작업자는 목표를 전달하지 않았으므로 기존 방식의 과거 경험 조회를 유지한다.
+  assert.equal(selectVerifiedDepartmentLearning(ledger,{role:'graphics'}).length,3);
+});
