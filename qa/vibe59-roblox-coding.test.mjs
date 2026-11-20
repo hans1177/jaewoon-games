@@ -590,3 +590,26 @@ test('Vibe59 requires an assigned owner to claim complete responsible-source cov
   assert.equal(result.qualityDirector.gameplayPass,false);
   assert.equal(result.sourceWrite,false);
 });
+
+// [루아우 자동검사 회귀] main과 PR에서 동일한 입력 변경을 감지해야 정식 컴파일·실행 검사가 빠지지 않는다.
+test('Vibe5.9 Luau compiler gate covers every tested source on push and pull request',()=>{
+ const workflow=fs.readFileSync(new URL('../.github/workflows/vibe59-luau-compiler.yml',import.meta.url),'utf8');
+ const push=workflow.split('\n  push:\n')[1]?.split('\n  pull_request:\n')[0];
+ const pr=workflow.split('\n  pull_request:\n')[1]?.split('\n  workflow_dispatch:\n')[0];
+ assert.ok(push&&pr,'VIBE59_COMPILER_BOTH_TRIGGERS_REQUIRED');
+ const paths=section=>[...section.matchAll(/^\s+- '([^']+)'/gm)].map(x=>x[1]).sort();
+ assert.deepEqual(paths(push),paths(pr),'VIBE59_COMPILER_PUSH_PR_TRIGGER_DRIFT');
+ for(const required of [
+   'tools/vibe59-*.mjs','tools/vibe2-v59-autonomy.mjs','tools/vibe2-source-worker.mjs',
+   'qa/vibe59-roblox-coding.test.mjs','qa/vibe59-crafting-transaction.test.mjs',
+   'qa/vibe59-luau-compiler.mjs','qa/vibe59-luau-runtime.mjs',
+   'qa/vibe59-crafting-runtime.mjs'
+ ])assert.ok(paths(push).includes(required),'VIBE59_COMPILER_MISSING_TRIGGER:'+required);
+ for(const command of [
+   'node --test qa/vibe59-roblox-coding.test.mjs',
+   'node --test qa/vibe59-crafting-transaction.test.mjs',
+   'node qa/vibe59-luau-compiler.mjs',
+   'node qa/vibe59-luau-runtime.mjs',
+   'node qa/vibe59-crafting-runtime.mjs'
+ ])assert.ok(workflow.includes(command),'VIBE59_COMPILER_MISSING_TEST:'+command);
+});
