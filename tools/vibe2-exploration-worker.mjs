@@ -194,7 +194,7 @@ function reusableArtifact(cwd,order){
     cached.impactAnalysisSchemaVersion!==6
     ||(clean(order.target).toLowerCase()==='roblox'&&(
       cached.robloxCoding?.authority!=='roblox-luau-static-analysis'
-      ||cached.robloxCoding?.scanCoverage?.responsibleComplete===undefined
+      ||cached.robloxCoding?.scanCoverage?.version!==2
       ||cached.robloxModuleGraph?.version!==1
       ||cached.codingRepoMap?.version!==1))
     ||cached.sourceImpact?.authority!=='advisory-source-impact-only'
