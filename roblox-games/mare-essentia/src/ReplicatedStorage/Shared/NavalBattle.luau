@@ -1272,7 +1272,7 @@ function NavalBattle.play(opts)
 		b.AnchorPoint = anchor or Vector2.new(0, 1)
 		b.Position = pos
 		b.Size = size
-		b.BackgroundColor3 = Color3.fromRGB(50, 83, 106)
+		b.BackgroundColor3 = Color3.fromRGB(38, 47, 53)
 		b.TextColor3 = Color3.fromRGB(250, 236, 200)
 		b.Font = Enum.Font.GothamBold
 		b.TextSize = 22
@@ -1301,8 +1301,8 @@ function NavalBattle.play(opts)
 			local art = Instance.new("ImageLabel")
 			art.Name = "NavalButtonArtwork"
 			art.AnchorPoint = Vector2.new(0.5, 0.5)
-			art.Position = UDim2.fromScale(0.5, 0.5)
-			art.Size = UDim2.fromScale(1, 1)
+			art.Position = UDim2.new(0.5, 0, 0.5, -7)
+			art.Size = UDim2.new(1, -16, 1, -16)
 			art.BackgroundTransparency = 1
 			art.Image = "rbxassetid://" .. tostring(assetId)
 			art.ScaleType = Enum.ScaleType.Fit
@@ -1312,9 +1312,11 @@ function NavalBattle.play(opts)
 			local caption = Instance.new("TextLabel")
 			caption.Name = "NavalButtonCaption"
 			caption.AnchorPoint = Vector2.new(0.5, 1)
-			caption.Position = UDim2.new(0.5, 0, 1, -4)
-			caption.Size = UDim2.new(1, -8, 0, 17)
-			caption.BackgroundTransparency = 1
+			caption.Position = UDim2.new(0.5, 0, 1, -10)
+			caption.Size = UDim2.new(1, -24, 0, 21)
+			caption.BackgroundColor3 = Color3.fromRGB(32, 26, 22)
+			caption.BackgroundTransparency = 0.12
+			caption.BorderSizePixel = 0
 			caption.Text = text
 			caption.Font = Enum.Font.GothamBold
 			caption.TextSize = if size.X.Offset >= 90 then 16 else 14
@@ -1322,13 +1324,19 @@ function NavalBattle.play(opts)
 			caption.TextStrokeColor3 = Color3.fromRGB(14, 26, 44)
 			caption.TextStrokeTransparency = 1
 			caption.TextTruncate = Enum.TextTruncate.AtEnd
-			caption.ZIndex = b.ZIndex + 2
+			caption.ZIndex = b.ZIndex + 4
+			caption.Active = false
 			caption.Parent = b
+			local captionCorner = Instance.new("UICorner")
+			captionCorner.CornerRadius = UDim.new(0, 5)
+			captionCorner.Parent = caption
 		end
 		-- [해상 기술 쿨타임] 숫자 대신 원형 아이콘 위 음영으로만 남은 비율을 표현한다.
 		local cooling = Instance.new("Frame")
 		cooling.Name = "NavalCooldownShade"
-		cooling.Size = UDim2.fromScale(1, 1)
+		cooling.AnchorPoint = Vector2.new(0.5, 0.5)
+		cooling.Position = UDim2.new(0.5, 0, 0.5, -7)
+		cooling.Size = UDim2.new(1, -16, 1, -16)
 		cooling.BackgroundColor3 = Color3.fromRGB(12, 20, 32)
 		cooling.BackgroundTransparency = 0.26
 		cooling.BorderSizePixel = 0
