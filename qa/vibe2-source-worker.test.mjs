@@ -2742,6 +2742,18 @@ test('declared Blender verification executes only declared recipe and restores t
     assert.equal(result.recipes[0].runtimeVerified,false);
     assert.equal(result.recipes[0].glbDataQaPass,true);
     assert.equal(execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}),'');
+    // [DCC 오류 근거] 사전 변경된 회사 자산 원장은 신규 출력 누락의 원인으로 표시하지 않는다.
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),'{"version":1}\n');
+    fs.appendFileSync(blender,'fs.writeFileSync("assets/test/undeclared.png","unexpected-output");\n');
+    assert.throws(
+      ()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender}),
+      error=>{
+        assert.match(error.message,/NATIVE_DCC_VERIFY_MUTATED_REPOSITORY:added=assets\/test\/undeclared\.png;removed=/);
+        assert.doesNotMatch(error.message,/company-asset-library\.json/);
+        return true;
+      }
+    );
+    assert.ok(fs.existsSync(path.join(root,'assets/test/undeclared.png')),'unowned file must remain untouched');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 test('declared Blender authoring persists exact generated outputs only inside the candidate Work Lock',()=>{
