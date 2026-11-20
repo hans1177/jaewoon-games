@@ -85,7 +85,7 @@ export const VIBE_ENGINE_SPECIALISTS=Object.freeze([
 export function createVibeEngineSpecialistPlan({gameId='',request='',target='ROBLOX',assetGaps=[],externalCandidates=[],runtimeEvidence=null,departmentEvidence=[]}={}){
   const platform=clean(target).toUpperCase(),goal=clean(request).toLowerCase();
   const gaps=Array.isArray(assetGaps)?assetGaps:[],sources=Array.isArray(externalCandidates)?externalCandidates:[];
-  const full=/(?:모두|전체|전부|전 분야|엔진|engine|고도화)/i.test(goal);
+  const full=/(?:모두|전체|전부|전 분야|부서별|역량.?강화|자가.?발전|엔진|engine|고도화)/i.test(goal);
   const active=VIBE_ENGINE_SPECIALISTS.filter(role=>full||role.keywords.some(key=>goal.includes(key.toLowerCase()))
     ||gaps.some(row=>clean(row?.family||row?.category||row).toUpperCase()===role.family));
   const teams=active.map(role=>{
@@ -112,7 +112,7 @@ export function createVibeEngineSpecialistPlan({gameId='',request='',target='ROB
         needs.length?'SOURCE_OR_DETAIL_GAP':'INSPECTION_PENDING',
       gameplayAuthority:false,qaAuthority:false,preparedIsNotApplied:true});
   });
-  return Object.freeze({version:1,kind:'VIBE_ENGINE_SPECIALIST_IMPROVEMENT',
+  return Object.freeze({version:2,kind:'VIBE_ENGINE_SPECIALIST_IMPROVEMENT',
     gameId:clean(gameId)||null,platform,teams:Object.freeze(teams),
     // [부서별 역량 강화] 기존 제작/학습 엔진에만 훈련·증거 요구를 연결한다.
     // 외부 후보 또는 자체 신고 증거는 PASS/학습 샘플로 자동 승격하지 않는다.
@@ -132,18 +132,55 @@ export function createVibeEngineSpecialistPlan({gameId='',request='',target='ROB
         &&/^[a-f0-9]{64}$/i.test(clean(row?.artifactSha256))
         &&row?.observed===true&&row?.independentQaPassed===true
         &&row?.securityBlocked!==true);
+      // [부서 학습] 동일 원본·실행 캡처에 묶인 독립 QA 전후 점수만 연습 우선순위에 사용한다.
+      // QA가 승인된 증거라도 공식 학습 게이트·네이티브 승격을 대신하지 않는다.
+      const seenPractice=new Set();
+      const measured=pinnedProof.filter(row=>{
+        const technique=clean(row?.technique).toUpperCase();
+        const before=Number(row?.beforeScore),after=Number(row?.afterScore);
+        if(!team.practiceChecks.includes(technique)
+          ||row?.nativeRuntimeVerified!==true||row?.runtimeObserved!==true
+          ||row?.sourceAndOutputHashesVerified!==true
+          ||!/^[a-f0-9]{64}$/i.test(clean(row?.runtimeCaptureSha256))
+          ||row?.beforeScore==null||row?.afterScore==null
+          ||!Number.isFinite(before)||!Number.isFinite(after)
+          ||before<0||before>100||after<0||after>100)return false;
+        const key=[technique,clean(row.sourceRevision),clean(row.artifactSha256)].join('|');
+        if(seenPractice.has(key))return false;
+        seenPractice.add(key);return true;
+      });
+      const practicePlan=Object.freeze((requested?team.practiceChecks:[]).map((check,index)=>{
+        const records=measured.filter(row=>clean(row.technique).toUpperCase()===check);
+        const delta=records.reduce((sum,row)=>sum+Number(row.afterScore)-Number(row.beforeScore),0);
+        const regressions=records.filter(row=>Number(row.afterScore)<Number(row.beforeScore)).length;
+        const improved=records.filter(row=>Number(row.afterScore)>Number(row.beforeScore)).length;
+        const averageDelta=records.length?Number((delta/records.length).toFixed(2)):null;
+        const priorityScore=regressions?90+regressions*5:
+          !records.length?70:averageDelta<=0?80:Math.max(10,40-averageDelta);
+        const status=regressions?'REPAIR_REGRESSION_AND_REVERIFY':
+          !records.length?'PRACTICE_AND_RUNTIME_EVIDENCE_PENDING':
+          averageDelta<=0?'REPLAN_AND_REVERIFY':'COMPARISON_REVIEWABLE_CANONICAL_LEARNING_PENDING';
+        return Object.freeze({
+          id:team.id+':'+(index+1),technique:check,status,
+          existingModule:team.module,independentQaRequired:true,
+          scoredRuntimeObservations:records.length,improvedObservations:improved,
+          regressionObservations:regressions,averageQualityDelta:averageDelta,
+          priorityScore,canonicalLearningAccepted:false
+        });
+      }));
+      const nextPractice=[...practicePlan].sort((a,b)=>
+        b.priorityScore-a.priorityScore||a.id.localeCompare(b.id))[0]||null;
       return Object.freeze({
         id:team.id,name:team.name,owner:team.owner,existingScope:team.existingScope,
         existingModule:team.module,specialistIds:team.specialists,
         activeSpecialists:Object.freeze(assigned.map(role=>role.id)),
         activeForCurrentRequest:Boolean(requested),
         trainingDomains:team.learningDomains,
-        practicePlan:Object.freeze((requested?team.practiceChecks:[]).map((check,index)=>Object.freeze({
-          id:team.id+':'+(index+1),technique:check,
-          status:'PRACTICE_AND_RUNTIME_EVIDENCE_PENDING',
-          existingModule:team.module,independentQaRequired:true
-        }))),
+        practicePlan,
         requiredEvidence:team.requiredProof,
+        nextPractice:nextPractice?Object.freeze({technique:nextPractice.technique,priorityScore:nextPractice.priorityScore,reason:nextPractice.status}):null,
+        scoredRuntimeObservationCount:measured.length,
+        unscoredReviewableEvidenceCount:pinnedProof.length-measured.length,
         sourceGapCount:sourceGaps,unverifiedExternalCount:blockers,
         sourceAcquisitionNeeded:team.id==='vibe-assets'&&sources.length>0,
         reviewableEvidenceCount:pinnedProof.length,
@@ -161,7 +198,8 @@ export function createVibeEngineSpecialistPlan({gameId='',request='',target='ROB
     status:teams.length?'PLAN_UNVERIFIED':'NO_SPECIALIST_SIGNAL',singleGraphicsRoot:true,
     independentPipelineForbidden:true,newQueueForbidden:true,webGameAuthoring:false,
     freeCc0Only:true,originalAssetImmutable:true,gameplayAndSavePreserved:true,
-    runtimeEvidenceObserved:runtimeEvidence?.pass===true,runtimeQaStillRequired:true,releaseAuthority:false});
+    runtimeEvidenceObserved:runtimeEvidence?.pass===true,runtimeQaStillRequired:true,releaseAuthority:false,
+    departmentImprovementUsesPinnedRuntimeComparisons:true,canonicalLearningGateUnchanged:true});
 }
 
 export const VIBE_ASSET_ACQUISITION_ORDER = Object.freeze([
@@ -463,21 +501,56 @@ export function createVibeAssetRecompositionPlan({
     }
   }
   const observations=Array.isArray(verifiedObservations)?verifiedObservations:[];
-  // [실패 학습 차단] 관측 기록은 정확한 부모·조리법에 결합된 경우에만 참조한다.
-  const evidence=observations.filter(row=>recipes.some(recipe=>recipe.id===clean(row?.recipeId)
-    &&recipe.baseAssetId===clean(row?.parentAssetId))
-    &&row?.independentQaPassed===true&&row?.runtimeObserved===true
-    &&row?.rightsVerified===true&&row?.sourceAndOutputHashesVerified===true
-    &&/^[a-f0-9]{40}$/i.test(clean(row?.sourceRevision))
-    &&/^[a-f0-9]{64}$/i.test(clean(row?.outputSha256)));
+  // [재조합 학습] 정확한 레시피·부모·도너·플랫폼·해시를 검증하고 재전송 중복을 제거한다.
+  // 기존 원본의 성공·실패 전후 비교는 다음 연습 순서만 바꾼다. 파일 생성/승격 판정에는 사용하지 않는다.
+  const observedKeys=new Set();
+  const evidence=observations.filter(row=>{
+    const recipe=recipes.find(candidate=>candidate.id===clean(row?.recipeId)
+      &&candidate.baseAssetId===clean(row?.parentAssetId));
+    if(!recipe||row?.independentQaPassed!==true||row?.runtimeObserved!==true
+      ||row?.rightsVerified!==true||row?.sourceAndOutputHashesVerified!==true
+      ||!/^[a-f0-9]{40}$/i.test(clean(row?.sourceRevision))
+      ||!/^[a-f0-9]{64}$/i.test(clean(row?.outputSha256)))return false;
+    if(row?.gameId!=null&&clean(row.gameId)!==clean(gameId))return false;
+    if(row?.platform!=null&&clean(row.platform).toUpperCase()!==platform)return false;
+    if(row?.donorAssetId!=null&&clean(row.donorAssetId)!==recipe.donorAssetId)return false;
+    if(row?.baseSourceSha256!=null&&clean(row.baseSourceSha256).toLowerCase()!==recipe.parentHashes[0])return false;
+    if(row?.donorSourceSha256!=null&&clean(row.donorSourceSha256).toLowerCase()!==recipe.parentHashes[1])return false;
+    const key=[recipe.id,clean(row.sourceRevision),clean(row.outputSha256)].join('|');
+    if(observedKeys.has(key))return false;
+    observedKeys.add(key);return true;
+  });
+  const recipeFeedback=Object.freeze(recipes.map(recipe=>{
+    const records=evidence.filter(row=>clean(row.recipeId)===recipe.id);
+    const passed=records.filter(row=>clean(row.outcome).toUpperCase()==='PASS'&&row?.nativeRuntimeVerified===true).length;
+    const failed=records.filter(row=>clean(row.outcome).toUpperCase()==='FAIL').length;
+    const scored=records.filter(row=>row?.beforeScore!=null&&row?.afterScore!=null
+      &&Number.isFinite(Number(row.beforeScore))&&Number.isFinite(Number(row.afterScore))
+      &&Number(row.beforeScore)>=0&&Number(row.beforeScore)<=100
+      &&Number(row.afterScore)>=0&&Number(row.afterScore)<=100);
+    const delta=scored.length?Number((scored.reduce((sum,row)=>
+      sum+Number(row.afterScore)-Number(row.beforeScore),0)/scored.length).toFixed(2)):null;
+    // 검증된 실패 회피 + 우수한 후보 재검증을 우선한다. 0개인 후보도 계속 탐색 대상으로 둔다.
+    const priorityScore=Number((records.length?35:60)+(passed*15)-(failed*30)
+      +(delta??0)).toFixed(2);
+    return Object.freeze({recipeId:recipe.id,observations:records.length,
+      runtimePassReferences:passed,verifiedFailureReferences:failed,
+      scoredComparisons:scored.length,meanQualityDelta:delta,priorityScore,
+      productionFileVerified:false,canonicalLearningAccepted:false});
+  }));
+  const rankedRecipeIds=Object.freeze([...recipeFeedback].sort((a,b)=>
+    b.priorityScore-a.priorityScore||a.recipeId.localeCompare(b.recipeId)).map(row=>row.recipeId));
   return Object.freeze({
-    version:1,kind:'VIBE_ASSET_COMPONENT_RECOMPOSITION',gameId:clean(gameId)||null,
+    version:2,kind:'VIBE_ASSET_COMPONENT_RECOMPOSITION',gameId:clean(gameId)||null,
     platform,request:requestedText.slice(0,180),families:Object.freeze(Object.keys(VIBE_RECOMPOSITION_FAMILIES)),
     inspectedCount:assets.length,approvedCount:approved.length,rejectedCount:rejected.length,
     approvedParents:Object.freeze(approved),rejectedParents:Object.freeze(rejected),
-    recipes:Object.freeze(recipes),verifiedObservations:Object.freeze(evidence.map(row=>Object.freeze({
+    recipes:Object.freeze(recipes),recipeFeedback,rankedRecipeIds,
+    nextPracticeRecipeId:rankedRecipeIds[0]||null,
+    verifiedObservations:Object.freeze(evidence.map(row=>Object.freeze({
       recipeId:clean(row.recipeId),outputSha256:clean(row.outputSha256),
-      sourceRevision:clean(row.sourceRevision)
+      sourceRevision:clean(row.sourceRevision),
+      outcome:['PASS','FAIL'].includes(clean(row.outcome).toUpperCase())?clean(row.outcome).toUpperCase():'OBSERVED_ONLY'
     }))),
     rejectedOrUnanchoredObservations:observations.length-evidence.length,
     incumbentAlgorithms:Object.freeze(['EXISTING_BLENDER_KITBASH','EXISTING_MOTION_RETARGET',
@@ -487,7 +560,7 @@ export function createVibeAssetRecompositionPlan({
     externalDistillationOwner:'tools/vibe2-external-ai-distillation.mjs',
     noNewQueueOrPipeline:true,
     noOriginalOverwrite:true,gameplayAndSavePreserved:true,
-    verifiedObservationIsNotModelTraining:true,
+    verifiedObservationIsNotModelTraining:true,feedbackChangesPracticeOrderOnly:true,
     automaticModelWeightUpdate:false,
     runtimeQaAndOwnerReviewStillRequired:true,
     status:recipes.length?'RECIPES_PENDING_NATIVE_AUTHORING_AND_RUNTIME_QA':
@@ -821,6 +894,7 @@ export function createVibeGraphicsProduction({
   assetProductionPlan=null,
   reconstructionSources=[],
   reconstructionObservations=[],
+  departmentEvidence=[],
   runtimeEvidence=null,
   candidateRevision='',
   sourceRevision='',
@@ -849,7 +923,7 @@ export function createVibeGraphicsProduction({
     gameId,request,target:platforms.length===1?platforms[0]:'ROBLOX',
     assetGaps:assetProductionPlan?.familyAssetOptimization?.familyTasks?.filter(row=>row?.requested===true)||[],
     externalCandidates:assetProductionPlan?.externalAcquisition?.candidates||[],
-    runtimeEvidence
+    runtimeEvidence,departmentEvidence
   });
   const artSpec=createVibeArtPipeline({request,target:platforms.length===2?'native':String(platforms[0]||target).toLowerCase(),quality,style});
   const visualDirection=planVibeStyleAwareGraphicsAutopilot({game,world,characters,platform:platforms.length===2?'mobile':String(platforms[0]||'mobile').toLowerCase()});
