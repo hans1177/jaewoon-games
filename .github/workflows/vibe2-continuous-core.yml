@@ -1864,11 +1864,13 @@ jobs:
             if [ -x "$executable" ] && [ -f "$runtime/.official-sha256" ] \
               && [ "$(cat "$runtime/.official-sha256")" = "$BLENDER_SHA256" ] \
               && "$executable" --background --disable-autoexec --python-expr 'import bpy; assert bpy.app.version[:3] == (4, 5, 15); assert bpy.ops.export_scene.gltf.get_rna_type()' >/dev/null 2>&1; then
+              blender_binary="$executable"
               echo "VIBE2_NATIVE_DCC_CACHE=RESTORED_VERIFIED"
               echo "$runtime/blender-4.5.15-linux-x64" >> "$GITHUB_PATH"
             elif command -v blender >/dev/null 2>&1 \
               && blender --version 2>/dev/null | grep -qF 'Blender 4.5.15' \
               && blender --background --disable-autoexec --python-expr 'import bpy; assert bpy.app.version[:3] == (4, 5, 15); assert bpy.ops.export_scene.gltf.get_rna_type()' >/dev/null 2>&1; then
+              blender_binary="$(command -v blender)"
               echo 'VIBE2_NATIVE_DCC_CACHE=REUSED_SYSTEM'
             else
               # [캐시 누락/손상] 기존 공식 Blender 4.5.15 아카이브와 SHA를 그대로 사용.
@@ -1886,6 +1888,7 @@ jobs:
               printf '%s\n' "$BLENDER_SHA256" > "$runtime/.official-sha256"
               echo 'built=true' >> "$GITHUB_OUTPUT"
               echo "$runtime/blender-4.5.15-linux-x64" >> "$GITHUB_PATH"
+              blender_binary="$executable"
               echo 'VIBE2_NATIVE_DCC_CACHE=VERIFIED_OFFICIAL_ARCHIVE'
             fi
           else
@@ -1895,9 +1898,10 @@ jobs:
               sudo apt-get install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
             fi
             blender --background --disable-autoexec --python-expr 'import bpy; assert bpy.ops.export_scene.gltf.get_rna_type()'
+            blender_binary="$(command -v blender)"
             echo 'VIBE2_NATIVE_DCC_CACHE=ARM_SYSTEM_PACKAGE'
           fi
-          blender --version | head -n 1
+          "$blender_binary" --version | head -n 1
           echo 'VIBE2_NATIVE_DCC_RUNTIME=BLENDER_READY'
 
       # [공용 캐시] 공식 해시/Blender 실행 검증 후에만 저장한다.
