@@ -532,6 +532,80 @@ test('Vibe59 excludes commented, quoted and out-of-frame remote calls',()=>{
   assert.equal(report.runtimeVerified,false);
 });
 
+// [중첩 스코프 회귀] 첫 end)가 실제 프레임 콜백 종료가 아닐 수 있다.
+test('Vibe59 preserves frame scope through nested if, loops and function callbacks',()=>{
+  const path='client/Input.client.luau';
+  const source=[
+    'RunService.PreRender:Connect(function(dt)',
+    '  if dt > 0 then',
+    '    local optional = function() return dt end',
+    '    for index=1,3 do',
+    '      if index > 1 then',
+    '        remote:FireServer(index)',
+    '      end',
+    '    end',
+    '  end',
+    '  player.CharacterAdded:Connect(function(character)',
+    '    print(character)',
+    '  end)',
+    'end)',
+    'remote:FireServer("one-shot")'
+  ].join('\n');
+  const report=inspectVibe59RobloxCoding({files:[{path,source}],responsiblePaths:[path]});
+  const codes=new Map(report.warnings.map(x=>[x.code,x.line]));
+  assert.equal(codes.get('FRAME_REMOTE_REQUEST'),6);
+  assert.equal(codes.get('FRAME_CONNECTION_ACCUMULATION'),10);
+  assert.equal(report.qualityDirector.responsibleSourceCoverageComplete,true);
+  assert.equal(report.runtimeVerified,false);
+});
+
+test('Vibe59 recognizes server frame broadcasts but preserves client/server authority',()=>{
+  const path='server/Network.server.luau';
+  const source=[
+    'RunService.PostSimulation:Connect(function(dt)',
+    '  for _,player in ipairs(players) do',
+    '    signal:FireClient(player, dt)',
+    '  end',
+    'end)'
+  ].join('\r\n');
+  const report=inspectVibe59RobloxCoding({files:[{path,source}],responsiblePaths:[path]});
+  assert.deepEqual(report.warnings.filter(x=>x.code==='FRAME_SERVER_BROADCAST').map(x=>x.line),[3]);
+  assert.ok(!report.warnings.some(x=>x.code==='FRAME_REMOTE_REQUEST'));
+  assert.ok(report.qualityDirector.priorityFindings.some(x=>x.code==='FRAME_SERVER_BROADCAST'&&x.priority===3));
+  assert.equal(report.sourceWrite,false);
+  assert.equal(report.runtimeVerified,false);
+});
+
+test('Vibe59 does not attribute network calls after nested frame callback to every frame',()=>{
+  const path='client/Idle.client.luau';
+  const source=[
+    'RunService.Heartbeat:Connect(function()',
+    '  repeat',
+    '    task.wait()',
+    '  until stopped',
+    '  do',
+    '    local done = true',
+    '  end',
+    'end)',
+    'remote:FireServer("outside")',
+    'player.CharacterAdded:Connect(function(character) print(character) end)'
+  ].join('\n');
+  const report=inspectVibe59RobloxCoding({files:[{path,source}],responsiblePaths:[path]});
+  assert.equal(report.warnings.filter(x=>x.code.startsWith('FRAME_')).length,0);
+  assert.equal(report.runtimeVerified,false);
+});
+
+test('Vibe59 skips oversized or incomplete frame callback instead of inventing risk',()=>{
+  const path='client/Long.client.luau';
+  const source='RunService.PreSimulation:Connect(function()\n'+
+    'local padding = "'+'a'.repeat(4200)+'"\n'+
+    'remote:FireServer("late")\nend)';
+  const report=inspectVibe59RobloxCoding({files:[{path,source}],responsiblePaths:[path]});
+  assert.ok(!report.warnings.some(x=>x.code==='FRAME_REMOTE_REQUEST'));
+  assert.equal(report.qualityDirector.gameplayPass,false);
+  assert.equal(report.runtimeVerified,false);
+});
+
 // [로블록스 파일 검증] 스캔 상한 초과·경로 누락은 안전하다는 증거가 아니다.
 test('Vibe59 exposes oversized responsible Luau files instead of silently clearing findings',()=>{
   const path='server/Combat.server.luau',source='--'+'.'.repeat(260001);
