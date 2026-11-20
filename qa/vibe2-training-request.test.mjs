@@ -118,8 +118,8 @@ test('검증된 실제 샘플 SHA가 바뀌면 자동 재훈련 요청도 새 �
 test('기존 로컬 학습기가 요청-데이터셋 지문을 검증하고 가중치 승격은 금지한다',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-local-distillation-train.yml',import.meta.url),'utf8');
   const dataset=fs.readFileSync(new URL('../tools/vibe2-weight-learning.mjs',import.meta.url),'utf8');
-  assert.match(workflow,/manifest\.datasetSha256\s+-ne\s+\[string\]\$item\.datasetSha256/);
-  assert.match(workflow,/training dataset changed after request/);
+  assert.match(dataset,/TRAINING_DATASET_SHA_MISMATCH/);
+  assert.match(dataset,/pending\.datasetSha256!==manifest\.datasetSha256/);
   assert.match(dataset,/datasetSha256:datasetContentFingerprint\(dataset\)/);
   assert.match(workflow,/runtimePromotionAllowed\s*=\s*\$false/);
   assert.match(workflow,/AUTO_PROMOTION=NO/);
