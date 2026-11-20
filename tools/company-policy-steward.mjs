@@ -6,9 +6,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const CANONICAL='company-learning/platform-release-roadmap.json';
+const BRIEF='company-learning/platform-release-roadmap.brief.json';
+const BRIEF_FIELDS=Object.freeze([
+  'version','status','policySource','updatedAt','priority','primaryPlatform','currentPhase',
+  'developmentAccess','platformEntryGateAllowed','platformDevelopmentMayStartWithoutPriorPlatformCompletion',
+  'platformReleaseMayProceedWhenOwnEvidencePasses','runtimeContractCannotCreatePolicy',
+  'fixedAutonomousDevelopmentOperatingContract','finalDevelopmentLock',
+  'robloxStudioProductionFlowContract','commonExecutionContract','forbidden','ownerActiveDevelopmentScope20261009'
+]);
 const DOCUMENT_PATHS=Object.freeze([
   CANONICAL,
   'company-learning/company-log-map.json',
@@ -111,6 +120,38 @@ export function resolveActiveOwnerPolicy(policy={}, {allowMissing=false}={}){
   };
 }
 
+// [정본에서 파생된 조회용 요약] 원본의 실제 값만 복사하고 SHA-256 불일치를 차단한다.
+// CI는 읽기 전용 검사만 수행한다. 동기화 옵션도 네 개의 정본 파일은 절대로 변경하지 않는다.
+export function synchronizeRoadmapBrief({root=ROOT,checkOnly=true}={}){
+  const canonicalFile=path.join(root,CANONICAL);
+  const raw=fs.readFileSync(canonicalFile,'utf8');
+  const policy=JSON.parse(raw);
+  if(!object(policy)||policy.status!=='OWNER_DIRECT_LOCKED'||policy.policySource!==CANONICAL)
+    throw new Error('POLICY_STEWARD_BRIEF_SOURCE_INVALID');
+  const brief={
+    _readme:'조회 전용 파생 요약이다. 정책 권한은 company-learning/platform-release-roadmap.json에만 있다. sourceSha256과 원본이 다르면 이 요약본을 사용하지 말고 정본을 다시 읽어라.',
+    sourceFile:CANONICAL,
+    sourceBytes:Buffer.byteLength(raw),
+    sourceSha256:createHash('sha256').update(raw,'utf8').digest('hex')
+  };
+  for(const key of BRIEF_FIELDS){
+    if(!Object.prototype.hasOwnProperty.call(policy,key))
+      throw new Error('POLICY_STEWARD_BRIEF_SOURCE_FIELD_MISSING:'+key);
+    brief[key]=policy[key];
+  }
+  const expected=JSON.stringify(brief,null,1)+'\n';
+  const file=path.join(root,BRIEF);
+  let current='';
+  try{current=fs.readFileSync(file,'utf8');}catch(error){
+    if(error.code!=='ENOENT')throw error;
+  }
+  if(current!==expected){
+    if(checkOnly)throw new Error('POLICY_STEWARD_BRIEF_STALE');
+    fs.writeFileSync(file,expected,'utf8');
+  }
+  return{version:policy.version,sourceSha256:brief.sourceSha256,changed:current!==expected,briefPath:BRIEF};
+}
+
 export function auditFourPolicyDocuments({root=ROOT}={}){
   const policy=read(root,CANONICAL);
   const set=policy.centralDocumentation?.canonicalSet||{};
@@ -151,6 +192,13 @@ export function auditFourPolicyDocuments({root=ROOT}={}){
 if(process.argv[1]===fileURLToPath(import.meta.url)){
   if(process.argv.some(arg=>arg.startsWith('--fix')))
     throw new Error('POLICY_STEWARD_FILE_WRITE_FORBIDDEN');
+  if(process.argv.includes('--sync-brief')||process.argv.includes('--check-brief')){
+    const result=synchronizeRoadmapBrief({checkOnly:!process.argv.includes('--sync-brief')});
+    console.log('POLICY_STEWARD_BRIEF_VERSION='+result.version);
+    console.log('POLICY_STEWARD_BRIEF_SOURCE_SHA256='+result.sourceSha256);
+    console.log('POLICY_STEWARD_BRIEF_SYNC='+(!result.changed?'CURRENT':'UPDATED'));
+    process.exit(0);
+  }
   const result=auditFourPolicyDocuments();
   if(process.argv.includes('--json')){
     console.log(JSON.stringify(result));
