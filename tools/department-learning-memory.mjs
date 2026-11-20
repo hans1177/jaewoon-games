@@ -4,7 +4,9 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {GEMINI_FREE_MODELS,VERIFIED_FREE_FALLBACK_MODELS} from './vibe2-gemini-free-rotation.mjs';
 
-export const CORE_DEPARTMENT_ROLES=Object.freeze(['planning','development','graphics','qa','balance']);
+// [현재 부서] 계획/그래픽/개발/QA/오디오. 과거 밸런스 자료는 삭제하지 않고 읽기 호환한다.
+export const CORE_DEPARTMENT_ROLES=Object.freeze(['planning','graphics','development','qa','audio']);
+export const LEGACY_DEPARTMENT_ROLES=Object.freeze(['planning','development','graphics','qa','balance']);
 const DECISIONS=new Set(['PROCEED','ADJUST','BLOCK']);
 const OUTCOMES=new Set(['SUCCESS','FAILURE']);
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -30,8 +32,10 @@ export function normalizeVerifiedDepartmentLearning(evidence={}){
   const finalDecision=clean(learning.finalDecision).toUpperCase();
   const recordedAt=clean(evidence.verifiedAt)||new Date().toISOString();
   const byRole=new Map(learning.results.map(row=>[clean(row?.role),row]));
+  // [학습 보존] 오디오가 있는 최신 5개 부서는 신규 기준, 이전 기록은 기존 5개 부서 기준을 유지한다.
+  const roles=byRole.has('audio')?CORE_DEPARTMENT_ROLES:LEGACY_DEPARTMENT_ROLES;
   const rows=[];
-  for(const role of CORE_DEPARTMENT_ROLES){
+  for(const role of roles){
     const result=byRole.get(role);
     if(!result||result.skippedFast===true)continue;
     const decision=clean(result.decision).toUpperCase();
@@ -108,7 +112,7 @@ export function ingestVerifiedDepartmentEvidenceDirectory(ledger,dir='company-le
 
 export function selectVerifiedDepartmentLearning(ledger={},context={},max=4){
   const role=clean(context.role);
-  if(!CORE_DEPARTMENT_ROLES.includes(role))return [];
+  if(!CORE_DEPARTMENT_ROLES.includes(role)&&role!=='balance')return [];
   const gameId=clean(context.gameId),gameSlug=clean(context.gameSlug),sourcePath=clean(context.sourcePath),workLane=clean(context.workLane).toUpperCase();
   // [부서 경험 검색] 현재 작업 목표가 구체적이면 검증된 타게임 사례도 동일 주제일 때만 인용한다.
   // 범용 동사와 과정 이름으로 우연히 일치한 과거 결론이 모델 선택과 작업 제약을 오염시키지 않도록 한다.
