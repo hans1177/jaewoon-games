@@ -5985,7 +5985,35 @@ export function buildVibeAssetProductionPlan({
   // 실소스·권리·플랫폼 QA가 없는 에셋의 자동 적용은 허용하지 않는다.
   const currentLibraryAssets=new Map((librarySync.sourceConsumerRegistry?.assets||companyRegistry.assets||[])
     .filter(row=>clean(row?.id)).map(row=>[clean(row.id),row]));
-  const existingSelectionKeys=new Set(automaticBindingTargets.map(row=>clean(row.assetId)));
+  // [직접 제작→게임 연결] 유효한 Blender 파생 메시를 기존 BUILD_UP 게임 워커에 전달한다.
+  // PREPARED 자산은 회사 검증 원본이 아니므로 실제 네이티브 import/화면/모바일 QA 전에는 적용·승격 금지.
+  const preparedNativeImportTargets=freezeList([...currentLibraryAssets.values()]
+    .filter(asset=>clean(asset?.parentSourceId)
+      &&(asset?.intendedConsumerGameIds||[]).includes(currentGameId)
+      &&(asset?.preparedForPlatforms||[]).includes(resolvedTarget.toUpperCase())
+      &&asset?.runtimeVerificationState==='STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING'
+      &&asset?.productionVerified===false&&asset?.nativeRuntimeVerified===false
+      &&/^[a-f0-9]{64}$/i.test(clean(asset?.artifactHash))
+      &&/^[a-f0-9]{64}$/i.test(clean(asset?.masterGlbHash))
+      &&clean(asset?.path).startsWith('assets/generated/'+resolvedTarget+'/'+currentGameId+'/')
+      &&clean(asset?.evidenceRef)&&clean(asset?.applicationRef))
+    .map(asset=>freeze({
+      requirementId:null,assetId:clean(asset.id),family:clean(asset.family),
+      role:clean(asset.role)||null,status:'NATIVE_IMPORT_AND_RUNTIME_QA_REQUIRED',
+      sourceBound:actualGameConsumerIds.has(clean(asset.id)),
+      sourceFiles:freezeList([clean(asset.path),clean(asset.masterGlb)]),
+      sourceHash:clean(asset.sourceHash),artifactHash:clean(asset.artifactHash),
+      masterGlbHash:clean(asset.masterGlbHash),
+      sourceFilesPresent:true,sourceContentFingerprint:clean(asset.artifactHash),
+      libraryVersion:Number(companyRegistry.version||0),
+      verifiedLibraryCandidate:false,nativeSelectionReady:false,nativeRuntimeVerified:false,
+      parentSourceId:clean(asset.parentSourceId),evidenceRef:clean(asset.evidenceRef),
+      applicationRef:clean(asset.applicationRef),
+      repairOwner:'EXISTING_GAME_SOURCE_WORKER',
+      nativeAssetImportRequired:true,independentRuntimeVisualAndMobileQaRequired:true,
+      protectedGameplayAuthority:true,automaticReplacementAuthorized:false
+    })));
+  const existingSelectionKeys=new Set([...automaticBindingTargets,...preparedNativeImportTargets].map(row=>clean(row.assetId)));
   const detailedBindingTargets=freezeList(detailedAssetCandidateReview.candidates
     .filter(row=>row.stillInCurrentRegistry&&row.assetId&&!existingSelectionKeys.has(row.assetId))
     .map(row=>{
@@ -6020,7 +6048,8 @@ export function buildVibeAssetProductionPlan({
         replacesCandidateAssetId:row.replacesCandidateAssetId||null
       });
     }));
-  automaticBindingTargets.push(...detailedBindingTargets);
+  automaticBindingTargets.push(...detailedBindingTargets,...preparedNativeImportTargets.filter(row=>
+    !automaticBindingTargets.some(existing=>existing.assetId===row.assetId)));
   const automaticAssetBindingWork=freeze({
     version:1,enabled:Boolean(currentGameId)&&['roblox','unity','web'].includes(resolvedTarget),
     trigger:'EVERY_EXISTING_BUILD_UP',gameId:currentGameId||null,target:resolvedTarget,
@@ -6028,6 +6057,7 @@ export function buildVibeAssetProductionPlan({
     actualSourceBoundCount:actualGameConsumerIds.size,
     selectedRequirementCount:automaticBindingTargets.length,
     pendingSourceBindingCount:automaticBindingTargets.filter(row=>row.status==='NATIVE_SOURCE_BINDING_REQUIRED').length,
+    preparedNativeImportCount:automaticBindingTargets.filter(row=>row.status==='NATIVE_IMPORT_AND_RUNTIME_QA_REQUIRED').length,
     provenanceRequiredCount:automaticBindingTargets.filter(row=>row.status==='SOURCE_BINDING_PROVENANCE_REQUIRED').length,
     authoringRequiredCount:automaticBindingTargets.filter(row=>['AUTHORING_REQUIRED','SOURCE_ASSET_REQUIRED'].includes(row.status)).length,
     runtimeQaRequiredCount:automaticBindingTargets.filter(row=>row.status==='SOURCE_BOUND_RUNTIME_QA_REQUIRED').length,
