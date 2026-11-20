@@ -494,6 +494,44 @@ test('Vibe59 dedupes repeated invalid remotes so later datastore security findin
   assert.equal(report.sourceWrite,false);
 });
 
+// [프레임 성능 회귀] 반복 원격 요청·이벤트 연결을 같은 기존 소스 검사에서 추적한다.
+test('Vibe59 locates per-frame remote pressure and nested connection accumulation',()=>{
+  const path='client/Mobile.client.luau';
+  const source=[
+    'RunService.Heartbeat:Connect(function(dt)',
+    '  remote:FireServer("aim")',
+    '  player.CharacterAdded:Connect(function(character) print(character) end)',
+    'end)'
+  ].join('\r\n');
+  const report=inspectVibe59RobloxCoding({files:[{path,source}],responsiblePaths:[path]});
+  const warnings=new Map(report.warnings.map(row=>[row.code,row]));
+  assert.equal(warnings.get('FRAME_REMOTE_REQUEST')?.line,2);
+  assert.equal(warnings.get('FRAME_CONNECTION_ACCUMULATION')?.line,3);
+  assert.ok(report.qualityDirector.priorityFindings.some(row=>row.code==='FRAME_REMOTE_REQUEST'));
+  assert.ok(report.qualityDirector.priorityFindings.some(row=>row.code==='FRAME_CONNECTION_ACCUMULATION'));
+  assert.equal(report.scanCoverage.responsibleComplete,true);
+  assert.equal(report.sourceWrite,false);
+  assert.equal(report.runtimeVerified,false);
+  assert.equal(report.qualityDirector.gameplayPass,false);
+});
+
+test('Vibe59 excludes commented, quoted and out-of-frame remote calls',()=>{
+  const path='client/Idle.client.luau';
+  const source=[
+    '-- RunService.Heartbeat:Connect(function() remote:FireServer() end)',
+    'local fake = "RenderStepped:Connect(function() remote:FireServer() end)"',
+    'RunService.RenderStepped:Connect(function(dt)',
+    '  local aim = dt',
+    'end)',
+    'remote:FireServer("one-shot")',
+    'player.CharacterAdded:Connect(function(character) print(character) end)'
+  ].join('\n');
+  const report=inspectVibe59RobloxCoding({files:[{path,source}],responsiblePaths:[path]});
+  assert.ok(!report.warnings.some(row=>row.code==='FRAME_REMOTE_REQUEST'));
+  assert.ok(!report.warnings.some(row=>row.code==='FRAME_CONNECTION_ACCUMULATION'));
+  assert.equal(report.runtimeVerified,false);
+});
+
 // [로블록스 파일 검증] 스캔 상한 초과·경로 누락은 안전하다는 증거가 아니다.
 test('Vibe59 exposes oversized responsible Luau files instead of silently clearing findings',()=>{
   const path='server/Combat.server.luau',source='--'+'.'.repeat(260001);
