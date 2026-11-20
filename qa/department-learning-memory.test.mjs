@@ -261,3 +261,12 @@ test('department learning direct CLI retains existing XP and history with no unv
     assert.deepEqual(ledger.verifiedLearning,[]);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('read-only pull-request learning QA does not serialize unrelated PRs or the main writer',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-dna-learning.yml',import.meta.url),'utf8');
+  assert.ok(workflow.includes("github.event_name == 'pull_request'"));
+  assert.ok(workflow.includes("format('company-dna-learning-pr-{0}', github.event.pull_request.number)"));
+  assert.ok(workflow.includes("|| 'company-dna-learning'"));
+  assert.ok(workflow.includes("if: github.event_name != 'pull_request'"));
+  assert.ok(workflow.includes('cancel-in-progress: false'));
+});
