@@ -1580,6 +1580,41 @@ test('경제 시설 증축 연출은 발전 시에만 실행되고 재입항과 
 });
 
  
+// [주민 직업 실물 소지품] 31개 경제 직업 각각 등록된 입체 도구 1개와 모바일 거리 해제를 검증한다.
+test('항구 31개 직업은 등록된 실물 장비를 직접 R15에 착용하고 저상세에서만 숨긴다',()=>{
+ const pose=read('ReplicatedStorage/Shared/Pose.luau');
+ const assetIds=read('ReplicatedStorage/Shared/AssetIds.luau');
+ const loader=read('ServerScriptService/AssetLoader.server.luau');
+ const port=read('ReplicatedStorage/Shared/PortScene.luau');
+ const professions=pose.match(/local NPC_PROFESSION_LOOK = \{([\s\S]*?)\n\}/)?.[1];
+ const equipment=pose.match(/local NPC_PROFESSION_GEAR = \{([\s\S]*?)\n\}/)?.[1];
+ assert.ok(professions && equipment,'기존 직업과 원본 장비 직결');
+ const jobs=[...professions.matchAll(/\b([a-z_]+)\s*=\s*"(?:worker|artisan|sailor|guard|official)"/g)].map(match=>match[1]);
+ const tools=[...equipment.matchAll(/\b([a-z_]+)\s*=\s*\{\s*"((?:Relics|Cargo)\/[^"]+)"/g)]
+  .map(match=>({job:match[1],asset:match[2]}));
+ assert.equal(jobs.length,31,'기존 직업 31종 보존');
+ assert.equal(tools.length,jobs.length,'31직업 장비 누락 불가');
+ assert.equal(new Set(tools.map(row=>row.job)).size,31,'중복 직업 장비 매핑 금지');
+ assert.ok(new Set(tools.map(row=>row.asset)).size>=20,'실물 원본 모델 다양성');
+ for(const job of jobs)assert.ok(tools.some(row=>row.job===job),'장비 없는 주민 직업: '+job);
+ for(const {asset} of tools){
+  assert.ok(assetIds.includes('["'+asset+'"]'),'등록되지 않은 장비: '+asset);
+  assert.ok(loader.includes('["'+asset+'"] = true'),'기존 인입 큐에서 누락: '+asset);
+ }
+ assert.match(pose,/NPC_PROFESSION_GEAR\[profession\]/);
+ assert.match(pose,/AssetIds\[jobGear\[1\]\]/);
+ assert.match(pose,/sourceGroup = if jobProp then shelf and shelf:FindFirstChild\(propGroup\) else people/);
+ assert.match(pose,/model:FindFirstChild\(slotName\)/);
+ assert.match(pose,/if jobProp and UserInputService\.TouchEnabled and detailLimit == 3 then/);
+ assert.match(pose,/LocalTransparencyModifier = 1/);
+ assert.match(pose,/if string\.sub\(assetName, 1, 7\) == "outfit_" or jobProp then/);
+ assert.match(pose,/LocalTransparencyModifier = 0/);
+ assert.match(pose,/math\.rad\(spec\[9\] or 0\)/);
+ assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
+ assert.match(port,/GetAttributeChangedSignal\("MareAssetsReady"\)/);
+ assert.match(port,/readyConn:Disconnect\(\)/);
+ assert.doesNotMatch(equipment,/Instance\.new\(/,'임시 파트로 도구 대체 금지');
+});
 // [원본 머리 6종 + 액세서리 5종] 실제 3D 원본 증빙, 등록 후 역할별 장착, R15 관절·저장 불변.
 test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 등록된 경우에만 정밀 장착된다',async()=>{
  const pose=read('ReplicatedStorage/Shared/Pose.luau');
