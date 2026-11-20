@@ -496,7 +496,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 				local minus = origin * CFrame.Angles(-0.32, 0, 0) * c1:Inverse()
 				return (plus:VectorToWorldSpace(limbDown) - minus:VectorToWorldSpace(limbDown)):Dot(forward)
 			end)
-			if ok and math.abs(axisScore) > 0.04 then
+			if ok and type(axisScore) == "number" and math.abs(axisScore) > 0.04 then
 				-- 팔꿈치는 음의 X 동작을 가슴 앞으로 접고, 무릎은 음의 X를 뒤로 접는다.
 				local sign = if axisScore > 0 then 1 else -1
 				if key == "leftElbow" or key == "rightElbow" then sign = -sign end
