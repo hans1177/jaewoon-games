@@ -10,7 +10,7 @@ const core=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/C
 // [시작 로딩 회귀] 저장을 건드리지 않는 진단만 노출하고, 실제 서버/클라이언트 어느 단계에서 멈췄는지 증명한다.
 test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증거를 남긴다',()=>{
   const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
-  assert.equal(capture.length,241);
+  assert.equal(capture.length,243);
   // [통합 표지 QA] 실제 시작 화면과 클릭 순서를 검사해 이전 버튼명 회귀를 차단한다.
   assert.match(capture[4].code,/FindFirstChild\('TitleBackdrop'\)/);
   assert.match(capture[4].code,/FindFirstChild\('TitlePanel'\)/);
@@ -86,7 +86,7 @@ test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가
   assert.match(source,/function RENDERERS\.codex\(\)/);
   assert.match(source,/function RENDERERS\.tech\(\)/);
   assert.match(source,/function RENDERERS\.encyclopedia\(\)/);
-  assert.equal(capture.length,241);
+  assert.equal(capture.length,243);
   assert.match(capture[39].code,/TRADE_TAB_DETAIL_NOT_VISIBLE/);
   assert.match(capture[122].code,/TRADE_TAB_MENU_PASS/);
   assert.match(capture[123].code,/TRADE_TAB_PRICES_AND_ACTIONS_PASS/);
@@ -117,7 +117,7 @@ test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본
   assert.match(layout,/content\.Position = UDim2\.fromOffset\(artW \+ 16, bodyTop\)/);
   assert.doesNotMatch(layout,/local navW\s*=/);
   assert.match(tabs,/mkButton\(H\.tabStrip, TAB_NAME\[id\]/);
-  assert.equal(capture.length,241);
+  assert.equal(capture.length,243);
   assert.equal(capture[88].name,'ui_mobile_tabs_topright');
   for(const claim of ['MOBILE_TABS_NOT_ONE_ROW','MOBILE_TABS_NOT_TOP_RIGHT','MOBILE_LEFT_SPACE_NOT_RECLAIMED','MOBILE_TABS_WRAPPED_TO_SECOND_ROW','MOBILE_LAST_TAB_NOT_REACHABLE']){
     assert.ok(capture[87].code.includes(claim),claim);
@@ -136,7 +136,7 @@ test('새 항해 첫 카드 창 오발동 차단과 가죽·양피지 버튼 계
   assert.doesNotMatch(buttonCode,/Color3\.fromRGB\(183, 215, 236\)/);
   assert.match(buttonCode,/elseif good or travel then Color3\.fromRGB\(251, 237, 208\)/);
   assert.match(source,/local groupWidth = statusWidth \+ recentWidth \+ 8/);
-  assert.equal(capture.length,241);
+  assert.equal(capture.length,243);
 });
 
 test('항구 장면의 소품 선택은 Luau 복수 반환 조건식 없이 실행된다', () => {
@@ -564,7 +564,14 @@ test('1단 검병·궁수 편성은 유지하면서 승인된 R15 체형 3종 �
 test('스튜디오 탐험 실증은 현재 공격·회피 메달과 집안별 두 무기를 검사한다',()=>{
   const path='roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json';
   const script=JSON.parse(fs.readFileSync(path,'utf8'));
-  assert.equal(script.length,241,'기존 전체 스튜디오 검사 순서 유지');
+  assert.equal(script.length,243,'기존 전체 스튜디오 검사 순서 유지');
+  // [실제 카드 대전 종료] 접힌 메뉴를 화면에서 먼저 클릭한 후 그 안의 건너뛰기를 실제 터치한다.
+  assert.equal(script[152].label,'card_practice_menu_open');
+  assert.match(script[152].code,/CARD_PRACTICE_MENU_REAL_CLICK/);
+  assert.equal(script[153].type,'wait');
+  assert.equal(script[154].label,'card_practice_exit');
+  assert.match(script[154].code,/actions\.Visible/);
+  assert.match(script[154].code,/for _,child in actions:GetChildren\(\)/);
   // [실제 화면 대기] 고정시간을 넘기는 PC 시작 로딩에서 아무 버튼을 잘못 누르지 않는다.
   assert.equal(script[4].type,'luau');
   assert.equal(script[4].timeoutMs,85000);
@@ -573,9 +580,9 @@ test('스튜디오 탐험 실증은 현재 공격·회피 메달과 집안별 �
   assert.match(script[4].code,/task\.wait\(0\.5\)/);
   assert.match(script[6].code,/if not best or bs<=0 then return 'NONE' end/);
 
-  const entry=script[234].code;
-  const motion=script[236].code;
-  const live=script[239].code;
+  const entry=script[236].code;
+  const motion=script[238].code;
+  const live=script[241].code;
   assert.ok(entry.includes('FIELD_QA_ENTRY_FAIL:'),'실제 UI로 탐험 입장 검증 필수');
   assert.ok(entry.includes('FieldCombatReady'),'실제 전투 준비 검증 필수');
   // [승인 원화 회귀] 새 공격 원화는 완성형 PNG를 검증하고, 구형 아이콘만 메달 테두리를 검증한다.
