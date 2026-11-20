@@ -1523,6 +1523,10 @@ test('자가 코딩의 네이티브 성공 학습은 정확한 게임 실행 증
     const outcome=applyVerifiedKnowledgeOutcomes({}, {tasks:[task]});
     assert.equal(outcome.added,expected,task.id);
     assert.equal(outcome.positive,expected,task.id);
+    const candidate={...task,evidence:[...task.evidence,'coding-strategy:RESPONSIBILITY_FIRST',
+      'coding-candidate-first-attempt:YES']};
+    const strategy=applyVerifiedCodingStrategyOutcomes({}, {tasks:[candidate]});
+    assert.equal(strategy.added,expected,'strategy:'+task.id);
   }
   const regression={id:'native-runtime-regression',gameId:'native-learning-game',
     target:'roblox',goal:'Roblox asset model',evidence:[
