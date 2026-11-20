@@ -1473,7 +1473,21 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		local old = extra.age == "elder"
 		local hairColor = if old then GRAY_HAIR else SKIN_HAIR[rng:NextInteger(1, #SKIN_HAIR)]
 		extra.hairColor = hairColor
-		extra.hair = if female then (if extra.age == "child" then "long" elseif rng:NextNumber() < 0.5 then "bun" else "long") else "short"
+		-- [개인별 외형] 기존 R15 비율·등록 헤어를 쓰면서 같은 직업도 체격, 걸음새, 헤어가 다르다.
+		extra.persona = rng:NextInteger(1, 3)
+		extra.height = spec.height or (if extra.age == "child" then rng:NextNumber(5.55, 5.92)
+			elseif old then rng:NextNumber(5.55, 5.85) else rng:NextNumber(5.54, 6.06))
+		local professionId = extra.profession
+		extra.bodyType = spec.bodyType or (if professionId == "farmer" or professionId == "docker"
+			or professionId == "construction_worker" then "heavy"
+			elseif professionId == "guard" or professionId == "sailor" or professionId == "fisher" then "athletic"
+			elseif professionId == "tailor" or professionId == "teacher" then "slim" else nil)
+		extra.motionStyle = spec.motionStyle or (if professionId == "guard" then "disciplined"
+			elseif professionId == "sailor" or professionId == "docker" then "heavy"
+			elseif professionId == "merchant" or professionId == "official" then "scholar"
+			elseif professionId == "fisher" or professionId == "craftsman" then "nimble" else nil)
+		extra.hair = if female then (if extra.age == "child" then "long"
+			elseif rng:NextNumber() < 0.44 then "bun" else "long") else "short"
 		if female and extra.age ~= "child" then
 			extra.skirt = spec.skirt or (o.coats and o.coats[rng:NextInteger(1, #o.coats)]) or Color3.fromRGB(120, 90, 70)
 			extra.skirtLong = true
@@ -1500,6 +1514,9 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			t.morning += lift
 			t.market += lift
 			t.evening += lift
+			if t.home then t.home += lift end
+			t.lastPos = t.base.Position
+			t.lastFacing = t.base.LookVector
 		end
 		t.phase = t.phase or rng:NextNumber(0, 10)
 		-- [개인 생태] 주민마다 고정된 행동 속도와 사회적 리듬. 경제/저장과 분리.
@@ -1571,40 +1588,68 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 	local touchJobs = game:GetService("UserInputService").TouchEnabled
 	local residents = if info.sim then math.max(0, math.floor(tonumber(info.sim.residents) or 0)) else 20 + lvl * 12
 	local employment = info.sim and info.sim.jobs
-	local dayJobCount = if employment then math.max(0, math.floor(tonumber(employment.merchant) or 0))
-		+ math.max(0, math.floor(tonumber(employment.sailor) or 0))
-		+ math.max(0, math.floor(tonumber(employment.guard) or 0))
-		+ math.max(0, math.floor(tonumber(employment.craftsman) or 0)) else 20
+	-- [직업별 시간표] 경제 직업 ID와 실제 고용 인원만 사용한다. 생활 단계와 위치는 연출 전용.
+	local dayJobs = {
+		{ job = "merchant", role = "Rogue", wake = 6.6, market = 9.4, leave = 17.2, home = 21.8,
+			work = { "pack", "count", "ledger", "weigh" }, trade = { "offer", "receive", "bargain", "stall" }, rest = { "gossip", "drink", "listen" } },
+		{ job = "sailor", role = "Barbarian", wake = 5.2, market = 9.8, leave = 16.8, home = 21.0,
+			work = { "knot", "chart", "check_compass", "haul_rope" }, trade = { "unload", "offer", "inspect" }, rest = { "stretch", "cheer", "talk" } },
+		{ job = "guard", role = "Knight", wake = 5.8, market = 10.6, leave = 16.4, home = 22.1,
+			work = { "patrol", "scan", "salute", "watch" }, trade = { "guide", "look", "patrol" }, rest = { "warm", "lean", "yawn" } },
+		{ job = "craftsman", role = "Barbarian", wake = 6.2, market = 10.7, leave = 16.7, home = 21.0,
+			work = { "saw", "carve", "inspect", "plane_wood" }, trade = { "pack", "count", "offer" }, rest = { "stretch", "gossip", "drink" } },
+		{ job = "farmer", role = "Barbarian", wake = 5.0, market = 10.4, leave = 15.7, home = 20.7,
+			work = { "hoe", "harvest", "sow", "water" }, trade = { "sort_crop", "offer", "receive" }, rest = { "stretch", "drink", "listen" } },
+		{ job = "fisher", role = "Barbarian", wake = 4.8, market = 10.0, leave = 16.2, home = 20.5,
+			work = { "fish", "net", "reel", "mend_net" }, trade = { "offer", "receive", "weigh" }, rest = { "drink", "talk", "stretch" } },
+		{ job = "official", role = "Mage", wake = 7.0, market = 11.0, leave = 16.3, home = 21.1,
+			work = { "seal", "write", "read", "count" }, trade = { "guide", "ledger", "point" }, rest = { "read", "talk", "listen" } },
+		{ job = "laborer", role = "Rogue", wake = 5.6, market = 10.2, leave = 16.0, home = 20.9,
+			work = { "carry", "lift", "stack", "sweep" }, trade = { "unload", "pack", "offer" }, rest = { "stretch", "drink", "gossip" } },
+		{ job = "clergy", role = "Mage", wake = 6.8, market = 11.2, leave = 16.0, home = 20.6,
+			work = { "pray", "read", "bless", "bell" }, trade = { "listen", "guide", "talk" }, rest = { "read", "warm", "look" } },
+	}
+	local remainingJobs, dayJobCount = {}, 0
+	for _, duty in dayJobs do
+		local employed = if employment then math.max(0, math.floor(tonumber(employment[duty.job]) or 0))
+			else math.max(1, lvl)
+		remainingJobs[duty.job] = employed
+		dayJobCount += employed
+	end
 	local livingCount = math.min(residents, dayJobCount,
 		if touchJobs then math.min(6, 1 + lvl + math.floor(residents / 24))
 		else math.min(12, 2 + lvl * 2 + math.floor(residents / 16)))
 	local scheduledPeople = {}
 	for i = 1, livingCount do
-		local side = if i % 2 == 0 then 1 else -1
-		local work = Vector3.new(-55 - i * 5, 0, side * 22)
-		local market = Vector3.new(-43 - i * 4, 0, side * 12)
-		local evening = if side > 0 then Vector3.new(-26 - i * 3, 0, 12)
-			else Vector3.new(-18 - i * 2, 0, -24)
-		-- [직업별 실제 생활동선] 기존 소수 인원만 장터·작업장·부두를 오간다.
-		local dayJobs = {
-			{ job = "merchant", role = "Rogue", work = { "pack", "count", "bargain", "ledger" }, trade = { "offer", "receive", "bargain" }, rest = { "gossip", "drink", "listen" } },
-			{ job = "sailor", role = "Barbarian", work = { "knot", "chart", "scan", "check_compass", "haul_rope" }, trade = { "unload", "offer", "inspect" }, rest = { "stretch", "cheer", "talk" } },
-			{ job = "guard", role = "Knight", work = { "patrol", "scan", "salute", "scan_horizon", "watch" }, trade = { "guide", "look", "patrol" }, rest = { "warm", "lean", "yawn" } },
-			{ job = "craftsman", role = "Barbarian", work = { "saw", "carve", "inspect", "plane_wood", "repair" }, trade = { "pack", "count", "offer" }, rest = { "stretch", "gossip", "drink" } },
-		}
-		-- [실제 직군 배정] 고용 0명인 직종의 주민을 가짜로 생성하지 않는다.
-		local eligibleJobs = {}
-		for _, candidate in dayJobs do
-			if not employment or (tonumber(employment[candidate.job]) or 0) > 0 then
-				table.insert(eligibleJobs, candidate)
+		-- [고용 명수] 1명을 여러 직업에 재사용하지 않고 각 직업의 실제 보유 슬롯을 소진한다.
+		local duty
+		for offset = 0, #dayJobs - 1 do
+			local candidate = dayJobs[(i + offset - 1) % #dayJobs + 1]
+			if remainingJobs[candidate.job] > 0 then
+				duty = candidate
+				remainingJobs[candidate.job] -= 1
+				break
 			end
 		end
-		local duty = eligibleJobs[(i - 1) % #eligibleJobs + 1]
+		if not duty then break end
+		local side = if i % 2 == 0 then 1 else -1
+		local work = Vector3.new(-56 - i * 5, 0, side * 22)
+		local market = Vector3.new(-44 - i * 4, 0, side * 12)
+		local evening = if side > 0 then Vector3.new(-26 - i * 3, 0, 12)
+			else Vector3.new(-18 - i * 2, 0, -24)
+		-- [귀가] 작업장과 분리된 근처 주거 골목. 기존 도로를 횡단하지 않는 같은 쪽 동선.
+		local home = work + Vector3.new(0, 0, side * 10)
+		local shift = rng:NextNumber(-0.32, 0.32)
+		local marketAt = duty.market + shift
+		local marketEnd = duty.leave + shift
+		local homeAt = duty.home + shift
 		local fig = person(work, faceTo(work, market), { role = duty.role, profession = duty.job, hat = "cap" }, duty.job)
-		addTask(fig, { mode = "schedule", morning = work, market = market, evening = evening,
+		addTask(fig, { mode = "schedule", morning = work, market = market, evening = evening, home = home,
 			job = duty.job, workKinds = duty.work, tradeKinds = duty.trade, leisureKinds = duty.rest,
 			phase = rng:NextNumber(0, 10), socialKind = duty.rest[(i - 1) % #duty.rest + 1],
-			-- [개인 동선] 각자의 서행/휴식 간격은 같지 않으며 기존 도로 중심을 벗어나지 않는다.
+			wakeAt = duty.wake + shift, marketAt = marketAt, marketEnd = marketEnd, homeAt = homeAt,
+			breakAt = math.min(marketEnd - 1.3, marketAt + 1.8 + rng:NextNumber(0.4, 1.2)),
+			breakSpan = rng:NextNumber(0.5, 0.9),
 			travelPace = rng:NextNumber(0.83, 1.12), travelOffset = rng:NextNumber(-1.3, 1.3) })
 		if fig then
 			fig:SetAttribute("Job", duty.job)
