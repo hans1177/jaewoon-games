@@ -409,15 +409,31 @@ test('Vibe2 main push rechecks executable department learning imports after thei
   assert.ok(pushScope.includes("- 'tools/department-learning-memory.mjs'"));
 });
 
-// [에셋 병목 회귀] 무료 Blender 설치만 안정화하고 기존 실제 DCC 검증은 삭제하지 않는다.
-test('Vibe2 native DCC setup stays free and has enough installation time without skipping verification',()=>{
-  const start=core.indexOf('      - name: Prepare declared native DCC authoring runtime');
+// [에셋 병목 회귀] 공식 Blender 고정 캐시를 재사용하고, ARM 원래 경로와 실제 DCC 검증을 보존한다.
+test('Vibe2 native DCC reuses verified free Blender cache and keeps real authoring verification',()=>{
+  const start=core.indexOf('      - name: Restore pinned Blender for native DCC authoring');
   const end=core.indexOf('      - name: Run isolated learning practice',start);
   assert.ok(start>=0&&end>start,'VIBE2_CANONICAL_NATIVE_DCC_STEPS_REQUIRED');
   const scope=core.slice(start,end);
+  const roblox=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const cacheKey='native-blender-4.5.15-linux-x64-0d2b8bb2efe97e6c8eb57de6b7322f8800e1984e3125b60decca5f6771e4773e-v1';
+  assert.ok(roblox.includes(cacheKey),'EXISTING_NATIVE_BLENDER_CACHE_KEY_REQUIRED');
+  assert.equal((scope.match(/key: native-blender-4\.5\.15-linux-x64-/g)||[]).length,2);
+  assert.ok(scope.includes(cacheKey));
+  assert.match(scope,/uses: actions\/cache\/restore@v4/);
+  assert.match(scope,/uses: actions\/cache\/save@v4/);
+  assert.match(scope,/path: \$\{\{ runner\.temp \}\}\/vibe2-blender-4\.5\.15/);
+  assert.match(scope,/runner\.arch == 'X64'/);
   assert.match(scope,/timeout-minutes: 12/);
+  assert.match(scope,/sha256sum --check --status/);
+  assert.match(scope,/BLENDER_SHA256: 0d2b8bb2efe97e6c8eb57de6b7322f8800e1984e3125b60decca5f6771e4773e/);
+  assert.match(scope,/https:\/\/download\.blender\.org\/release\/Blender4\.5\/blender-4\.5\.15-linux-x64\.tar\.xz/);
+  assert.match(scope,/bpy\.ops\.export_scene\.gltf\.get_rna_type\(\)/);
+  assert.match(scope,/VIBE2_NATIVE_DCC_CACHE=RESTORED_VERIFIED/);
+  assert.match(scope,/steps\.native-dcc\.outputs\.built == 'true'/);
+  assert.match(scope,/steps\.native-dcc-cache\.outputs\.cache-hit != 'true'/);
   assert.match(scope,/sudo apt-get install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri/);
   assert.match(scope,/node --input-type=module/);
   assert.ok(scope.includes('executeDeclaredNativeDccAuthoringVerification({cwd:root,order})'));
-  assert.ok(scope.includes("NATIVE_DCC_AUTHORING_EXECUTION_REQUIRED"));
+  assert.ok(scope.includes('NATIVE_DCC_AUTHORING_EXECUTION_REQUIRED'));
 });
