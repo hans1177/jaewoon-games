@@ -221,3 +221,29 @@ test('공식 JS 데이터셋과 Python 가중치 학습기의 샘플 SHA256 식�
   const check=spawnSync('python3',['-c',script],{input:JSON.stringify(normalized[0]),encoding:'utf8'});
   assert.equal(check.status,0,check.stderr||check.error?.message||'JS/Python sample SHA mismatch');
 });
+
+
+test('로컬 정식 플랫폼 학습 요청의 합성 상한은 준비 판정과 동일한 0이다', () => {
+  const task = {
+    ready: true, accepted: 48, train: 34, eval: 7, holdout: 7,
+    distinctProjects: 3, batchingPass: true, diversityPass: true,
+    contaminationPass: true, taskPlanReady: true,
+    datasetSha256: 'a'.repeat(64),
+  };
+  const taskTypes = ['unity', 'roblox', 'fortnite_uefn', 'coding'];
+  const request = buildTrainingRequest(status({
+    readyTasks: taskTypes,
+    state: 'READY_TASKS_AVAILABLE',
+    tasks: Object.fromEntries(taskTypes.map((type) => [type, task])),
+  }));
+  for (const entry of request.requests) {
+    const capPosition = entry.datasetCommand.indexOf('--synthetic-ratio-cap');
+    assert.notEqual(capPosition, -1);
+    const expected = entry.taskType === 'coding' ? '0.5' : '0';
+    assert.equal(entry.datasetCommand[capPosition + 1], expected, entry.taskType);
+    assert.equal(entry.datasetSha256, task.datasetSha256);
+  }
+  assert.equal(request.execution.route, 'LOCAL_SELF_HOSTED_ONLY');
+  assert.equal(request.execution.githubHostedTrainingAllowed, false);
+  assert.equal(request.execution.paidApiAllowed, false);
+});
