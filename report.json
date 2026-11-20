@@ -1,5 +1,5 @@
 {
- "sourceRevision": "f40ae02bf8504ea723c96a2fb2bf710fcfef209e",
+ "sourceRevision": "cd1f6eea311e368dfa78db5da40e6e50b86b3895",
  "log": [
   {
    "step": 1,
@@ -390,166 +390,458 @@
    "step": 85,
    "ctx": "Client",
    "out": "UI_MOBILE_420PX_SIMULATED\ntext"
+  },
+  {
+   "step": 87,
+   "ctx": "Client",
+   "out": "UI_MOBILE_TOP_RIGHT_TABS_PASS width=406 tabs=4\ntext"
+  },
+  {
+   "step": 88,
+   "capture": "ui_mobile_tabs_topright",
+   "files": 1
+  },
+  {
+   "step": 89,
+   "ctx": "Client",
+   "out": "UI_MOBILE_LAYOUT_RESTORED\ntext"
+  },
+  {
+   "step": 91,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 전투 교관 · 해적 사냥 | 전투 본부 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 지상 탐험 | 해적 사냥 | 전투 준비 | 지상 탐험 | 지상 탐험 | 함대전\ntext"
+  },
+  {
+   "step": 92,
+   "ctx": "Client",
+   "out": "tab codex\ntext"
+  },
+  {
+   "step": 94,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:codex\ntext"
+  },
+  {
+   "step": 95,
+   "capture": "tab_codex",
+   "files": 1
+  },
+  {
+   "step": 96,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 학자 · 지식 백과 | 학자의 서재 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 해적 사냥 | 지식 보고 | 학자와 보고 | 지식 백과 | 지식 백과 | 연구\ntext"
+  },
+  {
+   "step": 97,
+   "click": "qa_tab_codex_to_tech",
+   "at": "770,110",
+   "out": "770,110 CLICK=FACILITY_TAB_codex_TO_tech\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 770,
+      "y": 110
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 99,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:codex_TO_tech\ntext"
+  },
+  {
+   "step": 100,
+   "capture": "qa_click_codex_to_tech",
+   "files": 1
+  },
+  {
+   "step": 101,
+   "ctx": "Client",
+   "out": "tab tech\ntext"
+  },
+  {
+   "step": 103,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:tech\ntext"
+  },
+  {
+   "step": 104,
+   "capture": "tab_tech",
+   "files": 1
+  },
+  {
+   "step": 105,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 학자 · 연구 | 학자의 서재 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 지식 백과 | 지식 보고 | 학자와 보고 | 지식 백과 | 지식 백과 | 연구\ntext"
+  },
+  {
+   "step": 106,
+   "ctx": "Client",
+   "out": "tab status\ntext"
+  },
+  {
+   "step": 108,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:status\ntext"
+  },
+  {
+   "step": 109,
+   "capture": "tab_status",
+   "files": 1
+  },
+  {
+   "step": 110,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 · 현황 | 선장실 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 연구 | 현황 | 선장 현황 | 동료 관리 | 동료 관리 | ◆ 현황 · 핵심 정보\ntext"
+  },
+  {
+   "step": 111,
+   "click": "qa_tab_status_to_crew",
+   "at": "942,110",
+   "out": "942,110 CLICK=FACILITY_TAB_status_TO_crew\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 942,
+      "y": 110
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 113,
+   "ctx": "Client",
+   "out": "QA_REAL_TAB_CLICK_PASS:status_TO_crew\ntext"
+  },
+  {
+   "step": 114,
+   "capture": "qa_click_status_to_crew",
+   "files": 1
+  },
+  {
+   "step": 115,
+   "ctx": "Client",
+   "out": "tab crew\ntext"
+  },
+  {
+   "step": 117,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:crew\ntext"
+  },
+  {
+   "step": 118,
+   "capture": "tab_crew",
+   "files": 1
+  },
+  {
+   "step": 119,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장 · 동료 관리 | 선장실 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ↶ 현황 | 현황 | 선장 현황 | 동료 관리 | 동료 관리 | ◆ 동료 관리 · 핵심 정보\ntext"
+  },
+  {
+   "step": 120,
+   "ctx": "Client",
+   "out": "QA_TRADE_INLINE_OPEN\ntext"
+  },
+  {
+   "step": 122,
+   "ctx": "Client",
+   "out": "TRADE_TAB_MENU_PASS\ntext"
+  },
+  {
+   "step": 123,
+   "ctx": "Client",
+   "out": "TRADE_TAB_PRICES_AND_ACTIONS_PASS\ntext"
+  },
+  {
+   "step": 124,
+   "capture": "ui_trade_inline",
+   "files": 1
+  },
+  {
+   "step": 125,
+   "ctx": "Client",
+   "out": "QA_YARD_INLINE_OPEN\ntext"
+  },
+  {
+   "step": 127,
+   "ctx": "Client",
+   "out": "YARD_TAB_MENU_PASS\ntext"
+  },
+  {
+   "step": 128,
+   "ctx": "Client",
+   "out": "SHIP_INLINE_COMPARISON_PASS\ntext"
+  },
+  {
+   "step": 129,
+   "capture": "ui_yard_inline",
+   "files": 1
+  },
+  {
+   "step": 130,
+   "click": "yard_book_close",
+   "at": "1005,43",
+   "out": "1005,43 CLICK=시설닫기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 1005,
+      "y": 43
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 132,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_CLOSE_PASS\ntext"
+  },
+  {
+   "step": 133,
+   "capture": "ui_facility_book_closed",
+   "files": 1
+  },
+  {
+   "step": 134,
+   "ctx": "Client",
+   "out": "VOYAGE_QA_EVENT_OPEN\ntext"
+  },
+  {
+   "step": 136,
+   "ctx": "Client",
+   "out": "VOYAGE_QA_EVENT_GATE_PASS\ntext"
+  },
+  {
+   "step": 137,
+   "ctx": "Client",
+   "out": "VOYAGE_QA_RESUMED_AFTER_EVENT:false:이미 이 항구에 있어요\ntext"
+  },
+  {
+   "step": 138,
+   "ctx": "Client",
+   "out": "NEWGAME ok=true\ntext"
+  },
+  {
+   "step": 140,
+   "ctx": "Client",
+   "out": "DEV Deck\ntext"
+  },
+  {
+   "step": 142,
+   "ctx": "Client",
+   "out": "CARD_DECK_RUNTIME_PASS\ntext"
+  },
+  {
+   "step": 143,
+   "capture": "cb0_deck",
+   "files": 1
+  },
+  {
+   "step": 144,
+   "ctx": "Client",
+   "out": "CARD_BOOK_RUNTIME_PASS\ntext"
+  },
+  {
+   "step": 145,
+   "ctx": "Client",
+   "out": "DEV Practice\ntext"
+  },
+  {
+   "step": 147,
+   "ctx": "Client",
+   "out": "CARD_PRACTICE_RUNTIME_PASS\ntext"
+  },
+  {
+   "step": 148,
+   "capture": "cb1",
+   "files": 1
+  },
+  {
+   "step": 149,
+   "ctx": "Client",
+   "out": "CARD_BOARD_RUNTIME_PASS\ntext"
+  },
+  {
+   "step": 151,
+   "capture": "cb2",
+   "files": 1
   }
  ],
  "errors": [
-  "step87:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:16: MOBILE_TAB_CELL_INVALID | text"
+  "step152:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:8: CARD_PRACTICE_EXIT_BUTTON_MISSING |"
  ],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28014
+   "elapsedMs": 28003
   },
   {
    "step": 1,
    "type": "capture",
-   "elapsedMs": 1495
+   "elapsedMs": 1456
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 216
+   "elapsedMs": 217
   },
   {
    "step": 3,
    "type": "luau",
-   "elapsedMs": 217
+   "elapsedMs": 200
   },
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 199
+   "elapsedMs": 232
   },
   {
    "step": 5,
    "type": "wait",
-   "elapsedMs": 409
+   "elapsedMs": 404
   },
   {
    "step": 6,
    "type": "click_from_luau",
-   "elapsedMs": 1114
+   "elapsedMs": 996
   },
   {
    "step": 7,
    "type": "wait",
-   "elapsedMs": 2013
+   "elapsedMs": 2005
   },
   {
    "step": 8,
    "type": "capture",
-   "elapsedMs": 1194
+   "elapsedMs": 1088
   },
   {
    "step": 9,
    "type": "luau",
-   "elapsedMs": 221
+   "elapsedMs": 207
   },
   {
    "step": 10,
    "type": "wait",
-   "elapsedMs": 412
+   "elapsedMs": 401
   },
   {
    "step": 11,
    "type": "click_from_luau",
-   "elapsedMs": 952
+   "elapsedMs": 844
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 2012
+   "elapsedMs": 2005
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 880
+   "elapsedMs": 985
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 208
+   "elapsedMs": 199
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 405
+   "elapsedMs": 407
   },
   {
    "step": 16,
    "type": "click_from_luau",
-   "elapsedMs": 1112
+   "elapsedMs": 926
   },
   {
    "step": 17,
    "type": "wait",
-   "elapsedMs": 1706
+   "elapsedMs": 1710
   },
   {
    "step": 18,
    "type": "capture",
-   "elapsedMs": 1044
+   "elapsedMs": 1107
   },
   {
    "step": 19,
    "type": "wait",
-   "elapsedMs": 1808
+   "elapsedMs": 1801
   },
   {
    "step": 20,
    "type": "capture",
-   "elapsedMs": 1346
+   "elapsedMs": 2404
   },
   {
    "step": 21,
    "type": "wait",
-   "elapsedMs": 1804
+   "elapsedMs": 1809
   },
   {
    "step": 22,
    "type": "capture",
-   "elapsedMs": 3825
+   "elapsedMs": 3402
   },
   {
    "step": 23,
    "type": "wait",
-   "elapsedMs": 3712
+   "elapsedMs": 3711
   },
   {
    "step": 24,
    "type": "capture",
-   "elapsedMs": 1405
+   "elapsedMs": 1411
   },
   {
    "step": 25,
    "type": "luau",
-   "elapsedMs": 2852
+   "elapsedMs": 2777
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 314
+   "elapsedMs": 334
   },
   {
    "step": 27,
    "type": "wait",
-   "elapsedMs": 2507
+   "elapsedMs": 2515
   },
   {
    "step": 28,
    "type": "capture",
-   "elapsedMs": 1344
+   "elapsedMs": 1569
   },
   {
    "step": 29,
    "type": "luau",
-   "elapsedMs": 1199
+   "elapsedMs": 1167
   },
   {
    "step": 30,
    "type": "luau",
-   "elapsedMs": 301
+   "elapsedMs": 300
   },
   {
    "step": 31,
@@ -559,267 +851,267 @@
   {
    "step": 32,
    "type": "wait",
-   "elapsedMs": 2505
+   "elapsedMs": 2503
   },
   {
    "step": 33,
    "type": "luau",
-   "elapsedMs": 79
+   "elapsedMs": 64
   },
   {
    "step": 34,
    "type": "capture",
-   "elapsedMs": 1238
+   "elapsedMs": 1207
   },
   {
    "step": 35,
    "type": "luau",
-   "elapsedMs": 328
+   "elapsedMs": 309
   },
   {
    "step": 36,
    "type": "luau",
-   "elapsedMs": 317
+   "elapsedMs": 316
   },
   {
    "step": 37,
    "type": "wait",
-   "elapsedMs": 2503
+   "elapsedMs": 2511
   },
   {
    "step": 38,
    "type": "luau",
-   "elapsedMs": 287
+   "elapsedMs": 223
   },
   {
    "step": 39,
    "type": "luau",
-   "elapsedMs": 311
+   "elapsedMs": 418
   },
   {
    "step": 40,
    "type": "capture",
-   "elapsedMs": 1339
+   "elapsedMs": 1439
   },
   {
    "step": 41,
    "type": "luau",
-   "elapsedMs": 561
+   "elapsedMs": 328
   },
   {
    "step": 42,
    "type": "click_from_luau",
-   "elapsedMs": 1316
+   "elapsedMs": 1198
   },
   {
    "step": 43,
    "type": "wait",
-   "elapsedMs": 859
+   "elapsedMs": 862
   },
   {
    "step": 44,
    "type": "luau",
-   "elapsedMs": 124
+   "elapsedMs": 123
   },
   {
    "step": 45,
    "type": "capture",
-   "elapsedMs": 1192
+   "elapsedMs": 1021
   },
   {
    "step": 46,
    "type": "luau",
-   "elapsedMs": 279
+   "elapsedMs": 237
   },
   {
    "step": 47,
    "type": "wait",
-   "elapsedMs": 2513
+   "elapsedMs": 2505
   },
   {
    "step": 48,
    "type": "luau",
-   "elapsedMs": 182
+   "elapsedMs": 186
   },
   {
    "step": 49,
    "type": "capture",
-   "elapsedMs": 863
+   "elapsedMs": 822
   },
   {
    "step": 50,
    "type": "luau",
-   "elapsedMs": 185
+   "elapsedMs": 177
   },
   {
    "step": 51,
    "type": "click_from_luau",
-   "elapsedMs": 553
+   "elapsedMs": 552
   },
   {
    "step": 52,
    "type": "wait",
-   "elapsedMs": 859
+   "elapsedMs": 857
   },
   {
    "step": 53,
    "type": "luau",
-   "elapsedMs": 158
+   "elapsedMs": 92
   },
   {
    "step": 54,
    "type": "capture",
-   "elapsedMs": 687
+   "elapsedMs": 681
   },
   {
    "step": 55,
    "type": "luau",
-   "elapsedMs": 178
+   "elapsedMs": 170
   },
   {
    "step": 56,
    "type": "wait",
-   "elapsedMs": 2507
+   "elapsedMs": 2501
   },
   {
    "step": 57,
    "type": "luau",
-   "elapsedMs": 161
+   "elapsedMs": 182
   },
   {
    "step": 58,
    "type": "capture",
-   "elapsedMs": 684
+   "elapsedMs": 674
   },
   {
    "step": 59,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 175
   },
   {
    "step": 60,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 185
   },
   {
    "step": 61,
    "type": "wait",
-   "elapsedMs": 2503
+   "elapsedMs": 2508
   },
   {
    "step": 62,
    "type": "luau",
-   "elapsedMs": 63
+   "elapsedMs": 75
   },
   {
    "step": 63,
    "type": "capture",
-   "elapsedMs": 1133
+   "elapsedMs": 913
   },
   {
    "step": 64,
    "type": "luau",
-   "elapsedMs": 234
+   "elapsedMs": 185
   },
   {
    "step": 65,
    "type": "luau",
-   "elapsedMs": 233
+   "elapsedMs": 184
   },
   {
    "step": 66,
    "type": "wait",
-   "elapsedMs": 2501
+   "elapsedMs": 2506
   },
   {
    "step": 67,
    "type": "luau",
-   "elapsedMs": 166
+   "elapsedMs": 94
   },
   {
    "step": 68,
    "type": "capture",
-   "elapsedMs": 904
+   "elapsedMs": 870
   },
   {
    "step": 69,
    "type": "luau",
-   "elapsedMs": 199
+   "elapsedMs": 178
   },
   {
    "step": 70,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 184
   },
   {
    "step": 71,
    "type": "wait",
-   "elapsedMs": 2510
+   "elapsedMs": 2501
   },
   {
    "step": 72,
    "type": "luau",
-   "elapsedMs": 204
+   "elapsedMs": 151
   },
   {
    "step": 73,
    "type": "capture",
-   "elapsedMs": 925
+   "elapsedMs": 1177
   },
   {
    "step": 74,
    "type": "luau",
-   "elapsedMs": 231
+   "elapsedMs": 207
   },
   {
    "step": 75,
    "type": "luau",
-   "elapsedMs": 245
+   "elapsedMs": 216
   },
   {
    "step": 76,
    "type": "wait",
-   "elapsedMs": 2505
+   "elapsedMs": 2502
   },
   {
    "step": 77,
    "type": "luau",
-   "elapsedMs": 195
+   "elapsedMs": 171
   },
   {
    "step": 78,
    "type": "capture",
-   "elapsedMs": 974
+   "elapsedMs": 779
   },
   {
    "step": 79,
    "type": "luau",
-   "elapsedMs": 191
+   "elapsedMs": 186
   },
   {
    "step": 80,
    "type": "capture",
-   "elapsedMs": 990
+   "elapsedMs": 1012
   },
   {
    "step": 81,
    "type": "luau",
-   "elapsedMs": 211
+   "elapsedMs": 169
   },
   {
    "step": 82,
    "type": "wait",
-   "elapsedMs": 601
+   "elapsedMs": 614
   },
   {
    "step": 83,
    "type": "capture",
-   "elapsedMs": 906
+   "elapsedMs": 1194
   },
   {
    "step": 84,
    "type": "luau",
-   "elapsedMs": 193
+   "elapsedMs": 223
   },
   {
    "step": 85,
@@ -829,28 +1121,363 @@
   {
    "step": 86,
    "type": "wait",
-   "elapsedMs": 1113
+   "elapsedMs": 1104
   },
   {
    "step": 87,
    "type": "luau",
-   "elapsedMs": 628
+   "elapsedMs": 465
+  },
+  {
+   "step": 88,
+   "type": "capture",
+   "elapsedMs": 1226
+  },
+  {
+   "step": 89,
+   "type": "luau",
+   "elapsedMs": 81
+  },
+  {
+   "step": 90,
+   "type": "wait",
+   "elapsedMs": 410
+  },
+  {
+   "step": 91,
+   "type": "luau",
+   "elapsedMs": 231
+  },
+  {
+   "step": 92,
+   "type": "luau",
+   "elapsedMs": 216
+  },
+  {
+   "step": 93,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 94,
+   "type": "luau",
+   "elapsedMs": 99
+  },
+  {
+   "step": 95,
+   "type": "capture",
+   "elapsedMs": 961
+  },
+  {
+   "step": 96,
+   "type": "luau",
+   "elapsedMs": 211
+  },
+  {
+   "step": 97,
+   "type": "click_from_luau",
+   "elapsedMs": 1028
+  },
+  {
+   "step": 98,
+   "type": "wait",
+   "elapsedMs": 862
+  },
+  {
+   "step": 99,
+   "type": "luau",
+   "elapsedMs": 192
+  },
+  {
+   "step": 100,
+   "type": "capture",
+   "elapsedMs": 1053
+  },
+  {
+   "step": 101,
+   "type": "luau",
+   "elapsedMs": 227
+  },
+  {
+   "step": 102,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 103,
+   "type": "luau",
+   "elapsedMs": 165
+  },
+  {
+   "step": 104,
+   "type": "capture",
+   "elapsedMs": 1183
+  },
+  {
+   "step": 105,
+   "type": "luau",
+   "elapsedMs": 235
+  },
+  {
+   "step": 106,
+   "type": "luau",
+   "elapsedMs": 248
+  },
+  {
+   "step": 107,
+   "type": "wait",
+   "elapsedMs": 2508
+  },
+  {
+   "step": 108,
+   "type": "luau",
+   "elapsedMs": 76
+  },
+  {
+   "step": 109,
+   "type": "capture",
+   "elapsedMs": 668
+  },
+  {
+   "step": 110,
+   "type": "luau",
+   "elapsedMs": 66
+  },
+  {
+   "step": 111,
+   "type": "click_from_luau",
+   "elapsedMs": 666
+  },
+  {
+   "step": 112,
+   "type": "wait",
+   "elapsedMs": 863
+  },
+  {
+   "step": 113,
+   "type": "luau",
+   "elapsedMs": 70
+  },
+  {
+   "step": 114,
+   "type": "capture",
+   "elapsedMs": 506
+  },
+  {
+   "step": 115,
+   "type": "luau",
+   "elapsedMs": 78
+  },
+  {
+   "step": 116,
+   "type": "wait",
+   "elapsedMs": 2512
+  },
+  {
+   "step": 117,
+   "type": "luau",
+   "elapsedMs": 154
+  },
+  {
+   "step": 118,
+   "type": "capture",
+   "elapsedMs": 1020
+  },
+  {
+   "step": 119,
+   "type": "luau",
+   "elapsedMs": 221
+  },
+  {
+   "step": 120,
+   "type": "luau",
+   "elapsedMs": 255
+  },
+  {
+   "step": 121,
+   "type": "wait",
+   "elapsedMs": 3015
+  },
+  {
+   "step": 122,
+   "type": "luau",
+   "elapsedMs": 172
+  },
+  {
+   "step": 123,
+   "type": "luau",
+   "elapsedMs": 183
+  },
+  {
+   "step": 124,
+   "type": "capture",
+   "elapsedMs": 918
+  },
+  {
+   "step": 125,
+   "type": "luau",
+   "elapsedMs": 183
+  },
+  {
+   "step": 126,
+   "type": "wait",
+   "elapsedMs": 3014
+  },
+  {
+   "step": 127,
+   "type": "luau",
+   "elapsedMs": 173
+  },
+  {
+   "step": 128,
+   "type": "luau",
+   "elapsedMs": 181
+  },
+  {
+   "step": 129,
+   "type": "capture",
+   "elapsedMs": 773
+  },
+  {
+   "step": 130,
+   "type": "click_from_luau",
+   "elapsedMs": 1043
+  },
+  {
+   "step": 131,
+   "type": "wait",
+   "elapsedMs": 2014
+  },
+  {
+   "step": 132,
+   "type": "luau",
+   "elapsedMs": 238
+  },
+  {
+   "step": 133,
+   "type": "capture",
+   "elapsedMs": 765
+  },
+  {
+   "step": 134,
+   "type": "luau",
+   "elapsedMs": 644
+  },
+  {
+   "step": 135,
+   "type": "wait",
+   "elapsedMs": 965
+  },
+  {
+   "step": 136,
+   "type": "luau",
+   "elapsedMs": 157
+  },
+  {
+   "step": 137,
+   "type": "luau",
+   "elapsedMs": 2389
+  },
+  {
+   "step": 138,
+   "type": "luau",
+   "elapsedMs": 2393
+  },
+  {
+   "step": 139,
+   "type": "wait",
+   "elapsedMs": 4005
+  },
+  {
+   "step": 140,
+   "type": "luau",
+   "elapsedMs": 145
+  },
+  {
+   "step": 141,
+   "type": "wait",
+   "elapsedMs": 3010
+  },
+  {
+   "step": 142,
+   "type": "luau",
+   "elapsedMs": 565
+  },
+  {
+   "step": 143,
+   "type": "capture",
+   "elapsedMs": 1130
+  },
+  {
+   "step": 144,
+   "type": "luau",
+   "elapsedMs": 679
+  },
+  {
+   "step": 145,
+   "type": "luau",
+   "elapsedMs": 183
+  },
+  {
+   "step": 146,
+   "type": "wait",
+   "elapsedMs": 6009
+  },
+  {
+   "step": 147,
+   "type": "luau",
+   "elapsedMs": 185
+  },
+  {
+   "step": 148,
+   "type": "capture",
+   "elapsedMs": 954
+  },
+  {
+   "step": 149,
+   "type": "luau",
+   "elapsedMs": 201
+  },
+  {
+   "step": 150,
+   "type": "wait",
+   "elapsedMs": 8006
+  },
+  {
+   "step": 151,
+   "type": "capture",
+   "elapsedMs": 1091
+  },
+  {
+   "step": 152,
+   "type": "click_from_luau",
+   "elapsedMs": 638
   }
  ],
  "consoleCapture": {
   "captured": true,
-  "errorCount": 0,
-  "warningCount": 0,
-  "errors": []
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 1,
+  "warningCount": 12,
+  "errors": [
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "AssistantCommand:8: CARD_PRACTICE_EXIT_BUTTON_MISSING"
+   }
+  ]
  },
  "summary": {
   "plannedSteps": 241,
-  "completedSteps": 88,
+  "completedSteps": 153,
   "plannedClicks": 10,
-  "successfulClicks": 5,
+  "successfulClicks": 8,
   "skippedOptionalClicks": 0,
   "plannedFrames": 62,
-  "capturedFrames": 20,
+  "capturedFrames": 33,
   "abortedEarly": true
  },
  "visualSamples": [
@@ -860,7 +1487,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 251347,
+      "bytes": 251241,
       "width": 0,
       "height": 0,
       "pass": true
@@ -883,7 +1510,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 250719,
+      "bytes": 250780,
       "width": 0,
       "height": 0,
       "pass": true
@@ -898,7 +1525,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195342,
+      "bytes": 195193,
       "width": 0,
       "height": 0,
       "pass": true
@@ -913,7 +1540,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 148035,
+      "bytes": 148057,
       "width": 0,
       "height": 0,
       "pass": true
@@ -937,7 +1564,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 135373,
+      "bytes": 135316,
       "width": 0,
       "height": 0,
       "pass": true
@@ -950,7 +1577,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0149102210998535,
+    "brightness": 2.014453172683716,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -961,7 +1588,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 142648,
+      "bytes": 142694,
       "width": 0,
       "height": 0,
       "pass": true
@@ -974,7 +1601,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.018179416656494,
+    "brightness": 2.0179319381713867,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -985,7 +1612,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105863,
+      "bytes": 105866,
       "width": 0,
       "height": 0,
       "pass": true
@@ -998,7 +1625,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0218982696533203,
+    "brightness": 2.021721601486206,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1009,7 +1636,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 138367,
+      "bytes": 138539,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1022,7 +1649,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0264573097229004,
+    "brightness": 2.026402473449707,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -1033,7 +1660,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 144709,
+      "bytes": 144818,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1048,7 +1675,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 175948,
+      "bytes": 175991,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1063,7 +1690,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 144202,
+      "bytes": 144282,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1078,7 +1705,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 137768,
+      "bytes": 137593,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1093,7 +1720,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 115925,
+      "bytes": 115992,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1108,7 +1735,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 115861,
+      "bytes": 116402,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1123,7 +1750,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 172834,
+      "bytes": 172409,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1138,7 +1765,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 146071,
+      "bytes": 145912,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1153,7 +1780,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 150166,
+      "bytes": 150119,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1168,7 +1795,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 148779,
+      "bytes": 148790,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1183,7 +1810,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 149267,
+      "bytes": 148685,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1198,7 +1825,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 244699,
+      "bytes": 228556,
       "width": 0,
       "height": 0,
       "pass": true
@@ -1206,15 +1833,210 @@
     ]
    },
    "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "ui_mobile_tabs_topright",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 180006,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_codex",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 162560,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "qa_click_codex_to_tech",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 150483,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "tab_tech",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 149688,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "tab_status",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 137136,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_codex_TO_tech"
+  },
+  {
+   "name": "qa_click_status_to_crew",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 141467,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "tab_crew",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 141305,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "ui_trade_inline",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 175646,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "ui_yard_inline",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 172170,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_status_TO_crew"
+  },
+  {
+   "name": "ui_facility_book_closed",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 250398,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "시설닫기"
+  },
+  {
+   "name": "cb0_deck",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 276617,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "시설닫기"
+  },
+  {
+   "name": "cb1",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 180911,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "시설닫기"
+  },
+  {
+   "name": "cb2",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 185016,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "시설닫기"
   }
  ],
  "abortDiagnostics": {
-  "step": 87,
-  "type": "luau",
-  "elapsedMs": 87,
+  "step": 152,
+  "type": "click_from_luau",
+  "elapsedMs": 202,
   "context": "Client",
-  "lastScreenshot": "ui_main_menu_icons",
-  "lastClick": "qa_tab_route_to_map",
+  "lastScreenshot": "cb2",
+  "lastClick": "yard_book_close",
   "probes": {
    "Client": {
     "reachable": true,
@@ -1227,7 +2049,7 @@
   }
  },
  "visualEvidence": {
-  "framesChecked": 20,
+  "framesChecked": 33,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
