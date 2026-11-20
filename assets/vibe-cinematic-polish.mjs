@@ -190,6 +190,8 @@ export function createVibeRenderQualityController(renderer,{mobile=false,maxPixe
     drawCalls:Number.isFinite(drawCalls)?drawCalls:null,performanceObservationOnly:true});
   },
   get tier(){return tiers[index];},
+  // [모바일 프레임] 화면 숨김/복귀 시 이전 측정 창을 버려 품질 승격·강등을 오판하지 않는다.
+  resetSample(){frames=0;elapsed=0;slowWindows=0;fastWindows=0;},
   dispose(){renderer.shadowMap.enabled=initialShadow;renderer.setPixelRatio(initialRatio);}
  };
 }
