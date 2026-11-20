@@ -42,6 +42,9 @@ local GOOD_MESH = {
 	coffee = { "Cargo", "cup-coffee" }, tea = { "Cargo", "cup-tea" }, cocoa = { "Cargo", "chocolate" }, rum = { "Cargo", "barrel", Color3.fromRGB(96, 56, 39) },
 	salt = { "Cargo", "shaker-salt" }, sugar = { "Cargo", "sugar" }, fruit = { "Cargo", "grapes" }, grapes = { "Cargo", "grapes" },
 	lemon = { "Cargo", "lemon" }, maize = { "Cargo", "corn" }, coconut = { "Cargo", "coconut" }, meat = { "Cargo", "whole-ham" },
+	-- 이름이 같은 모델이 없어 열린 상자로 보이던 교역품: 등록된 CC0 Cargo 모델로 구분한다 (기름류는 통 색으로, 수지는 자루로)
+	palm_oil = { "Cargo", "barrel-open", Color3.fromRGB(170, 96, 44) }, whale_oil = { "Cargo", "barrel", Color3.fromRGB(176, 150, 96) },
+	gum_arabic = { "Cargo", "bag" }, pearl_shell = { "Cargo", "pearls" }, sandalwood_hi = { "Cargo", "sandalwood" },
 }
 -- 통은 사케·럼만 쓴다: 와인은 병(wine-red), 맥주는 잔(mug)으로 모양 자체를 달리해 통 네 가지가 똑같아 보이던 문제를 줄인다 (모두 등록된 CC0 원본).
 -- 표에 없는 교역품은 같은 이름의 3D 모델(등록돼 있으면)을, 그것도 없으면 열린 상자를 쓴다
@@ -53,6 +56,7 @@ setmetatable(GOOD_MESH, { __index = function(_, good)
 end })
 -- 상품 종류별 진열 크기 배율: 작은 물건(보석·향신료·찻잔)은 작게, 큰 물건(통·목재·천 더미)은 크게 보여 종류가 한눈에 구분되게 한다.
 local GOOD_SIZE = {
+	pearl_shell = 0.8, gum_arabic = 0.9, palm_oil = 1.1, whale_oil = 1.2,
 	gems = 0.75, pearls = 0.7, pepper = 0.8, salt = 0.8, olive_oil = 0.9, coffee = 0.75, tea = 0.75, cocoa = 0.8, honey = 0.8, lemon = 0.8, coconut = 0.85,
 	wine = 1.0, beer = 0.9, sake = 1.2, rum = 1.2, timber = 1.3, mahogany = 1.25, cloth = 1.2, silk = 1.2, grain = 1.1, sugar = 1.1,
 }
