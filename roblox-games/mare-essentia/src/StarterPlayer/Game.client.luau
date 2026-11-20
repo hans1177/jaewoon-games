@@ -2120,12 +2120,16 @@ function H.layoutBook()
   end
   H.tabStrip.CanvasSize = UDim2.fromOffset(allTabsWidth, 0)
   local selectedIndex = table.find(groupOf(currentTab).tabs, currentTab) or 1
-  local desiredScroll = (selectedIndex - 1) * (tabWidth + tabGap)
-    - math.floor((visibleTabsWidth - tabWidth) / 2)
+  local selectedLeft = (selectedIndex - 1) * (tabWidth + tabGap)
   -- [탭 위치] 같은 화면의 데이터가 갱신될 때는 사용자가 밀어 놓은 위치를 유지한다.
   local tabViewport = Vector2.new(tabWidth, visibleTabsWidth)
   if H.lastTabLayoutId ~= currentTab or H.lastTabViewport ~= tabViewport then
     H.lastTabLayoutId, H.lastTabViewport = currentTab, tabViewport
+    -- 이미 보이는 탭은 제자리에 두고, 화면 밖 탭만 가까운 가장자리까지 이동한다.
+    local currentX = H.tabStrip.CanvasPosition.X
+    local selectedRight = selectedLeft + tabWidth
+    local desiredScroll = if visibleTabsWidth < tabWidth or selectedLeft < currentX then selectedLeft
+      elseif selectedRight > currentX + visibleTabsWidth then selectedRight - visibleTabsWidth else currentX
     H.tabStrip.CanvasPosition = Vector2.new(math.clamp(desiredScroll, 0, math.max(0, allTabsWidth - visibleTabsWidth)), 0)
   end
   local bodyTop = if tabs then (if width < 740 then 124 else 134) else 68
@@ -11310,7 +11314,7 @@ function H.renderTabs()
 		-- [선택 띠 재사용] 모든 탭에 한 번 만들고 선택 시 보이기만 전환한다.
 		local rule = Instance.new("Frame")
 		rule.Name = "ActiveTabRule"
-		rule.BackgroundColor3 = UI_BRASS
+		rule.BackgroundColor3 = INK
 		rule.BorderSizePixel = 0
 		rule.Position = UDim2.new(0, 8, 1, -5)
 		rule.Size = UDim2.new(1, -16, 0, 4)
