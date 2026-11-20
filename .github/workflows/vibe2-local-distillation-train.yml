@@ -170,6 +170,103 @@ jobs:
             $manifest = [System.IO.File]::ReadAllText($manifestPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
             if ($manifest.readyForTraining -ne $true) { throw "manifest is not training-ready for $taskType" }
             if ($manifest.targetTaskType -ne $taskType) { throw "manifest task mismatch for $taskType" }
+            # [가중치 재훈련] 검증 스냅샷이 요청 이후 바뀌었으면 무조건 중단한다.
+            if ([string]$item.datasetSha256 -notmatch '^[a-f0-9]{64}
+            if ($isPlatformTask) {
+              node tools/vibe2-real-platform-dataset-gate.mjs `
+                --task-type $taskType `
+                --manifest $manifestPath `
+                --train $trainPath `
+                --eval $evalPath `
+                --holdout $holdoutPath `
+                --samples-root (Join-Path $env:GITHUB_WORKSPACE 'company-learning\training-samples')
+              if ($LASTEXITCODE -ne 0) { throw "real verified platform dataset gate failed for $taskType" }
+              Write-Host "PLATFORM_TRAINING_AUTHORITY=$taskType:VERIFIED_PRODUCTION_EVIDENCE_ONLY"
+              Write-Host "PLATFORM_SYNTHETIC_TRAINING=$taskType:NO"
+            }
+
+            $selectionJson = node tools/vibe3-model-selection.mjs `
+              --task-type $taskType `
+              --method $env:TRAINING_METHOD `
+              --cuda true `
+              --vram-gib $env:CUDA_VRAM_GIB `
+              --disk-gib $env:TRAINING_DISK_GIB `
+              --enable $env:VIBE3_CODER_ENABLE `
+              --compatible $env:VIBE3_CODER_COMPATIBLE `
+              --cached $env:VIBE3_CODER_CACHED
+            if ($LASTEXITCODE -ne 0) { throw "Vibe3 model selection failed for $taskType" }
+            $selection = $selectionJson | ConvertFrom-Json
+            $baseModel = [string]$selection.model
+            Write-Host "VIBE3_MODEL_TIER=$($selection.tier) TASK=$taskType MODEL=$baseModel"
+            if ($selection.upgraded -eq $true) { Write-Host 'VIBE3_CODER_UPGRADE=YES' } else { Write-Host "VIBE3_CODER_UPGRADE=NO reasons=$($selection.reasons -join ',')" }
+
+            $adapterDir = Join-Path $env:LOCAL_TRAINING_ROOT ("adapters\$taskType\$adapterVersion")
+            if (Test-Path $adapterDir) { Remove-Item $adapterDir -Recurse -Force }
+            New-Item -ItemType Directory -Path $adapterDir -Force | Out-Null
+
+            python tools/vibe2-train.py `
+              --train $trainPath `
+              --eval $evalPath `
+              --dataset-manifest $manifestPath `
+              --output $adapterDir `
+              --adapter-version $adapterVersion `
+              --task-type $taskType `
+              --method $env:TRAINING_METHOD `
+              --base-model $baseModel
+            if ($LASTEXITCODE -ne 0) { throw "adapter training failed for $taskType" }
+
+            $metadataPath = Join-Path $adapterDir 'training-metadata.json'
+            if (-not (Test-Path $metadataPath)) { throw "training metadata missing for $taskType" }
+            $metadata = [System.IO.File]::ReadAllText($metadataPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+            if ($metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) {
+              throw "fresh adapter must remain unverified for $taskType"
+            }
+            if ($isPlatformTask -and $metadata.verifiedRealOnly -ne $true) {
+              throw "$taskType adapter must be marked verified-real-only"
+            }
+            $runtimeItems += [pscustomobject]@{
+              taskType = $taskType
+              adapterVersion = $adapterVersion
+              method = $env:TRAINING_METHOD
+              baseModel = $baseModel
+              modelTier = [string]$selection.tier
+              localAdapterPath = $adapterDir
+              datasetManifest = $manifestPath
+              promotionState = 'UNVERIFIED'
+              runtimePromotionAllowed = $false
+              requiredNextGate = 'FIXED_HOLDOUT_AB_AND_CANARY'
+            }
+          }
+
+          $runtime = [ordered]@{
+            version = 2
+            requestId = $env:REQUEST_ID
+            state = 'TRAINED_UNVERIFIED'
+            trainedAt = (Get-Date).ToUniversalTime().ToString('o')
+            runner = $env:RUNNER_NAME
+            items = $runtimeItems
+            hostedTraining = $false
+            paidApi = $false
+            vibe3CapabilityGatedModelSelection = $true
+            nextGate = 'FIXED_HOLDOUT_AB_AND_CANARY'
+          }
+          $runtimePath = Join-Path $env:LOCAL_TRAINING_ROOT 'latest-training-runtime.json'
+          $runtime | ConvertTo-Json -Depth 12 | Set-Content $runtimePath -Encoding utf8
+          Write-Host "[PASS] trained adapters remain UNVERIFIED: $runtimePath"
+
+      - name: Training summary
+        if: always()
+        run: |
+          Write-Host "REQUEST_ID=$env:REQUEST_ID"
+          Write-Host "GITHUB_HOSTED_MODEL_TRAINING=NO"
+          Write-Host "PAID_API=NO"
+          Write-Host "VIBE3_CAPABILITY_GATED_MODEL_SELECTION=YES"
+          Write-Host "AUTO_PROMOTION=NO"
+          Write-Host "NEXT_GATE=FIXED_HOLDOUT_AB_AND_CANARY"
+) { throw "verified dataset fingerprint required for $taskType" }
+            if ([string]$manifest.datasetSha256 -ne [string]$item.datasetSha256) {
+              throw "training dataset changed after request for $taskType; require fresh canonical distillation"
+            }
 
             if ($isPlatformTask) {
               node tools/vibe2-real-platform-dataset-gate.mjs `
