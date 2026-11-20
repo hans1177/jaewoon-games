@@ -137,13 +137,13 @@ jobs:
             if [ -n "$changed" ]; then
               while IFS= read -r changed_file; do
                 case "$changed_file" in
-                  roblox-games/mare-essentia/assets/people/*|roblox-games/mare-essentia/src/StarterPlayer/LookApply.client.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-villagers.json)
+                  roblox-games/mare-essentia/assets/people/*|roblox-games/mare-essentia/src/StarterPlayer/LookApply.client.luau|roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-villagers.json)
                     candidate=PEOPLE ;;
                   roblox-games/mare-essentia/assets/naval/*|roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Ships.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json)
                     candidate=SHIPS ;;
                   roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-menus.json)
                     candidate=MENUS ;;
-                  roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau|roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldMotion.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-motionlab.json)
+                  roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldMotion.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-motionlab.json)
                     candidate=MOTION ;;
                   *) candidate=FULL ;;
                 esac
