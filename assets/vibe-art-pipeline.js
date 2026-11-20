@@ -501,21 +501,56 @@ export function createVibeAssetRecompositionPlan({
     }
   }
   const observations=Array.isArray(verifiedObservations)?verifiedObservations:[];
-  // [실패 학습 차단] 관측 기록은 정확한 부모·조리법에 결합된 경우에만 참조한다.
-  const evidence=observations.filter(row=>recipes.some(recipe=>recipe.id===clean(row?.recipeId)
-    &&recipe.baseAssetId===clean(row?.parentAssetId))
-    &&row?.independentQaPassed===true&&row?.runtimeObserved===true
-    &&row?.rightsVerified===true&&row?.sourceAndOutputHashesVerified===true
-    &&/^[a-f0-9]{40}$/i.test(clean(row?.sourceRevision))
-    &&/^[a-f0-9]{64}$/i.test(clean(row?.outputSha256)));
+  // [재조합 학습] 정확한 레시피·부모·도너·플랫폼·해시를 검증하고 재전송 중복을 제거한다.
+  // 기존 원본의 성공·실패 전후 비교는 다음 연습 순서만 바꾼다. 파일 생성/승격 판정에는 사용하지 않는다.
+  const observedKeys=new Set();
+  const evidence=observations.filter(row=>{
+    const recipe=recipes.find(candidate=>candidate.id===clean(row?.recipeId)
+      &&candidate.baseAssetId===clean(row?.parentAssetId));
+    if(!recipe||row?.independentQaPassed!==true||row?.runtimeObserved!==true
+      ||row?.rightsVerified!==true||row?.sourceAndOutputHashesVerified!==true
+      ||!/^[a-f0-9]{40}$/i.test(clean(row?.sourceRevision))
+      ||!/^[a-f0-9]{64}$/i.test(clean(row?.outputSha256)))return false;
+    if(row?.gameId!=null&&clean(row.gameId)!==clean(gameId))return false;
+    if(row?.platform!=null&&clean(row.platform).toUpperCase()!==platform)return false;
+    if(row?.donorAssetId!=null&&clean(row.donorAssetId)!==recipe.donorAssetId)return false;
+    if(row?.baseSourceSha256!=null&&clean(row.baseSourceSha256).toLowerCase()!==recipe.parentHashes[0])return false;
+    if(row?.donorSourceSha256!=null&&clean(row.donorSourceSha256).toLowerCase()!==recipe.parentHashes[1])return false;
+    const key=[recipe.id,clean(row.sourceRevision),clean(row.outputSha256)].join('|');
+    if(observedKeys.has(key))return false;
+    observedKeys.add(key);return true;
+  });
+  const recipeFeedback=Object.freeze(recipes.map(recipe=>{
+    const records=evidence.filter(row=>clean(row.recipeId)===recipe.id);
+    const passed=records.filter(row=>clean(row.outcome).toUpperCase()==='PASS'&&row?.nativeRuntimeVerified===true).length;
+    const failed=records.filter(row=>clean(row.outcome).toUpperCase()==='FAIL').length;
+    const scored=records.filter(row=>row?.beforeScore!=null&&row?.afterScore!=null
+      &&Number.isFinite(Number(row.beforeScore))&&Number.isFinite(Number(row.afterScore))
+      &&Number(row.beforeScore)>=0&&Number(row.beforeScore)<=100
+      &&Number(row.afterScore)>=0&&Number(row.afterScore)<=100);
+    const delta=scored.length?Number((scored.reduce((sum,row)=>
+      sum+Number(row.afterScore)-Number(row.beforeScore),0)/scored.length).toFixed(2)):null;
+    // 검증된 실패 회피 + 우수한 후보 재검증을 우선한다. 0개인 후보도 계속 탐색 대상으로 둔다.
+    const priorityScore=Number((records.length?35:60)+(passed*15)-(failed*30)
+      +(delta??0)).toFixed(2);
+    return Object.freeze({recipeId:recipe.id,observations:records.length,
+      runtimePassReferences:passed,verifiedFailureReferences:failed,
+      scoredComparisons:scored.length,meanQualityDelta:delta,priorityScore,
+      productionFileVerified:false,canonicalLearningAccepted:false});
+  }));
+  const rankedRecipeIds=Object.freeze([...recipeFeedback].sort((a,b)=>
+    b.priorityScore-a.priorityScore||a.recipeId.localeCompare(b.recipeId)).map(row=>row.recipeId));
   return Object.freeze({
-    version:1,kind:'VIBE_ASSET_COMPONENT_RECOMPOSITION',gameId:clean(gameId)||null,
+    version:2,kind:'VIBE_ASSET_COMPONENT_RECOMPOSITION',gameId:clean(gameId)||null,
     platform,request:requestedText.slice(0,180),families:Object.freeze(Object.keys(VIBE_RECOMPOSITION_FAMILIES)),
     inspectedCount:assets.length,approvedCount:approved.length,rejectedCount:rejected.length,
     approvedParents:Object.freeze(approved),rejectedParents:Object.freeze(rejected),
-    recipes:Object.freeze(recipes),verifiedObservations:Object.freeze(evidence.map(row=>Object.freeze({
+    recipes:Object.freeze(recipes),recipeFeedback,rankedRecipeIds,
+    nextPracticeRecipeId:rankedRecipeIds[0]||null,
+    verifiedObservations:Object.freeze(evidence.map(row=>Object.freeze({
       recipeId:clean(row.recipeId),outputSha256:clean(row.outputSha256),
-      sourceRevision:clean(row.sourceRevision)
+      sourceRevision:clean(row.sourceRevision),
+      outcome:['PASS','FAIL'].includes(clean(row.outcome).toUpperCase())?clean(row.outcome).toUpperCase():'OBSERVED_ONLY'
     }))),
     rejectedOrUnanchoredObservations:observations.length-evidence.length,
     incumbentAlgorithms:Object.freeze(['EXISTING_BLENDER_KITBASH','EXISTING_MOTION_RETARGET',
@@ -525,7 +560,7 @@ export function createVibeAssetRecompositionPlan({
     externalDistillationOwner:'tools/vibe2-external-ai-distillation.mjs',
     noNewQueueOrPipeline:true,
     noOriginalOverwrite:true,gameplayAndSavePreserved:true,
-    verifiedObservationIsNotModelTraining:true,
+    verifiedObservationIsNotModelTraining:true,feedbackChangesPracticeOrderOnly:true,
     automaticModelWeightUpdate:false,
     runtimeQaAndOwnerReviewStillRequired:true,
     status:recipes.length?'RECIPES_PENDING_NATIVE_AUTHORING_AND_RUNTIME_QA':
