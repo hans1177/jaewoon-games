@@ -1580,8 +1580,8 @@ test('경제 시설 증축 연출은 발전 시에만 실행되고 재입항과 
 });
 
  
-// [주민 직업 실물 소지품] 31개 경제 직업 각각 등록된 입체 도구 1개와 모바일 거리 해제를 검증한다.
-test('항구 31개 직업은 등록된 실물 장비를 직접 R15에 착용하고 저상세에서만 숨긴다',()=>{
+// [주민 직업 실물 소지품] 35개 실사용 직업 각각 등록된 입체 도구 1개와 모바일 거리 해제를 검증한다.
+test('항구 35개 직업은 등록된 실물 장비를 직접 R15에 착용하고 저상세에서만 숨긴다',()=>{
  const pose=read('ReplicatedStorage/Shared/Pose.luau');
  const assetIds=read('ReplicatedStorage/Shared/AssetIds.luau');
  const loader=read('ServerScriptService/AssetLoader.server.luau');
@@ -1592,16 +1592,18 @@ test('항구 31개 직업은 등록된 실물 장비를 직접 R15에 착용하�
  const jobs=[...professions.matchAll(/\b([a-z_]+)\s*=\s*"(?:worker|artisan|sailor|guard|official)"/g)].map(match=>match[1]);
  const tools=[...equipment.matchAll(/\b([a-z_]+)\s*=\s*\{\s*"((?:Relics|Cargo)\/[^"]+)"/g)]
   .map(match=>({job:match[1],asset:match[2]}));
- assert.equal(jobs.length,31,'기존 직업 31종 보존');
- assert.equal(tools.length,jobs.length,'31직업 장비 누락 불가');
- assert.equal(new Set(tools.map(row=>row.job)).size,31,'중복 직업 장비 매핑 금지');
- assert.ok(new Set(tools.map(row=>row.asset)).size>=20,'실물 원본 모델 다양성');
+ assert.equal(jobs.length,35,'기존 직업 35종 보존');
+ assert.equal(tools.length,jobs.length,'35직업 장비 누락 불가');
+ assert.equal(new Set(tools.map(row=>row.job)).size,35,'중복 직업 장비 매핑 금지');
+ assert.ok(new Set(tools.map(row=>row.asset)).size>=21,'실물 원본 모델 다양성');
  for(const job of jobs)assert.ok(tools.some(row=>row.job===job),'장비 없는 주민 직업: '+job);
  for(const {asset} of tools){
   assert.ok(assetIds.includes('["'+asset+'"]'),'등록되지 않은 장비: '+asset);
   assert.ok(loader.includes('["'+asset+'"] = true'),'기존 인입 큐에서 누락: '+asset);
  }
  assert.match(pose,/NPC_PROFESSION_GEAR\[profession\]/);
+ assert.match(pose,/outfit\.profession == "clergy" then/);
+ assert.match(pose,/look = "companion_clergy"/);
  assert.match(pose,/AssetIds\[jobGear\[1\]\]/);
  assert.match(pose,/sourceGroup = if jobProp then shelf and shelf:FindFirstChild\(propGroup\) else people/);
  assert.match(pose,/model:FindFirstChild\(slotName\)/);
