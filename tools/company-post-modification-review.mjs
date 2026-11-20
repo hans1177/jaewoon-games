@@ -71,6 +71,8 @@ if(role!=='director'){
     request:{
       requestId,gameId,modificationCommit:req.modificationCommit||'',buildRunId:req.buildRunId||null,
       buildConclusion:req.buildConclusion||'unknown',buildStage:req.buildStage||'',buildError:req.buildError||'',scope:req.scope||'',
+      changedFiles:Array.isArray(req.changedFiles)?req.changedFiles:[],
+      audioPlaybackEvidence:Array.isArray(req.audioPlaybackEvidence)?req.audioPlaybackEvidence:[],
       runtimeEvidence
     },
     department:role,

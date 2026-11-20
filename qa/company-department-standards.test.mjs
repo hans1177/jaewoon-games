@@ -133,16 +133,46 @@ test('post modification review workflow runs only canonical five roles and keeps
   assert.ok(getDepartmentStandard('qa').requiredChecks.some(x=>x.includes('드롭률')));
 });
 
-test('audio source modification needs real runtime sound evidence before a PASS',()=>{
+test('audio source modification needs a revision-bound non-silent playback capture before PASS',()=>{
   const evidence=['audio.js 포격 효과음 재생 이벤트와 SFX 타이밍 확인'];
-  const request={scope:'audio.js SFX playback change'};
+  const request={scope:'audio.js SFX playback change',gameId:'sea-game',modificationCommit:'a'.repeat(40)};
   const pending=evaluateDepartmentEvidence({role:'audio',evidence,request});
   assert.equal(pending.passed,false);
   assert.equal(pending.runtimeRequired,true);
-  assert.ok(pending.blockerCodes.includes('RUNTIME_PLAY_EVIDENCE_REQUIRED'));
-  const verified=evaluateDepartmentEvidence({role:'audio',evidence,request:{...request,playTestEvidence:['포격 1회 입력 → 효과음 1회 재생 런타임 확인']}});
+  assert.ok(pending.blockerCodes.includes('AUDIO_PLAYBACK_CAPTURE_REQUIRED'));
+
+  // 일반 실행 기록이나 텍스트 설명은 실제 재생 캡처를 대체할 수 없다.
+  const smokeOnly=evaluateDepartmentEvidence({role:'audio',evidence,request:{
+    ...request,runtimeSmokePassed:true,
+    playTestEvidence:['포격 1회 입력 → 효과음 1회 재생 런타임 확인']
+  }});
+  assert.equal(smokeOnly.passed,false);
+  assert.ok(smokeOnly.blockerCodes.includes('AUDIO_PLAYBACK_CAPTURE_REQUIRED'));
+
+  const capture={gameId:'sea-game',sourceRevision:'a'.repeat(40),runId:123,
+    eventId:'cannon-fire',playbackCount:1,nonSilentFrames:32,
+    captureArtifact:'audio/cannon-fire.wav',artifactSha256:'b'.repeat(64),result:'PASS'};
+  for(const invalid of [
+    {...capture,sourceRevision:'c'.repeat(40)},
+    {...capture,nonSilentFrames:0},
+    {...capture,captureArtifact:'../false.wav'},
+    {...capture,artifactSha256:''}
+  ]){
+    const rejected=evaluateDepartmentEvidence({role:'audio',evidence,request:{
+      ...request,audioPlaybackEvidence:[invalid]}});
+    assert.equal(rejected.passed,false);
+  }
+  const verified=evaluateDepartmentEvidence({role:'audio',evidence,request:{
+    ...request,audioPlaybackEvidence:[capture]}});
   assert.equal(verified.passed,true);
-  assert.equal(verified.runtimeEvidence.length,1);
-  const unrelated=evaluateDepartmentEvidence({role:'audio',evidence:['오디오 영향 없음: GameCore.cs만 수정'],request:{scope:'GameCore.cs null guard'}});
+  assert.equal(verified.audioPlaybackCaptureCount,1);
+
+  // 수정 파일이 음원이라면 요청 설명에 오디오가 없어도 검증을 강제한다.
+  const changedFile=evaluateDepartmentEvidence({role:'audio',evidence:['음원 변경 확인'],request:{
+    ...request,scope:'presentation update',changedFiles:['Assets/Audio/hit.ogg']}});
+  assert.equal(changedFile.passed,false);
+  assert.ok(changedFile.blockerCodes.includes('AUDIO_PLAYBACK_CAPTURE_REQUIRED'));
+  const unrelated=evaluateDepartmentEvidence({role:'audio',
+    evidence:['오디오 영향 없음: GameCore.cs만 수정'],request:{scope:'GameCore.cs null guard'}});
   assert.equal(unrelated.passed,true);
 });
