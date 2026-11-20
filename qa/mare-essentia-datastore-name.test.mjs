@@ -1469,15 +1469,17 @@ test('주거·항만·공방·행정·시장 장식은 실제 신규 단계에�
 test('마을 7개 시설은 승인된 건축물과 업종별 실물 구조로 구분한다',()=>{
  const scene=read('ReplicatedStorage/Shared/PortScene.luau');
  const ids=read('ReplicatedStorage/Shared/AssetIds.luau');
+ const client=read('StarterPlayer/Game.client.luau');
  const start=scene.indexOf('-- 시설 건물: { 이름, 탭, 위치, 크기, 벽색 }');
  const end=scene.indexOf('-- 조선소:', start);
  assert.ok(start>=0&&end>start,'기존 시설 건물 배치 영역');
  const facilities=scene.slice(start,end);
  for(const [name,tab] of [
-  ['교역소','trade'],['주점','quest'],['항만청','route'],['은행','harbor'],
-  ['상인 길드','trade'],['학자의 서재','tech'],['도서관 (도감)','codex']
+  ['교역소','trade'],['주점','board'],['항만청','route'],['은행','harbor'],
+  ['상인 길드','market'],['학자의 서재','tech'],['도서관 (도감)','codex']
  ]) {
-  assert.ok(facilities.includes('name = "'+name+'", tab = "'+tab+'"'),name+' 기존 시설 탭');
+  assert.ok(facilities.includes('name = "'+name+'", tab = "'+tab+'"'),name+' 현재 시설 탭');
+  assert.ok(client.includes('{ id = "'+tab+'", name = '),name+' 연결 탭이 실제 메뉴에 존재해야 함');
   assert.ok(facilities.includes('f.name == "'+name+'"'),name+' 독립된 건축 외관');
  }
  assert.match(facilities,/signatureAsset = if localArchitecture then nil/);
