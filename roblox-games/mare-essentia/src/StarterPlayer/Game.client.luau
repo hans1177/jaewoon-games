@@ -11168,6 +11168,10 @@ H.TAB_ICON = {
 	status = { "Glyph", "captain" }, crew = { "Glyph", "crew" },
 }
 function H.renderTabs()
+	-- [시설 아이콘 동작] 기존 탭 아이콘에만 터치 선택·마우스 반응을 적용한다.
+	-- 매 프레임 갱신이나 무한 반복은 사용하지 않아 모바일 배터리·입력 성능을 유지한다.
+	local motionService = game:GetService("TweenService")
+	local motionSettings = game:GetService("GuiService")
 	-- [시설 탭 재사용] 같은 시설 안에서 이동할 때 아이콘·원화를 다시 생성하지 않는다.
 	-- 소속 시설이 바뀌거나 버튼이 없을 때에만 기존 생성 경로를 사용한다.
 	local g = groupOf(currentTab)
@@ -11210,6 +11214,13 @@ function H.renderTabs()
 				end
 				local underline = b:FindFirstChild("ActiveTabRule")
 				if underline then underline.Visible = selected end
+				local icon = b:FindFirstChild("TabIcon")
+				local iconScale = icon and icon:FindFirstChild("TabIconScale")
+				if selected and iconScale and not motionSettings.ReducedMotionEnabled then
+					motionService:Create(iconScale, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, true), {
+						Scale = 1.15,
+					}):Play()
+				end
 				local hint = b:FindFirstChild("FacilityTabHint")
 				if hint then hint.TextColor3 = if selected then INK_SOFT else Color3.fromRGB(238, 218, 183) end
 			end
@@ -11241,6 +11252,31 @@ function H.renderTabs()
 			icon.ClipsDescendants = true
 			icon.ZIndex = b.ZIndex + 2
 			icon.Parent = b
+			-- [아이콘 일관성] 원화 아틀라스와 기존 황동 도형 모두 같은 15% 선택 확대를 쓴다.
+			-- UIScale은 버튼의 클릭 영역·스크롤 탭 크기·원본 이미지 자산을 바꾸지 않는다.
+			local iconScale = Instance.new("UIScale")
+			iconScale.Name = "TabIconScale"
+			iconScale.Scale = 1
+			iconScale.Parent = icon
+			b.MouseEnter:Connect(function()
+				if not motionSettings.ReducedMotionEnabled then
+					motionService:Create(iconScale, TweenInfo.new(0.16, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+						Scale = 1.1,
+					}):Play()
+				end
+			end)
+			b.MouseLeave:Connect(function()
+				if iconScale.Parent then
+					motionService:Create(iconScale, TweenInfo.new(0.18, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+						Scale = 1,
+					}):Play()
+				end
+			end)
+			if selected and not motionSettings.ReducedMotionEnabled then
+				motionService:Create(iconScale, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, true), {
+					Scale = 1.15,
+				}):Play()
+			end
 			local pad = Instance.new("UIPadding")
 			pad.PaddingLeft = UDim.new(0, 35)
 			pad.Parent = b
