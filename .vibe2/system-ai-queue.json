@@ -122859,7 +122859,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -122893,7 +122893,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 33,
-      "previousReservationId": "system-ai:44795658011:1",
+      "previousReservationId": "system-ai:44802283155:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -122901,12 +122901,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44802283155:1",
-      "reservedAt": "2026-11-20T19:34:03.180Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -126417,7 +126417,8 @@
         "actions-run:44787218345",
         "system-ai-handoff-to-reservation:system-ai:44795658011:1",
         "system-ai-handoff-from-reservation:system-ai:44795658011:1",
-        "system-ai-handoff-to-reservation:system-ai:44802283155:1"
+        "system-ai-handoff-to-reservation:system-ai:44802283155:1",
+        "actions-run:44802283155"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 402,
@@ -126432,7 +126433,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-20T19:34:03.180Z"
+      "updatedAt": "2026-11-20T19:41:53.984Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -155754,7 +155755,7 @@
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -155788,7 +155789,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 7,
-      "previousReservationId": "system-ai:44766600996:1",
+      "previousReservationId": "system-ai:44802283155:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -155796,12 +155797,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44802283155:1",
-      "reservedAt": "2026-11-20T19:34:03.180Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -156104,7 +156105,8 @@
         "system-ai-handoff-from-reservation:system-ai:44747482662:1",
         "system-ai-handoff-to-reservation:system-ai:44766600996:1",
         "actions-run:44766600996",
-        "system-ai-handoff-to-reservation:system-ai:44802283155:1"
+        "system-ai-handoff-to-reservation:system-ai:44802283155:1",
+        "actions-run:44802283155"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1834,
@@ -156119,7 +156121,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-20T19:34:03.180Z"
+      "updatedAt": "2026-11-20T19:41:53.984Z"
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
