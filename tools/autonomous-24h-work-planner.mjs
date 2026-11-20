@@ -199,6 +199,10 @@ export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},qu
 }
 
 export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={games:[]},diagnostics={},queueState={version:2,attempts:[]},impactHistory={version:1,entries:[]},date=kstDate(),filesystem=fs,priorityGameId='',now=new Date(),isSourceReleased=()=>false}={}){
+  // [현재 정식 5부서] 계획·실행·검증에서 동일한 오디오 포함 역할을 사용한다.
+  const departmentReviewRoles=['planning','graphics','development','qa','audio'];
+  const implementationRoles=departmentReviewRoles.filter(role=>role!=='planning');
+  const departmentSequence=[...departmentReviewRoles,'planning-final'];
   const active=activeReservations(queueState,{now,isSourceReleased});
   const activeGameIds=new Set(active.map(row=>row.gameId)),activeSourcePaths=new Set(active.map(row=>clean(row.sourcePath)).filter(Boolean));
   const urgentProjects=(portfolio?.projects??[]).filter(project=>!activeGameIds.has(project.id)&&!activeSourcePaths.has(clean(project.sourcePath))&&Boolean(runtimeIncident(health,project.slug)));
@@ -226,7 +230,7 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
     const fallback=buildAutonomousWorkOrder({portfolio,artbooks,health,catalog,diagnostics,queueState:{version:1,attempts:[]},date,filesystem,priorityGameId});
     const fallbackProject=(portfolio?.projects??[]).find(project=>project.id===fallback?.gameId);
     if(classPolicyEnabled&&fallbackProject&&classOf(fallbackProject,catalog)===PRODUCTION_CLASSES.DESIGN_ONLY)return {run:false,reason:'DESIGN_ONLY',date,gameId:fallbackProject.id,productionClass:PRODUCTION_CLASSES.DESIGN_ONLY,continuous24h:{enabled:true,mode:'DESIGN_ONLY_ARTBOOK'}};
-    return {...fallback,workLane:fallback.run?'FULL':null,departmentReviewRoles:fallback.run?['planning','development','graphics','qa','balance']:[],implementationRoles:fallback.run?['development','graphics','qa','balance']:[],continuous24h:{enabled:true,mode:'RECOVERY_FALLBACK',dailyCap:null,sameGameDailyCap:null}};
+    return {...fallback,workLane:fallback.run?'FULL':null,departmentReviewRoles:fallback.run?[...departmentReviewRoles]:[],implementationRoles:fallback.run?[...implementationRoles]:[],continuous24h:{enabled:true,mode:'RECOVERY_FALLBACK',dailyCap:null,sameGameDailyCap:null}};
   }
   const target=selected.project,optionalWebTestbed=selected.projectLane==='DEVELOPMENT_CONFIRMED_OPTIONAL_WEB_TESTBED';
   const forcedProject={...target,productionClass:PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED,profileStatus:'DEVELOPMENT_CONFIRMED',mode:optionalWebTestbed?'OPTIONAL_WEB_GAMEPLAY_TESTBED':'IMPROVE'};
@@ -239,8 +243,8 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
     order.selectedReason='DEVELOPMENT_CONFIRMED_OPTIONAL_WEB_TESTBED';
     order.goal=`[OPTIONAL_WEB_GAMEPLAY_TESTBED] Web은 선택사항 게임플레이 테스트베드다. 핵심 루프가 실제로 플레이되는 가장 작은 검증만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. Web 결과는 선택 플랫폼 기술·게임플레이 검증을 대체하거나 플랫폼 선택을 강제하지 않는다. ${order.goal}`.slice(0,2400);
   }else order.selectedReason=selected.explicitPriority?'FOCUSED_ARTBOOK_PRIORITY_HANDOFF':'FOCUSED_CONTINUOUS_DEVELOPMENT';
-  order.workLane='FULL';order.departmentReviewRoles=['planning','development','graphics','qa','balance'];order.implementationRoles=['development','graphics','qa','balance'];order.planningFinalMode='AI_FULL';
-  order.continuous24h={enabled:true,mode:optionalWebTestbed?'DEVELOPMENT_CONFIRMED_OPTIONAL_WEB_TESTBED':'FOCUSED_ARTBOOK_DEPARTMENT_LOOP',maxFocusedGames:Number(portfolio?.developmentFocusPolicy?.maxFocusedGames||1),focusedGameIds:selected.focusedGameIds||[],focusedPlatforms:selected.focusedPlatforms||{},nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],selection:optionalWebTestbed?'AUTO_OPTIONAL_WEB_TESTBED_LOW_IMPACT_PENALTY_THEN_SCORE_THEN_LEAST_KST_ATTEMPTS':'AUTO_SELECTED_PLATFORM_READY_THEN_SCORE',selectedGameAttemptsToday:selected.attemptsToday,impactPriorityPenalty:selected.impactPriorityPenalty||0,lowImpactStreak:selected.lowImpactStreak||0,impactPriorityPenalties:selected.impactPriorityPenalties||{},activeGameIds:selected.activeGameIds||[],sourceRootLock:'ACTIVE_RESERVATION_LEASE',departmentSequence:['planning','development','graphics','qa','balance','planning-final'],recoveryWakeup:'HOURLY'};
+  order.workLane='FULL';order.departmentReviewRoles=[...departmentReviewRoles];order.implementationRoles=[...implementationRoles];order.planningFinalMode='AI_FULL';
+  order.continuous24h={enabled:true,mode:optionalWebTestbed?'DEVELOPMENT_CONFIRMED_OPTIONAL_WEB_TESTBED':'FOCUSED_ARTBOOK_DEPARTMENT_LOOP',maxFocusedGames:Number(portfolio?.developmentFocusPolicy?.maxFocusedGames||1),focusedGameIds:selected.focusedGameIds||[],focusedPlatforms:selected.focusedPlatforms||{},nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],selection:optionalWebTestbed?'AUTO_OPTIONAL_WEB_TESTBED_LOW_IMPACT_PENALTY_THEN_SCORE_THEN_LEAST_KST_ATTEMPTS':'AUTO_SELECTED_PLATFORM_READY_THEN_SCORE',selectedGameAttemptsToday:selected.attemptsToday,impactPriorityPenalty:selected.impactPriorityPenalty||0,lowImpactStreak:selected.lowImpactStreak||0,impactPriorityPenalties:selected.impactPriorityPenalties||{},activeGameIds:selected.activeGameIds||[],sourceRootLock:'ACTIVE_RESERVATION_LEASE',departmentSequence,recoveryWakeup:'HOURLY'};
   order.queue={...(order.queue||{}),attemptsToday:attemptsForDate(queueState,date).length,maxDaily:null,remainingBeforeSelection:null};
   order.evidence={...(order.evidence||{}),continuous24hOriginalProfile:originalProfile,developmentFocus:{score:focusTotal(target),focusedGameIds:selected.focusedGameIds||[],focusedPlatforms:selected.focusedPlatforms||{},nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],optionalWebTestbed,autoRotate:true,impactPriorityPenalty:selected.impactPriorityPenalty||0,lowImpactStreak:selected.lowImpactStreak||0}};
   return order;
