@@ -1685,6 +1685,28 @@ test('motion LOD reduces presentation layers but preserves hit semantics',()=>{
   assert.equal(far.gameplayHitAndCollisionUnaffected,true);
 });
 
+// [모바일 모션] 거리 경계 진동을 표현 계층에서만 줄여준다.
+test('motion LOD stabilizes distance thresholds without dropping critical gameplay response',()=>{
+  const retainNear=selectMotionLod({cameraDistance:13,combatRelevant:false,
+    actorImportance:'STANDARD',previousTier:'NEAR',deviceClass:'MOBILE'});
+  assert.equal(retainNear.tier,'NEAR');
+  const retainMid=selectMotionLod({cameraDistance:11,combatRelevant:false,previousTier:'MID'});
+  assert.equal(retainMid.tier,'MID');
+  const retainFar=selectMotionLod({cameraDistance:34,combatRelevant:false,previousTier:'FAR'});
+  assert.equal(retainFar.tier,'FAR');
+  const upgrade=selectMotionLod({cameraDistance:28,combatRelevant:false,
+    previousTier:'FAR',blendSeconds:.3});
+  assert.equal(upgrade.tier,'MID');
+  assert.equal(upgrade.transition.changed,true);
+  assert.equal(upgrade.transition.blendSeconds,.3);
+  assert.equal(upgrade.transition.gameplayEventTimingUnchanged,true);
+  const boss=selectMotionLod({cameraDistance:50,actorImportance:'BOSS',previousTier:'FAR'});
+  assert.equal(boss.tier,'NEAR');
+  const offscreen=selectMotionLod({visible:false,actorImportance:'BOSS',previousTier:'NEAR'});
+  assert.equal(offscreen.tier,'OFFSCREEN');
+  assert.equal(offscreen.gameplayHitAndCollisionUnaffected,true);
+});
+
 test('motion lineage tracks parent source and verification evidence',()=>{
   const lineage=createMotionLineage({
     assetId:'goblin-slash-cartoon-roblox',
