@@ -98,3 +98,29 @@ test('verified local trainer gives difficult QA cases priority without dropping 
   const check=spawnSync('python3',['-c',script],{encoding:'utf8'});
   assert.equal(check.status,0,check.stderr||check.error?.message||'Python curriculum test failed');
 });
+
+test('검증된 실제 샘플 SHA가 바뀌면 자동 재훈련 요청도 새 버전으로 생성된다',()=>{
+  const task={ready:true,accepted:40,train:28,eval:6,holdout:6,distinctProjects:3,
+    batchingPass:true,diversityPass:true,contaminationPass:true,taskPlanReady:true,
+    datasetSha256:'a'.repeat(64)};
+  const first=buildTrainingRequest(status({readyTasks:['coding'],state:'READY_TASKS_AVAILABLE',tasks:{coding:task}}));
+  const unchanged=buildTrainingRequest(status({readyTasks:['coding'],state:'READY_TASKS_AVAILABLE',tasks:{coding:{...task}}}));
+  const changed=buildTrainingRequest(status({readyTasks:['coding'],state:'READY_TASKS_AVAILABLE',tasks:{coding:{...task,datasetSha256:'b'.repeat(64)}}}));
+  assert.equal(first.requestId,unchanged.requestId);
+  assert.notEqual(first.requestId,changed.requestId);
+  assert.notEqual(first.requests[0].adapterVersion,changed.requests[0].adapterVersion);
+  assert.equal(first.requests[0].datasetSha256,task.datasetSha256);
+  assert.equal(first.execution.route,'LOCAL_SELF_HOSTED_ONLY');
+  assert.equal(first.execution.githubHostedTrainingAllowed,false);
+  assert.equal(first.execution.paidApiAllowed,false);
+});
+
+test('기존 로컬 학습기가 요청-데이터셋 지문을 검증하고 가중치 승격은 금지한다',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-local-distillation-train.yml',import.meta.url),'utf8');
+  const dataset=fs.readFileSync(new URL('../tools/vibe2-weight-learning.mjs',import.meta.url),'utf8');
+  assert.match(workflow,/manifest\.datasetSha256\s+-ne\s+\[string\]\$item\.datasetSha256/);
+  assert.match(workflow,/training dataset changed after request/);
+  assert.match(dataset,/datasetSha256:datasetContentFingerprint\(dataset\)/);
+  assert.match(workflow,/runtimePromotionAllowed\s*=\s*\$false/);
+  assert.match(workflow,/AUTO_PROMOTION=NO/);
+});
