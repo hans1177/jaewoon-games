@@ -164,7 +164,12 @@ export function buildPracticeAssetCoverage(registry,repoRoot){
   for(const asset of assets){
     const info=classifyPracticeAsset(asset),fam=families[info.family]??={catalogued:0,eligible3d:0};
     fam.catalogued++;
-    const licensed=/^CC0(?:-1\.0)?$/i.test(String(asset.license||''));
+    const rightsLabel=String(asset.license||'').toUpperCase();
+    const licensed=/^CC0(?:-1\.0)?$/.test(rightsLabel)
+      ||['PROJECT-ORIGINAL','CREATED-IN-PROJECT','COMPANY-OWNED'].includes(rightsLabel)
+        &&asset.ownerRightsVerified===true&&asset.licenseVerified===true
+        &&asset.commercialUseVerified===true&&asset.derivativesAllowed===true
+        &&/^[a-f0-9]{64}$/i.test(String(asset.sourceSha256||asset.sourceHash||''));
     const approved=!asset.catalogOnly&&licensed&&!asset.securityBlocked&&!asset.quarantined&&!asset.gameUseForbidden&&
       !asset.parentSourceId&&!asset.derivedFromAssetId&&asset.catalogActive!==false&&!asset.corruptSource;
     const sources=Array.isArray(asset.sourceFiles)?asset.sourceFiles:[];
