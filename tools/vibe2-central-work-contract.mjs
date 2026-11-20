@@ -323,7 +323,7 @@ export function loadCentralPolicySnapshotFromGitRef({repoRoot=process.cwd(),poli
     cachedGitPolicy={key:cacheKey,snapshot};
     return{...snapshot,required:required===true};
   }catch(error){
-    const detail=clean(error?.stderr||error?.message||error).replace(/\\s+/g,' ').slice(0,240)||'UNKNOWN';
+    const detail=clean(error?.stderr||error?.message||error).replace(/\s+/g,' ').slice(0,240)||'UNKNOWN';
     return{
       required:required===true,present:false,valid:required!==true,path:policyPath,
       fingerprint:null,executionFingerprint:null,version:null,status:null,policySource:null,syncMode:null,
