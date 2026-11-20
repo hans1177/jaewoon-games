@@ -149,3 +149,9 @@ test('company stage review and verified experience use five active departments w
   assert.doesNotMatch(awardSource,/\n  balance: \[/);
   assert.match(postmortemSource,/graphics','audio','balance'/);
 });
+
+test('verified department XP fetches exact QA source revision and parent without whole-repo history',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/department-experience.yml',import.meta.url),'utf8');
+  assert.match(workflow,/git fetch --no-tags --depth=2 origin "\$SOURCE_SHA"/);
+  assert.match(workflow,/node tools\/award-department-experience\.mjs "\$SOURCE_SHA"/);
+});
