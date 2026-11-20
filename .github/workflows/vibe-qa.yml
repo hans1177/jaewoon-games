@@ -39,6 +39,13 @@ on:
       - 'qa/vibe-regression.mjs'
       - 'qa/vibe-*.mjs'
       - 'qa/vibe-*.test.mjs'
+      # [정식 5개 부서] 공용 배정·심사·경험치 변경 때 기존 QA를 재사용한다.
+      - 'assets/department-experience.js'
+      - 'assets/department-experience-state.js'
+      - 'assets/company-quality-bar.js'
+      - 'tools/award-department-experience.mjs'
+      - 'tools/award-postmortem-learning.mjs'
+      - 'qa/autonomous-department-integrator.test.mjs'
       - 'qa/vibe2-artbook-story-core.test.mjs'
       - 'qa/horror-escape-room-release.test.mjs'
       - 'qa/company-roblox-source-drift-sync.test.mjs'
@@ -85,6 +92,13 @@ on:
       - 'qa/vibe-regression.mjs'
       - 'qa/vibe-*.mjs'
       - 'qa/vibe-*.test.mjs'
+      # [정식 5개 부서] 공용 배정·심사·경험치 변경 때 기존 QA를 재사용한다.
+      - 'assets/department-experience.js'
+      - 'assets/department-experience-state.js'
+      - 'assets/company-quality-bar.js'
+      - 'tools/award-department-experience.mjs'
+      - 'tools/award-postmortem-learning.mjs'
+      - 'qa/autonomous-department-integrator.test.mjs'
       - 'qa/vibe2-artbook-story-core.test.mjs'
       - 'qa/horror-escape-room-release.test.mjs'
       - 'qa/company-roblox-source-drift-sync.test.mjs'
@@ -333,7 +347,10 @@ jobs:
           node --test qa/vibe-cc0-chain.test.mjs
 
       - name: Run integrated regression
-        run: node qa/vibe-regression.mjs
+        run: |
+          node qa/vibe-regression.mjs
+          # [정식 5개 부서] 기존 통합회귀 단계에서 배정·심사·경험치·과거 후보 호환을 검증한다.
+          node --test qa/autonomous-department-integrator.test.mjs
 
       - name: Check Godot common toolkit structure
         run: |
