@@ -127,6 +127,7 @@ export function planVibe59RobloxOfflineRepairs({files=[],responsiblePaths=[]}={}
 export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
   if(!Array.isArray(files)||files.length>48)throw Error('VIBE59_ROBLOX_SCAN_LIMIT');
   const owners=new Set(responsiblePaths),result=[],warnings=[],diagnostics=[],unscanned=[];
+  const handlerScopesByPath=new Map();
   const observedPaths=new Set();
   for(const file of files.slice(0,48)){
     const path=String(file?.path||''),source=file?.source;
@@ -151,7 +152,7 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       unscanned.push({path,reason:'LUAU_SOURCE_LIMIT_EXCEEDED',responsible:owners.has(path)});
       continue;
     }
-    const side=classifyVibe59RobloxScript(path),events=[],calls=[],stateEffects=[],found=new Map(),
+    const side=classifyVibe59RobloxScript(path),events=[],calls=[],stateEffects=[],handlerScopes=[],found=new Map(),
       functionDefinitions=[],functionCalls=[];
     // [루아우 정적 흐름] 긴 주석·인용 문자열·인라인 주석 속 가짜 호출은
     // 실제 Remote/저장 접근으로 오인하지 않는다. 원본 줄 위치는 유지한다.
@@ -211,7 +212,9 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
               .map(item=>item[1]))].slice(0,8);
         }
       }
-      events.push({remote:match[1],signal:match[2],line,
+      // [기존 출력 호환] 공개 events 구조는 유지하고 핸들러 분석은 내부 자료로만 추적한다.
+      events.push({remote:match[1],signal:match[2],line});
+      handlerScopes.push({remote:match[1],signal:match[2],line,
         handlerScopeComplete,handlerEndLine,
         handlerStateMethods,handlerResponseMethods});
       if(side==='CLIENT'&&match[2].startsWith('OnServer'))if(!found.has('SERVER_HANDLER_IN_CLIENT'))found.set('SERVER_HANDLER_IN_CLIENT',{code:'SERVER_HANDLER_IN_CLIENT',line});
@@ -333,6 +336,7 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
     }));
     // [권한 경고] 반복 호출은 유형별 첫 위치만 보고해 뒤에 있는 저장 오류를 가리지 않는다.
     const fileWarnings=[...found.values()].slice(0,16);
+    handlerScopesByPath.set(path,handlerScopes);
     result.push({path,side,responsible:owners.has(path),events,calls,stateEffects,
       functionDefinitions,functionCalls,warnings:fileWarnings});
     warnings.push(...fileWarnings.map(x=>({path,...x})));
@@ -383,7 +387,7 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       return Object.freeze({
         clientPath:link.path,clientLine:link.line,remote:link.remote,
         serverCandidates:Object.freeze(candidateOwners.map(row=>{
-          const handlers=row.events.filter(event=>event.remote===link.remote
+          const handlers=(handlerScopesByPath.get(row.path)||[]).filter(event=>event.remote===link.remote
             &&event.signal===link.expectedSignal);
           const scoped=handlers.filter(event=>event.handlerScopeComplete);
           return Object.freeze({
