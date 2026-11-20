@@ -480,7 +480,23 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			local low = math.min(p.Color.R, p.Color.G, p.Color.B)
 			local high = math.max(p.Color.R, p.Color.G, p.Color.B)
 			local importedWhite = low >= 0.78 and high - low <= 0.14
-			if tint then
+			-- [원본 재질 우선] 이미 텍스처/법선/거칠기/MaterialVariant를 가진 건축 메시에는
+			-- 강제 단색 Tint를 곱하지 않는다. 판넬·기와·벽화의 명암과 원래 광택을 보존한다.
+			local surfaceMap = p:FindFirstChildOfClass("SurfaceAppearance")
+			local preserveArchitectureTexture = architecture and (
+				(p:IsA("MeshPart") and p.TextureID ~= "")
+				or p.MaterialVariant ~= ""
+				or (surfaceMap and (surfaceMap.ColorMap ~= "" or surfaceMap.NormalMap ~= ""
+					or surfaceMap.RoughnessMap ~= "" or surfaceMap.MetalnessMap ~= "")))
+			if architecture and not preserveArchitectureTexture then
+				for _, mesh in p:GetChildren() do
+					if mesh:IsA("SpecialMesh") and mesh.TextureId ~= "" then
+						preserveArchitectureTexture = true
+						break
+					end
+				end
+			end
+			if tint and not preserveArchitectureTexture then
 				if kind == "Animals" then
 					-- [실물 가축 품종색] 기등록 원본 PBR/텍스처와 눈·갈기·발굽 무늬는 보존한다.
 						-- 색이 빠진 단색 몸통 메시만 부드럽게 보정해 생물별 털색을 살린다.
@@ -553,8 +569,9 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 				and p.Material ~= Enum.Material.Glass and p.Material ~= Enum.Material.Metal
 				and p.Material ~= Enum.Material.Neon then
 				local sa = p:FindFirstChildOfClass("SurfaceAppearance")
-				local textured = (p:IsA("MeshPart") and p.TextureID ~= "")
-					or (sa and sa.ColorMap ~= "")
+				local textured = preserveArchitectureTexture or (p:IsA("MeshPart") and p.TextureID ~= "")
+					or p.MaterialVariant ~= "" or (sa and (sa.ColorMap ~= ""
+					or sa.NormalMap ~= "" or sa.RoughnessMap ~= "" or sa.MetalnessMap ~= ""))
 				for _, child in p:GetChildren() do
 					if child:IsA("SpecialMesh") and child.TextureId ~= "" then textured = true end
 				end
@@ -563,7 +580,18 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					local name = (asset .. " " .. p.Name):lower()
 					local material, paint = Enum.Material.Brick, wallColor
 					if sandy or mediterranean then material = Enum.Material.Plaster end
-					if name:find("roof", 1, true) or name:find("tile", 1, true)
+					if name:find("glass", 1, true) or name:find("windowpane", 1, true)
+						or name:find("glazing", 1, true) then
+						-- [유리] 무늬가 없는 수입 흰 창만 원재질을 살린다.
+						material, paint = Enum.Material.Glass, C(194, 218, 222)
+					elseif name:find("hinge", 1, true) or name:find("iron", 1, true)
+						or name:find("metal", 1, true) or name:find("latch", 1, true) then
+						-- [철물] 경첩/문고리/철제 난간은 저반사 철제 표면.
+						material, paint = Enum.Material.Metal, C(100, 105, 108)
+					elseif name:find("awning", 1, true) or name:find("canvas", 1, true)
+						or name:find("cloth", 1, true) then
+						material, paint = Enum.Material.Fabric, if tint then tint else C(171, 125, 88)
+					elseif name:find("roof", 1, true) or name:find("tile", 1, true)
 						or name:find("gable", 1, true) or name:find("shingle", 1, true) then
 						material, paint = Enum.Material.Slate, roofColor
 						if sandy then material = Enum.Material.Plaster
@@ -586,7 +614,10 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					elseif tint then
 						paint = paint:Lerp(tint, 0.86)
 					end
-					p.Material, p.Color, p.Reflectance = material, paint, 0
+					-- [소재별 반사] 유리는 밝은 창빛, 금속은 제한적 광택. 석재·나무·천은 무광.
+					p.Material, p.Color, p.Reflectance = material, paint,
+						if material == Enum.Material.Glass then 0.045
+						elseif material == Enum.Material.Metal then 0.02 else 0
 					if sa and sa.ColorMap == "" then sa.Color = paint end
 					-- 원래 무텍스처 메시의 이중 색 곱셈을 막고 지정된 돌/벽돌 색을 그대로 표시한다.
 					for _, child in p:GetChildren() do
@@ -811,7 +842,8 @@ local function uniformMaterial(m, style, surface)
 		if p:IsA("BasePart") and p.Material ~= Enum.Material.Glass
 			and p.Material ~= Enum.Material.Metal and p.Material ~= Enum.Material.Neon then
 			local sa = p:FindFirstChildOfClass("SurfaceAppearance")
-			local textured = sa ~= nil or (p:IsA("MeshPart") and p.TextureID ~= "")
+			local textured = sa ~= nil or p.MaterialVariant ~= ""
+				or (p:IsA("MeshPart") and p.TextureID ~= "")
 			for _, ch in p:GetChildren() do
 				if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 			end
