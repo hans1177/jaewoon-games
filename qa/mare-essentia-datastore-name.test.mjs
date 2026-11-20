@@ -1655,7 +1655,7 @@ test('대항해시대 26종 PBR은 실제 원본에서 안전하게 제작되고
       const file=path.join(originals,name+'.glb'),bytes=fs.readFileSync(file);
       const proof=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
       const scene=JSON.parse(bytes.toString('utf8',20,20+bytes.readUInt32LE(12)));
-      assert.equal(proof.pbrVersion,3,'재질 제작기 강화 누락: '+name);
+      assert.equal(proof.pbrVersion,4,'재질 제작기 강화 누락: '+name);
       assert.equal(proof.sourceSha256,crypto.createHash('sha256').update(bytes).digest('hex'),'해시 오류: '+name);
       assert.ok(scene.images?.length>=3&&scene.textures?.length>=3,'PBR 세 맵 누락: '+name);
       for(const primitive of scene.meshes.flatMap(mesh=>mesh.primitives||[])){
@@ -1686,6 +1686,9 @@ test('대항해시대 주민 재질은 PBR 금속 채널과 거칠기 차이를 
   assert.match(generator,/kind==='hair'\?169:kind==='feather'\?219:113/);
   assert.match(generator,/kind==='metal'\?255:0/);
   assert.match(generator,/retouchPbr\(original,name,maps,proof\)/);
+  assert.match(generator,/proof\.pbrVersion===2\|\|proof\.pbrVersion===3/);
+  assert.match(generator,/roughVariation=kind==='fabric'\?20:kind==='leather'\?42:kind==='metal'\?37/);
+  assert.match(generator,/kind==='hair'\?31:kind==='feather'\?19:8/);
   assert.match(generator,/MARE_CHARACTER_V3_GEOMETRY_CHANGED/);
   const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
   assert.match(workflow,/roblox-games\/mare-essentia\/assets\/people\/\{outfit_\*,hair_\*,acc_\*\}\.glb\*/);
@@ -1711,7 +1714,7 @@ test('대항해시대 의상·헤어·장신구 26종은 UV/PBR 원본과 등록
     const bytes=fs.readFileSync(base);
     let proof=null;
     try{proof=JSON.parse(fs.readFileSync(base+'.license.json','utf8'));}catch{}
-    if(proof?.pbrVersion!==2 && proof?.pbrVersion!==3)continue;
+    if(![2,3,4].includes(proof?.pbrVersion))continue;
     upgraded.push(name);
     const json=JSON.parse(bytes.toString('utf8',20,20+bytes.readUInt32LE(12)));
     assert.equal(proof.sourceSizeBytes,bytes.length,'PBR 원본 크기 불일치: '+name);
@@ -1759,7 +1762,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
     assert.equal(uvProof.sourceSizeBytes,bytes.length,'원본 갱신 크기 오류: '+name);
     assert.equal(gltf.accessors.length,uvProof.originalAccessorCount+gltf.meshes[0].primitives.length);
     assert.equal(gltf.bufferViews.length,uvProof.originalBufferViewCount+gltf.meshes[0].primitives.length+(gltf.images?.length||0));
-    if(uvProof.pbrVersion===2 || uvProof.pbrVersion===3){
+    if([2,3,4].includes(uvProof.pbrVersion)){
       assert.ok(gltf.images?.length>=3,'직물·가죽·금속 실제 PNG PBR 맵 누락: '+name);
       for(const source of gltf.images){
         assert.equal(source.mimeType,'image/png','PBR 표면 PNG 형식: '+name);
