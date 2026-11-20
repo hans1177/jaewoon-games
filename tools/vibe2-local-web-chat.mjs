@@ -55,8 +55,13 @@ export function readLocalChatPolicy(root = ROOT) {
     }
     return document;
   });
-  if (docs[1].retained?.unknownOrMissingPolicy !== 'FAIL_CLOSED') throw new Error('LOG_POLICY_NOT_FAIL_CLOSED');
-  if (docs[2].constitutionalEnforcement?.mode !== 'FAIL_CLOSED') throw new Error('ARCHITECTURE_POLICY_NOT_FAIL_CLOSED');
+  // [중앙 4문서] 현행 책임 계약을 확인한다. 폐기된 retained/mode 값으로 검증을 대체하지 않는다.
+  if (docs[1].failureContract?.exactStageRequired !== true ||
+      docs[1].failureContract?.staleFailureMayNotOverrideCurrentRawState !== true)
+    throw new Error('LOG_POLICY_NOT_FAIL_CLOSED');
+  if (docs[2].constitutionalEnforcement?.mode !== 'EXECUTABLE_FAIL_CLOSED_PER_SCOPE_GLOBAL_24H_CONTINUES' ||
+      docs[2].constitutionalEnforcement?.subordinateOverrideForbidden !== true)
+    throw new Error('ARCHITECTURE_POLICY_NOT_FAIL_CLOSED');
   if (docs[3].defaultTrust !== 'DENY_OR_QUARANTINE_UNTIL_VERIFIED') throw new Error('SECURITY_POLICY_NOT_FAIL_CLOSED');
   return validateLocalWebChatPolicy(docs[0]);
 }
@@ -135,6 +140,9 @@ export async function askLocalWebModel({ messages, fetchImpl = fetch, signal = A
 }
 
 export function buildExistingOwnerWebDispatch({gameId, goal, root = ROOT, uuid = randomUUID()} = {}) {
+  // [오너 2026-11-20] 기존 웹게임 제작 접수를 중단한다. 읽기 전용 대화는 유지.
+  const policy=JSON.parse(fs.readFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),'utf8'));
+  if(policy?.localVibeWebChat?.webGameAuthoringEnabled!==true)throw new Error('LOCAL_WEB_OWNER_GAME_AUTHORING_STOPPED');
   const body = clean(goal);
   const selected = readApprovedWebGame(gameId, root);
   const catalog = JSON.parse(fs.readFileSync(path.join(root, 'game-catalog.json'), 'utf8'));
