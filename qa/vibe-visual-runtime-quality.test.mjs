@@ -677,8 +677,13 @@ test('graphics root consumes the existing family optimization work without a sec
 });
 
 test('바이브 엔진 13개 전문팀은 단일 제작 루트에서 무료 원본 검증 후에만 적용 후보를 만든다',async()=>{
-  const {VIBE_ENGINE_SPECIALISTS,createVibeEngineSpecialistPlan}=await import('../assets/vibe-art-pipeline.js');
+  const {VIBE_ENGINE_SPECIALISTS,VIBE_ENGINE_TEAMS,createVibeEngineSpecialistPlan}=await import('../assets/vibe-art-pipeline.js');
   assert.equal(VIBE_ENGINE_SPECIALISTS.length,13);
+  assert.deepEqual(VIBE_ENGINE_TEAMS.map(team=>team.id),[
+    'vibe-core','vibe-graphics','vibe-world','vibe-motion',
+    'vibe-effects','vibe-story','vibe-assets','vibe-research'
+  ]);
+  assert.equal(new Set(VIBE_ENGINE_TEAMS.flatMap(team=>team.specialists)).size,13);
   const hash='a'.repeat(64);
   const plan=createVibeEngineSpecialistPlan({
     gameId:'mare-essentia',target:'ROBLOX',request:'바이브 엔진 전체 개선',
@@ -692,6 +697,11 @@ test('바이브 엔진 13개 전문팀은 단일 제작 루트에서 무료 원�
   });
   assert.equal(plan.teams.length,13);
   assert.equal(plan.singleGraphicsRoot,true);
+  assert.equal(plan.departments.length,8);
+  assert.equal(plan.canonicalRepository,'hans1177/jaewoon-games');
+  assert.equal(plan.canonicalMain,'main');
+  assert.equal(plan.departments.every(team=>team.independentMain===false&&team.newGitHubOrganization===false),true);
+  assert.equal(plan.teams.find(team=>team.id==='ANIMATION').teamId,'vibe-motion');
   assert.equal(plan.webGameAuthoring,false);
   assert.equal(plan.freeCc0Only,true);
   assert.equal(plan.runtimeQaStillRequired,true);
