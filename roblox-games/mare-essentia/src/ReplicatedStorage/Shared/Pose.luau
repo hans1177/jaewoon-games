@@ -800,11 +800,25 @@ local NPC_REGISTERED_ACCESSORY = {
 	citizen_sailor_male = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
 	citizen_sailor_female = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
 	citizen_guard_male = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
+	citizen_guard_female = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
+	citizen_worker_female = { "acc_ribbon_bow", "Head", 0.93, 0.96, 0.95, 0.34, 0.13, -0.11 },
 	citizen_artisan_male = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	citizen_artisan_female = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
 	companion_male = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
 	companion_female = { "acc_pearl_hairpin", "Head", 0.68, 0.70, 0.72, 0.30, 0.34, -0.09 },
 }
 
+-- [직업별 장신구] 기존 등록·승인된 메시만. 비유럽·중세 복장은 보존한다.
+local NPC_PROFESSION_ACCESSORY = {
+	fisher = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
+	docker = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
+	boatswain = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
+	shipwright = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	carpenter = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	smith = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	tailor = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	merchant = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+}
 -- [직업별 실물 휴대품 35종] 기존 등록된 CC0 Relics/Cargo 자산을 주민 R15 관절에만 부착한다.
 -- 각 직업은 독립된 도구·소지품과 착용 위치를 가진다. 공격 판정·경제·저장 속성은 변경하지 않는다.
 -- 표: 원본 자산 키/관절/크기 XYZ/위치 YXZ/기울기 X(도). 미등록 자산은 장착하지 않는다.
@@ -938,8 +952,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	end
 	-- [등록·사용 권한 관문] 기존 AssetIds에 등록된 추가 액세서리만 장착 시도한다.
 	-- 등록 전에는 기등록 복식만 사용한다. 기존 프로필 표는 수정하지 않는다.
-	local accessory = npcOutfit and NPC_REGISTERED_ACCESSORY[profile]
 	local profession = npcOutfit and model:GetAttribute("AppearanceProfession")
+	local professionAccessory = detailAllowed and profession and NPC_PROFESSION_ACCESSORY[profession]
+	local accessory = professionAccessory and AssetIds["People/" .. professionAccessory[1]]
+		and professionAccessory or (npcOutfit and NPC_REGISTERED_ACCESSORY[profile])
 	local jobGear = detailAllowed and profession and NPC_PROFESSION_GEAR[profession]
 	if accessory and AssetIds["People/" .. accessory[1]] then
 		specs = table.clone(specs)
@@ -1191,6 +1207,12 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					-- 원본 금속광을 유지하되 플라스틱 같은 과한 반사는 억제한다.
 					if part.Material == Enum.Material.Metal then
 						part.Reflectance = math.min(part.Reflectance, 0.025)
+					elseif part.Material == Enum.Material.Leather then
+						-- [가죽] 원래 버클 금속을 보존하면서 부드러운 피혁광만 남긴다.
+						part.Reflectance = math.min(part.Reflectance, 0.012)
+					elseif part.Material == Enum.Material.Fabric then
+						-- [직물] 재단선과 색상은 원본 그대로, 무광 산란만 보정한다.
+						part.Reflectance = 0
 					end
 				-- [직업 실물 도구] Cargo/Relics 원본 금속·목재·직물과 PBR을 보존한다.
 				-- 기존 People 보조 스킨용 무채색 보정은 작업 도구에는 적용하지 않는다.
