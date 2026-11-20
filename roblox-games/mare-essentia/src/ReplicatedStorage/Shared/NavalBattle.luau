@@ -4181,27 +4181,28 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end
 	-- [4단계 수면 충돌] 기존 등록된 엔진 물 입자만 사용: 수면 충격 → 물기둥 → 낙하 물방울 → 잔여 거품.
 	-- 기존 단색 원기둥·구체 물보라를 생성하지 않는다. 위치·규모는 실제 포탄 착탄 좌표로 정한다.
-	function FX.splash(pos, profile, power)
+	function FX.splash(pos, profile, power, impactDir)
 		-- [4단계 수면 물보라] 큰 네모 연기판 대신 물방울·하얀 포말을 실제 착수점에서 확산한다.
 		-- 탄종/선체/침몰 물보라 강도는 기존 power 그대로 유지한다.
 		local style = profile or DEFAULT_FX
 		local theme = style.theme or FX_THEMES.europe
 		local strength = math.clamp(power or 1, 0.65, 3.2)
 		local surface = Vector3.new(pos.X, ORIGIN.Y + 0.35, pos.Z)
+		local drift = impactDir or Vector3.zero
 		-- 1차: 물속 충돌 직후 수면 양옆으로 튀는 미세 거품.
 		FX.burst(surface, nil, {
 			{ tex = "spark", c0 = Color3.fromRGB(241, 254, 255), c1 = theme.foam,
 				s0 = 0.75 * strength, s1 = 0.06, life = 0.44,
 				v0 = 7, v1 = 16 * strength, spread = 170, glow = 0.35,
 				n = if MOBILE_VFX then 8 else 16, a0 = 0.18,
-				acc = Vector3.new(0, -9, 0), drag = 4 },
+				acc = drift * 13 + Vector3.new(0, -9, 0), drag = 4 },
 		})
 		-- 2차: 세로 물기둥. 기존 함수는 낙하 운동만 시각화한다.
 		FX.waterColumn(surface, style, strength)
 		task.delay(0.20, function()
 			if finished then return end
 			-- 3차: 물기둥 꼭대기에서 중력으로 떨어지는 빛나는 물방울.
-			FX.burst(surface + Vector3.new(0, 4 * strength, 0), Vector3.new(0, 1, 0), {
+			FX.burst(surface + drift * strength + Vector3.new(0, 4 * strength, 0), Vector3.new(0, 1, 0), {
 				{ tex = "spark", c0 = Color3.fromRGB(240, 252, 255), c1 = theme.foam,
 					s0 = math.min(1.15, 0.58 * strength), s1 = 0.05,
 					life = 0.7 + strength * 0.1, v0 = 6, v1 = 15 * strength,
@@ -4216,7 +4217,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				{ tex = "spark", c0 = Color3.fromRGB(247, 255, 255), c1 = theme.foam,
 					s0 = math.min(1.3, 0.8 * strength), s1 = 0.02, life = 0.95,
 					v0 = 3, v1 = 8 * strength, spread = 175,
-					n = if MOBILE_VFX then 6 else 12, a0 = 0.35, drag = 6 },
+					n = if MOBILE_VFX then 6 else 12, a0 = 0.35, drag = 6,
+					acc = drift * 5 },
 			})
 		end)
 	end
@@ -5096,7 +5098,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					if MOBILE_VFX and splashScale and splashScale < 0.8 then
 						FX.waterColumn(Vector3.new(to.X, ORIGIN.Y + 0.35, to.Z), style, power)
 					else
-						FX.splash(to, style, power)
+						local flight = Vector3.new(velocity.X, 0, velocity.Z)
+						FX.splash(to, style, power, if flight.Magnitude > 0 then flight.Unit else nil)
 					end
 				end
 				-- 충돌 시 거대한 광구·회색 공 대신 위의 실제 파편·입자 폭발과 물결만 사용한다.
