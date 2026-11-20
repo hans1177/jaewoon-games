@@ -288,8 +288,19 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   const highEndFrames=highEndRequired?auditVibeHighEndTargetFrameEvidence(evidence):null;
   const universalAssetFirstRequired=evidence.universalAssetFirstRequired===true;
   const mobileAssetPerformanceRequired=evidence.mobileAssetPerformanceRequired===true;
+  const mobileAssetHashesRequired=[...new Set((Array.isArray(evidence.mobileAssetHashesRequired)
+    ?evidence.mobileAssetHashesRequired:[]).map(h=>String(h||'').toLowerCase()))];
+  const mobileAssetEvidence=Array.isArray(evidence.mobileAssetPerformances)
+    ?evidence.mobileAssetPerformances:[evidence.mobileAssetPerformance||{}];
   const mobileAssetPerformance=mobileAssetPerformanceRequired
-    ?auditVibeMobileAssetPerformance(evidence.mobileAssetPerformance||{},evidence.candidateRevision):null;
+    ?mobileAssetHashesRequired.length?(()=>{
+      const assets=mobileAssetHashesRequired.map(hash=>{
+        const matching=mobileAssetEvidence.find(item=>String(item?.assetGlbSha256||'').toLowerCase()===hash);
+        return auditVibeMobileAssetPerformance(matching||{},evidence.candidateRevision);
+      });
+      return Object.freeze({pass:assets.every(row=>row.pass),assets:Object.freeze(assets),
+        reasons:Object.freeze(assets.flatMap(row=>row.reasons))});
+    })():auditVibeMobileAssetPerformance(mobileAssetEvidence[0],evidence.candidateRevision):null;
   const universalAssetFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
   const assetFamilyCoverage=evidence.assetFamilyCoverage&&typeof evidence.assetFamilyCoverage==='object'?evidence.assetFamilyCoverage:{};
   const missingAssetFamilyAccounting=universalAssetFirstRequired?universalAssetFamilies.filter(family=>!['APPLIED','NOT_APPLICABLE'].includes(String(assetFamilyCoverage?.[family]?.status||assetFamilyCoverage?.[family]||'').toUpperCase())):[];
