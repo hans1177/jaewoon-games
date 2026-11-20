@@ -122,13 +122,25 @@ export function planVibe59RobloxOfflineRepairs({files=[],responsiblePaths=[]}={}
 export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
   if(!Array.isArray(files)||files.length>48)throw Error('VIBE59_ROBLOX_SCAN_LIMIT');
   const owners=new Set(responsiblePaths),result=[],warnings=[],diagnostics=[],unscanned=[];
+  const observedPaths=new Set();
   for(const file of files.slice(0,48)){
-    const path=String(file?.path||''),source=String(file?.source||'');
+    const path=String(file?.path||''),source=file?.source;
+    // [소스 무결성] 중복 경로를 독립 검사 파일로 계산하지 않는다.
+    // 충돌한 원본을 판별할 수 없으므로 책임 파일의 검사는 불완전으로 유지한다.
+    if(observedPaths.has(path)){
+      unscanned.push({path,reason:'LUAU_DUPLICATE_SOURCE_PATH',responsible:owners.has(path)});
+      continue;
+    }
+    observedPaths.add(path);
     if(!/\.(?:luau|lua)$/i.test(path)){
       if(owners.has(path))unscanned.push({path,reason:'RESPONSIBLE_SOURCE_NOT_LUAU',responsible:true});
       continue;
     }
-    // [검사 범위] 긴 책임 파일을 조용히 무시하면 '위험 없음'으로 오인된다.
+    // [검사 범위] 읽기에 실패한 소스나 빈 소스는 정상 분석 완료가 아니다.
+    if(typeof source!=='string'||!source.trim()){
+      unscanned.push({path,reason:'LUAU_SOURCE_UNAVAILABLE_OR_EMPTY',responsible:owners.has(path)});
+      continue;
+    }
     // 검사 상한·읽기 전용 정책은 유지하고 누락된 파일을 명시적으로 보고한다.
     if(source.length>260000){
       unscanned.push({path,reason:'LUAU_SOURCE_LIMIT_EXCEEDED',responsible:owners.has(path)});
@@ -220,9 +232,11 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
   }
   const observedResponsible=result.filter(row=>row.responsible).length;
   const scanCoverage=Object.freeze({
+    version:2,
     requiredResponsibleFiles:owners.size,
     observedResponsibleFiles:observedResponsible,
-    responsibleComplete:unscanned.every(row=>!row.responsible),
+    responsibleComplete:owners.size>0&&observedResponsible===owners.size
+      &&unscanned.every(row=>!row.responsible),
     unscanned:unscanned.slice(0,48),
     sourceWrite:false,runtimeVerified:false
   });
