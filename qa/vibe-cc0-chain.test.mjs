@@ -109,6 +109,33 @@ test('Blender CC0 actor/building profiles remain source-bound and registry prese
 });
 
 
+test('world geometry reauthoring uses bounded original CC0 topology and prepared native handoff',async()=>{
+  const builder=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  const planner=fs.readFileSync(new URL('../tools/vibe2-asset-production-plan.mjs',import.meta.url),'utf8');
+  assert.match(builder,/RECONSTRUCTION_WORLD_REQUIRES_STATIC_WORLD_SOURCE/);
+  assert.match(builder,/body_plan=='WORLD'/);
+  assert.match(builder,/VibeSourceEdgeFinish/);
+  assert.match(builder,/RECONSTRUCTION_BEVEL_SOURCE_TRIANGLE_BUDGET/);
+  assert.match(planner,/VERIFIED_SOURCE_MESH_RECONSTRUCTION/);
+  assert.match(planner,/NATIVE_IMPORT_AND_RUNTIME_QA_REQUIRED/);
+  assert.match(planner,/nativeApplication:Object\.freeze\(/);
+  const f=fixture();
+  try{
+    await assert.rejects(produceRegisteredCc0Asset({
+      repoRoot:f.root,assetId:'fixture-cc0-actor',gameId:'demo',
+      target:'web',role:'character',
+      reconstruction:{bodyPlan:'WORLD',morph:{height:1.05},detail:'EDGE_BEVEL'},
+      fetchImpl:()=>{throw Error('should-not-download')}
+    }),/CC0_RECONSTRUCTION_RECIPE_INVALID/);
+    assert.equal(fs.existsSync(f.source),false);
+    await assert.rejects(produceRegisteredCc0Asset({
+      repoRoot:f.root,assetId:'fixture-cc0-actor',gameId:'demo',
+      target:'web',role:'character',styleFamily:'../../private',
+      fetchImpl:()=>{throw Error('should-not-download')}
+    }),/CC0_STYLE_FAMILY_INVALID/);
+  }finally{f.cleanup();}
+});
+
 test('mare story/event audio uses verified CC0 parents and decodable game-specific derivatives',()=>{
   const root=new URL('../',import.meta.url).pathname;
   const manifest=JSON.parse(fs.readFileSync(path.join(root,'roblox-games/mare-essentia/audio/manifest.json'),'utf8'));
