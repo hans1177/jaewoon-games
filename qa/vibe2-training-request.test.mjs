@@ -124,3 +124,33 @@ test('기존 로컬 학습기가 요청-데이터셋 지문을 검증하고 가�
   assert.match(workflow,/runtimePromotionAllowed\s*=\s*\$false/);
   assert.match(workflow,/AUTO_PROMOTION=NO/);
 });
+
+test('정식 로컬 재훈련은 보류셋 SHA와 수량을 검증하고 학습 완료 뒤에만 A/B 손실을 비교한다',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-train.py',import.meta.url),'utf8');
+  assert.match(source,/holdoutSha256/);
+  assert.match(source,/official holdout SHA256 mismatch/);
+  assert.match(source,/official holdout missing or row count mismatch/);
+  assert.match(source,/official holdout task type mismatch/);
+  assert.match(source,/officialPostTrainHoldoutComparison/);
+  assert.match(source,/trainingUsedHoldout": False/);
+  assert.match(source,/runtimePromotionAllowed": False/);
+  assert.match(source,/nextGate": "FIXED_HOLDOUT_AB_AND_CANARY"/);
+  const script=[
+    'import ast,pathlib',
+    'p=pathlib.Path("tools/vibe2-train.py")',
+    'source=p.read_text(encoding="utf8")',
+    'tree=ast.parse(source)',
+    'main=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=="main")',
+    'train=source.index("train_result = trainer.train(")',
+    'holdout=source.index("official_holdout_dataset = JsonlDataset(holdout_rows)")',
+    'candidate=source.index("adapted_holdout = trainer.evaluate(")',
+    'baseline=source.index("baseline_holdout = trainer.evaluate(")',
+    'assert train < holdout < candidate < baseline',
+    'assert "with model.disable_adapter():" in source[candidate:baseline]',
+    'assert source.index("official holdout SHA256 mismatch") < train',
+    'assert source.index("promotionState") > baseline',
+    'print("POST_TRAIN_HOLDOUT_STRUCTURE=PASS")',
+  ].join('\n');
+  const check=spawnSync('python3',['-c',script],{encoding:'utf8'});
+  assert.equal(check.status,0,check.stderr||check.error?.message||'Holdout verification test failed');
+});
