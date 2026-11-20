@@ -4973,7 +4973,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end)
 	end
 	-- [포격 시네마] 함선 중앙이 아닌 실제 좌·우 선측 포구에서 번갈아 발사한다.
-	local function shoot(fromPos, toPos, fx, nc)
+	local function shoot(fromPos, toPos, fx, nc, hitTest, splashScale)
 		nc = nc or NC.demi
 		local from = ORIGIN + fromPos + Vector3.new(0, 7, 0)
 		local shooter = nil
@@ -5063,8 +5063,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if finished then
 					return
 				end
-				-- 착탄과 물보라를 실제 포탄 충돌 프레임에 맞춰 별도 재생한다.
-				if hullHit then
+				-- 실시간 포탄은 기존 명중 판정이 확인된 뒤에만 선체 효과를 낸다.
+				local hit = hullHit and (not hitTest or hitTest())
+				if hit then
 					Sfx.play("sfx_naval_hull_hit", 0.72 + stage * 0.026, 1.05 - stage * 0.03 + math.random() * 0.08, "sfx_hit")
 					Sfx.play("sfx_naval_wood", 0.45 + stage * 0.025, 1.12 - stage * 0.037, "sfx_creak")
 					if math.random() < 0.42 then
@@ -5082,20 +5083,25 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						end)
 					end
 				end
-				if hullHit then
+				if hit then
 					FX.splinters(to, if MOBILE_VFX then 5 else 5 + stage * 2)
 					FX.impact(to, nc.ball, style, nc)
 					shake = math.max(shake, 1.3)
 					kick = math.max(kick, 5 + nc.ball)
-					if to.Y <= ORIGIN.Y + 9 then
+					if not hitTest and to.Y <= ORIGIN.Y + 9 then
 						FX.splash(Vector3.new(to.X, ORIGIN.Y, to.Z), style, nc.ball * 0.78)
 					end
 				else
-					FX.splash(to, style, nc.ball)
+					local power = nc.ball * (splashScale or 1)
+					if MOBILE_VFX and splashScale and splashScale < 0.8 then
+						FX.waterColumn(Vector3.new(to.X, ORIGIN.Y + 0.35, to.Z), style, power)
+					else
+						FX.splash(to, style, power)
+					end
 				end
 				-- 충돌 시 거대한 광구·회색 공 대신 위의 실제 파편·입자 폭발과 물결만 사용한다.
 				-- 별도 프레임 연결을 만들지 않아 모바일 부하도 줄인다.
-				if fx then
+				if hit then
 					fx()
 				end
 			end
@@ -5539,18 +5545,24 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 								if finished or rt.ended then
 									return
 								end
-								shoot(me.pos, lead, if k == volley - 1 then function()
-									if rt.ended then
-										return
-									end
-									shake = 1.2
-									if (foe.pos - lead).Magnitude < 26 then
+								if k == volley - 1 then
+									shoot(me.pos, lead, function()
+										shake = 1.2
 										rt.hits += 1
 										rtDamage(false, base * acc)
-									else
-										popText("빗나감!", Color3.fromRGB(190, 200, 215))
-									end
-								end else nil, cannon)
+									end, cannon, function()
+										return not rt.ended and (foe.pos - lead).Magnitude < 26
+									end)
+								else
+									-- [포격 연출] 추가 탄은 적선 앞·뒤·바깥쪽 수면에 엇갈려 떨어진다.
+									local along = forward(foe.theta)
+									local across = Vector3.new(-along.Z, 0, along.X)
+									local side = if k % 2 == 0 then 1 else -1
+									local near = k == 0
+									local offset = along * (foe.length * (if near then 0.42 else 0.8) * side)
+										+ across * (foe.length * (if near then 0.6 else 0.95) * -side)
+									shoot(me.pos, lead + offset, nil, cannon, nil, if near then 1.15 else 0.7)
+								end
 							end)
 						end
 					end
