@@ -1344,11 +1344,12 @@ for (const item of plan) {
   // 새 모델 등록과 Universe 사용 권한이 함께 확인되지 않으면 기존 번호로 복구한다.
   if (item.assetType === 'Model' && item.sourceLicense) {
     const old = registry.assets[id];
-    const characterPbrUpgrade = item.kind === 'People' && /^(?:outfit_|hair_|acc_)[a-z0-9_]+$/.test(item.name);
+    const outfitUvUpgrade = item.kind === 'People' && /^outfit_(?:vest|coat|guard|apron|sash|belt|cuff|boot|stole)$/.test(item.name);
+    const characterPbrUpgrade = item.kind === 'People' && /^(?:hair_|acc_)[a-z0-9_]+$/.test(item.name);
     // 옛 복식 ID는 해시가 없으므로 새 UV 원본에 재사용하지 않는다.
     // 신규 ID/Universe 권한 실패 시 기존 등록번호로 원자적 롤백한다.
     if (old?.assetId && old.sourceSha256 !== sourceSha256
-      && (characterPbrUpgrade || Boolean(old.sourceSha256))) {
+      && (outfitUvUpgrade || characterPbrUpgrade || Boolean(old.sourceSha256))) {
       previousTypeAssets.set(id, {...old});
       delete registry.assets[id];
       console.log('ORIGINAL_MODEL_SOURCE_CHANGED_REUPLOAD', id);
