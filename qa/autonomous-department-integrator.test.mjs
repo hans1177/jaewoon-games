@@ -118,3 +118,34 @@ test('canonical five reviews require audio and do not accept a legacy balance vo
   const missing=current.map(row=>row.role==='audio'?{...row,role:'balance'}:row);
   assert.equal(canUseDeterministicFinalization({vibeCore,results:missing}),false);
 });
+
+test('company stage review and verified experience use five active departments while keeping legacy balance history', async()=>{
+  const { COMPANY_REVIEW_ROLES, summarizeInternalReview, createDepartmentReview } = await import('../assets/vibe-company-development-flow.js');
+  const { createCompanyStageAssignment } = await import('../assets/vibe-company-orchestration-bridge.js');
+  const { createDepartmentExperienceState, createDepartmentQualityProfile, awardDepartmentExperience } = await import('../assets/department-experience.js');
+  const { createCompanyQualityBar } = await import('../assets/company-quality-bar.js');
+  assert.deepEqual(COMPANY_REVIEW_ROLES,['planning','graphics','development','qa','audio']);
+  for(const stage of ['playable-draft','internal-review','integrated-qa'])
+    assert.deepEqual(createCompanyStageAssignment({stageId:stage}).roles,COMPANY_REVIEW_ROLES);
+  assert.deepEqual(createCompanyStageAssignment({stageId:'core-fun'}).roles,['planning','qa']);
+  assert.ok(createCompanyStageAssignment({stageId:'graphics-upgrade'}).roles.includes('audio'));
+  assert.ok(createCompanyStageAssignment({stageId:'optimization'}).roles.includes('audio'));
+  const reviews=COMPANY_REVIEW_ROLES.map(role=>createDepartmentReview({role,decision:'PASS'}));
+  assert.equal(summarizeInternalReview({reviews}).decision,'PASS');
+  const legacy=[...reviews.filter(row=>row.role!=='audio'),createDepartmentReview({role:'balance',decision:'PASS'})];
+  const blocked=summarizeInternalReview({reviews:legacy});
+  assert.equal(blocked.ready,false);
+  assert.ok(blocked.missingRoles.includes('audio'));
+  assert.equal(summarizeInternalReview({reviews:[...reviews,createDepartmentReview({role:'balance',decision:'DROP'})]}).decision,'PASS');
+  const state=createDepartmentExperienceState({departments:{balance:{xp:200},audio:{xp:0},planning:{xp:400},graphics:{xp:400},development:{xp:9280},qa:{xp:3760}}});
+  assert.equal(state.departments.balance.xp,200);
+  assert.equal(createDepartmentQualityProfile('audio',state).department,'audio');
+  assert.equal(awardDepartmentExperience(state,{department:'audio',verified:false,evidence:'no-proof'}).awarded,false);
+  assert.throws(()=>awardDepartmentExperience(state,{department:'balance',verified:true,evidence:'verified',reward:'qaPass'}));
+  assert.equal(createCompanyQualityBar(state).averageLevel,5);
+  const awardSource=fs.readFileSync(new URL('../tools/award-department-experience.mjs',import.meta.url),'utf8');
+  const postmortemSource=fs.readFileSync(new URL('../tools/award-postmortem-learning.mjs',import.meta.url),'utf8');
+  assert.match(awardSource,/audio: \[/);
+  assert.doesNotMatch(awardSource,/\n  balance: \[/);
+  assert.match(postmortemSource,/graphics','audio','balance'/);
+});

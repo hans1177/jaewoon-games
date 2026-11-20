@@ -1,4 +1,5 @@
-// Awards small XP only after a failure has a verified root cause, fix, and prevention note.
+// 파일명: tools/award-postmortem-learning.mjs
+// 실패 원인·수정·예방 검증 후에만 경험치를 기록한다.
 import fs from 'node:fs';
 
 const key=String(process.argv[2]||'').trim();
@@ -31,7 +32,7 @@ bugs.updatedAt=new Date().toISOString();
 fs.writeFileSync(xpPath,JSON.stringify(ledger,null,2)+'\n');
 fs.writeFileSync(bugPath,JSON.stringify(bugs,null,2)+'\n');
 
-const ids=['planning','development','qa','graphics','balance','homepage','release','director'];
+const ids=['planning','development','qa','graphics','audio','balance','homepage','release','director'];
 const lines=ids.map(id=>{const d=ledger.departments[id]||{};return `    ${id}: Object.freeze({ xp: ${Number(d.xp)||0}, level: ${Number(d.level)||1}, verifiedCompletions: ${Number(d.verifiedCompletions)||0}, learningEvents: ${Number(d.learningEvents)||0}, lastEvidence: ${d.lastEvidence?JSON.stringify(d.lastEvidence):'null'} })`;});
 const state=`// AUTO-GENERATED FROM department-experience.json. Do not hand-edit.\nexport const DEFAULT_DEPARTMENT_EXPERIENCE_STATE = Object.freeze({\n  version: 1,\n  departments: Object.freeze({\n${lines.join(',\n')}\n  })\n});\n`;
 fs.writeFileSync('assets/department-experience-state.js',state);

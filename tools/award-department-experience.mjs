@@ -30,7 +30,8 @@ const matchers = {
     /^COMPANY_FLOW\.md$/,
     /^assets\/vibe-company-development-flow\.js$/,
     /^assets\/game-blueprint\.js$/,
-    /^\.github\/agents\/planning\.agent\.md$/
+    /^\.github\/agents\/planning\.agent\.md$/,
+    /(^|\/)(balance|progression|economy|d20|game-content)(-|_|\/|\.)/i
   ],
   development: [
     /^unity-games\//,
@@ -42,16 +43,19 @@ const matchers = {
   qa: [
     /^qa\//,
     /^\.github\/workflows\/vibe-(qa|regression)\.yml$/,
-    /^\.github\/agents\/qa\.agent\.md$/
+    /^\.github\/agents\/qa\.agent\.md$/,
+    /(^|\/)(balance|progression|economy|d20|game-content)(-|_|\/|\.)/i
   ],
   graphics: [
     /(^|\/)(graphics|visual|ui|animation|animated|asset|art)(-|_|\/|\.)/i,
     /^ASSET_RULES\.md$/,
     /^\.github\/agents\/graphics\.agent\.md$/
   ],
-  balance: [
-    /(^|\/)(balance|progression|economy|d20|game-content)(-|_|\/|\.)/i,
-    /^\.github\/agents\/balance\.agent\.md$/
+  // [정식 오디오] 수치/밸런스 XP는 신규 지급하지 않고 기존 기록만 보존한다.
+  audio: [
+    /(^|\/)(audio|sound|sfx|music|bgm|mixer)(-|_|\/|\.)/i,
+    /\.(?:wav|ogg|mp3|flac|aiff?)$/i,
+    /^\.github\/agents\/audio\.agent\.md$/
   ],
   homepage: [
     /^index\.html$/,
@@ -124,7 +128,7 @@ function jsValue(value) {
   return JSON.stringify(String(value));
 }
 
-const orderedDepartments = ['planning','development','qa','graphics','balance','homepage','release','director'];
+const orderedDepartments = ['planning','development','qa','graphics','audio','balance','homepage','release','director'];
 const runtimeLines = orderedDepartments.map((id) => {
   const item = ledger.departments[id] || { xp:0, level:1, verifiedCompletions:0, learningEvents:0, lastEvidence:null };
   return `    ${id}: Object.freeze({ xp: ${Number(item.xp)||0}, level: ${Number(item.level)||1}, verifiedCompletions: ${Number(item.verifiedCompletions)||0}, learningEvents: ${Number(item.learningEvents)||0}, lastEvidence: ${jsValue(item.lastEvidence)} })`;
