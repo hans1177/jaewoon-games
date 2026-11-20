@@ -360,7 +360,9 @@
     // 메인: 시각 책임 후보여도 절대 경로·상위 폴더·URI로 저장소 범위를 벗어나면 거부한다.
     if(rel.startsWith('/')||rel.startsWith('~')||/^[a-z][a-z0-9+.-]*:/i.test(rel)||rel.split('/').includes('..')||rel.includes('\0'))return Object.freeze({file:rel,safe:false,reason:'UNSAFE_VISUAL_PATH'});
     if(lower.startsWith('.github/')||lower.startsWith('.autonomous/')||lower.startsWith('company-learning/')||/\.(?:md|txt)$/.test(lower))return Object.freeze({file:rel,safe:false,reason:'NON_VISUAL_META'});
-    const strongVisual=/\.(?:css|svg|shader|mat|anim|controller|prefab|unity)$/.test(lower)||/(?:^|[\/_-])(?:ui|hud|render|visual|sprite|animation|animator|effect|vfx|particle|shader|material|camera|environment)(?:[\/_\-.]|$)/.test(lower);
+    const strongVisual=/\.(?:css|svg|shader|mat|anim|controller|prefab|unity)$/.test(lower)
+      ||/(?:^|[\/_-])(?:ui|hud|render|visual|sprite|animation|animator|effect|vfx|particle|shader|material|camera|environment)(?:[\/_\-.]|$)/.test(lower)
+      ||/(?:animator|animation|motion|visual|renderer|render|vfx|hud|camera)(?:controller|view|manager)?\.cs$/.test(lower);
     const strongGameplay=/(?:gamecore|game-state|gamestate|playerstate|save|economy|balance|combat|quest|inventory|reward|damage|health|spawn)/.test(lower);
     if(!strongVisual)return Object.freeze({file:rel,safe:false,reason:'NO_VISUAL_IMPLEMENTATION_SIGNAL'});
     if(strongGameplay&&!/(?:ui|hud|render|visual|sprite|animation|animator|effect|vfx)/.test(lower))return Object.freeze({file:rel,safe:false,reason:'GAMEPLAY_AUTHORITY_RISK'});
