@@ -6295,14 +6295,14 @@ local function openTradeHall()
 			end
 			-- [교역품 읽기 순서] 가격 → 세계 평균 화살표 → 세후 손익 → 현재 보유·구매 가능.
 			-- [상품 목록] 가격만 짧게, 이익·보유는 아랫줄로 분리한다.
-			local priceText = string.format("매입 %s\n판매 %s",
-				H.commas(unitBuyOf(g)), H.commas(g.sell))
+			local priceText = string.format("매입 %s\n판매 %s\n재고 %s",
+				H.commas(unitBuyOf(g)), H.commas(g.sell), H.commas(g.supply or 0))
 			local pr = mkLabel(row, priceText, 17, INK, false)
 			pr.RichText = true
 			pr.Text = priceText:gsub("▲", '<font color="#B12F39"><b>▲</b></font>'):gsub("▼", '<font color="#236BAC"><b>▼</b></font>')
 			pr.TextWrapped = true
 			pr.Position = UDim2.fromOffset(listPx + 16, 55)
-			pr.Size = UDim2.new(1, -listPx - 22, 0, 58)
+			pr.Size = UDim2.new(1, -listPx - 22, 0, 70)
 			pr.TextSize = if listWidth < 230 then 15 else 17
 			pr.AutomaticSize = Enum.AutomaticSize.None
 			local ownedLine = mkLabel(row,
@@ -6818,7 +6818,6 @@ if view.weather then
 		add(function()
 			return H.tileGrid({
 				{ icon = "route", title = "하루 기다리기", sub = "날씨가 나쁠 때 · 사기 +2", btn = "대기", color = COLORS.blue, onClick = function() call("WaitDay", {}) end },
-				{ icon = "map", title = "해도 보기", sub = "항구 위치 한눈에", btn = "지도", color = COLORS.green, onClick = function() openTab("map", "chart") end },
 			}, content, 176, 150)
 		end)
 	end
@@ -6830,7 +6829,6 @@ if view.weather then
 			{ text = "의뢰", color = if H.routeSort == "quest" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "quest"; render() end },
 			{ text = "조선소", color = if H.routeSort == "yard" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "yard"; render() end },
 			{ text = "해역", color = if H.routeSort == "region" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "region"; render() end },
-			{ text = "지도", color = COLORS.green, onClick = function() openTab("map", "chart") end },
 		}, 60)
 		return row
 	end)
@@ -6861,7 +6859,7 @@ if view.weather then
 			local coalLeft = (ship.coal or 0) - (r.coal or 0)
 			local warn = if supplyLeft < 0 then string.format("🔴 보급 %d 부족", -supplyLeft)
 				elseif (r.coal or 0) > 0 and coalLeft < 0 then string.format("🔴 석탄 %d 부족", -coalLeft)
-				else string.format("🟢 보급 충분 · 예상 잔량 %d", supplyLeft)
+				else string.format("출항 가능 · 보급 %d 남음", supplyLeft)
 			if view.weather and (view.weather.id == "storm" or view.weather.id == "rain") then
 				warn ..= if view.weather.id == "storm" then " · 🔴 현재 폭풍 주의" else " · 🟡 현재 비 주의"
 			end
@@ -6872,7 +6870,7 @@ if view.weather then
 			end
 			local tags = (if r.yard then " 🔧조선소" else "") .. (if r.quest then " 📜" .. r.quest else "")
 			return mkRow(content, r.name .. tags, string.format("%s · %d일 · %d km\n필요 보급 %d%s · %s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
-				{ text = "출항", color = COLORS.blue, onClick = function() confirmSail(r) end },
+				{ text = if supplyLeft < 0 or coalLeft < 0 then "출항 확인" else "출항", color = if supplyLeft < 0 or coalLeft < 0 then COLORS.gold else COLORS.blue, onClick = function() confirmSail(r) end },
 			}, 56)
 		end)
 	end
