@@ -1919,7 +1919,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.match(pose,/NpcOutfitNextCheckAt/);
   const port=read('ReplicatedStorage/Shared/PortScene.luau');
   assert.match(port,/string\.sub\(asset\.Name, 1, 7\) == "outfit_"/);
-  assert.match(pose,/slotName = "R15Asset_" \.\. assetName \.\. "_" \.\. boneName/);
+  assert.ok(pose.includes('local slotName = "R15Asset_" .. string.gsub(assetName, "/", "_") .. "_" .. boneName'),'R15 직업 소지품 경로 충돌 방지 슬롯');
   assert.match(pose,/if not textured and string\.sub\(assetName, 1, 7\) == "outfit_"/);
   assert.match(field,/companion = true, gender = if ad\.female then "female" else "male", culture = ad\.nation/);
   assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
