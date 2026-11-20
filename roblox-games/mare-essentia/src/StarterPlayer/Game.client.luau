@@ -12690,13 +12690,11 @@ function render()
 	setPortrait(grp.name)
 	-- [중복 이름 제거] 화면 제목에서 조선소·은행·길드 이름을 반복하지 않는다.
 	local placeName = H.visitFacility or grp.name
+	-- 시설은 제목, 현재 기능은 선택 탭, 항구와 담당자는 보조 줄에서 표시한다.
 	local tabName = TAB_NAME[currentTab] or ""
-	headerLabel.Text = if mainInner.AbsoluteSize.X < 740 and placeName ~= tabName
+	headerLabel.Text = if #grp.tabs <= 1 and currentTab ~= "yard" and placeName ~= tabName
 		then placeName .. " · " .. tabName else placeName
-	-- [현재 위치] 모바일에는 항구·선택 탭만, 넓은 화면에는 담당자까지 표시한다.
-	H.pageDetails.Text = if mainInner.AbsoluteSize.X < 480
-		then string.format("%s · %s", p.portName, TAB_NAME[currentTab])
-		else string.format("%s · %s · %s", p.portName, grp.keeper, TAB_NAME[currentTab])
+	H.pageDetails.Text = string.format("%s · %s", p.portName, grp.keeper)
 	coinValue.Text = tostring(p.coins)
 	H.updateHud(p, ship)
 	-- [현재 시설 표시] 가죽 도크의 선택 상태와 실제 열려 있는 시설을 동기화한다.
