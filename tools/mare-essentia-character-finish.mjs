@@ -240,7 +240,12 @@ function retouchPbr(bytes,name,maps,proof){
     parts.push(block);next+=block.length;
     oldEnd=offset+length;
   }
-  for(const material of scene.materials||[]){
+  // [기존 GLB 정본] 미사용 재질 슬롯은 법선 지도가 없어도 정상이다.
+  // 실제 렌더링하는 메시 프리미티브의 재질만 검증하고 노멀 강도를 보정한다.
+  const renderedMaterials=new Set(scene.meshes.flatMap(mesh=>
+    (mesh.primitives||[]).map(primitive=>primitive.material)));
+  for(const [index,material] of (scene.materials||[]).entries()){
+    if(!renderedMaterials.has(index))continue;
     if(!material.normalTexture)throw Error('MARE_CHARACTER_V3_NORMAL_MISSING:'+name);
     const role=materialRole(name,material);
     material.normalTexture.scale=role==='metal'?0.46:role==='pearl'?0.13:
