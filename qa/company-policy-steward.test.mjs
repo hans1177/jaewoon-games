@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {auditFourPolicyDocuments,resolveActiveOwnerPolicy} from '../tools/company-policy-steward.mjs';
+import {auditFourPolicyDocuments,resolveActiveOwnerPolicy,synchronizeRoadmapBrief} from '../tools/company-policy-steward.mjs';
 import {ownerDevelopmentHeld} from '../tools/vibe2-queue-control.mjs';
 import {loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
 
@@ -28,6 +28,26 @@ function fixture(fn){
     return fn(tmp);
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 }
+test('derived roadmap brief is updated from canonical source without editing any of four authority documents',()=>fixture(tmp=>{
+  const source=fs.readFileSync(path.join(tmp,paths[0]),'utf8');
+  assert.throws(()=>synchronizeRoadmapBrief({root:tmp,checkOnly:true}),/POLICY_STEWARD_BRIEF_STALE/);
+  const result=synchronizeRoadmapBrief({root:tmp,checkOnly:false});
+  const briefPath=path.join(tmp,result.briefPath);
+  const brief=JSON.parse(fs.readFileSync(briefPath,'utf8'));
+  const canonical=JSON.parse(source);
+  assert.equal(brief.version,canonical.version);
+  assert.equal(brief.sourceSha256,result.sourceSha256);
+  assert.deepEqual(brief.finalDevelopmentLock,canonical.finalDevelopmentLock);
+  assert.deepEqual(brief.fixedAutonomousDevelopmentOperatingContract,canonical.fixedAutonomousDevelopmentOperatingContract);
+  assert.equal(fs.readFileSync(path.join(tmp,paths[0]),'utf8'),source);
+  assert.equal(synchronizeRoadmapBrief({root:tmp,checkOnly:true}).changed,false);
+  canonical.version+=1;
+  fs.writeFileSync(path.join(tmp,paths[0]),JSON.stringify(canonical)+'\n','utf8');
+  assert.throws(()=>synchronizeRoadmapBrief({root:tmp,checkOnly:true}),/POLICY_STEWARD_BRIEF_STALE/);
+  synchronizeRoadmapBrief({root:tmp,checkOnly:false});
+  assert.equal(JSON.parse(fs.readFileSync(briefPath,'utf8')).version,canonical.version);
+}));
+
 test('four existing documents stay bit-for-bit immutable',()=>fixture(tmp=>{
   const originals=paths.map(p=>fs.readFileSync(path.join(tmp,p),'utf8'));
   const audit=auditFourPolicyDocuments({root:tmp});
