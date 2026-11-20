@@ -409,6 +409,29 @@ test('Vibe2 main push rechecks executable department learning imports after thei
   assert.ok(pushScope.includes("- 'tools/department-learning-memory.mjs'"));
 });
 
+// [ARM 다운로드 회귀] 공식 Linux ARM64 바이너리가 없으므로 기존 apt 검증 경로는 유지한다.
+test('Vibe2 ARM native DCC caches only apt archives while preserving signed package install',()=>{
+  const start=core.indexOf('      - name: Restore ARM Blender package archives');
+  const end=core.indexOf('      - name: Execute declared native DCC authoring verification',start);
+  assert.ok(start>=0&&end>start,'VIBE2_ARM_NATIVE_DCC_CACHE_GATE_REQUIRED');
+  const scope=core.slice(start,end);
+  const cacheKey='native-blender-arm64-ubuntu2404-apt-archives-v1';
+  assert.equal(scope.split('key: '+cacheKey).length-1,2);
+  assert.match(scope,/id: native-dcc-arm-cache/);
+  assert.match(scope,/runner\.arch == 'ARM64'/);
+  assert.match(scope,/uses: actions\/cache\/restore@v4/);
+  assert.match(scope,/uses: actions\/cache\/save@v4/);
+  assert.match(scope,/path: \$\{\{ runner\.temp \}\}\/vibe2-blender-arm64-apt/);
+  assert.match(scope,/sudo apt-get update -y/);
+  assert.match(scope,/Dir::Cache::archives=\$apt_cache/);
+  assert.match(scope,/APT::Keep-Downloaded-Packages=true/);
+  assert.match(scope,/sudo apt-get -o "[^"]+" -o "[^"]+"\s+\\?\s*install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri/);
+  assert.match(scope,/bpy\.ops\.export_scene\.gltf\.get_rna_type\(\)/);
+  assert.match(scope,/steps\.native-dcc\.outputs\.arm_packages_built == 'true'/);
+  assert.match(scope,/steps\.native-dcc-arm-cache\.outputs\.cache-hit != 'true'/);
+  assert.doesNotMatch(scope,/blender-4\.5\.15-linux-arm64\.tar\.xz/);
+});
+
 // [에셋 병목 회귀] 공식 Blender 고정 캐시를 재사용하고, ARM 원래 경로와 실제 DCC 검증을 보존한다.
 test('Vibe2 native DCC reuses verified free Blender cache and keeps real authoring verification',()=>{
   const start=core.indexOf('      - name: Restore pinned Blender for native DCC authoring');
