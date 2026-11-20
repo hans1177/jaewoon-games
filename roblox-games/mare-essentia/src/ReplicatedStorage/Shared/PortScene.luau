@@ -1568,8 +1568,17 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 
 	-- [주민 일상 동선] 기존 직업 주민 중 소수만 작업장→시장→주점/광장으로 이동한다.
 	-- 모바일은 2명 상한이며 카메라에서 멀면 관절 연출만 생략한다. 경제 및 저장 상태에는 관여하지 않는다.
-	local livingCount = if game:GetService("UserInputService").TouchEnabled then 2 else math.min(4, 1 + lvl)
-	if info.sim and (info.sim.residents or 0) < 4 then livingCount = 0 end
+	local touchJobs = game:GetService("UserInputService").TouchEnabled
+	local residents = if info.sim then math.max(0, math.floor(tonumber(info.sim.residents) or 0)) else 20 + lvl * 12
+	local employment = info.sim and info.sim.jobs
+	local dayJobCount = if employment then math.max(0, math.floor(tonumber(employment.merchant) or 0))
+		+ math.max(0, math.floor(tonumber(employment.sailor) or 0))
+		+ math.max(0, math.floor(tonumber(employment.guard) or 0))
+		+ math.max(0, math.floor(tonumber(employment.craftsman) or 0)) else 20
+	local livingCount = math.min(residents, dayJobCount,
+		if touchJobs then math.min(6, 1 + lvl + math.floor(residents / 24))
+		else math.min(12, 2 + lvl * 2 + math.floor(residents / 16)))
+	local scheduledPeople = {}
 	for i = 1, livingCount do
 		local side = if i % 2 == 0 then 1 else -1
 		local work = Vector3.new(-55 - i * 5, 0, side * 22)
@@ -1587,8 +1596,21 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		local fig = person(work, faceTo(work, market), { role = duty.role, profession = duty.job, hat = "cap" }, duty.job)
 		addTask(fig, { mode = "schedule", morning = work, market = market, evening = evening,
 			job = duty.job, workKinds = duty.work, tradeKinds = duty.trade, leisureKinds = duty.rest,
-			phase = rng:NextNumber(0, 10), socialKind = duty.rest[(i - 1) % #duty.rest + 1] })
-		if fig then fig:SetAttribute("Job", duty.job); fig:SetAttribute("DailyRoutine", "work") end
+			phase = rng:NextNumber(0, 10), socialKind = duty.rest[(i - 1) % #duty.rest + 1],
+			-- [개인 동선] 각자의 서행/휴식 간격은 같지 않으며 기존 도로 중심을 벗어나지 않는다.
+			travelPace = rng:NextNumber(0.83, 1.12), travelOffset = rng:NextNumber(-1.3, 1.3) })
+		if fig then
+			fig:SetAttribute("Job", duty.job)
+			fig:SetAttribute("DailyRoutine", "work")
+			local this = walkers[#walkers]
+			if this and this.model == fig then
+				local previous = scheduledPeople[#scheduledPeople]
+				if previous and #scheduledPeople % 2 == 1 then
+					this.socialPartner, previous.socialPartner = previous, this
+				end
+				table.insert(scheduledPeople, this)
+			end
+		end
 	end
 
 	-- [지역 물류] 현재 항구에서 실제 생산하는 품목만 작업장→시장→부두 보행으로 운송한다.
@@ -2164,12 +2186,17 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		end
 		local total = 0
 		for _, j in ipairs(ORDER) do total += jobs[j] or 0 end
-		local N = if info.sim then math.clamp(math.floor((info.sim.residents or 6) * 0.3), 1, 18) else ({ 6, 8, 10, 12, 14 })[lvl]
+		-- [현지 고용 표본] 주민 수·실제 직종 고용·도시 단계에 따라 표시 인원만 증가.
+		-- 모바일과 PC 별도 인원 상한. 경제 고용 숫자보다 많은 직업 모델을 생성하지 않는다.
+		local residents = if info.sim then math.max(0, math.floor(tonumber(info.sim.residents) or 0)) else 16 + lvl * 14
+		local touch = game:GetService("UserInputService").TouchEnabled
+		local cap = if touch then math.min(30, 9 + lvl * 4) else math.min(48, 12 + lvl * 8)
+		local N = math.min(cap, residents, math.floor(total))
 		local quota, used = {}, 0
 		for _, j in ipairs(ORDER) do
 			local share = (jobs[j] or 0) / math.max(total, 1)
 			if j == "farmer" or j == "laborer" then share = math.min(share, 0.2) end
-			quota[j] = math.floor(N * share + 0.5)
+			quota[j] = math.min(math.max(0, math.floor(tonumber(jobs[j]) or 0)), math.floor(N * share + 0.5))
 			if not info.sim and (jobs[j] or 0) > 0 and quota[j] == 0 then quota[j] = 1 end
 			used += quota[j]
 		end
@@ -2179,7 +2206,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			local yard = JOB_YARD[j]
 			for k = 1, quota[j] do
 				slot += 1
-				if slot > 24 then break end
+				if slot > cap then break end
 				local lane = lanes[(slot - 1) % #lanes + 1]
 				local x = -46 - math.floor((slot - 1) / #lanes) * 22 - ((slot - 1) % 3) * 7
 				local side = if lane > 0 then 1 else -1
