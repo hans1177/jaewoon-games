@@ -1191,7 +1191,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
         || !sourceLicense.author || !sourceLicense.sourceSha256 || !sourceLicense.source))
         throw new Error('CC0_MATERIAL_SOURCE_METADATA_REQUIRED:' + f);
       if (characterFinish && (!sourceLicense || sourceLicense.license !== 'CC0-1.0'
-        || sourceLicense.pbrVersion !== 2 || !sourceLicense.pbrColorMap || !sourceLicense.pbrNormalMap
+        || sourceLicense.pbrVersion !== 3 || !sourceLicense.pbrColorMap || !sourceLicense.pbrNormalMap
         || !sourceLicense.pbrRoughnessMetallicMap || !sourceLicense.sourceGitBlobSha1 || !sourceLicense.sourceSha256))
         throw new Error('R15_CHARACTER_PBR_PROOF_REQUIRED:' + f);
       if (originalOutfit && (!sourceLicense || sourceLicense.uvVersion !== 1 || !sourceLicense.originalGeometrySha256))
