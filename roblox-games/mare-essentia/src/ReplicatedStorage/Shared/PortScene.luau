@@ -6727,19 +6727,13 @@ function PortScene.build(info, onFacility)
 	folder:SetAttribute("NpcRouteAudit", if routeOk then "PASS" else "FAIL")
 	if not routeOk then folder:SetAttribute("NpcRouteFailure", tostring(routeError)) end
 
-	-- [기존 People 등록 모델 지연 로딩] 주민과 동료의 미완성 복장만 기존 장착 책임 함수로 갱신한다.
-	-- 이벤트 묶음은 한 번만 조회하고 장면 파괴 시 연결을 즉시 끊는다.
+	-- [주민 직업 실물 장비] People·Cargo·Relics 등록 경로 그대로 활용하며 최종 인입 시 누락 부착만 재검사한다.
 	do
 		local shelf = ReplicatedStorage:FindFirstChild("MareAssets")
 		local people = shelf and shelf:FindFirstChild("People")
 		if people then
 			local queued = false
-			local outfitConn = people.ChildAdded:Connect(function(asset)
-				if not asset:IsA("Model") or not AssetIds["People/" .. asset.Name] then return end
-				-- 신규 액세서리도 기존 People 인입 이벤트에서 한 번만 재장착한다.
-				if not (string.find(asset.Name, "peasant", 1, true) or string.find(asset.Name, "ranger", 1, true)
-					or string.sub(asset.Name, 1, 5) == "hair_" or string.sub(asset.Name, 1, 4) == "acc_"
-					or string.sub(asset.Name, 1, 7) == "outfit_") then return end
+			local function refreshOutfits()
 				if queued then return end
 				queued = true
 				task.delay(0.08, function()
@@ -6747,13 +6741,26 @@ function PortScene.build(info, onFacility)
 					if not folder.Parent then return end
 					for _, subject in folder:GetDescendants() do
 						if subject:IsA("Model") and subject:GetAttribute("NpcAssetProfile")
-							and subject:GetAttribute("NpcAppearanceState") ~= "ready" then
+						and subject:GetAttribute("NpcAppearanceState") ~= "ready" then
 							Pose.applyRegisteredMobOutfit(subject)
 						end
 					end
 				end)
+			end
+			local outfitConn = people.ChildAdded:Connect(function(asset)
+				if not asset:IsA("Model") or not AssetIds["People/" .. asset.Name] then return end
+				if not (string.find(asset.Name, "peasant", 1, true) or string.find(asset.Name, "ranger", 1, true)
+					or string.sub(asset.Name, 1, 5) == "hair_" or string.sub(asset.Name, 1, 4) == "acc_"
+					or string.sub(asset.Name, 1, 7) == "outfit_") then return end
+				refreshOutfits()
 			end)
-			folder.Destroying:Connect(function() outfitConn:Disconnect() end)
+			local readyConn = ReplicatedStorage:GetAttributeChangedSignal("MareAssetsReady"):Connect(function()
+				if ReplicatedStorage:GetAttribute("MareAssetsReady") then refreshOutfits() end
+			end)
+			folder.Destroying:Connect(function()
+				outfitConn:Disconnect()
+				readyConn:Disconnect()
+			end)
 		end
 	end
 
