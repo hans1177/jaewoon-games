@@ -137,7 +137,7 @@ def is_external_black_box_qa(row, qa):
     )
 
 
-def validate_manifest(args, manifest, train_rows, eval_rows):
+def validate_manifest(args, manifest, train_rows, eval_rows, holdout_rows=()):
     if int(manifest.get("version", 0)) < 3:
         raise RuntimeError("dataset manifest v3 or newer is required")
     if manifest.get("readyForTraining") is not True:
@@ -182,7 +182,27 @@ def validate_manifest(args, manifest, train_rows, eval_rows):
     if args.seed != int(manifest.get("seed", args.seed)):
         raise RuntimeError("trainer seed must match dataset manifest seed")
 
-    for row in train_rows + eval_rows:
+    # [정식 보류셋] 학습/평가와 별도인 데이터도 동일한 증거 기준을 검사한다.
+    # 데이터 파일과 manifest 해시가 함께 변조돼도 샘플 중복 또는 QA 미통과를 통과시키지 않는다.
+    official_training = manifest.get("authority") != "PRACTICE_ONLY"
+    if official_training:
+        if not holdout_rows or len(holdout_rows) != int(stats.get("holdout", -1)):
+            raise RuntimeError("official holdout missing or row count mismatch")
+        if dataset_hash(holdout_rows) != manifest.get("holdoutSha256"):
+            raise RuntimeError("official holdout SHA256 mismatch")
+        observed_ids = set()
+        for split_rows in (train_rows, eval_rows, holdout_rows):
+            for sample in split_rows:
+                sample_id = sample.get("sampleId")
+                if not isinstance(sample_id, str) or len(sample_id) != 64 or any(
+                    char not in "0123456789abcdef" for char in sample_id.lower()
+                ):
+                    raise RuntimeError("official dataset sample identity missing")
+                if sample_id in observed_ids:
+                    raise RuntimeError("official train/eval/holdout sample identity overlap")
+                observed_ids.add(sample_id)
+
+    for row in train_rows + eval_rows + (list(holdout_rows) if official_training else []):
         qa = row.get("qa") or {}
         row_task_type = str(row.get("taskType") or "").lower()
         external_black_box = is_external_black_box_qa(row, qa)
@@ -279,17 +299,7 @@ def main():
         str(Path(args.train).with_name("holdout.jsonl")) if official_training else ""
     )
     holdout_rows = load_jsonl(holdout_path) if holdout_path and Path(holdout_path).is_file() else []
-    validate_manifest(args, manifest, train_rows, eval_rows)
-    if official_training:
-        expected_count = int((manifest.get("stats") or {}).get("holdout", 0))
-        if not holdout_rows or len(holdout_rows) != expected_count:
-            raise RuntimeError("official holdout missing or row count mismatch")
-        if dataset_hash(holdout_rows) != manifest.get("holdoutSha256"):
-            raise RuntimeError("official holdout SHA256 mismatch")
-        if any(str(row.get("taskType") or "") != args.task_type for row in holdout_rows):
-            raise RuntimeError("official holdout task type mismatch")
-        if any(row.get("lifecycle") != "active" for row in holdout_rows):
-            raise RuntimeError("inactive sample in official holdout")
+    validate_manifest(args, manifest, train_rows, eval_rows, holdout_rows)
 
     import torch
     from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
