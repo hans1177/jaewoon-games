@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import { writeEvolutionEvidence } from '../tools/evolution-evidence-recorder.mjs';
 import { CORE_DEPARTMENT_ROLES, ingestVerifiedDepartmentEvidence, normalizeVerifiedDepartmentLearning, selectVerifiedDepartmentLearning } from '../tools/department-learning-memory.mjs';
 import { buildVibeCoreContext } from '../tools/autonomous-department-cycle.mjs';
@@ -239,4 +241,23 @@ test('기획·그래픽·개발·QA·오디오의 검증 경험치가 기존 부
   assert.equal(core.departmentReviewRequired,true);
   assert.equal(core.maySelfApprove,false);
   assert.equal(JSON.stringify(ledger),original,'기존 경험치·기록·밸런스는 불변이다');
+});
+
+
+test('department learning direct CLI retains existing XP and history with no unverified evidence',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-department-cli-'));
+  try{
+    const ledgerPath=path.join(dir,'department-experience.json');
+    const evidenceDir=path.join(dir,'evidence');
+    fs.mkdirSync(evidenceDir);
+    const original={version:1,departments:{development:{xp:9320}},history:[{type:'existing-verified'}]};
+    fs.writeFileSync(ledgerPath,JSON.stringify(original),'utf8');
+    const script=fileURLToPath(new URL('../tools/department-learning-memory.mjs',import.meta.url));
+    const output=execFileSync(process.execPath,[script,'--ledger='+ledgerPath,'--evidence-dir='+evidenceDir],{encoding:'utf8'});
+    assert.equal(JSON.parse(output).xpMutation,false);
+    const ledger=JSON.parse(fs.readFileSync(ledgerPath,'utf8'));
+    assert.deepEqual(ledger.departments,original.departments);
+    assert.deepEqual(ledger.history,original.history);
+    assert.deepEqual(ledger.verifiedLearning,[]);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
