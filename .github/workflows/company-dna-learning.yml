@@ -65,6 +65,7 @@ jobs:
             qa
             assets
             company-learning
+            .github
           sparse-checkout-cone-mode: true
       - uses: actions/setup-node@v4
         with:
