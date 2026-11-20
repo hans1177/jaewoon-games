@@ -328,6 +328,24 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       status:definitions.length===1?'POTENTIAL_SAME_FILE_FUNCTION':'AMBIGUOUS_SAME_FILE_FUNCTION',
       runtimeVerified:false}];
   })).slice(0,160);
+  // [기능 연결 추적] 원격 송신 → 잠재 수신 → 상태 변경 → 응답 송신을 소스 관찰로만 연결한다.
+  // 변수명 일치만으로 동일 Remote 인스턴스나 실제 이벤트 인과관계를 증명하지 않는다.
+  const actionChains=remoteLinks.filter(link=>['FireServer','InvokeServer'].includes(link.method))
+    .map(link=>{
+      const candidateOwners=link.possibleReceivers.map(path=>result.find(row=>row.path===path)).filter(Boolean);
+      return Object.freeze({
+        clientPath:link.path,clientLine:link.line,remote:link.remote,
+        serverCandidates:Object.freeze(candidateOwners.map(row=>Object.freeze({
+          path:row.path,
+          stateMethods:Object.freeze([...new Set(row.stateEffects.map(item=>item.method))].slice(0,8)),
+          responseMethods:Object.freeze([...new Set(row.calls.filter(call=>
+            ['FireClient','FireAllClients','InvokeClient'].includes(call.method)).map(call=>call.method))].slice(0,8)),
+          serverAuthorityConfirmed:false
+        }))),
+        status:link.status,causalProof:'UNVERIFIED_STATIC_CANDIDATE',
+        actualGameplayVerified:false,saveRoundTripVerified:false
+      });
+    }).slice(0,40);
   const priority=code=>/^FRAME_/.test(code)?3
     :/CLIENT|REMOTE|DATASTORE|SAVE/i.test(code)?3
     :/COMBAT|DAMAGE|BUILD|INVENTORY|BESTIARY/i.test(code)?2:1;
@@ -343,20 +361,37 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       exactFind:null,exactAnchorUnique:false
     }))
   ].sort((a,b)=>b.priority-a.priority||a.path.localeCompare(b.path)||a.line-b.line).slice(0,16);
+  // [수정 책임 추적] 중복 함수 이름은 단정하지 않고, 원본 한 줄이 유일할 때만 편집 후보를 기록한다.
+  const repairTargets=priorityFindings.map(finding=>{
+    const owner=result.find(row=>row.path===finding.path);
+    const before=(owner?.functionDefinitions||[]).filter(row=>row.line<=finding.line);
+    const nearest=before.at(-1),sameName=nearest
+      ?owner.functionDefinitions.filter(row=>row.name===nearest.name):[];
+    return Object.freeze({
+      path:finding.path,line:finding.line,code:finding.code,
+      symbolCandidate:sameName.length===1?nearest.name:null,
+      symbolConfidence:'LEXICAL_CANDIDATE_ONLY',
+      sourceAnchorUnique:finding.exactAnchorUnique===true,
+      exactFind:finding.exactFind,
+      priority:finding.priority,repairAdvice:finding.review,
+      sourceWrite:false,regressionRequired:true,actualPlayRequired:true
+    });
+  });
+  const performanceFindings=Object.freeze(priorityFindings.filter(row=>row.code.startsWith('FRAME_')));
   const qualityDirector=Object.freeze({
     mode:'SOURCE_GROUNDED_STATIC_ADVISORY',sourceWrite:false,runtimeVerified:false,
     qualityScore:null,gameplayPass:false,completeRepositoryGraph:false,
     observedFiles:result.length,observedResponsibleFiles:observedResponsible,
     responsibleSourceCoverageComplete:scanCoverage.responsibleComplete,
     unscannedResponsiblePaths:scanCoverage.unscanned.filter(row=>row.responsible).map(row=>row.path),
-    priorityFindings,remoteLinks,functionLinks,
+    priorityFindings,repairTargets,performanceFindings,actionChains,remoteLinks,functionLinks,
     missingReceiverMeansConfirmedDefect:false,
     unobservedClientVisualAndMobileQuality:'UNKNOWN_REQUIRES_REAL_PLAY',
     existingSaveBalanceAndAuthorityMustBePreserved:true
   });
   return Object.freeze({authority:'roblox-luau-static-analysis',runtimeVerified:false,
     sourceWrite:false,completeRepositoryGraph:false,files:result,warnings:warnings.slice(0,32),
-    diagnostics:diagnostics.slice(0,200),remoteLinks,functionLinks,qualityDirector,
+    diagnostics:diagnostics.slice(0,200),remoteLinks,functionLinks,actionChains,qualityDirector,
     scanCoverage,
     offlineRuleCount:VIBE59_ROBLOX_OFFLINE_RULES.length,modelUsed:false});
 }
