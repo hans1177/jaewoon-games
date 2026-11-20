@@ -157,8 +157,20 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       if(side==='SERVER'&&/^(FireServer|InvokeServer)$/.test(match[2]))
         found.push({code:'CLIENT_REMOTE_CALL_IN_SERVER',line});
     }
+    // [저장·서버 권한] 원격 호출과 동일한 26만 자 한도에서 전체 소스를 검사한다.
+    // 여러 줄로 분리된 접근과 4천 줄 이후의 접근도 실제 원본 줄에 연결한다.
+    for(const match of activeSource.matchAll(/:\s*(GetDataStore|UpdateAsync|SetAsync|GetAsync|SetAttribute)\s*\(/g)){
+      const line=sourceLineAt(match.index);
+      if(stateEffects.length<24)stateEffects.push({method:match[1],line});
+      if(side==='CLIENT'&&match[1]==='GetDataStore')
+        found.push({code:'CLIENT_DATASTORE_ACCESS',line});
+    }
+    if(side==='CLIENT'){
+      for(const match of activeSource.matchAll(/\bGetService\s*\(\s*['"]DataStoreService['"]\s*\)/g)){
+        found.push({code:'CLIENT_DATASTORE_SERVICE',line:sourceLineAt(match.index)});
+      }
+    }
     for(const [i,line] of activeSource.split(/\r?\n/).slice(0,4000).entries()){
-
       if(!line.trim())continue;
       // [함수 의존관계] 기존 Luau 주석·문자열 제거 결과만 사용한다.
       // 동일 파일 심볼의 선언과 호출은 정적 후보이며 실제 실행·스코프 확정이 아니다.
@@ -171,12 +183,6 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
         if(invocation[1]==='function'||/\bfunction\s+$/.test(line.slice(0,invocation.index)))continue;
         functionCalls.push({name:invocation[1],line:i+1});
       }
-      for(const match of line.matchAll(/:\s*(GetDataStore|UpdateAsync|SetAsync|GetAsync|SetAttribute)\s*\(/g)){
-        if(stateEffects.length<24)stateEffects.push({method:match[1],line:i+1});
-        if(side==='CLIENT'&&match[1]==='GetDataStore')found.push({code:'CLIENT_DATASTORE_ACCESS',line:i+1});
-      }
-      if(side==='CLIENT'&&/GetService\s*\(\s*['"]DataStoreService['"]\s*\)/.test(line))
-        found.push({code:'CLIENT_DATASTORE_SERVICE',line:i+1});
     }
     const offline=diagnoseVibe59RobloxOffline({path,source});
     // 정확한 원본 한 줄이 유일할 때만 편집 앵커 후보로 노출한다.
@@ -436,11 +442,16 @@ export function synthesizeVibe59RobloxServerAction({machine={},binding={},source
   if(typeof source!=='string'||source.length>260000||typeof replaceAnchor!=='string'
     ||!replaceAnchor||replaceAnchor.length>1024||source.split(replaceAnchor).length!==2)
     throw Error('VIBE59_ROBLOX_ANCHOR_REQUIRED');
-  const unchanged=source.replace(replaceAnchor,'');
-  if(!declared(unchanged,remote,'variable')||!declared(unchanged,statesTable,'variable')
-    ||!declared(unchanged,authorize,'function'))
+  // [실제 책임 함수] 주석·문자열의 가짜 선언은 권한 증거가 아니다.
+  // 생성 위치보다 늦게 선언된 local 바인딩 역시 해당 루아우 범위에서 접근할 수 없다.
+  const anchorStart=source.indexOf(replaceAnchor);
+  const preceding=stripVibe59LuauComments(source.slice(0,anchorStart));
+  const executable=stripVibe59LuauComments(source.slice(0,anchorStart)+
+    source.slice(anchorStart+replaceAnchor.length));
+  if(!declared(preceding,remote,'variable')||!declared(preceding,statesTable,'variable')
+    ||!declared(preceding,authorize,'function'))
     throw Error('VIBE59_ROBLOX_EXISTING_BINDING_REQUIRED');
-  if(new RegExp('\\b'+remote+'\\.OnServerEvent\\s*:\\s*Connect\\s*\\(').test(unchanged))
+  if(new RegExp('\\b'+remote+'\\s*\\.\\s*OnServerEvent\\s*:\\s*Connect\\s*\\(').test(executable))
     throw Error('VIBE59_ROBLOX_DUPLICATE_REMOTE_HANDLER');
   const {states,events,transitions}=machine;
   if(!Array.isArray(states)||states.length<2||states.length>20
