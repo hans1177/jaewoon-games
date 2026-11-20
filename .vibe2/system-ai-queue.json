@@ -155233,7 +155233,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -155267,7 +155267,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 11,
-      "previousReservationId": "system-ai:44763358606:1",
+      "previousReservationId": "system-ai:44799525966:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -155275,12 +155275,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44799525966:1",
-      "reservedAt": "2026-11-20T19:15:21.166Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -155714,7 +155714,15 @@
         "actions-run:44761583370",
         "system-ai-handoff-to-reservation:system-ai:44763358606:1",
         "actions-run:44763358606",
-        "system-ai-handoff-to-reservation:system-ai:44799525966:1"
+        "system-ai-handoff-to-reservation:system-ai:44799525966:1",
+        "actions-run:44799525966",
+        "external-ai-raw-output-sha256:55848e81c304eb44a7b68a59838277b8d3dc868934900d9660afed8a6b0b70c3",
+        "selected-strategy:strategy-json-marketing-pack",
+        "system-ai-critic-decision-sha256:e5237588a84daf1c2d93bd20a4e82239f20fb8d98e6a8676b2bbb84784c2d56e",
+        "system-ai-applied-answer-sha256:56664bf4c0a15afe3a2168e41f1db49a956fb8e1a69c6660410a59c43d34f238",
+        "repair-strategy-fingerprint:3d84fa0fd9812307f290be55536f2a0c12c5f5f8bd29292c404dde663cd5cbfb",
+        "failed-strategy-fingerprint:3d84fa0fd9812307f290be55536f2a0c12c5f5f8bd29292c404dde663cd5cbfb",
+        "model-output-sha256:55848e81c304eb44a7b68a59838277b8d3dc868934900d9660afed8a6b0b70c3"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1862,
@@ -155729,7 +155737,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-20T19:15:21.166Z"
+      "updatedAt": "2026-11-20T19:23:19.974Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
