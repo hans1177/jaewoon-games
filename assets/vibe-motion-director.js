@@ -3579,21 +3579,39 @@ export function createEmotionIntentLayer({
   });
 }
 
+// [모션 세부 묘사] 단말·거리 변화가 경계값을 오갈 때 렌더링 계층만 안정적으로 유지한다.
+// 모션 프레임 예산과 전환 메타데이터는 게임플레이 피해·히트박스·이동 권한을 바꾸지 않는다.
 export function selectMotionLod({
   cameraDistance=0,
   screenSize=0,
   deviceClass='MOBILE',
   actorImportance='STANDARD',
   combatRelevant=true,
-  visible=true
+  visible=true,
+  previousTier=null,
+  hysteresisMeters=3,
+  blendSeconds=.18
 }={}){
   const importance=upper(actorImportance);
   const device=upper(deviceClass);
+  const distance=Number(cameraDistance),size=Number(screenSize);
+  const safeDistance=Number.isFinite(distance)?Math.max(0,distance):Infinity;
+  const safeSize=Number.isFinite(size)?Math.max(0,size):0;
+  const protectedActor=importance==='HERO'||importance==='BOSS';
   let tier='FAR';
   if(visible===false)tier='OFFSCREEN';
-  else if(importance==='HERO'||importance==='BOSS'||Number(cameraDistance)<12||Number(screenSize)>0.2)tier='NEAR';
-  else if(Number(cameraDistance)<35||combatRelevant===true)tier='MID';
-  if(device==='LOW_END_MOBILE'&&tier==='NEAR'&&importance!=='HERO'&&importance!=='BOSS')tier='MID';
+  else if(protectedActor||safeDistance<12||safeSize>0.2)tier='NEAR';
+  else if(safeDistance<35||combatRelevant===true)tier='MID';
+  if(device==='LOW_END_MOBILE'&&tier==='NEAR'&&!protectedActor)tier='MID';
+  // [거리 진동 억제] 중요 캐릭터/전투 판독 조건과 화면 밖 판정이 거리 히스테리시스보다 우선한다.
+  const prior=upper(previousTier||'');
+  const margin=clamp(hysteresisMeters,0,8);
+  if(visible!==false&&!protectedActor&&combatRelevant!==true&&safeSize<=0.2){
+    if(prior==='NEAR'&&tier==='MID'&&safeDistance<12+margin&&device!=='LOW_END_MOBILE')tier='NEAR';
+    else if(prior==='MID'&&tier==='NEAR'&&safeDistance>=12-margin&&safeSize<=0.2)tier='MID';
+    else if(prior==='MID'&&tier==='FAR'&&safeDistance<35+margin)tier='MID';
+    else if(prior==='FAR'&&tier==='MID'&&safeDistance>=35-margin)tier='FAR';
+  }
   const features=tier==='NEAR'
     ?['FULL_BODY_LAYERING','POSE_MATCHING','IK_CONTACT','FULL_IK_CONTACT','HEAD_GAZE','SECONDARY_MOTION','FACIAL_WHEN_AVAILABLE','FULL_VFX_SYNC']
     :tier==='MID'
@@ -3612,6 +3630,9 @@ export function selectMotionLod({
     tier,
     features:Object.freeze(features),
     budget:Object.freeze(budget),
+    transition:Object.freeze({from:['NEAR','MID','FAR','OFFSCREEN'].includes(prior)?prior:null,to:tier,
+      changed:Boolean(prior)&&prior!==tier,blendSeconds:clamp(blendSeconds,0,.5),
+      presentationOnly:true,gameplayEventTimingUnchanged:true}),
     offscreenMayReducePoseEvaluation:tier==='OFFSCREEN',
     heroAndBossNeverLoseCriticalReaction:true,
     gameplayHitAndCollisionUnaffected:true,
