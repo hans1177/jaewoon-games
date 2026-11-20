@@ -1870,7 +1870,6 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 					end
 				end
 			end
-			end
 			local gaitOf = { dog = 15, cat = 11, duck = 17, chicken = 17, pig = 9, sheep = 8,
 				cow = 5.5, horse = 6.5, donkey = 7, llama = 7, elephant = 4 }
 			local stepOf = { dog = 2.2, cat = 1.9, duck = 1.1, chicken = 1.0, pig = 2.5, sheep = 2.6,
@@ -5848,7 +5847,6 @@ function PortScene.build(info, onFacility)
 						end
 					end
 				end
-			end
 			elseif w.mode == "circle" then
 				if w.model.Parent then
 					local a = (now + w.phase) * w.speed / w.r
