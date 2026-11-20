@@ -56,6 +56,9 @@ export function assertWebVibeQueue(input){
   return input;
 }
 export function ingestWebVibeTask({task,queue,catalog={},status={},repoRoot=process.cwd(),filesystem=fs}={}){
+  // [오너 2026-11-20] 웹게임 신규 제작 접수 중단. 기존 큐 기록은 삭제하지 않는다.
+  const ownerPolicy=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),'utf8'));
+  if(ownerPolicy?.localVibeWebChat?.webGameAuthoringEnabled===false)throw new Error('WEB_VIBE_OWNER_WEB_GAME_AUTHORING_STOPPED');
   const validated=assertWebVibeQueue(queue);
   const old=buildPwaVibeTask(task,{catalog,status,repoRoot,filesystem});
   const verified=validated.tasks.filter(row=>row.gameId===old.gameId
