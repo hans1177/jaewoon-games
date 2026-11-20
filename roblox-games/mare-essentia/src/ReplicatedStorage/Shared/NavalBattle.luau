@@ -1505,17 +1505,19 @@ function NavalBattle.play(opts)
 		end)
 		skillBtn[sk.id] = b
 	end
-	-- 장전 게이지: 다음 포격까지 얼마나 남았는지 (사정거리 밖이면 회색)
+	-- 좁거나 낮은 화면에서는 포 사격 버튼에 장전 상태를 붙인다.
+	local compactReload = battleViewport.X < 720 or battleViewport.Y < 420
 	local reloadBack = Instance.new("Frame")
-	reloadBack.AnchorPoint = Vector2.new(0.5, 1)
-	reloadBack.Position = UDim2.new(0.5, 0, 1, if battleViewport.X < 480 then -295 elseif battleViewport.X < 720 then -212 else -62)
-	reloadBack.Size = UDim2.fromOffset(if battleViewport.X < 480 then math.min(260, battleViewport.X - 40)
-		elseif battleViewport.X < 720 then math.min(280, battleViewport.X - 48) else 300, 20)
+	reloadBack.Name = "NavalReloadGauge"
+	reloadBack.AnchorPoint = Vector2.new(0.5, if compactReload then 0 else 1)
+	reloadBack.Position = if compactReload then UDim2.new(0.5, 0, 0, 12) else UDim2.new(0.5, 0, 1, -62)
+	reloadBack.Size = if compactReload then UDim2.new(1, -42, 0, 19) else UDim2.fromOffset(300, 24)
+	reloadBack.ZIndex = if compactReload then skillBtn.fire.ZIndex + 5 else 2
 	reloadBack.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
 	reloadBack.BackgroundTransparency = 0.15
 	reloadBack.BorderSizePixel = 0
-	reloadBack.Visible = not opts.cardOnly and (battleViewport.X >= 720 or (battleViewport.X < 480 and battleViewport.Y >= 620) or (battleViewport.X >= 480 and battleViewport.Y >= 520))
-	reloadBack.Parent = gui
+	reloadBack.Visible = not opts.cardOnly
+	reloadBack.Parent = if compactReload then skillBtn.fire else gui
 	do
 		local c = Instance.new("UICorner")
 		c.CornerRadius = UDim.new(0, 8)
@@ -1526,7 +1528,10 @@ function NavalBattle.play(opts)
 		st.Parent = reloadBack
 	end
 	local reloadFill = Instance.new("Frame")
-	reloadFill.Size = UDim2.fromScale(1, 1)
+	reloadFill.AnchorPoint = Vector2.new(0, 1)
+	reloadFill.Position = UDim2.new(0, 4, 1, -2)
+	reloadFill.Size = UDim2.new(0, 0, 0, 3)
+	reloadFill.ZIndex = reloadBack.ZIndex + 1
 	reloadFill.BackgroundColor3 = Color3.fromRGB(240, 180, 80)
 	reloadFill.BorderSizePixel = 0
 	reloadFill.Parent = reloadBack
@@ -1536,8 +1541,9 @@ function NavalBattle.play(opts)
 		c.Parent = reloadFill
 	end
 	local reloadText = label(reloadBack, "포 장전", 12, Color3.fromRGB(255, 255, 255), true)
-	reloadText.Size = UDim2.fromScale(1, 1)
-	reloadText.ZIndex = 5
+	reloadText.Size = UDim2.new(1, -4, 1, -4)
+	reloadText.Position = UDim2.fromOffset(2, 0)
+	reloadText.ZIndex = reloadBack.ZIndex + 2
 	-- 적선까지 거리 표시
 	local distLabel = label(gui, "", 15, Color3.fromRGB(255, 255, 255))
 	distLabel.AnchorPoint = Vector2.new(0.5, 1)
@@ -6140,11 +6146,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			distLabel.TextColor3 = if inRange then Color3.fromRGB(130, 235, 150) elseif dv < cannon.range * 1.4 then Color3.fromRGB(255, 226, 120) else Color3.fromRGB(255, 255, 255)
 			local cdNow = cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
 			local prog = if opts.card or not inRange then 0 else 1 - math.clamp((nextMeFire - now) / math.max(0.1, cdNow), 0, 1)
-			reloadFill.Size = UDim2.fromScale(prog, 1)
+			reloadFill.Size = UDim2.new(prog, -8 * prog, 0, 3)
 			reloadFill.BackgroundColor3 = if now < skillUntil.rapid then Color3.fromRGB(255, 120, 70) elseif prog >= 1 then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(240, 180, 80)
-			reloadText.Text = if not inRange then "포 — 사거리 밖"
-				elseif prog >= 1 then "포 발사 준비!"
-				else "포 장전 중"
+			reloadText.Text = if not inRange then "사거리 밖"
+				elseif prog >= 1 then "장전 완료"
+				else "장전 중"
 			local v = cam:WorldToViewportPoint(ORIGIN + foe.pos)
 			local vp = cam.ViewportSize
 			local onScr = v.Z > 0 and v.X > 40 and v.X < vp.X - 40 and v.Y > 90 and v.Y < vp.Y - 90
