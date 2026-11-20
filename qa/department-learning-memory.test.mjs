@@ -1,3 +1,4 @@
+// 파일명: qa/department-learning-memory.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -6,6 +7,14 @@ import path from 'node:path';
 import { writeEvolutionEvidence } from '../tools/evolution-evidence-recorder.mjs';
 import { CORE_DEPARTMENT_ROLES, ingestVerifiedDepartmentEvidence, normalizeVerifiedDepartmentLearning, selectVerifiedDepartmentLearning } from '../tools/department-learning-memory.mjs';
 import { buildVibeCoreContext } from '../tools/autonomous-department-cycle.mjs';
+
+// [학습 모듈 로딩 회귀] 바이브2 작업자가 평가 코드에서 직접 import해도 CLI 저장을 실행하지 않는다.
+test('department learning memory import from Node module eval does not require argv[1]',()=>{
+  const output=execFileSync(process.execPath,
+    ['--input-type=module','--eval',"await import('./tools/department-learning-memory.mjs')"],
+    {cwd:process.cwd(),encoding:'utf8'});
+  assert.equal(output,'');
+});
 
 const roles=['planning','development','graphics','qa','balance'];
 const resultFor=(role,extra={})=>({role,workState:'DONE',decision:'PROCEED',summary:`${role} summary`,nextAction:`${role} action`,checks:[`${role} check`],risks:[],...extra});
