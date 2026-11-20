@@ -2128,6 +2128,7 @@ function H.layoutBook()
   H.facilityGallery.Visible = gallery
   local primaryVisible = gallery and currentTab ~= "board" and currentTab ~= "battle"
     and currentTab ~= "war" and currentTab ~= "route" and currentTab ~= "status"
+    and currentTab ~= "scholar" and currentTab ~= "crew"
   H.menuActionButton.Visible = primaryVisible
   H.menuActionDock.Visible = primaryVisible
   if facilityDetail then
@@ -12886,7 +12887,7 @@ function render()
 				icon.Position = UDim2.fromOffset(14, 7)
 				icon.ZIndex = banner.ZIndex + 1
 			end
-			local heading = mkLabel(banner, TAB_NAME[currentTab] or "시설", if wide then 20 else 18, Color3.fromRGB(255, 222, 144), true)
+			local heading = mkLabel(banner, "현재 상태", if wide then 20 else 18, Color3.fromRGB(255, 222, 144), true)
 			heading.Name = "MenuFocusHeading"
 			heading.Position = UDim2.fromOffset(if tabIcon then 46 else 14, 7)
 			heading.Size = UDim2.new(1, if tabIcon then -60 else -28, 0, 26)
