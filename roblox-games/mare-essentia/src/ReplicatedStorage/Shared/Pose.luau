@@ -1214,7 +1214,7 @@ function Pose.work(model, kind, t, moving)
 	local now = os.clock()
 	local st = workSmooth[model]
 	if not st then
-		st = { at = now, prev = {} }
+		st = { at = now, prev = {}, touched = {} }
 		workSmooth[model] = st
 	end
 	local interval = now - st.at
@@ -1230,8 +1230,10 @@ function Pose.work(model, kind, t, moving)
 	st.moving = moving == true
 	st.at = now
 	local dt = math.clamp(interval, 0, 1 / 20)
-	-- [보행 관절 보호] 이번 작업 모션에서 건드린 관절만 보간해 걷는 팔·발이 끌리지 않도록 한다.
-	local touched = {}
+	-- [모바일 성능] 인물별 관절 표시 표를 재사용해 매 프레임 새 테이블을 만들지 않는다.
+	-- [보행 관절 보호] 실제 바뀐 관절만 보간하고 보행 발걸음은 그대로 둔다.
+	local touched = st.touched
+	table.clear(touched)
 	local function set(motor, cf)
 		if not motor then return end
 		if motor == m.leftArm or motor == m.rightArm then
