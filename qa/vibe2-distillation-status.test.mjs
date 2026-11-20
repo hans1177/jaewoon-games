@@ -186,4 +186,9 @@ test('정식 플랫폼 재훈련 준비 판정과 생성 데이터가 합성 및
   assert.equal(status.tasks.roblox.accepted,exact.stats.accepted);
   assert.ok([...exact.train,...exact.eval,...exact.holdout].every(row=>row.synthetic===false&&row.provenance.sourceKind==='vibe2'));
   assert.equal(status.tasks.roblox.ready,true);
+  const wrongBrowser=verifiedSample({project:'P0001',index:99,taskType:'roblox'});
+  wrongBrowser.provenance={sourceKind:'vibe2'};
+  wrongBrowser.synthetic=false;
+  const rejected=buildDataset([entry(wrongBrowser,0)],{targetTaskType:'roblox',syntheticRatioCap:0});
+  assert.equal(rejected.stats.accepted,0);
 });
