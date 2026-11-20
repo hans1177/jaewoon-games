@@ -2154,7 +2154,7 @@ function H.layoutBook()
     local heading = H.menuFocusBanner:FindFirstChild("MenuFocusHeading")
     if heading then heading.TextSize = if firstCardAction then 20 else 18 end
     local number = H.menuFocusBanner:FindFirstChild("MenuFocusValue")
-    if number then number.TextSize = if firstCardAction then 24 else 22 end
+    if number then number.Size = UDim2.new(1, -28, 0, 42) end
     local explanation = H.menuFocusBanner:FindFirstChild("MenuFocusDescription")
     if explanation then
       explanation.Position = UDim2.fromOffset(14, if firstCardAction then 88 else 84)
@@ -12760,10 +12760,10 @@ function render()
 				if site.unlocked and (site.left or 0) > 0 then available += 1 end
 			end
 			fact = string.format("탐험 가능 %d / %d지역", available, #(view.sites or {}))
-			context = string.format("보급품 %d개 · 장소별 위험과 남은 발견물 확인", ship.supplies or 0)
+			context = string.format("보급품 %d개", ship.supplies or 0)
 		elseif currentTab == "gwent" then
-			fact = string.format("내 카드 %d장 · 병종 상성 확인", #((view.deck and view.deck.cards) or {}))
-			context = "병종 배치와 카드 효과 확인 · 기존 카드 대결 규칙 유지"
+			fact = string.format("보유 카드 %d장", #((view.deck and view.deck.cards) or {}))
+			context = ""
 		elseif currentTab == "scholar" or currentTab == "codex" then
 			local cx = view.codex or {}
 			fact = string.format("지식 발견 %d / %d장", cx.found or 0, cx.total or 0)
@@ -12791,7 +12791,7 @@ function render()
 					end
 				end
 			end
-			fact = string.format("연구 가능 %d개 · 다음 기술 선택", researchable)
+			fact = string.format("연구 가능 %d개", researchable)
 			if candidate then
 				local reason = if candidate.blocked then tostring(candidate.blocked)
 					elseif (candidate.cost or 0) > p.coins then string.format("코인 %s 부족", H.commas((candidate.cost or 0) - p.coins))
@@ -12836,12 +12836,30 @@ function render()
 			heading.Size = UDim2.new(1, if tabIcon then -60 else -28, 0, 26)
 			heading.AutomaticSize = Enum.AutomaticSize.None
 			heading.TextTruncate = Enum.TextTruncate.AtEnd
-			local highlight = mkLabel(banner, fact, if wide then 24 else 22, if urgent then Color3.fromRGB(255, 142, 128) else Color3.fromRGB(255, 238, 187), true)
-			highlight.Name = "MenuFocusValue"
-			highlight.Position = UDim2.fromOffset(14, 34)
-			highlight.Size = UDim2.new(1, -28, 0, 48)
-			highlight.AutomaticSize = Enum.AutomaticSize.None
-			highlight.TextWrapped = true
+			local values = string.split(fact, " · ")
+			local metrics = Instance.new("Frame")
+			metrics.Name = "MenuFocusValue"
+			metrics.BackgroundTransparency = 1
+			metrics.Position = UDim2.fromOffset(14, 34)
+			metrics.Size = UDim2.new(1, -28, 0, 42)
+			metrics.Parent = banner
+			local count = #values
+			for index, value in values do
+				local metric = mkLabel(metrics, value, 18, if urgent then Color3.fromRGB(255, 165, 151) else Color3.fromRGB(255, 238, 187), true)
+				metric.AutomaticSize = Enum.AutomaticSize.None
+				metric.Position = UDim2.new((index - 1) / count, 2, 0, 0)
+				metric.Size = UDim2.new(1 / count, -4, 1, 0)
+				metric.BackgroundColor3 = Color3.fromRGB(43, 34, 28)
+				metric.BackgroundTransparency = 0
+				metric.TextXAlignment = Enum.TextXAlignment.Center
+				metric.TextWrapped = true
+				metric.TextScaled = true
+				local limit = Instance.new("UITextSizeConstraint")
+				limit.MinTextSize = 11
+				limit.MaxTextSize = 19
+				limit.Parent = metric
+				corner(metric, 5)
+			end
 			local explanation = mkLabel(banner, context, if wide then 18 else 17, Color3.fromRGB(249, 232, 207), true)
 			explanation.Name = "MenuFocusDescription"
 			explanation.Position = UDim2.fromOffset(14, if wide then 88 else 84)
