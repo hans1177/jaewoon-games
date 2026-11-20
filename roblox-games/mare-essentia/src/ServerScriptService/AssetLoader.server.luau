@@ -200,6 +200,7 @@ local pending, loaded, failed = #queue, 0, 0
 local shipColorModels, shipColorParts, shipUnknownParts, shipColorExpected = 0, 0, 0, 0
 -- [스튜디오 실물 재질 점검] 등록 원본 9종을 한 번만 집계한다. 게임 저장/선적/재질은 건드리지 않는다.
 local outfitModels, outfitParts, outfitWhite, outfitMapped, outfitMaterialized = 0, 0, 0, 0, 0
+local outfitColorMaps, outfitNormalMaps, outfitRoughnessMaps, outfitMetalnessMaps = 0, 0, 0, 0
 local outfitMissing = {}
 for _, item in queue do
 	if item.kind == "Naval" and (item.name:match("%-v5$") or item.name:match("%-v5%-mobile$")) then
@@ -294,6 +295,13 @@ for _ = 1, 12 do
 								if piece.TextureID ~= "" or (surface and surface.ColorMap ~= "") then
 									outfitMapped += 1
 								end
+								-- [실물 재질 4종] 색만 입힌 플라스틱이 아닌 원본 256px 텍스처 여부를 확인한다.
+								if surface then
+									if surface.ColorMap ~= "" then outfitColorMaps += 1 end
+									if surface.NormalMap ~= "" then outfitNormalMaps += 1 end
+									if surface.RoughnessMap ~= "" then outfitRoughnessMaps += 1 end
+									if surface.MetalnessMap ~= "" then outfitMetalnessMaps += 1 end
+								end
 							end
 						end
 					end
@@ -343,10 +351,14 @@ for _ = 1, 12 do
 				ReplicatedStorage:SetAttribute("MareOutfitMaterialAudit", HttpService:JSONEncode({
 					expected = 9, loaded = outfitModels, meshParts = outfitParts,
 					whiteParts = outfitWhite, mappedParts = outfitMapped,
+					colorMaps = outfitColorMaps, normalMaps = outfitNormalMaps,
+					roughnessMaps = outfitRoughnessMaps, metalnessMaps = outfitMetalnessMaps,
 					nativeMaterialParts = outfitMaterialized, missing = outfitMissing,
 				}))
 				ReplicatedStorage:SetAttribute("MareOutfitMaterialAuditState",
-					if outfitModels == 9 and outfitParts >= 9 and outfitWhite == 0 then "PASS" else "FAIL")
+					if outfitModels == 9 and outfitParts >= 9 and outfitWhite == 0
+						and outfitColorMaps >= 9 and outfitNormalMaps >= 9 and outfitRoughnessMaps >= 9
+						and outfitMetalnessMaps >= 1 then "PASS" else "FAIL")
 				-- [스튜디오 독립 진단] 미복원 메시가 남았는지 확인할 수 있도록 집계만 기록한다.
 				ReplicatedStorage:SetAttribute("MareShipV5ColorAudit", HttpService:JSONEncode({
 					expected = shipColorExpected, models = shipColorModels,
