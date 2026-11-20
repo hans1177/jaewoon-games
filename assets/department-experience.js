@@ -10,7 +10,8 @@ export const COMPANY_DEPARTMENTS = Object.freeze([
   'development',
   'qa',
   'graphics',
-  'balance',
+  'audio',
+  'balance', // 과거 경험치 조회만 유지
   'homepage',
   'release',
   'director'
@@ -35,6 +36,7 @@ const FOCUS = Object.freeze({
   development: ['구현 대안 비교', '회귀 최소화', '구조 재사용', '성능/빌드 위험 조기 검증'],
   qa: ['경계조건 확대', '재현성', '회귀 범위 확대', '실패 패턴 재시험'],
   graphics: ['가독성', '에셋 일관성', '애니메이션 검증', '모바일 성능/화면 구성'],
+  audio: ['재생 이벤트 동기화', '실제 음향 재생 증거', '음량/음소거', '모바일 호환/라이선스'],
   balance: ['수치 근거', '성장곡선', '전투 압력', '경제/보상 회귀'],
   homepage: ['공개 게이트', '링크 안정성', '모바일 접근성', '게시 회귀'],
   release: ['빌드 재현성', '해시/산출물 검증', '배포 실패 복구', '게시 승인 분리'],
@@ -144,7 +146,7 @@ export function awardDepartmentExperience(state, {
 } = {}) {
   const normalized = createDepartmentExperienceState(state);
   const id = clean(department);
-  if (!COMPANY_DEPARTMENTS.includes(id)) throw new Error(`unknown department: ${id}`);
+  if (!COMPANY_DEPARTMENTS.includes(id) || id === 'balance') throw new Error(`unknown department: ${id}`);
 
   const proof = clean(evidence);
   const isLearningOnly = clean(outcome).toUpperCase() !== 'PASS';

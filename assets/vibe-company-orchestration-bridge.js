@@ -59,22 +59,23 @@ export const VIBE2_COMPANY_SYNC=Object.freeze({
   paidAutomation:'forbidden'
 });
 
+// [영향별 부서 배정] 밸런스·경제 심사는 기획/QA, 재생·음향은 오디오가 담당한다.
 const STAGE_ASSIGNMENTS=Object.freeze({
   brief:['planning'],
-  'core-fun':['planning','balance'],
+  'core-fun':['planning','qa'],
   'world-story':['planning'],
   storyboard:['planning','graphics'],
-  systems:['planning','development','balance'],
+  systems:['planning','development','qa'],
   'technical-architecture':['development'],
   'technical-spike':['development','qa'],
-  'playable-draft':['planning','development','qa','graphics','balance'],
-  'internal-review':['planning','development','qa','graphics','balance'],
+  'playable-draft':['planning','graphics','development','qa','audio'],
+  'internal-review':['planning','graphics','development','qa','audio'],
   'owner-approval':['director'],
   'full-development':['development'],
-  'system-complete':['development','qa','balance'],
-  'graphics-upgrade':['graphics','development','qa'],
-  'integrated-qa':['qa','planning','development','graphics','balance'],
-  optimization:['development','qa','graphics'],
+  'system-complete':['development','qa','audio'],
+  'graphics-upgrade':['graphics','development','qa','audio'],
+  'integrated-qa':['planning','graphics','development','qa','audio'],
+  optimization:['development','qa','graphics','audio'],
   'android-build':['development','qa','release']
 });
 

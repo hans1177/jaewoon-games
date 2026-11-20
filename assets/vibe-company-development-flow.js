@@ -18,7 +18,7 @@ export const COMPANY_FLOW_STAGES=Object.freeze([
   Object.freeze({id:'technical-architecture',name:'기술 구조',purpose:'아트북 컨셉을 엔진·플랫폼·렌더링·저장·빌드·저장소 구조와 기술 제약으로 번역',outputs:freezeList(['technical-stack','risk-list','performance-budget'])}),
   Object.freeze({id:'technical-spike',name:'기술 스파이크',purpose:'위험한 기술 요소만 작은 Web 실험으로 검증하고 모바일 성능/구현가능성을 확인',outputs:freezeList(['spike-results','web-runtime-check','risk-verdict'])}),
   Object.freeze({id:'playable-draft',name:'Web 개발판 B',purpose:'안정판 A를 보존한 채 핵심루프와 안전2+실험1을 구현하고, 컨셉 비주얼·몬스터 개연성·액션 모션·VFX/SFX/BGM·모바일 UI까지 Web에서 실제 플레이 기준으로 성립시킨다',outputs:freezeList(['web-candidate-b','play-notes','known-limitations','vibe2-evidence','concept-visuals','action-motion','vfx-sfx-bgm','mobile-ui-layout'])}),
-  Object.freeze({id:'internal-review',name:'내부 평가',purpose:'기획·개발·QA·그래픽·밸런스 관점에서 A/B와 증거를 독립 평가 후 총괄 종합',outputs:freezeList(['department-reviews','ab-evidence','director-verdict'])}),
+  Object.freeze({id:'internal-review',name:'내부 평가',purpose:'기획·그래픽·개발·QA·오디오 관점에서 A/B와 증거를 독립 평가 후 총괄 종합',outputs:freezeList(['department-reviews','ab-evidence','director-verdict'])}),
   Object.freeze({id:'owner-approval',name:'JAY 게임개발 게이트',purpose:'게임개발 MAJOR를 포함해 ADVANCE/REVISE/REDESIGN/HOLD/KILL을 증거 기반으로 판정. CEO 예약사항만 상향',outputs:freezeList(['jay-decision','owner-escalation-if-required'])}),
   Object.freeze({id:'full-development',name:'본개발',purpose:'검증된 최신 아트북 기준선과 JAY 판정을 기준으로 실제 콘텐츠와 시스템 구현',outputs:freezeList(['gameplay-systems','content'])}),
   Object.freeze({id:'system-complete',name:'시스템 완성',purpose:'핵심 플레이·성장·콘텐츠 흐름과 저장 구조 안정화',outputs:freezeList(['feature-complete-build'])}),
@@ -29,7 +29,8 @@ export const COMPANY_FLOW_STAGES=Object.freeze([
   Object.freeze({id:'public-release',name:'최종 공개',purpose:'CEO/L5 최종 공개 게이트 통과 후 공개 안정판으로 승격',outputs:freezeList(['public-release'])})
 ]);
 
-export const COMPANY_REVIEW_ROLES=freezeList(['planning','development','qa','graphics','balance']);
+// [정식 5부서] 새 검토에 과거 balance 역할을 사용하지 않는다.
+export const COMPANY_REVIEW_ROLES=freezeList(['planning','graphics','development','qa','audio']);
 export const COMPANY_DECISIONS=freezeList(['PASS','REVISE','DROP']);
 export const ARTBOOK_LOCKED_PREDESIGN_STAGES=freezeList(['brief','core-fun','world-story','storyboard','systems']);
 export const ARTBOOK_LOCKED_CONCEPT_CATEGORIES=freezeList([
@@ -176,7 +177,7 @@ export function createCompanyProposal({
 
 export function createDepartmentReview({role='',decision='REVISE',findings=[],blockingIssues=[],recommendations=[]}={}){
   const normalizedRole=clean(role).toLowerCase();
-  if(!COMPANY_REVIEW_ROLES.includes(normalizedRole))throw new Error(`unsupported review role: ${normalizedRole}`);
+  if(!COMPANY_REVIEW_ROLES.includes(normalizedRole)&&normalizedRole!=='balance')throw new Error(`unsupported review role: ${normalizedRole}`);
   const normalizedDecision=clean(decision).toUpperCase();
   if(!COMPANY_DECISIONS.includes(normalizedDecision))throw new Error(`unsupported review decision: ${normalizedDecision}`);
   return Object.freeze({
@@ -193,9 +194,11 @@ export function summarizeInternalReview({reviews=[],revisionRoundsUsed=0,maxRevi
   const missing=COMPANY_REVIEW_ROLES.filter(role=>!normalized.some(review=>review.role===role));
   if(missing.length)return Object.freeze({ready:false,decision:'REVISE',missingRoles:freezeList(missing),reviews:freezeList(normalized),reason:'all-review-roles-required'});
 
-  const blockers=normalized.flatMap(review=>review.blockingIssues);
-  const hasDrop=normalized.some(review=>review.decision==='DROP');
-  const hasRevise=normalized.some(review=>review.decision==='REVISE')||blockers.length>0;
+  // [기록 호환] 과거 balance 심사는 열람하되 현행 결재 집계에는 참여하지 않는다.
+  const active=normalized.filter(review=>COMPANY_REVIEW_ROLES.includes(review.role));
+  const blockers=active.flatMap(review=>review.blockingIssues);
+  const hasDrop=active.some(review=>review.decision==='DROP');
+  const hasRevise=active.some(review=>review.decision==='REVISE')||blockers.length>0;
   const used=Math.max(0,Math.floor(Number(revisionRoundsUsed)||0));
   const limit=Math.max(0,Math.floor(Number(maxRevisionRounds)||0));
   let decision='PASS';
