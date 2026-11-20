@@ -58,6 +58,41 @@ test('canonical Vibe2 Roblox handoff warns when Vibe59 responsible source is uno
   assert.match(report,/실제 Studio 실행 또는 보안 검증 통과의 증거가 아니다/);
 });
 
+// [바이브2 캐시 정합성] 새 검사 버전이 없는 구형 로블록스 인계 자료는 다시 분석한다.
+test('Vibe2 Roblox exploration refuses obsolete Vibe59 source-integrity cache',()=>{
+  const cwd=tempRoot(),root='roblox-games/source-integrity';
+  write(path.join(cwd,root,'server/Combat.server.luau'),
+    'local function inspect(player) return player end\ninspect(player)\n');
+  const order={
+    run:true,taskId:'roblox-integrity-check',gameId:'source-integrity',
+    target:'roblox',goal:'combat source integrity analysis',
+    source:{root,responsibleFiles:[root+'/server/Combat.server.luau'],ignoredPaths:[]},
+    workPackage:{id:'roblox-integrity',sharedContext:{diagnosticEvidence:[]}}
+  };
+  const prior=process.env.VIBE2_EXPLORATION_FILE;
+  delete process.env.VIBE2_EXPLORATION_FILE;
+  try{
+    const initial=exploreVibe2WorkOrder({cwd,order});
+    assert.equal(initial.robloxCoding.scanCoverage.version,2);
+    assert.equal(initial.robloxCoding.scanCoverage.responsibleComplete,true);
+    const artifact=path.join(cwd,'.vibe2/source-integrity.json');
+    write(artifact,JSON.stringify(initial));
+    process.env.VIBE2_EXPLORATION_FILE=artifact;
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,true);
+    write(artifact,JSON.stringify({
+      ...initial,robloxCoding:{...initial.robloxCoding,
+        scanCoverage:{...initial.robloxCoding.scanCoverage,version:1}}
+    }));
+    const refreshed=exploreVibe2WorkOrder({cwd,order});
+    assert.equal(refreshed.reused,false);
+    assert.equal(refreshed.robloxCoding.scanCoverage.version,2);
+    assert.equal(refreshed.sourceWrite,false);
+  }finally{
+    if(prior===undefined)delete process.env.VIBE2_EXPLORATION_FILE;
+    else process.env.VIBE2_EXPLORATION_FILE=prior;
+  }
+});
+
 test('canonical exploration guidance carries Roblox quality director without granting edit scope',()=>{
   const report=explorationGuidance({
     reuseKey:'roblox-director-contract',
