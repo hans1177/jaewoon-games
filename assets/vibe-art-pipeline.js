@@ -361,6 +361,141 @@ function derivedPathFor(asset, profileId, index) {
   return `${dir}/derived/${base}--v3-${profileId}-${index + 1}${ext}`;
 }
 
+// [바이브5.9 재창조 엔진] 기존 변형/모션/오디오 제작 책임을 재사용하는 분해·교환·재조합 계약.
+// 완성 메시·오디오·애니메이션 파일을 여기서 꾸며내지 않으며, 검증 불가능한 출처는 차단한다.
+export const VIBE_RECOMPOSITION_FAMILIES=Object.freeze({
+  CHARACTER:Object.freeze({operations:['PART_SWAP','MATERIAL_REAUTHOR','RIG_REBIND'],production:'tools/vibe-variation-gym.mjs'}),
+  CREATURE:Object.freeze({operations:['PART_SWAP','SILHOUETTE_KITBASH','RIG_REBIND'],production:'tools/vibe-variation-gym.mjs'}),
+  BUILDING:Object.freeze({operations:['PART_SWAP','SET_DRESSING','KITBASH'],production:'tools/vibe-variation-gym.mjs'}),
+  ENVIRONMENT:Object.freeze({operations:['LANDMARK_KITBASH','BIOME_BLEND','LOD_REAUTHOR'],production:'assets/vibe-environment-director.js'}),
+  PROP:Object.freeze({operations:['PART_SWAP','KITBASH','MATERIAL_REAUTHOR'],production:'tools/vibe-variation-gym.mjs'}),
+  MATERIAL:Object.freeze({operations:['LAYER_SWAP','SURFACE_REAUTHOR'],production:'assets/vibe-art-pipeline.js'}),
+  UI:Object.freeze({operations:['ICON_LAYER_SWAP','STATE_COMPOSITE'],production:'assets/vibe-presentation-director.js'}),
+  ICON:Object.freeze({operations:['ICON_LAYER_SWAP','STATE_COMPOSITE'],production:'assets/vibe-presentation-director.js'}),
+  VFX:Object.freeze({operations:['EMITTER_REASSEMBLE','EVENT_SYNC'],production:'assets/vibe-motion-effects-director.js'}),
+  MOTION:Object.freeze({operations:['RIG_RETARGET','POSE_LAYER_SWAP','ROOT_MOTION_MATCH'],production:'assets/vibe-motion-director.js'}),
+  ANIMATION:Object.freeze({operations:['RIG_RETARGET','STATE_BLEND','LOOP_STITCH'],production:'assets/vibe-motion-director.js'}),
+  AUDIO:Object.freeze({operations:['STEM_LAYER_SWAP','LOOP_STITCH','SPATIAL_MIX'],production:'assets/vibe-presentation-director.js'}),
+  MUSIC:Object.freeze({operations:['STEM_LAYER_SWAP','LOOP_STITCH','TRANSITION_BLEND'],production:'assets/vibe-presentation-director.js'}),
+  SFX:Object.freeze({operations:['TRANSIENT_LAYER_SWAP','SPATIAL_MIX'],production:'assets/vibe-presentation-director.js'})
+});
+
+// [분해·조립] 사용자가 제공한 ChatGPT 제작물/내부 자산도 원본 권리·실제 바이너리 SHA 증거가 있어야 후보가 된다.
+// 후보 파일 생성과 게임 업로드는 원래의 Blender·네이티브 제작 워커 및 독립 QA가 수행한다.
+export function createVibeAssetRecompositionPlan({
+  gameId='',target='ROBLOX',sourceAssets=[],request='',maxRecipes=8,verifiedObservations=[]
+}={}){
+  const platform=clean(target).toUpperCase();
+  const approved=[],rejected=[],assets=Array.isArray(sourceAssets)?sourceAssets.slice(0,32):[];
+  for(const source of assets){
+    const family=clean(source?.family||source?.category).toUpperCase();
+    const id=clean(source?.id),sha256=clean(source?.sha256||source?.sourceSha256||source?.sourceHash).toLowerCase();
+    const origin=clean(source?.origin).toUpperCase();
+    const license=clean(source?.license).toUpperCase();
+    const rights=license==='CC0'||license==='CC0-1.0'
+      ||['PROJECT-ORIGINAL','CREATED-IN-PROJECT','COMPANY-OWNED'].includes(license)&&source?.ownerRightsVerified===true;
+    const parentSafety=source?.securityBlocked!==true&&source?.quarantined!==true
+      &&source?.gameUseForbidden!==true&&source?.derivativesAllowed!==false;
+    const verified=source?.licenseVerified===true&&source?.commercialUseVerified===true
+      &&source?.sourceBytesVerified===true&&source?.sourceHashVerified===true;
+    const components=Array.isArray(source?.components)?source.components.slice(0,24):[];
+    const parts=components.filter(part=>clean(part?.id)&&clean(part?.slot)
+      &&/^[a-f0-9]{64}$/i.test(clean(part?.sha256||part?.sourceHash))
+      &&part?.sourceBytesVerified===true&&part?.safeForReuse===true);
+    const reasons=[];
+    if(!id||!Object.hasOwn(VIBE_RECOMPOSITION_FAMILIES,family))reasons.push('ASSET_ID_OR_FAMILY_INVALID');
+    if(!/^[a-f0-9]{64}$/.test(sha256))reasons.push('ORIGINAL_SHA256_REQUIRED');
+    if(!rights||!verified)reasons.push('SOURCE_RIGHTS_AND_BINARY_PROOF_REQUIRED');
+    if(!parentSafety)reasons.push('SOURCE_QUARANTINED_OR_MUTATION_FORBIDDEN');
+    if(!parts.length)reasons.push('VERIFIED_DECOMPOSED_PART_REQUIRED');
+    if(origin==='CHATGPT_GENERATED'&&source?.ownerRightsVerified!==true)
+      reasons.push('CHATGPT_OUTPUT_OWNER_RIGHTS_REVIEW_REQUIRED');
+    if(reasons.length){
+      rejected.push(Object.freeze({id:id||null,family:family||null,reasons:Object.freeze(reasons)}));
+      continue;
+    }
+    approved.push(Object.freeze({
+      id,family,sha256,origin,license,
+      parts:Object.freeze(parts.map(part=>Object.freeze({
+        id:clean(part.id),slot:clean(part.slot).toUpperCase(),
+        sha256:clean(part.sha256||part.sourceHash).toLowerCase(),
+        rigProfile:clean(part.rigProfile).toUpperCase()||null,
+        compatibilityGroup:clean(part.compatibilityGroup).toUpperCase()||null
+      }))),
+      production:VIBE_RECOMPOSITION_FAMILIES[family].production,
+      operators:VIBE_RECOMPOSITION_FAMILIES[family].operations
+    }));
+  }
+  const recipes=[],limit=Math.max(0,Math.min(16,Math.floor(Number(maxRecipes)||8)));
+  const requestedText=clean(request).toLowerCase();
+  const validOrigins=new Set(approved.map(row=>row.id));
+  for(const base of approved){
+    for(const donor of approved){
+      if(base.id===donor.id||base.sha256===donor.sha256)continue;
+      for(const basePart of base.parts){
+        for(const donatedPart of donor.parts){
+          if(recipes.length>=limit)break;
+          if(basePart.slot!==donatedPart.slot)continue;
+          if(base.family!==donor.family)continue;
+          if(basePart.compatibilityGroup&&donatedPart.compatibilityGroup&&
+            basePart.compatibilityGroup!==donatedPart.compatibilityGroup)continue;
+          if(basePart.rigProfile!==donatedPart.rigProfile &&
+            (basePart.rigProfile||donatedPart.rigProfile))continue;
+          const operation=base.operators[0],recipeId='recompose-'+stableHash([
+            base.sha256,donor.sha256,basePart.sha256,donatedPart.sha256,operation,platform
+          ].join('|'));
+          if(recipes.some(row=>row.id===recipeId))continue;
+          recipes.push(Object.freeze({
+            id:recipeId,gameId:clean(gameId)||null,platform,
+            baseAssetId:base.id,donorAssetId:donor.id,
+            parentHashes:Object.freeze([base.sha256,donor.sha256]),
+            replacedPart:Object.freeze({id:basePart.id,slot:basePart.slot,sha256:basePart.sha256}),
+            donorPart:Object.freeze({id:donatedPart.id,slot:donatedPart.slot,sha256:donatedPart.sha256}),
+            operation,compatibleRig:basePart.rigProfile||null,
+            production:base.production,
+            sourceMutation:false,originalParentsImmutable:true,
+            status:'COMPOSITION_RECIPE_NEEDS_NATIVE_AUTHORING_AND_RUNTIME_QA',
+            externalModelMaySuggestParameters:true,externalModelMaySelfApprove:false,
+            nativeOutputProduced:false,gameSourceApplied:false,robloxUploaded:false,
+            authority:'EXISTING_GRAPHICS_AND_NATIVE_GAME_OWNER'
+          }));
+        }
+      }
+    }
+  }
+  const observations=Array.isArray(verifiedObservations)?verifiedObservations:[];
+  const evidence=observations.filter(row=>validOrigins.has(clean(row?.parentAssetId))
+    &&recipes.some(recipe=>recipe.id===clean(row?.recipeId))
+    &&row?.independentQaPassed===true&&row?.runtimeObserved===true
+    &&row?.rightsVerified===true&&row?.sourceAndOutputHashesVerified===true
+    &&/^[a-f0-9]{40}$/i.test(clean(row?.sourceRevision))
+    &&/^[a-f0-9]{64}$/i.test(clean(row?.outputSha256)));
+  return Object.freeze({
+    version:1,kind:'VIBE_ASSET_COMPONENT_RECOMPOSITION',gameId:clean(gameId)||null,
+    platform,request:requestedText.slice(0,180),families:Object.freeze(Object.keys(VIBE_RECOMPOSITION_FAMILIES)),
+    inspectedCount:assets.length,approvedCount:approved.length,rejectedCount:rejected.length,
+    approvedParents:Object.freeze(approved),rejectedParents:Object.freeze(rejected),
+    recipes:Object.freeze(recipes),verifiedObservations:Object.freeze(evidence.map(row=>Object.freeze({
+      recipeId:clean(row.recipeId),outputSha256:clean(row.outputSha256),
+      sourceRevision:clean(row.sourceRevision)
+    }))),
+    rejectedOrUnanchoredObservations:observations.length-evidence.length,
+    incumbentAlgorithms:Object.freeze(['EXISTING_BLENDER_KITBASH','EXISTING_MOTION_RETARGET',
+      'EXISTING_V3_VARIANT_TOURNAMENT','EXISTING_EPSILON_GREEDY_VARIATION_GYM']),
+    externalFreeModelRouter:'tools/vibe2-gemini-free-rotation.mjs#selectVibe59FreeExperts',
+    verifiedLearningOwner:'tools/department-learning-memory.mjs',
+    externalDistillationOwner:'tools/vibe2-external-ai-distillation.mjs',
+    noNewQueueOrPipeline:true,
+    noOriginalOverwrite:true,gameplayAndSavePreserved:true,
+    verifiedObservationIsNotModelTraining:true,
+    automaticModelWeightUpdate:false,
+    runtimeQaAndOwnerReviewStillRequired:true,
+    status:recipes.length?'RECIPES_PENDING_NATIVE_AUTHORING_AND_RUNTIME_QA':
+      rejected.length?'SOURCE_OR_PART_VERIFICATION_REQUIRED':'NO_COMPATIBLE_VERIFIED_PARTS',
+    authority:'GRAPHICS_PRODUCTION_RESEARCH_ADVISORY_ONLY'
+  });
+}
+
 export function createVibeAssetVariantPlan({ asset = {}, requestedTransforms = ASSET_TRANSFORMS, variantCount = 3 } = {}) {
   const rights = createVibeAssetReconstructionContract({asset,requestedTransforms,derivativePurpose:'vibe3-non-destructive-variant-tournament'});
   const count = Math.max(2, Math.min(6, Math.floor(Number(variantCount) || 3)));
@@ -684,6 +819,8 @@ export function createVibeGraphicsProduction({
   graph=null,
   events=[],
   assetProductionPlan=null,
+  reconstructionSources=[],
+  reconstructionObservations=[],
   runtimeEvidence=null,
   candidateRevision='',
   sourceRevision='',
@@ -704,6 +841,10 @@ export function createVibeGraphicsProduction({
 }={}){
   const platforms=graphicsProductionPlatforms(target);
   const changeRequestStability=createVibeOwnerChangeRequestStability({request,previousRequests:previousOwnerRequests,affectedScopes});
+  const assetRecomposition=createVibeAssetRecompositionPlan({
+    gameId,target:platforms.length===1?platforms[0]:'ROBLOX',
+    request,sourceAssets:reconstructionSources,verifiedObservations:reconstructionObservations
+  });
   const engineImprovement=createVibeEngineSpecialistPlan({
     gameId,request,target:platforms.length===1?platforms[0]:'ROBLOX',
     assetGaps:assetProductionPlan?.familyAssetOptimization?.familyTasks?.filter(row=>row?.requested===true)||[],
@@ -1009,6 +1150,7 @@ export function createVibeGraphicsProduction({
     soleCoordinator:GRAPHICS_PRODUCTION_INTERNAL_MODULES.coordinator,
     inputPlanner:GRAPHICS_PRODUCTION_INTERNAL_MODULES.inputPlanner,
     engineImprovement,
+    assetRecomposition,
     internalModules:GRAPHICS_PRODUCTION_INTERNAL_MODULES,
     stages:GRAPHICS_PRODUCTION_STAGES,
     assetProductionPlanBound:assetPlanBound,
