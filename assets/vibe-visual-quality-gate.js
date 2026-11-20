@@ -232,12 +232,75 @@ export function auditVibeHighEndTargetFrameEvidence(evidence={}){
   });
 }
 
+// [모바일 에셋 런타임] 실행 화면·측정 프레임은 동일한 파생 GLB 해시에 결속해야 한다.
+// 정적 Blender 화면이나 등록 메타데이터는 모바일 실행 증거가 아니다.
+export function auditVibeMobileAssetPerformance(evidence={},candidateRevision=''){
+  const revision=String(candidateRevision||evidence?.candidateRevision||'').trim();
+  const assetHash=String(evidence?.assetGlbSha256||'').trim().toLowerCase();
+  const capture=evidence?.capture||{},measurement=evidence?.measurement||{};
+  const samples=Array.isArray(measurement.frameSamplesMs)?measurement.frameSamplesMs:[];
+  const validSamples=samples.length>=60&&samples.length<=3600
+    &&samples.every(ms=>Number.isFinite(ms)&&ms>0&&ms<1000);
+  const ordered=validSamples?[...samples].sort((a,b)=>a-b):[];
+  const p95=validSamples?ordered[Math.ceil(ordered.length*.95)-1]:null;
+  const reasons=[];
+  if(!revision||!/^[a-f0-9]{64}$/i.test(assetHash))reasons.push('asset-or-candidate-revision-missing');
+  if(!RUNTIME_CAPTURE_SOURCES.has(String(capture.source||'').trim().toLowerCase())
+    ||capture.runtimeScreenshot!==true||capture.observed!==true||capture.reviewed!==true
+    ||capture.markerOnly===true||String(capture.candidateRevision||'').trim()!==revision
+    ||String(capture.deviceClass||'').toUpperCase()!=='MOBILE'
+    ||!String(capture.artifactId||'').trim()
+    ||!/^[a-f0-9]{64}$/i.test(String(capture.imageSha256||''))
+    ||capture.pixelReview?.pass!==true
+    ||capture.pixelReview?.imageSha256!==capture.imageSha256
+    ||!Array.isArray(capture.visibleAssetHashes)
+    ||!capture.visibleAssetHashes.map(h=>String(h).toLowerCase()).includes(assetHash))
+    reasons.push('asset-mobile-runtime-screenshot-or-identity-missing');
+  if(measurement.source!=='native-runtime-telemetry'
+    ||measurement.observed!==true||measurement.reviewed!==true
+    ||String(measurement.candidateRevision||'').trim()!==revision
+    ||String(measurement.assetGlbSha256||'').toLowerCase()!==assetHash
+    ||!String(measurement.deviceId||'').trim()
+    ||String(measurement.deviceId||'')!==String(capture.deviceId||'')
+    ||!String(measurement.artifactId||'').trim()
+    ||!/^[a-f0-9]{64}$/i.test(String(measurement.sha256||''))||!validSamples)
+    reasons.push('asset-mobile-measured-frame-evidence-missing');
+  const limits={frameP95Ms:34,drawCalls:300,visibleTriangles:300000,memoryPeakMb:512};
+  const metrics={frameP95Ms:p95,drawCalls:measurement.drawCalls,
+    visibleTriangles:measurement.visibleTriangles,memoryPeakMb:measurement.memoryPeakMb};
+  for(const [key,maximum] of Object.entries(limits)){
+    const value=metrics[key];
+    if(!Number.isFinite(value)||value<0||(key==='frameP95Ms'&&value===0))
+      reasons.push('mobile-'+key+'-measurement-missing');
+    else if(value>maximum)reasons.push('mobile-'+key+'-budget-exceeded');
+  }
+  return Object.freeze({version:1,pass:reasons.length===0,
+    candidateRevision:revision||null,assetGlbSha256:assetHash||null,
+    sampleCount:samples.length,metrics:Object.freeze(metrics),limits:Object.freeze(limits),
+    reasons:Object.freeze(reasons),source:'EXACT_NATIVE_MOBILE_RUNTIME_EVIDENCE',
+    runtimeVerified:reasons.length===0,gameplayAuthority:false});
+}
+
 export function auditVibeRuntimeVisualEvidence(evidence={}){
   const stage=String(evidence.stage||'INTERNAL_PLAYTEST').trim().toUpperCase();
   const golden=auditVibeGoldenSceneEvidence(evidence);
   const highEndRequired=evidence.highEndVisualRequired===true||String(evidence.qualityProfile||'').trim().toUpperCase()==='HIGH_END_COMMERCIAL_NATIVE_PRESENTATION';
   const highEndFrames=highEndRequired?auditVibeHighEndTargetFrameEvidence(evidence):null;
   const universalAssetFirstRequired=evidence.universalAssetFirstRequired===true;
+  const mobileAssetPerformanceRequired=evidence.mobileAssetPerformanceRequired===true;
+  const mobileAssetHashesRequired=[...new Set((Array.isArray(evidence.mobileAssetHashesRequired)
+    ?evidence.mobileAssetHashesRequired:[]).map(h=>String(h||'').toLowerCase()))];
+  const mobileAssetEvidence=Array.isArray(evidence.mobileAssetPerformances)
+    ?evidence.mobileAssetPerformances:[evidence.mobileAssetPerformance||{}];
+  const mobileAssetPerformance=mobileAssetPerformanceRequired
+    ?mobileAssetHashesRequired.length?(()=>{
+      const assets=mobileAssetHashesRequired.map(hash=>{
+        const matching=mobileAssetEvidence.find(item=>String(item?.assetGlbSha256||'').toLowerCase()===hash);
+        return auditVibeMobileAssetPerformance(matching||{},evidence.candidateRevision);
+      });
+      return Object.freeze({pass:assets.every(row=>row.pass),assets:Object.freeze(assets),
+        reasons:Object.freeze(assets.flatMap(row=>row.reasons))});
+    })():auditVibeMobileAssetPerformance(mobileAssetEvidence[0],evidence.candidateRevision):null;
   const universalAssetFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
   const assetFamilyCoverage=evidence.assetFamilyCoverage&&typeof evidence.assetFamilyCoverage==='object'?evidence.assetFamilyCoverage:{};
   const missingAssetFamilyAccounting=universalAssetFirstRequired?universalAssetFamilies.filter(family=>!['APPLIED','NOT_APPLICABLE'].includes(String(assetFamilyCoverage?.[family]?.status||assetFamilyCoverage?.[family]||'').toUpperCase())):[];
@@ -397,6 +460,8 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   if(highEndRequired&&!visualRegressionPassed)reasons.push('before-after-visual-regression-missing-or-failed');
   if(artDirectionReview&&(!artDirectionReview.pass||artDirectionRevisionMismatch))reasons.push('art-direction-visible-quality-unverified');
   if(highEndRequired&&evidence.performance?.pass!==true)reasons.push('platform-performance-evidence-missing-or-failed');
+  if(mobileAssetPerformanceRequired&&mobileAssetPerformance?.pass!==true)
+    reasons.push('native-mobile-asset-performance-evidence-missing-or-failed');
   if(primitiveViolations.length)reasons.push('primary-actor-primitive-placeholder');
   if(actorBindingFailures.length)reasons.push('primary-actor-native-binding-not-verified');
   if(finalStage&&openCriticalDebt.length)reasons.push('unresolved-critical-visual-debt');
@@ -410,6 +475,11 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   for(const id of missingInterfaceSurfaces)repairTargets.push(Object.freeze({surface:'INTERFACE',id,scope:'HUD_MENU_MINIMAP_INTERACTION_PRESENTATION',evidenceRequired:'EXACT_SOURCE_PORTRAIT_LANDSCAPE_IMAGE_AND_TOUCH_BOUNDS',findings:interfaceFailures[id]}));
   for(const id of missingSceneObjects)repairTargets.push(Object.freeze({surface:'SCENE_OBJECT',id,scope:'DECLARED_VISUAL_OBJECT_BINDING',evidenceRequired:'RUNTIME_VISIBLE_AND_BOUND_CAPTURE'}));
   if(highEndRequired&&!visualRegressionPassed)repairTargets.push(Object.freeze({surface:'VISUAL_REGRESSION',id:'BEFORE_AFTER',scope:'CHANGED_VISUAL_RESPONSIBILITY_ONLY',evidenceRequired:detailedVisualRegression?'DISTINCT_STABLE_RUNTIME_BEFORE_AFTER_CAPTURE':'EXISTING_VISUAL_REGRESSION_EVIDENCE'}));
+  if(mobileAssetPerformanceRequired&&mobileAssetPerformance?.pass!==true)
+    repairTargets.push(Object.freeze({surface:'MOBILE_NATIVE_ASSET',id:'GLB_RUNTIME_PERFORMANCE',
+      scope:'NATIVE_VISUAL_AND_PERFORMANCE_ONLY',findings:mobileAssetPerformance.reasons,
+      evidenceRequired:'EXACT_MODEL_HASH_RUNTIME_SCREENSHOT_AND_60_NATIVE_FRAME_SAMPLES',
+      preserveGameplayAndSave:true}));
   return Object.freeze({
     version:1,
     pass:reasons.length===0,
@@ -437,6 +507,7 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
       complete:missingSceneObjects.length===0
     }),
     visualRegression:visualRegressionAudit,
+    mobileAssetPerformance,
     artDirectionReview,
     repairTargets:Object.freeze(repairTargets),
     universalAssetFirst:Object.freeze({

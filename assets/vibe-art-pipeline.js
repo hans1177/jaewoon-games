@@ -725,8 +725,18 @@ export function createVibeGraphicsProduction({
   const sceneSource=(sceneObjectRequirements||[]).length?sceneObjectRequirements:(world?.requiredObjects||game?.requiredSceneObjects||[]);
   const sceneRequirements=Object.freeze((sceneSource||[]).map(row=>typeof row==='string'?Object.freeze({id:row,required:true}):Object.freeze({...row})).filter(row=>clean(row?.id)));
   const runtimeEvidenceBase=runtimeEvidence&&typeof runtimeEvidence==='object'?runtimeEvidence:{};
-  const runtimeEvidenceBound=(Object.keys(runtimeEvidenceBase).length||requiredInterfaceSurfaces.length||sceneRequirements.length||runtimeBeforeAfterEvidence)?{
+  // [신규 네이티브 파생 자산] 실제 소스에 반영되기 전이라도 같은 그래픽 루트에서
+  // 각 GLB의 실게임 모바일 캡처·측정값이 없으면 GRAPHICS_PASS를 봉쇄한다.
+  const nativeImportHashes=Object.freeze(unique((assetPlanBound
+    ?assetProductionPlan?.automaticAssetBindingWork?.targets||[]:[])
+    .filter(row=>row?.status==='NATIVE_IMPORT_AND_RUNTIME_QA_REQUIRED')
+    .map(row=>clean(row?.artifactHash).toLowerCase())
+    .filter(hash=>/^[a-f0-9]{64}$/.test(hash))));
+  const nativeMobileQaRequired=nativeImportHashes.length>0||runtimeEvidenceBase.mobileAssetPerformanceRequired===true;
+  const runtimeEvidenceBound=(Object.keys(runtimeEvidenceBase).length||requiredInterfaceSurfaces.length||sceneRequirements.length||runtimeBeforeAfterEvidence||nativeMobileQaRequired)?{
     ...runtimeEvidenceBase,
+    ...(nativeMobileQaRequired?{mobileAssetPerformanceRequired:true}:{}),
+    ...(nativeImportHashes.length?{mobileAssetHashesRequired:nativeImportHashes}:{}),
     ...(requiredInterfaceSurfaces.length?{requiredInterfaceSurfaces}:{}),
     ...(sceneRequirements.length?{sceneObjectCoverage:{...(runtimeEvidenceBase.sceneObjectCoverage||{}),requirements:sceneRequirements}}:{}),
     ...(runtimeBeforeAfterEvidence?{visualRegression:runtimeBeforeAfterEvidence}:{})
@@ -876,6 +886,8 @@ export function createVibeGraphicsProduction({
     changeRequestStability,
     continuousEvolution:Object.freeze({enabled:true,graphicsPassIsCheckpointNotTerminal:true,continuesAfterInternalRelease:true,continuesAfterPublicRelease:true,highEndCompletionIsReleaseGate:false}),
     runtimeAudit,
+    nativeMobileQaRequired,
+    pendingNativeAssetHashes:nativeImportHashes,
     runtimeRepairLoop,
     engineMeasurementCapture:measurementCapture,
     interfaceRequirements:requiredInterfaceSurfaces,
@@ -905,6 +917,7 @@ export function createVibeGraphicsProduction({
       platformSpecificReauthoring:true,
       beforeAfterVisualRegression:true,
       platformPerformanceEvidence:true,
+      preparedNativeAssetRequiresExactMobileTelemetry:true,
       oneRootEvidenceRecord:true,
       shadowGraphicsPipelineForbidden:true,
       continuousPresentationEvolution:true,
