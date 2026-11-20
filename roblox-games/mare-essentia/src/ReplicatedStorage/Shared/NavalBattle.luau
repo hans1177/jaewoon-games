@@ -3446,8 +3446,20 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						if rule == description then rule = description:gsub("^낼 때：%s*", "", 1) end
 					end
 					local trigger = if rule ~= description then t("낼 때", "On play") elseif not hasTiming then timing else nil
-					focusRule.Text = row .. strength .. "\n" .. (if ability then ability .. " " else "")
-						.. (if trigger then trigger .. " · " else "") .. rule
+					-- [해도 탁자] 첫 줄에 발동과 효과, 다음 줄에 연계 조건과 전투 상태를 표시한다.
+					local combo
+					if card.id == "lo_51" then
+						local effect, condition = rule:match("^(.-)%.%s+(.+)$")
+						if effect then
+							rule, combo = effect, condition
+							if english then
+								rule = "Enemy melee non-hero −2"
+							end
+						end
+					end
+					focusRule.Text = (if trigger then trigger .. " · " else "") .. rule
+						.. (if combo then "\n" .. t("연계 · ", "Combo · ") .. combo else "")
+						.. "\n" .. row .. strength .. (if ability then " · " .. ability else "")
 						.. (if status then "\n" .. t("상태 · ", "Status · ") .. status else "")
 						.. (if forecast then "\n" .. forecast else "")
 				else
