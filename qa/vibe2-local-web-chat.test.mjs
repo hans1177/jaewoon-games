@@ -117,6 +117,9 @@ test('local chat adds no queue writer, shell, or direct publication method', () 
 test('only explicitly selected catalog web game can enter existing owner workflow', async () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vibe-owner-web-'));
   try {
+    // [기존 동작 회귀 fixture] 기존 정책 사용 테스트는 웹 작업 허용 정책을 명시적으로 제공한다.
+    fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+    fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({localVibeWebChat:{webGameAuthoringEnabled:true}}));
     fs.mkdirSync(path.join(root, 'web-games', 'tiny-game'), { recursive: true });
     fs.writeFileSync(path.join(root, 'web-games', 'tiny-game', 'index.html'), '<html>web</html>');
     fs.writeFileSync(path.join(root, 'game-catalog.json'), JSON.stringify({
