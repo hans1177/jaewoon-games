@@ -195,3 +195,17 @@ test('one sound implementation file belongs to audio only when the task explicit
     assert.equal(unrelated.reason,'NO_FUNCTIONAL_RESPONSIBILITY');
   }finally{fs.rmSync(source,{recursive:true,force:true});}
 });
+
+
+test('audio review-only handoff cannot claim game source mutation for an application-status inspection',()=>{
+  const source='web-games/__scope-audio-review-test__';
+  fs.rmSync(source,{recursive:true,force:true});fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'audio.js'),'const cue = new Audio("./cue.ogg"); function playSound(){cue.play()}');
+  try{
+    const result=resolveDepartmentScope({role:'audio',sourcePath:source,
+      goal:'선박 포격 효과음 이벤트 점검',repairMode:'MODEL',
+      departmentResult:{nextAction:'기존 포격 효과음 적용 여부를 검토하고 다음 라운드 기준을 제안한다'}});
+    assert.equal(result.run,false);
+    assert.equal(result.reason,'NO_FUNCTIONAL_RESPONSIBILITY');
+  }finally{fs.rmSync(source,{recursive:true,force:true});}
+});
