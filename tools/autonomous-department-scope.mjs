@@ -6,7 +6,8 @@ import { pathToFileURL } from 'node:url';
 import Graphics from '../assets/jaewoon-graphics-engine.js';
 import { rankAdaptiveContextCandidates } from './vibe2-development-intelligence.mjs';
 
-const ROLE_ORDER=['development','graphics','qa','balance'];
+// [현행 실행 부서] 밸런스 수치 보호는 기획·QA 심사, 코드 변경은 개발 책임이다.
+const ROLE_ORDER=['development','graphics','qa','audio'];
 const ROLES=new Set(ROLE_ORDER);
 const EXTENSIONS=new Set(['.html','.htm','.js','.mjs','.cjs','.css','.json','.svg']);
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -19,13 +20,13 @@ const SIGNALS={
   development:{path:/(?:^|\/)(?:main|game|app|index|player|world|core)|\.(?:js|mjs|cjs|html?)$/i,code:/\b(?:function|class|requestAnimationFrame|addEventListener|player|state|update|spawn|collision|canvas|getContext)\b/i},
   graphics:{path:/\.(?:css|svg)$|(?:ui|style|view|render|effect|vfx|animation|sprite|asset|hud|menu)/i,code:/(?:<canvas\b|<svg\b|\b(?:drawImage|fillRect|strokeRect|fillText|classList|style\.|animation|transform|sprite|render|particle|effect|hud|menu|modal)\b|#[\w-]+\s*\{|\.[\w-]+\s*\{)/i},
   qa:{path:/(?:^|\/)(?:test|tests|qa|spec)(?:\/|\.|-|_)|\.(?:test|spec)\./i,code:/\b(?:console\.(?:error|warn)|try\s*\{|catch\s*\(|throw\s+new|requestfailed|error|loading|localStorage|sessionStorage|getElementById|addEventListener|fetch\s*\()\b/i},
-  balance:{path:/\.json$|(?:balance|economy|reward|wave|stat|difficulty|enemy|loot)/i,code:/\b(?:hp|health|maxHp|maxHealth|damage|attack|enemy|boss|wave|reward|gold|coin|xp|level|speed|difficulty|loot|drop|cooldown|stun|crit|spawnRate)\b/i},
+  audio:{path:/(?:^|\/)(?:audio|sound|sfx|music|bgm)(?:\/|[._-]|$)/i,code:/(?:\b(?:AudioContext|webkitAudioContext|AudioBuffer|AudioBufferSourceNode|OscillatorNode|HTMLAudioElement|createOscillator|createBufferSource|decodeAudioData|playSound|playSfx|playBgm|audioCtx|soundEffect|backgroundMusic)\b|\bnew\s+Audio\s*\(|\.play\s*\(|\.volume\s*=)/i},
 };
 const IMPLEMENTATION_ACTION=/(?:수정|구현|추가|변경|적용|연결|교체|제거|작성|조정|튜닝|개선|고치|fix(?:es|ed|ing)?|implement(?:s|ed|ing)?|add(?:s|ed|ing)?|change(?:s|d|ing)?|update(?:s|d|ing)?|wire(?:s|d|ing)?|replace(?:s|d|ing)?|remove(?:s|d|ing)?|tune(?:s|d|ing)?|improve(?:s|d|ing)?)/i;
 const IMPLEMENTATION_TARGETS={
   graphics:/(?:\b(?:css|style|ui|hud|render|sprite|asset|animation|effect|vfx|canvas|svg)\b|그래픽|화면|렌더|스타일|애니메이션|이펙트|스프라이트|이미지)/i,
   qa:/(?:\b(?:assert|guard|fallback|exception|error handling|test code|spec file)\b|테스트\s*코드|검증\s*코드|오류\s*처리|에러\s*처리|예외\s*처리|가드|폴백)/i,
-  balance:/(?:\b(?:hp|health|damage|attack|enemy|boss|wave|reward|gold|coin|xp|level|speed|difficulty|loot|drop|cooldown|stun|crit|spawn(?:rate)?)\b|수치|체력|공격|데미지|적|보스|웨이브|보상|난이도|드롭|쿨다운|기절|치명타|스폰)/i,
+  audio:/(?:\b(?:audio|sound|sfx|music|bgm|volume|mute|playback|AudioContext|createOscillator)\b|오디오|사운드|효과음|배경음|음악|음소거|소리|볼륨|재생)/i,
 };
 
 function listFiles(sourcePath){
@@ -55,7 +56,7 @@ function graphicsPlanFor({sourcePath,goal='',diagnostic=null,departmentResult=nu
 function hasFunctionalResponsibility(role,departmentResult,context={}){
   if(role==='development')return true;
   const text=clean(departmentResult?.nextAction||departmentResult?.summary);
-  if(!text)return true;
+  if(!text)return role!=='audio';
   if(IMPLEMENTATION_ACTION.test(text)&&IMPLEMENTATION_TARGETS[role].test(text))return true;
   if(role==='graphics'){
     const plan=graphicsPlanFor({...context,departmentResult});
@@ -74,8 +75,10 @@ function scoreFile(role,row,{refs=[],focus=''}){
   if(signal.code.test(text))score+=7;
   if(refs.includes(row.path)&&score>0)score+=12;
   if(role==='development'&&refs.includes(row.path)&&score>0)score+=8;
-  const roleWords={development:['개발','구현','logic','runtime'],graphics:['그래픽','ui','화면','render','asset','animation'],qa:['qa','오류','에러','검증','test','runtime'],balance:['밸런스','난이도','보상','전투','damage','wave','enemy']}[role];
+  const roleWords={development:['개발','구현','logic','runtime'],graphics:['그래픽','ui','화면','render','asset','animation'],qa:['qa','오류','에러','검증','test','runtime'],audio:['효과음','사운드','오디오','음악','소리','재생','audio','sound','sfx','music']}[role];
   if(roleWords.some(word=>lowerFocus.includes(word)))score+=2;
+  // [오디오 파일 권한] 실제 소리 작업일 때만 단일 파일 소유권을 오디오 담당에게 부여한다.
+  if(role==='audio'&&signal.path.test(row.path)&&signal.code.test(text)&&/(?:효과음|사운드|오디오|음악|소리|재생|\b(?:audio|sound|sfx|music|bgm)\b)/i.test(focus))score+=15;
   if(/(?:save|storage|persist)/i.test(row.path)&&role!=='qa')score-=3;
   return score;
 }
