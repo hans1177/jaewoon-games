@@ -19,7 +19,7 @@ def load_base_trainer():
     return module
 
 
-def practice_validate(args, manifest, train_rows, eval_rows):
+def practice_validate(args, manifest, train_rows, eval_rows, _official_holdout_rows=None):
     if int(manifest.get('version', 0)) < 4:
         raise RuntimeError('practice dataset manifest v4 or newer is required')
     if manifest.get('readyForTraining') is not True:

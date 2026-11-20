@@ -154,3 +154,40 @@ test('정식 로컬 재훈련은 보류셋 SHA와 수량을 검증하고 학습 
   const check=spawnSync('python3',['-c',script],{encoding:'utf8'});
   assert.equal(check.status,0,check.stderr||check.error?.message||'Holdout verification test failed');
 });
+
+test('로컬 정식 학습기는 보류셋의 독립 QA, 원본 해시, 세 분할 간 샘플 중복을 거부한다',()=>{
+  const script=[
+    'import importlib.util,hashlib,copy,types,inspect',
+    'spec=importlib.util.spec_from_file_location("vibe_train","tools/vibe2-train.py")',
+    'm=importlib.util.module_from_spec(spec)',
+    'spec.loader.exec_module(m)',
+    'def row(i):',
+    '    return {"sampleId":hashlib.sha256(str(i).encode()).hexdigest(),"taskType":"coding","qa":{"independentQa":"PASS","browserQa":"PASS","runtime":"PASS"},"lifecycle":"active","qualityScore":1.0,"synthetic":False}',
+    'train,ev,held=[row(1)],[row(2)],[row(3)]',
+    'manifest={"version":3,"readyForTraining":True,"contamination":{"pass":True,"contaminationRate":0},"diversity":{"pass":True},"batching":{"pass":True},"targetTaskType":"coding","taskTrainingPlan":{"coding":{"ready":True}},"policy":{"teacherOnlyDifficult":True},"stats":{"train":1,"eval":1,"holdout":1,"syntheticTrain":0},"seed":20260910}',
+    'def refreshed(h):',
+    '    p=copy.deepcopy(manifest)',
+    '    p.update({"trainSha256":m.dataset_hash(train),"evalSha256":m.dataset_hash(ev),"holdoutSha256":m.dataset_hash(h)})',
+    '    return p',
+    'args=types.SimpleNamespace(task_type="coding",seed=20260910)',
+    'm.validate_manifest(args,refreshed(held),train,ev,held)',
+    'def rejected(h,marker,p=None):',
+    '    try: m.validate_manifest(args,p or refreshed(h),train,ev,h)',
+    '    except RuntimeError as err: assert marker in str(err),(marker,str(err))',
+    '    else: raise AssertionError("unsafe official holdout passed")',
+    'wrong_qa=copy.deepcopy(held); wrong_qa[0]["qa"]["independentQa"]="FAIL"',
+    'rejected(wrong_qa,"independent QA")',
+    'wrong_id=copy.deepcopy(held); wrong_id[0]["sampleId"]=train[0]["sampleId"]',
+    'rejected(wrong_id,"identity overlap")',
+    'rejected(wrong_qa,"holdout SHA256",refreshed(held))',
+    'wrong_task=copy.deepcopy(held); wrong_task[0]["taskType"]="bugfix"',
+    'rejected(wrong_task,"mixed task type")',
+    'p=importlib.util.spec_from_file_location("vibe_practice","tools/vibe2-practice-train.py")',
+    'practice=importlib.util.module_from_spec(p)',
+    'p.loader.exec_module(practice)',
+    'assert len(inspect.signature(practice.practice_validate).parameters)==5',
+    'print("VERIFIED_HOLDOUT_GATE=PASS")',
+  ].join('\n');
+  const check=spawnSync('python3',['-c',script],{encoding:'utf8'});
+  assert.equal(check.status,0,check.stderr||check.error?.message||'Official holdout verification test failed');
+});
