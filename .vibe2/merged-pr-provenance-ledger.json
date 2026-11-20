@@ -297938,11 +297938,129 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0eb4c0adb53d42f4785b6605",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13956",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "100452e2987a04f43ffb906ae122ed00aca016ca",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13956,
+        "baseBranch": "main",
+        "headBranch": "vibe59-roblox-hotpath-20261121",
+        "baseSha": "100452e2987a04f43ffb906ae122ed00aca016ca",
+        "headSha": "2b7b89ab5ed6fead65cf53b4abc6fcc2adf28b8d",
+        "mergeCommitSha": "f4bce2e44385e48e2c6620219b5fa7ed954fdaea",
+        "mergedAt": "2026-11-20T17:52:07Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e0edec1d2514b1eea652daf3638f876d1891833b1efe4af2a9d719891463a6bb",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe59-roblox-hotpath-20261121",
+        "candidateSha": "2b7b89ab5ed6fead65cf53b4abc6fcc2adf28b8d"
+      },
+      "changeStats": {
+        "changedFileCount": 2,
+        "codingRelevantFileCount": 2,
+        "addedLineCount": 69,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "qa/vibe59-roblox-coding.test.mjs",
+          "tools/vibe59-roblox-coding.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/vibe59-roblox-coding.test.mjs",
+          "tools/vibe59-roblox-coding.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13956",
+        "merge-commit:f4bce2e44385e48e2c6620219b5fa7ed954fdaea",
+        "base-main:100452e2987a04f43ffb906ae122ed00aca016ca"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2385
+    "total": 2386
   }
 }
