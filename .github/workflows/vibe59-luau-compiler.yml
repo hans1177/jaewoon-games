@@ -7,6 +7,7 @@ on:
       - 'tools/vibe59-*.mjs'
       - 'tools/vibe2-v59-autonomy.mjs'
       - 'tools/vibe2-source-worker.mjs'
+      - 'qa/vibe59-roblox-coding.test.mjs'
       - 'qa/vibe59-luau-compiler.mjs'
       - 'qa/vibe59-luau-runtime.mjs'
       - 'qa/vibe59-crafting-runtime.mjs'
@@ -17,8 +18,12 @@ on:
     paths:
       - 'tools/vibe59-*.mjs'
       - 'tools/vibe2-v59-autonomy.mjs'
+      - 'tools/vibe2-source-worker.mjs'
       - 'qa/vibe59-roblox-coding.test.mjs'
       - 'qa/vibe59-luau-compiler.mjs'
+      - 'qa/vibe59-luau-runtime.mjs'
+      - 'qa/vibe59-crafting-runtime.mjs'
+      - 'qa/vibe59-crafting-transaction.test.mjs'
       - '.github/workflows/vibe59-luau-compiler.yml'
   workflow_dispatch:
 
