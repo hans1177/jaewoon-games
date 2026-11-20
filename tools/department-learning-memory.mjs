@@ -119,14 +119,15 @@ export function selectVerifiedDepartmentLearning(ledger={},context={},max=4){
   const genericWords=new Set(['이번','현재','진행','작업','수정','개선','검토','확인','요청','기능','게임','코드','검증','추가','처리','적용','필요','문제','해결','고도화','실행','개발','완료','test','task','fix','game','code','change','update','check','review']);
   const taskTerms=new Set((clean(context.goal).toLowerCase().match(/[\p{L}\p{N}]{2,}/gu)||[]).filter(word=>!genericWords.has(word)));
   const rows=(Array.isArray(ledger?.verifiedLearning)?ledger.verifiedLearning:[])
-    .filter(row=>row?.verified===true&&clean(row?.independentQa).toUpperCase()==='PASS'&&clean(row?.role)===role)
+    .filter(row=>row?.verified===true&&clean(row?.independentQa).toUpperCase()==='PASS'&&clean(row?.role)===role&&clean(row?.sourceRevision))
     .map(row=>{
       const sameSource=Boolean(sourcePath&&clean(row.sourcePath)===sourcePath);
       const sameGame=Boolean((gameId&&clean(row.gameId)===gameId)||(gameSlug&&clean(row.gameSlug)===gameSlug));
       const learnedText=[row.summary,row.nextAction,...(Array.isArray(row.checks)?row.checks:[]),...(Array.isArray(row.risks)?row.risks:[])].map(clean).join(' ').toLowerCase();
       const learnedTerms=new Set(learnedText.match(/[\p{L}\p{N}]{2,}/gu)||[]);
       const taskMatches=[...taskTerms].filter(word=>learnedTerms.has(word)).length;
-      if(taskTerms.size>0&&!sameSource&&!sameGame&&taskMatches===0)return null;
+      // [목표 관련성] '개선/수정' 같은 일반 문구만으로 무관한 타게임 학습이 섞이지 않도록 한다.
+      if(clean(context.goal)&&!sameSource&&!sameGame&&(taskTerms.size===0||taskMatches===0))return null;
       let relevance=0;
       if(sameSource)relevance+=8;
       if(gameId&&clean(row.gameId)===gameId)relevance+=5;
