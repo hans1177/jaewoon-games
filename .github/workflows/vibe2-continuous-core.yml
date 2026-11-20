@@ -1840,14 +1840,15 @@ jobs:
           echo 'VIBE2_WORKER_PROVIDER=GEMINI_API'
 
       - name: Prepare declared native DCC authoring runtime
-        timeout-minutes: 5
+        # [블렌더] 무료 OS 패키지 설치가 5분 제한으로 끊긴 실측 실패를 방지한다.
+        timeout-minutes: 12
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0'
         shell: bash
         run: |
           set -euo pipefail
           if ! command -v blender >/dev/null 2>&1; then
             sudo apt-get update -y
-            sudo apt-get install -y blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
+            sudo apt-get install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
           fi
           blender --version | head -n 1
           echo 'VIBE2_NATIVE_DCC_RUNTIME=BLENDER_READY'
