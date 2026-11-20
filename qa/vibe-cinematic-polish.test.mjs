@@ -137,12 +137,12 @@ test('3D art preview uses the canonical lighting rig and a touch-safe panel',()=
  assert.match(html,/characterPerformance\.update\(delta\)/);
  assert.doesNotMatch(html,/scene\.add\(new THREE\.HemisphereLight/);
  assert.doesNotMatch(html,/now:performance\.now\(\)\/1000/);
- assert.match(html,/if\(mobileView\)\{/);
- assert.match(html,/sampleFrames\+\+/);
- assert.match(html,/fps<22/);
- assert.match(html,/fps>28/);
- assert.match(html,/Math\.max\(\.85,currentPixelRatio-\.25\)/);
- assert.match(html,/if\(document\.hidden\)\{sampleStarted=0/);
+ assert.match(html,/const renderQuality=createVibeRenderQualityController\(renderer,\{/);
+ assert.match(html,/mobile:mobileView,maxPixelRatio:Math\.min\(devicePixelRatio,mobileView\?1\.5:2\)/);
+ assert.match(html,/minPixelRatio:mobileView\?\.85:\.8,targetFps:mobileView\?29:55/);
+ assert.match(html,/renderQuality\.sample\(delta,\{drawCalls:renderer\.info\.render\.calls\}\)/);
+ assert.match(html,/if\(document\.hidden\)\{renderQuality\.resetSample\(\);clock\.getDelta\(\);return\}/);
+ assert.doesNotMatch(html,/sampleFrames\+\+|currentPixelRatio|desktopQuality/);
  assert.match(html,/expressionDirector\.update\(delta,\{reducedMotion:gameUi\.ui\.settings\.reducedMotion\}\)/);
  // [QA] 단일 카메라 책임 함수와 모바일 포인터가 기존 이동 집합에 직접 연결되어야 한다.
  assert.match(html,/createVibeShotComposer\(THREE,camera\)/);
@@ -204,6 +204,34 @@ test('Vibe 5.9 real renderer quality degrades after sustained high draw calls an
  assert.equal(quality.tier,'MID');
  assert.ok(renderer.ratio<1.5);
  quality.dispose();assert.equal(renderer.ratio,1.5);assert.equal(renderer.shadowMap.enabled,true);
+});
+
+// [모바일 QA] 화면이 숨겨졌던 시간을 연속 저하 측정으로 오판하지 않는다.
+test('mobile 3D quality uses sustained renderer observations and resets on hidden view',()=>{
+ const renderer={shadowMap:{enabled:true},ratio:1.5,
+  getPixelRatio(){return this.ratio},setPixelRatio(v){this.ratio=v}};
+ const tiers=[];
+ const quality=createVibeRenderQualityController(renderer,{
+  mobile:true,maxPixelRatio:1.5,minPixelRatio:.85,targetFps:29,
+  onTierChange:tier=>tiers.push(tier)
+ });
+ for(let i=0;i<40;i++)quality.sample(.1,{drawCalls:500});
+ assert.equal(quality.tier,'HIGH');
+ quality.resetSample();
+ for(let i=0;i<35;i++)quality.sample(.1,{drawCalls:500});
+ assert.equal(quality.tier,'HIGH','one slow window after resume must not downshift');
+ for(let i=0;i<35;i++)quality.sample(.1,{drawCalls:500});
+ assert.equal(quality.tier,'MID');
+ assert.ok(renderer.getPixelRatio()<1.5);
+ for(let i=0;i<35;i++)quality.sample(.1,{drawCalls:500});
+ for(let i=0;i<35;i++)quality.sample(.1,{drawCalls:500});
+ assert.equal(quality.tier,'LOW');
+ assert.equal(renderer.getPixelRatio(),.9);
+ assert.equal(renderer.shadowMap.enabled,false);
+ quality.dispose();
+ assert.equal(renderer.getPixelRatio(),1.5);
+ assert.equal(renderer.shadowMap.enabled,true);
+ assert.deepEqual(tiers,['HIGH','MID','LOW']);
 });
 
 test('Vibe 5.9 only switches between artist-authored LOD meshes and keeps the originals',()=>{
@@ -398,7 +426,7 @@ test('Vibe 5.9 static batching preserves hidden, transparent and manual-matrix m
 test('Vibe 5.9 graphics are attached to the existing WebGL preview, not a duplicate runtime',()=>{
  const html=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
  for(const symbol of ['createVibeAuthoredMeshLOD(THREE,model)','batchVibeExistingStaticMeshes(THREE,model',
-  'desktopQuality?.sample(delta','lightingDirector.setShadowQuality(fps<22','new bloomModule.UnrealBloomPass']){
+  'renderQuality.sample(delta','lightingDirector.setShadowQuality(tier)','new bloomModule.UnrealBloomPass']){
   assert.ok(html.includes(symbol),symbol);
  }
  assert.match(html,/else renderer\.render\(scene,camera\)/);
