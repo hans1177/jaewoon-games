@@ -1,0 +1,264 @@
+{
+ "sourceRevision": "c62fb1b8891cf91943e5445cf60ef6419b755aaf",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "ready=true Animals:0,Cargo:7,Castle:0,Interior:0,Monsters:0,Naval:80,People:25,Relics:27,Ships:0,Terrain:3,Town:167\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "01_top",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "02_plaza",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "03_street",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "04_dock",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "05_aerial",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "06_backstreet",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "07_wall",
+   "files": 1
+  }
+ ],
+ "errors": [
+  "step26:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:45: PZ:HarborHouse:-6,24|TOWN_CENTRAL_"
+ ],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35004
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 129
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 892
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 8005
+  },
+  {
+   "step": 4,
+   "type": "luau",
+   "elapsedMs": 244
+  },
+  {
+   "step": 5,
+   "type": "luau",
+   "elapsedMs": 186
+  },
+  {
+   "step": 6,
+   "type": "wait",
+   "elapsedMs": 2514
+  },
+  {
+   "step": 7,
+   "type": "capture",
+   "elapsedMs": 852
+  },
+  {
+   "step": 8,
+   "type": "luau",
+   "elapsedMs": 333
+  },
+  {
+   "step": 9,
+   "type": "wait",
+   "elapsedMs": 2505
+  },
+  {
+   "step": 10,
+   "type": "capture",
+   "elapsedMs": 884
+  },
+  {
+   "step": 11,
+   "type": "luau",
+   "elapsedMs": 201
+  },
+  {
+   "step": 12,
+   "type": "wait",
+   "elapsedMs": 2510
+  },
+  {
+   "step": 13,
+   "type": "capture",
+   "elapsedMs": 990
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 234
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 2504
+  },
+  {
+   "step": 16,
+   "type": "capture",
+   "elapsedMs": 767
+  },
+  {
+   "step": 17,
+   "type": "luau",
+   "elapsedMs": 165
+  },
+  {
+   "step": 18,
+   "type": "wait",
+   "elapsedMs": 2508
+  },
+  {
+   "step": 19,
+   "type": "capture",
+   "elapsedMs": 776
+  },
+  {
+   "step": 20,
+   "type": "luau",
+   "elapsedMs": 162
+  },
+  {
+   "step": 21,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 22,
+   "type": "capture",
+   "elapsedMs": 722
+  },
+  {
+   "step": 23,
+   "type": "luau",
+   "elapsedMs": 143
+  },
+  {
+   "step": 24,
+   "type": "wait",
+   "elapsedMs": 2508
+  },
+  {
+   "step": 25,
+   "type": "capture",
+   "elapsedMs": 885
+  },
+  {
+   "step": 26,
+   "type": "luau",
+   "elapsedMs": 508
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 45,
+  "completedSteps": 27,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 15,
+  "capturedFrames": 7,
+  "abortedEarly": true
+ },
+ "abortDiagnostics": {
+  "step": 26,
+  "type": "luau",
+  "elapsedMs": 172,
+  "context": "Client",
+  "lastScreenshot": "07_wall",
+  "lastClick": null,
+  "probes": {
+   "Client": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_CLIENT\ntext"
+   },
+   "Server": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_SERVER\ntext"
+   }
+  }
+ }
+}
