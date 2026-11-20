@@ -141,6 +141,28 @@ test('기존 파생본 재사용 시 미리보기 해시와 실제 GLB 구조를
   }
 });
 
+test('잘못된 블렌더 신규 출력은 최종 제작 경로에 승격하지 않고 임시 파일을 정리한다',{
+  skip:process.platform==='win32'
+},async()=>{
+  const f=fixture();
+  try{
+    fs.writeFileSync(f.source,binary);
+    const fakeBlender=path.join(f.root,'blender-fixture.sh');
+    fs.writeFileSync(fakeBlender,'#!/bin/sh\nout=""\nwhile [ "$#" -gt 0 ]; do\n'+
+      '  if [ "$1" = "--output" ]; then shift; out="$1"; fi\n  shift\ndone\n'+
+      'mkdir -p "$out"\nprintf "invalid glb output" > "$out/asset.glb"\n');
+    fs.chmodSync(fakeBlender,0o700);
+    const before=fs.readFileSync(path.join(f.root,'company-asset-library.json'));
+    await assert.rejects(produceRegisteredCc0Asset({
+      repoRoot:f.root,assetId:'fixture-cc0-actor',gameId:'demo',target:'web',
+      role:'character',blender:fakeBlender
+    }),/CC0_DERIVED_OUTPUT_STALE_KEEP_FOR_REVIEW/);
+    const generated=path.join(f.root,'assets/generated/web/demo');
+    assert.deepEqual(fs.readdirSync(generated),[],'invalid staged outputs must be deleted');
+    assert.deepEqual(fs.readFileSync(path.join(f.root,'company-asset-library.json')),before);
+  }finally{f.cleanup();}
+});
+
 test('wrong downloaded hash is rejected without leaving a source or stage',async()=>{
   const f=fixture({downloadUrl:'https://opengameart.org/sites/default/files/fixture.glb'});
   try{
