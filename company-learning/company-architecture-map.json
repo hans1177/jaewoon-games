@@ -1,5 +1,5 @@
 {
-  "version": 340,
+  "version": 339,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -7081,38 +7081,5 @@
     "activeParts": ".vibe2/queue/active/",
     "permanentHistoryParts": ".vibe2/queue/history/",
     "executionRepresentation": "SHA256_VERIFIED_FULL_QUEUE"
-  },
-  "vibeEngineImprovementTopology": {
-    "version": 1,
-    "source": "company-learning/platform-release-roadmap.json#vibeEngineImprovementContract",
-    "scope": "ROBLOX_AND_NATIVE_ASSET_ENGINE_ONLY",
-    "webGameAuthoring": false,
-    "legacyWebQueueArchived": true,
-    "organization": "VIBE_ENGINE_DEVELOPMENT",
-    "teamCount": 13,
-    "teamComposition": [
-      "GRAPHICS",
-      "CREATURE",
-      "BUILDING",
-      "ENVIRONMENT",
-      "ICON",
-      "UI",
-      "VFX",
-      "MOTION",
-      "ANIMATION",
-      "MUSIC",
-      "SFX",
-      "STORY",
-      "MATERIAL"
-    ],
-    "topLevelGraphicsRoot": "assets/vibe-art-pipeline.js",
-    "specialistPlan": "assets/vibe-art-pipeline.js#createVibeEngineSpecialistPlan",
-    "existingAssetPlanner": "tools/vibe2-asset-production-plan.mjs",
-    "codeLearning": "tools/vibe2-learning-motor.mjs",
-    "assetUpload": "EXISTING_ROBLOX_OPEN_CLOUD_VERIFIED_UPLOAD",
-    "autonomousCodeUpdate": "EXISTING_VIBE_GATED_PR_AND_MAIN_RUNTIME_QA_ONLY",
-    "newOrganization": false,
-    "newQueue": false,
-    "canonicalPipelinePreserved": true
   }
 }
