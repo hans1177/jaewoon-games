@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { integrateDepartmentCandidates } from '../tools/autonomous-department-integrator.mjs';
 import { canUseDeterministicFinalization, buildDeterministicFinalization } from '../tools/autonomous-department-cycle.mjs';
 
@@ -154,4 +156,53 @@ test('verified department XP fetches exact QA source revision and parent without
   const workflow=fs.readFileSync(new URL('../.github/workflows/department-experience.yml',import.meta.url),'utf8');
   assert.match(workflow,/git fetch --no-tags --depth=2 origin "\$SOURCE_SHA"/);
   assert.match(workflow,/node tools\/award-department-experience\.mjs "\$SOURCE_SHA"/);
+});
+test('verified Roblox merge awards development and audio only once, preserving legacy balance XP',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-roblox-department-xp-'));
+  const awardScript=fileURLToPath(new URL('../tools/award-department-experience.mjs',import.meta.url));
+  const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+  const write=(file,source)=>{
+    const dest=path.join(root,file);
+    fs.mkdirSync(path.dirname(dest),{recursive:true});
+    fs.writeFileSync(dest,source);
+  };
+  try{
+    git('init','-q','-b','main');
+    git('config','user.email','qa@example.invalid');
+    git('config','user.name','Department QA');
+    write('department-experience.json',JSON.stringify({
+      version:1,departments:{balance:{xp:200,level:2,verifiedCompletions:5,learningEvents:5}},
+      history:[]
+    },null,2)+'\n');
+    write('assets/department-experience-state.js','// pre-existing\n');
+    write('roblox-games/demo/ServerScriptService/Main.server.luau','-- original\n');
+    write('README.md','base\n');
+    git('add','.');git('commit','-qm','base');
+    git('checkout','-qb','roblox-change');
+    write('roblox-games/demo/ServerScriptService/Main.server.luau','-- revised\n');
+    write('roblox-games/demo/StarterPlayerScripts/AudioController.client.luau','-- verified sound event binding\n');
+    git('add','.');git('commit','-qm','Roblox game and audio update');
+    git('checkout','-q','main');
+    write('README.md','unrelated main change\n');
+    git('add','.');git('commit','-qm','unrelated main change');
+    git('merge','--no-ff','-qm','merge verified Roblox update','roblox-change');
+    const revision=git('rev-parse','HEAD');
+    assert.equal(git('diff-tree','--no-commit-id','--name-only','-r',revision),'',
+      'legacy diff-tree misses normal merge changes');
+    const first=execFileSync(process.execPath,[awardScript,revision,'qa-roblox-merge'],{cwd:root,encoding:'utf8'});
+    assert.match(first,/XP_AWARDED=development,audio /);
+    const ledger=JSON.parse(fs.readFileSync(path.join(root,'department-experience.json'),'utf8'));
+    assert.equal(ledger.departments.development.xp,40);
+    assert.equal(ledger.departments.audio.xp,40);
+    assert.equal(ledger.departments.balance.xp,200);
+    assert.equal(ledger.departments.qa,undefined);
+    assert.equal(ledger.history.at(-1).changedFilesCount,2);
+    assert.deepEqual(ledger.history.at(-1).departments,['development','audio']);
+    const before=fs.readFileSync(path.join(root,'department-experience.json'),'utf8');
+    const again=execFileSync(process.execPath,[awardScript,revision,'qa-roblox-merge'],{cwd:root,encoding:'utf8'});
+    assert.match(again,/XP_ALREADY_RECORDED=/);
+    assert.equal(fs.readFileSync(path.join(root,'department-experience.json'),'utf8'),before);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
 });
