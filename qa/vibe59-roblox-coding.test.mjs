@@ -659,6 +659,48 @@ test('Vibe59 avoids frame hot-path false positives from comments and one-time ca
   assert.equal(report.runtimeVerified,false);
 });
 
+// [기능 연결·인과 추적] 실행 증거를 날조하지 않고 책임 파일과 회귀 위치를 제공한다.
+test('Vibe59 connects client actions to possible server state and feedback without claiming runtime',()=>{
+  const client='client/Combat.client.luau',server='server/Combat.server.luau';
+  const report=inspectVibe59RobloxCoding({
+    files:[
+      {path:client,source:['local function attack(player)','  remote:FireServer("attack")',
+        '  humanoid:TakeDamage(10)','end'].join('\n')},
+      {path:server,source:['remote.OnServerEvent:Connect(function(player)',
+        '  store:UpdateAsync(key, update)',
+        '  ack:FireClient(player)',
+        'end)'].join('\n')}
+    ],responsiblePaths:[client,server]
+  });
+  const chain=report.actionChains.find(row=>row.clientPath===client);
+  assert.ok(chain);
+  assert.deepEqual(chain.serverCandidates.map(row=>row.path),[server]);
+  assert.ok(chain.serverCandidates[0].stateMethods.includes('UpdateAsync'));
+  assert.ok(chain.serverCandidates[0].responseMethods.includes('FireClient'));
+  assert.equal(chain.causalProof,'UNVERIFIED_STATIC_CANDIDATE');
+  assert.equal(chain.actualGameplayVerified,false);
+  const target=report.qualityDirector.repairTargets.find(row=>row.code==='COMBAT_CLIENT_DAMAGE');
+  assert.equal(target.path,client);
+  assert.equal(target.symbolCandidate,'attack');
+  assert.equal(target.sourceAnchorUnique,true);
+  assert.equal(target.sourceWrite,false);
+  assert.equal(target.regressionRequired,true);
+  assert.equal(report.qualityDirector.gameplayPass,false);
+});
+
+test('Vibe59 does not claim an unobserved remote receiver or code location is proven',()=>{
+  const client='client/Combat.client.luau';
+  const report=inspectVibe59RobloxCoding({
+    files:[{path:client,source:'remote:FireServer("attack")'}],
+    responsiblePaths:[client]
+  });
+  assert.equal(report.actionChains.length,1);
+  assert.equal(report.actionChains[0].status,'RECEIVER_NOT_OBSERVED');
+  assert.deepEqual(report.actionChains[0].serverCandidates,[]);
+  assert.equal(report.actionChains[0].actualGameplayVerified,false);
+  assert.equal(report.qualityDirector.existingSaveBalanceAndAuthorityMustBePreserved,true);
+});
+
 // [로블록스 파일 검증] 스캔 상한 초과·경로 누락은 안전하다는 증거가 아니다.
 test('Vibe59 exposes oversized responsible Luau files instead of silently clearing findings',()=>{
   const path='server/Combat.server.luau',source='--'+'.'.repeat(260001);

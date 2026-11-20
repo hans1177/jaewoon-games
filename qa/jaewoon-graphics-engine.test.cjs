@@ -68,6 +68,84 @@ test('single game cannot become company graphics DNA; 3 games and 2 contexts can
   assert.equal(promotion.requiresJayVerdict,true);
 });
 
+// [그래픽 QA] 실제 모션·화풍·거리 변경 결함을 기존 이상징후 검사에서 구분한다.
+test('graphics audits articulated rig, motion contact, style, LOD and mobile frame issues',()=>{
+  const found=Graphics.detectVisualAnomalies({
+    rigJointMotionMissing:true,footContactSliding:true,animationTransitionPop:true,
+    mobileFrameBudgetExceeded:true,lodTransitionPop:true,runtimeVisualRegression:true
+  });
+  assert.deepEqual(found,[
+    'RIG_JOINT_MOTION_MISSING','FOOT_CONTACT_SLIDING','ANIMATION_TRANSITION_POP',
+    'MOBILE_FRAME_BUDGET_EXCEEDED','LOD_TRANSITION_POP','RUNTIME_VISUAL_REGRESSION'
+  ]);
+  assert.ok(Graphics.inferVisualAnomalies('발 미끄러짐').includes('FOOT_CONTACT_SLIDING'));
+  const plan=Graphics.planGraphicsImplementation({
+    anomalies:['RIG_JOINT_MOTION_MISSING'],
+    files:['GameCore.cs','Actors/HeroAnimator.cs','Assets/UI/HudView.cs'],
+    goal:'관절 움직임 누락 수정'
+  });
+  assert.equal(plan.run,true);
+  assert.deepEqual(plan.scope,['Actors/HeroAnimator.cs','Assets/UI/HudView.cs']);
+  assert.ok(!plan.scope.includes('GameCore.cs'));
+});
+
+test('mobile visual budget uses only verified samples and protects readable core',()=>{
+  const low=Graphics.deviceVisualBudget('LOW',{
+    runtimeVerified:true,observedFps:20,targetFps:60,samples:120
+  });
+  assert.equal(low.validatedRuntimeSample,true);
+  assert.equal(low.adaptive,true);
+  assert.ok(low.decorativeParticles<Graphics.deviceVisualBudget('LOW').decorativeParticles);
+  assert.equal(low.coreSilhouette,1);
+  assert.equal(low.attackReadability,1);
+  assert.equal(low.uiHud,1);
+  assert.equal(low.playerFeedback,1);
+  const untrusted=Graphics.deviceVisualBudget('LOW',{
+    runtimeVerified:false,observedFps:10,targetFps:60,samples:120
+  });
+  assert.equal(untrusted.adaptive,false);
+  assert.equal(untrusted.decorativeParticles,Graphics.deviceVisualBudget('LOW').decorativeParticles);
+  const plan=Graphics.planGraphicsImplementation({
+    anomalies:['MOBILE_FRAME_BUDGET_EXCEEDED'],files:['Assets/Vfx/Particles.cs'],
+    goal:'모바일 프레임 저하 개선',deviceTier:'LOW',
+    deviceTelemetry:{runtimeVerified:true,observedFps:20,targetFps:60,samples:120}
+  });
+  assert.equal(plan.run,true);
+  assert.equal(plan.deviceBudget.uiHud,1);
+  assert.equal(plan.deviceBudget.adaptive,true);
+});
+
+test('native graphics comparisons require exact before-after captures and style locks when requested',()=>{
+  const conditions={sameDevice:true,sameScene:true,sameCharacter:true,sameInput:true,
+    samePerformanceLimit:true,requireRuntimeEvidence:true,requireStyleLock:true};
+  const baseline={evidence:fullEvidence(.55),styleDnaHash:'style-v1',
+    runtimeCapture:{id:'before',sourceRevision:'revision-1',sceneId:'boss-room',
+      deviceId:'android-low',sha256:'a'.repeat(64)}};
+  const ready={id:'candidate',target:'candidate',evidence:fullEvidence(.8),
+    styleDnaHash:'style-v1',runtimeVerified:true,independentQaPassed:true,
+    beforeAfterVisualRegressionPass:true,
+    runtimeCapture:{id:'after',sourceRevision:'revision-2',sceneId:'boss-room',
+      deviceId:'android-low',sha256:'b'.repeat(64)}};
+  const valid=Graphics.evaluateGraphicsExperiment({baseline,candidates:[ready],conditions});
+  assert.equal(valid.pass,true);
+  assert.equal(valid.winner.runtimeVerified,true);
+  assert.equal(valid.winner.evidenceScope,'EXACT_NATIVE_CAPTURE_COMPARISON');
+  for(const candidate of [
+    {...ready,runtimeVerified:false},{...ready,independentQaPassed:false},
+    {...ready,beforeAfterVisualRegressionPass:false},
+    {...ready,styleDnaHash:'other'},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,id:'before'}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,sha256:''}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,deviceId:'android-high'}}
+  ]){
+    const blocked=Graphics.evaluateGraphicsExperiment({baseline,candidates:[candidate],conditions});
+    assert.equal(blocked.pass,false);
+  }
+  const advisory=Graphics.evaluateGraphicsExperiment({baseline,candidates:[ready],
+    conditions:{sameDevice:true,sameScene:true,sameCharacter:true,sameInput:true,samePerformanceLimit:true}});
+  assert.equal(advisory.winner.runtimeVerified,false,'non-strict score cannot claim native runtime validation');
+});
+
 test('asset strategy preserves usable originals instead of replacing by default', () => {
   assert.equal(Graphics.classifyAsset({currentQuality:.9,readability:.9,identityFit:.9}), 'KEEP');
   assert.equal(Graphics.classifyAsset({currentQuality:.6,readability:.6,identityFit:.7}), 'ENHANCE');
