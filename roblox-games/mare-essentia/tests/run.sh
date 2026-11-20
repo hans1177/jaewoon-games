@@ -15,8 +15,8 @@ mkdir -p "$TMP/Shared" "$TMP/Services"
 cp "$ROOT"/src/ReplicatedStorage/Shared/*.luau "$TMP/Shared/"
 cp "$ROOT"/src/ServerScriptService/Services/*.luau "$TMP/Services/"
 cp "$ROOT"/tests/*.luau "$TMP/"
-# Roblox 엔진 전용(3D 장면)은 CLI 로 분석·실행할 수 없어 제외한다
-rm -f "$TMP"/Shared/PortScene.luau "$TMP"/Shared/VoyageScene.luau "$TMP"/Shared/FieldScene.luau "$TMP"/Shared/CommonVFX.luau "$TMP"/Shared/CommonMotion.luau "$TMP"/Shared/FieldMotion.luau "$TMP"/Shared/Pose.luau "$TMP"/Shared/Flags.luau "$TMP"/Shared/NavalBattle.luau "$TMP"/Shared/Sfx.luau "$TMP"/Shared/CardGallery.luau "$TMP"/Shared/DeckBuilder.luau "$TMP"/Shared/PortCultures.luau "$TMP"/Shared/PortCultures.luau
+# Roblox 엔진 전용 장면과 카드 UI는 CLI 타입 검사 대상에서 제외한다.
+rm -f "$TMP"/Shared/PortScene.luau "$TMP"/Shared/VoyageScene.luau "$TMP"/Shared/FieldScene.luau "$TMP"/Shared/CommonVFX.luau "$TMP"/Shared/CommonMotion.luau "$TMP"/Shared/FieldMotion.luau "$TMP"/Shared/Pose.luau "$TMP"/Shared/Flags.luau "$TMP"/Shared/NavalBattle.luau "$TMP"/Shared/Sfx.luau "$TMP"/Shared/CardGallery.luau "$TMP"/Shared/DeckBuilder.luau "$TMP"/Shared/PortCultures.luau "$TMP"/Shared/CardSymbols.luau "$TMP"/Shared/CardTheme.luau
 
 sed -i -E 's/require\(script\.Parent\.([A-Za-z0-9]+)\)/require(".\/\1")/g' "$TMP"/Shared/*.luau "$TMP"/Services/*.luau
 
@@ -57,6 +57,8 @@ if command -v "$COMPILE" >/dev/null 2>&1 || [ -x "$COMPILE" ]; then
   "$COMPILE" --null "$ROOT/src/StarterPlayer/Game.client.luau" >/dev/null
   "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/FieldScene.luau" >/dev/null
   "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/NavalBattle.luau" >/dev/null
+  "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/CardSymbols.luau" >/dev/null
+  "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/CardTheme.luau" >/dev/null
 fi
 
 echo "== 무기 연타·아이콘 스킬·저장 회귀 검사 =="
