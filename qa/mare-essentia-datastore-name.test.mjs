@@ -104,7 +104,9 @@ test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본
   assert.match(source,/tabBar\.AnchorPoint = Vector2\.new\(1, 0\)/);
   assert.match(source,/H\.tabStrip\.Name = "FacilityTabStrip"/);
   assert.match(source,/H\.tabStrip\.ScrollingDirection = Enum\.ScrollingDirection\.X/);
-  assert.match(layout,/tabBar\.Position = UDim2\.new\(1, -8, 0, 68\)/);
+  assert.match(layout,/local sectionTop = if compactTabs and not facilityDetail then 120 else 68/);
+  assert.match(layout,/tabBar\.Position = UDim2\.new\(1, -8, 0, sectionTop\)/);
+  assert.match(layout,/local bodyTop = sectionTop \+ \(if tabs then tabHeight \+ 12 else 0\)/);
   assert.match(layout,/H\.tabWidth = tabWidth/);
   assert.match(layout,/H\.tabStrip\.CanvasSize = UDim2\.fromOffset\(allTabsWidth, 0\)/);
   assert.match(source,/local tabLayout = Instance\.new\("UIListLayout"\)/);
