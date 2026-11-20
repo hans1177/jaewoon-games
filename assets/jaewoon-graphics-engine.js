@@ -289,6 +289,8 @@
 
   // [모바일 성능] 검증된 프레임 관찰이 있을 때만 장식 예산을 축소한다.
   // 실루엣·공격 전조·HUD·플레이어 피드백은 성능 문제로도 감축하지 않는다.
+  // [모바일 프레임] 실제 프레임 지연 표본을 받으면 90백분위 꼬리 지연으로
+  // 장식 예산을 보수적으로 계산한다. 미확인·손상된 표본은 자동 감축 근거가 아니다.
   function deviceVisualBudget(tier='MID', telemetry={}) {
     const key = String(tier).toUpperCase();
     const profiles = {
@@ -297,16 +299,32 @@
       HIGH:{ decorativeParticles:1, postFx:1, distantEffects:1, environmentMotion:1, coreSilhouette:1, attackReadability:1, uiHud:1, playerFeedback:1 },
     };
     if (!profiles[key]) throw new Error('unknown device tier: '+tier);
-    const measured=Number(telemetry?.observedFps),target=Number(telemetry?.targetFps),samples=Number(telemetry?.samples);
-    const eligible=telemetry?.runtimeVerified===true && Number.isFinite(measured) && measured>0
-      &&Number.isFinite(target)&&target>=24&&target<=120
-      &&Number.isInteger(samples)&&samples>=30;
+    const trace=telemetry?.frameTimesMs;
+    const hasTrace=trace!==undefined;
+    const traceValid=Array.isArray(trace)&&trace.length>=30&&trace.length<=240
+      &&trace.every(value=>typeof value==='number'&&Number.isFinite(value)&&value>=1&&value<=1000);
+    const ordered=traceValid?[...trace].sort((a,b)=>a-b):[];
+    const p90FrameMs=traceValid?ordered[Math.ceil(ordered.length*.9)-1]:null;
+    const frameRateFromTrace=traceValid?1000/p90FrameMs:null;
+    const observed=Number(telemetry?.observedFps),target=Number(telemetry?.targetFps);
+    const samples=Number(telemetry?.samples);
+    const eligible=telemetry?.runtimeVerified===true && Number.isFinite(target)
+      &&target>=24&&target<=120
+      &&(hasTrace
+        ?traceValid&&samples===trace.length
+        :Number.isFinite(observed)&&observed>0
+          &&Number.isInteger(samples)&&samples>=30);
+    const measured=hasTrace?frameRateFromTrace:observed;
     const pressure=eligible?clamp(measured/target,0.35,1):1;
     const chosen={...profiles[key]};
     for(const name of ['decorativeParticles','postFx','distantEffects','environmentMotion'])
       chosen[name]=Math.round(chosen[name]*pressure*1000)/1000;
     return Object.freeze({tier:key,...chosen,adaptive:eligible&&pressure<1,
       performanceRatio:pressure,validatedRuntimeSample:eligible,
+      telemetryMethod:eligible?(hasTrace?'P90_FRAME_TIME':'AGGREGATE_FPS'):'NONE',
+      p90FrameMs:eligible&&hasTrace?p90FrameMs:null,
+      measuredFps:eligible?Math.round(measured*100)/100:null,
+      telemetryEvidence:'CALLER_REPORTED_NOT_INDEPENDENTLY_VERIFIED',
       gameplayAndCriticalReadabilityPreserved:true});
   }
 
@@ -419,6 +437,7 @@
         candidate.runtimeVerified===true && candidate.independentQaPassed===true
         &&candidate.beforeAfterVisualRegressionPass===true
         &&/^[a-f0-9]{64}$/i.test(before.sha256??'')&&/^[a-f0-9]{64}$/i.test(after.sha256??'')
+        &&before.sha256.toLowerCase()!==after.sha256.toLowerCase()
         &&typeof before.id==='string'&&before.id.length>0&&typeof after.id==='string'&&after.id.length>0&&before.id!==after.id
         &&typeof before.sourceRevision==='string'&&before.sourceRevision.length>0
         &&typeof after.sourceRevision==='string'&&after.sourceRevision.length>0
