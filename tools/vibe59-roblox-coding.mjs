@@ -193,6 +193,24 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
           found.set('CLIENT_DATASTORE_SERVICE',{code:'CLIENT_DATASTORE_SERVICE',line:sourceLineAt(match.index)});
       }
     }
+    // [프레임 예산] 이미 연결된 RunService 콜백에서 원격 요청·추가 연결이
+    // 매 프레임 반복되는 경우만 정적 검토 대상으로 지정한다. 게임 코드는 수정하지 않는다.
+    // 주석·문자열은 제거된 activeSource를 사용하고, 닫힌 콜백 밖의 호출은 포함하지 않는다.
+    for(const callback of activeSource.matchAll(/\b(?:Heartbeat|RenderStepped|Stepped)\s*:\s*Connect\s*\(\s*function\s*\([^)]*\)/g)){
+      const start=callback.index+callback[0].length;
+      const tail=activeSource.slice(start,start+1600);
+      const close=tail.search(/\bend\s*\)/);
+      if(close<0)continue; // 불완전한 정적 범위로 성급히 경고하지 않는다.
+      const body=tail.slice(0,close);
+      const request=/\b[A-Za-z_]\w*\s*:\s*(?:FireServer|InvokeServer)\s*\(/.exec(body);
+      if(request&&!found.has('FRAME_REMOTE_REQUEST'))
+        found.set('FRAME_REMOTE_REQUEST',{code:'FRAME_REMOTE_REQUEST',line:sourceLineAt(start+request.index)});
+      const connection=/\b[A-Za-z_]\w*(?:\s*\.\s*[A-Za-z_]\w*)?\s*:\s*Connect\s*\(/.exec(body);
+      if(connection&&!found.has('FRAME_CONNECTION_ACCUMULATION'))
+        found.set('FRAME_CONNECTION_ACCUMULATION',{
+          code:'FRAME_CONNECTION_ACCUMULATION',line:sourceLineAt(start+connection.index)});
+      if(found.has('FRAME_REMOTE_REQUEST')&&found.has('FRAME_CONNECTION_ACCUMULATION'))break;
+    }
     // [전체 함수 영향] 26만 자의 검증된 상한 안에서 4천 줄 이후 의존성도 확인한다.
     // 저장되는 함수 선언·호출 수의 기존 48/64개 제한과 읽기 전용 성격은 유지한다.
     for(const [i,line] of activeSource.split(/\r?\n/).entries()){
