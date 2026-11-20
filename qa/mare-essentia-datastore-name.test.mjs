@@ -1429,7 +1429,7 @@ test('발전도 해금 장식은 단계적으로 설치되고 기존 완공물�
  assert.match(scene,/local newGrade = previousDecor and tier > \(previousDecor\[d\.kind\] or 0\)/);
  assert.match(scene,/if info\.sim and info\.sim\.buildings then lastDecorationGrowth\[info\.portId\] = decor end/);
  assert.match(scene,/CityDecorationScaffold/);
- assert.match(scene,/worker:SetAttribute\("Job", "construction_worker"\)/);
+ assert.match(scene,/worker:SetAttribute\("Job", profession\)/);
  assert.match(scene,/duty\.kind = "inspect"/);
  for(const tier of ['residential','harbor'])assert.match(config,new RegExp(tier+' = grade\\('));
  assert.match(scene,/CityGrowthDecoration_residential/);
@@ -1590,7 +1590,7 @@ test('항구 주민은 실제 고용을 넘지 않고 개인별 출퇴근·점�
   assert.match(scene,new RegExp('job = "'+key+'"'));
  }
  for(const marker of [
-  'remainingJobs[duty.job] -= 1','wakeAt = duty.wake + shift','marketAt = marketAt',
+  'remainingJobs[candidate.job] -= 1','wakeAt = duty.wake + shift','marketAt = marketAt',
   'marketEnd = marketEnd','homeAt = homeAt','breakAt = math.min(',
   'routine = if hour >= (w.breakAt or 13)','"night_watch"','"commute"',
   'w.home or w.morning','if t.home then t.home += lift end',
@@ -2031,7 +2031,7 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
   assert.match(block,/if not sa then/);
   assert.doesNotMatch(block,/Lerp\(tint, 0\.24\)/,'PBR 색 중복 혼합 복원 금지');
  }
- assert.match(port,/local textured = sa ~= nil or \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\)/);
+ assert.match(port,/local textured = sa ~= nil or p\.MaterialVariant ~= ""/);
  assert.match(port,/if not textured then[\s\S]*?p\.Material = selected/);
  for(const name of ['Plaster','ClayRoofTiles','RoofShingles','WoodPlanks','Limestone']){
   assert.ok(port.includes('Enum.Material.'+name)||cultures.includes('Enum.Material.'+name),'건축 재질 누락 '+name);
