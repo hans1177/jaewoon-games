@@ -664,7 +664,7 @@ export async function runWebVibeWorker(argv=process.argv.slice(2),{fetchImpl=fet
   const args=options(argv);
   // [오너 2026-11-20] 보관용 웹 전용 실행기가 다시 코드를 수정하지 못하도록 방지.
   const ownerPolicy=JSON.parse(fs.readFileSync(path.join(ROOT,'company-learning','platform-release-roadmap.json'),'utf8'));
-  if(!args.check&&ownerPolicy?.localVibeWebChat?.webGameAuthoringEnabled===false)fail('WEB_VIBE_OWNER_WEB_GAME_AUTHORING_STOPPED');
+  if(!args.check&&ownerPolicy?.localVibeWebChat?.webGameAuthoringEnabled!==true)fail('WEB_VIBE_OWNER_WEB_GAME_AUTHORING_STOPPED');
   if(args.pr&&!args.apply)fail('WEB_VIBE_PR_REQUIRES_EXPLICIT_APPLY');
   if(args.apply&&!args.pr)fail('WEB_VIBE_APPLY_REQUIRES_REVIEWABLE_PR');
   const token=clean(process.env.WEB_VIBE_GH_TOKEN);
