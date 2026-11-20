@@ -2141,7 +2141,7 @@ function H.layoutBook()
   H.facilityGallery.Visible = gallery
   local primaryVisible = gallery and currentTab ~= "board" and currentTab ~= "battle"
     and currentTab ~= "war" and currentTab ~= "route" and currentTab ~= "status"
-    and currentTab ~= "scholar" and currentTab ~= "crew"
+    and currentTab ~= "scholar" and currentTab ~= "crew" and currentTab ~= "gwent"
   H.menuActionButton.Visible = primaryVisible
   H.menuActionDock.Visible = primaryVisible
   if facilityDetail then
@@ -12728,7 +12728,7 @@ function render()
 	end
 	-- [오른쪽 상단 판단 정보] 교역소 기준: 실제 서버 값 → 조건 → 실행을 순서대로 읽는다.
 	-- 보상·위험·연구 효과·선박 능력은 표시만 하며 기존 규칙과 서버 판정을 바꾸지 않는다.
-	local focus = if currentTab == "trade" or currentTab == "yard" then nil else H.MENU_FOCUS[currentTab]
+	local focus = if currentTab == "trade" or currentTab == "yard" or currentTab == "gwent" then nil else H.MENU_FOCUS[currentTab]
 	H.menuPrimaryRoute = nil
 	if focus then
 		local fact, context, urgent = "현재 항구 " .. tostring(p.portName), "실제 진행 상태와 조건을 아래에서 확인해.", false
@@ -12832,9 +12832,6 @@ function render()
 			end
 			fact = string.format("탐험 가능 %d / %d지역", available, #(view.sites or {}))
 			context = string.format("보급품 %d개", ship.supplies or 0)
-		elseif currentTab == "gwent" then
-			fact = string.format("보유 카드 %d장", #((view.deck and view.deck.cards) or {}))
-			context = ""
 		elseif currentTab == "scholar" or currentTab == "codex" then
 			local cx = view.codex or {}
 			fact = string.format("지식 발견 %d / %d장", cx.found or 0, cx.total or 0)
