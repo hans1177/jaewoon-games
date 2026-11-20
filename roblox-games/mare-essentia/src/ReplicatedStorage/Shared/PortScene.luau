@@ -1530,6 +1530,15 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			elseif t.kind == "drink" then { group = "Cargo", asset = "mug", mount = "RightHand", size = 0.45, offset = CFrame.new(0, -0.2, -0.25) }
 			elseif t.kind == "hammer" then { group = "Relics", asset = "hammer", mount = "RightHand", size = 1.05, offset = CFrame.new(0, -0.45, -0.15) * CFrame.Angles(0, 0, math.rad(80)) }
 			elseif t.kind == "hoe" then { group = "Naval", asset = "tool-shovel", mount = "RightHand", size = 1.6, offset = CFrame.new(0, -0.8, -0.3) * CFrame.Angles(math.rad(80), 0, 0) }
+			-- [개별 근무 도구] 일과형 주민은 t.kind 없이 출근하므로 실제 직업에서 승인된 기존 소품을 선택한다.
+			-- 같은 소품을 교대마다 다시 만들지 않고 휴식 중에는 숨긴다.
+			elseif t.mode == "schedule" and (t.job == "merchant" or t.job == "laborer") then { group = "Cargo", asset = "box-open", mount = "UpperTorso", size = 0.82, offset = CFrame.new(0, -0.35, -0.9) }
+			elseif t.mode == "schedule" and t.job == "sailor" then { group = "Relics", asset = "rope-bundle-a", mount = "UpperTorso", size = 0.8, offset = CFrame.new(0, -0.35, -0.9) }
+			elseif t.mode == "schedule" and t.job == "guard" then { group = "Relics", asset = "weapon-sword", mount = "RightHand", size = 1.0, offset = CFrame.new(0, -0.45, -0.1) * CFrame.Angles(0, 0, math.rad(75)) }
+			elseif t.mode == "schedule" and t.job == "craftsman" then { group = "Relics", asset = "hammer", mount = "RightHand", size = 1.0, offset = CFrame.new(0, -0.45, -0.15) * CFrame.Angles(0, 0, math.rad(80)) }
+			elseif t.mode == "schedule" and t.job == "farmer" then { group = "Naval", asset = "tool-shovel", mount = "RightHand", size = 1.5, offset = CFrame.new(0, -0.8, -0.3) * CFrame.Angles(math.rad(80), 0, 0) }
+			elseif t.mode == "schedule" and t.job == "fisher" then { group = "Naval", asset = "fishing-net", mount = "UpperTorso", size = 0.84, offset = CFrame.new(0, -0.4, -0.9) }
+			elseif t.mode == "schedule" and t.job == "official" then { group = "Relics", asset = "map-rolled", mount = "RightHand", size = 0.7, offset = CFrame.new(0, -0.35, -0.1) }
 			else nil
 		local mount = spec and fig:FindFirstChild(spec.mount, true)
 		local assets = ReplicatedStorage:FindFirstChild("MareAssets")
@@ -1551,6 +1560,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				held.Parent = fig
 				held:PivotTo(mount.CFrame * spec.offset)
 				for _, mesh in parts do
+					mesh:SetAttribute("WorkPropOriginalTransparency", mesh.Transparency)
 					mesh.Anchored = false
 					mesh.CanCollide = false
 					mesh.CanTouch = false
@@ -1561,7 +1571,12 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 					joint.Parent = mesh
 				end
 			end)
-			if not ok then held:Destroy() end
+			if not ok then
+				held:Destroy()
+			else
+				t.workProp = held
+				fig:SetAttribute("WorkPropId", spec.group .. "/" .. spec.asset)
+			end
 		end
 		table.insert(walkers, t)
 	end
@@ -1643,7 +1658,19 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		local marketAt = duty.market + shift
 		local marketEnd = duty.leave + shift
 		local homeAt = duty.home + shift
-		local fig = person(work, faceTo(work, market), { role = duty.role, profession = duty.job, hat = "cap" }, duty.job)
+		-- [복장 다양화] 일괄 선원모를 제거하고 지역 전통모자·직업별 모자·장년층 머리색을 활용한다.
+		local attire = { role = duty.role, profession = duty.job }
+		if duty.job == "farmer" or duty.job == "fisher" then
+			attire.hat = "straw"
+		elseif duty.job == "sailor" or duty.job == "laborer" then
+			attire.hat = "cap"
+		elseif duty.job == "clergy" then
+			attire.hat = false
+		end
+		if (duty.job == "merchant" or duty.job == "official" or duty.job == "clergy") and i % 5 == 0 then
+			attire.age = "elder"
+		end
+		local fig = person(work, faceTo(work, market), attire, duty.job)
 		addTask(fig, { mode = "schedule", morning = work, market = market, evening = evening, home = home,
 			job = duty.job, workKinds = duty.work, tradeKinds = duty.trade, leisureKinds = duty.rest,
 			phase = rng:NextNumber(0, 10), socialKind = duty.rest[(i - 1) % #duty.rest + 1],
@@ -3774,6 +3801,13 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				outfit.profession, outfit.year = job, info.year or currentYear
 				outfit.female = districtResidents % 2 == 1
 				outfit.persona = (districtResidents % 3) + 1
+				-- [구역별 실제 인상] 농부의 밀짚모자·시장 상인의 머리·나이 든 성직자를 구분한다.
+				outfit.age = if job == "clergy" and districtResidents == 0 then "elder" else "adult"
+				outfit.hair = if outfit.female then (if districtResidents % 3 == 0 then "bun" else "long") else "short"
+				outfit.bodyType = if job == "farmer" then "heavy" elseif job == "merchant" then "slim" else "average"
+				outfit.motionStyle = if job == "farmer" then "heavy" elseif job == "merchant" then "nimble" else "scholar"
+				if job == "farmer" then outfit.hat = "straw" end
+				if job == "clergy" then outfit.noHat = true end
 				local m = villager(folder, Vector3.new(cx + dx, 0, cz + dz), yaw,
 					Color3.fromRGB(rng:NextInteger(60, 190), rng:NextInteger(60, 150), rng:NextInteger(40, 130)),
 					rng, spec and spec.role or "Rogue", false, outfit)
@@ -6028,6 +6062,17 @@ function PortScene.build(info, onFacility)
 					if w.lastRoutine ~= routine then
 						w.lastRoutine = routine
 						w.model:SetAttribute("DailyRoutine", routine)
+					end
+					-- [근무 소품] 작업·장터·출퇴근에만 보이고 집·주점·휴식에는 숨긴다.
+					-- 시각 상태가 바뀔 때만 실제 MeshPart 투명도를 조절해 모바일 프레임당 순회를 피한다.
+					local showWorkProp = routine == "work" or routine == "trade" or routine == "commute"
+					if w.workProp and w.workProp.Parent and w.workPropVisible ~= showWorkProp then
+						w.workPropVisible = showWorkProp
+						for _, mesh in w.workProp:GetDescendants() do
+							if mesh:IsA("BasePart") then
+								mesh.Transparency = if showWorkProp then (mesh:GetAttribute("WorkPropOriginalTransparency") or 0) else 1
+							end
+						end
 					end
 					local camera = workspace.CurrentCamera
 					if not camera or (camera.CFrame.Position - where).Magnitude < 180 then
