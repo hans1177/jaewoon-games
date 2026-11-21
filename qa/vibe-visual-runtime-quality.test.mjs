@@ -25,6 +25,22 @@ import {
   HIGH_END_GOLDEN_SCENE_ROLES,
 } from '../assets/vibe-visual-quality-gate.js';
 
+test('실화면 픽셀 비교 감독은 동일 장면과 원본 해시 검증 및 퇴보 검사를 요구한다',()=>{
+  const beforeHash='a'.repeat(64),afterHash='b'.repeat(64);
+  const evidence={baselineRevision:'rev-before',candidateRevision:'rev-after',
+    before:{source:'roblox-runtime-capture',artifactId:'before.png',candidateRevision:'rev-before',observed:true,reviewed:true,imageSha256:beforeHash},
+    after:{source:'roblox-runtime-capture',artifactId:'after.png',candidateRevision:'rev-after',observed:true,reviewed:true,imageSha256:afterHash},
+    comparison:{observed:true,reviewed:true,beforeStable:true,afterStable:true,method:'pixel-review',pass:true,visibleRenderDelta:true,
+      pixelVerified:true,sameCameraStateLighting:true,pixelReview:{pass:true,beforeSha256:beforeHash,afterSha256:afterHash},regressions:[]}};
+  assert.equal(auditVibeRuntimeBeforeAfterComparison(evidence).pass,true);
+  const regressed=structuredClone(evidence);
+  regressed.comparison.regressions=['UI_CLIPPED'];
+  assert.ok(auditVibeRuntimeBeforeAfterComparison(regressed).reasons.includes('before-after-visible-regression-detected'));
+  const mismatched=structuredClone(evidence);
+  mismatched.comparison.pixelReview.afterSha256=beforeHash;
+  assert.ok(auditVibeRuntimeBeforeAfterComparison(mismatched).reasons.includes('before-after-source-bound-pixel-review-required'));
+});
+
 function captures(revision='a'.repeat(40)){
   return GOLDEN_SCENE_ROLES.map((role,index)=>({
     role,
