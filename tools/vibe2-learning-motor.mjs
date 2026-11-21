@@ -492,7 +492,8 @@ export function applyVerifiedKnowledgeOutcomes(stateInput={},queueInput={}){
     if(!outcome)continue;
     const refs=uniq(knowledgeRefsFromEvidence(evidence)).sort();if(!refs.length)continue;
     const gameId=clean(task.gameId)||'unknown',target=lower(task.target)||'unknown';
-    const run=evidence.find(x=>x.startsWith('actions-run:'))||evidence.filter(x=>x.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
+    // 여러 실행 증거가 합쳐진 경우 가장 최근 실행을 기준으로 학습 결과를 식별한다.
+    const run=evidence.filter(x=>x.startsWith('actions-run:')).at(-1)||evidence.filter(x=>x.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
     const legacyEventId='knowledge_'+hash([clean(task.id),run,outcome,refs.join(',')].join('|'));
     const hasExactCandidate=evidence.some(value=>/^candidate-sha:[a-f0-9]{40}$/i.test(value));
     const eventId=hasExactCandidate?'knowledge_'+hash([codingOutcomeIdentity(task,'KNOWLEDGE'),outcome,refs.join(',')].join('|')):legacyEventId;
