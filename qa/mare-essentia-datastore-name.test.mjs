@@ -3333,3 +3333,15 @@ test('항구 시설 아이콘은 최초 생성과 반응형 배치에서 같은 
   const expected='icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 7, 0.5, -13)';
   assert.equal(source.split(expected).length-1,2);
 });
+
+// [조선소 실증 회귀] 정비와 선박 비교는 별도 페이지이며 실제 탭 클릭 후 비교를 검증한다.
+test('조선소 Studio QA는 정비와 비교 페이지를 각각 실제 클릭으로 검증한다',()=>{
+  const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  const maintenance=steps.find(x=>x.type==='luau' && x.code?.includes('YARD_MAINTENANCE_PASS'));
+  const click=steps.find(x=>x.type==='click_from_luau' && x.label==='yard_compare_tab');
+  const compare=steps.find(x=>x.type==='luau' && x.code?.includes('YARD_COMPARE_PAGE_PASS'));
+  assert.ok(maintenance && click && compare);
+  assert.ok(steps.indexOf(maintenance)<steps.indexOf(click) && steps.indexOf(click)<steps.indexOf(compare));
+  assert.match(click.code,/YardTab_compare/);
+  assert.match(compare.code,/YardSectionShips/);
+});
