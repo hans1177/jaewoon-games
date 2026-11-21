@@ -3,9 +3,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 
+// [윈도우 러너 이식성] 체크아웃 줄바꿈(CRLF)과 무관하게 동일한 원문 내용을 검사한다.
+const readText=(file)=>fs.readFileSync(file,'utf8').replace(/\r\n/g,'\n');
+
 // [시설 탭 최초 배치 회귀] 모바일 첫 렌더와 화면 크기 갱신이 같은 배치 규칙을 사용한다.
 test('시설 탭 아이콘과 글자는 첫 생성부터 모바일 규격으로 배치된다',()=>{
-  const game=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const game=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
   assert.match(game,/icon\.Position = if compactTabs then UDim2\.new\(0\.5, -13, 0, 3\) else UDim2\.new\(0, 7, 0\.5, -13\)/);
   assert.match(game,/caption\.TextXAlignment = if compactTabs then Enum\.TextXAlignment\.Center else Enum\.TextXAlignment\.Left/);
   assert.match(game,/textLimit\.MaxTextSize = if compactTabs then 14 else 17/);
@@ -13,11 +16,11 @@ test('시설 탭 아이콘과 글자는 첫 생성부터 모바일 규격으로 
 
 // DataStore 이름이 개명·유니버스 변경 중에 조용히 바뀌어 플레이어 저장이 초기화되는 사고를 막는다.
 // (2026-11-08: 새 유니버스에서 MareEssentia_v2로 저장이 시작됨.) 바꿔야 한다면 기존 저장 이전(마이그레이션)을 먼저 구현하고 이 테스트를 의도적으로 갱신한다.
-const core=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau','utf8');
+const core=readText('roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau');
 
 // [시작 로딩 회귀] 저장을 건드리지 않는 진단만 노출하고, 실제 서버/클라이언트 어느 단계에서 멈췄는지 증명한다.
 test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증거를 남긴다',()=>{
-  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  const capture=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
   assert.equal(capture.length,246);
   // [통합 표지 QA] 실제 시작 화면과 클릭 순서를 검사해 이전 버튼명 회귀를 차단한다.
   assert.match(capture[4].code,/FindFirstChild\('TitleBackdrop'\)/);
@@ -51,8 +54,8 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
 });
 
 test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가 회귀', () => {
-  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
-  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const capture=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
   assert.match(source,/currentTab ~= "map" and currentTab ~= "codex"/);
   assert.match(source,/CodexQuickNavigation/);
   assert.match(source,/ScholarTradeEncyclopediaBook/);
@@ -104,10 +107,10 @@ test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가
 
 // [공통 시설 메뉴 회귀] 기존 게임 기능·본문 유지, 상단 오른쪽 가로탭과 모바일 전체폭을 확인한다.
 test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본문 공간을 복구한다', () => {
-  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
   const layout=source.slice(source.indexOf('function H.layoutBook()'),source.indexOf('mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)'));
   const tabs=source.slice(source.indexOf('function H.renderTabs()'),source.indexOf('-- 모든 시설 창 오른쪽 위 모서리의 × 닫기 버튼'));
-  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  const capture=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
   assert.match(source,/tabBar\.Name = "FacilityTabBar"/);
   assert.match(source,/tabBar\.AnchorPoint = Vector2\.new\(1, 0\)/);
   assert.match(source,/H\.tabStrip\.Name = "FacilityTabStrip"/);
@@ -135,8 +138,8 @@ test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본
 });
 
 test('새 항해 첫 카드 창 오발동 차단과 가죽·양피지 버튼 계약', () => {
-  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
-  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const capture=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
   const buttonCode=source.slice(source.indexOf('local function mkButton('),source.indexOf('local function mkRow('));
   assert.match(source,/pickBefore ~= pickKey/);
   assert.match(source,/action ~= "State" and action ~= "NewGame" and action ~= "CardPick"/);
@@ -199,7 +202,7 @@ test('플레이어 저장 키는 UserId 기반 P_ 접두를 유지한다', () =>
 
 
 // [탐험 숙련 회귀] 기존 DataStore 확장·서버 정산·2~3타 무기별 순수 시각 연출을 점검한다.
-const read=(p)=>fs.readFileSync('roblox-games/mare-essentia/src/'+p,'utf8');
+const read=(p)=>readText('roblox-games/mare-essentia/src/'+p);
 const state=read('ServerScriptService/Services/State.luau');
 const discovery=read('ServerScriptService/Services/Discovery.luau');
 const view=read('ServerScriptService/Services/View.luau');
@@ -367,7 +370,7 @@ test('실물 해적 선상도·쌍날도끼·권총은 CC0 원본과 병종에 �
   for(const item of required){
     const file='roblox-games/mare-essentia/assets/relics/'+item.name+'.glb';
     assert.ok(fs.existsSync(file),'원본 메시 누락: '+item.name);
-    const proof=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
+    const proof=JSON.parse(readText(file+'.license.json'));
     assert.equal(proof.license,'CC0-1.0',item.name+' 사용 허가');
     assert.equal(proof.author,'Quaternius',item.name+' 원저작자');
     assert.match(proof.source,/^https:\/\/quaternius\.com\/packs\/piratekit\.html$/);
@@ -573,7 +576,7 @@ test('1단 검병·궁수 편성은 유지하면서 승인된 R15 체형 3종 �
 // [스튜디오 실증 회귀] 실제 탐험 2메달 HUD와 자동검사 스크립트가 같은 버튼을 검사해야 한다.
 test('스튜디오 탐험 실증은 현재 공격·회피 메달과 집안별 두 무기를 검사한다',()=>{
   const path='roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json';
-  const script=JSON.parse(fs.readFileSync(path,'utf8'));
+  const script=JSON.parse(readText(path));
   assert.equal(script.length,246,'기존 전체 스튜디오 검사 순서 유지');
   // [실제 카드 대전 종료] 접힌 메뉴를 화면에서 먼저 클릭한 후 그 안의 건너뛰기를 실제 터치한다.
   assert.equal(script[155].label,'card_practice_menu_open');
@@ -670,8 +673,8 @@ test('음악 효과음 환경음은 기본 믹서 크기·지연 로딩·자동 
   assert.ok(fieldScene.includes('if weather == "소나기" then 0.88 else 0.68'));
   assert.ok(fieldScene.includes('elseif phase == "밤" then 0.43 else 0.58'));
   // [무음 근본 원인] 100개 영수증의 granted=true만 믿고 다른 Universe를 건너뛰면 실게임에서 소리가 나지 않는다.
-  const upload=fs.readFileSync('tools/mare-audio-upload.mjs','utf8');
-  const receipts=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/audio/uploaded.json','utf8'));
+  const upload=readText('tools/mare-audio-upload.mjs');
+  const receipts=JSON.parse(readText('roblox-games/mare-essentia/audio/uploaded.json'));
   const audioIds=read('ReplicatedStorage/Shared/AudioIds.luau');
   assert.ok(upload.includes("process.env.MARE_UNIVERSE_ID||'10775310508'"));
   assert.ok(upload.includes("if(universeId!=='10775310508')"));
@@ -1709,7 +1712,7 @@ test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 
   const f='roblox-games/mare-essentia/assets/people/'+name+'.glb';
   assert.ok(fs.existsSync(f),'원본 GLB 누락: '+name);
   const raw=fs.readFileSync(f);
-  const license=JSON.parse(fs.readFileSync(f+'.license.json','utf8'));
+  const license=JSON.parse(readText(f+'.license.json'));
   const gitSha=crypto.createHash('sha1').update('blob '+raw.length+String.fromCharCode(0)).update(raw).digest('hex');
   assert.equal(license.license,'CC0-1.0',name+' 무료 사용 승인');
   assert.equal(license.sourceSizeBytes,raw.length,name+' 원본 크기');
@@ -1766,7 +1769,7 @@ test('대항해시대 26종 PBR은 실제 원본에서 안전하게 제작되고
     const uniqueColorMaps=new Set();
     for(const name of names){
       const file=path.join(originals,name+'.glb'),bytes=fs.readFileSync(file);
-      const proof=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
+      const proof=JSON.parse(readText(file+'.license.json'));
       const scene=JSON.parse(bytes.toString('utf8',20,20+bytes.readUInt32LE(12)));
       assert.equal(proof.pbrVersion,5,'재질 제작기 강화 누락: '+name);
       assert.equal(proof.pbrDesignProfile,name,'실제 의상별 재질 디자인 누락: '+name);
@@ -1802,7 +1805,7 @@ test('대항해시대 26종 PBR은 실제 원본에서 안전하게 제작되고
 
 // [재질 식별] 제작기가 구형 회백색 PBR이 아니라 직조·가죽·금속·모발 각자의 표면 지도를 유지한다.
 test('대항해시대 주민 재질은 PBR 금속 채널과 거칠기 차이를 실제 제작 단계에서 구분한다',()=>{
-  const generator=fs.readFileSync('tools/mare-essentia-character-finish.mjs','utf8');
+  const generator=readText('tools/mare-essentia-character-finish.mjs');
   assert.match(generator,/const MAP_SIZE = 256;/);
   assert.match(generator,/kind==='fabric'\?238:kind==='leather'\?172:kind==='metal'\?94/);
   assert.match(generator,/kind==='hair'\?169:kind==='feather'\?219:113/);
@@ -1816,7 +1819,7 @@ test('대항해시대 주민 재질은 PBR 금속 채널과 거칠기 차이를 
   assert.match(generator,/roughVariation=kind==='fabric'\?20:kind==='leather'\?42:kind==='metal'\?37/);
   assert.match(generator,/kind==='hair'\?31:kind==='feather'\?19:8/);
   assert.match(generator,/MARE_CHARACTER_V3_GEOMETRY_CHANGED/);
-  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  const workflow=readText('.github/workflows/owner-mare-essentia-assets.yml');
   assert.match(workflow,/roblox-games\/mare-essentia\/assets\/people\/\{outfit_\*,hair_\*,acc_\*\}\.glb\*/);
   assert.match(workflow,/SKIP_UNREGISTERED_CHARACTER_PBR/);
 });
@@ -1829,8 +1832,8 @@ test('대항해시대 의상·헤어·장신구 26종은 UV/PBR 원본과 등록
     'hair_sailor_ponytail','hair_shoulder_waves','hair_side_braid','hair_simpleparted',
     'acc_feather_hat','acc_guild_badge','acc_pearl_hairpin','acc_ribbon_bow','acc_sailor_headband',
   ];
-  const upload=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
-  const maker=fs.readFileSync('tools/mare-essentia-character-finish.mjs','utf8');
+  const upload=readText('tools/mare-essentia-upload-assets.mjs');
+  const maker=readText('tools/mare-essentia-character-finish.mjs');
   assert.match(upload,/await prepareCharacterFinishes\(ROOT\)/);
   assert.match(upload,/characterPbrUpgrade/);
   assert.match(maker,/MARE_CHARACTER_PBR_TOTAL=26/);
@@ -1839,7 +1842,7 @@ test('대항해시대 의상·헤어·장신구 26종은 UV/PBR 원본과 등록
     const base='roblox-games/mare-essentia/assets/people/'+name+'.glb';
     const bytes=fs.readFileSync(base);
     let proof=null;
-    try{proof=JSON.parse(fs.readFileSync(base+'.license.json','utf8'));}catch{}
+    try{proof=JSON.parse(readText(base+'.license.json'));}catch{}
     if(![2,3,4,5].includes(proof?.pbrVersion))continue;
     upgraded.push(name);
     const json=JSON.parse(bytes.toString('utf8',20,20+bytes.readUInt32LE(12)));
@@ -1880,7 +1883,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
     assert.ok(gltf.meshes[0].primitives.length>0 && gltf.meshes[0].primitives.length<=12,'모바일 모델 부품 초과: '+name);
     assert.ok(gltf.materials.length>=4,'원본 복식 소재 구분 누락: '+name);
     // [UV 원본 보존 검증] 원본 메시/법선/인덱스 바이너리는 전부 동일하고, 재질별 UV0만 뒤에 더했다.
-    const uvProof=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
+    const uvProof=JSON.parse(readText(file+'.license.json'));
     const binOffset=20+bytes.readUInt32LE(12)+8;
     assert.equal(uvProof.uvVersion,1,'UV 갱신 누락: '+name);
     assert.equal(bytes.readUInt32LE(binOffset-4),0x004e4942,'GLB 바이너리 누락: '+name);
@@ -1921,7 +1924,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
     const sourceMaterials=gltf.meshes[0].primitives.map(p=>gltf.materials[p.material].pbrMetallicRoughness);
     assert.ok(sourceMaterials.some(m=>m.metallicFactor>=0.65),'GLB 원본 금속 재질 누락: '+name);
     assert.ok(sourceMaterials.some(m=>m.metallicFactor<0.1),'GLB 원본 비금속 재질 누락: '+name);
-    const proof=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
+    const proof=JSON.parse(readText(file+'.license.json'));
     const actualSha=crypto.createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
     assert.equal(proof.sourceGitBlobSha1,actualSha,'원본 메시 SHA-1 오류: '+name);
     assert.equal(proof.license,'CC0-1.0','상업 이용 무료 사용권 누락: '+name);
@@ -2599,7 +2602,7 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
 
 test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox 등록기 연결을 지킨다',()=>{
   const root='roblox-games/mare-essentia/assets/materials/';
-  const approvals=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json','utf8')).approved;
+  const approvals=JSON.parse(readText('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json')).approved;
   const names=['mat_wall_plaster_beige','mat_wood_planks_worn','mat_stone_paving_historic'];
   for(const base of names)for(const suffix of ['bc','n','r']){
     const name=base+'_'+suffix;
@@ -2608,14 +2611,14 @@ test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox
     assert.ok(data.length>=30000,'실제 CC0 지도 파일 누락: '+name);
     assert.equal(data[0],0xff,'JPEG 파일 형식 오류: '+name);
     assert.equal(data[1],0xd8,'JPEG 파일 형식 오류: '+name);
-    const meta=JSON.parse(fs.readFileSync(file+'.license.json','utf8'));
+    const meta=JSON.parse(readText(file+'.license.json'));
     const hash=crypto.createHash('sha256').update(data).digest('hex');
     assert.equal(meta.sourceSha256,hash,'재질 원본 해시 오류: '+name);
     assert.equal(meta.license,'CC0-1.0','무료 상업 이용 라이선스 누락: '+name);
     assert.ok(meta.source.startsWith('https://'),'원본 공식 주소 누락: '+name);
     assert.equal(approvals['Materials/'+name],hash,'바이브 이미지 검수 해시 불일치: '+name);
   }
-  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  const uploader=readText('tools/mare-essentia-upload-assets.mjs');
   const loader=read('ServerScriptService/AssetLoader.server.luau');
   assert.match(uploader,/\['materials', 'Materials'\]/);
   assert.match(uploader,/kind === 'Materials'/);
@@ -2635,7 +2638,7 @@ test('무료 CC0 건축 재질 3종 9맵은 원본 해시·승인·기존 Roblox
 
 // 주민의 원본 얼굴 데칼을 보존하고 덧붙인 가면을 금지한다.
 test('R15 주민 얼굴은 공식 Studio 흰 얼굴 회귀를 막도록 기본 데칼을 보존한다',()=>{
-  const source=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
+  const source=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau');
   const start=source.indexOf('local function drawFace(');
   const end=source.indexOf('local function addHat(',start);
   assert.ok(start>=0 && end>start,'기존 책임 함수 확인');
@@ -2653,8 +2656,8 @@ test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치�
   const {validateReview, visualEditLooksSafe, applyVisualReplacements,
     authorizedCandidateBranch, verifiedStudioCapture} =
     await import('../tools/company-nemotron-design-review.mjs');
-  const contract = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8')).directVisualDesign;
-  const workflow = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  const contract = JSON.parse(readText('company-learning/external-ai-distillation-policy.json')).directVisualDesign;
+  const workflow = readText('.github/workflows/devloop-studio.yml');
   const pose = 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau';
   const port = 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau';
   assert.equal(contract.enabled, true);
@@ -2758,7 +2761,7 @@ test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치�
     {...reviewed.edits[0], before: first, after: second},
     {...reviewed.edits[0], before: first, after: '\tgui.LightInfluence = 0.4'}
   ], contract), /DUPLICATE_SOURCE_ANCHOR/);
-  assert.equal(fs.readFileSync(pose, 'utf8').includes(oldPose), true,
+  assert.equal(readText(pose).includes(oldPose), true,
     '원본 책임 게임 파일의 기존 기준선은 변경하지 않는다');
   assert.throws(() => validateReview({...response,
     edits: [{...response.edits[0], path: 'roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau'}]},
@@ -2782,7 +2785,7 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
     validateVisualComparison, verifiedDesignFeedback, mergeFreeVisualUsage,
     rankVisualSourceFiles, visualEditLooksSafe} =
       await import('../tools/company-nemotron-design-review.mjs');
-  const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
+  const policy = JSON.parse(readText('company-learning/external-ai-distillation-policy.json'));
   const config = policy.directVisualDesign.freeSpecialistPool;
   assert.equal(config.paidFallbackForbidden, true);
   assert.equal(config.accountTierProofRequired, false);
@@ -2802,8 +2805,8 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
   assert.equal(designRoleForFrames(['ship_harbor-0.jpg']), 'WORLD');
   assert.equal(designRoleForFrames(['menu_ui-0.jpg']), 'UI');
   assert.equal(designRoleForFrames(['run_motion-0.jpg']), 'MOTION');
-  const captures = JSON.parse(fs.readFileSync(
-    'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', 'utf8'))
+  const captures = JSON.parse(readText(
+    'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'))
     .filter(step => step.type === 'capture').map(step => step.name + '-0.jpg');
   const roles = ['NPC', 'WORLD', 'UI', 'MOTION', 'GENERAL'];
   assert.deepEqual(roles.map(role => selectDesignFrameRole(captures, role)),
@@ -2840,7 +2843,7 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
     tintBefore.replace('145, 133, 122', '256, 130, 120')), false);
   assert.equal(visualEditLooksSafe(tintBefore,
     tintBefore.replace('workbench-anvil', 'unlicensed-new-asset')), false);
-  const designSource = fs.readFileSync('tools/company-nemotron-design-review.mjs', 'utf8');
+  const designSource = readText('tools/company-nemotron-design-review.mjs');
   assert.match(designSource, /visualAnchors\(contract\.allowedSourceFiles, designRuntime\.selectedRole\)/);
   assert.match(designSource, /SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE[\s\S]*modelAvailability: diagnostics/);
 
@@ -2958,7 +2961,7 @@ test('무료 디자인 7개 모델은 역할별·인증·일일 한도·쿨다�
     ...original, usageWindow: {day, calls: {GEMINI: 12}}
   }})[0].provider, 'NVIDIA', '성공 학습도 무료 사용량 상한을 해제하지 못한다');
 
-  const workflow = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  const workflow = readText('.github/workflows/devloop-studio.yml');
   assert.match(workflow, /--feedback=\$priorVisualFeedback/);
   assert.match(workflow, /--mode=verify/);
   assert.match(workflow, /DESIGN_AUTO_MERGE=MERGED_AFTER_STUDIO_VISUAL_SECURITY_QA/);
@@ -3001,7 +3004,7 @@ test('무료 디자인 한도 예측은 계정 전체 잔량을 주장하지 않
   assert.ok(Object.values(snapshot).every(row => row.accountWideBalanceVerified === false &&
     row.scope === 'STUDIO_VISUAL_ONLY'),
   '디자인 자체 제한을 전체 계정 잔량으로 표시하면 안 된다');
-  const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
+  const policy = JSON.parse(readText('company-learning/external-ai-distillation-policy.json'));
   const env = {
     NVIDIA_API_KEY: 'fixture', NVIDIA_FREE_TIER_VERIFIED: 'YES',
     GEMINI_API_KEY: 'fixture', GEMINI_DESIGN_FREE_TIER_VERIFIED: 'YES',
@@ -3048,7 +3051,7 @@ test('오픈라우터 공식 무료 계정 상태를 조회하고 미공개 호�
   assert.equal(forecast.OPENROUTER.accountWideBalanceVerified, false);
   assert.equal(forecast.OPENROUTER.accountWideFreeRemaining, null);
   assert.equal(forecast.OPENROUTER.accountFreeTierVerified, true);
-  const policy = JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json', 'utf8'));
+  const policy = JSON.parse(readText('company-learning/external-ai-distillation-policy.json'));
   assert.ok(selectFreeDesignModels({policy, env, now, accountQuota: tier})
     .some(model => model.provider === 'OPENROUTER'),
     '무료 인증 키와 무료 모델 고정 규칙을 함께 충족할 때만 배정');
@@ -3227,7 +3230,7 @@ test('디자인 무료 공급자별 인증 실패·형식 오류·결제 요구�
       async()=>({ok:false,status:402}),env);
     assert.equal(billing.status,'BILLING_BLOCKED',model.id);
   }
-  const policy=JSON.parse(fs.readFileSync('company-learning/external-ai-distillation-policy.json','utf8'));
+  const policy=JSON.parse(readText('company-learning/external-ai-distillation-policy.json'));
   const previous={selectedRole:'NPC',cooldowns:{
     NVIDIA_VL:new Date(Date.now()+1800000).toISOString()
   },attempts:[{id:'NVIDIA_VL',status:'REVIEW_INVALID'}]};
@@ -3274,7 +3277,7 @@ test('네모트론 후보와 독립 검수는 동일 무료 호출에서 다른 
 
 // [교역 장부·조선소·시설 공통 회귀] 최신 메인의 원화·백과·거래 흐름을 보존한 상태에서 메뉴 가독성을 개선한다.
 test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 배치를 유지한다', () => {
-  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
   const trade=source.slice(source.indexOf('local function openTradeHall()'),source.indexOf('H.tradeHall = openTradeHall'));
   const yard=source.slice(source.indexOf('function openYardHall()'),source.indexOf('H.yardHall = openYardHall'));
   assert.match(source,/width < math\.max\(520, left \+ btnWidth \+ 240\)/,'중간 폭 메뉴에서도 버튼과 설명 분리');
@@ -3307,7 +3310,7 @@ test('AI 디자인이 교역·선박·서재·주점·선장실 등 방문 메�
     'uiCardGrid-0.jpg','cardPreview-0.jpg','deckPanel-0.jpg'])
     assert.equal(designRoleForFrames([name]),'EXCLUDED_CARD','외부 AI 카드 검수 금지: '+name);
   assert.equal(selectDesignFrameRole(targets),'UI','다수 UI 촬영본은 기존 UI 검수로 배정');
-  const source=fs.readFileSync('tools/company-nemotron-design-review.mjs','utf8');
+  const source=readText('tools/company-nemotron-design-review.mjs');
   assert.match(source,/trade goods previews, shipyard/,'무료 AI 디자인 검수 확장');
   assert.match(source,/Exclude standalone card battles, card decks, card art/,'카드 외부 AI 수정 금지');
   assert.match(source,/!\/\(\?:card\|deck\|duel\|knowledgebattle\)\/i.test\(line\)/,
@@ -3318,8 +3321,8 @@ test('AI 디자인이 교역·선박·서재·주점·선장실 등 방문 메�
 
 // [교역품 실증] 기존 공식 4장 제한을 유지하되 교역 화면을 대표 사진에서 누락하지 않는다.
 test('무료 AI 디자인 리뷰가 교역품 실촬영을 우선 전송한다',()=>{
-  const source=fs.readFileSync('tools/company-nemotron-design-review.mjs','utf8');
-  const capture=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-tradehall.json','utf8'));
+  const source=readText('tools/company-nemotron-design-review.mjs');
+  const capture=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-tradehall.json'));
   assert.match(source,/const ordered = selectedRole === 'UI'/);
   assert.match(source,/Number\(cargoFrame\.test\(b\)\) - Number\(cargoFrame\.test\(a\)\)/);
   assert.ok(capture.filter(row=>row.type==='capture' && /^trade_goods/.test(row.name)).length>=2,
@@ -3329,14 +3332,14 @@ test('무료 AI 디자인 리뷰가 교역품 실촬영을 우선 전송한다',
 
 // [시설 아이콘 회귀] 최초 생성과 반응형 갱신은 같은 모바일·데스크톱 좌표를 사용한다.
 test('항구 시설 아이콘은 최초 생성과 반응형 배치에서 같은 탭 내부 여백을 유지한다',()=>{
-  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
   const expected='icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 7, 0.5, -13)';
   assert.equal(source.split(expected).length-1,2);
 });
 
 // [조선소 실증 회귀] 정비와 선박 비교는 별도 페이지이며 실제 탭 클릭 후 비교를 검증한다.
 test('조선소 Studio QA는 정비와 비교 페이지를 각각 실제 클릭으로 검증한다',()=>{
-  const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  const steps=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
   const maintenance=steps.find(x=>x.type==='luau' && x.code?.includes('YARD_MAINTENANCE_PASS'));
   const click=steps.find(x=>x.type==='click_from_luau' && x.label==='yard_compare_tab');
   const compare=steps.find(x=>x.type==='luau' && x.code?.includes('YARD_COMPARE_PAGE_PASS'));
@@ -3349,8 +3352,8 @@ test('조선소 Studio QA는 정비와 비교 페이지를 각각 실제 클릭�
 
 // [스튜디오 원인 복구 회귀] 대련 애니메이션과 정밀 보행 관절 측정의 동시 쓰기를 차단한다.
 test('스튜디오 R15 보행 검증은 자동 대련 루프의 관절 덮어쓰기를 차단한다', () => {
-  const scene = fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau', 'utf8');
-  const steps = JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', 'utf8'));
+  const scene = readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau');
+  const steps = JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
   assert.equal(steps.length, 246);
   assert.match(scene, /RunService:IsStudio\(\) and folder:GetAttribute\("R15MotionProbe"\) == true/);
   for (const step of [204, 208]) {
