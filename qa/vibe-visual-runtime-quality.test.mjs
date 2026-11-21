@@ -87,6 +87,30 @@ test('자동 재작업은 중복 원인·모호한 책임 함수·게임 상태 
   assert.ok(result.reasons.includes('before-after-regression-repair-target-missing-or-unsafe:ICON_CLIPPED'));
 });
 
+test('캡처 검증이 깨지면 자동 재작업 대상을 발행하지 않는다',()=>{
+  const a='a'.repeat(64),b='b'.repeat(64);
+  const base={baselineRevision:'old',candidateRevision:'new',
+    before:{source:'roblox-runtime-capture',artifactId:'old',candidateRevision:'old',observed:true,reviewed:true,imageSha256:a},
+    after:{source:'roblox-runtime-capture',artifactId:'new',candidateRevision:'new',observed:true,reviewed:true,imageSha256:b},
+    comparison:{observed:true,reviewed:true,beforeStable:true,afterStable:true,method:'pixel',pass:true,visibleRenderDelta:true,
+      pixelVerified:true,sameCameraStateLighting:true,pixelReview:{pass:true,beforeSha256:a,afterSha256:b},
+      regressions:['ICON_CLIPPED'],repairTargets:[{issue:'ICON_CLIPPED',sourcePath:'roblox-games/mare-essentia/src/Harbor.lua',
+        targetId:'harbor',property:'Size',expectedEffect:'fit tab',scope:'VISUAL_PRESENTATION_ONLY',preserveGameplayAndSave:true}]}};
+  assert.equal(auditVibeRuntimeBeforeAfterComparison(base).repairTargets.length,1);
+  for(const mutate of [
+    row=>{row.before.observed=false;},
+    row=>{row.comparison.pixelReview.afterSha256=a;},
+    row=>{row.comparison.sameCameraStateLighting=false;},
+    row=>{row.after.artifactId='old';},
+    row=>{row.markerOnly=true;},
+  ]){
+    const invalid=structuredClone(base);mutate(invalid);
+    const result=auditVibeRuntimeBeforeAfterComparison(invalid);
+    assert.equal(result.repairTargets.length,0);
+    assert.ok(result.reasons.includes('before-after-regression-repair-evidence-not-trusted'));
+  }
+});
+
 function captures(revision='a'.repeat(40)){
   return GOLDEN_SCENE_ROLES.map((role,index)=>({
     role,
