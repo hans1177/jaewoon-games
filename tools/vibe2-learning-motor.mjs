@@ -427,7 +427,8 @@ function knowledgeLifecycle(row={}){
   if(fails>=4&&negative>=6&&failRate>=0.7)return'RETIRED';
   if(negative>=2&&failRate>0.5)return'DEMOTED';
   if(positive>=6&&games>=2&&failRate<=0.35)return'PREFERRED';
-  if(positive>=2)return'VERIFIED';
+  // 성공 횟수만으로 실패율이 높은 지식을 검증 완료로 승격하지 않는다.
+  if(positive>=2&&apps>=2&&failRate<=0.5)return'VERIFIED';
   return'CANDIDATE';
 }
 function normalizeKnowledgeAttribution(input={}){
