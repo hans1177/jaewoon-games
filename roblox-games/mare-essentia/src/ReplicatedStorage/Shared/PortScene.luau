@@ -5989,9 +5989,13 @@ function PortScene.build(info, onFacility)
 					action = selected
 					progress = (math.sin(now * 2.5) + 1) * 0.5
 				end
-				if not Pose.makeR15Action(w.model, action, progress, now) and not w.motionWarned then
-					w.motionWarned = true
-					warn("[MareEssentia] 항구 R15 대련 모션 적용 실패:", w.model.Name)
+				-- [Studio QA] 관절 측정 중에 자동 대련 루프가 같은 관절의 위상과 자세를 덮어쓰지 않는다.
+				-- 2명 대련 모델에만 적용하며 실제 게임/다른 주민의 모션 갱신은 그대로 유지한다.
+				if not (RunService:IsStudio() and folder:GetAttribute("R15MotionProbe") == true) then
+					if not Pose.makeR15Action(w.model, action, progress, now) and not w.motionWarned then
+						w.motionWarned = true
+						warn("[MareEssentia] 항구 R15 대련 모션 적용 실패:", w.model.Name)
+					end
 				end
 			elseif w.mode == "royal_rider" then
 				-- [경기병 착석] 정지 기마 경호는 R15 관절만 갱신하고 말·동선·판정을 이동시키지 않는다.
