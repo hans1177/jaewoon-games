@@ -938,7 +938,11 @@ export function createVibeGraphicsProduction({
   const presentation=planVibePresentationAutopilot({
     files,events,request,changeRequest:changeRequestStability,game,world,
     performanceTelemetry:verifiedFrameSample
-      ? {actualRuntime:true,frameMs:Number(engineMeasurementCapture.frameMs)}
+      ? {actualRuntime:true,frameMs:Number(engineMeasurementCapture.frameMs),
+        captureHash:clean(engineMeasurementCapture.captureHash).toLowerCase(),
+        frameSamplesMs:Array.isArray(engineMeasurementCapture.frameSamplesMs)
+          ?engineMeasurementCapture.frameSamplesMs:undefined,
+        resources:engineMeasurementCapture.resources||null}
       : null,
     uiSurfaces:(Array.isArray(game?.interfaceComposition)?game.interfaceComposition:Array.isArray(game?.uiSurfaces)?game.uiSurfaces:[]).filter(row=>row&&typeof row==='object')
   });
@@ -1195,6 +1199,54 @@ export function createVibeGraphicsProduction({
     recaptureAfterEveryRepair:true,
     closeOnlyAfterRuntimeReobservation:true
   }):Object.freeze({status:'RUNTIME_EVIDENCE_PENDING',defects:Object.freeze([...spatialRepairTargets,...nativeImportRepairTargets]),sameCaptureConditionsRequired:true,recaptureAfterEveryRepair:true,closeOnlyAfterRuntimeReobservation:true});
+  // [바이브 5.9 상용 그래픽 감독] 기존 GRAPHICS_PRODUCTION 안에서 관찰된 결함을
+  // 조형·PBR·모션·조명·VFX·카메라·UI·모바일 책임 단계로 직접 되돌린다.
+  // 계획만 작성해 PASS로 승격하지 않고 동일 소스/화면 재촬영으로 닫는다.
+  const professionalStageFor=defect=>{
+    const key=clean(defect?.surface||defect?.axis||'').toUpperCase();
+    if(/MOBILE|PERFORMANCE|LOD|FRAME/.test(key))return 'PLATFORM_PERFORMANCE_AND_COHESION_FAN_IN';
+    if(/MOTION|ANIMATION|CHARACTER_NPC_CREATURE/.test(key))return 'ANIMATION_AND_MOTION_IDENTITY';
+    if(/MATERIAL|PBR|LIGHT|COHESION/.test(key))return 'MATERIAL_LIGHTING_AND_PLATFORM_REAUTHORING';
+    if(/VFX|UI|INTERFACE|CAMERA|PRESENTATION/.test(key))return 'VFX_UI_AND_PRESENTATION_BINDING';
+    if(/ENVIRONMENT|BACKGROUND|LANDMARK|SCENE_OBJECT/.test(key))return 'ENVIRONMENT_BACKGROUND_LANDMARK_AND_SET_DRESSING';
+    if(/SPATIAL_3D|MODEL|MESH|SILHOUETTE|HERO|CHARACTER/.test(key))return 'HERO_CHARACTER_CREATURE_AND_SIGNATURE_ASSETS';
+    return 'RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION';
+  };
+  const repairSourceRows=runtimeRepairLoop.defects.map((defect,index)=>Object.freeze({
+    id:clean(defect?.id)||'visual-defect-'+index,
+    surface:clean(defect?.surface)||'VISUAL_REGRESSION',
+    stage:professionalStageFor(defect),
+    sourcePath:clean(defect?.sourcePath)||null,
+    property:clean(defect?.property)||null,
+    region:defect?.region||null,
+    issue:clean(defect?.issue)||null,
+    findings:Object.freeze(Array.isArray(defect?.findings)?[...defect.findings]:[]),
+    evidenceRequired:clean(defect?.evidenceRequired)||'CURRENT_RUNTIME_SCREENSHOT_AND_RECAPTURE',
+    directExistingSourceEditOnly:true,
+    originalMeshMaterialRigAndGameplayPreserved:true,
+    applicationVerified:false
+  }));
+  const stageOrder=new Map(GRAPHICS_PRODUCTION_STAGES.map((stage,index)=>[stage,index]));
+  repairSourceRows.sort((a,b)=>(stageOrder.get(a.stage)??99)-(stageOrder.get(b.stage)??99)
+    ||a.sourcePath?.localeCompare(b.sourcePath||'')||a.id.localeCompare(b.id));
+  const professionalGraphics=Object.freeze({
+    version:1,
+    owner:'GRAPHICS_PRODUCTION',
+    visualStyleLock:visualDirection?.highEnd?.artBible||null,
+    work:Object.freeze(repairSourceRows),
+    defectCount:repairSourceRows.length,
+    status:runtimeAudit?.pass===true&&runtimeRepairLoop.status==='VERIFIED_CHECKPOINT'
+      ?'RUNTIME_CHECKPOINT_VERIFIED':repairSourceRows.length?'SOURCE_BOUND_REPAIR_REQUIRED':'RUNTIME_CAPTURE_REQUIRED',
+    disciplines:Object.freeze(['MODEL_UV','PBR_MATERIAL','CHARACTER_MOTION','LIGHTING_AND_CAMERA',
+      'VFX_AND_AUDIO_SYNC','UI_AND_READABILITY','MOBILE_RUNTIME_PERFORMANCE']),
+    measuredPresentationBudget:presentation.presentationBudget,
+    screenshotBoundBeforeAfter:beforeAfterAudit||null,
+    artDirectionReview:artDirectionReview||null,
+    actualSourceEditPerformed:false,
+    actualNativeRuntimeVerification:runtimeAudit?.pass===true,
+    noNewQueueOrPipeline:true,
+    preserveGameplaySaveAndOriginalAssets:true
+  });
   const measurementCapture=Object.freeze({
     required:Boolean(artSpec.animation?.required||artSpec.highEndVisual?.required),
     provided:Boolean(engineMeasurementCapture&&typeof engineMeasurementCapture==='object'&&Object.keys(engineMeasurementCapture).length),
@@ -1251,6 +1303,7 @@ export function createVibeGraphicsProduction({
     pendingNativeAssetHashes:nativeImportHashes,
     nativeImportRepairTargets,
     runtimeRepairLoop,
+    professionalGraphics,
     engineMeasurementCapture:measurementCapture,
     interfaceRequirements:requiredInterfaceSurfaces,
     sceneObjectRequirements:sceneRequirements,
