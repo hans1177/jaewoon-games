@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 // 파일명: tools/vibe2-gemini-free-rotation.mjs
 // 메인: 기존 Gemini 소스·학습 공용 API 요청 안에서만 무료 공급자 대체 순환.
 // 보안: API 키 출력·유료 모델·자동 결제·로컬 모델·추가 파이프라인 금지.
@@ -18,6 +20,44 @@ export const VERIFIED_FREE_FALLBACK_MODELS=Object.freeze({
 });
 const cooldownUntil=new Map();
 const groqQuotaByModel=new Map();
+// [실행 간 쿨다운 공유] 메모리 쿨다운은 새 GitHub 실행에서 사라져 한도가 끝난 모델을 다시 두드렸다.
+// VIBE2_FREE_AI_COOLDOWN_FILE(기존 actions/cache로 실행 간 복원)에 모델별 복구 시각을 남긴다.
+// 병합 규칙: 같은 모델은 더 늦은 시각만 남겨 동시 워커가 서로의 기록을 지워도 한도가 초기화되지 않는다.
+// 지난 시각은 저장할 때 정리한다. 키·요청 내용은 저장하지 않는다(모델 이름·시각·근거만).
+function cooldownFile(){return String(process.env.VIBE2_FREE_AI_COOLDOWN_FILE??'').trim();}
+function readSharedCooldowns(){
+  const file=cooldownFile();
+  if(!file)return{};
+  try{
+    const parsed=JSON.parse(fs.readFileSync(file,'utf8'));
+    return parsed&&typeof parsed==='object'&&parsed.slots&&typeof parsed.slots==='object'?parsed.slots:{};
+  }catch{return{};}
+}
+function loadSharedCooldowns(now=Date.now()){
+  for(const [slot,row] of Object.entries(readSharedCooldowns())){
+    const until=Number(row?.until);
+    if(Number.isFinite(until)&&until>now)cooldownUntil.set(slot,Math.max(cooldownUntil.get(slot)||0,until));
+  }
+}
+function setCooldown(slot,until,basis='observed'){
+  const next=Math.max(cooldownUntil.get(slot)||0,Number(until)||0);
+  cooldownUntil.set(slot,next);
+  const file=cooldownFile();
+  if(!file)return;
+  try{
+    const now=Date.now();
+    const slots={};
+    for(const [key,row] of Object.entries(readSharedCooldowns()))
+      if(Number(row?.until)>now)slots[key]=row;
+    if(!slots[slot]||Number(slots[slot].until)<next)
+      slots[slot]={until:next,untilIso:new Date(next).toISOString(),basis,recordedAt:new Date(now).toISOString()};
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    const tmp=file+'.'+process.pid+'.tmp';
+    fs.writeFileSync(tmp,JSON.stringify({version:1,slots},null,1));
+    fs.renameSync(tmp,file);
+  }catch{/* 공유 기록 실패가 요청 자체를 막지 않는다 */}
+}
+export function sharedCooldownSnapshot(){return readSharedCooldowns();}
 let nextSlot=0;
 const clean=value=>String(value??'').trim();
 function infrastructureFailure(message,retryAt=0){
@@ -200,10 +240,12 @@ export async function requestGeminiFreePair({
   responseMimeType=null,fetchImpl=globalThis.fetch,geminiRetryAt=null,preferredRole='',
   specialistDepartment='',specialistTask='',specialistFiles=[],verifiedOutcomes=[]
 }={}){
+  // 다른 실행·워커가 남긴 모델별 복구 시각을 먼저 읽어, 쿨다운 중인 모델은 호출하지 않는다.
+  loadSharedCooldowns();
   const models=verifiedFreeGeminiModels();
   const knownRetryAt=Date.parse(clean(geminiRetryAt));
   if(Number.isFinite(knownRetryAt)&&knownRetryAt>Date.now())
-    for(const model of models)cooldownUntil.set(model,Math.max(cooldownUntil.get(model)||0,knownRetryAt));
+    for(const model of models)setCooldown(model,knownRetryAt,'official');
   const role=clean(preferredRole).toUpperCase();
   if(role&&!['TRIAGE','CODE_REPAIR','VERIFY'].includes(role))
     throw infrastructureFailure('VIBE2_FREE_AI_ROLE_INVALID');
@@ -288,14 +330,14 @@ export async function requestGeminiFreePair({
           groqQuota.requestsPerDayRemaining===0?Date.parse(groqQuota.requestsResetAt):0,
           groqQuota.tokensPerMinuteRemaining===0?Date.parse(groqQuota.tokensResetAt):0
         ].filter(value=>Number.isFinite(value)&&value>Date.now());
-        if(exhausted.length)cooldownUntil.set(slot,Math.max(cooldownUntil.get(slot)||0,...exhausted));
+        if(exhausted.length)setCooldown(slot,Math.max(...exhausted),'official');
       }
       if(!response.ok){
         const status=response.status;
         // [모델별 인증 실패] 잘못된 키 한 개 때문에 다른 무료 모델까지 중단하지 않는다.
         // 결제 요구 및 안전/권한 차단은 기존대로 전체 요청을 중단한다.
         if(status===401){
-          cooldownUntil.set(slot,Date.now()+21600000);
+          setCooldown(slot,Date.now()+21600000);
           failures.push(slot+':HTTP_401');
           console.log('VIBE2_EXTERNAL_FREE_ROTATE='+slot+':HTTP_401');
           continue;
@@ -317,7 +359,7 @@ export async function requestGeminiFreePair({
             const delay=status===400
               ?Math.max(1800000,retryDelayMs(response,status,errorBody,{provider:'GEMINI'}))
               :retryDelayMs(response,status,errorBody,{provider:'GEMINI'});
-            cooldownUntil.set(slot,Date.now()+delay);
+            setCooldown(slot,Date.now()+delay);
           }
           if(contextError)console.log('VIBE2_EXTERNAL_FREE_REQUEST_CONTEXT_REJECTED='+slot);
           if(status===400&&!contextError){
@@ -351,7 +393,7 @@ export async function requestGeminiFreePair({
               delay=Math.max(delay,Number.isFinite(requestReset)?requestReset-Date.now():0,
                 Number.isFinite(tokenReset)?tokenReset-Date.now():0,0);
             }
-            cooldownUntil.set(slot,Math.max(cooldownUntil.get(slot)||0,Date.now()+delay));
+            setCooldown(slot,Date.now()+delay);
           }
           if(contextError)console.log('VIBE2_EXTERNAL_FREE_REQUEST_CONTEXT_REJECTED='+slot);
           // [400 원인 기록] 실행 44956033693: OpenRouter·Groq 400이 원인 없이 '다음 모델로'만 기록됐다.
@@ -382,7 +424,7 @@ export async function requestGeminiFreePair({
         Array.isArray(content)?content.filter(item=>typeof item?.text==='string')
           .map(item=>item.text).join(''):'';
       if(!textValue.trim()){
-        cooldownUntil.set(slot,Date.now()+15000);
+        setCooldown(slot,Date.now()+15000);
         failures.push(slot+':EMPTY_OUTPUT');
         if(provider==='GEMINI')console.log('VIBE2_GEMINI_FREE_ROTATE='+model+':EMPTY_OUTPUT');
         continue;
@@ -394,7 +436,7 @@ export async function requestGeminiFreePair({
       return {text:textValue,model,provider,...(groqQuota?{freeQuota:groqQuota}:{})};
     }catch(error){
       if(error?.name==='AbortError'||error instanceof TypeError||error instanceof SyntaxError){
-        cooldownUntil.set(slot,Date.now()+15000);
+        setCooldown(slot,Date.now()+15000);
         failures.push(slot+':TRANSPORT_OR_TIMEOUT');
         console.log((provider==='GEMINI'?'VIBE2_GEMINI_FREE_ROTATE=':
           'VIBE2_EXTERNAL_FREE_ROTATE=')+slot+':TRANSPORT_OR_TIMEOUT');
