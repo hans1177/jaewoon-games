@@ -14239,8 +14239,15 @@ end
 		return out
 	end
 
+	local runStepBody
 	local function runStep(step)
-		task.defer(function() H.introDlgStep = step end) -- 안내창이 열린 뒤에 기록한다 (closeDlg가 지우므로)
+		runStepBody(step)
+		if dlg then H.introDlgStep = step end
+	end
+	function runStepBody(step)
+		-- [안내창 단계 기록] 지연(task.defer) 기록은 다음 단계 창이 열린 뒤에 옛 단계 이름을 덮어써
+		-- 서버와 다르다고 새 창을 닫는 경합을 만들었다(Studio 44921931706: stale=name>companion, 동료 단계 영구 정지).
+		-- 창을 연 직후 같은 스레드에서 기록한다(openDlg가 먼저 closeDlg로 지운 뒤).
 		local c = view.captain
 		local role = if step == "name" then "상인 길드" elseif step == "companion" then "주점" else "떠돌이 화가"
 		if step == "name" then
@@ -14349,6 +14356,8 @@ end
 				end
 				H.introDlgStep = nil
 				closeDlg()
+				-- 닫은 뒤 현재 서버 단계의 창을 다시 연다(이미 열었던 단계로 기억돼 영영 멈추지 않게).
+				last = nil
 			end
 			if c and not newGameMode and not sceneHold and not dlg and c.step ~= "done" then
 				local want = main.Visible and not H.openingPending
