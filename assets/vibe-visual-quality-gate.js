@@ -105,6 +105,17 @@ export function auditVibeRuntimeBeforeAfterComparison(evidence={}){
       reasons.push('before-after-visible-regression-detected');
       // [그래픽 자동 재작업] 실제 확인된 퇴보만 기존 소스의 책임 위치에 연결한다.
       // 출처가 없거나 게임 규칙/저장 구조를 건드리는 수정은 자동 실행하지 않는다.
+      // [검증된 화면만 재작업] 허위/누락된 캡처나 픽셀 검토로는 수정 대상 발행 금지.
+      const sourceBound=validCapture(before,baselineRevision)&&validCapture(after,candidateRevision)
+        &&baselineRevision!==candidateRevision&&beforeArtifact!==afterArtifact
+        &&/^[a-f0-9]{64}$/.test(beforeHash)&&/^[a-f0-9]{64}$/.test(afterHash)
+        &&beforeHash!==afterHash&&comparison.sameCameraStateLighting===true
+        &&comparison.observed===true&&comparison.reviewed===true
+        &&comparison.beforeStable===true&&comparison.afterStable===true
+        &&comparison.pixelReview?.pass===true
+        &&comparison.pixelReview?.beforeSha256===beforeHash
+        &&comparison.pixelReview?.afterSha256===afterHash&&!markerOnly;
+      if(!sourceBound)reasons.push('before-after-regression-repair-evidence-not-trusted');
       const targets=Array.isArray(comparison.repairTargets)?comparison.repairTargets:[];
       const protectedProperty=/(?:^|[._-])(?:hp|health|damage|attack|cooldown|spawn|reward|drop|save|storage|datastore|progression|economy|collision|hitbox|quest)(?=$|[._-]|[A-Z])/i;
       const seenIssues=new Set();
@@ -120,7 +131,7 @@ export function auditVibeRuntimeBeforeAfterComparison(evidence={}){
         const property=String(target?.property||'').trim();
         const duplicate=seenIssues.has(id);
         seenIssues.add(id);
-        const valid=Boolean(id&&!duplicate&&matches.length===1&&safePath&&safeScope
+        const valid=Boolean(sourceBound&&id&&!duplicate&&matches.length===1&&safePath&&safeScope
           &&String(target?.targetId||'').trim()&&property&&!protectedProperty.test(property)
           &&String(target?.expectedEffect||'').trim());
         if(!valid)reasons.push('before-after-regression-repair-target-missing-or-unsafe:'+id);
