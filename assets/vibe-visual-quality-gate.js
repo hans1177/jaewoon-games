@@ -109,8 +109,8 @@ export function auditVibeRuntimeBeforeAfterComparison(evidence={}){
       for(const issue of comparison.regressions){
         const id=String(issue||'').trim();
         const target=targets.find(row=>String(row?.issue||'').trim()===id);
-        const sourcePath=String(target?.sourcePath||'').replaceAll('\\\\','/').trim();
-        const safePath=/^(?:roblox-games|web-games|unity-games|assets)\\//.test(sourcePath)
+        const sourcePath=String(target?.sourcePath||'').replaceAll('\\','/').trim();
+        const safePath=/^(?:roblox-games|web-games|unity-games|assets)\//.test(sourcePath)
           &&!sourcePath.split('/').includes('..');
         const safeScope=target?.scope==='VISUAL_PRESENTATION_ONLY'
           &&target?.preserveGameplayAndSave===true;
