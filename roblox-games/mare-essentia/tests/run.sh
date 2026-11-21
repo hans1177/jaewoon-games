@@ -76,8 +76,10 @@ if 'if not folder.Parent or workspace:GetAttribute("VoyageActive") then return e
     raise SystemExit("MARE_PORT_OFFSCREEN_NPC_GUARD_MISSING")
 if 'if not folder.Parent then return end' not in ship_block:
     raise SystemExit("MARE_PORT_DESTROYED_VISUAL_GUARD_MISSING")
-if 'if workspace:GetAttribute("VoyageActive") then\n\t\t\tsetFoam(0)\n\t\t\treturn\n\t\tend' not in ship_block:
+if 'if workspace:GetAttribute("VoyageActive") then\n\t\t\tif not wasVoyageActive then\n\t\t\t\tsetFoam(0)\n\t\t\t\twasVoyageActive = true\n\t\t\tend\n\t\t\treturn\n\t\tend' not in ship_block:
     raise SystemExit("MARE_PORT_OFFSCREEN_SHIP_WAKE_NOT_STOPPED")
+if 'wasVoyageActive = false' not in source:
+    raise SystemExit("MARE_PORT_WAKE_MUST_RESET_AFTER_VOYAGE")
 if 'folder.Destroying:Connect(function()\n\t\twalkConn:Disconnect()' not in source:
     raise SystemExit("MARE_PORT_NPC_CONNECTION_CLEANUP_MISSING")
 if 'folder.Destroying:Connect(function()\n\t\tconn:Disconnect()' not in source:
