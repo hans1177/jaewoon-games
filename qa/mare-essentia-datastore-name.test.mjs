@@ -9,6 +9,8 @@ test('시설 탭 아이콘과 글자는 첫 생성부터 모바일 규격으로 
   assert.match(game,/icon\.Position = if mainInner\.AbsoluteSize\.X < 740 then UDim2\.new\(0\.5, -13, 0, 3\) else UDim2\.new\(0, 7, 0\.5, -13\)/);
   assert.match(game,/caption\.Position = if mainInner\.AbsoluteSize\.X < 740 then UDim2\.fromOffset\(4, 29\) else UDim2\.fromOffset\(44, 0\)/);
   assert.match(game,/icon\.Position = if compactTabs then UDim2\.new\(0\.5, -13, 0, 3\) else UDim2\.new\(0, 7, 0\.5, -13\)/);
+  assert.match(game,/caption\\.TextXAlignment = if compactTabs then Enum\\.TextXAlignment\\.Center else Enum\\.TextXAlignment\\.Left/);
+  assert.match(game,/textLimit\\.MaxTextSize = if compactTabs then 14 else 17/);
 });
 
 // DataStore 이름이 개명·유니버스 변경 중에 조용히 바뀌어 플레이어 저장이 초기화되는 사고를 막는다.
