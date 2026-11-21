@@ -13993,7 +13993,7 @@ end
 				task.delay(0.7, function() if dlg == layer then submit() end end) -- 조용히 몇 번 더
 			elseif ok == false then
 				note.Text = tostring(msg or "")
-				if msg == "이미 초상화를 받았어요" or msg == "이미 장부에 올렸어요" then
+				if (msg == "이미 초상화를 받았어요" or msg == "이미 장부에 올렸어요") and dlg == layer then
 					closeDlg()
 				end
 			end
@@ -14264,10 +14264,13 @@ end
 			openDlg({ speaker = "길드 서기", role = role, music = "music_market", sting = "sfx_bell", input = "이름을 적으세요 (12글자까지)", button = "장부에 올린다",
 				text = "(배에서 내리는 당신에게 상인 길드의 서기가 다가온다) 처음 보는 얼굴이군요. 이 항구에서 거래하려면 거래 장부에 이름이 있어야 합니다. 값을 치르고 영수증을 받는 사람의 이름이니까요. 뭐라고 적을까요?" },
 				function(v)
+					-- [자기 창만 닫기] 서버 응답을 기다리는 사이 다음 단계 창이 열렸을 수 있다(Studio 44925289818:
+					-- 이름 응답이 늦게 돌아와 막 열린 동료 창을 닫음 → 동료 단계 영구 정지). 응답 뒤에는 자기 창일 때만 닫는다.
+					local mine = dlg
 					local r = call("IntroName", { name = v })
 					if r and r.ok then
 						Sfx.play("sfx_contract_stamp", 0.7)
-						closeDlg()
+						if dlg == mine then closeDlg() end
 					end
 					return r and r.ok, r and r.message
 				end)
@@ -14280,6 +14283,7 @@ end
 			openDlg({ speaker = who.name, role = who.role, music = "music_story_tavern", sting = "sfx_story_tavern", button = "함께 가자",
 				text = string.format("(주점 구석에서 다가온다) 당신이 새로 온 선장이군요. 소문을 들었어요. 대가는 필요 없습니다. 같은 고향 사람끼리, 항해에 보탬이 되고 싶어요. 저를 태워 주시겠어요? (%s)", who.role) },
 				function()
+					local mine = dlg
 					local r = call("IntroCompanion", {})
 					-- [Studio 진단] 시작 안내가 동료 단계에서 멈추는 회차(44912240071 등)의 실제 서버 응답을 남긴다.
 					if game:GetService("RunService"):IsStudio() then
@@ -14287,7 +14291,7 @@ end
 					end
 					if r and r.ok then
 						Sfx.play("sfx_quest_accept", 0.6)
-						closeDlg()
+						if dlg == mine then closeDlg() end
 					end
 					return r and r.ok, r and r.message
 				end)
@@ -14296,9 +14300,10 @@ end
 				text = string.format("%s 선장님이시죠? 저는 항구를 떠돌며 항해자 화첩을 만들고 있어요. 바다로 나간 사람들의 얼굴을 남기면, 훗날 그들의 이야기가 사라지지 않거든요. 대가는 받지 않을게요. 어떤 모습으로 그려 드릴까요?", c.name or "선장") },
 				function(v)
 					local name = c.name or "선장"
+					local mine = dlg
 					local r = call("IntroPortrait", { portrait = v })
 					if r and r.ok then
-						closeDlg()
+						if dlg == mine then closeDlg() end
 						task.spawn(function()
 							reveal(v, name)
 						end)
