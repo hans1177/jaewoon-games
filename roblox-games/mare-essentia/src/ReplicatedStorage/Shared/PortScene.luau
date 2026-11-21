@@ -475,11 +475,19 @@ local function sliceMark(label: string)
 	end
 	spanAt, spanFrom = now, label
 end
+-- [양보 중 외부 지연 실측] 양보(task.wait) 동안 다른 작업·렌더 준비가 오래 걸린 프레임도 따로 기록한다.
+-- 생성 구간(spans)에 없는 멈춤이 어느 지점 직후의 렌더·물리·다른 스크립트에서 생기는지 찾는다.
+local yieldGapMax, yieldGapAt = 0, ""
 local function sliceYield(label: string?)
 	if os.clock() - sliceStart > SLICE_BUDGET and coroutine.isyieldable() then
 		sliceMark(label or "?")
+		local before = os.clock()
 		task.wait()
 		sliceStart = os.clock()
+		local gap = sliceStart - before
+		if gap > yieldGapMax then
+			yieldGapMax, yieldGapAt = gap, label or "?"
+		end
 		spanAt = sliceStart
 	end
 end
@@ -5099,6 +5107,7 @@ function PortScene.build(info, onFacility)
 	vacancyRate = info.vacancy or 0
 	sliceStart = os.clock()
 	spanAt, spanFrom, spans = sliceStart, "start", {}
+	yieldGapMax, yieldGapAt = 0, ""
 	-- [분할 생성 중 화면 유지] 새 항구가 다 만들어질 때까지 기존 항구를 그대로 보여 주고, 교체 직전에 지운다.
 	local old = workspace:FindFirstChild("PortScene")
 	local folder = Instance.new("Folder")
@@ -7204,6 +7213,23 @@ function PortScene.build(info, onFacility)
 		table.insert(gulls, { body = body, l = l, r = r, radius = rng:NextNumber(14, 34), height = rng:NextNumber(18, 30), speed = rng:NextNumber(0.25, 0.5), phase = i * 1.1, cx = rng:NextNumber(30, 70), cz = rng:NextNumber(-20, 20) })
 	end
 
+	-- [광장 실제 점유] 배치 전 검사는 기준점(pos)만 보지만, 집 모델은 앞뒤 뒤집기·크기 변주·피벗 차이로
+	-- 몸체 중심이 광장 안으로 들어올 수 있다(마을 검사 44928264116: 리스본 HarborHouse 몸체 중심 -6,24 → 광장 반경 26 안).
+	-- 완성된 실제 경계 상자 중심이 광장 안에 있는 고정 구조물만 걷어낸다(사람·동물·바닥판 제외, 반경 그대로).
+	local plazaRemoved = 0
+	for _, obj in folder:GetChildren() do
+		if obj:IsA("Model") and not obj:FindFirstChildOfClass("Humanoid") and not obj:FindFirstChildOfClass("AnimationController") then
+			local ok, box = pcall(obj.GetBoundingBox, obj)
+			if ok and box then
+				local dx, dz = box.Position.X + 6, box.Position.Z
+				if dx * dx + dz * dz < CENTRAL_PLAZA_RADIUS * CENTRAL_PLAZA_RADIUS then
+					obj:Destroy()
+					plazaRemoved += 1
+				end
+			end
+		end
+	end
+	folder:SetAttribute("CentralPlazaRemovedStructures", plazaRemoved)
 	sliceMark("beforeDestroyOld")
 	-- [교체 분할] 실측(44926863645): 기존 항구 한 번에 삭제 529ms + 새 항구 한 번에 workspace 연결 584ms가
 	-- 같은 프레임에 몰려 최대 1.46초 멈춤. 최상위 묶음 단위로 나눠 프레임 예산 안에서 지우고 붙인다.
@@ -7622,6 +7648,7 @@ function PortScene.build(info, onFacility)
 	for _, row in spans do table.insert(spanText, row.ms .. "ms@" .. row.at) end
 	folder:SetAttribute("BuildMaxSpanMs", if spans[1] then spans[1].ms else 0)
 	folder:SetAttribute("BuildSpans", table.concat(spanText, ";"))
+	folder:SetAttribute("BuildMaxYieldGap", math.floor(yieldGapMax * 1000) .. "ms@" .. yieldGapAt)
 	return { folder = folder, spawn = CFrame.new(spawnPos) * CFrame.Angles(0, math.rad(90), 0), controls = controls }
 end
 

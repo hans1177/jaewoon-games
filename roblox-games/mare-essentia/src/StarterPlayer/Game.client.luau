@@ -11580,7 +11580,7 @@ end
 -- buildMs = 새 항구 생성 완료, firstFrameMs = 새 항구가 처음 그려진 프레임, inputReadyMs = 시작 후 프레임 간격이 처음 100ms 미만,
 -- maxStallMs = 전환 전체에서 가장 긴 멈춤.
 function H.measurePortTransition(startedAt: number, portId: string)
-	local timing = { buildEnd = nil :: number? }
+	local timing = { buildEnd = nil :: number?, stallAt = nil :: number?, stallPhase = nil :: string? }
 	local last = startedAt
 	local firstFrameAt: number? = nil
 	local readyAt: number? = nil
@@ -11590,7 +11590,12 @@ function H.measurePortTransition(startedAt: number, portId: string)
 		local now = os.clock()
 		local dt = now - last
 		last = now
-		if dt > maxStall then maxStall = dt end
+		if dt > maxStall then
+			maxStall = dt
+			-- [최장 멈춤 위치] 시작 후 몇 ms에, 생성 중/후 어느 단계에서 났는지 남긴다.
+			timing.stallAt = math.floor((now - startedAt) * 1000)
+			timing.stallPhase = if timing.buildEnd then (if now - timing.buildEnd < 0.5 then "afterBuild" else "late") else "duringBuild"
+		end
 		if not readyAt and dt < 0.1 then readyAt = now end
 		if timing.buildEnd and not firstFrameAt then firstFrameAt = now end
 		local buildEnd = timing.buildEnd
@@ -11601,6 +11606,7 @@ function H.measurePortTransition(startedAt: number, portId: string)
 			workspace:SetAttribute("PortTransitionFirstFrameMs", math.floor(((firstFrameAt or now) - startedAt) * 1000))
 			workspace:SetAttribute("PortTransitionInputReadyMs", if readyAt then math.floor((readyAt - startedAt) * 1000) else -1)
 			workspace:SetAttribute("PortTransitionMaxStallMs", math.floor(maxStall * 1000))
+			workspace:SetAttribute("PortTransitionStallAt", tostring(timing.stallAt) .. "ms:" .. tostring(timing.stallPhase))
 			workspace:SetAttribute("PortTransitionPort", portId)
 			workspace:SetAttribute("PortTransitionSeq", (workspace:GetAttribute("PortTransitionSeq") or 0) + 1)
 		end
