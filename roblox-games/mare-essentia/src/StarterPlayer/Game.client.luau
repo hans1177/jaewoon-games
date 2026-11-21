@@ -5191,7 +5191,7 @@ function RENDERERS.harbor()
 	})
 	add(function() return mkHeader(content, view.player.portName .. " · " .. h.name .. " (" .. h.level .. "단계)") end)
 	add(function()
-		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 16, COLORS.text, true)
+		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces or {}, ", "), table.concat(h.demands or {}, ", ")), 16, COLORS.text, true)
 	end)
 	-- [항구별 특산 산업] 실물경제 시뮬의 품목별 생산·재고·가격·기술 발전을 표시한다.
 	if h.sim and h.sim.specialties and #h.sim.specialties > 0 then
