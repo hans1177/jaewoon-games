@@ -305,7 +305,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log(`선택: ${p.game} / ${p.area}`);
     if (run) {
       const r = spawnSync('gh', dispatchPlan(p), { encoding: 'utf8' });
-      if (r.status === 0) ledger = markDispatched(ledger, p, decisionAt, heads[p.game] || ''); else console.log('dispatch 실패:', (r.stderr || '').slice(0, 200));
+      if (r.status === 0) {
+        ledger = markDispatched(ledger, p, decisionAt, heads[p.game] || '');
+        console.log('AUTOPILOT_STUDIO_DISPATCH=PASS game=' + p.game + ' script=' + GAMES[p.game].scripts[p.kind]);
+      } else {
+        console.error('AUTOPILOT_STUDIO_DISPATCH=FAIL status=' + r.status + ' error=' + (r.stderr || r.error?.message || 'unknown').slice(0, 400));
+        process.exitCode = 1;
+      }
     }
   }
   // [상태] 같은 원장에 마지막 판단 시각을 보존한다. 게임 세이브 및 기존 키는 변경하지 않는다.
