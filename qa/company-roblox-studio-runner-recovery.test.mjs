@@ -142,3 +142,23 @@ test('E-drive migrated Studio runner is discovered for reboot recovery and its c
   assert.match(autoQa,/gh workflow run devloop-studio\.yml/);
   assert.doesNotMatch(workflow,/ROBLOX_RUNNER_AUTOMATED_LOGIN=TRUE/);
 });
+
+test('Studio recovery supervises GUI hang safely without fabricating MCP play evidence',()=>{
+  const supervisor=fs.readFileSync(new URL('../tools/roblox-studio-autostart-supervisor.ps1',import.meta.url),'utf8');
+  const installer=fs.readFileSync(new URL('../tools/install-roblox-studio-autostart.ps1',import.meta.url),'utf8');
+  assert.match(supervisor,/function Get-StudioHealth/);
+  assert.match(supervisor,/return 'GUI_UNRESPONSIVE'/);
+  assert.match(supervisor,/\$studioHangObservations -ge 3/);
+  assert.match(supervisor,/if \(Test-JobActive\) \{ return \$false \}/);
+  assert.match(supervisor,/\$process\.CloseMainWindow\(\)/);
+  assert.match(supervisor,/STUDIO_HANG_CLOSE_UNVERIFIED_NO_FORCE_KILL/);
+  assert.doesNotMatch(supervisor,/Stop-Process\s|taskkill\s|\.Kill\(\)/);
+  assert.match(supervisor,/studioMcpVerified = \$false; actualPlayVerified = \$false/);
+  assert.match(supervisor,/GUI_RESPONSIVE_MCP_UNVERIFIED/);
+  assert.match(supervisor,/\[string\]::Equals\(\[IO\.Path\]::GetFullPath\(\$p\.Path\),\$expected/);
+  assert.doesNotMatch(supervisor,/\.StartsWith\(\$root/);
+  assert.match(installer,/\$startStudio = -not \[bool\]\$DisableStudioAutostart/);
+  assert.match(installer,/\[switch\]\$KeepStudioOpen/);
+  assert.match(installer,/\[switch\]\$DisableStudioAutostart/);
+  assert.match(supervisor,/startStudio = \$true; startRunner = \$true/);
+});
