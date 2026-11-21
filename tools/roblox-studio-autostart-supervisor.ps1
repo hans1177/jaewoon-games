@@ -114,11 +114,18 @@ try {
           } else {
             Start-Process -FilePath $exe
           }
-          Write-Log 'STUDIO_STARTED'
+          # [실행 검증] 시작 명령 성공만으로 복구 완료 처리하지 않는다.
+          Start-Sleep -Seconds 20
+          if (Test-StudioRunning) {
+            $studioFails = 0
+            Write-Log 'STUDIO_START_VERIFIED'
+          } else {
+            $studioFails++
+            Write-Log 'STUDIO_START_UNVERIFIED'
+          }
         } catch { Write-Log ('STUDIO_START_FAILED ' + $_.Exception.Message); $studioFails++ }
       }
       $studioNextTry = $now.AddMinutes($(if ($studioFails -ge 5) { 30 } else { 3 }))
-      Start-Sleep -Seconds 20
     } elseif (Test-StudioRunning) { $studioFails = 0 }
 
     if ($cfgNow.startRunner -and -not (Test-RunnerRunning) -and $now -ge $runnerNextTry) {
@@ -128,7 +135,15 @@ try {
       } else {
         try {
           Start-Process -FilePath $cmd -WorkingDirectory $RunnerRoot -WindowStyle Minimized
-          Write-Log 'RUNNER_STARTED'
+          # [러너 실행 검증] 프로세스가 실제로 올라오지 않으면 다음 주기에 재시도한다.
+          Start-Sleep -Seconds 5
+          if (Test-RunnerRunning) {
+            $runnerFails = 0
+            Write-Log 'RUNNER_START_VERIFIED'
+          } else {
+            $runnerFails++
+            Write-Log 'RUNNER_START_UNVERIFIED'
+          }
         } catch { Write-Log ('RUNNER_START_FAILED ' + $_.Exception.Message); $runnerFails++ }
       }
       $runnerNextTry = $now.AddMinutes($(if ($runnerFails -ge 5) { 30 } else { 2 }))
