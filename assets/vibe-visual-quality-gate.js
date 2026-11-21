@@ -88,6 +88,20 @@ export function auditVibeRuntimeBeforeAfterComparison(evidence={}){
   if(comparison.beforeStable!==true||comparison.afterStable!==true)reasons.push('runtime-capture-not-deterministic');
   if(!String(comparison.method||'').trim())reasons.push('before-after-runtime-comparison-method-missing');
   if(comparison.pass!==true||comparison.visibleRenderDelta!==true)reasons.push('before-after-visible-render-delta-missing-or-failed');
+  // [실화면 비교 감독] 픽셀 비교를 주장하는 경우 원본 이미지 해시와 동일 장면 조건을 검증한다.
+  // [자동 재작업] 퇴보가 발견되면 통과시키지 않고 기존 아트 디렉션 책임 함수로 되돌린다.
+  if(comparison.pixelVerified===true){
+    const beforeHash=String(before.imageSha256||'').trim().toLowerCase();
+    const afterHash=String(after.imageSha256||'').trim().toLowerCase();
+    if(!/^[a-f0-9]{64}$/.test(beforeHash)||!/^[a-f0-9]{64}$/.test(afterHash)
+      ||beforeHash===afterHash)reasons.push('before-after-distinct-runtime-image-hashes-required');
+    if(comparison.sameCameraStateLighting!==true)reasons.push('before-after-equivalent-scene-required');
+    if(comparison.pixelReview?.pass!==true||comparison.pixelReview?.beforeSha256!==beforeHash
+      ||comparison.pixelReview?.afterSha256!==afterHash)
+      reasons.push('before-after-source-bound-pixel-review-required');
+    if(!Array.isArray(comparison.regressions))reasons.push('before-after-regression-review-required');
+    else if(comparison.regressions.length>0)reasons.push('before-after-visible-regression-detected');
+  }
   if(markerOnly)reasons.push('marker-only-runtime-comparison-forbidden');
   return Object.freeze({
     version:1,
