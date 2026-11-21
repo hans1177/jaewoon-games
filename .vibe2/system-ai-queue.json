@@ -116933,7 +116933,7 @@
     },
     {
       "id": "marketing-cozy-island-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -116976,12 +116976,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44903637905:1",
+      "reservedAt": "2026-11-21T12:28:22.193Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -123008,14 +123008,15 @@
         "failed-strategy-fingerprint:27f30f4dff3e782da82afb43eda1b6b6377e829765b49a968ded8cc340714770",
         "model-output-sha256:6c04f0bf4b4c74a0611e6fa1ed2c6b474d4b5148a463776645776ffd888fa80a",
         "system-ai-handoff-to-reservation:system-ai:44902747959:1",
-        "actions-run:44902747959"
+        "actions-run:44902747959",
+        "system-ai-handoff-to-reservation:system-ai:44903637905:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 302,
+      "impactScore": 1946,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 0,
-        "recurrenceCount": 0,
+        "blockedTaskCount": 43,
+        "recurrenceCount": 43,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -123023,7 +123024,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-21T12:23:00.379Z"
+      "updatedAt": "2026-11-21T12:28:22.193Z"
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
@@ -157955,7 +157956,7 @@
     },
     {
       "id": "recovery-recovery-c6e7736588dc69fb9540",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -158054,12 +158055,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44903637905:1",
+      "reservedAt": "2026-11-21T12:28:22.193Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -164045,14 +164046,15 @@
         "system-ai-handoff-to-reservation:system-ai:44901450038:1",
         "actions-run:44901450038",
         "system-ai-handoff-to-reservation:system-ai:44902747959:1",
-        "actions-run:44902747959"
+        "actions-run:44902747959",
+        "system-ai-handoff-to-reservation:system-ai:44903637905:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1938,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 23,
-        "recurrenceCount": 2612,
+        "recurrenceCount": 2613,
         "dependencyCentrality": 22,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -164060,11 +164062,11 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-11-21T12:23:00.379Z"
+      "updatedAt": "2026-11-21T12:28:22.193Z"
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -164171,12 +164173,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44903637905:1",
+      "reservedAt": "2026-11-21T12:28:22.193Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -170372,14 +170374,15 @@
         "failed-strategy-fingerprint:0d39c59475b411809d0e92fbc6e7b9bf7c0fb6ad003540bac36fff7e1f6bb2e6",
         "model-output-sha256:1d094c381954e810b299c0b1b4a2331eca37aa5f17c8ea849817802e1ecd5bfc",
         "system-ai-handoff-to-reservation:system-ai:44902747959:1",
-        "actions-run:44902747959"
+        "actions-run:44902747959",
+        "system-ai-handoff-to-reservation:system-ai:44903637905:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 26,
-        "recurrenceCount": 2732,
+        "recurrenceCount": 2733,
         "dependencyCentrality": 26,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -170387,7 +170390,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-11-21T12:23:00.379Z"
+      "updatedAt": "2026-11-21T12:28:22.193Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
@@ -173995,7 +173998,7 @@
     },
     {
       "id": "recovery-recovery-f84bbc96c4af1596274e",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -174053,12 +174056,12 @@
       "sourceMutationBaseline": "2026-10-21T17:45:04.849Z",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44903637905:1",
+      "reservedAt": "2026-11-21T12:28:22.193Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:39067647976:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -179375,14 +179378,15 @@
         "system-ai-handoff-to-reservation:system-ai:44901450038:1",
         "actions-run:44901450038",
         "system-ai-handoff-to-reservation:system-ai:44902747959:1",
-        "actions-run:44902747959"
+        "actions-run:44902747959",
+        "system-ai-handoff-to-reservation:system-ai:44903637905:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1534,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 20,
-        "recurrenceCount": 2244,
+        "recurrenceCount": 2245,
         "dependencyCentrality": 2,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -179390,7 +179394,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T21:02:09.727Z",
-      "updatedAt": "2026-11-21T12:23:00.379Z"
+      "updatedAt": "2026-11-21T12:28:22.193Z"
     },
     {
       "id": "recovery-recovery-0b623e521c00a2fbed55",
@@ -192455,7 +192459,7 @@
     },
     {
       "id": "recovery-recovery-9a838fb1109024466f82",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -192514,12 +192518,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44903637905:1",
+      "reservedAt": "2026-11-21T12:28:22.193Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:40125353017:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -196511,14 +196515,15 @@
         "system-ai-handoff-to-reservation:system-ai:44901450038:1",
         "actions-run:44901450038",
         "system-ai-handoff-to-reservation:system-ai:44902747959:1",
-        "actions-run:44902747959"
+        "actions-run:44902747959",
+        "system-ai-handoff-to-reservation:system-ai:44903637905:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2374,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 257,
-        "recurrenceCount": 1846,
+        "recurrenceCount": 1847,
         "dependencyCentrality": 2,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -196526,7 +196531,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-24T19:39:33.428Z",
-      "updatedAt": "2026-11-21T12:23:00.379Z"
+      "updatedAt": "2026-11-21T12:28:22.193Z"
     },
     {
       "id": "recovery-recovery-5debf7e19cca75143235",
@@ -222206,7 +222211,7 @@
     },
     {
       "id": "recovery-recovery-ad89d6a6bbf42a8096fd",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -222265,12 +222270,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44903637905:1",
+      "reservedAt": "2026-11-21T12:28:22.193Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:44233435770:1",
         "deployment-workflow:.github/workflows/devloop-studio.yml",
@@ -223028,22 +223033,23 @@
         "system-ai-handoff-to-reservation:system-ai:44901450038:1",
         "actions-run:44901450038",
         "system-ai-handoff-to-reservation:system-ai:44902747959:1",
-        "actions-run:44902747959"
+        "actions-run:44902747959",
+        "system-ai-handoff-to-reservation:system-ai:44903637905:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2307,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 109,
-        "recurrenceCount": 271,
+        "recurrenceCount": 272,
         "dependencyCentrality": 2,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
-        "ageHours": 78.8,
+        "ageHours": 78.98,
         "repairRisk": 1
       },
       "createdAt": "2026-11-18T05:29:44.865Z",
-      "updatedAt": "2026-11-21T12:23:00.379Z"
+      "updatedAt": "2026-11-21T12:28:22.193Z"
     },
     {
       "id": "recovery-recovery-450207b3d084c830bc47",
@@ -240334,6 +240340,7 @@
       "department": "recovery",
       "taskType": "bottleneck-repair",
       "gameId": "mare-essentia",
+      "jointDecisionRequired": false,
       "goal": "Studio runtime source is unresolved. Inspect the exact official Studio run and archived evidence first. The assigned workflow file is for diagnostic and capture-reliability repair only; do not treat unknown game source as an infrastructure defect, invent source files, or change gameplay to hide the failure. Preserve unresolved evidence for canonical Vibe game-source intake. Analyze the exact failed ROBLOX deployment stage LAUNCH_STUDIO_RUN_SCRIPT_CAPTURE_FRAMES for mare-essentia using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
       "responsibleFiles": [
         ".github/workflows/devloop-studio.yml"
@@ -240342,36 +240349,7 @@
         ".github/workflows/devloop-studio.yml",
         "roblox-games/mare-essentia"
       ],
-      "failureStage": "STUDIO_GAME_RUNTIME",
-      "failureSignature": "STUDIO_OBSERVED_RUNTIME_WARNINGS",
-      "relatedTaskIds": [
-        "deployment:.github/workflows/devloop-studio.yml:99a54b8431b65a5328ba20fceab06b50886daf71:mare-essentia"
-      ],
-      "blockedTaskIds": [
-        "deployment:.github/workflows/devloop-studio.yml:99a54b8431b65a5328ba20fceab06b50886daf71:mare-essentia"
-      ],
-      "blastRadius": "deployment-workflow:.github/workflows/devloop-studio.yml",
-      "recurrenceCount": 1,
-      "repairMode": "FOCUSED_REPAIR",
-      "userAssistanceRequired": false,
-      "sourceMutationRequired": true,
-      "sourceMutationBaseline": "99a54b8431b65a5328ba20fceab06b50886daf71",
-      "gameRepairContract": {
-        "version": 1,
-        "mode": "FOCUSED_REPAIR",
-        "prePatchReproductionRequired": true,
-        "causalResponsibleSystemRequired": true,
-        "compareLastKnownGoodFirstBrokenCurrentRequired": false,
-        "originalScenarioReplayRequired": true,
-        "invariantValidationRequired": true,
-        "saveMigrationValidationRequired": false,
-        "multiplayerLifecycleValidationRequired": false,
-        "multiplayerUserAssistanceRequired": false,
-        "multiplayerMinimumAutomatedClients": 0,
-        "impactRegressionRequired": true,
-        "fullRegressionFanInRequired": true,
-        "repeatedSameApproachWithoutNewCausalEvidenceForbidden": false
-      },
+      "focusPatterns": {},
       "acceptanceCriteria": [
         "repair only assigned responsible files",
         "reproduce the exact failure before patch or preserve existing verified reproduction evidence",
@@ -240395,7 +240373,24 @@
         "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
       ],
       "dependencies": [],
+      "relatedTaskIds": [
+        "deployment:.github/workflows/devloop-studio.yml:99a54b8431b65a5328ba20fceab06b50886daf71:mare-essentia"
+      ],
+      "blockedTaskIds": [
+        "deployment:.github/workflows/devloop-studio.yml:99a54b8431b65a5328ba20fceab06b50886daf71:mare-essentia"
+      ],
       "retries": 0,
+      "recurrenceCount": 1,
+      "failureStage": "STUDIO_GAME_RUNTIME",
+      "failureSignature": "STUDIO_OBSERVED_RUNTIME_WARNINGS",
+      "failureClass": null,
+      "handoffCount": 0,
+      "previousReservationId": null,
+      "blastRadius": "deployment-workflow:.github/workflows/devloop-studio.yml",
+      "knownGoodRevision": null,
+      "repairRisk": 1,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "99a54b8431b65a5328ba20fceab06b50886daf71",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "reservationId": null,
@@ -240435,8 +240430,8 @@
         "primary-ai-collaboration-task:recovery-recovery-c363744aa51246e4e1ff"
       ],
       "supervisorReviewRequired": true,
-      "workerSelfAcceptance": false,
-      "learningCandidate": true,
+      "impactScore": 0,
+      "impactComponents": null,
       "createdAt": "2026-11-21T12:25:58.868Z",
       "updatedAt": "2026-11-21T12:25:58.868Z"
     }
