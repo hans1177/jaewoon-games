@@ -256,6 +256,11 @@ jobs:
           console.log(`VIBE3_PUMP_BENCHMARKS=${pump.benchmarks||0}`);
           console.log(`VIBE3_RECOMBINATION_MATERIALS=${pump.recombinationMaterials||0}`);
           console.log(`VIBE3_RECOMBINATION_RECIPES=${pump.recombinationRecipes||0}`);
+          console.log(`DISTILLATION_RECORDS=${status.diagnostics.records}`);
+          console.log(`DISTILLATION_EVIDENCE_ONLY=${status.diagnostics.evidenceOnlyRecords}`);
+          console.log(`DISTILLATION_PRACTICE_ONLY_TEXT=${status.diagnostics.practiceOnlyTextSamples}`);
+          console.log(`DISTILLATION_TEXT_INCOMPLETE_VERIFICATION=${status.diagnostics.textWithoutCompleteVerification}`);
+          console.log(`DISTILLATION_VERIFIED_TEXT=${status.diagnostics.fullyVerifiedTextSamples}`);
           console.log(`DISTILLATION_READY_TASKS=${status.readyTasks.join(',')||'NONE'}`);
           console.log(`DISTILLATION_STATE=${status.state}`);
           console.log(`LOCAL_TRAINING_REQUEST_STATE=${request.state}`);
