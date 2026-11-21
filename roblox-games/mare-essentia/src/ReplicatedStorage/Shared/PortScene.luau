@@ -458,7 +458,18 @@ end
 local CENTRAL_PLAZA_RADIUS = 26
 -- [지역 건축] 실제 항구 문화권을 수입 건축 메시와 기존 집 생성에서 함께 참조한다.
 local currentKey = "north"
+-- [항구 생성 분할] 큰 모델 복제·R15 인물 생성 사이에 프레임을 양보해 클라이언트가 수 초씩 멈추지 않게 한다.
+-- 한 프레임에 12ms까지만 만들고 다음 프레임으로 넘긴다. 양보할 수 없는 호출(테스트·비동기 불가 문맥)에서는 그대로 한 번에 만든다.
+local SLICE_BUDGET = 0.012
+local sliceStart = os.clock()
+local function sliceYield()
+	if os.clock() - sliceStart > SLICE_BUDGET and coroutine.isyieldable() then
+		task.wait()
+		sliceStart = os.clock()
+	end
+end
 local function importedModel(parent, kind, asset, bottomPosition, desiredSize, solid, tint, buildDelay)
+	sliceYield()
 	if parent.Name == "PortScene" and kind ~= "People" and kind ~= "Animals" then
 		local dx, dz = bottomPosition.X + 6, bottomPosition.Z
 		if dx * dx + dz * dz < CENTRAL_PLAZA_RADIUS * CENTRAL_PLAZA_RADIUS then return nil end
@@ -789,6 +800,7 @@ local KEEPER_ROLE = {
 local OC = Color3.fromRGB
 local currentYear = 1700
 local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
+	sliceYield()
 	role = role or ({ "Knight", "Barbarian", "Mage", "Rogue", "Rogue_Hooded" })[rng:NextInteger(1, 5)]
 	local o = OUTFIT[currentKey]
 	local year = if extra and type(extra.year) == "number" then extra.year else currentYear
@@ -5070,10 +5082,9 @@ end
 -- 돌려주는 값: { folder, spawn = 캐릭터를 둘 위치, stop = 애니메이션 정지 함수 }
 function PortScene.build(info, onFacility)
 	vacancyRate = info.vacancy or 0
+	sliceStart = os.clock()
+	-- [분할 생성 중 화면 유지] 새 항구가 다 만들어질 때까지 기존 항구를 그대로 보여 주고, 교체 직전에 지운다.
 	local old = workspace:FindFirstChild("PortScene")
-	if old then
-		old:Destroy()
-	end
 	local folder = Instance.new("Folder")
 	folder.Name = "PortScene"
 	-- [중앙광장 영구 예약] 시각 시설물은 외곽에, 광장 중앙에는 보행·집회만 허용한다.
@@ -7177,6 +7188,9 @@ function PortScene.build(info, onFacility)
 		table.insert(gulls, { body = body, l = l, r = r, radius = rng:NextNumber(14, 34), height = rng:NextNumber(18, 30), speed = rng:NextNumber(0.25, 0.5), phase = i * 1.1, cx = rng:NextNumber(30, 70), cz = rng:NextNumber(-20, 20) })
 	end
 
+	if old and old.Parent then
+		old:Destroy()
+	end
 	folder.Parent = workspace
 
 	-- [마을 주민·건축물 간섭] 완성된 마을에서 초기 위치와 실제 이동 궤적을 확인한다.
