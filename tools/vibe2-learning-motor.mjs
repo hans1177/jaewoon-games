@@ -957,7 +957,11 @@ export function codingRiskGuidance({calibration={},hotspot={}}={}){
   if(clean(calibration?.recommendation)==='DOWNGRADE_HIGH_TO_MEDIUM')rows.push('[RESPONSIBILITY CONFIDENCE CALIBRATION] Prior verified HIGH-confidence work regressed often enough that raw HIGH must be treated as MEDIUM; perform extra read-only exploration before writing.');
   if(clean(hotspot?.riskLevel)&&clean(hotspot.riskLevel)!=='LOW'){
     rows.push('[REGRESSION HOTSPOT MEMORY] risk='+clean(hotspot.riskLevel));
-    for(const row of hotspot.entries||[])rows.push(row.kind+':'+row.name+' failures='+Number(row.verifiedRegressionFailures||0)+' passes='+Number(row.verifiedPasses||0));
+    for(const row of hotspot.entries||[]){
+      rows.push(row.kind+':'+row.name+' failures='+Number(row.verifiedRegressionFailures||0)+' passes='+Number(row.verifiedPasses||0));
+      if(row.risk?.level==='HIGH')rows.push('Recovery guidance for '+row.kind+':'+row.name+': inspect verified regression evidence, compare known-good implementation, and run focused dependent QA before retrying. Do not repeat an unverified fix.');
+      else if(row.risk?.level==='MEDIUM')rows.push('Recovery guidance for '+row.kind+':'+row.name+': check dependent behavior and verify the suspected change before promotion.');
+    }
     rows.push('Hotspot memory requires focused dependent QA and a proven strategy when available. It MUST NOT expand writable scope or bypass QA.');
   }
   return rows.join('\n');
