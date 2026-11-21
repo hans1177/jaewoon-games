@@ -993,6 +993,25 @@ jobs:
           $listeners = @(Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue |
             Where-Object { $_.ExecutablePath -and [string]::Equals([IO.Path]::GetFullPath($_.ExecutablePath),$listenerPath,[StringComparison]::OrdinalIgnoreCase) })
           Write-Host "MYBOX_RUNNER_LISTENER_COUNT=$($listeners.Count)"
+          # [중복 러너 진단] 경로와 무관하게 PC 전체의 Runner.Listener/Worker 개수·경로를 기록한다(종료하지 않음).
+          foreach ($procName in @('Runner.Listener.exe','Runner.Worker.exe')) {
+            $all = @(Get-CimInstance Win32_Process -Filter "Name='$procName'" -ErrorAction SilentlyContinue)
+            Write-Host "MYBOX_PROCESS_COUNT=${procName}:$($all.Count)"
+            foreach ($proc in $all) { Write-Host "MYBOX_PROCESS_PATH=${procName}:$($proc.ProcessId):$($proc.ExecutablePath)" }
+          }
+          if (@($listeners).Count -gt 1) { Write-Warning 'MYBOX_RUNNER_DUPLICATE_LISTENER=DETECTED' }
+          # [로그인 세션] 대화형 사용자(explorer.exe 소유자)와 러너 계정을 비교한다. MYBOX N:은 로그인 사용자 세션에 붙는다.
+          $interactive = @()
+          foreach ($ex in @(Get-CimInstance Win32_Process -Filter "Name='explorer.exe'" -ErrorAction SilentlyContinue)) {
+            try {
+              $o = Invoke-CimMethod -InputObject $ex -MethodName GetOwner -ErrorAction Stop
+              if ($o.ReturnValue -eq 0) { $interactive += "$($o.Domain)\$($o.User)@session$($ex.SessionId)" }
+            } catch {}
+          }
+          $interactive = @($interactive | Sort-Object -Unique)
+          Write-Host "MYBOX_INTERACTIVE_USERS=$(if ($interactive.Count) { $interactive -join ',' } else { 'NONE' })"
+          $sameUser = @($interactive | Where-Object { $_ -like "$($identity.Name)@*" }).Count -gt 0
+          Write-Host "MYBOX_INTERACTIVE_MATCHES_RUNNER=$sameUser"
           # [실행 계정 대조] 실제 Runner.Listener 소유자와 현재 QA 작업 계정을 비교한다.
           foreach ($listener in $listeners) {
             try {
@@ -1025,6 +1044,15 @@ jobs:
             return
           }
           $destinationRoot = 'N:\Jaewoon3D\mare-essentia'
+          # [N: 드라이브 진단] 드라이브 종류·형식·여유·최상위 폴더 이름만 읽는다(최상위에는 쓰지 않음).
+          try {
+            $nDrive = [IO.DriveInfo]::new('N:\')
+            Write-Host "MYBOX_DRIVE=type=$($nDrive.DriveType) format=$($nDrive.DriveFormat) ready=$($nDrive.IsReady) freeMB=$([math]::Round($nDrive.AvailableFreeSpace/1MB))"
+          } catch { Write-Warning "MYBOX_DRIVE=UNREADABLE:$($_.Exception.GetType().Name)" }
+          try {
+            $top = @(Get-ChildItem -LiteralPath 'N:\' -Directory -Force -ErrorAction Stop | Select-Object -First 20 -ExpandProperty Name)
+            Write-Host "MYBOX_TOP_FOLDERS=$($top -join '|')"
+          } catch { Write-Warning "MYBOX_TOP_FOLDERS=UNREADABLE:$($_.Exception.GetType().Name)" }
           # [MYBOX 경로 진단] 루트 생성 제한과 러너 계정 쓰기 권한을 분리해서 확인한다.
           Write-Host "MYBOX_PARENT_EXISTS=$(Test-Path -LiteralPath 'N:\Jaewoon3D' -PathType Container)"
           Write-Host "MYBOX_TARGET_EXISTS=$(Test-Path -LiteralPath $destinationRoot -PathType Container)"
@@ -1040,15 +1068,31 @@ jobs:
           try {
             $registry = Get-Content -LiteralPath $registryFile -Raw -Encoding UTF8 | ConvertFrom-Json
             if (-not $registry.assets) { throw 'MYBOX_REGISTRY_ASSETS_MISSING' }
+            # [반복 실패 자동 중단] 같은 권한 실패가 3회 연속이면 24시간 동안 쓰기 시도를 멈추고 진단만 남긴다.
+            $stateDir = 'E:\JaewoonRobloxStudioRunner\_work\_mybox'
+            $stateFile = Join-Path $stateDir 'state.json'
+            $state = $null
+            try { if (Test-Path -LiteralPath $stateFile) { $state = Get-Content -LiteralPath $stateFile -Raw | ConvertFrom-Json } } catch { $state = $null }
+            if ($state -and [int]$state.streak -ge 3 -and ([datetime]$state.lastFailure).AddHours(24) -gt (Get-Date)) {
+              Write-Warning "MYBOX_BACKUP=PAUSED_REPEATED_FAILURE:$($state.signature):streak=$($state.streak)"
+              throw 'MYBOX_PAUSED_REPEATED_FAILURE'
+            }
+            $op = 'NONE'
             try {
               # [기존 대상 보존] 새 저장소를 만들거나 우회 위치를 쓰지 않고 기존 MYBOX 보관 경로만 검사한다.
+              # [자동복구] 부모(N:\Jaewoon3D)가 있으면 그 안에 대상 폴더만 만든다. 최상위 생성이 막히면 원인을 기록한다.
+              if (-not (Test-Path -LiteralPath 'N:\Jaewoon3D' -PathType Container)) { $op = 'CREATE_PARENT_N:\Jaewoon3D' }
+              elseif (-not (Test-Path -LiteralPath $destinationRoot -PathType Container)) { $op = 'CREATE_TARGET' }
+              else { $op = 'WRITE_FILE' }
               New-Item -ItemType Directory -Path $destinationRoot -Force -ErrorAction Stop | Out-Null
+              $op = 'WRITE_FILE'
               $probePath = Join-Path $destinationRoot ('.vibe-write-probe-' + $env:GITHUB_RUN_ID)
               if (Test-Path -LiteralPath $probePath) { throw 'MYBOX_PROBE_NAME_COLLISION' }
               try {
                 [IO.File]::WriteAllText($probePath, 'VIBE_MYBOX_WRITE_CHECK')
                 if (-not (Test-Path -LiteralPath $probePath -PathType Leaf)) { throw 'MYBOX_WRITE_PROBE_NOT_VISIBLE' }
                 Write-Host 'MYBOX_WRITE_PROBE=PASS'
+                Remove-Item -LiteralPath $stateFile -Force -ErrorAction SilentlyContinue
               } finally {
                 if (Test-Path -LiteralPath $probePath -PathType Leaf) {
                   Remove-Item -LiteralPath $probePath -Force -ErrorAction SilentlyContinue
@@ -1059,6 +1103,18 @@ jobs:
                 'MYBOX_ROOT_PARENT_CREATE_BLOCKED'
               } else { 'MYBOX_TARGET_WRITE_DENIED' }
               Write-Warning "MYBOX_WRITE_PROBE=FAIL:${failure}:$($_.Exception.GetType().Name)"
+              Write-Warning "MYBOX_FAILED_OPERATION=$op"
+              Write-Warning "MYBOX_FAILED_MESSAGE=$($_.Exception.Message)"
+              if (-not $sameUser) { Write-Warning 'MYBOX_CAUSE_HINT=RUNNER_ACCOUNT_DIFFERS_FROM_LOGGED_IN_USER' }
+              elseif ($op -like 'CREATE_PARENT*') { Write-Warning 'MYBOX_CAUSE_HINT=MYBOX_ROOT_FOLDER_CREATE_BLOCKED_USE_EXISTING_FOLDER' }
+              else { Write-Warning 'MYBOX_CAUSE_HINT=TARGET_FOLDER_PERMISSION_DENIED' }
+              try {
+                New-Item -ItemType Directory -Path $stateDir -Force | Out-Null
+                $sig = "${failure}:$op"
+                $streak = if ($state -and $state.signature -eq $sig) { [int]$state.streak + 1 } else { 1 }
+                @{ signature = $sig; streak = $streak; lastFailure = (Get-Date).ToString('o'); account = $identity.Name } | ConvertTo-Json | Set-Content -LiteralPath $stateFile -Encoding UTF8
+                Write-Host "MYBOX_FAILURE_STREAK=$streak"
+              } catch {}
               throw
             }
             # [라이선스 추적] 원본 파일과 사용권한·출처·해시 메타데이터를 함께 보관한다.
@@ -1134,3 +1190,7 @@ jobs:
             Write-Warning "MYBOX_BACKUP=UNVERIFIED:$($_.Exception.GetType().Name)"
           }
           Write-Host "MYBOX_BACKUP_COPIED=$copied EXISTING=$existing SKIPPED=$skipped FAILED=$failed MB=$([math]::Round($copiedBytes/1MB,2))"
+          if ($env:GITHUB_STEP_SUMMARY) {
+            @("### MYBOX 자체 진단", "- 러너 계정: $($identity.Name) (세션 $session)", "- 로그인 사용자: $(if ($interactive.Count) { $interactive -join ', ' } else { '없음' })",
+              "- Runner.Listener(E:): $($listeners.Count)", "- 복사 $copied / 기존 $existing / 실패 $failed") | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY -Encoding UTF8
+          }
