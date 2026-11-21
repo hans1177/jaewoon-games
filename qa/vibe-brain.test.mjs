@@ -445,3 +445,12 @@ test('무효 수정안 재시도는 다른 무료 공급자를 우선한다', as
   assert.equal(result.provider, 'openrouter:free-code');
   assert.match(fs.readFileSync(path.join(root, GAME), 'utf8'), /if not ui\.target then return nil end/);
 });
+
+test('증거가 준 책임 함수 줄을 중심으로 큰 파일 발췌를 만든다', () => {
+  const body = Array.from({ length: 300 }, (_, i) => i === 199 ? 'function Pose.work(model)' : 'local filler' + i + ' = ' + i).join('\n') + '\n';
+  const root = mkRoot({ [GAME]: body });
+  const ctx = findContext(root, { ...order, sourceFile: GAME, sourceLine: 200 });
+  assert.equal(ctx[0].file, GAME);
+  assert.ok(ctx[0].from <= 200 && ctx[0].to >= 200, '책임 함수 줄이 발췌에 포함되어야 한다');
+  assert.match(ctx[0].body, /function Pose\.work/);
+});
