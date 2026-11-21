@@ -1,6 +1,7 @@
 // 파일명: qa/vibe-visual-runtime-quality.test.mjs
 // 역할: 기존 Vibe 그래픽 파이프의 에셋 확보 순서·Golden Scene·primitive lifecycle·visual debt 계약 검증
 import test from 'node:test';
+import {planVibePresentationAutopilot} from '../assets/vibe-presentation-director.js';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -924,4 +925,48 @@ test('재조합은 도너·원본 해시·플랫폼을 재검증하고 실패 �
   assert.equal(plan.automaticModelWeightUpdate,false);
   assert.ok(plan.rankedRecipeIds.includes(recipe.id));
   assert.ok(plan.recipes.every(row=>row.nativeOutputProduced===false&&row.gameSourceApplied===false));
+});
+
+
+// [상용 그래픽 감독] 실제 샘플의 꼬리 지연으로 장식 예산을 조정하되 게임 판정은 보호한다.
+test('vibe presentation uses p95 and measured resource pressure, never claims actual renderer mutation',()=>{
+  const hash='c'.repeat(64);
+  const input={actualRuntime:true,frameMs:16,captureHash:hash,
+    frameSamplesMs:[...Array(56).fill(16),...Array(4).fill(90)],
+    resources:{source:'native-runtime-telemetry',observed:true,captureHash:hash,
+      memoryPeakMb:620,drawCalls:360,visibleTriangles:350000}};
+  const plan=planVibePresentationAutopilot({request:'모바일 보스전 연출 개선',performanceTelemetry:input});
+  assert.equal(plan.presentationBudget.tier,'CRITICAL');
+  assert.equal(plan.presentationBudget.measurementMode,'OBSERVED_P95');
+  assert.equal(plan.presentationBudget.p95FrameMs,90);
+  assert.equal(plan.presentationBudget.resourcesVerified,true);
+  assert.equal(plan.presentationBudget.particlesPerImpact,4);
+  assert.equal(plan.presentationBudget.preserveAttackTelegraph,true);
+  assert.equal(plan.presentationBudget.preserveHudAndTouchTargets,true);
+  assert.equal(plan.presentationBudget.actualRuntimeBudgetApplied,false);
+  const missing=planVibePresentationAutopilot({performanceTelemetry:{actualRuntime:false,frameMs:90}});
+  assert.equal(missing.presentationBudget.tier,'UNMEASURED');
+  assert.equal(missing.presentationBudget.resourcesVerified,false);
+});
+
+test('Vibe graphics owner sends observed PBR defects to original material stage and keeps release unverified',()=>{
+  const review=aestheticFixture();
+  review.findings[0].axis='PBR_ROUGHNESS_METALNESS';
+  review.findings[0].after.severity=2;
+  const root=createVibeGraphicsProduction({gameId:'graphics-qa',request:'로블록스 재질 실물 품질 개선',
+    target:'roblox',game:{genre:'adventure'},runtimeEvidence:{
+      stage:'INTERNAL_PLAYTEST',candidateRevision:review.candidateRevision,
+      captures:captures(review.candidateRevision),artDirectionReview:review}});
+  assert.equal(root.professionalGraphics.owner,'GRAPHICS_PRODUCTION');
+  assert.equal(root.professionalGraphics.status,'SOURCE_BOUND_REPAIR_REQUIRED');
+  assert.ok(root.professionalGraphics.work.some(row=>
+    row.stage==='MATERIAL_LIGHTING_AND_PLATFORM_REAUTHORING'&&row.axis===undefined));
+  assert.equal(root.professionalGraphics.actualSourceEditPerformed,false);
+  assert.equal(root.professionalGraphics.actualNativeRuntimeVerification,false);
+  assert.equal(root.professionalGraphics.noNewQueueOrPipeline,true);
+  const telemetry=createVibeGraphicsProduction({gameId:'graphics-qa',request:'모바일 렌더링 조정',
+    target:'roblox',engineMeasurementCapture:{automatic:true,sourceHash:'a'.repeat(64),
+      captureHash:'b'.repeat(64),frameMs:16,frameSamplesMs:Array(60).fill(70)}});
+  assert.equal(telemetry.professionalGraphics.measuredPresentationBudget.tier,'CRITICAL');
+  assert.equal(telemetry.professionalGraphics.status,'RUNTIME_CAPTURE_REQUIRED');
 });
