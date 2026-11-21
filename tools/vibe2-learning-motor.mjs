@@ -885,7 +885,7 @@ export function applyVerifiedCodingCalibration(stateInput={},queueInput={}){
     if(!outcome)continue;
     const confidence=upper(lastEvidenceMarker(evidence,'coding-responsibility-confidence:'))||'LOW';
     const gameId=clean(task.gameId)||'unknown',target=lower(task.target)||'unknown';
-    const run=evidence.find(value=>value.startsWith('actions-run:'))||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
+    const run=evidence.filter(value=>value.startsWith('actions-run:')).at(-1)||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
     const legacyEventId='coding_cal_'+hash([clean(task.id),run,outcome,confidence].join('|'));
     const candidateIdentity=codingOutcomeIdentity(task,'CALIBRATION');
     const hasExactCandidate=evidence.some(value=>/^candidate-sha:[a-f0-9]{40}$/i.test(value));
@@ -902,8 +902,9 @@ export function applyVerifiedCodingCalibration(stateInput={},queueInput={}){
       }
       seen.add(eventId);added+=1;
     }
-    const primaryTargets=decodeEvidenceArray(evidence,'coding-primary-targets:');
-    const primarySystems=decodeEvidenceArray(evidence,'coding-primary-systems:');
+    // 동일 책임 대상의 순서 차이는 별도 회귀 이벤트로 계산하지 않는다.
+    const primaryTargets=uniq(decodeEvidenceArray(evidence,'coding-primary-targets:')).sort();
+    const primarySystems=uniq(decodeEvidenceArray(evidence,'coding-primary-systems:')).sort();
     const legacyHotspotEventId='coding_hotspot_'+hash([clean(task.id),run,outcome,primaryTargets.join(','),primarySystems.join(',')].join('|'));
     const hotspotEventId=hasExactCandidate?'coding_hotspot_'+hash([candidateIdentity,outcome,primaryTargets.join(','),primarySystems.join(',')].join('|')):legacyHotspotEventId;
     if(!hotspotSeen.has(hotspotEventId)&&!hotspotSeen.has(legacyHotspotEventId)){
@@ -969,7 +970,7 @@ export function applyVerifiedArchitectureDriftOutcomes(stateInput={},queueInput=
     const outcome=codingVerificationOutcome(task);
     if(!drift||!outcome||!drift.signals.length)continue;
     const gameId=clean(task.gameId)||'unknown';
-    const run=evidence.find(value=>value.startsWith('actions-run:'))||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
+    const run=evidence.filter(value=>value.startsWith('actions-run:')).at(-1)||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
     const legacyEventId='architecture_drift_'+hash([clean(task.id),run,outcome,drift.riskLevel,drift.signals.join(',')].join('|'));
     const eventId=evidence.some(value=>/^candidate-sha:[a-f0-9]{40}$/i.test(value))
       ?'architecture_drift_'+hash([codingOutcomeIdentity(task,'ARCHITECTURE'),outcome,drift.riskLevel,drift.signals.join(',')].join('|')):legacyEventId;
