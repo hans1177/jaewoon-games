@@ -233,7 +233,12 @@ end
 -- [Studio QA] 등록 모델 전체의 실제 로딩 성공·실패를 카운트하며 라이브 저장/동작은 건드리지 않는다.
 local studioAudit = RunService:IsStudio()
 local failedKeys = {}
+-- [3D 품질 자동 검사] 로딩된 승인 모델의 실측 공간 크기만 Studio에서 감사한다.
+-- 원본 메시/UV/PBR, AssetId, 게임 진행 데이터, 실서버 성능은 변경하지 않는다.
+local geometryChecked, geometryInvalid = 0, 0
+local geometryIssues = {}
 if studioAudit then
+	ReplicatedStorage:SetAttribute("MareModelGeometryAuditState", "RUNNING")
 	ReplicatedStorage:SetAttribute("MareModelAuditState", "RUNNING")
 	ReplicatedStorage:SetAttribute("MareModelAuditTotals", "")
 	ReplicatedStorage:SetAttribute("MareOutfitMaterialAuditState", "RUNNING")
@@ -246,6 +251,7 @@ end
 if studioAudit and #queue == 0 then
 	ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = 0, loaded = 0, failed = 0, errors = { "NO_REGISTERED_MODELS" }}))
 	ReplicatedStorage:SetAttribute("MareModelAuditState", "FAIL")
+	ReplicatedStorage:SetAttribute("MareModelGeometryAuditState", "FAIL")
 	ReplicatedStorage:SetAttribute("MareOutfitMaterialAuditState", "FAIL")
 end
 for _ = 1, 12 do
@@ -258,6 +264,19 @@ for _ = 1, 12 do
 				local model = container:FindFirstChildWhichIsA("Model") or container
 				local group = library:FindFirstChild(item.kind)
 				if model:IsA("Model") and model:FindFirstChildWhichIsA("BasePart", true) and group then
+					-- [기존 원본 품질 검사] 등록된 모델의 실제 3축 크기만 스튜디오에서 확인.
+					-- 메시를 합성하거나 텍스처/스케일을 임의 수정하지 않는다.
+					if studioAudit then
+						geometryChecked += 1
+						local boundsOk, _, bounds = pcall(model.GetBoundingBox, model)
+						local valid = boundsOk and bounds
+							and bounds.X > 0.0001 and bounds.Y > 0.0001 and bounds.Z > 0.0001
+							and bounds.X < math.huge and bounds.Y < math.huge and bounds.Z < math.huge
+						if not valid then
+							geometryInvalid += 1
+							if #geometryIssues < 24 then table.insert(geometryIssues, item.key) end
+						end
+					end
 					-- [항구 우물] Studio 실측에서 콘텐츠 표현이 없는 5개 TextureID만 제거한다.
 					-- CC0 원본 모델의 메시·스케일·구조는 보존하며, 라이브러리 복제 전에 재질을 복구한다.
 					if item.key == "Town/village-well" then
@@ -389,6 +408,11 @@ for _ = 1, 12 do
 				}))
 				ReplicatedStorage:SetAttribute("MareShipV5ColorAuditState",
 					if shipColorExpected == 72 and shipColorModels == 72 and shipColorParts > 0 and shipUnknownParts == 0 then "PASS" else "FAIL")
+				ReplicatedStorage:SetAttribute("MareModelGeometryAudit", HttpService:JSONEncode({
+					checked = geometryChecked, invalid = geometryInvalid, affected = geometryIssues,
+				}))
+				ReplicatedStorage:SetAttribute("MareModelGeometryAuditState",
+					if geometryInvalid == 0 and geometryChecked == #queue then "PASS" else "FAIL")
 				ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = #queue, loaded = loaded, failed = failed, errors = failedKeys}))
 				ReplicatedStorage:SetAttribute("MareModelAuditState", if failed == 0 and loaded == #queue then "PASS" else "FAIL")
 			end
