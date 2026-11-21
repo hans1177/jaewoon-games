@@ -459,32 +459,17 @@ local CENTRAL_PLAZA_RADIUS = 26
 -- [지역 건축] 실제 항구 문화권을 수입 건축 메시와 기존 집 생성에서 함께 참조한다.
 local currentKey = "north"
 -- [항구 생성 분할] 큰 모델 복제·R15 인물 생성 사이에 프레임을 양보해 클라이언트가 수 초씩 멈추지 않게 한다.
--- 한 프레임에 30ms까지만 만들고 다음 프레임으로 넘긴다(약 30fps 유지). 12ms에서는 첫 항구 생성이 6초+로 길어져
--- 시작 안내 진행이 QA 대기(21초) 안에 끝나지 않는 회차가 생겼다(실행 44912240071 INTRO_STUCK). 양보할 수 없는 호출(테스트·비동기 불가 문맥)에서는 그대로 한 번에 만든다.
-local SLICE_BUDGET = 0.03
+-- 한 프레임에 12ms까지만 만들고 다음 프레임으로 넘긴다. 양보할 수 없는 호출(테스트·비동기 불가 문맥)에서는 그대로 한 번에 만든다.
+local SLICE_BUDGET = 0.012
 local sliceStart = os.clock()
--- [멈춤 원인 실측] 양보 없이 이어진 가장 긴 구간 3개를 "앞 지점→뒤 지점"으로 기록한다(추정 대신 실측).
-local spanAt, spanFrom, spans = os.clock(), "start", {}
-local function sliceMark(label: string)
-	local now = os.clock()
-	local d = now - spanAt
-	if d > 0.02 then
-		table.insert(spans, { ms = math.floor(d * 1000), at = spanFrom .. ">" .. label })
-		table.sort(spans, function(a, b) return a.ms > b.ms end)
-		if #spans > 3 then table.remove(spans) end
-	end
-	spanAt, spanFrom = now, label
-end
-local function sliceYield(label: string?)
+local function sliceYield()
 	if os.clock() - sliceStart > SLICE_BUDGET and coroutine.isyieldable() then
-		sliceMark(label or "?")
 		task.wait()
 		sliceStart = os.clock()
-		spanAt = sliceStart
 	end
 end
 local function importedModel(parent, kind, asset, bottomPosition, desiredSize, solid, tint, buildDelay)
-	sliceYield(tostring(kind) .. "/" .. tostring(asset))
+	sliceYield()
 	if parent.Name == "PortScene" and kind ~= "People" and kind ~= "Animals" then
 		local dx, dz = bottomPosition.X + 6, bottomPosition.Z
 		if dx * dx + dz * dz < CENTRAL_PLAZA_RADIUS * CENTRAL_PLAZA_RADIUS then return nil end
@@ -815,7 +800,7 @@ local KEEPER_ROLE = {
 local OC = Color3.fromRGB
 local currentYear = 1700
 local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
-	sliceYield("villager:" .. tostring(role))
+	sliceYield()
 	role = role or ({ "Knight", "Barbarian", "Mage", "Rogue", "Rogue_Hooded" })[rng:NextInteger(1, 5)]
 	local o = OUTFIT[currentKey]
 	local year = if extra and type(extra.year) == "number" then extra.year else currentYear
@@ -5098,7 +5083,6 @@ end
 function PortScene.build(info, onFacility)
 	vacancyRate = info.vacancy or 0
 	sliceStart = os.clock()
-	spanAt, spanFrom, spans = sliceStart, "start", {}
 	-- [분할 생성 중 화면 유지] 새 항구가 다 만들어질 때까지 기존 항구를 그대로 보여 주고, 교체 직전에 지운다.
 	local old = workspace:FindFirstChild("PortScene")
 	local folder = Instance.new("Folder")
@@ -7204,13 +7188,10 @@ function PortScene.build(info, onFacility)
 		table.insert(gulls, { body = body, l = l, r = r, radius = rng:NextNumber(14, 34), height = rng:NextNumber(18, 30), speed = rng:NextNumber(0.25, 0.5), phase = i * 1.1, cx = rng:NextNumber(30, 70), cz = rng:NextNumber(-20, 20) })
 	end
 
-	sliceMark("beforeDestroyOld")
 	if old and old.Parent then
 		old:Destroy()
 	end
-	sliceMark("destroyOld")
 	folder.Parent = workspace
-	sliceMark("parentToWorkspace")
 
 	-- [마을 주민·건축물 간섭] 완성된 마을에서 초기 위치와 실제 이동 궤적을 확인한다.
 	-- 이동형·고정형·일과형 모두 생성 직후 한 번만 검사한다(프레임별 공간 질의 금지).
@@ -7591,7 +7572,6 @@ function PortScene.build(info, onFacility)
 			if found then break end
 		end
 	end)
-	sliceMark("routeCheck")
 	-- 성능: 작은 장식 부품(가장 긴 변 4칸 미만)은 그림자를 만들지 않는다. 큰 건물·나무 그림자는 그대로 둔다.
 	for _, d in folder:GetDescendants() do
 		if d:IsA("BasePart") and d.CastShadow then
@@ -7601,11 +7581,6 @@ function PortScene.build(info, onFacility)
 			end
 		end
 	end
-	sliceMark("shadowPass")
-	local spanText = {}
-	for _, row in spans do table.insert(spanText, row.ms .. "ms@" .. row.at) end
-	folder:SetAttribute("BuildMaxSpanMs", if spans[1] then spans[1].ms else 0)
-	folder:SetAttribute("BuildSpans", table.concat(spanText, ";"))
 	return { folder = folder, spawn = CFrame.new(spawnPos) * CFrame.Angles(0, math.rad(90), 0), controls = controls }
 end
 

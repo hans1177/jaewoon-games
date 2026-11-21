@@ -11561,7 +11561,6 @@ syncScene = function()
 		if H.portLoadingLabel then H.portLoadingLabel.Text = "항구 준비 오류 · 다시 접속해 줘." end
 		return
 	end
-	local postStart = os.clock()
 	sceneKey = key
 	sceneCtl = res.controls
 	arriveNext = false
@@ -11569,8 +11568,6 @@ syncScene = function()
 	applyView()
 	-- [준비 완료] 실제 항구가 설치된 뒤에만 시작 배경을 닫는다.
 	if H.setTitleMode then H.setTitleMode(not view or newGameMode) end
-	-- [멈춤 원인 실측] 생성 직후 화면 적용(카메라·UI) 구간도 따로 잰다.
-	workspace:SetAttribute("PortPostBuildMs", math.floor((os.clock() - postStart) * 1000))
 end
 
 -- [항구 전환 체감 시간] 생성(빌드)·첫 화면·조작 가능 시점을 각각 기록한다.
