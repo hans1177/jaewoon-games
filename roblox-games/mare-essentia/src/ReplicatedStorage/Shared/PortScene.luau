@@ -7436,14 +7436,18 @@ function PortScene.build(info, onFacility)
 		end
 		f.stern.Rate = math.floor(flow * 18)
 	end
+	-- [모바일 항구 연출] 항해 진입 시에만 입자를 멈추며 항해 중 같은 Rate를 매 프레임 쓰지 않는다.
+	local wasVoyageActive = false
 	local conn = RunService.Heartbeat:Connect(function()
-		-- [모바일 최적화] 항해 장면에서는 항구의 배/갈매기/풍차가 화면 밖에 있다.
-		-- 항적 방출을 멈추고 기존 객체와 연결은 그대로 보존한다.
 		if not folder.Parent then return end
 		if workspace:GetAttribute("VoyageActive") then
-			setFoam(0)
+			if not wasVoyageActive then
+				setFoam(0)
+				wasVoyageActive = true
+			end
 			return
 		end
+		wasVoyageActive = false
 		local t = os.clock() - t0
 		local shipPose = shipBase * CFrame.new(0, math.sin(t * 1.2) * 0.35, 0) * CFrame.Angles(math.sin(t * 0.9) * 0.025, 0, math.sin(t * 0.7) * 0.012)
 		local flow = 0
