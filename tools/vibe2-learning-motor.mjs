@@ -363,7 +363,7 @@ function normalizeRegressionHotspots(input={}){
       verifiedRegressionFailures:Math.max(0,Number(row.verifiedRegressionFailures)||0),
       verifiedPasses:Math.max(0,Number(row.verifiedPasses)||0),
       lastFailureEvidence:clean(row.lastFailureEvidence)||null,lastPassEvidence:clean(row.lastPassEvidence)||null,
-      lastVerifiedOutcome:upper(row.lastVerifiedOutcome)||null,lastUpdatedAt:clean(row.lastUpdatedAt)||null
+      lastVerifiedOutcome:['PASS','REGRESSION_FAIL'].includes(upper(row.lastVerifiedOutcome))?upper(row.lastVerifiedOutcome):null,lastUpdatedAt:clean(row.lastUpdatedAt)||null
     };
   }
   return{version:1,seenEventIds:uniq(source.seenEventIds||[]),entries};
