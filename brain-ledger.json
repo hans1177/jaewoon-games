@@ -205,6 +205,11 @@
       "n": 1,
       "lastAt": 1795261391061,
       "last": "FAILED"
+    },
+    "mare-essentia:visual:919a6c66d239f30dbeba3660cb5764b611b2d01c567e274892fe23748e832176": {
+      "n": 1,
+      "lastAt": 1795269316397,
+      "last": "APPLIED"
     }
   },
   "merged": [
@@ -269,19 +274,18 @@
       "lastAt": 1795255794980
     },
     "gemini:gemini-3.6-flash": {
-      "ok": 28,
+      "ok": 29,
       "fail": 38,
-      "lastAt": 1795261391061,
+      "lastAt": 1795269316396,
       "quotaUntil": 1795262291061
     }
   },
   "visualCoverage": {
-    "sourceRevision": "db1ffe778b2d438b12a1688171a8b77bb0226fe5",
+    "sourceRevision": "14b67ea95aa0f2884de1c6dab0f837f86c9796d9",
     "labels": [
-      "c00_start",
-      "t01",
-      "t02",
-      "ap_game"
+      "tab_harbor",
+      "tab_trade",
+      "qa_click_trade_to_harbor"
     ]
   }
 }
