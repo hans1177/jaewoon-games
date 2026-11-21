@@ -5935,6 +5935,9 @@ local function openTradeHall()
 		-- [교역 장부] 목록 24% · 승인 원화·백과 약 42% · 판단 수치·거래 약 34%. 세로는 목록/상세 전환.
 		local headH = if narrow then (if shortScreen then 128 else 146)
             elseif width < 1160 then (if shortScreen then 94 else 108) else 70
+		-- [낮은 가로 화면] 시설 책 머리줄에 이미 시설·항구 이름이 있어 장부 제목을 숨기고 한 줄로 줄인다.
+		local slimHead = shortScreen and not narrow
+		if slimHead then headH = 48 end
 		local menuY = headH + 12
 
 		-- 윗줄: 항구 이름, 코인, 화물칸, 나가기
@@ -5957,6 +5960,10 @@ local function openTradeHall()
 		local groupX = math.max(8, math.floor((width - 16 - groupWidth) / 2))
 		local rowY = if narrow then (if shortScreen then 52 else 64)
             elseif width < 1160 then (if shortScreen then 30 else 38) else 32
+		if slimHead then
+			title.Visible = false
+			rowY = 7
+		end
 		local commonStatus = mkLabel(top, H.statusMoneyCargo(p, ship, narrow), if narrow then 15 else 18, INK, true)
 		commonStatus.Name = "TradeGlobalMoneyCargo"
         -- [교역 자금] 황동 테두리로 상단의 거래 자금을 별도 현판 처리.
@@ -5996,6 +6003,10 @@ local function openTradeHall()
 		toastLbl.AutomaticSize = Enum.AutomaticSize.None
 		toastLbl.TextWrapped = true
 		toastLbl.TextTruncate = Enum.TextTruncate.AtEnd
+		if slimHead then
+			toastLbl.Position = UDim2.fromOffset(12, 12)
+			toastLbl.Size = UDim2.fromOffset(math.max(60, groupX - 24), 24)
+		end
 		local backToList = narrow and detailOpen
 		local leave = mkButton(top, if backToList then "목록" else "닫기", COLORS.leather, UDim2.fromOffset(78, 44), function()
 			if backToList then
