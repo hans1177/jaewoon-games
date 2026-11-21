@@ -98,7 +98,8 @@ test('daily C cleanup runs on existing signed-in Studio runner without touching 
   assert.doesNotMatch(cleanup,/Remove-AppxPackage|Win32_Product|winget uninstall|Get-ChildItem -Recurse|Clear-RecycleBin|Downloads|Documents|SavedPlaces/);
   assert.ok(!bootstrap.includes("name: Install hidden user-logon Startup launcher\n        if: github.event_name != 'schedule'"));
   assert.match(bootstrap,/ROBLOX_RUNNER_WATCHDOG=PRESERVED_VERIFIED_SAME_INTERACTIVE_SESSION/);
-  assert.match(bootstrap,/name: Checkout native recording setup without downloading game assets\n        if: github\.event_name != 'schedule'/);
+  assert.match(bootstrap,/name: Checkout existing Windows recovery and native recording tools\n        uses: actions\/checkout@v4/);
+  assert.match(bootstrap,/ref: \$\{\{ github\.sha \}\}/);
   assert.match(bootstrap,/name: Restore real Roblox Player recording on existing interactive Windows runner\n        if: github\.event_name != 'schedule'/);
 });
 
@@ -161,4 +162,25 @@ test('Studio recovery supervises GUI hang safely without fabricating MCP play ev
   assert.match(installer,/\[switch\]\$KeepStudioOpen/);
   assert.match(installer,/\[switch\]\$DisableStudioAutostart/);
   assert.match(supervisor,/startStudio = \$true; startRunner = \$true/);
+});
+
+test('authenticated Windows bootstrap deploys exact approved Studio supervisor and preserves owner settings',()=>{
+  const bootstrap=workflow.slice(workflow.indexOf('\n  bootstrap:'));
+  const install=fs.readFileSync(new URL('../tools/install-roblox-studio-autostart.ps1',import.meta.url),'utf8');
+  const trigger=workflow.slice(0,workflow.indexOf('\njobs:'));
+  assert.match(trigger,/tools\/install-roblox-studio-autostart\.ps1/);
+  assert.match(trigger,/tools\/roblox-studio-autostart-supervisor\.ps1/);
+  assert.match(bootstrap,/STUDIO_RECOVERY_RUNNER_ROOT=\$runnerRoot/);
+  assert.match(bootstrap,/STUDIO_RECOVERY_INSTALL=DEFERRED_INTERACTIVE_USER_REQUIRED/);
+  assert.match(bootstrap,/STUDIO_RECOVERY_INSTALL=DEFERRED_REGISTERED_RUNNER_REQUIRED/);
+  assert.match(bootstrap,/STUDIO_RECOVERY_INSTALL=STALE_CHECKOUT/);
+  assert.match(bootstrap,/STUDIO_RECOVERY_INSTALL=VERIFIED_EXISTING_SUPERVISOR/);
+  assert.match(bootstrap,/STUDIO_RECOVERY_INSTALL=SUPERVISOR_UPDATED_MCP_PLAY_NOT_VERIFIED/);
+  assert.ok(bootstrap.indexOf('Checkout existing Windows recovery and native recording tools') <
+    bootstrap.indexOf('Refresh existing Studio self-recovery on authenticated Windows'));
+  assert.match(install,/\$previous = Get-Content -LiteralPath \$configPath -Raw \| ConvertFrom-Json/);
+  assert.match(install,/\$startStudio = \[bool\]\$previous\.startStudio/);
+  assert.match(install,/if \(\$DisableStudioAutostart\) \{ \$startStudio = \$false \}/);
+  assert.match(install,/Stop-ScheduledTask -TaskName \$taskName/);
+  assert.doesNotMatch(bootstrap,/config\.cmd|--token|ROBLOX_STUDIO_MCP_PLAY_PASS=YES/);
 });
