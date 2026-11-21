@@ -294,18 +294,56 @@ export function planVibePresentationAutopilot({files=[],events=[],request='',cha
   // 메인: 관찰된 프레임 비용으로 연출 예산만 조정한다. 게임 판정/스폰/입력은 불변이다.
   const width=Number(viewport?.width)||393, height=Number(viewport?.height)||852;
   const mobile=Math.min(width,height)<600;
+  // [상용 그래픽 제어] 관측된 실제 프레임 분포 및 동일 캡처의 리소스 계측을 사용한다.
+  // 연출 예산의 변경은 기존 렌더러가 채택할 권고이며 게임 상태·판정에는 절대 적용하지 않는다.
   const observedFrameMs=Number(performanceTelemetry?.frameMs);
+  const sampleTimes=performanceTelemetry?.frameSamplesMs;
+  const validSamples=Array.isArray(sampleTimes)&&sampleTimes.length>=60&&sampleTimes.length<=3600
+    &&sampleTimes.every(ms=>typeof ms==='number'&&Number.isFinite(ms)&&ms>0&&ms<1000);
+  const ordered=validSamples?[...sampleTimes].sort((a,b)=>a-b):[];
+  const p95FrameMs=validSamples?ordered[Math.ceil(ordered.length*.95)-1]:null;
+  const p99FrameMs=validSamples?ordered[Math.ceil(ordered.length*.99)-1]:null;
   const measured=performanceTelemetry?.actualRuntime===true&&
     Number.isFinite(observedFrameMs)&&observedFrameMs>0;
   const frameBudgetMs=mobile?33.333:16.667;
-  const pressure=measured?observedFrameMs/frameBudgetMs:null;
-  const tier=!measured?'UNMEASURED':pressure>1.5?'CRITICAL':pressure>1?'PRESSURED':'NORMAL';
+  const effectiveFrameMs=measured?(p95FrameMs??observedFrameMs):null;
+  const pressure=measured?effectiveFrameMs/frameBudgetMs:null;
+  const resources=performanceTelemetry?.resources||{};
+  const resourcesVerified=measured&&resources.observed===true
+    &&resources.source==='native-runtime-telemetry'
+    &&/^[a-f0-9]{64}$/i.test(String(resources.captureHash||''))
+    &&String(resources.captureHash).toLowerCase()===String(performanceTelemetry.captureHash||'').toLowerCase();
+  const resourceFields=['memoryPeakMb','drawCalls','visibleTriangles'];
+  const resourceValues=Object.fromEntries(resourceFields.map(key=>[key,
+    resourcesVerified&&typeof resources[key]==='number'&&Number.isFinite(resources[key])&&resources[key]>=0
+      ?resources[key]:null]));
+  const resourceCeiling=mobile?{memoryPeakMb:512,drawCalls:300,visibleTriangles:300000}
+    :{memoryPeakMb:1024,drawCalls:600,visibleTriangles:600000};
+  const resourcePressure=resourcesVerified?Math.max(0,...resourceFields.map(key=>
+    resourceValues[key]===null?0:resourceValues[key]/resourceCeiling[key])):0;
+  const tier=!measured?'UNMEASURED':pressure>1.5||resourcePressure>1.5?'CRITICAL'
+    :pressure>1||resourcePressure>1?'PRESSURED':'NORMAL';
+  const decorativeScale=tier==='CRITICAL'?0.25:tier==='PRESSURED'?0.5:1;
   const presentationBudget=Object.freeze({
     tier,mobile,frameBudgetMs,
     observedFrameMs:measured?observedFrameMs:null,
+    p95FrameMs:measured?p95FrameMs:null,p99FrameMs:measured?p99FrameMs:null,
+    frameSampleCount:measured&&validSamples?sampleTimes.length:0,
+    measurementMode:!measured?'UNVERIFIED':validSamples?'OBSERVED_P95':'OBSERVED_SINGLE_FRAME',
+    resourceMetrics:Object.freeze(resourceValues),
+    resourceCeiling:Object.freeze(resourceCeiling),
+    resourcesVerified,
     telemetrySource:measured?'OBSERVED_RUNTIME':'UNVERIFIED_OR_ABSENT',
     particlesPerImpact:tier==='CRITICAL'?4:tier==='PRESSURED'?8:16,
     distantDecorativeEffectDensity:tier==='CRITICAL'?'MINIMAL':tier==='PRESSURED'?'REDUCED':'NORMAL',
+    postFxScale:decorativeScale,
+    distantVfxScale:decorativeScale,
+    ambientAnimationScale:decorativeScale,
+    preservePbrMaterialIdentity:true,
+    preserveCharacterSilhouette:true,
+    preserveAttackTelegraph:true,
+    preserveHudAndTouchTargets:true,
+    qualityRestorationRequiresFreshObservedRuntime:true,
     essentialHitFeedbackRequired:true,
     actionInputAndCollisionUnchanged:true,
     spawnedEntityAndCombatBudgetUnchanged:true,
