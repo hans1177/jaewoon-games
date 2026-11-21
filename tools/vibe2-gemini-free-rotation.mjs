@@ -1,6 +1,16 @@
 // 파일명: tools/vibe2-gemini-free-rotation.mjs
 // 메인: 기존 Gemini 소스·학습 공용 API 요청 안에서만 무료 공급자 대체 순환.
 // 보안: API 키 출력·유료 모델·자동 결제·로컬 모델·추가 파이프라인 금지.
+// [400 원인 분류] 문맥 초과·안전정책은 위에서 따로 처리한다. 나머지를 고칠 위치가 다른 유형으로 나눈다.
+export function classifyHttp400(detail=''){
+  const d=String(detail||'');
+  if(/model[^.]{0,40}(not found|does not exist|decommission|not available|unknown|invalid)|no endpoints found|is not a valid model/i.test(d))return'MODEL_UNAVAILABLE';
+  if(/unsupported|not supported|unknown (parameter|field|argument)|unrecognized|additional properties|property .{1,40} is not allowed|invalid[_ ]?(parameter|argument|value)/i.test(d))return'UNSUPPORTED_PARAMETER';
+  if(/json|schema|response[_ ]?format|mime/i.test(d))return'RESPONSE_FORMAT';
+  if(/role|messages?|content|empty|must (be|have)|required/i.test(d))return'INVALID_REQUEST_SHAPE';
+  return d?'OTHER':'NO_DETAIL';
+}
+
 export const GEMINI_FREE_MODELS=Object.freeze(['gemini-3.8-flash','gemini-3.5-flash-lite']);
 export const VERIFIED_FREE_FALLBACK_MODELS=Object.freeze({
   GROQ:'openai/gpt-oss-20b',
@@ -308,6 +318,13 @@ export async function requestGeminiFreePair({
             cooldownUntil.set(slot,Date.now()+delay);
           }
           if(contextError)console.log('VIBE2_EXTERNAL_FREE_REQUEST_CONTEXT_REJECTED='+slot);
+          if(status===400&&!contextError){
+            const kind=classifyHttp400(detail);
+            // 실패 문자열 형식(slot:HTTP_400)은 큐·조직 파서가 쓰므로 그대로 두고, 원인은 로그로 남긴다.
+            failures.push(slot+':HTTP_400');
+            console.log('VIBE2_EXTERNAL_FREE_HTTP400='+slot+':'+kind+':'+detail.replace(/\s+/g,' ').slice(0,180));
+            continue;
+          }
           failures.push(slot+':HTTP_'+status);
           console.log('VIBE2_GEMINI_FREE_ROTATE='+model+':HTTP_'+status);
           continue;
@@ -335,6 +352,15 @@ export async function requestGeminiFreePair({
             cooldownUntil.set(slot,Math.max(cooldownUntil.get(slot)||0,Date.now()+delay));
           }
           if(contextError)console.log('VIBE2_EXTERNAL_FREE_REQUEST_CONTEXT_REJECTED='+slot);
+          // [400 원인 기록] 실행 44956033693: OpenRouter·Groq 400이 원인 없이 '다음 모델로'만 기록됐다.
+          // 공급자 응답의 오류 코드·유형·문구로 원인을 나눠 남겨, 요청 생성 함수를 고칠 근거로 쓴다.
+          if(status===400&&!contextError){
+            const kind=classifyHttp400(detail);
+            // 실패 문자열 형식(slot:HTTP_400)은 큐·조직 파서가 쓰므로 그대로 두고, 원인은 로그로 남긴다.
+            failures.push(slot+':HTTP_400');
+            console.log('VIBE2_EXTERNAL_FREE_HTTP400='+slot+':'+kind+':'+detail.replace(/\s+/g,' ').slice(0,180));
+            continue;
+          }
           failures.push(slot+':HTTP_'+status);
           console.log('VIBE2_EXTERNAL_FREE_ROTATE='+slot+':HTTP_'+status);
           continue;
