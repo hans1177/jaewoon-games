@@ -5964,6 +5964,9 @@ function PortScene.build(info, onFacility)
 	-- 주민이 광장을 천천히 오간다 (끝에서 몸을 돌려 되돌아온다)
 	-- 공식 Motor6D.Transform 적용 시점: Animator 갱신 후, 물리 처리 직전.
 	local walkConn = RunService.PreSimulation:Connect(function(deltaTime)
+		-- [모바일 최적화] 먼 바다에서 항해하는 동안 항구 주민/가축 관절을 계산하지 않는다.
+		-- NPC 시간표는 아래의 절대 시각으로 복귀 즉시 다시 계산하며 게임 상태는 변경하지 않는다.
+		if not folder.Parent or workspace:GetAttribute("VoyageActive") then return end
 		local now = os.clock()
 		local dt = math.clamp(tonumber(deltaTime) or 1 / 60, 0, 0.1)
 		for _, w in walkers do
@@ -7430,6 +7433,13 @@ function PortScene.build(info, onFacility)
 		f.stern.Rate = math.floor(flow * 18)
 	end
 	local conn = RunService.Heartbeat:Connect(function()
+		-- [모바일 최적화] 항해 장면에서는 항구의 배/갈매기/풍차가 화면 밖에 있다.
+		-- 항적 방출을 멈추고 기존 객체와 연결은 그대로 보존한다.
+		if not folder.Parent then return end
+		if workspace:GetAttribute("VoyageActive") then
+			setFoam(0)
+			return
+		end
 		local t = os.clock() - t0
 		local shipPose = shipBase * CFrame.new(0, math.sin(t * 1.2) * 0.35, 0) * CFrame.Angles(math.sin(t * 0.9) * 0.025, 0, math.sin(t * 0.7) * 0.012)
 		local flow = 0
