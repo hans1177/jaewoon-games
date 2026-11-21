@@ -58,3 +58,13 @@ test('Studio 점검 작업과 겹치지 않는다: 작업 중(Runner.Worker)에�
   const w = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
   assert.match(w, /Get-Process RobloxStudioBeta[^\n]*Stop-Process -Force/);
 });
+
+// [자동복구 실증] 시작 명령만 성공한 경우를 PASS로 처리하지 않는다.
+test('Studio·러너 시작은 실제 프로세스를 재확인하고 실패 시 재시도한다', () => {
+  assert.match(sup, /STUDIO_START_VERIFIED/);
+  assert.match(sup, /STUDIO_START_UNVERIFIED/);
+  assert.match(sup, /RUNNER_START_VERIFIED/);
+  assert.match(sup, /RUNNER_START_UNVERIFIED/);
+  assert.match(sup, /if \(Test-StudioRunning\) \{/);
+  assert.match(sup, /if \(Test-RunnerRunning\) \{/);
+});
