@@ -156043,7 +156043,7 @@
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -156077,7 +156077,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 7,
-      "previousReservationId": "system-ai:44886836571:1",
+      "previousReservationId": "system-ai:44888460517:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -156085,12 +156085,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44888460517:1",
-      "reservedAt": "2026-11-21T09:15:45.761Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -156422,7 +156422,13 @@
         "repair-strategy-fingerprint:8cdc854a3f0534add59eac7b346319c758f6e0c8dca08b8ae5a147e774ab9625",
         "failed-strategy-fingerprint:8cdc854a3f0534add59eac7b346319c758f6e0c8dca08b8ae5a147e774ab9625",
         "model-output-sha256:d5b7ad7e2d40c1c42328631507a3f830bf17265c213547492cfa17dc9eee5f69",
-        "system-ai-handoff-to-reservation:system-ai:44888460517:1"
+        "system-ai-handoff-to-reservation:system-ai:44888460517:1",
+        "actions-run:44888460517",
+        "external-ai-raw-output-sha256:81943ced4fcd4da6767b56f55ba11ba9e50d54a2dc0fc669319a1666337ef9cf",
+        "system-ai-applied-answer-sha256:ef5eabe1a5247563c38bb5d13d4ca88db7a34851728416e1d7fe92ad4109a875",
+        "repair-strategy-fingerprint:1c19e2eed4d913721cef363c84c69db8aff24cc40d07287f275aa7c94f3d5a24",
+        "failed-strategy-fingerprint:1c19e2eed4d913721cef363c84c69db8aff24cc40d07287f275aa7c94f3d5a24",
+        "model-output-sha256:81943ced4fcd4da6767b56f55ba11ba9e50d54a2dc0fc669319a1666337ef9cf"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 402,
@@ -156437,7 +156443,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-21T09:15:45.761Z"
+      "updatedAt": "2026-11-21T09:20:15.388Z"
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
@@ -157515,7 +157521,7 @@
     },
     {
       "id": "marketing-cat-step-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -157549,7 +157555,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 1,
-      "previousReservationId": "system-ai:44315048023:1",
+      "previousReservationId": "system-ai:44888460517:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -157557,12 +157563,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44888460517:1",
-      "reservedAt": "2026-11-21T09:15:45.761Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -157652,7 +157658,8 @@
         "system-ai-representative-canary:system-ai-verification-failed",
         "system-ai-handoff-to-reservation:system-ai:44315048023:1",
         "actions-run:44315048023",
-        "system-ai-handoff-to-reservation:system-ai:44888460517:1"
+        "system-ai-handoff-to-reservation:system-ai:44888460517:1",
+        "actions-run:44888460517"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1694,
@@ -157667,7 +157674,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-03T04:14:38.370Z",
-      "updatedAt": "2026-11-21T09:15:45.761Z"
+      "updatedAt": "2026-11-21T09:20:15.388Z"
     },
     {
       "id": "marketing-wild-survival-pre-release-v1",
