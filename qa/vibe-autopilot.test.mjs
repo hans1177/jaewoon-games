@@ -212,7 +212,8 @@ test('Studio 단계 단언 실패를 실제 책임 함수와 분류로 묶는다
   assert.match(sf.sourceFunction, /^Pose\./);
   const src = fs.readFileSync(sf.sourceFile, 'utf8').split('\n');
   assert.match(src[sf.sourceLine - 1], new RegExp('function ' + sf.sourceFunction.replace('.', '\\.')));
-  const found = findingsFrom('mare-essentia', parseReport({ errors: [motion], log: [], summary: { capturedFrames: 57 } }));
+  // 실제 회차처럼 단언 실패로 중단(abortedEarly)되어도 Studio 연결 불가로 오분류하지 않는다.
+  const found = findingsFrom('mare-essentia', parseReport({ errors: [motion], log: [], summary: { capturedFrames: 57, abortedEarly: true } }));
   assert.equal(found.length, 1);
   assert.equal(found[0].kind, 'error');
   assert.equal(found[0].sourceFile, sf.sourceFile);
