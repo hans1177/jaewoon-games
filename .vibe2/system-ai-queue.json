@@ -155476,7 +155476,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -155510,7 +155510,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 11,
-      "previousReservationId": "system-ai:44884546690:1",
+      "previousReservationId": "system-ai:44886434531:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -155518,12 +155518,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44886434531:1",
-      "reservedAt": "2026-11-21T08:55:22.211Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -156009,7 +156009,15 @@
         "repair-strategy-fingerprint:5e4fc5bb0af1b768612ef0308997626e61f7bf1605638071bc747fd91db2dace",
         "failed-strategy-fingerprint:5e4fc5bb0af1b768612ef0308997626e61f7bf1605638071bc747fd91db2dace",
         "model-output-sha256:5f94e2594d19854ab7be6b848d8034834c617622ad2d5b826adce6cb4b18fe94",
-        "system-ai-handoff-to-reservation:system-ai:44886434531:1"
+        "system-ai-handoff-to-reservation:system-ai:44886434531:1",
+        "actions-run:44886434531",
+        "external-ai-raw-output-sha256:5ff937ab43635ff15f4b44b7b0f81922b40bf6249c9fcdde863ed04a20e7bba3",
+        "selected-strategy:strategy-grounded-pre-release-store-prep",
+        "system-ai-critic-decision-sha256:1388244a54c793945ae6654aa29b9b9894a235802e327335fe89f2dd940dda2f",
+        "system-ai-applied-answer-sha256:418a610d7529cba4ee5908e6a95dbffeacd3740b47735252edb19526e8b6fd35",
+        "repair-strategy-fingerprint:a77e8a1e8b50f9d1188888fb7257681156f0c54fb29a9539de797d886fc3b44c",
+        "failed-strategy-fingerprint:a77e8a1e8b50f9d1188888fb7257681156f0c54fb29a9539de797d886fc3b44c",
+        "model-output-sha256:5ff937ab43635ff15f4b44b7b0f81922b40bf6249c9fcdde863ed04a20e7bba3"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 402,
@@ -156024,7 +156032,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-21T08:55:22.211Z"
+      "updatedAt": "2026-11-21T09:04:10.525Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
@@ -156838,7 +156846,7 @@
     },
     {
       "id": "marketing-star-frontier-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -156872,7 +156880,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 2,
-      "previousReservationId": "system-ai:44298898498:1",
+      "previousReservationId": "system-ai:44886434531:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -156880,12 +156888,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44886434531:1",
-      "reservedAt": "2026-11-21T08:55:22.211Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -157204,7 +157212,8 @@
         "system-ai-blocked-task-count:3",
         "system-ai-handoff-to-reservation:system-ai:44298898498:1",
         "actions-run:44298898498",
-        "system-ai-handoff-to-reservation:system-ai:44886434531:1"
+        "system-ai-handoff-to-reservation:system-ai:44886434531:1",
+        "actions-run:44886434531"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1750,
@@ -157219,7 +157228,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-21T08:55:22.211Z"
+      "updatedAt": "2026-11-21T09:04:10.525Z"
     },
     {
       "id": "marketing-card-grid-duel-pre-release-v1",
