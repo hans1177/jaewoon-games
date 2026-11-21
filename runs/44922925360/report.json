@@ -1,5 +1,5 @@
 {
- "sourceRevision": "ffed5f05646d15dbeaaf6455dcf57e0bf15d7797",
+ "sourceRevision": "4db164aaf2504112104aaf67f64ce8c4a63f6846",
  "log": [
   {
    "step": 1,
@@ -121,7 +121,7 @@
   {
    "step": 25,
    "ctx": "Client",
-   "out": "INTRO_STUCK step=companion comp=true portrait=true\ntext"
+   "out": "INTRO_STUCK step=companion reply=nil stale=name>companion companions=0 comp=true portrait=true\ntext"
   }
  ],
  "errors": [
@@ -131,137 +131,137 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28003
+   "elapsedMs": 28012
   },
   {
    "step": 1,
    "type": "capture",
-   "elapsedMs": 1410
+   "elapsedMs": 1311
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 200
+   "elapsedMs": 213
   },
   {
    "step": 3,
    "type": "luau",
-   "elapsedMs": 218
+   "elapsedMs": 184
   },
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 218
+   "elapsedMs": 200
   },
   {
    "step": 5,
    "type": "wait",
-   "elapsedMs": 402
+   "elapsedMs": 414
   },
   {
    "step": 6,
    "type": "click_from_luau",
-   "elapsedMs": 1029
+   "elapsedMs": 953
   },
   {
    "step": 7,
    "type": "wait",
-   "elapsedMs": 2007
+   "elapsedMs": 2009
   },
   {
    "step": 8,
    "type": "capture",
-   "elapsedMs": 1329
+   "elapsedMs": 1176
   },
   {
    "step": 9,
    "type": "luau",
-   "elapsedMs": 231
+   "elapsedMs": 214
   },
   {
    "step": 10,
    "type": "wait",
-   "elapsedMs": 411
+   "elapsedMs": 406
   },
   {
    "step": 11,
    "type": "click_from_luau",
-   "elapsedMs": 1070
+   "elapsedMs": 1143
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 2004
+   "elapsedMs": 2002
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 1139
+   "elapsedMs": 1002
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 207
+   "elapsedMs": 327
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 404
+   "elapsedMs": 411
   },
   {
    "step": 16,
    "type": "click_from_luau",
-   "elapsedMs": 1114
+   "elapsedMs": 977
   },
   {
    "step": 17,
    "type": "wait",
-   "elapsedMs": 1713
+   "elapsedMs": 1703
   },
   {
    "step": 18,
    "type": "capture",
-   "elapsedMs": 1303
+   "elapsedMs": 1131
   },
   {
    "step": 19,
    "type": "wait",
-   "elapsedMs": 1802
+   "elapsedMs": 1800
   },
   {
    "step": 20,
    "type": "capture",
-   "elapsedMs": 2012
+   "elapsedMs": 2249
   },
   {
    "step": 21,
    "type": "wait",
-   "elapsedMs": 1804
+   "elapsedMs": 1815
   },
   {
    "step": 22,
    "type": "capture",
-   "elapsedMs": 1552
+   "elapsedMs": 1139
   },
   {
    "step": 23,
    "type": "wait",
-   "elapsedMs": 3712
+   "elapsedMs": 3707
   },
   {
    "step": 24,
    "type": "capture",
-   "elapsedMs": 1319
+   "elapsedMs": 1089
   },
   {
    "step": 25,
    "type": "luau",
-   "elapsedMs": 33979
+   "elapsedMs": 29000
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 2488
+   "elapsedMs": 483
   }
  ],
  "consoleCapture": {
@@ -287,7 +287,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 251335,
+      "bytes": 251361,
       "width": 0,
       "height": 0,
       "pass": true
@@ -310,7 +310,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 250755,
+      "bytes": 250763,
       "width": 0,
       "height": 0,
       "pass": true
@@ -325,7 +325,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195350,
+      "bytes": 195200,
       "width": 0,
       "height": 0,
       "pass": true
@@ -340,7 +340,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 150196,
+      "bytes": 150165,
       "width": 0,
       "height": 0,
       "pass": true
@@ -364,7 +364,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163327,
+      "bytes": 158400,
       "width": 0,
       "height": 0,
       "pass": true
@@ -377,7 +377,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0155222415924072,
+    "brightness": 2.015007495880127,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -388,7 +388,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 160640,
+      "bytes": 161891,
       "width": 0,
       "height": 0,
       "pass": true
@@ -401,7 +401,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.017599105834961,
+    "brightness": 2.01692795753479,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -412,7 +412,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 161490,
+      "bytes": 161355,
       "width": 0,
       "height": 0,
       "pass": true
@@ -425,7 +425,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.020979404449463,
+    "brightness": 2.02004337310791,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -434,7 +434,7 @@
  "abortDiagnostics": {
   "step": 26,
   "type": "luau",
-  "elapsedMs": 873,
+  "elapsedMs": 149,
   "context": "Client",
   "lastScreenshot": "t03",
   "lastClick": "title03",
