@@ -13653,8 +13653,17 @@ end
 (function()
 	local TweenService = game:GetService("TweenService")
 	local dlg = nil
+	-- [Studio 진단] 시작 안내 창 열림·닫힘 순서와 그때의 서버 단계를 시간순으로 남긴다(Studio 실행에서만).
+	local function introTrace(event: string)
+		if not game:GetService("RunService"):IsStudio() then return end
+		local stepNow = view and view.captain and view.captain.step or "-"
+		local line = string.format("%.1f:%s:%s", os.clock() % 1000, event, tostring(stepNow))
+		local old = tostring(workspace:GetAttribute("IntroQATrace") or "")
+		workspace:SetAttribute("IntroQATrace", string.sub(old .. "|" .. line, -900))
+	end
 	local dlgPrevMusic = nil
 	local function closeDlg()
+		if dlg then introTrace("close:" .. tostring(H.introDlgStep) .. ":" .. string.sub(debug.traceback("", 2):gsub("%s+", " "), 1, 120)) end
 		H.introDlgStep = nil
 		if dlg then
 			dlg:Destroy()
@@ -13726,6 +13735,7 @@ end
 	-- spec: speaker, role, text, input(placeholder), choices(list of {label,value}), portraits(list of values), button
 	local function openDlg(spec, onDone)
 		closeDlg()
+		introTrace("open:" .. tostring(spec.speaker))
 		local layer = overlayGui("IntroDialog", 58)
 		dlg = layer
 		local dim = Instance.new("Frame")
