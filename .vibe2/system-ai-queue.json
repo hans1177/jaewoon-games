@@ -156025,7 +156025,7 @@
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -156059,7 +156059,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 7,
-      "previousReservationId": "system-ai:44885033102:1",
+      "previousReservationId": "system-ai:44885957136:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -156067,12 +156067,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44885957136:1",
-      "reservedAt": "2026-11-21T08:44:58.902Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -156388,7 +156388,15 @@
         "repair-strategy-fingerprint:1d4308586b9f7b042c3e6032fc2b3ad2aa7b465037ff988b8347cf756e6abe64",
         "failed-strategy-fingerprint:1d4308586b9f7b042c3e6032fc2b3ad2aa7b465037ff988b8347cf756e6abe64",
         "model-output-sha256:ebdb8564d458190beaf51aaaa890401edacf69145c0aa718926198b62c4ad77c",
-        "system-ai-handoff-to-reservation:system-ai:44885957136:1"
+        "system-ai-handoff-to-reservation:system-ai:44885957136:1",
+        "actions-run:44885957136",
+        "external-ai-raw-output-sha256:877d22f101e523519d14490311812b288fa73aa308437c536df365b8f91a2e40",
+        "selected-strategy:strategy-marketing-package-creation",
+        "system-ai-critic-decision-sha256:ef8b08959947e4c3081dde43911bef2559491e0a90230fa01d1bc6b679b774e3",
+        "system-ai-applied-answer-sha256:877d22f101e523519d14490311812b288fa73aa308437c536df365b8f91a2e40",
+        "repair-strategy-fingerprint:449ccf618ef0c6cb9f20d1da60bcadfea78c3f32769a257cbf252b20389b88a4",
+        "failed-strategy-fingerprint:449ccf618ef0c6cb9f20d1da60bcadfea78c3f32769a257cbf252b20389b88a4",
+        "model-output-sha256:877d22f101e523519d14490311812b288fa73aa308437c536df365b8f91a2e40"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 302,
@@ -156403,11 +156411,11 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-21T08:44:58.902Z"
+      "updatedAt": "2026-11-21T08:51:24.899Z"
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -156441,7 +156449,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 3,
-      "previousReservationId": "system-ai:44764444896:1",
+      "previousReservationId": "system-ai:44885957136:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -156449,12 +156457,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:44885957136:1",
-      "reservedAt": "2026-11-21T08:44:58.902Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -156597,7 +156605,13 @@
         "actions-run:44761583370",
         "system-ai-handoff-to-reservation:system-ai:44764444896:1",
         "actions-run:44764444896",
-        "system-ai-handoff-to-reservation:system-ai:44885957136:1"
+        "system-ai-handoff-to-reservation:system-ai:44885957136:1",
+        "actions-run:44885957136",
+        "external-ai-raw-output-sha256:bcaa272dbe357391302cb0d1f01ce32b93b2c965c88a5cef73456481c9c2227f",
+        "system-ai-applied-answer-sha256:72116619e29c0f067f20f0066fbfc09e9964aa8e1120798d0549533575d61e8c",
+        "repair-strategy-fingerprint:f329daa7702ef31a4d74c98c915beac50faa4fe4fd4896dda097970843490aa8",
+        "failed-strategy-fingerprint:f329daa7702ef31a4d74c98c915beac50faa4fe4fd4896dda097970843490aa8",
+        "model-output-sha256:bcaa272dbe357391302cb0d1f01ce32b93b2c965c88a5cef73456481c9c2227f"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1806,
@@ -156612,7 +156626,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-21T08:44:58.902Z"
+      "updatedAt": "2026-11-21T08:51:24.899Z"
     },
     {
       "id": "marketing-seed-roblox-survival-horror-es-doors-pre-release-v1",
