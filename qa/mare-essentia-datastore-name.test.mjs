@@ -3318,3 +3318,10 @@ test('무료 AI 디자인 리뷰가 교역품 실촬영을 우선 전송한다',
     '실제 교역품 화면을 사전·사후로 촬영해야 한다');
   assert.match(source,/Skip cargo that is not shown/);
 });
+
+// [시설 아이콘 회귀] 실제 탭 생성 위치와 반응형 재배치가 동일한 여백을 유지한다.
+test('항구 시설 아이콘은 반응형 배치 후에도 기존 탭 내부 7px 여백을 유지한다',()=>{
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  assert.match(source,/icon\\.Position = UDim2\\.new\\(0, 7, 0\\.5, -13\\)/);
+  assert.match(source,/icon\\.Position = if compactTabs then UDim2\\.new\\(0\\.5, -13, 0, 3\\) else UDim2\\.new\\(0, 7, 0\\.5, -13\\)/);
+});
