@@ -73,6 +73,14 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
     browserQaPass: rawRecords.filter(browserPass).length,
     fullyVerifiedTextSamples: rawRecords.filter((record) => hasTextSample(record) && isVerifiedPass(record)).length,
     evidenceOnlyRecords: rawRecords.filter((record) => !hasTextSample(record)).length,
+    // [학습 병목] 외부 플레이 연습·불완전 검증·텍스트 없는 실행 증거는 각각 구분한다.
+    // 이 집계는 학습 자격을 새로 부여하지 않으며 기존 QA/런타임/프로젝트 기준을 유지한다.
+    practiceOnlyTextSamples: rawRecords.filter((record) => hasTextSample(record)
+      && (record?.practiceOnly === true || record?.trainingSample?.practiceOnly === true)).length,
+    textWithoutVerifiedRuntime: rawRecords.filter((record) => hasTextSample(record)
+      && !isVerifiedPass(record)).length,
+    evidenceOnlyIndependentQaPass: rawRecords.filter((record) => !hasTextSample(record)
+      && independentPass(record)).length,
   };
 
   const tasks = {};
