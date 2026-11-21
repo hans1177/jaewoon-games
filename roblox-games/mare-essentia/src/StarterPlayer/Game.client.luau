@@ -5992,6 +5992,8 @@ local function openTradeHall()
 		end, true)
 		leave.AnchorPoint = Vector2.new(1, 0.5)
 		leave.Position = if narrow then UDim2.new(1, -9, 0, 32) else UDim2.new(1, -9, 0.5, 0)
+		-- [닫기 중복 제거] 시설 책 오른쪽 위 X가 이미 닫기를 맡는다. 좁은 화면의 "목록"만 남긴다.
+		leave.Visible = backToList
 
 		-- 왼쪽: 상인 초상과 말풍선
 		local left = mkBox(root, UDim2.fromOffset(8, 78), UDim2.new(0, 240, 1, -86), Color3.fromRGB(46, 34, 26))
@@ -7558,6 +7560,8 @@ function openYardHall()
 		end, true)
 		leave.AnchorPoint = Vector2.new(1, 0.5)
 		leave.Position = UDim2.new(1, -9, 0.5, 0)
+		-- [닫기 중복 제거] 시설 책 오른쪽 위 X가 이미 닫기를 맡는다.
+		leave.Visible = false
 
 		local nav = mkBox(root, if landscape then UDim2.fromOffset(inset, heroTop) else UDim2.fromOffset(inset, 90),
 			if landscape then UDim2.new(0, navWidth, 1, -heroTop - 8) else UDim2.new(1, -inset - 8, 0, 52), COLORS.leather)
