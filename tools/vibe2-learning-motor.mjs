@@ -939,7 +939,13 @@ export function regressionHotspotRiskForTask({task={},stateInput={}}={}){
   // 다른 엔진에서 발생한 회귀 오류를 현재 작업의 위험으로 오인하지 않는다.
   const target=lower(task.target);
   const entries=Object.values(state.regressionHotspots?.entries||{}).filter(row=>clean(row.gameId)===gameId&&(!target||!lower(row.target)||lower(row.target)===target)).map(row=>({...row,risk:hotspotRisk(row)}));
-  entries.sort((a,b)=>b.risk.score-a.risk.score||Number(b.verifiedRegressionFailures||0)-Number(a.verifiedRegressionFailures||0));
+  // 작업의 실제 책임 파일과 겹치는 회귀 위험을 먼저 보여주되, 다른 위험도 삭제하지 않는다.
+  const responsible=new Set((task.responsibleFiles||[]).map(value=>lower(value).replace(/\\/g,'/')).filter(Boolean));
+  entries.sort((a,b)=>{
+    const aMatch=responsible.has(lower(a.name).replace(/\\/g,'/'))?1:0;
+    const bMatch=responsible.has(lower(b.name).replace(/\\/g,'/'))?1:0;
+    return bMatch-aMatch||b.risk.score-a.risk.score||Number(b.verifiedRegressionFailures||0)-Number(a.verifiedRegressionFailures||0);
+  });
   const top=entries.slice(0,8);
   const riskLevel=top.some(row=>row.risk.level==='HIGH')?'HIGH':top.some(row=>row.risk.level==='MEDIUM')?'MEDIUM':'LOW';
   return{riskLevel,entries:top,requiresFocusedDependentQa:riskLevel!=='LOW',preferVerifiedStrategy:riskLevel!=='LOW',increaseCandidateDiversity:riskLevel==='HIGH',writableScopeExpansionAllowed:false,authorityExpanded:false};
