@@ -11510,6 +11510,8 @@ syncScene = function()
 		return
 	end
 	workspace:SetAttribute("PortMood", sim and sim.mood or "steady")
+	-- [항구 전환 체감 시간] 생성 시간만이 아니라 첫 화면 표시·실제 조작 가능 시점을 따로 잰다.
+	local transitionStart = os.clock()
 	local ok, res = pcall(PortScene.build, {
 		portId = p.portId,
 		portName = p.portName,
@@ -11550,6 +11552,39 @@ syncScene = function()
 	applyView()
 	-- [준비 완료] 실제 항구가 설치된 뒤에만 시작 배경을 닫는다.
 	if H.setTitleMode then H.setTitleMode(not view or newGameMode) end
+	H.measurePortTransition(transitionStart, p.portId)
+end
+
+-- [항구 전환 체감 시간] 생성(빌드)·첫 화면·조작 가능 시점을 각각 기록한다.
+-- 빌드가 메인 스레드를 막는 동안에는 Heartbeat가 오지 않으므로 첫 Heartbeat 간격이 실제 멈춤 시간이다.
+-- 조작 가능 = 첫 화면 뒤 프레임 간격이 100ms 미만으로 돌아온 첫 시점. 출력 로그는 남기지 않고 속성만 쓴다.
+function H.measurePortTransition(startedAt: number, portId: string)
+	local buildEnd = os.clock()
+	local last = startedAt
+	local firstFrameAt: number? = nil
+	local readyAt: number? = nil
+	local maxStall = 0
+	local conn
+	conn = RunService.Heartbeat:Connect(function()
+		local now = os.clock()
+		local dt = now - last
+		last = now
+		if dt > maxStall then maxStall = dt end
+		if not firstFrameAt then
+			firstFrameAt = now
+		elseif not readyAt and dt < 0.1 then
+			readyAt = now
+		end
+		if (readyAt and now - startedAt > 3) or now - startedAt > 20 then
+			conn:Disconnect()
+			workspace:SetAttribute("PortTransitionBuildMs", math.floor((buildEnd - startedAt) * 1000))
+			workspace:SetAttribute("PortTransitionFirstFrameMs", math.floor(((firstFrameAt or now) - startedAt) * 1000))
+			workspace:SetAttribute("PortTransitionInputReadyMs", if readyAt then math.floor((readyAt - startedAt) * 1000) else -1)
+			workspace:SetAttribute("PortTransitionMaxStallMs", math.floor(maxStall * 1000))
+			workspace:SetAttribute("PortTransitionPort", portId)
+			workspace:SetAttribute("PortTransitionSeq", (workspace:GetAttribute("PortTransitionSeq") or 0) + 1)
+		end
+	end)
 end
 
 -- 항구 전경: 대항해시대 온라인처럼 항구 전체를 보여 주는 고정 시점 (천천히 흔들린다)
