@@ -1043,7 +1043,7 @@ jobs:
               $failure = if (-not (Test-Path -LiteralPath 'N:\Jaewoon3D' -PathType Container)) {
                 'MYBOX_ROOT_PARENT_CREATE_BLOCKED'
               } else { 'MYBOX_TARGET_WRITE_DENIED' }
-              Write-Warning "MYBOX_WRITE_PROBE=FAIL:$failure:$($_.Exception.GetType().Name)"
+              Write-Warning "MYBOX_WRITE_PROBE=FAIL:${failure}:$($_.Exception.GetType().Name)"
               throw
             }
             # [라이선스 추적] 원본 파일과 사용권한·출처·해시 메타데이터를 함께 보관한다.
