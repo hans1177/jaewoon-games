@@ -121,8 +121,13 @@ jobs:
           console.log('VIBE2_LEARNING_DURABLE_RESTORED=' + result.restored.length);
           console.log('VIBE2_LEARNING_MAIN_VERIFIED_PRESERVED=' + result.protectedMain.length);
           console.log('VIBE2_LEARNING_VERIFIED_CONFLICTS=' + result.conflictingVerified.length);
+          console.log('VIBE2_LEARNING_UNVERIFIED_CONFLICTS=' + result.conflictingUnverified.length);
           console.log('VIBE2_LEARNING_INVALID_DURABLE=' + result.rejected.length);
-          for (const file of result.conflictingVerified) console.warn('::warning::VERIFIED_TRAINING_SAMPLE_CONFLICT:' + file);
+          for (const file of result.conflictingVerified) console.error('::error::VERIFIED_TRAINING_SAMPLE_CONFLICT:' + file);
+          for (const file of result.conflictingUnverified) console.error('::error::UNVERIFIED_TRAINING_SAMPLE_CONFLICT:' + file);
+          if (result.conflictingVerified.length || result.conflictingUnverified.length || result.rejected.length) {
+            throw new Error('VIBE2_CANONICAL_LEARNING_RESTORE_CONFLICT_REQUIRES_REVIEW');
+          }
           NODE
             echo "VIBE2_LEARNING_STATE_RESTORED=MERGED_NO_MAIN_LOSS"
           else
