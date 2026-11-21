@@ -484,7 +484,7 @@ export function applyVerifiedKnowledgeOutcomes(stateInput={},queueInput={}){
     const evidence=(task?.evidence||[]).map(clean).filter(Boolean);
     const outcome=codingVerificationOutcome(task);
     if(!outcome)continue;
-    const refs=knowledgeRefsFromEvidence(evidence);if(!refs.length)continue;
+    const refs=uniq(knowledgeRefsFromEvidence(evidence)).sort();if(!refs.length)continue;
     const gameId=clean(task.gameId)||'unknown',target=lower(task.target)||'unknown';
     const run=evidence.find(x=>x.startsWith('actions-run:'))||evidence.filter(x=>x.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
     const legacyEventId='knowledge_'+hash([clean(task.id),run,outcome,refs.join(',')].join('|'));
