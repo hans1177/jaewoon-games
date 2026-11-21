@@ -1,0 +1,135 @@
+{
+  "version": 3,
+  "provider": "GEMINI",
+  "gameId": "mare-essentia",
+  "sourceRevision": "5ba5e6583bab8913787105e177f5e58a641ead84",
+  "status": "CANDIDATE_EDITED",
+  "selectedRole": "GENERAL",
+  "usageWindow": {
+    "day": "2026-11-21",
+    "calls": {
+      "NVIDIA": 0,
+      "GEMINI": 1,
+      "OPENROUTER": 0
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-21",
+      "GEMINI": "2026-11-21",
+      "OPENROUTER": "2026-11-21"
+    },
+    "firstCallAtByProvider": {
+      "GEMINI": "2026-11-21T12:00:04.538Z"
+    }
+  },
+  "cooldowns": {},
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 0,
+      "remainingLocal": 12,
+      "effectiveRemaining": 12,
+      "regularWorkRemaining": 9,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": null,
+      "estimatedHoursToLocalCap": null,
+      "nextLocalWindowAt": "2026-11-22T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 1,
+      "remainingLocal": 11,
+      "effectiveRemaining": 11,
+      "regularWorkRemaining": 8,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": null,
+      "estimatedHoursToLocalCap": null,
+      "nextLocalWindowAt": "2026-11-22T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 0,
+      "remainingLocal": 30,
+      "effectiveRemaining": 30,
+      "regularWorkRemaining": 24,
+      "emergencyReserveRemaining": 6,
+      "estimatedCallsPerHour": null,
+      "estimatedHoursToLocalCap": null,
+      "nextLocalWindowAt": "2026-11-22T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [
+    {
+      "id": "GEMINI_LITE",
+      "status": "OK",
+      "provider": "GEMINI",
+      "model": "gemini-3.5-flash-lite"
+    }
+  ],
+  "frames": [
+    {
+      "name": "b1_start-0.jpg",
+      "sha256": "4cb04f5061b737ba40534eb5089f0b61f8336d108d79f2d2ded9503ad075a41d"
+    },
+    {
+      "name": "b2_mid-0.jpg",
+      "sha256": "2adabf47d20b8e5ea3bb09cda27e0b50f43b6abd1704118f4a4f6b8def5c4d4d"
+    },
+    {
+      "name": "c00_start-0.jpg",
+      "sha256": "2d0e12b3a895703b3ce5330bf449eba95674df9f6bb6c7e8053c7bc893060a3c"
+    },
+    {
+      "name": "intro_center_early-0.jpg",
+      "sha256": "ac1369c12a668e4b1614c39ed642d57df51a3ad22e40337a90a564744003806d"
+    }
+  ],
+  "model": "gemini-3.5-flash-lite",
+  "rawResponseSha256": "4bbde14320fed1523b1cdc12bbeb206251eefe62ab8cefe2131e9af06c965d71",
+  "issues": [
+    {
+      "category": "lighting",
+      "severity": "medium",
+      "screenshot": "b2_mid-0.jpg",
+      "evidenceSha256": "a9633d5a1887bb0765098d993e21da8e330ec33f61e47117d6e61b1f205c8f7f"
+    }
+  ],
+  "edits": [
+    {
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+      "category": "lighting",
+      "screenshot": "b2_mid-0.jpg",
+      "beforeSha256": "7098afd058a18d7e65b843edab3d06f56184b4c5d1a7da87af1efc8d40564395",
+      "afterSha256": "456aff3a23522bbc646ce6077c56ccb7b69311ce3e09e1b843be4757521e4d42"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+      "beforeSha256": "104b7a7bee2ab4aee853cb35398859d234f9b61e36179e3d32d385aeb49726c4",
+      "afterSha256": "edf5f7ea10ae012f7598f53f2d4826ad1a3e11be0ece6d6f3de319eaa74af957"
+    }
+  ],
+  "candidateOnly": true,
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
