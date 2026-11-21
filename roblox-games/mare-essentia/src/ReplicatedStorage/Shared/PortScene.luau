@@ -6666,8 +6666,12 @@ function PortScene.build(info, onFacility)
 			bloom.Intensity = 0.17 + night * 0.12 + season.sun * noon
 		end
 		if rays then rays.Intensity = season.sun * day * (0.38 + noon * 0.62) end
-		for _, entry in lights do
-			if entry.light.Parent then
+		-- [GPU/메모리] 항구에서 제거된 조명을 기존 목록에서 즉시 해제해 반복 갱신을 막는다.
+		for index = #lights, 1, -1 do
+			local entry = lights[index]
+			if not entry.light:IsDescendantOf(folder) then
+				table.remove(lights, index)
+			else
 				entry.light.Brightness = entry.brightness * (0.16 + 2.15 * night)
 				entry.light.Range = entry.range * (0.82 + 0.6 * night)
 				-- [밤에만 창문 발광] 기존 0.1초 주야 갱신에 편승하며 일반 등불에는 영향을 주지 않는다.
