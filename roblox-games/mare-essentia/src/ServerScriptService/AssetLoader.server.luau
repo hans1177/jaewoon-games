@@ -90,6 +90,13 @@ local SHIP_V5_MATERIALS = {
 	lightgold = Enum.Material.Metal, silver = Enum.Material.Metal,
 	window = Enum.Material.Glass,
 }
+-- [게임 스크립트 권한] SurfaceAppearance.ColorMap은 플러그인 권한에서만 읽힌다. 읽기 실패 시 원본 PBR로 보고 보존한다.
+local function surfaceHasColorMap(sa: Instance?): boolean
+	if not sa then return false end
+	local ok, mapped = pcall(function() return (sa :: any).ColorMap ~= "" end)
+	return (not ok) or mapped == true
+end
+
 local function restoreShipV5Materials(model, assetName)
 	-- [72척 원본·경량판만] 기존 선박·교역품·항구·인물·건물 재질은 건드리지 않는다.
 	if not (assetName:match("%-v5$") or assetName:match("%-v5%-mobile$")) then return 0, 0 end
@@ -105,7 +112,7 @@ local function restoreShipV5Materials(model, assetName)
 			if color then
 				piece.Color = color
 				local surface = piece:FindFirstChildOfClass("SurfaceAppearance")
-				local textured = piece.TextureID ~= "" or (surface and surface.ColorMap ~= "")
+				local textured = piece.TextureID ~= "" or (surface and surfaceHasColorMap(surface))
 				-- [질감 보존] 승인된 PBR ColorMap은 제거하거나 새로 덮지 않는다.
 				-- 맵 없는 모델은 목재·천·금속의 기본 재질로 구분해 회색 평면처럼 보이지 않게 한다.
 				if not textured then
@@ -334,15 +341,18 @@ for _ = 1, 12 do
 									outfitMaterialized += 1
 								end
 								local surface = piece:FindFirstChildOfClass("SurfaceAppearance")
-								if piece.TextureID ~= "" or (surface and surface.ColorMap ~= "") then
+								if piece.TextureID ~= "" or (surface and surfaceHasColorMap(surface)) then
 									outfitMapped += 1
 								end
 								-- [실물 재질 4종] 색만 입힌 플라스틱이 아닌 원본 256px 텍스처 여부를 확인한다.
 								if surface then
-									if surface.ColorMap ~= "" then outfitColorMaps += 1 end
-									if surface.NormalMap ~= "" then outfitNormalMaps += 1 end
-									if surface.RoughnessMap ~= "" then outfitRoughnessMaps += 1 end
-									if surface.MetalnessMap ~= "" then outfitMetalnessMaps += 1 end
+									if surfaceHasColorMap(surface) then outfitColorMaps += 1 end
+									-- 맵 속성은 플러그인 권한에서만 읽힐 수 있어 실패해도 집계만 건너뛴다.
+									pcall(function()
+										if surface.NormalMap ~= "" then outfitNormalMaps += 1 end
+										if surface.RoughnessMap ~= "" then outfitRoughnessMaps += 1 end
+										if surface.MetalnessMap ~= "" then outfitMetalnessMaps += 1 end
+									end)
 								end
 							end
 						end

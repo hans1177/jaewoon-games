@@ -39,6 +39,13 @@ end
 
 -- [아이콘 표시] 등록된 공용 아이콘·도감 원화만 사용한다. 스킬은 글자 없이 그림을 중앙 배치한다.
 -- 공격·철수 등 기존 글자 버튼의 아이콘 위치는 변경하지 않는다.
+-- [게임 스크립트 권한] SurfaceAppearance.ColorMap은 플러그인 권한에서만 읽힌다. 읽기 실패 시 원본 PBR로 보고 보존한다.
+local function surfaceHasColorMap(sa: Instance?): boolean
+	if not sa then return false end
+	local ok, mapped = pcall(function() return (sa :: any).ColorMap ~= "" end)
+	return (not ok) or mapped == true
+end
+
 local function addIcon(button: TextButton, key: string)
 	local id = (AssetIds :: any)[key]
 	if not id then return nil end
@@ -264,7 +271,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 			if kind == "Animals" and tint then
 				-- [야생 생물 품종색] 원본 PBR 맵/무늬와 눈·발굽·뿔 등 세부색은 보존한다.
 				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
-				local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and sa.ColorMap ~= "")
+				local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and surfaceHasColorMap(sa))
 				for _, ch in d:GetChildren() do
 					if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 				end
@@ -280,7 +287,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 						or partName:find("stripe", 1, true) or partName:find("whisker", 1, true)
 				if textured and not detail then
 					-- [가축/야생 공통 PBR] 원본 지도는 보존하고 중복 색 곱셈을 한 채널로 줄인다.
-					if sa and sa.ColorMap ~= "" then
+					if sa and surfaceHasColorMap(sa) then
 						sa.Color = sa.Color:Lerp(tint, 0.16)
 					elseif not sa then
 						d.Color = d.Color:Lerp(tint, 0.16)
@@ -289,7 +296,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 					local light = math.max(d.Color.R, d.Color.G, d.Color.B)
 					-- [원본 PBR 재질] 색상 지도가 없어도 법선/거칠기 맵을 사용할 수 있다.
 					-- 원본 파츠 색과 PBR 색을 동시에 착색하지 않는다.
-					if sa and sa.ColorMap == "" then
+					if sa and not surfaceHasColorMap(sa) then
 						sa.Color = sa.Color:Lerp(tint, if light > 0.55 then 0.52 else 0.30)
 					else
 						d.Color = d.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
@@ -330,7 +337,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 					or (kind == "Naval" and (asset:find("dock", 1, true) or asset:find("platform", 1, true)))
 				if named then
 					local sa = d:FindFirstChildOfClass("SurfaceAppearance")
-					local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and sa.ColorMap ~= "")
+					local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and surfaceHasColorMap(sa))
 					for _, ch in d:GetChildren() do
 						if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 					end

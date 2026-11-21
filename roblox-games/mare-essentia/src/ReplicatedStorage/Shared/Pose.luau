@@ -17,6 +17,23 @@ do
 	end
 end
 
+-- [게임 스크립트 권한] SurfaceAppearance의 ColorMap 등 맵 속성은 플러그인 권한에서만 읽힌다.
+-- 게임에서 읽으면 "lacking capability Plugin" 오류로 함수가 중단된다(Studio 실행 44894900062 콘솔 오류).
+-- 읽을 수 없으면 등록된 PBR 원본(SurfaceAppearance 자체가 있음)으로 보고 원본 재질을 보존한다.
+local function surfaceHasMaps(sa: Instance?): boolean
+	if not sa then return false end
+	local ok, mapped = pcall(function()
+		local s = sa :: any
+		return s.ColorMap ~= "" or s.MetalnessMap ~= "" or s.RoughnessMap ~= "" or s.NormalMap ~= ""
+	end)
+	return (not ok) or mapped == true
+end
+local function surfaceHasColorMap(sa: Instance?): boolean
+	if not sa then return false end
+	local ok, mapped = pcall(function() return (sa :: any).ColorMap ~= "" end)
+	return (not ok) or mapped == true
+end
+
 local function findBone(model, pattern)
 	for _, d in model:GetDescendants() do
 		if d:IsA("Bone") and string.find(string.lower(d.Name), pattern) then
@@ -1156,13 +1173,12 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				part.Anchored, part.CanCollide, part.CanTouch, part.CanQuery = false, false, false, false
 				part.Massless = true
 				local surface = part:FindFirstChildOfClass("SurfaceAppearance")
-				local textured = (surface ~= nil and (surface.ColorMap ~= ""
-					or surface.MetalnessMap ~= "" or surface.RoughnessMap ~= "" or surface.NormalMap ~= ""))
+				local textured = surfaceHasMaps(surface)
 					or (part:IsA("MeshPart") and (part.TextureID ~= "" or part.MaterialVariant ~= ""))
 				-- [실물 헤어·직업 복식 구분] PBR 원본 ColorMap/Normal/Roughness는 그대로 두고,
 				-- 수입된 SurfaceAppearance의 보조 색상만 약하게 조절해 헤어색과 직군별 천을 구분한다.
 				-- 장식 금속·진주·장화의 원본 광택 및 원형은 절대 변경하지 않는다.
-				if npcOutfit and surface and surface.ColorMap ~= "" then
+				if npcOutfit and surface and surfaceHasColorMap(surface) then
 					if string.sub(assetName, 1, 5) == "hair_" then
 						local hairTint = model:GetAttribute("NpcHairTint")
 						if typeof(hairTint) == "Color3" then
