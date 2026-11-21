@@ -116,6 +116,16 @@ jobs:
           path: main
           ref: ${{ inputs.candidate_ref || github.sha }}
           fetch-depth: 1
+          # [E: 재발 방지] 전체 대형 저장소 대신 Studio 게임/공용 런타임/원본 3D와 검증 정책만 내려받는다.
+          # checkout의 기본 sparse cone이 필요한 파일만 부분 수신하므로 filter(우선권 있음)는 중복 지정하지 않는다.
+          # [필수 보존] assets 공용 모듈, QA, 중앙정책, 게임의 전체 원본 에셋은 빠짐없이 포함한다.
+          sparse-checkout: |
+            .github
+            assets
+            company-learning
+            qa
+            tools
+            roblox-games/mare-essentia
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
