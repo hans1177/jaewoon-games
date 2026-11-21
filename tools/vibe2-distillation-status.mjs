@@ -58,6 +58,26 @@ function learningDate(record) {
   return Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 10) : '';
 }
 
+// [증거-학습 연결] 서로 다른 저장소의 기록은 동일 후보 ID 또는 소스 리비전으로만 추적한다.
+// 추적 결과는 진단 전용이며 검증·승인·훈련 샘플을 자동 생성하지 않는다.
+export function diagnoseEvidenceLinkage(trainingEntries, evidenceEntries) {
+  const samples = trainingEntries.map((entry) => entry.record);
+  const evidence = evidenceEntries.map((entry) => entry.record);
+  const sampleIds = new Set(samples.map((row) => String(row?.candidateId ?? row?.id ?? '').trim()).filter(Boolean));
+  const revisions = new Set(samples.map(sourceRevision).filter(Boolean));
+  const linked = evidence.filter((row) => {
+    const id = String(row?.candidateId ?? row?.id ?? '').trim();
+    const revision = sourceRevision(row);
+    return (id && sampleIds.has(id)) || (revision && revisions.has(revision));
+  });
+  return {
+    evidenceRecords: evidence.length,
+    evidenceLinkedToTrainingRecord: linked.length,
+    evidenceWithoutTrainingRecord: evidence.length - linked.length,
+    evidenceWithSourceRevision: evidence.filter(sourceRevision).length,
+  };
+}
+
 function independentPass(record) {
   const qa = record?.qa && typeof record.qa === 'object' ? record.qa : {};
   return String(qa.independentQa ?? qa.independent ?? record?.independentQa ?? '').toUpperCase() === 'PASS';
@@ -202,7 +222,9 @@ function main() {
     taskPlanMinProjects: numberArg(args, 'task-plan-min-projects', 2),
   });
   status.sourceFiles = files.map((file) => path.relative(process.cwd(), file).replaceAll('\\', '/'));
-  status.diagnostics.evidenceSourceFiles = collectJsonFiles(evidenceDir).length;
+  const evidenceCollection = collectTrainingRecords([evidenceDir]);
+  status.diagnostics.evidenceSourceFiles = evidenceCollection.files.length;
+  status.diagnostics.crossSourceLinkage = diagnoseEvidenceLinkage(recordsWithSource, evidenceCollection.recordsWithSource);
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, `${JSON.stringify(status, null, 2)}\n`);
   console.log(JSON.stringify(status));
