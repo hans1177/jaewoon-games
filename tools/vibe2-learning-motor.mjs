@@ -492,8 +492,11 @@ export function applyVerifiedKnowledgeOutcomes(stateInput={},queueInput={}){
     const eventId=hasExactCandidate?'knowledge_'+hash([codingOutcomeIdentity(task,'KNOWLEDGE'),outcome,refs.join(',')].join('|')):legacyEventId;
     if(seen.has(eventId)||seen.has(legacyEventId))continue;
     for(const ref of refs){
-      const at=ref.indexOf(':');const source=at>0?upper(ref.slice(0,at)):'UNKNOWN',id=at>0?ref.slice(at+1):ref;
-      if(!id)continue;
+      const at=ref.indexOf(':');
+      // 출처가 없는 지식 ID는 검증된 학습 기록으로 승격하지 않는다.
+      if(at<=0||at===ref.length-1)continue;
+      const source=upper(ref.slice(0,at)),id=clean(ref.slice(at+1));
+      if(!/^[A-Z][A-Z0-9_-]*$/.test(source)||!id)continue;
       const key=source+':'+id,row=memory.entries[key]||{source,verifiedApplications:0,verifiedFailures:0,firstPasses:0,failureSignatureClears:0,regressionFailures:0,primaryDomainMatches:0,primaryDomainMismatches:0,games:{},targets:{},state:'CANDIDATE',lastEvidence:null,lastFailureEvidence:null,lastUpdatedAt:null};
       const firstPass=outcome==='PASS'&&lastEvidenceMarker(evidence,'coding-candidate-first-attempt:')==='YES';
       const signatureClear=outcome==='PASS'&&Boolean(lastEvidenceMarker(evidence,'coding-failure-fingerprint:'));
