@@ -116931,7 +116931,7 @@
     },
     {
       "id": "marketing-cozy-island-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -116974,12 +116974,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44840486875:1",
+      "reservedAt": "2026-11-21T00:02:38.963Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -122883,14 +122883,15 @@
         "system-ai-handoff-to-reservation:system-ai:44837244941:1",
         "actions-run:44837244941",
         "system-ai-handoff-to-reservation:system-ai:44838972860:1",
-        "actions-run:44838972860"
+        "actions-run:44838972860",
+        "system-ai-handoff-to-reservation:system-ai:44840486875:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1946,
+      "impactScore": 1918,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 43,
-        "recurrenceCount": 43,
+        "blockedTaskCount": 42,
+        "recurrenceCount": 42,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -122898,11 +122899,11 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-20T23:57:04.830Z"
+      "updatedAt": "2026-11-21T00:02:38.963Z"
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -122944,12 +122945,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44840486875:1",
+      "reservedAt": "2026-11-21T00:02:38.963Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-verification-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -126512,14 +126513,15 @@
         "system-ai-applied-answer-sha256:fff1fdcb58161eccf5719ed65ea66d27e44c32ebd26ec5be05ecf64a121b4f9e",
         "repair-strategy-fingerprint:86a5ab07cb34f65996db558f6821df00be1690dd0a8d3edf4efd53cad1061ec8",
         "failed-strategy-fingerprint:86a5ab07cb34f65996db558f6821df00be1690dd0a8d3edf4efd53cad1061ec8",
-        "model-output-sha256:3379f42d66c14355757b136c2ec8df2f60a2c991dd783e0da468cd9bab8d05ad"
+        "model-output-sha256:3379f42d66c14355757b136c2ec8df2f60a2c991dd783e0da468cd9bab8d05ad",
+        "system-ai-handoff-to-reservation:system-ai:44840486875:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1918,
+      "impactScore": 302,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 42,
-        "recurrenceCount": 42,
+        "blockedTaskCount": 0,
+        "recurrenceCount": 0,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -126527,7 +126529,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-21T00:00:09.766Z"
+      "updatedAt": "2026-11-21T00:02:38.963Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -157618,7 +157620,7 @@
     },
     {
       "id": "recovery-recovery-c6e7736588dc69fb9540",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -157717,12 +157719,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44840486875:1",
+      "reservedAt": "2026-11-21T00:02:38.963Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -163610,14 +163612,15 @@
         "system-ai-handoff-to-reservation:system-ai:44837244941:1",
         "actions-run:44837244941",
         "system-ai-handoff-to-reservation:system-ai:44838972860:1",
-        "actions-run:44838972860"
+        "actions-run:44838972860",
+        "system-ai-handoff-to-reservation:system-ai:44840486875:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1938,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 23,
-        "recurrenceCount": 2571,
+        "recurrenceCount": 2572,
         "dependencyCentrality": 22,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -163625,11 +163628,11 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-11-20T23:57:04.830Z"
+      "updatedAt": "2026-11-21T00:02:38.963Z"
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -163736,12 +163739,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44840486875:1",
+      "reservedAt": "2026-11-21T00:02:38.963Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -169835,14 +169838,15 @@
         "system-ai-handoff-to-reservation:system-ai:44837244941:1",
         "actions-run:44837244941",
         "system-ai-handoff-to-reservation:system-ai:44838972860:1",
-        "actions-run:44838972860"
+        "actions-run:44838972860",
+        "system-ai-handoff-to-reservation:system-ai:44840486875:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 26,
-        "recurrenceCount": 2691,
+        "recurrenceCount": 2692,
         "dependencyCentrality": 26,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -169850,7 +169854,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-11-20T23:57:04.830Z"
+      "updatedAt": "2026-11-21T00:02:38.963Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
@@ -173458,7 +173462,7 @@
     },
     {
       "id": "recovery-recovery-f84bbc96c4af1596274e",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -173516,12 +173520,12 @@
       "sourceMutationBaseline": "2026-10-21T17:45:04.849Z",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44840486875:1",
+      "reservedAt": "2026-11-21T00:02:38.963Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:39067647976:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -178756,14 +178760,15 @@
         "system-ai-handoff-to-reservation:system-ai:44837244941:1",
         "actions-run:44837244941",
         "system-ai-handoff-to-reservation:system-ai:44838972860:1",
-        "actions-run:44838972860"
+        "actions-run:44838972860",
+        "system-ai-handoff-to-reservation:system-ai:44840486875:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1534,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 20,
-        "recurrenceCount": 2210,
+        "recurrenceCount": 2211,
         "dependencyCentrality": 2,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -178771,7 +178776,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T21:02:09.727Z",
-      "updatedAt": "2026-11-20T23:57:04.830Z"
+      "updatedAt": "2026-11-21T00:02:38.963Z"
     },
     {
       "id": "recovery-recovery-0b623e521c00a2fbed55",
@@ -191820,7 +191825,7 @@
     },
     {
       "id": "recovery-recovery-9a838fb1109024466f82",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -191879,12 +191884,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44840486875:1",
+      "reservedAt": "2026-11-21T00:02:38.963Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:40125353017:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -195785,14 +195790,15 @@
         "system-ai-handoff-to-reservation:system-ai:44837244941:1",
         "actions-run:44837244941",
         "system-ai-handoff-to-reservation:system-ai:44838972860:1",
-        "actions-run:44838972860"
+        "actions-run:44838972860",
+        "system-ai-handoff-to-reservation:system-ai:44840486875:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2374,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 252,
-        "recurrenceCount": 1805,
+        "recurrenceCount": 1806,
         "dependencyCentrality": 2,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -195800,7 +195806,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-24T19:39:33.428Z",
-      "updatedAt": "2026-11-20T23:57:04.830Z"
+      "updatedAt": "2026-11-21T00:02:38.963Z"
     },
     {
       "id": "recovery-recovery-5debf7e19cca75143235",
@@ -221480,7 +221486,7 @@
     },
     {
       "id": "recovery-recovery-ad89d6a6bbf42a8096fd",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -221539,12 +221545,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44840486875:1",
+      "reservedAt": "2026-11-21T00:02:38.963Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:44233435770:1",
         "deployment-workflow:.github/workflows/devloop-studio.yml",
@@ -222200,22 +222206,23 @@
         "system-ai-handoff-to-reservation:system-ai:44837244941:1",
         "actions-run:44837244941",
         "system-ai-handoff-to-reservation:system-ai:44838972860:1",
-        "actions-run:44838972860"
+        "actions-run:44838972860",
+        "system-ai-handoff-to-reservation:system-ai:44840486875:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2298,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 99,
-        "recurrenceCount": 230,
+        "recurrenceCount": 231,
         "dependencyCentrality": 2,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
-        "ageHours": 66.33,
+        "ageHours": 66.55,
         "repairRisk": 1
       },
       "createdAt": "2026-11-18T05:29:44.865Z",
-      "updatedAt": "2026-11-20T23:57:04.830Z"
+      "updatedAt": "2026-11-21T00:02:38.963Z"
     },
     {
       "id": "recovery-recovery-450207b3d084c830bc47",
