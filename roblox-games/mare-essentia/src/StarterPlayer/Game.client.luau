@@ -11259,7 +11259,8 @@ function H.renderTabs()
 			local atlas = H.facilityIconAtlas and H.facilityIconCells[id] ~= nil
 			local icon = modelIcon(b, if atlas then "FacilityArt" else ti[1], if atlas then id else ti[2], nil, 26, TAB_NAME[id])
 			icon.Name = "TabIcon"
-			icon.Position = UDim2.new(0, 7, 0.5, -13)
+			-- [시설 탭 최초 배치] 화면 크기 갱신 전에 생성된 아이콘도 현재 모바일 규격을 따른다.
+			icon.Position = if mainInner.AbsoluteSize.X < 740 then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 7, 0.5, -13)
 			icon.ClipsDescendants = true
 			icon.ZIndex = b.ZIndex + 2
 			icon.Parent = b
@@ -11290,8 +11291,8 @@ function H.renderTabs()
 			end
 			local caption = b:FindFirstChild("PrintedCaption")
 			if caption and caption:IsA("TextLabel") then
-				caption.Position = UDim2.fromOffset(35, 3)
-				caption.Size = UDim2.new(1, -39, 0, 26)
+				caption.Position = if mainInner.AbsoluteSize.X < 740 then UDim2.fromOffset(4, 29) else UDim2.fromOffset(44, 0)
+				caption.Size = if mainInner.AbsoluteSize.X < 740 then UDim2.new(1, -8, 0, 17) else UDim2.new(1, -54, 1, -4)
 				caption.TextWrapped = false
 				caption.TextScaled = true
 				caption.TextXAlignment = Enum.TextXAlignment.Left
