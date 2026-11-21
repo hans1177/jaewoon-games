@@ -1203,11 +1203,11 @@ export function createVibeGraphicsProduction({
   // 조형·PBR·모션·조명·VFX·카메라·UI·모바일 책임 단계로 직접 되돌린다.
   // 계획만 작성해 PASS로 승격하지 않고 동일 소스/화면 재촬영으로 닫는다.
   const professionalStageFor=defect=>{
-    const key=clean(defect?.surface||defect?.axis||'').toUpperCase();
+    const key=clean(defect?.axis||defect?.surface||'').toUpperCase();
     if(/MOBILE|PERFORMANCE|LOD|FRAME/.test(key))return 'PLATFORM_PERFORMANCE_AND_COHESION_FAN_IN';
-    if(/MOTION|ANIMATION|CHARACTER_NPC_CREATURE/.test(key))return 'ANIMATION_AND_MOTION_IDENTITY';
+    if(/MOTION|ANIMATION|RIG|CONTACT|CHARACTER_NPC_CREATURE/.test(key))return 'ANIMATION_AND_MOTION_IDENTITY';
     if(/MATERIAL|PBR|LIGHT|COHESION/.test(key))return 'MATERIAL_LIGHTING_AND_PLATFORM_REAUTHORING';
-    if(/VFX|UI|INTERFACE|CAMERA|PRESENTATION/.test(key))return 'VFX_UI_AND_PRESENTATION_BINDING';
+    if(/VFX|UI|INTERFACE|CAMERA|PRESENTATION|HUD/.test(key))return 'VFX_UI_AND_PRESENTATION_BINDING';
     if(/ENVIRONMENT|BACKGROUND|LANDMARK|SCENE_OBJECT/.test(key))return 'ENVIRONMENT_BACKGROUND_LANDMARK_AND_SET_DRESSING';
     if(/SPATIAL_3D|MODEL|MESH|SILHOUETTE|HERO|CHARACTER/.test(key))return 'HERO_CHARACTER_CREATURE_AND_SIGNATURE_ASSETS';
     return 'RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION';
