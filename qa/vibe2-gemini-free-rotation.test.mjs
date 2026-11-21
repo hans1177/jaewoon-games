@@ -806,3 +806,21 @@ test('one free provider 401 rotates to independent free provider; 402 and safety
       '401 공급자를 다음 호출에 다시 쓰지 않는다');
   });
 });
+
+test('free provider HTTP 400 is classified with provider detail instead of a bare rotate',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.OPENROUTER_API_KEY='openrouter-test-secret';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    const {requestGeminiFreePair:isolated,classifyHttp400}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=http400-'+Date.now());
+    const logs=[];const orig=console.log;console.log=(...a)=>{logs.push(a.join(' '));};
+    try{
+      await assert.rejects(isolated({apiKey:'test',contents:[{role:'user',parts:[{text:'x'}]}],fetchImpl:async url=>{
+        if(String(url).includes('googleapis.com'))return{ok:false,status:429,headers:{get:()=> '30'}};
+        return{ok:false,status:400,headers:{get:()=>null},json:async()=>({error:{code:400,message:'No endpoints found for google/gemma-4-31b-it:free'}})};
+      }}),/OPENROUTER:[^,]*:HTTP_400/);
+    }finally{console.log=orig;}
+    assert.ok(logs.some(l=>/VIBE2_EXTERNAL_FREE_HTTP400=OPENROUTER:.*:MODEL_UNAVAILABLE:.*No endpoints found/.test(l)));
+    assert.equal(classifyHttp400('Unrecognized request argument supplied: service_tier'),'UNSUPPORTED_PARAMETER');
+    assert.equal(classifyHttp400(''),'NO_DETAIL');
+  });
+});
