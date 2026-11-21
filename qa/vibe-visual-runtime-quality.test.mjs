@@ -73,8 +73,10 @@ test('자동 재작업은 중복 원인·모호한 책임 함수·게임 상태 
   const valid=auditVibeRuntimeBeforeAfterComparison(base);
   assert.equal(valid.repairTargets.length,1);
   const unsafe=structuredClone(base);
-  unsafe.comparison.repairTargets[0].property='saveData';
-  assert.equal(auditVibeRuntimeBeforeAfterComparison(unsafe).repairTargets.length,0);
+  for(const property of ['saveData','SaveData','attackPower','health','dropRate','DataStore','save_data']){
+    unsafe.comparison.repairTargets[0].property=property;
+    assert.equal(auditVibeRuntimeBeforeAfterComparison(unsafe).repairTargets.length,0,property);
+  }
   const ambiguous=structuredClone(base);
   ambiguous.comparison.repairTargets.push({...ambiguous.comparison.repairTargets[0]});
   assert.equal(auditVibeRuntimeBeforeAfterComparison(ambiguous).repairTargets.length,0);
