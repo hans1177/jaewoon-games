@@ -2,13 +2,13 @@
   "version": 3,
   "provider": "NVIDIA",
   "gameId": "mare-essentia",
-  "sourceRevision": "d95bc1e35d3ad1e36c4add1ecc8011811eb07b7b",
+  "sourceRevision": "4fc18d189051c4964fbf160f6de9fd7e123daf72",
   "status": "CANDIDATE_EDITED",
-  "selectedRole": "GENERAL",
+  "selectedRole": "NPC",
   "usageWindow": {
     "day": "2026-11-21",
     "calls": {
-      "NVIDIA": 7,
+      "NVIDIA": 8,
       "GEMINI": 9,
       "OPENROUTER": 9
     },
@@ -24,20 +24,19 @@
     }
   },
   "cooldowns": {
-    "GEMINI_FLASH": "2026-11-22T13:30:36.242Z",
-    "OPENROUTER_GEMMA26": "2026-11-21T23:07:31.356Z"
+    "GEMINI_FLASH": "2026-11-22T13:30:36.242Z"
   },
   "quotaForecast": {
     "NVIDIA": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 7,
-      "remainingLocal": 5,
-      "effectiveRemaining": 5,
-      "regularWorkRemaining": 2,
+      "localUsed": 8,
+      "remainingLocal": 4,
+      "effectiveRemaining": 4,
+      "regularWorkRemaining": 1,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 0.55,
-      "estimatedHoursToLocalCap": 9.1,
+      "estimatedCallsPerHour": 0.63,
+      "estimatedHoursToLocalCap": 6.3,
       "nextLocalWindowAt": "2026-11-22T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -53,7 +52,7 @@
       "effectiveRemaining": 3,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 0.72,
+      "estimatedCallsPerHour": 0.71,
       "estimatedHoursToLocalCap": 4.2,
       "nextLocalWindowAt": "2026-11-22T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
@@ -70,8 +69,8 @@
       "effectiveRemaining": 21,
       "regularWorkRemaining": 15,
       "emergencyReserveRemaining": 6,
-      "estimatedCallsPerHour": 0.77,
-      "estimatedHoursToLocalCap": 27.3,
+      "estimatedCallsPerHour": 0.75,
+      "estimatedHoursToLocalCap": 28,
       "nextLocalWindowAt": "2026-11-22T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -83,12 +82,6 @@
   "accountQuota": null,
   "attempts": [
     {
-      "id": "OPENROUTER_GEMMA26",
-      "status": "HTTP_429",
-      "provider": "OPENROUTER",
-      "model": "google/gemma-4-26b-a4b-it:free"
-    },
-    {
       "id": "NVIDIA_VL",
       "status": "OK",
       "provider": "NVIDIA",
@@ -97,112 +90,107 @@
   ],
   "frames": [
     {
-      "name": "b1_start-0.jpg",
-      "sha256": "734da1be2431217211acac2d88e2c693efb6df1163cb62954238d4e5c5670b74"
+      "name": "field_npc_ally_mob-0.jpg",
+      "sha256": "dbda94d7a2ab9a8576ff01d19a509533df75ed5fdc78442d9fd615d3f862a4e6"
     },
     {
-      "name": "b2_mid-0.jpg",
-      "sha256": "be4a21b32469297975607f8b5c75ba153e938daa708f2386cc43ceadcf8deb6c"
+      "name": "harbor_npc_face_front-0.jpg",
+      "sha256": "3e5fb083504a95a401b21fadea9c8ade75568b96a3fb0305a5bbda2088208d6b"
     },
     {
-      "name": "c00_start-0.jpg",
-      "sha256": "2d1280777d4b4f3cb940da404447f4dcb439113d149b45c948530529baa7805a"
+      "name": "harbor_npc_sparring_01-0.jpg",
+      "sha256": "99984a70857da59cef7bd208d2b6e210593cb3997efff1b8be724648d14f453d"
     },
     {
-      "name": "intro_center_early-0.jpg",
-      "sha256": "ea3c9f7121046d3d1e0b3f20bdc8d2653ca016316554f91758d30f3ca992d954"
+      "name": "harbor_npc_sparring_02-0.jpg",
+      "sha256": "f1a9c51a8658d7c14ecdaf9159029218910d1faf758b753018d623688fecf69f"
     }
   ],
   "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
-  "rawResponseSha256": "028ba8e1fc24c584dd781cdbe044464215b0882c1062fec993aa949a065dd8cb",
+  "rawResponseSha256": "541520ecd87b638cdd897d8836bc4dfc537da8cb10f3d3acf183a5a591b466ec",
   "issues": [
     {
-      "category": "ui",
+      "category": "npc-face",
+      "severity": "high",
+      "screenshot": "harbor_npc_face_front-0.jpg",
+      "evidenceSha256": "5db6c2d882df488e05cf4958f7433839622d2e98019be7e9335fb08b899ed1b9"
+    },
+    {
+      "category": "npc-face",
       "severity": "medium",
-      "screenshot": "b1_start-0.jpg",
-      "evidenceSha256": "4f9c6e71d2be70065f87d2669a0cb6bac42600bd16204a5c0fec316cc0366284"
+      "screenshot": "harbor_npc_sparring_01-0.jpg",
+      "evidenceSha256": "9295e7b85493acdc5bc4fe9ab265ed2818683eedd5e721ed1bedbdc3480befa0"
+    },
+    {
+      "category": "npc-face",
+      "severity": "medium",
+      "screenshot": "harbor_npc_sparring_02-0.jpg",
+      "evidenceSha256": "571256533e5f098df2e0204f2faff0a0d93916aa163269040db41cbb0c1fb78b"
+    },
+    {
+      "category": "npc-hair",
+      "severity": "medium",
+      "screenshot": "field_npc_ally_mob-0.jpg",
+      "evidenceSha256": "e0c98cb2ad5521d4a84b5b1b4c2f1d9532076efaeffc9a571b3f9184fcd86406"
+    },
+    {
+      "category": "npc-clothing",
+      "severity": "medium",
+      "screenshot": "field_npc_ally_mob-0.jpg",
+      "evidenceSha256": "419ad986b58043cc0f9113b8a3fd1c1219f118f9f9b415d10c6327285a27d1c1"
     },
     {
       "category": "material",
       "severity": "medium",
-      "screenshot": "b2_mid-0.jpg",
-      "evidenceSha256": "715974ddfc762fc5fbc827f8c26598efa30cd4554c0da439c4c3b9387a89c9d4"
-    },
-    {
-      "category": "lighting",
-      "severity": "medium",
-      "screenshot": "c00_start-0.jpg",
-      "evidenceSha256": "cae2f9a0036782c5ed12cdbd423145f2ba74844618c98a18ae181c490b7dbb17"
+      "screenshot": "harbor_npc_face_front-0.jpg",
+      "evidenceSha256": "94624faae03cfb1983e21adafdbc200f1e8ceee099d8ee2edd5e2964873c24a1"
     },
     {
       "category": "ui",
-      "severity": "medium",
-      "screenshot": "intro_center_early-0.jpg",
-      "evidenceSha256": "a931a179aac7dccd86836beb23b757919c04247828c125b9e0f3d8fe61a48fcc"
-    },
-    {
-      "category": "material",
-      "severity": "medium",
-      "screenshot": "b2_mid-0.jpg",
-      "evidenceSha256": "c1fa83660a2acd1bc412eedf23f3cc57b0b9d712bdecf3fbf2be0a91e3b3f374"
-    },
-    {
-      "category": "environment",
-      "severity": "medium",
-      "screenshot": "b2_mid-0.jpg",
-      "evidenceSha256": "7a0f5b6384be97e2ca06d71fb6adb42ddf90fb42e277d189179b7a2f4d4f477c"
-    },
-    {
-      "category": "ui",
-      "severity": "medium",
-      "screenshot": "b1_start-0.jpg",
-      "evidenceSha256": "6eb3818ce76753d34c53df7e787cecf6f5b71a7b89ab09ec45d9e4ee5482f125"
-    },
-    {
-      "category": "material",
-      "severity": "medium",
-      "screenshot": "c00_start-0.jpg",
-      "evidenceSha256": "af096f1d86fc9c67bbff841bc75aa3f13fd8bff07c43178535feb76c533397d8"
+      "severity": "low",
+      "screenshot": "field_npc_ally_mob-0.jpg",
+      "evidenceSha256": "b7f4b0667e1931c3f8310232f442643036149fec1e4e1fed1336c6aa9cee84e8"
     },
     {
       "category": "typography",
       "severity": "low",
-      "screenshot": "intro_center_early-0.jpg",
-      "evidenceSha256": "fad6190f6aaead29b222252815798e0c9a9f5e853847911071f796447bc1d471"
+      "screenshot": "field_npc_ally_mob-0.jpg",
+      "evidenceSha256": "ba8d739f62ce306d72c76a3ef03779bdc7b6d3b89f2ccc3c5d4733b92347c445"
     },
     {
-      "category": "composition",
+      "category": "ship-appearance",
       "severity": "low",
-      "screenshot": "b1_start-0.jpg",
-      "evidenceSha256": "b9ba1c82f4acbd4c099706b66a661fa7a9c21d2778a8e4ac297027be75478a61"
+      "screenshot": "field_npc_ally_mob-0.jpg",
+      "evidenceSha256": "f7d170129191e42a9bf562903b84ca815de968f560f8a14ad18b40d7e16b4d1f"
+    },
+    {
+      "category": "environment",
+      "severity": "low",
+      "screenshot": "field_npc_ally_mob-0.jpg",
+      "evidenceSha256": "58181acb16ea7490d3b7976a135a0f4f1b131aa33f8193e835ef456dd212ea8e"
     }
   ],
   "edits": [
     {
-      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
-      "category": "material",
-      "screenshot": "b2_mid-0.jpg",
-      "beforeSha256": "56d8b315d667d1a8ce5ea2decc8138f65bfb8be83621858e9614ae2fdbb6aebb",
-      "afterSha256": "8eef5e089118589266df71d9ac0a4bbf5d016428b50dc292162f060fb13ed0f2"
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+      "category": "npc-face",
+      "screenshot": "harbor_npc_face_front-0.jpg",
+      "beforeSha256": "359a5ef2a21c227107dd51386c587816f86a3064735fa3c35ef5ab7679d3975f",
+      "afterSha256": "88672ed5ead2f67f0e1cda413f5f1b882b5a45e2a8fd8f2cbec283321901105d"
     },
     {
-      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
-      "category": "lighting",
-      "screenshot": "c00_start-0.jpg",
-      "beforeSha256": "7098afd058a18d7e65b843edab3d06f56184b4c5d1a7da87af1efc8d40564395",
-      "afterSha256": "34454eae31322135853b0ed05f4912563c546862c36fc1f156979922d23b6052"
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+      "category": "npc-hair",
+      "screenshot": "field_npc_ally_mob-0.jpg",
+      "beforeSha256": "1ec50d422cc72ae6a75726e7682ca3e9e695f1a28d7f6c07fb54a5db3bae07ba",
+      "afterSha256": "33117ce922c7390064be8b7e41ee68c2176ec6267277400a3e91ddd57c441f80"
     }
   ],
   "sourceHashes": [
     {
-      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
-      "beforeSha256": "b7241fde1a5ce21f6b5c9fa976f52b716d7f5f514734ff65f438735933b64d51",
-      "afterSha256": "7f47addc1b7272296d695ded9506160796f8120005805684cf14e68d0da694d1"
-    },
-    {
-      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
-      "beforeSha256": "104b7a7bee2ab4aee853cb35398859d234f9b61e36179e3d32d385aeb49726c4",
-      "afterSha256": "d0920e2e03f750d70b7be0363aaf7c3c5317994ee65b6b5cf54836aadf0ba77e"
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+      "beforeSha256": "af6fa47ecaebe023d2019df968866949b37bd911722edae41497d90adf7a94c0",
+      "afterSha256": "ad311da33d15343d32f39d00153d562cdf74335d2e3e993376859a76f461ad8e"
     }
   ],
   "candidateOnly": true,
