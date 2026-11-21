@@ -873,7 +873,11 @@ function hotspotRisk(row={}){
   const failures=Math.max(0,Number(row.verifiedRegressionFailures)||0),passes=Math.max(0,Number(row.verifiedPasses)||0);
   // 성공 기록이 많더라도 최근 검증된 회귀 실패 자체는 복구 검토 대상에서 제외하지 않는다.
   const score=Math.max(0,failures*3-passes);
-  return{score,level:row.lastVerifiedOutcome==='REGRESSION_FAIL'&&failures>=3?'HIGH':row.lastVerifiedOutcome==='REGRESSION_FAIL'?'MEDIUM':failures>=3&&score>=6?'HIGH':failures>=1?'MEDIUM':'LOW'};
+  // 최신 검증 성공이 있으면 과거 실패 누적만으로 미복구 상태라고 단정하지 않는다.
+  const level=row.lastVerifiedOutcome==='PASS'?(failures>=3&&score>=6?'MEDIUM':'LOW')
+    :row.lastVerifiedOutcome==='REGRESSION_FAIL'?(failures>=3?'HIGH':'MEDIUM')
+    :failures>=3&&score>=6?'HIGH':failures>=1?'MEDIUM':'LOW';
+  return{score,level};
 }
 export function applyVerifiedCodingCalibration(stateInput={},queueInput={}){
   const state=createMasteryState(stateInput);
