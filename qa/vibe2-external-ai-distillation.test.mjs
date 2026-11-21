@@ -50,6 +50,15 @@ test('external AI candidate requires at least two traceable verification evidenc
   assert.ok(check.reasons.includes('VERIFICATION_EVIDENCE_NOT_TRACEABLE'));
 });
 
+test('external AI candidate rejects identical evidence disguised as separate QA and source checks',()=>{
+  const check=validateExternalAiCandidate({
+    ...verifiedCandidate,
+    verification:{independent:true,status:'PASS',method:'independent-qa',evidence:['qa:shared-run-123','source:shared-run-123']}
+  });
+  assert.equal(check.ok,false);
+  assert.ok(check.reasons.includes('VERIFICATION_EVIDENCE_NOT_INDEPENDENT'));
+});
+
 test('external AI candidate requires independent verification evidence',()=>{
   const check=validateExternalAiCandidate({...verifiedCandidate,verification:{independent:false,status:'PASS',method:'independent-qa',evidence:[]}});
   assert.equal(check.ok,false);
