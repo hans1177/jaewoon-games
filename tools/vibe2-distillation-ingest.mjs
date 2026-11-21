@@ -184,14 +184,14 @@ export function chooseDurableTrainingSample(existing, durable) {
   if (durableVerified && !mainVerified) return 'RESTORE_VERIFIED';
   if (mainVerified && !durableVerified) return 'KEEP_VERIFIED_MAIN';
   if (mainVerified && durableVerified) return 'REVIEW_CONFLICTING_VERIFIED';
-  return 'KEEP_MAIN_UNVERIFIED';
+  return 'REVIEW_CONFLICTING_UNVERIFIED';
 }
 
 export function restoreDurableTrainingSamples({
   durableRef = 'origin/vibe2-learning-runtime',
   outDir = 'company-learning/training-samples',
 } = {}) {
-  const result = { examined: 0, restored: [], protectedMain: [], conflictingVerified: [], rejected: [] };
+  const result = { examined: 0, restored: [], protectedMain: [], conflictingVerified: [], conflictingUnverified: [], rejected: [] };
   const prefix = outDir.replaceAll('\\', '/').replace(/\\/g, '/').replace(/\/+$/, '');
   if (prefix !== 'company-learning/training-samples') throw new Error('CANONICAL_TRAINING_DIRECTORY_REQUIRED');
   const files = gitText(['ls-tree', '-r', '--name-only', durableRef, '--', prefix], { allowFailure: true })
@@ -207,6 +207,8 @@ export function restoreDurableTrainingSamples({
       result.restored.push({ file, decision });
     } else if (decision === 'REVIEW_CONFLICTING_VERIFIED') {
       result.conflictingVerified.push(file);
+    } else if (decision === 'REVIEW_CONFLICTING_UNVERIFIED') {
+      result.conflictingUnverified.push(file);
     } else if (decision === 'REJECT_INVALID_DURABLE') {
       result.rejected.push(file);
     } else if (decision !== 'KEEP_IDENTICAL') {
