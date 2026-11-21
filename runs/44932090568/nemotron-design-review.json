@@ -1,0 +1,147 @@
+{
+  "version": 3,
+  "provider": "GEMINI",
+  "gameId": "mare-essentia",
+  "sourceRevision": "cca8be8f18af8a5e2302ae11530e338887e24cb2",
+  "status": "CANDIDATE_EDITED",
+  "selectedRole": "UI",
+  "usageWindow": {
+    "day": "2026-11-21",
+    "calls": {
+      "NVIDIA": 5,
+      "GEMINI": 8,
+      "OPENROUTER": 7
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-21",
+      "GEMINI": "2026-11-21",
+      "OPENROUTER": "2026-11-21"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-21T12:10:02.598Z",
+      "GEMINI": "2026-11-21T12:00:04.538Z",
+      "OPENROUTER": "2026-11-21T12:42:28.464Z"
+    }
+  },
+  "cooldowns": {
+    "GEMINI_FLASH": "2026-11-22T13:30:36.242Z",
+    "NVIDIA_VL": "2026-11-21T18:10:35.515Z",
+    "OPENROUTER_GEMMA": "2026-11-21T17:59:06.238Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 5,
+      "remainingLocal": 7,
+      "effectiveRemaining": 7,
+      "regularWorkRemaining": 4,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": 0.69,
+      "estimatedHoursToLocalCap": 10.1,
+      "nextLocalWindowAt": "2026-11-22T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 8,
+      "remainingLocal": 4,
+      "effectiveRemaining": 4,
+      "regularWorkRemaining": 1,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": 1.17,
+      "estimatedHoursToLocalCap": 3.4,
+      "nextLocalWindowAt": "2026-11-22T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 7,
+      "remainingLocal": 23,
+      "effectiveRemaining": 23,
+      "regularWorkRemaining": 17,
+      "emergencyReserveRemaining": 6,
+      "estimatedCallsPerHour": 1.14,
+      "estimatedHoursToLocalCap": 20.2,
+      "nextLocalWindowAt": "2026-11-22T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [
+    {
+      "id": "OPENROUTER_GEMMA",
+      "status": "HTTP_429",
+      "provider": "OPENROUTER",
+      "model": "google/gemma-4-31b-it:free"
+    },
+    {
+      "id": "GEMINI_LITE",
+      "status": "OK",
+      "provider": "GEMINI",
+      "model": "gemini-3.5-flash-lite"
+    }
+  ],
+  "frames": [
+    {
+      "name": "qa_click_trade_to_harbor-0.jpg",
+      "sha256": "307d36d0f4f764537d7ce2a11430ba13008257794b42ec47f8924c67af513d67"
+    },
+    {
+      "name": "tab_trade-0.jpg",
+      "sha256": "cce6f1cc33bd7ca3305c3e79157344a006e13b1e04b3ed6a4dec1159cdffd219"
+    },
+    {
+      "name": "ui_trade_inline-0.jpg",
+      "sha256": "2e1f5efa049e4c3e33421eba8e43db606a6cc05a9e2db8878f1b12c6eb82b98f"
+    },
+    {
+      "name": "qa_click_codex_to_tech-0.jpg",
+      "sha256": "ad9d9ff9294c682e3861bb1328ce9f95ff4d240cdd029e57b7f204f8da16b02a"
+    }
+  ],
+  "model": "gemini-3.5-flash-lite",
+  "rawResponseSha256": "1986c9af848b1d982293a6b6c1b8a9de6f75909079a02251de676d6c23b3eb6d",
+  "issues": [
+    {
+      "category": "ui",
+      "severity": "medium",
+      "screenshot": "qa_click_trade_to_harbor-0.jpg",
+      "evidenceSha256": "066b4fb50be81b28d8643f3d7fac7d7694bad0aaac41b406dd0b5d5439d14b55"
+    }
+  ],
+  "edits": [
+    {
+      "path": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+      "category": "ui",
+      "screenshot": "qa_click_trade_to_harbor-0.jpg",
+      "beforeSha256": "f6cdfce54898335a4c83d93411fccb33583aee544645a9a9a7f5211156be1e24",
+      "afterSha256": "e7e3d825e6e767bce664ffe3e0bf082d1526c05d9ab022b2981d9aecf148d979"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+      "beforeSha256": "08e266848fbe00615b30b9fb78fcfb0fb9b8c450bd811732717c2d9c426bbb7b",
+      "afterSha256": "494d63fc04df59d889d0375f9e2ca9f28469823b0c2ba7a6ea48c05e36deaac6"
+    }
+  ],
+  "candidateOnly": true,
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
