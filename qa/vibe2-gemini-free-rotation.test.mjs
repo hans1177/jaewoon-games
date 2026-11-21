@@ -823,3 +823,38 @@ test('free provider HTTP 400 is classified with provider detail instead of a bar
     assert.equal(classifyHttp400(''),'NO_DETAIL');
   });
 });
+
+test('free model cooldown is shared across runs through the persisted file and merges by latest time',async()=>{
+  const os=await import('node:os');const path=await import('node:path');
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-cooldown-'));
+  const file=path.join(dir,'cooldown.json');
+  const prev=process.env.VIBE2_FREE_AI_COOLDOWN_FILE;
+  process.env.VIBE2_FREE_AI_COOLDOWN_FILE=file;
+  try{
+    // 실행 1: 두 Gemini 모델 429 → 파일에 복구 시각 기록
+    const run1=await import('../tools/vibe2-gemini-free-rotation.mjs?test=share1-'+Date.now());
+    await assert.rejects(run1.requestGeminiFreePair({apiKey:'k',contents:[{role:'user',parts:[{text:'x'}]}],
+      fetchImpl:async()=>({ok:false,status:429,headers:{get:name=>String(name).toLowerCase()==='retry-after'?'600':null}})}));
+    const saved=JSON.parse(fs.readFileSync(file,'utf8')).slots;
+    assert.ok(Object.keys(saved).length>=2,'모델별 기록');
+    assert.ok(!JSON.stringify(saved).includes('"k"'),'키 미저장');
+    // 실행 2(새 프로세스와 같은 새 모듈): 쿨다운 중인 모델은 호출하지 않는다
+    const run2=await import('../tools/vibe2-gemini-free-rotation.mjs?test=share2-'+Date.now());
+    let calls=0;
+    await assert.rejects(run2.requestGeminiFreePair({apiKey:'k',contents:[{role:'user',parts:[{text:'x'}]}],
+      fetchImpl:async()=>{calls++;return{ok:true,json:async()=>({candidates:[{content:{parts:[{text:'{}'}]}}]})};}}));
+    assert.equal(calls,0,'다음 실행에서 한도 끝난 모델 재호출 금지');
+    // 동시 워커가 더 이른 시각을 써도 늦은 시각이 유지된다
+    const slot=Object.keys(saved)[0];
+    const later=saved[slot].until;
+    const stale={version:1,slots:{...saved,[slot]:{...saved[slot],until:Date.now()+1000}}};
+    fs.writeFileSync(file,JSON.stringify(stale));
+    const run3=await import('../tools/vibe2-gemini-free-rotation.mjs?test=share3-'+Date.now());
+    run3.sharedCooldownSnapshot();
+    await assert.rejects(run3.requestGeminiFreePair({apiKey:'k',contents:[{role:'user',parts:[{text:'x'}]}],
+      geminiRetryAt:new Date(later).toISOString(),fetchImpl:async()=>{throw new Error('should not call');}}));
+    assert.ok(JSON.parse(fs.readFileSync(file,'utf8')).slots[slot].until>=later-5,'늦은 시각 보존');
+  }finally{
+    if(prev===undefined)delete process.env.VIBE2_FREE_AI_COOLDOWN_FILE;else process.env.VIBE2_FREE_AI_COOLDOWN_FILE=prev;
+  }
+});
