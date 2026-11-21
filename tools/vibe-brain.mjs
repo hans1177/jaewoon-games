@@ -342,7 +342,39 @@ export function recordMerged(ledger, result, pr, now = Date.now()) {
 function readJson(f, d) { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return d; } }
 
 // 기존 자동 점검의 보고서와 같은 커밋에 들어 있는 Studio 게임 화면만 사용한다.
-function readStudioVisualOrder(ref, coverage = {}) {
+// [화면→책임 코드] Studio 촬영 이름(라벨)이 어느 화면인지로 실제 책임 함수의 파일·줄을 찾는다.
+// 시설 탭(tab_/ui_/qa_click_) → Game.client 렌더러, 항구 인물 모션·얼굴 → Pose, 탐험 → FieldScene, 항해 → VoyageScene, 함대전 → NavalBattle.
+// 실제 파일과 함수 줄이 확인될 때만 돌려준다(추측 경로 없음).
+const MARE_SRC = 'roblox-games/mare-essentia/src/';
+const TAB_ANCHOR_ALIAS = { trade: ['local function openTradeHall\\('], yard: ['local function renderYard\\('] };
+export function captureSource(root, label) {
+  const name = String(label || '');
+  const find = (rel, patterns) => {
+    const abs = path.join(root, rel);
+    if (!ALLOWED.test(rel) || !fs.existsSync(abs)) return null;
+    const lines = fs.readFileSync(abs, 'utf8').split('\n');
+    for (const pat of patterns) {
+      const re = new RegExp('^\\s*' + pat);
+      const i = lines.findIndex(l => re.test(l));
+      if (i >= 0) return { sourceFile: rel, sourceLine: i + 1, sourceFunction: lines[i].trim().slice(0, 80) };
+    }
+    return null;
+  };
+  let m = name.match(/^(?:tab|ui)_([a-z]+)/) || name.match(/^qa_click_[a-z]+_to_([a-z]+)/);
+  if (m) {
+    const tab = m[1];
+    return find(MARE_SRC + 'StarterPlayer/Game.client.luau',
+      [...(TAB_ANCHOR_ALIAS[tab] || []), 'function RENDERERS\\.' + tab + '\\(', 'RENDERERS\\.' + tab + ' = ']);
+  }
+  if (/^harbor_npc_face/.test(name)) return find(MARE_SRC + 'ReplicatedStorage/Shared/Pose.luau', ['local function drawFace\\(']);
+  if (/^harbor_(?:motion|npc)_/.test(name)) return find(MARE_SRC + 'ReplicatedStorage/Shared/Pose.luau', ['function Pose\\.makeR15Action\\(']);
+  if (/^field_/.test(name)) return find(MARE_SRC + 'ReplicatedStorage/Shared/FieldScene.luau', ['function FieldScene\\.start\\(']);
+  if (/^v\d+_/.test(name)) return find(MARE_SRC + 'ReplicatedStorage/Shared/VoyageScene.luau', ['function VoyageScene\\.play\\(']);
+  if (/^b\d+_/.test(name)) return find(MARE_SRC + 'ReplicatedStorage/Shared/NavalBattle.luau', ['function NavalBattle\\.play\\(']);
+  return null;
+}
+
+export function readStudioVisualOrder(ref, coverage = {}) {
   const game = 'mare-essentia';
   const git = (...args) => execFileSync('git', args, { stdio: ['ignore', 'pipe', 'ignore'] });
   try {
@@ -358,14 +390,20 @@ function readStudioVisualOrder(ref, coverage = {}) {
     const images = [];
     const labels = [];
     const digest = crypto.createHash('sha256');
+    // [화면→책임 코드] 한 번에 보내는 촬영본은 같은 책임 파일로 이어지는 장면만 묶는다.
+    let bound = null;
     for (const row of report.log || []) {
       const label = row.capture;
       if (typeof label !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(label) || labels.includes(label) || reviewed.has(label)) continue;
+      const src = captureSource(process.cwd(), label);
+      // 책임 함수를 찾지 못한 장면은 보내지 않는다(어느 코드를 고칠지 모르는 시각 지시 방지).
+      if (!src || (bound && src.sourceFile !== bound.sourceFile)) continue;
       const file = ['png', 'jpg'].map(ext => label + '-0.' + ext).find(name => files.has(name));
       if (!file || Number(git('cat-file', '-s', commit + ':' + file)) > 2 * 1024 * 1024) continue;
       const bytes = git('show', commit + ':' + file);
       const png = file.endsWith('.png');
       if (png ? !bytes.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex')) : !bytes.subarray(0, 3).equals(Buffer.from('ffd8ff', 'hex'))) continue;
+      if (!bound && src) bound = src;
       labels.push(label);
       digest.update(label + '\0');
       digest.update(bytes);
@@ -389,7 +427,9 @@ function readStudioVisualOrder(ref, coverage = {}) {
         if (st.isFile() && !st.isSymbolicLink()) knownFiles.add(candidate);
       }
     }
-    const sourceFile = knownFiles.size === 1 ? [...knownFiles][0] : '';
+    // 콘솔 오류가 가리킨 실제 파일이 우선이고, 없으면 촬영 장면의 책임 함수로 연결한다.
+    const sourceFile = knownFiles.size === 1 ? [...knownFiles][0] : (bound?.sourceFile || '');
+    const sourceLine = knownFiles.size === 1 ? 1 : (bound?.sourceLine || 1);
     return {
       images,
       labels,
@@ -398,9 +438,11 @@ function readStudioVisualOrder(ref, coverage = {}) {
         game,
         kind: 'visual',
         sourceFile,
+        sourceLine,
         fingerprint: game + ':visual:' + digest.digest('hex'),
         text: 'Studio capture steps: ' + labels.join(', ') +
-          (sourceFile ? '. Verified failing source: ' + sourceFile + '. Evidence: ' + evidence[0]?.slice(0, 300) : '') +
+          (knownFiles.size === 1 ? '. Verified failing source: ' + sourceFile + '. Evidence: ' + evidence[0]?.slice(0, 300)
+            : bound ? '. Screen is drawn by ' + bound.sourceFunction + ' in ' + bound.sourceFile + ':' + bound.sourceLine : '') +
           '. Inspect visible character proportions, clothing, TextButton, ScreenGui, UIListLayout, Position, Lighting and Material defects. Fix only a defect supported by this source.'
       }
     };

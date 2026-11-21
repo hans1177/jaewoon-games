@@ -454,3 +454,19 @@ test('증거가 준 책임 함수 줄을 중심으로 큰 파일 발췌를 만�
   assert.ok(ctx[0].from <= 200 && ctx[0].to >= 200, '책임 함수 줄이 발췌에 포함되어야 한다');
   assert.match(ctx[0].body, /function Pose\.work/);
 });
+
+test('Studio 촬영 장면을 실제 책임 함수의 파일·줄로 연결한다', async () => {
+  const { captureSource } = await import('../tools/vibe-brain.mjs');
+  const cases = {
+    tab_trade: /openTradeHall/, ui_yard_inline: /renderYard/, qa_click_codex_to_tech: /RENDERERS\.tech/,
+    harbor_motion_walk: /Pose\.makeR15Action/, harbor_npc_face_front: /drawFace/, field_entry: /FieldScene\.start/,
+    v1_start: /VoyageScene\.play/, b2_mid: /NavalBattle\.play/
+  };
+  for (const [label, re] of Object.entries(cases)) {
+    const src = captureSource(process.cwd(), label);
+    assert.ok(src, label + ' 책임 코드 없음');
+    const line = fs.readFileSync(src.sourceFile, 'utf8').split('\n')[src.sourceLine - 1];
+    assert.match(line, re, label);
+  }
+  assert.equal(captureSource(process.cwd(), 'c00_start'), null, '알 수 없는 장면은 추측하지 않는다');
+});
