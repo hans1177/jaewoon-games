@@ -36,6 +36,37 @@ jobs:
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 50
     steps:
+      - name: Free runner E drive space
+        # [실행기 공간 정리] 이전 작업이 남긴 촬영본·빌드 place·로그·임시 폴더만 지운다.
+        # 저장소 작업 트리(.git 포함 폴더)와 러너 도구(_tool, _actions)는 건드리지 않는다.
+        # 촬영본은 mare-essentia-studio-frames 브랜치에 이미 보관되므로 로컬 사본은 필요 없다.
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $temp = [IO.Path]::GetFullPath($env:RUNNER_TEMP)
+          $work = Split-Path $temp -Parent
+          $drive = [IO.DriveInfo]::new([IO.Path]::GetPathRoot($temp))
+          Write-Host "RUNNER_DISK_FREE_MB_BEFORE=$([math]::Round($drive.AvailableFreeSpace/1MB))"
+          foreach ($dir in @(Get-ChildItem -LiteralPath $work -Directory -Force -ErrorAction SilentlyContinue)) {
+            $sum = (Get-ChildItem -LiteralPath $dir.FullName -Recurse -File -Force -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum
+            Write-Host "RUNNER_DISK_USAGE_MB=$([math]::Round($sum/1MB)) $($dir.Name)"
+          }
+          $cut = (Get-Date).AddHours(-6)
+          # 1) 이번 작업 이외의 오래된 임시 폴더·파일
+          Get-ChildItem -LiteralPath $temp -Force -ErrorAction SilentlyContinue |
+            Where-Object { $_.LastWriteTime -lt $cut } |
+            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+          # 2) 작업 폴더 안 촬영본·place·로그·압축 (저장소 추적 파일 제외)
+          $keep = '\\(_tool|_actions|_temp)\\|\\\.git\\'
+          $trees = @(Get-ChildItem -LiteralPath $work -Directory -Recurse -Depth 3 -Force -Filter '.git' -ErrorAction SilentlyContinue | ForEach-Object { $_.Parent.FullName + '\' })
+          $removed = 0; $freed = 0
+          Get-ChildItem -LiteralPath $work -Recurse -File -Force -Include *.jpg,*.jpeg,*.png,*.rbxl,*.rbxlx,*.log,*.zip,*.mp4,*.webm -ErrorAction SilentlyContinue |
+            Where-Object { $_.LastWriteTime -lt $cut -and $_.FullName -notmatch $keep } |
+            Where-Object { $f = $_.FullName; -not ($trees | Where-Object { $f.StartsWith($_, [StringComparison]::OrdinalIgnoreCase) }) } |
+            ForEach-Object { $freed += $_.Length; $removed++; Remove-Item -LiteralPath $_.FullName -Force -ErrorAction SilentlyContinue }
+          Write-Host "RUNNER_DISK_REMOVED_FILES=$removed RUNNER_DISK_REMOVED_MB=$([math]::Round($freed/1MB))"
+          $drive = [IO.DriveInfo]::new([IO.Path]::GetPathRoot($temp))
+          Write-Host "RUNNER_DISK_FREE_MB_AFTER=$([math]::Round($drive.AvailableFreeSpace/1MB))"
       - uses: actions/checkout@v4
         with:
           path: main
