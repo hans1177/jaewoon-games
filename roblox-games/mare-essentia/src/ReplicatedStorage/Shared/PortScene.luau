@@ -2234,7 +2234,8 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			end
 		end
 		if has.dog then
-			roam("dog", Vector3.new(-2, 0, 24), 6)
+			-- [중앙광장 공터] 개 집 위치(+왕복 6스터드)가 광장 반경 26 안으로 들어오지 않게 광장 밖에 둔다.
+			roam("dog", Vector3.new(-2, 0, 35), 6)
 		end
 	end
 	-- 순찰: 큰길을 오가며 두리번거리는 경비 (2단계부터)
