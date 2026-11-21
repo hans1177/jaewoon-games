@@ -77,7 +77,7 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
     // 이 집계는 학습 자격을 새로 부여하지 않으며 기존 QA/런타임/프로젝트 기준을 유지한다.
     practiceOnlyTextSamples: rawRecords.filter((record) => hasTextSample(record)
       && (record?.practiceOnly === true || record?.trainingSample?.practiceOnly === true)).length,
-    textWithoutVerifiedRuntime: rawRecords.filter((record) => hasTextSample(record)
+    textWithoutCompleteVerification: rawRecords.filter((record) => hasTextSample(record)
       && !isVerifiedPass(record)).length,
     evidenceOnlyIndependentQaPass: rawRecords.filter((record) => !hasTextSample(record)
       && independentPass(record)).length,
