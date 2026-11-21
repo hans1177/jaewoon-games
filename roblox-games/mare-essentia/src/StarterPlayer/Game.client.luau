@@ -2091,15 +2091,19 @@ function H.layoutBook()
   -- [낮은 가로 화면] 가로폰·작은 창은 탭을 머리줄(제목·자금 오른쪽, X 왼쪽)로 올려 본문 높이를 확보한다.
   local headerTabs, headerTabW = false, 0
   if wide and tabs and height > 0 and height < 600 then
-    local leftReserve = 236 + (if H.menuStatusLabel.Visible then statusWidth + 8 else 0)
+    -- 자금 표시는 머리줄 탭 모드에서 220px로 줄여 탭 4개(서재)도 한 줄에 들어가게 한다.
+    local leftReserve = 236 + (if H.menuStatusLabel.Visible then math.min(statusWidth, 220) + 8 else 0)
     headerTabW = math.floor((width - leftReserve - 64 - math.max(0, tabCount - 1) * 6) / math.max(1, tabCount))
     headerTabs = headerTabW >= 104
   end
+  H.headerTabs = headerTabs
   if headerTabs then
     sectionTop = 8
     H.menuRecentButton.Visible = false
     H.menuStatusLabel.AnchorPoint = Vector2.zero
     H.menuStatusLabel.Position = UDim2.fromOffset(236, topY)
+    H.menuStatusLabel.Size = UDim2.fromOffset(math.min(statusWidth, 220), rowH)
+    H.menuStatusLabel.TextSize = 15
     headerLabel.Size = UDim2.fromOffset(150, 29)
     H.pageDetails.Size = UDim2.fromOffset(150, 18)
   end
@@ -3179,7 +3183,7 @@ function H.updateHud(p, ship)
 	hullFill.BackgroundColor3 = if ship.hull / math.max(1, ship.maxHull) < 0.35 then Color3.fromRGB(255, 80, 40) else Color3.fromRGB(214, 40, 36)
 	H.hudShip.Text = string.format("화물 %d/%d · 명성 %d", ship.cargoUsed, ship.cargoCapacity, p.fame)
 	H.hudCoin.Text = tostring(p.coins) .. " 코인"
-	H.menuStatusLabel.Text = H.statusMoneyCargo(p, ship, mainInner.AbsoluteSize.X < 740)
+	H.menuStatusLabel.Text = H.statusMoneyCargo(p, ship, mainInner.AbsoluteSize.X < 740 or H.headerTabs == true)
 	-- [상황별 표시] 실제 서버 스냅샷의 현재 상태만 사용하고 새 저장 키를 만들지 않는다.
 	local lowPrice = false
 	if (ship.cargoCapacity or 0) > (ship.cargoUsed or 0) then
