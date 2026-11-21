@@ -895,7 +895,7 @@ export function applyVerifiedCodingCalibration(stateInput={},queueInput={}){
       for(const key of contextKeys){
         const row=calibration.contexts[key]||{verifiedSamples:0,highConfidenceSamples:0,highConfidenceFailures:0,firstCandidatePasses:0,semanticHardGatePasses:0,lastEvidence:null,lastUpdatedAt:null};
         row.verifiedSamples+=1;
-        if(confidence==='HIGH'){row.highConfidenceSamples+=1;if(outcome==='REGRESSION_FAIL')row.highConfidenceFailures+=1;}
+        if(confidence==='HIGH'){row.highConfidenceSamples+=1;if(outcome!=='PASS')row.highConfidenceFailures+=1;}
         if(outcome==='PASS'&&lastEvidenceMarker(evidence,'coding-candidate-first-attempt:')==='YES')row.firstCandidatePasses+=1;
         if(outcome==='PASS'&&lastEvidenceMarker(evidence,'coding-semantic-diff-mode:')==='HARD_ENFORCE'&&lastEvidenceMarker(evidence,'coding-semantic-diff-pass:')==='YES')row.semanticHardGatePasses+=1;
         row.lastEvidence=eventId;row.lastUpdatedAt=new Date().toISOString();calibration.contexts[key]=row;
