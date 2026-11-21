@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/company-roblox-runner-pwsh-bootstrap.yml'
+      # [기존 복구] 책임 PowerShell 변경 시 현재 연결된 윈도우 러너로 바로 설치 갱신.
+      - 'tools/install-roblox-studio-autostart.ps1'
+      - 'tools/roblox-studio-autostart-supervisor.ps1'
   workflow_dispatch:
   # [C 드라이브] 로그인된 기존 Roblox PC 실행기로 매일 안전한 파일만 정리한다.
   schedule:
@@ -282,6 +285,9 @@ jobs:
             exit 0
           }
 
+          # [연결] 이미 검증한 원본 러너 경로를 이어지는 Studio 감독 설치에서 재사용한다.
+          if ($runnerRoot -match '[\r\n]') { throw 'ROBLOX_RUNNER_ROOT_INVALID' }
+          "STUDIO_RECOVERY_RUNNER_ROOT=$runnerRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           $listenerExe = Join-Path $runnerRoot 'bin\Runner.Listener.exe'
           if ([int](Get-Process -Id $PID).SessionId -le 0) {
             Write-Host 'ROBLOX_RUNNER_STARTUP=BLOCKED_SERVICE_SESSION_PRESERVE_EXISTING_USER_LOGON_SHORTCUT'
@@ -408,15 +414,62 @@ jobs:
           Write-Host 'ROBLOX_STUDIO_USER_PROFILE_PRESERVED=YES'
           Write-Host 'ROBLOX_RUNNER_HIDDEN_BOOTSTRAP=PASS'
 
-      - name: Checkout native recording setup without downloading game assets
-        if: github.event_name != 'schedule'
+      - name: Checkout existing Windows recovery and native recording tools
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
           filter: blob:none
           sparse-checkout: |
             tools
+
+      - name: Refresh existing Studio self-recovery on authenticated Windows
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # [안전] 임의 로그인·새 러너 등록 없이 현재 인증된 대화형 Windows 세션에서만 설정한다.
+          $session = [int](Get-Process -Id $PID).SessionId
+          $console = (Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue).UserName
+          if ($session -le 0 -or -not $console -or
+              $console -ine [Security.Principal.WindowsIdentity]::GetCurrent().Name) {
+            Write-Host 'STUDIO_RECOVERY_INSTALL=DEFERRED_INTERACTIVE_USER_REQUIRED'
+            exit 0
+          }
+          $runnerRoot = [string]$env:STUDIO_RECOVERY_RUNNER_ROOT
+          if (-not $runnerRoot -or -not (Test-Path -LiteralPath (Join-Path $runnerRoot '.credentials'))) {
+            Write-Host 'STUDIO_RECOVERY_INSTALL=DEFERRED_REGISTERED_RUNNER_REQUIRED'
+            exit 0
+          }
+          $metadata = Get-Content -LiteralPath (Join-Path $runnerRoot '.runner') -Raw | ConvertFrom-Json
+          if ([string]$metadata.gitHubUrl -ne 'https://github.com/hans1177/jaewoon-games' -or
+              [string]$metadata.agentName -ne ('roblox-studio-' + $env:COMPUTERNAME)) {
+            throw 'STUDIO_RECOVERY_INSTALL=WRONG_REGISTERED_RUNNER'
+          }
+          # [소스 일치] 중앙 main 의 정확한 실행 커밋과 다른 작업 디렉터리는 설치하지 않는다.
+          $checkedOutSha = (& git -C $env:GITHUB_WORKSPACE rev-parse HEAD).Trim()
+          if ($checkedOutSha -ne $env:GITHUB_SHA) { throw 'STUDIO_RECOVERY_INSTALL=STALE_CHECKOUT' }
+          $supervisor = Join-Path $env:GITHUB_WORKSPACE 'tools\roblox-studio-autostart-supervisor.ps1'
+          $installer = Join-Path $env:GITHUB_WORKSPACE 'tools\install-roblox-studio-autostart.ps1'
+          if (-not (Test-Path -LiteralPath $supervisor) -or -not (Test-Path -LiteralPath $installer)) {
+            throw 'STUDIO_RECOVERY_INSTALL=MAIN_SOURCE_MISSING'
+          }
+          $stateDir = Join-Path $env:LOCALAPPDATA 'JaewoonRobloxStudioAutostart'
+          $installed = Join-Path $stateDir 'roblox-studio-autostart-supervisor.ps1'
+          $task = Get-ScheduledTask -TaskName 'JaewoonRobloxStudioAutostart' -ErrorAction SilentlyContinue
+          if ($task -and (Test-Path -LiteralPath $installed -PathType Leaf) -and
+              (Get-FileHash -LiteralPath $installed -Algorithm SHA256).Hash -eq
+              (Get-FileHash -LiteralPath $supervisor -Algorithm SHA256).Hash) {
+            Write-Host 'STUDIO_RECOVERY_INSTALL=VERIFIED_EXISTING_SUPERVISOR'
+            exit 0
+          }
+          # [기존 함수] 설치기는 기존 Runner watcher 를 재사용하고, 사용자 설정의 명시적 OFF를 보존한다.
+          & $installer -RunnerRoot $runnerRoot
+          if (-not (Test-Path -LiteralPath $installed -PathType Leaf) -or
+              (Get-FileHash -LiteralPath $installed -Algorithm SHA256).Hash -ne
+              (Get-FileHash -LiteralPath $supervisor -Algorithm SHA256).Hash) {
+            throw 'STUDIO_RECOVERY_INSTALL=INSTALLED_SOURCE_MISMATCH'
+          }
+          Write-Host 'STUDIO_RECOVERY_INSTALL=SUPERVISOR_UPDATED_MCP_PLAY_NOT_VERIFIED'
 
       - name: Restore real Roblox Player recording on existing interactive Windows runner
         if: github.event_name != 'schedule'
