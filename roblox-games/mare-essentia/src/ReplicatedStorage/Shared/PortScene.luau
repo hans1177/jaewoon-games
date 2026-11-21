@@ -7205,11 +7205,27 @@ function PortScene.build(info, onFacility)
 	end
 
 	sliceMark("beforeDestroyOld")
+	-- [교체 분할] 실측(44926863645): 기존 항구 한 번에 삭제 529ms + 새 항구 한 번에 workspace 연결 584ms가
+	-- 같은 프레임에 몰려 최대 1.46초 멈춤. 최상위 묶음 단위로 나눠 프레임 예산 안에서 지우고 붙인다.
+	-- (양보할 수 없는 문맥에서는 sliceYield가 그대로 진행해 기존처럼 한 번에 처리된다.)
 	if old and old.Parent then
+		for _, child in old:GetChildren() do
+			child:Destroy()
+			sliceYield("destroyOld")
+		end
 		old:Destroy()
 	end
 	sliceMark("destroyOld")
+	-- 새 항구는 빈 폴더를 먼저 연결하고, 묶음을 차례로 옮겨 붙인다(렌더·물리 등록 비용 분산).
+	local staged = folder:GetChildren()
+	local holder = Instance.new("Folder")
+	for _, child in staged do child.Parent = holder end
 	folder.Parent = workspace
+	for _, child in staged do
+		child.Parent = folder
+		sliceYield("parentToWorkspace")
+	end
+	holder:Destroy()
 	sliceMark("parentToWorkspace")
 
 	-- [마을 주민·건축물 간섭] 완성된 마을에서 초기 위치와 실제 이동 궤적을 확인한다.
