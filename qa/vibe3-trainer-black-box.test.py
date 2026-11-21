@@ -28,6 +28,8 @@ train_rows = [row]
 eval_rows = [dict(row)]
 manifest = {
     'version': 3,
+    # [QA fixture] Small black-box unit example is not a real official train/eval/holdout dataset.
+    'authority': 'PRACTICE_ONLY',
     'readyForTraining': True,
     'targetTaskType': 'qa',
     'seed': 20260910,

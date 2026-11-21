@@ -472,3 +472,59 @@ test('model-free graphics fails closed on licenses, invalid source pixels and un
   assert.throws(()=>Graphics.harmonizeSourceRaster({...valid,pixels:new Uint8Array([0,0,0,0]),
     source:{license:'CC0',sha256:'a'.repeat(64)}}),/GRAPHICS_SOURCE_FULLY_TRANSPARENT/);
 });
+
+
+// [바이브 5.9 전문 그래픽] 실제 화면 증거에 묶인 결함만 기존 그래픽 책임 파일로 배정한다.
+test('professional graphic defects route exact screenshot-bound source and reject forged findings',()=>{
+  const rev='graphic-rev-1',hash='a'.repeat(64),sourceHash='b'.repeat(64);
+  const finding={id:'uv-shading',sourcePath:'assets/vibe-visual-autopilot.js',
+    imageSha256:hash,sourceHash,candidateRevision:rev,observed:true,reviewed:true,
+    severity:'BLOCKER',observation:'real UV seam visible',targetId:'hero',property:'material',
+    region:{x:.1,y:.2,width:.4,height:.3}};
+  const files=['assets/vibe-visual-autopilot.js','web-games/demo/ui/hud.css'];
+  const planned=Graphics.planGraphicsImplementation({files,observedFindings:[finding],candidateRevision:rev});
+  assert.equal(planned.run,true);
+  assert.equal(planned.scope[0],finding.sourcePath);
+  assert.equal(planned.tasks[0].findings[0].id,finding.id);
+  assert.equal(planned.tasks[0].recaptureRequired,true);
+  assert.equal(planned.visualRuntimePass,false);
+  assert.equal(planned.productionVerified,false);
+  for(const broken of [
+    {...finding,candidateRevision:'stale'}, {...finding,sourcePath:'../save.js'},
+    {...finding,sourcePath:'GameCore.cs'}, {...finding,imageSha256:'fake'},
+    {...finding,region:{x:.8,y:.5,width:.4,height:.6}},
+    {...finding,observed:false},{...finding,reviewed:false}
+  ]){
+    const result=Graphics.planGraphicsImplementation({files,observedFindings:[broken],candidateRevision:rev});
+    assert.equal(result.run,false);
+    assert.equal(result.acceptedFindings.length,0);
+    assert.equal(result.rejectedFindings.length,1);
+  }
+  assert.ok(Graphics.inferVisualAnomalies('재질 플라스틱 광택 과도').includes('PBR_SURFACE_MISMATCH'));
+  assert.ok(Graphics.inferVisualAnomalies('카메라 시야 차단').includes('CAMERA_SUBJECT_OCCLUDED'));
+});
+
+test('professional visual budget responds to measured GPU resources without hiding gameplay',()=>{
+  const frames=Array(60).fill(16),hash='a'.repeat(64);
+  const base=Graphics.deviceVisualBudget('HIGH',{runtimeVerified:true,targetFps:60,observedFps:60,
+    samples:frames.length,frameTimesMs:frames});
+  const pressured=Graphics.deviceVisualBudget('HIGH',{runtimeVerified:true,targetFps:60,
+    observedFps:60,samples:frames.length,frameTimesMs:frames,
+    resources:{observed:true,source:'native-runtime-telemetry',captureHash:hash,deviceId:'phone',
+      memoryPeakMb:1024,drawCalls:600,visibleTriangles:600000}});
+  assert.equal(pressured.resourceObserved,true);
+  assert.equal(pressured.adaptive,true);
+  assert.ok(pressured.postFx<base.postFx);
+  assert.ok(pressured.distantEffects<base.distantEffects);
+  assert.equal(pressured.coreSilhouette,1);
+  assert.equal(pressured.attackReadability,1);
+  assert.equal(pressured.uiHud,1);
+  assert.equal(pressured.playerFeedback,1);
+  assert.equal(pressured.actualRendererMutationPerformed,false);
+  const forged=Graphics.deviceVisualBudget('HIGH',{runtimeVerified:true,targetFps:60,
+    observedFps:60,samples:frames.length,frameTimesMs:frames,
+    resources:{observed:true,source:'native-runtime-telemetry',captureHash:'bad',deviceId:'phone',
+      memoryPeakMb:10000,drawCalls:10000,visibleTriangles:10000000}});
+  assert.equal(forged.resourceObserved,false);
+  assert.equal(forged.postFx,base.postFx);
+});
