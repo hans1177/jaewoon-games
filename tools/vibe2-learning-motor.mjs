@@ -944,10 +944,12 @@ export function regressionHotspotRiskForTask({task={},stateInput={}}={}){
   entries.sort((a,b)=>{
     const aMatch=responsible.has(lower(a.name).replace(/\\/g,'/'))?1:0;
     const bMatch=responsible.has(lower(b.name).replace(/\\/g,'/'))?1:0;
-    return bMatch-aMatch||b.risk.score-a.risk.score||Number(b.verifiedRegressionFailures||0)-Number(a.verifiedRegressionFailures||0);
+    // 높은 회귀 위험은 담당 파일 우선순위 때문에 화면 밖으로 밀려나지 않아야 한다.
+    const priority={HIGH:2,MEDIUM:1,LOW:0};
+    return priority[b.risk.level]-priority[a.risk.level]||bMatch-aMatch||b.risk.score-a.risk.score||Number(b.verifiedRegressionFailures||0)-Number(a.verifiedRegressionFailures||0);
   });
   const top=entries.slice(0,8);
-  const riskLevel=top.some(row=>row.risk.level==='HIGH')?'HIGH':top.some(row=>row.risk.level==='MEDIUM')?'MEDIUM':'LOW';
+  const riskLevel=entries.some(row=>row.risk.level==='HIGH')?'HIGH':entries.some(row=>row.risk.level==='MEDIUM')?'MEDIUM':'LOW';
   return{riskLevel,entries:top,requiresFocusedDependentQa:riskLevel!=='LOW',preferVerifiedStrategy:riskLevel!=='LOW',increaseCandidateDiversity:riskLevel==='HIGH',writableScopeExpansionAllowed:false,authorityExpanded:false};
 }
 export function codingRiskGuidance({calibration={},hotspot={}}={}){
