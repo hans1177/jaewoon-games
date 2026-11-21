@@ -29,6 +29,24 @@ function verifiedSample({ project, index, taskType = 'bugfix' }) {
   };
 }
 
+test('같은 소스 리비전의 실행 증거와 학습 문답 연결 상태를 진단하되 자동 승인하지 않는다', () => {
+  const text = { ...verifiedSample({ project: 'P0001', index: 1, taskType: 'coding' }), createdAt: '2026-11-19T10:00:00Z' };
+  const records = [
+    entry(text, 0),
+    entry({ sourceRevision: text.sourceCommit, createdAt: '2026-11-20T10:00:00Z', independentQa: 'PASS' }, 1),
+    entry({ sourceRevision: 'unrelated-commit', createdAt: '2026-09-01T10:00:00Z', independentQa: 'PASS' }, 2),
+    entry({ independentQa: 'PASS' }, 3),
+  ];
+  const status = buildDistillationStatus(records);
+  assert.equal(status.diagnostics.evidenceOnlyRecords, 3);
+  assert.equal(status.diagnostics.evidenceOnlyWithSourceRevision, 2);
+  assert.equal(status.diagnostics.evidenceOnlyLinkedToTextSample, 1);
+  assert.equal(status.diagnostics.evidenceOnlyUnlinkedToTextSample, 2);
+  assert.equal(status.diagnostics.latestDatedRecord, '2026-11-20');
+  assert.equal(status.diagnostics.recordsFromNovember2026, 2);
+  assert.equal(status.readyTasks.length, 0);
+});
+
 test('성공 근거만 있고 학습 텍스트가 없으면 학습 준비로 보지 않는다', () => {
   const records = Array.from({ length: 20 }, (_, index) => entry({
     id: `evidence-${index}`,
