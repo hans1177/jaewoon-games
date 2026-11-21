@@ -2078,8 +2078,8 @@ function H.layoutBook()
   local facilityDetail = currentTab == "trade" or currentTab == "yard"
   -- [방문 메뉴 중복 제거] 교역·조선 상세장부에 동일한 자금/최근 메뉴가 있어
   -- 공통 헤더 표시만 숨긴다. 거래·정비·최근 이동 동작은 기존 상세장부를 사용한다.
-  H.menuStatusLabel.Visible = not facilityDetail
-  H.menuRecentButton.Visible = recent and not facilityDetail
+  H.menuStatusLabel.Visible = true
+  H.menuRecentButton.Visible = recent
   local gallery = H.galleryImage.Image ~= "" and not facilityDetail and view ~= nil and not newGameMode
     and currentTab ~= "map" and currentTab ~= "codex" and currentTab ~= "encyclopedia" and currentTab ~= "market"
   local wide = width >= 740
