@@ -158,7 +158,8 @@ test('Studio recovery supervises GUI hang safely without fabricating MCP play ev
   assert.match(supervisor,/GUI_RESPONSIVE_MCP_UNVERIFIED/);
   assert.match(supervisor,/\[string\]::Equals\(\[IO\.Path\]::GetFullPath\(\$p\.Path\),\$expected/);
   assert.doesNotMatch(supervisor,/\.StartsWith\(\$root/);
-  assert.match(installer,/\$startStudio = -not \[bool\]\$DisableStudioAutostart/);
+  assert.match(installer,/\$startStudio = \[bool\]\$previous\.startStudio/);
+  assert.match(installer,/if \(\$DisableStudioAutostart\) \{ \$startStudio = \$false \}/);
   assert.match(installer,/\[switch\]\$KeepStudioOpen/);
   assert.match(installer,/\[switch\]\$DisableStudioAutostart/);
   assert.match(supervisor,/startStudio = \$true; startRunner = \$true/);
