@@ -4713,3 +4713,21 @@ test('Mare central plaza is reserved as empty walking space and all original civ
   assert.match(check.code,/plaza_structures=0 inspected=%d/);
   assert.equal(town.length,45,'all existing town screenshots, game layout checks and capture stages must remain');
 });
+
+
+// [대항해시대 실기 회귀] 캡처 35단계에서 실제로 실패한 시설 아이콘 위치를 원본 UI 책임 함수로 검증한다.
+test('Mare facility icon desktop inset matches actual Studio QA without changing mobile touch layout',()=>{
+  const source=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  const iconCheck=steps[35];
+  assert.equal(steps.length,243,'existing game interaction and screenshot stages must remain intact');
+  assert.equal(iconCheck.type,'luau');
+  assert.match(iconCheck.code,/FACILITY_ICON_NOT_INSIDE_TAB:/);
+  assert.match(iconCheck.code,/icon\.Position\.X\.Offset==7 or icon\.Position\.X\.Scale==0\.5/);
+  assert.match(iconCheck.code,/icon\.BackgroundTransparency==1/);
+  // Desktop has a left-aligned icon, portrait mobile keeps its existing centered 26px icon.
+  assert.match(source,/icon\.Position = if compactTabs then UDim2\.new\(0\.5, -13, 0, 3\) else UDim2\.new\(0, 7, 0\.5, -13\)/);
+  assert.match(source,/local icon = modelIcon\(b, if atlas then "FacilityArt" else ti\[1\], if atlas then id else ti\[2\], nil, 26, TAB_NAME\[id\]\)/);
+  assert.match(source,/caption\.Position = if compactTabs then UDim2\.fromOffset\(4, 29\) else UDim2\.fromOffset\(44, 0\)/);
+  assert.doesNotMatch(source,/icon\.Position = if compactTabs then UDim2\.new\(0\.5, -13, 0, 3\) else UDim2\.new\(0, 10, 0\.5, -13\)/);
+});

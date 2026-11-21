@@ -2105,7 +2105,9 @@ function H.layoutBook()
       local icon = button:FindFirstChild("TabIcon")
       local caption = button:FindFirstChild("PrintedCaption")
       if icon then
-        icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 10, 0.5, -13)
+        -- [실기 QA] 넓은 화면도 탭 제작 기본값인 7px을 유지해 황동 아이콘과 인쇄 글자 간격을 일치시킨다.
+        -- 좁은 모바일 탭의 중앙 정렬, 기존 26px 원화, UIScale·클릭 영역은 그대로 보존한다.
+        icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 7, 0.5, -13)
       end
       if icon and caption then
         caption.Position = if compactTabs then UDim2.fromOffset(4, 29) else UDim2.fromOffset(44, 0)
