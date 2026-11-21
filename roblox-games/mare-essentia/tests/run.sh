@@ -93,8 +93,32 @@ if 'entry.light.Brightness = entry.brightness * (0.16 + 2.15 * night)' not in wi
     raise SystemExit("MARE_PORT_DAY_NIGHT_LIGHT_CYCLE_CHANGED")
 if 'window.Transparency = math.clamp(0.92 - night * 0.78, 0.14, 0.92)' not in window:
     raise SystemExit("MARE_PORT_WINDOW_NIGHT_GLOW_CHANGED")
+# [승인된 모델] 원래 Loader에서 실측 3축 크기·NaN·무한값을 감사하고 원본 모델은 교체하지 않는다.
+root = Path(sys.argv[1]).parents[3]
+loader = (root / "src/ServerScriptService/AssetLoader.server.luau").read_text(encoding="utf-8")
+if 'pcall(model.GetBoundingBox, model)' not in loader:
+    raise SystemExit("MARE_MODEL_REAL_BOUNDS_AUDIT_MISSING")
+if 'bounds.X > 0.0001 and bounds.Y > 0.0001 and bounds.Z > 0.0001' not in loader:
+    raise SystemExit("MARE_MODEL_EMPTY_GEOMETRY_CHECK_MISSING")
+if 'bounds.X < math.huge and bounds.Y < math.huge and bounds.Z < math.huge' not in loader:
+    raise SystemExit("MARE_MODEL_INVALID_GEOMETRY_CHECK_MISSING")
+if 'if studioAudit then\n\t\t\t\t\t\tgeometryChecked += 1' not in loader:
+    raise SystemExit("MARE_MODEL_AUDIT_MUST_NOT_ALTER_LIVE_GAME")
+if 'MareModelGeometryAuditState' not in loader or 'MareModelGeometryAudit' not in loader:
+    raise SystemExit("MARE_MODEL_GEOMETRY_AUDIT_RESULT_MISSING")
+# [R15 보정] 기존 관절을 중복 생성하지 않으면서 부족한 관절과 180도 뒤집힌 팔을 복구한다.
+pose = (root / "src/ReplicatedStorage/Shared/Pose.luau").read_text(encoding="utf-8")
+if 'if joints < 15 and humanoid then' not in pose:
+    raise SystemExit("MARE_R15_INCOMPLETE_JOINT_REPAIR_REQUIRED")
+if 'and not p1:FindFirstChild(link[1]) then' not in pose:
+    raise SystemExit("MARE_R15_EXISTING_JOINT_MUST_BE_PRESERVED")
+if 'if axis.Magnitude < 1e-4 then\n\t\taxis = Vector3.new(1, 0, 0)' not in pose:
+    raise SystemExit("MARE_R15_OPPOSITE_ARM_AXIS_REPAIR_REQUIRED")
+if 'if angle < 0.15 then' not in pose:
+    raise SystemExit("MARE_R15_NEUTRAL_ARM_POSE_MUST_BE_PRESERVED")
 print("MARE_PORT_OFFSCREEN_VISUAL_GATE=PASS")
 print("MARE_PORT_LIGHT_LIFECYCLE=PASS")
+print("MARE_MODEL_GEOMETRY_AND_R15_REPAIR=PASS")
 PY
 
 echo "== 무기 연타·아이콘 스킬·저장 회귀 검사 =="
