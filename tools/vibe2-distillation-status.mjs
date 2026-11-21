@@ -44,6 +44,20 @@ function hasTextSample(record) {
   return Boolean(String(sample?.instruction ?? '').trim() && String(sample?.output ?? '').trim());
 }
 
+// [학습 연결 진단] 실제 소스 리비전이 같은 증거와 학습 문답만 연결한다.
+// QA 통과나 학습 승인 여부는 기존 검증 함수만 결정한다.
+function sourceRevision(record) {
+  const value = record?.sourceCommit ?? record?.sourceRevision ?? record?.trainingSample?.sourceCommit ?? record?.provenance?.sourceCommit;
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+function learningDate(record) {
+  const value = record?.createdAt ?? record?.recordedAt ?? record?.timestamp ?? record?.trainingSample?.createdAt;
+  if (typeof value !== 'string' || !/^\\d{4}-\\d{2}-\\d{2}/.test(value)) return '';
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 10) : '';
+}
+
 function independentPass(record) {
   const qa = record?.qa && typeof record.qa === 'object' ? record.qa : {};
   return String(qa.independentQa ?? qa.independent ?? record?.independentQa ?? '').toUpperCase() === 'PASS';
@@ -66,6 +80,9 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
   } = options;
 
   const rawRecords = recordsWithSource.map((entry) => entry.record);
+  const textRevisions = new Set(rawRecords.filter(hasTextSample).map(sourceRevision).filter(Boolean));
+  const evidenceOnly = rawRecords.filter((record) => !hasTextSample(record));
+  const dated = rawRecords.map(learningDate).filter(Boolean).sort();
   const diagnostics = {
     records: rawRecords.length,
     textSamples: rawRecords.filter(hasTextSample).length,
@@ -73,6 +90,11 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
     browserQaPass: rawRecords.filter(browserPass).length,
     fullyVerifiedTextSamples: rawRecords.filter((record) => hasTextSample(record) && isVerifiedPass(record)).length,
     evidenceOnlyRecords: rawRecords.filter((record) => !hasTextSample(record)).length,
+    evidenceOnlyWithSourceRevision: evidenceOnly.filter(sourceRevision).length,
+    evidenceOnlyLinkedToTextSample: evidenceOnly.filter((record) => sourceRevision(record) && textRevisions.has(sourceRevision(record))).length,
+    evidenceOnlyUnlinkedToTextSample: evidenceOnly.filter((record) => !sourceRevision(record) || !textRevisions.has(sourceRevision(record))).length,
+    latestDatedRecord: dated.at(-1) ?? null,
+    recordsFromNovember2026: rawRecords.filter((record) => learningDate(record).startsWith('2026-11-')).length,
     // [학습 병목] 외부 플레이 연습·불완전 검증·텍스트 없는 실행 증거는 각각 구분한다.
     // 이 집계는 학습 자격을 새로 부여하지 않으며 기존 QA/런타임/프로젝트 기준을 유지한다.
     practiceOnlyTextSamples: rawRecords.filter((record) => hasTextSample(record)
