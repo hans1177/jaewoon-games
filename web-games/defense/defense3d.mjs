@@ -75,15 +75,23 @@ export function createDefense3d({canvas,PATH_N,PADS_N}){
  }
  for(const k of ENEMY_KINDS)enemyMesh.set(k,instance(enemyGeometries[k],enemyMaterials[k],ENEMY_INITIAL_CAP));
  for(const k of TOWER_KINDS)shotMesh.set(k,instance(shotGeometry,shotMaterials[k],SHOT_INITIAL_CAP));
- let width=1,height=1,worldWidth=1,worldDepth=1,disposed=false;
+ let width=0,height=0,worldWidth=1,worldDepth=1,disposed=false;
  const pickRay=new THREE.Raycaster(),pointer=new THREE.Vector2(),floorPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
  const hit=new THREE.Vector3(),up=new THREE.Vector3(0,1,0);
  function box(parent,x,y,z,w,h,d,mat){
   const mesh=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),mat);
   mesh.position.set(x,y,z);mesh.scale.set(w,h,d);parent.add(mesh);return mesh;
  }
+ // [GPU 자원] 화면 재배치 전에 이전 경로 버퍼와 재질을 한 번씩 해제한다.
  function path(){
+  const oldGeometry=new Set(),oldMaterials=new Set();
+  for(const mesh of pathGroup.children){
+   if(mesh.geometry)oldGeometry.add(mesh.geometry);
+   for(const mat of (Array.isArray(mesh.material)?mesh.material:[mesh.material]))if(mat)oldMaterials.add(mat);
+  }
   pathGroup.clear();
+  for(const geometry of oldGeometry)geometry.dispose();
+  for(const mat of oldMaterials)mat.dispose();
   const points=PATH_N.map(p=>new THREE.Vector3(p[0]*worldWidth,.04,p[1]*worldDepth));
   const stone=material('#99886d'),edge=material('#535e49');
   for(let i=1;i<points.length;i++){
@@ -100,7 +108,9 @@ export function createDefense3d({canvas,PATH_N,PADS_N}){
   box(pathGroup,end.x,.98,end.z,.72,.21,.72,material('#c6d2bc'));
   box(pathGroup,end.x,.33,end.z+.43,.34,.58,.08,material('#3e2d2a'));
  }
+ // [GPU 자원] 재생성되는 건설 발판의 이전 버퍼와 재질을 즉시 해제한다.
  function rebuildPads(){
+  for(const pad of pads.children){pad.geometry?.dispose();pad.material?.dispose();}
   pads.clear();
   for(let i=0;i<PADS_N.length;i++){
    const p=PADS_N[i],base=new THREE.Mesh(
@@ -110,7 +120,11 @@ export function createDefense3d({canvas,PATH_N,PADS_N}){
   }
  }
  function resize(){
-  width=Math.max(1,innerWidth);height=Math.max(1,innerHeight);
+  if(disposed)return;
+  const nextWidth=Math.max(1,innerWidth),nextHeight=Math.max(1,innerHeight);
+  // [모바일] 동일한 크기의 반복 resize에는 GPU 경로/발판을 다시 만들지 않는다.
+  if(width===nextWidth&&height===nextHeight)return;
+  width=nextWidth;height=nextHeight;
   worldWidth=width/SCALE;worldDepth=height/SCALE;
   renderer.setSize(width,height,false);
   camera.aspect=width/height;camera.updateProjectionMatrix();
@@ -143,12 +157,15 @@ export function createDefense3d({canvas,PATH_N,PADS_N}){
  }
  function updateInstanced(mesh,items,fn){
   const target=grow(mesh,items.length);
+  // [GPU 대역폭] 비어 있는 적/투사체 집합은 인스턴스 행렬을 다시 올리지 않는다.
+  if(!items.length){target.count=0;return target;}
   for(let i=0;i<items.length;i++){tmp.position.set(0,0,0);tmp.scale.set(1,1,1);tmp.rotation.set(0,0,0);fn(items[i],i,tmp);tmp.updateMatrix();target.setMatrixAt(i,tmp.matrix);}
   target.count=items.length;target.instanceMatrix.needsUpdate=true;
   return target;
  }
  function render({state,selectedTower=null}){
-  if(disposed||!state)return;
+  // [배경 렌더] 게임 상태 갱신은 원래 tick 소유. 숨겨진 화면의 GPU 출력만 생략한다.
+  if(disposed||!state||document.hidden)return;
   const existing=new Set();
   for(const t of state.towers){
    existing.add(t.pad);
@@ -201,15 +218,19 @@ export function createDefense3d({canvas,PATH_N,PADS_N}){
  const onResize=()=>resize();
  addEventListener('resize',onResize);canvas.addEventListener('webglcontextlost',onLoss);
  canvas.addEventListener('webglcontextrestored',onRestore);resize();
+ // [GPU 정리] 동일 자원을 공유하는 인스턴스와 타워가 있으므로 유일 객체만 해제한다.
  function dispose(){
+  if(disposed)return;
   disposed=true;removeEventListener('resize',onResize);
   canvas.removeEventListener('webglcontextlost',onLoss);
   canvas.removeEventListener('webglcontextrestored',onRestore);
+  const geometries=new Set(),materials=new Set();
   scene.traverse(o=>{
-   o.geometry?.dispose?.();
-   const materials=Array.isArray(o.material)?o.material:o.material?[o.material]:[];
-   for(const m of materials)m?.dispose?.();
+   if(o.geometry)geometries.add(o.geometry);
+   for(const mat of (Array.isArray(o.material)?o.material:[o.material]))if(mat)materials.add(mat);
   });
+  for(const geometry of geometries)geometry.dispose();
+  for(const mat of materials)mat.dispose();
   renderer.dispose();
  }
  return {render,pick,resize,dispose};
