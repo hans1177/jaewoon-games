@@ -152,7 +152,19 @@ export function validateEdits(root, order, parsed, contextFiles = null) {
     cache[rel] = src.replace(e.search, () => e.replace);          // 같은 파일의 다음 수정이 앞 수정 뒤의 글을 보도록
   }
   if (changed > LIMITS.maxChangedLines) errs.push('TOO_MANY_LINES:' + changed);
+  // [화면 수정 관문] 촬영본 분석 결과는 실제 화면 속성을 바꿀 때만 채택한다.
+  // nil 보호·이름 변경처럼 화면에 보이지 않는 수정을 "그래픽 개선"으로 기록하지 않는다(실행 44911137530 PR #14071).
+  if (order.kind === 'visual' && !errs.length && !edits.some(e => visualDelta(e.search, e.replace))) errs.push('VISUAL_EDIT_NOT_ON_SCREEN');
   return errs;
+}
+
+// 바뀐 줄에서 화면 속성(크기·위치·색·글자·투명도·레이아웃·조명·재질·카메라)이 실제로 달라졌는지 본다.
+const VISUAL_TOKENS = /\b(Size|Position|AnchorPoint|UDim2?|Color3|BackgroundColor3|TextColor3|ImageColor3|TextSize|Font|TextScaled|TextWrapped|TextTruncate|Transparency|BackgroundTransparency|ImageTransparency|Visible|ZIndex|LayoutOrder|Padding|CellSize|CellPadding|AutomaticSize|ClipsDescendants|Brightness|Ambient|OutdoorAmbient|ClockTime|FogEnd|FogStart|Material|MaterialVariant|Reflectance|CastShadow|FieldOfView|CFrame|Scale|Offset)\b/;
+export function visualDelta(search, replace) {
+  const a = String(search || '').split('\n'), b = String(replace || '').split('\n');
+  const removed = a.filter(l => !b.includes(l)), added = b.filter(l => !a.includes(l));
+  return [...removed, ...added].some(l => VISUAL_TOKENS.test(l) && !/^\s*--/.test(l))
+    && !(removed.length && added.length && removed.join('\n').replace(/\s+or\s+\{\}/g, '') === added.join('\n').replace(/\s+or\s+\{\}/g, ''));
 }
 
 export function applyEdits(root, parsed, order = null, contextFiles = null) {
