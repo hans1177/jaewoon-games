@@ -1868,6 +1868,14 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$RUNNER_ARCH" = X64 ]; then
+            # [실제 렌더 의존성] 블렌더 실행 검증만으로는 EGL 기반 미리보기 렌더가 보장되지 않는다.
+            # 공식 캐시는 유지하고, 없는 시스템 라이브러리만 무료 Ubuntu 패키지로 보충한다.
+            if ! ldconfig -p | grep -F 'libEGL.so.1' >/dev/null; then
+              sudo apt-get update -y
+              sudo apt-get install -y --no-install-recommends libegl1 libgl1-mesa-dri
+            fi
+            ldconfig -p | grep -F 'libEGL.so.1' >/dev/null || { echo 'VIBE2_NATIVE_DCC_EGL_LIBRARY_MISSING' >&2; exit 1; }
+            echo 'VIBE2_NATIVE_DCC_EGL_LIBRARY=READY'
             runtime="$RUNNER_TEMP/vibe2-blender-4.5.15"
             executable="$runtime/blender-4.5.15-linux-x64/blender"
             if [ -x "$executable" ] && [ -f "$runtime/.official-sha256" ] \
@@ -1923,6 +1931,11 @@ jobs:
             echo 'VIBE2_NATIVE_DCC_CACHE=ARM_SYSTEM_PACKAGE'
           fi
           "$blender_binary" --version | head -n 1
+          # [실제 미리보기 검사] X64 공식 블렌더에서 동일한 EEVEE 엔진의 초소형 프레임을 렌더해 EGL 장애를 조기에 검출한다.
+          if [ "$RUNNER_ARCH" = X64 ]; then
+            "$blender_binary" --background --disable-autoexec --python-exit-code 1 --python-expr 'import bpy; s=bpy.context.scene; s.render.engine="BLENDER_EEVEE_NEXT"; s.render.resolution_x=16; s.render.resolution_y=16; s.render.resolution_percentage=100; cam=bpy.data.objects.new("DCC_EGL_SMOKE",bpy.data.cameras.new("DCC_EGL_SMOKE")); s.collection.objects.link(cam); s.camera=cam; bpy.ops.render.render(write_still=False)'
+            echo 'VIBE2_NATIVE_DCC_EGL_PREVIEW=PASS'
+          fi
           echo 'VIBE2_NATIVE_DCC_RUNTIME=BLENDER_READY'
 
       # [공용 캐시] 공식 해시/Blender 실행 검증 후에만 저장한다.
