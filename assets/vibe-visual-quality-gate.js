@@ -115,7 +115,10 @@ export function auditVibeRuntimeBeforeAfterComparison(evidence={}){
 export const VIBE_ART_DIRECTION_AXES=Object.freeze([
   'COMPOSITION_AND_FOCAL_HIERARCHY','SPATIAL_DEPTH_AND_SCALE','LIGHT_AND_VALUE_STRUCTURE',
   'MATERIAL_AND_SURFACE_COHESION','SILHOUETTE_AND_ASSET_FIT',
-  'UI_TYPOGRAPHY_AND_SPACING','COLOR_AND_STYLE_IDENTITY','MOTION_AND_EFFECT_READABILITY'
+  'UI_TYPOGRAPHY_AND_SPACING','COLOR_AND_STYLE_IDENTITY','MOTION_AND_EFFECT_READABILITY',
+  // [전문 그래픽 QA] 사진·소스·영역이 확인된 세부 전문 결함만 기존 감독에서 수락한다.
+  'MODEL_UV_TOPOLOGY','PBR_ROUGHNESS_METALNESS','RIG_ROOT_AND_CONTACT',
+  'CAMERA_SUBJECT_VISIBILITY','VFX_AUDIO_EVENT_SYNC','MOBILE_HUD_TOUCH_READABILITY'
 ]);
 function validArtDirectionCapture(capture={},revision=''){
   return ['runtime-capture','roblox-runtime-capture','internal-playtest-capture','golden-scene-capture']
