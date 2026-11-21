@@ -90,6 +90,7 @@ export function auditVibeRuntimeBeforeAfterComparison(evidence={}){
   if(comparison.pass!==true||comparison.visibleRenderDelta!==true)reasons.push('before-after-visible-render-delta-missing-or-failed');
   // [실화면 비교 감독] 픽셀 비교를 주장하는 경우 원본 이미지 해시와 동일 장면 조건을 검증한다.
   // [자동 재작업] 퇴보가 발견되면 통과시키지 않고 기존 아트 디렉션 책임 함수로 되돌린다.
+  const repairTargets=[];
   if(comparison.pixelVerified===true){
     const beforeHash=String(before.imageSha256||'').trim().toLowerCase();
     const afterHash=String(after.imageSha256||'').trim().toLowerCase();
@@ -100,7 +101,28 @@ export function auditVibeRuntimeBeforeAfterComparison(evidence={}){
       ||comparison.pixelReview?.afterSha256!==afterHash)
       reasons.push('before-after-source-bound-pixel-review-required');
     if(!Array.isArray(comparison.regressions))reasons.push('before-after-regression-review-required');
-    else if(comparison.regressions.length>0)reasons.push('before-after-visible-regression-detected');
+    else if(comparison.regressions.length>0){
+      reasons.push('before-after-visible-regression-detected');
+      // [그래픽 자동 재작업] 실제 확인된 퇴보만 기존 소스의 책임 위치에 연결한다.
+      // 출처가 없거나 게임 규칙/저장 구조를 건드리는 수정은 자동 실행하지 않는다.
+      const targets=Array.isArray(comparison.repairTargets)?comparison.repairTargets:[];
+      for(const issue of comparison.regressions){
+        const id=String(issue||'').trim();
+        const target=targets.find(row=>String(row?.issue||'').trim()===id);
+        const sourcePath=String(target?.sourcePath||'').replaceAll('\\\\','/').trim();
+        const safePath=/^(?:roblox-games|web-games|unity-games|assets)\\//.test(sourcePath)
+          &&!sourcePath.split('/').includes('..');
+        const safeScope=target?.scope==='VISUAL_PRESENTATION_ONLY'
+          &&target?.preserveGameplayAndSave===true;
+        const valid=Boolean(id&&safePath&&safeScope&&String(target?.targetId||'').trim()
+          &&String(target?.property||'').trim()&&String(target?.expectedEffect||'').trim());
+        if(!valid)reasons.push('before-after-regression-repair-target-missing-or-unsafe:'+id);
+        else repairTargets.push(Object.freeze({issue:id,sourcePath,targetId:target.targetId,
+          property:target.property,expectedEffect:target.expectedEffect,
+          scope:'VISUAL_PRESENTATION_ONLY',preserveGameplayAndSave:true,
+          status:'REQUIRES_EXISTING_FUNCTION_REPAIR_AND_NEW_RUNTIME_CAPTURE'}));
+      }
+    }
   }
   if(markerOnly)reasons.push('marker-only-runtime-comparison-forbidden');
   return Object.freeze({
@@ -117,6 +139,7 @@ export function auditVibeRuntimeBeforeAfterComparison(evidence={}){
     afterStable:comparison.afterStable===true,
     visibleRenderDelta:comparison.visibleRenderDelta===true,
     markerOnly,
+    repairTargets:Object.freeze(repairTargets),
     reasons:Object.freeze(reasons),
     authority:'runtime-before-after-visual-comparison-audit'
   });
