@@ -941,7 +941,8 @@ export function regressionHotspotRiskForTask({task={},stateInput={}}={}){
   const target=lower(task.target);
   const entries=Object.values(state.regressionHotspots?.entries||{}).filter(row=>clean(row.gameId)===gameId&&(!target||!lower(row.target)||lower(row.target)===target)).map(row=>({...row,risk:hotspotRisk(row)}));
   // 작업의 실제 책임 파일과 겹치는 회귀 위험을 먼저 보여주되, 다른 위험도 삭제하지 않는다.
-  const responsible=new Set((task.responsibleFiles||[]).map(value=>lower(value).replace(/\\/g,'/')).filter(Boolean));
+  // 담당 파일 입력이 배열이 아니어도 위험 분석이 중단되지 않도록 정규화한다.
+  const responsible=new Set((Array.isArray(task.responsibleFiles)?task.responsibleFiles:[]).map(value=>lower(value).replace(/\\/g,'/')).filter(Boolean));
   entries.sort((a,b)=>{
     const aMatch=responsible.has(lower(a.name).replace(/\\/g,'/'))?1:0;
     const bMatch=responsible.has(lower(b.name).replace(/\\/g,'/'))?1:0;
@@ -949,7 +950,8 @@ export function regressionHotspotRiskForTask({task={},stateInput={}}={}){
     const priority={HIGH:2,MEDIUM:1,LOW:0};
     return priority[b.risk.level]-priority[a.risk.level]||bMatch-aMatch||b.risk.score-a.risk.score||Number(b.verifiedRegressionFailures||0)-Number(a.verifiedRegressionFailures||0);
   });
-  const top=entries.slice(0,8);
+  // 실제 위험이 없는 항목이 상위 8개를 차지해 복구 지침을 흐리지 않도록 한다.
+  const top=entries.filter(row=>row.risk.level!=='LOW').slice(0,8);
   const riskLevel=entries.some(row=>row.risk.level==='HIGH')?'HIGH':entries.some(row=>row.risk.level==='MEDIUM')?'MEDIUM':'LOW';
   return{riskLevel,entries:top,requiresFocusedDependentQa:riskLevel!=='LOW',preferVerifiedStrategy:riskLevel!=='LOW',increaseCandidateDiversity:riskLevel==='HIGH',writableScopeExpansionAllowed:false,authorityExpanded:false};
 }
