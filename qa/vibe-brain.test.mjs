@@ -470,3 +470,14 @@ test('Studio 촬영 장면을 실제 책임 함수의 파일·줄로 연결한�
   }
   assert.equal(captureSource(process.cwd(), 'c00_start'), null, '알 수 없는 장면은 추측하지 않는다');
 });
+
+test('촬영본 분석 수정은 실제 화면 속성을 바꿀 때만 채택한다', async () => {
+  const { visualDelta } = await import('../tools/vibe-brain.mjs');
+  // 실제 사례(PR #14071): 화면 렌더러 안의 nil 보호만 추가 → 화면 변화 없음
+  const nilGuard = ['return mkLabel(content, string.format("특산: %s", table.concat(h.produces, ", ")), 16, COLORS.text, true)',
+    'return mkLabel(content, string.format("특산: %s", table.concat(h.produces or {}, ", ")), 16, COLORS.text, true)'];
+  assert.equal(visualDelta(nilGuard[0], nilGuard[1]), false);
+  assert.equal(visualDelta('frame.Size = UDim2.fromOffset(200, 40)', 'frame.Size = UDim2.fromOffset(240, 48)'), true);
+  assert.equal(visualDelta('label.TextSize = 14', 'label.TextSize = 18'), true);
+  assert.equal(visualDelta('local n = count + 1', 'local n = (count or 0) + 1'), false);
+});
