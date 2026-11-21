@@ -185,3 +185,14 @@ test('실제 Studio 콘솔 실패는 HEALTH 없이도 지시서를 만들고 실
   assert.ok(openOrders(ledger).some(x => x.id === 'studio-unreachable'));
 });
 
+
+// [스튜디오 자체 복구] 기존 Windows 인증 실행기 복구 정본만 재사용하고 중복 실행을 막는다.
+test('바이브 자동 판단은 Studio 실행기 오프라인에만 기존 복구 워크플로를 호출한다',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe-autopilot.yml',import.meta.url),'utf8');
+  assert.match(workflow,/VIBE_STUDIO_RUNNER=UNVERIFIED_API_ACCESS/);
+  assert.match(workflow,/if \\[\\[ "\\$status" != "offline" \\]\\]/);
+  assert.match(workflow,/company-roblox-runner-pwsh-bootstrap\\.yml/);
+  assert.match(workflow,/now - 1800/);
+  assert.match(workflow,/ALREADY_RUNNING_OR_COOLDOWN/);
+  assert.doesNotMatch(workflow,/config\\.cmd|New-ScheduledTask/);
+});
