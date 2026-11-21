@@ -1821,7 +1821,7 @@ test('repeated regression failures retire harmful knowledge and remove it from r
 test('preferred knowledge outranks otherwise similar candidate knowledge after verified effectiveness',()=>{
   let state={};
   const goodTasks=[];
-  for(let i=0;i<5;i++)goodTasks.push({
+  for(let i=0;i<6;i++)goodTasks.push({
     id:'good-'+i,gameId:i<2?'g1':'g2',target:'web',goal:'repair save restore',
     evidence:[
       'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
@@ -1832,6 +1832,9 @@ test('preferred knowledge outranks otherwise similar candidate knowledge after v
       'actions-run:'+(300+i)
     ]
   });
+  // 다섯 번의 검증만으로는 최상위 선호 지식으로 승격하지 않는다.
+  const notYetPreferred=applyVerifiedKnowledgeOutcomes({}, {tasks:goodTasks.slice(0,5)}).state;
+  assert.equal(notYetPreferred.knowledgeAttribution.entries['CODE_PATTERN:preferred-save'].state,'VERIFIED');
   state=applyVerifiedKnowledgeOutcomes(state,{tasks:goodTasks}).state;
   assert.equal(state.knowledgeAttribution.entries['CODE_PATTERN:preferred-save'].state,'PREFERRED');
   const ctx=retrieveUnifiedLearning({
