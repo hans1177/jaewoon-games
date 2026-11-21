@@ -52,6 +52,12 @@
     ['MOBILE_FRAME_BUDGET_EXCEEDED',/(?:mobile.{0,20}(?:fps|frame).{0,14}(?:drop|slow|low)|모바일.{0,18}(?:프레임|성능).{0,12}(?:하락|저하|끊))/i],
     ['LOD_TRANSITION_POP',/(?:lod.{0,20}(?:pop|flicker)|거리.{0,12}(?:모델|디테일).{0,12}(?:튀|깜빡))/i],
     ['RUNTIME_VISUAL_REGRESSION',/(?:visual.{0,20}regression|화면.{0,18}(?:회귀|역행)|이전.{0,12}(?:화면|그래픽).{0,12}(?:악화|퇴보))/i],
+    // [상용급 실제 결함] 관측된 화면/소스에서 확인된 문제만 기존 그래픽 책임 함수로 보낸다.
+    ['MODEL_UV_MATERIAL_FAILURE',/(?:uv.{0,16}(?:seam|broken|missing)|normal.?map.{0,16}(?:missing|broken)|텍스처.{0,12}(?:늘어|찢어|이음)|법선.{0,12}(?:오류|반전))/i],
+    ['PBR_SURFACE_MISMATCH',/(?:roughness.{0,16}(?:wrong|broken)|metalness.{0,16}(?:wrong|broken)|재질.{0,12}(?:플라스틱|광택|금속성).{0,12}(?:오류|과도|부자연)|pbr.{0,12}(?:오류|불일치))/i],
+    ['LIGHTING_EXPOSURE_FAILURE',/(?:over.?expos|under.?expos|lighting.{0,12}(?:blown|flat)|조명.{0,12}(?:과다|어두|날아)|노출.{0,12}(?:과다|부족))/i],
+    ['CAMERA_SUBJECT_OCCLUDED',/(?:camera.{0,20}(?:occlud|block)|카메라.{0,12}(?:가림|시야)|시점.{0,12}(?:가림|차단))/i],
+    ['EVENT_VFX_AUDIO_DESYNC',/(?:vfx.{0,20}(?:desync|late)|audio.{0,20}desync|타격.{0,12}(?:효과|음향).{0,12}(?:불일치|늦|안 맞)|이펙트.{0,12}(?:타이밍|싱크).{0,10}(?:오류|불일치))/i],
   ]);
   const ANOMALY_FILE_HINTS = Object.freeze({
     SPRITE_CLIPPED:['sprite','render','visual','ui'],ALPHA_BACKGROUND_ERROR:['sprite','render','visual','asset'],ABNORMAL_SCALE:['ui','hud','render','visual'],
@@ -65,6 +71,11 @@
     MOBILE_FRAME_BUDGET_EXCEEDED:['render','visual','effect','vfx','particle','camera'],
     LOD_TRANSITION_POP:['render','visual','camera','environment','motion'],
     RUNTIME_VISUAL_REGRESSION:['render','visual','camera','ui','hud'],
+    MODEL_UV_MATERIAL_FAILURE:['material','texture','mesh','uv','model','render','visual'],
+    PBR_SURFACE_MISMATCH:['material','shader','texture','surface','render','visual'],
+    LIGHTING_EXPOSURE_FAILURE:['lighting','light','environment','camera','render','visual'],
+    CAMERA_SUBJECT_OCCLUDED:['camera','render','visual','environment'],
+    EVENT_VFX_AUDIO_DESYNC:['vfx','effect','audio','presentation','animation','visual'],
   });
 
   // 유틸: 렌더링 계측 실패(Infinity/NaN)를 최고 점수로 취급하지 않는다.
@@ -291,31 +302,48 @@
   // 실루엣·공격 전조·HUD·플레이어 피드백은 성능 문제로도 감축하지 않는다.
   // [모바일 프레임] 실제 프레임 지연 표본을 받으면 90백분위 꼬리 지연으로
   // 장식 예산을 보수적으로 계산한다. 미확인·손상된 표본은 자동 감축 근거가 아니다.
+  // [모바일 실측 제어] 실제 프레임 꼬리 지연·메모리·드로콜이 확인된 경우에만 장식 비용을 줄인다.
+  // 재질/모델의 원본, 조작계, 공격 전조와 판정은 절대 바꾸지 않는다.
   function deviceVisualBudget(tier='MID', telemetry={}) {
-    const key = String(tier).toUpperCase();
-    const profiles = {
-      LOW:{ decorativeParticles:0.30, postFx:0.20, distantEffects:0.35, environmentMotion:0.45, coreSilhouette:1, attackReadability:1, uiHud:1, playerFeedback:1 },
-      MID:{ decorativeParticles:0.65, postFx:0.55, distantEffects:0.70, environmentMotion:0.75, coreSilhouette:1, attackReadability:1, uiHud:1, playerFeedback:1 },
-      HIGH:{ decorativeParticles:1, postFx:1, distantEffects:1, environmentMotion:1, coreSilhouette:1, attackReadability:1, uiHud:1, playerFeedback:1 },
+    const key=String(tier).toUpperCase();
+    const profiles={
+      LOW:{decorativeParticles:0.30,postFx:0.20,distantEffects:0.35,environmentMotion:0.45,coreSilhouette:1,attackReadability:1,uiHud:1,playerFeedback:1},
+      MID:{decorativeParticles:0.65,postFx:0.55,distantEffects:0.70,environmentMotion:0.75,coreSilhouette:1,attackReadability:1,uiHud:1,playerFeedback:1},
+      HIGH:{decorativeParticles:1,postFx:1,distantEffects:1,environmentMotion:1,coreSilhouette:1,attackReadability:1,uiHud:1,playerFeedback:1}
     };
-    if (!profiles[key]) throw new Error('unknown device tier: '+tier);
-    const trace=telemetry?.frameTimesMs;
-    const hasTrace=trace!==undefined;
+    if(!profiles[key])throw new Error('unknown device tier: '+tier);
+    const trace=telemetry?.frameTimesMs,hasTrace=trace!==undefined;
     const traceValid=Array.isArray(trace)&&trace.length>=30&&trace.length<=240
       &&trace.every(value=>typeof value==='number'&&Number.isFinite(value)&&value>=1&&value<=1000);
     const ordered=traceValid?[...trace].sort((a,b)=>a-b):[];
-    const p90FrameMs=traceValid?ordered[Math.ceil(ordered.length*.9)-1]:null;
-    const frameRateFromTrace=traceValid?1000/p90FrameMs:null;
+    const p90FrameMs=traceValid?ordered[Math.ceil(ordered.length*.90)-1]:null;
+    const p99FrameMs=traceValid?ordered[Math.ceil(ordered.length*.99)-1]:null;
     const observed=Number(telemetry?.observedFps),target=Number(telemetry?.targetFps);
     const samples=Number(telemetry?.samples);
-    const eligible=telemetry?.runtimeVerified===true && Number.isFinite(target)
-      &&target>=24&&target<=120
-      &&(hasTrace
-        ?traceValid&&samples===trace.length
-        :Number.isFinite(observed)&&observed>0
-          &&Number.isInteger(samples)&&samples>=30);
-    const measured=hasTrace?frameRateFromTrace:observed;
-    const pressure=eligible?clamp(measured/target,0.35,1):1;
+    const eligible=telemetry?.runtimeVerified===true&&Number.isFinite(target)&&target>=24&&target<=120
+      &&(hasTrace?traceValid&&samples===trace.length
+        :Number.isFinite(observed)&&observed>0&&Number.isInteger(samples)&&samples>=30);
+    const measured=hasTrace?(traceValid?1000/p90FrameMs:null):observed;
+    // 보조 측정값도 동일 런타임 관측을 명시한 경우에만 사용. 불완전한 값은 성능 PASS 근거가 아니다.
+    const resources=telemetry?.resources||{};
+    const resourceObserved=eligible&&resources.observed===true&&resources.source==='native-runtime-telemetry'
+      &&typeof resources.deviceId==='string'&&resources.deviceId.length>0
+      &&typeof resources.captureHash==='string'&&/^[a-f0-9]{64}$/i.test(resources.captureHash);
+    const validNumber=name=>typeof resources[name]==='number'&&Number.isFinite(resources[name])&&resources[name]>=0;
+    const memoryMb=resourceObserved&&validNumber('memoryPeakMb')?resources.memoryPeakMb:null;
+    const drawCalls=resourceObserved&&validNumber('drawCalls')?resources.drawCalls:null;
+    const visualTriangles=resourceObserved&&validNumber('visibleTriangles')?resources.visibleTriangles:null;
+    const limits={LOW:{memoryPeakMb:320,drawCalls:175,visibleTriangles:150000},
+      MID:{memoryPeakMb:448,drawCalls:250,visibleTriangles:240000},
+      HIGH:{memoryPeakMb:512,drawCalls:300,visibleTriangles:300000}}[key];
+    const overload=Math.max(1,...[
+      memoryMb===null?1:memoryMb/limits.memoryPeakMb,
+      drawCalls===null?1:drawCalls/limits.drawCalls,
+      visualTriangles===null?1:visualTriangles/limits.visibleTriangles
+    ]);
+    const ratio=eligible?clamp(measured/target,0.35,1):1;
+    const resourceRatio=resourceObserved?clamp(1/overload,0.35,1):1;
+    const pressure=Math.min(ratio,resourceRatio);
     const chosen={...profiles[key]};
     for(const name of ['decorativeParticles','postFx','distantEffects','environmentMotion'])
       chosen[name]=Math.round(chosen[name]*pressure*1000)/1000;
@@ -323,7 +351,12 @@
       performanceRatio:pressure,validatedRuntimeSample:eligible,
       telemetryMethod:eligible?(hasTrace?'P90_FRAME_TIME':'AGGREGATE_FPS'):'NONE',
       p90FrameMs:eligible&&hasTrace?p90FrameMs:null,
+      p99FrameMs:eligible&&hasTrace?p99FrameMs:null,
       measuredFps:eligible?Math.round(measured*100)/100:null,
+      resourceObserved,resourcePressure:resourceObserved?resourceRatio:null,
+      resourceMetrics:Object.freeze({memoryPeakMb:memoryMb,drawCalls,visibleTriangles}),
+      resourceLimits:Object.freeze(limits),
+      presentationOnly:true,actualRendererMutationPerformed:false,
       telemetryEvidence:'CALLER_REPORTED_NOT_INDEPENDENTLY_VERIFIED',
       gameplayAndCriticalReadabilityPreserved:true});
   }
@@ -363,6 +396,11 @@
       MOBILE_FRAME_BUDGET_EXCEEDED: observation.mobileFrameBudgetExceeded,
       LOD_TRANSITION_POP: observation.lodTransitionPop,
       RUNTIME_VISUAL_REGRESSION: observation.runtimeVisualRegression,
+      MODEL_UV_MATERIAL_FAILURE: observation.modelUvMaterialFailure,
+      PBR_SURFACE_MISMATCH: observation.pbrSurfaceMismatch,
+      LIGHTING_EXPOSURE_FAILURE: observation.lightingExposureFailure,
+      CAMERA_SUBJECT_OCCLUDED: observation.cameraSubjectOccluded,
+      EVENT_VFX_AUDIO_DESYNC: observation.eventVfxAudioDesync,
     };
     return Object.freeze(Object.entries(checks).filter(([, active]) => active === true).map(([name]) => name));
   }
@@ -387,25 +425,69 @@
     return Object.freeze({file:rel,safe:true,reason:'VISUAL_PRESENTATION_SCOPE'});
   }
 
-  function planGraphicsImplementation({anomalies=[],files=[],goal='',deviceTier='MID',deviceTelemetry={},leasedFiles=[],maxFiles=2}={}) {
+  // [그래픽 직접 수정] 실제 스크린샷-소스 결함만 우선 배정한다. 알 수 없는 원본은 임의 모델로 대체하지 않는다.
+  function planGraphicsImplementation({anomalies=[],files=[],goal='',deviceTier='MID',deviceTelemetry={},
+    leasedFiles=[],maxFiles=2,observedFindings=[],candidateRevision=''}={}) {
     const visualBudget=deviceVisualBudget(deviceTier,deviceTelemetry);
+    const revision=clean(candidateRevision);
+    const validFindings=[],rejectedFindings=[],findingIds=new Set();
+    for(const finding of Array.isArray(observedFindings)?observedFindings:[]){
+      const id=clean(finding?.id),path=posix(finding?.sourcePath||'');
+      const authority=visualFileAuthority(path),region=finding?.region||{};
+      const rectValid=['x','y','width','height'].every(k=>typeof region[k]==='number'&&Number.isFinite(region[k]))
+        &&region.x>=0&&region.y>=0&&region.width>0&&region.height>0
+        &&region.x+region.width<=1.000001&&region.y+region.height<=1.000001;
+      const hash=String(finding?.imageSha256||'').toLowerCase(),sourceHash=String(finding?.sourceHash||'').toLowerCase();
+      const severity=String(finding?.severity||'').toUpperCase();
+      const valid=Boolean(id&&!findingIds.has(id)&&authority.safe&&rectValid
+        &&/^[a-f0-9]{64}$/.test(hash)&&/^[a-f0-9]{64}$/.test(sourceHash)
+        &&revision&&clean(finding?.candidateRevision)===revision
+        &&finding?.observed===true&&finding?.reviewed===true
+        &&['BLOCKER','HIGH','MEDIUM','LOW'].includes(severity)
+        &&clean(finding?.observation)&&clean(finding?.targetId)&&clean(finding?.property));
+      if(id)findingIds.add(id);
+      if(!valid){rejectedFindings.push(id||'UNKNOWN');continue;}
+      validFindings.push(Object.freeze({id,sourcePath:path,region:Object.freeze({...region}),
+        imageSha256:hash,sourceHash,severity,observation:clean(finding.observation),
+        targetId:clean(finding.targetId),property:clean(finding.property),candidateRevision:revision}));
+    }
     const explicit=[...new Set([...(Array.isArray(anomalies)?anomalies:[]),...inferVisualAnomalies(goal)])];
     const actionText=clean(goal);
-    const actionable=explicit.length>0||(/(?:그래픽|화면|ui|hud|render|sprite|animation|effect|vfx|스타일|애니메이션|이펙트)/i.test(actionText)&&/(?:수정|구현|추가|개선|연결|고치|fix|implement|improve|update|adjust)/i.test(actionText));
-    if(!actionable)return Object.freeze({run:false,scope:Object.freeze([]),tasks:Object.freeze([]),reason:'NO_ACTIONABLE_VISUAL_EVIDENCE',anomalies:Object.freeze(explicit),deviceBudget:visualBudget});
+    const actionable=validFindings.length>0||explicit.length>0
+      ||(/(?:그래픽|화면|ui|hud|render|sprite|animation|effect|vfx|스타일|애니메이션|이펙트)/i.test(actionText)
+        &&/(?:수정|구현|추가|개선|연결|고치|fix|implement|improve|update|adjust)/i.test(actionText));
+    const base={anomalies:Object.freeze(explicit),deviceBudget:visualBudget,
+      acceptedFindings:Object.freeze(validFindings),rejectedFindings:Object.freeze(rejectedFindings),
+      visualRuntimePass:false,productionVerified:false,gameplayMutationAllowed:false};
+    if(!actionable)return Object.freeze({run:false,scope:Object.freeze([]),tasks:Object.freeze([]),
+      reason:'NO_ACTIONABLE_VISUAL_EVIDENCE',...base});
     const leased=new Set((leasedFiles||[]).map(posix));
+    const rankedFindings=[...validFindings].sort((a,b)=>['BLOCKER','HIGH','MEDIUM','LOW'].indexOf(a.severity)
+      -['BLOCKER','HIGH','MEDIUM','LOW'].indexOf(b.severity)||a.id.localeCompare(b.id));
     const candidates=(files||[]).map(item=>typeof item==='string'?{path:item}:{...item,path:item.path}).map((item,index)=>{
       const authority=visualFileAuthority(item.path);if(!authority.safe||leased.has(posix(item.path)))return null;
-      const lower=posix(item.path).toLowerCase();let score=Number(item.score||0)+4;
+      const lower=posix(item.path).toLowerCase(),direct=rankedFindings.find(row=>row.sourcePath===posix(item.path));
+      let score=(Number.isFinite(Number(item.score))?Number(item.score):0)+4;
+      if(direct)score+=100-['BLOCKER','HIGH','MEDIUM','LOW'].indexOf(direct.severity)*10;
       for(const anomaly of explicit)for(const hint of ANOMALY_FILE_HINTS[anomaly]||[])if(lower.includes(hint))score+=6;
       if(/\.(?:css|svg)$/.test(lower))score+=3;
       return {...item,path:posix(item.path),authority,score,index};
     }).filter(Boolean).sort((a,b)=>b.score-a.score||a.index-b.index||a.path.localeCompare(b.path));
     const limit=Math.max(1,Math.min(2,Number(maxFiles)||2)),scope=candidates.slice(0,limit).map(row=>row.path);
-    if(!scope.length)return Object.freeze({run:false,scope:Object.freeze([]),tasks:Object.freeze([]),reason:'NO_SAFE_VISUAL_SCOPE',anomalies:Object.freeze(explicit),deviceBudget:visualBudget});
+    if(!scope.length)return Object.freeze({run:false,scope:Object.freeze([]),tasks:Object.freeze([]),
+      reason:'NO_SAFE_VISUAL_SCOPE',...base});
     const primary=explicit[0]||'VISUAL_QUALITY';
-    const tasks=scope.map(file=>Object.freeze({path:file,action:`${primary} 시각 문제를 이 표현 계층에서 최소 수정`,authority:'GAMEPLAY_STATE_READ_ONLY'}));
-    return Object.freeze({run:true,scope:Object.freeze(scope),tasks:Object.freeze(tasks),reason:'ACTIONABLE_VISUAL_SCOPE',anomalies:Object.freeze(explicit),deviceBudget:visualBudget,maxChangedFiles:2});
+    const tasks=scope.map(file=>{
+      const matched=rankedFindings.filter(row=>row.sourcePath===file);
+      return Object.freeze({path:file,
+        action:matched.length?'수정 대상 영역의 기존 렌더링 책임 함수 직접 수정 후 동일 카메라 재촬영'
+          :`${primary} 시각 문제를 이 표현 계층에서 최소 수정`,
+        findings:Object.freeze(matched),recaptureRequired:matched.length>0,
+        evidenceRequired:'SAME_REVISION_SOURCE_AND_SCREENSHOT_BOUND_BEFORE_AFTER',
+        authority:'GAMEPLAY_STATE_READ_ONLY'});
+    });
+    return Object.freeze({run:true,scope:Object.freeze(scope),tasks:Object.freeze(tasks),
+      reason:'ACTIONABLE_VISUAL_SCOPE',maxChangedFiles:2,...base});
   }
 
   function graphicsImplementationImpact({changedFiles=[]}={}) {
