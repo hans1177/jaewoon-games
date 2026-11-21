@@ -1,5 +1,5 @@
 {
- "sourceRevision": "c7d5ed7bb9a4b38e3caef79f791b06a0f800dca0",
+ "sourceRevision": "a42c7f03b1466b5673398bd6c451444ccf32ef1d",
  "log": [
   {
    "step": 1,
@@ -121,7 +121,7 @@
   {
    "step": 25,
    "ctx": "Client",
-   "out": "INTRO_STUCK step=companion comp=true portrait=true\ntext"
+   "out": "INTRO_STUCK step=companion reply=nil stale=name>companion trace=|62.4:open:길드 서기:name|64.8:close:nil: Players.Anyanguy1980.PlayerScripts.Client.Game:14368 :companion|65.2:open:대상 상인 카심:companion|66.9:close:companion: Players.Anyanguy1980.PlayerScripts.Client.Game:14270 Players.Anyanguy1980.PlayerScripts.Client.Game:13980 function subm:companion companions=0 comp=true portrait=true\ntext"
   }
  ],
  "errors": [
@@ -131,17 +131,17 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28009
+   "elapsedMs": 28008
   },
   {
    "step": 1,
    "type": "capture",
-   "elapsedMs": 1584
+   "elapsedMs": 1387
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 211
+   "elapsedMs": 200
   },
   {
    "step": 3,
@@ -151,67 +151,67 @@
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 201
+   "elapsedMs": 218
   },
   {
    "step": 5,
    "type": "wait",
-   "elapsedMs": 399
+   "elapsedMs": 404
   },
   {
    "step": 6,
    "type": "click_from_luau",
-   "elapsedMs": 817
+   "elapsedMs": 973
   },
   {
    "step": 7,
    "type": "wait",
-   "elapsedMs": 2004
+   "elapsedMs": 2001
   },
   {
    "step": 8,
    "type": "capture",
-   "elapsedMs": 1092
+   "elapsedMs": 1395
   },
   {
    "step": 9,
    "type": "luau",
-   "elapsedMs": 326
+   "elapsedMs": 226
   },
   {
    "step": 10,
    "type": "wait",
-   "elapsedMs": 400
+   "elapsedMs": 406
   },
   {
    "step": 11,
    "type": "click_from_luau",
-   "elapsedMs": 791
+   "elapsedMs": 1177
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 2015
+   "elapsedMs": 2012
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 860
+   "elapsedMs": 983
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 193
+   "elapsedMs": 238
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 408
+   "elapsedMs": 412
   },
   {
    "step": 16,
    "type": "click_from_luau",
-   "elapsedMs": 926
+   "elapsedMs": 1072
   },
   {
    "step": 17,
@@ -221,47 +221,47 @@
   {
    "step": 18,
    "type": "capture",
-   "elapsedMs": 1342
+   "elapsedMs": 1142
   },
   {
    "step": 19,
    "type": "wait",
-   "elapsedMs": 1809
+   "elapsedMs": 1803
   },
   {
    "step": 20,
    "type": "capture",
-   "elapsedMs": 2278
+   "elapsedMs": 2650
   },
   {
    "step": 21,
    "type": "wait",
-   "elapsedMs": 1805
+   "elapsedMs": 1808
   },
   {
    "step": 22,
    "type": "capture",
-   "elapsedMs": 1063
+   "elapsedMs": 1167
   },
   {
    "step": 23,
    "type": "wait",
-   "elapsedMs": 3707
+   "elapsedMs": 3708
   },
   {
    "step": 24,
    "type": "capture",
-   "elapsedMs": 1171
+   "elapsedMs": 1086
   },
   {
    "step": 25,
    "type": "luau",
-   "elapsedMs": 29317
+   "elapsedMs": 29311
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 782
+   "elapsedMs": 517
   }
  ],
  "consoleCapture": {
@@ -287,7 +287,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 251372,
+      "bytes": 251358,
       "width": 0,
       "height": 0,
       "pass": true
@@ -310,7 +310,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 250788,
+      "bytes": 250693,
       "width": 0,
       "height": 0,
       "pass": true
@@ -325,7 +325,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195220,
+      "bytes": 195357,
       "width": 0,
       "height": 0,
       "pass": true
@@ -340,7 +340,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 145182,
+      "bytes": 145183,
       "width": 0,
       "height": 0,
       "pass": true
@@ -364,7 +364,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 158373,
+      "bytes": 157730,
       "width": 0,
       "height": 0,
       "pass": true
@@ -377,7 +377,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0146753787994385,
+    "brightness": 2.015810966491699,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -388,7 +388,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 161732,
+      "bytes": 160675,
       "width": 0,
       "height": 0,
       "pass": true
@@ -401,7 +401,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0166447162628174,
+    "brightness": 2.01763653755188,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -412,7 +412,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 161448,
+      "bytes": 161384,
       "width": 0,
       "height": 0,
       "pass": true
@@ -425,7 +425,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0198278427124023,
+    "brightness": 2.020756483078003,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -434,7 +434,7 @@
  "abortDiagnostics": {
   "step": 26,
   "type": "luau",
-  "elapsedMs": 203,
+  "elapsedMs": 168,
   "context": "Client",
   "lastScreenshot": "t03",
   "lastClick": "title03",
