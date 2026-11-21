@@ -425,7 +425,8 @@ function knowledgeLifecycle(row={}){
   const negative=fails+regressions*1.5+domainMismatches*.5;
   const total=positive+negative,failRate=total?negative/total:0;
   if(regressions>=4&&failRate>=0.65)return'RETIRED';
-  if(fails>=4&&negative>=6&&failRate>=0.7)return'RETIRED';
+  // 검증 실패가 4회 이상이고 실패 비율이 높다면 부가 감점이 없어도 폐기한다.
+  if(fails>=4&&failRate>=0.7)return'RETIRED';
   if(negative>=2&&failRate>0.5)return'DEMOTED';
   // 여러 게임의 실제 검증 성공 없이 부가 점수만으로 최상위 지식에 승격하지 않는다.
   if(apps>=6&&positive>=6&&games>=2&&regressions===0&&failRate<=0.35)return'PREFERRED';
@@ -874,7 +875,7 @@ function hotspotRisk(row={}){
   // 성공 기록이 많더라도 최근 검증된 회귀 실패 자체는 복구 검토 대상에서 제외하지 않는다.
   const score=Math.max(0,failures*3-passes);
   // 최신 검증 성공이 있으면 과거 실패 누적만으로 미복구 상태라고 단정하지 않는다.
-  const level=row.lastVerifiedOutcome==='PASS'?(failures>=3&&score>=6?'MEDIUM':'LOW')
+  const level=row.lastVerifiedOutcome==='PASS'?(failures>=2&&score>=2?'MEDIUM':'LOW')
     :row.lastVerifiedOutcome==='REGRESSION_FAIL'?(failures>=3?'HIGH':'MEDIUM')
     :failures>=3&&score>=6?'HIGH':failures>=1?'MEDIUM':'LOW';
   return{score,level};
