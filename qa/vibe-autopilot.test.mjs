@@ -200,3 +200,25 @@ test('바이브 자동 판단은 Studio 실행기 오프라인에만 기존 복�
   assert.ok(workflow.includes('ALREADY_RUNNING_OR_COOLDOWN'));
   assert.doesNotMatch(workflow,/config.cmd|New-ScheduledTask/);
 });
+
+test('Studio 단계 단언 실패를 실제 책임 함수와 분류로 묶는다', async () => {
+  const { studioStepFailure } = await import('../tools/vibe-autopilot.mjs');
+  const motion = 'step230:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:x:101: y:54: AssistantCommand:57: MOTION_FOOTPLANT_STATIC:0.0591';
+  const sf = studioStepFailure(motion);
+  assert.equal(sf.step, 230);
+  assert.equal(sf.marker, 'MOTION_FOOTPLANT_STATIC');
+  assert.equal(sf.category, 'animation');
+  assert.equal(sf.sourceFile, 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau');
+  assert.match(sf.sourceFunction, /^Pose\./);
+  const src = fs.readFileSync(sf.sourceFile, 'utf8').split('\n');
+  assert.match(src[sf.sourceLine - 1], new RegExp('function ' + sf.sourceFunction.replace('.', '\\.')));
+  const found = findingsFrom('mare-essentia', parseReport({ errors: [motion], log: [], summary: { capturedFrames: 57 } }));
+  assert.equal(found.length, 1);
+  assert.equal(found[0].kind, 'error');
+  assert.equal(found[0].sourceFile, sf.sourceFile);
+  assert.equal(found[0].fingerprint, 'mare-essentia:studio-step-motion-footplant-static');
+  // 자산·Studio 실행 문제는 코드 작업으로 보내지 않는다.
+  const asset = studioStepFailure('step9:E:AssistantCommand:3: ASSET_TIMEOUT:1');
+  assert.equal(asset.kind, 'asset_link');
+  assert.equal(studioStepFailure('STUDIO_ASSET_AUDIT_FAILED'), null);
+});

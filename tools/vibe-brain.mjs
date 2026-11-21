@@ -65,7 +65,8 @@ export function findContext(root, order) {
   const bound = String(order.sourceFile || '').replace(/\\/g, '/');
   if (bound && ALLOWED.test(bound) && bound.startsWith('roblox-games/' + order.game + '/') &&
       files.some(f => path.relative(root, f).replace(/\\/g, '/') === bound)) {
-    hits.push({ f: path.join(root, bound), line: 1, score: 1000 });
+    // [책임 함수 위치] 증거가 준 실제 함수 줄을 중심으로 보여 준다(큰 파일에서 1줄 주변만 보던 문제 수정).
+    hits.push({ f: path.join(root, bound), line: Math.max(1, Math.floor(Number(order.sourceLine) || 1)), score: 1000 });
   }
   const m = text.match(/\b([A-Za-z_][\w]*):(\d+)\b/);                 // "Game:12462: ..." 같은 스크립트:줄
   if (m) for (const f of files) if (path.basename(f).replace(/\.(client|server)?\.?luau$/, '').toLowerCase() === m[1].toLowerCase()) hits.push({ f, line: +m[2], score: 100 });
