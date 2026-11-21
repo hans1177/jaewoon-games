@@ -296787,6 +296787,202 @@
       "maxRetries": null,
       "createdAt": "2026-11-21T08:02:32.154Z",
       "updatedAt": "2026-11-21T08:02:37.656Z"
+    },
+    {
+      "id": "recovery-e8ca3c79bddd68b6ed83",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "deployment",
+      "sourceTaskId": "deployment:.github/workflows/magic-forest-pages.yml:62d3db731228ad8cea95b26ec2294dd2d5ac9c8f:fantasy-survival",
+      "gameId": "fantasy-survival",
+      "responsibleFiles": [
+        ".github/workflows/magic-forest-pages.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/magic-forest-pages.yml",
+        "web-games/fantasy-survival"
+      ],
+      "goal": "Analyze the exact failed WEB deployment stage VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS for fantasy-survival using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [],
+      "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
+      "failureSignature": "WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
+      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+      "checkpoint": "62d3db731228ad8cea95b26ec2294dd2d5ac9c8f",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "62d3db731228ad8cea95b26ec2294dd2d5ac9c8f",
+      "evidence": [
+        "deployment-failure-run:44882774650:1",
+        "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+        "deployment-platform:WEB",
+        "deployment-game:fantasy-survival",
+        "deployment-head-sha:62d3db731228ad8cea95b26ec2294dd2d5ac9c8f",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:POST_PUBLICATION_3D_SMOKE",
+        "deployment-failed-step:VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/44882774650",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED"
+      ],
+      "recoveryStrategy": "SYSTEM_AI_CANONICAL_DEPLOYMENT_INFRASTRUCTURE_CAUSAL_REPAIR_THEN_VERIFIED_REDEPLOY",
+      "verificationPlan": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-11-21T08:14:32.501Z",
+      "updatedAt": "2026-11-21T08:14:48.834Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-11-21T08:14:48.834Z"
+      ]
+    },
+    {
+      "id": "recovery-d2f72b48d5f2f16c4aa2",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "deployment",
+      "sourceTaskId": "deployment:.github/workflows/devloop-studio.yml:62d3db731228ad8cea95b26ec2294dd2d5ac9c8f:mare-essentia",
+      "gameId": "mare-essentia",
+      "responsibleFiles": [
+        ".github/workflows/devloop-studio.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/devloop-studio.yml",
+        "roblox-games/mare-essentia"
+      ],
+      "goal": "Studio runtime source is unresolved. Inspect the exact official Studio run and archived evidence first. The assigned workflow file is for diagnostic and capture-reliability repair only; do not treat unknown game source as an infrastructure defect, invent source files, or change gameplay to hide the failure. Preserve unresolved evidence for canonical Vibe game-source intake. Analyze the exact failed ROBLOX deployment stage LAUNCH_STUDIO_RUN_SCRIPT_CAPTURE_FRAMES for mare-essentia using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [],
+      "failureStage": "STUDIO_EXECUTION",
+      "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
+      "blastRadius": "deployment-workflow:.github/workflows/devloop-studio.yml",
+      "checkpoint": "62d3db731228ad8cea95b26ec2294dd2d5ac9c8f",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "62d3db731228ad8cea95b26ec2294dd2d5ac9c8f",
+      "evidence": [
+        "deployment-failure-run:44882823044:1",
+        "deployment-workflow:.github/workflows/devloop-studio.yml",
+        "deployment-platform:ROBLOX",
+        "deployment-game:mare-essentia",
+        "deployment-head-sha:62d3db731228ad8cea95b26ec2294dd2d5ac9c8f",
+        "studio-qa-run:44882823044",
+        "studio-qa-checks:https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44882823044/checks.json",
+        "studio-qa-screenshots:https://github.com/hans1177/jaewoon-games/tree/mare-essentia-studio-frames/runs/44882823044",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:CAPTURE",
+        "deployment-failed-step:LAUNCH_STUDIO_RUN_SCRIPT_CAPTURE_FRAMES",
+        "deployment-confirmed-failure-stage:STUDIO_EXECUTION",
+        "deployment-confirmed-failure-signature:STUDIO_SCRIPT_REPORTED_ERRORS",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/44882823044",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED"
+      ],
+      "recoveryStrategy": "SYSTEM_AI_CANONICAL_DEPLOYMENT_INFRASTRUCTURE_CAUSAL_REPAIR_THEN_VERIFIED_REDEPLOY",
+      "verificationPlan": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-11-21T08:14:40.175Z",
+      "updatedAt": "2026-11-21T08:14:48.834Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-11-21T08:14:48.834Z"
+      ]
+    },
+    {
+      "id": "recovery-2f24083dc24018664933",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "deployment",
+      "sourceTaskId": "deployment:.github/workflows/devloop-studio.yml:c9b78fea450548f2772d7355d768b476a1fd8a93:mare-essentia",
+      "gameId": "mare-essentia",
+      "responsibleFiles": [
+        ".github/workflows/devloop-studio.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/devloop-studio.yml",
+        "roblox-games/mare-essentia"
+      ],
+      "goal": "Studio runtime source is unresolved. Inspect the exact official Studio run and archived evidence first. The assigned workflow file is for diagnostic and capture-reliability repair only; do not treat unknown game source as an infrastructure defect, invent source files, or change gameplay to hide the failure. Preserve unresolved evidence for canonical Vibe game-source intake. Analyze the exact failed ROBLOX deployment stage LAUNCH_STUDIO_RUN_SCRIPT_CAPTURE_FRAMES for mare-essentia using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [],
+      "failureStage": "STUDIO_EXECUTION",
+      "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
+      "blastRadius": "deployment-workflow:.github/workflows/devloop-studio.yml",
+      "checkpoint": "c9b78fea450548f2772d7355d768b476a1fd8a93",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "c9b78fea450548f2772d7355d768b476a1fd8a93",
+      "evidence": [
+        "deployment-failure-run:44883299715:1",
+        "deployment-workflow:.github/workflows/devloop-studio.yml",
+        "deployment-platform:ROBLOX",
+        "deployment-game:mare-essentia",
+        "deployment-head-sha:c9b78fea450548f2772d7355d768b476a1fd8a93",
+        "studio-qa-run:44883299715",
+        "studio-qa-checks:https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44883299715/checks.json",
+        "studio-qa-screenshots:https://github.com/hans1177/jaewoon-games/tree/mare-essentia-studio-frames/runs/44883299715",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:CAPTURE",
+        "deployment-failed-step:LAUNCH_STUDIO_RUN_SCRIPT_CAPTURE_FRAMES",
+        "deployment-confirmed-failure-stage:STUDIO_EXECUTION",
+        "deployment-confirmed-failure-signature:STUDIO_SCRIPT_REPORTED_ERRORS",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/44883299715",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED"
+      ],
+      "recoveryStrategy": "SYSTEM_AI_CANONICAL_DEPLOYMENT_INFRASTRUCTURE_CAUSAL_REPAIR_THEN_VERIFIED_REDEPLOY",
+      "verificationPlan": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-11-21T08:14:44.535Z",
+      "updatedAt": "2026-11-21T08:14:48.834Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-11-21T08:14:48.834Z"
+      ]
     }
   ]
 }
