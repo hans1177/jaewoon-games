@@ -106,16 +106,23 @@ export function auditVibeRuntimeBeforeAfterComparison(evidence={}){
       // [그래픽 자동 재작업] 실제 확인된 퇴보만 기존 소스의 책임 위치에 연결한다.
       // 출처가 없거나 게임 규칙/저장 구조를 건드리는 수정은 자동 실행하지 않는다.
       const targets=Array.isArray(comparison.repairTargets)?comparison.repairTargets:[];
+      const protectedProperty=/(?:^|[._-])(hp|health|damage|attack|cooldown|spawn|reward|drop|save|storage|datastore|progression|economy|collision|hitbox|quest)(?:$|[._-])/i;
+      const seenIssues=new Set();
       for(const issue of comparison.regressions){
         const id=String(issue||'').trim();
-        const target=targets.find(row=>String(row?.issue||'').trim()===id);
+        const matches=targets.filter(row=>String(row?.issue||'').trim()===id);
+        const target=matches.length===1?matches[0]:null;
         const sourcePath=String(target?.sourcePath||'').replaceAll('\\','/').trim();
         const safePath=/^(?:roblox-games|web-games|unity-games|assets)\//.test(sourcePath)
           &&!sourcePath.split('/').includes('..');
         const safeScope=target?.scope==='VISUAL_PRESENTATION_ONLY'
           &&target?.preserveGameplayAndSave===true;
-        const valid=Boolean(id&&safePath&&safeScope&&String(target?.targetId||'').trim()
-          &&String(target?.property||'').trim()&&String(target?.expectedEffect||'').trim());
+        const property=String(target?.property||'').trim();
+        const duplicate=seenIssues.has(id);
+        seenIssues.add(id);
+        const valid=Boolean(id&&!duplicate&&matches.length===1&&safePath&&safeScope
+          &&String(target?.targetId||'').trim()&&property&&!protectedProperty.test(property)
+          &&String(target?.expectedEffect||'').trim());
         if(!valid)reasons.push('before-after-regression-repair-target-missing-or-unsafe:'+id);
         else repairTargets.push(Object.freeze({issue:id,sourcePath,targetId:target.targetId,
           property:target.property,expectedEffect:target.expectedEffect,
