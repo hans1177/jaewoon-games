@@ -2801,8 +2801,33 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
             client.timeoutMs=Math.min(90000,Math.floor(requestedTimeoutMs));
           let out;
           try{out=await luau(st.ctx||'Client',st.code);}
+          catch(error){
+            // [플레이 클라이언트 일시 무응답] 같은 Studio 세션에서 클라이언트가 다시 응답하는지 확인한 뒤
+            // 이 Luau 단계만 한 번 다시 실행한다. 클릭 단계는 중복 클릭 위험이 있어 재시도하지 않는다.
+            // 클라이언트가 돌아오지 않으면 원래 오류로 실패 처리하고 증거를 보존한다.
+            if(!/Target is not reachable/.test(String(error?.message||error))||(st.ctx||'Client')!=='Client')throw error;
+            // 한 회차에서 2번을 넘으면 일시 장애가 아니라 구조적 문제로 보고 더 재시도하지 않는다.
+            if((report.recoveries||[]).length>=2)throw error;
+            const recovery={step:n,kind:'STUDIO_MCP_PLAYCLIENT_UNREACHABLE',reconnected:false,retry:'NOT_RUN',waitedMs:0};
+            report.recoveries=report.recoveries||[];
+            report.recoveries.push(recovery);
+            const recoveryStarted=Date.now();
+            for(let probe=0;probe<10&&!recovery.reconnected;probe++){
+              await wait(3000);
+              try{
+                const alive=await luau('Client',"return game:GetService('RunService'):IsClient() and 'STUDIO_CONTEXT_CLIENT' or 'X'");
+                recovery.reconnected=alive.includes('STUDIO_CONTEXT_CLIENT');
+              }catch{}
+            }
+            recovery.waitedMs=Date.now()-recoveryStarted;
+            console.log('STUDIO_MCP_PLAYCLIENT_RECONNECT='+(recovery.reconnected?'YES':'NO')+':step'+n+':'+recovery.waitedMs+'ms');
+            if(!recovery.reconnected){client.timeoutMs=originalTimeoutMs;throw error;}
+            try{out=await luau('Client',st.code);recovery.retry='PASS';}
+            catch(retryError){recovery.retry='FAIL';client.timeoutMs=originalTimeoutMs;throw retryError;}
+            finally{console.log('STUDIO_MCP_PLAYCLIENT_RETRY='+recovery.retry+':step'+n);}
+          }
           finally{client.timeoutMs=originalTimeoutMs;}
-          report.log.push({step:n,ctx:st.ctx||'Client',out:out.slice(0,6000)});
+          report.log.push({step:n,ctx:st.ctx||'Client',out:out.slice(0,6000),...(report.recoveries?.at(-1)?.step===n?{recoveredAfterPlayClientUnreachable:true}:{})});
         }else if(st.type==='click_text'||st.type==='click_from_luau'){
           const code=st.type==='click_text'
             ?'local p=game:GetService("Players").LocalPlayer.PlayerGui local out="NONE" local bestY=nil for _,d in ipairs(p:GetDescendants()) do if d:IsA("TextButton") and d.Text==\''+String(st.text).replace(/'/g,"")+'\' and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format("%d,%d",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end return out'
