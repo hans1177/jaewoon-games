@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildVerifiedTrainingSample, MAX_PATCH_BYTES, TRAINING_SAMPLE_VERSION, validatePositiveTrace, qaEvidencePasses, qaRequirementsForTask } from '../tools/vibe2-training-sample.mjs';
-import { validateVerifiedWebFinalBinding, buildExternalBlackBoxLearningPrinciples } from '../tools/vibe2-distillation-ingest.mjs';
+import { validateVerifiedWebFinalBinding, buildExternalBlackBoxLearningPrinciples, chooseDurableTrainingSample } from '../tools/vibe2-distillation-ingest.mjs';
 import { deriveVerifiedCodePatterns } from '../tools/vibe2-code-pattern-ingest.mjs';
 
 function trace(sourceRevision = 'abc123', overrides = {}) {
@@ -14,6 +14,23 @@ function evidence(overrides = {}) {
     summary: '거미 공격 계산을 원래 규칙으로 맞춤', expectedEffect: '전투 규칙 회귀 없이 올바른 피해 적용', saveKeyValidation: 'PASS',
     syntaxChecks: [{ name: 'syntax:index.html', status: 'PASS' }], verificationTrace: trace(), ...overrides };
 }
+
+test('정본 학습 복원: 새 main 샘플을 보존하고 검증된 영구 샘플만 선택한다', () => {
+  const verified = {
+    taskType: 'coding', instruction: '검증된 작업', input: '재현 절차',
+    output: '검증된 패치 결과', sourceRevision: '1111111',
+    independentQa: 'PASS', browserQa: 'PASS', verification: { runtime: 'PASS' },
+  };
+  const durable = { ...verified, sourceRevision: '2222222', output: '다른 검증된 수정' };
+  const practice = { ...durable, practiceOnly: true, independentQa: 'NOT_APPLICABLE' };
+  assert.equal(chooseDurableTrainingSample(null, durable), 'RESTORE_MISSING');
+  assert.equal(chooseDurableTrainingSample(verified, verified), 'KEEP_IDENTICAL');
+  assert.equal(chooseDurableTrainingSample(practice, verified), 'RESTORE_VERIFIED');
+  assert.equal(chooseDurableTrainingSample(verified, practice), 'KEEP_VERIFIED_MAIN');
+  assert.equal(chooseDurableTrainingSample(verified, durable), 'REVIEW_CONFLICTING_VERIFIED');
+  assert.equal(chooseDurableTrainingSample(practice, { ...practice, output: '연습 변경' }), 'REVIEW_CONFLICTING_UNVERIFIED');
+  assert.equal(chooseDurableTrainingSample(verified, null), 'REJECT_INVALID_DURABLE');
+});
 
 test('검증된 실제 diff와 완결 PASS trace를 bugfix 학습 샘플로 만든다', () => {
   const sample = buildVerifiedTrainingSample({ evidence: evidence(), patch: 'diff --git a/index.html b/index.html\n-old\n+new', sourceRevision: 'abc123', independentQa: 'PASS', browserQa: 'PASS', performance: { playerImpactScore: 0 } });
