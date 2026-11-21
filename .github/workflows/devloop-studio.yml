@@ -984,6 +984,15 @@ jobs:
         shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
+          # [러너 자체 진단] Claude 앱 연결 없이 현재 GitHub Actions 러너 계정·세션·정확한 실행기 개수를 확인한다.
+          $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+          $session = (Get-Process -Id $PID).SessionId
+          Write-Host "MYBOX_RUNNER_ACCOUNT=$($identity.Name)"
+          Write-Host "MYBOX_RUNNER_SESSION=$session"
+          $listenerPath = [IO.Path]::GetFullPath('E:\JaewoonRobloxStudioRunner\bin\Runner.Listener.exe')
+          $listeners = @(Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue |
+            Where-Object { $_.ExecutablePath -and [string]::Equals([IO.Path]::GetFullPath($_.ExecutablePath),$listenerPath,[StringComparison]::OrdinalIgnoreCase) })
+          Write-Host "MYBOX_RUNNER_LISTENER_COUNT=$($listeners.Count)"
           $repo = Join-Path $env:GITHUB_WORKSPACE 'main'
           $registryFile = Join-Path $repo 'roblox-games\mare-essentia\assets-registered.json'
           if (-not (Test-Path -LiteralPath $registryFile -PathType Leaf)) {
@@ -1001,6 +1010,9 @@ jobs:
             return
           }
           $destinationRoot = 'N:\Jaewoon3D\mare-essentia'
+          # [MYBOX 경로 진단] 루트 생성 제한과 러너 계정 쓰기 권한을 분리해서 확인한다.
+          Write-Host "MYBOX_PARENT_EXISTS=$(Test-Path -LiteralPath 'N:\Jaewoon3D' -PathType Container)"
+          Write-Host "MYBOX_TARGET_EXISTS=$(Test-Path -LiteralPath $destinationRoot -PathType Container)"
           $copied = 0
           $existing = 0
           $skipped = 0
@@ -1013,7 +1025,27 @@ jobs:
           try {
             $registry = Get-Content -LiteralPath $registryFile -Raw -Encoding UTF8 | ConvertFrom-Json
             if (-not $registry.assets) { throw 'MYBOX_REGISTRY_ASSETS_MISSING' }
-            New-Item -ItemType Directory -Path $destinationRoot -Force | Out-Null
+            try {
+              # [기존 대상 보존] 새 저장소를 만들거나 우회 위치를 쓰지 않고 기존 MYBOX 보관 경로만 검사한다.
+              New-Item -ItemType Directory -Path $destinationRoot -Force -ErrorAction Stop | Out-Null
+              $probePath = Join-Path $destinationRoot ('.vibe-write-probe-' + $env:GITHUB_RUN_ID)
+              if (Test-Path -LiteralPath $probePath) { throw 'MYBOX_PROBE_NAME_COLLISION' }
+              try {
+                [IO.File]::WriteAllText($probePath, 'VIBE_MYBOX_WRITE_CHECK')
+                if (-not (Test-Path -LiteralPath $probePath -PathType Leaf)) { throw 'MYBOX_WRITE_PROBE_NOT_VISIBLE' }
+                Write-Host 'MYBOX_WRITE_PROBE=PASS'
+              } finally {
+                if (Test-Path -LiteralPath $probePath -PathType Leaf) {
+                  Remove-Item -LiteralPath $probePath -Force -ErrorAction SilentlyContinue
+                }
+              }
+            } catch {
+              $failure = if (-not (Test-Path -LiteralPath 'N:\Jaewoon3D' -PathType Container)) {
+                'MYBOX_ROOT_PARENT_CREATE_BLOCKED'
+              } else { 'MYBOX_TARGET_WRITE_DENIED' }
+              Write-Warning "MYBOX_WRITE_PROBE=FAIL:$failure:$($_.Exception.GetType().Name)"
+              throw
+            }
             # [라이선스 추적] 원본 파일과 사용권한·출처·해시 메타데이터를 함께 보관한다.
             Copy-Item -LiteralPath $registryFile -Destination (Join-Path $destinationRoot 'assets-registered.json') -Force -ErrorAction Stop
             $sourcesFile = Join-Path $repo 'roblox-games\mare-essentia\assets\SOURCES.md'
