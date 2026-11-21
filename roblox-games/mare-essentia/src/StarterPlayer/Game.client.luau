@@ -2103,7 +2103,7 @@ function H.layoutBook()
     headerLabel.Size = UDim2.fromOffset(150, 29)
     H.pageDetails.Size = UDim2.fromOffset(150, 18)
   end
-  local tabHeight = if compactTabs then 52 else 54
+  local tabHeight = if headerTabs then 42 else if compactTabs then 52 else 54
   local tabGap = if width < 340 then 4 else 6
   local tabList = H.tabStrip:FindFirstChildOfClass("UIListLayout")
   if tabList then tabList.Padding = UDim.new(0, tabGap) end
