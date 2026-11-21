@@ -43,7 +43,23 @@ test('성공 근거만 있고 학습 텍스트가 없으면 학습 준비로 보
   assert.equal(status.state, 'WAITING_FOR_VERIFIED_SAMPLES');
   assert.equal(status.readyTasks.length, 0);
   assert.equal(status.diagnostics.evidenceOnlyRecords, 20);
+  assert.equal(status.diagnostics.evidenceOnlyIndependentQaPass, 20);
   assert.equal(status.diagnostics.fullyVerifiedTextSamples, 0);
+  assert.equal(status.diagnostics.practiceOnlyTextSamples, 0);
+  assert.equal(status.diagnostics.textWithoutCompleteVerification, 0);
+});
+
+test('검증된 자료와 연습 전용 자료의 수를 구분하고 연습을 학습 합격으로 계산하지 않는다', () => {
+  const candidate = verifiedSample({ project: 'P0001', index: 9, taskType: 'coding' });
+  const practice = { ...candidate, instruction: '외부 게임 관찰 연습', practiceOnly: true,
+    independentQa: 'NOT_APPLICABLE', sourceKind: 'commercial-runtime-reference' };
+  const status = buildDistillationStatus([entry(candidate, 0), entry(practice, 1)]);
+  assert.equal(status.diagnostics.records, 2);
+  assert.equal(status.diagnostics.textSamples, 2);
+  assert.equal(status.diagnostics.practiceOnlyTextSamples, 1);
+  assert.equal(status.diagnostics.fullyVerifiedTextSamples, 1);
+  assert.equal(status.diagnostics.textWithoutCompleteVerification, 1);
+  assert.equal(status.readyTasks.length, 0);
 });
 
 test('두 프로젝트의 충분한 검증 샘플이 쌓이면 해당 작업 어댑터만 준비된다', () => {
