@@ -912,7 +912,9 @@ export function applyVerifiedCodingCalibration(stateInput={},queueInput={}){
       for(const ref of refs){
         const key=[gameId,ref.kind,clean(ref.name)].join('|');
         const row=hotspots.entries[key]||{gameId,target,kind:ref.kind,name:clean(ref.name),verifiedRegressionFailures:0,verifiedPasses:0,lastFailureEvidence:null,lastPassEvidence:null,lastUpdatedAt:null};
-        if(outcome==='REGRESSION_FAIL'){row.verifiedRegressionFailures+=1;row.lastFailureEvidence=hotspotEventId;}else{row.verifiedPasses+=1;row.lastPassEvidence=hotspotEventId;}
+        if(outcome==='REGRESSION_FAIL'){row.verifiedRegressionFailures+=1;row.lastFailureEvidence=hotspotEventId;}
+        else if(outcome==='PASS'){row.verifiedPasses+=1;row.lastPassEvidence=hotspotEventId;}
+        else continue;
         row.lastUpdatedAt=new Date().toISOString();hotspots.entries[key]=row;
       }
       hotspotSeen.add(hotspotEventId);hotspotEventsAdded+=1;
