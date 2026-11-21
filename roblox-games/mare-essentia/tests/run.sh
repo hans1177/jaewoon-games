@@ -82,7 +82,19 @@ if 'folder.Destroying:Connect(function()\n\t\twalkConn:Disconnect()' not in sour
     raise SystemExit("MARE_PORT_NPC_CONNECTION_CLEANUP_MISSING")
 if 'folder.Destroying:Connect(function()\n\t\tconn:Disconnect()' not in source:
     raise SystemExit("MARE_PORT_SHIP_CONNECTION_CLEANUP_MISSING")
+# [항구 조명] 원래 주야 변화와 창문 조명은 유지하되 파괴/이탈된 조명 참조만 제거한다.
+climate = source.index('local climateConn = RunService.Heartbeat:Connect(function()')
+window = source[climate:source.index('if snow then', source.index('if rays then rays.Intensity', climate))]
+if 'for index = #lights, 1, -1 do' not in window:
+    raise SystemExit("MARE_PORT_REMOVED_LIGHT_PRUNE_LOOP_MISSING")
+if 'if not entry.light:IsDescendantOf(folder) then\n\t\t\t\ttable.remove(lights, index)' not in window:
+    raise SystemExit("MARE_PORT_REMOVED_LIGHT_REFERENCE_NOT_RELEASED")
+if 'entry.light.Brightness = entry.brightness * (0.16 + 2.15 * night)' not in window:
+    raise SystemExit("MARE_PORT_DAY_NIGHT_LIGHT_CYCLE_CHANGED")
+if 'window.Transparency = math.clamp(0.92 - night * 0.78, 0.14, 0.92)' not in window:
+    raise SystemExit("MARE_PORT_WINDOW_NIGHT_GLOW_CHANGED")
 print("MARE_PORT_OFFSCREEN_VISUAL_GATE=PASS")
+print("MARE_PORT_LIGHT_LIFECYCLE=PASS")
 PY
 
 echo "== 무기 연타·아이콘 스킬·저장 회귀 검사 =="
