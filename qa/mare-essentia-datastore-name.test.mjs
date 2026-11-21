@@ -1094,7 +1094,7 @@ test('대항해시대 탐험의 흰 건물·바닥과 성탑 층 겹침 방지',
   for(const marker of [
     'local named = (kind == "Town"', 'kind == "Castle"',
     'kind == "Terrain"', 'kind == "Naval"',
-    'd.TextureID ~= ""', 'sa and sa.ColorMap ~= ""', 'ch.TextureId ~= ""',
+    'd.TextureID ~= ""', 'sa and surfaceHasColorMap(sa)', 'ch.TextureId ~= ""',
     'light >= 0.80 and chroma <= 0.13',
     'Enum.Material.Cobblestone', 'Enum.Material.WoodPlanks',
     'Enum.Material.Slate', 'Enum.Material.Ground',
@@ -1654,7 +1654,7 @@ test('항구 35개 직업은 등록된 실물 장비를 직접 R15에 착용하�
  assert.match(pose,/LocalTransparencyModifier = 0/);
  assert.match(pose,/math\.rad\(spec\[9\] or 0\)/);
  assert.match(pose,/elseif not textured and not jobProp then/);
- assert.match(pose,/if npcOutfit and surface and surface\.ColorMap ~= "" then/);
+ assert.match(pose,/if npcOutfit and surface and surfaceHasColorMap\(surface\) then/);
  assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
  assert.match(port,/GetAttributeChangedSignal\("MareAssetsReady"\)/);
  assert.match(port,/readyConn:Disconnect\(\)/);
@@ -1961,8 +1961,8 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.ok(Number(belt[1])>=0.24 && Number(belt[1])<=0.50,'허리띠 시각 범위');
   assert.match(pose,/local fittedUpperReady = false/);
   assert.match(pose,/if fittedUpperReady and boneName == "UpperTorso"/);
-  assert.match(pose,/surface\.ColorMap ~= ""/);
-  assert.match(pose,/surface\.MetalnessMap ~= ""/);
+  assert.match(pose,/surfaceHasMaps\(surface\)/);
+  assert.match(pose,/s\.MetalnessMap ~= ""/);
   assert.match(pose,/part\.MaterialVariant ~= ""/);
   // [실제 로블록스 Studio 입력 검증] 자산 로더는 9개 복식의 흰색 유실/원본 재질 개수를 계측한다.
   assert.match(loader,/MareOutfitMaterialAudit/);
@@ -2031,7 +2031,7 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
   const stop=scene.indexOf('elseif not textured and not sa',start);
   assert.ok(start>0&&stop>start,name+' 가축 자연 재질 처리 경로');
   const block=scene.slice(start,stop);
-  assert.match(block,/if sa and sa\.ColorMap ~= "" then/);
+  assert.match(block,/if sa and surfaceHasColorMap\(sa\) then/);
   assert.match(block,/sa\.Color = sa\.Color:Lerp\(tint, 0\.16\)/);
   assert.match(block,/elseif not sa then/);
   assert.match(block,/Enum\.Material\.Fabric/);
@@ -2503,8 +2503,8 @@ test('항구·탐험 가축의 PBR 단일 채널과 눈·코·얼룩 보호',()=
   for(const role of ['muzzle','nose','snout','ear','udder','tusk','patch','spot','stripe','whisker']){
    assert.ok(scene.includes('partName:find("'+role+'", 1, true)'),name+'의 '+role+' 보호');
   }
-  assert.match(block,/if sa and sa\.ColorMap ~= "" then/,'원본 색상 지도 보호');
-  assert.match(block,/if sa and sa\.ColorMap == "" then\s+sa\.Color = sa\.Color:Lerp\(tint,/,'색상 지도 없는 PBR만 단일 채널 보정');
+  assert.match(block,/if sa and surfaceHasColorMap\(sa\) then/,'원본 색상 지도 보호');
+  assert.match(block,/if sa and not surfaceHasColorMap\(sa\) then\s+sa\.Color = sa\.Color:Lerp\(tint,/,'색상 지도 없는 PBR만 단일 채널 보정');
   assert.doesNotMatch(block,/sa\.Color = [pd]\.Color/,'PBR/파츠 중복 착색 금지');
   assert.match(block,/if not sa then\s+[pd]\.Material =/,'원본 재질 보존');
   for(const material of ['Fabric','Leather','Concrete','SmoothPlastic'])assert.ok(block.includes('Enum.Material.'+material),material+' 가축 재질');
@@ -2540,7 +2540,7 @@ test('성체 말과 주요 가축의 크기·품종색은 항구와 탐험이 �
  assert.match(scene,/if horse then mountedVisible \+= 1 end/);
  assert.match(scene,/local coatIndex = if skin then 1 \+ math\.floor/);
  assert.match(scene,/m:SetAttribute\("AnimalCoatIndex", coatIndex\)/);
- assert.match(scene,/local textured = \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\) or \(sa and sa\.ColorMap ~= ""\)/);
+ assert.match(scene,/local textured = \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\) or surfaceHasColorMap\(sa\)/);
  assert.match(scene,/if not textured and not detail then/);
  assert.match(scene,/local scale = if isAnimal then m:GetScale\(\) \* ratio else ratio/);
  assert.match(scene,/if math\.abs\(actualAxis - desiredSize\) > desiredSize \* 0\.2 then/);
@@ -2577,7 +2577,7 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
  assert.match(block,/local sandy = currentKey == "desert"/);
  assert.match(block,/local mediterranean = currentKey == "iberia"/);
  assert.match(block,/local textured = \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\)/);
- assert.match(block,/sa and sa\.ColorMap ~= ""/);
+ assert.match(block,/surfaceHasMaps\(sa\)/);
  assert.match(block,/child:IsA\("SpecialMesh"\) and child\.TextureId ~= ""/);
  assert.match(block,/if architecture and importedWhite/);
  assert.match(block,/if not textured then/);

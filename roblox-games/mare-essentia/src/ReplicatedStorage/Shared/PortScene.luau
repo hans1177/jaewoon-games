@@ -60,6 +60,23 @@ local GOOD_SIZE = {
 	gems = 0.75, pearls = 0.7, pepper = 0.8, salt = 0.8, olive_oil = 0.9, coffee = 0.75, tea = 0.75, cocoa = 0.8, honey = 0.8, lemon = 0.8, coconut = 0.85,
 	wine = 1.0, beer = 0.9, sake = 1.2, rum = 1.2, timber = 1.3, mahogany = 1.25, cloth = 1.2, silk = 1.2, grain = 1.1, sugar = 1.1,
 }
+-- [게임 스크립트 권한] SurfaceAppearance의 ColorMap 등 맵 속성은 플러그인 권한에서만 읽힌다.
+-- 게임에서 읽으면 "lacking capability Plugin" 오류로 함수가 중단된다(Studio 실행 44894900062 콘솔 오류).
+-- 읽을 수 없으면 등록된 PBR 원본(SurfaceAppearance 자체가 있음)으로 보고 원본 재질을 보존한다.
+local function surfaceHasMaps(sa: Instance?): boolean
+	if not sa then return false end
+	local ok, mapped = pcall(function()
+		local s = sa :: any
+		return s.ColorMap ~= "" or s.MetalnessMap ~= "" or s.RoughnessMap ~= "" or s.NormalMap ~= ""
+	end)
+	return (not ok) or mapped == true
+end
+local function surfaceHasColorMap(sa: Instance?): boolean
+	if not sa then return false end
+	local ok, mapped = pcall(function() return (sa :: any).ColorMap ~= "" end)
+	return (not ok) or mapped == true
+end
+
 local function goodSize(good, size)
 	return size * (GOOD_SIZE[good] or 1)
 end
@@ -490,8 +507,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			local preserveArchitectureTexture = architecture and (
 				(p:IsA("MeshPart") and p.TextureID ~= "")
 				or p.MaterialVariant ~= ""
-				or (surfaceMap and (surfaceMap.ColorMap ~= "" or surfaceMap.NormalMap ~= ""
-					or surfaceMap.RoughnessMap ~= "" or surfaceMap.MetalnessMap ~= "")))
+				or surfaceHasMaps(surfaceMap))
 			if architecture and not preserveArchitectureTexture then
 				for _, mesh in p:GetChildren() do
 					if mesh:IsA("SpecialMesh") and mesh.TextureId ~= "" then
@@ -505,7 +521,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					-- [실물 가축 품종색] 기등록 원본 PBR/텍스처와 눈·갈기·발굽 무늬는 보존한다.
 						-- 색이 빠진 단색 몸통 메시만 부드럽게 보정해 생물별 털색을 살린다.
 					local sa = p:FindFirstChildOfClass("SurfaceAppearance")
-					local textured = (p:IsA("MeshPart") and p.TextureID ~= "") or (sa and sa.ColorMap ~= "")
+					local textured = (p:IsA("MeshPart") and p.TextureID ~= "") or surfaceHasColorMap(sa)
 					for _, ch in p:GetChildren() do
 						if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 					end
@@ -522,7 +538,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					if textured and not detail then
 						-- [PBR 털색] ColorMap/메시 원본을 보존하고 단 한 채널만 약하게 보정한다.
 						-- 기존 Part.Color와 SurfaceAppearance.Color의 중복 곱셈으로 검게 변하던 문제 방지.
-						if sa and sa.ColorMap ~= "" then
+						if sa and surfaceHasColorMap(sa) then
 							sa.Color = sa.Color:Lerp(tint, 0.16)
 						elseif not sa then
 							p.Color = p.Color:Lerp(tint, 0.16)
@@ -531,7 +547,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						local light = math.max(p.Color.R, p.Color.G, p.Color.B)
 						-- [원본 PBR 재질] 색상 지도가 없어도 법선/거칠기 맵을 사용할 수 있다.
 						-- 원본 파츠 색과 PBR 색을 동시에 착색하지 않는다.
-						if sa and sa.ColorMap == "" then
+						if sa and not surfaceHasColorMap(sa) then
 							sa.Color = sa.Color:Lerp(tint, if light > 0.55 then 0.52 else 0.30)
 						else
 							p.Color = p.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
@@ -574,8 +590,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 				and p.Material ~= Enum.Material.Neon then
 				local sa = p:FindFirstChildOfClass("SurfaceAppearance")
 				local textured = preserveArchitectureTexture or (p:IsA("MeshPart") and p.TextureID ~= "")
-					or p.MaterialVariant ~= "" or (sa and (sa.ColorMap ~= ""
-					or sa.NormalMap ~= "" or sa.RoughnessMap ~= "" or sa.MetalnessMap ~= ""))
+					or p.MaterialVariant ~= "" or surfaceHasMaps(sa)
 				for _, child in p:GetChildren() do
 					if child:IsA("SpecialMesh") and child.TextureId ~= "" then textured = true end
 				end
@@ -622,7 +637,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					p.Material, p.Color, p.Reflectance = material, paint,
 						if material == Enum.Material.Glass then 0.045
 						elseif material == Enum.Material.Metal then 0.02 else 0
-					if sa and sa.ColorMap == "" then sa.Color = paint end
+					if sa and not surfaceHasColorMap(sa) then sa.Color = paint end
 					-- 원래 무텍스처 메시의 이중 색 곱셈을 막고 지정된 돌/벽돌 색을 그대로 표시한다.
 					for _, child in p:GetChildren() do
 						if child:IsA("SpecialMesh") then child.VertexColor = Vector3.new(1, 1, 1) end
