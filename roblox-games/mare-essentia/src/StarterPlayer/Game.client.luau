@@ -11240,7 +11240,8 @@ function H.renderTabs()
 	end
 	for i, id in g.tabs do
 		local selected = currentTab == id
-		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 166, if mainInner.AbsoluteSize.X < 740 then 46 else 54), function()
+		local compactTabs = mainInner.AbsoluteSize.X < 740
+		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 166, if compactTabs then 52 else 54), function()
 			-- [시설 탭 정본] 모든 시설은 같은 탭 전환 함수를 사용하며 별도 전체창은 만들지 않는다.
 			openTab(id)
 		end, true)
@@ -11260,7 +11261,7 @@ function H.renderTabs()
 			local icon = modelIcon(b, if atlas then "FacilityArt" else ti[1], if atlas then id else ti[2], nil, 26, TAB_NAME[id])
 			icon.Name = "TabIcon"
 			-- [시설 탭 최초 배치] 화면 크기 갱신 전에 생성된 아이콘도 현재 모바일 규격을 따른다.
-			icon.Position = if mainInner.AbsoluteSize.X < 740 then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 7, 0.5, -13)
+			icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 7, 0.5, -13)
 			icon.ClipsDescendants = true
 			icon.ZIndex = b.ZIndex + 2
 			icon.Parent = b
@@ -11291,14 +11292,14 @@ function H.renderTabs()
 			end
 			local caption = b:FindFirstChild("PrintedCaption")
 			if caption and caption:IsA("TextLabel") then
-				caption.Position = if mainInner.AbsoluteSize.X < 740 then UDim2.fromOffset(4, 29) else UDim2.fromOffset(44, 0)
-				caption.Size = if mainInner.AbsoluteSize.X < 740 then UDim2.new(1, -8, 0, 17) else UDim2.new(1, -54, 1, -4)
+				caption.Position = if compactTabs then UDim2.fromOffset(4, 29) else UDim2.fromOffset(44, 0)
+				caption.Size = if compactTabs then UDim2.new(1, -8, 0, 17) else UDim2.new(1, -54, 1, -4)
 				caption.TextWrapped = false
 				caption.TextScaled = true
-				caption.TextXAlignment = Enum.TextXAlignment.Left
+				caption.TextXAlignment = if compactTabs then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
 				local textLimit = Instance.new("UITextSizeConstraint")
-				textLimit.MinTextSize = 16
-				textLimit.MaxTextSize = 19
+				textLimit.MinTextSize = 11
+				textLimit.MaxTextSize = if compactTabs then 14 else 17
 				textLimit.Parent = caption
 			else
 				b.TextXAlignment = Enum.TextXAlignment.Right
