@@ -16,6 +16,7 @@ on:
 permissions:
   contents: write
   actions: write
+  issues: write
 concurrency:
   group: vibe-autopilot
   cancel-in-progress: false
@@ -136,3 +137,26 @@ jobs:
           }
           put build/autopilot-ledger.json autopilot-ledger.json
           put build/autopilot-orders.json autopilot-orders.json
+      # [오류 보고] 기존 GitHub Issues에 동일 오류를 한 건만 유지한다.
+      # 실행 실패가 확인될 때만 보고하며, 중복 실행마다 알림을 생성하지 않는다.
+      - name: Report autopilot execution failure
+        if: ${{ failure() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title="[자동점검] Vibe Autopilot 실행 오류"
+          url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          {
+            echo "## 자동점검 실패"
+            echo "실행: ${url}"
+            echo "브랜치: ${GITHUB_REF_NAME}"
+            echo "확인: Actions 실행 로그의 실패 단계와 원인을 확인해야 함"
+          } >> "${GITHUB_STEP_SUMMARY}"
+          existing=$(gh issue list --state open --limit 100 --json number,title --jq ".[] | select(.title == \"$title\") | .number" | head -1)
+          if [[ -n "$existing" ]]; then
+            echo "AUTOPILOT_ERROR_REPORT=EXISTING_ISSUE #$existing"
+          else
+            gh issue create --title "$title" --body "자동점검 실행 실패. 최신 실행 로그: $url" >/dev/null
+            echo "AUTOPILOT_ERROR_REPORT=NEW_ISSUE"
+          fi
