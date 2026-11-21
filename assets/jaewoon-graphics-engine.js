@@ -332,7 +332,7 @@
     const validNumber=name=>typeof resources[name]==='number'&&Number.isFinite(resources[name])&&resources[name]>=0;
     const memoryMb=resourceObserved&&validNumber('memoryPeakMb')?resources.memoryPeakMb:null;
     const drawCalls=resourceObserved&&validNumber('drawCalls')?resources.drawCalls:null;
-    const visualTriangles=resourceObserved&&validNumber('visibleTriangles')?resources.visibleTriangles:null;
+    const visibleTriangles=resourceObserved&&validNumber('visibleTriangles')?resources.visibleTriangles:null;
     const limits={LOW:{memoryPeakMb:320,drawCalls:175,visibleTriangles:150000},
       MID:{memoryPeakMb:448,drawCalls:250,visibleTriangles:240000},
       HIGH:{memoryPeakMb:512,drawCalls:300,visibleTriangles:300000}}[key];
