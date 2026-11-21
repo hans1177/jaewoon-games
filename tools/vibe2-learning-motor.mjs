@@ -474,7 +474,10 @@ function knowledgeRefsFromEvidence(evidence=[]){
   if(!marker)return[];
   try{
     const rows=JSON.parse(decodeURIComponent(marker.slice('learning-knowledge-ids:'.length)));
-    return Array.isArray(rows)?uniq(rows.map(clean).filter(Boolean)):[];
+    return Array.isArray(rows)?uniq(rows.map(clean).filter(ref=>{
+      const at=ref.indexOf(':');
+      return at>0&&at<ref.length-1&&ref.length<=512&&/^[A-Za-z][A-Za-z0-9_-]*$/.test(ref.slice(0,at));
+    })).sort():[];
   }catch{return[];}
 }
 export function applyVerifiedKnowledgeOutcomes(stateInput={},queueInput={}){
