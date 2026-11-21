@@ -450,7 +450,23 @@ jobs:
             $msgs = @(([string]$_.out -replace '^[^:]*LOGS\([0-9]+\):\s*','') -split ' // ' | Where-Object { $_.Trim() })
             # [서버 선로딩 정지] Client 전수 IsLoaded 검사가 이미지를 확정해 media 가 PASS 면, 서버 PreloadAsync 의 TIMEOUT_16S 기록도 제외한다.
             $mediaOk = ([string]$report.assetAudit.registered.status -eq 'PASS')
+            # [외부 자산 처리 중] 게임 소스·등록부에 없는 ContentId가 Roblox 서버에서 아직 변환 중이라는 문구는
+            # 게임 결함이 아니다(아바타 등 외부 콘텐츠, 실행 44899533993). 게임이 참조하는 ID면 그대로 실패로 남긴다.
+            $foreignProcessing = {
+              param($m)
+              if ($m -notmatch 'rbxassetid://([0-9]{6,20}) failed due to: Asset content representation is being generated') { return $false }
+              $assetId = $Matches[1]
+              if (-not $script:gameRefCache) { $script:gameRefCache = @{} }
+              if (-not $script:gameRefCache.ContainsKey($assetId)) {
+                $hit = Get-ChildItem -LiteralPath ("main/roblox-games/" + $env:CAP_GAME) -Recurse -File -Include *.luau,*.json -ErrorAction SilentlyContinue |
+                  Select-String -SimpleMatch -Pattern $assetId -List -ErrorAction SilentlyContinue | Select-Object -First 1
+                $script:gameRefCache[$assetId] = [bool]$hit
+                Write-Host "STUDIO_EXTERNAL_ASSET_PROCESSING=$assetId referencedByGame=$([bool]$hit)"
+              }
+              return (-not $script:gameRefCache[$assetId])
+            }
             $benign = @($msgs | Where-Object {
+              (& $foreignProcessing $_) -or
               $_ -match 'Place universe not found' -or
               ($mediaOk -and ($_ -match '^\[QA\] FAIL asset .* status=TIMEOUT_16S' -or $_ -match 'SERVER_PRELOAD_UNRESPONSIVE'))
             })
