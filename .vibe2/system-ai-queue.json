@@ -122982,7 +122982,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -123024,12 +123024,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44886092964:1",
+      "reservedAt": "2026-11-21T08:48:42.164Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-verification-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -126628,14 +126628,15 @@
         "system-ai-applied-answer-sha256:f97458c5fff80d0862d30ec95e6fb046ffd25e2ef8d758fcfefef6d9c8d4375e",
         "repair-strategy-fingerprint:43472593a0b8356208c81ca92ba9b3ef29f22ad59f132ecd971600230cf6d308",
         "failed-strategy-fingerprint:43472593a0b8356208c81ca92ba9b3ef29f22ad59f132ecd971600230cf6d308",
-        "model-output-sha256:7f3a76593016d646b2cfa7d8292f1a1774e6c9d319840af76286f1c04276008f"
+        "model-output-sha256:7f3a76593016d646b2cfa7d8292f1a1774e6c9d319840af76286f1c04276008f",
+        "system-ai-handoff-to-reservation:system-ai:44886092964:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 302,
+      "impactScore": 352,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 0,
-        "recurrenceCount": 0,
+        "blockedTaskCount": 1,
+        "recurrenceCount": 1,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -126643,7 +126644,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-21T08:46:12.094Z"
+      "updatedAt": "2026-11-21T08:48:42.164Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -156615,7 +156616,7 @@
     },
     {
       "id": "marketing-seed-roblox-survival-horror-es-doors-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -156657,12 +156658,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44886092964:1",
+      "reservedAt": "2026-11-21T08:48:42.164Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -156799,14 +156800,15 @@
         "system-ai-impact-score:502",
         "system-ai-blocked-task-count:4",
         "system-ai-handoff-to-reservation:system-ai:44297340987:1",
-        "actions-run:44297340987"
+        "actions-run:44297340987",
+        "system-ai-handoff-to-reservation:system-ai:44886092964:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 502,
+      "impactScore": 1778,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 4,
-        "recurrenceCount": 4,
+        "blockedTaskCount": 37,
+        "recurrenceCount": 37,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -156814,7 +156816,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-18T11:54:05.211Z"
+      "updatedAt": "2026-11-21T08:48:42.164Z"
     },
     {
       "id": "marketing-star-frontier-pre-release-v1",
