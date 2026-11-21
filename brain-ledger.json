@@ -175,6 +175,11 @@
       "n": 1,
       "lastAt": 1795231995623,
       "last": "REJECTED"
+    },
+    "mare-essentia:visual:6987cf2302ae0459492955313082ddf2c78315d61b7780ef5c6e9e203b749bd9": {
+      "n": 1,
+      "lastAt": 1795235398520,
+      "last": "REJECTED"
     }
   },
   "merged": [
@@ -240,17 +245,17 @@
     },
     "gemini:gemini-3.6-flash": {
       "ok": 23,
-      "fail": 35,
-      "lastAt": 1795231995623,
+      "fail": 36,
+      "lastAt": 1795235398520,
       "quotaUntil": 1795206776446
     }
   },
   "visualCoverage": {
-    "sourceRevision": "4762edfba74aa07381fb7a1694a149e2b68234ae",
+    "sourceRevision": "ccf2bbba266a7fd71d67f0249a4872fb9e989bc4",
     "labels": [
-      "c00_start",
-      "t01",
-      "t02"
+      "m_trade",
+      "m_harbor",
+      "m_route"
     ]
   }
 }
