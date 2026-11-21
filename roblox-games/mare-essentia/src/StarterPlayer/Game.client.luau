@@ -2088,14 +2088,31 @@ function H.layoutBook()
   -- [상단 오른쪽 가로 탭] 데스크톱은 한 줄 전체 표시, 작은 폰은 한 줄 가로 스크롤.
   local compactTabs = not wide
   local sectionTop = if compactTabs and not facilityDetail then 120 else 68
+  -- [낮은 가로 화면] 가로폰·작은 창은 탭을 머리줄(제목·자금 오른쪽, X 왼쪽)로 올려 본문 높이를 확보한다.
+  local headerTabs, headerTabW = false, 0
+  if wide and tabs and height > 0 and height < 600 then
+    local leftReserve = 236 + (if H.menuStatusLabel.Visible then statusWidth + 8 else 0)
+    headerTabW = math.floor((width - leftReserve - 64 - math.max(0, tabCount - 1) * 6) / math.max(1, tabCount))
+    headerTabs = headerTabW >= 104
+  end
+  if headerTabs then
+    sectionTop = 8
+    H.menuRecentButton.Visible = false
+    H.menuStatusLabel.AnchorPoint = Vector2.zero
+    H.menuStatusLabel.Position = UDim2.fromOffset(236, topY)
+    headerLabel.Size = UDim2.fromOffset(150, 29)
+    H.pageDetails.Size = UDim2.fromOffset(150, 18)
+  end
   local tabHeight = if compactTabs then 52 else 54
   local tabGap = if width < 340 then 4 else 6
   local tabList = H.tabStrip:FindFirstChildOfClass("UIListLayout")
   if tabList then tabList.Padding = UDim.new(0, tabGap) end
   local tabWidth = if compactTabs then math.clamp(math.floor((width - 16 - math.max(0, tabCount - 1) * tabGap) / math.max(1, tabCount)), 82, 190) else 166
+  if headerTabs then tabWidth = math.min(166, headerTabW) end
   local allTabsWidth = tabCount * tabWidth + math.max(0, tabCount - 1) * tabGap
   local visibleTabsWidth = math.min(math.max(1, width - 16), allTabsWidth)
   tabBar.Position = UDim2.new(1, -8, 0, sectionTop)
+  if headerTabs then tabBar.Position = UDim2.new(1, -60, 0, sectionTop) end
   tabBar.Size = UDim2.fromOffset(visibleTabsWidth, tabHeight + 3)
   -- [폰 너비 변경] 기존 버튼을 재생성하지 않고 현재 폭만 갱신한다.
   H.tabWidth = tabWidth
