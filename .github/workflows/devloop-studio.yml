@@ -901,3 +901,110 @@ jobs:
             throw 'STUDIO_QA_FAILED_EVIDENCE_PUBLISHED'
           }
           Write-Host 'STUDIO_QA_RESULT=PASS'
+
+      - name: Backup registered 3D assets to MYBOX
+        # [백업 전용] 무료 네이버 MYBOX N:이 연결된 경우에만 기존 등록 원본을 증분 복사한다.
+        # [게임 보호] QA 스크린샷, .git, 게임 저장 파일, 미검증 바이너리, 러너 등록정보는 백업하지 않는다.
+        # [승인 분리] 원본 해시/사용권한 확인은 백업 자격일 뿐 실제 게임 품질 승인 또는 출시 PASS가 아니다.
+        if: ${{ !cancelled() }}
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $repo = Join-Path $env:GITHUB_WORKSPACE 'main'
+          $registryFile = Join-Path $repo 'roblox-games\mare-essentia\assets-registered.json'
+          if (-not (Test-Path -LiteralPath $registryFile -PathType Leaf)) {
+            Write-Host 'MYBOX_BACKUP=SKIPPED_SOURCE_CHECKOUT_MISSING'
+            return
+          }
+          if (-not (Test-Path -LiteralPath 'N:\' -PathType Container)) {
+            Write-Host 'MYBOX_BACKUP=SKIPPED_DRIVE_OFFLINE'
+            return
+          }
+          # [무료 저장 공간] 네이버 가상 드라이브가 없거나 로컬 캐시 디스크가 부족하면 복사하지 않는다.
+          $systemDrive = [IO.DriveInfo]::new('C:\')
+          if ($systemDrive.AvailableFreeSpace -lt 1GB) {
+            Write-Host 'MYBOX_BACKUP=SKIPPED_SYSTEM_CACHE_SPACE_LOW'
+            return
+          }
+          $destinationRoot = 'N:\Jaewoon3D\mare-essentia'
+          $copied = 0
+          $existing = 0
+          $skipped = 0
+          $copiedBytes = [long]0
+          $maxBytes = 256MB
+          $maxFileBytes = 128MB
+          $maxFiles = 32
+          $deadline = (Get-Date).AddSeconds(100)
+          try {
+            $registry = Get-Content -LiteralPath $registryFile -Raw -Encoding UTF8 | ConvertFrom-Json
+            if (-not $registry.assets) { throw 'MYBOX_REGISTRY_ASSETS_MISSING' }
+            New-Item -ItemType Directory -Path $destinationRoot -Force | Out-Null
+            # [라이선스 추적] 원본 파일과 사용권한·출처·해시 메타데이터를 함께 보관한다.
+            Copy-Item -LiteralPath $registryFile -Destination (Join-Path $destinationRoot 'assets-registered.json') -Force -ErrorAction Stop
+            $sourcesFile = Join-Path $repo 'roblox-games\mare-essentia\assets\SOURCES.md'
+            if (Test-Path -LiteralPath $sourcesFile -PathType Leaf) {
+              Copy-Item -LiteralPath $sourcesFile -Destination (Join-Path $destinationRoot 'SOURCES.md') -Force -ErrorAction Stop
+            }
+            $prefix = 'roblox-games/mare-essentia/assets/'
+            foreach ($property in @($registry.assets.PSObject.Properties | Sort-Object Name)) {
+              if ($copied -ge $maxFiles -or $copiedBytes -ge $maxBytes -or (Get-Date) -gt $deadline) { break }
+              $entry = $property.Value
+              $relative = [string]$entry.source
+              $expected = ([string]$entry.sourceSha256).ToLowerInvariant()
+              if ($entry.usePermissionGranted -ne $true -or
+                  [string]$entry.assetType -ne 'Model' -or
+                  [string]$entry.license -notin @('CC0-1.0','PROJECT_ORIGINAL_ART','PUBLIC-DOMAIN','CC-BY-3.0','CC-BY-4.0') -or
+                  $expected -notmatch '^[0-9a-f]{64}$' -or
+                  $relative -notmatch '^roblox-games/mare-essentia/assets/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.(?:glb|fbx|blend)$') {
+                continue
+              }
+              $sourceFile = Join-Path $repo ($relative.Replace('/','\'))
+              if (-not (Test-Path -LiteralPath $sourceFile -PathType Leaf)) { $skipped++; continue }
+              $file = Get-Item -LiteralPath $sourceFile -Force -ErrorAction Stop
+              if (($file.Attributes -band [IO.FileAttributes]::ReparsePoint) -or
+                  $file.Length -le 0 -or $file.Length -gt $maxFileBytes -or
+                  ($copiedBytes + $file.Length) -gt $maxBytes) {
+                $skipped++
+                continue
+              }
+              try {
+                $actual = (Get-FileHash -LiteralPath $sourceFile -Algorithm SHA256 -ErrorAction Stop).Hash.ToLowerInvariant()
+                if ($actual -ne $expected) { Write-Warning "MYBOX_BACKUP_SOURCE_HASH_MISMATCH=$($file.Name)"; $skipped++; continue }
+                $subpath = $relative.Substring($prefix.Length).Replace('/','\')
+                $parent = Split-Path -Path $subpath -Parent
+                $folder = if ($parent) { Join-Path $destinationRoot $parent } else { $destinationRoot }
+                $name = [IO.Path]::GetFileNameWithoutExtension($subpath) + '-' + $expected.Substring(0,12) + [IO.Path]::GetExtension($subpath)
+                $target = Join-Path $folder $name
+                if (Test-Path -LiteralPath $target -PathType Leaf) {
+                  $saved = (Get-FileHash -LiteralPath $target -Algorithm SHA256 -ErrorAction Stop).Hash.ToLowerInvariant()
+                  if ($saved -ne $expected) { Write-Warning "MYBOX_BACKUP_EXISTING_HASH_MISMATCH=$name"; $skipped++ }
+                  else { $existing++ }
+                  continue
+                }
+                New-Item -ItemType Directory -Path $folder -Force | Out-Null
+                # [중단 안전] 임시 이름으로 복사해 해시를 확인한 뒤에만 정식 이름으로 바꾼다.
+                $upload = $target + '.upload-' + $env:GITHUB_RUN_ID
+                if (Test-Path -LiteralPath $upload) { Write-Warning "MYBOX_BACKUP_PENDING_FILE=$name"; $skipped++; continue }
+                try {
+                  Copy-Item -LiteralPath $sourceFile -Destination $upload -ErrorAction Stop
+                  $uploaded = (Get-FileHash -LiteralPath $upload -Algorithm SHA256 -ErrorAction Stop).Hash.ToLowerInvariant()
+                  if ($uploaded -ne $expected) { throw 'MYBOX_BACKUP_TRANSFER_HASH_MISMATCH' }
+                  Move-Item -LiteralPath $upload -Destination $target -ErrorAction Stop
+                  $copied++
+                  $copiedBytes += [long]$file.Length
+                } catch {
+                  Remove-Item -LiteralPath $upload -Force -ErrorAction SilentlyContinue
+                  throw
+                }
+              } catch {
+                $skipped++
+                Write-Warning "MYBOX_BACKUP_ITEM_FAILED=$($file.Name):$($_.Exception.GetType().Name)"
+              }
+            }
+            # N: 가상 드라이브의 파일 해시 확인은 서버 업로드 완료 인증과는 별개다.
+            Write-Host "MYBOX_BACKUP=LOCAL_COPY_VERIFIED"
+          } catch {
+            # [독립 보호] N: 접속 불안정이 Roblox Studio QA 결과를 가리지 않게 한다.
+            Write-Warning "MYBOX_BACKUP=UNVERIFIED:$($_.Exception.GetType().Name)"
+          }
+          Write-Host "MYBOX_BACKUP_COPIED=$copied EXISTING=$existing SKIPPED=$skipped MB=$([math]::Round($copiedBytes/1MB,2))"
