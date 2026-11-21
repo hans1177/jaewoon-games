@@ -215,24 +215,22 @@ test('Gemini 429 failover reaches only a pinned OpenRouter free model',async()=>
   });
 });
 
-test('Groq uses the pinned free model when API key exists without redundant free-tier flag',async()=>{
+test('Groq is never called with only an API key when the free plan is not verified',async()=>{
   await withExternalFixture(async()=>{
     process.env.GROQ_API_KEY='groq-test-secret';
     process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
-    const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=groq-free-key-'+Date.now());
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='NO';
+    const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=groq-unverified-'+Date.now());
     const calls=[];
-    const result=await isolated({apiKey:'test',
+    await assert.rejects(isolated({apiKey:'test',
       contents:[{role:'user',parts:[{text:'free code task'}]}],
       fetchImpl:async(url,options)=>{
         calls.push({url:String(url),options});
         if(String(url).includes('googleapis.com'))return{ok:false,status:429,headers:{get:()=> '30'}};
-        return{ok:true,json:async()=>({choices:[{message:{content:'{"ok":true}'}}],usage:{cost:0}})};
+        return{ok:true,json:async()=>({choices:[{message:{content:'{"ok":true}'}}]})};
       }
-    });
-    assert.equal(calls.length,3);
-    assert.equal(result.provider,'GROQ');
-    assert.equal(result.model,VERIFIED_FREE_FALLBACK_MODELS.GROQ);
-    assert.equal(JSON.parse(calls.at(-1).options.body).service_tier,'on_demand');
+    }));
+    assert.ok(!calls.some(c=>c.url.includes('groq.com')),'무료 요금제 미확인 Groq 호출 금지');
   });
 });
 
@@ -549,9 +547,9 @@ test('Vibe59 specialist routing assigns actual free model by domain',async()=>{
     }}});
   assert.ok(!cooldown.expertCandidates.some(row=>row.provider==='GROQ'),
     '검증된 무료 잔량 0 슬롯은 다음 배정에서 제외');
-  assert.ok(selectVibe59FreeExperts({department:'DEVELOPMENT',
+  assert.ok(!selectVibe59FreeExperts({department:'DEVELOPMENT',
     env:{...env,VIBE2_GROQ_FREE_PLAN_VERIFIED:'NO'}}).expertCandidates
-    .some(row=>row.provider==='GROQ'),'무료 고정 모델은 추가 확인 플래그 없이 배정');
+    .some(row=>row.provider==='GROQ'),'무료 요금제 미확인 Groq는 배정하지 않는다(오너 결정 2026-11-22)');
   await withExternalFixture(async()=>{
     process.env.GROQ_API_KEY='groq-fixture';
     process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
@@ -776,6 +774,7 @@ test('one free provider 401 rotates to independent free provider; 402 and safety
     process.env.GROQ_API_KEY='fixture-groq';
     process.env.OPENROUTER_API_KEY='fixture-router';
     process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
     const {requestGeminiFreePair:isolated}=await import(
       '../tools/vibe2-gemini-free-rotation.mjs?provider-auth-'+Date.now());
     const called=[];
