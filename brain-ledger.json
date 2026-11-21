@@ -185,6 +185,11 @@
       "n": 1,
       "lastAt": 1795235518674,
       "last": "APPLIED"
+    },
+    "mare-essentia:visual:6d7d1638f4a0641c406d4fbccb902cd4189d372762e667bb4934e5bf1618c189": {
+      "n": 1,
+      "lastAt": 1795250725909,
+      "last": "APPLIED"
     }
   },
   "merged": [
@@ -238,32 +243,29 @@
     },
     "gemini:gemini-3.8-flash": {
       "ok": 0,
-      "fail": 15,
+      "fail": 16,
       "quotaUntil": 1795250025166,
-      "lastAt": 1795228425166
+      "lastAt": 1795250725909
     },
     "gemini:gemini-3.7-flash": {
       "ok": 0,
-      "fail": 15,
+      "fail": 16,
       "quotaUntil": 1795250025166,
-      "lastAt": 1795228425166
+      "lastAt": 1795250725909
     },
     "gemini:gemini-3.6-flash": {
-      "ok": 24,
+      "ok": 26,
       "fail": 36,
-      "lastAt": 1795235518674,
+      "lastAt": 1795250725909,
       "quotaUntil": 1795206776446
     }
   },
   "visualCoverage": {
-    "sourceRevision": "ccf2bbba266a7fd71d67f0249a4872fb9e989bc4",
+    "sourceRevision": "db1ffe778b2d438b12a1688171a8b77bb0226fe5",
     "labels": [
-      "m_trade",
-      "m_harbor",
-      "m_route",
-      "m_map",
-      "m_yard",
-      "m_board"
+      "c00_start",
+      "t01",
+      "t02"
     ]
   }
 }
