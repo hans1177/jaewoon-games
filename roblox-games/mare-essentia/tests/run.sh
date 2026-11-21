@@ -63,6 +63,28 @@ if command -v "$COMPILE" >/dev/null 2>&1 || [ -x "$COMPILE" ]; then
   "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/CardTheme.luau" >/dev/null
 fi
 
+echo "== 항해 중 항구 3D 연출 중단 회귀 검사 =="
+python3 - "$ROOT/src/ReplicatedStorage/Shared/PortScene.luau" <<'PY'
+from pathlib import Path
+import sys
+source = Path(sys.argv[1]).read_text(encoding="utf-8")
+walk = source.index('local walkConn = RunService.PreSimulation:Connect(function(deltaTime)')
+ship = source.index('local conn = RunService.Heartbeat:Connect(function()', walk)
+walker_block = source[walk:source.index('local now = os.clock()', walk)]
+ship_block = source[ship:source.index('local t = os.clock() - t0', ship)]
+if 'if not folder.Parent or workspace:GetAttribute("VoyageActive") then return end' not in walker_block:
+    raise SystemExit("MARE_PORT_OFFSCREEN_NPC_GUARD_MISSING")
+if 'if not folder.Parent then return end' not in ship_block:
+    raise SystemExit("MARE_PORT_DESTROYED_VISUAL_GUARD_MISSING")
+if 'if workspace:GetAttribute("VoyageActive") then\n\t\t\tsetFoam(0)\n\t\t\treturn\n\t\tend' not in ship_block:
+    raise SystemExit("MARE_PORT_OFFSCREEN_SHIP_WAKE_NOT_STOPPED")
+if 'folder.Destroying:Connect(function()\n\t\twalkConn:Disconnect()' not in source:
+    raise SystemExit("MARE_PORT_NPC_CONNECTION_CLEANUP_MISSING")
+if 'folder.Destroying:Connect(function()\n\t\tconn:Disconnect()' not in source:
+    raise SystemExit("MARE_PORT_SHIP_CONNECTION_CLEANUP_MISSING")
+print("MARE_PORT_OFFSCREEN_VISUAL_GATE=PASS")
+PY
+
 echo "== 무기 연타·아이콘 스킬·저장 회귀 검사 =="
 (cd "$ROOT/../.." && node --test qa/mare-essentia-datastore-name.test.mjs)
 
