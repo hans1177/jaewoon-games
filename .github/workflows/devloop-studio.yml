@@ -37,36 +37,74 @@ jobs:
     timeout-minutes: 50
     steps:
       - name: Free runner E drive space
-        # [실행기 공간 정리] 이전 작업이 남긴 촬영본·빌드 place·로그·임시 폴더만 지운다.
-        # 저장소 작업 트리(.git 포함 폴더)와 러너 도구(_tool, _actions)는 건드리지 않는다.
-        # 촬영본은 mare-essentia-studio-frames 브랜치에 이미 보관되므로 로컬 사본은 필요 없다.
+        # [E: 실행기 보존] 등록정보·실행기·게임 원본·현재 작업은 건드리지 않는다.
+        # [지난 작업 정리] 6시간이 지난 QA 캡처·임시 빌드만 정리하고 실제 삭제 성공 용량을 기록한다.
         shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
-          $ErrorActionPreference = 'Continue'
-          $temp = [IO.Path]::GetFullPath($env:RUNNER_TEMP)
-          $work = Split-Path $temp -Parent
-          $drive = [IO.DriveInfo]::new([IO.Path]::GetPathRoot($temp))
-          Write-Host "RUNNER_DISK_FREE_MB_BEFORE=$([math]::Round($drive.AvailableFreeSpace/1MB))"
-          foreach ($dir in @(Get-ChildItem -LiteralPath $work -Directory -Force -ErrorAction SilentlyContinue)) {
-            $sum = (Get-ChildItem -LiteralPath $dir.FullName -Recurse -File -Force -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum
-            Write-Host "RUNNER_DISK_USAGE_MB=$([math]::Round($sum/1MB)) $($dir.Name)"
+          $ErrorActionPreference = 'Stop'
+          $runnerRoot = [IO.Path]::GetFullPath('E:\JaewoonRobloxStudioRunner').TrimEnd('\')
+          $work = Join-Path $runnerRoot '_work'
+          $temp = [IO.Path]::GetFullPath($env:RUNNER_TEMP).TrimEnd('\')
+          $expectedTemp = Join-Path $work '_temp'
+          if (-not [string]::Equals($temp, $expectedTemp, [StringComparison]::OrdinalIgnoreCase)) {
+            Write-Warning 'RUNNER_DISK_CLEAN_SKIP=UNEXPECTED_TEMP_PATH'
+            return
           }
+          if (-not (Test-Path -LiteralPath $temp -PathType Container)) {
+            Write-Warning 'RUNNER_DISK_CLEAN_SKIP=TEMP_MISSING'
+            return
+          }
+          $volume = [IO.DriveInfo]::new('E:\')
+          $before = $volume.AvailableFreeSpace
+          Write-Host "RUNNER_DISK_FREE_MB_BEFORE=$([math]::Round($before/1MB))"
           $cut = (Get-Date).AddHours(-6)
-          # 1) 이번 작업 이외의 오래된 임시 폴더·파일
-          Get-ChildItem -LiteralPath $temp -Force -ErrorAction SilentlyContinue |
-            Where-Object { $_.LastWriteTime -lt $cut } |
-            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-          # 2) 작업 폴더 안 촬영본·place·로그·압축 (저장소 추적 파일 제외)
-          $keep = '\\(_tool|_actions|_temp)\\|\\\.git\\'
-          $trees = @(Get-ChildItem -LiteralPath $work -Directory -Recurse -Depth 3 -Force -Filter '.git' -ErrorAction SilentlyContinue | ForEach-Object { $_.Parent.FullName + '\' })
-          $removed = 0; $freed = 0
-          Get-ChildItem -LiteralPath $work -Recurse -File -Force -Include *.jpg,*.jpeg,*.png,*.rbxl,*.rbxlx,*.log,*.zip,*.mp4,*.webm -ErrorAction SilentlyContinue |
-            Where-Object { $_.LastWriteTime -lt $cut -and $_.FullName -notmatch $keep } |
-            Where-Object { $f = $_.FullName; -not ($trees | Where-Object { $f.StartsWith($_, [StringComparison]::OrdinalIgnoreCase) }) } |
-            ForEach-Object { $freed += $_.Length; $removed++; Remove-Item -LiteralPath $_.FullName -Force -ErrorAction SilentlyContinue }
-          Write-Host "RUNNER_DISK_REMOVED_FILES=$removed RUNNER_DISK_REMOVED_MB=$([math]::Round($freed/1MB))"
-          $drive = [IO.DriveInfo]::new([IO.Path]::GetPathRoot($temp))
-          Write-Host "RUNNER_DISK_FREE_MB_AFTER=$([math]::Round($drive.AvailableFreeSpace/1MB))"
+          # [원본 보호] 기존 체크아웃의 .git이 포함된 폴더는 전체 보존한다.
+          $repos = @(Get-ChildItem -LiteralPath $work -Directory -Recurse -Depth 4 -Force -Filter '.git' -ErrorAction SilentlyContinue |
+            ForEach-Object { $_.Parent.FullName.TrimEnd('\') + '\' })
+          $removed = 0
+          $freed = [long]0
+          $failed = 0
+          $tempPrefix = $temp + '\'
+          $workPrefix = $work.TrimEnd('\') + '\'
+          # [개별 파일 검사] 폴더의 수정일만 오래됐다는 이유로 새 촬영본을 지우지 않는다.
+          $files = @(Get-ChildItem -LiteralPath $work -Recurse -File -Force -ErrorAction SilentlyContinue |
+            Where-Object {
+              $path = $_.FullName
+              if (-not $path.StartsWith($workPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+                  ($_.Attributes -band [IO.FileAttributes]::ReparsePoint) -or
+                  $_.LastWriteTime -ge $cut) { return $false }
+              if ($path.StartsWith($tempPrefix, [StringComparison]::OrdinalIgnoreCase)) { return $true }
+              if ($_.Extension.ToLowerInvariant() -notin @('.jpg','.jpeg','.png','.webp','.rbxl','.rbxlx','.zip','.mp4','.webm')) {
+                return $false
+              }
+              if ($path -match '(?i)\\\.git\\') { return $false }
+              foreach ($repo in $repos) {
+                if ($path.StartsWith($repo, [StringComparison]::OrdinalIgnoreCase)) { return $false }
+              }
+              return $true
+            })
+          foreach ($file in $files) {
+            try {
+              $size = $file.Length
+              Remove-Item -LiteralPath $file.FullName -Force -ErrorAction Stop
+              $removed++
+              $freed += $size
+            } catch {
+              $failed++
+              Write-Warning "RUNNER_DISK_CLEAN_LOCKED=$($file.Name)"
+            }
+          }
+          # [빈 결과 폴더] 생성된 임시 폴더만 비었을 때 정리한다.
+          foreach ($name in @('mare-frames','mare-first-attempt','rojo-bin')) {
+            $dir = Join-Path $temp $name
+            if (Test-Path -LiteralPath $dir -PathType Container) {
+              $remaining = @(Get-ChildItem -LiteralPath $dir -Force -ErrorAction SilentlyContinue)
+              if ($remaining.Count -eq 0) { Remove-Item -LiteralPath $dir -Force -ErrorAction SilentlyContinue }
+            }
+          }
+          Write-Host "RUNNER_DISK_REMOVED_FILES=$removed RUNNER_DISK_REMOVED_MB=$([math]::Round($freed/1MB)) RUNNER_DISK_CLEAN_FAILURES=$failed"
+          $volume = [IO.DriveInfo]::new('E:\')
+          Write-Host "RUNNER_DISK_FREE_MB_AFTER=$([math]::Round($volume.AvailableFreeSpace/1MB))"
       - uses: actions/checkout@v4
         with:
           path: main
