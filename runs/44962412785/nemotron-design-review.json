@@ -1,0 +1,158 @@
+{
+  "version": 3,
+  "provider": "GEMINI",
+  "gameId": "mare-essentia",
+  "sourceRevision": "6a9513a5b0fb1f4e03e83eab12d3572213220dfe",
+  "status": "CANDIDATE_EDITED",
+  "selectedRole": "WORLD",
+  "usageWindow": {
+    "day": "2026-11-21",
+    "calls": {
+      "NVIDIA": 9,
+      "GEMINI": 10,
+      "OPENROUTER": 10
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-21",
+      "GEMINI": "2026-11-21",
+      "OPENROUTER": "2026-11-21"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-21T12:10:02.598Z",
+      "GEMINI": "2026-11-21T12:00:04.538Z",
+      "OPENROUTER": "2026-11-21T12:42:28.464Z"
+    }
+  },
+  "cooldowns": {
+    "GEMINI_FLASH": "2026-11-22T13:30:36.242Z",
+    "OPENROUTER_GEMMA26": "2026-11-21T23:43:49.033Z",
+    "NVIDIA_VL": "2026-11-22T00:12:52.020Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 9,
+      "remainingLocal": 3,
+      "effectiveRemaining": 3,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": 0.69,
+      "estimatedHoursToLocalCap": 4.3,
+      "nextLocalWindowAt": "2026-11-22T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 10,
+      "remainingLocal": 2,
+      "effectiveRemaining": 2,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 2,
+      "estimatedCallsPerHour": 0.77,
+      "estimatedHoursToLocalCap": 2.6,
+      "nextLocalWindowAt": "2026-11-22T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 10,
+      "remainingLocal": 20,
+      "effectiveRemaining": 20,
+      "regularWorkRemaining": 14,
+      "emergencyReserveRemaining": 6,
+      "estimatedCallsPerHour": 0.82,
+      "estimatedHoursToLocalCap": 24.4,
+      "nextLocalWindowAt": "2026-11-22T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [
+    {
+      "id": "OPENROUTER_GEMMA26",
+      "status": "HTTP_429",
+      "provider": "OPENROUTER",
+      "model": "google/gemma-4-26b-a4b-it:free"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "OK",
+      "provider": "NVIDIA",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "REVIEW_INVALID",
+      "failureSignature": "DUPLICATE_SOURCE_ANCHOR"
+    },
+    {
+      "id": "GEMINI_LITE",
+      "status": "OK",
+      "provider": "GEMINI",
+      "model": "gemini-3.5-flash-lite"
+    }
+  ],
+  "frames": [
+    {
+      "name": "field_entry-0.jpg",
+      "sha256": "bad99f87398e4b5d61c2f6735cc7f46696b573b85c00c65e02fa5f45b03b0bbd"
+    },
+    {
+      "name": "v1_start-0.jpg",
+      "sha256": "14398ab4530e94384b105de9548d16e8c791fede72b8074d8f569ecd74e925fe"
+    },
+    {
+      "name": "v2_event-0.jpg",
+      "sha256": "7f2d9a630a5d357871db172113a65dd9f1e487bfc86b434521c3c31f8e2fbc52"
+    },
+    {
+      "name": "v3_event2-0.jpg",
+      "sha256": "3e90969ae378f552629980dcadc95d989cef603e77f2b29fc07ab75e6233de31"
+    }
+  ],
+  "model": "gemini-3.5-flash-lite",
+  "rawResponseSha256": "77c6b521738cd975cdf76a65e3884c40327b8f5ed3abaa7dfd3b458cc7efde71",
+  "issues": [
+    {
+      "category": "ship-appearance",
+      "severity": "medium",
+      "screenshot": "v1_start-0.jpg",
+      "evidenceSha256": "8772f3b5e50bad92033a444a7794964d9c712344dc27eabbef00033579d8bd7e"
+    }
+  ],
+  "edits": [
+    {
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+      "category": "ship-appearance",
+      "screenshot": "v1_start-0.jpg",
+      "beforeSha256": "a88ac6bdfbb531b7c5837db587c78ea348934f7f6a1855b48a9c0235e6c8d1b1",
+      "afterSha256": "e0dbd34615576884d9be49855de3f358d8a2ed2019970b337677dde5c28d4756"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+      "beforeSha256": "b7241fde1a5ce21f6b5c9fa976f52b716d7f5f514734ff65f438735933b64d51",
+      "afterSha256": "31bad3e1b5850e892d5c69ba8c254fcc2b4b6d1d513ed158678a4be0ad0226d8"
+    }
+  ],
+  "candidateOnly": true,
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
