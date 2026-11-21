@@ -860,6 +860,37 @@ jobs:
               Pop-Location
             }
           }
+          # [검사 디스크 자동 정리] 스크린샷·임시 Git 아카이브는 공식 Studio 증거 브랜치 게시 성공 뒤에만 로컬에서 지운다.
+          # [MYBOX 정책] QA 스크린샷을 N:에 복사하지 않는다. 게임 코드·승인 자산·러너 등록정보도 이동하지 않는다.
+          $cleanRoot = [IO.Path]::GetFullPath($env:RUNNER_TEMP).TrimEnd('\')
+          $expectedCleanRoot = [IO.Path]::GetFullPath('E:\JaewoonRobloxStudioRunner\_work\_temp').TrimEnd('\')
+          if (-not [string]::Equals($cleanRoot, $expectedCleanRoot, [StringComparison]::OrdinalIgnoreCase)) {
+            Write-Warning 'STUDIO_LOCAL_EVIDENCE_CLEAN_SKIP=UNEXPECTED_TEMP_PATH'
+          } else {
+            $localCleanCount = 0
+            $localCleanBytes = [long]0
+            foreach ($name in @('mare-frames','mare-first-attempt','mare-publish','mare-autopilot-publish')) {
+              $folder = Join-Path $cleanRoot $name
+              if (-not (Test-Path -LiteralPath $folder -PathType Container)) { continue }
+              $item = Get-Item -LiteralPath $folder -Force -ErrorAction SilentlyContinue
+              if (-not $item -or ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+                Write-Warning "STUDIO_LOCAL_EVIDENCE_CLEAN_SKIP=REPARSE_POINT:$name"
+                continue
+              }
+              try {
+                $bytes = (Get-ChildItem -LiteralPath $folder -Recurse -File -Force -ErrorAction Stop |
+                  Measure-Object Length -Sum).Sum
+                Remove-Item -LiteralPath $folder -Recurse -Force -ErrorAction Stop
+                $localCleanBytes += [long]$bytes
+                $localCleanCount++
+              } catch {
+                Write-Warning "STUDIO_LOCAL_EVIDENCE_CLEAN_FAILED=$name"
+              }
+            }
+            Write-Host "STUDIO_LOCAL_EVIDENCE_CLEANED_FOLDERS=$localCleanCount"
+            Write-Host "STUDIO_LOCAL_EVIDENCE_CLEANED_MB=$([math]::Round($localCleanBytes/1MB,2))"
+            Write-Host "STUDIO_E_DRIVE_FREE_MB_AFTER_ARCHIVE=$([math]::Round(([IO.DriveInfo]::new('E:\')).AvailableFreeSpace/1MB,2))"
+          }
           if ($qaStage -ne '') {
             Write-Host "STUDIO_QA_GAME_ID=$($env:CAP_GAME)"
             Write-Host "STUDIO_QA_FAILURE_STAGE=$qaStage"
