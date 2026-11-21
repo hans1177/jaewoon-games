@@ -993,6 +993,21 @@ jobs:
           $listeners = @(Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue |
             Where-Object { $_.ExecutablePath -and [string]::Equals([IO.Path]::GetFullPath($_.ExecutablePath),$listenerPath,[StringComparison]::OrdinalIgnoreCase) })
           Write-Host "MYBOX_RUNNER_LISTENER_COUNT=$($listeners.Count)"
+          # [실행 계정 대조] 실제 Runner.Listener 소유자와 현재 QA 작업 계정을 비교한다.
+          foreach ($listener in $listeners) {
+            try {
+              $owner = Invoke-CimMethod -InputObject $listener -MethodName GetOwner -ErrorAction Stop
+              if ($owner.ReturnValue -eq 0) {
+                $listenerAccount = "$($owner.Domain)\$($owner.User)"
+                Write-Host "MYBOX_LISTENER_ACCOUNT=$listenerAccount"
+                Write-Host "MYBOX_LISTENER_ACCOUNT_MATCHES_JOB=$([string]::Equals($identity.Name,$listenerAccount,[StringComparison]::OrdinalIgnoreCase))"
+              } else {
+                Write-Warning "MYBOX_LISTENER_ACCOUNT=UNVERIFIED_RETURN_$($owner.ReturnValue)"
+              }
+            } catch {
+              Write-Warning 'MYBOX_LISTENER_ACCOUNT=UNVERIFIED_OWNER_QUERY'
+            }
+          }
           $repo = Join-Path $env:GITHUB_WORKSPACE 'main'
           $registryFile = Join-Path $repo 'roblox-games\mare-essentia\assets-registered.json'
           if (-not (Test-Path -LiteralPath $registryFile -PathType Leaf)) {
