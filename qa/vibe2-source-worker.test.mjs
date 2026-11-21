@@ -2703,6 +2703,13 @@ function dccFixtureGlb({grounded=false}={}){
 }
 
 test('declared Blender verification executes only declared recipe and restores the repository',()=>{
+  // [DCC 회귀] 공식 Blender 실행 검증과 실제 EEVEE 미리보기 렌더 준비를 동시에 요구한다.
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const preparation=workflow.split('      - name: Prepare declared native DCC authoring runtime\n')[1]?.split('      - name: Save pinned Blender cache for native DCC authoring\n')[0]||'';
+  assert.match(preparation,/sudo apt-get install -y --no-install-recommends libegl1 libgl1-mesa-dri/);
+  assert.match(preparation,/VIBE2_NATIVE_DCC_EGL_LIBRARY_MISSING/);
+  assert.match(preparation,/bpy\.ops\.render\.render\(write_still=False\)/);
+  assert.match(preparation,/VIBE2_NATIVE_DCC_EGL_PREVIEW=PASS/);
   const root=tempRoot();
   try{
     fs.mkdirSync(path.join(root,'assets/test/native/model'),{recursive:true});
