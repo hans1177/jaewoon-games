@@ -774,6 +774,29 @@ test('verified regression outcomes calibrate overconfident responsibility and bu
   assert.equal(deduped.added,0);
   assert.equal(deduped.hotspotEventsAdded,0);
 });
+// 회귀 복구 기억: 마지막 검증 결과, 중복 처리, 타 엔진 격리를 함께 검사한다.
+test('verified regression recovery memory tracks failure and subsequent pass without erasing history',()=>{
+  const task=(id,outcome)=>({id,gameId:'recovery-game',target:'web',evidence:[
+    'coding-primary-targets:["recoverPointer"]',
+    'coding-responsibility-confidence:HIGH',
+    ...(outcome==='FAIL'?['failure-cause:fan-in-regression-failed']:['role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS']),
+    'actions-run:'+id
+  ]});
+  const failures=applyVerifiedCodingCalibration({}, {tasks:[task('failure-1','FAIL'),task('failure-2','FAIL'),task('failure-3','FAIL')]});
+  const failed=regressionHotspotRiskForTask({task:{gameId:'recovery-game',target:'web'},stateInput:failures.state});
+  assert.equal(failed.riskLevel,'HIGH');
+  assert.equal(failed.entries[0].lastVerifiedOutcome,'REGRESSION_FAIL');
+  const recovered=applyVerifiedCodingCalibration(failures.state,{tasks:[task('pass-1','PASS')]});
+  const risk=regressionHotspotRiskForTask({task:{gameId:'recovery-game',target:'web'},stateInput:recovered.state});
+  assert.equal(risk.riskLevel,'MEDIUM');
+  assert.equal(risk.entries[0].lastVerifiedOutcome,'PASS');
+  assert.equal(risk.entries[0].verifiedRegressionFailures,3);
+  assert.equal(risk.entries[0].verifiedPasses,1);
+  assert.match(codingRiskGuidance({hotspot:risk}),/verified pass exists/i);
+  const duplicate=applyVerifiedCodingCalibration(recovered.state,{tasks:[task('pass-1','PASS')]});
+  assert.equal(duplicate.hotspotEventsAdded,0);
+  assert.equal(regressionHotspotRiskForTask({task:{gameId:'recovery-game',target:'roblox'},stateInput:recovered.state}).riskLevel,'LOW');
+});
 test('verified architecture drift outcomes become reusable risk only after cross-game regression evidence',()=>{
   const fail=(id,gameId)=>({id,gameId,target:'web',evidence:[
     'architecture-drift-status:ANALYZED','architecture-drift-risk:HIGH','architecture-drift-score:6','architecture-drift-signals:GOD_FUNCTION_GROWTH,STATE_WRITER_FANOUT_GROWTH',
