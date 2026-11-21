@@ -339,7 +339,7 @@
     const overload=Math.max(1,...[
       memoryMb===null?1:memoryMb/limits.memoryPeakMb,
       drawCalls===null?1:drawCalls/limits.drawCalls,
-      visualTriangles===null?1:visualTriangles/limits.visibleTriangles
+      visibleTriangles===null?1:visibleTriangles/limits.visibleTriangles
     ]);
     const ratio=eligible?clamp(measured/target,0.35,1):1;
     const resourceRatio=resourceObserved?clamp(1/overload,0.35,1):1;
