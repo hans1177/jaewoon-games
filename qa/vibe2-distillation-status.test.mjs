@@ -1,7 +1,7 @@
 // 파일명: qa/vibe2-distillation-status.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildDistillationStatus } from '../tools/vibe2-distillation-status.mjs';
+import { buildDistillationStatus, diagnoseEvidenceLinkage } from '../tools/vibe2-distillation-status.mjs';
 import { buildDataset, datasetContentFingerprint } from '../tools/vibe2-weight-learning.mjs';
 
 function entry(record, index) {
@@ -45,6 +45,23 @@ test('같은 소스 리비전의 실행 증거와 학습 문답 연결 상태를
   assert.equal(status.diagnostics.latestDatedRecord, '2026-11-20');
   assert.equal(status.diagnostics.recordsFromNovember2026, 2);
   assert.equal(status.readyTasks.length, 0);
+});
+
+test('별도 증거 폴더와 학습 자료의 후보 ID 및 소스 리비전 연결을 추적한다', () => {
+  const samples = [entry({ candidateId: 'candidate-a', sourceCommit: 'commit-a', instruction: '문제', output: '수정' }, 0)];
+  const evidence = [
+    entry({ candidateId: 'candidate-a', sourceRevision: 'other-revision' }, 0),
+    entry({ candidateId: 'other', sourceRevision: 'commit-a' }, 1),
+    entry({ candidateId: 'unmatched', sourceRevision: 'unmatched-commit', independentQa: 'PASS' }, 2),
+  ];
+  const result = diagnoseEvidenceLinkage(samples, evidence);
+  assert.deepEqual(result, {
+    evidenceRecords: 3,
+    evidenceLinkedToTrainingRecord: 2,
+    evidenceWithoutTrainingRecord: 1,
+    evidenceWithSourceRevision: 3,
+  });
+  assert.equal(buildDistillationStatus(samples).readyTasks.length, 0);
 });
 
 test('성공 근거만 있고 학습 텍스트가 없으면 학습 준비로 보지 않는다', () => {
