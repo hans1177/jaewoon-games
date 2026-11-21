@@ -1957,7 +1957,7 @@
     },
     {
       "id": "marketing-ant-simulator-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": null,
       "taskType": null,
@@ -2003,12 +2003,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44933198078:1",
+      "reservedAt": "2026-11-21T18:08:53.447Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -3342,7 +3342,8 @@
         "system-ai-handoff-to-reservation:system-ai:44620955805:1",
         "actions-run:44620955805",
         "system-ai-handoff-to-reservation:system-ai:44898140562:1",
-        "actions-run:44898140562"
+        "actions-run:44898140562",
+        "system-ai-handoff-to-reservation:system-ai:44933198078:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1446,
@@ -3357,7 +3358,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-11-21T11:25:44.726Z"
+      "updatedAt": "2026-11-21T18:08:53.447Z"
     },
     {
       "id": "marketing-amusement-tycoon-pre-release-v1",
@@ -156300,7 +156301,7 @@
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -156342,12 +156343,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:44933198078:1",
+      "reservedAt": "2026-11-21T18:08:53.447Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -156714,14 +156715,17 @@
         "failed-strategy-fingerprint:455e6baca7cbf950ea86b3d8396edee0dd8bba085bc09a587cc53cbc710d98f7",
         "model-output-sha256:16ebfd2ed1af071a7afdeda205987a2f8b3b89693a553c8f23b3c6faaf921ed9",
         "system-ai-handoff-to-reservation:system-ai:44929118023:1",
-        "actions-run:44929118023"
+        "actions-run:44929118023",
+        "system-ai-impact-score:1890",
+        "system-ai-blocked-task-count:41",
+        "system-ai-handoff-to-reservation:system-ai:44933198078:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 302,
+      "impactScore": 1890,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 0,
-        "recurrenceCount": 0,
+        "blockedTaskCount": 41,
+        "recurrenceCount": 41,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -156729,7 +156733,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-21T17:30:43.660Z"
+      "updatedAt": "2026-11-21T18:08:53.447Z"
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
