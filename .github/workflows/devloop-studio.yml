@@ -1043,7 +1043,12 @@ jobs:
             Write-Host 'MYBOX_BACKUP=SKIPPED_SYSTEM_CACHE_SPACE_LOW'
             return
           }
-          $destinationRoot = 'N:\Jaewoon3D\mare-essentia'
+          # [MYBOX 개인 폴더] 네이버 MYBOX는 N:\ 최상위(개인·공유·즐겨찾기·휴지통)에 새 폴더를 만들 수 없다(실행 44889808617 진단).
+          # 오너 승인(2026-11-21)으로 기존 개인 저장 공간 아래에 둔다. PowerShell 5 스크립트 인코딩 안전을 위해 '개인'은 문자 코드로 만든다.
+          $personalRoot = Join-Path 'N:\' (-join ([char]0xAC1C, [char]0xC778))
+          $parentRoot = Join-Path $personalRoot 'Jaewoon3D'
+          $destinationRoot = Join-Path $parentRoot 'mare-essentia'
+          Write-Host "MYBOX_PERSONAL_EXISTS=$(Test-Path -LiteralPath $personalRoot -PathType Container)"
           # [N: 드라이브 진단] 드라이브 종류·형식·여유·최상위 폴더 이름만 읽는다(최상위에는 쓰지 않음).
           try {
             $nDrive = [IO.DriveInfo]::new('N:\')
@@ -1054,7 +1059,7 @@ jobs:
             Write-Host "MYBOX_TOP_FOLDERS=$($top -join '|')"
           } catch { Write-Warning "MYBOX_TOP_FOLDERS=UNREADABLE:$($_.Exception.GetType().Name)" }
           # [MYBOX 경로 진단] 루트 생성 제한과 러너 계정 쓰기 권한을 분리해서 확인한다.
-          Write-Host "MYBOX_PARENT_EXISTS=$(Test-Path -LiteralPath 'N:\Jaewoon3D' -PathType Container)"
+          Write-Host "MYBOX_PARENT_EXISTS=$(Test-Path -LiteralPath $parentRoot -PathType Container)"
           Write-Host "MYBOX_TARGET_EXISTS=$(Test-Path -LiteralPath $destinationRoot -PathType Container)"
           $copied = 0
           $existing = 0
@@ -1080,8 +1085,9 @@ jobs:
             $op = 'NONE'
             try {
               # [기존 대상 보존] 새 저장소를 만들거나 우회 위치를 쓰지 않고 기존 MYBOX 보관 경로만 검사한다.
-              # [자동복구] 부모(N:\Jaewoon3D)가 있으면 그 안에 대상 폴더만 만든다. 최상위 생성이 막히면 원인을 기록한다.
-              if (-not (Test-Path -LiteralPath 'N:\Jaewoon3D' -PathType Container)) { $op = 'CREATE_PARENT_N:\Jaewoon3D' }
+              # [자동복구] 개인 폴더 아래에 Jaewoon3D\mare-essentia를 만든다. 개인 폴더 자체가 없으면 원인을 기록한다.
+              if (-not (Test-Path -LiteralPath $personalRoot -PathType Container)) { $op = 'PERSONAL_FOLDER_MISSING' }
+              elseif (-not (Test-Path -LiteralPath $parentRoot -PathType Container)) { $op = 'CREATE_PARENT_Jaewoon3D' }
               elseif (-not (Test-Path -LiteralPath $destinationRoot -PathType Container)) { $op = 'CREATE_TARGET' }
               else { $op = 'WRITE_FILE' }
               New-Item -ItemType Directory -Path $destinationRoot -Force -ErrorAction Stop | Out-Null
@@ -1099,7 +1105,7 @@ jobs:
                 }
               }
             } catch {
-              $failure = if (-not (Test-Path -LiteralPath 'N:\Jaewoon3D' -PathType Container)) {
+              $failure = if (-not (Test-Path -LiteralPath $parentRoot -PathType Container)) {
                 'MYBOX_ROOT_PARENT_CREATE_BLOCKED'
               } else { 'MYBOX_TARGET_WRITE_DENIED' }
               Write-Warning "MYBOX_WRITE_PROBE=FAIL:${failure}:$($_.Exception.GetType().Name)"
