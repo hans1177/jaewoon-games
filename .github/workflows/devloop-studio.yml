@@ -105,6 +105,12 @@ jobs:
           Write-Host "RUNNER_DISK_REMOVED_FILES=$removed RUNNER_DISK_REMOVED_MB=$([math]::Round($freed/1MB)) RUNNER_DISK_CLEAN_FAILURES=$failed"
           $volume = [IO.DriveInfo]::new('E:\')
           Write-Host "RUNNER_DISK_FREE_MB_AFTER=$([math]::Round($volume.AvailableFreeSpace/1MB))"
+          # [실행기 장애] 공간 미확보 상태에서는 체크아웃을 반복하지 않고 복구 큐에 정확한 원인을 알린다.
+          if ($volume.AvailableFreeSpace -lt 2GB) {
+            Write-Host 'STUDIO_QA_FAILURE_STAGE=STUDIO_EXECUTION'
+            Write-Host 'STUDIO_QA_FAILURE_SIGNATURE=STUDIO_RUNNER_DISK_EXHAUSTED'
+            throw 'ROBLOX_STUDIO_E_DRIVE_FREE_SPACE_REQUIRED'
+          }
       - uses: actions/checkout@v4
         with:
           path: main
