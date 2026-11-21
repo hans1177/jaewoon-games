@@ -936,7 +936,9 @@ export function responsibilityCalibrationForTask({task={},stateInput={}}={}){
 }
 export function regressionHotspotRiskForTask({task={},stateInput={}}={}){
   const state=createMasteryState(stateInput),gameId=clean(task.gameId)||'unknown';
-  const entries=Object.values(state.regressionHotspots?.entries||{}).filter(row=>clean(row.gameId)===gameId).map(row=>({...row,risk:hotspotRisk(row)}));
+  // 다른 엔진에서 발생한 회귀 오류를 현재 작업의 위험으로 오인하지 않는다.
+  const target=lower(task.target);
+  const entries=Object.values(state.regressionHotspots?.entries||{}).filter(row=>clean(row.gameId)===gameId&&(!target||!lower(row.target)||lower(row.target)===target)).map(row=>({...row,risk:hotspotRisk(row)}));
   entries.sort((a,b)=>b.risk.score-a.risk.score||Number(b.verifiedRegressionFailures||0)-Number(a.verifiedRegressionFailures||0));
   const top=entries.slice(0,8);
   const riskLevel=top.some(row=>row.risk.level==='HIGH')?'HIGH':top.some(row=>row.risk.level==='MEDIUM')?'MEDIUM':'LOW';
