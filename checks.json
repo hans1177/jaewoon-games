@@ -1,23 +1,21 @@
 {
-  "runId": "44963354461",
+  "runId": "44964318019",
   "kind": "studio",
   "sourceRevision": "da5c63e90791cc94788333e4a02601f20d33db03",
-  "result": "FAIL",
-  "failureStage": "STUDIO_EXECUTION",
-  "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
+  "result": "PASS",
+  "failureStage": null,
+  "failureSignature": null,
   "summary": {
-    "plannedSteps": 45,
-    "completedSteps": 27,
+    "plannedSteps": 6,
+    "completedSteps": 6,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 15,
-    "capturedFrames": 7,
-    "abortedEarly": true
+    "plannedFrames": 2,
+    "capturedFrames": 2,
+    "abortedEarly": false
   },
-  "errors": [
-    "step26:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:45: PZ:dog-pug:1,23|TOWN_CENTRAL_PLAZA"
-  ],
+  "errors": [],
   "audits": {
     "models": "NOT_RUN",
     "registered": "NOT_RUN",
@@ -41,17 +39,19 @@
     },
     {
       "step": 2,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 3,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "poselab_stage",
       "status": "PASS",
-      "screenshots": []
+      "screenshots": [
+        "poselab_stage-0.jpg"
+      ]
     },
     {
       "step": 4,
@@ -62,392 +62,42 @@
     },
     {
       "step": 5,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 6,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 7,
       "type": "capture",
-      "name": "01_top",
+      "name": "poselab_probe",
       "status": "PASS",
       "screenshots": [
-        "01_top-0.jpg"
+        "poselab_probe-0.jpg"
       ]
-    },
-    {
-      "step": 8,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 9,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 10,
-      "type": "capture",
-      "name": "02_plaza",
-      "status": "PASS",
-      "screenshots": [
-        "02_plaza-0.jpg"
-      ]
-    },
-    {
-      "step": 11,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 12,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 13,
-      "type": "capture",
-      "name": "03_street",
-      "status": "PASS",
-      "screenshots": [
-        "03_street-0.jpg"
-      ]
-    },
-    {
-      "step": 14,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 15,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 16,
-      "type": "capture",
-      "name": "04_dock",
-      "status": "PASS",
-      "screenshots": [
-        "04_dock-0.jpg"
-      ]
-    },
-    {
-      "step": 17,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 18,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 19,
-      "type": "capture",
-      "name": "05_aerial",
-      "status": "PASS",
-      "screenshots": [
-        "05_aerial-0.jpg"
-      ]
-    },
-    {
-      "step": 20,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 21,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 22,
-      "type": "capture",
-      "name": "06_backstreet",
-      "status": "PASS",
-      "screenshots": [
-        "06_backstreet-0.jpg"
-      ]
-    },
-    {
-      "step": 23,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 24,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 25,
-      "type": "capture",
-      "name": "07_wall",
-      "status": "PASS",
-      "screenshots": [
-        "07_wall-0.jpg"
-      ]
-    },
-    {
-      "step": 26,
-      "type": "luau",
-      "name": "",
-      "status": "FAIL",
-      "screenshots": []
-    },
-    {
-      "step": 27,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 28,
-      "type": "luau",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 29,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 30,
-      "type": "capture",
-      "name": "08_harbor_npc_sparring_01",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 31,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 32,
-      "type": "capture",
-      "name": "08_harbor_npc_sparring_02",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 33,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 34,
-      "type": "capture",
-      "name": "08_harbor_npc_sparring_03",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 35,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 36,
-      "type": "capture",
-      "name": "08_harbor_npc_sparring_04",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 37,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 38,
-      "type": "capture",
-      "name": "08_harbor_npc_sparring_05",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 39,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 40,
-      "type": "capture",
-      "name": "08_harbor_npc_sparring_06",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 41,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 42,
-      "type": "capture",
-      "name": "08_harbor_npc_sparring_07",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 43,
-      "type": "wait",
-      "name": "",
-      "status": "NOT_RUN",
-      "screenshots": []
-    },
-    {
-      "step": 44,
-      "type": "capture",
-      "name": "08_harbor_npc_sparring_08",
-      "status": "NOT_RUN",
-      "screenshots": []
     }
   ],
   "screenshotComparison": [
     {
-      "name": "01_top-0.jpg",
-      "sha256": "1990bc2d874676e4e959ced11ce946d2a415f3c475055a98e2232080a14db933",
-      "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44963354461/01_top-0.jpg"
+      "name": "poselab_probe-0.jpg",
+      "sha256": "e6ede4f38afe27135a4e8b6aa4bbb598843d84a8d0ee79cebbf96c013f61f7cf",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44964318019/poselab_probe-0.jpg"
     },
     {
-      "name": "02_plaza-0.jpg",
-      "sha256": "9af1e3a83dd8a47cbd4e8ab9e46709c15701f54ffe47ce82b7a519ce3eb9287c",
-      "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44963354461/02_plaza-0.jpg"
-    },
-    {
-      "name": "03_street-0.jpg",
-      "sha256": "d8701b48323ce8bb3002b228ed0e6038ed78954c16899659841fadd40609557d",
-      "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44963354461/03_street-0.jpg"
-    },
-    {
-      "name": "04_dock-0.jpg",
-      "sha256": "7e82a16999d14da8821afb8d17d446d6c041c35dd4ddb91a3ea2597399cef87c",
-      "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44963354461/04_dock-0.jpg"
-    },
-    {
-      "name": "05_aerial-0.jpg",
-      "sha256": "0e69516ebb9425f6c4191899c52572e3fb12b32fa35345a1a3702ccb2337f23c",
-      "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44963354461/05_aerial-0.jpg"
-    },
-    {
-      "name": "06_backstreet-0.jpg",
-      "sha256": "265bbef6b10bf111d7849073af172d2d3db128b3d0623fe6392cdc3ee358d34f",
-      "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44963354461/06_backstreet-0.jpg"
-    },
-    {
-      "name": "07_wall-0.jpg",
-      "sha256": "488be400b33db09304cffed82722e8dfe634470c83f191cdc4272f6fec79935b",
-      "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44963354461/07_wall-0.jpg"
+      "name": "poselab_stage-0.jpg",
+      "sha256": "76b72bff8d8f2a69de506ddc944fcdb23f437ad6511e6972917af22eb6a3ea12",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44964318019/poselab_stage-0.jpg"
     }
   ],
   "screenshotFrameAudit": {
-    "checked": 7,
+    "checked": 2,
     "invalid": 0,
     "images": [
       {
-        "name": "01_top-0.jpg",
-        "bytes": 121373,
+        "name": "poselab_probe-0.jpg",
+        "bytes": 71131,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "02_plaza-0.jpg",
-        "bytes": 206924,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "03_street-0.jpg",
-        "bytes": 156027,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "04_dock-0.jpg",
-        "bytes": 154668,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "05_aerial-0.jpg",
-        "bytes": 168194,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "06_backstreet-0.jpg",
-        "bytes": 145836,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "07_wall-0.jpg",
-        "bytes": 178428,
+        "name": "poselab_stage-0.jpg",
+        "bytes": 72145,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -456,5 +106,5 @@
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "44961216990"
+  "previousRunId": "44963354461"
 }
