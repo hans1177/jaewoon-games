@@ -41,6 +41,26 @@ test('실화면 픽셀 비교 감독은 동일 장면과 원본 해시 검증 �
   assert.ok(auditVibeRuntimeBeforeAfterComparison(mismatched).reasons.includes('before-after-source-bound-pixel-review-required'));
 });
 
+test('실화면 퇴보는 기존 소스 책임 위치만 재작업 대상으로 연결한다',()=>{
+  const beforeHash='a'.repeat(64),afterHash='b'.repeat(64);
+  const base={baselineRevision:'old',candidateRevision:'new',
+    before:{source:'roblox-runtime-capture',artifactId:'old.png',candidateRevision:'old',observed:true,reviewed:true,imageSha256:beforeHash},
+    after:{source:'roblox-runtime-capture',artifactId:'new.png',candidateRevision:'new',observed:true,reviewed:true,imageSha256:afterHash},
+    comparison:{observed:true,reviewed:true,beforeStable:true,afterStable:true,method:'pixel-review',pass:true,visibleRenderDelta:true,
+      pixelVerified:true,sameCameraStateLighting:true,pixelReview:{pass:true,beforeSha256:beforeHash,afterSha256:afterHash},
+      regressions:['ICON_CLIPPED'],repairTargets:[{issue:'ICON_CLIPPED',sourcePath:'roblox-games/mare-essentia/src/Harbor.lua',
+        targetId:'harbor-icon',property:'Size',expectedEffect:'icon stays inside tab',scope:'VISUAL_PRESENTATION_ONLY',preserveGameplayAndSave:true}]}};
+  const result=auditVibeRuntimeBeforeAfterComparison(base);
+  assert.equal(result.pass,false);
+  assert.equal(result.repairTargets.length,1);
+  assert.equal(result.repairTargets[0].status,'REQUIRES_EXISTING_FUNCTION_REPAIR_AND_NEW_RUNTIME_CAPTURE');
+  const unsafe=structuredClone(base);
+  unsafe.comparison.repairTargets[0].sourcePath='../outside.lua';
+  const rejected=auditVibeRuntimeBeforeAfterComparison(unsafe);
+  assert.equal(rejected.repairTargets.length,0);
+  assert.ok(rejected.reasons.includes('before-after-regression-repair-target-missing-or-unsafe:ICON_CLIPPED'));
+});
+
 function captures(revision='a'.repeat(40)){
   return GOLDEN_SCENE_ROLES.map((role,index)=>({
     role,
