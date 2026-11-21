@@ -3345,3 +3345,20 @@ test('조선소 Studio QA는 정비와 비교 페이지를 각각 실제 클릭�
   assert.match(click.code,/YardTab_compare/);
   assert.match(compare.code,/YardSectionShips/);
 });
+
+
+// [스튜디오 원인 복구 회귀] 대련 애니메이션과 정밀 보행 관절 측정의 동시 쓰기를 차단한다.
+test('스튜디오 R15 보행 검증은 자동 대련 루프의 관절 덮어쓰기를 차단한다', () => {
+  const scene = fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau', 'utf8');
+  const steps = JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', 'utf8'));
+  assert.equal(steps.length, 246);
+  assert.match(scene, /RunService:IsStudio\(\) and folder:GetAttribute\("R15MotionProbe"\) == true/);
+  for (const step of [204, 208]) {
+    assert.match(steps[step].code, /scene:SetAttribute\("R15MotionProbe",true\)/);
+    assert.match(steps[step].code, /scene:SetAttribute\("R15MotionProbe",false\)/);
+    assert.match(steps[step].code, /MOTION_SAME_SIDE_ARM_LEG_REVERSED/);
+    assert.match(steps[step].code, /MOTION_WORLD_ARM_LEG_NOT_CROSSED/);
+  }
+  assert.match(steps[208].code, /joint:GetAttribute\("NpcPitchSign"\)/);
+  assert.match(steps[208].code, /task\.wait\(0\.045\)/);
+});
