@@ -190,6 +190,10 @@ test('실제 Studio 콘솔 실패는 HEALTH 없이도 지시서를 만들고 실
 test('바이브 자동 판단은 Studio 실행기 오프라인에만 기존 복구 워크플로를 호출한다',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe-autopilot.yml',import.meta.url),'utf8');
   assert.ok(workflow.includes('VIBE_STUDIO_RUNNER=UNVERIFIED_API_ACCESS'));
+  assert.ok(workflow.includes('STALE_QUEUE_CONFIRMED'));
+  assert.ok(workflow.includes('NO_STALE_QUEUE_OR_STUDIO_RUNNING'));
+  assert.ok(workflow.includes('now - 900'));
+  assert.ok(workflow.includes('status == "in_progress"'));
   assert.ok(workflow.includes('"$status" != "offline"'));
   assert.ok(workflow.includes('company-roblox-runner-pwsh-bootstrap.yml'));
   assert.ok(workflow.includes('now - 1800'));
