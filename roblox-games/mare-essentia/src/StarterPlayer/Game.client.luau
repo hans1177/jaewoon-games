@@ -1900,7 +1900,7 @@ end
 H.menuStatusLabel.Position = UDim2.new(0.5, 0, 0, 15)
 H.menuStatusLabel.Size = UDim2.fromOffset(330, 34)
 -- [최근 메뉴] 기존 직전 탭 기억을 재사용. 모든 시설의 자금·화물 현황 바로 옆에 둔다.
-H.menuRecentButton = mkButton(mainInner, "↶ 최근 메뉴", COLORS.leather,
+H.menuRecentButton = mkButton(mainInner, "← 최근 메뉴", COLORS.leather,
 	UDim2.fromOffset(126, 34), function()
 		local recent = H.recentTab
 		if recent and TAB_NAME[recent] and recent ~= currentTab then
@@ -2068,7 +2068,7 @@ function H.layoutBook()
   H.menuRecentButton.Size = UDim2.fromOffset(recentWidth, rowH)
   H.menuRecentButton.TextSize = if width < 480 then 14 else 16
   H.menuRecentButton.Visible = recent
-  H.menuRecentButton.Text = if recent then "↶ " .. groupOf(H.recentTab).name else ""
+  H.menuRecentButton.Text = if recent then "← " .. groupOf(H.recentTab).name else ""
   headerLabel.Size = UDim2.fromOffset(if width < 740 then math.max(86, width - 152)
     else math.max(108, math.floor((width - statusWidth) * 0.5) - 82), 29)
   H.pageDetails.Size = UDim2.fromOffset(if width < 740 then math.max(86, width - 152)
@@ -5959,7 +5959,7 @@ local function openTradeHall()
 		commonStatus.TextXAlignment = Enum.TextXAlignment.Center
 		commonStatus.TextYAlignment = Enum.TextYAlignment.Center
 		if showRecent then
-			local recentBtn = mkButton(top, "↶ " .. groupOf(recent).name, COLORS.leather,
+			local recentBtn = mkButton(top, "← " .. groupOf(recent).name, COLORS.leather,
 				UDim2.fromOffset(recentWidth, 34), function()
 					closeTradeHall()
 					openTab(recent, if recent == "map" then "chart" else nil)
@@ -7542,7 +7542,7 @@ function openYardHall()
 		hold.TextXAlignment = Enum.TextXAlignment.Center
 		hold.TextYAlignment = Enum.TextYAlignment.Center
 		if showRecent then
-			local recentBtn = mkButton(top, "↶ " .. groupOf(recent).name, COLORS.leather,
+			local recentBtn = mkButton(top, "← " .. groupOf(recent).name, COLORS.leather,
 				UDim2.fromOffset(recentWidth, 34), function()
 					closeTradeHall()
 					openTab(recent, if recent == "map" then "chart" else nil)
