@@ -445,7 +445,8 @@ function normalizeKnowledgeAttribution(input={}){
       primaryDomainMismatches:Math.max(0,Number(row.primaryDomainMismatches)||0),
       games:{...(row.games||{})},
       targets:{...(row.targets||{})},
-      state:clean(row.state)||knowledgeLifecycle(row),
+      // 저장된 상태 문자열보다 검증된 성공·실패 카운터를 우선해 수명주기를 재계산한다.
+      state:knowledgeLifecycle(row),
       lastEvidence:clean(row.lastEvidence)||null,
       lastFailureEvidence:clean(row.lastFailureEvidence)||null,
       lastUpdatedAt:clean(row.lastUpdatedAt)||null
