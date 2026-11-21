@@ -3,66 +3,265 @@
  "log": [
   {
    "step": 1,
-   "ctx": "Client",
-   "out": "ready=true Animals:11,Cargo:168,Castle:31,Interior:17,Monsters:4,Naval:196,People:75,Relics:36,Ships:0,Terrain:95,Town:167\ntext"
+   "capture": "c00_start",
+   "files": 1
   },
   {
    "step": 2,
    "ctx": "Client",
-   "out": "build ok=true nil\ntext"
+   "out": "QAAutoIntro on\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "INTRO_CENTER_QA_MONITOR_READY\ntext"
   },
   {
    "step": 4,
-   "capture": "holes_lisbon_port",
-   "files": 1
-  },
-  {
-   "step": 5,
    "ctx": "Client",
-   "out": "HOLEMAP x=-130..24 step4 (X=nohit S=safetyfloor L=low T=transparent W=water H=high .=ground)\n -70 ....................................H.T\n -66 ......................................T\n -62 ......................................T\n -58 ......................................T\n -54 ...................................HHHT\n -50 ...................................HHHT\n -46 ..........HH.................HHHH..HHHT\n -42 .........HHHH.....HHHH......HHHHH..HHHT\n -38 ........HHHHHH....HHHHHH...HHHHHH.....T\n -34 ........HHHHHH....HHHHH....HHHHHH...H.T\n -30 .........HHHH.....HHHH......HHHHH...HHT\n -26 ........HHHHHH......T.HH.....HHHH...HHT\n -22 .........H..H.........HH..............T\n -18 ......................................T\n -14 ...HH....H...HH..H.H.HH...............T\n -10 ...HH....H....H....H.HH...............T\n  -6 .....................H................T\n  -2 ......................................H\n   2 ......................................H\n   6 .......HH............H................T\n  10 ...H...HH.....HH....HHH...............T\n  14 ...HH...HH....HHH...HHH........H......T\n  18 .....................................HT\n  22 ...........H......HH.HH....HH.......HHT\n  26 .........H........HHTHH....HHHHHHH....T\n  30 .H.....HH..........HHHH....HHHHHHH..H.T\n  34 .H........HH......HHHHH....HHHHHHH..HHT\n  38 ..........HH......HHHHH....HHHHHHH..HHT\n  42 ............H......HHHH....HHHHHHH....T\n  46 ............................HHHHHH....T\n  50 ..................................HHHHT\n  54 H...............H.H..............HHHHHT\n  58 ..................................HHHHT\n  62 .................................HHHHHT\n  66 ..................................HHHHT\n  70 ....................................H.T\nBAD 36\nTRANSP 22,-70 Part\nTRANSP 22,-66 Part\nTRANSP 22,-62 Part\nTRANSP 22,-58 Part\nTRANSP 22,-54 Part\nTRANSP 22,-50 Part\nTRANSP 22,-46 Part\nTRANSP 22,-42 Part\nTRANSP 22,-38 Part\nTRANSP 22,-34 Part\nTRANSP 22,-30 Part\nTRANSP -50,-26 Part\nTRANSP 22,-26 Part\nTRANSP 22,-22 Part\nTRANSP 22,-18 Part\nTRANSP 22,-14 Part\nTRANSP 22,-10 Part\nTRANSP 22,-6 Part\nTRANSP 22,6 Part\nTRANSP 22,10 Part\nTRANSP 22,14 Part\nTRANSP 22,18 Part\nTRANSP 22,22 Part\nTRANSP -50,26 Part\nTRANSP 22,26 Part\nTRANSP 22,30 Part\nTRANSP 22,34 Part\nTRANSP 22,38 Part\nTRANSP 22,42 Part\nTRANSP 22,46 Part\nTRANSP 22,50 Part\nTRANSP 22,54 Part\nTRANSP 22,58 Part\nTRANSP 22,62 Part\nTRANSP 22,66 Part\nTRANSP 22,70 Part\ntext"
+   "out": "MARE_TITLE_READY:TitleBackdrop:프랑스\ntext"
   },
   {
    "step": 6,
-   "capture": "holes_ground_scan",
+   "click": "title01",
+   "at": "922,84",
+   "out": "922,84 CLICK=프랑스\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 922,
+      "y": 84
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 8,
+   "capture": "t01",
    "files": 1
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "SCROLLED 상인 집안\ntext"
+  },
+  {
+   "step": 11,
+   "click": "title02",
+   "at": "585,132",
+   "out": "585,132 CLICK=상인 집안\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 585,
+      "y": 132
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 13,
+   "capture": "t02",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "SCROLLED ⚓ 출항하기\ntext"
+  },
+  {
+   "step": 16,
+   "click": "title03",
+   "at": "730,206",
+   "out": "730,206 CLICK=⚓ 출항하기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 730,
+      "y": 206
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 18,
+   "capture": "intro_center_early",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "capture": "intro_center_next",
+   "files": 1
+  },
+  {
+   "step": 22,
+   "capture": "intro_center_late",
+   "files": 1
+  },
+  {
+   "step": 24,
+   "capture": "t03",
+   "files": 1
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "INTRO_STUCK step=companion reply=nil stale=name>companion trace=|61.2:open:길드 서기:name|63.5:close:nil: Players.Anyanguy1980.PlayerScripts.Client.Game:14368 :companion|64.0:open:대상 상인 카심:companion|65.2:close:companion: Players.Anyanguy1980.PlayerScripts.Client.Game:14270 Players.Anyanguy1980.PlayerScripts.Client.Game:13980 function subm:companion companions=0 comp=true portrait=true\ntext"
   }
  ],
- "errors": [],
+ "errors": [
+  "step26:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:1: INTRO_STAGE_COUNT_MISSING 2 |길드 서기|"
+ ],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 35009
+   "elapsedMs": 28010
   },
   {
    "step": 1,
-   "type": "luau",
-   "elapsedMs": 157
+   "type": "capture",
+   "elapsedMs": 1332
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 1725
+   "elapsedMs": 200
   },
   {
    "step": 3,
-   "type": "wait",
-   "elapsedMs": 8015
+   "type": "luau",
+   "elapsedMs": 216
   },
   {
    "step": 4,
-   "type": "capture",
-   "elapsedMs": 982
+   "type": "luau",
+   "elapsedMs": 201
   },
   {
    "step": 5,
-   "type": "luau",
-   "elapsedMs": 194
+   "type": "wait",
+   "elapsedMs": 407
   },
   {
    "step": 6,
+   "type": "click_from_luau",
+   "elapsedMs": 876
+  },
+  {
+   "step": 7,
+   "type": "wait",
+   "elapsedMs": 2009
+  },
+  {
+   "step": 8,
    "type": "capture",
-   "elapsedMs": 1077
+   "elapsedMs": 1017
+  },
+  {
+   "step": 9,
+   "type": "luau",
+   "elapsedMs": 190
+  },
+  {
+   "step": 10,
+   "type": "wait",
+   "elapsedMs": 408
+  },
+  {
+   "step": 11,
+   "type": "click_from_luau",
+   "elapsedMs": 926
+  },
+  {
+   "step": 12,
+   "type": "wait",
+   "elapsedMs": 2009
+  },
+  {
+   "step": 13,
+   "type": "capture",
+   "elapsedMs": 917
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 408
+  },
+  {
+   "step": 16,
+   "type": "click_from_luau",
+   "elapsedMs": 881
+  },
+  {
+   "step": 17,
+   "type": "wait",
+   "elapsedMs": 1708
+  },
+  {
+   "step": 18,
+   "type": "capture",
+   "elapsedMs": 1042
+  },
+  {
+   "step": 19,
+   "type": "wait",
+   "elapsedMs": 1810
+  },
+  {
+   "step": 20,
+   "type": "capture",
+   "elapsedMs": 2111
+  },
+  {
+   "step": 21,
+   "type": "wait",
+   "elapsedMs": 1807
+  },
+  {
+   "step": 22,
+   "type": "capture",
+   "elapsedMs": 1023
+  },
+  {
+   "step": 23,
+   "type": "wait",
+   "elapsedMs": 3714
+  },
+  {
+   "step": 24,
+   "type": "capture",
+   "elapsedMs": 968
+  },
+  {
+   "step": 25,
+   "type": "luau",
+   "elapsedMs": 28621
+  },
+  {
+   "step": 26,
+   "type": "luau",
+   "elapsedMs": 596
   }
  ],
  "consoleCapture": {
@@ -72,13 +271,190 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 7,
-  "completedSteps": 7,
-  "plannedClicks": 0,
-  "successfulClicks": 0,
+  "plannedSteps": 246,
+  "completedSteps": 27,
+  "plannedClicks": 12,
+  "successfulClicks": 3,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 2,
-  "capturedFrames": 2,
-  "abortedEarly": false
+  "plannedFrames": 62,
+  "capturedFrames": 7,
+  "abortedEarly": true
+ },
+ "visualSamples": [
+  {
+   "name": "c00_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 251293,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "t01",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 250802,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "프랑스"
+  },
+  {
+   "name": "t02",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 195182,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "상인 집안"
+  },
+  {
+   "name": "intro_center_early",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 145155,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "intro_center_next",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 157741,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.014482259750366,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "intro_center_late",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 160835,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0163135528564453,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "t03",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 161423,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.019261598587036,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  }
+ ],
+ "abortDiagnostics": {
+  "step": 26,
+  "type": "luau",
+  "elapsedMs": 198,
+  "context": "Client",
+  "lastScreenshot": "t03",
+  "lastClick": "title03",
+  "probes": {
+   "Client": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_CLIENT\ntext"
+   },
+   "Server": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_SERVER\ntext"
+   }
+  }
+ },
+ "visualEvidence": {
+  "framesChecked": 7,
+  "framesWithInvalidSize": 0,
+  "voyageSceneObserved": false,
+  "departureObserved": false,
+  "voyageDiagnostics": [],
+  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
  }
 }
