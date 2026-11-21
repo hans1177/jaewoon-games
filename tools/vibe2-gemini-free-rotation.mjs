@@ -157,9 +157,10 @@ export function selectVibe59FreeExperts({
   const choices=[
     {id:'GEMINI_FLASH',provider:'GEMINI',model:geminiModels[0],available:!!clean(env.GEMINI_API_KEY)},
     {id:'GEMINI_LITE',provider:'GEMINI',model:geminiModels[1],available:!!clean(env.GEMINI_API_KEY)},
+    // [무료 자격] 키 보유 ≠ 무료 요금제 확인. 오너 결정(2026-11-22): VIBE2_GROQ_FREE_PLAN_VERIFIED=YES 일 때만 배정.
     {id:'GROQ',provider:'GROQ',model:VERIFIED_FREE_FALLBACK_MODELS.GROQ,
       available:clean(env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES'&&
-        !!clean(env.GROQ_API_KEY)},
+        !!clean(env.GROQ_API_KEY)&&clean(env.VIBE2_GROQ_FREE_PLAN_VERIFIED)==='YES'},
     {id:'OPENROUTER',provider:'OPENROUTER',model:VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER,
       available:clean(env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES'&&!!clean(env.OPENROUTER_API_KEY)}
   ];
@@ -215,7 +216,8 @@ export async function requestGeminiFreePair({
   // 기존 승인된 무료 공급자만 채택한다. 인증키 보유와 무료 요금제 증거는 구분한다.
   const externalRotation=clean(process.env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES';
   const extras=externalRotation?[
-    ...(clean(process.env.GROQ_API_KEY)
+    // 무료 요금제 확인 플래그가 YES가 아니면 Groq는 호출 경로에 넣지 않는다(키만으로 호출 금지).
+    ...(clean(process.env.GROQ_API_KEY)&&clean(process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED)==='YES'
       ?[{provider:'GROQ',model:VERIFIED_FREE_FALLBACK_MODELS.GROQ,key:clean(process.env.GROQ_API_KEY),
          endpoint:'https://api.groq.com/openai/v1/chat/completions'}]:[]),
     ...(clean(process.env.OPENROUTER_API_KEY)
