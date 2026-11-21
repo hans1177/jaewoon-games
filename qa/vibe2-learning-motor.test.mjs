@@ -793,6 +793,15 @@ test('verified regression recovery memory tracks failure and subsequent pass wit
   assert.equal(risk.entries[0].verifiedRegressionFailures,3);
   assert.equal(risk.entries[0].verifiedPasses,1);
   assert.match(codingRiskGuidance({hotspot:risk}),/verified pass exists/i);
+  // 오래된 성공 표식이 섞여도 회귀 실패를 성공으로 덮어쓰지 않는다.
+  const mixed=task('mixed-failure','FAIL');
+  mixed.evidence.push('role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS');
+  const regressed=applyVerifiedCodingCalibration(recovered.state,{tasks:[mixed]});
+  const afterRegression=regressionHotspotRiskForTask({task:{gameId:'recovery-game',target:'web'},stateInput:regressed.state});
+  assert.equal(afterRegression.riskLevel,'HIGH');
+  assert.equal(afterRegression.entries[0].lastVerifiedOutcome,'REGRESSION_FAIL');
+  assert.equal(afterRegression.entries[0].verifiedRegressionFailures,4);
+  assert.equal(afterRegression.entries[0].verifiedPasses,1);
   const duplicate=applyVerifiedCodingCalibration(recovered.state,{tasks:[task('pass-1','PASS')]});
   assert.equal(duplicate.hotspotEventsAdded,0);
   assert.equal(regressionHotspotRiskForTask({task:{gameId:'recovery-game',target:'roblox'},stateInput:recovered.state}).riskLevel,'LOW');
