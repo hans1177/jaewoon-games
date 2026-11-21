@@ -172,6 +172,17 @@ jobs:
                   const unityPaths=[...excerpt.matchAll(/Assets\/[A-Za-z0-9_./-]+\.cs/g)].map(x=>x[0]);
                   const classification=exceptionAt>=0?'UNITY_MISSING_COMPONENT':
                     errorAt>=0?'UNITY_CSHARP_COMPILE':'';
+                  // [Studio 저장공간] 실제 체크아웃 단계가 실패하고 GitHub 오류 로그에 용량 부족이 확정된 경우만 복구 원인으로 전달한다.
+                  const event=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));
+                  const studioCheckout=event?.workflow_run?.path==='.github/workflows/devloop-studio.yml'
+                    &&(job.steps||[]).some(step=>step.name==='Run actions/checkout@v4'&&step.conclusion==='failure');
+                  const studioDiskExhausted=studioCheckout
+                    &&/##\[error\](?:fatal: write error: No space left on device|디스크 공간이 부족합니다)/.test(logs);
+                  if(studioDiskExhausted){
+                    data.studioMarkers=[...new Set([...(data.studioMarkers||[]),
+                      'STUDIO_QA_FAILURE_STAGE=STUDIO_EXECUTION',
+                      'STUDIO_QA_FAILURE_SIGNATURE=STUDIO_RUNNER_DISK_EXHAUSTED'])];
+                  }
                   data.failureMarkers=[...new Set(markers)];
                   data.failureDiagnostics={classification,
                     sourceFiles:[...new Set([...repoPaths,...unityPaths])].slice(0,3)};
