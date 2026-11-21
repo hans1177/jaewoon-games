@@ -299856,11 +299856,147 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_a3a8f3e266f2ab752a4633a9",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-13983",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7b0e5916146a527b057d3282100562417639bf6b",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 13983,
+        "baseBranch": "main",
+        "headBranch": "feat/vibe59-commercial-graphics-director-20261121",
+        "baseSha": "7b0e5916146a527b057d3282100562417639bf6b",
+        "headSha": "063a835c7046290e6c229bd4a8b47e00c6550581",
+        "mergeCommitSha": "e8a7180a0c2db42a22d67d45e70875b3c7ecf44c",
+        "mergedAt": "2026-11-21T00:58:48Z",
+        "authorLogin": "hans1177",
+        "titleHash": "5053d8bca2c6e1c0bb984b7c1f6d6a42e72e96bdd9016e018d19226b912d5b77",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/vibe59-commercial-graphics-director-20261121",
+        "candidateSha": "063a835c7046290e6c229bd4a8b47e00c6550581"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 392,
+        "deletedLineCount": 39,
+        "changedFiles": [
+          "assets/jaewoon-graphics-engine.js",
+          "assets/vibe-art-pipeline.js",
+          "assets/vibe-presentation-director.js",
+          "assets/vibe-visual-quality-gate.js",
+          "qa/jaewoon-graphics-engine.test.cjs",
+          "qa/vibe-visual-runtime-quality.test.mjs",
+          "qa/vibe3-trainer-black-box.test.py",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau",
+          "roblox-games/mare-essentia/tests/run.sh"
+        ],
+        "codingRelevantFiles": [
+          "assets/jaewoon-graphics-engine.js",
+          "assets/vibe-art-pipeline.js",
+          "assets/vibe-presentation-director.js",
+          "assets/vibe-visual-quality-gate.js",
+          "qa/jaewoon-graphics-engine.test.cjs",
+          "qa/vibe-visual-runtime-quality.test.mjs",
+          "qa/vibe3-trainer-black-box.test.py",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau",
+          "roblox-games/mare-essentia/tests/run.sh"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:13983",
+        "merge-commit:e8a7180a0c2db42a22d67d45e70875b3c7ecf44c",
+        "base-main:7b0e5916146a527b057d3282100562417639bf6b"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2401
+    "total": 2402
   }
 }
