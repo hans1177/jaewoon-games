@@ -28,7 +28,7 @@ test('정본 학습 복원: 새 main 샘플을 보존하고 검증된 영구 샘
   assert.equal(chooseDurableTrainingSample(practice, verified), 'RESTORE_VERIFIED');
   assert.equal(chooseDurableTrainingSample(verified, practice), 'KEEP_VERIFIED_MAIN');
   assert.equal(chooseDurableTrainingSample(verified, durable), 'REVIEW_CONFLICTING_VERIFIED');
-  assert.equal(chooseDurableTrainingSample(practice, { ...practice, output: '연습 변경' }), 'KEEP_MAIN_UNVERIFIED');
+  assert.equal(chooseDurableTrainingSample(practice, { ...practice, output: '연습 변경' }), 'REVIEW_CONFLICTING_UNVERIFIED');
   assert.equal(chooseDurableTrainingSample(verified, null), 'REJECT_INVALID_DURABLE');
 });
 
