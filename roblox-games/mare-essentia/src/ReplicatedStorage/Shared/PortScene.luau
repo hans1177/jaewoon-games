@@ -6666,8 +6666,12 @@ function PortScene.build(info, onFacility)
 			bloom.Intensity = 0.17 + night * 0.12 + season.sun * noon
 		end
 		if rays then rays.Intensity = season.sun * day * (0.38 + noon * 0.62) end
-		for _, entry in lights do
-			if entry.light.Parent then
+		-- [GPU/메모리] 항구에서 제거된 조명을 기존 목록에서 즉시 해제해 반복 갱신을 막는다.
+		for index = #lights, 1, -1 do
+			local entry = lights[index]
+			if not entry.light:IsDescendantOf(folder) then
+				table.remove(lights, index)
+			else
 				entry.light.Brightness = entry.brightness * (0.16 + 2.15 * night)
 				entry.light.Range = entry.range * (0.82 + 0.6 * night)
 				-- [밤에만 창문 발광] 기존 0.1초 주야 갱신에 편승하며 일반 등불에는 영향을 주지 않는다.
@@ -7432,14 +7436,18 @@ function PortScene.build(info, onFacility)
 		end
 		f.stern.Rate = math.floor(flow * 18)
 	end
+	-- [모바일 항구 연출] 항해 진입 시에만 입자를 멈추며 항해 중 같은 Rate를 매 프레임 쓰지 않는다.
+	local wasVoyageActive = false
 	local conn = RunService.Heartbeat:Connect(function()
-		-- [모바일 최적화] 항해 장면에서는 항구의 배/갈매기/풍차가 화면 밖에 있다.
-		-- 항적 방출을 멈추고 기존 객체와 연결은 그대로 보존한다.
 		if not folder.Parent then return end
 		if workspace:GetAttribute("VoyageActive") then
-			setFoam(0)
+			if not wasVoyageActive then
+				setFoam(0)
+				wasVoyageActive = true
+			end
 			return
 		end
+		wasVoyageActive = false
 		local t = os.clock() - t0
 		local shipPose = shipBase * CFrame.new(0, math.sin(t * 1.2) * 0.35, 0) * CFrame.Angles(math.sin(t * 0.9) * 0.025, 0, math.sin(t * 0.7) * 0.012)
 		local flow = 0

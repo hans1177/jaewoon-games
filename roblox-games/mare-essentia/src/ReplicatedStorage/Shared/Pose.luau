@@ -43,11 +43,14 @@ local function lowerArm(upper, lower)
 	if angle < 0.15 then
 		return -- 이미 내려가 있다
 	end
+	-- [R15 자동 보정] 팔뼈가 정확히 위를 향하면 외적이 0이 된다. 안정적인 직교축으로 뒤집힘을 복구한다.
 	local axis = dir:Cross(down)
 	if axis.Magnitude < 1e-4 then
-		return
+		axis = Vector3.new(1, 0, 0)
+	else
+		axis = axis.Unit
 	end
-	local turn = CFrame.fromAxisAngle(axis.Unit, angle * 0.88)
+	local turn = CFrame.fromAxisAngle(axis, angle * 0.88)
 	local rot = a.Rotation
 	upper.Transform = rot:Inverse() * turn * rot
 end
@@ -263,8 +266,9 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 			return n
 		end
 		local joints = countJoints()
-		-- 설명서로 만든 모델은 부품과 부착점만 있고 관절(Motor6D)이 없을 수 있다: 부착점으로 관절을 만든다
-		if joints < 12 and humanoid then
+		-- [R15 누락 관절 복구] 12~14개로 불완전한 리그도 표준 15관절을 확인해 빠진 연결만 보완한다.
+		-- 원래 Motor6D/AnimationConstraint가 있으면 재생성하지 않고 원본 애니메이션을 유지한다.
+		if joints < 15 and humanoid then
 			-- BuildRigFromAttachments 가 관절을 만들지 못하는 환경이 있어, R15 표준 관절표대로 직접 잇는다
 			local LINKS = {
 				{ "Root", "HumanoidRootPart", "LowerTorso" }, { "Waist", "LowerTorso", "UpperTorso" }, { "Neck", "UpperTorso", "Head" },
