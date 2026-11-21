@@ -190,13 +190,15 @@ export function parseReport(report, root = process.cwd()) {
 const FALLBACK_GROUP = { background: ['background'], combat: ['combat'], ui: ['ui'] };
 export function findingsFrom(game, s) {
   const f = [];
-  if (s.aborted || (!s.ok && s.captured === 0 && s.studioErrors.length))
+  // [단계 단언 중단] 단언 실패로 멈춘 회차는 Studio 연결 불가가 아니라 책임 함수 작업이다.
+  const sf = s.stepFailure;
+  const stepAssert = !!(sf && sf.sourceFile && (sf.kind === 'error' || sf.kind === 'ui'));
+  if (!stepAssert && (s.aborted || (!s.ok && s.captured === 0 && s.studioErrors.length)))
     f.push({ id: 'studio-unreachable', kind: 'infra', task: 'health', text: 'Studio 점검이 중간에 멈춤: ' + (s.studioErrors[0] || '원인 불명') });
   if (s.err > 0) f.push({ id: 'console-errors', kind: 'error', task: 'health', text: `콘솔 오류 ${s.err}건. 첫 오류: ${s.errFirst}` });
   // [단계 단언 → 책임 함수] 코드로 고칠 수 있는 분류(모션·NPC·UI·게임)만 두뇌 작업으로 보낸다.
   // 자산·Studio 실행 문제는 기존대로 infra/asset 지시서로 남긴다(코드 변경으로 해결하지 않음).
-  const sf = s.stepFailure;
-  if (!s.aborted && sf && sf.sourceFile && (sf.kind === 'error' || sf.kind === 'ui')) {
+  if (stepAssert) {
     f.push({ id: 'studio-step-' + sf.marker.toLowerCase().replace(/_/g, '-'), kind: sf.kind, task: 'health',
       sourceFile: sf.sourceFile, sourceLine: sf.sourceLine, category: sf.category,
       text: `Studio 검사 ${sf.step}단계 실패 ${sf.marker}${sf.value ? ':' + sf.value : ''} (${sf.category}). ` +
