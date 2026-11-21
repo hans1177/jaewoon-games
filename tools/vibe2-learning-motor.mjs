@@ -967,9 +967,9 @@ export function codingRiskGuidance({calibration={},hotspot={}}={}){
   if(clean(hotspot?.riskLevel)&&clean(hotspot.riskLevel)!=='LOW'){
     rows.push('[REGRESSION HOTSPOT MEMORY] risk='+clean(hotspot.riskLevel));
     for(const row of hotspot.entries||[]){
-      rows.push(row.kind+':'+row.name+' failures='+Number(row.verifiedRegressionFailures||0)+' passes='+Number(row.verifiedPasses||0));
+      rows.push(row.kind+':'+row.name+' failures='+Number(row.verifiedRegressionFailures||0)+' passes='+Number(row.verifiedPasses||0)+' latestVerifiedOutcome='+(row.lastVerifiedOutcome||'UNKNOWN'));
       if(row.risk?.level==='HIGH')rows.push('Recovery guidance for '+row.kind+':'+row.name+': inspect verified regression evidence '+(clean(row.lastFailureEvidence)||'(evidence unavailable)')+', compare known-good implementation, and run focused dependent QA before retrying. Do not repeat an unverified fix. '+(row.lastPassEvidence?'Previously verified pass: '+clean(row.lastPassEvidence)+'.':'No verified recovery pass recorded.'));
-      else if(row.risk?.level==='MEDIUM')rows.push('Recovery guidance for '+row.kind+':'+row.name+': check dependent behavior and verify the suspected change before promotion.');
+      else if(row.risk?.level==='MEDIUM')rows.push('Recovery guidance for '+row.kind+':'+row.name+': '+(row.lastVerifiedOutcome==='PASS'?'A later verified pass exists; recheck affected dependencies before lowering historical risk.':'Inspect the unresolved regression evidence and verify the suspected change before promotion.'));
     }
     rows.push('Hotspot memory requires focused dependent QA and a proven strategy when available. It MUST NOT expand writable scope or bypass QA.');
   }
