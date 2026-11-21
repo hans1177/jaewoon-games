@@ -469,8 +469,9 @@ function knowledgeEffectAdjustment(master={},source='',id=''){
   const key=upper(source)+':'+clean(id),row=master?.knowledgeAttribution?.entries?.[key];
   if(!row)return 0;
   const firstPasses=Math.max(0,Number(row.firstPasses)||0),clears=Math.max(0,Number(row.failureSignatureClears)||0);
-  const regressions=Math.max(0,Number(row.regressionFailures)||0),matches=Math.max(0,Number(row.primaryDomainMatches)||0),mismatches=Math.max(0,Number(row.primaryDomainMismatches)||0);
-  return Math.max(-12,Math.min(12,firstPasses*1.5+clears*2+matches*.5-regressions*3-mismatches));
+  const regressions=Math.max(0,Number(row.regressionFailures)||0),failures=Math.max(0,Number(row.verifiedFailures)||0),matches=Math.max(0,Number(row.primaryDomainMatches)||0),mismatches=Math.max(0,Number(row.primaryDomainMismatches)||0);
+  // 검증 실패도 검색 우선순위에 즉시 반영하고, 회귀 실패는 더 강하게 감점한다.
+  return Math.max(-12,Math.min(12,firstPasses*1.5+clears*2+matches*.5-failures*1.5-regressions*3-mismatches));
 }
 function knowledgeRefsFromEvidence(evidence=[]){
   const marker=(evidence||[]).map(clean).filter(x=>x.startsWith('learning-knowledge-ids:')).at(-1);
