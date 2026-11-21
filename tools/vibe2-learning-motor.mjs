@@ -362,7 +362,8 @@ function normalizeRegressionHotspots(input={}){
       gameId:clean(row.gameId)||null,target:lower(row.target)||null,kind:clean(row.kind)||null,name:clean(row.name)||null,
       verifiedRegressionFailures:Math.max(0,Number(row.verifiedRegressionFailures)||0),
       verifiedPasses:Math.max(0,Number(row.verifiedPasses)||0),
-      lastFailureEvidence:clean(row.lastFailureEvidence)||null,lastPassEvidence:clean(row.lastPassEvidence)||null,lastUpdatedAt:clean(row.lastUpdatedAt)||null
+      lastFailureEvidence:clean(row.lastFailureEvidence)||null,lastPassEvidence:clean(row.lastPassEvidence)||null,
+      lastVerifiedOutcome:upper(row.lastVerifiedOutcome)||null,lastUpdatedAt:clean(row.lastUpdatedAt)||null
     };
   }
   return{version:1,seenEventIds:uniq(source.seenEventIds||[]),entries};
@@ -872,7 +873,7 @@ function hotspotRisk(row={}){
   const failures=Math.max(0,Number(row.verifiedRegressionFailures)||0),passes=Math.max(0,Number(row.verifiedPasses)||0);
   // 성공 기록이 많더라도 최근 검증된 회귀 실패 자체는 복구 검토 대상에서 제외하지 않는다.
   const score=Math.max(0,failures*3-passes);
-  return{score,level:failures>=3&&score>=6?'HIGH':failures>=1?'MEDIUM':'LOW'};
+  return{score,level:row.lastVerifiedOutcome==='REGRESSION_FAIL'&&failures>=3?'HIGH':row.lastVerifiedOutcome==='REGRESSION_FAIL'?'MEDIUM':failures>=3&&score>=6?'HIGH':failures>=1?'MEDIUM':'LOW'};
 }
 export function applyVerifiedCodingCalibration(stateInput={},queueInput={}){
   const state=createMasteryState(stateInput);
@@ -912,10 +913,11 @@ export function applyVerifiedCodingCalibration(stateInput={},queueInput={}){
       const refs=[...primaryTargets.map(name=>({kind:'SYMBOL',name})),...primarySystems.map(name=>({kind:'SYSTEM',name}))];
       for(const ref of refs){
         const key=[gameId,ref.kind,clean(ref.name)].join('|');
-        const row=hotspots.entries[key]||{gameId,target,kind:ref.kind,name:clean(ref.name),verifiedRegressionFailures:0,verifiedPasses:0,lastFailureEvidence:null,lastPassEvidence:null,lastUpdatedAt:null};
+        const row=hotspots.entries[key]||{gameId,target,kind:ref.kind,name:clean(ref.name),verifiedRegressionFailures:0,verifiedPasses:0,lastFailureEvidence:null,lastPassEvidence:null,lastVerifiedOutcome:null,lastUpdatedAt:null};
         if(outcome==='REGRESSION_FAIL'){row.verifiedRegressionFailures+=1;row.lastFailureEvidence=hotspotEventId;}
         else if(outcome==='PASS'){row.verifiedPasses+=1;row.lastPassEvidence=hotspotEventId;}
         else continue;
+        row.lastVerifiedOutcome=outcome;
         row.lastUpdatedAt=new Date().toISOString();hotspots.entries[key]=row;
       }
       hotspotSeen.add(hotspotEventId);hotspotEventsAdded+=1;
