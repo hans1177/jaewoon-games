@@ -106,7 +106,7 @@ export function auditVibeRuntimeBeforeAfterComparison(evidence={}){
       // [그래픽 자동 재작업] 실제 확인된 퇴보만 기존 소스의 책임 위치에 연결한다.
       // 출처가 없거나 게임 규칙/저장 구조를 건드리는 수정은 자동 실행하지 않는다.
       const targets=Array.isArray(comparison.repairTargets)?comparison.repairTargets:[];
-      const protectedProperty=/(?:^|[._-])(?:hp|health|damage|attack|cooldown|spawn|reward|drop|save|storage|datastore|progression|economy|collision|hitbox|quest)(?=$|[._-]|[A-Z])/;
+      const protectedProperty=/(?:^|[._-])(?:hp|health|damage|attack|cooldown|spawn|reward|drop|save|storage|datastore|progression|economy|collision|hitbox|quest)(?=$|[._-]|[A-Z])/i;
       const seenIssues=new Set();
       for(const issue of comparison.regressions){
         const id=String(issue||'').trim();
