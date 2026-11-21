@@ -105,6 +105,43 @@ jobs:
           Write-Host "RUNNER_DISK_REMOVED_FILES=$removed RUNNER_DISK_REMOVED_MB=$([math]::Round($freed/1MB)) RUNNER_DISK_CLEAN_FAILURES=$failed"
           $volume = [IO.DriveInfo]::new('E:\')
           Write-Host "RUNNER_DISK_FREE_MB_AFTER=$([math]::Round($volume.AvailableFreeSpace/1MB))"
+          # [자동 복구] 공간이 6GB 미만이면 이 러너의 지난 GitHub Actions 작업 복사본만 검증 후 정리한다.
+          # [데이터 보호] 현재 러너는 이 작업만 수행한다. 이전 체크아웃에 로컬 변경·잠금·다른 Git 실행이 있으면 삭제하지 않는다.
+          if ($volume.AvailableFreeSpace -lt 6GB) {
+            $previousCheckout = Join-Path $env:GITHUB_WORKSPACE 'main'
+            $knownCheckout = Join-Path $work 'jaewoon-games\jaewoon-games\main'
+            $gitFolder = Join-Path $previousCheckout '.git'
+            if (-not [string]::Equals([IO.Path]::GetFullPath($previousCheckout), [IO.Path]::GetFullPath($knownCheckout), [StringComparison]::OrdinalIgnoreCase)) {
+              Write-Warning 'RUNNER_DISK_WORKTREE_RECOVERY=SKIPPED_UNEXPECTED_PATH'
+            } elseif (-not (Test-Path -LiteralPath $gitFolder -PathType Container)) {
+              Write-Host 'RUNNER_DISK_WORKTREE_RECOVERY=SKIPPED_NO_PRIOR_CHECKOUT'
+            } elseif (@(Get-Process -Name 'git','git-lfs' -ErrorAction SilentlyContinue).Count -gt 0) {
+              Write-Warning 'RUNNER_DISK_WORKTREE_RECOVERY=SKIPPED_GIT_BUSY'
+            } else {
+              try {
+                $origin = @(& git -C $previousCheckout remote get-url origin)
+                $remoteExit = $LASTEXITCODE
+                $changes = @(& git -C $previousCheckout status --porcelain --untracked-files=all)
+                $statusExit = $LASTEXITCODE
+                $locks = @(Get-ChildItem -LiteralPath $gitFolder -Recurse -File -Filter '*.lock' -ErrorAction Stop)
+                if ($remoteExit -ne 0 -or $statusExit -ne 0 -or $origin.Count -ne 1 -or
+                    [string]$origin[0] -notmatch '^https://github\.com/hans1177/jaewoon-games(\.git)?$' -or
+                    $changes.Count -ne 0 -or $locks.Count -gt 0) {
+                  Write-Warning "RUNNER_DISK_WORKTREE_RECOVERY=SKIPPED_UNVERIFIED_OR_MODIFIED:changes=$($changes.Count):locks=$($locks.Count)"
+                } else {
+                  $beforeRecovery = ([IO.DriveInfo]::new('E:\')).AvailableFreeSpace
+                  Remove-Item -LiteralPath $previousCheckout -Recurse -Force -ErrorAction Stop
+                  $afterRecovery = ([IO.DriveInfo]::new('E:\')).AvailableFreeSpace
+                  Write-Host "RUNNER_DISK_WORKTREE_RECOVERY=VERIFIED_PRIOR_CHECKOUT_REMOVED"
+                  Write-Host "RUNNER_DISK_WORKTREE_RECOVERED_MB=$([math]::Round([math]::Max(0, $afterRecovery - $beforeRecovery)/1MB,2))"
+                  $volume = [IO.DriveInfo]::new('E:\')
+                }
+              } catch {
+                Write-Warning "RUNNER_DISK_WORKTREE_RECOVERY=SKIPPED_OR_FAILED:$($_.Exception.GetType().Name)"
+              }
+            }
+          }
+          Write-Host "RUNNER_DISK_FREE_MB_AFTER_RECOVERY=$([math]::Round($volume.AvailableFreeSpace/1MB,2))"
           # [실행기 장애] 공간 미확보 상태에서는 체크아웃을 반복하지 않고 복구 큐에 정확한 원인을 알린다.
           if ($volume.AvailableFreeSpace -lt 2GB) {
             Write-Host 'STUDIO_QA_FAILURE_STAGE=STUDIO_EXECUTION'
