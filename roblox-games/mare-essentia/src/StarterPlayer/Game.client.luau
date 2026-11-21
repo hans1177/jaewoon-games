@@ -14264,6 +14264,10 @@ end
 				text = string.format("(주점 구석에서 다가온다) 당신이 새로 온 선장이군요. 소문을 들었어요. 대가는 필요 없습니다. 같은 고향 사람끼리, 항해에 보탬이 되고 싶어요. 저를 태워 주시겠어요? (%s)", who.role) },
 				function()
 					local r = call("IntroCompanion", {})
+					-- [Studio 진단] 시작 안내가 동료 단계에서 멈추는 회차(44912240071 등)의 실제 서버 응답을 남긴다.
+					if game:GetService("RunService"):IsStudio() then
+						workspace:SetAttribute("IntroQACompanionReply", tostring(r and r.ok) .. "|" .. tostring(r and r.message))
+					end
 					if r and r.ok then
 						Sfx.play("sfx_quest_accept", 0.6)
 						closeDlg()
@@ -14340,6 +14344,9 @@ end
 			local c = view and view.captain
 			-- 서버에서 이미 다음 단계로 넘어갔는데 옛 안내창이 남아 있으면 닫는다 (화면에 갇히지 않게)
 			if dlg and c and H.introDlgStep and c.step ~= H.introDlgStep and not H.openingPending then
+				if game:GetService("RunService"):IsStudio() then
+					workspace:SetAttribute("IntroQAStaleClose", tostring(H.introDlgStep) .. ">" .. tostring(c.step))
+				end
 				H.introDlgStep = nil
 				closeDlg()
 			end
