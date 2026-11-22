@@ -1990,9 +1990,8 @@ function FieldScene.start(opts)
 	-- 상태
 	local pl = AC.newPlayer(100)
 	local BASE_DMG = 10
-	-- [휴식 회복] 자동 회복은 이번 지상 탐험의 체력에만 적용한다. 동료는 실제 영입·소환된 치료 직업만 인정한다.
+	-- [휴식 회복] 기존 자연 회복은 유지한다. 전투에서 제외된 동료의 추가 치유 보정은 적용하지 않는다.
 	local lastCombatAt = os.clock()
-	local activeHealers = {}
 	local passiveRegenHudAt, passiveRegenFxAt = 0, -100
 	-- [정예 둔화·보스 독] 탐험 한 판에만 존재하는 비저장 상태. 중복 효과와 지속 피해 폭증을 방지한다.
 	local eliteSlowUntil, bossPoisonUntil, bossPoisonNextAt = 0, 0, math.huge
@@ -7883,7 +7882,7 @@ function FieldScene.start(opts)
 			debuffLabel.TextColor3 = if poisoned then Color3.fromRGB(144, 232, 144) else Color3.fromRGB(151, 210, 249)
 		end
 		-- [비전투 극소량 체력 회복] 8초간 전투 행동이 없고 40스터드 이내 적이 없을 때만 작동한다.
-		-- 자연 초당 0.12, 실제 치료 동료가 28스터드 안에 있으면 동료당 +0.18(최대 2명).
+		-- 자연 초당 0.12만 적용한다. 동료가 전투에서 빠졌으므로 지원 치유는 없다.
 		if now - lastCombatAt >= 8 and pl.hp > 0 and pl.hp < pl.maxHp then
 			local ch = player.Character
 			local root = ch and ch:FindFirstChild("HumanoidRootPart")
@@ -7897,13 +7896,7 @@ function FieldScene.start(opts)
 				end
 			end
 			if not danger then
-				local healers = 0
-				for _, a in activeHealers do
-					if a.root and a.root.Parent and (a.root.Position - root.Position).Magnitude <= 28 then
-						healers += 1
-					end
-				end
-				pl.hp = math.min(pl.maxHp, pl.hp + (0.12 + math.min(healers, 2) * 0.18) * math.min(dt, 0.1))
+				pl.hp = math.min(pl.maxHp, pl.hp + 0.12 * math.min(dt, 0.1))
 				if now >= passiveRegenHudAt then
 					passiveRegenHudAt = now + 0.5
 					refresh()
@@ -7912,7 +7905,7 @@ function FieldScene.start(opts)
 					passiveRegenFxAt = now
 					pulseAt("HEAL_PULSE", root.CFrame * CFrame.new(0, -2.1, 0), Color3.fromRGB(104, 207, 151),
 						Color3.fromRGB(215, 250, 227), 3.8, if visualMobile then 2 else 4)
-					sfx("sfx_card_magic", 0.16, if healers > 0 then 1.15 else 1.32)
+					sfx("sfx_card_magic", 0.16, 1.32)
 				end
 			end
 		end
@@ -8689,7 +8682,7 @@ function FieldScene.start(opts)
 		end
 	end))
 
-	-- 동료(최대 2명): 주인공 곁을 따라다니다 가까운 적에게 달려가 알아서 싸운다. 맞지는 않는 지원군.
+	-- 동료(최대 2명): 전투에는 참여하지 않고 주인공 곁에서 복식·동행·대화 기능을 유지한다.
 	do
 		local function hashName(str: string): number
 			local h = 7
@@ -8827,8 +8820,7 @@ function FieldScene.start(opts)
 						local tg = label(bbA, ad.name, 12, if i == 1 then Color3.fromRGB(125, 224, 255) else Color3.fromRGB(245, 207, 110))
 						tg.TextTruncate = Enum.TextTruncate.AtEnd
 						tg.Size = UDim2.new(1, 0, 1, 0)
-						-- [기존 영입 동료 초상과 지원 상태] 무적 지원군은 생명력이 소모되지 않으므로
-						-- 고정 체력 표시를 두고 실제 공격·스킬 사용량에 따른 전투 에너지만 시각적으로 갱신한다.
+						-- [기존 영입 동료 초상과 동행 상태] 비전투 동료의 초상·기존 파티 HUD를 그대로 표시한다.
 						local status = Instance.new("Frame")
 						status.Name = "FieldAllyStatus" .. i
 						-- [파티 HUD] 화면 방향에 상관없이 주인공 아래에 같은 폭으로 쌓는다.
@@ -8899,15 +8891,12 @@ function FieldScene.start(opts)
 						energyCaption.Position = UDim2.fromOffset(153, 34)
 						energyCaption.Size = UDim2.fromOffset(38, 12)
 						energyCaption.ZIndex = 6
-						local ally = { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now,
+						local ally = { model = m, root = r, slot = i, t0 = now,
 							footOffset = m:GetPivot().Position.Y - pos0.Y,
 							leftFoot = m:FindFirstChild("LeftFoot"), rightFoot = m:FindFirstChild("RightFoot"),
-							fm = if FM then FM.new(m, false) else nil, name = ad.name, skills = ad.skills,
-							weapon = ad.weapon or Weapons.get("sword"), skillCd = {}, nextSkill = now + 4 + i * 2,
-							gait = (i - 1) * 0.45, energy = 100, energyFill = energyFill,
-							healer = table.find(ad.skills, "heal") ~= nil }
+							fm = if FM then FM.new(m, false) else nil, name = ad.name,
+							weapon = ad.weapon or Weapons.get("sword"), gait = (i - 1) * 0.45 }
 						table.insert(allies, ally)
-						if ally.healer then table.insert(activeHealers, ally) end
 						table.insert(conns, { Disconnect = function()
 							m:Destroy()
 						end })
@@ -8919,34 +8908,14 @@ function FieldScene.start(opts)
 				spawning = false
 			end
 			for _, a in allies do
-				-- [동료 안정 추적] 한 프레임마다 목표를 바꾸면 몹 사이를 지그재그로 뛰므로 기존 대상을 유지한다.
-				-- 주인공과 멀어지면 대형 복귀를 먼저 하고, 더 가까운 적이 확실할 때만 목표를 바꾼다.
-				local tgt, td = a.focus, 40 * STUD
-				if tgt then
-					local d = (tgt.root.Position - a.root.Position).Magnitude
-					if tgt.ac.dead or not tgt.root.Parent or d > 40 * STUD or (root0.Position - a.root.Position).Magnitude > 30 then
-						tgt = nil
-					else
-						td = d
-					end
-				end
-				if (root0.Position - a.root.Position).Magnitude <= 30 then
-					for _, e in enemies do
-						local d0 = (e.root.Position - a.root.Position).Magnitude
-						if d0 < td * (if tgt then 0.65 else 1) then
-							tgt, td = e, d0
-						end
-					end
-				end
-				a.focus = tgt
+				-- [비전투 동행] 영입·복식·이동·지형 접지·동료 HUD는 유지하되 적 탐색·공격·전투 스킬은 사용하지 않는다.
 				-- [동료 대형] 주인공을 따라 방향을 바꿔도 좌우 후방에 서도록 로컬 좌표를 사용한다.
-				local goal = if tgt then tgt.root.Position else (root0.CFrame * CFrame.new(if a.slot == 1 then -3.4 else 3.4, 0, 4.7)).Position
-				local aw = a.weapon
-				local stop = if tgt then (if aw.ranged then 16 else 5.5) else 3
+				local goal = (root0.CFrame * CFrame.new(if a.slot == 1 then -3.4 else 3.4, 0, 4.7)).Position
+				local stop = 3
 				local to = Vector3.new(goal.X - a.root.Position.X, 0, goal.Z - a.root.Position.Z)
 				local moving = to.Magnitude > stop
 				-- [동료 관성 보행] 이동 최고속도는 유지하고 목표에 가까워질수록 다리 디딤과 실제 이동을 함께 감속한다.
-				local maxSpeed = if tgt then 16 else 20
+				local maxSpeed = 20
 				local remaining = math.max(0, to.Magnitude - stop)
 				local desiredSpeed = if moving then math.min(maxSpeed, math.max(2, remaining * 3.5)) else 0
 				local wantedVel = if moving then to.Unit * desiredSpeed else Vector3.zero
@@ -8984,9 +8953,8 @@ function FieldScene.start(opts)
 					end
 				end
 				local gaitMoving = walked > 0.01
-				-- [시선·발 방향 분리] 적을 공격할 때는 적을 보고, 복귀하면 주인공과 같은 방향을 보며 회전은 지연시킨다.
-				local face = if tgt then tgt.root.Position - a.root.Position
-					elseif moving and a.moveVel.Magnitude > 0.05 then a.moveVel else root0.CFrame.LookVector
+				-- [시선·발 방향] 전투 표적 없이 걷는 방향을 향하고, 정지하면 주인공을 따라 시선을 돌린다.
+				local face = if moving and a.moveVel.Magnitude > 0.05 then a.moveVel else root0.CFrame.LookVector
 				face = Vector3.new(face.X, 0, face.Z)
 				if face.Magnitude > 0.01 then
 					local pv = a.model:GetPivot()
@@ -8994,100 +8962,15 @@ function FieldScene.start(opts)
 					a.model:PivotTo(CFrame.new(pv.Position) * pv.Rotation:Lerp(front.Rotation,
 						1 - math.exp(-(if moving then 5.5 else 8) * math.clamp(dt, 0, 0.1))))
 				end
-				if tgt and not moving and now >= a.nextAt then
-					a.nextAt = now + 1.3 / aw.speed
-					a.swingAt = now
-					-- [동료 기본 공격] 별도 연타 누적·마무리 콤보는 사용하지 않는다.
-					-- 기존 동료 공격 주기·피해·실물 무기 동작은 유지한다.
-					a.energy = math.max(0, a.energy - 10)
-					strikeEnemy(tgt, 0.6 * aw.power, a.root.Position, if aw.family == "axe" then 2 else 1.0,
-						aw.family == "axe", true, false, nil, aw)
-					if aw.ranged then
-						-- 동료 사격: 총알·화살 궤적
-						local a0 = a.root.Position + Vector3.new(0, 0.5, 0)
-						local b0 = tgt.root.Position
-						local arrow = aw.family == "bow" or aw.motion == "CROSSBOW"
-						-- [동료 사격] 화살·볼트·총알의 색상과 발사소리를 실제 동료 장비로 구분한다.
-						arrowTrail(a0, b0, nil, nil, aw.motion)
-						if aw.motion == "CROSSBOW" then
-							sfx("sfx_card_volley", 0.28, 1.46)
-						elseif aw.family == "bow" then
-							sfx("sfx_rope_release", 0.32, if aw.motion == "LONGBOW" then 1.12 else 1.38)
-						elseif aw.motion == "RIFLE" then
-							sfx("sfx_cannon", 0.29, 1.87)
-						else
-							sfx("sfx_card_fire", 0.30, 1.52)
-						end
-						if CommonVFX then
-							pcall(CommonVFX.Create, "IMPACT_FLASH", {
-								parent = workspace, cframe = CFrame.new(b0), color = if arrow then Color3.fromRGB(210, 187, 129) else Color3.fromRGB(255, 226, 162),
-								endSize = 2.2, count = 4, duration = 0.18, hideRing = true,
-							})
-						end
-					end
-				end
-				-- 직업 스킬(최대 2개): 상황이 맞을 때 자동으로 쓴다 (치료=체력 낮을 때, 보호막=없을 때, 사격·강타·저격=적이 가까울 때, 사기=적 2명 이상)
-				if now >= a.nextSkill and (#enemies > 0 or (a.healer and pl.hp < pl.maxHp * 0.65)) then
-					for _, sid in a.skills do
-						local def = JobSkills.Skills[sid]
-						if def and (a.skillCd[sid] or 0) <= now then
-							local nearE = 0
-							for _, e in enemies do
-								if (e.root.Position - a.root.Position).Magnitude <= 30 * STUD then nearE += 1 end
-							end
-							local ok = false
-							if sid == "heal" then ok = pl.hp < pl.maxHp * 0.65
-							elseif sid == "armor" then ok = not pl.ward and nearE > 0
-							elseif sid == "rally" then ok = nearE >= 2 and now > (pl.buffUntil or 0)
-							elseif sid == "luck" then ok = pl.stamina < 40
-							else ok = nearE > 0 end
-							if ok then
-								a.skillCd[sid] = now + def.cooldown
-								a.nextSkill = now + 3
-								a.swingAt = now
-								a.energy = math.max(0, a.energy - 20)
-								-- 지원기 발동 시 공격 대신 지원 자세를 보여 준다. 효과와 쿨타임은 기존 로직 유지.
-								if sid == "heal" or sid == "armor" or sid == "rally" or sid == "luck" then
-									a.castAt, a.castSkill = now, sid
-								end
-								castEffect(sid, a.name .. " · " .. def.name, a.model, a.root)
-								break
-							end
-						end
-					end
-				end
-				-- [동료 자원 HUD] 전투 판정과 별개로 화면에 최근 행동량을 표시한다.
-				a.energy = math.min(100, a.energy + math.min(dt, 0.1) * 13)
-				if a.energyFill and a.energyFill.Parent then
-					a.energyFill.Size = UDim2.fromScale(a.energy / 100, 1)
-				end
-				local ap = (now - a.swingAt) / 0.5
+				-- [동료 자연 보행] 적 타격/사격/지원 연출 없이 원래 R15 걷기·대기 모션만 재생한다.
+				local gaitMoving = walked > 0.01
 				if a.fm and a.fm.nj > 0 then
-					if a.castAt and now - a.castAt < 0.7 then
-						FM.actor(a.fm, "INTERACT", (now - a.castAt) / 0.7, dt, nil, 1.3, nil, false, a.castSkill)
-					elseif ap >= 0 and ap < 1 then
-						-- [동료 무기 공격 통합] 원본 1~3타의 재생 속도는 유지하면서 전신·축발·반동을 함께 적용한다.
-						-- 맨손도 공용 연타를 사용하며 기존 피해 발생 시각과 공격 주기는 그대로다.
-						FM.actor(a.fm, "ATTACK", 0.25 + math.clamp(ap, 0, 1) * 0.35,
-							dt, nil, 1.3, nil, false, nil, a.weapon.motion)
-					elseif ap >= 1 and ap < 1.7 then
-						-- [동료 무기 회수] 실제 공격 후 0.35초 자세를 정돈한다(기존 공격 판정·주기는 동일).
-						FM.actor(a.fm, "RECOVERY", math.clamp((ap - 1) / 0.7, 0, 1), dt, nil, 1.25, nil, false, nil, a.weapon.motion)
-					elseif tgt and not moving and a.nextAt > now and a.nextAt - now < 0.22 then
-						-- [타격 예고] 다음 공격 직전의 짧은 무기 준비. 대미지 발생 시각은 변경하지 않는다.
-						FM.actor(a.fm, "ANTICIPATION", 1 - (a.nextAt - now) / 0.22, dt, nil, 1.18, nil, false, nil, a.weapon.motion)
-					elseif gaitMoving then
-						-- [옆걸음] 적을 바라보며 이동하는 동료는 좌우 발과 골반이 진행 방향을 따라가도록 한다.
-						local sideStep = math.clamp(a.root.CFrame.RightVector:Dot(a.moveVel) / maxSpeed, -1, 1)
+					if gaitMoving then
 						FM.actor(a.fm, "RUN", (a.gait or 0) % 1, dt, nil, 1.3, nil, false, nil, a.weapon.motion,
-							math.clamp(walked / math.max(dt, 0.008) / maxSpeed, 0.12, 1.25), sideStep)
+							math.clamp(walked / math.max(dt, 0.008) / maxSpeed, 0.12, 1.25), 0)
 					else
 						FM.actor(a.fm, "IDLE", (now / 2.4 + a.slot * 0.3) % 1, dt, nil, 1.15, nil, false, nil, a.weapon.motion)
 					end
-				elseif a.castAt and now - a.castAt < 0.7 then
-					Pose.makeR15Action(a.model, if a.castSkill == "rally" or a.castSkill == "heal" then "cheer" elseif a.castSkill == "armor" then "guard" else "talk", (now - a.castAt) / 0.7, now - a.t0)
-				elseif ap >= 0 and ap < 1 then
-					Pose.makeR15Action(a.model, "attack", ap, now - a.t0)
 				else
 					Pose.makeR15Action(a.model, if gaitMoving then "run" else "idle", 0,
 						if gaitMoving then (a.gait or 0) * 2 * math.pi else now - a.t0,
