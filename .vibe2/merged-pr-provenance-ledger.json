@@ -310194,11 +310194,131 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0dbeab13b116a89ecc5efddf",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14180",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b737994d1f7289130a792cbcefccc2cc18a5b99c",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14180,
+        "baseBranch": "main",
+        "headBranch": "owner/mare-cardart-color-style-20261122",
+        "baseSha": "b737994d1f7289130a792cbcefccc2cc18a5b99c",
+        "headSha": "baf33513f6c58e2d8bbefa46a65e19b34c330225",
+        "mergeCommitSha": "b38724f18f93e6b18b992be5ea6f9219fb9cc621",
+        "mergedAt": "2026-11-22T03:48:27Z",
+        "authorLogin": "hans1177",
+        "titleHash": "cbfaf623d020a4cd5ee0e99caed8f5c52fac15378fada87bfae42a3e4159b65b",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/mare-cardart-color-style-20261122",
+        "candidateSha": "baf33513f6c58e2d8bbefa46a65e19b34c330225"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 1,
+        "addedLineCount": 277,
+        "deletedLineCount": 273,
+        "changedFiles": [
+          "roblox-games/mare-essentia/docs/CARD_ART_BY_CATEGORY.md",
+          "roblox-games/mare-essentia/docs/CARD_ART_PROMPTS.md",
+          "roblox-games/mare-essentia/docs/continent_card_art_prompts.csv",
+          "roblox-games/mare-essentia/docs/leader_art_prompts.csv",
+          "roblox-games/mare-essentia/tools/gen_continent_card_prompts.py"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/tools/gen_continent_card_prompts.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14180",
+        "merge-commit:b38724f18f93e6b18b992be5ea6f9219fb9cc621",
+        "base-main:b737994d1f7289130a792cbcefccc2cc18a5b99c"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2487
+    "total": 2488
   }
 }
