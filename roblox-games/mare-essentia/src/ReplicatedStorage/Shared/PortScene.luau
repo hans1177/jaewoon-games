@@ -6607,6 +6607,10 @@ function PortScene.build(info, onFacility)
 			look = { amb = look.amb:Lerp(Color3.fromRGB(110, 112, 118), 0.5), haze = look.haze:Lerp(Color3.fromRGB(170, 172, 180), 0.55), dens = look.dens + 0.08 }
 		end
 	end
+	-- [측정] 실측 최장 프레임(239~246ms)이 3회 모두 같은 지점(조명·대기 설정 직후, 가판대 생성 전)에서 났다.
+	-- 원인 구간을 가리려고 조명 설정 전·setDay 후에 한 번씩 양보 지점을 둔다(동작 불변, 프레임 2개).
+	sliceStart = 0
+	sliceYield("beforeLighting")
 	Lighting.GlobalShadows = true
 	local atmos = Lighting:FindFirstChild("MareAtmosphere")
 	if not atmos then
@@ -6700,6 +6704,8 @@ function PortScene.build(info, onFacility)
 		water.Color = if temperate then season.sea else C(32, 118, 160):Lerp(season.sea, 0.25)
 	end
 	setDay(info.day)
+	sliceStart = 0
+	sliceYield("afterSetDay")
 
 	local grade = Lighting:FindFirstChild("MareGrade")
 	local bloom = Lighting:FindFirstChild("MareBloom")
