@@ -1753,13 +1753,14 @@ function FieldScene.start(opts)
 	-- [자연층 자유 배치] 기존 승인 식생은 맵 넓이에 따라 배치하고 모바일/PC 고정 10/24개 제한을 없앤다.
 	local detailCount = math.max(24, math.floor(24 * math.sqrt(AREA)))
 	for index = 1, detailCount do
-		local band = math.floor((index - 1) / 4)
+		-- [근·중·원경 균형] 3개 띠를 반복해 모델 수가 늘어도 어느 한쪽에 몰리지 않게 한다.
+		-- 각 띠 안에서는 길이방향으로 다섯 줄을 순환하며 기존 전투 중앙 통로를 비운다.
+		local band = math.floor((index - 1) / 4) % 3
+		local depthRow = math.floor((index - 1) / 12) % 5
 		local side = if index % 2 == 0 then -1 else 1
-		-- [장면 깊이] 화면 크기 무관하게 상세식생을 근경→중경→원경으로 나눈다.
-		-- 최초 10개가 전부 먼 원경에만 놓이던 문제를 고치되 전투 중앙은 비운다.
 		local lateral = if band == 0 then 0.16 elseif band == 1 then 0.25 else 0.34
 		local px = side * half * (lateral + rng:NextNumber(0, 0.13))
-		local pz = half * (0.81 - band * 0.28) + rng:NextNumber(-7, 7)
+		local pz = half * (0.81 - band * 0.28 - depthRow * 0.10) + rng:NextNumber(-7, 7)
 		local asset = detailAssets[((index - 1) % #detailAssets) + 1]
 		local entry = { "Terrain", asset, if asset == "north-pine-fall" then 8.5
 			elseif asset == "east-bamboo-grove" then 7 elseif asset == "log-stack" then 4.5
@@ -6999,7 +7000,12 @@ function FieldScene.start(opts)
 			for _, obj in fieldObjects do
 				if visualObjectHits >= maxVisualHits or (rangedShot and shots >= 1) then break end
 				if not obj.model.Parent or not obj.model:GetAttribute("FieldCombatObject") then continue end
-				local toward = (obj.pos - hrp.Position) * Vector3.new(1, 0, 1)
+				-- [다수 모델 최적화] 실제 공격 사정거리 바깥은 제곱거리만 비교해
+				-- 먼 나무·암석의 벡터/각도 계산을 건너뛴다. 공격범위·타격판정·보상은 그대로다.
+				local dx, dz = obj.pos.X - hrp.Position.X, obj.pos.Z - hrp.Position.Z
+				local maxReach = rangeR * STUD + 3 + obj.radius
+				if dx * dx + dz * dz > maxReach * maxReach then continue end
+				local toward = Vector3.new(dx, 0, dz)
 				local nearDist = math.max(0, toward.Magnitude - obj.radius)
 				local angle = 0
 				if toward.Magnitude > 0.01 then
