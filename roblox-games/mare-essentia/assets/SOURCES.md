@@ -1957,3 +1957,23 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `terrain/tree-palmbend.glb` | `f1ce81e92c48c980fca2de9f0605702e415efb30` | 열대 해안 야자수 |
 
 로블록스 실제 Model 업로드/Universe 권한 부여/AssetIds 정합성은 기존 등록 워크플로에서 독립 확인하고, 그 이후 기존 필드·해상전 함수가 해당 자산만 사용한다.
+
+## 2026-11-22 5차 입체 자연 원본 8종
+
+- 공식 원작: [Kenney Nature Kit](https://kenney.nl/assets/nature-kit), CC0 1.0, 상업 이용·변경 허용.
+- 원본 보관처: [Hidencod/tge-assets Nature Kit](https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit).
+- 아래 GLB는 내부 `assets/terrain/`에 바이트 그대로 복사. 공개 원본 Git blob SHA-1과 내부 Git blob **8/8 일치**. 유료/저작권 불명 모델 없음.
+- 발헤임의 생물군계 고저차와 씨 오브 시브즈의 암석 섬 윤곽을 구도 참고만 했고, 게임 파일/그림을 복제하지 않았음.
+
+| 원본 파일 (`assets/terrain/`) | 원본 SHA-1 | 의도 |
+|---|---|---|
+| `tree-tall.glb` | `183c2bd2b4f8fdaaceb94523bcb233132307287f` | 높은 전경 나무 |
+| `tree-thin.glb` | `3e959e80ae2a1cf518036005713bf6067cdfc2bb` | 가느다란 먼 수목 |
+| `plant-bushlargetriangle.glb` | `624f5c46e9edd7a7c413ffe621250968be250393` | 사선 수풀 |
+| `cliff-diagonal-rock.glb` | `5c02a7c3c6682dce820f68188958a66d6c9295f1` | 사선 절벽 |
+| `cliff-cornerinnertop-rock.glb` | `5a39c65292bcf803a53053069b282a13a49a43de` | 협곡 높은 꺾임 |
+| `rock-talld.glb` | `1051df6526955c0e9185c3e666fc952ad9d97a9c` | 날카로운 바위 기둥 |
+| `ground-pathbend.glb` | `f1f3da1463157dbb3c73ae82e1e386d9fe42e6e9` | 휘어지는 돌길 |
+| `tree-tall-fall.glb` | `3851f9d49b5ff496ded56cddef6f23351b6fbc02` | 가을 키 큰 나무 |
+
+모델 사용은 기존 로블록스 등록기의 실제 AssetIds·체험 권한 승인을 받아야 하며 미승인 모델은 대체 도형으로 채우지 않는다.
