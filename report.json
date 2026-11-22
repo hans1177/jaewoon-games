@@ -4,640 +4,221 @@
   {
    "step": 1,
    "ctx": "Client",
-   "out": "QAAutoIntro on\ntext"
+   "out": "SHIP_36_PREVIEW_PREPARED\ntext"
   },
   {
    "step": 2,
    "ctx": "Client",
-   "out": "INTRO_CENTER_QA_MONITOR_READY\ntext"
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:europe:5\ntext"
   },
   {
-   "step": 3,
-   "ctx": "Client",
-   "out": "MARE_TITLE_READY:TitleBackdrop:프랑스\ntext"
+   "step": 4,
+   "capture": "ships_europe",
+   "files": 1
   },
   {
    "step": 5,
-   "click": "title01",
-   "at": "922,84",
-   "out": "922,84 CLICK=프랑스\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 922,
-      "y": 84
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:east_asia:5\ntext"
   },
   {
    "step": 7,
-   "ctx": "Client",
-   "out": "SCROLLED 상인 집안\ntext"
+   "capture": "ships_east_asia",
+   "files": 1
   },
   {
-   "step": 9,
-   "click": "title02",
-   "at": "585,132",
-   "out": "585,132 CLICK=상인 집안\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 585,
-      "y": 132
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
+   "step": 8,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:new_world:5\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "ships_new_world",
+   "files": 1
   },
   {
    "step": 11,
    "ctx": "Client",
-   "out": "SCROLLED ⚓ 출항하기\ntext"
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:middle_east:5\ntext"
   },
   {
    "step": 13,
-   "click": "title03",
-   "at": "730,206",
-   "out": "730,206 CLICK=⚓ 출항하기\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 730,
-      "y": 206
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
+   "capture": "ships_middle_east",
+   "files": 1
   },
   {
-   "step": 18,
+   "step": 14,
    "ctx": "Client",
-   "out": "INTRO_OK\ntext"
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:southeast_asia:5\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "ships_southeast_asia",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:africa:5\ntext"
   },
   {
    "step": 19,
-   "ctx": "Client",
-   "out": "INTRO_CENTER_SIZE_UNIFIED_PASS stages=3 |길드 서기|대상 상인 카심|떠돌이 화가\ntext"
+   "capture": "ships_africa",
+   "files": 1
   },
   {
-   "step": 21,
+   "step": 20,
    "ctx": "Client",
-   "out": "INTRO_RUNTIME_STATE_PASS_NO_DECK_POPUP\ntext"
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:lost:6\ntext"
   },
   {
    "step": 22,
-   "ctx": "Client",
-   "out": "DEV Deck try=1\ntext"
-  },
-  {
-   "step": 24,
-   "ctx": "Client",
-   "out": "CARD_DECK_RUNTIME_PASS\ntext"
-  },
-  {
-   "step": 25,
-   "capture": "cb0_deck",
+   "capture": "ships_lost",
    "files": 1
   },
   {
-   "step": 26,
+   "step": 23,
    "ctx": "Client",
-   "out": "DEV Practice\ntext"
-  },
-  {
-   "step": 28,
-   "ctx": "Client",
-   "out": "CARD_PRACTICE_RUNTIME_PASS\ntext"
-  },
-  {
-   "step": 29,
-   "capture": "cb1",
-   "files": 1
-  },
-  {
-   "step": 31,
-   "click": "card_hand_select",
-   "at": "48,269",
-   "out": "48,269 CLICK=hand_card_1\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 48,
-      "y": 269
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 33,
-   "ctx": "Client",
-   "out": "CARD_SELECT_PASS idx=1\ntext"
-  },
-  {
-   "step": 34,
-   "capture": "cb_select",
-   "files": 1
-  },
-  {
-   "step": 35,
-   "click": "card_hand_use",
-   "at": "49,270",
-   "out": "49,270 CLICK=hand_card_use\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 49,
-      "y": 270
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 37,
-   "ctx": "Client",
-   "out": "CARD_USE_PASS hand=10->9 board=0->1 turn=me vp=1048x380 cutButtons=0 tray=813x90 mainButtons=2 minButtonH=40 trayOverlap=0\ntext"
-  },
-  {
-   "step": 38,
-   "capture": "cb_after_play",
-   "files": 1
-  },
-  {
-   "step": 40,
-   "capture": "cb2",
-   "files": 1
+   "out": "SHIP_36_PREVIEW_CLEAN_EXIT_PASS\ntext"
   }
  ],
- "errors": [
-  "STUDIO_FULL_AUDIT_INCOMPLETE"
- ],
+ "errors": [],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28002
+   "elapsedMs": 30008
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 273
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 182
+   "elapsedMs": 219
   },
   {
    "step": 3,
-   "type": "luau",
-   "elapsedMs": 200
+   "type": "wait",
+   "elapsedMs": 1817
   },
   {
    "step": 4,
-   "type": "wait",
-   "elapsedMs": 413
+   "type": "capture",
+   "elapsedMs": 714
   },
   {
    "step": 5,
-   "type": "click_from_luau",
-   "elapsedMs": 1120
+   "type": "luau",
+   "elapsedMs": 327
   },
   {
    "step": 6,
    "type": "wait",
-   "elapsedMs": 2005
+   "elapsedMs": 1802
   },
   {
    "step": 7,
-   "type": "luau",
-   "elapsedMs": 211
+   "type": "capture",
+   "elapsedMs": 637
   },
   {
    "step": 8,
-   "type": "wait",
-   "elapsedMs": 402
+   "type": "luau",
+   "elapsedMs": 277
   },
   {
    "step": 9,
-   "type": "click_from_luau",
-   "elapsedMs": 1132
+   "type": "wait",
+   "elapsedMs": 1804
   },
   {
    "step": 10,
-   "type": "wait",
-   "elapsedMs": 2006
+   "type": "capture",
+   "elapsedMs": 616
   },
   {
    "step": 11,
    "type": "luau",
-   "elapsedMs": 193
+   "elapsedMs": 197
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 404
+   "elapsedMs": 1810
   },
   {
    "step": 13,
-   "type": "click_from_luau",
-   "elapsedMs": 1130
+   "type": "capture",
+   "elapsedMs": 643
   },
   {
    "step": 14,
-   "type": "wait",
-   "elapsedMs": 1709
+   "type": "luau",
+   "elapsedMs": 288
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 1812
+   "elapsedMs": 1800
   },
   {
    "step": 16,
-   "type": "wait",
-   "elapsedMs": 1802
+   "type": "capture",
+   "elapsedMs": 595
   },
   {
    "step": 17,
-   "type": "wait",
-   "elapsedMs": 3706
+   "type": "luau",
+   "elapsedMs": 197
   },
   {
    "step": 18,
-   "type": "luau",
-   "elapsedMs": 4789
+   "type": "wait",
+   "elapsedMs": 1807
   },
   {
    "step": 19,
-   "type": "luau",
-   "elapsedMs": 1305
+   "type": "capture",
+   "elapsedMs": 618
   },
   {
    "step": 20,
-   "type": "wait",
-   "elapsedMs": 2502
+   "type": "luau",
+   "elapsedMs": 295
   },
   {
    "step": 21,
-   "type": "luau",
-   "elapsedMs": 2505
+   "type": "wait",
+   "elapsedMs": 1814
   },
   {
    "step": 22,
-   "type": "luau",
-   "elapsedMs": 1934
+   "type": "capture",
+   "elapsedMs": 636
   },
   {
    "step": 23,
-   "type": "wait",
-   "elapsedMs": 3013
-  },
-  {
-   "step": 24,
    "type": "luau",
-   "elapsedMs": 1913
-  },
-  {
-   "step": 25,
-   "type": "capture",
-   "elapsedMs": 2243
-  },
-  {
-   "step": 26,
-   "type": "luau",
-   "elapsedMs": 318
-  },
-  {
-   "step": 27,
-   "type": "wait",
-   "elapsedMs": 6001
-  },
-  {
-   "step": 28,
-   "type": "luau",
-   "elapsedMs": 282
-  },
-  {
-   "step": 29,
-   "type": "capture",
-   "elapsedMs": 1601
-  },
-  {
-   "step": 30,
-   "type": "wait",
-   "elapsedMs": 2006
-  },
-  {
-   "step": 31,
-   "type": "click_from_luau",
-   "elapsedMs": 1286
-  },
-  {
-   "step": 32,
-   "type": "wait",
-   "elapsedMs": 1003
-  },
-  {
-   "step": 33,
-   "type": "luau",
-   "elapsedMs": 204
-  },
-  {
-   "step": 34,
-   "type": "capture",
-   "elapsedMs": 1101
-  },
-  {
-   "step": 35,
-   "type": "click_from_luau",
-   "elapsedMs": 753
-  },
-  {
-   "step": 36,
-   "type": "wait",
-   "elapsedMs": 2003
-  },
-  {
-   "step": 37,
-   "type": "luau",
-   "elapsedMs": 176
-  },
-  {
-   "step": 38,
-   "type": "capture",
-   "elapsedMs": 1032
-  },
-  {
-   "step": 39,
-   "type": "wait",
-   "elapsedMs": 8013
-  },
-  {
-   "step": 40,
-   "type": "capture",
-   "elapsedMs": 852
+   "elapsedMs": 181
   }
  ],
  "consoleCapture": {
   "captured": true,
-  "contexts": [
-   "Client",
-   "Server"
-  ],
   "errorCount": 0,
-  "warningCount": 12,
+  "warningCount": 0,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 41,
-  "completedSteps": 41,
-  "plannedClicks": 5,
-  "successfulClicks": 5,
+  "plannedSteps": 24,
+  "completedSteps": 24,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 5,
-  "capturedFrames": 5,
+  "plannedFrames": 7,
+  "capturedFrames": 7,
   "abortedEarly": false
- },
- "visualSamples": [
-  {
-   "name": "cb0_deck",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 280563,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기",
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": true,
-    "brightness": 2.0272440910339355,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "cb1",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 195954,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기",
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": true,
-    "brightness": 2.0327529907226562,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "cb_select",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 178513,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "hand_card_1"
-  },
-  {
-   "name": "cb_after_play",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 182809,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "hand_card_use"
-  },
-  {
-   "name": "cb2",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 182832,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "hand_card_use"
-  }
- ],
- "assetAudit": {
-  "models": {
-   "status": "PASS",
-   "loaded": 864,
-   "errors": [],
-   "failed": 0,
-   "registered": 864
-  },
-  "registered": {
-   "status": "PASS",
-   "failed": 0,
-   "imagesSounds": 629,
-   "models": 873,
-   "elapsedSeconds": 16,
-   "timedOut": false,
-   "registered": 1502,
-   "serverPreloadUnresponsive": true,
-   "failedMedia": [],
-   "fetchCallbacks": 0,
-   "currentBatch": 1,
-   "serverPreloadEvidence": {
-    "status": "FAIL",
-    "failed": 12,
-    "failedMedia": [
-     {
-      "id": "rbxassetid://72489040757878",
-      "key": "AssetIds.CardArt/af_03",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://77023165428158",
-      "key": "AssetIds.CardArt/af_15",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://118991943570083",
-      "key": "AssetIds.CardArt/af_18",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://140089768483999",
-      "key": "AssetIds.CardArt/af_19",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://107734944778682",
-      "key": "AssetIds.CardArt/af_20",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://139202302026948",
-      "key": "AssetIds.CardArt/af_21",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://112968614735458",
-      "key": "AssetIds.CardArt/af_22",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://137895732576949",
-      "key": "AssetIds.CardArt/af_23",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://128540491426332",
-      "key": "AssetIds.CardArt/af_24",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://123418860511107",
-      "key": "AssetIds.CardArt/af_25",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://100930344878038",
-      "key": "AssetIds.CardArt/af_26",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://121009253806186",
-      "key": "AssetIds.CardArt/af_27",
-      "status": "TIMEOUT_16S"
-     }
-    ],
-    "timedOut": false,
-    "fetchCallbacks": 0
-   },
-   "clientVerified": true,
-   "soundClientVerified": true,
-   "authority": "OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED"
-  },
-  "features": {
-   "status": "RUNNING",
-   "progress": "1900:VoyageBonus"
-  }
- },
- "assetRegistryAudit": {
-  "registered": 1402,
-  "activeIds": 1402,
-  "mismatched": [],
-  "missing": [],
-  "unverifiedPermissions": [],
-  "status": "PASS"
- },
- "clientImageAudit": {
-  "mode": "VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED",
-  "expected": 529,
-  "soundExpected": 100,
-  "missing": [],
-  "soundMissing": [],
-  "batches": 11,
-  "loaded": 529,
-  "soundLoaded": 100
- },
- "visualEvidence": {
-  "framesChecked": 5,
-  "framesWithInvalidSize": 0,
-  "voyageSceneObserved": false,
-  "departureObserved": false,
-  "voyageDiagnostics": [],
-  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
  }
 }
