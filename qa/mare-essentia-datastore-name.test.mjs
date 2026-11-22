@@ -349,15 +349,19 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.match(field,/pl\.cd\[key\] = now \+ 8/);
 });
 
-test('동료 명세 계산은 별도 책임 범위에서 실행되어 필드 컴파일 지역변수 한도를 넘기지 않는다',()=>{
-  assert.match(field,/local function prepareAllyDefs\(\)/);
-  assert.match(field,/local allyDefs = prepareAllyDefs\(\)/);
-  assert.match(field,/local function hashName\(str: string\): number/);
-  assert.match(field,/weapon = Weapons\.allyWeapon\(category,/);
-  assert.match(field,/local allies: \{ any \} = \{\}/);
+test('영입 동료는 지상전투에 출전하지 않고 기존 파티 명단과 초상만 유지한다',()=>{
+  assert.match(field,/local party = if type\(opts\.allies\) == "table" then opts\.allies else \{\}/);
+  assert.match(field,/for _, member in party do/);
+  assert.match(field,/status:SetAttribute\("CompanionId", member\.id\)/);
+  assert.match(field,/status:SetAttribute\("CombatEnabled", false\)/);
+  assert.match(field,/local portrait = opts\.allyPortraits and opts\.allyPortraits\[member\.id\]/);
+  assert.match(field,/statusText\.Name = "FieldAllyPartyRole"/);
+  assert.doesNotMatch(field,/local function prepareAllyDefs\(\)/,'지상전투 동료 리그 생성 제거');
+  assert.doesNotMatch(field,/m\.Name = "FieldAlly"/,'전투 지역 동료 모델 금지');
+  assert.doesNotMatch(field,/equipFieldWeapon\(m, ad\.weapon\)/,'동료 무기 생성 금지');
   assert.match(field,/무기 숙련 시 2~3연타 확률 발동/);
   assert.doesNotMatch(field,/무기 숙련 시 2~5단 확률 발동/);
-});
+};
 
 // [실물 무기 회귀] 승인된 해적 키트 원본만 사용하고 저장·전투 수치를 변경하지 않는다.
 test('실물 해적 선상도·쌍날도끼·권총은 CC0 원본과 병종에 연결된다',()=>{
@@ -389,7 +393,7 @@ test('실물 해적 선상도·쌍날도끼·권총은 CC0 원본과 병종에 �
 });
 
 // [무기 사실성 회귀] R15 관절·재질 표현만 보강하고 전투 수치·저장 구조는 변경하지 않는다.
-test('적 무기 모션과 동료 비전투 동행은 원본 PBR 및 R15 복식을 보존한다',()=>{
+test('적 무기 모션과 비전투 파티 표시는 R15 전투 및 원본 PBR을 보존한다',()=>{
   const fieldMotion=read('ReplicatedStorage/Shared/FieldMotion.luau');
   for(const weapon of ['PISTOL','RIFLE','BOW','LONGBOW','CROSSBOW','SPEAR','DAGGER','WAR_AXE','MACE','RAPIER','SABRE','SCIMITAR','KATANA']){
     assert.ok(fieldMotion.includes('grip == "'+weapon+'"'),'무기 동작 구분 누락: '+weapon);
@@ -410,22 +414,20 @@ test('적 무기 모션과 동료 비전투 동행은 원본 PBR 및 R15 복식�
   assert.match(field,/local enemyDt = dtc \* \(if now < \(pl\.matrixSlowUntil or 0\) then 0\.24 else 1\)/);
   assert.match(field,/AC\.stepEnemy\(e\.ac, enemyDt,/);
   assert.match(field,/FM\.actor\(e\.fm, st, ph, enemyDt, e\.boss/);
-  // [동료 비전투 회귀] 영입·초상·대형·보행·휴식 치유는 유지하고 전투 공격/자동 스킬은 없다.
-  const companion = field.slice(field.indexOf('-- 동료(최대 2명):'), field.indexOf('-- 폰: 기본 터치'));
-  assert.ok(companion.includes('local allyDefs = prepareAllyDefs()'),'동료 영입 유지');
-  assert.ok(companion.includes('m:SetAttribute("CompanionId", ad.id)'),'동료 식별 유지');
-  assert.ok(companion.includes('FieldAllyPortrait'),'동료 초상 유지');
-  assert.ok(companion.includes('local goal = (root0.CFrame * CFrame.new('),'기존 동행 대형 유지');
-  assert.match(companion,/FM\.actor\(a\.fm, "RUN"/);
-  // [지상전투 단독] 동료는 소환·동행·대화하지 않는다(영입·저장 데이터는 유지).
-  assert.ok(companion.includes('local allyNames: { any } = {}'),'동료 지상전투 제외');
-  assert.ok(field.includes('local companionRows: { any } = {}'),'동료 대화 제외');
-  assert.doesNotMatch(companion,/opts\.allies/,'동료 지상전투 유입 금지');
-  assert.match(companion,/FM\.actor\(a\.fm, "IDLE"/);
-  assert.doesNotMatch(companion,/strikeEnemy\(|castEffect\(|local tgt|a\.nextSkill|a\.castAt/,'동료 전투/자동 스킬 경로 잔존 금지');
-  assert.match(field,/pl\.hp = math\.min\(pl\.maxHp, pl\.hp \+ \(0\.12 \+ math\.min\(healers, 2\) \* 0\.18\) \* math\.min\(dt, 0\.1\)\)/);
-  assert.match(companion,/if ally\.healer then table\.insert\(activeHealers, ally\) end/);
-  assert.match(field,/local activeHealers = \{\}/,'비전투 휴식 회복 보존');
+  // [파티 전용 회귀] 기존 영입·초상·직업 데이터는 표시하고, 필드 동료 공격·치유·3D 소환은 모두 제외한다.
+  const party = field.slice(field.indexOf('-- [비전투 파티]'),field.indexOf('-- 폰: 기본 터치'));
+  assert.ok(party.length>1000,'파티 UI 코드 누락');
+  assert.match(party,/local party = if type\(opts\.allies\) == "table"/);
+  assert.match(party,/if count >= 2 then break end/);
+  assert.match(party,/status:SetAttribute\("CompanionId", member\.id\)/);
+  assert.match(party,/status:SetAttribute\("CombatEnabled", false\)/);
+  assert.match(party,/FieldAllyPortrait/);
+  assert.match(party,/FieldAllyName/);
+  assert.match(party,/FieldAllyPartyRole/);
+  assert.doesNotMatch(party,/Pose\.createR15|equipFieldWeapon|FM\.actor|strikeEnemy|castEffect/);
+  assert.doesNotMatch(field,/local activeHealers = \{\}/,'파티 치유 보정 제거');
+  assert.match(field,/pl\.hp = math\.min\(pl\.maxHp, pl\.hp \+ 0\.12 \* math\.min\(dt, 0\.1\)\)/);
+  assert.match(field,/local companionRows: \{ any \} = \{\}/,'지상 대화 연출은 독립 유지');
   assert.match(field,/if not quiet then/);
   assert.match(field,/local thrust = family == "spear" or family == "dagger"/);
   assert.match(field,/local heavy = family == "axe" or family == "blunt"/);
@@ -2046,7 +2048,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.match(port,/string\.sub\(asset\.Name, 1, 7\) == "outfit_"/);
   assert.ok(pose.includes('local slotName = "R15Asset_" .. string.gsub(assetName, "/", "_") .. "_" .. boneName'),'R15 직업 소지품 경로 충돌 방지 슬롯');
   assert.match(pose,/if not textured and string\.sub\(assetName, 1, 7\) == "outfit_"/);
-  assert.match(field,/companion = true, gender = if ad\.female then "female" else "male", culture = ad\.nation/);
+  assert.match(field,/local portrait = opts\.allyPortraits and opts\.allyPortraits\[member\.id\]/);
   assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
   assert.match(pose,/part\.CanCollide, part\.CanTouch, part\.CanQuery = false, false, false, false/);
 });
@@ -2641,7 +2643,7 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
  assert.match(field,/asset:find\("eastasia", 1, true\)/);
  assert.match(field,/local textured = \(d:IsA\("MeshPart"\) and d\.TextureID ~= ""\)/);
  assert.match(field,/if not textured and light >= 0\.80 and chroma <= 0\.13 then/);
- assert.match(field,/culture = ad\.nation/);
+ assert.match(field,/status:SetAttribute\("CombatEnabled", false\)/);
 });
 
 
