@@ -317693,11 +317693,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_8eb9762b5284ac56ceaea4ca",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14319",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "8068efee83b0aceb8f87c7434da170e9addfd57d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14319,
+        "baseBranch": "main",
+        "headBranch": "owner/web-rpg-playable-20261122",
+        "baseSha": "8068efee83b0aceb8f87c7434da170e9addfd57d",
+        "headSha": "e594d2e7e4b06391d57e1eed48c5fd91150bb62b",
+        "mergeCommitSha": "1e1fe09c32632789d0e59a61317a0213c1f7d81f",
+        "mergedAt": "2026-11-22T10:47:20Z",
+        "authorLogin": "hans1177",
+        "titleHash": "152999a4608e3d02b2662ca1d838611cb55efadec5130908e3e2c2811f0fcd89",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/web-rpg-playable-20261122",
+        "candidateSha": "e594d2e7e4b06391d57e1eed48c5fd91150bb62b"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 533,
+        "deletedLineCount": 565,
+        "changedFiles": [
+          "roblox-games/rpg-adventure/client/Game.client.luau",
+          "roblox-games/rpg-adventure/default.project.json",
+          "roblox-games/rpg-adventure/server/Game.server.luau",
+          "roblox-games/rpg-adventure/shared/Config.luau",
+          "web-games/rpg-adventure/index.html"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/rpg-adventure/client/Game.client.luau",
+          "roblox-games/rpg-adventure/default.project.json",
+          "roblox-games/rpg-adventure/server/Game.server.luau",
+          "roblox-games/rpg-adventure/shared/Config.luau",
+          "web-games/rpg-adventure/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14319",
+        "merge-commit:1e1fe09c32632789d0e59a61317a0213c1f7d81f",
+        "base-main:8068efee83b0aceb8f87c7434da170e9addfd57d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2549
+    "total": 2550
   }
 }
