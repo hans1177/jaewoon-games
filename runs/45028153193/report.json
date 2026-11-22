@@ -1,0 +1,114 @@
+{
+ "sourceRevision": "2cfcd8cc205a744910ed6ec131458ed579ee0356",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "started\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "mobs=27 FieldEnemy@2972.51025390625, 3.188095808029175, 134.34259033203125;FieldEnemy@2963.18896484375, 3.1948230266571045, 130.795654296875;FieldEnemy@3019.91845703125, 3.2134530544281006, 129.160888671875;FieldEnemy@2915.896240234375, 7.896388530731201, -116.18846130371094;FieldEnemy@3124.674560546875, 3.1989710330963135, -83.72672271728516;FieldEnemy@2921.61767578125, 3.194443702697754, -92.8395004272461;FieldEnemy@3116.35595703125, 7.1610565185546875, -86.07154846191406;FieldEnemy@2877.94091796875, 3.3167433738708496, 10.944290161132812;FieldEnemy@3124.257080078125, 3.1876220703125, 20.499919891357422;FieldEnemy@2919.861328125, 6.613317489624023, -102.81130981445312;FieldEnemy@3127.71240234375, 3.2138478755950928, -83.86238098144531;FieldEnemy@2918.259765625, 6.797037601470947, -99.89269256591797;FieldEnemy@3132.5400390625, 3.199965476989746, -96.326904296875;FieldEnemy@2877.6376953125, 3.189177989959717, 20.96727180480957;FieldEnemy@3130.591064453125, 3.213404655456543, 18.863412857055664;FieldEnemy@2921.3203125, 4.0129194259643555, -117.69861602783203;FieldEnemy@3118.50927734375, 4.217240810394287, -96.13111114501953;FieldEnemy@2928.873046875, 3.19508695602417, -94.89655303955078;FieldEnemy@3131.267822265625, 3.2134454250335693, -86.62879943847656;FieldEnemy@2879.91259765625, 3.2084741592407227, 26.7415771484375;FieldEnemy@3122.1103515625, 3.1875457763671875, 31.056045532226562;FieldEnemy@2908.59033203125, 11.5740327835083, -110.0074234008789;FieldEnemy@3132.80859375, 3.2136175632476807, -92.46434783935547;FieldEnemy@2911.53369140625, 7.926790714263916, -95.0989990234375;FieldEnemy@3122.38671875, 3.199033737182617, -96.34679412841797;FieldEnemy@2878.675048828125, 3.194228410720825, 20.147111892700195;FieldEnemy@3125.99609375, 3.2134320735931396, 20.420297622680664\ntext"
+  },
+  {
+   "step": 4,
+   "capture": "f0_environment",
+   "files": 1
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "f1_start",
+   "files": 1
+  }
+ ],
+ "errors": [
+  "step8:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:1: FIELD_REGION_MISMATCH | text"
+ ],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 30004
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 1681
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 544
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 11014
+  },
+  {
+   "step": 4,
+   "type": "capture",
+   "elapsedMs": 896
+  },
+  {
+   "step": 5,
+   "type": "luau",
+   "elapsedMs": 192
+  },
+  {
+   "step": 6,
+   "type": "wait",
+   "elapsedMs": 9015
+  },
+  {
+   "step": 7,
+   "type": "capture",
+   "elapsedMs": 962
+  },
+  {
+   "step": 8,
+   "type": "luau",
+   "elapsedMs": 556
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 11,
+  "completedSteps": 9,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 3,
+  "capturedFrames": 2,
+  "abortedEarly": true
+ },
+ "abortDiagnostics": {
+  "step": 8,
+  "type": "luau",
+  "elapsedMs": 173,
+  "context": "Client",
+  "lastScreenshot": "f1_start",
+  "lastClick": null,
+  "probes": {
+   "Client": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_CLIENT\ntext"
+   },
+   "Server": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_SERVER\ntext"
+   }
+  }
+ }
+}

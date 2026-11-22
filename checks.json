@@ -1,7 +1,7 @@
 {
-  "runId": "45027697365",
+  "runId": "45028153193",
   "kind": "studio",
-  "sourceRevision": "e2302e9a28fabfee220e3fecc1b8fcb4cfb6a4d4",
+  "sourceRevision": "2cfcd8cc205a744910ed6ec131458ed579ee0356",
   "result": "FAIL",
   "failureStage": "STUDIO_EXECUTION",
   "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
@@ -16,7 +16,7 @@
     "abortedEarly": true
   },
   "errors": [
-    "step8:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:1: FIELD_SCENE_MISSING | text"
+    "step8:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:1: FIELD_REGION_MISMATCH | text"
   ],
   "audits": {
     "models": "NOT_RUN",
@@ -110,15 +110,15 @@
   "screenshotComparison": [
     {
       "name": "f0_environment-0.jpg",
-      "sha256": "a3c94e238a6e89ce918be9624f72352b40236ed4fe5c406af3bb19a9e1d1e408",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45027697365/f0_environment-0.jpg"
+      "sha256": "cd07e719e91d824892ff5b9baca5cef672c41d72e6a84e00a3791a0364e4ce30",
+      "comparison": "CHANGED_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45028153193/f0_environment-0.jpg"
     },
     {
       "name": "f1_start-0.jpg",
-      "sha256": "5bb943789088d5b9219b3bfce09e9c23751bc6a71d733ab05656f8133a2047a4",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45027697365/f1_start-0.jpg"
+      "sha256": "791771967007e7746109c7abbfc7a5154567501ecd433d09abf99227ce322c1d",
+      "comparison": "CHANGED_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45028153193/f1_start-0.jpg"
     }
   ],
   "screenshotFrameAudit": {
@@ -127,14 +127,14 @@
     "images": [
       {
         "name": "f0_environment-0.jpg",
-        "bytes": 194294,
+        "bytes": 193256,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "f1_start-0.jpg",
-        "bytes": 69439,
+        "bytes": 218039,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -143,5 +143,5 @@
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "45018900184"
+  "previousRunId": "45027697365"
 }
