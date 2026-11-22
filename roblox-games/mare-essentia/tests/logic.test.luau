@@ -3646,6 +3646,22 @@ local function testNations()
 			local ally = N.tariff(s3, w3, "rouen", "england")
 			check("동맹 항구는 관세가 낮다", ally.stance == "ally" and ally.rate < neutral.rate)
 			fraS.allies.england, engS.allies.france = nil, nil
+			local rouenOwner = N.portOwner(s3, w3, "rouen")
+			if rouenOwner == "france" then
+				local polN = N.tariffPolicy(s3, w3, "rouen", "england")
+				local savedWar = fraS.war
+				engS.war, engS.rel.france = { foe = "france", months = 1 }, -80
+				fraS.war, fraS.rel.england = { foe = "england", months = 1 }, -80
+				local polH = N.tariffPolicy(s3, w3, "rouen", "england")
+				engS.war, fraS.war = nil, savedWar
+				local expectN = if polN.colony then 1.25 else 1
+				check("관세 정책: 중립 배율, 적대+전쟁이면 배율이 높고 금수", math.abs(polN.mult - expectN) < 1e-9 and polN.closed == false and polH.mult > polN.mult and polH.closed == true)
+			else
+				engS.war = nil
+				check("관세 정책: 루앙 소유가 바뀐 세계에서도 정책 값이 정상", N.tariffPolicy(s3, w3, "rouen", "england").mult >= 0)
+			end
+			check("관세 정책: 자국 항구는 0배", N.tariffPolicy(s3, w3, "london", "england").mult == 0)
+			fraS.allies.england, engS.allies.france = nil, nil
 			-- 종전 협상
 			engS.war = { foe = "france", months = 10, score = 9 }
 			fraS.war = { foe = "england", months = 10, score = -9 }

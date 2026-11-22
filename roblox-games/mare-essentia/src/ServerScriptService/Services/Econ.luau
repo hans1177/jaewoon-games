@@ -87,6 +87,19 @@ return function(D, S)
 		return false, "지금은 개입할 수 없어요"
 	end
 
+	-- 거래 관세 정책 (배율·금수). 세계나 국가 정보가 없거나 오류면 nil → 기존 관세 그대로.
+	function X.tariffPolicy(state, portId)
+		local ok, result = pcall(function()
+			local w = ensure(state)
+			if not w or not w.nations then return nil end
+			local home = D.Specialties and D.Specialties.NationPower and D.Specialties.NationPower[state.nationId] or nil
+			if not home then return nil end
+			return E.Nations.tariffPolicy(w.nations, w, portId, home)
+		end)
+		if ok then return result end
+		return nil
+	end
+
 	-- 항구 하나의 경제 요약 (View 와 마을 장면이 쓴다). 시뮬이 없으면 nil.
 	function X.town(state, portId)
 		local w = ensure(state)
