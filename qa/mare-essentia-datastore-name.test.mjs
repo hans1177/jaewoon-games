@@ -3785,11 +3785,15 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/local detailCount = if visualMobile then 10 else 24/,'모바일 기존 예산 보존');
   // [실제 Studio 화면 회귀] 등록 실물의 위치만 근경·중경으로 옮긴다.
   // 신규 인스턴스 생성·추가 모델 예산·적/저장/보상 동선 변경 없이 좌우에 시각 깊이를 만든다.
-  assert.match(field,/if index % 5 == 1 then\n\s+local lane = math\.floor\(\(index - 1\) \/ 5\) % 3/,'수목 일부 근경 배치');
+  assert.match(field,/if index % 4 == 1 then\n\s+local lane = math\.floor\(\(index - 1\) \/ 4\) % 3/,'수목 일부 근경 배치');
   assert.match(field,/if index % 6 == 1 then\n\s+pos = ORIGIN/,'기존 암석 중경 배치');
-  assert.match(field,/local px = side \* half \* \(0\.29 \+ rng:NextNumber\(0, 0\.13\)\)/,'실물 소품 측면 거리');
-  assert.match(field,/local pz = half \* \(0\.71 - band \* 0\.23\)/,'모바일 소품 앞뒤 층');
+  assert.match(field,/local px = side \* half \* \(0\.27 \+ rng:NextNumber\(0, 0\.11\)\)/,'실물 소품 측면 거리');
+  assert.match(field,/local pz = half \* \(0\.82 - band \* 0\.21\)/,'모바일 소품 앞뒤 층');
   assert.match(field,/depthX = \(if depthX < 0 then -1 else 1\) \* half/,'등록된 지형 근경 배치');
+  assert.match(field,/depthZ = half \* \(if index == 1 then 0\.74 else 0\.53\)/,'실물 지형 첫 진입 시야 우선 배치');
+  assert.match(field,/half \* \(0\.79 - lane \* 0\.17\)/,'나무가 첫 전방 시야에 등장');
+  assert.match(field,/half \* \(0\.76 - \(math\.floor\(\(index - 1\) \/ 6\) % 2\) \* 0\.21\)/,'암석 중경 층 깊이');
+  assert.match(field,/half \* 0\.51 - math\.floor\(\(index - 1\) \/ 3\) \* 9/,'농경지 작물은 먼 원경이 아닌 중경');
   assert.match(field,/local visualLayoutRng = Random\.new\(/,'전경 배치 전용 난수 분리');
   assert.match(field,/half \* visualLayoutRng:NextNumber\(0\.27, 0\.37\)/,'나무 중경 랜덤은 전용 난수');
   assert.match(field,/half \* visualLayoutRng:NextNumber\(0\.30, 0\.43\)/,'바위 중경 랜덤은 전용 난수');
