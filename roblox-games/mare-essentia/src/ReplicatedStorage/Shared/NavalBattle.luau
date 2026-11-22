@@ -687,12 +687,15 @@ function NavalBattle.play(opts)
 		-- [해안 원근층] CC0 절벽 원본 3종만 각 해역 바깥쪽에 추가한다.
 		-- 실제 항구/물가에 존재하던 실물과 같은 수입 경로로 단 한번 로드한다.
 		local depthCoast = if coast.id == "caribbean" or coast.id == "tropical" or coast.id == "gold_coast" then {
+			{ "cliff-cornerlarge-rock", 142, -473, -393 }, { "tree-palmdetailedtall", 70, -444, -353 },
 			{ "cliff-blockslope-rock", 113, -471, -388 }, { "cliff-top-rock", 92, 464, 401 },
 			{ "cliff-large-rock", 138, 512, -392 },
 		} elseif coast.id == "north_sea" or coast.id == "arctic" or coast.id == "cape" or coast.id == "atlantic_storm" then {
+			{ "cliff-waterfall-stone", 144, 473, -401 }, { "cliff-cornerlarge-rock", 118, -472, 395 },
 			{ "cliff-large-rock", 149, 474, -408 }, { "cliff-top-rock", 123, -500, 384 },
 			{ "cliff-blockslope-rock", 102, -437, -410 },
 		} else {
+			{ "cliff-blockdiagonal-rock", 140, -488, 375 }, { "cliff-cornerlarge-rock", 117, 495, -413 },
 			{ "cliff-blockslope-rock", 128, -496, 371 }, { "cliff-large-rock", 136, 486, -401 },
 			{ "cliff-top-rock", 98, 438, 410 },
 		}
@@ -803,6 +806,14 @@ function NavalBattle.play(opts)
 		end)
 	end
 
+	-- [후미 흰 포말] 환경별 선박 속력만 따라가는 엔진 내장 입자.
+	-- 카드 대결은 제외하며 모바일 2척/PC 6척까지, 장면 종료 시 Terrain Attachment를 정리한다.
+	local wakeAttachments, wakeCount = {}, 0
+	folder.Destroying:Connect(function()
+		for _, anchor in wakeAttachments do
+			if anchor.Parent then anchor:Destroy() end
+		end
+	end)
 	-- [36척 해전 실물] 선박 구매·저장 ID를 유지하면서 등록된 V5 모델만 우선 수입한다.
 	-- 터치 기기에서는 경량판을, 미등록 모델은 기존 원본을 그대로 사용한다.
 	local function newShip(asset, length, pos, theta, tint, shipId)
@@ -813,8 +824,40 @@ function NavalBattle.play(opts)
 		local m = placeShip(folder, asset, ORIGIN + pos, length, 0, tint)
 		local base = m:GetPivot()
 		local rot = base - base.Position
+		local wakeAnchor, wakeFoam
+		if not opts.cardOnly and wakeCount < (if MOBILE_VFX then 2 else 6) then
+			wakeAnchor = Instance.new("Attachment")
+			wakeAnchor.Name = "NavalSternFoam"
+			wakeAnchor.WorldCFrame = CFrame.new(ORIGIN + pos)
+			wakeAnchor.Parent = workspace.Terrain
+			wakeFoam = Instance.new("ParticleEmitter")
+			wakeFoam.Texture = "rbxasset://textures/particles/smoke_main.dds"
+			wakeFoam.Color = ColorSequence.new(Color3.fromRGB(214, 244, 248), Color3.fromRGB(129, 194, 207))
+			wakeFoam.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.39),
+				NumberSequenceKeypoint.new(0.55, 0.65),
+				NumberSequenceKeypoint.new(1, 1),
+			})
+			wakeFoam.Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.9),
+				NumberSequenceKeypoint.new(0.4, if MOBILE_VFX then 2.8 else 4.1),
+				NumberSequenceKeypoint.new(1, 0),
+			})
+			wakeFoam.Speed = NumberRange.new(0.8, 2.6)
+			wakeFoam.Lifetime = NumberRange.new(0.8, 1.4)
+			wakeFoam.SpreadAngle = Vector2.new(85, 18)
+			wakeFoam.EmissionDirection = Enum.NormalId.Top
+			wakeFoam.Drag = 2.4
+			wakeFoam.Enabled = false
+			wakeFoam.Rate = 0
+			wakeFoam.Parent = wakeAnchor
+			table.insert(wakeAttachments, wakeAnchor)
+			wakeCount += 1
+		end
+		folder:SetAttribute("NavalWakeSourceCount", wakeCount)
 		return { model = m, pos = pos, theta = theta, speed = 0, rot = rot, y = base.Position.Y - ORIGIN.Y,
-			length = length, fx = FX_PROFILES[shipId] or DEFAULT_FX, shipId = shipId }
+			length = length, fx = FX_PROFILES[shipId] or DEFAULT_FX, shipId = shipId,
+			wake = wakeAnchor, wakeFx = wakeFoam, wakeNext = 0 }
 	end
 	local shipDef = ShipDefs.Ships[opts.shipId or ""]
 	local myLen = if shipDef then math.clamp(26 + shipDef.hull * 0.1, 30, 52) else 40
@@ -5514,6 +5557,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			* CFrame.Angles(-sh.roll + heel + rollAdd + (if seaMood == "card" then 0 else math.sin(swellTime * 0.61) * swell * 0.055),
 				0, pitch + pitchAdd + (if seaMood == "card" then 0 else math.cos(swellTime * 0.82) * swell * 0.065))
 		sh.model:PivotTo(CFrame.new(ORIGIN + Vector3.new(sh.pos.X, sh.y, sh.pos.Z)) * CFrame.Angles(0, -sh.theta, 0) * bob * sh.rot)
+		-- [선박 항적] 이미 계산한 위치·속도만 읽고, 포격·선체 충돌·실제 항속은 바꾸지 않는다.
+		if sh.wake and sh.wake.Parent and sh.wakeFx and t >= (sh.wakeNext or 0) then
+			sh.wakeNext = t + (if MOBILE_VFX then 0.20 else 0.11)
+			local heading = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
+			local stern = ORIGIN + sh.pos - heading * sh.length * 0.40 + Vector3.new(0, 0.3, 0)
+			sh.wake.WorldCFrame = CFrame.lookAt(stern, stern - heading)
+			sh.wakeFx.Enabled = (sh.speed or 0) > 2 and not sink
+			sh.wakeFx.Rate = math.clamp((sh.speed or 0) * (if MOBILE_VFX then 0.42 else 0.75), 1.5, if MOBILE_VFX then 8 else 16)
+		end
 	end
 
 	-- 카드 대결 무대: 두 배 갑판 위에 로블록스 캐릭터 선원이 서 있고, 카드를 낼 때마다 그 줄의 병종이 움직인다
