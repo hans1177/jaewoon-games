@@ -7238,27 +7238,23 @@ function PortScene.build(info, onFacility)
 	-- [삭제 엔진 비용 분산] 실측(정밀검사 44965867262 런던): 최상위 묶음 하나 삭제 직후 프레임이 252ms
 	-- (yieldGap@destroyOld). 비용은 Lua 시간이 아니라 엔진 쪽 해제라 시간 예산만으로는 못 나눈다.
 	-- 큰 묶음은 안쪽부터 쪼개 지우고, 약 500개 인스턴스마다 한 프레임 양보한다(장면·규칙 불변).
-	local destroyedSinceYield = 0
-	local function destroyChunked(inst: Instance)
-		if #inst:GetDescendants() > 500 then
-			for _, inner in inst:GetChildren() do
-				destroyChunked(inner)
+	-- 하위 목록은 한 번만 받는다(GetDescendants는 전위 순서). 뒤에서부터 지우면 자식이 부모보다 먼저 지워져
+	-- 반복 탐색 없이 O(n)으로 끝난다.
+	if old and old.Parent then
+		local all = old:GetDescendants()
+		local sinceYield = 0
+		for index = #all, 1, -1 do
+			local inst = all[index]
+			if inst.Parent then inst:Destroy() end
+			sinceYield += 1
+			if sinceYield >= 500 then
+				sinceYield = 0
+				sliceStart = 0 -- 다음 sliceYield가 즉시 양보(양보 불가 문맥이면 그대로 진행)
+				sliceYield("destroyOld")
 			end
 		end
-		local count = #inst:GetDescendants() + 1
-		inst:Destroy()
-		destroyedSinceYield += count
-		if destroyedSinceYield >= 500 then
-			destroyedSinceYield = 0
-			sliceStart = 0 -- 다음 sliceYield가 즉시 양보하게 한다(양보 불가 문맥이면 그대로 진행)
-		end
-		sliceYield("destroyOld")
-	end
-	if old and old.Parent then
-		for _, child in old:GetChildren() do
-			destroyChunked(child)
-		end
 		old:Destroy()
+		folder:SetAttribute("PortOldDestroyedInstances", #all) -- 측정용(판정·저장 무관)
 	end
 	sliceMark("destroyOld")
 	-- 새 항구는 빈 폴더를 먼저 연결하고, 묶음을 차례로 옮겨 붙인다(렌더·물리 등록 비용 분산).
