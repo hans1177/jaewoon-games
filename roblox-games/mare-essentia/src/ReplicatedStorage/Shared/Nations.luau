@@ -388,7 +388,9 @@ local function succeed(st, S, reason)
 		new.title = old.title
 	end
 	S.ruler = new
-	logEvent(st, S.id, "succession", string.format("%s %s 교체 (%s → %s)", S.id, reason, old.name, new.name))
+	local oldName: any = old.name
+	local newName: any = new.name
+	logEvent(st, S.id, "succession", S.id .. " " .. reason .. " 교체 (" .. tostring(oldName) .. " → " .. tostring(newName) .. ")")
 end
 
 local function stepState(st, S)
@@ -535,7 +537,10 @@ function N.rank(st)
 			+ S.dev.sci * 0.15 + S.dev.culture * 0.15 + S.dev.learn * 0.1 + math.log(1 + m.pop) * 0.1)
 		table.insert(rows, { id = id, score = score })
 	end
-	table.sort(rows, function(a, b) if a.score ~= b.score then return a.score > b.score end return a.id < b.id end)
+	table.sort(rows, function(a, b)
+		if a.score ~= b.score then return a.score > b.score end
+		return a.id < b.id
+	end)
 	local ranks = {}
 	for i, row in ipairs(rows) do ranks[row.id] = i end
 	st.ranks = ranks
