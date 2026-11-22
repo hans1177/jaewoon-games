@@ -140,13 +140,7 @@ end
 local order = { Town = 1, Naval = 2, Cargo = 3, Interior = 4, Terrain = 5, Castle = 6, Relics = 7, People = 8 }
 -- [항구·탐험 초반 조경] 먼저 등록된 승인 메시만 기존 로딩 큐의 맨 앞에서 수입한다.
 -- 별도 작업 큐나 임시 모델을 만들지 않고, 기존 우선 선박 두 종 다음에 배치한다.
-local earlyScenery = {
-	["Terrain/Grass_Small"] = true, ["Terrain/Bush_Small"] = true, ["Terrain/Rock_2"] = true,
-	-- [지상전 외부 CC0] AssetIds에 실등록된 모델만 기존 우선 로더로 조기 적재한다.
-	["Terrain/kenney_rock_largeB"] = true, ["Terrain/kenney_tree_fat"] = true,
-	["Terrain/kenney_mushroom_red"] = true, ["Terrain/kenney_mushroom_redGroup"] = true,
-	["Terrain/kenney_stump_old"] = true, ["Terrain/kenney_stone_smallFlatA"] = true,
-}
+local earlyScenery = { ["Terrain/Grass_Small"] = true, ["Terrain/Bush_Small"] = true, ["Terrain/Rock_2"] = true }
 -- [R15 실물 복식] 현재 주민·동료 프로필이 실제 사용하는 People 메시만 기존 로더에서 앞당긴다.
 -- 장면 진입 후 지연 로드 재장착도 유지하며, 새 큐·모델·다운로드 경로를 만들지 않는다.
 local earlyMobParts = {
