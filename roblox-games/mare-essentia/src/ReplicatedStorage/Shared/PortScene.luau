@@ -5774,15 +5774,12 @@ function PortScene.build(info, onFacility)
 		-- [검증된 지역 외관 부재] 등록된 문화권 전용 지붕/기둥/아치만 사용한다.
 		-- 기존 상자형 본체를 새 파츠로 덮지 않는다. 완성형 전용 궁전 메시가 없는 지역은 추후 실물 자산 등록 필요.
 		if east then
-			for _, z in { -deep * 0.26, 0, deep * 0.26 } do
-				importedModel(folder, "Town", "eastasia-roof", Vector3.new(px, tall + 3, z), 34, false, roofColor)
-			end
-			-- 조선/중국/일본의 정면 행각은 승인된 동아시아 기둥과 처마 모델을 사용한다.
+			-- [실측 결함 제거] Town/eastasia-roof 원본은 두께 0.15 평판(RoomRoof)이라 지붕 위에 붉은 판으로만 보였다
+			-- (Studio mare-palaces 44970048347). 기와지붕 대체가 아니므로 왕궁에서는 쓰지 않는다(assets-wanted 등록).
 			if palaceTier >= 2 then
 				for _, z in { -36, -18, 18, 36 } do
 					importedModel(folder, "Town", "eastasia-column-base", Vector3.new(facadeX + 12, 0, z), 7, false)
 				end
-				importedModel(folder, "Town", "eastasia-roof", Vector3.new(facadeX + 10, tall * 0.8, 0), 23, false, roofColor)
 			end
 		elseif indian or southeast then
 			-- 말라바르 해안과 동남아는 중국식 기와 궁전을 재사용하지 않고 목조 경사 지붕을 사용한다.
@@ -5790,8 +5787,12 @@ function PortScene.build(info, onFacility)
 				importedModel(folder, "Town", "roof-gable", Vector3.new(px, tall + 3, z), 31, false, roofColor)
 			end
 		elseif islamic then
-			for _, z in { -deep * 0.3, 0, deep * 0.3 } do
-				part(folder, Vector3.new(28, 18, 28), CFrame.new(px, tall + 8, z), roofColor, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+			-- [기본 도형 금지] 기본 구체 파츠 돔 3개를 제거한다. 승인된 돔 실물 모델은 assets-wanted에 등록해 확보 후 적용.
+			-- 회랑 입구는 승인·등록된 이집트 신전 아치 실물 모델로 정면에 둔다.
+			if palaceTier >= 3 then
+				for _, z in { -30, 30 } do
+					importedModel(folder, "Terrain", "egypt-temple-arch-a", Vector3.new(facadeX + 10, 0, z), 16, false)
+				end
 			end
 		elseif tropical then
 			for k = -4, 4 do
