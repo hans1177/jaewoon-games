@@ -323,9 +323,14 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 			d.Anchored = true
 			d.CanCollide = solid == true
 			d.CanTouch = false
-			-- [전경 유지·원경 최적화] 충돌 없는 먼 장식의 그림자만 생략한다.
-			-- 승인 모델 외형·텍스처·근경 그림자·실제 충돌 판정은 그대로 유지한다.
-			if scenicBand == "far" and solid ~= true then d.CastShadow = false end
+			-- [무제한 경관 경량화] 전투 오브젝트 타격은 fieldObjects가 직접 판정하므로
+			-- 충돌 없는 장식은 물리 쿼리에서 제외한다. 계단·단서 등 충돌형 실물은 보존.
+			if solid ~= true then d.CanQuery = false end
+			-- 원경 전체·중경 소형·근경 초소형만 그림자를 절제한다.
+			-- 모델/텍스처/가까운 나무와 건물의 실제 그림자는 그대로 렌더링한다.
+			if solid ~= true and (scenicBand == "far"
+				or (scenicBand == "mid" and desired <= 9)
+				or desired <= 4.5) then d.CastShadow = false end
 			local tint = tintOverride or FIELD_TINT[asset]
 			if kind == "Animals" and tint then
 				-- [야생 생물 품종색] 원본 PBR 맵/무늬와 눈·발굽·뿔 등 세부색은 보존한다.
@@ -826,6 +831,7 @@ function FieldScene.start(opts)
 		local p = part(folder, w[1], CFrame.new(ORIGIN + w[2]), Color3.new(1, 1, 1))
 		p.Transparency = 1
 		p.CanQuery = false
+		p.CastShadow = false -- 보이지 않는 필드 경계가 주변 나무/모래에 그림자를 만들지 않는다.
 	end
 
 	-- [낙사 방지] 기존 바닥 아래에 충돌 안전판을 두고, 이동 감시에서 추락 시 마지막 안전 지점으로 복귀한다.
@@ -834,6 +840,7 @@ function FieldScene.start(opts)
 		safetyFloor.Name = "FieldSafetyFloor"
 		safetyFloor.Transparency = 1
 		safetyFloor.CanQuery = false
+		safetyFloor.CastShadow = false -- 투명 충돌판은 햇빛·모래색에 영향 없음.
 	end
 
 	-- [실제 지형 높이] 기존 Kenney CC0 나무·암석 모델을 놓는 전장 안쪽에도
