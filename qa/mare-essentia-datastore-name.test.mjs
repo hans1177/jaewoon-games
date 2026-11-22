@@ -3429,6 +3429,12 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('surface.Color = surface.Color:Lerp(softTint, 0.72)'));
   assert.ok(pose.includes('scalp.Name = "HairScalp"'));
   assert.ok(pose.includes('temple.Name = "HairScalpSide"'));
+  // [사진 회귀] 실물 헤어가 부분 메시일 때 목덜미·묶은 머리 볼륨을 보존한다.
+  assert.ok(pose.includes('rearLock.Name = "HairBack"'));
+  assert.ok(pose.includes('nape.Name = "HairBack"'));
+  assert.ok(pose.includes('knot.Name = "HairBack"'));
+  assert.ok(pose.includes('visibleHeadwearParts == 0'));
+  assert.ok(pose.includes('assetName .. ":invisible"'));
   assert.ok(pose.includes('local fittedUpperReady = false'));
   assert.ok(pose.includes('(assetName == "outfit_boot" or assetName == "outfit_belt")'));
   assert.ok(pose.includes('part.Material = Enum.Material.Leather'));
