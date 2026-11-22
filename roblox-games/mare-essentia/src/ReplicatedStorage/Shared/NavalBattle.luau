@@ -3521,7 +3521,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			showCardCodex(nil)
 		end
 		focusClose.Activated:Connect(closeCardCodex)
-		focusShade.Activated:Connect(closeCardCodex)
+		-- [다시 눌러 사용] 확대창 배경이 화면 전체를 덮어 선택한 손패를 다시 눌러도 창만 닫히고 선택이 풀렸다
+		-- (Studio 카드배틀 44979385067: 두 번째 클릭 뒤 손패 10→10). 배경 클릭이 선택 카드 위면 기존 사용 흐름으로 낸다.
+		focusShade.Activated:Connect(function(input)
+			if selectedPlay and selected and selected.Parent and selected.Visible and input then
+				local p = Vector2.new(input.Position.X, input.Position.Y)
+				local a, size = selected.AbsolutePosition, selected.AbsoluteSize
+				local inset = game:GetService("GuiService"):GetGuiInset()
+				for _, q in { p, p - inset } do
+					if q.X >= a.X and q.X <= a.X + size.X and q.Y >= a.Y and q.Y <= a.Y + size.Y then
+						selectedPlay()
+						return
+					end
+				end
+			end
+			closeCardCodex()
+		end)
 		focusUse.Activated:Connect(function()
 			if leaderPreviewId then
 				if playing or auto or finished or m.over or m.turn ~= "me" or m.leaderUsed.me or leaderPreviewId ~= m.leader.me then return end
