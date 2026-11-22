@@ -2,14 +2,14 @@
   "version": 3,
   "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "0bd2c65c795257e2dd005ac75ff914853cb16dea",
+  "sourceRevision": "72647cfda143eabc8c97875ca16940f327029229",
   "status": "REVIEWED_NO_VERIFIED_EDIT",
-  "selectedRole": "MOTION",
+  "selectedRole": "GENERAL",
   "usageWindow": {
     "day": "2026-11-22",
     "calls": {
       "NVIDIA": 12,
-      "GEMINI": 6,
+      "GEMINI": 7,
       "OPENROUTER": 30
     },
     "windowIds": {
@@ -25,7 +25,7 @@
   },
   "cooldowns": {
     "GEMINI_FLASH": "2026-11-22T13:30:36.242Z",
-    "GEMINI_LITE": "2026-11-22T09:13:43.600Z"
+    "GEMINI_LITE": "2026-11-22T09:53:19.195Z"
   },
   "quotaForecast": {
     "NVIDIA": {
@@ -36,7 +36,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 1.26,
+      "estimatedCallsPerHour": 1.23,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -48,13 +48,13 @@
     "GEMINI": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 6,
-      "remainingLocal": 6,
-      "effectiveRemaining": 6,
-      "regularWorkRemaining": 3,
+      "localUsed": 7,
+      "remainingLocal": 5,
+      "effectiveRemaining": 5,
+      "regularWorkRemaining": 2,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 4.35,
-      "estimatedHoursToLocalCap": 1.4,
+      "estimatedCallsPerHour": 4.55,
+      "estimatedHoursToLocalCap": 1.1,
       "nextLocalWindowAt": "2026-11-23T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
       "accountWideBalanceVerified": false,
@@ -70,7 +70,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 3.31,
+      "estimatedCallsPerHour": 3.24,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -84,27 +84,32 @@
   "attempts": [
     {
       "id": "GEMINI_LITE",
-      "status": "HTTP_503",
+      "status": "OK",
       "provider": "GEMINI",
       "model": "gemini-3.5-flash-lite"
+    },
+    {
+      "id": "GEMINI_LITE",
+      "status": "REVIEW_INVALID",
+      "failureSignature": "EDIT_NOT_VISUAL_OR_NOT_IN_POLICY"
     }
   ],
   "frames": [
     {
-      "name": "field_actor_after_motion-0.jpg",
-      "sha256": "b12e7af33b9f0053ec79e86839934e20f2e2df517a85949ea51305f5b690fd1a"
+      "name": "b1_start-0.jpg",
+      "sha256": "de50b36c903c3043d8093c9d1bb9f2105e882f51420c014509b077328cbfdba9"
     },
     {
-      "name": "field_motion_smooth_icons-0.jpg",
-      "sha256": "82590baf902901e4f8ada957282a224d9b025765fb0751fb8afe5f238ce3a101"
+      "name": "b2_mid-0.jpg",
+      "sha256": "203a02049271401c954afff1ca818aa9f14822a6389945cc3ed7b4c417e21f33"
     },
     {
-      "name": "harbor_motion_attack-0.jpg",
-      "sha256": "9371031c29b706d00753c2744fba061077d14d2e437dadc23ed75623c133f8c6"
+      "name": "c00_start-0.jpg",
+      "sha256": "4c6069f6464e440f9041dc9ade29ae27469749178f8a0c5f1ffd8a4fcc060667"
     },
     {
-      "name": "harbor_motion_cheer-0.jpg",
-      "sha256": "ae37a95b219d8edf21144ac7780b258b2203b3659c5d5ffab6ef817503d29b5a"
+      "name": "intro_center_early-0.jpg",
+      "sha256": "5102b43c83b6cef73f3150d8513ef0bd96a0dd6198bd2c6f7a05af47cc5504bb"
     }
   ],
   "independentQaPassed": false,
