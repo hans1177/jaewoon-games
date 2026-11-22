@@ -1917,3 +1917,23 @@ Roblox 등록 번호와 Universe 사용 권한은 기존 `owner-mare-essentia-as
 
 Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산 ID·체험 사용 권한 검증 후에만 게임에서 사용한다.
 원본 확보와 게임 게시·실제 Studio 화면·모바일 성능 검증은 각각 별개다.
+
+## 2026-11-22 입체감 4차 실물 하천·해안·수관 원본 8종
+
+- 공식 제작/사용 허가: **Kenney Nature Kit — CC0 1.0**, https://kenney.nl/assets/nature-kit
+- 외부 원본: https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit
+- 기존 `assets/terrain/` 폴더에 원본 GLB를 수정하지 않고 저장. 외부/내부 Git 바이너리 blob SHA-1 **8/8 일치**.
+- 연출 참고: 개활지-그늘-수면 순의 공간 원근 배치와 선명한 연안 지형 실루엣. 타 게임 에셋 자체는 복제하지 않음.
+
+| `assets/terrain/` 원본 | SHA-1 | 용도 |
+|---|---|---|
+| `cliff-large-stone.glb` | `e93d0635a9bc566f5a13843f9ef1f9df09c5437c` | 빙하·고지대 밝은 암벽 |
+| `cliff-cornerlarge-stone.glb` | `5f73fd650e8c63d9f943a0846c8f805156e8eca3` | 해안 절벽 코너 |
+| `ground-riverbendbank.glb` | `3493554fdeeec1c8409478d7e61c0e0338a31556` | 강이 굽이치는 가장자리 |
+| `ground-riverside.glb` | `7fb71bbd881c3a1b5c5c540a4c139ef2963877f7` | 습지/호수 물가 |
+| `plant-bushsmall.glb` | `de5e7840512f0ca9d465eab5bc7c078bf1d613b0` | 근경 수풀 |
+| `grass-leafslarge.glb` | `662b40110f7f45ae508632dce3e8f69e45bd27a9` | 풀잎 군락 |
+| `tree-oak-fall.glb` | `b14f0de44be30815bfeb91026f41869160cc22ce` | 가을 참나무 |
+| `tree-palmbend.glb` | `f1ce81e92c48c980fca2de9f0605702e415efb30` | 구부러진 열대 야자 |
+
+실제 Roblox 모델 사용은 기존 정식 등록 워크플로가 ID와 Universe 권한을 승인한 다음에만 한다.
