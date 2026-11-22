@@ -239853,9 +239853,9 @@
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "work-order-not-runnable",
       "blastRadius": "single-task",
-      "checkpoint": "2026-11-22T00:06:56.747Z",
+      "checkpoint": "2026-11-22T01:35:20.938Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-11-22T00:06:56.747Z",
+      "sourceMutationBaseline": "2026-11-22T01:35:20.938Z",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -246154,7 +246154,8 @@
         "system-ai-handoff-to-reservation:system-ai:44967508094:1",
         "actions-run:44967508094",
         "system-ai-handoff-to-reservation:system-ai:44970288426:1",
-        "actions-run:44970288426"
+        "actions-run:44970288426",
+        "system-ai-handoff-to-reservation:system-ai:44971175891:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -246172,7 +246173,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-11-22T01:32:32.228Z"
+      "updatedAt": "2026-11-22T01:37:25.970Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -246289,9 +246290,9 @@
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "single-task",
-      "checkpoint": "2026-11-22T00:06:56.747Z",
+      "checkpoint": "2026-11-22T01:35:20.938Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-11-22T00:06:56.747Z",
+      "sourceMutationBaseline": "2026-11-22T01:35:20.938Z",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -252387,7 +252388,8 @@
         "system-ai-handoff-to-reservation:system-ai:44967508094:1",
         "actions-run:44967508094",
         "system-ai-handoff-to-reservation:system-ai:44970288426:1",
-        "actions-run:44970288426"
+        "actions-run:44970288426",
+        "system-ai-handoff-to-reservation:system-ai:44971175891:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -252405,7 +252407,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-11-22T01:32:32.194Z"
+      "updatedAt": "2026-11-22T01:37:25.936Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -253555,9 +253557,9 @@
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "FAIL",
       "blastRadius": "single-task",
-      "checkpoint": "2026-11-22T00:06:56.747Z",
+      "checkpoint": "2026-11-22T01:35:20.938Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-11-22T00:06:56.747Z",
+      "sourceMutationBaseline": "2026-11-22T01:35:20.938Z",
       "evidence": [
         "deployment-failure-run:39067647976:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -258979,7 +258981,8 @@
         "system-ai-handoff-to-reservation:system-ai:44964585750:1",
         "actions-run:44964585750",
         "system-ai-handoff-to-reservation:system-ai:44970288426:1",
-        "actions-run:44970288426"
+        "actions-run:44970288426",
+        "system-ai-handoff-to-reservation:system-ai:44971175891:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -258997,7 +259000,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-11-22T01:32:32.314Z"
+      "updatedAt": "2026-11-22T01:37:26.052Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -270379,9 +270382,9 @@
       "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
       "failureSignature": "WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
       "blastRadius": "single-task",
-      "checkpoint": "2026-11-22T00:06:56.747Z",
+      "checkpoint": "2026-11-22T01:35:20.938Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-11-22T00:06:56.747Z",
+      "sourceMutationBaseline": "2026-11-22T01:35:20.938Z",
       "evidence": [
         "deployment-failure-run:40125353017:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -274473,7 +274476,8 @@
         "system-ai-handoff-to-reservation:system-ai:44967508094:1",
         "actions-run:44967508094",
         "system-ai-handoff-to-reservation:system-ai:44970288426:1",
-        "actions-run:44970288426"
+        "actions-run:44970288426",
+        "system-ai-handoff-to-reservation:system-ai:44971175891:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -274491,7 +274495,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-30T03:07:30.585Z",
-      "updatedAt": "2026-11-22T01:32:32.438Z"
+      "updatedAt": "2026-11-22T01:37:26.202Z"
     },
     {
       "id": "recovery-00b462d32b871dc8e70a",
@@ -285608,9 +285612,9 @@
       "failureStage": "STUDIO_EXECUTION",
       "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
       "blastRadius": "single-task",
-      "checkpoint": "2026-11-22T00:06:56.747Z",
+      "checkpoint": "2026-11-22T01:35:20.938Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-11-22T00:06:56.747Z",
+      "sourceMutationBaseline": "2026-11-22T01:35:20.938Z",
       "evidence": [
         "deployment-failure-run:44233435770:1",
         "deployment-workflow:.github/workflows/devloop-studio.yml",
@@ -286481,7 +286485,9 @@
         "system-ai-impact-score:2317",
         "system-ai-blocked-task-count:125",
         "system-ai-handoff-to-reservation:system-ai:44970288426:1",
-        "actions-run:44970288426"
+        "actions-run:44970288426",
+        "system-ai-blocked-task-count:127",
+        "system-ai-handoff-to-reservation:system-ai:44971175891:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -286499,7 +286505,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-11-18T05:48:40.335Z",
-      "updatedAt": "2026-11-22T01:32:32.465Z"
+      "updatedAt": "2026-11-22T01:37:26.230Z"
     },
     {
       "id": "recovery-000fe4cf648e182f3ac1",
@@ -299384,7 +299390,7 @@
     },
     {
       "id": "recovery-d46931cc2539dd78deb7",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "deployment",
       "sourceTaskId": "deployment:.github/workflows/devloop-studio.yml:da5c63e90791cc94788333e4a02601f20d33db03:mare-essentia",
@@ -299423,7 +299429,13 @@
         "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
         "deployment-release-gates:PRESERVED",
         "source-mutation-required:YES",
-        "primary-ai-collaboration:REQUESTED"
+        "primary-ai-collaboration:REQUESTED",
+        "deployment-failure-run:44963354461:1",
+        "studio-qa-run:44963354461",
+        "studio-qa-checks:https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44963354461/checks.json",
+        "studio-qa-screenshots:https://github.com/hans1177/jaewoon-games/tree/mare-essentia-studio-frames/runs/44963354461",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/44963354461",
+        "recovery-reactivated-after-source-refailure"
       ],
       "recoveryStrategy": "SYSTEM_AI_CANONICAL_DEPLOYMENT_INFRASTRUCTURE_CAUSAL_REPAIR_THEN_VERIFIED_REDEPLOY",
       "verificationPlan": [
@@ -299438,12 +299450,12 @@
       "recoveryOwner": "SYSTEM_AI",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 1,
+      "recurrenceCount": 2,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-11-22T01:14:55.016Z",
-      "updatedAt": "2026-11-22T01:15:04.553Z"
+      "updatedAt": "2026-11-22T01:37:32.208Z"
     },
     {
       "id": "recovery-a59f180be6a3156e8040",
