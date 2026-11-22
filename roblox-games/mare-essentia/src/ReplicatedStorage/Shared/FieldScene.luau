@@ -1099,6 +1099,7 @@ function FieldScene.start(opts)
 	end
 	-- [원근 입체감] Kenney CC0 실물 절벽 면/상단/경사와 숲 하층을 지형 높이 위에 층으로 배치한다.
 	-- 동선과 퀘스트 조사 대상은 그대로 유지하며 시각 모델 충돌은 만들지 않는다.
+	do -- [Luau 지역변수 상한] 추가 실물 깊이 배치표는 기존 구획과 지역변수 생명주기를 분리한다.
 	local depthLandforms = if questTerrain == "highland" or questTerrain == "glacier" or questTerrain == "volcanic" then {
 		{ "cliff-large-rock", 44, -0.83, -0.65, 13 }, { "cliff-blockslope-rock", 29, 0.80, -0.44, 28 },
 		{ "cliff-top-rock", 33, -0.84, -0.22, -24 }, { "rock-tallc", 16, 0.73, -0.78, 0 },
@@ -1125,6 +1126,7 @@ function FieldScene.start(opts)
 				stageFeature(entry)
 			end
 		end
+	end
 	end
 	-- [문화권 전용 윤곽] 공통 지형 위에 같은 소품을 반복하지 않고 국가별 대표 실물 건축·식생 군집을 놓는다.
 	-- 위치는 맵 가장자리로 제한해 기존 퀘스트 목표·전투·시작 동선을 유지한다.
