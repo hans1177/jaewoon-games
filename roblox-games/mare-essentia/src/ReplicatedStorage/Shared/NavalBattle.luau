@@ -3317,10 +3317,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local lunge = if attack then 0.8 * impact elseif motion == "pounce" then 0.9 * impact else 0
 				-- 배경은 가볍게 패럴랙스, 캐릭터·무기·함선은 독립된 장면 안에서 실제 동작한다.
 				local pan = (if motion == "retreat" then 0.07 else 0.018) * wind
-				image.Position = UDim2.fromScale(0.5 + pan - 0.045 * lunge + 0.02 * recoil,
-					0.5 + (if motion == "storm" then 0.039 else 0.019) * wave - 0.015 * impact)
+				-- [기존 승인 원화] 카드 틀을 넘는 자동 확대만 제한한다. 파도·안개·광원 모션은 유지한다.
+				image.Position = if opts.cardOnly then UDim2.fromScale(0.5 + 0.012 * wind, 0.5 + 0.012 * wave)
+					else UDim2.fromScale(0.5 + pan - 0.045 * lunge + 0.02 * recoil,
+						0.5 + (if motion == "storm" then 0.039 else 0.019) * wave - 0.015 * impact)
 				image.Rotation = if motion == "storm" then 1.2 * wave elseif motion == "gallop" then 0.8 * wave else 0
-				image.Size = UDim2.fromScale(1.17 + (if focused then 0.04 else 0) + 0.025 * impact, 1.17 + (if focused then 0.04 else 0) + 0.025 * impact)
+				local artZoom = if opts.cardOnly then (0.94 + 0.01 * impact) else (1.17 + (if focused then 0.04 else 0) + 0.025 * impact)
+				image.Size = UDim2.fromScale(artZoom, artZoom)
 				mist.Position = UDim2.fromScale(-0.25 + math.sin(elapsed * 0.55) * 0.11, 0.72 + wave * 0.038)
 				mist.BackgroundTransparency = if motion == "storm" or motion == "fog" then 0.44 + 0.15 * wave
 					elseif motion == "fire" then 0.65 - 0.2 * impact
@@ -3693,13 +3696,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			focusUse.Visible = if leaderProfile then (leaderPreviewId ~= nil and m.turn == "me" and not m.over and not m.leaderUsed.me and not playing and not auto)
 				else not readOnly
 			focusUse.Text = if leaderProfile then t("지도자 능력 사용", "Use Leader Ability") else t("카드 사용", "Play Card")
-			-- [크기] 화면 가장자리 여백을 남기고 0.69 비율로 최대 620px까지 확대한다.
+			-- [크기] 카드 대전 확대창은 새 세로 7:10 틀을 그대로 사용한다.
 			local screenSize = bg.AbsoluteSize
-			local height = math.floor(math.max(210, math.min(screenSize.Y * 0.86, screenSize.X * 0.9 / 0.69, 620)))
+			local ratio = if opts.cardOnly then portraitCardRatio else 0.69
+			local height = math.floor(math.max(210, math.min(screenSize.Y * 0.86, screenSize.X * 0.9 / ratio, 620)))
 			if opts.cardOnly then
-				height = math.floor(math.max(1, math.min(screenSize.Y * 0.88, screenSize.X * 0.94 / 0.69, 620)))
+				height = math.floor(math.max(1, math.min(screenSize.Y * 0.88, screenSize.X * 0.94 / ratio, 620)))
 			end
-			focusFrame.Size = UDim2.fromOffset(math.floor(height * 0.69), height)
+			focusFrame.Size = UDim2.fromOffset(math.floor(height * ratio), height)
 			focusScale.Scale = 0.78
 			focusShade.BackgroundTransparency = 1
 			focusShade.Visible = true
@@ -3711,8 +3715,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local artKey = if leaderProfile then (NEW_LEADER_ART[card.leaderId] and AssetIds[NEW_LEADER_ART[card.leaderId]] and NEW_LEADER_ART[card.leaderId]) or (AssetIds["CardArt/leader_" .. card.leaderId] and "CardArt/leader_" .. card.leaderId) or LEADER_FACE[card.leaderId] else cardArtworkKey(card)
 			focusImage.Image = if artKey and AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			focusImage.ImageColor3 = if leaderProfile or (type(card.id) == "string" and AssetIds["CardArt/" .. card.id]) then Color3.new(1, 1, 1) else Color3.fromRGB(239, 214, 174)
-			focusImage.ScaleType = if leaderProfile then Enum.ScaleType.Fit else Enum.ScaleType.Crop
-			focusImage.Size = if leaderProfile then UDim2.fromScale(1, 1) else UDim2.fromScale(1.14, 1.14)
+			-- [등록 원화] 기존 정사각형과 신규 7:10 원화 모두 확대 시 잘리지 않게 표시한다.
+			focusImage.ScaleType = if opts.cardOnly or leaderProfile then Enum.ScaleType.Fit else Enum.ScaleType.Crop
+			focusImage.Size = if opts.cardOnly or leaderProfile then UDim2.fromScale(1, 1) else UDim2.fromScale(1.14, 1.14)
 			local regionId = if leaderProfile then m.faction[card.leaderSide] elseif type(card.id) == "string" then BC.cardRegionPrefix(card.id) else nil
 			local regionDeck = if regionId then CARD_DECK[regionId] else nil
 			local focusFrameArtId = regionId and REGION_FRAME[regionId] and AssetIds[REGION_FRAME[regionId]]
@@ -4143,7 +4148,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				art.Name = "Artwork"
 				art.Archivable = false
 				art.Position = UDim2.fromOffset(3, 3)
-				art.Size = UDim2.new(1, -6, if opts.cardOnly then 1 else 0.69, -3)
+				art.Size = UDim2.new(1, -6, 0.69, -3)
 				art.BackgroundColor3 = Color3.fromRGB(88, 67, 46)
 				art.BorderSizePixel = 0
 				art.ClipsDescendants = true
