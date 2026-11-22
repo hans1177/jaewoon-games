@@ -1990,8 +1990,9 @@ function FieldScene.start(opts)
 	-- 상태
 	local pl = AC.newPlayer(100)
 	local BASE_DMG = 10
-	-- [휴식 회복] 기존 자연 회복은 유지한다. 전투에서 제외된 동료의 추가 치유 보정은 적용하지 않는다.
+	-- [휴식 회복] 동료는 전투에서 제외하되 기존 비전투 휴식 치유 보정은 보존한다.
 	local lastCombatAt = os.clock()
+	local activeHealers = {} -- [기존 비전투 휴식] 실제 영입된 치료 동료의 회복 보정만 유지한다.
 	local passiveRegenHudAt, passiveRegenFxAt = 0, -100
 	-- [정예 둔화·보스 독] 탐험 한 판에만 존재하는 비저장 상태. 중복 효과와 지속 피해 폭증을 방지한다.
 	local eliteSlowUntil, bossPoisonUntil, bossPoisonNextAt = 0, 0, math.huge
@@ -7882,7 +7883,7 @@ function FieldScene.start(opts)
 			debuffLabel.TextColor3 = if poisoned then Color3.fromRGB(144, 232, 144) else Color3.fromRGB(151, 210, 249)
 		end
 		-- [비전투 극소량 체력 회복] 8초간 전투 행동이 없고 40스터드 이내 적이 없을 때만 작동한다.
-		-- 자연 초당 0.12만 적용한다. 동료가 전투에서 빠졌으므로 지원 치유는 없다.
+		-- 자연 초당 0.12, 치료 동료가 28스터드 이내에 있을 때 +0.18(최대 2명). 전투 스킬은 비활성이다.
 		if now - lastCombatAt >= 8 and pl.hp > 0 and pl.hp < pl.maxHp then
 			local ch = player.Character
 			local root = ch and ch:FindFirstChild("HumanoidRootPart")
@@ -7896,7 +7897,13 @@ function FieldScene.start(opts)
 				end
 			end
 			if not danger then
-				pl.hp = math.min(pl.maxHp, pl.hp + 0.12 * math.min(dt, 0.1))
+				local healers = 0
+				for _, a in activeHealers do
+					if a.root and a.root.Parent and (a.root.Position - root.Position).Magnitude <= 28 then
+						healers += 1
+					end
+				end
+				pl.hp = math.min(pl.maxHp, pl.hp + (0.12 + math.min(healers, 2) * 0.18) * math.min(dt, 0.1))
 				if now >= passiveRegenHudAt then
 					passiveRegenHudAt = now + 0.5
 					refresh()
@@ -7905,7 +7912,7 @@ function FieldScene.start(opts)
 					passiveRegenFxAt = now
 					pulseAt("HEAL_PULSE", root.CFrame * CFrame.new(0, -2.1, 0), Color3.fromRGB(104, 207, 151),
 						Color3.fromRGB(215, 250, 227), 3.8, if visualMobile then 2 else 4)
-					sfx("sfx_card_magic", 0.16, 1.32)
+					sfx("sfx_card_magic", 0.16, if healers > 0 then 1.15 else 1.32)
 				end
 			end
 		end
@@ -8895,8 +8902,10 @@ function FieldScene.start(opts)
 							footOffset = m:GetPivot().Position.Y - pos0.Y,
 							leftFoot = m:FindFirstChild("LeftFoot"), rightFoot = m:FindFirstChild("RightFoot"),
 							fm = if FM then FM.new(m, false) else nil, name = ad.name,
-							weapon = ad.weapon or Weapons.get("sword"), gait = (i - 1) * 0.45 }
+							weapon = ad.weapon or Weapons.get("sword"), gait = (i - 1) * 0.45,
+							healer = table.find(ad.skills, "heal") ~= nil }
 						table.insert(allies, ally)
+						if ally.healer then table.insert(activeHealers, ally) end
 						table.insert(conns, { Disconnect = function()
 							m:Destroy()
 						end })
