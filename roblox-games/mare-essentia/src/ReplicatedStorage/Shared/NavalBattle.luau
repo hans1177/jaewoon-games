@@ -1460,11 +1460,13 @@ function NavalBattle.play(opts)
 			local target = foe.pos - me.pos
 			if target.Magnitude >= cannon.range or target.Magnitude < 0.1 then
 				skillPop("사거리 밖!", Color3.fromRGB(255, 188, 112))
+				gui:SetAttribute("NavalSkillResult", "fire:range") -- [검증용 읽기 전용] 판정 불변
 				return
 			end
 			local heading = Vector3.new(math.cos(me.theta), 0, math.sin(me.theta))
 			if math.abs(heading:Cross(target.Unit).Y) <= 0.5 then
 				skillPop("선측을 맞춰!", Color3.fromRGB(255, 188, 112))
+				gui:SetAttribute("NavalSkillResult", "fire:angle")
 				return
 			end
 			fireOrderUntil = now + 0.5
@@ -1472,6 +1474,8 @@ function NavalBattle.play(opts)
 		end
 		skillReady[sk.id] = now + sk.cd
 		skillUntil[sk.id] = now + sk.dur
+		gui:SetAttribute("NavalSkillResult", sk.id .. ":ok")
+		gui:SetAttribute("NavalSkillsUsed", (gui:GetAttribute("NavalSkillsUsed") or 0) + 1)
 		skillPop(sk.text .. " · " .. (sk.cue or "발동") .. "!", sk.col)
 		skillFx(sk.id, sk.dur)
 		if sk.id == "rapid" or sk.id == "fire" then
@@ -1500,6 +1504,7 @@ function NavalBattle.play(opts)
 		b:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 		b.BackgroundColor3 = sk.col
 		b.Visible = not opts.cardOnly
+		b.Name = "NavalSkill_" .. sk.id -- [검증용 이름] 실제 클릭 검사가 기술 버튼을 찾는다(동작 불변).
 		b.Activated:Connect(function()
 			useSkill(sk)
 		end)
@@ -5474,11 +5479,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			rt.meHull = math.max(0, rt.meHull - amount)
 			rt.meCrew = math.max(1, rt.meCrew - amount * 0.06)
 			meHp = rt.meHull / rt.meMax
+			gui:SetAttribute("NavalMeHull", rt.meHull)
 			if meHp < 0.5 then CH.flash("pump") end
 		else
 			rt.foeHull = math.max(0, rt.foeHull - amount)
 			rt.foeCrew = math.max(1, rt.foeCrew - amount * 0.06)
 			foeHp = rt.foeHull / rt.foeMax
+			gui:SetAttribute("NavalFoeHull", rt.foeHull) -- [검증용 읽기 전용] 피해 계산 불변
 			if rt.hits % 3 == 1 then CH.flash("cannon") end
 		end
 		dmgPop(toPlayer, math.max(1, math.floor(amount + 0.5)))
