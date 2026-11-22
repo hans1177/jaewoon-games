@@ -162,3 +162,14 @@
 - **다음 작업:** 현재 `main`과 최신 등록표·동일 워크플로 실행 결과부터 재확인. Kenney 공식 다운로드 응답과 고정 ZIP SHA-256이 불일치하는 원인을 원본/라이선스/내용까지 검증한 다음, 기존 책임 함수 안에서만 수정해 정식 등록기를 재실행할 것. 안전 검증 우회·새 래퍼/등록기·고정 해시 임의 갱신·미검증 등록 성공 주장은 금지.
 - `eu_23` 유럽늑대 후보 중 한 번의 이미지 생성이 **불곰으로 잘못 출력**되어 폐기했다. `eu_23`의 원화/승인/자산등록 실적이 아니며 별도 늑대 원화를 제작해야 한다.
 - 게임 카드 능력치·전투 규칙·저장 키·기존 등록 원화는 변경하지 않았음. 이 절의 상태는 작성 당시 실측이므로 **후속 작업은 반드시 최신 `main`을 재조회**한다.
+
+## 15. 유럽늑대 `eu_23` 원화 반영과 등록기 장애 (2026-11-22)
+
+- **카드 원화 제작·원본 확인:** `eu_23` 유럽늑대 한 마리가 숲에서 도약·돌진하는 정사각형 1024×1024 컬러 역사 회화 PNG. 글자·금테·대시보드 없음. 원본 경로 `assets/cardart/src/eu_23-original.png`.
+- **최종 원본 SHA-256:** `7cc1b1732669fd99a3661ad4a8a249e3438dd4a19fac90189d94388e285a5aae`. **원격 Git Blob SHA:** `d4293dd2a96e325fa3332cddfe376a247a1ed604` (실제 업로드 결과와 일치).
+- **원본·승인표 원격 `main` 반영:** `a456cac123511b2324f91e0b9ef8ac7a71027bad`. `APPROVED_IMAGES.json`의 `approved["CardArt/eu_23"]`와 `modelOriginals`에 동일한 최종 원본 SHA-256·시각검수 증빙을 기록했다.
+- **2026-11-22 등록 차단(확인됨):** 기존 `owner-mare-essentia-assets.yml` 실행 [#45011649733](https://github.com/hans1177/jaewoon-games/actions/runs/45011649733) 1차 실패, 실패 작업 1회 재실행(2차)도 실패. 작업 `Upload licensed models and menu icons to Roblox and write AssetIds`에서 `tools/mare-essentia-upload-assets.mjs:824`의 `MARE_CC0_NATURE_OFFICIAL_ARCHIVE_HASH_INVALID` 발생. 코드가 공식 Kenney Nature Kit ZIP의 **기존 고정 SHA-256과 다운로드된 실제 바이트가 일치하지 않아** 차단하며, **카드 이미지 승인 오류나 신규 PNG 해시 오류가 아니다.** 원본 검증을 건너뛰거나 임의 해시로 교체하면 안 된다.
+- **자산번호·권한·바인딩은 미완료:** 이 문서 기록 당시 `assets-registered.json`에 `CardArt/eu_23` 자산번호가 없고 `AssetIds.luau`에도 바인딩이 없다. **Roblox 등록 완료·Studio 표시·게시 PASS로 말하지 않는다.** 이전 `eu_21` 등록 결과는 유지.
+- **병행 작업 주의:** `eu_22` 유라시아스라소니는 별도 작업자가 원본·승인표를 `main`에 올렸지만 이 확인 당시 `assets-registered.json`에는 등록번호가 없었다. 중복 제작하지 말고 최신 `main`에서 재확인해야 한다.
+- **후속 안전 복구:** 고정 해시의 실제 공식 원본과 다운로드 응답을 재확인하고, 기존 `prepareLicensedOriginals` 책임 흐름 안에서만 원인을 해결한다. 기존 출처 검증·사용권한·제재자산 방어 기능을 낮추지 않는다. 이후 동일한 기존 워크플로를 재실행해 `eu_22`·`eu_23` 개별 자산번호, `usePermissionGranted:true`, 승인/등록/원본 SHA와 `AssetIds.luau` 바인딩까지 검증한다. **원화 제작/등록 후보 다음 순번 `eu_24` 스톤헨지**도 항상 최신 등록상태를 확인한 다음 진행한다.
+- 게임 규칙·능력치·저장 구조·업로더 로직을 임의 변경하거나 새 업로더를 만들지 않았다. 해당 시점의 에셋 등록 결과는 **실패**이며 `main`의 승인표와 원본은 남아 있다.
