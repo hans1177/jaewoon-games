@@ -278,7 +278,7 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.ok(field.includes('map.Position = UDim2.fromOffset(226, 74)'));
   assert.ok(field.includes('if compactTouch then UDim2.new(1, -68, 1, -315)'));
   assert.ok(field.includes('if compactTouch then UDim2.new(1, -62, 1, -202)'));
-  assert.ok(field.includes('local partyWidth = heroPanel.Size.X.Offset'));
+  assert.ok(field.includes('status.Size = UDim2.fromOffset(heroPanel.Size.X.Offset, if shortHud then 44 else 52)'));
   assert.ok(field.includes('heroPanel.Position.Y.Offset + heroPanel.Size.Y.Offset + 6'));
   assert.ok(field.includes('lastTouchEnded = os.clock()'));
   assert.ok(field.includes('touchActive = true'));
@@ -1335,10 +1335,10 @@ test('직업별 주민과 남녀 탐험 동료의 실제 메시 복식은 등록
   assert.match(pose,/NPC_PROFESSION_LOOK\[outfit\.profession\]/);
   assert.match(pose,/look = "companion_clergy"/);
   assert.match(pose,/model:SetAttribute\("NpcAssetProfile", look \.\. "_" \.\. outfit\.gender\)/);
-  assert.match(field,/local knownFemale = id == "c_merian"/);
-  assert.match(field,/nm\.gender == "female" or nm\.gender == "male"/);
-  assert.match(field,/companion = true, gender = if ad\.female then "female" else "male"/);
-  assert.match(field,/outfit\.hair = if ad\.female then/);
+  // [오너 파티 전용] 복식 원본은 Pose·항구에 보존하고 탐험에는 3D 동료를 만들지 않는다.
+  assert.match(field,/local party = if type\(opts\.allies\) == "table"/);
+  assert.match(field,/local portrait = opts\.allyPortraits and opts\.allyPortraits\[member\.id\]/);
+  assert.doesNotMatch(field,/local knownFemale = id == "c_merian"|Pose\.createR15\(folder, pos0/);
   assert.match(field,/for _, subject in folder:GetChildren\(\) do[\s\S]*?subject:GetAttribute\("NpcAppearanceState"\) ~= "ready"/);
   assert.match(port,/profession = c\.role/);
   assert.match(port,/c\.id == "t_nun" or c\.id == "t_bhikkhuni"/);
