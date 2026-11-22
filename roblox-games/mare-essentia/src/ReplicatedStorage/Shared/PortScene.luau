@@ -4958,28 +4958,98 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		end
 		importedModel(folder, "Naval", "tower-watch", Vector3.new(WX, 0, 0), 16, true)
 	end
-	-- 도시 안에 바위와 나무를 세우지 않는다. 자연 배경은 외곽 숲과 돌산만 남긴다.
-	-- 식생/암석 수는 발전된 항구일수록 줄여 모바일 프레임을 보호한다.
+	-- [문화권별 입체 원경] 기존 도시 경계·보행·주택 필지는 그대로 두고 바깥 지형 메시만 바꾼다.
+	-- 발헤임식 지형 높이층과 아노식 도시 발전 실루엣은 배치 원리만 참고한다. 타 게임 모델을 복제하지 않는다.
+	local vistaMobile = UserInputService.TouchEnabled
+	local rockyCoast = key == "iberia" or key == "italy" or key == "med" or key == "swahili"
+		or key == "ottoman" or key == "pacific" or key == "japan" or key == "korea"
+	local northernLand = key == "nordic" or key == "hanse" or key == "britain"
+		or key == "stone" or key == "north" or key == "france"
+	local ridgePool = if northernLand then { "cliff-large-stone", "cliff-cornerinnertop-rock", "cliff-blockslope-rock" }
+		elseif rockyCoast then { "cliff-diagonal-rock", "cliff-cornerinnerlarge-rock", "cliff-large-rock" }
+		else { "cliff-blockslope-rock", "cliff-diagonal-rock", "cliff-large-rock" }
 	local rimRocks = if lvl >= 4 then 16 else 25
+	local ridgePlaced = 0
+	local ridgeLimit = if vistaMobile then 2 else 5
 	for i = 1, rimRocks do
 		local side = if i % 2 == 0 then 1 else -1
 		local at = Vector3.new(rng:NextNumber(-420, -45), 0, side * rng:NextNumber(WZ + 26, WZ + 100))
-		importedModel(folder, "Town", "rock-large", at, rng:NextNumber(12, 20), false)
+		local ridge = i % 4 == 0 and ridgePlaced < ridgeLimit
+		local rockName = if ridge then ridgePool[(math.floor(i / 4) - 1) % #ridgePool + 1] else "rock-large"
+		local rockKind = if ridge then "Terrain" else "Town"
+		if AssetIds[rockKind .. "/" .. rockName] then
+			local size = if ridge then rng:NextNumber(31, 39) + (if lvl >= 4 then 9 else 0)
+				else rng:NextNumber(12, 20)
+			local rock = importedModel(folder, rockKind, rockName, at, size, false)
+			if rock and ridge then
+				rock.Name = "PortBackdropRidge"
+				rock:SetAttribute("BackdropCulture", key)
+				rock:SetAttribute("BackdropTier", lvl)
+				ridgePlaced += 1
+			end
+		end
 		if i % 3 == 0 then
 			importedModel(folder, "Town", "rock-small", at + Vector3.new(9, 0, 8), 7, false)
 		end
 	end
+	folder:SetAttribute("PortBackdropRidgeCount", ridgePlaced)
+	-- [자연 생물군계] 등록·권한 확인된 수목만 기존 외곽 나무 개수에 섞는다.
+	-- 북방 침엽수/동아시아 혼합림/열대 야자/서유럽 활엽림으로 수관 높낮이를 구분한다.
+	local detailedTrees = if northernLand then { "tree-pinetallc-detailed", "tree-pinetallb-detailed", "tree-tall" }
+		elseif palm then { "tree-palmbend", "tree-palmdetailedtall", "tree-tall" }
+		elseif key == "japan" or key == "china" or key == "korea" then { "tree-plateau", "tree-tall", "tree-oak-dark" }
+		else { "tree-oak-dark", "tree-tall", "tree-plateau" }
 	local forestCount = if lvl >= 4 then 60 else 94
 	local trees = if key == "japan" or cold then { "tree-high", "tree", "tree-crooked" }
 		elseif palm then { "palm-detailed-straight", "tree-crooked", "tree-high" }
 		else { "tree-high", "tree-crooked", "tree" }
+	local canopyPlaced = 0
 	for i = 1, forestCount do
 		local side = if i % 2 == 0 then 1 else -1
 		local at = Vector3.new(rng:NextNumber(-440, -40), 0, side * rng:NextNumber(WZ + 26, WZ + 120))
-		local pick = trees[rng:NextInteger(1, #trees)]
-		local kind = if pick:find("palm", 1, true) then "Naval" else "Town"
-		importedModel(folder, kind, pick, at, rng:NextNumber(8, 14), false)
+		local useDetailed = i % (if vistaMobile then 11 else 6) == 0
+		local chosen = if useDetailed then detailedTrees[(math.floor(i / (if vistaMobile then 11 else 6)) - 1) % #detailedTrees + 1] else nil
+		local pick = if chosen and AssetIds["Terrain/" .. chosen] then chosen else trees[rng:NextInteger(1, #trees)]
+		local kind = if chosen and pick == chosen then "Terrain"
+			elseif pick:find("palm", 1, true) then "Naval" else "Town"
+		local size = if kind == "Terrain" then rng:NextNumber(14, 20) else rng:NextNumber(8, 14)
+		local tree = importedModel(folder, kind, pick, at, size, false)
+		if tree and kind == "Terrain" then
+			tree.Name = "PortBackdropCanopy"
+			tree:SetAttribute("BackdropCulture", key)
+			canopyPlaced += 1
+		end
 	end
+	folder:SetAttribute("PortBackdropCanopyCount", canopyPlaced)
+	-- [마을 발전 실루엣] 기등록된 문화권 적합 실물 건축만 3단계 이후 외곽에 소량 표시한다.
+	-- 정식 건물·사업장으로 오인되지 않게 모든 모델은 충돌·경제·저장 없이 배경 전용으로 둔다.
+	local vistaBuilding = ({
+		iberia = "bell-tower", italy = "bell-tower", med = "bell-tower",
+		france = "quaternius_large_simple_tower", britain = "quaternius_pointy_tower",
+		stone = "quaternius_pointy_tower", north = "quaternius_watch_tower_wroof",
+		nordic = "quaternius_watch_tower_wroof",
+		hanse = "quaternius_lg_sq_tower_brick", brick = "quaternius_lg_sq_tower_brick",
+		colonial = "bell-tower", creole = "bell-tower",
+		japan = "temple-tower", china = "temple-tower",
+	})[key]
+	local skylinePlaced = 0
+	if lvl >= 3 and vistaBuilding and AssetIds["Town/" .. vistaBuilding] then
+		local budget = math.min(lvl - 2, if vistaMobile then 2 else 3)
+		for i = 1, budget do
+			local side = if i % 2 == 0 then 1 else -1
+			local at = Vector3.new(-180 - i * 78, 0, side * (WZ + 155 + (i % 2) * 15))
+			local model = importedModel(folder, "Town", vistaBuilding, at, 17 + 4 * lvl + i * 3, false)
+			if model then
+				model.Name = "PortDistantArchitecture"
+				model:SetAttribute("BackdropCulture", key)
+				model:SetAttribute("BackdropTier", lvl)
+				model:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+				skylinePlaced += 1
+			end
+		end
+	end
+	folder:SetAttribute("PortBackdropArchitectureCount", skylinePlaced)
+	-- [기존 외곽 원경 보호] 먼 수목은 원래 수량/범위를 유지한다.
 	for i = 1, (if lvl >= 4 then 9 else 14) do
 		local at = Vector3.new(-1005 + rng:NextNumber(-16, 16), 0, rng:NextNumber(-WZ, WZ))
 		importedModel(folder, "Town", "tree-high", at, rng:NextNumber(8, 12), false)
@@ -5338,15 +5408,26 @@ function PortScene.build(info, onFacility)
 	-- 신규 Roblox 자산 번호가 없으면 생략한다. 기존 보행·저장·전투 판정에 영향을 주지 않는다.
 	local warmShore = palmOk(info.portId, style)
 	local coastalRocks = if warmShore then { "rocks-sand-a", "rocks-sand-b", "rocks-sand-c" } else { "rocks-a", "rocks-b" }
+	-- [해안 높이층] 기존 네 곳의 연안 바위 예산 안에서 곶·사선 절벽을 실물 모델로 교차한다.
+	-- 섬·항로 판정은 원래 물·보행 경계가 담당하며 새 지형은 충돌이 없다.
+	local coastCliffs = { "cliff-cornerinnerlarge-rock", "cliff-diagonal-rock" }
+	local coastRelief = 0
 	for i = 1, 4 do
-		local name = coastalRocks[(i - 1) % #coastalRocks + 1]
-		if AssetIds["Naval/" .. name] then
+		local highRelief = i % 2 == 0 and (not UserInputService.TouchEnabled or i == 2)
+		local name = if highRelief then coastCliffs[math.floor(i / 2)] else coastalRocks[(i - 1) % #coastalRocks + 1]
+		local group = if highRelief then "Terrain" else "Naval"
+		if AssetIds[group .. "/" .. name] then
 			local side = if i % 2 == 0 then 1 else -1
-			local seaRock = importedModel(folder, "Naval", name,
-				Vector3.new(100 + 27 * i, 0.5, side * (108 + 19 * i)), if warmShore then 19 else 23, false)
-			if seaRock then seaRock.Name = "DistantCoast_" .. i end
+			local seaRock = importedModel(folder, group, name,
+				Vector3.new(100 + 27 * i, 0.5, side * (108 + 19 * i)),
+				if highRelief then 29 + sceneLevel * 2 else (if warmShore then 19 else 23), false)
+			if seaRock then
+				seaRock.Name = if highRelief then "DistantCliff_" .. i else "DistantCoast_" .. i
+				if highRelief then coastRelief += 1 end
+			end
 		end
 	end
+	folder:SetAttribute("PortCoastCliffDepthCount", coastRelief)
 	if warmShore and AssetIds["Naval/patch-sand-foliage"] then
 		for _, z in { -116, 116 } do
 			local patch = importedModel(folder, "Naval", "patch-sand-foliage", Vector3.new(13, 0.1, z), 11, false)
