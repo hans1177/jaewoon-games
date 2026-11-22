@@ -323,6 +323,13 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 			d.Anchored = true
 			d.CanCollide = solid == true
 			d.CanTouch = false
+			-- [거리별 저폴리 LOD] 등록된 원본 메시와 텍스처를 유지한 채 엔진의
+			-- 메시 간소화만 사용한다. 근·중경은 거리 기반 자동 품질,
+			-- 원경은 성능 우선 품질. 실제 충돌 형상·경관 모델 수는 바꾸지 않는다.
+			if d:IsA("MeshPart") and scenicBand then
+				d.RenderFidelity = if scenicBand == "far" then Enum.RenderFidelity.Performance
+					else Enum.RenderFidelity.Automatic
+			end
 			-- [무제한 경관 경량화] 전투 오브젝트 타격은 fieldObjects가 직접 판정하므로
 			-- 충돌 없는 장식은 물리 쿼리에서 제외한다. 계단·단서 등 충돌형 실물은 보존.
 			if solid ~= true then d.CanQuery = false end
