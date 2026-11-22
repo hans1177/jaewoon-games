@@ -3791,6 +3791,10 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/local pz = half \* \(0\.82 - band \* 0\.21\)/,'모바일 소품 앞뒤 층');
   assert.match(field,/depthX = \(if depthX < 0 then -1 else 1\) \* half/,'등록된 지형 근경 배치');
   assert.match(field,/depthZ = half \* \(if index == 1 then 0\.74 else 0\.53\)/,'실물 지형 첫 진입 시야 우선 배치');
+  assert.match(field,/if index == 2 and \(questTerrain == "plains" or questTerrain == "farm"/,'항구 고유 근경 활성화');
+  assert.match(field,/local portBands = PORT_NATURE_MODELS\[portNature or ""\]/,'기존 승인 항구 지형 재사용');
+  assert.match(field,/portBands\[\(portVisualSeed \+ 1\) % #portBands \+ 1\]/,'지점별 지형 변이');
+  assert.match(field,/entry\[1\], entry\[2\], entry\[3\] = portFeature\[1\], portFeature\[2\], portFeature\[3\]/,'추가 모델 없이 근경 교체');
   assert.match(field,/half \* \(0\.79 - lane \* 0\.17\)/,'나무가 첫 전방 시야에 등장');
   assert.match(field,/half \* \(0\.76 - \(math\.floor\(\(index - 1\) \/ 6\) % 2\) \* 0\.21\)/,'암석 중경 층 깊이');
   assert.match(field,/half \* 0\.51 - math\.floor\(\(index - 1\) \/ 3\) \* 9/,'농경지 작물은 먼 원경이 아닌 중경');
