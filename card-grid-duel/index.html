@@ -36,6 +36,9 @@ h1{font-size:22px;margin:0}
 .board.stageTen .cell.homeBlue,.board.stageTen .cell.homeRed{background:#3a443c}
 .board.stageTen .cell.voidCell{visibility:hidden;pointer-events:none}
 .board.stageTen .cell.banditCell{border-color:#9d6a4f}
+/* 10스테이지 거대 블랙 슬라임은 한 칸을 점유하되 크기와 색감으로 구분한다. */
+.board.stageTen .cell.blackSlimeCell{border:2px solid #8f76c7;background:#242335;box-shadow:inset 0 0 16px #4e3a69}
+.board.stageTen .cell.blackSlimeCell .portrait{transform:scale(1.25);transform-origin:center}
 .board.stageTen .cell.shopCell{background:#3c3850;border:2px solid #b5a0e5}
 .board.stageTen .cell.questCell{background:#274d46;border:2px solid #6bcbaf}
 .stageTenObject{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:clamp(10px,1.8vw,14px);font-weight:900;pointer-events:none}
@@ -1338,8 +1341,10 @@ function unitText(u){
   const charge=u.card==='HAMMER'?(u.hammerTarget?' · 공격예약':' · 대상지정 필요'):'';
   const lock=u.attackLockedNow?' · 공격불가':'';
   const rage=u.card==='URSUS'&&u.roarTurns>0?' · 포효 '+u.roarTurns+'턴':'';
+  const chain=u.chainTurns>0?' · 사슬 '+u.chainTurns+'턴':'';
+  const wild=u.wildBuffTurns>0?' · 강화 '+u.wildBuffTurns+'턴':'';
   const maxHp=unitMaxHp(u),atk=unitAtk(u);
-  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'">'+portraitHtml(u.card,d)+'<b>'+d.name+'</b><small>'+u.hp+'/'+maxHp+' · '+(d.heal?'회복 '+d.heal:'공'+atk+' 사'+d.range)+charge+(u.frozenNow?' · 봉인':'')+lock+rage+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/maxHp*100)+'%"></i></span></div>'
+  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'">'+portraitHtml(u.card,d)+'<b>'+d.name+'</b><small>'+u.hp+'/'+maxHp+' · '+(d.heal?'회복 '+d.heal:'공'+atk+' 사'+d.range)+charge+(u.frozenNow?' · 봉인':'') +lock+rage+chain+wild+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/maxHp*100)+'%"></i></span></div>'
 }
 function createStageFourTiles(){
   const cells=[];
@@ -1436,6 +1441,7 @@ function render(){
     if(u){
       if(u.card==='URSUS'||u.card==='SILPERIA')b.classList.add('bossCell');
       if(u.card==='SILPERIA')b.classList.add('silperiaCell');
+      if(state?.stage===10&&u.card==='BLACK_SLIME')b.classList.add('blackSlimeCell');
       if(state?.stage===10&&u.side==='RED')b.classList.add('banditCell');
       b.insertAdjacentHTML('beforeend',unitText(u));
       if(u.id===selectedUnit)b.classList.add('sel');
