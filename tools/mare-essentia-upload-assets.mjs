@@ -1111,7 +1111,7 @@ const cardApprovalDocument = JSON.parse(await fs.readFile(ROOT + '/assets/APPROV
 const modelOriginals = cardApprovalDocument.modelOriginals || {};
 if (typeof modelOriginals !== 'object' || Array.isArray(modelOriginals)) throw new Error('MODEL_ORIGINAL_REVIEW_MAP_INVALID');
 if (!studioRegrantPath) for (const [id, review] of Object.entries(modelOriginals)) {
-  const match = /^CardArt\/((?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[12][0-9]|30))$/.exec(id);
+  const match = /^CardArt\/((?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[1-4][0-9]))$/.exec(id);
   if (!match) throw new Error('MODEL_ORIGINAL_CARD_ID_INVALID:' + id);
   const name = match[1];
   const relativeSource = 'assets/cardart/src/' + name + '-original.png';
@@ -1347,7 +1347,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     // [5대륙 카드] 기존 CardArt 승인 경로에서만 150장 PNG를 등록한다. SVG 원본은 Roblox 이미지로 직접 올리지 않는다.
     if (kind === 'CardArt' && !approvedCardNames.has(f) && !/^(?:world_(?:0[1-9]|[1-9][0-9]{1,2})|event_[a-z_]+|battle_board)\.jpg$/.test(f)
         && !['event_title_ship.png', 'event_title_parchment.png'].includes(f)
-        && !/^(?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[12][0-9]|30)\.png$/.test(f)) continue;
+        && !/^(?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[1-4][0-9])\.png$/.test(f)) continue;
     const compressedGlb = f.toLowerCase().endsWith('.glb.gz');
     const ext = compressedGlb ? '.glb' : path.extname(f).toLowerCase();
     const name = compressedGlb ? path.basename(f, '.glb.gz') : path.basename(f, ext);
@@ -1479,7 +1479,7 @@ for (const item of plan) {
     }
   }
   // [카드 원화 해시] 카드 ID는 그대로 유지하며, 승인받은 지역 원화만 교체한다. 미승인 이미지는 기존 등록 ID를 보존한다.
-  const regionalCardArt = item.kind === 'CardArt' && /^(?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[12][0-9]|30)$/.test(item.name);
+  const regionalCardArt = item.kind === 'CardArt' && /^(?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[1-4][0-9])$/.test(item.name);
   if (regionalCardArt) {
     // [새 원화와 교체 원화] 생성 모델 원본 + 바이브 시각 품질·권리 검수 증빙이 없으면 등록을 거부한다.
     // 이미 등록된 20장과 기존 저장 키는 바꾸지 않는다.
