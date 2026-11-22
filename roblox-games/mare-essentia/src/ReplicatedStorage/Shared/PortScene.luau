@@ -7256,27 +7256,16 @@ function PortScene.build(info, onFacility)
 	-- [교체 분할] 실측(44926863645): 기존 항구 한 번에 삭제 529ms + 새 항구 한 번에 workspace 연결 584ms가
 	-- 같은 프레임에 몰려 최대 1.46초 멈춤. 최상위 묶음 단위로 나눠 프레임 예산 안에서 지우고 붙인다.
 	-- (양보할 수 없는 문맥에서는 sliceYield가 그대로 진행해 기존처럼 한 번에 처리된다.)
-	-- [삭제 엔진 비용 분산] 실측(정밀검사 44965867262 런던): 최상위 묶음 하나 삭제 직후 프레임이 252ms
-	-- (yieldGap@destroyOld). 비용은 Lua 시간이 아니라 엔진 쪽 해제라 시간 예산만으로는 못 나눈다.
-	-- 큰 묶음은 안쪽부터 쪼개 지우고, 약 1500개 인스턴스마다 한 프레임 양보한다(장면·규칙 불변).
-	-- 하위 목록은 한 번만 받는다(GetDescendants는 전위 순서). 뒤에서부터 지우면 자식이 부모보다 먼저 지워져
-	-- 반복 탐색 없이 O(n)으로 끝난다.
+	-- [삭제 방식 원복] 강제 프레임 양보(500·1500개 단위) 시험은 프레임마다 엔진 해제 비용이 커서 전체 전환이
+	-- 길어져 정밀검사 233단계(4초 대기)를 넘겼다(44968230194, 44969891132). 기존 최상위 묶음 단위 삭제로 되돌린다.
 	if old and old.Parent then
-		local all = old:GetDescendants()
-		local sinceYield = 0
-		for index = #all, 1, -1 do
-			local inst = all[index]
-			if inst.Parent then inst:Destroy() end
-			sinceYield += 1
-			-- 500개 단위는 프레임 수가 늘어 재생성이 길어졌다(정밀검사 44968230194 233단계 대기 초과). 1500개로 조정.
-			if sinceYield >= 1500 then
-				sinceYield = 0
-				sliceStart = 0 -- 다음 sliceYield가 즉시 양보(양보 불가 문맥이면 그대로 진행)
-				sliceYield("destroyOld")
-			end
+		local destroyedCount = #old:GetDescendants()
+		for _, child in old:GetChildren() do
+			child:Destroy()
+			sliceYield("destroyOld")
 		end
 		old:Destroy()
-		folder:SetAttribute("PortOldDestroyedInstances", #all) -- 측정용(판정·저장 무관)
+		folder:SetAttribute("PortOldDestroyedInstances", destroyedCount) -- 측정용(판정·저장 무관)
 	end
 	sliceMark("destroyOld")
 	-- 새 항구는 빈 폴더를 먼저 연결하고, 묶음을 차례로 옮겨 붙인다(렌더·물리 등록 비용 분산).
