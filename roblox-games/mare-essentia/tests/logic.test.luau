@@ -3645,6 +3645,7 @@ local function testNations()
 			fraS.allies.england, engS.allies.france = true, true
 			local ally = N.tariff(s3, w3, "rouen", "england")
 			check("동맹 항구는 관세가 낮다", ally.stance == "ally" and ally.rate < neutral.rate)
+			fraS.allies.england, engS.allies.france = nil, nil
 			local rouenOwner = N.portOwner(s3, w3, "rouen")
 			if rouenOwner == "france" then
 				local polN = N.tariffPolicy(s3, w3, "rouen", "england")
