@@ -307109,11 +307109,144 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_f5b4e3b92b351ad37b47f1ce",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14108",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "d7ce237117bce37324d6db640fbd55e8b380485c",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14108,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-npc-outfit-hair-20261122",
+        "baseSha": "d7ce237117bce37324d6db640fbd55e8b380485c",
+        "headSha": "81d014d77ab9772a255767f43f62997449a7c7f6",
+        "mergeCommitSha": "f696d504421bfcc5da21d64f6111a38d279868c4",
+        "mergedAt": "2026-11-22T00:57:55Z",
+        "authorLogin": "hans1177",
+        "titleHash": "db0c7eae716d21719f5c5b48ed02ddc4a0aabceda298ab21f15d63dd092afd13",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-npc-outfit-hair-20261122",
+        "candidateSha": "81d014d77ab9772a255767f43f62997449a7c7f6"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 672,
+        "deletedLineCount": 97,
+        "changedFiles": [
+          "docs/devloop/VISUAL_LADDER_mare-essentia.md",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VisualLadderState.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-cardbattle.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-town.json",
+          "roblox-games/mare-essentia/visual-ladder-state.json",
+          "vibe-ladder-status.json"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VisualLadderState.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-cardbattle.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-town.json",
+          "roblox-games/mare-essentia/visual-ladder-state.json",
+          "vibe-ladder-status.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14108",
+        "merge-commit:f696d504421bfcc5da21d64f6111a38d279868c4",
+        "base-main:d7ce237117bce37324d6db640fbd55e8b380485c"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2462
+    "total": 2463
   }
 }
