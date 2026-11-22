@@ -3832,6 +3832,7 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.ok(autoQa.includes('FIELD) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-field.json'),'기존 Studio 실행기 사용');
   assert.deepEqual(script.filter(row=>row.type==='capture').map(row=>row.name),
     ['f0_environment','f1_start','f2_later'],'실제 캐릭터 근경 포함한 3회 촬영');
+  assert.ok(script.some(row=>row.code?.includes("workspace:SetAttribute('DevGod',true)")),'Studio 전경 촬영 중 적 공격에 따른 장면 조기 종료 방지');
   assert.ok(script.some(row=>row.code?.includes('FIELD_SCENERY_NEAR_MISSING')),'근경 실물 생성 검사');
   assert.ok(script.some(row=>row.code?.includes('FIELD_SCENERY_MID_MISSING')),'중경 실물 생성 검사');
   assert.ok(script.some(row=>row.code?.includes('studioFPS=')),'실측 스튜디오 FPS 로그');
