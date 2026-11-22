@@ -1054,6 +1054,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 
 	-- [승인 메시 부착] 천/가죽/강철/머리카락을 부위별로 구분하며 실제 원본 텍스처와 PBR 맵은 보존한다.
 	local attached = 0
+	-- [외형 상태 분리] 실제 표시·의도적 원거리 생략·통합 제거·근거리 실패를 따로 센다.
+	-- 숨긴 메시를 "표시됨"으로 세지 않고, 실패한 필수 복장은 이름과 원인을 남긴다.
+	local visibleCount, lodHidden, merged = 0, 0, 0
+	local missing = {}
 	for _, spec in specs do
 		local assetName, boneName = spec[1], spec[2]
 		local propGroup, propName = string.match(assetName, "^(Relics)/(.+)$")
@@ -1068,6 +1072,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			local duplicate = model:FindFirstChild("R15Asset_" .. assetName .. "_" .. boneName)
 			if duplicate then duplicate:Destroy() end
 			attached += 1
+			merged += 1
 			continue
 		end
 		-- [모바일 원거리] 소형 직업 도구는 렌더링에서만 제외한다.
@@ -1080,6 +1085,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				end
 			end
 			attached += 1
+			lodHidden += 1
 			continue
 		end
 		-- [입체 복식 거리 제어] 근접 시 추가 메시를 장착하고 멀어지면 보이는 부품만 숨긴다.
@@ -1098,6 +1104,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					end
 				end
 				attached += 1
+				lodHidden += 1
 				continue
 			end
 		end
@@ -1129,6 +1136,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				end
 			end
 			attached += 1
+			visibleCount += 1
 			continue
 		end
 		local assetKey = if jobProp then assetName else "People/" .. assetName
@@ -1136,7 +1144,11 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		local sourceGroup = if jobProp then shelf and shelf:FindFirstChild(propGroup) else people
 		local source = registeredId and sourceGroup and sourceGroup:FindFirstChild(if jobProp then propName else assetName)
 		local target = model:FindFirstChild(boneName)
-		if not (source and source:IsA("Model") and target and target:IsA("BasePart")) then continue end
+		if not (source and source:IsA("Model") and target and target:IsA("BasePart")) then
+			table.insert(missing, assetName .. ":" .. (if not registeredId then "unregistered"
+				elseif not source then "not_loaded" elseif not target then "no_bone" else "bad_source"))
+			continue
+		end
 		local skin = source:Clone()
 		skin.Name = slotName
 		local parts = {}
@@ -1150,7 +1162,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			end
 		end
 		-- [모바일·리그 안전] 통짜 다관절 인물이나 과도한 메시 파츠는 덧씌우지 않는다.
-		if #parts < 1 or #parts > 12 then skin:Destroy(); continue end
+		if #parts < 1 or #parts > 12 then
+			table.insert(missing, assetName .. ":parts_" .. #parts)
+			skin:Destroy(); continue
+		end
 		local ok = pcall(function()
 			local bounds, ext = skin:GetBoundingBox()
 			if ext.X < 0.01 or ext.Y < 0.01 or ext.Z < 0.01 then error("empty mesh") end
@@ -1313,6 +1328,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		end)
 		if ok then
 			attached += 1
+			visibleCount += 1
 			-- [실물 확인] 실제 장착된 메시 종류를 읽을 수 있게 남긴다. 저장·경제 데이터와 무관하다.
 			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" then
 				model:SetAttribute("NpcVisibleHairMesh", assetName)
@@ -1328,8 +1344,17 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					if piece:IsA("BasePart") and piece.Name == fallbackName then piece.Transparency = 1 end
 				end
 			end
-		else skin:Destroy() end
+		else
+			table.insert(missing, assetName .. ":fit_failed")
+			skin:Destroy()
+		end
 	end
+	-- [검증용 진단] 저장·경제와 무관한 표시 상태. 근거리(detailLimit 99) 생략은 0이어야 한다.
+	model:SetAttribute("OutfitVisibleCount", visibleCount)
+	model:SetAttribute("OutfitLodHiddenCount", lodHidden)
+	model:SetAttribute("OutfitMergedCount", merged)
+	model:SetAttribute("OutfitRequiredCount", #specs)
+	model:SetAttribute("OutfitMissing", if #missing > 0 then table.concat(missing, ",") else nil)
 	model:SetAttribute(if npcOutfit then "NpcAppearanceState" else "MobAppearanceState",
 		if attached == #specs then "ready" elseif attached > 0 then "partial" else "asset_pending")
 	return attached == #specs
