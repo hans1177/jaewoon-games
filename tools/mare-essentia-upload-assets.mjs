@@ -815,13 +815,39 @@ async function prepareLicensedOriginals() {
     } else pendingNature.push({...entry, member});
   }
   if (pendingNature.length) {
-    const response = await fetch(natureArchive, {signal: AbortSignal.timeout(90000)});
-    if (!response.ok || Number(response.headers.get('content-length') || 0) > 30000000)
-      throw new Error('MARE_CC0_NATURE_DOWNLOAD_FAILED:' + response.status);
-    const archive = Buffer.from(await response.arrayBuffer());
-    if (archive.length < 100000 || archive.length > 30000000
-      || crypto.createHash('sha256').update(archive).digest('hex') !== natureArchiveSha)
-      throw new Error('MARE_CC0_NATURE_OFFICIAL_ARCHIVE_HASH_INVALID');
+    // [등록기 원본 수급] 공식 Kenney 우선. 공식 응답이 차단/변조된 경우,
+    // 2026-10-31 보관된 바이트 동일 CC0 원본만 동일 고정 SHA-256으로 검증한다.
+    // 해시가 다른 응답은 출처와 관계없이 등록하지 않는다.
+    const natureDownloads = [
+      natureArchive,
+      'https://github.com/WaviestSun/atelier-packs/releases/download/packs-2/kenney_nature-kit.zip',
+    ];
+    let archive = null;
+    let verifiedDownload = null;
+    for (const downloadUrl of natureDownloads) {
+      try {
+        const response = await fetch(downloadUrl, {signal: AbortSignal.timeout(90000)});
+        const declaredBytes = Number(response.headers.get('content-length') || 0);
+        if (!response.ok || declaredBytes > 30000000) {
+          console.warn('MARE_CC0_NATURE_DOWNLOAD_REJECTED', downloadUrl === natureArchive ? 'OFFICIAL' : 'PINNED_MIRROR', response.status, declaredBytes);
+          continue;
+        }
+        const candidate = Buffer.from(await response.arrayBuffer());
+        const digest = crypto.createHash('sha256').update(candidate).digest('hex');
+        if (candidate.length < 100000 || candidate.length > 30000000
+          || digest !== natureArchiveSha || candidate.toString('ascii', 0, 2) !== 'PK') {
+          console.warn('MARE_CC0_NATURE_ARCHIVE_REJECTED', downloadUrl === natureArchive ? 'OFFICIAL' : 'PINNED_MIRROR', candidate.length, digest);
+          continue;
+        }
+        archive = candidate;
+        verifiedDownload = downloadUrl;
+        break;
+      } catch (error) {
+        console.warn('MARE_CC0_NATURE_DOWNLOAD_ERROR', downloadUrl === natureArchive ? 'OFFICIAL' : 'PINNED_MIRROR', error.name);
+      }
+    }
+    if (!archive) throw new Error('MARE_CC0_NATURE_OFFICIAL_ARCHIVE_HASH_INVALID');
+    console.log('MARE_CC0_NATURE_ARCHIVE_VERIFIED', verifiedDownload === natureArchive ? 'OFFICIAL' : 'PINNED_MIRROR', natureArchiveSha);
     const archivePath = path.join(process.env.RUNNER_TEMP || '/tmp', 'mare-kenney-nature-2-1.zip');
     await fs.writeFile(archivePath, archive);
     const inbox = path.join(ROOT, 'assets/inbox/Terrain');
