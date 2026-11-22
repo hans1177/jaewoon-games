@@ -1246,6 +1246,47 @@ function N.portView(st, w, portId)
 	}
 end
 
+-- ───────── 화면용 요약 (문장 목록) ─────────
+local function fmt1(x) return string.format("%.1f", x) end
+local STANCE_NAME = { home = "자국", ally = "동맹", friendly = "우호", neutral = "중립", hostile = "적대" }
+function N.summary(st, w, portId, homeNation)
+	local t = w.towns[portId]
+	if not t then return nil end
+	local ownerId = ownerOf(st, portId, t)
+	local S = st.states[ownerId]
+	if not S then return nil end
+	local v = N.view(st, ownerId)
+	local pv = N.portView(st, w, portId)
+	local lines = {}
+	table.insert(lines, string.format("%s · %s%s", N.leaderLine(st, ownerId) or ownerId, "국력 " .. tostring(v.rank) .. "위", if st.hegemon == ownerId then " · 패권국" else ""))
+	table.insert(lines, string.format("체제: %s — 강점 %s / 약점 %s", v.regime, v.pros or "-", v.cons or "-"))
+	local F = S.forces
+	table.insert(lines, string.format("육군 보병 %s·기병 %s·포병 %s·민병 %s (천 명) · 교리 %s", fmt1(F.inf), fmt1(F.cav), fmt1(F.art), fmt1(F.militia), v.doctrine))
+	table.insert(lines, string.format("해군 전열함 %s·프리깃 %s·소형 %s·수송 %s (척)", fmt1(F.line), fmt1(F.frigate), fmt1(F.small), fmt1(F.transport)))
+	local T = S.tech
+	local cur = T.cur and N.TECH_BY_ID[T.cur]
+	if cur then
+		table.insert(lines, string.format("연구: %s (%d%%) · 발견 %d종", cur.name, math.floor(clamp(T.prog / cur.cost, 0, 1) * 100), T.count))
+	else
+		table.insert(lines, string.format("발견 %d종", T.count))
+	end
+	local extra = {}
+	if S.war then table.insert(extra, "전쟁: " .. tostring(S.war.foe)) end
+	if v.crisis then table.insert(extra, "위기: " .. v.crisis) end
+	local allies = {}
+	for a in pairs(S.allies) do table.insert(allies, a) end
+	table.sort(allies)
+	if #allies > 0 then table.insert(extra, "동맹: " .. table.concat(allies, ", ")) end
+	if #extra > 0 then table.insert(lines, table.concat(extra, " · ")) end
+	table.insert(lines, string.format("항구: %s · %s · %s%s — 동화 %d%% · 불만 %d%%", pv.culture, pv.language, pv.faith,
+		if pv.colony then " · 식민지" else "", math.floor(pv.assimilation * 100 + 0.5), math.floor(pv.unrest * 100 + 0.5)))
+	if homeNation and st.states[st.liege[homeNation] or homeNation] then
+		local tf = N.tariff(st, w, portId, homeNation)
+		table.insert(lines, string.format("입장: %s · 관세 %d%%%s", STANCE_NAME[tf.stance] or tf.stance, math.floor(tf.rate * 100 + 0.5), if tf.closed then " · 금수" else ""))
+	end
+	return { owner = ownerId, lines = lines }
+end
+
 function N.leaderLine(st, id)
 	local v = N.view(st, id)
 	if not v then return nil end
