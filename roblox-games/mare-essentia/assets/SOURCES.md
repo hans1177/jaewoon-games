@@ -2028,3 +2028,36 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `terrain/tree-plateau-fall.glb` | 16296 | `e5f7b4eeca1d86157d89f07da63b167bb447b39c` |
 | `terrain/tree-detailed-dark.glb` | 31416 | `f078aeeeb9fb3f36501a54d768db3675456bfb60` |
 | `terrain/tree-pinetalld-detailed.glb` | 12548 | `58e4fc02f3232c880e3255f485b42c3f5a64b220` |
+
+
+## 2026-11-23 중세 마을 무료 3D 집·건축물·생활 배경 21종
+
+- **공식 제작자:** Quaternius, Medieval Village Pack, https://quaternius.com/packs/medievalvillage.html
+- **라이선스:** CC0-1.0, 개인·상업 이용 무료. https://github.com/trebeljahr/quaternius-showcase/blob/main/LICENSES.md
+- **원본 경로:** https://github.com/trebeljahr/quaternius-showcase/tree/main/public/glb/medieval_village_pack
+- **원본 무변형 검증:** 각 GLB의 원본 Git blob SHA-1과 저장소 복사 Git blob SHA-1 일치, GLB 서명·길이 일치. 기존 에셋을 덮어쓰지 않고 `town/` 및 `terrain/`에 21종 추가.
+- **적용 구분:** 현재 단계는 원본 무료 3D 파일 저장·해시 검증이다. 실제 Roblox 자산 업로드·Universe 사용 권한·게임 배경 배치·게시·모바일 시각 QA는 각기 별도 검증한다. 기존 canonical 등록기만 사용한다.
+
+| 저장 파일 (`assets/` 아래) | 원본 파일 (`medieval_village_pack/`) | 크기(B) | 원본=보관 Git blob SHA-1 |
+|---|---|---:|---|
+| `town/village-house-1.glb` | `House_1.glb` | 410268 | `b2733641f276a98615436b998d8f0d1c5e68a441` |
+| `town/village-house-2.glb` | `House_2.glb` | 509876 | `daaa54f0be323aa63a3d1b54843a2327130c3e8c` |
+| `town/village-house-3.glb` | `House_3.glb` | 258580 | `8beb250ade5125a93f9ce2e3a3c6bb3abfe3efec` |
+| `town/village-house-4.glb` | `House_4.glb` | 205028 | `74e71b5fd358ef9933e298b4ae6f89d86963505b` |
+| `town/village-inn.glb` | `Inn.glb` | 468600 | `773f9184c4c80f20ec37de300b3f7e4106754e83` |
+| `town/village-blacksmith.glb` | `Blacksmith.glb` | 670832 | `83917c55b132d8e51e6c2b969911e14c857956a8` |
+| `town/village-mill.glb` | `Mill.glb` | 575508 | `bf421e0d3493f6192971a90b25e91969f27c14de` |
+| `town/village-sawmill.glb` | `Sawmill.glb` | 309568 | `61bb00a510792562bcad524ab874f8dcd6542b86` |
+| `town/village-stable.glb` | `Stable.glb` | 444596 | `0a5d8cf36222f8a579bb44c9402a8f8df1b50da6` |
+| `town/village-bell-tower.glb` | `Bell_Tower.glb` | 728440 | `8b3941789f75e5a8e9a960f57b921fe1f7935950` |
+| `town/village-gazebo.glb` | `Gazebo.glb` | 51956 | `7d96b269fe1ece33607361c9691ef2453ea56c13` |
+| `town/village-well-cc0.glb` | `Well.glb` | 110340 | `80996c09cdb0680e5f62b62535cdb8bbebba700b` |
+| `town/village-market-stand-1.glb` | `MarketStand_1.glb` | 84992 | `3894530a8476c5411cb685278eafcaedd90e1249` |
+| `town/village-market-stand-2.glb` | `MarketStand_2.glb` | 63640 | `049e04ad14ee535ce134a3e41bccf6e20da79cfa` |
+| `terrain/village-path-square.glb` | `Path_Square.glb` | 19928 | `71c67d8443cf992069310ba7a50b055bbb2f6d82` |
+| `terrain/village-path-straight.glb` | `Path_Straight.glb` | 38356 | `1fb0e9e5048b770536a7c572fcd7524731acfdd0` |
+| `terrain/village-fence.glb` | `Fence.glb` | 12348 | `562e389e169379e55e8a8419646a98a4a2b5af0c` |
+| `terrain/village-hay.glb` | `Hay.glb` | 27464 | `f6b0f88222c411fc8369254eb25ca884d4e8090f` |
+| `terrain/village-cart.glb` | `Cart.glb` | 108660 | `b69da9a51ecdcdeb8494f178644734459c06555f` |
+| `terrain/village-bonfire.glb` | `Bonfire.glb` | 30592 | `b936e46d0a1b43a16d548fc80bf538e02211320a` |
+| `terrain/village-stairs.glb` | `Stairs.glb` | 13712 | `67ec6739a5f048e1986d01eafa3e2030b2e53535` |
