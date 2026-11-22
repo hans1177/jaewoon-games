@@ -6042,16 +6042,17 @@ function PortScene.build(info, onFacility)
 	end
 
 	-- 왕궁·궁정 구역: 시장·공업·외곽 주거 구역과 분리한 서쪽 중앙 축에만 짓는다.
-	-- 최소 가로/세로 140스터드급: 일반 주택 약 12~16스터드보다 10배 이상 크다.
+	-- [대형 왕궁] 본관·측랑을 주변 건물보다 확실히 크게 보이도록 확대하되, 기존 왕궁 보호 구역과 동선을 유지한다.
 	local palaceCourt = nil
 	if fac.palace then
 		local px = -425
 		local key = currentKey
 		local royalSeed = seeded(info.portId .. ":royal-court")
-		-- 왕도 발전에 따른 왕궁 폭·깊이 확장. 별관·근위대·정원까지 하나의 구획으로 확보한다.
-		local scale = 1.34 + (cityTier - 1) * 0.1 + royalSeed:NextNumber(0, 0.025) -- 초기 폭 약 180, 최고 약 240: 일반 주택 대비 10배급
+		-- [왕궁 크기] 승인된 실물 건축 모듈의 가로·세로를 초기부터 크게 만들고, 3층 본관으로 실루엣을 높인다.
+		-- 최대 폭 279/깊이 286스터드: 기존 왕궁 보호 구역(-570~-235, |z|<265)의 본관·별관을 넘지 않는다.
+		local scale = 1.85 + (cityTier - 1) * 0.04 + royalSeed:NextNumber(0, 0.025)
 		local wide, deep = 134 * scale, 138 * scale
-		local tall = 30 + sceneLevel * 4
+		local tall = 50 + sceneLevel * 7
 		-- [지역 관저 판별] 지역 문화 키만으로 통치 체계가 달라지는 항구를 같은 왕궁으로 묶지 않는다.
 		-- 조선은 기존 포트 문화 테이블에서 stone으로 분류돼 있으므로 국가 데이터를 먼저 본다.
 		local homePort = PortData.Ports[info.portId]
@@ -6111,7 +6112,7 @@ function PortScene.build(info, onFacility)
 			elseif islamic then { wall = "kenney_grey_wall_01", window = "kenney_grey_arch_01", door = "kenney_grey_door_round_01" }
 			elseif indian or southeast or tropical or westAfrican then { wall = "kenney_wood_wall_01", window = "kenney_wood_window_square_01", door = "kenney_wood_door_01", roof = "kenney_roof_straight_red_01" }
 			else { wall = "kenney_grey_wall_01", window = "kenney_grey_window_square_01", door = "kenney_grey_door_round_01", roof = "kenney_roof_straight_red_01" }
-		local hallPieces, hallTop, hallX, hallZ = modularHall(folder, px, 0, wide * 0.92, deep * 0.72, 2, hallSet, baseColor, roofColor)
+		local hallPieces, hallTop, hallX, hallZ = modularHall(folder, px, 0, wide * 0.92, deep * 0.72, 3, hallSet, baseColor, roofColor)
 		main:SetAttribute("ModularHallPieces", hallPieces)
 		-- [부속 건물 역할별 실물 조립] 같은 주택 하나를 반복하지 않고 역할마다 형태를 다르게 조립한다.
 		-- 마구간=목조 단층, 근위소=창 적은 좁은 3층(탑형), 서고=창 많은 2층, 행정청=본관과 같은 입면 2층.
@@ -6145,7 +6146,7 @@ function PortScene.build(info, onFacility)
 			local z = side * (deep * 0.41 + 20)
 			local wing = part(folder, Vector3.new(wide * 0.74, tall * 0.72, 30), CFrame.new(px - 8, tall * 0.36, z), baseColor, surface)
 			local wingRoof = part(folder, Vector3.new(wide * 0.78, 3.5, 34), CFrame.new(px - 8, tall * 0.72 + 1.5, z), roofColor, Enum.Material.Slate)
-			-- [측랑 실물화] 본관과 같은 문화권 부품으로 2층 측랑을 조립한다(성공 시 상자는 투명 충돌체).
+			-- [측랑 실물화] 본관 규모에 비례한 넓은 2층 측랑을 같은 문화권 승인 모듈로 조립한다.
 			if hallPieces > 0 then
 				local wingPieces, wingTop, wingX, wingZ = modularHall(folder, px - 8, z, wide * 0.7, 28, 2, hallSet, baseColor, roofColor)
 				if wingPieces > 0 then
@@ -6164,10 +6165,13 @@ function PortScene.build(info, onFacility)
 			if palaceTier >= 2 and europeanCourt then
 				local zTower = side * (deep * 0.47 + 23)
 				local tx = px - wide * 0.34
-				local tbase = importedModel(folder, "Castle", "tower-square-base", Vector3.new(tx, 0, zTower), 16, true, baseColor)
+				-- [높은 왕궁 탑] 3층 본관보다 충분히 높은 승인된 성곽 메시를 기존 탑 위치에만 쌓는다.
+				local tbase = importedModel(folder, "Castle", "tower-square-base", Vector3.new(tx, 0, zTower), 26, true, baseColor)
 				if tbase then tbase.Name = "RoyalTower" end
-				importedModel(folder, "Castle", "tower-square-mid-windows", Vector3.new(tx, 16, zTower), 16, true, baseColor)
-				importedModel(folder, "Castle", "tower-square-top-roof", Vector3.new(tx, 32, zTower), 18, false)
+				for level = 1, 3 do
+					importedModel(folder, "Castle", "tower-square-mid-windows", Vector3.new(tx, level * 26, zTower), 26, true, baseColor)
+				end
+				importedModel(folder, "Castle", "tower-square-top-roof", Vector3.new(tx, 104, zTower), 29, false)
 			end
 			if palaceTier >= 2 then
 				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(facadeX + 5, 0, side * (deep * 0.4 + 7)), 12, false)
@@ -6273,7 +6277,8 @@ function PortScene.build(info, onFacility)
 				importedModel(folder, "Terrain", "statue-column", Vector3.new(frontX + 46, 0, z), 13, false)
 			end
 		end
-		sign(folder, main, palaceTitle .. " · " .. courtStyle, C(153, 114, 61), 23)
+		sign(folder, main, palaceTitle .. " · " .. courtStyle, C(153, 114, 61),
+			if hallPieces > 0 then math.max(36, hallTop * 0.82) else tall * 0.78)
 		prompt(folder, Vector3.new(frontX + 9, 3, 0), palaceTitle, "알현하기", "harbor", onFacility)
 		-- [궁정 인력] 실제 거주자·번영도·궁정 등급만 읽는다. 경제 직군/거주자/저장 키를 추가하지 않는다.
 		local courtStaff = PortBuildings.royalPopulation(info.sim and info.sim.residents, info.sim and info.sim.prosperity, palaceTier)
