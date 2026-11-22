@@ -1950,6 +1950,10 @@ local function roundEnd(m: any)
 			drawCards(m, side, math.max(0, math.min(B.ROUND_DRAW, B.HAND_MAX - #m.hand[side])))
 			m.played[side] = 0
 		end
+		-- 궨트식: 새 판마다 손패 교체 1장 추가 (남은 장수와 합쳐 최대 B.MULLIGAN)
+		if m.mulligan then
+			m.mulligan.me = math.min(B.MULLIGAN, (m.mulligan.me or 0) + 1)
+		end
 		-- 유럽: 판을 이기면 한 장 더
 		if winner and m.faction and m.faction[winner] == "europe" then
 			drawCards(m, winner, 1)
@@ -2776,9 +2780,10 @@ function B.pass(m: any, side)
 	return true, "멈췄다", nil, { "s" }
 end
 
--- 멀리건: 첫 판에서 카드를 내기 전에 손패 한 장을 덱 맨 아래로 돌려보내고 새로 한 장 뽑는다 (총 B.MULLIGAN장)
+-- 멀리건: 판마다 카드를 내기 전에 손패 한 장을 덱 맨 아래로 돌려보내고 새로 한 장 뽑는다.
+-- 첫 판 B.MULLIGAN장, 이후 판마다 1장 추가(최대 B.MULLIGAN장) — 궨트식 라운드 멀리건.
 function B.mulligan(m: any, side, handIdx)
-	if m.over or m.round ~= 1 or (m.played[side] or 0) > 0 then
+	if m.over or (m.played[side] or 0) > 0 then
 		return false, "지금은 바꿀 수 없어요"
 	end
 	if ((m.mulligan or {})[side] or 0) <= 0 then

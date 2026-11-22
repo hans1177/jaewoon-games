@@ -300,14 +300,15 @@ function DeckBuilder.build(parent, ctx)
 	deckCover.Name = "ActiveDeckCover"
 	deckCover.AnchorPoint = Vector2.new(0.5, 0)
 	deckCover.Position = UDim2.fromScale(0.5, 0.02)
-	deckCover.Size = UDim2.fromScale(0.44, 0.58)
+	deckCover.Size = UDim2.fromScale(0.40, 0.54)
 	deckCover.BackgroundTransparency = 1
 	deckCover.ScaleType = Enum.ScaleType.Fit
 	deckCover.Parent = hub
 
 	local deckSummary = text(hub, "", 17, SEPIA, true)
-	deckSummary.Position = UDim2.fromScale(0.18, 0.61)
-	deckSummary.Size = UDim2.fromScale(0.64, 0.15)
+	-- [작전실 정리] 가운데 칸(지도자·덱 요약·출항)은 양옆 버튼(0.025~0.275, 0.725~0.975)과 겹치지 않게 0.30~0.70 안에 둔다.
+	deckSummary.Position = UDim2.fromScale(0.30, 0.58)
+	deckSummary.Size = UDim2.fromScale(0.40, 0.13)
 	local chartId = ctx.AssetIds["CardArt/ui_ops_chart"]
 	local albumId = ctx.AssetIds["CardArt/ui_card_vault_album"]
 	local tableId = ctx.AssetIds["CardArt/ui_fleet_table"]
@@ -445,9 +446,9 @@ function DeckBuilder.build(parent, ctx)
 		local art = buttonArt(control, action[6])
 		if art then
 			local isDeparture = action[2] == "battle"
-			control.AnchorPoint = Vector2.new(0, if isDeparture then 1 else 0)
-			control.Position = UDim2.fromScale(action[3], action[4])
-			control.Size = UDim2.fromScale(action[5], if isDeparture then 0.20 else 0.40)
+			control.AnchorPoint = Vector2.new(if isDeparture then 0.5 else 0, if isDeparture then 1 else 0)
+			control.Position = UDim2.fromScale(if isDeparture then 0.5 else action[3], action[4])
+			control.Size = UDim2.fromScale(action[5], if isDeparture then 0.22 else 0.40)
 			local aspect = Instance.new("UIAspectRatioConstraint")
 			aspect.AspectRatio = action[7]
 			aspect.AspectType = Enum.AspectType.FitWithinMaxSize
