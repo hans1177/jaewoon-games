@@ -91,7 +91,9 @@ public final class MainActivity extends Activity {
                 && "https".equalsIgnoreCase(uri.getScheme())
                 && GAME_HOST.equalsIgnoreCase(uri.getHost())
                 && uri.getPath() != null
-                && uri.getPath().startsWith(GAME_PATH);
+                && (GAME_PATH.equals(uri.getPath())
+                    || (GAME_PATH + "index.html").equals(uri.getPath())
+                    || (GAME_PATH + "privacy.html").equals(uri.getPath()));
     }
 
     private void configureGame() {
