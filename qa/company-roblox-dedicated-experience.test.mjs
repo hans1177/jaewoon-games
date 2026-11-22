@@ -919,8 +919,8 @@ test('Mare exploration preserves combat rules while grounding allies and contain
   assert.match(field,/local pos0 = Vector3\.new\(footX, ORIGIN\.Y \+ 0\.015, root0\.Position\.Z - 4\)/);
   assert.match(pose,/function Pose\.createR15\(parent, bottomPosition,/);
   assert.match(field,/local created, m = pcall\(Pose\.createR15, folder, pos0/);
-  assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
-  assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
+  assert.match(field,/local visualTreeCount = treeCount/);
+  assert.match(field,/local visualRockCount = rockCount/);
   assert.match(field,/local hillCount = if visualMobile then 16 else 28/);
   // [집안별 무기] 임의 전체 순환이 아닌 최초 선택 무기 두 개만 실제 교체한다.
   assert.match(field,/wbtn:SetAttribute\("WeaponChoiceCount", 2\)/);
