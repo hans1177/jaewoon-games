@@ -671,6 +671,8 @@ local MOB_OUTFIT_PARTS = {
 	knight = {
 		{ "male_ranger_body", "UpperTorso", 1.22, 1.56, 1.27, -0.10 },
 		{ "female_ranger_acc_pauldrons", "UpperTorso", 1.52, 1.10, 1.48, 0.30 },
+		-- [대머리 몹 보정] 투구·두건이 없는 기사에 등록 실물 헤어를 씌운다(전투 판정 불변).
+		{ "hair_court_curls", "Head", 1.15, 1.23, 1.18, 0.13 },
 	},
 	rogue = {
 		{ "male_ranger_body", "UpperTorso", 1.16, 1.50, 1.22, -0.10 },
@@ -691,6 +693,9 @@ local MOB_OUTFIT_PARTS = {
 	brute = {
 		{ "male_peasant_body", "UpperTorso", 1.23, 1.57, 1.27, -0.10 },
 		{ "male_ranger_acc_pauldron", "RightUpperArm", 1.35, 1.15, 1.36, 0.30 },
+		-- [대머리 몹 보정] 등록 짧은 머리 + 수염.
+		{ "hair_buzzed", "Head", 1.14, 1.22, 1.17, 0.12 },
+		{ "hair_beard", "Head", 1.14, 1.25, 1.15, 0.18 },
 	},
 	bombard = {
 		{ "female_peasant_body", "UpperTorso", 1.19, 1.51, 1.22, -0.10 },
@@ -902,6 +907,9 @@ local MOB_OUTFIT_PARTS = {
 	warlord = {
 		{ "male_ranger_body", "UpperTorso", 1.27, 1.61, 1.32, -0.12 },
 		{ "female_ranger_acc_pauldrons", "UpperTorso", 1.64, 1.16, 1.57, 0.33 },
+		-- [대머리 몹 보정] 등록 짧은 머리 + 수염.
+		{ "hair_buzzed", "Head", 1.14, 1.22, 1.17, 0.12 },
+		{ "hair_beard", "Head", 1.14, 1.25, 1.15, 0.18 },
 	},
 }
 
@@ -1144,6 +1152,14 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		if specs == MOB_OUTFIT_PARTS[profile] then specs = table.clone(specs) end
 		table.insert(specs, jobGear)
 	end
+	-- [얼굴 다양화] 같은 남성 주민 얼굴 반복을 줄이려 성격 값 3인 남성(두건 없는 직업)에 등록 수염을 더한다.
+	-- 수염은 헤어 교체·높이 보정·헤어 슬롯 정리·예비 머리 숨김 대상이 아니다. 직업·저장·전투 불변.
+	local beardPersona = math.floor(math.clamp(tonumber(model:GetAttribute("MotionPersonality")) or 1, 1, 3))
+	if detailAllowed and beardPersona == 3 and string.sub(profile, -5) == "_male"
+		and string.find(profile, "clergy", 1, true) == nil and AssetIds["People/hair_beard"] then
+		if specs == MOB_OUTFIT_PARTS[profile] then specs = table.clone(specs) end
+		table.insert(specs, { "hair_beard", "Head", 1.14, 1.25, 1.15, 0.18 })
+	end
 	local shelf = ReplicatedStorage:FindFirstChild("MareAssets")
 	local people = shelf and shelf:FindFirstChild("People")
 
@@ -1264,7 +1280,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		end
 		-- [신규 메시 자동 선택] 실제로 등록된 머리만 기존 스타일·성별·직업에 맞춰 교체한다.
 		-- 신규 등록이 없으면 기등록 긴머리/올림머리/짧은머리를 정확히 보존한다.
-		if npcOutfit and string.sub(assetName, 1, 5) == "hair_" then
+		if npcOutfit and string.sub(assetName, 1, 5) == "hair_" and assetName ~= "hair_beard" then
 			local hairstyle = model:GetAttribute("NpcHairStyle")
 			local femaleLong = profile == "citizen_female" or profile == "citizen_official_female"
 				or profile == "citizen_sailor_female" or profile == "citizen_artisan_female"
@@ -1360,7 +1376,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			-- [헤어 장착 비율] 긴 머리를 머리 높이 한 칸에 압축하면 숱과 폭이 사라진다.
 			-- 실물 헤어는 R15 두상 폭·깊이를 우선 맞추고 머리형에 필요한 아래쪽 길이를 허용한다.
 			-- 원본 메시·R15 관절·모자 부착점은 바꾸지 않고 과도한 머리 길이는 제한한다.
-			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" then
+			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" and assetName ~= "hair_beard" then
 				local hairStyle = model:GetAttribute("NpcHairStyle")
 				local hairHeightAllowance = if hairStyle == "long" then 2.20
 					elseif hairStyle == "bun" then 1.68 else 1.42
@@ -1582,18 +1598,18 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			attached += 1
 			visibleCount += 1
 			-- [실물 확인] 실제 장착된 메시 종류를 읽을 수 있게 남긴다. 저장·경제 데이터와 무관하다.
-			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" then
+			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" and assetName ~= "hair_beard" then
 				-- [교체 헤어 정리] 새 머리 장착을 확인한 뒤에만 기존 실물 헤어 슬롯을 제거한다.
 				-- 로드 실패 시 기존 머리를 보존한다.
 				for _, previous in model:GetChildren() do
 					if previous:IsA("Model") and string.sub(previous.Name, 1, 14) == "R15Asset_hair_"
-						and previous.Name ~= slotName then previous:Destroy() end
+						and string.find(previous.Name, "hair_beard", 1, true) == nil and previous.Name ~= slotName then previous:Destroy() end
 				end
 				model:SetAttribute("NpcVisibleHairMesh", assetName)
 			elseif npcOutfit and string.sub(assetName, 1, 4) == "acc_" then
 				model:SetAttribute("NpcVisibleAccessoryMesh", assetName)
 			end
-			if npcOutfit and (string.sub(assetName, 1, 5) == "hair_"
+			if npcOutfit and ((string.sub(assetName, 1, 5) == "hair_" and assetName ~= "hair_beard")
 				or (detailAllowed and assetName == "acc_feather_hat")) then
 				-- [정수리·뒤통수 보존] 앞머리 보조 도형만 감추고 HairBack은 남겨 실물의 빈틈을 메운다.
 				-- [지역 복식 보존] 실물 머리와 서유럽 깃털모자만 기존 예비 도형을 가린다.
