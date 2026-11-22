@@ -1,0 +1,84 @@
+{
+ "sourceRevision": "b5da1fcdb8a501db5d10716882d1c6d3fd96c77c",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "NEWGAME ok=true\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "DEV Deck not_open\ntext"
+  }
+ ],
+ "errors": [
+  "step5:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:1: CARD_DECK_WINDOW_MISSING | text"
+ ],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35012
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 5767
+  },
+  {
+   "step": 2,
+   "type": "wait",
+   "elapsedMs": 4004
+  },
+  {
+   "step": 3,
+   "type": "luau",
+   "elapsedMs": 27179
+  },
+  {
+   "step": 4,
+   "type": "wait",
+   "elapsedMs": 3009
+  },
+  {
+   "step": 5,
+   "type": "luau",
+   "elapsedMs": 890
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 22,
+  "completedSteps": 6,
+  "plannedClicks": 2,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 5,
+  "capturedFrames": 0,
+  "abortedEarly": true
+ },
+ "abortDiagnostics": {
+  "step": 5,
+  "type": "luau",
+  "elapsedMs": 241,
+  "context": "Client",
+  "lastScreenshot": null,
+  "lastClick": null,
+  "probes": {
+   "Client": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_CLIENT\ntext"
+   },
+   "Server": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_SERVER\ntext"
+   }
+  }
+ }
+}
