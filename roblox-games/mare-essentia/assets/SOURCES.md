@@ -1998,3 +1998,33 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `terrain/` | kenney_tree_defaultDark.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
 | `terrain/` | kenney_tree_palmShort.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
 | `terrain/` | kenney_tree_pinetallD_detailed.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+
+
+## 2026-11-23 지상·해상 배경 3층 원근 CC0 원본 19종
+
+- **실물 원본:** Kenney Nature Kit, 공식 출처 https://kenney.nl/assets/nature-kit (CC0-1.0; 무료 상업 이용 가능).
+- **동일 바이너리 확보:** https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit (자체 텍스처 포함 GLB). 원본 Git blob SHA와 저장소 Git blob SHA가 19종 전부 일치하고 GLB 서명·크기도 검증했다.
+- 기존 `assets/terrain/`와 기존 자산 등록기만 사용하며, 미등록 모델은 기존 화면에 강제 적용하지 않는다. 용도는 지상 절벽·언덕·강·흙길·계절 숲, 해상 절벽·섬·원근층이다.
+- **정확한 상태: SOURCE_DOWNLOADED_HASH_VERIFIED.** 외부 파일 확보는 Roblox Model 생성, Universe 사용권한, 실제 게임 표시, 게임 게시 또는 모바일 검증 완료를 뜻하지 않는다. 기존 `owner-mare-essentia-assets.yml` → `mare-essentia-upload-assets.mjs`로 자산 ID/게임 권한 확인 후 기존 `AssetIds.luau`에 올라온 자산만 사용한다.
+
+| 보관 파일 | 바이트 | 원본/보관 Git SHA |
+|---|---:|---|
+| `terrain/cliff-blockcave-rock.glb` | 5432 | `d6e8c3fc146c406f1af16cf35d35cf665bbab1e3` |
+| `terrain/cliff-blockhalf-rock.glb` | 2788 | `d62eb0d35fc942b12e504be856e07219be7a81dd` |
+| `terrain/cliff-blockslopewalls-rock.glb` | 8900 | `6a2c4c16486c387ad41f7d655527972b55428f2e` |
+| `terrain/cliff-cave-stone.glb` | 5484 | `0325f4557bec25dbca12da66ba737de0aedd2488` |
+| `terrain/cliff-cornerinnertop-stone.glb` | 7612 | `53c7922ab0b85b5f57393d6a53c8661c182c2568` |
+| `terrain/cliff-stepscorner-rock.glb` | 17544 | `2ad3ed8ea2858e2adec6b970cf19479bbfef66f5` |
+| `terrain/cliff-topdiagonal-rock.glb` | 6220 | `2c647bce59d89de5d68ad7373afd7533f2bb37ea` |
+| `terrain/cliff-waterfalltop-stone.glb` | 7508 | `14f125fc81bb45eb7038d0a5c2769ac1947cf2e4` |
+| `terrain/platform-grass.glb` | 12568 | `3c81d0f7307bb4061c35c76a7dc0325608668d2a` |
+| `terrain/platform-stone.glb` | 13632 | `be429454801c6e6d72ed1c0d35226606004f1c78` |
+| `terrain/ground-pathcorner.glb` | 3532 | `2f9cb73793a2d3ecfd2fe2d98bd037074d28580a` |
+| `terrain/ground-pathcross.glb` | 6404 | `8e85f01f30c3f51b32ccc82441360fa623c62725` |
+| `terrain/ground-rivertile.glb` | 9120 | `9dcdf254511884d7f2a5b0587663a0fe9fda225b` |
+| `terrain/ground-rivercorner.glb` | 4844 | `2ce831b8730c0818f1d915afdb61371d9e5ef768` |
+| `terrain/plant-bushtriangle.glb` | 3956 | `ffe8aaa74a968d990a4111be9fbcd4588f570af5` |
+| `terrain/grass-leafs.glb` | 4608 | `1b7754f269370a04750fdb1f61beba6d0a9f0741` |
+| `terrain/tree-plateau-fall.glb` | 16296 | `e5f7b4eeca1d86157d89f07da63b167bb447b39c` |
+| `terrain/tree-detailed-dark.glb` | 31416 | `f078aeeeb9fb3f36501a54d768db3675456bfb60` |
+| `terrain/tree-pinetalld-detailed.glb` | 12548 | `58e4fc02f3232c880e3255f485b42c3f5a64b220` |
