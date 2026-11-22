@@ -875,6 +875,43 @@ local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 		outfit.hat = "wide"
 	end
 	if extra and extra.noHat then outfit.hat = nil end
+	-- [1650년대 주민 외형] 이름 또는 항구·직업·고정 좌표를 해시해 재방문 시 같은 얼굴/복식을 유지한다.
+	-- 기존 배치 난수, 경제, 저장을 변경하지 않고 승인된 머리·의상만 선택한다.
+	if year >= 1500 and not outfit.companion then
+		local identity = if extra and type(extra.identity) == "string" then extra.identity
+			else ("%s:%s:%d:%d"):format(currentKey, outfit.profession or role, math.floor(pos.X * 4), math.floor(pos.Z * 4))
+		local hash = 17
+		for i = 1, #identity do hash = (hash * 33 + string.byte(identity, i)) % 2147483647 end
+		outfit.identity = identity
+		outfit.persona = hash % 3 + 1
+		if not keepCoat and o and o.coats and #o.coats > 0 then
+			coat = o.coats[(math.floor(hash / 7) % #o.coats) + 1]
+			if currentKey == "tropic" or currentKey == "pacific" or currentKey == "seasia" then
+				coat = coat:Lerp(C(240, 224, 191), 0.14)
+			end
+		end
+		if outfit.age ~= "elder" then
+			local hairColors = if currentKey == "korea" or currentKey == "china" or currentKey == "japan"
+				then { C(34, 31, 30), C(55, 44, 38), C(69, 56, 46) }
+				elseif currentKey == "ottoman" or currentKey == "swahili" or currentKey == "wafrica" or currentKey == "malabar"
+				then { C(35, 30, 29), C(52, 39, 32), C(75, 51, 37) }
+				else { C(43, 33, 29), C(82, 56, 40), C(122, 82, 53), C(58, 51, 44), C(173, 132, 83) }
+			outfit.hairColor = hairColors[(math.floor(hash / 13) % #hairColors) + 1]
+		end
+		if outfit.gender == "male" then
+			local sailor = outfit.profession == "sailor" or outfit.profession == "boatswain" or outfit.profession == "fisher"
+			outfit.hair = if sailor and hash % 4 == 0 then "long" else "short"
+		elseif outfit.age ~= "child" then
+			outfit.hair = if hash % 4 == 0 then "short" elseif hash % 2 == 0 then "bun" else "long"
+		end
+		-- 외부 기후가 실제 입력된 경우 비/폭풍, 또는 기존 계절이 겨울일 때 서유럽 외투를 선택한다.
+		local weather = parent:GetAttribute("PortVisualWeather")
+		local winter = parent:GetAttribute("CitySeasonIndex") == 1
+		local coldRegion = currentKey == "north" or currentKey == "nordic" or currentKey == "hanse"
+			or currentKey == "britain" or currentKey == "france" or currentKey == "stone"
+		outfit.weatherLayer = if weather == "rain" or weather == "storm" or weather == "snow"
+			or (winter and coldRegion) then "outer_coat" else "normal"
+	end
 	local figure = Pose.createR15(parent, pos, facing, coat, rng, role,
 		if extra and type(extra.height) == "number" then extra.height else 5.8, outfit)
 	if figure then figure.Name = "Villager" end
@@ -5601,6 +5638,8 @@ function PortScene.build(info, onFacility)
 	folder:SetAttribute("CityBuildingMode", "AUTO_VISUAL_READ_ONLY")
 	folder:SetAttribute("CityDevelopmentTier", sceneLevel)
 	folder:SetAttribute("CityConstructionCanPurchase", false)
+	-- 실제 날씨 데이터가 있을 때만 주민 실물 외투 조건에 전달한다.
+	if type(info.weather) == "string" then folder:SetAttribute("PortVisualWeather", info.weather) end
 	-- [항만 단계] 장면과 항만 표지·투명 보행 경계가 같은 1~5단계 결과를 쓴다.
 	local dockGrowth = PortBuildings.harborVisual(sceneLevel, info.sim and info.sim.buildings)
 	folder:SetAttribute("HarborVisualTier", dockGrowth.tier)
