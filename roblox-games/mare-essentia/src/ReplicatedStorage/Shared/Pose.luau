@@ -330,6 +330,8 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 		Rogue_Hooded = Color3.fromRGB(80, 90, 106),
 	}
 	local jacket = coat or coats[role] or Color3.fromRGB(140, 108, 80)
+	-- [주민 복식 재질] 실물 모델 로드 전에도 기본 R15 옷과 피부를 서로 다른 재질로 구분한다.
+	local citizenCloth = outfit and (outfit.gender == "female" or outfit.gender == "male")
 	-- [개인 복식 팔레트] 문화권에서 결정된 옷색·바지색을 이미 있는 실물 재단복에 전달한다.
 	-- NPC 표시 전용 속성이며 경제·저장·전투 능력치는 바꾸지 않는다.
 	if outfit and (outfit.gender == "female" or outfit.gender == "male") then
@@ -362,18 +364,18 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 					descendant.Material = Enum.Material.SmoothPlastic
 				else
 					descendant.Color = jacket
-					descendant.Material = Enum.Material.SmoothPlastic
+					descendant.Material = if citizenCloth then Enum.Material.Fabric else Enum.Material.SmoothPlastic
 				end
 			elseif string.find(n, "Foot") then
 				descendant.Color = trousers:Lerp(Color3.new(0, 0, 0), 0.4)
 				descendant.Material = if role == "Knight" then Enum.Material.Metal else Enum.Material.Leather
 			elseif string.find(n, "Leg") then
 				descendant.Color = trousers
-				descendant.Material = if role == "Knight" then Enum.Material.Metal else Enum.Material.SmoothPlastic
+				descendant.Material = if role == "Knight" then Enum.Material.Metal elseif citizenCloth then Enum.Material.Fabric else Enum.Material.SmoothPlastic
 			elseif string.find(n, "Torso") then
 				-- 윗몸은 겉옷 색, 아랫몸은 조금 어둡게 (허리띠 느낌)
 				descendant.Color = if n == "LowerTorso" then jacket:Lerp(Color3.new(0, 0, 0), 0.22) else jacket
-				descendant.Material = if role == "Knight" then Enum.Material.Metal elseif role == "Barbarian" then Enum.Material.Leather else Enum.Material.SmoothPlastic
+				descendant.Material = if role == "Knight" then Enum.Material.Metal elseif role == "Barbarian" then Enum.Material.Leather elseif citizenCloth then Enum.Material.Fabric else Enum.Material.SmoothPlastic
 			end
 		end
 	end
@@ -841,11 +843,18 @@ local NPC_PROFESSION_ACCESSORY = {
 	fisher = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
 	docker = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
 	boatswain = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
+	sailor = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
+	royal_guard = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
+	royal_gate_guard = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
+	royal_ceremonial_guard = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
 	shipwright = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
 	carpenter = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
 	smith = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
 	tailor = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
 	merchant = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	banker = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	royal_scribe = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	royal_archivist = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
 }
 -- [직업별 실물 휴대품 35종] 기존 등록된 CC0 Relics/Cargo 자산을 주민 R15 관절에만 부착한다.
 -- 각 직업은 독립된 도구·소지품과 착용 위치를 가진다. 공격 판정·경제·저장 속성은 변경하지 않는다.
@@ -1011,8 +1020,18 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			local garment = entry[1]
 			if entry[2] == "UpperTorso" and (garment == "outfit_vest" or garment == "outfit_coat" or garment == "outfit_guard")
 				and AssetIds["People/" .. garment] and people:FindFirstChild(garment) then
-				fittedUpperReady = true
-				break
+				-- [상의 완전성] 등록과 로드만으로 구형 몸통을 제거하지 않는다.
+				-- 실제 부착됐고 화면에 보이는 재단 상의가 있을 때에만 교체 가능하다.
+				local mounted = model:FindFirstChild("R15Asset_" .. garment .. "_UpperTorso")
+				if mounted then
+					for _, piece in mounted:GetDescendants() do
+						if piece:IsA("BasePart") and piece.LocalTransparencyModifier < 0.99 then
+							fittedUpperReady = true
+							break
+						end
+					end
+				end
+				if fittedUpperReady then break end
 			end
 		end
 	end
@@ -1120,13 +1139,15 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			local persona = math.clamp(tonumber(model:GetAttribute("MotionPersonality")) or 1, 1, 3)
 			local candidate = if type(options) == "table" and #options > 0
 				then options[(math.floor(persona) - 1) % #options + 1] else options
-			if candidate and AssetIds["People/" .. candidate] then
+			if candidate and AssetIds["People/" .. candidate] and people and people:FindFirstChild(candidate) then
 				assetName = candidate
 			elseif femaleLong and hairstyle == "long" then
-				assetName = "hair_long"
+				if AssetIds["People/hair_long"] and people and people:FindFirstChild("hair_long") then assetName = "hair_long" end
 			elseif femaleLong and hairstyle == "bun" then
-				assetName = "hair_buns"
+				if AssetIds["People/hair_buns"] and people and people:FindFirstChild("hair_buns") then assetName = "hair_buns" end
 			end
+			-- [실제 헤어 슬롯] 교체 확정된 메시 이름으로 슬롯을 찾고 중복 머리 장착을 방지한다.
+			slotName = "R15Asset_" .. string.gsub(assetName, "/", "_") .. "_" .. boneName
 		end
 		local equipped = model:FindFirstChild(slotName)
 		if equipped then
@@ -1296,7 +1317,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					-- 진주 부분은 금속광이 아닌 무광 유백색. 금속 부위만 Metal로 표시.
 					part.Material = if armor or badge or (pearl and not pearlWhite) then Enum.Material.Metal
 						elseif hair or pearlWhite then Enum.Material.SmoothPlastic
-						elseif hood or tunic or ribbon or headwear then Enum.Material.SmoothPlastic
+						elseif hood or tunic or ribbon or headwear then Enum.Material.Fabric
 						else Enum.Material.Leather
 					local tint = if armor then Color3.fromRGB(108, 117, 124)
 						elseif badge then Color3.fromRGB(188, 151, 80)
@@ -1331,6 +1352,12 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			visibleCount += 1
 			-- [실물 확인] 실제 장착된 메시 종류를 읽을 수 있게 남긴다. 저장·경제 데이터와 무관하다.
 			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" then
+				-- [교체 헤어 정리] 새 머리 장착을 확인한 뒤에만 기존 실물 헤어 슬롯을 제거한다.
+				-- 로드 실패 시 기존 머리를 보존한다.
+				for _, previous in model:GetChildren() do
+					if previous:IsA("Model") and string.sub(previous.Name, 1, 14) == "R15Asset_hair_"
+						and previous.Name ~= slotName then previous:Destroy() end
+				end
 				model:SetAttribute("NpcVisibleHairMesh", assetName)
 			elseif npcOutfit and string.sub(assetName, 1, 4) == "acc_" then
 				model:SetAttribute("NpcVisibleAccessoryMesh", assetName)
@@ -1347,6 +1374,33 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		else
 			table.insert(missing, assetName .. ":fit_failed")
 			skin:Destroy()
+		end
+	end
+	-- [중복 상의 정리] 새 재단 상의의 실제 부착·표시가 확인된 뒤 구형 통짜 상의만 제거한다.
+	-- 미등록·지연 로드·부착 실패 상태에서는 기본 옷을 유지한다. 게임 규칙과 R15 관절은 그대로다.
+	if npcOutfit and detailAllowed then
+		local fittedVisible = false
+		for _, garment in { "outfit_vest", "outfit_coat", "outfit_guard" } do
+			local mounted = model:FindFirstChild("R15Asset_" .. garment .. "_UpperTorso")
+			if mounted then
+				for _, part in mounted:GetDescendants() do
+					if part:IsA("BasePart") and part.LocalTransparencyModifier < 0.99 then
+						fittedVisible = true
+						break
+					end
+				end
+			end
+			if fittedVisible then break end
+		end
+		if fittedVisible then
+			for _, oldName in { "male_peasant_body", "female_peasant_body", "male_ranger_body", "female_ranger_body" } do
+				local old = model:FindFirstChild("R15Asset_" .. oldName .. "_UpperTorso")
+				if old then
+					old:Destroy()
+					merged += 1
+					visibleCount = math.max(0, visibleCount - 1)
+				end
+			end
 		end
 	end
 	-- [검증용 진단] 저장·경제와 무관한 표시 상태. 근거리(detailLimit 99) 생략은 0이어야 한다.
