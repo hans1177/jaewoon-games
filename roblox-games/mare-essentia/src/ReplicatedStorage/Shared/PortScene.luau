@@ -5153,11 +5153,15 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			local size = if ridge then rng:NextNumber(115, 175) + (if lvl >= 4 then 16 else 0)
 				else rng:NextNumber(12, 20)
 			local rock = importedModel(folder, rockKind, rockName, at, size, false)
-			if rock and ridge then
-				rock.Name = "PortBackdropRidge"
-				rock:SetAttribute("BackdropCulture", key)
-				rock:SetAttribute("BackdropTier", lvl)
-				ridgePlaced += 1
+			if rock then
+				-- [3층 원근] 기존 지형 모델의 원근 레이어만 지정한다.
+				rock:SetAttribute("PortDepthLayer", if ridge then "FAR" else "NEAR")
+				if ridge then
+					rock.Name = "PortBackdropRidge"
+					rock:SetAttribute("BackdropCulture", key)
+					rock:SetAttribute("BackdropTier", lvl)
+					ridgePlaced += 1
+				end
 			end
 		end
 		if i % 3 == 0 then
@@ -5195,13 +5199,57 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			elseif pick:find("palm", 1, true) then "Naval" else "Town"
 		local size = if kind == "Terrain" then rng:NextNumber(14, 20) else rng:NextNumber(8, 14)
 		local tree = importedModel(folder, kind, pick, at, size, false)
-		if tree and kind == "Terrain" then
-			tree.Name = "PortBackdropCanopy"
-			tree:SetAttribute("BackdropCulture", key)
-			canopyPlaced += 1
+		if tree then
+			tree:SetAttribute("PortDepthLayer", "MID")
+			if kind == "Terrain" then
+				tree.Name = "PortBackdropCanopy"
+				tree:SetAttribute("BackdropCulture", key)
+				canopyPlaced += 1
+			end
 		end
 	end
 	folder:SetAttribute("PortBackdropCanopyCount", canopyPlaced)
+	-- [근경/바닥 경계] 승인된 풀·관목·암석을 도시의 외곽에만 배치한다.
+	-- 주민 경로, 기존 도로/필지, 생성 난수, 충돌과 경제 수치는 변경하지 않는다.
+	local foregroundAssets = {
+		{ "grass-large", 13 }, { "plant-bushlarge", 15 },
+		{ "grass-leafslarge", 12 }, { "Rock_2", 12 },
+		{ "coast-grass-patch", 10 }, { "plant-bushlarge", 14 },
+	}
+	local foregroundPlaced = 0
+	for i = 1, (if vistaMobile then 4 else 8) do
+		local entry = foregroundAssets[(i - 1) % #foregroundAssets + 1]
+		if AssetIds["Terrain/" .. entry[1]] then
+			local side = if i % 2 == 0 then 1 else -1
+			local at = Vector3.new(-65 - ((i * 53) % 280), 0, side * (WZ + 11 + (i % 3) * 7))
+			local model = importedModel(folder, "Terrain", entry[1], at, entry[2], false)
+			if model then
+				local foliage = entry[1] ~= "Rock_2"
+				model.Name = if foliage then "PortForegroundFoliage" else "PortForegroundRock"
+				model:SetAttribute("PortDepthLayer", "NEAR")
+				model:SetAttribute("PortSway", foliage)
+				foregroundPlaced += 1
+				-- [바람 먼지] 데스크톱의 앞쪽 두 풀에서만 기존 입자 텍스처를 재사용한다.
+				if foliage and not vistaMobile and foregroundPlaced <= 2 then
+					local anchor = model:FindFirstChildWhichIsA("BasePart", true)
+					if anchor then
+						local dust = Instance.new("ParticleEmitter")
+						dust.Name = "PortWindDust"
+						dust.Texture = "rbxasset://textures/particles/smoke_main.dds"
+						dust.Rate = 0.3
+						dust.Lifetime = NumberRange.new(1.4, 2.3)
+						dust.Speed = NumberRange.new(0.2, 0.7)
+						dust.Acceleration = Vector3.new(0.45, 0.12, 0.08)
+						dust.Size = NumberSequence.new(0.6, 1.3)
+						dust.Transparency = NumberSequence.new(0.65, 1)
+						dust.Color = ColorSequence.new(Color3.fromRGB(194, 179, 148))
+						dust.Parent = anchor
+					end
+				end
+			end
+		end
+	end
+	folder:SetAttribute("PortBackdropForegroundCount", foregroundPlaced)
 	-- [마을 발전 실루엣] 기등록된 문화권 적합 실물 건축만 3단계 이후 외곽에 소량 표시한다.
 	-- 정식 건물·사업장으로 오인되지 않게 모든 모델은 충돌·경제·저장 없이 배경 전용으로 둔다.
 	local vistaBuilding = ({
@@ -5643,6 +5691,7 @@ function PortScene.build(info, onFacility)
 				if hills then
 					hills.Name = "DistantHills"
 					hills:SetAttribute("BackdropLayer", depth)
+					hills:SetAttribute("PortDepthLayer", "FAR")
 				end
 			end
 		end
@@ -7055,6 +7104,8 @@ function PortScene.build(info, onFacility)
 	sliceStart = 0
 	sliceYield("beforeLighting")
 	Lighting.GlobalShadows = true
+	-- [측광] 기존 해 방향을 유지하고 그림자의 계조만 부드럽게 한다.
+	Lighting.ShadowSoftness = 0.32
 	local atmos = Lighting:FindFirstChild("MareAtmosphere")
 	if not atmos then
 		atmos = Instance.new("Atmosphere")
@@ -7062,7 +7113,7 @@ function PortScene.build(info, onFacility)
 		atmos.Parent = Lighting
 	end
 	atmos.Offset = 0.2
-	atmos.Decay = Color3.fromRGB(120, 140, 170)
+	atmos.Decay = Color3.fromRGB(108, 143, 185)
 	if not Lighting:FindFirstChild("MareGrade") then
 		local cc = Instance.new("ColorCorrectionEffect")
 		cc.Name = "MareGrade"
@@ -7075,6 +7126,21 @@ function PortScene.build(info, onFacility)
 		rays.Name = "MareRays"
 		rays.Spread = 0.6
 		rays.Parent = Lighting
+	end
+	-- [천천히 흐르는 원경 구름] 기존 장면의 구름은 건드리지 않고 전용 구름만 생명주기에 묶는다.
+	local skyTerrain = workspace:FindFirstChildOfClass("Terrain")
+	local existingClouds = skyTerrain and skyTerrain:FindFirstChildOfClass("Clouds")
+	if skyTerrain and (not existingClouds or existingClouds.Name == "MarePortClouds") then
+		if existingClouds then existingClouds:Destroy() end
+		local portClouds = Instance.new("Clouds")
+		portClouds.Name = "MarePortClouds"
+		portClouds.Cover = if UserInputService.TouchEnabled then 0.16 else 0.26
+		portClouds.Density = 0.24
+		portClouds.Color = Color3.fromRGB(235, 241, 249)
+		portClouds.Parent = skyTerrain
+		folder.Destroying:Connect(function()
+			if portClouds.Parent then portClouds:Destroy() end
+		end)
 	end
 
 	-- 안전망: 어떤 이유로든 바다나 허공으로 떨어지면 광장으로 되돌린다
@@ -7152,6 +7218,8 @@ function PortScene.build(info, onFacility)
 
 	local grade = Lighting:FindFirstChild("MareGrade")
 	local bloom = Lighting:FindFirstChild("MareBloom")
+	-- [모바일 부하] 이 장면에는 심도 효과가 없으며 블룸만 터치 환경에서 끈다.
+	if bloom then bloom.Enabled = not UserInputService.TouchEnabled end
 	local rays = Lighting:FindFirstChild("MareRays")
 	local lights = {}
 	local function registerLight(item)
@@ -7918,6 +7986,14 @@ function PortScene.build(info, onFacility)
 		end
 	end
 	local hub = folder:FindFirstChild("MillHub")
+	-- [기존 움직임 루프] 전경 풀만 매우 약하게 흔들어 별도 프레임 루프를 만들지 않는다.
+	local windPlants = {}
+	for _, child in folder:GetChildren() do
+		if child:IsA("Model") and child:GetAttribute("PortSway") == true then
+			table.insert(windPlants, { model = child, pivot = child:GetPivot(), phase = #windPlants * 1.7 })
+		end
+	end
+	local nextWindStep = 0
 	local t0 = os.clock()
 	-- 항해 연출: 출항(부두 -> 먼 바다)과 입항(먼 바다 -> 부두)
 	local SEA_DIST = 420
@@ -8028,6 +8104,14 @@ function PortScene.build(info, onFacility)
 		end
 		wasVoyageActive = false
 		local t = os.clock() - t0
+		if t >= nextWindStep then
+			nextWindStep = t + (if UserInputService.TouchEnabled then 0.22 else 0.14)
+			for _, plant in windPlants do
+				if plant.model.Parent then
+					plant.model:PivotTo(plant.pivot * CFrame.Angles(0, 0, math.sin(t * 0.9 + plant.phase) * 0.026))
+				end
+			end
+		end
 		local shipPose = shipBase * CFrame.new(0, math.sin(t * 1.2) * 0.35, 0) * CFrame.Angles(math.sin(t * 0.9) * 0.025, 0, math.sin(t * 0.7) * 0.012)
 		local flow = 0
 		if anim then
