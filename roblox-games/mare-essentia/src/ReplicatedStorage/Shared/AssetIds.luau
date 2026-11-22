@@ -77,6 +77,7 @@ return {
 	["CardArt/eu_36"] = 109450995413069,
 	["CardArt/eu_43"] = 89949148341846,
 	["CardArt/eu_44"] = 71729824727554,
+	["CardArt/eu_45"] = 92661745127683,
 	["CardArt/event_angkor"] = 90783710214595,
 	["CardArt/event_anglo_dutch_war"] = 113404061062686,
 	["CardArt/event_boston_tea"] = 109655723686183,
