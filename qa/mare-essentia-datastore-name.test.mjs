@@ -3468,6 +3468,8 @@ test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 
   assert.ok(pose.includes('skin:ScaleTo(ratio)'));
   assert.ok(pose.includes('weld.Part0, weld.Part1, weld.Parent = target, part, part'));
   assert.ok(pose.includes('surfaceHasColorMap(surface)'));
+  assert.ok(pose.includes('decal.Texture = "rbxasset://textures/face.png"'));
+  assert.ok(pose.includes('decal.Color3 = Color3.new(1, 1, 1)'));
   // [기존 Studio 촬영] 검은 얼굴만 확대하지 말고 손목·배지와 의상까지 한 화면에 기록한다.
   const shot=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.equal(shot.length,246);
