@@ -1,6 +1,6 @@
 {
-  "version": 33,
-  "updatedAt": "2026-11-18",
+  "version": 34,
+  "updatedAt": "2026-11-22",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -12,6 +12,85 @@
     "counts": "DERIVED_FROM_CURRENT_MEMBERSHIP"
   },
   "games": [
+    {
+      "id": "animal-auto-battle",
+      "name": "동물 자동대전",
+      "description": "동물 조합과 자동 전투로 8승을 노리는 모바일 전략 게임",
+      "genre": [
+        "전략",
+        "자동전투",
+        "동물"
+      ],
+      "image": "assets/pwa-icon-512.png",
+      "webPath": "web-games/animal-auto-battle",
+      "hasWebArchive": true,
+      "homepageWebPlayable": false,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
+      "homepageCategory": "development-confirmed",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+      "ownerWebEntryFile": "web-games/animal-auto-battle/index.html",
+      "productionTarget": "WEB",
+      "selectedPlatform": "WEB",
+      "homepageStage": "웹 개발 중 · 게시 후 검증 대기",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 45,
+        "authority": "OWNER_DIRECT_GAME_BUILD",
+        "identity": {
+          "gameId": "animal-auto-battle",
+          "name": "동물 자동대전",
+          "description": "동물 조합과 자동 전투로 8승을 노리는 모바일 전략 게임",
+          "genres": [
+            "전략",
+            "자동전투",
+            "동물"
+          ],
+          "image": "assets/pwa-icon-512.png",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_GAME_BUILD",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "OWNER_DIRECT_GAME_BUILD",
+          "target": "WEB",
+          "selectedPlatform": "WEB",
+          "stage": "웹 개발 중 · 게시 후 검증 대기"
+        },
+        "sources": {
+          "web": {
+            "path": "web-games/animal-auto-battle",
+            "archive": true,
+            "playable": false,
+            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "web-games/animal-auto-battle/"
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "stage": "웹 개발 중 · 게시 후 검증 대기",
+          "runtime": {
+            "authority": "company-runtime"
+          }
+        }
+      },
+      "catalogOrder": 45,
+      "web3dRedevelopmentRequired": true
+    },
     {
       "id": "amusement-tycoon",
       "name": "놀이공원 타이쿤",
