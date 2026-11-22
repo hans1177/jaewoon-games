@@ -278,7 +278,8 @@ local function researchRate(S)
 	local calm = if S.stab > 0.4 then 1 else 0.5
 	local reg = (N.REGIMES[S.regime] or N.REGIMES.absolute).mods
 	local focus = 0.7 + ((S.focus.sci or 0.14) + (S.focus.learn or 0.14)) * 1.8
-	return base * economy * city * calm * focus * mm(S, "research") * (reg.sci or 1) * (S.war and 0.85 or 1)
+	local crisis = (S.crisis and N.CRISIS[S.crisis.kind] and N.CRISIS[S.crisis.kind].research) or 0
+	return base * economy * city * calm * focus * mm(S, "research") * (reg.sci or 1) * (S.war and 0.85 or 1) * (1 + crisis)
 end
 
 local function knownBy(st, S, techId)
@@ -412,7 +413,7 @@ local function stepForces(st, S, instant)
 	local cap = S.cap
 	local reg = N.REGIMES[S.regime] or N.REGIMES.absolute
 	local mobil = (reg.mods.mil or 1) * (0.5 + S.stab * 0.5)
-	local manpower = m.pop * 0.0045 * mobil * math.min(1.2, cap.food) * mm(S, "manpower") -- 먹여 살릴 수 있는 만큼만 징집
+	local manpower = m.pop * 0.0045 * mobil * math.min(1.2, cap.food) * mm(S, "manpower") * (1 + ((S.crisis and N.CRISIS[S.crisis.kind] and N.CRISIS[S.crisis.kind].manpower) or 0)) -- 먹여 살릴 수 있는 만큼만 징집
 	local milShare = S.focus.mil / math.max(0.05, S.focus.mil + S.focus.navy)
 	local budget = S.fin.income * (0.35 + S.focus.mil * 1.2 + S.focus.navy * 0.8 + (S.war and 0.3 or 0))
 	local armyBudget, navyBudget = budget * milShare, budget * (1 - milShare)
@@ -838,6 +839,37 @@ local function stepSociety(st, S)
 	S.dev.sci = clamp(S.dev.sci + soc.literacy * 0.08 * (1 - S.dev.sci / 100), 0, 100)
 end
 
+-- ───────── 위기 사건: 역병·흉년·종교 갈등 ─────────
+-- 도시화·교역·인구 압박이 클수록, 보건·검역 발견이 약할수록 위기가 잘 온다. 위기는 일정 기간 불만·연구·징집에 영향을 준다.
+N.CRISIS = {
+	plague = { name = "역병", months = 8, unrest = 0.18, research = -0.3, manpower = -0.25 },
+	famine = { name = "흉년", months = 10, unrest = 0.22, research = -0.1, manpower = -0.15 },
+	strife = { name = "종교 분쟁", months = 14, unrest = 0.15, research = -0.15, manpower = -0.05 },
+}
+local function stepCrisis(st, S)
+	local c = S.crisis
+	if c and st.day >= c.untilDay then
+		logEvent(st, S.id, "crisis_end", string.format("%s %s 종식", S.id, N.CRISIS[c.kind].name))
+		S.crisis = nil
+		c = nil
+	end
+	if c then return end
+	local m = S.metrics
+	local urban = clamp(((S.soc and S.soc.urban) or 0), 0, 1)
+	local health = (S.mods and S.mods.health) or 0
+	local plague = 0.0012 * (1 + urban * 1.5 + math.min(2, m.trade / math.max(1, m.pop) * 0.002)) * (1 - math.min(0.8, health))
+	local famine = if S.cap and S.cap.food and S.cap.food < 0.55 then 0.01 * (0.7 - S.cap.food) * 10 else 0.0006
+	local strife = 0.0008 + ((S.soc and S.soc.unrest) or 0) * 0.004
+	local r = roll(st, S.id .. ":crisis")
+	local kind = nil
+	if r < plague then kind = "plague" elseif r < plague + famine then kind = "famine" elseif r < plague + famine + strife then kind = "strife" end
+	if kind then
+		S.crisis = { kind = kind, untilDay = st.day + N.CRISIS[kind].months * 30 }
+		S.soc.unrest = clamp(S.soc.unrest + N.CRISIS[kind].unrest, 0, 1)
+		logEvent(st, S.id, "crisis", string.format("%s %s 발생", S.id, N.CRISIS[kind].name))
+	end
+end
+
 local function stepState(st, S)
 	local reg = N.REGIMES[S.regime] or N.REGIMES.absolute
 	local m = S.metrics
@@ -866,6 +898,7 @@ local function stepState(st, S)
 		S.dev[k] = clamp(S.dev[k] + gain * (1 - S.dev[k] / 100), 0, 100)
 	end
 	stepSociety(st, S)
+	stepCrisis(st, S)
 	stepTech(st, S)
 	S.fin.income = S.fin.income * mm(S, "income") * (1 + 0.5 * ((S.mods and S.mods.trade) or 0))
 	stepForces(st, S)
@@ -979,6 +1012,16 @@ function N.treaty(st, w, S, foe)
 end
 
 local function stepDiplomacy(st, w)
+	do
+		local top, topP, second = nil, 0, 0
+		for id, S in pairs(st.states) do
+			local pw = S.power or 0
+			if pw > topP or (pw == topP and top and id < top) then second, top, topP = topP, id, pw elseif pw > second then second = pw end
+		end
+		local prev = st.hegemon
+		st.hegemon = if top and topP > second * 1.5 and topP > 0 then top else nil
+		if st.hegemon and st.hegemon ~= prev then logEvent(st, st.hegemon, "hegemon", string.format("%s 패권국으로 부상 — 주변국이 견제를 시작", st.hegemon)) end
+	end
 	local ids = {}
 	for id in pairs(st.states) do table.insert(ids, id) end
 	table.sort(ids)
@@ -992,6 +1035,24 @@ local function stepDiplomacy(st, w)
 				local rivalry = if math.abs(militaryPower(S) - militaryPower(O)) < 0.25 * math.max(militaryPower(S), militaryPower(O)) then -0.4 else 0
 				local ally = if S.allies[other] then 1 else 0
 				S.rel[other] = clamp(v + drift + rivalry + ally + (roll(st, id .. other .. "d") - 0.5) * 2, -100, 100)
+			end
+		end
+		-- 종교·문화: 같은 문화권은 가까워지고, 믿음이 다른 인접국은 서서히 멀어진다
+		for other in pairs(S.rel) do
+			local O = st.states[other]
+			if O and S.fam and O.fam and st.adjacency[id] and st.adjacency[id][other] then
+				local same = S.fam == O.fam
+				S.rel[other] = clamp(S.rel[other] + (if same then 0.3 else -0.2), -100, 100)
+			end
+		end
+		-- 패권 견제: 가장 강한 나라가 둘째보다 크게 앞서면 나머지가 그 나라에 맞서 결집한다
+		if st.hegemon and st.hegemon ~= id and S.rel[st.hegemon] then
+			S.rel[st.hegemon] = clamp(S.rel[st.hegemon] - 0.5, -100, 100)
+			for other in pairs(S.rel) do
+				local O = st.states[other]
+				if O and other ~= st.hegemon and (O.rel[st.hegemon] or 0) < 10 and S.rel[other] then
+					S.rel[other] = clamp(S.rel[other] + 0.6, -100, 100)
+				end
 			end
 		end
 		-- 동맹: 관계가 충분히 좋고 공통의 적이 있을 때
@@ -1122,7 +1183,7 @@ function N.view(st, id)
 		cultureLevel = S.culture.level, cultureName = N.BRAND_NAMES[S.culture.level], war = S.war and S.war.foe or nil,
 		rank = st.ranks[owner], regent = st.day < S.regentUntil, civilWar = st.day < S.civilUntil,
 		debt = S.fin.debt, income = S.fin.income,
-		soc = S.soc, tech = S.tech, mods = S.mods, doctrine = N.doctrineName(S), prestige = S.prestige, res = S.res, cap = S.cap, forces = S.forces, power = S.power, armyPower = S.armyPower, navyPower = S.navyPower, standing = S.standing,
+		crisis = S.crisis and N.CRISIS[S.crisis.kind].name or nil, soc = S.soc, tech = S.tech, mods = S.mods, doctrine = N.doctrineName(S), prestige = S.prestige, res = S.res, cap = S.cap, forces = S.forces, power = S.power, armyPower = S.armyPower, navyPower = S.navyPower, standing = S.standing,
 	}
 end
 
@@ -1221,7 +1282,7 @@ function N.snapshot(st)
 	if not st then return nil end
 	return clean({
 		schema = st.schema, seed = st.seed, day = st.day, startYear = st.startYear,
-		states = st.states, liege = st.liege, log = st.log, owner = st.owner, ports = st.ports, firsts = st.firsts,
+		states = st.states, liege = st.liege, log = st.log, owner = st.owner, ports = st.ports, firsts = st.firsts, hegemon = st.hegemon,
 	}, 0)
 end
 
@@ -1250,6 +1311,7 @@ local function repair(st, S)
 	S.fin.treasury = tonumber(S.fin.treasury) or 0
 	S.legit = clamp(tonumber(S.legit) or 0.6, 0.1, 1)
 	S.prestige = math.max(0, tonumber(S.prestige) or 0)
+	if type(S.crisis) ~= "table" or not N.CRISIS[S.crisis.kind] then S.crisis = nil else S.crisis.untilDay = tonumber(S.crisis.untilDay) or 0 end
 	if type(S.tech) ~= "table" or type(S.tech.known) ~= "table" then
 		initTech(st, S)
 	end
@@ -1308,6 +1370,7 @@ function N.restore(w, snap)
 		end
 	end
 	st.owner, st.ports, st.firsts = {}, {}, {}
+	if type(data.hegemon) == "string" and data.states[data.hegemon] then st.hegemon = data.hegemon else st.hegemon = nil end
 	if type(data.firsts) == "table" then
 		for id, row in pairs(data.firsts) do
 			if N.TECH_BY_ID[id] and type(row) == "table" and type(row.nation) == "string" then st.firsts[id] = { nation = row.nation, year = math.floor(tonumber(row.year) or st.startYear) } end

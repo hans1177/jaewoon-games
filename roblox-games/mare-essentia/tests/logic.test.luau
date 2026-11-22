@@ -3692,6 +3692,30 @@ local function testNations()
 		local fix6: any = E.restoreWorld(bad6)
 		check("손상된 발견 저장값을 고쳐서 복원한다", fix6 ~= nil and fix6.nations.states.england.tech.known.fake_tech == nil)
 	end
+	-- 위기·패권
+	do
+		local w7: any = E.newWorld({ seed = 55, year = 1650 })
+		local s7: any = w7.nations
+		local eng7 = s7.states.england
+		eng7.crisis = { kind = "plague", untilDay = w7.day + 240 }
+		check("국가 조회에 위기 이름이 나온다", N.view(s7, "england").crisis == "역병")
+		local snap7 = E.snapshot(w7)
+		snap7.nations.states.england.crisis = { kind = "없는위기", untilDay = 5 }
+		local back7: any = E.restoreWorld(snap7)
+		check("손상된 위기 저장값은 지워진다", back7 ~= nil and back7.nations.states.england.crisis == nil)
+		eng7.crisis = nil
+		local seenCrisis, seenHeg = false, false
+		for _ = 1, 365 * 6 do
+			E.step(w7)
+			for _, S in pairs(s7.states) do if S.crisis then seenCrisis = true end end
+			if s7.hegemon then seenHeg = true end
+		end
+		check("6년 안에 위기 사건이 한 번은 일어난다", seenCrisis)
+		check("패권 값은 없거나 실제 국가다", s7.hegemon == nil or s7.states[s7.hegemon] ~= nil)
+		local back8: any = E.restoreWorld(E.snapshot(w7))
+		check("패권국이 저장·복원된다", back8 ~= nil and back8.nations.hegemon == s7.hegemon)
+		local _ = seenHeg
+	end
 end
 testNations()
 
