@@ -323,12 +323,8 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 			d.Anchored = true
 			d.CanCollide = solid == true
 			d.CanTouch = false
-			-- [저폴리 메시 LOD] 현재 공식 API와 실제 Studio 클라이언트 실측에서 쓰기가 검증됐다.
-			-- 근·중경은 자동 정밀도, 원경만 Performance. 기등록 모델·텍스처·충돌을 유지한다.
-			if d:IsA("MeshPart") and scenicBand then
-				d.RenderFidelity = if scenicBand == "far" then Enum.RenderFidelity.Performance
-					else Enum.RenderFidelity.Automatic
-			end
+			-- [저폴리 자산 권한 보호] RenderFidelity는 실제 게임 클라이언트에서 쓰기 권한이 없다.
+			-- 원경은 승인된 저폴리 모델 자체를 선택하고, 등록 메시의 정밀도·PBR은 그대로 보존한다.
 			-- [무제한 경관 경량화] 전투 오브젝트 타격은 fieldObjects가 직접 판정하므로
 			-- 충돌 없는 장식은 물리 쿼리에서 제외한다. 계단·단서 등 충돌형 실물은 보존.
 			if solid ~= true then d.CanQuery = false end
