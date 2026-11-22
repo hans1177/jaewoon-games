@@ -1,0 +1,139 @@
+{
+  "version": 3,
+  "provider": "GEMINI",
+  "gameId": "mare-essentia",
+  "sourceRevision": "a84b364d2e81e2a048a0f50d0a3fa3c67b52a105",
+  "status": "CANDIDATE_EDITED",
+  "selectedRole": "GENERAL",
+  "usageWindow": {
+    "day": "2026-11-22",
+    "calls": {
+      "NVIDIA": 12,
+      "GEMINI": 9,
+      "OPENROUTER": 30
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-22",
+      "GEMINI": "2026-11-22",
+      "OPENROUTER": "2026-11-22"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-22T00:27:30.319Z",
+      "GEMINI": "2026-11-22T08:04:11.923Z",
+      "OPENROUTER": "2026-11-22T00:27:00.167Z"
+    }
+  },
+  "cooldowns": {
+    "GEMINI_FLASH": "2026-11-22T13:30:36.242Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 12,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 1.13,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 9,
+      "remainingLocal": 3,
+      "effectiveRemaining": 3,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": 3.72,
+      "estimatedHoursToLocalCap": 0.8,
+      "nextLocalWindowAt": "2026-11-23T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 30,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 2.97,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [
+    {
+      "id": "GEMINI_LITE",
+      "status": "OK",
+      "provider": "GEMINI",
+      "model": "gemini-3.5-flash-lite"
+    }
+  ],
+  "frames": [
+    {
+      "name": "b1_start-0.jpg",
+      "sha256": "c2d964ac2279784750730d1359a98174513b876a8089cc5daa4dc6ff7537a1f0"
+    },
+    {
+      "name": "b2_mid-0.jpg",
+      "sha256": "196a3de68764e9ae4211660218ba8c56663eb61818ac43364c01b1484ce9c60d"
+    },
+    {
+      "name": "c00_start-0.jpg",
+      "sha256": "a0d0bec27608e46ab188342f5b5c7945edb461bef44ac86f840b5c5196f9a646"
+    },
+    {
+      "name": "intro_center_early-0.jpg",
+      "sha256": "db00dce4ffebaa4ab8526f13e33a8190dae4ff61b24a7a95d3362b09e779a93f"
+    }
+  ],
+  "model": "gemini-3.5-flash-lite",
+  "rawResponseSha256": "49a072edf7ae41d61d82b5431e31295c45052530dcdabbce38f12102466621c7",
+  "issues": [
+    {
+      "category": "lighting",
+      "severity": "medium",
+      "screenshot": "b2_mid-0.jpg",
+      "evidenceSha256": "5514bb7ab90426e67be1b526f45a63410f21fc47d7ac25308e3987d1c7f9c8fb"
+    }
+  ],
+  "edits": [
+    {
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+      "category": "lighting",
+      "screenshot": "b2_mid-0.jpg",
+      "beforeSha256": "fea3d40aa61e904c3949dfe3a0ffdd1d7bf0363bff50c29e3afe4b5827a2fbb3",
+      "afterSha256": "f4f6a412aaec10d475dd3dbb68e7f9019f179a060cf3c9375c48069d79bef1b6"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+      "beforeSha256": "b9fe5281ce64694ccdbfe4daca4e8355789c9e3c673ace217bce6a1edbc5c957",
+      "afterSha256": "9df625a5ed46fdbfcbbcf5758cb4c296202cc0b361e9dd7e8a200c270f18ce5d"
+    }
+  ],
+  "candidateOnly": true,
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
