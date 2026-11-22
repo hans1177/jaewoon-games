@@ -4937,7 +4937,31 @@ function H.historyCinematic(parent, ev)
 	return function()
 		if recorded or not root.Parent then return end
 		recorded = true
+		-- [사건 귀환] 현실로 펼쳐졌던 지도가 양쪽 책장 속으로 접히며 서재에 기록된다.
+		local closeBook = Instance.new("Frame")
+		closeBook.Name = "HistoricBookClosing"
+		closeBook.Size = UDim2.fromScale(1, 1)
+		closeBook.BackgroundTransparency = 1
+		closeBook.ZIndex = 11
+		closeBook.Parent = root
+		for i = 1, 2 do
+			local leaf = Instance.new("Frame")
+			leaf.Name = if i == 1 then "ReturnLeftPage" else "ReturnRightPage"
+			leaf.AnchorPoint = Vector2.new(if i == 1 then 0 else 1, 0.5)
+			leaf.Position = UDim2.fromScale(if i == 1 then 0 else 1, 0.5)
+			leaf.Size = UDim2.fromScale(0.006, 0.94)
+			leaf.BackgroundColor3 = if i == 1 then Color3.fromRGB(229, 199, 146) else Color3.fromRGB(244, 219, 176)
+			leaf.BorderSizePixel = 0
+			leaf.ZIndex = 12
+			leaf.Parent = closeBook
+			TS:Create(leaf, TweenInfo.new(if lessMotion then 0.16 else 0.46, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+				Size = UDim2.fromScale(0.5, 0.94),
+			}):Play()
+		end
 		Sfx.play("sfx_contract_stamp", 0.28, 1.03, "sfx_book_turn")
+		task.delay(0.25, function()
+			if root.Parent then Sfx.play("sfx_quest_book_close", 0.23, 1.03, "sfx_book_turn") end
+		end)
 		local seal = Instance.new("TextLabel")
 		seal.Name = "HistoricalBookArchived"
 		seal.AnchorPoint = Vector2.new(0.5, 0.5)
