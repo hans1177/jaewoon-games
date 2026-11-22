@@ -174,6 +174,32 @@ return function(D, S)
 		return true, string.format("%s 관리에게 선물을 건넸다. 호감 +12 (지금 %d)", X.PowerName[power], d.rep[power])
 	end
 
+	-- 전쟁 개입: 이 항구 나라에 군수 납품·중재·용병 해군. 성공할 때만 코인을 쓴다.
+	local AID_KINDS = { supply = true, mediate = true, mercenary = true }
+	local AID_AMOUNTS = { [200] = true, [500] = true, [1000] = true }
+	function handlers.DiploAid(state, p)
+		local kind, amount = p and p.kind, p and tonumber(p.amount)
+		if not AID_KINDS[kind] or not amount or not AID_AMOUNTS[amount] then
+			return false, "잘못된 요청"
+		end
+		local port = D.Ports.Ports[state.portId]
+		if not port then
+			return false, "이 항구를 찾을 수 없어요"
+		end
+		if state.coins < amount then
+			return false, string.format("%d코인이 필요해요", amount)
+		end
+		if not (S.Econ and S.Econ.aid) then
+			return false, "지금은 개입할 수 없어요"
+		end
+		local ok, message = S.Econ.aid(state, kind, port.country, amount)
+		if not ok then
+			return false, message
+		end
+		state.coins -= amount
+		return true, message
+	end
+
 	function handlers.DiploPass(state)
 		local d = dip(state)
 		if d.passUntil >= state.day + PASS_DAYS - 5 then

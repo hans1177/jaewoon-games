@@ -2844,6 +2844,12 @@ do
 		d1.portId = "lisbon"
 		S.Diplomacy.tick(d1)
 		check("diplo: 우호국엔 선물 가능", H.DiploGift(d1, {}) and d1.coins == 800 and d1.diplo.rep.portugal >= 12)
+		-- 전쟁 개입: 잘못된 금액·종류는 거절, 실패하면 코인이 줄지 않는다
+		local coinsA = d1.coins
+		local badAmt = H.DiploAid(d1, { kind = "supply", amount = 7 })
+		local badKind = H.DiploAid(d1, { kind = "bomb", amount = 500 })
+		local failed = H.DiploAid(d1, { kind = "mediate", amount = 200 })
+		check("diplo: 개입은 잘못된 요청을 거절하고 실패 시 코인이 그대로다", badAmt == false and badKind == false and (failed == false or d1.coins < coinsA) and (failed or d1.coins == coinsA))
 		local back = S.State.sanitize(S.State.serialize(d1))
 		check("diplo: 저장·복원", back.diplo.rep.portugal == d1.diplo.rep.portugal and back.diplo.warSeen.w_armada ~= nil)
 		-- 항해자: 정해진 항로를 돈다
