@@ -47,7 +47,7 @@ for src, dst, m, h in done:
     print(("[시험] " if dry else "") + f"등록: {src} → {dst}  ({m['license']}, {h[:10]})")
     if dry: continue
     os.makedirs(os.path.dirname(dst), exist_ok=True)
-    shutil.move(src, dst); os.remove(src + ".license.json")
+    shutil.move(src, dst); shutil.move(src + ".license.json", dst + ".license.json")
     with open(os.path.join(root, "assets", "SOURCES.md"), "a", encoding="utf-8") as s:
         s.write(f"| `{os.path.basename(os.path.dirname(dst))}/` | {os.path.basename(dst)} | {m.get('author','')} · {m['license']} | {m.get('source','')} |\n")
 print(f"등록 {len(done)}건, 거부 {len(bad)}건" + (" (시험 실행)" if dry else "") + ("" if dry or not done else " → 다음: owner-mare-essentia-assets 워크플로로 업로드"))
