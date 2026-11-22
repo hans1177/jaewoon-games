@@ -127191,7 +127191,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -127234,12 +127234,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:45040306494:1",
+      "reservedAt": "2026-11-22T15:57:07.620Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -128172,7 +128172,8 @@
         "system-ai-handoff-to-reservation:system-ai:45033314019:1",
         "actions-run:45033314019",
         "system-ai-handoff-to-reservation:system-ai:45036403193:1",
-        "actions-run:45036403193"
+        "actions-run:45036403193",
+        "system-ai-handoff-to-reservation:system-ai:45040306494:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1918,
@@ -128187,7 +128188,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-22T15:21:56.121Z"
+      "updatedAt": "2026-11-22T15:57:07.620Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
@@ -247422,7 +247423,7 @@
     },
     {
       "id": "marketing-rpg-adventure-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -247463,12 +247464,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:45040306494:1",
+      "reservedAt": "2026-11-22T15:57:07.620Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-verification-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -247525,22 +247526,23 @@
         "learning-penalty:YES",
         "primary-ai-collaboration:REQUESTED",
         "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
-        "primary-ai-collaboration-task:marketing-rpg-adventure-pre-release-v1"
+        "primary-ai-collaboration-task:marketing-rpg-adventure-pre-release-v1",
+        "system-ai-impact-score:198"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 176,
+      "impactScore": 198,
       "impactComponents": {
         "severity": 2,
         "blockedTaskCount": 0,
-        "recurrenceCount": 0,
+        "recurrenceCount": 1,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
-        "ageHours": 0.26,
+        "ageHours": 0.52,
         "repairRisk": 1
       },
       "createdAt": "2026-11-22T15:26:05.928Z",
-      "updatedAt": "2026-11-22T15:48:00.000Z"
+      "updatedAt": "2026-11-22T15:57:07.620Z"
     },
     {
       "id": "recovery-recovery-a04337cc3eb4766b9b8d",
