@@ -3071,7 +3071,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 
 	-- 1) 마을 구획: 큰길 앞 두 줄 + 골목마다 등을 맞댄 두 줄. 집 크기·간격·층수·골목 짜임은 지역 프로필을 따르고,
 	--    항구 발전도가 오를수록 구획(줄)이 늘고 길이 포장되며 집이 높아진다.
-	-- 기본 필지 1.5배, 최대 2.2배. 건물 본체는 기존 크기를 유지하고 넓어진 필지를 보행·정원에 쓴다.
+	-- [마을 축소] 실제 경제·저장 필지와 도로 키는 유지하되 시각 주택 규모와 시가지 외곽을 압축한다.
 	local isRoyalCity = table.find(info.facilities or {}, "palace") ~= nil
 	local royalPlots = PortBuildings.RoyalCityPlots
 	local royalLot = if isRoyalCity then royalPlots.plotScale[lvl] else 1
@@ -3082,7 +3082,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local fw = P.S * (countryPlan and countryPlan.lot or 1) / (HOUSE_SCALE * 1.08)
 	local laneWidth = math.max(if isRoyalCity then 13 else 9, P.alley * (if isRoyalCity then 2.1 else 1.8))
 	local laneL = 2 * S + laneWidth + 12
-	local pairsN = math.min(3, math.max(1, math.floor((395 - 151) / laneL)), 1 + math.floor(lvl * 0.6))
+	local pairsN = math.min(2, math.max(1, math.floor((395 - 151) / laneL)), 1 + math.floor(lvl * 0.6))
 	local localBlocks = info.development and info.development.blocks
 	local economicDensity = if localBlocks then math.clamp(0.8 + math.sqrt(math.max(0, localBlocks)) / 60, 0.76, 1.18) else 1
 	local moodDensity = if info.sim and info.sim.mood == "slump" then 0.88 else 1
@@ -3135,7 +3135,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		elseif key == "japan" or key == "china" or key == "korea" or key == "seasia" then "bamboo"
 		else "woodland"
 	-- 도시 전체 외곽을 단계별로 서쪽으로 넓혀 구시가지와 신시가지를 분리한다.
-	local X_END = -math.min(565, 210 + math.floor(130 * math.sqrt(areaGrowth)) + math.floor(districtOffset * 3))
+	local X_END = -math.min(490, 190 + math.floor(110 * math.sqrt(areaGrowth)) + math.floor(districtOffset * 3))
 	local placedLots = {}
 	local streetsOuter = {}
 	for x = -235, X_END, -(S * 2.7 + laneWidth + 12) do
@@ -3176,7 +3176,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			local clear = math.abs(z) + hz <= 440
 			-- 기존 시가지 시설·왕궁·세로 도로를 보수적인 건물 외곽 기준으로 피한다.
 			if clear and x > -108 - hx and math.abs(z) > 17 - hz and math.abs(z) < 59 + hz then clear = false end
-			if clear and isRoyalCity and x - hx < -235 and x + hx > -570 and math.abs(z) < 265 + hz then clear = false end
+			if clear and isRoyalCity and x - hx < -215 and x + hx > -630 and math.abs(z) < 320 + hz then clear = false end
 			if clear and math.abs(z) < 165 + hz and math.abs(x + 212) < hx + 9 then clear = false end
 			if clear and math.abs(z) < 68 + hz then
 				for _, sx in streetsX do
@@ -3224,7 +3224,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		halfZ = halfZ or halfX
 		if x > -108 - halfX and math.abs(z) > 17 - halfZ and math.abs(z) < 59 + halfZ then return true end
 		if x < -211 + halfX and math.abs(z) < 145 + halfZ then return true end
-		if isRoyalCity and x < -235 + halfX and x > -570 - halfX and math.abs(z) < 265 + halfZ then return true end
+		if isRoyalCity and x < -215 + halfX and x > -630 - halfX and math.abs(z) < 320 + halfZ then return true end
 		for _, d in districts do
 			if math.abs(x - d.at.X) < d.hx + halfX and math.abs(z - d.at.Z) < d.hz + halfZ then return true end
 		end
@@ -3470,7 +3470,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				-- 폭/깊이도 지역 프로필을 재사용해 운하 상가·목조 민가·중정 주택의 실루엣을 구분한다.
 				local widthBase = fw * (sz / S) * (P.wMul or 1)
 				local depthBase = math.max(widthBase * 0.72, widthBase + (P.dAdd or 0))
-				local sizeScale = houseSizeBands[lvl][sizeClass] * sizeJitter
+				local sizeScale = houseSizeBands[lvl][sizeClass] * sizeJitter * 0.8
 				-- 집 본체뿐 아니라 동아시아 처마·서양 별채·베란다·계단도 여유 폭에 포함한다.
 				-- 기존 필지 점유 반경보다 작게 잡지 않아 모바일 건물 수가 증가하지 않는다.
 				local roofFactor = if style.kit == "eastasia" then 1.62 else 1.46
@@ -3480,7 +3480,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				-- 도로와 맞닿는 대형 주택은 같은 필지에서 한 단계 작은 형태를 선택한다.
 				while sizeClass > 1 and projectedHalf > rowClearance do
 					sizeClass -= 1
-					sizeScale = houseSizeBands[lvl][sizeClass] * sizeJitter
+					sizeScale = houseSizeBands[lvl][sizeClass] * sizeJitter * 0.8
 					projectedHalf = math.max(widthBase, depthBase) * sizeScale * HOUSE_SCALE * (style.sizeMul or 1)
 						* roofFactor * 0.5 + 3.5
 				end
@@ -6048,11 +6048,11 @@ function PortScene.build(info, onFacility)
 		local px = -425
 		local key = currentKey
 		local royalSeed = seeded(info.portId .. ":royal-court")
-		-- [왕궁 크기] 승인된 실물 건축 모듈의 가로·세로를 초기부터 크게 만들고, 3층 본관으로 실루엣을 높인다.
-		-- 최대 폭 279/깊이 286스터드: 기존 왕궁 보호 구역(-570~-235, |z|<265)의 본관·별관을 넘지 않는다.
-		local scale = 1.85 + (cityTier - 1) * 0.04 + royalSeed:NextNumber(0, 0.025)
+		-- [왕궁 발전별 규모] 1~6 발전 단계마다 가로폭이 확실히 증가한다. 기존 모듈만 재사용한다.
+		-- 본관 최대 355스터드, 서측 농장 경계보다 동쪽. 부속 건물은 왕궁 보호 구역 내에 유지한다.
+		local scale = 2.08 + (cityTier - 1) * 0.11 + royalSeed:NextNumber(0, 0.02)
 		local wide, deep = 134 * scale, 138 * scale
-		local tall = 50 + sceneLevel * 7
+		local tall = 48 + sceneLevel * 12
 		-- [지역 관저 판별] 지역 문화 키만으로 통치 체계가 달라지는 항구를 같은 왕궁으로 묶지 않는다.
 		-- 조선은 기존 포트 문화 테이블에서 stone으로 분류돼 있으므로 국가 데이터를 먼저 본다.
 		local homePort = PortData.Ports[info.portId]
@@ -6097,6 +6097,10 @@ function PortScene.build(info, onFacility)
 		main:SetAttribute("PortId", info.portId)
 		main:SetAttribute("FootprintRatio", 10)
 		main:SetAttribute("RoyalTier", palaceTier)
+		-- [왕궁 시각 단계] 별관·탑·층수가 기존 경제 발전도에 따라 달라진다(저장값 불변).
+		main:SetAttribute("RoyalVisualStage", if palaceTier == 1 then "ROYAL_RESIDENCE"
+			elseif palaceTier == 2 then "ROYAL_COURT" elseif palaceTier == 3 then "ROYAL_PALACE"
+			elseif palaceTier == 4 then "ROYAL_COMPLEX" else "ROYAL_CAPITAL")
 		-- [궁정 건축] 궁전 등급도 기존 발전도와 통일된 표시용 필지 규약으로 공개한다.
 		main:SetAttribute("BuildPlotId", info.portId .. ":royal:main")
 		main:SetAttribute("BuildType", "palace")
@@ -6112,7 +6116,9 @@ function PortScene.build(info, onFacility)
 			elseif islamic then { wall = "kenney_grey_wall_01", window = "kenney_grey_arch_01", door = "kenney_grey_door_round_01" }
 			elseif indian or southeast or tropical or westAfrican then { wall = "kenney_wood_wall_01", window = "kenney_wood_window_square_01", door = "kenney_wood_door_01", roof = "kenney_roof_straight_red_01" }
 			else { wall = "kenney_grey_wall_01", window = "kenney_grey_window_square_01", door = "kenney_grey_door_round_01", roof = "kenney_roof_straight_red_01" }
-		local hallPieces, hallTop, hallX, hallZ = modularHall(folder, px, 0, wide * 0.92, deep * 0.72, 3, hallSet, baseColor, roofColor)
+		local hallFloors = if palaceTier <= 2 then 2 elseif palaceTier <= 4 then 3 else 4
+		local hallPieces, hallTop, hallX, hallZ = modularHall(folder, px, 0, wide * 0.92, deep * 0.72, hallFloors, hallSet, baseColor, roofColor)
+		main:SetAttribute("RoyalVisualFloors", hallFloors)
 		main:SetAttribute("ModularHallPieces", hallPieces)
 		-- [부속 건물 역할별 실물 조립] 같은 주택 하나를 반복하지 않고 역할마다 형태를 다르게 조립한다.
 		-- 마구간=목조 단층, 근위소=창 적은 좁은 3층(탑형), 서고=창 많은 2층, 행정청=본관과 같은 입면 2층.
@@ -6148,7 +6154,8 @@ function PortScene.build(info, onFacility)
 			local wingRoof = part(folder, Vector3.new(wide * 0.78, 3.5, 34), CFrame.new(px - 8, tall * 0.72 + 1.5, z), roofColor, Enum.Material.Slate)
 			-- [측랑 실물화] 본관 규모에 비례한 넓은 2층 측랑을 같은 문화권 승인 모듈로 조립한다.
 			if hallPieces > 0 then
-				local wingPieces, wingTop, wingX, wingZ = modularHall(folder, px - 8, z, wide * 0.7, 28, 2, hallSet, baseColor, roofColor)
+				local wingFloors = if palaceTier >= 4 then 3 else 2
+				local wingPieces, wingTop, wingX, wingZ = modularHall(folder, px - 8, z, wide * 0.7, 28, wingFloors, hallSet, baseColor, roofColor)
 				if wingPieces > 0 then
 					wing.Size = Vector3.new(wingX - 1.4, wingTop - 0.4, wingZ - 1.4)
 					wing.CFrame = CFrame.new(px - 8, (wingTop - 0.4) / 2, z)
@@ -6168,10 +6175,11 @@ function PortScene.build(info, onFacility)
 				-- [높은 왕궁 탑] 3층 본관보다 충분히 높은 승인된 성곽 메시를 기존 탑 위치에만 쌓는다.
 				local tbase = importedModel(folder, "Castle", "tower-square-base", Vector3.new(tx, 0, zTower), 26, true, baseColor)
 				if tbase then tbase.Name = "RoyalTower" end
-				for level = 1, 3 do
+				local towerLevels = math.clamp(palaceTier, 2, 4)
+				for level = 1, towerLevels do
 					importedModel(folder, "Castle", "tower-square-mid-windows", Vector3.new(tx, level * 26, zTower), 26, true, baseColor)
 				end
-				importedModel(folder, "Castle", "tower-square-top-roof", Vector3.new(tx, 104, zTower), 29, false)
+				importedModel(folder, "Castle", "tower-square-top-roof", Vector3.new(tx, (towerLevels + 1) * 26, zTower), 29, false)
 			end
 			if palaceTier >= 2 then
 				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(facadeX + 5, 0, side * (deep * 0.4 + 7)), 12, false)
