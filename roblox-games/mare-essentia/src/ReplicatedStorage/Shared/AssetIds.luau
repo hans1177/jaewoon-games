@@ -14,6 +14,7 @@ return {
 	["CardArt/af_03"] = 72489040757878,
 	["CardArt/af_15"] = 77023165428158,
 	["CardArt/af_32"] = 110821195259437,
+	["CardArt/af_34"] = 132227915959718,
 	["CardArt/ast_aurora"] = 107877140385634,
 	["CardArt/ast_comet"] = 127370718437030,
 	["CardArt/ast_halley_comet"] = 105991549101223,
