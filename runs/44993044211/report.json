@@ -1,0 +1,118 @@
+{
+ "sourceRevision": "028695f97553a3fcc7afc1a355bf80cadea61c3c",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "play ok=true nil\ntext"
+  },
+  {
+   "step": 3,
+   "capture": "rt1",
+   "files": 1
+  },
+  {
+   "step": 4,
+   "click": "naval_fire",
+   "at": "910,136",
+   "out": "910,136 CLICK=naval_fire\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 910,
+      "y": 136
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 6,
+   "ctx": "Client",
+   "out": "NAVAL_FIRE_INPUT_PASS result=fire:ok\ntext"
+  }
+ ],
+ "errors": [
+  "step7:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:4: NAVAL_SKILL_BUTTON_MISSING:guard | "
+ ],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35006
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 386
+  },
+  {
+   "step": 2,
+   "type": "wait",
+   "elapsedMs": 7004
+  },
+  {
+   "step": 3,
+   "type": "capture",
+   "elapsedMs": 938
+  },
+  {
+   "step": 4,
+   "type": "click_from_luau",
+   "elapsedMs": 1053
+  },
+  {
+   "step": 5,
+   "type": "wait",
+   "elapsedMs": 801
+  },
+  {
+   "step": 6,
+   "type": "luau",
+   "elapsedMs": 116
+  },
+  {
+   "step": 7,
+   "type": "click_from_luau",
+   "elapsedMs": 583
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 21,
+  "completedSteps": 8,
+  "plannedClicks": 2,
+  "successfulClicks": 1,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 6,
+  "capturedFrames": 1,
+  "abortedEarly": true
+ },
+ "abortDiagnostics": {
+  "step": 7,
+  "type": "click_from_luau",
+  "elapsedMs": 182,
+  "context": "Client",
+  "lastScreenshot": "rt1",
+  "lastClick": "naval_fire",
+  "probes": {
+   "Client": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_CLIENT\ntext"
+   },
+   "Server": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_SERVER\ntext"
+   }
+  }
+ }
+}
