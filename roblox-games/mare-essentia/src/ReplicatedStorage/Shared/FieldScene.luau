@@ -591,42 +591,49 @@ function FieldScene.start(opts)
 	-- 기존 위험도·몬스터·보상과 무관한 이번 필드 한정 시각 값이며 원본 BIOMES 테이블은 변경하지 않는다.
 	local biome = table.clone(lookFor(opts.name or "", opts.portId))
 	-- [대륙·항구 식별] 기존 Ports 원본 좌표·특산품을 시각적 구역 정체성으로만 읽는다.
-	local port = opts.portId and Ports.Ports[opts.portId]
-	local latitude, longitude = port and port.lat or 0, port and port.lon or 0
-	local continent = if port == nil then "generic"
-		elseif longitude < -30 then (if latitude < 10 then "south_america" else "north_america")
-		elseif longitude > 100 and latitude < -9 then "oceania"
-		elseif (biome.region == "wafrica" or biome.region == "swahili" or
-			(latitude < -10 and longitude < 55)) then "africa"
-		elseif longitude >= 38 or biome.region == "korea" or biome.region == "japan"
-			or biome.region == "china" or biome.region == "malabar" or biome.region == "seasia"
-			or biome.region == "ottoman" then "asia"
-		else "europe"
-	local portNature = PORT_NATURE[opts.portId or ""]
-	if not portNature and port then
-		portNature = if latitude > 56 then "northern_coast"
-			elseif latitude < -10 and latitude > -42 and continent == "oceania" then "woodland"
-			elseif table.find(port.produces, "timber") then "forest"
-			elseif table.find(port.produces, "iron") or table.find(port.produces, "copper")
-				or table.find(port.produces, "coal") then "mineral"
-			elseif table.find(port.produces, "rice") or table.find(port.produces, "spice") then "mangrove"
-			elseif latitude > 25 and latitude < 36 and continent == "africa" then "arid_coast"
-			elseif continent == "oceania" or continent == "north_america" and latitude < 28 then "reef"
-			elseif continent == "asia" and latitude < 20 then "jungle_coast"
-			else "coast"
+	-- [Luau 지역변수 상한] 대륙 계산용 좌표와 이름은 이 블록에서 바로 해제한다.
+	local portNature, portVisualSeed = nil, 0
+	do
+		local port = opts.portId and Ports.Ports[opts.portId]
+		local latitude, longitude = port and port.lat or 0, port and port.lon or 0
+		local portId = opts.portId or ""
+		local continent = if port == nil then "generic"
+			elseif table.find({ "honolulu", "guam", "tahiti", "suva", "port_moresby" }, portId) then "oceania"
+			elseif portId == "port_louis" then "africa"
+			elseif portId == "panama" or portId == "portobelo" then "north_america"
+			elseif portId == "la_guaira" or portId == "cartagena_indias" then "south_america"
+			elseif longitude < -30 then (if latitude < 10 then "south_america" else "north_america")
+			elseif longitude > 100 and latitude < -9 then "oceania"
+			elseif (biome.region == "wafrica" or biome.region == "swahili" or
+				(latitude < -10 and longitude < 55)) then "africa"
+			elseif longitude >= 38 or biome.region == "korea" or biome.region == "japan"
+				or biome.region == "china" or biome.region == "malabar" or biome.region == "seasia"
+				or biome.region == "ottoman" then "asia"
+			else "europe"
+		portNature = PORT_NATURE[portId]
+		if not portNature and port then
+			portNature = if latitude > 56 then "northern_coast"
+				elseif latitude < -10 and latitude > -42 and continent == "oceania" then "woodland"
+				elseif table.find(port.produces, "timber") then "forest"
+				elseif table.find(port.produces, "iron") or table.find(port.produces, "copper")
+					or table.find(port.produces, "coal") then "mineral"
+				elseif table.find(port.produces, "rice") or table.find(port.produces, "spice") then "mangrove"
+				elseif latitude > 25 and latitude < 36 and continent == "africa" then "arid_coast"
+				elseif continent == "oceania" or (continent == "north_america" and latitude < 28) then "reef"
+				elseif continent == "asia" and latitude < 20 then "jungle_coast"
+				else "coast"
+		end
+		-- [퀘스트마다 다른 배치] 실제 siteId를 사용. 게임 RNG 및 저장·보상과 완전히 분리.
+		local visualKey = portId .. "/" .. (opts.siteId or opts.name or "")
+		for index = 1, #visualKey do
+			portVisualSeed = (portVisualSeed * 31 + string.byte(visualKey, index)) % 2147483647
+		end
+		folder:SetAttribute("FieldContinent", continent)
+		folder:SetAttribute("FieldPortId", portId)
+		folder:SetAttribute("FieldSiteId", opts.siteId or "")
+		folder:SetAttribute("FieldPortNature", portNature or "unknown")
+		folder:SetAttribute("FieldVisualSeed", portVisualSeed)
 	end
-	-- [퀘스트마다 다른 배치] 동일 항구라도 실제 siteId를 섞은 정적 시각 시드.
-	-- 기존 전투 스폰/보상 난수 rng와 분리해 게임 규칙과 저장 구조는 보존한다.
-	local visualKey = (opts.portId or "") .. "/" .. (opts.siteId or opts.name or "")
-	local portVisualSeed = 0
-	for index = 1, #visualKey do
-		portVisualSeed = (portVisualSeed * 31 + string.byte(visualKey, index)) % 2147483647
-	end
-	folder:SetAttribute("FieldContinent", continent)
-	folder:SetAttribute("FieldPortId", opts.portId or "")
-	folder:SetAttribute("FieldSiteId", opts.siteId or "")
-	folder:SetAttribute("FieldPortNature", portNature or "unknown")
-	folder:SetAttribute("FieldVisualSeed", portVisualSeed)
 	local month = os.date("!*t").month
 	local season = if month >= 3 and month <= 5 then "봄" elseif month >= 6 and month <= 8 then "여름"
 		elseif month >= 9 and month <= 11 then "가을" else "겨울"
