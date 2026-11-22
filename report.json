@@ -1,5 +1,5 @@
 {
- "sourceRevision": "39162263807efb226d2ff42dc3732c6290fd1347",
+ "sourceRevision": "bdd10a93d70213f0e84d179b2c9b9805dddc1d50",
  "log": [
   {
    "step": 1,
@@ -763,7 +763,7 @@
   {
    "step": 163,
    "ctx": "Client",
-   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.5, 219.2686004638672, 36.4462890625 on=true parent=VoyageScene fog=2600 brightness=1.983071208000183 atmo=0.3700000047683716 camdist=36.657291412353516\ntext"
+   "out": "stream=false parts=44/44 ex=galleon_hull_darkwood:0:83.23200225830078, 18.653249740600586, 29.482744216918945:MeshPart;galleon_hull_hull:0:83.23200225830078, 15.147000312805176, 28.048315048217773:MeshPart;galleon_hull_hull2:0:83.23200225830078, 13.60425090789795, 28.048315048217773:MeshPart;galleon_hull_seam:0:83.51212310791016, 15.978890419006348, 28.645360946655273:MeshPart vp=524.5070190429688, 218.8920135498047, 36.4453125 on=true parent=VoyageScene fog=1603.545654296875 brightness=1.9825315475463867 atmo=0.3700000047683716 camdist=36.65126419067383\ntext"
   },
   {
    "step": 165,
@@ -1003,7 +1003,7 @@
   {
    "step": 235,
    "ctx": "Client",
-   "out": "FIELD_QA_ENTRY_AVAILABLE=12 LOCKED_LABELS=0 REAL_UI_ONLY=true PORT_TRANSITION port=london buildMs=9477 firstFrameMs=9479 inputReadyMs=74 maxStallMs=325 postBuildMs=0 spans=65ms@routeCheck>shadowPass;49ms@villager:Barbarian>villager:Barbarian;42ms@villager:Knight>villager:Mage stallAt=8105ms:duringBuild yieldGap=293ms@parentToWorkspace heap-836KB destroyed=68858\ntext"
+   "out": "FIELD_QA_ENTRY_AVAILABLE=12 LOCKED_LABELS=0 REAL_UI_ONLY=true PORT_TRANSITION port=london buildMs=8515 firstFrameMs=8516 inputReadyMs=86 maxStallMs=305 postBuildMs=0 spans=49ms@villager:Rogue>villager:Barbarian;43ms@parentToWorkspace>parentToWorkspace;41ms@villager:Rogue>villager:Barbarian stallAt=520ms:duringBuild yieldGap=273ms@Town/fence_straight heap-589KB destroyed=68858\ntext"
   },
   {
    "step": 236,
@@ -1028,729 +1028,701 @@
    "step": 238,
    "capture": "field_entry",
    "files": 1
-  },
-  {
-   "step": 239,
-   "ctx": "Client",
-   "out": "FIELD_QA_ENTRY_PASS MOVEMENT_READY: x=2998 screen=FieldGui\ntext"
-  },
-  {
-   "step": 240,
-   "capture": "field_npc_ally_mob",
-   "files": 1
-  },
-  {
-   "step": 241,
-   "ctx": "Client",
-   "out": "FIELD_MOTION_STABLE actors=21 maxStep=1.20 twoWeapons=PASS skillArt=PASS\ntext"
-  },
-  {
-   "step": 242,
-   "capture": "field_motion_smooth_icons",
-   "files": 1
-  },
-  {
-   "step": 244,
-   "ctx": "Client",
-   "out": "MOTION_FIELD_ACTORS_PASS ENEMY_ROLES=3 ALLIES=1 ENEMY_JOINTS=5 ALLY_JOINTS=5 DISTINCT_ROLE_POSES=3 DISTINCT_SUPPORT_POSES=4\ntext"
-  },
-  {
-   "step": 245,
-   "capture": "field_actor_after_motion",
-   "files": 1
   }
  ],
- "errors": [],
+ "errors": [
+  "step239:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:1: FIELD_QA_ENTRY_FAIL: pointer=activa"
+ ],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28013
+   "elapsedMs": 28003
   },
   {
    "step": 1,
    "type": "capture",
-   "elapsedMs": 1113
+   "elapsedMs": 1384
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 182
+   "elapsedMs": 215
   },
   {
    "step": 3,
    "type": "luau",
-   "elapsedMs": 200
+   "elapsedMs": 201
   },
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 219
+   "elapsedMs": 200
   },
   {
    "step": 5,
    "type": "wait",
-   "elapsedMs": 402
+   "elapsedMs": 415
   },
   {
    "step": 6,
    "type": "click_from_luau",
-   "elapsedMs": 1007
+   "elapsedMs": 1167
   },
   {
    "step": 7,
    "type": "wait",
-   "elapsedMs": 2015
+   "elapsedMs": 2009
   },
   {
    "step": 8,
    "type": "capture",
-   "elapsedMs": 1027
+   "elapsedMs": 1097
   },
   {
    "step": 9,
    "type": "luau",
-   "elapsedMs": 181
+   "elapsedMs": 196
   },
   {
    "step": 10,
    "type": "wait",
-   "elapsedMs": 412
+   "elapsedMs": 409
   },
   {
    "step": 11,
    "type": "click_from_luau",
-   "elapsedMs": 986
+   "elapsedMs": 923
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 2007
+   "elapsedMs": 2008
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 805
+   "elapsedMs": 833
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 172
+   "elapsedMs": 192
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 414
+   "elapsedMs": 412
   },
   {
    "step": 16,
    "type": "click_from_luau",
-   "elapsedMs": 1035
+   "elapsedMs": 889
   },
   {
    "step": 17,
    "type": "wait",
-   "elapsedMs": 1714
+   "elapsedMs": 1701
   },
   {
    "step": 18,
    "type": "capture",
-   "elapsedMs": 1220
+   "elapsedMs": 1644
   },
   {
    "step": 19,
    "type": "wait",
-   "elapsedMs": 1802
+   "elapsedMs": 1805
   },
   {
    "step": 20,
    "type": "capture",
-   "elapsedMs": 3499
+   "elapsedMs": 4082
   },
   {
    "step": 21,
    "type": "wait",
-   "elapsedMs": 1806
+   "elapsedMs": 1811
   },
   {
    "step": 22,
    "type": "capture",
-   "elapsedMs": 3627
+   "elapsedMs": 2507
   },
   {
    "step": 23,
    "type": "wait",
-   "elapsedMs": 3712
+   "elapsedMs": 3700
   },
   {
    "step": 24,
    "type": "capture",
-   "elapsedMs": 2977
+   "elapsedMs": 2853
   },
   {
    "step": 25,
    "type": "luau",
-   "elapsedMs": 4180
+   "elapsedMs": 2756
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 1530
+   "elapsedMs": 310
   },
   {
    "step": 27,
    "type": "wait",
-   "elapsedMs": 2504
+   "elapsedMs": 2511
   },
   {
    "step": 28,
    "type": "capture",
-   "elapsedMs": 2096
+   "elapsedMs": 1923
   },
   {
    "step": 29,
    "type": "luau",
-   "elapsedMs": 1839
+   "elapsedMs": 1736
   },
   {
    "step": 30,
    "type": "luau",
-   "elapsedMs": 69
+   "elapsedMs": 324
   },
   {
    "step": 31,
    "type": "luau",
-   "elapsedMs": 381
+   "elapsedMs": 341
   },
   {
    "step": 32,
    "type": "wait",
-   "elapsedMs": 2500
+   "elapsedMs": 2507
   },
   {
    "step": 33,
    "type": "luau",
-   "elapsedMs": 554
+   "elapsedMs": 257
   },
   {
    "step": 34,
    "type": "capture",
-   "elapsedMs": 1237
+   "elapsedMs": 1405
   },
   {
    "step": 35,
    "type": "luau",
-   "elapsedMs": 360
+   "elapsedMs": 356
   },
   {
    "step": 36,
    "type": "luau",
-   "elapsedMs": 697
+   "elapsedMs": 361
   },
   {
    "step": 37,
    "type": "wait",
-   "elapsedMs": 2501
+   "elapsedMs": 2508
   },
   {
    "step": 38,
    "type": "luau",
-   "elapsedMs": 341
+   "elapsedMs": 309
   },
   {
    "step": 39,
    "type": "luau",
-   "elapsedMs": 298
+   "elapsedMs": 316
   },
   {
    "step": 40,
    "type": "capture",
-   "elapsedMs": 1134
+   "elapsedMs": 1337
   },
   {
    "step": 41,
    "type": "luau",
-   "elapsedMs": 399
+   "elapsedMs": 322
   },
   {
    "step": 42,
    "type": "click_from_luau",
-   "elapsedMs": 1067
+   "elapsedMs": 1300
   },
   {
    "step": 43,
    "type": "wait",
-   "elapsedMs": 860
+   "elapsedMs": 857
   },
   {
    "step": 44,
    "type": "luau",
-   "elapsedMs": 189
+   "elapsedMs": 159
   },
   {
    "step": 45,
    "type": "capture",
-   "elapsedMs": 840
+   "elapsedMs": 1094
   },
   {
    "step": 46,
    "type": "luau",
-   "elapsedMs": 184
+   "elapsedMs": 192
   },
   {
    "step": 47,
    "type": "wait",
-   "elapsedMs": 2505
+   "elapsedMs": 2502
   },
   {
    "step": 48,
    "type": "luau",
-   "elapsedMs": 207
+   "elapsedMs": 249
   },
   {
    "step": 49,
    "type": "capture",
-   "elapsedMs": 1029
+   "elapsedMs": 1038
   },
   {
    "step": 50,
    "type": "luau",
-   "elapsedMs": 196
+   "elapsedMs": 216
   },
   {
    "step": 51,
    "type": "click_from_luau",
-   "elapsedMs": 767
+   "elapsedMs": 797
   },
   {
    "step": 52,
    "type": "wait",
-   "elapsedMs": 854
+   "elapsedMs": 850
   },
   {
    "step": 53,
    "type": "luau",
-   "elapsedMs": 203
+   "elapsedMs": 79
   },
   {
    "step": 54,
    "type": "capture",
-   "elapsedMs": 783
+   "elapsedMs": 1561
   },
   {
    "step": 55,
    "type": "luau",
-   "elapsedMs": 222
+   "elapsedMs": 236
   },
   {
    "step": 56,
    "type": "wait",
-   "elapsedMs": 2504
+   "elapsedMs": 2507
   },
   {
    "step": 57,
    "type": "luau",
-   "elapsedMs": 170
+   "elapsedMs": 193
   },
   {
    "step": 58,
    "type": "capture",
-   "elapsedMs": 642
+   "elapsedMs": 810
   },
   {
    "step": 59,
    "type": "luau",
-   "elapsedMs": 186
+   "elapsedMs": 213
   },
   {
    "step": 60,
    "type": "luau",
-   "elapsedMs": 184
+   "elapsedMs": 204
   },
   {
    "step": 61,
    "type": "wait",
-   "elapsedMs": 2501
+   "elapsedMs": 2509
   },
   {
    "step": 62,
    "type": "luau",
-   "elapsedMs": 193
+   "elapsedMs": 203
   },
   {
    "step": 63,
    "type": "capture",
-   "elapsedMs": 817
+   "elapsedMs": 1084
   },
   {
    "step": 64,
    "type": "luau",
-   "elapsedMs": 172
+   "elapsedMs": 219
   },
   {
    "step": 65,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 213
   },
   {
    "step": 66,
    "type": "wait",
-   "elapsedMs": 2510
+   "elapsedMs": 2507
   },
   {
    "step": 67,
    "type": "luau",
-   "elapsedMs": 123
+   "elapsedMs": 159
   },
   {
    "step": 68,
    "type": "capture",
-   "elapsedMs": 918
+   "elapsedMs": 1115
   },
   {
    "step": 69,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 486
   },
   {
    "step": 70,
    "type": "luau",
-   "elapsedMs": 182
+   "elapsedMs": 363
   },
   {
    "step": 71,
    "type": "wait",
-   "elapsedMs": 2502
+   "elapsedMs": 2514
   },
   {
    "step": 72,
    "type": "luau",
-   "elapsedMs": 187
+   "elapsedMs": 407
   },
   {
    "step": 73,
    "type": "capture",
-   "elapsedMs": 742
+   "elapsedMs": 1413
   },
   {
    "step": 74,
    "type": "luau",
-   "elapsedMs": 170
+   "elapsedMs": 482
   },
   {
    "step": 75,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 253
   },
   {
    "step": 76,
    "type": "wait",
-   "elapsedMs": 2503
+   "elapsedMs": 2513
   },
   {
    "step": 77,
    "type": "luau",
-   "elapsedMs": 161
+   "elapsedMs": 137
   },
   {
    "step": 78,
    "type": "capture",
-   "elapsedMs": 945
+   "elapsedMs": 1006
   },
   {
    "step": 79,
    "type": "luau",
-   "elapsedMs": 541
+   "elapsedMs": 628
   },
   {
    "step": 80,
    "type": "capture",
-   "elapsedMs": 907
+   "elapsedMs": 1024
   },
   {
    "step": 81,
    "type": "luau",
-   "elapsedMs": 192
+   "elapsedMs": 208
   },
   {
    "step": 82,
    "type": "wait",
-   "elapsedMs": 606
+   "elapsedMs": 614
   },
   {
    "step": 83,
    "type": "capture",
-   "elapsedMs": 833
+   "elapsedMs": 1009
   },
   {
    "step": 84,
    "type": "luau",
-   "elapsedMs": 162
+   "elapsedMs": 195
   },
   {
    "step": 85,
    "type": "luau",
-   "elapsedMs": 182
+   "elapsedMs": 199
   },
   {
    "step": 86,
    "type": "wait",
-   "elapsedMs": 1110
+   "elapsedMs": 1103
   },
   {
    "step": 87,
    "type": "luau",
-   "elapsedMs": 126
+   "elapsedMs": 197
   },
   {
    "step": 88,
    "type": "capture",
-   "elapsedMs": 858
+   "elapsedMs": 816
   },
   {
    "step": 89,
    "type": "luau",
-   "elapsedMs": 178
+   "elapsedMs": 187
   },
   {
    "step": 90,
    "type": "wait",
-   "elapsedMs": 412
+   "elapsedMs": 410
   },
   {
    "step": 91,
    "type": "luau",
-   "elapsedMs": 166
+   "elapsedMs": 186
   },
   {
    "step": 92,
    "type": "luau",
-   "elapsedMs": 184
+   "elapsedMs": 180
   },
   {
    "step": 93,
    "type": "wait",
-   "elapsedMs": 2501
+   "elapsedMs": 2504
   },
   {
    "step": 94,
    "type": "luau",
-   "elapsedMs": 184
+   "elapsedMs": 101
   },
   {
    "step": 95,
    "type": "capture",
-   "elapsedMs": 877
+   "elapsedMs": 955
   },
   {
    "step": 96,
    "type": "luau",
-   "elapsedMs": 181
+   "elapsedMs": 191
   },
   {
    "step": 97,
    "type": "click_from_luau",
-   "elapsedMs": 940
+   "elapsedMs": 954
   },
   {
    "step": 98,
    "type": "wait",
-   "elapsedMs": 861
+   "elapsedMs": 863
   },
   {
    "step": 99,
    "type": "luau",
-   "elapsedMs": 73
+   "elapsedMs": 138
   },
   {
    "step": 100,
    "type": "capture",
-   "elapsedMs": 544
+   "elapsedMs": 772
   },
   {
    "step": 101,
    "type": "luau",
-   "elapsedMs": 172
+   "elapsedMs": 193
   },
   {
    "step": 102,
    "type": "wait",
-   "elapsedMs": 2501
+   "elapsedMs": 2500
   },
   {
    "step": 103,
    "type": "luau",
-   "elapsedMs": 68
+   "elapsedMs": 83
   },
   {
    "step": 104,
    "type": "capture",
-   "elapsedMs": 492
+   "elapsedMs": 501
   },
   {
    "step": 105,
    "type": "luau",
-   "elapsedMs": 73
+   "elapsedMs": 167
   },
   {
    "step": 106,
    "type": "luau",
-   "elapsedMs": 83
+   "elapsedMs": 82
   },
   {
    "step": 107,
    "type": "wait",
-   "elapsedMs": 2514
+   "elapsedMs": 2509
   },
   {
    "step": 108,
    "type": "luau",
-   "elapsedMs": 70
+   "elapsedMs": 75
   },
   {
    "step": 109,
    "type": "capture",
-   "elapsedMs": 723
+   "elapsedMs": 523
   },
   {
    "step": 110,
    "type": "luau",
-   "elapsedMs": 193
+   "elapsedMs": 77
   },
   {
    "step": 111,
    "type": "click_from_luau",
-   "elapsedMs": 937
+   "elapsedMs": 716
   },
   {
    "step": 112,
    "type": "wait",
-   "elapsedMs": 854
+   "elapsedMs": 860
   },
   {
    "step": 113,
    "type": "luau",
-   "elapsedMs": 194
+   "elapsedMs": 157
   },
   {
    "step": 114,
    "type": "capture",
-   "elapsedMs": 954
+   "elapsedMs": 455
   },
   {
    "step": 115,
    "type": "luau",
-   "elapsedMs": 196
+   "elapsedMs": 78
   },
   {
    "step": 116,
    "type": "wait",
-   "elapsedMs": 2504
+   "elapsedMs": 2508
   },
   {
    "step": 117,
    "type": "luau",
-   "elapsedMs": 142
+   "elapsedMs": 159
   },
   {
    "step": 118,
    "type": "capture",
-   "elapsedMs": 941
+   "elapsedMs": 856
   },
   {
    "step": 119,
    "type": "luau",
-   "elapsedMs": 194
+   "elapsedMs": 177
   },
   {
    "step": 120,
    "type": "luau",
-   "elapsedMs": 201
+   "elapsedMs": 184
   },
   {
    "step": 121,
    "type": "wait",
-   "elapsedMs": 3002
+   "elapsedMs": 3006
   },
   {
    "step": 122,
    "type": "luau",
-   "elapsedMs": 79
+   "elapsedMs": 244
   },
   {
    "step": 123,
    "type": "luau",
-   "elapsedMs": 184
+   "elapsedMs": 173
   },
   {
    "step": 124,
    "type": "capture",
-   "elapsedMs": 1011
+   "elapsedMs": 767
   },
   {
    "step": 125,
    "type": "luau",
-   "elapsedMs": 206
+   "elapsedMs": 176
   },
   {
    "step": 126,
    "type": "wait",
-   "elapsedMs": 3009
+   "elapsedMs": 3002
   },
   {
    "step": 127,
    "type": "luau",
-   "elapsedMs": 186
+   "elapsedMs": 98
   },
   {
    "step": 128,
    "type": "click_from_luau",
-   "elapsedMs": 1015
+   "elapsedMs": 1103
   },
   {
    "step": 129,
    "type": "wait",
-   "elapsedMs": 908
+   "elapsedMs": 907
   },
   {
    "step": 130,
    "type": "luau",
-   "elapsedMs": 201
+   "elapsedMs": 157
   },
   {
    "step": 131,
    "type": "luau",
-   "elapsedMs": 214
+   "elapsedMs": 182
   },
   {
    "step": 132,
    "type": "capture",
-   "elapsedMs": 1163
+   "elapsedMs": 908
   },
   {
    "step": 133,
    "type": "click_from_luau",
-   "elapsedMs": 1271
+   "elapsedMs": 916
   },
   {
    "step": 134,
    "type": "wait",
-   "elapsedMs": 2001
+   "elapsedMs": 2010
   },
   {
    "step": 135,
    "type": "luau",
-   "elapsedMs": 81
+   "elapsedMs": 183
   },
   {
    "step": 136,
    "type": "capture",
-   "elapsedMs": 912
+   "elapsedMs": 800
   },
   {
    "step": 137,
    "type": "luau",
-   "elapsedMs": 824
+   "elapsedMs": 823
   },
   {
    "step": 138,
@@ -1760,27 +1732,27 @@
   {
    "step": 139,
    "type": "luau",
-   "elapsedMs": 238
+   "elapsedMs": 84
   },
   {
    "step": 140,
    "type": "luau",
-   "elapsedMs": 1209
+   "elapsedMs": 752
   },
   {
    "step": 141,
    "type": "luau",
-   "elapsedMs": 3010
+   "elapsedMs": 2843
   },
   {
    "step": 142,
    "type": "wait",
-   "elapsedMs": 4007
+   "elapsedMs": 4011
   },
   {
    "step": 143,
    "type": "luau",
-   "elapsedMs": 466
+   "elapsedMs": 193
   },
   {
    "step": 144,
@@ -1790,342 +1762,342 @@
   {
    "step": 145,
    "type": "luau",
-   "elapsedMs": 853
+   "elapsedMs": 814
   },
   {
    "step": 146,
    "type": "capture",
-   "elapsedMs": 1126
+   "elapsedMs": 1186
   },
   {
    "step": 147,
    "type": "luau",
-   "elapsedMs": 754
+   "elapsedMs": 706
   },
   {
    "step": 148,
    "type": "luau",
-   "elapsedMs": 185
+   "elapsedMs": 183
   },
   {
    "step": 149,
    "type": "wait",
-   "elapsedMs": 6009
+   "elapsedMs": 6007
   },
   {
    "step": 150,
    "type": "luau",
-   "elapsedMs": 155
+   "elapsedMs": 182
   },
   {
    "step": 151,
    "type": "capture",
-   "elapsedMs": 1000
+   "elapsedMs": 1047
   },
   {
    "step": 152,
    "type": "luau",
-   "elapsedMs": 197
+   "elapsedMs": 337
   },
   {
    "step": 153,
    "type": "wait",
-   "elapsedMs": 8011
+   "elapsedMs": 8010
   },
   {
    "step": 154,
    "type": "capture",
-   "elapsedMs": 968
+   "elapsedMs": 1146
   },
   {
    "step": 155,
    "type": "click_from_luau",
-   "elapsedMs": 887
+   "elapsedMs": 882
   },
   {
    "step": 156,
    "type": "wait",
-   "elapsedMs": 664
+   "elapsedMs": 658
   },
   {
    "step": 157,
    "type": "click_from_luau",
-   "elapsedMs": 770
+   "elapsedMs": 1244
   },
   {
    "step": 158,
    "type": "luau",
-   "elapsedMs": 431
+   "elapsedMs": 452
   },
   {
    "step": 159,
    "type": "wait",
-   "elapsedMs": 6004
+   "elapsedMs": 6010
   },
   {
    "step": 160,
    "type": "capture",
-   "elapsedMs": 1007
+   "elapsedMs": 1140
   },
   {
    "step": 161,
    "type": "wait",
-   "elapsedMs": 6007
+   "elapsedMs": 6009
   },
   {
    "step": 162,
    "type": "capture",
-   "elapsedMs": 930
+   "elapsedMs": 834
   },
   {
    "step": 163,
    "type": "luau",
-   "elapsedMs": 159
+   "elapsedMs": 191
   },
   {
    "step": 164,
    "type": "wait",
-   "elapsedMs": 4010
+   "elapsedMs": 4007
   },
   {
    "step": 165,
    "type": "capture",
-   "elapsedMs": 1007
+   "elapsedMs": 834
   },
   {
    "step": 166,
    "type": "wait",
-   "elapsedMs": 6006
+   "elapsedMs": 6007
   },
   {
    "step": 167,
    "type": "capture",
-   "elapsedMs": 990
+   "elapsedMs": 1054
   },
   {
    "step": 168,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 182
   },
   {
    "step": 169,
    "type": "luau",
-   "elapsedMs": 384
+   "elapsedMs": 385
   },
   {
    "step": 170,
    "type": "wait",
-   "elapsedMs": 7006
+   "elapsedMs": 7015
   },
   {
    "step": 171,
    "type": "capture",
-   "elapsedMs": 895
+   "elapsedMs": 820
   },
   {
    "step": 172,
    "type": "luau",
-   "elapsedMs": 184
+   "elapsedMs": 181
   },
   {
    "step": 173,
    "type": "wait",
-   "elapsedMs": 9013
+   "elapsedMs": 9006
   },
   {
    "step": 174,
    "type": "capture",
-   "elapsedMs": 920
+   "elapsedMs": 815
   },
   {
    "step": 175,
    "type": "luau",
-   "elapsedMs": 195
+   "elapsedMs": 178
   },
   {
    "step": 176,
    "type": "luau",
-   "elapsedMs": 222
+   "elapsedMs": 183
   },
   {
    "step": 177,
    "type": "luau",
-   "elapsedMs": 6013
+   "elapsedMs": 4165
   },
   {
    "step": 178,
    "type": "wait",
-   "elapsedMs": 8008
+   "elapsedMs": 8003
   },
   {
    "step": 179,
    "type": "luau",
-   "elapsedMs": 192
+   "elapsedMs": 65
   },
   {
    "step": 180,
    "type": "luau",
-   "elapsedMs": 204
+   "elapsedMs": 183
   },
   {
    "step": 181,
    "type": "luau",
-   "elapsedMs": 232
+   "elapsedMs": 187
   },
   {
    "step": 182,
    "type": "wait",
-   "elapsedMs": 465
+   "elapsedMs": 451
   },
   {
    "step": 183,
    "type": "capture",
-   "elapsedMs": 754
+   "elapsedMs": 790
   },
   {
    "step": 184,
    "type": "wait",
-   "elapsedMs": 462
+   "elapsedMs": 461
   },
   {
    "step": 185,
    "type": "capture",
-   "elapsedMs": 924
+   "elapsedMs": 698
   },
   {
    "step": 186,
    "type": "wait",
-   "elapsedMs": 452
+   "elapsedMs": 459
   },
   {
    "step": 187,
    "type": "capture",
-   "elapsedMs": 938
+   "elapsedMs": 709
   },
   {
    "step": 188,
    "type": "wait",
-   "elapsedMs": 462
+   "elapsedMs": 452
   },
   {
    "step": 189,
    "type": "capture",
-   "elapsedMs": 906
+   "elapsedMs": 809
   },
   {
    "step": 190,
    "type": "wait",
-   "elapsedMs": 453
+   "elapsedMs": 455
   },
   {
    "step": 191,
    "type": "capture",
-   "elapsedMs": 902
+   "elapsedMs": 1303
   },
   {
    "step": 192,
    "type": "wait",
-   "elapsedMs": 459
+   "elapsedMs": 458
   },
   {
    "step": 193,
    "type": "capture",
-   "elapsedMs": 727
+   "elapsedMs": 2474
   },
   {
    "step": 194,
    "type": "wait",
-   "elapsedMs": 452
+   "elapsedMs": 465
   },
   {
    "step": 195,
    "type": "capture",
-   "elapsedMs": 681
+   "elapsedMs": 1771
   },
   {
    "step": 196,
    "type": "wait",
-   "elapsedMs": 450
+   "elapsedMs": 452
   },
   {
    "step": 197,
    "type": "capture",
-   "elapsedMs": 846
+   "elapsedMs": 1294
   },
   {
    "step": 198,
    "type": "luau",
-   "elapsedMs": 175
+   "elapsedMs": 270
   },
   {
    "step": 199,
    "type": "wait",
-   "elapsedMs": 557
+   "elapsedMs": 559
   },
   {
    "step": 200,
    "type": "capture",
-   "elapsedMs": 654
+   "elapsedMs": 1141
   },
   {
    "step": 201,
    "type": "luau",
-   "elapsedMs": 179
+   "elapsedMs": 229
   },
   {
    "step": 202,
    "type": "wait",
-   "elapsedMs": 553
+   "elapsedMs": 552
   },
   {
    "step": 203,
    "type": "capture",
-   "elapsedMs": 751
+   "elapsedMs": 1141
   },
   {
    "step": 204,
    "type": "luau",
-   "elapsedMs": 4895
+   "elapsedMs": 5655
   },
   {
    "step": 205,
    "type": "luau",
-   "elapsedMs": 184
+   "elapsedMs": 216
   },
   {
    "step": 206,
    "type": "wait",
-   "elapsedMs": 549
+   "elapsedMs": 558
   },
   {
    "step": 207,
    "type": "capture",
-   "elapsedMs": 761
+   "elapsedMs": 896
   },
   {
    "step": 208,
    "type": "luau",
-   "elapsedMs": 3156
+   "elapsedMs": 3782
   },
   {
    "step": 209,
    "type": "luau",
-   "elapsedMs": 171
+   "elapsedMs": 196
   },
   {
    "step": 210,
    "type": "wait",
-   "elapsedMs": 564
+   "elapsedMs": 554
   },
   {
    "step": 211,
    "type": "capture",
-   "elapsedMs": 699
+   "elapsedMs": 870
   },
   {
    "step": 212,
    "type": "luau",
-   "elapsedMs": 182
+   "elapsedMs": 208
   },
   {
    "step": 213,
@@ -2135,162 +2107,132 @@
   {
    "step": 214,
    "type": "capture",
-   "elapsedMs": 769
+   "elapsedMs": 902
   },
   {
    "step": 215,
    "type": "luau",
-   "elapsedMs": 226
+   "elapsedMs": 195
   },
   {
    "step": 216,
    "type": "wait",
-   "elapsedMs": 561
+   "elapsedMs": 554
   },
   {
    "step": 217,
    "type": "capture",
-   "elapsedMs": 957
+   "elapsedMs": 913
   },
   {
    "step": 218,
    "type": "luau",
-   "elapsedMs": 233
+   "elapsedMs": 202
   },
   {
    "step": 219,
    "type": "wait",
-   "elapsedMs": 551
+   "elapsedMs": 561
   },
   {
    "step": 220,
    "type": "capture",
-   "elapsedMs": 687
+   "elapsedMs": 693
   },
   {
    "step": 221,
    "type": "luau",
-   "elapsedMs": 181
+   "elapsedMs": 342
   },
   {
    "step": 222,
    "type": "wait",
-   "elapsedMs": 550
+   "elapsedMs": 561
   },
   {
    "step": 223,
    "type": "capture",
-   "elapsedMs": 818
+   "elapsedMs": 851
   },
   {
    "step": 224,
    "type": "luau",
-   "elapsedMs": 179
+   "elapsedMs": 206
   },
   {
    "step": 225,
    "type": "wait",
-   "elapsedMs": 558
+   "elapsedMs": 554
   },
   {
    "step": 226,
    "type": "capture",
-   "elapsedMs": 681
+   "elapsedMs": 849
   },
   {
    "step": 227,
    "type": "luau",
-   "elapsedMs": 179
+   "elapsedMs": 193
   },
   {
    "step": 228,
    "type": "wait",
-   "elapsedMs": 552
+   "elapsedMs": 563
   },
   {
    "step": 229,
    "type": "capture",
-   "elapsedMs": 747
+   "elapsedMs": 849
   },
   {
    "step": 230,
    "type": "luau",
-   "elapsedMs": 3450
+   "elapsedMs": 3825
   },
   {
    "step": 231,
    "type": "luau",
-   "elapsedMs": 187
+   "elapsedMs": 203
   },
   {
    "step": 232,
    "type": "capture",
-   "elapsedMs": 811
+   "elapsedMs": 591
   },
   {
    "step": 233,
    "type": "luau",
-   "elapsedMs": 20708
+   "elapsedMs": 20594
   },
   {
    "step": 234,
    "type": "wait",
-   "elapsedMs": 1810
+   "elapsedMs": 1814
   },
   {
    "step": 235,
    "type": "luau",
-   "elapsedMs": 759
+   "elapsedMs": 583
   },
   {
    "step": 236,
    "type": "click_from_luau",
-   "elapsedMs": 2403
+   "elapsedMs": 2431
   },
   {
    "step": 237,
    "type": "wait",
-   "elapsedMs": 1508
+   "elapsedMs": 1503
   },
   {
    "step": 238,
    "type": "capture",
-   "elapsedMs": 1353
+   "elapsedMs": 930
   },
   {
    "step": 239,
    "type": "luau",
-   "elapsedMs": 846
-  },
-  {
-   "step": 240,
-   "type": "capture",
-   "elapsedMs": 1099
-  },
-  {
-   "step": 241,
-   "type": "luau",
-   "elapsedMs": 1933
-  },
-  {
-   "step": 242,
-   "type": "capture",
-   "elapsedMs": 1184
-  },
-  {
-   "step": 243,
-   "type": "wait",
-   "elapsedMs": 810
-  },
-  {
-   "step": 244,
-   "type": "luau",
-   "elapsedMs": 925
-  },
-  {
-   "step": 245,
-   "type": "capture",
-   "elapsedMs": 1147
+   "elapsedMs": 572
   }
  ],
  "consoleCapture": {
@@ -2299,19 +2241,30 @@
    "Client",
    "Server"
   ],
-  "errorCount": 0,
+  "errorCount": 2,
   "warningCount": 13,
-  "errors": []
+  "errors": [
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "ReplicatedStorage.Shared.FieldScene:1751: Expected ')' (to close '(' at column 29), got 'end'"
+   },
+   {
+    "type": "studio-console-error",
+    "actionId": null,
+    "signature": "AssistantCommand:1: FIELD_QA_ENTRY_FAIL: pointer=activated stage=BUTTON attempt=london_fields reason=FIELD_MODULE_UNAVAILABLE ground=false gui=false x=-2"
+   }
+  ]
  },
  "summary": {
   "plannedSteps": 246,
-  "completedSteps": 246,
+  "completedSteps": 240,
   "plannedClicks": 12,
   "successfulClicks": 12,
   "skippedOptionalClicks": 0,
   "plannedFrames": 62,
-  "capturedFrames": 62,
-  "abortedEarly": false
+  "capturedFrames": 59,
+  "abortedEarly": true
  },
  "visualSamples": [
   {
@@ -2320,7 +2273,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 251391,
+      "bytes": 251362,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2343,7 +2296,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 250778,
+      "bytes": 250706,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2358,7 +2311,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195108,
+      "bytes": 195345,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2373,7 +2326,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 150209,
+      "bytes": 150246,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2397,7 +2350,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163319,
+      "bytes": 163320,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2410,7 +2363,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0148885250091553,
+    "brightness": 2.0165317058563232,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -2421,7 +2374,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 118634,
+      "bytes": 103060,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2434,7 +2387,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0184757709503174,
+    "brightness": 2.019529342651367,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -2445,7 +2398,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 159268,
+      "bytes": 162121,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2458,7 +2411,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0228569507598877,
+    "brightness": 2.0240108966827393,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -2469,7 +2422,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 161638,
+      "bytes": 160675,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2482,7 +2435,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.029773235321045,
+    "brightness": 2.028872489929199,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -2493,7 +2446,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 175851,
+      "bytes": 175806,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2508,7 +2461,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 187886,
+      "bytes": 187839,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2523,7 +2476,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 176534,
+      "bytes": 175728,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2538,7 +2491,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 173404,
+      "bytes": 173625,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2553,7 +2506,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 126678,
+      "bytes": 126909,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2568,7 +2521,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 126190,
+      "bytes": 126905,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2583,7 +2536,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 169109,
+      "bytes": 168685,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2598,7 +2551,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 173600,
+      "bytes": 173369,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2613,7 +2566,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 181521,
+      "bytes": 181973,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2628,7 +2581,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 171760,
+      "bytes": 171576,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2643,7 +2596,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 171475,
+      "bytes": 171760,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2658,7 +2611,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 269615,
+      "bytes": 265642,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2673,7 +2626,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 198710,
+      "bytes": 197891,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2688,7 +2641,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 172062,
+      "bytes": 172618,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2703,7 +2656,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 177363,
+      "bytes": 177355,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2718,7 +2671,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 177090,
+      "bytes": 177002,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2733,7 +2686,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 160924,
+      "bytes": 161147,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2748,7 +2701,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 182780,
+      "bytes": 182818,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2763,7 +2716,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 182400,
+      "bytes": 182917,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2778,7 +2731,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 187535,
+      "bytes": 187752,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2793,7 +2746,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 179917,
+      "bytes": 179337,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2808,7 +2761,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 256559,
+      "bytes": 261093,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2838,7 +2791,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 196064,
+      "bytes": 196080,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2853,7 +2806,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 200167,
+      "bytes": 200145,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2868,7 +2821,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 256638,
+      "bytes": 258079,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2882,7 +2835,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 254395,
+      "bytes": 253693,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2896,7 +2849,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 255578,
+      "bytes": 229549,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2910,7 +2863,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 258048,
+      "bytes": 265683,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2924,7 +2877,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 140278,
+      "bytes": 141631,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2938,7 +2891,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 154580,
+      "bytes": 147564,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2952,7 +2905,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 98661,
+      "bytes": 107434,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2966,7 +2919,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106369,
+      "bytes": 106368,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2980,7 +2933,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106369,
+      "bytes": 108262,
       "width": 0,
       "height": 0,
       "pass": true
@@ -2994,7 +2947,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104855,
+      "bytes": 107805,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3008,7 +2961,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104166,
+      "bytes": 107567,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3022,7 +2975,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106576,
+      "bytes": 107871,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3036,7 +2989,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106441,
+      "bytes": 107764,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3050,7 +3003,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106404,
+      "bytes": 107764,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3064,7 +3017,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 102753,
+      "bytes": 103997,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3078,7 +3031,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 104285,
+      "bytes": 108814,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3092,7 +3045,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106354,
+      "bytes": 107145,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3106,7 +3059,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106829,
+      "bytes": 107535,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3120,7 +3073,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106020,
+      "bytes": 106510,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3134,7 +3087,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105949,
+      "bytes": 106868,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3148,7 +3101,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106460,
+      "bytes": 107764,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3162,7 +3115,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105487,
+      "bytes": 104442,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3176,7 +3129,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 106136,
+      "bytes": 109845,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3190,7 +3143,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 109442,
+      "bytes": 110931,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3204,7 +3157,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 102361,
+      "bytes": 106863,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3218,52 +3171,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 151415,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
-  },
-  {
-   "name": "field_npc_ally_mob",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 217755,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
-  },
-  {
-   "name": "field_motion_smooth_icons",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 215336,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
-  },
-  {
-   "name": "field_actor_after_motion",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 219038,
+      "bytes": 163582,
       "width": 0,
       "height": 0,
       "pass": true
@@ -3273,391 +3181,23 @@
    "interaction": "지상맵 입장 HITBOX=VISIBLE BLOCKER=none"
   }
  ],
- "assetAudit": {
-  "models": {
-   "status": "PASS",
-   "loaded": 864,
-   "errors": [],
-   "failed": 0,
-   "registered": 864
-  },
-  "registered": {
-   "status": "PASS",
-   "failed": 0,
-   "imagesSounds": 631,
-   "models": 873,
-   "elapsedSeconds": 16,
-   "timedOut": false,
-   "registered": 1504,
-   "serverPreloadUnresponsive": true,
-   "failedMedia": [],
-   "fetchCallbacks": 0,
-   "currentBatch": 1,
-   "serverPreloadEvidence": {
-    "status": "FAIL",
-    "failed": 12,
-    "failedMedia": [
-     {
-      "id": "rbxassetid://72489040757878",
-      "key": "AssetIds.CardArt/af_03",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://77023165428158",
-      "key": "AssetIds.CardArt/af_15",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://118991943570083",
-      "key": "AssetIds.CardArt/af_18",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://140089768483999",
-      "key": "AssetIds.CardArt/af_19",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://107734944778682",
-      "key": "AssetIds.CardArt/af_20",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://139202302026948",
-      "key": "AssetIds.CardArt/af_21",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://112968614735458",
-      "key": "AssetIds.CardArt/af_22",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://137895732576949",
-      "key": "AssetIds.CardArt/af_23",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://128540491426332",
-      "key": "AssetIds.CardArt/af_24",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://123418860511107",
-      "key": "AssetIds.CardArt/af_25",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://100930344878038",
-      "key": "AssetIds.CardArt/af_26",
-      "status": "TIMEOUT_16S"
-     },
-     {
-      "id": "rbxassetid://121009253806186",
-      "key": "AssetIds.CardArt/af_27",
-      "status": "TIMEOUT_16S"
-     }
-    ],
-    "timedOut": false,
-    "fetchCallbacks": 0
+ "abortDiagnostics": {
+  "step": 239,
+  "type": "luau",
+  "elapsedMs": 203,
+  "context": "Client",
+  "lastScreenshot": "field_entry",
+  "lastClick": "field_entry",
+  "probes": {
+   "Client": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_CLIENT\ntext"
    },
-   "clientVerified": true,
-   "soundClientVerified": true,
-   "authority": "OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED"
-  },
-  "features": {
-   "status": "PASS",
-   "progress": "2044:DONE",
-   "coverage": {
-    "Visit": {
-     "invalid": 0,
-     "rejected": 54,
-     "accepted": 0,
-     "calls": 54
-    },
-    "BuyFleetShip": {
-     "invalid": 0,
-     "rejected": 48,
-     "accepted": 3,
-     "calls": 51
-    },
-    "VoyageBonus": {
-     "invalid": 0,
-     "rejected": 181,
-     "accepted": 0,
-     "calls": 181
-    },
-    "PlayStory": {
-     "invalid": 0,
-     "rejected": 226,
-     "accepted": 2,
-     "calls": 228
-    },
-    "Hunt": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Audience": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "BuyGear": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 6,
-     "calls": 6
-    },
-    "BuyShip": {
-     "invalid": 0,
-     "rejected": 49,
-     "accepted": 2,
-     "calls": 51
-    },
-    "HireCrew": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyPlating": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyMap": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "NewGame": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "WaitDay": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "SetSpecialty": {
-     "invalid": 0,
-     "rejected": 10,
-     "accepted": 5,
-     "calls": 15
-    },
-    "Talk": {
-     "invalid": 0,
-     "rejected": 47,
-     "accepted": 2,
-     "calls": 49
-    },
-    "Borrow": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "QAGrant": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Sell": {
-     "invalid": 0,
-     "rejected": 98,
-     "accepted": 20,
-     "calls": 118
-    },
-    "Buy": {
-     "invalid": 0,
-     "rejected": 98,
-     "accepted": 20,
-     "calls": 118
-    },
-    "Repair": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "Sail": {
-     "invalid": 0,
-     "rejected": 179,
-     "accepted": 2,
-     "calls": 181
-    },
-    "Research": {
-     "invalid": 0,
-     "rejected": 6,
-     "accepted": 0,
-     "calls": 6
-    },
-    "Withdraw": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuySupplies": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "DismissEscort": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "ToggleGear": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 6,
-     "calls": 6
-    },
-    "VoyageChoice": {
-     "invalid": 0,
-     "rejected": 181,
-     "accepted": 0,
-     "calls": 181
-    },
-    "ResolveBattle": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Repay": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "Recruit": {
-     "invalid": 0,
-     "rejected": 48,
-     "accepted": 1,
-     "calls": 49
-    },
-    "Accept": {
-     "invalid": 0,
-     "rejected": 3,
-     "accepted": 5,
-     "calls": 8
-    },
-    "Feast": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "TalkChoice": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "BuyInsurance": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyEscort": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "State": {
-     "invalid": 0,
-     "rejected": 2,
-     "accepted": 0,
-     "calls": 2
-    },
-    "Rumor": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "ChallengeBoss": {
-     "invalid": 0,
-     "rejected": 4,
-     "accepted": 0,
-     "calls": 4
-    },
-    "Deposit": {
-     "invalid": 0,
-     "rejected": 0,
-     "accepted": 1,
-     "calls": 1
-    },
-    "BuyLicense": {
-     "invalid": 0,
-     "rejected": 1,
-     "accepted": 0,
-     "calls": 1
-    },
-    "Haggle": {
-     "invalid": 0,
-     "rejected": 60,
-     "accepted": 57,
-     "calls": 117
-    },
-    "Explore": {
-     "invalid": 0,
-     "rejected": 592,
-     "accepted": 0,
-     "calls": 592
-    },
-    "BuyCannon": {
-     "invalid": 0,
-     "rejected": 3,
-     "accepted": 2,
-     "calls": 5
-    }
-   },
-   "observed": {
-    "naval-resolved": 1,
-    "quest-accepted": 5,
-    "voyage-arrived": 2,
-    "naval-encounter": 1
-   },
-   "calls": 2044,
-   "issues": [],
-   "rejected": 1891,
-   "failed": 0,
-   "accepted": 150
+   "Server": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_SERVER\ntext"
+   }
   }
- },
- "assetRegistryAudit": {
-  "registered": 1404,
-  "activeIds": 1404,
-  "mismatched": [],
-  "missing": [],
-  "unverifiedPermissions": [],
-  "status": "PASS"
- },
- "clientImageAudit": {
-  "mode": "VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED",
-  "expected": 531,
-  "soundExpected": 100,
-  "missing": [],
-  "soundMissing": [],
-  "batches": 11,
-  "loaded": 531,
-  "soundLoaded": 100
  },
  "assetOwnership": {
   "reportedFailedIds": [
@@ -3750,7 +3290,7 @@
       ]
      }
     },
-    "scanned": 23942,
+    "scanned": 23936,
     "contentRefs": 5599,
     "complete": true
    },
@@ -3836,7 +3376,7 @@
   }
  },
  "visualEvidence": {
-  "framesChecked": 62,
+  "framesChecked": 59,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
