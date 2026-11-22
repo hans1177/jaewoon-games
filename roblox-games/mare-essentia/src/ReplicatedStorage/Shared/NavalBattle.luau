@@ -604,6 +604,41 @@ function NavalBattle.play(opts)
 			foam.Parent = anchor
 			table.insert(oceanNodes, anchor)
 		end
+		-- [연안 물보라] 씨 오브 시브즈의 가까운 포말/먼 해안층 원리만 참고한다.
+		-- 새 파츠나 셰이더 없이 기존 내장 입자/Attachment를 재사용하고 모바일은 2곳만 표시한다.
+		local coastFoamCount = 0
+		for i = 1, math.min(if MOBILE_VFX then 2 else 5, #coast.props) do
+			local spec = coast.props[(i * 3 - 1) % #coast.props + 1]
+			if AssetIds["Terrain/" .. spec[1]] then
+				local surf = Instance.new("Attachment")
+				surf.Name = "NavalCoastBreakers"
+				surf.WorldCFrame = CFrame.new(ORIGIN + Vector3.new(spec[3] * 0.93, 0.52, spec[4] * 0.93))
+				surf.Parent = terrain
+				local spray = Instance.new("ParticleEmitter")
+				spray.Texture = "rbxasset://textures/particles/smoke_main.dds"
+				spray.Color = ColorSequence.new(foamColor, coast.water:Lerp(Color3.fromRGB(239, 250, 251), 0.72))
+				spray.Transparency = NumberSequence.new({
+					NumberSequenceKeypoint.new(0, 0.58),
+					NumberSequenceKeypoint.new(0.35, 0.66),
+					NumberSequenceKeypoint.new(1, 1),
+				})
+				spray.Size = NumberSequence.new({
+					NumberSequenceKeypoint.new(0, 1.6),
+					NumberSequenceKeypoint.new(0.5, if mode == "storm" then 7 else 4),
+					NumberSequenceKeypoint.new(1, 0),
+				})
+				spray.Speed = NumberRange.new(0.7, if mode == "storm" then 6 else 3)
+				spray.Lifetime = NumberRange.new(0.7, 1.6)
+				spray.SpreadAngle = Vector2.new(130, 20)
+				spray.EmissionDirection = Enum.NormalId.Top
+				spray.Rate = if MOBILE_VFX then 1.2 elseif mode == "storm" then 5 else 2.6
+				spray.Drag = 2.5
+				spray.Parent = surf
+				table.insert(oceanNodes, surf)
+				coastFoamCount += 1
+			end
+		end
+		folder:SetAttribute("NavalCoastFoamSources", coastFoamCount)
 		local weatherNodes = {}
 		if mode == "rain" or mode == "storm" or coast.id == "north_sea" or coast.id == "arctic" then
 			local snowfall = coast.id == "north_sea" or coast.id == "arctic"
@@ -649,13 +684,35 @@ function NavalBattle.play(opts)
 		end
 		-- [승인된 실물 지형] 라이선스 등록·실제 로딩이 완료된 모델만 복제한다.
 		local distantShips = {}
+		-- [해안 원근층] CC0 절벽 원본 3종만 각 해역 바깥쪽에 추가한다.
+		-- 실제 항구/물가에 존재하던 실물과 같은 수입 경로로 단 한번 로드한다.
+		local depthCoast = if coast.id == "caribbean" or coast.id == "tropical" or coast.id == "gold_coast" then {
+			{ "cliff-blockslope-rock", 113, -471, -388 }, { "cliff-top-rock", 92, 464, 401 },
+			{ "cliff-large-rock", 138, 512, -392 },
+		} elseif coast.id == "north_sea" or coast.id == "arctic" or coast.id == "cape" or coast.id == "atlantic_storm" then {
+			{ "cliff-large-rock", 149, 474, -408 }, { "cliff-top-rock", 123, -500, 384 },
+			{ "cliff-blockslope-rock", 102, -437, -410 },
+		} else {
+			{ "cliff-blockslope-rock", 128, -496, 371 }, { "cliff-large-rock", 136, 486, -401 },
+			{ "cliff-top-rock", 98, 438, 410 },
+		}
+		folder:SetAttribute("NavalDepthCoastCount", 0)
 		task.delay(1.0, function()
 			if not folder.Parent then return end
 			local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 			local terrain = lib and lib:FindFirstChild("Terrain")
 			if not terrain then return end
+			local shoreModels = {}
 			for index, spec in coast.props do
-				if MOBILE_VFX and index > 3 then break end
+				if not MOBILE_VFX or index <= 3 then table.insert(shoreModels, spec) end
+			end
+			local originalCoastCount = #shoreModels
+			for index, spec in depthCoast do
+				if (not MOBILE_VFX or index <= 1) and AssetIds["Terrain/" .. spec[1]] then
+					table.insert(shoreModels, spec)
+				end
+			end
+			for index, spec in shoreModels do
 				local template = terrain:FindFirstChild(spec[1])
 				if template and template:IsA("Model") and AssetIds["Terrain/" .. spec[1]] then
 					local model = template:Clone()
@@ -666,6 +723,7 @@ function NavalBattle.play(opts)
 						end
 					end
 					model.Name = "NavalCoast"
+					if index > originalCoastCount then model:SetAttribute("NavalDepthCliff", true) end
 					model.Parent = folder
 					local ok = pcall(function()
 						local _, dims = model:GetBoundingBox()
@@ -675,7 +733,10 @@ function NavalBattle.play(opts)
 						local target = ORIGIN + Vector3.new(spec[3], 0, spec[4])
 						model:PivotTo(CFrame.new(target - bottom) * model:GetPivot())
 					end)
-					if not ok then model:Destroy() end
+					if not ok then model:Destroy()
+					elseif index > originalCoastCount then
+						folder:SetAttribute("NavalDepthCoastCount", (folder:GetAttribute("NavalDepthCoastCount") or 0) + 1)
+					end
 				end
 			end
 			-- [원경 항해선] 실물 범선이 이미 로드된 경우에만 멀리 이동하는 해상 교통을 표현한다.
@@ -5445,7 +5506,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				rollAdd, pitchAdd = sink.side * k * 1.12, -k * 0.68
 			end
 		end
-		local bob = CFrame.new(0, math.sin(t * 1.3 + sh.length) * 0.5 + dip, 0) * CFrame.Angles(-sh.roll + heel + rollAdd, 0, pitch + pitchAdd)
+		-- [선체와 파도] 기존 포격·항속·충돌 판정은 그대로 두고 선체 표시만 해역 파고에 맞춘다.
+		local seaMood = if opts.cardOnly then "card" else (folder:GetAttribute("NavalWeatherMode") or "clear")
+		local swell = if seaMood == "storm" then 1.05 elseif seaMood == "rain" then 0.68 else 0.48
+		local swellTime = t * (if seaMood == "storm" then 1.8 elseif seaMood == "rain" then 1.45 else 1.3) + sh.length
+		local bob = CFrame.new(0, math.sin(swellTime) * (if seaMood == "card" then 0.5 else swell) + dip, 0)
+			* CFrame.Angles(-sh.roll + heel + rollAdd + (if seaMood == "card" then 0 else math.sin(swellTime * 0.61) * swell * 0.055),
+				0, pitch + pitchAdd + (if seaMood == "card" then 0 else math.cos(swellTime * 0.82) * swell * 0.065))
 		sh.model:PivotTo(CFrame.new(ORIGIN + Vector3.new(sh.pos.X, sh.y, sh.pos.Z)) * CFrame.Angles(0, -sh.theta, 0) * bob * sh.rot)
 	end
 
