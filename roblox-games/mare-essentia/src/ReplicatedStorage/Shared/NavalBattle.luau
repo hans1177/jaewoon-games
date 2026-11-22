@@ -733,6 +733,9 @@ function NavalBattle.play(opts)
 				if template and template:IsA("Model") and AssetIds["Terrain/" .. spec[1]] then
 					local model = template:Clone()
 					local farShore = index > originalCoastCount
+					-- [실거리 3층] 원경은 기존 해안선보다 먼 곳에 낮게 배치한다.
+					-- 모바일에서는 물 바깥으로 크게 밀리지 않게 거리를 더 적게 늘린다.
+					local depthDistance = if farShore then (if MOBILE_VFX then 1.10 else 1.25) else 1
 					for _, node in model:GetDescendants() do
 						if node:IsA("BasePart") then
 							node.Anchored = true
@@ -760,10 +763,10 @@ function NavalBattle.play(opts)
 					model.Parent = folder
 					local ok = pcall(function()
 						local _, dims = model:GetBoundingBox()
-						model:ScaleTo(spec[2] / math.max(dims.X, dims.Z, 0.01))
+						model:ScaleTo(spec[2] * (if farShore then 0.82 else 1) / math.max(dims.X, dims.Z, 0.01))
 						local box, ext = model:GetBoundingBox()
 						local bottom = box.Position - Vector3.new(0, ext.Y * 0.5, 0)
-						local target = ORIGIN + Vector3.new(spec[3], 0, spec[4])
+						local target = ORIGIN + Vector3.new(spec[3] * depthDistance, 0, spec[4] * depthDistance)
 						model:PivotTo(CFrame.new(target - bottom) * model:GetPivot())
 					end)
 					if not ok then model:Destroy()
@@ -773,7 +776,8 @@ function NavalBattle.play(opts)
 							and string.find(spec[1], "cliff", 1, true) then
 							local surf = Instance.new("Attachment")
 							surf.Name = "NavalCliffShoreWash"
-							surf.WorldCFrame = CFrame.new(ORIGIN + Vector3.new(spec[3] * 0.97, 0.48, spec[4] * 0.97))
+							surf.WorldCFrame = CFrame.new(ORIGIN + Vector3.new(spec[3] * depthDistance * 0.97,
+									0.48, spec[4] * depthDistance * 0.97))
 							surf.Parent = workspace.Terrain
 							local wash = Instance.new("ParticleEmitter")
 							wash.Texture = "rbxasset://textures/particles/smoke_main.dds"
