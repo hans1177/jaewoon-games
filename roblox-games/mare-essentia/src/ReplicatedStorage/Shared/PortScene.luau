@@ -7235,10 +7235,28 @@ function PortScene.build(info, onFacility)
 	-- [교체 분할] 실측(44926863645): 기존 항구 한 번에 삭제 529ms + 새 항구 한 번에 workspace 연결 584ms가
 	-- 같은 프레임에 몰려 최대 1.46초 멈춤. 최상위 묶음 단위로 나눠 프레임 예산 안에서 지우고 붙인다.
 	-- (양보할 수 없는 문맥에서는 sliceYield가 그대로 진행해 기존처럼 한 번에 처리된다.)
+	-- [삭제 엔진 비용 분산] 실측(정밀검사 44965867262 런던): 최상위 묶음 하나 삭제 직후 프레임이 252ms
+	-- (yieldGap@destroyOld). 비용은 Lua 시간이 아니라 엔진 쪽 해제라 시간 예산만으로는 못 나눈다.
+	-- 큰 묶음은 안쪽부터 쪼개 지우고, 약 500개 인스턴스마다 한 프레임 양보한다(장면·규칙 불변).
+	local destroyedSinceYield = 0
+	local function destroyChunked(inst: Instance)
+		if #inst:GetDescendants() > 500 then
+			for _, inner in inst:GetChildren() do
+				destroyChunked(inner)
+			end
+		end
+		local count = #inst:GetDescendants() + 1
+		inst:Destroy()
+		destroyedSinceYield += count
+		if destroyedSinceYield >= 500 then
+			destroyedSinceYield = 0
+			sliceStart = 0 -- 다음 sliceYield가 즉시 양보하게 한다(양보 불가 문맥이면 그대로 진행)
+		end
+		sliceYield("destroyOld")
+	end
 	if old and old.Parent then
 		for _, child in old:GetChildren() do
-			child:Destroy()
-			sliceYield("destroyOld")
+			destroyChunked(child)
 		end
 		old:Destroy()
 	end
