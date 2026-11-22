@@ -8898,28 +8898,133 @@ function H.showCardGain(card, moreCount)
 			}):Play()
 		end)
 	end)
-	task.delay(1.65, function()
-		if not g.Parent then return end
-		Sfx.play("sfx_book_turn", 0.27)
+	-- [팽이 수납 · 메인] 원화 공개 후 가속 회전·곡선 축소·잔상을 거쳐 기존 서재/내 카드 버튼으로 흡수한다.
+	-- 별도 UI 시스템·음원·저장 경로를 만들지 않으며, 움직임 감소 설정과 모바일 도크 스크롤을 존중한다.
+	task.delay(1.54, function()
+		if not g.Parent or not frame.Parent then return end
 		local icon = if isCombat then hudTop:FindFirstChild("DeckButton") else H.dockButtons and H.dockButtons.codex
-		local destination = UDim2.new(1, -44, 0, 70)
-		if icon and icon.Parent and icon.Visible and icon.AbsoluteSize.X > 0 then
-			destination = UDim2.fromOffset(
-				icon.AbsolutePosition.X + icon.AbsoluteSize.X * 0.5,
-				icon.AbsolutePosition.Y + icon.AbsoluteSize.Y * 0.5)
+		local canTarget = icon and icon.Parent and icon.Visible and hudTopGui.Enabled and icon.AbsoluteSize.X > 0
+		-- [모바일 서재] 가로 도크에 가려진 서재 버튼은 기존 스크롤만 움직여 수납 목적지를 보여 준다.
+		if canTarget and not isCombat and icon:IsDescendantOf(dock) then
+			local left = dock.AbsolutePosition.X
+			local right = left + dock.AbsoluteSize.X
+			local iconX = icon.AbsolutePosition.X + icon.AbsoluteSize.X * 0.5
+			if iconX < left + 22 or iconX > right - 22 then
+				local maxScroll = math.max(0, dock.AbsoluteCanvasSize.X - dock.AbsoluteSize.X)
+				local desired = math.clamp(dock.CanvasPosition.X + iconX - (left + dock.AbsoluteSize.X * 0.68), 0, maxScroll)
+				TS:Create(dock, TweenInfo.new(0.26, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+					CanvasPosition = Vector2.new(desired, dock.CanvasPosition.Y),
+				}):Play()
+			end
 		end
-		TS:Create(frame, TweenInfo.new(0.75, Enum.EasingStyle.Quint, Enum.EasingDirection.In), {
-			Position = destination, Size = UDim2.fromOffset(26, 37),
-			Rotation = 9, BackgroundTransparency = 1,
-		}):Play()
-		TS:Create(art, TweenInfo.new(0.66), { ImageTransparency = 1 }):Play()
-		TS:Create(rim, TweenInfo.new(0.68), { Transparency = 1 }):Play()
-		TS:Create(name, TweenInfo.new(0.5), { TextTransparency = 1 }):Play()
-		TS:Create(rarity, TweenInfo.new(0.5), { TextTransparency = 1 }):Play()
-		TS:Create(caption, TweenInfo.new(0.55), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
-		TS:Create(spotlightName, TweenInfo.new(0.45), { TextTransparency = 1 }):Play()
+
+		local reducedMotion = game:GetService("GuiService").ReducedMotionEnabled
+		local startPoint = Vector2.new(viewport.X * center.X.Scale, viewport.Y * center.Y.Scale)
+		local fallbackPoint = Vector2.new(viewport.X - 44, 70)
+		local revolutions = if rarityLevel >= 4 then 4 elseif rarityLevel >= 3 then 3.5
+			elseif rarityLevel >= 2 then 3 else 2.5
+		local trails = {}
+		if not reducedMotion then
+			for i = 1, if viewport.X < 540 then 2 else 3 do
+				local ghost = Instance.new("Frame")
+				ghost.Name = "CardSpinAfterimage"
+				ghost.AnchorPoint = Vector2.new(0.5, 0.5)
+				ghost.Position = center
+				ghost.Size = UDim2.fromOffset(revealWidth, revealHeight)
+				ghost.BackgroundTransparency = 1
+				ghost.ZIndex = 7
+				ghost.Parent = g
+				corner(ghost, 8)
+				local outline = Instance.new("UIStroke")
+				outline.Color = gold
+				outline.Thickness = if rarityLevel >= 3 then 2.5 else 1.7
+				outline.Transparency = 0.55 + i * 0.11
+				outline.Parent = ghost
+				table.insert(trails, { ghost, outline })
+			end
+		end
+		Sfx.play("sfx_card_swing", 0.31, 1.14, "sfx_card_deal")
+		TS:Create(caption, TweenInfo.new(0.32), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+		TS:Create(spotlightName, TweenInfo.new(0.3), { TextTransparency = 1 }):Play()
+
+		local progress = Instance.new("NumberValue")
+		progress.Name = "CardArchiveProgress"
+		progress.Parent = g
+		local changed = progress.Changed:Connect(function(value)
+			if not g.Parent or not frame.Parent then return end
+			local t = math.clamp(value, 0, 1)
+			-- 도크가 펼쳐지거나 스크롤되는 동안에도 버튼의 실제 화면 좌표를 매 프레임 따라간다.
+			local target = fallbackPoint
+			if canTarget and icon.Parent and icon.Visible and hudTopGui.Enabled then
+				target = icon.AbsolutePosition + icon.AbsoluteSize * 0.5
+			end
+			local bend = math.min(86, viewport.Y * 0.13)
+			local control = Vector2.new(
+				startPoint.X + (target.X - startPoint.X) * 0.40,
+				math.min(startPoint.Y, target.Y) - bend)
+			local current = if reducedMotion then startPoint:Lerp(target, t)
+				else startPoint * ((1 - t) ^ 2) + control * (2 * (1 - t) * t) + target * (t ^ 2)
+			local spin = if reducedMotion then 0 else revolutions * 360 * t
+			local scale = math.max(0.035, (1 - t) ^ 1.35)
+			local widthRipple = if reducedMotion then 1 else 0.74 + 0.26 * math.abs(math.cos(math.rad(spin)))
+			frame.Position = UDim2.fromOffset(current.X, current.Y)
+			frame.Size = UDim2.fromOffset(
+				math.max(2, math.floor(revealWidth * scale * widthRipple)),
+				math.max(3, math.floor(revealHeight * scale)))
+			frame.Rotation = spin
+			frame.BackgroundTransparency = math.clamp((t - 0.72) / 0.28, 0, 1)
+			art.ImageTransparency = math.clamp((t - 0.74) / 0.26, 0, 1)
+			rim.Transparency = math.clamp((t - 0.70) / 0.30, 0, 1)
+			name.TextTransparency = math.clamp((t - 0.36) / 0.42, 0, 1)
+			rarity.TextTransparency = name.TextTransparency
+			for i, pair in trails do
+				local lag = math.max(0, t - i * 0.09)
+				local echoPos = startPoint * ((1 - lag) ^ 2) + control * (2 * (1 - lag) * lag) + target * (lag ^ 2)
+				pair[1].Position = UDim2.fromOffset(echoPos.X, echoPos.Y)
+				pair[1].Size = UDim2.fromOffset(
+					math.max(2, math.floor(revealWidth * (1 - lag) ^ 1.35)),
+					math.max(3, math.floor(revealHeight * (1 - lag) ^ 1.35)))
+				pair[1].Rotation = revolutions * 360 * lag - i * 13
+				pair[2].Transparency = math.clamp(0.55 + i * 0.11 + t * 0.20, 0, 1)
+			end
+		end)
+		local flight = TS:Create(progress, TweenInfo.new(
+			if reducedMotion then 0.38 else 0.72, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { Value = 1 })
+		flight.Completed:Once(function()
+			changed:Disconnect()
+			progress:Destroy()
+			if not g.Parent then return end
+			frame.Visible = false
+			for _, pair in trails do pair[1]:Destroy() end
+			local landed = fallbackPoint
+			if canTarget and icon.Parent and icon.Visible and hudTopGui.Enabled then
+				landed = icon.AbsolutePosition + icon.AbsoluteSize * 0.5
+			end
+			-- [수납 완료] 기존 등록 책장/카드장 효과음과 아이콘 위 황동 파동 1회.
+			Sfx.play(if isCombat then "sfx_card_page" else "sfx_book_turn", 0.30, 1.08, "sfx_book_turn")
+			task.delay(0.07, Sfx.play, "sfx_quest_book_close", 0.22, 1.15, "sfx_click")
+			local pulse = Instance.new("Frame")
+			pulse.Name = "CardArchivePulse"
+			pulse.AnchorPoint = Vector2.new(0.5, 0.5)
+			pulse.Position = UDim2.fromOffset(landed.X, landed.Y)
+			pulse.Size = UDim2.fromOffset(20, 20)
+			pulse.BackgroundTransparency = 1
+			pulse.ZIndex = 13
+			pulse.Parent = g
+			corner(pulse, 100)
+			local pulseStroke = Instance.new("UIStroke")
+			pulseStroke.Color = gold
+			pulseStroke.Thickness = if rarityLevel >= 3 then 3.5 else 2.5
+			pulseStroke.Transparency = 0.08
+			pulseStroke.Parent = pulse
+			TS:Create(pulse, TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Size = UDim2.fromOffset(if rarityLevel >= 3 then 96 else 78, if rarityLevel >= 3 then 96 else 78),
+			}):Play()
+			TS:Create(pulseStroke, TweenInfo.new(0.28), { Transparency = 1 }):Play()
+		end)
+		flight:Play()
 	end)
-	task.delay(2.55, function()
+	task.delay(2.66, function()
 		if g.Parent then g:Destroy() end
 	end)
 end
@@ -9117,7 +9222,7 @@ function H.checkNewCards()
 			if not player.Parent then break end
 			local found = table.remove(H.cardGainQueue, 1)
 			H.showCardGain(found.card, found.extra)
-			task.wait(2.65)
+			task.wait(2.76)
 		end
 		H.cardGainPlaying = false
 	end)
