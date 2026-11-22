@@ -1140,8 +1140,12 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			elseif string.find(profile, "citizen_sailor_", 1, true) == 1 then
 				mobileEssentials = { outfit_sash = true, outfit_boot = true, outfit_cuff = true }
 			elseif string.find(profile, "citizen_artisan_", 1, true) == 1 then
-				mobileEssentials = { outfit_vest = not winterCoat, outfit_coat = winterCoat,
-					outfit_apron = true, outfit_cuff = true }
+				-- [거리 LOD] 여름에는 기존 필수 조끼, 겨울에는 같은 슬롯의 승인 외투만 표시한다.
+				if winterCoat then
+					mobileEssentials = { outfit_coat = true, outfit_apron = true, outfit_cuff = true }
+				else
+					mobileEssentials = { outfit_vest = true, outfit_apron = true, outfit_cuff = true }
+				end
 			elseif string.find(profile, "companion_clergy_", 1, true) == 1 then
 				mobileEssentials = { outfit_stole = true, outfit_belt = true, outfit_cuff = true }
 			elseif string.find(profile, "companion_", 1, true) == 1 then
