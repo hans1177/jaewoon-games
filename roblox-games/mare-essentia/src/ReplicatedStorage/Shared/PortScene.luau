@@ -938,8 +938,8 @@ local function modularHall(parent, cx, cz, sizeX, sizeZ, floors, set, tint, roof
 		placed += 1
 		return m, size.Y
 	end
-	-- 모바일 부담: 긴 변의 1/8 간격(14~28)으로 부품 수를 왕궁당 약 180개 이내로 제한한다.
-	local unit = math.clamp(math.max(sizeX, sizeZ) / 8, 14, 28)
+	-- 모바일 부담: 실측(정밀검사 44983384848) 생성 6.4→9.2초. 긴 변의 1/5 간격(14~40)으로 부품 수를 줄인다.
+	local unit = math.clamp(math.max(sizeX, sizeZ) / 5, 14, 40)
 	local nZ = math.max(2, math.floor(sizeZ / unit))
 	local nX = math.max(2, math.floor(sizeX / unit))
 	local spanZ, spanX = nZ * unit, nX * unit
@@ -972,16 +972,27 @@ local function modularHall(parent, cx, cz, sizeX, sizeZ, floors, set, tint, roof
 	end
 	-- 지붕: 실물 지붕 조각을 상면 격자에 얹는다(용마루는 z 방향).
 	local top = (floorH or 8) * math.max(1, floors)
+	-- 지붕: 격자로 깔면 톱니·틈이 생기고 너무 높았다(Studio 44983383153). 실물 지붕 모델 하나를
+	-- 건물 크기에 맞춰 축별로 늘리고 경사 높이는 짧은 변의 30%(최대 24)로 낮춘다.
 	if set.roof then
-		local ru = unit * 2
-		local rX, rZ = math.max(1, math.floor(spanX / ru)), math.max(1, math.floor(spanZ / ru))
-		for i = 1, rX do
-			for j = 1, rZ do
-				piece(set.roof, Vector3.new(cx - rX * ru / 2 + ru * (i - 0.5), top, cz - rZ * ru / 2 + ru * (j - 0.5)), ru, math.pi / 2, roofTint)
+		local roof = piece(set.roof, Vector3.new(cx, top, cz), math.max(spanX, spanZ), 0, roofTint)
+		if roof then
+			local box, size = roof:GetBoundingBox()
+			local want = Vector3.new(spanX + 2, math.min(24, math.min(spanX, spanZ) * 0.3), spanZ + 2)
+			local k = Vector3.new(want.X / size.X, want.Y / size.Y, want.Z / size.Z)
+			local base = box.Position - Vector3.new(0, size.Y / 2, 0)
+			for _, p in roof:GetDescendants() do
+				if p:IsA("BasePart") then
+					local lk = p.CFrame:VectorToObjectSpace(k)
+					p.Size = p.Size * Vector3.new(math.abs(lk.X), math.abs(lk.Y), math.abs(lk.Z))
+					p.Position = base + (p.Position - base) * k
+				end
 			end
+			local box2, size2 = roof:GetBoundingBox()
+			roof:PivotTo(CFrame.new(Vector3.new(cx, top, cz) - (box2.Position - Vector3.new(0, size2.Y / 2, 0))) * roof:GetPivot())
 		end
 	end
-	return placed, top
+	return placed, top, spanX, spanZ
 end
 
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
@@ -5809,7 +5820,7 @@ function PortScene.build(info, onFacility)
 			elseif islamic then { wall = "kenney_grey_wall_01", window = "kenney_grey_arch_01", door = "kenney_grey_door_round_01" }
 			elseif indian or southeast or tropical or westAfrican then { wall = "kenney_wood_wall_01", window = "kenney_wood_window_square_01", door = "kenney_wood_door_01", roof = "kenney_roof_straight_red_01" }
 			else { wall = "kenney_grey_wall_01", window = "kenney_grey_window_square_01", door = "kenney_grey_door_round_01", roof = "kenney_roof_straight_red_01" }
-		local hallPieces = modularHall(folder, px, 0, wide * 0.92, deep * 0.72, if palaceTier >= 4 then 3 else 2, hallSet, baseColor, roofColor)
+		local hallPieces, hallTop, hallX, hallZ = modularHall(folder, px, 0, wide * 0.92, deep * 0.72, 2, hallSet, baseColor, roofColor)
 		main:SetAttribute("ModularHallPieces", hallPieces)
 		-- [부속 건물 역할별 실물 조립] 같은 주택 하나를 반복하지 않고 역할마다 형태를 다르게 조립한다.
 		-- 마구간=목조 단층, 근위소=창 적은 좁은 3층(탑형), 서고=창 많은 2층, 행정청=본관과 같은 입면 2층.
@@ -5831,7 +5842,11 @@ function PortScene.build(info, onFacility)
 			return fallback
 		end
 		if hallPieces > 0 then
-			main.Transparency = 1
+			-- [실내 채움] 창·아치 너머가 비어 보이지 않게 기존 본체를 벽 바로 안쪽 크기의 어두운 실내로 쓴다.
+			main.Size = Vector3.new(hallX - 1.4, hallTop - 0.4, hallZ - 1.4)
+			main.CFrame = CFrame.new(px, (hallTop - 0.4) / 2, 0)
+			main.Color = baseColor:Lerp(Color3.new(0, 0, 0), 0.62)
+			main.Material = Enum.Material.SmoothPlastic
 			mainRoof.Transparency = 1
 			mainRoof.CanCollide = false
 		end
@@ -5840,10 +5855,16 @@ function PortScene.build(info, onFacility)
 			local wing = part(folder, Vector3.new(wide * 0.74, tall * 0.72, 30), CFrame.new(px - 8, tall * 0.36, z), baseColor, surface)
 			local wingRoof = part(folder, Vector3.new(wide * 0.78, 3.5, 34), CFrame.new(px - 8, tall * 0.72 + 1.5, z), roofColor, Enum.Material.Slate)
 			-- [측랑 실물화] 본관과 같은 문화권 부품으로 2층 측랑을 조립한다(성공 시 상자는 투명 충돌체).
-			if hallPieces > 0 and modularHall(folder, px - 8, z, wide * 0.7, 28, 2, hallSet, baseColor, roofColor) > 0 then
-				wing.Transparency = 1
-				wingRoof.Transparency = 1
-				wingRoof.CanCollide = false
+			if hallPieces > 0 then
+				local wingPieces, wingTop, wingX, wingZ = modularHall(folder, px - 8, z, wide * 0.7, 28, 2, hallSet, baseColor, roofColor)
+				if wingPieces > 0 then
+					wing.Size = Vector3.new(wingX - 1.4, wingTop - 0.4, wingZ - 1.4)
+					wing.CFrame = CFrame.new(px - 8, (wingTop - 0.4) / 2, z)
+					wing.Color = baseColor:Lerp(Color3.new(0, 0, 0), 0.62)
+					wing.Material = Enum.Material.SmoothPlastic
+					wingRoof.Transparency = 1
+					wingRoof.CanCollide = false
+				end
 			end
 			-- 지역 양식에 따라 관문 탑·첨탑·누각으로 실루엣을 다르게 한다.
 			-- [문화권 탑] 유럽식 성곽 탑은 유럽·지중해 관저에만 둔다(동아시아·이슬람·남아시아·열대 궁정에 붙이지 않음).
