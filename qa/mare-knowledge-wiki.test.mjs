@@ -28,3 +28,23 @@ test('카드 상세는 위키 해설·접는 섹션·세로 7:10 원화 틀을 �
   assert.match(client, /\(if txt\.Visible then "▾ " else "▸ "\)/, '접는 섹션');
   assert.match(client, /CC BY-SA 4\.0/);
 });
+
+test('읽기 퀴즈는 서버가 판정하고 보상은 카드당 한 번이다', () => {
+  const wiki = read('KnowledgeWiki.luau');
+  const codex = fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/Codex.luau', 'utf8');
+  const state = fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/Services/State.luau', 'utf8');
+  const client = fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau', 'utf8');
+  const entries = [...wiki.matchAll(/\n\t(\w+) = \{\n\t\ttopic = /g)].length;
+  const questions = [...wiki.matchAll(/answer = (\d+) \}/g)];
+  assert.equal(questions.length, entries * 3, '카드당 3문제');
+  for (const m of wiki.matchAll(/options = \{([^}]*)\}, answer = (\d+)/g)) {
+    const n = m[1].split('", "').length;
+    assert.ok(Number(m[2]) >= 1 && Number(m[2]) <= n, '정답 번호가 보기 범위 안');
+  }
+  assert.match(wiki, /QUIZ_REWARD = \{ coins = 30, fame = 1 \}/);
+  assert.match(codex, /function handlers\.WikiQuiz\(state, p\)/);
+  assert.match(codex, /if state\.wikiQuiz\[id\] then/, '중복 보상 차단');
+  assert.match(codex, /not state\.discovered\[id\]/, '미발견 카드 차단');
+  assert.match(state, /wikiQuiz = \{\}/);
+  assert.match(client, /call\("WikiQuiz"/);
+});

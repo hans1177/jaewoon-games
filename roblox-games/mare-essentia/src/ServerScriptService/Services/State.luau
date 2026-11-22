@@ -45,6 +45,7 @@ return function(D)
 			discovered = {},
 			cardOrigins = {}, -- [개인 탐험 백과] 최초 카드 획득의 항구·날짜·현장·전수자·퀘스트
 			codexLevel = {},
+			wikiQuiz = {}, -- [백과 읽기 퀴즈] 보상을 받은 카드 id. 카드당 한 번.
 			encyclopediaBookmarkId = nil, -- [서재] 선택한 지식 1개의 책갈피. 기존 저장에는 없어도 된다.
 			tech = {},
 			careers = D.Careers.new(),
@@ -309,6 +310,13 @@ return function(D)
 						siteId = type(record.siteId) == "string" and siteIds[record.siteId] and record.siteId or nil,
 						eventId = type(record.eventId) == "string" and (D.Story.ById[record.eventId] or D.HistoryEvents.ById[record.eventId]) and record.eventId or nil,
 					}
+				end
+			end
+		end
+		if type(saved.wikiQuiz) == "table" then
+			for id, v in saved.wikiQuiz do
+				if v == true and type(id) == "string" and D.Cards.Wiki and D.Cards.Wiki[id] then
+					s.wikiQuiz[id] = true
 				end
 			end
 		end
@@ -940,6 +948,7 @@ return function(D)
 			discovered = state.discovered,
 			cardOrigins = state.cardOrigins, -- 개인 백과 최초 발견 이력을 기존 저장 경로로 보존
 			codexLevel = state.codexLevel,
+			wikiQuiz = state.wikiQuiz,
 			encyclopediaBookmarkId = state.encyclopediaBookmarkId, -- [서재] 한 항목만 저장해 폭증을 막는다.
 			tech = state.tech,
 			careers = state.careers,

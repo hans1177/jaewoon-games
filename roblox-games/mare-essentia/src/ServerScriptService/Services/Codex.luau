@@ -82,6 +82,39 @@ return function(D, S)
 		return true, msg
 	end
 
+	-- [백과 읽기 퀴즈] 해설을 읽고 3문제를 모두 맞히면 카드당 한 번 소액 보상. 정답·중복은 서버가 판정한다.
+	function handlers.WikiQuiz(state, p)
+		local id = if type(p) == "table" then p.id else nil
+		local wiki = if type(id) == "string" and D.Cards.Wiki then D.Cards.Wiki[id] else nil
+		if not wiki or not wiki.quiz or not state.discovered[id] then
+			return false, "발견한 지식의 퀴즈만 풀 수 있어요"
+		end
+		state.wikiQuiz = state.wikiQuiz or {}
+		if state.wikiQuiz[id] then
+			return false, "이 카드의 퀴즈 보상은 이미 받았어요"
+		end
+		local answers = p.answers
+		if type(answers) ~= "table" then
+			return false, "답을 골라 주세요"
+		end
+		for i, q in wiki.quiz do
+			local a = answers[i]
+			if type(a) ~= "number" or a < 1 or a > #q.options or a ~= math.floor(a) then
+				return false, "모든 문제에 답을 골라 주세요"
+			end
+		end
+		for i, q in wiki.quiz do
+			if answers[i] ~= q.answer then
+				return false, "틀린 문제가 있어요. 해설을 다시 읽고 도전해 보세요"
+			end
+		end
+		state.wikiQuiz[id] = true
+		local reward = D.Cards.QuizReward
+		state.coins += reward.coins
+		state.fame += reward.fame
+		return true, string.format("퀴즈 통과! +%d코인, 명성 +%d", reward.coins, reward.fame)
+	end
+
 	-- [서재 · 영구 책갈피] 기존 발견/저장 모델에 포함되는 단일 카드 ID만 갱신한다.
 	-- 같은 카드를 다시 누르면 제거한다. 미발견/존재하지 않는 카드는 저장하지 않는다.
 	function handlers.SetEncyclopediaBookmark(state, p)
