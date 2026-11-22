@@ -89,7 +89,7 @@ button(shop, "PotionShop", "물약 구매", UDim2.new(0.5, 4, 0, 47), UDim2.new(
     remote:FireServer("BUY_POTION")
 end)
 
-local actions = panel("Actions", gui, UDim2.new(0, 208, 0, 146), UDim2.new(1, -12, 1, -12), Vector2.new(1, 1))
+local actions = panel("Actions", gui, UDim2.new(0, 208, 0, 146), UDim2.new(1, -12, 1, -112), Vector2.new(1, 1))
 button(actions, "Attack", "공격", UDim2.new(0, 6, 0, 6), UDim2.new(0.5, -9, 0, 63), function()
     remote:FireServer("ATTACK")
 end)
