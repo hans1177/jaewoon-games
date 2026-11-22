@@ -377,6 +377,38 @@ function NavalBattle.play(opts)
 	-- [16해역 통합 연출] 위치·기상·교전 정보에 따라 배경을 고른다. 실제 전투·저장·포격 수치는 건드리지 않는다.
 	-- [모바일] 등록된 지형 메시를 우선 재사용하고, 원경·입자·수면 갱신만 경량화한다.
 	if not opts.cardOnly then
+		-- [실제 입체 수면] 기존 항해와 같은 Roblox Terrain 물 재질을 해전 좌표에 생성한다.
+		-- 물결은 엔진이 움직이므로 프레임마다 파츠를 복제하지 않는다. 기존 평면은 깊은 해저 백업으로만 남긴다.
+		local oceanTerrain = workspace.Terrain
+		local oceanSpan = if MOBILE_VFX then 1050 else 1550
+		local oceanSize = Vector3.new(oceanSpan, 6, oceanSpan)
+		local oceanFrame = CFrame.new(ORIGIN + Vector3.new(0, -2, 0))
+		local oldWater = {
+			color = oceanTerrain.WaterColor, waveSize = oceanTerrain.WaterWaveSize,
+			waveSpeed = oceanTerrain.WaterWaveSpeed, transparency = oceanTerrain.WaterTransparency,
+			reflectance = oceanTerrain.WaterReflectance,
+		}
+		local oceanReady = pcall(function()
+			oceanTerrain:FillBlock(oceanFrame, oceanSize, Enum.Material.Water)
+		end)
+		if oceanReady then
+			sea.CFrame = CFrame.new(ORIGIN + Vector3.new(0, -5.2, 0))
+			folder:SetAttribute("NavalOceanSurfaceType", "TERRAIN_WATER")
+		else
+			folder:SetAttribute("NavalOceanSurfaceType", "PLANE_FALLBACK")
+		end
+		folder.Destroying:Connect(function()
+			if oceanReady then
+				pcall(function() oceanTerrain:FillBlock(oceanFrame, oceanSize, Enum.Material.Air) end)
+			end
+			pcall(function()
+				oceanTerrain.WaterColor = oldWater.color
+				oceanTerrain.WaterWaveSize = oldWater.waveSize
+				oceanTerrain.WaterWaveSpeed = oldWater.waveSpeed
+				oceanTerrain.WaterTransparency = oldWater.transparency
+				oceanTerrain.WaterReflectance = oldWater.reflectance
+			end)
+		end)
 		local coasts = {
 			{ id="caribbean", name="카리브 해적 해역", water=Color3.fromRGB(31, 157, 170), sky=Color3.fromRGB(132, 207, 230),
 				props={{"platform-beach",175,-453,351},{"tropical-palm-tall",63,-421,327},{"cliff-rock",135,455,-372},{"tropical-palm-short",55,426,-347}} },
@@ -453,6 +485,17 @@ function NavalBattle.play(opts)
 			Sfx.ambient({ "sfx_ambience_storm", "sfx_waves" }, 0.55)
 		end
 		sea.Color = coast.water:Lerp(Color3.fromRGB(17, 37, 54), 0.12)
+		-- [해역별 파고] 잔잔한 물·계절풍·폭풍을 물 표면에 직접 적용한다.
+		-- 선박 피해·속도와 포격 판정은 기존 서버/장면 계산을 그대로 사용한다.
+		if oceanReady then
+			pcall(function()
+				oceanTerrain.WaterColor = sea.Color
+				oceanTerrain.WaterTransparency = if mode == "fog" then 0.42 else 0.28
+				oceanTerrain.WaterReflectance = if phase == "night" then 0.08 else 0.15
+				oceanTerrain.WaterWaveSize = if mode == "storm" then 0.85 elseif mode == "rain" then 0.48 else 0.28
+				oceanTerrain.WaterWaveSpeed = if mode == "storm" then 17 elseif mode == "rain" then 12 else 8
+			end)
+		end
 		folder:SetAttribute("NavalEnvironment", coast.id)
 		folder:SetAttribute("NavalEnvironmentName", coast.name)
 		folder:SetAttribute("NavalEnvironmentCount", #coasts)
