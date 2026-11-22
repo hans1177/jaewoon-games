@@ -5058,13 +5058,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local heading = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
 		local right = Vector3.new(-heading.Z, 0, heading.X)
 		local rowing = profile.rowed == true
+		local seaMood = folder:GetAttribute("NavalWeatherMode") or "clear"
+		local waveBoost = if seaMood == "storm" then 1.45 elseif seaMood == "rain" then 1.18 else 1
 		local drive = math.clamp((sh.speed or 0) / 18, 0.34, 1.75)
 		local stern = ORIGIN + sh.pos - heading * sh.length * 0.49 + Vector3.new(0, 0.27, 0)
 		-- [선미] 흰 선형 포말과 조금 굵은 물방울을 겹쳐 물살이 끊기지 않도록 한다.
 		FX.burst(stern, Vector3.new(-heading.X, 0.1, -heading.Z), {
 			{ tex = "spark", c0 = Color3.fromRGB(245, 255, 255), c1 = theme.foam,
-				s0 = if rowing then 0.76 else 0.62, s1 = 0.025, life = if rowing then 0.88 else 0.72,
-				v0 = 2 * drive, v1 = 7 * drive, spreadX = if rowing then 92 else 55, spreadY = 15,
+				s0 = (if rowing then 0.76 else 0.62) * waveBoost, s1 = 0.025, life = (if rowing then 0.88 else 0.72) * waveBoost,
+				v0 = 2 * drive, v1 = 7 * drive * waveBoost, spreadX = if rowing then 92 else 55, spreadY = 15,
 				axis = "forward", n = if MOBILE_VFX then 5 else 9,
 				a0 = 0.25, drag = 4.2, acc = Vector3.new(0, -4, 0), glow = 0.13 },
 		})
@@ -5075,8 +5077,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local sprayDir = right * side * 0.72 - heading * 0.35 + Vector3.new(0, 0.7, 0)
 				FX.burst(bow + right * side * sh.length * 0.075, sprayDir, {
 					{ tex = "spark", c0 = Color3.fromRGB(248, 255, 255), c1 = theme.foam,
-						s0 = math.min(0.95, 0.57 * drive), s1 = 0.04,
-						life = 0.45, v0 = 7 * drive, v1 = 15 * drive,
+						s0 = math.min(1.5, 0.57 * drive * waveBoost), s1 = 0.04,
+						life = 0.45 * waveBoost, v0 = 7 * drive, v1 = 15 * drive * waveBoost,
 						spreadX = 28, spreadY = 38, axis = "forward",
 						n = if MOBILE_VFX then 5 else 9, a0 = 0.11,
 						acc = Vector3.new(0, -20, 0), drag = 1.9, glow = 0.25 },
@@ -5530,6 +5532,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					end
 				end
 				if hit then
+					-- [선체 피격 무게감] 실제 적중 때만 상대 승인 선체의 표시 Pivot에 감쇠 충격을 전달한다.
+					local struck = if shooter == me then foe elseif shooter == foe then me else nil
+					if struck then
+						local broadside = Vector3.new(-math.sin(struck.theta), 0, math.cos(struck.theta))
+						struck.impactAt = os.clock()
+						struck.impactSide = if broadside:Dot(to - from) >= 0 then 1 else -1
+						struck.impactPower = math.clamp(nc.ball * 0.15, 0.09, 0.30)
+					end
 					FX.splinters(to, if MOBILE_VFX then 5 else 5 + stage * 2)
 					FX.impact(to, nc.ball, style, nc)
 					shake = math.max(shake, 1.3)
@@ -5563,7 +5573,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		-- 방향을 틀면 바깥쪽으로 기울고(롤), 속도가 붙으면 선수가 살짝 든다. 피해가 쌓이면 한쪽으로 기울며 가라앉는다.
 		local dTheta = (sh.theta - (sh.lastTheta or sh.theta) + math.pi) % (math.pi * 2) - math.pi
 		sh.lastTheta = sh.theta
-		sh.roll = (sh.roll or 0) + (math.clamp(dTheta * 9, -0.3, 0.3) - (sh.roll or 0)) * 0.12
+		-- [함종별 관성] 작은 배는 조타에 즉시 반응하고, 대형선은 묵직하게 따라온다.
+		local hullWeight = math.clamp((sh.length - 26) / 35, 0, 1)
+		sh.roll = (sh.roll or 0) + (math.clamp(dTheta * 9, -0.3, 0.3) - (sh.roll or 0)) * (0.15 - hullWeight * 0.07)
 		local hp = sh.hp or 1
 		local heel = (1 - hp) * 0.28 * (sh.heelSide or 1)
 		local pitch = math.clamp((sh.speed or 0) / 90, 0, 0.1) + math.sin(t * 0.9 + sh.length) * 0.03
@@ -5574,6 +5586,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local pulse = math.exp(-age * 9) * math.sin(age * 23)
 				heel += (sh.recoilSide or 1) * (sh.recoilForce or 0.1) * pulse
 				pitch += (sh.recoilForce or 0.1) * 0.32 * pulse
+			end
+		end
+		-- [명중 반동] 피해·전투 속도는 그대로 두고 맞은 선체만 잠시 밀렸다 복원된다.
+		if sh.impactAt then
+			local age = t - sh.impactAt
+			if age >= 0 and age < 0.72 then
+				local impulse = (sh.impactPower or 0.12) * math.exp(-age * (4.5 + hullWeight)) * math.sin(age * 16)
+				heel += (sh.impactSide or 1) * impulse
+				pitch -= impulse * 0.58
 			end
 		end
 		local dip, rollAdd, pitchAdd = -(1 - hp) * 1.6, 0, 0
@@ -5596,13 +5617,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				rollAdd, pitchAdd = sink.side * k * 1.12, -k * 0.68
 			end
 		end
-		-- [선체와 파도] 기존 포격·항속·충돌 판정은 그대로 두고 선체 표시만 해역 파고에 맞춘다.
+		-- [다중 파도·함종별 부력] 서로 다른 파동의 위상과 선박 위치를 사용해 물결을 입체적으로 탄다.
+		-- 대형선은 작은 파도를 덜 타고, 소형선은 선수·선미가 더 크게 흔들린다. 물리 판정은 불변.
 		local seaMood = if opts.cardOnly then "card" else (folder:GetAttribute("NavalWeatherMode") or "clear")
-		local swell = if seaMood == "storm" then 1.05 elseif seaMood == "rain" then 0.68 else 0.48
-		local swellTime = t * (if seaMood == "storm" then 1.8 elseif seaMood == "rain" then 1.45 else 1.3) + sh.length
-		local bob = CFrame.new(0, math.sin(swellTime) * (if seaMood == "card" then 0.5 else swell) + dip, 0)
-			* CFrame.Angles(-sh.roll + heel + rollAdd + (if seaMood == "card" then 0 else math.sin(swellTime * 0.61) * swell * 0.055),
-				0, pitch + pitchAdd + (if seaMood == "card" then 0 else math.cos(swellTime * 0.82) * swell * 0.065))
+		local swell = if seaMood == "storm" then 1.48 elseif seaMood == "rain" then 0.86 else 0.52
+		local rate = if seaMood == "storm" then 1.85 elseif seaMood == "rain" then 1.5 else 1.28
+		local swellTime = t * rate + sh.pos.X * 0.016 + sh.pos.Z * 0.013 + sh.length * 0.24
+		local crossTime = t * rate * 0.67 - sh.pos.X * 0.011 + sh.pos.Z * 0.019 + sh.length * 0.11
+		local buoyancy = 1 - hullWeight * 0.43
+		local heave = if seaMood == "card" then math.sin(t * 1.3 + sh.length) * 0.5
+			else (math.sin(swellTime) * 0.73 + math.cos(crossTime) * 0.27) * swell * buoyancy
+		local seaRoll = if seaMood == "card" then 0
+			else (math.sin(swellTime * 0.64 + sh.theta) * 0.070 + math.cos(crossTime) * 0.038) * swell * buoyancy
+		local seaPitch = if seaMood == "card" then 0
+			else (math.cos(swellTime * 0.82) * 0.080 + math.sin(crossTime) * 0.046) * swell * buoyancy
+		local bob = CFrame.new(0, heave + dip, 0)
+			* CFrame.Angles(-sh.roll + heel + rollAdd + seaRoll, 0, pitch + pitchAdd + seaPitch)
 		sh.model:PivotTo(CFrame.new(ORIGIN + Vector3.new(sh.pos.X, sh.y, sh.pos.Z)) * CFrame.Angles(0, -sh.theta, 0) * bob * sh.rot)
 		-- [선박 항적] 이미 계산한 위치·속도만 읽고, 포격·선체 충돌·실제 항속은 바꾸지 않는다.
 		if sh.wake and sh.wake.Parent and sh.wakeFx and t >= (sh.wakeNext or 0) then
@@ -6708,14 +6738,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		kick *= 0.86 ^ (dt * 60)
 		local boardingView = phase == "board" and not cardBusy and not opts.cardOnly and not (rt and rt.sunk) and not sinkStart
 		FX.boardZoom += ((if boardingView then 1 else 0) - FX.boardZoom) * (1 - math.exp(-dt * 4.2))
-		cam.FieldOfView = (if MOBILE_VFX then 73 else 75) - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom - FX.boardZoom * (17 + math.clamp(me.fx.stage or 2, 1, 6) * 0.6)
+		-- [입체 해전 카메라] 비전투 카드판은 유지하고 해전만 선체 크기·거리감이 읽히는 화각으로 좁힌다.
+		cam.FieldOfView = (if opts.cardOnly then (if MOBILE_VFX then 73 else 75) else (if MOBILE_VFX then 69 else 71)) - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom - FX.boardZoom * (17 + math.clamp(me.fx.stage or 2, 1, 6) * 0.6)
 		local f = forward(me.theta)
 		local sep = (foe.pos - me.pos)
 		local dist = sep.Magnitude
 		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
-		-- [선체 가독성] 선박 외형이 너무 작게 보이지 않게 카메라만 약간 가까이 이동한다.
-		local camPos = ORIGIN + me.pos - f * ((if MOBILE_VFX then 147 else 160) + dist * (if MOBILE_VFX then 0.46 else 0.51))
-			+ Vector3.new(0, math.min(78, 65 + dist * 0.11), 0)
+		-- [선박 3D 실루엣] 비스듬한 측면에서 선수·돛·함포가 동시에 보이도록 좌우 시차를 준다.
+		local side = Vector3.new(-f.Z, 0, f.X)
+		local cameraDistance = (if MOBILE_VFX then 133 else 145) + dist * (if MOBILE_VFX then 0.47 else 0.49)
+		local camPos = ORIGIN + me.pos - f * cameraDistance
+			+ (if opts.cardOnly then Vector3.zero else side * math.min(25, 13 + dist * 0.055))
+			+ Vector3.new(0, math.min(72, 51 + dist * 0.09), 0)
 		if cardBusy then
 			local mid = (me.pos + foe.pos) / 2
 			local dir = foe.pos - me.pos
@@ -6750,6 +6784,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			focus = focus:Lerp(shot, 0.92)
 			camPos = camPos:Lerp(desired, if MOBILE_VFX then 0.78 else 0.91)
 			cam.FieldOfView = 66 - (if showingSinking then 7 else 3) * math.clamp((now - endAt) / 1.5, 0, 1)
+		end
+		-- [수면 시점] 수평선은 안정적으로 유지하고 근거리 카메라에만 작은 물결 시차를 적용한다.
+		if not opts.cardOnly and not cardBusy and phase == "duel" then
+			local mood = folder:GetAttribute("NavalWeatherMode")
+			local cameraSwell = if mood == "storm" then 0.65 elseif mood == "rain" then 0.38 else 0.20
+			camPos += Vector3.new(0, math.sin(now * 1.15) * cameraSwell, 0)
 		end
 		local a = 1 - math.exp(-dt * (if cardBusy then 6 else 2.6))
 		FX.cam = if FX.cam then { pos = FX.cam.pos:Lerp(camPos, a), focus = FX.cam.focus:Lerp(focus, a) } else { pos = camPos, focus = focus }
