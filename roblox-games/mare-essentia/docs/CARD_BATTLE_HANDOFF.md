@@ -115,3 +115,12 @@
 - **기존 정식 자산등록 워크플로:** [실행 #45008490315](https://github.com/hans1177/jaewoon-games/actions/runs/45008490315) **success**. `assets-registered.json`의 `CardArt/af_30` 자산번호는 `98978608266827`, `usePermissionGranted:true`. 등록 SHA-256과 승인 SHA-256 일치 및 `AssetIds.luau`의 연결을 확인했다.
 - **다음 후보:** `eu_18` 유럽들소. 실험 시안 2개가 하르마탄 먼지바람 풍경으로 잘못 출력되어 **모두 폐기**했다. **유럽들소 원화의 제작·승인·등록 완료 증거가 아니다.** 유럽 숲에서 돌진하는 유럽들소 한 마리를 정확히 새로 그려야 한다.
 - **별도 미검증:** Roblox Studio 실제 카드 표시, 최종 게임 Place 게시. 기존 규칙·카드 수치·저장 구조·자산등록 파이프라인 변경 없음. 이후 작업자는 반드시 최신 `main`으로 모든 상태를 재조회한다.
+
+## 11. 유럽들소 `eu_18` 정식 등록 확인 (2026-11-22)
+
+- **카드 주제:** 유럽 숲속에서 전방으로 돌진하는 유럽들소 한 마리. 사진풍이 아닌 역동적인 컬러 회화, 원본 1024×1024 PNG. 글자·테두리·합성 대시보드·타 카드 소재 없음.
+- **원본:** `assets/cardart/src/eu_18-original.png`. 최종 PNG SHA-256 `d881176ab01218c7e9d04dfe52657a6a41c1c8cf08fa87ae4aa059018531387e`; 검증된 Git Blob SHA `bb3eb38d67e21978813d36778090ae7e87d87b53`.
+- **원본·승인 동시 반영:** `bb133dc5c3ef8e69725e76c2cbf4143919b1cc9c` (main). `assets/APPROVED_IMAGES.json`의 `CardArt/eu_18`, `modelOriginals`의 실제 시각검수 증빙과 PNG 객체를 함께 반영.
+- **Roblox 등록 확인:** `assets-registered.json`의 `CardArt/eu_18` 자산번호 **`134528634133181`**, `usePermissionGranted:true`. 등록·승인·원본 검수 SHA-256이 동일하고 `src/ReplicatedStorage/Shared/AssetIds.luau`에 `CardArt/eu_18` 바인딩이 같은 번호로 기록됨. 이는 **자산등록 증거**이며 Studio 실제 게임 카드 표시·최종 Place 게시 성공을 증명하지 않는다.
+- **다음 대상:** `eu_19` **붉은사슴**. 유럽 숲속을 달리는 긴 뿔을 가진 붉은사슴 **한 마리**를 기존 컬러 회화 화풍으로 제작하고, 별도 최종 PNG 해시·승인·기존 Roblox 등록기를 통해 검증한다. 유럽들소 원화를 재사용·덮어쓰기 하지 않는다.
+- **보존:** 게임 카드 능력치·전투 규칙·저장 키·등록 작업 구조는 변경 없음. 후속 작업자는 이 기록 대신 **현재 main의 등록표를 우선**해 재확인한다.
