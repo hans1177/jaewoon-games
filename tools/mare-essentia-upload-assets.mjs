@@ -787,7 +787,7 @@ async function prepareLicensedOriginals() {
       console.log('MARE_LICENSED_MODEL_PREPARED', name, hash, tris);
     } else console.log('MARE_LICENSED_MODEL_SOURCE_VERIFIED', name, tris);
   }
-  // [2026-11-22 지상전 CC0 자산] 공식 Kenney Nature Kit 2.1에서 미등록 실물 3종만 수급한다.
+  // [2026-11-22 지상전 CC0 자산] Kenney Nature Kit 2.1의 승인 모델 6종만 기존 정본 등록기로 수급한다.
   // 라이선스·원본 ZIP SHA·개별 GLB SHA를 확보하고 기존 inbox/register_asset.py 등록기를 사용한다.
   const natureArchive = 'https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip';
   const naturePage = 'https://kenney.nl/assets/nature-kit';
@@ -796,6 +796,9 @@ async function prepareLicensedOriginals() {
     {original:'rock_largeB', name:'kenney_rock_largeB'},
     {original:'tree_fat', name:'kenney_tree_fat'},
     {original:'mushroom_red', name:'kenney_mushroom_red'},
+    {original:'mushroom_redGroup', name:'kenney_mushroom_redGroup'},
+    {original:'stump_old', name:'kenney_stump_old'},
+    {original:'stone_smallFlatA', name:'kenney_stone_smallFlatA'},
   ];
   const pendingNature = [];
   for (const entry of natureModels) {
@@ -815,13 +818,32 @@ async function prepareLicensedOriginals() {
     } else pendingNature.push({...entry, member});
   }
   if (pendingNature.length) {
-    const response = await fetch(natureArchive, {signal: AbortSignal.timeout(90000)});
-    if (!response.ok || Number(response.headers.get('content-length') || 0) > 30000000)
-      throw new Error('MARE_CC0_NATURE_DOWNLOAD_FAILED:' + response.status);
-    const archive = Buffer.from(await response.arrayBuffer());
-    if (archive.length < 100000 || archive.length > 30000000
-      || crypto.createHash('sha256').update(archive).digest('hex') !== natureArchiveSha)
-      throw new Error('MARE_CC0_NATURE_OFFICIAL_ARCHIVE_HASH_INVALID');
+    // [원본 ZIP 복구] 공식 응답이 바뀌면 검증된 2026-10-31 보관본만 같은 SHA-256으로 대조한다.
+    // 기존 해시·GLB/라이선스·중복·로블록스 체험 사용 권한 검사는 절대 완화하지 않는다.
+    const verifiedArchiveMirror = 'https://github.com/WaviestSun/atelier-packs/releases/download/packs-2/kenney_nature-kit.zip';
+    let archive = null;
+    let downloadedFrom = '';
+    for (const source of [natureArchive, verifiedArchiveMirror]) {
+      try {
+        const response = await fetch(source, {signal: AbortSignal.timeout(90000)});
+        if (!response.ok || Number(response.headers.get('content-length') || 0) > 30000000) {
+          console.warn('MARE_CC0_NATURE_ARCHIVE_RESPONSE_INVALID', new URL(source).hostname, response.status);
+          continue;
+        }
+        const candidate = Buffer.from(await response.arrayBuffer());
+        const candidateHash = crypto.createHash('sha256').update(candidate).digest('hex');
+        if (candidate.length < 100000 || candidate.length > 30000000 || candidateHash !== natureArchiveSha) {
+          console.warn('MARE_CC0_NATURE_ARCHIVE_SHA_REJECTED', new URL(source).hostname, candidateHash);
+          continue;
+        }
+        archive = candidate;
+        downloadedFrom = source;
+        break;
+      } catch (error) {
+        console.warn('MARE_CC0_NATURE_ARCHIVE_FETCH_REJECTED', new URL(source).hostname, String(error));
+      }
+    }
+    if (!archive) throw new Error('MARE_CC0_NATURE_OFFICIAL_ARCHIVE_HASH_INVALID');
     const archivePath = path.join(process.env.RUNNER_TEMP || '/tmp', 'mare-kenney-nature-2-1.zip');
     await fs.writeFile(archivePath, archive);
     const inbox = path.join(ROOT, 'assets/inbox/Terrain');
@@ -848,6 +870,7 @@ async function prepareLicensedOriginals() {
       await fs.writeFile(path.join(inbox,name+'.license.json'),JSON.stringify({
         author:'Kenney', license:'CC0-1.0', source:natureArchive, sourcePage:naturePage,
         sourceMember:entry.member, archiveSha256:natureArchiveSha, sourceSha256:hash,
+        retrievedFrom:downloadedFrom,
         modification:'Unmodified official Kenney Nature Kit 2.1 model',
         commercialUseAllowed:true, derivativesAllowed:true,
         actualRobloxRuntimeVerified:false, visualQualityApproved:false,
