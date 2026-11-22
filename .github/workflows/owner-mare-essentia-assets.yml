@@ -180,6 +180,33 @@ jobs:
           else
             node tools/mare-essentia-upload-assets.mjs
           fi
+          # [지상전 신규 CC0 실물 3종] 로블록스 번호·실제 Universe 사용권·원본 해시 확인 후에만 GitHub에 승격한다.
+          if [[ "$STUDIO_REGRANT" != "true" ]]; then
+            python3 - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path('roblox-games/mare-essentia')
+          registry=json.loads((root/'assets-registered.json').read_text(encoding='utf-8'))['assets']
+          ziphash='fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d'
+          confirmed=set()
+          for name in ('kenney_rock_largeB','kenney_tree_fat','kenney_mushroom_red'):
+              original=root/'assets'/'terrain'/(name+'.glb')
+              proof=json.loads(pathlib.Path(str(original)+'.license.json').read_text(encoding='utf-8'))
+              row=registry.get('Terrain/'+name) or {}
+              sha=hashlib.sha256(original.read_bytes()).hexdigest()
+              if (proof.get('sourceSha256')!=sha or proof.get('archiveSha256')!=ziphash
+                  or proof.get('license')!='CC0-1.0' or proof.get('author')!='Kenney'
+                  or proof.get('sourcePage')!='https://kenney.nl/assets/nature-kit'
+                  or row.get('sourceSha256')!=sha or row.get('license')!='CC0-1.0'
+                  or row.get('assetType')!='Model' or row.get('usePermissionGranted') is not True
+                  or not str(row.get('assetId','')).isdigit() or int(row.get('assetId',0))<1):
+                  raise SystemExit('MARE_NATURE_ID_RIGHTS_OR_ORIGINAL_INVALID:'+name)
+              confirmed.add(str(row['assetId']))
+              print('MARE_NATURE_ROBLOX_REGISTERED',name,row['assetId'],sha)
+          if len(confirmed)!=3: raise SystemExit('MARE_NATURE_DUPLICATE_ASSET_ID')
+          print('MARE_NATURE_REGISTERED_RIGHTS_VERIFIED=3')
+          print('MARE_NATURE_STUDIO_3D_VISUAL_QA=UNVERIFIED')
+          PY
+          fi
           # [36척 V5 등록 확정] 72개가 전부 실제 자산번호와 Universe 사용 권한을 받아야 성공이다.
           if [[ "${{ steps.ship_v5.outcome }}" == "success" ]]; then
             python3 - <<'PY'
@@ -267,7 +294,7 @@ jobs:
             echo "::error::MARE_EXTERNAL_CC0_HULL_OR_REGISTRATION_QA_FAILED"
             exit 1
           fi
-          for f in roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb.license.json roblox-games/mare-essentia/assets/naval/fishing-net.glb roblox-games/mare-essentia/assets/naval/fishing-net.glb.license.json roblox-games/mare-essentia/assets/naval/net-floats.glb roblox-games/mare-essentia/assets/naval/net-floats.glb.license.json roblox-games/mare-essentia/assets/naval/galleon-heritage.glb roblox-games/mare-essentia/assets/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png roblox-games/mare-essentia/assets/naval/*-v5*.glb* roblox-games/mare-essentia/assets/cargo/{amber,ambergris,camphor,coal,guano,gum_arabic,jade,nitrate}.glb* roblox-games/mare-essentia/assets/people/{outfit_*,hair_*,acc_*}.glb*; do
+          for f in roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb.license.json roblox-games/mare-essentia/assets/naval/fishing-net.glb roblox-games/mare-essentia/assets/naval/fishing-net.glb.license.json roblox-games/mare-essentia/assets/naval/net-floats.glb roblox-games/mare-essentia/assets/naval/net-floats.glb.license.json roblox-games/mare-essentia/assets/naval/galleon-heritage.glb roblox-games/mare-essentia/assets/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png roblox-games/mare-essentia/assets/terrain/kenney_*.glb* roblox-games/mare-essentia/assets/SOURCES.md roblox-games/mare-essentia/assets/naval/*-v5*.glb* roblox-games/mare-essentia/assets/cargo/{amber,ambergris,camphor,coal,guano,gum_arabic,jade,nitrate}.glb* roblox-games/mare-essentia/assets/people/{outfit_*,hair_*,acc_*}.glb*; do
             if [[ ( "$f" == roblox-games/mare-essentia/assets/naval/nau-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/nau-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/rowboat-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/kotia-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/mtepe-custom.glb* ) && ( "${{ steps.asset_registration.outcome }}" != "success" || "${{ steps.nau_check.outcome }}" != "success" ) ]]; then
               echo "SKIP_UNVERIFIED_EXTERNAL_CC0_HULL $f"
               continue
@@ -287,6 +314,11 @@ jobs:
             fi
             if [[ "$f" == roblox-games/mare-essentia/assets/cardart/*.png && "${{ steps.asset_registration.outcome }}" != "success" ]]; then
               echo "SKIP_UNVERIFIED_MODEL_ORIGINAL $f"
+              continue
+            fi
+            # [지상전 3D 실물] 등록·권한 확정 전에는 외부 GLB·권리 증빙·SOURCES 장부를 반영하지 않는다.
+            if [[ ( "$f" == roblox-games/mare-essentia/assets/terrain/kenney_*.glb* || "$f" == roblox-games/mare-essentia/assets/SOURCES.md ) && "${{ steps.asset_registration.outcome }}" != "success" ]]; then
+              echo "SKIP_UNVERIFIED_KENNEY_NATURE $f"
               continue
             fi
             # [V5 원본 파일 승격] 등록번호와 Universe 사용 권한을 검증하기 전에는 GitHub 원본도 승격하지 않는다.
