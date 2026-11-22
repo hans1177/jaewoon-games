@@ -3374,3 +3374,28 @@ test('스튜디오 R15 보행 검증은 자동 대련 루프의 관절 덮어쓰
   assert.match(steps[208].code, /joint:GetAttribute\("NpcPitchSign"\)/);
   assert.match(steps[208].code, /task\.wait\(0\.045\)/);
 });
+
+// [캐릭터 외형 회귀] 등록된 실물 메시와 두피 볼륨·모자·머리색·직업 장식 색상은 함께 유지한다.
+test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제 R15 장착 흐름에 연결된다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  const assetIds=read('ReplicatedStorage/Shared/AssetIds.luau');
+  assert.match(pose,/scalp\.Name = "HairScalp"/);
+  assert.match(pose,/temple\.Name = "HairScalpSide"/);
+  assert.match(pose,/h\.Y \* 0\.65, h\.Z \* 1\.08/);
+  for(const kind of ['sailorcap','bonnet','beret','bicorne'])
+    assert.ok(pose.includes('kind == "'+kind+'"'),'모자 형태 누락: '+kind);
+  assert.match(pose,/EUROPEAN_DETAIL_CULTURES\[outfit\.culture\]/,
+    '기존 지역·시대 허용 체계를 보존한다');
+  assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
+  assert.match(pose,/local hairPalette = \{/);
+  assert.match(pose,/surface\.Color = surface\.Color:Lerp\(softTint, 0\.72\)/,
+    '텍스처/원본 PBR을 유지하면서 실제 머리색을 가시화한다');
+  assert.match(pose,/model:SetAttribute\("NpcAccentTint", accentTint\)/);
+  assert.match(pose,/surface\.Color = surface\.Color:Lerp\(accent:Lerp\(/);
+  assert.match(pose,/if not textured and string\.sub\(assetName, 1, 7\) == "outfit_"/);
+  assert.match(pose,/local fittedUpperReady = false/);
+  assert.match(pose,/if fittedVisible then/);
+  assert.match(pose,/model:SetAttribute\("OutfitMissing"/);
+  for(const asset of ['hair_simpleparted','hair_long','hair_buns','acc_feather_hat','acc_sailor_headband'])
+    assert.ok(assetIds.includes('["People/'+asset+'"]'),'등록 원본 누락: '+asset);
+});
