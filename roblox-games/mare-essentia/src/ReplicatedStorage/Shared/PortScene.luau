@@ -5113,7 +5113,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		end
 		importedModel(folder, "Naval", "tower-watch", Vector3.new(WX, 0, 0), 16, true)
 	end
-	-- [문화권별 입체 원경] 기존 도시 경계·보행·주택 필지는 그대로 두고 바깥 지형 메시만 바꾼다.
+	-- [문화권별 대형 입체 원경] 기존 도시 경계·보행·주택 필지는 그대로 두고 바깥의 승인된 지형 메시만 대폭 확대한다.
 	-- 발헤임식 지형 높이층과 아노식 도시 발전 실루엣은 배치 원리만 참고한다. 타 게임 모델을 복제하지 않는다.
 	local vistaMobile = UserInputService.TouchEnabled
 	local rockyCoast = key == "iberia" or key == "italy" or key == "med" or key == "swahili"
@@ -5123,17 +5123,21 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local ridgePool = if northernLand then { "cliff-large-stone", "cliff-cornerinnertop-rock", "cliff-blockslope-rock" }
 		elseif rockyCoast then { "cliff-diagonal-rock", "cliff-cornerinnerlarge-rock", "cliff-large-rock" }
 		else { "cliff-blockslope-rock", "cliff-diagonal-rock", "cliff-large-rock" }
-	local rimRocks = if lvl >= 4 then 16 else 25
+	local rimRocks = if lvl >= 4 then 24 else 32
 	local ridgePlaced = 0
-	local ridgeLimit = if vistaMobile then 2 else 5
+	local ridgeLimit = if vistaMobile then 8 else 12
 	for i = 1, rimRocks do
 		local side = if i % 2 == 0 then 1 else -1
-		local at = Vector3.new(rng:NextNumber(-420, -45), 0, side * rng:NextNumber(WZ + 26, WZ + 100))
-		local ridge = i % 4 == 0 and ridgePlaced < ridgeLimit
-		local rockName = if ridge then ridgePool[(math.floor(i / 4) - 1) % #ridgePool + 1] else "rock-large"
+		-- [좌우 균형] 짝수에만 절벽을 놓지 않고, 외곽 2~3겹 실루엣을 형성한다.
+		local ridge = i % 3 ~= 0 and ridgePlaced < ridgeLimit
+		local at = if ridge then Vector3.new(rng:NextNumber(-620, -170), 0,
+			side * rng:NextNumber(WZ + 125, WZ + 225))
+			else Vector3.new(rng:NextNumber(-420, -45), 0,
+				side * rng:NextNumber(WZ + 26, WZ + 100))
+		local rockName = if ridge then ridgePool[(i - 1) % #ridgePool + 1] else "rock-large"
 		local rockKind = if ridge then "Terrain" else "Town"
 		if AssetIds[rockKind .. "/" .. rockName] then
-			local size = if ridge then rng:NextNumber(31, 39) + (if lvl >= 4 then 9 else 0)
+			local size = if ridge then rng:NextNumber(115, 175) + (if lvl >= 4 then 16 else 0)
 				else rng:NextNumber(12, 20)
 			local rock = importedModel(folder, rockKind, rockName, at, size, false)
 			if rock and ridge then
@@ -5573,26 +5577,26 @@ function PortScene.build(info, onFacility)
 			end
 		end
 	end
-	-- [CC0 해안 배경] 등록·검증된 실물 메시만 사용하며 멀리 최대 6개를 배치한다.
+	-- [CC0 해안 배경] 등록·검증된 실물 메시만 사용하며 해안 바위 3개와 원경 대형 절벽 3~5개를 배치한다.
 	-- 신규 Roblox 자산 번호가 없으면 생략한다. 기존 보행·저장·전투 판정에 영향을 주지 않는다.
 	local warmShore = palmOk(info.portId, style)
 	local coastalRocks = if warmShore then { "rocks-sand-a", "rocks-sand-b", "rocks-sand-c" } else { "rocks-a", "rocks-b" }
-	-- [해안 높이층] 기존 네 곳의 연안 바위 예산 안에서 곶·사선 절벽을 실물 모델로 교차한다.
-	-- 섬·항로 판정은 원래 물·보행 경계가 담당하며 새 지형은 충돌이 없다.
-	-- [이전 해안 회귀 복구] 모래바위 A/B/C 및 북쪽 바위 A/B를 먼저 배치한다.
-	-- 모바일은 기존 네 자리, PC는 다섯 자리: 바위 3개+절벽 1~2개, 새 파츠 없이 실제 모델만.
+	-- [해안 높이층] 기존 연안 바위 3개를 보존하고 멀리 실제 절벽 3~5개를 크게 띄운다.
+	-- 섬·항로 판정은 기존 물·보행 경계가 담당하고 지형은 충돌 없는 승인된 메시만 쓴다.
 	local coastCliffs = if warmShore then { "cliff-cornerinnerlarge-rock", "cliff-diagonal-rock" }
 		else { "cliff-cornerlarge-stone", "cliff-large-stone" }
 	local coastRelief = 0
-	for i = 1, (if UserInputService.TouchEnabled then 4 else 5) do
+	for i = 1, (if UserInputService.TouchEnabled then 6 else 8) do
 		local highRelief = i >= 4
-		local name = if highRelief then coastCliffs[i - 3] else coastalRocks[(i - 1) % #coastalRocks + 1]
+		local name = if highRelief then coastCliffs[(i - 4) % #coastCliffs + 1] else coastalRocks[(i - 1) % #coastalRocks + 1]
 		local group = if highRelief then "Terrain" else "Naval"
 		if AssetIds[group .. "/" .. name] then
 			local side = if i % 2 == 0 then 1 else -1
-			local seaRock = importedModel(folder, group, name,
-				Vector3.new(100 + 27 * i, 0.5, side * (108 + 19 * i)),
-				if highRelief then 29 + sceneLevel * 2 else (if warmShore then 19 else 23), false)
+			local at = if highRelief then Vector3.new(120 + 32 * i, 0.5, side * (155 + 35 * i))
+				else Vector3.new(100 + 27 * i, 0.5, side * (108 + 19 * i))
+			local seaRock = importedModel(folder, group, name, at,
+				if highRelief then 100 + sceneLevel * 8 + (i - 4) * 10
+				else (if warmShore then 19 else 23), false)
 			if seaRock then
 				seaRock.Name = if highRelief then "DistantCliff_" .. i else "DistantCoast_" .. i
 				if highRelief then coastRelief += 1 end
@@ -5605,10 +5609,20 @@ function PortScene.build(info, onFacility)
 			local patch = importedModel(folder, "Naval", "patch-sand-foliage", Vector3.new(13, 0.1, z), 11, false)
 			if patch then patch.Name = "SandyShore" end
 		end
-	elseif not warmShore and AssetIds["Castle/ground-hills"] then
-		for _, z in { -(CITY_LIMIT_Z + 90), CITY_LIMIT_Z + 90 } do
-			local hills = importedModel(folder, "Castle", "ground-hills", Vector3.new(-330, 0, z), 76, false)
-			if hills then hills.Name = "DistantHills" end
+	end
+	-- [거대한 원경 언덕] 기존 CC0 언덕을 좌우 외곽에 2~3겹 확대 배치한다.
+	-- 마을 경계 밖의 비충돌 장면 전용 모델이라 기존 도로·저장·게임 규칙은 불변.
+	if not warmShore and AssetIds["Castle/ground-hills"] then
+		for _, side in { -1, 1 } do
+			for depth = 1, (if UserInputService.TouchEnabled then 2 else 3) do
+				local at = Vector3.new(-350 - depth * 110, -2,
+					side * (CITY_LIMIT_Z + 150 + (depth - 1) * 150))
+				local hills = importedModel(folder, "Castle", "ground-hills", at, 230 + depth * 55, false)
+				if hills then
+					hills.Name = "DistantHills"
+					hills:SetAttribute("BackdropLayer", depth)
+				end
+			end
 		end
 	end
 	part(folder, Vector3.new(8, 2, 300), CFrame.new(18, 0, 0), Color3.fromRGB(130, 126, 120), Enum.Material.Cobblestone)
