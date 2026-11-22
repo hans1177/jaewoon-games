@@ -120,9 +120,10 @@ local function drawFace(head)
 		decal.Parent = head
 	end
 	decal.Face = Enum.NormalId.Front
-	if decal.Texture == "" then
-		decal.Texture = "rbxasset://textures/face.png"
-	end
+	-- [얼굴 표정] 빈 아바타 설명에서 물려받은 미확인 데칼을 그대로 복제하지 않는다.
+	-- 승인된 Roblox 내장 얼굴을 사용하고 불투명한 검은 색상 틴트를 초기화한다.
+	decal.Texture = "rbxasset://textures/face.png"
+	decal.Color3 = Color3.new(1, 1, 1)
 	decal.Transparency = 0
 end
 
