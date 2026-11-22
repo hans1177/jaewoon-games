@@ -3596,7 +3596,7 @@ test('대항해시대 3차 원근·계절 숲·선박 항적 CC0 자산 실물 �
   const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
   assert.match(field,/FieldElevatedTerraceCount/);
   assert.match(field,/FieldNearDepthBandCount/);
-  assert.match(field,/local nearBands = if questTerrain == "coast" and tropical then/);
+  assert.match(field,/local nearBands = if tropical then/);
   assert.match(field,/groundRay\.FilterDescendantsInstances = \{ workspace\.Terrain, ground \}/);
   assert.match(field,/AssetIds\["Terrain\/tree-detailed-fall"\]/);
   assert.match(field,/AssetIds\["Terrain\/tree-palmdetailedtall"\]/);
