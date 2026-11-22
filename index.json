@@ -2,10 +2,10 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "44988900269",
+    "runId": "44989360274",
     "kind": "deep",
-    "at": "2026-11-22T05:33:36.717Z",
-    "sourceRevision": "f36bf2e52c4fb36ff5091c18dfa5f38f03718b88",
+    "at": "2026-11-22T05:45:33.174Z",
+    "sourceRevision": "f6c02750cb2e78e54dc3258e722dc54a9356aeb3",
     "result": "PASS",
     "frames": 62,
     "changedFrames": 61,
@@ -19,10 +19,30 @@
       "capturedFrames": 62,
       "abortedEarly": false
     },
-    "path": "runs/44988900269"
+    "path": "runs/44989360274"
   },
-  "lastDeepAt": "2026-11-22T05:33:36.717Z",
+  "lastDeepAt": "2026-11-22T05:45:33.174Z",
   "runs": [
+    {
+      "runId": "44989360274",
+      "kind": "deep",
+      "at": "2026-11-22T05:45:33.174Z",
+      "sourceRevision": "f6c02750cb2e78e54dc3258e722dc54a9356aeb3",
+      "result": "PASS",
+      "frames": 62,
+      "changedFrames": 61,
+      "summary": {
+        "plannedSteps": 246,
+        "completedSteps": 246,
+        "plannedClicks": 12,
+        "successfulClicks": 12,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 62,
+        "capturedFrames": 62,
+        "abortedEarly": false
+      },
+      "path": "runs/44989360274"
+    },
     {
       "runId": "44988900269",
       "kind": "deep",
@@ -102,26 +122,6 @@
         "abortedEarly": true
       },
       "path": "runs/44986526303"
-    },
-    {
-      "runId": "44986443333",
-      "kind": "deep",
-      "at": "2026-11-22T04:57:20.550Z",
-      "sourceRevision": "b3ed101ff616627f010f7810c86e72a9a9cf3516",
-      "result": "FAIL",
-      "frames": 62,
-      "changedFrames": 61,
-      "summary": {
-        "plannedSteps": 246,
-        "completedSteps": 246,
-        "plannedClicks": 12,
-        "successfulClicks": 12,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 62,
-        "capturedFrames": 62,
-        "abortedEarly": false
-      },
-      "path": "runs/44986443333"
     },
     {
       "runId": "44984878635",
