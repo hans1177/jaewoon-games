@@ -8694,55 +8694,56 @@ function FieldScene.start(opts)
 				and member.id ~= "" and not seen[member.id] then
 				seen[member.id] = true
 				count += 1
-				local shortHud = visualMobile
+				-- [지역변수 예산] 파티 UI 객체는 한 테이블에서 관리하고 전투 함수 200레지스터 상한을 보호한다.
+				local ui = {}
 				local status = Instance.new("Frame")
 				status.Name = "FieldAllyStatus" .. count
 				status:SetAttribute("CompanionId", member.id)
 				status:SetAttribute("CombatEnabled", false)
 				status.Position = UDim2.fromOffset(heroPanel.Position.X.Offset,
-					heroPanel.Position.Y.Offset + heroPanel.Size.Y.Offset + 6 + (count - 1) * (if shortHud then 48 else 56))
-				status.Size = UDim2.fromOffset(heroPanel.Size.X.Offset, if shortHud then 44 else 52)
+					heroPanel.Position.Y.Offset + heroPanel.Size.Y.Offset + 6 + (count - 1) * (if visualMobile then 48 else 56))
+				status.Size = UDim2.fromOffset(heroPanel.Size.X.Offset, if visualMobile then 44 else 52)
 				status.BackgroundColor3 = Color3.fromRGB(24, 33, 49)
 				status.BackgroundTransparency = 0.12
 				status.BorderSizePixel = 0
 				status.Parent = gui
-				local rounded = Instance.new("UICorner")
-				rounded.CornerRadius = UDim.new(0, 9)
-				rounded.Parent = status
-				local outline = Instance.new("UIStroke")
-				outline.Color = if count == 1 then Color3.fromRGB(105, 200, 223) else Color3.fromRGB(222, 181, 103)
-				outline.Thickness = 1.1
-				outline.Parent = status
-				local face = Instance.new("ImageLabel")
-				face.Name = "FieldAllyPortrait"
-				face.Size = UDim2.fromOffset(if shortHud then 29 else 39, if shortHud then 35 else 43)
-				face.Position = UDim2.fromOffset(6, 5)
-				face.BackgroundColor3 = Color3.fromRGB(56, 70, 82)
-				face.BorderSizePixel = 0
-				face.ScaleType = Enum.ScaleType.Crop
-				local portrait = opts.allyPortraits and opts.allyPortraits[member.id]
-				if portrait and portrait.id then
-					face.Image = "rbxassetid://" .. tostring(portrait.id)
-					face.ImageRectOffset = portrait.offset or Vector2.zero
-					face.ImageRectSize = portrait.size or Vector2.zero
+				ui.rounded = Instance.new("UICorner")
+				ui.rounded.CornerRadius = UDim.new(0, 9)
+				ui.rounded.Parent = status
+				ui.outline = Instance.new("UIStroke")
+				ui.outline.Color = if count == 1 then Color3.fromRGB(105, 200, 223) else Color3.fromRGB(222, 181, 103)
+				ui.outline.Thickness = 1.1
+				ui.outline.Parent = status
+				ui.face = Instance.new("ImageLabel")
+				ui.face.Name = "FieldAllyPortrait"
+				ui.face.Size = UDim2.fromOffset(if visualMobile then 29 else 39, if visualMobile then 35 else 43)
+				ui.face.Position = UDim2.fromOffset(6, 5)
+				ui.face.BackgroundColor3 = Color3.fromRGB(56, 70, 82)
+				ui.face.BorderSizePixel = 0
+				ui.face.ScaleType = Enum.ScaleType.Crop
+				ui.portrait = opts.allyPortraits and opts.allyPortraits[member.id]
+				if ui.portrait and ui.portrait.id then
+					ui.face.Image = "rbxassetid://" .. tostring(ui.portrait.id)
+					ui.face.ImageRectOffset = ui.portrait.offset or Vector2.zero
+					ui.face.ImageRectSize = ui.portrait.size or Vector2.zero
 				end
-				face.Parent = status
-				local faceRounded = Instance.new("UICorner")
-				faceRounded.CornerRadius = UDim.new(0, 7)
-				faceRounded.Parent = face
-				local nameText = label(status, member.name, if shortHud then 12 else 13)
-				nameText.Name = "FieldAllyName"
-				nameText.Position = UDim2.fromOffset(if shortHud then 43 else 51, 4)
-				nameText.Size = UDim2.fromOffset(if shortHud then 151 else 143, 18)
-				nameText.TextXAlignment = Enum.TextXAlignment.Left
-				nameText.TextTruncate = Enum.TextTruncate.AtEnd
-				local role = if type(member.role) == "string" and member.role ~= "" then member.role else "동료"
-				local statusText = label(status, role .. " · 파티원", if shortHud then 10 else 11, Color3.fromRGB(168, 210, 190))
-				statusText.Name = "FieldAllyPartyRole"
-				statusText.Position = UDim2.fromOffset(if shortHud then 43 else 51, if shortHud then 23 else 27)
-				statusText.Size = UDim2.fromOffset(if shortHud then 151 else 143, 18)
-				statusText.TextXAlignment = Enum.TextXAlignment.Left
-				statusText.TextTruncate = Enum.TextTruncate.AtEnd
+				ui.face.Parent = status
+				ui.faceRounded = Instance.new("UICorner")
+				ui.faceRounded.CornerRadius = UDim.new(0, 7)
+				ui.faceRounded.Parent = ui.face
+				ui.nameText = label(status, member.name, if visualMobile then 12 else 13)
+				ui.nameText.Name = "FieldAllyName"
+				ui.nameText.Position = UDim2.fromOffset(if visualMobile then 43 else 51, 4)
+				ui.nameText.Size = UDim2.fromOffset(if visualMobile then 151 else 143, 18)
+				ui.nameText.TextXAlignment = Enum.TextXAlignment.Left
+				ui.nameText.TextTruncate = Enum.TextTruncate.AtEnd
+				ui.role = if type(member.ui.role) == "string" and member.ui.role ~= "" then member.ui.role else "동료"
+				ui.statusText = label(status, ui.role .. " · 파티원", if visualMobile then 10 else 11, Color3.fromRGB(168, 210, 190))
+				ui.statusText.Name = "FieldAllyPartyRole"
+				ui.statusText.Position = UDim2.fromOffset(if visualMobile then 43 else 51, if visualMobile then 23 else 27)
+				ui.statusText.Size = UDim2.fromOffset(if visualMobile then 151 else 143, 18)
+				ui.statusText.TextXAlignment = Enum.TextXAlignment.Left
+				ui.statusText.TextTruncate = Enum.TextTruncate.AtEnd
 			end
 		end
 	end
