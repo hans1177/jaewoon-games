@@ -1465,6 +1465,15 @@ function N.seaDanger(st, w, portId)
 	local ownerId = N.portOwner(st, w, portId)
 	local S = ownerId and st.states[ownerId]
 	return S and S.ship and S.ship.danger or 0
+
+-- 거래 연결용 관세 정책: 기존 관세(우호도 기반)에 곱하는 배율과 금수 여부.
+-- 배율은 입장(자국 0 · 동맹 0.5 · 우호 0.75 · 중립 1 · 적대 1.8)에 식민지 독점(×1.25)을 곱한다. 상한 2.2배.
+-- 금수(closed)는 "플레이어 본국과 전쟁 중 + 관계 -60 이하"인 항구만이며, 암시장은 그대로 쓸 수 있다.
+local STANCE_MULT = { home = 0, ally = 0.5, friendly = 0.75, neutral = 1, hostile = 1.8 }
+function N.tariffPolicy(st, w, portId, homeNation)
+	local tf = N.tariff(st, w, portId, homeNation)
+	local mult = (STANCE_MULT[tf.stance] or 1) * (if tf.colony and tf.stance ~= "home" then 1.25 or 1)
+	return { mult = clamp(mult, 0, 2.2), closed = tf.closed == true, stance = tf.stance, colony = tf.colony }
 end
 
 function N.portView(st, w, portId)

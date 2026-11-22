@@ -3645,6 +3645,13 @@ local function testNations()
 			fraS.allies.england, engS.allies.france = true, true
 			local ally = N.tariff(s3, w3, "rouen", "england")
 			check("동맹 항구는 관세가 낮다", ally.stance == "ally" and ally.rate < neutral.rate)
+			local polN = N.tariffPolicy(s3, w3, "rouen", "england")
+			engS.war, engS.rel.france = { foe = "france", months = 1 }, -80
+			fraS.rel.england = -80
+			local polH = N.tariffPolicy(s3, w3, "rouen", "england")
+			engS.war = nil
+			check("관세 정책: 중립 1배, 적대+전쟁이면 배율이 높고 금수", polN.mult == 1 and polN.closed == false and polH.mult > polN.mult and polH.closed == true)
+			check("관세 정책: 자국 항구는 0배", N.tariffPolicy(s3, w3, "london", "england").mult == 0)
 			fraS.allies.england, engS.allies.france = nil, nil
 			-- 종전 협상
 			engS.war = { foe = "france", months = 10, score = 9 }

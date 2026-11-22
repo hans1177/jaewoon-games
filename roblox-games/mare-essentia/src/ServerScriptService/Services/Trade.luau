@@ -41,7 +41,17 @@ return function(D, S)
 		-- [상선 교역 특화] 매매가격·재고·판매율 상한은 유지하고 외국 항구 관세만 최대 ±8% 상대 보정.
 		local base = math.max(0, 0.05 - (state.rep[port.country] or 0) / 100 * 0.05)
 		local trait = S.State.shipDef(state).trait or {}
-		return math.max(0, base * (1 - (trait.tariff or 0)))
+		local rate = math.max(0, base * (1 - (trait.tariff or 0)))
+		-- [국가 시뮬 연결] 항구 주인의 입장(동맹·중립·적대)과 식민지 독점에 따라 배율을 곱한다. 최대 12%.
+		local policy = S.Econ and S.Econ.tariffPolicy and S.Econ.tariffPolicy(state, state.portId)
+		if policy then rate = math.min(0.12, rate * policy.mult) end
+		return rate
+	end
+
+	-- 금수: 본국과 전쟁 중이고 관계가 크게 나쁜 나라의 항구는 정식 거래가 막힌다 (암시장은 가능).
+	local function embargoed(state)
+		local policy = S.Econ and S.Econ.tariffPolicy and S.Econ.tariffPolicy(state, state.portId)
+		return policy ~= nil and policy.closed == true
 	end
 
 	local function sellRateFor(state)
@@ -62,6 +72,9 @@ return function(D, S)
 		local goodId, amount = p.goodId, parseAmount(p.amount, state)
 		if type(goodId) ~= "string" or not D.Ports.Goods[goodId] or not amount then
 			return false, "잘못된 요청"
+		end
+		if embargoed(state) then
+			return false, "전쟁 중인 나라의 항구라 정식 거래가 막혔어요 (암시장은 가능해요)"
 		end
 		local lim = limits(state, goodId)
 		if lim and amount > lim.supply then
@@ -166,6 +179,9 @@ return function(D, S)
 		local owned = state.cargo[goodId] or 0
 		if owned < amount then
 			return false, "가진 수량이 부족해요"
+		end
+		if embargoed(state) then
+			return false, "전쟁 중인 나라의 항구라 정식 거래가 막혔어요 (암시장은 가능해요)"
 		end
 		local lim = limits(state, goodId)
 		if lim and amount > lim.absorb then
