@@ -1468,6 +1468,14 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			slotName = "R15Asset_" .. string.gsub(assetName, "/", "_") .. "_" .. boneName
 		end
 		local equipped = model:FindFirstChild(slotName)
+		-- [기등록 수염 재정렬] 이전 버전의 머리 중앙 부착 수염만, 원본이 준비됐을 때 다시 장착한다.
+		-- 자산 로드 실패 시 기존 수염을 보존하고 새 메시를 임의 생성하지 않는다.
+		if equipped and npcOutfit and assetName == "hair_beard"
+			and equipped:GetAttribute("NpcBeardFitVersion") ~= 1
+			and AssetIds["People/hair_beard"] and people and people:FindFirstChild("hair_beard") then
+			equipped:Destroy()
+			equipped = nil
+		end
 		if equipped then
 			if string.sub(assetName, 1, 7) == "outfit_" or string.sub(assetName, 1, 4) == "cc0_" or jobProp then
 				for _, part in equipped:GetDescendants() do
@@ -1477,7 +1485,8 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			attached += 1
 			visibleCount += 1
 			if string.sub(assetName, 1, 7) == "outfit_" then garmentVisible += 1 end
-			if string.sub(assetName, 1, 4) == "acc_" or string.sub(assetName, 1, 4) == "cc0_" then accessoryVisible += 1 end
+			if assetName == "hair_beard" or string.sub(assetName, 1, 4) == "acc_"
+				or string.sub(assetName, 1, 4) == "cc0_" then accessoryVisible += 1 end
 			continue
 		end
 		local assetKey = if jobProp then assetName else "People/" .. assetName
@@ -1527,10 +1536,13 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			local belt = npcOutfit and assetName == "outfit_belt"
 			local cuff = npcOutfit and assetName == "outfit_cuff"
 			local boot = npcOutfit and assetName == "outfit_boot"
+			local beard = npcOutfit and assetName == "hair_beard"
+			-- [수염 전용 크기] 얼굴용 실물 수염을 머리카락 크기(가로 114%, 높이 125%)로 늘리지 않는다.
+			-- 다른 헤어·소매·장화·모자는 원래 비율을 유지한다.
 			local ratio = math.min(
-				target.Size.X * (if belt then 1.04 elseif cuff then 1.02 elseif boot then 1.05 else spec[3]) / ext.X,
-				target.Size.Y * (if belt then 0.38 elseif cuff then 0.36 elseif boot then 0.94 else spec[4]) / ext.Y,
-				target.Size.Z * (if belt then 1.04 elseif cuff then 1.08 elseif boot then 1.07 else spec[5]) / ext.Z
+				target.Size.X * (if belt then 1.04 elseif cuff then 1.02 elseif boot then 1.05 elseif beard then 0.76 else spec[3]) / ext.X,
+				target.Size.Y * (if belt then 0.38 elseif cuff then 0.36 elseif boot then 0.94 elseif beard then 0.58 else spec[4]) / ext.Y,
+				target.Size.Z * (if belt then 1.04 elseif cuff then 1.08 elseif boot then 1.07 elseif beard then 0.74 else spec[5]) / ext.Z
 			)
 			-- [헤어 장착 비율] 긴 머리를 머리 높이 한 칸에 압축하면 숱과 폭이 사라진다.
 			-- 실물 헤어는 R15 두상 폭·깊이를 우선 맞추고 머리형에 필요한 아래쪽 길이를 허용한다.
@@ -1556,9 +1568,11 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				local crownY = if hairStyle == "bun" then 0.79 elseif hairStyle == "long" then 0.67 else 0.65
 				hairOffsetY = crownY - bounds.Size.Y * 0.5 / target.Size.Y
 			end
-			-- [소매·장화 위치] 소매는 손목 위 작은 면적에, 장화는 정강이 아래쪽에 밀착시킨다.
+			-- [수염·소매·장화 부착 위치] 수염은 얼굴 앞면(-Z)과 턱 아래(-Y)에 맞춘다.
+			-- 실제 R15 Head 관절을 따라가는 용접은 유지하고 피부/얼굴 데칼을 가리지 않게 크기를 제한한다.
 			skin:PivotTo((target.CFrame * CFrame.new(target.Size.X * (spec[7] or 0),
-				target.Size.Y * (if cuff then -0.36 elseif boot then -0.15 else hairOffsetY), target.Size.Z * (spec[8] or 0))
+				target.Size.Y * (if cuff then -0.36 elseif boot then -0.15 elseif beard then -0.29 else hairOffsetY),
+				target.Size.Z * (if beard then -0.42 else (spec[8] or 0)))
 				* CFrame.Angles(math.rad(spec[9] or 0), 0, 0)) * bounds:ToObjectSpace(skin:GetPivot()))
 			for _, part in parts do
 				part.Anchored, part.CanCollide, part.CanTouch, part.CanQuery = false, false, false, false
@@ -1797,13 +1811,16 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				local weld = Instance.new("WeldConstraint")
 				weld.Part0, weld.Part1, weld.Parent = target, part, part
 			end
+			-- [수염 중복 방지] 부착 완료된 메시만 새 위치 버전을 기록한다.
+			if beard then skin:SetAttribute("NpcBeardFitVersion", 1) end
 			skin.Parent = model
 		end)
 		if ok then
 			attached += 1
 			visibleCount += 1
 			if string.sub(assetName, 1, 7) == "outfit_" then garmentVisible += 1 end
-			if string.sub(assetName, 1, 4) == "acc_" or string.sub(assetName, 1, 4) == "cc0_" then accessoryVisible += 1 end
+			if assetName == "hair_beard" or string.sub(assetName, 1, 4) == "acc_"
+				or string.sub(assetName, 1, 4) == "cc0_" then accessoryVisible += 1 end
 			-- [실물 확인] 실제 장착된 메시 종류를 읽을 수 있게 남긴다. 저장·경제 데이터와 무관하다.
 			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" and assetName ~= "hair_beard" then
 				-- [교체 헤어 정리] 새 머리 장착을 확인한 뒤에만 기존 실물 헤어 슬롯을 제거한다.
