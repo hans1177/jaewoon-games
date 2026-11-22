@@ -3499,7 +3499,7 @@ test('대항해시대 내부 무료 숲 자산 및 지상 구릉·해상 물결 
     assert.ok(ids.includes('["'+key+'"] = '+record.assetId),key+' 실제 사용 번호');
     const bytes=fs.readFileSync(root+'assets/terrain/'+name+'.glb');
     assert.equal(bytes.toString('ascii',0,4),'glTF');
-    const blob=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length+'\\0')).update(bytes).digest('hex');
+    const blob=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length)).update(Buffer.from([0])).update(bytes).digest('hex');
     assert.equal(blob,expectedBlob,key+' 원본 GLB 보존');
   }
   const field=readText(root+'src/ReplicatedStorage/Shared/FieldScene.luau');
