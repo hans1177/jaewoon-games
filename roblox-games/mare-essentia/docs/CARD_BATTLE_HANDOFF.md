@@ -142,3 +142,12 @@
 - **정식 등록 워크플로:** [실행 #45010277370](https://github.com/hans1177/jaewoon-games/actions/runs/45010277370) 결과 `success`. `assets-registered.json`의 Roblox 자산번호 **`109399954277820`**, `usePermissionGranted:true`. 등록·승인 SHA-256 일치, `src/ReplicatedStorage/Shared/AssetIds.luau`의 `CardArt/eu_20` 연결번호 일치.
 - **다음 후보:** `eu_21` 유럽불곰. 곰을 요청하는 도중 검독수리 그림이 두 번 잘못 생성돼 **미사용·폐기**했다. 두 시안은 유럽불곰 원화/승인/등록 증거가 아니다. 반드시 유럽불곰 한 마리가 숲에서 달리는 독립된 컬러 회화를 제작할 것.
 - **별도 미검증:** Roblox Studio 실제 카드 표시, 게임 Place 최종 게시. 기존 전투 밸런스·규칙·저장 구조·정식 자산등록 방식은 수정하지 않았다. 등록 상태는 다음 작업 시 최신 `main`에서 다시 확인한다.
+
+## 14. 유럽불곰 `eu_21` 정식 등록 확인 (2026-11-22)
+
+- **카드 주제:** 유럽 숲에서 포효하며 전방으로 돌진하는 유럽불곰 한 마리. 기존 유럽 동물 카드와 같은 역동적 컬러 회화 1024×1024 단일 PNG. 사진풍·글자·테두리·다른 동물 없음.
+- **최종 원본:** `assets/cardart/src/eu_21-original.png`. PNG SHA-256 `b24a63fdeb3df631550e01e4780ea3e4ecf2357edb9a9ea97b96d18d46ef18dd`; Git Blob SHA `dd2d11aefc86f60a37239a8bcc6e9a81f590d3ca` (원격 객체·로컬 해시 일치).
+- **원본과 승인표 동시 `main` 반영:** [`74e563597a72043c5a1ce8ed50338b8f06e73d86`](https://github.com/hans1177/jaewoon-games/commit/74e563597a72043c5a1ce8ed50338b8f06e73d86). 병행 작업으로 인한 첫 브랜치 갱신 충돌은 최신 `main` 기반 비강제 재반영으로 해결했고, 다른 작업자의 코드를 덮어쓰지 않았다.
+- **Roblox 자산등록 검증:** `assets-registered.json`의 `CardArt/eu_21` 자산번호 **`138739723458669`**, `usePermissionGranted:true`; `APPROVED_IMAGES.json`의 승인·시각검수 해시와 등록 원본 SHA-256 일치; `src/ReplicatedStorage/Shared/AssetIds.luau`의 `CardArt/eu_21` 바인딩 번호 일치.
+- **다음 후보:** `eu_22` 유라시아스라소니. 현재 최신 `main`에서 등록 여부를 재검증한 후 한 마리의 급강하·도약 장면으로 제작한다.
+- **남은 별도 검증:** Roblox Studio 게임 내 카드 실제 표시, 게임 Place 게시 성공. 기존 전투 규칙·능력치·저장 키·등록기 구조 변경 없음.
