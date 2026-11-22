@@ -1045,11 +1045,25 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				roof.Name = "HarborRoof"
 				uniformMaterial(roof, style, "roof")
 			end
-			-- 동아시아의 집 앞은 기존 승인된 계단 메시로 구분한다. 시설 출입 판정은 바꾸지 않는다.
+			-- [동아시아 발전 주택] 승인된 계단은 유지하고, 3단계부터 현관 주춧돌 실물 메시를 제한 배치한다.
+			-- 조선·중국·일본 각국 전용 기와 모델이 없는 상태에서 다른 문화권 궁전 외형을 섞지 않는다.
 			if architecture.eastAsiaEntry and not vacant and houseTier >= 2 and seed % 3 == 0 then
 				local stairs = importedModel(parent, "Town", "eastasia-stairs",
 					pos + Vector3.new(0, 0, front * size * 0.48), size * 0.34, false)
 				if stairs then stairs.Name = "HarborEntrance" end
+			end
+			if architecture.eastAsiaEntry and not vacant and houseTier >= 3
+				and seed % (if UserInputService.TouchEnabled then 13 else 7) == 2
+				and AssetIds["Town/eastasia-column-base"] then
+				for _, side in { -1, 1 } do
+					local column = importedModel(parent, "Town", "eastasia-column-base",
+						pos + Vector3.new(side * size * 0.26, 0, front * size * 0.44),
+						size * 0.2, false, tintColor)
+					if column then
+						column.Name = "HarborPorchFoundation"
+						uniformMaterial(column, style, "entry")
+					end
+				end
 			end
 			if vacant then
 				for k = -1, 1 do
@@ -1109,13 +1123,20 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				elseif lifted then "kenney_wood_door_square_01" else "kenney_grey_door_round_01"
 			local door = importedModel(parent, "Town", entry, pos + Vector3.new(0, lift, front * (dd * 0.5 + 0.2)), math.min(ww * 0.38, 5), false)
 			if door then door.Name = "HarborEntrance" end
-			if form == "carved" and houseTier >= 3 then
-				-- 스와힐리 석조집: 깊은 목조 문틀·양쪽 기둥으로 아프리카 동해안 입면을 구분한다.
-				for _, side in { -1, 1 } do
-					local trim = part(parent, Vector3.new(0.45, hh * 0.56, 0.55), CFrame.new(pos + Vector3.new(side * ww * 0.18, lift + hh * 0.29, front * (dd * 0.5 + 0.4))), C(93, 61, 38), Enum.Material.Wood)
-					trim.CanCollide = false
-				end
+			if form == "carved" and houseTier >= 3 and seed % (if UserInputService.TouchEnabled then 9 else 5) == 0 then
+				-- [스와힐리 석조 현관] 기존 단순 막대 문틀을 승인된 실제 석재 아치 메시로 교체한다.
+				local portal = importedModel(parent, "Town", "kenney_grey_arch_01",
+					pos + Vector3.new(0, 0, front * (dd * 0.5 + 0.45)), math.min(ww * 0.58, 7), false, tintColor)
+				if portal then portal.Name = "HarborStonePortal" end
 			end
+		end
+		if lifted and houseTier >= 3 and not vacant
+			and seed % (if UserInputService.TouchEnabled then 11 else 7) == 0
+			and AssetIds["Town/kenney_wood_railing_01"] then
+			-- [동남아·태평양] 고상식 마루 끝에 기등록 목재 난간을 1개만 배치한다.
+			local rail = importedModel(parent, "Town", "kenney_wood_railing_01",
+				pos + Vector3.new(0, lift, front * (dd * 0.5 + 1.3)), ww * 0.68, false)
+			if rail then rail.Name = "HarborStiltVeranda" end
 		end
 		return building
 	end
@@ -1202,6 +1223,12 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 						tintColor:Lerp(style.roofs[1], 0.34))
 					if gable then gable.Name = "HarborSteppedGable" end
 				end
+				if houseTier >= 4 and seed % 8 == 1 and AssetIds["Town/quaternius_wall_bricks"] then
+					-- [한자 상가 4단계] 원래 3단 실제 석재 박공을 보존하면서 붉은 벽돌 입면을 강조한다.
+					local face = importedModel(parent, "Town", "quaternius_wall_bricks",
+						pos + Vector3.new(0, 0, facadeZ), ext.X * 0.8, false, tintColor)
+					if face then face.Name = "HarborBrickFacade" end
+				end
 			elseif form == "timber" then
 				-- 영국·북유럽: 단순 가로세로 막대 대신 목골 프레임 실물 메시를 전면에 붙인다.
 				local frame = importedModel(parent, "Town", "kenney_wood_wall_double_cross_01",
@@ -1232,6 +1259,13 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 							pos + Vector3.new(ext.X * dx, 0, front * (ext.Z * 0.5 + 1.75)),
 							ext.Y * 0.62, false, C(89, 65, 47))
 						if support then support.Name = "HarborVerandaPost" end
+					end
+					if houseTier >= 4 and seed % (if UserInputService.TouchEnabled then 12 else 8) == 1
+						and AssetIds["Town/kenney_wood_railing_01"] then
+						-- [식민지·크리올 4단계] 기존 실물 기와 차양·목재 기둥 아래 난간만 추가한다.
+						local fence = importedModel(parent, "Town", "kenney_wood_railing_01",
+							pos + Vector3.new(0, 0, front * (ext.Z * 0.5 + 1.45)), ext.X * 0.78, false)
+						if fence then fence.Name = "HarborProsperousVeranda" end
 					end
 				end
 			elseif form == "mansard" then
