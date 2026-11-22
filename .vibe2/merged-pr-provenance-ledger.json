@@ -319046,11 +319046,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_c6664eeea2fa93780e519a9f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14395",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "69a573c19301591ee785bfcb55a974289bb5f328",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14395,
+        "baseBranch": "main",
+        "headBranch": "owner-gwent-card-portrait-20261123",
+        "baseSha": "69a573c19301591ee785bfcb55a974289bb5f328",
+        "headSha": "061501e2f4e1b30b614742b0218bea7b2ea925b0",
+        "mergeCommitSha": "4fb3389e3f4cee26920a609eab17bcbf065d7059",
+        "mergedAt": "2026-11-22T15:37:21Z",
+        "authorLogin": "hans1177",
+        "titleHash": "54db5c5db57ba91fd56804d35cba7ef329808e1cf5ac215162e8fd8cdeba7f2a",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner-gwent-card-portrait-20261123",
+        "candidateSha": "061501e2f4e1b30b614742b0218bea7b2ea925b0"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 305,
+        "deletedLineCount": 298,
+        "changedFiles": [
+          "AGENTS.md",
+          "roblox-games/mare-essentia/docs/CARD_ART_BY_CATEGORY.md",
+          "roblox-games/mare-essentia/docs/CARD_ART_PROMPTS.md",
+          "roblox-games/mare-essentia/docs/CARD_BATTLE_HANDOFF.md",
+          "roblox-games/mare-essentia/docs/continent_card_art_prompts.csv",
+          "roblox-games/mare-essentia/docs/leader_art_prompts.csv",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/CardGallery.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DeckBuilder.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/tools/gen_continent_card_prompts.py"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/CardGallery.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DeckBuilder.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/tools/gen_continent_card_prompts.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14395",
+        "merge-commit:4fb3389e3f4cee26920a609eab17bcbf065d7059",
+        "base-main:69a573c19301591ee785bfcb55a974289bb5f328"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2560
+    "total": 2561
   }
 }
