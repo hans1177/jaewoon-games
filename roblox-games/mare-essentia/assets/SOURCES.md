@@ -1854,3 +1854,20 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 - `ui_battle_dawn.png`: 카드 전투판용 자체 제작 새벽 바다 원화. `PROJECT_ORIGINAL_ART`. 원본 SHA-256: `a22b1bf46bfe1de17219b0343f97272b48091b80c03ba80db9c511cf083699ef`.
 
 - `ui_card_vault_album.png`: 카드 보관소용 자체 제작 가죽 장부 배경. `PROJECT_ORIGINAL_ART`. 원본 SHA-256: `0416e6eb9723472c742a1be1661c338d2d2d514ea601cf6203b22ffb3b8a38b7`.
+
+## 2026-11-22 지상전 구릉·숲 보강 원본 (추가 3개)
+
+기존 무료 Kenney Nature Kit 2.1(CC0-1.0)에서 기존 내부 폴더에 없는 GLB 세 개를 별도로 확보했다.
+원본 공급: https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit (Kenney Nature Kit GLB 자체 포함 메시).
+공식 원작·라이선스: https://kenney.nl/assets/nature-kit (CC0 1.0).
+원본 Git blob SHA-1과 내부로 복사한 바이너리 blob SHA-1이 동일함을 검증했다.
+
+| 기존 내부 경로 | 원본 Git blob SHA-1 | 목적 |
+|---|---|---|
+| `assets/terrain/tree-detailed.glb` | `fb9d3a9b6d3b5dac19a6dbfd5c617ae07bab74b6` | 숲 지역 수관·나무 다양화 |
+| `assets/terrain/tree-pinedefaultb.glb` | `c0d4020f3ea4453801daca882314ee02cd155f3d` | 북방 소나무 군락 |
+| `assets/terrain/rock-largea.glb` | `3df13f56ceaa9da68e02a55e60a6961a33499d42` | 경사·암석 장식 |
+
+원본은 수정하지 않았다. `FieldScene.luau`는 등록된 기존 나무·바위로 우선 렌더링하고,
+위 3종은 기존 Open Cloud 등록기가 실물 모델 ID와 사용 권한을 발급한 뒤에만 선택한다.
+**내부 Git 확보와 Roblox 업로드/Studio 표시/정식 게시 완료는 별개다.**
