@@ -1025,7 +1025,7 @@ test('탐험 현장별 10종 3차원 지형, 주야·기상·실물 동물 및 �
   assert.match(field,/FieldQuestTerrainTheme/);
   assert.match(field,/FieldTerrainFeatureCount/);
   // [배경 디테일] 모바일 지형 수 제한, 승인 에셋 통합 배치, 지연 복제 및 철수 정리.
-  assert.match(field,/if not visualMobile or index <= 9 then/);
+  assert.match(field,/for index, entry in featureList do/);
   assert.match(field,/local function placeFeature\(entry\)/);
   assert.match(field,/local function stageFeature\(entry\)/);
   assert.ok(field.includes('if not AssetIds[entry[1] .. "/" .. entry[2]] then return nil end'));
@@ -1066,7 +1066,7 @@ test('탐험 지역 기후·사계절 배경과 바람 입자 디테일',()=>{
     'FieldSeasonMonth', 'local winterScene =', 'local monsoon =', 'foliageTint',
     'local detailAssets =', 'FieldSeasonalDrift', 'local driftType =', 'local weatherOptions = if snowy'
   ]) assert.ok(field.includes(marker),'계절/기후 묘사 연결 누락: '+marker);
-  assert.match(field,/local detailCount = if visualMobile then 10 else 24/);
+  assert.match(field,/local detailCount = math\.max\(24, math\.floor\(24 \* math\.sqrt\(AREA\)\)\)/);
   assert.match(field,/local arid = not tropical and/);
   assert.match(field,/local climateZone = if northern then "북방"/);
   assert.match(field,/local weatherOptions = if snowy then/);
@@ -1192,7 +1192,7 @@ test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 
   assert.match(field,/if breakCrate\(c, if moveId == "heavy" then 2 else 1\) then sceneryHit = true end/);
   assert.match(field,/if rangedShot and shots >= 1 then break end/);
   assert.match(field,/local frozen = knocked or now < \(e\.holdUntil or 0\)[\s\S]{0,120}or now < \(e\.guardUntil or 0\)/);
-  assert.match(field,/if not visualMobile or index <= 9 then/);
+  assert.match(field,/for index, entry in featureList do/);
   assert.match(field,/local function placeFeature\(entry\)/);
   assert.match(field,/if not AssetIds\[entry\[1\] \.\. "\/" \.\. entry\[2\]\] then return nil end/);
   assert.match(combat,/A\.MELEE_TOKENS = 2/);
@@ -3647,7 +3647,7 @@ test('대항해시대 4차 하천·절벽·수관 CC0 등록 및 지형 시차 �
   assert.match(field,/AssetIds\["Terrain\/grass-leafslarge"\]/);
   assert.match(field,/local depthLandforms = if questTerrain == "glacier" then/);
   assert.match(field,/FieldNearDepthBandCount/);
-  assert.match(field,/local detailCount = if visualMobile then 10 else 24/);
+  assert.match(field,/local detailCount = math\.max\(24, math\.floor\(24 \* math\.sqrt\(AREA\)\)\)/);
   assert.match(naval,/NavalDepthShoreBreakCount/);
   assert.match(naval,/shoreBreakCount < \(if MOBILE_VFX then 1 else 2\)/);
   assert.match(naval,/NavalCliffShoreWash/);
@@ -3754,9 +3754,9 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/portVisualSeed \* 31 \+ string\.byte\(visualKey, index\)/);
   assert.match(field,/if index == 3 and variants then/,'기존 문화권 대표 건물 2개 유지');
   assert.match(field,/AssetIds\[candidate\[1\] \.\. "\/" \.\. candidate\[2\]\]/,'등록된 모델만 사용');
-  assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
-  assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
-  assert.match(field,/local detailCount = if visualMobile then 10 else 24/);
+  assert.match(field,/local visualTreeCount = treeCount/);
+  assert.match(field,/local visualRockCount = rockCount/);
+  assert.match(field,/local detailCount = math\.max\(24, math\.floor\(24 \* math\.sqrt\(AREA\)\)\)/);
   // [등록 후 실제 사용] 신규 21종을 기존 자연·암석·바닥 후보만으로 사용한다.
   // [정확한 신규 범위] 기존 항구 건물(kenney_wood_arch_01 등)은 등록된 별도 모델이다.
   // 이번 21종 자연 모델을 선택하는 세 원본 책임 블록만 검사해 기존 Town 건물을 오탐하지 않는다.
@@ -3782,19 +3782,32 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/local natureDetail = if questTerrain == "forest" then/);
   assert.match(field,/if AssetIds\["Terrain\/" \.\. name\]/,'미등록 모델은 자동 생략');
   assert.match(field,/if AssetIds\["Terrain\/" \.\. name\] and not table\.find\(detailAssets, name\)/);
-  assert.match(field,/local detailCount = if visualMobile then 10 else 24/,'모바일 기존 예산 보존');
-  // [실제 Studio 화면 회귀] 등록 실물의 위치만 근경·중경으로 옮긴다.
-  // 신규 인스턴스 생성·추가 모델 예산·적/저장/보상 동선 변경 없이 좌우에 시각 깊이를 만든다.
-  assert.match(field,/if index % 5 == 1 then\n\s+local lane = math\.floor\(\(index - 1\) \/ 5\) % 3/,'수목 일부 근경 배치');
-  assert.match(field,/if index % 6 == 1 then\n\s+pos = ORIGIN/,'기존 암석 중경 배치');
-  assert.match(field,/local px = side \* half \* \(0\.29 \+ rng:NextNumber\(0, 0\.13\)\)/,'실물 소품 측면 거리');
-  assert.match(field,/local pz = half \* \(0\.71 - band \* 0\.23\)/,'모바일 소품 앞뒤 층');
-  assert.match(field,/depthX = \(if depthX < 0 then -1 else 1\) \* half/,'등록된 지형 근경 배치');
-  assert.match(field,/local visualLayoutRng = Random\.new\(/,'전경 배치 전용 난수 분리');
-  assert.match(field,/half \* visualLayoutRng:NextNumber\(0\.27, 0\.37\)/,'나무 중경 랜덤은 전용 난수');
-  assert.match(field,/half \* visualLayoutRng:NextNumber\(0\.30, 0\.43\)/,'바위 중경 랜덤은 전용 난수');
-  assert.match(field,/\+ visualLayoutRng:NextNumber\(-6, 6\)/,'전경 나무 좌표 난수 격리');
-  assert.match(field,/\+ visualLayoutRng:NextNumber\(-7, 7\)/,'전경 바위 좌표 난수 격리');
-  assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
-  assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
+  assert.match(field,/local detailCount = math\.max\(24, math\.floor\(24 \* math\.sqrt\(AREA\)\)\)/,'기기별 고정 모델 상한 제거');
+  // [지상전 모델 수 상한 해제] 승인 모델만 쓰고 거리별 장면을 전체 배치한다.
+  assert.match(field,/local AREA = \(SIZE \/ 200\) \^ 2/,'맵 면적별 밀도 제한 해제');
+  assert.match(field,/if index % 3 == 1 then/,'수목 근경 배치');
+  assert.match(field,/elseif index % 3 == 2 then/,'수목 중경 배치');
+  assert.match(field,/if index % 4 == 1 then/,'암석 근경 배치');
+  assert.match(field,/elseif index % 4 == 2 then/,'암석 중경 배치');
+  assert.ok(field.includes('half * visualLayoutRng:NextNumber(0.19, 0.31)'),'근경 수목 시야');
+  assert.ok(field.includes('half * visualLayoutRng:NextNumber(0.23, 0.33)'),'근경 암석 시야');
+  assert.ok(field.includes('if band == 0 then 0.16 elseif band == 1 then 0.25 else 0.34 end'),'근경 식생층');
+  assert.match(field,/local pz = half \* \(0\.81 - band \* 0\.28\)/,'식생 전후 거리');
+  assert.match(field,/local visualLayoutRng = Random\.new\(/,'전경 난수는 전투 시드에서 분리');
+  assert.match(field,/local visualTreeCount = treeCount/,'수목 모바일 제한 해제');
+  assert.match(field,/local visualRockCount = rockCount/,'암석 모바일 제한 해제');
+  assert.match(field,/local detailCount = math\.max\(24, math\.floor\(24 \* math\.sqrt\(AREA\)\)\)/,'상세소품 수량 자동 확장');
+  assert.match(field,/for index, entry in featureList do/,'전체 지형 랜드마크 사용');
+  assert.match(field,/for _, spec in depthLandforms do/,'전체 절벽층 사용');
+  assert.match(field,/if AssetIds\["Terrain\/" \.\. spec\[1\]\] then/,'승인 근경 모델 사용');
+  assert.match(field,/for index, feature in regionalFeatures do/,'지역 대표 모델');
+  assert.match(field,/math\.floor\(pr\[3\] \* math\.sqrt\(AREA\)\)/,'문화권 소품 수량 자동 확장');
+  assert.match(field,/for index, e in lm\[2\] do/,'퀘스트 건축 전체 사용');
+  for(const cap of ['math.min(treeCount, 44)','math.min(rockCount, 36)',
+    'if not visualMobile or index <= 9 then','if not visualMobile or index <= 3 then',
+    'if not visualMobile or index <= 22 then','local detailCount = if visualMobile then 10 else 24']){
+    assert.ok(!field.includes(cap),'남은 모델 하드캡: '+cap);
+  }
+  assert.match(field,/local visualTreeCount = treeCount/);
+  assert.match(field,/local visualRockCount = rockCount/);
 });
