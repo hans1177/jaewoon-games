@@ -1501,7 +1501,10 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     // [원본 UV 개선] 복식 9종은 반드시 실제 원본 해시·형상 보존 증빙을 보유한다.
     const originalOutfit = kind === 'People' && /^outfit_(?:vest|coat|guard|apron|sash|belt|cuff|boot|stole)\.glb$/.test(sourceFileName);
     const characterFinish = kind === 'People' && /^(?:outfit_|hair_|acc_)[a-z0-9_]+\.glb$/.test(sourceFileName);
-    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || (kind === 'Terrain' && f.startsWith('kenney_'))) {
+    // [무료 원본 등록] 새 R15 장신구는 기존 People 모델 등록기에 자동 유입하되,
+    // Quaternius CC0 원본 바이너리/해시/모바일 삼각형 수를 검증하지 못하면 업로드를 차단한다.
+    const externalR15Item = kind === 'People' && /^cc0_[a-z0-9_]+\.glb$/.test(sourceFileName);
+    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || (kind === 'Terrain' && f.startsWith('kenney_'))) {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
       if (kind === 'Materials' && (!sourceLicense || sourceLicense.license !== 'CC0-1.0'
@@ -1516,6 +1519,32 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       if (sourceLicense && (!['PROJECT_ORIGINAL_ART', 'CC0-1.0', 'CC-BY-4.0'].includes(sourceLicense.license)
         || !sourceLicense.author || !sourceLicense.sourceSha256 || !sourceLicense.source))
         throw new Error('ORIGINAL_MODEL_SOURCE_METADATA_INVALID:' + f);
+      if (externalR15Item) {
+        if (!sourceLicense || sourceLicense.license !== 'CC0-1.0' || sourceLicense.author !== 'Quaternius'
+          || sourceLicense.commercialUseAllowed !== true || !sourceLicense.sourceGitBlobSha1
+          || sourceLicense.registrationStatus === 'BLOCKED' || sourceLicense.nativeVisualQa === 'FAILED'
+          || sourceLicense.r15FitQa === 'FAILED' || sourceLicense.triangles > 1500)
+          throw new Error('R15_EXTERNAL_CC0_PROOF_REQUIRED:' + f);
+        const original = await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName));
+        const sourceHash = crypto.createHash('sha256').update(original).digest('hex');
+        const sourceBlob = crypto.createHash('sha1')
+          .update(Buffer.from('blob ' + original.length + '\0')).update(original).digest('hex');
+        if (original.subarray(0, 4).toString('ascii') !== 'glTF'
+          || original.readUInt32LE(4) !== 2 || original.readUInt32LE(8) !== original.length
+          || sourceHash !== sourceLicense.sourceSha256 || sourceBlob !== sourceLicense.sourceGitBlobSha1
+          || original.length !== sourceLicense.sourceSizeBytes)
+          throw new Error('R15_EXTERNAL_CC0_BINARY_OR_HASH_CHANGED:' + f);
+        const jsonLength = original.readUInt32LE(12);
+        if (original.readUInt32LE(16) !== 0x4e4f534a || jsonLength < 32
+          || jsonLength + 20 > original.length) throw new Error('R15_EXTERNAL_CC0_GLB_INVALID:' + f);
+        const gltf = JSON.parse(original.subarray(20, 20 + jsonLength).toString('utf8'));
+        let triangleCount = 0;
+        for (const mesh of gltf.meshes || []) for (const primitive of mesh.primitives || []) {
+          triangleCount += (gltf.accessors?.[primitive.indices]?.count || 0) / 3;
+        }
+        if (triangleCount !== sourceLicense.triangles || triangleCount < 100 || triangleCount > 1500
+          || !gltf.meshes?.length || gltf.skins?.length) throw new Error('R15_EXTERNAL_CC0_GEOMETRY_CHANGED:' + f);
+      }
     }
     plan.push({kind, name, file: path.join(ROOT, 'assets', dir, f), ext, compressed: compressedGlb, sourceLicense,
       // [실제 Studio 검증] Goods/Menu/Portraits 모두 ImageLabel에서 사용한다. Decal 번호는 Client에서 로딩되지 않았다.
