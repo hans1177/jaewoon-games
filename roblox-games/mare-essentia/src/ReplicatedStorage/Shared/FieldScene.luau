@@ -323,8 +323,12 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 			d.Anchored = true
 			d.CanCollide = solid == true
 			d.CanTouch = false
-			-- [로블록스 메시 권한] RenderFidelity는 게임 스크립트에서 변경할 수 없다.
-			-- 승인된 실제 메시의 기존 자동 LOD를 보존하고, 원경은 아래 승인 간결 실물로 선택한다.
+			-- [저폴리 메시 LOD] 현재 공식 API와 실제 Studio 클라이언트 실측에서 쓰기가 검증됐다.
+			-- 근·중경은 자동 정밀도, 원경만 Performance. 기등록 모델·텍스처·충돌을 유지한다.
+			if d:IsA("MeshPart") and scenicBand then
+				d.RenderFidelity = if scenicBand == "far" then Enum.RenderFidelity.Performance
+					else Enum.RenderFidelity.Automatic
+			end
 			-- [무제한 경관 경량화] 전투 오브젝트 타격은 fieldObjects가 직접 판정하므로
 			-- 충돌 없는 장식은 물리 쿼리에서 제외한다. 계단·단서 등 충돌형 실물은 보존.
 			if solid ~= true then d.CanQuery = false end
