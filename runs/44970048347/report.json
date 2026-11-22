@@ -1,0 +1,398 @@
+{
+ "sourceRevision": "0f5a2f2e8f7c77b1478b5dda14d5b5127df832ac",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=london style=영국 왕실 관저 culture=britain tier=5 primitiveParts=25 models=54 meshParts=688\ntext"
+  },
+  {
+   "step": 5,
+   "capture": "palace_london",
+   "files": 1
+  },
+  {
+   "step": 6,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=lisbon style=이베리아 관저 culture=iberia tier=5 primitiveParts=25 models=87 meshParts=726\ntext"
+  },
+  {
+   "step": 9,
+   "capture": "palace_lisbon",
+   "files": 1
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 12,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=venice style=이탈리아 궁정 culture=italy tier=5 primitiveParts=25 models=72 meshParts=715\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "palace_venice",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 16,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=istanbul style=오스만 궁정 culture=ottoman tier=5 primitiveParts=22 models=54 meshParts=340\ntext"
+  },
+  {
+   "step": 17,
+   "capture": "palace_istanbul",
+   "files": 1
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=busan style=조선 관아 culture=korea tier=5 primitiveParts=16 models=58 meshParts=343\ntext"
+  },
+  {
+   "step": 21,
+   "capture": "palace_busan",
+   "files": 1
+  },
+  {
+   "step": 22,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 24,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=nagasaki style=일본 관저·성곽 culture=japan tier=5 primitiveParts=16 models=64 meshParts=357\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "palace_nagasaki",
+   "files": 1
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=canton style=중국 관아 culture=china tier=5 primitiveParts=16 models=83 meshParts=462\ntext"
+  },
+  {
+   "step": 29,
+   "capture": "palace_canton",
+   "files": 1
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 32,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=calicut style=말라바르 관저 culture=malabar tier=5 primitiveParts=16 models=55 meshParts=342\ntext"
+  },
+  {
+   "step": 33,
+   "capture": "palace_calicut",
+   "files": 1
+  },
+  {
+   "step": 34,
+   "ctx": "Client",
+   "out": "KIT_SIZES eastasia-base=15.6x1.8x23.4 eastasia-bell=1.0x2.3x1.0 eastasia-column-base=2.0x0.2x2.0 eastasia-roof=10.8x0.2x16.0 eastasia-stairs=4.0x1.8x4.6 temple-stone=2.2x4.3x2.2 temple-tower=2.2x3.9x2.2 fortress=2.1x1.4x2.0 tower-square-base=1.0x1.0x1.0 tower-square-mid-windows=0.9x1.0x0.9 tower-square-top-roof=1.0x1.0x1.0 wall=1.0x1.3x1.0 gate=0.2x0.9x0.7 egypt-temple-wall=4.3x4.4x0.0 egypt-temple-arch-a=7.3x18.6x29.1 egypt-temple-door=1.0x5.0x4.5 egypt-column=1.6x5.0x1.6 mystic-stone-arch=4.2x3.5x0.4 ruins-wall-arched=4.0x4.0x1.0 tower-complete-large=3.6x10.2x3.6 tower-roof=3.6x3.4x3.6 gate-overhang=4.0x0.8x2.1\ntext"
+  },
+  {
+   "step": 36,
+   "capture": "kit_all",
+   "files": 1
+  },
+  {
+   "step": 37,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 39,
+   "capture": "kit_left",
+   "files": 1
+  },
+  {
+   "step": 40,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 42,
+   "capture": "kit_right",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35004
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 144
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 7842
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 9003
+  },
+  {
+   "step": 4,
+   "type": "luau",
+   "elapsedMs": 142
+  },
+  {
+   "step": 5,
+   "type": "capture",
+   "elapsedMs": 989
+  },
+  {
+   "step": 6,
+   "type": "luau",
+   "elapsedMs": 9049
+  },
+  {
+   "step": 7,
+   "type": "wait",
+   "elapsedMs": 9005
+  },
+  {
+   "step": 8,
+   "type": "luau",
+   "elapsedMs": 149
+  },
+  {
+   "step": 9,
+   "type": "capture",
+   "elapsedMs": 752
+  },
+  {
+   "step": 10,
+   "type": "luau",
+   "elapsedMs": 8622
+  },
+  {
+   "step": 11,
+   "type": "wait",
+   "elapsedMs": 9005
+  },
+  {
+   "step": 12,
+   "type": "luau",
+   "elapsedMs": 160
+  },
+  {
+   "step": 13,
+   "type": "capture",
+   "elapsedMs": 840
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 8246
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 9011
+  },
+  {
+   "step": 16,
+   "type": "luau",
+   "elapsedMs": 72
+  },
+  {
+   "step": 17,
+   "type": "capture",
+   "elapsedMs": 688
+  },
+  {
+   "step": 18,
+   "type": "luau",
+   "elapsedMs": 10278
+  },
+  {
+   "step": 19,
+   "type": "wait",
+   "elapsedMs": 9003
+  },
+  {
+   "step": 20,
+   "type": "luau",
+   "elapsedMs": 187
+  },
+  {
+   "step": 21,
+   "type": "capture",
+   "elapsedMs": 949
+  },
+  {
+   "step": 22,
+   "type": "luau",
+   "elapsedMs": 7496
+  },
+  {
+   "step": 23,
+   "type": "wait",
+   "elapsedMs": 9000
+  },
+  {
+   "step": 24,
+   "type": "luau",
+   "elapsedMs": 269
+  },
+  {
+   "step": 25,
+   "type": "capture",
+   "elapsedMs": 769
+  },
+  {
+   "step": 26,
+   "type": "luau",
+   "elapsedMs": 7275
+  },
+  {
+   "step": 27,
+   "type": "wait",
+   "elapsedMs": 9003
+  },
+  {
+   "step": 28,
+   "type": "luau",
+   "elapsedMs": 170
+  },
+  {
+   "step": 29,
+   "type": "capture",
+   "elapsedMs": 744
+  },
+  {
+   "step": 30,
+   "type": "luau",
+   "elapsedMs": 9959
+  },
+  {
+   "step": 31,
+   "type": "wait",
+   "elapsedMs": 9002
+  },
+  {
+   "step": 32,
+   "type": "luau",
+   "elapsedMs": 188
+  },
+  {
+   "step": 33,
+   "type": "capture",
+   "elapsedMs": 852
+  },
+  {
+   "step": 34,
+   "type": "luau",
+   "elapsedMs": 244
+  },
+  {
+   "step": 35,
+   "type": "wait",
+   "elapsedMs": 2507
+  },
+  {
+   "step": 36,
+   "type": "capture",
+   "elapsedMs": 1211
+  },
+  {
+   "step": 37,
+   "type": "luau",
+   "elapsedMs": 215
+  },
+  {
+   "step": 38,
+   "type": "wait",
+   "elapsedMs": 1501
+  },
+  {
+   "step": 39,
+   "type": "capture",
+   "elapsedMs": 1011
+  },
+  {
+   "step": 40,
+   "type": "luau",
+   "elapsedMs": 231
+  },
+  {
+   "step": 41,
+   "type": "wait",
+   "elapsedMs": 1509
+  },
+  {
+   "step": 42,
+   "type": "capture",
+   "elapsedMs": 957
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 17,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 43,
+  "completedSteps": 43,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 11,
+  "capturedFrames": 11,
+  "abortedEarly": false
+ }
+}
