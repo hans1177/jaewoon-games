@@ -61,6 +61,18 @@ return function(D, S)
 		return n
 	end
 
+	-- 항구 주인 나라의 지도자·군사·발견·문화권 요약 (표시 전용). 실패해도 경제 화면은 그대로 나온다.
+	function X.nationSummary(state, w, portId)
+		local ok, result = pcall(function()
+			if not w.nations then return nil end
+			local N = E.Nations
+			local home = D.Specialties and D.Specialties.NationPower and D.Specialties.NationPower[state.nationId] or nil
+			return N.summary(w.nations, w, portId, home)
+		end)
+		if ok then return result end
+		return nil
+	end
+
 	-- 항구 하나의 경제 요약 (View 와 마을 장면이 쓴다). 시뮬이 없으면 nil.
 	function X.town(state, portId)
 		local w = ensure(state)
@@ -114,6 +126,7 @@ return function(D, S)
 			buildings = bld, housing = { cap = math.floor(E.housingCap(t)), ratio = math.floor(t.housingRatio * 100 + 0.5) },
 			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
 			service = svc, construction = construction,
+			nation = X.nationSummary(state, w, portId),
 		}
 	end
 

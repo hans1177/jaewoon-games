@@ -18,6 +18,7 @@ local Regions = require(script.Parent.Regions)
 local Nations = require(script.Parent.Nations)
 
 local E = {}
+E.Nations = Nations -- 서버가 국가 요약을 부를 때 쓴다
 
 E.START_YEAR_HINT = 1650
 E.TECH_FIELDS = { "agri", "craft", "commerce", "sea", "medicine", "gov" }

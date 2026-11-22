@@ -3650,6 +3650,11 @@ local function testNations()
 			engS.war, fraS.war = savedE, savedF
 			engS.allies.france, fraS.allies.england = savedAE, savedAF
 		end
+		local sum = N.summary(s3, w3, "london", "england")
+		check("항구 화면용 요약이 나온다", sum ~= nil and #sum.lines >= 7 and sum.owner ~= nil)
+		local sumLine = table.concat(sum.lines, "\n")
+		check("요약에 지도자·편제·발견·문화권·관세가 모두 들어간다", string.find(sumLine, "육군", 1, true) ~= nil and string.find(sumLine, "해군", 1, true) ~= nil
+			and string.find(sumLine, "발견", 1, true) ~= nil and string.find(sumLine, "항구:", 1, true) ~= nil and string.find(sumLine, "관세", 1, true) ~= nil)
 		-- 할양 항구 소유, 위기, 손상 복구를 한 번의 저장·복원으로 확인
 		s3.owner["rouen"] = "england"
 		check("식민지가 된 항구는 식민지 표시", N.portView(s3, w3, "rouen").colony == true and N.tariff(s3, w3, "rouen", "france").colony == true)
