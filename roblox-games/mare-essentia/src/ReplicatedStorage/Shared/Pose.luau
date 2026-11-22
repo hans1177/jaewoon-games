@@ -225,7 +225,9 @@ local function addHair(model, kind, color)
 	end
 	-- [주민 실제 두피] 등록 헤어가 부분 메시여도 머리가 대머리처럼 드러나지 않게 머리 윗부분은 유지한다.
 	-- 기존 Hair 장식은 등록 메시가 로드되면 숨기되, 얇은 모발 베이스는 관절에 계속 붙인다.
-	local scalp = piece(Enum.PartType.Ball, Vector3.new(h.X * 1.08, h.Y * 0.65, h.Z * 1.08), Vector3.new(0, h.Y * 0.31, 0))
+	-- [얼굴 보존] 머리 윗부분은 두껍게, 앞뒤 깊이는 얼굴 데칼보다 뒤로 빼서 표정을 가리지 않는다.
+	local scalp = piece(Enum.PartType.Ball, Vector3.new(h.X * 1.08, h.Y * 0.65, h.Z * 0.84),
+		Vector3.new(0, h.Y * 0.31, h.Z * 0.11))
 	scalp.Name = "HairScalp"
 	-- [숱 보강] 등록된 실물 헤어의 머리 옆 빈틈을 가볍게 메운다.
 	for _, side in { -1, 1 } do
