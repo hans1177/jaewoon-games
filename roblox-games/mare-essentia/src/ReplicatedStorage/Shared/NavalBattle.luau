@@ -2044,7 +2044,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		chartMark.Parent = bg
 		local battleLine = Instance.new("Frame")
 		battleLine.AnchorPoint = Vector2.new(0, 0.5)
-		battleLine.Position = if compactCards then UDim2.fromScale(0.01, 0.463) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.39 else 0.42)
+		battleLine.Position = if compactCards then UDim2.fromScale(0.01, 0.459) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.39 else 0.42)
 		battleLine.Size = UDim2.fromScale(if compactCards then 0.98 elseif opts.cardOnly then 0.76 else 0.78, 0.004)
 		battleLine.BackgroundColor3 = Color3.fromRGB(214, 170, 96)
 		battleLine.BorderSizePixel = 0
@@ -2124,14 +2124,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local roundResultTick = 0
 
 		local boardFrame = Instance.new("Frame")
-		boardFrame.Position = if compactCards then UDim2.fromScale(0.012, 0.233) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.13 else 0.14)
-		boardFrame.Size = if compactCards then UDim2.fromScale(0.976, 0.46) else UDim2.fromScale(if opts.cardOnly then 0.76 else 0.78, if opts.cardOnly then 0.52 else 0.56)
+		boardFrame.Position = if compactCards then UDim2.fromScale(0.012, 0.214) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.13 else 0.14)
+		boardFrame.Size = if compactCards then UDim2.fromScale(0.976, 0.49) else UDim2.fromScale(if opts.cardOnly then 0.76 else 0.78, if opts.cardOnly then 0.52 else 0.56)
 		boardFrame.BackgroundTransparency = 1
 		boardFrame.Parent = g
 		-- 왼쪽 정보판: 양쪽 합계 원, 목숨 보석, 멈춤 표시, 날씨
 		local panel = Instance.new("Frame")
 		panel.Position = if compactCards then UDim2.fromScale(0.012, 0.133) else UDim2.fromScale(if opts.cardOnly then 0.79 else 0.02, 0.14)
-		panel.Size = if compactCards then UDim2.fromScale(0.976, 0.091) else UDim2.fromScale(0.17, 0.56)
+		panel.Size = if compactCards then UDim2.fromScale(0.976, 0.075) else UDim2.fromScale(0.17, 0.56)
 		panel.BackgroundColor3 = if opts.cardOnly then CardTheme.leather else Color3.fromRGB(30, 23, 19)
 		panel.BorderSizePixel = 0
 		panel.Parent = g
@@ -2287,8 +2287,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		-- [손패 받침대] 카드 아이콘·터치 확대 기능은 기존 ScrollingFrame에서 처리한다.
 		local handTray = Instance.new("Frame")
 		handTray.Name = "NavalCardHandTray"
-		handTray.Position = if compactCards then UDim2.fromScale(0.012, 0.773) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.015, if opts.cardOnly then 0.66 else 0.715)
-		handTray.Size = if compactCards then UDim2.fromScale(0.976, 0.219) else UDim2.fromScale(if opts.cardOnly then 0.76 else 0.75, if opts.cardOnly then 0.335 else 0.275)
+		handTray.Position = if compactCards then UDim2.fromScale(0.012, 0.712) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.015, if opts.cardOnly then 0.66 else 0.715)
+		handTray.Size = if compactCards then UDim2.fromScale(0.776, 0.28) else UDim2.fromScale(if opts.cardOnly then 0.76 else 0.75, if opts.cardOnly then 0.335 else 0.275)
 		handTray.BackgroundColor3 = if opts.cardOnly then CardTheme.leather else Color3.fromRGB(18, 39, 58)
 		handTray.BackgroundTransparency = if opts.cardOnly then 0.6 else 0.27
 		handTray.BorderSizePixel = 0
@@ -2304,8 +2304,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		trayGradient.Rotation = 90
 		trayGradient.Parent = handTray
 		local handFrame = Instance.new("ScrollingFrame")
-		handFrame.Position = if compactCards then UDim2.fromScale(0.018, 0.777) else UDim2.fromScale(if opts.cardOnly then 0.025 else 0.02, if opts.cardOnly then 0.665 else 0.72)
-		handFrame.Size = if compactCards then UDim2.fromScale(0.964, 0.211) else UDim2.fromScale(if opts.cardOnly then 0.75 else 0.74, if opts.cardOnly then 0.325 else 0.26)
+		handFrame.Position = if compactCards then UDim2.fromScale(0.018, 0.716) else UDim2.fromScale(if opts.cardOnly then 0.025 else 0.02, if opts.cardOnly then 0.665 else 0.72)
+		handFrame.Size = if compactCards then UDim2.fromScale(0.764, 0.272) else UDim2.fromScale(if opts.cardOnly then 0.75 else 0.74, if opts.cardOnly then 0.325 else 0.26)
 		handFrame.BackgroundTransparency = 1
 		handFrame.BorderSizePixel = 0
 		handFrame.ScrollingDirection = Enum.ScrollingDirection.X
@@ -2330,9 +2330,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local b = Instance.new("TextButton")
 			b.Text = ""
 			if compactCards then
-				local index = if y == 0.765 then 0 elseif y == 0.83 then 1 elseif y == 0.70 then 2 else 3
-				b.Position = UDim2.fromScale(0.015 + 0.246 * index, 0.7)
-				b.Size = UDim2.fromScale(0.231, 0.068)
+				-- [작은 화면 터치] 버튼 줄(높이 약 23px)을 없애고 손패 오른쪽 세로 칸에 둔다.
+				-- 패스는 위, 손패 교체는 아래로 분리해 높이 약 44px 이상을 확보하고 전장·손패에 공간을 돌려준다.
+				local lower = y == 0.70 or y == 0.895
+				b.Position = UDim2.fromScale(0.8, if lower then 0.857 else 0.712)
+				b.Size = UDim2.fromScale(0.188, 0.135)
 			else
 				b.Position = UDim2.fromScale(0.78, y)
 				b.Size = UDim2.fromScale(0.2, 0.058)
@@ -2717,10 +2719,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end)
 			end
 		end
+		local passArmedAt = 0
 		local passBtn = mkSide(t(if opts.cardOnly then "패스" else "멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), if opts.cardOnly and AssetIds["CardArt/ui_icon_hourglass"] then "CardArt/ui_icon_hourglass" else "Menu/cc0_shield", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
+				-- [패스 오조작 방지] 카드전은 2.5초 안에 한 번 더 눌러야 이번 라운드를 넘긴다.
+				if opts.cardOnly and os.clock() - passArmedAt > 2.5 then
+					passArmedAt = os.clock()
+					info.Text = t("한 번 더 누르면 이번 라운드를 패스합니다 · 패스하면 이 라운드에 카드를 더 낼 수 없습니다",
+						"Tap again to pass this round · you cannot play more cards this round")
+					return
+				end
+				passArmedAt = 0
 				Sfx.play("sfx_anchor_lower", 0.55, 1.1, "sfx_rope_pull")
 				afterAction(mine(BC.pass(m, "me")))
+			elseif opts.cardOnly then
+				info.Text = if m.turn ~= "me" then t("상대 차례에는 패스할 수 없습니다", "You cannot pass on the opponent's turn")
+					elseif auto then t("자동 진행 중입니다", "Auto play is on") else t("지금은 패스할 수 없습니다", "You cannot pass now")
 			end
 		end)
 		local leaderBtn, leaderIcon = mkSide(t(if opts.cardOnly then "지도자 카드" else "지도자 능력", if opts.cardOnly then "Leader Card" else "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
