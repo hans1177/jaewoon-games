@@ -3474,5 +3474,7 @@ test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 
   const focus=shot.findIndex(row=>row.type==='capture' && row.name==='harbor_npc_face_front');
   assert.ok(focus>0);
   assert.ok(shot[focus-1].code.includes('head.Position-Vector3.new(0,1.10,0)'));
-  assert.ok(shot[focus-1].code.includes('workspace:SetAttribute("ShotFov",44)'));
+  assert.ok(shot[focus-1].code.includes('head.CFrame.LookVector*14.0'));
+  assert.ok(shot[focus-1].code.includes('workspace:SetAttribute("ShotFov",46)'));
+  assert.ok(shot[focus-1].code.includes('BACKWARDS=0 DECAL='));
 });
