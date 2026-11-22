@@ -1099,6 +1099,20 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	local detailKinds = 0
 	local specs = MOB_OUTFIT_PARTS[profile]
 	if not specs then return false end
+	-- [계절 복식] 추운 항구의 근세 유럽 시민·장인에게 기존 승인 외투를 조끼 대신 입힌다.
+	-- 부위·복식 개수·직업·R15 리그는 그대로이며 지역/시대 조건이 없으면 원본 조끼를 보존한다.
+	local winterWardrobe = detailAllowed and (profile == "citizen_male" or profile == "citizen_female"
+		or profile == "citizen_artisan_male" or profile == "citizen_artisan_female")
+	local winterCoat = winterWardrobe and model.Parent and model.Parent:GetAttribute("PortWinterCoat") == true
+		and AssetIds["People/outfit_coat"] ~= nil
+	if winterCoat then
+		specs = table.clone(specs)
+		for index, item in specs do
+			if item[1] == "outfit_vest" and item[2] == "UpperTorso" then
+				specs[index] = { "outfit_coat", "UpperTorso", 1.21, 1.53, 1.23, -0.04 }
+			end
+		end
+	end
 	local mobileEssentials = nil
 	if UserInputService.TouchEnabled and detailAllowed then
 		local camera, torso = workspace.CurrentCamera, model:FindFirstChild("UpperTorso")
@@ -1126,11 +1140,14 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			elseif string.find(profile, "citizen_sailor_", 1, true) == 1 then
 				mobileEssentials = { outfit_sash = true, outfit_boot = true, outfit_cuff = true }
 			elseif string.find(profile, "citizen_artisan_", 1, true) == 1 then
-				mobileEssentials = { outfit_vest = true, outfit_apron = true, outfit_cuff = true }
+				mobileEssentials = { outfit_vest = not winterCoat, outfit_coat = winterCoat,
+					outfit_apron = true, outfit_cuff = true }
 			elseif string.find(profile, "companion_clergy_", 1, true) == 1 then
 				mobileEssentials = { outfit_stole = true, outfit_belt = true, outfit_cuff = true }
 			elseif string.find(profile, "companion_", 1, true) == 1 then
 				mobileEssentials = { outfit_coat = true, outfit_boot = true, outfit_sash = true }
+			elseif winterCoat then
+				mobileEssentials = { outfit_coat = true, outfit_boot = true, outfit_belt = true }
 			end
 		end
 		if previous ~= detailLimit then model:SetAttribute("NpcOutfitDetailLimit", detailLimit) end
@@ -1653,6 +1670,16 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					visibleCount = math.max(0, visibleCount - 1)
 				end
 			end
+		end
+	end
+	-- [계절 전환] 새 외투/조끼가 실제 부착된 후에만 반대 계절의 상의를 제거한다.
+	-- 등록/로드 실패 시 직전 옷을 그대로 보존하고, 동일 R15 위치에 두 벌이 겹치지 않게 한다.
+	if winterWardrobe then
+		local wanted = if winterCoat then "outfit_coat" else "outfit_vest"
+		local previous = if winterCoat then "outfit_vest" else "outfit_coat"
+		if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then
+			local old = model:FindFirstChild("R15Asset_" .. previous .. "_UpperTorso")
+			if old then old:Destroy(); merged += 1 end
 		end
 	end
 	-- [검증용 진단] 저장·경제와 무관한 표시 상태. 근거리(detailLimit 99) 생략은 0이어야 한다.
