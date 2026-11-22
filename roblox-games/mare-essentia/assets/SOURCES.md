@@ -1977,3 +1977,6 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `tree-tall-fall.glb` | `3851f9d49b5ff496ded56cddef6f23351b6fbc02` | 가을 키 큰 나무 |
 
 모델 사용은 기존 로블록스 등록기의 실제 AssetIds·체험 권한 승인을 받아야 하며 미승인 모델은 대체 도형으로 채우지 않는다.
+| `terrain/` | kenney_mushroom_red.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_rock_largeB.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_tree_fat.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
