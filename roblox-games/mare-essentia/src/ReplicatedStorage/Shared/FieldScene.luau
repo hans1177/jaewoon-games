@@ -8037,9 +8037,9 @@ function FieldScene.start(opts)
 		local dtc = math.min(dt, 0.1)
 		-- [매트릭스 회피] 성공한 순간만 짧게 적 세계시간을 늦춘다. 주인공·동료·재화·쿨타임은 정상 진행.
 		local enemyDt = dtc * (if now < (pl.matrixSlowUntil or 0) then 0.24 else 1)
-		local acList = {}
-		for _, o in enemies do table.insert(acList, o.ac) end
-		local attackers = AC.attackersCount(acList)
+		-- [전투 프레임] 적 상태는 기존 ActionCombat 집계 함수가 원본 배열에서 직접 확인한다.
+		-- 매 프레임 임시 31개 엔트리 배열을 만들지 않으며 공격 순서/판정은 동일하다.
+		local attackers = AC.attackersCount(enemies)
 		-- [협동 반격권] 준비가 끝난 방어 성공 몹 한 명만 다음 순서를 우선 사용한다.
 		-- 기존 동시 공격 상한·실제 예고시간·개인 공격 간격은 그대로 둔다.
 		local nextCounter = nil
