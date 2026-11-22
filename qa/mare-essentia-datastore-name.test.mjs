@@ -3810,4 +3810,23 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   }
   assert.match(field,/local visualTreeCount = treeCount/);
   assert.match(field,/local visualRockCount = rockCount/);
+  // [무제한 경관 프레임 안정성] 기존 배치·자산만 사용하고 한 프레임에 몰리는 복제를 분산.
+  assert.match(field,/local sceneryBatch = 0/,'기존 장면 배치에 프레임 분산');
+  assert.match(field,/sceneryBatch \+= 1/,'실제 로드된 모델만 분산 계수');
+  assert.match(field,/if sceneryBatch >= 12 then/,'프레임별 배치 분산');
+  assert.match(field,/if scenicBand == "far" and solid ~= true then d\.CastShadow = false end/,'원경 장식 그림자만 절제');
+  assert.match(field,/entry\.tint, entry\.band\)/,'기존 승인 모델 배치에 거리 계층 연결');
+  for(const attr of ['FieldSceneryNearPlaced','FieldSceneryMidPlaced','FieldSceneryFarPlaced']){
+    assert.ok(field.includes('"'+attr+'"'),'거리별 실제 배치 기록 '+attr);
+  }
+  // [기존 Studio QA] 메인 필드 소스 변경을 전용 촬영기에 연결해 스튜디오 실화면까지 확인한다.
+  const autoQa=readText('.github/workflows/studio-autoqa.yml');
+  const script=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-field.json'));
+  assert.match(autoQa,/candidate=FIELD/,'지상전 변경 전용 검사 라우팅');
+  assert.ok(autoQa.includes('FIELD) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-field.json'),'기존 Studio 실행기 사용');
+  assert.deepEqual(script.filter(row=>row.type==='capture').map(row=>row.name),
+    ['f0_environment','f1_start','f2_later'],'실제 캐릭터 근경 포함한 3회 촬영');
+  assert.ok(script.some(row=>row.code?.includes('FIELD_SCENERY_NEAR_MISSING')),'근경 실물 생성 검사');
+  assert.ok(script.some(row=>row.code?.includes('FIELD_SCENERY_MID_MISSING')),'중경 실물 생성 검사');
+  assert.ok(script.some(row=>row.code?.includes('studioFPS=')),'실측 스튜디오 FPS 로그');
 });
