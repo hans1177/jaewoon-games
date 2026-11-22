@@ -417,6 +417,10 @@ test('적 무기 모션과 동료 비전투 동행은 원본 PBR 및 R15 복식�
   assert.ok(companion.includes('FieldAllyPortrait'),'동료 초상 유지');
   assert.ok(companion.includes('local goal = (root0.CFrame * CFrame.new('),'기존 동행 대형 유지');
   assert.match(companion,/FM\.actor\(a\.fm, "RUN"/);
+  // [지상전투 단독] 동료는 소환·동행·대화하지 않는다(영입·저장 데이터는 유지).
+  assert.ok(companion.includes('local allyNames: { any } = {}'),'동료 지상전투 제외');
+  assert.ok(field.includes('local companionRows: { any } = {}'),'동료 대화 제외');
+  assert.doesNotMatch(companion,/opts\.allies/,'동료 지상전투 유입 금지');
   assert.match(companion,/FM\.actor\(a\.fm, "IDLE"/);
   assert.doesNotMatch(companion,/strikeEnemy\(|castEffect\(|local tgt|a\.nextSkill|a\.castAt/,'동료 전투/자동 스킬 경로 잔존 금지');
   assert.match(field,/pl\.hp = math\.min\(pl\.maxHp, pl\.hp \+ \(0\.12 \+ math\.min\(healers, 2\) \* 0\.18\) \* math\.min\(dt, 0\.1\)\)/);

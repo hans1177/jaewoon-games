@@ -3200,7 +3200,7 @@ function FieldScene.start(opts)
 		me.Parent = map
 		-- [탐험 동료 대화] 영입된 실제 동료의 기존 개인사와 현장 좌표/전투를 엮어 중앙에 한마디씩 보여 준다.
 		-- 게임 보상·호감도·드랍 판정은 건드리지 않는다. 한 번에 한 대사만 비차단으로 표시한다.
-		local companionRows = opts.allies or {}
+		local companionRows: { any } = {} -- [지상전투 단독] 동료는 지상전투에 나오지 않으므로 대화도 없다.
 		local talkHistory = require(script.Parent:WaitForChild("CompanionTalk")).Talk
 		local talkRng = Random.new(math.floor(os.clock() * 1000) % 2147483647)
 		local dialogueFrame, speakerLabel, speechLabel = nil, nil, nil
@@ -8699,8 +8699,8 @@ function FieldScene.start(opts)
 		-- [동료 명세 준비] 기존 영입·직업·국적 판정은 그대로 두고 루아우 200개 지역변수 한도를 피하도록 이 책임만 분리.
 		local function prepareAllyDefs()
 			local allyDefs = {}
-			local allyNames = opts.allies or {}
-			if #allyNames == 0 and RunService:IsStudio() and workspace:GetAttribute("DevAllies") then
+			local allyNames: { any } = {} -- [지상전투 단독] 동료는 소환·동행하지 않고 주인공 혼자 싸운다. 영입·저장 데이터는 그대로.
+			if false then
 				allyNames = { { name = "동료 포수", role = "포수" }, { name = "동료 항해사", role = "항해사" } } -- 실제 서버에서는 없는 동료를 만들지 않는다.
 			end
 			-- [동료 식별] 같은 영입 ID 중복은 한 번만 소환한다. 최대 2명, 직업별 기존 스킬·무기는 유지.
