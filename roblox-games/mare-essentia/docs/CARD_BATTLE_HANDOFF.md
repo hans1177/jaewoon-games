@@ -183,3 +183,13 @@
 - **Kenney Nature Kit CC0 원본 3종 등록표 확인:** `Terrain/kenney_rock_largeB` = `71077469685189`, `Terrain/kenney_tree_fat` = `136614086977728`, `Terrain/kenney_mushroom_red` = `137550817039551`. 모두 `usePermissionGranted:true`, 개별 출처·원본 SHA-256 및 공식 ZIP 고정 SHA-256 기록 확인. **Studio 3D 실화면은 미검증.**
 - **다음 원화 후보:** `eu_24` 스톤헨지. 기존 `assets/cardart/src/eu_24.svg`는 이미 있으므로 **중복 생성 금지**. 다만 이 카드의 `assets/cardart/src/eu_24-original.png` 완성 PNG, `APPROVED_IMAGES.json` 승인 해시, `assets-registered.json`의 로블록스 번호는 현재 `main`에 없다. 기존 SVG 원화 자체의 검수와 새로 제작된 1024×1024 원화의 중복·품질 검증을 거쳐, 승인된 최종 PNG가 실제 원격 바이너리로 반영됐을 때만 기존 등록기로 승격한다. 이미지가 채팅에만 있거나 로컬에만 있는 상태는 등록 완료가 아니다.
 - **미검증:** 신규 등록 작업의 전체 종료 로그, Roblox Studio 실제 카드 표시, 기존 Place 최종 게임 게시/모바일 실화면. 등록표 존재만으로 이 검증들을 PASS로 표기하지 않는다. 게임 밸런스·저장키·기존 원화는 변경 없음.
+
+## 17. 스톤헨지 `eu_24` 신규 원화 실제 등록 (2026-11-22)
+
+- **중복 확인:** `eu_21~eu_23`은 기존 승인된 원본과 등록번호 보존. `eu_24`는 기존 `src/eu_24.svg` 시안만 있고 승인된 완성 PNG·등록번호가 없어 신규 회화 원화를 제작했다. 기존 SVG는 삭제하지 않았다.
+- **원화:** 영국 솔즈베리 평원의 스톤헨지 거석군·황금빛 구름 사이 햇살·바람 부는 초원으로 구성된 1024×1024 단일 컬러 유화 PNG. 카드 프레임·문자·숫자·워터마크·다른 카드 주제 없음.
+- **원본:** `assets/cardart/src/eu_24-original.png`. SHA-256 `e46333ecffe476baa172b1f6fe6122cab8e72a8c38a669285eb02f309b30b88f`, Git Blob SHA `54b625f948c74e670249f00f911f47e42a95dd1f` (원격 업로드 후 동일성 확인).
+- **원본과 승인표를 동시 main 반영:** [`febb14da801a22202949fb27a6aa9a16d2b7c3b1`](https://github.com/hans1177/jaewoon-games/commit/febb14da801a22202949fb27a6aa9a16d2b7c3b1). `APPROVED_IMAGES.json`의 `approved["CardArt/eu_24"]`와 `modelOriginals`에 동일 SHA-256 및 시각검수 항목을 기록.
+- **정식 자산등록 워크플로:** [실행 #45022878739](https://github.com/hans1177/jaewoon-games/actions/runs/45022878739) `register` 작업 `success`. `assets-registered.json` 자산번호 **`120884527313899`**, `usePermissionGranted:true`; 승인·등록 SHA-256 일치, `AssetIds.luau`의 `CardArt/eu_24` 연결 확인.
+- **다음 카드:** `eu_25` 콜로세움. 최신 조회 당시 완성 원본 PNG·승인 해시·등록번호가 모두 없다. 이번 차례 원화 생성 도구가 오류를 반환해 **아직 미제작·미등록**이며, 무관한 다른 이미지를 이름만 바꿔 재사용하지 않는다. 생성 기능이 정상일 때 주제 정확한 1:1 역동 컬러 회화를 제작해 동일한 기존 등록기로만 등록한다.
+- **별도 미검증:** Roblox Studio 실제 카드 노출, 최종 Place 게시/모바일 플레이 실화면. 게임 저장 구조·밸런스·기존 등록 원화/번호는 변경하지 않음.
