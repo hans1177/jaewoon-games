@@ -3726,6 +3726,13 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(workflow,/if len\(confirmed\)!=21/);
   assert.match(field,/local PORT_NATURE = \{/,'항구 고유 지형 입력');
   assert.match(field,/local PORT_NATURE_MODELS = \{/,'항구별 등록 실물 배치 표');
+  const ids=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau');
+  const portModels=field.split('local PORT_NATURE_MODELS = {')[1]?.split('-- [지역별 생태]')[0]||'';
+  const scenery=[...portModels.matchAll(/\{"(Terrain|Town|Castle|Naval)","([^"]+)"/g)];
+  assert.ok(scenery.length>=35,'항구별 실물 지형 모델 편성');
+  for(const row of scenery){
+    assert.ok(ids.includes('["'+row[1]+'/'+row[2]+'"] ='),'미등록 항구 배경 자산 '+row[1]+'/'+row[2]);
+  }
   for(const port of ['venice','amsterdam','bergen','cape_town','zanzibar','goa','busan',
     'calcutta','new_orleans','san_francisco','rio','sydney','honolulu','guam']){
     assert.match(field,new RegExp('\\b'+port+'='),'고유 지리 정체성: '+port);
