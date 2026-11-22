@@ -482,11 +482,13 @@ local function sliceYield(label: string?)
 	if os.clock() - sliceStart > SLICE_BUDGET and coroutine.isyieldable() then
 		sliceMark(label or "?")
 		local before = os.clock()
+		-- [측정] 긴 프레임이 Lua 메모리 정리(GC) 때문인지 가리기 위해 양보 전후 Lua 힙(KB)을 기록한다(동작 불변).
+		local heapBefore = collectgarbage("count")
 		task.wait()
 		sliceStart = os.clock()
 		local gap = sliceStart - before
 		if gap > yieldGapMax then
-			yieldGapMax, yieldGapAt = gap, label or "?"
+			yieldGapMax, yieldGapAt = gap, (label or "?") .. string.format(" heap%+dKB", math.floor(collectgarbage("count") - heapBefore))
 		end
 		spanAt = sliceStart
 	end
