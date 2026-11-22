@@ -3466,9 +3466,9 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('target.Size.Y * hairHeightAllowance / ext.Y,'));
   assert.ok(pose.includes('target.Size.Z * spec[5] / ext.Z)'));
   assert.ok(pose.includes('if npcOutfit and not surface and part:IsA("MeshPart") and part.TextureID ~= ""'));
-  assert.ok(pose.includes('part.Color = part.Color:Lerp(hairTint:Lerp(Color3.new(1, 1, 1), 0.25), 0.70)'));
+  assert.ok(pose.includes('part.Color = part.Color:Lerp(hairTint, if pale then 0.93 else 0.45)'), '텍스처 머리 흰색 기본 배율 복구');
   assert.ok(pose.includes('if npcOutfit and surface and surfaceHasColorMap(surface) then'));
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(softTint, 0.72)'));
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(softTint, if pale then 0.93 else 0.50)'), 'PBR 머리 흰색 기본 배율 복구');
   assert.ok(pose.includes('scalp.Name = "HairScalp"'));
   assert.ok(pose.includes('temple.Name = "HairScalpSide"'));
   // [사진 회귀] 실물 헤어가 부분 메시일 때 목덜미·묶은 머리 볼륨을 보존한다.
@@ -3477,6 +3477,12 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('knot.Name = "HairBack"'));
   assert.ok(pose.includes('visibleHeadwearParts == 0'));
   assert.ok(pose.includes('assetName .. ":invisible"'));
+  assert.ok(pose.includes('local crownY = if hairStyle == "bun" then 0.79 elseif hairStyle == "long" then 0.67 else 0.65'), '헤어 정수리 위로 부착');
+  assert.ok(pose.includes('hairOffsetY = crownY - bounds.Size.Y * 0.5 / target.Size.Y'), '긴머리 길이에 따라 높이 자동 정렬');
+  assert.ok(pose.includes('model:SetAttribute("NpcHairMeshReady", wornHair ~= nil)'), '실물 머리 가시 상태 검증');
+  assert.ok(pose.includes('piece.Transparency = if wornHair then 1 else 0'), '머리 메시 로드 실패 시 기존 머리 유지');
+  assert.ok(pose.includes('piece.Transparency = if fullCrown then 1 else 0'), '실물 머리와 두피 중복 시 보조 구체 숨김');
+  assert.ok(pose.includes('and not string.find(worn.Name, "hair_beard", 1, true)'), '수염 머리카락과 분리 보존');
   // [모자 정수리] 실물 깃털모자가 기존 머리 보조를 모두 지우면서 뚫린 윗면을 드러내지 않도록 한다.
   assert.ok(pose.includes('crown:SetAttribute("NpcHatCrown", true)'));
   assert.ok(pose.includes('piece:GetAttribute("NpcHatCrown") == true'));
