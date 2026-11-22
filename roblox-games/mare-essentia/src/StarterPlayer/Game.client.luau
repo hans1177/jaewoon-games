@@ -4676,6 +4676,294 @@ function H.playRumorScene(r)
 	})
 end
 
+
+-- [역사 시네마틱 · 메인] 책이 열리면 실제 항구 좌표의 세계 해도와 등록 3D 역사 무대가 펼쳐진다.
+-- 서버 선택/보상/저장에 개입하지 않고 기존 모델·음원만 사용하는 순수 클라이언트 연출.
+function H.historyCinematic(parent, ev)
+	local TS = game:GetService("TweenService")
+	local lessMotion = game:GetService("GuiService").ReducedMotionEnabled
+	local keyPorts = {
+		magellan_circum = "seville", mercator_projection = "amsterdam", lepanto = "venice",
+		imjin_war = "busan", armada = "plymouth", manila_galleon = "manila",
+		great_fire = "london", great_plague = "london", principia = "london",
+		lisbon_quake = "lisbon", boston_tea = "boston", independence = "boston",
+		french_revolution = "rouen", cook_voyage = "plymouth", dutch_revolt = "amsterdam",
+	}
+	local regionPorts = { europe = "london", w_africa = "zanzibar", new_world = "kingston",
+		indian = "calcutta", far_east = "edo", pacific = "sydney" }
+	local referenceId = ev.portId or ev.port or keyPorts[ev.id] or (ev.regions and regionPorts[ev.regions[1]])
+	local origin = PortData.Ports[view and view.player and view.player.portId or "london"] or PortData.Ports.london
+	local located = referenceId and PortData.Ports[referenceId]
+	local destination = located or origin
+	local gold = Color3.fromRGB(248, 199, 113)
+	local root = Instance.new("Frame")
+	root.Name = "HistoryLivingScene"
+	root.Size = UDim2.fromScale(1, 1)
+	root.BackgroundColor3 = Color3.fromRGB(33, 45, 53)
+	root.BorderSizePixel = 0
+	root.ClipsDescendants = true
+	root.Parent = parent
+
+	-- [세계지도] 기존 승인된 세계 해도와 좌표·항로·사건 위치 표시.
+	local map = Instance.new("Frame")
+	map.Name = "HistoryWorldChart"
+	map.AnchorPoint = Vector2.new(0.5, 0.5)
+	map.Position = UDim2.fromScale(0.5, 0.5)
+	map.Size = UDim2.fromScale(1, 1)
+	map.BackgroundColor3 = Color3.fromRGB(65, 70, 69)
+	map.BorderSizePixel = 0
+	map.Parent = root
+	local imageId = AssetIds["CardArt/event_chart_world"] or AssetIds["Menu/chart_folded_map"]
+	if imageId then
+		local chart = Instance.new("ImageLabel")
+		chart.Name = "RegisteredHistoricalWorldMap"
+		chart.Size = UDim2.fromScale(1, 1)
+		chart.BackgroundTransparency = 1
+		chart.Image = "rbxassetid://" .. tostring(imageId)
+		chart.ImageTransparency = 0.24
+		chart.ScaleType = Enum.ScaleType.Crop
+		chart.Parent = map
+	end
+	local tint = Instance.new("Frame")
+	tint.Size = UDim2.fromScale(1, 1)
+	tint.BackgroundColor3 = Color3.fromRGB(17, 34, 44)
+	tint.BackgroundTransparency = 0.55
+	tint.BorderSizePixel = 0
+	tint.Parent = map
+	for i = 1, 5 do
+		local longitude = Instance.new("Frame")
+		longitude.Name = "MapLongitude"
+		longitude.Position = UDim2.fromScale(i / 6, 0)
+		longitude.Size = UDim2.new(0, 1, 1, 0)
+		longitude.BackgroundColor3 = gold
+		longitude.BackgroundTransparency = 0.83
+		longitude.BorderSizePixel = 0
+		longitude.Parent = map
+	end
+	for i = 1, 3 do
+		local latitude = Instance.new("Frame")
+		latitude.Name = "MapLatitude"
+		latitude.Position = UDim2.fromScale(0, i / 4)
+		latitude.Size = UDim2.new(1, 0, 0, 1)
+		latitude.BackgroundColor3 = gold
+		latitude.BackgroundTransparency = 0.83
+		latitude.BorderSizePixel = 0
+		latitude.Parent = map
+	end
+	local function coordinates(port)
+		return Vector2.new(math.clamp((port.lon + 180) / 360, 0.03, 0.97),
+			math.clamp((90 - port.lat) / 180, 0.06, 0.94))
+	end
+	local from = coordinates(origin)
+	local target = coordinates(destination)
+	if (from - target).Magnitude < 0.015 then from += Vector2.new(-0.10, 0.035) end
+	local dots = if lessMotion then 5 else 10
+	for i = 1, dots do
+		local t = i / dots
+		local point = from:Lerp(target, t) + Vector2.new(0, -0.09 * math.sin(math.pi * t))
+		local dot = Instance.new("Frame")
+		dot.Name = "AnimatedSeaRoute"
+		dot.AnchorPoint = Vector2.new(0.5, 0.5)
+		dot.Position = UDim2.fromScale(point.X, point.Y)
+		dot.Size = UDim2.fromOffset(4, 4)
+		dot.BackgroundColor3 = gold
+		dot.BackgroundTransparency = if lessMotion then 0.12 else 1
+		dot.BorderSizePixel = 0
+		dot.Parent = map
+		corner(dot, 20)
+		if not lessMotion then
+			task.delay(0.42 + i * 0.055, function()
+				if dot.Parent then TS:Create(dot, TweenInfo.new(0.2), { BackgroundTransparency = 0.12 }):Play() end
+			end)
+		end
+	end
+	local marker = Instance.new("TextLabel")
+	marker.Name = "HistoricMapBeacon"
+	marker.AnchorPoint = Vector2.new(0.5, 0.5)
+	marker.Position = UDim2.fromScale(target.X, target.Y)
+	marker.Size = UDim2.fromOffset(34, 34)
+	marker.BackgroundTransparency = 1
+	marker.Text = "✦"
+	marker.Font = Enum.Font.GothamBold
+	marker.TextSize = 28
+	marker.TextColor3 = gold
+	marker.Parent = map
+	local pulse = Instance.new("Frame")
+	pulse.Name = "HistoricalMapPulse"
+	pulse.AnchorPoint = Vector2.new(0.5, 0.5)
+	pulse.Position = marker.Position
+	pulse.Size = UDim2.fromOffset(22, 22)
+	pulse.BackgroundTransparency = 1
+	pulse.Parent = map
+	corner(pulse, 100)
+	local ring = Instance.new("UIStroke")
+	ring.Color = gold
+	ring.Thickness = 2
+	ring.Parent = pulse
+	if not lessMotion then
+		TS:Create(pulse, TweenInfo.new(1.05, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+			Size = UDim2.fromOffset(94, 94),
+		}):Play()
+		TS:Create(ring, TweenInfo.new(1.05), { Transparency = 1 }):Play()
+		TS:Create(map, TweenInfo.new(3.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+			Position = UDim2.fromScale(0.5 + (0.5 - target.X) * 0.18, 0.5 + (0.5 - target.Y) * 0.10),
+			Size = UDim2.fromScale(1.10, 1.10),
+		}):Play()
+	end
+	local place = Instance.new("TextLabel")
+	place.Name = "HistoryMapPlace"
+	place.AnchorPoint = Vector2.new(0, 1)
+	place.Position = UDim2.fromScale(0.04, 0.97)
+	place.Size = UDim2.new(0.53, 0, 0, 25)
+	place.BackgroundTransparency = 1
+	place.Text = "해도 · " .. (if located then located.name else "현재 항해 기준점")
+	place.Font = Enum.Font.GothamBold
+	place.TextSize = 14
+	place.TextXAlignment = Enum.TextXAlignment.Left
+	place.TextColor3 = gold
+	place.TextStrokeTransparency = 0.4
+	place.Parent = root
+
+	-- [3D 역사 무대] 해전·학문·교역에 맞는 승인 원본 모델을 작은 뷰포트에 배치한다.
+	local stage = Instance.new("ViewportFrame")
+	stage.Name = "ApprovedHistory3DStage"
+	stage.AnchorPoint = Vector2.new(1, 0)
+	stage.Position = UDim2.fromScale(0.97, 0.06)
+	stage.Size = UDim2.fromScale(0.44, 0.78)
+	stage.BackgroundColor3 = Color3.fromRGB(27, 40, 52)
+	stage.BackgroundTransparency = 0.12
+	stage.Ambient = Color3.fromRGB(169, 153, 147)
+	stage.LightColor = Color3.fromRGB(255, 222, 161)
+	stage.LightDirection = Vector3.new(-0.65, -0.75, -0.46).Unit
+	stage.Parent = root
+	corner(stage, 10)
+	local world = Instance.new("WorldModel")
+	world.Parent = stage
+	local cam = Instance.new("Camera")
+	cam.FieldOfView = 42
+	cam.CFrame = CFrame.lookAt(Vector3.new(13, 9, 18), Vector3.new(0, 2, 0))
+	cam.Parent = stage
+	stage.CurrentCamera = cam
+	local subject = tostring(ev.tag or "") .. " " .. tostring(ev.title or "") .. " " .. tostring(ev.art or "")
+	local war = string.find(subject, "전쟁", 1, true) or string.find(subject, "해전", 1, true)
+	local scholar = string.find(subject, "학문", 1, true) or string.find(subject, "과학", 1, true)
+		or ev.art == "library" or ev.art == "observatory"
+	local commerce = string.find(subject, "무역", 1, true) or string.find(subject, "경제", 1, true)
+		or ev.art == "tavern"
+	local selection = if war then { { "Naval", "ship-large" }, { "Naval", "ship-medium" }, { "People", "Soldier_Male" } }
+		elseif scholar then { { "Interior", "bookcaseopenlow" }, { "People", "Doctor_Male_Old" }, { "Relics", "map" } }
+		elseif commerce then { { "Naval", "ship-medium" }, { "Cargo", "box-open" }, { "People", "Worker_Male" } }
+		else { { "Naval", "ship-medium" }, { "People", "Casual_Male" }, { "Relics", "map" } }
+	task.spawn(function()
+		local library = ReplicatedStorage:FindFirstChild("MareAssets") or ReplicatedStorage:WaitForChild("MareAssets", 2)
+		if not library or not stage.Parent then return end
+		local populated = 0
+		for i, spec in selection do
+			local group = library:FindFirstChild(spec[1])
+			local modelSource = group and group:FindFirstChild(spec[2])
+			if modelSource and modelSource:IsA("Model") and modelSource:FindFirstChildWhichIsA("BasePart", true)
+				and stage.Parent then
+				local model = modelSource:Clone()
+				for _, p in model:GetDescendants() do
+					if p:IsA("BasePart") then
+						p.Anchored = true
+						p.CanCollide = false
+						p.CanTouch = false
+						p.CanQuery = false
+					end
+				end
+				model.Parent = world
+				local _, bounds = model:GetBoundingBox()
+				pcall(function()
+					model:ScaleTo((if i == 1 then 7 else 4) / math.max(bounds.X, bounds.Y, bounds.Z, 0.1))
+				end)
+				local measured, size = model:GetBoundingBox()
+				model:PivotTo(CFrame.new((i - 2) * 4.6,
+					model:GetPivot().Position.Y - measured.Position.Y + size.Y / 2,
+					(i - 2) * 0.7) * CFrame.Angles(0, math.rad(18 - i * 16), 0))
+				populated += 1
+			end
+		end
+		if populated > 0 and stage.Parent and not lessMotion then
+			TS:Create(cam, TweenInfo.new(3.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+				CFrame = CFrame.lookAt(Vector3.new(10, 7, 13), Vector3.new(0, 2, 0)),
+				FieldOfView = 37,
+			}):Play()
+		end
+	end)
+
+	-- [책 개봉] 양피지 두 장이 펼쳐지며 지도·3D 무대가 드러나고 기존 장부/해도 소리가 이어진다.
+	local book = Instance.new("Frame")
+	book.Name = "HistoricBookOpening"
+	book.Size = UDim2.fromScale(1, 1)
+	book.BackgroundTransparency = 1
+	book.ZIndex = 10
+	book.Parent = root
+	for i = 1, 2 do
+		local page = Instance.new("Frame")
+		page.Name = if i == 1 then "BookLeft" else "BookRight"
+		page.AnchorPoint = Vector2.new(if i == 1 then 1 else 0, 0.5)
+		page.Position = UDim2.fromScale(0.5, 0.5)
+		page.Size = UDim2.fromScale(0.5, 0.96)
+		page.BackgroundColor3 = if i == 1 then Color3.fromRGB(214, 184, 132) else Color3.fromRGB(243, 218, 171)
+		page.BorderSizePixel = 0
+		page.ZIndex = 11
+		page.Parent = book
+		local glyph = Instance.new("TextLabel")
+		glyph.Size = UDim2.fromScale(1, 1)
+		glyph.BackgroundTransparency = 1
+		glyph.Text = if i == 1 then "✦" else "역사"
+		glyph.Font = Enum.Font.Antique
+		glyph.TextSize = if i == 1 then 58 else 26
+		glyph.TextColor3 = Color3.fromRGB(90, 61, 41)
+		glyph.ZIndex = 12
+		glyph.Parent = page
+		task.delay(0.15, function()
+			if not page.Parent then return end
+			TS:Create(page, TweenInfo.new(if lessMotion then 0.16 else 0.60, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+				Size = UDim2.fromScale(0.006, 0.96), BackgroundTransparency = 1,
+			}):Play()
+			TS:Create(glyph, TweenInfo.new(0.23), { TextTransparency = 1 }):Play()
+		end)
+	end
+	Sfx.play("sfx_book_turn", 0.25)
+	task.delay(0.40, function()
+		if root.Parent then Sfx.play("sfx_chart_unfold", 0.31, 1.04, "sfx_book_turn") end
+	end)
+	task.delay(1, function() if book.Parent then book:Destroy() end end)
+
+	-- [서재 수납] 서버 승인 후 책장에 기록됐다는 황동 봉인을 띄운다.
+	local recorded = false
+	return function()
+		if recorded or not root.Parent then return end
+		recorded = true
+		Sfx.play("sfx_contract_stamp", 0.28, 1.03, "sfx_book_turn")
+		local seal = Instance.new("TextLabel")
+		seal.Name = "HistoricalBookArchived"
+		seal.AnchorPoint = Vector2.new(0.5, 0.5)
+		seal.Position = UDim2.fromScale(0.5, 0.5)
+		seal.Size = UDim2.fromScale(0.80, 0.34)
+		seal.BackgroundColor3 = Color3.fromRGB(64, 44, 32)
+		seal.BackgroundTransparency = 0.08
+		seal.BorderSizePixel = 0
+		seal.Font = Enum.Font.Antique
+		seal.TextSize = 23
+		seal.TextColor3 = gold
+		seal.TextWrapped = true
+		seal.Text = "✦ 역사 기록 완료 ✦" .. string.char(10) .. "서재에 새겨졌다"
+		seal.TextTransparency = 1
+		seal.ZIndex = 15
+		seal.Parent = root
+		corner(seal, 10)
+		TS:Create(seal, TweenInfo.new(0.22), { TextTransparency = 0 }):Play()
+		task.delay(0.46, function()
+			if seal.Parent then TS:Create(seal, TweenInfo.new(0.29), {
+				TextTransparency = 1, BackgroundTransparency = 1,
+			}):Play() end
+		end)
+	end
+end
+
 function playStory(ev)
 	local overlay = Instance.new("Frame")
 	overlay.Name = "StoryScene"
@@ -4697,52 +4985,8 @@ function playStory(ev)
 	end)
 	local picture = mkBox(overlay, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.56), Color3.new(0, 0, 0))
 	picture.ClipsDescendants = true
-	-- 배경 그림 우선순위: ① 이 이벤트 전용 그림(CardArt/story_<이벤트id>) ② 이 이벤트가 주는 지식카드의 그림 ③ 장면 종류별 공용 그림.
-	-- 어느 것도 없으면 UI 도형으로 그린 임시 배경은 쓰지 않고, 지금 서 있는 항구의 실제 3D 풍경을 어둡게 깔아 보여 준다.
-	do
-		local ILLUST = { tavern = "event_festival", harbor = "event_trade_boom", storm = "event_storm", palace = "event_royal_charter", ruins = "event_stonehenge", observatory = "event_principia", library = "event_principia" }
-		local img = AssetIds["CardArt/story_" .. tostring(ev.id or "")]
-		if not img then
-			pcall(function()
-				for _, choice in ev.choices or {} do
-					local cid = choice.effect and choice.effect.cardId
-					if cid and AssetIds["CardArt/" .. cid] then
-						img = AssetIds["CardArt/" .. cid]
-						break
-					end
-				end
-			end)
-		end
-		img = img or AssetIds["CardArt/" .. (ILLUST[ev.art or ""] or "none")]
-		if not img then
-			if ev.art == "epilogue" then
-				H.paintScene(picture, ev.art) -- 에필로그만 기존 연출 유지
-			else
-				overlay.BackgroundTransparency = 1
-				picture.BackgroundTransparency = 1
-				local dim = mkBox(overlay, UDim2.fromScale(0, 0.56), UDim2.fromScale(1, 0.44), Color3.new(0, 0, 0))
-				dim.BackgroundTransparency = 0.12
-				local top = mkBox(picture, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.new(0, 0, 0))
-				top.BackgroundTransparency = 0.78
-			end
-		end
-		if img then
-			local bg = Instance.new("ImageLabel")
-			bg.Name = "Illustration"
-			bg.AnchorPoint = Vector2.new(0.5, 0.5)
-			bg.Position = UDim2.fromScale(0.5, 0.5)
-			bg.Size = UDim2.fromScale(1, 1)
-			bg.BackgroundTransparency = 1
-			bg.ScaleType = Enum.ScaleType.Crop
-			bg.Image = "rbxassetid://" .. tostring(img)
-			bg.Parent = picture
-			local shade = Instance.new("UIGradient")
-			shade.Rotation = 90
-			shade.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(1, 0.25) })
-			shade.Parent = bg
-			-- [이벤트 원화] 원본보다 14% 더 확대하면 저해상도 원화와 세부 질감이 흐려져 확대를 생략한다.
-		end
-	end
+	-- [이벤트 연출 정본] 그림 한 장을 고정하지 않고 세계 지도와 3D 무대가 책에서 펼쳐진다.
+	local recordHistory = H.historyCinematic(picture, ev)
 
 	-- [초상 원본 화질] 256폭 지역 아틀라스를 330px로 확장하지 않고 원본 이하로 표시한다.
 	local storyViewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
@@ -4981,6 +5225,7 @@ function playStory(ev)
 					hint.TextSize = 16
 				end
 				if result and result.ok then
+					recordHistory()
 					for _, c in list:GetChildren() do
 						if c:IsA("TextButton") then
 							c:Destroy()
@@ -14079,6 +14324,8 @@ do
 		dim.BackgroundTransparency = 0.5
 		dim.BorderSizePixel = 0
 		dim.Parent = layer
+		-- [역사 이벤트] 책에서 지도와 기존 3D 무대가 등장한 뒤 선택창이 나타난다.
+		local recordHistory = H.historyCinematic(layer, ev)
 		local win = Instance.new("Frame")
 		win.AnchorPoint = Vector2.new(0.5, 0.5)
 		win.Position = UDim2.fromScale(0.5, 0.5)
@@ -14086,7 +14333,11 @@ do
 		win.AutomaticSize = Enum.AutomaticSize.Y
 		win.BackgroundColor3 = COLORS.cover
 		win.BorderSizePixel = 0
+		win.Visible = false
 		win.Parent = layer
+		task.delay(1.18, function()
+			if win.Parent then win.Visible = true end
+		end)
 		corner(win, 16)
 		local wst = Instance.new("UIStroke")
 		wst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -14119,8 +14370,17 @@ do
 			rl.Parent = row
 			local ok = (view and view.player and view.player.coins or 0) >= ch.cost
 			local b = mkButton(row, ch.label, COLORS.gold, UDim2.new(1, 0, 0, 40), function()
-				closePopup()
-				call("HistoryChoose", { choice = ch.index })
+				-- 서버가 선택을 승인해야만 책에 기록되는 효과를 준다. 판정과 보상은 그대로.
+				if not popupGui or popupFor ~= ev.id then return end
+				local response = call("HistoryChoose", { choice = ch.index })
+				if response and response.ok then
+					recordHistory()
+					task.delay(0.62, function()
+						if popupFor == ev.id then closePopup() end
+					end)
+				else
+					closePopup()
+				end
 			end, ok)
 			b.LayoutOrder = 1
 			local hint = mkLabel(row, ch.hint or "", 12, COLORS.muted, false, 2)
