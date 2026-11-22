@@ -5811,6 +5811,25 @@ function PortScene.build(info, onFacility)
 			else { wall = "kenney_grey_wall_01", window = "kenney_grey_window_square_01", door = "kenney_grey_door_round_01", roof = "kenney_roof_straight_red_01" }
 		local hallPieces = modularHall(folder, px, 0, wide * 0.92, deep * 0.72, if palaceTier >= 4 then 3 else 2, hallSet, baseColor, roofColor)
 		main:SetAttribute("ModularHallPieces", hallPieces)
+		-- [부속 건물 역할별 실물 조립] 같은 주택 하나를 반복하지 않고 역할마다 형태를 다르게 조립한다.
+		-- 마구간=목조 단층, 근위소=창 적은 좁은 3층(탑형), 서고=창 많은 2층, 행정청=본관과 같은 입면 2층.
+		-- 조립 실패 시에만 기존 house()로 짓는다. 이름·위치·상호작용은 그대로.
+		local stableSet = { wall = "kenney_wood_wall_01", window = "kenney_wood_wall_01", door = "kenney_wood_door_01",
+			roof = if east then "kenney_roof_straight_green_01" else "kenney_roof_straight_red_01" }
+		local guardSet = { wall = hallSet.wall, window = hallSet.wall, door = hallSet.door, roof = hallSet.roof }
+		local librarySet = { wall = hallSet.window, window = hallSet.window, door = hallSet.door, roof = hallSet.roof }
+		local function royalAnnex(name, pos, sx, sz, floors, set, tint)
+			local holder = Instance.new("Model")
+			holder.Name = name
+			holder.Parent = folder
+			if modularHall(holder, pos.X, pos.Z, sx, sz, floors, set, tint, roofColor) > 0 then
+				return holder
+			end
+			holder:Destroy()
+			local fallback = house(folder, pos, sx, sz, floors, style, royalSeed, tint)
+			if fallback then fallback.Name = name end
+			return fallback
+		end
 		if hallPieces > 0 then
 			main.Transparency = 1
 			mainRoof.Transparency = 1
@@ -5916,11 +5935,9 @@ function PortScene.build(info, onFacility)
 		if palaceTier >= 2 then
 			-- 별관 서비스 필지: 남쪽 마구간, 북쪽 근위병영.
 			-- [실물 부속 건물] 상자·지붕판 대신 지역 양식 주택 실물 모델(house)로 짓는다. 위치·이름은 그대로.
-			local stable = house(folder, Vector3.new(px - wide * 0.38, 0, deep * 0.62 + 30), 30, 18, 1, style, royalSeed, C(142, 111, 80))
-			if stable then stable.Name = "RoyalStable" end
+			local stable = royalAnnex("RoyalStable", Vector3.new(px - wide * 0.38, 0, deep * 0.62 + 30), 30, 18, 1, stableSet, C(142, 111, 80))
 			importedModel(folder, "Town", "cart", Vector3.new(px - wide * 0.38 - 18, 0, deep * 0.62 + 30), 7, false)
-			local guardroom = house(folder, Vector3.new(px - wide * 0.38, 0, -(deep * 0.62 + 30)), 34, 19, 2, style, royalSeed, baseColor)
-			if guardroom then guardroom.Name = "RoyalGuardHouse" end
+			local guardroom = royalAnnex("RoyalGuardHouse", Vector3.new(px - wide * 0.38, 0, -(deep * 0.62 + 30)), 20, 19, 3, guardSet, baseColor)
 		end
 		if palaceTier >= 3 then
 			-- 정원 분수·정원 벤치와 왕실 학문 서고.
@@ -5928,13 +5945,11 @@ function PortScene.build(info, onFacility)
 				importedModel(folder, "Town", "fountain-round", Vector3.new(frontX + 29, 0, z), 10, false)
 				importedModel(folder, "Town", "bench_A", Vector3.new(frontX + 38, 0, z + (if z > 0 then 14 else -14)), 5, false)
 			end
-			local library = house(folder, Vector3.new(px - wide * 0.28, 0, deep * 0.62 + 65), 27, 20, 2, style, royalSeed, baseColor)
-			if library then library.Name = "RoyalLibrary" end
+			local library = royalAnnex("RoyalLibrary", Vector3.new(px - wide * 0.28, 0, deep * 0.62 + 65), 30, 20, 2, librarySet, baseColor)
 		end
 		if palaceTier >= 4 then
 			-- 행정청과 의전 깃발. 관문 폭은 최종 단계까지 보존한다.
-			local office = house(folder, Vector3.new(px - wide * 0.28, 0, -(deep * 0.62 + 65)), 27, 20, 2, style, royalSeed, baseColor)
-			if office then office.Name = "RoyalAdministration" end
+			local office = royalAnnex("RoyalAdministration", Vector3.new(px - wide * 0.28, 0, -(deep * 0.62 + 65)), 30, 20, 2, hallSet, baseColor)
 			for _, z in { -38, 38 } do
 				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(frontX + 8, 0, z), 13, false)
 			end
