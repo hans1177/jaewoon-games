@@ -193,3 +193,13 @@
 - **정식 자산등록 워크플로:** [실행 #45022878739](https://github.com/hans1177/jaewoon-games/actions/runs/45022878739) `register` 작업 `success`. `assets-registered.json` 자산번호 **`120884527313899`**, `usePermissionGranted:true`; 승인·등록 SHA-256 일치, `AssetIds.luau`의 `CardArt/eu_24` 연결 확인.
 - **다음 카드:** `eu_25` 콜로세움. 최신 조회 당시 완성 원본 PNG·승인 해시·등록번호가 모두 없다. 이번 차례 원화 생성 도구가 오류를 반환해 **아직 미제작·미등록**이며, 무관한 다른 이미지를 이름만 바꿔 재사용하지 않는다. 생성 기능이 정상일 때 주제 정확한 1:1 역동 컬러 회화를 제작해 동일한 기존 등록기로만 등록한다.
 - **별도 미검증:** Roblox Studio 실제 카드 노출, 최종 Place 게시/모바일 플레이 실화면. 게임 저장 구조·밸런스·기존 등록 원화/번호는 변경하지 않음.
+
+## 18. 콜로세움 `eu_25` 원화·정식 자산등록 확인 (2026-11-22)
+
+- **주제/원화:** 고대 로마 콜로세움이 황금빛 구름 사이 햇살과 함께 드러나는 1024×1024 단일 컬러 유화. 다른 카드 주제·글자·카드 테두리·숫자·스프라이트 시트 없음. 기존 `src/eu_25.svg`와 `eu_24` 원본·자산번호는 보존함.
+- **원본 경로:** `assets/cardart/src/eu_25-original.png`; PNG SHA-256 `d96baf1d4e1d9d69326b99089be847d6e0e9d05be8fc15d15969d2805b611d95`; Git Blob SHA `a2868f92df7daa5a937032c4363ba00edfdb4b4e`. 실제 Blob API 등록 SHA와 로컬 Git 객체 계산값 동일.
+- **원본·승인 동시 main 반영:** [`e0ee60a1c02d1e793b4555a62636f0bd47a70020`](https://github.com/hans1177/jaewoon-games/commit/e0ee60a1c02d1e793b4555a62636f0bd47a70020). `APPROVED_IMAGES.json`의 `approved["CardArt/eu_25"]`와 `modelOriginals`에 동일 SHA-256 및 실제 시각검수·상업 권리 항목을 기록.
+- **기존 정식 자산등록:** [워크플로 #45024663747](https://github.com/hans1177/jaewoon-games/actions/runs/45024663747) `register` 작업 `success`; 로그 `MODEL_ORIGINAL_PROMOTED CardArt/eu_25`, `UPLOADED CardArt/eu_25 114076190690083`, `GRANTED_ASSET CardArt/eu_25`, `REGISTERED_COUNT=1404 FAILED_COUNT=0` 실측.
+- **로블록스 자산번호:** `114076190690083`, `assets-registered.json`의 `usePermissionGranted:true`와 `sourceSha256`, 승인표·검수표 해시 일치. `src/ReplicatedStorage/Shared/AssetIds.luau`의 `["CardArt/eu_25"] = 114076190690083` 연결 확인.
+- **다음 미등록 원화 후보:** `eu_26` 알프스. 최신 `main` 승인/원본/등록 상태부터 재확인한 뒤, 이미 제작된 SVG를 훼손하지 않고 별도 고품질 1:1 컬러 역사 회화 원화를 기존 경로로 등록한다. 다른 카드 원화를 ID만 바꿔 재사용하지 않는다.
+- **별도 미검증:** Roblox Studio에서 카드의 실제 표시 및 최종 게임 Place 게시·모바일 런타임. 기존 게임 밸런스·저장 키·기존 등록 자산은 변경하지 않았다.
