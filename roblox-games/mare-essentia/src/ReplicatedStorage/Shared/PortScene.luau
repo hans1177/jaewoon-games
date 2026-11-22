@@ -3871,6 +3871,64 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	end
 	-- 기존 항구 중심 도로는 유지하고 서쪽 외곽도로로 진입로를 연결한다.
 	strip(folder, style, -212, 0, 9, 320)
+	-- [마을 길 실물화] 기존 보행 도로의 위에 승인된 CC0 포장·목재 판로 메시를 소량 배치한다.
+	-- 구도심 흙길 → 지역별 포석/물가 목재길로 발전한다. 도로 충돌·건축 필지·경제 원본은 그대로 둔다.
+	local streetTouch = UserInputService.TouchEnabled
+	local stoneStreet = key == "iberia" or key == "italy" or key == "med" or key == "france"
+		or key == "britain" or key == "hanse" or key == "brick" or key == "stone"
+		or key == "north" or key == "colonial" or key == "creole" or key == "ottoman"
+	local timberStreet = key == "malabar" or key == "seasia" or key == "pacific"
+		or key == "tropic" or key == "nordic"
+	local pathKind = if lvl <= 2 then "Terrain" elseif timberStreet then "Naval"
+		elseif stoneStreet then "Town" else "Terrain"
+	local pathAsset = if lvl <= 2 then "ground-pathstraight" elseif timberStreet then "platform-planks"
+		elseif stoneStreet then "cobblestones" else "ground-pathrocks"
+	local streetPatches, streetLanterns = 0, 0
+	local patchLimit = if streetTouch then 4 else 8
+	local streetVisualSeed = seeded(info.portId .. ":cultural-road-depth")
+	if AssetIds[pathKind .. "/" .. pathAsset] then
+		for _, sx in streetsOuter do
+			if streetPatches >= patchLimit then break end
+			for side = -1, 1, 2 do
+				if streetPatches >= patchLimit then break end
+				local row = streetVisualSeed:NextInteger(0, pairsN)
+				local roadAt = Vector3.new(sx, 0.25, side * (152 + laneOffset + row * laneL))
+				local paving = importedModel(folder, pathKind, pathAsset, roadAt,
+					math.min(10, laneWidth * 0.76), false)
+				if paving then
+					paving.Name = "CityRegionalStreetPaving"
+					paving:SetAttribute("CityArchitectureCulture", key)
+					paving:SetAttribute("CityDevelopmentTier", lvl)
+					paving:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+					paving:SetAttribute("ShowcaseOnly", true)
+					streetPatches += 1
+				end
+			end
+		end
+	end
+	-- [번영한 시가지] 4단계부터 유럽 포석길엔 실제 가로등, 다른 지역엔 등록된 범용 등불만 제한 배치한다.
+	-- 중앙광장과 시설 앞 기존 조명은 중복하지 않고 외곽 주거 골목에서만 늘린다.
+	if lvl >= 4 then
+		local lightAsset = if stoneStreet then "kenney_lightpost_01" else "lantern"
+		if AssetIds["Town/" .. lightAsset] then
+			for i = 1, math.min(#streetsOuter, if streetTouch then 1 else 3) do
+				local side = if i % 2 == 0 then 1 else -1
+				local lampAt = Vector3.new(streetsOuter[i] + laneWidth * 0.36, 0,
+					side * (152 + laneOffset + laneL * 0.5))
+				local lamp = importedModel(folder, "Town", lightAsset, lampAt, 5.6, false)
+				if lamp then
+					lamp.Name = "CityRegionalStreetLantern"
+					lamp:SetAttribute("CityArchitectureCulture", key)
+					lamp:SetAttribute("CityDevelopmentTier", lvl)
+					lamp:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+					streetLanterns += 1
+				end
+			end
+		end
+	end
+	folder:SetAttribute("CityRegionalStreetPavingCount", streetPatches)
+	folder:SetAttribute("CityRegionalStreetLanternCount", streetLanterns)
+	folder:SetAttribute("CityRegionalStreetAsset", pathKind .. "/" .. pathAsset)
 	-- 구역 내용 (등록된 실제 3D 모델만 사용)
 	do
 		local function put(kind, asset, size, x, z, solid, yaw, buildDelay)
@@ -5559,6 +5617,30 @@ function PortScene.build(info, onFacility)
 			part(folder, Vector3.new(1.2, 6, 1.2), CFrame.new(x, -1, side * 4.6), Color3.fromRGB(90, 64, 40), Enum.Material.Wood, Enum.PartType.Cylinder).CFrame = CFrame.new(x, -1, side * 4.6) * CFrame.Angles(0, 0, math.pi / 2)
 		end
 	end
+	-- [항만 투자와 실물 디테일] 기존 부두 통행판·선박 동선은 그대로 두고
+	-- 실제 dock 건설 실적이 허용한 발전 단계부터 승인된 3D 목재 접안 측면·모서리를 표시한다.
+	local pierMeshes = 0
+	if dockGrowth.tier >= 2 then
+		local trimLimit = if UserInputService.TouchEnabled then 2
+			elseif dockGrowth.tier >= 4 then 4 else 2
+		for i = 1, trimLimit do
+			local asset = if i <= 2 then "dock-side" else "dock-corner"
+			if AssetIds["Naval/" .. asset] then
+				local x = if i <= 2 then 37 + 18 * (i - 1) else 76
+				local z = if i % 2 == 0 then 5.9 else -5.9
+				local at = Vector3.new(x, 0.9, z)
+				local trim = importedModel(folder, "Naval", asset, at, if i <= 2 then 10 else 8, false)
+				if trim then
+					trim.Name = "HarborInvestedPierMesh"
+					trim:SetAttribute("HarborVisualTier", dockGrowth.tier)
+					trim:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+					trim:SetAttribute("ShowcaseOnly", true)
+					pierMeshes += 1
+				end
+			end
+		end
+	end
+	folder:SetAttribute("HarborInvestedPierMeshCount", pierMeshes)
 	-- 바다 쪽 보이지 않는 벽: 해안선과 부두 옆·끝을 막아 바닷속으로 떨어지지 않게 한다
 	do
 		local function wall(size, cf)
@@ -7100,7 +7182,11 @@ function PortScene.build(info, onFacility)
 		foam.CanCollide = false
 		for _, z in { -120, -70, 70, 120 } do
 			if not importedModel(folder, "Town", "rock-large", Vector3.new(15, 0, z), 7, true) then
-				part(folder, Vector3.new(6, 4, 6), CFrame.new(15, 1, z), Color3.fromRGB(120, 118, 112), Enum.Material.Slate, Enum.PartType.Ball)
+				-- 원래 암석 메시가 누락돼도 구형 Part 대체 금지. 권한 확인된 같은 종류의 실제 연안 암석만 사용.
+				local coastRock = if warmShore then "rocks-sand-a" else "rocks-a"
+				if AssetIds["Naval/" .. coastRock] then
+					importedModel(folder, "Naval", coastRock, Vector3.new(15, 0, z), 7, true)
+				end
 			end
 		end
 		for _, z in { -34, 34, -96, 96 } do
