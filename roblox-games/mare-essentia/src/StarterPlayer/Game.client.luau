@@ -8646,28 +8646,60 @@ local GAIN_RARITY = { Common = "흔함", Uncommon = "보통", Rare = "희귀", E
 
 function H.showCardGain(card, moreCount)
 	if not card then return end
-	-- [카드 습득] 별도 이벤트씬·암전·선택 강제 없이 승인된 도감 원화가 중앙에서 빛나며 나타난다.
-	-- 부드러운 황동 광륜과 별빛이 퍼진 뒤, 실제 서재 도크 아이콘으로 작아지며 페이드 아웃한다.
+	-- [카드 획득 · 메인] 기존 카드/도감 원화만 표시한다. 보상과 저장값에는 관여하지 않는다.
+	-- [모바일] 7:10 카드 비율, 비차단 알림, 등급별 가벼운 트윈 및 기존 SFX만 사용한다.
 	local pg = player:WaitForChild("PlayerGui")
 	local previous = pg:FindFirstChild("CardGain")
 	if previous then previous:Destroy() end
 	local g = overlayGui("CardGain", 95)
 	g:SetAttribute("NonBlockingCardNotice", true)
 	local TS = game:GetService("TweenService")
+	local isCombat = card.gainType == "combat"
 	local tone = GAIN_COLOR[card.rarity] or GAIN_COLOR.Common
 	local rarityLevel = ({ Common = 0, Uncommon = 1, Rare = 2, Epic = 3, Legendary = 4 })[card.rarity] or 0
-	local gold = Color3.fromRGB(255, 217, 124):Lerp(tone, if rarityLevel >= 2 then 0.22 else 0.50)
+	local gold = Color3.fromRGB(255, 217, 124):Lerp(tone, if rarityLevel >= 2 then 0.22 else 0.5)
+	local viewport = if workspace.CurrentCamera then workspace.CurrentCamera.ViewportSize else Vector2.new(720, 900)
+	local revealHeight = math.floor(math.min(if rarityLevel >= 3 then 280 else 254, math.max(185, viewport.Y * 0.41)))
+	local revealWidth = math.floor(revealHeight * 0.7)
 	local center = UDim2.fromScale(0.5, 0.46)
-	local revealWidth = if rarityLevel >= 3 then 208 else 186
-	local revealHeight = if rarityLevel >= 3 then 246 else 226
+	local imageId = AssetIds["CardArt/" .. tostring(card.id)]
+	local artImage = if imageId then "rbxassetid://" .. tostring(imageId)
+		elseif type(card.image) == "string" and card.image ~= "" then card.image
+		elseif type(card.stageArt) == "string" and AssetIds[card.stageArt] then "rbxassetid://" .. tostring(AssetIds[card.stageArt])
+		else ""
+
+	-- [등급 광륜] 고급 이상일 때만 빛살을 추가한다. 텍스처·반복 루프·파츠를 만들지 않는다.
+	local rayCount = if rarityLevel >= 4 then 6 elseif rarityLevel >= 2 then 4 else 0
+	for i = 1, rayCount do
+		local ray = Instance.new("Frame")
+		ray.Name = "RarityRay"
+		ray.AnchorPoint = Vector2.new(0.5, 0.5)
+		ray.Position = center
+		ray.Size = UDim2.fromOffset(9, revealHeight * 0.45)
+		ray.Rotation = (i - 1) * 180 / rayCount
+		ray.BackgroundColor3 = gold
+		ray.BackgroundTransparency = 0.69
+		ray.BorderSizePixel = 0
+		ray.ZIndex = 5
+		ray.Parent = g
+		task.delay(0.38, function()
+			if ray.Parent then
+				TS:Create(ray, TweenInfo.new(0.78, Enum.EasingStyle.Quad), {
+					Size = UDim2.fromOffset(3, revealHeight * 1.48), BackgroundTransparency = 1,
+				}):Play()
+			end
+		end)
+	end
+
 	local frame = Instance.new("Frame")
-	frame.Name = "KnowledgeCardReveal"
+	frame.Name = "AcquiredCardReveal"
 	frame.AnchorPoint = Vector2.new(0.5, 0.5)
 	frame.Position = center
-	frame.Size = UDim2.fromOffset(58, 76)
+	frame.Size = UDim2.fromOffset(58, 83)
 	frame.BackgroundColor3 = Color3.fromRGB(234, 212, 166)
 	frame.BorderSizePixel = 0
-	frame.Rotation = -5
+	frame.Rotation = -7
+	frame.ClipsDescendants = true
 	frame.ZIndex = 8
 	frame.Parent = g
 	corner(frame, 10)
@@ -8683,30 +8715,74 @@ function H.showCardGain(card, moreCount)
 	local art = Instance.new("ImageLabel")
 	art.Name = "ApprovedCardArt"
 	art.BackgroundTransparency = 1
-	art.Position = UDim2.fromOffset(10, 12)
-	art.Size = UDim2.new(1, -20, 1, -71)
-	art.Image = if AssetIds["CardArt/" .. tostring(card.id)] then
-		"rbxassetid://" .. tostring(AssetIds["CardArt/" .. tostring(card.id)]) else ""
+	art.Position = UDim2.fromOffset(8, 9)
+	art.Size = UDim2.new(1, -16, 1, -76)
+	art.Image = artImage
+	art.ImageTransparency = 1
 	art.ScaleType = Enum.ScaleType.Fit
 	art.ZIndex = 9
 	art.Parent = frame
+	if artImage == "" then
+		local missing = Instance.new("TextLabel")
+		missing.Name = "ArtworkPending"
+		missing.BackgroundTransparency = 1
+		missing.Position = art.Position
+		missing.Size = art.Size
+		missing.Font = Enum.Font.Antique
+		missing.TextColor3 = Color3.fromRGB(98, 75, 49)
+		missing.TextSize = 15
+		missing.TextWrapped = true
+		missing.Text = "원화 준비 중"
+		missing.ZIndex = 9
+		missing.Parent = frame
+	end
 	local name = Instance.new("TextLabel")
 	name.Name = "CardName"
 	name.BackgroundTransparency = 1
-	name.Position = UDim2.new(0, 6, 1, -56)
-	name.Size = UDim2.new(1, -12, 0, 29)
+	name.Position = UDim2.new(0, 6, 1, -61)
+	name.Size = UDim2.new(1, -12, 0, 31)
 	name.Font = Enum.Font.GothamBold
-	name.TextSize = 19
+	name.TextSize = 18
 	name.TextColor3 = Color3.fromRGB(52, 36, 24)
 	name.TextTruncate = Enum.TextTruncate.AtEnd
-	name.Text = tostring(card.name or "새 지식")
+	name.Text = tostring(card.name or "새 카드")
 	name.ZIndex = 9
 	name.Parent = frame
-	-- [카드 이름] 중심 원화와 별개로 큰 한글 제목을 유지하여 긴 카드명도 알아볼 수 있게 한다.
+	local rarity = Instance.new("TextLabel")
+	rarity.BackgroundTransparency = 1
+	rarity.Position = UDim2.new(0, 6, 1, -29)
+	rarity.Size = UDim2.new(1, -12, 0, 22)
+	rarity.Font = Enum.Font.GothamBold
+	rarity.TextSize = 13
+	rarity.TextColor3 = Color3.fromRGB(75, 54, 34)
+	rarity.Text = if isCombat then
+		(if card.isHero then "영웅 카드" elseif card.isSpecial then "특수 카드" else "전투 카드") .. " · 덱에 보관"
+		else (GAIN_RARITY[card.rarity] or "지식") .. " · 서재에 보관"
+	rarity.ZIndex = 9
+	rarity.Parent = frame
+
+	-- [봉인 해제] 황동 문장으로 뒷면을 먼저 보여 주고, 가로 축을 좁혔다 펴며 실제 원화를 드러낸다.
+	local seal = Instance.new("TextLabel")
+	seal.Name = "CardSeal"
+	seal.Size = UDim2.fromScale(1, 1)
+	seal.BackgroundColor3 = Color3.fromRGB(62, 47, 37)
+	seal.BorderSizePixel = 0
+	seal.Font = Enum.Font.Antique
+	seal.Text = "✦"
+	seal.TextSize = 60
+	seal.TextColor3 = gold
+	seal.ZIndex = 11
+	seal.Parent = frame
+	corner(seal, 10)
+	local sealGradient = Instance.new("UIGradient")
+	sealGradient.Color = ColorSequence.new(Color3.fromRGB(103, 72, 49), Color3.fromRGB(44, 39, 41))
+	sealGradient.Rotation = 35
+	sealGradient.Parent = seal
+
 	local spotlightName = Instance.new("TextLabel")
 	spotlightName.Name = "CardGainTitle"
 	spotlightName.AnchorPoint = Vector2.new(0.5, 0)
-	spotlightName.Position = UDim2.new(0.5, 0, 0.46, 123)
+	spotlightName.Position = UDim2.new(0.5, 0, 0.46, math.floor(revealHeight * 0.5) + 12)
 	spotlightName.Size = UDim2.new(0.88, 0, 0, 38)
 	spotlightName.BackgroundTransparency = 1
 	spotlightName.Font = Enum.Font.GothamBold
@@ -8715,20 +8791,12 @@ function H.showCardGain(card, moreCount)
 	spotlightName.TextStrokeColor3 = Color3.fromRGB(33, 25, 18)
 	spotlightName.TextStrokeTransparency = 0.74
 	spotlightName.TextWrapped = true
-	spotlightName.Text = tostring(card.name or "새 지식")
+	spotlightName.TextTruncate = Enum.TextTruncate.AtEnd
+	spotlightName.Text = tostring(card.name or "새 카드")
 	spotlightName.TextTransparency = 1
 	spotlightName.ZIndex = 12
 	spotlightName.Parent = g
-	local rarity = Instance.new("TextLabel")
-	rarity.BackgroundTransparency = 1
-	rarity.Position = UDim2.new(0, 6, 1, -28)
-	rarity.Size = UDim2.new(1, -12, 0, 22)
-	rarity.Font = Enum.Font.GothamBold
-	rarity.TextSize = 15
-	rarity.TextColor3 = Color3.fromRGB(75, 54, 34)
-	rarity.Text = (GAIN_RARITY[card.rarity] or "지식") .. " · 서재에 보관"
-	rarity.ZIndex = 9
-	rarity.Parent = frame
+
 	local rings = {}
 	for i = 1, 2 + (if rarityLevel >= 3 then 2 elseif rarityLevel >= 2 then 1 else 0) do
 		local ring = Instance.new("Frame")
@@ -8748,21 +8816,23 @@ function H.showCardGain(card, moreCount)
 		table.insert(rings, { ring, stroke })
 	end
 	local caption = Instance.new("TextLabel")
-	caption.Name = "KnowledgeAcquired"
+	caption.Name = "CardAcquired"
 	caption.AnchorPoint = Vector2.new(0.5, 0)
-	caption.Position = UDim2.new(0.5, 0, 0.46, -166)
-	caption.Size = UDim2.fromOffset(260, 36)
+	local captionY = -math.floor(revealHeight * 0.5) - 55
+	caption.Position = UDim2.new(0.5, 0, 0.46, captionY - 10)
+	caption.Size = UDim2.new(0.92, 0, 0, 36)
 	caption.BackgroundTransparency = 1
 	caption.Font = Enum.Font.GothamBold
 	caption.TextSize = 19
 	caption.TextColor3 = gold
 	caption.TextStrokeColor3 = Color3.fromRGB(18, 15, 12)
 	caption.TextStrokeTransparency = 0.82
-	caption.Text = if (moreCount or 0) > 0 then
-		string.format("지식 발견! · 추가 %d장", moreCount) else "새 지식 발견!"
+	local headline = if card.isDuplicate then "카드 추가 획득!" elseif isCombat then "새 전투 카드 획득!" else "새 지식 발견!"
+	caption.Text = if (moreCount or 0) > 0 then string.format("%s · 추가 %d장", headline, moreCount) else headline
 	caption.ZIndex = 10
 	caption.Parent = g
-	local sparkleCount = 4 + rarityLevel * 4
+
+	local sparkleCount = if viewport.X < 540 then 4 + rarityLevel * 2 else 6 + rarityLevel * 3
 	for i = 1, sparkleCount do
 		local angle = (i - 1) * math.pi * 2 / sparkleCount
 		local glint = Instance.new("TextLabel")
@@ -8777,20 +8847,18 @@ function H.showCardGain(card, moreCount)
 		glint.TextColor3 = gold
 		glint.ZIndex = 7
 		glint.Parent = g
-		TS:Create(glint, TweenInfo.new(0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-			Position = UDim2.new(0.5, math.cos(angle) * (115 + rarityLevel * 13), 0.46, math.sin(angle) * (95 + rarityLevel * 9)),
+		TS:Create(glint, TweenInfo.new(0.85, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+			Position = UDim2.new(0.5, math.cos(angle) * (110 + rarityLevel * 12), 0.46, math.sin(angle) * (94 + rarityLevel * 8)),
 			TextTransparency = 1,
 		}):Play()
 	end
-	-- [등급별 효과음] 등록된 게임 사운드만 재사용. 높은 등급일수록 2차 울림이 추가된다.
-	Sfx.play("sfx_card_coin", if rarityLevel >= 2 then 0.75 else 0.46, 1 + rarityLevel * 0.035)
-	if rarityLevel >= 2 then Sfx.play("sfx_bell", 0.22 + rarityLevel * 0.09, 1.12) end
-	if rarityLevel >= 3 then Sfx.play("sfx_fanfare", if rarityLevel == 4 then 0.72 else 0.38, 1.02) end
-	TS:Create(frame, TweenInfo.new(0.46, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+
+	-- [효과음] 기존 등록 음원만 사용하며 모바일에서 과도하게 중첩하지 않는다.
+	Sfx.play("sfx_card_deal", 0.35, 1.05, "sfx_book_turn")
+	if rarityLevel >= 2 then Sfx.play("sfx_card_coin", 0.5, 1 + rarityLevel * 0.035) end
+	if rarityLevel >= 3 then task.delay(0.48, Sfx.play, "sfx_fanfare", if rarityLevel == 4 then 0.64 else 0.35, 1.02) end
+	TS:Create(frame, TweenInfo.new(0.36, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 		Size = UDim2.fromOffset(revealWidth, revealHeight), Rotation = 0,
-	}):Play()
-	TS:Create(spotlightName, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-		TextTransparency = 0,
 	}):Play()
 	for i, pair in rings do
 		TS:Create(pair[1], TweenInfo.new(0.85 + i * 0.13, Enum.EasingStyle.Quart), {
@@ -8798,13 +8866,42 @@ function H.showCardGain(card, moreCount)
 		}):Play()
 		TS:Create(pair[2], TweenInfo.new(0.9 + i * 0.15), { Transparency = 1 }):Play()
 	end
-	TS:Create(caption, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-		Position = UDim2.new(0.5, 0, 0.46, -148),
+	TS:Create(caption, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.5, 0, 0.46, captionY),
 	}):Play()
-	task.delay(1.4, function()
+
+	task.delay(0.37, function()
+		if not frame.Parent then return end
+		TS:Create(frame, TweenInfo.new(0.13, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+			Size = UDim2.fromOffset(6, revealHeight),
+		}):Play()
+		task.delay(0.14, function()
+			if not frame.Parent then return end
+			seal:Destroy()
+			TS:Create(frame, TweenInfo.new(0.27, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+				Size = UDim2.fromOffset(revealWidth, revealHeight),
+			}):Play()
+			TS:Create(art, TweenInfo.new(0.25), { ImageTransparency = 0 }):Play()
+			TS:Create(spotlightName, TweenInfo.new(0.28), { TextTransparency = 0 }):Play()
+			local sheen = Instance.new("Frame")
+			sheen.Name = "CardLightSweep"
+			sheen.Position = UDim2.fromOffset(-36, 0)
+			sheen.Size = UDim2.new(0, 23, 1, 0)
+			sheen.Rotation = 13
+			sheen.BorderSizePixel = 0
+			sheen.BackgroundColor3 = Color3.fromRGB(255, 249, 221)
+			sheen.BackgroundTransparency = 0.69
+			sheen.ZIndex = 10
+			sheen.Parent = frame
+			TS:Create(sheen, TweenInfo.new(0.48, Enum.EasingStyle.Quad), {
+				Position = UDim2.new(1, 36, 0, 0), BackgroundTransparency = 1,
+			}):Play()
+		end)
+	end)
+	task.delay(1.65, function()
 		if not g.Parent then return end
-		Sfx.play("sfx_book_turn", 0.32)
-		local icon = H.dockButtons and H.dockButtons.codex
+		Sfx.play("sfx_book_turn", 0.27)
+		local icon = if isCombat then hudTop:FindFirstChild("DeckButton") else H.dockButtons and H.dockButtons.codex
 		local destination = UDim2.new(1, -44, 0, 70)
 		if icon and icon.Parent and icon.Visible and icon.AbsoluteSize.X > 0 then
 			destination = UDim2.fromOffset(
@@ -8812,7 +8909,7 @@ function H.showCardGain(card, moreCount)
 				icon.AbsolutePosition.Y + icon.AbsoluteSize.Y * 0.5)
 		end
 		TS:Create(frame, TweenInfo.new(0.75, Enum.EasingStyle.Quint, Enum.EasingDirection.In), {
-			Position = destination, Size = UDim2.fromOffset(26, 34),
+			Position = destination, Size = UDim2.fromOffset(26, 37),
 			Rotation = 9, BackgroundTransparency = 1,
 		}):Play()
 		TS:Create(art, TweenInfo.new(0.66), { ImageTransparency = 1 }):Play()
@@ -8822,11 +8919,10 @@ function H.showCardGain(card, moreCount)
 		TS:Create(caption, TweenInfo.new(0.55), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
 		TS:Create(spotlightName, TweenInfo.new(0.45), { TextTransparency = 1 }):Play()
 	end)
-	task.delay(2.3, function()
+	task.delay(2.55, function()
 		if g.Parent then g:Destroy() end
 	end)
 end
-
 -- 개발 확인용: workspace 속성 DevSail 에 항구 id 를 넣으면 그 항구로 출항 연출을 보여 준다
 workspace:GetAttributeChangedSignal("DevSail"):Connect(function()
 	local id = workspace:GetAttribute("DevSail")
@@ -8935,12 +9031,18 @@ end)
 -- 개발 확인용: workspace 속성 DevCardGain 에 카드 id 를 넣으면 그 카드의 습득 연출을 보여 준다
 workspace:GetAttributeChangedSignal("DevCardGain"):Connect(function()
 	local id = workspace:GetAttribute("DevCardGain")
-	if type(id) ~= "string" or id == "" or not (view and view.codex) then return end
-	for _, c in view.codex.cards do
+	if type(id) ~= "string" or id == "" or not view then return end
+	for _, c in (view.codex and view.codex.cards or {}) do
 		if c.id == id then
 			H.showCardGain(if c.found then c else { id = c.id, name = c.name ~= "???" and c.name or id, field = c.field, rarity = c.rarity, description = c.description, found = true }, 0)
-			break
+			return
 		end
+	end
+	local CB = require(Shared:WaitForChild("CardBook"))
+	local def = CB.def(id)
+	if def then
+		H.showCardGain({ id = id, name = def.name, rarity = if def.hero then "Legendary" else "Common",
+			gainType = "combat", isHero = def.hero == true, isSpecial = CB.isSpecial(id), stageArt = def.stage and def.stage.art }, 0)
 	end
 end)
 
@@ -8948,23 +9050,59 @@ end)
 -- 강제 전면 이벤트/사운드/클릭 대기는 없으며, 도감과 덱 상세 기능은 그대로 이용할 수 있다.
 function H.checkNewCards()
 	local cards = view and view.codex and view.codex.cards
-	if not cards then return end
-	-- [저장 보호] 첫 서버 스냅샷은 기존 도감 상태만 기준선으로 읽어 재접속 때 획득 연출을 반복하지 않는다.
-	local firstSnapshot = H.seenCards == nil
-	H.seenCards = H.seenCards or {}
-	local acquired = {}
-	for _, c in cards do
-		if c.found and not H.seenCards[c.id] then
-			H.seenCards[c.id] = true
-			if not firstSnapshot then table.insert(acquired, c) end
+	local owned = view and view.cardbook and view.cardbook.owned
+	if not cards and type(owned) ~= "table" then return end
+	-- [저장 보호] 최초 서버 스냅샷은 양쪽 컬렉션의 기준선으로만 삼아 재접속 중복 연출을 막는다.
+	local acquired, gainedIds = {}, {}
+	if cards then
+		local firstKnowledgeSnapshot = H.seenCards == nil
+		H.seenCards = H.seenCards or {}
+		for _, c in cards do
+			if c.found and not H.seenCards[c.id] then
+				H.seenCards[c.id] = true
+				if not firstKnowledgeSnapshot then
+					table.insert(acquired, { card = c, extra = 0 })
+					gainedIds[c.id] = true
+				end
+			end
 		end
 	end
+	-- [전투 카드] 서버가 실제로 늘려 준 보유 수만 감지한다. 지식카드와 같은 ID는 이중 표시하지 않는다.
+	-- 이미 있던 카드의 추가 1장도 획득으로 표시하되, 강화 등 수량 감소로는 연출하지 않는다.
+	if type(owned) == "table" then
+		local firstCombatSnapshot = H.seenCombatCards == nil
+		local oldOwned = H.seenCombatCards or {}
+		if not firstCombatSnapshot then
+			local CB = require(Shared:WaitForChild("CardBook"))
+			for id, amount in owned do
+				if type(id) == "string" and type(amount) == "number" and amount > (oldOwned[id] or 0)
+					and not gainedIds[id] then
+					local def = CB.def(id)
+					if def then
+						local oldCount = oldOwned[id] or 0
+						table.insert(acquired, {
+							card = {
+								id = id, name = def.name,
+								rarity = if def.hero then "Legendary" else "Common",
+								gainType = "combat", isHero = def.hero == true,
+								isSpecial = CB.isSpecial(id),
+								isDuplicate = oldCount > 0,
+								stageArt = def.stage and def.stage.art,
+							},
+							extra = math.max(0, amount - oldCount - 1),
+						})
+						gainedIds[id] = true
+					end
+				end
+			end
+		end
+		H.seenCombatCards = table.clone(owned)
+	end
 	if #acquired == 0 then return end
-	-- [등급 보존] 같은 응답에서 여러 장을 얻었더라도 각각 실제 등급과 이름으로 보여 준다.
-	-- 게임 조작은 막지 않고 장면이 끝난 뒤 기존 큐에서 순서대로 공개한다.
+	-- [단일 연출 큐] 퀘스트/전투/카드선택 중 끼어들지 않고, 획득순으로 비차단 표시한다.
 	H.cardGainQueue = H.cardGainQueue or {}
-	for _, gainedCard in acquired do
-		table.insert(H.cardGainQueue, { card = gainedCard, extra = 0 })
+	for _, entry in acquired do
+		table.insert(H.cardGainQueue, entry)
 	end
 	if H.cardGainPlaying then return end
 	H.cardGainPlaying = true
@@ -8979,12 +9117,11 @@ function H.checkNewCards()
 			if not player.Parent then break end
 			local found = table.remove(H.cardGainQueue, 1)
 			H.showCardGain(found.card, found.extra)
-			task.wait(2.4)
+			task.wait(2.65)
 		end
 		H.cardGainPlaying = false
 	end)
 end
-
 local function tierRows(list: { any }, scope: string, labelFmt: string)
 	for _, t in list do
 		add(function()
