@@ -1440,6 +1440,16 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						or assetName == "outfit_stole" or assetName == "outfit_cuff") and part.Material == Enum.Material.SmoothPlastic then
 						part.Material = Enum.Material.Fabric
 					end
+					-- [가죽 신발·벨트] 기본 플라스틱으로 들어온 단색 가죽만 복원한다.
+					-- 버클·리벳 등 별도 금속 파츠와 원본 텍스처/PBR 맵은 변경하지 않는다.
+					if npcOutfit and (assetName == "outfit_boot" or assetName == "outfit_belt")
+						and part.Material == Enum.Material.SmoothPlastic then
+						local trim = part.Name:lower()
+						if not trim:find("buckle", 1, true) and not trim:find("metal", 1, true)
+							and not trim:find("stud", 1, true) and not trim:find("rivets", 1, true) then
+							part.Material = Enum.Material.Leather
+						end
+					end
 					-- [개인별 천·피혁 마감] 원본 표면 재질과 금속 장식·봉제선은 그대로 둔다.
 					-- 텍스처 없는 이미 분류된 직물만 지역 고유 옷색을 부드럽게 섞는다.
 					if npcOutfit and detailAllowed and part.Material == Enum.Material.Fabric
