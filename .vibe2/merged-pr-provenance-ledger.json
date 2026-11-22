@@ -315049,11 +315049,127 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_2121a9e3f0df09428c17637a",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14248",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "a55d8add7b86bad8e976d1042100e2b67fc7bb0f",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14248,
+        "baseBranch": "main",
+        "headBranch": "owner/mare-fifth-depth-qa-repair-20261122",
+        "baseSha": "a55d8add7b86bad8e976d1042100e2b67fc7bb0f",
+        "headSha": "c91419b5de130f9bbfd26e4ca4f27011249395b1",
+        "mergeCommitSha": "7abb913f18d68b91d6c3729caf9e5bb7bde1c3dc",
+        "mergedAt": "2026-11-22T08:29:02Z",
+        "authorLogin": "hans1177",
+        "titleHash": "2546ea91a8f55b573b9f1fc8ab59c8a8c3ea4274347d066de842a7392b568552",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/mare-fifth-depth-qa-repair-20261122",
+        "candidateSha": "c91419b5de130f9bbfd26e4ca4f27011249395b1"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "codingRelevantFileCount": 1,
+        "addedLineCount": 3,
+        "deletedLineCount": 3,
+        "changedFiles": [
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14248",
+        "merge-commit:7abb913f18d68b91d6c3729caf9e5bb7bde1c3dc",
+        "base-main:a55d8add7b86bad8e976d1042100e2b67fc7bb0f"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2527
+    "total": 2528
   }
 }
