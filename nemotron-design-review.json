@@ -1,16 +1,16 @@
 {
   "version": 3,
-  "provider": "NVIDIA",
+  "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "46ae1e5f88b00108ee23ea276d82113c8766a624",
-  "status": "CANDIDATE_EDITED",
-  "selectedRole": "MOTION",
+  "sourceRevision": "4c18b2702ad780e63ba76eebeb2c796fa9dd76fe",
+  "status": "REVIEWED_NO_VERIFIED_EDIT",
+  "selectedRole": "GENERAL",
   "usageWindow": {
     "day": "2026-11-22",
     "calls": {
-      "NVIDIA": 4,
+      "NVIDIA": 5,
       "GEMINI": 12,
-      "OPENROUTER": 10
+      "OPENROUTER": 12
     },
     "windowIds": {
       "NVIDIA": "2026-11-22",
@@ -25,20 +25,21 @@
   },
   "cooldowns": {
     "GEMINI_FLASH": "2026-11-22T13:30:36.242Z",
-    "OPENROUTER_NEMOTRON": "2026-11-22T02:37:43.715Z",
-    "OPENROUTER_OMNI": "2026-11-22T02:31:43.973Z"
+    "OPENROUTER_GEMMA26": "2026-11-22T02:42:48.199Z",
+    "NVIDIA_VL": "2026-11-22T03:11:51.027Z",
+    "OPENROUTER_GEMMA": "2026-11-22T02:42:51.748Z"
   },
   "quotaForecast": {
     "NVIDIA": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 4,
-      "remainingLocal": 8,
-      "effectiveRemaining": 8,
-      "regularWorkRemaining": 5,
+      "localUsed": 5,
+      "remainingLocal": 7,
+      "effectiveRemaining": 7,
+      "regularWorkRemaining": 4,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 1.45,
-      "estimatedHoursToLocalCap": 5.5,
+      "estimatedCallsPerHour": 1.79,
+      "estimatedHoursToLocalCap": 3.9,
       "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -54,7 +55,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 0.76,
+      "estimatedCallsPerHour": 0.75,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-22T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
@@ -66,13 +67,13 @@
     "OPENROUTER": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 30,
-      "localUsed": 10,
-      "remainingLocal": 20,
-      "effectiveRemaining": 20,
-      "regularWorkRemaining": 14,
+      "localUsed": 12,
+      "remainingLocal": 18,
+      "effectiveRemaining": 18,
+      "regularWorkRemaining": 12,
       "emergencyReserveRemaining": 6,
-      "estimatedCallsPerHour": 4.34,
-      "estimatedHoursToLocalCap": 4.6,
+      "estimatedCallsPerHour": 4.89,
+      "estimatedHoursToLocalCap": 3.7,
       "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -84,100 +85,47 @@
   "accountQuota": null,
   "attempts": [
     {
-      "id": "OPENROUTER_OMNI",
-      "status": "EMPTY_OUTPUT_TOKEN_LIMIT",
+      "id": "OPENROUTER_GEMMA26",
+      "status": "HTTP_429",
       "provider": "OPENROUTER",
-      "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
+      "model": "google/gemma-4-26b-a4b-it:free"
     },
     {
       "id": "NVIDIA_VL",
       "status": "OK",
       "provider": "NVIDIA",
       "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "REVIEW_INVALID",
+      "failureSignature": "EDIT_NOT_VISUAL_OR_NOT_IN_POLICY"
+    },
+    {
+      "id": "OPENROUTER_GEMMA",
+      "status": "HTTP_429",
+      "provider": "OPENROUTER",
+      "model": "google/gemma-4-31b-it:free"
     }
   ],
   "frames": [
     {
-      "name": "field_actor_after_motion-0.jpg",
-      "sha256": "6d3b2cb65dd9822ad33eb5187032ea97f35e545ee495055678bed5f33e85bbda"
+      "name": "b1_start-0.jpg",
+      "sha256": "e72cb0b26a23cef52ae484d9f4c3a9e79478a084415d895478744b192eaba3e2"
     },
     {
-      "name": "field_motion_smooth_icons-0.jpg",
-      "sha256": "6dd0d92bdbdb8bb880eecf9027b09f0450c45686b5c8f6ff27f000ce89099ad8"
+      "name": "b2_mid-0.jpg",
+      "sha256": "211a6b945957809dc6e80273453f7ca42046326911a10540f0872e6ff8b5d5ad"
     },
     {
-      "name": "harbor_motion_attack-0.jpg",
-      "sha256": "78b3ec9d8cdcfd5f7bcaa86918b4c8128fcdefefd98111b9244b67cd6f79d7d6"
+      "name": "c00_start-0.jpg",
+      "sha256": "c17ca0f2e34da17aebae8ae6cf810ae9b84ae321be1d2d9b6c50466e335fd301"
     },
     {
-      "name": "harbor_motion_cheer-0.jpg",
-      "sha256": "b4c1d5614162e11e11bcb4921d3b8a24ae1b9b18b919b8701cbb8d6f48d86296"
+      "name": "intro_center_early-0.jpg",
+      "sha256": "3cf7096eb28d3eb77ae95ab1af9517d464872b21ffae087119650f64598eafdf"
     }
   ],
-  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
-  "rawResponseSha256": "69effcf0ad8511380c809b09416362314ccd57a57ceb0687834b72dbe5a7c296",
-  "issues": [
-    {
-      "category": "ui",
-      "severity": "medium",
-      "screenshot": "field_actor_after_motion-0.jpg",
-      "evidenceSha256": "c57bddcb9da18e3af681960ea3415dfecb9253f9b243fb132d601a8d2d6b61df"
-    },
-    {
-      "category": "hud",
-      "severity": "medium",
-      "screenshot": "field_motion_smooth_icons-0.jpg",
-      "evidenceSha256": "f032b4c7b561889c9709c50fc5d10105fdf4a5cfad9057b1df184fe7956bb1b1"
-    },
-    {
-      "category": "npc-face",
-      "severity": "medium",
-      "screenshot": "harbor_motion_attack-0.jpg",
-      "evidenceSha256": "ea5af9d38a9d47f59397be0d40f8abc29223722fd1b5af88eba97bde84705d0c"
-    },
-    {
-      "category": "npc-clothing",
-      "severity": "medium",
-      "screenshot": "harbor_motion_cheer-0.jpg",
-      "evidenceSha256": "c9e1b82d3c453945d05317f73b4ae1f6ba3d9127feb818d1cd36c9e9196afb22"
-    },
-    {
-      "category": "material",
-      "severity": "medium",
-      "screenshot": "harbor_motion_attack-0.jpg",
-      "evidenceSha256": "dddeabb5f8fbd37df5ba356a8ecd1ed932bad90044df56ff554b362134dedc93"
-    },
-    {
-      "category": "lighting",
-      "severity": "low",
-      "screenshot": "field_actor_after_motion-0.jpg",
-      "evidenceSha256": "77cfbdb40284283e7d45433568e234b82d0b25c5e5f655f17e37dd724a5f888a"
-    }
-  ],
-  "edits": [
-    {
-      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
-      "category": "ui",
-      "screenshot": "field_actor_after_motion-0.jpg",
-      "beforeSha256": "7f9b6a75f1101018b97993011a52a181bfd29dbd1c6142cd2086d6f293230aa8",
-      "afterSha256": "f5ad052106c3b848cd554ee1846bd785648ee4b11dd2a07fc099aa2bd114e5b0"
-    },
-    {
-      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
-      "category": "hud",
-      "screenshot": "field_motion_smooth_icons-0.jpg",
-      "beforeSha256": "bc0ce08c594d34e589531b3827eecd115e5f50ed788c19c1163cb4f3e6b4bd38",
-      "afterSha256": "971de149956036f472f15bf68cadb29f836ec94e8971e11b568a51003c9d3804"
-    }
-  ],
-  "sourceHashes": [
-    {
-      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
-      "beforeSha256": "9eb56a56adc3d4e3267b139075dd3825a54b7ffe931a307febe9d26acbde26a7",
-      "afterSha256": "29dbfbd825db93ae3e570f4a78845840815702a8e6d2e46eada9ddebcb82bac0"
-    }
-  ],
-  "candidateOnly": true,
   "independentQaPassed": false,
   "afterStudioPassed": false,
   "releasePassed": false
