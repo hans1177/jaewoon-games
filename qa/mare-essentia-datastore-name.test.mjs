@@ -3653,3 +3653,48 @@ test('대항해시대 4차 하천·절벽·수관 CC0 등록 및 지형 시차 �
   assert.match(naval,/NavalWakeSourceCount/);
   assert.match(naval,/cliff-large-stone/);
 });
+
+// [4차 추가 원본 8종] Kenney CC0 실물 지형의 원본 해시·등록 권한·기존 모바일 예산을 함께 검증한다.
+test('대항해시대 4차 원경 능선·자연 메시 8종·해안 시각 모델 검증',()=>{
+  const root='roblox-games/mare-essentia/';
+  const registry=JSON.parse(readText(root+'assets-registered.json')).assets;
+  const ids=readText(root+'src/ReplicatedStorage/Shared/AssetIds.luau');
+  const originals={
+    'tree-plateau':'f71ffc832f57211786833401e5e5a980f3b9188e',
+    'tree-pinetallc-detailed':'db0568ca14d97917aa0c0fccc17f8feddb0e21e4',
+    'plant-flattall':'892506b42f756ce42a0c0d7dbdadd8c29c07ecc0',
+    'cliff-cornerinnerlarge-rock':'eb7e85430f5a74a1405bfaea14ed1da062a65046',
+    'cliff-cornertop-rock':'2d6be6c8feb0c42d697d48d888fd0c45e996865f',
+    'ground-riverbendbank':'3493554fdeeec1c8409478d7e61c0e0338a31556',
+    'rock-largec':'2cdf83e8a9e681a0b1c6aef4d9933d772d3ebc65',
+    'tree-palmbend':'f1ce81e92c48c980fca2de9f0605702e415efb30',
+  };
+  for(const [name,sha] of Object.entries(originals)){
+    const key='Terrain/'+name, row=registry[key];
+    assert.equal(row?.license,'CC0-1.0',key+' 무료 원본');
+    assert.equal(row?.assetType,'Model',key+' 실물 메시');
+    assert.equal(row?.usePermissionGranted,true,key+' 체험 권한');
+    assert.ok(/^[1-9][0-9]*$/.test(String(row?.assetId||'')),key+' Roblox ID');
+    assert.ok(ids.includes('["'+key+'"] = '+row.assetId),key+' AssetIds 연결');
+    const bytes=fs.readFileSync(root+'assets/terrain/'+name+'.glb');
+    assert.equal(bytes.toString('ascii',0,4),'glTF',key+' 원본 GLB');
+    const actual=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length))
+      .update(Buffer.from([0])).update(bytes).digest('hex');
+    assert.equal(actual,sha,key+' 원본 해시 동일');
+  }
+  const field=readText(root+'src/ReplicatedStorage/Shared/FieldScene.luau');
+  const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
+  assert.match(field,/FieldBackdropCrestCount/);
+  assert.match(field,/local backdropCount = if visualMobile then 2 else 4/);
+  assert.match(field,/terrain:FillBall\(center, r, mat\)/);
+  assert.match(field,/table.insert\(hills, \{ center, r \}\)/);
+  assert.match(field,/AssetIds\["Terrain\/tree-plateau"\]/);
+  assert.match(field,/AssetIds\["Terrain\/tree-pinetallc-detailed"\]/);
+  assert.match(field,/AssetIds\["Terrain\/plant-flattall"\]/);
+  assert.match(field,/AssetIds\["Terrain\/rock-largec"\]/);
+  assert.match(naval,/cliff-cornerinnerlarge-rock/);
+  assert.match(naval,/cliff-cornertop-rock/);
+  assert.match(naval,/local originalCoastCount = #shoreModels/);
+  assert.match(naval,/if \(not MOBILE_VFX or index <= 1\) and AssetIds/);
+  assert.match(naval,/NavalDepthShoreBreakCount/);
+});
