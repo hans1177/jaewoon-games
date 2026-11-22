@@ -1250,21 +1250,22 @@ function FieldScene.start(opts)
 	-- [가까운 시야층] 원신식 원근 구도의 원리만 참고한다. 전경의 낮은 수풀, 중경의
 	-- 강가 돌무더기, 원경의 절벽선을 서로 다른 거리에 배치한다. 중앙 전투 길을 가리지 않는다.
 	do
-		local nearBands = if tropical then {
+		local nearBands = if questTerrain == "coast" and tropical then {
+			-- [열대 해변] 야자수와 승인된 해안 플랫폼을 모바일 2개 전경 슬롯 안에 배치한다.
+			{ "tree-palmbend", 24, -0.66, 0.18, 12 }, { "platform-beach", 19, -0.84, -0.81, -18 },
+			{ "grass-leafslarge", 6, -0.54, 0.16, 7 }, { "coast-grass-patch", 8, 0.74, -0.61, 0 },
+		} elseif tropical then {
 			{ "tree-palmbend", 24, -0.66, 0.18, 12 },
 			{ "grass-leafslarge", 6, -0.54, 0.16, 7 }, { "plant-flattall", 7, 0.52, 0.07, 0 },
 			{ "cliff-cornerlarge-stone", 31, 0.85, -0.47, 35 }, { "ground-riverbendbank", 13, -0.68, -0.54, 19 },
-			
 		} elseif questTerrain == "forest" or questTerrain == "swamp" then {
 			{ "plant-bushlargetriangle", 9, -0.55, 0.22, 0 },
 			{ "plant-bushdetailed", 8, -0.69, 0.11, 9 }, { "tree-tall", 20, 0.71, 0.06, -10 },
 			{ "ground-riverside", 19, -0.83, -0.37, 34 }, { "ground-riverbendbank", 12, 0.65, -0.56, -24 },
-			
 		} elseif questTerrain == "highland" or questTerrain == "mine" or questTerrain == "glacier" or questTerrain == "volcanic" then {
 			{ "cliff-cornerinnertop-rock", 34, -0.85, 0.18, 12 },
 			{ "cliff-blockdiagonal-rock", 29, 0.90, -0.80, -12 }, { "rock-talld", 17, 0.77, 0.09, 0 },
 			{ "cliff-cornerlarge-rock", 39, 0.89, -0.49, -20 }, { "cliff-waterfall-stone", 31, -0.84, -0.70, 0 },
-			
 		} elseif questTerrain == "coast" then {
 			-- [해안 전경] 모바일 두 슬롯 안에 승인된 실제 해변 모델을 넣고 진입로를 비운다.
 			{ "cliff-diagonal-rock", 36, -0.87, 0.08, 12 }, { "platform-beach", 19, -0.84, -0.81, -18 },
