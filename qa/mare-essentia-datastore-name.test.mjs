@@ -3793,7 +3793,9 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.ok(field.includes('half * visualLayoutRng:NextNumber(0.23, 0.33)'),'근경 암석 시야');
   assert.ok(field.includes('local lateral = if band == 0 then 0.16 elseif band == 1 then 0.25 else 0.34'),'근경 식생층');
   assert.ok(!field.includes('else 0.34 end)'), 'Luau if 조건식에 잘못된 end 금지');
-  assert.match(field,/local pz = half \* \(0\.81 - band \* 0\.28\)/,'식생 전후 거리');
+  assert.match(field,/local band = math\.floor\(\(index - 1\) \/ 4\) % 3/,'식생 근경·중경·원경 순환 배치');
+  assert.match(field,/local depthRow = math\.floor\(\(index - 1\) \/ 12\) % 5/,'과밀 대신 깊이방향 분산');
+  assert.match(field,/local pz = half \* \(0\.81 - band \* 0\.28 - depthRow \* 0\.10\)/,'식생 구획별 앞뒤 거리');
   assert.match(field,/local visualLayoutRng = Random\.new\(/,'전경 난수는 전투 시드에서 분리');
   assert.match(field,/local visualTreeCount = treeCount/,'수목 모바일 제한 해제');
   assert.match(field,/local visualRockCount = rockCount/,'암석 모바일 제한 해제');
@@ -3817,6 +3819,9 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/if sceneryBatch >= 12 then/,'프레임별 배치 분산');
   assert.match(field,/if scenicBand == "far" and solid ~= true then d\.CastShadow = false end/,'원경 장식 그림자만 절제');
   assert.match(field,/entry\.tint, entry\.band\)/,'기존 승인 모델 배치에 거리 계층 연결');
+  assert.match(field,/local maxReach = rangeR \* STUD \+ 3 \+ obj\.radius/,'기존 무기 사거리·장식 반경 유지');
+  assert.match(field,/if dx \* dx \+ dz \* dz > maxReach \* maxReach then continue end/,'먼 실물 장식의 공격 판정 조기 제외');
+  assert.match(field,/if AC\.inReach\(rangeR \* STUD \+ 3, arcR, nearDist, angle\) then/,'기존 공격 사거리·각도 최종 판정 보존');
   for(const attr of ['FieldSceneryNearPlaced','FieldSceneryMidPlaced','FieldSceneryFarPlaced']){
     assert.ok(field.includes('"'+attr+'"'),'거리별 실제 배치 기록 '+attr);
   }
