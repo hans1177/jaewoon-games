@@ -188,7 +188,17 @@ jobs:
           registry=json.loads((root/'assets-registered.json').read_text(encoding='utf-8'))['assets']
           ziphash='fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d'
           confirmed=set()
-          for name in ('kenney_rock_largeB','kenney_tree_fat','kenney_mushroom_red'):
+          for name in (
+              'kenney_rock_largeB', 'kenney_tree_fat', 'kenney_mushroom_red',
+              'kenney_mushroom_redGroup', 'kenney_stump_old', 'kenney_stone_smallFlatA',
+              'kenney_rock_largeD', 'kenney_rock_tallE', 'kenney_rock_smallFlatA',
+              'kenney_stone_largeB', 'kenney_path_stoneCircle', 'kenney_tree_defaultDark',
+              'kenney_tree_pinetallD_detailed', 'kenney_tree_palmShort',
+              'kenney_mushroom_tanGroup', 'kenney_stump_roundDetailed',
+              'kenney_plant_bushTriangle', 'kenney_grass_leafs',
+              'kenney_log_stackLarge', 'kenney_ground_riverCorner',
+              'kenney_ground_pathCorner',
+          ):
               original=root/'assets'/'terrain'/(name+'.glb')
               proof=json.loads(pathlib.Path(str(original)+'.license.json').read_text(encoding='utf-8'))
               row=registry.get('Terrain/'+name) or {}
@@ -202,8 +212,8 @@ jobs:
                   raise SystemExit('MARE_NATURE_ID_RIGHTS_OR_ORIGINAL_INVALID:'+name)
               confirmed.add(str(row['assetId']))
               print('MARE_NATURE_ROBLOX_REGISTERED',name,row['assetId'],sha)
-          if len(confirmed)!=3: raise SystemExit('MARE_NATURE_DUPLICATE_ASSET_ID')
-          print('MARE_NATURE_REGISTERED_RIGHTS_VERIFIED=3')
+          if len(confirmed)!=21: raise SystemExit('MARE_NATURE_DUPLICATE_ASSET_ID')
+          print('MARE_NATURE_REGISTERED_RIGHTS_VERIFIED=21')
           print('MARE_NATURE_STUDIO_3D_VISUAL_QA=UNVERIFIED')
           PY
           fi
