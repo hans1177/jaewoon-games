@@ -3830,7 +3830,8 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/sceneryBatch \+= 1/,'실제 로드된 모델만 분산 계수');
   assert.match(field,/if sceneryBatch >= 12 then/,'프레임별 배치 분산');
   assert.match(field,/if solid ~= true then d\.CanQuery = false end/,'비충돌 장식만 물리 쿼리에서 제외');
-  assert.ok(!field.includes('d.RenderFidelity ='),'게임 런타임의 접근 제한 메시 품질 속성 쓰기 금지');
+  assert.match(field,/d\.RenderFidelity = if scenicBand == "far" then Enum\.RenderFidelity\.Performance/,'Studio 실측 확인된 원경 LOD 사용');
+  assert.match(field,/else Enum\.RenderFidelity\.Automatic/,'근·중경 원본 정밀도 유지');
   assert.match(field,/if index % 3 == 0 and not arid then/,'원경 식생만 승인 간결 모델로 선택');
   assert.ok(field.includes('AssetIds["Terrain/" .. simpler]'),'지역에 맞는 기등록 자연 메시만 선택');
   assert.ok(field.includes('AssetIds["Terrain/kenney_rock_smallFlatA"]'),'원경 암석의 기등록 간결 메시만 선택');
@@ -3863,6 +3864,8 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.ok(script.some(row=>row.code?.includes('FIELD_LOW_POLY_VARIANT_MISSING')),'스튜디오 기등록 원경 간결 메시 실제 생성 검사');
   assert.ok(script.some(row=>row.code?.includes('FIELD_LOW_POLY_COUNT_MISMATCH')),'스튜디오 원경 간결 메시 집계 대조');
   assert.ok(script.some(row=>row.code?.includes('lowPolyModels=')),'스튜디오 원경 간결 실물 수 계측');
+  assert.ok(script.some(row=>row.code?.includes('FIELD_LOW_POLY_MESH_MISSING')),'스튜디오 성능형 메시 설정 확인');
+  assert.ok(script.some(row=>row.code?.includes('lowPolyMeshes=')),'스튜디오 성능형 메시 적용 수 계측');
   assert.ok(script.some(row=>row.code?.includes('FIELD_GROUND_MATERIAL_MISMATCH')),'스튜디오 해안 모래 실측');
   assert.ok(script.some(row=>row.code?.includes("FieldQuestTerrainTheme')=='coast")),'해적 소굴의 해안 퀘스트 지형 검사');
 });
