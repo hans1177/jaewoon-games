@@ -3698,3 +3698,49 @@ test('대항해시대 4차 원경 능선·자연 메시 8종·해안 시각 모�
   assert.match(naval,/if \(not MOBILE_VFX or index <= 1\) and AssetIds/);
   assert.match(naval,/NavalDepthShoreBreakCount/);
 });
+
+// [5차 지형 실물 검증] 새로운 배포 구조 없이 공개 CC0 원본 8종과 Roblox 체험권한을 하나의 게이트에서 검사한다.
+test('대항해시대 5차 지형원근 실물 등록·모바일 지형 검증',()=>{
+  const root='roblox-games/mare-essentia/';
+  const db=JSON.parse(readText(root+'assets-registered.json')).assets;
+  const ids=readText(root+'src/ReplicatedStorage/Shared/AssetIds.luau');
+  const originals={
+    'tree-tall':'183c2bd2b4f8fdaaceb94523bcb233132307287f',
+    'tree-thin':'3e959e80ae2a1cf518036005713bf6067cdfc2bb',
+    'plant-bushlargetriangle':'624f5c46e9edd7a7c413ffe621250968be250393',
+    'cliff-diagonal-rock':'5c02a7c3c6682dce820f68188958a66d6c9295f1',
+    'cliff-cornerinnertop-rock':'5a39c65292bcf803a53053069b282a13a49a43de',
+    'rock-talld':'1051df6526955c0e9185c3e666fc952ad9d97a9c',
+    'ground-pathbend':'f1f3da1463157dbb3c73ae82e1e386d9fe42e6e9',
+    'tree-tall-fall':'3851f9d49b5ff496ded56cddef6f23351b6fbc02',
+  };
+  for(const [name,sha] of Object.entries(originals)){
+    const key='Terrain/'+name, asset=db[key];
+    assert.equal(asset?.license,'CC0-1.0',key+' CC0');
+    assert.equal(asset?.assetType,'Model',key+' 실제 GLB 모델');
+    assert.equal(asset?.usePermissionGranted,true,key+' 체험 사용권한');
+    assert.ok(/^[1-9][0-9]*$/.test(String(asset?.assetId||'')),key+' Roblox 번호');
+    assert.ok(ids.includes('["'+key+'"] = '+asset.assetId),key+' 등록 원본');
+    const bytes=fs.readFileSync(root+'assets/terrain/'+name+'.glb');
+    assert.equal(bytes.toString('ascii',0,4),'glTF',key+' 실물 메시');
+    const actual=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length))
+      .update(Buffer.from([0])).update(bytes).digest('hex');
+    assert.equal(actual,sha,key+' Git 원본과 1:1 동일');
+  }
+  const field=readText(root+'src/ReplicatedStorage/Shared/FieldScene.luau');
+  const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
+  assert.match(field,/AssetIds\["Terrain\/tree-tall"\]/);
+  assert.match(field,/AssetIds\["Terrain\/tree-thin"\]/);
+  assert.match(field,/AssetIds\["Terrain\/tree-tall-fall"\]/);
+  assert.match(field,/AssetIds\["Terrain\/rock-talld"\]/);
+  assert.match(field,/AssetIds\["Terrain\/plant-bushlargetriangle"\]/);
+  assert.match(field,/AssetIds\["Terrain\/ground-pathbend"\]/);
+  assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
+  assert.match(field,/local detailCount = if visualMobile then 10 else 24/);
+  assert.match(field,/FieldBackdropCrestCount/);
+  assert.match(naval,/cliff-diagonal-rock/);
+  assert.match(naval,/cliff-cornerinnertop-rock/);
+  assert.match(naval,/cliff-large-stone/);
+  assert.match(naval,/if \(not MOBILE_VFX or index <= 1\) and AssetIds/);
+  assert.match(naval,/NavalDepthShoreBreakCount/);
+});
