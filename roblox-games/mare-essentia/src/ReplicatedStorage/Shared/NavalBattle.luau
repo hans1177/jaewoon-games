@@ -686,18 +686,20 @@ function NavalBattle.play(opts)
 		local distantShips = {}
 		-- [해안 원근층] CC0 절벽 원본 3종만 각 해역 바깥쪽에 추가한다.
 		-- 실제 항구/물가에 존재하던 실물과 같은 수입 경로로 단 한번 로드한다.
+		-- [실물 해안선 4차] 암반 안쪽 굴곡과 윗턱을 높낮이로 교차해 수평선에 두 겹의 윤곽을 만든다.
+		-- 기존 해역별 5개 모델 예산과 모바일 1개 실물 제한은 유지한다.
 		local depthCoast = if coast.id == "caribbean" or coast.id == "tropical" or coast.id == "gold_coast" then {
-			{ "cliff-cornerlarge-stone", 142, -473, -393 }, { "tree-palmbend", 70, -444, -353 },
-			{ "cliff-blockslope-rock", 113, -471, -388 }, { "cliff-top-rock", 92, 464, 401 },
-			{ "tree-palmdetailedtall", 65, 478, 410 },
+			{ "cliff-cornerinnerlarge-rock", 146, -473, -393 }, { "tree-palmbend", 70, -444, -353 },
+			{ "cliff-cornertop-rock", 124, -471, -388 }, { "cliff-top-rock", 92, 464, 401 },
+			{ "rock-largec", 70, 478, 410 },
 		} elseif coast.id == "north_sea" or coast.id == "arctic" or coast.id == "cape" or coast.id == "atlantic_storm" then {
-			{ "cliff-large-stone", 149, 473, -401 }, { "cliff-cornerlarge-stone", 118, -472, 395 },
+			{ "cliff-cornertop-rock", 158, 473, -401 }, { "cliff-cornerinnerlarge-rock", 125, -472, 395 },
 			{ "cliff-waterfall-stone", 137, 489, -425 }, { "cliff-top-rock", 123, -500, 384 },
 			{ "cliff-blockslope-rock", 102, -437, -410 },
 		} else {
-			{ "cliff-cornerlarge-stone", 140, -488, 375 }, { "cliff-large-stone", 117, 495, -413 },
+			{ "cliff-cornerinnerlarge-rock", 146, -488, 375 }, { "cliff-cornertop-rock", 130, 495, -413 },
 			{ "cliff-blockslope-rock", 128, -496, 371 }, { "cliff-large-rock", 136, 486, -401 },
-			{ "cliff-cornerlarge-rock", 98, 438, 410 },
+			{ "rock-largec", 96, 438, 410 },
 		}
 		folder:SetAttribute("NavalDepthCoastCount", 0)
 		task.delay(1.0, function()
