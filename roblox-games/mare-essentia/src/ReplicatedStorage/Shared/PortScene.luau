@@ -3071,7 +3071,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 
 	-- 1) 마을 구획: 큰길 앞 두 줄 + 골목마다 등을 맞댄 두 줄. 집 크기·간격·층수·골목 짜임은 지역 프로필을 따르고,
 	--    항구 발전도가 오를수록 구획(줄)이 늘고 길이 포장되며 집이 높아진다.
-	-- [마을 축소] 실제 경제·저장 필지와 도로 키는 유지하되 시각 주택 규모와 시가지 외곽을 압축한다.
+	-- [마을 땅 크기] 집 모형 크기·경제·저장값은 보존하고, 발전 단계에 맞춰 실제 마을 지면만 조절한다.
 	local isRoyalCity = table.find(info.facilities or {}, "palace") ~= nil
 	local royalPlots = PortBuildings.RoyalCityPlots
 	local royalLot = if isRoyalCity then royalPlots.plotScale[lvl] else 1
@@ -3470,7 +3470,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				-- 폭/깊이도 지역 프로필을 재사용해 운하 상가·목조 민가·중정 주택의 실루엣을 구분한다.
 				local widthBase = fw * (sz / S) * (P.wMul or 1)
 				local depthBase = math.max(widthBase * 0.72, widthBase + (P.dAdd or 0))
-				local sizeScale = houseSizeBands[lvl][sizeClass] * sizeJitter * 0.8
+				local sizeScale = houseSizeBands[lvl][sizeClass] * sizeJitter
 				-- 집 본체뿐 아니라 동아시아 처마·서양 별채·베란다·계단도 여유 폭에 포함한다.
 				-- 기존 필지 점유 반경보다 작게 잡지 않아 모바일 건물 수가 증가하지 않는다.
 				local roofFactor = if style.kit == "eastasia" then 1.62 else 1.46
@@ -3480,7 +3480,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				-- 도로와 맞닿는 대형 주택은 같은 필지에서 한 단계 작은 형태를 선택한다.
 				while sizeClass > 1 and projectedHalf > rowClearance do
 					sizeClass -= 1
-					sizeScale = houseSizeBands[lvl][sizeClass] * sizeJitter * 0.8
+					sizeScale = houseSizeBands[lvl][sizeClass] * sizeJitter
 					projectedHalf = math.max(widthBase, depthBase) * sizeScale * HOUSE_SCALE * (style.sizeMul or 1)
 						* roofFactor * 0.5 + 3.5
 				end
@@ -3796,6 +3796,19 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	-- 근접 건물/도로/시장/왕궁/랜드마크와 겹치면 건너뛰며 주택 건축 슬롯은 점유하지 않는다.
 	local fringeBudget = if wildernessTouch then 7 else 13
 	local outerEdgeZ = 152 + laneOffset + pairsN * laneL + laneWidth * 0.5 + 15
+	-- [발전별 실제 마을 땅] 주거·골목·미개발 변두리의 배치 범위를 따라 TownFloor 판 자체의 폭·깊이를 축소한다.
+	-- 왕궁은 이미 커진 실물 본관·별관을 덮을 최소 폭을 보장하고 농촌 바닥은 건드리지 않는다.
+	local townFloor = folder:FindFirstChild("TownFloor")
+	if townFloor and townFloor:IsA("BasePart") then
+		local townLeft = if isRoyalCity then -635 else math.min(-330, X_END - 32)
+		local townRight = 35 -- 기존 항구 해안선과 접한 동쪽 가장자리를 유지한다.
+		local townHalfZ = math.min(360 + lvl * 80 + 14, math.max(300, outerEdgeZ + 52))
+		townFloor.Size = Vector3.new(townRight - townLeft, townFloor.Size.Y, 2 * townHalfZ)
+		townFloor.Position = Vector3.new((townLeft + townRight) * 0.5, townFloor.Position.Y, 0)
+		folder:SetAttribute("TownLandWidth", math.floor(townRight - townLeft))
+		folder:SetAttribute("TownLandDepth", math.floor(2 * townHalfZ))
+		folder:SetAttribute("TownLandTier", cityTier)
+	end
 	if outerEdgeZ < 360 + lvl * 80 - 20 then
 		for side = -1, 1, 2 do
 			for row = 1, 3 do
@@ -5490,7 +5503,7 @@ function PortScene.build(info, onFacility)
 		-- 실제 건설비가 지출되는 항구만 기존 건설 현장/목수 모션으로 표시한다.
 		info.construction = { to = math.min(5, sceneLevel + 1) }
 	end
-	-- 발전 단계별 신도시 외곽 도로·왕궁 별관을 포함하는 안전 경계. 파트 수 증가 없이 바닥만 확장한다.
+	-- [이동·농촌 안전 범위] 바다의 충돌벽과 농촌 안전망은 기존 좌표를 유지하고, 실제 보이는 마을 땅만 따로 축소한다.
 	local CITY_LIMIT_Z = 360 + sceneLevel * 80
 	currentKey = styleKeyOf(style)
 	currentYear = year
@@ -5499,23 +5512,32 @@ function PortScene.build(info, onFacility)
 		fac[k] = true
 	end
 
-	-- 먼 땅: 잔디 질감은 어둡게 보여서, 색을 밝은 풀색 쪽으로 옮긴다
+	-- [땅 자체 축소] 기존 2600x2600 대형 배경판을 발전도별 작은 지면으로 재조정한다.
+	-- 서쪽 농촌(-1325까지)과 외곽 지형·왕궁·항구는 유지한다. 새 지면 파트를 추가하지 않는다.
+	local farLandLeft = -1470 - (cityTier - 1) * 60
+	local farLandRight = 20
+	local farLandWidth = farLandRight - farLandLeft
+	local farLandDepth = 2 * (CITY_LIMIT_Z + 470)
+	local farLandCenter = (farLandLeft + farLandRight) * 0.5
+	folder:SetAttribute("PortLandWidth", farLandWidth)
+	folder:SetAttribute("PortLandDepth", farLandDepth)
 	local farGround = style.ground:Lerp(Color3.fromRGB(122, 164, 84), 0.7)
 	local plate = workspace:FindFirstChild("Baseplate")
 	if plate then
 		plate.Color = farGround
-		-- 항공 시점에서 땅 모서리가 보이지 않게 넓힌다 (바다는 x>20 이라 서쪽으로만 확장)
-		plate.Size = Vector3.new(2600, plate.Size.Y, 2600)
-		plate.Position = Vector3.new(-1280, plate.Position.Y, 0)
+		-- [발전도별 기존 지면 조정] 실제 땅 크기를 1~6단계별로 변경한다.
+		plate.Size = Vector3.new(farLandWidth, plate.Size.Y, farLandDepth)
+		plate.Position = Vector3.new(farLandCenter, plate.Position.Y, 0)
 		plate.Material = Enum.Material.SmoothPlastic
 	else
 		-- 로블록스 기본 Baseplate가 없는 빌드: 항구 땅(서쪽)과 바다 밑바닥을 직접 만든다
-		local land = part(folder, Vector3.new(2600, 4, 2600), CFrame.new(-1280, -2, 0), farGround, Enum.Material.SmoothPlastic)
+		local land = part(folder, Vector3.new(farLandWidth, 4, farLandDepth),
+			CFrame.new(farLandCenter, -2, 0), farGround, Enum.Material.SmoothPlastic)
 		land.Name = "Ground"
 		part(folder, Vector3.new(1400, 4, 1000), CFrame.new(430, -12, 0), Color3.fromRGB(176, 160, 120), Enum.Material.Sand)
 	end
 
-	-- 마을 바닥판: 땅 사이 구멍이 보이지 않게 마을 전체를 한 장으로 덮고, 발전도에 따라 흙→자갈→포석→화강암→대리석으로 바뀐다.
+	-- 마을 바닥판: 기존 재질 발전은 유지하고, 주거 배치가 확정되면 densify()에서 땅 크기 자체를 다시 줄인다.
 	do
 		local lvlColor = {
 			Color3.fromRGB(176, 146, 104), Color3.fromRGB(170, 158, 140), Color3.fromRGB(160, 156, 150),
