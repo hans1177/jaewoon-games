@@ -3567,6 +3567,35 @@ local function testNations()
 	local fixed: any = E.restoreWorld(bad)
 	check("손상된 국가 저장값을 고쳐서 복원한다", fixed ~= nil and fixed.nations.states.france.ruler.name ~= nil
 		and fixed.nations.states.england.dev.mil <= 100 and fixed.nations.states.england.stab >= 0)
+	-- 자원·편제: 시작부터 나라마다 힘이 다르고, 시간이 지나도 유한하며, 저장·복원된다
+	do
+		local w4: any = E.newWorld({ seed = 777, year = 1650 })
+		local s4: any = w4.nations
+		local powers, distinct, bad = {}, {}, {}
+		for id, S in pairs(s4.states) do
+			table.insert(powers, S.power)
+			distinct[string.format("%.2f", S.power)] = true
+			for _, k in ipairs(N.ARMY_KEYS) do if not (S.forces[k] >= 0 and S.forces[k] < 1e9) then table.insert(bad, id .. k) end end
+			for _, k in ipairs(N.NAVY_KEYS) do if not (S.forces[k] >= 0 and S.forces[k] < 1e9) then table.insert(bad, id .. k) end end
+			for _, k in ipairs(N.RES_KEYS) do if not (S.res[k] >= 0) then table.insert(bad, id .. k) end end
+		end
+		check("시작부터 모든 국가에 편제와 자원 기반이 있다", #powers >= 40 and #bad == 0)
+		local n = 0
+		for _ in pairs(distinct) do n += 1 end
+		check("시작 시점 국력이 나라마다 다르다", n >= 15)
+		local eng, ven = s4.states.england, s4.states.venice
+		check("영국·베네치아는 해군을 가진다", eng ~= nil and eng.forces.line + eng.forces.frigate > 0 and ven ~= nil and ven.navyPower > 0)
+		for _ = 1, 365 * 5 do E.step(w4) end
+		local bad2 = 0
+		for _, S in pairs(s4.states) do
+			if not (S.power >= 0 and S.power < 1e9) or not (S.standing >= 0) then bad2 += 1 end
+		end
+		check("5년 뒤에도 국력·편제가 유한하다", bad2 == 0)
+		local v = N.view(s4, "england")
+		check("국가 조회에 편제·자원·생산력이 들어간다", v.forces ~= nil and v.res ~= nil and v.cap ~= nil and v.power ~= nil)
+		local back4: any = E.restoreWorld(E.snapshot(w4))
+		check("편제가 저장·복원된다", back4 ~= nil and math.abs(back4.nations.states.england.forces.inf - s4.states.england.forces.inf) < 1e-6)
+	end
 end
 testNations()
 

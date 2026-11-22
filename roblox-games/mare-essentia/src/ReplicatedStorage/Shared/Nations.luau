@@ -10,6 +10,8 @@
 -- (판단과 기록만 남긴다). 저장은 w.nations 한 곳에만 하며 기존 저장 키와 필드는 바꾸지 않는다.
 -- 인물·연도는 게임용 값이며 시작 시점 이후는 실제 역사와 달라진다. 이름 없는 나라의 지도자는 가상 인물이다.
 
+local Chains = require(script.Parent.ProductionChains)
+
 local N = {}
 
 N.SCHEMA = 1
@@ -198,6 +200,117 @@ local function normalizeFocus(f)
 	for _, k in ipairs(N.FIELDS) do f[k] = f[k] / sum end
 end
 
+-- ───────── 자원·생산력·군사 편제 ─────────
+-- 나라가 가진 항구의 특산 원자재(t.produces)와 발전도(단계·인구·기술)에서 자원 기반을 계산하고,
+-- 그 기반 위에서 육군(보병·기병·포병·민병)·해군(전열함·프리깃·소형선·수송선)·상비군 규모가 자란다.
+-- 계산 결과는 국가 기록(S.res / S.cap / S.forces)에만 남고 경제 수치(가격·생산·교역)는 바꾸지 않는다.
+N.RES_KEYS = { "food", "timber", "iron", "copper", "coal", "nitrate", "animal", "fiber", "salt", "bullion", "ports", "yards" }
+N.RES_NAMES = { food = "식량", timber = "목재", iron = "철", copper = "구리·주석", coal = "석탄", nitrate = "초석", animal = "목축·가죽", fiber = "섬유·돛천", salt = "소금", bullion = "금·은", ports = "항구", yards = "조선소" }
+N.ARMY_KEYS = { "inf", "cav", "art", "militia" }
+N.NAVY_KEYS = { "line", "frigate", "small", "transport" }
+N.UNIT_NAMES = { inf = "보병", cav = "기병", art = "포병", militia = "민병", line = "전열함", frigate = "프리깃", small = "소형 군선", transport = "수송선" }
+-- 병종 한 단위의 전투력 (천 명 / 척 기준)
+local UNIT_POWER = { inf = 1, cav = 2.4, art = 3.6, militia = 0.3, line = 12, frigate = 4.5, small = 1.2, transport = 0.3 }
+
+local RES_OF = { iron = "iron", copper = "copper", tin = "copper", coal = "coal", nitrate = "nitrate", salt = "salt", silver = "bullion", gold = "bullion",
+	fish = "food", timber = "timber", wool = "animal", leather = "animal", fur = "animal", cotton = "fiber" }
+
+local function emptyRes()
+	local r = {}
+	for _, k in ipairs(N.RES_KEYS) do r[k] = 0 end
+	return r
+end
+
+local function addTownRes(S, t)
+	local weight = 0.6 + 0.2 * (t.stage or 1)
+	local r = S.res
+	r.ports += 1
+	if t.shipyard then r.yards += weight end
+	for good in pairs(t.produces or {}) do
+		local key = RES_OF[good]
+		if not key then
+			local class = Chains.ClassOf[good]
+			if class == "forest" then key = "timber" elseif class == "farm" then key = "food" elseif class == "animal" then key = "animal" elseif class == "fiber" then key = "fiber" end
+		end
+		if key then r[key] += weight end
+	end
+	if t.coastal then r.food += 0.3 * weight end
+end
+
+local function capacities(S)
+	local r, d, m = S.res, S.dev, S.metrics
+	local tech = clamp((m.tech or 1) / 2, 0.3, 1.6)
+	local sci = (d.learn * 0.5 + d.sci * 0.5) / 100
+	local function sat(x, k) return x / (x + k) end -- 0..1, 자원이 많을수록 완만히 포화
+	local cap = {}
+	cap.food = clamp(r.food / math.max(1, m.towns) * 0.8 + 0.3, 0.2, 1.5)
+	cap.arms = (sat(r.iron, 2) * 0.6 + sat(r.copper, 2) * 0.25 + sat(r.coal, 2) * 0.15) * tech * (0.6 + sci * 0.8)
+	cap.powder = math.min(sat(r.nitrate, 1.5), sat(r.coal + 0.4 * r.salt, 2)) * tech * (0.6 + sci * 0.8)
+	cap.ships = (sat(r.timber, 2) * 0.5 + sat(r.fiber, 2) * 0.2 + sat(r.yards, 1.2) * 0.3) * (0.6 + d.navy / 160) * (0.7 + sci * 0.5)
+	cap.horse = sat(r.animal, 3) * (0.7 + d.mil / 200)
+	cap.treasure = sat(r.bullion, 3)
+	return cap
+end
+
+-- 목표 편제를 구하고 현재 편제를 한 걸음 가까이 움직인다
+local function stepForces(st, S, instant)
+	local m, r = S.metrics, S.res
+	S.cap = capacities(S)
+	local cap = S.cap
+	local reg = N.REGIMES[S.regime] or N.REGIMES.absolute
+	local mobil = (reg.mods.mil or 1) * (0.5 + S.stab * 0.5)
+	local manpower = m.pop * 0.0045 * mobil * math.min(1.2, cap.food) -- 먹여 살릴 수 있는 만큼만 징집
+	local milShare = S.focus.mil / math.max(0.05, S.focus.mil + S.focus.navy)
+	local budget = S.fin.income * (0.35 + S.focus.mil * 1.2 + S.focus.navy * 0.8 + (S.war and 0.3 or 0))
+	local armyBudget, navyBudget = budget * milShare, budget * (1 - milShare)
+	-- 병종별 단가(한 단위 유지비) 와 자원 한도
+	local tgt = {}
+	tgt.inf = math.min(armyBudget * 0.55 / 40, manpower * 0.6) * (0.6 + cap.arms * 0.6)
+	tgt.cav = math.min(armyBudget * 0.15 / 110, manpower * 0.1) * cap.horse * 2
+	tgt.art = math.min(armyBudget * 0.2 / 180, manpower * 0.08) * cap.arms * cap.powder * 3
+	tgt.militia = manpower * 0.25 * (1 - milShare * 0.3)
+	tgt.line = math.min(navyBudget * 0.4 / 900, 0.012 * m.pop * 0.01) * cap.ships * 2.5
+	tgt.frigate = math.min(navyBudget * 0.3 / 400, 0.02 * m.pop * 0.01) * cap.ships * 2.5
+	tgt.small = math.min(navyBudget * 0.2 / 120, 0.04 * m.pop * 0.01) * (0.5 + cap.ships)
+	tgt.transport = math.min(navyBudget * 0.1 / 150, 0.03 * m.pop * 0.01) * (0.4 + cap.ships)
+	local F = S.forces
+	local speed = if instant then 1 else 0.08 * (0.6 + (reg.speed or 1) * 0.4)
+	for _, k in ipairs(N.ARMY_KEYS) do F[k] += (tgt[k] - F[k]) * speed end
+	for _, k in ipairs(N.NAVY_KEYS) do F[k] += (tgt[k] - F[k]) * (if instant then 1 else speed * 0.7) end -- 배는 더디게 는다
+	-- 전쟁의 손실
+	if S.war and not instant then
+		local foe = st.states[S.war.foe]
+		local ratio = if foe then math.min(2, math.max(0.5, (foe.power or 1) / math.max(0.1, S.power or 1))) else 1
+		for _, k in ipairs(N.ARMY_KEYS) do F[k] *= 1 - 0.012 * ratio end
+		for _, k in ipairs(N.NAVY_KEYS) do F[k] *= 1 - 0.006 * ratio end
+	end
+	for _, k in ipairs(N.ARMY_KEYS) do F[k] = math.max(0, F[k]) end
+	for _, k in ipairs(N.NAVY_KEYS) do F[k] = math.max(0, F[k]) end
+	-- 전술·교리 수준: 군사 발전도 + 학문·과학
+	F.doctrine = clamp((S.dev.mil * 0.5 + S.dev.learn * 0.25 + S.dev.sci * 0.25) / 100, 0, 1)
+	-- 합산 전투력
+	local army, navy = 0, 0
+	for _, k in ipairs(N.ARMY_KEYS) do army += F[k] * UNIT_POWER[k] end
+	for _, k in ipairs(N.NAVY_KEYS) do navy += F[k] * UNIT_POWER[k] end
+	local quality = 0.7 + F.doctrine * 0.8
+	S.armyPower = army * quality
+	S.navyPower = navy * quality
+	S.power = (S.armyPower * 0.55 + S.navyPower * 0.45) * (0.6 + S.stab * 0.4)
+	-- 상비군: 인구 대비 상비 병력 비율(군사비 부담)
+	S.standing = (F.inf + F.cav + F.art) / math.max(1, m.pop * 0.01)
+end
+
+-- 자원 기반이 방향을 조금 바꾼다: 철·석탄이 풍부하면 군사, 목재·조선소가 많으면 해군, 식량이 모자라면 행정
+local function resourceBias(S)
+	local r, n = S.res, math.max(1, S.metrics.towns)
+	local b = {}
+	b.mil = clamp((r.iron + r.coal * 0.5 + r.copper * 0.5) / n * 0.12, 0, 0.15)
+	b.navy = clamp((r.timber + r.yards * 1.5) / n * 0.1, 0, 0.15)
+	b.trade = clamp(r.ports / n * 0.04 + r.bullion / n * 0.05, 0, 0.1)
+	b.admin = if S.cap and S.cap.food and S.cap.food < 0.55 then 0.08 else 0
+	return b
+end
+
 local function targetFocus(S)
 	local reg = N.REGIMES[S.regime] or N.REGIMES.absolute
 	local rb = rulerBias(S.ruler)
@@ -211,6 +324,9 @@ local function targetFocus(S)
 		t.navy += 0.1
 	end
 	if S.fin.debt > S.fin.income * 6 then t.admin += 0.2 end
+	if S.res then
+		for k, v in pairs(resourceBias(S)) do t[k] += v end
+	end
 	normalizeFocus(t)
 	return t
 end
@@ -253,10 +369,60 @@ local function newState(st, id, regimeOverride)
 		legit = reg.legit, stab = 0.6, focus = {}, dev = {}, culture = { stock = 0, level = 1 },
 		fin = { income = 1, debt = 0, treasury = 0 }, rel = {}, allies = {}, war = nil,
 		regentUntil = 0, civilUntil = 0, metrics = { pop = 0, gdp = 0, trade = 0, towns = 0 },
+		soc = { unrest = 0.1, literacy = 0.2, urban = 0, lastPop = 0 }, res = emptyRes(), cap = {}, power = 0, armyPower = 0, navyPower = 0, standing = 0,
+		forces = { inf = 0, cav = 0, art = 0, militia = 0, line = 0, frigate = 0, small = 0, transport = 0, doctrine = 0 },
 	}
 	for _, k in ipairs(N.FIELDS) do S.dev[k] = 25 + (S.bias[k] or 0) * 60 end
 	S.focus = targetFocus(S)
 	return S
+end
+
+local function aggregate(st, w)
+	for _, S in pairs(st.states) do S.metrics = { pop = 0, gdp = 0, trade = 0, towns = 0, stab = 0, tech = 0, treasury = 0, stage = 0 }
+		S.res = emptyRes()
+	end
+	for _, id in ipairs(w.order) do
+		local t = w.towns[id]
+		local owner = st.liege[t.country] or t.country
+		local S = st.states[owner]
+		if S then
+			local m = S.metrics
+			m.pop += t.pop or 0
+			m.gdp += t.gdp or 0
+			m.trade += (t.tradeOut or 0) + (t.tradeIn or 0)
+			m.towns += 1
+			addTownRes(S, t)
+			m.stab += t.stability or 0.5
+			m.stage += t.stage or 1
+			m.treasury += t.treasury or 0
+			if t.tech then
+				local sum, n = 0, 0
+				for _, v in pairs(t.tech) do sum += v; n += 1 end
+				if n > 0 then m.tech += sum / n end
+			end
+		end
+	end
+	for _, S in pairs(st.states) do
+		local m = S.metrics
+		if m.towns > 0 then
+			m.stab /= m.towns
+			m.tech /= m.towns
+			m.stage /= m.towns
+		else
+			m.stab, m.tech, m.stage = 0.5, 1, 1
+		end
+		S.fin.income = math.max(1, m.gdp * 0.08)
+		S.fin.treasury = m.treasury
+	end
+end
+
+-- 시작 시점 편제: 자원·발전도에 맞춰 곧바로 채운다 (게임 시작부터 국가가 서로 다른 힘을 가진다)
+local function seedForces(st, w)
+	aggregate(st, w)
+	for _, S in pairs(st.states) do
+		S.focus = targetFocus(S)
+		stepForces(st, S, true)
+	end
 end
 
 -- ───────── 초기화 ─────────
@@ -295,46 +461,11 @@ function N.init(w)
 			if st.states[other] then S.rel[other] = clamp(10 - weight * 2 + (hash01(id .. other) - 0.5) * 30, -60, 60) end
 		end
 	end
+	seedForces(st, w)
 	return st
 end
 
 -- ───────── 월 단위 갱신 ─────────
-local function aggregate(st, w)
-	for _, S in pairs(st.states) do S.metrics = { pop = 0, gdp = 0, trade = 0, towns = 0, stab = 0, tech = 0, treasury = 0, stage = 0 } end
-	for _, id in ipairs(w.order) do
-		local t = w.towns[id]
-		local owner = st.liege[t.country] or t.country
-		local S = st.states[owner]
-		if S then
-			local m = S.metrics
-			m.pop += t.pop or 0
-			m.gdp += t.gdp or 0
-			m.trade += (t.tradeOut or 0) + (t.tradeIn or 0)
-			m.towns += 1
-			m.stab += t.stability or 0.5
-			m.stage += t.stage or 1
-			m.treasury += t.treasury or 0
-			if t.tech then
-				local sum, n = 0, 0
-				for _, v in pairs(t.tech) do sum += v; n += 1 end
-				if n > 0 then m.tech += sum / n end
-			end
-		end
-	end
-	for _, S in pairs(st.states) do
-		local m = S.metrics
-		if m.towns > 0 then
-			m.stab /= m.towns
-			m.tech /= m.towns
-			m.stage /= m.towns
-		else
-			m.stab, m.tech, m.stage = 0.5, 1, 1
-		end
-		S.fin.income = math.max(1, m.gdp * 0.08)
-		S.fin.treasury = m.treasury
-	end
-end
-
 local function chooseRegimeAfter(st, S)
 	local list = N.REVOLUTION_TO[S.regime] or { "absolute" }
 	return list[1 + math.floor(roll(st, S.id .. ":rev") * #list) % #list]
@@ -393,6 +524,49 @@ local function succeed(st, S, reason)
 	logEvent(st, S.id, "succession", S.id .. " " .. reason .. " 교체 (" .. tostring(oldName) .. " → " .. tostring(newName) .. ")")
 end
 
+-- ───────── 사회·연결 ─────────
+-- 인구·식량·세금·전쟁 피로가 불만(unrest)을 만들고, 학문·문화·도시화가 식자율(literacy)을 만든다.
+-- 식자율은 과학 발전을 돕고, 불만은 안정도를 깎는다. 동맹·교역 상대에게서 기술이 퍼진다(확산).
+local function stepSociety(st, S)
+	local m = S.metrics
+	local soc = S.soc
+	local reg = N.REGIMES[S.regime] or N.REGIMES.absolute
+	local pop = m.pop
+	local growth = if soc.lastPop > 0 then (pop - soc.lastPop) / soc.lastPop else 0
+	soc.lastPop = pop
+	local foodShort = if S.cap and S.cap.food then math.max(0, 0.7 - S.cap.food) else 0
+	local burden = S.fin.income > 0 and clamp(S.fin.debt / (S.fin.income * 12), 0, 1) or 0
+	local pressure = foodShort * 0.8 + burden * 0.4 + (S.war and 0.15 or 0) + math.max(0, growth) * 6 + (S.standing or 0) * 0.02
+	local relief = (S.dev.admin / 100) * 0.25 + S.legit * 0.2 + (reg.stab or 0) * 0.5
+	soc.unrest = clamp(soc.unrest + (pressure - relief) * 0.12, 0, 1)
+	local urban = clamp((m.stage - 1) / 4, 0, 1)
+	local litTarget = clamp((S.dev.learn * 0.5 + S.dev.culture * 0.3) / 100 + urban * 0.2, 0, 1)
+	soc.literacy = clamp(soc.literacy + (litTarget - soc.literacy) * 0.05, 0, 1)
+	soc.urban = urban
+	-- 확산: 동맹·교역 상대의 발전도가 높으면 천천히 따라간다
+	local best = {}
+	for other in pairs(S.allies) do
+		local O = st.states[other]
+		if O then
+			for _, k in ipairs(N.FIELDS) do best[k] = math.max(best[k] or 0, O.dev[k]) end
+		end
+	end
+	for other, v in pairs(S.rel) do
+		local O = st.states[other]
+		if O and v > 10 and not S.allies[other] then
+			for _, k in ipairs(N.FIELDS) do best[k] = math.max(best[k] or 0, O.dev[k] * 0.85) end
+		end
+	end
+	for _, k in ipairs(N.FIELDS) do
+		local b = best[k]
+		if b and b > S.dev[k] then
+			S.dev[k] = clamp(S.dev[k] + (b - S.dev[k]) * 0.015 * (0.5 + soc.literacy), 0, 100)
+		end
+	end
+	-- 식자율은 과학·학문 성장을 돕는다
+	S.dev.sci = clamp(S.dev.sci + soc.literacy * 0.08 * (1 - S.dev.sci / 100), 0, 100)
+end
+
 local function stepState(st, S)
 	local reg = N.REGIMES[S.regime] or N.REGIMES.absolute
 	local m = S.metrics
@@ -405,7 +579,7 @@ local function stepState(st, S)
 	local civil = if st.day < S.civilUntil then -0.25 else 0
 	local skill = (S.ruler.skills.cha + S.ruler.skills.diplo) / 20
 	S.legit = clamp(S.legit + (reg.legit + (skill - 0.5) * 0.2 - S.legit) * 0.04, 0.1, 1)
-	local target = clamp(m.stab * 0.6 + S.legit * 0.3 + reg.stab + regent + civil + (S.war and -0.05 or 0.02), 0, 1)
+	local target = clamp(m.stab * 0.6 + S.legit * 0.3 + reg.stab - (S.soc and S.soc.unrest or 0) * 0.2 + regent + civil + (S.war and -0.05 or 0.02), 0, 1)
 	S.stab = clamp(S.stab + (target - S.stab) * 0.2, 0, 1)
 	-- 투자 방향과 발전
 	local tf = targetFocus(S)
@@ -420,6 +594,8 @@ local function stepState(st, S)
 		if S.war and (k == "trade" or k == "culture") then gain *= 0.8 end
 		S.dev[k] = clamp(S.dev[k] + gain * (1 - S.dev[k] / 100), 0, 100)
 	end
+	stepSociety(st, S)
+	stepForces(st, S)
 	-- 재정: 전쟁과 행정이 약하면 빚이 늘고, 평시에는 갚는다
 	local spend = S.fin.income * (0.75 + S.focus.mil * 0.6 + S.focus.navy * 0.3 + (S.war and 0.25 or 0))
 	local net = S.fin.income * (0.9 + S.dev.admin / 250) - spend
@@ -452,7 +628,7 @@ local function stepState(st, S)
 end
 
 local function militaryPower(S)
-	return (S.dev.mil * 0.6 + S.dev.navy * 0.4) * math.log(1 + S.metrics.pop) / 10 * (0.6 + S.stab * 0.4)
+	return S.power or 0
 end
 
 local function stepDiplomacy(st)
@@ -504,6 +680,17 @@ local function stepDiplomacy(st)
 				S.rel[worst] = clamp(S.rel[worst] - 20, -100, 100)
 				st.states[worst].rel[id] = clamp((st.states[worst].rel[id] or 0) - 20, -100, 100)
 				logEvent(st, id, "war", string.format("%s 가 %s 에 선전포고", id, worst))
+				-- 동맹은 같은 편으로 참전한다 (관계가 좋을수록, 상대와 사이가 나쁠수록)
+				for _, side in ipairs({ { id, worst }, { worst, id } }) do
+					local mine, foeId = st.states[side[1]], side[2]
+					for ally in pairs(mine.allies) do
+						local A = st.states[ally]
+						if A and not A.war and ally ~= foeId and roll(st, ally .. foeId .. "join") < 0.35 then
+							A.war = { foe = foeId, months = 0 }
+							logEvent(st, ally, "join", string.format("%s 가 동맹 %s 편으로 %s 와 전쟁 참전", ally, side[1], foeId))
+						end
+					end
+				end
 			end
 		end
 	end
@@ -533,7 +720,7 @@ function N.rank(st)
 	local rows = {}
 	for id, S in pairs(st.states) do
 		local m = S.metrics
-		local score = (militaryPower(S) * 0.25 + S.dev.trade * math.log(1 + m.trade) / 12 * 0.25
+		local score = (math.log(1 + militaryPower(S)) * 6 * 0.25 + S.dev.trade * math.log(1 + m.trade) / 12 * 0.25
 			+ S.dev.sci * 0.15 + S.dev.culture * 0.15 + S.dev.learn * 0.1 + math.log(1 + m.pop) * 0.1)
 		table.insert(rows, { id = id, score = score })
 	end
@@ -578,6 +765,7 @@ function N.view(st, id)
 		cultureLevel = S.culture.level, cultureName = N.BRAND_NAMES[S.culture.level], war = S.war and S.war.foe or nil,
 		rank = st.ranks[owner], regent = st.day < S.regentUntil, civilWar = st.day < S.civilUntil,
 		debt = S.fin.debt, income = S.fin.income,
+		soc = S.soc, res = S.res, cap = S.cap, forces = S.forces, power = S.power, armyPower = S.armyPower, navyPower = S.navyPower, standing = S.standing,
 	}
 end
 
@@ -646,6 +834,22 @@ local function repair(st, S)
 	S.fin.treasury = tonumber(S.fin.treasury) or 0
 	S.legit = clamp(tonumber(S.legit) or 0.6, 0.1, 1)
 	S.stab = clamp(tonumber(S.stab) or 0.5, 0, 1)
+	S.soc = type(S.soc) == "table" and S.soc or {}
+	S.soc.unrest = clamp(tonumber(S.soc.unrest) or 0.1, 0, 1)
+	S.soc.literacy = clamp(tonumber(S.soc.literacy) or 0.2, 0, 1)
+	S.soc.urban = clamp(tonumber(S.soc.urban) or 0, 0, 1)
+	S.soc.lastPop = math.max(0, tonumber(S.soc.lastPop) or 0)
+	S.res = type(S.res) == "table" and S.res or emptyRes()
+	for _, k in ipairs(N.RES_KEYS) do S.res[k] = math.max(0, tonumber(S.res[k]) or 0) end
+	S.cap = type(S.cap) == "table" and S.cap or {}
+	S.forces = type(S.forces) == "table" and S.forces or {}
+	for _, k in ipairs(N.ARMY_KEYS) do S.forces[k] = math.max(0, tonumber(S.forces[k]) or 0) end
+	for _, k in ipairs(N.NAVY_KEYS) do S.forces[k] = math.max(0, tonumber(S.forces[k]) or 0) end
+	S.forces.doctrine = clamp(tonumber(S.forces.doctrine) or 0, 0, 1)
+	S.power = math.max(0, tonumber(S.power) or 0)
+	S.armyPower = math.max(0, tonumber(S.armyPower) or 0)
+	S.navyPower = math.max(0, tonumber(S.navyPower) or 0)
+	S.standing = math.max(0, tonumber(S.standing) or 0)
 	S.rel = type(S.rel) == "table" and S.rel or {}
 	S.allies = type(S.allies) == "table" and S.allies or {}
 	S.regentUntil = tonumber(S.regentUntil) or 0
@@ -690,6 +894,11 @@ function N.restore(w, snap)
 			if type(e) == "table" and type(e.text) == "string" then table.insert(st.log, e) end
 		end
 	end
+	local empty = true
+	for _, S in pairs(st.states) do
+		if (S.power or 0) > 0 then empty = false break end
+	end
+	if empty then seedForces(st, w) end
 	N.rank(st)
 	return true
 end
