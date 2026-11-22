@@ -4704,6 +4704,79 @@ function H.historyCinematic(parent, ev)
 	root.ClipsDescendants = true
 	root.Parent = parent
 
+	-- [30프레임 사건 원화 · 메인] 기존 자산등록기가 검증한 6×5 PNG 그림판만 재생한다.
+	-- 등록 전에는 아래 기존 해도/승인 모델 연출을 유지한다. 별도의 조형물·저장·보상 로직 없음.
+	local imageOpen = AssetIds["CardArt/history_open"]
+	local imageMap = AssetIds["CardArt/history_map"]
+	local imageRecord = AssetIds["CardArt/history_record"]
+	if imageOpen and imageMap and imageRecord then
+		local sheets = {
+			{ imageId = imageOpen, width = 252, height = 200 },
+			{ imageId = imageMap, width = 250, height = 200 },
+			{ imageId = imageRecord, width = 222, height = 225 },
+		}
+		local backdrop = Instance.new("ImageLabel")
+		backdrop.Name = "HistoricalIllustratedFrames"
+		backdrop.BackgroundTransparency = 1
+		backdrop.Size = UDim2.fromScale(1, 1)
+		backdrop.Image = "rbxassetid://" .. tostring(AssetIds["CardArt/event_chart_world"] or imageOpen)
+		backdrop.ScaleType = Enum.ScaleType.Crop
+		backdrop.Parent = root
+		local chapter = 0
+		local archived = false
+		local loaded = false
+		local function playFrames(stageIndex)
+			if not root.Parent or chapter ~= stageIndex then return end
+			local sheet = sheets[stageIndex]
+			backdrop.Image = "rbxassetid://" .. tostring(sheet.imageId)
+			backdrop.ImageRectSize = Vector2.new(sheet.width, sheet.height)
+			for frameIndex = 0, 29 do
+				if not root.Parent or chapter ~= stageIndex then return end
+				backdrop.ImageRectOffset = Vector2.new(
+					(frameIndex % 6) * sheet.width,
+					math.floor(frameIndex / 6) * sheet.height)
+				if not lessMotion then task.wait(1 / 30) else return end
+			end
+		end
+		-- [원화 로딩] Roblox 체험에 사용권이 있는 등록 이미지 3종만 불러온다.
+		task.spawn(function()
+			local addresses = {}
+			for _, sheet in sheets do table.insert(addresses, "rbxassetid://" .. tostring(sheet.imageId)) end
+			local good = true
+			local ok = pcall(function()
+				game:GetService("ContentProvider"):PreloadAsync(addresses, function(_, status)
+					if status ~= Enum.AssetFetchStatus.Success then good = false end
+				end)
+			end)
+			if not ok or not good or not root.Parent then return end
+			loaded = true
+			if archived then return end
+			chapter = 1
+			Sfx.play("sfx_book_turn", 0.25)
+			playFrames(1)
+			if not root.Parent or archived then return end
+			chapter = 2
+			Sfx.play("sfx_chart_unfold", 0.31, 1.04, "sfx_book_turn")
+			playFrames(2)
+			-- 사건 내용과 선택지를 읽는 동안 3D 사건이 펼쳐진 장면을 고정한다.
+			if chapter == 2 and not archived and root.Parent then
+				backdrop.ImageRectOffset = Vector2.new(5 * sheets[2].width, 2 * sheets[2].height)
+			end
+		end)
+		return function()
+			if archived or not root.Parent then return end
+			archived = true
+			chapter = 3
+			Sfx.play("sfx_contract_stamp", 0.28, 1.03, "sfx_book_turn")
+			if loaded then
+				task.spawn(function()
+					playFrames(3)
+					if root.Parent then Sfx.play("sfx_quest_book_close", 0.23, 1.03, "sfx_book_turn") end
+				end)
+			end
+		end
+	end
+
 	-- [세계지도] 기존 승인된 세계 해도와 좌표·항로·사건 위치 표시.
 	local map = Instance.new("Frame")
 	map.Name = "HistoryWorldChart"
@@ -14401,7 +14474,9 @@ do
 					-- [수납 화면] 기존 선택창을 숨겨 책으로 되접히는 최종 연출이 가려지지 않게 한다.
 					win.Visible = false
 					recordHistory()
-					task.delay(0.62, function()
+					-- 신규 30프레임 책 수납이 있으면 마지막 장면이 끝난 뒤 닫는다.
+					local archiveDelay = if AssetIds["CardArt/history_record"] then 1.08 else 0.62
+					task.delay(archiveDelay, function()
 						if popupFor == ev.id then closePopup() end
 					end)
 				else
