@@ -213,3 +213,13 @@
 - **자산번호·권한·연결:** `137445389080483`. 현재 `main`의 `assets-registered.json`에 `usePermissionGranted:true`, `sourceSha256`이 승인·최종 PNG 해시와 동일. `src/ReplicatedStorage/Shared/AssetIds.luau`의 `["CardArt/eu_26"] = 137445389080483` 확인.
 - **다음 후보:** `eu_27` 지브롤터 해협. 최신 `main`에서 미등록 여부를 먼저 확인한 후 대서양·지중해를 연결하는 협곡 해상 통로에 정확한 독립 회화 PNG를 제작한다. 등록된 원화·자산번호·밸런스·저장키를 임의 변경하지 않는다.
 - **별도 미검증:** Roblox Studio 실제 카드 표시와 최종 게임 Place 게시·모바일 실화면은 본 자산등록 워크플로만으로 확인된 것이 아니다.
+
+## 20. 지브롤터 해협 `eu_27` 정식 자산등록 확인 (2026-11-22)
+
+- **원화:** 유럽 지브롤터 해협에서 대서양과 지중해를 잇는 물길, 좌측 지브롤터 석회암 절벽과 맞은편 북아프리카 연안, 거친 청록색 파도·포말·극적인 햇살을 담은 1024×1024 정사각형 컬러 유화. 카드 금테·텍스트·분할 시트·현대 물건 없음. 기존 `src/eu_27.svg`와 등록 원본을 보존함.
+- **실제 원본:** `assets/cardart/src/eu_27-original.png`, SHA-256 `db0e762c3ea40cc3b29b4977ef3bd8b1e12a5449998b5d24a96ce3e4cfb4fc43`, Git Blob SHA `71584c73672ba77ffb3e5607d990df43395e2267` (로컬 Git Blob 계산과 GitHub 생성 결과 일치).
+- **원본·승인 동시 main 반영:** [PR #14352](https://github.com/hans1177/jaewoon-games/pull/14352), squash 커밋 [`067ea5aa1b25c61c416c29d929d21a673aa62042`](https://github.com/hans1177/jaewoon-games/commit/067ea5aa1b25c61c416c29d929d21a673aa62042). `APPROVED_IMAGES.json`의 `approved["CardArt/eu_27"]`·`modelOriginals` 기록과 실제 PNG 원본 SHA-256 동일.
+- **기존 정식 등록 워크플로:** [#45027404062](https://github.com/hans1177/jaewoon-games/actions/runs/45027404062) `register` 작업 `success`. 실행 로그 `MODEL_ORIGINAL_PROMOTED CardArt/eu_27`, `UPLOADED CardArt/eu_27 129708511722826`, `GRANTED_ASSET CardArt/eu_27`, `REGISTERED_COUNT=1406 FAILED_COUNT=0` 확인.
+- **자산번호/권한/연결:** `129708511722826`. 최신 `main` 등록표의 `usePermissionGranted:true`, `sourceSha256` 원본/승인 동일, `src/ReplicatedStorage/Shared/AssetIds.luau`의 `["CardArt/eu_27"] = 129708511722826` 연결 확인.
+- **다음 제작 후보:** `eu_28` **베네치아 운하**. 반드시 시작 시 최신 `main`의 등록·원본 상태를 다시 확인한 뒤 개별 원화를 제작. 기존 자산 재사용·중복 업로드 금지.
+- **별도 미검증:** Roblox Studio 실화면 실제 카드 표시, 최종 Place 게시/모바일 플레이 화면. 자산등록 성공을 게시 성공으로 간주하지 않는다. 카드 능력치·전투 규칙·진행도·저장 키·등록기/배포 파이프라인 변경 없음.
