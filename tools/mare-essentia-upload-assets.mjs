@@ -1297,7 +1297,10 @@ const approvedCardNames = new Set();
 for (const k of Object.keys(cardApprovalDocument.approved || {})) {
   if (!k.startsWith('CardArt/')) continue;
   approvedCardNames.add(k.slice(8) + '.jpg');
-  if (k.startsWith('CardArt/ui_')) approvedCardNames.add(k.slice(8) + '.png');
+  // [역사 이벤트 30프레임] 검수된 기존 등록 해시에 오른 3종 PNG 그림판만 허용.
+  if (k.startsWith('CardArt/ui_') || /^CardArt\/history_(?:open|map|record)$/.test(k)) {
+    approvedCardNames.add(k.slice(8) + '.png');
+  }
 }
 // [기존 원본 등록기] 캐릭터 26종의 GLB UV/PBR 맵과 해시를 등록 전에 직접 제작·검증한다.
 // [가축 자산 직접 제작] 검증된 CC0 당나귀 정적 원본을 건드리지 않고 새 스킨 메시·키프레임 후보만 생성한다.
