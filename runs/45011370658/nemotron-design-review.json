@@ -1,0 +1,152 @@
+{
+  "version": 3,
+  "provider": "GEMINI",
+  "gameId": "mare-essentia",
+  "sourceRevision": "9b0e9b463c5472586291702915f4891567d0b65a",
+  "status": "CANDIDATE_EDITED",
+  "selectedRole": "NPC",
+  "usageWindow": {
+    "day": "2026-11-22",
+    "calls": {
+      "NVIDIA": 12,
+      "GEMINI": 10,
+      "OPENROUTER": 30
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-22",
+      "GEMINI": "2026-11-22",
+      "OPENROUTER": "2026-11-22"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-22T00:27:30.319Z",
+      "GEMINI": "2026-11-22T08:04:11.923Z",
+      "OPENROUTER": "2026-11-22T00:27:00.167Z"
+    }
+  },
+  "cooldowns": {
+    "GEMINI_FLASH": "2026-11-22T13:30:36.242Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 12,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 1.11,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 10,
+      "remainingLocal": 2,
+      "effectiveRemaining": 2,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 2,
+      "estimatedCallsPerHour": 3.89,
+      "estimatedHoursToLocalCap": 0.5,
+      "nextLocalWindowAt": "2026-11-23T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 30,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 2.92,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [
+    {
+      "id": "GEMINI_LITE",
+      "status": "OK",
+      "provider": "GEMINI",
+      "model": "gemini-3.5-flash-lite"
+    }
+  ],
+  "frames": [
+    {
+      "name": "field_npc_ally_mob-0.jpg",
+      "sha256": "71748cfbbc0173014a949d592031cac968f396e387c6a1b035918266c82bf106"
+    },
+    {
+      "name": "harbor_npc_face_front-0.jpg",
+      "sha256": "aba83fa5412fda8f6c1b2f3e2ff454cf79cd77553377b35a0155b7391581ea83"
+    },
+    {
+      "name": "harbor_npc_sparring_01-0.jpg",
+      "sha256": "b81bc7d551ef6436464c100aa9e4e32e7a96b673db0d1e4b9fd318901afa8946"
+    },
+    {
+      "name": "harbor_npc_sparring_02-0.jpg",
+      "sha256": "cb13557f4347d4c72e1207692a39b6069c6ca2ff2897395b6fe62920f9835820"
+    }
+  ],
+  "model": "gemini-3.5-flash-lite",
+  "rawResponseSha256": "3e06835a2ec7b55f9fad921e1269cfddc57c172a87dbd4896913782788a7c1dc",
+  "issues": [
+    {
+      "category": "lighting",
+      "severity": "medium",
+      "screenshot": "field_npc_ally_mob-0.jpg",
+      "evidenceSha256": "284e6c975e8a52156895d1d53ec8bbde786c358839d448dd73869073a2bb5e6c"
+    },
+    {
+      "category": "lighting",
+      "severity": "medium",
+      "screenshot": "harbor_npc_face_front-0.jpg",
+      "evidenceSha256": "f1d1f61a1db7c699e8677df2464710fe7907755e15df40ef14336a2ca3ce3fff"
+    }
+  ],
+  "edits": [
+    {
+      "path": "roblox-games/mare-essentia/src/StarterPlayer/TownMood.client.luau",
+      "category": "lighting",
+      "screenshot": "field_npc_ally_mob-0.jpg",
+      "beforeSha256": "b7c83d53764d34941338e1c201ca96c4bd5743cf780b4f4aa88765e22f0e13ae",
+      "afterSha256": "13cb4ad62022e0820bf062d1504e7ca355410adcd65a934339f984b9f66f298b"
+    },
+    {
+      "path": "roblox-games/mare-essentia/src/StarterPlayer/TownMood.client.luau",
+      "category": "lighting",
+      "screenshot": "harbor_npc_face_front-0.jpg",
+      "beforeSha256": "7f185e3cb12d574b5d59898e441f14ecf45eca6760d5809472eb4f727822fd16",
+      "afterSha256": "f1f88caff45e91b72079095692dab962c04f9b8a76ecfd66d8215ae58498c4fd"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "roblox-games/mare-essentia/src/StarterPlayer/TownMood.client.luau",
+      "beforeSha256": "ae54a8fd159d79fd9d5e70455c1fea3c498337fe24ca1c334cee46619d2108a1",
+      "afterSha256": "e3fdc42afa739e1a38e481f3048d91a448df4776fcd3106248392d7ece0ab4f8"
+    }
+  ],
+  "candidateOnly": true,
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
