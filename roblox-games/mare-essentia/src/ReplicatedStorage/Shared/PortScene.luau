@@ -1368,6 +1368,8 @@ end
 
 -- 항구 발전도(1~5)와 지역별 마을 배치 ------------------------------------------
 local sceneLevel = 1
+-- [표시 단계 1~6] 기존 1~5 배열은 sceneLevel로 그대로 읽고, 원본 마을 발전도 6(최고)일 때만 6을 쓴다.
+local cityTier = 1
 local function roadMat()
 	-- 발전도별 바닥: 흙 → 자갈 → 포석 → 화강암 → 대리석
 	return if sceneLevel <= 1 then Enum.Material.Sand
@@ -2790,6 +2792,16 @@ local function placeSignature(folder, info)
 			end
 		end
 	end
+	-- [6단계 대도시 경관] 승인 모델만 사용: 대표경관 앞 등불 열주와 깃발 한 쌍(비충돌, 광장 밖).
+	if cityTier >= 6 then
+		for _, dx in { -32, -20, 20, 32 } do
+			importedModel(folder, "Town", "kenney_lightpost_01", SIG_ANCHOR + Vector3.new(dx, 0, -27), 7, false)
+		end
+		for _, dx in { -38, 38 } do
+			importedModel(folder, "Castle", "flag-banner-long", SIG_ANCHOR + Vector3.new(dx, 0, -21), 11, false)
+		end
+		landmarkFloor:SetAttribute("Tier", cityTier)
+	end
 	if european and sceneLevel >= 4 then
 		-- 바닷가 건물은 기존 모델을 국별로 골라 쓴다. 새 자산·충돌하는 랜드마크 생성은 없다.
 		local kind, asset = "Town", "fountain-square"
@@ -2950,8 +2962,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local localBlocks = info.development and info.development.blocks
 	local economicDensity = if localBlocks then math.clamp(0.8 + math.sqrt(math.max(0, localBlocks)) / 60, 0.76, 1.18) else 1
 	local moodDensity = if info.sim and info.sim.mood == "slump" then 0.88 else 1
+	-- 6단계(최고 발전)는 외곽 미개발 필지가 주거로 채워지도록 밀도를 한 단계 더 올린다.
 	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens * (countryPlan and countryPlan.density or 1)
-		* economicDensity * moodDensity, 0.3, 0.97)
+		* economicDensity * moodDensity * (if cityTier >= 6 then 1.08 else 1), 0.3, 0.97)
 	-- 실제 건설된 주택이 부족한 항구는 주거 필지를 비워 두고 경제 데이터는 그대로 둔다.
 	if info.sim and info.sim.buildings then
 		local target = ({ 40, 130, 430, 1600, 4000 })[lvl]
@@ -2963,6 +2976,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local wildernessTouch = game:GetService("UserInputService").TouchEnabled
 	local wildernessQuota = math.min(({ 36, 29, 23, 17, 12 })[lvl],
 		if wildernessTouch then ({ 22, 19, 16, 13, 9 })[lvl] else 36)
+	-- [6단계 외곽 확장] 최고 발전 도시는 미개발 표본을 절반으로 줄여 외곽이 시가지로 이어지게 한다.
+	if cityTier >= 6 then wildernessQuota = math.min(wildernessQuota, if wildernessTouch then 5 else 6) end
 	local wildernessPlaced, wildernessDetails, wildernessFringe, wildernessRejected = 0, 0, 0, 0
 	local wildernessRng = seeded(info.portId .. ":open-land")
 	-- [입체 지형 팔레트] 자산 번호가 존재하는 무료 기존 모델만 사용한다. 허허벌판을 건물로 위장하지 않는다.
@@ -5134,6 +5149,12 @@ function PortScene.build(info, onFacility)
 		sceneLevel = math.clamp(math.floor((sceneLevel + info.sim.stage) / 2 + 0.5), 1, 5)
 	end
 	houseTier = sceneLevel
+	-- [원본 발전도 6단계 연결] Village.portDev(1~6)는 서버 계산 그대로 받는다. 평균값(1~5)이 최고인데
+	-- 원본도 6이면 표시 단계 6으로 구별한다. 저장값·발전 계산·기존 1~5 배열 접근은 바뀌지 않는다.
+	local sourceLevel = info.development and tonumber(info.development.level)
+	cityTier = if sourceLevel and sourceLevel >= 6 and sceneLevel >= 5 then 6 else sceneLevel
+	folder:SetAttribute("CitySourceLevel", sourceLevel)
+	folder:SetAttribute("CityDisplayTier", cityTier)
 	-- [향후 건축 시뮬] 기존 경제 건설·증축 알고리즘을 정본으로 두고, 지금은 도시 외형만 자동 갱신한다.
 	folder:SetAttribute("CityBuildingMode", "AUTO_VISUAL_READ_ONLY")
 	folder:SetAttribute("CityDevelopmentTier", sceneLevel)
@@ -5662,7 +5683,7 @@ function PortScene.build(info, onFacility)
 		local key = currentKey
 		local royalSeed = seeded(info.portId .. ":royal-court")
 		-- 왕도 발전에 따른 왕궁 폭·깊이 확장. 별관·근위대·정원까지 하나의 구획으로 확보한다.
-		local scale = 1.34 + (sceneLevel - 1) * 0.1 + royalSeed:NextNumber(0, 0.025) -- 초기 폭 약 180, 최고 약 240: 일반 주택 대비 10배급
+		local scale = 1.34 + (cityTier - 1) * 0.1 + royalSeed:NextNumber(0, 0.025) -- 초기 폭 약 180, 최고 약 240: 일반 주택 대비 10배급
 		local wide, deep = 134 * scale, 138 * scale
 		local tall = 30 + sceneLevel * 4
 		-- [지역 관저 판별] 지역 문화 키만으로 통치 체계가 달라지는 항구를 같은 왕궁으로 묶지 않는다.
