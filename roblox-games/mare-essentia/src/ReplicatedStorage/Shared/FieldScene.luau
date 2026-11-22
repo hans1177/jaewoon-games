@@ -251,19 +251,6 @@ local FIELD_TINT = {
 	-- [지형 실물 착색] 원본 회색 PBR 메시를 지역색과 자연스럽게 맞춘다.
 	["Grass_Small"] = Color3.fromRGB(134, 188, 88), ["Bush_Small"] = Color3.fromRGB(82, 146, 72),
 	["Rock_2"] = Color3.fromRGB(153, 148, 134),
-	["kenney_rock_largeB"] = Color3.fromRGB(143, 137, 127),
-	["kenney_stone_smallFlatA"] = Color3.fromRGB(137, 135, 124),
-	["kenney_stump_old"] = Color3.fromRGB(120, 95, 69),
-	["kenney_tree_fat"] = Color3.fromRGB(91, 145, 75),
-	["kenney_tree_defaultDark"] = Color3.fromRGB(83, 127, 72),
-	["kenney_tree_pinetallD_detailed"] = Color3.fromRGB(89, 132, 118),
-	["kenney_tree_palmShort"] = Color3.fromRGB(83, 154, 100),
-	["kenney_rock_largeD"] = Color3.fromRGB(132, 125, 117),
-	["kenney_rock_tallE"] = Color3.fromRGB(132, 122, 111),
-	["kenney_rock_smallFlatA"] = Color3.fromRGB(153, 142, 121),
-	["kenney_stone_largeB"] = Color3.fromRGB(174, 175, 168),
-	["kenney_stump_roundDetailed"] = Color3.fromRGB(120, 94, 70),
-	["kenney_log_stackLarge"] = Color3.fromRGB(121, 96, 69),
 }
 local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverride)
 	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
@@ -955,17 +942,6 @@ function FieldScene.start(opts)
 	end
 	-- 나무와 바위
 	local treeNames = table.clone(biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" })
-	-- [실제 수관] 등록·권한 확인 후에만 숲과 밀림의 기존 나무 슬롯에 울창한 원본 모델을 섞는다.
-	if not winterScene and not arid and (questTerrain == "forest" or questTerrain == "jungle")
-		and AssetIds["Terrain/kenney_tree_fat"] then table.insert(treeNames, "kenney_tree_fat") end
-	if not winterScene and (questTerrain == "forest" or questTerrain == "ruins")
-		and AssetIds["Terrain/kenney_tree_defaultDark"] then table.insert(treeNames, "kenney_tree_defaultDark") end
-	if northern and AssetIds["Terrain/kenney_tree_pinetallD_detailed"] then
-		table.insert(treeNames, "kenney_tree_pinetallD_detailed")
-	end
-	if tropical and AssetIds["Terrain/kenney_tree_palmShort"] then
-		table.insert(treeNames, "kenney_tree_palmShort")
-	end
 	-- [신규 내부 CC0 원본] Roblox Universe 등록 ID가 확인된 나무만 기존 실물 선택군에 합류한다.
 	-- 미등록 파일은 화면에 가짜 도형으로 대체하지 않고 기존 등록 나무를 유지한다.
 	if not arid and AssetIds["Terrain/tree-detailed"] then table.insert(treeNames, "tree-detailed") end
@@ -1057,25 +1033,6 @@ function FieldScene.start(opts)
 	end
 	-- [무료 실물 지형] 기존 바위 개수를 유지하면서 등록된 Quaternius 모델을 섞는다.
 	local rockNames = { { "Town", "rock-large" }, { "Town", "rock-small" }, { "Town", "rock-wide" }, { "Terrain", "Rock_2" } }
-	-- [입체 암반] 기존 바위 개수와 충돌·지면 높이 판정은 유지한다.
-	if AssetIds["Terrain/kenney_rock_largeB"] then table.insert(rockNames, { "Terrain", "kenney_rock_largeB" }) end
-	-- [퀘스트별 원석 층] 등록 자산만 기존 바위 수량 안에서 선택해 지형 실루엣을 구분한다.
-	if (questTerrain == "highland" or questTerrain == "mine" or questTerrain == "desert"
-		or questTerrain == "volcanic") and AssetIds["Terrain/kenney_rock_largeD"] then
-		table.insert(rockNames, { "Terrain", "kenney_rock_largeD" })
-	end
-	if (questTerrain == "highland" or questTerrain == "volcanic" or questTerrain == "plains")
-		and AssetIds["Terrain/kenney_rock_tallE"] then
-		table.insert(rockNames, { "Terrain", "kenney_rock_tallE" })
-	end
-	if (questTerrain == "coast" or questTerrain == "lake")
-		and AssetIds["Terrain/kenney_rock_smallFlatA"] then
-		table.insert(rockNames, { "Terrain", "kenney_rock_smallFlatA" })
-	end
-	if (questTerrain == "glacier" or questTerrain == "ruins")
-		and AssetIds["Terrain/kenney_stone_largeB"] then
-		table.insert(rockNames, { "Terrain", "kenney_stone_largeB" })
-	end
 	if AssetIds["Terrain/rock-largea"] then table.insert(rockNames, { "Terrain", "rock-largea" }) end
 	if (questTerrain == "highland" or questTerrain == "mine" or questTerrain == "coast" or questTerrain == "glacier")
 		and AssetIds["Terrain/rock-tallc"] then table.insert(rockNames, { "Terrain", "rock-tallc" }) end
@@ -1233,7 +1190,7 @@ function FieldScene.start(opts)
 		{ "cliff-cornerlarge-stone", 32, 0.82, -0.43, 28 },
 		{ "cliff-blockdiagonal-rock", 31, 0.91, -0.84, -9 },
 		{ "cliff-cornertop-rock", 33, -0.84, -0.22, -24 },
-		{ if AssetIds["Terrain/kenney_stone_largeB"] then "kenney_stone_largeB" else "rock-largec", 16, 0.73, -0.78, 0 },
+		{ "rock-largec", 16, 0.73, -0.78, 0 },
 		{ "ground-pathrocks", 10, -0.52, -0.39, -17 },
 		{ "cliff-blockslope-rock", 24, -0.92, -0.45, 23 }
 	} elseif questTerrain == "volcanic" then {
@@ -1242,14 +1199,14 @@ function FieldScene.start(opts)
 		{ "cliff-blockdiagonal-rock", 33, 0.86, -0.54, -17 },
 		{ "debris", 14, -0.66, -0.35, 11 },
 		{ "cliff-cornerinnertop-rock", 31, 0.87, -0.83, 22 },
-		{ if AssetIds["Terrain/kenney_rock_tallE"] then "kenney_rock_tallE" else "rock-talld", 18, 0.77, -0.26, 14 },
+		{ "rock-talld", 18, 0.77, -0.26, 14 },
 		{ "ground-pathrocks", 9, -0.55, -0.44, 13 },
 	} elseif questTerrain == "highland" then {
 		{ "cliff-diagonal-rock", 44, -0.83, -0.65, 13 },
 		{ "cliff-blockslope-rock", 29, 0.80, -0.44, 28 },
 		{ "cliff-blockdiagonal-rock", 32, 0.92, -0.84, -11 },
 		{ "cliff-cornerinnertop-rock", 33, -0.84, -0.22, -24 },
-		{ if AssetIds["Terrain/kenney_rock_tallE"] then "kenney_rock_tallE" else "rock-talld", 16, 0.73, -0.78, 0 },
+		{ "rock-talld", 16, 0.73, -0.78, 0 },
 		{ "ground-pathbend", 10, -0.52, -0.39, -17 },
 		{ "cliff-large-rock", 36, -0.92, -0.85, 11 },
 		{ "cliff-cornerinnerlarge-rock", 29, -0.89, -0.38, 30 }
@@ -1276,14 +1233,14 @@ function FieldScene.start(opts)
 		{ "wood-support", 19, 0.78, -0.54, -12 },
 		{ "cliff-blockslope-rock", 28, 0.87, -0.82, 20 },
 		{ "log-stack", 8, -0.63, -0.41, 28 },
-		{ if AssetIds["Terrain/kenney_rock_largeD"] then "kenney_rock_largeD" else "rock-talld", 18, 0.79, -0.27, 9 },
+		{ "rock-talld", 18, 0.79, -0.27, 9 },
 		{ "cliff-cornerinnerlarge-rock", 31, -0.91, -0.88, 14 },
 	} elseif questTerrain == "fort" then {
 		-- [성채 전장] 성벽 실루엣을 유지하고 아래 암반·목재 보강 구조를 따로 깐다.
 		{ "cliff-blockslope-rock", 31, -0.85, -0.68, 18 },
 		{ "wood-support", 19, 0.78, -0.47, -10 },
 		{ "cliff-blockdiagonal-rock", 30, 0.89, -0.84, 17 },
-		{ if AssetIds["Terrain/kenney_stone_largeB"] then "kenney_stone_largeB" else "rock-largea", 13, -0.72, -0.32, -12 },
+		{ "rock-largea", 13, -0.72, -0.32, -12 },
 		{ "ground-pathrocks", 9, 0.63, -0.37, 19 },
 		{ "cliff-cornerlarge-rock", 28, -0.90, -0.81, 15 },
 	} elseif questTerrain == "ruins" then {
@@ -1291,20 +1248,20 @@ function FieldScene.start(opts)
 		{ "ruins-wall-arched", 28, -0.84, -0.75, 15 },
 		{ "ruins-pillar-decorated", 19, 0.81, -0.56, -21 },
 		{ "cliff-cornerinnertop-rock", 29, 0.89, -0.83, 24 },
-		{ if AssetIds["Terrain/kenney_stone_largeB"] then "kenney_stone_largeB" else "rock-largea", 13, -0.74, -0.34, 12 },
+		{ "rock-largea", 13, -0.74, -0.34, 12 },
 		{ "ground-pathrocks", 9, 0.61, -0.41, 18 },
 		{ "cliff-blockdiagonal-rock", 26, -0.91, -0.54, -12 },
 	} elseif questTerrain == "desert" then {
 		-- [사막 3D 층] 모래 언덕을 근경, 암벽을 원경으로 구분한다.
 		{ "mystic-sand-dune", 35, -0.86, -0.78, 10 },
-		{ if AssetIds["Terrain/kenney_rock_largeD"] then "kenney_rock_largeD" else "rock-largea", 19, 0.80, -0.47, -12 },
+		{ "rock-largea", 19, 0.80, -0.47, -12 },
 		{ "cliff-blockdiagonal-rock", 31, 0.90, -0.87, 21 },
 		{ "ground-pathrocks", 9, -0.58, -0.32, 8 },
 		{ "rock-talld", 14, -0.81, -0.19, -11 },
 		{ "cliff-cornerlarge-rock", 29, -0.91, -0.57, 15 },
 	} elseif questTerrain == "farm" then {
 		-- [농경지 3D 층] 승인된 실물 자갈길·밀밭·장작더미로 완만한 높이 차를 만든다.
-		{ if AssetIds["Terrain/kenney_ground_pathCorner"] then "kenney_ground_pathCorner" else "ground-pathstraight", 23, -0.81, -0.71, 14 },
+		{ "ground-pathstraight", 23, -0.81, -0.71, 14 },
 		{ "crops-wheatstageb", 13, 0.75, -0.52, -17 },
 		{ "cliff-blockslope-rock", 24, 0.89, -0.87, 12 },
 		{ "log-stack", 8, -0.67, -0.35, 10 },
@@ -1312,7 +1269,7 @@ function FieldScene.start(opts)
 		{ "ground-pathrocks", 11, -0.86, -0.43, -10 },
 	} elseif questTerrain == "swamp" then {
 		-- [습지 3D 층] 물가 둑·키 큰 수풀·이끼 바위를 겹치되 통행 판정은 바꾸지 않는다.
-		{ if AssetIds["Terrain/kenney_ground_riverCorner"] then "kenney_ground_riverCorner" else "ground-riverbendbank", 21, -0.84, -0.71, 24 },
+		{ "ground-riverbendbank", 21, -0.84, -0.71, 24 },
 		{ "forest-bush-detailed", 12, 0.77, -0.49, -12 },
 		{ "cliff-cornerinnertop-rock", 26, 0.89, -0.83, 15 },
 		{ "plant-bushdetailed", 8, -0.70, -0.37, 8 },
@@ -1330,7 +1287,7 @@ function FieldScene.start(opts)
 		{ "cliff-blockslope-rock", 25, -0.81, -0.53, 22 },
 		{ "cliff-cornerinnertop-rock", 24, 0.78, -0.73, -30 },
 		{ "plant-bushdetailed", 7, 0.60, -0.33, 6 },
-		{ if AssetIds["Terrain/kenney_plant_bushTriangle"] then "kenney_plant_bushTriangle" else "plant-bushlargetriangle", 8, -0.52, -0.29, 6 },
+		{ "plant-bushlargetriangle", 8, -0.52, -0.29, 6 },
 		{ "grass-large", 6, 0.51, -0.35, 0 },
 		{ "ground-pathbend", 7, -0.49, -0.56, 15 },
 		{ "cliff-blockslope-rock", 23, 0.90, -0.58, -21 },
@@ -1340,7 +1297,7 @@ function FieldScene.start(opts)
 		{ "ground-pathrocks", 7, 0.51, -0.42, 22 },
 		{ "cliff-blockslope-rock", 26, 0.89, -0.82, -12 },
 		{ "grass-large", 5, -0.57, -0.28, 0 },
-		{ if AssetIds["Terrain/kenney_rock_tallE"] then "kenney_rock_tallE" else "rock-tallc", 10, 0.76, -0.63, 0 },
+		{ "rock-tallc", 10, 0.76, -0.63, 0 },
 		{ "plant-bushdetailed", 6, -0.62, -0.29, 0 }
 	}
 	folder:SetAttribute("FieldDepthFeatureCount", 0)
@@ -1400,8 +1357,7 @@ function FieldScene.start(opts)
 		} elseif questTerrain == "forest" then {
 			-- [숲 전경] 모바일 두 슬롯에서 나무 수관과 낮은 관목이 겹치게 실루엣을 분리한다.
 			{ "plant-bushlargetriangle", 9, -0.55, 0.22, 0 },
-			{ if AssetIds["Terrain/kenney_tree_fat"] then "kenney_tree_fat" else "tree-tall", 20, 0.71, 0.06, -10 },
-			{ "plant-bushdetailed", 8, -0.69, 0.11, 9 },
+			{ "tree-tall", 20, 0.71, 0.06, -10 }, { "plant-bushdetailed", 8, -0.69, 0.11, 9 },
 			{ "ground-riverside", 19, -0.83, -0.37, 34 }, { "ground-riverbendbank", 12, 0.65, -0.56, -24 },
 		} elseif questTerrain == "glacier" then {
 			-- [빙하 전경] 같은 모델 수에서 회색 암석 대신 실제 밝은 석벽·침엽수층을 노출한다.
@@ -1535,32 +1491,6 @@ function FieldScene.start(opts)
 		if AssetIds["Terrain/grass-leafslarge"] then table.insert(detailAssets, "grass-leafslarge") end
 		if AssetIds["Terrain/plant-flattall"] then table.insert(detailAssets, "plant-flattall") end
 	end
-	-- [퀘스트 전경 팔레트] 원본 CC0 실물만 등록번호가 있을 때 기존 10/24개 디테일 슬롯에 대체 배치한다.
-	-- 모바일에서도 첫 3개 고유 소품과 진입·전투 동선을 유지하고, 새 배치 수량은 늘리지 않는다.
-	local natureDetail = if questTerrain == "forest" then {
-		"kenney_mushroom_red", "kenney_mushroom_redGroup", "kenney_mushroom_tanGroup",
-		"kenney_stump_roundDetailed", "kenney_plant_bushTriangle", "kenney_grass_leafs",
-	} elseif questTerrain == "jungle" then {
-		"kenney_mushroom_redGroup", "kenney_stump_old", "kenney_grass_leafs", "kenney_plant_bushTriangle",
-	} elseif questTerrain == "swamp" then {
-		"kenney_stump_old", "kenney_mushroom_tanGroup", "kenney_ground_riverCorner", "kenney_stone_smallFlatA",
-	} elseif questTerrain == "coast" or questTerrain == "lake" then {
-		"kenney_rock_smallFlatA", "kenney_stone_smallFlatA", "kenney_ground_riverCorner",
-	} elseif questTerrain == "highland" or questTerrain == "glacier" then {
-		"kenney_stone_largeB", "kenney_rock_largeB", "kenney_rock_smallFlatA",
-	} elseif questTerrain == "mine" or questTerrain == "volcanic" then {
-		"kenney_rock_largeD", "kenney_rock_smallFlatA", "kenney_stone_smallFlatA",
-	} elseif questTerrain == "ruins" or questTerrain == "fort" then {
-		"kenney_stone_largeB", "kenney_path_stoneCircle", "kenney_stone_smallFlatA",
-	} elseif questTerrain == "farm" then {
-		"kenney_ground_pathCorner", "kenney_log_stackLarge", "kenney_stump_old",
-	} elseif questTerrain == "desert" then {
-		"kenney_rock_largeD", "kenney_rock_smallFlatA", "kenney_stone_smallFlatA",
-	} else { "kenney_rock_smallFlatA", "kenney_grass_leafs", "kenney_stone_smallFlatA" }
-	for index = #natureDetail, 1, -1 do
-		local asset = natureDetail[index]
-		if AssetIds["Terrain/" .. asset] then table.insert(detailAssets, math.min(#detailAssets + 1, 4), asset) end
-	end
 	if questTerrain == "lake" or questTerrain == "coast" or questTerrain == "swamp" then
 		if AssetIds["Terrain/ground-riverbendbank"] then table.insert(detailAssets, "ground-riverbendbank") end
 		if AssetIds["Terrain/ground-riverside"] then table.insert(detailAssets, "ground-riverside") end
@@ -1579,18 +1509,7 @@ function FieldScene.start(opts)
 			elseif asset == "ground-riverbendbank" or asset == "ground-riverside" then 9
 			elseif asset == "grass-large" or asset == "grass-leafslarge" then 4.2
 			elseif asset == "plant-bushlarge" then 6.8 elseif asset == "plant-bushsmall" then 4.7
-			elseif asset == "kenney_mushroom_red" then 1.5
-			elseif asset == "kenney_mushroom_redGroup" or asset == "kenney_mushroom_tanGroup" then 2.8
-			elseif asset == "kenney_stump_old" or asset == "kenney_stump_roundDetailed" then 3.7
-			elseif asset == "kenney_stone_smallFlatA" or asset == "kenney_rock_smallFlatA" then 2.2
-			elseif asset == "kenney_rock_largeD" or asset == "kenney_rock_largeB" then 6.5
-			elseif asset == "kenney_stone_largeB" then 5.3
-			elseif asset == "kenney_path_stoneCircle" or asset == "kenney_ground_pathCorner" then 8
-			elseif asset == "kenney_ground_riverCorner" then 8.5
-			elseif asset == "kenney_log_stackLarge" then 4.8
-			elseif asset == "kenney_plant_bushTriangle" then 4.5
-			elseif asset == "kenney_grass_leafs" then 4.2
-			else rng:NextNumber(2.2, 5.2), nil, nil, false, rng:NextInteger(0, 11) * 30 }
+			else rng:NextNumber(2.2, 5.2), nil, nil, false }
 		entry.position = ORIGIN + Vector3.new(px, 0, math.clamp(pz, -half * 0.83, half * 0.27))
 		stageFeature(entry)
 	end
