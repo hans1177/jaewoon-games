@@ -799,11 +799,31 @@ async function prepareLicensedOriginals() {
     {original:'mushroom_redGroup', name:'kenney_mushroom_redGroup'},
     {original:'stump_old', name:'kenney_stump_old'},
     {original:'stone_smallFlatA', name:'kenney_stone_smallFlatA'},
+    // [고지·광산·사막] 암석 실루엣과 퇴적층 원본.
+    {original:'rock_largeD', name:'kenney_rock_largeD'},
+    {original:'rock_tallE', name:'kenney_rock_tallE'},
+    {original:'rock_smallFlatA', name:'kenney_rock_smallFlatA'},
+    // [빙하·폐허] 밝은 석영질 암석과 돌바닥 원본.
+    {original:'stone_largeB', name:'kenney_stone_largeB'},
+    {original:'path_stoneCircle', name:'kenney_path_stoneCircle'},
+    // [계절·정글 숲] 기존 나무 예산을 대체하는 확장 수종.
+    {original:'tree_defaultDark', name:'kenney_tree_defaultDark'},
+    {original:'tree_pinetallD_detailed', name:'kenney_tree_pinetallD_detailed'},
+    {original:'tree_palmShort', name:'kenney_tree_palmShort'},
+    // [습지·숲 하층] 뿌리·그루터기·버섯·수풀·자연 길.
+    {original:'mushroom_tanGroup', name:'kenney_mushroom_tanGroup'},
+    {original:'stump_roundDetailed', name:'kenney_stump_roundDetailed'},
+    {original:'plant_bushTriangle', name:'kenney_plant_bushTriangle'},
+    {original:'grass_leafs', name:'kenney_grass_leafs'},
+    {original:'log_stackLarge', name:'kenney_log_stackLarge'},
+    {original:'ground_riverCorner', name:'kenney_ground_riverCorner'},
+    {original:'ground_pathCorner', name:'kenney_ground_pathCorner'},
   ];
   const pendingNature = [];
   for (const entry of natureModels) {
     const target = path.join(ROOT, 'assets/terrain', entry.name + '.glb');
     const member = 'Models/GLTF format/' + entry.original + '.glb';
+    const nameKey = value => String(value).split('/').pop().replace(/\.glb$/i, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
     let bytes = null, proof = null;
     try { bytes = await fs.readFile(target); } catch (e) { if (e.code !== 'ENOENT') throw e; }
     try { proof = JSON.parse(await fs.readFile(target + '.license.json', 'utf8')); }
@@ -811,7 +831,7 @@ async function prepareLicensedOriginals() {
     if (bytes || proof) {
       if (!bytes || !proof || proof.license !== 'CC0-1.0' || proof.author !== 'Kenney'
         || proof.source !== natureArchive || proof.sourcePage !== naturePage
-        || proof.sourceMember !== member || proof.archiveSha256 !== natureArchiveSha
+        || nameKey(proof.sourceMember || '') !== nameKey(member) || proof.archiveSha256 !== natureArchiveSha
         || proof.sourceSha256 !== crypto.createHash('sha256').update(bytes).digest('hex'))
         throw new Error('MARE_CC0_NATURE_SOURCE_MISMATCH:' + entry.name);
       console.log('MARE_CC0_NATURE_ORIGINAL_VERIFIED', entry.name, proof.sourceSha256);
@@ -848,9 +868,22 @@ async function prepareLicensedOriginals() {
     await fs.writeFile(archivePath, archive);
     const inbox = path.join(ROOT, 'assets/inbox/Terrain');
     await fs.mkdir(inbox, {recursive:true});
+    // [정확한 GLB 멤버] 공식 ZIP의 실제 대소문자·구분 문자를 읽어서 1:1 대응한다.
+    // 없는 종은 다른 모델로 대체하지 않으며 중복된 정규화 이름은 차단한다.
+    const archiveMembers = execFileSync('unzip', ['-Z1', archivePath], {encoding:'utf8', maxBuffer:1000000, timeout:20000})
+      .split(/\r?\n/).filter(member => member.endsWith('.glb') && member.includes('GLTF format/'));
+    const archiveIndex = new Map();
+    for (const member of archiveMembers) {
+      const normalized = member.split('/').pop().replace(/\.glb$/i, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+      if (archiveIndex.has(normalized)) throw new Error('MARE_CC0_NATURE_DUPLICATE_ARCHIVE_MEMBER:' + normalized);
+      archiveIndex.set(normalized, member);
+    }
     const newHashes = new Set();
     for (const entry of pendingNature) {
-      const bytes = execFileSync('unzip', ['-p', archivePath, entry.member], {maxBuffer:3000000, timeout:20000});
+      const normalized = entry.original.replace(/[^a-z0-9]/gi, '').toLowerCase();
+      const member = archiveIndex.get(normalized);
+      if (!member) throw new Error('MARE_CC0_NATURE_OFFICIAL_MEMBER_MISSING:' + entry.name);
+      const bytes = execFileSync('unzip', ['-p', archivePath, member], {maxBuffer:3000000, timeout:20000});
       if (bytes.length < 500 || bytes.length > 2500000 || bytes.toString('ascii',0,4) !== 'glTF'
         || bytes.readUInt32LE(4) !== 2 || bytes.readUInt32LE(8) !== bytes.length
         || bytes.readUInt32LE(16) !== 0x4e4f534a)
@@ -869,7 +902,7 @@ async function prepareLicensedOriginals() {
       await fs.writeFile(path.join(inbox,name),bytes);
       await fs.writeFile(path.join(inbox,name+'.license.json'),JSON.stringify({
         author:'Kenney', license:'CC0-1.0', source:natureArchive, sourcePage:naturePage,
-        sourceMember:entry.member, archiveSha256:natureArchiveSha, sourceSha256:hash,
+        sourceMember:member, archiveSha256:natureArchiveSha, sourceSha256:hash,
         retrievedFrom:downloadedFrom,
         modification:'Unmodified official Kenney Nature Kit 2.1 model',
         commercialUseAllowed:true, derivativesAllowed:true,
