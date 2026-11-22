@@ -1539,7 +1539,10 @@ test('마을 7개 시설은 실제 건설 수량·번영도·항구 발전도에
   assert.ok(line&&line.includes('economy = "'+key+'"'),name+' 경제 시설 연계');
   assert.ok(economy.includes('id = "'+key+'"'),key+' 기존 세계경제 건축물');
  }
- assert.match(scene,/sceneLevel = math\.clamp\(math\.floor\(\(sceneLevel \+ info\.sim\.stage\) \/ 2 \+ 0\.5\), 1, 5\)/);
+ // [오너 지시] 외형은 시뮬 발전 단계가 정하고, 플레이어 투자는 시뮬 단계보다 높을 때만 최대 +1 보조한다.
+ assert.match(scene,/local simStage = math\.clamp\(math\.floor\(info\.sim\.stage\), 1, 5\)/);
+ assert.match(scene,/local investBonus = if sceneLevel > simStage then 1 else 0/);
+ assert.match(scene,/sceneLevel = math\.clamp\(simStage \+ investBonus, 1, 5\)/);
  for(const threshold of ['count >= 16 then 5','count >= 9 then 4','count >= 4 then 3','count >= 1 then 2']) {
   assert.ok(facilities.includes(threshold),'실제 수량 증축 경계 '+threshold);
  }
