@@ -3494,9 +3494,14 @@ test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 
   const pose=read('ReplicatedStorage/Shared/Pose.luau');
   assert.ok(pose.includes('local cuff = npcOutfit and assetName == "outfit_cuff"'));
   assert.ok(pose.includes('local boot = npcOutfit and assetName == "outfit_boot"'));
-  assert.ok(pose.includes('elseif cuff then 0.55 elseif boot then 1.18'));
-  assert.ok(pose.includes('if cuff then -0.29 elseif boot then -0.11 else spec[6]'));
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen, 0.47)'));
+  assert.ok(pose.includes('elseif cuff then 0.36 elseif boot then 0.94'), '소매와 장화 높이를 관절 대비 축소');
+  assert.ok(pose.includes('if cuff then -0.36 elseif boot then -0.15 else spec[6]'), '손목/정강이 아래 장착');
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen, 0.47)'), '원본 린넨 색상 보존');
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen, 0.78)'), 'PBR 흰 소매 밝은 무채색만 복구');
+  assert.ok(pose.includes('if not metalTrim and pale then'), 'PBR 흰 장화만 보정, 금속 보호');
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(leather, 0.83)'), 'PBR 흰 장화 가죽염색');
+  assert.ok(pose.includes('if assetName == "outfit_cuff" and neutral then 0.83'), '무텍스처 흰 소매 추가 보정');
+  assert.ok(pose.includes('part.Color:Lerp(leather, if bright then 0.86 else 0.20)'), '무텍스처 흰 장화 추가 보정');
   assert.ok(pose.includes('linenOnly = candidate[2] ~= Enum.Material.Metal'));
   assert.ok(pose.includes('bestError < 0.0064 and linenOnly and part.Material ~= Enum.Material.Metal'));
   assert.ok(pose.includes('outfit_cuff" then npcClothTint:Lerp(Color3.fromRGB(205, 192, 169), 0.42)'));
