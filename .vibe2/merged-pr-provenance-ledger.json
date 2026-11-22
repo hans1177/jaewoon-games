@@ -314211,11 +314211,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_078dbe5b1076589aa7cea530",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14237",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7145d36b7b0216517f89e8699f3bc4f3c1bc6c29",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14237,
+        "baseBranch": "main",
+        "headBranch": "owner/mare-depth-layer4-assets-20261122",
+        "baseSha": "7145d36b7b0216517f89e8699f3bc4f3c1bc6c29",
+        "headSha": "b635b3c181358a2146242e1261b345d82016a9e0",
+        "mergeCommitSha": "97762a0c7cb68b9cd19c358b4f17387d4f840073",
+        "mergedAt": "2026-11-22T08:03:13Z",
+        "authorLogin": "hans1177",
+        "titleHash": "77b353cd169c9b216adae7f51985f27bdaf790f7856cf2acefe5f681111ca45c",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/mare-depth-layer4-assets-20261122",
+        "candidateSha": "b635b3c181358a2146242e1261b345d82016a9e0"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 0,
+        "addedLineCount": 20,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/terrain/cliff-cornerlarge-stone.glb",
+          "roblox-games/mare-essentia/assets/terrain/cliff-large-stone.glb",
+          "roblox-games/mare-essentia/assets/terrain/grass-leafslarge.glb",
+          "roblox-games/mare-essentia/assets/terrain/ground-riverbendbank.glb",
+          "roblox-games/mare-essentia/assets/terrain/ground-riverside.glb",
+          "roblox-games/mare-essentia/assets/terrain/plant-bushsmall.glb",
+          "roblox-games/mare-essentia/assets/terrain/tree-oak-fall.glb",
+          "roblox-games/mare-essentia/assets/terrain/tree-palmbend.glb"
+        ],
+        "codingRelevantFiles": [],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14237",
+        "merge-commit:97762a0c7cb68b9cd19c358b4f17387d4f840073",
+        "base-main:7145d36b7b0216517f89e8699f3bc4f3c1bc6c29"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2520
+    "total": 2521
   }
 }
