@@ -7633,6 +7633,49 @@ function FieldScene.start(opts)
 			addIcon(wbtn, "Menu/field_weapon")
 			wbtn.Text = ""
 		end
+		-- [무기교체 회전 광륜] 기존 교체 버튼 위에 재사용형 UI 링과 섬광만 얹는다. 신규 버튼/3D 입자는 없다.
+		wbtn.ClipsDescendants = false
+		local swapHalo = Instance.new("Frame")
+		swapHalo.Name = "FieldWeaponSwapHalo"
+		swapHalo.AnchorPoint = Vector2.new(0.5, 0.5)
+		swapHalo.Position = UDim2.fromScale(0.5, 0.5)
+		swapHalo.Size = UDim2.fromScale(0.9, 0.9)
+		swapHalo.BackgroundTransparency = 1
+		swapHalo.Active = false
+		swapHalo.ZIndex = wbtn.ZIndex + 8
+		swapHalo.Parent = wbtn
+		Instance.new("UICorner", swapHalo).CornerRadius = UDim.new(1, 0)
+		local swapStroke = Instance.new("UIStroke")
+		swapStroke.Color = Color3.fromRGB(255, 233, 163)
+		swapStroke.Thickness = if visualMobile then 2.3 else 3.1
+		swapStroke.Transparency = 1
+		swapStroke.Parent = swapHalo
+		local swapBeam = Instance.new("UIGradient")
+		swapBeam.Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 244, 211)),
+			ColorSequenceKeypoint.new(0.5, Color3.fromRGB(142, 226, 255)),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 222, 140)),
+		})
+		swapBeam.Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1),
+			NumberSequenceKeypoint.new(0.38, 0.85),
+			NumberSequenceKeypoint.new(0.52, 0),
+			NumberSequenceKeypoint.new(0.66, 0.85),
+			NumberSequenceKeypoint.new(1, 1),
+		})
+		swapBeam.Parent = swapStroke
+		local swapFlash = Instance.new("Frame")
+		swapFlash.Name = "FieldWeaponSwapFlash"
+		swapFlash.AnchorPoint = Vector2.new(0.5, 0.5)
+		swapFlash.Position = UDim2.fromScale(0.5, 0.5)
+		swapFlash.Size = UDim2.fromScale(0.78, 0.78)
+		swapFlash.BackgroundColor3 = Color3.fromRGB(246, 250, 255)
+		swapFlash.BackgroundTransparency = 1
+		swapFlash.BorderSizePixel = 0
+		swapFlash.Active = false
+		swapFlash.ZIndex = wbtn.ZIndex + 9
+		swapFlash.Parent = wbtn
+		Instance.new("UICorner", swapFlash).CornerRadius = UDim.new(1, 0)
 		wbtn:SetAttribute("SkillFullName", wpn.name .. " ↔ " .. reserveWeapon.name)
 		wbtn:SetAttribute("WeaponChoiceCount", 2)
 		wbtn:SetAttribute("WeaponPrimaryId", wpn.id)
@@ -7649,6 +7692,19 @@ function FieldScene.start(opts)
 			swingKind, swingCombo, slashIdx = nil, nil, 0
 			swingBridge.rootFrom, swingBridge.rootLast = nil, nil
 			wpn, reserveWeapon = reserveWeapon, wpn
+			-- [교체 성공 피드백] 회전 광륜 1개 + 짧은 섬광 1개만 재사용한다. 모바일 신규 파티클 방출 0개.
+			swapHalo.Size = UDim2.fromScale(0.9, 0.9)
+			swapStroke.Transparency = 0.05
+			swapBeam.Rotation = 0
+			swapFlash.BackgroundTransparency = if visualMobile then 0.82 else 0.73
+			TweenService:Create(swapHalo, TweenInfo.new(0.44, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Size = UDim2.fromScale(1.20, 1.20) }):Play()
+			TweenService:Create(swapBeam, TweenInfo.new(0.44, Enum.EasingStyle.Linear),
+				{ Rotation = 360 }):Play()
+			TweenService:Create(swapStroke, TweenInfo.new(0.44, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Transparency = 1 }):Play()
+			TweenService:Create(swapFlash, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ BackgroundTransparency = 1 }):Play()
 			wbtn:SetAttribute("SkillFullName", wpn.name .. " ↔ " .. reserveWeapon.name)
 			if wbtn:GetAttribute("IconArtKey") ~= "Menu/field_weapon" then wbtn.Text = "교체" end
 			wbtn:SetAttribute("WeaponPrimaryId", wpn.id)
@@ -8036,6 +8092,49 @@ function FieldScene.start(opts)
                             Color = if key == "dodge" then Color3.fromRGB(114, 244, 228) else Color3.fromRGB(224, 184, 105),
                             Thickness = if key == "dodge" then 3.2 else 2,
                         }):Play()
+                    end
+                    -- [재사용 준비 회전광] 기존 버튼의 쿨타임 종료 순간에만 링 1개 생성·재사용한다.
+                    -- 모바일에서는 작은 2D 선 하나만 움직이며 신규 ParticleEmitter와 매 프레임 생성은 없다.
+                    local readyHalo = sb.btn:FindFirstChild("FieldReadyHalo")
+                    if not readyHalo then
+                        sb.btn.ClipsDescendants = false
+                        readyHalo = Instance.new("Frame")
+                        readyHalo.Name = "FieldReadyHalo"
+                        readyHalo.AnchorPoint = Vector2.new(0.5, 0.5)
+                        readyHalo.Position = UDim2.fromScale(0.5, 0.5)
+                        readyHalo.Size = UDim2.fromScale(0.92, 0.92)
+                        readyHalo.BackgroundTransparency = 1
+                        readyHalo.Active = false
+                        readyHalo.ZIndex = sb.btn.ZIndex + 8
+                        readyHalo.Parent = sb.btn
+                        Instance.new("UICorner", readyHalo).CornerRadius = UDim.new(1, 0)
+                        local lightRim = Instance.new("UIStroke")
+                        lightRim.Color = Color3.fromRGB(255, 245, 177)
+                        lightRim.Thickness = if visualMobile then 2 else 2.8
+                        lightRim.Transparency = 1
+                        lightRim.Parent = readyHalo
+                        local sweep = Instance.new("UIGradient")
+                        sweep.Transparency = NumberSequence.new({
+                            NumberSequenceKeypoint.new(0, 1),
+                            NumberSequenceKeypoint.new(0.35, 0.92),
+                            NumberSequenceKeypoint.new(0.5, 0),
+                            NumberSequenceKeypoint.new(0.65, 0.92),
+                            NumberSequenceKeypoint.new(1, 1),
+                        })
+                        sweep.Parent = lightRim
+                    end
+                    local lightRim = readyHalo:FindFirstChildOfClass("UIStroke")
+                    local sweep = lightRim and lightRim:FindFirstChildOfClass("UIGradient")
+                    if lightRim and sweep then
+                        readyHalo.Size = UDim2.fromScale(0.92, 0.92)
+                        lightRim.Transparency = 0.03
+                        sweep.Rotation = 0
+                        TweenService:Create(readyHalo, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            { Size = UDim2.fromScale(1.14, 1.14) }):Play()
+                        TweenService:Create(sweep, TweenInfo.new(0.47, Enum.EasingStyle.Linear),
+                            { Rotation = 360 }):Play()
+                        TweenService:Create(lightRim, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            { Transparency = 1 }):Play()
                     end
                     -- [지상 준비 완료] 엄지 위치에서 한 번 크게 숨쉬듯 확대 후 복귀한다.
                     local readyScale = sb.btn:FindFirstChildOfClass("UIScale")
