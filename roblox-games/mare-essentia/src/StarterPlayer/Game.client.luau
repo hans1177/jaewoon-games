@@ -8316,17 +8316,25 @@ function H.showCardDetail(card)
 	end
 	mkLabel(body, fieldDef.name .. "  ·  " .. rarity, 14, brown, true, 0)
 	encHeading(card.name, 1).TextSize = 28
-	local art = Instance.new("Frame")
-	art.LayoutOrder = 2
+	-- [원화 자리] 세로 7:10 빈 틀. 등록된 원화가 없으면 분야 색 틀만 보이고, 원화가 생기면 그 자리에 들어간다.
+	local artRow = Instance.new("Frame")
+	artRow.LayoutOrder = 2
+	artRow.BackgroundTransparency = 1
 	local camera = workspace.CurrentCamera
 	local viewportHeight = if camera then camera.ViewportSize.Y else 600
-	art.Size = UDim2.new(1, -8, 0, math.clamp(math.floor(viewportHeight * 0.43), 140, 410))
+	local artH = math.clamp(math.floor(viewportHeight * 0.43), 140, 410)
+	artRow.Size = UDim2.new(1, -8, 0, artH)
+	artRow.Parent = body
+	local art = Instance.new("Frame")
+	art.AnchorPoint = Vector2.new(0.5, 0)
+	art.Position = UDim2.fromScale(0.5, 0)
+	art.Size = UDim2.fromOffset(math.floor(artH * 0.7), artH)
 	local artBorder = Instance.new("UIStroke")
 	artBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	artBorder.Color = brown
 	artBorder.Parent = art
 	corner(art, 5)
-	art.Parent = body
+	art.Parent = artRow
 	paintCardArt(art, card, fieldDef, true)
 
 	-- 강화 2단계부터 삽화가 움직인다 (천천히 확대·이동 + 반짝임)
@@ -8534,6 +8542,35 @@ function H.showCardDetail(card)
 			mkLabel(body, "연결된 카드  " .. card.combat.origin, 13, brown, false, 7)
 		end
 	elseif card.found then
+		local wiki = require(Shared:WaitForChild("KnowledgeWiki")).Wiki[card.id]
+		if wiki then
+			-- [위키식 해설] 한 줄 요약 + 접는 섹션(첫 섹션만 펼침). 기존 본문은 아래에 그대로 둔다.
+			mkLabel(body, wiki.summary, 16, brown, true, 4)
+			for i, sec in wiki.sections do
+				local open = i == 1
+				local head = Instance.new("TextButton")
+				head.LayoutOrder = 40 + i * 2
+				head.Size = UDim2.new(1, -8, 0, 36)
+				head.BackgroundTransparency = 1
+				head.AutoButtonColor = false
+				head.TextXAlignment = Enum.TextXAlignment.Left
+				head.Font = Enum.Font.GothamBold
+				head.TextSize = 17
+				head.TextColor3 = ink
+				head.Parent = body
+				local txt = mkLabel(body, sec.body, 15, ink, false, 41 + i * 2)
+				txt.Visible = open
+				local function sync()
+					head.Text = (if txt.Visible then "▾ " else "▸ ") .. sec.title
+				end
+				sync()
+				head.Activated:Connect(function()
+					txt.Visible = not txt.Visible
+					sync()
+				end)
+			end
+			mkLabel(body, "해설 참고  위키백과 · " .. wiki.topic:gsub("_", " ") .. " (CC BY-SA 4.0)", 12, brown, false, 60)
+		end
 		if article then
 			encHeading("특징과 원리", 5)
 			mkLabel(body, article.details, 15, ink, false, 6)
