@@ -274,11 +274,13 @@ local function addSkirt(model, color, long)
 	if not (lower and lower:IsA("BasePart")) then
 		return
 	end
-	local len = if long then lower.Size.Y * 2.15 else lower.Size.Y * 1.55
+	-- [치마 링 방지] 허리 둘레만 두른 납작한 원판처럼 보이지 않도록 길이를 몸 폭 기준(무릎 부근)으로 잡는다.
+	-- 기존 원통 치마를 유지하되 길이만 늘리고 지름은 허리 폭 안쪽으로 줄여 다리를 감싸는 실루엣으로 만든다.
+	local len = lower.Size.X * (if long then 0.95 else 0.66)
 	local q = Instance.new("Part")
 	q.Name = "Skirt"
 	q.Shape = Enum.PartType.Cylinder
-	q.Size = Vector3.new(len, lower.Size.X * 1.18, lower.Size.X * 1.12)
+	q.Size = Vector3.new(len, lower.Size.X * 1.10, lower.Size.X * 1.04)
 	q.Color = color
 	-- [기존 치맛자락] 별도 새 장식 대신 원형을 유지하고 무광 천 재질로 조정한다.
 	q.Material, q.Reflectance = Enum.Material.Fabric, 0
