@@ -1,0 +1,35 @@
+// 파일명: android-games/animal-auto-battle/app/build.gradle
+plugins { id 'com.android.application' }
+// 서명 키는 저장하지 않고 환경 변수로만 받는다.
+def uploadStore = System.getenv('ANDROID_UPLOAD_KEYSTORE')
+android {
+    namespace 'com.jaewoon.animalautobattle'
+    compileSdk 36
+    defaultConfig {
+        applicationId 'com.jaewoon.animalautobattle'
+        minSdk 26
+        targetSdk 36
+        versionCode 1
+        versionName '1.0.0'
+    }
+    signingConfigs {
+        release {
+            if (uploadStore) {
+                storeFile file(uploadStore)
+                storePassword System.getenv('ANDROID_UPLOAD_STORE_PASSWORD')
+                keyAlias System.getenv('ANDROID_UPLOAD_KEY_ALIAS')
+                keyPassword System.getenv('ANDROID_UPLOAD_KEY_PASSWORD')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (uploadStore) signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
