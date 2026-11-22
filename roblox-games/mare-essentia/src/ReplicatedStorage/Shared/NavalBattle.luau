@@ -695,18 +695,24 @@ function NavalBattle.play(opts)
 		-- [실물 해안선 5차] 기존 승인 자연 메시로 사선 암반과 오목한 절벽 윗턱을 교차한다.
 		-- 해역별 해안 모델 수량과 기등록 사용 권한 검사는 그대로 유지한다.
 		-- 기존 해역별 5개 모델 예산과 모바일 1개 실물 제한은 유지한다.
+		-- [CC0 신규 원경 3층] 기존 5개 실물 해안 슬롯 안에서만 문화권 지형을 교체한다.
+		-- AssetIds에 등록·사용권한이 없는 원본은 기존 절벽·지반 메시를 그대로 유지한다.
 		local depthCoast = if coast.id == "caribbean" or coast.id == "tropical" or coast.id == "gold_coast" then {
-			{ "cliff-diagonal-rock", 146, -473, -393 }, { "tree-palmbend", 70, -444, -353 },
+			{ AssetIds["Terrain/cliff-topdiagonal-rock"] and "cliff-topdiagonal-rock" or "cliff-diagonal-rock", 146, -473, -393 },
+			{ "tree-palmbend", 70, -444, -353 },
 			{ "cliff-cornerinnertop-rock", 124, -471, -388 }, { "cliff-cornertop-rock", 92, 464, 401 },
-			{ "rock-largec", 70, 478, 410 },
+			{ AssetIds["Terrain/platform-grass"] and "platform-grass" or "rock-largec", 70, 478, 410 },
 		} elseif coast.id == "north_sea" or coast.id == "arctic" or coast.id == "cape" or coast.id == "atlantic_storm" then {
-			{ "cliff-cornerinnertop-rock", 158, 473, -401 }, { "cliff-cornerinnerlarge-rock", 125, -472, 395 },
-			{ "cliff-diagonal-rock", 137, 489, -425 }, { "cliff-waterfall-stone", 123, -500, 384 },
-			{ "cliff-cornerlarge-rock", 102, -437, -410 },
+			{ AssetIds["Terrain/cliff-cornerinnertop-stone"] and "cliff-cornerinnertop-stone" or "cliff-cornerinnertop-rock", 158, 473, -401 },
+			{ "cliff-cornerinnerlarge-rock", 125, -472, 395 },
+			{ "cliff-diagonal-rock", 137, 489, -425 },
+			{ AssetIds["Terrain/cliff-waterfalltop-stone"] and "cliff-waterfalltop-stone" or "cliff-waterfall-stone", 123, -500, 384 },
+			{ AssetIds["Terrain/cliff-cave-stone"] and "cliff-cave-stone" or "cliff-cornerlarge-rock", 102, -437, -410 },
 		} else {
 			{ "cliff-diagonal-rock", 146, -488, 375 }, { "cliff-cornerinnertop-rock", 130, 495, -413 },
-			{ "cliff-blockslope-rock", 128, -496, 371 }, { "cliff-large-stone", 136, 486, -401 },
-			{ "rock-largec", 96, 438, 410 },
+			{ AssetIds["Terrain/cliff-blockslopewalls-rock"] and "cliff-blockslopewalls-rock" or "cliff-blockslope-rock", 128, -496, 371 },
+			{ "cliff-large-stone", 136, 486, -401 },
+			{ AssetIds["Terrain/platform-stone"] and "platform-stone" or "rock-largec", 96, 438, 410 },
 		}
 		folder:SetAttribute("NavalDepthCoastCount", 0)
 		task.delay(1.0, function()
