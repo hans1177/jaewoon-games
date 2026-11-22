@@ -203,3 +203,13 @@
 - **로블록스 자산번호:** `114076190690083`, `assets-registered.json`의 `usePermissionGranted:true`와 `sourceSha256`, 승인표·검수표 해시 일치. `src/ReplicatedStorage/Shared/AssetIds.luau`의 `["CardArt/eu_25"] = 114076190690083` 연결 확인.
 - **다음 미등록 원화 후보:** `eu_26` 알프스. 최신 `main` 승인/원본/등록 상태부터 재확인한 뒤, 이미 제작된 SVG를 훼손하지 않고 별도 고품질 1:1 컬러 역사 회화 원화를 기존 경로로 등록한다. 다른 카드 원화를 ID만 바꿔 재사용하지 않는다.
 - **별도 미검증:** Roblox Studio에서 카드의 실제 표시 및 최종 게임 Place 게시·모바일 런타임. 기존 게임 밸런스·저장 키·기존 등록 자산은 변경하지 않았다.
+
+## 19. 알프스 `eu_26` 원화 및 정식 로블록스 자산등록 (2026-11-22)
+
+- **원화:** 유럽 알프스의 설산·빙하·청록빛 호수·깊은 산골짜기·극적인 햇살을 표현한 1024×1024 정사각형 컬러 유화 원본. 글자·카드 금테·분할 스프라이트·서명 없음. 기존 `src/eu_26.svg` 및 `eu_24`·`eu_25` 등 등록 원화는 보존했다.
+- **원격 원본:** `assets/cardart/src/eu_26-original.png`, SHA-256 `3bb1fe5c214b519550ff1cec10566f21b6f8992e5a4ce9b96b2640349601738d`, Git Blob `828dd844957c55c417d21f3a8bc2758b7c5b4d08`. 원본 실제 PNG 바이트가 Blob API에 업로드됐고 해시가 일치한다.
+- **main 반영:** [커밋 `6c8c30755f4738d18af26b60274325b297df4f95`](https://github.com/hans1177/jaewoon-games/commit/6c8c30755f4738d18af26b60274325b297df4f95)에서 기존 승인표 `APPROVED_IMAGES.json`의 `approved["CardArt/eu_26"]`·`modelOriginals` 검수 결과와 PNG를 한 커밋으로 반영했다.
+- **기존 정식 로블록스 등록:** [워크플로 #45025632277](https://github.com/hans1177/jaewoon-games/actions/runs/45025632277) `register` 작업 `success`. 로그 `MODEL_ORIGINAL_PROMOTED CardArt/eu_26`, `UPLOADED CardArt/eu_26 137445389080483`, `GRANTED_ASSET CardArt/eu_26`, `REGISTERED_COUNT=1405 FAILED_COUNT=0` 확인.
+- **자산번호·권한·연결:** `137445389080483`. 현재 `main`의 `assets-registered.json`에 `usePermissionGranted:true`, `sourceSha256`이 승인·최종 PNG 해시와 동일. `src/ReplicatedStorage/Shared/AssetIds.luau`의 `["CardArt/eu_26"] = 137445389080483` 확인.
+- **다음 후보:** `eu_27` 지브롤터 해협. 최신 `main`에서 미등록 여부를 먼저 확인한 후 대서양·지중해를 연결하는 협곡 해상 통로에 정확한 독립 회화 PNG를 제작한다. 등록된 원화·자산번호·밸런스·저장키를 임의 변경하지 않는다.
+- **별도 미검증:** Roblox Studio 실제 카드 표시와 최종 게임 Place 게시·모바일 실화면은 본 자산등록 워크플로만으로 확인된 것이 아니다.
