@@ -246275,7 +246275,8 @@
         "actions-run:45048773342",
         "system-ai-handoff-to-reservation:system-ai:45049814510:1",
         "actions-run:45049814510",
-        "system-ai-handoff-to-reservation:system-ai:45050730242:1"
+        "system-ai-handoff-to-reservation:system-ai:45050730242:1",
+        "actions-run:45050730242"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -246293,7 +246294,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-11-22T17:49:12.516Z"
+      "updatedAt": "2026-11-22T17:53:02.318Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -252629,7 +252630,13 @@
         "actions-run:45048773342",
         "system-ai-handoff-to-reservation:system-ai:45049814510:1",
         "actions-run:45049814510",
-        "system-ai-handoff-to-reservation:system-ai:45050730242:1"
+        "system-ai-handoff-to-reservation:system-ai:45050730242:1",
+        "actions-run:45050730242",
+        "external-ai-raw-output-sha256:8f8423336b98d3fe109591e71bd44ec05305d6cce784a88d93818fcbd6751539",
+        "system-ai-applied-answer-sha256:e8833dd327733fc86eb3aa0b73e7c4e7e34971c3297fdc5cb4aa094b83b17e8b",
+        "repair-strategy-fingerprint:05d616b483a80d84d4cd8ec8c7d1c009d67e7d376e3432c3b9b2c8cd4f4dc8b2",
+        "failed-strategy-fingerprint:05d616b483a80d84d4cd8ec8c7d1c009d67e7d376e3432c3b9b2c8cd4f4dc8b2",
+        "model-output-sha256:8f8423336b98d3fe109591e71bd44ec05305d6cce784a88d93818fcbd6751539"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -252647,7 +252654,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-11-22T17:49:12.485Z"
+      "updatedAt": "2026-11-22T17:53:02.284Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -259346,7 +259353,8 @@
         "model-output-sha256:32ada0ddaee009d76d40586aadfdf899de249f9857e8820b113fcfbd5f6de2f1",
         "system-ai-handoff-to-reservation:system-ai:45049814510:1",
         "actions-run:45049814510",
-        "system-ai-handoff-to-reservation:system-ai:45050730242:1"
+        "system-ai-handoff-to-reservation:system-ai:45050730242:1",
+        "actions-run:45050730242"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -259364,7 +259372,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-11-22T17:49:12.606Z"
+      "updatedAt": "2026-11-22T17:53:02.402Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -274978,7 +274986,8 @@
         "actions-run:45048773342",
         "system-ai-handoff-to-reservation:system-ai:45049814510:1",
         "actions-run:45049814510",
-        "system-ai-handoff-to-reservation:system-ai:45050730242:1"
+        "system-ai-handoff-to-reservation:system-ai:45050730242:1",
+        "actions-run:45050730242"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -274996,7 +275005,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-30T03:07:30.585Z",
-      "updatedAt": "2026-11-22T17:49:12.729Z"
+      "updatedAt": "2026-11-22T17:53:02.516Z"
     },
     {
       "id": "recovery-00b462d32b871dc8e70a",
@@ -287130,7 +287139,8 @@
         "actions-run:45048773342",
         "system-ai-handoff-to-reservation:system-ai:45049814510:1",
         "actions-run:45049814510",
-        "system-ai-handoff-to-reservation:system-ai:45050730242:1"
+        "system-ai-handoff-to-reservation:system-ai:45050730242:1",
+        "actions-run:45050730242"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -287148,7 +287158,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-11-18T05:48:40.335Z",
-      "updatedAt": "2026-11-22T17:49:12.752Z"
+      "updatedAt": "2026-11-22T17:53:02.538Z"
     },
     {
       "id": "recovery-000fe4cf648e182f3ac1",
@@ -302413,7 +302423,13 @@
         "system-ai-applied-answer-sha256:bc31b0d15b436cc930956fbc9f207eeff2798362ee5b2023d5151e1e3225b974",
         "repair-strategy-fingerprint:345b294e05cbd513bde3b97f572344fb7e3010ff6a32907e5db1dd6c3239b8ca",
         "failed-strategy-fingerprint:345b294e05cbd513bde3b97f572344fb7e3010ff6a32907e5db1dd6c3239b8ca",
-        "model-output-sha256:6e905009e661551f27c250d70f2551d245af65fd5f396ba0d5b3fac1c2e6c09b"
+        "model-output-sha256:6e905009e661551f27c250d70f2551d245af65fd5f396ba0d5b3fac1c2e6c09b",
+        "actions-run:45050730242",
+        "external-ai-raw-output-sha256:e06589d1c3492b44f927e53b351b40d0c958ebd01bce39b22334464cfb938c0b",
+        "system-ai-applied-answer-sha256:ae2a0de2bbae5c690bb49227e1073052d2fd7f727dab4ebfe45d8f2bce7cea34",
+        "repair-strategy-fingerprint:8651ef29c71351aacb6cc26493c1ddec5dc1b087a484bf1e17022b03217ffa00",
+        "failed-strategy-fingerprint:8651ef29c71351aacb6cc26493c1ddec5dc1b087a484bf1e17022b03217ffa00",
+        "model-output-sha256:e06589d1c3492b44f927e53b351b40d0c958ebd01bce39b22334464cfb938c0b"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -302431,7 +302447,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-11-22T16:05:05.393Z",
-      "updatedAt": "2026-11-22T17:49:12.787Z"
+      "updatedAt": "2026-11-22T17:53:02.571Z"
     }
   ]
 }
