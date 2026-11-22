@@ -1,384 +1,643 @@
 {
- "sourceRevision": "11922abb8444ea8cbcfbe47e61c9310ee2178efc",
+ "sourceRevision": "9858f427876ccef3b1e498badfaf05aa7c618902",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "cam\ntext"
+   "out": "QAAutoIntro on\ntext"
   },
   {
    "step": 2,
    "ctx": "Client",
-   "out": "built true nil\ntext"
+   "out": "INTRO_CENTER_QA_MONITOR_READY\ntext"
   },
   {
-   "step": 4,
+   "step": 3,
    "ctx": "Client",
-   "out": "villagers=91 pick=-660, 3.0767452716827393, 4.5\ntext"
+   "out": "MARE_TITLE_READY:TitleBackdrop:프랑스\ntext"
   },
   {
-   "step": 6,
-   "capture": "vil_1_0",
-   "files": 1
+   "step": 5,
+   "click": "title01",
+   "at": "922,84",
+   "out": "922,84 CLICK=프랑스\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 922,
+      "y": 84
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
   },
   {
-   "step": 8,
-   "capture": "vil_1_1",
-   "files": 1
+   "step": 7,
+   "ctx": "Client",
+   "out": "SCROLLED 상인 집안\ntext"
   },
   {
-   "step": 10,
-   "capture": "vil_1_2",
-   "files": 1
+   "step": 9,
+   "click": "title02",
+   "at": "585,132",
+   "out": "585,132 CLICK=상인 집안\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 585,
+      "y": 132
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
   },
   {
    "step": 11,
    "ctx": "Client",
-   "out": "villagers=91 pick=-138.9374237060547, 2.9859185218811035, -253.80020141601562\ntext"
+   "out": "SCROLLED ⚓ 출항하기\ntext"
   },
   {
    "step": 13,
-   "capture": "vil_2_0",
-   "files": 1
-  },
-  {
-   "step": 15,
-   "capture": "vil_2_1",
-   "files": 1
-  },
-  {
-   "step": 17,
-   "capture": "vil_2_2",
-   "files": 1
+   "click": "title03",
+   "at": "730,206",
+   "out": "730,206 CLICK=⚓ 출항하기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 730,
+      "y": 206
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
   },
   {
    "step": 18,
    "ctx": "Client",
-   "out": "villagers=91 pick=-94, 2.891465187072754, 16.399999618530273\ntext"
+   "out": "INTRO_OK\ntext"
   },
   {
-   "step": 20,
-   "capture": "vil_3_0",
-   "files": 1
+   "step": 19,
+   "ctx": "Client",
+   "out": "INTRO_CENTER_SIZE_UNIFIED_PASS stages=3 |길드 서기|대상 상인 카심|떠돌이 화가\ntext"
+  },
+  {
+   "step": 21,
+   "ctx": "Client",
+   "out": "INTRO_RUNTIME_STATE_PASS_NO_DECK_POPUP\ntext"
   },
   {
    "step": 22,
-   "capture": "vil_3_1",
-   "files": 1
+   "ctx": "Client",
+   "out": "DEV Deck try=1\ntext"
   },
   {
    "step": 24,
-   "capture": "vil_3_2",
-   "files": 1
+   "ctx": "Client",
+   "out": "CARD_DECK_RUNTIME_PASS\ntext"
   },
   {
    "step": 25,
-   "ctx": "Client",
-   "out": "villagers=91 pick=-68, 2.9785170555114746, 40.400001525878906\ntext"
-  },
-  {
-   "step": 27,
-   "capture": "vil_4_0",
+   "capture": "cb0_deck",
    "files": 1
   },
   {
+   "step": 26,
+   "ctx": "Client",
+   "out": "DEV Practice\ntext"
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "CARD_PRACTICE_RUNTIME_PASS\ntext"
+  },
+  {
    "step": 29,
-   "capture": "vil_4_1",
+   "capture": "cb1",
    "files": 1
   },
   {
    "step": 31,
-   "capture": "vil_4_2",
-   "files": 1
+   "click": "card_hand_select",
+   "at": "48,269",
+   "out": "48,269 CLICK=hand_card_1\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 48,
+      "y": 269
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
   },
   {
-   "step": 32,
+   "step": 33,
    "ctx": "Client",
-   "out": "villagers=91 pick=-54, 3.107015609741211, 22.5\ntext"
+   "out": "CARD_SELECT_PASS idx=1\ntext"
   },
   {
    "step": 34,
-   "capture": "vil_5_0",
+   "capture": "cb_select",
    "files": 1
   },
   {
-   "step": 36,
-   "capture": "vil_5_1",
-   "files": 1
+   "step": 35,
+   "click": "card_hand_use",
+   "at": "49,270",
+   "out": "49,270 CLICK=hand_card_use\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 49,
+      "y": 270
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 37,
+   "ctx": "Client",
+   "out": "CARD_USE_PASS hand=10->9 board=0->1 turn=me vp=1048x380 cutButtons=0 tray=813x90 mainButtons=2 minButtonH=40 trayOverlap=0\ntext"
   },
   {
    "step": 38,
-   "capture": "vil_5_2",
+   "capture": "cb_after_play",
    "files": 1
   },
   {
-   "step": 39,
-   "ctx": "Client",
-   "out": "villagers=91 pick=-27.41691780090332, 2.9859185218811035, -38.79134750366211\ntext"
-  },
-  {
-   "step": 41,
-   "capture": "vil_6_0",
-   "files": 1
-  },
-  {
-   "step": 43,
-   "capture": "vil_6_1",
-   "files": 1
-  },
-  {
-   "step": 45,
-   "capture": "vil_6_2",
+   "step": 40,
+   "capture": "cb2",
    "files": 1
   }
  ],
- "errors": [],
+ "errors": [
+  "STUDIO_FULL_AUDIT_INCOMPLETE"
+ ],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 35002
+   "elapsedMs": 28003
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 67
+   "elapsedMs": 190
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 6515
+   "elapsedMs": 200
   },
   {
    "step": 3,
-   "type": "wait",
-   "elapsedMs": 9002
+   "type": "luau",
+   "elapsedMs": 200
   },
   {
    "step": 4,
-   "type": "luau",
-   "elapsedMs": 214
+   "type": "wait",
+   "elapsedMs": 414
   },
   {
    "step": 5,
-   "type": "wait",
-   "elapsedMs": 514
+   "type": "click_from_luau",
+   "elapsedMs": 988
   },
   {
    "step": 6,
-   "type": "capture",
-   "elapsedMs": 1096
+   "type": "wait",
+   "elapsedMs": 2008
   },
   {
    "step": 7,
-   "type": "wait",
-   "elapsedMs": 506
+   "type": "luau",
+   "elapsedMs": 189
   },
   {
    "step": 8,
-   "type": "capture",
-   "elapsedMs": 1137
+   "type": "wait",
+   "elapsedMs": 407
   },
   {
    "step": 9,
-   "type": "wait",
-   "elapsedMs": 500
+   "type": "click_from_luau",
+   "elapsedMs": 1026
   },
   {
    "step": 10,
-   "type": "capture",
-   "elapsedMs": 1076
+   "type": "wait",
+   "elapsedMs": 2016
   },
   {
    "step": 11,
    "type": "luau",
-   "elapsedMs": 251
+   "elapsedMs": 83
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 515
+   "elapsedMs": 406
   },
   {
    "step": 13,
-   "type": "capture",
-   "elapsedMs": 856
+   "type": "click_from_luau",
+   "elapsedMs": 1145
   },
   {
    "step": 14,
    "type": "wait",
-   "elapsedMs": 512
+   "elapsedMs": 1709
   },
   {
    "step": 15,
-   "type": "capture",
-   "elapsedMs": 845
+   "type": "wait",
+   "elapsedMs": 1806
   },
   {
    "step": 16,
    "type": "wait",
-   "elapsedMs": 509
+   "elapsedMs": 1811
   },
   {
    "step": 17,
-   "type": "capture",
-   "elapsedMs": 828
+   "type": "wait",
+   "elapsedMs": 3700
   },
   {
    "step": 18,
    "type": "luau",
-   "elapsedMs": 295
+   "elapsedMs": 3733
   },
   {
    "step": 19,
-   "type": "wait",
-   "elapsedMs": 504
+   "type": "luau",
+   "elapsedMs": 491
   },
   {
    "step": 20,
-   "type": "capture",
-   "elapsedMs": 945
+   "type": "wait",
+   "elapsedMs": 2507
   },
   {
    "step": 21,
-   "type": "wait",
-   "elapsedMs": 505
+   "type": "luau",
+   "elapsedMs": 1796
   },
   {
    "step": 22,
-   "type": "capture",
-   "elapsedMs": 974
+   "type": "luau",
+   "elapsedMs": 2108
   },
   {
    "step": 23,
    "type": "wait",
-   "elapsedMs": 507
+   "elapsedMs": 3012
   },
   {
    "step": 24,
-   "type": "capture",
-   "elapsedMs": 1107
+   "type": "luau",
+   "elapsedMs": 1277
   },
   {
    "step": 25,
-   "type": "luau",
-   "elapsedMs": 237
+   "type": "capture",
+   "elapsedMs": 2016
   },
   {
    "step": 26,
-   "type": "wait",
-   "elapsedMs": 509
+   "type": "luau",
+   "elapsedMs": 351
   },
   {
    "step": 27,
-   "type": "capture",
-   "elapsedMs": 870
+   "type": "wait",
+   "elapsedMs": 6003
   },
   {
    "step": 28,
-   "type": "wait",
-   "elapsedMs": 505
+   "type": "luau",
+   "elapsedMs": 214
   },
   {
    "step": 29,
    "type": "capture",
-   "elapsedMs": 870
+   "elapsedMs": 1601
   },
   {
    "step": 30,
    "type": "wait",
-   "elapsedMs": 500
+   "elapsedMs": 2000
   },
   {
    "step": 31,
-   "type": "capture",
-   "elapsedMs": 932
+   "type": "click_from_luau",
+   "elapsedMs": 1368
   },
   {
    "step": 32,
-   "type": "luau",
-   "elapsedMs": 177
+   "type": "wait",
+   "elapsedMs": 1011
   },
   {
    "step": 33,
-   "type": "wait",
-   "elapsedMs": 510
+   "type": "luau",
+   "elapsedMs": 252
   },
   {
    "step": 34,
    "type": "capture",
-   "elapsedMs": 798
+   "elapsedMs": 1191
   },
   {
    "step": 35,
-   "type": "wait",
-   "elapsedMs": 513
+   "type": "click_from_luau",
+   "elapsedMs": 909
   },
   {
    "step": 36,
-   "type": "capture",
-   "elapsedMs": 652
+   "type": "wait",
+   "elapsedMs": 2015
   },
   {
    "step": 37,
-   "type": "wait",
-   "elapsedMs": 502
+   "type": "luau",
+   "elapsedMs": 118
   },
   {
    "step": 38,
    "type": "capture",
-   "elapsedMs": 767
+   "elapsedMs": 1343
   },
   {
    "step": 39,
-   "type": "luau",
-   "elapsedMs": 171
+   "type": "wait",
+   "elapsedMs": 8001
   },
   {
    "step": 40,
-   "type": "wait",
-   "elapsedMs": 507
-  },
-  {
-   "step": 41,
    "type": "capture",
-   "elapsedMs": 998
-  },
-  {
-   "step": 42,
-   "type": "wait",
-   "elapsedMs": 513
-  },
-  {
-   "step": 43,
-   "type": "capture",
-   "elapsedMs": 875
-  },
-  {
-   "step": 44,
-   "type": "wait",
-   "elapsedMs": 503
-  },
-  {
-   "step": 45,
-   "type": "capture",
-   "elapsedMs": 1011
+   "elapsedMs": 832
   }
  ],
  "consoleCapture": {
   "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
   "errorCount": 0,
-  "warningCount": 0,
+  "warningCount": 12,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 46,
-  "completedSteps": 46,
-  "plannedClicks": 0,
-  "successfulClicks": 0,
+  "plannedSteps": 41,
+  "completedSteps": 41,
+  "plannedClicks": 5,
+  "successfulClicks": 5,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 18,
-  "capturedFrames": 18,
+  "plannedFrames": 5,
+  "capturedFrames": 5,
   "abortedEarly": false
+ },
+ "visualSamples": [
+  {
+   "name": "cb0_deck",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 276617,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.024984836578369,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "cb1",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 194938,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0304877758026123,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "cb_select",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 172780,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "hand_card_1"
+  },
+  {
+   "name": "cb_after_play",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 182389,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "hand_card_use"
+  },
+  {
+   "name": "cb2",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 182387,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "hand_card_use"
+  }
+ ],
+ "assetAudit": {
+  "models": {
+   "status": "PASS",
+   "loaded": 800,
+   "errors": [],
+   "failed": 0,
+   "registered": 800
+  },
+  "registered": {
+   "status": "PASS",
+   "failed": 0,
+   "imagesSounds": 599,
+   "models": 809,
+   "elapsedSeconds": 16,
+   "timedOut": false,
+   "registered": 1408,
+   "serverPreloadUnresponsive": true,
+   "failedMedia": [],
+   "fetchCallbacks": 0,
+   "currentBatch": 1,
+   "serverPreloadEvidence": {
+    "status": "FAIL",
+    "failed": 12,
+    "failedMedia": [
+     {
+      "id": "rbxassetid://72489040757878",
+      "key": "AssetIds.CardArt/af_03",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://77023165428158",
+      "key": "AssetIds.CardArt/af_15",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://107877140385634",
+      "key": "AssetIds.CardArt/ast_aurora",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://127370718437030",
+      "key": "AssetIds.CardArt/ast_comet",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://105991549101223",
+      "key": "AssetIds.CardArt/ast_halley_comet",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://114650000468629",
+      "key": "AssetIds.CardArt/ast_halley_prediction",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://125327803198600",
+      "key": "AssetIds.CardArt/ast_jupiter_moons",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://120956229711846",
+      "key": "AssetIds.CardArt/ast_saturn_rings",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://114615121747571",
+      "key": "AssetIds.CardArt/ast_venus",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://92405337443576",
+      "key": "AssetIds.CardArt/battle_africa",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://91390038338745",
+      "key": "AssetIds.CardArt/battle_card_back",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://113361166465626",
+      "key": "AssetIds.CardArt/battle_east_asia",
+      "status": "TIMEOUT_16S"
+     }
+    ],
+    "timedOut": false,
+    "fetchCallbacks": 0
+   },
+   "clientVerified": true,
+   "soundClientVerified": true,
+   "authority": "OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED"
+  },
+  "features": {
+   "status": "RUNNING",
+   "progress": "1900:VoyageBonus"
+  }
+ },
+ "assetRegistryAudit": {
+  "registered": 1308,
+  "activeIds": 1308,
+  "mismatched": [],
+  "missing": [],
+  "unverifiedPermissions": [],
+  "status": "PASS"
+ },
+ "clientImageAudit": {
+  "mode": "VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED",
+  "expected": 499,
+  "soundExpected": 100,
+  "missing": [],
+  "soundMissing": [],
+  "batches": 10,
+  "loaded": 499,
+  "soundLoaded": 100
+ },
+ "visualEvidence": {
+  "framesChecked": 5,
+  "framesWithInvalidSize": 0,
+  "voyageSceneObserved": false,
+  "departureObserved": false,
+  "voyageDiagnostics": [],
+  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
  }
 }

@@ -1,26 +1,28 @@
 {
-  "runId": "44984061877",
+  "runId": "44984878635",
   "kind": "studio",
-  "sourceRevision": "11922abb8444ea8cbcfbe47e61c9310ee2178efc",
-  "result": "PASS",
-  "failureStage": null,
-  "failureSignature": null,
+  "sourceRevision": "9858f427876ccef3b1e498badfaf05aa7c618902",
+  "result": "FAIL",
+  "failureStage": "STUDIO_EXECUTION",
+  "failureSignature": "STUDIO_FULL_AUDIT_INCOMPLETE",
   "summary": {
-    "plannedSteps": 46,
-    "completedSteps": 46,
-    "plannedClicks": 0,
-    "successfulClicks": 0,
+    "plannedSteps": 41,
+    "completedSteps": 41,
+    "plannedClicks": 5,
+    "successfulClicks": 5,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 18,
-    "capturedFrames": 18,
+    "plannedFrames": 5,
+    "capturedFrames": 5,
     "abortedEarly": false
   },
-  "errors": [],
+  "errors": [
+    "STUDIO_FULL_AUDIT_INCOMPLETE"
+  ],
   "audits": {
-    "models": "NOT_RUN",
-    "registered": "NOT_RUN",
-    "features": "NOT_RUN",
-    "registry": "NOT_RUN"
+    "models": "PASS",
+    "registered": "PASS",
+    "features": "RUNNING",
+    "registry": "PASS"
   },
   "steps": [
     {
@@ -46,65 +48,59 @@
     },
     {
       "step": 3,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 4,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 5,
+      "step": 4,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 6,
-      "type": "capture",
-      "name": "vil_1_0",
+      "step": 5,
+      "type": "click_from_luau",
+      "name": "title01",
       "status": "PASS",
-      "screenshots": [
-        "vil_1_0-0.jpg"
-      ]
+      "screenshots": []
+    },
+    {
+      "step": 6,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
     },
     {
       "step": 7,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 8,
-      "type": "capture",
-      "name": "vil_1_1",
-      "status": "PASS",
-      "screenshots": [
-        "vil_1_1-0.jpg"
-      ]
-    },
-    {
-      "step": 9,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 10,
-      "type": "capture",
-      "name": "vil_1_2",
+      "step": 9,
+      "type": "click_from_luau",
+      "name": "title02",
       "status": "PASS",
-      "screenshots": [
-        "vil_1_2-0.jpg"
-      ]
+      "screenshots": []
+    },
+    {
+      "step": 10,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
     },
     {
       "step": 11,
@@ -122,12 +118,10 @@
     },
     {
       "step": 13,
-      "type": "capture",
-      "name": "vil_2_0",
+      "type": "click_from_luau",
+      "name": "title03",
       "status": "PASS",
-      "screenshots": [
-        "vil_2_0-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 14,
@@ -138,12 +132,10 @@
     },
     {
       "step": 15,
-      "type": "capture",
-      "name": "vil_2_1",
+      "type": "wait",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "vil_2_1-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 16,
@@ -154,12 +146,10 @@
     },
     {
       "step": 17,
-      "type": "capture",
-      "name": "vil_2_2",
+      "type": "wait",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "vil_2_2-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 18,
@@ -170,35 +160,31 @@
     },
     {
       "step": 19,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 20,
-      "type": "capture",
-      "name": "vil_3_0",
-      "status": "PASS",
-      "screenshots": [
-        "vil_3_0-0.jpg"
-      ]
-    },
-    {
-      "step": 21,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 22,
-      "type": "capture",
-      "name": "vil_3_1",
+      "step": 21,
+      "type": "luau",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "vil_3_1-0.jpg"
-      ]
+      "screenshots": []
+    },
+    {
+      "step": 22,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
     },
     {
       "step": 23,
@@ -209,39 +195,37 @@
     },
     {
       "step": 24,
-      "type": "capture",
-      "name": "vil_3_2",
-      "status": "PASS",
-      "screenshots": [
-        "vil_3_2-0.jpg"
-      ]
-    },
-    {
-      "step": 25,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
+      "step": 25,
+      "type": "capture",
+      "name": "cb0_deck",
+      "status": "PASS",
+      "screenshots": [
+        "cb0_deck-0.jpg"
+      ]
+    },
+    {
       "step": 26,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 27,
-      "type": "capture",
-      "name": "vil_4_0",
+      "type": "wait",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "vil_4_0-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 28,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -249,10 +233,10 @@
     {
       "step": 29,
       "type": "capture",
-      "name": "vil_4_1",
+      "name": "cb1",
       "status": "PASS",
       "screenshots": [
-        "vil_4_1-0.jpg"
+        "cb1-0.jpg"
       ]
     },
     {
@@ -264,23 +248,21 @@
     },
     {
       "step": 31,
-      "type": "capture",
-      "name": "vil_4_2",
+      "type": "click_from_luau",
+      "name": "card_hand_select",
       "status": "PASS",
-      "screenshots": [
-        "vil_4_2-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 32,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 33,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -288,31 +270,29 @@
     {
       "step": 34,
       "type": "capture",
-      "name": "vil_5_0",
+      "name": "cb_select",
       "status": "PASS",
       "screenshots": [
-        "vil_5_0-0.jpg"
+        "cb_select-0.jpg"
       ]
     },
     {
       "step": 35,
+      "type": "click_from_luau",
+      "name": "card_hand_use",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 36,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 36,
-      "type": "capture",
-      "name": "vil_5_1",
-      "status": "PASS",
-      "screenshots": [
-        "vil_5_1-0.jpg"
-      ]
-    },
-    {
       "step": 37,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -320,304 +300,96 @@
     {
       "step": 38,
       "type": "capture",
-      "name": "vil_5_2",
+      "name": "cb_after_play",
       "status": "PASS",
       "screenshots": [
-        "vil_5_2-0.jpg"
+        "cb_after_play-0.jpg"
       ]
     },
     {
       "step": 39,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 40,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 41,
       "type": "capture",
-      "name": "vil_6_0",
+      "name": "cb2",
       "status": "PASS",
       "screenshots": [
-        "vil_6_0-0.jpg"
-      ]
-    },
-    {
-      "step": 42,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 43,
-      "type": "capture",
-      "name": "vil_6_1",
-      "status": "PASS",
-      "screenshots": [
-        "vil_6_1-0.jpg"
-      ]
-    },
-    {
-      "step": 44,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 45,
-      "type": "capture",
-      "name": "vil_6_2",
-      "status": "PASS",
-      "screenshots": [
-        "vil_6_2-0.jpg"
+        "cb2-0.jpg"
       ]
     }
   ],
   "screenshotComparison": [
     {
-      "name": "vil_1_0-0.jpg",
-      "sha256": "e62f11f670d59a9e90050db2691f437fbcbcd5e19214c632438ce3f9366e95ab",
+      "name": "cb0_deck-0.jpg",
+      "sha256": "10eed528154a6164dde714234b41c37fd9365ffda487316864eb0caed15e008d",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_1_0-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984878635/cb0_deck-0.jpg"
     },
     {
-      "name": "vil_1_1-0.jpg",
-      "sha256": "9c64b89727a4984b2cbdf88d7040f3ad08b0831e67dfd0d9441a5c359f6b6215",
+      "name": "cb1-0.jpg",
+      "sha256": "22deef88c388dc193111bccee8ac29c6fd715ad6339ff4e533811c20e39e85d8",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_1_1-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984878635/cb1-0.jpg"
     },
     {
-      "name": "vil_1_2-0.jpg",
-      "sha256": "d52b695566768cf4588bbdb6bb95997154e3f34500533503a7f6219862ab2784",
+      "name": "cb2-0.jpg",
+      "sha256": "641a3d84d8dffd7fac887c133d701d0edfca54d2d21440f4e39c0f479d34d250",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_1_2-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984878635/cb2-0.jpg"
     },
     {
-      "name": "vil_2_0-0.jpg",
-      "sha256": "70265ce7f12b7746ae9d76207b556178fc4630202ddbe789e1157d8141f9074c",
+      "name": "cb_after_play-0.jpg",
+      "sha256": "93796ad020d0819bca38bcf58c50b3bcf638cf1a7b4576c27eb4e160b93427c2",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_2_0-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984878635/cb_after_play-0.jpg"
     },
     {
-      "name": "vil_2_1-0.jpg",
-      "sha256": "caaa7c8aa279bbb2fcc59fe1e1a12612f9f58051db26bd9c5d7aa5667e3c0709",
+      "name": "cb_select-0.jpg",
+      "sha256": "a7abed06c1dde04c2f722a527aa3be22a95b6f725aebef24631d1a85cb94c864",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_2_1-0.jpg"
-    },
-    {
-      "name": "vil_2_2-0.jpg",
-      "sha256": "819d81d6dbbaea6ea6b9786fce842ccd81effd8bd16e3694a985f259e95f981c",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_2_2-0.jpg"
-    },
-    {
-      "name": "vil_3_0-0.jpg",
-      "sha256": "45f06e62d3699f0800a3cc57868ddcef7377200c2cf55b172ad919798650c049",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_3_0-0.jpg"
-    },
-    {
-      "name": "vil_3_1-0.jpg",
-      "sha256": "3d3c36b94c800715222bad93c289495d44539e7492867f3a2e8cd87b96faa5b2",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_3_1-0.jpg"
-    },
-    {
-      "name": "vil_3_2-0.jpg",
-      "sha256": "d2d0c2790b35980f80f4565c1a7f713ec029f1ac57cf356cfc8e3fcdc071fe04",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_3_2-0.jpg"
-    },
-    {
-      "name": "vil_4_0-0.jpg",
-      "sha256": "60c7d6981473fc3d612ba450724d5a30f813e1165c7b54ce8c6a039484d49d7e",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_4_0-0.jpg"
-    },
-    {
-      "name": "vil_4_1-0.jpg",
-      "sha256": "768823d110f9084e51f654b29a9bc1020aeafa3f1008baac83b831d90f3c6895",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_4_1-0.jpg"
-    },
-    {
-      "name": "vil_4_2-0.jpg",
-      "sha256": "3c800fecedde3449016326143ede5f1965fe90d16baf9f4bb13d675a740752ab",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_4_2-0.jpg"
-    },
-    {
-      "name": "vil_5_0-0.jpg",
-      "sha256": "f2f68e038a1b772de9684458322ba159264ceee590c7e33ad9567c142eb416fd",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_5_0-0.jpg"
-    },
-    {
-      "name": "vil_5_1-0.jpg",
-      "sha256": "1026a876425735c1602269c6cdf499098125246e656bcd6e69ec7f93e1798ff0",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_5_1-0.jpg"
-    },
-    {
-      "name": "vil_5_2-0.jpg",
-      "sha256": "c3bea5ecc25084226c1570f8f0359cc6b14da1118840d621be71dffb992b5b1a",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_5_2-0.jpg"
-    },
-    {
-      "name": "vil_6_0-0.jpg",
-      "sha256": "6de4d80305067cd4ed7bec764ff6e5db08bc101d4e00294a5358da4913dd2810",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_6_0-0.jpg"
-    },
-    {
-      "name": "vil_6_1-0.jpg",
-      "sha256": "03654efb987df82805347a6705c7faa0b4f8871a9e3427380488f11efc895f58",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_6_1-0.jpg"
-    },
-    {
-      "name": "vil_6_2-0.jpg",
-      "sha256": "15d936ef1ecd53781906ed4c33374109d150b92fb940749672262b4bb2c3e3a9",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984061877/vil_6_2-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984878635/cb_select-0.jpg"
     }
   ],
   "screenshotFrameAudit": {
-    "checked": 18,
+    "checked": 5,
     "invalid": 0,
     "images": [
       {
-        "name": "vil_1_0-0.jpg",
-        "bytes": 119687,
+        "name": "cb0_deck-0.jpg",
+        "bytes": 276617,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "vil_1_1-0.jpg",
-        "bytes": 319070,
+        "name": "cb1-0.jpg",
+        "bytes": 194938,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "vil_1_2-0.jpg",
-        "bytes": 316613,
+        "name": "cb2-0.jpg",
+        "bytes": 182387,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "vil_2_0-0.jpg",
-        "bytes": 228655,
+        "name": "cb_after_play-0.jpg",
+        "bytes": 182389,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "vil_2_1-0.jpg",
-        "bytes": 203864,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "vil_2_2-0.jpg",
-        "bytes": 228884,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "vil_3_0-0.jpg",
-        "bytes": 190342,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "vil_3_1-0.jpg",
-        "bytes": 213506,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "vil_3_2-0.jpg",
-        "bytes": 212154,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "vil_4_0-0.jpg",
-        "bytes": 213388,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "vil_4_1-0.jpg",
-        "bytes": 212863,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "vil_4_2-0.jpg",
-        "bytes": 214787,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "vil_5_0-0.jpg",
-        "bytes": 113334,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "vil_5_1-0.jpg",
-        "bytes": 114084,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "vil_5_2-0.jpg",
-        "bytes": 114595,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "vil_6_0-0.jpg",
-        "bytes": 250832,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "vil_6_1-0.jpg",
-        "bytes": 248423,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "vil_6_2-0.jpg",
-        "bytes": 248834,
+        "name": "cb_select-0.jpg",
+        "bytes": 172780,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -626,5 +398,5 @@
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "44983383153"
+  "previousRunId": "44984061877"
 }

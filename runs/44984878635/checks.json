@@ -1,28 +1,28 @@
 {
-  "runId": "44977335969",
+  "runId": "44984878635",
   "kind": "studio",
-  "sourceRevision": "5bda8ec87d6c48d06d062d64c5a40d801c359d2d",
+  "sourceRevision": "9858f427876ccef3b1e498badfaf05aa7c618902",
   "result": "FAIL",
   "failureStage": "STUDIO_EXECUTION",
-  "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
+  "failureSignature": "STUDIO_FULL_AUDIT_INCOMPLETE",
   "summary": {
     "plannedSteps": 41,
-    "completedSteps": 38,
+    "completedSteps": 41,
     "plannedClicks": 5,
     "successfulClicks": 5,
     "skippedOptionalClicks": 0,
     "plannedFrames": 5,
-    "capturedFrames": 3,
-    "abortedEarly": true
+    "capturedFrames": 5,
+    "abortedEarly": false
   },
   "errors": [
-    "step37:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:7: CARD_USE_NO_STATE_CHANGE:hand=10->1"
+    "STUDIO_FULL_AUDIT_INCOMPLETE"
   ],
   "audits": {
-    "models": "NOT_RUN",
-    "registered": "NOT_RUN",
-    "features": "NOT_RUN",
-    "registry": "NOT_RUN"
+    "models": "PASS",
+    "registered": "PASS",
+    "features": "RUNNING",
+    "registry": "PASS"
   },
   "steps": [
     {
@@ -294,29 +294,33 @@
       "step": 37,
       "type": "luau",
       "name": "",
-      "status": "FAIL",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 38,
       "type": "capture",
       "name": "cb_after_play",
-      "status": "NOT_RUN",
-      "screenshots": []
+      "status": "PASS",
+      "screenshots": [
+        "cb_after_play-0.jpg"
+      ]
     },
     {
       "step": 39,
       "type": "wait",
       "name": "",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 40,
       "type": "capture",
       "name": "cb2",
-      "status": "NOT_RUN",
-      "screenshots": []
+      "status": "PASS",
+      "screenshots": [
+        "cb2-0.jpg"
+      ]
     }
   ],
   "screenshotComparison": [
@@ -324,23 +328,35 @@
       "name": "cb0_deck-0.jpg",
       "sha256": "10eed528154a6164dde714234b41c37fd9365ffda487316864eb0caed15e008d",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44977335969/cb0_deck-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984878635/cb0_deck-0.jpg"
     },
     {
       "name": "cb1-0.jpg",
-      "sha256": "8999e6b6e3e6cf545f6f1f8004df9672b4d853de115ad0ee18e2dabbbdc35277",
+      "sha256": "22deef88c388dc193111bccee8ac29c6fd715ad6339ff4e533811c20e39e85d8",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44977335969/cb1-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984878635/cb1-0.jpg"
+    },
+    {
+      "name": "cb2-0.jpg",
+      "sha256": "641a3d84d8dffd7fac887c133d701d0edfca54d2d21440f4e39c0f479d34d250",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984878635/cb2-0.jpg"
+    },
+    {
+      "name": "cb_after_play-0.jpg",
+      "sha256": "93796ad020d0819bca38bcf58c50b3bcf638cf1a7b4576c27eb4e160b93427c2",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984878635/cb_after_play-0.jpg"
     },
     {
       "name": "cb_select-0.jpg",
-      "sha256": "2f57fbf28af7b2a6374e018d7d73ab7ad3d028576a17d56602e93f70c6ad1948",
+      "sha256": "a7abed06c1dde04c2f722a527aa3be22a95b6f725aebef24631d1a85cb94c864",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44977335969/cb_select-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/44984878635/cb_select-0.jpg"
     }
   ],
   "screenshotFrameAudit": {
-    "checked": 3,
+    "checked": 5,
     "invalid": 0,
     "images": [
       {
@@ -352,14 +368,28 @@
       },
       {
         "name": "cb1-0.jpg",
-        "bytes": 195060,
+        "bytes": 194938,
+        "width": 1311,
+        "height": 475,
+        "status": "PASS"
+      },
+      {
+        "name": "cb2-0.jpg",
+        "bytes": 182387,
+        "width": 1311,
+        "height": 475,
+        "status": "PASS"
+      },
+      {
+        "name": "cb_after_play-0.jpg",
+        "bytes": 182389,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "cb_select-0.jpg",
-        "bytes": 172748,
+        "bytes": 172780,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -368,5 +398,5 @@
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "44974697773"
+  "previousRunId": "44984061877"
 }

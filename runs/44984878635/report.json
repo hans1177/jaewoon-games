@@ -1,5 +1,5 @@
 {
- "sourceRevision": "5bda8ec87d6c48d06d062d64c5a40d801c359d2d",
+ "sourceRevision": "9858f427876ccef3b1e498badfaf05aa7c618902",
  "log": [
   {
    "step": 1,
@@ -175,31 +175,46 @@
    },
    "status": "DISPATCHED",
    "mouseResponse": "Success text"
+  },
+  {
+   "step": 37,
+   "ctx": "Client",
+   "out": "CARD_USE_PASS hand=10->9 board=0->1 turn=me vp=1048x380 cutButtons=0 tray=813x90 mainButtons=2 minButtonH=40 trayOverlap=0\ntext"
+  },
+  {
+   "step": 38,
+   "capture": "cb_after_play",
+   "files": 1
+  },
+  {
+   "step": 40,
+   "capture": "cb2",
+   "files": 1
   }
  ],
  "errors": [
-  "step37:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:7: CARD_USE_NO_STATE_CHANGE:hand=10->1"
+  "STUDIO_FULL_AUDIT_INCOMPLETE"
  ],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28005
+   "elapsedMs": 28003
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 203
+   "elapsedMs": 190
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 199
+   "elapsedMs": 200
   },
   {
    "step": 3,
    "type": "luau",
-   "elapsedMs": 314
+   "elapsedMs": 200
   },
   {
    "step": 4,
@@ -209,7 +224,7 @@
   {
    "step": 5,
    "type": "click_from_luau",
-   "elapsedMs": 1000
+   "elapsedMs": 988
   },
   {
    "step": 6,
@@ -219,174 +234,193 @@
   {
    "step": 7,
    "type": "luau",
-   "elapsedMs": 150
+   "elapsedMs": 189
   },
   {
    "step": 8,
    "type": "wait",
-   "elapsedMs": 401
+   "elapsedMs": 407
   },
   {
    "step": 9,
    "type": "click_from_luau",
-   "elapsedMs": 920
+   "elapsedMs": 1026
   },
   {
    "step": 10,
    "type": "wait",
-   "elapsedMs": 2008
+   "elapsedMs": 2016
   },
   {
    "step": 11,
    "type": "luau",
-   "elapsedMs": 120
+   "elapsedMs": 83
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 415
+   "elapsedMs": 406
   },
   {
    "step": 13,
    "type": "click_from_luau",
-   "elapsedMs": 1017
+   "elapsedMs": 1145
   },
   {
    "step": 14,
    "type": "wait",
-   "elapsedMs": 1713
+   "elapsedMs": 1709
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 1807
+   "elapsedMs": 1806
   },
   {
    "step": 16,
    "type": "wait",
-   "elapsedMs": 1812
+   "elapsedMs": 1811
   },
   {
    "step": 17,
    "type": "wait",
-   "elapsedMs": 3704
+   "elapsedMs": 3700
   },
   {
    "step": 18,
    "type": "luau",
-   "elapsedMs": 4159
+   "elapsedMs": 3733
   },
   {
    "step": 19,
    "type": "luau",
-   "elapsedMs": 728
+   "elapsedMs": 491
   },
   {
    "step": 20,
    "type": "wait",
-   "elapsedMs": 2506
+   "elapsedMs": 2507
   },
   {
    "step": 21,
    "type": "luau",
-   "elapsedMs": 1488
+   "elapsedMs": 1796
   },
   {
    "step": 22,
    "type": "luau",
-   "elapsedMs": 1634
+   "elapsedMs": 2108
   },
   {
    "step": 23,
    "type": "wait",
-   "elapsedMs": 3009
+   "elapsedMs": 3012
   },
   {
    "step": 24,
    "type": "luau",
-   "elapsedMs": 1176
+   "elapsedMs": 1277
   },
   {
    "step": 25,
    "type": "capture",
-   "elapsedMs": 2217
+   "elapsedMs": 2016
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 419
+   "elapsedMs": 351
   },
   {
    "step": 27,
    "type": "wait",
-   "elapsedMs": 6010
+   "elapsedMs": 6003
   },
   {
    "step": 28,
    "type": "luau",
-   "elapsedMs": 254
+   "elapsedMs": 214
   },
   {
    "step": 29,
    "type": "capture",
-   "elapsedMs": 1682
+   "elapsedMs": 1601
   },
   {
    "step": 30,
    "type": "wait",
-   "elapsedMs": 2009
+   "elapsedMs": 2000
   },
   {
    "step": 31,
    "type": "click_from_luau",
-   "elapsedMs": 1223
+   "elapsedMs": 1368
   },
   {
    "step": 32,
    "type": "wait",
-   "elapsedMs": 1003
+   "elapsedMs": 1011
   },
   {
    "step": 33,
    "type": "luau",
-   "elapsedMs": 314
+   "elapsedMs": 252
   },
   {
    "step": 34,
    "type": "capture",
-   "elapsedMs": 1388
+   "elapsedMs": 1191
   },
   {
    "step": 35,
    "type": "click_from_luau",
-   "elapsedMs": 1329
+   "elapsedMs": 909
   },
   {
    "step": 36,
    "type": "wait",
-   "elapsedMs": 2012
+   "elapsedMs": 2015
   },
   {
    "step": 37,
    "type": "luau",
-   "elapsedMs": 6693
+   "elapsedMs": 118
+  },
+  {
+   "step": 38,
+   "type": "capture",
+   "elapsedMs": 1343
+  },
+  {
+   "step": 39,
+   "type": "wait",
+   "elapsedMs": 8001
+  },
+  {
+   "step": 40,
+   "type": "capture",
+   "elapsedMs": 832
   }
  ],
  "consoleCapture": {
   "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
   "errorCount": 0,
-  "warningCount": 0,
+  "warningCount": 12,
   "errors": []
  },
  "summary": {
   "plannedSteps": 41,
-  "completedSteps": 38,
+  "completedSteps": 41,
   "plannedClicks": 5,
   "successfulClicks": 5,
   "skippedOptionalClicks": 0,
   "plannedFrames": 5,
-  "capturedFrames": 3,
-  "abortedEarly": true
+  "capturedFrames": 5,
+  "abortedEarly": false
  },
  "visualSamples": [
   {
@@ -408,7 +442,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0240533351898193,
+    "brightness": 2.024984836578369,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -419,7 +453,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195060,
+      "bytes": 194938,
       "width": 0,
       "height": 0,
       "pass": true
@@ -432,7 +466,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0297627449035645,
+    "brightness": 2.0304877758026123,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -443,7 +477,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 172748,
+      "bytes": 172780,
       "width": 0,
       "height": 0,
       "pass": true
@@ -451,28 +485,155 @@
     ]
    },
    "interaction": "hand_card_1"
+  },
+  {
+   "name": "cb_after_play",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 182389,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "hand_card_use"
+  },
+  {
+   "name": "cb2",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 182387,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "hand_card_use"
   }
  ],
- "abortDiagnostics": {
-  "step": 37,
-  "type": "luau",
-  "elapsedMs": 6260,
-  "context": "Client",
-  "lastScreenshot": "cb_select",
-  "lastClick": "card_hand_use",
-  "probes": {
-   "Client": {
-    "reachable": true,
-    "output": "STUDIO_CONTEXT_CLIENT\ntext"
+ "assetAudit": {
+  "models": {
+   "status": "PASS",
+   "loaded": 800,
+   "errors": [],
+   "failed": 0,
+   "registered": 800
+  },
+  "registered": {
+   "status": "PASS",
+   "failed": 0,
+   "imagesSounds": 599,
+   "models": 809,
+   "elapsedSeconds": 16,
+   "timedOut": false,
+   "registered": 1408,
+   "serverPreloadUnresponsive": true,
+   "failedMedia": [],
+   "fetchCallbacks": 0,
+   "currentBatch": 1,
+   "serverPreloadEvidence": {
+    "status": "FAIL",
+    "failed": 12,
+    "failedMedia": [
+     {
+      "id": "rbxassetid://72489040757878",
+      "key": "AssetIds.CardArt/af_03",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://77023165428158",
+      "key": "AssetIds.CardArt/af_15",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://107877140385634",
+      "key": "AssetIds.CardArt/ast_aurora",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://127370718437030",
+      "key": "AssetIds.CardArt/ast_comet",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://105991549101223",
+      "key": "AssetIds.CardArt/ast_halley_comet",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://114650000468629",
+      "key": "AssetIds.CardArt/ast_halley_prediction",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://125327803198600",
+      "key": "AssetIds.CardArt/ast_jupiter_moons",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://120956229711846",
+      "key": "AssetIds.CardArt/ast_saturn_rings",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://114615121747571",
+      "key": "AssetIds.CardArt/ast_venus",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://92405337443576",
+      "key": "AssetIds.CardArt/battle_africa",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://91390038338745",
+      "key": "AssetIds.CardArt/battle_card_back",
+      "status": "TIMEOUT_16S"
+     },
+     {
+      "id": "rbxassetid://113361166465626",
+      "key": "AssetIds.CardArt/battle_east_asia",
+      "status": "TIMEOUT_16S"
+     }
+    ],
+    "timedOut": false,
+    "fetchCallbacks": 0
    },
-   "Server": {
-    "reachable": true,
-    "output": "STUDIO_CONTEXT_SERVER\ntext"
-   }
+   "clientVerified": true,
+   "soundClientVerified": true,
+   "authority": "OFFICIAL_STUDIO_MCP_VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED"
+  },
+  "features": {
+   "status": "RUNNING",
+   "progress": "1900:VoyageBonus"
   }
  },
+ "assetRegistryAudit": {
+  "registered": 1308,
+  "activeIds": 1308,
+  "mismatched": [],
+  "missing": [],
+  "unverifiedPermissions": [],
+  "status": "PASS"
+ },
+ "clientImageAudit": {
+  "mode": "VISIBLE_CLIENT_IMAGE_AND_SOUND_ISLOADED",
+  "expected": 499,
+  "soundExpected": 100,
+  "missing": [],
+  "soundMissing": [],
+  "batches": 10,
+  "loaded": 499,
+  "soundLoaded": 100
+ },
  "visualEvidence": {
-  "framesChecked": 3,
+  "framesChecked": 5,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
