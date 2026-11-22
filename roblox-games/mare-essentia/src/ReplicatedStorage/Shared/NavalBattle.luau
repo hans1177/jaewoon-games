@@ -3977,32 +3977,113 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					b.Visible = true
 					afterAction(mine(BC.play(m, "me", i)))
 				end
+				-- [카드 터치] 사용할 수 없는 상태는 이유를 보여 준다. 판정은 기존 BC.play만 사용한다.
+				local function blockedReason()
+					if finished or m.over then return t("대전이 끝났습니다", "The duel is over") end
+					if m.turn ~= "me" then return t("상대 차례입니다 · 잠시 기다리세요", "Opponent's turn · please wait") end
+					if auto then return t("자동 진행 중에는 카드를 낼 수 없습니다", "Auto play is on") end
+					if playing then return t("카드를 내는 중입니다", "Playing a card") end
+					return nil
+				end
+				local function selectCard()
+					if selected and selected.Parent then
+						selected.Rotation = 0
+						selected.SelectedCardScale.Scale = 1
+						selected.UIStroke.Color = brass
+						selected:SetAttribute("ArtFocused", false)
+					end
+					b:SetAttribute("ArtFocused", true)
+					Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click")
+					clearDropHint()
+					showCardCodex(c)
+					dropHint(c)
+					selected = b
+					selectedPlay = playChosenCard
+					edge.Color = Color3.fromRGB(255, 215, 126)
+					if opts.cardOnly then lift.Scale = 1.04 end
+					TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = if opts.cardOnly then 0 else -4 }):Play()
+					info.Text = cardName(c) .. " · " .. cardDescription(c)
+						.. (if c.hero then t(" · 영웅: 날씨·소각 면역", " · Hero: weather and Scorch immune") else "")
+						.. t(" · 크게 보고 사용 버튼 또는 다시 눌러 사용", " · Enlarge to inspect; tap again or Play Card")
+				end
+				local dragSuppressClick = false
 				b.Activated:Connect(function()
-					if playing or auto or finished or m.turn ~= "me" or m.over then return end
+					if dragSuppressClick then dragSuppressClick = false return end
+					local reason = blockedReason()
+					if reason then info.Text = reason return end
 					if selected ~= b then
-						if selected and selected.Parent then
-							selected.Rotation = 0
-							selected.SelectedCardScale.Scale = 1
-							selected.UIStroke.Color = brass
-							selected:SetAttribute("ArtFocused", false)
-						end
-						b:SetAttribute("ArtFocused", true)
-						Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click")
-						clearDropHint()
-						showCardCodex(c)
-						dropHint(c)
-						selected = b
-						selectedPlay = playChosenCard
-						edge.Color = Color3.fromRGB(255, 215, 126)
-						if opts.cardOnly then lift.Scale = 1.04 end
-						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = if opts.cardOnly then 0 else -4 }):Play()
-						info.Text = cardName(c) .. " · " .. cardDescription(c)
-							.. (if c.hero then t(" · 영웅: 날씨·소각 면역", " · Hero: weather and Scorch immune") else "")
-							.. t(" · 크게 보고 사용 버튼 또는 다시 눌러 사용", " · Enlarge to inspect; tap again or Play Card")
+						selectCard()
 						return
 					end
 					playChosenCard()
 				end)
+				-- [끌어서 놓기] 위로 끌면 카드가 손가락을 따라오고, 놓일 줄이 강조된다.
+				-- 맞는 줄에 놓으면 기존 사용 흐름(playChosenCard)을 그대로 호출, 아니면 손패로 돌아간다.
+				-- 가로 끌기는 손패 스크롤로 남겨 두어 기존 넘기기와 충돌하지 않는다.
+				local dragInput, dragStart, ghost, dragConns = nil, nil, nil, {}
+				local function dropTarget()
+					local side = if c.ability == "spy" or c.ability == "defect" or c.ability == "feigned" then "foe" else "me"
+					return if c.special then boardFrame else (rowTargets[side][BC.lane(c)] and rowTargets[side][BC.lane(c)].Parent)
+				end
+				local function endDrag(pos)
+					for _, cn in dragConns do cn:Disconnect() end
+					table.clear(dragConns)
+					local wasDragging = ghost ~= nil
+					if ghost then ghost:Destroy() ghost = nil end
+					dragInput, dragStart = nil, nil
+					if not wasDragging or not b.Parent then return end
+					b.Visible = true
+					dragSuppressClick = true
+					task.delay(0.25, function() dragSuppressClick = false end)
+					local target = dropTarget()
+					local inside = false
+					if target and pos then
+						local p, size = target.AbsolutePosition, target.AbsoluteSize
+						inside = pos.X >= p.X and pos.X <= p.X + size.X and pos.Y >= p.Y and pos.Y <= p.Y + size.Y
+					end
+					local reason = blockedReason()
+					if inside and not reason then
+						if selected ~= b then selectCard() end
+						playChosenCard()
+					else
+						info.Text = reason or t("놓을 수 있는 줄이 아닙니다 · 카드는 손패로 돌아왔습니다", "Not a valid row · card returned to hand")
+					end
+				end
+				b.InputBegan:Connect(function(input)
+					if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+					if dragInput or blockedReason() then return end
+					dragInput, dragStart = input, input.Position
+					table.insert(dragConns, UIS.InputChanged:Connect(function(move)
+						if not dragInput then return end
+						local sameTouch = move == dragInput or (dragInput.UserInputType == Enum.UserInputType.MouseButton1
+							and move.UserInputType == Enum.UserInputType.MouseMovement)
+						if not sameTouch then return end
+						local delta = move.Position - dragStart
+						if not ghost then
+							-- 위로 18px 이상, 세로 이동이 우세할 때만 끌기로 본다.
+							if delta.Y > -18 or math.abs(delta.Y) < math.abs(delta.X) or blockedReason() then return end
+							if selected ~= b then selectCard() end
+							ghost = b:Clone()
+							ghost.Name = "DragGhost"
+							ghost.Active, ghost.Interactable = false, false
+							ghost.AnchorPoint = Vector2.new(0.5, 0.5)
+							ghost.Size = UDim2.fromOffset(b.AbsoluteSize.X, b.AbsoluteSize.Y)
+							ghost.Rotation = 0
+							ghost.ZIndex = 25
+							ghost.Parent = bg
+							b.Visible = false
+						end
+						local at = Vector2.new(move.Position.X, move.Position.Y) - bg.AbsolutePosition
+						ghost.Position = UDim2.fromOffset(at.X, at.Y)
+					end))
+					table.insert(dragConns, UIS.InputEnded:Connect(function(done)
+						if done == dragInput or (dragInput and dragInput.UserInputType == Enum.UserInputType.MouseButton1
+							and done.UserInputType == Enum.UserInputType.MouseButton1) then
+							endDrag(Vector2.new(done.Position.X, done.Position.Y))
+						end
+					end))
+				end)
+				b.Destroying:Connect(function() endDrag(nil) end)
 			end
 			-- 부채꼴 손패: 가운데 카드는 곧게, 가장자리로 갈수록 기울인다
 			do
