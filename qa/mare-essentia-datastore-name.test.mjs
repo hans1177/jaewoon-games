@@ -3480,3 +3480,37 @@ test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 
   assert.ok(shot[focus-1].code.includes('workspace:SetAttribute("ShotFov",46)'));
   assert.ok(shot[focus-1].code.includes('BACKWARDS=0 DECAL='));
 });
+
+// [대항해시대 전장 지형 회귀] 신규 내부 CC0 원본·체험 권한과 실제 구릉/물결 연결을 기존 QA에서 확인한다.
+test('대항해시대 내부 무료 숲 자산 및 지상 구릉·해상 물결 연결',()=>{
+  const root='roblox-games/mare-essentia/';
+  const reg=JSON.parse(readText(root+'assets-registered.json')).assets;
+  const ids=readText(root+'src/ReplicatedStorage/Shared/AssetIds.luau');
+  for(const [name,expectedBlob] of [
+    ['tree-detailed','fb9d3a9b6d3b5dac19a6dbfd5c617ae07bab74b6'],
+    ['tree-pinedefaultb','c0d4020f3ea4453801daca882314ee02cd155f3d'],
+    ['rock-largea','3df13f56ceaa9da68e02a55e60a6961a33499d42'],
+  ]){
+    const key='Terrain/'+name;
+    const record=reg[key];
+    assert.ok(record && record.usePermissionGranted===true,key+' Roblox 체험 권한');
+    assert.equal(record.assetType,'Model',key);
+    assert.equal(record.license,'CC0-1.0',key);
+    assert.ok(ids.includes('["'+key+'"] = '+record.assetId),key+' 실제 사용 번호');
+    const bytes=fs.readFileSync(root+'assets/terrain/'+name+'.glb');
+    assert.equal(bytes.toString('ascii',0,4),'glTF');
+    const blob=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length)).update(Buffer.from([0])).update(bytes).digest('hex');
+    assert.equal(blob,expectedBlob,key+' 원본 GLB 보존');
+  }
+  const field=readText(root+'src/ReplicatedStorage/Shared/FieldScene.luau');
+  const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
+  assert.match(field,/FieldWalkableHillCount/);
+  assert.match(field,/terrain:FillBall\(center, radius, mat\)/);
+  assert.match(field,/groundRay\.FilterDescendantsInstances = \{ workspace\.Terrain, ground \}/);
+  assert.match(field,/AssetIds\["Terrain\/tree-detailed"\]/);
+  assert.match(field,/AssetIds\["Terrain\/rock-largea"\]/);
+  assert.match(naval,/NavalOceanSurfaceType/);
+  assert.match(naval,/oceanTerrain:FillBlock\(oceanFrame, oceanSize, Enum\.Material\.Water\)/);
+  assert.match(naval,/oceanTerrain\.WaterWaveSize = if mode == "storm"/);
+  assert.match(naval,/oceanTerrain:FillBlock\(oceanFrame, oceanSize, Enum\.Material\.Air\)/);
+});
