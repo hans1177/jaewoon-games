@@ -1259,7 +1259,7 @@ function VoyageScene.play(info)
 	-- 사건 소품: 지나가는 상선, 암초, 섬, 유령선 등 (승인된 모델만)
 	local props = {}
 	local fish = {}
-	local function addProp(kind, asset, size, side, along, extraYaw, y)
+	local function addProp(kind, asset, size, side, along, extraYaw, y, band)
 		if not info.place then
 			return nil
 		end
@@ -1270,6 +1270,25 @@ function VoyageScene.play(info)
 		local bcf, bsize = m:GetBoundingBox()
 		local off = (bcf.Position.Y - bsize.Y / 2) - m:GetPivot().Position.Y
 		local rec = { m = m, side = side, along = along, yaw = extraYaw or 0, y = (y or 0) - off }
+		-- [항해 섬 실물] 기존 CC0 지형만 원근층을 부여한다. 외관 텍스처와 실제 이벤트 판정은 유지.
+		if band then
+			m:SetAttribute("VoyageSceneryBand", band)
+			if band == "far" then
+				for _, piece in m:GetDescendants() do
+					if piece:IsA("BasePart") then
+						piece.CastShadow = false
+						if not piece:FindFirstChildOfClass("SurfaceAppearance")
+							and (not piece:IsA("MeshPart") or piece.TextureID == "") then
+							local hasTexture = false
+							for _, mesh in piece:GetChildren() do
+								if mesh:IsA("SpecialMesh") and mesh.TextureId ~= "" then hasTexture = true; break end
+							end
+							if not hasTexture then piece.Color = piece.Color:Lerp(Color3.fromRGB(133, 169, 190), 0.21) end
+						end
+					end
+				end
+			end
+		end
 		table.insert(props, rec)
 		return rec
 	end
@@ -1364,12 +1383,14 @@ function VoyageScene.play(info)
 			who.follow = raft
 		end
 	elseif ev.kind == "island" then
-		addProp("Terrain", "cliff-rock", 70, 150, 0.12, 0, -3)
-		addProp("Terrain", "campfire-stones", 5, 128, 0.12, 0, 0.5)
-		addProp("Terrain", "log-stack", 6, 124, 0.12, 0.5, 0.5)
-		addProp("Terrain", "canoe", 9, 118, 0.12, 1.2, 0)
+		-- [원경 절벽→중경 야자→근경 해안] 승인된 기존 8개 모델·섬 사건을 그대로 쓴다.
+		-- 섬 전체가 항해 중 서로 미끄러지지 않도록 같은 along 값을 공유한다.
+		addProp("Terrain", "cliff-rock", 90, 171, 0.12, 0, -3, "far")
+		addProp("Terrain", "campfire-stones", 5, 128, 0.12, 0, 0.5, "near")
+		addProp("Terrain", "log-stack", 6, 124, 0.12, 0.5, 0.5, "near")
+		addProp("Terrain", "canoe", 9, 118, 0.12, 1.2, 0, "near")
 		for i = 1, 4 do
-			addProp("Naval", "palm-detailed-straight", 16, 135 + i * 7, 0.12 + i * 0.006, i, -1)
+			addProp("Naval", "palm-detailed-straight", 16, 132 + i * 8, 0.12, i, -1, "mid")
 		end
 	elseif ev.kind == "ghost" then
 		addProp("Naval", "ship-ghost", 18, -80, 0.35, math.pi, 0)
