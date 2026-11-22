@@ -3435,3 +3435,22 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   for(const kind of ['tricorn','bicorne','beret','sailorcap','knit','kofia','fez'])
     assert.ok(pose.includes('kind == "'+kind+'"'), '기존 모자/재질 분류 누락: '+kind);
 });
+
+// [주민 외형 후입고] 헤어 후보가 뒤늦게 들어오면 현재 마을의 기존 갱신기로 교체한다.
+test('헤어 우선 모델이 지연 입고돼도 기존 준비 완료 상태에서 영구 누락되지 않는다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+  const loader=read('ServerScriptService/AssetLoader.server.luau');
+  assert.match(pose,/local hairUpgradePending = false/);
+  assert.match(pose,/local desiredHair = if type\(options\) == "table" and #options > 0/);
+  assert.match(pose,/desiredHair and AssetIds\["People\/" \.\. desiredHair\] and candidate ~= desiredHair/);
+  assert.match(pose,/hairUpgradePending = true/);
+  assert.match(pose,/model:SetAttribute\("NpcHairUpgradePending", hairUpgradePending\)/);
+  assert.match(pose,/if attached == #specs and not hairUpgradePending then "ready"/);
+  assert.match(pose,/return attached == #specs and not hairUpgradePending/);
+  assert.match(scene,/subject:GetAttribute\("NpcAppearanceState"\) ~= "ready"/);
+  assert.match(scene,/local outfitConn = people\.ChildAdded:Connect/);
+  assert.match(scene,/string\.sub\(asset\.Name, 1, 5\) == "hair_"/);
+  assert.match(scene,/Pose\.applyRegisteredMobOutfit\(subject\)/);
+  assert.match(loader,/\["People\/hair_braided_crown"\] = true/);
+});
