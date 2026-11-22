@@ -173,3 +173,13 @@
 - **병행 작업 주의:** `eu_22` 유라시아스라소니는 별도 작업자가 원본·승인표를 `main`에 올렸지만 이 확인 당시 `assets-registered.json`에는 등록번호가 없었다. 중복 제작하지 말고 최신 `main`에서 재확인해야 한다.
 - **후속 안전 복구:** 고정 해시의 실제 공식 원본과 다운로드 응답을 재확인하고, 기존 `prepareLicensedOriginals` 책임 흐름 안에서만 원인을 해결한다. 기존 출처 검증·사용권한·제재자산 방어 기능을 낮추지 않는다. 이후 동일한 기존 워크플로를 재실행해 `eu_22`·`eu_23` 개별 자산번호, `usePermissionGranted:true`, 승인/등록/원본 SHA와 `AssetIds.luau` 바인딩까지 검증한다. **원화 제작/등록 후보 다음 순번 `eu_24` 스톤헨지**도 항상 최신 등록상태를 확인한 다음 진행한다.
 - 게임 규칙·능력치·저장 구조·업로더 로직을 임의 변경하거나 새 업로더를 만들지 않았다. 해당 시점의 에셋 등록 결과는 **실패**이며 `main`의 승인표와 원본은 남아 있다.
+
+## 16. 기존 원화 재사용·로블록스 등록 복구 결과 (2026-11-22)
+
+- **중복 제작 방지:** `eu_21` 유럽불곰 원화 및 등록번호 `138739723458669` 유지. `eu_22`·`eu_23`은 이미 제작·승인된 원본을 **다시 생성하지 않고 그대로 등록**했다.
+- **등록기 장애 복구 커밋:** [`7280c004a8c7918161bf402c73fb9366474fa4ad`](https://github.com/hans1177/jaewoon-games/commit/7280c004a8c7918161bf402c73fb9366474fa4ad). 기존 `tools/mare-essentia-upload-assets.mjs`의 `prepareLicensedOriginals`에서 Kenney 공식 다운로드를 우선 사용하고, 동일 원본을 보관한 공개 보관처를 고정 SHA-256 검증 후에만 대체 수급한다. 고정 SHA·라이선스·중복·GLB 실물·사용 권한 검사는 유지했다. **새 등록기·새 워크플로 없음.**
+- **`eu_22` 유라시아스라소니:** 원본·승인 SHA-256 `d29083c15efbc995cbb521170287d0cbd7ed3f145a64d2bc1de9fac1309ebd07`, `assets-registered.json` 자산번호 `116600517797861`, `usePermissionGranted:true`. `AssetIds.luau` `CardArt/eu_22` 동일 번호 연결 확인.
+- **`eu_23` 유럽늑대:** 원본·승인 SHA-256 `7cc1b1732669fd99a3661ad4a8a249e3438dd4a19fac90189d94388e285a5aae`, 등록 자산번호 `133255967032055`, `usePermissionGranted:true`. `AssetIds.luau` `CardArt/eu_23` 동일 번호 연결 확인.
+- **Kenney Nature Kit CC0 원본 3종 등록표 확인:** `Terrain/kenney_rock_largeB` = `71077469685189`, `Terrain/kenney_tree_fat` = `136614086977728`, `Terrain/kenney_mushroom_red` = `137550817039551`. 모두 `usePermissionGranted:true`, 개별 출처·원본 SHA-256 및 공식 ZIP 고정 SHA-256 기록 확인. **Studio 3D 실화면은 미검증.**
+- **다음 원화 후보:** `eu_24` 스톤헨지. 기존 `assets/cardart/src/eu_24.svg`는 이미 있으므로 **중복 생성 금지**. 다만 이 카드의 `assets/cardart/src/eu_24-original.png` 완성 PNG, `APPROVED_IMAGES.json` 승인 해시, `assets-registered.json`의 로블록스 번호는 현재 `main`에 없다. 기존 SVG 원화 자체의 검수와 새로 제작된 1024×1024 원화의 중복·품질 검증을 거쳐, 승인된 최종 PNG가 실제 원격 바이너리로 반영됐을 때만 기존 등록기로 승격한다. 이미지가 채팅에만 있거나 로컬에만 있는 상태는 등록 완료가 아니다.
+- **미검증:** 신규 등록 작업의 전체 종료 로그, Roblox Studio 실제 카드 표시, 기존 Place 최종 게임 게시/모바일 실화면. 등록표 존재만으로 이 검증들을 PASS로 표기하지 않는다. 게임 밸런스·저장키·기존 원화는 변경 없음.
