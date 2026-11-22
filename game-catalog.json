@@ -1,6 +1,6 @@
 {
   "version": 33,
-  "updatedAt": "2026-11-22T02:25:09.193Z",
+  "updatedAt": "2026-11-22T02:32:32.241Z",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -857,6 +857,124 @@
       "web3dRedevelopmentRequired": true
     },
     {
+      "id": "animal-auto-battle",
+      "name": "animal-auto-battle",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
+      "lifecycleState": "ACTIVE",
+      "selectedPlatform": "ROBLOX",
+      "robloxProjectPath": "roblox-games/animal-auto-battle",
+      "developmentHandling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
+      "sourceIntake": {
+        "kind": "EXISTING_ROJO_PROJECT",
+        "designVerified": false,
+        "runtimeVerified": false,
+        "externalReleaseApproved": false
+      },
+      "homepageCategory": "development-confirmed",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 5,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "animal-auto-battle",
+          "name": "animal-auto-battle",
+          "description": "",
+          "genres": [],
+          "image": "assets/pwa-icon-512.png",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/pwa-icon-512.png",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": null,
+          "robloxThumbnail": null,
+          "robloxTitleArtwork": null
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
+          "target": "",
+          "handling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
+          "selectedPlatform": "ROBLOX",
+          "stage": ""
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": false,
+            "playable": false,
+            "state": "",
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": "roblox-games/animal-auto-battle"
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "",
+            "sourceTreeSha": ""
+          },
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "",
+          "recentWork": "",
+          "runtime": {
+            "authority": "company-runtime",
+            "developmentActive": false,
+            "platform": "ROBLOX",
+            "platformLabel": "",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_RUNTIME",
+            "validationSchemaVersion": null,
+            "genre": [],
+            "genreLabel": "",
+            "subgenre": "",
+            "playMode": "",
+            "playModeLabel": "플레이 방식 미평가",
+            "latestWork": "개발 작업 정보 없음",
+            "updatedAt": null,
+            "status": "ACTIVE",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 5
+    },
+    {
       "id": "card-grid-duel",
       "name": "card-grid-duel",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -900,7 +1018,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 5,
+        "catalogOrder": 6,
         "authority": "company-runtime",
         "identity": {
           "gameId": "card-grid-duel",
@@ -998,7 +1116,7 @@
           }
         }
       },
-      "catalogOrder": 5
+      "catalogOrder": 6
     },
     {
       "id": "human-go-temp",
@@ -1056,7 +1174,7 @@
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 6,
+        "catalogOrder": 7,
         "authority": "company-runtime",
         "identity": {
           "gameId": "human-go-temp",
@@ -1178,7 +1296,7 @@
           }
         }
       },
-      "catalogOrder": 6,
+      "catalogOrder": 7,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1221,7 +1339,7 @@
       "homepageCategory": "development-confirmed",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 7,
+        "catalogOrder": 8,
         "authority": "company-runtime",
         "identity": {
           "gameId": "mare-essentia",
@@ -1319,7 +1437,7 @@
           }
         }
       },
-      "catalogOrder": 7,
+      "catalogOrder": 8,
       "productionTarget": "ROBLOX_UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -1398,7 +1516,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 8,
+        "catalogOrder": 9,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-casual-realm-weaver",
@@ -1509,7 +1627,7 @@
           }
         }
       },
-      "catalogOrder": 8,
+      "catalogOrder": 9,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1585,7 +1703,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 9,
+        "catalogOrder": 10,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -1696,7 +1814,7 @@
           }
         }
       },
-      "catalogOrder": 9,
+      "catalogOrder": 10,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1772,7 +1890,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 10,
+        "catalogOrder": 11,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-puzzle-chromatic-cascade",
@@ -1883,7 +2001,7 @@
           }
         }
       },
-      "catalogOrder": 10,
+      "catalogOrder": 11,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1964,7 +2082,7 @@
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 11,
+        "catalogOrder": 12,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -2079,7 +2197,7 @@
           }
         }
       },
-      "catalogOrder": 11,
+      "catalogOrder": 12,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2153,7 +2271,7 @@
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 12,
+        "catalogOrder": 13,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
@@ -2268,7 +2386,7 @@
           }
         }
       },
-      "catalogOrder": 12,
+      "catalogOrder": 13,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2342,7 +2460,7 @@
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 13,
+        "catalogOrder": 14,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -2457,7 +2575,7 @@
           }
         }
       },
-      "catalogOrder": 13,
+      "catalogOrder": 14,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2531,7 +2649,7 @@
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 14,
+        "catalogOrder": 15,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-survival-horror-es-doors",
@@ -2646,7 +2764,7 @@
           }
         }
       },
-      "catalogOrder": 14,
+      "catalogOrder": 15,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2715,7 +2833,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 15,
+        "catalogOrder": 16,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -2833,7 +2951,7 @@
           }
         }
       },
-      "catalogOrder": 15,
+      "catalogOrder": 16,
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "PERMANENTLY_REMOVED_REJECTED_TEST",
@@ -2920,7 +3038,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 16,
+        "catalogOrder": 17,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -3031,7 +3149,7 @@
           }
         }
       },
-      "catalogOrder": 16,
+      "catalogOrder": 17,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3112,7 +3230,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 17,
+        "catalogOrder": 18,
         "authority": "company-runtime",
         "identity": {
           "gameId": "cat-step",
@@ -3234,7 +3352,7 @@
           }
         }
       },
-      "catalogOrder": 17,
+      "catalogOrder": 18,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3316,7 +3434,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 18,
+        "catalogOrder": 19,
         "authority": "company-runtime",
         "identity": {
           "gameId": "core-clash-4v4",
@@ -3438,7 +3556,7 @@
           }
         }
       },
-      "catalogOrder": 18,
+      "catalogOrder": 19,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3488,7 +3606,7 @@
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "selectedPlatform": "WEB",
-      "catalogOrder": 19,
+      "catalogOrder": 20,
       "homepageStage": "개발확정 · Roblox 개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox 설계 보강 완료",
       "ownerWebEntryFile": "web-games/deep-diver/index.html",
@@ -3520,7 +3638,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 19,
+        "catalogOrder": 20,
         "authority": "company-runtime",
         "identity": {
           "gameId": "deep-diver",
@@ -3695,7 +3813,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 20,
+        "catalogOrder": 21,
         "authority": "company-runtime",
         "identity": {
           "gameId": "defense",
@@ -3817,7 +3935,7 @@
           }
         }
       },
-      "catalogOrder": 20,
+      "catalogOrder": 21,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3900,7 +4018,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 21,
+        "catalogOrder": 22,
         "authority": "company-runtime",
         "identity": {
           "gameId": "dice-battle-board",
@@ -4022,7 +4140,7 @@
           }
         }
       },
-      "catalogOrder": 21,
+      "catalogOrder": 22,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -4105,7 +4223,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 22,
+        "catalogOrder": 23,
         "authority": "company-runtime",
         "identity": {
           "gameId": "exorcist-office",
@@ -4227,7 +4345,7 @@
           }
         }
       },
-      "catalogOrder": 22,
+      "catalogOrder": 23,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -4308,7 +4426,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 23,
+        "catalogOrder": 24,
         "authority": "company-runtime",
         "identity": {
           "gameId": "fantasy-survival",
@@ -4430,7 +4548,7 @@
           }
         }
       },
-      "catalogOrder": 23,
+      "catalogOrder": 24,
       "productionTarget": "ROBLOX",
       "homepageStage": "개발확정 · Roblox 개발",
       "concurrentTargetPlatforms": [
@@ -4440,7 +4558,7 @@
         "ROBLOX": "roblox-games/fantasy-survival"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
-      "updatedAt": "2026-11-22T02:25:09.193Z",
+      "updatedAt": "2026-11-22T02:32:32.241Z",
       "robloxProjectPath": "roblox-games/fantasy-survival",
       "unityProjectPath": "unity-games/fantasy-survival",
       "robloxTitleArtwork": {
@@ -4519,7 +4637,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 24,
+        "catalogOrder": 25,
         "authority": "company-runtime",
         "identity": {
           "gameId": "fifty-days",
@@ -4639,7 +4757,7 @@
           }
         }
       },
-      "catalogOrder": 24,
+      "catalogOrder": 25,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -4685,7 +4803,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 25,
+        "catalogOrder": 26,
         "authority": "company-runtime",
         "identity": {
           "gameId": "forest-survival",
@@ -4791,7 +4909,7 @@
           }
         }
       },
-      "catalogOrder": 25,
+      "catalogOrder": 26,
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -4887,7 +5005,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 26,
+        "catalogOrder": 27,
         "authority": "company-runtime",
         "identity": {
           "gameId": "gem-survivor",
@@ -5009,7 +5127,7 @@
           }
         }
       },
-      "catalogOrder": 26,
+      "catalogOrder": 27,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -5092,7 +5210,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 27,
+        "catalogOrder": 28,
         "authority": "company-runtime",
         "identity": {
           "gameId": "kingshot-ad",
@@ -5214,7 +5332,7 @@
           }
         }
       },
-      "catalogOrder": 27,
+      "catalogOrder": 28,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -5293,7 +5411,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 28,
+        "catalogOrder": 29,
         "authority": "company-runtime",
         "identity": {
           "gameId": "mini-empire",
@@ -5408,7 +5526,7 @@
           }
         }
       },
-      "catalogOrder": 28,
+      "catalogOrder": 29,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerWebEntryFile": "web-games/mini-empire/index.html",
@@ -5487,7 +5605,7 @@
       "ownerWebEntryFile": "web-games/moon-ruins/index.html",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 29,
+        "catalogOrder": 30,
         "authority": "company-runtime",
         "identity": {
           "gameId": "moon-ruins",
@@ -5600,7 +5718,7 @@
           }
         }
       },
-      "catalogOrder": 29,
+      "catalogOrder": 30,
       "webPublishedRoute": "web-games/moon-ruins/",
       "webPublishedSourceTreeSha": "3c9df920247cf1c63815df0f09de12cc790b92ca",
       "concurrentTargetPlatforms": [
@@ -5648,7 +5766,7 @@
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "Kenney CC0 3D 범선, 8개 항구 교역, A* 항로, 함포전, 운송 계약, 저장 기능 구현 · 런타임 및 배포 검증 대기",
       "selectedPlatform": "WEB",
-      "catalogOrder": 30,
+      "catalogOrder": 31,
       "updatedAt": "2026-10-20T19:38:00+09:00",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -5680,7 +5798,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 30,
+        "catalogOrder": 31,
         "authority": "company-runtime",
         "identity": {
           "gameId": "ocean-voyage",
@@ -5870,7 +5988,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 31,
+        "catalogOrder": 32,
         "authority": "company-runtime",
         "identity": {
           "gameId": "party-rpg",
@@ -5992,7 +6110,7 @@
           }
         }
       },
-      "catalogOrder": 31,
+      "catalogOrder": 32,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -6075,7 +6193,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 32,
+        "catalogOrder": 33,
         "authority": "company-runtime",
         "identity": {
           "gameId": "realistic-builder",
@@ -6197,7 +6315,7 @@
           }
         }
       },
-      "catalogOrder": 32,
+      "catalogOrder": 33,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -6276,7 +6394,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 33,
+        "catalogOrder": 34,
         "authority": "company-runtime",
         "identity": {
           "gameId": "restaurant-tycoon",
@@ -6391,7 +6509,7 @@
           }
         }
       },
-      "catalogOrder": 33,
+      "catalogOrder": 34,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerWebEntryFile": "web-games/restaurant-tycoon/index.html",
@@ -6471,7 +6589,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 34,
+        "catalogOrder": 35,
         "authority": "company-runtime",
         "identity": {
           "gameId": "star-frontier",
@@ -6591,7 +6709,7 @@
           }
         }
       },
-      "catalogOrder": 34,
+      "catalogOrder": 35,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -6674,7 +6792,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 35,
+        "catalogOrder": 36,
         "authority": "company-runtime",
         "identity": {
           "gameId": "tower-choice-rpg",
@@ -6796,7 +6914,7 @@
           }
         }
       },
-      "catalogOrder": 35,
+      "catalogOrder": 36,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -6850,7 +6968,7 @@
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 36,
+        "catalogOrder": 37,
         "authority": "company-runtime",
         "identity": {
           "gameId": "turn-rpg",
@@ -6956,7 +7074,7 @@
           }
         }
       },
-      "catalogOrder": 36,
+      "catalogOrder": 37,
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -7042,7 +7160,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 37,
+        "catalogOrder": 38,
         "authority": "company-runtime",
         "identity": {
           "gameId": "zombie-survival",
@@ -7164,7 +7282,7 @@
           }
         }
       },
-      "catalogOrder": 37,
+      "catalogOrder": 38,
       "selectedPlatform": "WEB",
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
@@ -7249,7 +7367,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 38,
+        "catalogOrder": 39,
         "authority": "company-runtime",
         "identity": {
           "gameId": "bug-defense",
@@ -7362,7 +7480,7 @@
           }
         }
       },
-      "catalogOrder": 38,
+      "catalogOrder": 39,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -7440,7 +7558,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 39,
+        "catalogOrder": 40,
         "authority": "company-runtime",
         "identity": {
           "gameId": "insect-survival",
@@ -7560,7 +7678,7 @@
           }
         }
       },
-      "catalogOrder": 39,
+      "catalogOrder": 40,
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -7642,7 +7760,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 40,
+        "catalogOrder": 41,
         "authority": "company-runtime",
         "identity": {
           "gameId": "chess-battle",
@@ -7760,7 +7878,7 @@
           }
         }
       },
-      "catalogOrder": 40,
+      "catalogOrder": 41,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -7850,7 +7968,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 41,
+        "catalogOrder": 42,
         "authority": "company-runtime",
         "identity": {
           "gameId": "human-go",
@@ -7961,7 +8079,7 @@
           }
         }
       },
-      "catalogOrder": 41,
+      "catalogOrder": 42,
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -8031,7 +8149,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 42,
+        "catalogOrder": 43,
         "authority": "company-runtime",
         "identity": {
           "gameId": "island-village",
@@ -8144,7 +8262,7 @@
           }
         }
       },
-      "catalogOrder": 42,
+      "catalogOrder": 43,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -8224,7 +8342,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 43,
+        "catalogOrder": 44,
         "authority": "company-runtime",
         "identity": {
           "gameId": "monster-adventure",
@@ -8344,7 +8462,7 @@
           }
         }
       },
-      "catalogOrder": 43,
+      "catalogOrder": 44,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -8431,7 +8549,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 44,
+        "catalogOrder": 45,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival",
@@ -8542,7 +8660,7 @@
           }
         }
       },
-      "catalogOrder": 44,
+      "catalogOrder": 45,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -8625,7 +8743,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 45,
+        "catalogOrder": 46,
         "authority": "company-runtime",
         "identity": {
           "gameId": "medieval-defense",
@@ -8733,7 +8851,7 @@
           }
         }
       },
-      "catalogOrder": 45
+      "catalogOrder": 46
     },
     {
       "id": "territory-war",
@@ -8784,7 +8902,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 46,
+        "catalogOrder": 47,
         "authority": "company-runtime",
         "identity": {
           "gameId": "territory-war",
@@ -8902,7 +9020,7 @@
           }
         }
       },
-      "catalogOrder": 46,
+      "catalogOrder": 47,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "targetPlatform": "ROBLOX",
@@ -8943,22 +9061,6 @@
       "webPublishedSourceTreeSha": "bd1cd06ff49b156e284f3d5946e8f9d368819175",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
-    },
-    {
-      "id": "animal-auto-battle",
-      "name": "animal-auto-battle",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
-      "lifecycleState": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "robloxProjectPath": "roblox-games/animal-auto-battle",
-      "developmentHandling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
-      "sourceIntake": {
-        "kind": "EXISTING_ROJO_PROJECT",
-        "designVerified": false,
-        "runtimeVerified": false,
-        "externalReleaseApproved": false
-      }
     }
   ],
   "runtimeAuthority": "company-runtime",
@@ -8968,9 +9070,9 @@
     "UNITY"
   ],
   "runtimeCounts": {
-    "canonicalGames": 46,
+    "canonicalGames": 47,
     "homepageInfo": 46,
-    "normalizedGames": 46,
+    "normalizedGames": 47,
     "ownerWebAdded": 1,
     "ownerWebUpdated": 27,
     "ownerWebDisabled": 16,
