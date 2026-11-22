@@ -175,7 +175,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local n=0 local f=workspace:FindFirstChild('FieldScene') if f then for _,m in f:GetChildren() do if m.Name=='FieldAlly' then n+=1 end end end return 'ALLIES '..n"
+  "code": "-- [파티 전용 지상전투] 동료 출전 모델은 0명, 파티 초상은 최대 2명만 허용한다.\nlocal field=assert(workspace:FindFirstChild(\"FieldScene\"),\"FIELD_SCENE_MISSING\")\nlocal gui=assert(game.Players.LocalPlayer.PlayerGui:FindFirstChild(\"FieldGui\"),\"FIELD_GUI_MISSING\")\nlocal models=0\nfor _,m in field:GetDescendants() do\n if m:IsA(\"Model\") and m.Name==\"FieldAlly\" then models+=1 end\nend\nassert(models==0,\"FIELD_COMPANION_COMBAT_MODEL_PRESENT:\"..models)\nlocal cards=0\nfor _,c in gui:GetChildren() do\n if c.Name==\"FieldAllyStatus1\" or c.Name==\"FieldAllyStatus2\" then\n  cards+=1\n  assert(type(c:GetAttribute(\"CompanionId\"))==\"string\" and c:GetAttribute(\"CombatEnabled\")==false,\"FIELD_PARTY_CARD_INVALID:\"..c.Name)\n end\nend\nassert(cards<=2,\"FIELD_PARTY_CARD_LIMIT:\"..cards)\nreturn \"FIELD_PARTY_ONLY_PASS models=\"..models..\" cards=\"..cards"
  },
  {
   "type": "capture",
