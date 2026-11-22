@@ -11,6 +11,19 @@
  {
   "type": "luau",
   "ctx": "Client",
+  "code": "local lib=game:GetService(\"ReplicatedStorage\"):FindFirstChild(\"MareAssets\") assert(lib,\"NO_LIB\")\nlocal town=lib:FindFirstChild(\"Town\") assert(town,\"NO_TOWN\")\nlocal old=workspace:FindFirstChild(\"KitMeasure\") if old then old:Destroy() end\nlocal g=Instance.new(\"Folder\") g.Name=\"KitMeasure\" g.Parent=workspace\nlocal out={} local x=-1400\nfor _,n in {\"kenney_grey_wall_01\",\"kenney_grey_window_square_01\",\"kenney_grey_window_round_long_01\",\"kenney_grey_door_round_01\",\"kenney_grey_corner_01\",\"kenney_grey_arch_01\",\"kenney_grey_pole_01\",\"kenney_wood_wall_01\",\"kenney_wood_window_square_01\",\"kenney_wood_door_01\",\"kenney_wood_corner_01\",\"kenney_wood_pole_01\",\"kenney_roof_straight_red_01\",\"kenney_roof_corner_red_01\",\"kenney_roof_point_red_01\",\"kenney_roof_slant_red_01\",\"kenney_roof_straight_green_01\",\"kenney_roof_corner_green_01\",\"kenney_stairs_stone_01\",\"quaternius_large_square_tower\",\"quaternius_wall_entrance\",\"quaternius_tall_wall\",\"quaternius_window_gothic\",\"wall-arch\",\"wall-window-shutters\",\"roof-gable\",\"roof-high-window\",\"balcony-wall\",\"pillar-stone\"} do\n local t=town:FindFirstChild(n)\n if t and t:IsA(\"Model\") then\n  local m=t:Clone()\n  for _,d in m:GetDescendants() do if d:IsA(\"BasePart\") then d.Anchored=true d.CanCollide=false end end\n  local cf,sz=m:GetBoundingBox()\n  local piv=m:GetPivot()\n  local rel=cf:PointToObjectSpace(piv.Position)\n  m:PivotTo(piv+(Vector3.new(x,0,-900)-Vector3.new(cf.Position.X,cf.Position.Y-sz.Y/2,cf.Position.Z)))\n  m.Parent=g\n  table.insert(out,string.format(\"%s=%.2fx%.2fx%.2f piv(%.2f,%.2f,%.2f) look(%.1f,%.1f)\",n,sz.X,sz.Y,sz.Z,rel.X,rel.Y,rel.Z,piv.LookVector.X,piv.LookVector.Z))\n  x+=math.max(sz.X,sz.Z)+6\n else table.insert(out,n..\"=MISSING\") end\nend\nworkspace:SetAttribute(\"ShotFov\",50) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-1400+(x+1400)/2,40,-840),Vector3.new(-1400+(x+1400)/2,4,-900),Vector3.new(0,1,0)))\nreturn \"KENNEY_KIT \"..table.concat(out,\" | \")"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "kit_kenney"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
   "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='london',portName='london',level=5,shipId='galleon',hasShipyard=true,facilities={'palace','bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) workspace:SetAttribute('ShotFov',55) return tostring(ok)..tostring(err)"
  },
  {
