@@ -958,18 +958,18 @@ local NPC_REGISTERED_HAIR = {
 -- [승인된 헤드·몸통 액세서리 5종] 추가 요소만 분리한다. 위치는 R15 부위의 상대 좌표.
 -- 배열 7/8열: 기존 Y 오프셋 뒤의 X/Z 배율(미지정이면 0). 금속 배지는 겉옷 바깥쪽에 보이게 장착한다.
 local NPC_REGISTERED_ACCESSORY = {
-	citizen_female = { "acc_ribbon_bow", "Head", 0.93, 0.96, 0.95, 0.34, 0.13, -0.11 },
-	citizen_official_male = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
-	citizen_official_female = { "acc_pearl_hairpin", "Head", 0.68, 0.70, 0.72, 0.30, 0.34, -0.09 },
+	citizen_female = { "acc_ribbon_bow", "Head", 0.56, 0.58, 0.57, 0.38, 0.29, 0.27 },
+	citizen_official_male = { "acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38, 0.17, -0.31, -0.66 },
+	citizen_official_female = { "acc_pearl_hairpin", "Head", 0.36, 0.39, 0.40, 0.32, 0.36, -0.12 },
 	citizen_sailor_male = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
 	citizen_sailor_female = { "acc_sailor_headband", "Head", 1.12, 1.12, 1.13, 0.14 },
 	citizen_guard_male = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
 	citizen_guard_female = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
-	citizen_worker_female = { "acc_ribbon_bow", "Head", 0.93, 0.96, 0.95, 0.34, 0.13, -0.11 },
-	citizen_artisan_male = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
-	citizen_artisan_female = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	citizen_worker_female = { "acc_ribbon_bow", "Head", 0.56, 0.58, 0.57, 0.38, 0.29, 0.27 },
+	citizen_artisan_male = { "acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38, 0.17, -0.31, -0.66 },
+	citizen_artisan_female = { "acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38, 0.17, -0.31, -0.66 },
 	companion_male = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
-	companion_female = { "acc_pearl_hairpin", "Head", 0.68, 0.70, 0.72, 0.30, 0.34, -0.09 },
+	companion_female = { "acc_pearl_hairpin", "Head", 0.36, 0.39, 0.40, 0.32, 0.36, -0.12 },
 }
 
 -- [직업별 장신구] 기존 등록·승인된 메시만. 비유럽·중세 복장은 보존한다.
@@ -981,14 +981,14 @@ local NPC_PROFESSION_ACCESSORY = {
 	royal_guard = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
 	royal_gate_guard = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
 	royal_ceremonial_guard = { "acc_feather_hat", "Head", 1.22, 1.26, 1.22, 0.37 },
-	shipwright = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
-	carpenter = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
-	smith = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
-	tailor = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
-	merchant = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
-	banker = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
-	royal_scribe = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
-	royal_archivist = { "acc_guild_badge", "UpperTorso", 0.60, 0.64, 0.68, 0.12, -0.31, -0.61 },
+	shipwright = { "acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38, 0.17, -0.31, -0.66 },
+	carpenter = { "acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38, 0.17, -0.31, -0.66 },
+	smith = { "acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38, 0.17, -0.31, -0.66 },
+	tailor = { "acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38, 0.17, -0.31, -0.66 },
+	merchant = { "acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38, 0.17, -0.31, -0.66 },
+	banker = { "acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38, 0.17, -0.31, -0.66 },
+	royal_scribe = { "acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38, 0.17, -0.31, -0.66 },
+	royal_archivist = { "acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38, 0.17, -0.31, -0.66 },
 }
 -- [직업별 실물 휴대품 35종] 기존 등록된 CC0 Relics/Cargo 자산을 주민 R15 관절에만 부착한다.
 -- 각 직업은 독립된 도구·소지품과 착용 위치를 가진다. 공격 판정·경제·저장 속성은 변경하지 않는다.
@@ -1347,12 +1347,14 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		local ok = pcall(function()
 			local bounds, ext = skin:GetBoundingBox()
 			if ext.X < 0.01 or ext.Y < 0.01 or ext.Z < 0.01 then error("empty mesh") end
-			-- [허리띠 바렐링 방지] 원본 복식의 재질·형태는 살리고 R15 허리 높이만 슬림하게 맞춘다.
+			-- [복식 맞춤] 원본 재질·형태를 유지하면서 손목 레이스와 장화가 팔다리를 과하게 감싸지 않게 맞춘다.
 			local belt = npcOutfit and assetName == "outfit_belt"
+			local cuff = npcOutfit and assetName == "outfit_cuff"
+			local boot = npcOutfit and assetName == "outfit_boot"
 			local ratio = math.min(
-				target.Size.X * (if belt then 1.04 else spec[3]) / ext.X,
-				target.Size.Y * (if belt then 0.38 else spec[4]) / ext.Y,
-				target.Size.Z * (if belt then 1.04 else spec[5]) / ext.Z
+				target.Size.X * (if belt then 1.04 elseif cuff then 1.06 elseif boot then 1.10 else spec[3]) / ext.X,
+				target.Size.Y * (if belt then 0.38 elseif cuff then 0.55 elseif boot then 1.18 else spec[4]) / ext.Y,
+				target.Size.Z * (if belt then 1.04 elseif cuff then 1.12 elseif boot then 1.13 else spec[5]) / ext.Z
 			)
 			-- [헤어 장착 비율] 긴 머리를 머리 높이 한 칸에 압축하면 숱과 폭이 사라진다.
 			-- 실물 헤어는 R15 두상 폭·깊이를 우선 맞추고 머리형에 필요한 아래쪽 길이를 허용한다.
@@ -1370,8 +1372,9 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			bounds = skin:GetBoundingBox()
 			-- [직업 도구 자연스러운 고정] 기존 부착 좌표에 필요한 도구 기울기만 적용한다.
 			-- 근접 보행·망치질에는 손/허리 R15 관절을 따라가며 접지/충돌 판정이 없다.
+			-- [손목·발목 접합] 커프는 팔끝, 장화는 종아리 아래로 내려 관절 위에 뜬 흰 띠를 줄인다.
 			skin:PivotTo((target.CFrame * CFrame.new(target.Size.X * (spec[7] or 0),
-				target.Size.Y * spec[6], target.Size.Z * (spec[8] or 0))
+				target.Size.Y * (if cuff then -0.29 elseif boot then -0.11 else spec[6]), target.Size.Z * (spec[8] or 0))
 				* CFrame.Angles(math.rad(spec[9] or 0), 0, 0)) * bounds:ToObjectSpace(skin:GetPivot()))
 			for _, part in parts do
 				part.Anchored, part.CanCollide, part.CanTouch, part.CanQuery = false, false, false, false
@@ -1398,6 +1401,16 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						if typeof(hairTint) == "Color3" then
 							local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.34)
 							surface.Color = surface.Color:Lerp(softTint, 0.72)
+						end
+					elseif detailAllowed and assetName == "outfit_cuff" and typeof(npcClothTint) == "Color3" then
+						-- [흰 레이스 완화] 장신구의 금속 단추와 원본 PBR 지도는 보존하고 직물만 외투 색과 맞춘다.
+						local trim = part.Name:lower()
+						if part.Material ~= Enum.Material.Metal
+							and not trim:find("metal", 1, true) and not trim:find("button", 1, true)
+							and not trim:find("fastener", 1, true) and not trim:find("buckle", 1, true)
+							and not trim:find("stud", 1, true) then
+							local linen = npcClothTint:Lerp(Color3.fromRGB(205, 192, 169), 0.42)
+							surface.Color = surface.Color:Lerp(linen, 0.47)
 						end
 					elseif detailAllowed and (assetName == "outfit_vest" or assetName == "outfit_coat"
 						or assetName == "outfit_apron"
@@ -1474,7 +1487,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					-- 텍스처 없는 이미 분류된 직물만 지역 고유 옷색을 부드럽게 섞는다.
 					if npcOutfit and detailAllowed and part.Material == Enum.Material.Fabric
 						and typeof(npcClothTint) == "Color3" then
-						local tint = if assetName == "outfit_cuff" then npcClothTint:Lerp(Color3.fromRGB(226, 203, 165), 0.68)
+						local tint = if assetName == "outfit_cuff" then npcClothTint:Lerp(Color3.fromRGB(205, 192, 169), 0.42)
 						elseif assetName == "outfit_stole" then npcClothTint:Lerp(Color3.fromRGB(210, 185, 137), 0.58)
 						elseif assetName == "outfit_sash" then npcClothTint:Lerp(
 							if typeof(npcTrouserTint) == "Color3" then npcTrouserTint else npcClothTint, 0.45)
@@ -1483,7 +1496,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						-- 무채색으로 유실된 복식에서 색조를 조금 더 복원한다.
 						local neutral = math.max(part.Color.R, part.Color.G, part.Color.B)
 							- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.11
-						part.Color = part.Color:Lerp(tint, (if neutral then 0.39 else 0.18) * finishing)
+						part.Color = part.Color:Lerp(tint, (if assetName == "outfit_cuff" and neutral then 0.59 elseif neutral then 0.39 else 0.18) * finishing)
 					end
 					-- [기존 가죽 대비] 원본 가죽/금속 판정을 유지하고 직업별 바지 색상은 무텍스처 장화에만 반영한다.
 					if npcOutfit and assetName == "outfit_boot" and part.Material == Enum.Material.Leather
