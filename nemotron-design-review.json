@@ -2,9 +2,9 @@
   "version": 3,
   "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "4ac18ad66c0b0c557e2ec59cb436fb342612b9ab",
-  "status": "REVIEWED_NO_VERIFIED_EDIT",
-  "selectedRole": "MOTION",
+  "sourceRevision": "e43d5031b94dbd84525222fd90166ce46685fd38",
+  "status": "SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE",
+  "selectedRole": "GENERAL",
   "usageWindow": {
     "day": "2026-11-22",
     "calls": {
@@ -36,8 +36,8 @@
       "effectiveRemaining": 2,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 2,
-      "estimatedCallsPerHour": 1.64,
-      "estimatedHoursToLocalCap": 1.2,
+      "estimatedCallsPerHour": 1.59,
+      "estimatedHoursToLocalCap": 1.3,
       "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -70,7 +70,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 5.28,
+      "estimatedCallsPerHour": 5.11,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -81,38 +81,60 @@
     }
   },
   "accountQuota": null,
-  "attempts": [
-    {
-      "id": "NVIDIA_VL",
-      "status": "OK",
-      "provider": "NVIDIA",
-      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
-    },
-    {
-      "id": "NVIDIA_VL",
-      "status": "REVIEW_INVALID",
-      "failureSignature": "REVIEW_SCHEMA_INVALID"
-    }
-  ],
+  "attempts": [],
   "frames": [
     {
-      "name": "field_actor_after_motion-0.jpg",
-      "sha256": "14fb5ce28e1cae21f2a3c83236890668ae1c542938c4847d58e02e31f8dfc89d"
+      "name": "b1_start-0.jpg",
+      "sha256": "3cd1ed03a8716fc7bae412a604be1e80da7e3533e1c3d61f5e338e72571b5b67"
     },
     {
-      "name": "field_motion_smooth_icons-0.jpg",
-      "sha256": "b9fa03afef5e9383f03c71224d45431e444eaad910b0f349b80a12fdb81233bd"
+      "name": "b2_mid-0.jpg",
+      "sha256": "dead5bd5d6934bb5fee3ed24d6a75d3df33c0dfca7179334c3ebedbf40b66263"
     },
     {
-      "name": "harbor_motion_attack-0.jpg",
-      "sha256": "c83324a0f7d7582d73d51e5fe6a14d6a86a3f67c626461232ad305df98799e5d"
+      "name": "c00_start-0.jpg",
+      "sha256": "9f68f74ab3c503c05b246cc0eebd8beb9b08e14a32f64835cf8c2fca6b63b795"
     },
     {
-      "name": "harbor_motion_cheer-0.jpg",
-      "sha256": "93bb356e709cab84a19f0812d44086d17fe0e17eeca4f2ec9ca9f49b4dfbfb1a"
+      "name": "intro_center_early-0.jpg",
+      "sha256": "6de61a89492fd935a25cfd43fbdcc0f42c475840fea9b9b7186a9f282bad0f9a"
     }
   ],
-  "independentQaPassed": false,
-  "afterStudioPassed": false,
-  "releasePassed": false
+  "modelAvailability": [
+    {
+      "modelId": "NVIDIA_VL",
+      "provider": "NVIDIA",
+      "status": "COOLDOWN_ACTIVE"
+    },
+    {
+      "modelId": "GEMINI_FLASH",
+      "provider": "GEMINI",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_GEMMA",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_NEMOTRON",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_GEMMA26",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_OMNI",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "GEMINI_LITE",
+      "provider": "GEMINI",
+      "status": "DAILY_CALL_CAP"
+    }
+  ]
 }
