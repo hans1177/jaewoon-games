@@ -3605,3 +3605,45 @@ test('대항해시대 3차 원근·계절 숲·선박 항적 CC0 자산 실물 �
   assert.match(naval,/cliff-cornerlarge-rock/);
   assert.match(naval,/cliff-waterfall-stone/);
 });
+
+// [입체 지형 4차] CC0 원본·등록 권한·강둑·절벽·계절 숲/해안 연출 회귀검사
+test('대항해시대 4차 고지 수관·절벽 만·강둑 CC0 8종 및 모바일 디테일',()=>{
+  const root='roblox-games/mare-essentia/';
+  const registry=JSON.parse(readText(root+'assets-registered.json')).assets;
+  const ids=readText(root+'src/ReplicatedStorage/Shared/AssetIds.luau');
+  const originals={
+    'tree-plateau':'f71ffc832f57211786833401e5e5a980f3b9188e',
+    'tree-pinetallc-detailed':'db0568ca14d97917aa0c0fccc17f8feddb0e21e4',
+    'plant-flattall':'892506b42f756ce42a0c0d7dbdadd8c29c07ecc0',
+    'cliff-cornerinnerlarge-rock':'eb7e85430f5a74a1405bfaea14ed1da062a65046',
+    'cliff-cornertop-rock':'2d6be6c8feb0c42d697d48d888fd0c45e996865f',
+    'ground-riverbendbank':'3493554fdeeec1c8409478d7e61c0e0338a31556',
+    'rock-largec':'2cdf83e8a9e681a0b1c6aef4d9933d772d3ebc65',
+    'tree-palmbend':'f1ce81e92c48c980fca2de9f0605702e415efb30',
+  };
+  for(const [name,sha] of Object.entries(originals)){
+    const key='Terrain/'+name,row=registry[key];
+    assert.equal(row?.license,'CC0-1.0',key+' 무료 원본 저작권');
+    assert.equal(row?.assetType,'Model',key+' 실물 3D 모델');
+    assert.equal(row?.usePermissionGranted,true,key+' Roblox 체험 사용권한');
+    assert.ok(/^[1-9][0-9]*$/.test(String(row?.assetId||'')),key+' 실제 ID');
+    assert.ok(ids.includes('["'+key+'"] = '+row.assetId),key+' 배포용 AssetIds');
+    const bytes=fs.readFileSync(root+'assets/terrain/'+name+'.glb');
+    assert.equal(bytes.toString('ascii',0,4),'glTF',key+' 원본 GLB');
+    const actual=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length))
+      .update(Buffer.from([0])).update(bytes).digest('hex');
+    assert.equal(actual,sha,key+' 원본 Git blob SHA-1');
+  }
+  const field=readText(root+'src/ReplicatedStorage/Shared/FieldScene.luau');
+  const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
+  assert.match(field,/AssetIds\["Terrain\/tree-plateau"\]/);
+  assert.match(field,/AssetIds\["Terrain\/tree-palmbend"\]/);
+  assert.match(field,/AssetIds\["Terrain\/rock-largec"\]/);
+  assert.match(field,/AssetIds\["Terrain\/ground-riverbendbank"\]/);
+  assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\) else treeCount/);
+  assert.match(field,/local detailCount = if visualMobile then 10 else 24/);
+  assert.match(naval,/cliff-cornerinnerlarge-rock/);
+  assert.match(naval,/cliff-cornertop-rock/);
+  assert.match(naval,/wakeCount < \(if MOBILE_VFX then 2 else 6\)/);
+  assert.match(naval,/wakeFoam\.Texture = "rbxasset:\/\/textures\/particles\/sparkles_main\.dds"/);
+});
