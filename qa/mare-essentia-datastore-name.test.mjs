@@ -3495,6 +3495,27 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
     assert.ok(pose.includes('kind == "'+kind+'"'), '기존 모자/재질 분류 누락: '+kind);
 });
 
+// [남성 주민 수염 액세서리 회귀] 모발과 분리하고 얼굴 중앙이 아닌 턱·얼굴 앞쪽에 고정한다.
+test('항구 남성 주민 수염은 R15 Head 턱에 맞춰 1회 장착하고 흰색/중복을 방지한다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  const ids=read('ReplicatedStorage/Shared/AssetIds.luau');
+  assert.ok(ids.includes('["People/hair_beard"]'), '수염은 이미 승인된 원본 자산만 사용');
+  assert.ok(pose.includes('if detailAllowed and beardPersona == 3 and string.sub(profile, -5) == "_male"'), '기존 남성 주민 수염 선택 유지');
+  assert.ok(pose.includes('and string.find(profile, "clergy", 1, true) == nil'), '성직자 수염 제외 규칙 유지');
+  assert.ok(pose.includes('local beard = npcOutfit and assetName == "hair_beard"'), '몬스터 수염 비율은 변경하지 않음');
+  assert.ok(pose.includes('elseif beard then 0.76 else spec[3]'), '수염이 얼굴 너비보다 넓어지지 않음');
+  assert.ok(pose.includes('elseif beard then 0.58 else spec[4]'), '수염이 머리 전체를 덮지 않음');
+  assert.ok(pose.includes('elseif beard then 0.74 else spec[5]'), '수염 깊이 과장 방지');
+  assert.ok(pose.includes('elseif beard then -0.29 else hairOffsetY'), '수염은 정수리가 아닌 턱 아래');
+  assert.ok(pose.includes('if beard then -0.42 else (spec[8] or 0)'), '수염은 얼굴 전방으로 장착');
+  assert.ok(pose.includes('equipped:GetAttribute("NpcBeardFitVersion") ~= 1'), '기존 잘못 장착된 수염 1회 복구');
+  assert.ok(pose.includes('if beard then skin:SetAttribute("NpcBeardFitVersion", 1) end'), '이미 정상 장착된 수염 재복제 방지');
+  assert.ok(pose.includes('assetName == "hair_beard" or string.sub(assetName, 1, 4) == "acc_"'), '수염 액세서리 가시성 검사');
+  assert.ok(pose.includes('and not string.find(worn.Name, "hair_beard", 1, true)'), '실물 머리카락 갱신 시 수염 보존');
+  assert.ok(pose.includes('local hairTint = model:GetAttribute("NpcHairTint")'), '기존 주민 머리색 재사용');
+  assert.ok(pose.includes('weld.Part0, weld.Part1, weld.Parent = target, part, part'), '기존 Head 용접 유지');
+});
+
 // [손목·발목·장신구 실물 회귀] 붕 뜬 흰 레이스·장화와 과대 머리핀/배지를 장착 위치에서 보정한다.
 test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 및 PBR 지도를 유지한다',()=>{
   const pose=read('ReplicatedStorage/Shared/Pose.luau');
