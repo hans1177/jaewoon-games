@@ -1,145 +1,493 @@
 {
- "sourceRevision": "028695f97553a3fcc7afc1a355bf80cadea61c3c",
+ "sourceRevision": "b167e1fe45d2064b0673b49272fb07778247cded",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "ready=true Animals:11,Cargo:168,Castle:31,Interior:17,Monsters:4,Naval:196,People:75,Relics:36,Ships:0,Terrain:95,Town:167\ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
-   "step": 2,
+   "step": 3,
    "ctx": "Client",
-   "out": "build ok=true nil\ntext"
-  },
-  {
-   "step": 4,
-   "ctx": "Client",
-   "out": "bound\ntext"
+   "out": "killed 0\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "dev\ntext"
   },
   {
    "step": 7,
-   "capture": "01_top",
-   "files": 1
-  },
-  {
-   "step": 8,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "dev\ntext"
   },
   {
-   "step": 10,
-   "capture": "02_plaza",
-   "files": 1
+   "step": 9,
+   "ctx": "Client",
+   "out": "killed 1\ntext"
   },
   {
    "step": 11,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "audit reset\ntext"
+  },
+  {
+   "step": 12,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=trade opened=true buttons=86 offscreen=0[] small<36=2 clippedText=0 vp=1048x380\ntext"
   },
   {
    "step": 13,
-   "capture": "03_street",
+   "capture": "m_trade",
    "files": 1
   },
   {
    "step": 14,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "dev\ntext"
   },
   {
    "step": 16,
-   "capture": "04_dock",
-   "files": 1
-  },
-  {
-   "step": 17,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "dev\ntext"
   },
   {
-   "step": 19,
-   "capture": "05_aerial",
-   "files": 1
+   "step": 18,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
   },
   {
    "step": 20,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "MENU_AUDIT tab=harbor opened=true buttons=26 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 21,
+   "capture": "m_harbor",
+   "files": 1
   },
   {
    "step": 22,
-   "capture": "06_backstreet",
-   "files": 1
-  },
-  {
-   "step": 23,
    "ctx": "Client",
-   "out": "ok\ntext"
+   "out": "dev\ntext"
   },
   {
-   "step": 25,
-   "capture": "07_wall",
-   "files": 1
+   "step": 24,
+   "ctx": "Client",
+   "out": "dev\ntext"
   },
   {
    "step": 26,
    "ctx": "Client",
-   "out": "TOWN_LIVE_SPACING_PASS relocated=9 stopped=3 industry_sites=0 npc_faces=29 reversed_rigs=0 plaza_structures=0 inspected=741 GRAPHIC_AUDIT floating=34 [sheep@-809,-131+40.0;sheep@-847,-162+40.0;sheep@-851,-87+40.0;HarborRoofDetail@-12,27+18.9;chimney@-16,-36+16.2;HarborRoofDetail@-12,-30+15.7] houseOverlap=1 [-30,-23~-4,-49=30%] OUTFIT_AUDIT models=54 states=[ready=54] visible=481/519 lodHidden=0 hairMesh=51 missing=[] CITY_TIER source=nil display=1 scene=1 DISTRIBUTION all=[21,73,60,79,51,441] houses=[3,1,1,0,0,0] edges=40/80/120/170/240\ntext"
-  },
-  {
-   "step": 27,
-   "ctx": "Client",
-   "out": "parts=4352 meshparts=3675 models=2667 houses=5\ntext"
+   "out": "killed 0\ntext"
   },
   {
    "step": 28,
    "ctx": "Client",
-   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=1.0238996744155884\ntext"
+   "out": "MENU_AUDIT tab=route opened=true buttons=143 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 29,
+   "capture": "m_route",
+   "files": 1
   },
   {
    "step": 30,
-   "capture": "08_harbor_npc_sparring_01",
-   "files": 1
+   "ctx": "Client",
+   "out": "dev\ntext"
   },
   {
    "step": 32,
-   "capture": "08_harbor_npc_sparring_02",
-   "files": 1
+   "ctx": "Client",
+   "out": "dev\ntext"
   },
   {
    "step": 34,
-   "capture": "08_harbor_npc_sparring_03",
-   "files": 1
+   "ctx": "Client",
+   "out": "killed 0\ntext"
   },
   {
    "step": 36,
-   "capture": "08_harbor_npc_sparring_04",
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=map opened=true buttons=191 offscreen=0[] small<36=181 clippedText=13 vp=1048x380\ntext"
+  },
+  {
+   "step": 37,
+   "capture": "m_map",
    "files": 1
   },
   {
    "step": 38,
-   "capture": "08_harbor_npc_sparring_05",
-   "files": 1
+   "ctx": "Client",
+   "out": "dev\ntext"
   },
   {
    "step": 40,
-   "capture": "08_harbor_npc_sparring_06",
-   "files": 1
+   "ctx": "Client",
+   "out": "dev\ntext"
   },
   {
    "step": 42,
-   "capture": "08_harbor_npc_sparring_07",
-   "files": 1
+   "ctx": "Client",
+   "out": "killed 0\ntext"
   },
   {
    "step": 44,
-   "capture": "08_harbor_npc_sparring_08",
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=yard opened=true buttons=39 offscreen=0[] small<36=2 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 45,
+   "capture": "m_yard",
    "files": 1
+  },
+  {
+   "step": 46,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 48,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 50,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 52,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=board opened=true buttons=11 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 53,
+   "capture": "m_board",
+   "files": 1
+  },
+  {
+   "step": 54,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 56,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 58,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 60,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=quest opened=true buttons=19 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 61,
+   "capture": "m_quest",
+   "files": 1
+  },
+  {
+   "step": 62,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 64,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 66,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 68,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=recruit opened=true buttons=29 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 69,
+   "capture": "m_recruit",
+   "files": 1
+  },
+  {
+   "step": 70,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 72,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 74,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 76,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=explore opened=true buttons=13 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 77,
+   "capture": "m_explore",
+   "files": 1
+  },
+  {
+   "step": 78,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 80,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 82,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 84,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=battle opened=true buttons=38 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 85,
+   "capture": "m_battle",
+   "files": 1
+  },
+  {
+   "step": 86,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 88,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 90,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 92,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=war opened=true buttons=9 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 93,
+   "capture": "m_war",
+   "files": 1
+  },
+  {
+   "step": 94,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 96,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 98,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 100,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=gwent opened=true buttons=8 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 101,
+   "capture": "m_gwent",
+   "files": 1
+  },
+  {
+   "step": 102,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 104,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 106,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 108,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=scholar opened=true buttons=20 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 109,
+   "capture": "m_scholar",
+   "files": 1
+  },
+  {
+   "step": 110,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 112,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 114,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 116,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=codex opened=true buttons=127 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 117,
+   "capture": "m_codex",
+   "files": 1
+  },
+  {
+   "step": 118,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 120,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 122,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 124,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=tech opened=true buttons=12 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 125,
+   "capture": "m_tech",
+   "files": 1
+  },
+  {
+   "step": 126,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 128,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 130,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 132,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=status opened=true buttons=34 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 133,
+   "capture": "m_status",
+   "files": 1
+  },
+  {
+   "step": 134,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 136,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 138,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 140,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=crew opened=true buttons=43 offscreen=0[] small<36=0 clippedText=20 vp=1048x380\ntext"
+  },
+  {
+   "step": 141,
+   "capture": "m_crew",
+   "files": 1
+  },
+  {
+   "step": 143,
+   "click": "menu_book_close",
+   "at": "1003,45",
+   "out": "1003,45 CLICK=시설닫기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 1003,
+      "y": 45
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 145,
+   "click": "dock_real_click",
+   "at": "730,-20",
+   "out": "730,-20 CLICK=dock_Menu_trade\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 730,
+      "y": -20
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 147,
+   "ctx": "Client",
+   "out": "MENU_DOCK_CLICK_PASS Menu_trade\ntext"
+  },
+  {
+   "step": 148,
+   "ctx": "Client",
+   "out": "MENU_AUDIT_SUMMARY |trade:open:off0:small2:clip0|harbor:open:off0:small0:clip0|route:open:off0:small0:clip0|map:open:off0:small181:clip13|yard:open:off0:small2:clip0|board:open:off0:small0:clip0|quest:open:off0:small0:clip0|recruit:open:off0:small0:clip0|explore:open:off0:small0:clip0|battle:open:off0:small0:clip0|war:open:off0:small0:clip0|gwent:open:off0:small0:clip0|scholar:open:off0:small0:clip0|codex:open:off0:small0:clip0|tech:open:off0:small0:clip0|status:open:off0:small0:clip0|crew:open:off0:small0:clip20\ntext"
   }
  ],
  "errors": [],
@@ -152,238 +500,762 @@
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 83
+   "elapsedMs": 2552
   },
   {
    "step": 2,
-   "type": "luau",
-   "elapsedMs": 3600
+   "type": "wait",
+   "elapsedMs": 4014
   },
   {
    "step": 3,
-   "type": "wait",
-   "elapsedMs": 8009
+   "type": "luau",
+   "elapsedMs": 486
   },
   {
    "step": 4,
-   "type": "luau",
-   "elapsedMs": 91
+   "type": "wait",
+   "elapsedMs": 806
   },
   {
    "step": 5,
    "type": "luau",
-   "elapsedMs": 291
+   "elapsedMs": 474
   },
   {
    "step": 6,
    "type": "wait",
-   "elapsedMs": 2501
+   "elapsedMs": 2503
   },
   {
    "step": 7,
-   "type": "capture",
-   "elapsedMs": 822
+   "type": "luau",
+   "elapsedMs": 424
   },
   {
    "step": 8,
-   "type": "luau",
-   "elapsedMs": 186
+   "type": "wait",
+   "elapsedMs": 2502
   },
   {
    "step": 9,
-   "type": "wait",
-   "elapsedMs": 2509
+   "type": "luau",
+   "elapsedMs": 217
   },
   {
    "step": 10,
-   "type": "capture",
-   "elapsedMs": 847
+   "type": "wait",
+   "elapsedMs": 606
   },
   {
    "step": 11,
    "type": "luau",
-   "elapsedMs": 175
+   "elapsedMs": 234
   },
   {
    "step": 12,
-   "type": "wait",
-   "elapsedMs": 2513
+   "type": "luau",
+   "elapsedMs": 242
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 761
+   "elapsedMs": 1129
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 177
+   "elapsedMs": 436
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 2503
+   "elapsedMs": 2509
   },
   {
    "step": 16,
-   "type": "capture",
-   "elapsedMs": 753
+   "type": "luau",
+   "elapsedMs": 477
   },
   {
    "step": 17,
-   "type": "luau",
-   "elapsedMs": 177
+   "type": "wait",
+   "elapsedMs": 2511
   },
   {
    "step": 18,
-   "type": "wait",
-   "elapsedMs": 2515
+   "type": "luau",
+   "elapsedMs": 420
   },
   {
    "step": 19,
-   "type": "capture",
-   "elapsedMs": 857
+   "type": "wait",
+   "elapsedMs": 615
   },
   {
    "step": 20,
    "type": "luau",
-   "elapsedMs": 178
+   "elapsedMs": 404
   },
   {
    "step": 21,
-   "type": "wait",
-   "elapsedMs": 2504
+   "type": "capture",
+   "elapsedMs": 1268
   },
   {
    "step": 22,
-   "type": "capture",
-   "elapsedMs": 774
+   "type": "luau",
+   "elapsedMs": 237
   },
   {
    "step": 23,
-   "type": "luau",
-   "elapsedMs": 138
+   "type": "wait",
+   "elapsedMs": 2514
   },
   {
    "step": 24,
-   "type": "wait",
-   "elapsedMs": 2512
+   "type": "luau",
+   "elapsedMs": 104
   },
   {
    "step": 25,
-   "type": "capture",
-   "elapsedMs": 951
+   "type": "wait",
+   "elapsedMs": 2501
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 181
+   "elapsedMs": 281
   },
   {
    "step": 27,
-   "type": "luau",
-   "elapsedMs": 178
+   "type": "wait",
+   "elapsedMs": 604
   },
   {
    "step": 28,
    "type": "luau",
-   "elapsedMs": 174
+   "elapsedMs": 456
   },
   {
    "step": 29,
-   "type": "wait",
-   "elapsedMs": 452
+   "type": "capture",
+   "elapsedMs": 1520
   },
   {
    "step": 30,
-   "type": "capture",
-   "elapsedMs": 793
+   "type": "luau",
+   "elapsedMs": 259
   },
   {
    "step": 31,
    "type": "wait",
-   "elapsedMs": 453
+   "elapsedMs": 2512
   },
   {
    "step": 32,
-   "type": "capture",
-   "elapsedMs": 736
+   "type": "luau",
+   "elapsedMs": 137
   },
   {
    "step": 33,
    "type": "wait",
-   "elapsedMs": 453
+   "elapsedMs": 2506
   },
   {
    "step": 34,
-   "type": "capture",
-   "elapsedMs": 756
+   "type": "luau",
+   "elapsedMs": 164
   },
   {
    "step": 35,
    "type": "wait",
-   "elapsedMs": 465
+   "elapsedMs": 600
   },
   {
    "step": 36,
-   "type": "capture",
-   "elapsedMs": 766
+   "type": "luau",
+   "elapsedMs": 184
   },
   {
    "step": 37,
-   "type": "wait",
-   "elapsedMs": 450
+   "type": "capture",
+   "elapsedMs": 1134
   },
   {
    "step": 38,
-   "type": "capture",
-   "elapsedMs": 929
+   "type": "luau",
+   "elapsedMs": 265
   },
   {
    "step": 39,
    "type": "wait",
-   "elapsedMs": 460
+   "elapsedMs": 2511
   },
   {
    "step": 40,
-   "type": "capture",
-   "elapsedMs": 709
+   "type": "luau",
+   "elapsedMs": 182
   },
   {
    "step": 41,
    "type": "wait",
-   "elapsedMs": 463
+   "elapsedMs": 2502
   },
   {
    "step": 42,
-   "type": "capture",
-   "elapsedMs": 807
+   "type": "luau",
+   "elapsedMs": 149
   },
   {
    "step": 43,
    "type": "wait",
-   "elapsedMs": 461
+   "elapsedMs": 615
   },
   {
    "step": 44,
+   "type": "luau",
+   "elapsedMs": 170
+  },
+  {
+   "step": 45,
    "type": "capture",
-   "elapsedMs": 772
+   "elapsedMs": 872
+  },
+  {
+   "step": 46,
+   "type": "luau",
+   "elapsedMs": 175
+  },
+  {
+   "step": 47,
+   "type": "wait",
+   "elapsedMs": 2513
+  },
+  {
+   "step": 48,
+   "type": "luau",
+   "elapsedMs": 120
+  },
+  {
+   "step": 49,
+   "type": "wait",
+   "elapsedMs": 2507
+  },
+  {
+   "step": 50,
+   "type": "luau",
+   "elapsedMs": 227
+  },
+  {
+   "step": 51,
+   "type": "wait",
+   "elapsedMs": 613
+  },
+  {
+   "step": 52,
+   "type": "luau",
+   "elapsedMs": 197
+  },
+  {
+   "step": 53,
+   "type": "capture",
+   "elapsedMs": 878
+  },
+  {
+   "step": 54,
+   "type": "luau",
+   "elapsedMs": 163
+  },
+  {
+   "step": 55,
+   "type": "wait",
+   "elapsedMs": 2509
+  },
+  {
+   "step": 56,
+   "type": "luau",
+   "elapsedMs": 160
+  },
+  {
+   "step": 57,
+   "type": "wait",
+   "elapsedMs": 2504
+  },
+  {
+   "step": 58,
+   "type": "luau",
+   "elapsedMs": 160
+  },
+  {
+   "step": 59,
+   "type": "wait",
+   "elapsedMs": 601
+  },
+  {
+   "step": 60,
+   "type": "luau",
+   "elapsedMs": 158
+  },
+  {
+   "step": 61,
+   "type": "capture",
+   "elapsedMs": 773
+  },
+  {
+   "step": 62,
+   "type": "luau",
+   "elapsedMs": 256
+  },
+  {
+   "step": 63,
+   "type": "wait",
+   "elapsedMs": 2513
+  },
+  {
+   "step": 64,
+   "type": "luau",
+   "elapsedMs": 149
+  },
+  {
+   "step": 65,
+   "type": "wait",
+   "elapsedMs": 2509
+  },
+  {
+   "step": 66,
+   "type": "luau",
+   "elapsedMs": 108
+  },
+  {
+   "step": 67,
+   "type": "wait",
+   "elapsedMs": 610
+  },
+  {
+   "step": 68,
+   "type": "luau",
+   "elapsedMs": 183
+  },
+  {
+   "step": 69,
+   "type": "capture",
+   "elapsedMs": 730
+  },
+  {
+   "step": 70,
+   "type": "luau",
+   "elapsedMs": 260
+  },
+  {
+   "step": 71,
+   "type": "wait",
+   "elapsedMs": 2505
+  },
+  {
+   "step": 72,
+   "type": "luau",
+   "elapsedMs": 278
+  },
+  {
+   "step": 73,
+   "type": "wait",
+   "elapsedMs": 2514
+  },
+  {
+   "step": 74,
+   "type": "luau",
+   "elapsedMs": 85
+  },
+  {
+   "step": 75,
+   "type": "wait",
+   "elapsedMs": 610
+  },
+  {
+   "step": 76,
+   "type": "luau",
+   "elapsedMs": 100
+  },
+  {
+   "step": 77,
+   "type": "capture",
+   "elapsedMs": 1080
+  },
+  {
+   "step": 78,
+   "type": "luau",
+   "elapsedMs": 100
+  },
+  {
+   "step": 79,
+   "type": "wait",
+   "elapsedMs": 2508
+  },
+  {
+   "step": 80,
+   "type": "luau",
+   "elapsedMs": 140
+  },
+  {
+   "step": 81,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 82,
+   "type": "luau",
+   "elapsedMs": 244
+  },
+  {
+   "step": 83,
+   "type": "wait",
+   "elapsedMs": 608
+  },
+  {
+   "step": 84,
+   "type": "luau",
+   "elapsedMs": 573
+  },
+  {
+   "step": 85,
+   "type": "capture",
+   "elapsedMs": 2019
+  },
+  {
+   "step": 86,
+   "type": "luau",
+   "elapsedMs": 310
+  },
+  {
+   "step": 87,
+   "type": "wait",
+   "elapsedMs": 2503
+  },
+  {
+   "step": 88,
+   "type": "luau",
+   "elapsedMs": 523
+  },
+  {
+   "step": 89,
+   "type": "wait",
+   "elapsedMs": 2508
+  },
+  {
+   "step": 90,
+   "type": "luau",
+   "elapsedMs": 177
+  },
+  {
+   "step": 91,
+   "type": "wait",
+   "elapsedMs": 606
+  },
+  {
+   "step": 92,
+   "type": "luau",
+   "elapsedMs": 126
+  },
+  {
+   "step": 93,
+   "type": "capture",
+   "elapsedMs": 1290
+  },
+  {
+   "step": 94,
+   "type": "luau",
+   "elapsedMs": 394
+  },
+  {
+   "step": 95,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 96,
+   "type": "luau",
+   "elapsedMs": 198
+  },
+  {
+   "step": 97,
+   "type": "wait",
+   "elapsedMs": 2516
+  },
+  {
+   "step": 98,
+   "type": "luau",
+   "elapsedMs": 530
+  },
+  {
+   "step": 99,
+   "type": "wait",
+   "elapsedMs": 601
+  },
+  {
+   "step": 100,
+   "type": "luau",
+   "elapsedMs": 303
+  },
+  {
+   "step": 101,
+   "type": "capture",
+   "elapsedMs": 1634
+  },
+  {
+   "step": 102,
+   "type": "luau",
+   "elapsedMs": 386
+  },
+  {
+   "step": 103,
+   "type": "wait",
+   "elapsedMs": 2505
+  },
+  {
+   "step": 104,
+   "type": "luau",
+   "elapsedMs": 453
+  },
+  {
+   "step": 105,
+   "type": "wait",
+   "elapsedMs": 2512
+  },
+  {
+   "step": 106,
+   "type": "luau",
+   "elapsedMs": 410
+  },
+  {
+   "step": 107,
+   "type": "wait",
+   "elapsedMs": 604
+  },
+  {
+   "step": 108,
+   "type": "luau",
+   "elapsedMs": 486
+  },
+  {
+   "step": 109,
+   "type": "capture",
+   "elapsedMs": 2008
+  },
+  {
+   "step": 110,
+   "type": "luau",
+   "elapsedMs": 114
+  },
+  {
+   "step": 111,
+   "type": "wait",
+   "elapsedMs": 2503
+  },
+  {
+   "step": 112,
+   "type": "luau",
+   "elapsedMs": 278
+  },
+  {
+   "step": 113,
+   "type": "wait",
+   "elapsedMs": 2502
+  },
+  {
+   "step": 114,
+   "type": "luau",
+   "elapsedMs": 76
+  },
+  {
+   "step": 115,
+   "type": "wait",
+   "elapsedMs": 612
+  },
+  {
+   "step": 116,
+   "type": "luau",
+   "elapsedMs": 325
+  },
+  {
+   "step": 117,
+   "type": "capture",
+   "elapsedMs": 1135
+  },
+  {
+   "step": 118,
+   "type": "luau",
+   "elapsedMs": 484
+  },
+  {
+   "step": 119,
+   "type": "wait",
+   "elapsedMs": 2507
+  },
+  {
+   "step": 120,
+   "type": "luau",
+   "elapsedMs": 197
+  },
+  {
+   "step": 121,
+   "type": "wait",
+   "elapsedMs": 2509
+  },
+  {
+   "step": 122,
+   "type": "luau",
+   "elapsedMs": 203
+  },
+  {
+   "step": 123,
+   "type": "wait",
+   "elapsedMs": 604
+  },
+  {
+   "step": 124,
+   "type": "luau",
+   "elapsedMs": 68
+  },
+  {
+   "step": 125,
+   "type": "capture",
+   "elapsedMs": 1055
+  },
+  {
+   "step": 126,
+   "type": "luau",
+   "elapsedMs": 181
+  },
+  {
+   "step": 127,
+   "type": "wait",
+   "elapsedMs": 2512
+  },
+  {
+   "step": 128,
+   "type": "luau",
+   "elapsedMs": 69
+  },
+  {
+   "step": 129,
+   "type": "wait",
+   "elapsedMs": 2506
+  },
+  {
+   "step": 130,
+   "type": "luau",
+   "elapsedMs": 252
+  },
+  {
+   "step": 131,
+   "type": "wait",
+   "elapsedMs": 606
+  },
+  {
+   "step": 132,
+   "type": "luau",
+   "elapsedMs": 157
+  },
+  {
+   "step": 133,
+   "type": "capture",
+   "elapsedMs": 1769
+  },
+  {
+   "step": 134,
+   "type": "luau",
+   "elapsedMs": 246
+  },
+  {
+   "step": 135,
+   "type": "wait",
+   "elapsedMs": 2507
+  },
+  {
+   "step": 136,
+   "type": "luau",
+   "elapsedMs": 123
+  },
+  {
+   "step": 137,
+   "type": "wait",
+   "elapsedMs": 2502
+  },
+  {
+   "step": 138,
+   "type": "luau",
+   "elapsedMs": 198
+  },
+  {
+   "step": 139,
+   "type": "wait",
+   "elapsedMs": 609
+  },
+  {
+   "step": 140,
+   "type": "luau",
+   "elapsedMs": 157
+  },
+  {
+   "step": 141,
+   "type": "capture",
+   "elapsedMs": 1096
+  },
+  {
+   "step": 142,
+   "type": "wait",
+   "elapsedMs": 808
+  },
+  {
+   "step": 143,
+   "type": "click_from_luau",
+   "elapsedMs": 1118
+  },
+  {
+   "step": 144,
+   "type": "wait",
+   "elapsedMs": 2015
+  },
+  {
+   "step": 145,
+   "type": "click_from_luau",
+   "elapsedMs": 1415
+  },
+  {
+   "step": 146,
+   "type": "wait",
+   "elapsedMs": 1509
+  },
+  {
+   "step": 147,
+   "type": "luau",
+   "elapsedMs": 189
+  },
+  {
+   "step": 148,
+   "type": "luau",
+   "elapsedMs": 201
   }
  ],
  "consoleCapture": {
   "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
   "errorCount": 0,
-  "warningCount": 0,
+  "warningCount": 12,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 45,
-  "completedSteps": 45,
-  "plannedClicks": 0,
-  "successfulClicks": 0,
+  "plannedSteps": 149,
+  "completedSteps": 149,
+  "plannedClicks": 2,
+  "successfulClicks": 2,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 15,
-  "capturedFrames": 15,
+  "plannedFrames": 17,
+  "capturedFrames": 17,
   "abortedEarly": false
  }
 }
