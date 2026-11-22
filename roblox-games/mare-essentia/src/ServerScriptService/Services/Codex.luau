@@ -83,7 +83,7 @@ return function(D, S)
 	end
 
 	-- [백과 읽기 퀴즈] 해설을 읽고 3문제를 모두 맞히면 카드당 한 번 소액 보상. 정답·중복은 서버가 판정한다.
-	function handlers.WikiQuiz(state, p)
+	function handlers.WikiQuiz(state: any, p: any): (boolean, string)
 		local id = if type(p) == "table" then p.id else nil
 		local wiki = if type(id) == "string" and D.Cards.Wiki then D.Cards.Wiki[id] else nil
 		if not wiki or not wiki.quiz or not state.discovered[id] then

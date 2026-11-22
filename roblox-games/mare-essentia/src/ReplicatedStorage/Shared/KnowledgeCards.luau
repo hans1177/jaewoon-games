@@ -1260,8 +1260,8 @@ local Articles: { [string]: { topic: string, details: string, context: string, h
 }
 
 return {
-	Wiki = require(script.Parent.KnowledgeWiki).Wiki, -- [백과 위키 해설] 추가 데이터. 읽기 퀴즈 포함
-	QuizReward = require(script.Parent.KnowledgeWiki).QuizReward,
+	Wiki = require(script.Parent.KnowledgeWiki).Wiki :: any, -- [백과 위키 해설] 추가 데이터. 읽기 퀴즈 포함(타입 검사 복잡도 한계 회피용 any)
+	QuizReward = require(script.Parent.KnowledgeWiki).QuizReward :: any,
 	Articles = Articles,
 	Cards = Cards,
 	ById = ById,
