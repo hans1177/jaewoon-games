@@ -752,8 +752,10 @@ function FieldScene.start(opts)
 		biome.mat = Enum.Material.Sand
 		biome.ground = Color3.fromRGB(204, 177, 122)
 	elseif questTerrain == "coast" then
-		-- [해안 지질] 바위 절벽·피오르드는 암석, 해변·섬은 모래로 구별한다.
-		if portNature == "fjord" or portNature == "cliff_coast" or portNature == "mountain_coast" then
+		-- [해안 지질] 북방 겨울 눈은 보존, 그 외는 절벽 암석과 모래 해변으로 구별한다.
+		if winterScene then
+			biome.mat = Enum.Material.Snow
+		elseif portNature == "fjord" or portNature == "cliff_coast" or portNature == "mountain_coast" then
 			biome.mat = Enum.Material.Slate
 			biome.ground = Color3.fromRGB(118, 122, 117)
 		else
