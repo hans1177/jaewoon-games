@@ -5453,9 +5453,14 @@ function PortScene.build(info, onFacility)
 	local style = if culture and STYLE[culture] then STYLE[culture] elseif MED[info.portId] then STYLE.med else STYLE.north
 	local rng = seeded(info.portId)
 	sceneLevel = math.clamp(math.floor(info.level or 1), 1, 5)
-	-- 실물경제 시뮬의 발전 단계가 있으면 투자 단계와 평균해 마을 외형을 정한다 (인구·번영이 외형을 키운다)
+	-- [시뮬 우선] 마을 외형은 실물경제 시뮬의 발전 단계(인구·번영)가 정한다.
+	-- 플레이어 항구 투자는 보조: 투자 단계가 시뮬 단계보다 높으면 최대 +1만 더하고, 낮다고 외형을 깎지 않는다.
 	if info.sim and type(info.sim.stage) == "number" then
-		sceneLevel = math.clamp(math.floor((sceneLevel + info.sim.stage) / 2 + 0.5), 1, 5)
+		local simStage = math.clamp(math.floor(info.sim.stage), 1, 5)
+		local investBonus = if sceneLevel > simStage then 1 else 0
+		sceneLevel = math.clamp(simStage + investBonus, 1, 5)
+		folder:SetAttribute("CitySimStage", simStage)
+		folder:SetAttribute("CityInvestBonus", investBonus)
 	end
 	houseTier = sceneLevel
 	-- [원본 발전도 6단계 연결] Village.portDev(1~6)는 서버 계산 그대로 받는다. 평균값(1~5)이 최고인데
