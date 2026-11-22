@@ -1,0 +1,1268 @@
+{
+ "sourceRevision": "c75d052e6b9abdfd2a6a3011eda8f6ee653d66d2",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "KENNEY_KIT kenney_grey_wall_01=0.50x2.20x3.00 piv(0.25,-1.10,-1.50) look(-0.0,-1.0) | kenney_grey_window_square_01=0.50x2.20x3.00 piv(0.25,-1.10,-1.50) look(-0.0,-1.0) | kenney_grey_window_round_long_01=0.50x2.20x3.00 piv(0.25,-1.10,-1.50) look(-0.0,-1.0) | kenney_grey_door_round_01=0.50x2.20x3.00 piv(0.25,-1.10,-1.50) look(-0.0,-1.0) | kenney_grey_corner_01=3.00x2.20x3.00 piv(1.50,-1.10,-1.50) look(-0.0,-1.0) | kenney_grey_arch_01=0.50x2.20x3.00 piv(0.25,-1.10,-1.50) look(-0.0,-1.0) | kenney_grey_pole_01=0.50x2.20x0.50 piv(0.25,-1.10,-0.25) look(-0.0,-1.0) | kenney_wood_wall_01=0.50x2.20x3.00 piv(0.25,-1.10,-1.50) look(-0.0,-1.0) | kenney_wood_window_square_01=0.50x2.20x3.00 piv(0.25,-1.10,-1.50) look(-0.0,-1.0) | kenney_wood_door_01=0.30x1.92x1.22 piv(-0.15,-0.96,-0.61) look(-0.0,-1.0) | kenney_wood_corner_01=3.00x2.20x3.00 piv(1.50,-1.10,-1.50) look(-0.0,-1.0) | kenney_wood_pole_01=0.50x2.20x0.50 piv(0.25,-1.10,-0.25) look(-0.0,-1.0) | kenney_roof_straight_red_01=3.40x2.86x3.56 piv(1.50,-1.43,-1.50) look(-0.0,-1.0) | kenney_roof_corner_red_01=3.28x2.57x3.28 piv(1.64,-1.28,-1.64) look(-0.0,-1.0) | kenney_roof_point_red_01=3.34x2.56x3.34 piv(1.50,-1.53,-1.50) look(-0.0,-1.0) | kenney_roof_slant_red_01=3.28x2.57x3.00 piv(1.64,-1.16,-1.50) look(-0.0,-1.0) | kenney_roof_straight_green_01=3.40x2.86x3.56 piv(1.50,-1.43,-1.50) look(-0.0,-1.0) | kenney_roof_corner_green_01=3.28x2.57x3.28 piv(1.64,-1.28,-1.64) look(-0.0,-1.0) | kenney_stairs_stone_01=3.00x2.20x1.50 piv(1.50,-1.10,-0.75) look(-0.0,-1.0) | quaternius_large_square_tower=1.29x4.16x1.37 piv(-0.00,-2.09,-0.00) look(-0.0,-1.0) | quaternius_wall_entrance=1.54x1.55x0.56 piv(0.00,-0.79,-0.12) look(-0.0,-1.0) | quaternius_tall_wall=1.52x2.35x0.42 piv(0.00,-1.19,0.03) look(-0.0,-1.0) | quaternius_window_gothic=0.16x0.34x0.05 piv(0.00,-0.03,0.00) look(-0.0,-1.0) | wall-arch=0.10x1.00x0.30 piv(0.45,-0.50,0.35) look(-0.0,-1.0) | wall-window-shutters=0.18x1.00x1.00 piv(0.41,-0.50,-0.00) look(-0.0,-1.0) | roof-gable=1.10x0.57x1.07 piv(0.00,-0.29,0.00) look(-0.0,-1.0) | roof-high-window=1.07x1.18x1.00 piv(-0.04,-0.55,0.00) look(-0.0,-1.0) | balcony-wall=0.10x1.00x1.00 piv(0.45,-0.50,-0.00) look(-0.0,-1.0) | pillar-stone=0.16x1.00x0.16 piv(0.00,-0.50,0.00) look(-0.0,-1.0)\ntext"
+  },
+  {
+   "step": 4,
+   "capture": "kit_kenney",
+   "files": 1
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=london style=영국 왕실 관저 culture=britain tier=5 primitiveParts=10 models=246 meshParts=1243 towers=2 | RoyalStable=model:RoyalStable mesh19 part0 [128598408483126,116669244436297]; RoyalGuardHouse=model:RoyalGuardHouse mesh52 part0 [128598408483126,116669244436297]; RoyalLibrary=model:RoyalLibrary mesh36 part0 [73116744742935,131367322966844]; RoyalAdministration=model:RoyalAdministration mesh36 part0 [128598408483126,116669244436297]; RoyalTower=model:RoyalTower mesh1 part0 [133843089067307]\ntext"
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "cam front\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "palace_london_front",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "cam right\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "palace_london_right",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "cam back\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "palace_london_back",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "cam left\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "palace_london_left",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "cam roof\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "palace_london_roof",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=lisbon style=이베리아 관저 culture=iberia tier=5 primitiveParts=10 models=279 meshParts=1281 towers=2 | RoyalStable=model:RoyalStable mesh19 part0 [128598408483126,116669244436297]; RoyalGuardHouse=model:RoyalGuardHouse mesh52 part0 [128598408483126,116669244436297]; RoyalLibrary=model:RoyalLibrary mesh36 part0 [73116744742935,131367322966844]; RoyalAdministration=model:RoyalAdministration mesh36 part0 [128598408483126,116669244436297]; RoyalTower=model:RoyalTower mesh1 part0 [133843089067307]\ntext"
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "cam front\ntext"
+  },
+  {
+   "step": 28,
+   "capture": "palace_lisbon_front",
+   "files": 1
+  },
+  {
+   "step": 29,
+   "ctx": "Client",
+   "out": "cam right\ntext"
+  },
+  {
+   "step": 31,
+   "capture": "palace_lisbon_right",
+   "files": 1
+  },
+  {
+   "step": 32,
+   "ctx": "Client",
+   "out": "cam back\ntext"
+  },
+  {
+   "step": 34,
+   "capture": "palace_lisbon_back",
+   "files": 1
+  },
+  {
+   "step": 35,
+   "ctx": "Client",
+   "out": "cam left\ntext"
+  },
+  {
+   "step": 37,
+   "capture": "palace_lisbon_left",
+   "files": 1
+  },
+  {
+   "step": 38,
+   "ctx": "Client",
+   "out": "cam roof\ntext"
+  },
+  {
+   "step": 40,
+   "capture": "palace_lisbon_roof",
+   "files": 1
+  },
+  {
+   "step": 41,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 43,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=venice style=이탈리아 궁정 culture=italy tier=5 primitiveParts=10 models=264 meshParts=1270 towers=2 | RoyalStable=model:RoyalStable mesh19 part0 [128598408483126,116669244436297]; RoyalGuardHouse=model:RoyalGuardHouse mesh52 part0 [128598408483126,116669244436297]; RoyalLibrary=model:RoyalLibrary mesh36 part0 [73116744742935,131367322966844]; RoyalAdministration=model:RoyalAdministration mesh36 part0 [128598408483126,116669244436297]; RoyalTower=model:RoyalTower mesh1 part0 [133843089067307]\ntext"
+  },
+  {
+   "step": 44,
+   "ctx": "Client",
+   "out": "cam front\ntext"
+  },
+  {
+   "step": 46,
+   "capture": "palace_venice_front",
+   "files": 1
+  },
+  {
+   "step": 47,
+   "ctx": "Client",
+   "out": "cam right\ntext"
+  },
+  {
+   "step": 49,
+   "capture": "palace_venice_right",
+   "files": 1
+  },
+  {
+   "step": 50,
+   "ctx": "Client",
+   "out": "cam back\ntext"
+  },
+  {
+   "step": 52,
+   "capture": "palace_venice_back",
+   "files": 1
+  },
+  {
+   "step": 53,
+   "ctx": "Client",
+   "out": "cam left\ntext"
+  },
+  {
+   "step": 55,
+   "capture": "palace_venice_left",
+   "files": 1
+  },
+  {
+   "step": 56,
+   "ctx": "Client",
+   "out": "cam roof\ntext"
+  },
+  {
+   "step": 58,
+   "capture": "palace_venice_roof",
+   "files": 1
+  },
+  {
+   "step": 59,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 61,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=istanbul style=오스만 궁정 culture=ottoman tier=5 primitiveParts=4 models=222 meshParts=799 towers=0 | RoyalStable=model:RoyalStable mesh19 part0 [128598408483126,116669244436297]; RoyalGuardHouse=model:RoyalGuardHouse mesh48 part0 [128598408483126,116669244436297]; RoyalLibrary=model:RoyalLibrary mesh32 part0 [130581242660433,94358523624352]; RoyalAdministration=model:RoyalAdministration mesh32 part0 [128598408483126,116669244436297]; RoyalTower=none\ntext"
+  },
+  {
+   "step": 62,
+   "ctx": "Client",
+   "out": "cam front\ntext"
+  },
+  {
+   "step": 64,
+   "capture": "palace_istanbul_front",
+   "files": 1
+  },
+  {
+   "step": 65,
+   "ctx": "Client",
+   "out": "cam right\ntext"
+  },
+  {
+   "step": 67,
+   "capture": "palace_istanbul_right",
+   "files": 1
+  },
+  {
+   "step": 68,
+   "ctx": "Client",
+   "out": "cam back\ntext"
+  },
+  {
+   "step": 70,
+   "capture": "palace_istanbul_back",
+   "files": 1
+  },
+  {
+   "step": 71,
+   "ctx": "Client",
+   "out": "cam left\ntext"
+  },
+  {
+   "step": 73,
+   "capture": "palace_istanbul_left",
+   "files": 1
+  },
+  {
+   "step": 74,
+   "ctx": "Client",
+   "out": "cam roof\ntext"
+  },
+  {
+   "step": 76,
+   "capture": "palace_istanbul_roof",
+   "files": 1
+  },
+  {
+   "step": 77,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 79,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=busan style=조선 관아 culture=korea tier=5 primitiveParts=1 models=240 meshParts=878 towers=0 | RoyalStable=model:RoyalStable mesh19 part0 [128598408483126,116669244436297]; RoyalGuardHouse=model:RoyalGuardHouse mesh51 part0 [128598408483126,116669244436297]; RoyalLibrary=model:RoyalLibrary mesh35 part0 [73116744742935,131367322966844]; RoyalAdministration=model:RoyalAdministration mesh35 part0 [128598408483126,116669244436297]; RoyalTower=none\ntext"
+  },
+  {
+   "step": 80,
+   "ctx": "Client",
+   "out": "cam front\ntext"
+  },
+  {
+   "step": 82,
+   "capture": "palace_busan_front",
+   "files": 1
+  },
+  {
+   "step": 83,
+   "ctx": "Client",
+   "out": "cam right\ntext"
+  },
+  {
+   "step": 85,
+   "capture": "palace_busan_right",
+   "files": 1
+  },
+  {
+   "step": 86,
+   "ctx": "Client",
+   "out": "cam back\ntext"
+  },
+  {
+   "step": 88,
+   "capture": "palace_busan_back",
+   "files": 1
+  },
+  {
+   "step": 89,
+   "ctx": "Client",
+   "out": "cam left\ntext"
+  },
+  {
+   "step": 91,
+   "capture": "palace_busan_left",
+   "files": 1
+  },
+  {
+   "step": 92,
+   "ctx": "Client",
+   "out": "cam roof\ntext"
+  },
+  {
+   "step": 94,
+   "capture": "palace_busan_roof",
+   "files": 1
+  },
+  {
+   "step": 95,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 97,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=nagasaki style=일본 관저·성곽 culture=japan tier=5 primitiveParts=1 models=242 meshParts=876 towers=0 | RoyalStable=model:RoyalStable mesh19 part0 [128598408483126,116669244436297]; RoyalGuardHouse=model:RoyalGuardHouse mesh51 part0 [128598408483126,116669244436297]; RoyalLibrary=model:RoyalLibrary mesh35 part0 [73116744742935,131367322966844]; RoyalAdministration=model:RoyalAdministration mesh35 part0 [128598408483126,116669244436297]; RoyalTower=none\ntext"
+  },
+  {
+   "step": 98,
+   "ctx": "Client",
+   "out": "cam front\ntext"
+  },
+  {
+   "step": 100,
+   "capture": "palace_nagasaki_front",
+   "files": 1
+  },
+  {
+   "step": 101,
+   "ctx": "Client",
+   "out": "cam right\ntext"
+  },
+  {
+   "step": 103,
+   "capture": "palace_nagasaki_right",
+   "files": 1
+  },
+  {
+   "step": 104,
+   "ctx": "Client",
+   "out": "cam back\ntext"
+  },
+  {
+   "step": 106,
+   "capture": "palace_nagasaki_back",
+   "files": 1
+  },
+  {
+   "step": 107,
+   "ctx": "Client",
+   "out": "cam left\ntext"
+  },
+  {
+   "step": 109,
+   "capture": "palace_nagasaki_left",
+   "files": 1
+  },
+  {
+   "step": 110,
+   "ctx": "Client",
+   "out": "cam roof\ntext"
+  },
+  {
+   "step": 112,
+   "capture": "palace_nagasaki_roof",
+   "files": 1
+  },
+  {
+   "step": 113,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 115,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=canton style=중국 관아 culture=china tier=5 primitiveParts=1 models=265 meshParts=997 towers=0 | RoyalStable=model:RoyalStable mesh19 part0 [128598408483126,116669244436297]; RoyalGuardHouse=model:RoyalGuardHouse mesh51 part0 [128598408483126,116669244436297]; RoyalLibrary=model:RoyalLibrary mesh35 part0 [73116744742935,131367322966844]; RoyalAdministration=model:RoyalAdministration mesh35 part0 [128598408483126,116669244436297]; RoyalTower=none\ntext"
+  },
+  {
+   "step": 116,
+   "ctx": "Client",
+   "out": "cam front\ntext"
+  },
+  {
+   "step": 118,
+   "capture": "palace_canton_front",
+   "files": 1
+  },
+  {
+   "step": 119,
+   "ctx": "Client",
+   "out": "cam right\ntext"
+  },
+  {
+   "step": 121,
+   "capture": "palace_canton_right",
+   "files": 1
+  },
+  {
+   "step": 122,
+   "ctx": "Client",
+   "out": "cam back\ntext"
+  },
+  {
+   "step": 124,
+   "capture": "palace_canton_back",
+   "files": 1
+  },
+  {
+   "step": 125,
+   "ctx": "Client",
+   "out": "cam left\ntext"
+  },
+  {
+   "step": 127,
+   "capture": "palace_canton_left",
+   "files": 1
+  },
+  {
+   "step": 128,
+   "ctx": "Client",
+   "out": "cam roof\ntext"
+  },
+  {
+   "step": 130,
+   "capture": "palace_canton_roof",
+   "files": 1
+  },
+  {
+   "step": 131,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 133,
+   "ctx": "Client",
+   "out": "PALACE_AUDIT port=calicut style=말라바르 관저 culture=malabar tier=5 primitiveParts=1 models=241 meshParts=885 towers=0 | RoyalStable=model:RoyalStable mesh19 part0 [128598408483126,116669244436297]; RoyalGuardHouse=model:RoyalGuardHouse mesh51 part0 [128598408483126,116669244436297]; RoyalLibrary=model:RoyalLibrary mesh35 part0 [73116744742935,131367322966844]; RoyalAdministration=model:RoyalAdministration mesh35 part0 [128598408483126,116669244436297]; RoyalTower=none\ntext"
+  },
+  {
+   "step": 134,
+   "ctx": "Client",
+   "out": "cam front\ntext"
+  },
+  {
+   "step": 136,
+   "capture": "palace_calicut_front",
+   "files": 1
+  },
+  {
+   "step": 137,
+   "ctx": "Client",
+   "out": "cam right\ntext"
+  },
+  {
+   "step": 139,
+   "capture": "palace_calicut_right",
+   "files": 1
+  },
+  {
+   "step": 140,
+   "ctx": "Client",
+   "out": "cam back\ntext"
+  },
+  {
+   "step": 142,
+   "capture": "palace_calicut_back",
+   "files": 1
+  },
+  {
+   "step": 143,
+   "ctx": "Client",
+   "out": "cam left\ntext"
+  },
+  {
+   "step": 145,
+   "capture": "palace_calicut_left",
+   "files": 1
+  },
+  {
+   "step": 146,
+   "ctx": "Client",
+   "out": "cam roof\ntext"
+  },
+  {
+   "step": 148,
+   "capture": "palace_calicut_roof",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35016
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 138
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 183
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 2500
+  },
+  {
+   "step": 4,
+   "type": "capture",
+   "elapsedMs": 611
+  },
+  {
+   "step": 5,
+   "type": "luau",
+   "elapsedMs": 6489
+  },
+  {
+   "step": 6,
+   "type": "wait",
+   "elapsedMs": 9012
+  },
+  {
+   "step": 7,
+   "type": "luau",
+   "elapsedMs": 188
+  },
+  {
+   "step": 8,
+   "type": "luau",
+   "elapsedMs": 200
+  },
+  {
+   "step": 9,
+   "type": "wait",
+   "elapsedMs": 1502
+  },
+  {
+   "step": 10,
+   "type": "capture",
+   "elapsedMs": 634
+  },
+  {
+   "step": 11,
+   "type": "luau",
+   "elapsedMs": 226
+  },
+  {
+   "step": 12,
+   "type": "wait",
+   "elapsedMs": 1502
+  },
+  {
+   "step": 13,
+   "type": "capture",
+   "elapsedMs": 1344
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 215
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 1509
+  },
+  {
+   "step": 16,
+   "type": "capture",
+   "elapsedMs": 648
+  },
+  {
+   "step": 17,
+   "type": "luau",
+   "elapsedMs": 191
+  },
+  {
+   "step": 18,
+   "type": "wait",
+   "elapsedMs": 1511
+  },
+  {
+   "step": 19,
+   "type": "capture",
+   "elapsedMs": 917
+  },
+  {
+   "step": 20,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 21,
+   "type": "wait",
+   "elapsedMs": 1513
+  },
+  {
+   "step": 22,
+   "type": "capture",
+   "elapsedMs": 691
+  },
+  {
+   "step": 23,
+   "type": "luau",
+   "elapsedMs": 8696
+  },
+  {
+   "step": 24,
+   "type": "wait",
+   "elapsedMs": 9014
+  },
+  {
+   "step": 25,
+   "type": "luau",
+   "elapsedMs": 159
+  },
+  {
+   "step": 26,
+   "type": "luau",
+   "elapsedMs": 159
+  },
+  {
+   "step": 27,
+   "type": "wait",
+   "elapsedMs": 1514
+  },
+  {
+   "step": 28,
+   "type": "capture",
+   "elapsedMs": 830
+  },
+  {
+   "step": 29,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 30,
+   "type": "wait",
+   "elapsedMs": 1506
+  },
+  {
+   "step": 31,
+   "type": "capture",
+   "elapsedMs": 819
+  },
+  {
+   "step": 32,
+   "type": "luau",
+   "elapsedMs": 155
+  },
+  {
+   "step": 33,
+   "type": "wait",
+   "elapsedMs": 1507
+  },
+  {
+   "step": 34,
+   "type": "capture",
+   "elapsedMs": 809
+  },
+  {
+   "step": 35,
+   "type": "luau",
+   "elapsedMs": 158
+  },
+  {
+   "step": 36,
+   "type": "wait",
+   "elapsedMs": 1502
+  },
+  {
+   "step": 37,
+   "type": "capture",
+   "elapsedMs": 732
+  },
+  {
+   "step": 38,
+   "type": "luau",
+   "elapsedMs": 155
+  },
+  {
+   "step": 39,
+   "type": "wait",
+   "elapsedMs": 1506
+  },
+  {
+   "step": 40,
+   "type": "capture",
+   "elapsedMs": 551
+  },
+  {
+   "step": 41,
+   "type": "luau",
+   "elapsedMs": 5888
+  },
+  {
+   "step": 42,
+   "type": "wait",
+   "elapsedMs": 9004
+  },
+  {
+   "step": 43,
+   "type": "luau",
+   "elapsedMs": 70
+  },
+  {
+   "step": 44,
+   "type": "luau",
+   "elapsedMs": 151
+  },
+  {
+   "step": 45,
+   "type": "wait",
+   "elapsedMs": 1500
+  },
+  {
+   "step": 46,
+   "type": "capture",
+   "elapsedMs": 825
+  },
+  {
+   "step": 47,
+   "type": "luau",
+   "elapsedMs": 204
+  },
+  {
+   "step": 48,
+   "type": "wait",
+   "elapsedMs": 1515
+  },
+  {
+   "step": 49,
+   "type": "capture",
+   "elapsedMs": 882
+  },
+  {
+   "step": 50,
+   "type": "luau",
+   "elapsedMs": 176
+  },
+  {
+   "step": 51,
+   "type": "wait",
+   "elapsedMs": 1510
+  },
+  {
+   "step": 52,
+   "type": "capture",
+   "elapsedMs": 738
+  },
+  {
+   "step": 53,
+   "type": "luau",
+   "elapsedMs": 193
+  },
+  {
+   "step": 54,
+   "type": "wait",
+   "elapsedMs": 1511
+  },
+  {
+   "step": 55,
+   "type": "capture",
+   "elapsedMs": 809
+  },
+  {
+   "step": 56,
+   "type": "luau",
+   "elapsedMs": 201
+  },
+  {
+   "step": 57,
+   "type": "wait",
+   "elapsedMs": 1505
+  },
+  {
+   "step": 58,
+   "type": "capture",
+   "elapsedMs": 767
+  },
+  {
+   "step": 59,
+   "type": "luau",
+   "elapsedMs": 6819
+  },
+  {
+   "step": 60,
+   "type": "wait",
+   "elapsedMs": 9014
+  },
+  {
+   "step": 61,
+   "type": "luau",
+   "elapsedMs": 81
+  },
+  {
+   "step": 62,
+   "type": "luau",
+   "elapsedMs": 207
+  },
+  {
+   "step": 63,
+   "type": "wait",
+   "elapsedMs": 1501
+  },
+  {
+   "step": 64,
+   "type": "capture",
+   "elapsedMs": 907
+  },
+  {
+   "step": 65,
+   "type": "luau",
+   "elapsedMs": 215
+  },
+  {
+   "step": 66,
+   "type": "wait",
+   "elapsedMs": 1506
+  },
+  {
+   "step": 67,
+   "type": "capture",
+   "elapsedMs": 996
+  },
+  {
+   "step": 68,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 69,
+   "type": "wait",
+   "elapsedMs": 1503
+  },
+  {
+   "step": 70,
+   "type": "capture",
+   "elapsedMs": 846
+  },
+  {
+   "step": 71,
+   "type": "luau",
+   "elapsedMs": 213
+  },
+  {
+   "step": 72,
+   "type": "wait",
+   "elapsedMs": 1513
+  },
+  {
+   "step": 73,
+   "type": "capture",
+   "elapsedMs": 856
+  },
+  {
+   "step": 74,
+   "type": "luau",
+   "elapsedMs": 190
+  },
+  {
+   "step": 75,
+   "type": "wait",
+   "elapsedMs": 1514
+  },
+  {
+   "step": 76,
+   "type": "capture",
+   "elapsedMs": 795
+  },
+  {
+   "step": 77,
+   "type": "luau",
+   "elapsedMs": 7559
+  },
+  {
+   "step": 78,
+   "type": "wait",
+   "elapsedMs": 9015
+  },
+  {
+   "step": 79,
+   "type": "luau",
+   "elapsedMs": 170
+  },
+  {
+   "step": 80,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 81,
+   "type": "wait",
+   "elapsedMs": 1514
+  },
+  {
+   "step": 82,
+   "type": "capture",
+   "elapsedMs": 641
+  },
+  {
+   "step": 83,
+   "type": "luau",
+   "elapsedMs": 200
+  },
+  {
+   "step": 84,
+   "type": "wait",
+   "elapsedMs": 1509
+  },
+  {
+   "step": 85,
+   "type": "capture",
+   "elapsedMs": 802
+  },
+  {
+   "step": 86,
+   "type": "luau",
+   "elapsedMs": 170
+  },
+  {
+   "step": 87,
+   "type": "wait",
+   "elapsedMs": 1500
+  },
+  {
+   "step": 88,
+   "type": "capture",
+   "elapsedMs": 629
+  },
+  {
+   "step": 89,
+   "type": "luau",
+   "elapsedMs": 169
+  },
+  {
+   "step": 90,
+   "type": "wait",
+   "elapsedMs": 1505
+  },
+  {
+   "step": 91,
+   "type": "capture",
+   "elapsedMs": 615
+  },
+  {
+   "step": 92,
+   "type": "luau",
+   "elapsedMs": 179
+  },
+  {
+   "step": 93,
+   "type": "wait",
+   "elapsedMs": 1514
+  },
+  {
+   "step": 94,
+   "type": "capture",
+   "elapsedMs": 589
+  },
+  {
+   "step": 95,
+   "type": "luau",
+   "elapsedMs": 6794
+  },
+  {
+   "step": 96,
+   "type": "wait",
+   "elapsedMs": 9006
+  },
+  {
+   "step": 97,
+   "type": "luau",
+   "elapsedMs": 181
+  },
+  {
+   "step": 98,
+   "type": "luau",
+   "elapsedMs": 317
+  },
+  {
+   "step": 99,
+   "type": "wait",
+   "elapsedMs": 1504
+  },
+  {
+   "step": 100,
+   "type": "capture",
+   "elapsedMs": 718
+  },
+  {
+   "step": 101,
+   "type": "luau",
+   "elapsedMs": 192
+  },
+  {
+   "step": 102,
+   "type": "wait",
+   "elapsedMs": 1505
+  },
+  {
+   "step": 103,
+   "type": "capture",
+   "elapsedMs": 1644
+  },
+  {
+   "step": 104,
+   "type": "luau",
+   "elapsedMs": 289
+  },
+  {
+   "step": 105,
+   "type": "wait",
+   "elapsedMs": 1510
+  },
+  {
+   "step": 106,
+   "type": "capture",
+   "elapsedMs": 837
+  },
+  {
+   "step": 107,
+   "type": "luau",
+   "elapsedMs": 199
+  },
+  {
+   "step": 108,
+   "type": "wait",
+   "elapsedMs": 1506
+  },
+  {
+   "step": 109,
+   "type": "capture",
+   "elapsedMs": 960
+  },
+  {
+   "step": 110,
+   "type": "luau",
+   "elapsedMs": 196
+  },
+  {
+   "step": 111,
+   "type": "wait",
+   "elapsedMs": 1501
+  },
+  {
+   "step": 112,
+   "type": "capture",
+   "elapsedMs": 747
+  },
+  {
+   "step": 113,
+   "type": "luau",
+   "elapsedMs": 8372
+  },
+  {
+   "step": 114,
+   "type": "wait",
+   "elapsedMs": 9005
+  },
+  {
+   "step": 115,
+   "type": "luau",
+   "elapsedMs": 203
+  },
+  {
+   "step": 116,
+   "type": "luau",
+   "elapsedMs": 190
+  },
+  {
+   "step": 117,
+   "type": "wait",
+   "elapsedMs": 1514
+  },
+  {
+   "step": 118,
+   "type": "capture",
+   "elapsedMs": 1045
+  },
+  {
+   "step": 119,
+   "type": "luau",
+   "elapsedMs": 193
+  },
+  {
+   "step": 120,
+   "type": "wait",
+   "elapsedMs": 1504
+  },
+  {
+   "step": 121,
+   "type": "capture",
+   "elapsedMs": 687
+  },
+  {
+   "step": 122,
+   "type": "luau",
+   "elapsedMs": 183
+  },
+  {
+   "step": 123,
+   "type": "wait",
+   "elapsedMs": 1506
+  },
+  {
+   "step": 124,
+   "type": "capture",
+   "elapsedMs": 669
+  },
+  {
+   "step": 125,
+   "type": "luau",
+   "elapsedMs": 177
+  },
+  {
+   "step": 126,
+   "type": "wait",
+   "elapsedMs": 1502
+  },
+  {
+   "step": 127,
+   "type": "capture",
+   "elapsedMs": 734
+  },
+  {
+   "step": 128,
+   "type": "luau",
+   "elapsedMs": 191
+  },
+  {
+   "step": 129,
+   "type": "wait",
+   "elapsedMs": 1508
+  },
+  {
+   "step": 130,
+   "type": "capture",
+   "elapsedMs": 578
+  },
+  {
+   "step": 131,
+   "type": "luau",
+   "elapsedMs": 6301
+  },
+  {
+   "step": 132,
+   "type": "wait",
+   "elapsedMs": 9014
+  },
+  {
+   "step": 133,
+   "type": "luau",
+   "elapsedMs": 199
+  },
+  {
+   "step": 134,
+   "type": "luau",
+   "elapsedMs": 200
+  },
+  {
+   "step": 135,
+   "type": "wait",
+   "elapsedMs": 1506
+  },
+  {
+   "step": 136,
+   "type": "capture",
+   "elapsedMs": 721
+  },
+  {
+   "step": 137,
+   "type": "luau",
+   "elapsedMs": 189
+  },
+  {
+   "step": 138,
+   "type": "wait",
+   "elapsedMs": 1504
+  },
+  {
+   "step": 139,
+   "type": "capture",
+   "elapsedMs": 634
+  },
+  {
+   "step": 140,
+   "type": "luau",
+   "elapsedMs": 195
+  },
+  {
+   "step": 141,
+   "type": "wait",
+   "elapsedMs": 1508
+  },
+  {
+   "step": 142,
+   "type": "capture",
+   "elapsedMs": 713
+  },
+  {
+   "step": 143,
+   "type": "luau",
+   "elapsedMs": 180
+  },
+  {
+   "step": 144,
+   "type": "wait",
+   "elapsedMs": 1509
+  },
+  {
+   "step": 145,
+   "type": "capture",
+   "elapsedMs": 699
+  },
+  {
+   "step": 146,
+   "type": "luau",
+   "elapsedMs": 167
+  },
+  {
+   "step": 147,
+   "type": "wait",
+   "elapsedMs": 1507
+  },
+  {
+   "step": 148,
+   "type": "capture",
+   "elapsedMs": 571
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 12,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 149,
+  "completedSteps": 149,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 41,
+  "capturedFrames": 41,
+  "abortedEarly": false
+ }
+}
