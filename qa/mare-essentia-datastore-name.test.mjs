@@ -3757,4 +3757,18 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
   assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
   assert.match(field,/local detailCount = if visualMobile then 10 else 24/);
+  // [등록 후 실제 사용] 신규 21종을 기존 자연·암석·바닥 후보만으로 사용한다.
+  const sceneryIds=[...field.matchAll(/"kenney_[A-Za-z0-9_]+"/g)].map(x=>x[0].slice(1,-1));
+  const allowed=new Set(approved.map(x=>x[2]));
+  for(const name of sceneryIds)assert.ok(allowed.has(name),'승인표에 없는 외부 자연 자산 '+name);
+  for(const name of ['kenney_tree_fat','kenney_rock_largeB','kenney_mushroom_red',
+    'kenney_mushroom_redGroup','kenney_stump_roundDetailed','kenney_ground_riverCorner']){
+    assert.ok(sceneryIds.includes(name),'등록 후 탐험 배치 후보 누락 '+name);
+  }
+  assert.match(field,/local trees = if winterScene or northern then/);
+  assert.match(field,/local rocks = if questTerrain == "glacier" or questTerrain == "ruins" then/);
+  assert.match(field,/local natureDetail = if questTerrain == "forest" then/);
+  assert.match(field,/if AssetIds\["Terrain\/" \.\. name\]/,'미등록 모델은 자동 생략');
+  assert.match(field,/if AssetIds\["Terrain\/" \.\. name\] and not table\.find\(detailAssets, name\)/);
+  assert.match(field,/local detailCount = if visualMobile then 10 else 24/,'모바일 기존 예산 보존');
 });
