@@ -634,6 +634,7 @@ return function(D, S)
 		view.pace = S.Pace.viewOf(state)
 		view.world = S.World.viewOf(state)
 		view.diplo = S.Diplomacy.viewOf(state)
+		view.worldNations = S.Econ and S.Econ.worldSummary and S.Econ.worldSummary(state) or nil
 		view.autoStory = state.autoStory
 	view.order = S.Order.viewOf(state)
 	view.room = S.Room.viewOf(state)

@@ -1544,6 +1544,26 @@ function N.summary(st, w, portId, homeNation)
 	return { owner = ownerId, lines = lines }
 end
 
+-- 세계 정세 표: 국력 순위 상위 limit 개 (표시 전용)
+function N.worldSummary(st, limit)
+	local rows = N.rank(st)
+	local out = {}
+	for i = 1, math.min(limit or 8, #rows) do
+		local id = rows[i].id
+		local S = st.states[id]
+		if S then
+			local allies = 0
+			for _ in pairs(S.allies) do allies += 1 end
+			table.insert(out, {
+				id = id, rank = i, leader = N.leaderLine(st, id) or id, regime = (N.REGIMES[S.regime] or N.REGIMES.absolute).name,
+				army = S.armyPower or 0, navy = S.navyPower or 0, techs = (S.tech and S.tech.count) or 0,
+				war = S.war and S.war.foe or nil, allies = allies, hegemon = st.hegemon == id,
+			})
+		end
+	end
+	return out
+end
+
 function N.leaderLine(st, id)
 	local v = N.view(st, id)
 	if not v then return nil end

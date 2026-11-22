@@ -3672,6 +3672,8 @@ local function testNations()
 			engS.war, fraS.war = savedE, savedF
 			engS.allies.france, fraS.allies.england = savedAE, savedAF
 		end
+		local ws = N.worldSummary(s3, 8)
+		check("세계 정세 표가 순위순으로 나온다", #ws >= 5 and ws[1].rank == 1 and ws[2].rank == 2 and ws[1].leader ~= "" and ws[1].army >= 0)
 		local sum = N.summary(s3, w3, "london", "england")
 		check("항구 화면용 요약이 나온다", sum ~= nil and #sum.lines >= 7 and sum.owner ~= nil)
 		local sumLine = table.concat(sum.lines, "\n")
