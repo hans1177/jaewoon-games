@@ -1548,9 +1548,17 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			bounds = skin:GetBoundingBox()
 			-- [직업 도구 자연스러운 고정] 기존 부착 좌표에 필요한 도구 기울기만 적용한다.
 			-- 근접 보행·망치질에는 손/허리 R15 관절을 따라가며 접지/충돌 판정이 없다.
+			-- [헤어 두상 정렬] 긴 머리는 메시 전체 중심이 아니라 정수리 윗선을 기준으로 맞춘다.
+			-- 기존 헤어 크기·리그·장착 대상은 유지하고 뒤쪽 긴 머리의 공중부양만 방지한다.
+			local hairOffsetY = spec[6]
+			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" and assetName ~= "hair_beard" then
+				local hairStyle = model:GetAttribute("NpcHairStyle")
+				local crownY = if hairStyle == "bun" then 0.79 elseif hairStyle == "long" then 0.67 else 0.65
+				hairOffsetY = crownY - bounds.Size.Y * 0.5 / target.Size.Y
+			end
 			-- [소매·장화 위치] 소매는 손목 위 작은 면적에, 장화는 정강이 아래쪽에 밀착시킨다.
 			skin:PivotTo((target.CFrame * CFrame.new(target.Size.X * (spec[7] or 0),
-				target.Size.Y * (if cuff then -0.36 elseif boot then -0.15 else spec[6]), target.Size.Z * (spec[8] or 0))
+				target.Size.Y * (if cuff then -0.36 elseif boot then -0.15 else hairOffsetY), target.Size.Z * (spec[8] or 0))
 				* CFrame.Angles(math.rad(spec[9] or 0), 0, 0)) * bounds:ToObjectSpace(skin:GetPivot()))
 			for _, part in parts do
 				part.Anchored, part.CanCollide, part.CanTouch, part.CanQuery = false, false, false, false
@@ -1565,7 +1573,11 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					and string.sub(assetName, 1, 5) == "hair_" then
 					local hairTint = model:GetAttribute("NpcHairTint")
 					if typeof(hairTint) == "Color3" then
-						part.Color = part.Color:Lerp(hairTint:Lerp(Color3.new(1, 1, 1), 0.25), 0.70)
+						-- [회색/흰 머리 복구] 밝은 무채색 수입 결과만 강하게 원래 머리색으로 맞춘다.
+						local pale = part.Color.R > 0.78 and part.Color.G > 0.78 and part.Color.B > 0.77
+							and math.max(part.Color.R, part.Color.G, part.Color.B)
+								- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.12
+						part.Color = part.Color:Lerp(hairTint, if pale then 0.93 else 0.45)
 					end
 				end
 				-- [실물 헤어·직업 복식 구분] PBR 원본 ColorMap/Normal/Roughness는 그대로 두고,
@@ -1575,8 +1587,14 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					if string.sub(assetName, 1, 5) == "hair_" then
 						local hairTint = model:GetAttribute("NpcHairTint")
 						if typeof(hairTint) == "Color3" then
-							local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.34)
-							surface.Color = surface.Color:Lerp(softTint, 0.72)
+							-- [PBR 헤어] 원본 컬러맵은 보존하고 흰색 기본 배율만 주민 고유 머리색으로 복구한다.
+							-- 검거나 이미 염색된 부위는 과도하게 다시 덮지 않는다.
+							local base = surface.Color
+							local pale = base.R > 0.78 and base.G > 0.78 and base.B > 0.77
+								and math.max(base.R, base.G, base.B)
+									- math.min(base.R, base.G, base.B) < 0.12
+							local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.12)
+							surface.Color = surface.Color:Lerp(softTint, if pale then 0.93 else 0.50)
 						end
 					elseif detailAllowed and assetName == "outfit_cuff" and typeof(npcClothTint) == "Color3" then
 						-- [원본 6부위 재질] 커프 GLB는 금속 단추와 직물 레이스가 같은 이름으로 수입된다.
@@ -1770,7 +1788,8 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					if faded or (hair and npcOutfit and model:GetAttribute("NpcHairTint"))
 						or (npcOutfit and (ribbon or headwear)) then
 						part.Color = part.Color:Lerp(tint,
-							if hair and model:GetAttribute("NpcHairTint") then 0.40
+							if hair and faded then 0.90
+							elseif hair and model:GetAttribute("NpcHairTint") then 0.45
 							elseif ribbon or headwear then 0.38 else 0.78)
 					end
 					part.Reflectance = if part.Material == Enum.Material.Metal then 0.025 else 0
@@ -1797,17 +1816,11 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			elseif npcOutfit and (string.sub(assetName, 1, 4) == "acc_" or string.sub(assetName, 1, 4) == "cc0_") then
 				model:SetAttribute("NpcVisibleAccessoryMesh", assetName)
 			end
-			if npcOutfit and ((string.sub(assetName, 1, 5) == "hair_" and assetName ~= "hair_beard")
-				or (detailAllowed and assetName == "acc_feather_hat")) then
-				-- [정수리·뒤통수 보존] 앞머리 보조 도형만 감추고 HairBack은 남겨 실물의 빈틈을 메운다.
-				-- [지역 복식 보존] 실물 머리와 서유럽 깃털모자만 기존 예비 도형을 가린다.
-				-- 선원 머리띠는 지역별 모자 대신 쓰지 않으며, 미로드 시 원형을 유지한다.
-				local fallbackName = if string.sub(assetName, 1, 5) == "hair_" then "Hair" else "Hat"
+			if npcOutfit and detailAllowed and assetName == "acc_feather_hat" then
+				-- [지역 복식] 정상 장착된 깃털모자만 기존 챙 중복을 숨기고 정수리 안감은 남긴다.
 				for _, piece in model:GetChildren() do
-					if piece:IsA("BasePart") and piece.Name == fallbackName then
-						-- [사진 보정] 챙·깃털 중복만 숨긴다. 기존 속모자 윗면은 남겨 원본 GLB의 빈 중심을 덮는다.
-						piece.Transparency = if assetName == "acc_feather_hat"
-							and piece:GetAttribute("NpcHatCrown") == true then 0 else 1
+					if piece:IsA("BasePart") and piece.Name == "Hat" then
+						piece.Transparency = if piece:GetAttribute("NpcHatCrown") == true then 0 else 1
 					end
 				end
 			end
@@ -1815,6 +1828,44 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			table.insert(missing, assetName .. ":fit_failed")
 			skin:Destroy()
 		end
+	end
+	-- [헤어 겹침/대머리 복구] 실물 등록 머리의 실제 표시 여부를 기준으로 보조 헤어를 정리한다.
+	-- 2차 호출에서 이미 장착된 머리도 동일하게 처리하며, 에셋 로드 실패 때는 예비 헤어를 되살린다.
+	-- 원본 머리 메시와 남녀/직업별 스타일·수염은 그대로 두고 새 Part는 만들지 않는다.
+	if npcOutfit and model:GetAttribute("NpcHairStyle") then
+		local wornHair = nil
+		for _, worn in model:GetChildren() do
+			if worn:IsA("Model") and string.sub(worn.Name, 1, 14) == "R15Asset_hair_"
+				and not string.find(worn.Name, "hair_beard", 1, true) then
+				for _, mesh in worn:GetDescendants() do
+					if mesh:IsA("BasePart") and mesh.Transparency < 0.95 and mesh.LocalTransparencyModifier < 0.95 then
+						wornHair = worn
+						break
+					end
+				end
+			end
+			if wornHair then break end
+		end
+		local fullCrown = false
+		if wornHair then
+			local head = model:FindFirstChild("Head")
+			if head and head:IsA("BasePart") then
+				local _, hairBounds = wornHair:GetBoundingBox()
+				fullCrown = hairBounds.X >= head.Size.X * 0.82
+					and hairBounds.Z >= head.Size.Z * 0.68
+			end
+		end
+		for _, piece in model:GetChildren() do
+			if piece:IsA("BasePart") then
+				if piece.Name == "Hair" or piece.Name == "HairBack" then
+					piece.Transparency = if wornHair then 1 else 0
+				elseif piece.Name == "HairScalp" or piece.Name == "HairScalpSide" then
+					-- 작은 부분 메시에는 두피 보조를 남기되 정상 실물 머리 아래에서 공 모양이 튀어나오지 않게 한다.
+					piece.Transparency = if fullCrown then 1 else 0
+				end
+			end
+		end
+		model:SetAttribute("NpcHairMeshReady", wornHair ~= nil)
 	end
 	-- [중복 상의 정리] 새 재단 상의의 실제 부착·표시가 확인된 뒤 구형 통짜 상의만 제거한다.
 	-- 미등록·지연 로드·부착 실패 상태에서는 기본 옷을 유지한다. 게임 규칙과 R15 관절은 그대로다.
