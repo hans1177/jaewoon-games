@@ -1045,11 +1045,25 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				roof.Name = "HarborRoof"
 				uniformMaterial(roof, style, "roof")
 			end
-			-- 동아시아의 집 앞은 기존 승인된 계단 메시로 구분한다. 시설 출입 판정은 바꾸지 않는다.
+			-- [동아시아 발전 주택] 등록된 현관 주춧돌만 사용해 3단계부터 입구 깊이감을 만든다.
+			-- 현지 전용 기와·공포가 없는 상태에서 중국식 건축을 조선식으로 오인시켜 만들지 않는다.
 			if architecture.eastAsiaEntry and not vacant and houseTier >= 2 and seed % 3 == 0 then
 				local stairs = importedModel(parent, "Town", "eastasia-stairs",
 					pos + Vector3.new(0, 0, front * size * 0.48), size * 0.34, false)
 				if stairs then stairs.Name = "HarborEntrance" end
+			end
+			if architecture.eastAsiaEntry and not vacant and houseTier >= 3
+				and seed % (if UserInputService.TouchEnabled then 13 else 7) == 2
+				and AssetIds["Town/eastasia-column-base"] then
+				for _, side in { -1, 1 } do
+					local column = importedModel(parent, "Town", "eastasia-column-base",
+						pos + Vector3.new(side * size * 0.26, 0, front * size * 0.44),
+						size * 0.2, false, tintColor)
+					if column then
+						column.Name = "HarborPorchFoundation"
+						uniformMaterial(column, style, "entry")
+					end
+				end
 			end
 			if vacant then
 				for k = -1, 1 do
@@ -1109,13 +1123,20 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				elseif lifted then "kenney_wood_door_square_01" else "kenney_grey_door_round_01"
 			local door = importedModel(parent, "Town", entry, pos + Vector3.new(0, lift, front * (dd * 0.5 + 0.2)), math.min(ww * 0.38, 5), false)
 			if door then door.Name = "HarborEntrance" end
-			if form == "carved" and houseTier >= 3 then
-				-- 스와힐리 석조집: 깊은 목조 문틀·양쪽 기둥으로 아프리카 동해안 입면을 구분한다.
-				for _, side in { -1, 1 } do
-					local trim = part(parent, Vector3.new(0.45, hh * 0.56, 0.55), CFrame.new(pos + Vector3.new(side * ww * 0.18, lift + hh * 0.29, front * (dd * 0.5 + 0.4))), C(93, 61, 38), Enum.Material.Wood)
-					trim.CanCollide = false
-				end
+			if form == "carved" and houseTier >= 3 and seed % (if UserInputService.TouchEnabled then 9 else 5) == 0 then
+				-- 스와힐리 연안: 기존 단순 목재 기둥 대신 기등록 문틀 실물 메시를 사용한다.
+				local portal = importedModel(parent, "Town", "kenney_grey_arch_01",
+					pos + Vector3.new(0, 0, front * (dd * 0.5 + 0.45)), math.min(ww * 0.58, 7), false, tintColor)
+				if portal then portal.Name = "HarborStonePortal" end
 			end
+		end
+		if lifted and houseTier >= 3 and not vacant
+			and seed % (if UserInputService.TouchEnabled then 11 else 7) == 0
+			and AssetIds["Town/kenney_wood_railing_01"] then
+			-- [남아시아·동남아·태평양] 고상식 마루는 기존 승인된 목재 난간으로만 장식한다.
+			local rail = importedModel(parent, "Town", "kenney_wood_railing_01",
+				pos + Vector3.new(0, lift, front * (dd * 0.5 + 1.3)), ww * 0.68, false)
+			if rail then rail.Name = "HarborStiltVeranda" end
 		end
 		return building
 	end
@@ -1185,52 +1206,60 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				uniformMaterial(bal, style, "trim")
 			end
 		end
-		-- [유럽·지중해·남아시아] 동일한 기본 주택 메시에 지역별 골조/박공/회랑/현관을 얹는다.
-		-- 상세 장식은 일부 주택에만 출력하여 모바일 장면의 파트 수를 제한한다.
+		-- [문화권·발전도별 실물 입면] 다른 게임의 거리 밀도·입체감 원리만 참고하고
+		-- 오너 승인 CC0 메시를 기존 집 외형에 붙인다. 새 모델/기하/저장/건축 규칙은 만들지 않는다.
+		-- 기존 일부 주택(시드 1/4)만 장식하며 모바일은 건물당 세부 모델 수를 더 줄인다.
 		if not vacant and houseTier >= 2 and seed % 4 == 1 then
 			local form = architecture.form
-			local decor = C(89, 65, 47)
 			if form == "stepped" then
-				-- 한자동맹: 계단형 정면 박공 실루엣.
-				for j = -2, 2 do
-					local h = (3 - math.abs(j)) * ext.Y * 0.095
-					local gable = part(parent, Vector3.new(ext.X * 0.19, h, 0.52), CFrame.new(pos + Vector3.new(j * ext.X * 0.18, ext.Y + h * 0.35, front * ext.Z * 0.48)), tintColor:Lerp(style.roofs[1], 0.44), Enum.Material.Brick)
-					gable.CanCollide = false
+				-- 한자 벽돌집: 박공 모양 전용 승인 메시가 없어 원래 벽돌 실루엣을 유지한다.
+				-- 중복 도형을 추가하지 않고 4단계 이상에는 승인된 벽돌 입면 한 장만 강조한다.
+				if houseTier >= 4 and seed % 8 == 1 and AssetIds["Town/quaternius_wall_bricks"] then
+					local face = importedModel(parent, "Town", "quaternius_wall_bricks",
+						pos + Vector3.new(0, 0, front * (ext.Z * 0.5 + 0.06)), ext.X * 0.8, false, tintColor)
+					if face then face.Name = "HarborBrickFacade" end
 				end
 			elseif form == "timber" then
-				-- 북유럽·영국: 기둥과 가로보가 드러나는 목골조.
-				for _, dx in { -0.35, 0.35 } do
-					local beam = part(parent, Vector3.new(0.38, ext.Y * 0.68, 0.38), CFrame.new(pos + Vector3.new(ext.X * dx, ext.Y * 0.43, front * (ext.Z * 0.5 + 0.15))), decor, Enum.Material.Wood)
-					beam.CanCollide = false
+				-- 중북유럽: 기본 막대기 대신 실제 십자형 목골 입면 패널 1개를 사용한다.
+				if AssetIds["Town/kenney_wood_wall_double_cross_01"] then
+					local timbers = importedModel(parent, "Town", "kenney_wood_wall_double_cross_01",
+						pos + Vector3.new(0, ext.Y * 0.18, front * (ext.Z * 0.5 + 0.15)),
+						ext.X * 0.72, false, Color3.fromRGB(105, 80, 60))
+					if timbers then timbers.Name = "HarborTimberFacade" end
 				end
-				local brace = part(parent, Vector3.new(ext.X * 0.8, 0.38, 0.4), CFrame.new(pos + Vector3.new(0, ext.Y * 0.75, front * (ext.Z * 0.5 + 0.15))), decor, Enum.Material.Wood)
-				brace.CanCollide = false
 			elseif form == "arcade" or form == "loggia" then
-				-- 이베리아/이탈리아: 돌기둥 회랑과 발코니 돌출 처마.
+				-- 이베리아·이탈리아: 기존 실제 열주 모델을 보존하고 고단계 베란다를 메시 난간으로 마감한다.
 				for _, dx in { -0.32, 0.32 } do
-					importedModel(parent, "Terrain", "column", pos + Vector3.new(ext.X * dx, 0, front * (ext.Z * 0.52 + 0.85)), ext.Y * 0.58, false)
+					importedModel(parent, "Terrain", "column",
+						pos + Vector3.new(ext.X * dx, 0, front * (ext.Z * 0.52 + 0.85)), ext.Y * 0.58, false)
 				end
-				if houseTier >= 3 then
-					local veranda = part(parent, Vector3.new(ext.X * 0.85, 0.42, 2.4), CFrame.new(pos + Vector3.new(0, ext.Y * 0.52, front * (ext.Z * 0.5 + 0.9))), tintColor, Enum.Material.Limestone)
-					veranda.CanCollide = false
+				if houseTier >= 3 and AssetIds["Town/balcony-wall-fence"] then
+					local gallery = importedModel(parent, "Town", "balcony-wall-fence",
+						pos + Vector3.new(0, ext.Y * 0.52, front * (ext.Z * 0.5 + 0.9)), ext.X * 0.8, false, tintColor)
+					if gallery then gallery.Name = "HarborLoggiaGallery" end
 				end
 			elseif form == "veranda" then
-				-- 크리올·식민 항구: 넓은 전면 베란다와 차양.
-				local awning = part(parent, Vector3.new(ext.X * 0.95, 0.35, 3), CFrame.new(pos + Vector3.new(0, ext.Y * 0.62, front * (ext.Z * 0.5 + 0.9))), style.roofs[1], Enum.Material.WoodPlanks)
-				awning.CanCollide = false
-				for _, dx in { -0.4, 0.4 } do
-					local post = part(parent, Vector3.new(0.4, ext.Y * 0.6, 0.4), CFrame.new(pos + Vector3.new(ext.X * dx, ext.Y * 0.3, front * (ext.Z * 0.5 + 1.9))), decor, Enum.Material.Wood)
-					post.CanCollide = false
+				-- 크리올·식민 항구: 직육면체 차양과 막대기 대신 실제 기와·목재 난간 메시.
+				local canopy = importedModel(parent, "Town", "kenney_roof_straight_red_01",
+					pos + Vector3.new(0, ext.Y * 0.62, front * (ext.Z * 0.5 + 0.8)), ext.X * 0.96, false, style.roofs[1])
+				if canopy then canopy.Name = "HarborVerandaEave" end
+				if houseTier >= 3 and AssetIds["Town/kenney_wood_railing_01"] then
+					local fence = importedModel(parent, "Town", "kenney_wood_railing_01",
+						pos + Vector3.new(0, 0, front * (ext.Z * 0.5 + 1.4)), ext.X * 0.78, false)
+					if fence then fence.Name = "HarborVerandaRailing" end
 				end
 			elseif form == "mansard" then
-				-- 프랑스: 지붕창과 작은 처마가 비대칭으로 솟는 석조 시가지.
+				-- 프랑스: 기존 실물 지붕창 두 개를 보존한다.
 				for _, dx in { -0.26, 0.26 } do
-					importedModel(parent, "Town", "roof-high-window", pos + Vector3.new(ext.X * dx, ext.Y * 0.83, front * ext.Z * 0.25), ext.X * 0.27, false)
+					importedModel(parent, "Town", "roof-high-window",
+						pos + Vector3.new(ext.X * dx, ext.Y * 0.83, front * ext.Z * 0.25), ext.X * 0.27, false)
 				end
-			elseif form == "coastal" then
-				-- 인도 서해안: 넓고 낮은 목조 처마.
-				local eave = part(parent, Vector3.new(ext.X + 3, 0.4, ext.Z + 3), CFrame.new(pos + Vector3.new(0, ext.Y * 0.78, 0)), style.roofs[1], Enum.Material.WoodPlanks)
-				eave.CanCollide = false
+			elseif form == "coastal" and AssetIds["Town/kenney_roof_slant_red_01"] then
+				-- 말라바르: 도형 처마를 실제 기울어진 기와 메시로 교체한다.
+				local eave = importedModel(parent, "Town", "kenney_roof_slant_red_01",
+					pos + Vector3.new(0, ext.Y * 0.78, front * ext.Z * 0.33),
+					ext.X * 0.9, false, style.roofs[1])
+				if eave then eave.Name = "HarborCoastalEave" end
 			end
 		end
 		-- 번성한 항구(4단계↑)엔 집 옆에 수레(Town/cart)를 세워 장사하는 분위기를 낸다
