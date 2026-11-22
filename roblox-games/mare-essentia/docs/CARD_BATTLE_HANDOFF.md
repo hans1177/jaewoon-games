@@ -133,3 +133,12 @@
 - 기존 정식 자산등록 워크플로 [#45009482336](https://github.com/hans1177/jaewoon-games/actions/runs/45009482336): **success**. `assets-registered.json`의 Roblox 자산번호 **`77805456081903`**, `usePermissionGranted:true`; 등록 원본 SHA-256과 승인·시각검수 해시 일치; `src/ReplicatedStorage/Shared/AssetIds.luau`의 `CardArt/eu_19` 번호 연결 확인.
 - **다음 대상:** `eu_20` 검독수리. 이 회차 중 이미지 생성기가 붉은사슴 시안을 2회 더 출력해 **주제 불일치로 모두 폐기**했으며, `eu_20` 원화·승인·등록을 완료했다고 보고하지 않는다. 다음 작업자는 검독수리 **한 마리가 급강하하는** 별도 역동적인 컬러 회화 원화부터 제작한다.
 - 기존 전투 규칙·카드 능력치·진행도·저장키·기존 원화는 변경하지 않았다. **Studio 실제 카드 표시 및 게임 Place 최종 게시: 별도 미검증.** 이후에는 최신 `main`의 실제 등록표가 이 기록보다 우선이다.
+
+## 13. 검독수리 `eu_20` 정식 등록 확인 (2026-11-22)
+
+- **카드 주제:** 검독수리 한 마리가 유럽 알프스 고산지대 상공에서 날개를 펼치고 발톱을 내밀며 급강하하는 1024×1024 단일 컬러 회화 원화. 사진풍·카드 테두리·문자·다른 동물 없음.
+- **원본:** `assets/cardart/src/eu_20-original.png`. 최종 PNG SHA-256 `b59342831d6ece4b7f2de703c399294911dbb1b700780f116b70621b21e81641`, 검증된 Git Blob SHA `a1e94463bab0b4532969f8779a618ece87f3b855`.
+- **원본·승인 동시 반영:** [`a84b364d2e81e2a048a0f50d0a3fa3c67b52a105`](https://github.com/hans1177/jaewoon-games/commit/a84b364d2e81e2a048a0f50d0a3fa3c67b52a105) (`main`). `assets/APPROVED_IMAGES.json`의 승인 해시와 `modelOriginals` 검수 기록이 원본과 일치한다.
+- **정식 등록 워크플로:** [실행 #45010277370](https://github.com/hans1177/jaewoon-games/actions/runs/45010277370) 결과 `success`. `assets-registered.json`의 Roblox 자산번호 **`109399954277820`**, `usePermissionGranted:true`. 등록·승인 SHA-256 일치, `src/ReplicatedStorage/Shared/AssetIds.luau`의 `CardArt/eu_20` 연결번호 일치.
+- **다음 후보:** `eu_21` 유럽불곰. 곰을 요청하는 도중 검독수리 그림이 두 번 잘못 생성돼 **미사용·폐기**했다. 두 시안은 유럽불곰 원화/승인/등록 증거가 아니다. 반드시 유럽불곰 한 마리가 숲에서 달리는 독립된 컬러 회화를 제작할 것.
+- **별도 미검증:** Roblox Studio 실제 카드 표시, 게임 Place 최종 게시. 기존 전투 밸런스·규칙·저장 구조·정식 자산등록 방식은 수정하지 않았다. 등록 상태는 다음 작업 시 최신 `main`에서 다시 확인한다.
