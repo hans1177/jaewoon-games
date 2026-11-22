@@ -684,20 +684,21 @@ function NavalBattle.play(opts)
 		end
 		-- [승인된 실물 지형] 라이선스 등록·실제 로딩이 완료된 모델만 복제한다.
 		local distantShips = {}
-		-- [해안 원근층] CC0 절벽 원본 3종만 각 해역 바깥쪽에 추가한다.
+		-- [해안 원근층] 내부 CC0 원본으로 돌출/안쪽 만·절벽 상단·숲 실루엣을
+		-- 기존 해역마다 다르게 배치한다. 모바일 원경 1개/PC 5개 상한은 유지한다.
 		-- 실제 항구/물가에 존재하던 실물과 같은 수입 경로로 단 한번 로드한다.
 		local depthCoast = if coast.id == "caribbean" or coast.id == "tropical" or coast.id == "gold_coast" then {
-			{ "cliff-cornerlarge-rock", 142, -473, -393 }, { "tree-palmdetailedtall", 70, -444, -353 },
-			{ "cliff-blockslope-rock", 113, -471, -388 }, { "cliff-top-rock", 92, 464, 401 },
-			{ "cliff-large-rock", 138, 512, -392 },
+			{ "cliff-cornerinnerlarge-rock", 151, -478, -398 }, { "tree-palmbend", 78, -438, -359 },
+			{ "cliff-cornertop-rock", 109, 491, 392 }, { "cliff-cornerlarge-rock", 142, -473, -393 },
+			{ "tree-palmdetailedtall", 70, -444, -353 },
 		} elseif coast.id == "north_sea" or coast.id == "arctic" or coast.id == "cape" or coast.id == "atlantic_storm" then {
+			{ "cliff-cornertop-rock", 154, 475, -413 }, { "cliff-cornerinnerlarge-rock", 130, -476, 402 },
 			{ "cliff-waterfall-stone", 144, 473, -401 }, { "cliff-cornerlarge-rock", 118, -472, 395 },
-			{ "cliff-large-rock", 149, 474, -408 }, { "cliff-top-rock", 123, -500, 384 },
-			{ "cliff-blockslope-rock", 102, -437, -410 },
+			{ "cliff-large-rock", 149, 474, -408 },
 		} else {
-			{ "cliff-blockdiagonal-rock", 140, -488, 375 }, { "cliff-cornerlarge-rock", 117, 495, -413 },
-			{ "cliff-blockslope-rock", 128, -496, 371 }, { "cliff-large-rock", 136, 486, -401 },
-			{ "cliff-top-rock", 98, 438, 410 },
+			{ "cliff-cornerinnerlarge-rock", 145, -501, 378 }, { "cliff-cornertop-rock", 125, 491, -419 },
+			{ "cliff-blockdiagonal-rock", 140, -488, 375 }, { "cliff-blockslope-rock", 128, -496, 371 },
+			{ "cliff-large-rock", 136, 486, -401 },
 		}
 		folder:SetAttribute("NavalDepthCoastCount", 0)
 		task.delay(1.0, function()
@@ -831,7 +832,8 @@ function NavalBattle.play(opts)
 			wakeAnchor.WorldCFrame = CFrame.new(ORIGIN + pos)
 			wakeAnchor.Parent = workspace.Terrain
 			wakeFoam = Instance.new("ParticleEmitter")
-			wakeFoam.Texture = "rbxasset://textures/particles/smoke_main.dds"
+			-- [흰 항적] 일반 연막 대신 기존 엔진의 물빛 반짝임 텍스처.
+			wakeFoam.Texture = "rbxasset://textures/particles/sparkles_main.dds"
 			wakeFoam.Color = ColorSequence.new(Color3.fromRGB(214, 244, 248), Color3.fromRGB(129, 194, 207))
 			wakeFoam.Transparency = NumberSequence.new({
 				NumberSequenceKeypoint.new(0, 0.39),
@@ -843,9 +845,9 @@ function NavalBattle.play(opts)
 				NumberSequenceKeypoint.new(0.4, if MOBILE_VFX then 2.8 else 4.1),
 				NumberSequenceKeypoint.new(1, 0),
 			})
-			wakeFoam.Speed = NumberRange.new(0.8, 2.6)
+			wakeFoam.Speed = NumberRange.new(0.8, if roughSeas then 4.3 else 2.6)
 			wakeFoam.Lifetime = NumberRange.new(0.8, 1.4)
-			wakeFoam.SpreadAngle = Vector2.new(85, 18)
+			wakeFoam.SpreadAngle = Vector2.new(if roughSeas then 108 else 78, if roughSeas then 25 else 16)
 			wakeFoam.EmissionDirection = Enum.NormalId.Top
 			wakeFoam.Drag = 2.4
 			wakeFoam.Enabled = false
