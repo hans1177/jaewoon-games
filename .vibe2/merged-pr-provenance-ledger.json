@@ -314089,11 +314089,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_9982d965472e2d9094341132",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14234",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "accef059e5391ca8f27f53e0e902b8b4cfd191bf",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14234,
+        "baseBranch": "main",
+        "headBranch": "owner/mare-depth-layer3-game-20261122",
+        "baseSha": "accef059e5391ca8f27f53e0e902b8b4cfd191bf",
+        "headSha": "9e0aafac245d55ddecfb408b3f1261194f4b4d30",
+        "mergeCommitSha": "bfd1e3560262993bd4875b944451c3183dd4b8f3",
+        "mergedAt": "2026-11-22T07:50:33Z",
+        "authorLogin": "hans1177",
+        "titleHash": "09318e0ae4a66e534e2a7ee093befb02c979e411da284742993695a3d1d93133",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/mare-depth-layer3-game-20261122",
+        "candidateSha": "9e0aafac245d55ddecfb408b3f1261194f4b4d30"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 178,
+        "deletedLineCount": 5,
+        "changedFiles": [
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-field.json"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-field.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14234",
+        "merge-commit:bfd1e3560262993bd4875b944451c3183dd4b8f3",
+        "base-main:accef059e5391ca8f27f53e0e902b8b4cfd191bf"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2519
+    "total": 2520
   }
 }
