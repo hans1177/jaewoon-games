@@ -5185,7 +5185,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		-- [좌우 균형] 짝수에만 절벽을 놓지 않고, 외곽 2~3겹 실루엣을 형성한다.
 		local ridge = i % 3 ~= 0 and ridgePlaced < ridgeLimit
 		-- [3층 단차] 승인된 절벽 메시를 3개 거리띠의 다른 기슭 높이에 배치한다.
-		local ridgeBand = 1 + ((i - 1) % 3)
+		local ridgeBand = 1 + (math.floor((i - 1) / 2) % 3)
 		local at = if ridge then Vector3.new(rng:NextNumber(-620, -170), -2 - ridgeBand * 2,
 			side * rng:NextNumber(WZ + 65 + ridgeBand * 45, WZ + 115 + ridgeBand * 55))
 			else Vector3.new(rng:NextNumber(-420, -45), 0,
@@ -5315,7 +5315,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		local asset = terrainPatches[(i - 1) % #terrainPatches + 1]
 		if AssetIds["Terrain/" .. asset] then
 			local side = if i % 2 == 0 then 1 else -1
-			local at = Vector3.new(-135 - i * 28, 0.18, side * (112 + (i % 3) * 11))
+			local at = Vector3.new(-135 - i * 28, 0.18, side * (WZ + 10 + (i % 3) * 5))
 			local patch = importedModel(folder, "Terrain", asset, at, if asset == "ground-pathrocks" then 10 else 7, false)
 			if patch then
 				patch.Name = "PortGroundVariation"
@@ -5328,13 +5328,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	folder:SetAttribute("PortGroundVariationCount", groundPatchesPlaced)
 	-- [바람] 기존 승인 수풀 3개 이하만 회전. 모바일·항해 중에는 갱신하지 않는다.
 	if #swayingFoliage > 0 then
-		local began, swayAt, swayConn = false, 0, nil
+		local swayAt, swayConn = 0, nil
 		swayConn = RunService.Heartbeat:Connect(function()
-			if not folder.Parent then
-				if began then swayConn:Disconnect() end
-				return
-			end
-			began = true
+			if not folder.Parent then return end
 			local now = os.clock()
 			if now < swayAt or workspace:GetAttribute("VoyageActive") then return end
 			swayAt = now + 0.22
@@ -5344,6 +5340,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				end
 			end
 		end)
+		folder.Destroying:Connect(function() swayConn:Disconnect() end)
 	end
 	-- [마을 발전 실루엣] 기등록된 문화권 적합 실물 건축만 3단계 이후 외곽에 소량 표시한다.
 	-- 정식 건물·사업장으로 오인되지 않게 모든 모델은 충돌·경제·저장 없이 배경 전용으로 둔다.
