@@ -309924,11 +309924,149 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_aeb4f95c5217f8d3c6b0328b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14166",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "63b48d3ef7777b36773cdf719894a47267a7bea0",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14166,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-cardbattle-retap-under-backdrop",
+        "baseSha": "63b48d3ef7777b36773cdf719894a47267a7bea0",
+        "headSha": "df6e796f432afc9d93155dd67a4797d7b317d9b9",
+        "mergeCommitSha": "a38351ca568a3f5784a693a26d4bfe0abd749c50",
+        "mergedAt": "2026-11-22T03:29:33Z",
+        "authorLogin": "hans1177",
+        "titleHash": "0babc8cc8fe2c5726b7d972860a0a209be297489b973b968d69b20c2d5018e46",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-cardbattle-retap-under-backdrop",
+        "candidateSha": "df6e796f432afc9d93155dd67a4797d7b317d9b9"
+      },
+      "changeStats": {
+        "changedFileCount": 18,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 239,
+        "deletedLineCount": 7,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/assets/cardart/af_01.png",
+          "roblox-games/mare-essentia/assets/cardart/ea_01.png",
+          "roblox-games/mare-essentia/assets/cardart/eu_01.png",
+          "roblox-games/mare-essentia/assets/cardart/me_01.png",
+          "roblox-games/mare-essentia/assets/cardart/nw_01.png",
+          "roblox-games/mare-essentia/assets/cardart/sa_01.png",
+          "roblox-games/mare-essentia/assets/cardart/src/af_01-original.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_01-original.png",
+          "roblox-games/mare-essentia/assets/cardart/src/eu_01-original.png",
+          "roblox-games/mare-essentia/assets/cardart/src/me_01-original.png",
+          "roblox-games/mare-essentia/assets/cardart/src/nw_01-original.png",
+          "roblox-games/mare-essentia/assets/cardart/src/sa_01-original.png",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-menus.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-menus.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14166",
+        "merge-commit:a38351ca568a3f5784a693a26d4bfe0abd749c50",
+        "base-main:63b48d3ef7777b36773cdf719894a47267a7bea0"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2485
+    "total": 2486
   }
 }
