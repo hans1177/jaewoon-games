@@ -950,6 +950,13 @@ function FieldScene.start(opts)
 	if tropical and AssetIds["Terrain/tree-palmbend"] then
 		table.insert(treeNames, "tree-palmbend")
 	end
+	-- [4차 실물 수관] 나무 개수는 유지하고 고지형 넓은 수관·북방 고목을 기존 선택군에 교체 투입한다.
+	if (questTerrain == "forest" or questTerrain == "highland") and not winterScene and AssetIds["Terrain/tree-plateau"] then
+		table.insert(treeNames, "tree-plateau")
+	end
+	if northern and AssetIds["Terrain/tree-pinetallc-detailed"] then
+		table.insert(treeNames, "tree-pinetallc-detailed")
+	end
 	-- [구획별 단순화된 식생 팔레트] 고스트 오브 쓰시마처럼 동일 화면의 나뭇잎색을 절제해 지역 정체성을 강조한다.
 	local foliageTint = if winterScene then Color3.fromRGB(150, 173, 160)
 		elseif northern and season == "가을" then Color3.fromRGB(155, 119, 66)
@@ -986,12 +993,13 @@ function FieldScene.start(opts)
 		entry.position = pos
 		-- 상록수는 북방 겨울에도 녹음을 유지하고, 낙엽수만 황금·적갈색 또는 서리색을 입힌다.
 		entry.tint = if name == "tree-pinedefaulta" or name == "tree-pinedefaultb" or name == "tree-pinetalla-detailed"
-			or name == "tree-pinetallb-detailed" or name == "north-pine-fall"
+			or name == "tree-pinetallb-detailed" or name == "tree-pinetallc-detailed" or name == "north-pine-fall"
 			then (if winterScene then Color3.fromRGB(85, 117, 116) else Color3.fromRGB(103, 146, 92))
 			elseif name == "tree-detailed-fall" then Color3.fromRGB(194, 123, 61)
 			elseif name == "tree-oak-dark" then Color3.fromRGB(71, 109, 77)
 			elseif name == "tree-oak-fall" then Color3.fromRGB(169, 100, 52)
 			elseif name == "tree-palmdetailedtall" or name == "tree-palmbend" then Color3.fromRGB(83, 157, 97)
+			elseif name == "tree-plateau" then Color3.fromRGB(101, 148, 89)
 			else foliageTint
 		stageFeature(entry)
 	end
@@ -1002,6 +1010,8 @@ function FieldScene.start(opts)
 		and AssetIds["Terrain/rock-tallc"] then table.insert(rockNames, { "Terrain", "rock-tallc" }) end
 	if (questTerrain == "highland" or questTerrain == "coast" or questTerrain == "glacier" or questTerrain == "volcanic")
 		and AssetIds["Terrain/rock-talli"] then table.insert(rockNames, { "Terrain", "rock-talli" }) end
+	if (questTerrain == "highland" or questTerrain == "coast" or questTerrain == "lake")
+		and AssetIds["Terrain/rock-largec"] then table.insert(rockNames, { "Terrain", "rock-largec" }) end
 	local rockCount = math.floor(biome.rocks * 1.6 * AREA)
 	local visualRockCount = if visualMobile then math.min(rockCount, 36) else rockCount
 	for index = 1, visualRockCount do
@@ -1149,13 +1159,13 @@ function FieldScene.start(opts)
 		{ "ground-pathrocks", 10, -0.52, -0.39, -17 },
 	} elseif questTerrain == "highland" or questTerrain == "volcanic" then {
 		{ "cliff-large-rock", 44, -0.83, -0.65, 13 }, { "cliff-blockslope-rock", 29, 0.80, -0.44, 28 },
-		{ "cliff-top-rock", 33, -0.84, -0.22, -24 }, { "rock-tallc", 16, 0.73, -0.78, 0 },
+		{ "cliff-cornertop-rock", 34, -0.84, -0.22, -24 }, { "rock-tallc", 16, 0.73, -0.78, 0 },
 		{ "ground-pathrocks", 10, -0.52, -0.39, -17 },
 	} elseif questTerrain == "coast" or questTerrain == "lake" then {
-		{ "cliff-cornerlarge-stone", 34, 0.87, -0.60, 20 }, { "cliff-blockslope-rock", 26, -0.83, -0.31, 32 },
+		{ "cliff-cornerinnerlarge-rock", 34, 0.87, -0.60, 20 }, { "cliff-blockslope-rock", 26, -0.83, -0.31, 32 },
 		{ "ground-riverside", 15, 0.76, -0.27, -10 }, { "ground-riverbendbank", 13, -0.57, -0.49, 40 },
 	} elseif questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "swamp" then {
-		{ "cliff-blockslope-rock", 25, -0.81, -0.53, 22 }, { "cliff-top-rock", 24, 0.78, -0.73, -30 },
+		{ "cliff-blockslope-rock", 25, -0.81, -0.53, 22 }, { "cliff-cornertop-rock", 24, 0.78, -0.73, -30 },
 		{ "plant-bushdetailed", 8, -0.52, -0.29, 6 }, { "grass-large", 6, 0.51, -0.35, 0 },
 		{ "ground-pathrocks", 7, -0.49, -0.56, 15 },
 	} else {
@@ -1182,7 +1192,7 @@ function FieldScene.start(opts)
 			{ "tree-palmbend", 24, -0.66, 0.18, 12 }, { "plant-bushsmall", 7, 0.52, 0.07, 0 },
 			{ "cliff-cornerlarge-stone", 31, 0.85, -0.47, 35 }, { "ground-riverbendbank", 13, -0.68, -0.54, 19 },
 		} elseif questTerrain == "forest" or questTerrain == "swamp" then {
-			{ "plant-bushsmall", 9, -0.55, 0.22, 0 }, { "tree-oak-dark", 20, 0.71, 0.06, -10 },
+			{ "plant-bushsmall", 9, -0.55, 0.22, 0 }, { "tree-plateau", 20, 0.71, 0.06, -10 },
 			{ "ground-riverside", 19, -0.83, -0.37, 34 }, { "ground-riverbendbank", 12, 0.65, -0.56, -24 },
 		} elseif questTerrain == "highland" or questTerrain == "mine" or questTerrain == "glacier" or questTerrain == "volcanic" then {
 			{ "cliff-blockdiagonal-rock", 34, -0.85, 0.18, 12 }, { "rock-talli", 17, 0.77, 0.09, 0 },
@@ -1304,6 +1314,9 @@ function FieldScene.start(opts)
 		if AssetIds["Terrain/ground-riverbendbank"] then table.insert(detailAssets, "ground-riverbendbank") end
 		if AssetIds["Terrain/ground-riverside"] then table.insert(detailAssets, "ground-riverside") end
 	end
+	if not winterScene and not arid and AssetIds["Terrain/plant-flattall"] then
+		table.insert(detailAssets, "plant-flattall")
+	end
 	local detailCount = if visualMobile then 10 else 24
 	for index = 1, detailCount do
 		local band = math.floor((index - 1) / 4)
@@ -1315,7 +1328,7 @@ function FieldScene.start(opts)
 			elseif asset == "east-bamboo-grove" then 7 elseif asset == "log-stack" then 4.5
 			elseif asset == "ground-pathrocks" or asset == "ground-riverrocks" then 8
 			elseif asset == "ground-riverbendbank" or asset == "ground-riverside" then 9
-			elseif asset == "grass-large" or asset == "grass-leafslarge" then 4.2
+			elseif asset == "grass-large" or asset == "grass-leafslarge" or asset == "plant-flattall" then 4.2
 			elseif asset == "plant-bushlarge" then 6.8 elseif asset == "plant-bushsmall" then 4.7
 			else rng:NextNumber(2.2, 5.2), nil, nil, false }
 		entry.position = ORIGIN + Vector3.new(px, 0, math.clamp(pz, -half * 0.83, half * 0.27))
