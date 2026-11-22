@@ -1,0 +1,482 @@
+{
+ "sourceRevision": "4aac13414daa11d5a7ce81d3ae0f6463bbe2b30a",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "QAAutoIntro on\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "INTRO_CENTER_QA_MONITOR_READY\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "MARE_TITLE_READY:TitleBackdrop:프랑스\ntext"
+  },
+  {
+   "step": 5,
+   "click": "title01",
+   "at": "922,84",
+   "out": "922,84 CLICK=프랑스\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 922,
+      "y": 84
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "SCROLLED 상인 집안\ntext"
+  },
+  {
+   "step": 9,
+   "click": "title02",
+   "at": "585,132",
+   "out": "585,132 CLICK=상인 집안\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 585,
+      "y": 132
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "SCROLLED ⚓ 출항하기\ntext"
+  },
+  {
+   "step": 13,
+   "click": "title03",
+   "at": "730,206",
+   "out": "730,206 CLICK=⚓ 출항하기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 730,
+      "y": 206
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "INTRO_OK\ntext"
+  },
+  {
+   "step": 19,
+   "ctx": "Client",
+   "out": "INTRO_CENTER_SIZE_UNIFIED_PASS stages=3 |길드 서기|대상 상인 카심|떠돌이 화가\ntext"
+  },
+  {
+   "step": 21,
+   "ctx": "Client",
+   "out": "INTRO_RUNTIME_STATE_PASS_NO_DECK_POPUP\ntext"
+  },
+  {
+   "step": 22,
+   "ctx": "Client",
+   "out": "DEV Deck try=1\ntext"
+  },
+  {
+   "step": 24,
+   "ctx": "Client",
+   "out": "CARD_DECK_RUNTIME_PASS\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "cb0_deck",
+   "files": 1
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "DEV Practice\ntext"
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "CARD_PRACTICE_RUNTIME_PASS\ntext"
+  },
+  {
+   "step": 29,
+   "capture": "cb1",
+   "files": 1
+  },
+  {
+   "step": 31,
+   "click": "card_hand_select",
+   "at": "48,269",
+   "out": "48,269 CLICK=hand_card_1\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 48,
+      "y": 269
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 33,
+   "ctx": "Client",
+   "out": "CARD_SELECT_PASS idx=1\ntext"
+  },
+  {
+   "step": 34,
+   "capture": "cb_select",
+   "files": 1
+  },
+  {
+   "step": 35,
+   "click": "card_hand_use",
+   "at": "49,270",
+   "out": "49,270 CLICK=hand_card_use\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 49,
+      "y": 270
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  }
+ ],
+ "errors": [
+  "step37:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:7: CARD_USE_NO_STATE_CHANGE:hand=10->1"
+ ],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 28010
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 185
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 215
+  },
+  {
+   "step": 3,
+   "type": "luau",
+   "elapsedMs": 201
+  },
+  {
+   "step": 4,
+   "type": "wait",
+   "elapsedMs": 406
+  },
+  {
+   "step": 5,
+   "type": "click_from_luau",
+   "elapsedMs": 1145
+  },
+  {
+   "step": 6,
+   "type": "wait",
+   "elapsedMs": 2015
+  },
+  {
+   "step": 7,
+   "type": "luau",
+   "elapsedMs": 334
+  },
+  {
+   "step": 8,
+   "type": "wait",
+   "elapsedMs": 413
+  },
+  {
+   "step": 9,
+   "type": "click_from_luau",
+   "elapsedMs": 971
+  },
+  {
+   "step": 10,
+   "type": "wait",
+   "elapsedMs": 2007
+  },
+  {
+   "step": 11,
+   "type": "luau",
+   "elapsedMs": 208
+  },
+  {
+   "step": 12,
+   "type": "wait",
+   "elapsedMs": 404
+  },
+  {
+   "step": 13,
+   "type": "click_from_luau",
+   "elapsedMs": 929
+  },
+  {
+   "step": 14,
+   "type": "wait",
+   "elapsedMs": 1701
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 1805
+  },
+  {
+   "step": 16,
+   "type": "wait",
+   "elapsedMs": 1811
+  },
+  {
+   "step": 17,
+   "type": "wait",
+   "elapsedMs": 3702
+  },
+  {
+   "step": 18,
+   "type": "luau",
+   "elapsedMs": 3669
+  },
+  {
+   "step": 19,
+   "type": "luau",
+   "elapsedMs": 848
+  },
+  {
+   "step": 20,
+   "type": "wait",
+   "elapsedMs": 2510
+  },
+  {
+   "step": 21,
+   "type": "luau",
+   "elapsedMs": 1873
+  },
+  {
+   "step": 22,
+   "type": "luau",
+   "elapsedMs": 1654
+  },
+  {
+   "step": 23,
+   "type": "wait",
+   "elapsedMs": 3014
+  },
+  {
+   "step": 24,
+   "type": "luau",
+   "elapsedMs": 1155
+  },
+  {
+   "step": 25,
+   "type": "capture",
+   "elapsedMs": 1958
+  },
+  {
+   "step": 26,
+   "type": "luau",
+   "elapsedMs": 333
+  },
+  {
+   "step": 27,
+   "type": "wait",
+   "elapsedMs": 6011
+  },
+  {
+   "step": 28,
+   "type": "luau",
+   "elapsedMs": 306
+  },
+  {
+   "step": 29,
+   "type": "capture",
+   "elapsedMs": 1860
+  },
+  {
+   "step": 30,
+   "type": "wait",
+   "elapsedMs": 2011
+  },
+  {
+   "step": 31,
+   "type": "click_from_luau",
+   "elapsedMs": 1393
+  },
+  {
+   "step": 32,
+   "type": "wait",
+   "elapsedMs": 1001
+  },
+  {
+   "step": 33,
+   "type": "luau",
+   "elapsedMs": 367
+  },
+  {
+   "step": 34,
+   "type": "capture",
+   "elapsedMs": 1417
+  },
+  {
+   "step": 35,
+   "type": "click_from_luau",
+   "elapsedMs": 1272
+  },
+  {
+   "step": 36,
+   "type": "wait",
+   "elapsedMs": 2012
+  },
+  {
+   "step": 37,
+   "type": "luau",
+   "elapsedMs": 6716
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 41,
+  "completedSteps": 38,
+  "plannedClicks": 5,
+  "successfulClicks": 5,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 5,
+  "capturedFrames": 3,
+  "abortedEarly": true
+ },
+ "visualSamples": [
+  {
+   "name": "cb0_deck",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 276617,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0237159729003906,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "cb1",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 195130,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0292580127716064,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "cb_select",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 173115,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "hand_card_1"
+  }
+ ],
+ "abortDiagnostics": {
+  "step": 37,
+  "type": "luau",
+  "elapsedMs": 6333,
+  "context": "Client",
+  "lastScreenshot": "cb_select",
+  "lastClick": "card_hand_use",
+  "probes": {
+   "Client": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_CLIENT\ntext"
+   },
+   "Server": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_SERVER\ntext"
+   }
+  }
+ },
+ "visualEvidence": {
+  "framesChecked": 3,
+  "framesWithInvalidSize": 0,
+  "voyageSceneObserved": false,
+  "departureObserved": false,
+  "voyageDiagnostics": [],
+  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
+ }
+}
