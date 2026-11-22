@@ -1687,10 +1687,11 @@ test('항구 35개 직업은 등록된 실물 장비를 직접 R15에 착용하�
  assert.match(pose,/model:FindFirstChild\(slotName\)/);
  assert.match(pose,/if jobProp and UserInputService\.TouchEnabled and detailLimit == 3 then/);
  assert.match(pose,/LocalTransparencyModifier = 1/);
- assert.match(pose,/if string\.sub\(assetName, 1, 7\) == "outfit_" or jobProp then/);
+ // [CC0 액세서리] 승인된 cc0_ 접두 R15 액세서리도 같은 착용 분기를 쓴다(34599fdcc8).
+ assert.match(pose,/if string\.sub\(assetName, 1, 7\) == "outfit_" or string\.sub\(assetName, 1, 4\) == "cc0_" or jobProp then/);
  assert.match(pose,/LocalTransparencyModifier = 0/);
  assert.match(pose,/math\.rad\(spec\[9\] or 0\)/);
- assert.match(pose,/elseif not textured and not jobProp then/);
+ assert.match(pose,/elseif not textured and not jobProp and string\.sub\(assetName, 1, 4\) ~= "cc0_" then/);
  assert.match(pose,/if npcOutfit and surface and surfaceHasColorMap\(surface\) then/);
  assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
  assert.match(port,/GetAttributeChangedSignal\("MareAssetsReady"\)/);
