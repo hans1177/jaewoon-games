@@ -1894,3 +1894,26 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 `NavalBattle.luau`는 실물 해안 절벽·바다 포말 연출에 사용한다.
 Roblox 등록 번호와 Universe 사용 권한은 기존 `owner-mare-essentia-assets.yml`/정식 등록기가 별도로 확인한다.
 **GitHub 원본 확보와 Roblox 원본 업로드, Studio 실제 보임 및 최종 게임 게시 증거는 각각 독립 검증 대상이다.**
+
+## 2026-11-22 입체감 3차 자연 원본 10종
+
+- 공식 원작·권리: [Kenney Nature Kit](https://kenney.nl/assets/nature-kit), **CC0 1.0**.
+- 원본 Git 경로: [Hidencod/tge-assets Nature Kit](https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit).
+- 아래 원본은 `assets/terrain/` 내부에 GLB 바이너리 그대로 확보했다. 외부 원본 Git blob SHA-1과 내부 복사본 해시 10/10 일치.
+- 참고 방식: 원신의 전경·중경·원경 구도, 씨 오브 시브즈의 파도 포말·선박 항적·해안 실루엣. 타 게임 에셋 복사 없음.
+
+| `assets/terrain/` 파일 | 원본 Git SHA-1 | 활용 |
+|---|---|---|
+| `tree-detailed-fall.glb` | `1d39f5584e2ae459c2b812b1cb7f91349dc46de0` | 가을 수관 |
+| `tree-oak-dark.glb` | `84a0b4364de35b0c2056aea0d8a1de1b3300e167` | 그늘 숲 |
+| `tree-pinetallb-detailed.glb` | `31a663c2bc895b34564ee1bae8699d46cca93231` | 북방 소나무 실루엣 |
+| `plant-bushlarge.glb` | `6ca5d5cb789507ee647c969b7bd8e6d2c4526b8b` | 전경 수풀 |
+| `rock-talli.glb` | `a8e2a0670e2bd60fdb548cd6684df42af1c8f5b7` | 바위 기둥 |
+| `cliff-cornerlarge-rock.glb` | `49300019c18ffdfabd181b674a1c297dc6278c24` | 바다 돌출 해안 |
+| `ground-riverrocks.glb` | `fd64e00165a23742a17de9b59832f88fefbd8b1b` | 시냇물 암반 |
+| `cliff-waterfall-stone.glb` | `09c790a07b93c09cab0dd34a4e928cc042c79867` | 폭포 절벽 |
+| `tree-palmdetailedtall.glb` | `4b8a5138d0cad20ae512c914caa9854df3954b5a` | 열대 야자수 |
+| `cliff-blockdiagonal-rock.glb` | `d5573d35456d0d1a545004a9297aa8664c5992e6` | 대각 협곡 경사 |
+
+Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산 ID·체험 사용 권한 검증 후에만 게임에서 사용한다.
+원본 확보와 게임 게시·실제 Studio 화면·모바일 성능 검증은 각각 별개다.
