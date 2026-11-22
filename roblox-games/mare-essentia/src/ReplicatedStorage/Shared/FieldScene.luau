@@ -813,9 +813,41 @@ function FieldScene.start(opts)
 		lightSave = {
 			FogColor = L.FogColor, FogStart = L.FogStart, FogEnd = L.FogEnd, ClockTime = L.ClockTime,
 			Brightness = L.Brightness, Ambient = L.Ambient, OutdoorAmbient = L.OutdoorAmbient,
-			ColorShiftTop = L.ColorShift_Top,
+			ColorShiftTop = L.ColorShift_Top, ShadowSoftness = L.ShadowSoftness,
 		}
+		-- [실제 대기 원근] 포트의 기존 Atmosphere가 있으면 수치를 보관해 재사용한다.
+		-- 엔진 Fog만 바꿨을 때 기존 Atmosphere에 가려 거리감이 사라지는 문제를 해결한다.
+		local oldAtmosphere = L:FindFirstChildOfClass("Atmosphere")
+		local fieldAtmosphere = oldAtmosphere or Instance.new("Atmosphere")
+		local oldAtmosphereLook = if oldAtmosphere then {
+			color = oldAtmosphere.Color, decay = oldAtmosphere.Decay,
+			density = oldAtmosphere.Density, offset = oldAtmosphere.Offset,
+			haze = oldAtmosphere.Haze, glare = oldAtmosphere.Glare,
+		} else nil
+		lightSave.FieldAtmosphere = fieldAtmosphere
+		fieldAtmosphere.Color = biome.fog:Lerp(Color3.fromRGB(215, 229, 239), 0.19)
+		fieldAtmosphere.Decay = biome.fog:Lerp(
+			if arid then Color3.fromRGB(184, 159, 132) else Color3.fromRGB(103, 143, 179), 0.43)
+		fieldAtmosphere.Density = if biome.fogEnd < 480 then 0.34 elseif biome.fogEnd < 650 then 0.29 else 0.24
+		fieldAtmosphere.Offset = 0.18
+		fieldAtmosphere.Haze = if visualMobile then 0.85 else 1.3
+		fieldAtmosphere.Glare = 0.12
+		if not oldAtmosphere then
+			fieldAtmosphere.Name = "FieldDepthAtmosphere"
+			fieldAtmosphere.Parent = L
+		end
+		folder.Destroying:Connect(function()
+			L.ShadowSoftness = lightSave.ShadowSoftness
+			if oldAtmosphereLook and fieldAtmosphere.Parent then
+				fieldAtmosphere.Color, fieldAtmosphere.Decay = oldAtmosphereLook.color, oldAtmosphereLook.decay
+				fieldAtmosphere.Density, fieldAtmosphere.Offset = oldAtmosphereLook.density, oldAtmosphereLook.offset
+				fieldAtmosphere.Haze, fieldAtmosphere.Glare = oldAtmosphereLook.haze, oldAtmosphereLook.glare
+			elseif not oldAtmosphere and fieldAtmosphere.Parent then
+				fieldAtmosphere:Destroy()
+			end
+		end)
 		pcall(function()
+			L.ShadowSoftness = 0.31
 			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = biome.fog, 40, biome.fogEnd, biome.clock
 			L.Brightness = 2.1
 			L.Ambient = biome.fog:Lerp(Color3.fromRGB(132, 139, 153), 0.65)
@@ -1049,6 +1081,26 @@ function FieldScene.start(opts)
 		-- [Studio 근·중·원경 확인] 등록 모델이 실제 배치됐을 때만 세며, 지연 로드도 같은 수치에 포함한다.
 		if entry.band then
 			m:SetAttribute("FieldSceneryBand", entry.band)
+			-- [먼 수목과 절벽] 원본 텍스처/PBR을 보존하고 무텍스처 면만 하늘빛에 옅게 섞는다.
+			-- 근경은 명암을 유지하며 모델 개수와 전투 피격 판정은 건드리지 않는다.
+			if entry.band == "far" then
+				local faded = 0
+				for _, piece in m:GetDescendants() do
+					if piece:IsA("BasePart") and piece.Transparency < 0.95
+						and not piece:FindFirstChildOfClass("SurfaceAppearance")
+						and (not piece:IsA("MeshPart") or piece.TextureID == "") then
+						local specialMap = false
+						for _, child in piece:GetChildren() do
+							if child:IsA("SpecialMesh") and child.TextureId ~= "" then specialMap = true; break end
+						end
+						if not specialMap then
+							piece.Color = piece.Color:Lerp(biome.fog, if biome.fogEnd < 500 then 0.30 else 0.20)
+							faded += 1
+						end
+					end
+				end
+				if faded > 0 then m:SetAttribute("FieldAtmosphericFarTone", true) end
+			end
 			if entry.lowPolyVariant then
 				m:SetAttribute("FieldSceneryLowPolyVariant", true) -- [Studio 실물 계수] 자산 선택 결과만 기록한다.
 				folder:SetAttribute("FieldSceneryLowPolyPlaced", (folder:GetAttribute("FieldSceneryLowPolyPlaced") or 0) + 1)
@@ -3020,6 +3072,17 @@ function FieldScene.start(opts)
 			lighting.Brightness = (0.52 + 1.58 * sun) * (if weather == "소나기" then 0.78 else 1)
 			lighting.FogEnd = math.max(105, biome.fogEnd * damp)
 			lighting.FogColor = biome.fog:Lerp(Color3.fromRGB(60, 78, 111), (1 - sun) * 0.55)
+			-- [기존 날씨 틱 통합] 새 갱신 루프 없이 새벽·밤·비·해무의 대기 밀도만 조정한다.
+			local depthAtmosphere = lightSave.FieldAtmosphere
+			if depthAtmosphere and depthAtmosphere.Parent then
+				depthAtmosphere.Color = lighting.FogColor:Lerp(Color3.fromRGB(216, 229, 240), 0.14)
+				depthAtmosphere.Decay = lighting.FogColor:Lerp(
+					if arid then Color3.fromRGB(184, 159, 132) else Color3.fromRGB(103, 143, 179),
+					if sun < 0.2 then 0.39 else 0.28)
+				depthAtmosphere.Density = math.clamp(0.25 + (600 - lighting.FogEnd) / 1700, 0.21, 0.39)
+				depthAtmosphere.Haze = if weather == "옅은 안개" then 2.9 elseif weather == "소나기" then 1.9
+					else (if visualMobile then 0.85 else 1.3)
+			end
 			lighting.Ambient = biome.fog:Lerp(Color3.fromRGB(83, 103, 132), if sun < 0.5 then 0.77 else 0.54)
 			lighting.OutdoorAmbient = biome.fog:Lerp(Color3.fromRGB(112, 127, 151), if sun < 0.5 then 0.69 else 0.45)
 			if weather == "소나기" and now >= flashNext then
