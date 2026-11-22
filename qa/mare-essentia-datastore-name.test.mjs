@@ -3701,3 +3701,60 @@ test('대항해시대 4차 원경 능선·자연 메시 8종·해안 시각 모�
   assert.match(naval,/if \(not MOBILE_VFX or index <= 1\) and AssetIds/);
   assert.match(naval,/NavalDepthShoreBreakCount/);
 });
+
+
+// [지상전 지리 다양화 회귀] 대륙·항구·개별 탐험지 배경은 기존 실물만 사용하고
+// 게임 전투 RNG/보상/저장과 독립이다. 신규 모델은 자산번호 없으면 참조하지 않는다.
+test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환경 구분',()=>{
+  const uploader=readText('tools/mare-essentia-upload-assets.mjs');
+  const workflow=readText('.github/workflows/owner-mare-essentia-assets.yml');
+  const field=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau');
+  const client=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const approved=[...uploader.matchAll(/\{original:'([^']+)', name:'(kenney_[^']+)'\}/g)];
+  assert.equal(approved.length,21,'기존 등록기에 CC0 자연 원본 21종');
+  assert.equal(new Set(approved.map(x=>x[1])).size,21,'원본 이름 중복 금지');
+  assert.equal(new Set(approved.map(x=>x[2])).size,21,'등록 대상 이름 중복 금지');
+  for(const entry of approved){
+    assert.ok(workflow.includes("'"+entry[2]+"'"),'원본 검증·권한 확인 누락 '+entry[2]);
+  }
+  assert.match(uploader,/natureArchiveSha = '[0-9a-f]{64}'/);
+  assert.match(uploader,/digest !== natureArchiveSha/,'외부 보관본도 동일 해시만 허용');
+  assert.match(uploader,/if \(!archive\) throw new Error\('MARE_CC0_NATURE_OFFICIAL_ARCHIVE_HASH_INVALID'\)/);
+  assert.match(uploader,/MARE_CC0_NATURE_DUPLICATE_MESH/);
+  assert.match(uploader,/tools\/devloop\/register_asset\.py/,'기존 정본 등록기 유지');
+  assert.match(workflow,/usePermissionGranted'\) is not True/);
+  assert.match(workflow,/if len\(confirmed\)!=21/);
+  assert.match(field,/local PORT_NATURE = \{/,'항구 고유 지형 입력');
+  assert.match(field,/local PORT_NATURE_MODELS = \{/,'항구별 등록 실물 배치 표');
+  const ids=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau');
+  const portModels=field.split('local PORT_NATURE_MODELS = {')[1]?.split('-- [지역별 생태]')[0]||'';
+  const scenery=[...portModels.matchAll(/\{"(Terrain|Town|Castle|Naval)","([^"]+)"/g)];
+  assert.ok(scenery.length>=35,'항구별 실물 지형 모델 편성');
+  for(const row of scenery){
+    assert.ok(ids.includes('["'+row[1]+'/'+row[2]+'"] ='),'미등록 항구 배경 자산 '+row[1]+'/'+row[2]);
+  }
+  for(const port of ['venice','amsterdam','bergen','cape_town','zanzibar','goa','busan',
+    'calcutta','new_orleans','san_francisco','rio','sydney','honolulu','guam']){
+    assert.match(field,new RegExp('\\b'+port+'='),'고유 지리 정체성: '+port);
+  }
+  for(const geo of ['europe','africa','asia','north_america','south_america','oceania']){
+    assert.ok(field.includes('"'+geo+'"'),'대륙 분류 '+geo);
+  }
+  for(const terrain of ['forest','jungle','swamp','coast','glacier','volcanic','highland',
+    'mine','desert','farm','ruins','fort','lake','plains']){
+    assert.ok(field.includes('questTerrain == "'+terrain+'"'),'퀘스트 지형 '+terrain);
+  }
+  for(const attr of ['FieldContinent','FieldPortId','FieldSiteId','FieldPortNature',
+    'FieldVisualSeed','FieldQuestTerrainTheme','FieldSeasonLabel']){
+    assert.ok(field.includes('"'+attr+'"'),'현장 실측 표지 '+attr);
+  }
+  assert.match(client,/siteId = s\.id/,'기존 탐험 지점 ID를 FieldScene에 전달');
+  assert.match(client,/portId = s\.portId/,'기존 항구 ID 유지');
+  assert.match(field,/local visualKey = portId \.\. "\/" \.\. \(opts\.siteId or opts\.name or ""\)/);
+  assert.match(field,/portVisualSeed \* 31 \+ string\.byte\(visualKey, index\)/);
+  assert.match(field,/if index == 3 and variants then/,'기존 문화권 대표 건물 2개 유지');
+  assert.match(field,/AssetIds\[candidate\[1\] \.\. "\/" \.\. candidate\[2\]\]/,'등록된 모델만 사용');
+  assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
+  assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
+  assert.match(field,/local detailCount = if visualMobile then 10 else 24/);
+});

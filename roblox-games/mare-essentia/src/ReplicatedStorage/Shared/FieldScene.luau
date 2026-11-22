@@ -181,6 +181,48 @@ local REGION_LOOK: {[string]: any} = {
 	wafrica = { ground = RC(168, 140, 84), mat = Enum.Material.Ground, fog = RC(232, 214, 170), fogEnd = 700, clock = 13.5, treeMul = 0.8, rockMul = 1, sizeMul = 1.2, trees = { "tree_large", "tree-default-fall" }, mobs = { "해안 약탈자", "노예 상인 용병", "약탈 두목" }, props = { { "Terrain", "canoe", 3, 8 }, { "Terrain", "tropical-palm-short", 3, 11 }, { "Terrain", "Bush_Small", 4, 3 } } },
 }
 
+-- [항구 고유 지형] 등록된 지역별 자연·건축 실물을 교체해 실재 항구의 지리 특성을 나타낸다.
+-- 이름을 특정하지 않은 나머지 항구도 Ports 원본 위도·경도와 특산품으로 유형을 결정한다.
+-- 전투/보상/지도 좌표는 고치지 않고 장면 마지막 원경 모델 1종과 약한 색감만 변경한다.
+local PORT_NATURE = {
+	venice="lagoon", amsterdam="lagoon", rotterdam="lagoon", antwerp="river",
+	hamburg="river", london="river", rouen="river", bordeaux="river",
+	lisbon="cliff_coast", porto="cliff_coast", copenhagen="islands",
+	stockholm="islands", bergen="fjord", oslo="fjord", edinburgh="moor",
+	glasgow="moor", seville="farmland", naples="volcanic", athens="ruins",
+	cape_town="cliff_coast", algiers="arid_coast", alexandria="river",
+	dakar="arid_coast", zanzibar="mangrove", mombasa="mangrove", kilwa="mangrove",
+	goa="jungle_coast", calcutta="delta", shanghai="delta", canton="delta",
+	singapore="mangrove", batavia="volcanic", nagasaki="mountain_coast",
+	busan="mountain_coast", hakodate="northern_coast",
+	new_orleans="delta", new_york="river", havana="reef", san_juan="reef",
+	san_francisco="cliff_coast", rio="mountain_coast", valparaiso="cliff_coast",
+	sydney="woodland", auckland="volcanic", guam="reef", honolulu="volcanic", suva="reef",
+}
+-- 문화권의 대표 랜드마크 앞에 들어가는 3번째 실물만 항구 지리와 탐험지로 교체한다.
+-- 없는 자산을 그리지 않고 기존 FieldScene.stageFeature 등록 검사 경로를 통과한다.
+local PORT_NATURE_MODELS = {
+	lagoon = { {"Terrain","ground-riverbendbank",16,0.72,-0.48}, {"Terrain","bridge-stone",15,-0.71,-0.62} },
+	river = { {"Terrain","river-stone-bank",14,0.73,-0.49}, {"Terrain","ground-riverside",17,-0.75,-0.65} },
+	fjord = { {"Terrain","cliff-large-stone",29,0.82,-0.67}, {"Terrain","cliff-cornerlarge-stone",28,-0.83,-0.74} },
+	islands = { {"Terrain","cliff-diagonal-rock",26,0.81,-0.72}, {"Terrain","tree-pinedefaulta",19,-0.76,-0.44} },
+	moor = { {"Terrain","rock-largec",15,0.73,-0.53}, {"Town","tree-crooked",20,-0.78,-0.39} },
+	farmland = { {"Terrain","crops-wheatstageb",12,0.72,-0.49}, {"Town","windmill",25,-0.81,-0.78} },
+	volcanic = { {"Terrain","cliff-blockdiagonal-rock",28,0.84,-0.65}, {"Terrain","rock-talld",16,-0.77,-0.46} },
+	ruins = { {"Terrain","ruins-pillar-decorated",20,0.78,-0.61}, {"Terrain","greek-ruins-a",22,-0.83,-0.73} },
+	cliff_coast = { {"Terrain","cliff-cornerinnertop-rock",28,0.84,-0.61}, {"Terrain","cliff-large-rock",29,-0.86,-0.69} },
+	arid_coast = { {"Terrain","mystic-sand-dune",24,0.81,-0.64}, {"Terrain","cliff-diagonal-rock",26,-0.82,-0.69} },
+	mangrove = { {"Terrain","tropical-palm-tall",22,0.76,-0.55}, {"Terrain","ground-riverbendbank",15,-0.77,-0.60} },
+	jungle_coast = { {"Terrain","east-bamboo-grove",17,0.79,-0.52}, {"Terrain","tropical-palm-tall",21,-0.75,-0.69} },
+	delta = { {"Terrain","ground-riverbendbank",17,0.79,-0.55}, {"Terrain","bridge-wood",15,-0.74,-0.58} },
+	mountain_coast = { {"Terrain","cliff-diagonal-rock",29,0.84,-0.68}, {"Terrain","tree-oak",21,-0.75,-0.54} },
+	northern_coast = { {"Terrain","north-pine-fall",21,0.75,-0.55}, {"Terrain","cliff-large-stone",29,-0.83,-0.68} },
+	reef = { {"Terrain","platform-beach",24,0.81,-0.74}, {"Terrain","coast-grass-patch",10,-0.75,-0.45} },
+	woodland = { {"Terrain","tree-plateau",22,0.78,-0.61}, {"Terrain","forest-bush-detailed",9,-0.72,-0.38} },
+	mineral = { {"Terrain","cliff-cave-rock",28,0.84,-0.73}, {"Terrain","rock-largea",16,-0.76,-0.45} },
+	forest = { {"Terrain","tree-oak",20,0.75,-0.61}, {"Terrain","forest-bush-detailed",10,-0.72,-0.37} },
+	coast = { {"Terrain","cliff-diagonal-rock",24,0.82,-0.69}, {"Terrain","river-stone-bank",12,-0.75,-0.44} },
+}
 -- [지역별 생태] 기존 21개 문화권의 지형·소품과 연결하는 적 무리 배치 구역. 전투 수치/적 수는 그대로 둔다.
 local REGION_ENCOUNTERS = {
 	iberia = "ruins", italy = "ruins", france = "forest", britain = "highland", hanse = "coast",
@@ -548,6 +590,50 @@ function FieldScene.start(opts)
 	-- [지역·계절 지형] 실제 달력 월에 맞춰 온대 사계절·북방 설기·열대 우건기·건조지대의 차이를 준다.
 	-- 기존 위험도·몬스터·보상과 무관한 이번 필드 한정 시각 값이며 원본 BIOMES 테이블은 변경하지 않는다.
 	local biome = table.clone(lookFor(opts.name or "", opts.portId))
+	-- [대륙·항구 식별] 기존 Ports 원본 좌표·특산품을 시각적 구역 정체성으로만 읽는다.
+	-- [Luau 지역변수 상한] 대륙 계산용 좌표와 이름은 이 블록에서 바로 해제한다.
+	local portNature, portVisualSeed = nil, 0
+	do
+		local port = opts.portId and Ports.Ports[opts.portId]
+		local latitude, longitude = port and port.lat or 0, port and port.lon or 0
+		local portId = opts.portId or ""
+		local continent = if port == nil then "generic"
+			elseif table.find({ "honolulu", "guam", "tahiti", "suva", "port_moresby" }, portId) then "oceania"
+			elseif portId == "port_louis" then "africa"
+			elseif portId == "panama" or portId == "portobelo" then "north_america"
+			elseif portId == "la_guaira" or portId == "cartagena_indias" then "south_america"
+			elseif longitude < -30 then (if latitude < 10 then "south_america" else "north_america")
+			elseif longitude > 100 and latitude < -9 then "oceania"
+			elseif (biome.region == "wafrica" or biome.region == "swahili" or
+				(latitude < -10 and longitude < 55)) then "africa"
+			elseif longitude >= 38 or biome.region == "korea" or biome.region == "japan"
+				or biome.region == "china" or biome.region == "malabar" or biome.region == "seasia"
+				or biome.region == "ottoman" then "asia"
+			else "europe"
+		portNature = PORT_NATURE[portId]
+		if not portNature and port then
+			portNature = if latitude > 56 then "northern_coast"
+				elseif latitude < -10 and latitude > -42 and continent == "oceania" then "woodland"
+				elseif table.find(port.produces, "timber") then "forest"
+				elseif table.find(port.produces, "iron") or table.find(port.produces, "copper")
+					or table.find(port.produces, "coal") then "mineral"
+				elseif table.find(port.produces, "rice") or table.find(port.produces, "spice") then "mangrove"
+				elseif latitude > 25 and latitude < 36 and continent == "africa" then "arid_coast"
+				elseif continent == "oceania" or (continent == "north_america" and latitude < 28) then "reef"
+				elseif continent == "asia" and latitude < 20 then "jungle_coast"
+				else "coast"
+		end
+		-- [퀘스트마다 다른 배치] 실제 siteId를 사용. 게임 RNG 및 저장·보상과 완전히 분리.
+		local visualKey = portId .. "/" .. (opts.siteId or opts.name or "")
+		for index = 1, #visualKey do
+			portVisualSeed = (portVisualSeed * 31 + string.byte(visualKey, index)) % 2147483647
+		end
+		folder:SetAttribute("FieldContinent", continent)
+		folder:SetAttribute("FieldPortId", portId)
+		folder:SetAttribute("FieldSiteId", opts.siteId or "")
+		folder:SetAttribute("FieldPortNature", portNature or "unknown")
+		folder:SetAttribute("FieldVisualSeed", portVisualSeed)
+	end
 	local month = os.date("!*t").month
 	local season = if month >= 3 and month <= 5 then "봄" elseif month >= 6 and month <= 8 then "여름"
 		elseif month >= 9 and month <= 11 then "가을" else "겨울"
@@ -643,6 +729,18 @@ function FieldScene.start(opts)
 		biome.mat = Enum.Material.Grass
 		biome.ground = biome.ground:Lerp(Color3.fromRGB(49, 103, 59), 0.55)
 		biome.fog = biome.fog:Lerp(Color3.fromRGB(123, 173, 146), 0.45)
+	end
+	-- [항구별 토양 광량] 같은 대륙·문화권 안에서도 하구·암벽·열대·삼림의 색을 조금씩 구분한다.
+	-- 빙하·화산·늪·밀림의 퀘스트 재질과 기후는 우선하며 지면 충돌·경로는 변경하지 않는다.
+	if questTerrain ~= "glacier" and questTerrain ~= "volcanic" and questTerrain ~= "swamp" and questTerrain ~= "jungle" then
+		local portColor = if portNature == "fjord" or portNature == "cliff_coast" then Color3.fromRGB(116, 131, 121)
+			elseif portNature == "lagoon" or portNature == "delta" or portNature == "river" then Color3.fromRGB(91, 132, 111)
+			elseif portNature == "reef" then Color3.fromRGB(206, 185, 130)
+			elseif portNature == "arid_coast" then Color3.fromRGB(198, 164, 108)
+			elseif portNature == "mineral" or portNature == "volcanic" then Color3.fromRGB(120, 117, 106)
+			elseif portNature == "mangrove" or portNature == "jungle_coast" then Color3.fromRGB(69, 128, 75)
+			else nil
+		if portColor then biome.ground = biome.ground:Lerp(portColor, 0.17) end
 	end
 	folder:SetAttribute("FieldQuestTerrainTheme", questTerrain)
 	folder:SetAttribute("FieldSeasonLabel", seasonName)
@@ -1426,8 +1524,21 @@ function FieldScene.start(opts)
 	if regionalFeatures then
 		for index, feature in regionalFeatures do
 			if not visualMobile or index <= 3 then
-				local entry = { feature[1], feature[2], feature[3], nil, nil, false }
-				entry.position = ORIGIN + Vector3.new(feature[4] * half * mirror, 0, feature[5] * half)
+				-- [대륙 → 항구 → 탐험지] 문화권의 앞 두 랜드마크는 보존.
+				-- 세 번째 배경만 항구의 지리와 siteId에서 뽑은 승인 실물 원본으로 교체한다.
+				local selected = feature
+				local variants = PORT_NATURE_MODELS[portNature or ""]
+				if index == 3 and variants then
+					local candidate = variants[portVisualSeed % #variants + 1]
+					if AssetIds[candidate[1] .. "/" .. candidate[2]] then selected = candidate end
+				end
+				local entry = { selected[1], selected[2], selected[3], nil, nil, false }
+				-- [실제 시차] 항구·퀘스트 시각 시드에 따라 외곽 실루엣 위치만 ±4% 분산.
+				-- 조사/적/시작 지점과 맞닿지 않는 맵 외곽에서만 변한다.
+				local stagger = (portVisualSeed % 9 - 4) * 0.008
+				entry.position = ORIGIN + Vector3.new(
+					math.clamp(selected[4] + (if selected[4] > 0 then stagger else -stagger), -0.93, 0.93) * half * mirror,
+					0, math.clamp(selected[5] + stagger * 0.6, -0.90, 0.18) * half)
 				entry.landmark = true
 				stageFeature(entry)
 			end
