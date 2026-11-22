@@ -1,0 +1,389 @@
+{
+ "sourceRevision": "5bda8ec87d6c48d06d062d64c5a40d801c359d2d",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "ready=true Animals:11,Cargo:168,Castle:31,Interior:17,Monsters:4,Naval:196,People:75,Relics:36,Ships:0,Terrain:95,Town:167\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "build ok=true nil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "01_top",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "02_plaza",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "03_street",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "04_dock",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "05_aerial",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "06_backstreet",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "07_wall",
+   "files": 1
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "TOWN_LIVE_SPACING_PASS relocated=9 stopped=3 industry_sites=0 npc_faces=29 reversed_rigs=0 plaza_structures=0 inspected=646 GRAPHIC_AUDIT floating=34 [sheep@-809,-130+40.0;sheep@-848,-162+40.0;sheep@-851,-87+40.0;HarborRoofDetail@-12,27+18.9;chimney@-16,-36+16.2;HarborRoofDetail@-12,-30+15.7] houseOverlap=1 [-30,-23~-4,-49=30%] OUTFIT_AUDIT models=54 states=[ready=54] visible=474/512 lodHidden=0 hairMesh=51 missing=[] CITY_TIER source=nil display=1 scene=1 DISTRIBUTION all=[21,73,60,79,51,346] houses=[3,1,1,0,0,0] edges=40/80/120/170/240\ntext"
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "parts=4149 meshparts=3472 models=2470 houses=5\ntext"
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=1.0238996744155884\ntext"
+  },
+  {
+   "step": 30,
+   "capture": "08_harbor_npc_sparring_01",
+   "files": 1
+  },
+  {
+   "step": 32,
+   "capture": "08_harbor_npc_sparring_02",
+   "files": 1
+  },
+  {
+   "step": 34,
+   "capture": "08_harbor_npc_sparring_03",
+   "files": 1
+  },
+  {
+   "step": 36,
+   "capture": "08_harbor_npc_sparring_04",
+   "files": 1
+  },
+  {
+   "step": 38,
+   "capture": "08_harbor_npc_sparring_05",
+   "files": 1
+  },
+  {
+   "step": 40,
+   "capture": "08_harbor_npc_sparring_06",
+   "files": 1
+  },
+  {
+   "step": 42,
+   "capture": "08_harbor_npc_sparring_07",
+   "files": 1
+  },
+  {
+   "step": 44,
+   "capture": "08_harbor_npc_sparring_08",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35007
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 88
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 4239
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 8014
+  },
+  {
+   "step": 4,
+   "type": "luau",
+   "elapsedMs": 96
+  },
+  {
+   "step": 5,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 6,
+   "type": "wait",
+   "elapsedMs": 2510
+  },
+  {
+   "step": 7,
+   "type": "capture",
+   "elapsedMs": 828
+  },
+  {
+   "step": 8,
+   "type": "luau",
+   "elapsedMs": 195
+  },
+  {
+   "step": 9,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 10,
+   "type": "capture",
+   "elapsedMs": 890
+  },
+  {
+   "step": 11,
+   "type": "luau",
+   "elapsedMs": 191
+  },
+  {
+   "step": 12,
+   "type": "wait",
+   "elapsedMs": 2513
+  },
+  {
+   "step": 13,
+   "type": "capture",
+   "elapsedMs": 856
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 182
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 2504
+  },
+  {
+   "step": 16,
+   "type": "capture",
+   "elapsedMs": 954
+  },
+  {
+   "step": 17,
+   "type": "luau",
+   "elapsedMs": 191
+  },
+  {
+   "step": 18,
+   "type": "wait",
+   "elapsedMs": 2510
+  },
+  {
+   "step": 19,
+   "type": "capture",
+   "elapsedMs": 797
+  },
+  {
+   "step": 20,
+   "type": "luau",
+   "elapsedMs": 160
+  },
+  {
+   "step": 21,
+   "type": "wait",
+   "elapsedMs": 2502
+  },
+  {
+   "step": 22,
+   "type": "capture",
+   "elapsedMs": 794
+  },
+  {
+   "step": 23,
+   "type": "luau",
+   "elapsedMs": 137
+  },
+  {
+   "step": 24,
+   "type": "wait",
+   "elapsedMs": 2503
+  },
+  {
+   "step": 25,
+   "type": "capture",
+   "elapsedMs": 932
+  },
+  {
+   "step": 26,
+   "type": "luau",
+   "elapsedMs": 208
+  },
+  {
+   "step": 27,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 28,
+   "type": "luau",
+   "elapsedMs": 259
+  },
+  {
+   "step": 29,
+   "type": "wait",
+   "elapsedMs": 460
+  },
+  {
+   "step": 30,
+   "type": "capture",
+   "elapsedMs": 791
+  },
+  {
+   "step": 31,
+   "type": "wait",
+   "elapsedMs": 458
+  },
+  {
+   "step": 32,
+   "type": "capture",
+   "elapsedMs": 710
+  },
+  {
+   "step": 33,
+   "type": "wait",
+   "elapsedMs": 451
+  },
+  {
+   "step": 34,
+   "type": "capture",
+   "elapsedMs": 767
+  },
+  {
+   "step": 35,
+   "type": "wait",
+   "elapsedMs": 450
+  },
+  {
+   "step": 36,
+   "type": "capture",
+   "elapsedMs": 782
+  },
+  {
+   "step": 37,
+   "type": "wait",
+   "elapsedMs": 457
+  },
+  {
+   "step": 38,
+   "type": "capture",
+   "elapsedMs": 769
+  },
+  {
+   "step": 39,
+   "type": "wait",
+   "elapsedMs": 457
+  },
+  {
+   "step": 40,
+   "type": "capture",
+   "elapsedMs": 901
+  },
+  {
+   "step": 41,
+   "type": "wait",
+   "elapsedMs": 464
+  },
+  {
+   "step": 42,
+   "type": "capture",
+   "elapsedMs": 738
+  },
+  {
+   "step": 43,
+   "type": "wait",
+   "elapsedMs": 457
+  },
+  {
+   "step": 44,
+   "type": "capture",
+   "elapsedMs": 757
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 45,
+  "completedSteps": 45,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 15,
+  "capturedFrames": 15,
+  "abortedEarly": false
+ }
+}
