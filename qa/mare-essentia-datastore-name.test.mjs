@@ -3558,3 +3558,50 @@ test('대항해시대 생물군계 절벽·하층 식생 및 해상 연안 깊�
   assert.match(naval,/local depthCoast = if coast\.id/);
   assert.match(naval,/spray\.Rate = if MOBILE_VFX/);
 });
+
+// [지상전/해상전 3차 입체감] 공개 CC0 원본 10종, Roblox 사용권한, 모바일 엔진 항적을 하나의 회귀검사로 묶는다.
+test('대항해시대 3차 원근·계절 숲·선박 항적 CC0 자산 실물 검증',()=>{
+  const root='roblox-games/mare-essentia/';
+  const registry=JSON.parse(readText(root+'assets-registered.json')).assets;
+  const ids=readText(root+'src/ReplicatedStorage/Shared/AssetIds.luau');
+  const originals={
+    'tree-detailed-fall':'1d39f5584e2ae459c2b812b1cb7f91349dc46de0',
+    'tree-oak-dark':'84a0b4364de35b0c2056aea0d8a1de1b3300e167',
+    'tree-pinetallb-detailed':'31a663c2bc895b34564ee1bae8699d46cca93231',
+    'plant-bushlarge':'6ca5d5cb789507ee647c969b7bd8e6d2c4526b8b',
+    'rock-talli':'a8e2a0670e2bd60fdb548cd6684df42af1c8f5b7',
+    'cliff-cornerlarge-rock':'49300019c18ffdfabd181b674a1c297dc6278c24',
+    'ground-riverrocks':'fd64e00165a23742a17de9b59832f88fefbd8b1b',
+    'cliff-waterfall-stone':'09c790a07b93c09cab0dd34a4e928cc042c79867',
+    'tree-palmdetailedtall':'4b8a5138d0cad20ae512c914caa9854df3954b5a',
+    'cliff-blockdiagonal-rock':'d5573d35456d0d1a545004a9297aa8664c5992e6',
+  };
+  for(const [name,expected] of Object.entries(originals)){
+    const key='Terrain/'+name,row=registry[key];
+    assert.equal(row?.license,'CC0-1.0',key+' 원본 CC0');
+    assert.equal(row?.assetType,'Model',key+' 실제 모델');
+    assert.equal(row?.usePermissionGranted,true,key+' 체험권한');
+    assert.ok(/^[1-9][0-9]*$/.test(String(row?.assetId||'')),key+' 실제 자산번호');
+    assert.ok(ids.includes('["'+key+'"] = '+row.assetId),key+' AssetIds 정본');
+    const bytes=fs.readFileSync(root+'assets/terrain/'+name+'.glb');
+    assert.equal(bytes.toString('ascii',0,4),'glTF',key+' 바이너리 실물');
+    const sha=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length))
+      .update(Buffer.from([0])).update(bytes).digest('hex');
+    assert.equal(sha,expected,key+' 공개 원본 해시 보존');
+  }
+  const field=readText(root+'src/ReplicatedStorage/Shared/FieldScene.luau');
+  const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
+  assert.match(field,/FieldElevatedTerraceCount/);
+  assert.match(field,/FieldNearDepthBandCount/);
+  assert.match(field,/local nearBands = if tropical then/);
+  assert.match(field,/groundRay\.FilterDescendantsInstances = \{ workspace\.Terrain, ground \}/);
+  assert.match(field,/AssetIds\["Terrain\/tree-detailed-fall"\]/);
+  assert.match(field,/AssetIds\["Terrain\/tree-palmdetailedtall"\]/);
+  assert.match(field,/if visualMobile then 1 else 3/);
+  assert.match(naval,/NavalWakeSourceCount/);
+  assert.match(naval,/wakeCount < \(if MOBILE_VFX then 2 else 6\)/);
+  assert.match(naval,/sh\.wakeFx\.Enabled = \(sh\.speed or 0\) > 2 and not sink/);
+  assert.match(naval,/local stern = ORIGIN \+ sh\.pos - heading \* sh\.length \* 0\.40/);
+  assert.match(naval,/cliff-cornerlarge-rock/);
+  assert.match(naval,/cliff-waterfall-stone/);
+});
