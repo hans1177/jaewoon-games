@@ -2650,6 +2650,7 @@ function FieldScene.start(opts)
 			elseif visualMobile then -95 else -88,
 			1, if compactTouch then -85 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then -70
 				elseif visualMobile then -88 else -88), Vector2.new(0.5, 0.5))
+	attackBtn.Name = "FieldAttackButton" -- [검증용 이름] 실제 클릭 검사가 공격 버튼을 찾는다(동작 불변).
 	attackBtn.Name = "FieldAttack"
 	attackBtn:SetAttribute("SkillFullName", "일반 공격")
 	attackBtn:SetAttribute("TouchPriority", "ATTACK")
@@ -4898,6 +4899,8 @@ function FieldScene.start(opts)
 		e.hitVariant = (e.hitVariant or 0) % 3 + 1
 		e.model:SetAttribute("FieldHitVariant", e.hitVariant)
 		e.bar.Size = UDim2.fromScale(math.max(e.ac.hp, 0) / e.maxHp, 1)
+		-- [검증용 읽기 전용] Studio 지상전 검사가 실제 타격 결과를 확인한다. 피해 계산·판정 불변.
+		e.model:SetAttribute("FieldEnemyHpRatio", math.max(e.ac.hp, 0) / e.maxHp)
 		local away = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
 		if not died and stagger and knock >= 4 and not e.boss and not shieldBlocked
 			and evadeAt - (e.lastFallAt or -100) >= 3.5 then
