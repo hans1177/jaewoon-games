@@ -1129,7 +1129,7 @@ function FieldScene.start(opts)
 		elseif tropical then Color3.fromRGB(81, 146, 82)
 		elseif arid then Color3.fromRGB(156, 151, 94)
 		else Color3.fromRGB(102, 153, 82)
-	-- [모바일 안정화] 메시는 화면 자원만 줄이고 탐험 보상·몬스터 수·위험도는 유지한다.
+	-- [승인 자연물] 탐험 보상·몬스터 수·위험도와 분리된 환경 배치만 계산한다.
 	local treeCount = math.floor(biome.trees * 2 * AREA)
 	-- [지형 모델 수 해제] 기기별 개수 제한 없이 현재 바이옴과 맵 면적이 정한 수목을 배치한다.
 	local visualTreeCount = treeCount
@@ -1491,7 +1491,7 @@ function FieldScene.start(opts)
 	-- 강가 돌무더기, 원경의 절벽선을 서로 다른 거리에 배치한다. 중앙 전투 길을 가리지 않는다.
 	do
 		local nearBands = if tropical then {
-			-- [바이옴 전경] 같은 모바일 2개 슬롯을 해안/밀림에서 각각 실물 모래 해변/대나무 군집으로 사용한다.
+			-- [바이옴 전경] 해안/밀림의 실물 모래 해변/대나무 군집으로 시야층을 구분한다.
 			if questTerrain == "jungle" then { "east-bamboo-grove", 19, -0.73, 0.10, 11 }
 				else { "tree-palmbend", 24, -0.66, 0.18, 12 },
 			if questTerrain == "coast" then { "platform-beach", 19, -0.84, -0.81, -18 }
@@ -1517,7 +1517,7 @@ function FieldScene.start(opts)
 			{ "ruins-pillar-decorated", 21, -0.86, 0.12, 16 }, { "rock-largea", 12, 0.78, -0.17, 7 },
 			{ "ruins-wall-arched", 23, -0.87, -0.61, 12 }, { "ground-pathrocks", 8, 0.65, -0.38, 16 },
 		} elseif questTerrain == "desert" then {
-			-- [사막 전경] 바위와 모래 언덕의 거리 차이를 밝히고 기존 모바일 슬롯 제한을 유지한다.
+			-- [사막 전경] 승인 바위와 모래 언덕의 거리 차이를 노출한다.
 			{ "rock-largea", 15, -0.81, 0.13, -13 }, { "mystic-sand-dune", 27, 0.85, -0.46, 18 },
 			{ "rock-talld", 12, 0.74, -0.12, 20 }, { "ground-pathrocks", 8, -0.69, -0.39, 14 },
 		} elseif questTerrain == "farm" then {
@@ -1579,8 +1579,8 @@ function FieldScene.start(opts)
 		end
 		folder:SetAttribute("FieldNearDepthBandCount", placedBandCount)
 	end
-	-- [문화권 전용 윤곽] 모바일은 앞의 3개만 표시하므로 승인된 대표 건축물을 먼저 배치한다.
-	-- 위치는 맵 가장자리로 제한해 기존 퀘스트 목표·전투·시작 동선을 유지한다.
+	-- [문화권 전용 윤곽] 승인된 문화권 대표 건축물 전체를 거리별로 배치한다.
+	-- 중앙 전투·시작 동선과 간격을 두고 지역 상징물을 배치한다.
 	local regionalSilhouettes = {
 		iberia = { {"Terrain","ruins-wall-arched",23,-0.73,-0.59}, {"Terrain","column",15,-0.62,-0.42}, {"Terrain","tree-oak",17,0.71,-0.59} },
 		italy = { {"Town","bell-tower",27,0.84,-0.87}, {"Terrain","greek-ruins-a",28,0.72,-0.75}, {"Terrain","greek-column",20,-0.62,-0.61}, {"Terrain","greek-statue",14,0.63,-0.39}, {"Town","house",19,-0.88,-0.53} },
@@ -1608,28 +1608,26 @@ function FieldScene.start(opts)
 	local regionalFeatures = regionalSilhouettes[region]
 	if regionalFeatures then
 		for index, feature in regionalFeatures do
-			do -- [기기별 모델 제한 해제] 문화권의 모든 승인 대표 모델을 화면에 배치한다.
-				-- [대륙 → 항구 → 탐험지] 문화권의 앞 두 랜드마크는 보존.
-				-- 세 번째 배경만 항구의 지리와 siteId에서 뽑은 승인 실물 원본으로 교체한다.
-				local selected = feature
-				local variants = PORT_NATURE_MODELS[portNature or ""]
-				if index == 3 and variants then
-					local candidate = variants[portVisualSeed % #variants + 1]
-					if AssetIds[candidate[1] .. "/" .. candidate[2]] then selected = candidate end
-				end
-				local entry = { selected[1], selected[2], selected[3], nil, nil, false }
-				-- [지역 실루엣 실제 노출] 대륙 대표 모델은 중경, 항구 고유 자연 모델은 근경에 둔다.
-				-- 개수·종류·조사 랜드마크는 그대로, 원래 외곽에 치우친 시각 모델만 이동한다.
-				local stagger = (portVisualSeed % 9 - 4) * 0.008
-				local bandX = if index == 3 then 0.40 elseif index == 2 then 0.51 else 0.59
-				local bandZ = if index == 3 then 0.43 elseif index == 2 then 0.10 else -0.20
-				entry.position = ORIGIN + Vector3.new(
-					(if selected[4] > 0 then 1 else -1) * half * (bandX + stagger) * mirror,
-					0, half * (bandZ + stagger * 0.6))
-				entry.band = if index == 3 then "near" else "mid"
-				entry.landmark = true
-				stageFeature(entry)
+			-- [대륙 → 항구 → 탐험지] 승인된 전체 지역 모델 사용. 세 번째 모델은 항구/유적 지형으로 선택.
+			local selected = feature
+			local variants = PORT_NATURE_MODELS[portNature or ""]
+			if index == 3 and variants then
+				local candidate = variants[portVisualSeed % #variants + 1]
+				if AssetIds[candidate[1] .. "/" .. candidate[2]] then selected = candidate end
 			end
+			local entry = { selected[1], selected[2], selected[3], nil, nil, false }
+			-- [근·중·원경] 항구 고유 자연물은 진입 근경, 대표 건축물은 중경·원경으로 계단식 배치.
+			local stagger = (portVisualSeed % 9 - 4) * 0.008
+			local bandX = if index == 3 then 0.40 elseif index == 2 then 0.51
+				else 0.59 + math.max(0, index - 3) * 0.07
+			local bandZ = if index == 3 then 0.43 elseif index == 2 then 0.10
+				else -0.20 - math.max(0, index - 3) * 0.17
+			entry.position = ORIGIN + Vector3.new(
+				(if selected[4] > 0 then 1 else -1) * half * (bandX + stagger) * mirror,
+				0, half * (bandZ + stagger * 0.6))
+			entry.band = if index == 3 then "near" elseif index <= 2 then "mid" else "far"
+			entry.landmark = true
+			stageFeature(entry)
 		end
 	end
 	folder:SetAttribute("FieldTerrainFeatureCount", built)
@@ -1637,7 +1635,7 @@ function FieldScene.start(opts)
 	-- 문화권 소품(기둥·천막·카누 등): 등록된 모델만 놓고, 없으면 건너뛴다
 	for groupIndex, pr in (biome.props or {}) do
 		-- [문화권 군집] 나무·기둥·천막·카누를 길 한가운데 흩뿌리지 않고 각 문화권의 외곽 마을/해안대로 묶는다.
-		-- [모바일] 기존 종류당 4개 제한과 규모는 유지한다.
+		-- [수량 고정 제한 해제] 문화권 소품은 바이옴 수량과 맵 면적에 비례해 확장한다.
 		for index = 1, math.max(1, math.floor(pr[3] * math.sqrt(AREA))) do
 			local side = if (groupIndex + index) % 2 == 0 then -1 else 1
 			local x = side * half * rng:NextNumber(0.54, 0.85)
@@ -1693,7 +1691,7 @@ function FieldScene.start(opts)
 		and AssetIds["Terrain/ground-riverrocks"] then
 		table.insert(detailAssets, "ground-riverrocks")
 	end
-	-- [근접 하천·바람풀] 추가 수량 없이 기존 10/24개 상세소품의 후보만 교체한다.
+	-- [근접 하천·바람풀] 등록된 자연물만 상세식생 선택군에 추가한다.
 	if not winterScene and not arid then
 		if AssetIds["Terrain/plant-bushsmall"] then table.insert(detailAssets, "plant-bushsmall") end
 		if AssetIds["Terrain/grass-leafslarge"] then table.insert(detailAssets, "grass-leafslarge") end
@@ -1703,7 +1701,7 @@ function FieldScene.start(opts)
 		if AssetIds["Terrain/ground-riverbendbank"] then table.insert(detailAssets, "ground-riverbendbank") end
 		if AssetIds["Terrain/ground-riverside"] then table.insert(detailAssets, "ground-riverside") end
 	end
-	-- [대륙·항구·퀘스트 3중 식생 필터] 기존 소품 10/24개 예산 안에서만 교체.
+	-- [대륙·항구·퀘스트 3중 식생 필터] 지역 실물과 지형 특성을 반영한다.
 	-- 신규 모델이 자산번호를 아직 받지 못했으면 건너뛰며 기존 원본은 그대로 남는다.
 	do
 		local natureDetail = if questTerrain == "forest" then {
@@ -1746,7 +1744,7 @@ function FieldScene.start(opts)
 	for index = 1, detailCount do
 		local band = math.floor((index - 1) / 4)
 		local side = if index % 2 == 0 then -1 else 1
-		-- [장면 깊이] 기존 모바일 10개 / PC 24개 실물 소품을 앞→중간→뒤로 나눈다.
+		-- [장면 깊이] 화면 크기 무관하게 상세식생을 근경→중경→원경으로 나눈다.
 		-- 최초 10개가 전부 먼 원경에만 놓이던 문제를 고치되 전투 중앙은 비운다.
 		local px = side * half * ((if band == 0 then 0.16 elseif band == 1 then 0.25 else 0.34 end) + rng:NextNumber(0, 0.13))
 		local pz = half * (0.81 - band * 0.28) + rng:NextNumber(-7, 7)
