@@ -196,7 +196,8 @@ local function addHat(model, kind, color)
 	end
 end
 
--- 머리카락: 짧은 머리·묶음·긴 머리·흰머리. (부품 몇 개로 만든 머리, 모자와 같은 방식)
+-- [R15 머리 표현] 등록 GLB를 우선 사용하고, 미등록/지연 로드 중에는 매끄러운 모발 실루엣으로 빈틈을 채운다.
+-- 실물 헤어가 장착되면 Hair 이름의 보조 헤어만 숨기고 HairScalp 두피는 유지한다.
 local function addHair(model, kind, color)
 	local head = model:FindFirstChild("Head")
 	if not (head and head:IsA("BasePart") and kind) then
@@ -228,10 +229,29 @@ local function addHair(model, kind, color)
 			Vector3.new(side * h.X * 0.48, h.Y * 0.10, h.Z * 0.08))
 		temple.Name = "HairScalpSide"
 	end
+	-- [머리 실루엣] 실제 미로드 때도 짧은 앞머리·긴 옆머리·쪽머리가 서로 다른 형태로 보인다.
+	-- 부품은 정지 후 Weld만 쓰고 매 프레임 갱신하지 않아 모바일에서 비용을 제한한다.
+	local variation = tonumber(model:GetAttribute("NpcHairVariant")) or 1
 	if kind == "long" then
-		piece(Enum.PartType.Block, Vector3.new(h.X * 1.0, h.Y * 1.5, h.X * 0.35), Vector3.new(0, -h.Y * 0.2, h.X * 0.5))
+		for _, side in { -1, 1 } do
+			piece(Enum.PartType.Ball, Vector3.new(h.X * 0.33, h.Y * (if variation % 2 == 0 then 1.25 else 1.02), h.Z * 0.34),
+				Vector3.new(side * h.X * 0.37, -h.Y * 0.35, h.Z * 0.35))
+		end
+		piece(Enum.PartType.Ball, Vector3.new(h.X * 0.72, h.Y * 0.92, h.Z * 0.26),
+			Vector3.new(0, -h.Y * 0.29, h.Z * 0.48))
 	elseif kind == "bun" then
-		piece(Enum.PartType.Ball, Vector3.new(h.X * 0.5, h.X * 0.5, h.X * 0.5), Vector3.new(0, h.Y * 0.72, h.X * 0.3))
+		piece(Enum.PartType.Ball, Vector3.new(h.X * (if variation % 2 == 0 then 0.59 else 0.46),
+			h.Y * 0.40, h.Z * 0.49), Vector3.new(0, h.Y * 0.57, h.Z * 0.32))
+		piece(Enum.PartType.Ball, Vector3.new(h.X * 0.73, h.Y * 0.18, h.Z * 0.23),
+			Vector3.new(0, h.Y * 0.27, -h.Z * 0.47))
+	elseif kind == "short" then
+		piece(Enum.PartType.Ball, Vector3.new(h.X * (if variation % 2 == 0 then 0.78 else 0.56),
+			h.Y * 0.19, h.Z * 0.28), Vector3.new(if variation % 2 == 0 then h.X * 0.08 else -h.X * 0.13,
+			h.Y * 0.31, -h.Z * 0.46))
+		if variation % 3 == 0 then
+			piece(Enum.PartType.Ball, Vector3.new(h.X * 0.35, h.Y * 0.22, h.Z * 0.20),
+				Vector3.new(h.X * 0.32, h.Y * 0.19, -h.Z * 0.38))
+		end
 	end
 end
 
@@ -418,12 +438,30 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	if outfit and outfit.age then
 		model:SetAttribute("Age", outfit.age)
 	end
+	-- [인물별 머리 변형] 기존 마을 좌표/성격으로 결정하므로 난수 호출 및 배치·경제 시드는 유지한다.
+	-- 1~8 변형은 저장하지 않는 R15 외형 속성이다. 재호출·자산 지연 로드 뒤에도 같은 모델을 선택한다.
+	if outfit and outfit.hair then
+		local coordinate = if typeof(bottomPosition) == "Vector3" then math.abs(math.floor(bottomPosition.X * 13 + bottomPosition.Z * 19)) else 0
+		local variant = (coordinate + (tonumber(outfit.persona) or 1) * 3) % 8 + 1
+		model:SetAttribute("NpcHairVariant", variant)
+	end
 	-- [시대·문화·직업] 비주얼 메타데이터는 게임 세이브·경제·판정에 기록하지 않는다.
 	if outfit then
 		if type(outfit.year) == "number" then model:SetAttribute("AppearanceYear", outfit.year) end
 		if type(outfit.culture) == "string" then model:SetAttribute("AppearanceCulture", outfit.culture) end
 		if type(outfit.profession) == "string" then model:SetAttribute("AppearanceProfession", outfit.profession) end
 		if outfit.gender == "female" or outfit.gender == "male" then model:SetAttribute("AppearanceGender", outfit.gender) end
+		-- [머리 종류 확장] 해당 시대·문화권의 일부 선원은 묶은 머리, 주민은 짧은 머리도 선택한다.
+		-- 새 저장/랜덤 시드 없이 기존 원본 헤어 ID와 직업 프로필에서 고른다.
+		local variant = tonumber(model:GetAttribute("NpcHairVariant")) or 1
+		if EUROPEAN_DETAIL_CULTURES[outfit.culture] then
+			if outfit.gender == "female" and variant == 8 and outfit.hair == "long" and not outfit.hat then
+				outfit.hair = "short"
+			elseif outfit.gender == "male" and variant == 7 and outfit.hair == "short"
+				and (outfit.profession == "sailor" or outfit.profession == "boatswain") then
+				outfit.hair = "long"
+			end
+		end
 		-- [실물 머리 맞춤] 기존 머리/연령 선택을 다시 뽑지 않고 3D 머리 메시와 같은 값으로 묶는다.
 		if outfit.hair == "short" or outfit.hair == "bun" or outfit.hair == "long" then
 			model:SetAttribute("NpcHairStyle", outfit.hair)
@@ -436,6 +474,15 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 			outfit.hairColor = if outfit.age == "elder" then Color3.fromRGB(179, 174, 163)
 				else hairPalette[rng:NextInteger(1, #hairPalette)]
 		end
+		-- [머리색 다양성] 항구에서 받은 원래 색과 문화권은 보존하고 자연스러운 금발·적갈색·갈색 차이만 보완한다.
+		-- 노년 회백색과 비유럽 지역의 원래 팔레트는 변경하지 않는다.
+		if outfit.age ~= "elder" and EUROPEAN_DETAIL_CULTURES[outfit.culture]
+			and typeof(outfit.hairColor) == "Color3" and variant >= 4 then
+			local regionalHairDyes = { Color3.fromRGB(58, 39, 30), Color3.fromRGB(131, 74, 47),
+				Color3.fromRGB(185, 145, 87), Color3.fromRGB(92, 52, 39),
+				Color3.fromRGB(208, 173, 116) }
+			outfit.hairColor = outfit.hairColor:Lerp(regionalHairDyes[(variant - 4) % #regionalHairDyes + 1], 0.53)
+		end
 		if typeof(outfit.hairColor) == "Color3" then model:SetAttribute("NpcHairTint", outfit.hairColor) end
 		-- [직업 모자] 해당 연도·문화권에서 허용된 기본 cap만 모양을 바꾼다.
 		if outfit.hat == "cap" and EUROPEAN_DETAIL_CULTURES[outfit.culture] then
@@ -444,7 +491,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 			elseif outfit.profession == "tailor" or outfit.profession == "baker" then
 				outfit.hat = "bonnet"
 			elseif outfit.profession == "merchant" or outfit.profession == "official" or outfit.profession == "banker" then
-				outfit.hat = if (outfit.year or 1700) >= 1700 then "bicorne" else "beret"
+				outfit.hat = if (outfit.year or 1700) >= 1780 then "bicorne" elseif (outfit.year or 1700) >= 1680 then "tricorn" else "beret"
 			elseif outfit.profession == "craftsman" or outfit.profession == "carpenter" then
 				outfit.hat = "beret"
 			end
@@ -848,22 +895,53 @@ local MOB_OUTFIT_PARTS = {
 -- [주민·동료 추가 실물 헤어 6종] 기등록 모델을 먼저 유지하고 등록된 원본 번호가 있을 때만 전환한다.
 -- 주민 역할/성별/머리색 결정은 기존 R15에서 가져오고 저장·전투·직업 수치는 변경하지 않는다.
 local NPC_REGISTERED_HAIR = {
-	-- [직업·개성별 머리] 기존 People 실물 헤어만 사용하며 인물의 MotionPersonality 값으로
-	-- 재호출·자산 지연 로드 후에도 같은 머리 메시를 유지한다.
+	-- [개성별 실물 헤어] AssetIds에 있는 등록 모델만. R15의 직업·성별·연대 스타일로 구분한다.
+	-- 모든 후보가 실물 로드되지 않으면 기존 메시/두피를 보존한다. 허가되지 않은 번호를 만들지 않는다.
 	citizen_male = { short = { "hair_simpleparted", "hair_court_curls", "hair_buzzed" } },
-	citizen_female = { long = { "hair_shoulder_waves", "hair_side_braid" }, bun = { "hair_low_bun", "hair_braided_crown" } },
-	citizen_worker_male = { short = { "hair_buzzed", "hair_simpleparted" } },
-	citizen_worker_female = { long = { "hair_side_braid", "hair_shoulder_waves" }, bun = { "hair_low_bun", "hair_buzzedfemale" } },
-	citizen_guard_male = { short = { "hair_simpleparted", "hair_court_curls" } },
-	citizen_guard_female = { long = { "hair_shoulder_waves", "hair_braided_crown" }, bun = { "hair_braided_crown", "hair_low_bun" } },
-	citizen_official_male = { short = { "hair_court_curls", "hair_simpleparted" } },
-	citizen_official_female = { long = { "hair_shoulder_waves", "hair_court_curls" }, bun = { "hair_braided_crown", "hair_low_bun" } },
-	citizen_sailor_male = { short = { "hair_simpleparted", "hair_buzzed" } },
-	citizen_sailor_female = { long = { "hair_sailor_ponytail", "hair_side_braid" }, bun = { "hair_low_bun", "hair_sailor_ponytail" } },
-	citizen_artisan_male = { short = { "hair_buzzed", "hair_simpleparted" } },
-	citizen_artisan_female = { long = { "hair_side_braid", "hair_shoulder_waves" }, bun = { "hair_low_bun", "hair_braided_crown" } },
-	companion_male = { short = { "hair_simpleparted", "hair_court_curls" } },
-	companion_female = { long = { "hair_side_braid", "hair_shoulder_waves" }, bun = { "hair_braided_crown", "hair_low_bun" } },
+	citizen_female = {
+		short = { "hair_buzzedfemale", "hair_simpleparted" },
+		long = { "hair_shoulder_waves", "hair_side_braid", "hair_long", "hair_sailor_ponytail" },
+		bun = { "hair_low_bun", "hair_braided_crown", "hair_buns", "hair_side_braid" },
+	},
+	citizen_worker_male = { short = { "hair_buzzed", "hair_simpleparted", "hair_court_curls" } },
+	citizen_worker_female = {
+		short = { "hair_buzzedfemale", "hair_simpleparted" },
+		long = { "hair_side_braid", "hair_shoulder_waves", "hair_long" },
+		bun = { "hair_low_bun", "hair_buns", "hair_braided_crown" },
+	},
+	citizen_guard_male = { short = { "hair_simpleparted", "hair_court_curls", "hair_buzzed" } },
+	citizen_guard_female = {
+		short = { "hair_buzzedfemale", "hair_simpleparted" },
+		long = { "hair_shoulder_waves", "hair_braided_crown", "hair_side_braid" },
+		bun = { "hair_braided_crown", "hair_low_bun", "hair_buns" },
+	},
+	citizen_official_male = { short = { "hair_court_curls", "hair_simpleparted", "hair_buzzed" } },
+	citizen_official_female = {
+		short = { "hair_buzzedfemale", "hair_simpleparted" },
+		long = { "hair_shoulder_waves", "hair_court_curls", "hair_side_braid" },
+		bun = { "hair_braided_crown", "hair_low_bun", "hair_buns" },
+	},
+	citizen_sailor_male = {
+		short = { "hair_simpleparted", "hair_buzzed", "hair_court_curls" },
+		long = { "hair_sailor_ponytail", "hair_long", "hair_side_braid" },
+	},
+	citizen_sailor_female = {
+		short = { "hair_buzzedfemale", "hair_simpleparted" },
+		long = { "hair_sailor_ponytail", "hair_side_braid", "hair_shoulder_waves", "hair_long" },
+		bun = { "hair_low_bun", "hair_sailor_ponytail", "hair_buns" },
+	},
+	citizen_artisan_male = { short = { "hair_buzzed", "hair_simpleparted", "hair_court_curls" } },
+	citizen_artisan_female = {
+		short = { "hair_buzzedfemale", "hair_simpleparted" },
+		long = { "hair_side_braid", "hair_shoulder_waves", "hair_long" },
+		bun = { "hair_low_bun", "hair_braided_crown", "hair_buns" },
+	},
+	companion_male = { short = { "hair_simpleparted", "hair_court_curls", "hair_buzzed" } },
+	companion_female = {
+		short = { "hair_buzzedfemale", "hair_simpleparted" },
+		long = { "hair_side_braid", "hair_shoulder_waves", "hair_long" },
+		bun = { "hair_braided_crown", "hair_low_bun", "hair_buns" },
+	},
 }
 -- [승인된 헤드·몸통 액세서리 5종] 추가 요소만 분리한다. 위치는 R15 부위의 상대 좌표.
 -- 배열 7/8열: 기존 Y 오프셋 뒤의 X/Z 배율(미지정이면 0). 금속 배지는 겉옷 바깥쪽에 보이게 장착한다.
@@ -1180,9 +1258,20 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				or profile == "companion_female"
 			local preferred = NPC_REGISTERED_HAIR[profile]
 			local options = preferred and preferred[hairstyle or "short"]
-			local persona = math.clamp(tonumber(model:GetAttribute("MotionPersonality")) or 1, 1, 3)
-			local candidate = if type(options) == "table" and #options > 0
-				then options[(math.floor(persona) - 1) % #options + 1] else options
+			-- [실물 등록/로드 전수] 3가지 성격만으로 머리를 고르던 제한을 제거한다.
+			-- 머리 후보 중 실제 등록되고 로드된 모델을 변형 번호 순서로 찾는다.
+			local variation = math.clamp(math.floor(tonumber(model:GetAttribute("NpcHairVariant")) or 1), 1, 8)
+			local candidate = nil
+			if type(options) == "table" and #options > 0 then
+				for offset = 0, #options - 1 do
+					local choice = options[((variation - 1 + offset) % #options) + 1]
+					local loaded = people and people:FindFirstChild(choice)
+					if AssetIds["People/" .. choice] and loaded and loaded:IsA("Model") then
+						candidate = choice
+						break
+					end
+				end
+			end
 			if candidate and AssetIds["People/" .. candidate] and people and people:FindFirstChild(candidate) then
 				assetName = candidate
 			elseif femaleLong and hairstyle == "long" then
@@ -1266,7 +1355,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 							surface.Color = surface.Color:Lerp(softTint, 0.72)
 						end
 					elseif detailAllowed and (assetName == "outfit_vest" or assetName == "outfit_coat"
-						or assetName == "outfit_guard" or assetName == "outfit_apron"
+						or assetName == "outfit_apron"
 						or assetName == "outfit_sash" or assetName == "outfit_stole") then
 						local dye = if string.find(profile, "guard", 1, true) then Color3.fromRGB(215, 228, 245)
 							elseif string.find(profile, "official", 1, true) then Color3.fromRGB(247, 221, 215)
@@ -1323,21 +1412,28 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					-- 원본 ColorMap이 있는 옷/금속 및 베이스 부품에는 이 보정을 적용하지 않는다.
 					if npcOutfit and (assetName == "outfit_vest" or assetName == "outfit_coat"
 						or assetName == "outfit_apron" or assetName == "outfit_sash"
-						or assetName == "outfit_stole") and part.Material == Enum.Material.SmoothPlastic then
+						or assetName == "outfit_stole" or assetName == "outfit_cuff") and part.Material == Enum.Material.SmoothPlastic then
 						part.Material = Enum.Material.Fabric
 					end
 					-- [개인별 천·피혁 마감] 원본 표면 재질과 금속 장식·봉제선은 그대로 둔다.
 					-- 텍스처 없는 이미 분류된 직물만 지역 고유 옷색을 부드럽게 섞는다.
 					if npcOutfit and detailAllowed and part.Material == Enum.Material.Fabric
 						and typeof(npcClothTint) == "Color3" then
-						local tint = if assetName == "outfit_sash" then npcClothTint:Lerp(
+						local tint = if assetName == "outfit_cuff" then npcClothTint:Lerp(Color3.fromRGB(226, 203, 165), 0.68)
+						elseif assetName == "outfit_stole" then npcClothTint:Lerp(Color3.fromRGB(210, 185, 137), 0.58)
+						elseif assetName == "outfit_sash" then npcClothTint:Lerp(
 							if typeof(npcTrouserTint) == "Color3" then npcTrouserTint else npcClothTint, 0.45)
 							elseif assetName == "outfit_apron" then npcClothTint:Lerp(Color3.fromRGB(177, 148, 113), 0.48)
 							else npcClothTint
 						-- 무채색으로 유실된 복식에서 색조를 조금 더 복원한다.
 						local neutral = math.max(part.Color.R, part.Color.G, part.Color.B)
 							- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.11
-						part.Color = part.Color:Lerp(tint, (if neutral then 0.28 else 0.14) * finishing)
+						part.Color = part.Color:Lerp(tint, (if neutral then 0.39 else 0.18) * finishing)
+					end
+					-- [기존 가죽 대비] 원본 가죽/금속 판정을 유지하고 직업별 바지 색상은 무텍스처 장화에만 반영한다.
+					if npcOutfit and assetName == "outfit_boot" and part.Material == Enum.Material.Leather
+						and typeof(npcTrouserTint) == "Color3" then
+						part.Color = part.Color:Lerp(npcTrouserTint:Lerp(Color3.new(0, 0, 0), 0.46), 0.20)
 					end
 					-- 원본 금속광을 유지하되 플라스틱 같은 과한 반사는 억제한다.
 					if part.Material == Enum.Material.Metal then
