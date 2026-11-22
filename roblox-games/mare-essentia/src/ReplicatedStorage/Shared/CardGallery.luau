@@ -199,8 +199,8 @@ local function showDetail(ctx, id, readOnly)
 		local size = if landscape then viewport else card.AbsoluteSize
 		if landscape then
 			local available = math.max(1, size.Y - 104)
-			local width = math.min(size.X * 0.52, available * 0.75)
-			frame.Size = UDim2.fromOffset(width, width / 0.75)
+			local width = math.min(size.X * 0.52, available * 0.7)
+			frame.Size = UDim2.fromOffset(width, width / 0.7)
 			frame.Position = UDim2.new(0.315, -width / 2, 0, 48)
 			right.Position = UDim2.new(0.65, 0, 0, 47)
 			right.Size = UDim2.new(0.32, 0, 1, -105)
@@ -399,7 +399,7 @@ function Gallery.build(parent, ctx, order)
 	grid.LayoutOrder = 3
 	grid.Parent = box
 	local gl = Instance.new("UIGridLayout")
-	gl.CellSize = UDim2.fromOffset(104, 146)
+	gl.CellSize = UDim2.fromOffset(104, 149) -- [카드 목록] 세로 7:10
 	gl.CellPadding = UDim2.fromOffset(8, 8)
 	gl.SortOrder = Enum.SortOrder.LayoutOrder
 	gl.Parent = grid
@@ -433,7 +433,7 @@ function Gallery.build(parent, ctx, order)
 					img.Position = UDim2.fromOffset(4, 4)
 					img.Size = UDim2.new(1, -8, 0.68, -4)
 					img.BackgroundColor3 = Color3.fromRGB(88, 67, 46)
-					img.ScaleType = Enum.ScaleType.Crop
+					img.ScaleType = Enum.ScaleType.Fit
 					local key = ctx.artKey(d)
 					img.Image = if ctx.AssetIds[key] then "rbxassetid://" .. tostring(ctx.AssetIds[key]) else ""
 					img.ImageColor3 = if owned > 0 then Color3.new(1, 1, 1) else Color3.fromRGB(55, 55, 65) -- 못 얻은 카드는 어둡게
