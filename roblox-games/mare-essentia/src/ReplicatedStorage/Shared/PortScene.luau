@@ -7258,7 +7258,7 @@ function PortScene.build(info, onFacility)
 	-- (양보할 수 없는 문맥에서는 sliceYield가 그대로 진행해 기존처럼 한 번에 처리된다.)
 	-- [삭제 엔진 비용 분산] 실측(정밀검사 44965867262 런던): 최상위 묶음 하나 삭제 직후 프레임이 252ms
 	-- (yieldGap@destroyOld). 비용은 Lua 시간이 아니라 엔진 쪽 해제라 시간 예산만으로는 못 나눈다.
-	-- 큰 묶음은 안쪽부터 쪼개 지우고, 약 500개 인스턴스마다 한 프레임 양보한다(장면·규칙 불변).
+	-- 큰 묶음은 안쪽부터 쪼개 지우고, 약 1500개 인스턴스마다 한 프레임 양보한다(장면·규칙 불변).
 	-- 하위 목록은 한 번만 받는다(GetDescendants는 전위 순서). 뒤에서부터 지우면 자식이 부모보다 먼저 지워져
 	-- 반복 탐색 없이 O(n)으로 끝난다.
 	if old and old.Parent then
@@ -7268,7 +7268,8 @@ function PortScene.build(info, onFacility)
 			local inst = all[index]
 			if inst.Parent then inst:Destroy() end
 			sinceYield += 1
-			if sinceYield >= 500 then
+			-- 500개 단위는 프레임 수가 늘어 재생성이 길어졌다(정밀검사 44968230194 233단계 대기 초과). 1500개로 조정.
+			if sinceYield >= 1500 then
 				sinceYield = 0
 				sliceStart = 0 -- 다음 sliceYield가 즉시 양보(양보 불가 문맥이면 그대로 진행)
 				sliceYield("destroyOld")
