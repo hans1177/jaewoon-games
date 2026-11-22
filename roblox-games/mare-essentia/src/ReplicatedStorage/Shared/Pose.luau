@@ -1318,29 +1318,9 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	local shelf = ReplicatedStorage:FindFirstChild("MareAssets")
 	local people = shelf and shelf:FindFirstChild("People")
 
-	-- [중복 상의 방지] 승인된 재단 상의가 준비된 주민만 기존 전신 메쉬의 상의 중첩을 없앤다.
-	-- 원본 자산이 늦거나 다른 문화권이면 기본 의상을 그대로 유지한다.
-	local fittedUpperReady = false
-	if npcOutfit and detailAllowed and people then
-		for _, entry in specs do
-			local garment = entry[1]
-			if entry[2] == "UpperTorso" and (garment == "outfit_vest" or garment == "outfit_coat" or garment == "outfit_guard")
-				and AssetIds["People/" .. garment] and people:FindFirstChild(garment) then
-				-- [상의 완전성] 등록과 로드만으로 구형 몸통을 제거하지 않는다.
-				-- 실제 부착됐고 화면에 보이는 재단 상의가 있을 때에만 교체 가능하다.
-				local mounted = model:FindFirstChild("R15Asset_" .. garment .. "_UpperTorso")
-				if mounted then
-					for _, piece in mounted:GetDescendants() do
-						if piece:IsA("BasePart") and piece.LocalTransparencyModifier < 0.99 then
-							fittedUpperReady = true
-							break
-						end
-					end
-				end
-				if fittedUpperReady then break end
-			end
-		end
-	end
+	-- [주민 기본복 유지] 원본 peasant/ranger 몸체 GLB는 팔 소매와 등·옆면까지 포함한다.
+	-- 조끼/외투/경비복은 장식적 부분 외피라서 기본 몸체를 지우면 R15 기본 팔이 드러난다.
+	-- 기존 기본복 위에 등록 겉옷을 착용하고 계절별 겉옷끼리만 정리한다.
 
 	-- [기본 복식 재질] 실제 GLB가 지연될 때도 병종별 실루엣·소재가 다르게 보인다.
 	-- 얼굴·피부·R15 관절은 원본 그대로, 몸통·장갑·장화의 표시용 재질만 한 번 교정한다.
@@ -1390,17 +1370,6 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		if not propGroup then propGroup, propName = string.match(assetName, "^(Cargo)/(.+)$") end
 		local jobProp = propGroup ~= nil
 		local slotName = "R15Asset_" .. string.gsub(assetName, "/", "_") .. "_" .. boneName
-		-- [주민 상의 1겹] 재단복이 준비된 직업만 구형 통짜 몸통을 제거한다.
-		-- 고유 문화권·지연 자산·전투 몹의 복장은 변경하지 않는다.
-		if fittedUpperReady and boneName == "UpperTorso" and (assetName == "male_peasant_body"
-			or assetName == "female_peasant_body" or assetName == "male_ranger_body"
-			or assetName == "female_ranger_body") then
-			local duplicate = model:FindFirstChild("R15Asset_" .. assetName .. "_" .. boneName)
-			if duplicate then duplicate:Destroy() end
-			attached += 1
-			merged += 1
-			continue
-		end
 		-- [모바일 원거리] 소형 직업 도구는 렌더링에서만 제외한다.
 		-- 기존 소품은 보관해 가까워질 때 재복제 없이 복구한다.
 		if jobProp and UserInputService.TouchEnabled and detailLimit == 3 then
@@ -1926,38 +1895,9 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		end
 		model:SetAttribute("NpcHairMeshReady", wornHair ~= nil)
 	end
-	-- [복장 겹침 방지] 현재 직업/계절이 실제 요구하는 상의 한 벌만 검증한다.
-	-- 예전 계절의 외투가 남았다는 이유로 구형 기본 상의를 지우면 지연 로드 때 맨몸이 드러난다.
-	if npcOutfit and detailAllowed then
-		local fittedVisible = false
-		for _, spec in specs do
-			local garment, bone = spec[1], spec[2]
-			if bone == "UpperTorso" and (garment == "outfit_vest" or garment == "outfit_coat"
-				or garment == "outfit_guard") then
-				local mounted = model:FindFirstChild("R15Asset_" .. garment .. "_UpperTorso")
-				if mounted then
-					for _, part in mounted:GetDescendants() do
-						if part:IsA("BasePart") and part.Transparency < 0.95
-							and part.LocalTransparencyModifier < 0.99 then
-							fittedVisible = true
-							break
-						end
-					end
-				end
-				break
-			end
-		end
-		if fittedVisible then
-			for _, oldName in { "male_peasant_body", "female_peasant_body", "male_ranger_body", "female_ranger_body" } do
-				local old = model:FindFirstChild("R15Asset_" .. oldName .. "_UpperTorso")
-				if old then
-					old:Destroy()
-					merged += 1
-					visibleCount = math.max(0, visibleCount - 1)
-				end
-			end
-		end
-	end
+	-- [복식 레이어] 원본 전신복은 소매·등판·다리천을 담당한다.
+	-- 겉조끼·외투·경비복이 추가되어도 전신복을 지우지 않는다. 계절 상의끼리만 중복 정리한다.
+
 	-- [계절 전환] 새 외투/조끼가 실제 부착된 후에만 반대 계절의 상의를 제거한다.
 	-- 등록/로드 실패 시 직전 옷을 그대로 보존하고, 동일 R15 위치에 두 벌이 겹치지 않게 한다.
 	if winterWardrobe then

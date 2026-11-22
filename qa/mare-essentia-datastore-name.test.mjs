@@ -1772,9 +1772,9 @@ test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 
   "선택된 최종 실물 헤어 ID로 슬롯을 정해야 한다");
  assert.ok(pose.includes('previous.Name ~= slotName then previous:Destroy()'),
   "교체 실물 헤어 장착 후 구형 메시를 정리해야 한다");
- assert.ok(pose.includes('local mounted = model:FindFirstChild("R15Asset_" .. garment .. "_UpperTorso")'),
-  "신규 상의의 실제 장착 확인 전 구형 상의 제거 금지");
- assert.match(pose,/if fittedVisible then/);
+ assert.ok(pose.includes('if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then'),
+  "현재 시즌 겉옷 준비 전 기존 복식 제거 금지");
+ assert.match(pose,/-- \[주민 기본복 유지\] 원본 peasant\/ranger 몸체 GLB는 팔 소매와 등·옆면까지 포함한다\./);
  assert.match(pose,/if accessory and AssetIds\["People\/" \.\. accessory\[1\]\] then/);
  assert.match(pose,/specs = table\.clone\(specs\)/);
  assert.match(pose,/target\.Size\.X \* \(spec\[7\] or 0\)/);
@@ -2013,8 +2013,8 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   const belt=pose.match(/if belt then ([0-9.]+) elseif cuff then 0\.36 elseif boot then 0\.94 elseif beard then 0\.58 else spec\[4\]/);
   assert.ok(belt,'주민 허리띠 스케일 존재');
   assert.ok(Number(belt[1])>=0.24 && Number(belt[1])<=0.50,'허리띠 시각 범위');
-  assert.match(pose,/local fittedUpperReady = false/);
-  assert.match(pose,/if fittedUpperReady and boneName == "UpperTorso"/);
+  assert.match(pose,/-- \[복식 레이어\] 원본 전신복은 소매·등판·다리천을 담당한다\./);
+  assert.doesNotMatch(pose,/if fittedUpperReady and boneName == "UpperTorso"/, "전신복 임의 삭제 금지");
   assert.match(pose,/surfaceHasMaps\(surface\)/);
   assert.match(pose,/s\.MetalnessMap ~= ""/);
   assert.match(pose,/part\.MaterialVariant ~= ""/);
@@ -3436,8 +3436,8 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
   assert.match(pose,/model:SetAttribute\("NpcAccentTint", accentTint\)/);
   assert.match(pose,/surface\.Color = surface\.Color:Lerp\(accent:Lerp\(/);
   assert.match(pose,/if not textured and string\.sub\(assetName, 1, 7\) == "outfit_"/);
-  assert.match(pose,/local fittedUpperReady = false/);
-  assert.match(pose,/if fittedVisible then/);
+  assert.match(pose,/-- \[복식 레이어\] 원본 전신복은 소매·등판·다리천을 담당한다\./);
+  assert.match(pose,/-- \[주민 기본복 유지\] 원본 peasant\/ranger 몸체 GLB는 팔 소매와 등·옆면까지 포함한다\./);
   assert.match(pose,/model:SetAttribute\("OutfitMissing"/);
   // [헤어 다양성] 8개 모델별 변형은 기존 공간 좌표로 안정적이며 AssetIds가 실제 등록한 후보만 선택한다.
   assert.match(pose,/model:SetAttribute\("NpcHairVariant", variant\)/);
@@ -3474,8 +3474,8 @@ test('주민 복장 천·피혁·금속 재질과 계절 상의 교체는 원본
   assert.ok(!pose.includes('surface.Color = surface.Color:Lerp(dye, 0.26)'), '옷 전체 파스텔 일괄 염색 금지');
   assert.ok(pose.includes('if not trim:find("button", 1, true) and not trim:find("buckle", 1, true)'), '무텍스처 직물에서도 단추는 보호');
   assert.ok(pose.includes('for _, spec in specs do'), '현재 직업/계절 의상 기준으로 검사');
-  assert.ok(pose.includes('if bone == "UpperTorso" and (garment == "outfit_vest" or garment == "outfit_coat"'), '현재 상의만 중복 제거 판정');
-  assert.ok(pose.includes('part.Transparency < 0.95'), '투명하게 숨겨진 복장은 유효 상의로 세지 않음');
+  assert.ok(pose.includes('if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then'), '현재 계절 상의끼리만 정리');
+  assert.ok(!pose.includes('local fittedUpperReady = false'), '단면 겉옷 장착 시 전신복 삭제 금지');
   assert.ok(pose.includes('if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then'), '기존 계절 의상 지연 로드 보호');
   assert.ok(pose.includes('weld.Part0, weld.Part1, weld.Parent = target, part, part'), 'R15 관절 유지');
 });
@@ -3493,6 +3493,23 @@ test('주민 의상·헤어 메시 부착은 실제 경계 크기를 사용하�
   assert.match(pose,/model:SetAttribute\("OutfitMissing", if #missing > 0 then table\.concat\(missing, ","\) else nil\)/, '오류 코드는 기존 진단 속성 재사용');
   assert.match(pose,/local skin = source:Clone\(\)/, '기존 승인 자산 재사용');
   assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/, 'R15 기존 용접 유지');
+});
+
+// [실제 화면 원인 회귀] 기존 의상 GLB는 전신, 신규 vest/coat/guard GLB는 전면 외피이므로 둘 다 필요.
+test('겉조끼·외투·경비복 추가 시 승인 전신복의 소매·등판을 삭제하지 않는다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  for(const name of ['male_peasant_body','female_peasant_body','male_ranger_body','female_ranger_body']){
+    assert.ok(pose.includes('"'+name+'", "UpperTorso"'), '기등록 전신복 유지 '+name);
+  }
+  assert.doesNotMatch(pose,/fittedUpperReady/, '겉옷이 있으면 전신복을 생략하던 이전 로직 금지');
+  assert.doesNotMatch(pose,/local old = model:FindFirstChild\("R15Asset_" \.\. oldName \.\. "_UpperTorso"\)/,
+    '겉옷 장착으로 전신복 전체 파괴 금지');
+  assert.match(pose,/-- \[주민 기본복 유지\] 원본 peasant\/ranger 몸체 GLB는 팔 소매와 등·옆면까지 포함한다\./);
+  assert.match(pose,/-- \[복식 레이어\] 원본 전신복은 소매·등판·다리천을 담당한다\./);
+  assert.ok(pose.includes('if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then'),
+    '계절별 겉옷끼리만 중복 정리한다');
+  assert.ok(pose.includes('hairOffsetY = crownY - ext.Y * 0.5 / target.Size.Y'), '헤어 실제 크기 수정 유지');
+  assert.ok(pose.includes('NpcBeardFitVersion'), '수염 수정 유지');
 });
 
 // [헤어 실물 품질 회귀] 단순 메시 숫자 대신 실제 두상 폭·두피·텍스처별 색상 경로를 검사한다.
@@ -3525,7 +3542,7 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('crown:SetAttribute("NpcHatCrown", true)'));
   assert.ok(pose.includes('piece:GetAttribute("NpcHatCrown") == true'));
   assert.ok(pose.includes('assetName == "acc_feather_hat"'));
-  assert.ok(pose.includes('local fittedUpperReady = false'));
+  assert.ok(!pose.includes('local fittedUpperReady = false'), '기본복 삭제 조건 제거');
   assert.ok(pose.includes('(assetName == "outfit_boot" or assetName == "outfit_belt")'));
   assert.ok(pose.includes('part.Material = Enum.Material.Leather'));
   assert.ok(pose.includes('not trim:find("buckle", 1, true)'));
