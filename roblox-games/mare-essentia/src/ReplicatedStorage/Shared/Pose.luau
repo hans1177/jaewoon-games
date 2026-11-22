@@ -1403,12 +1403,26 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 							surface.Color = surface.Color:Lerp(softTint, 0.72)
 						end
 					elseif detailAllowed and assetName == "outfit_cuff" and typeof(npcClothTint) == "Color3" then
-						-- [흰 레이스 완화] 장신구의 금속 단추와 원본 PBR 지도는 보존하고 직물만 외투 색과 맞춘다.
-						local trim = part.Name:lower()
-						if part.Material ~= Enum.Material.Metal
-							and not trim:find("metal", 1, true) and not trim:find("button", 1, true)
-							and not trim:find("fastener", 1, true) and not trim:find("buckle", 1, true)
-							and not trim:find("stud", 1, true) then
+						-- [원본 6부위 재질] 커프 GLB는 금속 단추와 직물 레이스가 같은 이름으로 수입된다.
+						-- 이름에 "metal"/"button"이 있는지로 판단하면 황동 버튼까지 천색으로 덮일 수 있다.
+						-- 기등록 원본 glTF의 선형색과 감마색 중 가까운 재질만 선정해 밝은 레이스만 염색한다.
+						local bestError, linenOnly = math.huge, false
+						local sourceColor = part.Color
+						for _, candidate in OUTFIT_SOURCE_MATERIALS do
+							for colorIndex = 1, 3, 2 do
+								local original = candidate[colorIndex]
+								local err = (sourceColor.R - original.R) ^ 2
+									+ (sourceColor.G - original.G) ^ 2 + (sourceColor.B - original.B) ^ 2
+								if err < bestError then
+									bestError = err
+									local base = candidate[1]
+									linenOnly = candidate[2] ~= Enum.Material.Metal
+										and base.R > 0.70 and base.G > 0.70 and base.B > 0.60
+								end
+							end
+						end
+						-- [금속·가죽 보호] 색상 등록 근거가 없거나 유사도 낮은 파츠는 원본 PBR을 건드리지 않는다.
+						if bestError < 0.0064 and linenOnly and part.Material ~= Enum.Material.Metal then
 							local linen = npcClothTint:Lerp(Color3.fromRGB(205, 192, 169), 0.42)
 							surface.Color = surface.Color:Lerp(linen, 0.47)
 						end

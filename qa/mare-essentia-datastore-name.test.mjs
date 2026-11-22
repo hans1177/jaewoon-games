@@ -3459,7 +3459,8 @@ test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 
   assert.ok(pose.includes('elseif cuff then 0.55 elseif boot then 1.18'));
   assert.ok(pose.includes('if cuff then -0.29 elseif boot then -0.11 else spec[6]'));
   assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen, 0.47)'));
-  assert.ok(pose.includes('not trim:find("fastener", 1, true)'));
+  assert.ok(pose.includes('linenOnly = candidate[2] ~= Enum.Material.Metal'));
+  assert.ok(pose.includes('bestError < 0.0064 and linenOnly and part.Material ~= Enum.Material.Metal'));
   assert.ok(pose.includes('outfit_cuff" then npcClothTint:Lerp(Color3.fromRGB(205, 192, 169), 0.42)'));
   assert.equal(pose.split('"acc_ribbon_bow", "Head", 0.56, 0.58, 0.57').length-1,2);
   assert.equal(pose.split('"acc_pearl_hairpin", "Head", 0.36, 0.39, 0.40').length-1,2);
@@ -3467,4 +3468,11 @@ test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 
   assert.ok(pose.includes('skin:ScaleTo(ratio)'));
   assert.ok(pose.includes('weld.Part0, weld.Part1, weld.Parent = target, part, part'));
   assert.ok(pose.includes('surfaceHasColorMap(surface)'));
+  // [기존 Studio 촬영] 검은 얼굴만 확대하지 말고 손목·배지와 의상까지 한 화면에 기록한다.
+  const shot=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
+  assert.equal(shot.length,246);
+  const focus=shot.findIndex(row=>row.type==='capture' && row.name==='harbor_npc_face_front');
+  assert.ok(focus>0);
+  assert.ok(shot[focus-1].code.includes('head.Position-Vector3.new(0,1.10,0)'));
+  assert.ok(shot[focus-1].code.includes('workspace:SetAttribute("ShotFov",44)'));
 });
