@@ -293,6 +293,20 @@ local FIELD_TINT = {
 	-- [지형 실물 착색] 원본 회색 PBR 메시를 지역색과 자연스럽게 맞춘다.
 	["Grass_Small"] = Color3.fromRGB(134, 188, 88), ["Bush_Small"] = Color3.fromRGB(82, 146, 72),
 	["Rock_2"] = Color3.fromRGB(153, 148, 134),
+	-- [정식 등록 시 자동 사용] 원본 PBR/텍스처가 있으면 그대로 두고 맵 없는 면만 색 보정.
+	["kenney_rock_largeB"] = Color3.fromRGB(150, 144, 130),
+	["kenney_rock_largeD"] = Color3.fromRGB(137, 129, 114),
+	["kenney_rock_tallE"] = Color3.fromRGB(143, 135, 122),
+	["kenney_rock_smallFlatA"] = Color3.fromRGB(151, 143, 128),
+	["kenney_stone_largeB"] = Color3.fromRGB(172, 175, 170),
+	["kenney_stone_smallFlatA"] = Color3.fromRGB(159, 158, 151),
+	["kenney_tree_fat"] = Color3.fromRGB(84, 139, 73),
+	["kenney_tree_defaultDark"] = Color3.fromRGB(72, 124, 68),
+	["kenney_tree_pinetallD_detailed"] = Color3.fromRGB(87, 128, 109),
+	["kenney_tree_palmShort"] = Color3.fromRGB(82, 144, 85),
+	["kenney_stump_old"] = Color3.fromRGB(121, 98, 70),
+	["kenney_stump_roundDetailed"] = Color3.fromRGB(126, 101, 71),
+	["kenney_log_stackLarge"] = Color3.fromRGB(128, 99, 69),
 }
 local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverride)
 	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
@@ -1040,6 +1054,21 @@ function FieldScene.start(opts)
 	end
 	-- 나무와 바위
 	local treeNames = table.clone(biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" })
+	-- [지역 수목 실물] 신규 케니 자연 모델은 ID+체험권한 확인 후 정식 AssetIds에 생길 때만 선택한다.
+	-- 나무 개수를 늘리지 않고 기존 나무 슬롯에서 계절·지역별 수종만 추가한다.
+	do
+		local trees = if winterScene or northern then { "kenney_tree_pinetallD_detailed" }
+			elseif tropical or portNature == "mangrove" or portNature == "jungle_coast"
+				then { "kenney_tree_fat", "kenney_tree_palmShort" }
+			elseif questTerrain == "forest" or portNature == "forest"
+				then { "kenney_tree_fat", "kenney_tree_defaultDark" }
+			else { "kenney_tree_defaultDark" }
+		if not arid then
+			for _, name in trees do
+				if AssetIds["Terrain/" .. name] then table.insert(treeNames, name) end
+			end
+		end
+	end
 	-- [신규 내부 CC0 원본] Roblox Universe 등록 ID가 확인된 나무만 기존 실물 선택군에 합류한다.
 	-- 미등록 파일은 화면에 가짜 도형으로 대체하지 않고 기존 등록 나무를 유지한다.
 	if not arid and AssetIds["Terrain/tree-detailed"] then table.insert(treeNames, "tree-detailed") end
@@ -1131,6 +1160,21 @@ function FieldScene.start(opts)
 	end
 	-- [무료 실물 지형] 기존 바위 개수를 유지하면서 등록된 Quaternius 모델을 섞는다.
 	local rockNames = { { "Town", "rock-large" }, { "Town", "rock-small" }, { "Town", "rock-wide" }, { "Terrain", "Rock_2" } }
+	-- [퀘스트 암석 실물] 기존 바위 슬롯 수만 사용. 계곡·광산·빙하·해안에서 바위의 단면을 달리한다.
+	do
+		local rocks = if questTerrain == "glacier" or questTerrain == "ruins" then {
+			"kenney_stone_largeB", "kenney_rock_largeB" }
+			elseif questTerrain == "highland" or questTerrain == "volcanic" then {
+				"kenney_rock_tallE", "kenney_rock_largeD", "kenney_rock_largeB" }
+			elseif questTerrain == "mine" or questTerrain == "desert" then {
+				"kenney_rock_largeD", "kenney_rock_smallFlatA" }
+			elseif questTerrain == "lake" or questTerrain == "coast" or portNature == "lagoon" then {
+				"kenney_rock_smallFlatA", "kenney_stone_smallFlatA" }
+			else { "kenney_rock_largeB", "kenney_rock_smallFlatA" }
+		for _, name in rocks do
+			if AssetIds["Terrain/" .. name] then table.insert(rockNames, { "Terrain", name }) end
+		end
+	end
 	if AssetIds["Terrain/rock-largea"] then table.insert(rockNames, { "Terrain", "rock-largea" }) end
 	if (questTerrain == "highland" or questTerrain == "mine" or questTerrain == "coast" or questTerrain == "glacier")
 		and AssetIds["Terrain/rock-tallc"] then table.insert(rockNames, { "Terrain", "rock-tallc" }) end
@@ -1606,6 +1650,44 @@ function FieldScene.start(opts)
 		if AssetIds["Terrain/ground-riverbendbank"] then table.insert(detailAssets, "ground-riverbendbank") end
 		if AssetIds["Terrain/ground-riverside"] then table.insert(detailAssets, "ground-riverside") end
 	end
+	-- [대륙·항구·퀘스트 3중 식생 필터] 기존 소품 10/24개 예산 안에서만 교체.
+	-- 신규 모델이 자산번호를 아직 받지 못했으면 건너뛰며 기존 원본은 그대로 남는다.
+	do
+		local natureDetail = if questTerrain == "forest" then {
+			"kenney_mushroom_red", "kenney_mushroom_redGroup", "kenney_mushroom_tanGroup",
+			"kenney_stump_roundDetailed", "kenney_plant_bushTriangle", "kenney_grass_leafs" }
+			elseif questTerrain == "jungle" then {
+				"kenney_mushroom_redGroup", "kenney_stump_old", "kenney_grass_leafs", "kenney_plant_bushTriangle" }
+			elseif questTerrain == "swamp" then {
+				"kenney_stump_old", "kenney_mushroom_tanGroup", "kenney_ground_riverCorner", "kenney_stone_smallFlatA" }
+			elseif questTerrain == "coast" or questTerrain == "lake" then {
+				"kenney_rock_smallFlatA", "kenney_stone_smallFlatA", "kenney_ground_riverCorner" }
+			elseif questTerrain == "highland" or questTerrain == "glacier" then {
+				"kenney_stone_largeB", "kenney_rock_smallFlatA", "kenney_path_stoneCircle" }
+			elseif questTerrain == "mine" or questTerrain == "volcanic" then {
+				"kenney_rock_largeD", "kenney_rock_smallFlatA", "kenney_stone_smallFlatA" }
+			elseif questTerrain == "ruins" or questTerrain == "fort" then {
+				"kenney_stone_largeB", "kenney_path_stoneCircle", "kenney_stone_smallFlatA" }
+			elseif questTerrain == "farm" then {
+				"kenney_ground_pathCorner", "kenney_log_stackLarge", "kenney_stump_old" }
+			elseif questTerrain == "desert" then {
+				"kenney_rock_largeD", "kenney_rock_smallFlatA" }
+			else { "kenney_rock_smallFlatA", "kenney_grass_leafs" }
+		if portNature == "mangrove" or portNature == "lagoon" or portNature == "delta" then
+			table.insert(natureDetail, "kenney_ground_riverCorner")
+		elseif portNature == "fjord" or portNature == "cliff_coast" then
+			table.insert(natureDetail, "kenney_stone_largeB")
+		elseif portNature == "forest" or portNature == "woodland" then
+			table.insert(natureDetail, "kenney_stump_roundDetailed")
+		end
+		-- 기존 꽃·풀·자갈을 제거하지 않고 등록된 모델을 앞쪽 선택군에 끼워 모바일에도 보이게 한다.
+		for index = #natureDetail, 1, -1 do
+			local name = natureDetail[index]
+			if AssetIds["Terrain/" .. name] and not table.find(detailAssets, name) then
+				table.insert(detailAssets, math.min(#detailAssets + 1, 3), name)
+			end
+		end
+	end
 	local detailCount = if visualMobile then 10 else 24
 	for index = 1, detailCount do
 		local band = math.floor((index - 1) / 4)
@@ -1620,6 +1702,15 @@ function FieldScene.start(opts)
 			elseif asset == "ground-riverbendbank" or asset == "ground-riverside" then 9
 			elseif asset == "grass-large" or asset == "grass-leafslarge" then 4.2
 			elseif asset == "plant-bushlarge" then 6.8 elseif asset == "plant-bushsmall" then 4.7
+			elseif asset == "kenney_mushroom_red" then 1.4
+			elseif asset == "kenney_mushroom_redGroup" or asset == "kenney_mushroom_tanGroup" then 2.6
+			elseif asset == "kenney_stump_old" or asset == "kenney_stump_roundDetailed" then 3.6
+			elseif asset == "kenney_stone_smallFlatA" or asset == "kenney_rock_smallFlatA" then 2.3
+			elseif asset == "kenney_stone_largeB" or asset == "kenney_rock_largeD" then 6.5
+			elseif asset == "kenney_path_stoneCircle" or asset == "kenney_ground_pathCorner" then 7.5
+			elseif asset == "kenney_ground_riverCorner" then 8
+			elseif asset == "kenney_log_stackLarge" then 4.8
+			elseif asset == "kenney_plant_bushTriangle" or asset == "kenney_grass_leafs" then 4.4
 			else rng:NextNumber(2.2, 5.2), nil, nil, false }
 		entry.position = ORIGIN + Vector3.new(px, 0, math.clamp(pz, -half * 0.83, half * 0.27))
 		stageFeature(entry)
