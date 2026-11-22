@@ -1069,6 +1069,17 @@ test('탐험 지역 기후·사계절 배경과 바람 입자 디테일',()=>{
   assert.match(field,/local detailCount = math\.max\(24, math\.floor\(24 \* math\.sqrt\(AREA\)\)\)/);
   assert.match(field,/local arid = not tropical and/);
   assert.match(field,/local climateZone = if northern then "북방"/);
+  // [지역 지면 재질] 퀘스트 지형이 문화권 기본 풀밭을 잘못 물려받지 않는다.
+  for(const pair of [
+    ['desert','Enum.Material.Sand'],['coast','Enum.Material.Sand'],
+    ['highland','Enum.Material.Slate'],['mine','Enum.Material.Slate'],
+    ['ruins','Enum.Material.Ground'],['glacier','Enum.Material.Snow'],
+    ['swamp','Enum.Material.Mud'],['volcanic','Enum.Material.Slate']]){
+    assert.ok(field.includes('questTerrain == "'+pair[0]+'"'),'지형 인식 누락 '+pair[0]);
+    assert.ok(field.includes('biome.mat = '+pair[1]),'지면 재질 미설정 '+pair[0]);
+  }
+  assert.ok(field.includes('string.find(questName, "해적 소굴", 1, true) then "coast"'),'해적 은신처 해안 지형');
+  assert.ok(field.includes('mat ~= Enum.Material.Snow and mat ~= Enum.Material.Ground'),'복셀 언덕의 눈·흙 재질 보존');
   assert.match(field,/local weatherOptions = if snowy then/);
   assert.match(field,/drift\.Rate = \(if visualMobile then 3 else 8\)/);
   assert.match(field,/timeLabel\.Text = string\.format\("%s %s %02d:%02d/);
@@ -3836,4 +3847,6 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.ok(script.some(row=>row.code?.includes('FIELD_SCENERY_NEAR_MISSING')),'근경 실물 생성 검사');
   assert.ok(script.some(row=>row.code?.includes('FIELD_SCENERY_MID_MISSING')),'중경 실물 생성 검사');
   assert.ok(script.some(row=>row.code?.includes('studioFPS=')),'실측 스튜디오 FPS 로그');
+  assert.ok(script.some(row=>row.code?.includes('FIELD_GROUND_MATERIAL_MISMATCH')),'스튜디오 해안 모래 실측');
+  assert.ok(script.some(row=>row.code?.includes("FieldQuestTerrainTheme')=='coast")),'해적 소굴의 해안 퀘스트 지형 검사');
 });
