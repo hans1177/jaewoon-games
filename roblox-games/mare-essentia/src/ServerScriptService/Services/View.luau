@@ -897,7 +897,7 @@ return function(D, S)
 				image = if found and art then art.image else nil,
 				credit = if found and art then art.credit else nil,
 				level = if found then (state.codexLevel[c.id] or 0) else nil,
-				quizDone = found and state.wikiQuiz ~= nil and state.wikiQuiz[c.id] == true, -- [백과 읽기 퀴즈] 보상 수령 여부
+				quizDone = found and (state :: any).wikiQuiz ~= nil and (state :: any).wikiQuiz[c.id] == true, -- [백과 읽기 퀴즈] 보상 수령 여부
 				upCost = if found and (state.codexLevel[c.id] or 0) < S.Codex.MAX_LEVEL then S.Codex.upgradeCost(c, state.codexLevel[c.id] or 0) else nil,
 			})
 		end

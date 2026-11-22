@@ -85,4 +85,36 @@ local Wiki: { [string]: WikiEntry } = {
 	},
 }
 
-return { Wiki = Wiki, QuizReward = QUIZ_REWARD }
+-- 서버 판정. 서비스 쪽 타입 추론 부담을 줄이려고 이 모듈에 둔다.
+local function grade(state: any, p: any): (boolean, string)
+	local id = if type(p) == "table" then p.id else nil
+	local wiki = if type(id) == "string" then Wiki[id] else nil
+	if not wiki or not wiki.quiz or not state.discovered[id] then
+		return false, "발견한 지식의 퀴즈만 풀 수 있어요"
+	end
+	state.wikiQuiz = state.wikiQuiz or {}
+	if state.wikiQuiz[id] then
+		return false, "이 카드의 퀴즈 보상은 이미 받았어요"
+	end
+	local answers = p.answers
+	if type(answers) ~= "table" then
+		return false, "답을 골라 주세요"
+	end
+	for i, q in wiki.quiz do
+		local a = answers[i]
+		if type(a) ~= "number" or a < 1 or a > #q.options or a ~= math.floor(a) then
+			return false, "모든 문제에 답을 골라 주세요"
+		end
+	end
+	for i, q in wiki.quiz do
+		if answers[i] ~= q.answer then
+			return false, "틀린 문제가 있어요. 해설을 다시 읽고 도전해 보세요"
+		end
+	end
+	state.wikiQuiz[id] = true
+	state.coins += QUIZ_REWARD.coins
+	state.fame += QUIZ_REWARD.fame
+	return true, string.format("퀴즈 통과! +%d코인, 명성 +%d", QUIZ_REWARD.coins, QUIZ_REWARD.fame)
+end
+
+return { Wiki = Wiki, QuizReward = QUIZ_REWARD, Grade = grade }
