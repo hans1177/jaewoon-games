@@ -886,7 +886,11 @@ function FieldScene.start(opts)
 		return placed
 	end
 	-- 나무와 바위
-	local treeNames = biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
+	local treeNames = table.clone(biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" })
+	-- [신규 내부 CC0 원본] Roblox Universe 등록 ID가 확인된 나무만 기존 실물 선택군에 합류한다.
+	-- 미등록 파일은 화면에 가짜 도형으로 대체하지 않고 기존 등록 나무를 유지한다.
+	if not arid and AssetIds["Terrain/tree-detailed"] then table.insert(treeNames, "tree-detailed") end
+	if northern and AssetIds["Terrain/tree-pinedefaultb"] then table.insert(treeNames, "tree-pinedefaultb") end
 	-- [구획별 단순화된 식생 팔레트] 고스트 오브 쓰시마처럼 동일 화면의 나뭇잎색을 절제해 지역 정체성을 강조한다.
 	local foliageTint = if winterScene then Color3.fromRGB(150, 173, 160)
 		elseif northern and season == "가을" then Color3.fromRGB(155, 119, 66)
@@ -929,6 +933,7 @@ function FieldScene.start(opts)
 	end
 	-- [무료 실물 지형] 기존 바위 개수를 유지하면서 등록된 Quaternius 모델을 섞는다.
 	local rockNames = { { "Town", "rock-large" }, { "Town", "rock-small" }, { "Town", "rock-wide" }, { "Terrain", "Rock_2" } }
+	if AssetIds["Terrain/rock-largea"] then table.insert(rockNames, { "Terrain", "rock-largea" }) end
 	local rockCount = math.floor(biome.rocks * 1.6 * AREA)
 	local visualRockCount = if visualMobile then math.min(rockCount, 36) else rockCount
 	for index = 1, visualRockCount do
