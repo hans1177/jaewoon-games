@@ -975,15 +975,26 @@ function VoyageScene.play(info)
 	-- 조명 저장 후 바다 분위기로 바꾼다
 	local saved = {
 		clock = Lighting.ClockTime, fogEnd = Lighting.FogEnd, fogStart = Lighting.FogStart, fogColor = Lighting.FogColor,
-		ambient = Lighting.Ambient, camType = camera.CameraType, camFov = camera.FieldOfView,
+		ambient = Lighting.Ambient, shadowSoftness = Lighting.ShadowSoftness,
+		camType = camera.CameraType, camFov = camera.FieldOfView,
 	}
-	local atmosphere = Instance.new("Atmosphere")
-	atmosphere.Name = "VoyageAtmosphere"
+	-- [수평선 대기원근] 항구의 기존 Atmosphere가 남아 있으면 이를 재사용해 다중 대기 충돌을 막는다.
+	-- 항해 후 기존 밀도·색·해무·그림자 계조를 정확히 돌려준다.
+	local originalAtmosphere = Lighting:FindFirstChildOfClass("Atmosphere")
+	local atmosphere = originalAtmosphere or Instance.new("Atmosphere")
+	local savedAtmosphere = if originalAtmosphere then {
+		color = atmosphere.Color, decay = atmosphere.Decay, density = atmosphere.Density,
+		offset = atmosphere.Offset, haze = atmosphere.Haze, glare = atmosphere.Glare,
+	} else nil
+	if not originalAtmosphere then atmosphere.Name = "VoyageAtmosphere" end
 	atmosphere.Density = 0.25
 	atmosphere.Offset = 0.2
 	atmosphere.Color = Color3.fromRGB(190, 210, 230)
-	atmosphere.Decay = Color3.fromRGB(240, 200, 160)
-	atmosphere.Parent = Lighting
+	atmosphere.Decay = Color3.fromRGB(106, 148, 185)
+	atmosphere.Haze = 0.65
+	atmosphere.Glare = 0.12
+	if not originalAtmosphere then atmosphere.Parent = Lighting end
+	Lighting.ShadowSoftness = 0.30
 	-- 색감·빛번짐을 살려 바다를 덜 밋밋하게
 	local grade = Instance.new("ColorCorrectionEffect")
 	grade.Saturation = 0.18
@@ -991,7 +1002,9 @@ function VoyageScene.play(info)
 	grade.TintColor = Color3.fromRGB(255, 248, 238)
 	grade.Parent = Lighting
 	local bloom = Instance.new("BloomEffect")
-	bloom.Intensity = 0.35
+	-- [모바일 수평선] 수면 반짝임은 원본 채광만 유지하고 과한 후처리를 없앤다.
+	bloom.Enabled = not UserInputService.TouchEnabled
+	bloom.Intensity = if UserInputService.TouchEnabled then 0 else 0.35
 	bloom.Size = 28
 	bloom.Threshold = 1.1
 	bloom.Parent = Lighting
@@ -1013,6 +1026,19 @@ function VoyageScene.play(info)
 
 	-- 물결치는 진짜 물(지형 물)을 배 주변에만 깐다. 실패하면 위의 판이 바다를 맡는다.
 	local terrain = workspace.Terrain
+	-- [실제 3D 구름] 기존 엔진 Clouds를 재사용하므로 공/판 구름을 만들지 않는다.
+	-- 기상 변동은 아래 기존 항해 프레임에서만 저빈도로 반영한다.
+	local originalSkyClouds = terrain:FindFirstChildOfClass("Clouds")
+	local skyClouds = originalSkyClouds or Instance.new("Clouds")
+	local savedSkyClouds = if originalSkyClouds then {
+		cover = skyClouds.Cover, density = skyClouds.Density, color = skyClouds.Color,
+	} else nil
+	if not originalSkyClouds then skyClouds.Name = "VoyageSkyClouds" end
+	skyClouds.Cover = 0.24
+	skyClouds.Density = 0.34
+	skyClouds.Color = Color3.fromRGB(227, 237, 247)
+	if not originalSkyClouds then skyClouds.Parent = terrain end
+	local nextSkyWeatherAt = 0
 	local savedWater = { c = terrain.WaterColor, t = terrain.WaterTransparency, r = terrain.WaterReflectance, ws = terrain.WaterWaveSize, wsp = terrain.WaterWaveSpeed }
 	-- 지형 물은 검은 타원 얼룩이 생겨 쓰지 않는다. 판의 윗면을 수면(0)에 맞춘다.
 	local waterOk = false
@@ -1962,9 +1988,17 @@ function VoyageScene.play(info)
 		atmosphere.Color = SEA_WEATHER.clear.fog:Lerp(weather.fog, weatherLevel)
 		atmosphere.Density = 0.25 + weatherLevel * (if mist then 0.34 else 0.16)
 		atmosphere.Haze = (if weather == SEA_WEATHER.haze then 3.6 else 1.4) * weatherLevel
+		-- [깊이별 색감/움직이는 구름] 실물 하늘과 먼 해무를 맞추되 0.2~0.35초마다만 갱신한다.
+		if t >= nextSkyWeatherAt then
+			nextSkyWeatherAt = t + (if mobile then 0.35 else 0.20)
+			atmosphere.Decay = Color3.fromRGB(106, 148, 185):Lerp(weather.fog, weatherLevel * 0.52)
+			skyClouds.Cover = math.clamp(0.24 + weatherLevel * (if weather.thunder then 0.53 else 0.35), 0.15, 0.79)
+			skyClouds.Density = 0.34 + weatherLevel * 0.34
+			skyClouds.Color = Color3.fromRGB(227, 237, 247):Lerp(weather.fog, weatherLevel * 0.78)
+		end
 		sea.Color = season.sea:Lerp(weather.sea, weatherLevel)
 		rays.Intensity = season.rays * (1 - weatherLevel * 0.82)
-		bloom.Intensity = (0.24 + season.rays * 0.9) * (1 - weatherLevel * 0.55)
+		bloom.Intensity = if mobile then 0 else (0.24 + season.rays * 0.9) * (1 - weatherLevel * 0.55)
 		grade.TintColor = season.tint:Lerp(weather.fog:Lerp(Color3.new(1, 1, 1), 0.72), weatherLevel)
 		grade.Saturation = 0.16 - weatherLevel * 0.32
 		if precip then
@@ -2169,7 +2203,15 @@ function VoyageScene.play(info)
 	Lighting.FogStart = saved.fogStart
 	Lighting.FogColor = saved.fogColor
 	Lighting.Ambient = saved.ambient
-	atmosphere:Destroy()
+	Lighting.ShadowSoftness = saved.shadowSoftness
+	if savedAtmosphere and atmosphere.Parent then
+		atmosphere.Color, atmosphere.Decay = savedAtmosphere.color, savedAtmosphere.decay
+		atmosphere.Density, atmosphere.Offset = savedAtmosphere.density, savedAtmosphere.offset
+		atmosphere.Haze, atmosphere.Glare = savedAtmosphere.haze, savedAtmosphere.glare
+	elseif not originalAtmosphere then atmosphere:Destroy() end
+	if savedSkyClouds and skyClouds.Parent then
+		skyClouds.Cover, skyClouds.Density, skyClouds.Color = savedSkyClouds.cover, savedSkyClouds.density, savedSkyClouds.color
+	elseif not originalSkyClouds then skyClouds:Destroy() end
 	grade:Destroy()
 	bloom:Destroy()
 	rays:Destroy()
