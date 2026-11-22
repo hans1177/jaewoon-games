@@ -1,7 +1,7 @@
 {
  "version": 1,
- "sessions": 2557,
- "lastSessionAt": "2026-11-22T00:41:37.724Z",
+ "sessions": 2558,
+ "lastSessionAt": "2026-11-22T00:46:38.356Z",
  "registryAssets": 160,
  "cataloguedAssets": 3955,
  "eligible3dAssets": 78,
@@ -69,10 +69,10 @@
   "ENVIRONMENT": {
    "catalogued": 517,
    "eligible3d": 25,
-   "trials": 0,
-   "staticMeasured": 0,
+   "trials": 4,
+   "staticMeasured": 4,
    "unverifiedOrFailed": 0,
-   "state": "NOT_PRACTICED",
+   "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
    "gameApplied": false
   },
@@ -109,8 +109,8 @@
   "ICON": {
    "catalogued": 124,
    "eligible3d": 20,
-   "trials": 2,
-   "staticMeasured": 2,
+   "trials": 1,
+   "staticMeasured": 1,
    "unverifiedOrFailed": 0,
    "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
@@ -169,58 +169,58 @@
  },
  "cumulative": {
   "MESH": {
-   "trials": 9998,
-   "staticMeasured": 9863,
+   "trials": 10002,
+   "staticMeasured": 9867,
    "unverifiedOrFailed": 135
   },
   "RIG": {
-   "trials": 2549,
-   "staticMeasured": 2534,
+   "trials": 2550,
+   "staticMeasured": 2535,
    "unverifiedOrFailed": 15
   },
   "JOINT": {
-   "trials": 2549,
-   "staticMeasured": 2534,
+   "trials": 2550,
+   "staticMeasured": 2535,
    "unverifiedOrFailed": 15
   },
   "MOTION": {
-   "trials": 2549,
-   "staticMeasured": 2546,
+   "trials": 2550,
+   "staticMeasured": 2547,
    "unverifiedOrFailed": 3
   },
   "ACTION": {
-   "trials": 2549,
-   "staticMeasured": 2546,
+   "trials": 2550,
+   "staticMeasured": 2547,
    "unverifiedOrFailed": 3
   },
   "MATERIAL": {
-   "trials": 10028,
-   "staticMeasured": 9886,
+   "trials": 10032,
+   "staticMeasured": 9890,
    "unverifiedOrFailed": 140
   },
   "ENVIRONMENT": {
-   "trials": 7511,
-   "staticMeasured": 7393,
+   "trials": 7515,
+   "staticMeasured": 7397,
    "unverifiedOrFailed": 118
   },
   "OBJECT": {
-   "trials": 10022,
-   "staticMeasured": 9886,
+   "trials": 10026,
+   "staticMeasured": 9890,
    "unverifiedOrFailed": 136
   },
   "UI": {
-   "trials": 279430,
-   "staticMeasured": 279422,
+   "trials": 279538,
+   "staticMeasured": 279530,
    "unverifiedOrFailed": 8
   },
   "BUTTON": {
-   "trials": 279430,
-   "staticMeasured": 279422,
+   "trials": 279538,
+   "staticMeasured": 279530,
    "unverifiedOrFailed": 8
   },
   "ICON": {
-   "trials": 8904,
-   "staticMeasured": 7604,
+   "trials": 8905,
+   "staticMeasured": 7605,
    "unverifiedOrFailed": 1300
   },
   "VFX": {
@@ -239,8 +239,8 @@
    "unverifiedOrFailed": 0
   },
   "LIGHTING": {
-   "trials": 2557,
-   "staticMeasured": 2557,
+   "trials": 2558,
+   "staticMeasured": 2558,
    "unverifiedOrFailed": 0
   },
   "CAMERA": {
@@ -266,8 +266,8 @@
  },
  "rig": {
   "latest": {
-   "id": "external-actor-skeleton-mage",
-   "sourceSha256": "0bc67a2346251675710c65a62e382614eaa4684f22b795a392a7dc846c4850b0",
+   "id": "external-actor-skeleton-minion",
+   "sourceSha256": "b7f7fbd4b96af09b3aece2e1650d03fde9b471af32af2eb22ecf84267aebfa3b",
    "measured": true,
    "rigPass": true,
    "bones": 41,
@@ -308,9 +308,9 @@
     "productionPromotionAllowed": false
    },
    "groundEvidence": {
-    "lowestMesh": "Skeleton_Mage_LegLeft",
+    "lowestMesh": "Skeleton_Minion_LegLeft",
     "lowestMeshMinZ": -0.00003,
-    "lowestBoundMesh": "Skeleton_Mage_LegLeft",
+    "lowestBoundMesh": "Skeleton_Minion_LegLeft",
     "boundGroundOffsetRatio": 0,
     "orphansBelowBound": []
    },
@@ -319,6 +319,23 @@
    "gameApplied": false
   },
   "history": {
+   "external-actor-skeleton-minion": {
+    "sourceSha256": "b7f7fbd4b96af09b3aece2e1650d03fde9b471af32af2eb22ecf84267aebfa3b",
+    "attempts": 255,
+    "passed": 254,
+    "failed": 1,
+    "measured": 255,
+    "bones": 41,
+    "meshParts": 9,
+    "clipNamesObserved": 95,
+    "curveInspectedClips": 95,
+    "validMovingClips": 85,
+    "movingBoneCurves": 8358,
+    "lastLowestMesh": "Skeleton_Minion_LegLeft",
+    "lastBoundGroundOffsetRatio": 0,
+    "lastFailures": [],
+    "lastSession": "2026-11-22T00:46:38.356Z"
+   },
    "external-actor-skeleton-mage": {
     "sourceSha256": "0bc67a2346251675710c65a62e382614eaa4684f22b795a392a7dc846c4850b0",
     "attempts": 255,
@@ -471,30 +488,13 @@
     "lastBoundGroundOffsetRatio": 0,
     "lastFailures": [],
     "lastSession": "2026-11-22T00:03:38.614Z"
-   },
-   "external-actor-skeleton-minion": {
-    "sourceSha256": "b7f7fbd4b96af09b3aece2e1650d03fde9b471af32af2eb22ecf84267aebfa3b",
-    "attempts": 254,
-    "passed": 253,
-    "failed": 1,
-    "measured": 254,
-    "bones": 41,
-    "meshParts": 9,
-    "clipNamesObserved": 95,
-    "curveInspectedClips": 95,
-    "validMovingClips": 85,
-    "movingBoneCurves": 8358,
-    "lastLowestMesh": "Skeleton_Minion_LegLeft",
-    "lastBoundGroundOffsetRatio": 0,
-    "lastFailures": [],
-    "lastSession": "2026-11-21T23:59:06.557Z"
    }
   }
  },
  "icon": {
   "latest": {
-   "id": "tycoon-arrowBlue_left",
-   "sourceSha256": "c31a3563b46295da4deafd0eb08882092492bc9b702df1c47555482de9e9a35e",
+   "id": "tycoon-arrowBlue_right",
+   "sourceSha256": "8a720d8318c368505fa89b901f3f84a839b5fb27b134fed064ee5415d4739f19",
    "measured": true,
    "legible": true,
    "pixels64": 299,
@@ -504,6 +504,16 @@
    "gameApplied": false
   },
   "history": {
+   "tycoon-arrowBlue_right": {
+    "sourceSha256": "8a720d8318c368505fa89b901f3f84a839b5fb27b134fed064ee5415d4739f19",
+    "attempts": 637,
+    "measured": 637,
+    "passed": 637,
+    "rejected": 0,
+    "pixels64": 299,
+    "contrast64": 0.165,
+    "lastSession": "2026-11-22T00:46:38.356Z"
+   },
    "tycoon-arrowBlue_left": {
     "sourceSha256": "c31a3563b46295da4deafd0eb08882092492bc9b702df1c47555482de9e9a35e",
     "attempts": 637,
@@ -533,16 +543,6 @@
     "pixels64": 102,
     "contrast64": 0.008,
     "lastSession": "2026-11-22T00:32:09.498Z"
-   },
-   "tycoon-arrowBlue_right": {
-    "sourceSha256": "8a720d8318c368505fa89b901f3f84a839b5fb27b134fed064ee5415d4739f19",
-    "attempts": 636,
-    "measured": 636,
-    "passed": 636,
-    "rejected": 0,
-    "pixels64": 299,
-    "contrast64": 0.165,
-    "lastSession": "2026-11-22T00:27:40.291Z"
    }
   }
  },
