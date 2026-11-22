@@ -207,7 +207,10 @@ local earlyMobParts = {
 -- [R15 장착 실사] 실제 InsertService 로드 결과로 복식/액세서리 준비 상태를 분리한다.
 -- 등록번호의 존재와 실제 3D 모델 장착 가능 상태를 혼동하지 않는다.
 local r15GarmentExpected, r15GarmentLoaded, r15AccessoryExpected, r15AccessoryLoaded = 0, 0, 0, 0
+-- [외부 무료 실물 검증] 등록 번호가 없는 CC0 원본은 준비 완료로 보고하지 않는다.
+local externalExpected, externalLoaded = 0, 0
 ReplicatedStorage:SetAttribute("MareR15WearablesState", "LOADING")
+ReplicatedStorage:SetAttribute("MareR15ExternalState", "NOT_REGISTERED")
 local queue = {}
 for key, assetId in ids do
 	local kind, name = string.match(key, "^(%w+)/(.+)$")
@@ -216,6 +219,7 @@ for key, assetId in ids do
 		table.insert(queue, { kind = kind, name = name, id = assetId, key = key })
 		if kind == "People" and string.sub(name, 1, 7) == "outfit_" then r15GarmentExpected += 1 end
 		if kind == "People" and string.sub(name, 1, 4) == "acc_" then r15AccessoryExpected += 1 end
+		if kind == "People" and string.sub(name, 1, 4) == "cc0_" then externalExpected += 1 end
 	end
 end
 -- 시작 프롤로그에서 사용하는 승인된 실물 범선을 먼저 로드한다.
@@ -383,6 +387,7 @@ for _ = 1, 12 do
 					model.Parent = group
 					if item.kind == "People" and string.sub(item.name, 1, 7) == "outfit_" then r15GarmentLoaded += 1 end
 					if item.kind == "People" and string.sub(item.name, 1, 4) == "acc_" then r15AccessoryLoaded += 1 end
+					if item.kind == "People" and string.sub(item.name, 1, 4) == "cc0_" then externalLoaded += 1 end
 					if model ~= container then container:Destroy() end
 					loaded += 1
 				else
@@ -409,8 +414,16 @@ for _ = 1, 12 do
 				ReplicatedStorage:SetAttribute("MareR15WearablesState",
 					if wearablesReady then "READY" elseif r15GarmentLoaded + r15AccessoryLoaded > 0 then "PARTIAL" else "FAILED")
 				ReplicatedStorage:SetAttribute("MareR15WearablesExpected", r15GarmentExpected + r15AccessoryExpected)
-				print(string.format("[MareEssentia] R15 의상 로딩 %d/%d 액세서리 %d/%d",
-					r15GarmentLoaded, r15GarmentExpected, r15AccessoryLoaded, r15AccessoryExpected))
+				ReplicatedStorage:SetAttribute("MareR15ExternalExpected", externalExpected)
+				ReplicatedStorage:SetAttribute("MareR15ExternalLoaded", externalLoaded)
+				ReplicatedStorage:SetAttribute("MareR15ExternalState",
+					if externalExpected == 0 then "NOT_REGISTERED"
+					elseif externalExpected < 25 then "PARTIAL_REGISTERED"
+					elseif externalLoaded == externalExpected then "READY"
+					elseif externalLoaded > 0 then "PARTIAL_LOAD" else "LOAD_FAILED")
+				print(string.format("[MareEssentia] R15 의상 로딩 %d/%d 액세서리 %d/%d 외부CC0 %d/%d",
+					r15GarmentLoaded, r15GarmentExpected, r15AccessoryLoaded, r15AccessoryExpected,
+					externalLoaded, externalExpected))
 			end
 			if studioAudit and pending == 0 then
 				-- [원본 복식 수입 상태] 재질·텍스처 맵이 실제로 살아 있는지 검증한다.
