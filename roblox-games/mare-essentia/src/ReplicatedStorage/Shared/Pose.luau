@@ -455,6 +455,12 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	-- 1~8 변형은 저장하지 않는 R15 외형 속성이다. 재호출·자산 지연 로드 뒤에도 같은 모델을 선택한다.
 	if outfit and outfit.hair then
 		local coordinate = if typeof(bottomPosition) == "Vector3" then math.abs(math.floor(bottomPosition.X * 13 + bottomPosition.Z * 19)) else 0
+		-- [개인 식별 해시] 직업/항구/이름 기반 ID를 받았으면 좌표만이 아닌 해당 주민의 고정 변형을 우선한다.
+		local identity = outfit.identity
+		if type(identity) == "string" and #identity > 0 then
+			coordinate = 17
+			for i = 1, #identity do coordinate = (coordinate * 33 + string.byte(identity, i)) % 2147483647 end
+		end
 		local variant = (coordinate + (tonumber(outfit.persona) or 1) * 3) % 8 + 1
 		model:SetAttribute("NpcHairVariant", variant)
 	end
@@ -463,6 +469,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 		if type(outfit.year) == "number" then model:SetAttribute("AppearanceYear", outfit.year) end
 		if type(outfit.culture) == "string" then model:SetAttribute("AppearanceCulture", outfit.culture) end
 		if type(outfit.profession) == "string" then model:SetAttribute("AppearanceProfession", outfit.profession) end
+		if outfit.weatherLayer == "outer_coat" then model:SetAttribute("NpcWeatherLayer", "outer_coat") end
 		if outfit.gender == "female" or outfit.gender == "male" then model:SetAttribute("AppearanceGender", outfit.gender) end
 		-- [머리 종류 확장] 해당 시대·문화권의 일부 선원은 묶은 머리, 주민은 짧은 머리도 선택한다.
 		-- 새 저장/랜덤 시드 없이 기존 원본 헤어 ID와 직업 프로필에서 고른다.
@@ -1099,6 +1106,18 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	local detailKinds = 0
 	local specs = MOB_OUTFIT_PARTS[profile]
 	if not specs then return false end
+	-- [비·겨울 외투] 승인 등록된 서유럽 외투 메시로 기존 조끼 슬롯만 대체한다.
+	-- 새 의상 부품을 생성하거나 중복 상의를 장착하지 않는다. 비유럽·중세 복식은 그대로.
+	if detailAllowed and model:GetAttribute("NpcWeatherLayer") == "outer_coat"
+		and AssetIds["People/outfit_coat"] then
+		for index, garment in specs do
+			if garment[1] == "outfit_vest" then
+				specs = table.clone(specs)
+				specs[index] = { "outfit_coat", "UpperTorso", 1.21, 1.53, 1.23, -0.04 }
+				break
+			end
+		end
+	end
 	-- [계절 복식] 추운 항구의 근세 유럽 시민·장인에게 기존 승인 외투를 조끼 대신 입힌다.
 	-- 부위·복식 개수·직업·R15 리그는 그대로이며 지역/시대 조건이 없으면 원본 조끼를 보존한다.
 	local winterWardrobe = detailAllowed and (profile == "citizen_male" or profile == "citizen_female"
@@ -1149,6 +1168,11 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			elseif winterCoat then
 				mobileEssentials = { outfit_coat = true, outfit_boot = true, outfit_belt = true }
 			end
+		end
+		if mobileEssentials and model:GetAttribute("NpcWeatherLayer") == "outer_coat"
+			and mobileEssentials.outfit_vest then
+			mobileEssentials.outfit_coat = true
+			mobileEssentials.outfit_vest = nil
 		end
 		if previous ~= detailLimit then model:SetAttribute("NpcOutfitDetailLimit", detailLimit) end
 	end
