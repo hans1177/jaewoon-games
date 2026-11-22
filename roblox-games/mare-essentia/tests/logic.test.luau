@@ -3567,34 +3567,111 @@ local function testNations()
 	local fixed: any = E.restoreWorld(bad)
 	check("손상된 국가 저장값을 고쳐서 복원한다", fixed ~= nil and fixed.nations.states.france.ruler.name ~= nil
 		and fixed.nations.states.england.dev.mil <= 100 and fixed.nations.states.england.stab >= 0)
-	-- 자원·편제: 시작부터 나라마다 힘이 다르고, 시간이 지나도 유한하며, 저장·복원된다
+	-- 자원·편제·발견·종전·항구·관세·위기: 시작 세계(w4)와 60년 뒤 세계(w3)를 재사용해 시간을 아낀다
 	do
 		local w4: any = E.newWorld({ seed = 777, year = 1650 })
 		local s4: any = w4.nations
-		local powers, distinct, bad = {}, {}, {}
+		local distinct, bad, n4, count4, badReq = {}, {}, 0, 0, 0
 		for id, S in pairs(s4.states) do
-			table.insert(powers, S.power)
+			n4 += 1
 			distinct[string.format("%.2f", S.power)] = true
 			for _, k in ipairs(N.ARMY_KEYS) do if not (S.forces[k] >= 0 and S.forces[k] < 1e9) then table.insert(bad, id .. k) end end
 			for _, k in ipairs(N.NAVY_KEYS) do if not (S.forces[k] >= 0 and S.forces[k] < 1e9) then table.insert(bad, id .. k) end end
 			for _, k in ipairs(N.RES_KEYS) do if not (S.res[k] >= 0) then table.insert(bad, id .. k) end end
+			count4 += S.tech.count
+			for tid in pairs(S.tech.known) do
+				for _, r in ipairs(N.TECH_BY_ID[tid].req) do if not S.tech.known[r] then badReq += 1 end end
+			end
 		end
-		check("시작부터 모든 국가에 편제와 자원 기반이 있다", #powers >= 40 and #bad == 0)
-		local n = 0
-		for _ in pairs(distinct) do n += 1 end
-		check("시작 시점 국력이 나라마다 다르다", n >= 15)
+		check("시작부터 모든 국가에 편제와 자원 기반이 있다", n4 >= 40 and #bad == 0)
+		local kinds = 0
+		for _ in pairs(distinct) do kinds += 1 end
+		check("시작 시점 국력이 나라마다 다르다", kinds >= 15)
 		local eng, ven = s4.states.england, s4.states.venice
 		check("영국·베네치아는 해군을 가진다", eng ~= nil and eng.forces.line + eng.forces.frigate > 0 and ven ~= nil and ven.navyPower > 0)
-		for _ = 1, 365 * 5 do E.step(w4) end
-		local bad2 = 0
-		for _, S in pairs(s4.states) do
-			if not (S.power >= 0 and S.power < 1e9) or not (S.standing >= 0) then bad2 += 1 end
+		check("시작 발견은 선행 발견을 모두 갖춘다", badReq == 0 and count4 > 40)
+		local counts = {}
+		for _, S in pairs(s4.states) do counts[S.tech.count] = true end
+		local ck = 0
+		for _ in pairs(counts) do ck += 1 end
+		check("나라마다 시작 발견 수가 다르다", ck >= 4)
+		local v4 = N.view(s4, "england")
+		check("국가 조회에 편제·자원·생산력·발견·교리가 들어간다", v4.forces ~= nil and v4.res ~= nil and v4.cap ~= nil and v4.power ~= nil
+			and v4.tech ~= nil and v4.doctrine ~= "" and v4.mods ~= nil)
+		-- 60년 뒤 세계(w3): 유한성·연구 진행·최초 발견·패권
+		local count3, bad3, badReq3 = 0, 0, 0
+		for _, S in pairs(s3.states) do
+			count3 += S.tech.count
+			if not (S.power >= 0 and S.power < 1e9) or not (S.standing >= 0) then bad3 += 1 end
+			for tid in pairs(S.tech.known) do
+				for _, r in ipairs(N.TECH_BY_ID[tid].req) do if not S.tech.known[r] then badReq3 += 1 end end
+			end
 		end
-		check("5년 뒤에도 국력·편제가 유한하다", bad2 == 0)
-		local v = N.view(s4, "england")
-		check("국가 조회에 편제·자원·생산력이 들어간다", v.forces ~= nil and v.res ~= nil and v.cap ~= nil and v.power ~= nil)
-		local back4: any = E.restoreWorld(E.snapshot(w4))
-		check("편제가 저장·복원된다", back4 ~= nil and math.abs(back4.nations.states.england.forces.inf - s4.states.england.forces.inf) < 1e-6)
+		check("60년 뒤에도 국력·편제가 유한하다", bad3 == 0)
+		check("60년 연구하면 발견이 크게 늘어난다", count3 > count4 * 1.5)
+		check("연구해도 선행 발견 순서가 지켜진다", badReq3 == 0)
+		local firstCount = 0
+		for _ in pairs(s3.firsts) do firstCount += 1 end
+		check("최초 발견 기록이 있다", firstCount >= 5)
+		check("패권 값은 없거나 실제 국가다", s3.hegemon == nil or s3.states[s3.hegemon] ~= nil)
+		-- 항구 조회·관세·입장
+		local pv: any = N.portView(s3, w3, "london")
+		check("항구 조회에 문화권·언어·주민·자원이 있다", pv ~= nil and pv.culture ~= "" and pv.language ~= "" and pv.pop > 0 and #pv.produces > 0)
+		local allPorts = true
+		for _, id in ipairs(w3.order) do
+			local v = N.portView(s3, w3, id)
+			if not v or not v.culture or v.owner == nil or not (v.unrest >= 0 and v.unrest <= 1 and v.assimilation >= 0 and v.assimilation <= 1) then allPorts = false end
+		end
+		check("모든 항구에 문화권이 있고 불만·동화 값이 정상이다", allPorts)
+		local own = N.tariff(s3, w3, "london", "england")
+		check("자국 항구는 관세가 없다", own.stance == "home" and own.rate <= 0.001)
+		local engS, fraS = s3.states.england, s3.states.france
+		if engS and fraS then
+			local savedE, savedF, savedAE, savedAF = engS.war, fraS.war, engS.allies.france, fraS.allies.england
+			engS.war, fraS.war, engS.allies.france, fraS.allies.england = nil, nil, nil, nil
+			engS.rel.france, fraS.rel.england = 0, 0
+			local neutral = N.tariff(s3, w3, "rouen", "england")
+			check("외국 항구는 관세가 있고 0~45%다", neutral.rate > 0 and neutral.rate <= 0.45)
+			engS.war = { foe = "france", months = 1 }
+			local hostile = N.tariff(s3, w3, "rouen", "england")
+			check("전쟁 중인 나라 항구는 적대 입장이다", hostile.stance == "hostile" and hostile.rate > neutral.rate)
+			engS.war = nil
+			fraS.allies.england, engS.allies.france = true, true
+			local ally = N.tariff(s3, w3, "rouen", "england")
+			check("동맹 항구는 관세가 낮다", ally.stance == "ally" and ally.rate < neutral.rate)
+			fraS.allies.england, engS.allies.france = nil, nil
+			-- 종전 협상
+			engS.war = { foe = "france", months = 10, score = 9 }
+			fraS.war = { foe = "england", months = 10, score = -9 }
+			local before = fraS.fin.debt
+			local kind = N.treaty(s3, w3, engS, fraS)
+			check("압승하면 배상금을 받아낸다", kind == "win" and fraS.fin.debt > before)
+			check("종전 기록이 남는다", s3.log[#s3.log].kind == "treaty")
+			engS.war, fraS.war = savedE, savedF
+			engS.allies.france, fraS.allies.england = savedAE, savedAF
+		end
+		-- 할양 항구 소유, 위기, 손상 복구를 한 번의 저장·복원으로 확인
+		s3.owner["rouen"] = "england"
+		check("식민지가 된 항구는 식민지 표시", N.portView(s3, w3, "rouen").colony == true and N.tariff(s3, w3, "rouen", "france").colony == true)
+		s3.states.england.crisis = { kind = "plague", untilDay = w3.day + 240 }
+		check("국가 조회에 위기 이름이 나온다", N.view(s3, "england").crisis == "역병")
+		local snap3 = E.snapshot(w3)
+		local back3: any = E.restoreWorld(snap3)
+		check("편제·발견·소유·위기가 저장·복원된다", back3 ~= nil
+			and math.abs(back3.nations.states.england.forces.inf - s3.states.england.forces.inf) < 1e-6
+			and back3.nations.states.england.tech.count == s3.states.england.tech.count
+			and back3.nations.owner["rouen"] == "england" and back3.nations.states.england.crisis ~= nil
+			and back3.nations.hegemon == s3.hegemon)
+		local badSnap = E.snapshot(w3)
+		badSnap.nations.states.england.tech.known.fake_tech = 1650
+		badSnap.nations.states.england.tech.cur = "없는발견"
+		badSnap.nations.states.england.crisis = { kind = "없는위기", untilDay = 5 }
+		local fixed2: any = E.restoreWorld(badSnap)
+		check("손상된 발견·위기 저장값을 고쳐서 복원한다", fixed2 ~= nil and fixed2.nations.states.england.tech.known.fake_tech == nil
+			and fixed2.nations.states.england.crisis == nil)
+		s3.states.england.crisis = { kind = "famine", untilDay = w3.day + 1 }
+		for _ = 1, 31 do E.step(w3) end
+		check("위기는 기한이 지나면 끝난다", s3.states.england.crisis == nil or s3.states.england.crisis.untilDay > w3.day)
 	end
 end
 testNations()
