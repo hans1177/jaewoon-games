@@ -30,7 +30,7 @@ local function number(value,min,max,fallback)
 end
 local function makeState()
  return {version=1,round=1,gold=Rules.StartGold,hearts=Rules.StartHearts,wins=0,
-  phase="shop",team={},shop={},events={},ready=false,dirty=true}
+  phase="shop",team={},shop={},events={},replay={},replaySerial=0,ready=false,dirty=true}
 end
 local function choice(ids,data,tier)
  local pool={}
@@ -99,7 +99,8 @@ local function sync(player,err)
  local s=sessions[player]
  if not s then return end
  snapshot:FireClient(player,{ready=s.ready,round=s.round,gold=s.gold,hearts=s.hearts,
-  wins=s.wins,phase=s.phase,team=s.team,shop=s.shop,events=s.events,error=err or ""})
+  wins=s.wins,phase=s.phase,team=s.team,shop=s.shop,events=s.events,
+  replay=s.replay,replaySerial=s.replaySerial,error=err or ""})
 end
 local function battleCopy(source)
  local result={}
@@ -128,9 +129,23 @@ local function enemyTeam(round)
  end
  return result
 end
+-- 전투: 서버가 한 번만 판정하고, 같은 판정의 읽기 전용 재생 프레임을 전달한다.
 local function battle(s)
  local mine,foes=battleCopy(s.team),battleCopy(enemyTeam(s.round))
- local events={}
+ local events,frames={},{}
+ local function record(description)
+  local allies,enemies={},{}
+  for i,pet in ipairs(mine) do
+   allies[i]={id=pet.id,attack=pet.attack,health=math.max(0,pet.health),level=pet.level}
+  end
+  for i,pet in ipairs(foes) do
+   enemies[i]={id=pet.id,attack=pet.attack,health=math.max(0,pet.health),level=pet.level}
+  end
+  local frame={mine=allies,foes=enemies,text=description}
+  -- 지나치게 긴 전투에서도 마지막 결과 프레임은 반드시 보존한다.
+  if #frames<48 then table.insert(frames,frame) else frames[#frames]=frame end
+ end
+ record(string.format("%d라운드 · 양 팀 준비 완료",s.round))
  local hits=0
  while #mine>0 and #foes>0 and hits<360 do
   hits+=1
@@ -141,14 +156,15 @@ local function battle(s)
   local hurtB=math.max(1,ap-(b.armor or 0))
   a.health-=hurtA
   b.health-=hurtB
-  if #events<75 then
-   table.insert(events,string.format("%s %d 피해 · %s %d 피해",
-    Rules.Pets[a.id].name,hurtB,Rules.Pets[b.id].name,hurtA))
-  end
+  local description=string.format("%s → %s %d 피해 · %s → %s %d 피해",
+   Rules.Pets[a.id].name,Rules.Pets[b.id].name,hurtB,
+   Rules.Pets[b.id].name,Rules.Pets[a.id].name,hurtA)
+  if #events<75 then table.insert(events,description) end
   if b.health<=0 and a.health>0 and a.id=="wolf" then a.attack=Rules.stat(a.attack+a.level) end
   if a.health<=0 and b.health>0 and b.id=="wolf" then b.attack=Rules.stat(b.attack+b.level) end
   if a.health<=0 then table.remove(mine,1) end
   if b.health<=0 then table.remove(foes,1) end
+  record(description)
  end
  local verdict="무승부"
  if #mine>0 and #foes==0 then
@@ -159,7 +175,10 @@ local function battle(s)
   verdict="패배"
  end
  table.insert(events,1,string.format("%d라운드: %s",s.round,verdict))
+ record(string.format("%d라운드 결과 · %s",s.round,verdict))
  s.events=events
+ s.replaySerial+=1
+ s.replay={round=s.round,verdict=verdict,frames=frames}
  s.dirty=true
  if s.wins>=Rules.TargetWins or s.hearts<=0 then
   s.phase="ended"
@@ -169,15 +188,18 @@ local function battle(s)
   roll(s,true)
  end
 end
+
 local function act(s,m)
  local action=m.action
  if action=="SYNC" then return end
  if action=="NEW" then
   if s.phase~="ended" then return "현재 도전이 아직 진행 중이야" end
+  local previousReplaySerial=s.replaySerial
   local reset=makeState()
   roll(reset,false)
   reset.ready=true
   for k,v in pairs(reset) do s[k]=v end
+  s.replaySerial=previousReplaySerial
   return
  end
  if s.phase~="shop" then return "새 도전을 시작해" end
