@@ -157,7 +157,9 @@ local function addHat(model, kind, color)
 	local flat = CFrame.Angles(0, 0, math.pi / 2) -- 원기둥(축이 X)을 눕혀 가로로 놓는다
 	if kind == "wide" or kind == "plume" or kind == "straw" then
 		piece(Enum.PartType.Cylinder, Vector3.new(0.1, h.X * 1.9, h.X * 1.9), Vector3.new(0, h.Y * 0.5, 0), flat)
-		piece(Enum.PartType.Cylinder, Vector3.new(h.Y * 0.55, h.X * 1.05, h.X * 1.05), Vector3.new(0, h.Y * 0.78, 0), flat)
+		-- [모자 안감] 기존 모자 윗면을 재사용한다. 실물 깃털모자의 뚫린 정수리를 가리는 용도이며 새 메시를 만들지 않는다.
+		local crown = piece(Enum.PartType.Cylinder, Vector3.new(h.Y * 0.55, h.X * 1.05, h.X * 1.05), Vector3.new(0, h.Y * 0.78, 0), flat)
+		if kind == "wide" or kind == "plume" then crown:SetAttribute("NpcHatCrown", true) end
 		if kind == "plume" then
 			piece(Enum.PartType.Block, Vector3.new(0.08, h.Y * 0.9, h.X * 0.25), Vector3.new(h.X * 0.45, h.Y * 1.0, 0), CFrame.Angles(0, 0, -0.7)).Color = Color3.fromRGB(240, 236, 226)
 		end
@@ -1570,7 +1572,11 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				-- 선원 머리띠는 지역별 모자 대신 쓰지 않으며, 미로드 시 원형을 유지한다.
 				local fallbackName = if string.sub(assetName, 1, 5) == "hair_" then "Hair" else "Hat"
 				for _, piece in model:GetChildren() do
-					if piece:IsA("BasePart") and piece.Name == fallbackName then piece.Transparency = 1 end
+					if piece:IsA("BasePart") and piece.Name == fallbackName then
+						-- [사진 보정] 챙·깃털 중복만 숨긴다. 기존 속모자 윗면은 남겨 원본 GLB의 빈 중심을 덮는다.
+						piece.Transparency = if assetName == "acc_feather_hat"
+							and piece:GetAttribute("NpcHatCrown") == true then 0 else 1
+					end
 				end
 			end
 		else
