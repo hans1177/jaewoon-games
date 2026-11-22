@@ -1,7 +1,7 @@
 {
-  "runId": "45028947204",
+  "runId": "45029411509",
   "kind": "studio",
-  "sourceRevision": "c0ada934265c37e9dc2c3c3a79b85696822f0da5",
+  "sourceRevision": "c89249597383ba16df36af7065493d52ffe1c7e2",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
@@ -110,21 +110,21 @@
   "screenshotComparison": [
     {
       "name": "f0_environment-0.jpg",
-      "sha256": "ce9e27a3468cf8a6daa455eed3c8a830c29a209dc386159939faeabe1c1733e0",
+      "sha256": "8e6a4c2fa6bded08c5d79abd82d5e4618bbafa82dace5980dfd8c64d72456a37",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45028947204/f0_environment-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45029411509/f0_environment-0.jpg"
     },
     {
       "name": "f1_start-0.jpg",
-      "sha256": "69eb0d092775bc0518159e0bf54cfcfe3dd51adef6be7a47397245e7d893fb22",
+      "sha256": "73feeae78457cf20a42a048162a707d87af44d480b75f49117edfb4f9a9ea5da",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45028947204/f1_start-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45029411509/f1_start-0.jpg"
     },
     {
       "name": "f2_later-0.jpg",
-      "sha256": "47316545e16dd6d09972ccf3515dbe4fb0bd0f248f5ec305844ebbe0b9047b13",
+      "sha256": "c4d44b09ad54651ca1ffba6af8e39634541d55ad59717964bb235315eab5b199",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45028947204/f2_later-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45029411509/f2_later-0.jpg"
     }
   ],
   "screenshotFrameAudit": {
@@ -133,21 +133,21 @@
     "images": [
       {
         "name": "f0_environment-0.jpg",
-        "bytes": 166397,
+        "bytes": 165805,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "f1_start-0.jpg",
-        "bytes": 162807,
+        "bytes": 175755,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "f2_later-0.jpg",
-        "bytes": 170800,
+        "bytes": 166455,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -156,5 +156,5 @@
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "45028619428"
+  "previousRunId": "45028947204"
 }
