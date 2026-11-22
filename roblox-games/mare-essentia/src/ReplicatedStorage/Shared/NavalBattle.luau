@@ -26,6 +26,8 @@ local CARD_SEA = "CardArt/event_calm_seas"
 -- 백과사전 화풍: 기존 등록 도판을 배경으로 사용하고, 역할과 맞는 승인된 모델·동작만 입힌다.
 -- 묘사 대상이 없는 경우 임의 동물/문화권 복식/무기를 생성하지 않고 해당 해역 지도 도판을 쓴다.
 -- 이 목록은 BoardingCards.luau 병종·특수 카드의 실제 id를 정확히 따라간다.
+-- [오너 지시] 카드 원화 움직임(3D 모델 복제 연출)은 끈다. 추후 제작할 움직이는 원화로 교체할 때 다시 켠다.
+local CARD_ART_MOTION = false
 local CARD_STAGE = {
 	swordsman = { art="CardArt/event_chart_north_sea", prop={"Naval","ship-pirate-small"}, motion="board", scene="소형 공격선 접현" },
 	axeman = { art="CardArt/event_chart_west_europe", prop={"Naval","ship-pirate-medium"}, motion="board", scene="중형 공격선 돌격" },
@@ -2889,7 +2891,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				regionBorder.ZIndex = 4
 				regionBorder.Parent = f
 			end
-			if moving then table.insert(cardMotions, animateCardArt(plate, painting, c)) end
+			if moving and CARD_ART_MOTION then table.insert(cardMotions, animateCardArt(plate, painting, c)) end
 			local blackWash = Instance.new("UIGradient")
 			blackWash.Rotation = 90
 			blackWash.Transparency = NumberSequence.new({
@@ -3585,8 +3587,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						.. (if status then "\n" .. t("상태 · ", "Status · ") .. status else "")
 						.. (if BC.CardLines[card.id] then "\n「" .. BC.CardLines[card.id][if english then 2 else 1] .. "」" else "")
 				end
-				focusMotion = animateCardArt(focusArtwork, focusImage, card)
-				table.insert(cardMotions, focusMotion)
+				if CARD_ART_MOTION then
+					focusMotion = animateCardArt(focusArtwork, focusImage, card)
+					table.insert(cardMotions, focusMotion)
+				end
 			end
 		end
 		local function closeCardCodex()
@@ -4009,7 +4013,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					handBorder.ZIndex = 3
 					handBorder.Parent = b
 				end
-				table.insert(cardMotions, animateCardArt(art, image, c))
+				if CARD_ART_MOTION then table.insert(cardMotions, animateCardArt(art, image, c)) end
 				local caption = label(b, cardName(c), 13, ink, true)
 				caption.Position = UDim2.fromScale(0.25, 0.7)
 				caption.Size = UDim2.fromScale(0.71, 0.27)
