@@ -315,12 +315,17 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 					d.Material = Enum.Material.Fabric
 				end
 			elseif tint then
-				d.Color = tint
-				pcall(function() (d :: any).UsePartColor = true end)
+				-- [지상전 PBR 재질] 계절색은 무늬 없는 표면에만 약하게 섞는다.
+				-- 승인 메시의 ColorMap/TextureID/UV·원본 색을 강제로 덮지 않는다.
 				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
-				if sa then sa.Color = tint end
+				local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and surfaceHasColorMap(sa))
 				for _, ch in d:GetChildren() do
-					if ch:IsA("SpecialMesh") then ch.VertexColor = Vector3.new(tint.R, tint.G, tint.B) end
+					if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
+				end
+				if not textured then
+					local strength = if kind == "Terrain" then 0.40 else 0.28
+					if sa then sa.Color = sa.Color:Lerp(tint, strength)
+					else d.Color = d.Color:Lerp(tint, strength) end
 				end
 			else
 				-- [흰 건물·바닥 복구] 맵 있는 승인 메시/PBR은 보존하고, 색이 빠진 흰 면만 기존 재질로 복구한다.
@@ -1182,21 +1187,39 @@ function FieldScene.start(opts)
 		{ "cliff-large-stone", 45, -0.85, -0.66, 14 }, { "cliff-cornerlarge-stone", 32, 0.82, -0.43, 28 },
 		{ "cliff-cornertop-rock", 33, -0.84, -0.22, -24 }, { "rock-largec", 16, 0.73, -0.78, 0 },
 		{ "ground-pathrocks", 10, -0.52, -0.39, -17 },
+		{ "cliff-blockdiagonal-rock", 31, 0.91, -0.84, -9 },
+		{ "cliff-blockslope-rock", 24, -0.92, -0.45, 23 },
 	} elseif questTerrain == "highland" or questTerrain == "volcanic" then {
 		{ "cliff-diagonal-rock", 44, -0.83, -0.65, 13 }, { "cliff-blockslope-rock", 29, 0.80, -0.44, 28 },
 		{ "cliff-cornerinnertop-rock", 33, -0.84, -0.22, -24 }, { "rock-talld", 16, 0.73, -0.78, 0 },
 		{ "ground-pathbend", 10, -0.52, -0.39, -17 }, { "cliff-large-rock", 36, -0.92, -0.85, 11 },
-	} elseif questTerrain == "coast" or questTerrain == "lake" then {
+		{ "cliff-blockdiagonal-rock", 32, 0.92, -0.84, -11 },
+		{ "cliff-cornerinnerlarge-rock", 29, -0.89, -0.38, 30 },
+	} elseif questTerrain == "coast" then {
+		-- [연안 입체감] 승인된 해변·암벽 메시로 해안선의 꺾임과 바위 단차를 보강한다.
 		{ "cliff-cornerinnertop-rock", 34, 0.87, -0.60, 20 }, { "cliff-cornertop-rock", 26, -0.83, -0.31, 32 },
 		{ "cliff-diagonal-rock", 29, 0.86, -0.83, -12 }, { "ground-riverside", 15, 0.76, -0.27, -10 },
 		{ "ground-riverbendbank", 13, -0.57, -0.49, 40 },
+		{ "platform-beach", 28, -0.87, -0.82, -18 },
+		{ "cliff-blockdiagonal-rock", 34, 0.91, -0.88, 15 },
+		{ "cliff-cornerinnerlarge-rock", 31, -0.91, -0.37, 27 },
+	} elseif questTerrain == "lake" then {
+		{ "cliff-cornerinnertop-rock", 34, 0.87, -0.60, 20 }, { "cliff-cornertop-rock", 26, -0.83, -0.31, 32 },
+		{ "cliff-diagonal-rock", 29, 0.86, -0.83, -12 }, { "ground-riverside", 15, 0.76, -0.27, -10 },
+		{ "ground-riverbendbank", 13, -0.57, -0.49, 40 },
+		{ "cliff-blockslope-rock", 24, 0.86, -0.77, 18 },
+		{ "ground-riverbendbank", 15, -0.73, -0.70, -16 },
 	} elseif questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "swamp" then {
 		{ "cliff-blockslope-rock", 25, -0.81, -0.53, 22 }, { "cliff-cornerinnertop-rock", 24, 0.78, -0.73, -30 },
 		{ "plant-bushlargetriangle", 8, -0.52, -0.29, 6 }, { "grass-large", 6, 0.51, -0.35, 0 },
 		{ "ground-pathbend", 7, -0.49, -0.56, 15 }, { "plant-bushdetailed", 7, 0.60, -0.33, 6 },
+		{ "cliff-blockslope-rock", 23, 0.90, -0.58, -21 },
+		{ "grass-leafslarge", 6, -0.63, -0.22, 7 },
 	} else {
 		{ "cliff-large-rock", 27, -0.86, -0.74, 8 }, { "ground-pathrocks", 7, 0.51, -0.42, 22 },
 		{ "grass-large", 5, -0.57, -0.28, 0 }, { "rock-tallc", 10, 0.76, -0.63, 0 },
+		{ "cliff-blockslope-rock", 26, 0.89, -0.82, -12 },
+		{ "plant-bushdetailed", 6, -0.62, -0.29, 0 },
 	}
 	folder:SetAttribute("FieldDepthFeatureCount", 0)
 	for index, spec in depthLandforms do
@@ -1217,15 +1240,19 @@ function FieldScene.start(opts)
 		local nearBands = if tropical then {
 			{ "tree-palmbend", 24, -0.66, 0.18, 12 }, { "plant-flattall", 7, 0.52, 0.07, 0 },
 			{ "cliff-cornerlarge-stone", 31, 0.85, -0.47, 35 }, { "ground-riverbendbank", 13, -0.68, -0.54, 19 },
+			{ "grass-leafslarge", 6, -0.54, 0.16, 7 },
 		} elseif questTerrain == "forest" or questTerrain == "swamp" then {
 			{ "plant-bushlargetriangle", 9, -0.55, 0.22, 0 }, { "tree-tall", 20, 0.71, 0.06, -10 },
 			{ "ground-riverside", 19, -0.83, -0.37, 34 }, { "ground-riverbendbank", 12, 0.65, -0.56, -24 },
+			{ "plant-bushdetailed", 8, -0.69, 0.11, 9 },
 		} elseif questTerrain == "highland" or questTerrain == "mine" or questTerrain == "glacier" or questTerrain == "volcanic" then {
 			{ "cliff-cornerinnertop-rock", 34, -0.85, 0.18, 12 }, { "rock-talld", 17, 0.77, 0.09, 0 },
 			{ "cliff-cornerlarge-rock", 39, 0.89, -0.49, -20 }, { "cliff-waterfall-stone", 31, -0.84, -0.70, 0 },
+			{ "cliff-blockdiagonal-rock", 29, 0.90, -0.80, -12 },
 		} elseif questTerrain == "coast" or questTerrain == "lake" then {
 			{ "cliff-diagonal-rock", 36, -0.87, 0.08, 12 }, { "rock-talld", 14, 0.78, -0.15, -18 },
 			{ "ground-riverside", 12, -0.64, -0.46, 30 }, { "ground-riverbendbank", 13, 0.74, -0.61, 0 },
+			{ "platform-beach", 19, -0.84, -0.81, -18 },
 		} else {
 			{ "plant-bushlarge", 7, -0.57, 0.22, 0 }, { "rock-talli", 12, 0.78, -0.23, 0 },
 			{ "ground-riverrocks", 9, 0.65, -0.53, 24 },
@@ -1246,14 +1273,14 @@ function FieldScene.start(opts)
 	-- 위치는 맵 가장자리로 제한해 기존 퀘스트 목표·전투·시작 동선을 유지한다.
 	local regionalSilhouettes = {
 		iberia = { {"Terrain","ruins-wall-arched",23,-0.73,-0.59}, {"Terrain","column",15,-0.62,-0.42}, {"Terrain","tree-oak",17,0.71,-0.59} },
-		italy = { {"Terrain","greek-ruins-a",28,0.72,-0.75}, {"Terrain","greek-column",20,-0.62,-0.61}, {"Terrain","greek-statue",14,0.63,-0.39} },
-		france = { {"Town","windmill",30,0.73,-0.79}, {"Terrain","bridge-stone",19,-0.63,-0.47}, {"Terrain","forest-flower-purple",6,-0.65,-0.20} },
-		britain = { {"Castle","wall-narrow-gate",27,-0.72,-0.76}, {"Terrain","haunted-iron-gate",16,0.71,-0.60}, {"Terrain","haunted-pine-crooked",20,-0.67,-0.36} },
-		hanse = { {"Town","windmill",31,0.77,-0.76}, {"Naval","structure-platform-dock",24,-0.69,-0.72}, {"Terrain","north-pine-fall",19,-0.73,-0.34} },
+		italy = { {"Terrain","greek-ruins-a",28,0.72,-0.75}, {"Terrain","greek-column",20,-0.62,-0.61}, {"Terrain","greek-statue",14,0.63,-0.39}, {"Town","bell-tower",27,0.84,-0.87}, {"Town","house",19,-0.88,-0.53} },
+		france = { {"Town","windmill",30,0.73,-0.79}, {"Terrain","bridge-stone",19,-0.63,-0.47}, {"Terrain","forest-flower-purple",6,-0.65,-0.20}, {"Town","house",20,0.85,-0.82}, {"Town","village-well",8,-0.79,-0.34} },
+		britain = { {"Castle","wall-narrow-gate",27,-0.72,-0.76}, {"Terrain","haunted-iron-gate",16,0.71,-0.60}, {"Terrain","haunted-pine-crooked",20,-0.67,-0.36}, {"Town","quaternius_watchtower",27,0.84,-0.83}, {"Town","kenney_wood_arch_01",15,-0.85,-0.50} },
+		hanse = { {"Town","windmill",31,0.77,-0.76}, {"Naval","structure-platform-dock",24,-0.69,-0.72}, {"Terrain","north-pine-fall",19,-0.73,-0.34}, {"Town","watermill",26,0.85,-0.83}, {"Town","house",19,-0.86,-0.52} },
 		nordic = { {"Terrain","cliff-rock",39,-0.78,-0.77}, {"Terrain","gate-rock",22,0.73,-0.64}, {"Terrain","north-pine-fall",20,-0.66,-0.24}, {"Terrain","campfire-logs",6,0.57,-0.30} },
-		brick = { {"Town","windmill",31,0.73,-0.81}, {"Terrain","ground-riverbend",25,-0.64,-0.61}, {"Town","house",19,-0.71,-0.32} },
-		stone = { {"Castle","tower-hexagon-base",28,-0.73,-0.73}, {"Terrain","bridge-stone",18,0.63,-0.48}, {"Terrain","north-pine-fall",20,-0.65,-0.28} },
-		med = { {"Terrain","greek-amphitheater",34,-0.76,-0.79}, {"Terrain","greek-column",18,0.71,-0.58}, {"Terrain","coast-grass-patch",8,0.62,-0.28} },
+		brick = { {"Town","windmill",31,0.73,-0.81}, {"Terrain","ground-riverbend",25,-0.64,-0.61}, {"Town","house",19,-0.71,-0.32}, {"Town","quaternius_wall_bricks",24,0.87,-0.83}, {"Town","village-well",8,-0.82,-0.47} },
+		stone = { {"Castle","tower-hexagon-base",28,-0.73,-0.73}, {"Terrain","bridge-stone",18,0.63,-0.48}, {"Terrain","north-pine-fall",20,-0.65,-0.28}, {"Town","quaternius_small_tower",25,0.87,-0.82}, {"Town","house",18,-0.84,-0.54} },
+		med = { {"Terrain","greek-amphitheater",34,-0.76,-0.79}, {"Terrain","greek-column",18,0.71,-0.58}, {"Terrain","coast-grass-patch",8,0.62,-0.28}, {"Town","kenney_grey_arch_01",20,-0.87,-0.83}, {"Town","house",20,0.84,-0.53} },
 		ottoman = { {"Town","temple-stone",36,0.74,-0.78}, {"Terrain","tent-detailedopen",15,-0.66,-0.56}, {"Terrain","egypt-column",17,0.70,-0.32} },
 		desert = { {"Terrain","mystic-sand-dune",34,-0.79,-0.81}, {"Terrain","egypt-temple-arch-a",28,0.73,-0.73}, {"Terrain","egypt-obelisk",25,0.69,-0.40} },
 		swahili = { {"Terrain","tent-detailedopen",17,0.68,-0.68}, {"Terrain","canoe",13,-0.72,-0.70}, {"Terrain","tropical-palm-tall",21,-0.66,-0.30} },
@@ -1263,7 +1290,7 @@ function FieldScene.start(opts)
 		china = { {"Town","temple-tower",40,0.75,-0.82}, {"Terrain","bridge-stone",21,-0.64,-0.56}, {"Terrain","cliff-rock",32,-0.80,-0.83}, {"Terrain","east-bamboo-grove",15,0.66,-0.30} },
 		seasia = { {"Terrain","cliff-waterfall-rock",38,-0.79,-0.81}, {"Terrain","tropical-palm-tall",24,0.76,-0.68}, {"Terrain","east-bamboo-grove",18,-0.66,-0.29} },
 		tropic = { {"Terrain","tropical-palm-tall",24,-0.73,-0.75}, {"Naval","boat-fishing-small",15,0.70,-0.73}, {"Terrain","canoe",12,0.66,-0.39} },
-		colonial = { {"Town","windmill",34,0.75,-0.82}, {"Terrain","crops-cornstagec",15,-0.70,-0.59}, {"Town","house",21,-0.66,-0.32} },
+		colonial = { {"Town","windmill",34,0.75,-0.82}, {"Terrain","crops-cornstagec",15,-0.70,-0.59}, {"Town","house",21,-0.66,-0.32}, {"Town","house",22,0.85,-0.83}, {"Town","village-well",7,-0.83,-0.45} },
 		creole = { {"Terrain","crop-melon",12,-0.71,-0.69}, {"Terrain","tropical-palm-short",17,0.71,-0.59}, {"Terrain","canoe",13,0.63,-0.31} },
 		pacific = { {"Naval","structure-platform-dock",29,-0.71,-0.76}, {"Terrain","canoe",14,0.72,-0.68}, {"Terrain","tropical-palm-tall",24,0.69,-0.29} },
 		wafrica = { {"Terrain","tent-detailedopen",18,-0.72,-0.68}, {"Terrain","tropical-palm-tall",23,0.71,-0.75}, {"Terrain","canoe",14,0.66,-0.39} },
