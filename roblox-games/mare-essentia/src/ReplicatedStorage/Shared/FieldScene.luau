@@ -980,6 +980,9 @@ function FieldScene.start(opts)
 	do
 
 	local mirror = if (math.floor(tonumber(opts.seed) or 7) % 2 == 0) then 1 else -1
+	-- [전경 배치 난수 분리] 시야 구성 때문에 기존 rng 시퀀스가 달라져
+	-- 퀘스트 카드·적 위치·공격 패턴에 영향을 주지 않도록 승인 실물의 재배치만 별도 추첨한다.
+	local visualLayoutRng = Random.new((portVisualSeed + math.floor(tonumber(opts.seed) or 7) * 97) % 2147483647)
 
 	-- [실물 배경 통합 배치] 나무·바위·문화권 소품·퀘스트 건축물 모두 기존 승인된 원본으로만 생성한다.
 	-- AssetLoader가 뒤늦게 등록한 모델도 같은 좌표에 한 번만 배치한다. 새 파츠 대체는 하지 않는다.
@@ -1143,8 +1146,8 @@ function FieldScene.start(opts)
 		-- 기존 나무 다섯 그루 중 한 그루를 진입로 양옆에 둔다. 스폰·중앙 전투로와 수량은 그대로다.
 		if index % 5 == 1 then
 			local lane = math.floor((index - 1) / 5) % 3
-			pos = ORIGIN + Vector3.new((if index % 2 == 0 then -1 else 1) * half * rng:NextNumber(0.27, 0.37), 0,
-				half * (0.72 - lane * 0.18) + rng:NextNumber(-6, 6))
+			pos = ORIGIN + Vector3.new((if index % 2 == 0 then -1 else 1) * half * visualLayoutRng:NextNumber(0.27, 0.37), 0,
+				half * (0.72 - lane * 0.18) + visualLayoutRng:NextNumber(-6, 6))
 		end
 		local h = rng:NextNumber(9, 15)
 		local name = treeNames[rng:NextInteger(1, #treeNames)]
@@ -1208,8 +1211,8 @@ function FieldScene.start(opts)
 		-- [전투로 측면] 기존 암석의 일부를 중경 자갈·암반층으로 재배치한다.
 		-- 중앙 공격 동선과 최초 스폰 지점을 침범하지 않고 기존 암석 개수만 사용한다.
 		if index % 6 == 1 then
-			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.30, 0.43), 0,
-				half * (0.62 - (math.floor((index - 1) / 6) % 2) * 0.20) + rng:NextNumber(-7, 7))
+			pos = ORIGIN + Vector3.new(side * half * visualLayoutRng:NextNumber(0.30, 0.43), 0,
+				half * (0.62 - (math.floor((index - 1) / 6) % 2) * 0.20) + visualLayoutRng:NextNumber(-7, 7))
 		end
 		local rock = rockNames[rng:NextInteger(1, #rockNames)]
 		local entry = { rock[1], rock[2], rng:NextNumber(2.5, 6), nil, nil, true }
