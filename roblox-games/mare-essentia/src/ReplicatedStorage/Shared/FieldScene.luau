@@ -1630,7 +1630,8 @@ function FieldScene.start(opts)
 	local regionalFeatures = regionalSilhouettes[region]
 	if regionalFeatures then
 		for index, feature in regionalFeatures do
-			if not visualMobile or index <= 3 then
+			-- [대륙·항구 실루엣] 모바일도 그래픽 품질에 따라 기등록 랜드마크 4~5종을 노출한다.
+			if not visualMobile or index <= math.ceil(3 + fieldVisualDensity) then
 				-- [대륙 → 항구 → 탐험지] 문화권의 앞 두 랜드마크는 보존.
 				-- 세 번째 배경만 항구의 지리와 siteId에서 뽑은 승인 실물 원본으로 교체한다.
 				local selected = feature
