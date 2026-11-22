@@ -11,7 +11,15 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local c=workspace.CurrentCamera c.CameraType=Enum.CameraType.Scriptable c.FieldOfView=70 c.CFrame=CFrame.lookAt(Vector3.new(3000,14,96),Vector3.new(3000,3,40)) local n=0 local names={} local f=workspace.FieldScene for _,m in f:GetChildren() do if m:IsA('Model') and m:FindFirstChildOfClass('Humanoid') then n+=1 local r=m:FindFirstChild('HumanoidRootPart') names[#names+1]=m.Name..'@'..tostring(r and r.Position) end end return 'mobs='..n..' '..table.concat(names,';')"
+  "code": "local c=workspace.CurrentCamera c.CameraType=Enum.CameraType.Scriptable c.FieldOfView=70 local ch=game.Players.LocalPlayer.Character local hr=ch and ch:FindFirstChild('HumanoidRootPart') local p=hr and hr.Position or Vector3.new(3000,4,140) c.CFrame=CFrame.lookAt(p+Vector3.new(0,12,22),p+Vector3.new(0,3,-33)) local n=0 local names={} local f=workspace.FieldScene for _,m in f:GetChildren() do if m:IsA('Model') and m:FindFirstChildOfClass('Humanoid') then n+=1 local r=m:FindFirstChild('HumanoidRootPart') names[#names+1]=m.Name..'@'..tostring(r and r.Position) end end return 'mobs='..n..' '..table.concat(names,';')"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "f0_environment"
  },
  {
   "type": "luau",
@@ -29,7 +37,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local f=workspace:FindFirstChild('FieldScene') local h,parts,models=0,0,0 if f then for _,d in f:GetDescendants() do if d:IsA('Humanoid') then h+=1 elseif d:IsA('Model') then models+=1 elseif d:IsA('BasePart') then parts+=1 end end end local c=workspace.CurrentCamera local ch=game.Players.LocalPlayer.Character local hr=ch and ch:FindFirstChild('HumanoidRootPart') return 'err='..tostring(workspace:GetAttribute('FieldErr'))..' done='..tostring(workspace:GetAttribute('FieldDone'))..' humanoids='..h..' models='..models..' parts='..parts..' cam='..tostring(c.CFrame.Position)..' hrp='..tostring(hr and hr.Position)..' shelves='..tostring(f and f:GetAttribute('FieldElevatedTerraceCount'))..' ridges='..tostring(f and f:GetAttribute('FieldDepthRidgeCount'))..' near3D='..tostring(f and f:GetAttribute('FieldNearDepthBandCount'))..' placed3D='..tostring(f and f:GetAttribute('FieldDepthFeatureCount'))"
+  "code": "local f=workspace:FindFirstChild('FieldScene') local h,parts,models=0,0,0 if f then for _,d in f:GetDescendants() do if d:IsA('Humanoid') then h+=1 elseif d:IsA('Model') then models+=1 elseif d:IsA('BasePart') then parts+=1 end end end local c=workspace.CurrentCamera local ch=game.Players.LocalPlayer.Character local hr=ch and ch:FindFirstChild('HumanoidRootPart') return 'err='..tostring(workspace:GetAttribute('FieldErr'))..' done='..tostring(workspace:GetAttribute('FieldDone'))..' humanoids='..h..' models='..models..' parts='..parts..' cam='..tostring(c.CFrame.Position)..' hrp='..tostring(hr and hr.Position)..' shelves='..tostring(f and f:GetAttribute('FieldElevatedTerraceCount'))..' ridges='..tostring(f and f:GetAttribute('FieldDepthRidgeCount'))..' near3D='..tostring(f and f:GetAttribute('FieldNearDepthBandCount'))..' placed3D='..tostring(f and f:GetAttribute('FieldDepthFeatureCount'))..' near='..tostring(f and f:GetAttribute('FieldSceneryNearPlaced'))..' mid='..tostring(f and f:GetAttribute('FieldSceneryMidPlaced'))..' far='..tostring(f and f:GetAttribute('FieldSceneryFarPlaced'))..' port='..tostring(f and f:GetAttribute('FieldPortNature'))..' quest='..tostring(f and f:GetAttribute('FieldQuestTerrainTheme'))"
  },
  {
   "type": "wait",
