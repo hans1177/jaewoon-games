@@ -8963,7 +8963,6 @@ function FieldScene.start(opts)
 						1 - math.exp(-(if moving then 5.5 else 8) * math.clamp(dt, 0, 0.1))))
 				end
 				-- [동료 자연 보행] 적 타격/사격/지원 연출 없이 원래 R15 걷기·대기 모션만 재생한다.
-				local gaitMoving = walked > 0.01
 				if a.fm and a.fm.nj > 0 then
 					if gaitMoving then
 						FM.actor(a.fm, "RUN", (a.gait or 0) % 1, dt, nil, 1.3, nil, false, nil, a.weapon.motion,
