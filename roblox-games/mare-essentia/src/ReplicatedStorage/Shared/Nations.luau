@@ -200,6 +200,155 @@ local function normalizeFocus(f)
 	for _, k in ipairs(N.FIELDS) do f[k] = f[k] / sum end
 end
 
+-- ───────── 발견·연구 (실제 연구로 쌓이는 기술) ─────────
+-- 나라는 시대 문턱이 아니라 "연구"로 발견을 얻는다. 발견마다 선행 발견·비용·분야가 있고,
+-- 연구력(학문·과학 발전, 식자율, 지도자 능력, 경제 규모, 도시 기술)이 점수를 쌓아 발견을 완성한다.
+-- 이미 아는 나라가 동맹·우호·인접이면 배우기 쉽고(확산), 세상에서 처음이면 "최초 발견" 기록이 남는다.
+-- 효과는 식량·무기·조선·병종 전투력·재정·식자율·연구 속도 보정으로 이어진다 (경제 수치는 건드리지 않는다).
+-- fx 의 값은 합산되어 (1 + 합) 배율이 된다.
+N.TECHS = {
+	{ id = "mathematics", name = "수학·대수", field = "sci", disc = "physics", cost = 24, req = {}, fx = { research = 0.03 }, init = 0.7 },
+	{ id = "printing", name = "인쇄술", field = "learn", disc = "linguistics", cost = 34, req = {}, fx = { lit = 0.08, research = 0.04 }, init = 0.6 },
+	{ id = "flintlock", name = "수석식 소총", field = "mil", disc = "chemistry", cost = 34, req = {}, fx = { unit_inf = 0.25, unit_militia = 0.1 }, init = 0.6 },
+	{ id = "galleon", name = "대형 범선 설계", field = "navy", disc = "shipbuilding", cost = 36, req = {}, fx = { ships = 0.1, unit_frigate = 0.15, unit_transport = 0.15 }, init = 0.6 },
+	{ id = "crop_rotation", name = "윤작", field = "admin", disc = "botany", cost = 38, req = {}, fx = { food = 0.12 }, init = 0.4 },
+	{ id = "double_entry", name = "복식 부기", field = "trade", disc = "commerce", cost = 40, req = {}, fx = { income = 0.04 }, init = 0.5 },
+	{ id = "quarantine", name = "검역 제도", field = "admin", disc = "medicine", cost = 44, req = {}, fx = { health = 0.1 }, init = 0.3 },
+	{ id = "astronomy_tables", name = "항해 천문표", field = "navy", disc = "navigation", cost = 56, req = { "mathematics" }, fx = { ships = 0.06, trade = 0.03 }, init = 0.3 },
+	{ id = "universities", name = "대학 제도", field = "learn", disc = "philosophy", cost = 62, req = { "printing" }, fx = { research = 0.08, lit = 0.05 }, init = 0.25 },
+	{ id = "metallurgy", name = "고로 제철", field = "mil", disc = "mineralogy", cost = 66, req = {}, fx = { arms = 0.18 }, init = 0.25 },
+	{ id = "bayonet", name = "총검", field = "mil", disc = "chemistry", cost = 70, req = { "flintlock" }, fx = { unit_inf = 0.2, doctrine = 0.04 }, init = 0.15 },
+	{ id = "fortification", name = "능보식 요새", field = "mil", disc = "architecture", cost = 72, req = { "mathematics" }, fx = { manpower = 0.04, doctrine = 0.03 }, init = 0.2 },
+	{ id = "naval_gunnery", name = "함포 사격술", field = "navy", disc = "physics", cost = 78, req = { "galleon", "metallurgy" }, fx = { unit_frigate = 0.12, unit_line = 0.12 }, init = 0.12 },
+	{ id = "joint_stock", name = "주식회사", field = "trade", disc = "commerce", cost = 84, req = { "double_entry" }, fx = { income = 0.05, trade = 0.05 }, init = 0.12 },
+	{ id = "bureaucratic_exams", name = "관료 선발 제도", field = "admin", disc = "political_science", cost = 86, req = {}, fx = { income = 0.03, manpower = 0.03, lit = 0.04 }, init = 0.2 },
+	{ id = "chemistry", name = "근대 화학", field = "sci", disc = "chemistry", cost = 100, req = { "mathematics", "universities" }, fx = { powder = 0.2, research = 0.05 }, init = 0.04 },
+	{ id = "scientific_method", name = "과학적 방법", field = "sci", disc = "philosophy", cost = 120, req = { "universities", "mathematics" }, fx = { research = 0.14 }, init = 0.04 },
+	{ id = "ship_of_the_line", name = "전열함 설계", field = "navy", disc = "shipbuilding", cost = 120, req = { "naval_gunnery", "astronomy_tables" }, fx = { ships = 0.1, unit_line = 0.3 }, init = 0.05 },
+	{ id = "linear_tactics", name = "선형 전술", field = "mil", disc = "history", cost = 124, req = { "bayonet" }, fx = { doctrine = 0.1, unit_inf = 0.12 }, init = 0.04 },
+	{ id = "field_artillery", name = "야전포", field = "mil", disc = "physics", cost = 130, req = { "metallurgy", "chemistry" }, fx = { unit_art = 0.35 }, init = 0.03 },
+	{ id = "central_bank", name = "중앙은행", field = "trade", disc = "economics", cost = 140, req = { "joint_stock", "bureaucratic_exams" }, fx = { income = 0.06, debt = 0.25 }, init = 0.02 },
+	{ id = "standing_army", name = "상비군 제도", field = "mil", disc = "political_science", cost = 150, req = { "linear_tactics", "bureaucratic_exams" }, fx = { manpower = 0.15, unit_inf = 0.1 }, init = 0.02 },
+	{ id = "academies", name = "학술원·학회", field = "learn", disc = "philosophy", cost = 160, req = { "scientific_method" }, fx = { research = 0.12, lit = 0.06 }, init = 0.01 },
+	{ id = "chronometer", name = "해상 시계", field = "navy", disc = "navigation", cost = 170, req = { "scientific_method", "astronomy_tables" }, fx = { ships = 0.1, trade = 0.08 }, init = 0 },
+	{ id = "inoculation", name = "종두법", field = "sci", disc = "medicine", cost = 190, req = { "quarantine", "scientific_method" }, fx = { health = 0.25 }, init = 0 },
+	{ id = "copper_sheathing", name = "선체 동판", field = "navy", disc = "chemistry", cost = 200, req = { "chemistry", "ship_of_the_line" }, fx = { ships = 0.12, unit_line = 0.12 }, init = 0 },
+	{ id = "column_tactics", name = "종대 전술", field = "mil", disc = "history", cost = 260, req = { "standing_army", "field_artillery" }, fx = { doctrine = 0.14, unit_inf = 0.18, unit_art = 0.15 }, init = 0 },
+	{ id = "steam_engine", name = "증기 기관", field = "sci", disc = "physics", cost = 320, req = { "scientific_method", "metallurgy" }, fx = { arms = 0.15, ships = 0.1, research = 0.05 }, init = 0 },
+}
+N.TECH_BY_ID = {}
+for _, tdef in ipairs(N.TECHS) do N.TECH_BY_ID[tdef.id] = tdef end
+
+local function mm(S, key)
+	return 1 + ((S.mods and S.mods[key]) or 0)
+end
+
+local function recomputeMods(S)
+	local mods = {}
+	for id in pairs(S.tech.known) do
+		local def = N.TECH_BY_ID[id]
+		if def then
+			for k, v in pairs(def.fx) do mods[k] = (mods[k] or 0) + v end
+		end
+	end
+	S.mods = mods
+end
+
+-- 시작 시점: 발전도와 문화권 바탕으로 이미 가진 발견 (선행 발견이 있어야만 얻는다)
+local function initTech(st, S)
+	S.tech = { known = {}, cur = nil, prog = 0, count = 0 }
+	for _, def in ipairs(N.TECHS) do
+		local ok = true
+		for _, r in ipairs(def.req) do if not S.tech.known[r] then ok = false end end
+		local dev = (S.dev[def.field] or 25) / 100
+		if ok and def.init > 0 and hash01(S.id .. ":init:" .. def.id) < def.init * (0.4 + dev * 1.4) then
+			S.tech.known[def.id] = math.floor(st.startYear)
+			S.tech.count += 1
+		end
+	end
+	recomputeMods(S)
+end
+
+local function researchRate(S)
+	local m = S.metrics
+	local soc = S.soc or { literacy = 0.2 }
+	local base = 0.35 + S.dev.learn / 160 + S.dev.sci / 160 + soc.literacy * 0.7 + S.ruler.skills.sci / 20
+	local economy = clamp(math.log(1 + m.gdp) / 12, 0.3, 1.2)
+	local city = clamp((m.tech or 1) / 2, 0.5, 1.4)
+	local calm = if S.stab > 0.4 then 1 else 0.5
+	local reg = (N.REGIMES[S.regime] or N.REGIMES.absolute).mods
+	local focus = 0.7 + ((S.focus.sci or 0.14) + (S.focus.learn or 0.14)) * 1.8
+	return base * economy * city * calm * focus * mm(S, "research") * (reg.sci or 1) * (S.war and 0.85 or 1)
+end
+
+local function knownBy(st, S, techId)
+	local n = 0
+	for other, v in pairs(S.rel) do
+		local O = st.states[other]
+		if O and O.tech and O.tech.known[techId] and (S.allies[other] or v > 10 or (st.adjacency[S.id] and st.adjacency[S.id][other])) then n += 1 end
+	end
+	return n
+end
+
+local function pickTech(st, S)
+	local best, bestScore = nil, -1
+	for _, def in ipairs(N.TECHS) do
+		if not S.tech.known[def.id] then
+			local ok = true
+			for _, r in ipairs(def.req) do if not S.tech.known[r] then ok = false break end end
+			if ok then
+				local f = S.focus[def.field] or 0.14
+				local war = if S.war and (def.field == "mil" or def.field == "navy") then 0.08 else 0
+				local score = f + war + hash01(S.id .. ":pick:" .. def.id .. ":" .. tostring(S.tech.count)) * 0.12 - def.cost / 4000 + knownBy(st, S, def.id) * 0.015
+				if score > bestScore then best, bestScore = def, score end
+			end
+		end
+	end
+	return best
+end
+
+local function stepTech(st, S)
+	local T = S.tech
+	if not T.cur or T.known[T.cur] or not N.TECH_BY_ID[T.cur] then
+		local def = pickTech(st, S)
+		T.cur, T.prog = def and def.id or nil, 0
+	end
+	local def = T.cur and N.TECH_BY_ID[T.cur]
+	if not def then return end
+	local seen = knownBy(st, S, def.id)
+	local first = st.firsts[def.id] == nil
+	-- 아는 이웃이 많을수록 싸고(최대 40%), 세상에서 처음이면 20% 비싸다
+	local cost = def.cost * (1 - math.min(4, seen) * 0.1) * (if first then 1.2 else 1)
+	-- 우연한 번뜩임: 식자율이 높은 나라는 가끔 점수를 크게 얻는다
+	local spark = if roll(st, S.id .. ":spark") < 0.02 * (0.5 + (S.soc and S.soc.literacy or 0.2) * 2) then 1.8 else 1
+	T.prog += researchRate(S) * spark
+	if T.prog >= cost then
+		T.known[def.id] = math.floor(year(st))
+		T.count += 1
+		T.prog = 0
+		T.cur = nil
+		recomputeMods(S)
+		if first then
+			st.firsts[def.id] = { nation = S.id, year = math.floor(year(st)) }
+			S.prestige = (S.prestige or 0) + 0.5
+			logEvent(st, S.id, "discovery_first", string.format("%s 최초 발견: %s", S.id, def.name))
+		else
+			logEvent(st, S.id, "discovery", string.format("%s 발견: %s", S.id, def.name))
+		end
+	end
+end
+
+-- 현재 교리 이름 (병종·전술 발견으로 정해진다)
+function N.doctrineName(S)
+	local k = (S.tech and S.tech.known) or {}
+	if k.column_tactics then return "종대 전술" end
+	if k.standing_army then return "상비군 선형 전술" end
+	if k.linear_tactics then return "선형 전술" end
+	if k.bayonet then return "총검 보병" end
+	if k.flintlock then return "총병·창병 혼성" end
+	return "창병·기사 중심"
+end
+
 -- ───────── 자원·생산력·군사 편제 ─────────
 -- 나라가 가진 항구의 특산 원자재(t.produces)와 발전도(단계·인구·기술)에서 자원 기반을 계산하고,
 -- 그 기반 위에서 육군(보병·기병·포병·민병)·해군(전열함·프리깃·소형선·수송선)·상비군 규모가 자란다.
@@ -249,6 +398,10 @@ local function capacities(S)
 	cap.ships = (sat(r.timber, 2) * 0.5 + sat(r.fiber, 2) * 0.2 + sat(r.yards, 1.2) * 0.3) * (0.6 + d.navy / 160) * (0.7 + sci * 0.5)
 	cap.horse = sat(r.animal, 3) * (0.7 + d.mil / 200)
 	cap.treasure = sat(r.bullion, 3)
+	cap.food *= mm(S, "food")
+	cap.arms *= mm(S, "arms")
+	cap.powder *= mm(S, "powder")
+	cap.ships *= mm(S, "ships")
 	return cap
 end
 
@@ -259,7 +412,7 @@ local function stepForces(st, S, instant)
 	local cap = S.cap
 	local reg = N.REGIMES[S.regime] or N.REGIMES.absolute
 	local mobil = (reg.mods.mil or 1) * (0.5 + S.stab * 0.5)
-	local manpower = m.pop * 0.0045 * mobil * math.min(1.2, cap.food) -- 먹여 살릴 수 있는 만큼만 징집
+	local manpower = m.pop * 0.0045 * mobil * math.min(1.2, cap.food) * mm(S, "manpower") -- 먹여 살릴 수 있는 만큼만 징집
 	local milShare = S.focus.mil / math.max(0.05, S.focus.mil + S.focus.navy)
 	local budget = S.fin.income * (0.35 + S.focus.mil * 1.2 + S.focus.navy * 0.8 + (S.war and 0.3 or 0))
 	local armyBudget, navyBudget = budget * milShare, budget * (1 - milShare)
@@ -287,11 +440,11 @@ local function stepForces(st, S, instant)
 	for _, k in ipairs(N.ARMY_KEYS) do F[k] = math.max(0, F[k]) end
 	for _, k in ipairs(N.NAVY_KEYS) do F[k] = math.max(0, F[k]) end
 	-- 전술·교리 수준: 군사 발전도 + 학문·과학
-	F.doctrine = clamp((S.dev.mil * 0.5 + S.dev.learn * 0.25 + S.dev.sci * 0.25) / 100, 0, 1)
+	F.doctrine = clamp((S.dev.mil * 0.5 + S.dev.learn * 0.25 + S.dev.sci * 0.25) / 100 + ((S.mods and S.mods.doctrine) or 0), 0, 1.2)
 	-- 합산 전투력
 	local army, navy = 0, 0
-	for _, k in ipairs(N.ARMY_KEYS) do army += F[k] * UNIT_POWER[k] end
-	for _, k in ipairs(N.NAVY_KEYS) do navy += F[k] * UNIT_POWER[k] end
+	for _, k in ipairs(N.ARMY_KEYS) do army += F[k] * UNIT_POWER[k] * mm(S, "unit_" .. k) end
+	for _, k in ipairs(N.NAVY_KEYS) do navy += F[k] * UNIT_POWER[k] * mm(S, "unit_" .. k) end
 	local quality = 0.7 + F.doctrine * 0.8
 	S.armyPower = army * quality
 	S.navyPower = navy * quality
@@ -369,11 +522,12 @@ local function newState(st, id, regimeOverride)
 		legit = reg.legit, stab = 0.6, focus = {}, dev = {}, culture = { stock = 0, level = 1 },
 		fin = { income = 1, debt = 0, treasury = 0 }, rel = {}, allies = {}, war = nil,
 		regentUntil = 0, civilUntil = 0, metrics = { pop = 0, gdp = 0, trade = 0, towns = 0 },
-		soc = { unrest = 0.1, literacy = 0.2, urban = 0, lastPop = 0 }, res = emptyRes(), cap = {}, power = 0, armyPower = 0, navyPower = 0, standing = 0,
+		soc = { unrest = 0.1, literacy = 0.2, urban = 0, lastPop = 0 }, mods = {}, res = emptyRes(), cap = {}, power = 0, armyPower = 0, navyPower = 0, standing = 0,
 		forces = { inf = 0, cav = 0, art = 0, militia = 0, line = 0, frigate = 0, small = 0, transport = 0, doctrine = 0 },
 	}
 	for _, k in ipairs(N.FIELDS) do S.dev[k] = 25 + (S.bias[k] or 0) * 60 end
 	S.focus = targetFocus(S)
+	initTech(st, S)
 	return S
 end
 
@@ -537,7 +691,7 @@ end
 -- ───────── 초기화 ─────────
 function N.init(w)
 	local st = { schema = N.SCHEMA, seed = math.floor(w.seed or 1), day = w.day or 0, startYear = w.startYear or 1650,
-		states = {}, liege = {}, log = {}, ranks = {}, adjacency = {}, owner = {}, ports = {} }
+		states = {}, liege = {}, log = {}, ranks = {}, adjacency = {}, owner = {}, ports = {}, firsts = {} }
 	local seen = {}
 	for _, id in ipairs(w.order) do seen[w.towns[id].country] = true end
 	local ids = {}
@@ -568,6 +722,14 @@ function N.init(w)
 	for id, S in pairs(st.states) do
 		for other, weight in pairs(st.adjacency[id] or {}) do
 			if st.states[other] then S.rel[other] = clamp(10 - weight * 2 + (hash01(id .. other) - 0.5) * 30, -60, 60) end
+		end
+	end
+	local order = {}
+	for id in pairs(st.states) do table.insert(order, id) end
+	table.sort(order)
+	for _, id in ipairs(order) do
+		for techId in pairs(st.states[id].tech.known) do
+			if not st.firsts[techId] then st.firsts[techId] = { nation = id, year = st.startYear } end
 		end
 	end
 	seedForces(st, w)
@@ -644,12 +806,12 @@ local function stepSociety(st, S)
 	local growth = if soc.lastPop > 0 then (pop - soc.lastPop) / soc.lastPop else 0
 	soc.lastPop = pop
 	local foodShort = if S.cap and S.cap.food then math.max(0, 0.7 - S.cap.food) else 0
-	local burden = S.fin.income > 0 and clamp(S.fin.debt / (S.fin.income * 12), 0, 1) or 0
-	local pressure = foodShort * 0.8 + burden * 0.4 + (S.war and 0.15 or 0) + math.max(0, growth) * 6 + (S.standing or 0) * 0.02
+	local burden = S.fin.income > 0 and clamp(S.fin.debt / (S.fin.income * 12) * (1 - math.min(0.6, (S.mods and S.mods.debt) or 0)), 0, 1) or 0
+	local pressure = foodShort * 0.8 + burden * 0.4 + (S.war and 0.15 or 0) + math.max(0, growth) * 6 + (S.standing or 0) * 0.02 - ((S.mods and S.mods.health) or 0) * 0.15
 	local relief = (S.dev.admin / 100) * 0.25 + S.legit * 0.2 + (reg.stab or 0) * 0.5
 	soc.unrest = clamp(soc.unrest + (pressure - relief) * 0.12, 0, 1)
 	local urban = clamp((m.stage - 1) / 4, 0, 1)
-	local litTarget = clamp((S.dev.learn * 0.5 + S.dev.culture * 0.3) / 100 + urban * 0.2, 0, 1)
+	local litTarget = clamp((S.dev.learn * 0.5 + S.dev.culture * 0.3) / 100 + urban * 0.2 + ((S.mods and S.mods.lit) or 0), 0, 1)
 	soc.literacy = clamp(soc.literacy + (litTarget - soc.literacy) * 0.05, 0, 1)
 	soc.urban = urban
 	-- 확산: 동맹·교역 상대의 발전도가 높으면 천천히 따라간다
@@ -704,6 +866,8 @@ local function stepState(st, S)
 		S.dev[k] = clamp(S.dev[k] + gain * (1 - S.dev[k] / 100), 0, 100)
 	end
 	stepSociety(st, S)
+	stepTech(st, S)
+	S.fin.income = S.fin.income * mm(S, "income") * (1 + 0.5 * ((S.mods and S.mods.trade) or 0))
 	stepForces(st, S)
 	-- 재정: 전쟁과 행정이 약하면 빚이 늘고, 평시에는 갚는다
 	local spend = S.fin.income * (0.75 + S.focus.mil * 0.6 + S.focus.navy * 0.3 + (S.war and 0.25 or 0))
@@ -958,7 +1122,7 @@ function N.view(st, id)
 		cultureLevel = S.culture.level, cultureName = N.BRAND_NAMES[S.culture.level], war = S.war and S.war.foe or nil,
 		rank = st.ranks[owner], regent = st.day < S.regentUntil, civilWar = st.day < S.civilUntil,
 		debt = S.fin.debt, income = S.fin.income,
-		soc = S.soc, res = S.res, cap = S.cap, forces = S.forces, power = S.power, armyPower = S.armyPower, navyPower = S.navyPower, standing = S.standing,
+		soc = S.soc, tech = S.tech, mods = S.mods, doctrine = N.doctrineName(S), prestige = S.prestige, res = S.res, cap = S.cap, forces = S.forces, power = S.power, armyPower = S.armyPower, navyPower = S.navyPower, standing = S.standing,
 	}
 end
 
@@ -1057,7 +1221,7 @@ function N.snapshot(st)
 	if not st then return nil end
 	return clean({
 		schema = st.schema, seed = st.seed, day = st.day, startYear = st.startYear,
-		states = st.states, liege = st.liege, log = st.log, owner = st.owner, ports = st.ports,
+		states = st.states, liege = st.liege, log = st.log, owner = st.owner, ports = st.ports, firsts = st.firsts,
 	}, 0)
 end
 
@@ -1086,6 +1250,17 @@ local function repair(st, S)
 	S.fin.treasury = tonumber(S.fin.treasury) or 0
 	S.legit = clamp(tonumber(S.legit) or 0.6, 0.1, 1)
 	S.prestige = math.max(0, tonumber(S.prestige) or 0)
+	if type(S.tech) ~= "table" or type(S.tech.known) ~= "table" then
+		initTech(st, S)
+	end
+	local known, count = {}, 0
+	for id, y in pairs(S.tech.known) do
+		if N.TECH_BY_ID[id] then known[id] = math.floor(tonumber(y) or st.startYear); count += 1 end
+	end
+	S.tech.known, S.tech.count = known, count
+	S.tech.prog = math.max(0, tonumber(S.tech.prog) or 0)
+	if S.tech.cur ~= nil and (type(S.tech.cur) ~= "string" or not N.TECH_BY_ID[S.tech.cur]) then S.tech.cur = nil end
+	recomputeMods(S)
 	if type(S.tribute) ~= "table" or type(S.tribute.to) ~= "string" then S.tribute = nil else S.tribute.untilDay = tonumber(S.tribute.untilDay) or 0 end
 	if type(S.fam) ~= "string" or not N.FAMILIES[S.fam] then S.fam = nil end
 	S.stab = clamp(tonumber(S.stab) or 0.5, 0, 1)
@@ -1132,7 +1307,12 @@ function N.restore(w, snap)
 			if data.liege[c] == nil then st.liege[c] = nil end
 		end
 	end
-	st.owner, st.ports = {}, {}
+	st.owner, st.ports, st.firsts = {}, {}, {}
+	if type(data.firsts) == "table" then
+		for id, row in pairs(data.firsts) do
+			if N.TECH_BY_ID[id] and type(row) == "table" and type(row.nation) == "string" then st.firsts[id] = { nation = row.nation, year = math.floor(tonumber(row.year) or st.startYear) } end
+		end
+	end
 	if type(data.owner) == "table" then
 		for pid, o in pairs(data.owner) do
 			if type(pid) == "string" and type(o) == "string" and w.towns[pid] and data.states[o] then st.owner[pid] = o end

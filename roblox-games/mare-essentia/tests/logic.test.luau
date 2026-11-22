@@ -3648,6 +3648,50 @@ local function testNations()
 		end
 		check("3년 뒤에도 항구 불만·동화 값이 정상이다", okp)
 	end
+	-- 발견·연구: 선행 발견, 연구로 얻는 효과, 확산, 저장·복원
+	do
+		local w6: any = E.newWorld({ seed = 321, year = 1650 })
+		local s6: any = w6.nations
+		local badReq, total, started = 0, 0, 0
+		for _, S in pairs(s6.states) do
+			for id in pairs(S.tech.known) do
+				total += 1
+				for _, r in ipairs(N.TECH_BY_ID[id].req) do if not S.tech.known[r] then badReq += 1 end end
+			end
+		end
+		check("시작 발견은 선행 발견을 모두 갖춘다", badReq == 0 and total > 40)
+		local counts = {}
+		for _, S in pairs(s6.states) do counts[S.tech.count] = true end
+		local kinds = 0
+		for _ in pairs(counts) do kinds += 1 end
+		check("나라마다 시작 발견 수가 다르다", kinds >= 4)
+		local sumBefore = 0
+		for _, S in pairs(s6.states) do sumBefore += S.tech.count end
+		for _ = 1, 365 * 8 do E.step(w6) end
+		local sumAfter, badReq2, notNeg = 0, 0, true
+		for _, S in pairs(s6.states) do
+			sumAfter += S.tech.count
+			for id in pairs(S.tech.known) do
+				for _, r in ipairs(N.TECH_BY_ID[id].req) do if not S.tech.known[r] then badReq2 += 1 end end
+			end
+			if not (S.power >= 0 and S.power < 1e9) then notNeg = false end
+		end
+		check("8년 연구하면 발견이 늘어난다", sumAfter > sumBefore)
+		check("연구해도 선행 발견 순서가 지켜진다", badReq2 == 0 and notNeg)
+		local firstCount = 0
+		for _ in pairs(s6.firsts) do firstCount += 1 end
+		check("최초 발견 기록이 있다", firstCount >= 5)
+		local v6 = N.view(s6, "england")
+		check("국가 조회에 발견·교리가 있다", v6.tech ~= nil and v6.doctrine ~= "" and v6.mods ~= nil)
+		local back6: any = E.restoreWorld(E.snapshot(w6))
+		check("발견이 저장·복원된다", back6 ~= nil and back6.nations.states.england.tech.count == s6.states.england.tech.count
+			and back6.nations.firsts.printing ~= nil)
+		local bad6 = E.snapshot(w6)
+		bad6.nations.states.england.tech.known.fake_tech = 1650
+		bad6.nations.states.england.tech.cur = "없는발견"
+		local fix6: any = E.restoreWorld(bad6)
+		check("손상된 발견 저장값을 고쳐서 복원한다", fix6 ~= nil and fix6.nations.states.england.tech.known.fake_tech == nil)
+	end
 end
 testNations()
 
