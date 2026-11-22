@@ -687,15 +687,15 @@ function NavalBattle.play(opts)
 		-- [해안 원근층] CC0 절벽 원본 3종만 각 해역 바깥쪽에 추가한다.
 		-- 실제 항구/물가에 존재하던 실물과 같은 수입 경로로 단 한번 로드한다.
 		local depthCoast = if coast.id == "caribbean" or coast.id == "tropical" or coast.id == "gold_coast" then {
-			{ "cliff-cornerlarge-stone", 142, -473, -393 }, { "tree-palmbend", 70, -444, -353 },
+			{ "cliff-cornerinnerlarge-rock", 142, -473, -393 }, { "tree-palmbend", 70, -444, -353 },
 			{ "cliff-blockslope-rock", 113, -471, -388 }, { "cliff-top-rock", 92, 464, 401 },
 			{ "tree-palmdetailedtall", 65, 478, 410 },
 		} elseif coast.id == "north_sea" or coast.id == "arctic" or coast.id == "cape" or coast.id == "atlantic_storm" then {
-			{ "cliff-large-stone", 149, 473, -401 }, { "cliff-cornerlarge-stone", 118, -472, 395 },
+			{ "cliff-cornertop-rock", 149, 473, -401 }, { "cliff-cornerlarge-stone", 118, -472, 395 },
 			{ "cliff-waterfall-stone", 137, 489, -425 }, { "cliff-top-rock", 123, -500, 384 },
 			{ "cliff-blockslope-rock", 102, -437, -410 },
 		} else {
-			{ "cliff-cornerlarge-stone", 140, -488, 375 }, { "cliff-large-stone", 117, 495, -413 },
+			{ "cliff-cornerinnerlarge-rock", 140, -488, 375 }, { "cliff-cornertop-rock", 117, 495, -413 },
 			{ "cliff-blockslope-rock", 128, -496, 371 }, { "cliff-large-rock", 136, 486, -401 },
 			{ "cliff-cornerlarge-rock", 98, 438, 410 },
 		}
@@ -865,7 +865,7 @@ function NavalBattle.play(opts)
 			wakeAnchor.WorldCFrame = CFrame.new(ORIGIN + pos)
 			wakeAnchor.Parent = workspace.Terrain
 			wakeFoam = Instance.new("ParticleEmitter")
-			wakeFoam.Texture = "rbxasset://textures/particles/smoke_main.dds"
+			wakeFoam.Texture = "rbxasset://textures/particles/sparkles_main.dds"
 			wakeFoam.Color = ColorSequence.new(Color3.fromRGB(214, 244, 248), Color3.fromRGB(129, 194, 207))
 			wakeFoam.Transparency = NumberSequence.new({
 				NumberSequenceKeypoint.new(0, 0.39),
@@ -877,9 +877,9 @@ function NavalBattle.play(opts)
 				NumberSequenceKeypoint.new(0.4, if MOBILE_VFX then 2.8 else 4.1),
 				NumberSequenceKeypoint.new(1, 0),
 			})
-			wakeFoam.Speed = NumberRange.new(0.8, 2.6)
+			wakeFoam.Speed = NumberRange.new(0.8, if roughSeas then 4.3 else 2.6)
 			wakeFoam.Lifetime = NumberRange.new(0.8, 1.4)
-			wakeFoam.SpreadAngle = Vector2.new(85, 18)
+			wakeFoam.SpreadAngle = Vector2.new(if roughSeas then 108 else 78, if roughSeas then 25 else 16)
 			wakeFoam.EmissionDirection = Enum.NormalId.Top
 			wakeFoam.Drag = 2.4
 			wakeFoam.Enabled = false
