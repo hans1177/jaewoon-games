@@ -326,11 +326,13 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 			-- [무제한 경관 경량화] 전투 오브젝트 타격은 fieldObjects가 직접 판정하므로
 			-- 충돌 없는 장식은 물리 쿼리에서 제외한다. 계단·단서 등 충돌형 실물은 보존.
 			if solid ~= true then d.CanQuery = false end
-			-- 원경 전체·중경 소형·근경 초소형만 그림자를 절제한다.
-			-- 모델/텍스처/가까운 나무와 건물의 실제 그림자는 그대로 렌더링한다.
-			if solid ~= true and (scenicBand == "far"
-				or (scenicBand == "mid" and desired <= 9)
-				or desired <= 4.5) then d.CastShadow = false end
+			-- [원경 메시 최적화] 먼 바위·나무는 충돌 유지 여부와 관계없이 그림자만 생략한다.
+			-- 중경 작은 실물·근경 초소형 장식도 같은 방식으로 부하를 줄인다.
+			-- 근경 대형 나무·건물 그림자와 원본 메시·텍스처는 보존한다.
+			if scenicBand == "far" or (solid ~= true
+				and ((scenicBand == "mid" and desired <= 9) or desired <= 4.5)) then
+				d.CastShadow = false
+			end
 			local tint = tintOverride or FIELD_TINT[asset]
 			if kind == "Animals" and tint then
 				-- [야생 생물 품종색] 원본 PBR 맵/무늬와 눈·발굽·뿔 등 세부색은 보존한다.
