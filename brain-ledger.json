@@ -225,6 +225,11 @@
       "n": 1,
       "lastAt": 1795298528012,
       "last": "REJECTED"
+    },
+    "mare-essentia:visual:6800cc6df9f7dfa6717c9703acedfd9f7a736c813b8c38688e09edcb5fbf40dd": {
+      "n": 1,
+      "lastAt": 1795313584114,
+      "last": "REJECTED"
     }
   },
   "merged": [
@@ -278,32 +283,29 @@
     },
     "gemini:gemini-3.8-flash": {
       "ok": 0,
-      "fail": 18,
+      "fail": 19,
       "quotaUntil": 1795304743853,
-      "lastAt": 1795283143853
+      "lastAt": 1795313584113
     },
     "gemini:gemini-3.7-flash": {
       "ok": 0,
-      "fail": 19,
+      "fail": 20,
       "quotaUntil": 1795304743853,
-      "lastAt": 1795283143853
+      "lastAt": 1795313584113
     },
     "gemini:gemini-3.6-flash": {
       "ok": 29,
-      "fail": 44,
-      "lastAt": 1795298528012,
+      "fail": 46,
+      "lastAt": 1795313584113,
       "quotaUntil": 1795262291061
     }
   },
   "visualCoverage": {
-    "sourceRevision": "cca8be8f18af8a5e2302ae11530e338887e24cb2",
+    "sourceRevision": "a1e99ad9061f07a27100c8cce1ccb855f1bce720",
     "labels": [
       "tab_harbor",
       "tab_trade",
-      "qa_click_trade_to_harbor",
-      "tab_route",
-      "qa_click_route_to_map",
-      "tab_map"
+      "qa_click_trade_to_harbor"
     ]
   }
 }
