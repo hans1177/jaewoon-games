@@ -1961,14 +1961,18 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   // [실물 스크린샷 회귀] 얼굴·치마·허리띠·중첩 상의가 다시 원통/흰 갑옷으로 돌아가지 않도록 고정.
   assert.doesNotMatch(pose,/MareFaceSurface/);
   assert.match(pose,/scalp\.Name = "HairScalp"/);
-  assert.match(pose,/piece\.Name == fallbackName then piece\.Transparency = 1/);
+  // [모자 원본 교체] 헤어는 예비 장식을 숨기고, 깃털모자는 기존 윗면만 남겨 정수리 구멍을 막는다.
+  assert.match(pose,/if piece:IsA\("BasePart"\) and piece\.Name == fallbackName then/);
+  assert.match(pose,/piece\.Transparency = if assetName == "acc_feather_hat"/);
+  assert.match(pose,/and piece:GetAttribute\("NpcHatCrown"\) == true then 0 else 1/);
   // [모델 후보 안전범위] 원래 시각 기준 대신 중앙정책에 허용된 정확한 숫자 범위와 수정을 검증한다.
   const skirt=pose.match(/q\.Size = Vector3\.new\(len, lower\.Size\.X \* ([0-9.]+), lower\.Size\.X \* ([0-9.]+)\)/);
   assert.ok(skirt,'실제 주민 치마 비율 존재');
   assert.ok(Number(skirt[1])>=0.94 && Number(skirt[1])<=1.24,'치마 가로 범위');
   assert.ok(Number(skirt[2])>=0.90 && Number(skirt[2])<=1.18,'치마 깊이 범위');
   assert.match(pose,/local belt = npcOutfit and assetName == "outfit_belt"/);
-  const belt=pose.match(/if belt then ([0-9.]+) else spec\[4\]/);
+  // [손목·장화] 허리띠 한도는 보존하고 커프/장화만 별도 비율로 맞춘다.
+  const belt=pose.match(/if belt then ([0-9.]+) elseif cuff then 0\.55 elseif boot then 1\.18 else spec\[4\]/);
   assert.ok(belt,'주민 허리띠 스케일 존재');
   assert.ok(Number(belt[1])>=0.24 && Number(belt[1])<=0.50,'허리띠 시각 범위');
   assert.match(pose,/local fittedUpperReady = false/);
