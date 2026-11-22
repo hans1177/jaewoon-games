@@ -3396,6 +3396,20 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
   assert.match(pose,/local fittedUpperReady = false/);
   assert.match(pose,/if fittedVisible then/);
   assert.match(pose,/model:SetAttribute\("OutfitMissing"/);
+  // [헤어 다양성] 8개 모델별 변형은 기존 공간 좌표로 안정적이며 AssetIds가 실제 등록한 후보만 선택한다.
+  assert.match(pose,/model:SetAttribute\("NpcHairVariant", variant\)/);
+  assert.match(pose,/for offset = 0, #options - 1 do/);
+  assert.match(pose,/loaded and loaded:IsA\("Model"\)/);
+  for(const name of ['hair_shoulder_waves','hair_side_braid','hair_low_bun',
+    'hair_braided_crown','hair_sailor_ponytail','hair_buzzedfemale','hair_court_curls'])
+    assert.ok(pose.includes('"'+name+'"'),'헤어 스타일 누락: '+name);
+  assert.match(pose,/regionalHairDyes/,'기존 지역·연령 팔레트를 보존한 머리색 차별화');
+  assert.match(pose,/piece\(Enum.PartType.Ball, Vector3.new\(h.X \* 0.33/,'실물 머리 로드 전 롱헤어 뒤쪽 실루엣');
+  // [의복 재질] PBR ColorMap/금속을 보존하며 천 소매·스톨·가죽장화만 물성·색조를 바꾼다.
+  assert.match(pose,/or assetName == "outfit_stole" or assetName == "outfit_cuff"/);
+  assert.match(pose,/if assetName == "outfit_cuff" then npcClothTint/);
+  assert.match(pose,/if npcOutfit and assetName == "outfit_boot" and part.Material == Enum.Material.Leather/);
+  assert.match(pose,/if not textured and string.sub\(assetName, 1, 7\) == "outfit_"/);
   for(const asset of ['hair_simpleparted','hair_long','hair_buns','acc_feather_hat','acc_sailor_headband'])
     assert.ok(assetIds.includes('["People/'+asset+'"]'),'등록 원본 누락: '+asset);
 });
