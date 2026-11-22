@@ -410,7 +410,7 @@ test('적 무기 모션과 동료 비전투 동행은 원본 PBR 및 R15 복식�
   assert.match(field,/local enemyDt = dtc \* \(if now < \(pl\.matrixSlowUntil or 0\) then 0\.24 else 1\)/);
   assert.match(field,/AC\.stepEnemy\(e\.ac, enemyDt,/);
   assert.match(field,/FM\.actor\(e\.fm, st, ph, enemyDt, e\.boss/);
-  // [동료 비전투 회귀] 영입·초상·대형·보행은 남고 적 공격/자동 스킬/지원 치유는 없다.
+  // [동료 비전투 회귀] 영입·초상·대형·보행·휴식 치유는 유지하고 전투 공격/자동 스킬은 없다.
   const companion = field.slice(field.indexOf('-- 동료(최대 2명):'), field.indexOf('-- 폰: 기본 터치'));
   assert.ok(companion.includes('local allyDefs = prepareAllyDefs()'),'동료 영입 유지');
   assert.ok(companion.includes('m:SetAttribute("CompanionId", ad.id)'),'동료 식별 유지');
@@ -418,9 +418,10 @@ test('적 무기 모션과 동료 비전투 동행은 원본 PBR 및 R15 복식�
   assert.ok(companion.includes('local goal = (root0.CFrame * CFrame.new('),'기존 동행 대형 유지');
   assert.match(companion,/FM\.actor\(a\.fm, "RUN"/);
   assert.match(companion,/FM\.actor\(a\.fm, "IDLE"/);
-  assert.doesNotMatch(companion,/strikeEnemy\(|castEffect\(|local tgt|a\.nextSkill|a\.castAt|activeHealers/,'동료 전투/지원 경로 잔존 금지');
-  assert.match(field,/pl\.hp = math\.min\(pl\.maxHp, pl\.hp \+ 0\.12 \* math\.min\(dt, 0\.1\)\)/);
-  assert.doesNotMatch(field,/local activeHealers =/,'동료 추가 치유 경로 잔존 금지');
+  assert.doesNotMatch(companion,/strikeEnemy\(|castEffect\(|local tgt|a\.nextSkill|a\.castAt/,'동료 전투/자동 스킬 경로 잔존 금지');
+  assert.match(field,/pl\.hp = math\.min\(pl\.maxHp, pl\.hp \+ \(0\.12 \+ math\.min\(healers, 2\) \* 0\.18\) \* math\.min\(dt, 0\.1\)\)/);
+  assert.match(companion,/if ally\.healer then table\.insert\(activeHealers, ally\) end/);
+  assert.match(field,/local activeHealers = \{\}/,'비전투 휴식 회복 보존');
   assert.match(field,/if not quiet then/);
   assert.match(field,/local thrust = family == "spear" or family == "dagger"/);
   assert.match(field,/local heavy = family == "axe" or family == "blunt"/);
