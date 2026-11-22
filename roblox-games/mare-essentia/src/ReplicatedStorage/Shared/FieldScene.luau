@@ -251,6 +251,10 @@ local FIELD_TINT = {
 	-- [지형 실물 착색] 원본 회색 PBR 메시를 지역색과 자연스럽게 맞춘다.
 	["Grass_Small"] = Color3.fromRGB(134, 188, 88), ["Bush_Small"] = Color3.fromRGB(82, 146, 72),
 	["Rock_2"] = Color3.fromRGB(153, 148, 134),
+	["kenney_rock_largeB"] = Color3.fromRGB(143, 137, 127),
+	["kenney_stone_smallFlatA"] = Color3.fromRGB(137, 135, 124),
+	["kenney_stump_old"] = Color3.fromRGB(120, 95, 69),
+	["kenney_tree_fat"] = Color3.fromRGB(91, 145, 75),
 }
 local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverride)
 	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
@@ -942,6 +946,9 @@ function FieldScene.start(opts)
 	end
 	-- 나무와 바위
 	local treeNames = table.clone(biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" })
+	-- [실제 수관] 등록·권한 확인 후에만 숲과 밀림의 기존 나무 슬롯에 울창한 원본 모델을 섞는다.
+	if not winterScene and not arid and (questTerrain == "forest" or questTerrain == "jungle")
+		and AssetIds["Terrain/kenney_tree_fat"] then table.insert(treeNames, "kenney_tree_fat") end
 	-- [신규 내부 CC0 원본] Roblox Universe 등록 ID가 확인된 나무만 기존 실물 선택군에 합류한다.
 	-- 미등록 파일은 화면에 가짜 도형으로 대체하지 않고 기존 등록 나무를 유지한다.
 	if not arid and AssetIds["Terrain/tree-detailed"] then table.insert(treeNames, "tree-detailed") end
@@ -1033,6 +1040,8 @@ function FieldScene.start(opts)
 	end
 	-- [무료 실물 지형] 기존 바위 개수를 유지하면서 등록된 Quaternius 모델을 섞는다.
 	local rockNames = { { "Town", "rock-large" }, { "Town", "rock-small" }, { "Town", "rock-wide" }, { "Terrain", "Rock_2" } }
+	-- [입체 암반] 기존 바위 개수와 충돌·지면 높이 판정은 유지한다.
+	if AssetIds["Terrain/kenney_rock_largeB"] then table.insert(rockNames, { "Terrain", "kenney_rock_largeB" }) end
 	if AssetIds["Terrain/rock-largea"] then table.insert(rockNames, { "Terrain", "rock-largea" }) end
 	if (questTerrain == "highland" or questTerrain == "mine" or questTerrain == "coast" or questTerrain == "glacier")
 		and AssetIds["Terrain/rock-tallc"] then table.insert(rockNames, { "Terrain", "rock-tallc" }) end
@@ -1357,7 +1366,8 @@ function FieldScene.start(opts)
 		} elseif questTerrain == "forest" then {
 			-- [숲 전경] 모바일 두 슬롯에서 나무 수관과 낮은 관목이 겹치게 실루엣을 분리한다.
 			{ "plant-bushlargetriangle", 9, -0.55, 0.22, 0 },
-			{ "tree-tall", 20, 0.71, 0.06, -10 }, { "plant-bushdetailed", 8, -0.69, 0.11, 9 },
+			{ if AssetIds["Terrain/kenney_tree_fat"] then "kenney_tree_fat" else "tree-tall", 20, 0.71, 0.06, -10 },
+			{ "plant-bushdetailed", 8, -0.69, 0.11, 9 },
 			{ "ground-riverside", 19, -0.83, -0.37, 34 }, { "ground-riverbendbank", 12, 0.65, -0.56, -24 },
 		} elseif questTerrain == "glacier" then {
 			-- [빙하 전경] 같은 모델 수에서 회색 암석 대신 실제 밝은 석벽·침엽수층을 노출한다.
@@ -1491,6 +1501,12 @@ function FieldScene.start(opts)
 		if AssetIds["Terrain/grass-leafslarge"] then table.insert(detailAssets, "grass-leafslarge") end
 		if AssetIds["Terrain/plant-flattall"] then table.insert(detailAssets, "plant-flattall") end
 	end
+	-- [숲 바닥 실물] 붉은 버섯·버섯 군락·그루터기·납작한 돌은 승인 모델만 기존 소품 예산에 포함한다.
+	if questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "swamp" then
+		for _, asset in { "kenney_mushroom_red", "kenney_mushroom_redGroup", "kenney_stump_old", "kenney_stone_smallFlatA" } do
+			if AssetIds["Terrain/" .. asset] then table.insert(detailAssets, asset) end
+		end
+	end
 	if questTerrain == "lake" or questTerrain == "coast" or questTerrain == "swamp" then
 		if AssetIds["Terrain/ground-riverbendbank"] then table.insert(detailAssets, "ground-riverbendbank") end
 		if AssetIds["Terrain/ground-riverside"] then table.insert(detailAssets, "ground-riverside") end
@@ -1509,7 +1525,11 @@ function FieldScene.start(opts)
 			elseif asset == "ground-riverbendbank" or asset == "ground-riverside" then 9
 			elseif asset == "grass-large" or asset == "grass-leafslarge" then 4.2
 			elseif asset == "plant-bushlarge" then 6.8 elseif asset == "plant-bushsmall" then 4.7
-			else rng:NextNumber(2.2, 5.2), nil, nil, false }
+			elseif asset == "kenney_mushroom_red" then 1.5
+			elseif asset == "kenney_mushroom_redGroup" then 2.8
+			elseif asset == "kenney_stump_old" then 3.7
+			elseif asset == "kenney_stone_smallFlatA" then 2.2
+			else rng:NextNumber(2.2, 5.2), nil, nil, false, rng:NextInteger(0, 11) * 30 }
 		entry.position = ORIGIN + Vector3.new(px, 0, math.clamp(pz, -half * 0.83, half * 0.27))
 		stageFeature(entry)
 	end
