@@ -11121,6 +11121,13 @@ function RENDERERS.map()
 			}, 84)
 		end)
 		add(function()
+			return mkRow(content, "전쟁 개입", "이 항구 나라가 전쟁 중이면 군수 물자(전쟁 점수↑), 중재(휴전 시도), 용병 해군(6개월)을 쓸 수 있어요. 성공할 때만 코인이 나가요.", {
+				{ text = "군수 500", color = COLORS.green, onClick = function() call("DiploAid", { kind = "supply", amount = 500 }) end, enabled = true },
+				{ text = "중재 500", color = COLORS.blue, onClick = function() call("DiploAid", { kind = "mediate", amount = 500 }) end, enabled = true },
+				{ text = "용병 500", color = COLORS.gold, onClick = function() call("DiploAid", { kind = "mercenary", amount = 500 }) end, enabled = true },
+			}, 96)
+		end)
+		add(function()
 			return mkLabel(content, "⚓ 이 항구의 항해자", 14, COLORS.gold, true)
 		end)
 		if #dp.voyagers == 0 then

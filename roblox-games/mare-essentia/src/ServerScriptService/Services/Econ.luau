@@ -73,6 +73,20 @@ return function(D, S)
 		return nil
 	end
 
+	-- 플레이어의 외교 개입(군수 납품·중재·용병 해군). 반환: ok, 설명. 재화 차감은 호출한 쪽이 처리한다.
+	function X.aid(state, kind, targetNation, amount)
+		local ok, success, text = pcall(function()
+			local w = ensure(state)
+			if not w or not w.nations then return false, "세계 정보가 아직 없어요" end
+			local home = D.Specialties and D.Specialties.NationPower and D.Specialties.NationPower[state.nationId] or nil
+			local okA, msg = E.Nations.aid(w.nations, w, home, kind, targetNation, amount)
+			if okA then worldDirty = true end
+			return okA, msg
+		end)
+		if ok then return success, text end
+		return false, "지금은 개입할 수 없어요"
+	end
+
 	-- 항구 하나의 경제 요약 (View 와 마을 장면이 쓴다). 시뮬이 없으면 nil.
 	function X.town(state, portId)
 		local w = ensure(state)
