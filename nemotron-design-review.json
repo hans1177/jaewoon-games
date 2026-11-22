@@ -2,9 +2,9 @@
   "version": 3,
   "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "39162263807efb226d2ff42dc3732c6290fd1347",
+  "sourceRevision": "61be67063569fb3abaf393395dce77a15f70a68d",
   "status": "SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE",
-  "selectedRole": "NPC",
+  "selectedRole": "WORLD",
   "usageWindow": {
     "day": "2026-11-22",
     "calls": {
@@ -23,9 +23,7 @@
       "OPENROUTER": "2026-11-22T00:27:00.167Z"
     }
   },
-  "cooldowns": {
-    "GEMINI_FLASH": "2026-11-22T13:30:36.242Z"
-  },
+  "cooldowns": {},
   "quotaForecast": {
     "NVIDIA": {
       "scope": "STUDIO_VISUAL_ONLY",
@@ -35,7 +33,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 0.86,
+      "estimatedCallsPerHour": 0.77,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -52,7 +50,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 2.13,
+      "estimatedCallsPerHour": 1.64,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-23T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
@@ -69,7 +67,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 2.27,
+      "estimatedCallsPerHour": 2.03,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -83,20 +81,20 @@
   "attempts": [],
   "frames": [
     {
-      "name": "field_npc_ally_mob-0.jpg",
-      "sha256": "72d93cd1fc032afa6384eeec09a67678f96ed0221ac6ce8ec0b1a2ed231b44d4"
+      "name": "field_entry-0.jpg",
+      "sha256": "dd52c3b228d1e3dd09f11c88c4d7e050c5d693b5b8a797bebd4ffe2f3da76d56"
     },
     {
-      "name": "harbor_npc_face_front-0.jpg",
-      "sha256": "c2bbcd9113c92a29d6a0a62aaf9eb7a96fda379530b611d18fee83d191514f9b"
+      "name": "v1_start-0.jpg",
+      "sha256": "05ccc4b856325339f314c2a9fa7ed0c9156077238dd397b09d625ef09ac2611f"
     },
     {
-      "name": "harbor_npc_sparring_01-0.jpg",
-      "sha256": "c2083c08eec95c4981163ffa086870b414a3803aa8e7079b5336a11fb1e4cfb5"
+      "name": "v2_event-0.jpg",
+      "sha256": "1d50dd733f3beae167a83f335e7645a9e2b94d6518c262e08ab669dcc67e030f"
     },
     {
-      "name": "harbor_npc_sparring_02-0.jpg",
-      "sha256": "0061dfca109fff839fcef42e845319383657aae62ee2a4793ed40c5066fdadb9"
+      "name": "v3_event2-0.jpg",
+      "sha256": "2fc21aa3f33854add4c46e07b353b52e9f38ae3b852fbaecde833f240d8d8273"
     }
   ],
   "modelAvailability": [
