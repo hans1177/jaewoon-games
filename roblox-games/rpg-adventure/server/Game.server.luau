@@ -21,7 +21,6 @@ local storeOk, storeResult = pcall(function()
 end)
 if storeOk then store = storeResult end
 
-local actionAt = {}
 local duelHit = {}
 local lastDuelReward = {}
 local live = {}
@@ -139,7 +138,7 @@ local function load(player)
     for key, fallback in pairs(Config.DefaultSave) do
         local upper = key == "Level" and Config.MaxLevel or
             (key == "Weapon" and Config.MaxWeapon or (key == "Potions" and 99 or 1000000000))
-        setAttr(player, key, integer(saved[key], fallback, key == "Level" or key == "Weapon" or key == "QuestStage" and 1 or 0, upper))
+        setAttr(player, key, integer(saved[key], fallback, ((key == "Level" or key == "Weapon" or key == "QuestStage") and 1 or 0), upper))
     end
     setAttr(player, "SaveStatus", ok and "저장 준비" or "저장 확인 불가")
     setAttr(player, "BattleMode", "TRAIN")
@@ -332,7 +331,6 @@ Players.PlayerRemoving:Connect(function(player)
     save(player)
     live[player] = nil
     duelHit[player] = nil
-    actionAt[player] = nil
 end)
 
 game:BindToClose(function()
