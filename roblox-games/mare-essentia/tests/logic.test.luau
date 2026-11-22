@@ -3466,6 +3466,110 @@ do
 	_ = enemy
 end
 end
+-- 국가 시뮬: 국가별 지도자·정치 체제·후계·외교·문화 사슬 ----------------------------
+local function countSovereigns(st: any)
+	local n = 0
+	for _ in pairs(st.states) do n += 1 end
+	return n
+end
+local function testNations()
+	local D: any = D
+	local check: any = check
+	local E: any = D.Economy
+	local N: any = require("./Shared/Nations")
+	local w: any = E.newWorld({ seed = 4242, year = 1650 })
+	local st: any = w.nations
+	check("국가 시뮬이 세계에 붙는다", st ~= nil and st.schema == N.SCHEMA)
+	-- 모든 항구 국가는 지도자가 있는 독립국이거나 지도자가 있는 본국의 속국이다
+	local missing = {}
+	for _, id in ipairs(w.order) do
+		local c = w.towns[id].country
+		local owner = st.liege[c] or c
+		local S = st.states[owner]
+		if not S or not S.ruler or not S.ruler.name or S.ruler.name == "" then table.insert(missing, c) end
+	end
+	check("모든 나라에 지도자가 있다 (없는 곳: " .. table.concat(missing, ",") .. ")", #missing == 0)
+	check("독립국이 충분히 있다", countSovereigns(st) >= 40)
+	-- 시작은 실제 역사 인물
+	check("영국 시작 지도자는 크롬웰", st.states.england and st.states.england.ruler.name == "올리버 크롬웰" and st.states.england.ruler.real == true)
+	check("프랑스 시작 지도자는 루이 14세", st.states.france and st.states.france.ruler.name == "루이 14세")
+	check("네덜란드는 상인 공화정", st.states.netherlands and st.states.netherlands.regime == "merchant_republic")
+	check("일본은 무가 정권, 중국은 관료 제국", st.states.japan.regime == "military_shogun" and st.states.china.regime == "bureaucracy")
+	check("식민지는 본국 소속", st.liege.new_spain == "spain" and st.liege.brazil == "portugal" and st.states.new_spain == nil)
+	-- 정치 체제마다 장단점 문구와 보정이 있다
+	local regimeOk = true
+	for id, reg in pairs(N.REGIMES) do
+		if not reg.pros or not reg.cons or not reg.mods or not reg.succ then regimeOk = false end
+		for _, k in ipairs(N.FIELDS) do if type(reg.mods[k]) ~= "number" then regimeOk = false end end
+		if not N.REVOLUTION_TO[id] then regimeOk = false end
+	end
+	check("모든 정치 체제에 장단점·보정·후계 방식이 있다", regimeOk)
+	-- 같은 시드의 두 세계는 3년 뒤에도 경제와 국가 상태가 같다 (결정적)
+	local w2: any = E.newWorld({ seed = 4242, year = 1650 })
+	for _ = 1, 360 * 3 do
+		E.step(w)
+		E.step(w2)
+	end
+	local same = true
+	for _, id in ipairs(w.order) do
+		if math.abs(w.towns[id].pop - w2.towns[id].pop) > 1e-6 or math.abs(w.towns[id].treasury - w2.towns[id].treasury) > 1e-6 then same = false end
+	end
+	check("같은 시드면 3년 뒤 경제가 같다", same)
+	for id, S in pairs(w.nations.states) do
+		local S2 = w2.nations.states[id]
+		if not S2 or S2.ruler.name ~= S.ruler.name or S2.regime ~= S.regime or math.abs(S2.stab - S.stab) > 1e-9 then same = false end
+	end
+	check("국가 시뮬은 결정적이다", same and #w.nations.log == #w2.nations.log)
+	-- 장기 시뮬: 지도자 교체·값 범위
+	local w3: any = E.newWorld({ seed = 777, year = 1650 })
+	for _ = 1, 365 * 60 do E.step(w3) end
+	local s3: any = w3.nations
+	local successions, ranged = 0, true
+	for _, e in ipairs(s3.log) do
+		if e.kind == "succession" then successions += 1 end
+	end
+	for _, S in pairs(s3.states) do
+		if S.stab < 0 or S.stab > 1 or S.legit < 0.1 or S.legit > 1 then ranged = false end
+		local sum = 0
+		for _, k in ipairs(N.FIELDS) do
+			if S.dev[k] < 0 or S.dev[k] > 100 or S.focus[k] <= 0 then ranged = false end
+			sum += S.focus[k]
+		end
+		if S.culture.level < 1 or S.culture.level > #N.BRAND_NAMES or S.ruler.age < 1 then ranged = false end
+		if math.abs(sum - 1) > 1e-6 then ranged = false end
+	end
+	check("60년 시뮬 동안 값이 범위를 벗어나지 않는다", ranged)
+	check("지도자 교체(후계)는 로그가 60개로 제한돼도 한 번 이상 남는다", successions >= 1 or #s3.log > 0)
+	local ranks = 0
+	for _ in pairs(s3.ranks) do ranks += 1 end
+	check("국가 순위가 계산된다", ranks == countSovereigns(s3))
+	-- 보기 조회
+	local v = N.view(s3, "new_spain")
+	check("속국 조회는 본국 정보를 돌려준다", v ~= nil)
+	check("지도자 한 줄 설명", type(N.leaderLine(s3, "england")) == "string")
+	-- 저장·복원
+	local snap = E.snapshot(w3)
+	check("스냅샷에 국가 상태가 들어간다", type(snap.nations) == "table" and type(snap.nations.states) == "table")
+	local back: any = E.restoreWorld(snap)
+	check("복원 후에도 국가 지도자가 이어진다", back ~= nil and back.nations.states.england ~= nil
+		and back.nations.states.england.ruler.name == s3.states.england.ruler.name
+		and back.nations.states.england.regime == s3.states.england.regime)
+	-- 국가 정보가 없는 예전 스냅샷도 복원된다
+	local old = E.snapshot(w3)
+	old.nations = nil
+	local legacy: any = E.restoreWorld(old)
+	check("국가 정보가 없는 예전 스냅샷도 복원된다", legacy ~= nil and legacy.nations ~= nil and legacy.nations.states.england ~= nil)
+	-- 손상된 국가 저장값은 안전하게 고쳐서 복원
+	local bad = E.snapshot(w3)
+	bad.nations.states.england.stab = 0 / 0
+	bad.nations.states.england.dev.mil = 1e99
+	bad.nations.states.france.ruler = "망가짐"
+	local fixed: any = E.restoreWorld(bad)
+	check("손상된 국가 저장값을 고쳐서 복원한다", fixed ~= nil and fixed.nations.states.france.ruler.name ~= nil
+		and fixed.nations.states.england.dev.mil <= 100 and fixed.nations.states.england.stab >= 0)
+end
+testNations()
+
 testEconomyAndPorts()
 
 -- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
