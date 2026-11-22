@@ -69,6 +69,12 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .fightText{min-height:50px;display:grid;place-items:center;text-align:center;border:1px solid #567779;border-radius:12px;background:#183238;padding:12px;color:#ffe09b;font-weight:850;font-size:13px}
 .dialogBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .log{margin:11px 0 0;padding:8px 12px;background:#152930;border-radius:11px;color:#d5dfdc;max-height:116px;overflow:auto;font-size:11px;line-height:1.6}
+.bookGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}
+.bookPet{text-align:center;min-width:0;padding:12px 4px;border:1px solid #567f76;border-radius:12px;background:#25474a}
+.bookPet b{display:block;font-size:31px}.bookPet strong{display:block;font-size:12px;margin:3px 0}.bookPet small{display:block;color:#bdd5d0;font-size:10px}
+.bookPet.unknown{filter:saturate(.3);opacity:.55}
+.duelPet:first-child{box-shadow:0 0 0 2px #ffdc84a6,0 8px 16px #06101477;transform:perspective(300px) rotateX(7deg) translateY(-3px)}
+@media(max-width:400px){.bookGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.shell{padding:8px}.header h1{font-size:19px}.header small{font-size:9px}.btn,.back{padding:8px;font-size:10px}.arena{min-height:124px}.stat{padding:7px 3px}.stat span{font-size:9px}.pet{min-height:113px}.pet .name{font-size:10px}.pet .stats{font-size:10px}.shop{gap:5px}.offer{padding:7px 3px}.offer .buy,.offer .freeze{font-size:10px}.offer small{font-size:9px}.actions .btn{font-size:11px}.notice{font-size:11px}}
 @media(max-width:380px){.header{gap:4px}.header .tools{gap:3px}.header h1{font-size:17px}.pet .face{font-size:25px}.pet{min-height:105px}.offer strong{font-size:10px}.offer .face{font-size:28px}.offer .buy{min-height:44px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -78,7 +84,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 <main class="shell">
 <header class="header">
   <div><h1>🐾 동물 자동대전</h1><small>동물을 모아 8승에 도전해!</small></div>
-  <div class="tools"><button class="btn" id="helpBtn" type="button">도움말</button><a class="back" href="../../index.html">게임 목록</a></div>
+  <div class="tools"><button class="btn" id="bookBtn" type="button">도감</button><button class="btn" id="helpBtn" type="button">도움말</button><a class="back" href="../../index.html">게임 목록</a></div>
 </header>
 <div class="hud" aria-label="진행 상태">
   <div class="stat"><b id="round">1</b><span>라운드</span></div>
@@ -103,6 +109,14 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 <div class="rules">먹이는 동물을 선택한 뒤 구매해. 같은 동물을 합치면 능력치와 레벨이 올라가. 게임은 이 브라우저에 자동 저장돼.</div>
 <div class="log" id="log" aria-label="최근 전투 기록"></div>
 </main>
+<div class="modal" id="bookModal" hidden>
+ <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="bookTitle">
+  <h2 id="bookTitle">동물 도감</h2>
+  <p id="bookStats">발견한 동물을 확인해.</p>
+  <div class="bookGrid" id="bookGrid"></div>
+  <button class="btn primary" id="bookClose" type="button" style="width:100%">상점으로 돌아가기</button>
+ </div>
+</div>
 <div class="modal" id="replayModal" hidden>
  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="replayTitle">
   <h2 id="replayTitle">자동 전투</h2>
@@ -158,7 +172,7 @@ const pick=items=>items[Math.floor(Math.random()*items.length)];
 const choice=(defs,round)=>pick(Object.keys(defs).filter(id=>defs[id].tier<=tier(round)));
 const newPet=id=>({id:id,a:PETS[id].a,h:PETS[id].h,exp:0,lvl:1});
 function newState(){
- const s={version:1,round:1,gold:START_GOLD,hearts:START_HEARTS,wins:0,phase:"shop",team:[],shop:[null,null,null,null],log:[]};
+ const s={version:1,round:1,gold:START_GOLD,hearts:START_HEARTS,wins:0,phase:"shop",team:[],shop:[null,null,null,null],log:[],discovered:[],bestWins:0,completedRuns:0};
  roll(s,false);return s;
 }
 /* 저장·복구: 신규 독립 키만 사용. 다른 게임 저장 데이터는 변경하지 않음 */
@@ -181,6 +195,10 @@ function load(){
   });
   if(raw.shop.length!==4)roll(s,false);
   s.log=Array.isArray(raw.log)?raw.log.filter(x=>typeof x==="string").slice(0,8).map(x=>x.slice(0,120)):[];
+  s.discovered=Array.isArray(raw.discovered)?[...new Set(raw.discovered.filter(id=>typeof id==="string"&&PETS[id]))]:[];
+  for(const p of s.team)if(!s.discovered.includes(p.id))s.discovered.push(p.id);
+  s.bestWins=Math.max(s.wins,int(raw.bestWins,0,TARGET_WINS,0));
+  s.completedRuns=int(raw.completedRuns,0,999999,0);
   s.phase=s.hearts===0||s.wins>=TARGET_WINS?"ended":"shop";
   return s;
  }catch(e){return newState()}
@@ -232,6 +250,7 @@ function buy(i){
   note(target?"같은 동물만 합칠 수 있어. 빈 칸을 선택해":"팀은 최대 5마리야");
   return;
  }
+ if(offer.kind==="pet"&&!state.discovered.includes(offer.id))state.discovered.push(offer.id);
  state.gold-=3;state.shop[i]=null;selected=-1;save();render();
 }
 function freeze(i){
@@ -270,7 +289,10 @@ function enemyTeam(round){
  });
 }
 function fight(){
- if(state.phase==="ended"){state=newState();selected=-1;save();render();note("새 도전을 시작했어");return}
+ if(state.phase==="ended"){
+  const history={discovered:state.discovered.slice(),bestWins:state.bestWins,completedRuns:state.completedRuns};
+  state=newState();Object.assign(state,history);selected=-1;save();render();note("새 도전을 시작했어");return;
+ }
  if(state.phase!=="shop")return;
  if(!state.team.length){note("동물을 최소 1마리 편성해");return}
  let mine=battleCopy(state.team),foes=battleCopy(enemyTeam(state.round));
@@ -281,6 +303,7 @@ function fight(){
   if(frames.length<48)frames.push(frame);else frames[frames.length-1]=frame;
  };
  const round=state.round;
+ for(const p of foes)if(!state.discovered.includes(p.id))state.discovered.push(p.id);
  record(round+"라운드 · 양 팀 준비 완료");
  let hits=0;
  while(mine.length&&foes.length&&hits<360){
@@ -304,7 +327,8 @@ function fight(){
  record(round+"라운드 결과 · "+result);
  state.log.unshift(round+"라운드 · "+result+" · 전투 "+hits+"회");
  state.log=state.log.slice(0,8);
- if(state.wins>=TARGET_WINS||state.hearts<=0)state.phase="ended";
+ state.bestWins=Math.max(state.bestWins,state.wins);
+ if(state.wins>=TARGET_WINS||state.hearts<=0){state.phase="ended";state.completedRuns=Math.min(999999,state.completedRuns+1)}
  else{
   state.round=Math.min(99,state.round+1);
   state.gold=START_GOLD;
@@ -340,6 +364,15 @@ function showReplay(round,result,frames){
  }
  if(frames.length>1)replayTimer=setTimeout(next,650);
  $("skipBtn").focus();
+}
+/* 도감: 현재 실행 게임에서 확인한 기존 8종만 기록하며, 저장을 별도로 복제하지 않음 */
+function showBook(){
+ $("bookStats").textContent="발견 "+state.discovered.length+" / "+Object.keys(PETS).length+"종 · 최고 "+state.bestWins+"승 · 완료한 도전 "+state.completedRuns+"회";
+ $("bookGrid").innerHTML=Object.entries(PETS).map(([id,d])=>{
+  const known=state.discovered.includes(id);
+  return '<div class="bookPet'+(known?'':' unknown')+'"><b>'+(known?d.icon:'❔')+'</b><strong>'+(known?d.name:'미발견')+'</strong><small>'+(known?'공격 '+d.a+' · 체력 '+d.h+' · '+d.tier+'단계':'전투와 상점에서 발견')+'</small></div>';
+ }).join("");
+ $("bookModal").hidden=false;$("bookClose").focus();
 }
 function closeReplay(){
  replaySerial++;clearTimeout(replayTimer);$("replayModal").hidden=true;$("fightBtn").focus();
@@ -387,11 +420,14 @@ $("sellBtn").addEventListener("click",sell);
 $("fightBtn").addEventListener("click",fight);
 $("skipBtn").addEventListener("click",skipReplay);
 $("closeBtn").addEventListener("click",closeReplay);
+$("bookBtn").addEventListener("click",showBook);
+$("bookClose").addEventListener("click",()=>{$("bookModal").hidden=true;$("bookBtn").focus()});
 $("helpBtn").addEventListener("click",()=>{$("helpModal").hidden=false;$("helpClose").focus()});
 $("helpClose").addEventListener("click",()=>{$("helpModal").hidden=true;$("helpBtn").focus()});
 document.addEventListener("keydown",event=>{
  if(event.key!=="Escape")return;
- if(!$("helpModal").hidden)$("helpClose").click();
+ if(!$("bookModal").hidden)$("bookClose").click();
+ else if(!$("helpModal").hidden)$("helpClose").click();
  else if(!$("replayModal").hidden)closeReplay();
 });
 state=load();render();
