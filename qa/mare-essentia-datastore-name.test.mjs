@@ -1066,7 +1066,7 @@ test('탐험 지역 기후·사계절 배경과 바람 입자 디테일',()=>{
     'FieldSeasonMonth', 'local winterScene =', 'local monsoon =', 'foliageTint',
     'local detailAssets =', 'FieldSeasonalDrift', 'local driftType =', 'local weatherOptions = if snowy'
   ]) assert.ok(field.includes(marker),'계절/기후 묘사 연결 누락: '+marker);
-  assert.match(field,/local detailCount = if visualMobile then 10 else 24/);
+  assert.match(field,/local detailCount = math\.max\(12, math\.floor\(/);
   assert.match(field,/local arid = not tropical and/);
   assert.match(field,/local climateZone = if northern then "북방"/);
   assert.match(field,/local weatherOptions = if snowy then/);
@@ -3647,7 +3647,7 @@ test('대항해시대 4차 하천·절벽·수관 CC0 등록 및 지형 시차 �
   assert.match(field,/AssetIds\["Terrain\/grass-leafslarge"\]/);
   assert.match(field,/local depthLandforms = if questTerrain == "glacier" then/);
   assert.match(field,/FieldNearDepthBandCount/);
-  assert.match(field,/local detailCount = if visualMobile then 10 else 24/);
+  assert.match(field,/local detailCount = math\.max\(12, math\.floor\(/);
   assert.match(naval,/NavalDepthShoreBreakCount/);
   assert.match(naval,/shoreBreakCount < \(if MOBILE_VFX then 1 else 2\)/);
   assert.match(naval,/NavalCliffShoreWash/);
@@ -3703,6 +3703,28 @@ test('대항해시대 4차 원경 능선·자연 메시 8종·해안 시각 모�
 });
 
 
+// [시각 모델 예산 회귀] 다른 Roblox 월드처럼 모델 수를 인위적 44/36/10개로 자르지 않고
+// 공식 거리별 메시 LOD와 사용자 그래픽 품질·지역 면적을 함께 사용한다.
+test('지상전 자연 모델 그래픽 품질·면적별 밀도와 모바일 거리 LOD',()=>{
+  const field=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau');
+  assert.match(field,/local fieldVisualDensity = if visualMobile then 0\.82 else 1/);
+  assert.match(field,/SavedQualityLevel/);
+  assert.match(field,/FieldVisualBudgetMode/);
+  assert.match(field,/FieldVisualDensity/);
+  assert.match(field,/FieldVisualTreeCount/);
+  assert.match(field,/FieldVisualRockCount/);
+  assert.match(field,/FieldVisualDetailCount/);
+  assert.match(field,/local visualTreeCount = math\.floor\(treeCount \* fieldVisualDensity \+ 0\.5\)/);
+  assert.match(field,/local visualRockCount = math\.floor\(rockCount \* fieldVisualDensity \+ 0\.5\)/);
+  assert.match(field,/local detailCount = math\.max\(12, math\.floor\(\(if visualMobile then 16 else 24\) \* AREA \* fieldVisualDensity \+ 0\.5\)\)/);
+  assert.match(field,/local band = math\.floor\(\(index - 1\) \/ 4\) % 7/);
+  assert.match(field,/d\.RenderFidelity = Enum\.RenderFidelity\.Automatic/);
+  assert.match(field,/if not solid and desired < 9 then d\.CastShadow = false end/);
+  assert.match(field,/if visualMobile and index % 18 == 0 then task\.wait\(\) end/);
+  assert.doesNotMatch(field,/math\.min\(treeCount, 44\)|math\.min\(rockCount, 36\)/);
+  assert.match(field,/if \(not visualMobile or index <= math\.ceil\(3 \+ fieldVisualDensity\)\)/);
+});
+
 // [지상전 지리 다양화 회귀] 대륙·항구·개별 탐험지 배경은 기존 실물만 사용하고
 // 게임 전투 RNG/보상/저장과 독립이다. 신규 모델은 자산번호 없으면 참조하지 않는다.
 test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환경 구분',()=>{
@@ -3754,9 +3776,9 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/portVisualSeed \* 31 \+ string\.byte\(visualKey, index\)/);
   assert.match(field,/if index == 3 and variants then/,'기존 문화권 대표 건물 2개 유지');
   assert.match(field,/AssetIds\[candidate\[1\] \.\. "\/" \.\. candidate\[2\]\]/,'등록된 모델만 사용');
-  assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
-  assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
-  assert.match(field,/local detailCount = if visualMobile then 10 else 24/);
+  assert.match(field,/local visualTreeCount = math\.floor\(treeCount \* fieldVisualDensity \+ 0\.5\)/);
+  assert.match(field,/local visualRockCount = math\.floor\(rockCount \* fieldVisualDensity \+ 0\.5\)/);
+  assert.match(field,/local detailCount = math\.max\(12, math\.floor\(/);
   // [등록 후 실제 사용] 신규 21종을 기존 자연·암석·바닥 후보만으로 사용한다.
   // [정확한 신규 범위] 기존 항구 건물(kenney_wood_arch_01 등)은 등록된 별도 모델이다.
   // 이번 21종 자연 모델을 선택하는 세 원본 책임 블록만 검사해 기존 Town 건물을 오탐하지 않는다.
@@ -3782,7 +3804,7 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/local natureDetail = if questTerrain == "forest" then/);
   assert.match(field,/if AssetIds\["Terrain\/" \.\. name\]/,'미등록 모델은 자동 생략');
   assert.match(field,/if AssetIds\["Terrain\/" \.\. name\] and not table\.find\(detailAssets, name\)/);
-  assert.match(field,/local detailCount = if visualMobile then 10 else 24/,'모바일 기존 예산 보존');
+  assert.match(field,/local detailCount = math\.max\(12, math\.floor\(/,'고정 수량 대신 면적과 그래픽 품질에 따른 자연 밀도');
   // [실제 Studio 화면 회귀] 등록 실물의 위치만 근경·중경으로 옮긴다.
   // 신규 인스턴스 생성·추가 모델 예산·적/저장/보상 동선 변경 없이 좌우에 시각 깊이를 만든다.
   assert.match(field,/if index % 4 == 1 then\n\s+local lane = math\.floor\(\(index - 1\) \/ 4\) % 3/,'수목 일부 근경 배치');
@@ -3803,6 +3825,6 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/half \* visualLayoutRng:NextNumber\(0\.30, 0\.43\)/,'바위 중경 랜덤은 전용 난수');
   assert.match(field,/\+ visualLayoutRng:NextNumber\(-6, 6\)/,'전경 나무 좌표 난수 격리');
   assert.match(field,/\+ visualLayoutRng:NextNumber\(-7, 7\)/,'전경 바위 좌표 난수 격리');
-  assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
-  assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
+  assert.match(field,/local visualTreeCount = math\.floor\(treeCount \* fieldVisualDensity \+ 0\.5\)/);
+  assert.match(field,/local visualRockCount = math\.floor\(rockCount \* fieldVisualDensity \+ 0\.5\)/);
 });
