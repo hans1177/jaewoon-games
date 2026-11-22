@@ -251,6 +251,9 @@ local function recomputeMods(S)
 			for k, v in pairs(def.fx) do mods[k] = (mods[k] or 0) + v end
 		end
 	end
+	for _, tal in ipairs(S.talents or {}) do
+		for k, v in pairs(tal.fx or {}) do mods[k] = (mods[k] or 0) + v end
+	end
 	S.mods = mods
 end
 
@@ -448,6 +451,8 @@ local function stepForces(st, S, instant)
 	for _, k in ipairs(N.NAVY_KEYS) do navy += F[k] * UNIT_POWER[k] * mm(S, "unit_" .. k) end
 	local quality = 0.7 + F.doctrine * 0.8
 	S.armyPower = army * quality
+	if S.merc and st.day < S.merc.untilDay then navy += S.merc.ships * UNIT_POWER.frigate * mm(S, "unit_frigate") end
+	if S.merc and st.day >= S.merc.untilDay then S.merc = nil end
 	S.navyPower = navy * quality
 	S.power = (S.armyPower * 0.55 + S.navyPower * 0.45) * (0.6 + S.stab * 0.4)
 	-- 상비군: 인구 대비 상비 병력 비율(군사비 부담)
@@ -523,7 +528,8 @@ local function newState(st, id, regimeOverride)
 		legit = reg.legit, stab = 0.6, focus = {}, dev = {}, culture = { stock = 0, level = 1 },
 		fin = { income = 1, debt = 0, treasury = 0 }, rel = {}, allies = {}, war = nil,
 		regentUntil = 0, civilUntil = 0, metrics = { pop = 0, gdp = 0, trade = 0, towns = 0 },
-		soc = { unrest = 0.1, literacy = 0.2, urban = 0, lastPop = 0 }, mods = {}, res = emptyRes(), cap = {}, power = 0, armyPower = 0, navyPower = 0, standing = 0,
+		soc = { unrest = 0.1, literacy = 0.2, urban = 0, lastPop = 0 }, mods = {}, ship = { fleet = 10, lossFrac = 0, lost = 0, danger = 0, prizes = 0 }, spy = { net = 0.1 }, honor = 0.7, pacts = {}, talents = {},
+		res = emptyRes(), cap = {}, power = 0, armyPower = 0, navyPower = 0, standing = 0,
 		forces = { inf = 0, cav = 0, art = 0, militia = 0, line = 0, frigate = 0, small = 0, transport = 0, doctrine = 0 },
 	}
 	for _, k in ipairs(N.FIELDS) do S.dev[k] = 25 + (S.bias[k] or 0) * 60 end
@@ -870,6 +876,114 @@ local function stepCrisis(st, S)
 	end
 end
 
+-- ───────── 3단계: 항로 안전·해적, 첩보, 인재 ─────────
+-- 항로 안전: 전쟁 상대의 해군과 해적(불안정·약한 해군)이 상선단을 위협한다. 호위(자국 해군)가 강하면 안전하다.
+-- 상선 손실은 재정(기록상의 수입)을 줄인다. 실제 플레이어 거래에는 N.seaDanger 로만 조회된다.
+local function stepRaids(st, S)
+	local m = S.metrics
+	local ship = S.ship
+	ship.fleet = 10 + math.log(1 + m.trade) * 5
+	local foe = S.war and st.states[S.war.foe]
+	local threat = foe and (foe.navyPower or 0) or 0
+	local piracy = clamp(0.05 + (1 - S.stab) * 0.25 + (if (S.navyPower or 0) < 1 then 0.1 else 0), 0, 0.5)
+	local escort = S.navyPower or 0
+	local pirate = piracy * 2
+	ship.danger = clamp((threat + pirate) / (threat + pirate + escort + 0.5), 0, 1)
+	ship.lossFrac += (ship.danger * 0.15 - ship.lossFrac) * 0.3
+	ship.lost += ship.fleet * ship.danger * 0.02
+	if foe and foe.ship then foe.ship.prizes += ship.fleet * ship.danger * 0.01 end
+end
+
+-- 첩보: 행정·과학·지도자 외교 능력으로 첩보망이 자라고, 라이벌의 기술을 훔치거나 들켜 관계가 나빠진다.
+local function stepSpy(st, S)
+	local spy = S.spy
+	spy.net = clamp(spy.net + ((S.dev.admin * 0.4 + S.ruler.skills.diplo * 6 + S.dev.sci * 0.2) / 100) * 0.05 - spy.net * 0.02, 0, 1)
+	if spy.net < 0.35 or roll(st, S.id .. ":spy") >= 0.08 * spy.net then return end
+	local target, gap = nil, 0
+	local ids = {}
+	for other in pairs(S.rel) do table.insert(ids, other) end
+	table.sort(ids)
+	for _, other in ipairs(ids) do
+		local O = st.states[other]
+		if O and O.tech and (S.rel[other] or 0) < 20 and O.tech.count - S.tech.count > gap then target, gap = O, O.tech.count - S.tech.count end
+	end
+	if not target then return end
+	local caught = roll(st, S.id .. ":caught") < 0.3 * (target.dev.admin / 100 + 0.2)
+	if caught then
+		S.rel[target.id] = clamp((S.rel[target.id] or 0) - 15, -100, 100)
+		target.rel[S.id] = clamp((target.rel[S.id] or 0) - 15, -100, 100)
+		logEvent(st, S.id, "spy_caught", string.format("%s 첩자가 %s 에서 발각됨", S.id, target.id))
+		return
+	end
+	local pick
+	for _, def in ipairs(N.TECHS) do
+		if target.tech.known[def.id] and not S.tech.known[def.id] then
+			local ok = true
+			for _, r in ipairs(def.req) do if not S.tech.known[r] then ok = false break end end
+			if ok and (not pick or def.cost < pick.cost) then pick = def end
+		end
+	end
+	if pick then
+		S.tech.cur = pick.id
+		S.tech.prog = math.max(S.tech.prog, pick.cost * 0.5)
+		logEvent(st, S.id, "spy_steal", string.format("%s 가 %s 의 '%s' 기술을 빼돌림", S.id, target.id, pick.name))
+	end
+end
+
+-- 인재: 학자·명장·거상이 나라에 나타나 연구·군사·재정을 돕고, 25년 뒤 물러나며, 불안한 나라에서는 이주한다.
+N.TALENT = {
+	scholar = { name = "학자", fx = { research = 0.05 } },
+	general = { name = "명장", fx = { doctrine = 0.03, unit_inf = 0.05 } },
+	merchant = { name = "거상", fx = { income = 0.02, trade = 0.02 } },
+}
+local TALENT_KINDS = { "scholar", "general", "merchant" }
+local function stepTalents(st, S)
+	local list = S.talents
+	local changed = false
+	for i = #list, 1, -1 do
+		local tal = list[i]
+		if st.day >= tal.untilDay then
+			logEvent(st, S.id, "talent_retire", string.format("%s %s %s 은퇴", S.id, N.TALENT[tal.kind].name, tal.name))
+			table.remove(list, i)
+			changed = true
+		elseif S.stab < 0.35 and roll(st, S.id .. ":mig" .. tal.name) < 0.02 then
+			local best, bestScore = nil, -1
+			local ids = {}
+			for other in pairs(S.rel) do table.insert(ids, other) end
+			table.sort(ids)
+			for _, other in ipairs(ids) do
+				local O = st.states[other]
+				if O and #O.talents < 4 and O.stab > 0.5 and (O.prestige or 0) + O.stab > bestScore then best, bestScore = O, (O.prestige or 0) + O.stab end
+			end
+			if best then
+				table.remove(list, i)
+				table.insert(best.talents, tal)
+				recomputeMods(best)
+				changed = true
+				logEvent(st, best.id, "talent_move", string.format("%s %s %s 이 %s 로 이주", S.id, N.TALENT[tal.kind].name, tal.name, best.id))
+			end
+		end
+	end
+	if #list < 4 then
+		local lit = (S.soc and S.soc.literacy or 0.2) + 0.2
+		local chance = { scholar = 0.004 * lit * (S.dev.learn / 50), general = 0.004 * (if S.war then 3 else 1) * (S.dev.mil / 50), merchant = 0.004 * (S.dev.trade / 50) }
+		local r = roll(st, S.id .. ":talent")
+		local acc = 0
+		for _, kind in ipairs(TALENT_KINDS) do
+			acc += chance[kind]
+			if r < acc then
+				local g = GROUPS[groupOf(S.id)] or GROUPS[DEFAULT_GROUP]
+				local nm = pickFrom(g.names, st, S.id .. ":tn" .. tostring(st.day))
+				table.insert(list, { kind = kind, name = nm, since = math.floor(year(st)), untilDay = st.day + 365 * 25, fx = N.TALENT[kind].fx })
+				changed = true
+				logEvent(st, S.id, "talent", string.format("%s 에 %s %s 등장", S.id, N.TALENT[kind].name, nm))
+				break
+			end
+		end
+	end
+	if changed then recomputeMods(S) end
+end
+
 local function stepState(st, S)
 	local reg = N.REGIMES[S.regime] or N.REGIMES.absolute
 	local m = S.metrics
@@ -900,7 +1014,11 @@ local function stepState(st, S)
 	stepSociety(st, S)
 	stepCrisis(st, S)
 	stepTech(st, S)
-	S.fin.income = S.fin.income * mm(S, "income") * (1 + 0.5 * ((S.mods and S.mods.trade) or 0))
+	stepSpy(st, S)
+	stepTalents(st, S)
+	stepRaids(st, S)
+	S.honor = clamp(S.honor + (0.7 - S.honor) * 0.02, 0, 1)
+	S.fin.income = S.fin.income * mm(S, "income") * (1 + 0.5 * ((S.mods and S.mods.trade) or 0)) * (1 - S.ship.lossFrac * 0.4)
 	stepForces(st, S)
 	-- 재정: 전쟁과 행정이 약하면 빚이 늘고, 평시에는 갚는다
 	local spend = S.fin.income * (0.75 + S.focus.mil * 0.6 + S.focus.navy * 0.3 + (S.war and 0.25 or 0))
@@ -1011,6 +1129,104 @@ function N.treaty(st, w, S, foe)
 	return "win", win.id
 end
 
+-- ───────── 3단계: 식민 개척, 조약, 플레이어 개입 ─────────
+-- 식민 개척: 해군이 강하고 안정된 나라가 약한 나라(부족·소국)의 항구를 전쟁 없이 확보한다. 쿨다운 2년.
+local function stepColony(st, w, S)
+	if (S.navyPower or 0) <= 0 or S.stab < 0.5 or st.day < 365 or st.day < (S.colonyUntil or 0) then return end
+	if roll(st, S.id .. ":colon") >= 0.012 * (1 + S.focus.navy * 3) then return end
+	local ids = {}
+	for id in pairs(st.states) do table.insert(ids, id) end
+	table.sort(ids)
+	for _, id in ipairs(ids) do
+		local O = st.states[id]
+		if O and id ~= S.id and not S.allies[id] and not (S.pacts[id]) and (O.regime == "tribal" or O.power < S.power * 0.25) then
+			local pid = ceedablePort(st, w, id, S.id)
+			if pid then
+				st.owner[pid] = S.id
+				st.ports[pid] = nil
+				S.colonyUntil = st.day + 720
+				O.rel[S.id] = clamp((O.rel[S.id] or 0) - 30, -100, 100)
+				S.prestige = (S.prestige or 0) + 0.3
+				logEvent(st, S.id, "colonize", string.format("%s 가 %s 의 %s 항구를 식민지로 확보", S.id, id, w.towns[pid].name or pid))
+				return
+			end
+		end
+	end
+end
+
+-- 조약: 무역 협정(관세 인하)·통과권. 어기면 신용(honor)이 떨어지고 신용이 낮으면 동맹을 맺기 어렵다.
+N.PACT_NAMES = { trade = "무역 협정", passage = "통과권 협정" }
+local function formPact(st, a, b, kind)
+	local untilDay = st.day + 365 * (3 + math.floor(hash01(a.id .. b.id .. tostring(st.day)) * 3))
+	a.pacts[b.id] = { kind = kind, untilDay = untilDay }
+	b.pacts[a.id] = { kind = kind, untilDay = untilDay }
+	logEvent(st, a.id, "pact", string.format("%s ↔ %s %s 체결", a.id, b.id, N.PACT_NAMES[kind]))
+end
+local function breakPact(st, breaker, other)
+	if not breaker.pacts[other.id] then return end
+	local kind = breaker.pacts[other.id].kind
+	breaker.pacts[other.id] = nil
+	other.pacts[breaker.id] = nil
+	breaker.honor = clamp(breaker.honor - 0.2, 0, 1)
+	other.rel[breaker.id] = clamp((other.rel[breaker.id] or 0) - 20, -100, 100)
+	logEvent(st, breaker.id, "pact_break", string.format("%s 가 %s 와의 %s 파기 (신용 하락)", breaker.id, other.id, N.PACT_NAMES[kind]))
+end
+local function stepPacts(st, S)
+	for other, pact in pairs(S.pacts) do
+		local O = st.states[other]
+		if not O or st.day >= pact.untilDay then
+			S.pacts[other] = nil
+			if O then O.pacts[S.id] = nil end
+			logEvent(st, S.id, "pact_end", string.format("%s ↔ %s %s 만료", S.id, other, N.PACT_NAMES[pact.kind] or "협정"))
+		end
+	end
+	local ids = {}
+	for other in pairs(S.rel) do table.insert(ids, other) end
+	table.sort(ids)
+	for _, other in ipairs(ids) do
+		local O = st.states[other]
+		if O and S.id < other and not S.pacts[other] and not S.war and not O.war and (S.rel[other] or 0) > 25 and (O.rel[S.id] or 0) > 10
+			and S.honor > 0.4 and O.honor > 0.4 and roll(st, S.id .. other .. ":pact") < 0.01 then
+			local kind = if st.adjacency[S.id] and st.adjacency[S.id][other] then "passage" else "trade"
+			formPact(st, S, O, kind)
+		end
+	end
+end
+
+-- 플레이어 개입(군수 납품·중재·용병 해군). 반환: ok, 설명. 재화 차감은 호출한 쪽이 처리한다.
+function N.aid(st, w, homeNation, kind, targetId, amount)
+	local T = st.states[st.liege[targetId] or targetId]
+	local H = st.states[st.liege[homeNation] or homeNation]
+	amount = tonumber(amount) or 0
+	if not T or amount <= 0 then return false, "대상이나 금액이 올바르지 않아요" end
+	local scale = math.max(1, T.fin.income)
+	if kind == "supply" then
+		if not T.war then return false, "전쟁 중인 나라에만 군수 물자를 보낼 수 있어요" end
+		local effect = clamp(amount / (scale * 2), 0, 1.5)
+		T.war.score = (T.war.score or 0) + effect * 3
+		if H then T.rel[H.id] = clamp((T.rel[H.id] or 0) + effect * 10, -100, 100) end
+		return true, string.format("%s 에 군수 물자를 납품해 전쟁 점수 +%.1f", T.id, effect * 3)
+	elseif kind == "mediate" then
+		local foe = T.war and st.states[T.war.foe]
+		if not foe then return false, "전쟁 중인 나라만 중재할 수 있어요" end
+		local chance = clamp(0.3 + amount / (scale * 3) + (if H then (T.rel[H.id] or 0) / 400 else 0), 0.1, 0.9)
+		if roll(st, "mediate" .. T.id .. foe.id) < chance then
+			T.war, foe.war = nil, nil
+			T.rel[foe.id] = clamp((T.rel[foe.id] or 0) + 10, -100, 100)
+			foe.rel[T.id] = clamp((foe.rel[T.id] or 0) + 10, -100, 100)
+			logEvent(st, T.id, "mediation", string.format("%s ↔ %s 중재로 휴전", T.id, foe.id))
+			return true, string.format("중재 성공: %s 와 %s 가 휴전했어요", T.id, foe.id)
+		end
+		return false, "중재가 받아들여지지 않았어요"
+	elseif kind == "mercenary" then
+		local ships = clamp(amount / 400, 0.5, 4)
+		T.merc = { ships = ships, untilDay = st.day + 180 }
+		if H then T.rel[H.id] = clamp((T.rel[H.id] or 0) + 5, -100, 100) end
+		return true, string.format("%s 에 용병 해군 %.1f척을 6개월간 빌려줬어요", T.id, ships)
+	end
+	return false, "알 수 없는 개입이에요"
+end
+
 local function stepDiplomacy(st, w)
 	do
 		local top, topP, second = nil, 0, 0
@@ -1057,7 +1273,8 @@ local function stepDiplomacy(st, w)
 		end
 		-- 동맹: 관계가 충분히 좋고 공통의 적이 있을 때
 		for other, v in pairs(S.rel) do
-			if v > 45 and not S.allies[other] and st.states[other] and roll(st, id .. other .. "al") < 0.02 then
+			if v > 45 and not S.allies[other] and st.states[other] and S.honor > 0.4 and st.states[other].honor > 0.4
+				and roll(st, id .. other .. "al") < 0.02 then
 				S.allies[other] = true
 				st.states[other].allies[id] = true
 				logEvent(st, id, "alliance", string.format("%s ↔ %s 동맹", id, other))
@@ -1092,6 +1309,7 @@ local function stepDiplomacy(st, w)
 			end
 			if worst and worstV < -40 and militaryPower(S) > militaryPower(st.states[worst]) * 1.15
 				and roll(st, id .. "warroll") < 0.03 * (N.REGIMES[S.regime].mods.mil or 1) then
+				if S.pacts[worst] then breakPact(st, S, st.states[worst]) end
 				S.war = { foe = worst, months = 0 }
 				st.states[worst].war = { foe = id, months = 0 }
 				S.rel[worst] = clamp(S.rel[worst] - 20, -100, 100)
@@ -1102,9 +1320,15 @@ local function stepDiplomacy(st, w)
 					local mine, foeId = st.states[side[1]], side[2]
 					for ally in pairs(mine.allies) do
 						local A = st.states[ally]
-						if A and not A.war and ally ~= foeId and roll(st, ally .. foeId .. "join") < 0.35 then
-							A.war = { foe = foeId, months = 0 }
-							logEvent(st, ally, "join", string.format("%s 가 동맹 %s 편으로 %s 와 전쟁 참전", ally, side[1], foeId))
+						if A and not A.war and ally ~= foeId then
+							if roll(st, ally .. foeId .. "join") < 0.35 then
+								A.war = { foe = foeId, months = 0 }
+								logEvent(st, ally, "join", string.format("%s 가 동맹 %s 편으로 %s 와 전쟁 참전", ally, side[1], foeId))
+							else
+								-- 참전 거부: 동맹의 신용이 깎이고 관계가 나빠진다
+								A.honor = clamp(A.honor - 0.05, 0, 1)
+								mine.rel[ally] = clamp((mine.rel[ally] or 0) - 5, -100, 100)
+							end
 						end
 					end
 				end
@@ -1165,6 +1389,13 @@ function N.step(w)
 	end
 	stepDiplomacy(st, w)
 	stepVassals(st, w)
+	for _, id in ipairs(ids) do
+		local S = st.states[id]
+		if S then
+			stepPacts(st, S)
+			stepColony(st, w, S)
+		end
+	end
 	stepPorts(st, w)
 	N.rank(st)
 end
@@ -1183,7 +1414,7 @@ function N.view(st, id)
 		cultureLevel = S.culture.level, cultureName = N.BRAND_NAMES[S.culture.level], war = S.war and S.war.foe or nil,
 		rank = st.ranks[owner], regent = st.day < S.regentUntil, civilWar = st.day < S.civilUntil,
 		debt = S.fin.debt, income = S.fin.income,
-		crisis = S.crisis and N.CRISIS[S.crisis.kind].name or nil, soc = S.soc, tech = S.tech, mods = S.mods, doctrine = N.doctrineName(S), prestige = S.prestige, res = S.res, cap = S.cap, forces = S.forces, power = S.power, armyPower = S.armyPower, navyPower = S.navyPower, standing = S.standing,
+		crisis = S.crisis and N.CRISIS[S.crisis.kind].name or nil, ship = S.ship, spy = S.spy, honor = S.honor, pacts = S.pacts, talents = S.talents, merc = S.merc, soc = S.soc, tech = S.tech, mods = S.mods, doctrine = N.doctrineName(S), prestige = S.prestige, res = S.res, cap = S.cap, forces = S.forces, power = S.power, armyPower = S.armyPower, navyPower = S.navyPower, standing = S.standing,
 	}
 end
 
@@ -1221,11 +1452,19 @@ function N.tariff(st, w, portId, homeNation)
 	local base = TARIFF_BASE[S.regime] or 0.08
 	local colony = (st.owner[portId] ~= nil) or (st.liege[t.country] == ownerId)
 	local mult = ({ home = 0, ally = 0.5, friendly = 0.75, neutral = 1, hostile = 2 })[stance] or 1
+	local homeS = st.states[st.liege[homeNation] or homeNation]
+	if homeS and homeS.pacts[ownerId] and homeS.pacts[ownerId].kind == "trade" and stance ~= "home" then mult *= 0.6 end
 	local rate = base * mult
 	if colony and stance ~= "home" then rate += 0.06 end -- 식민지 본국 독점 가산
 	rate -= (S.dev.admin / 100) * 0.01 -- 행정이 좋으면 탈세가 줄어 세율을 낮출 여유
 	local closed = stance == "hostile" and (S.rel[st.liege[homeNation] or homeNation] or 0) < -60 and S.war ~= nil
 	return { rate = clamp(rate, 0, 0.45), stance = stance, closed = closed, colony = colony, owner = ownerId }
+end
+
+function N.seaDanger(st, w, portId)
+	local ownerId = N.portOwner(st, w, portId)
+	local S = ownerId and st.states[ownerId]
+	return S and S.ship and S.ship.danger or 0
 end
 
 function N.portView(st, w, portId)
@@ -1278,6 +1517,14 @@ function N.summary(st, w, portId, homeNation)
 	table.sort(allies)
 	if #allies > 0 then table.insert(extra, "동맹: " .. table.concat(allies, ", ")) end
 	if #extra > 0 then table.insert(lines, table.concat(extra, " · ")) end
+	table.insert(lines, string.format("항로 위험 %d%% · 첩보망 %d%% · 신용 %d%%", math.floor(S.ship.danger * 100 + 0.5), math.floor(S.spy.net * 100 + 0.5), math.floor(S.honor * 100 + 0.5)))
+	local ext = {}
+	for other, pact in pairs(S.pacts) do table.insert(ext, string.format("%s(%s)", other, N.PACT_NAMES[pact.kind] or "협정")) end
+	table.sort(ext)
+	if #ext > 0 then table.insert(lines, "조약: " .. table.concat(ext, ", ")) end
+	local tl = {}
+	for _, tal in ipairs(S.talents) do table.insert(tl, string.format("%s %s", N.TALENT[tal.kind].name, tal.name)) end
+	if #tl > 0 then table.insert(lines, "인재: " .. table.concat(tl, ", ")) end
 	table.insert(lines, string.format("항구: %s · %s · %s%s — 동화 %d%% · 불만 %d%%", pv.culture, pv.language, pv.faith,
 		if pv.colony then " · 식민지" else "", math.floor(pv.assimilation * 100 + 0.5), math.floor(pv.unrest * 100 + 0.5)))
 	if homeNation and st.states[st.liege[homeNation] or homeNation] then
@@ -1352,6 +1599,30 @@ local function repair(st, S)
 	S.fin.treasury = tonumber(S.fin.treasury) or 0
 	S.legit = clamp(tonumber(S.legit) or 0.6, 0.1, 1)
 	S.prestige = math.max(0, tonumber(S.prestige) or 0)
+	S.honor = clamp(tonumber(S.honor) or 0.7, 0, 1)
+	S.colonyUntil = tonumber(S.colonyUntil) or 0
+	S.ship = type(S.ship) == "table" and S.ship or {}
+	for _, k in ipairs({ "fleet", "lossFrac", "lost", "danger", "prizes" }) do S.ship[k] = math.max(0, tonumber(S.ship[k]) or (if k == "fleet" then 10 else 0)) end
+	S.ship.lossFrac, S.ship.danger = clamp(S.ship.lossFrac, 0, 1), clamp(S.ship.danger, 0, 1)
+	S.spy = type(S.spy) == "table" and S.spy or {}
+	S.spy.net = clamp(tonumber(S.spy.net) or 0.1, 0, 1)
+	local pacts = {}
+	if type(S.pacts) == "table" then
+		for other, pact in pairs(S.pacts) do
+			if type(other) == "string" and type(pact) == "table" and N.PACT_NAMES[pact.kind] then pacts[other] = { kind = pact.kind, untilDay = tonumber(pact.untilDay) or 0 } end
+		end
+	end
+	S.pacts = pacts
+	local talents = {}
+	if type(S.talents) == "table" then
+		for _, tal in ipairs(S.talents) do
+			if type(tal) == "table" and N.TALENT[tal.kind] and #talents < 4 then
+				table.insert(talents, { kind = tal.kind, name = tostring(tal.name or "?"), since = tonumber(tal.since) or st.startYear, untilDay = tonumber(tal.untilDay) or 0, fx = N.TALENT[tal.kind].fx })
+			end
+		end
+	end
+	S.talents = talents
+	if type(S.merc) == "table" then S.merc = { ships = clamp(tonumber(S.merc.ships) or 0, 0, 4), untilDay = tonumber(S.merc.untilDay) or 0 } else S.merc = nil end
 	if type(S.crisis) ~= "table" or not N.CRISIS[S.crisis.kind] then S.crisis = nil else S.crisis.untilDay = tonumber(S.crisis.untilDay) or 0 end
 	if type(S.tech) ~= "table" or type(S.tech.known) ~= "table" then
 		initTech(st, S)

@@ -3655,6 +3655,38 @@ local function testNations()
 		local sumLine = table.concat(sum.lines, "\n")
 		check("요약에 지도자·편제·발견·문화권·관세가 모두 들어간다", string.find(sumLine, "육군", 1, true) ~= nil and string.find(sumLine, "해군", 1, true) ~= nil
 			and string.find(sumLine, "발견", 1, true) ~= nil and string.find(sumLine, "항구:", 1, true) ~= nil and string.find(sumLine, "관세", 1, true) ~= nil)
+		-- 3단계: 항로·첩보·인재·조약·개입
+		local okShip, okSpy, talentTotal, pactsOk = true, true, 0, true
+		for id, S in pairs(s3.states) do
+			if not (S.ship.danger >= 0 and S.ship.danger <= 1 and S.ship.lossFrac >= 0 and S.ship.lossFrac <= 1 and S.ship.lost >= 0) then okShip = false end
+			if not (S.spy.net >= 0 and S.spy.net <= 1 and S.honor >= 0 and S.honor <= 1) then okSpy = false end
+			talentTotal += #S.talents
+			if #S.talents > 4 then okSpy = false end
+			for other, pact in pairs(S.pacts) do
+				if not s3.states[other] or not s3.states[other].pacts[id] or not N.PACT_NAMES[pact.kind] then pactsOk = false end
+			end
+		end
+		check("항로 위험·손실 값이 정상 범위다", okShip)
+		check("첩보망·신용·인재 수가 정상 범위다", okSpy)
+		check("60년 안에 인재가 나타난다", talentTotal > 0)
+		check("조약은 양쪽에 기록된다", pactsOk)
+		check("항로 위험 조회가 0~1이다", N.seaDanger(s3, w3, "london") >= 0 and N.seaDanger(s3, w3, "london") <= 1)
+		do
+			local E1, F1 = s3.states.england, s3.states.france
+			local sv1, sv2 = E1.war, F1.war
+			E1.war, F1.war = { foe = "france", months = 1, score = 0 }, { foe = "england", months = 1, score = 0 }
+			local okA, textA = N.aid(s3, w3, "france", "supply", "england", E1.fin.income * 2)
+			check("군수 납품은 전쟁 점수를 올린다", okA == true and E1.war.score > 0 and textA ~= "")
+			local okM, textM = N.aid(s3, w3, "france", "mercenary", "england", 800)
+			check("용병 해군을 빌려줄 수 있다", okM == true and E1.merc ~= nil and E1.merc.ships >= 0.5)
+			local noWar, _ = N.aid(s3, w3, "france", "supply", "venice", 100)
+			local venWar = s3.states.venice.war
+			check("전쟁 중이 아니면 군수 납품이 거절된다", venWar ~= nil or noWar == false)
+			local okMed = N.aid(s3, w3, "france", "mediate", "england", E1.fin.income * 100)
+			check("중재는 성공하면 전쟁이 끝난다", okMed == false or (E1.war == nil and F1.war == nil))
+			E1.war, F1.war = sv1, sv2
+			E1.merc = nil
+		end
 		-- 할양 항구 소유, 위기, 손상 복구를 한 번의 저장·복원으로 확인
 		s3.owner["rouen"] = "england"
 		check("식민지가 된 항구는 식민지 표시", N.portView(s3, w3, "rouen").colony == true and N.tariff(s3, w3, "rouen", "france").colony == true)
@@ -3666,7 +3698,7 @@ local function testNations()
 			and math.abs(back3.nations.states.england.forces.inf - s3.states.england.forces.inf) < 1e-6
 			and back3.nations.states.england.tech.count == s3.states.england.tech.count
 			and back3.nations.owner["rouen"] == "england" and back3.nations.states.england.crisis ~= nil
-			and back3.nations.hegemon == s3.hegemon)
+			and back3.nations.hegemon == s3.hegemon and #back3.nations.states.england.talents == #s3.states.england.talents)
 		local badSnap = E.snapshot(w3)
 		badSnap.nations.states.england.tech.known.fake_tech = 1650
 		badSnap.nations.states.england.tech.cur = "없는발견"
