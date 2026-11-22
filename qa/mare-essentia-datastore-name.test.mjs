@@ -3381,7 +3381,8 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
   const assetIds=read('ReplicatedStorage/Shared/AssetIds.luau');
   assert.match(pose,/scalp\.Name = "HairScalp"/);
   assert.match(pose,/temple\.Name = "HairScalpSide"/);
-  assert.match(pose,/h\.Y \* 0\.65, h\.Z \* 1\.08/);
+  assert.match(pose,/h\.Y \* 0\.65, h\.Z \* 0\.84/);
+  assert.match(pose,/h\.Y \* 0\.31, h\.Z \* 0\.11/);
   for(const kind of ['sailorcap','bonnet','beret','bicorne'])
     assert.ok(pose.includes('kind == "'+kind+'"'),'모자 형태 누락: '+kind);
   assert.match(pose,/EUROPEAN_DETAIL_CULTURES\[outfit\.culture\]/,
