@@ -151,5 +151,44 @@
  {
   "type": "capture",
   "name": "palace_calicut"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local lib=game:GetService(\"ReplicatedStorage\"):FindFirstChild(\"MareAssets\") assert(lib,\"NO_LIB\")\nlocal old=workspace:FindFirstChild(\"PalaceKitGallery\") if old then old:Destroy() end\nlocal g=Instance.new(\"Folder\") g.Name=\"PalaceKitGallery\" g.Parent=workspace\nlocal out={} local x=-900\nfor i,k in {{\"Town\",\"eastasia-base\"},{\"Town\",\"eastasia-bell\"},{\"Town\",\"eastasia-column-base\"},{\"Town\",\"eastasia-roof\"},{\"Town\",\"eastasia-stairs\"},{\"Town\",\"temple-stone\"},{\"Town\",\"temple-tower\"},{\"Castle\",\"fortress\"},{\"Castle\",\"tower-square-base\"},{\"Castle\",\"tower-square-mid-windows\"},{\"Castle\",\"tower-square-top-roof\"},{\"Castle\",\"wall\"},{\"Castle\",\"gate\"},{\"Terrain\",\"egypt-temple-wall\"},{\"Terrain\",\"egypt-temple-arch-a\"},{\"Terrain\",\"egypt-temple-door\"},{\"Terrain\",\"egypt-column\"},{\"Terrain\",\"mystic-stone-arch\"},{\"Terrain\",\"ruins-wall-arched\"},{\"Naval\",\"tower-complete-large\"},{\"Naval\",\"tower-roof\"},{\"Terrain\",\"gate-overhang\"}} do\n local grp=lib:FindFirstChild(k[1]) local t=grp and grp:FindFirstChild(k[2])\n if t and t:IsA(\"Model\") then\n  local m=t:Clone() local _,sz=m:GetBoundingBox() local s=18/math.max(sz.X,sz.Y,sz.Z) m:ScaleTo(m:GetScale()*s)\n  local cf,sz2=m:GetBoundingBox() m:PivotTo(m:GetPivot()+(Vector3.new(x,sz2.Y/2,-700)-cf.Position)) m.Parent=g\n  table.insert(out,string.format(\"%s=%.1fx%.1fx%.1f\",k[2],sz.X,sz.Y,sz.Z)) x+=26\n else table.insert(out,k[2]..\"=MISSING\") end\nend\nworkspace:SetAttribute(\"ShotFov\",50) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-900+13*26,60,-600),Vector3.new(-900+13*26,6,-700),Vector3.new(0,1,0)))\nreturn \"KIT_SIZES \"..table.concat(out,\" \")"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "kit_all"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-900+4*26,45,-640),Vector3.new(-900+4*26,6,-700),Vector3.new(0,1,0))) return \"ok\""
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "kit_left"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-900+16*26,45,-640),Vector3.new(-900+16*26,6,-700),Vector3.new(0,1,0))) return \"ok\""
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "kit_right"
  }
 ]
