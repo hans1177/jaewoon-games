@@ -3758,7 +3758,19 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
   assert.match(field,/local detailCount = if visualMobile then 10 else 24/);
   // [등록 후 실제 사용] 신규 21종을 기존 자연·암석·바닥 후보만으로 사용한다.
-  const sceneryIds=[...field.matchAll(/"kenney_[A-Za-z0-9_]+"/g)].map(x=>x[0].slice(1,-1));
+  // [정확한 신규 범위] 기존 항구 건물(kenney_wood_arch_01 등)은 등록된 별도 모델이다.
+  // 이번 21종 자연 모델을 선택하는 세 원본 책임 블록만 검사해 기존 Town 건물을 오탐하지 않는다.
+  const treeStart=field.indexOf('local trees = if winterScene or northern then');
+  const rockStart=field.indexOf('local rocks = if questTerrain == "glacier" or questTerrain == "ruins" then');
+  const detailStart=field.indexOf('local natureDetail = if questTerrain == "forest" then');
+  assert.ok(treeStart>0 && rockStart>treeStart && detailStart>rockStart,'세 자연 모델 책임 배치 누락');
+  const natureSource=[
+    field.slice(treeStart,field.indexOf('for _, name in trees do',treeStart)),
+    field.slice(rockStart,field.indexOf('for _, name in rocks do',rockStart)),
+    field.slice(detailStart,field.indexOf('for index = #natureDetail',detailStart)),
+  ].join('\n');
+  const sceneryIds=[...natureSource.matchAll(/"kenney_[A-Za-z0-9_]+"/g)].map(x=>x[0].slice(1,-1));
+  assert.ok(sceneryIds.length>=21,'대륙·항구·퀘스트 신규 자연 자산 선택 누락');
   const allowed=new Set(approved.map(x=>x[2]));
   for(const name of sceneryIds)assert.ok(allowed.has(name),'승인표에 없는 외부 자연 자산 '+name);
   for(const name of ['kenney_tree_fat','kenney_rock_largeB','kenney_mushroom_red',
