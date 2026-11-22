@@ -1067,6 +1067,8 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	local npcProfile = model:GetAttribute("NpcAssetProfile")
 	local profile = model:GetAttribute("MobAssetProfile") or npcProfile
 	local npcOutfit = npcProfile ~= nil and model:GetAttribute("MobAssetProfile") == nil
+	-- [헤어 후입고] 준비된 기본 헤어로 미등록/미로드 우선 헤어를 대체할 때는 나중 재검사를 보존한다.
+	local hairUpgradePending = false
 	-- [시대·문화권 보존] 기존 근세 서유럽만 상세 재단복을 착용한다.
 	local year = model:GetAttribute("AppearanceYear")
 	local culture = model:GetAttribute("AppearanceCulture")
@@ -1266,6 +1268,8 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			-- 머리 후보 중 실제 등록되고 로드된 모델을 변형 번호 순서로 찾는다.
 			local variation = math.clamp(math.floor(tonumber(model:GetAttribute("NpcHairVariant")) or 1), 1, 8)
 			local candidate = nil
+			local desiredHair = if type(options) == "table" and #options > 0
+				then options[(variation - 1) % #options + 1] else nil
 			if type(options) == "table" and #options > 0 then
 				for offset = 0, #options - 1 do
 					local choice = options[((variation - 1 + offset) % #options) + 1]
@@ -1275,6 +1279,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						break
 					end
 				end
+			end
+			if desiredHair and AssetIds["People/" .. desiredHair] and candidate ~= desiredHair then
+				-- [후입고 재검사] 우선 원본 헤어가 늦게 도착해도 교체되도록 ready를 보류한다.
+				hairUpgradePending = true
 			end
 			if candidate and AssetIds["People/" .. candidate] and people and people:FindFirstChild(candidate) then
 				assetName = candidate
@@ -1592,9 +1600,11 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	model:SetAttribute("OutfitMergedCount", merged)
 	model:SetAttribute("OutfitRequiredCount", #specs)
 	model:SetAttribute("OutfitMissing", if #missing > 0 then table.concat(missing, ",") else nil)
+	if npcOutfit then model:SetAttribute("NpcHairUpgradePending", hairUpgradePending) end
 	model:SetAttribute(if npcOutfit then "NpcAppearanceState" else "MobAppearanceState",
-		if attached == #specs then "ready" elseif attached > 0 then "partial" else "asset_pending")
-	return attached == #specs
+		if attached == #specs and not hairUpgradePending then "ready"
+		elseif attached > 0 then "partial" else "asset_pending")
+	return attached == #specs and not hairUpgradePending
 end
 
 function Pose.walkR15(model, phase, moving)
