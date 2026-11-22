@@ -3866,6 +3866,10 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.ok(script.some(row=>row.code?.includes('lowPolyModels=')),'스튜디오 원경 간결 실물 수 계측');
   assert.ok(script.some(row=>row.code?.includes('FIELD_LOW_POLY_MESH_MISSING')),'스튜디오 성능형 메시 설정 확인');
   assert.ok(script.some(row=>row.code?.includes('lowPolyMeshes=')),'스튜디오 성능형 메시 적용 수 계측');
+  assert.ok(script.some(row=>row.code?.includes('hiddenSceneryFPS=')),'스튜디오 배경 렌더 병목 단독 계측');
+  assert.ok(script.some(row=>row.code?.includes('pair[1].LocalTransparencyModifier=pair[2]')),'진단 직후 장식 화면 표시 원복');
+  assert.ok(script.some(row=>row.code?.includes('FIELD_SCENERY_PROFILE_EMPTY')),'장식 표시 변경이 실제 있었는지 검증');
+  assert.ok(!field.includes('LocalTransparencyModifier=1'),'게임 실행 시 모델 임의 숨김 금지');
   assert.ok(script.some(row=>row.code?.includes('FIELD_GROUND_MATERIAL_MISMATCH')),'스튜디오 해안 모래 실측');
   assert.ok(script.some(row=>row.code?.includes("FieldQuestTerrainTheme')=='coast")),'해적 소굴의 해안 퀘스트 지형 검사');
 });
