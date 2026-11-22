@@ -1757,7 +1757,8 @@ function FieldScene.start(opts)
 		local side = if index % 2 == 0 then -1 else 1
 		-- [장면 깊이] 화면 크기 무관하게 상세식생을 근경→중경→원경으로 나눈다.
 		-- 최초 10개가 전부 먼 원경에만 놓이던 문제를 고치되 전투 중앙은 비운다.
-		local px = side * half * ((if band == 0 then 0.16 elseif band == 1 then 0.25 else 0.34 end) + rng:NextNumber(0, 0.13))
+		local lateral = if band == 0 then 0.16 elseif band == 1 then 0.25 else 0.34
+		local px = side * half * (lateral + rng:NextNumber(0, 0.13))
 		local pz = half * (0.81 - band * 0.28) + rng:NextNumber(-7, 7)
 		local asset = detailAssets[((index - 1) % #detailAssets) + 1]
 		local entry = { "Terrain", asset, if asset == "north-pine-fall" then 8.5
