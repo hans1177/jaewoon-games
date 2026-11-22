@@ -8662,6 +8662,7 @@ function H.showCardGain(card, moreCount)
 	local revealHeight = math.floor(math.min(if rarityLevel >= 3 then 280 else 254, math.max(185, viewport.Y * 0.41)))
 	local revealWidth = math.floor(revealHeight * 0.7)
 	local center = UDim2.fromScale(0.5, 0.46)
+	local reducedMotion = game:GetService("GuiService").ReducedMotionEnabled
 	local imageId = AssetIds["CardArt/" .. tostring(card.id)]
 	local artImage = if imageId then "rbxassetid://" .. tostring(imageId)
 		elseif type(card.image) == "string" and card.image ~= "" then card.image
@@ -8689,6 +8690,25 @@ function H.showCardGain(card, moreCount)
 				}):Play()
 			end
 		end)
+	end
+
+	-- [발견 아우라] 책의 금박이 열릴 때 카드 뒤에서 번지는 부드러운 빛.
+	if not reducedMotion then
+		local bloom = Instance.new("Frame")
+		bloom.Name = "CardDiscoveryBloom"
+		bloom.AnchorPoint = Vector2.new(0.5, 0.5)
+		bloom.Position = center
+		bloom.Size = UDim2.fromOffset(48, 48)
+		bloom.BackgroundColor3 = gold
+		bloom.BackgroundTransparency = 0.66
+		bloom.BorderSizePixel = 0
+		bloom.ZIndex = 5
+		bloom.Parent = g
+		corner(bloom, 100)
+		TS:Create(bloom, TweenInfo.new(0.69, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+			Size = UDim2.fromOffset(math.floor(revealWidth * 1.8), math.floor(revealHeight * 1.75)),
+			BackgroundTransparency = 1,
+		}):Play()
 	end
 
 	local frame = Instance.new("Frame")
@@ -8760,6 +8780,17 @@ function H.showCardGain(card, moreCount)
 		else (GAIN_RARITY[card.rarity] or "지식") .. " · 서재에 보관"
 	rarity.ZIndex = 9
 	rarity.Parent = frame
+	-- [금박 측면] 팽이 회전 시 세로 축으로 접혔다 펼쳐지는 두께와 반사광을 보이게 한다.
+	local foil = Instance.new("Frame")
+	foil.Name = "CardFoilEdge"
+	foil.AnchorPoint = Vector2.new(1, 0)
+	foil.Position = UDim2.fromScale(1, 0)
+	foil.Size = UDim2.new(0, 5, 1, 0)
+	foil.BackgroundColor3 = gold
+	foil.BackgroundTransparency = 0.58
+	foil.BorderSizePixel = 0
+	foil.ZIndex = 10
+	foil.Parent = frame
 
 	-- [봉인 해제] 황동 문장으로 뒷면을 먼저 보여 주고, 가로 축을 좁혔다 펴며 실제 원화를 드러낸다.
 	local seal = Instance.new("TextLabel")
@@ -8878,6 +8909,51 @@ function H.showCardGain(card, moreCount)
 		task.delay(0.14, function()
 			if not frame.Parent then return end
 			seal:Destroy()
+			-- [공개 충격파] 카드가 펼쳐지는 바로 그 순간 황동 문장 파편이 튀고 한 번 크게 울린다.
+			Sfx.play("sfx_card_page", 0.26, 1.13, "sfx_book_turn")
+			if rarityLevel == 2 then task.delay(0.11, Sfx.play, "sfx_bell", 0.24, 1.12) end
+			if not reducedMotion then
+				local impact = Instance.new("Frame")
+				impact.Name = "CardSealShockwave"
+				impact.AnchorPoint = Vector2.new(0.5, 0.5)
+				impact.Position = center
+				impact.Size = UDim2.fromOffset(32, 32)
+				impact.BackgroundTransparency = 1
+				impact.ZIndex = 7
+				impact.Parent = g
+				corner(impact, 100)
+				local outline = Instance.new("UIStroke")
+				outline.Color = gold
+				outline.Thickness = if rarityLevel >= 3 then 4 else 2.5
+				outline.Transparency = 0.12
+				outline.Parent = impact
+				TS:Create(impact, TweenInfo.new(0.52, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+					Size = UDim2.fromOffset(math.floor(revealHeight * 1.5), math.floor(revealHeight * 1.5)),
+				}):Play()
+				TS:Create(outline, TweenInfo.new(0.52), { Transparency = 1 }):Play()
+				local fragments = (if viewport.X < 540 then 5 else 8) + (if rarityLevel >= 3 then 3 else 0)
+				for i = 1, fragments do
+					local shard = Instance.new("TextLabel")
+					shard.Name = "CardSealFragment"
+					shard.AnchorPoint = Vector2.new(0.5, 0.5)
+					shard.Position = center
+					shard.Size = UDim2.fromOffset(17, 17)
+					shard.BackgroundTransparency = 1
+					shard.Text = "✦"
+					shard.Font = Enum.Font.GothamBold
+					shard.TextSize = if i % 2 == 0 then 14 else 20
+					shard.TextColor3 = gold
+					shard.ZIndex = 10
+					shard.Parent = g
+					local angle = i * math.pi * 2 / fragments
+					TS:Create(shard, TweenInfo.new(0.52, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+						Position = UDim2.new(center.X.Scale, math.cos(angle) * (86 + rarityLevel * 9),
+							center.Y.Scale, math.sin(angle) * (110 + rarityLevel * 12)),
+						Rotation = math.deg(angle) + 90,
+						TextTransparency = 1,
+					}):Play()
+				end
+			end
 			TS:Create(frame, TweenInfo.new(0.27, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 				Size = UDim2.fromOffset(revealWidth, revealHeight),
 			}):Play()
@@ -8896,11 +8972,27 @@ function H.showCardGain(card, moreCount)
 			TS:Create(sheen, TweenInfo.new(0.48, Enum.EasingStyle.Quad), {
 				Position = UDim2.new(1, 36, 0, 0), BackgroundTransparency = 1,
 			}):Play()
+			-- [공개 무게감] 가볍게 부풀었다가 정규 7:10 비율로 정확히 돌아오는 한 박자.
+			if not reducedMotion then
+				task.delay(0.22, function()
+					if not frame.Parent then return end
+					TS:Create(frame, TweenInfo.new(0.12, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+						Size = UDim2.fromOffset(math.floor(revealWidth * 1.07), math.floor(revealHeight * 1.07)),
+					}):Play()
+					task.delay(0.13, function()
+						if frame.Parent then
+							TS:Create(frame, TweenInfo.new(0.19, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+								Size = UDim2.fromOffset(revealWidth, revealHeight),
+							}):Play()
+						end
+					end)
+				end)
+			end
 		end)
 	end)
 	-- [팽이 수납 · 메인] 원화 공개 후 가속 회전·곡선 축소·잔상을 거쳐 기존 서재/내 카드 버튼으로 흡수한다.
 	-- 별도 UI 시스템·음원·저장 경로를 만들지 않으며, 움직임 감소 설정과 모바일 도크 스크롤을 존중한다.
-	task.delay(1.54, function()
+	task.delay(1.43, function()
 		if not g.Parent or not frame.Parent then return end
 		local icon = if isCombat then hudTop:FindFirstChild("DeckButton") else H.dockButtons and H.dockButtons.codex
 		local canTarget = icon and icon.Parent and icon.Visible and hudTopGui.Enabled and icon.AbsoluteSize.X > 0
@@ -8918,13 +9010,44 @@ function H.showCardGain(card, moreCount)
 			end
 		end
 
-		local reducedMotion = game:GetService("GuiService").ReducedMotionEnabled
 		local startPoint = Vector2.new(viewport.X * center.X.Scale, viewport.Y * center.Y.Scale)
 		local fallbackPoint = Vector2.new(viewport.X - 44, 70)
 		local revolutions = if rarityLevel >= 4 then 4 elseif rarityLevel >= 3 then 3.5
 			elseif rarityLevel >= 2 then 3 else 2.5
-		local trails = {}
+		local trails, ribbons, orbit = {}, {}, {}
 		if not reducedMotion then
+			-- [빛 궤적] 카드 바퀴 뒤에서 길게 휘어지는 황동빛 선과 주변의 작은 마법 문장.
+			for i = 1, if viewport.X < 540 then 2 else 3 do
+				local ribbon = Instance.new("Frame")
+				ribbon.Name = "CardArchiveLightRibbon"
+				ribbon.AnchorPoint = Vector2.new(0.5, 0.5)
+				ribbon.Position = center
+				ribbon.Size = UDim2.fromOffset(2, 3)
+				ribbon.BackgroundColor3 = gold
+				ribbon.BackgroundTransparency = 1
+				ribbon.BorderSizePixel = 0
+				ribbon.ZIndex = 6
+				ribbon.Parent = g
+				corner(ribbon, 100)
+				table.insert(ribbons, ribbon)
+			end
+			local motes = if viewport.X < 540 then (if rarityLevel >= 3 then 5 else 3)
+				else (if rarityLevel >= 3 then 7 else 5)
+			for i = 1, motes do
+				local light = Instance.new("TextLabel")
+				light.Name = "CardArchiveOrbit"
+				light.AnchorPoint = Vector2.new(0.5, 0.5)
+				light.Position = center
+				light.Size = UDim2.fromOffset(20, 20)
+				light.BackgroundTransparency = 1
+				light.Font = Enum.Font.GothamBold
+				light.Text = "✦"
+				light.TextSize = if i % 2 == 0 then 12 else 18
+				light.TextColor3 = gold
+				light.ZIndex = 10
+				light.Parent = g
+				table.insert(orbit, light)
+			end
 			for i = 1, if viewport.X < 540 then 2 else 3 do
 				local ghost = Instance.new("Frame")
 				ghost.Name = "CardSpinAfterimage"
@@ -8972,11 +9095,34 @@ function H.showCardGain(card, moreCount)
 				math.max(2, math.floor(revealWidth * scale * widthRipple)),
 				math.max(3, math.floor(revealHeight * scale)))
 			frame.Rotation = spin
+			paper.Rotation = 90 + spin * 0.15
+			foil.Size = UDim2.new(0, math.max(2, math.floor(5 + (1 - widthRipple) * 26)), 1, 0)
+			foil.BackgroundTransparency = math.clamp(0.34 + t * 0.65, 0, 1)
 			frame.BackgroundTransparency = math.clamp((t - 0.72) / 0.28, 0, 1)
 			art.ImageTransparency = math.clamp((t - 0.74) / 0.26, 0, 1)
 			rim.Transparency = math.clamp((t - 0.70) / 0.30, 0, 1)
 			name.TextTransparency = math.clamp((t - 0.36) / 0.42, 0, 1)
 			rarity.TextTransparency = name.TextTransparency
+			for i, light in orbit do
+				local angle = (i - 1) * math.pi * 2 / #orbit + math.rad(spin * 1.35)
+				local radius = math.max(4, revealWidth * scale * 0.69)
+				light.Position = UDim2.fromOffset(
+					current.X + math.cos(angle) * radius,
+					current.Y + math.sin(angle) * radius * 1.18)
+				light.Rotation = spin * 0.62
+				light.TextTransparency = math.clamp(0.15 + t * 0.74, 0, 1)
+			end
+			for i, ribbon in ribbons do
+				local a = math.max(0, t - (i - 1) * 0.046)
+				local b = math.max(0, t - i * 0.046)
+				local pa = startPoint * ((1 - a) ^ 2) + control * (2 * (1 - a) * a) + target * (a ^ 2)
+				local pb = startPoint * ((1 - b) ^ 2) + control * (2 * (1 - b) * b) + target * (b ^ 2)
+				local delta = pa - pb
+				ribbon.Position = UDim2.fromOffset((pa.X + pb.X) * 0.5, (pa.Y + pb.Y) * 0.5)
+				ribbon.Size = UDim2.fromOffset(math.max(1, delta.Magnitude), math.max(1, 6 - i))
+				ribbon.Rotation = math.deg(math.atan2(delta.Y, delta.X))
+				ribbon.BackgroundTransparency = if a <= b then 1 else math.clamp(0.28 + i * 0.13 + t * 0.25, 0, 1)
+			end
 			for i, pair in trails do
 				local lag = math.max(0, t - i * 0.09)
 				local echoPos = startPoint * ((1 - lag) ^ 2) + control * (2 * (1 - lag) * lag) + target * (lag ^ 2)
@@ -8996,6 +9142,8 @@ function H.showCardGain(card, moreCount)
 			if not g.Parent then return end
 			frame.Visible = false
 			for _, pair in trails do pair[1]:Destroy() end
+			for _, ribbon in ribbons do ribbon:Destroy() end
+			for _, light in orbit do light:Destroy() end
 			local landed = fallbackPoint
 			if canTarget and icon.Parent and icon.Visible and hudTopGui.Enabled then
 				landed = icon.AbsolutePosition + icon.AbsoluteSize * 0.5
@@ -9021,10 +9169,71 @@ function H.showCardGain(card, moreCount)
 				Size = UDim2.fromOffset(if rarityLevel >= 3 then 96 else 78, if rarityLevel >= 3 then 96 else 78),
 			}):Play()
 			TS:Create(pulseStroke, TweenInfo.new(0.28), { Transparency = 1 }):Play()
+			-- [수납 착지] 기존 메뉴 아이콘이 짧게 숨을 쉬고 작은 기록 문구와 빛점이 남는다.
+			if not reducedMotion and canTarget and icon.Parent and icon.Visible and hudTopGui.Enabled then
+				local bounce = Instance.new("UIScale")
+				bounce.Name = "CardArchiveIconBounce"
+				bounce.Scale = 0.94
+				bounce.Parent = icon
+				TS:Create(bounce, TweenInfo.new(0.17, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+					Scale = 1.16,
+				}):Play()
+				task.delay(0.18, function()
+					if bounce.Parent then
+						TS:Create(bounce, TweenInfo.new(0.2, Enum.EasingStyle.Quad), { Scale = 1 }):Play()
+					end
+				end)
+				task.delay(0.45, function()
+					if bounce.Parent then bounce:Destroy() end
+				end)
+			end
+			if not reducedMotion then
+				for i = 1, if rarityLevel >= 3 then 6 else 3 do
+					local spark = Instance.new("TextLabel")
+					spark.Name = "CardArchiveLandingSpark"
+					spark.AnchorPoint = Vector2.new(0.5, 0.5)
+					spark.Position = UDim2.fromOffset(landed.X, landed.Y)
+					spark.Size = UDim2.fromOffset(16, 16)
+					spark.BackgroundTransparency = 1
+					spark.Text = "✦"
+					spark.Font = Enum.Font.GothamBold
+					spark.TextSize = 16
+					spark.TextColor3 = gold
+					spark.ZIndex = 14
+					spark.Parent = g
+					local angle = (i - 1) * math.pi * 2 / (if rarityLevel >= 3 then 6 else 3)
+					TS:Create(spark, TweenInfo.new(0.42, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+						Position = UDim2.fromOffset(landed.X + math.cos(angle) * 42, landed.Y + math.sin(angle) * 42),
+						TextTransparency = 1,
+					}):Play()
+				end
+			end
+			local stamp = Instance.new("TextLabel")
+			stamp.Name = "CardArchivedConfirmation"
+			stamp.AnchorPoint = Vector2.new(0.5, 0)
+			stamp.Position = UDim2.fromOffset(math.clamp(landed.X, 100, viewport.X - 100), landed.Y + 29)
+			stamp.Size = UDim2.fromOffset(190, 28)
+			stamp.BackgroundColor3 = Color3.fromRGB(60, 44, 34)
+			stamp.BackgroundTransparency = 0.12
+			stamp.BorderSizePixel = 0
+			stamp.Font = Enum.Font.GothamBold
+			stamp.TextSize = 14
+			stamp.TextColor3 = gold
+			stamp.Text = if isCombat then "✦ 내 카드에 기록됨" else "✦ 서재에 기록됨"
+			stamp.TextTransparency = 1
+			stamp.ZIndex = 15
+			stamp.Parent = g
+			corner(stamp, 8)
+			TS:Create(stamp, TweenInfo.new(0.14), { TextTransparency = 0 }):Play()
+			task.delay(0.45, function()
+				if stamp.Parent then
+					TS:Create(stamp, TweenInfo.new(0.20), { TextTransparency = 1, BackgroundTransparency = 1 }):Play()
+				end
+			end)
 		end)
 		flight:Play()
 	end)
-	task.delay(2.66, function()
+	task.delay(3.04, function()
 		if g.Parent then g:Destroy() end
 	end)
 end
@@ -9222,7 +9431,7 @@ function H.checkNewCards()
 			if not player.Parent then break end
 			local found = table.remove(H.cardGainQueue, 1)
 			H.showCardGain(found.card, found.extra)
-			task.wait(2.76)
+			task.wait(3.14)
 		end
 		H.cardGainPlaying = false
 	end)
