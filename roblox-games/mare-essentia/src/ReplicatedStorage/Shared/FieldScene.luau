@@ -1212,6 +1212,13 @@ function FieldScene.start(opts)
 	if not arid and (questTerrain == "highland" or questTerrain == "forest") and AssetIds["Terrain/tree-plateau"] then
 		table.insert(treeNames, "tree-plateau")
 	end
+	-- [정식 CC0 실물] 기존 수목 배치 수를 유지하며 권한 확인된 숲·북방 원경 변종만 선택한다.
+	if (questTerrain == "forest" or questTerrain == "highland") and AssetIds["Terrain/tree-detailed-dark"] then
+		table.insert(treeNames, "tree-detailed-dark")
+	end
+	if northern and AssetIds["Terrain/tree-pinetalld-detailed"] then
+		table.insert(treeNames, "tree-pinetalld-detailed")
+	end
 	if tropical and AssetIds["Terrain/tree-palmdetailedtall"] then
 		table.insert(treeNames, "tree-palmdetailedtall")
 	end
@@ -1488,7 +1495,7 @@ function FieldScene.start(opts)
 	-- 동선과 퀘스트 조사 대상은 그대로 유지하며 시각 모델 충돌은 만들지 않는다.
 	do -- [Luau 지역변수 상한] 추가 실물 깊이 배치표는 기존 구획과 지역변수 생명주기를 분리한다.
 	local depthLandforms = if questTerrain == "glacier" then {
-		{ "cliff-large-stone", 45, -0.85, -0.66, 14 },
+		{ AssetIds["Terrain/cliff-cornerinnertop-stone"] and "cliff-cornerinnertop-stone" or "cliff-large-stone", 45, -0.85, -0.66, 14 },
 		{ "cliff-cornerlarge-stone", 32, 0.82, -0.43, 28 },
 		{ "cliff-blockdiagonal-rock", 31, 0.91, -0.84, -9 },
 		{ "cliff-cornertop-rock", 33, -0.84, -0.22, -24 },
@@ -1496,15 +1503,15 @@ function FieldScene.start(opts)
 		{ "ground-pathrocks", 10, -0.52, -0.39, -17 },
 		{ "cliff-blockslope-rock", 24, -0.92, -0.45, 23 }
 	} elseif questTerrain == "volcanic" then {
-		-- [화산 전장] 거친 암벽·부스러기 실제 메시로 적막한 산악 지형과 구분한다.
-		{ "cliff-large-rock", 43, -0.84, -0.70, 14 },
+		-- [화산 전장] 신규 절벽 측벽은 등록 시에만 기존 원경 암벽 대신 사용한다.
+		{ AssetIds["Terrain/cliff-blockslopewalls-rock"] and "cliff-blockslopewalls-rock" or "cliff-large-rock", 43, -0.84, -0.70, 14 },
 		{ "cliff-blockdiagonal-rock", 33, 0.86, -0.54, -17 },
 		{ "debris", 14, -0.66, -0.35, 11 },
 		{ "cliff-cornerinnertop-rock", 31, 0.87, -0.83, 22 },
 		{ "rock-talld", 18, 0.77, -0.26, 14 },
 		{ "ground-pathrocks", 9, -0.55, -0.44, 13 },
 	} elseif questTerrain == "highland" then {
-		{ "cliff-diagonal-rock", 44, -0.83, -0.65, 13 },
+		{ AssetIds["Terrain/cliff-topdiagonal-rock"] and "cliff-topdiagonal-rock" or "cliff-diagonal-rock", 44, -0.83, -0.65, 13 },
 		{ "cliff-blockslope-rock", 29, 0.80, -0.44, 28 },
 		{ "cliff-blockdiagonal-rock", 32, 0.92, -0.84, -11 },
 		{ "cliff-cornerinnertop-rock", 33, -0.84, -0.22, -24 },
@@ -1527,11 +1534,11 @@ function FieldScene.start(opts)
 		{ "cliff-cornertop-rock", 26, -0.83, -0.31, 32 },
 		{ "cliff-diagonal-rock", 29, 0.86, -0.83, -12 },
 		{ "ground-riverside", 15, 0.76, -0.27, -10 },
-		{ "ground-riverbendbank", 13, -0.57, -0.49, 40 },
-		{ "ground-riverbendbank", 15, -0.73, -0.70, -16 }
+		{ AssetIds["Terrain/ground-rivercorner"] and "ground-rivercorner" or "ground-riverbendbank", 13, -0.57, -0.49, 40 },
+		{ AssetIds["Terrain/ground-rivertile"] and "ground-rivertile" or "ground-riverbendbank", 15, -0.73, -0.70, -16 }
 	} elseif questTerrain == "mine" then {
-		-- [광산 3D 층] 기존 실물 동굴 입구·나무 지지대·암벽을 전투길 바깥에 배치한다.
-		{ "cliff-cave-rock", 36, -0.84, -0.68, 15 },
+		-- [광산 3D 층] 등록 확인된 동굴암벽 원본을 기존 원경 자리에서만 사용한다.
+		{ AssetIds["Terrain/cliff-blockcave-rock"] and "cliff-blockcave-rock" or "cliff-cave-rock", 36, -0.84, -0.68, 15 },
 		{ "wood-support", 19, 0.78, -0.54, -12 },
 		{ "cliff-blockslope-rock", 28, 0.87, -0.82, 20 },
 		{ "log-stack", 8, -0.63, -0.41, 28 },
@@ -1562,16 +1569,16 @@ function FieldScene.start(opts)
 		{ "rock-talld", 14, -0.81, -0.19, -11 },
 		{ "cliff-cornerlarge-rock", 29, -0.91, -0.57, 15 },
 	} elseif questTerrain == "farm" then {
-		-- [농경지 3D 층] 승인된 실물 자갈길·밀밭·장작더미로 완만한 높이 차를 만든다.
-		{ "ground-pathstraight", 23, -0.81, -0.71, 14 },
+		-- [농경지 3D 층] 신규 흙길 굽이를 기존 자갈길 자리에서만 선택한다.
+		{ AssetIds["Terrain/ground-pathcorner"] and "ground-pathcorner" or "ground-pathstraight", 23, -0.81, -0.71, 14 },
 		{ "crops-wheatstageb", 13, 0.75, -0.52, -17 },
 		{ "cliff-blockslope-rock", 24, 0.89, -0.87, 12 },
 		{ "log-stack", 8, -0.67, -0.35, 10 },
 		{ "plant-bushdetailed", 7, 0.66, -0.32, 11 },
 		{ "ground-pathrocks", 11, -0.86, -0.43, -10 },
 	} elseif questTerrain == "swamp" then {
-		-- [습지 3D 층] 물가 둑·키 큰 수풀·이끼 바위를 겹치되 통행 판정은 바꾸지 않는다.
-		{ "ground-riverbendbank", 21, -0.84, -0.71, 24 },
+		-- [습지 3D 층] 원경 강수면은 등록된 실제 타일로 바꿔 층을 강조한다.
+		{ AssetIds["Terrain/ground-rivertile"] and "ground-rivertile" or "ground-riverbendbank", 21, -0.84, -0.71, 24 },
 		{ "forest-bush-detailed", 12, 0.77, -0.49, -12 },
 		{ "cliff-cornerinnertop-rock", 26, 0.89, -0.83, 15 },
 		{ "plant-bushdetailed", 8, -0.70, -0.37, 8 },
@@ -1588,12 +1595,12 @@ function FieldScene.start(opts)
 	} elseif questTerrain == "forest" then {
 		{ "cliff-blockslope-rock", 25, -0.81, -0.53, 22 },
 		{ "cliff-cornerinnertop-rock", 24, 0.78, -0.73, -30 },
-		{ "plant-bushdetailed", 7, 0.60, -0.33, 6 },
+		{ AssetIds["Terrain/plant-bushtriangle"] and "plant-bushtriangle" or "plant-bushdetailed", 7, 0.60, -0.33, 6 },
 		{ "plant-bushlargetriangle", 8, -0.52, -0.29, 6 },
 		{ "grass-large", 6, 0.51, -0.35, 0 },
 		{ "ground-pathbend", 7, -0.49, -0.56, 15 },
 		{ "cliff-blockslope-rock", 23, 0.90, -0.58, -21 },
-		{ "grass-leafslarge", 6, -0.63, -0.22, 7 }
+		{ AssetIds["Terrain/grass-leafs"] and "grass-leafs" or "grass-leafslarge", 6, -0.63, -0.22, 7 }
 	} else {
 		{ "cliff-large-rock", 27, -0.86, -0.74, 8 },
 		{ "ground-pathrocks", 7, 0.51, -0.42, 22 },
