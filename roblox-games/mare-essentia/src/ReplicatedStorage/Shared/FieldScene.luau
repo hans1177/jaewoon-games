@@ -323,6 +323,10 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 			d.Anchored = true
 			d.CanCollide = solid == true
 			d.CanTouch = false
+			-- [Roblox 공식 거리 LOD] 등록된 MeshPart 원본은 보존하면서 거리별 정밀도를 자동 조절한다.
+			-- 작은 장식은 그림자를 생략해 모바일에 추가 자연물을 허용한다.
+			if d:IsA("MeshPart") then d.RenderFidelity = Enum.RenderFidelity.Automatic end
+			if not solid and desired < 9 then d.CastShadow = false end
 			local tint = tintOverride or FIELD_TINT[asset]
 			if kind == "Animals" and tint then
 				-- [야생 생물 품종색] 원본 PBR 맵/무늬와 눈·발굽·뿔 등 세부색은 보존한다.
@@ -684,6 +688,22 @@ function FieldScene.start(opts)
 	folder:SetAttribute("FieldClimateZone", climateZone)
 	folder:SetAttribute("FieldSeasonMonth", month)
 	local visualMobile = game:GetService("UserInputService").TouchEnabled
+	-- [실측 품질별 식생 밀도] 기기 유형 하나만 보고 나무 44개·바위 36개로 자르지 않는다.
+	-- 그래픽 자동 설정은 보수적으로 시작하고, 사용자가 선택한 품질을 그대로 존중한다.
+	local fieldVisualDensity = if visualMobile then 0.82 else 1
+	do
+		local ok, savedQuality = pcall(function()
+			return UserSettings():GetService("UserGameSettings").SavedQualityLevel
+		end)
+		if ok and savedQuality and savedQuality ~= Enum.SavedQualitySetting.Automatic then
+			local level = savedQuality.Value
+			fieldVisualDensity = if level <= 2 then 0.55 elseif level <= 4 then 0.72
+				elseif level <= 6 then 0.90 else 1.12
+			if not visualMobile then fieldVisualDensity = math.max(0.80, fieldVisualDensity) end
+		end
+	end
+	folder:SetAttribute("FieldVisualDensity", fieldVisualDensity)
+	folder:SetAttribute("FieldVisualBudgetMode", "AREA_AND_GRAPHICS_QUALITY")
 	folder:SetAttribute("FieldDifficultyGrade", math.clamp(math.floor(tonumber(opts.danger) or 1), 1, 5))
 	folder:SetAttribute("FieldRegion", biome.region or "generic")
 	folder:SetAttribute("FieldEncounterPattern", biome.encounter or biome.kind)
@@ -1123,7 +1143,9 @@ function FieldScene.start(opts)
 		else Color3.fromRGB(102, 153, 82)
 	-- [모바일 안정화] 메시는 화면 자원만 줄이고 탐험 보상·몬스터 수·위험도는 유지한다.
 	local treeCount = math.floor(biome.trees * 2 * AREA)
-	local visualTreeCount = if visualMobile then math.min(treeCount, 44) else treeCount
+	-- [자연 밀도] 하드 제한 대신 실제 바이옴·전장 면적·사용자 그래픽 품질을 따른다.
+	local visualTreeCount = math.floor(treeCount * fieldVisualDensity + 0.5)
+	folder:SetAttribute("FieldVisualTreeCount", visualTreeCount)
 	for index = 1, visualTreeCount do
 		local pos = ORIGIN + scatter(14)
 		-- 산길·유적은 바깥 능선으로, 숲은 양옆의 구불구불한 수목 통로로 배치한다.
@@ -1167,6 +1189,8 @@ function FieldScene.start(opts)
 			elseif name == "tree-palmdetailedtall" or name == "tree-palmbend" then Color3.fromRGB(83, 157, 97)
 			else foliageTint
 		stageFeature(entry)
+		-- [모바일 프레임 분산] 많은 실물은 한 프레임에 전부 복제하지 않고 기존 생성 루프 안에서 나눠 배치.
+		if visualMobile and index % 18 == 0 then task.wait() end
 	end
 	-- [무료 실물 지형] 기존 바위 개수를 유지하면서 등록된 Quaternius 모델을 섞는다.
 	local rockNames = { { "Town", "rock-large" }, { "Town", "rock-small" }, { "Town", "rock-wide" }, { "Terrain", "Rock_2" } }
@@ -1195,7 +1219,8 @@ function FieldScene.start(opts)
 	if (questTerrain == "highland" or questTerrain == "coast" or questTerrain == "mine" or questTerrain == "volcanic")
 		and AssetIds["Terrain/rock-talld"] then table.insert(rockNames, { "Terrain", "rock-talld" }) end
 	local rockCount = math.floor(biome.rocks * 1.6 * AREA)
-	local visualRockCount = if visualMobile then math.min(rockCount, 36) else rockCount
+	local visualRockCount = math.floor(rockCount * fieldVisualDensity + 0.5)
+	folder:SetAttribute("FieldVisualRockCount", visualRockCount)
 	for index = 1, visualRockCount do
 		local pos = ORIGIN + scatter(10)
 		local side = if index % 2 == 0 then 1 else -1
@@ -1218,6 +1243,7 @@ function FieldScene.start(opts)
 		local entry = { rock[1], rock[2], rng:NextNumber(2.5, 6), nil, nil, true }
 		entry.position = pos
 		stageFeature(entry)
+		if visualMobile and index % 18 == 0 then task.wait() end
 	end
 
 
@@ -1544,7 +1570,8 @@ function FieldScene.start(opts)
 		}
 		local placedBandCount = 0
 		for index, spec in nearBands do
-			if (not visualMobile or index <= 2) and AssetIds["Terrain/" .. spec[1]] then
+			-- [실제 시야 밀도] 가까운 지형도 두 개만 표시하던 제한을 품질에 맞춰 확대한다.
+			if (not visualMobile or index <= math.ceil(3 + fieldVisualDensity)) and AssetIds["Terrain/" .. spec[1]] then
 				local entry = { "Terrain", spec[1], spec[2], nil, nil, false, spec[5] }
 				-- [항구 고유 근경] 평원·농경지·해안·호수의 두 번째 모델은 해당 항구의 기존 지리 실물로 선택한다.
 				-- 한 대륙 안에서도 석호·피오르·하구·맹그로브가 첫 화면에서 구분된다. 수량과 전투 판정은 유지.
@@ -1724,12 +1751,15 @@ function FieldScene.start(opts)
 			end
 		end
 	end
-	local detailCount = if visualMobile then 10 else 24
+	-- [바닥 입체감] 10/24개라는 고정값을 없애고 면적별 식생층에 분배한다.
+	-- 숲·정글은 원래 바이옴 모델과 하층 디테일이 동시에 늘어나며 등록된 자산만 배치한다.
+	local detailCount = math.max(12, math.floor((if visualMobile then 16 else 24) * AREA * fieldVisualDensity + 0.5))
+	folder:SetAttribute("FieldVisualDetailCount", detailCount)
 	for index = 1, detailCount do
-		local band = math.floor((index - 1) / 4)
+		local band = math.floor((index - 1) / 4) % 7
 		local side = if index % 2 == 0 then -1 else 1
-		-- [장면 깊이] 기존 모바일 10개 / PC 24개 실물 소품을 앞→중간→뒤로 나눈다.
-		-- 최초 10개가 전부 먼 원경에만 놓이던 문제를 고치되 전투 중앙은 비운다.
+		-- [장면 깊이] 모바일도 앞→중간→뒤의 7개 거리 띠로 순환 배치한다.
+		-- 중앙 전투로는 비워 두면서 앞쪽 식생·강돌·버섯을 겹겹이 보여 준다.
 		local px = side * half * (0.27 + rng:NextNumber(0, 0.11))
 		local pz = half * (0.82 - band * 0.21) + rng:NextNumber(-7, 7)
 		local asset = detailAssets[((index - 1) % #detailAssets) + 1]
@@ -1752,6 +1782,7 @@ function FieldScene.start(opts)
 			else rng:NextNumber(2.2, 5.2), nil, nil, false }
 		entry.position = ORIGIN + Vector3.new(px, 0, math.clamp(pz, -half * 0.74, half * 0.87))
 		stageFeature(entry)
+		if visualMobile and index % 18 == 0 then task.wait() end
 	end
 
 	-- 생산지·탐험 지역에 신규 CC0 자연 자산을 배치한다.
