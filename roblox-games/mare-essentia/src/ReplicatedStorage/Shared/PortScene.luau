@@ -5744,13 +5744,18 @@ function PortScene.build(info, onFacility)
 			part(folder, Vector3.new(wide * 0.74, tall * 0.72, 30), CFrame.new(px - 8, tall * 0.36, z), baseColor, surface)
 			part(folder, Vector3.new(wide * 0.78, 3.5, 34), CFrame.new(px - 8, tall * 0.72 + 1.5, z), roofColor, Enum.Material.Slate)
 			-- 지역 양식에 따라 관문 탑·첨탑·누각으로 실루엣을 다르게 한다.
-			if palaceTier >= 2 then
-				local tower = if east then "tower-square-roof" elseif islamic then "tower-hexagon-roof" else "tower-square-top-roof"
+			-- [문화권 탑] 유럽식 성곽 탑은 유럽·지중해 관저에만 둔다(동아시아·이슬람·남아시아·열대 궁정에 붙이지 않음).
+			-- 탑 몸체는 기본 파츠 대신 승인된 성곽 탑 실물 부품(기단+창문층)으로 쌓는다.
+			local europeanCourt = not (east or indian or southeast or islamic or westAfrican or tropical)
+			if palaceTier >= 2 and europeanCourt then
 				local zTower = side * (deep * 0.47 + 23)
 				local tx = px - wide * 0.34
-				local tbase = part(folder, Vector3.new(16, tall * 0.72, 16), CFrame.new(tx, tall * 0.36, zTower), baseColor, surface)
-				tbase.Name = "RoyalTower"
-				importedModel(folder, "Castle", tower, Vector3.new(tx, tall * 0.72, zTower), 20, false)
+				local tbase = importedModel(folder, "Castle", "tower-square-base", Vector3.new(tx, 0, zTower), 16, true, baseColor)
+				if tbase then tbase.Name = "RoyalTower" end
+				importedModel(folder, "Castle", "tower-square-mid-windows", Vector3.new(tx, 16, zTower), 16, true, baseColor)
+				importedModel(folder, "Castle", "tower-square-top-roof", Vector3.new(tx, 32, zTower), 18, false)
+			end
+			if palaceTier >= 2 then
 				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(facadeX + 5, 0, side * (deep * 0.4 + 7)), 12, false)
 			end
 			-- 궁정 담장·정원은 본체와 겹치지 않으며 거주구역보다 낮은 밀도로 배치한다.
@@ -5827,12 +5832,12 @@ function PortScene.build(info, onFacility)
 		part(folder, Vector3.new(75, 0.4, 26), CFrame.new(frontX + 25, 0.24, 0), C(166, 158, 148), Enum.Material.Cobblestone)
 		if palaceTier >= 2 then
 			-- 별관 서비스 필지: 남쪽 마구간, 북쪽 근위병영.
-			local stable = part(folder, Vector3.new(30, 13, 18), CFrame.new(px - wide * 0.38, 6.5, deep * 0.62 + 30), C(142, 111, 80), Enum.Material.WoodPlanks)
-			stable.Name = "RoyalStable"
+			-- [실물 부속 건물] 상자·지붕판 대신 지역 양식 주택 실물 모델(house)로 짓는다. 위치·이름은 그대로.
+			local stable = house(folder, Vector3.new(px - wide * 0.38, 0, deep * 0.62 + 30), 30, 18, 1, style, royalSeed, C(142, 111, 80))
+			if stable then stable.Name = "RoyalStable" end
 			importedModel(folder, "Town", "cart", Vector3.new(px - wide * 0.38 - 18, 0, deep * 0.62 + 30), 7, false)
-			local guardroom = part(folder, Vector3.new(34, 16, 19), CFrame.new(px - wide * 0.38, 8, -(deep * 0.62 + 30)), baseColor, surface)
-			guardroom.Name = "RoyalGuardHouse"
-			part(folder, Vector3.new(36, 2, 21), CFrame.new(px - wide * 0.38, 17, -(deep * 0.62 + 30)), roofColor, Enum.Material.Slate)
+			local guardroom = house(folder, Vector3.new(px - wide * 0.38, 0, -(deep * 0.62 + 30)), 34, 19, 2, style, royalSeed, baseColor)
+			if guardroom then guardroom.Name = "RoyalGuardHouse" end
 		end
 		if palaceTier >= 3 then
 			-- 정원 분수·정원 벤치와 왕실 학문 서고.
@@ -5840,15 +5845,13 @@ function PortScene.build(info, onFacility)
 				importedModel(folder, "Town", "fountain-round", Vector3.new(frontX + 29, 0, z), 10, false)
 				importedModel(folder, "Town", "bench_A", Vector3.new(frontX + 38, 0, z + (if z > 0 then 14 else -14)), 5, false)
 			end
-			local library = part(folder, Vector3.new(27, 15, 20), CFrame.new(px - wide * 0.28, 7.5, deep * 0.62 + 65), baseColor, surface)
-			library.Name = "RoyalLibrary"
-			part(folder, Vector3.new(30, 2.5, 22), CFrame.new(px - wide * 0.28, 16.2, deep * 0.62 + 65), roofColor, Enum.Material.Slate)
+			local library = house(folder, Vector3.new(px - wide * 0.28, 0, deep * 0.62 + 65), 27, 20, 2, style, royalSeed, baseColor)
+			if library then library.Name = "RoyalLibrary" end
 		end
 		if palaceTier >= 4 then
 			-- 행정청과 의전 깃발. 관문 폭은 최종 단계까지 보존한다.
-			local office = part(folder, Vector3.new(27, 16, 20), CFrame.new(px - wide * 0.28, 8, -(deep * 0.62 + 65)), baseColor, surface)
-			office.Name = "RoyalAdministration"
-			part(folder, Vector3.new(30, 2.5, 22), CFrame.new(px - wide * 0.28, 17, -(deep * 0.62 + 65)), roofColor, Enum.Material.Slate)
+			local office = house(folder, Vector3.new(px - wide * 0.28, 0, -(deep * 0.62 + 65)), 27, 20, 2, style, royalSeed, baseColor)
+			if office then office.Name = "RoyalAdministration" end
 			for _, z in { -38, 38 } do
 				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(frontX + 8, 0, z), 13, false)
 			end
