@@ -1362,7 +1362,7 @@ test('선원·장인 직업별 실물 복장과 여성 헤어 스타일을 원�
   assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
   assert.match(pose,/elseif femaleLong and hairstyle == "long" then/);
   assert.match(pose,/elseif femaleLong and hairstyle == "bun" then/);
-  assert.match(pose,/if hair and model:GetAttribute\("NpcHairTint"\) then 0\.40/);
+  assert.match(pose,/elseif hair and model:GetAttribute\("NpcHairTint"\) then 0\.45/, '원본 헤어 색상 보존');
   for(const mesh of ['hair_long','hair_simpleparted','hair_buzzed','hair_buzzedfemale']) {
     assert.ok(loader.includes('["People/'+mesh+'"] = true'),'로더 우선순위 누락: '+mesh);
   }
@@ -2000,9 +2000,9 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.doesNotMatch(pose,/MareFaceSurface/);
   assert.match(pose,/scalp\.Name = "HairScalp"/);
   // [모자 원본 교체] 헤어는 예비 장식을 숨기고, 깃털모자는 기존 윗면만 남겨 정수리 구멍을 막는다.
-  assert.match(pose,/if piece:IsA\("BasePart"\) and piece\.Name == fallbackName then/);
-  assert.match(pose,/piece\.Transparency = if assetName == "acc_feather_hat"/);
-  assert.match(pose,/and piece:GetAttribute\("NpcHatCrown"\) == true then 0 else 1/);
+  assert.match(pose,/if piece:IsA\("BasePart"\) and piece\.Name == "Hat" then/, '깃털모자 원형만 교체');
+  assert.match(pose,/piece\.Transparency = if piece:GetAttribute\("NpcHatCrown"\) == true then 0 else 1/, '모자 정수리 보존');
+  assert.match(pose,/piece\.Transparency = if wornHair then 1 else 0/, '실물 헤어 장착 때 중복 보조모발 숨김');
   // [모델 후보 안전범위] 원래 시각 기준 대신 중앙정책에 허용된 정확한 숫자 범위와 수정을 검증한다.
   const skirt=pose.match(/q\.Size = Vector3\.new\(len, lower\.Size\.X \* ([0-9.]+), lower\.Size\.X \* ([0-9.]+)\)/);
   assert.ok(skirt,'실제 주민 치마 비율 존재');
@@ -2010,7 +2010,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.ok(Number(skirt[2])>=0.90 && Number(skirt[2])<=1.18,'치마 깊이 범위');
   assert.match(pose,/local belt = npcOutfit and assetName == "outfit_belt"/);
   // [손목·장화] 허리띠 한도는 보존하고 커프/장화만 별도 비율로 맞춘다.
-  const belt=pose.match(/if belt then ([0-9.]+) elseif cuff then 0\.55 elseif boot then 1\.18 else spec\[4\]/);
+  const belt=pose.match(/if belt then ([0-9.]+) elseif cuff then 0\.36 elseif boot then 0\.94 else spec\[4\]/);
   assert.ok(belt,'주민 허리띠 스케일 존재');
   assert.ok(Number(belt[1])>=0.24 && Number(belt[1])<=0.50,'허리띠 시각 범위');
   assert.match(pose,/local fittedUpperReady = false/);
@@ -3431,8 +3431,8 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
     '기존 지역·시대 허용 체계를 보존한다');
   assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
   assert.match(pose,/local hairPalette = \{/);
-  assert.match(pose,/surface\.Color = surface\.Color:Lerp\(softTint, 0\.72\)/,
-    '텍스처/원본 PBR을 유지하면서 실제 머리색을 가시화한다');
+  assert.match(pose,/surface\.Color = surface\.Color:Lerp\(softTint, if pale then 0\.93 else 0\.50\)/,
+    '텍스처/원본 PBR을 유지하면서 밝게 로드된 머리색만 복구한다');
   assert.match(pose,/model:SetAttribute\("NpcAccentTint", accentTint\)/);
   assert.match(pose,/surface\.Color = surface\.Color:Lerp\(accent:Lerp\(/);
   assert.match(pose,/if not textured and string\.sub\(assetName, 1, 7\) == "outfit_"/);
@@ -3466,9 +3466,9 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('target.Size.Y * hairHeightAllowance / ext.Y,'));
   assert.ok(pose.includes('target.Size.Z * spec[5] / ext.Z)'));
   assert.ok(pose.includes('if npcOutfit and not surface and part:IsA("MeshPart") and part.TextureID ~= ""'));
-  assert.ok(pose.includes('part.Color = part.Color:Lerp(hairTint:Lerp(Color3.new(1, 1, 1), 0.25), 0.70)'));
+  assert.ok(pose.includes('part.Color = part.Color:Lerp(hairTint, if pale then 0.93 else 0.45)'), '텍스처 머리 흰색 기본 배율 복구');
   assert.ok(pose.includes('if npcOutfit and surface and surfaceHasColorMap(surface) then'));
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(softTint, 0.72)'));
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(softTint, if pale then 0.93 else 0.50)'), 'PBR 머리 흰색 기본 배율 복구');
   assert.ok(pose.includes('scalp.Name = "HairScalp"'));
   assert.ok(pose.includes('temple.Name = "HairScalpSide"'));
   // [사진 회귀] 실물 헤어가 부분 메시일 때 목덜미·묶은 머리 볼륨을 보존한다.
@@ -3477,6 +3477,12 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('knot.Name = "HairBack"'));
   assert.ok(pose.includes('visibleHeadwearParts == 0'));
   assert.ok(pose.includes('assetName .. ":invisible"'));
+  assert.ok(pose.includes('local crownY = if hairStyle == "bun" then 0.79 elseif hairStyle == "long" then 0.67 else 0.65'), '헤어 정수리 위로 부착');
+  assert.ok(pose.includes('hairOffsetY = crownY - bounds.Size.Y * 0.5 / target.Size.Y'), '긴머리 길이에 따라 높이 자동 정렬');
+  assert.ok(pose.includes('model:SetAttribute("NpcHairMeshReady", wornHair ~= nil)'), '실물 머리 가시 상태 검증');
+  assert.ok(pose.includes('piece.Transparency = if wornHair then 1 else 0'), '머리 메시 로드 실패 시 기존 머리 유지');
+  assert.ok(pose.includes('piece.Transparency = if fullCrown then 1 else 0'), '실물 머리와 두피 중복 시 보조 구체 숨김');
+  assert.ok(pose.includes('and not string.find(worn.Name, "hair_beard", 1, true)'), '수염 머리카락과 분리 보존');
   // [모자 정수리] 실물 깃털모자가 기존 머리 보조를 모두 지우면서 뚫린 윗면을 드러내지 않도록 한다.
   assert.ok(pose.includes('crown:SetAttribute("NpcHatCrown", true)'));
   assert.ok(pose.includes('piece:GetAttribute("NpcHatCrown") == true'));
@@ -3495,7 +3501,7 @@ test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 
   assert.ok(pose.includes('local cuff = npcOutfit and assetName == "outfit_cuff"'));
   assert.ok(pose.includes('local boot = npcOutfit and assetName == "outfit_boot"'));
   assert.ok(pose.includes('elseif cuff then 0.36 elseif boot then 0.94'), '소매와 장화 높이를 관절 대비 축소');
-  assert.ok(pose.includes('if cuff then -0.36 elseif boot then -0.15 else spec[6]'), '손목/정강이 아래 장착');
+  assert.ok(pose.includes('if cuff then -0.36 elseif boot then -0.15 else hairOffsetY'), '손목/정강이 아래 장착 및 헤어 높이 분리');
   assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen, 0.47)'), '원본 린넨 색상 보존');
   assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen, 0.78)'), 'PBR 흰 소매 밝은 무채색만 복구');
   assert.ok(pose.includes('if not metalTrim and pale then'), 'PBR 흰 장화만 보정, 금속 보호');
@@ -3503,7 +3509,8 @@ test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 
   assert.ok(pose.includes('if assetName == "outfit_cuff" and neutral then 0.83'), '무텍스처 흰 소매 추가 보정');
   assert.ok(pose.includes('part.Color:Lerp(leather, if bright then 0.86 else 0.20)'), '무텍스처 흰 장화 추가 보정');
   assert.ok(pose.includes('linenOnly = candidate[2] ~= Enum.Material.Metal'));
-  assert.ok(pose.includes('bestError < 0.0064 and linenOnly and part.Material ~= Enum.Material.Metal'));
+  assert.ok(pose.includes('if part.Material ~= Enum.Material.Metal then'), '흰 소매 금속 재질 보호');
+  assert.ok(pose.includes('if bestError < 0.0064 and linenOnly then'), '원본 린넨 후보만 기존 색 복구');
   assert.ok(pose.includes('outfit_cuff" then npcClothTint:Lerp(Color3.fromRGB(205, 192, 169), 0.42)'));
   assert.equal(pose.split('"acc_ribbon_bow", "Head", 0.56, 0.58, 0.57').length-1,2);
   assert.equal(pose.split('"acc_pearl_hairpin", "Head", 0.36, 0.39, 0.40').length-1,2);
