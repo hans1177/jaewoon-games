@@ -1362,7 +1362,7 @@ test('선원·장인 직업별 실물 복장과 여성 헤어 스타일을 원�
   assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
   assert.match(pose,/elseif femaleLong and hairstyle == "long" then/);
   assert.match(pose,/elseif femaleLong and hairstyle == "bun" then/);
-  assert.match(pose,/if hair and model:GetAttribute\("NpcHairTint"\) then 0\.40/);
+  assert.match(pose,/elseif hair and model:GetAttribute\("NpcHairTint"\) then 0\.45/, '원본 헤어 색상 보존');
   for(const mesh of ['hair_long','hair_simpleparted','hair_buzzed','hair_buzzedfemale']) {
     assert.ok(loader.includes('["People/'+mesh+'"] = true'),'로더 우선순위 누락: '+mesh);
   }
@@ -2000,9 +2000,9 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.doesNotMatch(pose,/MareFaceSurface/);
   assert.match(pose,/scalp\.Name = "HairScalp"/);
   // [모자 원본 교체] 헤어는 예비 장식을 숨기고, 깃털모자는 기존 윗면만 남겨 정수리 구멍을 막는다.
-  assert.match(pose,/if piece:IsA\("BasePart"\) and piece\.Name == fallbackName then/);
-  assert.match(pose,/piece\.Transparency = if assetName == "acc_feather_hat"/);
-  assert.match(pose,/and piece:GetAttribute\("NpcHatCrown"\) == true then 0 else 1/);
+  assert.match(pose,/if piece:IsA\("BasePart"\) and piece\.Name == "Hat" then/, '깃털모자 원형만 교체');
+  assert.match(pose,/piece\.Transparency = if piece:GetAttribute\("NpcHatCrown"\) == true then 0 else 1/, '모자 정수리 보존');
+  assert.match(pose,/piece\.Transparency = if wornHair then 1 else 0/, '실물 헤어 장착 때 중복 보조모발 숨김');
   // [모델 후보 안전범위] 원래 시각 기준 대신 중앙정책에 허용된 정확한 숫자 범위와 수정을 검증한다.
   const skirt=pose.match(/q\.Size = Vector3\.new\(len, lower\.Size\.X \* ([0-9.]+), lower\.Size\.X \* ([0-9.]+)\)/);
   assert.ok(skirt,'실제 주민 치마 비율 존재');
@@ -2010,7 +2010,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.ok(Number(skirt[2])>=0.90 && Number(skirt[2])<=1.18,'치마 깊이 범위');
   assert.match(pose,/local belt = npcOutfit and assetName == "outfit_belt"/);
   // [손목·장화] 허리띠 한도는 보존하고 커프/장화만 별도 비율로 맞춘다.
-  const belt=pose.match(/if belt then ([0-9.]+) elseif cuff then 0\.55 elseif boot then 1\.18 else spec\[4\]/);
+  const belt=pose.match(/if belt then ([0-9.]+) elseif cuff then 0\.36 elseif boot then 0\.94 else spec\[4\]/);
   assert.ok(belt,'주민 허리띠 스케일 존재');
   assert.ok(Number(belt[1])>=0.24 && Number(belt[1])<=0.50,'허리띠 시각 범위');
   assert.match(pose,/local fittedUpperReady = false/);
