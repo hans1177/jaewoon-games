@@ -1188,6 +1188,15 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	local professionAccessory = detailAllowed and profession and NPC_PROFESSION_ACCESSORY[profession]
 	local accessory = professionAccessory and AssetIds["People/" .. professionAccessory[1]]
 		and professionAccessory or (npcOutfit and NPC_REGISTERED_ACCESSORY[profile])
+	-- [기등록 액세서리 개성] 머리핀과 리본은 성별/직업을 보존하며 기존 실물 중 한 가지를 선택한다.
+	-- 신규 자산 번호 없이 개인 해시의 머리 변형만 사용해 같은 마을 주민의 반복을 줄인다.
+	if detailAllowed and not professionAccessory and (profile == "citizen_female"
+		or profile == "citizen_official_female" or profile == "citizen_worker_female")
+		and (tonumber(model:GetAttribute("NpcHairVariant")) or 1) % 2 == 0 then
+		local alternate = if profile == "citizen_official_female" then NPC_REGISTERED_ACCESSORY.citizen_female
+			else NPC_REGISTERED_ACCESSORY.citizen_official_female
+		if alternate and AssetIds["People/" .. alternate[1]] then accessory = alternate end
+	end
 	local jobGear = detailAllowed and profession and NPC_PROFESSION_GEAR[profession]
 	if accessory and AssetIds["People/" .. accessory[1]] then
 		specs = table.clone(specs)
@@ -1274,6 +1283,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	-- [외형 상태 분리] 실제 표시·의도적 원거리 생략·통합 제거·근거리 실패를 따로 센다.
 	-- 숨긴 메시를 "표시됨"으로 세지 않고, 실패한 필수 복장은 이름과 원인을 남긴다.
 	local visibleCount, lodHidden, merged = 0, 0, 0
+	local garmentVisible, accessoryVisible = 0, 0
 	local missing = {}
 	for _, spec in specs do
 		local assetName, boneName = spec[1], spec[2]
@@ -1367,6 +1377,8 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			end
 			attached += 1
 			visibleCount += 1
+			if string.sub(assetName, 1, 7) == "outfit_" then garmentVisible += 1 end
+			if string.sub(assetName, 1, 4) == "acc_" then accessoryVisible += 1 end
 			continue
 		end
 		local assetKey = if jobProp then assetName else "People/" .. assetName
@@ -1644,6 +1656,8 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		if ok then
 			attached += 1
 			visibleCount += 1
+			if string.sub(assetName, 1, 7) == "outfit_" then garmentVisible += 1 end
+			if string.sub(assetName, 1, 4) == "acc_" then accessoryVisible += 1 end
 			-- [실물 확인] 실제 장착된 메시 종류를 읽을 수 있게 남긴다. 저장·경제 데이터와 무관하다.
 			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" and assetName ~= "hair_beard" then
 				-- [교체 헤어 정리] 새 머리 장착을 확인한 뒤에만 기존 실물 헤어 슬롯을 제거한다.
@@ -1714,12 +1728,16 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	end
 	-- [검증용 진단] 저장·경제와 무관한 표시 상태. 근거리(detailLimit 99) 생략은 0이어야 한다.
 	model:SetAttribute("OutfitVisibleCount", visibleCount)
+	-- [실제 장착 판단] R15 기본 리그나 숨겨진 옷을 실물 의상으로 오보고하지 않는다.
+	model:SetAttribute("NpcR15GarmentVisible", garmentVisible)
+	model:SetAttribute("NpcR15AccessoryVisible", accessoryVisible)
 	model:SetAttribute("OutfitLodHiddenCount", lodHidden)
 	model:SetAttribute("OutfitMergedCount", merged)
 	model:SetAttribute("OutfitRequiredCount", #specs)
 	model:SetAttribute("OutfitMissing", if #missing > 0 then table.concat(missing, ",") else nil)
 	model:SetAttribute(if npcOutfit then "NpcAppearanceState" else "MobAppearanceState",
-		if attached == #specs then "ready" elseif attached > 0 then "partial" else "asset_pending")
+		if npcOutfit and detailAllowed and garmentVisible == 0 then "asset_pending"
+		elseif attached == #specs then "ready" elseif attached > 0 then "partial" else "asset_pending")
 	return attached == #specs
 end
 
