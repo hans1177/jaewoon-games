@@ -922,6 +922,68 @@ local function uniformMaterial(m, style, surface)
 end
 
 local vacancyRate = 0 -- 빈집 비율 (PortScene.build 가 정한다)
+-- [모듈 실물 건축] 등록된 Kenney 모듈 키트(벽·창·문·지붕)를 실제 크기로 재서 격자로 조립한다.
+-- 기본 상자 대신 실물 메시만 보이게 한다. 부품 크기를 코드에 고정하지 않고 실행 중 경계 상자로 간격을 정한다.
+-- set = { wall=, window=, door=, roof= } (Town 키트 이름), 정면은 +X(frontSign=1) 방향.
+local function modularHall(parent, cx, cz, sizeX, sizeZ, floors, set, tint, roofTint)
+	local placed = 0
+	local function piece(asset, pos, unit, rotY, color)
+		local m = importedModel(parent, "Town", asset, pos, unit, true, color)
+		if not m then return nil, 0 end
+		if rotY ~= 0 then
+			local c = m:GetBoundingBox()
+			m:PivotTo(CFrame.new(c.Position) * CFrame.Angles(0, rotY, 0) * CFrame.new(c.Position):Inverse() * m:GetPivot())
+		end
+		local _, size = m:GetBoundingBox()
+		placed += 1
+		return m, size.Y
+	end
+	-- 모바일 부담: 긴 변의 1/8 간격(14~28)으로 부품 수를 왕궁당 약 180개 이내로 제한한다.
+	local unit = math.clamp(math.max(sizeX, sizeZ) / 8, 14, 28)
+	local nZ = math.max(2, math.floor(sizeZ / unit))
+	local nX = math.max(2, math.floor(sizeX / unit))
+	local spanZ, spanX = nZ * unit, nX * unit
+	local floorH = nil
+	for floor = 0, math.max(1, floors) - 1 do
+		local y = (floorH or 0) * floor
+		-- 정면·후면(x 고정, z 방향으로 이어짐): 부품을 90도 돌려 얇은 면이 바깥을 향하게 한다.
+		for side = -1, 1, 2 do
+			local x = cx + side * spanX / 2
+			for i = 1, nZ do
+				local z = cz - spanZ / 2 + unit * (i - 0.5)
+				local mid = i == math.ceil(nZ / 2)
+				local asset = if floor == 0 and side == 1 and mid then set.door
+					elseif (i + floor) % 2 == 0 then set.window else set.wall
+				local _, h = piece(asset, Vector3.new(x, y, z), unit, math.pi / 2, tint)
+				if not floorH and h and h > 0 then floorH = h end
+			end
+		end
+		-- 양 측면(z 고정, x 방향으로 이어짐)
+		for side = -1, 1, 2 do
+			local z = cz + side * spanZ / 2
+			for i = 1, nX do
+				local x = cx - spanX / 2 + unit * (i - 0.5)
+				local asset = if (i + floor) % 2 == 0 then set.window else set.wall
+				local _, h = piece(asset, Vector3.new(x, y, z), unit, 0, tint)
+				if not floorH and h and h > 0 then floorH = h end
+			end
+		end
+		if not floorH then break end
+	end
+	-- 지붕: 실물 지붕 조각을 상면 격자에 얹는다(용마루는 z 방향).
+	local top = (floorH or 8) * math.max(1, floors)
+	if set.roof then
+		local ru = unit * 2
+		local rX, rZ = math.max(1, math.floor(spanX / ru)), math.max(1, math.floor(spanZ / ru))
+		for i = 1, rX do
+			for j = 1, rZ do
+				piece(set.roof, Vector3.new(cx - rX * ru / 2 + ru * (i - 0.5), top, cz - rZ * ru / 2 + ru * (j - 0.5)), ru, math.pi / 2, roofTint)
+			end
+		end
+	end
+	return placed, top
+end
+
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- [광장 건축 금지] 향후 시설 추가에서도 중앙광장의 빈 보행 공간은 유지한다.
 	if parent.Name == "PortScene" then
@@ -5740,11 +5802,49 @@ function PortScene.build(info, onFacility)
 		main:SetAttribute("BuildTier", palaceTier)
 		main:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 		main:SetAttribute("RoyalPlotScale", PortBuildings.RoyalCityPlots.plotScale[sceneLevel])
-		part(folder, Vector3.new(wide + 6, 3.2, deep * 0.77 + 6), CFrame.new(px, tall + 1.6, 0), roofColor, if east or tropical then Enum.Material.WoodPlanks else Enum.Material.Slate)
+		local mainRoof = part(folder, Vector3.new(wide + 6, 3.2, deep * 0.77 + 6), CFrame.new(px, tall + 1.6, 0), roofColor, if east or tropical then Enum.Material.WoodPlanks else Enum.Material.Slate)
+		-- [본관 실물화] 상자 본체 대신 등록된 모듈 실물 부품으로 문화권별 입면을 조립한다.
+		-- 조립에 성공하면 상자·지붕판은 투명한 충돌/발판으로만 남겨 이름·속성·알현 위치를 보존한다.
+		local hallSet = if east then { wall = "kenney_wood_wall_01", window = "kenney_wood_window_square_01", door = "kenney_wood_door_01", roof = "kenney_roof_straight_green_01" }
+			elseif islamic then { wall = "kenney_grey_wall_01", window = "kenney_grey_arch_01", door = "kenney_grey_door_round_01" }
+			elseif indian or southeast or tropical or westAfrican then { wall = "kenney_wood_wall_01", window = "kenney_wood_window_square_01", door = "kenney_wood_door_01", roof = "kenney_roof_straight_red_01" }
+			else { wall = "kenney_grey_wall_01", window = "kenney_grey_window_square_01", door = "kenney_grey_door_round_01", roof = "kenney_roof_straight_red_01" }
+		local hallPieces = modularHall(folder, px, 0, wide * 0.92, deep * 0.72, if palaceTier >= 4 then 3 else 2, hallSet, baseColor, roofColor)
+		main:SetAttribute("ModularHallPieces", hallPieces)
+		-- [부속 건물 역할별 실물 조립] 같은 주택 하나를 반복하지 않고 역할마다 형태를 다르게 조립한다.
+		-- 마구간=목조 단층, 근위소=창 적은 좁은 3층(탑형), 서고=창 많은 2층, 행정청=본관과 같은 입면 2층.
+		-- 조립 실패 시에만 기존 house()로 짓는다. 이름·위치·상호작용은 그대로.
+		local stableSet = { wall = "kenney_wood_wall_01", window = "kenney_wood_wall_01", door = "kenney_wood_door_01",
+			roof = if east then "kenney_roof_straight_green_01" else "kenney_roof_straight_red_01" }
+		local guardSet = { wall = hallSet.wall, window = hallSet.wall, door = hallSet.door, roof = hallSet.roof }
+		local librarySet = { wall = hallSet.window, window = hallSet.window, door = hallSet.door, roof = hallSet.roof }
+		local function royalAnnex(name, pos, sx, sz, floors, set, tint)
+			local holder = Instance.new("Model")
+			holder.Name = name
+			holder.Parent = folder
+			if modularHall(holder, pos.X, pos.Z, sx, sz, floors, set, tint, roofColor) > 0 then
+				return holder
+			end
+			holder:Destroy()
+			local fallback = house(folder, pos, sx, sz, floors, style, royalSeed, tint)
+			if fallback then fallback.Name = name end
+			return fallback
+		end
+		if hallPieces > 0 then
+			main.Transparency = 1
+			mainRoof.Transparency = 1
+			mainRoof.CanCollide = false
+		end
 		for _, side in { -1, 1 } do
 			local z = side * (deep * 0.41 + 20)
-			part(folder, Vector3.new(wide * 0.74, tall * 0.72, 30), CFrame.new(px - 8, tall * 0.36, z), baseColor, surface)
-			part(folder, Vector3.new(wide * 0.78, 3.5, 34), CFrame.new(px - 8, tall * 0.72 + 1.5, z), roofColor, Enum.Material.Slate)
+			local wing = part(folder, Vector3.new(wide * 0.74, tall * 0.72, 30), CFrame.new(px - 8, tall * 0.36, z), baseColor, surface)
+			local wingRoof = part(folder, Vector3.new(wide * 0.78, 3.5, 34), CFrame.new(px - 8, tall * 0.72 + 1.5, z), roofColor, Enum.Material.Slate)
+			-- [측랑 실물화] 본관과 같은 문화권 부품으로 2층 측랑을 조립한다(성공 시 상자는 투명 충돌체).
+			if hallPieces > 0 and modularHall(folder, px - 8, z, wide * 0.7, 28, 2, hallSet, baseColor, roofColor) > 0 then
+				wing.Transparency = 1
+				wingRoof.Transparency = 1
+				wingRoof.CanCollide = false
+			end
 			-- 지역 양식에 따라 관문 탑·첨탑·누각으로 실루엣을 다르게 한다.
 			-- [문화권 탑] 유럽식 성곽 탑은 유럽·지중해 관저에만 둔다(동아시아·이슬람·남아시아·열대 궁정에 붙이지 않음).
 			-- 탑 몸체는 기본 파츠 대신 승인된 성곽 탑 실물 부품(기단+창문층)으로 쌓는다.
@@ -5835,11 +5935,9 @@ function PortScene.build(info, onFacility)
 		if palaceTier >= 2 then
 			-- 별관 서비스 필지: 남쪽 마구간, 북쪽 근위병영.
 			-- [실물 부속 건물] 상자·지붕판 대신 지역 양식 주택 실물 모델(house)로 짓는다. 위치·이름은 그대로.
-			local stable = house(folder, Vector3.new(px - wide * 0.38, 0, deep * 0.62 + 30), 30, 18, 1, style, royalSeed, C(142, 111, 80))
-			if stable then stable.Name = "RoyalStable" end
+			local stable = royalAnnex("RoyalStable", Vector3.new(px - wide * 0.38, 0, deep * 0.62 + 30), 30, 18, 1, stableSet, C(142, 111, 80))
 			importedModel(folder, "Town", "cart", Vector3.new(px - wide * 0.38 - 18, 0, deep * 0.62 + 30), 7, false)
-			local guardroom = house(folder, Vector3.new(px - wide * 0.38, 0, -(deep * 0.62 + 30)), 34, 19, 2, style, royalSeed, baseColor)
-			if guardroom then guardroom.Name = "RoyalGuardHouse" end
+			local guardroom = royalAnnex("RoyalGuardHouse", Vector3.new(px - wide * 0.38, 0, -(deep * 0.62 + 30)), 20, 19, 3, guardSet, baseColor)
 		end
 		if palaceTier >= 3 then
 			-- 정원 분수·정원 벤치와 왕실 학문 서고.
@@ -5847,13 +5945,11 @@ function PortScene.build(info, onFacility)
 				importedModel(folder, "Town", "fountain-round", Vector3.new(frontX + 29, 0, z), 10, false)
 				importedModel(folder, "Town", "bench_A", Vector3.new(frontX + 38, 0, z + (if z > 0 then 14 else -14)), 5, false)
 			end
-			local library = house(folder, Vector3.new(px - wide * 0.28, 0, deep * 0.62 + 65), 27, 20, 2, style, royalSeed, baseColor)
-			if library then library.Name = "RoyalLibrary" end
+			local library = royalAnnex("RoyalLibrary", Vector3.new(px - wide * 0.28, 0, deep * 0.62 + 65), 30, 20, 2, librarySet, baseColor)
 		end
 		if palaceTier >= 4 then
 			-- 행정청과 의전 깃발. 관문 폭은 최종 단계까지 보존한다.
-			local office = house(folder, Vector3.new(px - wide * 0.28, 0, -(deep * 0.62 + 65)), 27, 20, 2, style, royalSeed, baseColor)
-			if office then office.Name = "RoyalAdministration" end
+			local office = royalAnnex("RoyalAdministration", Vector3.new(px - wide * 0.28, 0, -(deep * 0.62 + 65)), 30, 20, 2, hallSet, baseColor)
 			for _, z in { -38, 38 } do
 				importedModel(folder, "Castle", "flag-banner-long", Vector3.new(frontX + 8, 0, z), 13, false)
 			end
