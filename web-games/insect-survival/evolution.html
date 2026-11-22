@@ -176,15 +176,23 @@ async function load3D(){
   return group;
  }
  // CC0 실제 바닥 타일. 단순 도형으로 곤충이나 소품을 대체하지 않는다.
+ // 지면: 기존 Tiny Treats CC0 메시 그대로 사용. 강한 태양광/안개/노출에서
+ // MeshStandardMaterial의 녹색이 흰색으로 날아가지 않도록 지면만 색을 고정한다.
+ // 진짜 3D 삼각형 지형과 깊이 판정, 캐릭터 충돌 좌표는 그대로 유지한다.
  const worldFloor=templates.floor;
  const bounds=new THREE.Box3().setFromObject(worldFloor);
  const span=bounds.getSize(new THREE.Vector3());
+ const groundPalette=['#54764b','#5b7f51','#608153','#57794c'];
+ const groundMaterials=groundPalette.map(color=>new THREE.MeshBasicMaterial({
+  color,side:THREE.DoubleSide,fog:false,toneMapped:false,depthTest:true,depthWrite:true
+ }));
  for(let ix=-3;ix<=3;ix++)for(let iz=-3;iz<=3;iz++){
   const floor=worldFloor.clone(true);
   floor.scale.set(16/Math.max(.01,span.x),.34,16/Math.max(.01,span.z));
   const scaled=new THREE.Box3().setFromObject(floor);
   floor.position.set(ix*16,-scaled.max.y,iz*16);
-  floor.traverse(mesh=>{if(mesh.isMesh){mesh.material=new THREE.MeshStandardMaterial({color:'#8ca978',roughness:1,side:THREE.DoubleSide});mesh.receiveShadow=true;}});
+  const material=groundMaterials[((ix*13+iz*7)%groundMaterials.length+groundMaterials.length)%groundMaterials.length];
+  floor.traverse(mesh=>{if(mesh.isMesh){mesh.material=material;mesh.receiveShadow=true;}});
   scene.add(floor);
  }
  for(let i=0;i<25;i++){
