@@ -730,7 +730,26 @@ function FieldScene.start(opts)
 			terrain:FillBall(center, radius, mat)
 			table.insert(hills, { center, radius })
 		end
+		-- [다층 지형] 발헤임식 생물군계 높낮이를 참고한 낮은 옆능선.
+		-- 전투 중앙 길·진입 스폰을 비우고, 기등록 실물 절벽/수목과 표면을 연결한다.
+		local contourCount = if questTerrain == "highland" or questTerrain == "volcanic" or questTerrain == "glacier" then (if visualMobile then 4 else 7)
+			elseif questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "mine" then (if visualMobile then 3 else 5)
+			elseif questTerrain == "coast" or questTerrain == "lake" then (if visualMobile then 2 else 4)
+			else (if visualMobile then 1 else 2)
+		for index = 1, contourCount do
+			local side = if index % 2 == 0 then -1 else 1
+			local lane = math.floor((index - 1) / 2)
+			local radius = if questTerrain == "highland" or questTerrain == "glacier" then hillRng:NextNumber(36, 49)
+				elseif questTerrain == "forest" or questTerrain == "jungle" then hillRng:NextNumber(29, 39)
+				else hillRng:NextNumber(24, 35)
+			local x = side * half * hillRng:NextNumber(0.69, 0.84)
+			local z = -half * 0.69 + lane * half * 0.29 + hillRng:NextNumber(-9, 9)
+			local center = ORIGIN + Vector3.new(x, -radius * (if questTerrain == "highland" or questTerrain == "glacier" then 0.58 else 0.72), z)
+			terrain:FillBall(center, radius, mat)
+			table.insert(hills, { center, radius })
+		end
 		folder:SetAttribute("FieldWalkableHillCount", insideCount)
+		folder:SetAttribute("FieldDepthRidgeCount", contourCount)
 		folder.Destroying:Connect(function()
 			for _, h in hills do
 				terrain:FillBall(h[1], h[2] + 2, Enum.Material.Air)
@@ -830,6 +849,9 @@ function FieldScene.start(opts)
 		end
 		local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6], entry.tint)
 		if not m then return nil end
+		if entry.depth then
+			folder:SetAttribute("FieldDepthFeatureCount", (folder:GetAttribute("FieldDepthFeatureCount") or 0) + 1)
+		end
 		if entry.landmark then
 			m.Name = "FieldTerrainLandmark"
 			m:SetAttribute("TerrainTheme", questTerrain)
@@ -891,6 +913,7 @@ function FieldScene.start(opts)
 	-- 미등록 파일은 화면에 가짜 도형으로 대체하지 않고 기존 등록 나무를 유지한다.
 	if not arid and AssetIds["Terrain/tree-detailed"] then table.insert(treeNames, "tree-detailed") end
 	if northern and AssetIds["Terrain/tree-pinedefaultb"] then table.insert(treeNames, "tree-pinedefaultb") end
+	if northern and AssetIds["Terrain/tree-pinetalla-detailed"] then table.insert(treeNames, "tree-pinetalla-detailed") end
 	-- [구획별 단순화된 식생 팔레트] 고스트 오브 쓰시마처럼 동일 화면의 나뭇잎색을 절제해 지역 정체성을 강조한다.
 	local foliageTint = if winterScene then Color3.fromRGB(150, 173, 160)
 		elseif northern and season == "가을" then Color3.fromRGB(155, 119, 66)
@@ -926,7 +949,7 @@ function FieldScene.start(opts)
 		local entry = { kind, name, h, nil, nil, false }
 		entry.position = pos
 		-- 상록수는 북방 겨울에도 녹음을 유지하고, 낙엽수만 황금·적갈색 또는 서리색을 입힌다.
-		entry.tint = if name == "tree-pinedefaulta" or name == "north-pine-fall"
+		entry.tint = if name == "tree-pinedefaulta" or name == "tree-pinedefaultb" or name == "tree-pinetalla-detailed" or name == "north-pine-fall"
 			then (if winterScene then Color3.fromRGB(85, 117, 116) else Color3.fromRGB(103, 146, 92))
 			else foliageTint
 		stageFeature(entry)
@@ -934,6 +957,8 @@ function FieldScene.start(opts)
 	-- [무료 실물 지형] 기존 바위 개수를 유지하면서 등록된 Quaternius 모델을 섞는다.
 	local rockNames = { { "Town", "rock-large" }, { "Town", "rock-small" }, { "Town", "rock-wide" }, { "Terrain", "Rock_2" } }
 	if AssetIds["Terrain/rock-largea"] then table.insert(rockNames, { "Terrain", "rock-largea" }) end
+	if (questTerrain == "highland" or questTerrain == "mine" or questTerrain == "coast" or questTerrain == "glacier")
+		and AssetIds["Terrain/rock-tallc"] then table.insert(rockNames, { "Terrain", "rock-tallc" }) end
 	local rockCount = math.floor(biome.rocks * 1.6 * AREA)
 	local visualRockCount = if visualMobile then math.min(rockCount, 36) else rockCount
 	for index = 1, visualRockCount do
@@ -1072,6 +1097,37 @@ function FieldScene.start(opts)
 			stageFeature(entry)
 		end
 	end
+	-- [원근 입체감] Kenney CC0 실물 절벽 면/상단/경사와 숲 하층을 지형 높이 위에 층으로 배치한다.
+	-- 동선과 퀘스트 조사 대상은 그대로 유지하며 시각 모델 충돌은 만들지 않는다.
+	do -- [Luau 지역변수 상한] 추가 실물 깊이 배치표는 기존 구획과 지역변수 생명주기를 분리한다.
+	local depthLandforms = if questTerrain == "highland" or questTerrain == "glacier" or questTerrain == "volcanic" then {
+		{ "cliff-large-rock", 44, -0.83, -0.65, 13 }, { "cliff-blockslope-rock", 29, 0.80, -0.44, 28 },
+		{ "cliff-top-rock", 33, -0.84, -0.22, -24 }, { "rock-tallc", 16, 0.73, -0.78, 0 },
+		{ "ground-pathrocks", 10, -0.52, -0.39, -17 },
+	} elseif questTerrain == "coast" or questTerrain == "lake" then {
+		{ "cliff-large-rock", 34, 0.87, -0.60, 20 }, { "cliff-blockslope-rock", 26, -0.83, -0.31, 32 },
+		{ "cliff-top-rock", 30, 0.87, -0.24, -10 }, { "ground-pathrocks", 8, -0.50, -0.42, 40 },
+	} elseif questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "swamp" then {
+		{ "cliff-blockslope-rock", 25, -0.81, -0.53, 22 }, { "cliff-top-rock", 24, 0.78, -0.73, -30 },
+		{ "plant-bushdetailed", 8, -0.52, -0.29, 6 }, { "grass-large", 6, 0.51, -0.35, 0 },
+		{ "ground-pathrocks", 7, -0.49, -0.56, 15 },
+	} else {
+		{ "cliff-large-rock", 27, -0.86, -0.74, 8 }, { "ground-pathrocks", 7, 0.51, -0.42, 22 },
+		{ "grass-large", 5, -0.57, -0.28, 0 }, { "rock-tallc", 10, 0.76, -0.63, 0 },
+	}
+	folder:SetAttribute("FieldDepthFeatureCount", 0)
+	for index, spec in depthLandforms do
+		if not visualMobile or index <= 3 then
+			local name = spec[1]
+			if AssetIds["Terrain/" .. name] then
+				local entry = { "Terrain", name, spec[2], nil, nil, false, spec[5] }
+				entry.position = ORIGIN + Vector3.new(spec[3] * half * mirror, 0, spec[4] * half)
+				entry.depth = true
+				stageFeature(entry)
+			end
+		end
+	end
+	end
 	-- [문화권 전용 윤곽] 공통 지형 위에 같은 소품을 반복하지 않고 국가별 대표 실물 건축·식생 군집을 놓는다.
 	-- 위치는 맵 가장자리로 제한해 기존 퀘스트 목표·전투·시작 동선을 유지한다.
 	local regionalSilhouettes = {
@@ -1146,6 +1202,14 @@ function FieldScene.start(opts)
 	elseif season == "가을" and (questTerrain == "forest" or questTerrain == "plains") then
 		detailAssets = { "forest-bush-detailed", "forest-flower-yellow", "coast-grass-patch" }
 	end
+	-- [하층 식생] 기존 모바일/PC 상세 소품 총량은 늘리지 않고 CC0 풀·관목·돌길만 교체 후보로 섞는다.
+	if not winterScene and not arid then
+		if AssetIds["Terrain/plant-bushdetailed"] then table.insert(detailAssets, "plant-bushdetailed") end
+		if AssetIds["Terrain/grass-large"] then table.insert(detailAssets, "grass-large") end
+	end
+	if questTerrain ~= "glacier" and questTerrain ~= "swamp" and AssetIds["Terrain/ground-pathrocks"] then
+		table.insert(detailAssets, "ground-pathrocks")
+	end
 	local detailCount = if visualMobile then 10 else 24
 	for index = 1, detailCount do
 		local band = math.floor((index - 1) / 4)
@@ -1155,6 +1219,7 @@ function FieldScene.start(opts)
 		local asset = detailAssets[((index - 1) % #detailAssets) + 1]
 		local entry = { "Terrain", asset, if asset == "north-pine-fall" then 8.5
 			elseif asset == "east-bamboo-grove" then 7 elseif asset == "log-stack" then 4.5
+			elseif asset == "ground-pathrocks" then 8 elseif asset == "grass-large" then 4.2
 			else rng:NextNumber(2.2, 5.2), nil, nil, false }
 		entry.position = ORIGIN + Vector3.new(px, 0, math.clamp(pz, -half * 0.83, half * 0.27))
 		stageFeature(entry)
