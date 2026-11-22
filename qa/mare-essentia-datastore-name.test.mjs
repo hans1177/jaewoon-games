@@ -3480,6 +3480,21 @@ test('주민 복장 천·피혁·금속 재질과 계절 상의 교체는 원본
   assert.ok(pose.includes('weld.Part0, weld.Part1, weld.Parent = target, part, part'), 'R15 관절 유지');
 });
 
+// [실제 런타임 실패 회귀] GetBoundingBox는 CFrame(위치)와 Vector3(크기)을 각각 반환한다.
+// 이전 위치 CFrame.Size 접근은 pcall에 가려져 모든 실물 헤어가 조용히 fit_failed가 됐다.
+test('주민 의상·헤어 메시 부착은 실제 경계 크기를 사용하고 실패 원인을 남긴다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  assert.match(pose,/local bounds, ext = skin:GetBoundingBox\(\)/, '첫 반환값은 위치 CFrame, 둘째는 실제 크기');
+  assert.match(pose,/skin:ScaleTo\(ratio\)\s*--[^\n]*\n\s*--[^\n]*\n\s*bounds, ext = skin:GetBoundingBox\(\)/, '스케일 후에는 두 반환값을 다시 받는다');
+  assert.match(pose,/hairOffsetY = crownY - ext\.Y \* 0\.5 \/ target\.Size\.Y/, '두상 배치를 크기 Vector3 기준으로 한다');
+  assert.doesNotMatch(pose,/bounds\.Size/, 'CFrame에는 Size 속성이 없음');
+  assert.match(pose,/local ok, fitError = pcall\(function\(\)/, '복장·헤어 조립 실패 원인 포착');
+  assert.match(pose,/assetName \.\. ":fit_failed:" \.\. string\.sub\(reason, 1, 72\)/, '기존 OutfitMissing에 실제 원인 기록');
+  assert.match(pose,/model:SetAttribute\("OutfitMissing", if #missing > 0 then table\.concat\(missing, ","\) else nil\)/, '오류 코드는 기존 진단 속성 재사용');
+  assert.match(pose,/local skin = source:Clone\(\)/, '기존 승인 자산 재사용');
+  assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/, 'R15 기존 용접 유지');
+});
+
 // [헤어 실물 품질 회귀] 단순 메시 숫자 대신 실제 두상 폭·두피·텍스처별 색상 경로를 검사한다.
 test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 압축하지 않는다',()=>{
   const pose=read('ReplicatedStorage/Shared/Pose.luau');
@@ -3501,7 +3516,7 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('visibleHeadwearParts == 0'));
   assert.ok(pose.includes('assetName .. ":invisible"'));
   assert.ok(pose.includes('local crownY = if hairStyle == "bun" then 0.79 elseif hairStyle == "long" then 0.67 else 0.65'), '헤어 정수리 위로 부착');
-  assert.ok(pose.includes('hairOffsetY = crownY - bounds.Size.Y * 0.5 / target.Size.Y'), '긴머리 길이에 따라 높이 자동 정렬');
+  assert.ok(pose.includes('hairOffsetY = crownY - ext.Y * 0.5 / target.Size.Y'), 'GetBoundingBox의 크기 반환값으로 헤어 두상 정렬');
   assert.ok(pose.includes('model:SetAttribute("NpcHairMeshReady", wornHair ~= nil)'), '실물 머리 가시 상태 검증');
   assert.ok(pose.includes('piece.Transparency = if wornHair then 1 else 0'), '머리 메시 로드 실패 시 기존 머리 유지');
   assert.ok(pose.includes('piece.Transparency = if fullCrown then 1 else 0'), '실물 머리와 두피 중복 시 보조 구체 숨김');
