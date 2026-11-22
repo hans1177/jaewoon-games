@@ -1645,7 +1645,7 @@ test('항구 주민은 실제 고용을 넘지 않고 개인별 출퇴근·점�
  ]) assert.ok(scene.includes(marker),'개별 시간표 연결 누락: '+marker);
  for(const marker of ['NPC_PROFESSION_ACCESSORY','NpcClothTint','NpcTrouserTint',
   'clothPersonality','outfit_apron','outfit_sash','Enum.Material.Fabric',
-  'NPC_PROFESSION_GEAR[profession]','surface.Color = surface.Color:Lerp(dye, 0.26)']){
+  'NPC_PROFESSION_GEAR[profession]','surface.Color = surface.Color:Lerp(dye, if assetName == "outfit_stole" then 0.16 else 0.27)']){
    assert.ok(pose.includes(marker),'기등록 재단복 디테일 누락: '+marker);
  }
  for(const accessory of ['acc_sailor_headband','acc_guild_badge','acc_feather_hat','acc_pearl_hairpin']){
@@ -3455,6 +3455,29 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
   assert.match(pose,/if not textured and string.sub\(assetName, 1, 7\) == "outfit_"/);
   for(const asset of ['hair_simpleparted','hair_long','hair_buns','acc_feather_hat','acc_sailor_headband'])
     assert.ok(assetIds.includes('["People/'+asset+'"]'),'등록 원본 누락: '+asset);
+});
+
+// [주민 복장·재질 회귀] PBR 컬러맵 보존, 금속 단추·가죽 보호, 계절별 상의 1벌만 유효 판정.
+test('주민 복장 천·피혁·금속 재질과 계절 상의 교체는 원본 GLB를 보존한다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  const ids=read('ReplicatedStorage/Shared/AssetIds.luau');
+  for(const item of ['outfit_vest','outfit_coat','outfit_guard','outfit_apron','outfit_sash','outfit_stole']){
+    assert.ok(ids.includes('["People/'+item+'"]'), '기존 승인 복장만 사용: '+item);
+  }
+  assert.ok(pose.includes('local bestMaterial, bestError = nil, math.huge'), '원본 선형·감마 색상으로 재질 분리');
+  assert.ok(pose.includes('or (bestError < 0.0064 and bestMaterial == Enum.Material.Metal)'), '황동/갑옷 금속 원재질 보존');
+  assert.ok(pose.includes('or (bestError < 0.0064 and bestMaterial == Enum.Material.Leather)'), '가죽 장식 보존');
+  assert.ok(pose.includes('if not metalTrim and not leatherTrim then'), '천 이외 재질 일괄 염색 금지');
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(dye, if assetName == "outfit_stole" then 0.16 else 0.27)'), 'PBR 천은 원본 텍스처 유지');
+  assert.ok(pose.includes('elseif pale and assetName ~= "outfit_guard" then'), '갑옷의 은색 부분을 흰색으로 오진하지 않음');
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(dye, 0.75)'), '실제 순백으로 유실된 직물만 복구');
+  assert.ok(!pose.includes('surface.Color = surface.Color:Lerp(dye, 0.26)'), '옷 전체 파스텔 일괄 염색 금지');
+  assert.ok(pose.includes('if not trim:find("button", 1, true) and not trim:find("buckle", 1, true)'), '무텍스처 직물에서도 단추는 보호');
+  assert.ok(pose.includes('for _, spec in specs do'), '현재 직업/계절 의상 기준으로 검사');
+  assert.ok(pose.includes('if bone == "UpperTorso" and (garment == "outfit_vest" or garment == "outfit_coat"'), '현재 상의만 중복 제거 판정');
+  assert.ok(pose.includes('part.Transparency < 0.95'), '투명하게 숨겨진 복장은 유효 상의로 세지 않음');
+  assert.ok(pose.includes('if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then'), '기존 계절 의상 지연 로드 보호');
+  assert.ok(pose.includes('weld.Part0, weld.Part1, weld.Parent = target, part, part'), 'R15 관절 유지');
 });
 
 // [헤어 실물 품질 회귀] 단순 메시 숫자 대신 실제 두상 폭·두피·텍스처별 색상 경로를 검사한다.
