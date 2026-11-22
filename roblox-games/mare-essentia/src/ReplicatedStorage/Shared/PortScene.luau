@@ -3428,7 +3428,11 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local homeCandidates, homePlaced, homeShifted, homePlotRejected, homeModelRejected = 0, 0, 0, 0, 0
 	local homeSizeCounts = { 0, 0, 0, 0, 0 }
 	local oldTownHomes, newTownHomes, nightWindows = 0, 0, 0
+	-- [문화권 주거 발전 입면] 단계별 추가 실물 부재는 각 주택에 한 번만 부착한다.
+	local villageAccents, villageCrowns = 0, 0
 	local touchHousing = game:GetService("UserInputService").TouchEnabled
+	local villageAccentCap = if touchHousing then 4 else 9
+	local villageCrownCap = if touchHousing then 2 else 5
 	local nightWindowLimit = if touchHousing then 5 else 11
 	-- 한 항구의 주택 후보 전부가 같은 5개 인접 위치를 사용해 재방문 배치를 재현한다.
 	local homeShifts = { Vector3.zero, Vector3.new(-2.4, 0, 0), Vector3.new(2.4, 0, 0),
@@ -3583,6 +3587,48 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 								elseif sizeClass >= 4 then "merchant_manor" else "town_house")
 							body:SetAttribute("CityArchitectureCulture", key)
 							body:SetAttribute("CityMerchantGrowth", merchantGrowth == true)
+							-- [발전 마을 외관] 아노의 단계별 주택 입면/매너 로즈의 필지 확장은 배치 방식만 참고.
+							-- 기존 PortCultures의 문화권 실물 건축 부재를 읽으며, 왕궁·시장·전투·건설 판정은 변경하지 않는다.
+							local homeArch = style.house or {}
+							local facadeFront = if pos.Z > 0 then -1 else 1
+							local anchor = bounds.Position + chosenShift
+							local accentName = homeArch.growthAccent
+							if lvl >= 2 and villageAccents < villageAccentCap and accentName
+								and AssetIds["Town/" .. accentName] and homePlaced % (if touchHousing then 13 else 9) == 2 then
+								local at = Vector3.new(anchor.X, pos.Y + math.max(1.2, dimensions.Y * 0.24),
+									anchor.Z + facadeFront * dimensions.Z * 0.34)
+								local accent = importedModel(folder, "Town", accentName, at,
+									math.min(5.8, dimensions.X * 0.31), false,
+									if key == "japan" or key == "china" or key == "korea" then style.walls[1] else nil)
+								if accent then
+									accent.Name = "CityCulturalHouseFront"
+									accent:SetAttribute("CityArchitectureCulture", key)
+									accent:SetAttribute("CityQuarter", quarter)
+									accent:SetAttribute("CityDevelopmentTier", lvl)
+									accent:SetAttribute("BuildPlotId", plotId)
+									accent:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+									villageAccents += 1
+								end
+							end
+							-- [상업 주택 지붕 성장] 4단계 이상 신시가지 중 실제 상가 성장 조건을 충족한 주택만.
+							-- 평지붕·고상가옥·동아시아 기와에는 유럽식 박공을 혼용하지 않는다.
+							local crownName = homeArch.growthCrown
+							if lvl >= 4 and quarter == "new" and merchantGrowth and sizeClass >= 3
+								and villageCrowns < villageCrownCap and crownName
+								and AssetIds["Town/" .. crownName] and homePlaced % (if touchHousing then 17 else 11) == 3 then
+								local at = Vector3.new(anchor.X, pos.Y + dimensions.Y * 0.77,
+									anchor.Z + facadeFront * dimensions.Z * 0.16)
+								local crown = importedModel(folder, "Town", crownName, at,
+									math.min(6.5, dimensions.X * 0.35), false, style.roofs[1])
+								if crown then
+									crown.Name = "CityMerchantRoofGrowth"
+									crown:SetAttribute("CityArchitectureCulture", key)
+									crown:SetAttribute("CityDevelopmentTier", lvl)
+									crown:SetAttribute("BuildPlotId", plotId)
+									crown:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+									villageCrowns += 1
+								end
+							end
 							-- [밤이 밝아지는 창] 기존 주야 조명의 PointLight 갱신 경로에 자동 연결된다.
 							-- 모바일 5곳/PC 11곳만 만들고 야간 시간에만 조도가 강해진다.
 							if lvl >= 2 and nightWindows < nightWindowLimit and homePlaced % 13 == 1 then
@@ -3808,6 +3854,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	folder:SetAttribute("CityOldTownHomes", oldTownHomes)
 	folder:SetAttribute("CityNewTownHomes", newTownHomes)
 	folder:SetAttribute("CityNightWindowCount", nightWindows)
+	folder:SetAttribute("CityCulturalHousingAccents", villageAccents)
+	folder:SetAttribute("CityCulturalHousingRoofs", villageCrowns)
 	folder:SetAttribute("CityHousingShifted", homeShifted)
 	folder:SetAttribute("CityHousingPlotRejected", homePlotRejected)
 	folder:SetAttribute("CityHousingModelRejected", homeModelRejected)
