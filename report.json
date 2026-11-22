@@ -9,42 +9,375 @@
   {
    "step": 3,
    "ctx": "Client",
-   "out": "DEV Deck\ntext"
+   "out": "INTRO name=true comp=true\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "killed=false\ntext"
+  },
+  {
+   "step": 6,
+   "ctx": "Client",
+   "out": "DEV Tab trade\ntext"
+  },
+  {
+   "step": 8,
+   "capture": "f_trade",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "CHK deck view=1048x380 texts=281 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:trade true nil\ntext"
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "killed=true\ntext"
+  },
+  {
+   "step": 12,
+   "ctx": "Client",
+   "out": "DEV Tab route\ntext"
+  },
+  {
+   "step": 14,
+   "capture": "f_route",
+   "files": 1
+  },
+  {
+   "step": 15,
+   "ctx": "Client",
+   "out": "CHK deck view=1048x380 texts=582 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
+  },
+  {
+   "step": 16,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:route true nil\ntext"
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "killed=false\ntext"
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "DEV Tab yard\ntext"
+  },
+  {
+   "step": 20,
+   "capture": "f_yard",
+   "files": 1
+  },
+  {
+   "step": 21,
+   "ctx": "Client",
+   "out": "CHK deck view=1048x380 texts=184 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
+  },
+  {
+   "step": 22,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:yard true nil\ntext"
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "killed=false\ntext"
+  },
+  {
+   "step": 24,
+   "ctx": "Client",
+   "out": "DEV Tab quest\ntext"
+  },
+  {
+   "step": 26,
+   "capture": "f_quest",
+   "files": 1
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "CHK deck view=1048x380 texts=231 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:quest true nil\ntext"
+  },
+  {
+   "step": 29,
+   "ctx": "Client",
+   "out": "killed=false\ntext"
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "DEV Tab codex\ntext"
+  },
+  {
+   "step": 32,
+   "capture": "f_codex",
+   "files": 1
+  },
+  {
+   "step": 33,
+   "ctx": "Client",
+   "out": "CHK deck view=1048x380 texts=837 issues=2 ; CUT[999997749] box=76x20 text=80x16 ; CUT[지식 백과] box=369x-16 text=60x21\ntext"
+  },
+  {
+   "step": 34,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:codex true nil\ntext"
+  },
+  {
+   "step": 35,
+   "ctx": "Client",
+   "out": "killed=false\ntext"
+  },
+  {
+   "step": 36,
+   "ctx": "Client",
+   "out": "DEV Tab status\ntext"
+  },
+  {
+   "step": 38,
+   "capture": "f_status",
+   "files": 1
+  },
+  {
+   "step": 39,
+   "ctx": "Client",
+   "out": "CHK deck view=1048x380 texts=191 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
+  },
+  {
+   "step": 40,
+   "ctx": "Client",
+   "out": "DEVRESULT Tab:status true nil\ntext"
+  },
+  {
+   "step": 41,
+   "ctx": "Client",
+   "out": "ERR Client count=0\ntext"
   }
  ],
- "errors": [
-  "step5:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:1: CARD_DECK_WINDOW_MISSING | text"
- ],
+ "errors": [],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 35007
+   "elapsedMs": 35008
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 2589
+   "elapsedMs": 2582
   },
   {
    "step": 2,
    "type": "wait",
-   "elapsedMs": 4009
+   "elapsedMs": 4014
   },
   {
    "step": 3,
    "type": "luau",
-   "elapsedMs": 344
+   "elapsedMs": 3326
   },
   {
    "step": 4,
    "type": "wait",
-   "elapsedMs": 3002
+   "elapsedMs": 2015
   },
   {
    "step": 5,
    "type": "luau",
-   "elapsedMs": 884
+   "elapsedMs": 245
+  },
+  {
+   "step": 6,
+   "type": "luau",
+   "elapsedMs": 798
+  },
+  {
+   "step": 7,
+   "type": "wait",
+   "elapsedMs": 3015
+  },
+  {
+   "step": 8,
+   "type": "capture",
+   "elapsedMs": 1586
+  },
+  {
+   "step": 9,
+   "type": "luau",
+   "elapsedMs": 427
+  },
+  {
+   "step": 10,
+   "type": "luau",
+   "elapsedMs": 393
+  },
+  {
+   "step": 11,
+   "type": "luau",
+   "elapsedMs": 412
+  },
+  {
+   "step": 12,
+   "type": "luau",
+   "elapsedMs": 504
+  },
+  {
+   "step": 13,
+   "type": "wait",
+   "elapsedMs": 3014
+  },
+  {
+   "step": 14,
+   "type": "capture",
+   "elapsedMs": 1946
+  },
+  {
+   "step": 15,
+   "type": "luau",
+   "elapsedMs": 529
+  },
+  {
+   "step": 16,
+   "type": "luau",
+   "elapsedMs": 517
+  },
+  {
+   "step": 17,
+   "type": "luau",
+   "elapsedMs": 506
+  },
+  {
+   "step": 18,
+   "type": "luau",
+   "elapsedMs": 479
+  },
+  {
+   "step": 19,
+   "type": "wait",
+   "elapsedMs": 3008
+  },
+  {
+   "step": 20,
+   "type": "capture",
+   "elapsedMs": 1192
+  },
+  {
+   "step": 21,
+   "type": "luau",
+   "elapsedMs": 640
+  },
+  {
+   "step": 22,
+   "type": "luau",
+   "elapsedMs": 373
+  },
+  {
+   "step": 23,
+   "type": "luau",
+   "elapsedMs": 64
+  },
+  {
+   "step": 24,
+   "type": "luau",
+   "elapsedMs": 361
+  },
+  {
+   "step": 25,
+   "type": "wait",
+   "elapsedMs": 3002
+  },
+  {
+   "step": 26,
+   "type": "capture",
+   "elapsedMs": 1108
+  },
+  {
+   "step": 27,
+   "type": "luau",
+   "elapsedMs": 379
+  },
+  {
+   "step": 28,
+   "type": "luau",
+   "elapsedMs": 361
+  },
+  {
+   "step": 29,
+   "type": "luau",
+   "elapsedMs": 333
+  },
+  {
+   "step": 30,
+   "type": "luau",
+   "elapsedMs": 334
+  },
+  {
+   "step": 31,
+   "type": "wait",
+   "elapsedMs": 3005
+  },
+  {
+   "step": 32,
+   "type": "capture",
+   "elapsedMs": 1185
+  },
+  {
+   "step": 33,
+   "type": "luau",
+   "elapsedMs": 381
+  },
+  {
+   "step": 34,
+   "type": "luau",
+   "elapsedMs": 346
+  },
+  {
+   "step": 35,
+   "type": "luau",
+   "elapsedMs": 592
+  },
+  {
+   "step": 36,
+   "type": "luau",
+   "elapsedMs": 315
+  },
+  {
+   "step": 37,
+   "type": "wait",
+   "elapsedMs": 3007
+  },
+  {
+   "step": 38,
+   "type": "capture",
+   "elapsedMs": 1041
+  },
+  {
+   "step": 39,
+   "type": "luau",
+   "elapsedMs": 328
+  },
+  {
+   "step": 40,
+   "type": "luau",
+   "elapsedMs": 334
+  },
+  {
+   "step": 41,
+   "type": "luau",
+   "elapsedMs": 332
   }
  ],
  "consoleCapture": {
@@ -54,31 +387,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 13,
-  "completedSteps": 6,
+  "plannedSteps": 42,
+  "completedSteps": 42,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 3,
-  "capturedFrames": 0,
-  "abortedEarly": true
- },
- "abortDiagnostics": {
-  "step": 5,
-  "type": "luau",
-  "elapsedMs": 376,
-  "context": "Client",
-  "lastScreenshot": null,
-  "lastClick": null,
-  "probes": {
-   "Client": {
-    "reachable": true,
-    "output": "STUDIO_CONTEXT_CLIENT\ntext"
-   },
-   "Server": {
-    "reachable": true,
-    "output": "STUDIO_CONTEXT_SERVER\ntext"
-   }
-  }
+  "plannedFrames": 6,
+  "capturedFrames": 6,
+  "abortedEarly": false
  }
 }
