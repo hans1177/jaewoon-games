@@ -3829,7 +3829,12 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/local sceneryBatch = 0/,'기존 장면 배치에 프레임 분산');
   assert.match(field,/sceneryBatch \+= 1/,'실제 로드된 모델만 분산 계수');
   assert.match(field,/if sceneryBatch >= 12 then/,'프레임별 배치 분산');
-  assert.match(field,/if scenicBand == "far" and solid ~= true then d\.CastShadow = false end/,'원경 장식 그림자만 절제');
+  assert.match(field,/if solid ~= true then d\.CanQuery = false end/,'비충돌 장식만 물리 쿼리에서 제외');
+  assert.match(field,/solid ~= true and \(scenicBand == "far"/,'원경 장식 그림자 절제');
+  assert.match(field,/scenicBand == "mid" and desired <= 9/,'작은 중경 장식 그림자 절제');
+  assert.match(field,/or desired <= 4\.5\) then d\.CastShadow = false end/,'초소형 장식 그림자 절제');
+  assert.match(field,/p\.CastShadow = false -- 보이지 않는 필드 경계/,'투명 전장 경계 그림자 제거');
+  assert.match(field,/safetyFloor\.CastShadow = false/,'투명 낙사 방지판 그림자 제거');
   assert.match(field,/entry\.tint, entry\.band\)/,'기존 승인 모델 배치에 거리 계층 연결');
   assert.match(field,/local maxReach = rangeR \* STUD \+ 3 \+ obj\.radius/,'기존 무기 사거리·장식 반경 유지');
   assert.match(field,/if dx \* dx \+ dz \* dz > maxReach \* maxReach then continue end/,'먼 실물 장식의 공격 판정 조기 제외');
