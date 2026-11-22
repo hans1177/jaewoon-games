@@ -3125,8 +3125,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			{ "Terrain", "ground-pathstraight", 7 } },
 		-- [미개발 주거 녹지] 원래의 4개 생태 표본을 나무·관목·풀로 다양화한다. 건축 필지는 그대로.
 		woodland = { { "Terrain", "tree-oak", 10 }, { "Terrain", "forest-bush-detailed", 5 },
-			{ "Terrain", "Bush_Small", 3.6 }, { "Terrain", "Grass_Small", 2.5 },
-			{ "Terrain", "ground-pathrocks", 7 } },
+			{ "Terrain", "Bush_Small", 3.6 }, { "Terrain", "Grass_Small", 2.5 } },
 	}
 	local agricultural = table.find(made or {}, "grain") ~= nil or table.find(made or {}, "wheat") ~= nil
 		or table.find(made or {}, "rice") ~= nil or table.find(made or {}, "maize") ~= nil
