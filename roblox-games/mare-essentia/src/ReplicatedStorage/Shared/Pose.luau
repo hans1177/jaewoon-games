@@ -1522,14 +1522,15 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		local ok = pcall(function()
 			local bounds, ext = skin:GetBoundingBox()
 			if ext.X < 0.01 or ext.Y < 0.01 or ext.Z < 0.01 then error("empty mesh") end
-			-- [복식 맞춤] 원본 재질·형태를 유지하면서 손목 레이스와 장화가 팔다리를 과하게 감싸지 않게 맞춘다.
+			-- [소매·장화 실물 맞춤] 흰 띠처럼 과대 출력되던 커프/장화의 R15 관절 대비 높이를 줄인다.
+			-- 기존 메시·관절·피부/복장 색상과 직업별 착용 슬롯은 그대로 사용한다.
 			local belt = npcOutfit and assetName == "outfit_belt"
 			local cuff = npcOutfit and assetName == "outfit_cuff"
 			local boot = npcOutfit and assetName == "outfit_boot"
 			local ratio = math.min(
-				target.Size.X * (if belt then 1.04 elseif cuff then 1.06 elseif boot then 1.10 else spec[3]) / ext.X,
-				target.Size.Y * (if belt then 0.38 elseif cuff then 0.55 elseif boot then 1.18 else spec[4]) / ext.Y,
-				target.Size.Z * (if belt then 1.04 elseif cuff then 1.12 elseif boot then 1.13 else spec[5]) / ext.Z
+				target.Size.X * (if belt then 1.04 elseif cuff then 1.02 elseif boot then 1.05 else spec[3]) / ext.X,
+				target.Size.Y * (if belt then 0.38 elseif cuff then 0.36 elseif boot then 0.94 else spec[4]) / ext.Y,
+				target.Size.Z * (if belt then 1.04 elseif cuff then 1.08 elseif boot then 1.07 else spec[5]) / ext.Z
 			)
 			-- [헤어 장착 비율] 긴 머리를 머리 높이 한 칸에 압축하면 숱과 폭이 사라진다.
 			-- 실물 헤어는 R15 두상 폭·깊이를 우선 맞추고 머리형에 필요한 아래쪽 길이를 허용한다.
@@ -1547,9 +1548,9 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			bounds = skin:GetBoundingBox()
 			-- [직업 도구 자연스러운 고정] 기존 부착 좌표에 필요한 도구 기울기만 적용한다.
 			-- 근접 보행·망치질에는 손/허리 R15 관절을 따라가며 접지/충돌 판정이 없다.
-			-- [손목·발목 접합] 커프는 팔끝, 장화는 종아리 아래로 내려 관절 위에 뜬 흰 띠를 줄인다.
+			-- [소매·장화 위치] 소매는 손목 위 작은 면적에, 장화는 정강이 아래쪽에 밀착시킨다.
 			skin:PivotTo((target.CFrame * CFrame.new(target.Size.X * (spec[7] or 0),
-				target.Size.Y * (if cuff then -0.29 elseif boot then -0.11 else spec[6]), target.Size.Z * (spec[8] or 0))
+				target.Size.Y * (if cuff then -0.36 elseif boot then -0.15 else spec[6]), target.Size.Z * (spec[8] or 0))
 				* CFrame.Angles(math.rad(spec[9] or 0), 0, 0)) * bounds:ToObjectSpace(skin:GetPivot()))
 			for _, part in parts do
 				part.Anchored, part.CanCollide, part.CanTouch, part.CanQuery = false, false, false, false
@@ -1596,10 +1597,31 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 								end
 							end
 						end
-						-- [금속·가죽 보호] 색상 등록 근거가 없거나 유사도 낮은 파츠는 원본 PBR을 건드리지 않는다.
-						if bestError < 0.0064 and linenOnly and part.Material ~= Enum.Material.Metal then
+						-- [흰 소매 복구] 원본 린넨은 부드럽게 염색하고, 기본 흰색으로 로드된 무채색
+						-- 메시만 더 강하게 주변 상의 색에 맞춘다. 단추·금속/기존 PBR 맵은 그대로 둔다.
+						if part.Material ~= Enum.Material.Metal then
 							local linen = npcClothTint:Lerp(Color3.fromRGB(205, 192, 169), 0.42)
-							surface.Color = surface.Color:Lerp(linen, 0.47)
+							if bestError < 0.0064 and linenOnly then
+								surface.Color = surface.Color:Lerp(linen, 0.47)
+							elseif sourceColor.R > 0.83 and sourceColor.G > 0.81 and sourceColor.B > 0.77
+								and math.max(sourceColor.R, sourceColor.G, sourceColor.B)
+									- math.min(sourceColor.R, sourceColor.G, sourceColor.B) < 0.12 then
+								surface.Color = surface.Color:Lerp(linen, 0.78)
+							end
+						end
+					elseif detailAllowed and assetName == "outfit_boot" and typeof(npcTrouserTint) == "Color3" then
+						-- [흰 장화 복구] 수입 시 기본 흰색으로 떨어진 가죽에만 바지색 기반 어두운 가죽톤을 입힌다.
+						-- 버클·리벳·금속 장식, 컬러맵 원본은 교체하지 않고 보조 색상만 조절한다.
+						local trim = part.Name:lower()
+						local metalTrim = part.Material == Enum.Material.Metal
+							or trim:find("buckle", 1, true) or trim:find("metal", 1, true)
+							or trim:find("stud", 1, true) or trim:find("rivet", 1, true)
+						local pale = part.Color.R > 0.78 and part.Color.G > 0.77 and part.Color.B > 0.74
+							and math.max(part.Color.R, part.Color.G, part.Color.B)
+								- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.12
+						if not metalTrim and pale then
+							local leather = npcTrouserTint:Lerp(Color3.fromRGB(56, 43, 34), 0.67)
+							surface.Color = surface.Color:Lerp(leather, 0.83)
 						end
 					elseif detailAllowed and (assetName == "outfit_vest" or assetName == "outfit_coat"
 						or assetName == "outfit_apron"
@@ -1685,12 +1707,18 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						-- 무채색으로 유실된 복식에서 색조를 조금 더 복원한다.
 						local neutral = math.max(part.Color.R, part.Color.G, part.Color.B)
 							- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.11
-						part.Color = part.Color:Lerp(tint, (if assetName == "outfit_cuff" and neutral then 0.59 elseif neutral then 0.39 else 0.18) * finishing)
+						-- [무텍스처 흰 소매] 린넨 본색은 보존하고 무채색 커프만 상의에 가까운 색으로 복구한다.
+						part.Color = part.Color:Lerp(tint, (if assetName == "outfit_cuff" and neutral then 0.83 elseif neutral then 0.39 else 0.18) * finishing)
 					end
-					-- [기존 가죽 대비] 원본 가죽/금속 판정을 유지하고 직업별 바지 색상은 무텍스처 장화에만 반영한다.
+					-- [무텍스처 장화] 흰색 무채색 가죽은 본래 장화색으로 확실히 복원한다.
+					-- 정상 착색된 원본 가죽·금속·기존 개인별 바지 염색은 유지한다.
 					if npcOutfit and assetName == "outfit_boot" and part.Material == Enum.Material.Leather
 						and typeof(npcTrouserTint) == "Color3" then
-						part.Color = part.Color:Lerp(npcTrouserTint:Lerp(Color3.new(0, 0, 0), 0.46), 0.20)
+						local bright = part.Color.R > 0.76 and part.Color.G > 0.75 and part.Color.B > 0.73
+							and math.max(part.Color.R, part.Color.G, part.Color.B)
+								- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.12
+						local leather = npcTrouserTint:Lerp(Color3.fromRGB(56, 43, 34), 0.67)
+						part.Color = part.Color:Lerp(leather, if bright then 0.86 else 0.20)
 					end
 					-- 원본 금속광을 유지하되 플라스틱 같은 과한 반사는 억제한다.
 					if part.Material == Enum.Material.Metal then
