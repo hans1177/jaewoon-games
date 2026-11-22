@@ -323,13 +323,8 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 			d.Anchored = true
 			d.CanCollide = solid == true
 			d.CanTouch = false
-			-- [거리별 저폴리 LOD] 등록된 원본 메시와 텍스처를 유지한 채 엔진의
-			-- 메시 간소화만 사용한다. 근·중경은 거리 기반 자동 품질,
-			-- 원경은 성능 우선 품질. 실제 충돌 형상·경관 모델 수는 바꾸지 않는다.
-			if d:IsA("MeshPart") and scenicBand then
-				d.RenderFidelity = if scenicBand == "far" then Enum.RenderFidelity.Performance
-					else Enum.RenderFidelity.Automatic
-			end
+			-- [로블록스 메시 권한] RenderFidelity는 게임 스크립트에서 변경할 수 없다.
+			-- 승인된 실제 메시의 기존 자동 LOD를 보존하고, 원경은 아래 승인 간결 실물로 선택한다.
 			-- [무제한 경관 경량화] 전투 오브젝트 타격은 fieldObjects가 직접 판정하므로
 			-- 충돌 없는 장식은 물리 쿼리에서 제외한다. 계단·단서 등 충돌형 실물은 보존.
 			if solid ~= true then d.CanQuery = false end
@@ -1054,6 +1049,10 @@ function FieldScene.start(opts)
 		-- [Studio 근·중·원경 확인] 등록 모델이 실제 배치됐을 때만 세며, 지연 로드도 같은 수치에 포함한다.
 		if entry.band then
 			m:SetAttribute("FieldSceneryBand", entry.band)
+			if entry.lowPolyVariant then
+				m:SetAttribute("FieldSceneryLowPolyVariant", true) -- [Studio 실물 계수] 자산 선택 결과만 기록한다.
+				folder:SetAttribute("FieldSceneryLowPolyPlaced", (folder:GetAttribute("FieldSceneryLowPolyPlaced") or 0) + 1)
+			end
 			local counter = if entry.band == "near" then "FieldSceneryNearPlaced"
 				elseif entry.band == "mid" then "FieldSceneryMidPlaced" else "FieldSceneryFarPlaced"
 			folder:SetAttribute(counter, (folder:GetAttribute(counter) or 0) + 1)
@@ -1223,8 +1222,19 @@ function FieldScene.start(opts)
 		end
 		local h = rng:NextNumber(9, 15)
 		local name = treeNames[rng:NextInteger(1, #treeNames)]
+		-- [저폴리 원경] 신규 생성물 없이 같은 식생권의 기등록 Kenney 간결 실물을 선택한다.
+		-- 근·중경의 수종 다양성·고품질 메시·지면 충돌과 총 배치 수는 그대로 둔다.
+		local lowPolyVariant = false
+		if index % 3 == 0 and not arid then
+			local simpler = if winterScene or northern then "tree-pinedefaulta"
+				elseif tropical then "kenney_tree_palmShort" else "kenney_tree_defaultDark"
+			if AssetIds["Terrain/" .. simpler] then
+				name, lowPolyVariant = simpler, true
+			end
+		end
 		local kind = if AssetIds["Terrain/" .. name] then "Terrain" else "Town"
 		local entry = { kind, name, h, nil, nil, false }
+		entry.lowPolyVariant = lowPolyVariant
 		entry.position = pos
 		entry.band = if index % 3 == 1 then "near" elseif index % 3 == 2 then "mid" else "far"
 		-- 상록수는 북방 겨울에도 녹음을 유지하고, 낙엽수만 황금·적갈색 또는 서리색을 입힌다.
@@ -1292,7 +1302,13 @@ function FieldScene.start(opts)
 				half * visualLayoutRng:NextNumber(-0.44, 0.24))
 		end
 		local rock = rockNames[rng:NextInteger(1, #rockNames)]
+		local lowPolyVariant = false
+		-- [저폴리 원경] 근경 암석과 실제 충돌을 유지하며 원경만 승인된 단순 바위 메시 사용.
+		if index % 4 >= 3 and AssetIds["Terrain/kenney_rock_smallFlatA"] then
+			rock, lowPolyVariant = { "Terrain", "kenney_rock_smallFlatA" }, true
+		end
 		local entry = { rock[1], rock[2], rng:NextNumber(2.5, 6), nil, nil, true }
+		entry.lowPolyVariant = lowPolyVariant
 		entry.position = pos
 		entry.band = if index % 4 == 1 then "near" elseif index % 4 == 2 then "mid" else "far"
 		stageFeature(entry)
