@@ -760,7 +760,8 @@ function FieldScene.start(opts)
 	folder:SetAttribute("FieldSeasonLabel", seasonName)
 	-- 지역(바이옴)과 위험도에 따라 맵 크기가 다르다: 위험한 곳일수록 넓다
 	local SIZE = math.floor(biome.size * (1 + math.min(opts.danger or 1, 10) * 0.03))
-	local AREA = math.min((SIZE / 200) ^ 2, 2.5)
+	-- [필드 경관] 맵 넓이에 맞춰 모델을 배치하며 임의 면적별 모델 수 상한을 두지 않는다.
+	local AREA = (SIZE / 200) ^ 2
 	-- 지역마다 하늘·안개 분위기가 다르다(끝나면 되돌린다)
 	local lightSave = {}
 	do
@@ -1130,7 +1131,8 @@ function FieldScene.start(opts)
 		else Color3.fromRGB(102, 153, 82)
 	-- [모바일 안정화] 메시는 화면 자원만 줄이고 탐험 보상·몬스터 수·위험도는 유지한다.
 	local treeCount = math.floor(biome.trees * 2 * AREA)
-	local visualTreeCount = if visualMobile then math.min(treeCount, 44) else treeCount
+	-- [지형 모델 수 해제] 기기별 개수 제한 없이 현재 바이옴과 맵 면적이 정한 수목을 배치한다.
+	local visualTreeCount = treeCount
 	for index = 1, visualTreeCount do
 		local pos = ORIGIN + scatter(14)
 		-- 산길·유적은 바깥 능선으로, 숲은 양옆의 구불구불한 수목 통로로 배치한다.
@@ -1207,7 +1209,7 @@ function FieldScene.start(opts)
 	if (questTerrain == "highland" or questTerrain == "coast" or questTerrain == "mine" or questTerrain == "volcanic")
 		and AssetIds["Terrain/rock-talld"] then table.insert(rockNames, { "Terrain", "rock-talld" }) end
 	local rockCount = math.floor(biome.rocks * 1.6 * AREA)
-	local visualRockCount = if visualMobile then math.min(rockCount, 36) else rockCount
+	local visualRockCount = rockCount
 	for index = 1, visualRockCount do
 		local pos = ORIGIN + scatter(10)
 		local side = if index % 2 == 0 then 1 else -1
@@ -1349,11 +1351,9 @@ function FieldScene.start(opts)
 	}
 	local featureList = landforms[questTerrain] or landforms.plains
 	for index, entry in featureList do
-		if not visualMobile or index <= 9 then
-			entry.landmark = true
-			entry.survey = table.find(surveyIndices[questTerrain] or surveyIndices.plains, index) ~= nil
-			stageFeature(entry)
-		end
+		entry.landmark = true
+		entry.survey = table.find(surveyIndices[questTerrain] or surveyIndices.plains, index) ~= nil
+		stageFeature(entry)
 	end
 	-- [전장 지형지물] 발헤임의 생물군계 구분·엘든 링의 먼 유적 윤곽·고스트 오브 쓰시마의 식생층 원리만 참고한다.
 	-- 타 게임 모델·텍스처는 복제하지 않으며 등록된 CC0 실물 지형만 사용한다.
@@ -1476,15 +1476,14 @@ function FieldScene.start(opts)
 		{ "plant-bushdetailed", 6, -0.62, -0.29, 0 }
 	}
 	folder:SetAttribute("FieldDepthFeatureCount", 0)
-	for index, spec in depthLandforms do
-		if not visualMobile or index <= 3 then
-			local name = spec[1]
-			if AssetIds["Terrain/" .. name] then
-				local entry = { "Terrain", name, spec[2], nil, nil, false, spec[5] }
-				entry.position = ORIGIN + Vector3.new(spec[3] * half * mirror, 0, spec[4] * half)
-				entry.depth = true
-				stageFeature(entry)
-			end
+	for _, spec in depthLandforms do
+		local name = spec[1]
+		if AssetIds["Terrain/" .. name] then
+			local entry = { "Terrain", name, spec[2], nil, nil, false, spec[5] }
+			entry.position = ORIGIN + Vector3.new(spec[3] * half * mirror, 0, spec[4] * half)
+			entry.depth = true
+			entry.band = "far"
+			stageFeature(entry)
 		end
 	end
 	end
@@ -1561,7 +1560,7 @@ function FieldScene.start(opts)
 		}
 		local placedBandCount = 0
 		for index, spec in nearBands do
-			if (not visualMobile or index <= 2) and AssetIds["Terrain/" .. spec[1]] then
+			if AssetIds["Terrain/" .. spec[1]] then
 				local entry = { "Terrain", spec[1], spec[2], nil, nil, false, spec[5] }
 				-- [실물 근경] 모바일에도 표시되는 첫 두 승인 실물을 실제 전투 시야 안으로 당긴다.
 				-- 크기·종류·기존 2개 제한은 바꾸지 않고 중앙 이동로는 비운다.
@@ -1609,7 +1608,7 @@ function FieldScene.start(opts)
 	local regionalFeatures = regionalSilhouettes[region]
 	if regionalFeatures then
 		for index, feature in regionalFeatures do
-			if not visualMobile or index <= 3 then
+			do -- [기기별 모델 제한 해제] 문화권의 모든 승인 대표 모델을 화면에 배치한다.
 				-- [대륙 → 항구 → 탐험지] 문화권의 앞 두 랜드마크는 보존.
 				-- 세 번째 배경만 항구의 지리와 siteId에서 뽑은 승인 실물 원본으로 교체한다.
 				local selected = feature
@@ -1639,7 +1638,7 @@ function FieldScene.start(opts)
 	for groupIndex, pr in (biome.props or {}) do
 		-- [문화권 군집] 나무·기둥·천막·카누를 길 한가운데 흩뿌리지 않고 각 문화권의 외곽 마을/해안대로 묶는다.
 		-- [모바일] 기존 종류당 4개 제한과 규모는 유지한다.
-		for index = 1, math.min(if visualMobile then 4 else 8, math.max(1, math.floor(pr[3] * math.min(AREA, 1.25)))) do
+		for index = 1, math.max(1, math.floor(pr[3] * math.sqrt(AREA))) do
 			local side = if (groupIndex + index) % 2 == 0 then -1 else 1
 			local x = side * half * rng:NextNumber(0.54, 0.85)
 			local z = rng:NextNumber(-half * 0.78, half * 0.40)
@@ -1742,7 +1741,8 @@ function FieldScene.start(opts)
 			end
 		end
 	end
-	local detailCount = if visualMobile then 10 else 24
+	-- [자연층 자유 배치] 기존 승인 식생은 맵 넓이에 따라 배치하고 모바일/PC 고정 10/24개 제한을 없앤다.
+	local detailCount = math.max(24, math.floor(24 * math.sqrt(AREA)))
 	for index = 1, detailCount do
 		local band = math.floor((index - 1) / 4)
 		local side = if index % 2 == 0 then -1 else 1
@@ -1851,13 +1851,11 @@ function FieldScene.start(opts)
 				-- 지명별 대표 건물은 맵 안쪽 목적지에 배치해 시작/전투 통로를 비운다.
 				local c = ORIGIN + Vector3.new(0, 0, -half * 0.61)
 				for index, e in lm[2] do
-					if not visualMobile or index <= 22 then
-						local entry = { e[1], e[2], e[3], nil, nil, e[6] == true }
-						-- [성탑 층높이] 층/지붕이 바닥에 겹치는 흰 평면 깨짐 방지.
-						entry.position = c + Vector3.new(e[4], e[8] or 0, e[5])
-						if index == 1 then entry.title = nm end
-						stageFeature(entry)
-					end
+					local entry = { e[1], e[2], e[3], nil, nil, e[6] == true }
+					-- [성탑 층높이] 기존 수직 오프셋·전투 통로 유지.
+					entry.position = c + Vector3.new(e[4], e[8] or 0, e[5])
+					if index == 1 then entry.title = nm end
+					stageFeature(entry)
 				end
 				break
 			end
