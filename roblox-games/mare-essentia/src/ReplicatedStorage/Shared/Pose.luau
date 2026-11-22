@@ -1528,7 +1528,8 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			table.insert(missing, assetName .. ":parts_" .. #parts)
 			skin:Destroy(); continue
 		end
-		local ok = pcall(function()
+		-- [착용 실패 원인 보존] 외형만 실패해도 NPC 전체를 끊지 않고 원인을 OutfitMissing에 남긴다.
+		local ok, fitError = pcall(function()
 			local bounds, ext = skin:GetBoundingBox()
 			if ext.X < 0.01 or ext.Y < 0.01 or ext.Z < 0.01 then error("empty mesh") end
 			-- [소매·장화 실물 맞춤] 흰 띠처럼 과대 출력되던 커프/장화의 R15 관절 대비 높이를 줄인다.
@@ -1557,7 +1558,9 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			end
 			if ratio <= 0 or ratio ~= ratio or ratio > 100 then error("invalid scale") end
 			skin:ScaleTo(ratio)
-			bounds = skin:GetBoundingBox()
+			-- [Roblox API] GetBoundingBox() 첫 반환값은 CFrame, 둘째 반환값이 Vector3 크기다.
+			-- 이전에는 CFrame.Size를 읽어 헤어 장착이 항상 fit_failed로 떨어졌다.
+			bounds, ext = skin:GetBoundingBox()
 			-- [직업 도구 자연스러운 고정] 기존 부착 좌표에 필요한 도구 기울기만 적용한다.
 			-- 근접 보행·망치질에는 손/허리 R15 관절을 따라가며 접지/충돌 판정이 없다.
 			-- [헤어 두상 정렬] 긴 머리는 메시 전체 중심이 아니라 정수리 윗선을 기준으로 맞춘다.
@@ -1566,7 +1569,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" and assetName ~= "hair_beard" then
 				local hairStyle = model:GetAttribute("NpcHairStyle")
 				local crownY = if hairStyle == "bun" then 0.79 elseif hairStyle == "long" then 0.67 else 0.65
-				hairOffsetY = crownY - bounds.Size.Y * 0.5 / target.Size.Y
+				hairOffsetY = crownY - ext.Y * 0.5 / target.Size.Y
 			end
 			-- [수염·소매·장화 부착 위치] 수염은 얼굴 앞면(-Z)과 턱 아래(-Y)에 맞춘다.
 			-- 실제 R15 Head 관절을 따라가는 용접은 유지하고 피부/얼굴 데칼을 가리지 않게 크기를 제한한다.
@@ -1878,7 +1881,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				end
 			end
 		else
-			table.insert(missing, assetName .. ":fit_failed")
+			-- [진단] 예전에는 어떤 런타임 오류든 fit_failed 한 단어로 숨겼다.
+			-- 검증 가능한 72자 오류만 기존 OutfitMissing에 기록하며 출력/새 테이블은 만들지 않는다.
+			local reason = tostring(fitError):match(":%d+:%s*(.+)$") or tostring(fitError)
+			table.insert(missing, assetName .. ":fit_failed:" .. string.sub(reason, 1, 72))
 			skin:Destroy()
 		end
 	end
