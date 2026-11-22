@@ -6,6 +6,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {execFileSync} from 'node:child_process';
 import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
 import {prepareCharacterFinishes} from './mare-essentia-character-finish.mjs';
 
@@ -786,6 +787,85 @@ async function prepareLicensedOriginals() {
       console.log('MARE_LICENSED_MODEL_PREPARED', name, hash, tris);
     } else console.log('MARE_LICENSED_MODEL_SOURCE_VERIFIED', name, tris);
   }
+  // [2026-11-22 지상전 CC0 자산] 공식 Kenney Nature Kit 2.1에서 미등록 실물 3종만 수급한다.
+  // 라이선스·원본 ZIP SHA·개별 GLB SHA를 확보하고 기존 inbox/register_asset.py 등록기를 사용한다.
+  const natureArchive = 'https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip';
+  const naturePage = 'https://kenney.nl/assets/nature-kit';
+  const natureArchiveSha = 'fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d';
+  const natureModels = [
+    {original:'rock_largeB', name:'kenney_rock_largeB'},
+    {original:'tree_fat', name:'kenney_tree_fat'},
+    {original:'mushroom_red', name:'kenney_mushroom_red'},
+  ];
+  const pendingNature = [];
+  for (const entry of natureModels) {
+    const target = path.join(ROOT, 'assets/terrain', entry.name + '.glb');
+    const member = 'Models/GLTF format/' + entry.original + '.glb';
+    let bytes = null, proof = null;
+    try { bytes = await fs.readFile(target); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+    try { proof = JSON.parse(await fs.readFile(target + '.license.json', 'utf8')); }
+    catch (e) { if (e.code !== 'ENOENT') throw e; }
+    if (bytes || proof) {
+      if (!bytes || !proof || proof.license !== 'CC0-1.0' || proof.author !== 'Kenney'
+        || proof.source !== natureArchive || proof.sourcePage !== naturePage
+        || proof.sourceMember !== member || proof.archiveSha256 !== natureArchiveSha
+        || proof.sourceSha256 !== crypto.createHash('sha256').update(bytes).digest('hex'))
+        throw new Error('MARE_CC0_NATURE_SOURCE_MISMATCH:' + entry.name);
+      console.log('MARE_CC0_NATURE_ORIGINAL_VERIFIED', entry.name, proof.sourceSha256);
+    } else pendingNature.push({...entry, member});
+  }
+  if (pendingNature.length) {
+    const response = await fetch(natureArchive, {signal: AbortSignal.timeout(90000)});
+    if (!response.ok || Number(response.headers.get('content-length') || 0) > 30000000)
+      throw new Error('MARE_CC0_NATURE_DOWNLOAD_FAILED:' + response.status);
+    const archive = Buffer.from(await response.arrayBuffer());
+    if (archive.length < 100000 || archive.length > 30000000
+      || crypto.createHash('sha256').update(archive).digest('hex') !== natureArchiveSha)
+      throw new Error('MARE_CC0_NATURE_OFFICIAL_ARCHIVE_HASH_INVALID');
+    const archivePath = path.join(process.env.RUNNER_TEMP || '/tmp', 'mare-kenney-nature-2-1.zip');
+    await fs.writeFile(archivePath, archive);
+    const inbox = path.join(ROOT, 'assets/inbox/Terrain');
+    await fs.mkdir(inbox, {recursive:true});
+    const newHashes = new Set();
+    for (const entry of pendingNature) {
+      const bytes = execFileSync('unzip', ['-p', archivePath, entry.member], {maxBuffer:3000000, timeout:20000});
+      if (bytes.length < 500 || bytes.length > 2500000 || bytes.toString('ascii',0,4) !== 'glTF'
+        || bytes.readUInt32LE(4) !== 2 || bytes.readUInt32LE(8) !== bytes.length
+        || bytes.readUInt32LE(16) !== 0x4e4f534a)
+        throw new Error('MARE_CC0_NATURE_NOT_REAL_GLB:' + entry.name);
+      const jsonLen = bytes.readUInt32LE(12);
+      if (jsonLen < 80 || jsonLen + 20 > bytes.length)
+        throw new Error('MARE_CC0_NATURE_BROKEN_GLB_JSON:' + entry.name);
+      const model = JSON.parse(bytes.subarray(20,20+jsonLen).toString('utf8'));
+      if (!model.meshes?.some(m => m.primitives?.length)
+        || (model.images || []).some(img => img.uri && !img.uri.startsWith('data:')))
+        throw new Error('MARE_CC0_NATURE_MESH_OR_TEXTURE_MISSING:' + entry.name);
+      const hash = crypto.createHash('sha256').update(bytes).digest('hex');
+      if (newHashes.has(hash)) throw new Error('MARE_CC0_NATURE_DUPLICATE_MESH:' + entry.name);
+      newHashes.add(hash);
+      const name = entry.name + '.glb';
+      await fs.writeFile(path.join(inbox,name),bytes);
+      await fs.writeFile(path.join(inbox,name+'.license.json'),JSON.stringify({
+        author:'Kenney', license:'CC0-1.0', source:natureArchive, sourcePage:naturePage,
+        sourceMember:entry.member, archiveSha256:natureArchiveSha, sourceSha256:hash,
+        modification:'Unmodified official Kenney Nature Kit 2.1 model',
+        commercialUseAllowed:true, derivativesAllowed:true,
+        actualRobloxRuntimeVerified:false, visualQualityApproved:false,
+      },null,2)+'\n');
+      console.log('MARE_CC0_NATURE_INBOX_APPROVED',entry.name,hash);
+    }
+    // [기존 정본] 중복/차단해시/출처 검증 후 기존 자산 폴더에만 이동.
+    execFileSync('python3',['tools/devloop/register_asset.py',ROOT],{stdio:'inherit',timeout:30000});
+    await fs.rm(archivePath,{force:true});
+    for (const entry of pendingNature) {
+      const target = path.join(ROOT,'assets/terrain',entry.name+'.glb');
+      const proof = JSON.parse(await fs.readFile(target+'.license.json','utf8'));
+      const bytes = await fs.readFile(target);
+      if (proof.sourceSha256 !== crypto.createHash('sha256').update(bytes).digest('hex'))
+        throw new Error('MARE_CC0_NATURE_PROMOTION_MISMATCH:' + entry.name);
+    }
+  }
+
 }
 if (!studioRegrantPath) await prepareLicensedOriginals();
 
@@ -1359,7 +1439,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     // [원본 UV 개선] 복식 9종은 반드시 실제 원본 해시·형상 보존 증빙을 보유한다.
     const originalOutfit = kind === 'People' && /^outfit_(?:vest|coat|guard|apron|sash|belt|cuff|boot|stole)\.glb$/.test(sourceFileName);
     const characterFinish = kind === 'People' && /^(?:outfit_|hair_|acc_)[a-z0-9_]+\.glb$/.test(sourceFileName);
-    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish) {
+    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || (kind === 'Terrain' && f.startsWith('kenney_'))) {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
       if (kind === 'Materials' && (!sourceLicense || sourceLicense.license !== 'CC0-1.0'
@@ -1379,7 +1459,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       // [실제 Studio 검증] Goods/Menu/Portraits 모두 ImageLabel에서 사용한다. Decal 번호는 Client에서 로딩되지 않았다.
       // 실패 원본을 재업로드하지 않고 승인된 기존 PNG/JPG로 Image 자산을 발급한다.
       assetType: image ? 'Image' : 'Model',
-      license: (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish) && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
+      license: (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || (kind === 'Terrain' && f.startsWith('kenney_'))) && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && ['parchment_grain.png', 'leather_grain.png', 'naval_skill.png', 'naval_fire.png', 'naval_speed.png', 'field_attack.png', 'field_dodge.png', 'field_weapon.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && f.startsWith('vfx_') ? 'CC0-1.0'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
