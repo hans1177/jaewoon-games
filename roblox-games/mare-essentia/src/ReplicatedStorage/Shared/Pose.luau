@@ -140,7 +140,11 @@ local function addHat(model, kind, color)
 		q.Shape = shape
 		q.Size = size
 		q.Color = color
-		q.Material = mat or (if kind == "straw" or kind == "kasa" then Enum.Material.Wood elseif kind == "turban" or kind == "bonnet" or kind == "beret" or kind == "sailorcap" then Enum.Material.Fabric else Enum.Material.Leather)
+		q.Material = mat or (if kind == "straw" or kind == "kasa" then Enum.Material.Wood
+			elseif kind == "turban" or kind == "bonnet" or kind == "beret" or kind == "sailorcap"
+				or kind == "tricorn" or kind == "bicorne" or kind == "wide" or kind == "plume"
+				or kind == "knit" or kind == "kofia" or kind == "fez" then Enum.Material.Fabric
+			else Enum.Material.Leather)
 		q.Reflectance = 0
 		q.CanCollide, q.CanTouch, q.CanQuery, q.Massless = false, false, false, true
 		q.CFrame = head.CFrame * CFrame.new(offset) * (rot or CFrame.identity)
@@ -1330,6 +1334,17 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				target.Size.Y * (if belt then 0.38 else spec[4]) / ext.Y,
 				target.Size.Z * (if belt then 1.04 else spec[5]) / ext.Z
 			)
+			-- [헤어 장착 비율] 긴 머리를 머리 높이 한 칸에 압축하면 숱과 폭이 사라진다.
+			-- 실물 헤어는 R15 두상 폭·깊이를 우선 맞추고 머리형에 필요한 아래쪽 길이를 허용한다.
+			-- 원본 메시·R15 관절·모자 부착점은 바꾸지 않고 과도한 머리 길이는 제한한다.
+			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" then
+				local hairStyle = model:GetAttribute("NpcHairStyle")
+				local hairHeightAllowance = if hairStyle == "long" then 2.20
+					elseif hairStyle == "bun" then 1.68 else 1.42
+				ratio = math.min(target.Size.X * spec[3] / ext.X,
+					target.Size.Y * hairHeightAllowance / ext.Y,
+					target.Size.Z * spec[5] / ext.Z)
+			end
 			if ratio <= 0 or ratio ~= ratio or ratio > 100 then error("invalid scale") end
 			skin:ScaleTo(ratio)
 			bounds = skin:GetBoundingBox()
@@ -1344,6 +1359,16 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				local surface = part:FindFirstChildOfClass("SurfaceAppearance")
 				local textured = surfaceHasMaps(surface)
 					or (part:IsA("MeshPart") and (part.TextureID ~= "" or part.MaterialVariant ~= ""))
+				-- [색상 지도 없는 경우] TextureID만 가져온 헤어는 SurfaceAppearance 경로를
+				-- 지나지 않는다. 머리카락 메시의 원본 TextureID를 유지한 채 색상 배율만 적용한다.
+				-- PBR SurfaceAppearance가 있는 모델은 아래 기존 PBR 분기에서 처리한다.
+				if npcOutfit and not surface and part:IsA("MeshPart") and part.TextureID ~= ""
+					and string.sub(assetName, 1, 5) == "hair_" then
+					local hairTint = model:GetAttribute("NpcHairTint")
+					if typeof(hairTint) == "Color3" then
+						part.Color = part.Color:Lerp(hairTint:Lerp(Color3.new(1, 1, 1), 0.25), 0.70)
+					end
+				end
 				-- [실물 헤어·직업 복식 구분] PBR 원본 ColorMap/Normal/Roughness는 그대로 두고,
 				-- 수입된 SurfaceAppearance의 보조 색상만 약하게 조절해 헤어색과 직군별 천을 구분한다.
 				-- 장식 금속·진주·장화의 원본 광택 및 원형은 절대 변경하지 않는다.
