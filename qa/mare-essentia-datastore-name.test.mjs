@@ -361,7 +361,7 @@ test('영입 동료는 지상전투에 출전하지 않고 기존 파티 명단�
   assert.doesNotMatch(field,/equipFieldWeapon\(m, ad\.weapon\)/,'동료 무기 생성 금지');
   assert.match(field,/무기 숙련 시 2~3연타 확률 발동/);
   assert.doesNotMatch(field,/무기 숙련 시 2~5단 확률 발동/);
-};
+});
 
 // [실물 무기 회귀] 승인된 해적 키트 원본만 사용하고 저장·전투 수치를 변경하지 않는다.
 test('실물 해적 선상도·쌍날도끼·권총은 CC0 원본과 병종에 연결된다',()=>{
