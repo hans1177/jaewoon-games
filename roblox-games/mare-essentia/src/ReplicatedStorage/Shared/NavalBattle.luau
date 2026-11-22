@@ -5,6 +5,7 @@
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService") -- [해상 버튼] 교체/준비광 트윈도 기존 클라이언트 서비스만 사용한다.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- [모바일 입자 예산] 효과 밀도만 조절한다. 명중·사거리·재사용 대기시간은 변경하지 않는다.
 local MOBILE_VFX = game:GetService("UserInputService").TouchEnabled
