@@ -3783,4 +3783,13 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/if AssetIds\["Terrain\/" \.\. name\]/,'미등록 모델은 자동 생략');
   assert.match(field,/if AssetIds\["Terrain\/" \.\. name\] and not table\.find\(detailAssets, name\)/);
   assert.match(field,/local detailCount = if visualMobile then 10 else 24/,'모바일 기존 예산 보존');
+  // [실제 Studio 화면 회귀] 등록 실물의 위치만 근경·중경으로 옮긴다.
+  // 신규 인스턴스 생성·추가 모델 예산·적/저장/보상 동선 변경 없이 좌우에 시각 깊이를 만든다.
+  assert.match(field,/if index % 5 == 1 then\n\s+local lane = math\.floor\(\(index - 1\) \/ 5\) % 3/,'수목 일부 근경 배치');
+  assert.match(field,/if index % 6 == 1 then\n\s+pos = ORIGIN/,'기존 암석 중경 배치');
+  assert.match(field,/local px = side \* half \* \(0\.29 \+ rng:NextNumber\(0, 0\.13\)\)/,'실물 소품 측면 거리');
+  assert.match(field,/local pz = half \* \(0\.71 - band \* 0\.23\)/,'모바일 소품 앞뒤 층');
+  assert.match(field,/depthX = \(if depthX < 0 then -1 else 1\) \* half/,'등록된 지형 근경 배치');
+  assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
+  assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
 });
