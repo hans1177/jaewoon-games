@@ -3866,6 +3866,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					local plate = if side == "me" then mePlate else foePlate
 					local first = side == m.roundStarter
 					plate.who.Text = (if first then t("선공", "First") else t("후공", "Second")) .. " · " .. plate.who.Text
+					if compactCards then
+						-- 좁은 왼쪽 칸: 이름은 짧게(나/상대 · 선후공). 차례는 테두리 강조와 상단 띠가 알려 준다.
+						plate.who.Text = (if side == "me" then t("나", "You") else t("상대", "Rival")) .. " · " .. (if first then t("선공", "1st") else t("후공", "2nd"))
+							.. (if m.passed[side] then t(" · 패스", " · Pass") else "")
+					end
 					plate.who.TextColor3 = if first then Color3.fromRGB(255, 223, 152) else Color3.fromRGB(202, 224, 246)
 					local outline = plate.plate:FindFirstChildOfClass("UIStroke")
 					if outline then
