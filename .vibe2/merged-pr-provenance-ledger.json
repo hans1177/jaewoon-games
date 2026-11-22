@@ -315165,11 +315165,129 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_74c248929cde651419ae54da",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14253",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "a86b5f3164db6681b2a15075cc1b0f80323afc5a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14253,
+        "baseBranch": "main",
+        "headBranch": "owner-cardwars-stage10-20261122",
+        "baseSha": "a86b5f3164db6681b2a15075cc1b0f80323afc5a",
+        "headSha": "3f029d36cda47d64fb097c546b2904032a040925",
+        "mergeCommitSha": "a778b9632362ef047ffe6905f1bda1e6025ff0b0",
+        "mergedAt": "2026-11-22T08:32:10Z",
+        "authorLogin": "hans1177",
+        "titleHash": "478a02e3a3fafb2c19adb22c91d22e9754098abbbbe07be822b306b1b95d864d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner-cardwars-stage10-20261122",
+        "candidateSha": "3f029d36cda47d64fb097c546b2904032a040925"
+      },
+      "changeStats": {
+        "changedFileCount": 2,
+        "codingRelevantFileCount": 2,
+        "addedLineCount": 219,
+        "deletedLineCount": 33,
+        "changedFiles": [
+          "card-grid-duel/index.html",
+          "roblox-games/mare-essentia/assets-registered.json"
+        ],
+        "codingRelevantFiles": [
+          "card-grid-duel/index.html",
+          "roblox-games/mare-essentia/assets-registered.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14253",
+        "merge-commit:a778b9632362ef047ffe6905f1bda1e6025ff0b0",
+        "base-main:a86b5f3164db6681b2a15075cc1b0f80323afc5a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2528
+    "total": 2529
   }
 }
