@@ -1871,3 +1871,26 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 원본은 수정하지 않았다. `FieldScene.luau`는 등록된 기존 나무·바위로 우선 렌더링하고,
 위 3종은 기존 Open Cloud 등록기가 실물 모델 ID와 사용 권한을 발급한 뒤에만 선택한다.
 **내부 Git 확보와 Roblox 업로드/Studio 표시/정식 게시 완료는 별개다.**
+
+## 2026-11-22 추가 확보: 지상전·해상전 실물 입체감 8종
+
+- 공식 팩: Kenney Nature Kit, CC0 1.0 — https://kenney.nl/assets/nature-kit
+- 고정 원본 Git 저장소: https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit
+- 기존 `assets/terrain/`에 원본 바이너리로 보관. 공개 원본과 내부 Git blob SHA-1 전수 일치(8/8). 원본을 바꾸지 않았고 임시 파츠·새 폴더·유료 에셋 없음.
+- 참고 게임: Valheim의 지형별 고저차·생물군계 단차와 Sea of Thieves의 해안 윤곽·포말 깊이감 (게임 파일·시각물 복제 아님).
+
+| 원본 파일 (`assets/terrain/`) | Git blob SHA-1 | 활용 |
+|---|---|---|
+| `cliff-large-rock.glb` | `0961d9bfdd7b952d152b8280f7d8d81b95828362` | 원거리 절벽 |
+| `cliff-blockslope-rock.glb` | `3536237912d55b87a3ccd009ad2aa7b6b4311b96` | 자연 경사면 |
+| `cliff-top-rock.glb` | `11b06ca857b860dc94696daff39685405616a88d` | 절벽 상단 단차 |
+| `plant-bushdetailed.glb` | `77b9ff8e77d4b0d7a39918c5edb52629a0ea01db` | 숲 하층 관목 |
+| `grass-large.glb` | `546a089b2a0e8f6d42ed948bad396e5169ef7c14` | 풀 군락 |
+| `rock-tallc.glb` | `8f3c255ad7fab4bde714b71e90cf67733a58aa37` | 높은 바위 |
+| `tree-pinetalla-detailed.glb` | `04b215870fabdfb428636dad8514224ab64489bf` | 북방 고목 |
+| `ground-pathrocks.glb` | `6a66adf9652b80eb19de76aa6b991d438123dff0` | 암석 산길 |
+
+게임 코드 `FieldScene.luau`는 구릉 윤곽 및 수목·암석·관목 모델의 지면 접지에 사용하고,
+`NavalBattle.luau`는 실물 해안 절벽·바다 포말 연출에 사용한다.
+Roblox 등록 번호와 Universe 사용 권한은 기존 `owner-mare-essentia-assets.yml`/정식 등록기가 별도로 확인한다.
+**GitHub 원본 확보와 Roblox 원본 업로드, Studio 실제 보임 및 최종 게임 게시 증거는 각각 독립 검증 대상이다.**
