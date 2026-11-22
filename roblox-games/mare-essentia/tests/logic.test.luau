@@ -4821,7 +4821,7 @@ do
 end
 
 
--- [멀리건] 첫 판에서 카드를 내기 전에 손패를 3장까지 바꾼다
+-- [멀리건] 첫 판 3장, 다음 판부터 1장씩 추가(최대 3). 카드를 내기 전에만 바꾼다
 do
 	local BC = D.BoardingCards
 	local function fresh()
@@ -4847,9 +4847,20 @@ do
 	m.turn = "me"
 	local okLate = BC.mulligan(m, "me", 1)
 	check("멀리건: 카드를 낸 뒤에는 못 바꾼다", okLate == false)
+	-- 궨트식: 다음 판마다 교체 1장 추가(최대 3). 남은 교체가 없으면 2판에서도 못 바꾼다.
 	m = fresh()
 	m.round = 2
-	check("멀리건: 첫 판에서만 가능하다", BC.mulligan(m, "me", 1) == false)
+	m.mulligan.me = 0
+	check("멀리건: 남은 교체가 없으면 다음 판에도 못 바꾼다", BC.mulligan(m, "me", 1) == false)
+	m = fresh()
+	for i = 1, 6 do table.insert(m.deck.me, 1, table.clone(BC.Units.pikeman)) end
+	BC.mulligan(m, "me", 1); BC.mulligan(m, "me", 1); BC.mulligan(m, "me", 1)
+	BC.pass(m, "me")
+	BC.pass(m, "foe")
+	check("멀리건: 새 판에 교체 1장이 추가된다", m.round == 2 and m.mulligan.me == 1)
+	m.turn = "me"
+	local okNext = BC.mulligan(m, "me", 1)
+	check("멀리건: 2판에서 카드를 내기 전에는 1장 바꿀 수 있다", okNext == true and m.mulligan.me == 0)
 	check("멀리건: 없는 카드 번호는 거절", BC.mulligan(fresh(), "me", 99) == false)
 	-- 기록(replay)에 멀리건이 들어가도 서버가 같은 결과로 다시 돌린다
 	local r = BC.replay("boarding", 11, { faction = "europe" }, {}, { { "m", 1 }, { "s" } })
