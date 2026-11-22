@@ -838,11 +838,11 @@ function FieldScene.start(opts)
 			local radius = if questTerrain == "highland" or questTerrain == "volcanic" then hillRng:NextNumber(33, 44)
 				elseif questTerrain == "forest" or questTerrain == "jungle" then hillRng:NextNumber(29, 40)
 				else hillRng:NextNumber(23, 34)
-			local x = side * (half * hillRng:NextNumber(0.49, 0.70))
+			local x = side * (half * hillRng:NextNumber(0.41, 0.61))
 			local z = half * (-0.75 + (i - 1) / math.max(1, insideCount - 1) * 1.23)
 				+ hillRng:NextNumber(-8, 8)
-			local depth = if questTerrain == "highland" or questTerrain == "volcanic" then 0.61
-				elseif questTerrain == "forest" or questTerrain == "jungle" then 0.72 else 0.83
+			local depth = if questTerrain == "highland" or questTerrain == "volcanic" then 0.58
+				elseif questTerrain == "forest" or questTerrain == "jungle" then 0.66 else 0.77
 			local center = ORIGIN + Vector3.new(x, -radius * depth, z)
 			terrain:FillBall(center, radius, mat)
 			table.insert(hills, { center, radius })
@@ -859,7 +859,7 @@ function FieldScene.start(opts)
 			local radius = if questTerrain == "highland" or questTerrain == "glacier" then hillRng:NextNumber(36, 49)
 				elseif questTerrain == "forest" or questTerrain == "jungle" then hillRng:NextNumber(29, 39)
 				else hillRng:NextNumber(24, 35)
-			local x = side * half * hillRng:NextNumber(0.69, 0.84)
+			local x = side * half * hillRng:NextNumber(0.61, 0.79)
 			local z = -half * 0.69 + lane * half * 0.29 + hillRng:NextNumber(-9, 9)
 			local center = ORIGIN + Vector3.new(x, -radius * (if questTerrain == "highland" or questTerrain == "glacier" then 0.58 else 0.72), z)
 			terrain:FillBall(center, radius, mat)
@@ -997,6 +997,13 @@ function FieldScene.start(opts)
 		end
 		local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6], entry.tint)
 		if not m then return nil end
+		-- [Studio 근·중·원경 확인] 등록 모델이 실제 배치됐을 때만 세며, 지연 로드도 같은 수치에 포함한다.
+		if entry.band then
+			m:SetAttribute("FieldSceneryBand", entry.band)
+			local counter = if entry.band == "near" then "FieldSceneryNearPlaced"
+				elseif entry.band == "mid" then "FieldSceneryMidPlaced" else "FieldSceneryFarPlaced"
+			folder:SetAttribute(counter, (folder:GetAttribute(counter) or 0) + 1)
+		end
 		if entry.depth then
 			folder:SetAttribute("FieldDepthFeatureCount", (folder:GetAttribute("FieldDepthFeatureCount") or 0) + 1)
 		end
@@ -1142,18 +1149,23 @@ function FieldScene.start(opts)
 			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.52, 0.88), 0,
 				rng:NextNumber(-half * 0.81, half * 0.50))
 		end
-		-- [전경·중경] 맵 외곽에만 수목이 몰려 빈 잔디밭처럼 보이지 않도록
-		-- 기존 나무 다섯 그루 중 한 그루를 진입로 양옆에 둔다. 스폰·중앙 전투로와 수량은 그대로다.
-		if index % 5 == 1 then
-			local lane = math.floor((index - 1) / 5) % 3
-			pos = ORIGIN + Vector3.new((if index % 2 == 0 then -1 else 1) * half * visualLayoutRng:NextNumber(0.27, 0.37), 0,
-				half * (0.72 - lane * 0.18) + visualLayoutRng:NextNumber(-6, 6))
+		-- [근경·중경·원경] 승인 나무 총량은 그대로 두고 3개 구획으로 나눈다.
+		-- 스폰과 중앙 전투 통로는 비우고 시야 양옆에 다층 숲을 만든다.
+		if index % 3 == 1 then
+			local lane = math.floor((index - 1) / 3) % 9
+			pos = ORIGIN + Vector3.new((if index % 2 == 0 then -1 else 1) * half * visualLayoutRng:NextNumber(0.19, 0.31), 0,
+				half * (0.78 - lane * 0.095) + visualLayoutRng:NextNumber(-8, 8))
+		elseif index % 3 == 2 then
+			local lane = math.floor((index - 2) / 3) % 7
+			pos = ORIGIN + Vector3.new((if index % 2 == 0 then -1 else 1) * half * visualLayoutRng:NextNumber(0.38, 0.54), 0,
+				half * (0.38 - lane * 0.14) + visualLayoutRng:NextNumber(-10, 10))
 		end
 		local h = rng:NextNumber(9, 15)
 		local name = treeNames[rng:NextInteger(1, #treeNames)]
 		local kind = if AssetIds["Terrain/" .. name] then "Terrain" else "Town"
 		local entry = { kind, name, h, nil, nil, false }
 		entry.position = pos
+		entry.band = if index % 3 == 1 then "near" elseif index % 3 == 2 then "mid" else "far"
 		-- 상록수는 북방 겨울에도 녹음을 유지하고, 낙엽수만 황금·적갈색 또는 서리색을 입힌다.
 		entry.tint = if name == "tree-pinedefaulta" or name == "tree-pinedefaultb" or name == "tree-pinetalla-detailed"
 			or name == "tree-pinetallb-detailed" or name == "tree-pinetallc-detailed" or name == "north-pine-fall"
@@ -1208,15 +1220,20 @@ function FieldScene.start(opts)
 			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.55, 0.90), 0,
 				rng:NextNumber(-half * 0.84, half * 0.48))
 		end
-		-- [전투로 측면] 기존 암석의 일부를 중경 자갈·암반층으로 재배치한다.
-		-- 중앙 공격 동선과 최초 스폰 지점을 침범하지 않고 기존 암석 개수만 사용한다.
-		if index % 6 == 1 then
-			pos = ORIGIN + Vector3.new(side * half * visualLayoutRng:NextNumber(0.30, 0.43), 0,
-				half * (0.62 - (math.floor((index - 1) / 6) % 2) * 0.20) + visualLayoutRng:NextNumber(-7, 7))
+		-- [전투로 측면 암석층] 기존 승인 암석 수만 재배치하고 근접 자갈→중경 바위→먼 암벽으로 연결한다.
+		-- 근경도 전투 중심축에서 떨어진 바깥쪽에 두어 원래 충돌·전투 경로를 보존한다.
+		if index % 4 == 1 then
+			local lane = math.floor((index - 1) / 4) % 7
+			pos = ORIGIN + Vector3.new(side * half * visualLayoutRng:NextNumber(0.23, 0.33), 0,
+				half * (0.74 - lane * 0.12) + visualLayoutRng:NextNumber(-6, 6))
+		elseif index % 4 == 2 then
+			pos = ORIGIN + Vector3.new(side * half * visualLayoutRng:NextNumber(0.38, 0.50), 0,
+				half * visualLayoutRng:NextNumber(-0.44, 0.24))
 		end
 		local rock = rockNames[rng:NextInteger(1, #rockNames)]
 		local entry = { rock[1], rock[2], rng:NextNumber(2.5, 6), nil, nil, true }
 		entry.position = pos
+		entry.band = if index % 4 == 1 then "near" elseif index % 4 == 2 then "mid" else "far"
 		stageFeature(entry)
 	end
 
@@ -1551,11 +1568,12 @@ function FieldScene.start(opts)
 				local depthX = spec[3] * half * mirror
 				local depthZ = spec[4] * half
 				if index <= 2 then
-					depthX = (if depthX < 0 then -1 else 1) * half * (if index == 1 then 0.48 else 0.56)
-					depthZ = half * (if index == 1 then 0.47 else 0.29)
+					depthX = (if depthX < 0 then -1 else 1) * half * (if index == 1 then 0.32 else 0.44)
+					depthZ = half * (if index == 1 then 0.48 else 0.27)
 				end
 				entry.position = ORIGIN + Vector3.new(depthX, 0, depthZ)
 				entry.depth = true
+				entry.band = if index == 1 then "near" elseif index == 2 then "mid" else "far"
 				stageFeature(entry)
 				placedBandCount += 1
 			end
@@ -1601,12 +1619,15 @@ function FieldScene.start(opts)
 					if AssetIds[candidate[1] .. "/" .. candidate[2]] then selected = candidate end
 				end
 				local entry = { selected[1], selected[2], selected[3], nil, nil, false }
-				-- [실제 시차] 항구·퀘스트 시각 시드에 따라 외곽 실루엣 위치만 ±4% 분산.
-				-- 조사/적/시작 지점과 맞닿지 않는 맵 외곽에서만 변한다.
+				-- [지역 실루엣 실제 노출] 대륙 대표 모델은 중경, 항구 고유 자연 모델은 근경에 둔다.
+				-- 개수·종류·조사 랜드마크는 그대로, 원래 외곽에 치우친 시각 모델만 이동한다.
 				local stagger = (portVisualSeed % 9 - 4) * 0.008
+				local bandX = if index == 3 then 0.40 elseif index == 2 then 0.51 else 0.59
+				local bandZ = if index == 3 then 0.43 elseif index == 2 then 0.10 else -0.20
 				entry.position = ORIGIN + Vector3.new(
-					math.clamp(selected[4] + (if selected[4] > 0 then stagger else -stagger), -0.93, 0.93) * half * mirror,
-					0, math.clamp(selected[5] + stagger * 0.6, -0.90, 0.18) * half)
+					(if selected[4] > 0 then 1 else -1) * half * (bandX + stagger) * mirror,
+					0, half * (bandZ + stagger * 0.6))
+				entry.band = if index == 3 then "near" else "mid"
 				entry.landmark = true
 				stageFeature(entry)
 			end
@@ -1622,8 +1643,17 @@ function FieldScene.start(opts)
 			local side = if (groupIndex + index) % 2 == 0 then -1 else 1
 			local x = side * half * rng:NextNumber(0.54, 0.85)
 			local z = rng:NextNumber(-half * 0.78, half * 0.40)
+			-- 기존 RNG 호출을 유지하고 배경용 독립 시드로 첫 두 소품만 가까운 군집으로 이동한다.
+			if index == 1 then
+				x = side * half * visualLayoutRng:NextNumber(0.34, 0.45)
+				z = half * 0.51 + visualLayoutRng:NextNumber(-9, 9)
+			elseif index == 2 then
+				x = side * half * visualLayoutRng:NextNumber(0.45, 0.57)
+				z = half * 0.18 + visualLayoutRng:NextNumber(-11, 11)
+			end
 			local entry = { pr[1], pr[2], pr[4], nil, nil, pr[1] == "Terrain" and pr[2] == "cliff-rock" }
 			entry.position = ORIGIN + Vector3.new(x, 0, z)
+			entry.band = if index == 1 then "near" elseif index == 2 then "mid" else "far"
 			stageFeature(entry)
 		end
 	end
@@ -1718,8 +1748,8 @@ function FieldScene.start(opts)
 		local side = if index % 2 == 0 then -1 else 1
 		-- [장면 깊이] 기존 모바일 10개 / PC 24개 실물 소품을 앞→중간→뒤로 나눈다.
 		-- 최초 10개가 전부 먼 원경에만 놓이던 문제를 고치되 전투 중앙은 비운다.
-		local px = side * half * (0.29 + rng:NextNumber(0, 0.13))
-		local pz = half * (0.71 - band * 0.23) + rng:NextNumber(-7, 7)
+		local px = side * half * ((if band == 0 then 0.16 elseif band == 1 then 0.25 else 0.34 end) + rng:NextNumber(0, 0.13))
+		local pz = half * (0.81 - band * 0.28) + rng:NextNumber(-7, 7)
 		local asset = detailAssets[((index - 1) % #detailAssets) + 1]
 		local entry = { "Terrain", asset, if asset == "north-pine-fall" then 8.5
 			elseif asset == "east-bamboo-grove" then 7 elseif asset == "log-stack" then 4.5
@@ -1738,7 +1768,8 @@ function FieldScene.start(opts)
 			elseif asset == "kenney_log_stackLarge" then 4.8
 			elseif asset == "kenney_plant_bushTriangle" or asset == "kenney_grass_leafs" then 4.4
 			else rng:NextNumber(2.2, 5.2), nil, nil, false }
-		entry.position = ORIGIN + Vector3.new(px, 0, math.clamp(pz, -half * 0.74, half * 0.80))
+		entry.position = ORIGIN + Vector3.new(px, 0, math.clamp(pz, -half * 0.74, half * 0.83))
+		entry.band = if band == 0 then "near" elseif band == 1 then "mid" else "far"
 		stageFeature(entry)
 	end
 
