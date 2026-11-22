@@ -311309,11 +311309,140 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_694487bbb5988beec6fac3ec",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14192",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "6398f0cd4870ab5a42f898d9525fba5cdc9cf294",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14192,
+        "baseBranch": "main",
+        "headBranch": "owner/animal-auto-battle-release-prep-20261122",
+        "baseSha": "6398f0cd4870ab5a42f898d9525fba5cdc9cf294",
+        "headSha": "fc3c02d7e44d30761e4e76cc9ea8b2dc9eca33af",
+        "mergeCommitSha": "b3ed101ff616627f010f7810c86e72a9a9cf3516",
+        "mergedAt": "2026-11-22T04:43:44Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e6514866010ccaa5ec5df44be4a6e9a5b442de91028fa9142979875626352ce8",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/animal-auto-battle-release-prep-20261122",
+        "candidateSha": "fc3c02d7e44d30761e4e76cc9ea8b2dc9eca33af"
+      },
+      "changeStats": {
+        "changedFileCount": 12,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 399,
+        "deletedLineCount": 6,
+        "changedFiles": [
+          "android-games/animal-auto-battle/.gitignore",
+          "android-games/animal-auto-battle/README.md",
+          "android-games/animal-auto-battle/app/build.gradle",
+          "android-games/animal-auto-battle/app/src/main/AndroidManifest.xml",
+          "android-games/animal-auto-battle/app/src/main/java/com/jaewoon/animalautobattle/MainActivity.java",
+          "android-games/animal-auto-battle/app/src/main/res/drawable/ic_launcher.xml",
+          "android-games/animal-auto-battle/app/src/main/res/xml/network_security_config.xml",
+          "android-games/animal-auto-battle/build.gradle",
+          "android-games/animal-auto-battle/gradle.properties",
+          "android-games/animal-auto-battle/settings.gradle",
+          "web-games/animal-auto-battle/index.html",
+          "web-games/animal-auto-battle/privacy.html"
+        ],
+        "codingRelevantFiles": [
+          "android-games/animal-auto-battle/app/src/main/java/com/jaewoon/animalautobattle/MainActivity.java",
+          "web-games/animal-auto-battle/index.html",
+          "web-games/animal-auto-battle/privacy.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14192",
+        "merge-commit:b3ed101ff616627f010f7810c86e72a9a9cf3516",
+        "base-main:6398f0cd4870ab5a42f898d9525fba5cdc9cf294"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2496
+    "total": 2497
   }
 }
