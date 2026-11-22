@@ -3113,16 +3113,20 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		coastal = { { "Terrain", "tropical-palm-short", 8 }, { "Terrain", "coast-grass-patch", 6 },
 			{ "Terrain", "forest-flower-yellow", 4 }, { "Naval", "rocks-sand-a", 6 } },
 		hillside = { { "Terrain", "Rock_2", 7 }, { "Terrain", "north-pine-fall", 9 },
-			{ "Terrain", "tree-pinedefaulta", 10 }, { "Terrain", "forest-bush-detailed", 5 } },
+			{ "Terrain", "tree-pinedefaulta", 10 }, { "Terrain", "forest-bush-detailed", 5 },
+			-- [구릉 지면 높이] 기존 지형 원본의 바위 계단/구릉 기단만 미개발 필지에 사용.
+			{ "Terrain", "cliff-steps-rock", 11 }, { "Terrain", "ground-pathrocks", 7 } },
 		bamboo = { { "Terrain", "east-bamboo-grove", 9 }, { "Terrain", "coast-grass-patch", 5 },
 			{ "Terrain", "forest-flower-yellow", 4 }, { "Terrain", "forest-bush-detailed", 5 } },
 		orchard = { { "Terrain", "tree-oak", 9 }, { "Terrain", "forest-flower-yellow", 4 },
 			{ "Terrain", "forest-flower-purple", 4 }, { "Terrain", "forest-bush-detailed", 5 } },
 		fallow = { { "Terrain", "crops-wheatstagea", 5 }, { "Terrain", "Grass_Small", 4 },
-			{ "Terrain", "coast-grass-patch", 5 }, { "Terrain", "crops-wheatstageb", 5 } },
+			{ "Terrain", "coast-grass-patch", 5 }, { "Terrain", "crops-wheatstageb", 5 },
+			{ "Terrain", "ground-pathstraight", 7 } },
 		-- [미개발 주거 녹지] 원래의 4개 생태 표본을 나무·관목·풀로 다양화한다. 건축 필지는 그대로.
 		woodland = { { "Terrain", "tree-oak", 10 }, { "Terrain", "forest-bush-detailed", 5 },
-			{ "Terrain", "Bush_Small", 3.6 }, { "Terrain", "Grass_Small", 2.5 } },
+			{ "Terrain", "Bush_Small", 3.6 }, { "Terrain", "Grass_Small", 2.5 },
+			{ "Terrain", "ground-pathrocks", 7 } },
 	}
 	local agricultural = table.find(made or {}, "grain") ~= nil or table.find(made or {}, "wheat") ~= nil
 		or table.find(made or {}, "rice") ~= nil or table.find(made or {}, "maize") ~= nil
@@ -5534,6 +5538,11 @@ function PortScene.build(info, onFacility)
 	cityTier = if sourceLevel and sourceLevel >= 6 and sceneLevel >= 5 then 6 else sceneLevel
 	folder:SetAttribute("CitySourceLevel", sourceLevel)
 	folder:SetAttribute("CityDisplayTier", cityTier)
+	-- [계절 복식] 기존 일자·위도로 겨울만 판단한다. 저장 없이 마을 주민 외관에서만 읽는다.
+	local clothingLatitude = (PortData.Ports[info.portId] or {}).lat or 0
+	local initialWinterCoat = math.abs(clothingLatitude) >= 39
+		and Voyage.season(tonumber(info.day) or 0, clothingLatitude) == 1
+	folder:SetAttribute("PortWinterCoat", initialWinterCoat)
 	-- [향후 건축 시뮬] 기존 경제 건설·증축 알고리즘을 정본으로 두고, 지금은 도시 외형만 자동 갱신한다.
 	folder:SetAttribute("CityBuildingMode", "AUTO_VISUAL_READ_ONLY")
 	folder:SetAttribute("CityDevelopmentTier", sceneLevel)
@@ -7200,6 +7209,17 @@ function PortScene.build(info, onFacility)
 		if seasonIndex == index then return end
 		seasonIndex = index
 		season = seasons[index]
+		-- [계절 경계] 겨울 의복만 바뀔 때 기존 NPC 재단복 장착 함수를 호출한다.
+		-- 날짜 변경은 드물며, 평소 프레임 루프에는 새 연산을 추가하지 않는다.
+		local winterCoat = cold and index == 1
+		if folder:GetAttribute("PortWinterCoat") ~= winterCoat then
+			folder:SetAttribute("PortWinterCoat", winterCoat)
+			for _, subject in folder:GetDescendants() do
+				if subject:IsA("Model") and subject:GetAttribute("NpcAssetProfile") then
+					Pose.applyRegisteredMobOutfit(subject)
+				end
+			end
+		end
 		-- [기존 계절 흐름] 항구 구역과 같은 계절 단계로 눈·거리·주택 연출이 동기화된다.
 		folder:SetAttribute("CitySeasonIndex", index)
 		folder:SetAttribute("CityWinterRoofTone", if cold and index == 1 then "SNOW" else "REGIONAL_MATERIAL")
