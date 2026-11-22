@@ -399,7 +399,7 @@ function Gallery.build(parent, ctx, order)
 	grid.LayoutOrder = 3
 	grid.Parent = box
 	local gl = Instance.new("UIGridLayout")
-	gl.CellSize = UDim2.fromOffset(104, 146)
+	gl.CellSize = UDim2.fromOffset(104, math.floor(104 / CardTheme.cardRatio + 0.5)) -- 7:10
 	gl.CellPadding = UDim2.fromOffset(8, 8)
 	gl.SortOrder = Enum.SortOrder.LayoutOrder
 	gl.Parent = grid

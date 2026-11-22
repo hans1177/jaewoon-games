@@ -495,7 +495,7 @@ function DeckBuilder.build(parent, ctx)
 	gridScroll.CanvasSize = UDim2.new()
 	gridScroll.Parent = left
 	local gl = Instance.new("UIGridLayout")
-	gl.CellSize = UDim2.fromOffset(100, 138)
+	gl.CellSize = UDim2.fromOffset(CardTheme.cardW, CardTheme.cardH)
 	gl.CellPadding = UDim2.fromOffset(8, 8)
 	gl.SortOrder = Enum.SortOrder.LayoutOrder
 	gl.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -525,14 +525,18 @@ function DeckBuilder.build(parent, ctx)
 	-- [지도자 카드] 일반 카드와 동일한 100×138 도판·이름 띠. 별도 얼굴 아이콘은 사용하지 않는다.
 	local leaderBox = Instance.new("Frame")
 	leaderBox.Position = UDim2.fromOffset(6, 6)
-	leaderBox.Size = UDim2.new(1, -12, 0, 150)
+	leaderBox.Size = UDim2.new(1, -12, 0, 155)
 	leaderBox.BackgroundColor3 = CardTheme.panel
 	leaderBox.BorderSizePixel = 0
 	leaderBox.Parent = right
 	corner(leaderBox, 8)
 	local leaderCard = button(leaderBox, "", Color3.fromRGB(58, 44, 32), 14, nil)
 	leaderCard.Name = "FullBodyLeaderCard"
-	leaderCard.Size = UDim2.fromOffset(100, 138)
+	leaderCard.Size = UDim2.fromOffset(CardTheme.cardW, CardTheme.cardH)
+	local leaderRatio = Instance.new("UIAspectRatioConstraint") -- 7:10 유지, 화면에 따라 자동 조절
+	leaderRatio.AspectRatio = CardTheme.cardRatio
+	leaderRatio.DominantAxis = Enum.DominantAxis.Width
+	leaderRatio.Parent = leaderCard
 	leaderCard.Position = UDim2.fromOffset(6, 6)
 	local leaderImage = Instance.new("ImageLabel")
 	leaderImage.Name = "LeaderPainting"
@@ -670,8 +674,8 @@ function DeckBuilder.build(parent, ctx)
 	-- [모바일] 화면 높이가 낮으면 지도자 카드는 축소 표시하고 눌러 원본 크기로 확대한다.
 	local function layoutLeaderCard()
 		local tall = right.AbsoluteSize.Y >= 640
-		leaderBox.Size = UDim2.new(1, -12, 0, if tall then 150 else 50)
-		leaderCard.Size = if tall then UDim2.fromOffset(100, 138) else UDim2.fromOffset(34, 44)
+		leaderBox.Size = UDim2.new(1, -12, 0, if tall then 155 else 50)
+		leaderCard.Size = if tall then UDim2.fromOffset(CardTheme.cardW, CardTheme.cardH) else UDim2.fromOffset(31, 44)
 		leaderCard.Position = if tall then UDim2.fromOffset(6, 6) else UDim2.fromOffset(4, 3)
 		leaderCardName.Visible = tall
 		leaderName.Position = if tall then UDim2.fromOffset(114, 7) else UDim2.fromOffset(44, 2)
@@ -684,9 +688,9 @@ function DeckBuilder.build(parent, ctx)
 		nextLeader.Position = if tall then UDim2.new(1, -6, 0, 108) else UDim2.new(1, -4, 0, 8)
 		prevLeader.Size = if tall then UDim2.fromOffset(36, 34) else UDim2.fromOffset(32, 34)
 		nextLeader.Size = if tall then UDim2.fromOffset(36, 34) else UDim2.fromOffset(32, 34)
-		balance.Position = UDim2.fromOffset(6, if tall then 156 else 56)
-		comboButton.Position = UDim2.fromOffset(6, if tall then 179 else 79)
-		local scrollTop = if tall then 207 else 107
+		balance.Position = UDim2.fromOffset(6, if tall then 161 else 56)
+		comboButton.Position = UDim2.fromOffset(6, if tall then 184 else 79)
+		local scrollTop = if tall then 212 else 107
 		deckScroll.Position = UDim2.fromOffset(6, scrollTop)
 		deckScroll.Size = UDim2.new(if right.AbsoluteSize.X >= 530 then 0.66 else 1, -12, 1, -scrollTop - 64)
 	end

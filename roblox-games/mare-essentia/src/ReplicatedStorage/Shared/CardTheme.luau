@@ -1,7 +1,12 @@
 --!strict
 -- CardTheme.luau
 -- 카드 전투와 보관함에서 공유하는 재질 색. 카드 지역색과 희귀도는 각 화면에서 표시한다.
+-- [카드 비율] 모바일 그웬트식 세로 7:10. 모든 카드 틀이 이 비율을 공유한다(화면에 맞춰 자동 조절).
+local CARD_RATIO = 0.7
 return {
+	cardRatio = CARD_RATIO,
+	cardW = 100,
+	cardH = 143, -- 100 / 0.7
 	regionFrames = {
 		eu = "CardArt/ui_frame_europe", ea = "CardArt/ui_frame_east_asia",
 		me = "CardArt/ui_frame_middle_east", nw = "CardArt/ui_frame_new_world",
