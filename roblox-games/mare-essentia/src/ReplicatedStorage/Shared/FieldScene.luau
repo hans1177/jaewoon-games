@@ -8737,7 +8737,7 @@ function FieldScene.start(opts)
 				ui.nameText.Size = UDim2.fromOffset(if visualMobile then 151 else 143, 18)
 				ui.nameText.TextXAlignment = Enum.TextXAlignment.Left
 				ui.nameText.TextTruncate = Enum.TextTruncate.AtEnd
-				ui.role = if type(member.ui.role) == "string" and member.ui.role ~= "" then member.ui.role else "동료"
+				ui.role = if type(member.role) == "string" and member.role ~= "" then member.role else "동료"
 				ui.statusText = label(status, ui.role .. " · 파티원", if visualMobile then 10 else 11, Color3.fromRGB(168, 210, 190))
 				ui.statusText.Name = "FieldAllyPartyRole"
 				ui.statusText.Position = UDim2.fromOffset(if visualMobile then 43 else 51, if visualMobile then 23 else 27)
