@@ -98,8 +98,6 @@ h1{font-size:22px;margin:0}
 .portrait.hammerArt,.card .art.hammerArt{background-size:400% 400%;background-position:66.6667% 66.6667%;background-repeat:no-repeat}
 .portrait img.newArt,.card .art img.newArt,.tileArt img{width:400%;height:400%;max-width:none}
 .portrait img.newAllyArt,.card .art img.newAllyArt{width:200%;height:200%;max-width:none}
-/* 기존 8종 개별 원화: 새 카드 틀 내부를 비율 왜곡 없이 채운다. */
-.card .art img.originalArt{display:block;width:100%;height:100%;max-width:100%;object-fit:cover;object-position:center;transform:none}
 
 .tileArt{position:absolute;inset:7%;z-index:0;border-radius:8px;overflow:hidden;pointer-events:none;opacity:.92}.unit{z-index:1}
 .unit b{font-size:11px}.unit small{font-size:9px;color:#e7eeff}
@@ -1396,7 +1394,7 @@ function artHtml(id,d){
   if(NEW_ART_POS[id])return '<div class="art"><img class="newArt" src="'+NEW_ART_SPRITE+'" alt="'+d.name+'" style="'+newArtStyle(id)+'"></div>';
   const fallbackId=id==='CROSSBOW'?'ARCHER':id;
   return SPRITE_POS[fallbackId]
-    ? '<div class="art"><img class="originalArt" src="portraits/'+fallbackId+'.webp" alt="'+d.name+'" decoding="async"></div>'
+    ? '<div class="art"><img src="'+UNIT_SPRITE+'" alt="'+d.name+'" style="'+spriteImgStyle(fallbackId)+'"></div>'
     : '<div class="art" style="display:flex;align-items:center;justify-content:center;font-size:38px">'+d.icon+'</div>'
 }
 function tileHtml(type){
