@@ -1990,9 +1990,8 @@ function FieldScene.start(opts)
 	-- 상태
 	local pl = AC.newPlayer(100)
 	local BASE_DMG = 10
-	-- [휴식 회복] 동료는 전투에서 제외하되 기존 비전투 휴식 치유 보정은 보존한다.
+	-- [지상전투 단독] 동료는 파티 UI에만 남으며 전투/전투 중 회복에는 관여하지 않는다.
 	local lastCombatAt = os.clock()
-	local activeHealers = {} -- [기존 비전투 휴식] 실제 영입된 치료 동료의 회복 보정만 유지한다.
 	local passiveRegenHudAt, passiveRegenFxAt = 0, -100
 	-- [정예 둔화·보스 독] 탐험 한 판에만 존재하는 비저장 상태. 중복 효과와 지속 피해 폭증을 방지한다.
 	local eliteSlowUntil, bossPoisonUntil, bossPoisonNextAt = 0, 0, math.huge
@@ -7882,8 +7881,8 @@ function FieldScene.start(opts)
 			debuffLabel.Text = debuff
 			debuffLabel.TextColor3 = if poisoned then Color3.fromRGB(144, 232, 144) else Color3.fromRGB(151, 210, 249)
 		end
-		-- [비전투 극소량 체력 회복] 8초간 전투 행동이 없고 40스터드 이내 적이 없을 때만 작동한다.
-		-- 자연 초당 0.12, 치료 동료가 28스터드 이내에 있을 때 +0.18(최대 2명). 전투 스킬은 비활성이다.
+		-- [주인공 자연 회복] 기존 자연 회복량 0.12는 유지하고, 동료 파티는 필드 피해·회복에 관여하지 않는다.
+		-- 전투 행동 8초 이상 없음 + 반경 40스터드 내 적 없음 조건을 그대로 적용한다.
 		if now - lastCombatAt >= 8 and pl.hp > 0 and pl.hp < pl.maxHp then
 			local ch = player.Character
 			local root = ch and ch:FindFirstChild("HumanoidRootPart")
@@ -7897,13 +7896,7 @@ function FieldScene.start(opts)
 				end
 			end
 			if not danger then
-				local healers = 0
-				for _, a in activeHealers do
-					if a.root and a.root.Parent and (a.root.Position - root.Position).Magnitude <= 28 then
-						healers += 1
-					end
-				end
-				pl.hp = math.min(pl.maxHp, pl.hp + (0.12 + math.min(healers, 2) * 0.18) * math.min(dt, 0.1))
+				pl.hp = math.min(pl.maxHp, pl.hp + 0.12 * math.min(dt, 0.1))
 				if now >= passiveRegenHudAt then
 					passiveRegenHudAt = now + 0.5
 					refresh()
@@ -7912,7 +7905,7 @@ function FieldScene.start(opts)
 					passiveRegenFxAt = now
 					pulseAt("HEAL_PULSE", root.CFrame * CFrame.new(0, -2.1, 0), Color3.fromRGB(104, 207, 151),
 						Color3.fromRGB(215, 250, 227), 3.8, if visualMobile then 2 else 4)
-					sfx("sfx_card_magic", 0.16, if healers > 0 then 1.15 else 1.32)
+					sfx("sfx_card_magic", 0.16, 1.32)
 				end
 			end
 		end
@@ -8689,305 +8682,70 @@ function FieldScene.start(opts)
 		end
 	end))
 
-	-- 동료(최대 2명): 전투에는 참여하지 않고 주인공 곁에서 복식·동행·대화 기능을 유지한다.
+	-- [비전투 파티] 서버가 영입 완료로 보낸 명단만 표시한다. 지상전투에 동료 모델·무기·공격·지원 스킬은 생성하지 않는다.
+	-- 기존 파티 ID와 초상 시트를 그대로 사용하고, 실제 피해·승패·보상·저장에는 개입하지 않는다.
 	do
-		local function hashName(str: string): number
-			local h = 7
-			for _, cp in utf8.codes(str) do h = (h * 31 + cp) % 100003 end
-			return h
+		local party = if type(opts.allies) == "table" then opts.allies else {}
+		local seen = {}
+		local count = 0
+		for _, member in party do
+			if count >= 2 then break end
+			if type(member) == "table" and type(member.id) == "string" and type(member.name) == "string"
+				and member.id ~= "" and not seen[member.id] then
+				seen[member.id] = true
+				count += 1
+				local shortHud = visualMobile
+				local status = Instance.new("Frame")
+				status.Name = "FieldAllyStatus" .. count
+				status:SetAttribute("CompanionId", member.id)
+				status:SetAttribute("CombatEnabled", false)
+				status.Position = UDim2.fromOffset(heroPanel.Position.X.Offset,
+					heroPanel.Position.Y.Offset + heroPanel.Size.Y.Offset + 6 + (count - 1) * (if shortHud then 48 else 56))
+				status.Size = UDim2.fromOffset(heroPanel.Size.X.Offset, if shortHud then 44 else 52)
+				status.BackgroundColor3 = Color3.fromRGB(24, 33, 49)
+				status.BackgroundTransparency = 0.12
+				status.BorderSizePixel = 0
+				status.Parent = gui
+				local rounded = Instance.new("UICorner")
+				rounded.CornerRadius = UDim.new(0, 9)
+				rounded.Parent = status
+				local outline = Instance.new("UIStroke")
+				outline.Color = if count == 1 then Color3.fromRGB(105, 200, 223) else Color3.fromRGB(222, 181, 103)
+				outline.Thickness = 1.1
+				outline.Parent = status
+				local face = Instance.new("ImageLabel")
+				face.Name = "FieldAllyPortrait"
+				face.Size = UDim2.fromOffset(if shortHud then 29 else 39, if shortHud then 35 else 43)
+				face.Position = UDim2.fromOffset(6, 5)
+				face.BackgroundColor3 = Color3.fromRGB(56, 70, 82)
+				face.BorderSizePixel = 0
+				face.ScaleType = Enum.ScaleType.Crop
+				local portrait = opts.allyPortraits and opts.allyPortraits[member.id]
+				if portrait and portrait.id then
+					face.Image = "rbxassetid://" .. tostring(portrait.id)
+					face.ImageRectOffset = portrait.offset or Vector2.zero
+					face.ImageRectSize = portrait.size or Vector2.zero
+				end
+				face.Parent = status
+				local faceRounded = Instance.new("UICorner")
+				faceRounded.CornerRadius = UDim.new(0, 7)
+				faceRounded.Parent = face
+				local nameText = label(status, member.name, if shortHud then 12 else 13)
+				nameText.Name = "FieldAllyName"
+				nameText.Position = UDim2.fromOffset(if shortHud then 43 else 51, 4)
+				nameText.Size = UDim2.fromOffset(if shortHud then 151 else 143, 18)
+				nameText.TextXAlignment = Enum.TextXAlignment.Left
+				nameText.TextTruncate = Enum.TextTruncate.AtEnd
+				local role = if type(member.role) == "string" and member.role ~= "" then member.role else "동료"
+				local statusText = label(status, role .. " · 파티원", if shortHud then 10 else 11, Color3.fromRGB(168, 210, 190))
+				statusText.Name = "FieldAllyPartyRole"
+				statusText.Position = UDim2.fromOffset(if shortHud then 43 else 51, if shortHud then 23 else 27)
+				statusText.Size = UDim2.fromOffset(if shortHud then 151 else 143, 18)
+				statusText.TextXAlignment = Enum.TextXAlignment.Left
+				statusText.TextTruncate = Enum.TextTruncate.AtEnd
+			end
 		end
-		-- [동료 명세 준비] 기존 영입·직업·국적 판정은 그대로 두고 루아우 200개 지역변수 한도를 피하도록 이 책임만 분리.
-		local function prepareAllyDefs()
-			local allyDefs = {}
-			local allyNames: { any } = {} -- [지상전투 단독] 동료는 소환·동행하지 않고 주인공 혼자 싸운다. 영입·저장 데이터는 그대로.
-			if false then
-				allyNames = { { name = "동료 포수", role = "포수" }, { name = "동료 항해사", role = "항해사" } } -- 실제 서버에서는 없는 동료를 만들지 않는다.
-			end
-			-- [동료 식별] 같은 영입 ID 중복은 한 번만 소환한다. 최대 2명, 직업별 기존 스킬·무기는 유지.
-			local ROLE_BY_JOB = { ["성직자"] = "Mage", ["수녀"] = "Mage", ["승려"] = "Mage", ["비구니"] = "Mage", ["순례자"] = "Mage", ["필사자"] = "Mage", ["포수"] = "Barbarian", ["항해사"] = "Rogue" }
-			local ROLES = { "Knight", "Rogue", "Barbarian", "Mage" }
-			local seenAllies = {}
-			for _, nm in allyNames do
-				if #allyDefs < 2 then
-					local name = if type(nm) == "table" then tostring(nm.name) else tostring(nm)
-					local job = if type(nm) == "table" then nm.role else nil
-					local id = if type(nm) == "table" and nm.id then tostring(nm.id) else name .. "|" .. tostring(job)
-					if not seenAllies[id] then
-						seenAllies[id] = true
-						local slot = #allyDefs + 1
-						local h = hashName(name)
-						-- [동료 무기] 기존 영입 ID로 출신·경력을 조회한다. 저장값/영입 순서는 변경하지 않는다.
-						local history = Specialties.CompanionById[id]
-						local birthplace = history and history.homePort and Ports.Ports[history.homePort]
-						local nation = (history and history.nation) or (birthplace and birthplace.country)
-						local vocation = job or (history and history.scholarId ~= "" and "학자") or "무인"
-						local category = JobSkills.categoryOf(vocation)
-						local life = history and history.summary or vocation
-						local weapon = Weapons.allyWeapon(category, { job = vocation, nation = nation, background = life, year = opts.year })
-						local role = (job and ROLE_BY_JOB[job]) or ROLES[(h + slot) % #ROLES + 1]
-						-- [동료 외형] 출신 지역을 확인할 수 있는 동료에게는 기존 복식 팔레트를 우선한다.
-						local regionalCoats = {
-							france = Color3.fromRGB(64, 95, 136), england = Color3.fromRGB(86, 110, 104),
-							portugal = Color3.fromRGB(118, 91, 120), spain = Color3.fromRGB(153, 90, 69),
-							ottoman = Color3.fromRGB(80, 111, 107), japan = Color3.fromRGB(112, 88, 127),
-							netherlands = Color3.fromRGB(130, 94, 65), swahili = Color3.fromRGB(137, 108, 73),
-							malabar = Color3.fromRGB(79, 119, 88),
-						}
-						local coat = regionalCoats[nation] or Color3.fromHSV(((h % 360) / 360 + (slot - 1) * 0.32) % 1, 0.45, 0.67)
-						-- 기존 영입 메타데이터를 읽되, 성별 추정/저장값 변경 없이 외형에만 전달한다.
-						local knownFemale = id == "c_merian" or id == "t_nun" or id == "t_bhikkhuni"
-							or id == "t_mate" or id == "t_surgeon"
-						local female = if type(nm) == "table" and type(nm.female) == "boolean" then nm.female
-							elseif type(nm) == "table" and (nm.gender == "female" or nm.gender == "male") then nm.gender == "female"
-							else knownFemale
-						table.insert(allyDefs, { id = id, name = name, role = role, coat = coat, job = vocation, female = female,
-							skills = JobSkills.allySkills(vocation), weapon = weapon, nation = nation })
-					end
-				end
-			end
-			return allyDefs
-		end
-		local allyDefs = prepareAllyDefs()
-		local allies: { any } = {}
-		local spawned = {} -- 영입 슬롯별 생성 성공만 기록. 실패 슬롯만 재시도한다.
-		local nextSpawnRetryAt = 0
-		local spawning = false -- R15 모델 생성이 비동기로 끝날 때까지 같은 슬롯 중복 소환 차단.
-		-- [탐험 동료 지면] 기존 지형·전투물의 실제 충돌면만 확인하고, 캐릭터 신체는 무시한다.
-		local allyGroundRay = RaycastParams.new()
-		allyGroundRay.FilterType = Enum.RaycastFilterType.Exclude
-		allyGroundRay.RespectCanCollide = true
-		-- [실제 관절 재생 시점] Animator 평가가 끝난 물리 직전 단계에 갱신해 팔다리가 고정된 인형처럼 남지 않게 한다.
-		table.insert(conns, RunService.PreSimulation:Connect(function(dt)
-			if finished or #allyDefs == 0 then
-				return
-			end
-			local ch = player.Character
-			local root0 = ch and ch:FindFirstChild("HumanoidRootPart")
-			if not root0 then
-				return
-			end
-			allyGroundRay.FilterDescendantsInstances = { ch }
-			local now = os.clock()
-			if #allies < #allyDefs and not spawning and now >= nextSpawnRetryAt then
-				spawning = true
-				nextSpawnRetryAt = now + 5 -- 외부 R15 생성 실패 때 매 프레임 중복 요청하지 않는다.
-				for i, ad in allyDefs do
-					if not spawned[i] then
-					-- [동료 접지] Pose.createR15의 인자는 몸통 위치가 아닌 발바닥 좌표다.
-					-- 주인공 루트 높이(약 3스터드)를 더하던 기존 계산이 동료 공중부양의 원인이다.
-					local footX = root0.Position.X + i * 5 - 8
-					local pos0 = Vector3.new(footX, ORIGIN.Y + 0.015, root0.Position.Z - 4)
-					-- [동료 고유 R15] 영입 이름·직업에 따른 체형·움직임을 안정적으로 재생한다.
-					local persona = hashName(ad.name) % 3 + 1
-					local bodyType = if ad.role == "Barbarian" then "heavy" elseif ad.role == "Rogue" then "slim" else "athletic"
-					local motionStyle = if ad.weapon and ad.weapon.ranged then "scholar" elseif ad.role == "Barbarian" then "heavy" else "disciplined"
-					local outfit = { bodyType = bodyType, motionStyle = motionStyle, persona = persona, profession = ad.job, year = opts.year,
-						companion = true, gender = if ad.female then "female" else "male", culture = ad.nation } -- 실제 양발 밑면을 바닥에 맞추는 동료 전용 생성 옵션.
-					-- 시대가 맞지 않는 조립형 장식은 추가하지 않는다.
-					if type(opts.year) == "number" and opts.year >= 1500 then
-						outfit.hair = if ad.female then (if persona == 2 then "bun" else "long") else "short"
-						outfit.hairColor = if persona == 1 then Color3.fromRGB(46, 34, 28) else Color3.fromRGB(88, 68, 50)
-					end
-					-- [동료 체격] 주인공의 실제 R15 머리~발 높이에 맞춘다. 성별 추정으로 크기를 임의 변경하지 않는다.
-					local heroHead = ch:FindFirstChild("Head")
-					local heroFoot = ch:FindFirstChild("LeftFoot") or ch:FindFirstChild("RightFoot")
-					local heroHeight = if heroHead and heroFoot
-						then math.clamp((heroHead.Position.Y + heroHead.Size.Y * 0.5) - (heroFoot.Position.Y - heroFoot.Size.Y * 0.5), 5.3, 7.2)
-						else 5.8
-					local created, m = pcall(Pose.createR15, folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)
-					if not created and not finished then
-						warn("[MareEssentia] 동료 리그 생성 오류", m)
-						m = nil
-					end
-					if finished or not folder.Parent then
-						if created and m and typeof(m) == "Instance" then m:Destroy() end
-						return
-					end
-					local r = m and m:FindFirstChild("HumanoidRootPart")
-					if m and r then
-						spawned[i] = true
-						m.Name = "FieldAlly"
-						m:SetAttribute("CompanionId", ad.id)
-						m:SetAttribute("CompanionName", ad.name)
-						m:SetAttribute("EquippedWeaponId", ad.weapon.id)
-						m:SetAttribute("EquippedWeaponName", ad.weapon.name)
-						m:SetAttribute("CompanionOriginNation", ad.nation or "")
-						equipFieldWeapon(m, ad.weapon)
-						m:SetAttribute("MotionRole", if ad.weapon and ad.weapon.ranged then "ally-ranged" else "ally-melee") -- 기존 직업별 모션 구분 유지
-						-- [탐험 HUD] 동료 이름을 근거리에서 작게 표시한다. 색상과 거리 제한은 유지한다.
-						local bbA = Instance.new("BillboardGui")
-						bbA.Name = "AllyRoleTag"
-						bbA.Adornee = r
-						bbA.Size = UDim2.fromOffset(120, 18)
-						bbA.StudsOffset = Vector3.new(0, 3.7, 0)
-						bbA.AlwaysOnTop = false
-						bbA.LightInfluence = 0
-						bbA.MaxDistance = 24
-						bbA.Parent = r
-						local tg = label(bbA, ad.name, 12, if i == 1 then Color3.fromRGB(125, 224, 255) else Color3.fromRGB(245, 207, 110))
-						tg.TextTruncate = Enum.TextTruncate.AtEnd
-						tg.Size = UDim2.new(1, 0, 1, 0)
-						-- [기존 영입 동료 초상과 동행 상태] 비전투 동료의 초상·기존 파티 HUD를 그대로 표시한다.
-						local status = Instance.new("Frame")
-						status.Name = "FieldAllyStatus" .. i
-						-- [파티 HUD] 화면 방향에 상관없이 주인공 아래에 같은 폭으로 쌓는다.
-						local partyWidth = heroPanel.Size.X.Offset
-						local shortHud = visualMobile
-						status.Position = UDim2.fromOffset(heroPanel.Position.X.Offset,
-							heroPanel.Position.Y.Offset + heroPanel.Size.Y.Offset + 6 + (i - 1) * (if shortHud then 48 else 56))
-						status.Size = UDim2.fromOffset(partyWidth, if shortHud then 44 else 52)
-						status.Visible = true
-						status.BackgroundColor3 = Color3.fromRGB(24, 33, 49)
-						status.BackgroundTransparency = 0.12
-						status.BorderSizePixel = 0
-						status.Parent = gui
-						local round = Instance.new("UICorner")
-						round.CornerRadius = UDim.new(0, 9)
-						round.Parent = status
-						local frame = Instance.new("UIStroke")
-						frame.Color = if i == 1 then Color3.fromRGB(105, 200, 223) else Color3.fromRGB(222, 181, 103)
-						frame.Thickness = 1.1
-						frame.Parent = status
-						local face = Instance.new("ImageLabel")
-						face.Name = "FieldAllyPortrait"
-						face.Size = UDim2.fromOffset(if shortHud then 29 else 39, if shortHud then 35 else 43)
-						face.Position = UDim2.fromOffset(6, 5)
-						face.BackgroundColor3 = Color3.fromRGB(56, 70, 82)
-						face.BorderSizePixel = 0
-						face.ScaleType = Enum.ScaleType.Crop
-						local portrait = opts.allyPortraits and opts.allyPortraits[ad.id]
-						if portrait and portrait.id then
-							face.Image = "rbxassetid://" .. tostring(portrait.id)
-							face.ImageRectOffset = portrait.offset or Vector2.zero
-							face.ImageRectSize = portrait.size or Vector2.zero
-						end
-						face.Parent = status
-						local faceRound = Instance.new("UICorner")
-						faceRound.CornerRadius = UDim.new(0, 7)
-						faceRound.Parent = face
-						local nameText = label(status, ad.name, 13)
-						nameText.Name = "FieldAllyName"
-						nameText.Position = UDim2.fromOffset(51, 3)
-						nameText.Size = UDim2.fromOffset(143, 18)
-						nameText.TextXAlignment = Enum.TextXAlignment.Left
-						nameText.TextTruncate = Enum.TextTruncate.AtEnd
-						local hpLine = Instance.new("Frame")
-						hpLine.Name = "FieldAllyHealth"
-						hpLine.Size = UDim2.fromOffset(140, 6)
-						hpLine.Position = UDim2.fromOffset(51, 24)
-						hpLine.BackgroundColor3 = Color3.fromRGB(82, 181, 117)
-						hpLine.BorderSizePixel = 0
-						hpLine.Parent = status
-						local manaAlly = JobSkills.categoryOf(ad.job) == "clergy"
-						local energyLine = Instance.new("Frame")
-						energyLine.Name = if manaAlly then "FieldAllyMana" else "FieldAllyStamina"
-						energyLine.Size = UDim2.fromOffset(140, 7)
-						energyLine.Position = UDim2.fromOffset(51, 36)
-						energyLine.BackgroundColor3 = Color3.fromRGB(42, 52, 68)
-						energyLine.BorderSizePixel = 0
-						energyLine.Parent = status
-						local energyFill = Instance.new("Frame")
-						energyFill.Name = "FieldAllyEnergyFill"
-						energyFill.Size = UDim2.fromScale(1, 1)
-						energyFill.BackgroundColor3 = if manaAlly then Color3.fromRGB(110, 151, 247) else Color3.fromRGB(232, 191, 89)
-						energyFill.BorderSizePixel = 0
-						energyFill.Parent = energyLine
-						local energyCaption = label(status, if manaAlly then "마력" else "기력", 10, Color3.fromRGB(239, 233, 215))
-						energyCaption.Name = "FieldAllyEnergyCaption"
-						energyCaption.TextXAlignment = Enum.TextXAlignment.Right
-						energyCaption.Position = UDim2.fromOffset(153, 34)
-						energyCaption.Size = UDim2.fromOffset(38, 12)
-						energyCaption.ZIndex = 6
-						local ally = { model = m, root = r, slot = i, t0 = now,
-							footOffset = m:GetPivot().Position.Y - pos0.Y,
-							leftFoot = m:FindFirstChild("LeftFoot"), rightFoot = m:FindFirstChild("RightFoot"),
-							fm = if FM then FM.new(m, false) else nil, name = ad.name,
-							weapon = ad.weapon or Weapons.get("sword"), gait = (i - 1) * 0.45,
-							healer = table.find(ad.skills, "heal") ~= nil }
-						table.insert(allies, ally)
-						if ally.healer then table.insert(activeHealers, ally) end
-						table.insert(conns, { Disconnect = function()
-							m:Destroy()
-						end })
-					elseif m then
-						m:Destroy() -- 불완전한 동료는 남기지 않고 같은 슬롯으로 다시 생성한다.
-					end
-					end
-				end
-				spawning = false
-			end
-			for _, a in allies do
-				-- [비전투 동행] 영입·복식·이동·지형 접지·동료 HUD는 유지하되 적 탐색·공격·전투 스킬은 사용하지 않는다.
-				-- [동료 대형] 주인공을 따라 방향을 바꿔도 좌우 후방에 서도록 로컬 좌표를 사용한다.
-				local goal = (root0.CFrame * CFrame.new(if a.slot == 1 then -3.4 else 3.4, 0, 4.7)).Position
-				local stop = 3
-				local to = Vector3.new(goal.X - a.root.Position.X, 0, goal.Z - a.root.Position.Z)
-				local moving = to.Magnitude > stop
-				-- [동료 관성 보행] 이동 최고속도는 유지하고 목표에 가까워질수록 다리 디딤과 실제 이동을 함께 감속한다.
-				local maxSpeed = 20
-				local remaining = math.max(0, to.Magnitude - stop)
-				local desiredSpeed = if moving then math.min(maxSpeed, math.max(2, remaining * 3.5)) else 0
-				local wantedVel = if moving then to.Unit * desiredSpeed else Vector3.zero
-				local previousVel = a.moveVel or Vector3.zero
-				local accel = if desiredSpeed > previousVel.Magnitude then 6.5 else 9
-				a.moveVel = previousVel:Lerp(wantedVel, 1 - math.exp(-accel * math.clamp(dt, 0, 0.1)))
-				local walked = 0
-				if moving and a.moveVel.Magnitude > 0.05 then
-					walked = math.min(remaining, a.moveVel.Magnitude * math.clamp(dt, 0, 0.1))
-					a.model:PivotTo(a.model:GetPivot() + a.moveVel.Unit * walked)
-					a.gait = (a.gait or 0) + walked / 5.2
-				end
-				-- [발 접지] 이동 후 동료의 발바닥이 서야 할 충돌면 높이를 읽어 모델 전체를 천천히 붙인다.
-				-- 지면에 없는 공중 장식·벽은 무시하고, 계단·완만한 지형만 최대 1.6스터드 보정한다.
-				local floorHit = workspace:Raycast(a.root.Position + Vector3.new(0, 4, 0),
-					Vector3.new(0, -14, 0), allyGroundRay)
-				if floorHit and floorHit.Normal.Y > 0.7 then
-					local pivot = a.model:GetPivot()
-					local wantedY = floorHit.Position.Y + a.footOffset + 0.015
-					local gap = wantedY - pivot.Position.Y
-					if math.abs(gap) < 1.6 then
-						-- [실제 신발 접지] 한쪽 발이 스윙 중 떠 있어도 낮은 쪽 축발은 땅에 남게 미세 보정한다.
-						-- 타격 시 발이 순간 이동하지 않도록 발바닥 보정량은 0.14스터드까지만 허용한다.
-						local soleCorrection = 0
-						if a.leftFoot and a.rightFoot and a.leftFoot.Parent and a.rightFoot.Parent then
-							local lowestSole = math.min(a.leftFoot.Position.Y - a.leftFoot.Size.Y * 0.5,
-								a.rightFoot.Position.Y - a.rightFoot.Size.Y * 0.5)
-							soleCorrection = math.clamp(floorHit.Position.Y + 0.015 - lowestSole, -0.14, 0.14)
-						end
-						local correction = gap * (1 - math.exp(-13 * math.clamp(dt, 0, 0.1)))
-							+ soleCorrection * (1 - math.exp(-7 * math.clamp(dt, 0, 0.1))) * 0.55
-						if math.abs(correction) > 0.002 then
-							a.model:PivotTo(pivot + Vector3.new(0, math.clamp(correction, -0.22, 0.22), 0))
-						end
-					end
-				end
-				local gaitMoving = walked > 0.01
-				-- [시선·발 방향] 전투 표적 없이 걷는 방향을 향하고, 정지하면 주인공을 따라 시선을 돌린다.
-				local face = if moving and a.moveVel.Magnitude > 0.05 then a.moveVel else root0.CFrame.LookVector
-				face = Vector3.new(face.X, 0, face.Z)
-				if face.Magnitude > 0.01 then
-					local pv = a.model:GetPivot()
-					local front = CFrame.lookAt(pv.Position, pv.Position + face.Unit)
-					a.model:PivotTo(CFrame.new(pv.Position) * pv.Rotation:Lerp(front.Rotation,
-						1 - math.exp(-(if moving then 5.5 else 8) * math.clamp(dt, 0, 0.1))))
-				end
-				-- [동료 자연 보행] 적 타격/사격/지원 연출 없이 원래 R15 걷기·대기 모션만 재생한다.
-				if a.fm and a.fm.nj > 0 then
-					if gaitMoving then
-						FM.actor(a.fm, "RUN", (a.gait or 0) % 1, dt, nil, 1.3, nil, false, nil, a.weapon.motion,
-							math.clamp(walked / math.max(dt, 0.008) / maxSpeed, 0.12, 1.25), 0)
-					else
-						FM.actor(a.fm, "IDLE", (now / 2.4 + a.slot * 0.3) % 1, dt, nil, 1.15, nil, false, nil, a.weapon.motion)
-					end
-				else
-					Pose.makeR15Action(a.model, if gaitMoving then "run" else "idle", 0,
-						if gaitMoving then (a.gait or 0) * 2 * math.pi else now - a.t0,
-						if gaitMoving then walked / math.max(dt, 0.008) / maxSpeed else 0)
-				end
-			end
-		end))
 	end
-
 
 	-- 폰: 기본 터치 조이스틱이 막히는 경우가 있어, 탐험 중에는 직접 만든 이동 패드를 쓴다(왼쪽 아래 원판을 끌면 카메라 기준으로 걷는다).
 	-- [Luau 200레지스터 제한] 모바일 패드 초기화는 원래 기능을 그대로 별도 실행 프레임에서 처리한다.
