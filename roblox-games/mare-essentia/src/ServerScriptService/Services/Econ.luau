@@ -62,7 +62,7 @@ return function(D, S)
 	end
 
 	-- 항구 주인 나라의 지도자·군사·발견·문화권 요약 (표시 전용). 실패해도 경제 화면은 그대로 나온다.
-	function X.nationSummary(state, w, portId)
+	function X.nationSummary(state: any, w: any, portId: any): any
 		local ok, result = pcall(function()
 			if not w.nations then return nil end
 			local N = E.Nations
@@ -74,7 +74,7 @@ return function(D, S)
 	end
 
 	-- 플레이어의 외교 개입(군수 납품·중재·용병 해군). 반환: ok, 설명. 재화 차감은 호출한 쪽이 처리한다.
-	function X.aid(state, kind, targetNation, amount)
+	function X.aid(state: any, kind: any, targetNation: any, amount: any): (boolean, string)
 		local ok, success, text = pcall(function()
 			local w = ensure(state)
 			if not w or not w.nations then return false, "세계 정보가 아직 없어요" end
@@ -88,7 +88,7 @@ return function(D, S)
 	end
 
 	-- 거래 관세 정책 (배율·금수). 세계나 국가 정보가 없거나 오류면 nil → 기존 관세 그대로.
-	function X.tariffPolicy(state, portId)
+	function X.tariffPolicy(state: any, portId: any): any
 		local ok, result = pcall(function()
 			local w = ensure(state)
 			if not w or not w.nations then return nil end
