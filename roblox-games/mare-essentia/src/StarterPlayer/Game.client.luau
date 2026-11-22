@@ -14398,6 +14398,8 @@ do
 				if not popupGui or popupFor ~= ev.id then return end
 				local response = call("HistoryChoose", { choice = ch.index })
 				if response and response.ok then
+					-- [수납 화면] 기존 선택창을 숨겨 책으로 되접히는 최종 연출이 가려지지 않게 한다.
+					win.Visible = false
 					recordHistory()
 					task.delay(0.62, function()
 						if popupFor == ev.id then closePopup() end
