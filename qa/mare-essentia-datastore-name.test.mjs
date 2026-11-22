@@ -1772,8 +1772,8 @@ test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 
   "선택된 최종 실물 헤어 ID로 슬롯을 정해야 한다");
  assert.ok(pose.includes('previous.Name ~= slotName then previous:Destroy()'),
   "교체 실물 헤어 장착 후 구형 메시를 정리해야 한다");
- assert.ok(pose.includes('local mounted = model:FindFirstChild("R15Asset_" .. garment .. "_UpperTorso")'),
-  "신규 상의의 실제 장착 확인 전 구형 상의 제거 금지");
+ assert.ok(pose.includes('if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then'),
+  "현재 시즌 겉옷 준비 전 기존 복식 제거 금지");
  assert.match(pose,/-- \[주민 기본복 유지\] 원본 peasant\/ranger 몸체 GLB는 팔 소매와 등·옆면까지 포함한다\./);
  assert.match(pose,/if accessory and AssetIds\["People\/" \.\. accessory\[1\]\] then/);
  assert.match(pose,/specs = table\.clone\(specs\)/);
@@ -3475,7 +3475,7 @@ test('주민 복장 천·피혁·금속 재질과 계절 상의 교체는 원본
   assert.ok(pose.includes('if not trim:find("button", 1, true) and not trim:find("buckle", 1, true)'), '무텍스처 직물에서도 단추는 보호');
   assert.ok(pose.includes('for _, spec in specs do'), '현재 직업/계절 의상 기준으로 검사');
   assert.ok(pose.includes('if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then'), '현재 계절 상의끼리만 정리');
-  assert.ok(pose.includes('part.Transparency < 0.95'), '투명하게 숨겨진 복장은 유효 상의로 세지 않음');
+  assert.ok(!pose.includes('local fittedUpperReady = false'), '단면 겉옷 장착 시 전신복 삭제 금지');
   assert.ok(pose.includes('if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then'), '기존 계절 의상 지연 로드 보호');
   assert.ok(pose.includes('weld.Part0, weld.Part1, weld.Parent = target, part, part'), 'R15 관절 유지');
 });
