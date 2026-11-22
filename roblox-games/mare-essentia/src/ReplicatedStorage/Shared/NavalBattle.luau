@@ -2049,8 +2049,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		chartMark.Parent = bg
 		local battleLine = Instance.new("Frame")
 		battleLine.AnchorPoint = Vector2.new(0, 0.5)
-		battleLine.Position = if compactCards then UDim2.fromScale(0.01, 0.459) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.39 else 0.42)
-		battleLine.Size = UDim2.fromScale(if compactCards then 0.98 elseif opts.cardOnly then 0.76 else 0.78, 0.004)
+		battleLine.Position = if compactCards then UDim2.fromScale(0.15, 0.42) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.39 else 0.42)
+		battleLine.Size = UDim2.fromScale(if compactCards then 0.838 elseif opts.cardOnly then 0.76 else 0.78, 0.004)
 		battleLine.BackgroundColor3 = Color3.fromRGB(214, 170, 96)
 		battleLine.BorderSizePixel = 0
 		battleLine.ZIndex = 3
@@ -2129,22 +2129,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local roundResultTick = 0
 
 		local boardFrame = Instance.new("Frame")
-		boardFrame.Position = if compactCards then UDim2.fromScale(0.012, 0.214) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.13 else 0.14)
-		boardFrame.Size = if compactCards then UDim2.fromScale(0.976, 0.49) else UDim2.fromScale(if opts.cardOnly then 0.76 else 0.78, if opts.cardOnly then 0.52 else 0.56)
+		boardFrame.Position = if compactCards then UDim2.fromScale(0.15, 0.135) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.13 else 0.14)
+		boardFrame.Size = if compactCards then UDim2.fromScale(0.838, 0.57) else UDim2.fromScale(if opts.cardOnly then 0.76 else 0.78, if opts.cardOnly then 0.52 else 0.56)
 		boardFrame.BackgroundTransparency = 1
 		boardFrame.Parent = g
 		-- 왼쪽 정보판: 양쪽 합계 원, 목숨 보석, 멈춤 표시, 날씨
 		local panel = Instance.new("Frame")
-		panel.Position = if compactCards then UDim2.fromScale(0.012, 0.133) else UDim2.fromScale(if opts.cardOnly then 0.79 else 0.02, 0.14)
-		panel.Size = if compactCards then UDim2.fromScale(0.976, 0.075) else UDim2.fromScale(0.17, 0.56)
+		panel.Position = if compactCards then UDim2.fromScale(0.012, 0.135) else UDim2.fromScale(if opts.cardOnly then 0.79 else 0.02, 0.14)
+		panel.Size = if compactCards then UDim2.fromScale(0.13, 0.57) else UDim2.fromScale(0.17, 0.56)
 		panel.BackgroundColor3 = if opts.cardOnly then CardTheme.leather else Color3.fromRGB(30, 23, 19)
 		panel.BorderSizePixel = 0
 		panel.Parent = g
 		frameEdge(panel, brass, 6)
 		local function sidePlate(y, color)
 			local plate = Instance.new("Frame")
-			plate.Position = if compactCards then UDim2.fromScale(if y < 0.5 then 0.515 else 0.015, 0.04) else UDim2.fromScale(0.05, y)
-			plate.Size = if compactCards then UDim2.fromScale(0.47, 0.92) else UDim2.fromScale(0.9, 0.4)
+			plate.Position = if compactCards then UDim2.fromScale(0.04, if y < 0.5 then 0.012 else 0.508) else UDim2.fromScale(0.05, y)
+			plate.Size = if compactCards then UDim2.fromScale(0.92, 0.48) else UDim2.fromScale(0.9, 0.4)
 			plate.BackgroundColor3 = color
 			plate.BorderSizePixel = 0
 			plate.Parent = panel
@@ -2230,7 +2230,45 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			deckCount.Size = UDim2.fromScale(0.72, 0.82)
 			deckCount.TextScaled = true
 			deckCount.ZIndex = 5
-			return { who = who, total = total, gems = gems, plate = plate, leader = leader, deck = deckCount }
+			-- [궨트식 정보 칸] 좁은 화면은 왼쪽 세로 칸: 이름 → 지도자·총점 → 목숨 → 덱·손패 순서로 쌓는다.
+			local score, passMark
+			if compactCards then
+				who.Size = UDim2.fromScale(0.92, 0.15)
+				score = label(plate, "0", 26, Color3.fromRGB(46, 33, 22), true)
+				score.Name = "SideScore"
+				score.AnchorPoint = Vector2.new(0.5, 0.5)
+				score.Position = UDim2.fromScale(0.74, 0.36)
+				score.Size = UDim2.fromScale(0.46, 0.34)
+				score.BackgroundColor3 = Color3.fromRGB(232, 194, 120)
+				score.BackgroundTransparency = 0
+				score.TextScaled = true
+				score.TextStrokeTransparency = 1
+				local scoreRatio = Instance.new("UIAspectRatioConstraint")
+				scoreRatio.Parent = score
+				frameEdge(score, Color3.fromRGB(255, 226, 150), 99)
+				gems.Position = UDim2.fromScale(0.04, 0.56)
+				gems.Size = UDim2.fromScale(0.92, 0.14)
+				pile.AnchorPoint = Vector2.new(0, 0)
+				pile.Position = UDim2.fromScale(0.05, 0.72)
+				pile.Size = UDim2.fromScale(0.34, 0.26)
+				total.AnchorPoint = Vector2.new(0, 0)
+				total.Position = UDim2.fromScale(0.44, 0.76)
+				total.Size = UDim2.fromScale(0.52, 0.2)
+				total.BackgroundTransparency = 0.35
+				passMark = label(plate, t("패스", "Passed"), 18, Color3.fromRGB(255, 236, 196), true)
+				passMark.Name = "SidePassed"
+				passMark.AnchorPoint = Vector2.new(0.5, 0.5)
+				passMark.Position = UDim2.fromScale(0.5, 0.42)
+				passMark.Size = UDim2.fromScale(0.96, 0.22)
+				passMark.Rotation = -8
+				passMark.BackgroundColor3 = Color3.fromRGB(120, 36, 30)
+				passMark.BackgroundTransparency = 0.08
+				passMark.TextScaled = true
+				passMark.ZIndex = 12
+				passMark.Visible = false
+				frameEdge(passMark, Color3.fromRGB(255, 210, 150), 4)
+			end
+			return { who = who, total = total, gems = gems, plate = plate, leader = leader, deck = deckCount, score = score, passed = passMark }
 		end
 		local foePlate = sidePlate(0.02, if opts.cardOnly then CardTheme.rival else Color3.fromRGB(88, 58, 50))
 		local mePlate = sidePlate(0.58, if opts.cardOnly then CardTheme.allied else Color3.fromRGB(58, 74, 62))
@@ -2760,8 +2798,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local side, control, icon, scorePlate = table.unpack(entry)
 				control.Name = if side == "me" then "PlayerLeader" else "OpponentLeader"
 				control.AnchorPoint = Vector2.new(0, 0.5)
-				control.Position = UDim2.fromScale(0.035, 0.52)
-				control.Size = UDim2.fromScale(if compactCards then 0.30 else 0.34, if compactCards then 0.88 else 0.65)
+				control.Position = UDim2.fromScale(0.035, if compactCards then 0.36 else 0.52)
+				control.Size = UDim2.fromScale(if compactCards then 0.46 else 0.34, if compactCards then 0.36 else 0.65)
 				control.Parent = scorePlate
 				control.Caption.Visible = false
 				icon.Position = UDim2.fromScale(0.05, 0.5)
@@ -2890,6 +2928,21 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local sizeLimit = Instance.new("UITextSizeConstraint")
 				sizeLimit.MaxTextSize = boardPowerTextSize
 				sizeLimit.Parent = stamp
+			end
+			if compactCards then
+				-- [궨트식 전장 카드] 작은 카드는 원화를 크게, 점수는 왼쪽 위 원 하나로. 이름·출신은 눌러서 확대창에서 본다.
+				plate.Size = UDim2.fromScale(1, 1)
+				tag.Visible = false
+				identity.Visible = false
+				stamp.AnchorPoint = Vector2.zero
+				stamp.Position = UDim2.fromScale(0.02, 0.02)
+				stamp.Size = UDim2.fromScale(0.5, 0.34)
+				stamp.BackgroundColor3 = if c.hero then Color3.fromRGB(246, 209, 120) else paper
+				stamp.ZIndex = 9
+				local stampCurve = stamp:FindFirstChildOfClass("UICorner")
+				if stampCurve then stampCurve.CornerRadius = UDim.new(1, 0) end
+				local stampRatio = Instance.new("UIAspectRatioConstraint")
+				stampRatio.Parent = stamp
 			end
 			return f
 		end
@@ -3184,26 +3237,55 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			menu.Name = "BattleActions"
 			menu.AnchorPoint = Vector2.new(1, 0)
 			menu.Position = UDim2.fromScale(0.98, 0.08)
-			menu.Size = UDim2.fromOffset(if compactCards then 166 else 180, 144)
+			menu.Size = UDim2.fromOffset(if compactCards then 166 else 180, 216)
 			menu.BackgroundColor3 = CardTheme.leather
 			menu.ZIndex = 40
 			menu.Visible = false
 			menu.Parent = g
 			frameEdge(menu, brass, 6)
-			local logBtn = mkSide(t("전황 기록", "Battle Log"), 0.83, CardTheme.leather, "Menu/codex", function()
+			-- [메뉴 기능별 정리] 정보(전황·규칙) → 진행(자동) → 나가기 순서로 묶고, 묶음 사이에 구분선을 둔다.
+			local lines = {}
+			local logMode = "log"
+			local RULES_TEXT = t(
+				"· 3판 2선승. 판마다 점수가 높은 쪽이 이긴다.\n· 줄: 위 2줄은 상대, 아래 2줄은 나 (전열·후열).\n· 카드를 눌러 고르고, 한 번 더 누르거나 줄로 끌어 놓는다.\n· 패스하면 이번 판에 카드를 더 낼 수 없다. 둘 다 패스하면 판 종료.\n· 판마다 손패 교체: 첫 판 3장, 다음 판부터 1장씩 추가(최대 3).\n· 판이 끝나면 카드 3장을 더 뽑는다. 아끼는 것도 전략.",
+				"· Best of 3 rounds. Higher score wins each round.\n· Top 2 rows: opponent. Bottom 2 rows: you.\n· Tap a card, tap again or drag it to a row.\n· Passing ends your round. When both pass, the round ends.\n· Swaps: 3 in round 1, +1 each later round (max 3).\n· Draw 3 cards after each round. Saving cards is a strategy.")
+			local function showLog(modeName)
 				menu.Visible = false
-				logBox.Visible = not logBox.Visible
-			end)
-			for i, control in { logBtn, autoBtn, skip } do
+				if logBox.Visible and logMode == modeName then logBox.Visible = false; return end
+				logMode = modeName
+				logBox.Text = if modeName == "rules" then RULES_TEXT
+					elseif #lines > 0 then table.concat(lines, "\n\n") else t("아직 전황 기록이 없어요", "No battle events yet")
+				logBox.TextYAlignment = if modeName == "rules" then Enum.TextYAlignment.Top else Enum.TextYAlignment.Bottom
+				logBox.Visible = true
+			end
+			local logBtn = mkSide(t("전황 기록", "Battle Log"), 0.83, CardTheme.leather, "Menu/codex", function() showLog("log") end)
+			local rulesBtn = mkSide(t("규칙 보기", "Rules"), 0.83, CardTheme.leather, "Menu/cc0_book", function() showLog("rules") end)
+			rulesBtn.Name = "BattleRules"
+			local y = 5
+			for i, control in { logBtn, rulesBtn, autoBtn, skip } do
+				if i == 3 or i == 4 then
+					local divider = Instance.new("Frame")
+					divider.Name = "MenuDivider"
+					divider.Position = UDim2.fromOffset(10, y + 1)
+					divider.Size = UDim2.new(1, -20, 0, 1)
+					divider.BackgroundColor3 = brass
+					divider.BackgroundTransparency = 0.3
+					divider.BorderSizePixel = 0
+					divider.ZIndex = 41
+					divider.Parent = menu
+					y += 6
+				end
 				control.Parent = menu
 				control.AnchorPoint = Vector2.zero
-				control.Position = UDim2.fromOffset(5, 5 + (i - 1) * 46)
+				control.Position = UDim2.fromOffset(5, y)
 				control.Size = UDim2.new(1, -10, 0, 42)
 				control.ZIndex = 41
 				for _, child in control:GetDescendants() do
 					if child:IsA("GuiObject") then child.ZIndex = 42 end
 				end
+				y += 46
 			end
+			skip.BackgroundColor3 = Color3.fromRGB(110, 44, 36)
 			local menuBtn = mkSide(t("메뉴", "Menu"), 0.895, CardTheme.leather, "Menu/codex", function()
 				if logBox.Visible then logBox.Visible = false; return end
 				menu.Visible = not menu.Visible
@@ -3219,13 +3301,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			logPad.PaddingLeft, logPad.PaddingRight, logPad.PaddingBottom = UDim.new(0, 8), UDim.new(0, 6), UDim.new(0, 6)
 			logPad.Parent = logBox
 			frameEdge(logBox, brass, 6)
-			local lines = {}
 			info:GetPropertyChangedSignal("Text"):Connect(function()
 				local txt = info.Text
 				if txt == "" or txt == lines[#lines] or string.find(txt, "카드를 눌러", 1, true) or string.find(txt, "Your turn", 1, true) then return end
 				table.insert(lines, txt)
 				while #lines > 5 do table.remove(lines, 1) end
-				logBox.Text = table.concat(lines, "\n\n")
+				if logMode == "log" then logBox.Text = table.concat(lines, "\n\n") end
 			end)
 		end
 		-- [확대 카드] 어두운 배경을 터치하면 선택을 취소하고 기존 카드 대전으로 돌아간다.
@@ -3659,6 +3740,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				battleTurn.Text = if m.over then t("종료", "Over") elseif m.turn == "me" then t("내 차례", "Your turn") else t("상대 차례", "Enemy turn")
 				battleTurn.TextColor3 = if m.over then ink elseif m.turn == "me" then Color3.fromRGB(36, 84, 59) else Color3.fromRGB(121, 54, 42)
 			end
+			for _, pair in { { mePlate, "me", myScore, foeScore }, { foePlate, "foe", foeScore, myScore } } do
+				local plate, side, own, rival = pair[1], pair[2], pair[3], pair[4]
+				if plate.score then
+					plate.score.Text = tostring(own)
+					-- 앞선 쪽 총점은 금색, 뒤진 쪽은 흐린 양피지색 (궨트 총점 표시)
+					plate.score.BackgroundColor3 = if own > rival then Color3.fromRGB(255, 206, 96) else Color3.fromRGB(196, 176, 140)
+				end
+				if plate.passed then plate.passed.Visible = m.passed[side] == true and not m.over end
+			end
 			foePlate.gems.Text = string.rep("◆", 2 - m.wins.me) .. string.rep("◇", m.wins.me)
 			mePlate.gems.Text = string.rep("◆", 2 - m.wins.foe) .. string.rep("◇", m.wins.foe)
 			mePlate.gems.TextColor3 = Color3.fromRGB(120, 220, 140)
@@ -3737,19 +3827,21 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if not compactCards then emblem(rf, rowIcons[row], UDim2.new(0, 4, 0.5, 0), UDim2.new(0, 21, 0.8, 0)) end
 				local mult, adv, dis = BC.rowMatchup(m, side, row)
 				local tag = label(rf, string.format("%s\n%d%s", rowName(row), BC.rowTotal(m, side, row), if adv and dis then " ▲▼" elseif adv then t(" ▲상성", " ▲Adv") elseif dis then t(" ▼불리", " ▼Dis") else "") .. (if BC.activeTactic(m.rows[side][row]) then "\n" .. BC.activeTactic(m.rows[side][row]) else ""), 13, Color3.fromRGB(246, 208, 130))
-				tag.Position = UDim2.fromOffset(if compactCards then 6 else 29, 0)
-				tag.Size = UDim2.new(0, if compactCards then 42 else 68, 1, 0)
+				tag.Position = if compactCards then UDim2.new(1, -40, 0, 0) else UDim2.fromOffset(29, 0)
+				tag.Size = UDim2.new(0, if compactCards then 36 else 68, 1, 0)
 				if compactCards then
+					-- 줄 이름은 오른쪽 끝에 흐리게 (궨트처럼 점수는 왼쪽, 카드는 가운데)
 					tag.Text = rowName(row)
 					tag.TextSize = 11
 					tag.TextWrapped = true
+					tag.TextTransparency = 0.35
 				end
 				if opts.cardOnly and m.weather[row] then tag.Text = "🌦️ " .. tag.Text end
 				tag.TextXAlignment = Enum.TextXAlignment.Left
 				tag.TextColor3 = if adv and not dis then Color3.fromRGB(150, 235, 150) elseif dis and not adv then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(246, 208, 130)
 				local cards = if opts.cardOnly then Instance.new("ScrollingFrame") else Instance.new("Frame")
-				cards.Position = UDim2.fromOffset(if compactCards then 48 else 104, 3)
-				cards.Size = UDim2.new(1, if compactCards then -90 elseif opts.cardOnly then -160 else -108, 1, -6)
+				cards.Position = UDim2.fromOffset(if compactCards then 44 else 104, if compactCards then 2 else 3)
+				cards.Size = UDim2.new(1, if compactCards then -88 elseif opts.cardOnly then -160 else -108, 1, if compactCards then -4 else -6)
 				if cards:IsA("ScrollingFrame") then
 					cards.BorderSizePixel = 0
 					cards.ScrollingDirection = Enum.ScrollingDirection.X
@@ -3764,9 +3856,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					-- 줄 점수 원형 배지 (퀜트식)
 					local badge = Instance.new("TextLabel")
 					badge.Name = "RowScoreBadge"
-					badge.AnchorPoint = Vector2.new(1, 0.5)
-					badge.Position = UDim2.new(1, -6, 0.5, 0)
-					badge.Size = if compactCards then UDim2.new(0, 32, 0.72, 0) else UDim2.fromOffset(44, 44)
+					badge.AnchorPoint = if compactCards then Vector2.new(0, 0.5) else Vector2.new(1, 0.5)
+					badge.Position = if compactCards then UDim2.new(0, 6, 0.5, 0) else UDim2.new(1, -6, 0.5, 0)
+					badge.Size = if compactCards then UDim2.fromOffset(34, 34) else UDim2.fromOffset(44, 44)
 					badge.BackgroundColor3 = if adv and not dis then Color3.fromRGB(60, 120, 70) elseif dis and not adv then Color3.fromRGB(130, 60, 50) else Color3.fromRGB(32, 24, 18)
 					badge.BorderSizePixel = 0
 					badge.Font = Enum.Font.GothamBlack
@@ -3788,6 +3880,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local lay = Instance.new("UIListLayout")
 				lay.FillDirection = Enum.FillDirection.Horizontal
 				lay.Padding = UDim.new(0, 4)
+				if opts.cardOnly then
+					-- 궨트식: 줄의 카드는 가운데부터 양옆으로 놓인다
+					lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
+					lay.VerticalAlignment = Enum.VerticalAlignment.Center
+				end
 				lay.Parent = cards
 				for idx, c in m.rows[side][row] do
 					local power = BC.cardPower(m, side, row, idx)
@@ -4146,7 +4243,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				passBtn.Interactable = m.turn == "me" and not m.over and not m.passed.me and not auto
 			end
 			do
-				local left = if m.round == 1 and (m.played.me or 0) == 0 then (m.mulligan and m.mulligan.me or 0) else 0
+				local left = if (m.played.me or 0) == 0 then (m.mulligan and m.mulligan.me or 0) else 0
 				mullBtn.Caption.Text = if left > 0 then t(string.format("손패 교체 (%d)", left), string.format("Swap Card (%d)", left)) else t("손패 교체 (끝)", "Swap Card (done)")
 				mullBtn.BackgroundTransparency = if left > 0 then 0 else 0.6
 				if opts.cardOnly then mullBtn.Visible = left > 0 and m.turn == "me" and not m.over and not auto end
