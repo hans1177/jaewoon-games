@@ -1317,9 +1317,11 @@ function FieldScene.start(opts)
 	-- 강가 돌무더기, 원경의 절벽선을 서로 다른 거리에 배치한다. 중앙 전투 길을 가리지 않는다.
 	do
 		local nearBands = if tropical then {
-			-- [모바일 해안·열대] 기존 검사 호환성을 유지하며 해안만 실물 해변을 두 번째 슬롯에 배치한다.
-			{ "tree-palmbend", 24, -0.66, 0.18, 12 },
+			-- [바이옴 전경] 같은 모바일 2개 슬롯을 해안/밀림에서 각각 실물 모래 해변/대나무 군집으로 사용한다.
+			if questTerrain == "jungle" then { "east-bamboo-grove", 19, -0.73, 0.10, 11 }
+				else { "tree-palmbend", 24, -0.66, 0.18, 12 },
 			if questTerrain == "coast" then { "platform-beach", 19, -0.84, -0.81, -18 }
+				elseif questTerrain == "jungle" then { "forest-bush-detailed", 11, 0.72, -0.17, 8 }
 				else { "grass-leafslarge", 6, -0.54, 0.16, 7 },
 			{ "plant-flattall", 7, 0.52, 0.07, 0 },
 			{ "cliff-cornerlarge-stone", 31, 0.85, -0.47, 35 },
@@ -1353,21 +1355,30 @@ function FieldScene.start(opts)
 			{ "ground-riverbendbank", 15, -0.84, 0.11, 19 }, { "forest-bush-detailed", 12, 0.72, -0.17, 11 },
 			{ "river-stone-bank", 13, -0.74, -0.40, -16 }, { "plant-bushdetailed", 8, 0.69, -0.35, 15 },
 		} elseif questTerrain == "forest" then {
+			-- [숲 전경] 모바일 두 슬롯에서 나무 수관과 낮은 관목이 겹치게 실루엣을 분리한다.
 			{ "plant-bushlargetriangle", 9, -0.55, 0.22, 0 },
-			{ "plant-bushdetailed", 8, -0.69, 0.11, 9 }, { "tree-tall", 20, 0.71, 0.06, -10 },
+			{ "tree-tall", 20, 0.71, 0.06, -10 }, { "plant-bushdetailed", 8, -0.69, 0.11, 9 },
 			{ "ground-riverside", 19, -0.83, -0.37, 34 }, { "ground-riverbendbank", 12, 0.65, -0.56, -24 },
-		} elseif questTerrain == "highland" or questTerrain == "mine" or questTerrain == "glacier" or questTerrain == "volcanic" then {
+		} elseif questTerrain == "glacier" then {
+			-- [빙하 전경] 같은 모델 수에서 회색 암석 대신 실제 밝은 석벽·침엽수층을 노출한다.
+			{ "cliff-large-stone", 39, -0.86, 0.14, 13 }, { "north-pine-fall", 20, 0.79, -0.17, -9 },
+			{ "cliff-cornerlarge-stone", 34, -0.89, -0.52, 16 }, { "rock-largec", 17, 0.77, -0.38, -12 },
+		} elseif questTerrain == "highland" then {
+			-- [협곡 전경] 폭포·계곡 지명에선 원본 폭포 암벽을 두 번째 모바일 전경으로 노출한다.
 			{ "cliff-cornerinnertop-rock", 34, -0.85, 0.18, 12 },
-			{ "cliff-blockdiagonal-rock", 29, 0.90, -0.80, -12 }, { "rock-talld", 17, 0.77, 0.09, 0 },
-			{ "cliff-cornerlarge-rock", 39, 0.89, -0.49, -20 }, { "cliff-waterfall-stone", 31, -0.84, -0.70, 0 },
+			if string.find(questName, "폭포", 1, true) or string.find(questName, "계곡", 1, true)
+				then { "cliff-waterfall-stone", 31, 0.89, -0.53, -12 }
+				else { "cliff-blockdiagonal-rock", 29, 0.90, -0.80, -12 },
+			{ "rock-talld", 17, 0.77, 0.09, 0 }, { "cliff-cornerlarge-rock", 39, 0.89, -0.49, -20 },
+			{ "cliff-waterfall-stone", 31, -0.84, -0.70, 0 },
 		} elseif questTerrain == "coast" then {
 			-- [해안 전경] 모바일 두 슬롯 안에 승인된 실제 해변 모델을 넣고 진입로를 비운다.
 			{ "cliff-diagonal-rock", 36, -0.87, 0.08, 12 }, { "platform-beach", 19, -0.84, -0.81, -18 },
 			{ "rock-talld", 14, 0.78, -0.15, -18 }, { "ground-riverside", 12, -0.64, -0.46, 30 },
 			{ "ground-riverbendbank", 13, 0.74, -0.61, 0 },
 		} elseif questTerrain == "lake" then {
-			-- [호숫가 전경] 바닷가 모래 플랫폼 대신 강기슭·초록 둑 메시만 배치한다.
-			{ "cliff-diagonal-rock", 36, -0.87, 0.08, 12 }, { "ground-riverbendbank", 13, 0.74, -0.61, 0 },
+			-- [호숫가 전경] 모래 해변과 구별하고 바위가 있는 실제 강둑을 두 번째 슬롯에서 노출한다.
+			{ "cliff-diagonal-rock", 36, -0.87, 0.08, 12 }, { "river-stone-bank", 13, 0.74, -0.61, 0 },
 			{ "rock-talld", 14, 0.78, -0.15, -18 }, { "ground-riverside", 12, -0.64, -0.46, 30 },
 		} else {
 			{ "plant-bushlarge", 7, -0.57, 0.22, 0 }, { "rock-talli", 12, 0.78, -0.23, 0 },
