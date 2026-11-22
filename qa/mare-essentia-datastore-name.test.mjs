@@ -1680,6 +1680,10 @@ test('항구 35개 직업은 등록된 실물 장비를 직접 R15에 착용하�
   assert.ok(loader.includes('["'+asset+'"] = true'),'기존 인입 큐에서 누락: '+asset);
  }
  assert.match(pose,/NPC_PROFESSION_GEAR\[profession\]/);
+ // [외부 무료 R15 25종] 등록된 후보만 선택하며 모바일 거리 제한·원본 재질을 유지한다.
+ assert.match(pose,/NPC_CC0_WARDROBE\[profession\]/);
+ assert.match(pose,/AssetIds\["People\/" \.\. selected\[1\]\]/);
+ assert.match(pose,/NpcExternalAccessorySelected/);
  assert.match(pose,/outfit\.profession == "clergy" then/);
  assert.match(pose,/look = "companion_clergy"/);
  assert.match(pose,/AssetIds\[jobGear\[1\]\]/);
@@ -1687,10 +1691,10 @@ test('항구 35개 직업은 등록된 실물 장비를 직접 R15에 착용하�
  assert.match(pose,/model:FindFirstChild\(slotName\)/);
  assert.match(pose,/if jobProp and UserInputService\.TouchEnabled and detailLimit == 3 then/);
  assert.match(pose,/LocalTransparencyModifier = 1/);
- assert.match(pose,/if string\.sub\(assetName, 1, 7\) == "outfit_" or jobProp then/);
+ assert.match(pose,/if string\.sub\(assetName, 1, 7\) == "outfit_" or string\.sub\(assetName, 1, 4\) == "cc0_" or jobProp then/);
  assert.match(pose,/LocalTransparencyModifier = 0/);
  assert.match(pose,/math\.rad\(spec\[9\] or 0\)/);
- assert.match(pose,/elseif not textured and not jobProp then/);
+ assert.match(pose,/elseif not textured and not jobProp and string\.sub\(assetName, 1, 4\) ~= "cc0_" then/);
  assert.match(pose,/if npcOutfit and surface and surfaceHasColorMap\(surface\) then/);
  assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
  assert.match(port,/GetAttributeChangedSignal\("MareAssetsReady"\)/);
