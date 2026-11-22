@@ -3638,18 +3638,8 @@ local function call(action, payload)
 			task.delay(0.4, Sfx.play, "sfx_treasure_chest", 0.8)
 		end
 	end
-	if result.scene and action ~= "Sail" then
-		-- 발견 연출 역시 이야기·항해가 모두 끝난 뒤에 띄운다.
-		local sceneId = result.scene
-		task.spawn(function()
-			local pg = player:WaitForChild("PlayerGui")
-			while player.Parent and (sceneHold or inField or H.questScenesPlaying or H.sceneBusy
-				or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true)) do
-				task.wait(0.2)
-			end
-			if player.Parent then H.playWonderScene(sceneId) end
-		end)
-	end
+	-- [카드 습득 연출] 카드를 얻을 때 큰 원화 이벤트 씬(원더 씬)은 자동으로 띄우지 않는다.
+	-- 카드 습득 연출(H.showCardGain)만 쓰고, 카드 상세의 '원더 연출 다시 보기'는 직접 누를 때만 재생한다.
 	if result.ranking then
 		ranking = result.ranking
 	end
@@ -4115,13 +4105,6 @@ local function sail(portId)
 	if result and result.ok then
 		-- 서버가 새 항구·시대 사건을 큐에 넣어도 먼저 모두 끝내고 출항한다.
 		finishRegionEvents()
-		if result.scene then
-			H.playWonderScene(result.scene)
-			local playerGui = player:WaitForChild("PlayerGui")
-			while player.Parent and (H.sceneBusy or playerGui:FindFirstChild("WonderScene", true)) do
-				task.wait(0.15)
-			end
-		end
 		departureEventPhase = false
 		audioLock = true
 		-- 지역 이벤트를 닫은 뒤에만 출항 음악·닻줄 연출을 시작한다.
