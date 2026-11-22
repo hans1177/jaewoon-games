@@ -11518,6 +11518,10 @@ syncScene = function()
 	end
 	H.portBuilding = true
 	H.portBuildPending = false
+	-- [상태 갱신과 장면 생성 분리] 분할 생성(약 6.5초)을 호출한 쪽이 끝까지 기다리면 State 갱신·탭 전환 같은
+	-- 같은 스레드의 다음 동작이 그동안 막혔다(정밀검사 233단계 4초 대기 초과 반복: 44980792550, 44980939526).
+	-- 생성은 별도 스레드에서 진행하고, 재진입은 기존 portBuilding/portBuildPending 장치가 막는다.
+	task.spawn(function()
 	-- [항구 전환 체감 시간] 생성 시간만이 아니라 첫 화면 표시·실제 조작 가능 시점을 따로 잰다.
 	local transitionStart = os.clock()
 	local timing = H.measurePortTransition(transitionStart, p.portId)
@@ -11571,6 +11575,7 @@ syncScene = function()
 	if H.setTitleMode then H.setTitleMode(not view or newGameMode) end
 	-- [멈춤 원인 실측] 생성 직후 화면 적용(카메라·UI) 구간도 따로 잰다.
 	workspace:SetAttribute("PortPostBuildMs", math.floor((os.clock() - postStart) * 1000))
+	end)
 end
 
 -- [항구 전환 체감 시간] 생성(빌드)·첫 화면·조작 가능 시점을 각각 기록한다.
