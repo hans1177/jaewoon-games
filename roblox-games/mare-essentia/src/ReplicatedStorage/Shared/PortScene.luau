@@ -3145,21 +3145,24 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local openLandAssets = {
 		arid = { { "Terrain", "arid-cactus-short", 5 }, { "Terrain", "arid-cactus-tall", 7 },
 			{ "Terrain", "mystic-sand-dune", 8 }, { "Naval", "rocks-sand-a", 7 }, { "Terrain", "Rock_2", 5 } },
-		wetland = { { "Terrain", "river-stone-bank", 7 }, { "Terrain", "coast-grass-patch", 6 },
+		-- [다운로드 원본] 같은 실물 슬롯에서만 강변 물길과 둔덕을 바꾼다. 미등록이면 기존 소품을 사용.
+		wetland = { { "Terrain", "river-stone-bank", 7 }, { "Terrain", AssetIds["Terrain/ground-rivercorner"] and "ground-rivercorner" or "coast-grass-patch", 6 },
 			{ "Terrain", "forest-bush-detailed", 5 }, { "Terrain", "Grass_Small", 4 } },
 		coastal = { { "Terrain", "tropical-palm-short", 8 }, { "Terrain", "coast-grass-patch", 6 },
-			{ "Terrain", "forest-flower-yellow", 4 }, { "Naval", "rocks-sand-a", 6 } },
-		hillside = { { "Terrain", "Rock_2", 7 }, { "Terrain", "north-pine-fall", 9 },
-			{ "Terrain", "tree-pinedefaulta", 10 }, { "Terrain", "forest-bush-detailed", 5 },
-			-- [구릉 지면 높이] 기존 지형 원본의 바위 계단/구릉 기단만 미개발 필지에 사용.
-			{ "Terrain", "cliff-steps-rock", 11 }, { "Terrain", "ground-pathrocks", 7 } },
+			{ "Terrain", AssetIds["Terrain/plant-bushtriangle"] and "plant-bushtriangle" or "forest-flower-yellow", 4 }, { "Naval", "rocks-sand-a", 6 } },
+		hillside = { { "Terrain", AssetIds["Terrain/cliff-blockhalf-rock"] and "cliff-blockhalf-rock" or "Rock_2", 7 },
+			{ "Terrain", "north-pine-fall", 9 }, { "Terrain", "tree-pinedefaulta", 10 },
+			{ "Terrain", "forest-bush-detailed", 5 },
+			-- [구릉 측벽과 오르막] 승인된 실제 계단 모서리·바위면·흙길로 기존 슬롯만 교체한다.
+			{ "Terrain", AssetIds["Terrain/cliff-stepscorner-rock"] and "cliff-stepscorner-rock" or "cliff-steps-rock", 11 },
+			{ "Terrain", AssetIds["Terrain/ground-pathcorner"] and "ground-pathcorner" or "ground-pathrocks", 7 } },
 		bamboo = { { "Terrain", "east-bamboo-grove", 9 }, { "Terrain", "coast-grass-patch", 5 },
 			{ "Terrain", "forest-flower-yellow", 4 }, { "Terrain", "forest-bush-detailed", 5 } },
 		orchard = { { "Terrain", "tree-oak", 9 }, { "Terrain", "forest-flower-yellow", 4 },
 			{ "Terrain", "forest-flower-purple", 4 }, { "Terrain", "forest-bush-detailed", 5 } },
 		fallow = { { "Terrain", "crops-wheatstagea", 5 }, { "Terrain", "Grass_Small", 4 },
 			{ "Terrain", "coast-grass-patch", 5 }, { "Terrain", "crops-wheatstageb", 5 },
-			{ "Terrain", "ground-pathstraight", 7 } },
+			{ "Terrain", AssetIds["Terrain/ground-pathcross"] and "ground-pathcross" or "ground-pathstraight", 7 } },
 		-- [미개발 주거 녹지] 원래의 4개 생태 표본을 나무·관목·풀로 다양화한다. 건축 필지는 그대로.
 		woodland = { { "Terrain", "tree-oak", 10 }, { "Terrain", "forest-bush-detailed", 5 },
 			{ "Terrain", "Bush_Small", 3.6 }, { "Terrain", "Grass_Small", 2.5 } },
@@ -5231,10 +5234,14 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	folder:SetAttribute("PortBackdropRidgeCount", ridgePlaced)
 	-- [자연 생물군계] 등록·권한 확인된 수목만 기존 외곽 나무 개수에 섞는다.
 	-- 북방 침엽수/동아시아 혼합림/열대 야자/서유럽 활엽림으로 수관 높낮이를 구분한다.
-	local detailedTrees = if northernLand then { "tree-pinetallc-detailed", "tree-pinetallb-detailed", "tree-tall" }
+	-- [거리별 계절 수관] 기존 3개 수목 슬롯만 유지하며 무료 원본이 등록된 지역에서만 대체한다.
+	local detailedTrees = if northernLand then { "tree-pinetallc-detailed", "tree-pinetallb-detailed",
+		AssetIds["Terrain/tree-pinetalld-detailed"] and "tree-pinetalld-detailed" or "tree-tall" }
 		elseif palm then { "tree-palmbend", "tree-palmdetailedtall", "tree-tall" }
-		elseif key == "japan" or key == "china" or key == "korea" then { "tree-plateau", "tree-tall", "tree-oak-dark" }
-		else { "tree-oak-dark", "tree-tall", "tree-plateau" }
+		elseif key == "japan" or key == "china" or key == "korea" then { "tree-plateau", "tree-tall",
+		AssetIds["Terrain/tree-detailed-dark"] and "tree-detailed-dark" or "tree-oak-dark" }
+		else { "tree-oak-dark", "tree-tall",
+		Voyage.season(tonumber(info.day) or 0, latitude) == 4 and AssetIds["Terrain/tree-plateau-fall"] and "tree-plateau-fall" or "tree-plateau" }
 	local forestCount = if lvl >= 4 then 60 else 94
 	local trees = if key == "japan" or cold then { "tree-high", "tree", "tree-crooked" }
 		elseif palm then { "palm-detailed-straight", "tree-crooked", "tree-high" }
@@ -5264,7 +5271,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	-- 주민 경로, 기존 도로/필지, 생성 난수, 충돌과 경제 수치는 변경하지 않는다.
 	local foregroundAssets = {
 		{ "grass-large", 13 }, { "plant-bushlarge", 15 },
-		{ "grass-leafslarge", 12 }, { "Rock_2", 12 },
+		{ AssetIds["Terrain/grass-leafs"] and "grass-leafs" or "grass-leafslarge", 12 }, { "Rock_2", 12 },
 		{ "coast-grass-patch", 10 }, { "plant-bushlarge", 14 },
 	}
 	local foregroundPlaced = 0
