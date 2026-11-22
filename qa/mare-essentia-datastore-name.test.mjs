@@ -3429,6 +3429,9 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('scalp.Name = "HairScalp"'));
   assert.ok(pose.includes('temple.Name = "HairScalpSide"'));
   assert.ok(pose.includes('local fittedUpperReady = false'));
+  assert.ok(pose.includes('(assetName == "outfit_boot" or assetName == "outfit_belt")'));
+  assert.ok(pose.includes('part.Material = Enum.Material.Leather'));
+  assert.ok(pose.includes('not trim:find("buckle", 1, true)'));
   for(const kind of ['tricorn','bicorne','beret','sailorcap','knit','kofia','fez'])
     assert.ok(pose.includes('kind == "'+kind+'"'), '기존 모자/재질 분류 누락: '+kind);
 });
