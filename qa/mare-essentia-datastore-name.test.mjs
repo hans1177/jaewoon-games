@@ -1080,6 +1080,7 @@ test('탐험 지역 기후·사계절 배경과 바람 입자 디테일',()=>{
   }
   assert.ok(field.includes('string.find(questName, "해적 소굴", 1, true) then "coast"'),'해적 은신처 해안 지형');
   assert.ok(field.includes('mat ~= Enum.Material.Snow and mat ~= Enum.Material.Ground'),'복셀 언덕의 눈·흙 재질 보존');
+  assert.match(field,/elseif questTerrain == "coast" then[\s\S]*?if winterScene then\s+biome\.mat = Enum\.Material\.Snow/,'북방 해안의 겨울 눈 보존');
   assert.match(field,/local weatherOptions = if snowy then/);
   assert.match(field,/drift\.Rate = \(if visualMobile then 3 else 8\)/);
   assert.match(field,/timeLabel\.Text = string\.format\("%s %s %02d:%02d/);
