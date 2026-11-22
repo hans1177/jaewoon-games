@@ -280,9 +280,21 @@ const STAGE_TEN_MAP=[
   '.########.','.########.',
   '...#####..','...#####..','...#####..','...#####..','...#####..'
 ];
-const STAGE_TEN_CHESTS=[{r:3,c:4},{r:5,c:8},{r:7,c:6},{r:11,c:4}];
-const STAGE_TEN_SHOPS=[{r:7,c:2},{r:12,c:5}];
+// 원본 스케치 좌표(행·열): / 상자 4개, X 상점 1개, ○ 의뢰인 1명.
+// 동그라미 친 /는 북쪽 도적 두목, -는 도적 7명의 고정 배치 위치다.
+const STAGE_TEN_CHESTS=[{r:4,c:4},{r:5,c:8},{r:7,c:7},{r:11,c:4}];
+const STAGE_TEN_SHOPS=[{r:6,c:2}];
 const STAGE_TEN_QUEST={r:7,c:8};
+const STAGE_TEN_BANDITS=[
+  {card:'BANDIT_LEADER',r:2,c:5},
+  {card:'BANDIT',r:1,c:6},
+  {card:'BANDIT',r:2,c:4},
+  {card:'BANDIT',r:3,c:4},
+  {card:'BANDIT',r:8,c:4},
+  {card:'BANDIT',r:9,c:8},
+  {card:'BANDIT',r:10,c:4},
+  {card:'BANDIT',r:11,c:8}
+];
 // 중갑병은 다른 카드(각 2칸)보다 낮은 확률(1칸)로 뽑힌다.
 const GACHA_POOL=['LANCER','LANCER','CROSSBOW','CROSSBOW','HAMMER','HAMMER','RIFLEMAN','RIFLEMAN','HEAVY_INFANTRY'];
 // 7스테이지 클리어 후 선택 가능한 강화 뽑기. 기마병 2/3, 성직자 1/3.
@@ -499,6 +511,58 @@ function loadProgress(){
       if(saved.chests)saved.chests=saved.chests.map(rotate);
       saved.mapOrientation='wide'
     }
+    // 과거 무작위 도적·상점 2개 버전의 10스테이지를 현재 지도에 맞춘다.
+    // 이미 처치한 적·열어 본 상자·골드·HP·턴·퀘스트·강화 내역은 그대로 유지한다.
+    let movedStageTenLayout=false;
+    if(saved?.stage===10&&saved.stageTenLayoutVersion!==1
+      &&Array.isArray(saved.units)&&Array.isArray(saved.chests)&&saved.quest10){
+      const reserved=new Set(STAGE_TEN_SHOPS.map(p=>p.r+','+p.c));
+      if(!saved.quest10.claimed)reserved.add(STAGE_TEN_QUEST.r+','+STAGE_TEN_QUEST.c);
+      const valid=p=>Number.isInteger(p.r)&&Number.isInteger(p.c)
+        &&STAGE_TEN_MAP[p.r-1]?.[p.c-1]==='#';
+      const available=p=>valid(p)&&!reserved.has(p.r+','+p.c);
+      // 기존 진행 중인 아군·적대화된 적은 먼저 배치하여 전투 진행을 보존한다.
+      const neutral=saved.units.filter(u=>u.side==='RED'
+        &&(u.card==='BANDIT'||u.card==='BANDIT_LEADER')&&!u.provoked);
+      const active=saved.units.filter(u=>!neutral.includes(u));
+      const relocate=(entity,preferred)=>{
+        if(available(preferred)){
+          entity.r=preferred.r;entity.c=preferred.c;
+          reserved.add(entity.r+','+entity.c);
+          return true
+        }
+        if(available(entity)){
+          reserved.add(entity.r+','+entity.c);
+          return true
+        }
+        const open=[];
+        for(let r=1;r<=STAGE_TEN_MAP.length;r++)
+          for(let c=1;c<=STAGE_TEN_MAP[r-1].length;c++)
+            if(available({r,c}))open.push({r,c});
+        if(!open.length)return false;
+        open.sort((a,b)=>Math.abs(a.r-entity.r)+Math.abs(a.c-entity.c)
+          -Math.abs(b.r-entity.r)-Math.abs(b.c-entity.c));
+        entity.r=open[0].r;entity.c=open[0].c;
+        reserved.add(entity.r+','+entity.c);
+        return true
+      };
+      for(const u of active)if(!relocate(u,u))return null;
+      // 남아 있는 상자만 재배치하며 이미 획득한 상자는 다시 생성하지 않는다.
+      for(const chest of saved.chests){
+        const target=chest.r===3&&chest.c===4?{r:4,c:4}
+          :chest.r===7&&chest.c===6?{r:7,c:7}:chest;
+        if(!relocate(chest,target))return null
+      }
+      const remaining=[...STAGE_TEN_BANDITS];
+      for(const u of neutral){
+        const index=remaining.findIndex(p=>p.card===u.card);
+        if(index<0)return null;
+        const preferred=remaining.splice(index,1)[0];
+        if(!relocate(u,preferred))return null
+      }
+      saved.stageTenLayoutVersion=1;
+      movedStageTenLayout=true
+    }
     if(!saved||!Number.isInteger(saved.stage)||saved.stage<1||saved.stage>10
       ||!Number.isInteger(saved.turn)||saved.turn<1||!['BATTLE','REST'].includes(saved.phase)
       ||!['BLUE','RED'].includes(saved.current)||!['','BLUE','RED'].includes(saved.winner)
@@ -579,7 +643,7 @@ function loadProgress(){
       localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved))
     }
     saved.diamonds=diamondWallet();
-    if(resizedStageSix)localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved));
+    if(resizedStageSix||movedStageTenLayout)localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved));
     return saved
   }catch(error){
     console.warn('카드워즈 진행 저장 불러오기 실패',error);
@@ -1869,20 +1933,12 @@ function startStage(next){
   state.quest10=next===10?{accepted:false,bossDefeated:false,claimed:false}:null;
   stageTenShopOpen=false;
   if(next===10){
-    const free=[];
-    for(let r=1;r<=STAGE_TEN_MAP.length;r++)for(let c=1;c<=STAGE_TEN_MAP[0].length;c++){
-      if(!isInside(r,c)||chestAt(r,c)||stageTenObjectAt(r,c))continue;
-      free.push({r,c})
-    }
-    for(let i=free.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
-      [free[i],free[j]]=[free[j],free[i]]
-    }
-    for(const id of ['BANDIT_LEADER','BANDIT','BANDIT','BANDIT','BANDIT','BANDIT','BANDIT','BANDIT']){
-      const pos=free.pop();
+    // 도적의 출현 위치는 원본 지도 그대로 고정. 턴 증원은 기존 규칙을 유지한다.
+    state.stageTenLayoutVersion=1;
+    for(const marker of STAGE_TEN_BANDITS){
       state.units.push({
-        id:crypto.randomUUID(),side:'RED',card:id,hp:enemyStat(id,'hp'),
-        r:pos.r,c:pos.c,moved:false,attacked:false,freeze:0,attackLock:0,
+        id:crypto.randomUUID(),side:'RED',card:marker.card,hp:enemyStat(marker.card,'hp'),
+        r:marker.r,c:marker.c,moved:false,attacked:false,freeze:0,attackLock:0,
         frozenNow:false,attackLockedNow:false,hammerTarget:'',provoked:false,rewardOverride:0
       });
       state.summons.RED++
