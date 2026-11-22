@@ -1778,7 +1778,7 @@ test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 
  assert.match(pose,/if accessory and AssetIds\["People\/" \.\. accessory\[1\]\] then/);
  assert.match(pose,/specs = table\.clone\(specs\)/);
  assert.match(pose,/target\.Size\.X \* \(spec\[7\] or 0\)/);
- assert.match(pose,/target\.Size\.Z \* \(spec\[8\] or 0\)/);
+ assert.match(pose,/target\.Size\.Z \* \(if beard then -0\.42 else \(spec\[8\] or 0\)\)/, '얼굴 앞쪽 수염 위치와 기존 액세서리 오프셋을 모두 보존');
  assert.match(pose,/skin:ScaleTo\(ratio\)/);
  assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
  assert.match(pose,/part\.Anchored, part\.CanCollide, part\.CanTouch, part\.CanQuery = false, false, false, false/);
@@ -2010,7 +2010,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.ok(Number(skirt[2])>=0.90 && Number(skirt[2])<=1.18,'치마 깊이 범위');
   assert.match(pose,/local belt = npcOutfit and assetName == "outfit_belt"/);
   // [손목·장화] 허리띠 한도는 보존하고 커프/장화만 별도 비율로 맞춘다.
-  const belt=pose.match(/if belt then ([0-9.]+) elseif cuff then 0\.36 elseif boot then 0\.94 else spec\[4\]/);
+  const belt=pose.match(/if belt then ([0-9.]+) elseif cuff then 0\.36 elseif boot then 0\.94 elseif beard then 0\.58 else spec\[4\]/);
   assert.ok(belt,'주민 허리띠 스케일 존재');
   assert.ok(Number(belt[1])>=0.24 && Number(belt[1])<=0.50,'허리띠 시각 범위');
   assert.match(pose,/local fittedUpperReady = false/);
@@ -3495,13 +3495,34 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
     assert.ok(pose.includes('kind == "'+kind+'"'), '기존 모자/재질 분류 누락: '+kind);
 });
 
+// [남성 주민 수염 액세서리 회귀] 모발과 분리하고 얼굴 중앙이 아닌 턱·얼굴 앞쪽에 고정한다.
+test('항구 남성 주민 수염은 R15 Head 턱에 맞춰 1회 장착하고 흰색/중복을 방지한다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  const ids=read('ReplicatedStorage/Shared/AssetIds.luau');
+  assert.ok(ids.includes('["People/hair_beard"]'), '수염은 이미 승인된 원본 자산만 사용');
+  assert.ok(pose.includes('if detailAllowed and beardPersona == 3 and string.sub(profile, -5) == "_male"'), '기존 남성 주민 수염 선택 유지');
+  assert.ok(pose.includes('and string.find(profile, "clergy", 1, true) == nil'), '성직자 수염 제외 규칙 유지');
+  assert.ok(pose.includes('local beard = npcOutfit and assetName == "hair_beard"'), '몬스터 수염 비율은 변경하지 않음');
+  assert.ok(pose.includes('elseif beard then 0.76 else spec[3]'), '수염이 얼굴 너비보다 넓어지지 않음');
+  assert.ok(pose.includes('elseif beard then 0.58 else spec[4]'), '수염이 머리 전체를 덮지 않음');
+  assert.ok(pose.includes('elseif beard then 0.74 else spec[5]'), '수염 깊이 과장 방지');
+  assert.ok(pose.includes('elseif beard then -0.29 else hairOffsetY'), '수염은 정수리가 아닌 턱 아래');
+  assert.ok(pose.includes('if beard then -0.42 else (spec[8] or 0)'), '수염은 얼굴 전방으로 장착');
+  assert.ok(pose.includes('equipped:GetAttribute("NpcBeardFitVersion") ~= 1'), '기존 잘못 장착된 수염 1회 복구');
+  assert.ok(pose.includes('if beard then skin:SetAttribute("NpcBeardFitVersion", 1) end'), '이미 정상 장착된 수염 재복제 방지');
+  assert.ok(pose.includes('assetName == "hair_beard" or string.sub(assetName, 1, 4) == "acc_"'), '수염 액세서리 가시성 검사');
+  assert.ok(pose.includes('and not string.find(worn.Name, "hair_beard", 1, true)'), '실물 머리카락 갱신 시 수염 보존');
+  assert.ok(pose.includes('local hairTint = model:GetAttribute("NpcHairTint")'), '기존 주민 머리색 재사용');
+  assert.ok(pose.includes('weld.Part0, weld.Part1, weld.Parent = target, part, part'), '기존 Head 용접 유지');
+});
+
 // [손목·발목·장신구 실물 회귀] 붕 뜬 흰 레이스·장화와 과대 머리핀/배지를 장착 위치에서 보정한다.
 test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 및 PBR 지도를 유지한다',()=>{
   const pose=read('ReplicatedStorage/Shared/Pose.luau');
   assert.ok(pose.includes('local cuff = npcOutfit and assetName == "outfit_cuff"'));
   assert.ok(pose.includes('local boot = npcOutfit and assetName == "outfit_boot"'));
   assert.ok(pose.includes('elseif cuff then 0.36 elseif boot then 0.94'), '소매와 장화 높이를 관절 대비 축소');
-  assert.ok(pose.includes('if cuff then -0.36 elseif boot then -0.15 else hairOffsetY'), '손목/정강이 아래 장착 및 헤어 높이 분리');
+  assert.ok(pose.includes('if cuff then -0.36 elseif boot then -0.15 elseif beard then -0.29 else hairOffsetY'), '손목/정강이/수염 위치를 각각 분리');
   assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen, 0.47)'), '원본 린넨 색상 보존');
   assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen, 0.78)'), 'PBR 흰 소매 밝은 무채색만 복구');
   assert.ok(pose.includes('if not metalTrim and pale then'), 'PBR 흰 장화만 보정, 금속 보호');
