@@ -1727,7 +1727,16 @@ test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 
  ])assert.ok(pose.includes(role+' = {'),role+' 남녀·직업 원본 보존');
  assert.match(pose,/local NPC_REGISTERED_HAIR = \{/);
  assert.match(pose,/local NPC_REGISTERED_ACCESSORY = \{/);
- assert.match(pose,/if candidate and AssetIds\["People\/" \.\. candidate\] then/);
+ // [런타임 실물 로드] 등록번호만 있는 헤어를 장착하면 공백 머리/중복 머리가 발생한다.
+ assert.ok(pose.includes('if candidate and AssetIds["People/" .. candidate] and people and people:FindFirstChild(candidate) then'),
+  "등록번호뿐 아니라 실제 선적된 헤어가 선택되어야 한다");
+ assert.ok(pose.includes('slotName = "R15Asset_" .. string.gsub(assetName, "/", "_") .. "_" .. boneName'),
+  "선택된 최종 실물 헤어 ID로 슬롯을 정해야 한다");
+ assert.ok(pose.includes('previous.Name ~= slotName then previous:Destroy()'),
+  "교체 실물 헤어 장착 후 구형 메시를 정리해야 한다");
+ assert.ok(pose.includes('local mounted = model:FindFirstChild("R15Asset_" .. garment .. "_UpperTorso")'),
+  "신규 상의의 실제 장착 확인 전 구형 상의 제거 금지");
+ assert.match(pose,/if fittedVisible then/);
  assert.match(pose,/if accessory and AssetIds\["People\/" \.\. accessory\[1\]\] then/);
  assert.match(pose,/specs = table\.clone\(specs\)/);
  assert.match(pose,/target\.Size\.X \* \(spec\[7\] or 0\)/);
@@ -3364,4 +3373,65 @@ test('스튜디오 R15 보행 검증은 자동 대련 루프의 관절 덮어쓰
   }
   assert.match(steps[208].code, /joint:GetAttribute\("NpcPitchSign"\)/);
   assert.match(steps[208].code, /task\.wait\(0\.045\)/);
+});
+
+// [캐릭터 외형 회귀] 등록된 실물 메시와 두피 볼륨·모자·머리색·직업 장식 색상은 함께 유지한다.
+test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제 R15 장착 흐름에 연결된다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  const assetIds=read('ReplicatedStorage/Shared/AssetIds.luau');
+  assert.match(pose,/scalp\.Name = "HairScalp"/);
+  assert.match(pose,/temple\.Name = "HairScalpSide"/);
+  assert.match(pose,/h\.Y \* 0\.65, h\.Z \* 1\.08/);
+  for(const kind of ['sailorcap','bonnet','beret','bicorne'])
+    assert.ok(pose.includes('kind == "'+kind+'"'),'모자 형태 누락: '+kind);
+  assert.match(pose,/EUROPEAN_DETAIL_CULTURES\[outfit\.culture\]/,
+    '기존 지역·시대 허용 체계를 보존한다');
+  assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
+  assert.match(pose,/local hairPalette = \{/);
+  assert.match(pose,/surface\.Color = surface\.Color:Lerp\(softTint, 0\.72\)/,
+    '텍스처/원본 PBR을 유지하면서 실제 머리색을 가시화한다');
+  assert.match(pose,/model:SetAttribute\("NpcAccentTint", accentTint\)/);
+  assert.match(pose,/surface\.Color = surface\.Color:Lerp\(accent:Lerp\(/);
+  assert.match(pose,/if not textured and string\.sub\(assetName, 1, 7\) == "outfit_"/);
+  assert.match(pose,/local fittedUpperReady = false/);
+  assert.match(pose,/if fittedVisible then/);
+  assert.match(pose,/model:SetAttribute\("OutfitMissing"/);
+  // [헤어 다양성] 8개 모델별 변형은 기존 공간 좌표로 안정적이며 AssetIds가 실제 등록한 후보만 선택한다.
+  assert.match(pose,/model:SetAttribute\("NpcHairVariant", variant\)/);
+  assert.match(pose,/for offset = 0, #options - 1 do/);
+  assert.match(pose,/loaded and loaded:IsA\("Model"\)/);
+  for(const name of ['hair_shoulder_waves','hair_side_braid','hair_low_bun',
+    'hair_braided_crown','hair_sailor_ponytail','hair_buzzedfemale','hair_court_curls'])
+    assert.ok(pose.includes('"'+name+'"'),'헤어 스타일 누락: '+name);
+  assert.match(pose,/regionalHairDyes/,'기존 지역·연령 팔레트를 보존한 머리색 차별화');
+  assert.match(pose,/piece\(Enum.PartType.Ball, Vector3.new\(h.X \* 0.33/,'실물 머리 로드 전 롱헤어 뒤쪽 실루엣');
+  // [의복 재질] PBR ColorMap/금속을 보존하며 천 소매·스톨·가죽장화만 물성·색조를 바꾼다.
+  assert.match(pose,/or assetName == "outfit_stole" or assetName == "outfit_cuff"/);
+  assert.match(pose,/if assetName == "outfit_cuff" then npcClothTint/);
+  assert.match(pose,/if npcOutfit and assetName == "outfit_boot" and part.Material == Enum.Material.Leather/);
+  assert.match(pose,/if not textured and string.sub\(assetName, 1, 7\) == "outfit_"/);
+  for(const asset of ['hair_simpleparted','hair_long','hair_buns','acc_feather_hat','acc_sailor_headband'])
+    assert.ok(assetIds.includes('["People/'+asset+'"]'),'등록 원본 누락: '+asset);
+});
+
+// [헤어 실물 품질 회귀] 단순 메시 숫자 대신 실제 두상 폭·두피·텍스처별 색상 경로를 검사한다.
+test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 압축하지 않는다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  assert.ok(pose.includes('local hairHeightAllowance = if hairStyle == "long" then 2.20'));
+  assert.ok(pose.includes('elseif hairStyle == "bun" then 1.68 else 1.42'));
+  assert.ok(pose.includes('ratio = math.min(target.Size.X * spec[3] / ext.X,'));
+  assert.ok(pose.includes('target.Size.Y * hairHeightAllowance / ext.Y,'));
+  assert.ok(pose.includes('target.Size.Z * spec[5] / ext.Z)'));
+  assert.ok(pose.includes('if npcOutfit and not surface and part:IsA("MeshPart") and part.TextureID ~= ""'));
+  assert.ok(pose.includes('part.Color = part.Color:Lerp(hairTint:Lerp(Color3.new(1, 1, 1), 0.25), 0.70)'));
+  assert.ok(pose.includes('if npcOutfit and surface and surfaceHasColorMap(surface) then'));
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(softTint, 0.72)'));
+  assert.ok(pose.includes('scalp.Name = "HairScalp"'));
+  assert.ok(pose.includes('temple.Name = "HairScalpSide"'));
+  assert.ok(pose.includes('local fittedUpperReady = false'));
+  assert.ok(pose.includes('(assetName == "outfit_boot" or assetName == "outfit_belt")'));
+  assert.ok(pose.includes('part.Material = Enum.Material.Leather'));
+  assert.ok(pose.includes('not trim:find("buckle", 1, true)'));
+  for(const kind of ['tricorn','bicorne','beret','sailorcap','knit','kofia','fez'])
+    assert.ok(pose.includes('kind == "'+kind+'"'), '기존 모자/재질 분류 누락: '+kind);
 });
