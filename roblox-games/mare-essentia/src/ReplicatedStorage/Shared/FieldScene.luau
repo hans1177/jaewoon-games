@@ -716,7 +716,8 @@ function FieldScene.start(opts)
 		elseif string.find(questName, "정글", 1, true) or string.find(questName, "밀림", 1, true)
 			or string.find(questName, "숲", 1, true) then "forest"
 		elseif string.find(questName, "해변", 1, true) or string.find(questName, "난파", 1, true)
-			or string.find(questName, "항만", 1, true) or string.find(questName, "포구", 1, true) then "coast"
+			or string.find(questName, "항만", 1, true) or string.find(questName, "포구", 1, true)
+			or string.find(questName, "해적 소굴", 1, true) then "coast"
 		elseif biome.kind == "forest" then "forest"
 		elseif biome.kind == "coast" then "coast"
 		elseif biome.kind == "mine" then "mine"
@@ -746,6 +747,34 @@ function FieldScene.start(opts)
 		biome.mat = Enum.Material.Grass
 		biome.ground = biome.ground:Lerp(Color3.fromRGB(49, 103, 59), 0.55)
 		biome.fog = biome.fog:Lerp(Color3.fromRGB(123, 173, 146), 0.45)
+	elseif questTerrain == "desert" then
+		-- [지형별 실제 바닥] 지역 문화권의 기본 초록색보다 모래 지형을 우선한다.
+		biome.mat = Enum.Material.Sand
+		biome.ground = Color3.fromRGB(204, 177, 122)
+	elseif questTerrain == "coast" then
+		-- [해안 지질] 바위 절벽·피오르드는 암석, 해변·섬은 모래로 구별한다.
+		if portNature == "fjord" or portNature == "cliff_coast" or portNature == "mountain_coast" then
+			biome.mat = Enum.Material.Slate
+			biome.ground = Color3.fromRGB(118, 122, 117)
+		else
+			biome.mat = Enum.Material.Sand
+			biome.ground = Color3.fromRGB(196, 180, 139)
+		end
+	elseif questTerrain == "highland" then
+		-- [산악 지질] 설기에는 눈을 지키고 그 외에는 풀밭 대신 바위 고원을 사용한다.
+		if not winterScene then
+			biome.mat = Enum.Material.Slate
+			biome.ground = biome.ground:Lerp(Color3.fromRGB(113, 117, 109), 0.75)
+		end
+	elseif questTerrain == "mine" then
+		biome.mat = Enum.Material.Slate
+		biome.ground = biome.ground:Lerp(Color3.fromRGB(107, 103, 98), 0.7)
+	elseif questTerrain == "ruins" or questTerrain == "fort" then
+		-- [고대 유적·요새] 기존 건물/길목은 그대로 두고 주변 흙과 석질을 드러낸다.
+		if not winterScene then
+			biome.mat = Enum.Material.Ground
+			biome.ground = biome.ground:Lerp(Color3.fromRGB(133, 124, 103), 0.7)
+		end
 	end
 	-- [항구별 토양 광량] 같은 대륙·문화권 안에서도 하구·암벽·열대·삼림의 색을 조금씩 구분한다.
 	-- 빙하·화산·늪·밀림의 퀘스트 재질과 기후는 우선하며 지면 충돌·경로는 변경하지 않는다.
@@ -814,7 +843,8 @@ function FieldScene.start(opts)
 		if questTerrain == "volcanic" or questTerrain == "mine" then mat = Enum.Material.Slate
 		elseif questTerrain == "glacier" then mat = Enum.Material.Snow
 		elseif questTerrain == "swamp" then mat = Enum.Material.Mud
-		elseif mat ~= Enum.Material.Sand and mat ~= Enum.Material.Slate and mat ~= Enum.Material.Mud then mat = Enum.Material.Grass end
+		elseif mat ~= Enum.Material.Sand and mat ~= Enum.Material.Slate and mat ~= Enum.Material.Mud
+			and mat ~= Enum.Material.Snow and mat ~= Enum.Material.Ground then mat = Enum.Material.Grass end
 		local hills = {}
 		local hillRng = Random.new((opts.seed or 7) * 13 + 5)
 		local hillCount = if visualMobile then 16 else 28
