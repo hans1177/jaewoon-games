@@ -3514,3 +3514,47 @@ test('대항해시대 내부 무료 숲 자산 및 지상 구릉·해상 물결 
   assert.match(naval,/oceanTerrain\.WaterWaveSize = if mode == "storm"/);
   assert.match(naval,/oceanTerrain:FillBlock\(oceanFrame, oceanSize, Enum\.Material\.Air\)/);
 });
+
+// [환경 원근 리그레션] CC0 8종의 원본·권한·전장 높이 연출이 같은 main 리비전에 함께 존재해야 한다.
+test('대항해시대 생물군계 절벽·하층 식생 및 해상 연안 깊이감',()=>{
+  const root='roblox-games/mare-essentia/';
+  const registry=JSON.parse(readText(root+'assets-registered.json')).assets;
+  const assetIds=readText(root+'src/ReplicatedStorage/Shared/AssetIds.luau');
+  const originals={
+    'cliff-large-rock':'0961d9bfdd7b952d152b8280f7d8d81b95828362',
+    'cliff-blockslope-rock':'3536237912d55b87a3ccd009ad2aa7b6b4311b96',
+    'cliff-top-rock':'11b06ca857b860dc94696daff39685405616a88d',
+    'plant-bushdetailed':'77b9ff8e77d4b0d7a39918c5edb52629a0ea01db',
+    'grass-large':'546a089b2a0e8f6d42ed948bad396e5169ef7c14',
+    'rock-tallc':'8f3c255ad7fab4bde714b71e90cf67733a58aa37',
+    'tree-pinetalla-detailed':'04b215870fabdfb428636dad8514224ab64489bf',
+    'ground-pathrocks':'6a66adf9652b80eb19de76aa6b991d438123dff0',
+  };
+  for(const [name,sha] of Object.entries(originals)){
+    const key='Terrain/'+name;
+    const row=registry[key];
+    assert.equal(row?.license,'CC0-1.0',key+' 검증된 무료 자산');
+    assert.equal(row?.assetType,'Model',key+' 실물 모델');
+    assert.equal(row?.usePermissionGranted,true,key+' Roblox Universe 권한');
+    assert.ok(assetIds.includes('["'+key+'"] = '+row.assetId),key+' 로딩 경로');
+    const bytes=fs.readFileSync(root+'assets/terrain/'+name+'.glb');
+    assert.equal(bytes.toString('ascii',0,4),'glTF',key+' 실물 GLB');
+    const gitSha=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length))
+      .update(Buffer.from([0])).update(bytes).digest('hex');
+    assert.equal(gitSha,sha,key+' 원본 바이너리 해시');
+  }
+  const field=readText(root+'src/ReplicatedStorage/Shared/FieldScene.luau');
+  const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
+  assert.match(field,/FieldDepthRidgeCount/);
+  assert.match(field,/FieldDepthFeatureCount/);
+  assert.match(field,/terrain:FillBall\(center, radius, mat\)/);
+  assert.match(field,/groundRay\.FilterDescendantsInstances = \{ workspace\.Terrain, ground \}/);
+  assert.match(field,/AssetIds\["Terrain\/tree-pinetalla-detailed"\]/);
+  assert.match(field,/local depthLandforms = if questTerrain/);
+  assert.match(naval,/NavalCoastFoamSources/);
+  assert.match(naval,/NavalDepthCoastCount/);
+  assert.match(naval,/NavalDepthCliff/);
+  assert.match(naval,/local seaMood = if opts\.cardOnly/);
+  assert.match(naval,/local depthCoast = if coast\.id/);
+  assert.match(naval,/spray\.Rate = if MOBILE_VFX/);
+});
