@@ -138,7 +138,7 @@
   "type": "click_from_luau",
   "ctx": "Client",
   "label": "field_attack_button",
-  "code": "local pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal b=pg:FindFirstChild(\"FieldAttackButton\",true)\nassert(b and b:IsA(\"GuiButton\") and b.Visible and b.AbsoluteSize.X>0,\"FIELD_ATTACK_BUTTON_MISSING\")\n-- 공격 버튼 근처에 적을 다시 세워 실제 클릭 결과를 확인한다(위치만 조정, 판정 불변).\nlocal ch=game.Players.LocalPlayer.Character local h=ch:WaitForChild(\"HumanoidRootPart\",5) local f=workspace.FieldScene\nfor _,m in f:GetChildren() do if m.Name==\"FieldEnemy\" and m:IsA(\"Model\") then m:PivotTo(CFrame.new(h.Position+h.CFrame.LookVector*6)) break end end\nreturn string.format(\"%d,%d CLICK=field_attack_button\",math.floor(b.AbsolutePosition.X+b.AbsoluteSize.X/2),math.floor(b.AbsolutePosition.Y+b.AbsoluteSize.Y/2))"
+  "code": "local pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal b=pg:FindFirstChild(\"FieldAttack\",true) or pg:FindFirstChild(\"FieldAttackButton\",true)\nassert(b and b:IsA(\"GuiButton\") and b.Visible and b.AbsoluteSize.X>0,\"FIELD_ATTACK_BUTTON_MISSING\")\n-- 공격 버튼 근처에 적을 다시 세워 실제 클릭 결과를 확인한다(위치만 조정, 판정 불변).\nlocal ch=game.Players.LocalPlayer.Character local h=ch:WaitForChild(\"HumanoidRootPart\",5) local f=workspace.FieldScene\nfor _,m in f:GetChildren() do if m.Name==\"FieldEnemy\" and m:IsA(\"Model\") then m:PivotTo(CFrame.new(h.Position+h.CFrame.LookVector*6)) break end end\nreturn string.format(\"%d,%d CLICK=field_attack_button\",math.floor(b.AbsolutePosition.X+b.AbsoluteSize.X/2),math.floor(b.AbsolutePosition.Y+b.AbsoluteSize.Y/2))"
  },
  {
   "type": "wait",

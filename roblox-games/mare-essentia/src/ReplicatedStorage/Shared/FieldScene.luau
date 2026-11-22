@@ -2650,7 +2650,6 @@ function FieldScene.start(opts)
 			elseif visualMobile then -95 else -88,
 			1, if compactTouch then -85 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then -70
 				elseif visualMobile then -88 else -88), Vector2.new(0.5, 0.5))
-	attackBtn.Name = "FieldAttackButton" -- [검증용 이름] 실제 클릭 검사가 공격 버튼을 찾는다(동작 불변).
 	attackBtn.Name = "FieldAttack"
 	attackBtn:SetAttribute("SkillFullName", "일반 공격")
 	attackBtn:SetAttribute("TouchPriority", "ATTACK")
