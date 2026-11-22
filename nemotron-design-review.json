@@ -2,9 +2,9 @@
   "version": 3,
   "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "1e1fe09c32632789d0e59a61317a0213c1f7d81f",
+  "sourceRevision": "afd9b9984c3e10113b775278c7a1fba527039700",
   "status": "SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE",
-  "selectedRole": "GENERAL",
+  "selectedRole": "NPC",
   "usageWindow": {
     "day": "2026-11-22",
     "calls": {
@@ -35,7 +35,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 1.04,
+      "estimatedCallsPerHour": 0.98,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -52,7 +52,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 3.69,
+      "estimatedCallsPerHour": 3,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-23T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
@@ -69,7 +69,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 2.73,
+      "estimatedCallsPerHour": 2.57,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
@@ -83,20 +83,20 @@
   "attempts": [],
   "frames": [
     {
-      "name": "b1_start-0.jpg",
-      "sha256": "5e064567e50618f74addc3ab40371f1123f124876499f8477884050df6a73a8e"
+      "name": "field_npc_ally_mob-0.jpg",
+      "sha256": "ccc40578f0551b21c4a67063caa30e1d6b09ac7b9ceadd50fd0d5c0c13d9db65"
     },
     {
-      "name": "b2_mid-0.jpg",
-      "sha256": "48f760b8a85805d91d5e872763746d0b11bd76ea40b0b1c939d319cc0faa2467"
+      "name": "harbor_npc_face_front-0.jpg",
+      "sha256": "8dc6a5b25616186694d0a672b7b4b62a742e5bbb9c48ab3d8baeeda50f1adc6e"
     },
     {
-      "name": "c00_start-0.jpg",
-      "sha256": "4d5baf7d00efda98f4cbc9ebebe4c02822cf25505d358fae85f51e39c34b4192"
+      "name": "harbor_npc_sparring_01-0.jpg",
+      "sha256": "3f9b79c0e615875cf7990857141f1f44d0e8ac4a68f6e295c9e748044310f2c0"
     },
     {
-      "name": "intro_center_early-0.jpg",
-      "sha256": "9e9acb8c8e45a296fca01a9e16fc139a0376d5d2fe637a39884109b44bdcefac"
+      "name": "harbor_npc_sparring_02-0.jpg",
+      "sha256": "f6ed7898ea684eec1b3471c71f13b7b7df73e9a877dfc177ed6ab7d3ef9ac176"
     }
   ],
   "modelAvailability": [

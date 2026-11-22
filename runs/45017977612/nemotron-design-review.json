@@ -1,0 +1,139 @@
+{
+  "version": 3,
+  "provider": "MULTI_FREE_VISUAL",
+  "gameId": "mare-essentia",
+  "sourceRevision": "afd9b9984c3e10113b775278c7a1fba527039700",
+  "status": "SKIPPED_FREE_DESIGN_POOL_UNAVAILABLE",
+  "selectedRole": "NPC",
+  "usageWindow": {
+    "day": "2026-11-22",
+    "calls": {
+      "NVIDIA": 12,
+      "GEMINI": 12,
+      "OPENROUTER": 30
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-22",
+      "GEMINI": "2026-11-22",
+      "OPENROUTER": "2026-11-22"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-22T00:27:30.319Z",
+      "GEMINI": "2026-11-22T08:04:11.923Z",
+      "OPENROUTER": "2026-11-22T00:27:00.167Z"
+    }
+  },
+  "cooldowns": {
+    "GEMINI_FLASH": "2026-11-22T13:30:36.242Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 12,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 0.98,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 12,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 3,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-23T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 30,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 2.57,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-23T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [],
+  "frames": [
+    {
+      "name": "field_npc_ally_mob-0.jpg",
+      "sha256": "ccc40578f0551b21c4a67063caa30e1d6b09ac7b9ceadd50fd0d5c0c13d9db65"
+    },
+    {
+      "name": "harbor_npc_face_front-0.jpg",
+      "sha256": "8dc6a5b25616186694d0a672b7b4b62a742e5bbb9c48ab3d8baeeda50f1adc6e"
+    },
+    {
+      "name": "harbor_npc_sparring_01-0.jpg",
+      "sha256": "3f9b79c0e615875cf7990857141f1f44d0e8ac4a68f6e295c9e748044310f2c0"
+    },
+    {
+      "name": "harbor_npc_sparring_02-0.jpg",
+      "sha256": "f6ed7898ea684eec1b3471c71f13b7b7df73e9a877dfc177ed6ab7d3ef9ac176"
+    }
+  ],
+  "modelAvailability": [
+    {
+      "modelId": "NVIDIA_VL",
+      "provider": "NVIDIA",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "GEMINI_FLASH",
+      "provider": "GEMINI",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_GEMMA",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_NEMOTRON",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_GEMMA26",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "OPENROUTER_OMNI",
+      "provider": "OPENROUTER",
+      "status": "DAILY_CALL_CAP"
+    },
+    {
+      "modelId": "GEMINI_LITE",
+      "provider": "GEMINI",
+      "status": "DAILY_CALL_CAP"
+    }
+  ]
+}
