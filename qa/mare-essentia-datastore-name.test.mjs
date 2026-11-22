@@ -1072,7 +1072,7 @@ test('탐험 지역 기후·사계절 배경과 바람 입자 디테일',()=>{
   assert.match(field,/local weatherOptions = if snowy then/);
   assert.match(field,/drift\.Rate = \(if visualMobile then 3 else 8\)/);
   assert.match(field,/timeLabel\.Text = string\.format\("%s %s %02d:%02d/);
-  assert.match(field,/placeModel\(folder, entry\[1\], entry\[2\], pos, entry\[3\], entry\[6\], entry\.tint\)/);
+  assert.match(field,/placeModel\(folder, entry\[1\], entry\[2\], pos, entry\[3\], entry\[6\], entry\.tint, entry\.band\)/);
   for (const name of [
     'coast-grass-patch','Grass_Small','river-stone-bank','debris','Rock_2','log-stack',
     'forest-bush-detailed','forest-flower-purple','north-pine-fall','crops-wheatstageb',
