@@ -1180,6 +1180,8 @@ function FieldScene.start(opts)
 			stageFeature(entry)
 		end
 	end
+	-- [전장 지형지물] 발헤임의 생물군계 구분·엘든 링의 먼 유적 윤곽·고스트 오브 쓰시마의 식생층 원리만 참고한다.
+	-- 타 게임 모델·텍스처는 복제하지 않으며 등록된 CC0 실물 지형만 사용한다.
 	-- [원근 입체감] Kenney CC0 실물 절벽 면/상단/경사와 숲 하층을 지형 높이 위에 층으로 배치한다.
 	-- 동선과 퀘스트 조사 대상은 그대로 유지하며 시각 모델 충돌은 만들지 않는다.
 	do -- [Luau 지역변수 상한] 추가 실물 깊이 배치표는 기존 구획과 지역변수 생명주기를 분리한다.
@@ -1191,7 +1193,15 @@ function FieldScene.start(opts)
 		{ "rock-largec", 16, 0.73, -0.78, 0 },
 		{ "ground-pathrocks", 10, -0.52, -0.39, -17 },
 		{ "cliff-blockslope-rock", 24, -0.92, -0.45, 23 }
-	} elseif questTerrain == "highland" or questTerrain == "volcanic" then {
+	} elseif questTerrain == "volcanic" then {
+		-- [화산 전장] 거친 암벽·부스러기 실제 메시로 적막한 산악 지형과 구분한다.
+		{ "cliff-large-rock", 43, -0.84, -0.70, 14 },
+		{ "cliff-blockdiagonal-rock", 33, 0.86, -0.54, -17 },
+		{ "debris", 14, -0.66, -0.35, 11 },
+		{ "cliff-cornerinnertop-rock", 31, 0.87, -0.83, 22 },
+		{ "rock-talld", 18, 0.77, -0.26, 14 },
+		{ "ground-pathrocks", 9, -0.55, -0.44, 13 },
+	} elseif questTerrain == "highland" then {
 		{ "cliff-diagonal-rock", 44, -0.83, -0.65, 13 },
 		{ "cliff-blockslope-rock", 29, 0.80, -0.44, 28 },
 		{ "cliff-blockdiagonal-rock", 32, 0.92, -0.84, -11 },
@@ -1225,6 +1235,14 @@ function FieldScene.start(opts)
 		{ "log-stack", 8, -0.63, -0.41, 28 },
 		{ "rock-talld", 18, 0.79, -0.27, 9 },
 		{ "cliff-cornerinnerlarge-rock", 31, -0.91, -0.88, 14 },
+	} elseif questTerrain == "fort" then {
+		-- [성채 전장] 성벽 실루엣을 유지하고 아래 암반·목재 보강 구조를 따로 깐다.
+		{ "cliff-blockslope-rock", 31, -0.85, -0.68, 18 },
+		{ "wood-support", 19, 0.78, -0.47, -10 },
+		{ "cliff-blockdiagonal-rock", 30, 0.89, -0.84, 17 },
+		{ "rock-largea", 13, -0.72, -0.32, -12 },
+		{ "ground-pathrocks", 9, 0.63, -0.37, 19 },
+		{ "cliff-cornerlarge-rock", 28, -0.90, -0.81, 15 },
 	} elseif questTerrain == "ruins" then {
 		-- [유적 3D 층] 아치·부서진 기둥과 암벽을 다른 원근에 분리한다.
 		{ "ruins-wall-arched", 28, -0.84, -0.75, 15 },
@@ -1257,7 +1275,15 @@ function FieldScene.start(opts)
 		{ "plant-bushdetailed", 8, -0.70, -0.37, 8 },
 		{ "river-stone-bank", 12, 0.64, -0.34, 18 },
 		{ "cliff-blockslope-rock", 23, -0.91, -0.45, -19 },
-	} elseif questTerrain == "forest" or questTerrain == "jungle" then {
+	} elseif questTerrain == "jungle" then {
+		-- [밀림 전장] 원경 큰 절벽에 대나무·하층 수풀을 분리해 깊은 녹지 질감을 만든다.
+		{ "cliff-blockslope-rock", 27, -0.82, -0.66, 18 },
+		{ "east-bamboo-grove", 17, 0.77, -0.50, -12 },
+		{ "forest-bush-detailed", 12, -0.65, -0.35, 13 },
+		{ "cliff-blockdiagonal-rock", 30, 0.90, -0.83, 16 },
+		{ "ground-riverbendbank", 12, 0.73, -0.37, -20 },
+		{ "plant-bushdetailed", 9, -0.53, -0.29, 6 },
+	} elseif questTerrain == "forest" then {
 		{ "cliff-blockslope-rock", 25, -0.81, -0.53, 22 },
 		{ "cliff-cornerinnertop-rock", 24, 0.78, -0.73, -30 },
 		{ "plant-bushdetailed", 7, 0.60, -0.33, 6 },
@@ -1298,6 +1324,14 @@ function FieldScene.start(opts)
 			{ "plant-flattall", 7, 0.52, 0.07, 0 },
 			{ "cliff-cornerlarge-stone", 31, 0.85, -0.47, 35 },
 			{ "ground-riverbendbank", 13, -0.68, -0.54, 19 },
+		} elseif questTerrain == "volcanic" then {
+			-- [화산 전경] 용암 재질을 가짜로 그리지 않고 실제 쇄설암·절벽을 서로 다른 깊이로 배치한다.
+			{ "debris", 15, -0.82, 0.13, 15 }, { "cliff-large-rock", 32, 0.85, -0.49, -19 },
+			{ "rock-talld", 17, -0.70, -0.27, 11 }, { "cliff-blockdiagonal-rock", 29, 0.90, -0.82, 19 },
+		} elseif questTerrain == "fort" then {
+			-- [성채 전경] 멀리 선 기존 성벽 앞에 지면 돌계단과 목재 버팀목 층을 배치한다.
+			{ "cliff-blockslope-rock", 25, -0.85, 0.12, 18 }, { "wood-support", 17, 0.81, -0.28, -12 },
+			{ "rock-largea", 14, -0.68, -0.36, 11 }, { "ground-pathrocks", 9, 0.64, -0.39, -14 },
 		} elseif questTerrain == "mine" then {
 			-- [광산 전경] 기존 2개 모바일 슬롯에서 동굴 벽과 버팀목의 깊이를 먼저 보여 준다.
 			{ "cliff-cave-rock", 34, -0.86, 0.12, 14 }, { "wood-support", 17, 0.82, -0.27, -19 },
