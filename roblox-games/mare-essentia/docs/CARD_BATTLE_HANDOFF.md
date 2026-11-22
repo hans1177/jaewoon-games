@@ -124,3 +124,12 @@
 - **Roblox 등록 확인:** `assets-registered.json`의 `CardArt/eu_18` 자산번호 **`134528634133181`**, `usePermissionGranted:true`. 등록·승인·원본 검수 SHA-256이 동일하고 `src/ReplicatedStorage/Shared/AssetIds.luau`에 `CardArt/eu_18` 바인딩이 같은 번호로 기록됨. 이는 **자산등록 증거**이며 Studio 실제 게임 카드 표시·최종 Place 게시 성공을 증명하지 않는다.
 - **다음 대상:** `eu_19` **붉은사슴**. 유럽 숲속을 달리는 긴 뿔을 가진 붉은사슴 **한 마리**를 기존 컬러 회화 화풍으로 제작하고, 별도 최종 PNG 해시·승인·기존 Roblox 등록기를 통해 검증한다. 유럽들소 원화를 재사용·덮어쓰기 하지 않는다.
 - **보존:** 게임 카드 능력치·전투 규칙·저장 키·등록 작업 구조는 변경 없음. 후속 작업자는 이 기록 대신 **현재 main의 등록표를 우선**해 재확인한다.
+
+## 12. 붉은사슴 `eu_19` 정식 자산등록 확인 (2026-11-22)
+
+- 카드 ID: `eu_19`, 주제: 유럽 숲속에서 힘차게 뛰는 **붉은사슴 수컷 한 마리**. 게임용 컬러 회화 1024×1024 단일 PNG, 낙엽·흙먼지·햇빛·넓은 뿔의 역동적인 장면. 카드 프레임·문자·수치·타 카드 소재 없음.
+- 원본: `assets/cardart/src/eu_19-original.png`. 최종 PNG SHA-256 `353e724a6ff9dfa44fc56d2329089a81c4ee032afe9c2a29addeae1d95344d45`; 실제 Git Blob SHA `23ec418b19912f569dd3eada724d6a0ccec30c84` 일치.
+- 원본·승인 동시 반영 커밋: `59c6bcfe23ba4da4b576722bd6c3aaa655441922` (`main`). `APPROVED_IMAGES.json`의 `approved["CardArt/eu_19"]`와 `modelOriginals`의 시각검수·상업 권리 증빙을 원본 PNG와 함께 반영.
+- 기존 정식 자산등록 워크플로 [#45009482336](https://github.com/hans1177/jaewoon-games/actions/runs/45009482336): **success**. `assets-registered.json`의 Roblox 자산번호 **`77805456081903`**, `usePermissionGranted:true`; 등록 원본 SHA-256과 승인·시각검수 해시 일치; `src/ReplicatedStorage/Shared/AssetIds.luau`의 `CardArt/eu_19` 번호 연결 확인.
+- **다음 대상:** `eu_20` 검독수리. 이 회차 중 이미지 생성기가 붉은사슴 시안을 2회 더 출력해 **주제 불일치로 모두 폐기**했으며, `eu_20` 원화·승인·등록을 완료했다고 보고하지 않는다. 다음 작업자는 검독수리 **한 마리가 급강하하는** 별도 역동적인 컬러 회화 원화부터 제작한다.
+- 기존 전투 규칙·카드 능력치·진행도·저장키·기존 원화는 변경하지 않았다. **Studio 실제 카드 표시 및 게임 Place 최종 게시: 별도 미검증.** 이후에는 최신 `main`의 실제 등록표가 이 기록보다 우선이다.
