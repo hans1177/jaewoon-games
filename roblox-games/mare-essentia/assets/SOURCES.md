@@ -1937,3 +1937,23 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `tree-palmbend.glb` | `f1ce81e92c48c980fca2de9f0605702e415efb30` | 구부러진 열대 야자 |
 
 실제 Roblox 모델 사용은 기존 정식 등록 워크플로가 ID와 Universe 권한을 승인한 다음에만 한다.
+
+## 2026-11-22 입체 지형 4차 CC0 자연 모델 8종
+
+- 원본: [Kenney Nature Kit](https://kenney.nl/assets/nature-kit), CC0 1.0, 유료 또는 출처 불명 없음.
+- 검증 원본: [Hidencod Nature Kit](https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit).
+- 기존 `assets/terrain/`에 GLB 원본 바이너리 보존. 원본 Git blob SHA-1 / 내부 해시 **8/8 일치**.
+- 구현 구도: 근경 풀→중경 나무→원경 능선, 굽은 해안 안쪽 암석과 강기슭. 특정 게임의 모델·이미지 복제 없음.
+
+| 원본 파일 | 원본 Git blob SHA-1 | 용도 |
+|---|---|---|
+| `terrain/tree-plateau.glb` | `f71ffc832f57211786833401e5e5a980f3b9188e` | 고지 숲 수관 |
+| `terrain/tree-pinetallc-detailed.glb` | `db0568ca14d97917aa0c0fccc17f8feddb0e21e4` | 능선 침엽수 |
+| `terrain/plant-flattall.glb` | `892506b42f756ce42a0c0d7dbdadd8c29c07ecc0` | 전경 풀 |
+| `terrain/cliff-cornerinnerlarge-rock.glb` | `eb7e85430f5a74a1405bfaea14ed1da062a65046` | 해안 안쪽 굴곡 |
+| `terrain/cliff-cornertop-rock.glb` | `2d6be6c8feb0c42d697d48d888fd0c45e996865f` | 절벽 위턱 |
+| `terrain/ground-riverbendbank.glb` | `3493554fdeeec1c8409478d7e61c0e0338a31556` | 강 굽이 둑 |
+| `terrain/rock-largec.glb` | `2cdf83e8a9e681a0b1c6aef4d9933d772d3ebc65` | 해안 큰 암석 |
+| `terrain/tree-palmbend.glb` | `f1ce81e92c48c980fca2de9f0605702e415efb30` | 열대 해안 야자수 |
+
+로블록스 실제 Model 업로드/Universe 권한 부여/AssetIds 정합성은 기존 등록 워크플로에서 독립 확인하고, 그 이후 기존 필드·해상전 함수가 해당 자산만 사용한다.
