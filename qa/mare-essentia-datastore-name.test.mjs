@@ -417,6 +417,10 @@ test('적 무기 모션과 동료 비전투 동행은 원본 PBR 및 R15 복식�
   assert.ok(companion.includes('FieldAllyPortrait'),'동료 초상 유지');
   assert.ok(companion.includes('local goal = (root0.CFrame * CFrame.new('),'기존 동행 대형 유지');
   assert.match(companion,/FM\.actor\(a\.fm, "RUN"/);
+  // [지상전투 단독] 동료는 소환·동행·대화하지 않는다(영입·저장 데이터는 유지).
+  assert.ok(companion.includes('local allyNames: { any } = {}'),'동료 지상전투 제외');
+  assert.ok(field.includes('local companionRows: { any } = {}'),'동료 대화 제외');
+  assert.doesNotMatch(companion,/opts\.allies/,'동료 지상전투 유입 금지');
   assert.match(companion,/FM\.actor\(a\.fm, "IDLE"/);
   assert.doesNotMatch(companion,/strikeEnemy\(|castEffect\(|local tgt|a\.nextSkill|a\.castAt/,'동료 전투/자동 스킬 경로 잔존 금지');
   assert.match(field,/pl\.hp = math\.min\(pl\.maxHp, pl\.hp \+ \(0\.12 \+ math\.min\(healers, 2\) \* 0\.18\) \* math\.min\(dt, 0\.1\)\)/);
@@ -751,7 +755,8 @@ test('무기별 실제 발사음과 원거리 스킬 이펙트가 등록된 음�
   }
   assert.match(field,/local impactWeapon = attackerWeapon or wpn/);
   assert.match(field,/local family = impactWeapon\.family/);
-  assert.match(field,/aw\.family == "axe", true, false, nil, aw/);
+  // [동료 지상전투 제외] 동료 공격자(aw) 타격 경로는 제거됨: 잔존 금지로 고정.
+  assert.doesNotMatch(field,/aw\.family == "axe", true, false, nil, aw/,'동료 공격 경로 잔존 금지');
   assert.match(field,/local rangedImpact = impactWeapon\.ranged and \(family == "bow" or family == "firearm"\)/);
   assert.match(field,/local rangedShot = wpn\.ranged[\s\S]*?sfx\("sfx_rope_release", 0\.49/);
   assert.doesNotMatch(field,/sfx\(if wpn\.family == "firearm" and wpn\.id ~= "crossbow"/);
@@ -766,7 +771,7 @@ test('무기별 실제 발사음과 원거리 스킬 이펙트가 등록된 음�
   assert.match(field,/if kind ~= "slash" then[\s\S]*?pulseAt\(if kind == "heavy" then "CRITICAL_BURST"/);
   assert.match(field,/local equippedId = ch and ch:GetAttribute\("EquippedWeaponId"\)/);
   assert.match(field,/arrowTrail\(pos, hitPos, nil, nil, motion, sk == "snipe"\)/);
-  assert.match(field,/arrowTrail\(a0, b0, nil, nil, aw\.motion\)/);
+  assert.doesNotMatch(field,/arrowTrail\(a0, b0, nil, nil, aw\.motion\)/,'동료 사격 경로 잔존 금지');
   assert.match(field,/nil, nil, if e\.weapon then e\.weapon\.motion else "BOW"/);
 });
 
@@ -3842,8 +3847,8 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/sceneryBatch \+= 1/,'실제 로드된 모델만 분산 계수');
   assert.match(field,/if sceneryBatch >= 12 then/,'프레임별 배치 분산');
   assert.match(field,/if solid ~= true then d\.CanQuery = false end/,'비충돌 장식만 물리 쿼리에서 제외');
-  assert.match(field,/d\.RenderFidelity = if scenicBand == "far" then Enum\.RenderFidelity\.Performance/,'Studio 실측 확인된 원경 LOD 사용');
-  assert.match(field,/else Enum\.RenderFidelity\.Automatic/,'근·중경 원본 정밀도 유지');
+  // [저폴리 자산 권한 보호] RenderFidelity 쓰기는 클라이언트 진입 실패 원인이라 제거됨: 쓰기 금지로 고정.
+  assert.doesNotMatch(field,/d\.RenderFidelity\s*=/,'RenderFidelity 쓰기 금지(권한 오류)');
   assert.match(field,/if index % 3 == 0 and not arid then/,'원경 식생만 승인 간결 모델로 선택');
   assert.ok(field.includes('AssetIds["Terrain/" .. simpler]'),'지역에 맞는 기등록 자연 메시만 선택');
   assert.ok(field.includes('AssetIds["Terrain/kenney_rock_smallFlatA"]'),'원경 암석의 기등록 간결 메시만 선택');
@@ -3876,7 +3881,7 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.ok(script.some(row=>row.code?.includes('FIELD_LOW_POLY_VARIANT_MISSING')),'스튜디오 기등록 원경 간결 메시 실제 생성 검사');
   assert.ok(script.some(row=>row.code?.includes('FIELD_LOW_POLY_COUNT_MISMATCH')),'스튜디오 원경 간결 메시 집계 대조');
   assert.ok(script.some(row=>row.code?.includes('lowPolyModels=')),'스튜디오 원경 간결 실물 수 계측');
-  assert.ok(script.some(row=>row.code?.includes('FIELD_LOW_POLY_MESH_MISSING')),'스튜디오 성능형 메시 설정 확인');
+  assert.ok(!script.some(row=>row.code?.includes('FIELD_LOW_POLY_MESH_MISSING')),'RenderFidelity 쓰기 검사는 제거됨');
   assert.ok(script.some(row=>row.code?.includes('lowPolyMeshes=')),'스튜디오 성능형 메시 적용 수 계측');
   assert.ok(script.some(row=>row.code?.includes('hiddenSceneryFPS=')),'스튜디오 배경 렌더 병목 단독 계측');
   assert.ok(script.some(row=>row.code?.includes('pair[1].LocalTransparencyModifier=pair[2]')),'진단 직후 장식 화면 표시 원복');
