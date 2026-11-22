@@ -389,7 +389,7 @@ test('실물 해적 선상도·쌍날도끼·권총은 CC0 원본과 병종에 �
 });
 
 // [무기 사실성 회귀] R15 관절·재질 표현만 보강하고 전투 수치·저장 구조는 변경하지 않는다.
-test('적과 동료는 무기별 준비·타격·회수 동작과 원본 PBR 맵을 유지한다',()=>{
+test('적 무기 모션과 동료 비전투 동행은 원본 PBR 및 R15 복식을 보존한다',()=>{
   const fieldMotion=read('ReplicatedStorage/Shared/FieldMotion.luau');
   for(const weapon of ['PISTOL','RIFLE','BOW','LONGBOW','CROSSBOW','SPEAR','DAGGER','WAR_AXE','MACE','RAPIER','SABRE','SCIMITAR','KATANA']){
     assert.ok(fieldMotion.includes('grip == "'+weapon+'"'),'무기 동작 구분 누락: '+weapon);
@@ -410,8 +410,17 @@ test('적과 동료는 무기별 준비·타격·회수 동작과 원본 PBR 맵
   assert.match(field,/local enemyDt = dtc \* \(if now < \(pl\.matrixSlowUntil or 0\) then 0\.24 else 1\)/);
   assert.match(field,/AC\.stepEnemy\(e\.ac, enemyDt,/);
   assert.match(field,/FM\.actor\(e\.fm, st, ph, enemyDt, e\.boss/);
-  assert.match(field,/FM\.actor\(a\.fm, "RECOVERY",[^\n]+a\.weapon\.motion\)/);
-  assert.match(field,/FM\.actor\(a\.fm, "ANTICIPATION",[^\n]+a\.weapon\.motion\)/);
+  // [동료 비전투 회귀] 영입·초상·대형·보행은 남고 적 공격/자동 스킬/지원 치유는 없다.
+  const companion = field.slice(field.indexOf('-- 동료(최대 2명):'), field.indexOf('-- 폰: 기본 터치'));
+  assert.ok(companion.includes('local allyDefs = prepareAllyDefs()'),'동료 영입 유지');
+  assert.ok(companion.includes('m:SetAttribute("CompanionId", ad.id)'),'동료 식별 유지');
+  assert.ok(companion.includes('FieldAllyPortrait'),'동료 초상 유지');
+  assert.ok(companion.includes('local goal = (root0.CFrame * CFrame.new('),'기존 동행 대형 유지');
+  assert.match(companion,/FM\.actor\(a\.fm, "RUN"/);
+  assert.match(companion,/FM\.actor\(a\.fm, "IDLE"/);
+  assert.doesNotMatch(companion,/strikeEnemy\(|castEffect\(|local tgt|a\.nextSkill|a\.castAt|activeHealers/,'동료 전투/지원 경로 잔존 금지');
+  assert.match(field,/pl\.hp = math\.min\(pl\.maxHp, pl\.hp \+ 0\.12 \* math\.min\(dt, 0\.1\)\)/);
+  assert.doesNotMatch(field,/local activeHealers =/,'동료 추가 치유 경로 잔존 금지');
   assert.match(field,/if not quiet then/);
   assert.match(field,/local thrust = family == "spear" or family == "dagger"/);
   assert.match(field,/local heavy = family == "axe" or family == "blunt"/);
