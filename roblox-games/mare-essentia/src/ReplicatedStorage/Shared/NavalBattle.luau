@@ -5,6 +5,7 @@
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService") -- [해상 버튼] 교체/준비광 트윈도 기존 클라이언트 서비스만 사용한다.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- [모바일 입자 예산] 효과 밀도만 조절한다. 명중·사거리·재사용 대기시간은 변경하지 않는다.
 local MOBILE_VFX = game:GetService("UserInputService").TouchEnabled
@@ -1571,10 +1572,66 @@ function NavalBattle.play(opts)
 		local mask = Instance.new("UICorner")
 		mask.CornerRadius = UDim.new(1, 0)
 		mask.Parent = cooling
+		-- [지상 버튼과 동일한 광륜] 승인된 원화 버튼에만 링 1개를 상주시키고 발동 때 재사용한다.
+		-- 모바일에서는 입자 추가 생성 없이 두께/섬광만 낮춰 처리한다.
+		if iconKey then
+			b.ClipsDescendants = false
+			local halo = Instance.new("Frame")
+			halo.Name = "NavalButtonHalo"
+			halo.AnchorPoint = Vector2.new(0.5, 0.5)
+			halo.Position = UDim2.fromScale(0.5, 0.5)
+			halo.Size = UDim2.fromScale(0.9, 0.9)
+			halo.BackgroundTransparency = 1
+			halo.Active = false
+			halo.ZIndex = b.ZIndex + 8
+			halo.Parent = b
+			Instance.new("UICorner", halo).CornerRadius = UDim.new(1, 0)
+			local lightRim = Instance.new("UIStroke")
+			lightRim.Color = Color3.fromRGB(255, 245, 177)
+			lightRim.Thickness = if MOBILE_VFX then 2 else 2.8
+			lightRim.Transparency = 1
+			lightRim.Parent = halo
+			local sweep = Instance.new("UIGradient")
+			sweep.Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 244, 211)),
+				ColorSequenceKeypoint.new(0.5, Color3.fromRGB(142, 226, 255)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 222, 140)),
+			})
+			sweep.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 1),
+				NumberSequenceKeypoint.new(0.35, 0.92),
+				NumberSequenceKeypoint.new(0.5, 0),
+				NumberSequenceKeypoint.new(0.65, 0.92),
+				NumberSequenceKeypoint.new(1, 1),
+			})
+			sweep.Parent = lightRim
+			if iconKey == "Menu/naval_speed" then
+				local flash = Instance.new("Frame")
+				flash.Name = "NavalButtonFlash"
+				flash.AnchorPoint = Vector2.new(0.5, 0.5)
+				flash.Position = UDim2.fromScale(0.5, 0.5)
+				flash.Size = UDim2.fromScale(0.78, 0.78)
+				flash.BackgroundColor3 = Color3.fromRGB(246, 250, 255)
+				flash.BackgroundTransparency = 1
+				flash.BorderSizePixel = 0
+				flash.Active = false
+				flash.ZIndex = b.ZIndex + 9
+				flash.Parent = b
+				Instance.new("UICorner", flash).CornerRadius = UDim.new(1, 0)
+			end
+		end
 		return b
 	end
 	local steerDir, throttle = 0, 1
-	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(96, 96), Vector2.new(1, 1), "Menu/naval_speed")
+	-- [지상 무기교체 버튼 동규격] 가속은 셋 중 가장 작은 보조 버튼이다.
+	local speedBtn
+	do
+		local compact = MOBILE_VFX and (battleViewport.X < 520 or battleViewport.X <= battleViewport.Y)
+		local size = if compact then 76 elseif MOBILE_VFX and battleViewport.Y < 330 then 72
+			elseif MOBILE_VFX then 80 else 82
+		speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24),
+			UDim2.fromOffset(size, size), Vector2.new(1, 1), "Menu/naval_speed")
+	end
 	speedBtn.TextSize = 20
 	speedBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 	local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, if battleViewport.X < 480 then 181 else 119),
@@ -1719,8 +1776,13 @@ function NavalBattle.play(opts)
 		end
 	end
 	for _, sk in SKILLS do
-		local actionSize = if battleViewport.X < 520 or (MOBILE_VFX and battleViewport.Y < 330) then 104
-			elseif MOBILE_VFX then 116 else 112
+		-- [지상 조작과 동규격] 포 사격=공격, 함선 특화=회피. 기존 위치/키 입력/사거리·쿨타임은 그대로.
+		local compact = MOBILE_VFX and (battleViewport.X < 520 or battleViewport.X <= battleViewport.Y)
+		local actionSize = if sk.id == "fire" then
+			(if compact then 104 elseif MOBILE_VFX and battleViewport.Y < 330 then 104
+				elseif MOBILE_VFX then 116 else 112)
+			else (if compact then 86 elseif MOBILE_VFX and battleViewport.Y < 330 then 88
+				elseif MOBILE_VFX then 96 else 94)
 		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, sk.y), UDim2.fromOffset(actionSize, actionSize), Vector2.new(0.5, 0.5),
 			if sk.id == "fire" then "Menu/naval_fire" else "Menu/naval_skill")
 		b.TextSize = 14
@@ -1858,6 +1920,26 @@ function NavalBattle.play(opts)
 	end))
 	speedBtn.Activated:Connect(function()
 		throttle = if throttle >= 1 then 0.45 elseif throttle > 0.4 then 0 else 1
+		-- [해상 가속 광륜·섬광] 지상 무기교체와 동일하게 1회 회전하며 기존 객체만 재사용한다.
+		local halo = speedBtn:FindFirstChild("NavalButtonHalo")
+		local rim = halo and halo:FindFirstChildOfClass("UIStroke")
+		local beam = rim and rim:FindFirstChildOfClass("UIGradient")
+		local flash = speedBtn:FindFirstChild("NavalButtonFlash")
+		if halo and rim and beam then
+			halo.Size = UDim2.fromScale(0.9, 0.9)
+			rim.Transparency = 0.05
+			beam.Rotation = 0
+			TweenService:Create(halo, TweenInfo.new(0.44, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Size = UDim2.fromScale(1.2, 1.2) }):Play()
+			TweenService:Create(beam, TweenInfo.new(0.44, Enum.EasingStyle.Linear), { Rotation = 360 }):Play()
+			TweenService:Create(rim, TweenInfo.new(0.44, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Transparency = 1 }):Play()
+		end
+		if flash then
+			flash.BackgroundTransparency = if MOBILE_VFX then 0.82 else 0.73
+			TweenService:Create(flash, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ BackgroundTransparency = 1 }):Play()
+		end
 		speedBtn.Text = if throttle >= 1 then "가속" elseif throttle > 0.4 then "순항" else "정지"
 		local caption = speedBtn:FindFirstChild("NavalButtonCaption")
 		if caption and caption:IsA("TextLabel") then caption.Text = speedBtn.Text end
@@ -6730,6 +6812,21 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			elseif b:GetAttribute("NavalWasCooling") then
 				b:SetAttribute("NavalWasCooling", false)
 				b:SetAttribute("NavalReadyPulseUntil", now + 0.55)
+				-- [해상 쿨타임 준비광] 지상과 동일하게 준비 완료 순간 한 바퀴 회전 후 사라진다.
+				local halo = b:FindFirstChild("NavalButtonHalo")
+				local lightRim = halo and halo:FindFirstChildOfClass("UIStroke")
+				local sweep = lightRim and lightRim:FindFirstChildOfClass("UIGradient")
+				if halo and lightRim and sweep then
+					halo.Size = UDim2.fromScale(0.92, 0.92)
+					lightRim.Transparency = 0.03
+					sweep.Rotation = 0
+					TweenService:Create(halo, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+						{ Size = UDim2.fromScale(1.14, 1.14) }):Play()
+					TweenService:Create(sweep, TweenInfo.new(0.47, Enum.EasingStyle.Linear),
+						{ Rotation = 360 }):Play()
+					TweenService:Create(lightRim, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+						{ Transparency = 1 }):Play()
+				end
                 local readyScale = b:FindFirstChild("NavalReadyScale")
                 if readyScale and readyScale:IsA("UIScale") then
                     readyScale.Scale = 1.12
