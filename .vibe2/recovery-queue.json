@@ -246155,7 +246155,8 @@
         "actions-run:44967508094",
         "system-ai-handoff-to-reservation:system-ai:44970288426:1",
         "actions-run:44970288426",
-        "system-ai-handoff-to-reservation:system-ai:44971175891:1"
+        "system-ai-handoff-to-reservation:system-ai:44971175891:1",
+        "system-ai-handoff-from-reservation:system-ai:44971175891:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -246173,7 +246174,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-11-22T01:37:25.970Z"
+      "updatedAt": "2026-11-22T02:13:07.331Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -252389,7 +252390,8 @@
         "actions-run:44967508094",
         "system-ai-handoff-to-reservation:system-ai:44970288426:1",
         "actions-run:44970288426",
-        "system-ai-handoff-to-reservation:system-ai:44971175891:1"
+        "system-ai-handoff-to-reservation:system-ai:44971175891:1",
+        "system-ai-handoff-from-reservation:system-ai:44971175891:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -252407,7 +252409,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-11-22T01:37:25.936Z"
+      "updatedAt": "2026-11-22T02:13:07.277Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -258982,7 +258984,8 @@
         "actions-run:44964585750",
         "system-ai-handoff-to-reservation:system-ai:44970288426:1",
         "actions-run:44970288426",
-        "system-ai-handoff-to-reservation:system-ai:44971175891:1"
+        "system-ai-handoff-to-reservation:system-ai:44971175891:1",
+        "system-ai-handoff-from-reservation:system-ai:44971175891:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -259000,7 +259003,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-11-22T01:37:26.052Z"
+      "updatedAt": "2026-11-22T02:13:07.402Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -274477,7 +274480,8 @@
         "actions-run:44967508094",
         "system-ai-handoff-to-reservation:system-ai:44970288426:1",
         "actions-run:44970288426",
-        "system-ai-handoff-to-reservation:system-ai:44971175891:1"
+        "system-ai-handoff-to-reservation:system-ai:44971175891:1",
+        "system-ai-handoff-from-reservation:system-ai:44971175891:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -274495,7 +274499,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-30T03:07:30.585Z",
-      "updatedAt": "2026-11-22T01:37:26.202Z"
+      "updatedAt": "2026-11-22T02:13:07.508Z"
     },
     {
       "id": "recovery-00b462d32b871dc8e70a",
@@ -286487,7 +286491,8 @@
         "system-ai-handoff-to-reservation:system-ai:44970288426:1",
         "actions-run:44970288426",
         "system-ai-blocked-task-count:127",
-        "system-ai-handoff-to-reservation:system-ai:44971175891:1"
+        "system-ai-handoff-to-reservation:system-ai:44971175891:1",
+        "system-ai-handoff-from-reservation:system-ai:44971175891:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -286505,7 +286510,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-11-18T05:48:40.335Z",
-      "updatedAt": "2026-11-22T01:37:26.230Z"
+      "updatedAt": "2026-11-22T02:13:07.533Z"
     },
     {
       "id": "recovery-000fe4cf648e182f3ac1",
@@ -299708,6 +299713,68 @@
       "maxRetries": null,
       "createdAt": "2026-11-22T01:48:09.847Z",
       "updatedAt": "2026-11-22T01:48:15.056Z"
+    },
+    {
+      "id": "recovery-fa44ede29f34a5933f34",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "deployment",
+      "sourceTaskId": "deployment:.github/workflows/magic-forest-pages.yml:a1e99ad9061f07a27100c8cce1ccb855f1bce720:fantasy-survival",
+      "gameId": "fantasy-survival",
+      "responsibleFiles": [
+        ".github/workflows/magic-forest-pages.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/magic-forest-pages.yml",
+        "web-games/fantasy-survival"
+      ],
+      "goal": "Analyze the exact failed WEB deployment stage VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS for fantasy-survival using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [],
+      "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
+      "failureSignature": "WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
+      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+      "checkpoint": "a1e99ad9061f07a27100c8cce1ccb855f1bce720",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "a1e99ad9061f07a27100c8cce1ccb855f1bce720",
+      "evidence": [
+        "deployment-failure-run:44973602456:1",
+        "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+        "deployment-platform:WEB",
+        "deployment-game:fantasy-survival",
+        "deployment-head-sha:a1e99ad9061f07a27100c8cce1ccb855f1bce720",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:POST_PUBLICATION_3D_SMOKE",
+        "deployment-failed-step:VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/44973602456",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED"
+      ],
+      "recoveryStrategy": "SYSTEM_AI_CANONICAL_DEPLOYMENT_INFRASTRUCTURE_CAUSAL_REPAIR_THEN_VERIFIED_REDEPLOY",
+      "verificationPlan": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-11-22T02:13:07.035Z",
+      "updatedAt": "2026-11-22T02:13:12.729Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-11-22T02:13:12.729Z"
+      ]
     }
   ]
 }
