@@ -151,3 +151,14 @@
 - **Roblox 자산등록 검증:** `assets-registered.json`의 `CardArt/eu_21` 자산번호 **`138739723458669`**, `usePermissionGranted:true`; `APPROVED_IMAGES.json`의 승인·시각검수 해시와 등록 원본 SHA-256 일치; `src/ReplicatedStorage/Shared/AssetIds.luau`의 `CardArt/eu_21` 바인딩 번호 일치.
 - **다음 후보:** `eu_22` 유라시아스라소니. 현재 최신 `main`에서 등록 여부를 재검증한 후 한 마리의 급강하·도약 장면으로 제작한다.
 - **남은 별도 검증:** Roblox Studio 게임 내 카드 실제 표시, 게임 Place 게시 성공. 기존 전투 규칙·능력치·저장 키·등록기 구조 변경 없음.
+
+## 15. 유라시아스라소니 `eu_22` 원화·자동등록 실패 실측 (2026-11-22)
+
+- **카드:** `eu_22` 유라시아스라소니. 유럽 숲에서 전방으로 도약하는 한 마리. 검은 귀끝 술, 짧은 꼬리, 반점 털, 땅먼지·낙엽이 보이는 **1024×1024 단일 컬러 회화 PNG**. 글자·테두리·다른 동물 없음.
+- **원본/승인:** `assets/cardart/src/eu_22-original.png`, SHA-256 `d29083c15efbc995cbb521170287d0cbd7ed3f145a64d2bc1de9fac1309ebd07`, 검증된 Git Blob `30b62304442c61fa583ea5154e7d614618dd9037`. 승인표 `CardArt/eu_22`와 `modelOriginals`에 동일 SHA-256 기록.
+- **원본·승인 `main` 반영:** `9b0e9b463c5472586291702915f4891567d0b65a` — 실제 PNG 바이너리와 기존 승인표를 같은 커밋으로 반영함.
+- **기존 자산등록 워크플로 [#45011328193](https://github.com/hans1177/jaewoon-games/actions/runs/45011328193): `failure`.** 작업 `register`의 `Upload licensed models and menu icons to Roblox and write AssetIds` 단계가 `tools/mare-essentia-upload-assets.mjs:824`의 `MARE_CC0_NATURE_OFFICIAL_ARCHIVE_HASH_INVALID`로 중단됨. **문제 발생 지점은 외부 Kenney Nature Kit ZIP 고정 해시 검사이며, `eu_22` 원화 자체의 PNG/승인 검사 실패가 아님.** 기존 보안 해시 검사를 제거하거나 무관한 ZIP을 신뢰하도록 바꾸지 말 것.
+- **상태:** 해당 워크플로가 실패했고 이번 검증 당시 `assets-registered.json`에 `CardArt/eu_22` 번호가 없으며 `AssetIds.luau`도 신규 번호가 없음. **원본·승인 반영 완료 / Roblox 실제 자산등록·사용 권한·Studio 실제 표시·게임 게시 미완료.**
+- **다음 작업:** 현재 `main`과 최신 등록표·동일 워크플로 실행 결과부터 재확인. Kenney 공식 다운로드 응답과 고정 ZIP SHA-256이 불일치하는 원인을 원본/라이선스/내용까지 검증한 다음, 기존 책임 함수 안에서만 수정해 정식 등록기를 재실행할 것. 안전 검증 우회·새 래퍼/등록기·고정 해시 임의 갱신·미검증 등록 성공 주장은 금지.
+- `eu_23` 유럽늑대 후보 중 한 번의 이미지 생성이 **불곰으로 잘못 출력**되어 폐기했다. `eu_23`의 원화/승인/자산등록 실적이 아니며 별도 늑대 원화를 제작해야 한다.
+- 게임 카드 능력치·전투 규칙·저장 키·기존 등록 원화는 변경하지 않았음. 이 절의 상태는 작성 당시 실측이므로 **후속 작업은 반드시 최신 `main`을 재조회**한다.
