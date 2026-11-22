@@ -240,14 +240,18 @@ local function addHair(model, kind, color)
 	local variation = tonumber(model:GetAttribute("NpcHairVariant")) or 1
 	if kind == "long" then
 		for _, side in { -1, 1 } do
-			piece(Enum.PartType.Ball, Vector3.new(h.X * 0.33, h.Y * (if variation % 2 == 0 then 1.25 else 1.02), h.Z * 0.34),
+			-- [사진 보정] 뒤쪽 머리숱은 원본 헤어가 부분 메시여도 없애지 않는다.
+			local rearLock = piece(Enum.PartType.Ball, Vector3.new(h.X * 0.33, h.Y * (if variation % 2 == 0 then 1.25 else 1.02), h.Z * 0.34),
 				Vector3.new(side * h.X * 0.37, -h.Y * 0.35, h.Z * 0.35))
+			rearLock.Name = "HairBack"
 		end
-		piece(Enum.PartType.Ball, Vector3.new(h.X * 0.72, h.Y * 0.92, h.Z * 0.26),
+		local nape = piece(Enum.PartType.Ball, Vector3.new(h.X * 0.72, h.Y * 0.92, h.Z * 0.26),
 			Vector3.new(0, -h.Y * 0.29, h.Z * 0.48))
+		nape.Name = "HairBack"
 	elseif kind == "bun" then
-		piece(Enum.PartType.Ball, Vector3.new(h.X * (if variation % 2 == 0 then 0.59 else 0.46),
+		local knot = piece(Enum.PartType.Ball, Vector3.new(h.X * (if variation % 2 == 0 then 0.59 else 0.46),
 			h.Y * 0.40, h.Z * 0.49), Vector3.new(0, h.Y * 0.57, h.Z * 0.32))
+		knot.Name = "HairBack"
 		piece(Enum.PartType.Ball, Vector3.new(h.X * 0.73, h.Y * 0.18, h.Z * 0.23),
 			Vector3.new(0, h.Y * 0.27, -h.Z * 0.47))
 	elseif kind == "short" then
@@ -1312,6 +1316,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		local skin = source:Clone()
 		skin.Name = slotName
 		local parts = {}
+		local visibleHeadwearParts = 0
 		for _, item in skin:GetDescendants() do
 			if item:IsA("Script") or item:IsA("LocalScript") or item:IsA("ModuleScript")
 				or item:IsA("Humanoid") or item:IsA("Animator") or item:IsA("Motor6D")
@@ -1319,7 +1324,18 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				item:Destroy()
 			elseif item:IsA("BasePart") then
 				table.insert(parts, item)
+				if item.Transparency < 0.95 and item.LocalTransparencyModifier < 0.95 then
+					visibleHeadwearParts += 1
+				end
 			end
+		end
+		-- [사진 보정] 투명한 실물 헤어·깃털모자는 정식 장착으로 세지 않는다.
+		-- 예비 모발과 모자가 숨겨져 빈 두피/정수리가 나타나는 상황을 방지한다.
+		if npcOutfit and (string.sub(assetName, 1, 5) == "hair_" or assetName == "acc_feather_hat")
+			and visibleHeadwearParts == 0 then
+			table.insert(missing, assetName .. ":invisible")
+			skin:Destroy()
+			continue
 		end
 		-- [모바일·리그 안전] 통짜 다관절 인물이나 과도한 메시 파츠는 덧씌우지 않는다.
 		if #parts < 1 or #parts > 12 then
@@ -1549,6 +1565,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			end
 			if npcOutfit and (string.sub(assetName, 1, 5) == "hair_"
 				or (detailAllowed and assetName == "acc_feather_hat")) then
+				-- [정수리·뒤통수 보존] 앞머리 보조 도형만 감추고 HairBack은 남겨 실물의 빈틈을 메운다.
 				-- [지역 복식 보존] 실물 머리와 서유럽 깃털모자만 기존 예비 도형을 가린다.
 				-- 선원 머리띠는 지역별 모자 대신 쓰지 않으며, 미로드 시 원형을 유지한다.
 				local fallbackName = if string.sub(assetName, 1, 5) == "hair_" then "Hair" else "Hat"
