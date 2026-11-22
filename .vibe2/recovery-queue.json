@@ -246253,7 +246253,8 @@
         "actions-run:45037579886",
         "system-ai-handoff-to-reservation:system-ai:45038555341:1",
         "actions-run:45038555341",
-        "system-ai-handoff-to-reservation:system-ai:45040171563:1"
+        "system-ai-handoff-to-reservation:system-ai:45040171563:1",
+        "actions-run:45040171563"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -246271,7 +246272,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-11-22T15:56:48.216Z"
+      "updatedAt": "2026-11-22T16:05:05.059Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -252585,7 +252586,8 @@
         "actions-run:45037579886",
         "system-ai-handoff-to-reservation:system-ai:45038555341:1",
         "actions-run:45038555341",
-        "system-ai-handoff-to-reservation:system-ai:45040171563:1"
+        "system-ai-handoff-to-reservation:system-ai:45040171563:1",
+        "actions-run:45040171563"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -252603,7 +252605,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-11-22T15:56:48.166Z"
+      "updatedAt": "2026-11-22T16:05:05.021Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -259273,7 +259275,8 @@
         "actions-run:45037579886",
         "system-ai-handoff-to-reservation:system-ai:45038555341:1",
         "actions-run:45038555341",
-        "system-ai-handoff-to-reservation:system-ai:45040171563:1"
+        "system-ai-handoff-to-reservation:system-ai:45040171563:1",
+        "actions-run:45040171563"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -259291,7 +259294,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-11-22T15:56:48.327Z"
+      "updatedAt": "2026-11-22T16:05:05.153Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -274883,7 +274886,8 @@
         "system-ai-handoff-to-reservation:system-ai:45038555341:1",
         "actions-run:45038555341",
         "system-ai-blocked-task-count:268",
-        "system-ai-handoff-to-reservation:system-ai:45040171563:1"
+        "system-ai-handoff-to-reservation:system-ai:45040171563:1",
+        "actions-run:45040171563"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -274901,7 +274905,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-30T03:07:30.585Z",
-      "updatedAt": "2026-11-22T15:56:48.488Z"
+      "updatedAt": "2026-11-22T16:05:05.270Z"
     },
     {
       "id": "recovery-00b462d32b871dc8e70a",
@@ -287012,7 +287016,8 @@
         "system-ai-impact-score:2328",
         "system-ai-handoff-to-reservation:system-ai:45038555341:1",
         "actions-run:45038555341",
-        "system-ai-handoff-to-reservation:system-ai:45040171563:1"
+        "system-ai-handoff-to-reservation:system-ai:45040171563:1",
+        "actions-run:45040171563"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -287030,7 +287035,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-11-18T05:48:40.335Z",
-      "updatedAt": "2026-11-22T15:56:48.515Z"
+      "updatedAt": "2026-11-22T16:05:05.328Z"
     },
     {
       "id": "recovery-000fe4cf648e182f3ac1",
@@ -302148,6 +302153,115 @@
       "maxRetries": null,
       "createdAt": "2026-11-22T15:45:44.964Z",
       "updatedAt": "2026-11-22T15:45:51.815Z"
+    },
+    {
+      "id": "recovery-fb8641235569166d0457",
+      "status": "dispatched",
+      "priority": "high",
+      "sourceQueue": "system-ai",
+      "sourceTaskId": "marketing-rpg-adventure-pre-release-v1",
+      "gameId": "rpg-adventure",
+      "responsibleFiles": [
+        "company-learning/marketing/rpg-adventure/latest.json"
+      ],
+      "contextFiles": [
+        "game-catalog.json"
+      ],
+      "goal": "Create the current non-financial growth/marketing execution package for rpg-adventure (rpg-adventure). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "relatedTaskIds": [],
+      "failureStage": "system-ai-implementation-failed",
+      "failureSignature": "system-ai-implementation-failed",
+      "blastRadius": "single-task",
+      "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor",
+        "system-ai-impact-score:176",
+        "system-ai-blocked-task-count:0",
+        "system-ai-common-bottleneck:NO",
+        "actions-run:45038555341",
+        "preflight:success",
+        "implementation:success",
+        "verification:failure",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:skipped",
+        "changed-file:company-learning/marketing/rpg-adventure/latest.json",
+        "external-ai-provider:GEMINI",
+        "external-ai-model:gemini-3.5-flash-lite",
+        "external-ai-raw-output-sha256:8255c95099f7d84486101871f0620409134a2a15d7c129e6a0974b4b06ac04c8",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_32dc843f059445dd88ff898e",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_e829220708a8cd005d123a42",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_6302273f93b5aeb91e76cce4",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_1a0cdcce0a4d0cd74b476329",
+        "learning-knowledge-id:EXPERIENCE:exp_pg739o",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_3f9ed1eaf8c7ed00c283e5c3",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_f22782671545193f22176195",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_4df55fa5262d4d2752236afe",
+        "learning-knowledge-id:CODE_PATTERN:pat_external_authorized_e2dd51dac9b5f5062a85243b",
+        "learning-knowledge-id:CODE_PATTERN:pat_external_authorized_ed029ace908f2d11e81feb4d",
+        "learning-knowledge-id:CODE_PATTERN:pat_7a30sr",
+        "learning-knowledge-id:CODE_PATTERN:pat_83szfq",
+        "learning-knowledge-id:CODE_PATTERN:pat_external_authorized_74ebe8b657b003d75b41e2fa",
+        "learning-knowledge-id:CODE_PATTERN:pat_security_policy_review_authorized_v1",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-advanced-coding-v1",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-visual-aesthetic-v1",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-mammal-fur-anatomy-v1",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-material-lighting-v1",
+        "system-ai-qa-contract-review:NOT_REQUIRED",
+        "system-ai-knowledge-outcome:PENDING_VERIFIED_FANIN",
+        "selected-hypothesis:pipeline-or-runner",
+        "selected-strategy:pipeline-or-runner",
+        "system-ai-critic-verdict:NOT_USED",
+        "system-ai-applied-answer-sha256:e8fd0128bd752f6a95adc2ff37cd8933ac36f0d376d277cefffa04a55cb7bc47",
+        "repair-strategy-fingerprint:b69ef16e758193bc55ffa8e7f63386e8dee05503f92e0230169612609fc10549",
+        "failed-strategy-fingerprint:b69ef16e758193bc55ffa8e7f63386e8dee05503f92e0230169612609fc10549",
+        "model-output-sha256:8255c95099f7d84486101871f0620409134a2a15d7c129e6a0974b4b06ac04c8",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "system-ai-failure-class:SECURITY_OR_AUTHORITY_BOUNDARY",
+        "system-ai-failure-route:SECURITY_IMMUNE_SYSTEM",
+        "retry-budget-consumed:YES",
+        "learning-penalty:YES",
+        "primary-ai-collaboration:REQUESTED",
+        "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
+        "primary-ai-collaboration-task:marketing-rpg-adventure-pre-release-v1",
+        "system-ai-impact-score:198",
+        "actions-run:45040306494",
+        "implementation:failure",
+        "verification:skipped",
+        "current-main-verification:failure",
+        "recovery-escalated-from:system-ai",
+        "recovery-route:SYSTEM_AI",
+        "primary-ai-collaboration-reason:REPEATED_FAILURE_SIGNATURE"
+      ],
+      "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
+      "verificationPlan": [
+        "RERUN_EXACT_FAILED_STAGE",
+        "INDEPENDENT_QA_WHEN_APPLICABLE",
+        "REGRESSION_WHEN_APPLICABLE",
+        "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-11-22T16:05:05.393Z",
+      "updatedAt": "2026-11-22T16:05:09.191Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-11-22T16:05:09.191Z"
+      ]
     }
   ]
 }
