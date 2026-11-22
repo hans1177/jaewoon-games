@@ -3525,6 +3525,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			clearDropHint()
 			selectedPlay = nil
 			showCardCodex(nil)
+			-- [실전 검증 표시] 판정과 무관한 읽기 전용 상태. Studio 검사가 실제 카드 사용 결과를 확인한다.
+			local boardMine = 0
+			for _, row in BC.ROWS do boardMine += #m.rows.me[row] end
+			g:SetAttribute("CardBoardMe", boardMine)
+			g:SetAttribute("CardHandMe", #m.hand.me)
+			g:SetAttribute("CardTurn", tostring(m.turn))
 			for _, moving in cardMotions do moving.stop() end
 			table.clear(cardMotions)
 			selected = nil
