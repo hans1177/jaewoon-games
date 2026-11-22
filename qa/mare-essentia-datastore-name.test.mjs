@@ -3413,3 +3413,22 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
   for(const asset of ['hair_simpleparted','hair_long','hair_buns','acc_feather_hat','acc_sailor_headband'])
     assert.ok(assetIds.includes('["People/'+asset+'"]'),'등록 원본 누락: '+asset);
 });
+
+// [헤어 실물 품질 회귀] 단순 메시 숫자 대신 실제 두상 폭·두피·텍스처별 색상 경로를 검사한다.
+test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 압축하지 않는다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  assert.ok(pose.includes('local hairHeightAllowance = if hairStyle == "long" then 2.20'));
+  assert.ok(pose.includes('elseif hairStyle == "bun" then 1.68 else 1.42'));
+  assert.ok(pose.includes('ratio = math.min(target.Size.X * spec[3] / ext.X,'));
+  assert.ok(pose.includes('target.Size.Y * hairHeightAllowance / ext.Y,'));
+  assert.ok(pose.includes('target.Size.Z * spec[5] / ext.Z)'));
+  assert.ok(pose.includes('if npcOutfit and not surface and part:IsA("MeshPart") and part.TextureID ~= ""'));
+  assert.ok(pose.includes('part.Color = part.Color:Lerp(hairTint:Lerp(Color3.new(1, 1, 1), 0.25), 0.70)'));
+  assert.ok(pose.includes('if npcOutfit and surface and surfaceHasColorMap(surface) then'));
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(softTint, 0.72)'));
+  assert.ok(pose.includes('scalp.Name = "HairScalp"'));
+  assert.ok(pose.includes('temple.Name = "HairScalpSide"'));
+  assert.ok(pose.includes('local fittedUpperReady = false'));
+  for(const kind of ['tricorn','bicorne','beret','sailorcap','knit','kofia','fez'])
+    assert.ok(pose.includes('kind == "'+kind+'"'), '기존 모자/재질 분류 누락: '+kind);
+});
