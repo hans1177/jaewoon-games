@@ -310436,11 +310436,153 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_31af0f060021003e5dd929c9",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14172",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "a38351ca568a3f5784a693a26d4bfe0abd749c50",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14172,
+        "baseBranch": "main",
+        "headBranch": "diag/mare-port-stall-locate",
+        "baseSha": "a38351ca568a3f5784a693a26d4bfe0abd749c50",
+        "headSha": "0c1e99e62c18c9b8273b6a83969934c4813cbed0",
+        "mergeCommitSha": "e33b73188e4c89e310726740c7b85d49e826f786",
+        "mergedAt": "2026-11-22T04:02:19Z",
+        "authorLogin": "hans1177",
+        "titleHash": "1ddb932601907184ffb1da494a78df8905cce31b0561160e57832f98650974bf",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "diag/mare-port-stall-locate",
+        "candidateSha": "0c1e99e62c18c9b8273b6a83969934c4813cbed0"
+      },
+      "changeStats": {
+        "changedFileCount": 22,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 290,
+        "deletedLineCount": 492,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/assets/cardart/af_01.png",
+          "roblox-games/mare-essentia/assets/cardart/ea_01.png",
+          "roblox-games/mare-essentia/assets/cardart/eu_01.png",
+          "roblox-games/mare-essentia/assets/cardart/me_01.png",
+          "roblox-games/mare-essentia/assets/cardart/nw_01.png",
+          "roblox-games/mare-essentia/assets/cardart/sa_01.png",
+          "roblox-games/mare-essentia/assets/cardart/src/af_01-original.png",
+          "roblox-games/mare-essentia/assets/cardart/src/ea_01-original.png",
+          "roblox-games/mare-essentia/assets/cardart/src/eu_01-original.png",
+          "roblox-games/mare-essentia/assets/cardart/src/me_01-original.png",
+          "roblox-games/mare-essentia/assets/cardart/src/nw_01-original.png",
+          "roblox-games/mare-essentia/assets/cardart/src/sa_01-original.png",
+          "roblox-games/mare-essentia/docs/CARD_ART_BY_CATEGORY.md",
+          "roblox-games/mare-essentia/docs/CARD_ART_PROMPTS.md",
+          "roblox-games/mare-essentia/docs/continent_card_art_prompts.csv",
+          "roblox-games/mare-essentia/docs/leader_art_prompts.csv",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tools/gen_continent_card_prompts.py"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tools/gen_continent_card_prompts.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14172",
+        "merge-commit:e33b73188e4c89e310726740c7b85d49e826f786",
+        "base-main:a38351ca568a3f5784a693a26d4bfe0abd749c50"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2489
+    "total": 2490
   }
 }
