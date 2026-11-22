@@ -120,9 +120,10 @@ local function drawFace(head)
 		decal.Parent = head
 	end
 	decal.Face = Enum.NormalId.Front
-	if decal.Texture == "" then
-		decal.Texture = "rbxasset://textures/face.png"
-	end
+	-- [기본 얼굴] 빈 HumanoidDescription 리그에서 온 미확인 데칼의 검은 영역을 피한다.
+	-- 주민 기본 얼굴은 내장 텍스처만 사용한다. 신규 외부 자산·표정 변경 없음.
+	decal.Texture = "rbxasset://textures/face.png"
+	decal.Color3 = Color3.new(1, 1, 1)
 	decal.Transparency = 0
 end
 
