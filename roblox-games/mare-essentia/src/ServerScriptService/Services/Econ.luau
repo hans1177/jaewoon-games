@@ -100,6 +100,17 @@ return function(D, S)
 		return nil
 	end
 
+	-- 외교 탭용 세계 정세 표 (국력 순위). 실패하면 nil.
+	function X.worldSummary(state)
+		local ok, result = pcall(function()
+			local w = ensure(state)
+			if not w or not w.nations then return nil end
+			return E.Nations.worldSummary(w.nations, 8)
+		end)
+		if ok then return result end
+		return nil
+	end
+
 	-- 항구 하나의 경제 요약 (View 와 마을 장면이 쓴다). 시뮬이 없으면 nil.
 	function X.town(state, portId)
 		local w = ensure(state)

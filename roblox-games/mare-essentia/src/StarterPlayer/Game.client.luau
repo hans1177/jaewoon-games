@@ -219,6 +219,7 @@ local TABS = {
     { id = "encyclopedia", name = "백과사전" },
 	{ id = "tech", name = "연구" },
 	{ id = "map", name = "지도" },
+	{ id = "diplomacy", name = "외교" },
 	{ id = "explore", name = "지상 탐험" },
 	{ id = "battle", name = "해적 사냥" },
 	{ id = "gwent", name = "카드 대결" },
@@ -228,7 +229,7 @@ local TABS = {
 -- 시설별 창: 건물에 들어가면 그 시설의 탭만 열린다
 local GROUPS = {
 	{ name = "교역소", keeper = "상인 길드", tabs = { "trade", "market", "harbor" } },
-	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map" } },
+	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map", "diplomacy" } },
 	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
 	{ name = "주점", keeper = "주점 주인", tabs = { "board", "quest", "recruit" } }, -- 주점: 의뢰·동료
 	{ name = "전투 본부", keeper = "전투 교관", tabs = { "battle", "explore", "war", "gwent" } }, -- 전투·지상 탐험·함대전·카드 배틀
@@ -254,6 +255,7 @@ H.MENU_FOCUS = {
 	harbor = { "항구 정보", "특산품·수요 → 시장·시설 → 발전 현황" , "항구 살펴보기" },
 	route = { "항로 선택", "거리·위험 → 보급 확인 → 출항" , "항로 살펴보기" },
 	map = { "세계 지도", "목적지 탐색 → 항구 정보 → 항로 연결" , "지도 살펴보기" },
+	diplomacy = { "외교", "나라 정세 → 관계·전쟁 → 선물·개입", "외교 살펴보기" },
 	yard = { "선박 관리", "선체·보급 → 선단·대포 → 새 배 비교" , "선박 비교 보기" },
 	board = { "주점 의뢰", "의뢰 조건 → 위험·보상 → 수락·납품" , "의뢰 살펴보기" },
 	quest = { "진행 일지", "현재 목표 → 달성 조건 → 보상 받기" , "진행 목표 보기" },
@@ -10851,6 +10853,95 @@ H.SEA_NAMES = {
 }
 
 -- 실제 위도·경도 위에 항구를 찍은 세계지도 (Natural Earth 해안선)
+-- [외교] 나라 정세·관계·전쟁·선물·개입·항해자를 한 곳에 모은 탭 (항만청). 기존 지도 탭 하단의 외교 목록을 옮겨 왔다.
+function RENDERERS.diplomacy()
+	H.walletBar("diplomacy")
+	local dp = view.diplo
+	if not dp then
+		add(function() return mkLabel(content, "아직 외교 정보가 없어요.", 14, COLORS.muted, false) end)
+		return
+	end
+	local STATUS = { war = "⚔ 전쟁", hostile = "적대", neutral = "중립", friend = "우호", ally = "동맹", own = "우리" }
+	-- 1) 한눈에: 우리 나라 · 이 항구 나라 · 전쟁 수
+	H.statStrip({
+		{ "우리 나라", dp.power.name, tone = "key" },
+		{ "이 항구", if dp.here and dp.here.power then string.format("%s · %s", dp.here.power, STATUS[dp.here.status] or "") else "-", tone = "key" },
+		{ "큰 전쟁", tostring(#dp.wars) .. "건", tone = if #dp.wars > 0 then "bad" else "good" },
+	})
+	-- 2) 이 항구 나라: 지도자·군사·연구·문화권·관세 (국가 시뮬 요약)
+	local nat = view.harbor and view.harbor.sim and view.harbor.sim.nation
+	if nat and nat.lines then
+		add(function() return mkHeader(content, "이 항구의 나라") end)
+		add(function() return mkLabel(content, table.concat(nat.lines, "\n"), 14, COLORS.text, true) end)
+	end
+	-- 3) 세계 정세: 국력 순위
+	if view.worldNations and #view.worldNations > 0 then
+		add(function() return mkHeader(content, "세계 정세 · 국력 순위") end)
+		for _, n in view.worldNations do
+			add(function()
+				local sub = string.format("%s · %s\n육군 %.0f · 해군 %.0f · 발견 %d종%s%s", n.leader, n.regime, n.army, n.navy, n.techs,
+					if n.war then " · 전쟁: " .. n.war else "", if n.allies > 0 then string.format(" · 동맹 %d", n.allies) else "")
+				local natInfo = PortData.Nations[n.id]
+				return mkRow(content, string.format("%d위 %s%s", n.rank, if natInfo then natInfo.name else n.id, if n.hegemon then " · 패권국" else ""), sub, {}, 70)
+			end)
+		end
+	end
+	-- 4) 관계·전쟁, 외교 행동(선물·증서·전쟁 개입), 항해자
+	add(function()
+		return mkLabel(content, string.format("🏳 국가 관계 — 우리는 %s%s", dp.power.name, if dp.here and dp.here.power then string.format(" · 이 항구: %s (%s)", dp.here.power, STATUS[dp.here.status] or "") else " · 이 항구: 자유 항구"), 15, COLORS.gold, true)
+	end)
+	if #dp.wars == 0 then
+		add(function() return mkLabel(content, "지금은 큰 전쟁이 없어요. 항구들이 평화롭게 오가요.", 12, COLORS.muted, false) end)
+	end
+	for _, w in dp.wars do
+		add(function()
+			return mkRow(content, (if w.mine then "⚔ [우리 편 연루] " else "⚔ ") .. w.title, string.format("%s 대 %s · %d년까지\n%s", w.a, w.b, w.until_, w.text), {}, 84)
+		end)
+	end
+	add(function()
+		local parts = {}
+		for _, r in dp.rel do
+			table.insert(parts, string.format("%s %s(%d)", r.name, STATUS[r.status] or "", r.rep))
+		end
+		return mkLabel(content, table.concat(parts, "  ·  "), 11, COLORS.muted, false)
+	end)
+	add(function()
+		return mkRow(content, "외교", string.format("선물로 호감을 쌓거나, 통행 증서(%d일)로 적국 항구의 입항세를 면해요.%s", 60, if dp.here and dp.here.passLeft > 0 then string.format(" 증서 %d일 남음", dp.here.passLeft) else ""), {
+			{ text = string.format("선물 %d", dp.giftCost), color = COLORS.green, onClick = function() call("DiploGift", {}) end, enabled = dp.here ~= nil and dp.here.canGift == true },
+			{ text = string.format("증서 %d", dp.passCost), color = COLORS.blue, onClick = function() call("DiploPass", {}) end, enabled = true },
+		}, 84)
+	end)
+	add(function()
+		return mkRow(content, "전쟁 개입", "이 항구 나라가 전쟁 중이면 군수 물자(전쟁 점수↑), 중재(휴전 시도), 용병 해군(6개월)을 쓸 수 있어요. 성공할 때만 코인이 나가요.", {
+			{ text = "군수 500", color = COLORS.green, onClick = function() call("DiploAid", { kind = "supply", amount = 500 }) end, enabled = true },
+			{ text = "중재 500", color = COLORS.blue, onClick = function() call("DiploAid", { kind = "mediate", amount = 500 }) end, enabled = true },
+			{ text = "용병 500", color = COLORS.gold, onClick = function() call("DiploAid", { kind = "mercenary", amount = 500 }) end, enabled = true },
+		}, 96)
+	end)
+	add(function()
+		return mkLabel(content, "⚓ 이 항구의 항해자", 14, COLORS.gold, true)
+	end)
+	if #dp.voyagers == 0 then
+		add(function() return mkLabel(content, "지금 이 항구에 머무는 다른 항해자는 없어요.", 12, COLORS.muted, false) end)
+	end
+	for _, v in dp.voyagers do
+		add(function()
+			return mkRow(content, string.format("%s · %s (%s)", v.name, v.role, v.power), v.text, {
+				{ text = if v.met then "대화" else "인사", color = COLORS.green, onClick = function() call("VoyagerMeet", { id = v.id }) end, enabled = true },
+			}, 96)
+		end)
+	end
+	if #dp.sea > 0 then
+		add(function()
+			local lines = {}
+			for _, v in dp.sea do
+				table.insert(lines, string.format("%s(%s) %s → %s %d%%", v.name, v.role, v.from, v.to, v.pct))
+			end
+			return mkLabel(content, "🌊 항해 중: " .. table.concat(lines, " · "), 11, COLORS.muted, false)
+		end)
+	end
+end
+
 function RENDERERS.map()
 	-- 상단 바로가기는 지도를, 항해 일지는 기록을 먼저 펼친다.
 	if H.mapPage ~= "chart" then
@@ -11092,64 +11183,6 @@ function RENDERERS.map()
 			}, 56)
 		end)
 	end
-	-- 국가 관계·전쟁·다른 항해자
-	if view.diplo then
-		local dp = view.diplo
-		local STATUS = { war = "⚔ 전쟁", hostile = "적대", neutral = "중립", friend = "우호", ally = "동맹", own = "우리" }
-		add(function()
-			return mkLabel(content, string.format("🏳 국가 관계 — 우리는 %s%s", dp.power.name, if dp.here and dp.here.power then string.format(" · 이 항구: %s (%s)", dp.here.power, STATUS[dp.here.status] or "") else " · 이 항구: 자유 항구"), 15, COLORS.gold, true)
-		end)
-		if #dp.wars == 0 then
-			add(function() return mkLabel(content, "지금은 큰 전쟁이 없어요. 항구들이 평화롭게 오가요.", 12, COLORS.muted, false) end)
-		end
-		for _, w in dp.wars do
-			add(function()
-				return mkRow(content, (if w.mine then "⚔ [우리 편 연루] " else "⚔ ") .. w.title, string.format("%s 대 %s · %d년까지\n%s", w.a, w.b, w.until_, w.text), {}, 84)
-			end)
-		end
-		add(function()
-			local parts = {}
-			for _, r in dp.rel do
-				table.insert(parts, string.format("%s %s(%d)", r.name, STATUS[r.status] or "", r.rep))
-			end
-			return mkLabel(content, table.concat(parts, "  ·  "), 11, COLORS.muted, false)
-		end)
-		add(function()
-			return mkRow(content, "외교", string.format("선물로 호감을 쌓거나, 통행 증서(%d일)로 적국 항구의 입항세를 면해요.%s", 60, if dp.here and dp.here.passLeft > 0 then string.format(" 증서 %d일 남음", dp.here.passLeft) else ""), {
-				{ text = string.format("선물 %d", dp.giftCost), color = COLORS.green, onClick = function() call("DiploGift", {}) end, enabled = dp.here ~= nil and dp.here.canGift == true },
-				{ text = string.format("증서 %d", dp.passCost), color = COLORS.blue, onClick = function() call("DiploPass", {}) end, enabled = true },
-			}, 84)
-		end)
-		add(function()
-			return mkRow(content, "전쟁 개입", "이 항구 나라가 전쟁 중이면 군수 물자(전쟁 점수↑), 중재(휴전 시도), 용병 해군(6개월)을 쓸 수 있어요. 성공할 때만 코인이 나가요.", {
-				{ text = "군수 500", color = COLORS.green, onClick = function() call("DiploAid", { kind = "supply", amount = 500 }) end, enabled = true },
-				{ text = "중재 500", color = COLORS.blue, onClick = function() call("DiploAid", { kind = "mediate", amount = 500 }) end, enabled = true },
-				{ text = "용병 500", color = COLORS.gold, onClick = function() call("DiploAid", { kind = "mercenary", amount = 500 }) end, enabled = true },
-			}, 96)
-		end)
-		add(function()
-			return mkLabel(content, "⚓ 이 항구의 항해자", 14, COLORS.gold, true)
-		end)
-		if #dp.voyagers == 0 then
-			add(function() return mkLabel(content, "지금 이 항구에 머무는 다른 항해자는 없어요.", 12, COLORS.muted, false) end)
-		end
-		for _, v in dp.voyagers do
-			add(function()
-				return mkRow(content, string.format("%s · %s (%s)", v.name, v.role, v.power), v.text, {
-					{ text = if v.met then "대화" else "인사", color = COLORS.green, onClick = function() call("VoyagerMeet", { id = v.id }) end, enabled = true },
-				}, 96)
-			end)
-		end
-		if #dp.sea > 0 then
-			add(function()
-				local lines = {}
-				for _, v in dp.sea do
-					table.insert(lines, string.format("%s(%s) %s → %s %d%%", v.name, v.role, v.from, v.to, v.pct))
-				end
-				return mkLabel(content, "🌊 항해 중: " .. table.concat(lines, " · "), 11, COLORS.muted, false)
-			end)
-		end
-	end
 	local function addSelectedRoute()
 		if selectedPort and selectedPort ~= view.player.portId then
 			for _, r in view.routes do
@@ -11232,6 +11265,7 @@ H.TAB_ICON = {
 	yard = { "Menu", "yard" }, battle = { "Menu", "battle" }, war = { "Glyph", "war" }, gwent = { "Glyph", "gwent" },
 	scholar = { "Glyph", "scholar" }, codex = { "Menu", "codex" }, encyclopedia = { "Menu", "codex" }, tech = { "Glyph", "research" },
 	status = { "Glyph", "captain" }, crew = { "Glyph", "crew" },
+	diplomacy = { "Castle", "flag-banner-short" }, -- 알현 아이콘과 같은 기존 깃발 모델
 }
 function H.renderTabs()
 	-- [시설 아이콘 동작] 기존 탭 아이콘에만 터치 선택·마우스 반응을 적용한다.
