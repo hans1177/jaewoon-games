@@ -1656,20 +1656,50 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 							surface.Color = surface.Color:Lerp(leather, 0.83)
 						end
 					elseif detailAllowed and (assetName == "outfit_vest" or assetName == "outfit_coat"
-						or assetName == "outfit_apron"
+						or assetName == "outfit_guard" or assetName == "outfit_apron"
 						or assetName == "outfit_sash" or assetName == "outfit_stole") then
-						local dye = if string.find(profile, "guard", 1, true) then Color3.fromRGB(215, 228, 245)
-							elseif string.find(profile, "official", 1, true) then Color3.fromRGB(247, 221, 215)
-							elseif string.find(profile, "sailor", 1, true) then Color3.fromRGB(205, 239, 233)
-							elseif string.find(profile, "worker", 1, true) or string.find(profile, "artisan", 1, true)
-								then Color3.fromRGB(244, 222, 192)
-							elseif string.find(profile, "clergy", 1, true) then Color3.fromRGB(249, 238, 215)
-							else Color3.fromRGB(236, 232, 220)
-						-- [천의 염색 차이] 실제 원본 ColorMap 색을 가리지 않도록 30% 이내 보정.
-						if typeof(npcClothTint) == "Color3" and assetName ~= "outfit_guard" then
-							dye = dye:Lerp(npcClothTint, 0.30 * finishing)
+						-- [원본 재질별 복장 보정] GLB의 섬유·피혁·황동 단추는 같은 outfit 메시라도 별도 재질이다.
+						-- 이전의 파스텔 일괄 염색은 금속 장식까지 밝게 만들었으므로 원본 선형/감마색으로 분리한다.
+						local bestMaterial, bestError = nil, math.huge
+						for _, candidate in OUTFIT_SOURCE_MATERIALS do
+							for colorIndex = 1, 3, 2 do
+								local original = candidate[colorIndex]
+								local err = (part.Color.R - original.R) ^ 2
+									+ (part.Color.G - original.G) ^ 2 + (part.Color.B - original.B) ^ 2
+								if err < bestError then
+									bestError, bestMaterial = err, candidate[2]
+								end
+							end
 						end
-						surface.Color = surface.Color:Lerp(dye, 0.26)
+						local name = part.Name:lower()
+						local metalTrim = part.Material == Enum.Material.Metal
+							or name:find("button", 1, true) or name:find("buckle", 1, true)
+							or name:find("stud", 1, true) or name:find("rivet", 1, true)
+							or name:find("metal", 1, true)
+							or (bestError < 0.0064 and bestMaterial == Enum.Material.Metal)
+						local leatherTrim = part.Material == Enum.Material.Leather
+							or (bestError < 0.0064 and bestMaterial == Enum.Material.Leather)
+						local pale = part.Color.R > 0.88 and part.Color.G > 0.87 and part.Color.B > 0.84
+							and math.max(part.Color.R, part.Color.G, part.Color.B)
+								- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.10
+						-- 경비병의 갑옷은 흰색 기본색이 섞여도 금속 판단이 불명확해 임의 천색으로 덮지 않는다.
+						if not metalTrim and not leatherTrim then
+							local dye = if typeof(npcClothTint) == "Color3" then npcClothTint else part.Color
+							if assetName == "outfit_sash" and typeof(npcTrouserTint) == "Color3" then
+								dye = npcTrouserTint:Lerp(dye, 0.36)
+							elseif assetName == "outfit_stole" then
+								dye = dye:Lerp(Color3.fromRGB(210, 200, 178), 0.58)
+							elseif assetName == "outfit_apron" then
+								dye = dye:Lerp(Color3.fromRGB(161, 130, 92), 0.38)
+							end
+							if bestError < 0.0064 and bestMaterial == Enum.Material.SmoothPlastic then
+								-- [실제 PBR 천] ColorMap/Normal/Roughness를 그대로 사용하며 옷색만 약하게 반영한다.
+								surface.Color = surface.Color:Lerp(dye, if assetName == "outfit_stole" then 0.16 else 0.27)
+							elseif pale and assetName ~= "outfit_guard" then
+								-- [수입 흰 옷 복구] 실제 GLB 원색에 없는 순백 기본 배율만 본래 직물 톤으로 되돌린다.
+								surface.Color = surface.Color:Lerp(dye, 0.75)
+							end
+						end
 					elseif string.sub(assetName, 1, 4) == "acc_" and assetName ~= "acc_pearl_hairpin"
 						and assetName ~= "acc_guild_badge" then
 						local accent = model:GetAttribute("NpcAccentTint")
@@ -1709,12 +1739,18 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						part.Material = fallback[2]
 						part.Color = fallback[1]
 					end
-					-- [직물·가죽 대비] 실제 PBR이 없는 복식만 Roblox 직물 재질로 표현한다.
-					-- 원본 ColorMap이 있는 옷/금속 및 베이스 부품에는 이 보정을 적용하지 않는다.
+					-- [무텍스처 직물 복원] 원본 GLB의 천 계열만 Fabric으로, 금속·피혁은 구분해 남긴다.
+					-- 아머의 천 안감과 단추를 뒤섞지 않고 기존 모델을 그대로 사용한다.
 					if npcOutfit and (assetName == "outfit_vest" or assetName == "outfit_coat"
-						or assetName == "outfit_apron" or assetName == "outfit_sash"
-						or assetName == "outfit_stole" or assetName == "outfit_cuff") and part.Material == Enum.Material.SmoothPlastic then
-						part.Material = Enum.Material.Fabric
+						or assetName == "outfit_guard" or assetName == "outfit_apron" or assetName == "outfit_sash"
+						or assetName == "outfit_stole" or assetName == "outfit_cuff")
+						and part.Material == Enum.Material.SmoothPlastic then
+						local trim = part.Name:lower()
+						if not trim:find("button", 1, true) and not trim:find("buckle", 1, true)
+							and not trim:find("metal", 1, true) and not trim:find("stud", 1, true)
+							and not trim:find("rivet", 1, true) then
+							part.Material = Enum.Material.Fabric
+						end
 					end
 					-- [가죽 신발·벨트] 기본 플라스틱으로 들어온 단색 가죽만 복원한다.
 					-- 버클·리벳 등 별도 금속 파츠와 원본 텍스처/PBR 맵은 변경하지 않는다.
@@ -1884,21 +1920,26 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		end
 		model:SetAttribute("NpcHairMeshReady", wornHair ~= nil)
 	end
-	-- [중복 상의 정리] 새 재단 상의의 실제 부착·표시가 확인된 뒤 구형 통짜 상의만 제거한다.
-	-- 미등록·지연 로드·부착 실패 상태에서는 기본 옷을 유지한다. 게임 규칙과 R15 관절은 그대로다.
+	-- [복장 겹침 방지] 현재 직업/계절이 실제 요구하는 상의 한 벌만 검증한다.
+	-- 예전 계절의 외투가 남았다는 이유로 구형 기본 상의를 지우면 지연 로드 때 맨몸이 드러난다.
 	if npcOutfit and detailAllowed then
 		local fittedVisible = false
-		for _, garment in { "outfit_vest", "outfit_coat", "outfit_guard" } do
-			local mounted = model:FindFirstChild("R15Asset_" .. garment .. "_UpperTorso")
-			if mounted then
-				for _, part in mounted:GetDescendants() do
-					if part:IsA("BasePart") and part.LocalTransparencyModifier < 0.99 then
-						fittedVisible = true
-						break
+		for _, spec in specs do
+			local garment, bone = spec[1], spec[2]
+			if bone == "UpperTorso" and (garment == "outfit_vest" or garment == "outfit_coat"
+				or garment == "outfit_guard") then
+				local mounted = model:FindFirstChild("R15Asset_" .. garment .. "_UpperTorso")
+				if mounted then
+					for _, part in mounted:GetDescendants() do
+						if part:IsA("BasePart") and part.Transparency < 0.95
+							and part.LocalTransparencyModifier < 0.99 then
+							fittedVisible = true
+							break
+						end
 					end
 				end
+				break
 			end
-			if fittedVisible then break end
 		end
 		if fittedVisible then
 			for _, oldName in { "male_peasant_body", "female_peasant_body", "male_ranger_body", "female_ranger_body" } do
