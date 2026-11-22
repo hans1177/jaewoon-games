@@ -3605,3 +3605,51 @@ test('대항해시대 3차 원근·계절 숲·선박 항적 CC0 자산 실물 �
   assert.match(naval,/cliff-cornerlarge-rock/);
   assert.match(naval,/cliff-waterfall-stone/);
 });
+
+// [입체감 4차] 무료 실물 원본·로블록스 체험권한·모바일 시각 예산·복원 경로를 기존 테스트에서 검증한다.
+test('대항해시대 4차 하천·절벽·수관 CC0 등록 및 지형 시차 검사',()=>{
+  const root='roblox-games/mare-essentia/';
+  const registry=JSON.parse(readText(root+'assets-registered.json')).assets;
+  const ids=readText(root+'src/ReplicatedStorage/Shared/AssetIds.luau');
+  const originals={
+    'cliff-large-stone':'e93d0635a9bc566f5a13843f9ef1f9df09c5437c',
+    'cliff-cornerlarge-stone':'5f73fd650e8c63d9f943a0846c8f805156e8eca3',
+    'ground-riverbendbank':'3493554fdeeec1c8409478d7e61c0e0338a31556',
+    'ground-riverside':'7fb71bbd881c3a1b5c5c540a4c139ef2963877f7',
+    'plant-bushsmall':'de5e7840512f0ca9d465eab5bc7c078bf1d613b0',
+    'grass-leafslarge':'662b40110f7f45ae508632dce3e8f69e45bd27a9',
+    'tree-oak-fall':'b14f0de44be30815bfeb91026f41869160cc22ce',
+    'tree-palmbend':'f1ce81e92c48c980fca2de9f0605702e415efb30',
+  };
+  for(const [name,expected] of Object.entries(originals)){
+    const key='Terrain/'+name,asset=registry[key];
+    assert.equal(asset?.license,'CC0-1.0',key+' 무료 라이선스');
+    assert.equal(asset?.assetType,'Model',key+' 3D Model');
+    assert.equal(asset?.usePermissionGranted,true,key+' Universe 권한 확인');
+    assert.ok(/^[1-9][0-9]*$/.test(String(asset?.assetId||'')),key+' Roblox ID');
+    assert.ok(ids.includes('["'+key+'"] = '+asset.assetId),key+' Luau 실물 경로');
+    const bytes=fs.readFileSync(root+'assets/terrain/'+name+'.glb');
+    assert.equal(bytes.toString('ascii',0,4),'glTF',key+' 원본 GLB');
+    const sha=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length))
+      .update(Buffer.from([0])).update(bytes).digest('hex');
+    assert.equal(sha,expected,key+' 공개 원본 SHA');
+  }
+  const field=readText(root+'src/ReplicatedStorage/Shared/FieldScene.luau');
+  const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
+  assert.match(field,/AssetIds\["Terrain\/tree-oak-fall"\]/);
+  assert.match(field,/AssetIds\["Terrain\/tree-palmbend"\]/);
+  assert.match(field,/AssetIds\["Terrain\/ground-riverbendbank"\]/);
+  assert.match(field,/AssetIds\["Terrain\/ground-riverside"\]/);
+  assert.match(field,/AssetIds\["Terrain\/plant-bushsmall"\]/);
+  assert.match(field,/AssetIds\["Terrain\/grass-leafslarge"\]/);
+  assert.match(field,/local depthLandforms = if questTerrain == "glacier" then/);
+  assert.match(field,/FieldNearDepthBandCount/);
+  assert.match(field,/local detailCount = if visualMobile then 10 else 24/);
+  assert.match(naval,/NavalDepthShoreBreakCount/);
+  assert.match(naval,/shoreBreakCount < \(if MOBILE_VFX then 1 else 2\)/);
+  assert.match(naval,/NavalCliffShoreWash/);
+  assert.match(naval,/table.insert\(oceanNodes, surf\)/);
+  assert.match(naval,/for _, anchor in oceanNodes do anchor:Destroy\(\) end/);
+  assert.match(naval,/NavalWakeSourceCount/);
+  assert.match(naval,/cliff-large-stone/);
+});
