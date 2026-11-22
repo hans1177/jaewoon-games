@@ -1008,6 +1008,91 @@ local NPC_PROFESSION_ACCESSORY = {
 	royal_scribe = { "acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38, 0.17, -0.31, -0.66 },
 	royal_archivist = { "acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38, 0.17, -0.31, -0.66 },
 }
+-- [무료 R15 장신구 25종] 실제 CC0 모델 원본·라이선스·해시가 있는 후보만 기등록 People 장착 경로에 연결한다.
+-- 왕관은 왕/왕비 역할 전용이며 아직 왕/왕비 NPC를 임의 생성하지 않는다. 갑옷은 궁정 경비에게만.
+-- 실제 Roblox 자산 ID가 발급되기 전에는 선택되지 않고, 기존 직업 장신구가 그대로 표시된다.
+local NPC_CC0_WARDROBE = {
+	royal_ruler = {
+		{ "cc0_crown", "Head", 1.02, 0.50, 1.02, 0.51 },
+		{ "cc0_crown_ornate", "Head", 1.03, 0.53, 1.03, 0.48 },
+	},
+	royal_consort = {
+		{ "cc0_crown_ornate", "Head", 1.01, 0.50, 1.01, 0.50 },
+		{ "cc0_crown", "Head", 1.02, 0.49, 1.02, 0.51 },
+	},
+	royal_court_officer = {
+		{ "cc0_necklace", "UpperTorso", 0.38, 0.42, 0.38, 0.14, 0, -0.64 },
+		{ "cc0_necklace_2", "UpperTorso", 0.37, 0.42, 0.38, 0.15, 0, -0.65 },
+		{ "cc0_necklace_3", "UpperTorso", 0.38, 0.42, 0.39, 0.15, 0, -0.65 },
+	},
+	royal_administrator = {
+		{ "cc0_necklace_3", "UpperTorso", 0.34, 0.38, 0.35, 0.15, 0, -0.63 },
+		{ "cc0_ring_1", "RightHand", 0.28, 0.22, 0.27, -0.12, 0.38, -0.15 },
+		{ "cc0_key_2", "LowerTorso", 0.37, 0.47, 0.37, -0.30, 0.43, -0.32 },
+	},
+	merchant = {
+		{ "cc0_pouch", "LowerTorso", 0.47, 0.50, 0.45, -0.33, 0.46, -0.25 },
+		{ "cc0_satchel", "LowerTorso", 0.48, 0.54, 0.50, -0.33, 0.45, -0.25 },
+		{ "cc0_coin_star", "UpperTorso", 0.24, 0.25, 0.25, 0.18, -0.34, -0.64 },
+		{ "cc0_coin", "UpperTorso", 0.23, 0.25, 0.25, 0.18, -0.32, -0.63 },
+	},
+	banker = {
+		{ "cc0_ring_1", "RightHand", 0.30, 0.23, 0.27, -0.10, 0.34, -0.16 },
+		{ "cc0_ring_2", "RightHand", 0.29, 0.23, 0.27, -0.10, 0.34, -0.16 },
+		{ "cc0_ring_3", "RightHand", 0.28, 0.22, 0.26, -0.10, 0.34, -0.16 },
+		{ "cc0_padlock", "LowerTorso", 0.35, 0.44, 0.36, -0.32, 0.45, -0.26 },
+		{ "cc0_key_1", "LowerTorso", 0.38, 0.49, 0.38, -0.32, 0.45, -0.32 },
+	},
+	official = {
+		{ "cc0_necklace_2", "UpperTorso", 0.34, 0.38, 0.36, 0.13, 0, -0.62 },
+		{ "cc0_parchment", "LowerTorso", 0.41, 0.40, 0.42, -0.35, 0.47, -0.25 },
+	},
+	royal_scholar = {
+		{ "cc0_book_1", "LeftHand", 0.62, 0.69, 0.61, -0.16, 0, -0.50 },
+		{ "cc0_scroll", "LeftHand", 0.62, 0.72, 0.62, -0.12, 0, -0.50 },
+	},
+	royal_scribe = {
+		{ "cc0_parchment", "UpperTorso", 0.30, 0.33, 0.29, 0.03, -0.41, -0.59 },
+		{ "cc0_book_2", "LowerTorso", 0.44, 0.47, 0.45, -0.35, 0.43, -0.31 },
+	},
+	royal_archivist = {
+		{ "cc0_book_2", "LowerTorso", 0.40, 0.43, 0.41, -0.35, 0.45, -0.31 },
+		{ "cc0_scroll", "LowerTorso", 0.43, 0.44, 0.42, -0.32, 0.46, -0.30 },
+	},
+	royal_messenger = {
+		{ "cc0_satchel", "LowerTorso", 0.49, 0.52, 0.51, -0.34, 0.46, -0.22 },
+		{ "cc0_pouch", "LowerTorso", 0.45, 0.50, 0.45, -0.32, 0.46, -0.26 },
+	},
+	royal_servant = {
+		{ "cc0_pouch", "LowerTorso", 0.42, 0.45, 0.42, -0.32, 0.43, -0.26 },
+		{ "cc0_satchel", "LowerTorso", 0.44, 0.45, 0.44, -0.33, 0.45, -0.26 },
+	},
+	royal_guard = {
+		{ "cc0_leather_armor", "UpperTorso", 1.03, 1.08, 1.05, 0.00 },
+		{ "cc0_metal_armor", "UpperTorso", 1.04, 1.11, 1.05, 0.00 },
+		{ "cc0_glove", "RightHand", 0.70, 0.72, 0.70, -0.11 },
+	},
+	royal_gate_guard = {
+		{ "cc0_metal_armor_2", "UpperTorso", 1.06, 1.10, 1.06, 0.00 },
+		{ "cc0_glove", "RightHand", 0.68, 0.74, 0.70, -0.11 },
+	},
+	royal_ceremonial_guard = {
+		{ "cc0_black_armor", "UpperTorso", 1.07, 1.13, 1.07, 0.00 },
+		{ "cc0_metal_armor_2", "UpperTorso", 1.05, 1.12, 1.06, 0.00 },
+	},
+	clergy = {
+		{ "cc0_necklace", "UpperTorso", 0.32, 0.36, 0.34, 0.14, 0, -0.63 },
+		{ "cc0_chalice", "RightHand", 0.64, 0.73, 0.64, -0.11 },
+	},
+	royal_stablehand = {
+		{ "cc0_pouch", "LowerTorso", 0.47, 0.46, 0.45, -0.32, 0.47, -0.28 },
+		{ "cc0_glove", "RightHand", 0.71, 0.73, 0.70, -0.12 },
+	},
+	tailor = {
+		{ "cc0_glove", "RightHand", 0.68, 0.70, 0.67, -0.12 },
+		{ "cc0_pouch", "LowerTorso", 0.44, 0.43, 0.43, -0.32, 0.45, -0.27 },
+	},
+}
 -- [직업별 실물 휴대품 35종] 기존 등록된 CC0 Relics/Cargo 자산을 주민 R15 관절에만 부착한다.
 -- 각 직업은 독립된 도구·소지품과 착용 위치를 가진다. 공격 판정·경제·저장 속성은 변경하지 않는다.
 -- 표: 원본 자산 키/관절/크기 XYZ/위치 YXZ/기울기 X(도). 미등록 자산은 장착하지 않는다.
@@ -1197,6 +1282,20 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			else NPC_REGISTERED_ACCESSORY.citizen_official_female
 		if alternate and AssetIds["People/" .. alternate[1]] then accessory = alternate end
 	end
+	-- [직업·신분·문화권 기반 무료 복식] 개인별 헤어 해시로 등록 완료된 실물 후보를 1개만 선택한다.
+	-- 모바일 원거리에서는 추가 후보를 포기하고 기존 복식을 보존한다. 번호 미발급 시 기존 장신구 유지.
+	local cc0Choices = detailAllowed and profession and NPC_CC0_WARDROBE[profession]
+	if cc0Choices and #cc0Choices > 0 and detailLimit > 3 then
+		local variant = math.floor(tonumber(model:GetAttribute("NpcHairVariant")) or 1)
+		for offset = 0, #cc0Choices - 1 do
+			local selected = cc0Choices[((variant + offset - 1) % #cc0Choices) + 1]
+			if AssetIds["People/" .. selected[1]] then
+				accessory = selected
+				model:SetAttribute("NpcExternalAccessorySelected", selected[1])
+				break
+			end
+		end
+	end
 	local jobGear = detailAllowed and profession and NPC_PROFESSION_GEAR[profession]
 	if accessory and AssetIds["People/" .. accessory[1]] then
 		specs = table.clone(specs)
@@ -1370,7 +1469,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		end
 		local equipped = model:FindFirstChild(slotName)
 		if equipped then
-			if string.sub(assetName, 1, 7) == "outfit_" or jobProp then
+			if string.sub(assetName, 1, 7) == "outfit_" or string.sub(assetName, 1, 4) == "cc0_" or jobProp then
 				for _, part in equipped:GetDescendants() do
 					if part:IsA("BasePart") then part.LocalTransparencyModifier = 0 end
 				end
@@ -1378,7 +1477,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			attached += 1
 			visibleCount += 1
 			if string.sub(assetName, 1, 7) == "outfit_" then garmentVisible += 1 end
-			if string.sub(assetName, 1, 4) == "acc_" then accessoryVisible += 1 end
+			if string.sub(assetName, 1, 4) == "acc_" or string.sub(assetName, 1, 4) == "cc0_" then accessoryVisible += 1 end
 			continue
 		end
 		local assetKey = if jobProp then assetName else "People/" .. assetName
@@ -1605,7 +1704,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					end
 				-- [직업 실물 도구] Cargo/Relics 원본 금속·목재·직물과 PBR을 보존한다.
 				-- 기존 People 보조 스킨용 무채색 보정은 작업 도구에는 적용하지 않는다.
-				elseif not textured and not jobProp then
+				elseif not textured and not jobProp and string.sub(assetName, 1, 4) ~= "cc0_" then
 					local meshName = (assetName .. "_" .. part.Name):lower()
 					local armor = meshName:find("pauldron", 1, true) or meshName:find("plate", 1, true)
 					local hair = meshName:find("hair_", 1, true)
@@ -1657,7 +1756,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			attached += 1
 			visibleCount += 1
 			if string.sub(assetName, 1, 7) == "outfit_" then garmentVisible += 1 end
-			if string.sub(assetName, 1, 4) == "acc_" then accessoryVisible += 1 end
+			if string.sub(assetName, 1, 4) == "acc_" or string.sub(assetName, 1, 4) == "cc0_" then accessoryVisible += 1 end
 			-- [실물 확인] 실제 장착된 메시 종류를 읽을 수 있게 남긴다. 저장·경제 데이터와 무관하다.
 			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" and assetName ~= "hair_beard" then
 				-- [교체 헤어 정리] 새 머리 장착을 확인한 뒤에만 기존 실물 헤어 슬롯을 제거한다.
@@ -1667,7 +1766,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						and string.find(previous.Name, "hair_beard", 1, true) == nil and previous.Name ~= slotName then previous:Destroy() end
 				end
 				model:SetAttribute("NpcVisibleHairMesh", assetName)
-			elseif npcOutfit and string.sub(assetName, 1, 4) == "acc_" then
+			elseif npcOutfit and (string.sub(assetName, 1, 4) == "acc_" or string.sub(assetName, 1, 4) == "cc0_") then
 				model:SetAttribute("NpcVisibleAccessoryMesh", assetName)
 			end
 			if npcOutfit and ((string.sub(assetName, 1, 5) == "hair_" and assetName ~= "hair_beard")
@@ -1724,6 +1823,29 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then
 			local old = model:FindFirstChild("R15Asset_" .. previous .. "_UpperTorso")
 			if old then old:Destroy(); merged += 1 end
+		end
+	end
+	-- [한 주민 한 장신구] 실제 R15 새 외장 소품을 장착한 뒤에만 오래된 슬롯을 제거한다.
+	-- 미등록·모델 로딩 실패일 때는 기존 깃털모자·배지·머리핀을 보존한다.
+	if npcOutfit and accessory and AssetIds["People/" .. accessory[1]] then
+		local selectedSlot = "R15Asset_" .. accessory[1] .. "_" .. accessory[2]
+		if model:FindFirstChild(selectedSlot) then
+			for _, worn in model:GetChildren() do
+				if worn:IsA("Model") and worn.Name ~= selectedSlot
+					and (string.sub(worn.Name, 1, 13) == "R15Asset_cc0_"
+						or string.sub(worn.Name, 1, 13) == "R15Asset_acc_") then
+					worn:Destroy()
+				end
+			end
+		end
+	end
+	if npcOutfit and UserInputService.TouchEnabled and detailLimit == 3 then
+		for _, worn in model:GetChildren() do
+			if worn:IsA("Model") and string.sub(worn.Name, 1, 13) == "R15Asset_cc0_" then
+				for _, mesh in worn:GetDescendants() do
+					if mesh:IsA("BasePart") then mesh.LocalTransparencyModifier = 1 end
+				end
+			end
 		end
 	end
 	-- [검증용 진단] 저장·경제와 무관한 표시 상태. 근거리(detailLimit 99) 생략은 0이어야 한다.
