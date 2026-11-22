@@ -1187,50 +1187,65 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		end
 		-- [유럽·지중해·남아시아] 동일한 기본 주택 메시에 지역별 골조/박공/회랑/현관을 얹는다.
 		-- 상세 장식은 일부 주택에만 출력하여 모바일 장면의 파트 수를 제한한다.
+		-- [문화권 실물 입면] 기존 도형 파츠 장식 대신 승인된 CC0 석재/목재 모듈을 직접 배치한다.
+		-- 실제 주택 본체·출입·경제 판정은 그대로 유지. 단계 2의 외벽부터 단계 3의 차양·회랑으로 발전한다.
 		if not vacant and houseTier >= 2 and seed % 4 == 1 then
 			local form = architecture.form
-			local decor = C(89, 65, 47)
+			local facadeZ = front * (ext.Z * 0.5 + 0.15)
 			if form == "stepped" then
-				-- 한자동맹: 계단형 정면 박공 실루엣.
-				for j = -2, 2 do
-					local h = (3 - math.abs(j)) * ext.Y * 0.095
-					local gable = part(parent, Vector3.new(ext.X * 0.19, h, 0.52), CFrame.new(pos + Vector3.new(j * ext.X * 0.18, ext.Y + h * 0.35, front * ext.Z * 0.48)), tintColor:Lerp(style.roofs[1], 0.44), Enum.Material.Brick)
-					gable.CanCollide = false
+				-- 한자 상가: 승인된 짧은 석재 벽 모듈을 3단으로 얹어 박공지붕의 높이선을 구분한다.
+				for j = -1, 1 do
+					local level = 2 - math.abs(j)
+					local gable = importedModel(parent, "Town", "kenney_grey_short_wall_01",
+						pos + Vector3.new(j * ext.X * 0.27, ext.Y * (0.78 + level * 0.08),
+							front * ext.Z * 0.47), ext.X * (0.32 + level * 0.05), false,
+						tintColor:Lerp(style.roofs[1], 0.34))
+					if gable then gable.Name = "HarborSteppedGable" end
 				end
 			elseif form == "timber" then
-				-- 북유럽·영국: 기둥과 가로보가 드러나는 목골조.
-				for _, dx in { -0.35, 0.35 } do
-					local beam = part(parent, Vector3.new(0.38, ext.Y * 0.68, 0.38), CFrame.new(pos + Vector3.new(ext.X * dx, ext.Y * 0.43, front * (ext.Z * 0.5 + 0.15))), decor, Enum.Material.Wood)
-					beam.CanCollide = false
-				end
-				local brace = part(parent, Vector3.new(ext.X * 0.8, 0.38, 0.4), CFrame.new(pos + Vector3.new(0, ext.Y * 0.75, front * (ext.Z * 0.5 + 0.15))), decor, Enum.Material.Wood)
-				brace.CanCollide = false
+				-- 영국·북유럽: 단순 가로세로 막대 대신 목골 프레임 실물 메시를 전면에 붙인다.
+				local frame = importedModel(parent, "Town", "kenney_wood_wall_double_cross_01",
+					pos + Vector3.new(0, ext.Y * 0.20, facadeZ), ext.X * 0.76, false, C(89, 65, 47))
+				if frame then frame.Name = "HarborTimberFacade" end
 			elseif form == "arcade" or form == "loggia" then
-				-- 이베리아/이탈리아: 돌기둥 회랑과 발코니 돌출 처마.
+				-- 이베리아·이탈리아: 기존 실물 석주 위에 진짜 아치 메시를 연결한다.
 				for _, dx in { -0.32, 0.32 } do
-					importedModel(parent, "Terrain", "column", pos + Vector3.new(ext.X * dx, 0, front * (ext.Z * 0.52 + 0.85)), ext.Y * 0.58, false)
+					importedModel(parent, "Terrain", "column",
+						pos + Vector3.new(ext.X * dx, 0, front * (ext.Z * 0.52 + 0.85)),
+						ext.Y * 0.58, false)
 				end
 				if houseTier >= 3 then
-					local veranda = part(parent, Vector3.new(ext.X * 0.85, 0.42, 2.4), CFrame.new(pos + Vector3.new(0, ext.Y * 0.52, front * (ext.Z * 0.5 + 0.9))), tintColor, Enum.Material.Limestone)
-					veranda.CanCollide = false
+					local arcade = importedModel(parent, "Town", "kenney_grey_arch_01",
+						pos + Vector3.new(0, ext.Y * 0.32, front * (ext.Z * 0.5 + 0.75)),
+						ext.X * 0.70, false, tintColor)
+					if arcade then arcade.Name = "HarborArcade" end
 				end
 			elseif form == "veranda" then
-				-- 크리올·식민 항구: 넓은 전면 베란다와 차양.
-				local awning = part(parent, Vector3.new(ext.X * 0.95, 0.35, 3), CFrame.new(pos + Vector3.new(0, ext.Y * 0.62, front * (ext.Z * 0.5 + 0.9))), style.roofs[1], Enum.Material.WoodPlanks)
-				awning.CanCollide = false
-				for _, dx in { -0.4, 0.4 } do
-					local post = part(parent, Vector3.new(0.4, ext.Y * 0.6, 0.4), CFrame.new(pos + Vector3.new(ext.X * dx, ext.Y * 0.3, front * (ext.Z * 0.5 + 1.9))), decor, Enum.Material.Wood)
-					post.CanCollide = false
+				-- 크리올·식민 항구: 승인된 적색 지붕 패널과 목주 메시로 베란다를 구성한다.
+				local awning = importedModel(parent, "Town", "kenney_roof_straight_red_01",
+					pos + Vector3.new(0, ext.Y * 0.64, front * (ext.Z * 0.5 + 0.85)),
+					ext.X * 0.89, false, style.roofs[1])
+				if awning then awning.Name = "HarborVerandaRoof" end
+				if houseTier >= 3 then
+					for _, dx in { -0.38, 0.38 } do
+						local support = importedModel(parent, "Town", "kenney_wood_pole_01",
+							pos + Vector3.new(ext.X * dx, 0, front * (ext.Z * 0.5 + 1.75)),
+							ext.Y * 0.62, false, C(89, 65, 47))
+						if support then support.Name = "HarborVerandaPost" end
+					end
 				end
 			elseif form == "mansard" then
-				-- 프랑스: 지붕창과 작은 처마가 비대칭으로 솟는 석조 시가지.
+				-- 프랑스: 기존 승인된 지붕창 실물 메시는 유지한다.
 				for _, dx in { -0.26, 0.26 } do
-					importedModel(parent, "Town", "roof-high-window", pos + Vector3.new(ext.X * dx, ext.Y * 0.83, front * ext.Z * 0.25), ext.X * 0.27, false)
+					importedModel(parent, "Town", "roof-high-window",
+						pos + Vector3.new(ext.X * dx, ext.Y * 0.83, front * ext.Z * 0.25),
+						ext.X * 0.27, false)
 				end
 			elseif form == "coastal" then
-				-- 인도 서해안: 넓고 낮은 목조 처마.
-				local eave = part(parent, Vector3.new(ext.X + 3, 0.4, ext.Z + 3), CFrame.new(pos + Vector3.new(0, ext.Y * 0.78, 0)), style.roofs[1], Enum.Material.WoodPlanks)
-				eave.CanCollide = false
+				-- 말라바르: 해안 목조 주택의 처마는 승인된 경사지붕 실물 모델로 표현한다.
+				local eave = importedModel(parent, "Town", "kenney_roof_straight_red_01",
+					pos + Vector3.new(0, ext.Y * 0.79, 0), ext.X * 0.95, false, style.roofs[1])
+				if eave then eave.Name = "HarborCoastalEave" end
 			end
 		end
 		-- 번성한 항구(4단계↑)엔 집 옆에 수레(Town/cart)를 세워 장사하는 분위기를 낸다
@@ -4989,7 +5004,16 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			end
 		end
 		if i % 3 == 0 then
-			importedModel(folder, "Town", "rock-small", at + Vector3.new(9, 0, 8), 7, false)
+			-- [마을-야산 경계] 기존 작은 바위 자리만 지역의 실물 관목으로 교체해 모델 수를 늘리지 않는다.
+			local brush = if palm then "plant-bushlargetriangle"
+				elseif key == "japan" or key == "china" or key == "korea" then "plant-bushsmall"
+				elseif not northernLand then "plant-bushlarge" else nil
+			if brush and AssetIds["Terrain/" .. brush] then
+				local shrub = importedModel(folder, "Terrain", brush, at + Vector3.new(9, 0, 8), 7, false)
+				if shrub then shrub.Name = "PortBackdropUndergrowth" end
+			else
+				importedModel(folder, "Town", "rock-small", at + Vector3.new(9, 0, 8), 7, false)
+			end
 		end
 	end
 	folder:SetAttribute("PortBackdropRidgeCount", ridgePlaced)
@@ -5410,11 +5434,14 @@ function PortScene.build(info, onFacility)
 	local coastalRocks = if warmShore then { "rocks-sand-a", "rocks-sand-b", "rocks-sand-c" } else { "rocks-a", "rocks-b" }
 	-- [해안 높이층] 기존 네 곳의 연안 바위 예산 안에서 곶·사선 절벽을 실물 모델로 교차한다.
 	-- 섬·항로 판정은 원래 물·보행 경계가 담당하며 새 지형은 충돌이 없다.
-	local coastCliffs = { "cliff-cornerinnerlarge-rock", "cliff-diagonal-rock" }
+	-- [이전 해안 회귀 복구] 모래바위 A/B/C 및 북쪽 바위 A/B를 먼저 배치한다.
+	-- 모바일은 기존 네 자리, PC는 다섯 자리: 바위 3개+절벽 1~2개, 새 파츠 없이 실제 모델만.
+	local coastCliffs = if warmShore then { "cliff-cornerinnerlarge-rock", "cliff-diagonal-rock" }
+		else { "cliff-cornerlarge-stone", "cliff-large-stone" }
 	local coastRelief = 0
-	for i = 1, 4 do
-		local highRelief = i % 2 == 0 and (not UserInputService.TouchEnabled or i == 2)
-		local name = if highRelief then coastCliffs[math.floor(i / 2)] else coastalRocks[(i - 1) % #coastalRocks + 1]
+	for i = 1, (if UserInputService.TouchEnabled then 4 else 5) do
+		local highRelief = i >= 4
+		local name = if highRelief then coastCliffs[i - 3] else coastalRocks[(i - 1) % #coastalRocks + 1]
 		local group = if highRelief then "Terrain" else "Naval"
 		if AssetIds[group .. "/" .. name] then
 			local side = if i % 2 == 0 then 1 else -1
