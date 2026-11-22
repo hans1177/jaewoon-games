@@ -3790,6 +3790,11 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/local px = side \* half \* \(0\.29 \+ rng:NextNumber\(0, 0\.13\)\)/,'실물 소품 측면 거리');
   assert.match(field,/local pz = half \* \(0\.71 - band \* 0\.23\)/,'모바일 소품 앞뒤 층');
   assert.match(field,/depthX = \(if depthX < 0 then -1 else 1\) \* half/,'등록된 지형 근경 배치');
+  assert.match(field,/local visualLayoutRng = Random\.new\(/,'전경 배치 전용 난수 분리');
+  assert.match(field,/half \* visualLayoutRng:NextNumber\(0\.27, 0\.37\)/,'나무 중경 랜덤은 전용 난수');
+  assert.match(field,/half \* visualLayoutRng:NextNumber\(0\.30, 0\.43\)/,'바위 중경 랜덤은 전용 난수');
+  assert.match(field,/\+ visualLayoutRng:NextNumber\(-6, 6\)/,'전경 나무 좌표 난수 격리');
+  assert.match(field,/\+ visualLayoutRng:NextNumber\(-7, 7\)/,'전경 바위 좌표 난수 격리');
   assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
   assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
 });
