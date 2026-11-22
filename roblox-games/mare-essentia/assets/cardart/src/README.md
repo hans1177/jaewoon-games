@@ -1,6 +1,6 @@
 # 해상전투 지역별 오브젝트 카드 원화
 
-> **카드배틀 후속 작업 필독:** [제작·등록 인수인계](../../docs/CARD_BATTLE_HANDOFF.md) 및 [원화 프롬프트 규칙](../../docs/CARD_ART_PROMPTS.md)을 먼저 읽어야 한다. 등록 완료와 시안/미등록을 구분하고, 기존 `main` 자산과 SHA-256을 대조한다.
+> **카드배틀 후속 작업 필독:** [제작·등록 인수인계](../../../docs/CARD_BATTLE_HANDOFF.md) 및 [원화 프롬프트 규칙](../../../docs/CARD_ART_PROMPTS.md)을 먼저 읽어야 한다. 등록 완료와 시안/미등록을 구분하고, 기존 `main` 자산과 SHA-256을 대조한다.
 
 기존 `BoardingCards.luau` 의 `eu_01`~`af_30` 150장에 대응하는 신규 원본 벡터 삽화(SVG)다.
 
