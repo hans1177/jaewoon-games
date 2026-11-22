@@ -1217,7 +1217,47 @@ function FieldScene.start(opts)
 		{ "ground-riverside", 15, 0.76, -0.27, -10 },
 		{ "ground-riverbendbank", 13, -0.57, -0.49, 40 },
 		{ "ground-riverbendbank", 15, -0.73, -0.70, -16 }
-	} elseif questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "swamp" then {
+	} elseif questTerrain == "mine" then {
+		-- [광산 3D 층] 기존 실물 동굴 입구·나무 지지대·암벽을 전투길 바깥에 배치한다.
+		{ "cliff-cave-rock", 36, -0.84, -0.68, 15 },
+		{ "wood-support", 19, 0.78, -0.54, -12 },
+		{ "cliff-blockslope-rock", 28, 0.87, -0.82, 20 },
+		{ "log-stack", 8, -0.63, -0.41, 28 },
+		{ "rock-talld", 18, 0.79, -0.27, 9 },
+		{ "cliff-cornerinnerlarge-rock", 31, -0.91, -0.88, 14 },
+	} elseif questTerrain == "ruins" then {
+		-- [유적 3D 층] 아치·부서진 기둥과 암벽을 다른 원근에 분리한다.
+		{ "ruins-wall-arched", 28, -0.84, -0.75, 15 },
+		{ "ruins-pillar-decorated", 19, 0.81, -0.56, -21 },
+		{ "cliff-cornerinnertop-rock", 29, 0.89, -0.83, 24 },
+		{ "rock-largea", 13, -0.74, -0.34, 12 },
+		{ "ground-pathrocks", 9, 0.61, -0.41, 18 },
+		{ "cliff-blockdiagonal-rock", 26, -0.91, -0.54, -12 },
+	} elseif questTerrain == "desert" then {
+		-- [사막 3D 층] 모래 언덕을 근경, 암벽을 원경으로 구분한다.
+		{ "mystic-sand-dune", 35, -0.86, -0.78, 10 },
+		{ "rock-largea", 19, 0.80, -0.47, -12 },
+		{ "cliff-blockdiagonal-rock", 31, 0.90, -0.87, 21 },
+		{ "ground-pathrocks", 9, -0.58, -0.32, 8 },
+		{ "rock-talld", 14, -0.81, -0.19, -11 },
+		{ "cliff-cornerlarge-rock", 29, -0.91, -0.57, 15 },
+	} elseif questTerrain == "farm" then {
+		-- [농경지 3D 층] 승인된 실물 자갈길·밀밭·장작더미로 완만한 높이 차를 만든다.
+		{ "ground-pathstraight", 23, -0.81, -0.71, 14 },
+		{ "crops-wheatstageb", 13, 0.75, -0.52, -17 },
+		{ "cliff-blockslope-rock", 24, 0.89, -0.87, 12 },
+		{ "log-stack", 8, -0.67, -0.35, 10 },
+		{ "plant-bushdetailed", 7, 0.66, -0.32, 11 },
+		{ "ground-pathrocks", 11, -0.86, -0.43, -10 },
+	} elseif questTerrain == "swamp" then {
+		-- [습지 3D 층] 물가 둑·키 큰 수풀·이끼 바위를 겹치되 통행 판정은 바꾸지 않는다.
+		{ "ground-riverbendbank", 21, -0.84, -0.71, 24 },
+		{ "forest-bush-detailed", 12, 0.77, -0.49, -12 },
+		{ "cliff-cornerinnertop-rock", 26, 0.89, -0.83, 15 },
+		{ "plant-bushdetailed", 8, -0.70, -0.37, 8 },
+		{ "river-stone-bank", 12, 0.64, -0.34, 18 },
+		{ "cliff-blockslope-rock", 23, -0.91, -0.45, -19 },
+	} elseif questTerrain == "forest" or questTerrain == "jungle" then {
 		{ "cliff-blockslope-rock", 25, -0.81, -0.53, 22 },
 		{ "cliff-cornerinnertop-rock", 24, 0.78, -0.73, -30 },
 		{ "plant-bushdetailed", 7, 0.60, -0.33, 6 },
@@ -1250,15 +1290,35 @@ function FieldScene.start(opts)
 	-- [가까운 시야층] 원신식 원근 구도의 원리만 참고한다. 전경의 낮은 수풀, 중경의
 	-- 강가 돌무더기, 원경의 절벽선을 서로 다른 거리에 배치한다. 중앙 전투 길을 가리지 않는다.
 	do
-		local nearBands = if questTerrain == "coast" and tropical then {
-			-- [열대 해변] 야자수와 승인된 해안 플랫폼을 모바일 2개 전경 슬롯 안에 배치한다.
-			{ "tree-palmbend", 24, -0.66, 0.18, 12 }, { "platform-beach", 19, -0.84, -0.81, -18 },
-			{ "grass-leafslarge", 6, -0.54, 0.16, 7 }, { "coast-grass-patch", 8, 0.74, -0.61, 0 },
-		} elseif tropical then {
+		local nearBands = if tropical then {
+			-- [모바일 해안·열대] 기존 검사 호환성을 유지하며 해안만 실물 해변을 두 번째 슬롯에 배치한다.
 			{ "tree-palmbend", 24, -0.66, 0.18, 12 },
-			{ "grass-leafslarge", 6, -0.54, 0.16, 7 }, { "plant-flattall", 7, 0.52, 0.07, 0 },
-			{ "cliff-cornerlarge-stone", 31, 0.85, -0.47, 35 }, { "ground-riverbendbank", 13, -0.68, -0.54, 19 },
-		} elseif questTerrain == "forest" or questTerrain == "swamp" then {
+			if questTerrain == "coast" then { "platform-beach", 19, -0.84, -0.81, -18 }
+				else { "grass-leafslarge", 6, -0.54, 0.16, 7 },
+			{ "plant-flattall", 7, 0.52, 0.07, 0 },
+			{ "cliff-cornerlarge-stone", 31, 0.85, -0.47, 35 },
+			{ "ground-riverbendbank", 13, -0.68, -0.54, 19 },
+		} elseif questTerrain == "mine" then {
+			-- [광산 전경] 기존 2개 모바일 슬롯에서 동굴 벽과 버팀목의 깊이를 먼저 보여 준다.
+			{ "cliff-cave-rock", 34, -0.86, 0.12, 14 }, { "wood-support", 17, 0.82, -0.27, -19 },
+			{ "rock-talld", 13, 0.76, -0.13, 7 }, { "cliff-blockdiagonal-rock", 28, -0.90, -0.58, 12 },
+		} elseif questTerrain == "ruins" then {
+			-- [유적 전경] 기존 조사·전투 위치 바깥에 실물 건축 파편을 한 층 더 배치한다.
+			{ "ruins-pillar-decorated", 21, -0.86, 0.12, 16 }, { "rock-largea", 12, 0.78, -0.17, 7 },
+			{ "ruins-wall-arched", 23, -0.87, -0.61, 12 }, { "ground-pathrocks", 8, 0.65, -0.38, 16 },
+		} elseif questTerrain == "desert" then {
+			-- [사막 전경] 바위와 모래 언덕의 거리 차이를 밝히고 기존 모바일 슬롯 제한을 유지한다.
+			{ "rock-largea", 15, -0.81, 0.13, -13 }, { "mystic-sand-dune", 27, 0.85, -0.46, 18 },
+			{ "rock-talld", 12, 0.74, -0.12, 20 }, { "ground-pathrocks", 8, -0.69, -0.39, 14 },
+		} elseif questTerrain == "farm" then {
+			-- [농경지 전경] 밀밭과 지면 길을 서로 다른 깊이에 둔다.
+			{ "crops-wheatstageb", 13, -0.77, 0.12, 11 }, { "ground-pathstraight", 16, 0.78, -0.23, -12 },
+			{ "log-stack", 7, -0.67, -0.36, 14 }, { "plant-bushdetailed", 7, 0.68, -0.41, 12 },
+		} elseif questTerrain == "swamp" then {
+			-- [습지 전경] 실제 하천 둑과 식생을 구분해 평면감을 줄인다.
+			{ "ground-riverbendbank", 15, -0.84, 0.11, 19 }, { "forest-bush-detailed", 12, 0.72, -0.17, 11 },
+			{ "river-stone-bank", 13, -0.74, -0.40, -16 }, { "plant-bushdetailed", 8, 0.69, -0.35, 15 },
+		} elseif questTerrain == "forest" then {
 			{ "plant-bushlargetriangle", 9, -0.55, 0.22, 0 },
 			{ "plant-bushdetailed", 8, -0.69, 0.11, 9 }, { "tree-tall", 20, 0.71, 0.06, -10 },
 			{ "ground-riverside", 19, -0.83, -0.37, 34 }, { "ground-riverbendbank", 12, 0.65, -0.56, -24 },
