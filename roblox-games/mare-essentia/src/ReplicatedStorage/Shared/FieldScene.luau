@@ -1139,6 +1139,13 @@ function FieldScene.start(opts)
 			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.52, 0.88), 0,
 				rng:NextNumber(-half * 0.81, half * 0.50))
 		end
+		-- [전경·중경] 맵 외곽에만 수목이 몰려 빈 잔디밭처럼 보이지 않도록
+		-- 기존 나무 다섯 그루 중 한 그루를 진입로 양옆에 둔다. 스폰·중앙 전투로와 수량은 그대로다.
+		if index % 5 == 1 then
+			local lane = math.floor((index - 1) / 5) % 3
+			pos = ORIGIN + Vector3.new((if index % 2 == 0 then -1 else 1) * half * rng:NextNumber(0.27, 0.37), 0,
+				half * (0.72 - lane * 0.18) + rng:NextNumber(-6, 6))
+		end
 		local h = rng:NextNumber(9, 15)
 		local name = treeNames[rng:NextInteger(1, #treeNames)]
 		local kind = if AssetIds["Terrain/" .. name] then "Terrain" else "Town"
@@ -1197,6 +1204,12 @@ function FieldScene.start(opts)
 			-- 일반 지형의 바위도 조사·전투·시작 통로와 충돌하지 않게 양쪽 가장자리에 둔다.
 			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.55, 0.90), 0,
 				rng:NextNumber(-half * 0.84, half * 0.48))
+		end
+		-- [전투로 측면] 기존 암석의 일부를 중경 자갈·암반층으로 재배치한다.
+		-- 중앙 공격 동선과 최초 스폰 지점을 침범하지 않고 기존 암석 개수만 사용한다.
+		if index % 6 == 1 then
+			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.30, 0.43), 0,
+				half * (0.62 - (math.floor((index - 1) / 6) % 2) * 0.20) + rng:NextNumber(-7, 7))
 		end
 		local rock = rockNames[rng:NextInteger(1, #rockNames)]
 		local entry = { rock[1], rock[2], rng:NextNumber(2.5, 6), nil, nil, true }
@@ -1530,7 +1543,15 @@ function FieldScene.start(opts)
 		for index, spec in nearBands do
 			if (not visualMobile or index <= 2) and AssetIds["Terrain/" .. spec[1]] then
 				local entry = { "Terrain", spec[1], spec[2], nil, nil, false, spec[5] }
-				entry.position = ORIGIN + Vector3.new(spec[3] * half * mirror, 0, spec[4] * half)
+				-- [실물 근경] 모바일에도 표시되는 첫 두 승인 실물을 실제 전투 시야 안으로 당긴다.
+				-- 크기·종류·기존 2개 제한은 바꾸지 않고 중앙 이동로는 비운다.
+				local depthX = spec[3] * half * mirror
+				local depthZ = spec[4] * half
+				if index <= 2 then
+					depthX = (if depthX < 0 then -1 else 1) * half * (if index == 1 then 0.48 else 0.56)
+					depthZ = half * (if index == 1 then 0.47 else 0.29)
+				end
+				entry.position = ORIGIN + Vector3.new(depthX, 0, depthZ)
 				entry.depth = true
 				stageFeature(entry)
 				placedBandCount += 1
@@ -1692,8 +1713,10 @@ function FieldScene.start(opts)
 	for index = 1, detailCount do
 		local band = math.floor((index - 1) / 4)
 		local side = if index % 2 == 0 then -1 else 1
-		local px = side * half * (0.51 + rng:NextNumber(0, 0.11))
-		local pz = -half * 0.71 + band * half * 0.17 + rng:NextNumber(-7, 7)
+		-- [장면 깊이] 기존 모바일 10개 / PC 24개 실물 소품을 앞→중간→뒤로 나눈다.
+		-- 최초 10개가 전부 먼 원경에만 놓이던 문제를 고치되 전투 중앙은 비운다.
+		local px = side * half * (0.29 + rng:NextNumber(0, 0.13))
+		local pz = half * (0.71 - band * 0.23) + rng:NextNumber(-7, 7)
 		local asset = detailAssets[((index - 1) % #detailAssets) + 1]
 		local entry = { "Terrain", asset, if asset == "north-pine-fall" then 8.5
 			elseif asset == "east-bamboo-grove" then 7 elseif asset == "log-stack" then 4.5
@@ -1712,7 +1735,7 @@ function FieldScene.start(opts)
 			elseif asset == "kenney_log_stackLarge" then 4.8
 			elseif asset == "kenney_plant_bushTriangle" or asset == "kenney_grass_leafs" then 4.4
 			else rng:NextNumber(2.2, 5.2), nil, nil, false }
-		entry.position = ORIGIN + Vector3.new(px, 0, math.clamp(pz, -half * 0.83, half * 0.27))
+		entry.position = ORIGIN + Vector3.new(px, 0, math.clamp(pz, -half * 0.74, half * 0.80))
 		stageFeature(entry)
 	end
 
