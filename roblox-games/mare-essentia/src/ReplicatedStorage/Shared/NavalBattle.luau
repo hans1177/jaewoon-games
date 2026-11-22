@@ -687,15 +687,15 @@ function NavalBattle.play(opts)
 		-- [해안 원근층] CC0 절벽 원본 3종만 각 해역 바깥쪽에 추가한다.
 		-- 실제 항구/물가에 존재하던 실물과 같은 수입 경로로 단 한번 로드한다.
 		local depthCoast = if coast.id == "caribbean" or coast.id == "tropical" or coast.id == "gold_coast" then {
-			{ "cliff-cornerlarge-rock", 142, -473, -393 }, { "tree-palmdetailedtall", 70, -444, -353 },
+			{ "cliff-cornerlarge-stone", 142, -473, -393 }, { "tree-palmbend", 70, -444, -353 },
 			{ "cliff-blockslope-rock", 113, -471, -388 }, { "cliff-top-rock", 92, 464, 401 },
-			{ "cliff-large-rock", 138, 512, -392 },
+			{ "tree-palmdetailedtall", 65, 478, 410 },
 		} elseif coast.id == "north_sea" or coast.id == "arctic" or coast.id == "cape" or coast.id == "atlantic_storm" then {
-			{ "cliff-waterfall-stone", 144, 473, -401 }, { "cliff-cornerlarge-rock", 118, -472, 395 },
-			{ "cliff-large-rock", 149, 474, -408 }, { "cliff-top-rock", 123, -500, 384 },
+			{ "cliff-large-stone", 149, 473, -401 }, { "cliff-cornerlarge-stone", 118, -472, 395 },
+			{ "cliff-waterfall-stone", 137, 489, -425 }, { "cliff-top-rock", 123, -500, 384 },
 			{ "cliff-blockslope-rock", 102, -437, -410 },
 		} else {
-			{ "cliff-blockdiagonal-rock", 140, -488, 375 }, { "cliff-cornerlarge-rock", 117, 495, -413 },
+			{ "cliff-cornerlarge-stone", 140, -488, 375 }, { "cliff-large-stone", 117, 495, -413 },
 			{ "cliff-blockslope-rock", 128, -496, 371 }, { "cliff-large-rock", 136, 486, -401 },
 			{ "cliff-top-rock", 98, 438, 410 },
 		}
@@ -710,6 +710,10 @@ function NavalBattle.play(opts)
 				if not MOBILE_VFX or index <= 3 then table.insert(shoreModels, spec) end
 			end
 			local originalCoastCount = #shoreModels
+			-- [연안 물결 시차] 물결은 돌출 실물 절벽의 기슭에서만 솟고,
+			-- 모바일은 한 곳, PC는 두 곳까지만 쓴다. 장면 종료 시 기존 oceanNodes가 해제한다.
+			local shoreBreakCount = 0
+			folder:SetAttribute("NavalDepthShoreBreakCount", 0)
 			for index, spec in depthCoast do
 				if (not MOBILE_VFX or index <= 1) and AssetIds["Terrain/" .. spec[1]] then
 					table.insert(shoreModels, spec)
@@ -739,6 +743,36 @@ function NavalBattle.play(opts)
 					if not ok then model:Destroy()
 					elseif index > originalCoastCount then
 						folder:SetAttribute("NavalDepthCoastCount", (folder:GetAttribute("NavalDepthCoastCount") or 0) + 1)
+						if shoreBreakCount < (if MOBILE_VFX then 1 else 2)
+							and string.find(spec[1], "cliff", 1, true) then
+							local surf = Instance.new("Attachment")
+							surf.Name = "NavalCliffShoreWash"
+							surf.WorldCFrame = CFrame.new(ORIGIN + Vector3.new(spec[3] * 0.97, 0.48, spec[4] * 0.97))
+							surf.Parent = workspace.Terrain
+							local wash = Instance.new("ParticleEmitter")
+							wash.Texture = "rbxasset://textures/particles/smoke_main.dds"
+							wash.Color = ColorSequence.new(foamColor, Color3.fromRGB(229, 244, 247))
+							wash.Transparency = NumberSequence.new({
+								NumberSequenceKeypoint.new(0, 0.58),
+								NumberSequenceKeypoint.new(0.65, 0.81),
+								NumberSequenceKeypoint.new(1, 1),
+							})
+							wash.Size = NumberSequence.new({
+								NumberSequenceKeypoint.new(0, 1.2),
+								NumberSequenceKeypoint.new(0.45, if mode == "storm" then 8 else 4.5),
+								NumberSequenceKeypoint.new(1, 0),
+							})
+							wash.Speed = NumberRange.new(0.6, if mode == "storm" then 7 else 3.6)
+							wash.Lifetime = NumberRange.new(0.65, 1.4)
+							wash.SpreadAngle = Vector2.new(128, 15)
+							wash.EmissionDirection = Enum.NormalId.Top
+							wash.Rate = if MOBILE_VFX then 2 else (if mode == "storm" then 5 else 3)
+							wash.Drag = 2.6
+							wash.Parent = surf
+							table.insert(oceanNodes, surf)
+							shoreBreakCount += 1
+							folder:SetAttribute("NavalDepthShoreBreakCount", shoreBreakCount)
+						end
 					end
 				end
 			end
