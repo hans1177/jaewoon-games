@@ -875,6 +875,43 @@ local function villager(parent, pos, facing, coat, rng, role, keepCoat, extra)
 		outfit.hat = "wide"
 	end
 	if extra and extra.noHat then outfit.hat = nil end
+	-- [1650년대 주민 외형] 이름 또는 항구·직업·고정 좌표를 해시해 재방문 시 같은 얼굴/복식을 유지한다.
+	-- 기존 배치 난수, 경제, 저장을 변경하지 않고 승인된 머리·의상만 선택한다.
+	if year >= 1500 and not outfit.companion then
+		local identity = if extra and type(extra.identity) == "string" then extra.identity
+			else ("%s:%s:%d:%d"):format(currentKey, outfit.profession or role, math.floor(pos.X * 4), math.floor(pos.Z * 4))
+		local hash = 17
+		for i = 1, #identity do hash = (hash * 33 + string.byte(identity, i)) % 2147483647 end
+		outfit.identity = identity
+		outfit.persona = hash % 3 + 1
+		if not keepCoat and o and o.coats and #o.coats > 0 then
+			coat = o.coats[(math.floor(hash / 7) % #o.coats) + 1]
+			if currentKey == "tropic" or currentKey == "pacific" or currentKey == "seasia" then
+				coat = coat:Lerp(C(240, 224, 191), 0.14)
+			end
+		end
+		if outfit.age ~= "elder" then
+			local hairColors = if currentKey == "korea" or currentKey == "china" or currentKey == "japan"
+				then { C(34, 31, 30), C(55, 44, 38), C(69, 56, 46) }
+				elseif currentKey == "ottoman" or currentKey == "swahili" or currentKey == "wafrica" or currentKey == "malabar"
+				then { C(35, 30, 29), C(52, 39, 32), C(75, 51, 37) }
+				else { C(43, 33, 29), C(82, 56, 40), C(122, 82, 53), C(58, 51, 44), C(173, 132, 83) }
+			outfit.hairColor = hairColors[(math.floor(hash / 13) % #hairColors) + 1]
+		end
+		if outfit.gender == "male" then
+			local sailor = outfit.profession == "sailor" or outfit.profession == "boatswain" or outfit.profession == "fisher"
+			outfit.hair = if sailor and hash % 4 == 0 then "long" else "short"
+		elseif outfit.age ~= "child" then
+			outfit.hair = if hash % 4 == 0 then "short" elseif hash % 2 == 0 then "bun" else "long"
+		end
+		-- 외부 기후가 실제 입력된 경우 비/폭풍, 또는 기존 계절이 겨울일 때 서유럽 외투를 선택한다.
+		local weather = parent:GetAttribute("PortVisualWeather")
+		local winter = parent:GetAttribute("CitySeasonIndex") == 1
+		local coldRegion = currentKey == "north" or currentKey == "nordic" or currentKey == "hanse"
+			or currentKey == "britain" or currentKey == "france" or currentKey == "stone"
+		outfit.weatherLayer = if weather == "rain" or weather == "storm" or weather == "snow"
+			or (winter and coldRegion) then "outer_coat" else "normal"
+	end
 	local figure = Pose.createR15(parent, pos, facing, coat, rng, role,
 		if extra and type(extra.height) == "number" then extra.height else 5.8, outfit)
 	if figure then figure.Name = "Villager" end
@@ -5136,7 +5173,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		or key == "ottoman" or key == "pacific" or key == "japan" or key == "korea"
 	local northernLand = key == "nordic" or key == "hanse" or key == "britain"
 		or key == "stone" or key == "north" or key == "france"
-	local ridgePool = if northernLand then { "cliff-large-stone", "cliff-cornerinnertop-rock", "cliff-blockslope-rock" }
+	local ridgePool = if northernLand then { "cliff-large-stone", "cliff-steps-rock", "cliff-blockslope-rock" }
 		elseif rockyCoast then { "cliff-diagonal-rock", "cliff-cornerinnerlarge-rock", "cliff-large-rock" }
 		else { "cliff-blockslope-rock", "cliff-diagonal-rock", "cliff-large-rock" }
 	local rimRocks = if lvl >= 4 then 24 else 32
@@ -5146,14 +5183,16 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		local side = if i % 2 == 0 then 1 else -1
 		-- [좌우 균형] 짝수에만 절벽을 놓지 않고, 외곽 2~3겹 실루엣을 형성한다.
 		local ridge = i % 3 ~= 0 and ridgePlaced < ridgeLimit
-		local at = if ridge then Vector3.new(rng:NextNumber(-620, -170), 0,
-			side * rng:NextNumber(WZ + 125, WZ + 225))
+		-- [3층 단차] 승인된 절벽 메시를 3개 거리띠의 다른 기슭 높이에 배치한다.
+		local ridgeBand = 1 + (math.floor((i - 1) / 2) % 3)
+		local at = if ridge then Vector3.new(rng:NextNumber(-620, -170), -2 - ridgeBand * 2,
+			side * rng:NextNumber(WZ + 65 + ridgeBand * 45, WZ + 115 + ridgeBand * 55))
 			else Vector3.new(rng:NextNumber(-420, -45), 0,
 				side * rng:NextNumber(WZ + 26, WZ + 100))
 		local rockName = if ridge then ridgePool[(i - 1) % #ridgePool + 1] else "rock-large"
 		local rockKind = if ridge then "Terrain" else "Town"
 		if AssetIds[rockKind .. "/" .. rockName] then
-			local size = if ridge then rng:NextNumber(115, 175) + (if lvl >= 4 then 16 else 0)
+			local size = if ridge then rng:NextNumber(145, 215) + (if lvl >= 4 then 20 else 0)
 				else rng:NextNumber(12, 20)
 			local rock = importedModel(folder, rockKind, rockName, at, size, false)
 			if rock then
@@ -5163,6 +5202,15 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					rock.Name = "PortBackdropRidge"
 					rock:SetAttribute("BackdropCulture", key)
 					rock:SetAttribute("BackdropTier", lvl)
+					rock:SetAttribute("PortReliefBand", ridgeBand)
+					-- [푸른 대기 원근] 등록 원본 PBR/텍스처는 지키고 무텍스처 메시만 거리별로 톤을 낮춘다.
+					for _, stone in rock:GetDescendants() do
+						if stone:IsA("BasePart") and stone.MaterialVariant == ""
+							and (not stone:IsA("MeshPart") or stone.TextureID == "")
+							and not stone:FindFirstChildOfClass("SurfaceAppearance") then
+							stone.Color = stone.Color:Lerp(Color3.fromRGB(145, 177, 204), 0.08 + ridgeBand * 0.07)
+						end
+					end
 					ridgePlaced += 1
 				end
 			end
@@ -5220,17 +5268,23 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		{ "coast-grass-patch", 10 }, { "plant-bushlarge", 14 },
 	}
 	local foregroundPlaced = 0
+	local swayingFoliage = {}
 	for i = 1, (if vistaMobile then 4 else 8) do
 		local entry = foregroundAssets[(i - 1) % #foregroundAssets + 1]
 		if AssetIds["Terrain/" .. entry[1]] then
 			local side = if i % 2 == 0 then 1 else -1
-			local at = Vector3.new(-65 - ((i * 53) % 280), 0, side * (WZ + 11 + (i % 3) * 7))
+			-- [전경 가림] 처음 두 수풀은 중심 광장에서 떨어진 양옆 산책로, 나머지는 성벽 바깥.
+			local at = if i <= 2 then Vector3.new(-132, 0, side * 116)
+				else Vector3.new(-65 - ((i * 53) % 280), 0, side * (WZ + 11 + (i % 3) * 7))
 			local model = importedModel(folder, "Terrain", entry[1], at, entry[2], false)
 			if model then
 				local foliage = entry[1] ~= "Rock_2"
 				model.Name = if foliage then "PortForegroundFoliage" else "PortForegroundRock"
 				model:SetAttribute("PortDepthLayer", "NEAR")
 				model:SetAttribute("PortSway", foliage)
+				if foliage and not vistaMobile and #swayingFoliage < 3 then
+					table.insert(swayingFoliage, { model = model, rest = model:GetPivot() })
+				end
 				foregroundPlaced += 1
 				-- [바람 먼지] 데스크톱의 앞쪽 두 풀에서만 기존 입자 텍스처를 재사용한다.
 				if foliage and not vistaMobile and foregroundPlaced <= 2 then
@@ -5253,6 +5307,40 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		end
 	end
 	folder:SetAttribute("PortBackdropForegroundCount", foregroundPlaced)
+	-- [땅 색 경계] 기존 등록 흙길·풀·야생화 실물 메시만 비충돌로 섞는다.
+	local terrainPatches = { "ground-pathrocks", "coast-grass-patch", "forest-flower-yellow" }
+	local groundPatchesPlaced = 0
+	for i = 1, (if vistaMobile then 4 else 9) do
+		local asset = terrainPatches[(i - 1) % #terrainPatches + 1]
+		if AssetIds["Terrain/" .. asset] then
+			local side = if i % 2 == 0 then 1 else -1
+			local at = Vector3.new(-135 - i * 28, 0.18, side * (WZ + 10 + (i % 3) * 5))
+			local patch = importedModel(folder, "Terrain", asset, at, if asset == "ground-pathrocks" then 10 else 7, false)
+			if patch then
+				patch.Name = "PortGroundVariation"
+				patch:SetAttribute("PortDepthLayer", "NEAR")
+				patch:SetAttribute("ShowcaseOnly", true)
+				groundPatchesPlaced += 1
+			end
+		end
+	end
+	folder:SetAttribute("PortGroundVariationCount", groundPatchesPlaced)
+	-- [바람] 기존 승인 수풀 3개 이하만 회전. 모바일·항해 중에는 갱신하지 않는다.
+	if #swayingFoliage > 0 then
+		local swayAt, swayConn = 0, nil
+		swayConn = RunService.Heartbeat:Connect(function()
+			if not folder.Parent then return end
+			local now = os.clock()
+			if now < swayAt or workspace:GetAttribute("VoyageActive") then return end
+			swayAt = now + 0.22
+			for index, target in swayingFoliage do
+				if target.model.Parent then
+					target.model:PivotTo(target.rest * CFrame.Angles(0, 0, math.sin(now * 0.9 + index) * 0.024))
+				end
+			end
+		end)
+		folder.Destroying:Connect(function() swayConn:Disconnect() end)
+	end
 	-- [마을 발전 실루엣] 기등록된 문화권 적합 실물 건축만 3단계 이후 외곽에 소량 표시한다.
 	-- 정식 건물·사업장으로 오인되지 않게 모든 모델은 충돌·경제·저장 없이 배경 전용으로 둔다.
 	local vistaBuilding = ({
@@ -5546,6 +5634,8 @@ function PortScene.build(info, onFacility)
 	folder:SetAttribute("CityBuildingMode", "AUTO_VISUAL_READ_ONLY")
 	folder:SetAttribute("CityDevelopmentTier", sceneLevel)
 	folder:SetAttribute("CityConstructionCanPurchase", false)
+	-- 실제 날씨 데이터가 있을 때만 주민 실물 외투 조건에 전달한다.
+	if type(info.weather) == "string" then folder:SetAttribute("PortVisualWeather", info.weather) end
 	-- [항만 단계] 장면과 항만 표지·투명 보행 경계가 같은 1~5단계 결과를 쓴다.
 	local dockGrowth = PortBuildings.harborVisual(sceneLevel, info.sim and info.sim.buildings)
 	folder:SetAttribute("HarborVisualTier", dockGrowth.tier)
@@ -7137,10 +7227,11 @@ function PortScene.build(info, onFacility)
 	end
 	-- [천천히 흐르는 원경 구름] 기존 장면의 구름은 건드리지 않고 전용 구름만 생명주기에 묶는다.
 	local skyTerrain = workspace:FindFirstChildOfClass("Terrain")
+	local portClouds = nil
 	local existingClouds = skyTerrain and skyTerrain:FindFirstChildOfClass("Clouds")
 	if skyTerrain and (not existingClouds or existingClouds.Name == "MarePortClouds") then
 		if existingClouds then existingClouds:Destroy() end
-		local portClouds = Instance.new("Clouds")
+		portClouds = Instance.new("Clouds")
 		portClouds.Name = "MarePortClouds"
 		portClouds.Cover = if UserInputService.TouchEnabled then 0.16 else 0.26
 		portClouds.Density = 0.24
@@ -7237,8 +7328,13 @@ function PortScene.build(info, onFacility)
 
 	local grade = Lighting:FindFirstChild("MareGrade")
 	local bloom = Lighting:FindFirstChild("MareBloom")
-	-- [모바일 부하] 이 장면에는 심도 효과가 없으며 블룸만 터치 환경에서 끈다.
+	-- [모바일 후처리] 항구에서는 터치 기기의 기존 심도/블룸 모두 비활성화한다.
 	if bloom then bloom.Enabled = not UserInputService.TouchEnabled end
+	if UserInputService.TouchEnabled then
+		for _, effect in Lighting:GetChildren() do
+			if effect:IsA("DepthOfFieldEffect") or effect:IsA("BloomEffect") then effect.Enabled = false end
+		end
+	end
 	local rays = Lighting:FindFirstChild("MareRays")
 	local lights = {}
 	local function registerLight(item)
@@ -7248,11 +7344,16 @@ function PortScene.build(info, onFacility)
 	end
 	for _, item in folder:GetDescendants() do registerLight(item) end
 	local lightConn = folder.DescendantAdded:Connect(registerLight)
-	local updateAt = 0
+	local updateAt, cloudUpdateAt = 0, 0
 	local climateConn = RunService.Heartbeat:Connect(function()
 		local now = os.clock()
 		if now < updateAt then return end
 		updateAt = now + 0.10
+		-- [원경 구름 움직임] 기존 구름 덮임만 2.5초마다 미세 변화시킨다.
+		if portClouds and portClouds.Parent and now >= cloudUpdateAt then
+			cloudUpdateAt = now + 2.5
+			portClouds.Cover = (if UserInputService.TouchEnabled then 0.16 else 0.26) + math.sin(now / 48) * 0.025
+		end
 		-- [조명 충돌 방지] 지상 탐험이 진행 중이면 항구의 주야 주기가 필드 조명을 덮어쓰지 않는다.
 		if workspace:GetAttribute("VoyageActive") or workspace:GetAttribute("ShotCF") or workspace:FindFirstChild("FieldScene") then
 			if snow then snow.Rate = 0 end
