@@ -308,7 +308,7 @@ local FIELD_TINT = {
 	["kenney_stump_roundDetailed"] = Color3.fromRGB(126, 101, 71),
 	["kenney_log_stackLarge"] = Color3.fromRGB(128, 99, 69),
 }
-local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverride)
+local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverride, scenicBand)
 	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 	local group = lib and lib:FindFirstChild(kind)
 	local tpl = group and group:FindFirstChild(asset)
@@ -323,6 +323,9 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 			d.Anchored = true
 			d.CanCollide = solid == true
 			d.CanTouch = false
+			-- [전경 유지·원경 최적화] 충돌 없는 먼 장식의 그림자만 생략한다.
+			-- 승인 모델 외형·텍스처·근경 그림자·실제 충돌 판정은 그대로 유지한다.
+			if scenicBand == "far" and solid ~= true then d.CastShadow = false end
 			local tint = tintOverride or FIELD_TINT[asset]
 			if kind == "Animals" and tint then
 				-- [야생 생물 품종색] 원본 PBR 맵/무늬와 눈·발굽·뿔 등 세부색은 보존한다.
@@ -989,6 +992,8 @@ function FieldScene.start(opts)
 	-- AssetLoader가 뒤늦게 등록한 모델도 같은 좌표에 한 번만 배치한다. 새 파츠 대체는 하지 않는다.
 	local pending = {}
 	local built = 0
+	-- [무제한 모델 분할 배치] 한 프레임에 수백 개를 복제하지 않고 기존 배치 흐름에서 분산한다.
+	local sceneryBatch = 0
 	local function placeFeature(entry)
 		if not folder.Parent then return nil end
 		local pos = entry.position or (ORIGIN + Vector3.new(entry[4] * half * mirror, 0, entry[5] * half))
@@ -996,7 +1001,7 @@ function FieldScene.start(opts)
 			local hit = workspace:Raycast(Vector3.new(pos.X, ORIGIN.Y + 100, pos.Z), Vector3.new(0, -140, 0), groundRay)
 			if hit then pos = Vector3.new(pos.X, hit.Position.Y, pos.Z) end
 		end
-		local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6], entry.tint)
+		local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6], entry.tint, entry.band)
 		if not m then return nil end
 		-- [Studio 근·중·원경 확인] 등록 모델이 실제 배치됐을 때만 세며, 지연 로드도 같은 수치에 포함한다.
 		if entry.band then
@@ -1054,6 +1059,12 @@ function FieldScene.start(opts)
 				titleLabel.Parent = bb
 				bb.Parent = adorn
 			end
+		end
+		sceneryBatch += 1
+		if sceneryBatch >= 12 then
+			sceneryBatch = 0
+			-- 모델 수 하드캡은 없으며, 대량 배치의 순간 렌더링 끊김만 줄인다.
+			task.wait()
 		end
 		return m
 	end
