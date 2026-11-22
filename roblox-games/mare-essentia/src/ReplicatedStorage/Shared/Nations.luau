@@ -377,13 +377,122 @@ local function newState(st, id, regimeOverride)
 	return S
 end
 
+-- ───────── 항구: 문화권·언어·종교, 소유, 동화와 반란 ─────────
+-- 항구마다 그 지역의 문화권(언어·종교)이 있다. 다른 문화권의 나라가 차지하면 동화가 더디고 반란 위험이 커진다.
+N.FAMILIES = {
+	latin = { name = "라틴·가톨릭권", lang = "로망스어", faith = "가톨릭" },
+	germanic = { name = "게르만·개신교권", lang = "게르만어", faith = "개신교" },
+	slavic = { name = "슬라브·정교권", lang = "슬라브어", faith = "정교회" },
+	levant = { name = "중동·이슬람권", lang = "아랍어·튀르크어", faith = "이슬람" },
+	persian = { name = "페르시아·이슬람권", lang = "페르시아어", faith = "이슬람" },
+	indian = { name = "인도권", lang = "인도어", faith = "힌두·이슬람" },
+	sea = { name = "동남아 해양권", lang = "말레이어", faith = "이슬람·불교" },
+	east = { name = "동아시아 유교권", lang = "한문·동아시아어", faith = "유교·불교" },
+	africa = { name = "아프리카권", lang = "아프리카 제어", faith = "토착·이슬람" },
+	pacific = { name = "태평양 도서권", lang = "폴리네시아어", faith = "토착" },
+	native = { name = "아메리카 원주민권", lang = "원주민어", faith = "토착" },
+}
+local FAMILY_OF_NATION = {
+	england = "germanic", netherlands = "germanic", sweden = "germanic", denmark = "germanic", prussia = "germanic", germany = "germanic",
+	russia = "slavic", poland = "slavic", ottoman = "levant", persia = "persian", china = "east", korea = "east", japan = "east", vietnam = "east",
+	spain = "latin", portugal = "latin", france = "latin", venice = "latin", italy = "latin", malta = "latin",
+}
+local function familyOfTown(t)
+	local lat, lon = t.lat or 0, t.lon or 0
+	if FAMILY_OF_NATION[t.country] then return FAMILY_OF_NATION[t.country] end
+	if lon < -30 then return "native" end
+	if lat > 35 and lon > -15 and lon < 40 then return "latin" end
+	if lat > 12 and lon >= 25 and lon < 60 then return "levant" end
+	if lat > 20 and lon >= 60 and lon < 95 then return "indian" end
+	if lat <= 20 and lon >= 60 and lon < 90 then return "indian" end
+	if lat >= 22 and lon >= 100 and lon < 150 then return "east" end
+	if lon >= 90 and lon < 135 then return "sea" end
+	if lat < 12 and lon > -25 and lon < 60 then return "africa" end
+	if lat > 12 and lon > -25 and lon < 25 then return "levant" end
+	return "pacific"
+end
+local TOLERANCE = { merchant_republic = 1.4, parliament = 1.2, bureaucracy = 1.0, elective = 1.0, absolute = 0.9, sultanate = 1.0,
+	military_shogun = 0.7, theocracy = 0.5, tribal = 1.0, military_republic = 0.8 }
+local TARIFF_BASE = { merchant_republic = 0.03, parliament = 0.06, absolute = 0.10, sultanate = 0.08, bureaucracy = 0.12,
+	military_shogun = 0.15, theocracy = 0.08, elective = 0.07, tribal = 0.05, military_republic = 0.09 }
+
+local function nativeOwner(st, t)
+	return st.liege[t.country] or t.country
+end
+local function ownerOf(st, id, t)
+	local o = st.owner[id]
+	if o and st.states[o] then return o end
+	return nativeOwner(st, t)
+end
+-- 나라(state)의 대표 문화권: 소유 항구 중 가장 많은 쪽
+local function nationFamily(st, w, nationId)
+	local cnt, best, bestN = {}, "latin", -1
+	for _, id in ipairs(w.order) do
+		local t = w.towns[id]
+		if nativeOwner(st, t) == nationId and not st.owner[id] then
+			local f = familyOfTown(t)
+			cnt[f] = (cnt[f] or 0) + 1
+		end
+	end
+	for f, n in pairs(cnt) do
+		if n > bestN or (n == bestN and f < best) then best, bestN = f, n end
+	end
+	return best
+end
+
+local function ensurePort(st, w, id, ownerId)
+	local t = w.towns[id]
+	local row = st.ports[id]
+	local fam = familyOfTown(t)
+	if not row then
+		row = { fam = fam, assim = 1, unrest = 0.1 }
+		st.ports[id] = row
+		local S = st.states[ownerId]
+		if S then
+			S.fam = S.fam or nationFamily(st, w, ownerId)
+			if S.fam ~= fam then row.assim = 0.35 end
+		end
+	end
+	return row
+end
+
+local function stepPorts(st, w)
+	for id, S in pairs(st.states) do S.fam = nationFamily(st, w, id) end
+	local ids = {}
+	for _, id in ipairs(w.order) do table.insert(ids, id) end
+	for _, id in ipairs(ids) do
+		local t = w.towns[id]
+		local ownerId = ownerOf(st, id, t)
+		local S = st.states[ownerId]
+		if S then
+			local row = ensurePort(st, w, id, ownerId)
+			local foreign = S.fam ~= row.fam
+			local colonial = ownerId ~= t.country and (st.owner[id] ~= nil or st.liege[t.country] == ownerId)
+			local tol = TOLERANCE[S.regime] or 1
+			if foreign then
+				row.assim = clamp(row.assim + 0.006 * tol * (0.5 + (S.soc and S.soc.literacy or 0.2)), 0, 0.85)
+			else
+				row.assim = clamp(row.assim + 0.02, 0, 1)
+			end
+			local pressure = (1 - row.assim) * 0.5 + (S.soc and S.soc.unrest or 0.1) * 0.3 + (colonial and 0.05 or 0) + (S.war and 0.04 or 0)
+			local relief = (S.dev.admin / 100) * 0.2 + (S.dev.mil / 100) * 0.1 + (S.legit or 0.5) * 0.15 + tol * 0.05
+			row.unrest = clamp(row.unrest + (pressure - relief) * 0.15, 0, 1)
+			if st.owner[id] and row.unrest > 0.85 and roll(st, id .. ":rebel") < 0.05 then
+				st.owner[id] = nil
+				row.unrest, row.assim = 0.3, 1
+				logEvent(st, ownerId, "port_rebel", string.format("%s 항구 반란: %s 지배 종식", t.name or id, ownerId))
+			end
+		end
+	end
+end
+
 local function aggregate(st, w)
 	for _, S in pairs(st.states) do S.metrics = { pop = 0, gdp = 0, trade = 0, towns = 0, stab = 0, tech = 0, treasury = 0, stage = 0 }
 		S.res = emptyRes()
 	end
 	for _, id in ipairs(w.order) do
 		local t = w.towns[id]
-		local owner = st.liege[t.country] or t.country
+		local owner = ownerOf(st, id, t)
 		local S = st.states[owner]
 		if S then
 			local m = S.metrics
@@ -428,7 +537,7 @@ end
 -- ───────── 초기화 ─────────
 function N.init(w)
 	local st = { schema = N.SCHEMA, seed = math.floor(w.seed or 1), day = w.day or 0, startYear = w.startYear or 1650,
-		states = {}, liege = {}, log = {}, ranks = {}, adjacency = {} }
+		states = {}, liege = {}, log = {}, ranks = {}, adjacency = {}, owner = {}, ports = {} }
 	local seen = {}
 	for _, id in ipairs(w.order) do seen[w.towns[id].country] = true end
 	local ids = {}
@@ -598,6 +707,8 @@ local function stepState(st, S)
 	stepForces(st, S)
 	-- 재정: 전쟁과 행정이 약하면 빚이 늘고, 평시에는 갚는다
 	local spend = S.fin.income * (0.75 + S.focus.mil * 0.6 + S.focus.navy * 0.3 + (S.war and 0.25 or 0))
+	if S.tribute and st.day > S.tribute.untilDay then S.tribute = nil end
+	if S.tribute then spend += S.fin.income * 0.1 end
 	local net = S.fin.income * (0.9 + S.dev.admin / 250) - spend
 	S.fin.debt = math.max(0, S.fin.debt - net * 0.5)
 	-- 문화 사슬: 투자 → 품질 → 특산품 → 브랜드
@@ -631,7 +742,79 @@ local function militaryPower(S)
 	return S.power or 0
 end
 
-local function stepDiplomacy(st)
+-- ───────── 전쟁 후 종전 협상 ─────────
+-- 전쟁 점수로 승패를 가르고, 이긴 쪽이 배상금·조공·항구 할양을 요구한다. 비기면 백지 휴전.
+-- 할양된 항구는 st.owner 로 소유가 바뀌고 식민지(이질 문화권이면 동화·반란 문제)가 된다.
+local function ceedablePort(st, w, loserId, winnerId)
+	local bestId, bestScore = nil, -1
+	local loserPorts = 0
+	for _, id in ipairs(w.order) do
+		if ownerOf(st, id, w.towns[id]) == loserId then loserPorts += 1 end
+	end
+	if loserPorts <= 1 then return nil end -- 마지막 항구는 빼앗지 않는다
+	local capital, capPop = nil, -1
+	for _, id in ipairs(w.order) do
+		local t = w.towns[id]
+		if ownerOf(st, id, t) == loserId and (t.pop or 0) > capPop then capital, capPop = id, t.pop or 0 end
+	end
+	for _, id in ipairs(w.order) do
+		local t = w.towns[id]
+		if id ~= capital and ownerOf(st, id, t) == loserId then
+			local near = 0
+			for _, nb in ipairs(t.neighbors or {}) do
+				local o = w.towns[nb.id]
+				if o and ownerOf(st, nb.id, o) == winnerId then near += 1 / math.max(1, nb.d / 500) end
+			end
+			local score = near * 2 + math.log(1 + (t.gdp or 0)) * 0.1 + hash01(id .. winnerId) * 0.01
+			if score > bestScore then bestId, bestScore = id, score end
+		end
+	end
+	return bestId
+end
+
+function N.treaty(st, w, S, foe)
+	local sScore = (S.war and S.war.score) or 0
+	local fScore = (foe.war and foe.war.score) or -sScore
+	local diff = sScore - fScore
+	local win, lose
+	if diff > 2 then win, lose = S, foe elseif diff < -2 then win, lose = foe, S end
+	if not win then
+		logEvent(st, S.id, "peace", string.format("%s 와 %s 백지 휴전", S.id, foe.id))
+		S.rel[foe.id] = clamp((S.rel[foe.id] or 0) + 10, -100, 100)
+		foe.rel[S.id] = clamp((foe.rel[S.id] or 0) + 10, -100, 100)
+		return "white"
+	end
+	local terms = {}
+	-- 배상금: 승자의 연 수입 몇 배만큼 패자의 빚이 늘고 승자의 빚은 준다
+	local indemnity = win.fin.income * math.min(4, 1 + math.abs(diff) * 0.4)
+	lose.fin.debt += indemnity
+	win.fin.debt = math.max(0, win.fin.debt - indemnity * 0.5)
+	table.insert(terms, "배상금")
+	-- 조공: 압승이면 일정 기간 수입의 일부를 바친다
+	if math.abs(diff) > 5 then
+		lose.tribute = { to = win.id, untilDay = st.day + 365 * 5 }
+		table.insert(terms, "조공")
+	end
+	-- 항구 할양
+	local ceded = nil
+	if math.abs(diff) > 3.5 and roll(st, win.id .. lose.id .. ":cede") < 0.65 then
+		local pid = ceedablePort(st, w, lose.id, win.id)
+		if pid then
+			st.owner[pid] = win.id
+			st.ports[pid] = nil -- 새 주인 아래서 동화·불만을 다시 시작
+			ceded = w.towns[pid].name or pid
+			table.insert(terms, "항구 할양: " .. tostring(ceded))
+		end
+	end
+	win.prestige = (win.prestige or 0) + 1
+	lose.legit = clamp(lose.legit - 0.08, 0.1, 1)
+	lose.rel[win.id] = clamp((lose.rel[win.id] or 0) - 15, -100, 100)
+	win.rel[lose.id] = clamp((win.rel[lose.id] or 0) - 5, -100, 100)
+	logEvent(st, win.id, "treaty", string.format("%s 승 · %s 패 종전 (%s)", win.id, lose.id, table.concat(terms, ", ")))
+	return "win", win.id
+end
+
+local function stepDiplomacy(st, w)
 	local ids = {}
 	for id in pairs(st.states) do table.insert(ids, id) end
 	table.sort(ids)
@@ -663,9 +846,18 @@ local function stepDiplomacy(st)
 		if S.war then
 			local foe = st.states[S.war.foe]
 			S.war.months += 1
+			-- 전쟁 점수: 매달 힘의 우위만큼 쌓인다 (이기는 쪽이 +)
+			if foe then
+				local a, b = militaryPower(S), militaryPower(foe)
+				S.war.score = (S.war.score or 0) + clamp((a - b) / math.max(0.1, a + b), -1, 1)
+			end
 			if not foe or S.war.months > 6 + math.floor(roll(st, id .. "peace") * 14) or S.stab < 0.2 then
-				logEvent(st, id, "peace", string.format("%s 와 %s 휴전", id, S.war.foe))
-				if foe and foe.war and foe.war.foe == id then foe.war = nil end
+				if foe and foe.war and foe.war.foe == id then
+					N.treaty(st, w, S, foe)
+					foe.war = nil
+				else
+					logEvent(st, id, "peace", string.format("%s 와 %s 휴전", id, S.war.foe))
+				end
 				S.war = nil
 			end
 		elseif S.stab > 0.4 and st.day > 365 then
@@ -746,8 +938,9 @@ function N.step(w)
 	for _, id in ipairs(ids) do
 		if st.states[id] then stepState(st, st.states[id]) end
 	end
-	stepDiplomacy(st)
+	stepDiplomacy(st, w)
 	stepVassals(st, w)
+	stepPorts(st, w)
 	N.rank(st)
 end
 
@@ -766,6 +959,65 @@ function N.view(st, id)
 		rank = st.ranks[owner], regent = st.day < S.regentUntil, civilWar = st.day < S.civilUntil,
 		debt = S.fin.debt, income = S.fin.income,
 		soc = S.soc, res = S.res, cap = S.cap, forces = S.forces, power = S.power, armyPower = S.armyPower, navyPower = S.navyPower, standing = S.standing,
+	}
+end
+
+-- ───────── 항구 조회·입장·관세 ─────────
+-- 입장(stance): 플레이어의 본국(homeNation) 기준으로 항구 주인이 동맹/중립/적대/자국인지 가른다.
+-- 관세: 체제 기본세 × 입장 보정 + 식민지 독점 가산. 적대 + 관계 악화면 금수(closed).
+-- ※ 조회 전용: 실제 거래 수치(Trade)에는 아직 연결하지 않았다.
+function N.portOwner(st, w, portId)
+	local t = w.towns[portId]
+	if not t then return nil end
+	return ownerOf(st, portId, t)
+end
+
+function N.stance(st, w, portId, homeNation)
+	local ownerId = N.portOwner(st, w, portId)
+	if not ownerId then return "neutral" end
+	local home = st.liege[homeNation] or homeNation
+	if ownerId == home then return "home" end
+	local S, H = st.states[ownerId], st.states[home]
+	if not S or not H then return "neutral" end
+	if (S.war and S.war.foe == home) or (H.war and H.war.foe == ownerId) then return "hostile" end
+	if S.allies[home] then return "ally" end
+	local r = S.rel[home] or 0
+	if r < -40 then return "hostile" end
+	if r > 40 then return "friendly" end
+	return "neutral"
+end
+
+function N.tariff(st, w, portId, homeNation)
+	local t = w.towns[portId]
+	local ownerId = N.portOwner(st, w, portId)
+	local S = ownerId and st.states[ownerId]
+	if not t or not S then return { rate = 0.05, stance = "neutral", closed = false, colony = false } end
+	local stance = N.stance(st, w, portId, homeNation)
+	local base = TARIFF_BASE[S.regime] or 0.08
+	local colony = (st.owner[portId] ~= nil) or (st.liege[t.country] == ownerId)
+	local mult = ({ home = 0, ally = 0.5, friendly = 0.75, neutral = 1, hostile = 2 })[stance] or 1
+	local rate = base * mult
+	if colony and stance ~= "home" then rate += 0.06 end -- 식민지 본국 독점 가산
+	rate -= (S.dev.admin / 100) * 0.01 -- 행정이 좋으면 탈세가 줄어 세율을 낮출 여유
+	local closed = stance == "hostile" and (S.rel[st.liege[homeNation] or homeNation] or 0) < -60 and S.war ~= nil
+	return { rate = clamp(rate, 0, 0.45), stance = stance, closed = closed, colony = colony, owner = ownerId }
+end
+
+function N.portView(st, w, portId)
+	local t = w.towns[portId]
+	if not t then return nil end
+	local ownerId = ownerOf(st, portId, t)
+	local row = ensurePort(st, w, portId, ownerId)
+	local fam = N.FAMILIES[row.fam] or N.FAMILIES.latin
+	local produces = {}
+	for g in pairs(t.produces or {}) do table.insert(produces, g) end
+	table.sort(produces)
+	local techSum, techN = 0, 0
+	for _, v in pairs(t.tech or {}) do techSum += v; techN += 1 end
+	return {
+		id = portId, owner = ownerId, colony = (st.owner[portId] ~= nil) or (st.liege[t.country] == ownerId),
+		culture = fam.name, language = fam.lang, faith = fam.faith, assimilation = row.assim, unrest = row.unrest,
+		pop = t.pop or 0, stage = t.stage or 1, tech = if techN > 0 then techSum / techN else 1, produces = produces,
 	}
 end
 
@@ -805,7 +1057,7 @@ function N.snapshot(st)
 	if not st then return nil end
 	return clean({
 		schema = st.schema, seed = st.seed, day = st.day, startYear = st.startYear,
-		states = st.states, liege = st.liege, log = st.log,
+		states = st.states, liege = st.liege, log = st.log, owner = st.owner, ports = st.ports,
 	}, 0)
 end
 
@@ -833,6 +1085,9 @@ local function repair(st, S)
 	S.fin.debt = math.max(0, tonumber(S.fin.debt) or 0)
 	S.fin.treasury = tonumber(S.fin.treasury) or 0
 	S.legit = clamp(tonumber(S.legit) or 0.6, 0.1, 1)
+	S.prestige = math.max(0, tonumber(S.prestige) or 0)
+	if type(S.tribute) ~= "table" or type(S.tribute.to) ~= "string" then S.tribute = nil else S.tribute.untilDay = tonumber(S.tribute.untilDay) or 0 end
+	if type(S.fam) ~= "string" or not N.FAMILIES[S.fam] then S.fam = nil end
 	S.stab = clamp(tonumber(S.stab) or 0.5, 0, 1)
 	S.soc = type(S.soc) == "table" and S.soc or {}
 	S.soc.unrest = clamp(tonumber(S.soc.unrest) or 0.1, 0, 1)
@@ -875,6 +1130,19 @@ function N.restore(w, snap)
 		end
 		for c in pairs(st.liege) do
 			if data.liege[c] == nil then st.liege[c] = nil end
+		end
+	end
+	st.owner, st.ports = {}, {}
+	if type(data.owner) == "table" then
+		for pid, o in pairs(data.owner) do
+			if type(pid) == "string" and type(o) == "string" and w.towns[pid] and data.states[o] then st.owner[pid] = o end
+		end
+	end
+	if type(data.ports) == "table" then
+		for pid, row in pairs(data.ports) do
+			if type(pid) == "string" and w.towns[pid] and type(row) == "table" and N.FAMILIES[row.fam] then
+				st.ports[pid] = { fam = row.fam, assim = clamp(tonumber(row.assim) or 1, 0, 1), unrest = clamp(tonumber(row.unrest) or 0.1, 0, 1) }
+			end
 		end
 	end
 	for id, row in pairs(data.states) do

@@ -3596,6 +3596,58 @@ local function testNations()
 		local back4: any = E.restoreWorld(E.snapshot(w4))
 		check("편제가 저장·복원된다", back4 ~= nil and math.abs(back4.nations.states.england.forces.inf - s4.states.england.forces.inf) < 1e-6)
 	end
+	-- 항구·종전·관세·입장
+	do
+		local w5: any = E.newWorld({ seed = 909, year = 1650 })
+		local s5: any = w5.nations
+		local pv: any = N.portView(s5, w5, "london")
+		check("항구 조회에 문화권·언어·주민·자원이 있다", pv ~= nil and pv.culture ~= "" and pv.language ~= "" and pv.pop > 0 and #pv.produces > 0)
+		check("모든 항구에 문화권이 있다", (function()
+			for _, id in ipairs(w5.order) do
+				local v = N.portView(s5, w5, id)
+				if not v or not v.culture or v.owner == nil then return false end
+			end
+			return true
+		end)())
+		local own = N.tariff(s5, w5, "london", "england")
+		check("자국 항구는 관세가 없다", own.stance == "home" and own.rate <= 0.001)
+		local neutral = N.tariff(s5, w5, "rouen", "england")
+		check("외국 항구는 관세가 있고 0~45%다", neutral.rate > 0 and neutral.rate <= 0.45)
+		-- 전쟁 → 종전 협상
+		local eng, fra = s5.states.england, s5.states.france
+		eng.war = { foe = "france", months = 10, score = 9 }
+		fra.war = { foe = "england", months = 10, score = -9 }
+		local before = fra.fin.debt
+		local kind = N.treaty(s5, w5, eng, fra)
+		check("압승하면 배상금을 받아낸다", kind == "win" and fra.fin.debt > before)
+		check("종전 기록이 남는다", s5.log[#s5.log].kind == "treaty")
+		eng.war, fra.war = nil, nil
+		-- 적대·동맹 입장과 관세
+		eng.war = { foe = "france", months = 1 }
+		local hostile = N.tariff(s5, w5, "rouen", "england")
+		check("전쟁 중인 나라 항구는 적대 입장이다", hostile.stance == "hostile" and hostile.rate > neutral.rate)
+		eng.war = nil
+		fra.allies.england, eng.allies.france = true, true
+		local ally = N.tariff(s5, w5, "rouen", "england")
+		check("동맹 항구는 관세가 낮다", ally.stance == "ally" and ally.rate < neutral.rate)
+		-- 할양 항구의 소유·저장·복원
+		local pid
+		for _, id in ipairs(w5.order) do
+			if s5.owner[id] then pid = id break end
+		end
+		s5.owner["rouen"] = "england"
+		local snap5 = E.snapshot(w5)
+		local back5: any = E.restoreWorld(snap5)
+		check("할양된 항구 소유가 저장·복원된다", back5 ~= nil and back5.nations.owner["rouen"] == "england")
+		check("식민지가 된 항구는 식민지 표시", N.portView(s5, w5, "rouen").colony == true and N.tariff(s5, w5, "rouen", "france").colony == true)
+		for _ = 1, 365 * 3 do E.step(w5) end
+		local okp = true
+		for _, id in ipairs(w5.order) do
+			local v = N.portView(s5, w5, id)
+			if not (v.unrest >= 0 and v.unrest <= 1 and v.assimilation >= 0 and v.assimilation <= 1) then okp = false end
+		end
+		check("3년 뒤에도 항구 불만·동화 값이 정상이다", okp)
+	end
 end
 testNations()
 
