@@ -3446,3 +3446,21 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   for(const kind of ['tricorn','bicorne','beret','sailorcap','knit','kofia','fez'])
     assert.ok(pose.includes('kind == "'+kind+'"'), '기존 모자/재질 분류 누락: '+kind);
 });
+
+// [손목·발목·장신구 실물 회귀] 붕 뜬 흰 레이스·장화와 과대 머리핀/배지를 장착 위치에서 보정한다.
+test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 및 PBR 지도를 유지한다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  assert.ok(pose.includes('local cuff = npcOutfit and assetName == "outfit_cuff"'));
+  assert.ok(pose.includes('local boot = npcOutfit and assetName == "outfit_boot"'));
+  assert.ok(pose.includes('elseif cuff then 0.55 elseif boot then 1.18'));
+  assert.ok(pose.includes('if cuff then -0.29 elseif boot then -0.11 else spec[6]'));
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen, 0.47)'));
+  assert.ok(pose.includes('not trim:find("fastener", 1, true)'));
+  assert.ok(pose.includes('outfit_cuff" then npcClothTint:Lerp(Color3.fromRGB(205, 192, 169), 0.42)'));
+  assert.equal(pose.split('"acc_ribbon_bow", "Head", 0.56, 0.58, 0.57').length-1,2);
+  assert.equal(pose.split('"acc_pearl_hairpin", "Head", 0.36, 0.39, 0.40').length-1,2);
+  assert.ok((pose.match(/"acc_guild_badge", "UpperTorso", 0.36, 0.38, 0.38/g)||[]).length>=6);
+  assert.ok(pose.includes('skin:ScaleTo(ratio)'));
+  assert.ok(pose.includes('weld.Part0, weld.Part1, weld.Parent = target, part, part'));
+  assert.ok(pose.includes('surfaceHasColorMap(surface)'));
+});
