@@ -1472,7 +1472,7 @@ function N.seaDanger(st, w, portId)
 local STANCE_MULT = { home = 0, ally = 0.5, friendly = 0.75, neutral = 1, hostile = 1.8 }
 function N.tariffPolicy(st, w, portId, homeNation)
 	local tf = N.tariff(st, w, portId, homeNation)
-	local mult = (STANCE_MULT[tf.stance] or 1) * (if tf.colony and tf.stance ~= "home" then 1.25 or 1)
+	local mult = (STANCE_MULT[tf.stance] or 1) * (if tf.colony and tf.stance ~= "home" then 1.25 else 1)
 	return { mult = clamp(mult, 0, 2.2), closed = tf.closed == true, stance = tf.stance, colony = tf.colony }
 end
 
