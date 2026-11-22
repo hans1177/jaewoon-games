@@ -515,8 +515,10 @@ function NavalBattle.play(opts)
 		local savedLighting = {
 			clock = lighting.ClockTime, fogColor = lighting.FogColor,
 			fogStart = lighting.FogStart, fogEnd = lighting.FogEnd,
-			ambient = lighting.OutdoorAmbient,
+			ambient = lighting.OutdoorAmbient, shadowSoftness = lighting.ShadowSoftness,
 		}
+		-- [수평선 실루엣] 기존 태양 방향은 유지하고 물가·돛·절벽의 그림자 경계를 부드럽게 한다.
+		lighting.ShadowSoftness = if mode == "storm" or mode == "fog" then 0.48 else 0.30
 		lighting.ClockTime = if phase == "night" then 21.15 elseif phase == "sunset" then 17.45 else 11.8
 		lighting.FogColor = skyColor
 		lighting.FogStart = if mode == "fog" then 210 elseif mode == "storm" then 370 else 690
@@ -533,9 +535,11 @@ function NavalBattle.play(opts)
 		} else nil
 		if not originalAtmosphere then atmosphere.Name = "NavalOceanAtmosphere" end
 		atmosphere.Color = skyColor:Lerp(Color3.fromRGB(222, 231, 238), if phase == "night" then 0.2 else 0.35)
-		atmosphere.Decay = if phase == "sunset" then Color3.fromRGB(234, 158, 114)
+		-- [대기 원근] 가까운 선체는 선명하고 수평선 절벽만 푸른 산란광에 묻히게 한다.
+		-- 석양 지역의 주황빛과 밤의 차가운 빛은 기존 기상 팔레트를 유지한다.
+		atmosphere.Decay = if phase == "sunset" then Color3.fromRGB(216, 153, 120)
 			elseif phase == "night" then Color3.fromRGB(90, 125, 170)
-			else coast.sky
+			else coast.sky:Lerp(Color3.fromRGB(113, 154, 186), if mode == "storm" then 0.24 else 0.39)
 		atmosphere.Density = if mode == "fog" then 0.43 elseif mode == "storm" then 0.34 else 0.20
 		atmosphere.Offset = if mode == "fog" then 0.05 else 0.22
 		atmosphere.Haze = if mode == "fog" then 3.1 elseif mode == "storm" then 2.0 else 0.85
@@ -555,7 +559,9 @@ function NavalBattle.play(opts)
 		if not originalClouds then clouds.Parent = terrain end
 		local bloom = Instance.new("BloomEffect")
 		bloom.Name = "NavalSeaGlow"
-		bloom.Intensity = if MOBILE_VFX then 0.10 else 0.19
+		-- [모바일] 햇빛·파도는 엔진 수면으로 표현하고 후처리 블룸은 끈다.
+		bloom.Enabled = not MOBILE_VFX
+		bloom.Intensity = if MOBILE_VFX then 0 else 0.19
 		bloom.Size = 18
 		bloom.Threshold = 1.4
 		bloom.Parent = lighting
@@ -726,14 +732,31 @@ function NavalBattle.play(opts)
 				local template = terrain:FindFirstChild(spec[1])
 				if template and template:IsA("Model") and AssetIds["Terrain/" .. spec[1]] then
 					local model = template:Clone()
+					local farShore = index > originalCoastCount
 					for _, node in model:GetDescendants() do
 						if node:IsA("BasePart") then
 							node.Anchored = true
 							node.CanCollide, node.CanTouch, node.CanQuery = false, false, false
+							-- [중·원경 해안] 먼 절벽만 그림자를 생략하고 텍스처 없는 면에 해무색을 섞는다.
+							-- SurfaceAppearance/TextureID/특수 메시 텍스처는 그대로 보존한다.
+							if farShore then
+								node.CastShadow = false
+								if not node:FindFirstChildOfClass("SurfaceAppearance")
+									and (not node:IsA("MeshPart") or node.TextureID == "") then
+									local specialMap = false
+									for _, child in node:GetChildren() do
+										if child:IsA("SpecialMesh") and child.TextureId ~= "" then specialMap = true; break end
+									end
+									if not specialMap then
+										node.Color = node.Color:Lerp(skyColor, if mode == "fog" then 0.34 else 0.22)
+									end
+								end
+							end
 						end
 					end
 					model.Name = "NavalCoast"
-					if index > originalCoastCount then model:SetAttribute("NavalDepthCliff", true) end
+					model:SetAttribute("NavalSceneryBand", if farShore then "FAR" else "MID")
+					if farShore then model:SetAttribute("NavalDepthCliff", true) end
 					model.Parent = folder
 					local ok = pcall(function()
 						local _, dims = model:GetBoundingBox()
@@ -786,9 +809,13 @@ function NavalBattle.play(opts)
 					local shipName = if i == 1 then "boat-sail-a" else "ship-small"
 					local template = naval:FindFirstChild(shipName)
 					if template and template:IsA("Model") and AssetIds["Naval/" .. shipName] then
+						-- [진짜 원경 실루엣] 두 번째 배가 수면 밖 X=1115로 벗어나던 좌표를 수정한다.
+						-- 두 배 모두 물 표면 안쪽 수평선에 작게 배치해 전투 함대와 깊이를 분리한다.
 						local distant = placeShip(folder, shipName,
-							ORIGIN + Vector3.new(-365 + i * 740, 0, -485 + i * 70), 23 + i * 5, i * 0.45)
+							ORIGIN + Vector3.new(if i == 1 then -360 else 370, 0, -535 - i * 18),
+							20 + i * 3, i * 0.45)
 						distant.Name = "NavalDistantMerchant"
+						distant:SetAttribute("NavalSceneryBand", "FAR")
 						table.insert(distantShips, { model=distant, start=distant:GetPivot(), speed=i })
 					end
 				end
@@ -829,6 +856,7 @@ function NavalBattle.play(opts)
 			lighting.ClockTime, lighting.FogColor = savedLighting.clock, savedLighting.fogColor
 			lighting.FogStart, lighting.FogEnd = savedLighting.fogStart, savedLighting.fogEnd
 			lighting.OutdoorAmbient = savedLighting.ambient
+			lighting.ShadowSoftness = savedLighting.shadowSoftness
 			if savedAtmosphere and atmosphere.Parent then
 				atmosphere.Density, atmosphere.Offset = savedAtmosphere.density, savedAtmosphere.offset
 				atmosphere.Color, atmosphere.Decay = savedAtmosphere.color, savedAtmosphere.decay
