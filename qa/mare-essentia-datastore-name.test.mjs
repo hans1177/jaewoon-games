@@ -3431,8 +3431,8 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
     '기존 지역·시대 허용 체계를 보존한다');
   assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
   assert.match(pose,/local hairPalette = \{/);
-  assert.match(pose,/surface\.Color = surface\.Color:Lerp\(softTint, 0\.72\)/,
-    '텍스처/원본 PBR을 유지하면서 실제 머리색을 가시화한다');
+  assert.match(pose,/surface\.Color = surface\.Color:Lerp\(softTint, if pale then 0\.93 else 0\.50\)/,
+    '텍스처/원본 PBR을 유지하면서 밝게 로드된 머리색만 복구한다');
   assert.match(pose,/model:SetAttribute\("NpcAccentTint", accentTint\)/);
   assert.match(pose,/surface\.Color = surface\.Color:Lerp\(accent:Lerp\(/);
   assert.match(pose,/if not textured and string\.sub\(assetName, 1, 7\) == "outfit_"/);
