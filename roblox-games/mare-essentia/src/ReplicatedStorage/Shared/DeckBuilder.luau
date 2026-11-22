@@ -383,7 +383,7 @@ function DeckBuilder.build(parent, ctx)
 		control.Size = UDim2.fromScale(0.36, 0.70)
 		control.Rotation = if index == 1 then -4 else 4
 		local aspect = Instance.new("UIAspectRatioConstraint")
-		aspect.AspectRatio = 0.75
+		aspect.AspectRatio = 7 / 10 -- [카드 모드] 세로 카드
 		aspect.AspectType = Enum.AspectType.FitWithinMaxSize
 		aspect.Parent = control
 		local art = Instance.new("ImageLabel")
@@ -495,7 +495,7 @@ function DeckBuilder.build(parent, ctx)
 	gridScroll.CanvasSize = UDim2.new()
 	gridScroll.Parent = left
 	local gl = Instance.new("UIGridLayout")
-	gl.CellSize = UDim2.fromOffset(100, 138)
+	gl.CellSize = UDim2.fromOffset(100, 143)
 	gl.CellPadding = UDim2.fromOffset(8, 8)
 	gl.SortOrder = Enum.SortOrder.LayoutOrder
 	gl.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -506,7 +506,7 @@ function DeckBuilder.build(parent, ctx)
 		local cell = math.floor((width - (columns - 1) * 8) / columns)
 		if cell < 1 then return end
 		gl.FillDirectionMaxCells = columns
-		gl.CellSize = UDim2.fromOffset(cell, math.floor(cell * 4 / 3))
+		gl.CellSize = UDim2.fromOffset(cell, math.floor(cell * 10 / 7))
 	end
 	gridScroll:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutCardGrid)
 	layoutCardGrid()
@@ -532,7 +532,7 @@ function DeckBuilder.build(parent, ctx)
 	corner(leaderBox, 8)
 	local leaderCard = button(leaderBox, "", Color3.fromRGB(58, 44, 32), 14, nil)
 	leaderCard.Name = "FullBodyLeaderCard"
-	leaderCard.Size = UDim2.fromOffset(100, 138)
+	leaderCard.Size = UDim2.fromOffset(100, 143)
 	leaderCard.Position = UDim2.fromOffset(6, 6)
 	local leaderImage = Instance.new("ImageLabel")
 	leaderImage.Name = "LeaderPainting"
@@ -671,7 +671,7 @@ function DeckBuilder.build(parent, ctx)
 	local function layoutLeaderCard()
 		local tall = right.AbsoluteSize.Y >= 640
 		leaderBox.Size = UDim2.new(1, -12, 0, if tall then 150 else 50)
-		leaderCard.Size = if tall then UDim2.fromOffset(100, 138) else UDim2.fromOffset(34, 44)
+		leaderCard.Size = if tall then UDim2.fromOffset(100, 143) else UDim2.fromOffset(31, 44)
 		leaderCard.Position = if tall then UDim2.fromOffset(6, 6) else UDim2.fromOffset(4, 3)
 		leaderCardName.Visible = tall
 		leaderName.Position = if tall then UDim2.fromOffset(114, 7) else UDim2.fromOffset(44, 2)
@@ -996,9 +996,9 @@ function DeckBuilder.build(parent, ctx)
 		tileStrokes[id] = { stroke = st, color = st.Color, width = st.Thickness }
 		local img = Instance.new("ImageLabel")
 		img.Position = UDim2.fromOffset(4, 4)
-		img.Size = UDim2.new(1, -8, 0.5625, -4)
+		img.Size = UDim2.new(1, -8, 0.70, -4)
 		img.BackgroundColor3 = Color3.fromRGB(88, 67, 46)
-		img.ScaleType = Enum.ScaleType.Crop
+		img.ScaleType = Enum.ScaleType.Fit
 		local key = ctx.artKey(d)
 		img.Image = if ctx.AssetIds[key] then "rbxassetid://" .. tostring(ctx.AssetIds[key]) else ""
 		img.ImageColor3 = if owned > 0 then Color3.new(1, 1, 1) else Color3.fromRGB(55, 55, 65)
@@ -1232,7 +1232,7 @@ function DeckBuilder.build(parent, ctx)
 					if detail.Visible then selectCard(e.id) else Gallery.showDetail(ctx.galleryCtx, e.id) end
 				end)
 				card.Position = UDim2.fromOffset((index - 1) * 52 + 2, 4)
-				card.Size = UDim2.fromOffset(68, 90)
+				card.Size = UDim2.fromOffset(68, 97)
 				card.ZIndex = index * 2 + 1
 				card.Rotation = ((index - 1) % 3 - 1) * 3
 				local shadow = Instance.new("Frame")
@@ -1249,7 +1249,7 @@ function DeckBuilder.build(parent, ctx)
 				image.BackgroundTransparency = 1
 				image.Size = UDim2.new(1, 0, 1, -19)
 				image.Image = if art then "rbxassetid://" .. tostring(art) else ""
-				image.ScaleType = Enum.ScaleType.Crop
+				image.ScaleType = Enum.ScaleType.Fit
 				image.ZIndex = card.ZIndex
 				image.Parent = card
 				local caption = text(card, e.d.name .. " ×" .. e.n, 11, SEPIA, true)
@@ -1349,14 +1349,14 @@ function DeckBuilder.build(parent, ctx)
 			candidate.ZIndex = 42
 			highlights[i] = candidate:FindFirstChildOfClass("UIStroke")
 			local ratio = Instance.new("UIAspectRatioConstraint")
-			ratio.AspectRatio = 3 / 4
+			ratio.AspectRatio = 7 / 10
 			ratio.AspectType = Enum.AspectType.FitWithinMaxSize
 			ratio.Parent = candidate
 			local art = Instance.new("ImageLabel")
 			art.BackgroundTransparency = 1
 			art.Position = UDim2.fromScale(0.025, 0.025)
 			art.Size = UDim2.fromScale(0.95, 0.73)
-			art.ScaleType = Enum.ScaleType.Crop
+			art.ScaleType = Enum.ScaleType.Fit
 			art.ZIndex = 43
 			local artId = card and ctx.AssetIds[ctx.artKey(card)]
 			art.Image = if artId then "rbxassetid://" .. tostring(artId) else ""
