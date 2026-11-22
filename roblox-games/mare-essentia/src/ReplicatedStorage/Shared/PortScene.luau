@@ -5241,7 +5241,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		elseif key == "japan" or key == "china" or key == "korea" then { "tree-plateau", "tree-tall",
 		AssetIds["Terrain/tree-detailed-dark"] and "tree-detailed-dark" or "tree-oak-dark" }
 		else { "tree-oak-dark", "tree-tall",
-		Voyage.season(tonumber(info.day) or 0, latitude) == 4 and AssetIds["Terrain/tree-plateau-fall"] and "tree-plateau-fall" or "tree-plateau" }
+		Voyage.season(tonumber(info.day) or 0, (PortData.Ports[info.portId] or {}).lat or 0) == 4 and AssetIds["Terrain/tree-plateau-fall"] and "tree-plateau-fall" or "tree-plateau" }
 	local forestCount = if lvl >= 4 then 60 else 94
 	local trees = if key == "japan" or cold then { "tree-high", "tree", "tree-crooked" }
 		elseif palm then { "palm-detailed-straight", "tree-crooked", "tree-high" }
