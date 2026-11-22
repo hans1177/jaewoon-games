@@ -3791,7 +3791,8 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/elseif index % 4 == 2 then/,'암석 중경 배치');
   assert.ok(field.includes('half * visualLayoutRng:NextNumber(0.19, 0.31)'),'근경 수목 시야');
   assert.ok(field.includes('half * visualLayoutRng:NextNumber(0.23, 0.33)'),'근경 암석 시야');
-  assert.ok(field.includes('if band == 0 then 0.16 elseif band == 1 then 0.25 else 0.34 end'),'근경 식생층');
+  assert.ok(field.includes('local lateral = if band == 0 then 0.16 elseif band == 1 then 0.25 else 0.34'),'근경 식생층');
+  assert.ok(!field.includes('else 0.34 end)'), 'Luau if 조건식에 잘못된 end 금지');
   assert.match(field,/local pz = half \* \(0\.81 - band \* 0\.28\)/,'식생 전후 거리');
   assert.match(field,/local visualLayoutRng = Random\.new\(/,'전경 난수는 전투 시드에서 분리');
   assert.match(field,/local visualTreeCount = treeCount/,'수목 모바일 제한 해제');
