@@ -697,7 +697,7 @@ function NavalBattle.play(opts)
 		} else {
 			{ "cliff-cornerlarge-stone", 140, -488, 375 }, { "cliff-large-stone", 117, 495, -413 },
 			{ "cliff-blockslope-rock", 128, -496, 371 }, { "cliff-large-rock", 136, 486, -401 },
-			{ "cliff-top-rock", 98, 438, 410 },
+			{ "cliff-cornerlarge-rock", 98, 438, 410 },
 		}
 		folder:SetAttribute("NavalDepthCoastCount", 0)
 		task.delay(1.0, function()
