@@ -8570,6 +8570,17 @@ function FieldScene.start(opts)
 			local hurtProgress = (now - e.hurtAt) / 0.3
 			local attackProgress = (now - e.swingAt) / 0.5
 			if e.fm then
+				-- [원거리 관절 경량화] 전술·이동·피해·공격권은 위의 기존 매 프레임 루프 그대로 유지한다.
+				-- 화면에서 먼 일반 적의 R15 관절 샘플링만 저빈도로 갱신해 모바일 CPU 부하를 낮춘다.
+				-- 공격 준비/타격/회복, 피격, 방어, 다운·기상, 두목은 매 프레임 즉시 반영한다.
+				local farVisual = not e.boss and flat.Magnitude > (if visualMobile then 65 else 90)
+					and e.ac.state ~= "windup" and e.ac.state ~= "active" and e.ac.state ~= "recover"
+					and now >= (e.hurtAt or -100) + 0.3
+					and now >= (e.knockUntil or 0) and now >= (e.riseUntil or 0)
+					and now >= (e.guardUntil or 0) and now >= (e.parryUntil or 0)
+					and now >= (e.dodgeUntil or 0)
+				if not farVisual or now >= (e.nextVisualTickAt or 0) then
+					e.nextVisualTickAt = if farVisual then now + (if visualMobile then 0.13 else 0.09) else 0
 				local st, ph = "IDLE", (now / 2.4 + e.motionPhase) % 1
 				local acs = e.ac.state
 				if now < (e.knockUntil or 0) then
@@ -8671,6 +8682,7 @@ function FieldScene.start(opts)
 					math.clamp(traveled / math.max(dtc, 0.016) / math.max(e.ac.def.speed, 1), 0.18, 1.25),
 					math.clamp(e.root.CFrame.RightVector:Dot(e.moveVel) / math.max(e.ac.def.speed, 1), -1, 1),
 					e.attackStep)
+				end
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then
