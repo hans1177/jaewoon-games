@@ -3830,6 +3830,10 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/sceneryBatch \+= 1/,'실제 로드된 모델만 분산 계수');
   assert.match(field,/if sceneryBatch >= 12 then/,'프레임별 배치 분산');
   assert.match(field,/if solid ~= true then d\.CanQuery = false end/,'비충돌 장식만 물리 쿼리에서 제외');
+  assert.match(field,/if d:IsA\("MeshPart"\) and scenicBand then/,'승인 메시만 거리별 LOD 적용');
+  assert.match(field,/d\.RenderFidelity = if scenicBand == "far" then Enum\.RenderFidelity\.Performance/,'원경 메시 저폴리');
+  assert.match(field,/else Enum\.RenderFidelity\.Automatic/,'근·중경 자동 정밀 LOD');
+  assert.match(field,/d\.CanCollide = solid == true/,'원본 실물 충돌 유지');
   assert.match(field,/if scenicBand == "far" or \(solid ~= true/,'충돌 실물 포함 원경 그림자 생략');
   assert.match(field,/scenicBand == "mid" and desired <= 9/,'작은 중경 장식 그림자 절제');
   assert.match(field,/or desired <= 4\.5\)\) then/,'초소형 장식 그림자 절제');
@@ -3853,6 +3857,8 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.ok(script.some(row=>row.code?.includes('FIELD_SCENERY_NEAR_MISSING')),'근경 실물 생성 검사');
   assert.ok(script.some(row=>row.code?.includes('FIELD_SCENERY_MID_MISSING')),'중경 실물 생성 검사');
   assert.ok(script.some(row=>row.code?.includes('studioFPS=')),'실측 스튜디오 FPS 로그');
+  assert.ok(script.some(row=>row.code?.includes('FIELD_LOW_POLY_MESH_MISSING')),'스튜디오 원경 실제 저폴리 메시 검사');
+  assert.ok(script.some(row=>row.code?.includes('lowPolyMeshes=')),'스튜디오 실제 저폴리 메시 수 계측');
   assert.ok(script.some(row=>row.code?.includes('FIELD_GROUND_MATERIAL_MISMATCH')),'스튜디오 해안 모래 실측');
   assert.ok(script.some(row=>row.code?.includes("FieldQuestTerrainTheme')=='coast")),'해적 소굴의 해안 퀘스트 지형 검사');
 });
