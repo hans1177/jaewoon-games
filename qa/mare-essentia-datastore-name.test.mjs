@@ -1119,6 +1119,8 @@ test('대항해시대 탐험의 흰 건물·바닥과 성탑 층 겹침 방지',
   assert.ok(field.includes('"tower-hexagon-mid", 12, -30, -26, true, nil, 8'));
   assert.ok(field.includes('"tower-hexagon-roof", 12, 30, -26, true, nil, 16'));
   assert.ok(field.includes('entry.position = c + Vector3.new(e[4], e[8] or 0, e[5])'));
+  // [실게임 권한 회귀] Studio 도구 권한으로 통과해도 클라이언트 RenderFidelity 쓰기는 탐험 입장을 중단시킨다.
+  assert.doesNotMatch(placement,/\.RenderFidelity\s*=/,'게임 클라이언트의 제한된 메시 정밀도 변경 금지');
   assert.doesNotMatch(placement,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/,'건물 복구에 임시 도형 금지');
   assert.match(field,/local enemyCount = math\.clamp\(20 \+ \(danger0 - 1\) \* 6/);
   assert.match(field,/AC\.stepEnemy\(e\.ac, enemyDt, dist, not e\.waiting\)/);
