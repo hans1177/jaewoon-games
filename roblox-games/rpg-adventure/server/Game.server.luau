@@ -108,7 +108,7 @@ end
 
 -- 저장: 플레이어별 독립 키. 다른 게임의 기존 저장 구조 변경 없음.
 local function save(player)
-    if not store or saving[player] then return false end
+    if not store or not live[player] or not live[player].saveReady or saving[player] then return false end
     saving[player] = true
     local snapshot = {Version = Config.SaveVersion}
     for key, fallback in pairs(Config.DefaultSave) do
@@ -135,6 +135,7 @@ local function load(player)
         end)
     end
     if typeof(saved) ~= "table" or saved.Version ~= Config.SaveVersion then saved = {} end
+    live[player].saveReady = ok
     for key, fallback in pairs(Config.DefaultSave) do
         local upper = key == "Level" and Config.MaxLevel or
             (key == "Weapon" and Config.MaxWeapon or (key == "Potions" and 99 or 1000000000))
