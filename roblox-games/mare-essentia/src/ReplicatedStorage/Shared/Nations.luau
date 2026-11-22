@@ -1465,6 +1465,7 @@ function N.seaDanger(st, w, portId)
 	local ownerId = N.portOwner(st, w, portId)
 	local S = ownerId and st.states[ownerId]
 	return S and S.ship and S.ship.danger or 0
+end
 
 -- 거래 연결용 관세 정책: 기존 관세(우호도 기반)에 곱하는 배율과 금수 여부.
 -- 배율은 입장(자국 0 · 동맹 0.5 · 우호 0.75 · 중립 1 · 적대 1.8)에 식민지 독점(×1.25)을 곱한다. 상한 2.2배.

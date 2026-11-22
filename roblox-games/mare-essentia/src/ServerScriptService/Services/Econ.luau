@@ -85,6 +85,7 @@ return function(D, S)
 		end)
 		if ok then return success, text end
 		return false, "지금은 개입할 수 없어요"
+	end
 
 	-- 거래 관세 정책 (배율·금수). 세계나 국가 정보가 없거나 오류면 nil → 기존 관세 그대로.
 	function X.tariffPolicy(state, portId)
