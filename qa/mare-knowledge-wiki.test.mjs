@@ -42,9 +42,11 @@ test('읽기 퀴즈는 서버가 판정하고 보상은 카드당 한 번이다'
     assert.ok(Number(m[2]) >= 1 && Number(m[2]) <= n, '정답 번호가 보기 범위 안');
   }
   assert.match(wiki, /QUIZ_REWARD = \{ coins = 30, fame = 1 \}/);
-  assert.match(codex, /function handlers\.WikiQuiz\(state, p\)/);
-  assert.match(codex, /if state\.wikiQuiz\[id\] then/, '중복 보상 차단');
-  assert.match(codex, /not state\.discovered\[id\]/, '미발견 카드 차단');
-  assert.match(state, /wikiQuiz = \{\}/);
+  assert.match(codex, /function handlers\.WikiQuiz\(state: any, p: any\)/);
+  assert.match(codex, /D\.Cards\.GradeQuiz\(state, p\)/);
+  assert.match(wiki, /if state\.wikiQuiz\[id\] then/, '중복 보상 차단');
+  assert.match(wiki, /not state\.discovered\[id\]/, '미발견 카드 차단');
+  assert.match(state, /\(s :: any\)\.wikiQuiz = quizDone/);
+  assert.match(state, /wikiQuiz = \(state :: any\)\.wikiQuiz/);
   assert.match(client, /call\("WikiQuiz"/);
 });
