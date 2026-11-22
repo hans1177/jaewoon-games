@@ -684,12 +684,12 @@ function FieldScene.start(opts)
 		safetyFloor.CanQuery = false
 	end
 
-	-- 지평선 언덕: 사방 가장자리 바깥에 복셀 지형 언덕을 쌓아 평평한 느낌을 줄인다 (끝나면 지운다)
+	-- [실제 지형 높이] 기존 Kenney CC0 나무·암석 모델을 놓는 전장 안쪽에도
+	-- 걸어 올라갈 수 있는 완만한 복셀 구릉을 만든다. 원래 중앙 이동로·스폰·전투 수치는 유지한다.
+	-- 지평선용 외곽 능선과 내부 구릉은 같은 Terrain을 사용하며 퇴장 때 모두 정리한다.
 	do
 		local terrain = workspace.Terrain
 		local mat = biome.mat
-		-- [지형 윤곽] 계곡은 높은 능선, 해안은 낮은 언덕, 설원은 빙설 능선, 늪은 낮은 둔덕.
-		-- 플레이 공간 바깥에서만 조성하며 기존 지면·전투 경로와 충돌하지 않는다.
 		if questTerrain == "volcanic" or questTerrain == "mine" then mat = Enum.Material.Slate
 		elseif questTerrain == "glacier" then mat = Enum.Material.Snow
 		elseif questTerrain == "swamp" then mat = Enum.Material.Mud
@@ -713,12 +713,37 @@ function FieldScene.start(opts)
 			terrain:FillBall(center, radius, mat)
 			table.insert(hills, { center, radius })
 		end
+		-- [전장 내부] 양쪽 숲·협곡에 교차 구릉. 중앙 폭과 입구는 항상 평탄하게 남긴다.
+		local insideCount = if questTerrain == "farm" or questTerrain == "ruins" then (if visualMobile then 4 else 6)
+			elseif visualMobile then 7 else 11
+		for i = 1, insideCount do
+			local side = if i % 2 == 0 then -1 else 1
+			local radius = if questTerrain == "highland" or questTerrain == "volcanic" then hillRng:NextNumber(33, 44)
+				elseif questTerrain == "forest" or questTerrain == "jungle" then hillRng:NextNumber(29, 40)
+				else hillRng:NextNumber(23, 34)
+			local x = side * (half * hillRng:NextNumber(0.49, 0.70))
+			local z = half * (-0.75 + (i - 1) / math.max(1, insideCount - 1) * 1.23)
+				+ hillRng:NextNumber(-8, 8)
+			local depth = if questTerrain == "highland" or questTerrain == "volcanic" then 0.61
+				elseif questTerrain == "forest" or questTerrain == "jungle" then 0.72 else 0.83
+			local center = ORIGIN + Vector3.new(x, -radius * depth, z)
+			terrain:FillBall(center, radius, mat)
+			table.insert(hills, { center, radius })
+		end
+		folder:SetAttribute("FieldWalkableHillCount", insideCount)
 		folder.Destroying:Connect(function()
 			for _, h in hills do
 				terrain:FillBall(h[1], h[2] + 2, Enum.Material.Air)
 			end
 		end)
 	end
+
+	-- [실제 접지] 생성된 복셀 언덕과 기존 지면 중 먼저 닿는 표면만 읽는다.
+	-- 나무/바위/적군을 동일 지형 표면에 배치하고 다른 장식의 충돌은 높이 측정에서 제외한다.
+	local groundRay = RaycastParams.new()
+	groundRay.FilterType = Enum.RaycastFilterType.Include
+	groundRay.FilterDescendantsInstances = { workspace.Terrain, ground }
+	groundRay.IgnoreWater = true
 
 	local spawn = ORIGIN + Vector3.new(0, 4, half - 14)
 	-- 필드 바닥 생성 직후 캐릭터와 카메라를 이동시켜, 나머지 적·조작 UI 생성과 분리한다.
@@ -799,6 +824,10 @@ function FieldScene.start(opts)
 	local function placeFeature(entry)
 		if not folder.Parent then return nil end
 		local pos = entry.position or (ORIGIN + Vector3.new(entry[4] * half * mirror, 0, entry[5] * half))
+		if math.abs(pos.Y - ORIGIN.Y) < 0.5 then
+			local hit = workspace:Raycast(Vector3.new(pos.X, ORIGIN.Y + 100, pos.Z), Vector3.new(0, -140, 0), groundRay)
+			if hit then pos = Vector3.new(pos.X, hit.Position.Y, pos.Z) end
+		end
 		local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6], entry.tint)
 		if not m then return nil end
 		if entry.landmark then
@@ -2075,6 +2104,8 @@ function FieldScene.start(opts)
 			else "pirate"
 		local mobHat = if mobProfile == "pirate" or mobProfile == "pirate_female" then "tricorn" else nil
 		-- [생성 중단 보호] 공식 R15 로딩이 지연되는 동안 철수해도 콜백 오류가 전파되지 않는다.
+		local mobFloor = workspace:Raycast(Vector3.new(pos.X, ORIGIN.Y + 100, pos.Z), Vector3.new(0, -140, 0), groundRay)
+		if mobFloor then pos = Vector3.new(pos.X, mobFloor.Position.Y, pos.Z) end
 		local created, model = pcall(Pose.createR15, folder, pos, 0, style[3], rng, if styleN == 1 then def[2] else style[2], stature,
 			{ bodyType = bodyType, motionStyle = motionStyle, trousers = trousers, persona = styleN, profession = ac.kind, year = opts.year, hat = mobHat })
 		if not created and not finished then
@@ -2098,6 +2129,7 @@ function FieldScene.start(opts)
 		end
 		local root = model:FindFirstChild("HumanoidRootPart")
 		if not root then model:Destroy(); continue end
+		local mobGroundOffset = root.Position.Y - pos.Y
 		local bb = Instance.new("BillboardGui")
 		bb.Adornee = root
 		bb.Size = UDim2.fromOffset(158, 34)
@@ -2137,7 +2169,7 @@ function FieldScene.start(opts)
 		tag.TextSize = if isBoss then 14 else 12
 		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil
-		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0, tacticAt = 0, tacticGoal = nil, tacticIntent = "approach", tacticSide = if rng:NextNumber() < 0.5 then -1 else 1,
+		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, groundOffset = mobGroundOffset, nextGroundAt = 0, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0, tacticAt = 0, tacticGoal = nil, tacticIntent = "approach", tacticSide = if rng:NextNumber() < 0.5 then -1 else 1,
 			counterReadyAt = 0, counterUntil = 0, nextGuardCounterAt = 0, lastReadBasicAt = -100,
 			playerChain = 0, bossReadUntil = 0, nextBossReadAt = 0 })
 	end
@@ -7813,7 +7845,18 @@ function FieldScene.start(opts)
 					local targetRot = CFrame.lookAt(Vector3.zero, facing).Rotation
 					rot = rot:Lerp(targetRot, 1 - math.exp(-(if charging then 12 elseif e.ac.state == "windup" then 10 else 7) * enemyDt))
 				end
-				e.model:PivotTo(CFrame.new(pv.Position + delta) * rot)
+				-- [경사 접지] 적군도 실제 구릉 표면을 따른다. 높이 검사는 모바일에서 저빈도 갱신.
+				local nextPos = pv.Position + delta
+				if now >= (e.nextGroundAt or 0) then
+					e.nextGroundAt = now + (if visualMobile then 0.18 else 0.12)
+					local hit = workspace:Raycast(Vector3.new(nextPos.X, ORIGIN.Y + 100, nextPos.Z), Vector3.new(0, -140, 0), groundRay)
+					if hit and hit.Normal.Y > 0.45 then e.groundY = hit.Position.Y + (e.groundOffset or 0) end
+				end
+				if e.groundY then
+					nextPos = Vector3.new(nextPos.X,
+						math.clamp(e.groundY, nextPos.Y - 25 * enemyDt, nextPos.Y + 25 * enemyDt), nextPos.Z)
+				end
+				e.model:PivotTo(CFrame.new(nextPos) * rot)
 			end
 			local traveled = (e.root.Position - beforeMove).Magnitude
 			if traveled > 0.02 then
