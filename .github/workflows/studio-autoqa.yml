@@ -145,6 +145,8 @@ jobs:
                     candidate=MENUS ;;
                   roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldMotion.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-motionlab.json)
                     candidate=MOTION ;;
+                  roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-field.json)
+                    candidate=FIELD ;;
                   *) candidate=FULL ;;
                 esac
                 if [ "$candidate" = FULL ] || { [ -n "$scope" ] && [ "$scope" != "$candidate" ]; }; then
@@ -159,6 +161,7 @@ jobs:
               SHIPS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json ;;
               MENUS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-menus.json ;;
               MOTION) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-motionlab.json ;;
+              FIELD) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-field.json ;;
               *) scope=FULL ;;
             esac
             echo "STUDIO_PUSH_DEVELOPMENT_SCOPE=$scope"
