@@ -87,10 +87,12 @@ end
 local function save(player,state)
  if not state or not state.ready or not state.dirty or saving[player] then return end
  saving[player]=true
+ -- 저장 도중 새 행동이 발생하면 그 변경을 다음 저장 대상으로 남긴다.
+ state.dirty=false
  local payload={version=1,round=state.round,gold=state.gold,hearts=state.hearts,
   wins=state.wins,team=state.team,shop=state.shop}
  local ok,err=pcall(function() store:SetAsync("u:"..player.UserId,payload) end)
- if ok then state.dirty=false else warn("[동물자동대전][저장] "..tostring(err)) end
+ if not ok then state.dirty=true;warn("[동물자동대전][저장] "..tostring(err)) end
  saving[player]=nil
 end
 local function sync(player,err)
