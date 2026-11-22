@@ -1727,7 +1727,16 @@ test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 
  ])assert.ok(pose.includes(role+' = {'),role+' 남녀·직업 원본 보존');
  assert.match(pose,/local NPC_REGISTERED_HAIR = \{/);
  assert.match(pose,/local NPC_REGISTERED_ACCESSORY = \{/);
- assert.match(pose,/if candidate and AssetIds\["People\/" \.\. candidate\] then/);
+ // [런타임 실물 로드] 등록번호만 있는 헤어를 장착하면 공백 머리/중복 머리가 발생한다.
+ assert.ok(pose.includes('if candidate and AssetIds["People/" .. candidate] and people and people:FindFirstChild(candidate) then'),
+  "등록번호뿐 아니라 실제 선적된 헤어가 선택되어야 한다");
+ assert.ok(pose.includes('slotName = "R15Asset_" .. string.gsub(assetName, "/", "_") .. "_" .. boneName'),
+  "선택된 최종 실물 헤어 ID로 슬롯을 정해야 한다");
+ assert.ok(pose.includes('previous.Name ~= slotName then previous:Destroy()'),
+  "교체 실물 헤어 장착 후 구형 메시를 정리해야 한다");
+ assert.ok(pose.includes('local mounted = model:FindFirstChild("R15Asset_" .. garment .. "_UpperTorso")'),
+  "신규 상의의 실제 장착 확인 전 구형 상의 제거 금지");
+ assert.match(pose,/if fittedVisible then/);
  assert.match(pose,/if accessory and AssetIds\["People\/" \.\. accessory\[1\]\] then/);
  assert.match(pose,/specs = table\.clone\(specs\)/);
  assert.match(pose,/target\.Size\.X \* \(spec\[7\] or 0\)/);
