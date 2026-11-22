@@ -1546,6 +1546,18 @@ function FieldScene.start(opts)
 		for index, spec in nearBands do
 			if (not visualMobile or index <= 2) and AssetIds["Terrain/" .. spec[1]] then
 				local entry = { "Terrain", spec[1], spec[2], nil, nil, false, spec[5] }
+				-- [항구 고유 근경] 평원·농경지·해안·호수의 두 번째 모델은 해당 항구의 기존 지리 실물로 선택한다.
+				-- 한 대륙 안에서도 석호·피오르·하구·맹그로브가 첫 화면에서 구분된다. 수량과 전투 판정은 유지.
+				if index == 2 and (questTerrain == "plains" or questTerrain == "farm"
+					or questTerrain == "coast" or questTerrain == "lake") then
+					local portBands = PORT_NATURE_MODELS[portNature or ""]
+					if portBands and #portBands > 0 then
+						local portFeature = portBands[(portVisualSeed + 1) % #portBands + 1]
+						if AssetIds[portFeature[1] .. "/" .. portFeature[2]] then
+							entry[1], entry[2], entry[3] = portFeature[1], portFeature[2], portFeature[3]
+						end
+					end
+				end
 				-- [실물 근경] 모바일에도 표시되는 첫 두 승인 실물을 실제 전투 시야 안으로 당긴다.
 				-- 크기·종류·기존 2개 제한은 바꾸지 않고 중앙 이동로는 비운다.
 				local depthX = spec[3] * half * mirror
