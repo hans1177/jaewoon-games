@@ -3714,15 +3714,15 @@ test('지상전 자연 모델 그래픽 품질·면적별 밀도와 모바일 �
   assert.match(field,/FieldVisualTreeCount/);
   assert.match(field,/FieldVisualRockCount/);
   assert.match(field,/FieldVisualDetailCount/);
-  assert.match(field,/local visualTreeCount = math\.floor\(treeCount \* fieldVisualDensity \+ 0\.5\)/);
-  assert.match(field,/local visualRockCount = math\.floor\(rockCount \* fieldVisualDensity \+ 0\.5\)/);
-  assert.match(field,/local detailCount = math\.max\(12, math\.floor\(\(if visualMobile then 16 else 24\) \* AREA \* fieldVisualDensity \+ 0\.5\)\)/);
+  assert.match(field,/local visualTreeCount = math\.floor\(treeCount \* folder:GetAttribute\("FieldVisualDensity"\) \+ 0\.5\)/);
+  assert.match(field,/local visualRockCount = math\.floor\(rockCount \* folder:GetAttribute\("FieldVisualDensity"\) \+ 0\.5\)/);
+  assert.match(field,/local detailCount = math\.max\(12, math\.floor\(\(if visualMobile then 16 else 24\) \* AREA \* folder:GetAttribute\("FieldVisualDensity"\) \+ 0\.5\)\)/);
   assert.match(field,/local band = math\.floor\(\(index - 1\) \/ 4\) % 7/);
   assert.match(field,/d\.RenderFidelity = Enum\.RenderFidelity\.Automatic/);
   assert.match(field,/if not solid and desired < 9 then d\.CastShadow = false end/);
   assert.match(field,/if visualMobile and index % 18 == 0 then task\.wait\(\) end/);
   assert.doesNotMatch(field,/math\.min\(treeCount, 44\)|math\.min\(rockCount, 36\)/);
-  assert.match(field,/if \(not visualMobile or index <= math\.ceil\(3 \+ fieldVisualDensity\)\)/);
+  assert.match(field,/if \(not visualMobile or index <= math\.ceil\(3 \+ folder:GetAttribute\("FieldVisualDensity"\)\)\)/);
 });
 
 // [지상전 지리 다양화 회귀] 대륙·항구·개별 탐험지 배경은 기존 실물만 사용하고
@@ -3776,8 +3776,8 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/portVisualSeed \* 31 \+ string\.byte\(visualKey, index\)/);
   assert.match(field,/if index == 3 and variants then/,'기존 문화권 대표 건물 2개 유지');
   assert.match(field,/AssetIds\[candidate\[1\] \.\. "\/" \.\. candidate\[2\]\]/,'등록된 모델만 사용');
-  assert.match(field,/local visualTreeCount = math\.floor\(treeCount \* fieldVisualDensity \+ 0\.5\)/);
-  assert.match(field,/local visualRockCount = math\.floor\(rockCount \* fieldVisualDensity \+ 0\.5\)/);
+  assert.match(field,/local visualTreeCount = math\.floor\(treeCount \* folder:GetAttribute\("FieldVisualDensity"\) \+ 0\.5\)/);
+  assert.match(field,/local visualRockCount = math\.floor\(rockCount \* folder:GetAttribute\("FieldVisualDensity"\) \+ 0\.5\)/);
   assert.match(field,/local detailCount = math\.max\(12, math\.floor\(/);
   // [등록 후 실제 사용] 신규 21종을 기존 자연·암석·바닥 후보만으로 사용한다.
   // [정확한 신규 범위] 기존 항구 건물(kenney_wood_arch_01 등)은 등록된 별도 모델이다.
@@ -3825,6 +3825,6 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/half \* visualLayoutRng:NextNumber\(0\.30, 0\.43\)/,'바위 중경 랜덤은 전용 난수');
   assert.match(field,/\+ visualLayoutRng:NextNumber\(-6, 6\)/,'전경 나무 좌표 난수 격리');
   assert.match(field,/\+ visualLayoutRng:NextNumber\(-7, 7\)/,'전경 바위 좌표 난수 격리');
-  assert.match(field,/local visualTreeCount = math\.floor\(treeCount \* fieldVisualDensity \+ 0\.5\)/);
-  assert.match(field,/local visualRockCount = math\.floor\(rockCount \* fieldVisualDensity \+ 0\.5\)/);
+  assert.match(field,/local visualTreeCount = math\.floor\(treeCount \* folder:GetAttribute\("FieldVisualDensity"\) \+ 0\.5\)/);
+  assert.match(field,/local visualRockCount = math\.floor\(rockCount \* folder:GetAttribute\("FieldVisualDensity"\) \+ 0\.5\)/);
 });
