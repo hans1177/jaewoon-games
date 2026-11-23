@@ -2076,3 +2076,16 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | nassau | environment_house3.glb | 597872 | 9172 | d7ac5fca3fc23292e6dcb6067ebee93fb995ce6c | b4afef964cf0f7d8e4c6ec41cd7a90d14951ddd789a7352db5b1eb1c498fe3b4 |
 
 - 현재 확인된 단계: SOURCE_DOWNLOADED_HASH_VERIFIED. Roblox 자산 번호/Universe 권한/실제 모바일 표시/게시 결과는 아직 미검증.
+| `town/` | london_bld_carpenter.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_chapel.glb | CreativeTrio; Kenney · CC0-1.0 | https://poly.pizza/m/GHzPfvoyzX |
+| `town/` | london_bld_house_row.glb | Kenney; Quaternius · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_market_stalls.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_mill.glb | Quaternius; Kenney · CC0-1.0 | https://github.com/trebeljahr/quaternius-showcase/blob/main/public/glb/medieval_village_pack/House_4.glb |
+| `town/` | london_bld_smithy.glb | Quaternius; Kenney (where indicated) · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_watchtower.glb | Quaternius · CC0-1.0 | https://opengameart.org/content/lowpoly-medieval-buildings |
+| `town/` | london_bld_well.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_house_artisan.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_house_worker.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_street_lamp.glb | Kenney · CC0-1.0 | https://opengameart.org/content/medieval-town-base-3d-assets |
+| `town/` | london_tavern_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_trade_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
