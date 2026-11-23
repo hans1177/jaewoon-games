@@ -1384,7 +1384,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	local roof = style.roofs[rng:NextInteger(1, #style.roofs)]
 	local h = floors * 6
 	local body = part(parent, Vector3.new(w, h, d), CFrame.new(pos + Vector3.new(0, h / 2, 0)), wall, Enum.Material.Brick)
-	if style == STYLE.med then
+	if style.cultureKey == "med" or style == STYLE.med then
 		body.Material = Enum.Material.Concrete
 	end
 	gableRoof(parent, pos + Vector3.new(0, h, 0), w + 1, d + 1, d * 0.5 * style.roofPitch, roof)
@@ -6885,10 +6885,10 @@ function PortScene.build(info, onFacility)
 	-- 성당 종탑 (유럽·식민지 문화권만. 다른 문화권은 지역 대표 건축물을 따로 세운다)
 	if CHURCH_KEYS[currentKey] and sceneLevel < 2 then
 		local cx, cz = -215, 42
-		part(folder, Vector3.new(8, 30, 8), CFrame.new(cx, 15, cz), if style == STYLE.med then Color3.fromRGB(230, 214, 180) else Color3.fromRGB(140, 130, 120), Enum.Material.Brick)
+		part(folder, Vector3.new(8, 30, 8), CFrame.new(cx, 15, cz), if style.cultureKey == "med" or style == STYLE.med then Color3.fromRGB(230, 214, 180) else Color3.fromRGB(140, 130, 120), Enum.Material.Brick)
 		wedge(folder, Vector3.new(8, 10, 4), CFrame.new(cx, 35, cz - 2), Color3.fromRGB(60, 80, 70))
 		wedge(folder, Vector3.new(8, 10, 4), CFrame.new(cx, 35, cz + 2) * CFrame.Angles(0, math.pi, 0), Color3.fromRGB(60, 80, 70))
-		part(folder, Vector3.new(16, 14, 24), CFrame.new(cx - 12, 7, cz), if style == STYLE.med then Color3.fromRGB(236, 224, 196) else Color3.fromRGB(150, 140, 128), Enum.Material.Brick)
+		part(folder, Vector3.new(16, 14, 24), CFrame.new(cx - 12, 7, cz), if style.cultureKey == "med" or style == STYLE.med then Color3.fromRGB(236, 224, 196) else Color3.fromRGB(150, 140, 128), Enum.Material.Brick)
 	end
 
 	-- [항구 풍차] 파츠 조립 가짜 풍차 대신 승인된 완성형 3D 풍차 한 채.
