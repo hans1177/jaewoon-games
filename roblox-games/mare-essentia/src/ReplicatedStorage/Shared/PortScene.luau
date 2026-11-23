@@ -1103,7 +1103,16 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		elseif scenePortId == "london" and seed % 3 == 0 then
 		(if originalHouseTier == 1 then "london_house_worker"
 			elseif originalHouseTier == 2 then "london_house_artisan" else nil) else nil
-	local selectedHouse = if originalHouse and AssetIds["Town/" .. originalHouse] then originalHouse
+	-- [런던 독립 주택] 실물 자산번호가 있을 때만 고급 필지에 상인 주택·저택·정원 빌라를 사용한다.
+	-- 기존 주거 층수, 필지, 저장 키는 바꾸지 않고 원래 단계 주택은 그 밖의 필지에 유지한다.
+	local londonEstate = if scenePortId == "london" and houseTier >= 5 and seed % 11 == 1
+		then "london_house_villa"
+		elseif scenePortId == "london" and houseTier >= 4 and seed % 9 == 2
+		then "london_house_mansion"
+		elseif scenePortId == "london" and houseTier >= 3 and seed % 7 == 3
+		then "london_house_merchant" else nil
+	local selectedHouse = if londonEstate and AssetIds["Town/" .. londonEstate] then londonEstate
+		elseif originalHouse and AssetIds["Town/" .. originalHouse] then originalHouse
 		elseif londonResidence and AssetIds["Town/" .. londonResidence] then londonResidence else nil
 	if selectedHouse then
 		local houseModel = importedModel(parent, "Town", selectedHouse, pos,
@@ -4449,6 +4458,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 					-- [런던 종교 구획] 1~2단계는 승인된 소형 예배당을, 이후는 원래의 대형 교회를 쓴다.
 					if info.portId == "london" and lvl <= 2 and AssetIds["Town/london_bld_chapel"] then
 						put("Town", "london_bld_chapel", 22, cx, cz, true, face)
+					elseif info.portId == "london" and lvl >= 3 and AssetIds["Town/london_bld_temple"] then
+						put("Town", "london_bld_temple", 30, cx, cz, true, face)
 					else
 						put("Town", "church", 30, cx, cz, true, face)
 					end

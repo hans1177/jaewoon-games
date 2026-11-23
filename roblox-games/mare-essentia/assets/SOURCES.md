@@ -2098,3 +2098,7 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `town/` | london_house_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
 | `town/` | london_house_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
 | `town/` | london_house_3.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_house_merchant.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_house_mansion.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_house_villa.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_temple.glb | CreativeTrio; Quaternius · CC0-1.0 | https://poly.pizza/m/GHzPfvoyzX |
