@@ -6169,6 +6169,10 @@ function PortScene.build(info, onFacility)
 			havana = "bay", hong_kong = "hill", alexandria = "delta", cairo = "delta",
 			rotterdam = "delta", antwerp = "river", genoa = "hill", naples = "bay",
 			marseille = "bay", osaka = "river", calcutta = "delta",
+			-- [촬영 항구 해안 지시서] 승인된 기존 해안 바위 메시를 배치하는 bay 분류만 지정한다.
+			-- 섬·강 프리미티브를 신설하거나 수변 보행·선박 항로·경제 지형을 수정하지 않는다.
+			zanzibar = "bay", calicut = "bay", veracruz = "bay",
+			sydney = "bay", cartagena_indias = "bay",
 		}
 		local choices = if currentKey == "japan" or currentKey == "nordic" then { "hill", "bay", "river" }
 			elseif currentKey == "pacific" or currentKey == "seasia" then { "lagoon", "bay", "delta" }
