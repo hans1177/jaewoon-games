@@ -3410,7 +3410,7 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
   assert.match(source,/H\.gallerySelectedTab ~= tab/,'탭 변경 시 원화 순서 초기화');
   assert.match(source,/H\.galleryReadingCard = if current\.found/,'백과 현재 페이지 원화 동기화');
   assert.match(source,/AssetIds\["CardArt\/event_chart_" \.\. H\.selectedChart\]/,'지도 선택과 원화 연동');
-  assert.match(source,/if chartName then matched = nil end/,'선택한 해역 지도 우선');
+  assert.match(source,/if chartName and not selection then matched = nil end/,'선택한 항구가 없으면 해역 지도를 우선');
   assert.match(source,/H\.galleryPrev\.Position = UDim2\.fromOffset\(cardW \+ 18, artH - 48\)/,'모바일 원화 넘김 좌표');
   assert.match(source,/local inYardHall = H\.yardHallActive/,'선박 클릭 시 상세장부 소속 보존');
   assert.match(source,/if inYardHall and tradeHallRefresh then tradeHallRefresh\(\) else render\(\) end/,
@@ -3418,7 +3418,7 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
   assert.match(source,/selectArea\.Size = UDim2\.new\(1, -4, 0, 78\)/,'구매 버튼과 선택 영역 분리');
   assert.match(source,/H\.galleryImage\.ScaleType = Enum\.ScaleType\.Fit/,'기존 원화 강제 잘림 금지');
   assert.match(source,/H\.galleryBookOpenRequested = H\.galleryLinkCardId/,'실제 지식 카드 ID 연결');
-  assert.match(source,/or \("search:" \.\. \(\(H\.FACILITY_GALLERY_TOPICS\[currentTab\]/,'미발견 주제는 기존 서재 검색으로 연결');
+  assert.match(source,/H\.gallerySearchTerm or \(\(H\.FACILITY_GALLERY_TOPICS\[currentTab\]/,'선택 대상을 우선 검색하고 그 외에는 시설 주제로 연결');
   assert.match(source,/if bookCard then bookCard\.id else "search:" \.\. shipName/,'해당 선박 기록이 없으면 선박명 검색');
   assert.match(source,/string\.sub\(target, 1, 7\) == "search:"/,'서재 검색과 정확한 백과 장 분기');
   assert.match(source,/H\.codexSearchTerm = string\.sub\(target, 8\)/,'기존 지식 검색 기능 재사용');
