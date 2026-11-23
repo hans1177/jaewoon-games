@@ -165,3 +165,36 @@ test('13개 촬영 확인 항구에 등록된 실물 특산품 3D를 표시하�
   assert.match(scene, /PortShowcaseGoodsId/);
   assert.match(scene, /for _, id in \(if port then port\.produces else \{\}\) do/);
 });
+
+test('촬영 13개 항구 외관이 개별 작업 지시서의 5단계 값과 일치한다', () => {
+  for (const port of ['london', 'amsterdam', 'rouen', 'lisbon', 'istanbul',
+    'zanzibar', 'calicut', 'nagasaki', 'veracruz', 'busan', 'canton',
+    'sydney', 'cartagena_indias']) {
+    const instructions = fs.readFileSync(root + 'docs/ports/' + port + '.md', 'utf8');
+    const entry = id.split('\\n\\t' + port + ' = { landmark = ')[1]
+      ?.split(/\\n\\t[a-z_]+ = \\{/)[0] ?? '';
+    assert.ok(entry, port + ' 외관 정체성 존재');
+    const roofWall = instructions.match(/^\\| 지붕·벽 \\| ([^|]+) \\|/m)?.[1].trim().split(' · ');
+    const plaza = instructions.match(/^\\| 광장 \\| ([^|]+) \\|/m)?.[1].trim();
+    const lamp = instructions.match(/^\\| 밤 조명 \\| ([^|]+) \\|/m)?.[1].trim();
+    const streets = instructions.match(/^\\| 길 1→5단계 \\| ([^|]+) \\|/m)?.[1].trim().split(' → ');
+    assert.ok(roofWall && plaza && lamp && streets?.length === 5, port + ' 지시서 완전성');
+    for (const [key, expected] of Object.entries({
+      roof: roofWall[0], wall: roofWall[1], plaza, lamp,
+    })) {
+      assert.ok(entry.includes(key + ' = "' + expected + '"'),
+        port + ' ' + key + ' 지시서 불일치');
+    }
+    assert.ok(entry.includes('street = { ' + streets.map(s => '"' + s + '"').join(', ') + ' }'),
+      port + ' 5단계 도로 지시서 불일치');
+  }
+});
+
+test('열대 해안 검수 항구는 기존 등록 바위 모델의 해안 유형을 선택한다', () => {
+  for (const port of ['zanzibar', 'calicut', 'veracruz', 'sydney', 'cartagena_indias']) {
+    assert.ok(scene.includes(port + ' = "bay"'), port + ' 해안선 지정');
+  }
+  const assets = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/AssetIds.luau', 'utf8');
+  assert.ok(assets.includes('["Naval/rocks-a"]'), '기존 해안 메쉬 등록');
+  assert.match(scene, /elseif form == "bay" and i ~= 2 then/);
+});
