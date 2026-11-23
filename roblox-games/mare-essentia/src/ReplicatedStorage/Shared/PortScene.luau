@@ -5370,11 +5370,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 		if lay.fort then
 			-- [런던 해안 망루] 실제 자산 번호가 등록된 경우만 승인된 해안 감시탑으로 대체한다.
 			local londonTower = info.portId == "london" and AssetIds["Town/london_bld_watchtower"] ~= nil
-			if londonTower then
-				one("Town", "london_bld_watchtower", 12, 6, 0, lay.fortZ, true)
-			else
-				one("Naval", "tower-watch", 12, 6, 0, lay.fortZ, true)
-			end
+			one(if londonTower then "Town" else "Naval",
+				if londonTower then "london_bld_watchtower" else "tower-watch", 12, 6, 0, lay.fortZ, true)
 			if lvl >= 3 then
 				for _, offset in { -9, 9 } do
 					one("Naval", "cannon", 3.4, 14, 0, lay.fortZ + offset)
