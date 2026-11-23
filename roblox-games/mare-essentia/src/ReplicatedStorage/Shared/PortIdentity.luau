@@ -525,6 +525,109 @@ local P: { [string]: Identity } = {
 		signature = { "인디고 염료 공방", "면화 상관", "보석 감정소" }, facade = { 212, 182, 140 }, roofTint = { 130, 88, 68 },
 		reflow = { lane = 6, plaza = 12, side = 1, landmarkX = 7, landmarkZ = 8, district = -10, facility = 1 } },
 
+	-- [항구별 재배치 85~101] cagliari: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	cagliari = { landmark = { id = "lm_cagliari_campanile", name = "카글리아리 항만 돔 성당 종탑", kind = "campanile", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "loggia", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "flagstone", "flagstone", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "dust",
+		signature = { "소금 건조장", "양모 창고", "올리브 압착소" }, facade = { 228, 189, 148 }, roofTint = { 173, 104, 72 },
+		reflow = { lane = -8, plaza = 14, side = 1, landmarkX = -7, landmarkZ = 8, district = 11, facility = 4 } },
+	-- [항구별 재배치 85~101] elmina: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	elmina = { landmark = { id = "lm_elmina_fort", name = "금 해안 석조 무역 성채", kind = "fort", fallback = "none" },
+		roof = "thatch", wall = "adobe", balcony = nil, layout = "organic", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "torch", ground = "red_earth", weatherGround = "monsoon_mud",
+		signature = { "금 계량소", "상아 선창", "야자기름 공방" }, facade = { 187, 152, 112 }, roofTint = { 119, 91, 69 },
+		reflow = { lane = 4, plaza = -10, side = -1, landmarkX = 6, landmarkZ = -7, district = -9, facility = 3 } },
+	-- [항구별 재배치 85~101] famagusta: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	famagusta = { landmark = { id = "lm_famagusta_campanile", name = "성벽 항만의 돔 성당 종탑", kind = "campanile", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "loggia", layout = "grid", plaza = "fountain",
+		street = { "dirt", "flagstone", "flagstone", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "dust",
+		signature = { "해염 건조장", "설탕 창고", "비단 시장" }, facade = { 225, 194, 161 }, roofTint = { 158, 98, 72 },
+		reflow = { lane = 9, plaza = 6, side = 1, landmarkX = 3, landmarkZ = 5, district = 7, facility = 5 } },
+	-- [항구별 재배치 85~101] freetown: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	freetown = { landmark = { id = "lm_freetown_fort", name = "해안 석조 성채와 교역 문루", kind = "fort", fallback = "none" },
+		roof = "thatch", wall = "adobe", balcony = nil, layout = "organic", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "torch", ground = "grass", weatherGround = "monsoon_mud",
+		signature = { "귀중품 계량소", "흑단 창고", "야자 기름 선창" }, facade = { 178, 144, 108 }, roofTint = { 116, 89, 68 },
+		reflow = { lane = -5, plaza = -13, side = -1, landmarkX = -8, landmarkZ = -6, district = -11, facility = 2 } },
+	-- [항구별 재배치 85~101] funchal: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	funchal = { landmark = { id = "lm_funchal_bell_tower", name = "마데이라 항만 석조 종탑", kind = "bell_tower", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "iron", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "포도주 숙성 창고", "설탕 압착소", "화산섬 상관" }, facade = { 236, 213, 175 }, roofTint = { 178, 105, 77 },
+		reflow = { lane = 11, plaza = -5, side = 1, landmarkX = 7, landmarkZ = -4, district = 9, facility = 6 } },
+	-- [항구별 재배치 85~101] gdansk: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	gdansk = { landmark = { id = "lm_gdansk_city_gate", name = "발트 고딕 양탑 도시 문루", kind = "city_gate", fallback = "none" },
+		roof = "gable", wall = "brick", balcony = nil, layout = "grid", plaza = "market",
+		street = { "dirt", "cobble", "cobble", "cobble", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "snow",
+		signature = { "호박 보석 시장", "목재 선창", "맥주 창고" }, facade = { 166, 103, 83 }, roofTint = { 100, 73, 67 },
+		reflow = { lane = -12, plaza = 11, side = -1, landmarkX = -5, landmarkZ = 6, district = 10, facility = 1 } },
+	-- [항구별 재배치 85~101] gibraltar: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	gibraltar = { landmark = { id = "lm_gibraltar_fort", name = "해협 성벽의 고대 석조 요새", kind = "fort", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "iron", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "dust",
+		signature = { "소금 선창", "어시장", "피혁 상관" }, facade = { 225, 202, 164 }, roofTint = { 151, 104, 80 },
+		reflow = { lane = 6, plaza = -15, side = 1, landmarkX = 8, landmarkZ = -8, district = -7, facility = 4 } },
+	-- [항구별 재배치 85~101] glasgow: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	glasgow = { landmark = { id = "lm_glasgow_clock_tower", name = "강변 고딕 교회 시계탑", kind = "clock_tower", fallback = "none" },
+		roof = "gable", wall = "brick", balcony = nil, layout = "grid", plaza = "market",
+		street = { "dirt", "gravel", "cobble", "cobble", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "석탄 선적소", "철 광석 창고", "아마 직물 시장" }, facade = { 169, 156, 148 }, roofTint = { 90, 101, 107 },
+		reflow = { lane = -7, plaza = 10, side = -1, landmarkX = -6, landmarkZ = 7, district = 3, facility = 2 } },
+	-- [항구별 재배치 85~101] guam: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	guam = { landmark = { id = "lm_guam_meeting_house", name = "해안 조각 기둥 집회소", kind = "meeting_house", fallback = "none" },
+		roof = "thatch", wall = "wood", balcony = nil, layout = "organic", plaza = "quay",
+		street = { "sand", "sand", "gravel", "plank", "paved" }, lamp = "torch", ground = "sand", weatherGround = "monsoon_mud",
+		signature = { "백단향 창고", "진주조개 시장", "은 선적소" }, facade = { 182, 154, 112 }, roofTint = { 124, 99, 72 },
+		reflow = { lane = 3, plaza = -9, side = 1, landmarkX = 4, landmarkZ = -6, district = 12, facility = 5 } },
+	-- [항구별 재배치 85~101] guayaquil: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	guayaquil = { landmark = { id = "lm_guayaquil_cathedral", name = "과야킬 강변 식민지 쌍탑 성당", kind = "cathedral", fallback = "none" },
+		roof = "flat", wall = "stucco", balcony = "iron", layout = "canal", plaza = "parade",
+		street = { "sand", "dirt", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "mud", weatherGround = "monsoon_mud",
+		signature = { "카카오 교역소", "목재 선창", "쌀 시장" }, facade = { 229, 203, 167 }, roofTint = { 168, 103, 73 },
+		reflow = { lane = -9, plaza = -6, side = -1, landmarkX = -7, landmarkZ = -7, district = -8, facility = 1 } },
+	-- [항구별 재배치 85~101] hakodate: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	hakodate = { landmark = { id = "lm_hakodate_castle", name = "하코다테 해안 석축 성곽 천수", kind = "castle", fallback = "none" },
+		roof = "eave", wall = "wood", balcony = "wood_lattice", layout = "organic", plaza = "quay",
+		street = { "dirt", "gravel", "gravel", "flagstone", "flagstone" }, lamp = "stone_lantern", ground = "snowmelt", weatherGround = "snow",
+		signature = { "어시장", "목재 상관", "모피 창고" }, facade = { 211, 199, 179 }, roofTint = { 85, 92, 98 },
+		reflow = { lane = 8, plaza = 15, side = 1, landmarkX = 6, landmarkZ = 7, district = 5, facility = 3 } },
+	-- [항구별 재배치 85~101] halifax: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	halifax = { landmark = { id = "lm_halifax_fort", name = "항만 석조 성채의 전망 탑", kind = "fort", fallback = "none" },
+		roof = "hip", wall = "stone", balcony = nil, layout = "grid", plaza = "parade",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "snow",
+		signature = { "어류 염장 창고", "목재 선창", "모피 상관" }, facade = { 178, 174, 164 }, roofTint = { 99, 104, 111 },
+		reflow = { lane = -4, plaza = -12, side = -1, landmarkX = -4, landmarkZ = -5, district = -5, facility = 6 } },
+	-- [항구별 재배치 85~101] helsinki: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	helsinki = { landmark = { id = "lm_helsinki_spire", name = "북해 항만 목조 교회 첨탑", kind = "spire", fallback = "none" },
+		roof = "gable", wall = "wood", balcony = "wood_lattice", layout = "grid", plaza = "quay",
+		street = { "dirt", "gravel", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "snowmelt", weatherGround = "snow",
+		signature = { "철 광석 창고", "목재 선창", "어시장" }, facade = { 200, 171, 129 }, roofTint = { 103, 79, 71 },
+		reflow = { lane = 12, plaza = 7, side = 1, landmarkX = 8, landmarkZ = 6, district = 11, facility = 1 } },
+	-- [항구별 재배치 85~101] hobart: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	hobart = { landmark = { id = "lm_hobart_meeting_house", name = "목각 기둥이 있는 해안 집회소", kind = "meeting_house", fallback = "none" },
+		roof = "thatch", wall = "wood", balcony = nil, layout = "organic", plaza = "quay",
+		street = { "sand", "sand", "gravel", "plank", "paved" }, lamp = "torch", ground = "grass", weatherGround = "puddles",
+		signature = { "물개가죽 시장", "고래기름 창고", "목재 선창" }, facade = { 185, 156, 115 }, roofTint = { 122, 100, 77 },
+		reflow = { lane = -10, plaza = -14, side = -1, landmarkX = -6, landmarkZ = -8, district = -4, facility = 5 } },
+	-- [항구별 재배치 85~101] hoi_an: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	hoi_an = { landmark = { id = "lm_hoi_an_pagoda", name = "수로 마을 겹지붕 교역 회관", kind = "pagoda", fallback = "none" },
+		roof = "thatch", wall = "wood", balcony = "wood_lattice", layout = "canal", plaza = "market",
+		street = { "mud", "dirt", "gravel", "plank", "paved" }, lamp = "paper_lantern", ground = "rice_paddy", weatherGround = "monsoon_mud",
+		signature = { "실크 직조 공방", "계피 창고", "흑단 목재 상관" }, facade = { 207, 174, 125 }, roofTint = { 138, 93, 62 },
+		reflow = { lane = 5, plaza = -7, side = 1, landmarkX = 7, landmarkZ = -3, district = 6, facility = 2 } },
+	-- [항구별 재배치 85~101] honolulu: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	honolulu = { landmark = { id = "lm_honolulu_meeting_house", name = "태평양 해변 조각 기둥 집회소", kind = "meeting_house", fallback = "none" },
+		roof = "thatch", wall = "wood", balcony = nil, layout = "organic", plaza = "quay",
+		street = { "sand", "sand", "gravel", "plank", "paved" }, lamp = "torch", ground = "sand", weatherGround = "puddles",
+		signature = { "백단향 창고", "진주조개 시장", "고래기름 선창" }, facade = { 192, 160, 117 }, roofTint = { 133, 98, 66 },
+		reflow = { lane = -6, plaza = 13, side = -1, landmarkX = -8, landmarkZ = 8, district = 9, facility = 3 } },
+	-- [항구별 재배치 85~101] hull: 기존 원본 건축과 필지·방문 시설의 고유 좌표 지정.
+	hull = { landmark = { id = "lm_hull_clock_tower", name = "북해 항구 고딕 교회 시계탑", kind = "clock_tower", fallback = "none" },
+		roof = "gable", wall = "brick", balcony = nil, layout = "grid", plaza = "market",
+		street = { "dirt", "gravel", "cobble", "cobble", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "양모 상관", "석탄 선창", "고래기름 창고" }, facade = { 181, 166, 143 }, roofTint = { 89, 93, 101 },
+		reflow = { lane = 10, plaza = -11, side = 1, landmarkX = 5, landmarkZ = -7, district = -10, facility = 4 } },
+
 }
 
 local M = {}
@@ -566,7 +669,7 @@ function M.get(portId: string): Identity?
 	return P[portId]
 end
 
--- [전체 항구 고유 외형] 항구별 지시서가 등록된 84개 항구는 지정 색을 그대로 쓰고,
+-- [전체 항구 고유 외형] 항구별 지시서가 등록된 101개 항구는 지정 색을 그대로 쓰고,
 -- 나머지 항구는 기존 문화권의 벽·지붕·도로 팔레트에서 항구 ID별 고정 변형을 만든다.
 -- 어떤 모델도 새로 생성·선택하지 않으며 항구 데이터·저장·경제는 변경하지 않는다.
 -- 같은 항구는 방문할 때마다 항상 같은 색이며 서로 다른 문화권의 재료색을 섞지 않는다.
