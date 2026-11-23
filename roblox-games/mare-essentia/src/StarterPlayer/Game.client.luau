@@ -2047,6 +2047,31 @@ H.galleryCaption.TextWrapped = true
 H.galleryCaption.TextTruncate = Enum.TextTruncate.AtEnd
 H.galleryCaption.TextSize = 14
 H.galleryCaption.ZIndex = 3
+-- [원화 넘김] 기존 발견·승인 원화만 순환한다. 원화 가운데 터치는 계속 백과 이동이다.
+for _, direction in { -1, 1 } do
+  local button = Instance.new("TextButton")
+  button.Name = if direction < 0 then "PreviousFacilityArt" else "NextFacilityArt"
+  button.Size = UDim2.fromOffset(40, 40)
+  button.Text = if direction < 0 then "◀" else "▶"
+  button.TextSize = 24
+  button.Font = Enum.Font.GothamBold
+  button.TextColor3 = Color3.fromRGB(255, 236, 169)
+  button.TextStrokeColor3 = Color3.fromRGB(41, 29, 18)
+  button.TextStrokeTransparency = 0.1
+  button.BackgroundTransparency = 1
+  button.BorderSizePixel = 0
+  button.AutoButtonColor = false
+  button.Visible = false
+  button.ZIndex = H.galleryImage.ZIndex + 2
+  button.Parent = H.facilityGallery
+  button.Activated:Connect(function()
+    local total = #(H.galleryMatches or {})
+    if total <= 1 then return end
+    H.galleryIndex = ((H.galleryIndex or 1) - 1 + direction) % total + 1
+    H.renderFacilityGallery()
+  end)
+  if direction < 0 then H.galleryPrev = button else H.galleryNext = button end
+end
 -- [기존 승인 원화] 외부 유료 자료나 임의 메시 대신 백과·사건 카드 그림을 직접 재사용한다.
 H.FACILITY_GALLERY_ART = {
   board = "event_royal_charter", quest = "event_cook_voyage", recruit = "event_merchant_lamu",
@@ -2069,25 +2094,52 @@ H.FACILITY_GALLERY_TOPICS = {
   tech = { "과학", "기술", "발명" }, status = { "항해", "선원", "인물" }, crew = { "선원", "항해", "인물" },
 }
 function H.renderFacilityGallery()
-  local focus = H.MENU_FOCUS[currentTab]
-  local artName = H.FACILITY_GALLERY_ART[currentTab] or "event_calm_seas"
+  local tab = currentTab
+  if H.gallerySelectedTab ~= tab then
+    H.gallerySelectedTab = tab
+    H.galleryIndex = 1
+  end
+  local focus = H.MENU_FOCUS[tab]
+  local artName = H.FACILITY_GALLERY_ART[tab] or "event_calm_seas"
   local fallback = AssetIds["CardArt/" .. artName] or AssetIds["CardArt/event_calm_seas"]
-  local matched = nil
-  for _, token in H.FACILITY_GALLERY_TOPICS[currentTab] or {} do
+  -- [지도 선택 연동] 플레이어가 고른 해역의 기존 승인 지도를 왼쪽 원화에도 그대로 보여 준다.
+  local chartName = nil
+  if tab == "map" and H.selectedChart then
+    local chart = AssetIds["CardArt/event_chart_" .. H.selectedChart]
+    if chart then
+      fallback = chart
+      for _, entry in H.CHART_REGIONS or {} do
+        if entry[1] == H.selectedChart then chartName = entry[2]; break end
+      end
+    end
+  end
+  -- [현행 지식] 이미 발견한 카드만 사용하고 주제별 중복 카드를 제거한다.
+  local matches, seen = {}, {}
+  for _, token in H.FACILITY_GALLERY_TOPICS[tab] or {} do
     for _, card in ((view and view.codex and view.codex.cards) or {}) do
-      if card.found == true and type(card.image) == "string" and card.image ~= "" then
+      if card.found == true and type(card.image) == "string" and card.image ~= "" and not seen[card.id] then
         local about = string.lower(tostring(card.name or "") .. " " .. tostring(card.topic or "")
           .. " " .. tostring(card.worldGroup or "") .. " " .. tostring(card.kindName or ""))
         if string.find(about, string.lower(token), 1, true) then
-          matched = card
-          break
+          table.insert(matches, card)
+          seen[card.id] = true
         end
       end
     end
-    if matched then break end
   end
+  H.galleryMatches = matches
+  H.galleryIndex = if #matches > 0 then math.clamp(H.galleryIndex or 1, 1, #matches) else 1
+  local matched = if #matches > 0 then matches[H.galleryIndex] else nil
+  -- [백과 현재 장] 백과에서 페이지를 넘길 때도 왼쪽 원화·직접 이동 대상이 같은 장을 가리킨다.
+  if (tab == "codex" or tab == "encyclopedia") and H.galleryReadingCard then
+    matched = H.galleryReadingCard
+  end
+  if chartName then matched = nil end
   local image = if matched then matched.image elseif fallback then "rbxassetid://" .. tostring(fallback) else ""
   H.galleryLinkCardId = if matched then matched.id else nil
+  local canPage = #matches > 1 and not chartName and not ((tab == "codex" or tab == "encyclopedia") and H.galleryReadingCard)
+  H.galleryPrev.Visible = canPage
+  H.galleryNext.Visible = canPage
   if H.galleryImage.Image ~= image then
     H.galleryImage.Image = image
     if image ~= "" and not game:GetService("GuiService").ReducedMotionEnabled then
@@ -2098,8 +2150,10 @@ function H.renderFacilityGallery()
       H.galleryImage.ImageTransparency = 0
     end
   end
-  H.galleryTitle.Text = if matched then matched.name elseif focus then focus[1] else TAB_NAME[currentTab] or "시설 안내"
-  H.galleryCaption.Text = if matched then "원화 터치 · 해당 백과 항목" else "원화 터치 · 세계 백과 펼치기"
+  H.galleryTitle.Text = if chartName then chartName elseif matched then matched.name
+    elseif focus then focus[1] else TAB_NAME[tab] or "시설 안내"
+  H.galleryCaption.Text = if canPage then string.format("%d/%d · 넘기기 / 원화 터치 → 백과", H.galleryIndex, #matches)
+    elseif matched then "원화 터치 · 해당 백과 항목" else "원화 터치 · 세계 백과 펼치기"
   H.galleryCaption.Visible = image ~= ""
 end
 
@@ -2286,6 +2340,8 @@ function H.layoutBook()
     local cardH = math.floor(cardW * 10 / 7)
     H.galleryCard.Position = UDim2.fromOffset(math.floor((artW - cardW) / 2), 8)
     H.galleryCard.Size = UDim2.fromOffset(cardW, cardH)
+    H.galleryPrev.Position = UDim2.fromOffset(math.floor((artW - cardW) / 2) + 3, 8 + math.floor(cardH / 2) - 20)
+    H.galleryNext.Position = UDim2.fromOffset(math.floor((artW + cardW) / 2) - 43, 8 + math.floor(cardH / 2) - 20)
     H.galleryTitle.TextWrapped = false
     H.galleryTitle.Position = UDim2.new(0, 8, 1, -53)
     H.galleryTitle.Size = UDim2.new(1, -16, 0, 25)
@@ -2307,11 +2363,13 @@ function H.layoutBook()
     local cardW = math.floor(cardH * 7 / 10)
     H.galleryCard.Position = UDim2.fromOffset(8, 7)
     H.galleryCard.Size = UDim2.fromOffset(cardW, cardH)
+    H.galleryPrev.Position = UDim2.fromOffset(cardW + 18, artH - 48)
+    H.galleryNext.Position = UDim2.fromOffset(cardW + 63, artH - 48)
     H.galleryTitle.Position = UDim2.fromOffset(cardW + 18, 10)
     H.galleryTitle.Size = UDim2.new(1, -cardW - 28, 0, 55)
     H.galleryTitle.TextWrapped = true
     H.galleryCaption.Position = UDim2.fromOffset(cardW + 18, 70)
-    H.galleryCaption.Size = UDim2.new(1, -cardW - 28, 0, 55)
+    H.galleryCaption.Size = UDim2.new(1, -cardW - 28, 0, 34)
     H.galleryCaption.TextWrapped = true
     H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Left
     local contentY = bodyTop + (if showArt then artH + 8 else 0)
@@ -7933,23 +7991,22 @@ local function renderYard(page)
 			end
 			local si = SHIP_ICON[s.id]
 			if si then withIcon(row, si[1], si[2], si[3], 100) end
-			-- [오른쪽 선박 목록] 배 이름·사진을 누르면 기존 중앙 3D 갤러리에 연결한다.
-			-- 교체/구매는 원래 버튼만 실행하고 제목 선택은 결제를 호출하지 않는다.
-			if not H.yardHallActive then
-				local selectArea = Instance.new("TextButton")
-				selectArea.Name = "SelectShip3D_" .. tostring(s.id)
-				selectArea.Text = ""
-				selectArea.BackgroundTransparency = 1
-				selectArea.BorderSizePixel = 0
-				selectArea.AutoButtonColor = false
-				selectArea.Size = UDim2.new(1, -4, 0, 78)
-				selectArea.ZIndex = 4
-				selectArea.Parent = row
-				selectArea.Activated:Connect(function()
-					H.shipPreviewId = s.id
-					render()
-				end)
-			end
+			-- [선박 원화 선택] 상세장부에서도 이름·사진을 누르면 중앙 7:10 선박이 바뀐다.
+			-- 선택만 하는 터치 영역이며 기존 실제 교체/구매 버튼과 겹치지 않는다.
+			local selectArea = Instance.new("TextButton")
+			selectArea.Name = "SelectShip3D_" .. tostring(s.id)
+			selectArea.Text = ""
+			selectArea.BackgroundTransparency = 1
+			selectArea.BorderSizePixel = 0
+			selectArea.AutoButtonColor = false
+			selectArea.Size = UDim2.new(1, -4, 0, 78)
+			selectArea.ZIndex = 4
+			selectArea.Parent = row
+			selectArea.Activated:Connect(function()
+				if H.shipPreviewId == s.id then return end
+				H.shipPreviewId = s.id
+				if H.yardHallActive and tradeHallRefresh then tradeHallRefresh() else render() end
+			end)
 			-- [선박 시각 비교] 실제 교체 후 화물칸·속도·선체를 표시한다.
 			-- 공통 카드의 본문 높이에 비교 영역을 예약해 모바일에서도 버튼·설명과 겹치지 않게 한다.
 			row:SetAttribute("FooterHeight", 118)
@@ -11013,6 +11070,11 @@ local f = findField(codexField)
 end
 
 function RENDERERS.codex()
+	-- [서재 전환] 책장을 닫은 경우에만 이전 장의 왼쪽 원화 선택을 해제한다.
+	if codexField ~= "book" and H.galleryReadingCard then
+		H.galleryReadingCard = nil
+		H.renderFacilityGallery()
+	end
 	-- [지식 백과의 책 펼치기] 기존 검색·분류·카드 기능은 보존한다.
 	if codexField == "book" then
 		RENDERERS.encyclopedia()
@@ -11273,6 +11335,11 @@ function RENDERERS.encyclopedia()
 	end
 	H.encyclopediaPage = math.clamp(H.encyclopediaPage or 1, 1, #found)
 	local current = found[H.encyclopediaPage]
+	-- [백과-원화 동기화] 책장을 넘기면 왼쪽 카드도 현재 읽는 발견 원화로 갱신한다.
+	if currentTab == "codex" or currentTab == "encyclopedia" then
+		H.galleryReadingCard = if current.found and type(current.image) == "string" and current.image ~= "" then current else nil
+		H.renderFacilityGallery()
+	end
 	local category = if current.combatArt then {
 		name = "해전 원화 화첩", color = { 122, 89, 48 },
 		detail = "해전 카드에서 수집한 물건·배·유물의 원화를 정리한 도판이야. 실제 역사 지식과 게임 카드 설정을 구분해 읽어 줘.",
