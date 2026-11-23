@@ -329773,11 +329773,129 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_5c667f834890313fb567ad93",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14758",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "c62a7310162988c4e1a5f9711fd3810b3f82cf81",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14758,
+        "baseBranch": "main",
+        "headBranch": "mare-port-asset-acquisition-84-20261124",
+        "baseSha": "c62a7310162988c4e1a5f9711fd3810b3f82cf81",
+        "headSha": "202f6af909966e763d442cd211e5313fb36c16a0",
+        "mergeCommitSha": "5d2bb70b2ec5e37383f648eac8d3ec089ec92298",
+        "mergedAt": "2026-11-23T16:37:10Z",
+        "authorLogin": "hans1177",
+        "titleHash": "dec2e091bf02f56108fffd458b516c76d632b8ede3bcb4e816b412b58ff4b0f4",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-port-asset-acquisition-84-20261124",
+        "candidateSha": "202f6af909966e763d442cd211e5313fb36c16a0"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 1,
+        "addedLineCount": 36,
+        "deletedLineCount": 2,
+        "changedFiles": [
+          "roblox-games/mare-essentia/docs/PORT_VILLAGE_PROMPTS.md",
+          "roblox-games/mare-essentia/docs/ports/london.md",
+          "roblox-games/mare-essentia/tools/gen_port_briefs_all.py"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/tools/gen_port_briefs_all.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14758",
+        "merge-commit:5d2bb70b2ec5e37383f648eac8d3ec089ec92298",
+        "base-main:c62a7310162988c4e1a5f9711fd3810b3f82cf81"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2639
+    "total": 2640
   }
 }
