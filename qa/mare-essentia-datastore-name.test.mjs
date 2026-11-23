@@ -4237,6 +4237,10 @@ test('13 representative port Studio captures fail closed on build and retain bot
     assert.ok(!scene.code.includes('return tostring(ok)..tostring(err)'),'오류 문자열을 성공으로 위장 금지');
     assert.ok(names.includes(id+'_L3_top') && names.includes(id+'_L3_street'),'두 실화면 프레임 누락: '+id);
   }
+  const workflow=readText('.github/workflows/studio-autoqa.yml');
+  assert.match(workflow,/candidate=PORTS/,'기존 Studio 자동 선택기의 항구 장면 분기');
+  assert.match(workflow,/PORTS\) script=roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/mare-startports\.json/,'항구 실화면 스크립트 전송');
+  assert.match(workflow,/\*\) scope=FULL ;;\s*esac/,'기존 복합 변경 시 전체 회귀 폴백 유지');
   const core=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
   assert.equal(core.length,1000,'기존 실제 플레이 검증 1,000단계는 별도로 유지');
 });
