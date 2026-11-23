@@ -1328,7 +1328,7 @@ return function(D, S)
 				view.navalSupport, view.navalEffects = ns.lines, ns.entries
 			end
 			-- [건축 시뮬] 이 항구 공사 진행. 곡물 품귀(흉년)면 공사가 멈춘다.
-			local crisis = if S.Econ and S.Econ.scarcity and S.Econ.scarcity(state, state.portId, "grain") == "품귀" then "흉년(곡물 품귀)" else nil
+			local crisis = if S.Econ and S.Econ.scarcity and D.Ports.Goods.grain and S.Econ.scarcity(state, state.portId, "grain") == "품귀" then "흉년(곡물 품귀)" else nil
 			D.PortBuildings.Projects.update(state, state.portId, crisis)
 			view.buildProjects = D.PortBuildings.Projects.active(state, state.portId)
 			view.buildCelebrate = D.PortBuildings.Projects.recentDone(state, state.portId)
