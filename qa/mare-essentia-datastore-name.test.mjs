@@ -21,7 +21,7 @@ const core=readText('roblox-games/mare-essentia/src/ServerScriptService/Core.ser
 // [시작 로딩 회귀] 저장을 건드리지 않는 진단만 노출하고, 실제 서버/클라이언트 어느 단계에서 멈췄는지 증명한다.
 test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증거를 남긴다',()=>{
   const capture=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
-  assert.equal(capture.length,246);
+  assert.equal(capture.length,270);
   // [지상맵 실입력] 비차단 카드 획득 알림은 대기 대상에서 제외하되, 실제 입력 가림막은 계속 검사한다.
   const entry=capture[236];
   assert.equal(entry.type,'click_from_luau');
@@ -35,6 +35,27 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
   assert.match(entry.code,/btn\.InputBegan:Connect/);
   assert.match(entry.code,/btn\.Activated:Connect/);
   assert.match(capture[239].code,/FieldEntryStage/);
+  // [270단계 확장] 기존 246개 실제 플레이 검사 인덱스·클릭·판정을 보존하고 신규 24단계를 뒤에 추가한다.
+  assert.equal(capture[245].name,'field_actor_after_motion');
+  const extra=capture.slice(246);
+  assert.equal(extra.length,24,'기존 246단계 삭제·중간 삽입 금지');
+  const captures=extra.filter(row=>row.type==='capture').map(row=>row.name);
+  assert.deepEqual(captures,[
+    'field_registry_181','field_palette_variants','field_ground_visible_extra',
+    'field_camera_normal','field_hud_touch_bounds','field_hud_hitbox',
+    'field_notice_overlap','field_runtime_fps_sample'
+  ],'8개 추가 실화면 캡처 유지');
+  const verifies=extra.filter(row=>row.type==='luau');
+  assert.equal(verifies.length,8,'8개 런타임 검사 유지');
+  assert.equal(extra.filter(row=>row.type==='wait').length,8,'24단계의 대기·촬영 흐름 유지');
+  for(const marker of [
+    'PORT_181_RUNTIME_PALETTES_PASS','PORT_181_VARIANTS_PASS',
+    'FIELD_EXT_WORLD_PASS','FIELD_EXT_CAMERA_PASS',
+    'FIELD_EXT_TOUCH_LAYOUT_PASS','FIELD_EXT_POINTER_HITBOX_PASS',
+    'FIELD_EXT_NONBLOCKING_NOTICE_PASS','FIELD_EXT_RENDER_OBSERVED'
+  ])assert.ok(verifies.some(row=>row.code.includes(marker)),'실제 검증 단계 누락: '+marker);
+  assert.ok(verifies.some(row=>row.code.includes('actual181Screenshots=false')),'181개 항구 전체 실화면 촬영으로 과대 표기 금지');
+  assert.ok(verifies.some(row=>row.code.includes('notPerformancePass=true')),'관측 FPS를 성능 통과로 과대 표기 금지');
   // [통합 표지 QA] 실제 시작 화면과 클릭 순서를 검사해 이전 버튼명 회귀를 차단한다.
   assert.match(capture[4].code,/FindFirstChild\('TitleBackdrop'\)/);
   assert.match(capture[4].code,/FindFirstChild\('TitlePanel'\)/);
@@ -111,7 +132,7 @@ test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가
   assert.match(source,/function RENDERERS\.codex\(\)/);
   assert.match(source,/function RENDERERS\.tech\(\)/);
   assert.match(source,/function RENDERERS\.encyclopedia\(\)/);
-  assert.equal(capture.length,246);
+  assert.equal(capture.length,270);
   assert.match(capture[39].code,/TRADE_TAB_DETAIL_NOT_VISIBLE/);
   assert.match(capture[122].code,/TRADE_TAB_MENU_PASS/);
   assert.match(capture[123].code,/TRADE_TAB_PRICES_AND_ACTIONS_PASS/);
@@ -144,7 +165,7 @@ test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본
   assert.match(layout,/content\.Position = UDim2\.fromOffset\(artW \+ 16, bodyTop\)/);
   assert.doesNotMatch(layout,/local navW\s*=/);
   assert.match(tabs,/mkButton\(H\.tabStrip, TAB_NAME\[id\]/);
-  assert.equal(capture.length,246);
+  assert.equal(capture.length,270);
   assert.equal(capture[88].name,'ui_mobile_tabs_topright');
   for(const claim of ['MOBILE_TABS_NOT_ONE_ROW','MOBILE_TABS_NOT_TOP_RIGHT','MOBILE_LEFT_SPACE_NOT_RECLAIMED','MOBILE_TABS_WRAPPED_TO_SECOND_ROW','MOBILE_LAST_TAB_NOT_REACHABLE']){
     assert.ok(capture[87].code.includes(claim),claim);
@@ -163,7 +184,7 @@ test('새 항해 첫 카드 창 오발동 차단과 가죽·양피지 버튼 계
   assert.doesNotMatch(buttonCode,/Color3\.fromRGB\(183, 215, 236\)/);
   assert.match(buttonCode,/elseif good or travel then Color3\.fromRGB\(251, 237, 208\)/);
   assert.match(source,/local groupWidth = statusWidth \+ recentWidth \+ 8/);
-  assert.equal(capture.length,246);
+  assert.equal(capture.length,270);
 });
 
 test('항구 장면의 소품 선택은 Luau 복수 반환 조건식 없이 실행된다', () => {
@@ -607,7 +628,7 @@ test('1단 검병·궁수 편성은 유지하면서 승인된 R15 체형 3종 �
 test('스튜디오 탐험 실증은 현재 공격·회피 메달과 집안별 두 무기를 검사한다',()=>{
   const path='roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json';
   const script=JSON.parse(readText(path));
-  assert.equal(script.length,246,'기존 전체 스튜디오 검사 순서 유지');
+  assert.equal(script.length,270,'기존 전체 스튜디오 검사 순서 유지');
   // [실제 카드 대전 종료] 접힌 메뉴를 화면에서 먼저 클릭한 후 그 안의 건너뛰기를 실제 터치한다.
   assert.equal(script[155].label,'card_practice_menu_open');
   assert.match(script[155].code,/CARD_PRACTICE_MENU_REAL_CLICK/);
@@ -3518,7 +3539,7 @@ test('조선소 Studio QA는 정비와 비교 페이지를 각각 실제 클릭�
 test('스튜디오 R15 보행 검증은 자동 대련 루프의 관절 덮어쓰기를 차단한다', () => {
   const scene = readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau');
   const steps = JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
-  assert.equal(steps.length, 246);
+  assert.equal(steps.length,270);
   assert.match(scene, /RunService:IsStudio\(\) and folder:GetAttribute\("R15MotionProbe"\) == true/);
   for (const step of [204, 208]) {
     assert.match(steps[step].code, /scene:SetAttribute\("R15MotionProbe",true\)/);
@@ -3749,7 +3770,7 @@ test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 
   assert.ok(pose.includes('decal.Color3 = Color3.new(1, 1, 1)'));
   // [기존 Studio 촬영] 검은 얼굴만 확대하지 말고 손목·배지와 의상까지 한 화면에 기록한다.
   const shot=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
-  assert.equal(shot.length,246);
+  assert.equal(shot.length,270);
   const focus=shot.findIndex(row=>row.type==='capture' && row.name==='harbor_npc_face_front');
   assert.ok(focus>0);
   assert.ok(shot[focus-1].code.includes('head.Position-Vector3.new(0,1.10,0)'));
