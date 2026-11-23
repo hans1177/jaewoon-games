@@ -182,6 +182,25 @@ check("실제 성장한 국제항은 다중 선박·하역기 공개",
 check("항만 단계 입력이 범위를 벗어나면 안전하게 고정",
 	D.PortBuildings.harborVisual(-2, nil).tier == 1 and D.PortBuildings.harborVisual(99, nil).tier == 5)
 
+-- [마을 실제 축척] 건설/경제 저장과 무관하게 단계별 주택 필지와 도시 면적만 줄인다.
+local cityLots = D.PortBuildings.CityPlots
+local royalLots = D.PortBuildings.RoyalCityPlots
+check("마을·왕궁 도시 5단계 필지 표준",
+	#cityLots.plotScale == 5 and #cityLots.areaScale == 5
+		and #royalLots.plotScale == 5 and #royalLots.districtScale == 5)
+for level = 1, 5 do
+	local previous = level - 1
+	check("마을 실제 필지/면적 성장 " .. level,
+		cityLots.plotScale[level] > (if previous > 0 then cityLots.plotScale[previous] else 0)
+		and cityLots.areaScale[level] > (if previous > 0 then cityLots.areaScale[previous] else 0)
+		and royalLots.plotScale[level] > (if previous > 0 then royalLots.plotScale[previous] else 0)
+		and royalLots.districtScale[level] > (if previous > 0 then royalLots.districtScale[previous] else 0))
+end
+check("마을·왕궁 과대 필지 축소",
+	cityLots.plotScale[1] < 1.5 and cityLots.plotScale[5] < 2.2
+		and cityLots.areaScale[1] < 1.5 and cityLots.areaScale[5] < 6
+		and royalLots.plotScale[5] < 1.4)
+
 -- [항만 필지 회귀] 접안·조선·어항·창고·경비 5개 실제 부지는 두 축에서 겹치지 않아야 한다.
 local lots = D.PortBuildings.HarborPlotBounds
 check("필지 명칭 5개와 실제 반폭 정의",

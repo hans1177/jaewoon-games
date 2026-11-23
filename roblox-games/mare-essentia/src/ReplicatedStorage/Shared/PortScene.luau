@@ -3091,7 +3091,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	-- 도시마다 고정된 지형 시드로 구획 방향·필지 크기·외곽 폭을 달리한다. 재진입해도 같은 항구는 같은 형태다.
 	local districtSeed = seeded(info.portId .. ":city-plan")
 	local districtOffset = districtSeed:NextNumber(-7, 7)
-	local lotVariance = districtSeed:NextNumber(0.94, 1.06)
+	local lotVariance = districtSeed:NextNumber(0.98, 1.02)
 	local coastForm = folder:GetAttribute("CoastForm") or "plain"
 	-- [지형 맞춤 골목] 기존 해안선·운하·언덕 분류를 마을 골목 방향에 재사용한다.
 	local terrainLaneShift = if coastForm == "hill" then 3.5 elseif coastForm == "river" or coastForm == "delta" then -2.5
@@ -3116,6 +3116,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local lotGrowth = PortBuildings.CityPlots.plotScale[lvl] * royalLot
 	local areaGrowth = PortBuildings.CityPlots.areaScale[lvl] * royalArea
 	local S = P.S * (countryPlan and countryPlan.lot or 1) * lotGrowth * lotVariance
+	-- [화면 실측] 발전도 필지 규격이 실제 주거/골목 좌표와 동기화됐는지 기록한다.
+	folder:SetAttribute("TownPlotScale", lotGrowth)
+	folder:SetAttribute("TownAreaScale", areaGrowth)
+	folder:SetAttribute("TownPlotSpacing", S)
 	local fw = P.S * (countryPlan and countryPlan.lot or 1) / (HOUSE_SCALE * 1.08)
 	local laneWidth = math.max(if isRoyalCity then 13 else 9, P.alley * (if isRoyalCity then 2.1 else 1.8))
 	local laneL = 2 * S + laneWidth + 12
@@ -3839,7 +3843,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	-- 근접 건물/도로/시장/왕궁/랜드마크와 겹치면 건너뛰며 주택 건축 슬롯은 점유하지 않는다.
 	local fringeBudget = if wildernessTouch then 7 else 13
 	local outerEdgeZ = 152 + laneOffset + pairsN * laneL + laneWidth * 0.5 + 15
-	-- [발전별 실제 마을 땅] 주거·골목·미개발 변두리의 배치 범위를 따라 TownFloor 판 자체의 폭·깊이를 축소한다.
+	-- [발전별 실제 마을 땅] 표준화한 주거·골목·외곽 경계에 맞춰 TownFloor 실물 판의 폭·깊이를 축소한다.
 	-- 왕궁은 이미 커진 실물 본관·별관을 덮을 최소 폭을 보장하고 농촌 바닥은 건드리지 않는다.
 	local townFloor = folder:FindFirstChild("TownFloor")
 	if townFloor and townFloor:IsA("BasePart") then
@@ -5665,12 +5669,12 @@ function PortScene.build(info, onFacility)
 		fac[k] = true
 	end
 
-	-- [땅 자체 축소] 기존 2600x2600 대형 배경판을 발전도별 작은 지면으로 재조정한다.
-	-- 서쪽 농촌(-1325까지)과 외곽 지형·왕궁·항구는 유지한다. 새 지면 파트를 추가하지 않는다.
-	local farLandLeft = -1470 - (cityTier - 1) * 60
+	-- [실제 Roblox 지면 규격] 발전도 1~6단계별 작은 Baseplate로 폭·깊이를 직접 조정한다.
+	-- 농촌 경계(-1325), 기존 왕궁·항구·이동·저장 구조는 유지하며 새 지면 모델을 만들지 않는다.
+	local farLandLeft = -1380 - (cityTier - 1) * 25
 	local farLandRight = 20
 	local farLandWidth = farLandRight - farLandLeft
-	local farLandDepth = 2 * (CITY_LIMIT_Z + 470)
+	local farLandDepth = 2 * (CITY_LIMIT_Z + 180)
 	local farLandCenter = (farLandLeft + farLandRight) * 0.5
 	folder:SetAttribute("PortLandWidth", farLandWidth)
 	folder:SetAttribute("PortLandDepth", farLandDepth)
