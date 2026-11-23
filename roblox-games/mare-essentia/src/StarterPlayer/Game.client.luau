@@ -2045,6 +2045,7 @@ H.galleryCard.Name = "FacilityArtCard7x10"
 H.galleryCard.BackgroundColor3 = Color3.fromRGB(239, 224, 194)
 H.galleryCard.BorderSizePixel = 0
 H.galleryCard.ClipsDescendants = true
+H.galleryCard.ZIndex = 4
 H.galleryCard.Parent = H.facilityGallery
 corner(H.galleryCard, 5)
 do -- [로컬 레지스터 200 한도] 최상위 local 을 늘리지 않게 블록 안에 둔다.
@@ -2059,8 +2060,30 @@ H.galleryImage.BackgroundTransparency = 1
 H.galleryImage.Size = UDim2.fromScale(1, 1)
 H.galleryImage.ScaleType = Enum.ScaleType.Fit
 H.galleryImage.AutoButtonColor = false
-H.galleryImage.ZIndex = 3
+H.galleryImage.ZIndex = 5
 H.galleryImage.Parent = H.galleryCard
+do -- [반응형 배너 배경] 같은 원화를 흐리게 깔아 화면 폭 전체를 채운다. 본 원화(카드)는 자르지 않는다.
+	local back = Instance.new("ImageLabel")
+	back.Name = "FacilityArtBackdrop"
+	back.BackgroundColor3 = Color3.fromRGB(30, 21, 13)
+	back.BorderSizePixel = 0
+	back.Size = UDim2.fromScale(1, 1)
+	back.ScaleType = Enum.ScaleType.Crop
+	back.ImageTransparency = 0.35
+	back.ZIndex = 2
+	back.Parent = H.facilityGallery
+	H.galleryBackdrop = back
+	local shade = Instance.new("Frame")
+	shade.Name = "FacilityArtShade"
+	shade.BackgroundColor3 = Color3.fromRGB(20, 13, 8)
+	shade.BorderSizePixel = 0
+	shade.Size = UDim2.fromScale(1, 1)
+	shade.ZIndex = 3
+	shade.Parent = H.facilityGallery
+	local g = Instance.new("UIGradient")
+	g.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.55), NumberSequenceKeypoint.new(0.45, 0.25), NumberSequenceKeypoint.new(1, 0.5) })
+	g.Parent = shade
+end
 H.galleryImage.Activated:Connect(function()
   if not view or not H.galleryImage.Image or H.galleryImage.Image == "" then return end
   -- [정확한 목적지] 연결된 발견 카드가 없으면 주제 검색으로 열고 무관한 백과 책갈피를 열지 않는다.
@@ -2073,7 +2096,10 @@ H.galleryTitle.Name = "FacilityGalleryHeading"
 H.galleryTitle.Position = UDim2.new(0, 12, 1, -40)
 H.galleryTitle.Size = UDim2.new(1, -24, 0, 30)
 H.galleryTitle.AutomaticSize = Enum.AutomaticSize.None
-H.galleryTitle.ZIndex = 3
+H.galleryTitle.ZIndex = 6
+H.galleryTitle.TextColor3 = Color3.fromRGB(255, 240, 205)
+H.galleryTitle.TextStrokeColor3 = Color3.fromRGB(25, 16, 9)
+H.galleryTitle.TextStrokeTransparency = 0.35
 -- [공통 원화 안내] 승인된 그림 아래에 시설 이용 순서를 잉크로 함께 적는다.
 H.galleryCaption = mkLabel(H.facilityGallery, "", 16, INK_SOFT, false)
 H.galleryCaption.Name = "FacilityGalleryCaption"
@@ -2082,7 +2108,10 @@ H.galleryCaption.Size = UDim2.new(1, -24, 0, 28)
 H.galleryCaption.TextWrapped = true
 H.galleryCaption.TextTruncate = Enum.TextTruncate.AtEnd
 H.galleryCaption.TextSize = 14
-H.galleryCaption.ZIndex = 3
+H.galleryCaption.ZIndex = 6
+H.galleryCaption.TextColor3 = Color3.fromRGB(236, 214, 170)
+H.galleryCaption.TextStrokeColor3 = Color3.fromRGB(25, 16, 9)
+H.galleryCaption.TextStrokeTransparency = 0.5
 -- [원화 넘김] 기존 발견·승인 원화만 순환한다. 원화 가운데 터치는 계속 백과 이동이다.
 for _, direction in { -1, 1 } do
   local button = Instance.new("TextButton")
@@ -2098,12 +2127,13 @@ for _, direction in { -1, 1 } do
   button.BorderSizePixel = 0
   button.AutoButtonColor = false
   button.Visible = false
-  button.ZIndex = H.galleryImage.ZIndex + 2
+  button.ZIndex = 7
   button.Parent = H.facilityGallery
   button.Activated:Connect(function()
     local total = #(H.galleryMatches or {})
     if total <= 1 then return end
     H.galleryIndex = ((H.galleryIndex or 1) - 1 + direction) % total + 1
+    H.galleryTouchedAt = os.clock() -- 직접 넘기면 잠시 자동 넘김을 멈춘다
     H.renderFacilityGallery()
   end)
   if direction < 0 then H.galleryPrev = button else H.galleryNext = button end
@@ -2117,6 +2147,25 @@ H.FACILITY_GALLERY_ART = {
   battle = "event_piracy", explore = "event_angkor", war = "event_anglo_dutch_war", gwent = "event_royal_charter",
   scholar = "event_principia", codex = "bot_herbarium", tech = "event_industrial_start",
   diplomacy = "event_title_parchment", -- 외교: 조약 문서(배 그림 기본값이면 조선소로 착각)
+}
+-- [자동 순환 원화] 메뉴마다 의미가 맞는 기존 승인 사건 원화 묶음. 발견 카드 뒤에 섞어 자동으로 넘긴다.
+H.FACILITY_GALLERY_POOL = {
+  trade = { "trade_boom", "merchant_coromandel", "merchant_hoi_an", "merchant_lamu", "merchant_naha", "canton_system", "zanzibar" },
+  market = { "trade_boom", "merchant_hoi_an", "merchant_naha", "canton_system", "festival" },
+  harbor = { "canton_system", "cape_colony", "zanzibar", "merchant_naha", "festival" },
+  route = { "new_route", "cook_voyage", "calm_seas", "title_sea", "canal_opened" },
+  diplomacy = { "title_parchment", "royal_charter", "boston_tea", "anglo_dutch_war" },
+  yard = { "title_ship", "shipworm", "treasure_wreck" },
+  board = { "royal_charter", "festival", "merchant_lamu" },
+  quest = { "cook_voyage", "new_route", "treasure_wreck", "angkor", "machu_picchu" },
+  recruit = { "merchant_lamu", "merchant_hoi_an", "merchant_coromandel" },
+  crew = { "merchant_coromandel", "title_ship" }, status = { "title_ship", "title_sea" },
+  battle = { "piracy", "anglo_dutch_war", "storm" }, war = { "anglo_dutch_war", "piracy" },
+  gwent = { "royal_charter", "piracy" },
+  explore = { "angkor", "petra", "machu_picchu", "giza", "moai", "chichen", "ellora_kailasa", "great_wall", "stonehenge", "uluru", "zimbabwe" },
+  scholar = { "principia", "franklin_kite", "industrial_start", "new_plant" },
+  codex = { "principia", "new_plant" }, encyclopedia = { "principia", "new_plant" },
+  tech = { "industrial_start", "franklin_kite", "canal_opened" },
 }
 -- [실제 지식 연결] 메뉴 의미에 맞는 발견 원화를 우선 사용한다. 미발견 카드·미등록 자산은 노출하지 않는다.
 H.FACILITY_GALLERY_TOPICS = {
@@ -2133,7 +2182,7 @@ function H.renderFacilityGallery()
   local tab = currentTab
   if H.gallerySelectedTab ~= tab then
     H.gallerySelectedTab = tab
-    H.galleryIndex = 1
+    H.galleryIndex = nil -- [랜덤 시작] 메뉴를 열 때마다 다른 원화부터 보여 준다
     H.gallerySelection = nil -- [시설 변경] 이전 국가·항구·항로 선택을 해제한다.
   end
   local focus = H.MENU_FOCUS[tab]
@@ -2164,7 +2213,12 @@ function H.renderFacilityGallery()
       end
     end
   end
+  for _, key in H.FACILITY_GALLERY_POOL[tab] or {} do
+    local id = AssetIds["CardArt/event_" .. key]
+    if id then table.insert(matches, { image = "rbxassetid://" .. tostring(id), poolArt = true }) end
+  end
   H.galleryMatches = matches
+  if H.galleryIndex == nil and #matches > 0 then H.galleryIndex = math.random(1, #matches) end
   H.galleryIndex = if #matches > 0 then math.clamp(H.galleryIndex or 1, 1, #matches) else 1
   local matched = if #matches > 0 then matches[H.galleryIndex] else nil
   -- [선택 원화] 클릭한 국가·항구·항로의 발견 카드/승인 해역도만 우선 전시한다.
@@ -2193,16 +2247,19 @@ function H.renderFacilityGallery()
   end
   if chartName and not selection then matched = nil end
   local image = if matched then matched.image elseif fallback then "rbxassetid://" .. tostring(fallback) else ""
-  H.galleryLinkCardId = if matched then matched.id else nil
+  local realCard = matched ~= nil and not matched.poolArt
+  H.galleryLinkCardId = if realCard then matched.id else nil
   H.gallerySearchTerm = if selection then selection.search or selection.name else chartName
   local canPage = #matches > 1 and not chartName and not selection
     and not ((tab == "codex" or tab == "encyclopedia") and H.galleryReadingCard)
   H.galleryPrev.Visible = canPage
   H.galleryNext.Visible = canPage
+  H.galleryCanPage = canPage
   if H.galleryImage.Image ~= image then
     -- [전환 성능] 빠른 넘김에서 이전 페이드가 새 그림 밝기를 덮지 않도록 재사용 제어한다.
     if H.galleryArtTween then H.galleryArtTween:Cancel(); H.galleryArtTween = nil end
     H.galleryImage.Image = image
+    if H.galleryBackdrop then H.galleryBackdrop.Image = image end
     if image ~= "" and not game:GetService("GuiService").ReducedMotionEnabled then
       H.galleryImage.ImageTransparency = 1
       H.galleryArtTween = game:GetService("TweenService"):Create(H.galleryImage,
@@ -2212,13 +2269,29 @@ function H.renderFacilityGallery()
       H.galleryImage.ImageTransparency = 0
     end
   end
-  H.galleryTitle.Text = if selection then selection.name elseif chartName then chartName elseif matched then matched.name
+  H.galleryTitle.Text = if selection then selection.name elseif chartName then chartName elseif realCard then matched.name
     elseif focus then focus[1] else TAB_NAME[tab] or "시설 안내"
-  H.galleryCaption.Text = if canPage then string.format("%d/%d · 넘기기 / 원화 터치 → 백과", H.galleryIndex, #matches)
-    elseif matched then "원화 터치 · 해당 백과 항목"
+  H.galleryCaption.Text = if canPage then string.format("%d/%d · 자동 넘김 · 원화 터치 → 백과", H.galleryIndex, #matches)
+    elseif realCard then "원화 터치 · 해당 백과 항목"
     elseif selection or chartName then "원화 터치 · 관련 지식 검색" else "원화 터치 · 세계 백과 검색"
   H.galleryCaption.Visible = image ~= ""
 end
+
+-- [자동 넘김] 메뉴 원화 배너는 8초마다 다음 그림으로 부드럽게 바뀐다. 직접 넘기면 15초 쉰다.
+task.spawn(function()
+  while true do
+    task.wait(8)
+    if H.galleryCanPage and H.facilityGallery.Visible and main.Visible
+      and os.clock() - (H.galleryTouchedAt or 0) > 15
+      and not game:GetService("GuiService").ReducedMotionEnabled then
+      local total = #(H.galleryMatches or {})
+      if total > 1 then
+        H.galleryIndex = (H.galleryIndex or 1) % total + 1
+        pcall(H.renderFacilityGallery)
+      end
+    end
+  end
+end)
 
 -- [교역소 기준] 가로는 3열, 세로는 큰 원화를 메뉴와 조작 사이에 놓는다.
 H.bookSpine = pageRule(mainInner, UDim2.fromOffset(132, 68), UDim2.new(0, 1, 1, -76))
@@ -2392,55 +2465,37 @@ function H.layoutBook()
     H.menuActionButton.TextSize = if firstCardAction then 19 else 20
     H.menuActionDock.Visible = primaryVisible and not firstCardAction
   end
-  if wide and gallery and height - bodyTop >= 210 then
-    -- [가로 공통] 높이가 짧으면 원화가 잘리지 않도록 가로 배치 대신 본문을 우선한다.
-    local availableH = math.max(100, height - bodyTop - 8)
-    local artW = math.min(math.clamp(math.floor(width * 0.38), 180, 460),
-      math.max(155, math.floor((availableH - 64) * 0.7) + 16))
-    H.facilityGallery.Position = UDim2.fromOffset(8, bodyTop)
-    H.facilityGallery.Size = UDim2.fromOffset(artW, availableH)
-    local cardW = math.max(80, math.min(artW - 16, math.floor((availableH - 66) * 0.7)))
-    local cardH = math.floor(cardW * 10 / 7)
-    H.galleryCard.Position = UDim2.fromOffset(math.floor((artW - cardW) / 2), 8)
-    H.galleryCard.Size = UDim2.fromOffset(cardW, cardH)
-    H.galleryPrev.Position = UDim2.fromOffset(math.floor((artW - cardW) / 2) + 3, 8 + math.floor(cardH / 2) - 20)
-    H.galleryNext.Position = UDim2.fromOffset(math.floor((artW + cardW) / 2) - 43, 8 + math.floor(cardH / 2) - 20)
-    H.galleryTitle.TextWrapped = false
-    H.galleryTitle.Position = UDim2.new(0, 8, 1, -53)
-    H.galleryTitle.Size = UDim2.new(1, -16, 0, 25)
-    H.galleryCaption.Position = UDim2.new(0, 8, 1, -29)
-    H.galleryCaption.Size = UDim2.new(1, -16, 0, 24)
-    H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Center
-    content.Position = UDim2.fromOffset(artW + 16, bodyTop)
-    content.Size = UDim2.new(1, -artW - 24, 1, -bodyTop - (if H.menuActionDock.Visible then 80 else 8))
-    H.menuActionDock.Position = UDim2.new(0, artW + 16, 1, -76)
-    H.menuActionDock.Size = UDim2.new(1, -artW - 24, 0, 68)
-  else
-    -- [폰·세로 화면] 탭은 상단 오른쪽 한 줄, 본문과 원화는 전체 폭을 사용한다.
-    local showArt = gallery and height - bodyTop >= 325
-    H.facilityGallery.Visible = showArt
-    local artH = if showArt then math.clamp(math.floor(height * 0.24), 154, 204) else 0
-    H.facilityGallery.Position = UDim2.fromOffset(8, bodyTop)
-    H.facilityGallery.Size = UDim2.new(1, -16, 0, artH)
-    local cardH = artH - 14
-    local cardW = math.floor(cardH * 7 / 10)
-    H.galleryCard.Position = UDim2.fromOffset(8, 7)
-    H.galleryCard.Size = UDim2.fromOffset(cardW, cardH)
-    H.galleryPrev.Position = UDim2.fromOffset(cardW + 18, artH - 48)
-    H.galleryNext.Position = UDim2.fromOffset(cardW + 63, artH - 48)
-    H.galleryTitle.Position = UDim2.fromOffset(cardW + 18, 10)
-    H.galleryTitle.Size = UDim2.new(1, -cardW - 28, 0, 55)
-    H.galleryTitle.TextWrapped = true
-    H.galleryCaption.Position = UDim2.fromOffset(cardW + 18, 70)
-    H.galleryCaption.Size = UDim2.new(1, -cardW - 28, 0, 34)
-    H.galleryCaption.TextWrapped = true
-    H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Left
-    local contentY = bodyTop + (if showArt then artH + 8 else 0)
-    content.Position = UDim2.fromOffset(8, contentY)
-    content.Size = UDim2.new(1, -16, 1, -contentY - (if H.menuActionDock.Visible then 80 else 8))
-    H.menuActionDock.Position = UDim2.new(0, 8, 1, -76)
-    H.menuActionDock.Size = UDim2.new(1, -16, 0, 68)
-  end
+  -- [반응형 원화 배너] 왼쪽 세로 칸을 없애고 본문 위 전체 폭 가로 띠로 바꾼다.
+  -- 같은 원화를 흐리게 깐 배경 위에 7:10 원화 카드(자르지 않음)와 제목을 놓는다.
+  -- 본문은 전체 폭을 쓰고, 높이가 모자라면 원화를 숨겨 조작을 우선한다.
+  local bodyH = height - bodyTop
+  local showArt = gallery and bodyH >= (if wide then 300 else 340)
+  H.facilityGallery.Visible = showArt
+  local artH = if showArt then math.clamp(math.floor(bodyH * (if wide then 0.32 else 0.26)), 112, if wide then 230 else 176) else 0
+  H.facilityGallery.Position = UDim2.fromOffset(8, bodyTop)
+  H.facilityGallery.Size = UDim2.new(1, -16, 0, artH)
+  local cardH = math.max(60, artH - 16)
+  local cardW = math.floor(cardH * 7 / 10)
+  local cardX = if wide then 24 else 10
+  H.galleryCard.Position = UDim2.fromOffset(cardX, 8)
+  H.galleryCard.Size = UDim2.fromOffset(cardW, cardH)
+  local textX = cardX + cardW + 16
+  H.galleryTitle.TextWrapped = true
+  H.galleryTitle.TextXAlignment = Enum.TextXAlignment.Left
+  H.galleryTitle.TextSize = if wide then 24 else 20
+  H.galleryTitle.Position = UDim2.fromOffset(textX, 14)
+  H.galleryTitle.Size = UDim2.new(1, -textX - 110, 0, if wide then 62 else 52)
+  H.galleryCaption.TextWrapped = true
+  H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Left
+  H.galleryCaption.Position = UDim2.new(0, textX, 1, -40)
+  H.galleryCaption.Size = UDim2.new(1, -textX - 110, 0, 30)
+  H.galleryPrev.Position = UDim2.new(1, -96, 1, -48)
+  H.galleryNext.Position = UDim2.new(1, -50, 1, -48)
+  local contentY = bodyTop + (if showArt then artH + 8 else 0)
+  content.Position = UDim2.fromOffset(8, contentY)
+  content.Size = UDim2.new(1, -16, 1, -contentY - (if H.menuActionDock.Visible then 80 else 8))
+  H.menuActionDock.Position = UDim2.new(0, 8, 1, -76)
+  H.menuActionDock.Size = UDim2.new(1, -16, 0, 68)
 end
 mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)
 tabBar:GetPropertyChangedSignal("Visible"):Connect(H.layoutBook)
