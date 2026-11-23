@@ -2088,8 +2088,11 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
   assert.ok(start>0&&stop>start,name+' 가축 자연 재질 처리 경로');
   const block=scene.slice(start,stop);
   assert.match(block,/if sa and surfaceHasColorMap\(sa\) then/);
-  assert.match(block,/sa\.Color = sa\.Color:Lerp\(tint, 0\.16\)/);
-  assert.match(block,/elseif not sa then/);
+  // [원본 맵 불변] 색상지도/PBR은 재착색하지 않고, 색 유실된 무텍스처 몸통만 복구한다.
+  assert.doesNotMatch(block,/if sa and surfaceHasColorMap\(sa\) then\s+sa\.Color\s*=/,'원본 PBR 색상지도 변경 금지');
+  assert.match(block,/elseif not textured and not detail then/);
+  assert.match(block,/local faded = high - low <= 0\.14 and high >= 0\.58/);
+  assert.match(block,/if not sa then\s+[pd]\.Material =/);
   assert.match(block,/Enum\.Material\.Fabric/);
   assert.match(block,/Enum\.Material\.Leather/);
   assert.match(block,/Enum\.Material\.Concrete/);
@@ -2106,6 +2109,14 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  assert.match(cultures,/Enum\.Material\.ClayRoofTiles/);
  assert.match(cultures,/Enum\.Material\.Plaster/);
  assert.match(cultures,/Enum\.Material\.RoofShingles/);
+ // [동물 발바닥/목초지] 충돌 없는 표면도 접지 질의에만 사용하고 원본 높이·애니메이션 정보를 보존한다.
+ assert.match(port,/animalGround\.FilterType = Enum\.RaycastFilterType\.Include/);
+ assert.match(port,/animalGround\.FilterDescendantsInstances = animalFloors/);
+ assert.match(port,/grass\.CanQuery = true/);
+ assert.match(port,/local visibleBottomY = math\.huge/);
+ assert.match(field,/local visibleBottomY = math\.huge/);
+ assert.match(port,/AnimalMotionRig/);
+ assert.match(port,/if k and AssetIds\["Animals\/" \.\. asset\]/);
  assert.match(port,/local lastDecorationGrowth = \{\}/);
  assert.match(port,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
 });
