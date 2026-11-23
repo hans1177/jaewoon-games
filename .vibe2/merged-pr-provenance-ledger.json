@@ -330865,11 +330865,142 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0769a8da04704dbc569adfc7",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14785",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7ac362786fff6927c232f575b67d1f45c2b165d4",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14785,
+        "baseBranch": "main",
+        "headBranch": "mare-london-cc0-20261124-b",
+        "baseSha": "7ac362786fff6927c232f575b67d1f45c2b165d4",
+        "headSha": "9be995ea711b651842d57375cb2d249993e72fb2",
+        "mergeCommitSha": "005064d62dc591b94e60f0da95f70bd7b40ef0e5",
+        "mergedAt": "2026-11-23T18:03:16Z",
+        "authorLogin": "hans1177",
+        "titleHash": "d4c500c67d0e1fa71067c6ae6e83dc179e47c475aaf0b9f40d2145c50344d488",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-london-cc0-20261124-b",
+        "candidateSha": "9be995ea711b651842d57375cb2d249993e72fb2"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 324,
+        "deletedLineCount": 5,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_chapel.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_chapel.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_house_row.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_house_row.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_mill.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_mill.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_watchtower.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_watchtower.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_street_lamp.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_street_lamp.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_chapel.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_house_row.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_mill.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_watchtower.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_street_lamp.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14785",
+        "merge-commit:005064d62dc591b94e60f0da95f70bd7b40ef0e5",
+        "base-main:7ac362786fff6927c232f575b67d1f45c2b165d4"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2648
+    "total": 2649
   }
 }
