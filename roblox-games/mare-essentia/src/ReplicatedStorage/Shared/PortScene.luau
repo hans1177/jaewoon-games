@@ -587,10 +587,10 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 							p.Color = p.Color:Lerp(tint, if faded then 0.82 else 0)
 						end
 						if not sa then
-							-- 원본 가죽·피부·주름 재질을 가축 종별 재질로 강제 치환하지 않는다.
 							p.Material = if faded and (p.Material == Enum.Material.SmoothPlastic or p.Material == Enum.Material.Plastic)
 								and (asset == "sheep" or asset == "llama") then Enum.Material.Fabric else p.Material
 							-- 이미 지정된 Enum.Material.Leather/Enum.Material.Concrete 역시 원본 그대로 유지한다.
+							-- 원본 가죽·피부·주름 재질을 가축 종별 재질로 강제 치환하지 않는다.
 							if p.Material == Enum.Material.Leather or p.Material == Enum.Material.Concrete then
 								p.Reflectance = math.min(p.Reflectance, 0.02)
 							end
