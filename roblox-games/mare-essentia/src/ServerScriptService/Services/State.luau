@@ -663,6 +663,16 @@ return function(D)
 			s.stats.battlesWon = math.floor(num(saved.stats.battlesWon, 0, 0, 1e9))
 			s.stats.battlesLost = math.floor(num(saved.stats.battlesLost, 0, 0, 1e9))
 			s.stats.explored = math.floor(num(saved.stats.explored, 0, 0, 1e9))
+			if type(saved.stats.warClears) == "table" then
+				local wc: any = {}
+				for k, v in saved.stats.warClears do
+					if type(k) == "string" and #k < 24 then
+						wc[k] = math.floor(num(v, 0, 0, 1e6))
+					end
+				end
+				local st: any = s.stats
+				st.warClears = wc
+			end
 			-- [연타 기록 마이그레이션] 이전 저장은 0으로 복원하고, 개인 최고 기록은 보상과 독립해 보관한다.
 			s.stats.fieldStreakBest = math.floor(num(saved.stats.fieldStreakBest, 0, 0, 500))
 			if type(saved.stats.visited) == "table" then

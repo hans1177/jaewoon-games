@@ -314,7 +314,7 @@ do
 	check("함대전: 레벨이 모자라면 거부", okBlock == false)
 	local okS = Registry.handlers.WarStart(stW, { id = "blockade" }, ctx)
 	check("함대전: 시작하면 첫 파도 해전이 열린다", okS == true and stW.war ~= nil and stW.war.wave == 1 and stW.pendingBattle ~= nil)
-	check("함대전: 화면 정보에 진행이 보인다", S.View.build(stW, ctx).war ~= nil and #S.View.build(stW, ctx).wars == 3)
+	check("함대전: 화면 정보에 진행이 보인다", S.View.build(stW, ctx).war ~= nil and #S.View.build(stW, ctx).wars == 9)
 	for wave = 1, 3 do
 		stW.pendingBattle.winner = "a"
 		stW.pendingBattle.reason = "sunk"
@@ -337,6 +337,32 @@ do
 	check("함대전: 한 파도라도 지면 작전 실패", stL.war == nil)
 	local again = Registry.handlers.WarStart(stW, { id = "blockade" }, ctx)
 	check("함대전: 완수 직후엔 같은 의뢰를 바로 못 받는다", again == false)
+end
+
+-- 해역별 함대전: 그 해역 항구에서만 받고, 완수 기록이 해상 연속 퀘스트로 이어진다
+do
+	local stR = S.State.new("england", 1700)
+	stR.careers.battle.level = 4
+	stR.portId = "london"
+	local okFar = Registry.handlers.WarStart(stR, { id = "war_new_world" }, ctx)
+	check("해역 함대전: 다른 해역 항구에서는 못 받는다", okFar == false and stR.war == nil)
+	local okHere = Registry.handlers.WarStart(stR, { id = "war_europe" }, ctx)
+	check("해역 함대전: 그 해역 항구에서는 시작된다", okHere == true and stR.war ~= nil)
+	for wave = 1, 3 do
+		stR.pendingBattle.winner = "a"
+		stR.pendingBattle.reason = "sunk"
+		stR.pendingBattle.hull = stR.ship.hull
+		stR.pendingBattle.crew = stR.ship.crew
+		Registry.handlers.ResolveBattle(stR, {}, ctx)
+		if wave < 3 then
+			Registry.handlers.WarNext(stR, {}, ctx)
+		end
+	end
+	local clears: any = (stR.stats :: any).warClears
+	check("해역 함대전: 완수하면 해역별 기록이 남는다", stR.war == nil and clears ~= nil and clears.europe == 1)
+	local loaded: any = S.State.sanitize(S.State.serialize(stR))
+	local loadedClears: any = loaded.stats.warClears
+	check("해역 함대전: 저장 후 불러와도 기록이 유지된다", loadedClears ~= nil and loadedClears.europe == 1)
 end
 
 -- 주점 의뢰판: 그 항구·그 시기에만 나오고, 납품·전투·이벤트가 각각 정산된다
