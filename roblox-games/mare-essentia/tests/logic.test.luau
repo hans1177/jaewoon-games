@@ -4189,6 +4189,26 @@ do
 	local backP = S.State.sanitize(S.State.serialize(stP))
 	check("건물계통: 저장/불러오기", backP.portStages.london.trade == 4)
 	check("건물계통: 잘못된 계통 거부", select(1, act(stP, "BuildStage", { chain = "castle" })) == false)
+	-- [건축 시뮬] 공사 기간·진행·완공 알림(효과는 즉시)
+	do
+		local Proj: any = D.PortBuildings.Projects
+		local list: any = Proj.list(stP)
+		check("건축 시뮬: 지으면 공사 기록이 남는다", #list >= 1 and list[#list].done > list[#list].start)
+		local act0: any = Proj.active(stP, "london")
+		check("건축 시뮬: 공사 중 목록과 진행률", #act0 >= 1 and act0[1].progress >= 0 and act0[1].progress < 1)
+		stP.day += 30
+		local fin: any = Proj.popFinished(stP)
+		check("건축 시뮬: 기간이 지나면 완공 알림 한 번", fin ~= nil and Proj.popFinished(stP) ~= fin)
+		local back: any = S.State.sanitize(S.State.serialize(stP))
+		check("건축 시뮬: 공사 기록 저장·복원", type(back.stats.buildProjects) == "table" and #back.stats.buildProjects >= 1)
+		check("건축 시뮬: 공사 기간 2~20일", Proj.daysFor(0) == 2 and Proj.daysFor(100000) == 20)
+		local stI: any = { day = 0, stats = {} }
+		Proj.start(stI, "london", "trade", "시험 건물", 9000)
+		local before = Proj.list(stI)[1].done
+		local sped = Proj.boost(stI, "london", 900)
+		check("건축·경제: 투자 300코인당 공사 1일 단축", sped == 3 and Proj.list(stI)[1].done == before - 3)
+		check("건축·경제: 최소 1일은 남긴다", Proj.boost(stI, "london", 100000) >= 0 and Proj.list(stI)[1].done >= 1)
+	end
 	local chron = S.View.build(newState("england"), ctx).history.chronicle
 	check("역사서: 연대기에 모든 사건이 연도순", #chron == #HE.Events and chron[1].year <= chron[#chron].year)
 	local futureHidden = false

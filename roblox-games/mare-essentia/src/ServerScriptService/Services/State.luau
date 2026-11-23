@@ -665,6 +665,10 @@ return function(D)
 			s.stats.explored = math.floor(num(saved.stats.explored, 0, 0, 1e9))
 			-- [이야기 퀘스트 시스템] 함대전 완수·지도자 대결·선택 분기 기록 복원
 			D.Quests.Kit.sanitizeStats(saved.stats, s.stats, num)
+			local projects: any = D.PortBuildings.Projects.sanitize(saved.stats.buildProjects)
+			if projects then
+				(s.stats :: any).buildProjects = projects
+			end
 			-- [연타 기록 마이그레이션] 이전 저장은 0으로 복원하고, 개인 최고 기록은 보상과 독립해 보관한다.
 			s.stats.fieldStreakBest = math.floor(num(saved.stats.fieldStreakBest, 0, 0, 500))
 			if type(saved.stats.visited) == "table" then
