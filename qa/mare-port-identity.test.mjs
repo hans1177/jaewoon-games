@@ -213,3 +213,39 @@ test('북유럽·한자·이베리아·이탈리아·카리브 8항구는 실제
   assert.match(scene, /if identity then folder:SetAttribute\("CityPortMissingLandmark", landmarkAsset\) end/);
   assert.match(scene, /if AssetIds\["Town\/" \.\. landmarkAsset\] then/);
 });
+
+test('전체 181개 실제 항구의 주택·도로·구역·랜드마크·광장을 기존 자리에서 재배치한다', () => {
+  const area = ports.split('local Ports:')[1]?.split('local Nations:')[0] ?? '';
+  const names = [...area.matchAll(/^\t([a-z_]+) = \{\s*\n\t\tid = "\1"/gm)].map(m => m[1]);
+  assert.equal(names.length, 181, '기존 전체 항구 181개를 보존한다');
+  assert.equal(new Set(names).size, names.length, '항구 식별자 중복 없음');
+
+  for (const region of [
+    'complete-city-reposition-v2', 'coast-layout-reposition-v2',
+    'district-reposition-v2', 'district-collision-reposition-v2',
+    'civic-quarter-reposition-v2', 'facility-block-reposition-v2',
+  ]) {
+    assert.ok(scene.includes('info.portId .. ":' + region + '"'),
+      region + ': 전체 항구 ID 고정 시드 재배치');
+  }
+  assert.match(scene, /CityPortLayoutRevision", "WHOLE_PORT_REPOSITION_V2"/);
+  assert.match(scene, /CityDistrictLayoutMode", "WHOLE_PORT_REPOSITION_COLLISION_CHECK"/);
+  assert.match(scene, /CityFacilityLayoutMode", "WHOLE_PORT_REPOSITION_V2"/);
+  assert.match(scene, /districtSeed:NextNumber\(-28, 28\)/);
+  assert.match(scene, /local signatureCenter = SIG_ANCHOR \+ Vector3\.new/);
+  assert.match(scene, /local plazaAt = Vector3\.new\(-140 \+ civicOffset/);
+  assert.match(scene, /CityPortPlazaLocation", plazaAt/);
+  assert.match(scene, /CityPortPlazaAccessConnected", true/);
+  assert.match(scene, /strip\(folder, style, plazaAt\.X, plazaAt\.Z \* 0\.5, 9,/);
+  assert.match(scene, /CityFacilityPosition_" \.\. f\.tab, f\.pos/);
+  assert.match(scene, /facilitySites\[\(index \+ rotation - 1\) % #facilitySites \+ 1\]/);
+  assert.match(scene, /local townHalfZ = math\.min\(360 \+ lvl \* 80 \+ 14, math\.max\(442, outerEdgeZ \+ 52\)\)/);
+  assert.match(scene, /for _, other in districts do/);
+  assert.match(scene, /if clear and isRoyalCity and x - hx < -215/);
+  assert.match(scene, /for _, a in LM_SITES do/);
+  assert.doesNotMatch(scene, /local laneOffset = districtSeed:NextNumber\(-9, 9\)/);
+  assert.doesNotMatch(scene, /Vector3\.new\(-134 \+ districtOffset, 0, 86/);
+  assert.doesNotMatch(scene, /CityPortPlazaLocation", Vector3\.new\(-106, 0, 122\)/);
+  assert.match(scene, /for _, f in facilities do\s+if f\.always or \(f\.key and fac\[f\.key\]\)/);
+  assert.match(scene, /f\.pos = Vector3\.new\(site\.X \+ facilityRng:NextInteger\(-2, 2\), 0, site\.Z \* reflection\)/);
+});
