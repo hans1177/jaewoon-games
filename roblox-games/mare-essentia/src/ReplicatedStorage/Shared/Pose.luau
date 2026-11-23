@@ -1874,6 +1874,23 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			end
 			if wornHair then break end
 		end
+		-- [성직자 두건] 실물 두건이 보일 때만 기본 예비 머리·두피를 숨긴다.
+		-- 두건 로드 실패나 거리 숨김에는 예비 머리를 되살려 대머리·중복을 동시에 막는다.
+		local hoodVisible = false
+		if profile == "companion_clergy_male" or profile == "companion_clergy_female" then
+			local hoodName = if profile == "companion_clergy_male"
+				then "R15Asset_male_ranger_head_hood_Head" else "R15Asset_female_ranger_head_hood_Head"
+			local hood = model:FindFirstChild(hoodName)
+			if hood then
+				for _, mesh in hood:GetDescendants() do
+					if mesh:IsA("BasePart") and mesh.Transparency < 0.95
+						and mesh.LocalTransparencyModifier < 0.95 then
+						hoodVisible = true
+						break
+					end
+				end
+			end
+		end
 		local fullCrown = false
 		if wornHair then
 			local head = model:FindFirstChild("Head")
@@ -1886,10 +1903,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		for _, piece in model:GetChildren() do
 			if piece:IsA("BasePart") then
 				if piece.Name == "Hair" or piece.Name == "HairBack" then
-					piece.Transparency = if wornHair then 1 else 0
+					piece.Transparency = if wornHair or hoodVisible then 1 else 0
 				elseif piece.Name == "HairScalp" or piece.Name == "HairScalpSide" then
 					-- 작은 부분 메시에는 두피 보조를 남기되 정상 실물 머리 아래에서 공 모양이 튀어나오지 않게 한다.
-					piece.Transparency = if fullCrown then 1 else 0
+					piece.Transparency = if fullCrown or hoodVisible then 1 else 0
 				end
 			end
 		end
