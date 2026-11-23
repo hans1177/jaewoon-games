@@ -1531,7 +1531,7 @@ test('Mare generated original art is promoted only after model-source visual QA 
     const record = {approved:{[id]:hash},modelOriginals:{[id]:review}};
     const save = () => fs.writeFileSync(path.join(root,'assets/APPROVED_IMAGES.json'),JSON.stringify(record));
     const execute = () => runInNewContext('(async()=>{' + intake + '\n})()', {
-      ROOT:root,fs:fs.promises,path,crypto:{createHash},Buffer,
+      ROOT:root,JSON_OUT:path.join(root,'assets-registered.json'),fs:fs.promises,path,crypto:{createHash},Buffer,
       studioRegrantPath:'',blockedHashes:new Set(),blockedPaths:new Set(),console:{log:()=>{}}
     });
     review.subjectMatch=false;
@@ -1550,6 +1550,38 @@ test('Mare generated original art is promoted only after model-source visual QA 
     await execute(); // 반복 실행은 기존 파일과 ID를 그대로 보존한다.
     fs.writeFileSync(dest,'unexpected overwrite attempt');
     await assert.rejects(execute(), /MODEL_ORIGINAL_EXISTING_CARD_PRESERVED/);
+
+    // [검수된 세로 교체] 기존 원화·등록 ID·권한과 정확히 맞을 때만 승격한다.
+    fs.copyFileSync(source,dest);
+    const upgradeId='CardArt/eu_18';
+    const reviewUpgrade={...approved.modelOriginals[upgradeId]};
+    const original='roblox-games/mare-essentia/assets/cardart/src/eu_18-original.png';
+    const upgraded='roblox-games/mare-essentia/assets/cardart/src/eu_18-1400x2000.png';
+    const upgradeSource=path.join(root,'assets/cardart/src/eu_18-1400x2000.png');
+    const upgradeDest=path.join(root,'assets/cardart/eu_18.png');
+    fs.copyFileSync(upgraded,upgradeSource);
+    fs.copyFileSync(original,upgradeDest);
+    const digest=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+    assert.equal(digest(upgradeDest),reviewUpgrade.replacesSha256);
+    assert.equal(digest(upgradeSource),reviewUpgrade.sourceSha256);
+    record.modelOriginals[upgradeId]=reviewUpgrade;
+    record.approved[upgradeId]=reviewUpgrade.sourceSha256;
+    fs.writeFileSync(path.join(root,'assets-registered.json'),JSON.stringify({assets:{
+      [upgradeId]:{assetId:reviewUpgrade.replacesAssetId,sourceSha256:reviewUpgrade.replacesSha256,
+        assetType:'Image',usePermissionGranted:true}
+    }}));
+    const registeredId=reviewUpgrade.replacesAssetId;
+    reviewUpgrade.replacesAssetId='1';
+    save();
+    await assert.rejects(execute(), /MODEL_ORIGINAL_EXISTING_CARD_PRESERVED/);
+    assert.equal(digest(upgradeDest),reviewUpgrade.replacesSha256);
+    reviewUpgrade.replacesAssetId=registeredId;
+    save();
+    await execute();
+    assert.equal(digest(upgradeDest),reviewUpgrade.sourceSha256);
+    assert.equal(digest(original),reviewUpgrade.replacesSha256,'historical source must remain intact');
+    await execute();
+    assert.equal(digest(upgradeDest),reviewUpgrade.sourceSha256,'repeat must not replace approved art');
   } finally {fs.rmSync(root,{recursive:true,force:true});}
 });
 
