@@ -2731,7 +2731,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		})
 		H.dockMotion[name] = pulse
 	end
-	-- [터치 광휘] 배경 없이 기존 투명 아이콘 테두리에만 짧게 반짝임.
+	-- [터치 광휘] 12개 기존 메뉴에 투명 금빛 파동 1회. 연타 시 이전 파동을 재사용 없이 제거해 누적을 막는다.
 	if dockItem then
 		button.Activated:Connect(function()
 			if game:GetService("GuiService").ReducedMotionEnabled then return end
@@ -2739,6 +2739,25 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 			hudTweenService:Create(badgeStroke, TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 				Transparency = if button:GetAttribute("SelectedFacility") then 0.20 else 1,
 			}):Play()
+			local previousSpark = button:FindFirstChild("PressSpark")
+			if previousSpark then previousSpark:Destroy() end
+			local pressSpark = Instance.new("ImageLabel")
+			pressSpark.Name = "PressSpark"
+			pressSpark.Image = "rbxasset://textures/particles/sparkles_main.dds"
+			pressSpark.ImageColor3 = Color3.fromRGB(255, 222, 127)
+			pressSpark.ImageTransparency = 0.08
+			pressSpark.BackgroundTransparency = 1
+			pressSpark.BorderSizePixel = 0
+			pressSpark.AnchorPoint = Vector2.new(0.5, 0.5)
+			pressSpark.Position = UDim2.new(0.5, 0, 0, 23)
+			pressSpark.Size = UDim2.fromOffset(16, 16)
+			pressSpark.ZIndex = 8
+			pressSpark.Parent = button
+			local pressTween = hudTweenService:Create(pressSpark,
+				TweenInfo.new(0.32, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Size = UDim2.fromOffset(40, 40), ImageTransparency = 1, Rotation = 65 })
+			pressTween.Completed:Connect(function() pressSpark:Destroy() end)
+			pressTween:Play()
 		end)
 	end
 	local scale = Instance.new("UIScale")
@@ -2818,7 +2837,7 @@ for i, d in H.DOCK do
 	local halo = Instance.new("ImageLabel")
 	halo.Name = "SignalHalo"
 	halo.AnchorPoint = Vector2.new(0.5, 0.5)
-	halo.Position = UDim2.new(1, -13, 0, 14)
+	halo.Position = UDim2.new(0.5, 0, 0, 23) -- [모바일] 셀 가운데에서만 빛이 퍼져 여섯 번째 열에서도 잘리지 않는다.
 	halo.Size = UDim2.fromOffset(28, 28)
 	halo.Image = "rbxasset://textures/particles/sparkles_main.dds"
 	halo.ImageColor3 = Color3.fromRGB(255, 204, 96)
@@ -2831,7 +2850,7 @@ for i, d in H.DOCK do
 	local notice = Instance.new("ImageLabel")
 	notice.Name = "FacilityNotice"
 	notice.AnchorPoint = Vector2.new(0.5, 0.5)
-	notice.Position = UDim2.new(1, -13, 0, 14)
+	notice.Position = UDim2.new(0.5, 0, 0, 23)
 	notice.Size = UDim2.fromOffset(26, 26)
 	notice.Image = "rbxasset://textures/particles/sparkles_main.dds"
 	notice.BackgroundTransparency = 1
@@ -3413,6 +3432,7 @@ function H.updateHud(p, ship)
 		local alert = alerts[id]
 		local previous = notice:GetAttribute("SignalKind")
 		local changed = (alert or "") ~= (previous or "")
+		local motionChanged = notice:GetAttribute("ReducedMotionLast") ~= reducedMotion
 		local tint = if alert == "긴급" then Color3.fromRGB(255, 71, 64)
 			elseif alert == "납품" then Color3.fromRGB(72, 255, 155)
 			elseif alert == "저가" then Color3.fromRGB(255, 212, 75)
@@ -3425,8 +3445,9 @@ function H.updateHud(p, ship)
 			halo.ImageColor3 = tint
 			halo.Visible = alert ~= nil
 		end
-		if changed then
+		if changed or motionChanged then
 			notice:SetAttribute("SignalKind", alert or "")
+			notice:SetAttribute("ReducedMotionLast", reducedMotion)
 			local running = H.dockSignalTweens[id]
 			if running then
 				for _, tween in running do tween:Cancel() end
@@ -3450,8 +3471,8 @@ function H.updateHud(p, ship)
 				local glow = signalTweenService:Create(halo,
 					TweenInfo.new(speed * 1.25, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
 					{ ImageTransparency = 0.95,
-						Size = UDim2.fromOffset(if alert == "납품" then 40 else 36,
-							if alert == "납품" then 40 else 36) })
+						Size = UDim2.fromOffset(if alert == "납품" then 42 else 38,
+							if alert == "납품" then 42 else 38) })
 				H.dockSignalTweens[id] = { core, glow }
 				core:Play()
 				glow:Play()
@@ -3459,9 +3480,10 @@ function H.updateHud(p, ship)
 		end
 		-- [발생 순간] 글씨·배지 없이 투명 별빛만 1회 분산. 반복 갱신으로 파티클이 쌓이지 않는다.
 		if changed and alert and button and hudTopGui.Enabled and not reducedMotion then
+			-- [좁은 화면] 가장 작은 46px 셀에도 들어가는 좌우 대칭 별빛 경로.
 			local offsets = {
-				Vector2.new(-25, -10), Vector2.new(-12, -12), Vector2.new(2, -11),
-				Vector2.new(-29, 8), Vector2.new(-3, 16),
+				Vector2.new(-14, -8), Vector2.new(-7, 7), Vector2.new(0, -12),
+				Vector2.new(8, 8), Vector2.new(14, -6),
 			}
 			local count = if alert == "긴급" then 5 else 4
 			for i = 1, count do
@@ -3475,13 +3497,13 @@ function H.updateHud(p, ship)
 				spark.Size = UDim2.fromOffset(if alert == "긴급" then 16 else 13,
 					if alert == "긴급" then 16 else 13)
 				spark.AnchorPoint = Vector2.new(0.5, 0.5)
-				spark.Position = UDim2.new(1, -13, 0, 14)
+				spark.Position = UDim2.new(0.5, 0, 0, 23)
 				spark.ZIndex = 9
 				spark.Parent = button
 				local delta = offsets[i]
 				local tween = signalTweenService:Create(spark,
 					TweenInfo.new(0.42 + i * 0.04, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-					{ Position = UDim2.new(1, -13 + delta.X, 0, 14 + delta.Y),
+					{ Position = UDim2.new(0.5, delta.X, 0, 23 + delta.Y),
 						Size = UDim2.fromOffset(2, 2), ImageTransparency = 1,
 						Rotation = if i % 2 == 0 then 70 else -70 })
 				tween.Completed:Connect(function() spark:Destroy() end)
