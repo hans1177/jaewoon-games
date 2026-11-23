@@ -106,3 +106,27 @@ test('시드니·카르타헤나 실화면에 항구별 길·광장·건축 정�
   }
   assert.match(scene, /CityPortMissingLandmark/);
 });
+
+test('실촬영된 항구 대표 거리에는 승인된 문화권 실물만 사용한다', () => {
+  const assets = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/AssetIds.luau', 'utf8');
+  const allowed = [
+    'Town/village-house-2', 'Town/village-house-3', 'Town/village-house-1',
+    'Town/eastasia-base', 'Town/eastasia-roof',
+    'Naval/dock-side', 'Naval/boat-sail-a',
+  ];
+  for (const path of allowed) assert.ok(assets.includes('["' + path + '"]'), path + ' 승인 등록');
+  const london = scene.match(/SIG\.london = cat\(([\s\S]*?)\n\tSIG\.edinburgh/);
+  assert.ok(london, '런던 거리');
+  assert.match(london[1], /village-house-2/);
+  assert.doesNotMatch(london[1], /one\("Town", "house"/);
+  const canton = scene.match(/SIG\.canton = cat\(([\s\S]*?)\n\tSIG\.macau/);
+  assert.ok(canton, '광저우 상관 거리');
+  assert.match(canton[1], /eastasia-base/);
+  assert.match(canton[1], /eastasia-roof/);
+  assert.doesNotMatch(canton[1], /one\("Town", "house"/);
+  const zanzibar = scene.match(/SIG\.zanzibar = cat\(([\s\S]*?)\n\t-- \[광저우\]/);
+  assert.ok(zanzibar, '잔지바르 항만');
+  assert.match(zanzibar[1], /one\("Naval", "dock-side"/);
+  assert.doesNotMatch(zanzibar[1], /tower-square/);
+  assert.match(scene, /\(port and port\.name or info\.portName or info\.portId\) \.\. " · "/);
+});
