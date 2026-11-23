@@ -304,13 +304,14 @@ test('181개 항구 산업·시장·농업지구가 항구별 새로운 독립 �
 });
 
 
-test('25개 항구 지시서별 실제 광장·도로·랜드마크·시설 재배치', () => {
-  const ports25 = ['london', 'amsterdam', 'rouen', 'copenhagen', 'gothenburg',
+test('33개 항구 지시서별 실제 광장·도로·랜드마크·시설 재배치', () => {
+  const ports33 = ['london', 'amsterdam', 'rouen', 'copenhagen', 'gothenburg',
     'venice', 'istanbul', 'zanzibar', 'calicut', 'nagasaki', 'veracruz', 'canton',
     'seville', 'busan', 'lisbon', 'sydney', 'cartagena_indias', 'stockholm',
-    'bergen', 'hamburg', 'porto', 'edinburgh', 'valletta', 'genoa', 'havana'];
+    'bergen', 'hamburg', 'porto', 'edinburgh', 'valletta', 'genoa', 'havana',
+    'bordeaux', 'marseille', 'naples', 'athens', 'goa', 'manila', 'osaka', 'cape_town'];
   const unique = new Set();
-  for (const port of ports25) {
+  for (const port of ports33) {
     const block = id.split('\n\t' + port + ' = { landmark = ')[1]?.split(/\n\t[a-z_]+ = \{/)[0] ?? '';
     const data = block.match(/reflow = \{ lane = (-?\d+), plaza = (-?\d+), side = (-?\d+), landmarkX = (-?\d+), landmarkZ = (-?\d+), district = (-?\d+), facility = (\d+) \}/);
     assert.ok(data, port + ' 항구별 재배치 누락');
@@ -321,7 +322,7 @@ test('25개 항구 지시서별 실제 광장·도로·랜드마크·시설 재�
     assert.ok(Math.abs(district) <= 12 && facility >= 1 && facility <= 6, port + ' 시설·외곽 배치');
     unique.add(data[0]);
   }
-  assert.equal(unique.size, 25, '항구마다 서로 다른 공간 배치');
+  assert.equal(unique.size, 33, '항구마다 서로 다른 공간 배치');
   assert.match(scene, /CityPortManualReflow", "PORT_MANUAL_REPOSITION_V1"/);
   assert.match(scene, /local laneOffset = districtSeed:NextNumber\(-28, 28\) \+ terrainLaneShift \+ \(if reflow then reflow.lane else 0\)/);
   assert.match(scene, /local districtX = -138 \+ \(if reflow then reflow.district/);
@@ -331,5 +332,28 @@ test('25개 항구 지시서별 실제 광장·도로·랜드마크·시설 재�
   assert.match(scene, /local shiftZ = if reflow then reflow.landmarkZ/);
   assert.match(scene, /local plazaAt = Vector3.new\(-140 \+ civicOffset/);
   assert.match(scene, /CityFacilityPosition_" \.\. f.tab, f.pos/);
+  assert.match(scene, /if AssetIds\["Town\/" \.\. landmarkAsset\] then/);
+});
+
+
+test('추가 8개 항구의 5단계 외관과 기존 필지 재배치가 지시서에 맞는다', () => {
+  const extra = ['bordeaux', 'marseille', 'naples', 'athens', 'goa', 'manila', 'osaka', 'cape_town'];
+  for (const port of extra) {
+    const instructions = fs.readFileSync(root + 'docs/ports/' + port + '.md', 'utf8');
+    const entry = id.split('\n\t' + port + ' = { landmark = ')[1]?.split(/\n\t[a-z_]+ = \{/)[0] ?? '';
+    assert.ok(entry, port + ' 독립 마을 누락');
+    assert.ok(ports.includes('id = "' + port + '"'), port + ' 기존 항구 보존');
+    const roofWall = instructions.match(/^\| 지붕·벽 \| ([^|]+) \|/m)?.[1]?.trim().split(' · ');
+    const plaza = instructions.match(/^\| 광장 \| ([^|]+) \|/m)?.[1]?.trim();
+    const lamp = instructions.match(/^\| 밤 조명 \| ([^|]+) \|/m)?.[1]?.trim();
+    const streets = instructions.match(/^\| 길 1→5단계 \| ([^|]+) \|/m)?.[1]?.trim().split(' → ');
+    assert.equal(streets?.length, 5, port + ' 5단계 길');
+    for (const [key, value] of Object.entries({roof: roofWall?.[0], wall: roofWall?.[1], plaza, lamp}))
+      assert.ok(entry.includes(key + ' = "' + value + '"'), port + ' ' + key);
+    assert.ok(entry.includes('street = { ' + streets.map(s => '"' + s + '"').join(', ') + ' }'), port + ' 도로 원형');
+    assert.match(entry, /^\{ id = "lm_[^"]+", name = "[^"]+", kind = "[^"]+", fallback = "none" \}/);
+    assert.match(entry, /reflow = \{ lane = -?\d+, plaza = -?\d+, side = -?\d+, landmarkX = -?\d+, landmarkZ = -?\d+, district = -?\d+, facility = \d+ \}/);
+  }
+  assert.match(scene, /local reflow = identity and identity.reflow/);
   assert.match(scene, /if AssetIds\["Town\/" \.\. landmarkAsset\] then/);
 });

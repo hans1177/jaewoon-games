@@ -167,6 +167,54 @@ local P: { [string]: Identity } = {
 		street = { "sand", "dirt", "gravel", "brick", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "monsoon_mud",
 		signature = { "설탕 저장고", "럼주 증류소", "마호가니 선창" }, facade = { 218, 184, 153 }, roofTint = { 157, 103, 77 },
 		reflow = { lane = 10, plaza = -8, side = 1, landmarkX = 7, landmarkZ = -7, district = 6, facility = 3 } },
+	-- [추가 항구 배치] bordeaux: 지시서의 기후·주택·도로·광장·특산 구역만 기존 모델과 필지에 적용.
+	bordeaux = { landmark = { id = "lm_bordeaux_spire", name = "고딕 석조 성당 첨탑", kind = "spire", fallback = "none" },
+		roof = "hip", wall = "stone", balcony = "iron", layout = "organic", plaza = "fountain",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "와인 저장고", "강변 생선 시장", "소금 창고" }, facade = { 210, 198, 177 }, roofTint = { 86, 92, 104 },
+		reflow = { lane = -3, plaza = 12, side = -1, landmarkX = -6, landmarkZ = 6, district = 5, facility = 5 } },
+	-- [추가 항구 배치] marseille: 지시서의 기후·주택·도로·광장·특산 구역만 기존 모델과 필지에 적용.
+	marseille = { landmark = { id = "lm_marseille_fort", name = "해안 성채와 성당 첨탑", kind = "fort", fallback = "none" },
+		roof = "hip", wall = "stone", balcony = "iron", layout = "organic", plaza = "fountain",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "염장 어시장", "올리브 교역소", "항만 창고" }, facade = { 229, 209, 170 }, roofTint = { 157, 110, 84 },
+		reflow = { lane = 10, plaza = -14, side = 1, landmarkX = 5, landmarkZ = -5, district = 8, facility = 2 } },
+	-- [추가 항구 배치] naples: 지시서의 기후·주택·도로·광장·특산 구역만 기존 모델과 필지에 적용.
+	naples = { landmark = { id = "lm_naples_campanile", name = "돔 성당과 종탑", kind = "campanile", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "loggia", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "flagstone", "flagstone", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "puddles",
+		signature = { "비단 시장", "포도주 선창", "산호 상관" }, facade = { 226, 184, 145 }, roofTint = { 165, 91, 62 },
+		reflow = { lane = -11, plaza = 9, side = -1, landmarkX = -3, landmarkZ = 8, district = -7, facility = 4 } },
+	-- [추가 항구 배치] athens: 지시서의 기후·주택·도로·광장·특산 구역만 기존 모델과 필지에 적용.
+	athens = { landmark = { id = "lm_athens_dome", name = "돔과 가는 첨탑이 있는 사원", kind = "dome", fallback = "none" },
+		roof = "dome", wall = "stone", balcony = "mashrabiya", layout = "terrace", plaza = "temple_court",
+		street = { "dirt", "gravel", "cobble", "flagstone", "flagstone" }, lamp = "mosque_lamp", ground = "red_earth", weatherGround = "dust",
+		signature = { "올리브 압착소", "대리석 상관", "직물 시장" }, facade = { 212, 195, 165 }, roofTint = { 144, 99, 81 },
+		reflow = { lane = 6, plaza = 14, side = -1, landmarkX = 4, landmarkZ = 6, district = 2, facility = 6 } },
+	-- [추가 항구 배치] goa: 지시서의 기후·주택·도로·광장·특산 구역만 기존 모델과 필지에 적용.
+	goa = { landmark = { id = "lm_goa_gopuram", name = "층층 지붕의 사원 문루", kind = "gopuram", fallback = "none" },
+		roof = "eave", wall = "plaster", balcony = "wood_lattice", layout = "organic", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "monsoon_mud",
+		signature = { "향신료 창고", "보석 상관", "쌀 교역소" }, facade = { 226, 193, 149 }, roofTint = { 133, 79, 66 },
+		reflow = { lane = -8, plaza = -15, side = 1, landmarkX = -7, landmarkZ = -4, district = -4, facility = 3 } },
+	-- [추가 항구 배치] manila: 지시서의 기후·주택·도로·광장·특산 구역만 기존 모델과 필지에 적용.
+	manila = { landmark = { id = "lm_manila_cathedral", name = "쌍탑 바로크 식민지 대성당", kind = "cathedral", fallback = "none" },
+		roof = "flat", wall = "stucco", balcony = "iron", layout = "grid", plaza = "parade",
+		street = { "sand", "dirt", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "monsoon_mud",
+		signature = { "은 선적 부두", "설탕 창고", "쌀 시장" }, facade = { 226, 212, 176 }, roofTint = { 166, 100, 78 },
+		reflow = { lane = 11, plaza = 8, side = 1, landmarkX = 8, landmarkZ = -6, district = 9, facility = 1 } },
+	-- [추가 항구 배치] osaka: 지시서의 기후·주택·도로·광장·특산 구역만 기존 모델과 필지에 적용.
+	osaka = { landmark = { id = "lm_osaka_castle", name = "석단 위 성곽 천수각", kind = "castle", fallback = "none" },
+		roof = "eave", wall = "wood", balcony = "wood_lattice", layout = "terrace", plaza = "quay",
+		street = { "dirt", "gravel", "gravel", "flagstone", "flagstone" }, lamp = "stone_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "쌀 교역소", "동 주조소", "칠기 공방" }, facade = { 147, 124, 96 }, roofTint = { 73, 77, 73 },
+		reflow = { lane = -5, plaza = -10, side = 1, landmarkX = 6, landmarkZ = 4, district = -9, facility = 6 } },
+	-- [추가 항구 배치] cape_town: 지시서의 기후·주택·도로·광장·특산 구역만 기존 모델과 필지에 적용.
+	cape_town = { landmark = { id = "lm_cape_town_chapel", name = "언덕 위 예배당과 종루", kind = "chapel", fallback = "none" },
+		roof = "flat", wall = "stucco", balcony = "wood_lattice", layout = "grid", plaza = "fountain",
+		street = { "dirt", "gravel", "flagstone", "flagstone", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "dust",
+		signature = { "어시장", "포도주 선창", "양모 창고" }, facade = { 229, 220, 197 }, roofTint = { 99, 123, 146 },
+		reflow = { lane = 12, plaza = 13, side = -1, landmarkX = -4, landmarkZ = -7, district = -7, facility = 2 } },
 
 }
 
@@ -208,7 +256,7 @@ function M.get(portId: string): Identity?
 	return P[portId]
 end
 
--- [전체 항구 고유 외형] 15개 원본 지시서는 지정 색을 그대로 쓰고,
+-- [전체 항구 고유 외형] 항구별 지시서가 등록된 33개 항구는 지정 색을 그대로 쓰고,
 -- 나머지 항구는 기존 문화권의 벽·지붕·도로 팔레트에서 항구 ID별 고정 변형을 만든다.
 -- 어떤 모델도 새로 생성·선택하지 않으며 항구 데이터·저장·경제는 변경하지 않는다.
 -- 같은 항구는 방문할 때마다 항상 같은 색이며 서로 다른 문화권의 재료색을 섞지 않는다.
