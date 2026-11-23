@@ -22,6 +22,19 @@ const core=readText('roblox-games/mare-essentia/src/ServerScriptService/Core.ser
 test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증거를 남긴다',()=>{
   const capture=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
   assert.equal(capture.length,246);
+  // [지상맵 실입력] 비차단 카드 획득 알림은 대기 대상에서 제외하되, 실제 입력 가림막은 계속 검사한다.
+  const entry=capture[236];
+  assert.equal(entry.type,'click_from_luau');
+  assert.equal(entry.label,'field_entry');
+  assert.match(entry.code,/gain\.Enabled and gain:GetAttribute\('NonBlockingCardNotice'\)~=true/);
+  assert.match(entry.code,/FIELD_ENTRY_CARD_GAIN_STILL_BLOCKING/);
+  assert.match(entry.code,/GetGuiObjectsAtPosition\(x,y\)/);
+  assert.match(entry.code,/FIELD_ENTRY_TOPMOST_BLOCKER/);
+  assert.match(entry.code,/FIELD_ENTRY_BUTTON_HITBOX_HIDDEN/);
+  assert.match(entry.code,/FIELD_ENTRY_BUTTON_INPUT_DISABLED/);
+  assert.match(entry.code,/btn\.InputBegan:Connect/);
+  assert.match(entry.code,/btn\.Activated:Connect/);
+  assert.match(capture[239].code,/FieldEntryStage/);
   // [통합 표지 QA] 실제 시작 화면과 클릭 순서를 검사해 이전 버튼명 회귀를 차단한다.
   assert.match(capture[4].code,/FindFirstChild\('TitleBackdrop'\)/);
   assert.match(capture[4].code,/FindFirstChild\('TitlePanel'\)/);
