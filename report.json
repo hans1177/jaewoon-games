@@ -1,40 +1,150 @@
 {
- "sourceRevision": "8e76cc2a1c08185f162b5c536a5600e5c9aaa2f9",
+ "sourceRevision": "64b6aaf3a07771cdbc78ea5e7aea3842cb8b540d",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "started\ntext"
+   "out": "ready=true Animals:11,Cargo:168,Castle:31,Interior:17,Monsters:4,Naval:196,People:100,Relics:36,Ships:0,Terrain:185,Town:181\ntext"
   },
   {
    "step": 2,
    "ctx": "Client",
-   "out": "mobs=27 FieldEnemy@3017.068359375, 3.1883091926574707, 127.46873474121094;FieldEnemy@3007.599853515625, 3.1948800086975098, 112.47818756103516;FieldEnemy@3013.201416015625, 3.2133140563964844, 117.97738647460938;FieldEnemy@2917.80078125, 5.825930595397949, -118.8811264038086;FieldEnemy@3119.496337890625, 4.464938640594482, -93.16536712646484;FieldEnemy@2928.071533203125, 3.1947197914123535, -98.50750732421875;FieldEnemy@3124.68505859375, 4.280287742614746, -83.92937469482422;FieldEnemy@2897.87158203125, 10.737056732177734, 15.684049606323242;FieldEnemy@3111.97119140625, 3.187947988510132, 36.09495162963867;FieldEnemy@2923.71533203125, 3.1885249614715576, -123.02703857421875;FieldEnemy@3108.281982421875, 5.7935028076171875, -104.94823455810547;FieldEnemy@2927.892333984375, 3.208728075027466, -110.67425537109375;FieldEnemy@3128.436279296875, 5.531379699707031, -79.4449462890625;FieldEnemy@2890.760009765625, 10.25069522857666, 15.894493103027344;FieldEnemy@3109.75927734375, 3.2135801315307617, 33.653053283691406;FieldEnemy@2916.503662109375, 5.403919219970703, -120.91761779785156;FieldEnemy@3114.5712890625, 7.701643943786621, -92.38919067382812;FieldEnemy@2919.63916015625, 6.9736480712890625, -111.38654327392578;FieldEnemy@3128.5224609375, 3.214113712310791, -86.41353607177734;FieldEnemy@2891.251220703125, 5.92884635925293, 27.644062042236328;FieldEnemy@3108.55078125, 3.914018154144287, 40.36479187011719;FieldEnemy@2922.353515625, 3.194955587387085, -121.34534454345703;FieldEnemy@3119.26123046875, 4.05568265914917, -95.44234466552734;FieldEnemy@2915.422119140625, 7.674151420593262, -98.04425048828125;FieldEnemy@3112.102294921875, 10.926155090332031, -76.32884216308594;FieldEnemy@2888.650146484375, 9.663054466247559, 16.072555541992188;FieldEnemy@3113.154052734375, 3.2134156227111816, 36.96324920654297\ntext"
+   "out": "build ok=true nil\ntext"
   },
   {
    "step": 4,
-   "capture": "f0_environment",
-   "files": 1
-  },
-  {
-   "step": 5,
    "ctx": "Client",
    "out": "bound\ntext"
   },
   {
+   "step": 5,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
    "step": 7,
-   "capture": "f1_start",
+   "capture": "01_top",
    "files": 1
   },
   {
    "step": 8,
    "ctx": "Client",
-   "out": "err=true table: 0x562400e23730896c done=nil humanoids=33 models=862 parts=1369 lowPolyModels=56 lowPolyMeshes=0/1274 cam=2996.125732421875, 7.688309192657471, 136.4376220703125 hrp=3001.018798828125, 2.9980251789093018, 157.19515991210938 shelves=0 ridges=4 near3D=5 placed3D=13 near=78 mid=75 far=106 port=reef quest=coast studioFPS=6 hiddenSceneryFPS=6 restoredFPS=7 sceneryFPSDelta=0 visualParts=528 enemyHiddenFPS=8 enemyVisualDelta=1 enemyVisualParts=795 sceneryOnly=true lodAssetSource=registered\ntext"
+   "out": "ok\ntext"
   },
   {
    "step": 10,
-   "capture": "f2_later",
+   "capture": "02_plaza",
    "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "03_street",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "04_dock",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "05_aerial",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "06_backstreet",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "07_wall",
+   "files": 1
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "TOWN_LIVE_SPACING_PASS relocated=9 stopped=4 industry_sites=0 npc_faces=29 reversed_rigs=0 plaza_structures=0 inspected=750 GRAPHIC_AUDIT floating=33 [sheep@-857,-149+40.0;sheep@-724,-201+40.0;sheep@-717,-137+40.0;HarborRoofDetail@-12,27+18.9;chimney@-16,-36+16.2;HarborRoofDetail@-12,-30+15.7] houseOverlap=1 [-30,-23~-4,-49=30%] OUTFIT_AUDIT models=54 states=[ready=54] visible=527/527 lodHidden=0 hairMesh=51 missing=[] CITY_TIER source=nil display=1 scene=1 DISTRIBUTION all=[21,74,67,77,53,444] houses=[3,1,1,0,0,0] edges=40/80/120/170/240\ntext"
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "parts=4431 meshparts=3783 models=2749 houses=5\ntext"
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "HARBOR_NPC_SPARRING_PAIR_FOUND distance=1.0729931592941284\ntext"
+  },
+  {
+   "step": 30,
+   "capture": "08_harbor_npc_sparring_01",
+   "files": 1
+  },
+  {
+   "step": 32,
+   "capture": "08_harbor_npc_sparring_02",
+   "files": 1
+  },
+  {
+   "step": 34,
+   "capture": "08_harbor_npc_sparring_03",
+   "files": 1
+  },
+  {
+   "step": 36,
+   "capture": "08_harbor_npc_sparring_04",
+   "files": 1
+  },
+  {
+   "step": 38,
+   "capture": "08_harbor_npc_sparring_05",
+   "files": 1
+  },
+  {
+   "step": 40,
+   "capture": "08_harbor_npc_sparring_06",
+   "files": 1
+  },
+  {
+   "step": 42,
+   "capture": "08_harbor_npc_sparring_07",
+   "files": 1
+  },
+  {
+   "step": 44,
+   "capture": "08_harbor_npc_sparring_08",
+   "files": 1
+  },
+  {
+   "step": 45,
+   "ctx": "Client",
+   "out": "TOWN_LAND_RUNTIME tier=1 floor=94x353 baseplate=1400x1240 plotScale=1.5456 rural=700x908\ntext"
   }
  ],
  "errors": [],
@@ -42,57 +152,232 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 30010
+   "elapsedMs": 35005
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 1685
+   "elapsedMs": 115
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 844
+   "elapsedMs": 4508
   },
   {
    "step": 3,
    "type": "wait",
-   "elapsedMs": 11009
+   "elapsedMs": 8005
   },
   {
    "step": 4,
-   "type": "capture",
-   "elapsedMs": 1139
+   "type": "luau",
+   "elapsedMs": 251
   },
   {
    "step": 5,
    "type": "luau",
-   "elapsedMs": 189
+   "elapsedMs": 269
   },
   {
    "step": 6,
    "type": "wait",
-   "elapsedMs": 9002
+   "elapsedMs": 2513
   },
   {
    "step": 7,
    "type": "capture",
-   "elapsedMs": 937
+   "elapsedMs": 757
   },
   {
    "step": 8,
    "type": "luau",
-   "elapsedMs": 19297
+   "elapsedMs": 178
   },
   {
    "step": 9,
    "type": "wait",
-   "elapsedMs": 6012
+   "elapsedMs": 2503
   },
   {
    "step": 10,
    "type": "capture",
-   "elapsedMs": 806
+   "elapsedMs": 900
+  },
+  {
+   "step": 11,
+   "type": "luau",
+   "elapsedMs": 213
+  },
+  {
+   "step": 12,
+   "type": "wait",
+   "elapsedMs": 2515
+  },
+  {
+   "step": 13,
+   "type": "capture",
+   "elapsedMs": 942
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 196
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 2511
+  },
+  {
+   "step": 16,
+   "type": "capture",
+   "elapsedMs": 841
+  },
+  {
+   "step": 17,
+   "type": "luau",
+   "elapsedMs": 178
+  },
+  {
+   "step": 18,
+   "type": "wait",
+   "elapsedMs": 2507
+  },
+  {
+   "step": 19,
+   "type": "capture",
+   "elapsedMs": 868
+  },
+  {
+   "step": 20,
+   "type": "luau",
+   "elapsedMs": 192
+  },
+  {
+   "step": 21,
+   "type": "wait",
+   "elapsedMs": 2504
+  },
+  {
+   "step": 22,
+   "type": "capture",
+   "elapsedMs": 670
+  },
+  {
+   "step": 23,
+   "type": "luau",
+   "elapsedMs": 159
+  },
+  {
+   "step": 24,
+   "type": "wait",
+   "elapsedMs": 2515
+  },
+  {
+   "step": 25,
+   "type": "capture",
+   "elapsedMs": 684
+  },
+  {
+   "step": 26,
+   "type": "luau",
+   "elapsedMs": 158
+  },
+  {
+   "step": 27,
+   "type": "luau",
+   "elapsedMs": 163
+  },
+  {
+   "step": 28,
+   "type": "luau",
+   "elapsedMs": 180
+  },
+  {
+   "step": 29,
+   "type": "wait",
+   "elapsedMs": 460
+  },
+  {
+   "step": 30,
+   "type": "capture",
+   "elapsedMs": 695
+  },
+  {
+   "step": 31,
+   "type": "wait",
+   "elapsedMs": 452
+  },
+  {
+   "step": 32,
+   "type": "capture",
+   "elapsedMs": 699
+  },
+  {
+   "step": 33,
+   "type": "wait",
+   "elapsedMs": 457
+  },
+  {
+   "step": 34,
+   "type": "capture",
+   "elapsedMs": 698
+  },
+  {
+   "step": 35,
+   "type": "wait",
+   "elapsedMs": 463
+  },
+  {
+   "step": 36,
+   "type": "capture",
+   "elapsedMs": 664
+  },
+  {
+   "step": 37,
+   "type": "wait",
+   "elapsedMs": 460
+  },
+  {
+   "step": 38,
+   "type": "capture",
+   "elapsedMs": 726
+  },
+  {
+   "step": 39,
+   "type": "wait",
+   "elapsedMs": 453
+  },
+  {
+   "step": 40,
+   "type": "capture",
+   "elapsedMs": 878
+  },
+  {
+   "step": 41,
+   "type": "wait",
+   "elapsedMs": 466
+  },
+  {
+   "step": 42,
+   "type": "capture",
+   "elapsedMs": 701
+  },
+  {
+   "step": 43,
+   "type": "wait",
+   "elapsedMs": 460
+  },
+  {
+   "step": 44,
+   "type": "capture",
+   "elapsedMs": 709
+  },
+  {
+   "step": 45,
+   "type": "luau",
+   "elapsedMs": 159
   }
  ],
  "consoleCapture": {
@@ -102,13 +387,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 11,
-  "completedSteps": 11,
+  "plannedSteps": 46,
+  "completedSteps": 46,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 3,
-  "capturedFrames": 3,
+  "plannedFrames": 15,
+  "capturedFrames": 15,
   "abortedEarly": false
  }
 }
