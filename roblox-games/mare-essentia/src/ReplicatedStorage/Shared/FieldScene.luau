@@ -3219,27 +3219,62 @@ function FieldScene.start(opts)
 			local basePivot = model:GetPivot()
 			local _, ext = model:GetBoundingBox()
 			local bodySize = math.max(ext.X, ext.Y, ext.Z)
+			-- [실물 리그] Bone·Motor6D·분리 사지를 중복 없이 수집한다.
+			-- 고정된 수입 모델은 Part1을 움직이고, 가동 관절은 원래 Transform으로만 구동한다.
 			local bones, parts, legCount = {}, {}, 0
+			local occupiedParts, drivenParts, legGroups = {}, {}, {}
 			for _, node in model:GetDescendants() do
+				if node:IsA("Motor6D") and node.Part1 then
+					occupiedParts[node.Part1] = true
+				elseif node:IsA("AnimationConstraint") then
+					local target = node.Attachment1 and node.Attachment1.Parent
+					if target and target:IsA("BasePart") then occupiedParts[target] = true end
+				end
+			end
+			for _, node in model:GetDescendants() do
+				local targetPart = if node:IsA("Motor6D") then node.Part1
+					elseif node:IsA("AnimationConstraint") then node.Attachment1 and node.Attachment1.Parent else nil
 				local name = node.Name:lower()
+				if targetPart then name ..= " " .. targetPart.Name:lower() end
 				local leg = name:find("leg", 1, true) or name:find("hoof", 1, true)
-					or name:find("paw", 1, true) or name:find("knee", 1, true)
+					or name:find("paw", 1, true) or name:find("foot", 1, true)
+					or name:find("knee", 1, true)
 				local head = name:find("head", 1, true) or name:find("neck", 1, true)
 				local tail = name:find("tail", 1, true)
 				local kind = if leg then "leg" elseif head then "head" elseif tail then "tail" else nil
 				if kind then
 					local left = name:find("left", 1, true) or name:find("_l", 1, true)
+						or name:sub(1, 2) == "l_"
 					local rear = name:find("rear", 1, true) or name:find("hind", 1, true)
+						or name:find("back", 1, true)
 					local phase = if rear then (if left then math.pi * 1.5 else math.pi * 0.5)
 						else (if left then 0 else math.pi)
+					local accepted = false
 					if node:IsA("Bone") and #bones < 14 then
 						table.insert(bones, { joint = node, base = node.Transform, kind = kind, phase = phase })
-						if kind == "leg" then legCount += 1 end
-					elseif node:IsA("BasePart") and #parts < 12
-						and math.max(node.Size.X, node.Size.Y, node.Size.Z) < bodySize * 0.77 then
+						accepted = true
+					elseif targetPart and targetPart:IsA("BasePart") then
+						if targetPart.Anchored and not drivenParts[targetPart] and #parts < 12
+							and math.max(targetPart.Size.X, targetPart.Size.Y, targetPart.Size.Z) < bodySize * 0.77 then
+							table.insert(parts, { part = targetPart, base = basePivot:ToObjectSpace(targetPart.CFrame),
+								kind = kind, phase = phase, hinge = math.min(targetPart.Size.Y * 0.34, 0.65) })
+							drivenParts[targetPart] = true
+							accepted = true
+						elseif not targetPart.Anchored and #bones < 14 then
+							table.insert(bones, { joint = node, base = node.Transform, kind = kind, phase = phase })
+							accepted = true
+						end
+					elseif node:IsA("BasePart") and not occupiedParts[node] and not drivenParts[node]
+						and #parts < 12 and math.max(node.Size.X, node.Size.Y, node.Size.Z) < bodySize * 0.77 then
 						table.insert(parts, { part = node, base = basePivot:ToObjectSpace(node.CFrame),
 							kind = kind, phase = phase, hinge = math.min(node.Size.Y * 0.34, 0.65) })
-						if kind == "leg" then legCount += 1 end
+						drivenParts[node] = true
+						accepted = true
+					end
+					if accepted and kind == "leg" then
+						-- [발별 판정] 무릎과 정강이를 서로 다른 다리로 세지 않는다.
+						local group = (if rear then "rear" else "front") .. (if left then "_left" else "_right")
+						if not legGroups[group] then legGroups[group] = true; legCount += 1 end
 					end
 				end
 			end
