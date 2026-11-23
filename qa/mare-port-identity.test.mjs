@@ -351,7 +351,7 @@ test('추가 8개 항구의 5단계 외관과 기존 필지 재배치가 지시�
     for (const [key, value] of Object.entries({roof: roofWall?.[0], wall: roofWall?.[1], plaza, lamp}))
       assert.ok(entry.includes(key + ' = "' + value + '"'), port + ' ' + key);
     assert.ok(entry.includes('street = { ' + streets.map(s => '"' + s + '"').join(', ') + ' }'), port + ' 도로 원형');
-    assert.match(entry, /landmark = \{ id = "lm_[^"]+", name = "[^"]+", kind = "[^"]+", fallback = "none" \}/);
+    assert.match(entry, /^\{ id = "lm_[^"]+", name = "[^"]+", kind = "[^"]+", fallback = "none" \}/);
     assert.match(entry, /reflow = \{ lane = -?\d+, plaza = -?\d+, side = -?\d+, landmarkX = -?\d+, landmarkZ = -?\d+, district = -?\d+, facility = \d+ \}/);
   }
   assert.match(scene, /local reflow = identity and identity.reflow/);
