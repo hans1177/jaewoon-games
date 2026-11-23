@@ -29,6 +29,19 @@
 
 대륙 전투카드는 **사진·도감풍 정지 장면이 아니라 역동적인 세로 7:10 컬러 회화 원화**다. PNG 없는 승인·이미지 생성 대시보드의 가짜 번호·검증되지 않은 Studio/게시 결과는 등록 증거로 인정하지 않는다. 새로운 워크플로·유료 API 없이 기존 canonical 등록기를 사용하고, 게임 규칙·저장 구조를 보존한다. 문서를 읽지 못한 작업자는 읽었다고 주장하거나 등록 완료를 보고하지 않는다. (2D 원화 절차이며 3D 모델 금지 규칙을 우회하는 예외가 아니다.)
 
+## 비주얼·마을·전투·배·주민 작업 필독 (mare-essentia)
+
+**`mare-essentia`의 마을·건물·항구 배치, 해전·지상전 배경, 배, 주민(NPC) 외형·모션, 아이콘·HUD, 원화를 만들거나 바꾸는 모든 GPT/Claude/코딩 에이전트는 작업 전에 아래를 반드시 읽는다.** 읽지 않았으면 읽었다고 주장하지 않는다. 중앙정책·위 전역 금지 규칙이 우선한다.
+
+1. `roblox-games/mare-essentia/docs/RULES.md` — 에셋 출처·원본 가공 허용·오너 제작 원화·코드 한도(Game.client 최상위 local 금지)
+2. `roblox-games/mare-essentia/docs/PORT_VILLAGE_PROMPTS.md` + `docs/ports/<항구>.md` — 항구 테마·왕궁·발전도별 건물·건축 시뮬·구획·주민 동선·날씨
+3. `roblox-games/mare-essentia/docs/battle_backdrops/README.md` + 해당 파일 — 해역·지상전·퀘스트별 배경
+4. `roblox-games/mare-essentia/docs/ships/README.md` + `grades.md` + `<배>.md` — 배 디테일·질감·등급 기능
+5. `roblox-games/mare-essentia/docs/residents/README.md` + `jobs.md` + `<문화권>.md` — 주민 헤어·복장·악세·재질·모션
+6. 카드 원화는 위 "카드배틀·지식카드 원화 작업 필독" 절을 따른다.
+
+작업 후 `roblox-games/mare-essentia/tests/run.sh` 통과(최상위 local 여유 검사 포함)와 Studio 촬영 확인 전에는 완료로 보고하지 않는다.
+
 ## 한방패치
 
 중앙정책 fixedAutonomousDevelopmentOperatingContract.ownerRequestedVibeOneShotPatch를 따른다.
