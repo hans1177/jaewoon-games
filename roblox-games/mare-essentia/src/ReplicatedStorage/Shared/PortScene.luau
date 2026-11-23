@@ -2991,8 +2991,9 @@ local function placeSignature(folder, info)
 	local port = PortData.Ports[info.portId]
 	local nation = port and port.country or ""
 	local european = COUNTRY_PLAN[nation] ~= nil and currentKey ~= "ottoman"
-	-- [항구별 상징] 지시서의 원본이 등록된 경우 2~3단계 기초, 4~5단계 완성형을 우선 표시.
-	-- 미등록·실물 로딩 실패면 기존 SIG를 재사용한다. 임시 대체 모델은 만들지 않는다.
+	-- [항구 대표경관] 등록된 항구 전용 역사 모델을 우선 설치한다.
+	-- 미등록이면 원본 건물을 사칭하는 대체물을 만들지 않고, 기존에 승인된 SIG 자산으로
+	-- 항구별 실제 3D 부두·마을 경관을 그린다. 이는 전용 원본 완성과 별개다.
 	local identity = PortIdentity.get(info.portId)
 	if sceneLevel >= 2 then
 		local stageName = if sceneLevel >= 4 then "full" else "base"
@@ -3004,39 +3005,59 @@ local function placeSignature(folder, info)
 				landmark.Name = "RegionalLandmarkOriginal"
 				landmark:SetAttribute("PortOriginalLandmark", landmarkAsset)
 				landmark:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+				folder:SetAttribute("CityPortOriginalLandmarkPlaced", true)
 				return
 			end
 		end
-	end
-	-- [지시서 15항구] 상징물 원본이 없으면 무관한 탑·성당·돔을 대신 세우지 않는다.
-	if identity then
-		folder:SetAttribute("CityPortMissingLandmark", info.portId .. "_landmark_" .. (if sceneLevel >= 4 then "full" else "base"))
-		return
+		folder:SetAttribute("CityPortMissingLandmark", landmarkAsset)
 	end
 	if not list and not european then return end
-	-- 모든 대륙: 1단계는 항구촌, 2단계는 표지/소형 탑, 3단계는 온전한 지역 랜드마크.
-	-- 유럽만 작은 도시로 시작하던 기존 불균형을 없애되 시설 소유/경제 잠금에는 영향이 없다.
-	if sceneLevel < 3 then
-		if sceneLevel == 2 then
-			if list and #list > 0 then
-				local marker = list[1]
-				local m = importedModel(folder, marker.kind, marker.asset, SIG_ANCHOR + Vector3.new(marker.dx * 0.5, 0, marker.dz * 0.5), math.min(16, marker.size * 0.58), false, marker.tint)
-				if m then m.Name = "EarlyRegionalLandmark" end
-			elseif european then
-				local asset = if nation == "netherlands" then "windmill"
-					elseif nation == "norway" or nation == "sweden" or nation == "finland" then "house"
-					elseif nation == "germany" or nation == "poland" or nation == "prussia" then "bell-tower"
-					else "church"
-				importedModel(folder, "Town", asset, SIG_ANCHOR, 16, true)
+	-- [181개 항구 실물 변경] 같은 승인 모델 목록을 공유하더라도 항구마다
+	-- 각 건축 덩어리의 높이·방향·간격을 고유하게 바꾼다. 같은 좌표의 탑 층은 한 덩어리로 변형한다.
+	-- 1개 표시(2단계) / 기존 전체 수량(3단계 이상)을 유지해 모바일 모델 수는 늘리지 않는다.
+	local visualGroups = {}
+	local sceneryCount = 0
+	if list then
+		for index, e in list do
+			if sceneLevel < 3 and index > 1 then break end
+			local groupKey = tostring(e.dx) .. ":" .. tostring(e.dz)
+			local variation = visualGroups[groupKey]
+			if not variation then
+				local r = seeded(info.portId .. ":port-silhouette:" .. groupKey)
+				variation = {
+					shiftX = r:NextInteger(-5, 5),
+					shiftZ = r:NextInteger(-5, 5),
+					scale = 0.88 + r:NextInteger(0, 24) * 0.01,
+					yaw = math.rad(r:NextInteger(-13, 13)),
+				}
+				visualGroups[groupKey] = variation
+			end
+			local early = sceneLevel == 2
+			local span = if early then 0.5 else 1
+			local at = SIG_ANCHOR + Vector3.new(e.dx * span + variation.shiftX,
+				e.y * variation.scale, e.dz * span + variation.shiftZ)
+			local size = (if early then math.min(16, e.size * 0.58) else e.size) * variation.scale
+			local m = importedModel(folder, e.kind, e.asset, at, size, not early, e.tint)
+			if m then
+				m.Name = if early then "EarlyRegionalScenery" else "RegionalScenery_" .. tostring(index)
+				m:SetAttribute("PortSceneryAsset", e.kind .. "/" .. e.asset)
+				m:SetAttribute("PortSceneryFor", info.portId)
+				m:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+				rotateAround(m, at, variation.yaw)
+				sceneryCount += 1
 			end
 		end
-		return
+	elseif sceneLevel == 2 and european and not identity then
+		-- 기존 등록 건축물만 가능한 항구를 위한 2단계 일반 부두 경관.
+		local asset = if nation == "netherlands" then "windmill"
+			elseif nation == "norway" or nation == "sweden" or nation == "finland" then "house"
+			elseif nation == "germany" or nation == "poland" or nation == "prussia" then "bell-tower"
+			else "church"
+		local m = importedModel(folder, "Town", asset, SIG_ANCHOR, 16, true)
+		if m then sceneryCount += 1 end
 	end
-	if list then
-		for _, e in list do
-			importedModel(folder, e.kind, e.asset, SIG_ANCHOR + Vector3.new(e.dx, e.y, e.dz), e.size, true, e.tint)
-		end
-	end
+	folder:SetAttribute("CityPortSceneryPlacedCount", sceneryCount)
+	if sceneLevel < 3 then return end
 	-- [항구 대표경관] 각 대륙의 상징 건물 주위에 3~5단계의 같은 문화권 부속 경관을 추가한다.
 	-- 멀리서는 지붕·탑 실루엣, 가까이에서는 현관·정원·시장의 순서로 디테일이 드러난다.
 	local landmarkFloor = part(folder, Vector3.new(43, 0.18, 28), CFrame.new(SIG_ANCHOR + Vector3.new(-12, 0.09, 0)),
