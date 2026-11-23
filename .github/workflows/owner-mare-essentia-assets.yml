@@ -96,7 +96,7 @@ jobs:
               for path in sorted(base.rglob('*.png')):
                   with path.open('rb') as f:
                       header = f.read(26)
-                  if header[:8] != b'\\x89PNG\\r\\n\\x1a\\n' or len(header) < 26:
+                  if header[:8] != b'\x89PNG\r\n\x1a\n' or len(header) < 26:
                       print('ART_PNG_INVALID ' + str(path), flush=True)
                       continue
                   if header[25] == 3:
