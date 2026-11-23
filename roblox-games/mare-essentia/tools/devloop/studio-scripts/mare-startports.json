@@ -1,1 +1,349 @@
-[{"type": "wait", "ms": 35000}, {"type": "luau", "ctx": "Client", "code": "for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then g.Enabled=false end end local RS=game:GetService('RunService') pcall(function() RS:UnbindFromRenderStep('MareShot') end) RS:BindToRenderStep('MareShot',Enum.RenderPriority.Last.Value+1,function() local cam=workspace.CurrentCamera local cf=workspace:GetAttribute('ShotCF') if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=workspace:GetAttribute('ShotFov') or 65 end end) return 'bound'"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='london',portName='london',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"}, {"type": "wait", "ms": 9000}, {"type": "capture", "name": "london_L3_top"}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"}, {"type": "wait", "ms": 2500}, {"type": "capture", "name": "london_L3_street"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='amsterdam',portName='amsterdam',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"}, {"type": "wait", "ms": 9000}, {"type": "capture", "name": "amsterdam_L3_top"}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"}, {"type": "wait", "ms": 2500}, {"type": "capture", "name": "amsterdam_L3_street"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='rouen',portName='rouen',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"}, {"type": "wait", "ms": 9000}, {"type": "capture", "name": "rouen_L3_top"}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"}, {"type": "wait", "ms": 2500}, {"type": "capture", "name": "rouen_L3_street"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='lisbon',portName='lisbon',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"}, {"type": "wait", "ms": 9000}, {"type": "capture", "name": "lisbon_L3_top"}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"}, {"type": "wait", "ms": 2500}, {"type": "capture", "name": "lisbon_L3_street"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='istanbul',portName='istanbul',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"}, {"type": "wait", "ms": 9000}, {"type": "capture", "name": "istanbul_L3_top"}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"}, {"type": "wait", "ms": 2500}, {"type": "capture", "name": "istanbul_L3_street"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='zanzibar',portName='zanzibar',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"}, {"type": "wait", "ms": 9000}, {"type": "capture", "name": "zanzibar_L3_top"}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"}, {"type": "wait", "ms": 2500}, {"type": "capture", "name": "zanzibar_L3_street"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='calicut',portName='calicut',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"}, {"type": "wait", "ms": 9000}, {"type": "capture", "name": "calicut_L3_top"}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"}, {"type": "wait", "ms": 2500}, {"type": "capture", "name": "calicut_L3_street"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='nagasaki',portName='nagasaki',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"}, {"type": "wait", "ms": 9000}, {"type": "capture", "name": "nagasaki_L3_top"}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"}, {"type": "wait", "ms": 2500}, {"type": "capture", "name": "nagasaki_L3_street"}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='veracruz',portName='veracruz',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"}, {"type": "wait", "ms": 9000}, {"type": "capture", "name": "veracruz_L3_top"}, {"type": "luau", "ctx": "Client", "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"}, {"type": "wait", "ms": 2500}, {"type": "capture", "name": "veracruz_L3_street"}]
+[
+  {
+    "type": "wait",
+    "ms": 35000
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then g.Enabled=false end end local RS=game:GetService('RunService') pcall(function() RS:UnbindFromRenderStep('MareShot') end) RS:BindToRenderStep('MareShot',Enum.RenderPriority.Last.Value+1,function() local cam=workspace.CurrentCamera local cf=workspace:GetAttribute('ShotCF') if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=workspace:GetAttribute('ShotFov') or 65 end end) return 'bound'"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,built=pcall(function() local PS=require(RS.Shared.PortScene) return PS.build({portId='london',portName='london',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) assert(ok and type(built)=='table' and built.folder and built.folder.Parent==workspace,'PORT_CAPTURE_BUILD_FAILED:london:'..tostring(built)) local parts=0 for _,piece in built.folder:GetDescendants() do if piece:IsA('BasePart') then parts+=1 end end assert(parts>=100,'PORT_CAPTURE_MISSING_GEOMETRY:london:'..parts) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return 'PORT_CAPTURE_READY:london parts='..parts"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "london_L3_top"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "london_L3_street"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,built=pcall(function() local PS=require(RS.Shared.PortScene) return PS.build({portId='amsterdam',portName='amsterdam',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) assert(ok and type(built)=='table' and built.folder and built.folder.Parent==workspace,'PORT_CAPTURE_BUILD_FAILED:amsterdam:'..tostring(built)) local parts=0 for _,piece in built.folder:GetDescendants() do if piece:IsA('BasePart') then parts+=1 end end assert(parts>=100,'PORT_CAPTURE_MISSING_GEOMETRY:amsterdam:'..parts) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return 'PORT_CAPTURE_READY:amsterdam parts='..parts"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "amsterdam_L3_top"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "amsterdam_L3_street"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,built=pcall(function() local PS=require(RS.Shared.PortScene) return PS.build({portId='rouen',portName='rouen',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) assert(ok and type(built)=='table' and built.folder and built.folder.Parent==workspace,'PORT_CAPTURE_BUILD_FAILED:rouen:'..tostring(built)) local parts=0 for _,piece in built.folder:GetDescendants() do if piece:IsA('BasePart') then parts+=1 end end assert(parts>=100,'PORT_CAPTURE_MISSING_GEOMETRY:rouen:'..parts) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return 'PORT_CAPTURE_READY:rouen parts='..parts"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "rouen_L3_top"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "rouen_L3_street"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,built=pcall(function() local PS=require(RS.Shared.PortScene) return PS.build({portId='lisbon',portName='lisbon',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) assert(ok and type(built)=='table' and built.folder and built.folder.Parent==workspace,'PORT_CAPTURE_BUILD_FAILED:lisbon:'..tostring(built)) local parts=0 for _,piece in built.folder:GetDescendants() do if piece:IsA('BasePart') then parts+=1 end end assert(parts>=100,'PORT_CAPTURE_MISSING_GEOMETRY:lisbon:'..parts) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return 'PORT_CAPTURE_READY:lisbon parts='..parts"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "lisbon_L3_top"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "lisbon_L3_street"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,built=pcall(function() local PS=require(RS.Shared.PortScene) return PS.build({portId='istanbul',portName='istanbul',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) assert(ok and type(built)=='table' and built.folder and built.folder.Parent==workspace,'PORT_CAPTURE_BUILD_FAILED:istanbul:'..tostring(built)) local parts=0 for _,piece in built.folder:GetDescendants() do if piece:IsA('BasePart') then parts+=1 end end assert(parts>=100,'PORT_CAPTURE_MISSING_GEOMETRY:istanbul:'..parts) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return 'PORT_CAPTURE_READY:istanbul parts='..parts"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "istanbul_L3_top"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "istanbul_L3_street"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,built=pcall(function() local PS=require(RS.Shared.PortScene) return PS.build({portId='zanzibar',portName='zanzibar',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) assert(ok and type(built)=='table' and built.folder and built.folder.Parent==workspace,'PORT_CAPTURE_BUILD_FAILED:zanzibar:'..tostring(built)) local parts=0 for _,piece in built.folder:GetDescendants() do if piece:IsA('BasePart') then parts+=1 end end assert(parts>=100,'PORT_CAPTURE_MISSING_GEOMETRY:zanzibar:'..parts) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return 'PORT_CAPTURE_READY:zanzibar parts='..parts"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "zanzibar_L3_top"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "zanzibar_L3_street"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,built=pcall(function() local PS=require(RS.Shared.PortScene) return PS.build({portId='calicut',portName='calicut',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) assert(ok and type(built)=='table' and built.folder and built.folder.Parent==workspace,'PORT_CAPTURE_BUILD_FAILED:calicut:'..tostring(built)) local parts=0 for _,piece in built.folder:GetDescendants() do if piece:IsA('BasePart') then parts+=1 end end assert(parts>=100,'PORT_CAPTURE_MISSING_GEOMETRY:calicut:'..parts) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return 'PORT_CAPTURE_READY:calicut parts='..parts"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "calicut_L3_top"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "calicut_L3_street"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,built=pcall(function() local PS=require(RS.Shared.PortScene) return PS.build({portId='nagasaki',portName='nagasaki',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) assert(ok and type(built)=='table' and built.folder and built.folder.Parent==workspace,'PORT_CAPTURE_BUILD_FAILED:nagasaki:'..tostring(built)) local parts=0 for _,piece in built.folder:GetDescendants() do if piece:IsA('BasePart') then parts+=1 end end assert(parts>=100,'PORT_CAPTURE_MISSING_GEOMETRY:nagasaki:'..parts) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return 'PORT_CAPTURE_READY:nagasaki parts='..parts"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "nagasaki_L3_top"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "nagasaki_L3_street"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,built=pcall(function() local PS=require(RS.Shared.PortScene) return PS.build({portId='veracruz',portName='veracruz',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) assert(ok and type(built)=='table' and built.folder and built.folder.Parent==workspace,'PORT_CAPTURE_BUILD_FAILED:veracruz:'..tostring(built)) local parts=0 for _,piece in built.folder:GetDescendants() do if piece:IsA('BasePart') then parts+=1 end end assert(parts>=100,'PORT_CAPTURE_MISSING_GEOMETRY:veracruz:'..parts) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return 'PORT_CAPTURE_READY:veracruz parts='..parts"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "veracruz_L3_top"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "veracruz_L3_street"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,built=pcall(function() local PS=require(RS.Shared.PortScene) return PS.build({portId='busan',portName='busan',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) assert(ok and type(built)=='table' and built.folder and built.folder.Parent==workspace,'PORT_CAPTURE_BUILD_FAILED:busan:'..tostring(built)) local parts=0 for _,piece in built.folder:GetDescendants() do if piece:IsA('BasePart') then parts+=1 end end assert(parts>=100,'PORT_CAPTURE_MISSING_GEOMETRY:busan:'..parts) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return 'PORT_CAPTURE_READY:busan parts='..parts"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "busan_L3_top"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "busan_L3_street"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,built=pcall(function() local PS=require(RS.Shared.PortScene) return PS.build({portId='canton',portName='canton',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) assert(ok and type(built)=='table' and built.folder and built.folder.Parent==workspace,'PORT_CAPTURE_BUILD_FAILED:canton:'..tostring(built)) local parts=0 for _,piece in built.folder:GetDescendants() do if piece:IsA('BasePart') then parts+=1 end end assert(parts>=100,'PORT_CAPTURE_MISSING_GEOMETRY:canton:'..parts) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return 'PORT_CAPTURE_READY:canton parts='..parts"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "canton_L3_top"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "canton_L3_street"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,built=pcall(function() local PS=require(RS.Shared.PortScene) return PS.build({portId='sydney',portName='sydney',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) assert(ok and type(built)=='table' and built.folder and built.folder.Parent==workspace,'PORT_CAPTURE_BUILD_FAILED:sydney:'..tostring(built)) local parts=0 for _,piece in built.folder:GetDescendants() do if piece:IsA('BasePart') then parts+=1 end end assert(parts>=100,'PORT_CAPTURE_MISSING_GEOMETRY:sydney:'..parts) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return 'PORT_CAPTURE_READY:sydney parts='..parts"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "sydney_L3_top"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "sydney_L3_street"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,built=pcall(function() local PS=require(RS.Shared.PortScene) return PS.build({portId='cartagena_indias',portName='cartagena_indias',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) assert(ok and type(built)=='table' and built.folder and built.folder.Parent==workspace,'PORT_CAPTURE_BUILD_FAILED:cartagena_indias:'..tostring(built)) local parts=0 for _,piece in built.folder:GetDescendants() do if piece:IsA('BasePart') then parts+=1 end end assert(parts>=100,'PORT_CAPTURE_MISSING_GEOMETRY:cartagena_indias:'..parts) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return 'PORT_CAPTURE_READY:cartagena_indias parts='..parts"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "cartagena_indias_L3_top"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('ShotFov',72) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-92,14,6),Vector3.new(-150,7,2),Vector3.new(0,1,0))) return 'ok'"
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "cartagena_indias_L3_street"
+  }
+]
