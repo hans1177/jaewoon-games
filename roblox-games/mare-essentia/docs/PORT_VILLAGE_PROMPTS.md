@@ -251,15 +251,6 @@ optional wet variant with puddles, optional dusty variant, optional light snow v
 
 ---
 
-### 모든 항구 전용 3D 원본 확보·가공 순서 (런던 84종부터)
-
-- 항구별 지시서의 전용 에셋을 **항목별로 모두 검사**한다. 런던은 `docs/ports/london.md`의 **84종**을 먼저 처리하고 다음 항구로 순차 진행한다.
-- **① 기존 승인 모델부터:** `assets-registered.json`·`AssetIds.luau`·`assets/inbox/`·실제 메시와 CC0 라이선스를 대조해 정확한 모델 또는 적법하게 가공 가능한 원본을 찾는다.
-- **② 없으면 공식 외부 다운로드:** 제작자 공식 웹사이트에서 무료 **CC0 실물 GLB/FBX 원본**을 확보하고 저자·원본 URL·가공/상업 이용/Roblox 게시 권리 및 해시를 확인한다.
-- **③ 정확한 외부 원본도 없으면:** 기존/외부 CC0 중 같은 용도·국가/문화권·1500~1800년대 건축 실루엣에 가장 가까운 실물 원본을 찾고, **메시·구조·외관·재질·내부·발전단계를 직접 가공**해 해당 지시서에 최대한 맞춘다. 색상만 바꾸거나 왕궁을 관아로, 상징 석교를 탑으로 위장하면 안 된다.
-- **④ 각 항목별 `derived` 증빙:** `<asset_id>.license.json`에 원본 이름·저자·URL·CC0·변경 내용·전후 SHA-256을 남긴다. 기존 `register_asset.py` → `owner-mare-essentia-assets.yml` → `AssetIds.luau` 경로로만 등록하고 Roblox 실제 화면·모바일·QA까지 검증한다.
-- 유료·NC·권리 불명·AI 무원본 3D는 사용하지 않는다. 합법적인 실제 원본을 구하지 못하면 **미확보/보류**, 실제 등록·게시 전에는 **미완료**로 표기한다. 임시 Part/가짜 자산/새 파이프라인 금지.
-
 ## 8. 작업자(ChatGPT 등) 공통 지시
 1. 먼저 `docs/RULES.md`(에셋·라이선스·코드 한도)를 읽는다.
 2. `Game.client.luau` 맨 바깥에 `local` 추가 금지 → `do` 블록·`H` 테이블. 넘치면 화면이 안 뜬다. 자동 조절 `tools/luau_local_budget.py fix`.
