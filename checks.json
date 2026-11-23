@@ -1,13 +1,13 @@
 {
-  "runId": "45238749416",
+  "runId": "45238806835",
   "kind": "studio",
-  "sourceRevision": "865d27dba8b86b05035e7cf4a76d7e967c8d9f8b",
+  "sourceRevision": "5c04f7f76d049862649c1470d7949e87bd755fdd",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
   "summary": {
-    "plannedSteps": 7,
-    "completedSteps": 7,
+    "plannedSteps": 13,
+    "completedSteps": 13,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
@@ -39,26 +39,24 @@
     },
     {
       "step": 2,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 3,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 4,
-      "type": "capture",
-      "name": "holes_lisbon_port",
+      "step": 3,
+      "type": "luau",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "holes_lisbon_port-0.jpg"
-      ]
+      "screenshots": []
+    },
+    {
+      "step": 4,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
     },
     {
       "step": 5,
@@ -69,26 +67,70 @@
     },
     {
       "step": 6,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 7,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 8,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 9,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 10,
       "type": "capture",
-      "name": "holes_ground_scan",
+      "name": "hud_icons",
       "status": "PASS",
       "screenshots": [
-        "holes_ground_scan-0.jpg"
+        "hud_icons-0.jpg"
+      ]
+    },
+    {
+      "step": 11,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 12,
+      "type": "capture",
+      "name": "hud_icons_pulse",
+      "status": "PASS",
+      "screenshots": [
+        "hud_icons_pulse-0.jpg"
       ]
     }
   ],
   "screenshotComparison": [
     {
-      "name": "holes_ground_scan-0.jpg",
-      "sha256": "f948e2207c210ff44452f2ab00af2b1ffce7dc31f80f96bbdec5cc8182159186",
+      "name": "hud_icons-0.jpg",
+      "sha256": "2f2694d9993b21905f8a03f92fedcdd8e37370f806bdad57949b6295cc5fdedc",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45238749416/holes_ground_scan-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45238806835/hud_icons-0.jpg"
     },
     {
-      "name": "holes_lisbon_port-0.jpg",
-      "sha256": "21ec0368353d5c6d316f00fc67cc060f329dd6b4efed9e5090aea95f10282abd",
+      "name": "hud_icons_pulse-0.jpg",
+      "sha256": "c4584a22357bd42af2e8277b0927eda22cfef0d27e0a29d6d73bf65497580ed0",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45238749416/holes_lisbon_port-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45238806835/hud_icons_pulse-0.jpg"
     }
   ],
   "screenshotFrameAudit": {
@@ -96,15 +138,15 @@
     "invalid": 0,
     "images": [
       {
-        "name": "holes_ground_scan-0.jpg",
-        "bytes": 270804,
+        "name": "hud_icons-0.jpg",
+        "bytes": 250918,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "holes_lisbon_port-0.jpg",
-        "bytes": 270487,
+        "name": "hud_icons_pulse-0.jpg",
+        "bytes": 251102,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -113,5 +155,5 @@
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "45237719627"
+  "previousRunId": "45238749416"
 }
