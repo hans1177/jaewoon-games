@@ -2707,7 +2707,7 @@ test('성체 말과 주요 가축의 크기·품종색은 항구와 탐험이 �
  assert.match(scene,/m:SetAttribute\("AnimalCoatIndex", coatIndex\)/);
  assert.match(scene,/local textured = \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\) or surfaceHasColorMap\(sa\)/);
  assert.match(scene,/if not textured and not detail then/);
- assert.match(scene,/local scale = if isAnimal then m:GetScale\(\) \* ratio else ratio/);
+ assert.match(scene,/local scale = if isAnimal or distantBackdrop then m:GetScale\(\) \* ratio else ratio/);
  assert.match(scene,/if math\.abs\(actualAxis - desiredSize\) > desiredSize \* 0\.2 then/);
  assert.match(field,/local PortBuildings = require\(script\.Parent:WaitForChild\("PortBuildings"\)\)/);
  assert.match(field,/local sizes = PortBuildings\.AnimalVisual/);
