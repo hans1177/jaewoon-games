@@ -326841,11 +326841,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_7235766e8dc6bd3dacd52b54",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14689",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "164d9027306c2c31719b851259817f1ef8afb2aa",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14689,
+        "baseBranch": "main",
+        "headBranch": "docs/mare-ai-cardart-rule",
+        "baseSha": "164d9027306c2c31719b851259817f1ef8afb2aa",
+        "headSha": "038d3b8e3e19601df5caa2b28db9be422269e2a3",
+        "mergeCommitSha": "3e54f1a6eb3215c6251b6fccc1670fab5359ffe4",
+        "mergedAt": "2026-11-23T12:54:52Z",
+        "authorLogin": "hans1177",
+        "titleHash": "a065b59645b4c2c34fcc3d73a28cceb81f5fc8c6946cc68a00309558d20675ae",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "docs/mare-ai-cardart-rule",
+        "candidateSha": "038d3b8e3e19601df5caa2b28db9be422269e2a3"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 185,
+        "deletedLineCount": 37,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "qa/mare-port-identity.test.mjs",
+          "roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/docs/RULES.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "qa/mare-port-identity.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14689",
+        "merge-commit:3e54f1a6eb3215c6251b6fccc1670fab5359ffe4",
+        "base-main:164d9027306c2c31719b851259817f1ef8afb2aa"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2617
+    "total": 2618
   }
 }
