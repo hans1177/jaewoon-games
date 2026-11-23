@@ -41,13 +41,14 @@ State.library = setmetatable({}, { __index = function(_, k)
 				return model(State.proxy, kind, name)
 			end }
 			-- [이벤트 목업] Roblox Folder.ChildAdded의 연결 계약을 재현하고 실제 항구 연결 횟수를 검사한다.
-			if kind == "People" then
-				category.ChildAdded = { Connect = function(_, callback)
-					if type(callback) ~= "function" then error("People.ChildAdded requires a callback") end
+			-- 모든 에셋 폴더(People·Cargo·Relics…)는 Roblox Folder처럼 ChildAdded를 가진다.
+			category.ChildAdded = { Connect = function(_, callback)
+				if type(callback) ~= "function" then error(kind .. ".ChildAdded requires a callback") end
+				if kind == "People" then
 					State.peopleChildAddedConnections += 1
-					return { Disconnect = function() end }
-				end }
-			end
+				end
+				return { Disconnect = function() end }
+			end }
 			return category
 		end
 	end
