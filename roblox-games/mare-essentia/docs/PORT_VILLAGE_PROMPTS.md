@@ -248,3 +248,12 @@ optional wet variant with puddles, optional dusty variant, optional light snow v
 4. 가로등·간판·창고 (전 항구 공통 사용 가능)
 
 **넣는 곳**: `assets/inbox/Town/<asset_id>.fbx|glb` → 승인 → `AssetIds["Town/<asset_id>"]` 등록 → 마을이 자동 사용(없으면 기존 에셋으로 대체).
+
+---
+
+## 8. 작업자(ChatGPT 등) 공통 지시
+1. 먼저 `docs/RULES.md`(에셋·라이선스·코드 한도)를 읽는다.
+2. `Game.client.luau` 맨 바깥에 `local` 추가 금지 → `do` 블록·`H` 테이블. 넘치면 화면이 안 뜬다. 자동 조절 `tools/luau_local_budget.py fix`.
+3. 지상전·마을 나무·덤불: 옅은 청록 단색 금지, 잎·줄기·그늘 색 구분 + 지역 기후 색.
+4. 저장 데이터·경제 수치·보행 충돌벽은 바꾸지 않는다.
+5. 끝나면 `tests/run.sh` 통과 + Studio `mare-town.json` 항공·광장 사진 확인.

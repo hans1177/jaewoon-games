@@ -1430,9 +1430,11 @@ main.Parent = gui
 -- 시설 페이지는 읽을 수 있는 본문 면을 바로 노출한다.
 mainInner.BackgroundColor3 = COLORS.coverRaised
 mainInner.BackgroundTransparency = 0.08
-local sizeLimit = Instance.new("UISizeConstraint")
-sizeLimit.MaxSize = Vector2.new(4000, 3000)
-sizeLimit.Parent = main
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local sizeLimit = Instance.new("UISizeConstraint")
+	sizeLimit.MaxSize = Vector2.new(4000, 3000)
+	sizeLimit.Parent = main
+end
 
 -- 항해 기록의 표제지: 시설 이름, 현재 항구와 선박 정보를 분리한다.
 H.pageMasthead = Instance.new("Frame")
@@ -1485,9 +1487,11 @@ headerLabel.TextTruncate = Enum.TextTruncate.AtEnd
 headerLabel.TextSize = 23
 headerLabel.Font = Enum.Font.Antique
 headerLabel.TextColor3 = COLORS.ink
-local mastheadSize = Instance.new("UITextSizeConstraint")
-mastheadSize.MaxTextSize = 23
-mastheadSize.Parent = headerLabel
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local mastheadSize = Instance.new("UITextSizeConstraint")
+	mastheadSize.MaxTextSize = 23
+	mastheadSize.Parent = headerLabel
+end
 headerLabel.Text = "불러오는 중..."
 headerLabel.Parent = mainInner
 
@@ -1548,11 +1552,13 @@ captainPlaceholder.TextColor3 = Color3.fromRGB(234, 246, 255)
 captainPlaceholder.Visible = false
 captainPlaceholder.Parent = mainInner
 corner(captainPlaceholder, 8)
-local pendingStroke = Instance.new("UIStroke")
-pendingStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-pendingStroke.Color = Color3.fromRGB(214, 170, 82)
-pendingStroke.Thickness = 2
-pendingStroke.Parent = captainPlaceholder
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local pendingStroke = Instance.new("UIStroke")
+	pendingStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	pendingStroke.Color = Color3.fromRGB(214, 170, 82)
+	pendingStroke.Thickness = 2
+	pendingStroke.Parent = captainPlaceholder
+end
 
 local portraitKey = nil
 local PORTRAIT_ROLE = {
@@ -1948,12 +1954,14 @@ H.tabStrip.CanvasSize = UDim2.new()
 H.tabStrip.ClipsDescendants = true
 H.tabStrip.Parent = tabBar
 -- [모바일 한 줄 고정] 그리드는 좁은 부모 폭에서 자동 줄바꿈하므로 기존 탭 정렬을 가로 목록으로 바꾼다.
-local tabLayout = Instance.new("UIListLayout")
-tabLayout.FillDirection = Enum.FillDirection.Horizontal
-tabLayout.Wraps = false
-tabLayout.Padding = UDim.new(0, 6)
-tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-tabLayout.Parent = H.tabStrip
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local tabLayout = Instance.new("UIListLayout")
+	tabLayout.FillDirection = Enum.FillDirection.Horizontal
+	tabLayout.Wraps = false
+	tabLayout.Padding = UDim.new(0, 6)
+	tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	tabLayout.Parent = H.tabStrip
+end
 
 local content = Instance.new("ScrollingFrame")
 content.BackgroundTransparency = 1
@@ -1965,10 +1973,12 @@ content.AutomaticCanvasSize = Enum.AutomaticSize.Y
 content.ScrollBarThickness = 4
 content.Parent = mainInner
 H.richParent = content
-local contentLayout = Instance.new("UIListLayout")
-contentLayout.Padding = UDim.new(0, 5)
-contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-contentLayout.Parent = content
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local contentLayout = Instance.new("UIListLayout")
+	contentLayout.Padding = UDim.new(0, 5)
+	contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	contentLayout.Parent = content
+end
 
 -- [오른쪽 아래 고정 실행] 스크롤 내용과 분리해 조작 위치를 모든 시설에서 일정하게 유지한다.
 -- 기존 수락·출항·연구·전투의 서버 확인과 저장 흐름은 그대로 호출한다.
@@ -2479,10 +2489,12 @@ hullBack.Size = UDim2.fromOffset(150, 14)
 hullBack.BorderSizePixel = 0
 hullBack.Parent = card
 corner(hullBack, 4)
-local hullStroke = Instance.new("UIStroke")
-hullStroke.Color = Color3.fromRGB(214, 170, 82)
-hullStroke.Thickness = 1.5
-hullStroke.Parent = hullBack
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local hullStroke = Instance.new("UIStroke")
+	hullStroke.Color = Color3.fromRGB(214, 170, 82)
+	hullStroke.Thickness = 1.5
+	hullStroke.Parent = hullBack
+end
 hullFill = Instance.new("Frame")
 hullFill.BackgroundColor3 = Color3.fromRGB(214, 40, 36)
 hullFill.Size = UDim2.fromScale(1, 1)
@@ -2490,31 +2502,37 @@ hullFill.BorderSizePixel = 0
 hullFill.Parent = hullBack
 corner(hullFill, 4)
 -- 질감: 위는 밝고 아래는 짙은 붉은 그라데이션 + 윗면 하이라이트 + 세로 줄무늬
-local hullGrad = Instance.new("UIGradient")
-hullGrad.Color = ColorSequence.new(Color3.fromRGB(255, 120, 96), Color3.fromRGB(150, 16, 20))
-hullGrad.Rotation = 90
-hullGrad.Parent = hullFill
-local hullShine = Instance.new("Frame")
-hullShine.BackgroundColor3 = Color3.new(1, 1, 1)
-hullShine.BackgroundTransparency = 0.72
-hullShine.Size = UDim2.new(1, -4, 0.32, 0)
-hullShine.Position = UDim2.fromOffset(2, 1)
-hullShine.BorderSizePixel = 0
-hullShine.Parent = hullFill
-corner(hullShine, 3)
-local hullTicks = Instance.new("Frame")
-hullTicks.BackgroundTransparency = 1
-hullTicks.Size = UDim2.fromScale(1, 1)
-hullTicks.ZIndex = 3
-hullTicks.Parent = hullBack
-for t = 1, 9 do
-	local tick = Instance.new("Frame")
-	tick.BackgroundColor3 = Color3.fromRGB(40, 8, 8)
-	tick.BackgroundTransparency = 0.6
-	tick.BorderSizePixel = 0
-	tick.Position = UDim2.new(t / 10, 0, 0, 0)
-	tick.Size = UDim2.new(0, 1, 1, 0)
-	tick.Parent = hullTicks
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local hullGrad = Instance.new("UIGradient")
+	hullGrad.Color = ColorSequence.new(Color3.fromRGB(255, 120, 96), Color3.fromRGB(150, 16, 20))
+	hullGrad.Rotation = 90
+	hullGrad.Parent = hullFill
+end
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local hullShine = Instance.new("Frame")
+	hullShine.BackgroundColor3 = Color3.new(1, 1, 1)
+	hullShine.BackgroundTransparency = 0.72
+	hullShine.Size = UDim2.new(1, -4, 0.32, 0)
+	hullShine.Position = UDim2.fromOffset(2, 1)
+	hullShine.BorderSizePixel = 0
+	hullShine.Parent = hullFill
+	corner(hullShine, 3)
+end
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local hullTicks = Instance.new("Frame")
+	hullTicks.BackgroundTransparency = 1
+	hullTicks.Size = UDim2.fromScale(1, 1)
+	hullTicks.ZIndex = 3
+	hullTicks.Parent = hullBack
+	for t = 1, 9 do
+		local tick = Instance.new("Frame")
+		tick.BackgroundColor3 = Color3.fromRGB(40, 8, 8)
+		tick.BackgroundTransparency = 0.6
+		tick.BorderSizePixel = 0
+		tick.Position = UDim2.new(t / 10, 0, 0, 0)
+		tick.Size = UDim2.new(0, 1, 1, 0)
+		tick.Parent = hullTicks
+end
 end
 hullText = Instance.new("TextLabel")
 hullText.BackgroundTransparency = 1
@@ -2584,16 +2602,18 @@ end
 
 -- [코인 카드] 카드 생성 직후 임시 변수 해제.
 do
-local coinCard = Instance.new("Frame")
-coinCard.BackgroundColor3 = NAVY
-coinCard.BackgroundTransparency = 0.08
-coinCard.AnchorPoint = Vector2.new(1, 0)
-coinCard.Position = UDim2.new(1, -8, 0, 8)
-coinCard.Size = UDim2.fromOffset(120, 30)
-coinCard.Parent = hud
-coinCard.Visible = false -- 코인은 왼쪽 카드에 표시
-corner(coinCard, 10)
-hudStroke(coinCard, 2)
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local coinCard = Instance.new("Frame")
+	coinCard.BackgroundColor3 = NAVY
+	coinCard.BackgroundTransparency = 0.08
+	coinCard.AnchorPoint = Vector2.new(1, 0)
+	coinCard.Position = UDim2.new(1, -8, 0, 8)
+	coinCard.Size = UDim2.fromOffset(120, 30)
+	coinCard.Parent = hud
+	coinCard.Visible = false -- 코인은 왼쪽 카드에 표시
+	corner(coinCard, 10)
+	hudStroke(coinCard, 2)
+end
 end
 
 -- [항해 도구] 선 조각 임시 아이콘 대신 기존 등록된 원화와 황동 테두리를 쓴다.
@@ -2819,9 +2839,11 @@ dockGrid.VerticalAlignment = Enum.VerticalAlignment.Center
 dockGrid.CellPadding = UDim2.fromOffset(6, 6)
 dockGrid.CellSize = UDim2.fromOffset(58, 76)
 dockGrid.Parent = dock
-local dockLimit = Instance.new("UISizeConstraint")
-dockLimit.MaxSize = Vector2.new(620, 200)
-dockLimit.Parent = dock
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local dockLimit = Instance.new("UISizeConstraint")
+	dockLimit.MaxSize = Vector2.new(620, 200)
+	dockLimit.Parent = dock
+end
 
 -- [시설 목차] 외교 포함 기존 8곳. 별도의 아이콘 아틀라스나 메뉴 구조를 만들지 않는다.
 H.DOCK = {

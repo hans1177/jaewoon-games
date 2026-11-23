@@ -126,6 +126,12 @@ PY
 echo "== 무기 연타·아이콘 스킬·저장 회귀 검사 =="
 (cd "$ROOT/../.." && node --test qa/mare-essentia-datastore-name.test.mjs)
 
+echo "== 최상위 local 한도(레지스터 200) =="
+# 클라이언트 진입 스크립트는 최상위 local 이 200을 넘으면 컴파일 자체가 실패한다(게임 화면이 안 뜸).
+# 여유가 3 미만이면 실패: python3 tools/luau_local_budget.py fix <파일> 로 자동 조절하거나 새 변수는 do 블록/H 테이블에.
+if command -v "$COMPILE" >/dev/null 2>&1 || [ -x "$COMPILE" ]; then
+  LUAU_COMPILE="$(command -v "$COMPILE" || echo "$COMPILE")" python3 "$ROOT/tools/luau_local_budget.py" check "$ROOT/src/StarterPlayer/Game.client.luau" --min 3
+fi
 echo "== 타입 검사 =="
 "$ANALYZE" "$TMP"/Shared/*.luau "$TMP"/Services/*.luau "$TMP/logic.test.luau" "$TMP/knowledge_battle.test.luau" "$TMP/action_combat.test.luau" "$TMP/economy.test.luau" "$TMP/jobskills.test.luau" "$TMP/weapons.test.luau"
 echo "OK"

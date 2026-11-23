@@ -11,6 +11,11 @@
 - 원본을 `assets/inbox/<종류>/`에 두고 같은 이름의 `.license.json`에 원저자/원본 URL/CC0를 기록한다. SHA-256·금지 해시·중복을 점검한 후 기존 `tools/devloop/register_asset.py` → `owner-mare-essentia-assets.yml` → `AssetIds.luau` 경로만 사용한다.
 - Roblox Universe 권한·실제 메시·재질·모바일 화면 검증 전에는 `productionVerified`로 판단하거나 왕궁 외형을 교체하지 않는다. 로컬 다운로드 오류·원본 검증 실패는 **미적용**으로 표기한다. 에셋 업로드 실패가 자동 배포 우회 근거가 되지 않는다.
 
+## 코드 한도 (자동 검사)
+- `src/StarterPlayer/Game.client.luau` 는 **최상위 local 이 Luau 레지스터 200개 한도**에 걸려 있다. 넘으면 컴파일이 실패해 게임 화면이 아예 안 뜬다(2026-11-23 실제 발생, #14561).
+- 새 변수는 **맨 바깥에 `local` 로 만들지 말고** `do ... end` 블록 안이나 `H` 테이블(`H.이름 = ...`)에 둔다.
+- `tests/run.sh` 가 여유를 측정해 3 미만이면 실패한다. 자동 조절: `python3 tools/luau_local_budget.py fix src/StarterPlayer/Game.client.luau --target 24` (그 구간 밖에서 안 쓰는 local 을 do 블록으로 감싸고 매번 컴파일 확인).
+
 ## 통합 3D 재질 제작 표준 (복식·건축·선박·소품)
 
 > 적용 범위: 주민·동료·전투 NPC, 가축, 복식·장신구·무기, 주거·시장·농장·종교·공방·행정·항구 건축물, 지형·도로, 선박·실내 소품. **새 자산과 기존 자산의 재질 개선 작업에 적용**한다. 이 문서는 제작 기준이며, 작성만으로 실제 텍스처 다운로드·업로드·배포·모바일 검증이 끝난 것은 아니다.
