@@ -1,0 +1,693 @@
+{
+ "sourceRevision": "a217488a934964a41cc98c39f107bcbabeb0ebcb",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "PORT_CAPTURE_READY:london parts=6555\ntext"
+  },
+  {
+   "step": 4,
+   "capture": "london_L3_top",
+   "files": 1
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "london_L3_street",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "PORT_CAPTURE_READY:amsterdam parts=6696\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "amsterdam_L3_top",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "amsterdam_L3_street",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "PORT_CAPTURE_READY:rouen parts=6327\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "rouen_L3_top",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "rouen_L3_street",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "PORT_CAPTURE_READY:lisbon parts=6445\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "lisbon_L3_top",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "lisbon_L3_street",
+   "files": 1
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "PORT_CAPTURE_READY:istanbul parts=3908\ntext"
+  },
+  {
+   "step": 28,
+   "capture": "istanbul_L3_top",
+   "files": 1
+  },
+  {
+   "step": 29,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 31,
+   "capture": "istanbul_L3_street",
+   "files": 1
+  },
+  {
+   "step": 32,
+   "ctx": "Client",
+   "out": "PORT_CAPTURE_READY:zanzibar parts=3861\ntext"
+  },
+  {
+   "step": 34,
+   "capture": "zanzibar_L3_top",
+   "files": 1
+  },
+  {
+   "step": 35,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 37,
+   "capture": "zanzibar_L3_street",
+   "files": 1
+  },
+  {
+   "step": 38,
+   "ctx": "Client",
+   "out": "PORT_CAPTURE_READY:calicut parts=3974\ntext"
+  },
+  {
+   "step": 40,
+   "capture": "calicut_L3_top",
+   "files": 1
+  },
+  {
+   "step": 41,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 43,
+   "capture": "calicut_L3_street",
+   "files": 1
+  },
+  {
+   "step": 44,
+   "ctx": "Client",
+   "out": "PORT_CAPTURE_READY:nagasaki parts=3812\ntext"
+  },
+  {
+   "step": 46,
+   "capture": "nagasaki_L3_top",
+   "files": 1
+  },
+  {
+   "step": 47,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 49,
+   "capture": "nagasaki_L3_street",
+   "files": 1
+  },
+  {
+   "step": 50,
+   "ctx": "Client",
+   "out": "PORT_CAPTURE_READY:veracruz parts=3752\ntext"
+  },
+  {
+   "step": 52,
+   "capture": "veracruz_L3_top",
+   "files": 1
+  },
+  {
+   "step": 53,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 55,
+   "capture": "veracruz_L3_street",
+   "files": 1
+  },
+  {
+   "step": 56,
+   "ctx": "Client",
+   "out": "PORT_CAPTURE_READY:busan parts=3999\ntext"
+  },
+  {
+   "step": 58,
+   "capture": "busan_L3_top",
+   "files": 1
+  },
+  {
+   "step": 59,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 61,
+   "capture": "busan_L3_street",
+   "files": 1
+  },
+  {
+   "step": 62,
+   "ctx": "Client",
+   "out": "PORT_CAPTURE_READY:canton parts=3830\ntext"
+  },
+  {
+   "step": 64,
+   "capture": "canton_L3_top",
+   "files": 1
+  },
+  {
+   "step": 65,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 67,
+   "capture": "canton_L3_street",
+   "files": 1
+  },
+  {
+   "step": 68,
+   "ctx": "Client",
+   "out": "PORT_CAPTURE_READY:sydney parts=3978\ntext"
+  },
+  {
+   "step": 70,
+   "capture": "sydney_L3_top",
+   "files": 1
+  },
+  {
+   "step": 71,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 73,
+   "capture": "sydney_L3_street",
+   "files": 1
+  },
+  {
+   "step": 74,
+   "ctx": "Client",
+   "out": "PORT_CAPTURE_READY:cartagena_indias parts=3703\ntext"
+  },
+  {
+   "step": 76,
+   "capture": "cartagena_indias_L3_top",
+   "files": 1
+  },
+  {
+   "step": 77,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 79,
+   "capture": "cartagena_indias_L3_street",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35011
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 179
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 6407
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 9012
+  },
+  {
+   "step": 4,
+   "type": "capture",
+   "elapsedMs": 1199
+  },
+  {
+   "step": 5,
+   "type": "luau",
+   "elapsedMs": 496
+  },
+  {
+   "step": 6,
+   "type": "wait",
+   "elapsedMs": 2513
+  },
+  {
+   "step": 7,
+   "type": "capture",
+   "elapsedMs": 1508
+  },
+  {
+   "step": 8,
+   "type": "luau",
+   "elapsedMs": 11060
+  },
+  {
+   "step": 9,
+   "type": "wait",
+   "elapsedMs": 9014
+  },
+  {
+   "step": 10,
+   "type": "capture",
+   "elapsedMs": 886
+  },
+  {
+   "step": 11,
+   "type": "luau",
+   "elapsedMs": 176
+  },
+  {
+   "step": 12,
+   "type": "wait",
+   "elapsedMs": 2515
+  },
+  {
+   "step": 13,
+   "type": "capture",
+   "elapsedMs": 753
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 5389
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 9004
+  },
+  {
+   "step": 16,
+   "type": "capture",
+   "elapsedMs": 818
+  },
+  {
+   "step": 17,
+   "type": "luau",
+   "elapsedMs": 142
+  },
+  {
+   "step": 18,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 19,
+   "type": "capture",
+   "elapsedMs": 673
+  },
+  {
+   "step": 20,
+   "type": "luau",
+   "elapsedMs": 5077
+  },
+  {
+   "step": 21,
+   "type": "wait",
+   "elapsedMs": 9002
+  },
+  {
+   "step": 22,
+   "type": "capture",
+   "elapsedMs": 791
+  },
+  {
+   "step": 23,
+   "type": "luau",
+   "elapsedMs": 180
+  },
+  {
+   "step": 24,
+   "type": "wait",
+   "elapsedMs": 2510
+  },
+  {
+   "step": 25,
+   "type": "capture",
+   "elapsedMs": 778
+  },
+  {
+   "step": 26,
+   "type": "luau",
+   "elapsedMs": 5048
+  },
+  {
+   "step": 27,
+   "type": "wait",
+   "elapsedMs": 9010
+  },
+  {
+   "step": 28,
+   "type": "capture",
+   "elapsedMs": 1307
+  },
+  {
+   "step": 29,
+   "type": "luau",
+   "elapsedMs": 229
+  },
+  {
+   "step": 30,
+   "type": "wait",
+   "elapsedMs": 2508
+  },
+  {
+   "step": 31,
+   "type": "capture",
+   "elapsedMs": 1151
+  },
+  {
+   "step": 32,
+   "type": "luau",
+   "elapsedMs": 5613
+  },
+  {
+   "step": 33,
+   "type": "wait",
+   "elapsedMs": 9005
+  },
+  {
+   "step": 34,
+   "type": "capture",
+   "elapsedMs": 911
+  },
+  {
+   "step": 35,
+   "type": "luau",
+   "elapsedMs": 196
+  },
+  {
+   "step": 36,
+   "type": "wait",
+   "elapsedMs": 2502
+  },
+  {
+   "step": 37,
+   "type": "capture",
+   "elapsedMs": 855
+  },
+  {
+   "step": 38,
+   "type": "luau",
+   "elapsedMs": 4836
+  },
+  {
+   "step": 39,
+   "type": "wait",
+   "elapsedMs": 9004
+  },
+  {
+   "step": 40,
+   "type": "capture",
+   "elapsedMs": 773
+  },
+  {
+   "step": 41,
+   "type": "luau",
+   "elapsedMs": 180
+  },
+  {
+   "step": 42,
+   "type": "wait",
+   "elapsedMs": 2504
+  },
+  {
+   "step": 43,
+   "type": "capture",
+   "elapsedMs": 774
+  },
+  {
+   "step": 44,
+   "type": "luau",
+   "elapsedMs": 3990
+  },
+  {
+   "step": 45,
+   "type": "wait",
+   "elapsedMs": 9009
+  },
+  {
+   "step": 46,
+   "type": "capture",
+   "elapsedMs": 858
+  },
+  {
+   "step": 47,
+   "type": "luau",
+   "elapsedMs": 172
+  },
+  {
+   "step": 48,
+   "type": "wait",
+   "elapsedMs": 2506
+  },
+  {
+   "step": 49,
+   "type": "capture",
+   "elapsedMs": 724
+  },
+  {
+   "step": 50,
+   "type": "luau",
+   "elapsedMs": 4614
+  },
+  {
+   "step": 51,
+   "type": "wait",
+   "elapsedMs": 9004
+  },
+  {
+   "step": 52,
+   "type": "capture",
+   "elapsedMs": 966
+  },
+  {
+   "step": 53,
+   "type": "luau",
+   "elapsedMs": 223
+  },
+  {
+   "step": 54,
+   "type": "wait",
+   "elapsedMs": 2516
+  },
+  {
+   "step": 55,
+   "type": "capture",
+   "elapsedMs": 852
+  },
+  {
+   "step": 56,
+   "type": "luau",
+   "elapsedMs": 5549
+  },
+  {
+   "step": 57,
+   "type": "wait",
+   "elapsedMs": 9012
+  },
+  {
+   "step": 58,
+   "type": "capture",
+   "elapsedMs": 880
+  },
+  {
+   "step": 59,
+   "type": "luau",
+   "elapsedMs": 181
+  },
+  {
+   "step": 60,
+   "type": "wait",
+   "elapsedMs": 2508
+  },
+  {
+   "step": 61,
+   "type": "capture",
+   "elapsedMs": 949
+  },
+  {
+   "step": 62,
+   "type": "luau",
+   "elapsedMs": 4888
+  },
+  {
+   "step": 63,
+   "type": "wait",
+   "elapsedMs": 9006
+  },
+  {
+   "step": 64,
+   "type": "capture",
+   "elapsedMs": 801
+  },
+  {
+   "step": 65,
+   "type": "luau",
+   "elapsedMs": 179
+  },
+  {
+   "step": 66,
+   "type": "wait",
+   "elapsedMs": 2505
+  },
+  {
+   "step": 67,
+   "type": "capture",
+   "elapsedMs": 732
+  },
+  {
+   "step": 68,
+   "type": "luau",
+   "elapsedMs": 4122
+  },
+  {
+   "step": 69,
+   "type": "wait",
+   "elapsedMs": 9014
+  },
+  {
+   "step": 70,
+   "type": "capture",
+   "elapsedMs": 833
+  },
+  {
+   "step": 71,
+   "type": "luau",
+   "elapsedMs": 179
+  },
+  {
+   "step": 72,
+   "type": "wait",
+   "elapsedMs": 2507
+  },
+  {
+   "step": 73,
+   "type": "capture",
+   "elapsedMs": 882
+  },
+  {
+   "step": 74,
+   "type": "luau",
+   "elapsedMs": 5597
+  },
+  {
+   "step": 75,
+   "type": "wait",
+   "elapsedMs": 9011
+  },
+  {
+   "step": 76,
+   "type": "capture",
+   "elapsedMs": 1108
+  },
+  {
+   "step": 77,
+   "type": "luau",
+   "elapsedMs": 211
+  },
+  {
+   "step": 78,
+   "type": "wait",
+   "elapsedMs": 2511
+  },
+  {
+   "step": 79,
+   "type": "capture",
+   "elapsedMs": 1049
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 12,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 80,
+  "completedSteps": 80,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 26,
+  "capturedFrames": 26,
+  "abortedEarly": false
+ }
+}
