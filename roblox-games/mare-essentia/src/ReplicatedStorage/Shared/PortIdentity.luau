@@ -131,6 +131,38 @@ function M.get(portId: string): Identity?
 	return P[portId]
 end
 
+-- [전체 항구 고유 외형] 15개 원본 지시서는 지정 색을 그대로 쓰고,
+-- 나머지 항구는 기존 문화권의 벽·지붕·도로 팔레트에서 항구 ID별 고정 변형을 만든다.
+-- 어떤 모델도 새로 생성·선택하지 않으며 항구 데이터·저장·경제는 변경하지 않는다.
+-- 같은 항구는 방문할 때마다 항상 같은 색이며 서로 다른 문화권의 재료색을 섞지 않는다.
+function M.appearance(portId: string?, wall: Color3, roof: Color3, street: Color3): (Color3, Color3, Color3)
+	if not portId then return wall, roof, street end
+	local identity = P[portId]
+	if identity then
+		local facade = identity.facade
+		local tiles = identity.roofTint
+		return Color3.fromRGB(facade[1], facade[2], facade[3]),
+			Color3.fromRGB(tiles[1], tiles[2], tiles[3]), street
+	end
+	local hash = 0
+	for i = 1, #portId do
+		hash = (hash * 31 + string.byte(portId, i)) % 2147483647
+	end
+	local hue, saturation, lightness = wall:ToHSV()
+	local roofHue, roofSaturation, roofLightness = roof:ToHSV()
+	local streetHue, streetSaturation, streetLightness = street:ToHSV()
+	local wallTone = Color3.fromHSV((hue + ((hash % 43) - 21) / 1800) % 1,
+		math.clamp(saturation * (0.84 + (math.floor(hash / 43) % 29) / 100), 0.04, 0.88),
+		math.clamp(lightness * (0.86 + (math.floor(hash / 1247) % 28) / 100), 0.2, 0.99))
+	local roofTone = Color3.fromHSV((roofHue + ((math.floor(hash / 107) % 37) - 18) / 2000) % 1,
+		math.clamp(roofSaturation * (0.88 + (math.floor(hash / 3969) % 25) / 100), 0.04, 0.88),
+		math.clamp(roofLightness * (0.85 + (math.floor(hash / 99225) % 29) / 100), 0.16, 0.96))
+	local roadTone = Color3.fromHSV((streetHue + ((math.floor(hash / 31) % 25) - 12) / 2200) % 1,
+		math.clamp(streetSaturation * (0.9 + (math.floor(hash / 775) % 21) / 100), 0.02, 0.65),
+		math.clamp(streetLightness * (0.92 + (hash % 17) / 100), 0.2, 0.98))
+	return wallTone, roofTone, roadTone
+end
+
 function M.tier(lvl: number): any
 	return Tier[math.clamp(math.floor(lvl), 1, 5)]
 end
