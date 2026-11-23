@@ -30,12 +30,12 @@ return function(D)
 	S.Diplomacy = require(script.Parent.Diplomacy)(D, S)
 	S.Pace = require(script.Parent.Pace)(D, S)
 	S.Build = require(script.Parent.Build)(D, S)
-	S.Cardbook = require(script.Parent.Cardbook)(D, S)
+	S.Cardbook = require(script.Parent.Cardbook)(D, S) :: any -- 타입 검사 복잡도 한계 회피
 	S.Chronicle = require(script.Parent.Chronicle)(D, S)
 	S.Village = require(script.Parent.Village)(D, S)
 	S.Quest = require(script.Parent.Quest)(D, S)
 	S.Intro = require(script.Parent.Intro)(D, S)
-	S.Advice = require(script.Parent.Advice)(D, S)
+	S.Advice = require(script.Parent.Advice)(D, S) :: any -- 타입 검사 복잡도 한계 회피
 	S.View = require(script.Parent.View)(D, S)
 
 	local handlers = {}

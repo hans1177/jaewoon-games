@@ -3178,11 +3178,14 @@ do
 			local bk = bookOf()
 			playCardOnly("연습전", "CardPractice", {}, { kind = "boarding", seed = 51, my = {}, foe = {}, book = { ids = bk.practiceIds, tier = {}, bonus = {}, practice = true } })
 		end
-		local function startDuel()
-			local r = call("CardDuelStart")
+		local function startDuel(questId: string?)
+			-- [이야기 카드 대결] questId 를 주면 서버가 정한 지도자 덱(duelFoe)과 겨룬다.
+			local r = call("CardDuelStart", if questId then { questId = questId } else nil)
 			local seed = view and view.cardbook and view.cardbook.duelSeed
+			local foe = view and view.cardbook and view.cardbook.duelFoe
 			if r and r.ok and seed then
-				playCardOnly("카드 대결", "CardDuelEnd", {}, { kind = "boarding", seed = seed, my = {}, foe = {} })
+				playCardOnly(if foe then "이야기 대결" else "카드 대결", "CardDuelEnd", {}, { kind = "boarding", seed = seed, my = {},
+					foe = if foe then { faction = foe.faction, leader = foe.leader } else {} })
 			end
 		end
 		H.devCards = { duel = startDuel, practice = startPractice }
@@ -9189,6 +9192,11 @@ function H.showCardDetail(card)
 			end
 			mkLabel(body, "해설 참고  위키백과 · " .. wiki.topic:gsub("_", " ") .. " (CC BY-SA 4.0)", 12, brown, false, 60)
 		end
+		-- [이야기 카드] 이 카드가 등장한 이야기를 끝내면 한 단락씩 열린다(가상의 이야기).
+		for li, lore in card.lore or {} do
+			mkLabel(body, "이야기 · " .. lore.title .. " (가상의 이야기)", 15, brown, true, 61 + li * 2)
+			mkLabel(body, lore.text, 15, ink, false, 62 + li * 2)
+		end
 		if article then
 			encHeading("특징과 원리", 5)
 			mkLabel(body, article.details, 15, ink, false, 6)
@@ -11641,10 +11649,25 @@ function RENDERERS.quest()
 			if q.kind == "deliver" then
 				table.insert(buttons, { text = "납품", color = COLORS.blue, onClick = function() call("TurnIn", { questId = q.id }) end })
 			end
+			-- [이야기 퀘스트 시스템] 선택 분기·지도자 대결·이야기 함대전 버튼
+			local ex = q.story2
+			if ex and ex.choices and not ex.picked then
+				for _, opt in ex.choices do
+					table.insert(buttons, { text = opt.label, color = COLORS.gold, onClick = function() call("StoryChoose", { questId = q.id, value = opt.value }) end })
+				end
+			elseif ex and ex.duel then
+				table.insert(buttons, { text = "대결", color = COLORS.red, onClick = function()
+					if H.openDeck then H.openDeck(true) end
+					task.defer(function() if H.devCards and H.devCards.duel then H.devCards.duel(q.id) end end)
+				end })
+			elseif ex and ex.warId then
+				table.insert(buttons, { text = "작전", color = COLORS.red, onClick = function() openTab("war") end })
+			end
 			local done, total = math.min(q.progress, q.amount), math.max(1, q.amount)
 			local filled = math.clamp(math.floor(done / total * 10 + 0.5), 0, 10)
 			local progress = string.rep("▰", filled) .. string.rep("▱", 10 - filled)
-			return mkRow(content, q.name, string.format("%s\n%s  %d/%d · 보상 %d코인", strandText(q), progress, done, q.amount, q.rewardCoins), buttons, if q.story then 136 else 92)
+			local said = if ex and ex.speaker then string.format("\n%s: \"%s\"", ex.speaker, ex.line) else ""
+			return mkRow(content, q.name, string.format("%s%s\n%s  %d/%d · 보상 %d코인", strandText(q), said, progress, done, q.amount, q.rewardCoins), buttons, if q.story or said ~= "" then 136 else 92)
 		end)
 	end
 	-- 자동으로 기록되는 발견·방문·연구 목표 (진행도만 보여 준다)

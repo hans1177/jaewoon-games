@@ -29,6 +29,18 @@ export type Quest = {
 	routeId: string?, -- 10대 이야기 항로의 안정된 식별자
 	routeName: string?, -- 지역별 연속 탐험 갈래
 	leadSource: string?, -- 소문·발견·사건·기록 등 단서가 전해진 형태
+	-- [이야기 퀘스트 시스템] 내용은 나중에 채운다. 모두 선택 필드.
+	warId: string?, -- kind "war_clear": 이 함대전 id 완수 횟수
+	leaderId: string?, -- kind "duel_leader": 이 지도자 덱을 카드 대결에서 이긴 횟수
+	duelFaction: string?, -- kind "duel_leader": 상대 진영(없으면 지도자 진영)
+	choiceKey: string?, -- kind "choice": 선택 결과 저장 키(없으면 퀘스트 id)
+	choices: { { value: string, label: string, result: string? } }?, -- kind "choice": 고를 수 있는 선택지
+	needChoice: string?, -- "key=value": 이 선택을 한 플레이어에게만 보인다(분기)
+	loreCardId: string?, -- 완료하면 이 카드 상세에 이야기 단락이 열린다
+	loreText: string?,
+	speaker: string?, -- 진행 중이면 이 인물이 동료 말풍선으로 line 을 말한다
+	speakerRole: string?,
+	line: string?,
 	regionId: string?, -- kind "war_clear": 이 해역(Regions id)의 함대전 완수 횟수 (없으면 전체)
 	cat: string?, -- kind "people": 이 분야(People.Cats)의 기록한 인물 수 (없으면 전체)
 }
@@ -843,9 +855,13 @@ local function Story(q: Quest, goodName: string?, portName: string?): (string, s
 	return hook, (if hand then hand[2] else fill(t[2], vars))
 end
 
+local Kit = require(script.Parent.StoryKit) :: any
+Kit.LORE = Kit.loreIndex(Quests)
+
 return {
 	Quests = Quests,
 	ById = ById,
 	Grade = Grade,
 	Story = Story,
+	Kit = Kit, -- [이야기 퀘스트 시스템] 선택 분기·지도자 대결·이야기 함대전·카드 이야기·인물 말풍선
 }
