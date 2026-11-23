@@ -169,6 +169,16 @@ return function(D, S)
 	end
 
 	-- 교역품 수급 표시: 시뮬 가격이 기준보다 크게 높으면 품귀, 낮으면 풍부 (표시 전용)
+	-- [건축·경제 연동] 이 항구가 위기인가: 흉작 충격(식량 효과 < 0.9) 또는 치안 붕괴(안정도 < 0.3)
+	function X.crisis(state: any, portId: any): any
+		local w = ensure(state)
+		local t = w and w.towns[portId]
+		if not t then return nil end
+		if t.fx and type(t.fx.food) == "number" and t.fx.food < 0.9 then return "흉년" end
+		if type(t.stability) == "number" and t.stability < 0.3 then return "치안 붕괴" end
+		return nil
+	end
+
 	function X.scarcity(state, portId, goodId)
 		local w = ensure(state)
 		local t = w and w.towns[portId]

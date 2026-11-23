@@ -13028,8 +13028,9 @@ syncScene = function()
 	-- [건축 시뮬] 플레이어가 지은 건물의 공사 기간에는 공사장(비계·일꾼)과 진행 공정을 보여 준다.
 	local proj = view and view.buildProjects and view.buildProjects[1]
 	if proj then
-		construction = { to = portLevel, seconds = 0, progress = proj.progress, label = proj.name }
+		construction = { to = portLevel, seconds = 0, progress = proj.progress, label = proj.name, paused = proj.paused ~= nil }
 	end
+	H.buildCelebrate = view and view.buildCelebrate or nil
 	if portLevel > shownLv then
 		local secs = math.clamp(40 * (portLevel - shownLv), 40, 120)
 		construction = { to = portLevel, seconds = secs }
@@ -13107,6 +13108,7 @@ syncScene = function()
 		portName = p.portName,
 		level = portLevel,
 		construction = construction,
+		celebrate = H.buildCelebrate, -- [완공 축하] 최근 완공 건물: 깃발·축하 인파
 		econ = econKind,
 		econIndex = eco.index,
 		sim = sim,

@@ -88,8 +88,10 @@ return function(D, S)
 				text = string.format("%s의 %s 완공! 비계를 걷고 주민들이 모여 축하하고 있어요.", portName, done.name), tab = "trade", label = "확인", dismissable = true })
 		end
 		for _, pr in D.PortBuildings.Projects.active(state, state.portId) do
-			table.insert(out, { id = "build_wip_" .. pr.chain, priority = 40, who = speaker(state, "build"),
-				text = string.format("%s 공사 중 (%d%%, %d일 남음). 목수와 석공이 일하고 있어요.", pr.name, math.floor(pr.progress * 100), pr.left), tab = "trade", label = "보기", dismissable = true })
+			table.insert(out, { id = "build_wip_" .. pr.chain, priority = if pr.paused then 70 else 40, who = speaker(state, "build"),
+				text = if pr.paused then string.format("%s 공사가 멈췄어요: %s. 일꾼들이 빈손으로 기다리고 있어요. 위기가 지나면 다시 시작돼요.", pr.name, pr.paused)
+					else string.format("%s 공사 중 (%d%%, %d일 남음). 목수와 석공이 일하고 있어요.", pr.name, math.floor(pr.progress * 100), pr.left),
+				tab = "trade", label = "보기", dismissable = true })
 			break
 		end
 		-- [이야기 인물 말풍선] 진행 중인 이야기 퀘스트의 인물이 동료 대신 한마디 한다.
