@@ -2255,6 +2255,11 @@ function H.renderFacilityGallery()
   H.galleryPrev.Visible = canPage
   H.galleryNext.Visible = canPage
   H.galleryCanPage = canPage
+  -- [가로 사건 원화] 사건 원화는 가로 그림이라 카드 틀에 넣으면 작아진다. 배경 전체를 원화로 쓰고 카드는 숨긴다.
+  -- 세로 7:10 지식 카드만 카드 틀에 자르지 않고 띄운다.
+  local portraitCard = realCard or ((tab == "codex" or tab == "encyclopedia") and H.galleryReadingCard ~= nil)
+  H.galleryCard.Visible = portraitCard
+  if H.galleryBackdrop then H.galleryBackdrop.ImageTransparency = if portraitCard then 0.35 else 0 end
   if H.galleryImage.Image ~= image then
     -- [전환 성능] 빠른 넘김에서 이전 페이드가 새 그림 밝기를 덮지 않도록 재사용 제어한다.
     if H.galleryArtTween then H.galleryArtTween:Cancel(); H.galleryArtTween = nil end
@@ -2493,8 +2498,8 @@ function H.layoutBook()
     H.galleryCaption.Position = UDim2.fromOffset(8, cardH + 42)
     H.galleryCaption.Size = UDim2.new(1, -16, 0, 26)
     local midY = 10 + math.floor(cardH / 2) - 20
-    H.galleryPrev.Position = UDim2.fromOffset(math.floor((posterW - cardW) / 2) - 2, midY)
-    H.galleryNext.Position = UDim2.fromOffset(math.floor((posterW + cardW) / 2) - 38, midY)
+    H.galleryPrev.Position = UDim2.fromOffset(4, midY)
+    H.galleryNext.Position = UDim2.new(1, -44, 0, midY)
     content.Position = UDim2.fromOffset(8, bodyTop)
     content.Size = UDim2.new(1, -posterW - 24, 1, -bodyTop - dockH)
     H.menuActionDock.Position = UDim2.new(0, 8, 1, -76)
