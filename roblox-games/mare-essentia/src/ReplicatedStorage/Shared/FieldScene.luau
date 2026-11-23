@@ -7682,9 +7682,9 @@ function FieldScene.start(opts)
 		local pulseRim = attackPulse and attackPulse:FindFirstChild("FieldAttackPulseRim")
 		if attackPulse and pulseRim then
 			pulseRim.Transparency = 0.06
-			attackPulse.Size = UDim2.fromScale(0.70, 0.70)
+			attackPulse.Size = UDim2.fromScale(0.62, 0.62)
 			TweenService:Create(attackPulse, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-				{ Size = UDim2.fromScale(0.97, 0.97) }):Play()
+				{ Size = UDim2.fromScale(0.86, 0.86) }):Play()
 			TweenService:Create(pulseRim, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
 				{ Transparency = 1 }):Play()
 		end
@@ -7846,12 +7846,21 @@ function FieldScene.start(opts)
 			swingBridge.rootFrom, swingBridge.rootLast = nil, nil
 			wpn, reserveWeapon = reserveWeapon, wpn
 			-- [교체 성공 피드백] 회전 광륜 1개 + 짧은 섬광 1개만 재사용한다. 모바일 신규 파티클 방출 0개.
-			swapHalo.Size = UDim2.fromScale(0.9, 0.9)
+			-- [해상·지상 통일] 링은 아이콘 안쪽(0.80→0.94)에서만 돌고, 흰 원 섬광 대신 아이콘이 톡 커졌다 돌아온다.
+			swapHalo.Size = UDim2.fromScale(0.80, 0.80)
 			swapStroke.Transparency = 0.05
 			swapBeam.Rotation = 0
-			swapFlash.BackgroundTransparency = if visualMobile then 0.82 else 0.73
+			swapFlash.BackgroundTransparency = 1
+			do
+				local pop = wbtn:FindFirstChild("FieldButtonIcon")
+				pop = pop and (pop:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", pop))
+				if pop then
+					pop.Scale = 1.14
+					TweenService:Create(pop, TweenInfo.new(0.32, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+				end
+			end
 			TweenService:Create(swapHalo, TweenInfo.new(0.44, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-				{ Size = UDim2.fromScale(1.20, 1.20) }):Play()
+				{ Size = UDim2.fromScale(0.94, 0.94) }):Play()
 			TweenService:Create(swapBeam, TweenInfo.new(0.44, Enum.EasingStyle.Linear),
 				{ Rotation = 360 }):Play()
 			TweenService:Create(swapStroke, TweenInfo.new(0.44, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
@@ -8220,7 +8229,8 @@ function FieldScene.start(opts)
 			local duration = if string.sub(key, 1, 4) == "card" then 8 else (AC.Moves[key] and AC.Moves[key].cooldown) or 4
 			if shade then
 				local fraction = math.clamp(left / math.max(duration, 0.1), 0, 1)
-				shade.Visible = left > 0
+				-- [해상·지상 통일] 원화 아이콘이 있으면 원 음영 대신 아이콘 자체만 어두워진다(음영이 아이콘보다 넓어 보이던 문제).
+				shade.Visible = left > 0 and sb.btn:FindFirstChild("FieldButtonIcon") == nil
 				shade.Size = UDim2.fromScale(1, 1)
 				shade.BackgroundTransparency = 0.24 + (1 - fraction) * 0.68
 				local timer = sb.btn:FindFirstChild("FieldCooldownTime")
@@ -8279,11 +8289,11 @@ function FieldScene.start(opts)
                     local lightRim = readyHalo:FindFirstChildOfClass("UIStroke")
                     local sweep = lightRim and lightRim:FindFirstChildOfClass("UIGradient")
                     if lightRim and sweep then
-                        readyHalo.Size = UDim2.fromScale(0.92, 0.92)
+                        readyHalo.Size = UDim2.fromScale(0.80, 0.80) -- [해상·지상 통일] 아이콘 안쪽에서만
                         lightRim.Transparency = 0.03
                         sweep.Rotation = 0
                         TweenService:Create(readyHalo, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                            { Size = UDim2.fromScale(1.14, 1.14) }):Play()
+                            { Size = UDim2.fromScale(0.94, 0.94) }):Play()
                         TweenService:Create(sweep, TweenInfo.new(0.47, Enum.EasingStyle.Linear),
                             { Rotation = 360 }):Play()
                         TweenService:Create(lightRim, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),

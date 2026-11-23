@@ -1932,17 +1932,26 @@ function NavalBattle.play(opts)
 		local beam = rim and rim:FindFirstChildOfClass("UIGradient")
 		local flash = speedBtn:FindFirstChild("NavalButtonFlash")
 		if halo and rim and beam then
-			halo.Size = UDim2.fromScale(0.9, 0.9)
+			-- [해상·지상 통일] 링은 아이콘 안쪽(0.80→0.94)에서만 돈다.
+			halo.Size = UDim2.fromScale(0.80, 0.80)
 			rim.Transparency = 0.05
 			beam.Rotation = 0
 			TweenService:Create(halo, TweenInfo.new(0.44, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-				{ Size = UDim2.fromScale(1.2, 1.2) }):Play()
+				{ Size = UDim2.fromScale(0.94, 0.94) }):Play()
 			TweenService:Create(beam, TweenInfo.new(0.44, Enum.EasingStyle.Linear), { Rotation = 360 }):Play()
 			TweenService:Create(rim, TweenInfo.new(0.44, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
 				{ Transparency = 1 }):Play()
 		end
+		do -- [해상·지상 통일] 흰 원 섬광 대신 아이콘이 톡 커졌다 돌아온다.
+			local art = speedBtn:FindFirstChild("NavalButtonArtwork")
+			local pop = art and (art:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", art))
+			if pop then
+				pop.Scale = 1.14
+				TweenService:Create(pop, TweenInfo.new(0.32, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+			end
+		end
 		if flash then
-			flash.BackgroundTransparency = if MOBILE_VFX then 0.82 else 0.73
+			flash.BackgroundTransparency = 1
 			TweenService:Create(flash, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
 				{ BackgroundTransparency = 1 }):Play()
 		end
@@ -6798,7 +6807,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local ratio = math.clamp(left / math.max(sk.cd, 0.1), 0, 1)
 			local shade = b:FindFirstChild("NavalCooldownShade")
 			if shade then
-				shade.Visible = not ready
+				-- [해상·지상 통일] 원화가 있으면 원 음영 대신 아이콘만 어두워진다.
+				shade.Visible = not ready and b:FindFirstChild("NavalButtonArtwork") == nil
 				shade.BackgroundTransparency = 0.22 + (1 - ratio) * 0.70
 			end
 			-- [한글 선명도] 초 숫자·그림자 제거. 아이콘은 어두운 상태에서 점점 원래 색으로 복귀한다.
@@ -6824,11 +6834,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local lightRim = halo and halo:FindFirstChildOfClass("UIStroke")
 				local sweep = lightRim and lightRim:FindFirstChildOfClass("UIGradient")
 				if halo and lightRim and sweep then
-					halo.Size = UDim2.fromScale(0.92, 0.92)
+					halo.Size = UDim2.fromScale(0.80, 0.80) -- [해상·지상 통일] 아이콘 안쪽에서만
 					lightRim.Transparency = 0.03
 					sweep.Rotation = 0
 					TweenService:Create(halo, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-						{ Size = UDim2.fromScale(1.14, 1.14) }):Play()
+						{ Size = UDim2.fromScale(0.94, 0.94) }):Play()
 					TweenService:Create(sweep, TweenInfo.new(0.47, Enum.EasingStyle.Linear),
 						{ Rotation = 360 }):Play()
 					TweenService:Create(lightRim, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),

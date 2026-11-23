@@ -631,19 +631,35 @@ H.facilityIconCells = {
 	battle = 4, codex = 5, encyclopedia = 5, status = 6, journal = 7,
 	deck = 8, gwent = 8, view = 9, gear = 10, help = 11, diplomacy = 5, close = 15, -- 외교: 예비 손그림 2번 시트의 봉인 서신(2행 2열)
 }
+-- [청동 아이콘 통일] 기존 승인 청동 예비 시트(768px, 4×4)에서 도형 대신 쓸 칸.
+-- {시트 번호, 칸}: 1 = ui_reserve_icons(닻·지도·두루마리…), 2 = ui_reserve_icons_2(선원·망원경·육분의…)
+H.reserveIconAtlas = { AssetIds["CardArt/ui_reserve_icons"], AssetIds["CardArt/ui_reserve_icons_2"] }
+H.reserveIconRowH = { 184, 189 } -- 시트 세로 739/758px ÷ 4
+H.reserveIconCells = {
+	diplomacy = { 2, 5 }, quest = { 1, 8 }, recruit = { 2, 0 }, crew = { 2, 0 }, explore = { 2, 4 },
+	harbor = { 1, 0 }, war = { 2, 8 }, scholar = { 2, 14 }, tech = { 2, 6 }, chart = { 1, 2 },
+}
+function H.hasIconArt(key)
+	local r = H.reserveIconCells[key]
+	if r and H.reserveIconAtlas[r[1]] ~= nil then return true end
+	return H.facilityIconAtlas ~= nil and H.facilityIconCells[key] ~= nil
+end
 local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, portraitOffset)
-	local diplomacyArt = kind == "FacilityArt" and asset == "diplomacy" and H.diplomacyIconAtlas ~= nil
-	local atlas = if diplomacyArt then H.diplomacyIconAtlas else H.facilityIconAtlas
-	local cell = atlas and H.facilityIconCells[asset]
+	local reserve = if kind == "FacilityArt" then H.reserveIconCells[asset] else nil
+	local reserveAtlas = reserve and H.reserveIconAtlas[reserve[1]]
+	local atlas = if reserveAtlas then reserveAtlas else H.facilityIconAtlas
+	local cell = if reserveAtlas then reserve[2] else (atlas and H.facilityIconCells[asset])
 	if kind == "FacilityArt" and cell ~= nil then
 		local icon = Instance.new("ImageLabel")
 		icon.Size = UDim2.fromOffset(px, px)
 		icon.BackgroundTransparency = 1
-		-- [아이콘 아틀라스] 외교는 768px 손그림 시트의 192px 칸, 나머지는 기존 512px 시트의 128px 칸.
-		local cellSize = if diplomacyArt then 192 else 128
+		icon.ScaleType = Enum.ScaleType.Fit
+		-- [아이콘 아틀라스] 예비 시트는 192px 칸, 기존 시설 시트는 512px 시트의 128px 칸.
+		local cellW = if reserveAtlas then 192 else 128
+		local cellH = if reserveAtlas then H.reserveIconRowH[reserve[1]] else 128
 		icon.Image = "rbxassetid://" .. tostring(atlas)
-		icon.ImageRectOffset = Vector2.new(cell % 4 * cellSize, math.floor(cell / 4) * cellSize)
-		icon.ImageRectSize = Vector2.new(cellSize, cellSize)
+		icon.ImageRectOffset = Vector2.new(cell % 4 * cellW, math.floor(cell / 4) * cellH)
+		icon.ImageRectSize = Vector2.new(cellW, cellH)
 		icon:SetAttribute("FacilityArtKey", asset)
 		icon.Parent = parent
 		return icon
@@ -2682,7 +2698,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	local facility = parent.Name == "Dock" and name:sub(1, 5) == "Menu_"
 	local artSize = if facility then 46 elseif dockItem then 43 else 31
 	local artTop = if dockItem then 3 else 4
-	if not specialGlyph and H.facilityIconCells[key] ~= nil and (H.facilityIconAtlas ~= nil or (key == "diplomacy" and H.diplomacyIconAtlas ~= nil)) then
+	if H.hasIconArt(key) then -- [청동 통일] 승인 청동 원화가 있으면 도형보다 우선
 		local icon = modelIcon(button, "FacilityArt", key, nil, artSize, label)
 		icon.Name = "MenuArt"
 		icon.AnchorPoint = Vector2.new(0.5, 0)
@@ -2799,13 +2815,12 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		TweenInfo.new(1.22 + (name:len() % 3) * 0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
 		{ Size = UDim2.fromOffset(63, 63), ImageTransparency = 0.80, Rotation = 24 })
 	local function syncIconMotion()
-		local alerting = button:GetAttribute("IconAlert") == true
-		iconGlow.Visible = alerting
+		local alerting = button:GetAttribute("IconAlert") == true or button:GetAttribute("GuideAlert") == true
+		iconGlow.Visible = false -- [효과 정리] 반짝이 광휘 제거. 아이콘 맥동만 남긴다.
 		local animate = alerting and not game:GetService("GuiService").ReducedMotionEnabled
 			and (not hudTopGui or hudTopGui.Enabled) and button.Visible
 		if animate then
 			if breathTween then breathTween:Play() end
-			glowTween:Play()
 		else
 			if breathTween then breathTween:Pause() end
 			glowTween:Pause()
@@ -2818,6 +2833,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	if hudTopGui then hudTopGui:GetPropertyChangedSignal("Enabled"):Connect(syncIconMotion) end
 	button:GetPropertyChangedSignal("Visible"):Connect(syncIconMotion)
 	button:GetAttributeChangedSignal("IconAlert"):Connect(syncIconMotion)
+	button:GetAttributeChangedSignal("GuideAlert"):Connect(syncIconMotion)
 	game:GetService("GuiService"):GetPropertyChangedSignal("ReducedMotionEnabled"):Connect(syncIconMotion)
 	syncIconMotion()
 	local art = button:FindFirstChild("MenuArt")
@@ -2976,12 +2992,17 @@ for i, d in H.DOCK do
 	local notice = Instance.new("ImageLabel")
 	notice.Name = "FacilityNotice"
 	notice.AnchorPoint = Vector2.new(0.5, 0.5)
-	notice.Position = UDim2.new(0.5, 0, 0, 23)
-	notice.Size = UDim2.fromOffset(26, 26)
-	notice.Image = "rbxasset://textures/particles/sparkles_main.dds"
+	-- [알림 배지] 반짝이 대신 기존 청동 예비 시트의 '느낌표 깃발' 원화를 아이콘 우상단에 작게 단다.
+	notice.Position = UDim2.new(0.5, 17, 0, 5)
+	notice.Size = UDim2.fromOffset(20, 20)
+	local flagSheet = H.reserveIconAtlas[2]
+	notice.Image = if flagSheet then "rbxassetid://" .. tostring(flagSheet) else ""
+	notice.ImageRectOffset = Vector2.new(3 * 192, 1 * 189)
+	notice.ImageRectSize = Vector2.new(192, 189)
+	notice.ScaleType = Enum.ScaleType.Fit
 	notice.BackgroundTransparency = 1
 	notice.BorderSizePixel = 0
-	notice.ImageColor3 = Color3.fromRGB(255, 204, 96)
+	notice.ImageColor3 = Color3.new(1, 1, 1)
 	notice.ZIndex = 7
 	notice.Visible = false
 	notice.Parent = b
@@ -3591,28 +3612,16 @@ function H.updateHud(p, ship)
 		local previous = notice:GetAttribute("SignalKind")
 		local changed = (alert or "") ~= (previous or "")
 		local motionChanged = notice:GetAttribute("ReducedMotionLast") ~= reducedMotion
-		local tint = if alert == "긴급" then Color3.fromRGB(255, 71, 64)
-			elseif alert == "납품" then Color3.fromRGB(72, 255, 155)
-			elseif alert == "저가" then Color3.fromRGB(255, 212, 75)
-			else Color3.fromRGB(255, 174, 89)
 		local button = H.dockButtons[id]
 		local halo = if button then button:FindFirstChild("SignalHalo") else nil
 		local bloom = H.dockBlooms[id]
-		if bloom then
-			bloom.Visible = alert ~= nil
-			bloom.BackgroundColor3 = tint
-			local edge = bloom:FindFirstChild("BloomEdge")
-			if edge then edge.Color = tint end
-		end
-		notice.ImageColor3 = tint
+		-- [효과 정리] 반짝이·색광·파편 제거. 알림은 청동 느낌표 배지 + 아이콘 맥동만.
+		if bloom then bloom.Visible = false end
+		if halo then halo.Visible = false end
 		notice.Visible = alert ~= nil
+		notice.ImageColor3 = if alert == "긴급" then Color3.fromRGB(255, 205, 190) else Color3.new(1, 1, 1)
 		if button then button:SetAttribute("IconAlert", alert ~= nil) end -- 알림 있을 때만 아이콘이 커졌다 작아진다
-		if halo then
-			halo.ImageColor3 = tint
-			halo.Visible = alert ~= nil
-		end
 		if changed or motionChanged then
-			if bloom then bloom.Size = UDim2.fromOffset(46, 46); bloom.BackgroundTransparency = 0.77 end
 			notice:SetAttribute("SignalKind", alert or "")
 			notice:SetAttribute("ReducedMotionLast", reducedMotion)
 			local running = H.dockSignalTweens[id]
@@ -3620,66 +3629,12 @@ function H.updateHud(p, ship)
 				for _, oldTween in running do oldTween:Cancel() end
 				H.dockSignalTweens[id] = nil
 			end
-			notice.Size = UDim2.fromOffset(26, 26)
-			notice.ImageTransparency = 0.02
-			notice.Rotation = 0
-			if halo then
-				halo.Size = UDim2.fromOffset(28, 28)
-				halo.ImageTransparency = if alert == "긴급" then 0.42 else 0.58
-			end
-			if alert and halo and bloom and not reducedMotion then
-				-- 긴급: 빠른 붉은 점멸, 저가: 느린 금빛 회전, 납품: 넓어지는 초록빛 맥동.
-				local speed = if alert == "긴급" then 0.33 elseif alert == "납품" then 0.7 else 1.05
-				local core = signalTweenService:Create(notice,
-					TweenInfo.new(speed, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-					{ ImageTransparency = if alert == "긴급" then 0.78 else 0.44,
-						Rotation = if alert == "저가" then 70 else 18,
-						Size = UDim2.fromOffset(29, 29) })
-				local glow = signalTweenService:Create(halo,
-					TweenInfo.new(speed * 1.25, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-					{ ImageTransparency = 0.95,
-						Size = UDim2.fromOffset(if alert == "납품" then 42 else 38,
-							if alert == "납품" then 42 else 38) })
-				local wide = signalTweenService:Create(bloom,
-					TweenInfo.new(speed * 1.25, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-					{ Size = UDim2.fromOffset(58, 58), BackgroundTransparency = 0.96 })
-				H.dockSignalTweens[id] = { core, glow, wide }
-				core:Play()
-				glow:Play()
-				wide:Play()
-			end
-		end
-		-- [알림 파편] 기존 버튼 내부 SignalSpark만 사용한다. 화면 전체 원형 파편은 만들지 않는다.
-		-- [발생 순간] 글씨·배지 없이 투명 별빛만 1회 분산. 반복 갱신으로 파티클이 쌓이지 않는다.
-		if changed and alert and button and hudTopGui.Enabled and not reducedMotion then
-			-- [좁은 화면] 가장 작은 46px 셀에도 들어가는 좌우 대칭 별빛 경로.
-			local offsets = {
-				Vector2.new(-14, -8), Vector2.new(-7, 7), Vector2.new(0, -12),
-				Vector2.new(8, 8), Vector2.new(14, -6),
-			}
-			local count = if alert == "긴급" then 5 else 4
-			for i = 1, count do
-				local spark = Instance.new("ImageLabel")
-				spark.Name = "SignalSpark"
-				spark.Image = "rbxasset://textures/particles/sparkles_main.dds"
-				spark.ImageColor3 = tint
-				spark.ImageTransparency = 0.03
-				spark.BackgroundTransparency = 1
-				spark.BorderSizePixel = 0
-				spark.Size = UDim2.fromOffset(if alert == "긴급" then 16 else 13,
-					if alert == "긴급" then 16 else 13)
-				spark.AnchorPoint = Vector2.new(0.5, 0.5)
-				spark.Position = UDim2.new(0.5, 0, 0, 23)
-				spark.ZIndex = 9
-				spark.Parent = button
-				local delta = offsets[i]
-				local tween = signalTweenService:Create(spark,
-					TweenInfo.new(0.42 + i * 0.04, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-					{ Position = UDim2.new(0.5, delta.X, 0, 23 + delta.Y),
-						Size = UDim2.fromOffset(2, 2), ImageTransparency = 1,
-						Rotation = if i % 2 == 0 then 70 else -70 })
-				tween.Completed:Connect(function() spark:Destroy() end)
-				tween:Play()
+			notice.Size = UDim2.fromOffset(20, 20)
+			if alert and changed and not reducedMotion then
+				-- 새 알림 순간 배지가 한 번 톡 튀어나온다(반복 없음).
+				notice.Size = UDim2.fromOffset(8, 8)
+				signalTweenService:Create(notice, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+					{ Size = UDim2.fromOffset(20, 20) }):Play()
 			end
 		end
 	end
@@ -3898,35 +3853,21 @@ local GUIDE_BTN = {
 }
 -- [시설 안내] 버튼 외곽 사각 테두리·30fps 흔들림 대신 원화 중심에만 금빛을 맥동시킨다.
 function H.setGuidePulse(tab)
+	-- [튜토리얼 안내] 반짝이 대신 해당 아이콘만 맥동(GuideAlert)시킨다.
 	for _, holder in { dock, hudTop } do
 		for _, n in GUIDE_BTN do
 			local b = holder:FindFirstChild(n)
-			local old = b and b:FindFirstChild("GuidePulse")
-			if old then old:Destroy() end
+			if b then
+				local old = b:FindFirstChild("GuidePulse")
+				if old then old:Destroy() end
+				b:SetAttribute("GuideAlert", false)
+			end
 		end
 	end
 	local name = tab and GUIDE_BTN[tab]
 	if not name then return end
 	local b = dock:FindFirstChild(name) or hudTop:FindFirstChild(name)
-	if not b then return end
-	local flare = Instance.new("ImageLabel")
-	flare.Name = "GuidePulse"
-	flare.Image = "rbxasset://textures/particles/sparkles_main.dds"
-	flare.ImageColor3 = Color3.fromRGB(255, 221, 117)
-	flare.ImageTransparency = 0.18
-	flare.BackgroundTransparency = 1
-	flare.BorderSizePixel = 0
-	flare.AnchorPoint = Vector2.new(0.5, 0.5)
-	flare.Position = UDim2.new(0.5, 0, 0, 23)
-	flare.Size = UDim2.fromOffset(52, 52)
-	flare.ZIndex = 5
-	flare.Active = false
-	flare.Parent = b
-	if not game:GetService("GuiService").ReducedMotionEnabled then
-		game:GetService("TweenService"):Create(flare,
-			TweenInfo.new(0.70, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-			{ Size = UDim2.fromOffset(64, 64), ImageTransparency = 0.83 }):Play()
-	end
+	if b then b:SetAttribute("GuideAlert", true) end
 end
 local function refreshBubble()
 	local adv = view and view.advice
@@ -12865,7 +12806,7 @@ function H.renderTabs()
 		local ti = H.TAB_ICON[id]
 		if ti then
 			-- [공통 규격] 도크는 40px, 시설별 탭은 26px. 아이콘과 인쇄 글자를 겹치지 않게 나눈다.
-			local atlas = H.facilityIconCells[id] ~= nil and (H.facilityIconAtlas ~= nil or (id == "diplomacy" and H.diplomacyIconAtlas ~= nil))
+			local atlas = H.hasIconArt(id)
 			local icon = modelIcon(b, if atlas then "FacilityArt" else ti[1], if atlas then id else ti[2], nil, 26, TAB_NAME[id])
 			icon.Name = "TabIcon"
 			-- [시설 탭 최초 배치] 화면 크기 갱신 전에 생성된 아이콘도 현재 모바일 규격을 따른다.
@@ -14561,7 +14502,7 @@ function render()
 			bookmark.Parent = banner
 			local tabIcon = H.TAB_ICON[currentTab]
 			if tabIcon then
-				local atlas = H.facilityIconAtlas and H.facilityIconCells[currentTab] ~= nil
+				local atlas = H.hasIconArt(currentTab)
 				local icon = modelIcon(banner, if atlas then "FacilityArt" else tabIcon[1], if atlas then currentTab else tabIcon[2], nil, 26, TAB_NAME[currentTab])
 				icon.Name = "MenuFocusIcon"
 				icon.Position = UDim2.fromOffset(14, 7)

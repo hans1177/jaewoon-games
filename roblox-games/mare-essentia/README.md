@@ -1,5 +1,7 @@
 # Mare Essentia: Explorer's Encyclopedia
 
+> **작업자 필독:** 무엇을 만지든 먼저 [`docs/READ_FIRST.md`](docs/READ_FIRST.md)와 거기 적힌 지시서를 읽고 따른다.
+
 서유럽·북유럽 항구에서 출발해 특산품을 교역하고, 증기 기술을 연구하고, 세계 백과를 완성하는 로블록스 RPG.
 
 - 시대: 1600~1700년대 + 증기 대체 역사

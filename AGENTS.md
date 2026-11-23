@@ -31,6 +31,8 @@
 
 ## 비주얼·마을·전투·배·주민 작업 필독 (mare-essentia)
 
+**모든 외부 AI·바이브코딩 도구 포함: 먼저 `roblox-games/mare-essentia/docs/READ_FIRST.md`(전체 지시서 목록·HUD 효과 규칙)를 읽는다.**
+
 **`mare-essentia`의 마을·건물·항구 배치, 해전·지상전 배경, 배, 주민(NPC) 외형·모션, 카드배틀, 아이콘·HUD, 원화를 만들거나 바꾸는 모든 GPT/Claude/코딩 에이전트는 작업 전에 아래를 반드시 읽는다.** 읽지 않았으면 읽었다고 주장하지 않는다. 중앙정책·위 전역 금지 규칙이 우선한다.
 
 1. `roblox-games/mare-essentia/docs/RULES.md` — 에셋 출처·원본 가공 허용·오너 제작 원화·코드 한도(Game.client 최상위 local 금지)
@@ -40,6 +42,7 @@
 5. `roblox-games/mare-essentia/docs/residents/README.md` + `jobs.md` + `<문화권>.md` — 주민 헤어·복장·악세·재질·모션
 6. `roblox-games/mare-essentia/docs/card_battle/README.md` + `screens.md`·`effects.md`·`card_text.md`·`factions.md` — 카드배틀 시스템·분위기·진행·메뉴·이펙트·카드 설명
 7. 카드 원화는 위 "카드배틀·지식카드 원화 작업 필독" 절을 따른다.
+8. HUD·아이콘·버튼 효과는 `roblox-games/mare-essentia/docs/READ_FIRST.md` 3절(청동 원화 시트만, 반짝이 금지, 맥동만, 해상·지상 동일)
 
 작업 후 `roblox-games/mare-essentia/tests/run.sh` 통과(최상위 local 여유 검사 포함)와 Studio 촬영 확인 전에는 완료로 보고하지 않는다.
 
