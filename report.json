@@ -1,85 +1,493 @@
 {
- "sourceRevision": "a6c2ff1a86c3af77d78cc7f92a6cccb9fef76100",
+ "sourceRevision": "7011cb7e9dabc2760bff82429cd3aa6779728314",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "SHIP_36_PREVIEW_PREPARED\ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
-   "step": 2,
+   "step": 3,
    "ctx": "Client",
-   "out": "SHIP_CONTINENT_RUNTIME_PASS:europe:5\ntext"
-  },
-  {
-   "step": 4,
-   "capture": "ships_europe",
-   "files": 1
+   "out": "killed 0\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "SHIP_CONTINENT_RUNTIME_PASS:east_asia:5\ntext"
+   "out": "dev\ntext"
   },
   {
    "step": 7,
-   "capture": "ships_east_asia",
-   "files": 1
-  },
-  {
-   "step": 8,
    "ctx": "Client",
-   "out": "SHIP_CONTINENT_RUNTIME_PASS:new_world:5\ntext"
+   "out": "dev\ntext"
   },
   {
-   "step": 10,
-   "capture": "ships_new_world",
-   "files": 1
+   "step": 9,
+   "ctx": "Client",
+   "out": "killed 1\ntext"
   },
   {
    "step": 11,
    "ctx": "Client",
-   "out": "SHIP_CONTINENT_RUNTIME_PASS:middle_east:5\ntext"
+   "out": "audit reset\ntext"
+  },
+  {
+   "step": 12,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=trade opened=true buttons=86 offscreen=0[] small<36=2 clippedText=0 vp=1048x380\ntext"
   },
   {
    "step": 13,
-   "capture": "ships_middle_east",
+   "capture": "m_trade",
    "files": 1
   },
   {
    "step": 14,
    "ctx": "Client",
-   "out": "SHIP_CONTINENT_RUNTIME_PASS:southeast_asia:5\ntext"
+   "out": "dev\ntext"
   },
   {
    "step": 16,
-   "capture": "ships_southeast_asia",
-   "files": 1
-  },
-  {
-   "step": 17,
    "ctx": "Client",
-   "out": "SHIP_CONTINENT_RUNTIME_PASS:africa:5\ntext"
+   "out": "dev\ntext"
   },
   {
-   "step": 19,
-   "capture": "ships_africa",
-   "files": 1
+   "step": 18,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
   },
   {
    "step": 20,
    "ctx": "Client",
-   "out": "SHIP_CONTINENT_RUNTIME_PASS:lost:6\ntext"
+   "out": "MENU_AUDIT tab=harbor opened=true buttons=26 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
   },
   {
-   "step": 22,
-   "capture": "ships_lost",
+   "step": 21,
+   "capture": "m_harbor",
    "files": 1
   },
   {
-   "step": 23,
+   "step": 22,
    "ctx": "Client",
-   "out": "SHIP_36_PREVIEW_CLEAN_EXIT_PASS\ntext"
+   "out": "dev\ntext"
+  },
+  {
+   "step": 24,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 28,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=route opened=true buttons=144 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 29,
+   "capture": "m_route",
+   "files": 1
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 32,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 34,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 36,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=map opened=true buttons=190 offscreen=0[] small<36=181 clippedText=13 vp=1048x380\ntext"
+  },
+  {
+   "step": 37,
+   "capture": "m_map",
+   "files": 1
+  },
+  {
+   "step": 38,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 40,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 42,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 44,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=yard opened=true buttons=39 offscreen=0[] small<36=2 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 45,
+   "capture": "m_yard",
+   "files": 1
+  },
+  {
+   "step": 46,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 48,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 50,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 52,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=board opened=true buttons=11 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 53,
+   "capture": "m_board",
+   "files": 1
+  },
+  {
+   "step": 54,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 56,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 58,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 60,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=quest opened=true buttons=19 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 61,
+   "capture": "m_quest",
+   "files": 1
+  },
+  {
+   "step": 62,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 64,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 66,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 68,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=recruit opened=true buttons=29 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 69,
+   "capture": "m_recruit",
+   "files": 1
+  },
+  {
+   "step": 70,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 72,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 74,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 76,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=explore opened=true buttons=13 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 77,
+   "capture": "m_explore",
+   "files": 1
+  },
+  {
+   "step": 78,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 80,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 82,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 84,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=battle opened=true buttons=38 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 85,
+   "capture": "m_battle",
+   "files": 1
+  },
+  {
+   "step": 86,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 88,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 90,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 92,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=war opened=true buttons=9 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 93,
+   "capture": "m_war",
+   "files": 1
+  },
+  {
+   "step": 94,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 96,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 98,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 100,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=gwent opened=true buttons=8 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 101,
+   "capture": "m_gwent",
+   "files": 1
+  },
+  {
+   "step": 102,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 104,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 106,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 108,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=scholar opened=true buttons=20 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 109,
+   "capture": "m_scholar",
+   "files": 1
+  },
+  {
+   "step": 110,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 112,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 114,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 116,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=codex opened=true buttons=127 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 117,
+   "capture": "m_codex",
+   "files": 1
+  },
+  {
+   "step": 118,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 120,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 122,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 124,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=tech opened=true buttons=12 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 125,
+   "capture": "m_tech",
+   "files": 1
+  },
+  {
+   "step": 126,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 128,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 130,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 132,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=status opened=true buttons=34 offscreen=0[] small<36=0 clippedText=0 vp=1048x380\ntext"
+  },
+  {
+   "step": 133,
+   "capture": "m_status",
+   "files": 1
+  },
+  {
+   "step": 134,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 136,
+   "ctx": "Client",
+   "out": "dev\ntext"
+  },
+  {
+   "step": 138,
+   "ctx": "Client",
+   "out": "killed 0\ntext"
+  },
+  {
+   "step": 140,
+   "ctx": "Client",
+   "out": "MENU_AUDIT tab=crew opened=true buttons=43 offscreen=0[] small<36=0 clippedText=20 vp=1048x380\ntext"
+  },
+  {
+   "step": 141,
+   "capture": "m_crew",
+   "files": 1
+  },
+  {
+   "step": 143,
+   "click": "menu_book_close",
+   "at": "1003,45",
+   "out": "1003,45 CLICK=시설닫기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 1003,
+      "y": 45
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 145,
+   "click": "dock_real_click",
+   "at": "730,-20",
+   "out": "730,-20 CLICK=dock_Menu_trade\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 730,
+      "y": -20
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 147,
+   "ctx": "Client",
+   "out": "MENU_DOCK_CLICK_PASS Menu_trade\ntext"
+  },
+  {
+   "step": 148,
+   "ctx": "Client",
+   "out": "MENU_AUDIT_SUMMARY |trade:open:off0:small2:clip0|harbor:open:off0:small0:clip0|route:open:off0:small0:clip0|map:open:off0:small181:clip13|yard:open:off0:small2:clip0|board:open:off0:small0:clip0|quest:open:off0:small0:clip0|recruit:open:off0:small0:clip0|explore:open:off0:small0:clip0|battle:open:off0:small0:clip0|war:open:off0:small0:clip0|gwent:open:off0:small0:clip0|scholar:open:off0:small0:clip0|codex:open:off0:small0:clip0|tech:open:off0:small0:clip0|status:open:off0:small0:clip0|crew:open:off0:small0:clip20\ntext"
   }
  ],
  "errors": [],
@@ -87,138 +495,767 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 30010
+   "elapsedMs": 35005
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 209
+   "elapsedMs": 2546
   },
   {
    "step": 2,
-   "type": "luau",
-   "elapsedMs": 322
+   "type": "wait",
+   "elapsedMs": 4012
   },
   {
    "step": 3,
-   "type": "wait",
-   "elapsedMs": 1800
+   "type": "luau",
+   "elapsedMs": 428
   },
   {
    "step": 4,
-   "type": "capture",
-   "elapsedMs": 981
+   "type": "wait",
+   "elapsedMs": 809
   },
   {
    "step": 5,
    "type": "luau",
-   "elapsedMs": 227
+   "elapsedMs": 401
   },
   {
    "step": 6,
    "type": "wait",
-   "elapsedMs": 1813
+   "elapsedMs": 2502
   },
   {
    "step": 7,
-   "type": "capture",
-   "elapsedMs": 874
+   "type": "luau",
+   "elapsedMs": 540
   },
   {
    "step": 8,
-   "type": "luau",
-   "elapsedMs": 231
+   "type": "wait",
+   "elapsedMs": 2512
   },
   {
    "step": 9,
-   "type": "wait",
-   "elapsedMs": 1810
+   "type": "luau",
+   "elapsedMs": 213
   },
   {
    "step": 10,
-   "type": "capture",
-   "elapsedMs": 774
+   "type": "wait",
+   "elapsedMs": 613
   },
   {
    "step": 11,
    "type": "luau",
-   "elapsedMs": 369
+   "elapsedMs": 217
   },
   {
    "step": 12,
-   "type": "wait",
-   "elapsedMs": 1802
+   "type": "luau",
+   "elapsedMs": 230
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 762
+   "elapsedMs": 1121
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 248
+   "elapsedMs": 213
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 1808
+   "elapsedMs": 2509
   },
   {
    "step": 16,
-   "type": "capture",
-   "elapsedMs": 1027
+   "type": "luau",
+   "elapsedMs": 312
   },
   {
    "step": 17,
-   "type": "luau",
-   "elapsedMs": 279
+   "type": "wait",
+   "elapsedMs": 2509
   },
   {
    "step": 18,
-   "type": "wait",
-   "elapsedMs": 1813
+   "type": "luau",
+   "elapsedMs": 126
   },
   {
    "step": 19,
-   "type": "capture",
-   "elapsedMs": 633
+   "type": "wait",
+   "elapsedMs": 603
   },
   {
    "step": 20,
    "type": "luau",
-   "elapsedMs": 189
+   "elapsedMs": 179
   },
   {
    "step": 21,
-   "type": "wait",
-   "elapsedMs": 1814
+   "type": "capture",
+   "elapsedMs": 1023
   },
   {
    "step": 22,
+   "type": "luau",
+   "elapsedMs": 208
+  },
+  {
+   "step": 23,
+   "type": "wait",
+   "elapsedMs": 2506
+  },
+  {
+   "step": 24,
+   "type": "luau",
+   "elapsedMs": 178
+  },
+  {
+   "step": 25,
+   "type": "wait",
+   "elapsedMs": 2502
+  },
+  {
+   "step": 26,
+   "type": "luau",
+   "elapsedMs": 199
+  },
+  {
+   "step": 27,
+   "type": "wait",
+   "elapsedMs": 607
+  },
+  {
+   "step": 28,
+   "type": "luau",
+   "elapsedMs": 149
+  },
+  {
+   "step": 29,
+   "type": "capture",
+   "elapsedMs": 939
+  },
+  {
+   "step": 30,
+   "type": "luau",
+   "elapsedMs": 194
+  },
+  {
+   "step": 31,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 32,
+   "type": "luau",
+   "elapsedMs": 109
+  },
+  {
+   "step": 33,
+   "type": "wait",
+   "elapsedMs": 2505
+  },
+  {
+   "step": 34,
+   "type": "luau",
+   "elapsedMs": 129
+  },
+  {
+   "step": 35,
+   "type": "wait",
+   "elapsedMs": 606
+  },
+  {
+   "step": 36,
+   "type": "luau",
+   "elapsedMs": 161
+  },
+  {
+   "step": 37,
+   "type": "capture",
+   "elapsedMs": 587
+  },
+  {
+   "step": 38,
+   "type": "luau",
+   "elapsedMs": 146
+  },
+  {
+   "step": 39,
+   "type": "wait",
+   "elapsedMs": 2503
+  },
+  {
+   "step": 40,
+   "type": "luau",
+   "elapsedMs": 96
+  },
+  {
+   "step": 41,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 42,
+   "type": "luau",
+   "elapsedMs": 66
+  },
+  {
+   "step": 43,
+   "type": "wait",
+   "elapsedMs": 604
+  },
+  {
+   "step": 44,
+   "type": "luau",
+   "elapsedMs": 238
+  },
+  {
+   "step": 45,
+   "type": "capture",
+   "elapsedMs": 715
+  },
+  {
+   "step": 46,
+   "type": "luau",
+   "elapsedMs": 148
+  },
+  {
+   "step": 47,
+   "type": "wait",
+   "elapsedMs": 2500
+  },
+  {
+   "step": 48,
+   "type": "luau",
+   "elapsedMs": 68
+  },
+  {
+   "step": 49,
+   "type": "wait",
+   "elapsedMs": 2514
+  },
+  {
+   "step": 50,
+   "type": "luau",
+   "elapsedMs": 64
+  },
+  {
+   "step": 51,
+   "type": "wait",
+   "elapsedMs": 608
+  },
+  {
+   "step": 52,
+   "type": "luau",
+   "elapsedMs": 140
+  },
+  {
+   "step": 53,
+   "type": "capture",
+   "elapsedMs": 832
+  },
+  {
+   "step": 54,
+   "type": "luau",
+   "elapsedMs": 169
+  },
+  {
+   "step": 55,
+   "type": "wait",
+   "elapsedMs": 2514
+  },
+  {
+   "step": 56,
+   "type": "luau",
+   "elapsedMs": 141
+  },
+  {
+   "step": 57,
+   "type": "wait",
+   "elapsedMs": 2508
+  },
+  {
+   "step": 58,
+   "type": "luau",
+   "elapsedMs": 121
+  },
+  {
+   "step": 59,
+   "type": "wait",
+   "elapsedMs": 614
+  },
+  {
+   "step": 60,
+   "type": "luau",
+   "elapsedMs": 173
+  },
+  {
+   "step": 61,
+   "type": "capture",
+   "elapsedMs": 823
+  },
+  {
+   "step": 62,
+   "type": "luau",
+   "elapsedMs": 141
+  },
+  {
+   "step": 63,
+   "type": "wait",
+   "elapsedMs": 2502
+  },
+  {
+   "step": 64,
+   "type": "luau",
+   "elapsedMs": 224
+  },
+  {
+   "step": 65,
+   "type": "wait",
+   "elapsedMs": 2504
+  },
+  {
+   "step": 66,
+   "type": "luau",
+   "elapsedMs": 152
+  },
+  {
+   "step": 67,
+   "type": "wait",
+   "elapsedMs": 609
+  },
+  {
+   "step": 68,
+   "type": "luau",
+   "elapsedMs": 160
+  },
+  {
+   "step": 69,
+   "type": "capture",
+   "elapsedMs": 840
+  },
+  {
+   "step": 70,
+   "type": "luau",
+   "elapsedMs": 161
+  },
+  {
+   "step": 71,
+   "type": "wait",
+   "elapsedMs": 2514
+  },
+  {
+   "step": 72,
+   "type": "luau",
+   "elapsedMs": 83
+  },
+  {
+   "step": 73,
+   "type": "wait",
+   "elapsedMs": 2506
+  },
+  {
+   "step": 74,
+   "type": "luau",
+   "elapsedMs": 78
+  },
+  {
+   "step": 75,
+   "type": "wait",
+   "elapsedMs": 608
+  },
+  {
+   "step": 76,
+   "type": "luau",
+   "elapsedMs": 74
+  },
+  {
+   "step": 77,
+   "type": "capture",
+   "elapsedMs": 678
+  },
+  {
+   "step": 78,
+   "type": "luau",
+   "elapsedMs": 73
+  },
+  {
+   "step": 79,
+   "type": "wait",
+   "elapsedMs": 2506
+  },
+  {
+   "step": 80,
+   "type": "luau",
+   "elapsedMs": 76
+  },
+  {
+   "step": 81,
+   "type": "wait",
+   "elapsedMs": 2500
+  },
+  {
+   "step": 82,
+   "type": "luau",
+   "elapsedMs": 84
+  },
+  {
+   "step": 83,
+   "type": "wait",
+   "elapsedMs": 605
+  },
+  {
+   "step": 84,
+   "type": "luau",
+   "elapsedMs": 198
+  },
+  {
+   "step": 85,
    "type": "capture",
    "elapsedMs": 779
   },
   {
-   "step": 23,
+   "step": 86,
+   "type": "luau",
+   "elapsedMs": 218
+  },
+  {
+   "step": 87,
+   "type": "wait",
+   "elapsedMs": 2512
+  },
+  {
+   "step": 88,
+   "type": "luau",
+   "elapsedMs": 188
+  },
+  {
+   "step": 89,
+   "type": "wait",
+   "elapsedMs": 2511
+  },
+  {
+   "step": 90,
+   "type": "luau",
+   "elapsedMs": 221
+  },
+  {
+   "step": 91,
+   "type": "wait",
+   "elapsedMs": 607
+  },
+  {
+   "step": 92,
+   "type": "luau",
+   "elapsedMs": 80
+  },
+  {
+   "step": 93,
+   "type": "capture",
+   "elapsedMs": 1153
+  },
+  {
+   "step": 94,
+   "type": "luau",
+   "elapsedMs": 212
+  },
+  {
+   "step": 95,
+   "type": "wait",
+   "elapsedMs": 2503
+  },
+  {
+   "step": 96,
+   "type": "luau",
+   "elapsedMs": 162
+  },
+  {
+   "step": 97,
+   "type": "wait",
+   "elapsedMs": 2509
+  },
+  {
+   "step": 98,
+   "type": "luau",
+   "elapsedMs": 212
+  },
+  {
+   "step": 99,
+   "type": "wait",
+   "elapsedMs": 613
+  },
+  {
+   "step": 100,
+   "type": "luau",
+   "elapsedMs": 201
+  },
+  {
+   "step": 101,
+   "type": "capture",
+   "elapsedMs": 922
+  },
+  {
+   "step": 102,
+   "type": "luau",
+   "elapsedMs": 210
+  },
+  {
+   "step": 103,
+   "type": "wait",
+   "elapsedMs": 2507
+  },
+  {
+   "step": 104,
+   "type": "luau",
+   "elapsedMs": 194
+  },
+  {
+   "step": 105,
+   "type": "wait",
+   "elapsedMs": 2510
+  },
+  {
+   "step": 106,
+   "type": "luau",
+   "elapsedMs": 190
+  },
+  {
+   "step": 107,
+   "type": "wait",
+   "elapsedMs": 614
+  },
+  {
+   "step": 108,
+   "type": "luau",
+   "elapsedMs": 201
+  },
+  {
+   "step": 109,
+   "type": "capture",
+   "elapsedMs": 1028
+  },
+  {
+   "step": 110,
+   "type": "luau",
+   "elapsedMs": 206
+  },
+  {
+   "step": 111,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 112,
+   "type": "luau",
+   "elapsedMs": 99
+  },
+  {
+   "step": 113,
+   "type": "wait",
+   "elapsedMs": 2511
+  },
+  {
+   "step": 114,
+   "type": "luau",
+   "elapsedMs": 173
+  },
+  {
+   "step": 115,
+   "type": "wait",
+   "elapsedMs": 602
+  },
+  {
+   "step": 116,
+   "type": "luau",
+   "elapsedMs": 224
+  },
+  {
+   "step": 117,
+   "type": "capture",
+   "elapsedMs": 988
+  },
+  {
+   "step": 118,
    "type": "luau",
    "elapsedMs": 187
+  },
+  {
+   "step": 119,
+   "type": "wait",
+   "elapsedMs": 2504
+  },
+  {
+   "step": 120,
+   "type": "luau",
+   "elapsedMs": 181
+  },
+  {
+   "step": 121,
+   "type": "wait",
+   "elapsedMs": 2515
+  },
+  {
+   "step": 122,
+   "type": "luau",
+   "elapsedMs": 115
+  },
+  {
+   "step": 123,
+   "type": "wait",
+   "elapsedMs": 603
+  },
+  {
+   "step": 124,
+   "type": "luau",
+   "elapsedMs": 130
+  },
+  {
+   "step": 125,
+   "type": "capture",
+   "elapsedMs": 940
+  },
+  {
+   "step": 126,
+   "type": "luau",
+   "elapsedMs": 193
+  },
+  {
+   "step": 127,
+   "type": "wait",
+   "elapsedMs": 2510
+  },
+  {
+   "step": 128,
+   "type": "luau",
+   "elapsedMs": 90
+  },
+  {
+   "step": 129,
+   "type": "wait",
+   "elapsedMs": 2515
+  },
+  {
+   "step": 130,
+   "type": "luau",
+   "elapsedMs": 168
+  },
+  {
+   "step": 131,
+   "type": "wait",
+   "elapsedMs": 608
+  },
+  {
+   "step": 132,
+   "type": "luau",
+   "elapsedMs": 109
+  },
+  {
+   "step": 133,
+   "type": "capture",
+   "elapsedMs": 890
+  },
+  {
+   "step": 134,
+   "type": "luau",
+   "elapsedMs": 194
+  },
+  {
+   "step": 135,
+   "type": "wait",
+   "elapsedMs": 2502
+  },
+  {
+   "step": 136,
+   "type": "luau",
+   "elapsedMs": 133
+  },
+  {
+   "step": 137,
+   "type": "wait",
+   "elapsedMs": 2510
+  },
+  {
+   "step": 138,
+   "type": "luau",
+   "elapsedMs": 139
+  },
+  {
+   "step": 139,
+   "type": "wait",
+   "elapsedMs": 610
+  },
+  {
+   "step": 140,
+   "type": "luau",
+   "elapsedMs": 90
+  },
+  {
+   "step": 141,
+   "type": "capture",
+   "elapsedMs": 834
+  },
+  {
+   "step": 142,
+   "type": "wait",
+   "elapsedMs": 813
+  },
+  {
+   "step": 143,
+   "type": "click_from_luau",
+   "elapsedMs": 828
+  },
+  {
+   "step": 144,
+   "type": "wait",
+   "elapsedMs": 2009
+  },
+  {
+   "step": 145,
+   "type": "click_from_luau",
+   "elapsedMs": 1072
+  },
+  {
+   "step": 146,
+   "type": "wait",
+   "elapsedMs": 1509
+  },
+  {
+   "step": 147,
+   "type": "luau",
+   "elapsedMs": 68
+  },
+  {
+   "step": 148,
+   "type": "luau",
+   "elapsedMs": 184
   }
  ],
  "consoleCapture": {
   "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
   "errorCount": 0,
-  "warningCount": 0,
+  "warningCount": 17,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 24,
-  "completedSteps": 24,
-  "plannedClicks": 0,
-  "successfulClicks": 0,
+  "plannedSteps": 149,
+  "completedSteps": 149,
+  "plannedClicks": 2,
+  "successfulClicks": 2,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 7,
-  "capturedFrames": 7,
+  "plannedFrames": 17,
+  "capturedFrames": 17,
   "abortedEarly": false
  }
 }
