@@ -1113,5 +1113,109 @@
   {
     "type": "capture",
     "name": "field_actor_after_motion"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [확장 01] Studio에서 실제 로딩된 181개 항구의 문화권 및 건축 팔레트 연결 검증 (화면 181곳 렌더 PASS 아님).\nlocal shared=game:GetService(\"ReplicatedStorage\"):WaitForChild(\"Shared\")\nlocal ports=require(shared:WaitForChild(\"Ports\"))\nlocal cultures=require(shared:WaitForChild(\"PortCultures\"))\nlocal count,regions=0,{}\nfor id,port in ports.Ports do\n count+=1\n local region=cultures.REGION[id]\n assert(type(region)==\"string\",\"PORT_181_REGION_MISSING:\"..id)\n local style=cultures.STYLE[region]\n assert(style and typeof(style.ground)==\"Color3\" and typeof(style.street)==\"Color3\",\"PORT_181_PALETTE_MISSING:\"..id..\":\"..region)\n assert(style.walls and #style.walls>0 and typeof(style.walls[1])==\"Color3\",\"PORT_181_WALL_PALETTE_MISSING:\"..id)\n assert(style.roofs and #style.roofs>0 and typeof(style.roofs[1])==\"Color3\",\"PORT_181_ROOF_PALETTE_MISSING:\"..id)\n assert(type(port.name)==\"string\" and port.name~=\"\",\"PORT_181_NAME_MISSING:\"..id)\n regions[region]=true\nend\nassert(count==181,\"PORT_181_RUNTIME_COUNT:\"..count)\nlocal variants=0 for _ in regions do variants+=1 end\nassert(variants>=8,\"PORT_181_REGION_VARIETY_MISSING:\"..variants)\nreturn string.format(\"PORT_181_RUNTIME_PALETTES_PASS ports=%d cultures=%d actual181Screenshots=false\",count,variants)"
+  },
+  {
+    "type": "wait",
+    "ms": 350
+  },
+  {
+    "type": "capture",
+    "name": "field_registry_181"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [확장 02] 문화권별 기존 벽·지붕 색 및 실루엣이 하나로 뭉개지지 않았는지 실제 ModuleScript 데이터로 확인.\nlocal shared=game:GetService(\"ReplicatedStorage\"):WaitForChild(\"Shared\")\nlocal cultures=require(shared:WaitForChild(\"PortCultures\"))\nlocal used,colors,forms={}, {}, {}\nfor _,region in cultures.REGION do used[region]=true end\nfor region in used do\n local p=assert(cultures.STYLE[region],\"PORT_PALETTE_STYLE_MISSING:\"..region)\n local wall,roof=p.walls and p.walls[1],p.roofs and p.roofs[1]\n assert(wall and roof and typeof(wall)==\"Color3\" and typeof(roof)==\"Color3\",\"PORT_PALETTE_COLOR_MISSING:\"..region)\n local fingerprint=string.format(\"%.3f:%.3f:%.3f:%.3f:%.3f:%.3f\",wall.R,wall.G,wall.B,roof.R,roof.G,roof.B)\n colors[fingerprint]=true\n if p.house and type(p.house.form)==\"string\" then forms[p.house.form]=true end\nend\nlocal palettes,shapes=0,0\nfor _ in colors do palettes+=1 end\nfor _ in forms do shapes+=1 end\nassert(palettes>=8,\"PORT_181_PALETTE_VARIETY_LOW:\"..palettes)\nassert(shapes>=6,\"PORT_181_FORM_VARIETY_LOW:\"..shapes)\nreturn string.format(\"PORT_181_VARIANTS_PASS colorPalettes=%d houseForms=%d visualPerPort=UNVERIFIED\",palettes,shapes)"
+  },
+  {
+    "type": "wait",
+    "ms": 350
+  },
+  {
+    "type": "capture",
+    "name": "field_palette_variants"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [확장 03] 기존 실제 지상맵 장면의 보이는 실물 및 보이지 않는 낙사 방지 바닥 분리.\nlocal field=assert(workspace:FindFirstChild(\"FieldScene\"),\"FIELD_EXT_SCENE_MISSING\")\nlocal ground=assert(field:FindFirstChild(\"FieldGround\"),\"FIELD_EXT_GROUND_MISSING\")\nlocal safety=assert(field:FindFirstChild(\"FieldSafetyFloor\"),\"FIELD_EXT_SAFETY_MISSING\")\nassert(ground:IsA(\"BasePart\") and ground.CanCollide and ground.Transparency<1,\"FIELD_EXT_GROUND_NOT_VISIBLE_SOLID\")\nassert(safety:IsA(\"BasePart\") and safety.CanCollide and safety.Transparency==1,\"FIELD_EXT_SAFETY_NOT_INVISIBLE_SOLID\")\nlocal parts,visible=0,0\nfor _,item in field:GetDescendants() do\n if item:IsA(\"BasePart\") then parts+=1 if item.Transparency<1 then visible+=1 end end\nend\nassert(parts>=20 and visible>=10,\"FIELD_EXT_WORLD_TOO_EMPTY:\"..visible..\"/\"..parts)\nreturn string.format(\"FIELD_EXT_WORLD_PASS parts=%d visible=%d safety=PASS\",parts,visible)"
+  },
+  {
+    "type": "wait",
+    "ms": 500
+  },
+  {
+    "type": "capture",
+    "name": "field_ground_visible_extra"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [확장 04] 촬영 전용 카메라가 해제되고 실제 플레이어 카메라/3D 월드로 복구됐는지 재확인.\nlocal camera=assert(workspace.CurrentCamera,\"FIELD_EXT_CAMERA_MISSING\")\nlocal player=game:GetService(\"Players\").LocalPlayer\nlocal humanoid=player.Character and player.Character:FindFirstChildOfClass(\"Humanoid\")\nassert(humanoid and humanoid.Health>0,\"FIELD_EXT_CHARACTER_NOT_ALIVE\")\nassert(camera.CameraType==Enum.CameraType.Custom,\"FIELD_EXT_CAMERA_NOT_PLAYER_CONTROLLED\")\nassert(camera.CameraSubject~=nil,\"FIELD_EXT_CAMERA_SUBJECT_MISSING\")\nassert(workspace:GetAttribute(\"ShotCF\")==nil,\"FIELD_EXT_CAMERA_STILL_LOCKED\")\nlocal size=camera.ViewportSize\nassert(size.X>=320 and size.Y>=240,\"FIELD_EXT_VIEWPORT_INVALID\")\nlocal pos=camera.CFrame.Position\nassert(pos.X==pos.X and pos.Y==pos.Y and pos.Z==pos.Z and pos.Magnitude<1e8,\"FIELD_EXT_CAMERA_NONFINITE\")\nreturn string.format(\"FIELD_EXT_CAMERA_PASS width=%d height=%d subject=%s\",size.X,size.Y,camera.CameraSubject.ClassName)"
+  },
+  {
+    "type": "wait",
+    "ms": 400
+  },
+  {
+    "type": "capture",
+    "name": "field_camera_normal"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [확장 05] 실제 화면 크기에서 공격/회피/퇴각 버튼이 잘리거나 터치 불가능해지지 않는지 검사.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gui=assert(pg:FindFirstChild(\"FieldGui\"),\"FIELD_EXT_HUD_MISSING\")\nassert(gui:IsA(\"ScreenGui\") and gui.Enabled,\"FIELD_EXT_HUD_DISABLED\")\nlocal viewport=assert(workspace.CurrentCamera).ViewportSize\nfor _,name in {\"FieldAttack\",\"FieldDodge\",\"FieldRetreat\"} do\n local button=assert(gui:FindFirstChild(name,true),\"FIELD_EXT_TOUCH_BUTTON_MISSING:\"..name)\n assert(button:IsA(\"GuiButton\") and button.Visible and button.Active and button.Interactable,\"FIELD_EXT_TOUCH_BUTTON_DISABLED:\"..name)\n local p,s=button.AbsolutePosition,button.AbsoluteSize\n assert(s.X>=60 and s.Y>=36,\"FIELD_EXT_TOUCH_BUTTON_TOO_SMALL:\"..name)\n assert(p.X>=-8 and p.Y>=-8 and p.X+s.X<=viewport.X+8 and p.Y+s.Y<=viewport.Y+8,\n  \"FIELD_EXT_TOUCH_BUTTON_CLIPPED:\"..name..\":\"..tostring(p)..\":\"..tostring(s))\nend\nreturn string.format(\"FIELD_EXT_TOUCH_LAYOUT_PASS viewport=%dx%d\",viewport.X,viewport.Y)"
+  },
+  {
+    "type": "wait",
+    "ms": 450
+  },
+  {
+    "type": "capture",
+    "name": "field_hud_touch_bounds"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [확장 06] 실제 플레이어 GUI의 화면좌표 클릭 영역이 버튼과 연결되는지 검사.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gui=assert(pg:FindFirstChild(\"FieldGui\"),\"FIELD_EXT_HITBOX_GUI_MISSING\")\nlocal tested=0\nfor _,name in {\"FieldAttack\",\"FieldDodge\",\"FieldRetreat\"} do\n local button=assert(gui:FindFirstChild(name,true),\"FIELD_EXT_HITBOX_BUTTON_MISSING:\"..name)\n local x=math.floor(button.AbsolutePosition.X+button.AbsoluteSize.X/2)\n local y=math.floor(button.AbsolutePosition.Y+button.AbsoluteSize.Y/2)\n local hit=false\n for _,item in pg:GetGuiObjectsAtPosition(x,y) do\n  if item==button or item:IsDescendantOf(button) then hit=true break end\n end\n assert(hit,\"FIELD_EXT_HITBOX_NOT_AT_BUTTON:\"..name)\n tested+=1\nend\nreturn \"FIELD_EXT_POINTER_HITBOX_PASS targets=\"..tested..\" (actualClickPreservedAtStep236)\""
+  },
+  {
+    "type": "wait",
+    "ms": 450
+  },
+  {
+    "type": "capture",
+    "name": "field_hud_hitbox"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [확장 07] 획득 카드 알림은 장식만 허용하고 실제 필드 버튼 활성 상태를 건드리지 않음.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gain=pg:FindFirstChild(\"CardGain\")\nif gain and gain:IsA(\"ScreenGui\") and gain.Enabled then\n assert(gain:GetAttribute(\"NonBlockingCardNotice\")==true,\"FIELD_EXT_CARD_GAIN_BLOCKING\")\n for _,obj in gain:GetDescendants() do\n  assert(not (obj:IsA(\"GuiButton\") and obj.Visible and obj.Active),\"FIELD_EXT_CARD_GAIN_ACTIVE_BUTTON:\"..obj.Name)\n end\nend\nlocal gui=assert(pg:FindFirstChild(\"FieldGui\"),\"FIELD_EXT_POST_NOTICE_GUI_MISSING\")\nlocal attack=assert(gui:FindFirstChild(\"FieldAttack\",true),\"FIELD_EXT_POST_NOTICE_ATTACK_MISSING\")\nassert(gui.Enabled and attack.Visible and attack.Interactable,\"FIELD_EXT_NOTICE_DISABLED_COMBAT\")\nreturn \"FIELD_EXT_NONBLOCKING_NOTICE_PASS present=\"..tostring(gain~=nil)"
+  },
+  {
+    "type": "wait",
+    "ms": 450
+  },
+  {
+    "type": "capture",
+    "name": "field_notice_overlap"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [확장 08] 실제 Studio 렌더 프레임 간격을 관측해 로그/사진으로 남긴다. 수치만으로 품질 PASS를 만들지 않는다.\nlocal run=game:GetService(\"RunService\")\nlocal frames,elapsed,worst=0,0,0\nfor i=1,60 do\n local dt=run.RenderStepped:Wait()\n frames+=1\n elapsed+=dt\n worst=math.max(worst,dt)\nend\nassert(frames==60 and elapsed>0,\"FIELD_EXT_RENDER_OBSERVATION_MISSING\")\nlocal field=assert(workspace:FindFirstChild(\"FieldScene\"),\"FIELD_EXT_RENDER_SCENE_MISSING\")\nreturn string.format(\"FIELD_EXT_RENDER_OBSERVED frames=%d avgFps=%.1f maxGapMs=%.1f active=%s notPerformancePass=true\",\n frames,frames/elapsed,worst*1000,tostring(field.Parent~=nil))"
+  },
+  {
+    "type": "wait",
+    "ms": 350
+  },
+  {
+    "type": "capture",
+    "name": "field_runtime_fps_sample"
   }
 ]
