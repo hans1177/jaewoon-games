@@ -1,23 +1,21 @@
 {
-  "runId": "45098334002",
+  "runId": "45101358130",
   "kind": "studio",
-  "sourceRevision": "9d5e44437c96fb91c6583b33c95f433665920a82",
-  "result": "FAIL",
-  "failureStage": "STUDIO_EXECUTION",
-  "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
+  "sourceRevision": "6890f09c69d02f72ac3106ae8b2e7397242db7e1",
+  "result": "PASS",
+  "failureStage": null,
+  "failureSignature": null,
   "summary": {
-    "plannedSteps": 14,
-    "completedSteps": 10,
+    "plannedSteps": 16,
+    "completedSteps": 16,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 3,
+    "plannedFrames": 1,
     "capturedFrames": 1,
-    "abortedEarly": true
+    "abortedEarly": false
   },
-  "errors": [
-    "step9:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: The current thread cannot call 'SendMouseButtonEvent' ("
-  ],
+  "errors": [],
   "audits": {
     "models": "NOT_RUN",
     "registered": "NOT_RUN",
@@ -69,69 +67,83 @@
     },
     {
       "step": 6,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 7,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 8,
-      "type": "capture",
-      "name": "dip_before",
-      "status": "PASS",
-      "screenshots": [
-        "dip_before-0.jpg"
-      ]
-    },
-    {
-      "step": 9,
       "type": "luau",
       "name": "",
-      "status": "FAIL",
+      "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 10,
+      "step": 9,
       "type": "capture",
-      "name": "dip_after",
-      "status": "NOT_RUN",
+      "name": "p_field",
+      "status": "PASS",
+      "screenshots": [
+        "p_field-0.jpg"
+      ]
+    },
+    {
+      "step": 10,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 11,
-      "type": "luau",
+      "type": "wait",
       "name": "",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 12,
-      "type": "wait",
+      "type": "luau",
       "name": "",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 13,
-      "type": "capture",
-      "name": "dip_devcall",
-      "status": "NOT_RUN",
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 14,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 15,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
       "screenshots": []
     }
   ],
   "screenshotComparison": [
     {
-      "name": "dip_before-0.jpg",
-      "sha256": "ac9b17d8c3f37d9c8fb4c09dcd60745045cdb77f56f95844fec7554492fca1d5",
+      "name": "p_field-0.jpg",
+      "sha256": "c817e2c434555713beced0bf56d73b0ad25b9297f33d1b05a0b4de1b41d202f2",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45098334002/dip_before-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45101358130/p_field-0.jpg"
     }
   ],
   "screenshotFrameAudit": {
@@ -139,8 +151,8 @@
     "invalid": 0,
     "images": [
       {
-        "name": "dip_before-0.jpg",
-        "bytes": 116279,
+        "name": "p_field-0.jpg",
+        "bytes": 169493,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -149,5 +161,5 @@
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "45097509176"
+  "previousRunId": "45100409928"
 }
