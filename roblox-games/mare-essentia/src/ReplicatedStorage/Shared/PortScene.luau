@@ -6422,7 +6422,17 @@ function PortScene.build(info, onFacility)
 	-- [항구별 광장] 공통 원형 도형/가짜 분수를 제거하고 진짜 승인 모델 하나만 문화거리에 배치한다.
 	-- 중앙 광장은 자유 보행 공간, 부두형·연병장형은 장애물 없는 개방 광장으로 유지한다.
 	do
-		local plazaKind = if identity then identity.plaza else "fountain"
+		local plazaKind = if identity then identity.plaza
+			elseif folder:GetAttribute("CoastForm") == "canal" or folder:GetAttribute("CoastForm") == "river" then "quay"
+			elseif currentKey == "britain" or currentKey == "hanse" or currentKey == "north" then "market"
+			elseif currentKey == "colonial" or currentKey == "creole" then "parade"
+			else "fountain"
+		-- [전체 항구 시민 광장 재배치] 등록된 랜드마크 구역과 반대편으로 이동한다.
+		local civicRng = seeded(info.portId .. ":civic-quarter-reposition-v2")
+		local civicOffset = civicRng:NextInteger(-10, 9)
+		local landmarkSide = if civicRng:NextInteger(0, 1) == 0 then -1 else 1
+		local civicDepth = civicRng:NextInteger(-6, 6)
+		local plazaAt = Vector3.new(-133 + civicOffset * 0.55, 0, -landmarkSide * (128 + civicDepth))
 		-- [문화권 고증] 유럽 노점을 부산·캘리컷 장시로, 유럽식 분수를 오스만 세정시설로 쓰지 않는다.
 		local europeanMarket = not identity or info.portId == "london" or info.portId == "rouen"
 		-- [항구별 원본 광장] 15항구 전용 승인 원화가 있으면 기존 동일 광장 슬롯에서 우선 사용한다.
@@ -6434,9 +6444,9 @@ function PortScene.build(info, onFacility)
 			elseif plazaKind == "fountain" then (if sceneLevel >= 4 then "fountain-round" else "village-well-cc0")
 			else nil
 		folder:SetAttribute("CityPortPlazaType", plazaKind)
-		folder:SetAttribute("CityPortPlazaLocation", Vector3.new(-106, 0, 122))
+		folder:SetAttribute("CityPortPlazaLocation", plazaAt)
 		if asset and AssetIds["Town/" .. asset] then
-			local center = importedModel(folder, "Town", asset, Vector3.new(-106, 0, 122),
+			local center = importedModel(folder, "Town", asset, plazaAt,
 				if plazaKind == "market" then 8 else 10, false)
 			if center then
 				center.Name = "CityPortPlazaCenter"
@@ -6474,6 +6484,23 @@ function PortScene.build(info, onFacility)
 		{ name = "학자의 서재", tab = "tech", pos = Vector3.new(-88, 0, 36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 100, 140), economy = "school", always = true },
 		{ name = "도서관 (도감)", tab = "codex", pos = Vector3.new(-88, 0, -36), w = 14, d = 12, floors = 2, color = Color3.fromRGB(100, 120, 110), economy = "school", always = true },
 	}
+	-- [181항구 방문 시설 실제 재배치] 원래 7개 고정 슬롯을 폐기하고
+	-- 기존 상호작용 프롬프트와 원본 건물을 포트별 북·남 구역에 새로 배정한다.
+	local facilityRng = seeded(info.portId .. ":facility-block-reposition-v2")
+	local facilitySites = {
+		Vector3.new(-18, 0, 46), Vector3.new(-18, 0, -46),
+		Vector3.new(-49, 0, 46), Vector3.new(-49, 0, -46),
+		Vector3.new(-80, 0, 46), Vector3.new(-80, 0, -46),
+		Vector3.new(-112, 0, 46),
+	}
+	local rotation = facilityRng:NextInteger(1, #facilitySites - 1)
+	local reflection = if facilityRng:NextInteger(0, 1) == 0 then -1 else 1
+	for index, f in facilities do
+		local site = facilitySites[(index + rotation - 1) % #facilitySites + 1]
+		f.pos = Vector3.new(site.X + facilityRng:NextInteger(-2, 2), 0, site.Z * reflection)
+		folder:SetAttribute("CityFacilityPosition_" .. f.tab, f.pos)
+	end
+	folder:SetAttribute("CityFacilityLayoutMode", "WHOLE_PORT_REPOSITION_V2")
 	for _, f in facilities do
 		if f.always or (f.key and fac[f.key]) then
 			-- [경제 발전도 직결] 실제 마을 시설 건설 수량이 없으면 높은 단계 외형을 선물하지 않는다.
