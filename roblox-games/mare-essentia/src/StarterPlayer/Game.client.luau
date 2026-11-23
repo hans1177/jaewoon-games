@@ -624,20 +624,26 @@ end
 H.sheetK = sheetK
 
 H.facilityIconAtlas = AssetIds["CardArt/ui_facility_icons"]
+-- [외교 손그림] 기존 승인된 황동 서신·깃펜 원화를 별도 시트에서 쓴다.
+H.diplomacyIconAtlas = AssetIds["CardArt/ui_reserve_icons_2"]
 H.facilityIconCells = {
 	trade = 0, market = 0, tavern = 1, board = 1, route = 2, map = 2, harbor = 2, yard = 3,
 	battle = 4, codex = 5, encyclopedia = 5, status = 6, journal = 7,
-	deck = 8, gwent = 8, view = 9, gear = 10, help = 11, diplomacy = 7, close = 15,
+	deck = 8, gwent = 8, view = 9, gear = 10, help = 11, diplomacy = 5, close = 15, -- 외교: 예비 손그림 2번 시트의 봉인 서신(2행 2열)
 }
 local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, portraitOffset)
-	local cell = H.facilityIconAtlas and H.facilityIconCells[asset]
+	local diplomacyArt = kind == "FacilityArt" and asset == "diplomacy" and H.diplomacyIconAtlas ~= nil
+	local atlas = if diplomacyArt then H.diplomacyIconAtlas else H.facilityIconAtlas
+	local cell = atlas and H.facilityIconCells[asset]
 	if kind == "FacilityArt" and cell ~= nil then
 		local icon = Instance.new("ImageLabel")
 		icon.Size = UDim2.fromOffset(px, px)
 		icon.BackgroundTransparency = 1
-		icon.Image = "rbxassetid://" .. tostring(H.facilityIconAtlas)
-		icon.ImageRectOffset = Vector2.new(cell % 4 * 128, math.floor(cell / 4) * 128)
-		icon.ImageRectSize = Vector2.new(128, 128)
+		-- [아이콘 아틀라스] 외교는 768px 손그림 시트의 192px 칸, 나머지는 기존 512px 시트의 128px 칸.
+		local cellSize = if diplomacyArt then 192 else 128
+		icon.Image = "rbxassetid://" .. tostring(atlas)
+		icon.ImageRectOffset = Vector2.new(cell % 4 * cellSize, math.floor(cell / 4) * cellSize)
+		icon.ImageRectSize = Vector2.new(cellSize, cellSize)
 		icon:SetAttribute("FacilityArtKey", asset)
 		icon.Parent = parent
 		return icon
@@ -2657,7 +2663,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	local facility = parent.Name == "Dock" and name:sub(1, 5) == "Menu_"
 	local artSize = if facility then 46 elseif dockItem then 43 else 31
 	local artTop = if dockItem then 3 else 4
-	if H.facilityIconAtlas and H.facilityIconCells[key] ~= nil then
+	if H.facilityIconCells[key] ~= nil and (H.facilityIconAtlas ~= nil or (key == "diplomacy" and H.diplomacyIconAtlas ~= nil)) then
 		local icon = modelIcon(button, "FacilityArt", key, nil, artSize, label)
 		icon.Name = "MenuArt"
 		icon.AnchorPoint = Vector2.new(0.5, 0)
@@ -12789,7 +12795,7 @@ H.TAB_ICON = {
 	yard = { "Menu", "yard" }, battle = { "Menu", "battle" }, war = { "Glyph", "war" }, gwent = { "Glyph", "gwent" },
 	scholar = { "Glyph", "scholar" }, codex = { "Menu", "codex" }, encyclopedia = { "Menu", "codex" }, tech = { "Glyph", "research" },
 	status = { "Glyph", "captain" }, crew = { "Glyph", "crew" },
-	diplomacy = { "Castle", "flag-banner-short" }, -- 알현 아이콘과 같은 기존 깃발 모델
+	diplomacy = { "Castle", "flag-banner-short" }, -- 승인된 외교 서신 원화가 없을 때만 기존 모델 사용
 }
 function H.renderTabs()
 	-- [시설 아이콘 동작] 기존 탭 아이콘에만 터치 선택·마우스 반응을 적용한다.
@@ -12865,7 +12871,7 @@ function H.renderTabs()
 		local ti = H.TAB_ICON[id]
 		if ti then
 			-- [공통 규격] 도크는 40px, 시설별 탭은 26px. 아이콘과 인쇄 글자를 겹치지 않게 나눈다.
-			local atlas = H.facilityIconAtlas and H.facilityIconCells[id] ~= nil
+			local atlas = H.facilityIconCells[id] ~= nil and (H.facilityIconAtlas ~= nil or (id == "diplomacy" and H.diplomacyIconAtlas ~= nil))
 			local icon = modelIcon(b, if atlas then "FacilityArt" else ti[1], if atlas then id else ti[2], nil, 26, TAB_NAME[id])
 			icon.Name = "TabIcon"
 			-- [시설 탭 최초 배치] 화면 크기 갱신 전에 생성된 아이콘도 현재 모바일 규격을 따른다.
