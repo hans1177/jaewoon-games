@@ -2031,7 +2031,7 @@ H.galleryImage.Activated:Connect(function()
   if not view or not H.galleryImage.Image or H.galleryImage.Image == "" then return end
   -- [정확한 목적지] 연결된 발견 카드가 없으면 주제 검색으로 열고 무관한 백과 책갈피를 열지 않는다.
   H.galleryBookOpenRequested = H.galleryLinkCardId
-    or ("search:" .. ((H.FACILITY_GALLERY_TOPICS[currentTab] or { "대항해" })[1]))
+    or ("search:" .. (H.gallerySearchTerm or ((H.FACILITY_GALLERY_TOPICS[currentTab] or { "대항해" })[1])))
   openTab("codex")
 end)
 H.galleryTitle = mkLabel(H.facilityGallery, "", 21, INK, true)
@@ -2100,6 +2100,7 @@ function H.renderFacilityGallery()
   if H.gallerySelectedTab ~= tab then
     H.gallerySelectedTab = tab
     H.galleryIndex = 1
+    H.gallerySelection = nil -- [시설 변경] 이전 국가·항구·항로 선택을 해제한다.
   end
   local focus = H.MENU_FOCUS[tab]
   local artName = H.FACILITY_GALLERY_ART[tab] or "event_calm_seas"
@@ -2132,14 +2133,33 @@ function H.renderFacilityGallery()
   H.galleryMatches = matches
   H.galleryIndex = if #matches > 0 then math.clamp(H.galleryIndex or 1, 1, #matches) else 1
   local matched = if #matches > 0 then matches[H.galleryIndex] else nil
-  -- [백과 현재 장] 백과에서 페이지를 넘길 때도 왼쪽 원화·직접 이동 대상이 같은 장을 가리킨다.
+  -- [선택 원화] 클릭한 국가·항구·항로의 발견 카드/승인 해역도만 우선 전시한다.
+  local selection = H.gallerySelection
+  if selection and selection.tab == tab then
+    matched = nil
+    for _, card in ((view and view.codex and view.codex.cards) or {}) do
+      if card.found == true and type(card.image) == "string" and card.image ~= ""
+        and (card.name == selection.name
+          or string.find(string.lower(tostring(card.name or "")), string.lower(selection.name), 1, true)) then
+        matched = card
+        break
+      end
+    end
+    if selection.chart then
+      fallback = AssetIds["CardArt/event_chart_" .. selection.chart] or fallback
+    end
+  else
+    selection = nil
+  end
   if (tab == "codex" or tab == "encyclopedia") and H.galleryReadingCard then
     matched = H.galleryReadingCard
   end
-  if chartName then matched = nil end
+  if chartName and not selection then matched = nil end
   local image = if matched then matched.image elseif fallback then "rbxassetid://" .. tostring(fallback) else ""
   H.galleryLinkCardId = if matched then matched.id else nil
-  local canPage = #matches > 1 and not chartName and not ((tab == "codex" or tab == "encyclopedia") and H.galleryReadingCard)
+  H.gallerySearchTerm = if selection then selection.search or selection.name else chartName
+  local canPage = #matches > 1 and not chartName and not selection
+    and not ((tab == "codex" or tab == "encyclopedia") and H.galleryReadingCard)
   H.galleryPrev.Visible = canPage
   H.galleryNext.Visible = canPage
   if H.galleryImage.Image ~= image then
@@ -2152,10 +2172,11 @@ function H.renderFacilityGallery()
       H.galleryImage.ImageTransparency = 0
     end
   end
-  H.galleryTitle.Text = if chartName then chartName elseif matched then matched.name
+  H.galleryTitle.Text = if selection then selection.name elseif chartName then chartName elseif matched then matched.name
     elseif focus then focus[1] else TAB_NAME[tab] or "시설 안내"
   H.galleryCaption.Text = if canPage then string.format("%d/%d · 넘기기 / 원화 터치 → 백과", H.galleryIndex, #matches)
-    elseif matched then "원화 터치 · 해당 백과 항목" else "원화 터치 · 세계 백과 펼치기"
+    elseif matched then "원화 터치 · 해당 백과 항목"
+    elseif selection or chartName then "원화 터치 · 관련 지식 검색" else "원화 터치 · 세계 백과 검색"
   H.galleryCaption.Visible = image ~= ""
 end
 
