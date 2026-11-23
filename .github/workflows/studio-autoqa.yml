@@ -137,6 +137,12 @@ jobs:
             if [ -n "$changed" ]; then
               while IFS= read -r changed_file; do
                 case "$changed_file" in
+                  # [항구 실화면 검사] 기존 전용 Studio 스크립트 변경은 해당 13개 항구를 실제 촬영한다.
+                  roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-startports.json)
+                    candidate=PORTS ;;
+                  # [같은 변경의 QA/선택기 파일] 실제 게임 영향 범위는 별도 소스 파일로 판단한다.
+                  qa/mare-essentia-datastore-name.test.mjs|.github/workflows/studio-autoqa.yml)
+                    continue ;;
                   roblox-games/mare-essentia/assets/people/*|roblox-games/mare-essentia/src/StarterPlayer/LookApply.client.luau|roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-villagers.json)
                     candidate=PEOPLE ;;
                   roblox-games/mare-essentia/assets/naval/*|roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Ships.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json)
@@ -157,6 +163,7 @@ jobs:
               done <<< "$changed"
             fi
             case "$scope" in
+              PORTS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-startports.json ;;
               PEOPLE) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-villagers.json ;;
               SHIPS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json ;;
               MENUS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-menus.json ;;
