@@ -332205,11 +332205,132 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_5fdf1c295e52ed2d49623687",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14813",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "88194fccd748a52daddd573d1cda16bf4d362837",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14813,
+        "baseBranch": "main",
+        "headBranch": "owner/mare-port-no-triangle-cap-20261124",
+        "baseSha": "88194fccd748a52daddd573d1cda16bf4d362837",
+        "headSha": "48d70aadf8c1405a36753550e9b97f874cb764da",
+        "mergeCommitSha": "83b651aebef336425f93218ecf272c123e6e97b2",
+        "mergedAt": "2026-11-23T23:39:07Z",
+        "authorLogin": "hans1177",
+        "titleHash": "ab949986f553f9a7b009c5ed4053126b4220338fdbcf123c5e48b36592363dcc",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/mare-port-no-triangle-cap-20261124",
+        "candidateSha": "48d70aadf8c1405a36753550e9b97f874cb764da"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 2,
+        "addedLineCount": 393,
+        "deletedLineCount": 390,
+        "changedFiles": [
+          "roblox-games/mare-essentia/docs/PORT_VILLAGE_PROMPTS.md",
+          "roblox-games/mare-essentia/docs/port_asset_prompts.csv",
+          "roblox-games/mare-essentia/docs/ports/london.md",
+          "roblox-games/mare-essentia/tools/gen_port_asset_prompts.py",
+          "roblox-games/mare-essentia/tools/gen_port_briefs_all.py"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/tools/gen_port_asset_prompts.py",
+          "roblox-games/mare-essentia/tools/gen_port_briefs_all.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14813",
+        "merge-commit:83b651aebef336425f93218ecf272c123e6e97b2",
+        "base-main:88194fccd748a52daddd573d1cda16bf4d362837"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2658
+    "total": 2659
   }
 }
