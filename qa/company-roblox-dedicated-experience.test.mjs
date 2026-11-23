@@ -1631,12 +1631,45 @@ test('Mare generated original art is promoted only after model-source visual QA 
     const upgradeId='CardArt/eu_18';
     const reviewUpgrade={...approved.modelOriginals[upgradeId]};
     const original='roblox-games/mare-essentia/assets/cardart/src/eu_18-original.png';
-    const upgraded='roblox-games/mare-essentia/assets/cardart/src/eu_18-1400x2000.png';
     const upgradeSource=path.join(root,'assets/cardart/src/eu_18-1400x2000.png');
     const upgradeDest=path.join(root,'assets/cardart/eu_18.png');
-    fs.copyFileSync(upgraded,upgradeSource);
+    // [독립 QA 원본] 기존 eu_18 교체 시안은 256색이므로 승인 테스트에 재사용하지 않는다.
+    // 게임 원화가 아닌 테스트 전용 1400×2000 RGB PNG를 표준 청크·CRC로 생성한다.
+    const width=1400,height=2000,stride=width*3+1;
+    const scanlines=Buffer.alloc(stride*height);
+    for(let y=0;y<height;y++) for(let x=0;x<width;x++){
+      const offset=y*stride+1+x*3;
+      scanlines[offset]=(x*17+y*31)&255;
+      scanlines[offset+1]=(x*13+y*47)&255;
+      scanlines[offset+2]=(x*53+y*7)&255;
+    }
+    const pngChunk=(type,payload)=>{
+      const body=Buffer.concat([Buffer.from(type),payload]);
+      let crc=0xffffffff;
+      for(const byte of body){
+        crc^=byte;
+        for(let bit=0;bit<8;bit++)crc=(crc>>>1)^(0xedb88320&-(crc&1));
+      }
+      const header=Buffer.alloc(4),tail=Buffer.alloc(4);
+      header.writeUInt32BE(payload.length);
+      tail.writeUInt32BE((crc^0xffffffff)>>>0);
+      return Buffer.concat([header,body,tail]);
+    };
+    const ihdr=Buffer.alloc(13);
+    ihdr.writeUInt32BE(width,0);
+    ihdr.writeUInt32BE(height,4);
+    ihdr[8]=8;
+    ihdr[9]=2;
+    const {deflateSync}=await import('node:zlib');
+    fs.writeFileSync(upgradeSource,Buffer.concat([
+      Buffer.from([137,80,78,71,13,10,26,10]),
+      pngChunk('IHDR',ihdr),
+      pngChunk('IDAT',deflateSync(scanlines,{level:6})),
+      pngChunk('IEND',Buffer.alloc(0)),
+    ]));
     fs.copyFileSync(original,upgradeDest);
     const digest=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+    reviewUpgrade.sourceSha256=digest(upgradeSource);
     assert.equal(digest(upgradeDest),reviewUpgrade.replacesSha256);
     assert.equal(digest(upgradeSource),reviewUpgrade.sourceSha256);
     record.modelOriginals[upgradeId]=reviewUpgrade;
