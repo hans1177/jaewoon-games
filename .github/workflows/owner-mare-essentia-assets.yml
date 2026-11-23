@@ -97,9 +97,14 @@ jobs:
             if [[ ${#parts[@]} -eq 0 || ! -f "$stage/sha256" ]]; then
               echo "::error::CARD_TRANSFER_INCOMPLETE:$id"; exit 1
             fi
+            expected="$(awk '{print $1}' "$stage/sha256")"
+            approved="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("approved",{}).get("CardArt/"+sys.argv[2],""))' "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json" "$id")"
+            if [[ "$expected" != "$approved" ]]; then
+              echo "CARD_TRANSFER_STALE_APPROVAL_SKIPPED $id $expected $approved"
+              continue
+            fi
             tmp="$(mktemp)"
             cat "${parts[@]}" | base64 --decode > "$tmp"
-            expected="$(awk '{print $1}' "$stage/sha256")"
             actual="$(sha256sum "$tmp" | awk '{print $1}')"
             if [[ "$actual" != "$expected" ]]; then
               echo "::error::CARD_TRANSFER_SHA_MISMATCH:$id"; exit 1
@@ -117,6 +122,11 @@ jobs:
             dest="$root/$id-original.png"
             cp "$tmp" "$dest"
             current="$(gh api "repos/${GITHUB_REPOSITORY}/contents/$dest?ref=main" --jq .sha 2>/dev/null || true)"
+            if [[ "$current" == "$(git hash-object "$tmp")" ]]; then
+              rm -f "$tmp"
+              echo "CARD_ORIGINAL_ALREADY_VERIFIED $id $actual"
+              continue
+            fi
             payload="$(mktemp)"
             python3 - "$dest" "$current" "$payload" <<'PYPAYLOAD'
           import base64,json,pathlib,sys
