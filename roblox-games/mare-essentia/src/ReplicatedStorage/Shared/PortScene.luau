@@ -8064,16 +8064,21 @@ function PortScene.build(info, onFacility)
 		local shelf = ReplicatedStorage:FindFirstChild("MareAssets")
 		local people = shelf and shelf:FindFirstChild("People")
 		if people then
-			local queued = false
-			local function refreshOutfits()
+			local queued, refreshReady = false, false
+			local function refreshOutfits(includeReady)
+				-- [자산 지연 입고] 원래 완성된 주민도 승인된 신규 머리/장신구 도착 때 재선택한다.
+				-- 기존 0.08초 배치와 원본 R15 착용 함수를 재사용한다.
+				if includeReady == true then refreshReady = true end
 				if queued then return end
 				queued = true
 				task.delay(0.08, function()
 					queued = false
 					if not folder.Parent then return end
+					local includeCompleted = refreshReady
+					refreshReady = false
 					for _, subject in folder:GetDescendants() do
 						if subject:IsA("Model") and subject:GetAttribute("NpcAssetProfile")
-						and subject:GetAttribute("NpcAppearanceState") ~= "ready" then
+						and (includeCompleted or subject:GetAttribute("NpcAppearanceState") ~= "ready") then
 							Pose.applyRegisteredMobOutfit(subject)
 						end
 					end
@@ -8084,14 +8089,28 @@ function PortScene.build(info, onFacility)
 				if not (string.find(asset.Name, "peasant", 1, true) or string.find(asset.Name, "ranger", 1, true)
 					or string.sub(asset.Name, 1, 5) == "hair_" or string.sub(asset.Name, 1, 4) == "acc_"
 					or string.sub(asset.Name, 1, 7) == "outfit_") then return end
-				refreshOutfits()
+				refreshOutfits(string.sub(asset.Name, 1, 5) == "hair_"
+					or string.sub(asset.Name, 1, 4) == "acc_")
 			end)
+			-- [직업용 장비] Cargo·Relics 원본이 늦게 도착해도 기존 주민에게 다시 장착한다.
+			local gearConns = {}
+			for _, kind in { "Cargo", "Relics" } do
+				local group = shelf:FindFirstChild(kind)
+				if group then
+					table.insert(gearConns, group.ChildAdded:Connect(function(asset)
+						if asset:IsA("Model") and AssetIds[kind .. "/" .. asset.Name] then refreshOutfits() end
+					end))
+				end
+			end
 			local readyConn = ReplicatedStorage:GetAttributeChangedSignal("MareAssetsReady"):Connect(function()
-				if ReplicatedStorage:GetAttribute("MareAssetsReady") then refreshOutfits() end
+				if ReplicatedStorage:GetAttribute("MareAssetsReady") then refreshOutfits(true) end
 			end)
+			-- 장면보다 먼저 모델 로드가 끝난 경우에도 누락/헤어 후보를 한 번 재검사한다.
+			if ReplicatedStorage:GetAttribute("MareAssetsReady") then refreshOutfits(true) end
 			folder.Destroying:Connect(function()
 				outfitConn:Disconnect()
 				readyConn:Disconnect()
+				for _, conn in gearConns do conn:Disconnect() end
 			end)
 		end
 	end
