@@ -3125,7 +3125,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local previousDecor = lastDecorationGrowth[info.portId]
 	local decorPlaced, decorAnimated, decorBuilders = 0, 0, 0
 	local touchDecor = game:GetService("UserInputService").TouchEnabled
-	local decorLimit = if game:GetService("UserInputService").TouchEnabled then 7 else 13
+	-- [항구 장식 상한] 중복 공용 소품을 줄여 항구 고유 건축을 먼저 보여 준다.
+	local decorLimit = if identity then (if touchDecor then 4 else 6) else (if touchDecor then 7 else 13)
 	local animationLimit = if touchDecor then 3 else 6
 	-- [건설 조직] 실제 고용된 일꾼·장인의 수를 넘지 않고 사이트마다 여러 직무로 분산한다.
 	-- 성능 예산은 도시 등급에 따라 커지지만 모바일은 동시 4명까지만 렌더링한다.
@@ -3260,6 +3261,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	-- [6단계 외곽 확장] 최고 발전 도시는 미개발 표본을 절반으로 줄여 외곽이 시가지로 이어지게 한다.
 	if cityTier >= 6 then wildernessQuota = math.min(wildernessQuota, if wildernessTouch then 5 else 6) end
 	local wildernessPlaced, wildernessDetails, wildernessFringe, wildernessRejected = 0, 0, 0, 0
+	if identity then wildernessQuota = math.min(wildernessQuota, if wildernessTouch then 8 else 12) end
 	local wildernessRng = seeded(info.portId .. ":open-land")
 	-- [입체 지형 팔레트] 자산 번호가 존재하는 무료 기존 모델만 사용한다. 허허벌판을 건물로 위장하지 않는다.
 	local openLandAssets = {
@@ -4096,7 +4098,6 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		elseif stoneStreet then "cobblestones" else "ground-pathrocks"
 	local streetPatches, streetLanterns = 0, 0
 	-- [깨끗한 길] 무작위로 바닥 조각을 흩뿌리지 않고 기존 골목과 만나는 교차점에만 배치.
-	local streetTouch = UserInputService.TouchEnabled
 	local patchLimit = if streetTouch then 4 else 8
 	if pathKind and pathAsset and AssetIds[pathKind .. "/" .. pathAsset] then
 		for i, sx in streetsOuter do
