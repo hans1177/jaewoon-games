@@ -3474,10 +3474,28 @@ test('주민 복장 천·피혁·금속 재질과 계절 상의 교체는 원본
   assert.ok(!pose.includes('surface.Color = surface.Color:Lerp(dye, 0.26)'), '옷 전체 파스텔 일괄 염색 금지');
   assert.ok(pose.includes('if not trim:find("button", 1, true) and not trim:find("buckle", 1, true)'), '무텍스처 직물에서도 단추는 보호');
   assert.ok(pose.includes('for _, spec in specs do'), '현재 직업/계절 의상 기준으로 검사');
-  assert.ok(pose.includes('if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then'), '현재 계절 상의끼리만 정리');
+  assert.ok(pose.includes('local mounted = model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso")'), '현재 계절 상의끼리만 정리');
   assert.ok(!pose.includes('local fittedUpperReady = false'), '단면 겉옷 장착 시 전신복 삭제 금지');
-  assert.ok(pose.includes('if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then'), '기존 계절 의상 지연 로드 보호');
+  assert.ok(pose.includes('if visible then'), '현재 상의가 실제 보일 때만 이전 상의 정리');
   assert.ok(pose.includes('weld.Part0, weld.Part1, weld.Parent = target, part, part'), 'R15 관절 유지');
+});
+
+// [계절·날씨 충돌 회귀] 비옷 선택과 항구 겨울 플래그가 달라도 실제 요청된 상의를 남긴다.
+test('주민 계절 외투와 개별 비옷은 현재 착용 목록을 기준으로 교체한다',()=>{
+  const pose=read('ReplicatedStorage/Shared/Pose.luau');
+  const from=pose.indexOf('-- [계절·날씨 상의 정리]');
+  const to=pose.indexOf('-- [한 주민 한 장신구]',from);
+  assert.ok(from>=0 && to>from,'기존 상의 교체 책임 구간');
+  const cleanup=pose.slice(from,to);
+  assert.ok(cleanup.includes('for _, spec in specs do'),'날씨·겨울 선택이 끝난 현재 specs만 사용');
+  assert.ok(cleanup.includes('wanted = spec[1]'),'현재 필요 상의를 기준으로 판정');
+  assert.ok(!cleanup.includes('if winterCoat then'),'항구 겨울 플래그로 개별 비옷을 제거하는 오류 방지');
+  assert.ok(cleanup.includes('part.Transparency < 0.95'),'숨겨진/투명 상의를 착용 성공으로 오판하지 않음');
+  assert.ok(cleanup.includes('part.LocalTransparencyModifier < 0.99'),'모바일 LOD 숨김 상의를 성공으로 오판하지 않음');
+  assert.ok(cleanup.includes('if visible then'),'실제 보이는 상의가 확인된 뒤만 옛 상의 제거');
+  assert.ok(!cleanup.includes('male_peasant_body'),'원본 전신복 보존');
+  assert.ok(pose.includes('model:GetAttribute("NpcWeatherLayer") == "outer_coat"'),'개별 날씨 외투 선택 보존');
+  assert.ok(pose.includes('model.Parent:GetAttribute("PortWinterCoat") == true'),'항구 겨울 외투 선택 보존');
 });
 
 // [실제 런타임 실패 회귀] GetBoundingBox는 CFrame(위치)와 Vector3(크기)을 각각 반환한다.
