@@ -1067,6 +1067,111 @@ local P: { [string]: Identity } = {
 		signature = { "올리브유 시장", "포도주 공방", "소금 선창" }, facade = { 230, 208, 192 }, roofTint = { 168, 105, 72 },
 		reflow = { lane = 2, plaza = -7, side = 1, landmarkX = 5, landmarkZ = -3, district = 5, facility = 2 } },
 
+	-- [항구별 재배치 119~181] tahiti: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	tahiti = { landmark = { id = "lm_tahiti_meeting_house", name = "파페에테 great meeting house with carved posts", kind = "meeting_house", fallback = "none" },
+		roof = "thatch", wall = "wood", balcony = nil, layout = "organic", plaza = "quay",
+		street = { "sand", "sand", "gravel", "plank", "paved" }, lamp = "torch", ground = "sand", weatherGround = "monsoon_mud",
+		signature = { "진주조개 시장", "백단향 공방", "진주조개 선창" }, facade = { 185, 166, 119 }, roofTint = { 131, 92, 73 },
+		reflow = { lane = 8, plaza = 2, side = 1, landmarkX = -5, landmarkZ = 3, district = -1, facility = 6 } },
+
+	-- [항구별 재배치 119~181] tainan: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	tainan = { landmark = { id = "lm_tainan_city_gate", name = "타이난 multi-storey pagoda or city gate tower", kind = "city_gate", fallback = "none" },
+		roof = "eave", wall = "brick", balcony = "wood_lattice", layout = "grid", plaza = "quay",
+		street = { "dirt", "gravel", "flagstone", "flagstone", "paved" }, lamp = "paper_lantern", ground = "grass", weatherGround = "monsoon_mud",
+		signature = { "설탕 시장", "쌀 공방", "장뇌 선창" }, facade = { 164, 159, 143 }, roofTint = { 56, 79, 84 },
+		reflow = { lane = -8, plaza = -10, side = 1, landmarkX = -8, landmarkZ = 1, district = -3, facility = 4 } },
+
+	-- [항구별 재배치 119~181] tallinn: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	tallinn = { landmark = { id = "lm_tallinn_city_gate", name = "탈린 brick Gothic city gate (Holstentor-style) with twin towers", kind = "city_gate", fallback = "none" },
+		roof = "gable", wall = "brick", balcony = nil, layout = "grid", plaza = "market",
+		street = { "dirt", "cobble", "cobble", "cobble", "paved" }, lamp = "oil_lantern", ground = "snowmelt", weatherGround = "snow",
+		signature = { "목재 시장", "모피 공방", "생선 선창" }, facade = { 166, 115, 97 }, roofTint = { 89, 78, 76 },
+		reflow = { lane = 6, plaza = -8, side = -1, landmarkX = 1, landmarkZ = -7, district = -3, facility = 1 } },
+
+	-- [항구별 재배치 119~181] tangier: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	tangier = { landmark = { id = "lm_tangier_mosque", name = "탕헤르 mosque with square minaret and courtyard", kind = "mosque", fallback = "none" },
+		roof = "flat", wall = "adobe", balcony = "mashrabiya", layout = "organic", plaza = "market",
+		street = { "sand", "dirt", "gravel", "flagstone", "flagstone" }, lamp = "mosque_lamp", ground = "sand", weatherGround = "dust",
+		signature = { "올리브유 시장", "소금 공방", "생선 선창" }, facade = { 221, 186, 157 }, roofTint = { 158, 136, 96 },
+		reflow = { lane = -6, plaza = -8, side = -1, landmarkX = 4, landmarkZ = -5, district = -11, facility = 5 } },
+
+	-- [항구별 재배치 119~181] ternate: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	ternate = { landmark = { id = "lm_ternate_pagoda", name = "테르나테 stupa/pagoda or tiered-roof royal hall", kind = "pagoda", fallback = "none" },
+		roof = "thatch", wall = "wood", balcony = "wood_lattice", layout = "organic", plaza = "market",
+		street = { "mud", "dirt", "gravel", "plank", "paved" }, lamp = "paper_lantern", ground = "mud", weatherGround = "monsoon_mud",
+		signature = { "정향 시장", "육두구 공방", "용연향 선창" }, facade = { 193, 160, 119 }, roofTint = { 135, 95, 57 },
+		reflow = { lane = 2, plaza = -8, side = 1, landmarkX = 2, landmarkZ = -7, district = 2, facility = 4 } },
+
+	-- [항구별 재배치 119~181] thessaloniki: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	thessaloniki = { landmark = { id = "lm_thessaloniki_mosque", name = "테살로니키 domed mosque with slender pencil minarets", kind = "mosque", fallback = "none" },
+		roof = "dome", wall = "stone", balcony = "mashrabiya", layout = "terrace", plaza = "temple_court",
+		street = { "dirt", "gravel", "cobble", "flagstone", "flagstone" }, lamp = "mosque_lamp", ground = "grass", weatherGround = "puddles",
+		signature = { "비단 시장", "양모 공방", "건포도 선창" }, facade = { 219, 183, 156 }, roofTint = { 147, 107, 90 },
+		reflow = { lane = 11, plaza = -2, side = -1, landmarkX = -4, landmarkZ = 5, district = 0, facility = 5 } },
+
+	-- [항구별 재배치 119~181] tianjin: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	tianjin = { landmark = { id = "lm_tianjin_city_gate", name = "톈진 multi-storey pagoda or city gate tower", kind = "city_gate", fallback = "none" },
+		roof = "eave", wall = "brick", balcony = "wood_lattice", layout = "grid", plaza = "quay",
+		street = { "dirt", "gravel", "flagstone", "flagstone", "paved" }, lamp = "paper_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "옥 시장", "인삼 공방", "비단 선창" }, facade = { 177, 155, 139 }, roofTint = { 66, 72, 77 },
+		reflow = { lane = 11, plaza = -3, side = 1, landmarkX = 3, landmarkZ = -6, district = -10, facility = 4 } },
+
+	-- [항구별 재배치 119~181] toulon: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	toulon = { landmark = { id = "lm_toulon_fort", name = "툴롱 Gothic cathedral spire or Vauban star fort", kind = "fort", fallback = "none" },
+		roof = "hip", wall = "stone", balcony = "iron", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "포도주 시장", "소금 공방", "올리브유 선창" }, facade = { 224, 217, 173 }, roofTint = { 158, 107, 76 },
+		reflow = { lane = -12, plaza = 1, side = 1, landmarkX = 3, landmarkZ = -5, district = 12, facility = 2 } },
+
+	-- [항구별 재배치 119~181] trieste: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	trieste = { landmark = { id = "lm_trieste_campanile", name = "트리에스테 brick campanile beside a domed church", kind = "campanile", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "loggia", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "flagstone", "flagstone", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "유리 시장", "소금 공방", "포도주 선창" }, facade = { 237, 186, 139 }, roofTint = { 167, 101, 48 },
+		reflow = { lane = 11, plaza = -14, side = -1, landmarkX = -3, landmarkZ = 6, district = 10, facility = 3 } },
+
+	-- [항구별 재배치 119~181] tripoli: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	tripoli = { landmark = { id = "lm_tripoli_mosque", name = "트리폴리 domed mosque with slender pencil minarets", kind = "mosque", fallback = "none" },
+		roof = "dome", wall = "stone", balcony = "mashrabiya", layout = "terrace", plaza = "temple_court",
+		street = { "dirt", "gravel", "cobble", "flagstone", "flagstone" }, lamp = "mosque_lamp", ground = "grass", weatherGround = "puddles",
+		signature = { "올리브유 시장", "소금 공방", "대추야자 선창" }, facade = { 212, 190, 170 }, roofTint = { 162, 103, 83 },
+		reflow = { lane = -12, plaza = -4, side = 1, landmarkX = -7, landmarkZ = 2, district = 9, facility = 6 } },
+
+	-- [항구별 재배치 119~181] tunis: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	tunis = { landmark = { id = "lm_tunis_mosque", name = "튀니스 domed mosque with slender pencil minarets", kind = "mosque", fallback = "none" },
+		roof = "dome", wall = "stone", balcony = "mashrabiya", layout = "terrace", plaza = "temple_court",
+		street = { "dirt", "gravel", "cobble", "flagstone", "flagstone" }, lamp = "mosque_lamp", ground = "grass", weatherGround = "puddles",
+		signature = { "올리브유 시장", "소금 공방", "생선 선창" }, facade = { 212, 190, 175 }, roofTint = { 145, 108, 79 },
+		reflow = { lane = 3, plaza = -1, side = 1, landmarkX = 4, landmarkZ = -4, district = 7, facility = 2 } },
+
+	-- [항구별 재배치 119~181] valencia: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	valencia = { landmark = { id = "lm_valencia_fort", name = "발렌시아 bell tower over a cathedral or Moorish-era fortress", kind = "fort", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "iron", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "올리브유 시장", "비단 공방", "소금 선창" }, facade = { 241, 220, 204 }, roofTint = { 173, 110, 70 },
+		reflow = { lane = 0, plaza = 5, side = 1, landmarkX = -2, landmarkZ = 6, district = -10, facility = 6 } },
+
+	-- [항구별 재배치 119~181] valparaiso: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	valparaiso = { landmark = { id = "lm_valparaiso_cathedral", name = "발파라이소 Baroque colonial cathedral facade with twin towers", kind = "cathedral", fallback = "none" },
+		roof = "flat", wall = "stucco", balcony = "iron", layout = "grid", plaza = "parade",
+		street = { "sand", "dirt", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "puddles",
+		signature = { "초석 시장", "구리 공방", "양모 선창" }, facade = { 233, 219, 179 }, roofTint = { 176, 99, 78 },
+		reflow = { lane = 9, plaza = -11, side = -1, landmarkX = 7, landmarkZ = -2, district = 10, facility = 3 } },
+
+	-- [항구별 재배치 119~181] vancouver: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	vancouver = { landmark = { id = "lm_vancouver_church", name = "밴쿠버 tall wooden stave-style church or copper-spired tower", kind = "church", fallback = "none" },
+		roof = "gable", wall = "wood", balcony = nil, layout = "organic", plaza = "quay",
+		street = { "dirt", "gravel", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "모피 시장", "목재 공방", "생선 선창" }, facade = { 176, 77, 59 }, roofTint = { 89, 82, 70 },
+		reflow = { lane = -3, plaza = -9, side = 1, landmarkX = -6, landmarkZ = 3, district = -12, facility = 2 } },
+
+	-- [항구별 재배치 119~181] visby: 지시서 건축·기후·시장·방문 구역에 따른 개별 배치.
+	visby = { landmark = { id = "lm_visby_fort", name = "비스뷔 stone fortress tower with onion or needle spire", kind = "fort", fallback = "none" },
+		roof = "hip", wall = "stone", balcony = nil, layout = "terrace", plaza = "parade",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "snowmelt", weatherGround = "snow",
+		signature = { "생선 시장", "소금 공방", "양모 선창" }, facade = { 175, 163, 163 }, roofTint = { 95, 96, 103 },
+		reflow = { lane = -5, plaza = 10, side = 1, landmarkX = -5, landmarkZ = 4, district = -10, facility = 6 } },
+
 }
 
 local M = {}
