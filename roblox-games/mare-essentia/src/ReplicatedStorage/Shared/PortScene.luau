@@ -459,6 +459,8 @@ end
 local CENTRAL_PLAZA_RADIUS = 26
 -- [지역 건축] 실제 항구 문화권을 수입 건축 메시와 기존 집 생성에서 함께 참조한다.
 local currentKey = "north"
+-- [항구별 원본 메시 색] 수입 모델 함수에서도 같은 항구 ID를 읽는다.
+local scenePortId: string? = nil
 -- [항구 생성 분할] 큰 모델 복제·R15 인물 생성 사이에 프레임을 양보해 클라이언트가 수 초씩 멈추지 않게 한다.
 -- 한 프레임에 30ms까지만 만들고 다음 프레임으로 넘긴다(약 30fps 유지). 12ms에서는 첫 항구 생성이 6초+로 길어져
 -- 시작 안내 진행이 QA 대기(21초) 안에 끝나지 않는 회차가 생겼다(실행 44912240071 INTRO_STUCK). 양보할 수 없는 호출(테스트·비동기 불가 문맥)에서는 그대로 한 번에 만든다.
@@ -528,6 +530,11 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		else C(156, 148, 138)
 	local roofColor = if east then C(76, 82, 82) elseif mediterranean then C(155, 79, 56)
 		elseif sandy then C(162, 128, 98) else C(100, 105, 110)
+	-- [181개 항구 건축색] 같은 승인된 건물 메시여도 포트별 실제 벽/기와색을 적용한다.
+	-- 색상지도가 있는 원본 메시에는 아래 기존 표면 보존 검사가 우선 적용된다.
+	if architecture and kind == "Town" and scenePortId and parent.Name == "PortScene" then
+		wallColor, roofColor = PortIdentity.appearance(scenePortId, wallColor, roofColor, wallColor, Color3)
+	end
 	local hasParts, restoredSurfaces = false, 0
 	for _, p in m:GetDescendants() do
 		if p:IsA("BasePart") then
@@ -1043,7 +1050,7 @@ local function modularHall(parent, cx, cz, sizeX, sizeZ, floors, set, tint, roof
 end
 
 -- [항구별 외형] 주택 생성 함수가 PortScene.build의 현재 항구 참조를 직접 읽도록 같은 로컬 스코프에서 선언한다.
-local scenePortId: string? = nil
+-- [항구 ID] 상단에 선언되어 수입 모델과 주택이 함께 참조한다.
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- [광장 건축 금지] 향후 시설 추가에서도 중앙광장의 빈 보행 공간은 유지한다.
 	if parent.Name == "PortScene" then
@@ -2775,9 +2782,15 @@ do
 	local belem = cat(one("Naval", "tower-complete-large", 30, 0, 0), one("Naval", "tower-complete-small", 14, 14, 10), flagAt(-10, 0))
 	local mission = cat(one("Town", "church", 30, 0, 0), one("Town", "bell-tower", 26, -16, 6), palms(18))
 	local rock = cat(one("Town", "rock-wide", 52, 0, 0), one("Town", "rock-wide", 34, 22, 8))
-	SIG.london = keep(34)
+	-- [런던] 기존 등록 실물 석교와 양안 상점가. 미등록 역사 원본으로 오인하지 않는다.
+	SIG.london = cat(one("Terrain", "bridge-stone", 34, -1, 0),
+		one("Town", "house", 16, -22, -15), one("Town", "house", 18, -5, -15),
+		one("Town", "house", 16, 13, -15))
 	SIG.edinburgh = cat(one("Town", "rock-wide", 40, 0, 0), keep(26))
-	SIG.amsterdam = windmills
+	-- [암스테르담] 운하 통로의 개폐교·운하변 창고·풍차. 기존 승인된 건축 메쉬만 사용.
+	SIG.amsterdam = cat(one("Castle", "bridge-draw", 29, -7, -5),
+		one("Town", "house", 18, -22, 15), one("Town", "house", 19, 9, 15),
+		one("Town", "windmill", 23, 25, -14))
 	SIG.hamburg = cat(one("Town", "church", 28, 0, 0), one("Town", "bell-tower", 30, -16, 0))
 	SIG.lisbon = belem
 	SIG.seville = cat(stack("Town", { "bell-tower", "bell-tower" }, 22, 0, 0), one("Castle", "wall", 20, 18, 0), one("Castle", "wall", 20, -18, 0))
@@ -2799,7 +2812,10 @@ do
 	SIG.canton = cat(pagoda, one("Town", "temple-stone", 18, 18, 8))
 	SIG.macau = cat(pagoda, one("Town", "temple-stone", 18, 20, 8)) -- 동아시아 항구: 서양식 성당 대신 탑과 사원
 	SIG.shanghai = cat(pagoda, one("Town", "eastasia-bell", 18, -22, 8))
-	SIG.nagasaki = cat(stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 11, 0, 0), one("Terrain", "gate-overhang", 14, 20, 0))
+	-- [나가사키] 데지마 교역 부두를 암시하는 교량·창고 거리. 전용 부채꼴 섬 원본은 별도 등록.
+	SIG.nagasaki = cat(one("Terrain", "bridge-stone", 26, -8, 11),
+		one("Town", "eastasia-base", 18, -18, -10), one("Town", "eastasia-roof", 19, -18, -10, 9),
+		one("Town", "eastasia-base", 18, 15, -10), one("Town", "eastasia-roof", 19, 15, -10, 9))
 	SIG.osaka = cat(one("Castle", "wall", 24, 0, 14), stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 13, 0, 0))
 	-- [에도] 같은 일본 문화권이라도 오사카의 성곽 윤곽과 복제하지 않고 원본 승인 모델의 배치를 달리한다.
 	SIG.edo = cat(stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 12, -6, 0),
@@ -2897,7 +2913,9 @@ do
 	SIG.ningbo = cat(shrine, one("Town", "eastasia-bell", 14, -22, 10))
 	SIG.amoy = cat(one("Town", "temple-tower", 29, -7, 0),
 		one("Town", "eastasia-base", 17, 19, 8), one("Town", "eastasia-roof", 19, 19, 12))
-	SIG.busan = shrine
+	-- [부산] 조선 해안 성곽과 기와 누각 윤곽. 전용 관아 원본으로 표기하지 않는다.
+	SIG.busan = cat(one("Castle", "wall", 23, -16, 8), one("Castle", "wall", 23, 9, 8),
+		one("Town", "eastasia-base", 18, 0, -9), one("Town", "eastasia-roof", 19, 0, -9, 9))
 	SIG.incheon = cat(one("Town", "eastasia-bell", 24, -6, 0),
 		one("Town", "eastasia-base", 18, 18, 8), one("Town", "eastasia-roof", 19, 18, 13))
 	SIG.hakodate = cat(one("Castle", "fortress", 24, 0, 0), one("Terrain", "tree-pinedefaulta", 12, 20, 6))
@@ -2995,6 +3013,11 @@ local function placeSignature(folder, info)
 	-- 미등록이면 원본 건물을 사칭하는 대체물을 만들지 않고, 기존에 승인된 SIG 자산으로
 	-- 항구별 실제 3D 부두·마을 경관을 그린다. 이는 전용 원본 완성과 별개다.
 	local identity = PortIdentity.get(info.portId)
+	-- [성장 단계 유지] 개척 1단계에는 완성형·기초형 대표경관을 짓지 않는다.
+	if sceneLevel < 2 then
+		folder:SetAttribute("CityPortSceneryPlacedCount", 0)
+		return
+	end
 	if sceneLevel >= 2 then
 		local stageName = if sceneLevel >= 4 then "full" else "base"
 		local landmarkAsset = info.portId .. "_landmark_" .. stageName
@@ -3009,7 +3032,7 @@ local function placeSignature(folder, info)
 				return
 			end
 		end
-		folder:SetAttribute("CityPortMissingLandmark", landmarkAsset)
+		if identity then folder:SetAttribute("CityPortMissingLandmark", landmarkAsset) end
 	end
 	if not list and not european then return end
 	-- [181개 항구 실물 변경] 같은 승인 모델 목록을 공유하더라도 항구마다
