@@ -6501,7 +6501,8 @@ function PortScene.build(info, onFacility)
 	}
 	-- [181항구 방문 시설 실제 재배치] 원래 7개 고정 슬롯을 폐기하고
 	-- 기존 상호작용 프롬프트와 원본 건물을 포트별 북·남 구역에 새로 배정한다.
-	local facilityRng = seeded(info.portId .. ":facility-block-reposition-v2")
+	do
+		local facilityRng = seeded(info.portId .. ":facility-block-reposition-v2")
 	local facilitySites = {
 		Vector3.new(-18, 0, 46), Vector3.new(-18, 0, -46),
 		Vector3.new(-49, 0, 46), Vector3.new(-49, 0, -46),
@@ -6515,6 +6516,7 @@ function PortScene.build(info, onFacility)
 		f.pos = Vector3.new(site.X + facilityRng:NextInteger(-2, 2), 0, site.Z * reflection)
 		folder:SetAttribute("CityFacilityPosition_" .. f.tab, f.pos)
 	end
+	end -- 방문 시설 슬롯 배치 완료, 임시 시드·슬롯 해제
 	folder:SetAttribute("CityFacilityLayoutMode", "WHOLE_PORT_REPOSITION_V2")
 	for _, f in facilities do
 		if f.always or (f.key and fac[f.key]) then
