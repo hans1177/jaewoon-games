@@ -2683,7 +2683,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	local facility = parent.Name == "Dock" and name:sub(1, 5) == "Menu_"
 	local artSize = if facility then 46 elseif dockItem then 43 else 31
 	local artTop = if dockItem then 3 else 4
-	if H.facilityIconCells[key] ~= nil and (H.facilityIconAtlas ~= nil or (key == "diplomacy" and H.diplomacyIconAtlas ~= nil)) then
+	if not specialGlyph and H.facilityIconCells[key] ~= nil and (H.facilityIconAtlas ~= nil or (key == "diplomacy" and H.diplomacyIconAtlas ~= nil)) then
 		local icon = modelIcon(button, "FacilityArt", key, nil, artSize, label)
 		icon.Name = "MenuArt"
 		icon.AnchorPoint = Vector2.new(0.5, 0)
