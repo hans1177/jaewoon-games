@@ -1,90 +1,20 @@
 {
- "sourceRevision": "0b4d4af552e3ffce8eb0a6fb1b22474f50d1a7bb",
+ "sourceRevision": "f1946c4ea38714c8fc53f917564d5eb8f8ae57d6",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=4 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=4 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   },
   {
-   "step": 3,
-   "ctx": "Client",
-   "out": "DEV Deck\ntext"
-  },
-  {
-   "step": 5,
-   "capture": "k0_deck",
+   "step": 2,
+   "capture": "ap_game",
    "files": 1
   },
   {
-   "step": 6,
+   "step": 4,
    "ctx": "Client",
-   "out": "CHK deck view=1048x380 texts=268 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 7,
-   "ctx": "Client",
-   "out": "DEV Practice\ntext"
-  },
-  {
-   "step": 9,
-   "capture": "k1_practice",
-   "files": 1
-  },
-  {
-   "step": 10,
-   "ctx": "Client",
-   "out": "CHK practice view=1048x380 texts=268 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 11,
-   "ctx": "Client",
-   "out": "DEVRESULT Practice false Players.Anyanguy1980.PlayerScripts.Client.Game:15874: attempt to index nil with 'practice'\ntext"
-  },
-  {
-   "step": 12,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
-  },
-  {
-   "step": 13,
-   "ctx": "Server",
-   "out": "TAC_START ok=false\ntext"
-  },
-  {
-   "step": 14,
-   "ctx": "Client",
-   "out": "x\ntext"
-  },
-  {
-   "step": 16,
-   "ctx": "Client",
-   "out": "DEV Tactics\ntext"
-  },
-  {
-   "step": 18,
-   "capture": "k2_tactics_hand",
-   "files": 1
-  },
-  {
-   "step": 19,
-   "ctx": "Client",
-   "out": "CHK tactics view=1048x380 texts=268 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 20,
-   "ctx": "Client",
-   "out": "HAND none\ntext"
-  },
-  {
-   "step": 22,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
-  },
-  {
-   "step": 23,
-   "ctx": "Server",
-   "out": "ERR Server count=0\ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=4 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=4 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   }
  ],
  "errors": [],
@@ -92,122 +22,27 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 35002
+   "elapsedMs": 35006
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 2814
+   "elapsedMs": 947
   },
   {
    "step": 2,
-   "type": "wait",
-   "elapsedMs": 4002
+   "type": "capture",
+   "elapsedMs": 1236
   },
   {
    "step": 3,
-   "type": "luau",
-   "elapsedMs": 455
+   "type": "wait",
+   "elapsedMs": 20016
   },
   {
    "step": 4,
-   "type": "wait",
-   "elapsedMs": 3006
-  },
-  {
-   "step": 5,
-   "type": "capture",
-   "elapsedMs": 3147
-  },
-  {
-   "step": 6,
    "type": "luau",
-   "elapsedMs": 335
-  },
-  {
-   "step": 7,
-   "type": "luau",
-   "elapsedMs": 455
-  },
-  {
-   "step": 8,
-   "type": "wait",
-   "elapsedMs": 9005
-  },
-  {
-   "step": 9,
-   "type": "capture",
-   "elapsedMs": 2229
-  },
-  {
-   "step": 10,
-   "type": "luau",
-   "elapsedMs": 264
-  },
-  {
-   "step": 11,
-   "type": "luau",
-   "elapsedMs": 275
-  },
-  {
-   "step": 12,
-   "type": "luau",
-   "elapsedMs": 319
-  },
-  {
-   "step": 13,
-   "type": "luau",
-   "elapsedMs": 603
-  },
-  {
-   "step": 14,
-   "type": "luau",
-   "elapsedMs": 941
-  },
-  {
-   "step": 15,
-   "type": "wait",
-   "elapsedMs": 3507
-  },
-  {
-   "step": 16,
-   "type": "luau",
-   "elapsedMs": 120
-  },
-  {
-   "step": 17,
-   "type": "wait",
-   "elapsedMs": 3507
-  },
-  {
-   "step": 18,
-   "type": "capture",
-   "elapsedMs": 1043
-  },
-  {
-   "step": 19,
-   "type": "luau",
-   "elapsedMs": 194
-  },
-  {
-   "step": 20,
-   "type": "luau",
-   "elapsedMs": 791
-  },
-  {
-   "step": 21,
-   "type": "wait",
-   "elapsedMs": 1508
-  },
-  {
-   "step": 22,
-   "type": "luau",
-   "elapsedMs": 190
-  },
-  {
-   "step": 23,
-   "type": "luau",
-   "elapsedMs": 185
+   "elapsedMs": 347
   }
  ],
  "consoleCapture": {
@@ -217,13 +52,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 24,
-  "completedSteps": 24,
+  "plannedSteps": 5,
+  "completedSteps": 5,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 3,
-  "capturedFrames": 3,
+  "plannedFrames": 1,
+  "capturedFrames": 1,
   "abortedEarly": false
  }
 }
