@@ -1095,7 +1095,10 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	local originalHouse = if scenePortId then scenePortId .. "_house_" .. tostring(originalHouseTier) else nil
 	-- [런던 주거 실물] 기존 1~3단계 정본을 우선하고, 아직 단계 전용본이 없을 때만
 	-- 실제로 등록된 노동자·장인 주택을 일부 필지에 적용한다. 미등록 파일은 표시하지 않는다.
-	local londonResidence = if scenePortId == "london" and seed % 3 == 0 then
+	-- [런던 연립 주택] 2단계의 일부 필지에만 승인된 실제 연립 주택을 쓰며 주거·저장 구조는 유지한다.
+	local londonResidence = if scenePortId == "london" and originalHouseTier == 2
+		and seed % 5 == 1 then "london_bld_house_row"
+		elseif scenePortId == "london" and seed % 3 == 0 then
 		(if originalHouseTier == 1 then "london_house_worker"
 			elseif originalHouseTier == 2 then "london_house_artisan" else nil) else nil
 	local selectedHouse = if originalHouse and AssetIds["Town/" .. originalHouse] then originalHouse
@@ -4382,6 +4385,21 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						lamp.Name = "CityRegionalStreetLantern"
 						lamp:SetAttribute("PortLampStyle", lampStyle)
 						if originalLamp and lampAsset == originalLamp then lamp:SetAttribute("PortOriginalLamp", originalLamp) end
+						-- [런던 기름등] 승인된 실물 유리 케이스 높이에만 기존 야간 조명 규모로 빛을 건다.
+						if lampAsset == "london_street_lamp" then
+							local anchor = lamp:FindFirstChildWhichIsA("BasePart", true)
+							if anchor then
+								local lampBox, lampSize = lamp:GetBoundingBox()
+								local mount = Instance.new("Attachment")
+								mount.Name = "OilLampGlow"
+								mount.Parent = anchor
+								mount.WorldPosition = lampBox.Position + Vector3.new(0, lampSize.Y * 0.39, 0)
+								local glow = Instance.new("PointLight")
+								glow.Color = Color3.fromRGB(255, 205, 130)
+								glow.Range, glow.Brightness, glow.Shadows = 12, 0.4, false
+								glow.Parent = mount
+							end
+						end
 						lamp:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 						streetLanterns += 1
 					end
@@ -4426,7 +4444,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 					put("Town", "temple-stone", 28, cx, cz, true, face)
 					if lvl >= 4 and clergyAvailable then put("Terrain", "pillar-obelisk", 14, cx + 15, cz, true) end
 				else
-					put("Town", "church", 30, cx, cz, true, face)
+					-- [런던 종교 구획] 1~2단계는 승인된 소형 예배당을, 이후는 원래의 대형 교회를 쓴다.
+					if info.portId == "london" and lvl <= 2 and AssetIds["Town/london_bld_chapel"] then
+						put("Town", "london_bld_chapel", 22, cx, cz, true, face)
+					else
+						put("Town", "church", 30, cx, cz, true, face)
+					end
 					if lvl >= 3 and clergyAvailable then
 						put("Town", "bell-tower", 22, cx - 16, cz + (if cz > 0 then -6 else 6), true)
 					end
@@ -4527,7 +4550,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						-- 목장용 축사나 탄광 건물로 유럽식 말 마구간·대장간을 위장하지 않는다.
 						local workshop = if europeanFarm and table.find(made, "timber") then "village-sawmill"
 							elseif europeanFarm and table.find(made, "iron") then "village-blacksmith"
-							elseif europeanFarm and ruralProduct == "grain" then "village-mill" else nil
+							elseif europeanFarm and ruralProduct == "grain" then
+							(if info.portId == "london" and AssetIds["Town/london_bld_mill"]
+								then "london_bld_mill" else "village-mill") else nil
 						if workshop and AssetIds["Town/" .. workshop] then
 							local building = put("Town", workshop, 22, cx + 62, cz, true, face)
 							if building then building:SetAttribute("CityPortRuralWorkshop", workshop) end
@@ -5343,7 +5368,13 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 			end
 		end
 		if lay.fort then
-			one("Naval", "tower-watch", 12, 6, 0, lay.fortZ, true)
+			-- [런던 해안 망루] 실제 자산 번호가 등록된 경우만 승인된 해안 감시탑으로 대체한다.
+			local londonTower = info.portId == "london" and AssetIds["Town/london_bld_watchtower"] ~= nil
+			if londonTower then
+				one("Town", "london_bld_watchtower", 12, 6, 0, lay.fortZ, true)
+			else
+				one("Naval", "tower-watch", 12, 6, 0, lay.fortZ, true)
+			end
 			if lvl >= 3 then
 				for _, offset in { -9, 9 } do
 					one("Naval", "cannon", 3.4, 14, 0, lay.fortZ + offset)
@@ -5351,7 +5382,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				one("Castle", "flag-banner-long", 9, 2, 0, lay.fortZ)
 			end
 			if lvl >= 5 then
-				one("Naval", "tower-watch", 12, 6, 0,
+				one(if londonTower then "Town" else "Naval",
+					if londonTower then "london_bld_watchtower" else "tower-watch", 12, 6, 0,
 					lay.fortZ + (if lay.fortZ > 0 then 1 else -1) * (PortBuildings.HarborPlotBounds.defense.halfZ - 7), true)
 			end
 		end
