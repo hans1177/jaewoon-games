@@ -3578,7 +3578,9 @@ function H.updateHud(p, ship)
 		yard = if (ship.hull or 0) / math.max(1, ship.maxHull or 1) < 0.40 then "긴급"
 			elseif (ship.hull or 0) < (ship.maxHull or 0) then "수리"
 			elseif (ship.supplies or 0) <= 5 then "보급" else nil,
-		board = if readyDelivery then "납품" else nil,
+		-- [인원 부족] 선원이 정원의 절반 아래면 주점(선원 고용)에 알림
+		board = if readyDelivery then "납품"
+			elseif (ship.crew or 0) < (ship.maxCrew or 0) * 0.5 then "인원" else nil,
 	}
 	-- [알림 효과] 실제 게임 상태만 사용. 2겹 색광은 활성 알림에만 재생하고 상태 변경 시 기존 트윈을 정리한다.
 	H.dockSignalTweens = H.dockSignalTweens or {}
