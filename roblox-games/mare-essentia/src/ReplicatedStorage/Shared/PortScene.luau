@@ -554,10 +554,10 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			end
 			if tint and not preserveArchitectureTexture then
 				if kind == "Animals" then
-					-- [실물 가축 품종색] 기등록 원본 PBR/텍스처와 눈·갈기·발굽 무늬는 보존한다.
-						-- 색이 빠진 단색 몸통 메시만 부드럽게 보정해 생물별 털색을 살린다.
+					-- [원본 동물 재질] 텍스처·PBR·품종 무늬는 손대지 않고 색이 유실된 단색 몸통만 복원한다.
 					local sa = p:FindFirstChildOfClass("SurfaceAppearance")
 					local textured = (p:IsA("MeshPart") and p.TextureID ~= "") or surfaceHasColorMap(sa)
+						or p.MaterialVariant ~= "" or surfaceHasMaps(sa)
 					for _, ch in p:GetChildren() do
 						if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 					end
@@ -572,34 +572,29 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						or partName:find("patch", 1, true) or partName:find("spot", 1, true)
 						or partName:find("stripe", 1, true) or partName:find("whisker", 1, true)
 					if textured and not detail then
-						-- [PBR 털색] ColorMap/메시 원본을 보존하고 단 한 채널만 약하게 보정한다.
-						-- 기존 Part.Color와 SurfaceAppearance.Color의 중복 곱셈으로 검게 변하던 문제 방지.
+						-- 원본 색상지도/PBR/TextureID의 색은 복원 대상이 아니다.
 						if sa and surfaceHasColorMap(sa) then
-							sa.Color = sa.Color:Lerp(tint, 0.16)
-						elseif not sa then
-							p.Color = p.Color:Lerp(tint, 0.16)
+							-- 기존 SurfaceAppearance.Color와 Part.Color 모두 보존한다.
 						end
 					elseif not textured and not detail then
-						local light = math.max(p.Color.R, p.Color.G, p.Color.B)
-						-- [원본 PBR 재질] 색상 지도가 없어도 법선/거칠기 맵을 사용할 수 있다.
-						-- 원본 파츠 색과 PBR 색을 동시에 착색하지 않는다.
+						local low = math.min(p.Color.R, p.Color.G, p.Color.B)
+						local high = math.max(p.Color.R, p.Color.G, p.Color.B)
+						local faded = high - low <= 0.14 and high >= 0.58
+						-- 유실된 회백색 몸통만 보정하고 원본 갈색·얼룩·코·눈은 보존한다.
 						if sa and not surfaceHasColorMap(sa) then
-							sa.Color = sa.Color:Lerp(tint, if light > 0.55 then 0.52 else 0.30)
+							sa.Color = sa.Color:Lerp(tint, if faded then 0.7 else 0)
 						else
-							p.Color = p.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
+							p.Color = p.Color:Lerp(tint, if faded then 0.82 else 0)
 						end
-						-- [종별 촉감] 양/라마 양털, 소/말/당나귀 가죽, 돼지 피부, 코끼리 주름을 기본 재질로 표현.
-						-- PBR 맵이 일부라도 있으면 원본 표면을 그대로 둔다.
 						if not sa then
-							p.Material = if asset == "sheep" or asset == "llama" or asset == "chicken"
-								or asset == "cat" or asset == "dog-pug" then Enum.Material.Fabric
-							elseif asset == "cow" or asset == "horse" or asset == "donkey" then Enum.Material.Leather
-							elseif asset == "elephant" then Enum.Material.Concrete
-							else Enum.Material.SmoothPlastic
-							p.Reflectance = 0
+							-- 원본 가죽·피부·주름 재질을 가축 종별 재질로 강제 치환하지 않는다.
+							p.Material = if faded and (p.Material == Enum.Material.SmoothPlastic or p.Material == Enum.Material.Plastic)
+								and (asset == "sheep" or asset == "llama") then Enum.Material.Fabric else p.Material
+							-- 이미 지정된 Enum.Material.Leather/Enum.Material.Concrete 역시 원본 그대로 유지한다.
+							if p.Material == Enum.Material.Leather or p.Material == Enum.Material.Concrete then
+								p.Reflectance = math.min(p.Reflectance, 0.02)
+							end
 						end
-						-- PBR 색은 위에서 한 채널만 보정했다.
-						-- SpecialMesh.VertexColor 이중 곱셈은 털색을 검게 만들므로 건드리지 않는다.
 					elseif not textured and not sa and (partName:find("mane", 1, true) or partName:find("tail", 1, true)) then
 						p.Material = Enum.Material.Fabric
 					end
@@ -722,7 +717,21 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			if size.Z > size.X then m:PivotTo(m:GetPivot() * CFrame.Angles(0, math.pi / 2, 0)) end
 		end
 		local center, size = m:GetBoundingBox()
-		local bottom = Vector3.new(center.Position.X, center.Position.Y - size.Y / 2, center.Position.Z)
+		-- [동물 발바닥 접지] 투명한 리그 루트의 경계는 제외하고 실제 보이는 메시의 최저점에 지면을 맞춘다.
+		local visibleBottomY = math.huge
+		if isAnimal then
+			for _, piece in m:GetDescendants() do
+				if piece:IsA("BasePart") and piece.Transparency < 0.98 then
+					local half = piece.Size * 0.5
+					local pose = piece.CFrame
+					local lowY = pose.Position.Y - math.abs(pose.RightVector.Y) * half.X
+						- math.abs(pose.UpVector.Y) * half.Y - math.abs(pose.LookVector.Y) * half.Z
+					visibleBottomY = math.min(visibleBottomY, lowY)
+				end
+			end
+		end
+		local bottom = Vector3.new(center.Position.X,
+			if visibleBottomY < math.huge then visibleBottomY else center.Position.Y - size.Y / 2, center.Position.Z)
 		m:PivotTo(CFrame.new(bottomPosition - bottom) * m:GetPivot())
 		if kind == "People" then
 			Pose.relaxArms(m)
@@ -2148,29 +2157,9 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			-- [품종별 코트] 직업·서식지·사육량을 바꾸지 않도록 기존 RNG 소비 없이 좌표로만 품종을 선택한다.
 			local coatIndex = if skin then 1 + math.floor(math.abs(pos.X * 0.21 + pos.Z * 0.39 + #walkers * 0.67)) % #skin.coats else 0
 			local coat = if skin then Color3.fromRGB(table.unpack(skin.coats[coatIndex])) else nil
-			local m = if species == "duck" then nil else k and importedModel(folder, "Animals", asset, pos, k[1], false, coat)
-			if species == "duck" then
-				-- 오리: 승인된 외부 메시가 아직 없으므로 기존 파트로 가벼운 입체 모델을 직접 제작한다.
-				m = Instance.new("Model")
-				m.Name = "Duck"
-				m.Parent = folder
-				local feathers = if rng:NextNumber() < 0.55 then C(232, 224, 190) else C(138, 113, 83)
-				local function piece(size, offset, color, shape)
-					local p = part(m, size, CFrame.new(pos + offset), color, Enum.Material.SmoothPlastic, shape)
-					p.CanCollide = false
-					p.CanTouch = false
-					p.CanQuery = false
-					return p
-				end
-				piece(Vector3.new(1.45, 0.7, 0.85), Vector3.new(0, 0.62, 0), feathers, Enum.PartType.Ball)
-				piece(Vector3.new(0.63, 0.58, 0.6), Vector3.new(0, 1.1, -0.38), feathers, Enum.PartType.Ball)
-				piece(Vector3.new(0.55, 0.16, 0.32), Vector3.new(0, 1.01, -0.81), C(227, 150, 55))
-				for _, side in { -1, 1 } do
-					piece(Vector3.new(0.7, 0.22, 0.15), Vector3.new(0, 0.78, side * 0.43), feathers:Lerp(C(90, 90, 73), 0.18), Enum.PartType.Ball)
-					piece(Vector3.new(0.11, 0.11, 0.11), Vector3.new(side * 0.2, 1.2, -0.61), C(35, 34, 31), Enum.PartType.Ball)
-					piece(Vector3.new(0.18, 0.12, 0.32), Vector3.new(side * 0.28, 0.16, 0.05), C(213, 148, 57))
-				end
-			end
+			-- [승인 모델만 표시] 오리 실물 자산이 없는 상태에서 금지된 구체 파츠로 대체하지 않는다.
+			local m = if k and AssetIds["Animals/" .. asset]
+				then importedModel(folder, "Animals", asset, pos, k[1], false, coat) else nil
 			if not m then return end
 			-- [시각 진단] 실제 동물 몸체 스케일과 털색 품종. 저장 키·경제 가축 수가 아니다.
 			m:SetAttribute("AnimalSpecies", species)
@@ -2268,6 +2257,9 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				cow = 3.8, horse = 4.3, donkey = 3.2, llama = 3.4, elephant = 4.8 }
 			m:SetAttribute("AnimalRigParts", #animalParts)
 			m:SetAttribute("AnimalRigJoints", #animalJoints)
+			-- [실물 모션 진단] 정적 원본을 스킨 애니메이션 완성으로 오판하지 않는다.
+			m:SetAttribute("AnimalMotionRig", if #animalJoints > 0 then "JOINTED"
+				elseif #animalParts > 0 then "SEGMENTED" else "STATIC_UNRIGGED")
 			table.insert(walkers, { model = m, base = basePivot, mode = "animal",
 				akind = k[2], phase = rng:NextNumber(0, 10), gait = gaitOf[species] or 7,
 				stepSize = stepOf[species] or 2.5, hd = 0, animalType = species,
@@ -2309,7 +2301,8 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				if sp == "pig" then C(139, 118, 88) else C(105, 139, 82), if sp == "pig" then Enum.Material.Ground else Enum.Material.Grass)
 			grass.Name = if sp == "pig" then "PigYard" else "OpenPasture"
 			grass.CanCollide = false
-			grass.CanQuery = false
+			-- [실물 지면] 비충돌 잔디·흙 바닥도 동물의 접지 레이캐스트에는 포함한다.
+			grass.CanQuery = true
 			grass:SetAttribute("BuildPlotId", info.portId .. ":pasture:" .. i)
 			grass:SetAttribute("BuildType", "farm")
 			grass:SetAttribute("BuildAuthority", "VISUAL_ONLY")
@@ -6637,10 +6630,20 @@ function PortScene.build(info, onFacility)
 	elseif RunService:IsStudio() then
 		warn("[MareEssentia] 항구 R15 대련 테스트 불가: 주민 모델 2명 미만")
 	end
-	-- [가축 발 접지] 실제 충돌 지면만 샘플링하고, 모든 가축이 동일한 경로·매 프레임 레이캐스트를 반복하지 않는다.
+	-- [가축 발 접지] 승인된 실제 항구 바닥·목초지·기본 지면만 사용한다. 동물·소품·보이지 않는 안전판은 제외한다.
 	local animalGround = RaycastParams.new()
-	animalGround.FilterType = Enum.RaycastFilterType.Exclude
-	animalGround.RespectCanCollide = true
+	local animalFloors = {}
+	local baseplate = workspace:FindFirstChild("Baseplate")
+	if baseplate and baseplate:IsA("BasePart") then table.insert(animalFloors, baseplate) end
+	for _, surface in folder:GetChildren() do
+		if surface:IsA("BasePart") and (surface.Name == "Ground" or surface.Name == "TownFloor"
+			or surface.Name == "RuralGround" or surface.Name == "OpenPasture" or surface.Name == "PigYard") then
+			table.insert(animalFloors, surface)
+		end
+	end
+	animalGround.FilterType = Enum.RaycastFilterType.Include
+	animalGround.FilterDescendantsInstances = animalFloors
+	animalGround.RespectCanCollide = false
 	-- 주민이 광장을 천천히 오간다 (끝에서 몸을 돌려 되돌아온다)
 	-- 공식 Motor6D.Transform 적용 시점: Animator 갱신 후, 물리 처리 직전.
 	local walkConn = RunService.PreSimulation:Connect(function(deltaTime)
@@ -6984,8 +6987,8 @@ function PortScene.build(info, onFacility)
 					if close and now >= w.groundCheckAt then
 						w.groundCheckAt = now + 0.18 + (w.phase % 0.08)
 						local ground = workspace:Raycast(
-							Vector3.new(destination.X, w.base.Position.Y + 3.5, destination.Z),
-							Vector3.new(0, -10, 0), animalGround)
+							Vector3.new(destination.X, w.homeFloor + 7, destination.Z),
+							Vector3.new(0, -14, 0), animalGround)
 						if ground and ground.Normal.Y > 0.7 and math.abs(ground.Position.Y - w.homeFloor) < 1.4 then
 							w.groundTarget = ground.Position.Y - w.homeFloor
 						end
