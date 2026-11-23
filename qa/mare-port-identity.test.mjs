@@ -249,3 +249,19 @@ test('전체 181개 실제 항구의 주택·도로·구역·랜드마크·광�
   assert.match(scene, /for _, f in facilities do\s+if f\.always or \(f\.key and fac\[f\.key\]\)/);
   assert.match(scene, /f\.pos = Vector3\.new\(site\.X \+ facilityRng:NextInteger\(-2, 2\), 0, site\.Z \* reflection\)/);
 });
+
+test('재배치 이후 시설 이용 주민과 주택 골목도 새 좌표를 사용한다', () => {
+  for (const [role, facility] of [['scholarAt', 'tech'], ['clerkAt', 'route'], ['bankerAt', 'harbor']]) {
+    assert.ok(scene.includes('GetAttribute("CityFacilityPosition_' + facility + '")'),
+      facility + ' 방문 건물에 전문직 주민 연결');
+    assert.ok(scene.includes('at = ' + role + ', prop ='), role + ' 실제 주민 좌표 사용');
+  }
+  assert.match(scene, /local laneNear = 152 \+ laneOffset \+ laneIndex \* laneL \+ nearBend/);
+  assert.match(scene, /local laneFar = 152 \+ laneOffset \+ \(laneIndex \+ 1\) \* laneL \+ farBend/);
+  assert.match(scene, /strip\(folder, style, sx, 0, laneWidth, 2 \* \(152 \+ math\.abs\(laneOffset\) \+ pairsN \* laneL\) \+ 30\)/);
+  assert.match(scene, /local homeCandidates, homePlaced, homeShifted,/);
+  assert.match(scene, /CityHousingLayoutState/);
+  assert.match(scene, /CityPortPlannedPlots/);
+  assert.match(scene, /PortOriginalLandmark/);
+  assert.match(scene, /CityFacilityLayoutMode", "WHOLE_PORT_REPOSITION_V2"/);
+});
