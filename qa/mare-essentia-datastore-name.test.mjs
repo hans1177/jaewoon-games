@@ -3553,8 +3553,11 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('local crownY = if hairStyle == "bun" then 0.79 elseif hairStyle == "long" then 0.67 else 0.65'), '헤어 정수리 위로 부착');
   assert.ok(pose.includes('hairOffsetY = crownY - ext.Y * 0.5 / target.Size.Y'), 'GetBoundingBox의 크기 반환값으로 헤어 두상 정렬');
   assert.ok(pose.includes('model:SetAttribute("NpcHairMeshReady", wornHair ~= nil)'), '실물 머리 가시 상태 검증');
-  assert.ok(pose.includes('piece.Transparency = if wornHair then 1 else 0'), '머리 메시 로드 실패 시 기존 머리 유지');
-  assert.ok(pose.includes('piece.Transparency = if fullCrown then 1 else 0'), '실물 머리와 두피 중복 시 보조 구체 숨김');
+  assert.ok(pose.includes('piece.Transparency = if wornHair or hoodVisible then 1 else 0'), '실물 머리·성직자 두건 착용 시 예비 머리 겹침 제거');
+  assert.ok(pose.includes('piece.Transparency = if fullCrown or hoodVisible then 1 else 0'), '두건 안쪽 두피 돌출 제거');
+  assert.ok(pose.includes('profile == "companion_clergy_male" or profile == "companion_clergy_female"'), '두건 처리는 성직자 프로필에만 제한');
+  assert.ok(pose.includes('R15Asset_male_ranger_head_hood_Head') && pose.includes('R15Asset_female_ranger_head_hood_Head'), '원본 등록 두건 메시만 확인');
+  assert.ok(pose.includes('mesh.LocalTransparencyModifier < 0.95'), '두건이 로드되지 않았거나 숨겨졌을 때 예비 머리를 유지');
   assert.ok(pose.includes('and not string.find(worn.Name, "hair_beard", 1, true)'), '수염 머리카락과 분리 보존');
   // [모자 정수리] 실물 깃털모자가 기존 머리 보조를 모두 지우면서 뚫린 윗면을 드러내지 않도록 한다.
   assert.ok(pose.includes('crown:SetAttribute("NpcHatCrown", true)'));
