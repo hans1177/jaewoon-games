@@ -1,0 +1,129 @@
+{
+  "version": 3,
+  "provider": "MULTI_FREE_VISUAL",
+  "gameId": "mare-essentia",
+  "sourceRevision": "7d030231d7cdd34473e3d468cffd99057567fc81",
+  "status": "REVIEWED_NO_VERIFIED_EDIT",
+  "selectedRole": "WORLD",
+  "usageWindow": {
+    "day": "2026-11-23",
+    "calls": {
+      "NVIDIA": 5,
+      "GEMINI": 12,
+      "OPENROUTER": 15
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-23",
+      "GEMINI": "2026-11-23",
+      "OPENROUTER": "2026-11-23"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-23T10:46:33.127Z",
+      "GEMINI": "2026-11-23T10:46:44.405Z",
+      "OPENROUTER": "2026-11-23T10:46:39.099Z"
+    }
+  },
+  "cooldowns": {
+    "GEMINI_FLASH": "2026-11-24T11:58:55.826Z",
+    "NVIDIA_VL": "2026-11-23T14:28:33.609Z",
+    "OPENROUTER_NEMOTRON": "2026-11-23T14:40:00.878Z",
+    "OPENROUTER_GEMMA26": "2026-11-23T14:21:26.068Z",
+    "GEMINI_LITE": "2026-11-23T14:21:02.257Z",
+    "OPENROUTER_GEMMA": "2026-11-23T14:21:32.708Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 5,
+      "remainingLocal": 7,
+      "effectiveRemaining": 7,
+      "regularWorkRemaining": 4,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": 1.12,
+      "estimatedHoursToLocalCap": 6.2,
+      "nextLocalWindowAt": "2026-11-24T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 12,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 3.09,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-24T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 15,
+      "remainingLocal": 15,
+      "effectiveRemaining": 15,
+      "regularWorkRemaining": 9,
+      "emergencyReserveRemaining": 6,
+      "estimatedCallsPerHour": 3.93,
+      "estimatedHoursToLocalCap": 3.8,
+      "nextLocalWindowAt": "2026-11-24T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [
+    {
+      "id": "OPENROUTER_GEMMA26",
+      "status": "HTTP_429",
+      "provider": "OPENROUTER",
+      "model": "google/gemma-4-26b-a4b-it:free"
+    },
+    {
+      "id": "GEMINI_LITE",
+      "status": "HTTP_503",
+      "provider": "GEMINI",
+      "model": "gemini-3.5-flash-lite"
+    },
+    {
+      "id": "OPENROUTER_GEMMA",
+      "status": "HTTP_429",
+      "provider": "OPENROUTER",
+      "model": "google/gemma-4-31b-it:free"
+    }
+  ],
+  "frames": [
+    {
+      "name": "field_camera_normal-0.jpg",
+      "sha256": "b951f0c2c2daada90e45042c26b4bdc2fbe72eff6cdbdf711cc1d69c2ae274b7"
+    },
+    {
+      "name": "field_entry-0.jpg",
+      "sha256": "32aef914a6a2bef312ea0142fc6d3a19833e60deedbf1995f1689fba4fc64079"
+    },
+    {
+      "name": "field_ground_visible_extra-0.jpg",
+      "sha256": "783de3e458f2110376b6150eb30d54f1820b46f1e69f2c1e9c1d4d2ec1f4df1c"
+    },
+    {
+      "name": "field_notice_overlap-0.jpg",
+      "sha256": "7d0a6cad6247e15fa6eb14e83afa49ff493468445fbdad19b7c7688ddc6f18fa"
+    }
+  ],
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
