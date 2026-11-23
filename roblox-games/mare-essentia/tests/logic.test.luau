@@ -4202,6 +4202,12 @@ do
 		local back: any = S.State.sanitize(S.State.serialize(stP))
 		check("건축 시뮬: 공사 기록 저장·복원", type(back.stats.buildProjects) == "table" and #back.stats.buildProjects >= 1)
 		check("건축 시뮬: 공사 기간 2~20일", Proj.daysFor(0) == 2 and Proj.daysFor(100000) == 20)
+		local stI: any = { day = 0, stats = {} }
+		Proj.start(stI, "london", "trade", "시험 건물", 9000)
+		local before = Proj.list(stI)[1].done
+		local sped = Proj.boost(stI, "london", 900)
+		check("건축·경제: 투자 300코인당 공사 1일 단축", sped == 3 and Proj.list(stI)[1].done == before - 3)
+		check("건축·경제: 최소 1일은 남긴다", Proj.boost(stI, "london", 100000) >= 0 and Proj.list(stI)[1].done >= 1)
 	end
 	local chron = S.View.build(newState("england"), ctx).history.chronicle
 	check("역사서: 연대기에 모든 사건이 연도순", #chron == #HE.Events and chron[1].year <= chron[#chron].year)

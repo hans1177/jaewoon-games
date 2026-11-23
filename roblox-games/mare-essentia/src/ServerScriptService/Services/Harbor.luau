@@ -61,6 +61,11 @@ return function(D, S)
 				table.insert(msgs, string.format("새 교역 품목이 열렸다: %s", D.Ports.Goods[g].name))
 			end
 		end
+		-- [건축·경제 연결] 투자금이 이 항구의 공사 기간을 줄인다
+		local sped = D.PortBuildings.Projects.boost(state, state.portId, amount)
+		if sped > 0 then
+			table.insert(msgs, string.format("투자 덕분에 공사가 %d일 앞당겨졌다", sped))
+		end
 		S.Perk.gainSpec(state, "trade", math.floor(amount / 40), msgs)
 		return true, table.concat(msgs, "\n")
 	end

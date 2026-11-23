@@ -60,6 +60,25 @@ function P.popFinished(state: any): any
 	return nil
 end
 
+-- [경제 연결] 항구 투자금이 그 항구 공사를 앞당긴다: 투자 300코인당 1일, 최소 1일은 남긴다.
+function P.boost(state: any, portId: string, coins: number): number
+	local saved = 0
+	local days = math.floor((coins or 0) / 300)
+	if days <= 0 then
+		return 0
+	end
+	for _, pr in P.list(state) do
+		if pr.port == portId and state.day < pr.done then
+			local cut = math.min(days, pr.done - state.day - 1)
+			if cut > 0 then
+				pr.done -= cut
+				saved += cut
+			end
+		end
+	end
+	return saved
+end
+
 -- 저장 복원(서버 load 에서): 형식이 맞는 것만 남긴다
 function P.sanitize(saved: any): any
 	if type(saved) ~= "table" then
