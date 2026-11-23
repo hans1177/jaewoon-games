@@ -3253,11 +3253,11 @@ function FieldScene.start(opts)
 		end
 		-- 자연동물은 최대 4마리만 두고 화면 밖에 있을 때 짧은 산책·풀 뜯기를 반복한다.
 		local tick = 0
-		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
+		table.insert(conns, RunService.PreSimulation:Connect(function(dt)
 			if finished or not folder.Parent then return end
 			tick += math.min(dt, 0.2)
 			-- [실물 관절 보행] 0.24초마다 순간이동하던 동물 위치를 근거리에서 부드럽게 갱신한다.
-			if tick < (if visualMobile then 0.09 else 0.065) then return end
+			if tick < (if visualMobile then 0.06 else 0.045) then return end
 			local elapsed = tick
 			tick = 0
 			local now = os.clock()
