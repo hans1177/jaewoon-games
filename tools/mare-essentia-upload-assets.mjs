@@ -1260,6 +1260,10 @@ if (!studioRegrantPath) for (const [id, review] of Object.entries(modelOriginals
   const portraitSource = 'assets/cardart/src/' + name + '-1400x2000.png';
   // [승인된 원화 교체] 기존 원본은 보존하고, 검수된 세로 원화만 기존 등록기에서 안전하게 교체한다.
   const replacingPortrait = review?.sourceFile === portraitSource;
+  // [풀컬러 원본 직접 교체] 기존 원본 파일명도 교체 증빙이 있으면 그대로 사용한다.
+  const replacingOriginal = review?.sourceFile === originalSource
+    && (review.replacesSha256 !== undefined || review.replacesAssetId !== undefined);
+  const replacingExisting = replacingPortrait || replacingOriginal;
   const relativeSource = replacingPortrait ? portraitSource : originalSource;
   const sourcePath = path.join(ROOT, relativeSource);
   const targetPath = path.join(ROOT, 'assets/cardart', name + '.png');
@@ -1280,6 +1284,10 @@ if (!studioRegrantPath) for (const [id, review] of Object.entries(modelOriginals
     throw new Error('MODEL_ORIGINAL_FULL_RESOLUTION_PNG_REQUIRED:' + id);
   if (replacingPortrait && (bytes.readUInt32BE(16) !== 1400 || bytes.readUInt32BE(20) !== 2000))
     throw new Error('MODEL_ORIGINAL_PORTRAIT_RESOLUTION_INVALID:' + id);
+  // [세로 7:10 원본] 원화의 실제 바이트를 유지하며 가짜 확대·팔레트 복원을 허용하지 않는다.
+  if (replacingExisting && Math.abs(bytes.readUInt32BE(16) * 10 - bytes.readUInt32BE(20) * 7)
+    > bytes.readUInt32BE(20) * 0.05)
+    throw new Error('MODEL_ORIGINAL_PORTRAIT_RATIO_INVALID:' + id);
   const hash = crypto.createHash('sha256').update(bytes).digest('hex');
   if (review.sourceSha256 !== hash || cardApprovalDocument.approved?.[id] !== hash
     || blockedHashes.has(hash) || blockedPaths.has(sourcePath) || blockedPaths.has(targetPath))
@@ -1287,9 +1295,25 @@ if (!studioRegrantPath) for (const [id, review] of Object.entries(modelOriginals
   let current = null;
   try { current = await fs.readFile(targetPath); } catch (error) { if (error.code !== 'ENOENT') throw error; }
   const currentHash = current && crypto.createHash('sha256').update(current).digest('hex');
+  // [256색 차단] 기존에 이미 등록된 팔레트 파일은 게임 보호를 위해 임시 보존하되,
+  // 신규 승인·재등록은 원본 RGB/RGBA 8비트 PNG만 허용한다.
+  let legacyIndexed = false;
+  if (bytes[24] !== 8 || (bytes[25] !== 2 && bytes[25] !== 6)) {
+    let previous = null;
+    if (bytes[24] === 8 && bytes[25] === 3 && !replacingExisting) {
+      try { previous = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')).assets?.[id]; }
+      catch (error) { if (error.code !== 'ENOENT') throw error; }
+    }
+    legacyIndexed = bytes[24] === 8 && bytes[25] === 3 && !replacingExisting
+      && currentHash === hash && previous?.sourceSha256 === hash
+      && previous?.assetType === 'Image' && previous?.usePermissionGranted === true
+      && Boolean(previous?.assetId);
+    if (!legacyIndexed) throw new Error('MODEL_ORIGINAL_RGB_RGBA_REQUIRED:' + id);
+    console.log('MODEL_ORIGINAL_LEGACY_PALETTE_REPLACEMENT_REQUIRED', id);
+  }
   if (current && currentHash !== hash) {
     // [기존 번호 보호] 새 원본이 아닌 모든 덮어쓰기는 등록표를 읽기 전부터 즉시 차단한다.
-    if (!replacingPortrait) throw new Error('MODEL_ORIGINAL_EXISTING_CARD_PRESERVED:' + id);
+    if (!replacingExisting) throw new Error('MODEL_ORIGINAL_EXISTING_CARD_PRESERVED:' + id);
     // 신규 업로드나 사용 권한이 실패하면 아래 기존 원자적 롤백이 이전 번호를 복구한다.
     const previous = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')).assets?.[id];
     if (review.replacesSha256 !== currentHash
@@ -1301,10 +1325,10 @@ if (!studioRegrantPath) for (const [id, review] of Object.entries(modelOriginals
     await fs.copyFile(sourcePath, targetPath);
     console.log('MODEL_ORIGINAL_APPROVED_REPLACEMENT_STAGED', id, previous.assetId, hash);
   } else if (!current) {
-    if (replacingPortrait) throw new Error('MODEL_ORIGINAL_REPLACEMENT_TARGET_MISSING:' + id);
+    if (replacingExisting) throw new Error('MODEL_ORIGINAL_REPLACEMENT_TARGET_MISSING:' + id);
     await fs.copyFile(sourcePath, targetPath);
     console.log('MODEL_ORIGINAL_PROMOTED', id, hash);
-  } else console.log('MODEL_ORIGINAL_VERIFIED', id);
+  } else console.log(legacyIndexed ? 'MODEL_ORIGINAL_LEGACY_PALETTE_HELD' : 'MODEL_ORIGINAL_VERIFIED', id);
 }
 
 // 2026-11-11 오너 승인으로 바이브가 직접 그린 평면 벡터 교역품(소스: assets/goods/src/)
