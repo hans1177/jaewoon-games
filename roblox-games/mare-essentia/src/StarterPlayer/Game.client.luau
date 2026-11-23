@@ -8002,10 +8002,12 @@ local function renderYard(page)
 			selectArea.Size = UDim2.new(1, -4, 0, 78)
 			selectArea.ZIndex = 4
 			selectArea.Parent = row
+			local inYardHall = H.yardHallActive
 			selectArea.Activated:Connect(function()
 				if H.shipPreviewId == s.id then return end
 				H.shipPreviewId = s.id
-				if H.yardHallActive and tradeHallRefresh then tradeHallRefresh() else render() end
+				-- [선택 원화 갱신] 콜백 시점에는 H.yardHallActive가 false이므로 생성 시의 소속을 사용한다.
+				if inYardHall and tradeHallRefresh then tradeHallRefresh() else render() end
 			end)
 			-- [선박 시각 비교] 실제 교체 후 화물칸·속도·선체를 표시한다.
 			-- 공통 카드의 본문 높이에 비교 영역을 예약해 모바일에서도 버튼·설명과 겹치지 않게 한다.
