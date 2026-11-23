@@ -8094,7 +8094,7 @@ function PortScene.build(info, onFacility)
 			end)
 			-- [직업용 장비] Cargo·Relics 원본이 늦게 도착해도 기존 주민에게 다시 장착한다.
 			local gearConns = {}
-			for _, kind in { "Cargo", "Relics" } do
+			for kind in { Cargo = true, Relics = true } do
 				local group = shelf:FindFirstChild(kind)
 				if group then
 					table.insert(gearConns, group.ChildAdded:Connect(function(asset)
