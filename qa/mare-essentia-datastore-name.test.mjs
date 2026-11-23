@@ -3454,7 +3454,7 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
   assert.ok(port.includes('local function refreshOutfits(includeReady)'), '완성 주민도 승인된 외형 모델 도착 시 다시 검사');
   assert.ok(port.includes('refreshOutfits(string.sub(asset.Name, 1, 5) == "hair_"'),
     '실물 헤어 지연 입고 후 재장착');
-  assert.ok(port.includes('for _, kind in { "Cargo", "Relics" } do'), '직업 소지품도 자산 도착 후 장착 복구');
+  assert.ok(port.includes('for kind in { Cargo = true, Relics = true } do'), '직업 소지품도 자산 도착 후 장착 복구');
   assert.ok(port.includes('if ReplicatedStorage:GetAttribute("MareAssetsReady") then refreshOutfits(true) end'),
     '항구 장면 생성보다 먼저 자산 인입 완료되면 다시 확인');
 
