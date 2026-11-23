@@ -422,6 +422,109 @@ local P: { [string]: Identity } = {
 		signature = { "생선 건조장", "소금 창고", "상아 선창" }, facade = { 177, 141, 107 }, roofTint = { 116, 90, 62 },
 		reflow = { lane = -4, plaza = -13, side = 1, landmarkX = -5, landmarkZ = -5, district = -10, facility = 6 } },
 
+	-- [항구별 재배치 68~84] bissau: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	bissau = { landmark = { id = "lm_bissau_fort", name = "해안 진흙벽 성채와 교역 문루", kind = "fort", fallback = "none" },
+		roof = "thatch", wall = "adobe", balcony = nil, layout = "organic", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "torch", ground = "red_earth", weatherGround = "monsoon_mud",
+		signature = { "면화 직물 공방", "야자 기름 창고", "상아 선창" }, facade = { 171, 134, 104 }, roofTint = { 110, 89, 67 },
+		reflow = { lane = 9, plaza = -14, side = 1, landmarkX = 7, landmarkZ = -7, district = 8, facility = 4 } },
+	-- [항구별 재배치 68~84] bone: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	bone = { landmark = { id = "lm_bone_mosque", name = "해안 중정과 사각 첨탑", kind = "mosque", fallback = "none" },
+		roof = "flat", wall = "adobe", balcony = "mashrabiya", layout = "terrace", plaza = "market",
+		street = { "sand", "dirt", "gravel", "flagstone", "flagstone" }, lamp = "mosque_lamp", ground = "sand", weatherGround = "dust",
+		signature = { "산호 교역소", "양모 시장", "피혁 창고" }, facade = { 217, 185, 147 }, roofTint = { 153, 119, 90 },
+		reflow = { lane = -6, plaza = 10, side = -1, landmarkX = -4, landmarkZ = 7, district = -10, facility = 1 } },
+	-- [항구별 재배치 68~84] bridgetown: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	bridgetown = { landmark = { id = "lm_bridgetown_fort", name = "신호탑이 있는 해안 석조 요새", kind = "fort", fallback = "none" },
+		roof = "hip", wall = "wood", balcony = "wood_lattice", layout = "grid", plaza = "parade",
+		street = { "sand", "dirt", "gravel", "brick", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "monsoon_mud",
+		signature = { "설탕 압착소", "럼주 선적 창고", "면화 시장" }, facade = { 227, 193, 153 }, roofTint = { 142, 91, 67 },
+		reflow = { lane = 12, plaza = -8, side = 1, landmarkX = 8, landmarkZ = -6, district = 5, facility = 6 } },
+	-- [항구별 재배치 68~84] brunei: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	brunei = { landmark = { id = "lm_brunei_royal_hall", name = "수상마을의 겹지붕 왕실 회관", kind = "royal_hall", fallback = "none" },
+		roof = "thatch", wall = "wood", balcony = "wood_lattice", layout = "canal", plaza = "market",
+		street = { "mud", "dirt", "gravel", "plank", "paved" }, lamp = "paper_lantern", ground = "rice_paddy", weatherGround = "monsoon_mud",
+		signature = { "장뇌 향료 창고", "후추 선별장", "흑단 선창" }, facade = { 173, 136, 99 }, roofTint = { 118, 81, 57 },
+		reflow = { lane = -11, plaza = 12, side = -1, landmarkX = -5, landmarkZ = 8, district = 11, facility = 2 } },
+	-- [항구별 재배치 68~84] calabar: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	calabar = { landmark = { id = "lm_calabar_fort", name = "해안 성채와 붉은 벽돌 문루", kind = "fort", fallback = "none" },
+		roof = "thatch", wall = "adobe", balcony = nil, layout = "organic", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "torch", ground = "red_earth", weatherGround = "monsoon_mud",
+		signature = { "야자 기름 압착소", "흑단 목재 선창", "후추 시장" }, facade = { 184, 145, 107 }, roofTint = { 113, 84, 63 },
+		reflow = { lane = 3, plaza = -15, side = 1, landmarkX = 5, landmarkZ = -8, district = -7, facility = 5 } },
+	-- [항구별 재배치 68~84] calcutta: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	calcutta = { landmark = { id = "lm_calcutta_gopuram", name = "석조 사원 층층 지붕 문루", kind = "gopuram", fallback = "none" },
+		roof = "eave", wall = "plaster", balcony = "wood_lattice", layout = "grid", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "monsoon_mud",
+		signature = { "면직물 공방", "인디고 염색소", "비단 상관" }, facade = { 207, 183, 143 }, roofTint = { 123, 88, 69 },
+		reflow = { lane = -8, plaza = -9, side = -1, landmarkX = -6, landmarkZ = -6, district = 10, facility = 3 } },
+	-- [항구별 재배치 68~84] callao: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	callao = { landmark = { id = "lm_callao_cathedral", name = "은 선적항의 쌍탑 대성당", kind = "cathedral", fallback = "none" },
+		roof = "flat", wall = "stucco", balcony = "iron", layout = "grid", plaza = "parade",
+		street = { "sand", "dirt", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "dust",
+		signature = { "은 선적 부두", "금 계량소", "면화 창고" }, facade = { 234, 215, 184 }, roofTint = { 175, 104, 74 },
+		reflow = { lane = 7, plaza = 9, side = 1, landmarkX = 4, landmarkZ = 6, district = -11, facility = 6 } },
+	-- [항구별 재배치 68~84] campeche: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	campeche = { landmark = { id = "lm_campeche_cathedral", name = "성벽 안쪽 바로크 대성당", kind = "cathedral", fallback = "none" },
+		roof = "flat", wall = "stucco", balcony = "iron", layout = "grid", plaza = "parade",
+		street = { "sand", "dirt", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "monsoon_mud",
+		signature = { "염료목 목재 선창", "마호가니 제재소", "면화 시장" }, facade = { 227, 198, 167 }, roofTint = { 164, 99, 70 },
+		reflow = { lane = -10, plaza = 4, side = -1, landmarkX = -7, landmarkZ = 5, district = 7, facility = 3 } },
+	-- [항구별 재배치 68~84] candia: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	candia = { landmark = { id = "lm_candia_campanile", name = "항만 돔 성당과 붉은 종탑", kind = "campanile", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "loggia", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "flagstone", "flagstone", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "dust",
+		signature = { "올리브 압착소", "포도주 상관", "건포도 창고" }, facade = { 225, 189, 149 }, roofTint = { 156, 101, 70 },
+		reflow = { lane = 5, plaza = -13, side = 1, landmarkX = 3, landmarkZ = -7, district = -9, facility = 2 } },
+	-- [항구별 재배치 68~84] cartagena: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	cartagena = { landmark = { id = "lm_cartagena_campanile", name = "지중해 석조 성당 종탑", kind = "campanile", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "iron", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "dust",
+		signature = { "소금 염장소", "피혁 상관", "비단 시장" }, facade = { 226, 207, 174 }, roofTint = { 174, 102, 79 },
+		reflow = { lane = -3, plaza = 15, side = -1, landmarkX = -5, landmarkZ = 8, district = 4, facility = 5 } },
+	-- [항구별 재배치 68~84] casablanca: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	casablanca = { landmark = { id = "lm_casablanca_mosque", name = "구시가지 사각 첨탑과 안뜰", kind = "mosque", fallback = "none" },
+		roof = "flat", wall = "adobe", balcony = "mashrabiya", layout = "organic", plaza = "market",
+		street = { "sand", "dirt", "gravel", "flagstone", "flagstone" }, lamp = "mosque_lamp", ground = "sand", weatherGround = "dust",
+		signature = { "어시장", "피혁 창고", "해염 선창" }, facade = { 221, 191, 153 }, roofTint = { 144, 114, 91 },
+		reflow = { lane = 11, plaza = -10, side = 1, landmarkX = 6, landmarkZ = -5, district = -8, facility = 4 } },
+	-- [항구별 재배치 68~84] charleston: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	charleston = { landmark = { id = "lm_charleston_fort", name = "해안 석조 요새와 신호탑", kind = "fort", fallback = "none" },
+		roof = "hip", wall = "wood", balcony = "wood_lattice", layout = "grid", plaza = "parade",
+		street = { "sand", "dirt", "gravel", "brick", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "monsoon_mud",
+		signature = { "쌀 교역소", "인디고 염색 공방", "면화 선창" }, facade = { 223, 198, 163 }, roofTint = { 145, 101, 76 },
+		reflow = { lane = -12, plaza = 6, side = -1, landmarkX = -8, landmarkZ = 5, district = 12, facility = 1 } },
+	-- [항구별 재배치 68~84] cochin: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	cochin = { landmark = { id = "lm_cochin_gopuram", name = "항만 목조 사원 문루", kind = "gopuram", fallback = "none" },
+		roof = "eave", wall = "plaster", balcony = "wood_lattice", layout = "canal", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "monsoon_mud",
+		signature = { "후추 분류소", "계피 시장", "흑단 목재 선창" }, facade = { 206, 168, 120 }, roofTint = { 131, 87, 63 },
+		reflow = { lane = 8, plaza = -11, side = 1, landmarkX = 5, landmarkZ = -8, district = -6, facility = 2 } },
+	-- [항구별 재배치 68~84] corfu: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	corfu = { landmark = { id = "lm_corfu_campanile", name = "연안 돔 성당과 종탑", kind = "campanile", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "loggia", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "flagstone", "flagstone", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "올리브 압착소", "해염 창고", "포도주 시장" }, facade = { 224, 196, 165 }, roofTint = { 158, 104, 76 },
+		reflow = { lane = -7, plaza = 13, side = -1, landmarkX = -6, landmarkZ = 7, district = 9, facility = 6 } },
+	-- [항구별 재배치 68~84] damietta: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	damietta = { landmark = { id = "lm_damietta_mosque", name = "강변 둥근 돔과 가는 첨탑", kind = "mosque", fallback = "none" },
+		roof = "dome", wall = "stone", balcony = "mashrabiya", layout = "canal", plaza = "temple_court",
+		street = { "dirt", "gravel", "cobble", "flagstone", "flagstone" }, lamp = "mosque_lamp", ground = "red_earth", weatherGround = "dust",
+		signature = { "면직물 공방", "대추야자 시장", "설탕 창고" }, facade = { 211, 192, 163 }, roofTint = { 150, 107, 87 },
+		reflow = { lane = 4, plaza = 8, side = 1, landmarkX = 2, landmarkZ = 6, district = 1, facility = 3 } },
+	-- [항구별 재배치 68~84] darwin: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	darwin = { landmark = { id = "lm_darwin_meeting_house", name = "조각 기둥이 있는 항만 집회소", kind = "meeting_house", fallback = "none" },
+		roof = "thatch", wall = "wood", balcony = nil, layout = "organic", plaza = "quay",
+		street = { "sand", "sand", "gravel", "plank", "paved" }, lamp = "torch", ground = "sand", weatherGround = "monsoon_mud",
+		signature = { "진주조개 시장", "흑단 선창", "교역 창고" }, facade = { 166, 143, 107 }, roofTint = { 111, 98, 72 },
+		reflow = { lane = -9, plaza = -14, side = -1, landmarkX = -4, landmarkZ = -6, district = -3, facility = 5 } },
+	-- [항구별 재배치 68~84] diu: 승인된 지형·주택과 기존 방문시설만 독립 재배치.
+	diu = { landmark = { id = "lm_diu_gopuram", name = "층층 지붕 사원 문루", kind = "gopuram", fallback = "none" },
+		roof = "eave", wall = "plaster", balcony = "wood_lattice", layout = "organic", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "dust",
+		signature = { "인디고 염료 공방", "면화 상관", "보석 감정소" }, facade = { 212, 182, 140 }, roofTint = { 130, 88, 68 },
+		reflow = { lane = 6, plaza = 12, side = 1, landmarkX = 7, landmarkZ = 8, district = -10, facility = 1 } },
+
 }
 
 local M = {}
@@ -463,7 +566,7 @@ function M.get(portId: string): Identity?
 	return P[portId]
 end
 
--- [전체 항구 고유 외형] 항구별 지시서가 등록된 67개 항구는 지정 색을 그대로 쓰고,
+-- [전체 항구 고유 외형] 항구별 지시서가 등록된 84개 항구는 지정 색을 그대로 쓰고,
 -- 나머지 항구는 기존 문화권의 벽·지붕·도로 팔레트에서 항구 ID별 고정 변형을 만든다.
 -- 어떤 모델도 새로 생성·선택하지 않으며 항구 데이터·저장·경제는 변경하지 않는다.
 -- 같은 항구는 방문할 때마다 항상 같은 색이며 서로 다른 문화권의 재료색을 섞지 않는다.
