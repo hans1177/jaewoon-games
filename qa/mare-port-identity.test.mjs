@@ -77,3 +77,32 @@ test('항구별 승인 실물만 배치하고 없는 건축과 농작물은 대�
   assert.match(scene, /CityPortPlannedPlots/);
   assert.match(scene, /CityHistoricWindmill/);
 });
+
+test('시드니·카르타헤나 실화면에 항구별 길·광장·건축 정체성을 반영한다', () => {
+  const specs = [
+    ['sydney', 'thatch', 'wood', 'organic', 'quay', 'torch',
+      ['sand', 'sand', 'gravel', 'plank', 'paved']],
+    ['cartagena_indias', 'flat', 'stucco', 'grid', 'parade', 'oil_lantern',
+      ['sand', 'dirt', 'gravel', 'cobble', 'paved']],
+  ];
+  for (const [port, roof, wall, layout, plaza, lamp, streets] of specs) {
+    assert.ok(ports.includes(`id = "${port}"`), `${port} 실제 항구 ID`);
+    const section = id.split(`\n\t${port} = { landmark = `)[1]?.split(/\n\t[a-z_]+ = \{/)[0] ?? '';
+    assert.ok(section, `${port} 별도 외관 누락`);
+    for (const [key, value] of Object.entries({ roof, wall, layout, plaza, lamp })) {
+      assert.ok(section.includes(`${key} = "${value}"`), `${port} ${key} 구별`);
+    }
+    assert.ok(section.includes('street = { ' + streets.map(s => '"' + s + '"').join(', ') + ' }'),
+      `${port} 발전도별 실물 도로`);
+  }
+  const culture = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/PortCultures.luau', 'utf8');
+  assert.match(culture, /pacific = \{ "sydney"/);
+  assert.match(culture, /colonial = \{[^\n]*"cartagena_indias"/);
+  assert.match(scene, /SIG\.sydney = cat\(one\("Naval", "structure-platform-dock"/);
+  assert.doesNotMatch(scene, /SIG\.sydney = cat\(lighthouse/);
+  const assets = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/AssetIds.luau', 'utf8');
+  for (const name of ['structure-platform-dock', 'boat-row-small', 'dock-side']) {
+    assert.ok(assets.includes('["Naval/' + name + '"]'), name + ' 등록 실물');
+  }
+  assert.match(scene, /CityPortMissingLandmark/);
+});
