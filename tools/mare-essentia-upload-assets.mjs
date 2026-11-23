@@ -1556,6 +1556,15 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || (kind === 'Terrain' && f.startsWith('kenney_'))) {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
+      // [검증 대기 원본 보호] 3D 도시 파생 모델은 CC0 원본 기록만 있고 검수·등록이
+      // 완료되지 않았으면 실제 카드 이미지 등록을 막거나 미승인 모델을 승격하지 않는다.
+      // 정식 등록 가능한 모델은 아래 기존 해시·권리·원본 검사에 그대로 진입한다.
+      if (portOriginalModel && sourceLicense?.derived === true
+        && sourceLicense.productionVerified === false
+        && /^PENDING_/.test(String(sourceLicense.registration || ''))) {
+        console.log('SKIP_PENDING_UNVERIFIED_PORT_MODEL', f);
+        continue;
+      }
       if (kind === 'Materials' && (!sourceLicense || sourceLicense.license !== 'CC0-1.0'
         || !sourceLicense.author || !sourceLicense.sourceSha256 || !sourceLicense.source))
         throw new Error('CC0_MATERIAL_SOURCE_METADATA_REQUIRED:' + f);
