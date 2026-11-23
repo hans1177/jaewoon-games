@@ -252,3 +252,11 @@
 - **남은 6번째 원본**: `eu_23-original.png`, 3,599,573바이트, 1049×1499, RGB, SHA-256 `4bfb8062f8e52c4d87cad005846d440515e0d303dbc7de806aa2cc441a80bcca`. 상기 다섯 장과 혼동하지 않는다.
 - **승격·등록 절차**: 실제 PNG 원본을 main에서 검증한 후 각 장을 실제 육안 검수한다. `assets/APPROVED_IMAGES.json`의 실제 해시·`modelOriginals`의 교체 이력은 사실 확인된 값만 반영한다. `.github/workflows/owner-mare-essentia-assets.yml` → `tools/mare-essentia-upload-assets.mjs` 기존 경로 외에 별도 등록기를 만들지 않는다. 새 Roblox 자산번호·Universe 사용권한·실제 게임 표시 검증 전에는 기존 등록본과 저장·룰을 지우지 않는다.
 - **실패 판정**: GitHub API 본문 전송의 `h2 protocol error` 등으로 바이너리 반영이 실패하면 **미업로드**다. 조각만 존재해도 원본 PNG 미반영이면 완료라고 말하지 않는다. 최소 1400×2000 미만인 `eu_03`, `eu_23`은 업스케일하거나 256색 변환하지 않는다.
+
+
+### 원본 5장 실측 업로드 상태 (2026-11-23)
+
+- **eu_01 원본 반영 완료**: main `assets/cardart/src/eu_01-original.png`, 실제 4,809,325바이트, Git blob SHA `c9af34f58241d0d99a77afd618caa5ef2ed09acf` 일치. 반영 커밋 `6608813af910c493b3d8c7bc03c993634cc028d7`.
+- **eu_01 기존 등록 경로 확인**: `APPROVED_IMAGES.json` 원본 SHA-256 `57a822cbf6808fb63f63733190bb1ec02725f92173f5b2654df0b41cd1d9d80f` 일치. `assets-registered.json`의 `CardArt/eu_01` 자산 ID `127738728463764`, `usePermissionGranted:true`, 등록 sourceSha256 원본과 일치. Roblox Studio 실화면/게임 Place 공개 게시 별도 미검증.
+- **나머지 네 장 main 원본 교체 미완료**: `eu_02`, `eu_03`, `eu_21`, `eu_22`의 main에 있는 기존 `-original.png` 바이너리는 상기 표의 풀컬러 신규 원본과 바이트 수 및 Git blob SHA가 다르다. 별도 확보한 원본의 새 바이너리 전송과 검증이 필요하다. 해당 네 장은 신규 등록·업로드 완료라고 보고하지 않는다.
+- **전송 장애 실측**: 분할했던 `eu_01` 전체 Base64 6,412,436자를 단일 GitHub API 본문으로 보낸 시도는 `h2 protocol error`로 실패했고, 이후 기존 원화 복원 워크플로에서 원본 바이트 반영을 확인했다. 다른 네 장을 업로드했다고 추정하지 않는다.
