@@ -200,18 +200,15 @@ test('열대 해안 검수 항구는 기존 등록 바위 모델의 해안 유�
   assert.match(scene, /elseif form == "bay" and i ~= 2 then/);
 });
 
-test('북유럽·한자·이베리아·이탈리아·카리브 8항구는 3D 원본을 사칭하지 않는다', () => {
-  const assets = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/AssetIds.luau', 'utf8');
+test('북유럽·한자·이베리아·이탈리아·카리브 8항구는 실제 원본 등록키를 유지한다', () => {
   const newPorts = ['stockholm', 'bergen', 'hamburg', 'porto',
     'edinburgh', 'valletta', 'genoa', 'havana'];
   for (const port of newPorts) {
     assert.ok(ports.includes('id = "' + port + '"'), port + ' 기존 항구');
     const data = id.split('\n\t' + port + ' = { landmark = ')[1]?.split(/\n\t[a-z_]+ = \{/)[0];
     assert.ok(data, port + ' 지시서 기반 시각 정체성');
-    const landmark = port + '_landmark_base';
-    // 향후 정식 원본이 등록되어도 회귀 검사는 유효해야 한다.
-    // 승인 자산 등록 유무는 기존 렌더러의 원본 우선/누락 기록 분기에서만 판정한다.
-    assert.ok(landmark.startsWith(port + '_landmark_'), port + ' 원본 자산 키 안정성');
+    // 등록 여부와 관계없이 실제 해당 항구의 전용 랜드마크 ID여야 한다.
+    assert.ok(data.includes('id = "lm_' + port + '_'), port + ' 고유 랜드마크 정체성');
   }
   assert.match(scene, /if identity then folder:SetAttribute\("CityPortMissingLandmark", landmarkAsset\) end/);
   assert.match(scene, /if AssetIds\["Town\/" \.\. landmarkAsset\] then/);
