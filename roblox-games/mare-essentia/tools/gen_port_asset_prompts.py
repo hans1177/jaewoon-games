@@ -248,6 +248,9 @@ def port_doc(pid, name, style, landmark, lamp, sigs, plaza, signs, goods, data):
              "- 항구 정체성 데이터: `src/ReplicatedStorage/Shared/PortIdentity.luau` (아래 표의 값이 여기 있음)",
              "- 에셋 등록: 파일을 `assets/inbox/Town/<asset_id>.glb`(라이선스 `<asset_id>.license.json` 동봉)에 넣고 main 반영 → `owner-mare-essentia-assets` 워크플로가 Roblox 등록 → 코드에서 `AssetIds[\"Town/<asset_id>\"]`, 배치는 `importedModel(folder, \"Town\", \"<asset_id>\", 위치, 크기)`",
              "- 지키기: 저장 데이터·경제 수치·보행 충돌벽 변경 금지. 원본 없으면 기존 승인 에셋으로 대체(이미 있는 방식).",
+             "- 코드 한도: `Game.client.luau` 맨 바깥에 `local` 새로 만들기 금지(레지스터 200 한도 → 화면 안 뜸). `do ... end` 또는 `H.이름`에. `tests/run.sh`가 검사.",
+             "- 에셋 규칙: `docs/RULES.md` 를 먼저 읽는다. 3D는 **승인 원본 에셋을 가공**해서 만든다(아래 프롬프트 = 가공 목표). `.license.json`에 원본 이름·URL·라이선스·\"derived\"·가공 내용 기록. 원본 없이 처음부터 AI 생성은 보류.",
+             "- 색감: 지상전·마을 나무/덤불은 옅은 청록 단색 금지 — 잎·줄기·그늘 색을 나누고 지역 기후 색(열대 진녹, 건조 올리브, 한대 청록)을 쓴다.",
              "- 검증: `LUAU_DIR=... bash tests/run.sh`(스모크 905건), Studio `tools/devloop/studio-scripts/mare-town.json` 항공·광장 촬영", "",
              "## 1. 항구 정체성", "",
              "| 항목 | 값 |", "|---|---|",
@@ -294,9 +297,8 @@ def main():
     load_identity(root)
     out_dir = os.path.join(root, "docs", "ports")
     os.makedirs(out_dir, exist_ok=True)
-    for spec in PORTS:
-        with open(os.path.join(out_dir, spec[0] + ".md"), "w", encoding="utf-8") as f:
-            f.write(port_doc(*spec, data))
+    # 항구별 md 는 tools/gen_port_briefs_all.py 가 전 항구 대상으로 만든다(여기서는 쓰지 않음).
+    _ = out_dir
     print(f"{len(PORTS)} port briefs -> {os.path.normpath(out_dir)} (identity parsed {len(IDENT)})")
 
 
