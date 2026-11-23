@@ -1451,7 +1451,7 @@ test('경제 공사 종류·건축자 모션·도시 장식 성장 모두 기존
  assert.match(plan,/count >= 12 and healthy/);
  for(const kind of ['market','religious','farm','industry','civic']) assert.ok(plan.includes(kind + ' = grade('),kind);
  assert.match(scene,/local decor = PortBuildings\.decorativeVisual\(lvl, info\.sim and info\.sim\.buildings, info\.sim and info\.sim\.prosperity\)/);
- assert.match(scene,/decorLimit = if game:GetService\("UserInputService"\)\.TouchEnabled then 7 else 13/);
+ assert.match(scene,/local decorLimit = if identity then \(if touchDecor then 4 else 6\) else \(if touchDecor then 7 else 13\)/);
  assert.match(scene,/CityGrowthDecoration_/);
  assert.match(scene,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
  assert.match(scene,/obj:SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
@@ -1513,7 +1513,7 @@ test('주거·항만·공방·행정·시장 장식은 실제 신규 단계에�
   'stageDecoration(warehouseDisplay, Vector3.new(-31, 0, 222), delay)',
  ]) assert.ok(scene.includes('if newGrade then '+call) || scene.includes(call),'신규 해금 장식 미연결: '+call);
  assert.equal((scene.match(/stageDecoration\(/g)||[]).length,5,'4개 배치 경로+단일 책임 함수');
- assert.match(scene,/decorLimit = if game:GetService\("UserInputService"\)\.TouchEnabled then 7 else 13/);
+ assert.match(scene,/local decorLimit = if identity then \(if touchDecor then 4 else 6\) else \(if touchDecor then 7 else 13\)/);
  assert.match(scene,/local builderLimit = math\.min\(availableBuilders,/);
  assert.match(scene,/if info\.sim and info\.sim\.buildings then lastDecorationGrowth\[info\.portId\] = decor end/);
 });
@@ -2223,7 +2223,7 @@ test('시장·농경·종교 구획은 시설과 인력에 따라 달라지고 �
   'if stalls >= 2 and warehouseBuilt > 0 then',
   'folder:SetAttribute("CityMarketStalls", stalls)',
   'local farmsBuilt = if districtBuildings then',
-  'local cropRows = if farmsBuilt <= 0 then 0 else math.min(3, lvl, math.max(1, math.floor(math.sqrt(farmsBuilt) / 2)))',
+  'local cropRows = if farmsBuilt <= 0 or not farmAsset then 0 else math.min(2, lvl, math.max(1, math.floor(math.sqrt(farmsBuilt) / 2)))',
   'if farmsBuilt > 0 then',
   'if lvl >= 3 and farmsBuilt >= 5 then',
   'folder:SetAttribute("CityFarmRows"',
