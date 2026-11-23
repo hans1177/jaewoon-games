@@ -3256,21 +3256,26 @@ local function placeSignature(folder, info)
 		elseif nation == "italy" or nation == "venice" or nation == "tuscany" or nation == "naples" or nation == "sicily" then
 			kind, asset = "Terrain", "statue-column"
 		end
-		importedModel(folder, kind, asset, Vector3.new(-8, 0, -112), 15, false)
+		-- [대표 경관 재배치] 부속 시설도 같은 항구별 상징 중심을 따른다.
+		local frontSign = if signatureCenter.Z > 0 then 1 else -1
+		importedModel(folder, kind, asset, signatureCenter + Vector3.new(22, 0, frontSign * 44), 15, false)
 		if sceneLevel >= 5 then
-			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(-18, 0, -128), 10, false)
-			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(2, 0, -128), 10, false)
+			importedModel(folder, "Castle", "flag-banner-long", signatureCenter + Vector3.new(12, 0, frontSign * 25), 10, false)
+			importedModel(folder, "Castle", "flag-banner-long", signatureCenter + Vector3.new(32, 0, frontSign * 25), 10, false)
 		end
 	end
 end
 
 local LM_SITES = {
-	-- 대로 시설·지역 산업과 별도 구획에 놓고 주택 건설에서 이곳을 예약한다.
-	Vector3.new(-112, 0, 166), Vector3.new(-112, 0, -166), Vector3.new(-160, 0, 166), Vector3.new(-160, 0, -166),
-	Vector3.new(-208, 0, 181), Vector3.new(-208, 0, -181), Vector3.new(-263, 0, 181), Vector3.new(-263, 0, -181),
+	-- [전 항구 재배치] 구 랜드마크 8개 필지 삭제. 항구별 고정 시드로 이동할 새 전용 대지.
+	-- x=-118/-183 구획은 왕궁·항만 시설·외곽 시장과 분리되어 기존 경관 실물만 배치한다.
+	Vector3.new(-118, 0, 201), Vector3.new(-183, 0, 201),
+	Vector3.new(-118, 0, -201), Vector3.new(-183, 0, -201),
+	Vector3.new(-118, 0, 266), Vector3.new(-183, 0, 266),
+	Vector3.new(-118, 0, -266), Vector3.new(-183, 0, -266),
 }
 
-local function densify(folder, info, style, rng, walkers, made, onFacility)
+local function densify(folder, info, style, rng, walkers, made, onFacility, landmarkSites)
 	local key = styleKeyOf(style)
 	local palm = palmOk(info.portId, style)
 	local cold = not palm
@@ -3282,6 +3287,13 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	-- [항구별 마을] 지시서의 운하·골목·바둑판·계단식 구획을 기존 필지 안에서만 적용한다.
 	local identity = PortIdentity.get(info.portId)
 	local villageLayout = identity and identity.layout or nil
+	-- [전 항구 시설 실제 좌표] 고정된 옛 건물 보호 박스를 버리고 새 방문 시설과 광장 위치를 사용한다.
+	local facilityLocations = {}
+	for _, tab in { "trade", "board", "route", "harbor", "market", "tech", "codex" } do
+		local location = folder:GetAttribute("CityFacilityPosition_" .. tab)
+		if typeof(location) == "Vector3" then table.insert(facilityLocations, location) end
+	end
+	local plazaLocation = folder:GetAttribute("CityPortPlazaLocation")
 	local lvl = sceneLevel
 	-- [자동 장식 건축] 실제 건설된 시장·농장·교회·공방·관청과 번영도를 읽어 단계별 실물 소품을 선택한다.
 	-- 시설 수나 생산량을 늘리는 경제 효과는 없고, 모바일 최대 7개 / PC 최대 13개만 배치한다.
@@ -3484,41 +3496,48 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	end
 	-- [181항구 구역 변경] 기존 ±86 고정 중심을 버리고 종교·시장·농장 구획을 분리한다.
 	-- 원본 건설 수치와 왕궁·길·랜드마크에 대한 충돌 검사는 유지한다.
-	local dz = seeded(info.portId .. ":district-reposition-v2")
+	-- [181항구 독립 구획] 종교/시장과 농업을 옛 도심에서 분리해 서로 다른 실제 땅으로 옮긴다.
+	local dz = seeded(info.portId .. ":district-reposition-v3")
+	local firstSide = if dz:NextInteger(0, 1) == 0 then -1 else 1
+	local districtX = -138 + dz:NextInteger(-8, 8)
+	local districtZ = 358 + dz:NextInteger(0, 14)
+	local farmX = -357 + dz:NextInteger(-12, 12)
+	local farmZ = 379 + dz:NextInteger(0, 9)
 	local slots = {
-		Vector3.new(-151 + dz:NextInteger(-9, 9), 0, 276 + dz:NextInteger(-8, 8)),
-		Vector3.new(-151 + dz:NextInteger(-9, 9), 0, -276 + dz:NextInteger(-8, 8)),
-		Vector3.new(-118 + dz:NextInteger(-5, 5), 0, 372 + dz:NextInteger(-6, 6)),
-		Vector3.new(-118 + dz:NextInteger(-5, 5), 0, -372 + dz:NextInteger(-6, 6)),
+		Vector3.new(districtX, 0, firstSide * districtZ),
+		Vector3.new(districtX, 0, -firstSide * districtZ),
+		Vector3.new(farmX, 0, firstSide * farmZ),
 	}
-	for i = #slots, 2, -1 do
-		local j = dz:NextInteger(1, i)
-		slots[i], slots[j] = slots[j], slots[i]
-	end
 	local districts = {}
 	local districtMoved, districtRejected = 0, 0
 	local districtSeed = seeded(info.portId .. ":district-collision-reposition-v2")
-	local firstSide = if districtSeed:NextInteger(1, 2) == 1 then 1 else -1
-	local farmSide = if districtSeed:NextInteger(1, 2) == 1 then 1 else -1
 	local districtKinds = { "religious", "market", "farm" }
 	for index, kind in districtKinds do
-		-- 농장 7x17 밭·풍차·장식과 시장·사원 부속물을 포함한 필지 보호 반경.
+		-- 시장·종교는 해안 도시 외곽, 농장은 서쪽 농촌의 실제 넓은 부지에 분리 배치한다.
 		local hx, hz = if kind == "farm" then 82 else 41, if kind == "farm" then 51 else 43
-		local side = if index == 1 then firstSide elseif index == 2 then -firstSide else farmSide
-		local proposedZ = if kind == "farm" then 376 + districtSeed:NextInteger(-7, 7)
-			else 283 + districtSeed:NextInteger(-11, 11)
-		local proposedX = if kind == "farm" then -117 + districtOffset * 0.22
-			else -150 + districtOffset * 0.3
+		local side = if index == 2 then -firstSide else firstSide
+		local proposedZ = if kind == "farm" then farmZ else districtZ
+		local proposedX = if kind == "farm" then farmX else districtX
 		local candidates = {
 			slots[index],
-			Vector3.new(proposedX, 0, side * proposedZ),
-			Vector3.new(proposedX + (if kind == "farm" then 5 else -7), 0, -side * proposedZ),
+			Vector3.new(proposedX + (if kind == "farm" then -24 else 20), 0, side * proposedZ),
+			Vector3.new(proposedX + (if kind == "farm" then -35 else -20), 0, side * proposedZ),
 		}
 		for candidateIndex, at in candidates do
 			local x, z = at.X, at.Z
 			local clear = math.abs(z) + hz <= 440
-			-- 기존 시가지 시설·왕궁·세로 도로를 보수적인 건물 외곽 기준으로 피한다.
-			if clear and x > -108 - hx and math.abs(z) > 17 - hz and math.abs(z) < 59 + hz then clear = false end
+			-- [방문 건물/중앙 광장] 실제 새 좌표의 충돌 반경을 피한다.
+			if clear then
+				for _, site in facilityLocations do
+					if math.abs(x - site.X) < hx + 25 and math.abs(z - site.Z) < hz + 25 then
+						clear = false
+						break
+					end
+				end
+			end
+			if clear and typeof(plazaLocation) == "Vector3"
+				and math.abs(x - plazaLocation.X) < hx + 25
+				and math.abs(z - plazaLocation.Z) < hz + 25 then clear = false end
 			if clear and isRoyalCity and x - hx < -215 and x + hx > -630 and math.abs(z) < 320 + hz then clear = false end
 			if clear and math.abs(z) < 165 + hz and math.abs(x + 212) < hx + 9 then clear = false end
 			if clear and math.abs(z) < 68 + hz then
@@ -3526,13 +3545,14 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					if math.abs(x - sx) < hx + 7 then clear = false break end
 				end
 			end
-			if clear then
+			-- [서쪽 농촌] 외곽 도로의 X열이 겹치더라도 먼 농업 필지 Z를 지우지 않는다.
+			if clear and kind ~= "farm" then
 				for _, sx in streetsOuter do
 					if math.abs(x - sx) < hx + laneWidth * 0.5 + 4 then clear = false break end
 				end
 			end
 			if clear then
-				for _, landmark in LM_SITES do
+				for _, landmark in landmarkSites do
 					if math.abs(x - landmark.X) < hx + 35 and math.abs(z - landmark.Z) < hz + 35 then
 						clear = false
 						break
@@ -3563,15 +3583,20 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	folder:SetAttribute("CityDistrictRejectedCandidates", districtRejected)
 	local function reserved(x, z, halfX, halfZ)
 		-- 시설·지역별 시장/농장·랜드마크·문명 산업 필지를 주택과 분리한다.
-		-- 신규 주택은 실제 모델의 직사각형 외곽을 쓰고, 기존 산업 필지는 종전 반경을 유지한다.
+		-- [새 도시 예약] 방문 시설·광장·왕궁의 실제 배치 좌표와 주거 충돌을 검증한다.
 		halfZ = halfZ or halfX
-		if x > -108 - halfX and math.abs(z) > 17 - halfZ and math.abs(z) < 59 + halfZ then return true end
+		for _, site in facilityLocations do
+			if math.abs(x - site.X) < halfX + 25 and math.abs(z - site.Z) < halfZ + 25 then return true end
+		end
+		if typeof(plazaLocation) == "Vector3"
+			and math.abs(x - plazaLocation.X) < halfX + 25
+			and math.abs(z - plazaLocation.Z) < halfZ + 25 then return true end
 		if x < -211 + halfX and math.abs(z) < 145 + halfZ then return true end
 		if isRoyalCity and x < -215 + halfX and x > -630 - halfX and math.abs(z) < 320 + halfZ then return true end
 		for _, d in districts do
 			if math.abs(x - d.at.X) < d.hx + halfX and math.abs(z - d.at.Z) < d.hz + halfZ then return true end
 		end
-		for _, a in LM_SITES do
+		for _, a in landmarkSites do
 			if math.abs(x - a.X) < 29 + halfX and math.abs(z - a.Z) < 29 + halfZ then return true end
 		end
 		for _, lot in placedLots do
@@ -4170,7 +4195,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	-- 왕궁은 이미 커진 실물 본관·별관을 덮을 최소 폭을 보장하고 농촌 바닥은 건드리지 않는다.
 	local townFloor = folder:FindFirstChild("TownFloor")
 	if townFloor and townFloor:IsA("BasePart") then
-		local townLeft = if isRoyalCity then -635 else math.min(-330, X_END - 32)
+		local townLeft = if isRoyalCity then -635 else math.min(-475, X_END - 32)
 		local townRight = 35 -- 기존 항구 해안선과 접한 동쪽 가장자리를 유지한다.
 		local townHalfZ = math.min(360 + lvl * 80 + 14, math.max(442, outerEdgeZ + 52))
 		townFloor.Size = Vector3.new(townRight - townLeft, townFloor.Size.Y, 2 * townHalfZ)
@@ -5777,7 +5802,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 end
 
 -- 발전도 랜드마크: 레벨 조건을 채운 시설이 자리에 들어선다. 등록된 모델과 기존 house()만 쓴다(새 도형 금지).
-local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
+local function placeLandmarks(folder, info, style, rng, onFacility, walkers, landmarkSites)
 	local lvl = sceneLevel
 	local key = styleKeyOf(style)
 	local year = (info.sim and info.sim.year) or info.year or 1700
@@ -5786,7 +5811,7 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 		if node.status == "adopted" then adopted[node.id] = true end
 	end
 	local order = {}
-	for i = 1, #LM_SITES do order[i] = i end
+	for i = 1, #landmarkSites do order[i] = i end
 	local pr = seeded(info.portId .. "landmarks")
 	for i = #order, 2, -1 do
 		local j = pr:NextInteger(1, i)
@@ -5810,7 +5835,7 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 		end
 	end
 	for idx, lm in PortBuildings.Landmarks do
-		local at = LM_SITES[order[idx]]
+		local at = landmarkSites[order[idx]]
 		if at and lvl >= lm.minLevel and year >= (lm.since or 0) and (not lm.tech or adopted[lm.tech]) then
 			local x, z = at.X, at.Z
 			local face = if z > 0 then 0 else math.pi
@@ -6768,7 +6793,9 @@ function PortScene.build(info, onFacility)
 	-- [대형 왕궁] 본관·측랑을 주변 건물보다 확실히 크게 보이도록 확대하되, 기존 왕궁 보호 구역과 동선을 유지한다.
 	local palaceCourt = nil
 	if fac.palace then
-		local px = -425
+		-- [181항구 왕궁 신배치] 왕궁 본관부터 근위·서고·접견 위치까지 같은 항구 ID를 기준으로 이동.
+		local royalLayoutRng = seeded(info.portId .. ":royal-district-reposition-v3")
+		local px = -425 + royalLayoutRng:NextInteger(-22, 22)
 		local key = currentKey
 		local royalSeed = seeded(info.portId .. ":royal-court")
 		-- [왕궁 발전별 규모] 1~6 발전 단계마다 가로폭이 확실히 증가한다. 기존 모듈만 재사용한다.
@@ -8274,8 +8301,24 @@ function PortScene.build(info, onFacility)
 		end)
 	end
 
-	densify(folder, info, style, rng, walkers, (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {}, onFacility)
-	placeLandmarks(folder, info, style, rng, onFacility, walkers)
+
+	-- [181항구 실제 랜드마크 재설계] 항구의 8개 위치를 새 고정 시드로 계산한다.
+	-- 주택 예약·시가지 충돌 검사와 랜드마크 배치는 같은 8개 좌표를 소비한다.
+	do
+		local landmarkRng = seeded(info.portId .. ":landmark-sites-reposition-v3")
+		local shiftX = landmarkRng:NextInteger(-5, 5)
+		local shiftZ = landmarkRng:NextInteger(-5, 5)
+		local landmarkSites = {}
+		for i, oldSite in LM_SITES do
+			landmarkSites[i] = Vector3.new(oldSite.X + shiftX, 0,
+				oldSite.Z + (if oldSite.Z > 0 then shiftZ else -shiftZ))
+		end
+		folder:SetAttribute("CityLandmarkReflowCount", #landmarkSites)
+		densify(folder, info, style, rng, walkers,
+			(PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {},
+			onFacility, landmarkSites)
+		placeLandmarks(folder, info, style, rng, onFacility, walkers, landmarkSites)
+	end
 	placeSignature(folder, info)
 
 	-- [학문별 자동 3D 발전] 백과 기술이 실제 도입된 항구에만 기존 승인 모델로 산업·학술 구역을 조성한다.
