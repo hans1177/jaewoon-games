@@ -1,0 +1,194 @@
+{
+ "sourceRevision": "a5597f113aeab231b10317173fcc4e638b8fac4a",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "NEWGAME ok=true\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "INTRO name=true comp=true\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "killed=false\ntext"
+  },
+  {
+   "step": 6,
+   "ctx": "Client",
+   "out": "tab harbor\ntext"
+  },
+  {
+   "step": 8,
+   "capture": "menu_harbor",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "tab quest\ntext"
+  },
+  {
+   "step": 11,
+   "capture": "menu_quest",
+   "files": 1
+  },
+  {
+   "step": 12,
+   "ctx": "Client",
+   "out": "tab diplomacy\ntext"
+  },
+  {
+   "step": 14,
+   "capture": "menu_diplomacy",
+   "files": 1
+  },
+  {
+   "step": 15,
+   "ctx": "Client",
+   "out": "tab explore\ntext"
+  },
+  {
+   "step": 17,
+   "capture": "menu_explore",
+   "files": 1
+  },
+  {
+   "step": 19,
+   "capture": "menu_explore_auto",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "GALLERY vis=true size=244, 210\ntext"
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35007
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 2524
+  },
+  {
+   "step": 2,
+   "type": "wait",
+   "elapsedMs": 4003
+  },
+  {
+   "step": 3,
+   "type": "luau",
+   "elapsedMs": 2888
+  },
+  {
+   "step": 4,
+   "type": "wait",
+   "elapsedMs": 2011
+  },
+  {
+   "step": 5,
+   "type": "luau",
+   "elapsedMs": 513
+  },
+  {
+   "step": 6,
+   "type": "luau",
+   "elapsedMs": 350
+  },
+  {
+   "step": 7,
+   "type": "wait",
+   "elapsedMs": 3512
+  },
+  {
+   "step": 8,
+   "type": "capture",
+   "elapsedMs": 1577
+  },
+  {
+   "step": 9,
+   "type": "luau",
+   "elapsedMs": 664
+  },
+  {
+   "step": 10,
+   "type": "wait",
+   "elapsedMs": 3510
+  },
+  {
+   "step": 11,
+   "type": "capture",
+   "elapsedMs": 1301
+  },
+  {
+   "step": 12,
+   "type": "luau",
+   "elapsedMs": 376
+  },
+  {
+   "step": 13,
+   "type": "wait",
+   "elapsedMs": 3503
+  },
+  {
+   "step": 14,
+   "type": "capture",
+   "elapsedMs": 1725
+  },
+  {
+   "step": 15,
+   "type": "luau",
+   "elapsedMs": 757
+  },
+  {
+   "step": 16,
+   "type": "wait",
+   "elapsedMs": 3513
+  },
+  {
+   "step": 17,
+   "type": "capture",
+   "elapsedMs": 1349
+  },
+  {
+   "step": 18,
+   "type": "wait",
+   "elapsedMs": 9011
+  },
+  {
+   "step": 19,
+   "type": "capture",
+   "elapsedMs": 1384
+  },
+  {
+   "step": 20,
+   "type": "luau",
+   "elapsedMs": 366
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 21,
+  "completedSteps": 21,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 5,
+  "capturedFrames": 5,
+  "abortedEarly": false
+ }
+}
