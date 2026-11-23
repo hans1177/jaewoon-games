@@ -1607,7 +1607,7 @@ test('Mare generated original art is promoted only after model-source visual QA 
     await assert.rejects(execute(), /MODEL_ORIGINAL_APPROVAL_OR_SAFETY_MISMATCH/);
     assert.equal(fs.existsSync(dest),false);
     // [원화 무손실 재등록] 실제 256색(P 모드) PNG는 승인 해시가 있어도 신규 승격할 수 없다.
-    const indexed = fs.readFileSync('roblox-games/mare-essentia/assets/cardart/src/eu_21-original.png');
+    const indexed = fs.readFileSync('roblox-games/mare-essentia/assets/cardart/eu_21.png');
     assert.equal(indexed[25],3,'indexed fixture must really be a palette PNG');
     fs.writeFileSync(source,indexed);
     const indexedHash=createHash('sha256').update(indexed).digest('hex');
@@ -1629,8 +1629,8 @@ test('Mare generated original art is promoted only after model-source visual QA 
     // [검수된 세로 교체] 기존 원화·등록 ID·권한과 정확히 맞을 때만 승격한다.
     fs.copyFileSync(source,dest);
     const upgradeId='CardArt/eu_18';
-    const reviewUpgrade={...approved.modelOriginals[upgradeId]};
-    const original='roblox-games/mare-essentia/assets/cardart/src/eu_18-original.png';
+    const reviewUpgrade={...review,sourceFile:'assets/cardart/src/eu_18-1400x2000.png',replacesAssetId:'2'};
+    const original='roblox-games/mare-essentia/assets/cardart/eu_18.png';
     const upgradeSource=path.join(root,'assets/cardart/src/eu_18-1400x2000.png');
     const upgradeDest=path.join(root,'assets/cardart/eu_18.png');
     // [독립 QA 원본] 기존 eu_18 교체 시안은 256색이므로 승인 테스트에 재사용하지 않는다.
@@ -1669,6 +1669,7 @@ test('Mare generated original art is promoted only after model-source visual QA 
     ]));
     fs.copyFileSync(original,upgradeDest);
     const digest=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+    reviewUpgrade.replacesSha256=digest(original);
     reviewUpgrade.sourceSha256=digest(upgradeSource);
     assert.equal(digest(upgradeDest),reviewUpgrade.replacesSha256);
     assert.equal(digest(upgradeSource),reviewUpgrade.sourceSha256);
@@ -1687,7 +1688,7 @@ test('Mare generated original art is promoted only after model-source visual QA 
     save();
     await execute();
     assert.equal(digest(upgradeDest),reviewUpgrade.sourceSha256);
-    assert.equal(digest(original),reviewUpgrade.replacesSha256,'historical source must remain intact');
+    assert.equal(digest(original),reviewUpgrade.replacesSha256,'registered fixture must remain intact');
     await execute();
     assert.equal(digest(upgradeDest),reviewUpgrade.sourceSha256,'repeat must not replace approved art');
   } finally {fs.rmSync(root,{recursive:true,force:true});}
