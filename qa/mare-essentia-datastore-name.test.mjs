@@ -1691,7 +1691,9 @@ test('항구 35개 직업은 등록된 실물 장비를 직접 R15에 착용하�
  assert.match(pose,/model:FindFirstChild\(slotName\)/);
  assert.match(pose,/if jobProp and UserInputService\.TouchEnabled and detailLimit == 3 then/);
  assert.match(pose,/LocalTransparencyModifier = 1/);
- assert.match(pose,/if string\.sub\(assetName, 1, 7\) == "outfit_" or string\.sub\(assetName, 1, 4\) == "cc0_" or jobProp then/);
+ assert.match(pose,/if string\.sub\(assetName, 1, 7\) == "outfit_" or string\.sub\(assetName, 1, 4\) == "cc0_"/);
+ assert.ok(pose.includes('or string.sub(assetName, 1, 4) == "acc_" or string.sub(assetName, 1, 5) == "hair_" or jobProp then'),
+  '거리 LOD 복구 시 기존 헤어와 장신구도 다시 표시한다');
  assert.match(pose,/LocalTransparencyModifier = 0/);
  assert.match(pose,/math\.rad\(spec\[9\] or 0\)/);
  assert.match(pose,/elseif not textured and not jobProp and string\.sub\(assetName, 1, 4\) ~= "cc0_" then/);
@@ -3421,6 +3423,7 @@ test('스튜디오 R15 보행 검증은 자동 대련 루프의 관절 덮어쓰
 test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제 R15 장착 흐름에 연결된다',()=>{
   const pose=read('ReplicatedStorage/Shared/Pose.luau');
   const assetIds=read('ReplicatedStorage/Shared/AssetIds.luau');
+  const port=read('ReplicatedStorage/Shared/PortScene.luau');
   assert.match(pose,/scalp\.Name = "HairScalp"/);
   assert.match(pose,/temple\.Name = "HairScalpSide"/);
   assert.match(pose,/h\.Y \* 0\.65, h\.Z \* 0\.84/);
