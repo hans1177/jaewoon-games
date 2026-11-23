@@ -1898,14 +1898,34 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	-- [복식 레이어] 원본 전신복은 소매·등판·다리천을 담당한다.
 	-- 겉조끼·외투·경비복이 추가되어도 전신복을 지우지 않는다. 계절 상의끼리만 중복 정리한다.
 
-	-- [계절 전환] 새 외투/조끼가 실제 부착된 후에만 반대 계절의 상의를 제거한다.
-	-- 등록/로드 실패 시 직전 옷을 그대로 보존하고, 동일 R15 위치에 두 벌이 겹치지 않게 한다.
+	-- [계절·날씨 상의 정리] 항구 겨울 상태와 개별 주민의 비옷 요구가 달라도,
+	-- 현재 specs가 요청한 상의만 정답으로 본다. 숨겨진/미장착 상의는 성공으로 세지 않는다.
+	-- 원본 전신복·소매·장화는 보존하고 조끼/외투 중 이전 슬롯만 정리한다.
 	if winterWardrobe then
-		local wanted = if winterCoat then "outfit_coat" else "outfit_vest"
-		local previous = if winterCoat then "outfit_vest" else "outfit_coat"
-		if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then
-			local old = model:FindFirstChild("R15Asset_" .. previous .. "_UpperTorso")
-			if old then old:Destroy(); merged += 1 end
+		local wanted = nil
+		for _, spec in specs do
+			if spec[2] == "UpperTorso" and (spec[1] == "outfit_vest" or spec[1] == "outfit_coat") then
+				wanted = spec[1]
+				break
+			end
+		end
+		if wanted then
+			local mounted = model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso")
+			local visible = false
+			if mounted then
+				for _, part in mounted:GetDescendants() do
+					if part:IsA("BasePart") and part.Transparency < 0.95
+						and part.LocalTransparencyModifier < 0.99 then
+						visible = true
+						break
+					end
+				end
+			end
+			if visible then
+				local previous = if wanted == "outfit_coat" then "outfit_vest" else "outfit_coat"
+				local old = model:FindFirstChild("R15Asset_" .. previous .. "_UpperTorso")
+				if old then old:Destroy(); merged += 1 end
+			end
 		end
 	end
 	-- [한 주민 한 장신구] 실제 R15 새 외장 소품을 장착한 뒤에만 오래된 슬롯을 제거한다.
