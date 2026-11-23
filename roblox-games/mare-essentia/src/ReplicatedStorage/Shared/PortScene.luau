@@ -2674,6 +2674,13 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		local function built(id, stage)
 			return lvl >= stage and (if info.sim then (stock[id] or 0) >= 1 else true)
 		end
+		-- [방문 건물 재배치에 맞춘 전문 인력] 기존 고용 숫자·직무는 그대로 두고 직업 장소만 이동한다.
+		local scholar = folder:GetAttribute("CityFacilityPosition_tech")
+		local office = folder:GetAttribute("CityFacilityPosition_route")
+		local bank = folder:GetAttribute("CityFacilityPosition_harbor")
+		local scholarAt = if typeof(scholar) == "Vector3" then scholar + Vector3.new(0, 0, if scholar.Z > 0 then -17 else 17) else Vector3.new(-86, 0, 21)
+		local clerkAt = if typeof(office) == "Vector3" then office + Vector3.new(0, 0, if office.Z > 0 then -15 else 15) else Vector3.new(-110, 0, 21)
+		local bankerAt = if typeof(bank) == "Vector3" then bank + Vector3.new(0, 0, if bank.Z > 0 then -15 else 15) else Vector3.new(-54, 0, 18)
 		local available = {
 			{ name = "대장장이", job = "smith", group = "craftsman", need = built("workshop", 2) and (made.iron or made.copper or made.tin), at = Vector3.new(-160, 0, -114), prop = { "Town", "workbench-anvil", 4 }, work = { "forge", "hammer", "carve", "inspect", "seal", "sharpen" }, rest = { "stretch", "drink", "warm" }, color = C(129, 72, 53) },
 			{ name = "재단사", job = "tailor", group = "craftsman", need = built("workshop", 2) and (made.cloth or made.silk or made.wool), at = Vector3.new(-188, 0, -114), prop = { "Cargo", "textiles-stack-large-colored", 3 }, work = { "sew", "fold", "carve", "inspect", "pack", "measure" }, rest = { "talk", "drink", "gossip" }, color = C(117, 86, 148) },
@@ -2681,9 +2688,9 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			{ name = "목수", job = "carpenter", group = "craftsman", need = built("workshop", 2) and (made.timber or made.mahogany or made.kauri), at = Vector3.new(-124, 0, -113), prop = { "Cargo", "resource-planks", 3 }, work = { "saw", "plane", "hammer", "inspect", "lift", "plane_wood", "repair" }, rest = { "stretch", "drink", "talk" }, color = C(136, 101, 67) },
 			{ name = "조선공", job = "shipwright", group = "sailor", need = lvl >= 3 and info.hasShipyard, at = Vector3.new(-19, 0, -106), prop = { "Cargo", "resource-planks", 3.5 }, work = { "knot", "plane", "hammer", "unload", "inspect", "repair", "haul_rope" }, rest = { "talk", "stretch", "cheer" }, color = C(79, 103, 134) },
 			{ name = "목장지기", job = "herder", group = "farmer", need = built("farm", 2), at = Vector3.new(-660, 0, 0), prop = { "Cargo", "wood-log-a", 3 }, work = { "look", "milk", "sow", "inspect", "scan", "feed" }, rest = { "drink", "lean", "warm" }, color = C(130, 121, 83) },
-			{ name = "교사", job = "teacher", group = "official", need = built("school", 3), at = Vector3.new(-86, 0, 21), prop = { "Interior", "bookcaseclosed", 4.2 }, work = { "teach", "read", "write", "guide", "point" }, rest = { "talk", "listen", "clap" }, color = C(80, 115, 108) },
-			{ name = "서기관", job = "clerk", group = "official", need = built("hall", 3), at = Vector3.new(-110, 0, 21), prop = { "Interior", "bookcaseclosed", 3.8 }, work = { "seal", "write", "count", "read", "inspect", "ledger" }, rest = { "talk", "listen", "yawn" }, color = C(91, 89, 131) },
-			{ name = "은행원", job = "banker", group = "merchant", need = lvl >= 4 and built("market", 2) and table.find(info.facilities or {}, "bank") ~= nil, at = Vector3.new(-54, 0, 18), prop = { "Cargo", "gold-bars", 2.1 }, work = { "count", "seal", "write", "bargain", "offer", "ledger" }, rest = { "talk", "read", "gossip" }, color = C(105, 75, 119) },
+			{ name = "교사", job = "teacher", group = "official", need = built("school", 3), at = scholarAt, prop = { "Interior", "bookcaseclosed", 4.2 }, work = { "teach", "read", "write", "guide", "point" }, rest = { "talk", "listen", "clap" }, color = C(80, 115, 108) },
+			{ name = "서기관", job = "clerk", group = "official", need = built("hall", 3), at = clerkAt, prop = { "Interior", "bookcaseclosed", 3.8 }, work = { "seal", "write", "count", "read", "inspect", "ledger" }, rest = { "talk", "listen", "yawn" }, color = C(91, 89, 131) },
+			{ name = "은행원", job = "banker", group = "merchant", need = lvl >= 4 and built("market", 2) and table.find(info.facilities or {}, "bank") ~= nil, at = bankerAt, prop = { "Cargo", "gold-bars", 2.1 }, work = { "count", "seal", "write", "bargain", "offer", "ledger" }, rest = { "talk", "read", "gossip" }, color = C(105, 75, 119) },
 		}
 		local specialistLimit = if info.sim then math.clamp(math.floor((info.sim.residents or 0) / 10), 0, 7) else lvl + 1
 		local specialistCount = 0
@@ -3893,8 +3900,13 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						-- 필지 예약 반경을 도로 판정에 중복 적용하면 모든 주택이 사라질 수 있다.
 						local actualHalfX = math.max(half, measuredHalfX)
 						local actualHalfZ = math.max(half, measuredHalfZ)
-						local laneNear = 152 + laneOffset + laneIndex * laneL
-						local laneFar = laneNear + laneL
+						-- [도로·주택 축 동기화] 구불구불한 골목도 양쪽 차로 실측 좌표로 판정한다.
+						local nearBend = if villageLayout == "organic" then (if laneIndex % 2 == 0 then -3 else 3)
+							elseif villageLayout == "terrace" then laneIndex * 2 else 0
+						local farBend = if villageLayout == "organic" then (if (laneIndex + 1) % 2 == 0 then -3 else 3)
+							elseif villageLayout == "terrace" then (laneIndex + 1) * 2 else 0
+						local laneNear = 152 + laneOffset + laneIndex * laneL + nearBend
+						local laneFar = 152 + laneOffset + (laneIndex + 1) * laneL + farBend
 						local chosenShift
 						-- 원래 자리에서 시작해 같은 필지 안에서만 조금 이동한다. 다른 건물은 건드리지 않는다.
 						for _, direction in homeShifts do
