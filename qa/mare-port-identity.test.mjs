@@ -48,11 +48,32 @@ test('항구별 길 원본과 골목 정렬은 기존 마을 렌더러에 연결
   assert.match(scene, /local patchLimit = if streetTouch then 4 else 8/);
 });
 
-test('항구별 3D 원본이 없을 때 기존 승인 자산과 주택 생성 흐름을 유지한다', () => {
+test('항구마다 필지·물길·광장·거리·날씨를 직접 적용한다', () => {
+  assert.match(scene, /PortIdentity\.tier\(lvl\)\.plots/);
+  assert.match(scene, /homePlaced < portPlotLimit and rowPlaced < rowPlotLimit/);
+  assert.match(scene, /waterLane = if identity then villageLayout == "canal"/);
+  assert.match(scene, /CityPortPlazaType/);
+  assert.match(scene, /CityPortPlazaCenter/);
+  assert.match(scene, /CityPortPlazaAsset/);
+  assert.match(scene, /local laneRow = math\.min\(pairsN, i - 1\)/);
+  assert.match(scene, /identity\.weatherGround == "monsoon_mud"/);
+  assert.match(scene, /CityPortMissingLamp/);
+  assert.doesNotMatch(scene, /local function disc\(radius, y, color, mat\)/);
+});
+
+test('항구별 승인 실물만 배치하고 없는 건축과 농작물은 대체하지 않는다', () => {
+  const assets = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/AssetIds.luau', 'utf8');
+  assert.match(scene, /CityPortMissingLandmark/);
   assert.match(scene, /originalHouse and AssetIds\["Town\/" \.\. originalHouse\]/);
   assert.match(scene, /if AssetIds\["Town\/" \.\. landmarkAsset\] then/);
-  assert.match(scene, /local list = SIG\[info\.portId\]/);
-  assert.match(scene, /local P = PROFILE\[key\] or PROFILE\.north/);
-  assert.match(scene, /PortOriginalHouse/);
-  assert.match(scene, /PortOriginalLandmark/);
+  assert.match(scene, /scenePortId == "london" or scenePortId == "rouen"/);
+  for (let i = 1; i <= 4; i++) {
+    assert.ok(assets.includes('"Town/village-house-' + i + '"'), '원본 민가 ' + i);
+  }
+  assert.match(scene, /CityPortRuralProduct/);
+  assert.match(scene, /CityPortRuralCropAsset/);
+  assert.match(scene, /MISSING_EXACT_3D_CROP/);
+  assert.match(scene, /if workshop and AssetIds\["Town\/" \.\. workshop\] then/);
+  assert.match(scene, /CityPortPlannedPlots/);
+  assert.match(scene, /CityHistoricWindmill/);
 });
