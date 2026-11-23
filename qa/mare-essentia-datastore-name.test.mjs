@@ -56,7 +56,8 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
 test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가 회귀', () => {
   const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
   const capture=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
-  assert.match(source,/currentTab ~= "map" and currentTab ~= "codex"/);
+  // 시설 원화 카드(7:10)는 모든 탭에 표시한다(9d6ab6fcf8). 예전 지도·서재 제외 조건 대신 카드 존재를 확인.
+  assert.match(source,/FacilityArtCard7x10/);
   assert.match(source,/CodexQuickNavigation/);
   assert.match(source,/ScholarTradeEncyclopediaBook/);
   assert.match(source,/CodexBookLeftPage/);
