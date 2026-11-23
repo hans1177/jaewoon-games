@@ -2173,6 +2173,20 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				else CFrame.new(origin.Position)
 			local yaw = rng:NextNumber(-math.pi, math.pi)
 			m:PivotTo(upright * CFrame.Angles(0, yaw, 0))
+			-- [회전 후 실측 접지] 수입 모델의 기준점이 몸 중앙에 있어도 회전 후 실제 발바닥이 지면에 남는다.
+			local lowestY = math.huge
+			for _, footPart in m:GetDescendants() do
+				if footPart:IsA("BasePart") and footPart.Transparency < 0.98 then
+					local half = footPart.Size * 0.5
+					local pose = footPart.CFrame
+					lowestY = math.min(lowestY, pose.Position.Y
+						- math.abs(pose.RightVector.Y) * half.X - math.abs(pose.UpVector.Y) * half.Y
+						- math.abs(pose.LookVector.Y) * half.Z)
+				end
+			end
+			if lowestY < math.huge then
+				m:PivotTo(CFrame.new(0, pos.Y - lowestY, 0) * m:GetPivot())
+			end
 			-- [외부 가축 원본 관절] 스킨 본·모터 또는 분리된 사지 메시만 수집한다.
 			-- 원본 한 덩어리 메시의 형상을 무리하게 뒤틀거나 새 관절·메시를 생성하지 않는다.
 			local animalJoints, animalParts = {}, {}
@@ -2198,6 +2212,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				end
 				local leg = name:find("leg", 1, true) or name:find("hoof", 1, true)
 					or name:find("paw", 1, true) or name:find("foot", 1, true)
+					or name:find("knee", 1, true) or name:find("hock", 1, true)
 				local head = name:find("head", 1, true) or name:find("neck", 1, true)
 				local tail = name:find("tail", 1, true)
 				local ear = name:find("ear", 1, true) and not name:find("heart", 1, true)
@@ -6935,7 +6950,9 @@ function PortScene.build(info, onFacility)
 				if w.model.Parent then
 					local t = now + w.phase
 					local u = if w.span then t * w.rate else 0
-					local targetD = if w.span then -math.sin(u) * w.span else 0
+					-- [스키 이동 방지] 사지 리그 없는 원본은 통째로 미끄러지게 이동시키지 않는다.
+					local hasGait = #w.animalJoints > 0 or #w.animalParts > 0
+					local targetD = if w.span and hasGait then -math.sin(u) * w.span else 0
 					local want = if math.cos(u) < -0.06 then math.pi elseif math.cos(u) > 0.06 then 0 else w.targetHd or 0
 					w.targetHd = want
 					if not w.headingStarted then
@@ -6953,14 +6970,15 @@ function PortScene.build(info, onFacility)
 					local walked = math.abs(d - (w.lastD or d))
 					w.lastD = d
 					local speed = if dt > 0 then walked / dt else 0
-					local moving = w.span ~= nil and alignment > 0.25 and speed > 0.08
+					local moving = hasGait and w.span ~= nil and alignment > 0.25 and speed > 0.08
 					if moving then
 						w.travelPhase += walked * (2 * math.pi / w.stepSize)
 					end
 					-- [가축별 생활] 정지 시 먹이·물·정리·휴식·귀 움직임, 이동 중 실제 보행.
 					local cycle = (t * 0.56) % 21
 					local action
-					if moving then action = "walk"
+					if not hasGait then action = "rest"
+					elseif moving then action = "walk"
 					elseif w.akind == "graze" then
 						action = if cycle < 5 then "graze" elseif cycle < 8 then "chew"
 							elseif cycle < 11 then "look" elseif cycle < 14 then "drink"
@@ -6996,7 +7014,8 @@ function PortScene.build(info, onFacility)
 					w.groundOffset += (w.groundTarget - w.groundOffset) * (1 - math.exp(-9 * dt))
 					-- [접지 보행] 몸 전체를 뒤집지 않고 실제 전진 거리로 작은 체중 이동만 준다.
 					local step = w.travelPhase
-					local bob = if moving then math.abs(math.sin(step)) * (if w.akind == "peck" then 0.025 else 0.042)
+					local bob = if not hasGait then 0
+						elseif moving then math.abs(math.sin(step)) * (if w.akind == "peck" then 0.025 else 0.042)
 						elseif action == "peck" then math.sin(t * 5) * 0.009
 						elseif action == "shake" then math.sin(t * 9) * 0.013
 						else math.sin(t * 1.3) * 0.009
