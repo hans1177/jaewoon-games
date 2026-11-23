@@ -3417,6 +3417,12 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
     '조선소 중앙 선박 원화 즉시 갱신');
   assert.match(source,/selectArea\.Size = UDim2\.new\(1, -4, 0, 78\)/,'구매 버튼과 선택 영역 분리');
   assert.match(source,/H\.galleryImage\.ScaleType = Enum\.ScaleType\.Fit/,'기존 원화 강제 잘림 금지');
+  assert.match(source,/H\.galleryBookOpenRequested = H\.galleryLinkCardId/,'실제 지식 카드 ID 연결');
+  assert.match(source,/or \("search:" \.\. \(\(H\.FACILITY_GALLERY_TOPICS\[currentTab\]/,'미발견 주제는 기존 서재 검색으로 연결');
+  assert.match(source,/if bookCard then bookCard\.id else "search:" \.\. shipName/,'해당 선박 기록이 없으면 선박명 검색');
+  assert.match(source,/string\.sub\(target, 1, 7\) == "search:"/,'서재 검색과 정확한 백과 장 분기');
+  assert.match(source,/H\.codexSearchTerm = string\.sub\(target, 8\)/,'기존 지식 검색 기능 재사용');
+  assert.match(source,/if wide and gallery and height - bodyTop >= 210 then/,'낮은 가로 화면의 원화 잘림 방지');
   for(const action of ['Buy','Sell','BuyShip','Repair','BuySupplies'])
     assert.ok(source.includes('call("'+action+'"'),'기존 서버 호출 유지: '+action);
   assert.doesNotMatch(trade,/Instance\.new\("Part"\)/,'새 임시 3D 도형 금지');
