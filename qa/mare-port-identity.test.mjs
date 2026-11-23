@@ -130,3 +130,15 @@ test('실촬영된 항구 대표 거리에는 승인된 문화권 실물만 사�
   assert.doesNotMatch(zanzibar[1], /tower-square/);
   assert.match(scene, /\(port and port\.name or info\.portName or info\.portId\) \.\. " · "/);
 });
+
+test('확인된 수변 항구 3곳의 부두·선박은 바다에만 배치하고 보행을 막지 않는다', () => {
+  assert.match(scene, /waterfront = waterfront == true/);
+  assert.match(scene, /local at = if e\.waterfront then Vector3\.new\(/);
+  assert.match(scene, /54 \+ e\.dx \+ variation\.shiftX \* 0\.2/);
+  assert.match(scene, /not early and not e\.waterfront/);
+  for (const port of ['sydney', 'zanzibar', 'canton']) {
+    const block = scene.match(new RegExp('SIG\\.' + port + ' = cat\\(([\\s\\S]*?)\\n\\t(?:SIG\\.|-- \\[)'));
+    assert.ok(block, port + ' 대표 경관');
+    assert.match(block[1], /nil, true/, port + ' 실제 수변 배치');
+  }
+});
