@@ -4159,7 +4159,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	if townFloor and townFloor:IsA("BasePart") then
 		local townLeft = if isRoyalCity then -635 else math.min(-330, X_END - 32)
 		local townRight = 35 -- 기존 항구 해안선과 접한 동쪽 가장자리를 유지한다.
-		local townHalfZ = math.min(360 + lvl * 80 + 14, math.max(300, outerEdgeZ + 52))
+		local townHalfZ = math.min(360 + lvl * 80 + 14, math.max(442, outerEdgeZ + 52))
 		townFloor.Size = Vector3.new(townRight - townLeft, townFloor.Size.Y, 2 * townHalfZ)
 		townFloor.Position = Vector3.new((townLeft + townRight) * 0.5, townFloor.Position.Y, 0)
 		folder:SetAttribute("TownLandWidth", math.floor(townRight - townLeft))
@@ -6432,7 +6432,7 @@ function PortScene.build(info, onFacility)
 		local civicOffset = civicRng:NextInteger(-10, 9)
 		local landmarkSide = if civicRng:NextInteger(0, 1) == 0 then -1 else 1
 		local civicDepth = civicRng:NextInteger(-6, 6)
-		local plazaAt = Vector3.new(-133 + civicOffset * 0.55, 0, -landmarkSide * (128 + civicDepth))
+		local plazaAt = Vector3.new(-140 + civicOffset * 0.45, 0, -landmarkSide * (113 + civicDepth))
 		-- [문화권 고증] 유럽 노점을 부산·캘리컷 장시로, 유럽식 분수를 오스만 세정시설로 쓰지 않는다.
 		local europeanMarket = not identity or info.portId == "london" or info.portId == "rouen"
 		-- [항구별 원본 광장] 15항구 전용 승인 원화가 있으면 기존 동일 광장 슬롯에서 우선 사용한다.
@@ -6445,6 +6445,9 @@ function PortScene.build(info, onFacility)
 			else nil
 		folder:SetAttribute("CityPortPlazaType", plazaKind)
 		folder:SetAttribute("CityPortPlazaLocation", plazaAt)
+		-- [새 광장 접근로] 기존 도로 시공 함수로 항구 중심 도로에서 새 광장까지 연결한다.
+		strip(folder, style, plazaAt.X, plazaAt.Z * 0.5, 9, math.abs(plazaAt.Z) + 15)
+		folder:SetAttribute("CityPortPlazaAccessConnected", true)
 		if asset and AssetIds["Town/" .. asset] then
 			local center = importedModel(folder, "Town", asset, plazaAt,
 				if plazaKind == "market" then 8 else 10, false)
