@@ -2841,6 +2841,7 @@ hudTop.Name = "HudTop"
 hudTop.BackgroundTransparency = 1
 hudTop.Size = UDim2.fromScale(1, 1)
 hudTop.Parent = hudTopGui
+do
 -- [지상·해상 배경] 눈에 보이는 큰 빛먼지 9개. 파츠/외부 에셋/스폰 반복 없음.
 local skyParticles = Instance.new("Frame")
 skyParticles.Name = "HudAmbientParticles"
@@ -2901,6 +2902,7 @@ function H.updateScreenAtmosphere()
 	if disc then disc.BackgroundColor3 = light; disc.BackgroundTransparency = 0.38 end
 end
 H.updateScreenAtmosphere()
+end
 hud:GetPropertyChangedSignal("Visible"):Connect(function()
 	hudTopGui.Enabled = hud.Visible and player.PlayerGui:FindFirstChild("TradeHallGui") == nil
 end)
