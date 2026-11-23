@@ -628,6 +628,109 @@ local P: { [string]: Identity } = {
 		signature = { "양모 상관", "석탄 선창", "고래기름 창고" }, facade = { 181, 166, 143 }, roofTint = { 89, 93, 101 },
 		reflow = { lane = 10, plaza = -11, side = 1, landmarkX = 5, landmarkZ = -7, district = -10, facility = 4 } },
 
+	-- [항구별 재배치 102~118] kingston: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	kingston = { landmark = { id = "lm_kingston_fort", name = "신호탑이 있는 킹스턴 해안 석조 요새", kind = "fort", fallback = "none" },
+		roof = "hip", wall = "wood", balcony = "wood_lattice", layout = "grid", plaza = "parade",
+		street = { "sand", "dirt", "gravel", "brick", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "monsoon_mud",
+		signature = { "설탕 압착소", "럼주 저장 창고", "마호가니 선창" }, facade = { 227, 196, 166 }, roofTint = { 142, 96, 73 },
+		reflow = { lane = -11, plaza = 9, side = 1, landmarkX = -6, landmarkZ = 7, district = -8, facility = 4 } },
+	-- [항구별 재배치 102~118] koenigsberg: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	koenigsberg = { landmark = { id = "lm_koenigsberg_city_gate", name = "쾨니히스베르크 붉은 벽돌 양탑 문루", kind = "city_gate", fallback = "none" },
+		roof = "gable", wall = "brick", balcony = nil, layout = "grid", plaza = "market",
+		street = { "dirt", "cobble", "cobble", "cobble", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "snow",
+		signature = { "호박 시장", "목재 부두", "아마 상관" }, facade = { 167, 112, 90 }, roofTint = { 93, 78, 72 },
+		reflow = { lane = 4, plaza = -14, side = -1, landmarkX = 6, landmarkZ = -5, district = 12, facility = 2 } },
+	-- [항구별 재배치 102~118] la_guaira: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	la_guaira = { landmark = { id = "lm_la_guaira_cathedral", name = "라과이라 식민지 쌍탑 성당", kind = "cathedral", fallback = "none" },
+		roof = "flat", wall = "stucco", balcony = "iron", layout = "terrace", plaza = "parade",
+		street = { "sand", "dirt", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "puddles",
+		signature = { "카카오 창고", "피혁 시장", "진주 선적소" }, facade = { 233, 210, 182 }, roofTint = { 174, 106, 77 },
+		reflow = { lane = 12, plaza = 5, side = 1, landmarkX = 7, landmarkZ = 5, district = 10, facility = 5 } },
+	-- [항구별 재배치 102~118] la_rochelle: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	la_rochelle = { landmark = { id = "lm_la_rochelle_fort", name = "라로셸 해안 석조 방어 성곽", kind = "fort", fallback = "none" },
+		roof = "hip", wall = "stone", balcony = "iron", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "소금 염장소", "포도주 상관", "올리브 압착소" }, facade = { 210, 204, 188 }, roofTint = { 103, 108, 118 },
+		reflow = { lane = -8, plaza = -11, side = -1, landmarkX = -5, landmarkZ = -7, district = 3, facility = 6 } },
+	-- [항구별 재배치 102~118] lagos: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	lagos = { landmark = { id = "lm_lagos_fort", name = "라고스 해안 요새와 붉은 벽돌 문루", kind = "fort", fallback = "none" },
+		roof = "thatch", wall = "adobe", balcony = nil, layout = "organic", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "torch", ground = "red_earth", weatherGround = "monsoon_mud",
+		signature = { "야자 기름 압착소", "상아 시장", "흑단 선창" }, facade = { 190, 150, 104 }, roofTint = { 117, 87, 61 },
+		reflow = { lane = 7, plaza = 13, side = 1, landmarkX = 5, landmarkZ = 7, district = -10, facility = 3 } },
+	-- [항구별 재배치 102~118] las_palmas: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	las_palmas = { landmark = { id = "lm_las_palmas_bell_tower", name = "라스팔마스 해안 성당 종탑", kind = "bell_tower", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "iron", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "dust",
+		signature = { "포도주 저장고", "설탕 압착소", "해염 시장" }, facade = { 241, 220, 187 }, roofTint = { 168, 105, 75 },
+		reflow = { lane = -5, plaza = -15, side = -1, landmarkX = -8, landmarkZ = -8, district = 9, facility = 1 } },
+	-- [항구별 재배치 102~118] livorno: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	livorno = { landmark = { id = "lm_livorno_campanile", name = "리보르노 붉은 벽돌 종탑", kind = "campanile", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "loggia", layout = "grid", plaza = "fountain",
+		street = { "dirt", "flagstone", "flagstone", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "올리브 압착소", "포도주 상관", "대리석 선창" }, facade = { 235, 195, 155 }, roofTint = { 166, 94, 69 },
+		reflow = { lane = 10, plaza = -8, side = 1, landmarkX = 8, landmarkZ = -5, district = -6, facility = 4 } },
+	-- [항구별 재배치 102~118] luanda: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	luanda = { landmark = { id = "lm_luanda_fort", name = "루안다 석조 해안 성채", kind = "fort", fallback = "none" },
+		roof = "thatch", wall = "adobe", balcony = nil, layout = "organic", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "torch", ground = "red_earth", weatherGround = "dust",
+		signature = { "면직물 공방", "설탕 창고", "흑단 목재 선창" }, facade = { 180, 142, 105 }, roofTint = { 108, 84, 66 },
+		reflow = { lane = -12, plaza = 7, side = -1, landmarkX = -7, landmarkZ = 6, district = -12, facility = 5 } },
+	-- [항구별 재배치 102~118] lubeck: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	lubeck = { landmark = { id = "lm_lubeck_city_gate", name = "뤼베크 고딕 양탑 도시 문루", kind = "city_gate", fallback = "none" },
+		roof = "gable", wall = "brick", balcony = nil, layout = "grid", plaza = "market",
+		street = { "dirt", "cobble", "cobble", "cobble", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "snow",
+		signature = { "해염 창고", "맥주 시장", "목재 상관" }, facade = { 181, 107, 86 }, roofTint = { 100, 77, 74 },
+		reflow = { lane = 2, plaza = 11, side = 1, landmarkX = 3, landmarkZ = 8, district = 7, facility = 2 } },
+	-- [항구별 재배치 102~118] macau: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	macau = { landmark = { id = "lm_macau_city_gate", name = "마카오 회색 벽돌 해안 문루", kind = "city_gate", fallback = "none" },
+		roof = "eave", wall = "brick", balcony = "wood_lattice", layout = "canal", plaza = "quay",
+		street = { "dirt", "gravel", "flagstone", "flagstone", "paved" }, lamp = "paper_lantern", ground = "rice_paddy", weatherGround = "monsoon_mud",
+		signature = { "차 상관", "도자기 시장", "비단 창고" }, facade = { 169, 151, 139 }, roofTint = { 63, 73, 82 },
+		reflow = { lane = -9, plaza = -13, side = -1, landmarkX = -6, landmarkZ = -6, district = 11, facility = 6 } },
+	-- [항구별 재배치 102~118] madras: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	madras = { landmark = { id = "lm_madras_gopuram", name = "마드라스 층층 지붕 사원 문루", kind = "gopuram", fallback = "none" },
+		roof = "eave", wall = "plaster", balcony = "wood_lattice", layout = "grid", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "monsoon_mud",
+		signature = { "면화 시장", "인디고 염색소", "보석 계량소" }, facade = { 211, 173, 129 }, roofTint = { 127, 92, 72 },
+		reflow = { lane = 6, plaza = 15, side = 1, landmarkX = 5, landmarkZ = 8, district = 1, facility = 3 } },
+	-- [항구별 재배치 102~118] makassar: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	makassar = { landmark = { id = "lm_makassar_royal_hall", name = "마카사르 향신료 항만 겹지붕 회관", kind = "royal_hall", fallback = "none" },
+		roof = "thatch", wall = "wood", balcony = "wood_lattice", layout = "organic", plaza = "market",
+		street = { "mud", "dirt", "gravel", "plank", "paved" }, lamp = "paper_lantern", ground = "mud", weatherGround = "monsoon_mud",
+		signature = { "육두구 선별장", "정향 창고", "백단향 선창" }, facade = { 190, 156, 111 }, roofTint = { 121, 85, 58 },
+		reflow = { lane = -7, plaza = -7, side = -1, landmarkX = -4, landmarkZ = -4, district = -9, facility = 1 } },
+	-- [항구별 재배치 102~118] malaga: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	malaga = { landmark = { id = "lm_malaga_bell_tower", name = "말라가 석조 성당 종탑", kind = "bell_tower", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "iron", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "dust",
+		signature = { "건포도 창고", "올리브 압착소", "포도주 시장" }, facade = { 237, 213, 172 }, roofTint = { 164, 105, 78 },
+		reflow = { lane = 11, plaza = 10, side = 1, landmarkX = 8, landmarkZ = 7, district = 12, facility = 5 } },
+	-- [항구별 재배치 102~118] messina: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	messina = { landmark = { id = "lm_messina_campanile", name = "메시나 해안 돔 성당 종탑", kind = "campanile", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "loggia", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "flagstone", "flagstone", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "비단 직조 공방", "포도주 상관", "산호 시장" }, facade = { 225, 188, 162 }, roofTint = { 170, 99, 74 },
+		reflow = { lane = -4, plaza = 14, side = -1, landmarkX = -3, landmarkZ = 6, district = 4, facility = 2 } },
+	-- [항구별 재배치 102~118] mocha: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	mocha = { landmark = { id = "lm_mocha_mosque", name = "모카 산호석 해안 모스크", kind = "mosque", fallback = "none" },
+		roof = "flat", wall = "coral", balcony = "wood_lattice", layout = "organic", plaza = "quay",
+		street = { "sand", "sand", "gravel", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "sand", weatherGround = "dust",
+		signature = { "커피 볶음 공방", "대추야자 창고", "아라비아고무 상관" }, facade = { 231, 212, 171 }, roofTint = { 143, 116, 85 },
+		reflow = { lane = 9, plaza = -15, side = 1, landmarkX = 7, landmarkZ = -8, district = -11, facility = 4 } },
+	-- [항구별 재배치 102~118] mogadishu: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	mogadishu = { landmark = { id = "lm_mogadishu_mosque", name = "모가디슈 해안 산호석 첨탑 모스크", kind = "mosque", fallback = "none" },
+		roof = "flat", wall = "coral", balcony = "wood_lattice", layout = "grid", plaza = "quay",
+		street = { "sand", "sand", "gravel", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "sand", weatherGround = "dust",
+		signature = { "용연향 계량소", "유향 창고", "상아 선창" }, facade = { 222, 202, 174 }, roofTint = { 135, 117, 94 },
+		reflow = { lane = -10, plaza = 6, side = -1, landmarkX = -8, landmarkZ = 4, district = 8, facility = 3 } },
+	-- [항구별 재배치 102~118] mombasa: 지시서와 기존 승인 실물에 따라 항만 필지·광장·시설 위치 분리.
+	mombasa = { landmark = { id = "lm_mombasa_mosque", name = "몸바사 해안 산호석 중정 모스크", kind = "mosque", fallback = "none" },
+		roof = "flat", wall = "coral", balcony = "wood_lattice", layout = "organic", plaza = "quay",
+		street = { "sand", "sand", "gravel", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "sand", weatherGround = "monsoon_mud",
+		signature = { "정향 선별장", "상아 시장", "대추야자 선창" }, facade = { 217, 193, 161 }, roofTint = { 149, 120, 87 },
+		reflow = { lane = 5, plaza = -12, side = 1, landmarkX = 6, landmarkZ = -7, district = -7, facility = 6 } },
+
 }
 
 local M = {}
@@ -669,7 +772,7 @@ function M.get(portId: string): Identity?
 	return P[portId]
 end
 
--- [전체 항구 고유 외형] 항구별 지시서가 등록된 101개 항구는 지정 색을 그대로 쓰고,
+-- [전체 항구 고유 외형] 항구별 지시서가 등록된 118개 항구는 지정 색을 그대로 쓰고,
 -- 나머지 항구는 기존 문화권의 벽·지붕·도로 팔레트에서 항구 ID별 고정 변형을 만든다.
 -- 어떤 모델도 새로 생성·선택하지 않으며 항구 데이터·저장·경제는 변경하지 않는다.
 -- 같은 항구는 방문할 때마다 항상 같은 색이며 서로 다른 문화권의 재료색을 섞지 않는다.
