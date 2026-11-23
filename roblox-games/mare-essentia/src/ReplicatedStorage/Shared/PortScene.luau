@@ -704,19 +704,23 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			else math.max(ext.X, ext.Z)
 		if axis < 0.01 then error("빈 모델") end
 		-- 야자나무는 잎이 넓어 가로 기준으로 줄이면 줄기가 뒤틀려 보인다: 높이 기준으로 맞춘다.
-		local ratio = desiredSize * (if isPalm then 1.5 else 1) / axis
-		-- 일반 시설·선박은 기존 배율 제한을 보존한다. 동물은 결과 실측 크기로 검증한다.
-		if not isAnimal and (ratio < 0.01 or ratio > 100) then error("비정상적인 모델 배율") end
-		-- ScaleTo는 상대 배율이 아니라 모델의 절대 배율을 받는다. 수입본의 기존 배율을 반영한다.
-		local scale = if isAnimal then m:GetScale() * ratio else ratio
+		local targetSize = desiredSize * (if isPalm then 1.5 else 1)
+		local ratio = targetSize / axis
+		-- [수입 모델 단위 보정] 큰 원본 바위·성벽 메시도 실제 목표 크기로 축소한다.
+		-- 배율을 임의로 고정하지 않고, 변환 후 실측 크기를 검증해 이상 메시를 차단한다.
+		if ratio ~= ratio or ratio < 0.000001 or ratio > 100 or ratio == math.huge then
+			error("비정상적인 모델 배율")
+		end
+		-- ScaleTo는 절대 배율이므로 수입본의 원래 배율을 모든 모델에 반영한다.
+		local scale = m:GetScale() * ratio
 		if scale ~= scale or scale <= 0 or scale == math.huge then error("비정상적인 모델 배율") end
 		m:ScaleTo(scale)
-		if isAnimal then
-			local _, actualSize = m:GetBoundingBox()
-			local actualAxis = math.max(actualSize.X, actualSize.Y, actualSize.Z)
-			if math.abs(actualAxis - desiredSize) > desiredSize * 0.2 then
-				error("동물 수입본 목표 크기 불일치")
-			end
+		local _, actualSize = m:GetBoundingBox()
+		local actualAxis = if kind == "People" or asset == "chimney" or isPalm then actualSize.Y
+			elseif isAnimal then math.max(actualSize.X, actualSize.Y, actualSize.Z)
+			else math.max(actualSize.X, actualSize.Z)
+		if actualAxis ~= actualAxis or math.abs(actualAxis - targetSize) > targetSize * 0.2 then
+			error(if isAnimal then "동물 수입본 목표 크기 불일치" else "수입 모델 목표 크기 불일치")
 		end
 		if kind ~= "People" and kind ~= "Animals" then
 			local _, size = m:GetBoundingBox()
