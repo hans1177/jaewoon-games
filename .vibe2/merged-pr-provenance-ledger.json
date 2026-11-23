@@ -331586,11 +331586,132 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_d5c1108181997739ea499f75",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14796",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "de722d7062fe0e7cdf9f52ae969549235221765a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14796,
+        "baseBranch": "main",
+        "headBranch": "mare-london-bridge-20261124-d",
+        "baseSha": "de722d7062fe0e7cdf9f52ae969549235221765a",
+        "headSha": "cc3ab4d7fc5f86e2112ae6a599ff718e318db1d5",
+        "mergeCommitSha": "ca3e0c15daadc0b283da5bcade351a342f6aadc7",
+        "mergedAt": "2026-11-23T23:13:28Z",
+        "authorLogin": "hans1177",
+        "titleHash": "f1e4480a91e7e597b45b15fd124df14297e7716fb6c236b946b40c4fb5d867f8",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-london-bridge-20261124-d",
+        "candidateSha": "cc3ab4d7fc5f86e2112ae6a599ff718e318db1d5"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 2,
+        "addedLineCount": 619,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/town/london_landmark_base.glb",
+          "roblox-games/mare-essentia/assets/town/london_landmark_base.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_landmark_full.glb",
+          "roblox-games/mare-essentia/assets/town/london_landmark_full.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/town/london_landmark_base.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_landmark_full.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14796",
+        "merge-commit:ca3e0c15daadc0b283da5bcade351a342f6aadc7",
+        "base-main:de722d7062fe0e7cdf9f52ae969549235221765a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2653
+    "total": 2654
   }
 }
