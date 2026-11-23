@@ -2116,6 +2116,13 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  assert.match(port,/local visibleBottomY = math\.huge/);
  assert.match(field,/local visibleBottomY = math\.huge/);
  assert.match(port,/AnimalMotionRig/);
+ // [실제 사지 보행] 한 다리의 무릎·발목을 별개 다리로 세지 않는다.
+ assert.match(port,/local legGroups, legCount = \{\}, 0/);
+ assert.match(port,/if limb\.group and not legGroups\[limb\.group\] then/);
+ assert.match(field,/local occupiedParts, drivenParts, legGroups = \{\}, \{\}, \{\}/);
+ assert.match(field,/node:IsA\("Motor6D"\)/);
+ assert.match(field,/node:IsA\("AnimationConstraint"\)/);
+ assert.match(field,/RunService\.PreSimulation:Connect\(function\(dt\)/);
  assert.match(port,/if k and AssetIds\["Animals\/" \.\. asset\]/);
  assert.match(port,/local lastDecorationGrowth = \{\}/);
  assert.match(port,/CityDecorationGrowthMode", "ECONOMY_READ_ONLY"/);
