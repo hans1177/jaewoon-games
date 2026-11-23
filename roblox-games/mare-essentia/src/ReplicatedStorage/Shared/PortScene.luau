@@ -1042,6 +1042,8 @@ local function modularHall(parent, cx, cz, sizeX, sizeZ, floors, set, tint, roof
 	return placed, top, spanX, spanZ
 end
 
+-- [항구별 외형] 주택 생성 함수가 PortScene.build의 현재 항구 참조를 직접 읽도록 같은 로컬 스코프에서 선언한다.
+local scenePortId: string? = nil
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- [광장 건축 금지] 향후 시설 추가에서도 중앙광장의 빈 보행 공간은 유지한다.
 	if parent.Name == "PortScene" then
@@ -1051,6 +1053,14 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
 	-- 마을 전체가 한 팔레트로 보이도록: 지역 대표색(첫 색)에 가깝게 모으고 집마다 아주 조금만 다르게 한다
 	local tintColor = wallColor or style.walls[1]:Lerp(style.walls[rng:NextInteger(1, #style.walls)], 0.3)
+	local portIdentity = scenePortId and PortIdentity.get(scenePortId)
+	-- [15개 항구 외벽] 지시서의 항구별 색상을 승인된 무텍스처 주택 메시에만 적용한다.
+	-- 시설용 고유 wallColor 및 수입 모델의 원본 PBR/컬러맵은 그대로 보존한다.
+	if portIdentity and not wallColor then
+		local facade = portIdentity.facade
+		tintColor = tintColor:Lerp(C(facade[1], facade[2], facade[3]), 0.74)
+	end
+	local portRoof = portIdentity and portIdentity.roofTint
 	-- 빈집: 위치로 정한 일부 집은 색이 바래고 앞에 판자 울타리가 쳐진다
 	if houseTier <= 1 then
 		tintColor = tintColor:Lerp(Color3.fromRGB(176, 150, 100), 0.25) -- 초가·통나무 느낌으로 바랜 색
@@ -1118,7 +1128,9 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			end
 			-- [한중일 차별화] 같은 기와라도 처마 폭과 지붕 실루엣은 지역마다 다르다.
 			local roofSpan = if currentKey == "china" then 1.32 elseif currentKey == "japan" then 1.15 else 1.22
-			local roof = importedModel(parent, "Town", "eastasia-roof", Vector3.new(pos.X, top, pos.Z), size * roofSpan, false, style.roofs[rng:NextInteger(1, #style.roofs)])
+			local roofColor = style.roofs[rng:NextInteger(1, #style.roofs)]
+			if portRoof then roofColor = roofColor:Lerp(C(portRoof[1], portRoof[2], portRoof[3]), 0.78) end
+			local roof = importedModel(parent, "Town", "eastasia-roof", Vector3.new(pos.X, top, pos.Z), size * roofSpan, false, roofColor)
 			if roof then
 				roof.Name = "HarborRoof"
 				uniformMaterial(roof, style, "roof")
@@ -1165,6 +1177,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		building.Name = "HarborHouse"
 		building:SetAttribute("Architecture", form)
 		local roofColor = style.roofs[(seed % #style.roofs) + 1]
+		if portRoof then roofColor = roofColor:Lerp(C(portRoof[1], portRoof[2], portRoof[3]), 0.72) end
 		if lifted then
 			-- 바닥을 올리고 네 기둥과 깊은 처마를 배치: 동남아·태평양 수변가옥/통풍형 주택.
 			local floor = part(parent, Vector3.new(ww + 1.3, 0.45, dd + 2.2), CFrame.new(pos + Vector3.new(0, lift - 0.3, 0)), C(112, 88, 59), Enum.Material.WoodPlanks)
@@ -1236,9 +1249,11 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		-- 기존 본체 메시와 충돌하지 않도록 장식만 비충돌로 두고, 주택/시설의 고유 판정은 유지한다.
 		local _, ext = mesh:GetBoundingBox()
 		if architecture.roof and not vacant and seed % (if houseTier >= 3 then 3 else 4) == 0 then
+			local roofColor = style.roofs[rng:NextInteger(1, #style.roofs)]
+			if portRoof then roofColor = roofColor:Lerp(C(portRoof[1], portRoof[2], portRoof[3]), 0.72) end
 			local roof = importedModel(parent, "Town", architecture.roof,
 				pos + Vector3.new(0, ext.Y * 0.78, front * ext.Z * 0.28),
-				ext.X * 0.45, false, style.roofs[rng:NextInteger(1, #style.roofs)])
+				ext.X * 0.45, false, roofColor)
 			if roof then
 				roof.Name = "HarborRoofDetail"
 				uniformMaterial(roof, style, "roof")
@@ -1572,7 +1587,7 @@ end
 local sceneLevel = 1
 -- [표시 단계 1~6] 기존 1~5 배열은 sceneLevel로 그대로 읽고, 원본 마을 발전도 6(최고)일 때만 6을 쓴다.
 local cityTier = 1
-local scenePortId: string? = nil -- [항구 정체성] 지금 짓는 항구 (정체성 표가 있으면 길·땅 재질을 항구별로)
+-- [항구 정체성] scenePortId는 house() 위에서 선언해 집·길·랜드마크가 동일한 항구 ID를 사용한다.
 -- 정체성 표의 { 재질 이름, R, G, B } → { Enum.Material, Color3 }
 local function identityLook(raw)
 	if not raw then return nil end
@@ -4123,7 +4138,11 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	-- 종이초롱·석등·모스크 등을 서양 등주로 속이지 않고 정확한 원본이 없으면 보류한다.
 	if lvl >= 2 then
 		local lampStyle = if identity then identity.lamp else "oil_lantern"
-		local lampAsset = if lampStyle == "oil_lantern" then "kenney_lightpost_01" else nil
+		-- [15항구 전용 등] 등록된 종이초롱·석등·모스크등은 정확한 항구 원본만 사용한다.
+		-- 미등록 원본을 서양 가로등으로 속이지 않으며, 기존 서양 기름등 모델만 재사용한다.
+		local originalLamp = if identity then info.portId .. "_street_lamp" else nil
+		local lampAsset = if originalLamp and AssetIds["Town/" .. originalLamp] then originalLamp
+			elseif lampStyle == "oil_lantern" then "kenney_lightpost_01" else nil
 		local lampSpacing = PortIdentity.tier(lvl).lampEvery
 		local lampLimit = math.min(#streetsOuter, if streetTouch then 2 else 4)
 		if lampAsset and AssetIds["Town/" .. lampAsset] then
@@ -4136,6 +4155,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					if lamp then
 						lamp.Name = "CityRegionalStreetLantern"
 						lamp:SetAttribute("PortLampStyle", lampStyle)
+						if originalLamp and lampAsset == originalLamp then lamp:SetAttribute("PortOriginalLamp", originalLamp) end
 						lamp:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 						streetLanterns += 1
 					end
@@ -4477,7 +4497,17 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			if chosen and mesh and AssetIds[mesh[1] .. "/" .. mesh[2]] then
 				local staged = Instance.new("Model")
 				staged.Name = "PortScene"
-				local body = house(staged, chosen, width, depth, floorCount, style, rng, wall)
+				-- [항구별 특산 공방] CSV의 <항구>_workshop_<상품> 실물 원본이 등록된 경우
+				-- 기존 주택 외관 대신 승인된 공방을 사용한다. 없는 원본을 일반 집으로 가장하지 않는다.
+				local workshopName = info.portId .. "_workshop_" .. good
+				local workshop = if lvl >= 3 and AssetIds["Town/" .. workshopName]
+					then importedModel(staged, "Town", workshopName, chosen, math.max(width, depth) * HOUSE_SCALE, true)
+					else nil
+				local body = workshop and workshop:FindFirstChildWhichIsA("BasePart", true)
+				if not body then
+					if workshop then workshop:Destroy(); workshop = nil end
+					body = house(staged, chosen, width, depth, floorCount, style, rng, wall)
+				end
 				if body then
 					local bounds, ext = staged:GetBoundingBox()
 					local hx = math.max(27, math.abs(bounds.Position.X - chosen.X) + ext.X * 0.5 + 2)
@@ -4506,6 +4536,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						body:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 						body:SetAttribute("IndustryGood", good)
 						body:SetAttribute("IndustryFamily", family)
+						if workshop then
+							workshop.Name = "CityPortOriginalWorkshop_" .. good
+							workshop:SetAttribute("PortOriginalWorkshop", workshopName)
+						end
 						body:SetAttribute("BuildingFootprintX", hx * 2)
 						body:SetAttribute("BuildingFootprintZ", hz * 2)
 						table.insert(placedLots, { X = chosen.X, Z = chosen.Z, HX = hx, HZ = hz, H = math.max(hx, hz) })
@@ -4530,7 +4564,18 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						else
 							propGroup, propName = "Cargo", "box-open"
 						end
-						importedModel(folder, propGroup, propName, chosen + Vector3.new(7, 0, 7.4), 3.2, false)
+						-- [항구별 장터] 전용 가판대 원본이 있으면 기존 공방 앞 한 슬롯만 교체한다.
+						local stallName = info.portId .. "_stall_" .. good
+						local stall = if lvl >= 2 and AssetIds["Town/" .. stallName]
+							then importedModel(folder, "Town", stallName, chosen + Vector3.new(7, 0, 7.4), 5, false)
+							else nil
+						if stall then
+							stall.Name = "CityPortOriginalStall_" .. good
+							stall:SetAttribute("PortOriginalStall", stallName)
+							stall:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+						else
+							importedModel(folder, propGroup, propName, chosen + Vector3.new(7, 0, 7.4), 3.2, false)
+						end
 						importedModel(folder, "Cargo", "box-open", chosen + Vector3.new(-7.6, 0, 7.4), 2.4, false)
 						sign(folder, body, SPECIAL_NAME[good] or "특산품 공방",
 							C(150, 110, 40), floorCount * 3 + 6, false, { mesh[1], mesh[2] })
@@ -6137,7 +6182,10 @@ function PortScene.build(info, onFacility)
 		local plazaKind = if identity then identity.plaza else "fountain"
 		-- [문화권 고증] 유럽 노점을 부산·캘리컷 장시로, 유럽식 분수를 오스만 세정시설로 쓰지 않는다.
 		local europeanMarket = not identity or info.portId == "london" or info.portId == "rouen"
+		-- [항구별 원본 광장] 15항구 전용 승인 원화가 있으면 기존 동일 광장 슬롯에서 우선 사용한다.
+		local originalPlaza = if identity then info.portId .. "_plaza_center" else nil
 		local asset = if sceneLevel < 2 then nil
+			elseif originalPlaza and AssetIds["Town/" .. originalPlaza] then originalPlaza
 			elseif plazaKind == "market" and europeanMarket then
 				(if sceneLevel == 2 then "village-well-cc0" else "village-market-stand-1")
 			elseif plazaKind == "fountain" then (if sceneLevel >= 4 then "fountain-round" else "village-well-cc0")
@@ -6152,6 +6200,7 @@ function PortScene.build(info, onFacility)
 				center:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 				center:SetAttribute("PortPlazaType", plazaKind)
 				folder:SetAttribute("CityPortPlazaAsset", asset)
+				if originalPlaza and asset == originalPlaza then center:SetAttribute("PortOriginalPlaza", originalPlaza) end
 			end
 		else
 			folder:SetAttribute("CityPortPlazaAsset", "OPEN_SQUARE")
