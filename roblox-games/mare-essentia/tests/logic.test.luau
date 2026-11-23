@@ -4213,7 +4213,7 @@ do
 		local d0 = Proj.list(stH)[1].done
 		Proj.update(stH, "london", nil)
 		stH.day = 3
-		Proj.update(stH, "london", "흉년(곡물 품귀)")
+		Proj.update(stH, "london", "흉년")
 		check("건축·경제: 흉년 동안 공사가 멈춘다(완공일 연기)", Proj.list(stH)[1].done == d0 + 3 and Proj.active(stH, "london")[1].paused ~= nil)
 		stH.day = Proj.list(stH)[1].done + 1
 		check("건축 시뮬: 완공 직후 축하 표시", Proj.recentDone(stH, "london") ~= nil)

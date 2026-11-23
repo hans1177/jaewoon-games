@@ -89,7 +89,7 @@ return function(D, S)
 		end
 		for _, pr in D.PortBuildings.Projects.active(state, state.portId) do
 			table.insert(out, { id = "build_wip_" .. pr.chain, priority = if pr.paused then 70 else 40, who = speaker(state, "build"),
-				text = if pr.paused then string.format("%s 공사가 멈췄어요: %s. 일꾼들이 빈손으로 기다리고 있어요. 곡물을 들여오면 다시 시작돼요.", pr.name, pr.paused)
+				text = if pr.paused then string.format("%s 공사가 멈췄어요: %s. 일꾼들이 빈손으로 기다리고 있어요. 위기가 지나면 다시 시작돼요.", pr.name, pr.paused)
 					else string.format("%s 공사 중 (%d%%, %d일 남음). 목수와 석공이 일하고 있어요.", pr.name, math.floor(pr.progress * 100), pr.left),
 				tab = "trade", label = "보기", dismissable = true })
 			break
