@@ -2919,10 +2919,15 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         }
         report.summary.completedSteps=n+1;
       }catch(e){
-        report.errors.push('step'+n+':'+clean(e?.message||e).slice(0,300));
+        // [스튜디오 실패 증거] 스택 경로가 앞부분을 채워 실제 Lua 오류가 잘리는 문제를 바로잡는다.
+        // 오류일 때 한 번만 상세 원인을 기록하며 통과 판정이나 재시도 흐름은 바꾸지 않는다.
+        const failureText=clean(e?.message||e);
+        report.errors.push('step'+n+':'+(failureText.length>300
+          ?failureText.slice(0,110)+' [중간 생략] '+failureText.slice(-165):failureText));
         report.summary.completedSteps=n+1;
         report.summary.abortedEarly=true;
         console.log('STUDIO_SCRIPT_ABORT_STEP='+n+':'+st.type);
+        console.log('STUDIO_SCRIPT_FAILURE_DETAIL='+n+':'+failureText.slice(-520));
         const failedElapsedMs=Date.now()-stepStarted;
         const lastFrame=report.log.findLast(row=>row.capture&&row.files>0);
         const lastClick=report.log.findLast(row=>row.click);
