@@ -2089,3 +2089,5 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `town/` | london_street_lamp.glb | Kenney · CC0-1.0 | https://opengameart.org/content/medieval-town-base-3d-assets |
 | `town/` | london_tavern_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
 | `town/` | london_trade_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_landmark_base.glb | Quaternius; Kenney · CC0-1.0 | https://opengameart.org/content/lowpoly-medieval-buildings |
+| `town/` | london_landmark_full.glb | Quaternius; Kenney · CC0-1.0 | https://opengameart.org/content/lowpoly-medieval-buildings |
