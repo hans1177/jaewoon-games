@@ -2809,7 +2809,13 @@ do
 	SIG.malacca = cat(one("Castle", "gate", 22, 0, 0), stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-roof" }, 12, 16, 0), palms(-18))
 	SIG.calicut = cat(one("Town", "temple-stone", 28, 0, 0), palms(18))
 	SIG.zanzibar = cat(stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-roof" }, 12, 0, 0), flagAt(10, 0), palms(18))
-	SIG.canton = cat(pagoda, one("Town", "temple-stone", 18, 18, 8))
+	-- [광저우] 십삼행 상관 거리는 사원 탑이 아니라 실제 등록된 무역관 주택과 부두·깃발로 구분한다.
+	-- 13개 역사 원본을 사칭하지 않으며, 확정 원본 모델은 등록 전까지 누락으로 유지한다.
+	SIG.canton = cat(one("Town", "house", 18, -24, -3),
+		one("Town", "house", 20, -5, -3), one("Town", "house", 18, 15, -3),
+		one("Castle", "flag-banner-long", 9, -25, 12),
+		one("Castle", "flag-banner-long", 9, 15, 12),
+		one("Naval", "dock-side", 18, -4, 20))
 	SIG.macau = cat(pagoda, one("Town", "temple-stone", 18, 20, 8)) -- 동아시아 항구: 서양식 성당 대신 탑과 사원
 	SIG.shanghai = cat(pagoda, one("Town", "eastasia-bell", 18, -22, 8))
 	-- [나가사키] 데지마 교역 부두를 암시하는 교량·창고 거리. 전용 부채꼴 섬 원본은 별도 등록.
@@ -2843,7 +2849,10 @@ do
 	SIG.cadiz = cat(fort(26), lighthouse)
 	SIG.dublin = cat(spire(HEX, 10, 0, 0), one("Town", "church", 24, 18, 6))
 	SIG.glasgow = walledChurch()
-	SIG.copenhagen = cat(spire(SQ, 10, 0, 0), one("Castle", "fortress", 24, 20, 8))
+	-- [코펜하겐] 사각 성채 대신 원형 천문탑에 더 가까운 다각 탑의 정면 윤곽과 항구 주택.
+	-- 나선형 내부 경사로는 전용 원본이 없으므로 허위 모델로 만들지 않는다.
+	SIG.copenhagen = cat(spire(HEX, 11, 0, 0),
+		one("Town", "house", 17, -21, 9), one("Town", "house", 16, 21, 8))
 	SIG.stockholm = cat(one("Castle", "fortress", 28, 0, 0), one("Town", "church", 22, 22, 6))
 	-- 베르겐 브뤼겐 목조 창고: 서로 다른 붉은색·황토색·청색 박공 줄.
 	SIG.bergen = cat(
@@ -2937,7 +2946,12 @@ do
 	SIG.corfu = fort(26)
 	SIG.candia = fort(26)
 	-- 기존 아이콘이 없던 유럽 해항도 도시가 고유한 성곽·시청·종탑 윤곽을 갖는다.
-	SIG.gothenburg = cat(one("Town", "house", 18, -18, 0, 0, C(178, 66, 53)), one("Town", "house", 18, 0, 0, 0, C(222, 195, 120)), one("Naval", "tower-watch", 24, 20, 0))
+	-- [예테보리] 3D 언덕 성채 윤곽을 먼저 보여 주고, 아래에 팔룬 붉은 목조 주택을 둔다.
+	-- 실제 크라운 요새 전용 원본은 별도 등록 전까지 미완료로 남는다.
+	SIG.gothenburg = cat(one("Town", "rock-wide", 29, 0, 0),
+		one("Castle", "fortress", 27, 0, 0, 7),
+		one("Town", "house", 17, -25, 10, 0, C(178, 66, 53)),
+		one("Town", "house", 16, 22, 12, 0, C(196, 97, 64)))
 	SIG.hull = cat(one("Castle", "gate", 23, 0, 0), one("Town", "bell-tower", 25, 18, 6))
 	SIG.la_rochelle = cat(spire(SQ, 11, -12, 0), spire(SQ, 11, 12, 0), one("Castle", "gate", 20, 0, 8))
 	SIG.valencia = cat(one("Town", "church", 27, 0, 0), spire(HEX, 9, -18, 0), one("Town", "fountain-square", 12, 16, 12))
@@ -3090,13 +3104,17 @@ local function placeSignature(folder, info)
 	if sceneLevel < 3 then return end
 	-- [항구 대표경관] 각 대륙의 상징 건물 주위에 3~5단계의 같은 문화권 부속 경관을 추가한다.
 	-- 멀리서는 지붕·탑 실루엣, 가까이에서는 현관·정원·시장의 순서로 디테일이 드러난다.
-	local landmarkFloor = part(folder, Vector3.new(43, 0.18, 28), CFrame.new(SIG_ANCHOR + Vector3.new(-12, 0.09, 0)),
-		if currentKey == "desert" or currentKey == "wafrica" then C(190, 169, 123) else C(166, 152, 139),
-		if currentKey == "desert" or currentKey == "wafrica" then Enum.Material.Sandstone else Enum.Material.Cobblestone)
-	landmarkFloor.Name = "RegionalLandmarkCourt"
-	landmarkFloor.CanCollide, landmarkFloor.CanQuery = false, false
-	landmarkFloor:SetAttribute("Culture", currentKey)
-	landmarkFloor:SetAttribute("Tier", sceneLevel)
+	-- [대표 경관 광장] 기본 직육면체 Part 대신 이미 등록된 3D 건축 바닥 메시를 설치한다.
+	-- 자산 템플릿이 실제 로드되지 않았으면 도형을 새로 만들지 않는다.
+	local landmarkFloor = importedModel(folder, "Town", "floor_base",
+		SIG_ANCHOR + Vector3.new(-12, 0, 0), 43, false,
+		if currentKey == "desert" or currentKey == "wafrica" then C(190, 169, 123) else C(166, 152, 139))
+	if landmarkFloor then
+		landmarkFloor.Name = "RegionalLandmarkCourt"
+		landmarkFloor:SetAttribute("Culture", currentKey)
+		landmarkFloor:SetAttribute("Tier", sceneLevel)
+		landmarkFloor:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+	end
 	if sceneLevel >= 4 then
 		local east = currentKey == "japan" or currentKey == "china"
 		local humid = currentKey == "seasia" or currentKey == "pacific" or currentKey == "tropic" or currentKey == "malabar"
@@ -3146,7 +3164,7 @@ local function placeSignature(folder, info)
 		for _, dx in { -38, 38 } do
 			importedModel(folder, "Castle", "flag-banner-long", SIG_ANCHOR + Vector3.new(dx, 0, -21), 11, false)
 		end
-		landmarkFloor:SetAttribute("Tier", cityTier)
+		if landmarkFloor then landmarkFloor:SetAttribute("Tier", cityTier) end
 	end
 	if european and sceneLevel >= 4 then
 		-- 바닷가 건물은 기존 모델을 국별로 골라 쓴다. 새 자산·충돌하는 랜드마크 생성은 없다.
