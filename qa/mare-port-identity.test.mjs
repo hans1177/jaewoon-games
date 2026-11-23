@@ -142,3 +142,26 @@ test('확인된 수변 항구 3곳의 부두·선박은 바다에만 배치하�
     assert.match(block[1], /nil, true/, port + ' 실제 수변 배치');
   }
 });
+
+test('13개 촬영 확인 항구에 등록된 실물 특산품 3D를 표시하되 원본 경제는 보존한다', () => {
+  const assets = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/AssetIds.luau', 'utf8');
+  const registrations = new Map([...assets.matchAll(/\["Cargo\/([^"]+)"\] = (\d+)/g)]
+    .map(m => [m[1], m[2]]));
+  const extended = [...scene.matchAll(/cargoModels\.(\w+) = "([^"]+)"/g)];
+  assert.ok(extended.length >= 25, '검수 항구별 실물 상품 연결');
+  for (const [, good, mesh] of extended) {
+    assert.ok(registrations.has(mesh), good + ' 실물 등록 누락');
+  }
+  for (const port of ['london','amsterdam','rouen','lisbon','istanbul','zanzibar',
+    'calicut','nagasaki','veracruz','busan','canton','sydney','cartagena_indias']) {
+    assert.ok(ports.includes('id = "' + port + '"'), port + ' 기존 항구');
+  }
+  for (const good of ['cloves', 'ivory', 'ambergris', 'cinnamon', 'copper',
+    'silver', 'cochineal', 'ginseng', 'wool', 'sealskin', 'gold', 'gems']) {
+    assert.match(scene, new RegExp('cargoModels\\.' + good + ' = "'));
+  }
+  assert.match(scene, /if identity and cargoIndex >= 4 then break end/);
+  assert.match(scene, /if mesh and AssetIds\["Cargo\/" \.\. mesh\] then/);
+  assert.match(scene, /PortShowcaseGoodsId/);
+  assert.match(scene, /for _, id in \(if port then port\.produces else \{\}\) do/);
+});
