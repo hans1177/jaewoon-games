@@ -166,10 +166,10 @@ test('13개 촬영 확인 항구에 등록된 실물 특산품 3D를 표시하�
   assert.match(scene, /for _, id in \(if port then port\.produces else \{\}\) do/);
 });
 
-test('촬영 13개 항구 외관이 개별 작업 지시서의 5단계 값과 일치한다', () => {
+test('개별 지시서에 등록된 17개 항구의 5단계 실제 외관이 일치한다', () => {
   for (const port of ['london', 'amsterdam', 'rouen', 'lisbon', 'istanbul',
     'zanzibar', 'calicut', 'nagasaki', 'veracruz', 'busan', 'canton',
-    'sydney', 'cartagena_indias']) {
+    'sydney', 'cartagena_indias', 'copenhagen', 'gothenburg', 'venice', 'seville']) {
     const instructions = fs.readFileSync(root + 'docs/ports/' + port + '.md', 'utf8');
     const entry = id.split('\n\t' + port + ' = { landmark = ')[1]
       ?.split(/\n\t[a-z_]+ = \{/)[0] ?? '';
