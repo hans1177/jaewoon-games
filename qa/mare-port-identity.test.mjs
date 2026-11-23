@@ -233,6 +233,10 @@ test('전체 181개 실제 항구의 주택·도로·구역·랜드마크·광�
   assert.match(scene, /CityFacilityLayoutMode", "WHOLE_PORT_REPOSITION_V2"/);
   assert.match(scene, /districtSeed:NextNumber\(-28, 28\)/);
   assert.match(scene, /local signatureCenter = SIG_ANCHOR \+ Vector3\.new/);
+  assert.ok(scene.includes('local civicSide = if (PortData.Ports[info.portId] or {}).shipyard then 1'),
+    '운영 중인 조선소를 피해 대표경관을 북측에 배치');
+  assert.ok(scene.includes('local landmarkSide = if (PortData.Ports[info.portId] or {}).shipyard then 1'),
+    '광장은 북측 대표경관과 반대편에 배치');
   assert.match(scene, /local plazaAt = Vector3\.new\(-140 \+ civicOffset/);
   assert.match(scene, /CityPortPlazaLocation", plazaAt/);
   assert.match(scene, /CityPortPlazaAccessConnected", true/);
