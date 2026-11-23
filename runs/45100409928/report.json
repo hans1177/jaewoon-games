@@ -1,0 +1,114 @@
+{
+ "sourceRevision": "987b711f0e5f578704ff02f8497d8a474b30bf2d",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "started\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "mobs=27 FieldEnemy@3017.068359375, 3.1883091926574707, 127.46873474121094;FieldEnemy@3007.599853515625, 3.1948800086975098, 112.47818756103516;FieldEnemy@3013.201416015625, 3.2133140563964844, 117.97738647460938;FieldEnemy@2917.80078125, 5.825930595397949, -118.8811264038086;FieldEnemy@3119.496337890625, 4.464938640594482, -93.16536712646484;FieldEnemy@2928.071533203125, 3.1947197914123535, -98.50750732421875;FieldEnemy@3124.68505859375, 4.280287742614746, -83.92937469482422;FieldEnemy@2897.87158203125, 10.737056732177734, 15.684049606323242;FieldEnemy@3111.97119140625, 3.187947988510132, 36.09495162963867;FieldEnemy@2923.71533203125, 3.1885249614715576, -123.02703857421875;FieldEnemy@3108.281982421875, 5.7935028076171875, -104.94823455810547;FieldEnemy@2927.892333984375, 3.208728075027466, -110.67425537109375;FieldEnemy@3128.436279296875, 5.531379699707031, -79.4449462890625;FieldEnemy@2890.760009765625, 10.25069522857666, 15.894493103027344;FieldEnemy@3109.75927734375, 3.2135801315307617, 33.653053283691406;FieldEnemy@2916.503662109375, 5.403919219970703, -120.91761779785156;FieldEnemy@3114.5712890625, 7.701643943786621, -92.38919067382812;FieldEnemy@2919.63916015625, 6.9736480712890625, -111.38654327392578;FieldEnemy@3128.5224609375, 3.214113712310791, -86.41353607177734;FieldEnemy@2891.251220703125, 5.92884635925293, 27.644062042236328;FieldEnemy@3108.55078125, 3.914018154144287, 40.36479187011719;FieldEnemy@2922.353515625, 3.194955587387085, -121.34534454345703;FieldEnemy@3119.26123046875, 4.05568265914917, -95.44234466552734;FieldEnemy@2915.422119140625, 7.674151420593262, -98.04425048828125;FieldEnemy@3112.102294921875, 10.926155090332031, -76.32884216308594;FieldEnemy@2888.650146484375, 9.663054466247559, 16.072555541992188;FieldEnemy@3113.154052734375, 3.2134156227111816, 36.96324920654297\ntext"
+  },
+  {
+   "step": 4,
+   "capture": "f0_environment",
+   "files": 1
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "f1_start",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "err=true table: 0xea941f8539ff500e done=nil humanoids=33 models=862 parts=1370 lowPolyModels=56 lowPolyMeshes=0/1274 cam=2993.748291015625, 7.688309192657471, 141.42564392089844 hrp=2990.59814453125, 2.9980251789093018, 149.91893005371094 shelves=0 ridges=4 near3D=5 placed3D=13 near=78 mid=75 far=106 port=reef quest=coast studioFPS=7 hiddenSceneryFPS=7 restoredFPS=8 sceneryFPSDelta=0 visualParts=528 enemyHiddenFPS=8 enemyVisualDelta=0 enemyVisualParts=795 sceneryOnly=true lodAssetSource=registered\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "f2_later",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 30012
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 1602
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 617
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 11006
+  },
+  {
+   "step": 4,
+   "type": "capture",
+   "elapsedMs": 884
+  },
+  {
+   "step": 5,
+   "type": "luau",
+   "elapsedMs": 192
+  },
+  {
+   "step": 6,
+   "type": "wait",
+   "elapsedMs": 9009
+  },
+  {
+   "step": 7,
+   "type": "capture",
+   "elapsedMs": 863
+  },
+  {
+   "step": 8,
+   "type": "luau",
+   "elapsedMs": 17844
+  },
+  {
+   "step": 9,
+   "type": "wait",
+   "elapsedMs": 6013
+  },
+  {
+   "step": 10,
+   "type": "capture",
+   "elapsedMs": 904
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 11,
+  "completedSteps": 11,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 3,
+  "capturedFrames": 3,
+  "abortedEarly": false
+ }
+}
