@@ -389,7 +389,7 @@ function DeckBuilder.build(parent, ctx)
 		local art = Instance.new("ImageLabel")
 		art.BackgroundTransparency = 1
 		art.Size = UDim2.new(1, 0, 1, -28)
-		art.ScaleType = Enum.ScaleType.Crop
+		art.ScaleType = Enum.ScaleType.Fit
 		local asset = ctx.AssetIds["CardArt/" .. option[3]]
 		art.Image = if asset then "rbxassetid://" .. tostring(asset) else ""
 		art.Parent = control

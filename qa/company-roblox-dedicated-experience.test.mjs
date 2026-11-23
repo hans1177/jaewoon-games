@@ -1432,7 +1432,7 @@ test('Mare standalone card duel board respects four rendered rows, zoom and appr
   assert.match(source,/BC.rowMatchup\(m, side, row\)/);
   assert.match(source,/BC.play\(m, "me", i\)/);
   assert.match(source,/focusFrame.Size = UDim2.fromScale\(0\.9, 0\.82\)/);
-  assert.match(source,/focusRatio.AspectRatio = 0\.69/);
+  assert.match(source,/focusRatio.AspectRatio = if opts\.cardOnly then portraitCardRatio else 0\.69/);
   assert.match(source,/focusBounds.MaxSize = Vector2.new\(430, 620\)/);
   assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,1,'reuse existing render loop');
   // 검증 등록된 개별 카드만 우선, 미등록 카드는 승인된 기존 그림을 유지한다.
@@ -1464,6 +1464,29 @@ test('Mare standalone card duel board respects four rendered rows, zoom and appr
   assert.match(uploader,/if \(approvedImages\[id\] !== hash\)/,'image SHA gate remains required');
   assert.match(readme,/GitHub에 실제 JPG 바이너리 미업로드/);
   assert.match(readme,/1536×864/);
+});
+
+// [카드 원화 무절단] 그림 비율이 달라도 손패·전투판·확대·도감에서 잘라내지 않는다.
+test('Mare card art retains full source frame during battle animation and codex rendering', () => {
+  const root = 'roblox-games/mare-essentia/src/';
+  const battle = fs.readFileSync(root+'ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const deck = fs.readFileSync(root+'ReplicatedStorage/Shared/DeckBuilder.luau','utf8');
+  const gallery = fs.readFileSync(root+'ReplicatedStorage/Shared/CardGallery.luau','utf8');
+  const game = fs.readFileSync(root+'StarterPlayer/Game.client.luau','utf8');
+  for (const token of ['painting.ScaleType = Enum.ScaleType.Fit',
+    'focusImage.ScaleType = Enum.ScaleType.Fit',
+    'image.ScaleType = Enum.ScaleType.Fit',
+    'painting.Size = UDim2.fromScale(0.92, 0.92)',
+    'local artZoom = 0.91 + (if focused then 0.005 else 0) + 0.01 * impact',
+    'math.clamp(0.5 + (if opts.cardOnly then 0.012 * wind else pan - 0.045 * lunge + 0.02 * recoil), 0.486, 0.514)',
+  ]) assert.ok(battle.includes(token), 'card image cropping regression: '+token);
+  assert.doesNotMatch(battle, /(?:painting|focusImage|image)\.ScaleType = if opts\.cardOnly.*Enum\.ScaleType\.Crop/);
+  assert.match(battle,/boardArt.ScaleType = Enum.ScaleType.Crop/,'board background is intentionally unaffected');
+  assert.match(deck,/art.ScaleType = Enum.ScaleType.Fit\n\s*local asset = ctx.AssetIds\["CardArt\/" \.. option\[3\]\]/);
+  assert.match(gallery,/art.ScaleType = Enum.ScaleType.Fit/);
+  assert.match(game,/local function paintCardArt\(parent, card, fieldDef\)/);
+  assert.match(game,/img.ScaleType = Enum.ScaleType.Fit/);
+  assert.doesNotMatch(game,/if fitImage then Enum\.ScaleType\.Fit else Enum\.ScaleType\.Crop/);
 });
 
 test('Mare 150 regional card illustrations remain source complete and SHA-approved before Roblox registration', () => {
