@@ -4215,3 +4215,28 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.ok(script.some(row=>row.code?.includes('FIELD_GROUND_MATERIAL_MISMATCH')),'스튜디오 해안 모래 실측');
   assert.ok(script.some(row=>row.code?.includes("FieldQuestTerrainTheme')=='coast")),'해적 소굴의 해안 퀘스트 지형 검사');
 });
+
+
+// [항구 실제 화면 QA] 1,000단계 기존 플레이 검사는 유지하고 항구 13곳의 상공·거리 장면을 별도 실촬영한다.
+test('13 representative port Studio captures fail closed on build and retain both real viewpoints', () => {
+  const script=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-startports.json'));
+  const ports=['london','amsterdam','rouen','lisbon','istanbul','zanzibar','calicut','nagasaki','veracruz','busan','canton','sydney','cartagena_indias'];
+  assert.equal(script.length,80,'기존 9곳 56단계 보존 + 4곳 촬영 24단계');
+  const scenes=script.filter(row=>row.type==='luau'&&row.code?.includes('PORT_CAPTURE_READY:'));
+  assert.equal(scenes.length,ports.length);
+  const names=script.filter(row=>row.type==='capture').map(row=>row.name);
+  assert.equal(names.length,26,'13개 항구 각각 실화면 2장');
+  assert.equal(script.filter(row=>row.type==='wait').length,27);
+  for(const id of ports){
+    const scene=scenes.find(row=>row.code.includes("portId='"+id+"'"));
+    assert.ok(scene,'실제 항구 장면 생성 누락: '+id);
+    assert.match(scene.code,/return PS\.build\(/,'생성 결과 누락 금지');
+    assert.ok(scene.code.includes('PORT_CAPTURE_BUILD_FAILED:'+id),'생성 실패를 숨기지 않는다');
+    assert.ok(scene.code.includes('PORT_CAPTURE_MISSING_GEOMETRY:'+id),'빈 장면을 촬영 성공으로 처리하지 않는다');
+    assert.ok(scene.code.includes('built.folder.Parent==workspace'),'실제 Workspace 장면 연결 확인');
+    assert.ok(!scene.code.includes('return tostring(ok)..tostring(err)'),'오류 문자열을 성공으로 위장 금지');
+    assert.ok(names.includes(id+'_L3_top') && names.includes(id+'_L3_street'),'두 실화면 프레임 누락: '+id);
+  }
+  const core=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
+  assert.equal(core.length,1000,'기존 실제 플레이 검증 1,000단계는 별도로 유지');
+});
