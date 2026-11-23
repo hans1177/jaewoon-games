@@ -330369,11 +330369,152 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_6185a13b5210d3526ea8e76a",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14765",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "d56c304abfd0f6b3994d5d3f94b55c7257ee6384",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14765,
+        "baseBranch": "main",
+        "headBranch": "docs/mare-cardbattle-brief",
+        "baseSha": "d56c304abfd0f6b3994d5d3f94b55c7257ee6384",
+        "headSha": "5138fa0021a72980d31f8f7e58d06315be59f9f3",
+        "mergeCommitSha": "7d248f455ce3be06a0070fd33407cfbd0e03e096",
+        "mergedAt": "2026-11-23T17:10:09Z",
+        "authorLogin": "hans1177",
+        "titleHash": "02eb46130c46cee85dff3c351d387ef7a3c631372a7f47bdc25b48242f0bc7c0",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "docs/mare-cardbattle-brief",
+        "candidateSha": "5138fa0021a72980d31f8f7e58d06315be59f9f3"
+      },
+      "changeStats": {
+        "changedFileCount": 20,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 526,
+        "deletedLineCount": 2,
+        "changedFiles": [
+          "AGENTS.md",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_carpenter.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_carpenter.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_market_stalls.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_market_stalls.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_artisan.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_artisan.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_worker.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_worker.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_tavern_1.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_tavern_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_trade_1.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_trade_1.glb.license.json",
+          "roblox-games/mare-essentia/docs/CARD_BATTLE_HANDOFF.md",
+          "roblox-games/mare-essentia/docs/card_battle/README.md",
+          "roblox-games/mare-essentia/docs/card_battle/card_text.md",
+          "roblox-games/mare-essentia/docs/card_battle/effects.md",
+          "roblox-games/mare-essentia/docs/card_battle/factions.md",
+          "roblox-games/mare-essentia/docs/card_battle/screens.md"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_carpenter.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_market_stalls.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_artisan.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_worker.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_tavern_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_trade_1.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14765",
+        "merge-commit:7d248f455ce3be06a0070fd33407cfbd0e03e096",
+        "base-main:d56c304abfd0f6b3994d5d3f94b55c7257ee6384"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2644
+    "total": 2645
   }
 }
