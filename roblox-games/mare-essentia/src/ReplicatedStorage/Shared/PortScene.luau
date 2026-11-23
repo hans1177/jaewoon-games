@@ -4422,9 +4422,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				local warehouseBuilt = if districtBuildings then math.max(0, math.floor(tonumber(districtBuildings.warehouse) or 0)) else lvl
 				local stalls = math.min(if districtTouch then 4 else 6, lvl + 1,
 					if marketBuilt > 0 then 1 + math.floor(math.sqrt(marketBuilt)) else 0)
-				-- [런던 지시서] 기존 날짜의 7일 주기 장날, 실제 시장 건물·재고 수치는 그대로 둔다.
+				-- [런던 지시서] 기존 Harbor 지역 축제·정기시 판정만 따라 장날을 표시하며 경제·저장은 그대로 둔다.
 				local londonMarketDay = info.portId == "london" and type(info.day) == "number"
-					and info.day > 0 and math.floor(info.day) % 7 == 0
+					and require(script.Parent:WaitForChild("Harbor")).festivalAt("europe", info.day) ~= nil
 				local londonExtraStalls = 0
 				for k = 1, stalls do
 					local x = cx + (k - (stalls + 1) / 2) * 10

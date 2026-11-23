@@ -585,7 +585,7 @@ test('119~181번째 항구의 개별 지시서·구역·색상·좌표·승인 �
 });
 
 
-// [런던 1/181] 원본 지시서의 실제 특산품·7일 장날·하역장·조선소 소품을 기존 렌더러와 대조.
+// [런던 1/181] 원본 지시서의 실제 특산품·정본 지역 장날·하역장·조선소 소품을 기존 렌더러와 대조.
 test('런던 지시서: 양모·석탄·주석 시장과 장날 가판대·광물 하역·조선항 밧줄', () => {
   const brief = fs.readFileSync(root + 'docs/ports/london.md', 'utf8');
   const assets = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/AssetIds.luau', 'utf8');
@@ -602,7 +602,10 @@ test('런던 지시서: 양모·석탄·주석 시장과 장날 가판대·광�
   assert.match(scene, /tin = \{ "Cargo", "tin" \}/);
   assert.ok(scene.includes('marketGoods = if info.portId == "london" then { "wool", "coal", "tin" }'));
   assert.match(scene, /local londonMarketDay = info.portId == "london" and type\(info\.day\) == "number"/);
-  assert.match(scene, /math\.floor\(info\.day\) % 7 == 0/);
+  assert.match(scene, /require\(script\.Parent:WaitForChild\("Harbor"\)\)\.festivalAt\("europe", info\.day\)/);
+  const sharedHarbor = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/Harbor.luau', 'utf8');
+  assert.match(sharedHarbor, /function Harbor\.festivalAt\(region: string, day: number\)/);
+  assert.match(sharedHarbor, /europe = \{ \{ day = 45, name = "사육제\(카니발\)" \}/);
   assert.match(scene, /put\("Town", stallAsset, 7, x, cz \+ side \* 19, false/);
   assert.match(scene, /"CityMarketStalls", stalls \+ londonExtraStalls/);
   assert.match(scene, /"CityLondonMarketDay", londonMarketDay/);
