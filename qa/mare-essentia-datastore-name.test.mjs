@@ -2296,7 +2296,36 @@ test('마을 주택은 5개 크기 등급을 발전도별로 혼합하고 도로
  assert.match(home,/BuildingClearance", math\.max\(actualHalfX, actualHalfZ\)/);
  assert.match(home,/math\.clamp\(fl, 1, P\.flMax\)/,'문화권별 최대 층수 유지');
  assert.match(port,/local roof = importedModel\(parent, "Town", "eastasia-roof"/);
- assert.match(buildings,/plotScale = \{ 1\.5, 1\.65, 1\.8, 2\.0, 2\.2 \}/);
+  // [마을 5단계 필지] 원본 건물은 보존하고 주거 간격·도시 면적과 실제 땅 크기만 축소한다.
+  const standard=buildings.match(/B\.CityPlots = \{ plotScale = \{ ([^}]+) \}, areaScale = \{ ([^}]+) \} \}/);
+  const royal=buildings.match(/B\.RoyalCityPlots = \{ plotScale = \{ ([^}]+) \}, districtScale = \{ ([^}]+) \} \}/);
+  assert.ok(standard && royal,'마을/왕궁 1~5단계 공통 토지 규격');
+  const factors=pair=>pair.slice(1).map(group=>group.split(',').map(Number));
+  const [plot,area]=factors(standard), [royalPlot,royalArea]=factors(royal);
+  for(const sizes of [plot,area,royalPlot,royalArea]){
+    assert.equal(sizes.length,5,'기존 5단계 발전도 유지');
+    assert.ok(sizes.every((v,i)=>Number.isFinite(v)&&v>0&&(i===0||v>sizes[i-1])),
+      '발전 단계별 땅 크기는 단계가 높을수록 증가');
+  }
+  assert.ok(plot[0]<1.5&&plot[4]<2.2&&area[0]<1.5&&area[4]<6,
+    '기존 과대 주택 필지·시가지 면적 축소');
+  assert.ok(royalPlot[4]<1.4&&royalArea[4]<1.3,'왕궁 구획 중복 확대 완화');
+  assert.ok(port.includes('local S = P.S * (countryPlan and countryPlan.lot or 1) * lotGrowth * lotVariance'),
+    '실제 주택 간격·골목 생성에 표준 필지 적용');
+  assert.ok(port.includes('local X_END = -math.min(490, 190 + math.floor(110 * math.sqrt(areaGrowth))'),
+    '실제 외곽 도로·주택 배치 범위에 단계별 축소 적용');
+  assert.ok(port.includes('townFloor.Size = Vector3.new(townRight - townLeft, townFloor.Size.Y, 2 * townHalfZ)'),
+    'Roblox 실물 TownFloor 크기도 변경');
+  assert.ok(port.includes('plate.Size = Vector3.new(farLandWidth, plate.Size.Y, farLandDepth)'),
+    '기본 Baseplate 실제 크기 변경');
+  assert.ok(port.includes('local farLandLeft = -1380 - (cityTier - 1) * 25'),
+    '6단계 실제 마을 지면 왼쪽 경계');
+  assert.ok(port.includes('local farLandDepth = 2 * (CITY_LIMIT_Z + 180)'),
+    '과대 지면 깊이 축소');
+  assert.ok(port.includes('TownPlotSpacing", S'),'실물 필지 간격 단계 진단');
+  const rural=buildings.match(/groundCenterX = (-?\d+), groundWidth = (\d+)/);
+  assert.ok(rural && -1380 < Number(rural[1])-Number(rural[2])/2,
+    '축소해도 기존 농촌 토지 전체를 덮도록 Roblox Baseplate 보호');
  assert.match(port,/CityBuildingMode", "AUTO_VISUAL_READ_ONLY"/);
  assert.match(port,/SetAttribute\("BuildAuthority", "VISUAL_ONLY"\)/);
 });
