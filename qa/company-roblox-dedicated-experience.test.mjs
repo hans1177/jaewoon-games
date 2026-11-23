@@ -1569,6 +1569,9 @@ test('Mare generated original art is promoted only after model-source visual QA 
   assert.ok(approved.modelOriginals && !Array.isArray(approved.modelOriginals));
   assert.match(uploader, /MODEL_ORIGINAL_REVIEW_REQUIRED/);
   assert.match(uploader, /MODEL_ORIGINAL_EXISTING_CARD_PRESERVED/);
+  assert.match(uploader, /MODEL_ORIGINAL_RGB_RGBA_REQUIRED/);
+  assert.match(uploader, /MODEL_ORIGINAL_LEGACY_PALETTE_REPLACEMENT_REQUIRED/);
+  assert.match(uploader, /const replacingOriginal = review\?\.sourceFile === originalSource/);
   assert.match(workflow, /SKIP_UNVERIFIED_MODEL_ORIGINAL/);
   assert.match(workflow, /assets\/cardart\/\*\.png/);
   const marker = '// [모델 원화 제작 분리·자동 인입]';
@@ -1603,6 +1606,18 @@ test('Mare generated original art is promoted only after model-source visual QA 
     save();
     await assert.rejects(execute(), /MODEL_ORIGINAL_APPROVAL_OR_SAFETY_MISMATCH/);
     assert.equal(fs.existsSync(dest),false);
+    // [원화 무손실 재등록] 실제 256색(P 모드) PNG는 승인 해시가 있어도 신규 승격할 수 없다.
+    const indexed = fs.readFileSync('roblox-games/mare-essentia/assets/cardart/src/eu_21-original.png');
+    assert.equal(indexed[25],3,'indexed fixture must really be a palette PNG');
+    fs.writeFileSync(source,indexed);
+    const indexedHash=createHash('sha256').update(indexed).digest('hex');
+    review.sourceSha256=indexedHash;
+    record.approved[id]=indexedHash;
+    save();
+    await assert.rejects(execute(), /MODEL_ORIGINAL_RGB_RGBA_REQUIRED/);
+    assert.equal(fs.existsSync(dest),false);
+    fs.copyFileSync('roblox-games/mare-essentia/assets/cardart/nw_03.png',source);
+    review.sourceSha256=hash;
     record.approved[id]=hash;
     save();
     await execute();
