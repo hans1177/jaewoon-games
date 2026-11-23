@@ -322267,11 +322267,171 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_09b6d6569ce692679c6a7e61",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14443",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "0624beb364da1e64e2d6a1f0cd722f12ccba531a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14443,
+        "baseBranch": "main",
+        "headBranch": "feat/mare-diplomacy-dock",
+        "baseSha": "0624beb364da1e64e2d6a1f0cd722f12ccba531a",
+        "headSha": "0820856f2b3dd17081ed38faf7793ae89b5d0d3b",
+        "mergeCommitSha": "c7e09d4a7c04e2841c5cb5f5d4cc5346df111dc6",
+        "mergedAt": "2026-11-23T01:34:51Z",
+        "authorLogin": "hans1177",
+        "titleHash": "8c35dca98573a20b781d111f1df7bb3f89953ef45d27080a288251e843829b5e",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/mare-diplomacy-dock",
+        "candidateSha": "0820856f2b3dd17081ed38faf7793ae89b5d0d3b"
+      },
+      "changeStats": {
+        "changedFileCount": 36,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 1750,
+        "deletedLineCount": 295,
+        "changedFiles": [
+          "qa/mare-diplomacy-dock.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/cardart/history_map.png",
+          "roblox-games/mare-essentia/assets/cardart/history_open.png",
+          "roblox-games/mare-essentia/assets/cardart/history_record.png",
+          "roblox-games/mare-essentia/assets/terrain/village-bonfire.glb",
+          "roblox-games/mare-essentia/assets/terrain/village-cart.glb",
+          "roblox-games/mare-essentia/assets/terrain/village-fence.glb",
+          "roblox-games/mare-essentia/assets/terrain/village-hay.glb",
+          "roblox-games/mare-essentia/assets/terrain/village-path-square.glb",
+          "roblox-games/mare-essentia/assets/terrain/village-path-straight.glb",
+          "roblox-games/mare-essentia/assets/terrain/village-stairs.glb",
+          "roblox-games/mare-essentia/assets/town/village-bell-tower.glb",
+          "roblox-games/mare-essentia/assets/town/village-blacksmith.glb",
+          "roblox-games/mare-essentia/assets/town/village-gazebo.glb",
+          "roblox-games/mare-essentia/assets/town/village-house-1.glb",
+          "roblox-games/mare-essentia/assets/town/village-house-2.glb",
+          "roblox-games/mare-essentia/assets/town/village-house-3.glb",
+          "roblox-games/mare-essentia/assets/town/village-house-4.glb",
+          "roblox-games/mare-essentia/assets/town/village-inn.glb",
+          "roblox-games/mare-essentia/assets/town/village-market-stand-1.glb",
+          "roblox-games/mare-essentia/assets/town/village-market-stand-2.glb",
+          "roblox-games/mare-essentia/assets/town/village-mill.glb",
+          "roblox-games/mare-essentia/assets/town/village-sawmill.glb",
+          "roblox-games/mare-essentia/assets/town/village-stable.glb",
+          "roblox-games/mare-essentia/assets/town/village-well-cc0.glb",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-diplomacy-dock.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14443",
+        "merge-commit:c7e09d4a7c04e2841c5cb5f5d4cc5346df111dc6",
+        "base-main:0624beb364da1e64e2d6a1f0cd722f12ccba531a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2584
+    "total": 2585
   }
 }
