@@ -2755,8 +2755,9 @@ local COUNTRY_PLAN = {
 ReplicatedStorage:SetAttribute("MarePortSceneStage", "port-signatures")
 local SIG = {}
 do
-	local function one(kind, asset, size, dx, dz, y, tint)
-		return { kind = kind, asset = asset, size = size, dx = dx, dz = dz, y = y or 0, tint = tint }
+	local function one(kind, asset, size, dx, dz, y, tint, waterfront)
+		return { kind = kind, asset = asset, size = size, dx = dx, dz = dz,
+			y = y or 0, tint = tint, waterfront = waterfront == true }
 	end
 	local function stack(kind, parts, size, dx, dz)
 		local out = {}
@@ -2818,8 +2819,8 @@ do
 	SIG.malacca = cat(one("Castle", "gate", 22, 0, 0), stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-roof" }, 12, 16, 0), palms(-18))
 	SIG.calicut = cat(one("Town", "temple-stone", 28, 0, 0), palms(18))
 	-- [잔지바르] 산호석 궁전 원본 미등록. 유럽 성탑을 궁전으로 대체하지 않고 승인된 항만·범선·해안 식생만 배치한다.
-	SIG.zanzibar = cat(one("Naval", "dock-side", 23, -10, 0),
-		one("Naval", "boat-sail-a", 18, 13, 8), palms(19))
+	SIG.zanzibar = cat(one("Naval", "dock-side", 23, 22, 28, 0.9, nil, true),
+		one("Naval", "boat-sail-a", 18, 52, -25, 1.2, nil, true), palms(19))
 	-- [광저우] 십삼행 상관 거리는 사원 탑이 아니라 실제 등록된 무역관 주택과 부두·깃발로 구분한다.
 	-- 13개 역사 원본을 사칭하지 않으며, 확정 원본 모델은 등록 전까지 누락으로 유지한다.
 	SIG.canton = cat(
@@ -2828,7 +2829,7 @@ do
 		one("Town", "eastasia-base", 18, 15, -3), one("Town", "eastasia-roof", 19, 15, -3, 9),
 		one("Castle", "flag-banner-long", 9, -25, 12),
 		one("Castle", "flag-banner-long", 9, 15, 12),
-		one("Naval", "dock-side", 18, -4, 20))
+		one("Naval", "dock-side", 18, 30, 28, 0.9, nil, true))
 	SIG.macau = cat(pagoda, one("Town", "temple-stone", 18, 20, 8)) -- 동아시아 항구: 서양식 성당 대신 탑과 사원
 	SIG.shanghai = cat(pagoda, one("Town", "eastasia-bell", 18, -22, 8))
 	-- [나가사키] 데지마 교역 부두를 암시하는 교량·창고 거리. 전용 부채꼴 섬 원본은 별도 등록.
@@ -2960,9 +2961,9 @@ do
 		one("Town", "eastasia-base", 18, 18, 8), one("Town", "eastasia-roof", 19, 18, 13))
 	SIG.hakodate = cat(one("Castle", "fortress", 24, 0, 0), one("Terrain", "tree-pinedefaulta", 12, 20, 6))
 	-- [시드니 코브] 기존 승인된 실물 부두·소형 목선만 배치한다. 시대에 맞지 않는 풍차·등대는 사용하지 않는다.
-	SIG.sydney = cat(one("Naval", "structure-platform-dock", 26, -9, 0),
-		one("Naval", "boat-row-small", 16, 18, 8),
-		one("Naval", "dock-side", 20, -22, 12))
+	SIG.sydney = cat(one("Naval", "structure-platform-dock", 26, 22, 25, 0.9, nil, true),
+		one("Naval", "boat-row-small", 16, 48, 22, 1.2, nil, true),
+		one("Naval", "dock-side", 20, 34, -30, 0.9, nil, true))
 	-- [호놀룰루] 기존 반복 석상 대신 어선, 어획물 적재 부두, 열대 나무.
 	SIG.honolulu = cat(one("Naval", "dock-side", 24, -11, 0),
 		one("Naval", "boat-fishing-small", 15, 15, 9),
@@ -3130,12 +3131,17 @@ local function placeSignature(folder, info)
 			end
 			local early = sceneLevel == 2
 			local span = if early then 0.5 else 1
-			local at = SIG_ANCHOR + Vector3.new(
-				(e.dx * layoutCos - e.dz * layoutSin) * layoutWidth * span + variation.shiftX,
-				e.y * variation.scale,
-				(e.dx * layoutSin + e.dz * layoutCos) * layoutWidth * span + variation.shiftZ)
+			-- [항구별 실제 수변] 항만·선박은 내륙의 역사 건축 랜드마크 자리가 아닌 동쪽 바다에 배치한다.
+			-- 원본 모델·수량과 보행 경계는 유지하며, 수변 경관은 충돌 없는 시각 자산으로만 둔다.
+			local at = if e.waterfront then Vector3.new(
+				54 + e.dx + variation.shiftX * 0.2, e.y * variation.scale,
+				e.dz + variation.shiftZ * 0.2)
+				else SIG_ANCHOR + Vector3.new(
+					(e.dx * layoutCos - e.dz * layoutSin) * layoutWidth * span + variation.shiftX,
+					e.y * variation.scale,
+					(e.dx * layoutSin + e.dz * layoutCos) * layoutWidth * span + variation.shiftZ)
 			local size = (if early then math.min(16, e.size * 0.58) else e.size) * variation.scale
-			local m = importedModel(folder, e.kind, e.asset, at, size, not early, e.tint)
+			local m = importedModel(folder, e.kind, e.asset, at, size, not early and not e.waterfront, e.tint)
 			if m then
 				m.Name = if early then "EarlyRegionalScenery" else "RegionalScenery_" .. tostring(index)
 				m:SetAttribute("PortSceneryAsset", e.kind .. "/" .. e.asset)
