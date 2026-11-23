@@ -3402,6 +3402,21 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
   assert.match(trade,/local heroH = math\.floor\(heroPx \* 10 \/ 7\)/,'가로 교역 원화 7:10');
   assert.match(trade,/local bigH = math\.floor\(bigPx \* 10 \/ 7\)/,'모바일 교역 원화 7:10');
   assert.match(trade,/artTap\.Activated:Connect\(openSelectedGoodEncyclopedia\)/,'선택 상품 그림 눌러 백과 이동');
+  // [연속 제작] 원화 넘김·현재 지식 장·해역 선택·조선소 선택이 실제 전시 슬롯을 갱신한다.
+  assert.match(source,/PreviousFacilityArt/,'왼쪽 이전 원화 조작');
+  assert.match(source,/NextFacilityArt/,'왼쪽 다음 원화 조작');
+  assert.match(source,/H\.galleryIndex = \(\(H\.galleryIndex or 1\) - 1 \+ direction\) % total \+ 1/,'발견 원화 순환 인덱스');
+  assert.match(source,/H\.galleryMatches = matches/,'발견 원화만 사용');
+  assert.match(source,/H\.gallerySelectedTab ~= tab/,'탭 변경 시 원화 순서 초기화');
+  assert.match(source,/H\.galleryReadingCard = if current\.found/,'백과 현재 페이지 원화 동기화');
+  assert.match(source,/AssetIds\["CardArt\/event_chart_" \.\. H\.selectedChart\]/,'지도 선택과 원화 연동');
+  assert.match(source,/if chartName then matched = nil end/,'선택한 해역 지도 우선');
+  assert.match(source,/H\.galleryPrev\.Position = UDim2\.fromOffset\(cardW \+ 18, artH - 48\)/,'모바일 원화 넘김 좌표');
+  assert.match(source,/local inYardHall = H\.yardHallActive/,'선박 클릭 시 상세장부 소속 보존');
+  assert.match(source,/if inYardHall and tradeHallRefresh then tradeHallRefresh\(\) else render\(\) end/,
+    '조선소 중앙 선박 원화 즉시 갱신');
+  assert.match(source,/selectArea\.Size = UDim2\.new\(1, -4, 0, 78\)/,'구매 버튼과 선택 영역 분리');
+  assert.match(source,/H\.galleryImage\.ScaleType = Enum\.ScaleType\.Fit/,'기존 원화 강제 잘림 금지');
   for(const action of ['Buy','Sell','BuyShip','Repair','BuySupplies'])
     assert.ok(source.includes('call("'+action+'"'),'기존 서버 호출 유지: '+action);
   assert.doesNotMatch(trade,/Instance\.new\("Part"\)/,'새 임시 3D 도형 금지');
