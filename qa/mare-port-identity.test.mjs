@@ -290,7 +290,7 @@ test('181개 항구의 왕궁·랜드마크·상징 부속·농업 구획을 실
 
 test('181개 항구 산업·시장·농업지구가 항구별 새로운 독립 공간과 실제 시설 충돌 검사를 사용한다', () => {
   assert.match(scene, /seeded\(info\.portId \.\. ":district-reposition-v3"\)/);
-  assert.match(scene, /local farmX = -357 \+ dz:NextInteger\(-12, 12\)/);
+  assert.match(scene, /local farmX = -357 \+ \(if reflow then reflow.district else dz:NextInteger\(-12, 12\)\)/);
   assert.match(scene, /local farmZ = 379 \+ dz:NextInteger\(0, 9\)/);
   assert.match(scene, /Vector3\.new\(farmX, 0, firstSide \* farmZ\)/);
   assert.match(scene, /if clear and kind ~= "farm" then/);
@@ -301,4 +301,35 @@ test('181개 항구 산업·시장·농업지구가 항구별 새로운 독립 �
   assert.match(scene, /math\.abs\(x - site\.X\) < halfX \+ 25/);
   assert.doesNotMatch(scene, /if x > -108 - halfX and math\.abs\(z\) > 17 - halfZ/);
   assert.match(scene, /for _, other in districts do/);
+});
+
+
+test('25개 항구 지시서별 실제 광장·도로·랜드마크·시설 재배치', () => {
+  const ports25 = ['london', 'amsterdam', 'rouen', 'copenhagen', 'gothenburg',
+    'venice', 'istanbul', 'zanzibar', 'calicut', 'nagasaki', 'veracruz', 'canton',
+    'seville', 'busan', 'lisbon', 'sydney', 'cartagena_indias', 'stockholm',
+    'bergen', 'hamburg', 'porto', 'edinburgh', 'valletta', 'genoa', 'havana'];
+  const unique = new Set();
+  for (const port of ports25) {
+    const block = id.split('\n\t' + port + ' = { landmark = ')[1]?.split(/\n\t[a-z_]+ = \{/)[0] ?? '';
+    const data = block.match(/reflow = \{ lane = (-?\d+), plaza = (-?\d+), side = (-?\d+), landmarkX = (-?\d+), landmarkZ = (-?\d+), district = (-?\d+), facility = (\d+) \}/);
+    assert.ok(data, port + ' 항구별 재배치 누락');
+    const [lane, plaza, side, lx, lz, district, facility] = data.slice(1).map(Number);
+    assert.ok(Math.abs(lane) <= 12 && Math.abs(plaza) <= 15, port + ' 도로·광장');
+    assert.ok(side === -1 || side === 1, port + ' 남북 구역');
+    assert.ok(Math.abs(lx) <= 8 && Math.abs(lz) <= 8, port + ' 랜드마크 안전 범위');
+    assert.ok(Math.abs(district) <= 12 && facility >= 1 && facility <= 6, port + ' 시설·외곽 배치');
+    unique.add(data[0]);
+  }
+  assert.equal(unique.size, 25, '항구마다 서로 다른 공간 배치');
+  assert.match(scene, /CityPortManualReflow", "PORT_MANUAL_REPOSITION_V1"/);
+  assert.match(scene, /local laneOffset = districtSeed:NextNumber\(-28, 28\) \+ terrainLaneShift \+ \(if reflow then reflow.lane else 0\)/);
+  assert.match(scene, /local districtX = -138 \+ \(if reflow then reflow.district/);
+  assert.match(scene, /local farmX = -357 \+ \(if reflow then reflow.district/);
+  assert.match(scene, /local rotation = if reflow then reflow.facility else facilityRng/);
+  assert.match(scene, /local shiftX = if reflow then reflow.landmarkX/);
+  assert.match(scene, /local shiftZ = if reflow then reflow.landmarkZ/);
+  assert.match(scene, /local plazaAt = Vector3.new\(-140 \+ civicOffset/);
+  assert.match(scene, /CityFacilityPosition_" \.\. f.tab, f.pos/);
+  assert.match(scene, /if AssetIds\["Town\/" \.\. landmarkAsset\] then/);
 });

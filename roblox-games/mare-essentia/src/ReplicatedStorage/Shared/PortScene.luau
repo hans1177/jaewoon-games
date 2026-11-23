@@ -3083,10 +3083,12 @@ ReplicatedStorage:SetAttribute("MarePortSceneStage", "defining-build")
 local function placeSignature(folder, info)
 	-- [모든 항구 랜드마크 재배치] 실제 승인 모델과 부속 경관을 각기 다른 내륙 지구로 옮긴다.
 	local civicRng = seeded(info.portId .. ":civic-quarter-reposition-v2")
-	local civicOffset = civicRng:NextInteger(-10, 9)
+	local identity = PortIdentity.get(info.portId)
+	local reflow = identity and identity.reflow
+	local civicOffset = if reflow then reflow.plaza else civicRng:NextInteger(-10, 9)
 	local civicSide = if (PortData.Ports[info.portId] or {}).shipyard then 1
-		elseif civicRng:NextInteger(0, 1) == 0 then -1 else 1
-	local civicDepth = civicRng:NextInteger(-6, 6)
+		elseif reflow then reflow.side elseif civicRng:NextInteger(0, 1) == 0 then -1 else 1
+	local civicDepth = if reflow then reflow.lane * 0.5 else civicRng:NextInteger(-6, 6)
 	local signatureCenter = SIG_ANCHOR + Vector3.new(civicOffset, 0, civicSide * (103 + civicDepth))
 	local list = SIG[info.portId]
 	local port = PortData.Ports[info.portId]
@@ -3095,7 +3097,6 @@ local function placeSignature(folder, info)
 	-- [항구 대표경관] 등록된 항구 전용 역사 모델을 우선 설치한다.
 	-- 미등록이면 원본 건물을 사칭하는 대체물을 만들지 않고, 기존에 승인된 SIG 자산으로
 	-- 항구별 실제 3D 부두·마을 경관을 그린다. 이는 전용 원본 완성과 별개다.
-	local identity = PortIdentity.get(info.portId)
 	-- [성장 단계 유지] 개척 1단계에는 완성형·기초형 대표경관을 짓지 않는다.
 	if sceneLevel < 2 then
 		folder:SetAttribute("CityPortSceneryPlacedCount", 0)
@@ -3286,6 +3287,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	local P = PROFILE[key] or PROFILE.north
 	-- [항구별 마을] 지시서의 운하·골목·바둑판·계단식 구획을 기존 필지 안에서만 적용한다.
 	local identity = PortIdentity.get(info.portId)
+	local reflow = identity and identity.reflow
 	local villageLayout = identity and identity.layout or nil
 	-- [전 항구 시설 실제 좌표] 고정된 옛 건물 보호 박스를 버리고 새 방문 시설과 광장 위치를 사용한다.
 	local facilityLocations = {}
@@ -3399,7 +3401,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	-- [지형 맞춤 골목] 기존 해안선·운하·언덕 분류를 마을 골목 방향에 재사용한다.
 	local terrainLaneShift = if coastForm == "hill" then 3.5 elseif coastForm == "river" or coastForm == "delta" then -2.5
 		elseif coastForm == "lagoon" or coastForm == "canal" then 2 else 0
-	local laneOffset = districtSeed:NextNumber(-28, 28) + terrainLaneShift
+	local laneOffset = districtSeed:NextNumber(-28, 28) + terrainLaneShift + (if reflow then reflow.lane else 0)
+	if reflow then folder:SetAttribute("CityPortManualReflow", "PORT_MANUAL_REPOSITION_V1") end
 	folder:SetAttribute("CityPortLayoutRevision", "WHOLE_PORT_REPOSITION_V2")
 	folder:SetAttribute("CityPortLaneOffset", laneOffset)
 	folder:SetAttribute("CityRoadTerrain", coastForm)
@@ -3498,10 +3501,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	-- 원본 건설 수치와 왕궁·길·랜드마크에 대한 충돌 검사는 유지한다.
 	-- [181항구 독립 구획] 종교/시장과 농업을 옛 도심에서 분리해 서로 다른 실제 땅으로 옮긴다.
 	local dz = seeded(info.portId .. ":district-reposition-v3")
-	local firstSide = if dz:NextInteger(0, 1) == 0 then -1 else 1
-	local districtX = -138 + dz:NextInteger(-8, 8)
+	local firstSide = if reflow then reflow.side elseif dz:NextInteger(0, 1) == 0 then -1 else 1
+	local districtX = -138 + (if reflow then reflow.district else dz:NextInteger(-8, 8))
 	local districtZ = 358 + dz:NextInteger(0, 14)
-	local farmX = -357 + dz:NextInteger(-12, 12)
+	local farmX = -357 + (if reflow then reflow.district else dz:NextInteger(-12, 12))
 	local farmZ = 379 + dz:NextInteger(0, 9)
 	local slots = {
 		Vector3.new(districtX, 0, firstSide * districtZ),
@@ -6467,11 +6470,12 @@ function PortScene.build(info, onFacility)
 			else "fountain"
 		-- [전체 항구 시민 광장 재배치] 등록된 랜드마크 구역과 반대편으로 이동한다.
 		local civicRng = seeded(info.portId .. ":civic-quarter-reposition-v2")
-		local civicOffset = civicRng:NextInteger(-10, 9)
+		local reflow = identity and identity.reflow
+		local civicOffset = if reflow then reflow.plaza else civicRng:NextInteger(-10, 9)
 		local landmarkSide = if (PortData.Ports[info.portId] or {}).shipyard then 1
-			elseif civicRng:NextInteger(0, 1) == 0 then -1 else 1
-		local civicDepth = civicRng:NextInteger(-6, 6)
-		local plazaAt = Vector3.new(-140 + civicOffset * 0.45, 0, -landmarkSide * (113 + civicDepth))
+			elseif reflow then reflow.side elseif civicRng:NextInteger(0, 1) == 0 then -1 else 1
+		local civicDepth = if reflow then reflow.lane * 0.5 else civicRng:NextInteger(-6, 6)
+		local plazaAt = Vector3.new(-140 + civicOffset * 0.45 + (if reflow then reflow.district * 0.55 else 0), 0, -landmarkSide * (113 + civicDepth))
 		-- [문화권 고증] 유럽 노점을 부산·캘리컷 장시로, 유럽식 분수를 오스만 세정시설로 쓰지 않는다.
 		local europeanMarket = not identity or info.portId == "london" or info.portId == "rouen"
 		-- [항구별 원본 광장] 15항구 전용 승인 원화가 있으면 기존 동일 광장 슬롯에서 우선 사용한다.
@@ -6530,14 +6534,15 @@ function PortScene.build(info, onFacility)
 	-- 기존 상호작용 프롬프트와 원본 건물을 포트별 북·남 구역에 새로 배정한다.
 	do
 		local facilityRng = seeded(info.portId .. ":facility-block-reposition-v2")
+		local reflow = identity and identity.reflow
 	local facilitySites = {
 		Vector3.new(-18, 0, 46), Vector3.new(-18, 0, -46),
 		Vector3.new(-49, 0, 46), Vector3.new(-49, 0, -46),
 		Vector3.new(-80, 0, 46), Vector3.new(-80, 0, -46),
 		Vector3.new(-112, 0, 46),
 	}
-	local rotation = facilityRng:NextInteger(1, #facilitySites - 1)
-	local reflection = if facilityRng:NextInteger(0, 1) == 0 then -1 else 1
+	local rotation = if reflow then reflow.facility else facilityRng:NextInteger(1, #facilitySites - 1)
+	local reflection = if reflow then reflow.side elseif facilityRng:NextInteger(0, 1) == 0 then -1 else 1
 	for index, f in facilities do
 		local site = facilitySites[(index + rotation - 1) % #facilitySites + 1]
 		f.pos = Vector3.new(site.X + facilityRng:NextInteger(-2, 2), 0, site.Z * reflection)
@@ -8306,8 +8311,9 @@ function PortScene.build(info, onFacility)
 	-- 주택 예약·시가지 충돌 검사와 랜드마크 배치는 같은 8개 좌표를 소비한다.
 	do
 		local landmarkRng = seeded(info.portId .. ":landmark-sites-reposition-v3")
-		local shiftX = landmarkRng:NextInteger(-5, 5)
-		local shiftZ = landmarkRng:NextInteger(-5, 5)
+		local reflow = identity and identity.reflow
+		local shiftX = if reflow then reflow.landmarkX else landmarkRng:NextInteger(-5, 5)
+		local shiftZ = if reflow then reflow.landmarkZ else landmarkRng:NextInteger(-5, 5)
 		local landmarkSites = {}
 		for i, oldSite in LM_SITES do
 			landmarkSites[i] = Vector3.new(oldSite.X + shiftX, 0,
