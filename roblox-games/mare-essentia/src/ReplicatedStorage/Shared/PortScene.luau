@@ -3256,7 +3256,7 @@ local function placeSignature(folder, info)
 			kind, asset = "Terrain", "statue-column"
 		end
 		-- [대표 경관 재배치] 부속 시설도 같은 항구별 상징 중심을 따른다.
-		local frontSign = if signatureCenter.Z > 0 then -1 else 1
+		local frontSign = if signatureCenter.Z > 0 then 1 else -1
 		importedModel(folder, kind, asset, signatureCenter + Vector3.new(22, 0, frontSign * 44), 15, false)
 		if sceneLevel >= 5 then
 			importedModel(folder, "Castle", "flag-banner-long", signatureCenter + Vector3.new(12, 0, frontSign * 25), 10, false)
