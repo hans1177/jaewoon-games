@@ -6650,10 +6650,11 @@ function PortScene.build(info, onFacility)
 			local londonFacility = if londonKind then "london_" .. londonKind .. "_"
 				.. tostring(if facilityTier >= 5 then 3 elseif facilityTier >= 3 then 2 else 1) else nil
 			if londonFacility and not AssetIds["Town/" .. londonFacility] then londonFacility = nil end
-			local signatureAsset = if londonFacility then londonFacility elseif localArchitecture then nil
+			local signatureAsset = if localArchitecture then nil
 				elseif f.name == "학자의 서재" then "quaternius_large_square_tower"
 				elseif f.name == "도서관 (도감)" then "temple-stone"
 				else nil
+			if londonFacility then signatureAsset = londonFacility end
 			local signature = signatureAsset and importedModel(folder, "Town", signatureAsset, f.pos,
 				math.max(f.w, f.d) * grow * HOUSE_SCALE * (1 + math.max(0, facilityTier - 2) * 0.055), true, tone)
 			if signature then
