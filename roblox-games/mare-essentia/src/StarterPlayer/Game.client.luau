@@ -2007,14 +2007,31 @@ H.facilityGallery.ClipsDescendants = true
 H.facilityGallery.Parent = mainInner
 corner(H.facilityGallery, 8)
 bookMaterial(H.facilityGallery, "parchment", 204)
-H.galleryImage = Instance.new("ImageLabel")
+-- [왼쪽 원화 카드] 카드배틀과 같은 세로 7:10 틀. 기존 가로·정사각형 원화는 Fit으로 보존한다.
+H.galleryCard = Instance.new("Frame")
+H.galleryCard.Name = "FacilityArtCard7x10"
+H.galleryCard.BackgroundColor3 = Color3.fromRGB(239, 224, 194)
+H.galleryCard.BorderSizePixel = 0
+H.galleryCard.ClipsDescendants = true
+H.galleryCard.Parent = H.facilityGallery
+corner(H.galleryCard, 5)
+local galleryBorder = Instance.new("UIStroke")
+galleryBorder.Color = Color3.fromRGB(213, 164, 81)
+galleryBorder.Thickness = 1.5
+galleryBorder.Parent = H.galleryCard
+H.galleryImage = Instance.new("ImageButton")
 H.galleryImage.Name = "ApprovedFacilityArt"
 H.galleryImage.BackgroundTransparency = 1
-H.galleryImage.Position = UDim2.fromOffset(8, 8)
-H.galleryImage.Size = UDim2.new(1, -16, 1, -50)
+H.galleryImage.Size = UDim2.fromScale(1, 1)
 H.galleryImage.ScaleType = Enum.ScaleType.Fit
+H.galleryImage.AutoButtonColor = false
 H.galleryImage.ZIndex = 3
-H.galleryImage.Parent = H.facilityGallery
+H.galleryImage.Parent = H.galleryCard
+H.galleryImage.Activated:Connect(function()
+  if not view or not H.galleryImage.Image or H.galleryImage.Image == "" then return end
+  H.galleryBookOpenRequested = H.galleryLinkCardId or true
+  openTab("codex")
+end)
 H.galleryTitle = mkLabel(H.facilityGallery, "", 21, INK, true)
 H.galleryTitle.Name = "FacilityGalleryHeading"
 H.galleryTitle.Position = UDim2.new(0, 12, 1, -40)
@@ -2028,6 +2045,7 @@ H.galleryCaption.AutomaticSize = Enum.AutomaticSize.None
 H.galleryCaption.Size = UDim2.new(1, -24, 0, 28)
 H.galleryCaption.TextWrapped = true
 H.galleryCaption.TextTruncate = Enum.TextTruncate.AtEnd
+H.galleryCaption.TextSize = 14
 H.galleryCaption.ZIndex = 3
 -- [기존 승인 원화] 외부 유료 자료나 임의 메시 대신 백과·사건 카드 그림을 직접 재사용한다.
 H.FACILITY_GALLERY_ART = {
@@ -2039,13 +2057,50 @@ H.FACILITY_GALLERY_ART = {
   scholar = "event_principia", codex = "bot_herbarium", tech = "event_industrial_start",
   diplomacy = "event_title_parchment", -- 외교: 조약 문서(배 그림 기본값이면 조선소로 착각)
 }
+-- [실제 지식 연결] 메뉴 의미에 맞는 발견 원화를 우선 사용한다. 미발견 카드·미등록 자산은 노출하지 않는다.
+H.FACILITY_GALLERY_TOPICS = {
+  trade = { "교역", "상업", "무역" }, market = { "교역", "시장", "무역" },
+  harbor = { "항구", "상업", "항만" }, route = { "항로", "항해", "해류" }, map = { "지도", "해도", "지리" },
+  diplomacy = { "외교", "조약", "국가" }, yard = { "선박", "조선", "범선" },
+  board = { "주점", "상인", "길드" }, quest = { "탐험", "항해", "모험" }, recruit = { "선원", "인물", "상인" },
+  battle = { "해전", "해적", "전쟁" }, war = { "함대", "해전", "전쟁" }, gwent = { "갈레온", "해전", "전투" },
+  explore = { "탐험", "유적", "지리" }, codex = { "학문", "지식", "기록" },
+  encyclopedia = { "학문", "지식", "기록" }, scholar = { "학문", "연구", "과학" },
+  tech = { "과학", "기술", "발명" }, status = { "항해", "선원", "인물" }, crew = { "선원", "항해", "인물" },
+}
 function H.renderFacilityGallery()
   local focus = H.MENU_FOCUS[currentTab]
   local artName = H.FACILITY_GALLERY_ART[currentTab] or "event_calm_seas"
-  local approved = AssetIds["CardArt/" .. artName] or AssetIds["CardArt/event_calm_seas"]
-  H.galleryImage.Image = if approved then "rbxassetid://" .. tostring(approved) else ""
-  H.galleryTitle.Text = if focus then focus[1] else TAB_NAME[currentTab] or "시설 안내"
-  H.galleryCaption.Visible = false
+  local fallback = AssetIds["CardArt/" .. artName] or AssetIds["CardArt/event_calm_seas"]
+  local matched = nil
+  for _, token in H.FACILITY_GALLERY_TOPICS[currentTab] or {} do
+    for _, card in ((view and view.codex and view.codex.cards) or {}) do
+      if card.found == true and type(card.image) == "string" and card.image ~= "" then
+        local about = string.lower(tostring(card.name or "") .. " " .. tostring(card.topic or "")
+          .. " " .. tostring(card.worldGroup or "") .. " " .. tostring(card.kindName or ""))
+        if string.find(about, string.lower(token), 1, true) then
+          matched = card
+          break
+        end
+      end
+    end
+    if matched then break end
+  end
+  local image = if matched then matched.image elseif fallback then "rbxassetid://" .. tostring(fallback) else ""
+  H.galleryLinkCardId = if matched then matched.id else nil
+  if H.galleryImage.Image ~= image then
+    H.galleryImage.Image = image
+    if image ~= "" and not game:GetService("GuiService").ReducedMotionEnabled then
+      H.galleryImage.ImageTransparency = 1
+      game:GetService("TweenService"):Create(H.galleryImage,
+        TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { ImageTransparency = 0 }):Play()
+    else
+      H.galleryImage.ImageTransparency = 0
+    end
+  end
+  H.galleryTitle.Text = if matched then matched.name elseif focus then focus[1] else TAB_NAME[currentTab] or "시설 안내"
+  H.galleryCaption.Text = if matched then "원화 터치 · 해당 백과 항목" else "원화 터치 · 세계 백과 펼치기"
+  H.galleryCaption.Visible = image ~= ""
 end
 
 -- [교역소 기준] 가로는 3열, 세로는 큰 원화를 메뉴와 조작 사이에 놓는다.
@@ -2096,7 +2151,6 @@ function H.layoutBook()
   H.menuStatusLabel.Visible = not facilityDetail
   H.menuRecentButton.Visible = recent and not facilityDetail
   local gallery = H.galleryImage.Image ~= "" and not facilityDetail and view ~= nil and not newGameMode
-    and currentTab ~= "map" and currentTab ~= "codex" and currentTab ~= "encyclopedia" and currentTab ~= "market"
   local wide = width >= 740
   -- [중복 탭 제거] 단일 기능 시설(조선소)은 같은 이름의 탭을 다시 보여주지 않는다.
   local tabs = tabCount > 1 and tabBar.Visible
@@ -2223,35 +2277,42 @@ function H.layoutBook()
   end
   if wide and gallery then
     -- [가로 공통] 탭을 상단으로 옮겨 되찾은 왼쪽 폭을 원화와 실제 본문에 분배한다.
-    local artW = math.clamp(math.floor(width * 0.38), 220, 460)
+    local availableH = math.max(100, height - bodyTop - 8)
+    local artW = math.min(math.clamp(math.floor(width * 0.38), 180, 460),
+      math.max(155, math.floor((availableH - 64) * 0.7) + 16))
     H.facilityGallery.Position = UDim2.fromOffset(8, bodyTop)
-    H.facilityGallery.Size = UDim2.fromOffset(artW, math.max(100, height - bodyTop - 8))
-    H.galleryImage.Position = UDim2.fromOffset(8, 8)
-    H.galleryImage.Size = UDim2.new(1, -16, 1, -46)
+    H.facilityGallery.Size = UDim2.fromOffset(artW, availableH)
+    local cardW = math.max(80, math.min(artW - 16, math.floor((availableH - 66) * 0.7)))
+    local cardH = math.floor(cardW * 10 / 7)
+    H.galleryCard.Position = UDim2.fromOffset(math.floor((artW - cardW) / 2), 8)
+    H.galleryCard.Size = UDim2.fromOffset(cardW, cardH)
     H.galleryTitle.TextWrapped = false
-    H.galleryTitle.Position = UDim2.new(0, 12, 1, -34)
-    H.galleryTitle.Size = UDim2.new(1, -24, 0, 30)
-    H.galleryCaption.Position = UDim2.new(0, 12, 1, -41)
-    H.galleryCaption.Size = UDim2.new(1, -24, 0, 34)
-    H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Left
+    H.galleryTitle.Position = UDim2.new(0, 8, 1, -53)
+    H.galleryTitle.Size = UDim2.new(1, -16, 0, 25)
+    H.galleryCaption.Position = UDim2.new(0, 8, 1, -29)
+    H.galleryCaption.Size = UDim2.new(1, -16, 0, 24)
+    H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Center
     content.Position = UDim2.fromOffset(artW + 16, bodyTop)
     content.Size = UDim2.new(1, -artW - 24, 1, -bodyTop - (if H.menuActionDock.Visible then 80 else 8))
     H.menuActionDock.Position = UDim2.new(0, artW + 16, 1, -76)
     H.menuActionDock.Size = UDim2.new(1, -artW - 24, 0, 68)
   else
     -- [폰·세로 화면] 탭은 상단 오른쪽 한 줄, 본문과 원화는 전체 폭을 사용한다.
-    local showArt = gallery and height - bodyTop >= 500
+    local showArt = gallery and height - bodyTop >= 325
     H.facilityGallery.Visible = showArt
-    local artH = if showArt then math.clamp(math.floor(height * 0.17), 108, 146) else 0
+    local artH = if showArt then math.clamp(math.floor(height * 0.24), 154, 204) else 0
     H.facilityGallery.Position = UDim2.fromOffset(8, bodyTop)
     H.facilityGallery.Size = UDim2.new(1, -16, 0, artH)
-    H.galleryImage.Position = UDim2.fromOffset(8, 8)
-    H.galleryImage.Size = UDim2.new(0.62, -12, 1, -16)
-    H.galleryTitle.Position = UDim2.new(0.62, 0, 0, 8)
-    H.galleryTitle.Size = UDim2.new(0.38, -12, 1, -16)
+    local cardH = artH - 14
+    local cardW = math.floor(cardH * 7 / 10)
+    H.galleryCard.Position = UDim2.fromOffset(8, 7)
+    H.galleryCard.Size = UDim2.fromOffset(cardW, cardH)
+    H.galleryTitle.Position = UDim2.fromOffset(cardW + 18, 10)
+    H.galleryTitle.Size = UDim2.new(1, -cardW - 28, 0, 55)
     H.galleryTitle.TextWrapped = true
-    H.galleryCaption.Position = UDim2.new(0.62, 0, 0, 54)
-    H.galleryCaption.Size = UDim2.new(0.38, -12, 1, -62)
+    H.galleryCaption.Position = UDim2.fromOffset(cardW + 18, 70)
+    H.galleryCaption.Size = UDim2.new(1, -cardW - 28, 0, 55)
+    H.galleryCaption.TextWrapped = true
     H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Left
     local contentY = bodyTop + (if showArt then artH + 8 else 0)
     content.Position = UDim2.fromOffset(8, contentY)
@@ -6603,6 +6664,18 @@ local function openTradeHall()
 		else
 			bookSummary ..= "\n백과 기록은 학자의 서재에서 이어 볼 수 있어."
 		end
+		-- [원화 클릭] 발견한 상품 지식은 해당 장으로, 미발견 상품은 기존 자원 백과로 간다.
+		local function openSelectedGoodEncyclopedia()
+			if not sel then return end
+			H.tradeBookGood = sel.id
+			if bookCard then
+				H.galleryBookOpenRequested = bookCard.id
+			else
+				H.tradeBookOpenRequested = true
+			end
+			closeTradeHall()
+			openTab("codex")
+		end
 		-- [기존 시세 함수] 서버의 실제 1개 가격은 기존 흥정 이월 할인까지 포함한다.
 		local function unitBuyOf(g)
 			return if g.buyTotals and g.buyTotals[1] then g.buyTotals[1] else g.buy
@@ -6846,14 +6919,15 @@ local function openTradeHall()
 			pages.ScrollBarThickness = 4
 			pages.ScrollingDirection = Enum.ScrollingDirection.Y
 			pages.Parent = exhibit
-			local heroPx = math.floor(math.clamp(heroW - 22, 164, 480))
+			local heroPx = math.floor(math.clamp(heroW - 22, 164, 380))
+			local heroH = math.floor(heroPx * 10 / 7)
 			local artId = AssetIds["Goods/" .. sel.id]
 			local gi = GOOD_ICON[sel.id]
 			if artId and not RESTRICTED_CARGO_ICON[sel.id] and not (gi and gi[1] == "Cargo" and gi[2] == "barrel") then
 				-- [실제 등록 2D] 512px 원본을 480px 이하 Fit으로 표시해 확대 흐림을 피한다.
 				local art = Instance.new("ImageLabel")
 				art.Name = "TradeHighResArt"
-				art.Size = UDim2.fromOffset(heroPx, heroPx)
+				art.Size = UDim2.fromOffset(heroPx, heroH)
 				art.AnchorPoint = Vector2.new(0.5, 0)
 				art.Position = UDim2.new(0.5, 0, 0, 32)
 				art.Image = "rbxassetid://" .. tostring(artId)
@@ -6863,19 +6937,32 @@ local function openTradeHall()
 			else
 				local icon = if gi then modelIcon(pages, gi[1], gi[2], gi[3], heroPx, sel.name, gi[4])
 					else modelIcon(pages, nil, nil, nil, heroPx, sel.name)
+				icon.Size = UDim2.fromOffset(heroPx, heroH)
 				icon.AnchorPoint = Vector2.new(0.5, 0)
 				icon.Position = UDim2.new(0.5, 0, 0, 32)
 			end
-			local ribbon = mkLabel(pages, "세계 교역 · 산업 백과", 17, INK_SOFT, true)
+			local artTap = Instance.new("TextButton")
+			artTap.Name = "TradeArtToCodex"
+			artTap.Text = ""
+			artTap.BackgroundTransparency = 1
+			artTap.BorderSizePixel = 0
+			artTap.AutoButtonColor = false
+			artTap.Size = UDim2.fromOffset(heroPx, heroH)
+			artTap.AnchorPoint = Vector2.new(0.5, 0)
+			artTap.Position = UDim2.new(0.5, 0, 0, 32)
+			artTap.ZIndex = 8
+			artTap.Parent = pages
+			artTap.Activated:Connect(openSelectedGoodEncyclopedia)
+			local ribbon = mkLabel(pages, "세계 교역 · 원화 터치 시 백과 이동", 17, INK_SOFT, true)
 			ribbon.Position = UDim2.fromOffset(12, 6)
 			ribbon.Size = UDim2.new(1, -24, 0, 25)
 			ribbon.AutomaticSize = Enum.AutomaticSize.None
 			local title = mkLabel(pages, sel.name .. (if sel.tag ~= "" then " · " .. sel.tag else ""), 22, INK, true)
-			title.Position = UDim2.fromOffset(12, heroPx + 40)
+			title.Position = UDim2.fromOffset(12, heroH + 40)
 			title.Size = UDim2.new(1, -24, 0, 35)
 			title.AutomaticSize = Enum.AutomaticSize.None
 			title.TextXAlignment = Enum.TextXAlignment.Center
-			local sheet = mkBox(pages, UDim2.fromOffset(10, heroPx + 86),
+			local sheet = mkBox(pages, UDim2.fromOffset(10, heroH + 86),
 				UDim2.new(1, -20, 0, 250), COLORS.paper)
 			sheet.Name = "TradeBookPage"
 			corner(sheet, 6)
@@ -6893,14 +6980,9 @@ local function openTradeHall()
 			story.TextTruncate = Enum.TextTruncate.AtEnd
 			story.TextYAlignment = Enum.TextYAlignment.Top
 			local openBook = mkButton(sheet, "서재 백과사전에서 읽기", COLORS.blue,
-				UDim2.new(1, -24, 0, 46), function()
-					H.tradeBookGood = sel.id -- [세션 한정] 저장 키를 바꾸지 않는다.
-					H.tradeBookOpenRequested = true
-					closeTradeHall()
-					openTab("codex")
-				end, true)
+				UDim2.new(1, -24, 0, 46), openSelectedGoodEncyclopedia, true)
 			openBook.Position = UDim2.fromOffset(12, 198)
-			pages.CanvasSize = UDim2.fromOffset(0, heroPx + 350)
+			pages.CanvasSize = UDim2.fromOffset(0, heroH + 350)
 		end
 
 		-- 오른쪽: 선택한 물품의 거래 상자
@@ -6913,8 +6995,9 @@ local function openTradeHall()
 		detail.BorderSizePixel = 0
 		detail.ScrollBarThickness = 4
 		local bigPx = if narrow then math.floor(math.min(width - 54, math.max(170, root.AbsoluteSize.Y * 0.48), 330)) else 0
-		-- [모바일 세로] 원화 아래 백과 요약을 먼저 보여 준다.
-		local infoTop = if narrow then bigPx + 242 else 80
+		local bigH = math.floor(bigPx * 10 / 7)
+		-- [모바일 세로] 원화는 카드배틀과 같은 7:10, 원본 이미지는 Fit으로 읽는다.
+		local infoTop = if narrow then bigH + 242 else 80
 		detail.CanvasSize = UDim2.fromOffset(0, infoTop + 812)
 		detail.ScrollingDirection = Enum.ScrollingDirection.Y
 		detail.Visible = not narrow or detailOpen
@@ -6935,7 +7018,7 @@ local function openTradeHall()
 			hn.AutomaticSize = Enum.AutomaticSize.None
 			local note = (sel.category or "교역품") .. " · " .. (sel.purpose or "항구 간 판매")
 			local hnote = mkLabel(right, note, 16, INK_SOFT, false)
-			hnote.Position = UDim2.fromOffset(12, if narrow then bigPx + 46 else 42)
+			hnote.Position = UDim2.fromOffset(12, if narrow then bigH + 46 else 42)
 			hnote.Size = UDim2.new(1, -24, 0, 38)
 			hnote.AutomaticSize = Enum.AutomaticSize.None
 			if narrow then
@@ -6946,16 +7029,29 @@ local function openTradeHall()
 					big.Name = "TradeHighResArt"
 					big.Image = "rbxassetid://" .. tostring(artId)
 					big.ScaleType = Enum.ScaleType.Fit
-					big.Size = UDim2.fromOffset(bigPx, bigPx)
+					big.Size = UDim2.fromOffset(bigPx, bigH)
 					big.BackgroundTransparency = 1
 					big.Parent = right
 				else
 					big = if gi then modelIcon(right, gi[1], gi[2], gi[3], bigPx, sel.name, gi[4])
 						else modelIcon(right, nil, nil, nil, bigPx, sel.name)
 				end
+				big.Size = UDim2.fromOffset(bigPx, bigH)
 				big.AnchorPoint = Vector2.new(0.5, 0)
 				big.Position = UDim2.new(0.5, 0, 0, 42)
-				local sheet = mkBox(right, UDim2.fromOffset(12, bigPx + 82),
+				local artTap = Instance.new("TextButton")
+				artTap.Name = "TradeArtToCodex"
+				artTap.Text = ""
+				artTap.BackgroundTransparency = 1
+				artTap.BorderSizePixel = 0
+				artTap.AutoButtonColor = false
+				artTap.Size = UDim2.fromOffset(bigPx, bigH)
+				artTap.AnchorPoint = Vector2.new(0.5, 0)
+				artTap.Position = UDim2.new(0.5, 0, 0, 42)
+				artTap.ZIndex = 8
+				artTap.Parent = right
+				artTap.Activated:Connect(openSelectedGoodEncyclopedia)
+				local sheet = mkBox(right, UDim2.fromOffset(12, bigH + 82),
 					UDim2.new(1, -24, 0, 148), COLORS.paper)
 				sheet.Name = "TradeBookPage"
 				bookMaterial(sheet, "parchment", 180)
@@ -6969,12 +7065,8 @@ local function openTradeHall()
 				summary.AutomaticSize = Enum.AutomaticSize.None
 				summary.TextWrapped = true
 				summary.TextTruncate = Enum.TextTruncate.AtEnd
-				local openBook = mkButton(sheet, "서재 백과사전", COLORS.blue, UDim2.new(1, -16, 0, 38), function()
-					H.tradeBookGood = sel.id
-					H.tradeBookOpenRequested = true
-					closeTradeHall()
-					openTab("codex")
-				end, true)
+				local openBook = mkButton(sheet, "서재 백과사전", COLORS.blue, UDim2.new(1, -16, 0, 38),
+					openSelectedGoodEncyclopedia, true)
 				openBook.Position = UDim2.fromOffset(8, 106)
 			end
 			local qty = math.clamp(hallQty, 1, 20)
@@ -8078,13 +8170,38 @@ function openYardHall()
 		local shipName = preview and preview.name or ship.name
 		local shipId = preview and preview.id or ship.id
 		local shipArt = SHIP_ICON[shipId]
-		local px = math.floor(math.max(96, math.min(heroWidth - 20, heroHeight - 62, 620)))
+		-- [조선소 원화 카드] 기존 승인 선박 모델을 세로 7:10 슬롯에 맞춰 전시한다.
+		local availableArtH = math.max(44, heroHeight - 72)
+		local cardW = math.floor(math.max(34, math.min(heroWidth - 20, availableArtH * 0.7)))
+		local cardH = math.floor(cardW * 10 / 7)
+		local card = Instance.new("Frame")
+		card.Name = "YardShipCard7x10"
+		card.Size = UDim2.fromOffset(cardW, cardH)
+		card.AnchorPoint = Vector2.new(0.5, 0)
+		card.Position = UDim2.new(0.5, 0, 0, 7)
+		card.BackgroundTransparency = 1
+		card.ClipsDescendants = true
+		card.Parent = gallery
 		if shipArt then
-			local model = modelIcon(gallery, shipArt[1], shipArt[2], shipArt[3], px, shipName)
-			-- [조선소 전시장] 승인된 선박만 기존 모델 뷰포트에 넓게 전시한다.
-			model.Size = UDim2.new(1, -20, 0, px)
-			model.AnchorPoint = Vector2.new(0.5, 0.5)
-			model.Position = UDim2.new(0.5, 0, 0.48, -8)
+			local model = modelIcon(card, shipArt[1], shipArt[2], shipArt[3], math.max(cardW, 44), shipName)
+			model.Size = UDim2.fromScale(1, 1)
+			model.Position = UDim2.fromOffset(0, 0)
+			model.BackgroundTransparency = 1
+			local bookCard = nil
+			for _, item in ((view.codex and view.codex.cards) or {}) do
+				if item.found and item.name == shipName then bookCard = item; break end
+			end
+			local link = Instance.new("TextButton")
+			link.Name = "YardArtToCodex"
+			link.Size = UDim2.fromScale(1, 1)
+			link.BackgroundTransparency = 1
+			link.Text = ""
+			link.ZIndex = model.ZIndex + 1
+			link.Parent = card
+			link.Activated:Connect(function()
+				H.galleryBookOpenRequested = if bookCard then bookCard.id else true
+				openTab("codex")
+			end)
 		end
 		local label = mkLabel(gallery, shipName .. (if preview and preview.owned then " · 현재 기함" else ""), 21, INK, true)
 		label.Position = UDim2.new(0, 12, 1, -60)
@@ -11130,6 +11247,15 @@ function RENDERERS.encyclopedia()
 			return mkRow(content, "읽을 지식이 없어", hint, {}, 80)
 		end)
 		return
+	end
+	-- [원화 직접 이동] 발견한 카드 ID를 찾아 해당 장을 열고, 없는 기록은 임의로 해금하지 않는다.
+	if H.encyclopediaTargetId then
+		local target = H.encyclopediaTargetId
+		H.encyclopediaTargetId = nil
+		H.encyclopediaPage = nil
+		for index, entry in found do
+			if entry.id == target then H.encyclopediaPage = index; break end
+		end
 	end
 	-- [이어 읽기] 새 접속에서 책갈피가 있으면 해당 장을 처음 펼친다.
 	if not H.encyclopediaPage and H.encyclopediaBookmarkId then
@@ -14539,7 +14665,7 @@ openTab = function(tabId, mapPage, facility)
 	local origin = if facility == "은행" or facility == "상인 길드" then facility else nil
 	if main.Visible and view and not newGameMode and not H.titleMenuOpen
 		and currentTab == tabId and H.mapPage == mapPage
-		and H.visitFacility == origin and not H.tradeBookOpenRequested then
+		and H.visitFacility == origin and not H.tradeBookOpenRequested and not H.galleryBookOpenRequested then
 		return
 	end
 	-- [시설 방문 표시] 출입 건물명은 실행 중 화면에만 사용한다. 저장 구조 변경 없음.
@@ -14547,7 +14673,17 @@ openTab = function(tabId, mapPage, facility)
 	H.bankVisitPending = origin == "은행"
 	-- [교역 장부→서재] 선택한 상품의 분류는 백과 상태 변수 선언 이후,
 	-- 기존 탭 전환 함수에서만 지정한다. 별도 화면·저장 키를 생성하지 않는다.
-	if tabId == "codex" and H.tradeBookOpenRequested then
+	if tabId == "codex" and H.galleryBookOpenRequested then
+		local target = H.galleryBookOpenRequested
+		H.galleryBookOpenRequested = nil
+		H.tradeBookOpenRequested = nil
+		H.encyclopediaTargetId = if type(target) == "string" then target else nil
+		H.encyclopediaCategoryId = "all"
+		H.encyclopediaSearchText = ""
+		H.encyclopediaIndexOpen = false
+		H.encyclopediaPage = nil
+		codexField = "book"
+	elseif tabId == "codex" and H.tradeBookOpenRequested then
 		H.tradeBookOpenRequested = nil
 		codexField = "r:all"
 		for _, resource in ((view and view.codex and view.codex.resources) or {}) do
