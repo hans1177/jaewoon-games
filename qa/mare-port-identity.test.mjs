@@ -171,13 +171,13 @@ test('촬영 13개 항구 외관이 개별 작업 지시서의 5단계 값과 �
     'zanzibar', 'calicut', 'nagasaki', 'veracruz', 'busan', 'canton',
     'sydney', 'cartagena_indias']) {
     const instructions = fs.readFileSync(root + 'docs/ports/' + port + '.md', 'utf8');
-    const entry = id.split('\\n\\t' + port + ' = { landmark = ')[1]
-      ?.split(/\\n\\t[a-z_]+ = \\{/)[0] ?? '';
+    const entry = id.split('\n\t' + port + ' = { landmark = ')[1]
+      ?.split(/\n\t[a-z_]+ = \{/)[0] ?? '';
     assert.ok(entry, port + ' 외관 정체성 존재');
-    const roofWall = instructions.match(/^\\| 지붕·벽 \\| ([^|]+) \\|/m)?.[1].trim().split(' · ');
-    const plaza = instructions.match(/^\\| 광장 \\| ([^|]+) \\|/m)?.[1].trim();
-    const lamp = instructions.match(/^\\| 밤 조명 \\| ([^|]+) \\|/m)?.[1].trim();
-    const streets = instructions.match(/^\\| 길 1→5단계 \\| ([^|]+) \\|/m)?.[1].trim().split(' → ');
+    const roofWall = instructions.match(/^\| 지붕·벽 \| ([^|]+) \|/m)?.[1]?.trim().split(' · ');
+    const plaza = instructions.match(/^\| 광장 \| ([^|]+) \|/m)?.[1]?.trim();
+    const lamp = instructions.match(/^\| 밤 조명 \| ([^|]+) \|/m)?.[1]?.trim();
+    const streets = instructions.match(/^\| 길 1→5단계 \| ([^|]+) \|/m)?.[1]?.trim().split(' → ');
     assert.ok(roofWall && plaza && lamp && streets?.length === 5, port + ' 지시서 완전성');
     for (const [key, expected] of Object.entries({
       roof: roofWall[0], wall: roofWall[1], plaza, lamp,
