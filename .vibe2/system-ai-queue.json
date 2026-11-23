@@ -247853,7 +247853,7 @@
     },
     {
       "id": "marketing-rpg-adventure-pre-release-v1",
-      "status": "failed",
+      "status": "queued",
       "priority": "critical",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -247882,7 +247882,7 @@
         "marketing-rpg-adventure-pre-release-v1"
       ],
       "blockedTaskIds": [],
-      "retries": 4,
+      "retries": 0,
       "recurrenceCount": 1,
       "failureStage": "system-ai-implementation-failed",
       "failureSignature": "system-ai-implementation-failed",
@@ -247893,7 +247893,7 @@
       "knownGoodRevision": null,
       "repairRisk": 1,
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-11-22T21:56:07.315Z",
+      "sourceMutationBaseline": "2026-11-23T02:32:51.207Z",
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
       "reservationId": null,
@@ -247901,7 +247901,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -248172,7 +248172,20 @@
         "repairRisk": 1
       },
       "createdAt": "2026-11-22T15:26:05.928Z",
-      "updatedAt": "2026-11-23T02:38:54.549Z"
+      "updatedAt": "2026-11-23T02:41:46.486Z",
+      "repairMode": "FOCUSED_REPAIR",
+      "userAssistanceRequired": false,
+      "gameRepairContract": {
+        "version": 1,
+        "mode": "FOCUSED_REPAIR",
+        "prePatchReproductionRequired": true,
+        "causalResponsibleSystemRequired": true,
+        "originalScenarioReplayRequired": true,
+        "invariantValidationRequired": true,
+        "impactRegressionRequired": true,
+        "fullRegressionFanInRequired": true,
+        "multiplayerUserAssistanceRequired": false
+      }
     },
     {
       "id": "recovery-recovery-a04337cc3eb4766b9b8d",
