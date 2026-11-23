@@ -2352,7 +2352,7 @@ test('모든 항구 시장·종교·농장에 경계 검사와 안전 재배치 
   assert.match(scene,/local farmZ = 379 \+ dz:NextInteger\(0, 9\)/);
   const manual=new Map([...identity.matchAll(/\n\t([a-z_]+) = \{ landmark = ([\s\S]*?)\n\t\treflow = \{ lane = (-?\d+), plaza = (-?\d+), side = (-?\d+), landmarkX = (-?\d+), landmarkZ = (-?\d+), district = (-?\d+), facility = (\d+) \}/g)]
     .map(m=>[m[1],{x:Number(m[8]),lx:Number(m[6]),lz:Number(m[7])}]));
-  assert.equal(manual.size,67,'지시서별 개별 재배치 항구 67개');
+  assert.equal(manual.size,84,'지시서별 개별 재배치 항구 84개');
   for(const id of ids){
     const reflow=manual.get(id);
     const districtX= reflow ? -138+reflow.x : -138;
