@@ -1300,11 +1300,11 @@ if (!studioRegrantPath) for (const [id, review] of Object.entries(modelOriginals
   let legacyIndexed = false;
   if (bytes[24] !== 8 || (bytes[25] !== 2 && bytes[25] !== 6)) {
     let previous = null;
-    if (bytes[24] === 8 && bytes[25] === 3 && !replacingExisting) {
+    if (bytes[24] === 8 && bytes[25] === 3) {
       try { previous = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')).assets?.[id]; }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
     }
-    legacyIndexed = bytes[24] === 8 && bytes[25] === 3 && !replacingExisting
+    legacyIndexed = bytes[24] === 8 && bytes[25] === 3
       && currentHash === hash && previous?.sourceSha256 === hash
       && previous?.assetType === 'Image' && previous?.usePermissionGranted === true
       && Boolean(previous?.assetId);
