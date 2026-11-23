@@ -7529,9 +7529,23 @@ if view.weather then
 				}, 56)
 			end
 			local tags = (if r.yard then " 🔧조선소" else "") .. (if r.quest then " 📜" .. r.quest else "")
-			return mkRow(content, r.name .. tags, string.format("%s · %d일 · %d km\n필요 보급 %d%s · %s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
+			local row = mkRow(content, r.name .. tags, string.format("%s · %d일 · %d km\n필요 보급 %d%s · %s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
 				{ text = if supplyLeft < 0 or coalLeft < 0 then "출항 확인" else "출항", color = if supplyLeft < 0 or coalLeft < 0 then COLORS.gold else COLORS.blue, onClick = function() confirmSail(r) end },
 			}, 56)
+			-- [항로 원화] 목적지 제목을 누르면 승인된 지역 해역도로 바뀐다. 출항 버튼과 겹치지 않는다.
+			local choose = Instance.new("TextButton")
+			choose.Name = "RouteArtwork_" .. tostring(r.id)
+			choose.Text = ""
+			choose.BackgroundTransparency = 1
+			choose.BorderSizePixel = 0
+			choose.Size = UDim2.new(1, -124, 0, 42)
+			choose.ZIndex = row.ZIndex + 3
+			choose.Parent = row
+			choose.Activated:Connect(function()
+				H.gallerySelection = { tab = "route", name = r.name, search = r.name, chart = H.chartForPort(r.id) }
+				H.renderFacilityGallery()
+			end)
+			return row
 		end)
 	end
 end
@@ -12112,7 +12126,22 @@ function RENDERERS.diplomacy()
 				local sub = string.format("%s · %s\n육군 %.0f · 해군 %.0f · 발견 %d종%s%s", n.leader, n.regime, n.army, n.navy, n.techs,
 					if n.war then " · 전쟁: " .. n.war else "", if n.allies > 0 then string.format(" · 동맹 %d", n.allies) else "")
 				local natInfo = PortData.Nations[n.id]
-				return mkRow(content, string.format("%d위 %s%s", n.rank, if natInfo then natInfo.name else n.id, if n.hegemon then " · 패권국" else ""), sub, {}, 70)
+				local nationName = if natInfo then natInfo.name else tostring(n.id)
+				local row = mkRow(content, string.format("%d위 %s%s", n.rank, nationName, if n.hegemon then " · 패권국" else ""), sub, {}, 70)
+				-- [외교 원화] 국가 순위의 이름을 누르면 같은 시설 원화 카드에 해당 국가를 표시한다.
+				local choose = Instance.new("TextButton")
+				choose.Name = "DiplomacyArtwork_" .. tostring(n.id)
+				choose.Text = ""
+				choose.BackgroundTransparency = 1
+				choose.BorderSizePixel = 0
+				choose.Size = UDim2.fromScale(1, 1)
+				choose.ZIndex = row.ZIndex + 3
+				choose.Parent = row
+				choose.Activated:Connect(function()
+					H.gallerySelection = { tab = "diplomacy", name = nationName, search = nationName }
+					H.renderFacilityGallery()
+				end)
+				return row
 			end)
 		end
 	end
@@ -12173,6 +12202,15 @@ function RENDERERS.diplomacy()
 end
 
 function RENDERERS.map()
+	-- [항구 선택 원화] 지도 점 또는 해역 목록에서 고른 항구에 맞는 승인 해역 원화를 사용한다.
+	if selectedPort and PortData.Ports[selectedPort] then
+		local port = PortData.Ports[selectedPort]
+		H.gallerySelection = { tab = "map", name = port.name, search = port.name,
+			chart = H.chartForPort(selectedPort) }
+	else
+		H.gallerySelection = nil
+	end
+	H.renderFacilityGallery()
 	-- 상단 바로가기는 지도를, 항해 일지는 기록을 먼저 펼친다.
 	if H.mapPage ~= "chart" then
 		local p = view.player
