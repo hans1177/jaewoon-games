@@ -2112,3 +2112,14 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 |---|---|---|---|
 | `inbox/Town/` | london_tavern_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
 | `inbox/Town/` | london_battle_1.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+
+
+## 2026-11-24 런던 항만·조선소 원본 가공 3종
+
+승인된 CC0 원본 메시·UV·재질 보존. 정식 등록 및 Studio 실물 검증 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_harbor_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_harbor_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_yard_1.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
