@@ -1674,7 +1674,7 @@ end
 end
 local PORTRAIT_GROUP = {
 	["교역소"] = "merchant", ["항만청"] = "harbor", ["조선소"] = "yard",
-	["주점"] = "tavern", ["학자의 서재"] = "scholar",
+	["주점"] = "tavern", ["학자의 서재"] = "scholar", ["외교"] = "harbor", -- 외교관: 관리 초상
 }
 -- 국가별 주인공 9명은 3x3 시트의 서로 다른 실제 인물 사진/원화를 사용한다.
 -- 이 시트를 기존 초상화 컴포넌트에서 공유하므로 새 UI 구조는 필요 없다.
@@ -2026,6 +2026,7 @@ H.FACILITY_GALLERY_ART = {
   trade = "event_trade_boom", yard = "event_title_ship",
   battle = "event_piracy", explore = "event_angkor", war = "event_anglo_dutch_war", gwent = "event_royal_charter",
   scholar = "event_principia", codex = "bot_herbarium", tech = "event_industrial_start",
+  diplomacy = "event_title_parchment", -- 외교: 조약 문서(배 그림 기본값이면 조선소로 착각)
 }
 function H.renderFacilityGallery()
   local focus = H.MENU_FOCUS[currentTab]
@@ -11749,7 +11750,7 @@ H.SEA_NAMES = {
 -- 실제 위도·경도 위에 항구를 찍은 세계지도 (Natural Earth 해안선)
 -- [외교] 나라 정세·관계·전쟁·선물·개입·항해자를 한 곳에 모은 탭 (항만청). 기존 지도 탭 하단의 외교 목록을 옮겨 왔다.
 function RENDERERS.diplomacy()
-	H.walletBar("diplomacy")
+	-- [외교 화면] 조선소 정비 바(보급·수리)는 외교와 무관해 조선소로 착각되므로 띄우지 않는다.
 	local dp = view.diplo
 	if not dp then
 		add(function() return mkLabel(content, "아직 외교 정보가 없어요.", 14, COLORS.muted, false) end)
