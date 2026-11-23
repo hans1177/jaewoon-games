@@ -213,6 +213,74 @@ def rows():
     return out
 
 
+IDENT = {}  # PortIdentity.luau 에서 읽은 항구별 길·조명·땅 (간단 파서)
+
+
+def load_identity(root):
+    import re
+    src = open(os.path.join(root, "src", "ReplicatedStorage", "Shared", "PortIdentity.luau"), encoding="utf-8").read()
+    for m in re.finditer(r"\n\t([a-z_]+) = \{ landmark = \{ id = \"([^\"]+)\", name = \"([^\"]+)\", kind = \"([a-z_]+)\"([\s\S]*?)signature = \{([^}]*)\} \}", src):
+        pid, lid, lname, kind, body, sig = m.groups()
+        get = lambda k: (re.search(k + r' = "([a-z_]+)"', body) or [None, None])[1]
+        street = re.search(r"street = \{([^}]*)\}", body).group(1).replace('"', "").replace(" ", "").split(",")
+        IDENT[pid] = dict(landmark_id=lid, landmark=lname, kind=kind, roof=get("roof"), wall=get("wall"), layout=get("layout"),
+                          plaza=get("plaza"), lamp=get("lamp"), ground=get("ground"), weather=get("weatherGround"), street=street,
+                          signature=[s.strip().strip('"') for s in sig.split(",")])
+
+
+LAYOUT_KO = {
+    "grid": "바둑판: 큰길과 직각 골목, 블록마다 4~6필지",
+    "canal": "운하: 물길 양쪽으로 집 한 줄씩, 다리로 연결",
+    "terrace": "계단식: 언덕 등고선 따라 계단 단지, 위로 갈수록 종교·관청",
+    "radial": "방사형: 광장에서 길이 사방으로",
+    "organic": "골목형: 구불구불한 골목, 불규칙 필지",
+}
+PLAZA_KO = {"fountain": "분수 광장", "market": "시장 광장", "temple_court": "사원 앞마당", "quay": "부두 광장", "parade": "연병장 광장"}
+
+
+def port_doc(pid, name, style, landmark, lamp, sigs, plaza, signs, goods, data):
+    idt = IDENT.get(pid, {})
+    lines = [f"# {name} ({pid}) — ChatGPT 작업 지시서", "",
+             "> 이 문서 하나로 이 항구의 3D 에셋 제작과 마을 배치를 진행한다. 공통 규칙은 `docs/PORT_VILLAGE_PROMPTS.md`.", "",
+             "## 0. 작업 환경", "",
+             "- 게임: Mare Essentia (Roblox, Luau). 배경 1500~1800년 대항해시대. 저장소 `roblox-games/mare-essentia`",
+             "- 마을 생성 코드: `src/ReplicatedStorage/Shared/PortScene.luau` (마을 짓기 `densify`, 대표 경관 `placeSignature`/`SIG`, 기념물 `placeLandmarks`)",
+             "- 항구 정체성 데이터: `src/ReplicatedStorage/Shared/PortIdentity.luau` (아래 표의 값이 여기 있음)",
+             "- 에셋 등록: 파일을 `assets/inbox/Town/<asset_id>.glb`(라이선스 `<asset_id>.license.json` 동봉)에 넣고 main 반영 → `owner-mare-essentia-assets` 워크플로가 Roblox 등록 → 코드에서 `AssetIds[\"Town/<asset_id>\"]`, 배치는 `importedModel(folder, \"Town\", \"<asset_id>\", 위치, 크기)`",
+             "- 지키기: 저장 데이터·경제 수치·보행 충돌벽 변경 금지. 원본 없으면 기존 승인 에셋으로 대체(이미 있는 방식).",
+             "- 검증: `LUAU_DIR=... bash tests/run.sh`(스모크 905건), Studio `tools/devloop/studio-scripts/mare-town.json` 항공·광장 촬영", "",
+             "## 1. 항구 정체성", "",
+             "| 항목 | 값 |", "|---|---|",
+             f"| 상징물 | {idt.get('landmark', landmark)} (`{idt.get('landmark_id', '')}`, 종류 {idt.get('kind', '')}) |",
+             f"| 건축 | {style} (지붕 {idt.get('roof', '')}, 벽 {idt.get('wall', '')}) |",
+             f"| 구획 | {LAYOUT_KO.get(idt.get('layout'), idt.get('layout', ''))} |",
+             f"| 광장 | {PLAZA_KO.get(idt.get('plaza'), idt.get('plaza', ''))} — {plaza} |",
+             f"| 길 1→5단계 | {' → '.join(idt.get('street', []))} |",
+             f"| 밤 조명 | {idt.get('lamp', lamp)} |",
+             f"| 길 밖 땅 / 날씨 | {idt.get('ground', '')} / {idt.get('weather', '')} |",
+             f"| 특산물(교역품) | {', '.join(goods)} |", "",
+             "## 2. 발전도별 배치 지시", "",
+             "| 단계 | 필지 | 무엇을 어디에 |", "|---|---|---|",
+             f"| 1 | 6 | 부두 옆 오두막 `{pid}_house_1` 6채, 길 {(idt.get('street') or ['dirt'])[0]}, 횃불 2~3. 외곽: {goods[0]} 관련 텃밭/작업장 1 |",
+             f"| 2 | 10 | 부두와 마을 사이 중앙 광장 + `{pid}_plaza_center`. 광장 옆에 `{pid}_landmark_base`(공사 중). 가판대 `{pid}_stall_*` 2개 |",
+             f"| 3 | 14 | 구역 분리: 시장(광장 동쪽·부두 쪽) / 종교·관청(광장 반대편) / 주거(골목) / 공방(외곽 강·물가). `{pid}_signature_1~3` 구역별 1채, `{pid}_workshop_*` 공방 구역, 가로등 `{pid}_street_lamp` 길 3칸마다, 간판 `{pid}_shop_sign` |",
+             f"| 4 | 18 | `{pid}_landmark_full`로 교체, `{pid}_house_2`(2층 상점) 큰길 앞, 창고 `{pid}_warehouse_stock`(재고 단계) 부두 뒤, 가로등 2칸마다 |",
+             f"| 5 | 24 | `{pid}_house_3`(3층) 광장 둘레, 외곽 구역 신설, 가로등 모든 길, 농촌 가공소 |", "",
+             "- 건물은 중앙에 몰지 말고 구역별로 나눈다. 광장 → 큰길 → 골목 순으로 밀도가 낮아지게.",
+             "- 같은 집 연속 배치 금지(색 슬롯·회전·높이 변형). 땅은 길(포장)과 길 밖(기후 재질)을 구분.", "",
+             "## 3. 3D 에셋 프롬프트", "",
+             "모든 프롬프트는 공통 문구 포함(그대로 3D 생성 도구에 붙여 넣기).", ""]
+    for r in data:
+        if r[0] != pid:
+            continue
+        lines += [f"### `{r[2]}` — {r[8]}", f"- 분류 {r[3]} · 등장 {r[4]}단계 · 크기 {r[5]} · 폴리곤 ≤ {r[6]}", "```", r[7], "```", ""]
+    lines += ["## 4. 완료 체크", "",
+              "- [ ] 에셋 파일·라이선스 inbox 등록, `AssetIds` 반영 확인",
+              "- [ ] 단계 1~5 Studio 항공 사진에서 구역 분리·광장·상징물 확인",
+              "- [ ] 스모크 905건·로직 테스트 통과", ""]
+    return "\n".join(lines)
+
+
 def main():
     here = os.path.dirname(os.path.abspath(__file__))
     path = os.path.join(here, "..", "docs", "port_asset_prompts.csv")
@@ -222,6 +290,14 @@ def main():
         w.writerow(["port_id", "port", "asset_id", "category", "tier", "size_studs", "tris", "prompt_en", "notes_ko"])
         w.writerows(data)
     print(f"{len(data)} rows -> {os.path.normpath(path)}")
+    root = os.path.join(here, "..")
+    load_identity(root)
+    out_dir = os.path.join(root, "docs", "ports")
+    os.makedirs(out_dir, exist_ok=True)
+    for spec in PORTS:
+        with open(os.path.join(out_dir, spec[0] + ".md"), "w", encoding="utf-8") as f:
+            f.write(port_doc(*spec, data))
+    print(f"{len(PORTS)} port briefs -> {os.path.normpath(out_dir)} (identity parsed {len(IDENT)})")
 
 
 if __name__ == "__main__":
