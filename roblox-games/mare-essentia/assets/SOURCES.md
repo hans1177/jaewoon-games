@@ -2061,3 +2061,18 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `terrain/village-cart.glb` | `Cart.glb` | 108660 | `b69da9a51ecdcdeb8494f178644734459c06555f` |
 | `terrain/village-bonfire.glb` | `Bonfire.glb` | 30592 | `b936e46d0a1b43a16d548fc80bf538e02211320a` |
 | `terrain/village-stairs.glb` | `Stairs.glb` | 13712 | `67ec6739a5f048e1986d01eafa3e2030b2e53535` |
+
+## 2026-11-23 카리브 3항구 실물 3D 주택 원본 추가
+
+- 제작자: Quaternius, 공식 CC0 Pirate Kit https://quaternius.com/packs/piratekit.html
+- 바이너리 출처: https://github.com/Papyszoo/CC0-Public-Domain-Models/tree/main/packs/quaternius-piratekit/models
+- 역할: 하바나·킹스턴·나소 16~18세기 카리브 해안 도시 목조 주택. 각기 다른 실물 모델이다. 특정 실존 건축물의 정확한 복제라는 의미는 아니다.
+- 기존 PortScene.house()의 원본 주택 슬롯 및 기존 자산 등록기로 연결한다. 게임 규칙/저장 구조는 유지한다.
+
+| 항구 | 기존 원본 파일 | 크기(B) | 삼각형 | Git blob SHA-1 | SHA-256 |
+|---|---|---:|---:|---|---|
+| havana | environment_house1.glb | 684264 | 11878 | d43a55f1fdba7c194c881d2412855c7117f07323 | 2942a1e9f7c504b132dc509a207051ae18b68bd05de160266f53f7ce4f2a10d4 |
+| kingston | environment_house2.glb | 269184 | 4958 | 2c2e57a7bb30d54ecd886e2aa84a81fc8c2d628c | 1280f4c93646828425dcb4ad63b1b30f1b1bf3488a5c8d5590f9ceab63f2df92 |
+| nassau | environment_house3.glb | 597872 | 9172 | d7ac5fca3fc23292e6dcb6067ebee93fb995ce6c | b4afef964cf0f7d8e4c6ec41cd7a90d14951ddd789a7352db5b1eb1c498fe3b4 |
+
+- 현재 확인된 단계: SOURCE_DOWNLOADED_HASH_VERIFIED. Roblox 자산 번호/Universe 권한/실제 모바일 표시/게시 결과는 아직 미검증.
