@@ -3840,6 +3840,29 @@ test('대항해시대 내부 무료 숲 자산 및 지상 구릉·해상 물결 
   assert.match(naval,/oceanTerrain:FillBlock\(oceanFrame, oceanSize, Enum\.Material\.Air\)/);
 });
 
+// [실물 원경 재발방지] 270단계에서 발견된 절벽·언덕 배율 오류는 원본 모델을 삭제하던 실제 렌더 결함이다.
+// 일반 건물·배·충돌 모델의 기존 제한은 유지하고 멀리 있는 비충돌 지형만 실측 크기로 교정한다.
+test('항구 원경 절벽과 언덕은 원본 배율로 목표 폭을 맞추고 실화면에서 존재를 검증한다',()=>{
+  const source=read('ReplicatedStorage/Shared/PortScene.luau');
+  const begin=source.indexOf('local function importedModel(parent, kind, asset, bottomPosition');
+  const end=source.indexOf('-- 등불:',begin);
+  assert.ok(begin>0&&end>begin,'기존 항구 모델 설치 책임 함수만 직접 수정');
+  const importer=source.slice(begin,end);
+  assert.match(importer,/local distantBackdrop = not solid and desiredSize >= 80 and \(kind == "Terrain" or kind == "Castle"\)/);
+  assert.match(importer,/not isAnimal and not distantBackdrop and \(ratio < 0\.01 or ratio > 100\)/);
+  assert.match(importer,/if isAnimal or distantBackdrop then m:GetScale\(\) \* ratio else ratio/);
+  assert.match(importer,/if isAnimal or distantBackdrop then/);
+  assert.match(importer,/math\.abs\(actualAxis - desiredSize\) > desiredSize \* 0\.2/);
+  for(const name of ['cliff-cornerlarge-stone','cliff-large-stone','cliff-cornerinnerlarge-rock','cliff-diagonal-rock','ground-hills'])
+    assert.ok(source.includes('"'+name+'"'),'기존 무료 원경 자산 보존: '+name);
+  const shot=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
+  assert.equal(shot.length,1000,'기존 전체 1000단계 유지');
+  assert.equal(shot[180].type,'luau');
+  assert.match(shot[180].code,/PortCoastCliffDepthCount/);
+  assert.match(shot[180].code,/PORT_COAST_CLIFF_RENDER_MISSING/);
+  assert.ok(shot[999].code.includes('STUDIO_1000_FINAL_STATE_PASS'));
+});
+
 // [환경 원근 리그레션] CC0 8종의 원본·권한·전장 높이 연출이 같은 main 리비전에 함께 존재해야 한다.
 test('대항해시대 생물군계 절벽·하층 식생 및 해상 연안 깊이감',()=>{
   const root='roblox-games/mare-essentia/';
