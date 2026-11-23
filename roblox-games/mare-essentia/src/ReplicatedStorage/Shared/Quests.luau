@@ -29,6 +29,7 @@ export type Quest = {
 	routeId: string?, -- 10대 이야기 항로의 안정된 식별자
 	routeName: string?, -- 지역별 연속 탐험 갈래
 	leadSource: string?, -- 소문·발견·사건·기록 등 단서가 전해진 형태
+	regionId: string?, -- kind "war_clear": 이 해역(Regions id)의 함대전 완수 횟수 (없으면 전체)
 	cat: string?, -- kind "people": 이 분야(People.Cats)의 기록한 인물 수 (없으면 전체)
 }
 
@@ -103,6 +104,13 @@ local Quests: { Quest } = {
 	{ id = "q_collector_2", name = "대수집가", summary = "도감 카드 40장 발견", kind = "discover", amount = 40, rewardCoins = 6000, rewardFame = 150, rewardCareer = "adventure", rewardXp = 700 },
 	{ id = "q_collector_3", name = "백과의 주인", summary = "도감 카드 80장 발견", kind = "discover", amount = 80, rewardCoins = 15000, rewardFame = 300, rewardCareer = "adventure", rewardXp = 1500 },
 	{ id = "q_sea_wolf_2", name = "북해의 지배자", summary = "해전에서 20번 승리", kind = "win", amount = 20, rewardCoins = 4500, rewardFame = 100, rewardCareer = "battle", rewardXp = 500, rewardCardId = "nav_portolan" },
+	-- [해상 연속 퀘스트] 해역별 함대전을 완수하면 이어서 열린다. 해역마다 이야기와 보상이 다르다.
+	{ id = "q_war_europe", name = "지중해의 방패", summary = "지중해 해상 봉쇄전을 1번 완수", kind = "war_clear", regionId = "europe", amount = 1, rewardCoins = 1200, rewardFame = 20, rewardCareer = "battle", rewardXp = 300, story = "사략 함대가 항로를 막으면 상인들이 먼저 쓰러진다. 함대로 길을 열어 주면 항구가 숨을 쉰다." },
+	{ id = "q_war_w_africa", name = "대서양 항로 감시", summary = "서아프리카 노예선단 차단을 1번 완수", kind = "war_clear", regionId = "w_africa", amount = 1, after = "q_war_europe", rewardCoins = 2000, rewardFame = 30, rewardCareer = "battle", rewardXp = 500, story = "대서양 섬들을 잇는 항로는 길고 외롭다. 이곳을 지키는 함대가 있어야 먼바다로 나갈 수 있다." },
+	{ id = "q_war_new_world", name = "카리브의 파수꾼", summary = "카리브 보물선단 습격을 1번 완수", kind = "war_clear", regionId = "new_world", amount = 1, after = "q_war_w_africa", rewardCoins = 3500, rewardFame = 45, rewardCareer = "battle", rewardXp = 800, story = "은과 설탕이 오가는 카리브는 해적과 함대가 맞서는 바다다. 이기는 쪽이 항로를 얻는다." },
+	{ id = "q_war_indian", name = "몬순 항로의 수호자", summary = "인도양 향신료 항로 수호를 1번 완수", kind = "war_clear", regionId = "indian", amount = 1, after = "q_war_new_world", rewardCoins = 5000, rewardFame = 60, rewardCareer = "battle", rewardXp = 1100, story = "몬순을 타고 향신료 배가 오간다. 바람이 바뀌기 전에 항로를 지켜야 한다." },
+	{ id = "q_war_far_east", name = "해협의 질서", summary = "동남아 해협 수비전을 1번 완수", kind = "war_clear", regionId = "far_east", amount = 1, after = "q_war_indian", rewardCoins = 7500, rewardFame = 85, rewardCareer = "battle", rewardXp = 1700, story = "좁은 해협을 쥔 쪽이 동서 교역을 쥔다. 해적 연합을 꺾으면 항로가 열린다." },
+	{ id = "q_war_pacific", name = "먼바다의 제독", summary = "태평양 원정 함대전을 1번 완수", kind = "war_clear", regionId = "pacific", amount = 1, after = "q_war_far_east", rewardCoins = 12000, rewardFame = 130, rewardCareer = "battle", rewardXp = 2600, story = "육지가 보이지 않는 바다에서 함대를 이끈다. 모든 해역의 함대전을 이긴 제독만 설 수 있는 자리다." },
 	{ id = "q_sea_wolf_3", name = "전설의 제독", summary = "해전에서 40번 승리", kind = "win", amount = 40, rewardCoins = 10000, rewardFame = 200, rewardCareer = "battle", rewardXp = 1000, rewardCardId = "nav_star_compass" },
 	{ id = "q_grand_tour_3", name = "북·서유럽 완전 일주", summary = "서로 다른 항구 18곳 방문", kind = "visit", amount = 18, rewardCoins = 3500, rewardFame = 100, rewardCareer = "adventure", rewardXp = 400 },
 	-- 스토리 퀘스트: 동료 이야기 / 역사 참여 / 인물과 연구
