@@ -65,8 +65,40 @@ local function vec(x, y, z)
 end
 Vector3 = { new = function(x, y, z) return vec(x or 0, y or 0, z or 0) end, zero = vec(0, 0, 0), yAxis = vec(0, 1, 0), xAxis = vec(1, 0, 0), zAxis = vec(0, 0, 1) }
 Vector2 = { new = function(x, y) return { X = x or 0, Y = y or 0 } end }
-local function colorOf(r, g, b) return { R = r or 0, G = g or 0, B = b or 0, Lerp = function(self) return self end } end
-Color3 = { fromRGB = colorOf, new = colorOf, fromHSV = colorOf }
+-- [Roblox Color3 모의] 실제 0~1 RGB와 HSV 상호변환을 재현해 181개 항구의 색상 변형을 스모크에서 검증한다.
+local colorMethods = {}
+colorMethods.__index = colorMethods
+local function colorOf(r, g, b)
+	return setmetatable({ R = r or 0, G = g or 0, B = b or 0 }, colorMethods)
+end
+function colorMethods:ToHSV()
+	local r, g, b = self.R, self.G, self.B
+	local highest, lowest = math.max(r, g, b), math.min(r, g, b)
+	local delta, hue = highest - lowest, 0
+	if delta > 0 then
+		if highest == r then hue = ((g - b) / delta) % 6
+		elseif highest == g then hue = (b - r) / delta + 2
+		else hue = (r - g) / delta + 4 end
+		hue /= 6
+	end
+	return hue, if highest > 0 then delta / highest else 0, highest
+end
+function colorMethods:Lerp(other, alpha)
+	return colorOf(self.R + (other.R - self.R) * alpha,
+		self.G + (other.G - self.G) * alpha, self.B + (other.B - self.B) * alpha)
+end
+local function colorFromHSV(hue, saturation, value)
+	local function channel(offset)
+		local k = (offset + 6 * hue) % 6
+		return value - value * saturation * math.max(math.min(k, 4 - k, 1), 0)
+	end
+	return colorOf(channel(5), channel(3), channel(1))
+end
+Color3 = {
+	new = colorOf,
+	fromRGB = function(r, g, b) return colorOf((r or 0) / 255, (g or 0) / 255, (b or 0) / 255) end,
+	fromHSV = colorFromHSV,
+}
 CFrame = setmetatable({ new = function() return proxy("CFrame") end, lookAt = function() return proxy("CFrame") end, Angles = function() return proxy("CFrame") end, identity = proxy("CFrame") }, {})
 UDim2 = setmetatable({}, { __index = function() return function() return proxy("UDim2") end end })
 UDim = UDim2
