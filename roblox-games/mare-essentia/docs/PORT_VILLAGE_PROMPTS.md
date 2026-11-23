@@ -256,4 +256,5 @@ optional wet variant with puddles, optional dusty variant, optional light snow v
 2. `Game.client.luau` 맨 바깥에 `local` 추가 금지 → `do` 블록·`H` 테이블. 넘치면 화면이 안 뜬다. 자동 조절 `tools/luau_local_budget.py fix`.
 3. 지상전·마을 나무·덤불: 옅은 청록 단색 금지, 잎·줄기·그늘 색 구분 + 지역 기후 색.
 4. 저장 데이터·경제 수치·보행 충돌벽은 바꾸지 않는다.
+6. 3D 에셋은 **승인 원본(Kenney 등 CC0 등록 에셋)을 가공**해서 만든다(프롬프트는 가공 목표 설명). `.license.json`에 원본 이름·URL·“derived”·가공 내용 기록. 원본 없이 처음부터 AI 생성은 보류.
 5. 끝나면 `tests/run.sh` 통과 + Studio `mare-town.json` 항공·광장 사진 확인.
