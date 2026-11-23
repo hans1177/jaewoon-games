@@ -1053,14 +1053,12 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
 	-- 마을 전체가 한 팔레트로 보이도록: 지역 대표색(첫 색)에 가깝게 모으고 집마다 아주 조금만 다르게 한다
 	local tintColor = wallColor or style.walls[1]:Lerp(style.walls[rng:NextInteger(1, #style.walls)], 0.3)
-	local portIdentity = scenePortId and PortIdentity.get(scenePortId)
-	-- [15개 항구 외벽] 지시서의 항구별 색상을 승인된 무텍스처 주택 메시에만 적용한다.
-	-- 시설용 고유 wallColor 및 수입 모델의 원본 PBR/컬러맵은 그대로 보존한다.
-	if portIdentity and not wallColor then
-		local facade = portIdentity.facade
-		tintColor = tintColor:Lerp(C(facade[1], facade[2], facade[3]), 0.74)
+	-- [181항구 외벽·지붕] 15개 고증 원색은 고정, 나머지 166개는 문화권 색에서 항구별 고유 팔레트 사용.
+	-- 원본 컬러맵/PBR 보존, 시설 전용 벽색과 기존 필지·경제·저장 흐름 유지.
+	local portFacade, portRoof = PortIdentity.appearance(scenePortId, style.walls[1], style.roofs[1], style.street)
+	if scenePortId and not wallColor then
+		tintColor = tintColor:Lerp(portFacade, 0.74)
 	end
-	local portRoof = portIdentity and portIdentity.roofTint
 	-- 빈집: 위치로 정한 일부 집은 색이 바래고 앞에 판자 울타리가 쳐진다
 	if houseTier <= 1 then
 		tintColor = tintColor:Lerp(Color3.fromRGB(176, 150, 100), 0.25) -- 초가·통나무 느낌으로 바랜 색
@@ -1128,7 +1126,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			-- [한중일 차별화] 같은 기와라도 처마 폭과 지붕 실루엣은 지역마다 다르다.
 			local roofSpan = if currentKey == "china" then 1.32 elseif currentKey == "japan" then 1.15 else 1.22
 			local roofColor = style.roofs[rng:NextInteger(1, #style.roofs)]
-			if portRoof then roofColor = roofColor:Lerp(C(portRoof[1], portRoof[2], portRoof[3]), 0.78) end
+			if scenePortId then roofColor = roofColor:Lerp(portRoof, 0.78) end
 			local roof = importedModel(parent, "Town", "eastasia-roof", Vector3.new(pos.X, top, pos.Z), size * roofSpan, false, roofColor)
 			if roof then
 				roof.Name = "HarborRoof"
@@ -1176,7 +1174,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		building.Name = "HarborHouse"
 		building:SetAttribute("Architecture", form)
 		local roofColor = style.roofs[(seed % #style.roofs) + 1]
-		if portRoof then roofColor = roofColor:Lerp(C(portRoof[1], portRoof[2], portRoof[3]), 0.72) end
+		if scenePortId then roofColor = roofColor:Lerp(portRoof, 0.72) end
 		if lifted then
 			-- 바닥을 올리고 네 기둥과 깊은 처마를 배치: 동남아·태평양 수변가옥/통풍형 주택.
 			local floor = part(parent, Vector3.new(ww + 1.3, 0.45, dd + 2.2), CFrame.new(pos + Vector3.new(0, lift - 0.3, 0)), C(112, 88, 59), Enum.Material.WoodPlanks)
@@ -1249,7 +1247,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		local _, ext = mesh:GetBoundingBox()
 		if architecture.roof and not vacant and seed % (if houseTier >= 3 then 3 else 4) == 0 then
 			local roofColor = style.roofs[rng:NextInteger(1, #style.roofs)]
-			if portRoof then roofColor = roofColor:Lerp(C(portRoof[1], portRoof[2], portRoof[3]), 0.72) end
+			if scenePortId then roofColor = roofColor:Lerp(portRoof, 0.72) end
 			local roof = importedModel(parent, "Town", architecture.roof,
 				pos + Vector3.new(0, ext.Y * 0.78, front * ext.Z * 0.28),
 				ext.X * 0.45, false, roofColor)
@@ -1611,10 +1609,12 @@ end
 local function roadColor(style)
 	local look = identityStreet()
 	if look then return look[2]:Lerp(style.street, 0.25) end
+	-- [181항구 거리] 원래 발전 단계의 길 재질은 보존하고 항구마다 표면의 지역색만 구분한다.
+	local _, _, streetTone = PortIdentity.appearance(scenePortId, style.walls[1], style.roofs[1], style.street)
 	if sceneLevel <= 1 then
-		return style.street:Lerp(Color3.fromRGB(176, 146, 104), 0.65)
+		return streetTone:Lerp(Color3.fromRGB(176, 146, 104), 0.65)
 	end
-	return style.street
+	return streetTone
 end
 local function strip(folder, style, cx, cz, sx, sz)
 	local p = part(folder, Vector3.new(sx, 0.2, sz), CFrame.new(cx, 0.1, cz), roadColor(style), roadMat())
@@ -2798,10 +2798,12 @@ do
 	SIG.zanzibar = cat(stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-roof" }, 12, 0, 0), flagAt(10, 0), palms(18))
 	SIG.canton = cat(pagoda, one("Town", "temple-stone", 18, 18, 8))
 	SIG.macau = cat(pagoda, one("Town", "temple-stone", 18, 20, 8)) -- 동아시아 항구: 서양식 성당 대신 탑과 사원
-	SIG.shanghai = pagoda
+	SIG.shanghai = cat(pagoda, one("Town", "eastasia-bell", 18, -22, 8))
 	SIG.nagasaki = cat(stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 11, 0, 0), one("Terrain", "gate-overhang", 14, 20, 0))
 	SIG.osaka = cat(one("Castle", "wall", 24, 0, 14), stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 13, 0, 0))
-	SIG.edo = SIG.osaka
+	-- [에도] 같은 일본 문화권이라도 오사카의 성곽 윤곽과 복제하지 않고 원본 승인 모델의 배치를 달리한다.
+	SIG.edo = cat(stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 12, -6, 0),
+		one("Castle", "gate", 20, 20, 9), one("Town", "eastasia-bell", 13, -23, 12))
 	SIG.batavia = cat(one("Town", "bell-tower", 30, 0, 0), one("Town", "church", 22, 18, 6), palms(-18))
 	SIG.manila = cat(one("Castle", "fortress", 30, 0, 0), one("Town", "church", 22, 22, 6))
 	-- 그 밖의 주요 항구
@@ -2844,7 +2846,8 @@ do
 	SIG.koenigsberg = cat(one("Castle", "fortress", 26, 0, 0), one("Town", "church", 22, 22, 6))
 	SIG.visby = walledChurch()
 	SIG.antwerp = cat(spire(SQ, 12, 0, 0), one("Town", "church", 26, 20, 6))
-	SIG.rotterdam = windmills
+	SIG.rotterdam = cat(one("Town", "windmill", 25, 0, 0),
+		one("Naval", "tower-watch", 24, -20, 7), one("Town", "house", 16, 22, 8))
 	SIG.plymouth = cat(lighthouse, fort(24))
 	SIG.boston = colonialChurch()
 	SIG.new_york = cat(one("Town", "windmill", 22, -10, 0), fort(24))
@@ -2885,15 +2888,18 @@ do
 	SIG.rangoon = cat(spire(HEX, 9, 0, 0), one("Town", "temple-stone", 22, 16, 8), spire(HEX, 6, -14, 0), spire(HEX, 6, 14, -6))
 	SIG.bangkok = cat(one("Town", "temple-tower", 30, 0, 0), one("Town", "temple-stone", 20, 18, 8))
 	SIG.singapore = cat(one("Town", "temple-tower", 26, 0, 0), palms(16)) -- 동남아 항구: 종탑 대신 사원 탑
-	SIG.hoi_an = shrine
+	SIG.hoi_an = cat(one("Town", "temple-tower", 26, -7, 0),
+		one("Town", "eastasia-base", 17, 17, 7), one("Naval", "palm-detailed-straight", 13, -20, 10))
 	SIG.brunei = cat(one("Terrain", "wood-support", 8, -8, 0), one("Terrain", "wood-support", 8, 8, 0), palms(14))
 	SIG.ternate = fortPalms(24)
 	SIG.banda = fortPalms(22)
-	SIG.tianjin = pagoda
-	SIG.ningbo = shrine
-	SIG.amoy = shrine
+	SIG.tianjin = cat(pagoda, one("Naval", "tower-watch", 21, 21, 8))
+	SIG.ningbo = cat(shrine, one("Town", "eastasia-bell", 14, -22, 10))
+	SIG.amoy = cat(one("Town", "temple-tower", 29, -7, 0),
+		one("Town", "eastasia-base", 17, 19, 8), one("Town", "eastasia-roof", 19, 19, 12))
 	SIG.busan = shrine
-	SIG.incheon = shrine
+	SIG.incheon = cat(one("Town", "eastasia-bell", 24, -6, 0),
+		one("Town", "eastasia-base", 18, 18, 8), one("Town", "eastasia-roof", 19, 18, 13))
 	SIG.hakodate = cat(one("Castle", "fortress", 24, 0, 0), one("Terrain", "tree-pinedefaulta", 12, 20, 6))
 	SIG.sydney = cat(lighthouse, one("Town", "windmill", 20, 16, 6))
 	SIG.honolulu = pacificSet
@@ -5893,6 +5899,13 @@ function PortScene.build(info, onFacility)
 	end
 	houseTier = sceneLevel
 	scenePortId = info.portId
+	-- [181개 항구 외형 증거] 기존 문화권·위치·소유·성장 데이터와 독립된 읽기 전용 진단.
+	local localFacade, localRoof, localStreet = PortIdentity.appearance(
+		info.portId, style.walls[1], style.roofs[1], style.street)
+	folder:SetAttribute("PortUniqueAppearance", info.portId)
+	folder:SetAttribute("PortUniqueFacade", localFacade)
+	folder:SetAttribute("PortUniqueRoof", localRoof)
+	folder:SetAttribute("PortUniqueStreet", localStreet)
 	local identity = PortIdentity.get(info.portId)
 	if identity then
 		folder:SetAttribute("PortIdentityLandmark", identity.landmark.id)
