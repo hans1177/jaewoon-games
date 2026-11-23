@@ -2015,10 +2015,12 @@ H.galleryCard.BorderSizePixel = 0
 H.galleryCard.ClipsDescendants = true
 H.galleryCard.Parent = H.facilityGallery
 corner(H.galleryCard, 5)
-local galleryBorder = Instance.new("UIStroke")
-galleryBorder.Color = Color3.fromRGB(213, 164, 81)
-galleryBorder.Thickness = 1.5
-galleryBorder.Parent = H.galleryCard
+do -- [로컬 레지스터 200 한도] 최상위 local 을 늘리지 않게 블록 안에 둔다.
+	local galleryBorder = Instance.new("UIStroke")
+	galleryBorder.Color = Color3.fromRGB(213, 164, 81)
+	galleryBorder.Thickness = 1.5
+	galleryBorder.Parent = H.galleryCard
+end
 H.galleryImage = Instance.new("ImageButton")
 H.galleryImage.Name = "ApprovedFacilityArt"
 H.galleryImage.BackgroundTransparency = 1
