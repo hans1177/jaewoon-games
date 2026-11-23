@@ -2789,8 +2789,9 @@ do
 	local rock = cat(one("Town", "rock-wide", 52, 0, 0), one("Town", "rock-wide", 34, 22, 8))
 	-- [런던] 기존 등록 실물 석교와 양안 상점가. 미등록 역사 원본으로 오인하지 않는다.
 	SIG.london = cat(one("Terrain", "bridge-stone", 34, -1, 0),
-		one("Town", "house", 16, -22, -15), one("Town", "house", 18, -5, -15),
-		one("Town", "house", 16, 13, -15))
+		one("Town", "village-house-2", 16, -22, -15),
+		one("Town", "village-house-3", 18, -5, -15),
+		one("Town", "village-house-1", 16, 13, -15))
 	SIG.edinburgh = cat(one("Town", "rock-wide", 40, 0, 0), keep(26))
 	-- [암스테르담] 운하 통로의 개폐교·운하변 창고·풍차. 기존 승인된 건축 메쉬만 사용.
 	SIG.amsterdam = cat(one("Castle", "bridge-draw", 29, -7, -5),
@@ -2816,11 +2817,15 @@ do
 	SIG.goa = mission
 	SIG.malacca = cat(one("Castle", "gate", 22, 0, 0), stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-roof" }, 12, 16, 0), palms(-18))
 	SIG.calicut = cat(one("Town", "temple-stone", 28, 0, 0), palms(18))
-	SIG.zanzibar = cat(stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-roof" }, 12, 0, 0), flagAt(10, 0), palms(18))
+	-- [잔지바르] 산호석 궁전 원본 미등록. 유럽 성탑을 궁전으로 대체하지 않고 승인된 항만·범선·해안 식생만 배치한다.
+	SIG.zanzibar = cat(one("Naval", "dock-side", 23, -10, 0),
+		one("Naval", "boat-sail-a", 18, 13, 8), palms(19))
 	-- [광저우] 십삼행 상관 거리는 사원 탑이 아니라 실제 등록된 무역관 주택과 부두·깃발로 구분한다.
 	-- 13개 역사 원본을 사칭하지 않으며, 확정 원본 모델은 등록 전까지 누락으로 유지한다.
-	SIG.canton = cat(one("Town", "house", 18, -24, -3),
-		one("Town", "house", 20, -5, -3), one("Town", "house", 18, 15, -3),
+	SIG.canton = cat(
+		one("Town", "eastasia-base", 18, -24, -3), one("Town", "eastasia-roof", 19, -24, -3, 9),
+		one("Town", "eastasia-base", 20, -5, -3), one("Town", "eastasia-roof", 21, -5, -3, 10),
+		one("Town", "eastasia-base", 18, 15, -3), one("Town", "eastasia-roof", 19, 15, -3, 9),
 		one("Castle", "flag-banner-long", 9, -25, 12),
 		one("Castle", "flag-banner-long", 9, 15, 12),
 		one("Naval", "dock-side", 18, -4, 20))
@@ -6331,7 +6336,9 @@ function PortScene.build(info, onFacility)
 	local gate = part(folder, Vector3.new(1, 10, 1), CFrame.new(22, 5, -6), Color3.fromRGB(90, 64, 40), Enum.Material.Wood)
 	part(folder, Vector3.new(1, 10, 1), CFrame.new(22, 5, 6), Color3.fromRGB(90, 64, 40), Enum.Material.Wood)
 	part(folder, Vector3.new(1.2, 1.2, 13), CFrame.new(22, 10, 0), Color3.fromRGB(90, 64, 40), Enum.Material.Wood)
-	sign(folder, gate, info.portName .. " · " .. dockGrowth.name, Color3.fromRGB(150, 110, 40), 7)
+	-- [항구 간판] 클라이언트가 전달한 영문 ID 대신 기존 항구 정본의 현지화 이름을 표시한다.
+	sign(folder, gate, (port and port.name or info.portName or info.portId) .. " · " .. dockGrowth.name,
+		Color3.fromRGB(150, 110, 40), 7)
 	prompt(folder, Vector3.new(60, 4, 0), "부두", "출항 준비 (지도)", "map", onFacility)
 
 	-- 내 배
