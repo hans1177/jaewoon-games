@@ -40,7 +40,7 @@ test('항구별 길 원본과 골목 정렬은 기존 마을 렌더러에 연결
     assert.ok(id.includes('layout = "' + layout + '"'), layout + ' 항구 정체성');
     assert.ok(scene.includes('villageLayout == "' + layout + '"'), layout + ' 마을 배치');
   }
-  assert.match(scene, /local villageLayout = identity and identity\.layout or nil/);
+  assert.match(scene, /local villageLayout = layoutPlan\.mode/);
   assert.match(scene, /local streetName = PortIdentity\.streetAt\(info\.portId, lvl\)/);
   assert.match(scene, /if pathKind and pathAsset and AssetIds\[pathKind \.\. "\/" \.\. pathAsset\] then/);
   assert.match(scene, /CityPortVillageLayout/);
@@ -51,7 +51,7 @@ test('항구별 길 원본과 골목 정렬은 기존 마을 렌더러에 연결
 test('항구마다 필지·물길·광장·거리·날씨를 직접 적용한다', () => {
   assert.match(scene, /PortIdentity\.tier\(lvl\)\.plots/);
   assert.match(scene, /homePlaced < portPlotLimit and rowPlaced < rowPlotLimit/);
-  assert.match(scene, /waterLane = if identity then villageLayout == "canal"/);
+  assert.match(scene, /local waterLane = villageLayout == "canal"/);
   assert.match(scene, /CityPortPlazaType/);
   assert.match(scene, /CityPortPlazaCenter/);
   assert.match(scene, /CityPortPlazaAsset/);
@@ -212,4 +212,60 @@ test('북유럽·한자·이베리아·이탈리아·카리브 8항구는 실제
   }
   assert.match(scene, /if identity then folder:SetAttribute\("CityPortMissingLandmark", landmarkAsset\) end/);
   assert.match(scene, /if AssetIds\["Town\/" \.\. landmarkAsset\] then/);
+});
+
+test('전체 181개 항구를 기존 고정 배치가 아닌 항구별 도시 재계획으로 실제 건설한다', () => {
+  const portSection = ports.split('local Ports:')[1]?.split('local Nations:')[0] ?? '';
+  const portIds = [...portSection.matchAll(/^\t([a-z_]+)\s*=\s*\{\s*id = "([^"]+)"/gm)];
+  assert.equal(portIds.length, 181, '현재 기존 항구 수 181개');
+  assert.ok(portIds.every(m => m[1] === m[2]), '항구 고유 ID 정본');
+  assert.match(scene, /seeded\(info\.portId \.\. ":city-reflow-v2"\)/);
+  assert.match(scene, /local mode = if identity then identity\.layout/);
+  assert.match(scene, /else availableLayouts\[planRng:NextInteger/);
+  assert.match(scene, /folder:SetAttribute\("CityPortLayoutRevision", "ALL_PORTS_REFLOW_V2"\)/);
+  assert.match(scene, /folder:SetAttribute\("CityPortLayoutMode", layoutPlan\.mode\)/);
+  assert.match(scene, /folder:SetAttribute\("CityPortLayoutSide", layoutPlan\.mainSide\)/);
+  assert.doesNotMatch(scene, /SIG_ANCHOR|LM_SITES/);
+});
+
+test('전 항구 주요 시설·광장·주택·시장·농업·랜드마크가 하나의 신규 배치계획으로 이동한다', () => {
+  for (let index = 1; index <= 7; index++) {
+    assert.ok(scene.includes('pos = layoutPlan.facilities[' + index + ']'),
+      '기존 시설 ' + index + ' 위치 재배치');
+  }
+  assert.match(scene, /local villageLayout = layoutPlan\.mode/);
+  assert.match(scene, /local waterLane = villageLayout == "canal"/);
+  assert.match(scene, /local landmark = importedModel\(folder, "Town", landmarkAsset, sigAnchor/);
+  assert.match(scene, /local sigAnchor = layoutPlan\.signature/);
+  assert.match(scene, /local at = layoutPlan\.landmarks\[order\[idx\]\]/);
+  assert.match(scene, /for _, landmark in layoutPlan\.landmarks do/);
+  assert.match(scene, /for _, a in layoutPlan\.landmarks do/);
+  assert.match(scene, /local center = importedModel\(folder, "Town", asset, layoutPlan\.plaza,/);
+  assert.match(scene, /CityPortPlazaLocation", layoutPlan\.plaza/);
+  assert.match(scene, /local slots = \{\s*Vector3\.new\(layoutPlan\.districtX/);
+  assert.match(scene, /Vector3\.new\(layoutPlan\.farmX, 0, layoutPlan\.mainSide \* layoutPlan\.farmZ\)/);
+  assert.match(scene, /layoutPlan\.residentialStartZ \+ laneOffset/);
+  assert.match(scene, /fillRow\(side \* \(laneZ \+ laneWidth \/ 2 \+ 6 \+ S \/ 2\), t, layoutPlan\.homeStartX/);
+  assert.match(scene, /for _, site in layoutPlan\.facilities do/);
+  assert.match(scene, /local townLeft = if isRoyalCity then -635 else math\.min\(-475, X_END - 32\)/);
+  assert.match(scene, /densify\(folder, info, style, rng, walkers,[^\n]+ onFacility, layoutPlan\)/);
+  assert.match(scene, /placeLandmarks\(folder, info, style, rng, onFacility, walkers, layoutPlan\)/);
+  assert.match(scene, /placeSignature\(folder, info, layoutPlan\)/);
+  for (const old of [
+    'Vector3.new(-12, 0, 36)', 'Vector3.new(-12, 0, -36)',
+    'Vector3.new(-50, 0, 36)', 'Vector3.new(-50, 0, -36)',
+    'Vector3.new(-88, 0, 36)', 'Vector3.new(-88, 0, -36)',
+  ]) {
+    assert.ok(!scene.includes(old), '구 시설 고정좌표 제거 ' + old);
+  }
+});
+
+test('새 도시 배치가 저장·경제·항해와 독립된 시각만 바꾸고 부두 진입 기능을 유지한다', () => {
+  assert.match(scene, /folder:SetAttribute\("CityPortFacilityPositions", #layoutPlan\.facilities\)/);
+  assert.match(scene, /if f\.always or \(f\.key and fac\[f\.key\]\) then/);
+  assert.match(scene, /prompt\(folder, Vector3\.new\(f\.pos\.X, 3, doorZ\), f\.name, "들어가기", f\.tab, onFacility\)/);
+  assert.match(scene, /prompt\(folder, Vector3\.new\(60, 4, 0\), "부두", "출항 준비 \(지도\)", "map", onFacility\)/);
+  assert.match(scene, /local ship = buildShip\(folder, info\.shipId, Vector3\.new\(50, 1\.2, 16\)\)/);
+  assert.match(scene, /part\(folder, Vector3\.new\(120, 0\.3, layoutPlan\.rowZ \* 2 \+ 8\)/);
+  assert.match(scene, /strip\(folder, style, layoutPlan\.plaza\.X, layoutPlan\.plaza\.Z \* 0\.5,/);
 });
