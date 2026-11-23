@@ -9750,7 +9750,7 @@ function H.showCardGain(card, moreCount)
 	-- 별도 UI 시스템·음원·저장 경로를 만들지 않으며, 움직임 감소 설정과 모바일 도크 스크롤을 존중한다.
 	task.delay(1.43, function()
 		if not g.Parent or not frame.Parent then return end
-		local icon = if isCombat then hudTop:FindFirstChild("DeckButton") else H.dockButtons and H.dockButtons.codex
+		local icon = if isCombat then hudTop:FindFirstChild("DeckButton", true) else H.dockButtons and H.dockButtons.codex
 		local canTarget = icon and icon.Parent and icon.Visible and hudTopGui.Enabled and icon.AbsoluteSize.X > 0
 		-- [모바일 서재] 가로 도크에 가려진 서재 버튼은 기존 스크롤만 움직여 수납 목적지를 보여 준다.
 		if canTarget and not isCombat and icon:IsDescendantOf(dock) then
