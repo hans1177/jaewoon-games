@@ -35,6 +35,15 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
   assert.match(entry.code,/btn\.InputBegan:Connect/);
   assert.match(entry.code,/btn\.Activated:Connect/);
   assert.match(capture[239].code,/FieldEntryStage/);
+  // [장시간 검증] 실제 입장·모션 확인 뒤 Studio 임시 생존 보호를 켜고 최종에 반드시 해제한다.
+  assert.match(capture[246].code,/FIELD_QA_GOD_MODE_STUDIO_ONLY/);
+  assert.match(capture[246].code,/FIELD_QA_ALIVE_BEFORE_HOLD/);
+  assert.match(capture[246].code,/workspace:SetAttribute\("DevGod",true\)/);
+  assert.match(capture[999].code,/FIELD_QA_GOD_MODE_LOST/);
+  assert.match(capture[999].code,/workspace:SetAttribute\("DevGod",nil\)/);
+  const fieldSource=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau');
+  assert.match(fieldSource,/if workspace:GetAttribute\("DevGod"\) then pl\.hp = pl\.maxHp end/,'기존 개발 촬영 보호만 재사용');
+
   // [270단계 확장] 기존 246개 실제 플레이 검사 인덱스·클릭·판정을 보존하고 신규 24단계를 뒤에 추가한다.
   assert.equal(capture[245].name,'field_actor_after_motion');
   const extra=capture.slice(246,270);
