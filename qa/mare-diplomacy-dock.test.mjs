@@ -4,11 +4,12 @@ import fs from 'node:fs';
 
 const client = fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau', 'utf8');
 
-test('외교는 기존 시설 원화 아틀라스 문서 아이콘을 사용하고 알현 3D 모델은 유지한다', () => {
+test('외교는 기존 승인 손그림 서신 원화를 사용하고 알현 3D 모델은 유지한다', () => {
   assert.match(client, /\{ name = "항만청", keeper = "항만 관리관", tabs = \{ "route", "map" \} \}/, '항만청에서 외교 분리');
   assert.match(client, /\{ name = "외교", keeper = "외교관", tabs = \{ "diplomacy" \} \}/, '외교 그룹 유지');
   assert.match(client, /\{ "diplomacy", "외교", "diplomacy" \}/, '외교 버튼 보존');
-  assert.match(client, /diplomacy = 7, close = 15/, '등록된 투명 아틀라스의 문서 그림 재사용');
+  assert.match(client, /H\.diplomacyIconAtlas = AssetIds\["CardArt\/ui_reserve_icons_2"\]/, '외교용 기존 승인 손그림 서신 원화');
+  assert.match(client, /diplomacy = 5, close = 15/, '외교 원화의 올바른 칸 선택');
   assert.match(client, /modelIcon\(button, "FacilityArt", key, nil, artSize, label\)/, '시설 아이콘 렌더러와 동일 화풍');
   assert.doesNotMatch(client, /modelIcon\(button, "Castle", "flag-banner-short"/, '외교 도크 3D 깃발 혼용 금지');
   assert.match(client, /\{ "알현", "Castle", "flag-banner-short" \}/, '원래 알현 모델 보존');
@@ -38,4 +39,19 @@ test('긴급 저가 알림은 글씨 대신 색 구분된 파티클과 중복 �
   assert.doesNotMatch(client, /notice\.Text = alert or ""/, '문자 알림 제거');
   assert.doesNotMatch(client, /H\.dockStatus\.Text/, '문자 요약 알림 제거');
   assert.match(client, /price <= average \* 0\.9/, '저가 판정 규칙 유지');
+});
+
+test('특수 황동 문양은 시설 아틀라스보다 우선하며 잘못된 그림 대체를 방지한다', () => {
+  const start = client.indexOf('function H.hudShortcut(');
+  const end = client.indexOf('\n\tif dockItem then', start);
+  assert.ok(start >= 0 && end > start, '기존 메뉴 생성 함수 확인');
+  const renderer = client.slice(start, end);
+  for (const key of ['tavern', 'deck', 'journal', 'gear', 'status']) {
+    assert.ok(renderer.includes('key == "' + key + '"'), '특수 문양 키 누락: ' + key);
+  }
+  assert.match(renderer, /if not specialGlyph and H\.facilityIconCells\[key\] ~= nil/,
+    '특수 문양은 아틀라스 경로로 들어가면 안 됨');
+  assert.match(renderer, /elseif specialGlyph then[\s\S]*?modelIcon\(button, "Glyph", specialGlyph, nil, artSize, label\)/,
+    '특수 문양이 실제 황동 렌더러를 사용해야 함');
+  assert.match(renderer, /symbol\.Name = "MenuArt"/, '기존 메뉴 표시/광휘 흐름 유지');
 });
