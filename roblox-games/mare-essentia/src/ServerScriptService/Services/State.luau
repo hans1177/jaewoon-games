@@ -312,6 +312,16 @@ return function(D)
 				end
 			end
 		end
+		-- [백과 읽기 퀴즈] 보상 받은 카드 id. 기본 상태 타입을 키우지 않으려고 any 로 다룬다.
+		local quizDone: { [string]: boolean } = {}
+		if type(saved.wikiQuiz) == "table" then
+			for id, v in saved.wikiQuiz do
+				if v == true and type(id) == "string" and D.Cards.Wiki and D.Cards.Wiki[id] then
+					quizDone[id] = true
+				end
+			end
+		end
+		(s :: any).wikiQuiz = quizDone
 		if type(saved.codexLevel) == "table" then
 			for id, v in saved.codexLevel do
 				if D.Cards.ById[id] and s.discovered[id] and type(v) == "number" then
@@ -940,6 +950,7 @@ return function(D)
 			discovered = state.discovered,
 			cardOrigins = state.cardOrigins, -- 개인 백과 최초 발견 이력을 기존 저장 경로로 보존
 			codexLevel = state.codexLevel,
+			wikiQuiz = (state :: any).wikiQuiz,
 			encyclopediaBookmarkId = state.encyclopediaBookmarkId, -- [서재] 한 항목만 저장해 폭증을 막는다.
 			tech = state.tech,
 			careers = state.careers,

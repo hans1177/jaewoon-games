@@ -3796,6 +3796,28 @@ do
 	check("collection survives save", back.collected["Botany:1"] == true and back.collected["ALL:5"] == true)
 	local evil = S.State.sanitize({ nationId = "england", startYear = 1700, collected = { ["Botany:1"] = true, ["bad key"] = true, ["x:1"] = "yes" } })
 	check("collection sanitized", evil.collected["Botany:1"] == true and evil.collected["bad key"] == nil and evil.collected["x:1"] == nil)
+	-- 백과 읽기 퀴즈: 발견한 카드만, 전부 맞혀야, 카드당 한 번만 보상 (서버 판정)
+	do
+		local sq = newState("england")
+		local qid = "nav_portolan"
+		local wiki = D.Cards.Wiki[qid]
+		local right = {}
+		for i, q in wiki.quiz do right[i] = q.answer end
+		check("quiz needs discovery", not act(sq, "WikiQuiz", { id = qid, answers = right }))
+		sq.discovered[qid] = true
+		local c0, f0 = sq.coins, sq.fame
+		check("quiz rejects bad id", not act(sq, "WikiQuiz", { id = "nope", answers = right }))
+		check("quiz rejects missing answers", not act(sq, "WikiQuiz", { id = qid, answers = { 1 } }))
+		check("quiz rejects out of range", not act(sq, "WikiQuiz", { id = qid, answers = { 9, 9, 9 } }))
+		local wrong = { right[1] % #wiki.quiz[1].options + 1, right[2], right[3] }
+		check("quiz wrong answer no reward", not act(sq, "WikiQuiz", { id = qid, answers = wrong }) and sq.coins == c0 and sq.fame == f0)
+		check("quiz pass", act(sq, "WikiQuiz", { id = qid, answers = right }) and sq.coins == c0 + D.Cards.QuizReward.coins and sq.fame == f0 + D.Cards.QuizReward.fame)
+		check("quiz once only", not act(sq, "WikiQuiz", { id = qid, answers = right }) and sq.coins == c0 + D.Cards.QuizReward.coins)
+		local bq = S.State.sanitize(S.State.serialize(sq))
+		check("quiz survives save", bq.wikiQuiz[qid] == true)
+		local evilq = S.State.sanitize({ nationId = "england", startYear = 1700, wikiQuiz = { [qid] = true, nope = true, nav_dead_reckoning = "yes" } })
+		check("quiz save sanitized", evilq.wikiQuiz.nope == nil and evilq.wikiQuiz.nav_dead_reckoning == nil)
+	end
 	-- 카드 강화 (2단계부터 움직이는 삽화)
 	do
 		local s2 = newState("england")

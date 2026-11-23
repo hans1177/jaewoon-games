@@ -3630,7 +3630,7 @@ local function call(action, payload)
 			snd = "sfx_deck_step"
 		elseif action == "CardSetDeck" or action == "CardSlotSave" or action == "CardSlotUse" or action == "CardAutoDeck" or action == "CardRecommend" or action == "CardSetLeader" then
 			snd = "sfx_card_place"
-		elseif action == "CardUpgrade" or action == "UpgradeCodexCard" or action == "CardPick" or action == "ClaimCollection" then
+		elseif action == "CardUpgrade" or action == "UpgradeCodexCard" or action == "CardPick" or action == "ClaimCollection" or action == "WikiQuiz" then
 			snd = "sfx_card_magic"
 		end
 		local msg = result.message or ""
@@ -8649,17 +8649,25 @@ function H.showCardDetail(card)
 	end
 	mkLabel(body, fieldDef.name .. "  ·  " .. rarity, 14, brown, true, 0)
 	encHeading(card.name, 1).TextSize = 28
-	local art = Instance.new("Frame")
-	art.LayoutOrder = 2
+	-- [원화 자리] 세로 7:10 빈 틀. 등록된 원화가 없으면 분야 색 틀만 보이고, 원화가 생기면 그 자리에 들어간다.
+	local artRow = Instance.new("Frame")
+	artRow.LayoutOrder = 2
+	artRow.BackgroundTransparency = 1
 	local camera = workspace.CurrentCamera
 	local viewportHeight = if camera then camera.ViewportSize.Y else 600
-	art.Size = UDim2.new(1, -8, 0, math.clamp(math.floor(viewportHeight * 0.43), 140, 410))
+	local artH = math.clamp(math.floor(viewportHeight * 0.43), 140, 410)
+	artRow.Size = UDim2.new(1, -8, 0, artH)
+	artRow.Parent = body
+	local art = Instance.new("Frame")
+	art.AnchorPoint = Vector2.new(0.5, 0)
+	art.Position = UDim2.fromScale(0.5, 0)
+	art.Size = UDim2.fromOffset(math.floor(artH * 0.7), artH)
 	local artBorder = Instance.new("UIStroke")
 	artBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	artBorder.Color = brown
 	artBorder.Parent = art
 	corner(art, 5)
-	art.Parent = body
+	art.Parent = artRow
 	paintCardArt(art, card, fieldDef, true)
 
 	-- 강화 2단계부터 삽화가 움직인다 (천천히 확대·이동 + 반짝임)
@@ -8867,6 +8875,108 @@ function H.showCardDetail(card)
 			mkLabel(body, "연결된 카드  " .. card.combat.origin, 13, brown, false, 7)
 		end
 	elseif card.found then
+		local wiki = require(Shared:WaitForChild("KnowledgeWiki")).Wiki[card.id]
+		if wiki then
+			-- [위키식 해설] 한 줄 요약 + 접는 섹션(첫 섹션만 펼침). 기존 본문은 아래에 그대로 둔다.
+			mkLabel(body, wiki.summary, 16, brown, true, 4)
+			for i, sec in wiki.sections do
+				local open = i == 1
+				local head = Instance.new("TextButton")
+				head.LayoutOrder = 40 + i * 2
+				head.Size = UDim2.new(1, -8, 0, 36)
+				head.BackgroundTransparency = 1
+				head.AutoButtonColor = false
+				head.TextXAlignment = Enum.TextXAlignment.Left
+				head.Font = Enum.Font.GothamBold
+				head.TextSize = 17
+				head.TextColor3 = ink
+				head.Parent = body
+				local txt = mkLabel(body, sec.body, 15, ink, false, 41 + i * 2)
+				txt.Visible = open
+				local function sync()
+					head.Text = (if txt.Visible then "▾ " else "▸ ") .. sec.title
+				end
+				sync()
+				head.Activated:Connect(function()
+					txt.Visible = not txt.Visible
+					sync()
+				end)
+			end
+			if wiki.quiz then
+				-- [읽기 퀴즈] 3문제를 모두 맞히면 카드당 한 번 보상. 정답·중복 판정은 서버가 한다.
+				local reward = require(Shared:WaitForChild("KnowledgeCards")).QuizReward
+				if card.quizDone then
+					mkLabel(body, "읽기 퀴즈 완료 · 보상을 받았어요", 14, brown, true, 56)
+				else
+					local quizHead = Instance.new("TextButton")
+					quizHead.LayoutOrder = 56
+					quizHead.Size = UDim2.new(1, -8, 0, 40)
+					quizHead.BackgroundColor3 = Color3.fromRGB(239, 202, 123)
+					quizHead.AutoButtonColor = true
+					quizHead.Font = Enum.Font.GothamBold
+					quizHead.TextSize = 16
+					quizHead.TextColor3 = ink
+					quizHead.TextWrapped = true
+					quizHead.Parent = body
+					corner(quizHead, 6)
+					local quizBox = Instance.new("Frame")
+					quizBox.LayoutOrder = 57
+					quizBox.BackgroundTransparency = 1
+					quizBox.Size = UDim2.new(1, -8, 0, 0)
+					quizBox.AutomaticSize = Enum.AutomaticSize.Y
+					quizBox.Visible = false
+					quizBox.Parent = body
+					local quizLay = Instance.new("UIListLayout")
+					quizLay.Padding = UDim.new(0, 5)
+					quizLay.SortOrder = Enum.SortOrder.LayoutOrder
+					quizLay.Parent = quizBox
+					local function syncQuizHead()
+						quizHead.Text = (if quizBox.Visible then "▾ " else "▸ ") .. string.format("읽기 퀴즈 (+%d코인 · 명성 +%d, 카드당 한 번)", reward.coins, reward.fame)
+					end
+					syncQuizHead()
+					quizHead.Activated:Connect(function()
+						quizBox.Visible = not quizBox.Visible
+						syncQuizHead()
+					end)
+					local picks = {}
+					local order = 0
+					for qi, q in wiki.quiz do
+						order += 1
+						mkLabel(quizBox, string.format("%d. %s", qi, q.q), 15, ink, true, order)
+						local optButtons = {}
+						for oi, optionText in q.options do
+							order += 1
+							local ob = mkButton(quizBox, optionText, COLORS.blue, UDim2.new(1, 0, 0, 34), function()
+								picks[qi] = oi
+								for k, other in optButtons do
+									other.BackgroundColor3 = if k == oi then Color3.fromRGB(239, 202, 123) else Color3.fromRGB(232, 211, 174)
+								end
+							end, true)
+							ob.LayoutOrder = order
+							optButtons[oi] = ob
+						end
+					end
+					order += 1
+					local quizMsg = mkLabel(quizBox, "", 14, COLORS.red, true, order + 1)
+					local submit = mkButton(quizBox, "정답 제출", COLORS.gold, UDim2.new(1, 0, 0, 38), function()
+						local res = call("WikiQuiz", { id = card.id, answers = picks })
+						if res and res.ok and view and view.codex then
+							for _, c in view.codex.cards do
+								if c.id == card.id then
+									overlay:Destroy()
+									H.showCardDetail(c)
+									break
+								end
+							end
+						elseif res then
+							quizMsg.Text = res.message or "다시 도전해 보세요"
+						end
+					end, true)
+					submit.LayoutOrder = order
+				end
+			end
+			mkLabel(body, "해설 참고  위키백과 · " .. wiki.topic:gsub("_", " ") .. " (CC BY-SA 4.0)", 12, brown, false, 60)
+		end
 		if article then
 			encHeading("특징과 원리", 5)
 			mkLabel(body, article.details, 15, ink, false, 6)
