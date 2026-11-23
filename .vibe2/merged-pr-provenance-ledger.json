@@ -326367,11 +326367,131 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_1bb2344f7273887785513598",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14679",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "3519524b2debd2f2f3e6cf5ba18bf2da51415f9c",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14679,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-13-port-guide-alignment-20261123",
+        "baseSha": "3519524b2debd2f2f3e6cf5ba18bf2da51415f9c",
+        "headSha": "f71bd652e749c023be6ae1d0ca7feda2d0dfb335",
+        "mergeCommitSha": "cafdfd170c78f0f1fbdf5d3fa7c664a79115a24f",
+        "mergedAt": "2026-11-23T12:16:12Z",
+        "authorLogin": "hans1177",
+        "titleHash": "fd7492f1c3c30e9002642f6a322c4f2dc884b37f4462fa49b7c1126e5b90f342",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-13-port-guide-alignment-20261123",
+        "candidateSha": "f71bd652e749c023be6ae1d0ca7feda2d0dfb335"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 40,
+        "deletedLineCount": 3,
+        "changedFiles": [
+          "qa/mare-port-identity.test.mjs",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortIdentity.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-port-identity.test.mjs",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortIdentity.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14679",
+        "merge-commit:cafdfd170c78f0f1fbdf5d3fa7c664a79115a24f",
+        "base-main:3519524b2debd2f2f3e6cf5ba18bf2da51415f9c"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2613
+    "total": 2614
   }
 }
