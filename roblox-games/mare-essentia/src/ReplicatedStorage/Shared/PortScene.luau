@@ -2272,13 +2272,22 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				cow = 3.8, horse = 4.3, donkey = 3.2, llama = 3.4, elephant = 4.8 }
 			m:SetAttribute("AnimalRigParts", #animalParts)
 			m:SetAttribute("AnimalRigJoints", #animalJoints)
-			-- [실물 모션 진단] 정적 원본을 스킨 애니메이션 완성으로 오판하지 않는다.
-			m:SetAttribute("AnimalMotionRig", if #animalJoints > 0 then "JOINTED"
-				elseif #animalParts > 0 then "SEGMENTED" else "STATIC_UNRIGGED")
+			-- [동물 실제 걷기] 목·꼬리만 있는 리그는 걷는 사지로 오판하지 않는다.
+			local legCount = 0
+			for _, limb in animalJoints do
+				if limb.kind == "leg" then legCount += 1 end
+			end
+			for _, limb in animalParts do
+				if limb.kind == "leg" then legCount += 1 end
+			end
+			local canWalk = legCount >= 2
+			m:SetAttribute("AnimalMotionRig", if canWalk and #animalJoints > 0 then "JOINTED_WALK"
+				elseif canWalk then "SEGMENTED_WALK"
+				elseif #animalJoints + #animalParts > 0 then "IDLE_ONLY" else "STATIC_UNRIGGED")
 			table.insert(walkers, { model = m, base = basePivot, mode = "animal",
 				akind = k[2], phase = rng:NextNumber(0, 10), gait = gaitOf[species] or 7,
 				stepSize = stepOf[species] or 2.5, hd = 0, animalType = species,
-				animalJoints = animalJoints, animalParts = animalParts, homeFloor = pos.Y,
+				animalJoints = animalJoints, animalParts = animalParts, canWalk = canWalk, homeFloor = pos.Y,
 				groundOffset = 0, groundTarget = 0, groundCheckAt = 0, travelPhase = 0 })
 		end
 		local lay = zoneLayout(info.portId, lvl, info.hasShipyard, info.sim and info.sim.buildings)
@@ -6951,7 +6960,7 @@ function PortScene.build(info, onFacility)
 					local t = now + w.phase
 					local u = if w.span then t * w.rate else 0
 					-- [스키 이동 방지] 사지 리그 없는 원본은 통째로 미끄러지게 이동시키지 않는다.
-					local hasGait = #w.animalJoints > 0 or #w.animalParts > 0
+					local hasGait = w.canWalk == true
 					local targetD = if w.span and hasGait then -math.sin(u) * w.span else 0
 					local want = if not hasGait then 0 elseif math.cos(u) < -0.06 then math.pi
 						elseif math.cos(u) > 0.06 then 0 else w.targetHd or 0
