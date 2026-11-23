@@ -1604,6 +1604,24 @@ local function strip(folder, style, cx, cz, sx, sz)
 	local p = part(folder, Vector3.new(sx, 0.2, sz), CFrame.new(cx, 0.1, cz), roadColor(style), roadMat())
 	p.CanCollide = false
 	p.CanQuery = false
+	-- [항구별 날씨] 새로운 도형·효과 인스턴스를 만들지 않고 지시서의 기존 길 표면만 갱신한다.
+	local identity = scenePortId and PortIdentity.get(scenePortId)
+	if identity then
+		local weather = folder:GetAttribute("PortVisualWeather")
+		local condition = if type(weather) == "string" then string.lower(weather) else ""
+		local wet = string.find(condition, "rain", 1, true) or string.find(condition, "storm", 1, true)
+			or string.find(condition, "monsoon", 1, true)
+		if wet and (identity.weatherGround == "puddles" or identity.weatherGround == "monsoon_mud") then
+			p.Color = p.Color:Lerp(Color3.fromRGB(70, 81, 82), 0.27)
+			p.Reflectance = 0.06
+			if identity.weatherGround == "monsoon_mud" and sceneLevel <= 2 then p.Material = Enum.Material.Mud end
+		elseif not wet and identity.weatherGround == "dust" and (condition == "clear" or condition == "sunny") then
+			p.Color = p.Color:Lerp(Color3.fromRGB(194, 154, 107), 0.17)
+		end
+		if identity.weatherGround == "snow" and folder:GetAttribute("PortWinterCoat") == true then
+			p.Color = p.Color:Lerp(Color3.fromRGB(218, 227, 232), 0.38)
+		end
+	end
 end
 
 local function smokeOn(folder, pos)
@@ -4077,47 +4095,56 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		elseif lvl <= 2 then "ground-pathstraight" elseif timberStreet then "platform-planks"
 		elseif stoneStreet then "cobblestones" else "ground-pathrocks"
 	local streetPatches, streetLanterns = 0, 0
+	-- [깨끗한 길] 무작위로 바닥 조각을 흩뿌리지 않고 기존 골목과 만나는 교차점에만 배치.
+	local streetTouch = UserInputService.TouchEnabled
 	local patchLimit = if streetTouch then 4 else 8
-	local streetVisualSeed = seeded(info.portId .. ":cultural-road-depth")
 	if pathKind and pathAsset and AssetIds[pathKind .. "/" .. pathAsset] then
-		for _, sx in streetsOuter do
+		for i, sx in streetsOuter do
 			if streetPatches >= patchLimit then break end
-			for side = -1, 1, 2 do
-				if streetPatches >= patchLimit then break end
-				local row = streetVisualSeed:NextInteger(0, pairsN)
-				local roadAt = Vector3.new(sx, 0.25, side * (152 + laneOffset + row * laneL))
-				local paving = importedModel(folder, pathKind, pathAsset, roadAt,
-					math.min(10, laneWidth * 0.76), false)
-				if paving then
-					paving.Name = "CityRegionalStreetPaving"
-					paving:SetAttribute("CityArchitectureCulture", key)
-					paving:SetAttribute("CityDevelopmentTier", lvl)
-					paving:SetAttribute("BuildAuthority", "VISUAL_ONLY")
-					paving:SetAttribute("ShowcaseOnly", true)
-					streetPatches += 1
-				end
+			local laneRow = math.min(pairsN, i - 1)
+			local laneBend = if villageLayout == "organic" then (if laneRow % 2 == 0 then -3 else 3)
+				elseif villageLayout == "terrace" then laneRow * 2 else 0
+			local side = if i % 2 == 0 then 1 else -1
+			local roadAt = Vector3.new(sx, 0.25, side * (152 + laneOffset + laneRow * laneL + laneBend))
+			local paving = importedModel(folder, pathKind, pathAsset, roadAt,
+				math.min(10, laneWidth * 0.76), false)
+			if paving then
+				paving.Name = "CityRegionalStreetPaving"
+				paving:SetAttribute("CityArchitectureCulture", key)
+				paving:SetAttribute("CityDevelopmentTier", lvl)
+				paving:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+				paving:SetAttribute("ShowcaseOnly", true)
+				streetPatches += 1
 			end
 		end
 	end
-	-- [번영한 시가지] 4단계부터 유럽 포석길엔 실제 가로등, 다른 지역엔 등록된 범용 등불만 제한 배치한다.
-	-- 중앙광장과 시설 앞 기존 조명은 중복하지 않고 외곽 주거 골목에서만 늘린다.
-	if lvl >= 4 then
-		local lightAsset = if stoneStreet then "kenney_lightpost_01" else "lantern"
-		if AssetIds["Town/" .. lightAsset] then
-			for i = 1, math.min(#streetsOuter, if streetTouch then 1 else 3) do
-				local side = if i % 2 == 0 then 1 else -1
-				local lampAt = Vector3.new(streetsOuter[i] + laneWidth * 0.36, 0,
-					side * (152 + laneOffset + laneL * 0.5))
-				local lamp = importedModel(folder, "Town", lightAsset, lampAt, 5.6, false)
-				if lamp then
-					lamp.Name = "CityRegionalStreetLantern"
-					lamp:SetAttribute("CityArchitectureCulture", key)
-					lamp:SetAttribute("CityDevelopmentTier", lvl)
-					lamp:SetAttribute("BuildAuthority", "VISUAL_ONLY")
-					streetLanterns += 1
+	-- [항구별 가로등] 각 도시의 유형/발전도/모바일 예산을 따른다.
+	-- 종이초롱·석등·모스크 등을 서양 등주로 속이지 않고 정확한 원본이 없으면 보류한다.
+	if lvl >= 2 then
+		local lampStyle = if identity then identity.lamp else "oil_lantern"
+		local lampAsset = if lampStyle == "oil_lantern" then "kenney_lightpost_01" else nil
+		local lampSpacing = PortIdentity.tier(lvl).lampEvery
+		local lampLimit = math.min(#streetsOuter, if streetTouch then 2 else 4)
+		if lampAsset and AssetIds["Town/" .. lampAsset] then
+			for i = 1, lampLimit do
+				if lampSpacing == 0 or (i - 1) % lampSpacing == 0 then
+					local side = if i % 2 == 0 then 1 else -1
+					local lampAt = Vector3.new(streetsOuter[i] + laneWidth * 0.36, 0,
+						side * (152 + laneOffset + laneL * 0.5))
+					local lamp = importedModel(folder, "Town", lampAsset, lampAt, 5.6, false)
+					if lamp then
+						lamp.Name = "CityRegionalStreetLantern"
+						lamp:SetAttribute("PortLampStyle", lampStyle)
+						lamp:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+						streetLanterns += 1
+					end
 				end
 			end
+		elseif identity then
+			folder:SetAttribute("CityPortMissingLamp", info.portId .. "_street_lamp")
 		end
+	elseif identity then
+		folder:SetAttribute("CityPortMissingLamp", info.portId .. "_torch")
 	end
 	folder:SetAttribute("CityRegionalStreetPavingCount", streetPatches)
 	folder:SetAttribute("CityRegionalStreetLanternCount", streetLanterns)
@@ -4157,7 +4184,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 						put("Town", "bell-tower", 22, cx - 16, cz + (if cz > 0 then -6 else 6), true)
 					end
 				end
-				if lvl >= 3 and clergyAvailable then
+				-- [지역 예식 조명] 초롱·모스크 등·석등이 없는 동안 범용 서양 등불을 대신 세우지 않는다.
+				if lvl >= 3 and clergyAvailable and (not identity or identity.lamp == "oil_lantern") then
 					for k = -1, 1, 2 do
 						lantern(folder, Vector3.new(cx + k * 9, 0, cz + (if cz > 0 then -17 else 17)), 3)
 					end
