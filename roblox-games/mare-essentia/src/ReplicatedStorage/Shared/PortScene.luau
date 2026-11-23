@@ -3255,21 +3255,26 @@ local function placeSignature(folder, info)
 		elseif nation == "italy" or nation == "venice" or nation == "tuscany" or nation == "naples" or nation == "sicily" then
 			kind, asset = "Terrain", "statue-column"
 		end
-		importedModel(folder, kind, asset, Vector3.new(-8, 0, -112), 15, false)
+		-- [대표 경관 재배치] 부속 시설도 같은 항구별 상징 중심을 따른다.
+		local frontSign = if signatureCenter.Z > 0 then -1 else 1
+		importedModel(folder, kind, asset, signatureCenter + Vector3.new(22, 0, frontSign * 44), 15, false)
 		if sceneLevel >= 5 then
-			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(-18, 0, -128), 10, false)
-			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(2, 0, -128), 10, false)
+			importedModel(folder, "Castle", "flag-banner-long", signatureCenter + Vector3.new(12, 0, frontSign * 25), 10, false)
+			importedModel(folder, "Castle", "flag-banner-long", signatureCenter + Vector3.new(32, 0, frontSign * 25), 10, false)
 		end
 	end
 end
 
 local LM_SITES = {
-	-- 대로 시설·지역 산업과 별도 구획에 놓고 주택 건설에서 이곳을 예약한다.
-	Vector3.new(-112, 0, 166), Vector3.new(-112, 0, -166), Vector3.new(-160, 0, 166), Vector3.new(-160, 0, -166),
-	Vector3.new(-208, 0, 181), Vector3.new(-208, 0, -181), Vector3.new(-263, 0, 181), Vector3.new(-263, 0, -181),
+	-- [전 항구 재배치] 구 랜드마크 8개 필지 삭제. 항구별 고정 시드로 이동할 새 전용 대지.
+	-- x=-118/-183 구획은 왕궁·항만 시설·외곽 시장과 분리되어 기존 경관 실물만 배치한다.
+	Vector3.new(-118, 0, 201), Vector3.new(-183, 0, 201),
+	Vector3.new(-118, 0, -201), Vector3.new(-183, 0, -201),
+	Vector3.new(-118, 0, 266), Vector3.new(-183, 0, 266),
+	Vector3.new(-118, 0, -266), Vector3.new(-183, 0, -266),
 }
 
-local function densify(folder, info, style, rng, walkers, made, onFacility)
+local function densify(folder, info, style, rng, walkers, made, onFacility, landmarkSites)
 	local key = styleKeyOf(style)
 	local palm = palmOk(info.portId, style)
 	local cold = not palm
@@ -3531,7 +3536,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 				end
 			end
 			if clear then
-				for _, landmark in LM_SITES do
+				for _, landmark in landmarkSites do
 					if math.abs(x - landmark.X) < hx + 35 and math.abs(z - landmark.Z) < hz + 35 then
 						clear = false
 						break
@@ -3570,7 +3575,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		for _, d in districts do
 			if math.abs(x - d.at.X) < d.hx + halfX and math.abs(z - d.at.Z) < d.hz + halfZ then return true end
 		end
-		for _, a in LM_SITES do
+		for _, a in landmarkSites do
 			if math.abs(x - a.X) < 29 + halfX and math.abs(z - a.Z) < 29 + halfZ then return true end
 		end
 		for _, lot in placedLots do
@@ -4169,7 +4174,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	-- 왕궁은 이미 커진 실물 본관·별관을 덮을 최소 폭을 보장하고 농촌 바닥은 건드리지 않는다.
 	local townFloor = folder:FindFirstChild("TownFloor")
 	if townFloor and townFloor:IsA("BasePart") then
-		local townLeft = if isRoyalCity then -635 else math.min(-330, X_END - 32)
+		local townLeft = if isRoyalCity then -635 else math.min(-475, X_END - 32)
 		local townRight = 35 -- 기존 항구 해안선과 접한 동쪽 가장자리를 유지한다.
 		local townHalfZ = math.min(360 + lvl * 80 + 14, math.max(442, outerEdgeZ + 52))
 		townFloor.Size = Vector3.new(townRight - townLeft, townFloor.Size.Y, 2 * townHalfZ)
@@ -5776,7 +5781,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 end
 
 -- 발전도 랜드마크: 레벨 조건을 채운 시설이 자리에 들어선다. 등록된 모델과 기존 house()만 쓴다(새 도형 금지).
-local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
+local function placeLandmarks(folder, info, style, rng, onFacility, walkers, landmarkSites)
 	local lvl = sceneLevel
 	local key = styleKeyOf(style)
 	local year = (info.sim and info.sim.year) or info.year or 1700
@@ -5785,7 +5790,7 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 		if node.status == "adopted" then adopted[node.id] = true end
 	end
 	local order = {}
-	for i = 1, #LM_SITES do order[i] = i end
+	for i = 1, #landmarkSites do order[i] = i end
 	local pr = seeded(info.portId .. "landmarks")
 	for i = #order, 2, -1 do
 		local j = pr:NextInteger(1, i)
@@ -5809,7 +5814,7 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers)
 		end
 	end
 	for idx, lm in PortBuildings.Landmarks do
-		local at = LM_SITES[order[idx]]
+		local at = landmarkSites[order[idx]]
 		if at and lvl >= lm.minLevel and year >= (lm.since or 0) and (not lm.tech or adopted[lm.tech]) then
 			local x, z = at.X, at.Z
 			local face = if z > 0 then 0 else math.pi
@@ -6766,7 +6771,9 @@ function PortScene.build(info, onFacility)
 	-- [대형 왕궁] 본관·측랑을 주변 건물보다 확실히 크게 보이도록 확대하되, 기존 왕궁 보호 구역과 동선을 유지한다.
 	local palaceCourt = nil
 	if fac.palace then
-		local px = -425
+		-- [181항구 왕궁 신배치] 왕궁 본관부터 근위·서고·접견 위치까지 같은 항구 ID를 기준으로 이동.
+		local royalLayoutRng = seeded(info.portId .. ":royal-district-reposition-v3")
+		local px = -425 + royalLayoutRng:NextInteger(-22, 22)
 		local key = currentKey
 		local royalSeed = seeded(info.portId .. ":royal-court")
 		-- [왕궁 발전별 규모] 1~6 발전 단계마다 가로폭이 확실히 증가한다. 기존 모듈만 재사용한다.
@@ -8272,8 +8279,24 @@ function PortScene.build(info, onFacility)
 		end)
 	end
 
-	densify(folder, info, style, rng, walkers, (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {}, onFacility)
-	placeLandmarks(folder, info, style, rng, onFacility, walkers)
+
+	-- [181항구 실제 랜드마크 재설계] 항구의 8개 위치를 새 고정 시드로 계산한다.
+	-- 주택 예약·시가지 충돌 검사와 랜드마크 배치는 같은 8개 좌표를 소비한다.
+	do
+		local landmarkRng = seeded(info.portId .. ":landmark-sites-reposition-v3")
+		local shiftX = landmarkRng:NextInteger(-5, 5)
+		local shiftZ = landmarkRng:NextInteger(-5, 5)
+		local landmarkSites = {}
+		for i, oldSite in LM_SITES do
+			landmarkSites[i] = Vector3.new(oldSite.X + shiftX, 0,
+				oldSite.Z + (if oldSite.Z > 0 then shiftZ else -shiftZ))
+		end
+		folder:SetAttribute("CityLandmarkReflowCount", #landmarkSites)
+		densify(folder, info, style, rng, walkers,
+			(PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {},
+			onFacility, landmarkSites)
+		placeLandmarks(folder, info, style, rng, onFacility, walkers, landmarkSites)
+	end
 	placeSignature(folder, info)
 
 	-- [학문별 자동 3D 발전] 백과 기술이 실제 도입된 항구에만 기존 승인 모델로 산업·학술 구역을 조성한다.
