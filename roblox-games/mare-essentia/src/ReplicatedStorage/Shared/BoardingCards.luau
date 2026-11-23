@@ -3150,6 +3150,11 @@ function B.build(kind, seed, my, foe)
 	else
 		myDeck, myLeader = B.playerDeck(my.deckCards, B.seeded(seed + 7), my.faction, my.book)
 		foeDeck, foeLeader = B.enemyDeck(foe.boss == true, B.seeded(seed + 13), foeFac, practice)
+		-- [이야기 카드 대결] 지정한 지도자로 상대를 고정한다(같은 진영 지도자만).
+		local L = foe.leader and B.Leaders[foe.leader]
+		if L and not practice and L.faction == foeFac then
+			foeLeader = foe.leader
+		end
 	end
 	-- 학문 숙련 보너스: 지식 카드를 모은 만큼 같은 계열 병종 카드의 부대 점수가 오른다 (영웅·특수 카드는 제외)
 	local kb = my.book and my.book.bonus

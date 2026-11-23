@@ -684,6 +684,7 @@ return function(D, S)
 					amount = q.amount,
 					rewardCoins = q.rewardCoins,
 					rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil,
+					story2 = D.Quests.Kit.questExtras(state, q), -- [이야기 퀘스트 시스템] 선택지·대결 상대·인물 대사
 				})
 			elseif not state.quests.done[q.id] and S.Quest.visible(state, q) and q.kind == "deliver" and q.strand ~= "main" and (q.portId ~= state.portId or shownDeliver >= DELIVER_SHOWN_MAX) then
 				-- 납품 의뢰는 지금 항구의 주점 게시판만, 최대 몇 개까지만 보여 준다 (나머지는 개수만 알린다)
@@ -897,6 +898,7 @@ return function(D, S)
 				image = if found and art then art.image else nil,
 				credit = if found and art then art.credit else nil,
 				level = if found then (state.codexLevel[c.id] or 0) else nil,
+				lore = if found then D.Quests.Kit.loreFor(state, D.Quests.Kit.LORE, c.id) else nil, -- [이야기 카드] 완료한 이야기 단락
 				quizDone = found and (state :: any).wikiQuiz ~= nil and (state :: any).wikiQuiz[c.id] == true, -- [백과 읽기 퀴즈] 보상 수령 여부
 				upCost = if found and (state.codexLevel[c.id] or 0) < S.Codex.MAX_LEVEL then S.Codex.upgradeCost(c, state.codexLevel[c.id] or 0) else nil,
 			})
@@ -1325,7 +1327,7 @@ return function(D, S)
 				local ns = S.Cardbook.navalSupport(state)
 				view.navalSupport, view.navalEffects = ns.lines, ns.entries
 			end
-			view.cardbook = { faction = faction, leader = spec.leader, bonus = spec.bonus, knowledgeCount = select(2, D.CardBook.knowledgeBonus(state.discovered, D.Cards.ById)), owned = S.Cardbook.get(state).owned, tier = spec.tier, deck = S.Cardbook.get(state).deck, ids = spec.ids, slots = S.Cardbook.get(state).slots, pick = S.Cardbook.get(state).pick and S.Cardbook.get(state).pick.ids, practiceIds = S.Cardbook.practiceBook(state).ids, practiceDone = S.Cardbook.get(state).practiceDone == true, day = math.floor(os.time() / 86400), duelSeed = S.Cardbook.get(state).duelSeed, duelLeft = math.max(0, 3 - (if S.Cardbook.get(state).duelDay == math.floor(os.time() / 86400) then (S.Cardbook.get(state).duelWins or 0) else 0)) }
+			view.cardbook = { faction = faction, leader = spec.leader, bonus = spec.bonus, knowledgeCount = select(2, D.CardBook.knowledgeBonus(state.discovered, D.Cards.ById)), owned = S.Cardbook.get(state).owned, tier = spec.tier, deck = S.Cardbook.get(state).deck, ids = spec.ids, slots = S.Cardbook.get(state).slots, pick = S.Cardbook.get(state).pick and S.Cardbook.get(state).pick.ids, practiceIds = S.Cardbook.practiceBook(state).ids, practiceDone = S.Cardbook.get(state).practiceDone == true, day = math.floor(os.time() / 86400), duelSeed = S.Cardbook.get(state).duelSeed, duelFoe = (S.Cardbook.get(state) :: any).duelFoe, duelLeft = math.max(0, 3 - (if S.Cardbook.get(state).duelDay == math.floor(os.time() / 86400) then (S.Cardbook.get(state).duelWins or 0) else 0)) }
 			if S.Battle and S.Battle.deckCache then
 				S.Battle.deckCache[state] = cards
 				S.Battle.deckFaction[state] = faction

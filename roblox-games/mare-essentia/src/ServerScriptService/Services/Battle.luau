@@ -244,11 +244,8 @@ return function(D, S)
 						state.coins += def.coins
 						state.fame += def.fame
 						S.State.gainXp(state, "battle", def.xp, msgs)
-						-- [해역별 함대전 기록] 해역 id → 완수 횟수. 해상 연속 퀘스트가 읽는다.
-						local clears: any = state.stats
-						clears.warClears = clears.warClears or {}
-						local key = def.region or "any"
-						clears.warClears[key] = (clears.warClears[key] or 0) + 1
+						-- [해역별·이야기 함대전 기록] 해역 키와 함대전 id 키를 함께 올린다. 해상·이야기 퀘스트가 읽는다.
+						D.Quests.Kit.recordWar(state, def)
 						warCooldown[state] = warCooldown[state] or {}
 						warCooldown[state][def.id] = state.day
 						state.war = nil
@@ -346,6 +343,9 @@ return function(D, S)
 		if state.ship.hull < S.State.shipDef(state).hull * 0.6 then
 			return "선체를 수리한 뒤 나서세요 (60% 이상 필요)"
 		end
+		if def.questOnly and not state.quests.active[def.questOnly] then
+			return "이야기를 진행해야 열리는 작전이에요"
+		end
 		if def.region then
 			local port = D.Ports.Ports[state.portId]
 			local here = port and D.Regions.of(port)
@@ -404,6 +404,9 @@ return function(D, S)
 	local function warView(state)
 		local list = {}
 		for _, w in WARS do
+			if w.questOnly and not state.quests.active[w.questOnly] then
+				continue -- 이야기 전용 함대전은 해당 이야기 진행 중에만 보인다
+			end
 			table.insert(list, { id = w.id, name = w.name, summary = w.summary, waves = #w.waves, coins = w.coins, fame = w.fame, minLevel = w.minLevel, region = w.region, blocked = warBlock(state, w) })
 		end
 		local war = state.war

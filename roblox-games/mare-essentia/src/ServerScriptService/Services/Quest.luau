@@ -7,7 +7,7 @@ return function(D, S)
 	local MAX_ACTIVE = 5
 
 	-- 발견·방문·연구처럼 플레이어 상태만으로 진행도가 정해지는 퀘스트는 수락하지 않아도 자동으로 보고된다.
-	local AUTO_KINDS = { discover_card = true, discover = true, field = true, visit = true, research = true, understand = true, understand_card = true, present = true, expo = true, joint = true, port_tech = true, landmark = true, launch = true, era = true, stock = true, dividend = true, history = true, people = true, people_talk = true, order_patrol = true, war_clear = true }
+	local AUTO_KINDS = { discover_card = true, discover = true, field = true, visit = true, research = true, understand = true, understand_card = true, present = true, expo = true, joint = true, port_tech = true, landmark = true, launch = true, era = true, stock = true, dividend = true, history = true, people = true, people_talk = true, order_patrol = true, war_clear = true, duel_leader = true }
 
 	local function isAuto(quest)
 		return AUTO_KINDS[quest.kind] == true
@@ -26,17 +26,9 @@ return function(D, S)
 			return if quest.cardId and state.discovered[quest.cardId] then 1 else 0
 		elseif quest.kind == "win" then
 			return state.stats.battlesWon - a.baseWins
-		elseif quest.kind == "war_clear" then
-			-- 해역별 함대전 완수 횟수 (regionId 없으면 전체 합)
-			local wc: any = (state.stats :: any).warClears or {}
-			if quest.regionId then
-				return wc[quest.regionId] or 0
-			end
-			local n = 0
-			for _, v in wc do
-				n += v
-			end
-			return n
+		elseif quest.kind == "war_clear" or quest.kind == "duel_leader" or quest.kind == "choice" then
+			-- [이야기 퀘스트 시스템] 함대전 완수·지도자 대결·선택 분기 (판정은 StoryKit)
+			return D.Quests.Kit.progress(state, quest) or 0
 		elseif quest.kind == "visit" then
 			return S.State.countVisited(state)
 		elseif quest.kind == "field" then
@@ -145,6 +137,9 @@ return function(D, S)
 		if quest.exploreSite and quest.portId ~= state.portId then return false end
 		if quest.after and not state.quests.done[quest.after] then
 			return false
+		end
+		if quest.needChoice and not D.Quests.Kit.choiceMet(state, quest.needChoice) then
+			return false -- 이야기 분기: 다른 선택을 한 플레이어에게는 안 보인다
 		end
 		if quest.nation and quest.nation ~= state.nationId then
 			return false -- 서막은 시작 국가의 이야기만 보인다
@@ -381,6 +376,12 @@ return function(D, S)
 				table.insert(msgs, "일지: 조건을 채웠다 — " .. quest.name)
 			end
 		end
+	end
+
+	-- [이야기 선택] kind "choice" 퀘스트에서 선택지를 고른다. 완료·보상은 기존 자동 정산이 처리한다.
+	function handlers.StoryChoose(state: any, p: any): (boolean, string)
+		local quest = type(p) == "table" and type(p.questId) == "string" and D.Quests.ById[p.questId]
+		return D.Quests.Kit.choose(state, quest, type(p) == "table" and p.value or nil)
 	end
 
 	return { handlers = handlers, storyOf = storyOf, offer = offer, progress = progress, visible = visible, autoDeliver = autoDeliver, autoReport = autoReport, isAuto = isAuto, progressAny = progressAny }

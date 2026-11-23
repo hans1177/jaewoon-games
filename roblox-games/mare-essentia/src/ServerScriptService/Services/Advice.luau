@@ -80,6 +80,11 @@ return function(D, S)
 			end
 			table.insert(out, { id = id, priority = priority, who = speaker(state, topic), text = text, tab = tab, label = label, dismissable = dismissable == true })
 		end
+		-- [이야기 인물 말풍선] 진행 중인 이야기 퀘스트의 인물이 동료 대신 한마디 한다.
+		local storyLine = D.Quests.Kit.speakerLine(state, D.Quests.Quests)
+		if storyLine and not state.advDone["story_" .. storyLine.id] then
+			table.insert(out, { id = "story_" .. storyLine.id, priority = 90, who = { id = nil, name = storyLine.name, role = storyLine.role }, text = storyLine.text, tab = "quest", label = "일지 보기", dismissable = true })
+		end
 
 		-- 선체
 		local hr = hullRatio(state)
