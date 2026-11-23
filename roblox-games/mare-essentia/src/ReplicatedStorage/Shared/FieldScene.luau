@@ -840,9 +840,11 @@ function FieldScene.start(opts)
 		fieldAtmosphere.Color = biome.fog:Lerp(Color3.fromRGB(215, 229, 239), 0.19)
 		fieldAtmosphere.Decay = biome.fog:Lerp(
 			if arid then Color3.fromRGB(184, 159, 132) else Color3.fromRGB(103, 143, 179), 0.43)
-		fieldAtmosphere.Density = if biome.fogEnd < 480 then 0.34 elseif biome.fogEnd < 650 then 0.29 else 0.24
-		fieldAtmosphere.Offset = 0.18
-		fieldAtmosphere.Haze = if visualMobile then 0.85 else 1.3
+		-- [입체감] 짙은 연무가 근경까지 하얗게 덮어 평면처럼 보였다(Studio f0_environment).
+		-- 근경은 선명하게, 원경만 흐려지도록 밀도·연무를 낮추고 시작 거리(Offset)를 뒤로 민다.
+		fieldAtmosphere.Density = if biome.fogEnd < 480 then 0.26 elseif biome.fogEnd < 650 then 0.21 else 0.17
+		fieldAtmosphere.Offset = 0.32
+		fieldAtmosphere.Haze = if visualMobile then 0.45 else 0.65
 		fieldAtmosphere.Glare = 0.12
 		if not oldAtmosphere then
 			fieldAtmosphere.Name = "FieldDepthAtmosphere"
@@ -857,6 +859,16 @@ function FieldScene.start(opts)
 			elseif not oldAtmosphere and fieldAtmosphere.Parent then
 				fieldAtmosphere:Destroy()
 			end
+		end)
+		-- [입체감] 대비·채도를 살짝 올려 지형 굴곡과 모델 윤곽이 읽히게 한다(끝나면 제거).
+		local grade = Instance.new("ColorCorrectionEffect")
+		grade.Name = "FieldDepthGrade"
+		grade.Contrast = 0.12
+		grade.Saturation = 0.10
+		grade.Brightness = -0.01
+		grade.Parent = L
+		folder.Destroying:Connect(function()
+			grade:Destroy()
 		end)
 		pcall(function()
 			L.ShadowSoftness = 0.31
