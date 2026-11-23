@@ -3177,9 +3177,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			painting.Name = "EncyclopediaPlate"
 			painting.AnchorPoint = Vector2.new(0.5, 0.5)
 			painting.Position = UDim2.fromScale(0.5, 0.5)
-			painting.Size = UDim2.fromScale(if opts.cardOnly then 1 else 1.12, if opts.cardOnly then 1 else 1.12)
+			painting.Size = UDim2.fromScale(0.92, 0.92)
 			painting.BackgroundTransparency = 1
-			painting.ScaleType = if opts.cardOnly then Enum.ScaleType.Fit else Enum.ScaleType.Crop
+			painting.ScaleType = Enum.ScaleType.Fit
 			painting.ImageColor3 = if type(c.id) == "string" and AssetIds["CardArt/" .. c.id] then Color3.new(1, 1, 1) else Color3.fromRGB(236, 211, 165)
 			local artKey = cardArtworkKey(c)
 			painting.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
@@ -3438,11 +3438,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				-- 배경은 가볍게 패럴랙스, 캐릭터·무기·함선은 독립된 장면 안에서 실제 동작한다.
 				local pan = (if motion == "retreat" then 0.07 else 0.018) * wind
 				-- [기존 승인 원화] 카드 틀을 넘는 자동 확대만 제한한다. 파도·안개·광원 모션은 유지한다.
-				image.Position = if opts.cardOnly then UDim2.fromScale(0.5 + 0.012 * wind, 0.5 + 0.012 * wave)
-					else UDim2.fromScale(0.5 + pan - 0.045 * lunge + 0.02 * recoil,
-						0.5 + (if motion == "storm" then 0.039 else 0.019) * wave - 0.015 * impact)
+				-- [원화 전체 표시] 카드 애니메이션의 이동을 여백 안에 제한한다. 파도·광원·실물 모션은 유지.
+				image.Position = UDim2.fromScale(
+					math.clamp(0.5 + (if opts.cardOnly then 0.012 * wind else pan - 0.045 * lunge + 0.02 * recoil), 0.486, 0.514),
+					math.clamp(0.5 + (if opts.cardOnly then 0.012 * wave else (if motion == "storm" then 0.039 else 0.019) * wave - 0.015 * impact), 0.486, 0.514))
 				image.Rotation = if motion == "storm" then 1.2 * wave elseif motion == "gallop" then 0.8 * wave else 0
-				local artZoom = if opts.cardOnly then (0.94 + 0.01 * impact) else (1.17 + (if focused then 0.04 else 0) + 0.025 * impact)
+				local artZoom = 0.91 + (if focused then 0.005 else 0) + 0.01 * impact
 				image.Size = UDim2.fromScale(artZoom, artZoom)
 				mist.Position = UDim2.fromScale(-0.25 + math.sin(elapsed * 0.55) * 0.11, 0.72 + wave * 0.038)
 				mist.BackgroundTransparency = if motion == "storm" or motion == "fog" then 0.44 + 0.15 * wave
@@ -3677,9 +3678,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local focusImage = Instance.new("ImageLabel")
 		focusImage.AnchorPoint = Vector2.new(0.5, 0.5)
 		focusImage.Position = UDim2.fromScale(0.5, 0.5)
-		focusImage.Size = UDim2.fromScale(if opts.cardOnly then 1 else 1.14, if opts.cardOnly then 1 else 1.14)
+		focusImage.Size = UDim2.fromScale(0.92, 0.92)
 		focusImage.BackgroundTransparency = 1
-		focusImage.ScaleType = if opts.cardOnly then Enum.ScaleType.Fit else Enum.ScaleType.Crop
+		focusImage.ScaleType = Enum.ScaleType.Fit
 		focusImage.ImageColor3 = Color3.fromRGB(239, 214, 174)
 		focusImage.ZIndex = 52
 		focusImage.Parent = focusArtwork
@@ -3835,9 +3836,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local artKey = if leaderProfile then (NEW_LEADER_ART[card.leaderId] and AssetIds[NEW_LEADER_ART[card.leaderId]] and NEW_LEADER_ART[card.leaderId]) or (AssetIds["CardArt/leader_" .. card.leaderId] and "CardArt/leader_" .. card.leaderId) or LEADER_FACE[card.leaderId] else cardArtworkKey(card)
 			focusImage.Image = if artKey and AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			focusImage.ImageColor3 = if leaderProfile or (type(card.id) == "string" and AssetIds["CardArt/" .. card.id]) then Color3.new(1, 1, 1) else Color3.fromRGB(239, 214, 174)
-			-- [등록 원화] 기존 정사각형과 신규 7:10 원화 모두 확대 시 잘리지 않게 표시한다.
-			focusImage.ScaleType = if opts.cardOnly or leaderProfile then Enum.ScaleType.Fit else Enum.ScaleType.Crop
-			focusImage.Size = if opts.cardOnly or leaderProfile then UDim2.fromScale(1, 1) else UDim2.fromScale(1.14, 1.14)
+			-- [등록 원화] 전투판·손패·확대창에서 정사각형과 7:10 원화를 전부 보이고 자르지 않는다.
+			focusImage.ScaleType = Enum.ScaleType.Fit
+			focusImage.Size = UDim2.fromScale(0.92, 0.92)
 			local regionId = if leaderProfile then m.faction[card.leaderSide] elseif type(card.id) == "string" then BC.cardRegionPrefix(card.id) else nil
 			local regionDeck = if regionId then CARD_DECK[regionId] else nil
 			local focusFrameArtId = regionId and REGION_FRAME[regionId] and AssetIds[REGION_FRAME[regionId]]
@@ -4309,9 +4310,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local image = Instance.new("ImageLabel")
 				image.AnchorPoint = Vector2.new(0.5, 0.5)
 				image.Position = UDim2.fromScale(0.5, 0.5)
-				image.Size = UDim2.fromScale(if opts.cardOnly then 1 else 1.17, if opts.cardOnly then 1 else 1.17)
+				image.Size = UDim2.fromScale(0.92, 0.92)
 				image.BackgroundTransparency = 1
-				image.ScaleType = if opts.cardOnly then Enum.ScaleType.Fit else Enum.ScaleType.Crop
+				image.ScaleType = Enum.ScaleType.Fit
 				local artKey = cardArtworkKey(c)
 				image.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 				image.ImageColor3 = if type(c.id) == "string" and AssetIds["CardArt/" .. c.id] then Color3.new(1, 1, 1) else Color3.fromRGB(236, 214, 175)
