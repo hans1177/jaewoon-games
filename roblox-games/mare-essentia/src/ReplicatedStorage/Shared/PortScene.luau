@@ -3260,7 +3260,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, layo
 	local countryPlan = COUNTRY_PLAN[nation]
 	local big = (port and port.shipyard) or false
 	local P = PROFILE[key] or PROFILE.north
-	-- [항구별 마을] 지시서의 운하·골목·바둑판·계단식 구획을 기존 필지 안에서만 적용한다.
+	-- [181항구 새 구획] 각 항구 고정 시드의 재배치 모드를 실제 주택·도로·시장 생성에 함께 적용한다.
 	local identity = PortIdentity.get(info.portId)
 	local villageLayout = layoutPlan.mode
 	local lvl = sceneLevel
@@ -3811,7 +3811,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, layo
 						* roofFactor * 0.5 + 3.5
 				end
 				local half = math.max(sz * 0.62, projectedHalf)
-				-- [기존 필지 내 재배치] 중앙 자리만 사전 검사하면 옆자리 2.4칸이 비어도 주택이 사라진다.
+				-- [새 필지 안전배치] 새 중심만 사전 검사하면 옆자리 2.4칸이 비어도 주택이 사라진다.
 				-- 전체 모델을 복제하기 전에 가까운 5곳의 기존 예약 경계부터 가볍게 검사한다.
 				local canFitPlot = false
 				if projectedHalf <= rowClearance then
@@ -4090,7 +4090,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, layo
 		-- 큰길(가운데 길) 앞 두 줄: 광장과 시설을 지나 안쪽부터
 		-- 구시가지 시설 옆 주거 건설을 중단하고 신도시 외곽의 독립 주거 구역으로 확장한다.
 		for p = 0, pairsN do
-			-- [항구 골목] 기존 해안선·필지·도로 중심을 함께 옮겨 보행 동선을 보존한다.
+			-- [항구 골목] 새로운 항구 배치계획의 주택·도로 중심을 일치시켜 보행 동선을 만든다.
 			local laneBend = if villageLayout == "organic" then (if p % 2 == 0 then -3 else 3)
 				elseif villageLayout == "terrace" then p * 2 else 0
 			local laneZ = layoutPlan.residentialStartZ + laneOffset + p * laneL + laneBend
@@ -4139,7 +4139,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, layo
 	if townFloor and townFloor:IsA("BasePart") then
 		local townLeft = if isRoyalCity then -635 else math.min(-475, X_END - 32)
 		local townRight = 35 -- 기존 항구 해안선과 접한 동쪽 가장자리를 유지한다.
-		local townHalfZ = math.min(360 + lvl * 80 + 14, math.max(300, outerEdgeZ + 52))
+		local townHalfZ = math.min(360 + lvl * 80 + 14,
+			math.max(300, outerEdgeZ + 52, layoutPlan.farmZ + 52))
 		townFloor.Size = Vector3.new(townRight - townLeft, townFloor.Size.Y, 2 * townHalfZ)
 		townFloor.Position = Vector3.new((townLeft + townRight) * 0.5, townFloor.Position.Y, 0)
 		folder:SetAttribute("TownLandWidth", math.floor(townRight - townLeft))
@@ -6066,6 +6067,7 @@ function PortScene.build(info, onFacility)
 			districtZ = planRng:NextInteger(358, 374),
 			farmX = planRng:NextInteger(-371, -348),
 			farmZ = planRng:NextInteger(378, 388),
+			royalX = -425 + planRng:NextInteger(-22, 22),
 			facilities = {
 				Vector3.new(frontX, 0, mainSide * rowZ), -- 교역소
 				Vector3.new(frontX, 0, -mainSide * rowZ), -- 주점
@@ -6761,7 +6763,8 @@ function PortScene.build(info, onFacility)
 	-- [대형 왕궁] 본관·측랑을 주변 건물보다 확실히 크게 보이도록 확대하되, 기존 왕궁 보호 구역과 동선을 유지한다.
 	local palaceCourt = nil
 	if fac.palace then
-		local px = -425
+		-- [왕궁 재배치] 본관·별관·근위·서고·입구는 같은 왕궁 중심 좌표를 공유한다.
+		local px = layoutPlan.royalX
 		local key = currentKey
 		local royalSeed = seeded(info.portId .. ":royal-court")
 		-- [왕궁 발전별 규모] 1~6 발전 단계마다 가로폭이 확실히 증가한다. 기존 모듈만 재사용한다.
