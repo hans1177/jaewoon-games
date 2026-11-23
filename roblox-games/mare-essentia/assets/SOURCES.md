@@ -2102,3 +2102,13 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `town/` | london_house_mansion.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
 | `town/` | london_house_villa.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
 | `town/` | london_bld_temple.glb | CreativeTrio; Quaternius · CC0-1.0 | https://poly.pizza/m/GHzPfvoyzX |
+
+
+## 2026-11-24 런던 시설 원본 가공 추가 2종
+
+승인 CC0 원본 메시·UV·재질 보존. 로블록스 등록 및 Studio 실물 검증 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_tavern_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_battle_1.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
