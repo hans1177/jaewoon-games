@@ -37,7 +37,8 @@ local PORT_CLOCK_EPOCH = os.clock()
 local GOOD_MESH = {
 	cheese = { "Cargo", "cheese" }, wine = { "Cargo", "wine-red" }, beer = { "Cargo", "mug" }, sake = { "Cargo", "barrel", Color3.fromRGB(196, 181, 150) }, fish = { "Cargo", "fish-large" }, wool = { "Cargo", "textiles-stack-small" },
 	cloth = { "Cargo", "textiles-a" }, silk = { "Cargo", "textiles-stack-large-colored" }, grain = { "Cargo", "food-flour" },
-	iron = { "Cargo", "iron-bars" }, copper = { "Cargo", "copper-bar" }, silver = { "Cargo", "silver-bar" }, gold = { "Cargo", "gold-bar" },
+	iron = { "Cargo", "iron-bars" }, coal = { "Cargo", "coal" }, tin = { "Cargo", "tin" },
+	copper = { "Cargo", "copper-bar" }, silver = { "Cargo", "silver-bar" }, gold = { "Cargo", "gold-bar" },
 	gems = { "Cargo", "gems-sack" }, pearls = { "Cargo", "gem-small" }, honey = { "Cargo", "honey" }, pepper = { "Cargo", "pepper-mill" },
 	olive_oil = { "Cargo", "bottle-oil" }, timber = { "Cargo", "wood-log-stack" }, mahogany = { "Cargo", "wood-log-a", Color3.fromRGB(110, 54, 40) },
 	coffee = { "Cargo", "cup-coffee" }, tea = { "Cargo", "cup-tea" }, cocoa = { "Cargo", "chocolate" }, rum = { "Cargo", "barrel", Color3.fromRGB(96, 56, 39) },
@@ -4421,22 +4422,33 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				local warehouseBuilt = if districtBuildings then math.max(0, math.floor(tonumber(districtBuildings.warehouse) or 0)) else lvl
 				local stalls = math.min(if districtTouch then 4 else 6, lvl + 1,
 					if marketBuilt > 0 then 1 + math.floor(math.sqrt(marketBuilt)) else 0)
+				-- [런던 지시서] 기존 날짜의 7일 주기 장날, 실제 시장 건물·재고 수치는 그대로 둔다.
+				local londonMarketDay = info.portId == "london" and type(info.day) == "number"
+					and info.day > 0 and math.floor(info.day) % 7 == 0
+				local londonExtraStalls = 0
 				for k = 1, stalls do
 					local x = cx + (k - (stalls + 1) / 2) * 10
 					local side = if k % 2 == 0 then -1 else 1
-					put("Town", if (k + lvl) % 2 == 0 then "stall-red" else "stall-green",
-						7, x, cz + side * 8, false, if side > 0 then face else face + math.pi)
+					local stallAsset = if (k + lvl) % 2 == 0 then "stall-red" else "stall-green"
+					local originalStall = put("Town", stallAsset, 7, x, cz + side * 8, false,
+						if side > 0 then face else face + math.pi)
+					if londonMarketDay and originalStall and
+						put("Town", stallAsset, 7, x, cz + side * 19, false,
+							if side > 0 then face else face + math.pi) then
+						londonExtraStalls += 1
+					end
 				end
 				if stalls >= 2 and warehouseBuilt > 0 then
 					put("Town", "cart", 4, cx - 14, cz, false)
 					put("Cargo", "box-open", 2.4, cx + 13, cz, false)
 				end
-				-- 광장의 이미 설치된 벤치·분수와 중복되지 않도록 추가 분수와 통은 제거.
-				if stalls > 0 then folder:SetAttribute("CityMarketStalls", stalls) end
-				-- [상품별 시장] 현지 실제 생산품 3D 전시는 모바일 1개, PC 2개만.
-				-- 기존 거래 가격·재고·시장 건물 수는 읽기 전용으로 보존한다.
-				local marketGoods = Chains.showcaseGoods(info.portId, made,
-					if game:GetService("UserInputService").TouchEnabled then 1 else 2)
+				-- [장날] 런던만 같은 승인 가판대를 두 줄로 진열, 다른 항구는 기존 연출을 보존한다.
+				if stalls > 0 then folder:SetAttribute("CityMarketStalls", stalls + londonExtraStalls) end
+				if info.portId == "london" then folder:SetAttribute("CityLondonMarketDay", londonMarketDay) end
+				-- [런던 특산품] 양모·석탄·주석 모두 승인된 Cargo 실물로 시장에 놓는다.
+				local marketGoods = if info.portId == "london" then { "wool", "coal", "tin" }
+					else Chains.showcaseGoods(info.portId, made,
+						if game:GetService("UserInputService").TouchEnabled then 1 else 2)
 				for i, good in marketGoods do
 					-- 실물 시장 0개인 도시에는 교역품이 허공에 진열되지 않는다.
 					local mesh = if stalls > 0 then GOOD_MESH[good] else nil
@@ -5221,14 +5233,30 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 			one("Cargo", "resource-planks", 3, 8, 0, lay.freightZ - 2)
 		end
 		if lay.freight and lay.mine then
-			-- 광물 항구도 없는 철광석을 임의로 적치하지 않는다: 실제 지역 생산품을 골라 쓴다.
-			for _, mineral in { "iron", "coal", "tin", "copper", "gold", "silver", "gems" } do
-				if table.find((port and port.produces) or {}, mineral) and AssetIds["Cargo/" .. mineral] then
-					one("Cargo", mineral, 3.4, 10, 0, lay.freightZ + 9)
-					break
+			-- [런던 광물 하역장] 실제 석탄·주석을 구분하되 다른 항구의 기존 1종 선택 규칙은 유지.
+			if info.portId == "london" then
+				for index, mineral in { "coal", "tin" } do
+					if table.find((port and port.produces) or {}, mineral)
+						and AssetIds["Cargo/" .. mineral] then
+						local cargo = one("Cargo", mineral, 3.4, 8 + index * 7, 0, lay.freightZ + 9)
+						if cargo then cargo:SetAttribute("LocalProduct", mineral) end
+					end
+				end
+			else
+				for _, mineral in { "iron", "coal", "tin", "copper", "gold", "silver", "gems" } do
+					if table.find((port and port.produces) or {}, mineral) and AssetIds["Cargo/" .. mineral] then
+						one("Cargo", mineral, 3.4, 10, 0, lay.freightZ + 9)
+						break
+					end
 				end
 			end
 			one("Town", "workbench-anvil", 3.4, 2, 0, lay.freightZ + 9)
+		end
+		-- [런던 조선항] 기존 등록 밧줄 소품을 원자재 필지에 놓고 전용 공장으로 위장하지 않는다.
+		if info.portId == "london" and lay.freight and lay.shipyardBuilt
+			and AssetIds["Relics/rope-bundle-a"] then
+			local rope = one("Relics", "rope-bundle-a", 3, -4, 0, lay.freightZ - 12)
+			if rope then rope:SetAttribute("LondonHarborRopeSupply", true) end
 		end
 		-- [지역 특산품 하역] 이 항구가 실제 생산하고 등록된 품목만 원자재 필지에 놓는다.
 		-- 주류·담배·약물 시각 자산은 새로 사용하지 않는다.

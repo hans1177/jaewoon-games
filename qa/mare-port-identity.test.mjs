@@ -583,3 +583,35 @@ test('119~181번째 항구의 개별 지시서·구역·색상·좌표·승인 �
   assert.match(scene, /local shiftZ = if reflow then reflow.landmarkZ/);
   assert.match(scene, /if AssetIds\["Town\/" \.\. landmarkAsset\] then/);
 });
+
+
+// [런던 1/181] 원본 지시서의 실제 특산품·7일 장날·하역장·조선소 소품을 기존 렌더러와 대조.
+test('런던 지시서: 양모·석탄·주석 시장과 장날 가판대·광물 하역·조선항 밧줄', () => {
+  const brief = fs.readFileSync(root + 'docs/ports/london.md', 'utf8');
+  const assets = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/AssetIds.luau', 'utf8');
+  assert.match(brief, /\| 특산물 \| wool, coal, tin \|/);
+  assert.match(brief, /장날엔 가판대 2배/);
+  assert.match(brief, /조선소와 밧줄 공장이 붙은 큰 항만/);
+  assert.match(ports, /london = \{[\s\S]*?produces = \{ "wool", "coal", "tin" \}/);
+  for (const item of ['Cargo/textiles-stack-small', 'Cargo/coal', 'Cargo/tin', 'Town/stall-red',
+    'Town/stall-green', 'Town/workbench-anvil', 'Relics/rope-bundle-a']) {
+    assert.ok(assets.includes('["' + item + '"]'), item + ' 등록 승인 모델');
+  }
+  assert.match(scene, /wool = \{ "Cargo", "textiles-stack-small" \}/);
+  assert.match(scene, /coal = \{ "Cargo", "coal" \}/);
+  assert.match(scene, /tin = \{ "Cargo", "tin" \}/);
+  assert.ok(scene.includes('marketGoods = if info.portId == "london" then { "wool", "coal", "tin" }'));
+  assert.match(scene, /local londonMarketDay = info.portId == "london" and type\(info\.day\) == "number"/);
+  assert.match(scene, /math\.floor\(info\.day\) % 7 == 0/);
+  assert.match(scene, /put\("Town", stallAsset, 7, x, cz \+ side \* 19, false/);
+  assert.match(scene, /"CityMarketStalls", stalls \+ londonExtraStalls/);
+  assert.match(scene, /"CityLondonMarketDay", londonMarketDay/);
+  assert.ok(scene.includes('for index, mineral in { "coal", "tin" } do'));
+  assert.match(scene, /AssetIds\["Cargo\/" \.\. mineral\]/);
+  assert.match(scene, /info\.portId == "london" and lay\.freight and lay\.shipyardBuilt/);
+  assert.match(scene, /if rope then rope:SetAttribute\("LondonHarborRopeSupply", true\) end/);
+  assert.ok(scene.includes('if stalls > 0 then GOOD_MESH[good] else nil'),
+    '실제 시장 건물 없으면 특산품 미배치');
+  assert.ok(scene.includes('if table.find((port and port.produces) or {}, mineral)'),
+    '등록된 실물 생산품만 하역');
+});
