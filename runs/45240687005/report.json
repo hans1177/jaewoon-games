@@ -1,0 +1,139 @@
+{
+ "sourceRevision": "6c3bb44dfa2624da8a5271a6a56c19dffbed8693",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "NEWGAME ok=true\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "INTRO name=true comp=true\ntext"
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "killed=false\ntext"
+  },
+  {
+   "step": 6,
+   "ctx": "Client",
+   "out": "tab\ntext"
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "main=true hud=true\ntext"
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "MENUART 13/13\n\ntext"
+  },
+  {
+   "step": 12,
+   "capture": "hud_icons",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "capture": "hud_icons_pulse",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35005
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 2561
+  },
+  {
+   "step": 2,
+   "type": "wait",
+   "elapsedMs": 4014
+  },
+  {
+   "step": 3,
+   "type": "luau",
+   "elapsedMs": 2223
+  },
+  {
+   "step": 4,
+   "type": "wait",
+   "elapsedMs": 2006
+  },
+  {
+   "step": 5,
+   "type": "luau",
+   "elapsedMs": 74
+  },
+  {
+   "step": 6,
+   "type": "luau",
+   "elapsedMs": 316
+  },
+  {
+   "step": 7,
+   "type": "wait",
+   "elapsedMs": 4006
+  },
+  {
+   "step": 8,
+   "type": "luau",
+   "elapsedMs": 148
+  },
+  {
+   "step": 9,
+   "type": "wait",
+   "elapsedMs": 1513
+  },
+  {
+   "step": 10,
+   "type": "luau",
+   "elapsedMs": 68
+  },
+  {
+   "step": 11,
+   "type": "wait",
+   "elapsedMs": 1212
+  },
+  {
+   "step": 12,
+   "type": "capture",
+   "elapsedMs": 1264
+  },
+  {
+   "step": 13,
+   "type": "wait",
+   "elapsedMs": 509
+  },
+  {
+   "step": 14,
+   "type": "capture",
+   "elapsedMs": 1068
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 15,
+  "completedSteps": 15,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
+  "abortedEarly": false
+ }
+}
