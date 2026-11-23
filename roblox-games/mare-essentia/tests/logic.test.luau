@@ -4208,6 +4208,17 @@ do
 		local sped = Proj.boost(stI, "london", 900)
 		check("건축·경제: 투자 300코인당 공사 1일 단축", sped == 3 and Proj.list(stI)[1].done == before - 3)
 		check("건축·경제: 최소 1일은 남긴다", Proj.boost(stI, "london", 100000) >= 0 and Proj.list(stI)[1].done >= 1)
+		local stH: any = { day = 0, stats = {} }
+		Proj.start(stH, "london", "trade", "흉년 시험", 4500)
+		local d0 = Proj.list(stH)[1].done
+		Proj.update(stH, "london", nil)
+		stH.day = 3
+		Proj.update(stH, "london", "흉년(곡물 품귀)")
+		check("건축·경제: 흉년 동안 공사가 멈춘다(완공일 연기)", Proj.list(stH)[1].done == d0 + 3 and Proj.active(stH, "london")[1].paused ~= nil)
+		stH.day = Proj.list(stH)[1].done + 1
+		check("건축 시뮬: 완공 직후 축하 표시", Proj.recentDone(stH, "london") ~= nil)
+		stH.day += 10
+		check("건축 시뮬: 축하는 3일 뒤 끝", Proj.recentDone(stH, "london") == nil)
 	end
 	local chron = S.View.build(newState("england"), ctx).history.chronicle
 	check("역사서: 연대기에 모든 사건이 연도순", #chron == #HE.Events and chron[1].year <= chron[#chron].year)

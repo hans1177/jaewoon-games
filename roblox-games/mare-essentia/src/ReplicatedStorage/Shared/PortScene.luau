@@ -2115,6 +2115,14 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			end
 		end
 	end
+	-- [완공 축하] 최근 완공한 건물이 있으면 광장 쪽에 깃발 줄을 세운다(승인된 깃발 에셋만, 3일간).
+	if info.celebrate then
+		local spots = { Vector3.new(-28, 0, 22), Vector3.new(-28, 0, -22), Vector3.new(-52, 0, 26), Vector3.new(-52, 0, -26), Vector3.new(-76, 0, 22), Vector3.new(-76, 0, -22) }
+		for _, at in spots do
+			importedModel(folder, "Castle", "flag-banner-short", at, 7, false)
+		end
+		folder:SetAttribute("BuildCelebrate", tostring(info.celebrate.name))
+	end
 	-- 발전도 상승 공사: 새 단계가 열리면 바로 바뀌지 않고, 공사 기간 동안 비계·자재 더미와
 	-- 망치질·자재 나르는 일꾼이 보인다. (공사가 끝나면 클라이언트가 새 단계 장면으로 다시 짓는다)
 	if info.construction then
