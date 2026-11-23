@@ -1,8 +1,8 @@
 --!strict
 -- [항구 정체성] 같은 문화권이라도 항구마다 다른 얼굴을 갖게 하는 데이터 표.
 -- 발전 단계(1~5)에 따라 열리는 요소(TIER)와 항구별 상징·건축·구획·광장·길·조명·땅을 정한다.
--- 3D 원본은 docs/port_identity_prompts.csv 의 프롬프트로 제작·승인한 뒤 AssetIds 에 등록한다.
--- 원본이 없으면 PortScene 은 기존 승인 에셋 조합(fallback)으로 대신 보여 준다.
+-- 3D 원본은 docs/port_asset_prompts.csv 의 프롬프트로 제작·승인한 뒤 AssetIds 에 등록한다.
+-- 없는 상징 원본은 임의 모델로 대체하지 않는다. 색상·주택·도로는 등록된 승인 모델만 활용한다.
 
 export type Landmark = { id: string, name: string, kind: string, fallback: string }
 export type Identity = {
@@ -17,6 +17,8 @@ export type Identity = {
 	ground: string, -- 길 밖 땅: grass | sand | mud | snowmelt | red_earth | rice_paddy
 	weatherGround: string, -- 비·계절 영향: puddles | dust | snow | monsoon_mud | none
 	signature: { string }, -- 구역별 특산 건물 (3단계부터)
+	facade: { number }, -- [항구별 원색] 승인된 무텍스처 주택에만 적용하는 벽 색 RGB
+	roofTint: { number }, -- [항구별 지붕] 승인된 무텍스처 기와·지붕 색 RGB
 }
 
 local Tier = {
@@ -32,63 +34,63 @@ local P: { [string]: Identity } = {
 	london = { landmark = { id = "lm_london_bridge", name = "런던 다리와 상점가", kind = "bridge", fallback = "tower" },
 		roof = "gable", wall = "brick", balcony = "iron", layout = "organic", plaza = "market",
 		street = { "dirt", "gravel", "cobble", "cobble", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
-		signature = { "왕립 거래소", "양조장", "해군 공창" } },
+		signature = { "왕립 거래소", "양조장", "해군 공창" }, facade = { 146, 84, 67 }, roofTint = { 79, 83, 91 } },
 	amsterdam = { landmark = { id = "lm_amsterdam_canal", name = "운하 수문과 계량소", kind = "canal_gate", fallback = "warehouse" },
 		roof = "gable", wall = "brick", balcony = "iron", layout = "canal", plaza = "quay",
 		street = { "plank", "brick", "brick", "brick", "paved" }, lamp = "oil_lantern", ground = "mud", weatherGround = "puddles",
-		signature = { "동인도회사 상관", "풍차 제분소", "거래소" } },
+		signature = { "동인도회사 상관", "풍차 제분소", "거래소" }, facade = { 166, 78, 62 }, roofTint = { 91, 63, 60 } },
 	rouen = { landmark = { id = "lm_rouen_cathedral", name = "고딕 대성당 첨탑", kind = "spire", fallback = "church" },
 		roof = "gable", wall = "timber", balcony = nil, layout = "organic", plaza = "market",
 		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
-		signature = { "직물 시장", "대시계 문루", "포도주 저장고" } },
+		signature = { "직물 시장", "대시계 문루", "포도주 저장고" }, facade = { 213, 193, 164 }, roofTint = { 70, 76, 91 } },
 	copenhagen = { landmark = { id = "lm_copenhagen_tower", name = "원형 천문탑", kind = "tower", fallback = "tower" },
 		roof = "gable", wall = "plaster", balcony = nil, layout = "canal", plaza = "quay",
 		street = { "dirt", "gravel", "cobble", "cobble", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "snow",
-		signature = { "해협 세관", "증권거래소", "목조 창고" } },
+		signature = { "해협 세관", "증권거래소", "목조 창고" }, facade = { 227, 191, 129 }, roofTint = { 88, 104, 94 } },
 	gothenburg = { landmark = { id = "lm_gothenburg_fort", name = "언덕 위 왕관 요새", kind = "fort", fallback = "fort" },
 		roof = "gable", wall = "wood", balcony = nil, layout = "canal", plaza = "quay",
 		street = { "dirt", "gravel", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "snow",
-		signature = { "동인도회사 창고", "제재소", "목조 교회" } },
+		signature = { "동인도회사 창고", "제재소", "목조 교회" }, facade = { 171, 65, 57 }, roofTint = { 72, 78, 76 } },
 	venice = { landmark = { id = "lm_venice_campanile", name = "광장 종탑", kind = "campanile", fallback = "tower" },
 		roof = "hip", wall = "stucco", balcony = "loggia", layout = "canal", plaza = "fountain",
 		street = { "plank", "flagstone", "flagstone", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "mud", weatherGround = "puddles",
-		signature = { "유리 공방", "검역소", "베네치아 공창" } },
+		signature = { "유리 공방", "검역소", "베네치아 공창" }, facade = { 220, 173, 147 }, roofTint = { 164, 88, 66 } },
 	istanbul = { landmark = { id = "lm_istanbul_mosque", name = "대모스크 돔과 첨탑", kind = "dome", fallback = "temple" },
 		roof = "dome", wall = "stone", balcony = "mashrabiya", layout = "terrace", plaza = "temple_court",
 		street = { "dirt", "gravel", "cobble", "flagstone", "flagstone" }, lamp = "mosque_lamp", ground = "red_earth", weatherGround = "dust",
-		signature = { "그랜드 바자르", "함맘", "카라반사라이" } },
+		signature = { "그랜드 바자르", "함맘", "카라반사라이" }, facade = { 215, 197, 165 }, roofTint = { 158, 103, 88 } },
 	zanzibar = { landmark = { id = "lm_zanzibar_house", name = "산호석 궁전과 조각문", kind = "palace", fallback = "palace" },
 		roof = "flat", wall = "coral", balcony = "wood_lattice", layout = "organic", plaza = "quay",
 		street = { "sand", "sand", "gravel", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "sand", weatherGround = "monsoon_mud",
-		signature = { "정향 창고", "다우선 선착장", "산호석 모스크" } },
+		signature = { "정향 창고", "다우선 선착장", "산호석 모스크" }, facade = { 229, 217, 188 }, roofTint = { 172, 142, 104 } },
 	calicut = { landmark = { id = "lm_calicut_temple", name = "목조 사원 고푸람", kind = "gopuram", fallback = "temple" },
 		roof = "eave", wall = "plaster", balcony = "wood_lattice", layout = "organic", plaza = "market",
 		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "monsoon_mud",
-		signature = { "후추 교역소", "면직 공방", "조선 작업장" } },
+		signature = { "후추 교역소", "면직 공방", "조선 작업장" }, facade = { 184, 144, 104 }, roofTint = { 143, 87, 64 } },
 	nagasaki = { landmark = { id = "lm_nagasaki_dejima", name = "데지마 부채꼴 상관", kind = "island_post", fallback = "warehouse" },
 		roof = "eave", wall = "wood", balcony = "wood_lattice", layout = "terrace", plaza = "quay",
 		street = { "dirt", "gravel", "gravel", "flagstone", "flagstone" }, lamp = "stone_lantern", ground = "grass", weatherGround = "puddles",
-		signature = { "도자기 가마", "쌀 창고", "신사 도리이" } },
+		signature = { "도자기 가마", "쌀 창고", "신사 도리이" }, facade = { 117, 99, 76 }, roofTint = { 77, 78, 79 } },
 	veracruz = { landmark = { id = "lm_veracruz_fort", name = "산후안 데 울루아 요새", kind = "fort", fallback = "fort" },
 		roof = "flat", wall = "stucco", balcony = "iron", layout = "grid", plaza = "parade",
 		street = { "sand", "dirt", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "dust",
-		signature = { "은 선적 부두", "세관", "대성당" } },
+		signature = { "은 선적 부두", "세관", "대성당" }, facade = { 220, 190, 156 }, roofTint = { 183, 100, 75 } },
 	canton = { landmark = { id = "lm_canton_hongs", name = "십삼행 상관 거리", kind = "trade_row", fallback = "warehouse" },
 		roof = "eave", wall = "brick", balcony = "wood_lattice", layout = "grid", plaza = "quay",
 		street = { "dirt", "gravel", "flagstone", "flagstone", "paved" }, lamp = "paper_lantern", ground = "rice_paddy", weatherGround = "monsoon_mud",
-		signature = { "차 시장", "도자기 상점", "관창" } },
+		signature = { "차 시장", "도자기 상점", "관창" }, facade = { 174, 168, 154 }, roofTint = { 58, 71, 69 } },
 	seville = { landmark = { id = "lm_seville_giralda", name = "히랄다 종탑", kind = "campanile", fallback = "tower" },
 		roof = "hip", wall = "stucco", balcony = "iron", layout = "organic", plaza = "fountain",
 		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "dust",
-		signature = { "인도 무역원", "올리브 압착소", "황금탑 부두" } },
+		signature = { "인도 무역원", "올리브 압착소", "황금탑 부두" }, facade = { 239, 227, 204 }, roofTint = { 180, 91, 61 } },
 	busan = { landmark = { id = "lm_busan_fort", name = "왜관과 진성", kind = "fort", fallback = "fort" },
 		roof = "eave", wall = "plaster", balcony = nil, layout = "terrace", plaza = "market",
 		street = { "dirt", "dirt", "gravel", "flagstone", "flagstone" }, lamp = "paper_lantern", ground = "grass", weatherGround = "snow",
-		signature = { "판옥선 조선소", "장시", "향교" } },
+		signature = { "판옥선 조선소", "장시", "향교" }, facade = { 222, 216, 201 }, roofTint = { 66, 71, 81 } },
 	lisbon = { landmark = { id = "lm_lisbon_belem", name = "벨렝 탑", kind = "tower", fallback = "tower" },
 		roof = "hip", wall = "stucco", balcony = "iron", layout = "terrace", plaza = "parade",
 		street = { "dirt", "gravel", "cobble", "cobble", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "puddles",
-		signature = { "항해 학교", "향신료 창고", "수도원" } },
+		signature = { "항해 학교", "향신료 창고", "수도원" }, facade = { 224, 200, 174 }, roofTint = { 161, 91, 66 } },
 }
 
 local M = {}
