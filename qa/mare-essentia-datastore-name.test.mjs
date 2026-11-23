@@ -2002,7 +2002,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   // [모자 원본 교체] 헤어는 예비 장식을 숨기고, 깃털모자는 기존 윗면만 남겨 정수리 구멍을 막는다.
   assert.match(pose,/if piece:IsA\("BasePart"\) and piece\.Name == "Hat" then/, '깃털모자 원형만 교체');
   assert.match(pose,/piece\.Transparency = if piece:GetAttribute\("NpcHatCrown"\) == true then 0 else 1/, '모자 정수리 보존');
-  assert.match(pose,/piece\.Transparency = if wornHair then 1 else 0/, '실물 헤어 장착 때 중복 보조모발 숨김');
+  assert.match(pose,/piece\.Transparency = if wornHair or hoodVisible then 1 else 0/, '실물 헤어와 성직자 두건 착용 시 보조모발 숨김');
   // [모델 후보 안전범위] 원래 시각 기준 대신 중앙정책에 허용된 정확한 숫자 범위와 수정을 검증한다.
   const skirt=pose.match(/q\.Size = Vector3\.new\(len, lower\.Size\.X \* ([0-9.]+), lower\.Size\.X \* ([0-9.]+)\)/);
   assert.ok(skirt,'실제 주민 치마 비율 존재');
