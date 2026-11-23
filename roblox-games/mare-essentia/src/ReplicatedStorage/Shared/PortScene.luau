@@ -6320,15 +6320,50 @@ function PortScene.build(info, onFacility)
 		fish = "food-barrel-fish", cheese = "cheese", wine = "barrel",
 		olive_oil = "bottle-oil", tea = "cup-tea", coffee = "cup-coffee",
 	}
+	-- [실촬영 항구 특산물] 별도 검수된 항구 정체성에만 기존 승인된 상품 3D를 추가한다.
+	-- 상품·수량·가격·재고·저장 구조에는 관여하지 않는 부두 전시물이며, 없는 원본은 대체하지 않는다.
+	if identity then
+		cargoModels.wool = "wool"
+		cargoModels.coal = "coal"
+		cargoModels.tin = "tin"
+		cargoModels.spice = "spice"
+		cargoModels.porcelain = "porcelain"
+		cargoModels.sugar = "sugar"
+		cargoModels.silk = "silk"
+		cargoModels.saffron = "saffron"
+		cargoModels.carpet = "carpet"
+		cargoModels.pearls = "pearls"
+		cargoModels.cloves = "cloves"
+		cargoModels.ivory = "ivory"
+		cargoModels.ambergris = "ambergris"
+		cargoModels.cinnamon = "cinnamon"
+		cargoModels.cotton = "cotton"
+		cargoModels.copper = "copper-bars"
+		cargoModels.silver = "silver-bars"
+		cargoModels.lacquer = "lacquer"
+		cargoModels.cochineal = "cochineal"
+		cargoModels.vanilla = "vanilla"
+		cargoModels.cocoa = "cocoa"
+		cargoModels.ginseng = "ginseng"
+		cargoModels.rice = "rice"
+		cargoModels.sealskin = "sealskin"
+		cargoModels.gold = "gold-bars"
+		cargoModels.gems = "gems-chest"
+	end
 	local port = PortData.Ports[info.portId]
 	local cargoIndex = 0
 	for _, id in (if port then port.produces else {}) do
+		-- [모바일 성능] 검증 항구는 최대 4개만 배치하고 기존 다른 항구의 전시는 그대로 둔다.
+		if identity and cargoIndex >= 4 then break end
 		local mesh = cargoModels[id]
-		if mesh then
+		if mesh and AssetIds["Cargo/" .. mesh] then
 			cargoIndex += 1
 			local model = importedModel(folder, "Cargo", mesh,
 				Vector3.new(25 + cargoIndex * 5, 2, if cargoIndex % 2 == 0 then 3.2 else -3.2), 2.4, false)
-			if model then model.Name = "TradeCargo_" .. id end
+			if model then
+				model.Name = "TradeCargo_" .. id
+				model:SetAttribute("PortShowcaseGoodsId", id)
+			end
 		end
 	end
 	-- 등대 (부두 끝)
