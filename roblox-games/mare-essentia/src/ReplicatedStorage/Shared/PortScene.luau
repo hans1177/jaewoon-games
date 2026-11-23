@@ -1542,9 +1542,14 @@ local sceneLevel = 1
 -- [표시 단계 1~6] 기존 1~5 배열은 sceneLevel로 그대로 읽고, 원본 마을 발전도 6(최고)일 때만 6을 쓴다.
 local cityTier = 1
 local scenePortId: string? = nil -- [항구 정체성] 지금 짓는 항구 (정체성 표가 있으면 길·땅 재질을 항구별로)
+-- 정체성 표의 { 재질 이름, R, G, B } → { Enum.Material, Color3 }
+local function identityLook(raw)
+	if not raw then return nil end
+	return { Enum.Material[raw[1]], Color3.fromRGB(raw[2], raw[3], raw[4]) }
+end
 local function identityStreet()
 	local name = scenePortId and PortIdentity.streetAt(scenePortId, sceneLevel)
-	return name and PortIdentity.STREET_LOOK[name]
+	return name and identityLook(PortIdentity.STREET_LOOK[name])
 end
 local function roadMat()
 	local look = identityStreet()
@@ -5730,7 +5735,7 @@ function PortScene.build(info, onFacility)
 	-- [항구 정체성] 길 밖 땅은 기후에 맞는 재질(풀·모래·진흙·붉은 흙·논)로 보이게 한다.
 	local identityGround = (function()
 		local id = PortIdentity.get(info.portId)
-		return id and PortIdentity.GROUND_LOOK[id.ground]
+		return id and identityLook(PortIdentity.GROUND_LOOK[id.ground])
 	end)()
 	if identityGround then
 		farGround = farGround:Lerp(identityGround[2], 0.6)

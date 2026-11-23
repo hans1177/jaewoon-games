@@ -103,26 +103,26 @@ M.LAMPS = { torch = true, oil_lantern = true, paper_lantern = true, mosque_lamp 
 M.GROUNDS = { grass = true, sand = true, mud = true, snowmelt = true, red_earth = true, rice_paddy = true }
 M.WEATHER = { puddles = true, dust = true, snow = true, monsoon_mud = true, none = true }
 
--- 길 재질 → Roblox 재질·색 (PortScene 이 쓴다)
+-- 길 재질 → { Roblox 재질 이름, R, G, B } (PortScene 이 Enum.Material/Color3 로 바꾼다)
 M.STREET_LOOK = {
-	dirt = { Enum.Material.Ground, Color3.fromRGB(122, 96, 70) },
-	gravel = { Enum.Material.Pebble, Color3.fromRGB(140, 132, 118) },
-	cobble = { Enum.Material.Cobblestone, Color3.fromRGB(128, 124, 118) },
-	flagstone = { Enum.Material.Slate, Color3.fromRGB(158, 150, 136) },
-	paved = { Enum.Material.Pavement, Color3.fromRGB(150, 146, 140) },
-	plank = { Enum.Material.WoodPlanks, Color3.fromRGB(120, 92, 64) },
-	brick = { Enum.Material.Brick, Color3.fromRGB(150, 82, 64) },
-	sand = { Enum.Material.Sand, Color3.fromRGB(206, 186, 140) },
-	red_earth = { Enum.Material.Ground, Color3.fromRGB(150, 92, 62) },
+	dirt = { "Ground", 122, 96, 70 },
+	gravel = { "Pebble", 140, 132, 118 },
+	cobble = { "Cobblestone", 128, 124, 118 },
+	flagstone = { "Slate", 158, 150, 136 },
+	paved = { "Pavement", 150, 146, 140 },
+	plank = { "WoodPlanks", 120, 92, 64 },
+	brick = { "Brick", 150, 82, 64 },
+	sand = { "Sand", 206, 186, 140 },
+	red_earth = { "Ground", 150, 92, 62 },
 }
--- 길 밖 땅 → 재질·색
+-- 길 밖 땅 → { 재질 이름, R, G, B }
 M.GROUND_LOOK = {
-	grass = { Enum.Material.Grass, Color3.fromRGB(96, 128, 72) },
-	sand = { Enum.Material.Sand, Color3.fromRGB(214, 196, 150) },
-	mud = { Enum.Material.Mud, Color3.fromRGB(104, 90, 70) },
-	snowmelt = { Enum.Material.Glacier, Color3.fromRGB(210, 214, 218) },
-	red_earth = { Enum.Material.Ground, Color3.fromRGB(160, 104, 72) },
-	rice_paddy = { Enum.Material.Mud, Color3.fromRGB(96, 116, 78) },
+	grass = { "Grass", 96, 128, 72 },
+	sand = { "Sand", 214, 196, 150 },
+	mud = { "Mud", 104, 90, 70 },
+	snowmelt = { "Glacier", 210, 214, 218 },
+	red_earth = { "Ground", 160, 104, 72 },
+	rice_paddy = { "Mud", 96, 116, 78 },
 }
 
 function M.get(portId: string): Identity?
