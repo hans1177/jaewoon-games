@@ -1437,7 +1437,7 @@ test('Mare standalone card duel board respects four rendered rows, zoom and appr
   assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,1,'reuse existing render loop');
   // 검증 등록된 개별 카드만 우선, 미등록 카드는 승인된 기존 그림을 유지한다.
   assert.match(source,/local individualArt = "CardArt\/" \.\. card\.id/);
-  assert.match(source,/if AssetIds\[individualArt\] then return individualArt end/);
+  assert.match(source,/if AssetIds\[individualArt\] and \(not europeCard or EUROPE_CARD_PORTRAIT_READY\[card\.id\]\) then/);
   assert.match(source,/if spec\.newArt and AssetIds\[spec\.newArt\] then return spec\.newArt end/);
   // [카드 식별 회귀] 손패뿐 아니라 확대·전투판에서도 지역/분류를 유지한다.
   assert.ok(source.includes('focusEdge.Color = if regionDeck then regionDeck.color else brass'));
@@ -1489,32 +1489,34 @@ test('Mare card art retains full source frame during battle animation and codex 
   assert.doesNotMatch(game,/if fitImage then Enum\.ScaleType\.Fit else Enum\.ScaleType\.Crop/);
 });
 
-// [유럽 카드 화풍·규격 검수] 이미지와 승인 SHA를 실제 main 바이너리로 검증한다.
-test('Mare European duel renders only visually reviewed original 7:10 card art', () => {
+// [유럽 카드 원화 검수] 실제 등록 파일 SHA·세로 7:10 규격과 전투 표시를 대조한다.
+test('Mare European duel renders only reviewed 7:10 original card art', () => {
   const root='roblox-games/mare-essentia/';
   const battle=fs.readFileSync(root+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   const game=fs.readFileSync(root+'src/StarterPlayer/Game.client.luau','utf8');
   const approved=JSON.parse(fs.readFileSync(root+'assets/APPROVED_IMAGES.json','utf8'));
   const registered=JSON.parse(fs.readFileSync(root+'assets-registered.json','utf8'));
-  const keys=[...battle.matchAll(/\\beu_(\\d\\d) = true,/g)].map(m=>'eu_'+m[1]);
-  assert.equal(keys.length,27,'only separately audited European portraits may be displayed');
-  assert.equal(new Set(keys).size,27,'duplicate portrait allowlist');
-  assert.match(battle,/EUROPE_CARD_PORTRAIT_READY\\[card\\.id\\]/);
-  assert.match(battle,/local europeCard = string\\.match\\(card\\.id, "\\^eu_%d%d\\$"\\) ~= nil/);
-  assert.match(game,/\\.cardArtworkKey\\(card\\)/,'combat reward follows the same gate');
-  let compliant=0,blocked=[],invalid=[];
+  const keys=[...battle.matchAll(/eu_(\d\d) = true,/g)].map(m=>'eu_'+m[1]);
+  assert.equal(keys.length,27,'27 approved 1400x2000 originals');
+  assert.equal(new Set(keys).size,27,'unique portraits');
+  assert.match(battle,/EUROPE_CARD_PORTRAIT_READY\[card\.id\]/);
+  assert.match(battle,/local europeCard = string\.match\(card\.id, "\^eu_%d%d\$"\) ~= nil/);
+  assert.match(game,/\.cardArtworkKey\(card\)/,'combat reward uses battle artwork gate');
+  let compliant=0;
+  const different=[],pending=[];
   for(let n=1;n<=45;n++){
     const card='eu_'+String(n).padStart(2,'0');
     const key='CardArt/'+card;
     const asset=registered.assets[key];
-    assert.equal(asset.usePermissionGranted,true,'registered permission '+card);
+    assert.equal(asset.usePermissionGranted,true,'asset use granted '+card);
     assert.equal(asset.sourceSha256,approved.approved[key],'approved SHA '+card);
-    const bin=fs.readFileSync(root+asset.source.replace(/^roblox-games\\/mare-essentia\\//,''));
-    const digest=createHash('sha256').update(bin).digest('hex');
-    assert.equal(digest,asset.sourceSha256,'actual registered PNG/JPG '+card);
+    assert.ok(asset.source.startsWith(root),'registered source stays within game '+card);
+    const bin=fs.readFileSync(asset.source);
+    assert.equal(createHash('sha256').update(bin).digest('hex'),asset.sourceSha256,'real source hash '+card);
     let w=0,h=0;
-    if(bin.toString('ascii',1,4)==='PNG'){w=bin.readUInt32BE(16);h=bin.readUInt32BE(20);}
-    else {
+    if(bin.length>24&&bin.toString('ascii',1,4)==='PNG'){
+      w=bin.readUInt32BE(16);h=bin.readUInt32BE(20);
+    }else if(bin[0]===0xff&&bin[1]===0xd8){
       for(let i=2;i<bin.length-9;){
         if(bin[i]!==0xff){i++;continue;}
         const marker=bin[i+1];
@@ -1526,13 +1528,16 @@ test('Mare European duel renders only visually reviewed original 7:10 card art',
         i+=2+size;
       }
     }
-    if(w===1400&&h===2000)compliant++;
-    else invalid.push(card+':'+w+'x'+h);
-    if(!keys.includes(card))blocked.push(card+':'+w+'x'+h);
-    if(keys.includes(card))assert.deepEqual([w,h],[1400,2000],card+' must be a complete reviewed portrait');
+    assert.ok(w>0&&h>0,'readable original image '+card);
+    const valid=w===1400&&h===2000;
+    if(valid)compliant++;
+    else different.push(card+':'+w+'x'+h);
+    if(keys.includes(card))assert.ok(valid,'visually reviewed image must be 1400x2000: '+card);
+    else pending.push(card+':'+w+'x'+h);
   }
-  console.log('EUROPE_CARD_ART_7X10='+compliant+'/45 NONSTANDARD='+invalid.join(',')+' REVIEW_PENDING='+blocked.join(','));
-  assert.equal(blocked.length,18,'all unreviewed European pictures remain hidden from card battle');
+  console.log('EUROPE_CARD_ART_7X10='+compliant+'/45 DIFFERENT='+different.join(',')+' DISPLAY_PENDING='+pending.join(','));
+  assert.equal(compliant,27);
+  assert.equal(pending.length,18,'18 nonstandard or unreviewed originals excluded from game display');
 });
 
 test('Mare 150 regional card illustrations remain source complete and SHA-approved before Roblox registration', () => {
