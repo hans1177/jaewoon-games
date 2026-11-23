@@ -229,7 +229,8 @@ local TABS = {
 -- 시설별 창: 건물에 들어가면 그 시설의 탭만 열린다
 local GROUPS = {
 	{ name = "교역소", keeper = "상인 길드", tabs = { "trade", "market", "harbor" } },
-	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map", "diplomacy" } },
+	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map" } },
+	{ name = "외교", keeper = "외교관", tabs = { "diplomacy" } }, -- 도크의 별도 외교 아이콘
 	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
 	{ name = "주점", keeper = "주점 주인", tabs = { "board", "quest", "recruit" } }, -- 주점: 의뢰·동료
 	{ name = "전투 본부", keeper = "전투 교관", tabs = { "battle", "explore", "war", "gwent" } }, -- 전투·지상 탐험·함대전·카드 배틀
@@ -1545,7 +1546,7 @@ pendingStroke.Parent = captainPlaceholder
 local portraitKey = nil
 local PORTRAIT_ROLE = {
 	["교역소"] = "Rogue", ["항만청"] = "Knight", ["조선소"] = "Barbarian",
-	["주점"] = "Barbarian", ["전투 본부"] = "Knight", ["학자의 서재"] = "Mage", ["선장실"] = "Rogue_Hooded",
+	["주점"] = "Barbarian", ["전투 본부"] = "Knight", ["학자의 서재"] = "Mage", ["선장실"] = "Rogue_Hooded", ["외교"] = "Knight",
 }
 -- 동료별 실제 등록된 인물 모델. 기존 3D 원본과 역할을 재사용하며 저장 데이터는 건드리지 않는다.
 -- 문화권·성별이 맞지 않는 공용 2D 얼굴을 다른 사람에게 강제로 할당하지 않는다.
@@ -2482,6 +2483,13 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		icon.AnchorPoint = Vector2.new(0.5, 0)
 		icon.Position = UDim2.new(0.5, 0, 0, artTop)
 		icon.ZIndex = 2
+	elseif key == "diplomacy" then
+		-- [외교 아이콘] 알현 메뉴와 같은 기존 깃발 모델(Castle/flag-banner-short)을 도크 시설 아이콘으로 쓴다.
+		local flag = modelIcon(button, "Castle", "flag-banner-short", nil, artSize, label)
+		flag.Name = "MenuArt"
+		flag.AnchorPoint = Vector2.new(0.5, 0)
+		flag.Position = UDim2.new(0.5, 0, 0, artTop)
+		flag.ZIndex = 2
 	elseif specialGlyph then
 		-- [시설·시스템 통일] 투명 황동 아이콘: 주점 잔/카드/기록장/설정/도움말.
 		local symbol = modelIcon(button, "Glyph", specialGlyph, nil, artSize, label)
@@ -2629,7 +2637,7 @@ dockLimit.Parent = dock
 
 -- [시설 목차] 시설 7곳은 기존 도크 그대로, 세부 기능은 각 시설의 탭 안에만 둔다.
 H.DOCK = {
-	{ "trade", "교역소", "trade" }, { "route", "항만청", "route" }, { "yard", "조선소", "yard" },
+	{ "trade", "교역소", "trade" }, { "route", "항만청", "route" }, { "diplomacy", "외교", "diplomacy" }, { "yard", "조선소", "yard" },
 	{ "board", "주점", "tavern" }, { "battle", "전투", "battle" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
 }
 H.dockButtons = {}
@@ -3258,9 +3266,9 @@ do
 	local function layoutBubble()
 		local width = math.max(320, hud.AbsoluteSize.X)
 		local compact = width < 610
-		-- [모바일 7개 시설] 가로 한 줄을 유지하고 화면보다 넓을 때만 스크롤한다.
+		-- [모바일 8개 시설] 가로 한 줄을 유지하고 화면보다 넓을 때만 스크롤한다.
 		local CW, CH, GAP = 44, 64, 4
-		local count = #H.DOCK
+		local count = #H.DOCK -- 시설 8곳(외교 포함): 화면보다 넓으면 가로 스크롤
 		local dockW = count * CW + math.max(0, count - 1) * GAP
 		dockGrid.Padding = UDim.new(0, GAP)
 		for _, dockButton in H.dockButtons do
