@@ -1,0 +1,29 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'NEWGAME ok='..tostring(a and a.ok)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local n=0 for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then for _,x in ipairs(g:GetDescendants()) do if x:IsA('TextLabel') and string.find(x.Text,'길드 서기') then g:Destroy() n+=1 break end end end end return 'killed '..n"
+ },
+ {
+  "type": "wait",
+  "ms": 8000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'noscene' end\nlocal types={} local minx,maxx,minz,maxz=1e9,-1e9,1e9,-1e9\nlocal grid={}\nfor _,m in ipairs(f:GetChildren()) do\n if m:IsA('Model') or m:IsA('BasePart') then\n  local ok,cf,sz=pcall(function() if m:IsA('Model') then return m:GetBoundingBox() else return m.CFrame,m.Size end end)\n  if ok and sz.X<200 and sz.Z<200 and m.Name~='TownFloor' and m.Name~='RuralGround' then\n   local p=cf.Position\n   local t=tostring(m:GetAttribute('BuildType') or m.Name:match('^[%a]+') or '?')\n   types[t]=(types[t] or 0)+1\n   if m:GetAttribute('BuildPlotId') then minx=math.min(minx,p.X) maxx=math.max(maxx,p.X) minz=math.min(minz,p.Z) maxz=math.max(maxz,p.Z) end\n   local gx=math.floor(p.X/50) local gz=math.floor(p.Z/50) local k=gx..','..gz grid[k]=(grid[k] or 0)+1\n  end\n end\nend\nlocal tl={} for k,v in pairs(types) do if v>=3 then table.insert(tl,k..'='..v) end end table.sort(tl)\nlocal gl={} for k,v in pairs(grid) do table.insert(gl,k..':'..v) end table.sort(gl)\nlocal tf=f:FindFirstChild('TownFloor') local bp=workspace:FindFirstChild('Baseplate')\nlocal a={} for _,k in ipairs({'CityDisplayTier','TownLandWidth','TownLandDepth','TownPlotSpacing','PortLandWidth','PortLandDepth'}) do table.insert(a,k..'='..tostring(f:GetAttribute(k))) end\nreturn 'attrs '..table.concat(a,' ')..'\\nfloor '..(tf and tostring(tf.Size)..' @'..tostring(tf.Position) or '-')..' base '..(bp and tostring(bp.Size) or '-')..'\\nplots x['..math.floor(minx)..','..math.floor(maxx)..'] z['..math.floor(minz)..','..math.floor(maxz)..']\\ntypes '..table.concat(tl,' ')..'\\ngrid50 '..table.concat(gl,' ')"
+ }
+]
