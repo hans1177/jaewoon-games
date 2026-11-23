@@ -217,3 +217,34 @@ optional wet variant with puddles, optional dusty variant, optional light snow v
 - `PortIdentity.streetAt(portId, lvl)` → 길 재질 (적용됨)
 - `identity.ground` → 길 밖 땅·마을 바닥 재질 (적용됨)
 - 상징물·특산 건물·밤 조명·날씨 바닥·자원 농촌은 3D 원본 등록 후 단계별 배치 (다음 단계)
+
+---
+
+## 7. 항구별 3D 에셋 제작 지시서 (CSV)
+
+파일: `docs/port_asset_prompts.csv` (300줄 = 15항구 × 약 20종). 생성기: `python3 tools/gen_port_asset_prompts.py`
+
+| 열 | 뜻 |
+|---|---|
+| asset_id | `<항구>_<종류>` (예: `venice_workshop_glass`). 업로드 파일 이름도 이걸로 |
+| category | landmark · house · district · plaza · lamp · sign · goods · workshop |
+| tier | 이 단계부터 마을에 나타남 |
+| size_studs / tris | 목표 크기(가로x깊이x높이)와 폴리곤 상한 |
+| prompt_en | 3D 생성 도구에 그대로 붙여 넣는 영어 프롬프트(공통 문구 포함) |
+| notes_ko | 한글 메모 |
+
+**항구당 에셋 구성**
+- 상징물 2종: 공사 중(2단계) → 완성(4단계)
+- 주택 3종: 1층 오두막(1단계) / 2층 상점 주택(3단계) / 3층 부유 상인 주택(5단계), 색 슬롯 3개
+- 구역 특산 건물 3종 (3단계)
+- 광장 중심물 1, 가로등 1(밤 발광 재질 슬롯), 그림 간판 세트 1
+- 특산물마다: 진열 가판대 + 공방
+- 창고 마당 재고 3단계(적음·보통·가득)
+
+**만드는 순서 (추천)**
+1. 시작 항구 5곳(런던·암스테르담·베네치아·이스탄불·나가사키)의 상징물 완성 + 주택 3종
+2. 같은 5곳의 가판대·공방
+3. 나머지 10곳
+4. 가로등·간판·창고 (전 항구 공통 사용 가능)
+
+**넣는 곳**: `assets/inbox/Town/<asset_id>.fbx|glb` → 승인 → `AssetIds["Town/<asset_id>"]` 등록 → 마을이 자동 사용(없으면 기존 에셋으로 대체).
