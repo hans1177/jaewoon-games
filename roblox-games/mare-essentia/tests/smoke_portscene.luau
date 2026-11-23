@@ -9,6 +9,20 @@ local Ports = require("./Ports")
 local ports = {}
 for id in Ports.Ports do table.insert(ports, id) end
 table.sort(ports)
+-- [181개 항구 전수 회귀] 항구별 경관 변경이 등록 항구·문화권 연결을 누락하면 실패한다.
+if #ports ~= 181 then error("항구 목록 181곳 불일치: " .. tostring(#ports)) end
+local PortIdentity = require("./PortIdentity")
+local landmarkPlans = 0
+for _, id in ports do
+	local identity = PortIdentity.get(id)
+	if identity then
+		landmarkPlans += 1
+		if not identity.landmark or not identity.landmark.id then
+			error("항구 상징 원본 계획 누락: " .. id)
+		end
+	end
+end
+if landmarkPlans < 15 then error("항구 상징 건물 계획 15곳 누락") end
 for _, id in ports do
 	if not Cultures.REGION[id] then error("문화권 미등록 항구: " .. id) end
 end

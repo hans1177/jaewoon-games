@@ -3040,6 +3040,11 @@ local function placeSignature(folder, info)
 	-- 1개 표시(2단계) / 기존 전체 수량(3단계 이상)을 유지해 모바일 모델 수는 늘리지 않는다.
 	local visualGroups = {}
 	local sceneryCount = 0
+	-- [항구 실루엣] 같은 등록 모델의 배치라도 항구별 간격과 방향은 고유하게 구성한다.
+	local layoutRng = seeded(info.portId .. ":signature-layout")
+	local layoutAngle = math.rad(layoutRng:NextInteger(-20, 20))
+	local layoutWidth = 0.90 + layoutRng:NextInteger(0, 20) / 100
+	local layoutCos, layoutSin = math.cos(layoutAngle), math.sin(layoutAngle)
 	if list then
 		for index, e in list do
 			if sceneLevel < 3 and index > 1 then break end
@@ -3050,15 +3055,17 @@ local function placeSignature(folder, info)
 				variation = {
 					shiftX = r:NextInteger(-5, 5),
 					shiftZ = r:NextInteger(-5, 5),
-					scale = 0.88 + r:NextInteger(0, 24) * 0.01,
-					yaw = math.rad(r:NextInteger(-13, 13)),
+					scale = 0.82 + r:NextInteger(0, 36) * 0.01,
+					yaw = math.rad(r:NextInteger(-21, 21)),
 				}
 				visualGroups[groupKey] = variation
 			end
 			local early = sceneLevel == 2
 			local span = if early then 0.5 else 1
-			local at = SIG_ANCHOR + Vector3.new(e.dx * span + variation.shiftX,
-				e.y * variation.scale, e.dz * span + variation.shiftZ)
+			local at = SIG_ANCHOR + Vector3.new(
+				(e.dx * layoutCos - e.dz * layoutSin) * layoutWidth * span + variation.shiftX,
+				e.y * variation.scale,
+				(e.dx * layoutSin + e.dz * layoutCos) * layoutWidth * span + variation.shiftZ)
 			local size = (if early then math.min(16, e.size * 0.58) else e.size) * variation.scale
 			local m = importedModel(folder, e.kind, e.asset, at, size, not early, e.tint)
 			if m then
@@ -3066,7 +3073,7 @@ local function placeSignature(folder, info)
 				m:SetAttribute("PortSceneryAsset", e.kind .. "/" .. e.asset)
 				m:SetAttribute("PortSceneryFor", info.portId)
 				m:SetAttribute("BuildAuthority", "VISUAL_ONLY")
-				rotateAround(m, at, variation.yaw)
+				rotateAround(m, at, variation.yaw + layoutAngle)
 				sceneryCount += 1
 			end
 		end
