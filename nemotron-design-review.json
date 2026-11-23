@@ -4,13 +4,13 @@
   "gameId": "mare-essentia",
   "sourceRevision": "2921ef3b142e4e513b669e51b53f938e6f284493",
   "status": "REVIEWED_NO_VERIFIED_EDIT",
-  "selectedRole": "GENERAL",
+  "selectedRole": "NPC",
   "usageWindow": {
     "day": "2026-11-23",
     "calls": {
-      "NVIDIA": 6,
+      "NVIDIA": 7,
       "GEMINI": 12,
-      "OPENROUTER": 22
+      "OPENROUTER": 24
     },
     "windowIds": {
       "NVIDIA": "2026-11-23",
@@ -25,22 +25,22 @@
   },
   "cooldowns": {
     "GEMINI_FLASH": "2026-11-24T11:58:55.826Z",
-    "NVIDIA_VL": "2026-11-23T15:00:50.864Z",
-    "OPENROUTER_GEMMA26": "2026-11-23T14:54:41.590Z",
-    "OPENROUTER_GEMMA": "2026-11-23T14:54:42.292Z",
-    "OPENROUTER_NEMOTRON": "2026-11-23T15:24:16.737Z"
+    "OPENROUTER_NEMOTRON": "2026-11-23T15:24:16.737Z",
+    "NVIDIA_VL": "2026-11-23T15:41:35.695Z",
+    "OPENROUTER_GEMMA": "2026-11-23T15:12:36.275Z",
+    "OPENROUTER_GEMMA26": "2026-11-23T15:12:36.881Z"
   },
   "quotaForecast": {
     "NVIDIA": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 6,
-      "remainingLocal": 6,
-      "effectiveRemaining": 6,
-      "regularWorkRemaining": 3,
+      "localUsed": 7,
+      "remainingLocal": 5,
+      "effectiveRemaining": 5,
+      "regularWorkRemaining": 2,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 1.21,
-      "estimatedHoursToLocalCap": 5,
+      "estimatedCallsPerHour": 1.36,
+      "estimatedHoursToLocalCap": 3.7,
       "nextLocalWindowAt": "2026-11-24T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -56,7 +56,7 @@
       "effectiveRemaining": 0,
       "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 0,
-      "estimatedCallsPerHour": 2.67,
+      "estimatedCallsPerHour": 2.49,
       "estimatedHoursToLocalCap": 0,
       "nextLocalWindowAt": "2026-11-24T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
@@ -68,13 +68,13 @@
     "OPENROUTER": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 30,
-      "localUsed": 22,
-      "remainingLocal": 8,
-      "effectiveRemaining": 8,
-      "regularWorkRemaining": 2,
+      "localUsed": 24,
+      "remainingLocal": 6,
+      "effectiveRemaining": 6,
+      "regularWorkRemaining": 0,
       "emergencyReserveRemaining": 6,
-      "estimatedCallsPerHour": 5.09,
-      "estimatedHoursToLocalCap": 1.6,
+      "estimatedCallsPerHour": 5.21,
+      "estimatedHoursToLocalCap": 1.2,
       "nextLocalWindowAt": "2026-11-24T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -86,10 +86,15 @@
   "accountQuota": null,
   "attempts": [
     {
-      "id": "OPENROUTER_GEMMA26",
-      "status": "HTTP_429",
-      "provider": "OPENROUTER",
-      "model": "google/gemma-4-26b-a4b-it:free"
+      "id": "NVIDIA_VL",
+      "status": "OK",
+      "provider": "NVIDIA",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "REVIEW_INVALID",
+      "failureSignature": "EDIT_NOT_VISUAL_OR_NOT_IN_POLICY"
     },
     {
       "id": "OPENROUTER_GEMMA",
@@ -98,33 +103,28 @@
       "model": "google/gemma-4-31b-it:free"
     },
     {
-      "id": "OPENROUTER_NEMOTRON",
-      "status": "OK",
+      "id": "OPENROUTER_GEMMA26",
+      "status": "HTTP_429",
       "provider": "OPENROUTER",
-      "model": "nvidia/nemotron-3.5-super-vl:free"
-    },
-    {
-      "id": "OPENROUTER_NEMOTRON",
-      "status": "REVIEW_INVALID",
-      "failureSignature": "Unterminated_string_in_JSON_at_position_14847__line_1_column_14848_"
+      "model": "google/gemma-4-26b-a4b-it:free"
     }
   ],
   "frames": [
     {
-      "name": "b1_start-0.jpg",
-      "sha256": "21f8ca0cb79f68be2b4259877196cd1dffb4da11c8f9e261c72244a45693aa68"
+      "name": "field_npc_ally_mob-0.jpg",
+      "sha256": "0285b6b657d0313c6836f059df8bf3eab5d42c6c164ebe1c422fdf17b30361bf"
     },
     {
-      "name": "b2_mid-0.jpg",
-      "sha256": "1f16e6cf7165f0410d626bad7440d69a5818ef84f831e9fbbb16e7ce2004f5cd"
+      "name": "harbor_npc_face_front-0.jpg",
+      "sha256": "bd602d4aefb1fb30b10a8791708d49b0b923dbc09d3adb2ad7225c3084d7ea6c"
     },
     {
-      "name": "c00_start-0.jpg",
-      "sha256": "8b013ebc3c47798bbbcfa05909d1811ce8e0ff6f6f4e977ab09171c782b4343d"
+      "name": "harbor_npc_sparring_01-0.jpg",
+      "sha256": "2fa60459821f3d1067c035e4c6ec26dc78403f0a68eb34ecb5a523f17d07ef4f"
     },
     {
-      "name": "intro_center_early-0.jpg",
-      "sha256": "f4335b903ff82bd88ccd6fc8b625273498073289fcdd56d052fdf42285daac58"
+      "name": "harbor_npc_sparring_02-0.jpg",
+      "sha256": "645a7c3ec525c081899535e8f449ef5b7564537075fa2b981331bdb012f66a17"
     }
   ],
   "independentQaPassed": false,
