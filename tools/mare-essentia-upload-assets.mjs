@@ -1288,10 +1288,11 @@ if (!studioRegrantPath) for (const [id, review] of Object.entries(modelOriginals
   try { current = await fs.readFile(targetPath); } catch (error) { if (error.code !== 'ENOENT') throw error; }
   const currentHash = current && crypto.createHash('sha256').update(current).digest('hex');
   if (current && currentHash !== hash) {
-    // [기존 번호 보호] 원본·등록 ID·Universe 권한이 모두 승인 기록과 일치할 때만 교체 준비.
+    // [기존 번호 보호] 새 원본이 아닌 모든 덮어쓰기는 등록표를 읽기 전부터 즉시 차단한다.
+    if (!replacingPortrait) throw new Error('MODEL_ORIGINAL_EXISTING_CARD_PRESERVED:' + id);
     // 신규 업로드나 사용 권한이 실패하면 아래 기존 원자적 롤백이 이전 번호를 복구한다.
     const previous = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')).assets?.[id];
-    if (!replacingPortrait || review.replacesSha256 !== currentHash
+    if (review.replacesSha256 !== currentHash
       || previous?.sourceSha256 !== currentHash
       || String(previous?.assetId || '') !== String(review.replacesAssetId || '')
       || previous?.assetType !== 'Image' || previous?.usePermissionGranted !== true
