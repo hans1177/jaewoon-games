@@ -2628,10 +2628,9 @@ end
 local hudTop, hudTopGui -- 아이콘 애니메이션을 HUD 표시 상태와 연동한다.
 do
 local hudTweenService = game:GetService("TweenService")
-local HUD_MENU_TINT = {
-	view = Color3.fromRGB(235, 206, 158), gear = Color3.fromRGB(235, 206, 158),
-	deck = Color3.fromRGB(255, 176, 150), help = Color3.fromRGB(255, 255, 255),
-}
+-- [청동 컨셉 통일] 모든 HUD·도크 아이콘을 같은 청동 색으로 칠한다(아이콘마다 다른 색 금지).
+local HUD_BRONZE = Color3.fromRGB(214, 152, 92)
+local HUD_MENU_TINT = {}
 local HUD_MENU_ART = {
 	gear = "", deck = "", auto = "harbor", help = "",
 	view = "view", trade = "trade", crew = "", recruit = "", scholar = "tech", route = "route",
@@ -2663,7 +2662,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	round.CornerRadius = UDim.new(1, 0)
 	round.Parent = disc
 	local grad = Instance.new("UIGradient")
-	grad.Color = ColorSequence.new(Color3.fromRGB(255, 237, 175), Color3.fromRGB(106, 59, 31))
+	grad.Color = ColorSequence.new(Color3.fromRGB(232, 170, 110), Color3.fromRGB(110, 62, 30)) -- 청동
 	grad.Rotation = 90
 	grad.Parent = disc
 	local badgeStroke = Instance.new("UIStroke")
@@ -2705,7 +2704,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 			art.Size = UDim2.fromOffset(artSize, artSize)
 			art.BackgroundTransparency = 1
 			art.Image = "rbxassetid://" .. tostring(artId)
-			art.ImageColor3 = if i == 1 then Color3.fromRGB(52, 35, 18) else (HUD_MENU_TINT[key] or Color3.fromRGB(255, 246, 229))
+			art.ImageColor3 = if i == 1 then Color3.fromRGB(52, 35, 18) else (HUD_MENU_TINT[key] or HUD_BRONZE)
 			art.ImageTransparency = if i == 1 then 0.76 else 0
 			art.ScaleType = Enum.ScaleType.Fit
 			art.ZIndex = i
@@ -2739,7 +2738,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		local art = button:FindFirstChild("MenuArt")
 		if art and art:IsA("ImageLabel") then
 			-- [밝은 투명 원화] 배경 사각형 없이 원본 색을 최대한 유지한다.
-			art.ImageColor3 = if selected then Color3.fromRGB(255, 253, 237) else (HUD_MENU_TINT[key] or Color3.fromRGB(255, 246, 229))
+			art.ImageColor3 = if selected then Color3.fromRGB(255, 253, 237) else (HUD_MENU_TINT[key] or HUD_BRONZE)
 		elseif art and art:IsA("Frame") and art:GetAttribute("MenuGlyph") then
 			-- [선택 색 동기화] 원화뿐 아니라 황동 도형도 같은 선택 강조를 받는다.
 			local highlight = if selected then Color3.fromRGB(255, 243, 190) else Color3.fromRGB(255, 222, 155)
@@ -2779,8 +2778,9 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	iconGlow.BackgroundTransparency = 1
 	iconGlow.BorderSizePixel = 0
 	iconGlow.Image = "rbxasset://textures/particles/sparkles_main.dds"
-	iconGlow.ImageColor3 = if key == "view" then Color3.fromRGB(105, 212, 255) else Color3.fromRGB(255, 198, 91)
+	iconGlow.ImageColor3 = Color3.fromRGB(255, 198, 91)
 	iconGlow.ImageTransparency = 0.47
+	iconGlow.Visible = false -- [알림 때만] 평소에는 숨김. IconAlert 속성이 켜질 때만 광휘·맥동.
 	iconGlow.ZIndex = 1
 	iconGlow.Active = false
 	iconGlow.Parent = button
@@ -2799,7 +2799,9 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		TweenInfo.new(1.22 + (name:len() % 3) * 0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
 		{ Size = UDim2.fromOffset(63, 63), ImageTransparency = 0.80, Rotation = 24 })
 	local function syncIconMotion()
-		local animate = not game:GetService("GuiService").ReducedMotionEnabled
+		local alerting = button:GetAttribute("IconAlert") == true
+		iconGlow.Visible = alerting
+		local animate = alerting and not game:GetService("GuiService").ReducedMotionEnabled
 			and (not hudTopGui or hudTopGui.Enabled) and button.Visible
 		if animate then
 			if breathTween then breathTween:Play() end
@@ -2815,6 +2817,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	end
 	if hudTopGui then hudTopGui:GetPropertyChangedSignal("Enabled"):Connect(syncIconMotion) end
 	button:GetPropertyChangedSignal("Visible"):Connect(syncIconMotion)
+	button:GetAttributeChangedSignal("IconAlert"):Connect(syncIconMotion)
 	game:GetService("GuiService"):GetPropertyChangedSignal("ReducedMotionEnabled"):Connect(syncIconMotion)
 	syncIconMotion()
 	local art = button:FindFirstChild("MenuArt")
@@ -2862,25 +2865,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 				{ Size = UDim2.fromOffset(63, 63), BackgroundTransparency = 1 })
 			tw.Completed:Connect(function() glow:Destroy() end)
 			tw:Play()
-			local previousSpark = button:FindFirstChild("PressSpark")
-			if previousSpark then previousSpark:Destroy() end
-			local pressSpark = Instance.new("ImageLabel")
-			pressSpark.Name = "PressSpark"
-			pressSpark.Image = "rbxasset://textures/particles/sparkles_main.dds"
-			pressSpark.ImageColor3 = Color3.fromRGB(255, 222, 127)
-			pressSpark.ImageTransparency = 0.08
-			pressSpark.BackgroundTransparency = 1
-			pressSpark.BorderSizePixel = 0
-			pressSpark.AnchorPoint = Vector2.new(0.5, 0.5)
-			pressSpark.Position = UDim2.new(0.5, 0, 0, 23)
-			pressSpark.Size = UDim2.fromOffset(16, 16)
-			pressSpark.ZIndex = 8
-			pressSpark.Parent = button
-			local pressTween = hudTweenService:Create(pressSpark,
-				TweenInfo.new(0.32, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-				{ Size = UDim2.fromOffset(40, 40), ImageTransparency = 1, Rotation = 65 })
-			pressTween.Completed:Connect(function() pressSpark:Destroy() end)
-			pressTween:Play()
+			-- [정리] 누를 때 반짝이 파편은 제거(값싼 효과). 눌림 고리와 크기 반응만 남긴다.
 		end)
 	end
 	local scale = Instance.new("UIScale")
@@ -3593,7 +3578,9 @@ function H.updateHud(p, ship)
 		yard = if (ship.hull or 0) / math.max(1, ship.maxHull or 1) < 0.40 then "긴급"
 			elseif (ship.hull or 0) < (ship.maxHull or 0) then "수리"
 			elseif (ship.supplies or 0) <= 5 then "보급" else nil,
-		board = if readyDelivery then "납품" else nil,
+		-- [인원 부족] 선원이 정원의 절반 아래면 주점(선원 고용)에 알림
+		board = if readyDelivery then "납품"
+			elseif (ship.crew or 0) < (ship.maxCrew or 0) * 0.5 then "인원" else nil,
 	}
 	-- [알림 효과] 실제 게임 상태만 사용. 2겹 색광은 활성 알림에만 재생하고 상태 변경 시 기존 트윈을 정리한다.
 	H.dockSignalTweens = H.dockSignalTweens or {}
@@ -3619,6 +3606,7 @@ function H.updateHud(p, ship)
 		end
 		notice.ImageColor3 = tint
 		notice.Visible = alert ~= nil
+		if button then button:SetAttribute("IconAlert", alert ~= nil) end -- 알림 있을 때만 아이콘이 커졌다 작아진다
 		if halo then
 			halo.ImageColor3 = tint
 			halo.Visible = alert ~= nil
@@ -3747,12 +3735,22 @@ do
 		local dockH = CH * 2 + GAP
 		dockGrid.CellPadding = UDim2.fromOffset(GAP, GAP)
 		dockGrid.CellSize = UDim2.fromOffset(CW, CH)
-		local sysOrder = { "JournalButton", "DeckButton", "OptionsButton", "ViewToggle" }
+		-- [정렬] 걷기는 2줄 맨 앞(7번째). 시설 1~6 → 1줄, 걷기 → 2줄 첫 칸, 나머지 시설 → 그 뒤, 저널·카드·설정 → 끝.
+		local sysOrder = { "JournalButton", "DeckButton", "OptionsButton" }
+		for i, d in H.DOCK do
+			local fb = H.dockButtons[d[1]]
+			if fb then fb.LayoutOrder = if i <= 6 then i else i + 1 end
+		end
+		local walkBtn = dock:FindFirstChild("ViewToggle") or hudTop:FindFirstChild("ViewToggle")
+		if walkBtn then
+			if walkBtn.Parent ~= dock then walkBtn.Parent = dock end
+			walkBtn.LayoutOrder = 7
+		end
 		for i, name in sysOrder do
 			local b = dock:FindFirstChild(name) or hudTop:FindFirstChild(name)
 			if b then
 				if b.Parent ~= dock then b.Parent = dock end
-				b.LayoutOrder = #H.DOCK + i
+				b.LayoutOrder = #H.DOCK + 1 + i
 			end
 		end
 		for _, item in dock:GetChildren() do
