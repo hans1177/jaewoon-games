@@ -3423,6 +3423,22 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
   assert.match(source,/string\.sub\(target, 1, 7\) == "search:"/,'서재 검색과 정확한 백과 장 분기');
   assert.match(source,/H\.codexSearchTerm = string\.sub\(target, 8\)/,'기존 지식 검색 기능 재사용');
   assert.match(source,/if wide and gallery and height - bodyTop >= 210 then/,'낮은 가로 화면의 원화 잘림 방지');
+  // [선택 대상과 원화] 실제 항로/국가/항구를 눌러도 기존 출항·외교·저장 흐름은 분리한다.
+  assert.match(source,/H\.gallerySelection = nil -- \[시설 변경\]/,'시설 변경 시 이전 선택 정리');
+  assert.match(source,/H\.gallerySearchTerm or/,'백과 링크에 선택 대상 검색어 전달');
+  assert.match(source,/H\.gallerySelection = \{ tab = "route"/,'항로 선택으로 원화 변경');
+  assert.match(source,/choose\.Name = "RouteArtwork_" \.\. tostring\(r\.id\)/,'항로 원화 터치 영역');
+  assert.match(source,/choose\.Size = UDim2\.new\(1, -124, 0, 42\)/,'항로 원화 터치와 실제 출항 버튼 분리');
+  assert.match(source,/H\.gallerySelection = \{ tab = "diplomacy"/,'외교 국가 선택으로 원화 변경');
+  assert.match(source,/choose\.Name = "DiplomacyArtwork_" \.\. tostring\(n\.id\)/,'외교 국가 터치 영역');
+  assert.match(source,/H\.gallerySelection = \{ tab = "map"/,'선택 항구에 연결된 원화 갱신');
+  assert.match(source,/chart = H\.chartForPort\(selectedPort\)/,'선택 항구는 기존 해역도 경로 사용');
+  assert.match(source,/AssetIds\["CardArt\/event_chart_" \.\. selection\.chart\]/,'승인 해역도만 사용');
+  assert.match(source,/AssetIds\["CardArt\/" \.\. selection\.art\]/,'승인 국가 관련 원화만 사용');
+  assert.match(source,/england = "event_royal_charter", netherlands = "event_anglo_dutch_war"/,'국가 관련 원본 카드');
+  assert.match(source,/H\.galleryArtTween:Cancel\(\)/,'원화 빠른 넘김 시 이전 효과 중복 중지');
+  assert.match(source,/H\.galleryArtTween:Play\(\)/,'새 원화 페이드 유지');
+  assert.match(source,/if card\.found == true and type\(card\.image\) == "string"/,'미발견 기록 원화 비공개');
   for(const action of ['Buy','Sell','BuyShip','Repair','BuySupplies'])
     assert.ok(source.includes('call("'+action+'"'),'기존 서버 호출 유지: '+action);
   assert.doesNotMatch(trade,/Instance\.new\("Part"\)/,'새 임시 3D 도형 금지');
