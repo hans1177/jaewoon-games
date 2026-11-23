@@ -332447,11 +332447,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0a9d172b66508561b10214d9",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14818",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "e9554c20a711e98c5935f71df201fe5d66846594",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14818,
+        "baseBranch": "main",
+        "headBranch": "owner/mare-london-assets-20261124-c",
+        "baseSha": "e9554c20a711e98c5935f71df201fe5d66846594",
+        "headSha": "08ee1ad9bd4b3c437cd251a2926b5e0e1f242515",
+        "mergeCommitSha": "e13d728caf96617480980476b35035d7499a2f33",
+        "mergedAt": "2026-11-23T23:46:13Z",
+        "authorLogin": "hans1177",
+        "titleHash": "73cc62126493e2e49baeb67a6399f5c9ee205f4db55d7c8656711d7ffcb38e46",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/mare-london-assets-20261124-c",
+        "candidateSha": "08ee1ad9bd4b3c437cd251a2926b5e0e1f242515"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 269,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_harbor_1.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_harbor_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_harbor_2.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_harbor_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_yard_1.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_yard_1.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Town/london_harbor_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_harbor_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_yard_1.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14818",
+        "merge-commit:e13d728caf96617480980476b35035d7499a2f33",
+        "base-main:e9554c20a711e98c5935f71df201fe5d66846594"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2660
+    "total": 2661
   }
 }
