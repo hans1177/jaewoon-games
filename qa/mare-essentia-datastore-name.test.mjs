@@ -1772,7 +1772,7 @@ test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 
   "선택된 최종 실물 헤어 ID로 슬롯을 정해야 한다");
  assert.ok(pose.includes('previous.Name ~= slotName then previous:Destroy()'),
   "교체 실물 헤어 장착 후 구형 메시를 정리해야 한다");
- assert.ok(pose.includes('if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then'),
+ assert.ok(pose.includes('local mounted = model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso")'),
   "현재 시즌 겉옷 준비 전 기존 복식 제거 금지");
  assert.match(pose,/-- \[주민 기본복 유지\] 원본 peasant\/ranger 몸체 GLB는 팔 소매와 등·옆면까지 포함한다\./);
  assert.match(pose,/if accessory and AssetIds\["People\/" \.\. accessory\[1\]\] then/);
@@ -3524,7 +3524,7 @@ test('겉조끼·외투·경비복 추가 시 승인 전신복의 소매·등판
     '겉옷 장착으로 전신복 전체 파괴 금지');
   assert.match(pose,/-- \[주민 기본복 유지\] 원본 peasant\/ranger 몸체 GLB는 팔 소매와 등·옆면까지 포함한다\./);
   assert.match(pose,/-- \[복식 레이어\] 원본 전신복은 소매·등판·다리천을 담당한다\./);
-  assert.ok(pose.includes('if model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso") then'),
+  assert.ok(pose.includes('local mounted = model:FindFirstChild("R15Asset_" .. wanted .. "_UpperTorso")'),
     '계절별 겉옷끼리만 중복 정리한다');
   assert.ok(pose.includes('hairOffsetY = crownY - ext.Y * 0.5 / target.Size.Y'), '헤어 실제 크기 수정 유지');
   assert.ok(pose.includes('NpcBeardFitVersion'), '수염 수정 유지');
