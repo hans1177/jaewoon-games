@@ -332076,11 +332076,140 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_504047df5ec64e3e1af43d83",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14810",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "8b3f75a450a76757c2e168986775e39355cfd3a5",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14810,
+        "baseBranch": "main",
+        "headBranch": "mare-london-mansion-merchant-20261124-g",
+        "baseSha": "8b3f75a450a76757c2e168986775e39355cfd3a5",
+        "headSha": "d9524e4a8edf6f1d55fa362e56b07ccdfc008a7f",
+        "mergeCommitSha": "a533c159afcb599ebe2093c2fc653cc72a5d32de",
+        "mergedAt": "2026-11-23T23:29:54Z",
+        "authorLogin": "hans1177",
+        "titleHash": "a3d0549eca52da1b3392b8ad40d0913672cda1c16080edd8d4b3a255d5c55bab",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-london-mansion-merchant-20261124-g",
+        "candidateSha": "d9524e4a8edf6f1d55fa362e56b07ccdfc008a7f"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 498,
+        "deletedLineCount": 1,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/town/london_bld_temple.glb",
+          "roblox-games/mare-essentia/assets/town/london_bld_temple.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_mansion.glb",
+          "roblox-games/mare-essentia/assets/town/london_house_mansion.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_merchant.glb",
+          "roblox-games/mare-essentia/assets/town/london_house_merchant.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_villa.glb",
+          "roblox-games/mare-essentia/assets/town/london_house_villa.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/town/london_bld_temple.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_mansion.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_merchant.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_villa.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14810",
+        "merge-commit:a533c159afcb599ebe2093c2fc653cc72a5d32de",
+        "base-main:8b3f75a450a76757c2e168986775e39355cfd3a5"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2657
+    "total": 2658
   }
 }
