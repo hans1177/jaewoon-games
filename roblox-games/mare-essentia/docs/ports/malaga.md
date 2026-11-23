@@ -484,7 +484,114 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. new suburb block with wider streets and gardens, built in local style: whitewashed and ochre stucco houses, hip tile roofs, iron window grilles, inner patios, azulejo accents.
 ```
 
-## 5. 마을 기본 에셋
+## 5. 구획·주거·배치·주민 동선
+
+| 구획 | 위치 | 열리는 단계 | 건물/필지 | 배치 소품 | 주민 직업 |
+|---|---|---|---|---|---|
+| 항만 구역 | 부두와 해안선 따라, 광장 동쪽 | 1 | 부두 창고·세관·선원 숙소·밧줄 공장 | 화물 상자·통·자루 더미, 기중기, 계류 말뚝, 그물, 수레, 갈매기 | 하역꾼·선원·세관원·어부·밧줄공 |
+| 시장 구역 | 광장 둘레, 큰길 시작점 | 1 | 가판대 줄·상점 주택·교역소·여관 | 천막 가판대·특산물 진열·저울·바구니·손수레·간판·우물 | 상인·행상·짐꾼·손님·소매치기 경비 |
+| 행정·종교 구역 | 광장 반대편 높은 곳(언덕이면 꼭대기) | 2 | 예배소→대사원·시청·학당·의원·도서관 | 종탑, 계단, 동상/분수, 벤치, 게시판, 화단 | 성직자·관리·학생·의사·경비병 |
+| 공방 구역 | 물가/강가·바람 아래쪽 외곽(냄새·연기) | 2 | 대장간·목공소·무두질장·양조장·특산물 공방 | 작업대·재료 더미·화덕 연기·물레방아·건조대·폐자재 | 대장장이·목수·직공·도공·염색공·견습생 |
+| 주거 구역 | 큰길 뒤 골목, 시장·공방 사이 | 1 | 노동자 오두막→장인 주택→상인 연립→부유층 저택 | 빨랫줄·화분·장작더미·닭장·벤치·놀이하는 아이·고양이 | 주부·아이·노인·야경꾼·물장수 |
+| 부유층 구역 | 광장 가까운 조용한 언덕/물가 | 4 | 부유 상인 저택·정원 주택·관저 | 정원 담장·분수·마차·하인·화분 장식 | 상인 가족·하인·정원사·마부 |
+| 농촌·목장 구역 | 마을 바깥 테두리 | 1 | 텃밭→밭·목초지·축사·방앗간·곡물 창고 | 울타리·건초더미·가축·허수아비·수로·농기구 | 농부·목동·방앗간지기·나무꾼 |
+| 방어 구역 | 항구 입구 곶·성문 | 2 | 망루→포대·성벽·병영·전투 본부 | 대포·포탄 더미·깃발·초소·훈련 허수아비 | 병사·포수·보초·훈련 교관 |
+
+**말라가 특색** — 테마 *농산물 항구*
+- 시장: raisins, olive_oil, wine 진열이 중심, 장날엔 가판대 2배
+- 공방: wine 공방이 줄지어 (연기·소리·작업 주민)
+- 항만: 작은 잔교와 하역장 위주
+- 생활: 이베리아 양식 집, 밤 조명 oil_lantern, 광장 fountain
+
+### 주거 등급 (구획 안에서 세분화)
+
+| 등급 | 단계 | 형태 | 사는 사람 |
+|---|---|---|---|
+| 노동자 오두막 | 1 | 1-room cottage with small yard, shared well (이베리아 양식) | 하역꾼·농부·어부 |
+| 장인 주택 | 2 | 2-storey house with ground-floor workshop (이베리아 양식) | 대장장이·목수·직공 |
+| 상인 연립 | 3 | 3-storey townhouse with shop front and storage attic (이베리아 양식) | 상인·선장 |
+| 부유층 저택 | 4 | detached mansion with garden wall and courtyard (이베리아 양식) | 대상인·관리 |
+| 정원 빌라 | 5 | villa with formal garden on the outskirts (이베리아 양식) | 귀족·은행가 |
+
+- 배치 규칙: 광장→큰길→골목 순으로 높고 촘촘하게 → 낮고 성기게. 같은 집 연속 금지(색·높이·문 위치 변형).
+- 공방 구역은 바람 아래·물가, 부유층은 조용한 언덕/물가, 농촌은 테두리. 구획 사이 작은 골목·계단·다리로 연결.
+
+### 하루 동선 (주민 일정)
+
+| 시간 | 움직임 |
+|---|---|
+| 새벽 5~7시 | 어부·하역꾼 집→부두, 빵집 화덕 불, 농부 집→밭, 종 울림 |
+| 오전 7~12시 | 상인 집→시장 가판대, 장인 공방 작업, 학생 학당, 공사 현장 일꾼 출근 |
+| 정오 | 광장 우물 물 긷기, 노점 식사, 휴식(더운 지역은 낮잠으로 거리 한산) |
+| 오후 13~18시 | 하역·운반 수레(농촌→시장→부두), 관리 순찰, 아이들 골목 놀이 |
+| 저녁 18~21시 | 주점 붐빔, 예배/기도, 가로등 점등꾼, 가족 귀가 |
+| 밤 21~5시 | 야경꾼 순찰·등불, 주점 몇 명, 고양이·개, 공사 중단(현장 등불) |
+
+- 이베리아 생활 특색: 예배 시간·장날·축제일에 광장 인파 증가, 흉년엔 빈 가판대·줄 선 주민.
+
+## 6. 날씨·바닥·파티클
+
+기후 유형: **temperate_south**
+
+| 날씨 | 바닥 표현 | 파티클·효과 |
+|---|---|---|
+| 건기·맑음 | 흙먼지, 흰 회벽 반사광 | 바람 먼지, 꽃가루 |
+| 가을비 | 포석 젖은 반사, 배수로 물줄기 | 가는 비, 처마 낙수 |
+| 시로코·열풍 | 모래 얇게 쌓임 | 황사 바람 |
+
+- 눈은 단계적으로 쌓인다(얇게→덮임→두껍게), 사람 다니는 길은 먼저 녹고 발자국 자국.
+- 비 그친 뒤 웅덩이는 서서히 마른다(반사 강도 감소). 진흙길은 수레 바퀴자국이 남는다.
+- 모바일은 파티클 수 절반, 원거리 바닥 효과 생략.
+
+#### `malaga_weather_ground` — 날씨 바닥 오버레이
+- texture · 1단계 · 크기 1024 tile · 폴리곤 ≤ -
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Tileable ground overlay decals for temperate_south weather on gravel, cobble, flagstone streets: puddles with reflections, wet sheen, wheel ruts in mud, snow cover (3 thickness levels), sand drift, frost. Alpha decals for overlay.
+```
+
+#### `malaga_weather_props` — 날씨 소품 세트
+- props · 1단계 · 크기 kit · 폴리곤 ≤ 3k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Weather props for 이베리아: roof snow caps (3 sizes), icicles, gutter downspout splash, puddle meshes, awning rain drips, sand drift piles, covered market stall cloth.
+```
+
+#### `malaga_district_props` — 구획 생활 소품 세트
+- props · 1단계 · 크기 kit · 폴리곤 ≤ 6k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. District prop kit for 이베리아 port: laundry lines, firewood stacks, chicken coop, flower pots, benches, wells, signposts, carts, barrels, market baskets, notice board, statue base.
+```
+
+#### `malaga_house_worker` — 주거 노동자 오두막
+- house · 1단계 · 크기 auto · 폴리곤 ≤ 7k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. 1-room cottage with small yard, shared well, built in local style: whitewashed and ochre stucco houses, hip tile roofs, iron window grilles, inner patios, azulejo accents. 3 colour slots.
+```
+
+#### `malaga_house_artisan` — 주거 장인 주택
+- house · 2단계 · 크기 auto · 폴리곤 ≤ 7k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. 2-storey house with ground-floor workshop, built in local style: whitewashed and ochre stucco houses, hip tile roofs, iron window grilles, inner patios, azulejo accents. 3 colour slots.
+```
+
+#### `malaga_house_merchant` — 주거 상인 연립
+- house · 3단계 · 크기 auto · 폴리곤 ≤ 7k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. 3-storey townhouse with shop front and storage attic, built in local style: whitewashed and ochre stucco houses, hip tile roofs, iron window grilles, inner patios, azulejo accents. 3 colour slots.
+```
+
+#### `malaga_house_mansion` — 주거 부유층 저택
+- house · 4단계 · 크기 auto · 폴리곤 ≤ 7k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. detached mansion with garden wall and courtyard, built in local style: whitewashed and ochre stucco houses, hip tile roofs, iron window grilles, inner patios, azulejo accents. 3 colour slots.
+```
+
+#### `malaga_house_villa` — 주거 정원 빌라
+- house · 5단계 · 크기 auto · 폴리곤 ≤ 7k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. villa with formal garden on the outskirts, built in local style: whitewashed and ochre stucco houses, hip tile roofs, iron window grilles, inner patios, azulejo accents. 3 colour slots.
+```
+
+## 7. 마을 기본 에셋
 
 #### `malaga_landmark_base` — 상징물 공사 중
 - landmark · 2단계 · 크기 40x40x30 · 폴리곤 ≤ 15k
@@ -534,9 +641,11 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. wine press house with a big wooden screw press and barrel cellar door, built in local style: whitewashed and ochre stucco houses, hip tile roofs, iron window grilles, inner patios, azulejo accents.
 ```
 
-## 6. 완료 체크
+## 8. 완료 체크
 
 - [ ] 에셋 `assets/inbox/Town/<asset_id>.glb` + `.license.json`(원본·derived)
 - [ ] 단계 1~5 Studio 항공 사진: 구역 분리·광장·상징물·방문 건물 위치
 - [ ] 공사 현장 ①~⑧ 공정과 일꾼 동작, 완공 연출 확인
+- [ ] 구획 8종·주거 5등급·하루 동선 확인
+- [ ] 날씨별 바닥(눈·웅덩이·진흙·모래)과 파티클 확인(모바일 절반)
 - [ ] `tests/run.sh` 통과(코드 한도 포함)

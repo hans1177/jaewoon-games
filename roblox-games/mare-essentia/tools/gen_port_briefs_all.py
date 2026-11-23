@@ -382,6 +382,120 @@ def construction_section(p, culture, c, has_palace, asset, lines):
     for bid, ko, cat, tier, en, eff in local_cat:
         asset(f"bld_{bid}", "building", tier, "auto", "8k", f"{en}, built in local style: {c['arch']}.", f"{ko}({cat}) {tier}단계")
 
+# ── 구획 세분화·주거 등급·배치 소품·주민 직업·동선 ───────────────────────────
+DISTRICTS = [
+    # (id, 이름, 위치 규칙, 개방 단계, 건물/필지, 배치 소품, 주민 직업)
+    ("harbor", "항만 구역", "부두와 해안선 따라, 광장 동쪽", 1,
+     "부두 창고·세관·선원 숙소·밧줄 공장", "화물 상자·통·자루 더미, 기중기, 계류 말뚝, 그물, 수레, 갈매기", "하역꾼·선원·세관원·어부·밧줄공"),
+    ("market", "시장 구역", "광장 둘레, 큰길 시작점", 1,
+     "가판대 줄·상점 주택·교역소·여관", "천막 가판대·특산물 진열·저울·바구니·손수레·간판·우물", "상인·행상·짐꾼·손님·소매치기 경비"),
+    ("civic", "행정·종교 구역", "광장 반대편 높은 곳(언덕이면 꼭대기)", 2,
+     "예배소→대사원·시청·학당·의원·도서관", "종탑, 계단, 동상/분수, 벤치, 게시판, 화단", "성직자·관리·학생·의사·경비병"),
+    ("craft", "공방 구역", "물가/강가·바람 아래쪽 외곽(냄새·연기)", 2,
+     "대장간·목공소·무두질장·양조장·특산물 공방", "작업대·재료 더미·화덕 연기·물레방아·건조대·폐자재", "대장장이·목수·직공·도공·염색공·견습생"),
+    ("residential", "주거 구역", "큰길 뒤 골목, 시장·공방 사이", 1,
+     "노동자 오두막→장인 주택→상인 연립→부유층 저택", "빨랫줄·화분·장작더미·닭장·벤치·놀이하는 아이·고양이", "주부·아이·노인·야경꾼·물장수"),
+    ("elite", "부유층 구역", "광장 가까운 조용한 언덕/물가", 4,
+     "부유 상인 저택·정원 주택·관저", "정원 담장·분수·마차·하인·화분 장식", "상인 가족·하인·정원사·마부"),
+    ("rural", "농촌·목장 구역", "마을 바깥 테두리", 1,
+     "텃밭→밭·목초지·축사·방앗간·곡물 창고", "울타리·건초더미·가축·허수아비·수로·농기구", "농부·목동·방앗간지기·나무꾼"),
+    ("defense", "방어 구역", "항구 입구 곶·성문", 2,
+     "망루→포대·성벽·병영·전투 본부", "대포·포탄 더미·깃발·초소·훈련 허수아비", "병사·포수·보초·훈련 교관"),
+]
+
+HOUSING = [  # 주거 등급: (등급, 개방 단계, 형태, 거주 직업)
+    ("노동자 오두막", 1, "1-room cottage with small yard, shared well", "하역꾼·농부·어부"),
+    ("장인 주택", 2, "2-storey house with ground-floor workshop", "대장장이·목수·직공"),
+    ("상인 연립", 3, "3-storey townhouse with shop front and storage attic", "상인·선장"),
+    ("부유층 저택", 4, "detached mansion with garden wall and courtyard", "대상인·관리"),
+    ("정원 빌라", 5, "villa with formal garden on the outskirts", "귀족·은행가"),
+]
+
+ROUTINE = [  # 시간대별 동선
+    ("새벽 5~7시", "어부·하역꾼 집→부두, 빵집 화덕 불, 농부 집→밭, 종 울림"),
+    ("오전 7~12시", "상인 집→시장 가판대, 장인 공방 작업, 학생 학당, 공사 현장 일꾼 출근"),
+    ("정오", "광장 우물 물 긷기, 노점 식사, 휴식(더운 지역은 낮잠으로 거리 한산)"),
+    ("오후 13~18시", "하역·운반 수레(농촌→시장→부두), 관리 순찰, 아이들 골목 놀이"),
+    ("저녁 18~21시", "주점 붐빔, 예배/기도, 가로등 점등꾼, 가족 귀가"),
+    ("밤 21~5시", "야경꾼 순찰·등불, 주점 몇 명, 고양이·개, 공사 중단(현장 등불)"),
+]
+
+# 기후별 날씨·바닥·파티클
+WEATHER = {
+    "tropical": [("소나기·몬순", "길 웅덩이(물 반사), 흙길 진흙 바퀴자국, 지붕 물받이 낙수", "굵은 빗줄기, 지붕 물튀김, 웅덩이 파문, 짙은 물안개"),
+                 ("무더위", "마른 흙길 갈라짐, 먼지", "열기 아지랑이, 날벌레"),
+                 ("태풍(드묾)", "쓰러진 가판대 천막, 흩어진 잎", "강풍 비, 잎 날림, 파도 물보라")],
+    "temperate_south": [("건기·맑음", "흙먼지, 흰 회벽 반사광", "바람 먼지, 꽃가루"),
+                        ("가을비", "포석 젖은 반사, 배수로 물줄기", "가는 비, 처마 낙수"),
+                        ("시로코·열풍", "모래 얇게 쌓임", "황사 바람")],
+    "temperate_north": [("비", "포석·자갈 젖은 반사, 길 웅덩이, 진흙 자국", "비 줄기, 웅덩이 파문, 처마 낙수"),
+                        ("안개", "젖은 바닥", "낮게 깔린 안개, 가로등 빛 번짐"),
+                        ("겨울 눈", "지붕·길가·울타리 위 눈 쌓임(단계적), 밟힌 길 눈 녹음", "눈송이, 굴뚝 연기 짙어짐, 입김")],
+    "cold": [("폭설", "지붕·길·광장 두꺼운 눈, 썰매 자국, 얼음 부두", "눈보라, 바람에 날리는 눈가루"),
+             ("서리", "하얀 서리 바닥, 얼어붙은 웅덩이", "입김, 반짝이는 서리"),
+             ("해빙기", "질척한 눈녹은 물, 진흙", "낙수, 물방울")],
+    "arid": [("모래바람", "길·계단 모래 쌓임, 가판대 천 덮개", "모래 폭풍 파티클, 시야 흐림"),
+             ("한낮 더위", "마른 흙·갈라진 바닥", "아지랑이"),
+             ("드문 비", "흙길 짙게 젖음, 짧은 웅덩이", "가는 비, 흙냄새 먼지 가라앉음")],
+}
+
+
+def weather_key(lat, culture):
+    a = abs(lat)
+    if culture in ("desert", "ottoman") and a < 38:
+        return "arid"
+    if a < 23.5:
+        return "tropical"
+    if a < 42:
+        return "temperate_south"
+    if a < 56:
+        return "temperate_north"
+    return "cold"
+
+
+def life_section(p, culture, c, asset, lines):
+    lines += ["## 5. 구획·주거·배치·주민 동선", "",
+              "| 구획 | 위치 | 열리는 단계 | 건물/필지 | 배치 소품 | 주민 직업 |", "|---|---|---|---|---|---|"]
+    for did, ko, where, tier, blds, props, jobs in DISTRICTS:
+        lines.append(f"| {ko} | {where} | {tier} | {blds} | {props} | {jobs} |")
+    goods = p["produces"] or []
+    ws = [g for g in goods if g in curated.WORKSHOP][:3]
+    theme_ko, _ = theme_of(goods)
+    lines += ["", f"**{p['name']} 특색** — 테마 *{theme_ko}*",
+              f"- 시장: {', '.join(goods[:4]) or '혼합 상품'} 진열이 중심, 장날엔 가판대 2배",
+              f"- 공방: {', '.join(ws) + ' 공방이 줄지어' if ws else '수리·잡화 공방'} (연기·소리·작업 주민)",
+              f"- 항만: {'조선소와 밧줄 공장이 붙은 큰 항만' if p['shipyard'] else '작은 잔교와 하역장 위주'}",
+              f"- 생활: {c['ko']} 양식 집, 밤 조명 {c['lamp']}, 광장 {c['plaza']}"]
+    lines += ["", "### 주거 등급 (구획 안에서 세분화)", "", "| 등급 | 단계 | 형태 | 사는 사람 |", "|---|---|---|---|"]
+    for ko, tier, en, who in HOUSING:
+        lines.append(f"| {ko} | {tier} | {en} ({c['ko']} 양식) | {who} |")
+    lines += ["", "- 배치 규칙: 광장→큰길→골목 순으로 높고 촘촘하게 → 낮고 성기게. 같은 집 연속 금지(색·높이·문 위치 변형).",
+              "- 공방 구역은 바람 아래·물가, 부유층은 조용한 언덕/물가, 농촌은 테두리. 구획 사이 작은 골목·계단·다리로 연결.", "",
+              "### 하루 동선 (주민 일정)", "", "| 시간 | 움직임 |", "|---|---|"]
+    for when, what in ROUTINE:
+        lines.append(f"| {when} | {what} |")
+    lines += ["", f"- {c['ko']} 생활 특색: 예배 시간·장날·축제일에 광장 인파 증가, 흉년엔 빈 가판대·줄 선 주민.", ""]
+    wk = weather_key(p["lat"], culture)
+    lines += ["## 6. 날씨·바닥·파티클", "", f"기후 유형: **{wk}**", "",
+              "| 날씨 | 바닥 표현 | 파티클·효과 |", "|---|---|---|"]
+    for name, ground, fx in WEATHER[wk]:
+        lines.append(f"| {name} | {ground} | {fx} |")
+    lines += ["", "- 눈은 단계적으로 쌓인다(얇게→덮임→두껍게), 사람 다니는 길은 먼저 녹고 발자국 자국.",
+              "- 비 그친 뒤 웅덩이는 서서히 마른다(반사 강도 감소). 진흙길은 수레 바퀴자국이 남는다.",
+              "- 모바일은 파티클 수 절반, 원거리 바닥 효과 생략.", ""]
+    asset("weather_ground", "texture", 1, "1024 tile", "-",
+          f"Tileable ground overlay decals for {wk} weather on {', '.join(c['street'][1:4])} streets: puddles with reflections, wet sheen, wheel ruts in mud, snow cover (3 thickness levels), sand drift, frost. Alpha decals for overlay.",
+          "날씨 바닥 오버레이")
+    asset("weather_props", "props", 1, "kit", "3k",
+          f"Weather props for {c['ko']}: roof snow caps (3 sizes), icicles, gutter downspout splash, puddle meshes, awning rain drips, sand drift piles, covered market stall cloth.",
+          "날씨 소품 세트")
+    asset("district_props", "props", 1, "kit", "6k",
+          f"District prop kit for {c['ko']} port: laundry lines, firewood stacks, chicken coop, flower pots, benches, wells, signposts, carts, barrels, market baskets, notice board, statue base.",
+          "구획 생활 소품 세트")
+    for ko, tier, en, who in HOUSING:
+        asset("house_" + ["worker", "artisan", "merchant", "mansion", "villa"][HOUSING.index((ko, tier, en, who))],
+              "house", tier, "auto", "7k", f"{en}, built in local style: {c['arch']}. 3 colour slots.", f"주거 {ko}")
+
 # ── 문서 생성 ────────────────────────────────────────────────────────────────
 
 def brief(p, culture, fac, palace_names, cur):
@@ -454,7 +568,8 @@ def brief(p, culture, fac, palace_names, cur):
           f"{pal_style}. Royal/governor seat of {name}, grand but game-readable, with a ceremonial entrance and courtyard.",
           (pal_name if has_palace else "총독 관저") + " 외형")
     construction_section(p, culture, c, has_palace, asset, lines)
-    lines += ["## 5. 마을 기본 에셋", ""]
+    life_section(p, culture, c, asset, lines)
+    lines += ["## 7. 마을 기본 에셋", ""]
     asset("landmark_base", "landmark", 2, "40x40x30", "15k", f"Under-construction {landmark}: lower half built, scaffolding, cranes, stone blocks.", "상징물 공사 중")
     asset("landmark_full", "landmark", 4, "40x40x70", "25k", f"Completed {landmark}, signature landmark of {name}.", "상징물 완성")
     for i, (t, fl, ex) in enumerate([(1, "1-storey", "humble, small yard"), (3, "2-storey", "shop on ground floor"), (5, "3-storey", "wealthy merchant house")], 1):
@@ -465,8 +580,8 @@ def brief(p, culture, fac, palace_names, cur):
             asset(f"stall_{g}", "goods", 2, "8x5x6", "3k", f"Market stall displaying {curated.GOOD_PROPS[g]}, style: {arch}.", f"가판대 {g}")
         if g in curated.WORKSHOP:
             asset(f"workshop_{g}", "workshop", 3, "24x20x16", "10k", f"{curated.WORKSHOP[g]}, built in local style: {arch}.", f"공방 {g}")
-    lines += ["## 6. 완료 체크", "", "- [ ] 에셋 `assets/inbox/Town/<asset_id>.glb` + `.license.json`(원본·derived)",
-              "- [ ] 단계 1~5 Studio 항공 사진: 구역 분리·광장·상징물·방문 건물 위치", "- [ ] 공사 현장 ①~⑧ 공정과 일꾼 동작, 완공 연출 확인", "- [ ] `tests/run.sh` 통과(코드 한도 포함)", ""]
+    lines += ["## 8. 완료 체크", "", "- [ ] 에셋 `assets/inbox/Town/<asset_id>.glb` + `.license.json`(원본·derived)",
+              "- [ ] 단계 1~5 Studio 항공 사진: 구역 분리·광장·상징물·방문 건물 위치", "- [ ] 공사 현장 ①~⑧ 공정과 일꾼 동작, 완공 연출 확인", "- [ ] 구획 8종·주거 5등급·하루 동선 확인", "- [ ] 날씨별 바닥(눈·웅덩이·진흙·모래)과 파티클 확인(모바일 절반)", "- [ ] `tests/run.sh` 통과(코드 한도 포함)", ""]
     return "\n".join(lines), rows, dict(theme=theme_ko, culture=c["ko"], palace=pal_name if has_palace else "")
 
 
