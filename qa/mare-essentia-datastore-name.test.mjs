@@ -2310,51 +2310,72 @@ test('시장·농경·종교 구획은 시설과 인력에 따라 달라지고 �
  assert.match(district,/districtResidents >= workersLimit/);
 });
 
-// [181개 항구 구역 재배치] 기존 시드와 모든 문화권의 경계가 동일 생성 함수에 적용된다.
+// [181개 항구 구역 재배치] 현재 랜드마크 8개를 항구별 이동 좌표로 검사한다.
 test('모든 항구 시장·종교·농장에 경계 검사와 안전 재배치 후보가 있다',()=>{
- const scene=read('ReplicatedStorage/Shared/PortScene.luau');
- const ports=read('ReplicatedStorage/Shared/Ports.luau');
- const section=ports.slice(ports.indexOf('local Ports:'),ports.indexOf('local Nations:'));
- const ids=[...section.matchAll(/^\t([a-z][a-z0-9_]*)\s*=\s*\{\s*\n\s*id = /gm)].map(x=>x[1]);
- assert.equal(ids.length,181,'등록된 181개 항구 모두 적용');
- assert.equal(new Set(ids).size,181,'항구 중복 없음');
- for(const token of [
-  'seeded(info.portId .. ":district-collision-reposition-v2")',
-  'local districtKinds = { "religious", "market", "farm" }',
-  'for candidateIndex, at in candidates do',
-  'if clear and isRoyalCity',
-  'for _, sx in streetsX do',
-  'for _, sx in streetsOuter do',
-  'for _, landmark in LM_SITES do',
-  'for _, other in districts do',
-  'hx + other.hx + 6','hz + other.hz + 6',
-  'math.abs(z) + hz <= 440',
-  'CityDistrictLayoutMode", "WHOLE_PORT_REPOSITION_COLLISION_CHECK"',
-  'CityDistrictPlaced", #districts',
-  'CityDistrictMoved", districtMoved',
-  'CityDistrictRejectedCandidates", districtRejected',
-  'd.hx + halfX','d.hz + halfZ',
-  'CityBuildingMode", "AUTO_VISUAL_READ_ONLY"'
- ])assert.ok(scene.includes(token),'항구별 구역 안전 검사 누락: '+token);
- // [전 항구 신배치] 실제 대체 후보의 최대 시드 편차 양 끝을 검증한다.
- // 원본 LM_SITES·왕궁·도시 경계와 모델 예약 반경의 겹침을 금지한다.
- const marks=[[-112,166],[-112,-166],[-160,166],[-160,-166],[-208,181],[-208,-181],[-263,181],[-263,-181]];
- for(const id of ids){
-  for(const side of [-1,1]){
-   for(const kind of ['religious','market','farm']){
-    const hx=kind==='farm'?82:41,hz=kind==='farm'?51:43;
-    for(const edge of [-1,1]){
-     const x=kind==='farm'?-117+edge*17*0.22:-150+edge*17*0.3;
-     const z=side*(kind==='farm'?376+edge*7:283+edge*11);
-     assert.ok(Math.abs(z)+hz<=440,id+' 신농촌·시장 외곽 경계');
-     assert.ok(x-hx>-215,id+' 왕궁 구역과 안전 분리');
-     for(const [lx,lz] of marks){
-      assert.ok(Math.abs(x-lx)>=hx+35||Math.abs(z-lz)>=hz+35,id+' 랜드마크 경계');
-     }
+  const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+  const identity=read('ReplicatedStorage/Shared/PortIdentity.luau');
+  const ports=read('ReplicatedStorage/Shared/Ports.luau');
+  const section=ports.slice(ports.indexOf('local Ports:'),ports.indexOf('local Nations:'));
+  const ids=[...section.matchAll(/^\t([a-z][a-z0-9_]*)\s*=\s*\{\s*\n\s*id = /gm)].map(x=>x[1]);
+  assert.equal(ids.length,181,'등록된 181개 항구 모두 적용');
+  assert.equal(new Set(ids).size,181,'항구 중복 없음');
+  // [실제 3D 충돌 경로] 고정 LM_SITES가 아니라 항구별 이동 후 landmarkSites를 대조해야 한다.
+  for(const token of [
+   'seeded(info.portId .. ":district-collision-reposition-v2")',
+   'local districtKinds = { "religious", "market", "farm" }',
+   'for candidateIndex, at in candidates do',
+   'if clear and isRoyalCity',
+   'for _, sx in streetsX do',
+   'for _, sx in streetsOuter do',
+   'for _, site in facilityLocations do',
+   'typeof(plazaLocation) == "Vector3"',
+   'for _, landmark in landmarkSites do',
+   'for _, other in districts do',
+   'hx + other.hx + 6','hz + other.hz + 6',
+   'math.abs(z) + hz <= 440',
+   'CityDistrictLayoutMode", "WHOLE_PORT_REPOSITION_COLLISION_CHECK"',
+   'CityDistrictPlaced", #districts',
+   'CityDistrictMoved", districtMoved',
+   'CityDistrictRejectedCandidates", districtRejected',
+   'd.hx + halfX','d.hz + halfZ',
+   'CityBuildingMode", "AUTO_VISUAL_READ_ONLY"'
+  ]) assert.ok(scene.includes(token),'항구별 구역 안전 검사 누락: '+token);
+  assert.match(scene,/landmarkSites\[i\] = Vector3\.new\(oldSite\.X \+ shiftX/);
+  assert.match(scene,/local shiftX = if reflow then reflow\.landmarkX else landmarkRng/);
+  assert.match(scene,/local shiftZ = if reflow then reflow\.landmarkZ else landmarkRng/);
+  // [항구별 이동 범위] 전체 주거·종교·시장·농촌의 새 실제 좌표 범위를 계산한다.
+  const sitesSection=scene.match(/local LM_SITES = \{([\s\S]*?)\n\}/)?.[1] ?? '';
+  const marks=[...sitesSection.matchAll(/Vector3\.new\((-?\d+), 0, (-?\d+)\)/g)]
+    .map(m=>[Number(m[1]),Number(m[2])]);
+  assert.equal(marks.length,8,'기존 승인 랜드마크 8개 필지');
+  assert.match(scene,/local districtZ = 358 \+ dz:NextInteger\(0, 14\)/);
+  assert.match(scene,/local farmZ = 379 \+ dz:NextInteger\(0, 9\)/);
+  const manual=new Map([...identity.matchAll(/\n\t([a-z_]+) = \{ landmark = ([\s\S]*?)\n\t\treflow = \{ lane = (-?\d+), plaza = (-?\d+), side = (-?\d+), landmarkX = (-?\d+), landmarkZ = (-?\d+), district = (-?\d+), facility = (\d+) \}/g)]
+    .map(m=>[m[1],{x:Number(m[7]),lx:Number(m[5]),lz:Number(m[6])}]));
+  assert.equal(manual.size,25,'개별 재배치 항구 25개');
+  for(const id of ids){
+    const reflow=manual.get(id);
+    const districtX= reflow ? -138+reflow.x : -138;
+    const farmX= reflow ? -357+reflow.x : -357;
+    assert.ok(districtX-41>-215,id+' 시장·종교와 왕궁 분리');
+    assert.ok(farmX+82 < -215,id+' 농촌과 도심 구역 분리');
+    for(const side of [-1,1]){
+      for(const z of [358,372]){
+        assert.ok(Math.abs(side*z)+43<=440,id+' 시장·종교 구역 경계');
+        for(const [,lz] of marks){
+          const shifted=Math.abs(lz)+(reflow ? Math.abs(reflow.lz) : 5);
+          assert.ok(z-shifted>=43+35,id+' 이동 랜드마크와 시장·종교 분리');
+        }
+      }
+      for(const z of [379,388]){
+        assert.ok(Math.abs(side*z)+51<=440,id+' 농촌 경계');
+        for(const [lx] of marks){
+          const shifted=lx-(reflow ? Math.abs(reflow.lx) : 5);
+          assert.ok(shifted-(farmX+82)>=35,id+' 이동 랜드마크와 농촌 분리');
+        }
+      }
     }
-   }
   }
- }
 });
 
 // [주택 배치] 실제 수입 건물의 처마·별채 점유 폭까지 보수적으로 계산하며 등급은 필지별로 고정한다.
