@@ -222,7 +222,7 @@ test('전체 181개 실제 항구의 주택·도로·구역·랜드마크·광�
 
   for (const region of [
     'complete-city-reposition-v2', 'coast-layout-reposition-v2',
-    'district-reposition-v2', 'district-collision-reposition-v2',
+    'district-reposition-v3', 'district-collision-reposition-v2',
     'civic-quarter-reposition-v2', 'facility-block-reposition-v2',
   ]) {
     assert.ok(scene.includes('info.portId .. ":' + region + '"'),
@@ -242,7 +242,7 @@ test('전체 181개 실제 항구의 주택·도로·구역·랜드마크·광�
   assert.match(scene, /local townHalfZ = math\.min\(360 \+ lvl \* 80 \+ 14, math\.max\(442, outerEdgeZ \+ 52\)\)/);
   assert.match(scene, /for _, other in districts do/);
   assert.match(scene, /if clear and isRoyalCity and x - hx < -215/);
-  assert.match(scene, /for _, a in LM_SITES do/);
+  assert.match(scene, /for _, a in landmarkSites do/);
   assert.doesNotMatch(scene, /local laneOffset = districtSeed:NextNumber\(-9, 9\)/);
   assert.doesNotMatch(scene, /Vector3\.new\(-134 \+ districtOffset, 0, 86/);
   assert.doesNotMatch(scene, /CityPortPlazaLocation", Vector3\.new\(-106, 0, 122\)/);
@@ -264,4 +264,37 @@ test('재배치 이후 시설 이용 주민과 주택 골목도 새 좌표를 �
   assert.match(scene, /CityPortPlannedPlots/);
   assert.match(scene, /PortOriginalLandmark/);
   assert.match(scene, /CityFacilityLayoutMode", "WHOLE_PORT_REPOSITION_V2"/);
+});
+
+test('181개 항구의 왕궁·랜드마크·상징 부속·농업 구획을 실제 신규 위치에서 렌더링한다', () => {
+  assert.match(scene, /seeded\(info\.portId \.\. ":landmark-sites-reposition-v3"\)/);
+  assert.match(scene, /Vector3\.new\(-118, 0, 201\), Vector3\.new\(-183, 0, 201\)/);
+  assert.match(scene, /landmarkSites\[i\] = Vector3\.new\(oldSite\.X \+ shiftX/);
+  assert.match(scene, /folder:SetAttribute\("CityLandmarkReflowCount", #landmarkSites\)/);
+  assert.match(scene, /densify\(folder, info, style, rng, walkers,[\s\S]*?onFacility, landmarkSites\)/);
+  assert.match(scene, /placeLandmarks\(folder, info, style, rng, onFacility, walkers, landmarkSites\)/);
+  assert.match(scene, /local at = landmarkSites\[order\[idx\]\]/);
+  assert.match(scene, /for _, landmark in landmarkSites do/);
+  assert.match(scene, /for _, a in landmarkSites do/);
+  assert.match(scene, /seeded\(info\.portId \.\. ":royal-district-reposition-v3"\)/);
+  assert.match(scene, /local px = -425 \+ royalLayoutRng:NextInteger\(-22, 22\)/);
+  assert.match(scene, /local townLeft = if isRoyalCity then -635 else math\.min\(-475, X_END - 32\)/);
+  assert.match(scene, /importedModel\(folder, kind, asset, signatureCenter \+ Vector3\.new/);
+  assert.match(scene, /importedModel\(folder, "Castle", "flag-banner-long", signatureCenter \+ Vector3\.new/);
+  assert.doesNotMatch(scene, /importedModel\(folder, kind, asset, Vector3\.new\(-8, 0, -112\)/);
+});
+
+test('181개 항구 산업·시장·농업지구가 항구별 새로운 독립 공간과 실제 시설 충돌 검사를 사용한다', () => {
+  assert.match(scene, /seeded\(info\.portId \.\. ":district-reposition-v3"\)/);
+  assert.match(scene, /local farmX = -357 \+ dz:NextInteger\(-12, 12\)/);
+  assert.match(scene, /local farmZ = 379 \+ dz:NextInteger\(0, 9\)/);
+  assert.match(scene, /Vector3\.new\(farmX, 0, firstSide \* farmZ\)/);
+  assert.match(scene, /if clear and kind ~= "farm" then/);
+  assert.match(scene, /folder:GetAttribute\("CityFacilityPosition_" \.\. tab\)/);
+  assert.match(scene, /local plazaLocation = folder:GetAttribute\("CityPortPlazaLocation"\)/);
+  assert.match(scene, /for _, site in facilityLocations do/);
+  assert.match(scene, /math\.abs\(x - site\.X\) < hx \+ 25/);
+  assert.match(scene, /math\.abs\(x - site\.X\) < halfX \+ 25/);
+  assert.doesNotMatch(scene, /if x > -108 - halfX and math\.abs\(z\) > 17 - halfZ/);
+  assert.match(scene, /for _, other in districts do/);
 });
