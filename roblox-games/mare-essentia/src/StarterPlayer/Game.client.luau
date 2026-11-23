@@ -9062,7 +9062,7 @@ local function findField(id)
 end
 
 -- 카드 그림: 등록된 이미지가 표시될 때까지 분야 색과 이름을 보여준다.
-local function paintCardArt(parent, card, fieldDef, fitImage)
+local function paintCardArt(parent, card, fieldDef)
 	parent.ClipsDescendants = true
 	local base = if card.found then fieldColor(fieldDef) else Color3.fromRGB(46, 52, 64)
 	parent.BackgroundColor3 = base
@@ -9087,7 +9087,7 @@ local function paintCardArt(parent, card, fieldDef, fitImage)
 		local img = Instance.new("ImageLabel")
 		img.Size = UDim2.fromScale(1, 1)
 		img.BackgroundTransparency = 1
-		img.ScaleType = if fitImage then Enum.ScaleType.Fit else Enum.ScaleType.Crop
+		img.ScaleType = Enum.ScaleType.Fit
 		img.Image = card.image
 		img.Parent = parent
 		img:GetPropertyChangedSignal("IsLoaded"):Connect(function()
@@ -9227,7 +9227,7 @@ function H.showCardDetail(card)
 	artBorder.Parent = art
 	corner(art, 5)
 	art.Parent = artRow
-	paintCardArt(art, card, fieldDef, true)
+	paintCardArt(art, card, fieldDef)
 
 	-- 강화 2단계부터 삽화가 움직인다 (천천히 확대·이동 + 반짝임)
 	local maxLevel = (view and view.codex and view.codex.maxLevel) or 3
@@ -11716,7 +11716,7 @@ function RENDERERS.encyclopedia()
 				end
 			end)
 		elseif type(current.image) == "string" and current.image ~= "" then
-			paintCardArt(art, current, category, true)
+			paintCardArt(art, current, category)
 		end
 		line(if current.combatArt and current.motionSheet then "24프레임 움직이는 원화 · " .. current.name
 			elseif current.combatArt and current.motionCandidate then "24프레임 시트 미등록 · 정지 원화 표시"
