@@ -1,7 +1,7 @@
 {
  "version": 1,
- "sessions": 2885,
- "lastSessionAt": "2026-11-23T03:40:14.762Z",
+ "sessions": 2886,
+ "lastSessionAt": "2026-11-23T03:44:30.573Z",
  "registryAssets": 160,
  "cataloguedAssets": 4157,
  "eligible3dAssets": 78,
@@ -9,8 +9,8 @@
   "MESH": {
    "catalogued": 1710,
    "eligible3d": 78,
-   "trials": 3,
-   "staticMeasured": 3,
+   "trials": 2,
+   "staticMeasured": 2,
    "unverifiedOrFailed": 0,
    "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
@@ -59,8 +59,8 @@
   "MATERIAL": {
    "catalogued": 1983,
    "eligible3d": 78,
-   "trials": 3,
-   "staticMeasured": 3,
+   "trials": 2,
+   "staticMeasured": 2,
    "unverifiedOrFailed": 0,
    "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
@@ -69,18 +69,18 @@
   "ENVIRONMENT": {
    "catalogued": 607,
    "eligible3d": 25,
-   "trials": 3,
-   "staticMeasured": 3,
+   "trials": 0,
+   "staticMeasured": 0,
    "unverifiedOrFailed": 0,
-   "state": "STATIC_PRACTICE_MEASURED",
+   "state": "NOT_PRACTICED",
    "runtimeVerified": false,
    "gameApplied": false
   },
   "OBJECT": {
    "catalogued": 1777,
    "eligible3d": 68,
-   "trials": 3,
-   "staticMeasured": 3,
+   "trials": 2,
+   "staticMeasured": 2,
    "unverifiedOrFailed": 0,
    "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
@@ -109,8 +109,8 @@
   "ICON": {
    "catalogued": 124,
    "eligible3d": 20,
-   "trials": 1,
-   "staticMeasured": 1,
+   "trials": 2,
+   "staticMeasured": 2,
    "unverifiedOrFailed": 0,
    "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
@@ -169,33 +169,33 @@
  },
  "cumulative": {
   "MESH": {
-   "trials": 11265,
-   "staticMeasured": 11125,
+   "trials": 11267,
+   "staticMeasured": 11127,
    "unverifiedOrFailed": 140
   },
   "RIG": {
-   "trials": 2877,
-   "staticMeasured": 2862,
+   "trials": 2878,
+   "staticMeasured": 2863,
    "unverifiedOrFailed": 15
   },
   "JOINT": {
-   "trials": 2877,
-   "staticMeasured": 2862,
+   "trials": 2878,
+   "staticMeasured": 2863,
    "unverifiedOrFailed": 15
   },
   "MOTION": {
-   "trials": 2877,
-   "staticMeasured": 2874,
+   "trials": 2878,
+   "staticMeasured": 2875,
    "unverifiedOrFailed": 3
   },
   "ACTION": {
-   "trials": 2877,
-   "staticMeasured": 2874,
+   "trials": 2878,
+   "staticMeasured": 2875,
    "unverifiedOrFailed": 3
   },
   "MATERIAL": {
-   "trials": 11295,
-   "staticMeasured": 11148,
+   "trials": 11297,
+   "staticMeasured": 11150,
    "unverifiedOrFailed": 145
   },
   "ENVIRONMENT": {
@@ -204,23 +204,23 @@
    "unverifiedOrFailed": 123
   },
   "OBJECT": {
-   "trials": 11289,
-   "staticMeasured": 11148,
+   "trials": 11291,
+   "staticMeasured": 11150,
    "unverifiedOrFailed": 141
   },
   "UI": {
-   "trials": 315277,
-   "staticMeasured": 315269,
+   "trials": 315385,
+   "staticMeasured": 315377,
    "unverifiedOrFailed": 8
   },
   "BUTTON": {
-   "trials": 315277,
-   "staticMeasured": 315269,
+   "trials": 315385,
+   "staticMeasured": 315377,
    "unverifiedOrFailed": 8
   },
   "ICON": {
-   "trials": 9960,
-   "staticMeasured": 8495,
+   "trials": 9962,
+   "staticMeasured": 8497,
    "unverifiedOrFailed": 1465
   },
   "VFX": {
@@ -239,8 +239,8 @@
    "unverifiedOrFailed": 0
   },
   "LIGHTING": {
-   "trials": 2885,
-   "staticMeasured": 2885,
+   "trials": 2886,
+   "staticMeasured": 2886,
    "unverifiedOrFailed": 0
   },
   "CAMERA": {
@@ -266,8 +266,8 @@
  },
  "rig": {
   "latest": {
-   "id": "external-actor-rogue",
-   "sourceSha256": "9b41cc7c6300299d46477fea5175d222bdec0aed5f215d16c1de4d8711761683",
+   "id": "external-actor-rogue-hooded",
+   "sourceSha256": "9aed88eede1480f44090494baeab930cc6353db99891decf2dd2c03af3467735",
    "measured": true,
    "rigPass": true,
    "bones": 41,
@@ -319,6 +319,23 @@
    "gameApplied": false
   },
   "history": {
+   "external-actor-rogue-hooded": {
+    "sourceSha256": "9aed88eede1480f44090494baeab930cc6353db99891decf2dd2c03af3467735",
+    "attempts": 288,
+    "passed": 287,
+    "failed": 1,
+    "measured": 288,
+    "bones": 41,
+    "meshParts": 12,
+    "clipNamesObserved": 76,
+    "curveInspectedClips": 76,
+    "validMovingClips": 69,
+    "movingBoneCurves": 5889,
+    "lastLowestMesh": "Rogue_LegLeft",
+    "lastBoundGroundOffsetRatio": 0,
+    "lastFailures": [],
+    "lastSession": "2026-11-23T03:44:30.573Z"
+   },
    "external-actor-rogue": {
     "sourceSha256": "9b41cc7c6300299d46477fea5175d222bdec0aed5f215d16c1de4d8711761683",
     "attempts": 288,
@@ -471,30 +488,13 @@
     "lastBoundGroundOffsetRatio": 0,
     "lastFailures": [],
     "lastSession": "2026-11-23T02:59:30.734Z"
-   },
-   "external-actor-rogue-hooded": {
-    "sourceSha256": "9aed88eede1480f44090494baeab930cc6353db99891decf2dd2c03af3467735",
-    "attempts": 287,
-    "passed": 286,
-    "failed": 1,
-    "measured": 287,
-    "bones": 41,
-    "meshParts": 12,
-    "clipNamesObserved": 76,
-    "curveInspectedClips": 76,
-    "validMovingClips": 69,
-    "movingBoneCurves": 5889,
-    "lastLowestMesh": "Rogue_LegLeft",
-    "lastBoundGroundOffsetRatio": 0,
-    "lastFailures": [],
-    "lastSession": "2026-11-23T02:54:14.490Z"
    }
   }
  },
  "icon": {
   "latest": {
-   "id": "tycoon-arrowBlue_left",
-   "sourceSha256": "c31a3563b46295da4deafd0eb08882092492bc9b702df1c47555482de9e9a35e",
+   "id": "tycoon-arrowBlue_right",
+   "sourceSha256": "8a720d8318c368505fa89b901f3f84a839b5fb27b134fed064ee5415d4739f19",
    "measured": true,
    "legible": true,
    "pixels64": 299,
@@ -504,6 +504,16 @@
    "gameApplied": false
   },
   "history": {
+   "tycoon-arrowBlue_right": {
+    "sourceSha256": "8a720d8318c368505fa89b901f3f84a839b5fb27b134fed064ee5415d4739f19",
+    "attempts": 719,
+    "measured": 719,
+    "passed": 719,
+    "rejected": 0,
+    "pixels64": 299,
+    "contrast64": 0.165,
+    "lastSession": "2026-11-23T03:44:30.573Z"
+   },
    "tycoon-arrowBlue_left": {
     "sourceSha256": "c31a3563b46295da4deafd0eb08882092492bc9b702df1c47555482de9e9a35e",
     "attempts": 719,
@@ -533,16 +543,6 @@
     "pixels64": 102,
     "contrast64": 0.008,
     "lastSession": "2026-11-23T03:31:43.386Z"
-   },
-   "tycoon-arrowBlue_right": {
-    "sourceSha256": "8a720d8318c368505fa89b901f3f84a839b5fb27b134fed064ee5415d4739f19",
-    "attempts": 718,
-    "measured": 718,
-    "passed": 718,
-    "rejected": 0,
-    "pixels64": 299,
-    "contrast64": 0.165,
-    "lastSession": "2026-11-23T03:26:53.213Z"
    }
   }
  },
