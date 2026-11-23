@@ -1,5 +1,5 @@
 {
- "sourceRevision": "af06dac1b4f33c798e294d98fb9fee0b60190a39",
+ "sourceRevision": "dcbaaa8246471242ac8e5a55341200f639325fb4",
  "log": [
   {
    "step": 1,
@@ -34,7 +34,7 @@
   {
    "step": 11,
    "ctx": "Client",
-   "out": "villagers=91 pick=-135.37713623046875, 3.2633774280548096, -56.30720138549805\ntext"
+   "out": "villagers=91 pick=-135.3738250732422, 3.2633774280548096, -56.30720138549805\ntext"
   },
   {
    "step": 13,
@@ -114,7 +114,7 @@
   {
    "step": 39,
    "ctx": "Client",
-   "out": "villagers=91 pick=-32, 2.873384475708008, 40.400001525878906\ntext"
+   "out": "villagers=91 pick=-32, 3.016709804534912, 11\ntext"
   },
   {
    "step": 41,
@@ -130,246 +130,256 @@
    "step": 45,
    "capture": "vil_6_2",
    "files": 1
+  },
+  {
+   "step": 46,
+   "ctx": "Client",
+   "out": "VILLAGER_OUTFIT_RUNTIME_AUDIT checked=95 ready=95 baseBody=95 hairReady=90/95 visibleGarmentParts=2526 overlap=0 whiteBoot=0 missing=0 hairFailures=[companion_clergy_male/clergy/short/slots=/fallback=0 | companion_clergy_female/clergy/short/slots=/fallback=0 | companion_clergy_male/clergy/short/slots=/fallback=0 | companion_clergy_male/clergy/short/slots=/fallback=0 | companion_clergy_male/clergy/short/slots=/fallback=0]\ntext"
   }
  ],
  "errors": [
-  "step46:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:64: VILLAGER_HAIR_NOT_READY:VILLAGER_O"
+  "step47:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:15: VILLAGER_HAIR_NOT_READY:90/95 | te"
  ],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 35015
+   "elapsedMs": 35011
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 184
+   "elapsedMs": 125
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 7674
+   "elapsedMs": 8445
   },
   {
    "step": 3,
    "type": "wait",
-   "elapsedMs": 9002
+   "elapsedMs": 9012
   },
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 239
+   "elapsedMs": 243
   },
   {
    "step": 5,
    "type": "wait",
-   "elapsedMs": 508
+   "elapsedMs": 501
   },
   {
    "step": 6,
    "type": "capture",
-   "elapsedMs": 1088
+   "elapsedMs": 1112
   },
   {
    "step": 7,
    "type": "wait",
-   "elapsedMs": 510
+   "elapsedMs": 508
   },
   {
    "step": 8,
    "type": "capture",
-   "elapsedMs": 1073
+   "elapsedMs": 984
   },
   {
    "step": 9,
    "type": "wait",
-   "elapsedMs": 515
+   "elapsedMs": 503
   },
   {
    "step": 10,
    "type": "capture",
-   "elapsedMs": 1086
+   "elapsedMs": 902
   },
   {
    "step": 11,
    "type": "luau",
-   "elapsedMs": 214
+   "elapsedMs": 367
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 513
+   "elapsedMs": 505
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 1428
+   "elapsedMs": 1123
   },
   {
    "step": 14,
    "type": "wait",
-   "elapsedMs": 508
+   "elapsedMs": 501
   },
   {
    "step": 15,
    "type": "capture",
-   "elapsedMs": 1315
+   "elapsedMs": 1050
   },
   {
    "step": 16,
    "type": "wait",
-   "elapsedMs": 512
+   "elapsedMs": 500
   },
   {
    "step": 17,
    "type": "capture",
-   "elapsedMs": 1243
+   "elapsedMs": 1031
   },
   {
    "step": 18,
    "type": "luau",
-   "elapsedMs": 247
+   "elapsedMs": 236
   },
   {
    "step": 19,
    "type": "wait",
-   "elapsedMs": 508
+   "elapsedMs": 500
   },
   {
    "step": 20,
    "type": "capture",
-   "elapsedMs": 920
+   "elapsedMs": 1019
   },
   {
    "step": 21,
    "type": "wait",
-   "elapsedMs": 514
+   "elapsedMs": 505
   },
   {
    "step": 22,
    "type": "capture",
-   "elapsedMs": 922
+   "elapsedMs": 1364
   },
   {
    "step": 23,
    "type": "wait",
-   "elapsedMs": 509
+   "elapsedMs": 512
   },
   {
    "step": 24,
    "type": "capture",
-   "elapsedMs": 929
+   "elapsedMs": 1056
   },
   {
    "step": 25,
    "type": "luau",
-   "elapsedMs": 393
+   "elapsedMs": 219
   },
   {
    "step": 26,
    "type": "wait",
-   "elapsedMs": 512
+   "elapsedMs": 502
   },
   {
    "step": 27,
    "type": "capture",
-   "elapsedMs": 1032
+   "elapsedMs": 867
   },
   {
    "step": 28,
    "type": "wait",
-   "elapsedMs": 509
+   "elapsedMs": 505
   },
   {
    "step": 29,
    "type": "capture",
-   "elapsedMs": 893
+   "elapsedMs": 811
   },
   {
    "step": 30,
    "type": "wait",
-   "elapsedMs": 506
+   "elapsedMs": 502
   },
   {
    "step": 31,
    "type": "capture",
-   "elapsedMs": 835
+   "elapsedMs": 817
   },
   {
    "step": 32,
    "type": "luau",
-   "elapsedMs": 233
+   "elapsedMs": 205
   },
   {
    "step": 33,
    "type": "wait",
-   "elapsedMs": 502
+   "elapsedMs": 504
   },
   {
    "step": 34,
    "type": "capture",
-   "elapsedMs": 1005
+   "elapsedMs": 974
   },
   {
    "step": 35,
    "type": "wait",
-   "elapsedMs": 509
+   "elapsedMs": 503
   },
   {
    "step": 36,
    "type": "capture",
-   "elapsedMs": 865
+   "elapsedMs": 791
   },
   {
    "step": 37,
    "type": "wait",
-   "elapsedMs": 506
+   "elapsedMs": 503
   },
   {
    "step": 38,
    "type": "capture",
-   "elapsedMs": 821
+   "elapsedMs": 777
   },
   {
    "step": 39,
    "type": "luau",
-   "elapsedMs": 237
+   "elapsedMs": 218
   },
   {
    "step": 40,
    "type": "wait",
-   "elapsedMs": 509
+   "elapsedMs": 500
   },
   {
    "step": 41,
    "type": "capture",
-   "elapsedMs": 1202
+   "elapsedMs": 996
   },
   {
    "step": 42,
    "type": "wait",
-   "elapsedMs": 503
+   "elapsedMs": 512
   },
   {
    "step": 43,
    "type": "capture",
-   "elapsedMs": 1199
+   "elapsedMs": 1096
   },
   {
    "step": 44,
    "type": "wait",
-   "elapsedMs": 505
+   "elapsedMs": 507
   },
   {
    "step": 45,
    "type": "capture",
-   "elapsedMs": 1229
+   "elapsedMs": 1064
   },
   {
    "step": 46,
    "type": "luau",
-   "elapsedMs": 585
+   "elapsedMs": 225
+  },
+  {
+   "step": 47,
+   "type": "luau",
+   "elapsedMs": 532
   }
  ],
  "consoleCapture": {
@@ -379,8 +389,8 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 47,
-  "completedSteps": 47,
+  "plannedSteps": 48,
+  "completedSteps": 48,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
@@ -389,9 +399,9 @@
   "abortedEarly": true
  },
  "abortDiagnostics": {
-  "step": 46,
+  "step": 47,
   "type": "luau",
-  "elapsedMs": 197,
+  "elapsedMs": 202,
   "context": "Client",
   "lastScreenshot": "vil_6_2",
   "lastClick": null,
