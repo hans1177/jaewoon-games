@@ -4183,3 +4183,20 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.ok(script.some(row=>row.code?.includes('FIELD_GROUND_MATERIAL_MISMATCH')),'스튜디오 해안 모래 실측');
   assert.ok(script.some(row=>row.code?.includes("FieldQuestTerrainTheme')=='coast")),'해적 소굴의 해안 퀘스트 지형 검사');
 });
+
+
+// [수입 원본 배율] 비정상적으로 큰 GLB 단위에서 항구 지형이 빠지지 않고 실측 목표 크기를 검사한다.
+test('Mare imported terrain and castle models preserve source scale and validate actual target size', () => {
+  const scene = readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau');
+  const begin = scene.indexOf('local function importedModel(');
+  const end = scene.indexOf('-- [실제 3D 설치 모션]', begin);
+  assert.ok(begin >= 0 && end > begin, '기존 수입 모델 배치 함수 유지');
+  const fit = scene.slice(begin, end);
+  assert.match(fit, /local scale = m:GetScale\(\) \* ratio/, '수입본 원래 배율을 전체 종류에 반영');
+  assert.match(fit, /ratio < 0\.000001 or ratio > 100/, '배율 이상치 경계 유지');
+  assert.match(fit, /m:ScaleTo\(scale\)/, '원래 모델 배치 흐름 유지');
+  assert.match(fit, /local _, actualSize = m:GetBoundingBox\(\)/, '변환 뒤 실제 메시 크기 측정');
+  assert.match(fit, /math\.abs\(actualAxis - targetSize\) > targetSize \* 0\.2/, '타깃 20% 오차 초과 시 실패');
+  assert.match(fit, /m:PivotTo\(CFrame\.new\(bottomPosition - bottom\) \* m:GetPivot\(\)\)/, '기존 접지 위치 유지');
+  assert.match(fit, /warn\("\[MareEssentia\] 모델 수입본 배치 오류"/, '원래 경고·안전 폐기 경로 유지');
+});
