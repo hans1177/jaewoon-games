@@ -4443,7 +4443,13 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 					put("Cargo", "box-open", 2.4, cx + 13, cz, false)
 				end
 				-- [장날] 런던만 같은 승인 가판대를 두 줄로 진열, 다른 항구는 기존 연출을 보존한다.
-				if stalls > 0 then folder:SetAttribute("CityMarketStalls", stalls + londonExtraStalls) end
+				if stalls > 0 then
+					if info.portId == "london" and londonMarketDay then
+						folder:SetAttribute("CityMarketStalls", stalls + londonExtraStalls)
+					else
+						folder:SetAttribute("CityMarketStalls", stalls)
+					end
+				end
 				if info.portId == "london" then folder:SetAttribute("CityLondonMarketDay", londonMarketDay) end
 				-- [런던 특산품] 양모·석탄·주석 모두 승인된 Cargo 실물로 시장에 놓는다.
 				local marketGoods = if info.portId == "london" then { "wool", "coal", "tin" }
