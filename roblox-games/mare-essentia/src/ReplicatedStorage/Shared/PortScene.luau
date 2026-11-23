@@ -6953,7 +6953,8 @@ function PortScene.build(info, onFacility)
 					-- [스키 이동 방지] 사지 리그 없는 원본은 통째로 미끄러지게 이동시키지 않는다.
 					local hasGait = #w.animalJoints > 0 or #w.animalParts > 0
 					local targetD = if w.span and hasGait then -math.sin(u) * w.span else 0
-					local want = if math.cos(u) < -0.06 then math.pi elseif math.cos(u) > 0.06 then 0 else w.targetHd or 0
+					local want = if not hasGait then 0 elseif math.cos(u) < -0.06 then math.pi
+						elseif math.cos(u) > 0.06 then 0 else w.targetHd or 0
 					w.targetHd = want
 					if not w.headingStarted then
 						w.hd, w.headingStarted = want, true
