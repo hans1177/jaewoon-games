@@ -340,6 +340,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 				-- [야생 생물 품종색] 원본 PBR 맵/무늬와 눈·발굽·뿔 등 세부색은 보존한다.
 				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
 				local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and surfaceHasColorMap(sa))
+					or d.MaterialVariant ~= ""
 				for _, ch in d:GetChildren() do
 					if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 				end
@@ -354,31 +355,28 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 						or partName:find("patch", 1, true) or partName:find("spot", 1, true)
 						or partName:find("stripe", 1, true) or partName:find("whisker", 1, true)
 				if textured and not detail then
-					-- [가축/야생 공통 PBR] 원본 지도는 보존하고 중복 색 곱셈을 한 채널로 줄인다.
+					-- [원본 PBR] 등록된 색상지도와 메시 색을 변형하지 않는다.
 					if sa and surfaceHasColorMap(sa) then
-						sa.Color = sa.Color:Lerp(tint, 0.16)
-					elseif not sa then
-						d.Color = d.Color:Lerp(tint, 0.16)
+						-- 기존 색상지도와 Part.Color 모두 보존.
 					end
 				elseif not textured and not detail then
-					local light = math.max(d.Color.R, d.Color.G, d.Color.B)
-					-- [원본 PBR 재질] 색상 지도가 없어도 법선/거칠기 맵을 사용할 수 있다.
-					-- 원본 파츠 색과 PBR 색을 동시에 착색하지 않는다.
+					-- [유실색 복구] 회백색으로 표시된 동물의 텍스처 없는 몸통만 품종색으로 조정.
+					local low = math.min(d.Color.R, d.Color.G, d.Color.B)
+					local high = math.max(d.Color.R, d.Color.G, d.Color.B)
+					local faded = high - low <= 0.14 and high >= 0.58
 					if sa and not surfaceHasColorMap(sa) then
-						sa.Color = sa.Color:Lerp(tint, if light > 0.55 then 0.52 else 0.30)
+						sa.Color = sa.Color:Lerp(tint, if faded then 0.7 else 0)
 					else
-						d.Color = d.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
+						d.Color = d.Color:Lerp(tint, if faded then 0.82 else 0)
 					end
-					-- [종별 자연 재질] 양털/단모 가죽/돼지 피부. 원본 PBR은 절대 덮지 않는다.
 					if not sa then
-						d.Material = if asset == "sheep" or asset == "llama" or asset == "chicken"
-							or asset == "cat" or asset == "dog-pug" then Enum.Material.Fabric
-							elseif asset == "cow" or asset == "horse" or asset == "donkey" then Enum.Material.Leather
-							elseif asset == "elephant" then Enum.Material.Concrete
-							else Enum.Material.SmoothPlastic
-						d.Reflectance = 0
+						-- 원래 Leather/Concrete 재질과 색상 있는 털·피부는 강제로 덮지 않는다.
+						d.Material = if faded and (d.Material == Enum.Material.SmoothPlastic or d.Material == Enum.Material.Plastic)
+							and (asset == "sheep" or asset == "llama") then Enum.Material.Fabric else d.Material
+						if d.Material == Enum.Material.Leather or d.Material == Enum.Material.Concrete then
+							d.Reflectance = math.min(d.Reflectance, 0.02)
+						end
 					end
-					-- PBR 색은 위에서 한 채널만 보정했다.
 				elseif not textured and not sa and (partName:find("mane", 1, true) or partName:find("tail", 1, true)) then
 					d.Material = Enum.Material.Fabric
 				end
@@ -453,7 +451,21 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 		if ratio ~= ratio or ratio <= 0 or ratio == math.huge then error("invalid imported model scale") end
 		m:ScaleTo(m:GetScale() * ratio)
 		local center, size = m:GetBoundingBox()
-		local b = Vector3.new(center.Position.X, center.Position.Y - size.Y / 2, center.Position.Z)
+		-- [야생 동물 접지] 수입 리그의 투명 루트 대신 보이는 메시의 발바닥을 기준으로 배치한다.
+		local visibleBottomY = math.huge
+		if kind == "Animals" then
+			for _, piece in m:GetDescendants() do
+				if piece:IsA("BasePart") and piece.Transparency < 0.98 then
+					local half = piece.Size * 0.5
+					local pose = piece.CFrame
+					visibleBottomY = math.min(visibleBottomY, pose.Position.Y
+						- math.abs(pose.RightVector.Y) * half.X - math.abs(pose.UpVector.Y) * half.Y
+						- math.abs(pose.LookVector.Y) * half.Z)
+				end
+			end
+		end
+		local b = Vector3.new(center.Position.X,
+			if visibleBottomY < math.huge then visibleBottomY else center.Position.Y - size.Y / 2, center.Position.Z)
 		m:PivotTo(CFrame.new(bottom - b) * m:GetPivot())
 		if kind == "People" then
 			Pose.relaxArms(m)
