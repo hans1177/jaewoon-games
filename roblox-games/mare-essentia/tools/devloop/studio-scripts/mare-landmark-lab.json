@@ -1,0 +1,77 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'NEWGAME ok='..tostring(a and a.ok)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local n=0 for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then for _,x in ipairs(g:GetDescendants()) do if x:IsA('TextLabel') and string.find(x.Text,'길드 서기') then g:Destroy() n+=1 break end end end end return 'killed '..n"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then g.Enabled=false end end return 'gui off'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local K=require(game:GetService('ReplicatedStorage').Shared:WaitForChild('PortLandmarkKit'))\nlocal f=Instance.new('Folder') f.Name='LandmarkLab' f.Parent=workspace\nlocal base=Vector3.new(2000,200,2000)\nlocal g=Instance.new('Part') g.Anchored=true g.Size=Vector3.new(560,1,140) g.Position=base+Vector3.new(220,-0.5,25) g.Color=Color3.fromRGB(110,140,80) g.Material=Enum.Material.Grass g.Parent=f\nlocal walls={tower='stucco',campanile='brick',spire='stone',dome='stone',fort='stone',bridge='brick',canal_gate='brick',gopuram='plaster',island_post='wood',trade_row='plaster',palace='coral'}\nlocal n=0\nfor i,k in ipairs(K.KINDS) do\n  K.build(f,k,'full',CFrame.new(base+Vector3.new((i-1)*48,0,0)),walls[k])\n  K.build(f,k,'base',CFrame.new(base+Vector3.new((i-1)*48,0,70)),walls[k])\n  n+=1\nend\nreturn 'built '..n"
+ },
+ {
+  "type": "wait",
+  "ms": 1000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable local t=Vector3.new(2072,215,2000) cam.CFrame=CFrame.lookAt(t+Vector3.new(0,25,-95),t) return 'cam'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "lab_full_a"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable local t=Vector3.new(2312,215,2000) cam.CFrame=CFrame.lookAt(t+Vector3.new(0,25,-95),t) return 'cam'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "lab_full_b"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable local t=Vector3.new(2072,215,2070) cam.CFrame=CFrame.lookAt(t+Vector3.new(0,25,-95),t) return 'cam'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "lab_base_a"
+ }
+]
