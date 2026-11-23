@@ -2126,3 +2126,19 @@ test('Mare first card has no forced wonder and spontaneous port events are limit
   assert.match(story,/function handlers\.PlayStory\(state, p\)/,'player-initiated story stays intact');
   assert.match(quest,/local function offer\(state, msgs, how, personId\)/,'player initiated quests preserved');
 });
+
+
+// [스튜디오 실제 클릭] 비차단 카드 획득 연출을 대기 실패로 오인하지 않으면서 포인터 검증은 유지한다.
+test('Mare Studio field entry respects nonblocking card notices and verifies real clicks', () => {
+  const steps = JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json', 'utf8'));
+  assert.equal(steps.length, 246, '기존 246단계 시나리오 유지');
+  const entry = steps[236];
+  assert.equal(entry.type, 'click_from_luau');
+  assert.equal(entry.label, 'field_entry');
+  assert.match(entry.code, /NonBlockingCardNotice/, '기존 카드 알림 비차단 속성을 확인');
+  assert.match(entry.code, /FIELD_ENTRY_CARD_GAIN_MODAL_BLOCKING/, '차단형 알림은 검사 실패');
+  assert.doesNotMatch(entry.code, /FIELD_ENTRY_CARD_GAIN_STILL_BLOCKING|for i=1,100 do/, '획득 큐 전체를 대기하지 않음');
+  for (const check of ['GetGuiObjectsAtPosition', 'FIELD_ENTRY_TOPMOST_BLOCKER', 'FIELD_ENTRY_BUTTON_HITBOX_HIDDEN', 'FIELD_ENTRY_BUTTON_INPUT_DISABLED', 'QAFieldEntryPointer']) {
+    assert.ok(entry.code.includes(check), '실제 클릭 검증 보존: ' + check);
+  }
+});
