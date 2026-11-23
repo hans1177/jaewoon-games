@@ -214,6 +214,75 @@ INTERIOR = {
 }
 
 
+# ── 건축 시뮬레이션: 단계별 건물 카탈로그 ─────────────────────────────────────
+# (id, 이름, 분류, 개방 단계, 조건, 영어 형태, 마을 효과(시뮬 설명))
+# 조건: None | "coast" | "shipyard" | "goods:<a,b>" | "cold" | "warm" | "palace"
+CATALOG = [
+    ("hut", "오두막", "주거", 1, None, "one-room hut with chimney and fenced yard", "인구 +2"),
+    ("well", "우물", "공공", 1, None, "stone well with wooden winch roof", "주민 행복 +, 화재 진압"),
+    ("dock_shed", "부두 창고", "항만", 1, "coast", "small wooden dock shed with crates", "하역 속도 +"),
+    ("fish_rack", "어망 건조대", "생산", 1, "goods:fish,whale_oil,salt,amber", "fish drying racks and net poles", "식량 +"),
+    ("garden", "텃밭", "농업", 1, None, "fenced vegetable plots with scarecrow", "식량 +"),
+    ("chapel", "작은 예배소", "종교", 1, None, "small shrine/chapel in local faith style", "신앙 +"),
+    ("house_row", "연립 주택", "주거", 2, None, "row of two-storey townhouses sharing walls", "인구 +6"),
+    ("bakery", "빵집·화덕", "식량", 2, None, "bakery with brick oven chimney and bread rack", "식량 가공 +"),
+    ("smithy", "대장간", "공방", 2, None, "smithy with open forge, anvil and bellows", "도구·무기 +"),
+    ("carpenter", "목공소", "공방", 2, None, "carpenter's workshop with timber stacks and saw horse", "건설 속도 +"),
+    ("granary", "곡물 창고", "저장", 2, None, "raised granary on stone legs", "흉년 대비 +"),
+    ("mill", "방앗간", "생산", 2, None, "watermill or windmill depending on terrain", "곡물 가공 +"),
+    ("market_stalls", "장터", "상업", 2, None, "cluster of canopy market stalls around a small square", "교역 +"),
+    ("watchtower", "망루", "방어", 2, "coast", "wooden coastal watchtower with signal brazier", "해적 경계 +"),
+    ("temple", "성당·사원", "종교", 3, None, "main temple/church/mosque of the local faith", "신앙·명성 +"),
+    ("school", "학당", "교육", 3, None, "schoolhouse with bell and courtyard", "연구 +"),
+    ("infirmary", "의원·병원", "의료", 3, None, "infirmary with herb garden and beds", "질병 감소"),
+    ("warehouse", "대형 창고", "저장", 3, None, "large stone warehouse with hoist beam and cart door", "재고 한도 +"),
+    ("ropewalk", "밧줄 공장", "조선", 3, "shipyard", "long narrow ropewalk shed", "배 수리비 -"),
+    ("brewery", "양조장", "식량", 3, "goods:beer,wine,rice,grain,sugar", "brewery/winery with vats and casks", "주민 만족 +"),
+    ("tannery", "무두질장", "공방", 3, "goods:leather,wool", "tannery with soaking pits and hanging hides (on outskirts)", "가죽 +"),
+    ("bathhouse", "공중목욕탕", "공공", 3, "warm", "public bathhouse with domes or tiled roof", "위생 +"),
+    ("lighthouse", "등대", "항만", 3, "coast", "stone lighthouse with lantern room", "야간 입항 안전"),
+    ("town_hall", "시청·관아", "행정", 4, None, "town hall / magistrate office with clock or drum tower", "세금·질서 +"),
+    ("hospital", "대병원", "의료", 4, None, "large hospital around a cloister", "질병 크게 감소"),
+    ("library", "도서관", "교육", 4, None, "library with reading hall and tall windows", "연구 ++"),
+    ("customs", "세관", "항만", 4, "coast", "customs house with arcade facing the quay", "관세 수입 +"),
+    ("fort_wall", "성벽·포대", "방어", 4, "coast", "stone harbour walls with gun battery and gate", "해적·전쟁 방어"),
+    ("theater", "극장", "문화", 4, None, "theatre / performance hall in local style", "명성·만족 +"),
+    ("guild_row", "공방 거리", "공방", 4, None, "street of specialist workshops with signs", "특산물 가공 +"),
+    ("university", "대학·학술원", "교육", 5, None, "university/academy with quadrangle and observatory dome", "연구 +++"),
+    ("exchange", "증권거래소", "상업", 5, None, "stock exchange with courtyard and clock tower", "투자·주식"),
+    ("arsenal", "해군 공창", "조선", 5, "shipyard", "naval arsenal with dry docks and cranes", "대형선 건조"),
+    ("botanic", "식물원", "과학", 5, None, "botanical garden with glasshouse", "연구·명성 +"),
+    ("opera", "오페라 극장·궁정 극장", "문화", 5, "palace", "grand opera house / court theatre", "명성 ++"),
+    ("suburb", "외곽 신시가지", "주거", 5, None, "new suburb block with wider streets and gardens", "인구 +20"),
+]
+
+# 문화권별 공사 방식: (주재료, 공정 특징, 일꾼 복장/도구, 완공 의식)
+BUILD_STYLE = {
+    "britain": ("brick, oak timber, slate", "벽돌 쌓기와 목골조, 슬레이트 지붕 잇기", "앞치마·모자 차림 석공과 목수, 벽돌 운반 짐꾼", "지붕 위 나뭇가지 꽂기(상량식)·맥주 돌리기"),
+    "brick": ("brick, timber piles", "말뚝 박기(간척지) → 벽돌 → 계단 박공", "나막신 신은 인부, 말뚝 해머", "박공 꼭대기 깃발 달기"),
+    "hanse": ("brick, oak", "벽돌 고딕 박공 쌓기", "길드 표식 단 석공", "길드 깃발 행진"),
+    "nordic": ("pine logs, turf, tar", "통나무 짜기 → 타르 칠 → 잔디 지붕", "털모자 목수, 도끼", "지붕 위 전나무 꽂기"),
+    "stone": ("granite, lime plaster", "석재 다듬기와 회반죽 바르기", "털 외투 석공, 정과 망치", "성직자 축복"),
+    "france": ("limestone, oak, slate", "석회암 블록 → 맨사드 지붕", "작업복 석공, 기중기 바퀴", "준공 축하 연회"),
+    "iberia": ("stucco over brick, clay tile", "벽돌 → 회칠 → 기와, 타일 붙이기", "밀짚모자 인부, 회칠 붓", "성인 조각상 축복"),
+    "italy": ("brick, travertine, terracotta", "벽돌 아치 → 회반죽 → 테라코타 지붕", "석공 길드, 나무 비계 탑", "종 울리기"),
+    "med": ("whitewashed stone", "돌 쌓기 → 석회 흰칠", "맨머리 인부, 석회 통", "흰칠 마무리 잔치"),
+    "desert": ("adobe mud brick, palm beams", "흙벽돌 틀 찍기 → 햇볕 건조 → 쌓기 → 흙 미장", "터번 인부, 벽돌 틀", "기도와 대추야자 나눔"),
+    "ottoman": ("stone, timber upper floor, lead domes", "석조 1층 → 목조 돌출 2층 → 돔에 납판", "페즈 모자 석공, 목수", "희생 제물·기도"),
+    "swahili": ("coral rag stone, lime, mangrove poles", "산호석 쌓기 → 맹그로브 들보 → 석회", "칸가 두른 인부, 맹그로브 장대", "북 연주와 축복"),
+    "malabar": ("laterite blocks, teak, clay tile", "라테라이트 블록 → 티크 지붕틀 → 기와", "도티 차림 장인, 코끼리 목재 운반", "길일 택일·기름등 점화"),
+    "japan": ("cedar/cypress timber, clay tile, plaster", "목조 짜맞춤(못 없음) → 상량 → 기와 → 흰 회벽", "핫피 입은 목수(다이쿠), 끌·대패", "상량식(조토시키) 떡 뿌리기"),
+    "korea": ("pine timber, clay tile, mud plaster", "주춧돌 → 기둥·대들보 → 상량 → 기와 → 흙벽", "갓·두건 목수, 먹줄", "상량문 걸기·고사"),
+    "china": ("grey brick, timber, glazed tile", "벽돌 담 → 목조 지붕틀 → 곡선 기와", "두건 장인, 대나무 비계", "폭죽과 붉은 천 달기"),
+    "seasia": ("hardwood stilts, bamboo, thatch/tile", "기둥 세우기(고상) → 대나무 엮기 → 지붕", "사롱 인부, 대나무 비계", "승려 축복·꽃 공양"),
+    "pacific": ("timber posts, pandanus thatch, coral lime", "기둥·서까래 묶기 → 이엉", "맨발 인부, 밧줄 묶기", "공동 연회"),
+    "wafrica": ("mud brick, palm thatch, timber torons", "흙벽돌 → 흙 미장 → 이엉·나무 돌출목", "천 두른 인부, 흙 바구니", "북과 춤"),
+    "colonial": ("stucco over stone, clay tile", "석재 → 회칠 → 철 발코니", "솜브레로 인부, 노새 수레", "사제 축복·종"),
+    "creole": ("timber frame, weatherboard, shingles", "목조 골조 → 판자 → 베란다", "밀짚모자 목수", "준공 파티"),
+    "tropic": ("timber, plaster, palm thatch", "목조 → 회벽 → 베란다", "밀짚모자 인부", "깃발 게양"),
+}
+
+
 def climate_of(lat):
     a = abs(lat)
     for limit, ko, en in CLIMATE:
@@ -234,6 +303,84 @@ def theme_of(goods):
 def tier_label(t):
     return ["", "1 개척", "2 마을", "3 읍", "4 도시", "5 대도시"][t]
 
+
+FAITH = {  # 문화권별 예배소·대사원 이름(한글, 영어)
+    "desert": ("작은 모스크", "대모스크", "small mosque with minaret", "great congregational mosque with courtyard"),
+    "ottoman": ("작은 모스크", "대모스크", "small mosque with pencil minaret", "domed mosque complex with madrasa"),
+    "swahili": ("산호석 모스크", "금요 모스크", "small coral-stone mosque", "Friday mosque with mihrab"),
+    "malabar": ("작은 사원", "대사원", "small Hindu shrine", "large temple with gopuram and tank"),
+    "japan": ("신사", "사원", "small Shinto shrine with torii", "Buddhist temple hall with pagoda"),
+    "korea": ("서낭당", "향교·사찰", "village shrine with sacred tree", "Confucian school shrine and Buddhist temple"),
+    "china": ("토지묘", "사원·문묘", "small earth-god shrine", "temple with pagoda and Confucian hall"),
+    "seasia": ("작은 사당", "불탑 사원", "small spirit house", "stupa temple complex"),
+    "pacific": ("작은 성소", "대회관·교회", "small sacred platform", "great meeting house / mission church"),
+    "wafrica": ("작은 사당", "흙 모스크·교회", "small shrine", "mud-brick mosque or mission church"),
+}
+
+
+def faith_names(culture):
+    return FAITH.get(culture, ("작은 예배당", "성당", "small chapel with bell", "stone church with bell tower"))
+
+
+def catalog_ok(cond, p, has_palace):
+    if cond is None:
+        return True
+    if cond == "coast":
+        return True
+    if cond == "shipyard":
+        return p["shipyard"]
+    if cond == "palace":
+        return has_palace
+    if cond == "warm":
+        return abs(p["lat"]) < 45
+    if cond == "cold":
+        return abs(p["lat"]) >= 50
+    if cond.startswith("goods:"):
+        return bool(set(cond[6:].split(",")) & set(p["produces"]))
+    return True
+
+
+def construction_section(p, culture, c, has_palace, asset, lines):
+    bs = BUILD_STYLE.get(culture, BUILD_STYLE["tropic"])
+    lines += ["## 4. 건축 시뮬레이션 (단계별 건물 카탈로그)", "",
+              "마을 경제 시뮬(인구·번영·자금)이 건설을 결정하면 아래 순서로 **공사 현장 → 완공**이 실제로 보인다. 단계가 오를수록 새 건물 종류가 열린다.", "",
+              "| 단계 | 건물 | 분류 | 마을 효과 |", "|---|---|---|---|"]
+    f1, f2, e1, e2 = faith_names(culture)
+    local_cat = []
+    for bid, ko, cat, tier, cond, en, eff in CATALOG:
+        if bid == "chapel":
+            ko, en = f1, e1
+        elif bid == "temple":
+            ko, en = f2, e2
+        if catalog_ok(cond, p, has_palace):
+            local_cat.append((bid, ko, cat, tier, en, eff))
+            lines.append(f"| {tier} | {ko} | {cat} | {eff} |")
+    lines += ["", f"### 공사 과정 ({c['ko']} 방식)", "",
+              f"- 주재료: {bs[0]}", f"- 공정: {bs[1]}", f"- 일꾼: {bs[2]}", f"- 완공 의식: {bs[3]}", "",
+              "| 공정 | 화면에 보이는 것 | 일꾼 동작 | 걸리는 시간(게임일) |", "|---|---|---|---|",
+              "| ① 측량 | 말뚝·줄 띄우기, 설계도 탁자 | 감독이 도면 확인, 측량꾼 줄 당기기 | 1 |",
+              "| ② 터 닦기 | 흙 파기, 흙더미, 수레 | 삽질·수레 끌기(2~3명) | 1~2 |",
+              f"| ③ 기초 | 주춧돌/말뚝, 재료 더미({bs[0].split(',')[0]}) | 돌 나르기·망치질 | 2 |",
+              "| ④ 골조·비계 | 기둥·들보 + 나무 비계, 도르래 기중기 | 목수 톱질·망치, 짐꾼 사다리 오르기 | 2~3 |",
+              "| ⑤ 벽 | 벽이 아래부터 차오름(절반→가득) | 석공/미장 동작 | 2~3 |",
+              "| ⑥ 지붕 | 지붕틀 → 기와/이엉 잇기 | 지붕 위 일꾼 2명 | 2 |",
+              "| ⑦ 마감 | 창·문·간판·색칠, 비계 철거 | 붓질·청소 | 1 |",
+              f"| ⑧ 완공 | 비계 사라짐, 깃발·꽃장식, {bs[3]} | 주민 모여 박수, 감독 인사 | 행사 1일 |", "",
+              "- 일꾼 수: 1단계 건물 2명 → 5단계 건물 6~8명. 감독 1명(도면), 목수·석공·짐꾼 구분.",
+              "- 공사 중 소리: 망치·톱·수레바퀴(기존 효과음). 밤에는 작업 중단, 현장 등불만.",
+              "- 자금 부족·흉년이면 공사 정지(비계만 남고 일꾼 없음). 재개되면 일꾼 복귀.",
+              "- 완공 순간: 건물 등장 연출(먼지 걷힘) + 알림 \"○○ 완공\" + 해당 효과 적용.", ""]
+    asset("construction_kit", "construction", 1, "kit", "8k",
+          f"Construction site kit for {c['ko']} style: survey stakes and string, dirt piles, foundation stones, timber scaffold modules (1/2/3 floors), wooden pulley crane, material piles of {bs[0]}, wheelbarrow, ladder, plan table.",
+          "공사 현장 소품 세트")
+    asset("construction_stages", "construction", 1, "per building", "10k",
+          f"Generic building in 5 construction stages (foundation, frame+scaffold, half walls, roof framing, finished) in local style: {c['arch']}. Each stage a separate mesh.",
+          "공사 단계 5개 메시")
+    asset("workers", "people", 1, "R15 outfits", "4k",
+          f"Construction worker outfit set (foreman with plan scroll, carpenter, mason, porter) for {c['ko']}: {bs[2]}. Period-accurate clothing accessories only (R15 layered).",
+          "공사 일꾼 복장 세트")
+    for bid, ko, cat, tier, en, eff in local_cat:
+        asset(f"bld_{bid}", "building", tier, "auto", "8k", f"{en}, built in local style: {c['arch']}.", f"{ko}({cat}) {tier}단계")
 
 # ── 문서 생성 ────────────────────────────────────────────────────────────────
 
@@ -306,7 +453,8 @@ def brief(p, culture, fac, palace_names, cur):
     asset("palace", "palace", 1 if has_palace else 5, "80x60x40", "40k",
           f"{pal_style}. Royal/governor seat of {name}, grand but game-readable, with a ceremonial entrance and courtyard.",
           (pal_name if has_palace else "총독 관저") + " 외형")
-    lines += ["## 4. 마을 에셋", ""]
+    construction_section(p, culture, c, has_palace, asset, lines)
+    lines += ["## 5. 마을 기본 에셋", ""]
     asset("landmark_base", "landmark", 2, "40x40x30", "15k", f"Under-construction {landmark}: lower half built, scaffolding, cranes, stone blocks.", "상징물 공사 중")
     asset("landmark_full", "landmark", 4, "40x40x70", "25k", f"Completed {landmark}, signature landmark of {name}.", "상징물 완성")
     for i, (t, fl, ex) in enumerate([(1, "1-storey", "humble, small yard"), (3, "2-storey", "shop on ground floor"), (5, "3-storey", "wealthy merchant house")], 1):
@@ -317,8 +465,8 @@ def brief(p, culture, fac, palace_names, cur):
             asset(f"stall_{g}", "goods", 2, "8x5x6", "3k", f"Market stall displaying {curated.GOOD_PROPS[g]}, style: {arch}.", f"가판대 {g}")
         if g in curated.WORKSHOP:
             asset(f"workshop_{g}", "workshop", 3, "24x20x16", "10k", f"{curated.WORKSHOP[g]}, built in local style: {arch}.", f"공방 {g}")
-    lines += ["## 5. 완료 체크", "", "- [ ] 에셋 `assets/inbox/Town/<asset_id>.glb` + `.license.json`(원본·derived)",
-              "- [ ] 단계 1~5 Studio 항공 사진: 구역 분리·광장·상징물·방문 건물 위치", "- [ ] `tests/run.sh` 통과(코드 한도 포함)", ""]
+    lines += ["## 6. 완료 체크", "", "- [ ] 에셋 `assets/inbox/Town/<asset_id>.glb` + `.license.json`(원본·derived)",
+              "- [ ] 단계 1~5 Studio 항공 사진: 구역 분리·광장·상징물·방문 건물 위치", "- [ ] 공사 현장 ①~⑧ 공정과 일꾼 동작, 완공 연출 확인", "- [ ] `tests/run.sh` 통과(코드 한도 포함)", ""]
     return "\n".join(lines), rows, dict(theme=theme_ko, culture=c["ko"], palace=pal_name if has_palace else "")
 
 

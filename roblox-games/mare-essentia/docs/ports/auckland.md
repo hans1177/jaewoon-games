@@ -219,7 +219,265 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. weatherboard colonial residence with veranda. Royal/governor seat of 오클랜드, grand but game-readable, with a ceremonial entrance and courtyard.
 ```
 
-## 4. 마을 에셋
+## 4. 건축 시뮬레이션 (단계별 건물 카탈로그)
+
+마을 경제 시뮬(인구·번영·자금)이 건설을 결정하면 아래 순서로 **공사 현장 → 완공**이 실제로 보인다. 단계가 오를수록 새 건물 종류가 열린다.
+
+| 단계 | 건물 | 분류 | 마을 효과 |
+|---|---|---|---|
+| 1 | 오두막 | 주거 | 인구 +2 |
+| 1 | 우물 | 공공 | 주민 행복 +, 화재 진압 |
+| 1 | 부두 창고 | 항만 | 하역 속도 + |
+| 1 | 텃밭 | 농업 | 식량 + |
+| 1 | 작은 성소 | 종교 | 신앙 + |
+| 2 | 연립 주택 | 주거 | 인구 +6 |
+| 2 | 빵집·화덕 | 식량 | 식량 가공 + |
+| 2 | 대장간 | 공방 | 도구·무기 + |
+| 2 | 목공소 | 공방 | 건설 속도 + |
+| 2 | 곡물 창고 | 저장 | 흉년 대비 + |
+| 2 | 방앗간 | 생산 | 곡물 가공 + |
+| 2 | 장터 | 상업 | 교역 + |
+| 2 | 망루 | 방어 | 해적 경계 + |
+| 3 | 대회관·교회 | 종교 | 신앙·명성 + |
+| 3 | 학당 | 교육 | 연구 + |
+| 3 | 의원·병원 | 의료 | 질병 감소 |
+| 3 | 대형 창고 | 저장 | 재고 한도 + |
+| 3 | 공중목욕탕 | 공공 | 위생 + |
+| 3 | 등대 | 항만 | 야간 입항 안전 |
+| 4 | 시청·관아 | 행정 | 세금·질서 + |
+| 4 | 대병원 | 의료 | 질병 크게 감소 |
+| 4 | 도서관 | 교육 | 연구 ++ |
+| 4 | 세관 | 항만 | 관세 수입 + |
+| 4 | 성벽·포대 | 방어 | 해적·전쟁 방어 |
+| 4 | 극장 | 문화 | 명성·만족 + |
+| 4 | 공방 거리 | 공방 | 특산물 가공 + |
+| 5 | 대학·학술원 | 교육 | 연구 +++ |
+| 5 | 증권거래소 | 상업 | 투자·주식 |
+| 5 | 식물원 | 과학 | 연구·명성 + |
+| 5 | 외곽 신시가지 | 주거 | 인구 +20 |
+
+### 공사 과정 (태평양·오세아니아 방식)
+
+- 주재료: timber posts, pandanus thatch, coral lime
+- 공정: 기둥·서까래 묶기 → 이엉
+- 일꾼: 맨발 인부, 밧줄 묶기
+- 완공 의식: 공동 연회
+
+| 공정 | 화면에 보이는 것 | 일꾼 동작 | 걸리는 시간(게임일) |
+|---|---|---|---|
+| ① 측량 | 말뚝·줄 띄우기, 설계도 탁자 | 감독이 도면 확인, 측량꾼 줄 당기기 | 1 |
+| ② 터 닦기 | 흙 파기, 흙더미, 수레 | 삽질·수레 끌기(2~3명) | 1~2 |
+| ③ 기초 | 주춧돌/말뚝, 재료 더미(timber posts) | 돌 나르기·망치질 | 2 |
+| ④ 골조·비계 | 기둥·들보 + 나무 비계, 도르래 기중기 | 목수 톱질·망치, 짐꾼 사다리 오르기 | 2~3 |
+| ⑤ 벽 | 벽이 아래부터 차오름(절반→가득) | 석공/미장 동작 | 2~3 |
+| ⑥ 지붕 | 지붕틀 → 기와/이엉 잇기 | 지붕 위 일꾼 2명 | 2 |
+| ⑦ 마감 | 창·문·간판·색칠, 비계 철거 | 붓질·청소 | 1 |
+| ⑧ 완공 | 비계 사라짐, 깃발·꽃장식, 공동 연회 | 주민 모여 박수, 감독 인사 | 행사 1일 |
+
+- 일꾼 수: 1단계 건물 2명 → 5단계 건물 6~8명. 감독 1명(도면), 목수·석공·짐꾼 구분.
+- 공사 중 소리: 망치·톱·수레바퀴(기존 효과음). 밤에는 작업 중단, 현장 등불만.
+- 자금 부족·흉년이면 공사 정지(비계만 남고 일꾼 없음). 재개되면 일꾼 복귀.
+- 완공 순간: 건물 등장 연출(먼지 걷힘) + 알림 "○○ 완공" + 해당 효과 적용.
+
+#### `auckland_construction_kit` — 공사 현장 소품 세트
+- construction · 1단계 · 크기 kit · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Construction site kit for 태평양·오세아니아 style: survey stakes and string, dirt piles, foundation stones, timber scaffold modules (1/2/3 floors), wooden pulley crane, material piles of timber posts, pandanus thatch, coral lime, wheelbarrow, ladder, plan table.
+```
+
+#### `auckland_construction_stages` — 공사 단계 5개 메시
+- construction · 1단계 · 크기 per building · 폴리곤 ≤ 10k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Generic building in 5 construction stages (foundation, frame+scaffold, half walls, roof framing, finished) in local style: timber and thatch houses on platforms, colonial weatherboard cottages later. Each stage a separate mesh.
+```
+
+#### `auckland_workers` — 공사 일꾼 복장 세트
+- people · 1단계 · 크기 R15 outfits · 폴리곤 ≤ 4k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Construction worker outfit set (foreman with plan scroll, carpenter, mason, porter) for 태평양·오세아니아: 맨발 인부, 밧줄 묶기. Period-accurate clothing accessories only (R15 layered).
+```
+
+#### `auckland_bld_hut` — 오두막(주거) 1단계
+- building · 1단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. one-room hut with chimney and fenced yard, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_well` — 우물(공공) 1단계
+- building · 1단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. stone well with wooden winch roof, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_dock_shed` — 부두 창고(항만) 1단계
+- building · 1단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. small wooden dock shed with crates, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_garden` — 텃밭(농업) 1단계
+- building · 1단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. fenced vegetable plots with scarecrow, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_chapel` — 작은 성소(종교) 1단계
+- building · 1단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. small sacred platform, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_house_row` — 연립 주택(주거) 2단계
+- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. row of two-storey townhouses sharing walls, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_bakery` — 빵집·화덕(식량) 2단계
+- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. bakery with brick oven chimney and bread rack, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_smithy` — 대장간(공방) 2단계
+- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. smithy with open forge, anvil and bellows, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_carpenter` — 목공소(공방) 2단계
+- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. carpenter's workshop with timber stacks and saw horse, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_granary` — 곡물 창고(저장) 2단계
+- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. raised granary on stone legs, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_mill` — 방앗간(생산) 2단계
+- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. watermill or windmill depending on terrain, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_market_stalls` — 장터(상업) 2단계
+- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. cluster of canopy market stalls around a small square, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_watchtower` — 망루(방어) 2단계
+- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. wooden coastal watchtower with signal brazier, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_temple` — 대회관·교회(종교) 3단계
+- building · 3단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. great meeting house / mission church, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_school` — 학당(교육) 3단계
+- building · 3단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. schoolhouse with bell and courtyard, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_infirmary` — 의원·병원(의료) 3단계
+- building · 3단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. infirmary with herb garden and beds, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_warehouse` — 대형 창고(저장) 3단계
+- building · 3단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. large stone warehouse with hoist beam and cart door, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_bathhouse` — 공중목욕탕(공공) 3단계
+- building · 3단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. public bathhouse with domes or tiled roof, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_lighthouse` — 등대(항만) 3단계
+- building · 3단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. stone lighthouse with lantern room, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_town_hall` — 시청·관아(행정) 4단계
+- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. town hall / magistrate office with clock or drum tower, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_hospital` — 대병원(의료) 4단계
+- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. large hospital around a cloister, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_library` — 도서관(교육) 4단계
+- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. library with reading hall and tall windows, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_customs` — 세관(항만) 4단계
+- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. customs house with arcade facing the quay, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_fort_wall` — 성벽·포대(방어) 4단계
+- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. stone harbour walls with gun battery and gate, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_theater` — 극장(문화) 4단계
+- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. theatre / performance hall in local style, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_guild_row` — 공방 거리(공방) 4단계
+- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. street of specialist workshops with signs, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_university` — 대학·학술원(교육) 5단계
+- building · 5단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. university/academy with quadrangle and observatory dome, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_exchange` — 증권거래소(상업) 5단계
+- building · 5단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. stock exchange with courtyard and clock tower, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_botanic` — 식물원(과학) 5단계
+- building · 5단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. botanical garden with glasshouse, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+#### `auckland_bld_suburb` — 외곽 신시가지(주거) 5단계
+- building · 5단계 · 크기 auto · 폴리곤 ≤ 8k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. new suburb block with wider streets and gardens, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
+```
+
+## 5. 마을 기본 에셋
 
 #### `auckland_landmark_base` — 상징물 공사 중
 - landmark · 2단계 · 크기 40x40x30 · 폴리곤 ≤ 15k
@@ -269,8 +527,9 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. water-wheel sawmill with log pond, built in local style: timber and thatch houses on platforms, colonial weatherboard cottages later.
 ```
 
-## 5. 완료 체크
+## 6. 완료 체크
 
 - [ ] 에셋 `assets/inbox/Town/<asset_id>.glb` + `.license.json`(원본·derived)
 - [ ] 단계 1~5 Studio 항공 사진: 구역 분리·광장·상징물·방문 건물 위치
+- [ ] 공사 현장 ①~⑧ 공정과 일꾼 동작, 완공 연출 확인
 - [ ] `tests/run.sh` 통과(코드 한도 포함)
