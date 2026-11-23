@@ -1,0 +1,156 @@
+# 베네치아 (venice) — ChatGPT 작업 지시서
+
+> 이 문서 하나로 이 항구의 3D 에셋 제작과 마을 배치를 진행한다. 공통 규칙은 `docs/PORT_VILLAGE_PROMPTS.md`.
+
+## 0. 작업 환경
+
+- 게임: Mare Essentia (Roblox, Luau). 배경 1500~1800년 대항해시대. 저장소 `roblox-games/mare-essentia`
+- 마을 생성 코드: `src/ReplicatedStorage/Shared/PortScene.luau` (마을 짓기 `densify`, 대표 경관 `placeSignature`/`SIG`, 기념물 `placeLandmarks`)
+- 항구 정체성 데이터: `src/ReplicatedStorage/Shared/PortIdentity.luau` (아래 표의 값이 여기 있음)
+- 에셋 등록: 파일을 `assets/inbox/Town/<asset_id>.glb`(라이선스 `<asset_id>.license.json` 동봉)에 넣고 main 반영 → `owner-mare-essentia-assets` 워크플로가 Roblox 등록 → 코드에서 `AssetIds["Town/<asset_id>"]`, 배치는 `importedModel(folder, "Town", "<asset_id>", 위치, 크기)`
+- 지키기: 저장 데이터·경제 수치·보행 충돌벽 변경 금지. 원본 없으면 기존 승인 에셋으로 대체(이미 있는 방식).
+- 검증: `LUAU_DIR=... bash tests/run.sh`(스모크 905건), Studio `tools/devloop/studio-scripts/mare-town.json` 항공·광장 촬영
+
+## 1. 항구 정체성
+
+| 항목 | 값 |
+|---|---|
+| 상징물 | 광장 종탑 (`lm_venice_campanile`, 종류 campanile) |
+| 건축 | Venetian stucco palazzi in pink/ochre, pointed-arch windows, loggias, funnel chimneys, hip roofs (지붕 hip, 벽 stucco) |
+| 구획 | 운하: 물길 양쪽으로 집 한 줄씩, 다리로 연결 |
+| 광장 | 분수 광장 — piazza with a carved stone wellhead |
+| 길 1→5단계 | plank → flagstone → flagstone → flagstone → flagstone |
+| 밤 조명 | oil_lantern |
+| 길 밖 땅 / 날씨 | mud / puddles |
+| 특산물(교역품) | glass, silk, coffee |
+
+## 2. 발전도별 배치 지시
+
+| 단계 | 필지 | 무엇을 어디에 |
+|---|---|---|
+| 1 | 6 | 부두 옆 오두막 `venice_house_1` 6채, 길 plank, 횃불 2~3. 외곽: glass 관련 텃밭/작업장 1 |
+| 2 | 10 | 부두와 마을 사이 중앙 광장 + `venice_plaza_center`. 광장 옆에 `venice_landmark_base`(공사 중). 가판대 `venice_stall_*` 2개 |
+| 3 | 14 | 구역 분리: 시장(광장 동쪽·부두 쪽) / 종교·관청(광장 반대편) / 주거(골목) / 공방(외곽 강·물가). `venice_signature_1~3` 구역별 1채, `venice_workshop_*` 공방 구역, 가로등 `venice_street_lamp` 길 3칸마다, 간판 `venice_shop_sign` |
+| 4 | 18 | `venice_landmark_full`로 교체, `venice_house_2`(2층 상점) 큰길 앞, 창고 `venice_warehouse_stock`(재고 단계) 부두 뒤, 가로등 2칸마다 |
+| 5 | 24 | `venice_house_3`(3층) 광장 둘레, 외곽 구역 신설, 가로등 모든 길, 농촌 가공소 |
+
+- 건물은 중앙에 몰지 말고 구역별로 나눈다. 광장 → 큰길 → 골목 순으로 밀도가 낮아지게.
+- 같은 집 연속 배치 금지(색 슬롯·회전·높이 변형). 땅은 길(포장)과 길 밖(기후 재질)을 구분.
+
+## 3. 3D 에셋 프롬프트
+
+모든 프롬프트는 공통 문구 포함(그대로 3D 생성 도구에 붙여 넣기).
+
+### `venice_landmark_base` — 2단계 상징물 기초(공사 중)
+- 분류 landmark · 등장 2단계 · 크기 40x40x30 · 폴리곤 ≤ 15k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Under-construction version of brick campanile with pyramid spire: lower half built, wooden scaffolding, cranes, stone blocks on ground.
+```
+
+### `venice_landmark_full` — 4단계 상징물 완성
+- 분류 landmark · 등장 4단계 · 크기 40x40x70 · 폴리곤 ≤ 25k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Completed brick campanile with pyramid spire, the city's signature landmark, ornate but game-readable, weathered stone.
+```
+
+### `venice_house_1` — 1단계 주택 변형 1
+- 분류 house · 등장 1단계 · 크기 16x14x(12-26) · 폴리곤 ≤ 6k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. 1-storey Venetian stucco palazzi in pink/ochre, pointed-arch windows, loggias, funnel chimneys, hip roofs, humble, small yard, wooden fence. Provide 3 colour-variant material slots.
+```
+
+### `venice_house_2` — 3단계 주택 변형 2
+- 분류 house · 등장 3단계 · 크기 16x14x(12-26) · 폴리곤 ≤ 6k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. 2-storey Venetian stucco palazzi in pink/ochre, pointed-arch windows, loggias, funnel chimneys, hip roofs, shop on ground floor, awning. Provide 3 colour-variant material slots.
+```
+
+### `venice_house_3` — 5단계 주택 변형 3
+- 분류 house · 등장 5단계 · 크기 16x14x(12-26) · 폴리곤 ≤ 6k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. 3-storey Venetian stucco palazzi in pink/ochre, pointed-arch windows, loggias, funnel chimneys, hip roofs, wealthy merchant house, decorative trim. Provide 3 colour-variant material slots.
+```
+
+### `venice_signature_1` — 3단계 구역 특산 건물
+- 분류 district · 등장 3단계 · 크기 30x24x24 · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Murano glass furnace workshop, in local style: Venetian stucco palazzi in pink/ochre, pointed-arch windows, loggias, funnel chimneys, hip roofs.
+```
+
+### `venice_signature_2` — 3단계 구역 특산 건물
+- 분류 district · 등장 3단계 · 크기 30x24x24 · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. lazaretto quarantine station, in local style: Venetian stucco palazzi in pink/ochre, pointed-arch windows, loggias, funnel chimneys, hip roofs.
+```
+
+### `venice_signature_3` — 3단계 구역 특산 건물
+- 분류 district · 등장 3단계 · 크기 30x24x24 · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Venetian Arsenal galley shed, in local style: Venetian stucco palazzi in pink/ochre, pointed-arch windows, loggias, funnel chimneys, hip roofs.
+```
+
+### `venice_plaza_center` — 2단계 중앙 광장 중심물
+- 분류 plaza · 등장 2단계 · 크기 20x20x10 · 폴리곤 ≤ 5k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. piazza with a carved stone wellhead, cobbled base, benches around.
+```
+
+### `venice_street_lamp` — 3단계 가로등(밤 발광)
+- 분류 lamp · 등장 3단계 · 크기 2x2x12 · 폴리곤 ≤ 1.5k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. wrought-iron oil street lantern on a post, glass panes, warm glow, 12 studs tall, emissive glass material slot for night.
+```
+
+### `venice_shop_sign` — 상점 그림 간판 세트
+- 분류 sign · 등장 3단계 · 크기 3x0.5x3 · 폴리곤 ≤ 1k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. set of 6 pictorial painted wooden signs: fish, barrel, cloth roll, bread, anvil, key. No letters.
+```
+
+### `venice_stall_glass` — 특산물 가판대: glass
+- 분류 goods · 등장 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Market stall with canopy displaying colourful blown-glass bottles and goblets on velvet, local style of 베네치아.
+```
+
+### `venice_workshop_glass` — 특산물 공방: glass
+- 분류 workshop · 등장 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. glass-blowing workshop with glowing furnace mouth and chimney, built in local style: Venetian stucco palazzi in pink/ochre, pointed-arch windows, loggias, funnel chimneys, hip roofs. Include worker spots and tools.
+```
+
+### `venice_stall_silk` — 특산물 가판대: silk
+- 분류 goods · 등장 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Market stall with canopy displaying bolts of shimmering silk in bright colours, local style of 베네치아.
+```
+
+### `venice_workshop_silk` — 특산물 공방: silk
+- 분류 workshop · 등장 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. silk workshop with silkworm racks and a draw loom, built in local style: Venetian stucco palazzi in pink/ochre, pointed-arch windows, loggias, funnel chimneys, hip roofs. Include worker spots and tools.
+```
+
+### `venice_stall_coffee` — 특산물 가판대: coffee
+- 분류 goods · 등장 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Market stall with canopy displaying sacks of roasted coffee beans and a copper roaster, local style of 베네치아.
+```
+
+### `venice_workshop_coffee` — 특산물 공방: coffee
+- 분류 workshop · 등장 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. coffee roasting house with copper drum roaster, built in local style: Venetian stucco palazzi in pink/ochre, pointed-arch windows, loggias, funnel chimneys, hip roofs. Include worker spots and tools.
+```
+
+### `venice_warehouse_stock` — 창고 마당 재고 3단계
+- 분류 goods · 등장 2단계 · 크기 20x16x10 · 폴리곤 ≤ 6k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Warehouse yard with 3 stacking states (low / medium / full) of crates, barrels and sacks for glass, silk, coffee.
+```
+
+## 4. 완료 체크
+
+- [ ] 에셋 파일·라이선스 inbox 등록, `AssetIds` 반영 확인
+- [ ] 단계 1~5 Studio 항공 사진에서 구역 분리·광장·상징물 확인
+- [ ] 스모크 905건·로직 테스트 통과

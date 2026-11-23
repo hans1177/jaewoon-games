@@ -28,6 +28,7 @@ local PortScene = {}
 
 ReplicatedStorage:SetAttribute("MarePortSceneStage", "require-PortCultures")
 local Cultures = require(script.Parent:WaitForChild("PortCultures"))
+local PortIdentity = require(script.Parent:WaitForChild("PortIdentity")) -- [항구 정체성] 항구별 길·땅·상징·조명 표
 local MED, STYLE, REGION, PROFILE, OUTFIT = Cultures.MED, Cultures.STYLE, Cultures.REGION, Cultures.PROFILE, Cultures.OUTFIT
 local C = Color3.fromRGB
 local PORT_CLOCK_EPOCH = os.clock()
@@ -1540,7 +1541,19 @@ end
 local sceneLevel = 1
 -- [표시 단계 1~6] 기존 1~5 배열은 sceneLevel로 그대로 읽고, 원본 마을 발전도 6(최고)일 때만 6을 쓴다.
 local cityTier = 1
+local scenePortId: string? = nil -- [항구 정체성] 지금 짓는 항구 (정체성 표가 있으면 길·땅 재질을 항구별로)
+-- 정체성 표의 { 재질 이름, R, G, B } → { Enum.Material, Color3 }
+local function identityLook(raw)
+	if not raw then return nil end
+	return { Enum.Material[raw[1]], Color3.fromRGB(raw[2], raw[3], raw[4]) }
+end
+local function identityStreet()
+	local name = scenePortId and PortIdentity.streetAt(scenePortId, sceneLevel)
+	return name and identityLook(PortIdentity.STREET_LOOK[name])
+end
 local function roadMat()
+	local look = identityStreet()
+	if look then return look[1] end
 	-- 발전도별 바닥: 흙 → 자갈 → 포석 → 화강암 → 대리석
 	return if sceneLevel <= 1 then Enum.Material.Sand
 		elseif sceneLevel == 2 then Enum.Material.Pebble
@@ -1549,6 +1562,8 @@ local function roadMat()
 		else Enum.Material.Marble
 end
 local function roadColor(style)
+	local look = identityStreet()
+	if look then return look[2]:Lerp(style.street, 0.25) end
 	if sceneLevel <= 1 then
 		return style.street:Lerp(Color3.fromRGB(176, 146, 104), 0.65)
 	end
@@ -5656,6 +5671,17 @@ function PortScene.build(info, onFacility)
 		folder:SetAttribute("CityInvestBonus", investBonus)
 	end
 	houseTier = sceneLevel
+	scenePortId = info.portId
+	local identity = PortIdentity.get(info.portId)
+	if identity then
+		folder:SetAttribute("PortIdentityLandmark", identity.landmark.id)
+		folder:SetAttribute("PortIdentityLayout", identity.layout)
+		folder:SetAttribute("PortIdentityPlaza", identity.plaza)
+		folder:SetAttribute("PortIdentityStreet", PortIdentity.streetAt(info.portId, sceneLevel))
+		folder:SetAttribute("PortIdentityLamp", identity.lamp)
+		folder:SetAttribute("PortIdentityGround", identity.ground)
+		folder:SetAttribute("PortIdentityWeather", identity.weatherGround)
+	end
 	-- [원본 발전도 6단계 연결] Village.portDev(1~6)는 서버 계산 그대로 받는다. 평균값(1~5)이 최고인데
 	-- 원본도 6이면 표시 단계 6으로 구별한다. 저장값·발전 계산·기존 1~5 배열 접근은 바뀌지 않는다.
 	local sourceLevel = info.development and tonumber(info.development.level)
@@ -5706,12 +5732,20 @@ function PortScene.build(info, onFacility)
 	folder:SetAttribute("PortLandDepth", farLandDepth)
 	local farGround = style.ground:Lerp(Color3.fromRGB(122, 164, 84), 0.7)
 	local plate = workspace:FindFirstChild("Baseplate")
+	-- [항구 정체성] 길 밖 땅은 기후에 맞는 재질(풀·모래·진흙·붉은 흙·논)로 보이게 한다.
+	local identityGround = (function()
+		local id = PortIdentity.get(info.portId)
+		return id and identityLook(PortIdentity.GROUND_LOOK[id.ground])
+	end)()
+	if identityGround then
+		farGround = farGround:Lerp(identityGround[2], 0.6)
+	end
 	if plate then
 		plate.Color = farGround
 		-- [발전도별 기존 지면 조정] 실제 땅 크기를 1~6단계별로 변경한다.
 		plate.Size = Vector3.new(farLandWidth, plate.Size.Y, farLandDepth)
 		plate.Position = Vector3.new(farLandCenter, plate.Position.Y, 0)
-		plate.Material = Enum.Material.SmoothPlastic
+		plate.Material = if identityGround then identityGround[1] else Enum.Material.SmoothPlastic
 	else
 		-- 로블록스 기본 Baseplate가 없는 빌드: 항구 땅(서쪽)과 바다 밑바닥을 직접 만든다
 		local land = part(folder, Vector3.new(farLandWidth, 4, farLandDepth),
@@ -5727,8 +5761,10 @@ function PortScene.build(info, onFacility)
 			Color3.fromRGB(168, 166, 170), Color3.fromRGB(226, 222, 214),
 		}
 		-- 도시는 돌길, 목장·밭은 자연 토지로 명확히 분리하여 농촌을 포장도로로 덮지 않는다.
+		-- [항구 정체성] 정체성 표가 있는 항구는 마을 바닥을 '길 밖 땅'으로 두고, 길은 strip 으로만 포장한다.
 		local floor = part(folder, Vector3.new(650, 0.3, 2 * (CITY_LIMIT_Z + 14)), CFrame.new(-290, 0.02, 0),
-			style.ground:Lerp(lvlColor[sceneLevel], if sceneLevel <= 1 then 0.8 else 0.65), roadMat())
+			if identityGround then style.ground:Lerp(identityGround[2], 0.55) else style.ground:Lerp(lvlColor[sceneLevel], if sceneLevel <= 1 then 0.8 else 0.65),
+			if identityGround then identityGround[1] else roadMat())
 		floor.Name = "TownFloor"
 		floor.CanCollide = true
 		floor.CanQuery = true
