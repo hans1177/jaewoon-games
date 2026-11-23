@@ -1,0 +1,75 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'NEWGAME ok='..tostring(a and a.ok)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local n=0 for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then for _,x in ipairs(g:GetDescendants()) do if x:IsA('TextLabel') and string.find(x.Text,'길드 서기') then g:Destroy() n+=1 break end end end end return 'killed '..n"
+ },
+ {
+  "type": "wait",
+  "ms": 5000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local rs=game:GetService('RunService') local st=game:GetService('Stats')\nlocal t,n=0,0 for i=1,40 do t+=rs.RenderStepped:Wait() n+=1 end\nlocal hb,ht=0,0 local c=rs.Heartbeat:Connect(function(dt) hb+=1 ht+=dt end) task.wait(2) c:Disconnect()\nlocal function g(k) local ok,v=pcall(function() return st[k] end) return ok and string.format('%.1f',tonumber(v) or -1) or 'na' end\nlocal hum=0 for _,x in ipairs(workspace:GetDescendants()) do if x:IsA('Humanoid') then hum+=1 end end\nreturn 'PORT fps='..math.floor(n/t+0.5)..' hbHz='..math.floor(hb/math.max(ht,0.001)+0.5)..' hbMs='..g('HeartbeatTimeMs')..' physMs='..g('PhysicsStepTimeMs')..' cpu='..g('RenderCPUFrameTime')..' gpu='..g('RenderGPUFrameTime')..' prims='..g('PrimitivesCount')..' hum='..hum..' parts='..#workspace:GetDescendants()"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=game.Players.LocalPlayer.Character if ch and ch:FindFirstChild('HumanoidRootPart') then ch.HumanoidRootPart.Anchored=true end local RS=game:GetService('ReplicatedStorage') local FS=require(RS.Shared.FieldScene) local pg=game.Players.LocalPlayer.PlayerGui local before={} for _,g in pg:GetChildren() do if g:IsA('ScreenGui') then before[g]=true g.Enabled=false end end workspace:SetAttribute('DevGod',true) workspace:SetAttribute('VoyageActive',true) task.spawn(function() local ok,err=xpcall(function() return FS.start({name='나소 해적 소굴',portId='nassau',siteId='nassau_pirates',nodes=2,danger=3,seed=5,onFinish=function(r) workspace:SetAttribute('FieldDone',tostring(r)) end}) end,function(e) return debug.traceback(tostring(e)) end) workspace:SetAttribute('FieldErr',tostring(ok)..' '..tostring(err)) end) task.wait(1) for _,g in pg:GetChildren() do if g:IsA('ScreenGui') and not before[g] then g.Enabled=true end end return 'started'"
+ },
+ {
+  "type": "wait",
+  "ms": 14000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local rs=game:GetService('RunService') local st=game:GetService('Stats')\nlocal t,n=0,0 for i=1,40 do t+=rs.RenderStepped:Wait() n+=1 end\nlocal hb,ht=0,0 local c=rs.Heartbeat:Connect(function(dt) hb+=1 ht+=dt end) task.wait(2) c:Disconnect()\nlocal function g(k) local ok,v=pcall(function() return st[k] end) return ok and string.format('%.1f',tonumber(v) or -1) or 'na' end\nlocal hum=0 for _,x in ipairs(workspace:GetDescendants()) do if x:IsA('Humanoid') then hum+=1 end end\nreturn 'FIELD fps='..math.floor(n/t+0.5)..' hbHz='..math.floor(hb/math.max(ht,0.001)+0.5)..' hbMs='..g('HeartbeatTimeMs')..' physMs='..g('PhysicsStepTimeMs')..' cpu='..g('RenderCPUFrameTime')..' gpu='..g('RenderGPUFrameTime')..' prims='..g('PrimitivesCount')..' hum='..hum..' parts='..#workspace:GetDescendants()"
+ },
+ {
+  "type": "capture",
+  "name": "p_field"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local n=0 local f=workspace:FindFirstChild('FieldScene') if not f then return 'nofield' end\nfor _,m in ipairs(f:GetChildren()) do local h=m:FindFirstChildOfClass('Humanoid') local r=m:FindFirstChild('HumanoidRootPart') if h and r and m.Name=='FieldEnemy' then r.Anchored=true h:ChangeState(Enum.HumanoidStateType.Physics) n+=1 end end return 'froze '..n"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local rs=game:GetService('RunService') local st=game:GetService('Stats')\nlocal t,n=0,0 for i=1,40 do t+=rs.RenderStepped:Wait() n+=1 end\nlocal hb,ht=0,0 local c=rs.Heartbeat:Connect(function(dt) hb+=1 ht+=dt end) task.wait(2) c:Disconnect()\nlocal function g(k) local ok,v=pcall(function() return st[k] end) return ok and string.format('%.1f',tonumber(v) or -1) or 'na' end\nlocal hum=0 for _,x in ipairs(workspace:GetDescendants()) do if x:IsA('Humanoid') then hum+=1 end end\nreturn 'FROZEN fps='..math.floor(n/t+0.5)..' hbHz='..math.floor(hb/math.max(ht,0.001)+0.5)..' hbMs='..g('HeartbeatTimeMs')..' physMs='..g('PhysicsStepTimeMs')..' cpu='..g('RenderCPUFrameTime')..' gpu='..g('RenderGPUFrameTime')..' prims='..g('PrimitivesCount')..' hum='..hum..' parts='..#workspace:GetDescendants()"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local n=0 local f=workspace:FindFirstChild('FieldScene') for _,m in ipairs(f:GetChildren()) do if m.Name=='FieldEnemy' then m.Parent=nil n+=1 end end return 'removed '..n"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local rs=game:GetService('RunService') local st=game:GetService('Stats')\nlocal t,n=0,0 for i=1,40 do t+=rs.RenderStepped:Wait() n+=1 end\nlocal hb,ht=0,0 local c=rs.Heartbeat:Connect(function(dt) hb+=1 ht+=dt end) task.wait(2) c:Disconnect()\nlocal function g(k) local ok,v=pcall(function() return st[k] end) return ok and string.format('%.1f',tonumber(v) or -1) or 'na' end\nlocal hum=0 for _,x in ipairs(workspace:GetDescendants()) do if x:IsA('Humanoid') then hum+=1 end end\nreturn 'NOENEMY fps='..math.floor(n/t+0.5)..' hbHz='..math.floor(hb/math.max(ht,0.001)+0.5)..' hbMs='..g('HeartbeatTimeMs')..' physMs='..g('PhysicsStepTimeMs')..' cpu='..g('RenderCPUFrameTime')..' gpu='..g('RenderGPUFrameTime')..' prims='..g('PrimitivesCount')..' hum='..hum..' parts='..#workspace:GetDescendants()"
+ }
+]
