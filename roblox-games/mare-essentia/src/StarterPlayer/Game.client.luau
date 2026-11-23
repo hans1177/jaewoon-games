@@ -9670,9 +9670,12 @@ function H.showCardGain(card, moreCount)
 	local revealWidth = math.floor(revealHeight * 0.7)
 	local center = UDim2.fromScale(0.5, 0.46)
 	local reducedMotion = game:GetService("GuiService").ReducedMotionEnabled
-	local imageId = AssetIds["CardArt/" .. tostring(card.id)]
+	-- [카드 원화 검수] 전투 보상에도 실제 카드배틀과 동일한 허용 목록을 적용한다.
+	local artworkKey = if isCombat then (NavalBattle or require(Shared:WaitForChild("NavalBattle"))).cardArtworkKey(card)
+		else "CardArt/" .. tostring(card.id)
+	local imageId = AssetIds[artworkKey]
 	local artImage = if imageId then "rbxassetid://" .. tostring(imageId)
-		elseif type(card.image) == "string" and card.image ~= "" then card.image
+		elseif not isCombat and type(card.image) == "string" and card.image ~= "" then card.image
 		elseif type(card.stageArt) == "string" and AssetIds[card.stageArt] then "rbxassetid://" .. tostring(AssetIds[card.stageArt])
 		else ""
 
