@@ -12,9 +12,17 @@ local Art: { [string]: Art } = {
 -- 자동 수집·등록된 카드 그림(AssetIds 의 CardArt/<카드id>)과 출처(CardArtCredits)를 합친다.
 local AssetIds = (require(script.Parent.AssetIds) :: any) :: { [string]: number }
 local Credits = require(script.Parent.CardArtCredits)
+-- [유럽 전투카드 원화 품질] 1400×2000 세로 7:10 원본·동일 컬러 회화 검수와 등록 해시가
+-- 모두 확인된 카드만 화면에 연결한다. 나머지 원본·등록번호·저장된 카드 소유권은 보존한다.
+local ApprovedEuropeanArt: { [string]: boolean } = {
+	eu_18 = true, -- 유럽들소 · 1400×2000 승인 원화
+	eu_19 = true, -- 붉은사슴 · 1400×2000 승인 원화
+	eu_20 = true, -- 검독수리 · 1400×2000 승인 원화
+	eu_28 = true, -- 유럽 원더 · 1400×2000 승인 원화
+}
 for key, assetId in AssetIds do
 	local cardId = string.match(key, "^CardArt/(.+)$")
-	if cardId and not Art[cardId] then
+	if cardId and not Art[cardId] and (not string.match(cardId, "^eu_%d%d$") or ApprovedEuropeanArt[cardId]) then
 		local c = Credits[cardId]
 		-- [5대륙 카드 원화] 기존 원본 SVG에서 제작·승인된 이미지에 위키백과 출처를 잘못 붙이지 않는다.
 		local region, digits = string.match(cardId, "^(%a%a)_(%d%d)$")

@@ -10,6 +10,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- [모바일 입자 예산] 효과 밀도만 조절한다. 명중·사거리·재사용 대기시간은 변경하지 않는다.
 local MOBILE_VFX = game:GetService("UserInputService").TouchEnabled
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
+local CardArt = require(script.Parent:WaitForChild("CardArt")).Art
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
 local CardTheme = require(script.Parent:WaitForChild("CardTheme"))
@@ -74,6 +75,11 @@ local CARD_STAGE = {
 -- [지역별 오브젝트 도판] 등록·승인된 개별 카드 그림을 우선하고, 없는 카드는 기존 도판을 보존한다.
 local function cardArtworkKey(card)
 	if type(card.id) == "string" then
+		-- [유럽 45장 원화] 규격·화풍 검수 미통과 그림은 손패·전투판·확대창에서 모두 감춘다.
+		-- 카드 자체와 능력·저장값은 유지하며, 다른 배경 이미지로 바꾸지 않는다.
+		if string.match(card.id, "^eu_%d%d$") and not CardArt[card.id] then
+			return nil
+		end
 		local individualArt = "CardArt/" .. card.id
 		if AssetIds[individualArt] then return individualArt end
 	end

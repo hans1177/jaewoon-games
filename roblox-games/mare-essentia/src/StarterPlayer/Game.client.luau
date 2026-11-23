@@ -9670,8 +9670,12 @@ function H.showCardGain(card, moreCount)
 	local revealWidth = math.floor(revealHeight * 0.7)
 	local center = UDim2.fromScale(0.5, 0.46)
 	local reducedMotion = game:GetService("GuiService").ReducedMotionEnabled
-	local imageId = AssetIds["CardArt/" .. tostring(card.id)]
-	local artImage = if imageId then "rbxassetid://" .. tostring(imageId)
+	-- [획득 연출] 유럽 원화의 동일 품질 검수 제외 규칙을 전투·도감과 똑같이 적용한다.
+	local excludedEuropeanArt = type(card.id) == "string"
+		and string.match(card.id, "^eu_%d%d$") ~= nil
+		and not require(Shared:WaitForChild("CardArt")).Art[card.id]
+	local imageId = if excludedEuropeanArt then nil else AssetIds["CardArt/" .. tostring(card.id)]
+	local artImage = if excludedEuropeanArt then "" elseif imageId then "rbxassetid://" .. tostring(imageId)
 		elseif type(card.image) == "string" and card.image ~= "" then card.image
 		elseif type(card.stageArt) == "string" and AssetIds[card.stageArt] then "rbxassetid://" .. tostring(AssetIds[card.stageArt])
 		else ""

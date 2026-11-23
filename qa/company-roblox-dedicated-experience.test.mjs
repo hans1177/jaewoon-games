@@ -1489,6 +1489,43 @@ test('Mare card art retains full source frame during battle animation and codex 
   assert.doesNotMatch(game,/if fitImage then Enum\.ScaleType\.Fit else Enum\.ScaleType\.Crop/);
 });
 
+// [유럽 원화 품질 회귀] 등록 자산 45장은 보존하고 검수된 세로 7:10 그림만 게임에 노출한다.
+test('Mare European card art hides unverified ratios and styles without deleting any registered assets', () => {
+  const root = 'roblox-games/mare-essentia/';
+  const art = fs.readFileSync(root+'src/ReplicatedStorage/Shared/CardArt.luau','utf8');
+  const battle = fs.readFileSync(root+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const client = fs.readFileSync(root+'src/StarterPlayer/Game.client.luau','utf8');
+  const ids = fs.readFileSync(root+'src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  const approved = JSON.parse(fs.readFileSync(root+'assets/APPROVED_IMAGES.json','utf8'));
+  const registered = JSON.parse(fs.readFileSync(root+'assets-registered.json','utf8'));
+  const permitted = ['eu_18','eu_19','eu_20','eu_28'];
+  const exposed = [...art.matchAll(/^\\s*(eu_\\d\\d)\\s*=\\s*true,?\\s*$/gm)].map(m=>m[1]).sort();
+  assert.deepEqual(exposed,permitted,'only portrait-verified European art may render');
+  assert.match(art,/not string\\.match\\(cardId, "\\^eu_%d%d\\$"\\) or ApprovedEuropeanArt\\[cardId\\]/);
+  assert.match(battle,/string\\.match\\(card\\.id, "\\^eu_%d%d\\$"\\) and not CardArt\\[card\\.id\\]/);
+  assert.match(battle,/if string\\.match\\(card\\.id, "\\^eu_%d%d\\$"\\) and not CardArt\\[card\\.id\\] then\\s*return nil/);
+  assert.match(client,/local imageId = if excludedEuropeanArt then nil else AssetIds\\["CardArt\\/" \\.\\. tostring\\(card\\.id\\)\\]/);
+  assert.match(client,/local artImage = if excludedEuropeanArt then "" elseif imageId/);
+  for (let n=1;n<=45;n++){
+    const id='eu_'+String(n).padStart(2,'0');
+    const key='CardArt/'+id;
+    assert.ok(approved.approved[key],key+' approved source preserved');
+    assert.ok(registered.assets[key]?.assetId,key+' Roblox asset preserved');
+    assert.equal(registered.assets[key].sourceSha256,approved.approved[key],key+' approved and registered SHA unchanged');
+    assert.ok(ids.includes('["'+key+'"] = '+registered.assets[key].assetId),key+' Luau ID unchanged');
+    if (!permitted.includes(id))continue;
+    const review=approved.modelOriginals[key];
+    assert.equal(review?.sourceSha256,approved.approved[key],key+' model original reviewed');
+    assert.equal(review?.subjectMatch,true);
+    assert.equal(review?.houseStyle,true);
+    assert.equal(review?.robloxSafety,true);
+    const png=fs.readFileSync(root+review.sourceFile);
+    assert.equal(png.toString('ascii',1,4),'PNG',key+' actual PNG');
+    assert.equal(png.readUInt32BE(16),1400,key+' original width');
+    assert.equal(png.readUInt32BE(20),2000,key+' original height');
+  }
+});
+
 test('Mare 150 regional card illustrations remain source complete and SHA-approved before Roblox registration', () => {
   const root='roblox-games/mare-essentia/';
   const manifest=JSON.parse(fs.readFileSync(root+'assets/cardart/region-art.json','utf8'));
