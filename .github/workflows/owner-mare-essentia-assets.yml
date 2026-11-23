@@ -80,6 +80,31 @@ jobs:
         with:
           node-version: '20'
 
+      # [원화 품질 확인] PNG 색상 종류(헤더 25번째 바이트)를 실제로 검증하고 삭제 대상을 기록한다.
+      - name: Audit 256-color indexed card artwork without altering registered assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib, struct
+          root = pathlib.Path('roblox-games/mare-essentia/assets')
+          count = 0
+          for folder in ('cardart', 'portraits', 'inbox', 'inbox-hold'):
+              base = root / folder
+              if not base.exists():
+                  continue
+              for path in sorted(base.rglob('*.png')):
+                  with path.open('rb') as f:
+                      header = f.read(26)
+                  if header[:8] != b'\\x89PNG\\r\\n\\x1a\\n' or len(header) < 26:
+                      print('ART_PNG_INVALID ' + str(path), flush=True)
+                      continue
+                  if header[25] == 3:
+                      count += 1
+                      print('ART_PALETTE256_FOUND ' + str(path), flush=True)
+          print('ART_PALETTE256_TOTAL=' + str(count), flush=True)
+          PY
+
       - name: Practice and verify approved trade goods using existing asset ledger
         id: trade_goods
         shell: bash
