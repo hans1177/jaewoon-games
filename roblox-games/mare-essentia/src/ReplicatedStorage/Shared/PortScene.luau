@@ -1081,8 +1081,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 등록 전에는 기존 문화권 주택 제작을 그대로 보존하며 저장·경제 값은 변경하지 않는다.
 	local originalHouseTier = if houseTier >= 5 and (floors or 1) >= 3 then 3
 		elseif houseTier >= 3 and (floors or 1) >= 2 then 2 else 1
-	local originalHouse = if scenePortId and PortIdentity.get(scenePortId)
-		then scenePortId .. "_house_" .. tostring(originalHouseTier) else nil
+	local originalHouse = if scenePortId then scenePortId .. "_house_" .. tostring(originalHouseTier) else nil
 	if originalHouse and AssetIds["Town/" .. originalHouse] then
 		local houseModel = importedModel(parent, "Town", originalHouse, pos,
 			math.max(w, d) * variation * HOUSE_SCALE, true)
@@ -1568,6 +1567,8 @@ end
 
 -- 마을 밀도·외곽 --------------------------------------------------------------
 local function styleKeyOf(style)
+	-- [181항구 고유 팔레트] PortScene.build가 복사한 지역 양식도 원래 문화권의 길·집·복식 규칙을 유지한다.
+	if style.cultureKey and STYLE[style.cultureKey] then return style.cultureKey end
 	for k, v in STYLE do
 		if v == style then return k end
 	end
@@ -2987,7 +2988,7 @@ local function placeSignature(folder, info)
 	-- [항구별 상징] 지시서의 원본이 등록된 경우 2~3단계 기초, 4~5단계 완성형을 우선 표시.
 	-- 미등록·실물 로딩 실패면 기존 SIG를 재사용한다. 임시 대체 모델은 만들지 않는다.
 	local identity = PortIdentity.get(info.portId)
-	if identity and sceneLevel >= 2 then
+	if sceneLevel >= 2 then
 		local stageName = if sceneLevel >= 4 then "full" else "base"
 		local landmarkAsset = info.portId .. "_landmark_" .. stageName
 		if AssetIds["Town/" .. landmarkAsset] then
@@ -4140,7 +4141,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		local lampStyle = if identity then identity.lamp else "oil_lantern"
 		-- [15항구 전용 등] 등록된 종이초롱·석등·모스크등은 정확한 항구 원본만 사용한다.
 		-- 미등록 원본을 서양 가로등으로 속이지 않으며, 기존 서양 기름등 모델만 재사용한다.
-		local originalLamp = if identity then info.portId .. "_street_lamp" else nil
+		local originalLamp = info.portId .. "_street_lamp"
 		local lampAsset = if originalLamp and AssetIds["Town/" .. originalLamp] then originalLamp
 			elseif lampStyle == "oil_lantern" then "kenney_lightpost_01" else nil
 		local lampSpacing = PortIdentity.tier(lvl).lampEvery
@@ -5838,7 +5839,44 @@ function PortScene.build(info, onFacility)
 		or (info.portId == "famagusta" and year >= 1571) then
 		culture = "ottoman"
 	end
-	local style = if culture and STYLE[culture] then STYLE[culture] elseif MED[info.portId] then STYLE.med else STYLE.north
+	-- [전체 181항구 외형] 문화권 기본형은 유지하면서 항구 ID별로 고정되는 실제 색상·지붕·건물 비례를 만든다.
+	-- 새 메시·Part·저장 키는 추가하지 않고 원래 승인된 건축물만 서로 다른 현지 팔레트로 표현한다.
+	local cultureKey = if culture and STYLE[culture] then culture elseif MED[info.portId] then "med" else "north"
+	local regionalStyle = STYLE[cultureKey]
+	local style = table.clone(regionalStyle)
+	style.cultureKey = cultureKey
+	local portLook = PortIdentity.get(info.portId)
+	local visualRng = seeded(info.portId .. ":historical-city-palette")
+	local wallShade = visualRng:NextNumber(-0.13, 0.13)
+	local roofShade = visualRng:NextNumber(-0.12, 0.12)
+	local warmTint = visualRng:NextNumber(-0.045, 0.045)
+	local wallSignature = portLook and C(portLook.facade[1], portLook.facade[2], portLook.facade[3])
+	local roofSignature = portLook and C(portLook.roofTint[1], portLook.roofTint[2], portLook.roofTint[3])
+	style.walls, style.roofs = {}, {}
+	for i, color in regionalStyle.walls do
+		local base = if wallSignature then color:Lerp(wallSignature, 0.52) else color
+		local localShade = wallShade * (if i == 1 then 1 else 0.78)
+		style.walls[i] = Color3.new(
+			math.clamp(base.R * (1 + localShade) + warmTint, 0, 1),
+			math.clamp(base.G * (1 + localShade), 0, 1),
+			math.clamp(base.B * (1 + localShade) - warmTint, 0, 1))
+	end
+	for i, color in regionalStyle.roofs do
+		local base = if roofSignature then color:Lerp(roofSignature, 0.62) else color
+		style.roofs[i] = Color3.new(
+			math.clamp(base.R * (1 + roofShade) + warmTint * 0.45, 0, 1),
+			math.clamp(base.G * (1 + roofShade), 0, 1),
+			math.clamp(base.B * (1 + roofShade) - warmTint * 0.45, 0, 1))
+	end
+	style.street = regionalStyle.street:Lerp(style.walls[1], 0.09)
+	style.sizeMul = (regionalStyle.sizeMul or 1) * visualRng:NextNumber(0.97, 1.03)
+	style.roofPitch = regionalStyle.roofPitch * visualRng:NextNumber(0.95, 1.05)
+	folder:SetAttribute("CityPortVisualIdentity", info.portId)
+	folder:SetAttribute("CityPortVisualCulture", cultureKey)
+	folder:SetAttribute("CityPortWallRGB", Vector3.new(
+		math.floor(style.walls[1].R * 255 + 0.5), math.floor(style.walls[1].G * 255 + 0.5), math.floor(style.walls[1].B * 255 + 0.5)))
+	folder:SetAttribute("CityPortRoofRGB", Vector3.new(
+		math.floor(style.roofs[1].R * 255 + 0.5), math.floor(style.roofs[1].G * 255 + 0.5), math.floor(style.roofs[1].B * 255 + 0.5)))
 	local rng = seeded(info.portId)
 	sceneLevel = math.clamp(math.floor(info.level or 1), 1, 5)
 	-- [시뮬 우선] 마을 외형은 실물경제 시뮬의 발전 단계(인구·번영)가 정한다.
@@ -6183,7 +6221,7 @@ function PortScene.build(info, onFacility)
 		-- [문화권 고증] 유럽 노점을 부산·캘리컷 장시로, 유럽식 분수를 오스만 세정시설로 쓰지 않는다.
 		local europeanMarket = not identity or info.portId == "london" or info.portId == "rouen"
 		-- [항구별 원본 광장] 15항구 전용 승인 원화가 있으면 기존 동일 광장 슬롯에서 우선 사용한다.
-		local originalPlaza = if identity then info.portId .. "_plaza_center" else nil
+		local originalPlaza = info.portId .. "_plaza_center"
 		local asset = if sceneLevel < 2 then nil
 			elseif originalPlaza and AssetIds["Town/" .. originalPlaza] then originalPlaza
 			elseif plazaKind == "market" and europeanMarket then
