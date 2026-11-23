@@ -1093,12 +1093,19 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	local originalHouseTier = if houseTier >= 5 and (floors or 1) >= 3 then 3
 		elseif houseTier >= 3 and (floors or 1) >= 2 then 2 else 1
 	local originalHouse = if scenePortId then scenePortId .. "_house_" .. tostring(originalHouseTier) else nil
-	if originalHouse and AssetIds["Town/" .. originalHouse] then
-		local houseModel = importedModel(parent, "Town", originalHouse, pos,
+	-- [런던 주거 실물] 기존 1~3단계 정본을 우선하고, 아직 단계 전용본이 없을 때만
+	-- 실제로 등록된 노동자·장인 주택을 일부 필지에 적용한다. 미등록 파일은 표시하지 않는다.
+	local londonResidence = if scenePortId == "london" and seed % 3 == 0 then
+		(if originalHouseTier == 1 then "london_house_worker"
+			elseif originalHouseTier == 2 then "london_house_artisan" else nil) else nil
+	local selectedHouse = if originalHouse and AssetIds["Town/" .. originalHouse] then originalHouse
+		elseif londonResidence and AssetIds["Town/" .. londonResidence] then londonResidence else nil
+	if selectedHouse then
+		local houseModel = importedModel(parent, "Town", selectedHouse, pos,
 			math.max(w, d) * variation * HOUSE_SCALE, true)
 		if houseModel then
 			houseModel.Name = "HarborHouse"
-			houseModel:SetAttribute("PortOriginalHouse", originalHouse)
+			houseModel:SetAttribute("PortOriginalHouse", selectedHouse)
 			return houseModel:FindFirstChildWhichIsA("BasePart", true)
 		end
 	end
@@ -3687,10 +3694,17 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						local face = if z > 0 then -1 else 1
 						local wallName = if key == "japan" or key == "china" or key == "seasia" or key == "malabar"
 							or key == "pacific" or key == "swahili" or key == "wafrica" then "kenney_wood_wall_01" else "kenney_grey_wall_01"
-						local ground = importedModel(folder, "Town", "floor_base", at, 21, false, c[6])
+						-- [런던 공방 전용 실물] 1번째 대장간, 2번째 목공소.
+						-- 실제 등록 번호가 없는 동안에는 기존 개방형 공방을 유지한다.
+						local londonWorkshop = if info.portId == "london" and c[1] == "workshop"
+							then (if n % 2 == 0 then "london_bld_carpenter" else "london_bld_smithy") else nil
+						if londonWorkshop and not AssetIds["Town/" .. londonWorkshop] then londonWorkshop = nil end
+						local ground = importedModel(folder, "Town", londonWorkshop or "floor_base", at,
+							21, londonWorkshop ~= nil, c[6])
 						if ground then
 							ground.Name = "EconomySite_" .. c[1]
 							ground:SetAttribute("IndustryGood", c[7] or "")
+							if londonWorkshop then ground:SetAttribute("PortOriginalIndustry", londonWorkshop) end
 							ground:SetAttribute("PortId", info.portId)
 							ground:SetAttribute("DevelopmentTier", lvl)
 							-- [경제↔건축] 현재 시설 숫자만 읽어 준공 및 증축 가능 등급을 표시한다. 건설비·저장값 변경 없음.
@@ -3705,29 +3719,34 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							placed += 1
 							table.insert(placedLots, { X = x, Z = z, H = 18 })
 							-- 한쪽이 실제로 열린 3면 작업장: 승인된 벽·지붕을 사용해 안에 들어갈 수 있다.
-							local back = importedModel(folder, "Town", wallName, at + Vector3.new(0, 0, -face * 8), 19, true, c[6])
-							for _, dx in { -9, 9 } do
-								local sideAt = at + Vector3.new(dx, 0, 0)
-								local sideWall = importedModel(folder, "Town", wallName, sideAt, 17, true, c[6])
-								if sideWall then rotateAround(sideWall, sideAt, math.pi * 0.5) end
-							end
-							if lvl >= 3 then
-								importedModel(folder, "Town", if wallName == "kenney_wood_wall_01" then "kenney_roof_straight_green_01" else "kenney_roof_straight_red_01",
-									at + Vector3.new(0, 9, 0), 21, false)
+							local back = nil
+							if not londonWorkshop then
+								back = importedModel(folder, "Town", wallName, at + Vector3.new(0, 0, -face * 8), 19, true, c[6])
+								for _, dx in { -9, 9 } do
+									local sideAt = at + Vector3.new(dx, 0, 0)
+									local sideWall = importedModel(folder, "Town", wallName, sideAt, 17, true, c[6])
+									if sideWall then rotateAround(sideWall, sideAt, math.pi * 0.5) end
+								end
+								if lvl >= 3 then
+									importedModel(folder, "Town", if wallName == "kenney_wood_wall_01" then "kenney_roof_straight_green_01" else "kenney_roof_straight_red_01",
+										at + Vector3.new(0, 9, 0), 21, false)
+								end
 							end
 							local anchor = back and back:FindFirstChildWhichIsA("BasePart", true)
 								or ground:FindFirstChildWhichIsA("BasePart", true)
 							if anchor then sign(folder, anchor, c[2], C(151, 110, 51), 10) end
 							-- [내부 설비] 업종에 맞는 실제 실내가구·장비·원료를 기존 개방형 실내에 놓는다.
-							local fixture = importedModel(folder, c[4], c[5], at + Vector3.new(-4, 0, -face * 2), 4.5, false)
-							if fixture then fixture.Name = "FacilityEquipment_" .. c[1] end
-							importedModel(folder, "Interior", if c[1] == "warehouse" or c[1] == "hall" or c[1] == "school"
-								then "bookcaseopenlow" elseif c[1] == "tavern" then "tablecloth" else "tablecross",
-								at + Vector3.new(3, 0, -face * 2), 4, false)
-							if c[1] == "tavern" or c[1] == "school" or c[1] == "hall" then
-								importedModel(folder, "Interior", "stoolbar", at + Vector3.new(5, 0, face * 3), 2.5, false)
-							elseif c[1] == "workshop" or c[1] == "warehouse" then
-								importedModel(folder, "Cargo", "resource-planks", at + Vector3.new(5, 0, face * 3), 3.4, false)
+							if not londonWorkshop then
+								local fixture = importedModel(folder, c[4], c[5], at + Vector3.new(-4, 0, -face * 2), 4.5, false)
+								if fixture then fixture.Name = "FacilityEquipment_" .. c[1] end
+								importedModel(folder, "Interior", if c[1] == "warehouse" or c[1] == "hall" or c[1] == "school"
+									then "bookcaseopenlow" elseif c[1] == "tavern" then "tablecloth" else "tablecross",
+									at + Vector3.new(3, 0, -face * 2), 4, false)
+								if c[1] == "tavern" or c[1] == "school" or c[1] == "hall" then
+									importedModel(folder, "Interior", "stoolbar", at + Vector3.new(5, 0, face * 3), 2.5, false)
+								elseif c[1] == "workshop" or c[1] == "warehouse" then
+									importedModel(folder, "Cargo", "resource-planks", at + Vector3.new(5, 0, face * 3), 3.4, false)
+								end
 							end
 							-- [실물 창고·식료품점] 이미 건설된 시장/창고의 개방형 공간에 지역 생산품만 진열한다.
 							-- 판매 가격·교역재고·건물 수는 변경하지 않는 시각 전시다. 주류·담배·약물 제외.
@@ -4050,7 +4069,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							if not residentialDecorationPlaced and decor.residential > 0 and decorPlaced < decorLimit then
 								local newGrade = previousDecor and decor.residential > (previousDecor.residential or 0)
 									and decorAnimated < animationLimit
-								local itemName = if decor.residential >= 3 then "village-well" else "bench_A"
+								local itemName = if decor.residential >= 3 and info.portId == "london"
+									and AssetIds["Town/london_bld_well"] then "london_bld_well"
+									elseif decor.residential >= 3 then "village-well" else "bench_A"
 								local front = if pos.Z > 0 then -1 else 1
 								local placeAt = pos + Vector3.new(ww * 0.28, 0, front * (ww * 0.45 + 4))
 								local delay = if newGrade then 0.28 + decorAnimated * 0.36 else nil
@@ -4429,7 +4450,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				for k = 1, stalls do
 					local x = cx + (k - (stalls + 1) / 2) * 10
 					local side = if k % 2 == 0 then -1 else 1
-					local stallAsset = if (k + lvl) % 2 == 0 then "stall-red" else "stall-green"
+					local stallAsset = if info.portId == "london" and lvl >= 2 and k == 1
+						and AssetIds["Town/london_bld_market_stalls"] then "london_bld_market_stalls"
+						elseif (k + lvl) % 2 == 0 then "stall-red" else "stall-green"
 					local originalStall = put("Town", stallAsset, 7, x, cz + side * 8, false,
 						if side > 0 then face else face + math.pi)
 					if londonMarketDay and originalStall and
@@ -6618,15 +6641,27 @@ function PortScene.build(info, onFacility)
 			local form = (style.house or {}).form
 			local localArchitecture = style.kit == "eastasia" or form == "flat" or form == "courtyard"
 				or form == "carved" or form == "stilt" or form == "coastal"
+			-- [런던 방문 시설] 문화권·경제 발전 단계에 정확히 대응하는 등록 실물만 우선한다.
+			local londonKind = if info.portId == "london" then
+				(if f.name == "교역소" then "trade" elseif f.name == "주점" then "tavern"
+					elseif f.name == "항만청" then "harbor" elseif f.name == "은행" then "bank"
+					elseif f.name == "상인 길드" then "guild" elseif f.name == "학자의 서재" then "scholar"
+					else nil) else nil
+			local londonFacility = if londonKind then "london_" .. londonKind .. "_"
+				.. tostring(if facilityTier >= 5 then 3 elseif facilityTier >= 3 then 2 else 1) else nil
+			if londonFacility and not AssetIds["Town/" .. londonFacility] then londonFacility = nil end
 			local signatureAsset = if localArchitecture then nil
 				elseif f.name == "학자의 서재" then "quaternius_large_square_tower"
 				elseif f.name == "도서관 (도감)" then "temple-stone"
 				else nil
+			if londonFacility then signatureAsset = londonFacility end
 			local signature = signatureAsset and importedModel(folder, "Town", signatureAsset, f.pos,
 				math.max(f.w, f.d) * grow * HOUSE_SCALE * (1 + math.max(0, facilityTier - 2) * 0.055), true, tone)
 			if signature then
-				signature.Name = if f.name == "학자의 서재" then "ScholarStudyTower" else "HarborLibraryHall"
+				signature.Name = if londonFacility then "LondonFacility_" .. f.tab
+					elseif f.name == "학자의 서재" then "ScholarStudyTower" else "HarborLibraryHall"
 				signature:SetAttribute("FacilityIdentity", f.tab)
+				if londonFacility then signature:SetAttribute("PortOriginalFacility", londonFacility) end
 			end
 			local body = (signature and signature:FindFirstChildWhichIsA("BasePart", true))
 				or house(folder, f.pos, f.w * grow, f.d * grow, visualFloors, style, rng, tone)
