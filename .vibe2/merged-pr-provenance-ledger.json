@@ -330123,11 +330123,134 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_e0708289574fe64946db1aaa",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14768",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "d56c304abfd0f6b3994d5d3f94b55c7257ee6384",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14768,
+        "baseBranch": "main",
+        "headBranch": "mare-london-84-assets-first-20261124",
+        "baseSha": "d56c304abfd0f6b3994d5d3f94b55c7257ee6384",
+        "headSha": "a8c81434747c786ce90bce80d63e8dd70771458f",
+        "mergeCommitSha": "9513e622ba7ab1b514b8a47a091ae15596bb6a03",
+        "mergedAt": "2026-11-23T16:55:24Z",
+        "authorLogin": "hans1177",
+        "titleHash": "c9d6a60b1a3fe29e4f8bcb3e448e38d9bce0cde550d2df3eff0cac792eeb9ddb",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-london-84-assets-first-20261124",
+        "candidateSha": "a8c81434747c786ce90bce80d63e8dd70771458f"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 165,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_market_stalls.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_market_stalls.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_tavern_1.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_tavern_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_trade_1.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_trade_1.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_market_stalls.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_tavern_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_trade_1.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14768",
+        "merge-commit:9513e622ba7ab1b514b8a47a091ae15596bb6a03",
+        "base-main:d56c304abfd0f6b3994d5d3f94b55c7257ee6384"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2642
+    "total": 2643
   }
 }
