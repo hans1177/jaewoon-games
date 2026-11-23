@@ -3097,7 +3097,7 @@ function FieldScene.start(opts)
 					if cue then sfx(cue, vol, pitch) end
 				end
 			end
-			local damp = if weather == "옅은 안개" then 0.48 elseif weather == "소나기" then 0.71
+			local damp = if weather == "옅은 안개" then 0.62 elseif weather == "소나기" then 0.71
 				elseif weather == "눈" or weather == "비" then 0.80 else 1
 			lighting.ClockTime = clock
 			lighting.Brightness = (0.52 + 1.58 * sun) * (if weather == "소나기" then 0.78 else 1)
@@ -3110,9 +3110,12 @@ function FieldScene.start(opts)
 				depthAtmosphere.Decay = lighting.FogColor:Lerp(
 					if arid then Color3.fromRGB(184, 159, 132) else Color3.fromRGB(103, 143, 179),
 					if sun < 0.2 then 0.39 else 0.28)
-				depthAtmosphere.Density = math.clamp(0.25 + (600 - lighting.FogEnd) / 1700, 0.21, 0.39)
-				depthAtmosphere.Haze = if weather == "옅은 안개" then 2.9 elseif weather == "소나기" then 1.9
-					else (if visualMobile then 0.85 else 1.3)
+				-- [입체감] 날씨 틱이 시작 값(밀도·연무)을 덮어써 근경까지 하얗게 됐다(Studio 재촬영).
+				-- 맑은 날은 근경 선명, 안개·소나기는 분위기만 남도록 상한을 낮춘다.
+				depthAtmosphere.Density = math.clamp(0.17 + (600 - lighting.FogEnd) / 2200, 0.14, 0.30)
+				depthAtmosphere.Offset = 0.32
+				depthAtmosphere.Haze = if weather == "옅은 안개" then 1.6 elseif weather == "소나기" then 1.2
+					else (if visualMobile then 0.45 else 0.65)
 			end
 			lighting.Ambient = biome.fog:Lerp(Color3.fromRGB(83, 103, 132), if sun < 0.5 then 0.77 else 0.54)
 			lighting.OutdoorAmbient = biome.fog:Lerp(Color3.fromRGB(112, 127, 151), if sun < 0.5 then 0.69 else 0.45)
