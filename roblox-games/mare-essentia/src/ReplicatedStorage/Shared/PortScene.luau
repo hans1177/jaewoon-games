@@ -1055,7 +1055,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	local tintColor = wallColor or style.walls[1]:Lerp(style.walls[rng:NextInteger(1, #style.walls)], 0.3)
 	-- [181항구 외벽·지붕] 15개 고증 원색은 고정, 나머지 166개는 문화권 색에서 항구별 고유 팔레트 사용.
 	-- 원본 컬러맵/PBR 보존, 시설 전용 벽색과 기존 필지·경제·저장 흐름 유지.
-	local portFacade, portRoof = PortIdentity.appearance(scenePortId, style.walls[1], style.roofs[1], style.street)
+	local portFacade, portRoof = PortIdentity.appearance(scenePortId, style.walls[1], style.roofs[1], style.street, Color3)
 	if scenePortId and not wallColor then
 		tintColor = tintColor:Lerp(portFacade, 0.74)
 	end
@@ -1610,7 +1610,7 @@ local function roadColor(style)
 	local look = identityStreet()
 	if look then return look[2]:Lerp(style.street, 0.25) end
 	-- [181항구 거리] 원래 발전 단계의 길 재질은 보존하고 항구마다 표면의 지역색만 구분한다.
-	local _, _, streetTone = PortIdentity.appearance(scenePortId, style.walls[1], style.roofs[1], style.street)
+	local _, _, streetTone = PortIdentity.appearance(scenePortId, style.walls[1], style.roofs[1], style.street, Color3)
 	if sceneLevel <= 1 then
 		return streetTone:Lerp(Color3.fromRGB(176, 146, 104), 0.65)
 	end
@@ -5901,7 +5901,7 @@ function PortScene.build(info, onFacility)
 	scenePortId = info.portId
 	-- [181개 항구 외형 증거] 기존 문화권·위치·소유·성장 데이터와 독립된 읽기 전용 진단.
 	local localFacade, localRoof, localStreet = PortIdentity.appearance(
-		info.portId, style.walls[1], style.roofs[1], style.street)
+		info.portId, style.walls[1], style.roofs[1], style.street, Color3)
 	folder:SetAttribute("PortUniqueAppearance", info.portId)
 	folder:SetAttribute("PortUniqueFacade", localFacade)
 	folder:SetAttribute("PortUniqueRoof", localRoof)
