@@ -258,4 +258,6 @@ B.AnimalVisual = {
 		{ 74, 69, 65 } } },
 }
 
+B.Projects = require(script.Parent.BuildProjects) :: any -- [건축 시뮬] 공사 기간·완공 알림
+
 return B
