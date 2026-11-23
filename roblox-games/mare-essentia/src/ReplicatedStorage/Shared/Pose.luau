@@ -1379,7 +1379,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					if part:IsA("BasePart") then part.LocalTransparencyModifier = 1 end
 				end
 			end
-			attached += 1
+			-- [거리 숨김] 표시 생략과 실제 부착은 별도로 집계한다.
 			lodHidden += 1
 			continue
 		end
@@ -1398,7 +1398,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						if part:IsA("BasePart") then part.LocalTransparencyModifier = 1 end
 					end
 				end
-				attached += 1
+				-- [거리 숨김] 표시 생략과 실제 부착은 별도로 집계한다.
 				lodHidden += 1
 				continue
 			end
@@ -1446,10 +1446,24 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			equipped = nil
 		end
 		if equipped then
-			if string.sub(assetName, 1, 7) == "outfit_" or string.sub(assetName, 1, 4) == "cc0_" or jobProp then
+			-- [거리 복귀] 기존 메시를 재생성하지 않고 의복·헤어·장신구의 숨김만 복원한다.
+			if string.sub(assetName, 1, 7) == "outfit_" or string.sub(assetName, 1, 4) == "cc0_"
+				or string.sub(assetName, 1, 4) == "acc_" or string.sub(assetName, 1, 5) == "hair_" or jobProp then
 				for _, part in equipped:GetDescendants() do
 					if part:IsA("BasePart") then part.LocalTransparencyModifier = 0 end
 				end
+			end
+			-- [실물 장착 판정] 기존 슬롯의 모든 부품이 투명하면 성공으로 계산하지 않는다.
+			local equippedVisible = false
+			for _, part in equipped:GetDescendants() do
+				if part:IsA("BasePart") and part.Transparency < 0.95 and part.LocalTransparencyModifier < 0.95 then
+					equippedVisible = true
+					break
+				end
+			end
+			if not equippedVisible then
+				table.insert(missing, assetName .. ":invisible")
+				continue
 			end
 			attached += 1
 			visibleCount += 1
@@ -1486,8 +1500,8 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 		end
 		-- [사진 보정] 투명한 실물 헤어·깃털모자는 정식 장착으로 세지 않는다.
 		-- 예비 모발과 모자가 숨겨져 빈 두피/정수리가 나타나는 상황을 방지한다.
-		if npcOutfit and (string.sub(assetName, 1, 5) == "hair_" or assetName == "acc_feather_hat")
-			and visibleHeadwearParts == 0 then
+		-- [원본 가시성] 머리·장신구뿐 아니라 투명 복장도 실제 장착으로 인정하지 않는다.
+		if visibleHeadwearParts == 0 then
 			table.insert(missing, assetName .. ":invisible")
 			skin:Destroy()
 			continue
@@ -1977,10 +1991,14 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	model:SetAttribute("OutfitMergedCount", merged)
 	model:SetAttribute("OutfitRequiredCount", #specs)
 	model:SetAttribute("OutfitMissing", if #missing > 0 then table.concat(missing, ",") else nil)
+	-- [착용 상태] 거리/시대 때문에 숨긴 부품은 제외하고 실제 표시해야 하는 부품만 판정한다.
+	-- 예전 ready 상태가 에셋 지연 로드를 가리는 일을 막고, 원거리 생략은 기존 LOD로 유지한다.
+	local activeRequired = #specs - lodHidden
+	local fullyMounted = attached == activeRequired and #missing == 0
 	model:SetAttribute(if npcOutfit then "NpcAppearanceState" else "MobAppearanceState",
 		if npcOutfit and detailAllowed and garmentVisible == 0 then "asset_pending"
-		elseif attached == #specs then "ready" elseif attached > 0 then "partial" else "asset_pending")
-	return attached == #specs
+		elseif fullyMounted then "ready" elseif attached > 0 then "partial" else "asset_pending")
+	return fullyMounted
 end
 
 function Pose.walkR15(model, phase, moving)
