@@ -19,9 +19,10 @@ test('메뉴 12개는 기존 기능을 유지한 채 6개씩 위아래 고정 �
   assert.match(client, /dockGrid = Instance\.new\("UIGridLayout"\)/, '정규 격자');
   assert.match(client, /dockGrid\.FillDirectionMaxCells = 6/, '한 줄에 6개');
   assert.match(client, /local dockH = CH \* 2 \+ GAP/, '두 줄 높이');
-  assert.match(client, /local sysOrder = \{ "JournalButton", "DeckButton", "OptionsButton", "ViewToggle" \}/,
-    '시설 8개에 시스템 4개 추가');
-  assert.match(client, /b\.LayoutOrder = #H\.DOCK \+ i/, '같은 격자 안에 12개');
+  assert.match(client, /local sysOrder = \{ "JournalButton", "DeckButton", "OptionsButton" \}/,
+    '시설 8개 + 걷기 + 시스템 3개');
+  assert.match(client, /walkBtn\.LayoutOrder = 7/, '걷기는 2줄 맨 앞');
+  assert.match(client, /b\.LayoutOrder = #H\.DOCK \+ 1 \+ i/, '같은 격자 안에 12개');
   assert.match(client, /CW = math\.min\(58, math\.floor\(\(width - 16 - GAP \* 5\) \/ 6\)\)/,
     '모바일 6개 폭 맞춤');
   assert.match(client, /help\.Visible = false/, '별도 도움말 아이콘만 숨김');
