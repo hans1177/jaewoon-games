@@ -1,0 +1,84 @@
+{
+ "sourceRevision": "113b0530faa488ede1e88dda9d0608635ffc2597",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "NEWGAME ok=true\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "MENUART 13/13\n\ntext"
+  },
+  {
+   "step": 5,
+   "capture": "hud_icons",
+   "files": 1
+  },
+  {
+   "step": 7,
+   "capture": "hud_icons_pulse",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35006
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 2593
+  },
+  {
+   "step": 2,
+   "type": "wait",
+   "elapsedMs": 5008
+  },
+  {
+   "step": 3,
+   "type": "luau",
+   "elapsedMs": 542
+  },
+  {
+   "step": 4,
+   "type": "wait",
+   "elapsedMs": 1211
+  },
+  {
+   "step": 5,
+   "type": "capture",
+   "elapsedMs": 2268
+  },
+  {
+   "step": 6,
+   "type": "wait",
+   "elapsedMs": 513
+  },
+  {
+   "step": 7,
+   "type": "capture",
+   "elapsedMs": 1465
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 8,
+  "completedSteps": 8,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
+  "abortedEarly": false
+ }
+}
