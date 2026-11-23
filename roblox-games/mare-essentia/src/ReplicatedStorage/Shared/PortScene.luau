@@ -1082,6 +1082,22 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			return houseModel:FindFirstChildWhichIsA("BasePart", true)
 		end
 	end
+	-- [항구별 건축] 런던·루앙에만 등록된 16~18세기 유럽 완성형 주택을 사용. 다른 문화권에는 혼용하지 않는다.
+	if scenePortId == "london" or scenePortId == "rouen" then
+		local variants = if scenePortId == "london"
+			then { "village-house-2", "village-house-3", "village-house-4", "village-house-1" }
+			else { "village-house-1", "village-house-4", "village-house-2", "village-house-3" }
+		local originalName = variants[(seed + math.clamp(floors or 1, 1, 3) - 1) % #variants + 1]
+		if AssetIds["Town/" .. originalName] then
+			local building = importedModel(parent, "Town", originalName, pos, math.max(w, d) * variation * HOUSE_SCALE, true)
+			if building then
+				building.Name = "HarborHouse"
+				building:SetAttribute("PortOriginalHouse", originalName)
+				building:SetAttribute("CityHistoricPort", scenePortId)
+				return building:FindFirstChildWhichIsA("BasePart", true)
+			end
+		end
+	end
 	-- (Town/house_chimney, house_door 는 집 전체가 아니라 굴뚝·문 부품이라 집 본체로 쓰지 않는다)
 	-- 동아시아 건축 세트: 등록된 eastasia 몸체를 층수만큼 쌓고 처마 지붕을 얹어 일반 집과 실루엣이 다르다
 	if style.kit == "eastasia" then
@@ -2952,6 +2968,11 @@ local function placeSignature(folder, info)
 			end
 		end
 	end
+	-- [지시서 15항구] 상징물 원본이 없으면 무관한 탑·성당·돔을 대신 세우지 않는다.
+	if identity then
+		folder:SetAttribute("CityPortMissingLandmark", info.portId .. "_landmark_" .. (if sceneLevel >= 4 then "full" else "base"))
+		return
+	end
 	if not list and not european then return end
 	-- 모든 대륙: 1단계는 항구촌, 2단계는 표지/소형 탑, 3단계는 온전한 지역 랜드마크.
 	-- 유럽만 작은 도시로 시작하던 기존 불균형을 없애되 시설 소유/경제 잠금에는 영향이 없다.
@@ -3552,6 +3573,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local homeCandidates, homePlaced, homeShifted, homePlotRejected, homeModelRejected = 0, 0, 0, 0, 0
 	local homeSizeCounts = { 0, 0, 0, 0, 0 }
 	local oldTownHomes, newTownHomes, nightWindows = 0, 0, 0
+	-- [발전도별 필지] 6/10/14/18/24 필지를 골목 행에 나누어 배치. 경제/저장과 무관한 화면용 수만 제한.
+	local portPlotLimit = if identity then PortIdentity.tier(lvl).plots else math.huge
+	local rowPlotLimit = if identity then math.max(1, math.ceil(portPlotLimit / (4 * pairsN))) else math.huge
+	if identity then folder:SetAttribute("CityPortPlannedPlots", portPlotLimit) end
 	-- [문화권 주거 발전 입면] 단계별 추가 실물 부재는 각 주택에 한 번만 부착한다.
 	local villageAccents, villageCrowns = 0, 0
 	local touchHousing = game:GetService("UserInputService").TouchEnabled
@@ -3566,13 +3591,13 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local residentialDecorationPlaced = false
 	local function fillRow(z, t, xStart, side, laneIndex, rowIndex)
 		local x = xStart
-		local slotIndex = 0
+		local slotIndex, rowPlaced = 0, 0
 		while x > X_END do
 			slotIndex += 1
 			local plotId = ("%s:home:%d:%d:%d:%d"):format(info.portId, side, laneIndex, rowIndex, slotIndex)
 			-- [도시 성장] 항구 쪽 오래된 구획과 발전 후 새로 열린 외곽 구획을 구분한다.
 			local quarter = if laneIndex == 0 then "old" elseif lvl >= 3 then "new" else "edge"
-			if rng:NextNumber() < dens then
+			if rng:NextNumber() < dens and homePlaced < portPlotLimit and rowPlaced < rowPlotLimit then
 				homeCandidates += 1
 				local sz = S * rng:NextNumber(0.9, 1.08)
 				-- [주택 정렬] 바둑판·운하는 곧게, 구시가지 골목은 불규칙하게, 언덕은 층차형으로.
@@ -3698,6 +3723,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 							pos += chosenShift
 							for _, object in staged:GetChildren() do object.Parent = folder end
 							homePlaced += 1
+							rowPlaced += 1
 							if chosenShift.Magnitude > 0 then homeShifted += 1 end
 							homeSizeCounts[sizeClass] += 1
 							if quarter == "old" then oldTownHomes += 1 elseif quarter == "new" then newTownHomes += 1 end
@@ -3898,7 +3924,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			local laneBend = if villageLayout == "organic" then (if p % 2 == 0 then -3 else 3)
 				elseif villageLayout == "terrace" then p * 2 else 0
 			local laneZ = 152 + laneOffset + p * laneL + laneBend
-			if (P.canal or info.portId == "venice") and p % 2 == 1 then
+			-- [항구별 물길] 운하 도시 이외에는 수로 대신 보행 골목.
+			local waterLane = if identity then villageLayout == "canal" else P.canal or info.portId == "venice"
+			if waterLane and p % 2 == 1 then
 				local canal = part(folder, Vector3.new(360, 0.3, laneWidth + 1), CFrame.new(-365, 0.05, side * laneZ), Color3.fromRGB(70, 120, 150), Enum.Material.Glass)
 				canal.Transparency = 0.25
 				canal.CanCollide = false
@@ -6049,35 +6077,28 @@ function PortScene.build(info, onFacility)
 	for _, sx in (PROFILE[styleKeyOf(style)] or PROFILE.north).streets do
 		part(folder, Vector3.new(6 + (sceneLevel - 1), 0.25, 130), CFrame.new(sx, 0.12, 0), roadColor(style), roadMat())
 	end
-	-- [분수 이전] 중앙광장은 포장 바닥만 남기고 분수 구조물은 서쪽 문화거리로 옮긴다.
-	if PortBuildings.StreetGrowth[sceneLevel].fountain then
-		part(folder, Vector3.new(2, 8, 8), CFrame.new(-106, 1, 122) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(200, 196, 186), Enum.Material.Marble, Enum.PartType.Cylinder)
-		part(folder, Vector3.new(2.2, 6.5, 6.5), CFrame.new(-106, 1.2, 122) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(80, 150, 200), Enum.Material.Glass, Enum.PartType.Cylinder)
-	end
-
-	-- 마을 광장: 중앙 분수를 둘러싼 원형 광장. 발전도가 오를수록 바닥이 흙 → 자갈 → 포석 → 화강암 → 대리석으로 고급스러워진다.
+	-- [항구별 광장] 공통 원형 도형/가짜 분수를 제거하고 진짜 승인 모델 하나만 문화거리에 배치한다.
+	-- 중앙 광장은 자유 보행 공간, 부두형·연병장형은 장애물 없는 개방 광장으로 유지한다.
 	do
-		local plazaMat = { Enum.Material.Ground, Enum.Material.Pebble, Enum.Material.Cobblestone, Enum.Material.Granite, Enum.Material.Marble }
-		local plazaCol = {
-			Color3.fromRGB(190, 158, 112), Color3.fromRGB(176, 164, 146), Color3.fromRGB(166, 160, 152),
-			Color3.fromRGB(176, 174, 178), Color3.fromRGB(232, 228, 218),
-		}
-		local function disc(radius, y, color, mat)
-			local d = part(folder, Vector3.new(0.3, radius * 2, radius * 2), CFrame.new(-6, y, 0) * CFrame.Angles(0, 0, math.pi / 2), color, mat, Enum.PartType.Cylinder)
-			d.CanCollide = true
-			return d
-		end
-		disc(24, 0.17, plazaCol[sceneLevel], plazaMat[sceneLevel])
-		if sceneLevel >= 2 then disc(19, 0.2, plazaCol[sceneLevel]:Lerp(Color3.new(0.3, 0.26, 0.22), 0.25), plazaMat[math.max(1, sceneLevel - 1)]) end
-		if sceneLevel >= 3 then disc(13, 0.23, plazaCol[sceneLevel]:Lerp(Color3.new(1, 1, 1), 0.2), plazaMat[sceneLevel]) end
-		if sceneLevel >= 4 then disc(10.5, 0.26, Color3.fromRGB(214, 170, 82), Enum.Material.Metal) end
-		if sceneLevel >= 4 then disc(10, 0.29, plazaCol[sceneLevel], plazaMat[sceneLevel]) end
-		local plazaLamps = PortBuildings.StreetGrowth[sceneLevel].plazaLamps
-		if plazaLamps > 0 then
-			-- [광장 공터] 기존 조명 수는 유지하되 광장 안쪽 원형 배치를 서쪽 거리로 이전한다.
-			for i = 0, plazaLamps - 1 do
-				lantern(folder, Vector3.new(-94 - math.floor(i / 2) * 18, 0, if i % 2 == 0 then 30 else -30), 3)
+		local plazaKind = if identity then identity.plaza else "fountain"
+		local asset = if sceneLevel < 2 then nil
+			elseif plazaKind == "market" then (if sceneLevel == 2 then "village-well-cc0" else "village-market-stand-1")
+			elseif plazaKind == "fountain" then (if sceneLevel >= 4 then "fountain-round" else "village-well-cc0")
+			elseif plazaKind == "temple_court" then (if sceneLevel >= 4 then "fountain-square" else "village-well-cc0")
+			else nil
+		folder:SetAttribute("CityPortPlazaType", plazaKind)
+		folder:SetAttribute("CityPortPlazaLocation", Vector3.new(-106, 0, 122))
+		if asset and AssetIds["Town/" .. asset] then
+			local center = importedModel(folder, "Town", asset, Vector3.new(-106, 0, 122),
+				if plazaKind == "market" then 8 else 10, false)
+			if center then
+				center.Name = "CityPortPlazaCenter"
+				center:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+				center:SetAttribute("PortPlazaType", plazaKind)
+				folder:SetAttribute("CityPortPlazaAsset", asset)
 			end
+		else
+			folder:SetAttribute("CityPortPlazaAsset", "OPEN_SQUARE")
 		end
 	end
 
@@ -6727,15 +6748,11 @@ function PortScene.build(info, onFacility)
 		part(folder, Vector3.new(16, 14, 24), CFrame.new(cx - 12, 7, cz), if style == STYLE.med then Color3.fromRGB(236, 224, 196) else Color3.fromRGB(150, 140, 128), Enum.Material.Brick)
 	end
 
-	-- 암스테르담·안트베르펀·함부르크에는 풍차
+	-- [항구 풍차] 파츠 조립 가짜 풍차 대신 승인된 완성형 3D 풍차 한 채.
 	if info.portId == "amsterdam" or info.portId == "antwerp" or info.portId == "hamburg" then
-		local mx, mz = -209, -87
-		part(folder, Vector3.new(14, 10, 10), CFrame.new(mx, 7, mz) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(110, 80, 60), Enum.Material.WoodPlanks, Enum.PartType.Cylinder)
-		local hub = part(folder, Vector3.new(1, 1, 1), CFrame.new(mx + 5.5, 12, mz), Color3.fromRGB(60, 40, 30))
-		hub.Name = "MillHub"
-		for k = 0, 3 do
-			local blade = part(folder, Vector3.new(0.4, 12, 2.2), CFrame.new(mx + 5.8, 12, mz) * CFrame.Angles(math.rad(k * 90), 0, 0) * CFrame.new(0, 6, 0), Color3.fromRGB(230, 220, 200), Enum.Material.Fabric)
-			blade.Name = "MillBlade"
+		if AssetIds["Town/windmill"] then
+			local mill = importedModel(folder, "Town", "windmill", Vector3.new(-209, 0, -87), 25, true)
+			if mill then mill.Name = "CityHistoricWindmill" end
 		end
 	end
 
