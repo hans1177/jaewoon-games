@@ -1256,12 +1256,17 @@ if (!studioRegrantPath) for (const [id, review] of Object.entries(modelOriginals
   const match = /^CardArt\/((?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[1-4][0-9]))$/.exec(id);
   if (!match) throw new Error('MODEL_ORIGINAL_CARD_ID_INVALID:' + id);
   const name = match[1];
-  const relativeSource = 'assets/cardart/src/' + name + '-original.png';
+  const originalSource = 'assets/cardart/src/' + name + '-original.png';
+  const portraitSource = 'assets/cardart/src/' + name + '-1400x2000.png';
+  // [승인된 원화 교체] 기존 원본은 보존하고, 검수된 세로 원화만 기존 등록기에서 안전하게 교체한다.
+  const replacingPortrait = review?.sourceFile === portraitSource;
+  const relativeSource = replacingPortrait ? portraitSource : originalSource;
   const sourcePath = path.join(ROOT, relativeSource);
   const targetPath = path.join(ROOT, 'assets/cardart', name + '.png');
   const reviewChecks = ['subjectMatch','historicalContext','houseStyle','singleFinishedScene',
     'noPartsOrSprites','robloxSafety','commercialRights'];
-  if (review?.sourceType !== 'IMAGE_GENERATION_MODEL' || review.sourceFile !== relativeSource
+  if (review?.sourceType !== 'IMAGE_GENERATION_MODEL'
+    || ![originalSource, portraitSource].includes(review.sourceFile)
     || review.reviewer !== 'VIBE_AGENT_VISUAL_REVIEW' || review.license !== 'PROJECT_ORIGINAL_ART'
     || !/^\d{4}-\d{2}-\d{2}$/.test(review.reviewedAt || '')
     || !reviewChecks.every(key => review[key] === true))
@@ -1273,15 +1278,29 @@ if (!studioRegrantPath) for (const [id, review] of Object.entries(modelOriginals
     || bytes.readUInt32BE(16) < 768 || bytes.readUInt32BE(20) < 768
     || bytes.readUInt32BE(16) > 4096 || bytes.readUInt32BE(20) > 4096)
     throw new Error('MODEL_ORIGINAL_FULL_RESOLUTION_PNG_REQUIRED:' + id);
+  if (replacingPortrait && (bytes.readUInt32BE(16) !== 1400 || bytes.readUInt32BE(20) !== 2000))
+    throw new Error('MODEL_ORIGINAL_PORTRAIT_RESOLUTION_INVALID:' + id);
   const hash = crypto.createHash('sha256').update(bytes).digest('hex');
   if (review.sourceSha256 !== hash || cardApprovalDocument.approved?.[id] !== hash
     || blockedHashes.has(hash) || blockedPaths.has(sourcePath) || blockedPaths.has(targetPath))
     throw new Error('MODEL_ORIGINAL_APPROVAL_OR_SAFETY_MISMATCH:' + id);
   let current = null;
   try { current = await fs.readFile(targetPath); } catch (error) { if (error.code !== 'ENOENT') throw error; }
-  if (current && crypto.createHash('sha256').update(current).digest('hex') !== hash)
-    throw new Error('MODEL_ORIGINAL_EXISTING_CARD_PRESERVED:' + id);
-  if (!current) {
+  const currentHash = current && crypto.createHash('sha256').update(current).digest('hex');
+  if (current && currentHash !== hash) {
+    // [기존 번호 보호] 원본·등록 ID·Universe 권한이 모두 승인 기록과 일치할 때만 교체 준비.
+    // 신규 업로드나 사용 권한이 실패하면 아래 기존 원자적 롤백이 이전 번호를 복구한다.
+    const previous = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')).assets?.[id];
+    if (!replacingPortrait || review.replacesSha256 !== currentHash
+      || previous?.sourceSha256 !== currentHash
+      || String(previous?.assetId || '') !== String(review.replacesAssetId || '')
+      || previous?.assetType !== 'Image' || previous?.usePermissionGranted !== true
+      || !/^[1-9][0-9]*$/.test(String(review.replacesAssetId || '')))
+      throw new Error('MODEL_ORIGINAL_EXISTING_CARD_PRESERVED:' + id);
+    await fs.copyFile(sourcePath, targetPath);
+    console.log('MODEL_ORIGINAL_APPROVED_REPLACEMENT_STAGED', id, previous.assetId, hash);
+  } else if (!current) {
+    if (replacingPortrait) throw new Error('MODEL_ORIGINAL_REPLACEMENT_TARGET_MISSING:' + id);
     await fs.copyFile(sourcePath, targetPath);
     console.log('MODEL_ORIGINAL_PROMOTED', id, hash);
   } else console.log('MODEL_ORIGINAL_VERIFIED', id);
