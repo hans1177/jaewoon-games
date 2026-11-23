@@ -5841,9 +5841,11 @@ function PortScene.build(info, onFacility)
 	end
 	-- [전체 181항구 외형] 문화권 기본형은 유지하면서 항구 ID별로 고정되는 실제 색상·지붕·건물 비례를 만든다.
 	-- 새 메시·Part·저장 키는 추가하지 않고 원래 승인된 건축물만 서로 다른 현지 팔레트로 표현한다.
+	local style = table.clone(if culture and STYLE[culture] then STYLE[culture] elseif MED[info.portId] then STYLE.med else STYLE.north)
+	-- [Luau 레지스터 보호] 항구색 계산 임시값은 장면 생성 후까지 유지하지 않는다.
+	do
 	local cultureKey = if culture and STYLE[culture] then culture elseif MED[info.portId] then "med" else "north"
 	local regionalStyle = STYLE[cultureKey]
-	local style = table.clone(regionalStyle)
 	style.cultureKey = cultureKey
 	local portLook = PortIdentity.get(info.portId)
 	local visualRng = seeded(info.portId .. ":historical-city-palette")
@@ -5877,6 +5879,7 @@ function PortScene.build(info, onFacility)
 		math.floor(style.walls[1].R * 255 + 0.5), math.floor(style.walls[1].G * 255 + 0.5), math.floor(style.walls[1].B * 255 + 0.5)))
 	folder:SetAttribute("CityPortRoofRGB", Vector3.new(
 		math.floor(style.roofs[1].R * 255 + 0.5), math.floor(style.roofs[1].G * 255 + 0.5), math.floor(style.roofs[1].B * 255 + 0.5)))
+	end
 	local rng = seeded(info.portId)
 	sceneLevel = math.clamp(math.floor(info.level or 1), 1, 5)
 	-- [시뮬 우선] 마을 외형은 실물경제 시뮬의 발전 단계(인구·번영)가 정한다.
