@@ -2814,13 +2814,25 @@ for i, d in H.DOCK do
 	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[3], d[2], true)
 	b.LayoutOrder = i
 	H.dockButtons[d[1]] = b
-	-- [시설 알림] 고정된 메뉴 아이콘에만 가볍게 표시한다. 인스턴스는 한 번만 만든다.
-	-- [상태 파티클] 저가·긴급 등의 문자 배지 대신 투명 반짝임만 유지한다.
+	-- [시설 신호] 기존 아이콘 위에 투명한 색광 두 겹을 한 번만 만든다. 메뉴·자산·터치 영역은 유지.
+	local halo = Instance.new("ImageLabel")
+	halo.Name = "SignalHalo"
+	halo.AnchorPoint = Vector2.new(0.5, 0.5)
+	halo.Position = UDim2.new(1, -13, 0, 14)
+	halo.Size = UDim2.fromOffset(28, 28)
+	halo.Image = "rbxasset://textures/particles/sparkles_main.dds"
+	halo.ImageColor3 = Color3.fromRGB(255, 204, 96)
+	halo.ImageTransparency = 0.58
+	halo.BackgroundTransparency = 1
+	halo.BorderSizePixel = 0
+	halo.ZIndex = 6
+	halo.Visible = false
+	halo.Parent = b
 	local notice = Instance.new("ImageLabel")
 	notice.Name = "FacilityNotice"
-	notice.AnchorPoint = Vector2.new(1, 0)
-	notice.Position = UDim2.new(1, -1, 0, 0)
-	notice.Size = UDim2.fromOffset(22, 22)
+	notice.AnchorPoint = Vector2.new(0.5, 0.5)
+	notice.Position = UDim2.new(1, -13, 0, 14)
+	notice.Size = UDim2.fromOffset(26, 26)
 	notice.Image = "rbxasset://textures/particles/sparkles_main.dds"
 	notice.BackgroundTransparency = 1
 	notice.BorderSizePixel = 0
@@ -3393,57 +3405,91 @@ function H.updateHud(p, ship)
 			elseif (ship.supplies or 0) <= 5 then "보급" else nil,
 		board = if readyDelivery then "납품" else nil,
 	}
-	-- [색상별 신호] 실제 상태가 변할 때만 갱신한다. 파티클은 기존 Roblox 투명 스파클 텍스처 재사용.
+	-- [알림 효과] 실제 게임 상태만 사용. 2겹 색광은 활성 알림에만 재생하고 상태 변경 시 기존 트윈을 정리한다.
 	H.dockSignalTweens = H.dockSignalTweens or {}
+	local signalTweenService = game:GetService("TweenService")
+	local reducedMotion = game:GetService("GuiService").ReducedMotionEnabled
 	for id, notice in H.dockNotices do
 		local alert = alerts[id]
 		local previous = notice:GetAttribute("SignalKind")
 		local changed = (alert or "") ~= (previous or "")
-		local tint = if alert == "긴급" then Color3.fromRGB(255, 87, 72)
-			elseif alert == "수리" or alert == "보급" then Color3.fromRGB(255, 176, 78)
-			elseif alert == "납품" then Color3.fromRGB(83, 255, 191)
-			else Color3.fromRGB(255, 235, 107)
+		local tint = if alert == "긴급" then Color3.fromRGB(255, 71, 64)
+			elseif alert == "납품" then Color3.fromRGB(72, 255, 155)
+			elseif alert == "저가" then Color3.fromRGB(255, 212, 75)
+			else Color3.fromRGB(255, 174, 89)
+		local button = H.dockButtons[id]
+		local halo = if button then button:FindFirstChild("SignalHalo") else nil
 		notice.ImageColor3 = tint
 		notice.Visible = alert ~= nil
+		if halo then
+			halo.ImageColor3 = tint
+			halo.Visible = alert ~= nil
+		end
 		if changed then
 			notice:SetAttribute("SignalKind", alert or "")
-			local oldTween = H.dockSignalTweens[id]
-			if oldTween then oldTween:Cancel(); H.dockSignalTweens[id] = nil end
-			notice.ImageTransparency = 0.05
-			if alert and not game:GetService("GuiService").ReducedMotionEnabled then
-				local tween = game:GetService("TweenService"):Create(notice,
-					TweenInfo.new(0.9, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-					{ ImageTransparency = 0.68 })
-				H.dockSignalTweens[id] = tween
-				tween:Play()
+			local running = H.dockSignalTweens[id]
+			if running then
+				for _, tween in running do tween:Cancel() end
+				H.dockSignalTweens[id] = nil
+			end
+			notice.Size = UDim2.fromOffset(26, 26)
+			notice.ImageTransparency = 0.02
+			notice.Rotation = 0
+			if halo then
+				halo.Size = UDim2.fromOffset(28, 28)
+				halo.ImageTransparency = if alert == "긴급" then 0.42 else 0.58
+			end
+			if alert and halo and not reducedMotion then
+				-- 긴급: 빠른 붉은 점멸, 저가: 느린 금빛 회전, 납품: 넓어지는 초록빛 맥동.
+				local speed = if alert == "긴급" then 0.33 elseif alert == "납품" then 0.7 else 1.05
+				local core = signalTweenService:Create(notice,
+					TweenInfo.new(speed, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+					{ ImageTransparency = if alert == "긴급" then 0.78 else 0.44,
+						Rotation = if alert == "저가" then 70 else 18,
+						Size = UDim2.fromOffset(29, 29) })
+				local glow = signalTweenService:Create(halo,
+					TweenInfo.new(speed * 1.25, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+					{ ImageTransparency = 0.95,
+						Size = UDim2.fromOffset(if alert == "납품" then 40 else 36,
+							if alert == "납품" then 40 else 36) })
+				H.dockSignalTweens[id] = { core, glow }
+				core:Play()
+				glow:Play()
 			end
 		end
-		-- [짧은 파티클] 알림 발생·상태 변경 시에만 3개 1회 발생. 버튼 위에 글씨 배지 없음.
-		local button = H.dockButtons[id]
-		if changed and alert and button and hudTopGui.Enabled
-			and not game:GetService("GuiService").ReducedMotionEnabled then
-			for i = 1, 3 do
+		-- [발생 순간] 글씨·배지 없이 투명 별빛만 1회 분산. 반복 갱신으로 파티클이 쌓이지 않는다.
+		if changed and alert and button and hudTopGui.Enabled and not reducedMotion then
+			local offsets = {
+				Vector2.new(-25, -10), Vector2.new(-12, -12), Vector2.new(2, -11),
+				Vector2.new(-29, 8), Vector2.new(-3, 16),
+			}
+			local count = if alert == "긴급" then 5 else 4
+			for i = 1, count do
 				local spark = Instance.new("ImageLabel")
 				spark.Name = "SignalSpark"
 				spark.Image = "rbxasset://textures/particles/sparkles_main.dds"
 				spark.ImageColor3 = tint
+				spark.ImageTransparency = 0.03
 				spark.BackgroundTransparency = 1
 				spark.BorderSizePixel = 0
-				spark.Size = UDim2.fromOffset(13, 13)
+				spark.Size = UDim2.fromOffset(if alert == "긴급" then 16 else 13,
+					if alert == "긴급" then 16 else 13)
 				spark.AnchorPoint = Vector2.new(0.5, 0.5)
-				spark.Position = UDim2.new(0.5, (i - 2) * 8, 0, 18)
+				spark.Position = UDim2.new(1, -13, 0, 14)
 				spark.ZIndex = 9
 				spark.Parent = button
-				local tween = game:GetService("TweenService"):Create(spark,
-					TweenInfo.new(0.46, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-					{ Position = UDim2.new(0.5, (i - 2) * 21, 0, -5 - (i % 2) * 7),
-						Size = UDim2.fromOffset(2, 2), ImageTransparency = 1 })
+				local delta = offsets[i]
+				local tween = signalTweenService:Create(spark,
+					TweenInfo.new(0.42 + i * 0.04, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+					{ Position = UDim2.new(1, -13 + delta.X, 0, 14 + delta.Y),
+						Size = UDim2.fromOffset(2, 2), ImageTransparency = 1,
+						Rotation = if i % 2 == 0 then 70 else -70 })
 				tween.Completed:Connect(function() spark:Destroy() end)
 				tween:Play()
 			end
 		end
 	end
-	-- [시설 길잡이] 실제 진행 단계가 바뀔 때만 다음 시설을 한 번 강조한다.
+		-- [시설 길잡이] 실제 진행 단계가 바뀔 때만 다음 시설을 한 번 강조한다.
 	local captain = view and view.captain
 	local tutorial = if not H.tutorialHidden and captain then captain.step else nil
 	local destination, cue
