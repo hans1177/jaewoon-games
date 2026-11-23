@@ -3167,6 +3167,12 @@ function FieldScene.start(opts)
 			local pos = ORIGIN + scatter(65)
 			local root0 = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 			if root0 and (root0.Position - pos).Magnitude < 32 then return end
+			-- [실물 접지] 최초 생성부터 언덕·지면의 실제 높이를 따른다.
+			local floorHit = workspace:Raycast(Vector3.new(pos.X, ORIGIN.Y + 110, pos.Z),
+				Vector3.new(0, -170, 0), groundRay)
+			if floorHit and floorHit.Normal.Y > 0.65 then
+				pos = Vector3.new(pos.X, floorHit.Position.Y, pos.Z)
+			end
 			local visual = sizes[species]
 			local coatIndex = 1 + math.floor(math.abs(pos.X * 0.21 + pos.Z * 0.39)) % #visual.coats
 			local model = placeModel(folder, "Animals", species, pos, visual.size, false, Color3.fromRGB(table.unpack(visual.coats[coatIndex])))
@@ -3192,15 +3198,67 @@ function FieldScene.start(opts)
 					say("동물 발견: " .. (names[species] or species) .. " · 현장 관찰 완료")
 				end)
 			end
-			table.insert(animals, { model = model, center = model:GetPivot(), bornAt = os.clock(),
-				phase = wildlifeRng:NextNumber(0, 7), direction = wildlifeRng:NextNumber(-math.pi, math.pi) })
+			-- [원본 모델 보존] 승인 동물의 실제 Bone·분리된 사지만 움직인다.
+			local origin = model:GetPivot()
+			local forward = origin.LookVector
+			local upright = if math.abs(forward.X) + math.abs(forward.Z) > 0.01
+				then CFrame.lookAt(origin.Position, origin.Position + Vector3.new(forward.X, 0, forward.Z))
+				else CFrame.new(origin.Position)
+			model:PivotTo(upright * CFrame.Angles(0, wildlifeRng:NextNumber(-math.pi, math.pi), 0))
+			local lowestY = math.huge
+			for _, piece in model:GetDescendants() do
+				if piece:IsA("BasePart") and piece.Transparency < 0.98 then
+					local half, cf = piece.Size * 0.5, piece.CFrame
+					lowestY = math.min(lowestY, cf.Position.Y - math.abs(cf.RightVector.Y) * half.X
+						- math.abs(cf.UpVector.Y) * half.Y - math.abs(cf.LookVector.Y) * half.Z)
+				end
+			end
+			if lowestY < math.huge then
+				model:PivotTo(CFrame.new(0, pos.Y - lowestY, 0) * model:GetPivot())
+			end
+			local basePivot = model:GetPivot()
+			local _, ext = model:GetBoundingBox()
+			local bodySize = math.max(ext.X, ext.Y, ext.Z)
+			local bones, parts, legCount = {}, {}, 0
+			for _, node in model:GetDescendants() do
+				local name = node.Name:lower()
+				local leg = name:find("leg", 1, true) or name:find("hoof", 1, true)
+					or name:find("paw", 1, true) or name:find("knee", 1, true)
+				local head = name:find("head", 1, true) or name:find("neck", 1, true)
+				local tail = name:find("tail", 1, true)
+				local kind = if leg then "leg" elseif head then "head" elseif tail then "tail" else nil
+				if kind then
+					local left = name:find("left", 1, true) or name:find("_l", 1, true)
+					local rear = name:find("rear", 1, true) or name:find("hind", 1, true)
+					local phase = if rear then (if left then math.pi * 1.5 else math.pi * 0.5)
+						else (if left then 0 else math.pi)
+					if node:IsA("Bone") and #bones < 14 then
+						table.insert(bones, { joint = node, base = node.Transform, kind = kind, phase = phase })
+						if kind == "leg" then legCount += 1 end
+					elseif node:IsA("BasePart") and #parts < 12
+						and math.max(node.Size.X, node.Size.Y, node.Size.Z) < bodySize * 0.77 then
+						table.insert(parts, { part = node, base = basePivot:ToObjectSpace(node.CFrame),
+							kind = kind, phase = phase, hinge = math.min(node.Size.Y * 0.34, 0.65) })
+						if kind == "leg" then legCount += 1 end
+					end
+				end
+			end
+			local canWalk = legCount >= 2
+			model:SetAttribute("FieldAnimalMotionRig", if canWalk then "WALK_RIG"
+				elseif #bones + #parts > 0 then "IDLE_RIG" else "STATIC_UNRIGGED")
+			table.insert(animals, { model = model, center = basePivot, bornAt = os.clock(),
+				phase = wildlifeRng:NextNumber(0, 7), bones = bones, parts = parts, canWalk = canWalk,
+				heading = 0, travel = 0, lastTravel = 0, step = 0, homeFloor = pos.Y,
+				groundTarget = 0, groundOffset = 0, groundCheckAt = 0 })
 		end
 		-- 자연동물은 최대 4마리만 두고 화면 밖에 있을 때 짧은 산책·풀 뜯기를 반복한다.
 		local tick = 0
 		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
 			if finished or not folder.Parent then return end
 			tick += math.min(dt, 0.2)
-			if tick < 0.24 then return end
+			-- [실물 관절 보행] 0.24초마다 순간이동하던 동물 위치를 근거리에서 부드럽게 갱신한다.
+			if tick < (if visualMobile then 0.09 else 0.065) then return end
+			local elapsed = tick
 			tick = 0
 			local now = os.clock()
 			local root0 = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
@@ -3211,12 +3269,45 @@ function FieldScene.start(opts)
 					table.remove(animals, i)
 				elseif not root0 or (root0.Position - a.center.Position).Magnitude < 160 then
 					local time = now - a.bornAt
-					local stroll = 5.5 * math.sin(time * 0.33 + a.phase)
-					local drift = 2.3 * math.sin(time * 0.21 + a.phase)
-					local offset = Vector3.new(math.cos(a.direction) * stroll, 0, math.sin(a.direction) * stroll + drift)
-					local yaw = math.sin(time * 0.28 + a.phase) * 0.36
-					local crouch = -0.09 * math.max(0, math.sin(time * 1.25 + a.phase))
-					a.model:PivotTo(a.center * CFrame.new(offset + Vector3.new(0, crouch, 0)) * CFrame.Angles(0, yaw, 0))
+					local cycle = time * 0.33 + a.phase
+					local target = if a.canWalk then 5.5 * math.sin(cycle) else 0
+					local want = if a.canWalk and math.cos(cycle) < -0.06 then math.pi else 0
+					local turn = math.atan2(math.sin(want - a.heading), math.cos(want - a.heading))
+					a.heading += turn * (1 - math.exp(-5.5 * elapsed))
+					local facing = math.clamp(1 - math.abs(turn) / 1.25, 0, 1)
+					a.travel += (target - a.travel) * (1 - math.exp(-7 * elapsed)) * facing
+					local walked = math.abs(a.travel - a.lastTravel)
+					a.lastTravel = a.travel
+					local moving = a.canWalk and facing > 0.2 and walked > 0.01
+					if moving then a.step += walked * (2 * math.pi / 3.4) end
+					local travelPivot = a.center * CFrame.new(0, 0, -a.travel)
+					if now >= a.groundCheckAt then
+						a.groundCheckAt = now + 0.2
+						local p = travelPivot.Position
+						local hit = workspace:Raycast(Vector3.new(p.X, ORIGIN.Y + 110, p.Z),
+							Vector3.new(0, -170, 0), groundRay)
+						if hit and hit.Normal.Y > 0.65 then
+							a.groundTarget = math.clamp(hit.Position.Y - a.homeFloor, -18, 22)
+						end
+					end
+					a.groundOffset += (a.groundTarget - a.groundOffset) * (1 - math.exp(-8 * elapsed))
+					local pivot = travelPivot * CFrame.new(0, a.groundOffset, 0) * CFrame.Angles(0, a.heading, 0)
+					a.model:PivotTo(pivot)
+					for _, limb in a.bones do
+						local pitch = if limb.kind == "leg" and moving then math.sin(a.step + limb.phase) * 0.23
+							elseif limb.kind == "head" and not moving then 0.10 + math.sin(time * 1.4) * 0.07
+							elseif limb.kind == "head" then math.sin(a.step * 2) * 0.035 else 0
+						local yaw = if limb.kind == "tail" then math.sin(time * 2.2) * 0.12 else 0
+						limb.joint.Transform = limb.base * CFrame.Angles(pitch, yaw, 0)
+					end
+					for _, limb in a.parts do
+						local pitch = if limb.kind == "leg" and moving then math.sin(a.step + limb.phase) * 0.23
+							elseif limb.kind == "head" and not moving then 0.10 + math.sin(time * 1.4) * 0.07
+							elseif limb.kind == "head" then math.sin(a.step * 2) * 0.035 else 0
+						local yaw = if limb.kind == "tail" then math.sin(time * 2.2) * 0.12 else 0
+						limb.part.CFrame = pivot * limb.base * CFrame.new(0, limb.hinge, 0)
+							* CFrame.Angles(pitch, yaw, 0) * CFrame.new(0, -limb.hinge, 0)
+					end
 				end
 			end
 			local phase = folder:GetAttribute("FieldTimePhase") or "낮"
