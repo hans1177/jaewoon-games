@@ -80,6 +80,57 @@ jobs:
         with:
           node-version: '20'
 
+      # [풀컬러 원본 인입] 큰 PNG 전송 실패 시 동일 원본의 Base64 분할 파일을 정식 등록 직전에 복원한다.
+      # 로블록스 등록기·이미지 승인 절차는 변경하지 않는다. 원본 SHA 불일치 시 실패한다.
+      - name: Restore full-color originals from verified transfer parts
+        if: ${{ github.event_name != 'schedule' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          root='roblox-games/mare-essentia/assets/cardart/src'
+          for id in eu_01 eu_02 eu_03 eu_21 eu_22 eu_23; do
+            stage="$root/.transfer/$id"
+            [[ -d "$stage" ]] || continue
+            mapfile -t parts < <(find "$stage" -maxdepth 1 -type f -name 'part*.b64' | sort)
+            if [[ ${#parts[@]} -eq 0 || ! -f "$stage/sha256" ]]; then
+              echo "::error::CARD_TRANSFER_INCOMPLETE:$id"; exit 1
+            fi
+            tmp="$(mktemp)"
+            cat "${parts[@]}" | base64 --decode > "$tmp"
+            expected="$(awk '{print $1}' "$stage/sha256")"
+            actual="$(sha256sum "$tmp" | awk '{print $1}')"
+            if [[ "$actual" != "$expected" ]]; then
+              echo "::error::CARD_TRANSFER_SHA_MISMATCH:$id"; exit 1
+            fi
+            python3 - "$tmp" "$id" <<'PYCARD'
+          import pathlib,struct,sys
+          p=pathlib.Path(sys.argv[1]); b=p.read_bytes(); card=sys.argv[2]
+          if b[:8]!=b'\x89PNG\r\n\x1a\n' or b[12:16]!=b'IHDR' or b[24]!=8 or b[25] not in (2,6):
+              raise SystemExit('CARD_TRANSFER_RGB_PNG_REQUIRED:'+card)
+          w,h=struct.unpack('>II',b[16:24])
+          if w<768 or h<768 or w>4096 or h>4096:
+              raise SystemExit('CARD_TRANSFER_PNG_DIMENSIONS_INVALID:'+card)
+          print('CARD_TRANSFER_VERIFIED',card,w,h,len(b))
+          PYCARD
+            dest="$root/$id-original.png"
+            cp "$tmp" "$dest"
+            current="$(gh api "repos/${GITHUB_REPOSITORY}/contents/$dest?ref=main" --jq .sha 2>/dev/null || true)"
+            payload="$(mktemp)"
+            python3 - "$dest" "$current" "$payload" <<'PYPAYLOAD'
+          import base64,json,pathlib,sys
+          source,sha,out=sys.argv[1:]
+          body={'message':'Mare Essentia: restore verified full-color original '+pathlib.Path(source).name,
+                'branch':'main','content':base64.b64encode(pathlib.Path(source).read_bytes()).decode('ascii')}
+          if sha: body['sha']=sha
+          pathlib.Path(out).write_text(json.dumps(body),encoding='utf-8')
+          PYPAYLOAD
+            gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/$dest" --input "$payload" --silent
+            rm -f "$tmp" "$payload"
+            echo "CARD_ORIGINAL_MAIN_RESTORED $id $actual"
+          done
+
       # [원화 품질 확인] PNG 색상 종류(헤더 25번째 바이트)를 실제로 검증하고 삭제 대상을 기록한다.
       - name: Audit 256-color indexed card artwork without altering registered assets
         shell: bash
