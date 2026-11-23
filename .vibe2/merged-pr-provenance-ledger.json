@@ -330996,11 +330996,164 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_97a777d2697c34f1c82d3cfe",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14776",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7ac362786fff6927c232f575b67d1f45c2b165d4",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14776,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-hud-icons-v2",
+        "baseSha": "7ac362786fff6927c232f575b67d1f45c2b165d4",
+        "headSha": "78f8bb38cb49ed8ea75a3df312fbc7a51787845d",
+        "mergeCommitSha": "97fc52c04eafb3086204e4f47c047e14b8d8d03f",
+        "mergedAt": "2026-11-23T18:19:08Z",
+        "authorLogin": "hans1177",
+        "titleHash": "a8431bedc81137bf1049546dbebe9bab884288a69e51648549216f281b56e9ea",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-hud-icons-v2",
+        "candidateSha": "78f8bb38cb49ed8ea75a3df312fbc7a51787845d"
+      },
+      "changeStats": {
+        "changedFileCount": 28,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 508,
+        "deletedLineCount": 148,
+        "changedFiles": [
+          ".clinerules",
+          ".cursor/rules/read-first.mdc",
+          ".cursorrules",
+          ".github/copilot-instructions.md",
+          ".windsurfrules",
+          "AGENTS.md",
+          "CLAUDE.md",
+          "GEMINI.md",
+          "qa/mare-diplomacy-dock.test.mjs",
+          "roblox-games/mare-essentia/AGENTS.md",
+          "roblox-games/mare-essentia/CLAUDE.md",
+          "roblox-games/mare-essentia/README.md",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_chapel.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_chapel.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_house_row.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_house_row.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_mill.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_mill.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_watchtower.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_watchtower.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_street_lamp.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_street_lamp.glb.license.json",
+          "roblox-games/mare-essentia/docs/READ_FIRST.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-diplomacy-dock.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_chapel.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_house_row.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_mill.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_watchtower.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_street_lamp.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14776",
+        "merge-commit:97fc52c04eafb3086204e4f47c047e14b8d8d03f",
+        "base-main:7ac362786fff6927c232f575b67d1f45c2b165d4"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2649
+    "total": 2650
   }
 }
