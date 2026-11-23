@@ -2625,7 +2625,7 @@ end
 -- [항해 도구] 선 조각 임시 아이콘 대신 기존 등록된 원화와 황동 테두리를 쓴다.
 -- 시스템 4개는 시설 6개와 색으로 구분한다(같은 원화를 쓰는 곳은 색을 바꿔 중복처럼 안 보이게).
 -- [항해 도구] 아이콘 데이터는 바로 아래 H.hudShortcut 메서드에만 유지한다.
-local hudTop -- 큰 화면 광휘가 도크에 잘리지 않도록 상단 레이어를 참조한다.
+local hudTop, hudTopGui -- 아이콘 애니메이션을 HUD 표시 상태와 연동한다.
 do
 local hudTweenService = game:GetService("TweenService")
 local HUD_MENU_TINT = {
@@ -2768,6 +2768,55 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	end
 	button:GetAttributeChangedSignal("SelectedFacility"):Connect(paintSelection)
 	paintSelection()
+	-- [메인 HUD 아이콘] 원화 자체만 심장박동처럼 커졌다 작아진다. 버튼과 글자는 고정한다.
+	-- 아이콘당 금빛 광휘 1개와 원화 맥동 1개만 반복하며 프레임 업데이트를 만들지 않는다.
+	local iconArt = button:FindFirstChild("MenuArt")
+	local iconGlow = Instance.new("ImageLabel")
+	iconGlow.Name = "IconBreathGlow"
+	iconGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+	iconGlow.Position = UDim2.new(0.5, 0, 0, 23)
+	iconGlow.Size = UDim2.fromOffset(51, 51)
+	iconGlow.BackgroundTransparency = 1
+	iconGlow.BorderSizePixel = 0
+	iconGlow.Image = "rbxasset://textures/particles/sparkles_main.dds"
+	iconGlow.ImageColor3 = if key == "view" then Color3.fromRGB(105, 212, 255) else Color3.fromRGB(255, 198, 91)
+	iconGlow.ImageTransparency = 0.47
+	iconGlow.ZIndex = 1
+	iconGlow.Active = false
+	iconGlow.Parent = button
+	local iconScale = nil
+	local breathTween = nil
+	if iconArt and iconArt:IsA("GuiObject") then
+		iconScale = Instance.new("UIScale")
+		iconScale.Name = "IconHeartbeat"
+		iconScale.Scale = 1
+		iconScale.Parent = iconArt
+		breathTween = hudTweenService:Create(iconScale,
+			TweenInfo.new(1.00 + (name:len() % 4) * 0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+			{ Scale = 1.14 })
+	end
+	local glowTween = hudTweenService:Create(iconGlow,
+		TweenInfo.new(1.22 + (name:len() % 3) * 0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+		{ Size = UDim2.fromOffset(63, 63), ImageTransparency = 0.80, Rotation = 24 })
+	local function syncIconMotion()
+		local animate = not game:GetService("GuiService").ReducedMotionEnabled
+			and (not hudTopGui or hudTopGui.Enabled) and button.Visible
+		if animate then
+			if breathTween then breathTween:Play() end
+			glowTween:Play()
+		else
+			if breathTween then breathTween:Pause() end
+			glowTween:Pause()
+			if iconScale then iconScale.Scale = 1 end
+			iconGlow.Size = UDim2.fromOffset(51, 51)
+			iconGlow.ImageTransparency = 0.60
+			iconGlow.Rotation = 0
+		end
+	end
+	if hudTopGui then hudTopGui:GetPropertyChangedSignal("Enabled"):Connect(syncIconMotion) end
+	button:GetPropertyChangedSignal("Visible"):Connect(syncIconMotion)
+	game:GetService("GuiService"):GetPropertyChangedSignal("ReducedMotionEnabled"):Connect(syncIconMotion)
+	syncIconMotion()
 	local art = button:FindFirstChild("MenuArt")
 	if facility and art then
 		local restPosition = art.Position
@@ -2786,36 +2835,33 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 			hudTweenService:Create(badgeStroke, TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 				Transparency = if button:GetAttribute("SelectedFacility") then 0.20 else 1,
 			}):Play()
-			-- [터치 120px] 전체 화면 레이어에 큰 원형 파동을 띄워 잘림 없이 표현한다.
-			if hudTop and hudTop.Parent then
-				local previousGlow = hudTop:FindFirstChild("PressGlow_" .. name)
-				if previousGlow then previousGlow:Destroy() end
-				local p = button.AbsolutePosition - hudTop.AbsolutePosition
-				local glow = Instance.new("Frame")
-				glow.Name = "PressGlow_" .. name
-				glow.AnchorPoint = Vector2.new(0.5, 0.5)
-				glow.Position = UDim2.fromOffset(p.X + button.AbsoluteSize.X / 2, p.Y + 24)
-				glow.Size = UDim2.fromOffset(28, 28)
-				glow.BackgroundColor3 = Color3.fromRGB(255, 213, 112)
-				glow.BackgroundTransparency = 0.35
-				glow.BorderSizePixel = 0
-				glow.Active = false
-				glow.ZIndex = 8
-				glow.Parent = hudTop
-				local curve = Instance.new("UICorner")
-				curve.CornerRadius = UDim.new(1, 0)
-				curve.Parent = glow
-				local rim = Instance.new("UIStroke")
-				rim.Color = Color3.fromRGB(255, 243, 166)
-				rim.Thickness = 3
-				rim.Parent = glow
-				hudTweenService:Create(rim, TweenInfo.new(0.56), { Transparency = 1 }):Play()
-				local tw = hudTweenService:Create(glow,
-					TweenInfo.new(0.56, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-					{ Size = UDim2.fromOffset(120, 120), BackgroundTransparency = 1 })
-				tw.Completed:Connect(function() glow:Destroy() end)
-				tw:Play()
-			end
+			-- [터치 파동] 눌린 아이콘 안에서만 짧게 퍼지므로 화면 전체를 덮지 않는다.
+			local previousGlow = button:FindFirstChild("PressGlow")
+			if previousGlow then previousGlow:Destroy() end
+			local glow = Instance.new("Frame")
+			glow.Name = "PressGlow"
+			glow.AnchorPoint = Vector2.new(0.5, 0.5)
+			glow.Position = UDim2.new(0.5, 0, 0, 23)
+			glow.Size = UDim2.fromOffset(24, 24)
+			glow.BackgroundColor3 = Color3.fromRGB(255, 213, 112)
+			glow.BackgroundTransparency = 0.54
+			glow.BorderSizePixel = 0
+			glow.Active = false
+			glow.ZIndex = 4
+			glow.Parent = button
+			local curve = Instance.new("UICorner")
+			curve.CornerRadius = UDim.new(1, 0)
+			curve.Parent = glow
+			local rim = Instance.new("UIStroke")
+			rim.Color = Color3.fromRGB(255, 243, 166)
+			rim.Thickness = 2
+			rim.Parent = glow
+			hudTweenService:Create(rim, TweenInfo.new(0.48), { Transparency = 1 }):Play()
+			local tw = hudTweenService:Create(glow,
+				TweenInfo.new(0.48, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Size = UDim2.fromOffset(63, 63), BackgroundTransparency = 1 })
+			tw.Completed:Connect(function() glow:Destroy() end)
+			tw:Play()
 			local previousSpark = button:FindFirstChild("PressSpark")
 			if previousSpark then previousSpark:Destroy() end
 			local pressSpark = Instance.new("ImageLabel")
@@ -2854,7 +2900,7 @@ end
 end
 
 -- 오른쪽 아이콘은 로블록스 상단 바 높이를 무시하고 화면 맨 위에 붙인다(왼쪽 카드는 기존 위치 유지).
-local hudTopGui = Instance.new("ScreenGui")
+hudTopGui = Instance.new("ScreenGui")
 hudTopGui.Name = "MareEssentiaHudTop"
 hudTopGui.ResetOnSpawn = false
 hudTopGui.IgnoreGuiInset = true
@@ -2868,64 +2914,17 @@ hudTop.BackgroundTransparency = 1
 hudTop.Size = UDim2.fromScale(1, 1)
 hudTop.Parent = hudTopGui
 do
--- [지상·해상 배경] 눈에 보이는 큰 빛먼지 9개. 파츠/외부 에셋/스폰 반복 없음.
-local skyParticles = Instance.new("Frame")
-skyParticles.Name = "HudAmbientParticles"
-skyParticles.BackgroundTransparency = 1
-skyParticles.Size = UDim2.fromScale(1, 1)
-skyParticles.Active = false
-skyParticles.Parent = hudTop
-H.screenMotes = {}
-local positions = { {0.10,0.31}, {0.29,0.25}, {0.52,0.40}, {0.79,0.31}, {0.92,0.56},
-	{0.20,0.70}, {0.40,0.84}, {0.64,0.76}, {0.85,0.87} }
-for i, xy in positions do
-	local glow = Instance.new("Frame")
-	glow.Name = "Mote_" .. i
-	glow.AnchorPoint = Vector2.new(0.5, 0.5)
-	glow.Position = UDim2.fromScale(xy[1], xy[2])
-	local diameter = if i % 3 == 0 then 96 else 72
-	glow.Size = UDim2.fromOffset(diameter, diameter)
-	glow.BackgroundColor3 = Color3.fromRGB(85, 185, 226)
-	glow.BackgroundTransparency = 0.78
-	glow.BorderSizePixel = 0
-	glow.Active = false
-	glow.ZIndex = 1
-	glow.Parent = skyParticles
-	local curve = Instance.new("UICorner")
-	curve.CornerRadius = UDim.new(1, 0)
-	curve.Parent = glow
-	local shade = Instance.new("UIGradient")
-	shade.Color = ColorSequence.new(Color3.fromRGB(245, 254, 255), Color3.fromRGB(65, 111, 162))
-	shade.Rotation = 90
-	shade.Parent = glow
-	local dot = Instance.new("Frame")
-	dot.Name = "BrightCore"
-	dot.AnchorPoint = Vector2.new(0.5, 0.5)
-	dot.Position = UDim2.fromScale(0.5, 0.5)
-	dot.Size = UDim2.fromOffset(12, 12)
-	dot.BackgroundColor3 = Color3.fromRGB(220, 249, 255)
-	dot.BorderSizePixel = 0
-	dot.ZIndex = 1
-	dot.Parent = glow
-	local dotCorner = Instance.new("UICorner")
-	dotCorner.CornerRadius = UDim.new(1, 0)
-	dotCorner.Parent = dot
-	H.screenMotes[i] = { glow = glow, dot = dot }
-	if not game:GetService("GuiService").ReducedMotionEnabled then
-		game:GetService("TweenService"):Create(glow,
-			TweenInfo.new(3 + i * 0.32, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-			{ Position = UDim2.fromScale(xy[1] + 0.02, xy[2] - 0.024), BackgroundTransparency = 0.94 }):Play()
-	end
-end
+-- [지상·해상 전환] 바탕화면 입자는 없애고 기존 걷기/전경 아이콘만 색광을 전환한다.
 function H.updateScreenAtmosphere()
-	local light = if overview then Color3.fromRGB(92, 194, 234) else Color3.fromRGB(245, 173, 80)
-	local dot = if overview then Color3.fromRGB(219, 244, 255) else Color3.fromRGB(255, 233, 170)
-	for _, fx in H.screenMotes do
-		fx.glow.BackgroundColor3 = light
-		fx.dot.BackgroundColor3 = dot
+	local walk = H.viewFxButton
+	if not walk then return end
+	local aura = walk:FindFirstChild("IconBreathGlow")
+	if aura then
+		aura.ImageColor3 = if overview then Color3.fromRGB(108, 214, 255)
+			else Color3.fromRGB(255, 190, 90)
 	end
-	local disc = H.viewFxButton and H.viewFxButton:FindFirstChild("CircularSelection")
-	if disc then disc.BackgroundColor3 = light; disc.BackgroundTransparency = 0.38 end
+	local disc = walk:FindFirstChild("CircularSelection")
+	if disc then disc.BackgroundTransparency = 1 end
 end
 H.updateScreenAtmosphere()
 end
@@ -3003,17 +3002,19 @@ for i, d in H.DOCK do
 	notice.Parent = b
 	H.dockNotices[d[1]] = notice
 	-- [긴급·저가·납품] 스크롤 잘림 밖 100px 둥근 그림자/빛 고리.
+	-- [시설 알림] 기존 알림 판정은 유지하되 100~128px 화면광 대신 아이콘 크기의 원형 음영을 쓴다.
 	local bloom = Instance.new("Frame")
 	bloom.Name = "SignalBloom_" .. d[1]
 	bloom.AnchorPoint = Vector2.new(0.5, 0.5)
-	bloom.Size = UDim2.fromOffset(100, 100)
+	bloom.Position = UDim2.new(0.5, 0, 0, 23)
+	bloom.Size = UDim2.fromOffset(46, 46)
 	bloom.BackgroundColor3 = Color3.fromRGB(255, 202, 92)
-	bloom.BackgroundTransparency = 0.62
+	bloom.BackgroundTransparency = 0.77
 	bloom.BorderSizePixel = 0
 	bloom.Active = false
 	bloom.Visible = false
-	bloom.ZIndex = 4
-	bloom.Parent = hudTop
+	bloom.ZIndex = 1
+	bloom.Parent = b
 	local r = Instance.new("UICorner")
 	r.CornerRadius = UDim.new(1, 0)
 	r.Parent = bloom
@@ -3023,17 +3024,10 @@ for i, d in H.DOCK do
 	shade.Parent = bloom
 	local rim = Instance.new("UIStroke")
 	rim.Name = "BloomEdge"
-	rim.Thickness = 3
-	rim.Transparency = 0.12
+	rim.Thickness = 2
+	rim.Transparency = 0.24
 	rim.Parent = bloom
 	H.dockBlooms[d[1]] = bloom
-	local function moveBloom()
-		local p = b.AbsolutePosition - hudTop.AbsolutePosition
-		bloom.Position = UDim2.fromOffset(p.X + b.AbsoluteSize.X / 2, p.Y + 24)
-	end
-	b:GetPropertyChangedSignal("AbsolutePosition"):Connect(moveBloom)
-	b:GetPropertyChangedSignal("AbsoluteSize"):Connect(moveBloom)
-	task.defer(moveBloom)
 	b.Activated:Connect(function()
 		openTab(d[1])
 	end)
@@ -3630,6 +3624,7 @@ function H.updateHud(p, ship)
 			halo.Visible = alert ~= nil
 		end
 		if changed or motionChanged then
+			if bloom then bloom.Size = UDim2.fromOffset(46, 46); bloom.BackgroundTransparency = 0.77 end
 			notice:SetAttribute("SignalKind", alert or "")
 			notice:SetAttribute("ReducedMotionLast", reducedMotion)
 			local running = H.dockSignalTweens[id]
@@ -3659,38 +3654,14 @@ function H.updateHud(p, ship)
 							if alert == "납품" then 42 else 38) })
 				local wide = signalTweenService:Create(bloom,
 					TweenInfo.new(speed * 1.25, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-					{ Size = UDim2.fromOffset(128, 128), BackgroundTransparency = 0.94 })
+					{ Size = UDim2.fromOffset(58, 58), BackgroundTransparency = 0.96 })
 				H.dockSignalTweens[id] = { core, glow, wide }
 				core:Play()
 				glow:Play()
 				wide:Play()
 			end
 		end
-		-- [발생 순간] 화면에 큰 원형 파편을 추가로 퍼뜨려 실제 표시가 확실하도록 한다.
-		if changed and alert and button and hudTopGui.Enabled and not reducedMotion and bloom then
-			for i = 1, 8 do
-				local angle = i * math.pi / 4
-				local spark = Instance.new("Frame")
-				spark.Name = "SignalBurst"
-				spark.AnchorPoint = Vector2.new(0.5, 0.5)
-				spark.Position = bloom.Position
-				spark.Size = UDim2.fromOffset(18, 18)
-				spark.BackgroundColor3 = tint
-				spark.BorderSizePixel = 0
-				spark.ZIndex = 9
-				spark.Parent = hudTop
-				local r = Instance.new("UICorner")
-				r.CornerRadius = UDim.new(1, 0)
-				r.Parent = spark
-				local t = signalTweenService:Create(spark,
-					TweenInfo.new(0.62, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-					{ Position = UDim2.fromOffset(bloom.Position.X.Offset + math.cos(angle) * 65,
-						bloom.Position.Y.Offset + math.sin(angle) * 65),
-						Size = UDim2.fromOffset(2, 2), BackgroundTransparency = 1 })
-				t.Completed:Connect(function() spark:Destroy() end)
-				t:Play()
-			end
-		end
+		-- [알림 파편] 기존 버튼 내부 SignalSpark만 사용한다. 화면 전체 원형 파편은 만들지 않는다.
 		-- [발생 순간] 글씨·배지 없이 투명 별빛만 1회 분산. 반복 갱신으로 파티클이 쌓이지 않는다.
 		if changed and alert and button and hudTopGui.Enabled and not reducedMotion then
 			-- [좁은 화면] 가장 작은 46px 셀에도 들어가는 좌우 대칭 별빛 경로.
@@ -3927,38 +3898,37 @@ local GUIDE_BTN = {
 	tech = "Menu_codex", codex = "Menu_codex", scholar = "Menu_codex",
 	crew = "Menu_status", status = "Menu_status",
 }
-local guidePulseToken = 0
+-- [시설 안내] 버튼 외곽 사각 테두리·30fps 흔들림 대신 원화 중심에만 금빛을 맥동시킨다.
 function H.setGuidePulse(tab)
-	guidePulseToken += 1
-	local token = guidePulseToken
 	for _, holder in { dock, hudTop } do
 		for _, n in GUIDE_BTN do
 			local b = holder:FindFirstChild(n)
 			local old = b and b:FindFirstChild("GuidePulse")
 			if old then old:Destroy() end
-			if b then b.Rotation = 0 end
 		end
 	end
 	local name = tab and GUIDE_BTN[tab]
 	if not name then return end
 	local b = dock:FindFirstChild(name) or hudTop:FindFirstChild(name)
 	if not b then return end
-	local stroke = Instance.new("UIStroke")
-	stroke.Name = "GuidePulse"
-	stroke.Color = Color3.fromRGB(255, 214, 96)
-	stroke.Thickness = 3
-	stroke.Parent = b
-	task.spawn(function()
-		local t0 = os.clock()
-		while guidePulseToken == token and b.Parent do
-			local t = os.clock() - t0
-			stroke.Thickness = 3 + math.abs(math.sin(t * 4)) * 3
-			b.Rotation = math.sin(t * 9) * 4 * math.max(0, math.sin(t * 1.5)) -- 숨 쉬듯 이따금 흔들림
-			task.wait(0.03)
-		end
-		if stroke.Parent then stroke:Destroy() end
-		if b.Parent then b.Rotation = 0 end
-	end)
+	local flare = Instance.new("ImageLabel")
+	flare.Name = "GuidePulse"
+	flare.Image = "rbxasset://textures/particles/sparkles_main.dds"
+	flare.ImageColor3 = Color3.fromRGB(255, 221, 117)
+	flare.ImageTransparency = 0.18
+	flare.BackgroundTransparency = 1
+	flare.BorderSizePixel = 0
+	flare.AnchorPoint = Vector2.new(0.5, 0.5)
+	flare.Position = UDim2.new(0.5, 0, 0, 23)
+	flare.Size = UDim2.fromOffset(52, 52)
+	flare.ZIndex = 5
+	flare.Active = false
+	flare.Parent = b
+	if not game:GetService("GuiService").ReducedMotionEnabled then
+		game:GetService("TweenService"):Create(flare,
+			TweenInfo.new(0.70, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+			{ Size = UDim2.fromOffset(64, 64), ImageTransparency = 0.83 }):Play()
+	end
 end
 local function refreshBubble()
 	local adv = view and view.advice
