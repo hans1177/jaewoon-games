@@ -297,9 +297,8 @@ def main():
     load_identity(root)
     out_dir = os.path.join(root, "docs", "ports")
     os.makedirs(out_dir, exist_ok=True)
-    for spec in PORTS:
-        with open(os.path.join(out_dir, spec[0] + ".md"), "w", encoding="utf-8") as f:
-            f.write(port_doc(*spec, data))
+    # 항구별 md 는 tools/gen_port_briefs_all.py 가 전 항구 대상으로 만든다(여기서는 쓰지 않음).
+    _ = out_dir
     print(f"{len(PORTS)} port briefs -> {os.path.normpath(out_dir)} (identity parsed {len(IDENT)})")
 
 

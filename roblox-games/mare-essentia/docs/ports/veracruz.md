@@ -1,171 +1,337 @@
-# 베라크루스 (veracruz) — ChatGPT 작업 지시서
+# 베라크루스 (veracruz) — 항구 작업 지시서
 
-> 이 문서 하나로 이 항구의 3D 에셋 제작과 마을 배치를 진행한다. 공통 규칙은 `docs/PORT_VILLAGE_PROMPTS.md`.
+> 공통 규칙: `docs/RULES.md`(원본 가공·라이선스·코드 한도) → `docs/PORT_VILLAGE_PROMPTS.md`. 이 문서만으로 이 항구의 테마·왕궁·방문 건물을 만든다.
 
-## 0. 작업 환경
-
-- 게임: Mare Essentia (Roblox, Luau). 배경 1500~1800년 대항해시대. 저장소 `roblox-games/mare-essentia`
-- 마을 생성 코드: `src/ReplicatedStorage/Shared/PortScene.luau` (마을 짓기 `densify`, 대표 경관 `placeSignature`/`SIG`, 기념물 `placeLandmarks`)
-- 항구 정체성 데이터: `src/ReplicatedStorage/Shared/PortIdentity.luau` (아래 표의 값이 여기 있음)
-- 에셋 등록: 파일을 `assets/inbox/Town/<asset_id>.glb`(라이선스 `<asset_id>.license.json` 동봉)에 넣고 main 반영 → `owner-mare-essentia-assets` 워크플로가 Roblox 등록 → 코드에서 `AssetIds["Town/<asset_id>"]`, 배치는 `importedModel(folder, "Town", "<asset_id>", 위치, 크기)`
-- 지키기: 저장 데이터·경제 수치·보행 충돌벽 변경 금지. 원본 없으면 기존 승인 에셋으로 대체(이미 있는 방식).
-- 코드 한도: `Game.client.luau` 맨 바깥에 `local` 새로 만들기 금지(레지스터 200 한도 → 화면 안 뜸). `do ... end` 또는 `H.이름`에. `tests/run.sh`가 검사.
-- 에셋 규칙: `docs/RULES.md` 를 먼저 읽는다. 3D는 **승인 원본 에셋을 가공**해서 만든다(아래 프롬프트 = 가공 목표). `.license.json`에 원본 이름·URL·라이선스·"derived"·가공 내용 기록. 원본 없이 처음부터 AI 생성은 보류.
-- 색감: 지상전·마을 나무/덤불은 옅은 청록 단색 금지 — 잎·줄기·그늘 색을 나누고 지역 기후 색(열대 진녹, 건조 올리브, 한대 청록)을 쓴다.
-- 검증: `LUAU_DIR=... bash tests/run.sh`(스모크 905건), Studio `tools/devloop/studio-scripts/mare-town.json` 항공·광장 촬영
-
-## 1. 항구 정체성
+## 1. 항구 테마
 
 | 항목 | 값 |
 |---|---|
-| 상징물 | 산후안 데 울루아 요새 (`lm_veracruz_fort`, 종류 fort) |
-| 건축 | Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios (지붕 flat, 벽 stucco) |
-| 구획 | 바둑판: 큰길과 직각 골목, 블록마다 4~6필지 |
-| 광장 | 연병장 광장 — plaza de armas with arcades |
+| 문화권 | 스페인·포르투갈 식민지 (`colonial`) |
+| 나라 | new_spain |
+| 기후 | 열대 — tropical palms, heavy rain, deep green foliage |
+| 테마 | **플랜테이션·기호품 항구** — plantation storehouses, roasting and boiling houses |
+| 특산물 | silver, cochineal, vanilla, cocoa |
+| 건축 | Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios |
+| 지붕·벽 | flat · stucco |
+| 광장 | parade |
 | 길 1→5단계 | sand → dirt → gravel → cobble → paved |
 | 밤 조명 | oil_lantern |
-| 길 밖 땅 / 날씨 | sand / dust |
-| 특산물(교역품) | silver, cochineal, vanilla, cocoa |
+| 상징물 | coral-stone sea fortress with bastions (2단계 공사 중 → 4단계 완성) |
+| 조선소 | 있음 |
+| 왕궁 | 없음 → 5단계에 총독 관저 |
 
-## 2. 발전도별 배치 지시
+## 2. 발전도별 마을
 
-| 단계 | 필지 | 무엇을 어디에 |
+| 단계 | 마을 모습 | 새로 방문 가능 |
 |---|---|---|
-| 1 | 6 | 부두 옆 오두막 `veracruz_house_1` 6채, 길 sand, 횃불 2~3. 외곽: silver 관련 텃밭/작업장 1 |
-| 2 | 10 | 부두와 마을 사이 중앙 광장 + `veracruz_plaza_center`. 광장 옆에 `veracruz_landmark_base`(공사 중). 가판대 `veracruz_stall_*` 2개 |
-| 3 | 14 | 구역 분리: 시장(광장 동쪽·부두 쪽) / 종교·관청(광장 반대편) / 주거(골목) / 공방(외곽 강·물가). `veracruz_signature_1~3` 구역별 1채, `veracruz_workshop_*` 공방 구역, 가로등 `veracruz_street_lamp` 길 3칸마다, 간판 `veracruz_shop_sign` |
-| 4 | 18 | `veracruz_landmark_full`로 교체, `veracruz_house_2`(2층 상점) 큰길 앞, 창고 `veracruz_warehouse_stock`(재고 단계) 부두 뒤, 가로등 2칸마다 |
-| 5 | 24 | `veracruz_house_3`(3층) 광장 둘레, 외곽 구역 신설, 가로등 모든 길, 농촌 가공소 |
+| 1 개척 | 오두막 6채·흙길·횃불, 부두 옆 교역소·주점·항만청 | 교역소, 주점, 항만청, 조선소 |
+| 2 마을 | 광장(parade)·상징물 기초, 집 10채, 큰길 dirt | 학자의 서재, 전투 본부 |
+| 3 읍 | 시장·종교·주거·공방 구역 분리, 플랜테이션·기호품 항구 특색 공방, 가로등 3칸마다 | 외교관 거처, 은행 |
+| 4 도시 | 상징물 완성, 2층 상점 주택, 창고 마당, 길 cobble, 가로등 2칸마다 | - |
+| 5 대도시 | 3층 주택·외곽 구역, 길 paved, 모든 길 가로등, 농촌 가공소 | 총독 관저 |
 
-- 건물은 중앙에 몰지 말고 구역별로 나눈다. 광장 → 큰길 → 골목 순으로 밀도가 낮아지게.
-- 같은 집 연속 배치 금지(색 슬롯·회전·높이 변형). 땅은 길(포장)과 길 밖(기후 재질)을 구분.
+## 3. 방문 가능 건물 (외형·내부·기능)
 
-## 3. 3D 에셋 프롬프트
+### 교역소 — 1단계부터
+- 기능: 상품 매입·판매, 시세 비교
+- 외형 단계: ① open-air trading post with awning and scales → ③ covered market hall with arcades → ⑤ grand merchant exchange with columns and clock (모두 스페인·포르투갈 식민지 양식)
+- 내부: 저울·장부 책상·견본 상품 선반·시세 칠판(그림), 특산물 견본 진열, 거래 상인 2명 — 스페인·포르투갈 식민지 실내 양식(바닥·조명 oil_lantern)
+- 단계 변화: ① 작은 1칸 → ③ 2~3칸·직원 증가 → ⑤ 넓은 홀·장식·플랜테이션·기호품 항구 상징 소품
+- 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
 
-모든 프롬프트는 공통 문구 포함(그대로 3D 생성 도구에 붙여 넣기).
-
-### `veracruz_landmark_base` — 2단계 상징물 기초(공사 중)
-- 분류 landmark · 등장 2단계 · 크기 40x40x30 · 폴리곤 ≤ 15k
+#### `veracruz_trade_1` — 교역소 외형 1단계
+- building · 1단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
 ```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Under-construction version of coral-stone sea fortress with bastions: lower half built, wooden scaffolding, cranes, stone blocks on ground.
-```
-
-### `veracruz_landmark_full` — 4단계 상징물 완성
-- 분류 landmark · 등장 4단계 · 크기 40x40x70 · 폴리곤 ≤ 25k
-```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Completed coral-stone sea fortress with bastions, the city's signature landmark, ornate but game-readable, weathered stone.
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. open-air trading post with awning and scales, a visitable 교역소 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
 ```
 
-### `veracruz_house_1` — 1단계 주택 변형 1
-- 분류 house · 등장 1단계 · 크기 16x14x(12-26) · 폴리곤 ≤ 6k
+#### `veracruz_trade_2` — 교역소 외형 2단계
+- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
 ```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. 1-storey Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios, humble, small yard, wooden fence. Provide 3 colour-variant material slots.
-```
-
-### `veracruz_house_2` — 3단계 주택 변형 2
-- 분류 house · 등장 3단계 · 크기 16x14x(12-26) · 폴리곤 ≤ 6k
-```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. 2-storey Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios, shop on ground floor, awning. Provide 3 colour-variant material slots.
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. covered market hall with arcades, a visitable 교역소 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
 ```
 
-### `veracruz_house_3` — 5단계 주택 변형 3
-- 분류 house · 등장 5단계 · 크기 16x14x(12-26) · 폴리곤 ≤ 6k
+#### `veracruz_trade_3` — 교역소 외형 3단계
+- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
 ```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. 3-storey Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios, wealthy merchant house, decorative trim. Provide 3 colour-variant material slots.
-```
-
-### `veracruz_signature_1` — 3단계 구역 특산 건물
-- 분류 district · 등장 3단계 · 크기 30x24x24 · 폴리곤 ≤ 12k
-```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. silver loading wharf with strongroom, in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios.
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. grand merchant exchange with columns and clock, a visitable 교역소 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
 ```
 
-### `veracruz_signature_2` — 3단계 구역 특산 건물
-- 분류 district · 등장 3단계 · 크기 30x24x24 · 폴리곤 ≤ 12k
+### 주점 — 1단계부터
+- 기능: 동료 영입, 소문·의뢰, 카드 대결
+- 외형 단계: ① small tavern shack with hanging sign → ③ two-storey inn with stable yard → ⑤ grand inn with balconies and courtyard (모두 스페인·포르투갈 식민지 양식)
+- 내부: 긴 나무 탁자·술통 카운터·벽난로/화덕·소문 게시판·카드 탁자, 2층 숙소 계단 — 스페인·포르투갈 식민지 실내 양식(바닥·조명 oil_lantern)
+- 단계 변화: ① 작은 1칸 → ③ 2~3칸·직원 증가 → ⑤ 넓은 홀·장식·플랜테이션·기호품 항구 상징 소품
+- 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
+
+#### `veracruz_tavern_1` — 주점 외형 1단계
+- building · 1단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
 ```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. royal customs house with arcade, in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios.
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. small tavern shack with hanging sign, a visitable 주점 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
 ```
 
-### `veracruz_signature_3` — 3단계 구역 특산 건물
-- 분류 district · 등장 3단계 · 크기 30x24x24 · 폴리곤 ≤ 12k
+#### `veracruz_tavern_2` — 주점 외형 2단계
+- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
 ```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. colonial cathedral facade, in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios.
-```
-
-### `veracruz_plaza_center` — 2단계 중앙 광장 중심물
-- 분류 plaza · 등장 2단계 · 크기 20x20x10 · 폴리곤 ≤ 5k
-```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. plaza de armas with arcades, cobbled base, benches around.
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. two-storey inn with stable yard, a visitable 주점 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
 ```
 
-### `veracruz_street_lamp` — 3단계 가로등(밤 발광)
-- 분류 lamp · 등장 3단계 · 크기 2x2x12 · 폴리곤 ≤ 1.5k
+#### `veracruz_tavern_3` — 주점 외형 3단계
+- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
 ```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. wrought-iron oil street lantern on a post, glass panes, warm glow, 12 studs tall, emissive glass material slot for night.
-```
-
-### `veracruz_shop_sign` — 상점 그림 간판 세트
-- 분류 sign · 등장 3단계 · 크기 3x0.5x3 · 폴리곤 ≤ 1k
-```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. set of 6 pictorial wrought-iron signs: fish, barrel, cloth roll, bread, anvil, key. No letters.
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. grand inn with balconies and courtyard, a visitable 주점 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
 ```
 
-### `veracruz_stall_silver` — 특산물 가판대: silver
-- 분류 goods · 등장 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
+### 항만청 — 1단계부터
+- 기능: 출항·항로·지도, 입항세
+- 외형 단계: ① dock office hut beside the pier → ③ customs house with flag → ⑤ admiralty building with signal mast and arcade (모두 스페인·포르투갈 식민지 양식)
+- 내부: 대형 해도 탁자·항로 지도 벽·입항 장부·나침반 진열·창밖 부두 전망 — 스페인·포르투갈 식민지 실내 양식(바닥·조명 oil_lantern)
+- 단계 변화: ① 작은 1칸 → ③ 2~3칸·직원 증가 → ⑤ 넓은 홀·장식·플랜테이션·기호품 항구 상징 소품
+- 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
+
+#### `veracruz_harbor_1` — 항만청 외형 1단계
+- building · 1단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
 ```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Market stall with canopy displaying silver ingots and coins in an iron-bound chest, local style of 베라크루스.
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. dock office hut beside the pier, a visitable 항만청 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
 ```
 
-### `veracruz_workshop_silver` — 특산물 공방: silver
-- 분류 workshop · 등장 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
+#### `veracruz_harbor_2` — 항만청 외형 2단계
+- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
 ```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. silver mint / assay house with strongbox and scales, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Include worker spots and tools.
-```
-
-### `veracruz_stall_cochineal` — 특산물 가판대: cochineal
-- 분류 goods · 등장 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
-```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Market stall with canopy displaying sacks of red cochineal dye and dyed cloth, local style of 베라크루스.
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. customs house with flag, a visitable 항만청 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
 ```
 
-### `veracruz_workshop_cochineal` — 특산물 공방: cochineal
-- 분류 workshop · 등장 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
+#### `veracruz_harbor_3` — 항만청 외형 3단계
+- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
 ```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. nopal cactus garden and dye-drying hut, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Include worker spots and tools.
-```
-
-### `veracruz_stall_vanilla` — 특산물 가판대: vanilla
-- 분류 goods · 등장 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
-```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Market stall with canopy displaying bundles of dark vanilla pods, local style of 베라크루스.
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. admiralty building with signal mast and arcade, a visitable 항만청 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
 ```
 
-### `veracruz_workshop_vanilla` — 특산물 공방: vanilla
-- 분류 workshop · 등장 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
+### 조선소 — 1단계부터
+- 기능: 배 구매·개조·수리·보급 (조선소 있는 항구만)
+- 외형 단계: ① open slipway with timber shed → ③ covered slipways with rope walk → ⑤ dry dock arsenal with cranes and warehouses (모두 스페인·포르투갈 식민지 양식)
+- 내부: 건조 중인 선체 골조·밧줄 더미·돛천 작업대·대포 진열·목재 적치 — 스페인·포르투갈 식민지 실내 양식(바닥·조명 oil_lantern)
+- 단계 변화: ① 작은 1칸 → ③ 2~3칸·직원 증가 → ⑤ 넓은 홀·장식·플랜테이션·기호품 항구 상징 소품
+- 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
+
+#### `veracruz_yard_1` — 조선소 외형 1단계
+- building · 1단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
 ```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. vanilla curing shed with sweat boxes, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Include worker spots and tools.
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. open slipway with timber shed, a visitable 조선소 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
 ```
 
-### `veracruz_stall_cocoa` — 특산물 가판대: cocoa
-- 분류 goods · 등장 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
+#### `veracruz_yard_2` — 조선소 외형 2단계
+- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
 ```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Market stall with canopy displaying cocoa pods and sacks of cocoa beans, local style of 베라크루스.
-```
-
-### `veracruz_workshop_cocoa` — 특산물 공방: cocoa
-- 분류 workshop · 등장 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
-```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. cocoa fermentation boxes and drying patio, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Include worker spots and tools.
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. covered slipways with rope walk, a visitable 조선소 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
 ```
 
-### `veracruz_warehouse_stock` — 창고 마당 재고 3단계
-- 분류 goods · 등장 2단계 · 크기 20x16x10 · 폴리곤 ≤ 6k
+#### `veracruz_yard_3` — 조선소 외형 3단계
+- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
 ```
-Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Warehouse yard with 3 stacking states (low / medium / full) of crates, barrels and sacks for silver, cochineal, vanilla.
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. dry dock arsenal with cranes and warehouses, a visitable 조선소 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
 ```
 
-## 4. 완료 체크
+### 학자의 서재 — 2단계부터
+- 기능: 지식 보고·연구·백과
+- 외형 단계: ① scribe's room in a townhouse → ③ library with reading hall → ⑤ academy with observatory dome (모두 스페인·포르투갈 식민지 양식)
+- 내부: 책장 벽·지구의·천체 관측기구·표본 상자·보고서 책상, 5단계 관측 돔 — 스페인·포르투갈 식민지 실내 양식(바닥·조명 oil_lantern)
+- 단계 변화: ① 작은 1칸 → ③ 2~3칸·직원 증가 → ⑤ 넓은 홀·장식·플랜테이션·기호품 항구 상징 소품
+- 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
 
-- [ ] 에셋 파일·라이선스 inbox 등록, `AssetIds` 반영 확인
-- [ ] 단계 1~5 Studio 항공 사진에서 구역 분리·광장·상징물 확인
-- [ ] 스모크 905건·로직 테스트 통과
+#### `veracruz_scholar_1` — 학자의 서재 외형 1단계
+- building · 2단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. scribe's room in a townhouse, a visitable 학자의 서재 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
+```
+
+#### `veracruz_scholar_2` — 학자의 서재 외형 2단계
+- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. library with reading hall, a visitable 학자의 서재 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
+```
+
+#### `veracruz_scholar_3` — 학자의 서재 외형 3단계
+- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. academy with observatory dome, a visitable 학자의 서재 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
+```
+
+### 전투 본부 — 2단계부터
+- 기능: 해적 사냥·함대전·지상 탐험·카드 대결
+- 외형 단계: ① watch post with palisade → ③ barracks with drill yard → ⑤ naval command fortress with bastions (모두 스페인·포르투갈 식민지 양식)
+- 내부: 무기 거치대·작전 지도 탁자·훈련장 허수아비·함대 모형·카드 대결 탁자 — 스페인·포르투갈 식민지 실내 양식(바닥·조명 oil_lantern)
+- 단계 변화: ① 작은 1칸 → ③ 2~3칸·직원 증가 → ⑤ 넓은 홀·장식·플랜테이션·기호품 항구 상징 소품
+- 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
+
+#### `veracruz_battle_1` — 전투 본부 외형 1단계
+- building · 2단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. watch post with palisade, a visitable 전투 본부 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
+```
+
+#### `veracruz_battle_2` — 전투 본부 외형 2단계
+- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. barracks with drill yard, a visitable 전투 본부 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
+```
+
+#### `veracruz_battle_3` — 전투 본부 외형 3단계
+- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. naval command fortress with bastions, a visitable 전투 본부 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
+```
+
+### 외교관 거처 — 3단계부터
+- 기능: 나라 정세·관계·선물·개입
+- 외형 단계: ① consul's house with national flags → ③ consulate with walled garden → ⑤ embassy quarter with several flag houses (모두 스페인·포르투갈 식민지 양식)
+- 내부: 여러 나라 깃발·선물 진열장·협상 탁자·국력 순위 게시판 — 스페인·포르투갈 식민지 실내 양식(바닥·조명 oil_lantern)
+- 단계 변화: ① 작은 1칸 → ③ 2~3칸·직원 증가 → ⑤ 넓은 홀·장식·플랜테이션·기호품 항구 상징 소품
+- 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
+
+#### `veracruz_diplomacy_1` — 외교관 거처 외형 1단계
+- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. consul's house with national flags, a visitable 외교관 거처 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
+```
+
+#### `veracruz_diplomacy_2` — 외교관 거처 외형 2단계
+- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. consulate with walled garden, a visitable 외교관 거처 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
+```
+
+#### `veracruz_diplomacy_3` — 외교관 거처 외형 3단계
+- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. embassy quarter with several flag houses, a visitable 외교관 거처 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
+```
+
+### 은행 — 3단계부터
+- 기능: 예금·대출·투자 (3단계부터 또는 지정 항구)
+- 외형 단계: ① money changer's counting house → ③ stone bank with vault → ⑤ exchange bank with trading floor (모두 스페인·포르투갈 식민지 양식)
+- 내부: 금고 문·환전 카운터·주화 저울·대출 장부·경비병 — 스페인·포르투갈 식민지 실내 양식(바닥·조명 oil_lantern)
+- 단계 변화: ① 작은 1칸 → ③ 2~3칸·직원 증가 → ⑤ 넓은 홀·장식·플랜테이션·기호품 항구 상징 소품
+- 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
+
+#### `veracruz_bank_1` — 은행 외형 1단계
+- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. money changer's counting house, a visitable 은행 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
+```
+
+#### `veracruz_bank_2` — 은행 외형 2단계
+- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. stone bank with vault, a visitable 은행 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
+```
+
+#### `veracruz_bank_3` — 은행 외형 3단계
+- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. exchange bank with trading floor, a visitable 은행 building for a port game, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios. Clear door, readable sign shape (no text).
+```
+
+### 총독 관저 — 5단계
+- 기능: 알현·작위·국가 의뢰
+- 외형: viceregal palace with arcade on the plaza de armas
+- 내부 방: 집무실, 알현실, 문서고, 정원
+- 크기: 마을 건물의 3~4배, 단 마을을 가리지 않게 마을 뒤쪽 언덕·물가에 둔다
+
+#### `veracruz_palace` — 총독 관저 외형
+- palace · 5단계 · 크기 80x60x40 · 폴리곤 ≤ 40k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. viceregal palace with arcade on the plaza de armas. Royal/governor seat of 베라크루스, grand but game-readable, with a ceremonial entrance and courtyard.
+```
+
+## 4. 마을 에셋
+
+#### `veracruz_landmark_base` — 상징물 공사 중
+- landmark · 2단계 · 크기 40x40x30 · 폴리곤 ≤ 15k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Under-construction coral-stone sea fortress with bastions: lower half built, scaffolding, cranes, stone blocks.
+```
+
+#### `veracruz_landmark_full` — 상징물 완성
+- landmark · 4단계 · 크기 40x40x70 · 폴리곤 ≤ 25k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Completed coral-stone sea fortress with bastions, signature landmark of 베라크루스.
+```
+
+#### `veracruz_house_1` — 주택 1단계
+- house · 1단계 · 크기 16x14x(12-26) · 폴리곤 ≤ 6k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. 1-storey Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios, humble, small yard. 3 colour-variant material slots.
+```
+
+#### `veracruz_house_2` — 주택 2단계
+- house · 3단계 · 크기 16x14x(12-26) · 폴리곤 ≤ 6k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. 2-storey Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios, shop on ground floor. 3 colour-variant material slots.
+```
+
+#### `veracruz_house_3` — 주택 3단계
+- house · 5단계 · 크기 16x14x(12-26) · 폴리곤 ≤ 6k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. 3-storey Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios, wealthy merchant house. 3 colour-variant material slots.
+```
+
+#### `veracruz_street_lamp` — 가로등
+- lamp · 3단계 · 크기 2x2x12 · 폴리곤 ≤ 1.5k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. wrought-iron oil street lantern on a post, glass panes, warm glow, 12 studs tall, emissive glass slot.
+```
+
+#### `veracruz_stall_silver` — 가판대 silver
+- goods · 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Market stall displaying silver ingots and coins in an iron-bound chest, style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios.
+```
+
+#### `veracruz_workshop_silver` — 공방 silver
+- workshop · 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. silver mint / assay house with strongbox and scales, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios.
+```
+
+#### `veracruz_stall_cochineal` — 가판대 cochineal
+- goods · 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Market stall displaying sacks of red cochineal dye and dyed cloth, style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios.
+```
+
+#### `veracruz_workshop_cochineal` — 공방 cochineal
+- workshop · 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. nopal cactus garden and dye-drying hut, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios.
+```
+
+#### `veracruz_stall_vanilla` — 가판대 vanilla
+- goods · 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Market stall displaying bundles of dark vanilla pods, style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios.
+```
+
+#### `veracruz_workshop_vanilla` — 공방 vanilla
+- workshop · 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. vanilla curing shed with sweat boxes, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios.
+```
+
+#### `veracruz_stall_cocoa` — 가판대 cocoa
+- goods · 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Market stall displaying cocoa pods and sacks of cocoa beans, style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios.
+```
+
+#### `veracruz_workshop_cocoa` — 공방 cocoa
+- workshop · 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
+```
+Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. cocoa fermentation boxes and drying patio, built in local style: Spanish colonial coral-stone and stucco houses, flat roofs, wrought-iron balconies, inner patios.
+```
+
+## 5. 완료 체크
+
+- [ ] 에셋 `assets/inbox/Town/<asset_id>.glb` + `.license.json`(원본·derived)
+- [ ] 단계 1~5 Studio 항공 사진: 구역 분리·광장·상징물·방문 건물 위치
+- [ ] `tests/run.sh` 통과(코드 한도 포함)
