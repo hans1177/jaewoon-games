@@ -3387,8 +3387,21 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
   assert.match(trade,/modelIcon\(pages, gi\[1\], gi\[2\]/,'원화가 없는 교역품은 기존 3D 렌더러 유지');
   assert.match(trade,/세계 교역 · 산업 백과/,'서재 백과사전 정보 연결 유지');
   assert.match(trade,/H\.marketPriceSignal\(sel\)/,'교역 판단 정보 연결 유지');
-  assert.match(yard,/math\.min\(heroWidth - 20, heroHeight - 62, 620\)/,'기존 선박 전시장 크기 확대');
-  assert.match(yard,/model\.Size = UDim2\.new\(1, -20, 0, px\)/,'모델을 가로로 넓게 전시');
+  // [오너 카드 규격] 조선소 원화 카드가 7:10이어도 기존 등록 선박 모델·비교는 유지한다.
+  assert.match(yard,/local cardW = math\.floor\(math\.max\(34, math\.min\(heroWidth - 20, availableArtH \* 0\.7\)\)\)/,'실제 창 높이를 기준으로 7:10 너비 계산');
+  assert.match(yard,/local cardH = math\.floor\(cardW \* 10 \/ 7\)/,'선박 전시 카드비 7:10');
+  assert.match(yard,/model = modelIcon\(card, shipArt\[1\], shipArt\[2\]/,'기존 등록 선박 모델 재사용');
+  assert.match(yard,/model\.Size = UDim2\.fromScale\(1, 1\)/,'모델은 전시 카드 안에 맞춤');
+  assert.match(yard,/YardArtToCodex/,'선박 원화 누르면 백과 이동');
+  // [메뉴별 원화] 발견된 지식만 연결하고 원본을 확대·자르지 않으며 기존 서버 구조를 보존한다.
+  assert.match(source,/FacilityArtCard7x10/,'시설별 원화 카드 슬롯');
+  assert.match(source,/H\.galleryImage = Instance\.new\("ImageButton"\)/,'왼쪽 원화 터치 반응');
+  assert.match(source,/H\.FACILITY_GALLERY_TOPICS/,'시설/탭별 관련 원화 전환');
+  assert.match(source,/H\.galleryImage\.Activated:Connect/,'원화 클릭 연결');
+  assert.match(source,/if entry\.id == target then H\.encyclopediaPage = index; break end/,'해당 백과 장 바로 열기');
+  assert.match(trade,/local heroH = math\.floor\(heroPx \* 10 \/ 7\)/,'가로 교역 원화 7:10');
+  assert.match(trade,/local bigH = math\.floor\(bigPx \* 10 \/ 7\)/,'모바일 교역 원화 7:10');
+  assert.match(trade,/artTap\.Activated:Connect\(openSelectedGoodEncyclopedia\)/,'선택 상품 그림 눌러 백과 이동');
   for(const action of ['Buy','Sell','BuyShip','Repair','BuySupplies'])
     assert.ok(source.includes('call("'+action+'"'),'기존 서버 호출 유지: '+action);
   assert.doesNotMatch(trade,/Instance\.new\("Part"\)/,'새 임시 3D 도형 금지');
