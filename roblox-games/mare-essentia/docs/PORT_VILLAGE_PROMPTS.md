@@ -12,11 +12,12 @@
 Stylized-realistic low-poly game asset for Roblox, early-modern era (1500–1800),
 hand-painted PBR look, readable silhouette from 40–80 studs, clean topology,
 pivot at ground center, no text/logos, no modern objects, neutral daylight,
-scale: 1 stud ≈ 0.28 m, doors 7–8 studs tall, max 10k tris (landmark 25k),
+scale: 1 stud ≈ 0.28 m, doors 7–8 studs tall,
 separate meshes for roof / walls / trim so colors can be tinted in-engine.
 ```
 
 ### 공통 규칙
+- 항구 3D 에셋은 고정 삼각형 수 상한을 적용하지 않는다. 과거 항구별 문서·CSV의 폴리곤 숫자(≤ 표기 포함)는 참고치이며 거절 기준이 아니다. 원본 디테일을 보존하고 모바일 실측 프레임·메모리·로딩·LOD로 최적화한다. 플랫폼 자체 제한 및 기존 권한·보안·품질 검사는 유지한다.
 | 항목 | 규칙 |
 |---|---|
 | 구획 | 필지는 큰길에 면한다. 집은 등을 맞대 두 줄. 광장은 항구와 마을 사이 한 곳 |
@@ -229,7 +230,7 @@ optional wet variant with puddles, optional dusty variant, optional light snow v
 | asset_id | `<항구>_<종류>` (예: `venice_workshop_glass`). 업로드 파일 이름도 이걸로 |
 | category | landmark · house · district · plaza · lamp · sign · goods · workshop |
 | tier | 이 단계부터 마을에 나타남 |
-| size_studs / tris | 목표 크기(가로x깊이x높이)와 폴리곤 상한 |
+| size_studs / tris | 목표 크기(가로x깊이x높이)와 기존 참고 삼각형 수(상한 아님) |
 | prompt_en | 3D 생성 도구에 그대로 붙여 넣는 영어 프롬프트(공통 문구 포함) |
 | notes_ko | 한글 메모 |
 
