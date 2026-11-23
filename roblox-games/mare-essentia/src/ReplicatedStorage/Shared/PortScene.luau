@@ -7795,6 +7795,42 @@ function PortScene.build(info, onFacility)
 	densify(folder, info, style, rng, walkers, (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {}, onFacility)
 	placeLandmarks(folder, info, style, rng, onFacility, walkers)
 	placeSignature(folder, info)
+	-- [빈 땅 축소] 마을 바닥(TownFloor)을 실제 건물·시설이 놓인 범위 + 여유 폭으로 줄인다.
+	-- 바깥은 기후 땅(Baseplate·농촌 바닥)이 보이므로 넓은 갈색 공터가 사라진다. 충돌·보행 경계는 그대로.
+	do
+		local townFloor = folder:FindFirstChild("TownFloor")
+		if townFloor and townFloor:IsA("BasePart") then
+			local minX, maxX, minZ, maxZ = math.huge, -math.huge, math.huge, -math.huge
+			local counted = 0
+			for _, child in folder:GetChildren() do
+				local kind = child:GetAttribute("BuildType")
+				if child:IsA("Model") and (kind == "house" or kind == "palace" or kind == "specialty" or kind == "decoration")
+					or (child:IsA("Model") and child:GetAttribute("BuildPlotId") and kind ~= "landscape" and kind ~= "farm") then
+					local ok, cf, size = pcall(child.GetBoundingBox, child)
+					if ok and size.X < 220 and size.Z < 220 and cf.Position.X > -700 then
+						minX = math.min(minX, cf.Position.X - size.X / 2)
+						maxX = math.max(maxX, cf.Position.X + size.X / 2)
+						minZ = math.min(minZ, cf.Position.Z - size.Z / 2)
+						maxZ = math.max(maxZ, cf.Position.Z + size.Z / 2)
+						counted += 1
+					end
+				end
+			end
+			if counted >= 6 then
+				local margin = 26
+				local left = math.max(townFloor.Position.X - townFloor.Size.X / 2, minX - margin)
+				local right = townFloor.Position.X + townFloor.Size.X / 2 -- 해안 쪽 가장자리 유지
+				local halfZ = math.max(120, math.max(math.abs(minZ), math.abs(maxZ)) + margin)
+				halfZ = math.min(halfZ, townFloor.Size.Z / 2)
+				townFloor.Size = Vector3.new(right - left, townFloor.Size.Y, 2 * halfZ)
+				townFloor.Position = Vector3.new((left + right) / 2, townFloor.Position.Y, 0)
+				folder:SetAttribute("TownFloorFitted", counted)
+				-- 기존 실측 진단(TownLandWidth/Depth == TownFloor 크기)과 일치시킨다.
+				folder:SetAttribute("TownLandWidth", right - left)
+				folder:SetAttribute("TownLandDepth", 2 * halfZ)
+			end
+		end
+	end
 
 	-- [학문별 자동 3D 발전] 백과 기술이 실제 도입된 항구에만 기존 승인 모델로 산업·학술 구역을 조성한다.
 	-- 지형·보행 도로·기존 시설 밖(-220 서쪽)의 고정 필지에 최대 8개만 설치해 모바일 부하를 제한한다.
