@@ -2801,7 +2801,10 @@ do
 	SIG.alexandria = cat(stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-square-mid", "tower-hexagon-top" }, 12, 0, 0), flagAt(10, 0))
 	SIG.cape_town = keep(32)
 	SIG.cartagena_indias = cat(one("Castle", "fortress", 34, 0, 0), one("Castle", "wall", 22, 20, 8), one("Castle", "wall", 22, -20, 8))
-	SIG.havana = cat(one("Castle", "fortress", 30, 0, 0), stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-roof" }, 10, 18, 0), flagAt(0, 14))
+	-- [하바나] 해안 요새와 신호탑 옆에 등록된 현지 주택을 넣어 역사 항구 실루엣을 구분한다.
+	SIG.havana = cat(one("Castle", "fortress", 30, 0, 0),
+		stack("Castle", { "tower-square-base", "tower-square-mid", "tower-square-roof" }, 10, 18, 0),
+		one("Town", "havana_house_1", 18, -22, 13))
 	SIG.veracruz = cat(one("Castle", "fortress", 30, 0, 0), palms(20))
 	SIG.rio = rock
 	SIG.salvador = mission
@@ -2839,7 +2842,6 @@ do
 	local colonialChurch = function() return cat(one("Town", "church", 26, 0, 0), one("Town", "bell-tower", 28, -16, 0)) end
 	local mosque = function(minaretSize) return cat(one("Town", "temple-stone", 30, 0, 0), spire(HEX, minaretSize, 18, -8), spire(HEX, minaretSize, 18, 8)) end
 	local shrine = cat(one("Town", "temple-stone", 22, 0, 0), stack("Town", { "eastasia-base", "eastasia-roof", "eastasia-base", "eastasia-roof" }, 10, 18, 0))
-	local pacificSet = cat(one("Terrain", "statue-ring", 16, -12, 0), one("Terrain", "statue-ring", 16, 0, 0), one("Terrain", "statue-ring", 16, 12, 0), palms(20))
 	SIG.naples = cat(one("Town", "rock-wide", 48, -22, 0), one("Castle", "fortress", 26, 16, 6))
 	SIG.marseille = cat(one("Town", "rock-wide", 30, 0, 0), one("Town", "church", 22, 0, 0, 12), one("Castle", "fortress", 20, 26, 8))
 	SIG.barcelona = cat(spire(HEX, 9, -12, 0), spire(HEX, 11, 0, 0), spire(HEX, 9, 12, 0), one("Town", "church", 24, 0, 16))
@@ -2883,9 +2885,21 @@ do
 	SIG.halifax = fort(28)
 	SIG.st_johns = fort(24)
 	SIG.san_francisco = mission
-	SIG.kingston = fortPalms(24)
-	SIG.bridgetown = fortPalms(22)
-	SIG.nassau = fortPalms(22)
+	-- [킹스턴] 해안 성채 + 현지 주택 + 제재소로 목재·조선 항구를 표현한다.
+	SIG.kingston = cat(one("Castle", "fortress", 25, 0, 0),
+		one("Naval", "tower-watch", 18, -21, -7),
+		one("Town", "kingston_house_1", 19, 19, 7),
+		one("Town", "village-sawmill", 16, -22, 13), palms(20))
+	-- [브리지타운] 교역소와 직물시장, 해안 요새를 동일 규모의 기존 메시로 배치한다.
+	SIG.bridgetown = cat(one("Castle", "fortress", 23, 0, -6),
+		one("Town", "house", 19, -20, 8),
+		one("Town", "stall-green", 13, 10, 10),
+		one("Town", "stall-red", 12, 24, 12), palms(-22))
+	-- [나소] 성채와 현지 주택, 소형 어선과 부두가 함께 보이는 어업 항구.
+	SIG.nassau = cat(one("Castle", "fortress", 23, 0, -8),
+		one("Town", "nassau_house_1", 20, -21, 5),
+		one("Naval", "boat-fishing-small", 14, 18, 13),
+		one("Naval", "dock-side", 17, -5, 18), palms(23))
 	SIG.santo_domingo = cat(colonialChurch(), fort(24))
 	SIG.san_juan = cat(fort(34), palms(22))
 	SIG.panama = mission
@@ -2915,7 +2929,9 @@ do
 	SIG.singapore = cat(one("Town", "temple-tower", 26, 0, 0), palms(16)) -- 동남아 항구: 종탑 대신 사원 탑
 	SIG.hoi_an = cat(one("Town", "temple-tower", 26, -7, 0),
 		one("Town", "eastasia-base", 17, 17, 7), one("Naval", "palm-detailed-straight", 13, -20, 10))
-	SIG.brunei = cat(one("Terrain", "wood-support", 8, -8, 0), one("Terrain", "wood-support", 8, 8, 0), palms(14))
+	-- [브루나이] 무관한 임시 공사 지지대 대신 완성된 부두와 작은 목선을 놓는다.
+	SIG.brunei = cat(one("Naval", "structure-platform-dock", 25, -8, 0),
+		one("Naval", "boat-row-small", 13, 12, 10), palms(16))
 	SIG.ternate = fortPalms(24)
 	SIG.banda = fortPalms(22)
 	SIG.tianjin = cat(pagoda, one("Naval", "tower-watch", 21, 21, 8))
@@ -2929,9 +2945,19 @@ do
 		one("Town", "eastasia-base", 18, 18, 8), one("Town", "eastasia-roof", 19, 18, 13))
 	SIG.hakodate = cat(one("Castle", "fortress", 24, 0, 0), one("Terrain", "tree-pinedefaulta", 12, 20, 6))
 	SIG.sydney = cat(lighthouse, one("Town", "windmill", 20, 16, 6))
-	SIG.honolulu = pacificSet
-	SIG.tahiti = pacificSet
-	SIG.auckland = pacificSet
+	-- [호놀룰루] 기존 반복 석상 대신 어선, 어획물 적재 부두, 열대 나무.
+	SIG.honolulu = cat(one("Naval", "dock-side", 24, -11, 0),
+		one("Naval", "boat-fishing-small", 15, 15, 9),
+		one("Cargo", "food-barrel-fish", 9, -17, 14), palms(20))
+	-- [타히티] 소형 부두와 돛배·노 젓는 배를 다른 방향으로 둔 교역 항구.
+	SIG.tahiti = cat(one("Naval", "structure-platform-dock-small", 25, -8, 0),
+		one("Naval", "boat-sail-a", 18, 17, 10),
+		one("Naval", "boat-row-small", 12, -21, 13), palms(23))
+	-- [오클랜드] 태평양 도서 석상과 야자수 반복 대신 온대 목조 항구 원본 조합.
+	SIG.auckland = cat(one("Town", "house", 21, -17, 0),
+		one("Naval", "dock-side", 24, 12, 11),
+		one("Naval", "boat-row-large", 15, -17, 13),
+		one("Town", "tree-high", 14, 26, -12))
 	SIG.tunis = mosque(8)
 	SIG.algiers = cat(one("Castle", "fortress", 28, 0, 0), one("Town", "temple-stone", 20, 22, 6))
 	SIG.tripoli = fort(26)
@@ -2986,7 +3012,10 @@ do
 	SIG.bissau = cat(one("Town", "house", 24, -8, 0), one("Naval", "palm-detailed-straight", 16, 19, 4), one("Castle", "wall", 18, -23, 12))
 	SIG.freetown = cat(one("Town", "church", 26, -8, 0), one("Naval", "tower-watch", 25, 19, 9), one("Naval", "palm-detailed-straight", 11, -24, 13))
 	SIG.ouidah = cat(one("Town", "temple-stone", 24, -8, 0), one("Naval", "palm-detailed-straight", 16, 18, 7), one("Castle", "wall", 20, -24, 12))
-	SIG.calabar = cat(one("Town", "house", 23, -9, 0), one("Naval", "tower-watch", 22, 18, 7), one("Town", "bench_A", 9, -22, 13))
+	-- [칼라바르] 일반 벤치·감시탑 조합보다 향신료 하역 부두와 목선을 우선한다.
+	SIG.calabar = cat(one("Naval", "dock-side", 25, -9, 0),
+		one("Cargo", "spice", 13, 17, 8),
+		one("Naval", "boat-row-small", 14, -21, 13))
 	SIG.sao_tome = cat(one("Town", "church", 26, -8, 0), one("Naval", "palm-detailed-straight", 15, 16, 5), one("Castle", "fortress", 18, -23, 12))
 	SIG.benguela = cat(one("Castle", "fortress", 28, -10, 0), one("Town", "bell-tower", 25, 19, 8), one("Naval", "palm-detailed-straight", 12, -22, 11))
 	SIG.st_helena = cat(one("Town", "rock-wide", 36, -12, 0), one("Castle", "fortress", 24, 12, 7), one("Naval", "tower-watch", 20, -25, 13))
@@ -2997,7 +3026,9 @@ do
 	SIG.port_louis = cat(one("Castle", "fortress", 27, -9, 0), one("Town", "church", 24, 18, 6), one("Naval", "palm-detailed-straight", 13, -22, 12))
 	SIG.tainan = cat(one("Town", "eastasia-base", 26, -9, 0), one("Town", "eastasia-roof", 28, -9, 0, 11), one("Terrain", "gate-overhang", 16, 20, 11))
 	SIG.makassar = cat(one("Castle", "fortress", 27, -8, 0), one("Town", "temple-stone", 22, 19, 9), one("Naval", "palm-detailed-straight", 13, -24, 12))
-	SIG.ambon = cat(one("Castle", "fortress", 25, -10, 0), one("Naval", "palm-detailed-straight", 17, 19, 5), one("Terrain", "statue-ring", 12, -24, 13))
+	-- [암본] 무관한 석상 대신 향신료 교역 부두·적재물·열대 나무 원본을 사용한다.
+	SIG.ambon = cat(one("Naval", "dock-side", 24, -10, 0),
+		one("Cargo", "spice", 14, 12, 9), one("Naval", "palm-detailed-straight", 16, -23, 11))
 	SIG.campeche = cat(one("Castle", "fortress", 29, -8, 0), one("Town", "church", 24, 19, 9), one("Castle", "wall", 18, -22, 12))
 	SIG.port_of_spain = cat(one("Town", "church", 26, -8, 0), one("Naval", "palm-detailed-straight", 15, 18, 9), one("Castle", "flag-banner-long", 13, -22, 12))
 	SIG.la_guaira = cat(one("Castle", "fortress", 27, -8, 0), one("Town", "church", 24, 20, 7), one("Naval", "tower-watch", 17, -23, 13))
@@ -3008,8 +3039,14 @@ do
 	SIG.hobart = cat(one("Castle", "tower-square-base", 25, -9, 0), one("Town", "house", 21, 18, 9), one("Terrain", "tree-pinedefaulta", 15, -24, 14))
 	SIG.perth = cat(one("Naval", "tower-watch", 28, -8, 0), one("Castle", "tower-square-roof", 21, 17, 8), one("Town", "house", 18, -23, 12))
 	SIG.darwin = cat(one("Naval", "tower-watch", 27, -10, 0), one("Naval", "palm-detailed-straight", 19, 20, 6), one("Town", "house", 21, -23, 13))
-	SIG.port_moresby = cat(one("Town", "house", 26, -9, 0), one("Naval", "palm-detailed-straight", 20, 18, 9), one("Town", "bench_A", 9, -24, 13))
-	SIG.suva = cat(one("Terrain", "statue-ring", 19, -10, 0), one("Naval", "palm-detailed-straight", 17, 18, 8), one("Town", "house", 21, -23, 12))
+	-- [포트모르즈비] 무관한 벤치 대신 실제 부두·목선·해안 나무.
+	SIG.port_moresby = cat(one("Naval", "structure-platform-dock", 25, -9, 0),
+		one("Naval", "boat-row-large", 17, 18, 9),
+		one("Naval", "palm-detailed-straight", 17, -24, 13))
+	-- [수바] 돌 원형 장식 대신 실물 부두·목선·야자수로 피지 해안 교역을 구분한다.
+	SIG.suva = cat(one("Naval", "structure-platform-dock", 24, -10, 0),
+		one("Naval", "boat-row-small", 14, 18, 8),
+		one("Naval", "palm-detailed-straight", 16, -23, 12))
 	SIG.guam = cat(one("Castle", "fortress", 26, -8, 0), one("Naval", "palm-detailed-straight", 17, 19, 8), one("Naval", "tower-watch", 19, -24, 12))
 	SIG.guayaquil = cat(one("Naval", "tower-watch", 27, -8, 0), one("Town", "house", 22, 19, 8), one("Town", "bell-tower", 17, -23, 12))
 	SIG.sitka = cat(one("Town", "house", 23, -9, 0), one("Terrain", "tree-pinedefaulta", 18, 19, 8), one("Naval", "tower-watch", 27, -23, 13))
