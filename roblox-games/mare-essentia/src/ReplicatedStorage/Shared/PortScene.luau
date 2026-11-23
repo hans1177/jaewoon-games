@@ -1096,7 +1096,9 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- [런던 주거 실물] 기존 1~3단계 정본을 우선하고, 아직 단계 전용본이 없을 때만
 	-- 실제로 등록된 노동자·장인 주택을 일부 필지에 적용한다. 미등록 파일은 표시하지 않는다.
 	-- [런던 연립 주택] 2단계의 일부 필지에만 승인된 실제 연립 주택을 쓰며 주거·저장 구조는 유지한다.
-	local londonResidence = if scenePortId == "london" and originalHouseTier == 2
+	local londonResidence = if scenePortId == "london" and originalHouseTier == 1
+		and seed % 7 == 2 then "london_bld_hut"
+		elseif scenePortId == "london" and originalHouseTier == 2
 		and seed % 5 == 1 then "london_bld_house_row"
 		elseif scenePortId == "london" and seed % 3 == 0 then
 		(if originalHouseTier == 1 then "london_house_worker"
@@ -5315,6 +5317,27 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 		-- [지역 특산품 하역] 이 항구가 실제 생산하고 등록된 품목만 원자재 필지에 놓는다.
 		-- 주류·담배·약물 시각 자산은 새로 사용하지 않는다.
 		if lay.freight then
+			-- [런던 실제 부두 창고·등대] 등록된 CC0 실물만 기존 원자재 필지·해안 경계에 설치한다.
+			local dockShedAsset = if info.portId == "london" and lvl >= 2
+				and AssetIds["Town/london_bld_dock_shed"] then "london_bld_dock_shed" else nil
+			if dockShedAsset then
+				local shed = one("Town", dockShedAsset, 15, -23, 0, lay.freightZ - 13, true)
+				if shed then
+					shed.Name = "LondonDockShed"
+					shed:SetAttribute("HarborPlot", "freight")
+					shed:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+				end
+			end
+			local lighthouseAsset = if info.portId == "london" and lvl >= 3
+				and AssetIds["Town/london_bld_lighthouse"] then "london_bld_lighthouse" else nil
+			if lighthouseAsset then
+				local tower = one("Town", lighthouseAsset, 20, 36, 0, lay.freightZ - 15, true)
+				if tower then
+					tower.Name = "LondonCoastalLighthouse"
+					tower:SetAttribute("HarborPlot", "freight")
+					tower:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+				end
+			end
 			local shown = 0
 			for _, good in (port and port.produces) or {} do
 				if shown >= (if touch then 1 else 3) then break end
@@ -5372,9 +5395,22 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 			local londonTower = info.portId == "london" and AssetIds["Town/london_bld_watchtower"] ~= nil
 			one(if londonTower then "Town" else "Naval",
 				if londonTower then "london_bld_watchtower" else "tower-watch", 12, 6, 0, lay.fortZ, true)
+			-- [런던 4단계 해안 방벽] 승인된 석벽+포대 실물에 대포가 포함되므로 중복 장식을 막는다.
+			local londonFortWall = if info.portId == "london" and lvl >= 4
+				and AssetIds["Town/london_bld_fort_wall"] then "london_bld_fort_wall" else nil
+			if londonFortWall then
+				local wall = one("Town", londonFortWall, 24, 14, 0, lay.fortZ, true)
+				if wall then
+					wall.Name = "LondonHarborFortWall"
+					wall:SetAttribute("HarborPlot", "defense")
+					wall:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+				end
+			end
 			if lvl >= 3 then
-				for _, offset in { -9, 9 } do
-					one("Naval", "cannon", 3.4, 14, 0, lay.fortZ + offset)
+				if not londonFortWall then
+					for _, offset in { -9, 9 } do
+						one("Naval", "cannon", 3.4, 14, 0, lay.fortZ + offset)
+					end
 				end
 				one("Castle", "flag-banner-long", 9, 2, 0, lay.fortZ)
 			end
