@@ -230,3 +230,25 @@
 - **자산번호/권한/연결:** `129708511722826`. 최신 `main` 등록표의 `usePermissionGranted:true`, `sourceSha256` 원본/승인 동일, `src/ReplicatedStorage/Shared/AssetIds.luau`의 `["CardArt/eu_27"] = 129708511722826` 연결 확인.
 - **다음 제작 후보:** `eu_28` **베네치아 운하**. 반드시 시작 시 최신 `main`의 등록·원본 상태를 다시 확인한 뒤 개별 원화를 제작. 기존 자산 재사용·중복 업로드 금지.
 - **별도 미검증:** Roblox Studio 실화면 실제 카드 표시, 최종 Place 게시/모바일 플레이 화면. 자산등록 성공을 게시 성공으로 간주하지 않는다. 카드 능력치·전투 규칙·진행도·저장 키·등록기/배포 파이프라인 변경 없음.
+
+
+## 2026-11-23 풀컬러 원본 5장 실제 용량·분할 전송 지시
+
+> 오너 즉시 지시. 이 항목은 **전송 방법·검증 기준**이며, 업로드/Roblox 등록 성공을 뜻하지 않는다. 모든 작업자는 최신 main을 먼저 확인한다.
+
+**현재 우선 5장 (변환 없는 실제 PNG 원본, RGB 8비트)**
+
+| 우선순위 | 원본 파일명 | 바이트 | 해상도 | SHA-256 | 700,000자 Base64 분할 시 |
+| --- | --- | ---: | --- | --- | ---: |
+| 1 | `eu_01-original.png` | 4,809,325 | 1400×2000 | `57a822cbf6808fb63f63733190bb1ec02725f92173f5b2654df0b41cd1d9d80f` | 10개 |
+| 2 | `eu_02-original.png` | 5,311,825 | 1400×2000 | `cd42693698e4c38b09381baaf2edeee899cbdb0a3181da5a0a1d95ef23a8441b` | 11개 |
+| 3 | `eu_03-original.png` | 3,749,059 | 1049×1500 | `5801d30af66228570f17e8fd6c55a8edaa385e805e55d7afd02d287037ca21ef` | 8개 |
+| 4 | `eu_21-original.png` | 5,617,593 | 1400×2000 | `8b8bad0fc9585a4efbba9d09225d890ccff320079af81fbf08c4c31bf6baf78d` | 11개 |
+| 5 | `eu_22-original.png` | 5,387,317 | 1400×2000 | `2f099800f981d37a0d3074ba04a08600d5aefeb44d7d1bd8e6673167124f83ea` | 11개 |
+
+- **바로 올릴 경로**: `roblox-games/mare-essentia/assets/cardart/src/`. 위 PNG를 파일 **한 장씩** 원본 바이트 그대로 GitHub 웹 업로드(한 파일 3.75~5.62 MB)하고 매번 **main 파일 존재·크기·SHA-256**을 검증한다. 별도 저장소·새 업로더·유료 API는 사용하지 않는다.
+- **분할 전송이 필요할 때**: 위 원본 한 장의 Base64 본문을 700,000자 단위(일반 조각당 525,000바이트에 해당)로 순서대로 잘라 기존 `assets/cardart/src/.transfer/<id>/part00.b64` ~ `partNN.b64`에 **텍스트**로 올린다. 조각이 다 올라왔다고 원본 업로드 완료가 아니다. 원문을 순서대로 이어 Base64 디코딩하여 `<id>-original.png` **바이너리로 복원**하고 원본 바이트 수·SHA-256·PNG RGB 헤더까지 검증하여 main에 커밋해야 한다. GitHub 자체는 ZIP/조각을 자동으로 풀어주지 않는다.
+- **기존 분할 증거**: `eu_01`은 main의 `assets/cardart/src/.transfer/eu_01/`에 `part00.b64`~`part09.b64` 10개와 `sha256`이 존재한다. 10개 총 Base64 6,412,436자이지만 **실제 PNG 복원·main 등록은 별도 확인 필요**다.
+- **남은 6번째 원본**: `eu_23-original.png`, 3,599,573바이트, 1049×1499, RGB, SHA-256 `4bfb8062f8e52c4d87cad005846d440515e0d303dbc7de806aa2cc441a80bcca`. 상기 다섯 장과 혼동하지 않는다.
+- **승격·등록 절차**: 실제 PNG 원본을 main에서 검증한 후 각 장을 실제 육안 검수한다. `assets/APPROVED_IMAGES.json`의 실제 해시·`modelOriginals`의 교체 이력은 사실 확인된 값만 반영한다. `.github/workflows/owner-mare-essentia-assets.yml` → `tools/mare-essentia-upload-assets.mjs` 기존 경로 외에 별도 등록기를 만들지 않는다. 새 Roblox 자산번호·Universe 사용권한·실제 게임 표시 검증 전에는 기존 등록본과 저장·룰을 지우지 않는다.
+- **실패 판정**: GitHub API 본문 전송의 `h2 protocol error` 등으로 바이너리 반영이 실패하면 **미업로드**다. 조각만 존재해도 원본 PNG 미반영이면 완료라고 말하지 않는다. 최소 1400×2000 미만인 `eu_03`, `eu_23`은 업스케일하거나 256색 변환하지 않는다.
