@@ -91,6 +91,16 @@ local P: { [string]: Identity } = {
 		roof = "hip", wall = "stucco", balcony = "iron", layout = "terrace", plaza = "parade",
 		street = { "dirt", "gravel", "cobble", "cobble", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "puddles",
 		signature = { "항해 학교", "향신료 창고", "수도원" }, facade = { 224, 200, 174 }, roofTint = { 161, 91, 66 } },
+	-- [항구별 외관] 시드니 코브: 등록된 현지 원본만 사용하고 없는 집회소는 미등록으로 남긴다.
+	sydney = { landmark = { id = "lm_sydney_meeting_house", name = "시드니 코브 집회소", kind = "meeting_house", fallback = "warehouse" },
+		roof = "thatch", wall = "wood", balcony = nil, layout = "organic", plaza = "quay",
+		street = { "sand", "sand", "gravel", "plank", "paved" }, lamp = "torch", ground = "grass", weatherGround = "dust",
+		signature = { "직물 공방", "염색 작업장", "목재 선창" }, facade = { 186, 158, 120 }, roofTint = { 135, 112, 78 } },
+	-- [항구별 외관] 카르타헤나 데 인디아스: 지중해 카르타헤나와 구별되는 카리브 식민항.
+	cartagena_indias = { landmark = { id = "lm_cartagena_indias_cathedral", name = "바로크 대성당 정면", kind = "cathedral", fallback = "church" },
+		roof = "flat", wall = "stucco", balcony = "iron", layout = "grid", plaza = "parade",
+		street = { "sand", "dirt", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "monsoon_mud",
+		signature = { "광석 선적 부두", "성벽 세관", "대성당" }, facade = { 233, 215, 187 }, roofTint = { 180, 99, 73 } },
 }
 
 local M = {}

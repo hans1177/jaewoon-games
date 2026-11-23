@@ -2954,7 +2954,10 @@ do
 	SIG.incheon = cat(one("Town", "eastasia-bell", 24, -6, 0),
 		one("Town", "eastasia-base", 18, 18, 8), one("Town", "eastasia-roof", 19, 18, 13))
 	SIG.hakodate = cat(one("Castle", "fortress", 24, 0, 0), one("Terrain", "tree-pinedefaulta", 12, 20, 6))
-	SIG.sydney = cat(lighthouse, one("Town", "windmill", 20, 16, 6))
+	-- [시드니 코브] 기존 승인된 실물 부두·소형 목선만 배치한다. 시대에 맞지 않는 풍차·등대는 사용하지 않는다.
+	SIG.sydney = cat(one("Naval", "structure-platform-dock", 26, -9, 0),
+		one("Naval", "boat-row-small", 16, 18, 8),
+		one("Naval", "dock-side", 20, -22, 12))
 	-- [호놀룰루] 기존 반복 석상 대신 어선, 어획물 적재 부두, 열대 나무.
 	SIG.honolulu = cat(one("Naval", "dock-side", 24, -11, 0),
 		one("Naval", "boat-fishing-small", 15, 15, 9),
