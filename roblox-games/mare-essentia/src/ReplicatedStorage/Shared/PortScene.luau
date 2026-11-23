@@ -2863,7 +2863,12 @@ do
 		one("Town", "house", 17, 14, 0, 0, C(88, 126, 146)),
 		one("Town", "bell-tower", 25, 0, -24)
 	)
-	SIG.oslo = fort(28)
+	-- [오슬로] 지시서의 북유럽 목조 주택과 첨탑 실루엣을 사용한다.
+	-- 전용 목조 교회/구리첨탑 원본이 등록되기 전에는 실물 역사 원본으로 표기하지 않는다.
+	SIG.oslo = cat(one("Town", "bell-tower", 29, 0, 0),
+		one("Town", "house", 18, -25, 8, 0, C(184, 78, 58)),
+		one("Town", "house", 18, 24, 7, 0, C(214, 190, 119)),
+		one("Terrain", "tree-pinedefaulta", 15, -23, -16))
 	SIG.helsinki = cat(one("Town", "church", 28, 0, 0), one("Castle", "wall", 24, 0, 16))
 	SIG.st_petersburg = cat(one("Castle", "fortress", 30, 0, 0), spire(SQ, 10, 22, 0))
 	SIG.gdansk = cat(one("Naval", "tower-watch", 26, 0, 0), one("Town", "church", 26, 20, 6))
@@ -3051,7 +3056,6 @@ do
 	SIG.guayaquil = cat(one("Naval", "tower-watch", 27, -8, 0), one("Town", "house", 22, 19, 8), one("Town", "bell-tower", 17, -23, 12))
 	SIG.sitka = cat(one("Town", "house", 23, -9, 0), one("Terrain", "tree-pinedefaulta", 18, 19, 8), one("Naval", "tower-watch", 27, -23, 13))
 	SIG.vancouver = cat(one("Town", "house", 24, -11, 0), one("Terrain", "tree-pinedefaulta", 18, 17, 10), one("Naval", "tower-watch", 26, -23, 12))
-	SIG.oslo = cat(one("Castle", "fortress", 28, 0, 0), one("Town", "house", 17, -24, 0, 0, C(184, 78, 58)), one("Town", "house", 17, 24, 0, 0, C(214, 190, 119)))
 end
 
 ReplicatedStorage:SetAttribute("MarePortSceneStage", "defining-build")
