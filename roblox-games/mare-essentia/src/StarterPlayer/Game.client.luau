@@ -6953,7 +6953,7 @@ local function openTradeHall()
 			artTap.ZIndex = 8
 			artTap.Parent = pages
 			artTap.Activated:Connect(openSelectedGoodEncyclopedia)
-			local ribbon = mkLabel(pages, "세계 교역 · 원화 터치 시 백과 이동", 17, INK_SOFT, true)
+			local ribbon = mkLabel(pages, "세계 교역 · 산업 백과 · 원화 터치 시 이동", 17, INK_SOFT, true)
 			ribbon.Position = UDim2.fromOffset(12, 6)
 			ribbon.Size = UDim2.new(1, -24, 0, 25)
 			ribbon.AutomaticSize = Enum.AutomaticSize.None
