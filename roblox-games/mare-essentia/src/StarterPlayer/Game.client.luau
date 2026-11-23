@@ -2029,7 +2029,9 @@ H.galleryImage.ZIndex = 3
 H.galleryImage.Parent = H.galleryCard
 H.galleryImage.Activated:Connect(function()
   if not view or not H.galleryImage.Image or H.galleryImage.Image == "" then return end
-  H.galleryBookOpenRequested = H.galleryLinkCardId or true
+  -- [정확한 목적지] 연결된 발견 카드가 없으면 주제 검색으로 열고 무관한 백과 책갈피를 열지 않는다.
+  H.galleryBookOpenRequested = H.galleryLinkCardId
+    or ("search:" .. ((H.FACILITY_GALLERY_TOPICS[currentTab] or { "대항해" })[1]))
   openTab("codex")
 end)
 H.galleryTitle = mkLabel(H.facilityGallery, "", 21, INK, true)
@@ -2329,8 +2331,8 @@ function H.layoutBook()
     H.menuActionButton.TextSize = if firstCardAction then 19 else 20
     H.menuActionDock.Visible = primaryVisible and not firstCardAction
   end
-  if wide and gallery then
-    -- [가로 공통] 탭을 상단으로 옮겨 되찾은 왼쪽 폭을 원화와 실제 본문에 분배한다.
+  if wide and gallery and height - bodyTop >= 210 then
+    -- [가로 공통] 높이가 짧으면 원화가 잘리지 않도록 가로 배치 대신 본문을 우선한다.
     local availableH = math.max(100, height - bodyTop - 8)
     local artW = math.min(math.clamp(math.floor(width * 0.38), 180, 460),
       math.max(155, math.floor((availableH - 64) * 0.7) + 16))
@@ -8261,7 +8263,7 @@ function openYardHall()
 			link.ZIndex = model.ZIndex + 1
 			link.Parent = card
 			link.Activated:Connect(function()
-				H.galleryBookOpenRequested = if bookCard then bookCard.id else true
+				H.galleryBookOpenRequested = if bookCard then bookCard.id else "search:" .. shipName
 				openTab("codex")
 			end)
 		end
@@ -14769,12 +14771,19 @@ openTab = function(tabId, mapPage, facility)
 		local target = H.galleryBookOpenRequested
 		H.galleryBookOpenRequested = nil
 		H.tradeBookOpenRequested = nil
-		H.encyclopediaTargetId = if type(target) == "string" then target else nil
-		H.encyclopediaCategoryId = "all"
-		H.encyclopediaSearchText = ""
-		H.encyclopediaIndexOpen = false
-		H.encyclopediaPage = nil
-		codexField = "book"
+		if type(target) == "string" and string.sub(target, 1, 7) == "search:" then
+			-- [연결 원화 없음] 기존 검색 화면에서 관련 주제만 보여 주고 임의 발견 처리하지 않는다.
+			H.codexSearchTerm = string.sub(target, 8)
+			H.encyclopediaTargetId = nil
+			codexField = "search"
+		else
+			H.encyclopediaTargetId = if type(target) == "string" then target else nil
+			H.encyclopediaCategoryId = "all"
+			H.encyclopediaSearchText = ""
+			H.encyclopediaIndexOpen = false
+			H.encyclopediaPage = nil
+			codexField = "book"
+		end
 	elseif tabId == "codex" and H.tradeBookOpenRequested then
 		H.tradeBookOpenRequested = nil
 		codexField = "r:all"
