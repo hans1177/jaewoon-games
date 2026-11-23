@@ -258,6 +258,12 @@ B.AnimalVisual = {
 		{ 74, 69, 65 } } },
 }
 
-B.Projects = require(script.Parent.BuildProjects) :: any -- [건축 시뮬] 공사 기간·완공 알림
+-- [건축 시뮬] 공사 기간·완공 알림. 스모크 빌드처럼 script 가 없는 환경에서는 건너뛴다.
+do
+	local ok, projects = pcall(function()
+		return require(script.Parent.BuildProjects)
+	end)
+	B.Projects = if ok then projects else nil :: any
+end
 
 return B
