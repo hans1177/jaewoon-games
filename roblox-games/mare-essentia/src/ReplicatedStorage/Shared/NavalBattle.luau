@@ -71,11 +71,46 @@ local CARD_STAGE = {
 	decoy = { art="CardArt/event_chart_north_sea", prop={"Naval","ship-pirate-small"}, motion="retreat", scene="후미에서 회군" },
 }
 
--- [지역별 오브젝트 도판] 등록·승인된 개별 카드 그림을 우선하고, 없는 카드는 기존 도판을 보존한다.
+-- [유럽 카드 원화 검수] 기존 승인 PNG와 1400×2000 원본의 실제 SHA·화풍을 대조한 카드만 전용 원화로 표시한다.
+-- 등록 번호나 저장 데이터는 유지하며 미확인·규격 불일치 원화는 공용 등록 도판으로 대체한다.
+local EUROPE_CARD_PORTRAIT_READY = {
+	eu_01 = true,
+	eu_04 = true,
+	eu_05 = true,
+	eu_06 = true,
+	eu_07 = true,
+	eu_08 = true,
+	eu_09 = true,
+	eu_10 = true,
+	eu_14 = true,
+	eu_15 = true,
+	eu_16 = true,
+	eu_17 = true,
+	eu_18 = true,
+	eu_19 = true,
+	eu_20 = true,
+	eu_28 = true,
+	eu_29 = true,
+	eu_30 = true,
+	eu_31 = true,
+	eu_32 = true,
+	eu_33 = true,
+	eu_37 = true,
+	eu_38 = true,
+	eu_39 = true,
+	eu_40 = true,
+	eu_41 = true,
+	eu_42 = true,
+}
+
+-- [지역별 오브젝트 도판] 검수된 유럽 세로 원화만 직접 표시하고 다른 대륙은 기존 승인 동작을 보존한다.
 local function cardArtworkKey(card)
 	if type(card.id) == "string" then
 		local individualArt = "CardArt/" .. card.id
-		if AssetIds[individualArt] then return individualArt end
+		local europeCard = string.match(card.id, "^eu_%d%d$") ~= nil
+		if AssetIds[individualArt] and (not europeCard or EUROPE_CARD_PORTRAIT_READY[card.id]) then
+			return individualArt
+		end
 	end
 	local spec = CARD_STAGE[card.id] or card.stage
 	if not spec then return CARD_SEA end
