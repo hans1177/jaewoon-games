@@ -1691,7 +1691,9 @@ test('항구 35개 직업은 등록된 실물 장비를 직접 R15에 착용하�
  assert.match(pose,/model:FindFirstChild\(slotName\)/);
  assert.match(pose,/if jobProp and UserInputService\.TouchEnabled and detailLimit == 3 then/);
  assert.match(pose,/LocalTransparencyModifier = 1/);
- assert.match(pose,/if string\.sub\(assetName, 1, 7\) == "outfit_" or string\.sub\(assetName, 1, 4\) == "cc0_" or jobProp then/);
+ assert.match(pose,/if string\.sub\(assetName, 1, 7\) == "outfit_" or string\.sub\(assetName, 1, 4\) == "cc0_"/);
+ assert.ok(pose.includes('or string.sub(assetName, 1, 4) == "acc_" or string.sub(assetName, 1, 5) == "hair_" or jobProp then'),
+  '거리 LOD 복구 시 기존 헤어와 장신구도 다시 표시한다');
  assert.match(pose,/LocalTransparencyModifier = 0/);
  assert.match(pose,/math\.rad\(spec\[9\] or 0\)/);
  assert.match(pose,/elseif not textured and not jobProp and string\.sub\(assetName, 1, 4\) ~= "cc0_" then/);
@@ -3421,6 +3423,7 @@ test('스튜디오 R15 보행 검증은 자동 대련 루프의 관절 덮어쓰
 test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제 R15 장착 흐름에 연결된다',()=>{
   const pose=read('ReplicatedStorage/Shared/Pose.luau');
   const assetIds=read('ReplicatedStorage/Shared/AssetIds.luau');
+  const port=read('ReplicatedStorage/Shared/PortScene.luau');
   assert.match(pose,/scalp\.Name = "HairScalp"/);
   assert.match(pose,/temple\.Name = "HairScalpSide"/);
   assert.match(pose,/h\.Y \* 0\.65, h\.Z \* 0\.84/);
@@ -3439,6 +3442,22 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
   assert.match(pose,/-- \[복식 레이어\] 원본 전신복은 소매·등판·다리천을 담당한다\./);
   assert.match(pose,/-- \[주민 기본복 유지\] 원본 peasant\/ranger 몸체 GLB는 팔 소매와 등·옆면까지 포함한다\./);
   assert.match(pose,/model:SetAttribute\("OutfitMissing"/);
+
+  // [R15 실물 준비] LOD 숨김과 실제 장착을 섞으면 모바일에서 의복이 사라져도 ready로 오진한다.
+  assert.ok(pose.includes('local activeRequired = #specs - lodHidden'), '거리 숨김은 실물 장착 성공 수에서 제외');
+  assert.ok(pose.includes('local fullyMounted = attached == activeRequired and #missing == 0'),
+    '실물 장착 및 누락 여부 모두 통과해야 ready');
+  assert.doesNotMatch(pose,/attached \+= 1\s+lodHidden \+= 1/,
+    '의도적으로 숨긴 복식을 실제 착용 완료로 잘못 집계하지 않는다');
+  assert.ok(pose.includes('local equippedVisible = false'), '장착 슬롯이 있어도 투명 모델은 성공 아님');
+  assert.ok(pose.includes('if visibleHeadwearParts == 0 then'), '투명한 헤어·의상·장신구는 실물 오류로 기록');
+  assert.ok(port.includes('local function refreshOutfits(includeReady)'), '완성 주민도 승인된 외형 모델 도착 시 다시 검사');
+  assert.ok(port.includes('refreshOutfits(string.sub(asset.Name, 1, 5) == "hair_"'),
+    '실물 헤어 지연 입고 후 재장착');
+  assert.ok(port.includes('for kind in { Cargo = true, Relics = true } do'), '직업 소지품도 자산 도착 후 장착 복구');
+  assert.ok(port.includes('if ReplicatedStorage:GetAttribute("MareAssetsReady") then refreshOutfits(true) end'),
+    '항구 장면 생성보다 먼저 자산 인입 완료되면 다시 확인');
+
   // [헤어 다양성] 8개 모델별 변형은 기존 공간 좌표로 안정적이며 AssetIds가 실제 등록한 후보만 선택한다.
   assert.match(pose,/model:SetAttribute\("NpcHairVariant", variant\)/);
   assert.match(pose,/for offset = 0, #options - 1 do/);
