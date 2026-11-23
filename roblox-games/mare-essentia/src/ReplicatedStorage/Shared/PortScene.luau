@@ -1067,6 +1067,21 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 층수가 높을수록 집도 키워서 1·2·3층이 실루엣으로 구분되게 한다 (0.92~1.12배)
 	variation *= 0.92 + (math.clamp(floors or 2, 1, 3) - 1) * 0.1
 	variation *= style.sizeMul or 1
+	-- [항구 전용 주택] 해당 항구의 승인된 실물 원본이 등록된 경우에만 사용.
+	-- 등록 전에는 기존 문화권 주택 제작을 그대로 보존하며 저장·경제 값은 변경하지 않는다.
+	local originalHouseTier = if houseTier >= 5 and (floors or 1) >= 3 then 3
+		elseif houseTier >= 3 and (floors or 1) >= 2 then 2 else 1
+	local originalHouse = if scenePortId and PortIdentity.get(scenePortId)
+		then scenePortId .. "_house_" .. tostring(originalHouseTier) else nil
+	if originalHouse and AssetIds["Town/" .. originalHouse] then
+		local houseModel = importedModel(parent, "Town", originalHouse, pos,
+			math.max(w, d) * variation * HOUSE_SCALE, true)
+		if houseModel then
+			houseModel.Name = "HarborHouse"
+			houseModel:SetAttribute("PortOriginalHouse", originalHouse)
+			return houseModel:FindFirstChildWhichIsA("BasePart", true)
+		end
+	end
 	-- (Town/house_chimney, house_door 는 집 전체가 아니라 굴뚝·문 부품이라 집 본체로 쓰지 않는다)
 	-- 동아시아 건축 세트: 등록된 eastasia 몸체를 층수만큼 쌓고 처마 지붕을 얹어 일반 집과 실루엣이 다르다
 	if style.kit == "eastasia" then
@@ -2920,6 +2935,23 @@ local function placeSignature(folder, info)
 	local port = PortData.Ports[info.portId]
 	local nation = port and port.country or ""
 	local european = COUNTRY_PLAN[nation] ~= nil and currentKey ~= "ottoman"
+	-- [항구별 상징] 지시서의 원본이 등록된 경우 2~3단계 기초, 4~5단계 완성형을 우선 표시.
+	-- 미등록·실물 로딩 실패면 기존 SIG를 재사용한다. 임시 대체 모델은 만들지 않는다.
+	local identity = PortIdentity.get(info.portId)
+	if identity and sceneLevel >= 2 then
+		local stageName = if sceneLevel >= 4 then "full" else "base"
+		local landmarkAsset = info.portId .. "_landmark_" .. stageName
+		if AssetIds["Town/" .. landmarkAsset] then
+			local landmark = importedModel(folder, "Town", landmarkAsset, SIG_ANCHOR,
+				if sceneLevel >= 4 then 40 else 28, true)
+			if landmark then
+				landmark.Name = "RegionalLandmarkOriginal"
+				landmark:SetAttribute("PortOriginalLandmark", landmarkAsset)
+				landmark:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+				return
+			end
+		end
+	end
 	if not list and not european then return end
 	-- 모든 대륙: 1단계는 항구촌, 2단계는 표지/소형 탑, 3단계는 온전한 지역 랜드마크.
 	-- 유럽만 작은 도시로 시작하던 기존 불균형을 없애되 시설 소유/경제 잠금에는 영향이 없다.
@@ -3043,7 +3075,11 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	local countryPlan = COUNTRY_PLAN[nation]
 	local big = (port and port.shipyard) or false
 	local P = PROFILE[key] or PROFILE.north
+	-- [항구별 마을] 지시서의 운하·골목·바둑판·계단식 구획을 기존 필지 안에서만 적용한다.
+	local identity = PortIdentity.get(info.portId)
+	local villageLayout = identity and identity.layout or nil
 	local lvl = sceneLevel
+	if villageLayout then folder:SetAttribute("CityPortVillageLayout", villageLayout) end
 	-- [자동 장식 건축] 실제 건설된 시장·농장·교회·공방·관청과 번영도를 읽어 단계별 실물 소품을 선택한다.
 	-- 시설 수나 생산량을 늘리는 경제 효과는 없고, 모바일 최대 7개 / PC 최대 13개만 배치한다.
 	local decor = PortBuildings.decorativeVisual(lvl, info.sim and info.sim.buildings, info.sim and info.sim.prosperity)
@@ -3539,7 +3575,14 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			if rng:NextNumber() < dens then
 				homeCandidates += 1
 				local sz = S * rng:NextNumber(0.9, 1.08)
-				local pos = Vector3.new(x + rng:NextNumber(-1, 1) * P.jx, 0, z + rng:NextNumber(-1, 1) * P.jz)
+				-- [주택 정렬] 바둑판·운하는 곧게, 구시가지 골목은 불규칙하게, 언덕은 층차형으로.
+				-- 기존 난수 소비 횟수와 필지 개수·충돌 검사 순서는 보존한다.
+				local jitterX = if villageLayout == "grid" or villageLayout == "canal" then 0.22
+					elseif villageLayout == "terrace" then 0.60 elseif villageLayout == "organic" then 1.12 else 1
+				local jitterZ = if villageLayout == "grid" or villageLayout == "canal" then 0.24
+					elseif villageLayout == "terrace" then 0.55 elseif villageLayout == "organic" then 1.10 else 1
+				local pos = Vector3.new(x + rng:NextNumber(-1, 1) * P.jx * jitterX,
+					0, z + rng:NextNumber(-1, 1) * P.jz * jitterZ)
 				-- 같은 필지는 같은 크기 등급을 선택한다. 공용 랜덤 흐름을 소비하지 않아 다른 건물 배치를 흔들지 않는다.
 				local sizeRng = seeded(plotId .. ":house-size")
 				local roll = sizeRng:NextInteger(1, 100)
@@ -3851,7 +3894,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		-- 큰길(가운데 길) 앞 두 줄: 광장과 시설을 지나 안쪽부터
 		-- 구시가지 시설 옆 주거 건설을 중단하고 신도시 외곽의 독립 주거 구역으로 확장한다.
 		for p = 0, pairsN do
-			local laneZ = 152 + laneOffset + p * laneL
+			-- [항구 골목] 기존 해안선·필지·도로 중심을 함께 옮겨 보행 동선을 보존한다.
+			local laneBend = if villageLayout == "organic" then (if p % 2 == 0 then -3 else 3)
+				elseif villageLayout == "terrace" then p * 2 else 0
+			local laneZ = 152 + laneOffset + p * laneL + laneBend
 			if (P.canal or info.portId == "venice") and p % 2 == 1 then
 				local canal = part(folder, Vector3.new(360, 0.3, laneWidth + 1), CFrame.new(-365, 0.05, side * laneZ), Color3.fromRGB(70, 120, 150), Enum.Material.Glass)
 				canal.Transparency = 0.25
@@ -3875,15 +3921,20 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 			end
 			if p < pairsN then
 				local t = (p + 0.5) / math.max(1, pairsN)
-				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, -260, side, p, 1)
-				fillRow(side * (laneZ + laneL - laneWidth / 2 - 6 - S / 2), t, -260, side, p, 2)
+				-- [계단식·골목형] 동일한 주택 수를 유지한 채 행 시작점만 교차 배치한다.
+				local rowShift = if villageLayout == "terrace" and p % 2 == 1 then -4
+					elseif villageLayout == "organic" and p % 2 == 1 then 3 else 0
+				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, -260 + rowShift, side, p, 1)
+				fillRow(side * (laneZ + laneL - laneWidth / 2 - 6 - S / 2), t, -260 - rowShift, side, p, 2)
 			end
 		end
 	end
 	-- [도시 외곽 자연 완충지] 마지막 주택 골목 바깥의 실제 빈땅만 기존 지형 팔레트로 채운다.
 	-- 근접 건물/도로/시장/왕궁/랜드마크와 겹치면 건너뛰며 주택 건축 슬롯은 점유하지 않는다.
 	local fringeBudget = if wildernessTouch then 7 else 13
-	local outerEdgeZ = 152 + laneOffset + pairsN * laneL + laneWidth * 0.5 + 15
+	local outerBend = if villageLayout == "organic" then (if pairsN % 2 == 0 then -3 else 3)
+		elseif villageLayout == "terrace" then pairsN * 2 else 0
+	local outerEdgeZ = 152 + laneOffset + pairsN * laneL + outerBend + laneWidth * 0.5 + 15
 	-- [발전별 실제 마을 땅] 표준화한 주거·골목·외곽 경계에 맞춰 TownFloor 실물 판의 폭·깊이를 축소한다.
 	-- 왕궁은 이미 커진 실물 본관·별관을 덮을 최소 폭을 보장하고 농촌 바닥은 건드리지 않는다.
 	local townFloor = folder:FindFirstChild("TownFloor")
@@ -3980,14 +4031,27 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 		or key == "north" or key == "colonial" or key == "creole" or key == "ottoman"
 	local timberStreet = key == "malabar" or key == "seasia" or key == "pacific"
 		or key == "tropic" or key == "nordic"
-	local pathKind = if lvl <= 2 then "Terrain" elseif timberStreet then "Naval"
+	-- [항구별 길] 기존 PortIdentity 5단계 도로 재질에 맞는 승인 실물 메시만 추가한다.
+	-- 벽돌·모래 길은 기존 기본 길 재질을 그대로 드러내고 잘못된 포석 원본을 덮지 않는다.
+	local streetName = PortIdentity.streetAt(info.portId, lvl)
+	local pathKind = if streetName == "brick" or streetName == "sand" then nil
+		elseif streetName == "plank" then "Naval"
+		elseif streetName == "cobble" or streetName == "flagstone" or streetName == "paved" then "Town"
+		elseif streetName then "Terrain"
+		elseif lvl <= 2 then "Terrain" elseif timberStreet then "Naval"
 		elseif stoneStreet then "Town" else "Terrain"
-	local pathAsset = if lvl <= 2 then "ground-pathstraight" elseif timberStreet then "platform-planks"
+	local pathAsset = if streetName == "brick" or streetName == "sand" then nil
+		elseif streetName == "plank" then "platform-planks"
+		elseif streetName == "cobble" then "cobblestones"
+		elseif streetName == "flagstone" or streetName == "paved" then "kenney_plate_pavement_01"
+		elseif streetName == "gravel" then "ground-pathrocks"
+		elseif streetName == "dirt" or streetName == "red_earth" then "ground-pathstraight"
+		elseif lvl <= 2 then "ground-pathstraight" elseif timberStreet then "platform-planks"
 		elseif stoneStreet then "cobblestones" else "ground-pathrocks"
 	local streetPatches, streetLanterns = 0, 0
 	local patchLimit = if streetTouch then 4 else 8
 	local streetVisualSeed = seeded(info.portId .. ":cultural-road-depth")
-	if AssetIds[pathKind .. "/" .. pathAsset] then
+	if pathKind and pathAsset and AssetIds[pathKind .. "/" .. pathAsset] then
 		for _, sx in streetsOuter do
 			if streetPatches >= patchLimit then break end
 			for side = -1, 1, 2 do
@@ -4029,7 +4093,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 	end
 	folder:SetAttribute("CityRegionalStreetPavingCount", streetPatches)
 	folder:SetAttribute("CityRegionalStreetLanternCount", streetLanterns)
-	folder:SetAttribute("CityRegionalStreetAsset", pathKind .. "/" .. pathAsset)
+	folder:SetAttribute("CityRegionalStreetAsset", if pathKind and pathAsset then pathKind .. "/" .. pathAsset
+		else "PORT_IDENTITY_MATERIAL_ONLY")
+	if streetName then folder:SetAttribute("CityPortVillageStreet", streetName) end
 	-- 구역 내용 (등록된 실제 3D 모델만 사용)
 	do
 		local function put(kind, asset, size, x, z, solid, yaw, buildDelay)
