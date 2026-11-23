@@ -513,8 +513,8 @@ def brief(p, culture, fac, palace_names, cur):
     pid, name = p["id"], p["name"]
 
     def asset(aid, cat, tier, size, tris, prompt, note):
-        rows.append([pid, name, f"{pid}_{aid}", cat, tier, size, tris, COMMON + prompt, note])
-        lines.extend([f"#### `{pid}_{aid}` — {note}", f"- {cat} · {tier}단계 · 크기 {size} · 폴리곤 ≤ {tris}", "```", COMMON + prompt, "```", ""])
+        rows.append([pid, name, f"{pid}_{aid}", cat, tier, size, "", COMMON + prompt, note])
+        lines.extend([f"#### `{pid}_{aid}` — {note}", f"- {cat} · {tier}단계 · 크기 {size}", "```", COMMON + prompt, "```", ""])
 
     head = [f"# {name} ({pid}) — 항구 작업 지시서", "",
             "> 공통 규칙: `docs/RULES.md`(원본 가공·라이선스·코드 한도) → `docs/PORT_VILLAGE_PROMPTS.md`. 이 문서만으로 이 항구의 테마·왕궁·방문 건물을 만든다.", "",

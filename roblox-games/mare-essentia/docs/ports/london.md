@@ -40,19 +40,19 @@
 - 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
 
 #### `london_trade_1` — 교역소 외형 1단계
-- building · 1단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 1단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. open-air trading post with awning and scales, a visitable 교역소 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_trade_2` — 교역소 외형 2단계
-- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 3단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. covered market hall with arcades, a visitable 교역소 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_trade_3` — 교역소 외형 3단계
-- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 5단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. grand merchant exchange with columns and clock, a visitable 교역소 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
@@ -65,19 +65,19 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 - 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
 
 #### `london_tavern_1` — 주점 외형 1단계
-- building · 1단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 1단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. small tavern shack with hanging sign, a visitable 주점 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_tavern_2` — 주점 외형 2단계
-- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 3단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. two-storey inn with stable yard, a visitable 주점 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_tavern_3` — 주점 외형 3단계
-- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 5단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. grand inn with balconies and courtyard, a visitable 주점 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
@@ -90,19 +90,19 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 - 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
 
 #### `london_harbor_1` — 항만청 외형 1단계
-- building · 1단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 1단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. dock office hut beside the pier, a visitable 항만청 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_harbor_2` — 항만청 외형 2단계
-- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 3단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. customs house with flag, a visitable 항만청 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_harbor_3` — 항만청 외형 3단계
-- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 5단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. admiralty building with signal mast and arcade, a visitable 항만청 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
@@ -115,19 +115,19 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 - 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
 
 #### `london_yard_1` — 조선소 외형 1단계
-- building · 1단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 1단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. open slipway with timber shed, a visitable 조선소 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_yard_2` — 조선소 외형 2단계
-- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 3단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. covered slipways with rope walk, a visitable 조선소 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_yard_3` — 조선소 외형 3단계
-- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 5단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. dry dock arsenal with cranes and warehouses, a visitable 조선소 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
@@ -140,19 +140,19 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 - 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
 
 #### `london_scholar_1` — 학자의 서재 외형 1단계
-- building · 2단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 2단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. scribe's room in a townhouse, a visitable 학자의 서재 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_scholar_2` — 학자의 서재 외형 2단계
-- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 3단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. library with reading hall, a visitable 학자의 서재 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_scholar_3` — 학자의 서재 외형 3단계
-- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 5단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. academy with observatory dome, a visitable 학자의 서재 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
@@ -165,19 +165,19 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 - 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
 
 #### `london_battle_1` — 전투 본부 외형 1단계
-- building · 2단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 2단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. watch post with palisade, a visitable 전투 본부 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_battle_2` — 전투 본부 외형 2단계
-- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 3단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. barracks with drill yard, a visitable 전투 본부 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_battle_3` — 전투 본부 외형 3단계
-- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 5단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. naval command fortress with bastions, a visitable 전투 본부 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
@@ -190,19 +190,19 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 - 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
 
 #### `london_diplomacy_1` — 외교관 거처 외형 1단계
-- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 3단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. consul's house with national flags, a visitable 외교관 거처 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_diplomacy_2` — 외교관 거처 외형 2단계
-- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 3단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. consulate with walled garden, a visitable 외교관 거처 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_diplomacy_3` — 외교관 거처 외형 3단계
-- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 5단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. embassy quarter with several flag houses, a visitable 외교관 거처 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
@@ -215,19 +215,19 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 - 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
 
 #### `london_bank_1` — 은행 외형 1단계
-- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 3단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. money changer's counting house, a visitable 은행 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_bank_2` — 은행 외형 2단계
-- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 3단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. stone bank with vault, a visitable 은행 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_bank_3` — 은행 외형 3단계
-- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 5단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. exchange bank with trading floor, a visitable 은행 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
@@ -240,19 +240,19 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 - 밤: 창문 불빛·입구 등. 간판은 글자 없이 기능 그림
 
 #### `london_guild_1` — 상인 길드 외형 1단계
-- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 3단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. guild hall with carved sign, a visitable 상인 길드 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_guild_2` — 상인 길드 외형 2단계
-- building · 3단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 3단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. guild hall with meeting hall, a visitable 상인 길드 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
 
 #### `london_guild_3` — 상인 길드 외형 3단계
-- building · 5단계 · 크기 24x20x(12-26) · 폴리곤 ≤ 12k
+- building · 5단계 · 크기 24x20x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. grand guild hall with tower, a visitable 상인 길드 building for a port game, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings. Clear door, readable sign shape (no text).
 ```
@@ -264,7 +264,7 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 - 크기: 마을 건물의 3~4배, 단 마을을 가리지 않게 마을 뒤쪽 언덕·물가에 둔다
 
 #### `london_palace` — 잉글랜드 왕궁 외형
-- palace · 1단계 · 크기 80x60x40 · 폴리곤 ≤ 40k
+- palace · 1단계 · 크기 80x60x40
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Tudor-Jacobean red-brick riverside palace with octagonal towers, great hall, gatehouse (Whitehall/Hampton style). Royal/governor seat of 런던, grand but game-readable, with a ceremonial entrance and courtyard.
 ```
@@ -333,217 +333,217 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 - 완공 순간: 건물 등장 연출(먼지 걷힘) + 알림 "○○ 완공" + 해당 효과 적용.
 
 #### `london_construction_kit` — 공사 현장 소품 세트
-- construction · 1단계 · 크기 kit · 폴리곤 ≤ 8k
+- construction · 1단계 · 크기 kit
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Construction site kit for 잉글랜드·스코틀랜드 style: survey stakes and string, dirt piles, foundation stones, timber scaffold modules (1/2/3 floors), wooden pulley crane, material piles of brick, oak timber, slate, wheelbarrow, ladder, plan table.
 ```
 
 #### `london_construction_stages` — 공사 단계 5개 메시
-- construction · 1단계 · 크기 per building · 폴리곤 ≤ 10k
+- construction · 1단계 · 크기 per building
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Generic building in 5 construction stages (foundation, frame+scaffold, half walls, roof framing, finished) in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows. Each stage a separate mesh.
 ```
 
 #### `london_workers` — 공사 일꾼 복장 세트
-- people · 1단계 · 크기 R15 outfits · 폴리곤 ≤ 4k
+- people · 1단계 · 크기 R15 outfits
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Construction worker outfit set (foreman with plan scroll, carpenter, mason, porter) for 잉글랜드·스코틀랜드: 앞치마·모자 차림 석공과 목수, 벽돌 운반 짐꾼. Period-accurate clothing accessories only (R15 layered).
 ```
 
 #### `london_bld_hut` — 오두막(주거) 1단계
-- building · 1단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 1단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. one-room hut with chimney and fenced yard, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_well` — 우물(공공) 1단계
-- building · 1단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 1단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. stone well with wooden winch roof, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_dock_shed` — 부두 창고(항만) 1단계
-- building · 1단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 1단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. small wooden dock shed with crates, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_garden` — 텃밭(농업) 1단계
-- building · 1단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 1단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. fenced vegetable plots with scarecrow, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_chapel` — 작은 예배당(종교) 1단계
-- building · 1단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 1단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. small chapel with bell, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_house_row` — 연립 주택(주거) 2단계
-- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 2단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. row of two-storey townhouses sharing walls, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_bakery` — 빵집·화덕(식량) 2단계
-- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 2단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. bakery with brick oven chimney and bread rack, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_smithy` — 대장간(공방) 2단계
-- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 2단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. smithy with open forge, anvil and bellows, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_carpenter` — 목공소(공방) 2단계
-- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 2단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. carpenter's workshop with timber stacks and saw horse, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_granary` — 곡물 창고(저장) 2단계
-- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 2단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. raised granary on stone legs, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_mill` — 방앗간(생산) 2단계
-- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 2단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. watermill or windmill depending on terrain, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_market_stalls` — 장터(상업) 2단계
-- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 2단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. cluster of canopy market stalls around a small square, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_watchtower` — 망루(방어) 2단계
-- building · 2단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 2단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. wooden coastal watchtower with signal brazier, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_temple` — 성당(종교) 3단계
-- building · 3단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 3단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. stone church with bell tower, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_school` — 학당(교육) 3단계
-- building · 3단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 3단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. schoolhouse with bell and courtyard, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_infirmary` — 의원·병원(의료) 3단계
-- building · 3단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 3단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. infirmary with herb garden and beds, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_warehouse` — 대형 창고(저장) 3단계
-- building · 3단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 3단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. large stone warehouse with hoist beam and cart door, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_ropewalk` — 밧줄 공장(조선) 3단계
-- building · 3단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 3단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. long narrow ropewalk shed, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_tannery` — 무두질장(공방) 3단계
-- building · 3단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 3단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. tannery with soaking pits and hanging hides (on outskirts), built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_lighthouse` — 등대(항만) 3단계
-- building · 3단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 3단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. stone lighthouse with lantern room, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_town_hall` — 시청·관아(행정) 4단계
-- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 4단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. town hall / magistrate office with clock or drum tower, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_hospital` — 대병원(의료) 4단계
-- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 4단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. large hospital around a cloister, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_library` — 도서관(교육) 4단계
-- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 4단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. library with reading hall and tall windows, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_customs` — 세관(항만) 4단계
-- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 4단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. customs house with arcade facing the quay, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_fort_wall` — 성벽·포대(방어) 4단계
-- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 4단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. stone harbour walls with gun battery and gate, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_theater` — 극장(문화) 4단계
-- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 4단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. theatre / performance hall in local style, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_guild_row` — 공방 거리(공방) 4단계
-- building · 4단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 4단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. street of specialist workshops with signs, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_university` — 대학·학술원(교육) 5단계
-- building · 5단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 5단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. university/academy with quadrangle and observatory dome, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_exchange` — 증권거래소(상업) 5단계
-- building · 5단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 5단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. stock exchange with courtyard and clock tower, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_arsenal` — 해군 공창(조선) 5단계
-- building · 5단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 5단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. naval arsenal with dry docks and cranes, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_botanic` — 식물원(과학) 5단계
-- building · 5단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 5단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. botanical garden with glasshouse, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_opera` — 오페라 극장·궁정 극장(문화) 5단계
-- building · 5단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 5단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. grand opera house / court theatre, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
 
 #### `london_bld_suburb` — 외곽 신시가지(주거) 5단계
-- building · 5단계 · 크기 auto · 폴리곤 ≤ 8k
+- building · 5단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. new suburb block with wider streets and gardens, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows.
 ```
@@ -608,49 +608,49 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 - 모바일은 파티클 수 절반, 원거리 바닥 효과 생략.
 
 #### `london_weather_ground` — 날씨 바닥 오버레이
-- texture · 1단계 · 크기 1024 tile · 폴리곤 ≤ -
+- texture · 1단계 · 크기 1024 tile
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Tileable ground overlay decals for temperate_north weather on gravel, cobble, cobble streets: puddles with reflections, wet sheen, wheel ruts in mud, snow cover (3 thickness levels), sand drift, frost. Alpha decals for overlay.
 ```
 
 #### `london_weather_props` — 날씨 소품 세트
-- props · 1단계 · 크기 kit · 폴리곤 ≤ 3k
+- props · 1단계 · 크기 kit
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Weather props for 잉글랜드·스코틀랜드: roof snow caps (3 sizes), icicles, gutter downspout splash, puddle meshes, awning rain drips, sand drift piles, covered market stall cloth.
 ```
 
 #### `london_district_props` — 구획 생활 소품 세트
-- props · 1단계 · 크기 kit · 폴리곤 ≤ 6k
+- props · 1단계 · 크기 kit
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. District prop kit for 잉글랜드·스코틀랜드 port: laundry lines, firewood stacks, chicken coop, flower pots, benches, wells, signposts, carts, barrels, market baskets, notice board, statue base.
 ```
 
 #### `london_house_worker` — 주거 노동자 오두막
-- house · 1단계 · 크기 auto · 폴리곤 ≤ 7k
+- house · 1단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. 1-room cottage with small yard, shared well, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows. 3 colour slots.
 ```
 
 #### `london_house_artisan` — 주거 장인 주택
-- house · 2단계 · 크기 auto · 폴리곤 ≤ 7k
+- house · 2단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. 2-storey house with ground-floor workshop, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows. 3 colour slots.
 ```
 
 #### `london_house_merchant` — 주거 상인 연립
-- house · 3단계 · 크기 auto · 폴리곤 ≤ 7k
+- house · 3단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. 3-storey townhouse with shop front and storage attic, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows. 3 colour slots.
 ```
 
 #### `london_house_mansion` — 주거 부유층 저택
-- house · 4단계 · 크기 auto · 폴리곤 ≤ 7k
+- house · 4단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. detached mansion with garden wall and courtyard, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows. 3 colour slots.
 ```
 
 #### `london_house_villa` — 주거 정원 빌라
-- house · 5단계 · 크기 auto · 폴리곤 ≤ 7k
+- house · 5단계 · 크기 auto
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. villa with formal garden on the outskirts, built in local style: English brick and timber-framed townhouses, slate gables, tall chimneys, sash windows. 3 colour slots.
 ```
@@ -658,73 +658,73 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 ## 7. 마을 기본 에셋
 
 #### `london_landmark_base` — 상징물 공사 중
-- landmark · 2단계 · 크기 40x40x30 · 폴리곤 ≤ 15k
+- landmark · 2단계 · 크기 40x40x30
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Under-construction medieval stone bridge with shops on top: lower half built, scaffolding, cranes, stone blocks.
 ```
 
 #### `london_landmark_full` — 상징물 완성
-- landmark · 4단계 · 크기 40x40x70 · 폴리곤 ≤ 25k
+- landmark · 4단계 · 크기 40x40x70
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Completed medieval stone bridge with shops on top, signature landmark of 런던.
 ```
 
 #### `london_house_1` — 주택 1단계
-- house · 1단계 · 크기 16x14x(12-26) · 폴리곤 ≤ 6k
+- house · 1단계 · 크기 16x14x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. 1-storey English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings, humble, small yard. 3 colour-variant material slots.
 ```
 
 #### `london_house_2` — 주택 2단계
-- house · 3단계 · 크기 16x14x(12-26) · 폴리곤 ≤ 6k
+- house · 3단계 · 크기 16x14x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. 2-storey English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings, shop on ground floor. 3 colour-variant material slots.
 ```
 
 #### `london_house_3` — 주택 3단계
-- house · 5단계 · 크기 16x14x(12-26) · 폴리곤 ≤ 6k
+- house · 5단계 · 크기 16x14x(12-26)
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. 3-storey English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings, wealthy merchant house. 3 colour-variant material slots.
 ```
 
 #### `london_street_lamp` — 가로등
-- lamp · 3단계 · 크기 2x2x12 · 폴리곤 ≤ 1.5k
+- lamp · 3단계 · 크기 2x2x12
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. wrought-iron oil street lantern on a post, glass panes, warm glow, 12 studs tall, emissive glass slot.
 ```
 
 #### `london_stall_wool` — 가판대 wool
-- goods · 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
+- goods · 2단계 · 크기 8x5x6
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Market stall displaying bales of raw wool and folded woollen cloth on a wooden counter, style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings.
 ```
 
 #### `london_workshop_wool` — 공방 wool
-- workshop · 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
+- workshop · 3단계 · 크기 24x20x16
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. wool weaving workshop with a large wooden loom and dye vats, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings.
 ```
 
 #### `london_stall_coal` — 가판대 coal
-- goods · 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
+- goods · 2단계 · 크기 8x5x6
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Market stall displaying sacks and a heap of black coal with a shovel, style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings.
 ```
 
 #### `london_workshop_coal` — 공방 coal
-- workshop · 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
+- workshop · 3단계 · 크기 24x20x16
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. coal mine adit entrance with timber frame and ore carts, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings.
 ```
 
 #### `london_stall_tin` — 가판대 tin
-- goods · 2단계 · 크기 8x5x6 · 폴리곤 ≤ 3k
+- goods · 2단계 · 크기 8x5x6
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. Market stall displaying stacked dull-silver tin ingots in a crate, style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings.
 ```
 
 #### `london_workshop_tin` — 공방 tin
-- workshop · 3단계 · 크기 24x20x16 · 폴리곤 ≤ 10k
+- workshop · 3단계 · 크기 24x20x16
 ```
 Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800, hand-painted PBR textures (albedo+normal+roughness), readable silhouette at 40-80 studs, clean quad topology, pivot at ground center facing -Z, no text, no logos, no modern objects, separate meshes for roof / walls / trim / props so colors can be tinted in-engine. Derive from an approved original CC0 asset (Kenney Castle/Fantasy Town/Pirate kits etc.) and modify it to match this brief; record the source asset in <asset_id>.license.json as derived. tin streaming works with sluice boxes, built in local style: English brick and timber-framed townhouses, steep slate gables, tall chimneys, iron railings.
 ```
@@ -732,6 +732,8 @@ Stylized-realistic low-poly 3D game asset for Roblox, early-modern era 1500-1800
 ## 8. 완료 체크
 
 ### 런던 84종 원본 모델 확보 순서
+
+- 삼각형 수 고정 상한 없음. 원본 메시·재질·디테일을 유지하고 실제 모바일 프레임·메모리·로딩·거리별 표시 품질로 판단한다. 필요할 때만 기존 LOD를 활용한다. 삼각형 수는 측정·기록하되 수치 자체로 제작 또는 등록을 거절하지 않는다. Roblox 플랫폼 자체 제한과 기존 권한·보안 검사는 유지한다.
 
 1. 런던 84종은 **기존 원본 모델 자산부터 확인**한다.
 2. 기존에 없으면 **외부에서 무료·사용 가능한 원본 모델을 다운로드**한다.

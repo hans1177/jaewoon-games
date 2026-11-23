@@ -174,7 +174,7 @@ def rows():
     out = []
     for pid, name, style, landmark, lamp, sigs, plaza, signs, goods in PORTS:
         def add(aid, cat, tier, size, tris, prompt, note):
-            out.append([pid, name, f"{pid}_{aid}", cat, tier, size, tris, COMMON + prompt, note])
+            out.append([pid, name, f"{pid}_{aid}", cat, tier, size, "", COMMON + prompt, note])
         # 상징물 기초/완성
         add("landmark_base", "landmark", 2, "40x40x30", "15k",
             f"Under-construction version of {landmark}: lower half built, wooden scaffolding, cranes, stone blocks on ground.",
@@ -276,7 +276,7 @@ def port_doc(pid, name, style, landmark, lamp, sigs, plaza, signs, goods, data):
     for r in data:
         if r[0] != pid:
             continue
-        lines += [f"### `{r[2]}` — {r[8]}", f"- 분류 {r[3]} · 등장 {r[4]}단계 · 크기 {r[5]} · 폴리곤 ≤ {r[6]}", "```", r[7], "```", ""]
+        lines += [f"### `{r[2]}` — {r[8]}", f"- 분류 {r[3]} · 등장 {r[4]}단계 · 크기 {r[5]}", "```", r[7], "```", ""]
     lines += ["## 4. 완료 체크", "",
               "- [ ] 에셋 파일·라이선스 inbox 등록, `AssetIds` 반영 확인",
               "- [ ] 단계 1~5 Studio 항공 사진에서 구역 분리·광장·상징물 확인",
