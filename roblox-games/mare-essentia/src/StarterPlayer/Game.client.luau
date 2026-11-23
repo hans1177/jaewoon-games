@@ -2147,6 +2147,9 @@ function H.renderFacilityGallery()
     end
     if selection.chart then
       fallback = AssetIds["CardArt/event_chart_" .. selection.chart] or fallback
+    elseif selection.art then
+      -- [등록 원화] 해당 국가와 실제 관련 있는 승인 사건 카드만 선택한다.
+      fallback = AssetIds["CardArt/" .. selection.art] or fallback
     end
   else
     selection = nil
@@ -2163,11 +2166,14 @@ function H.renderFacilityGallery()
   H.galleryPrev.Visible = canPage
   H.galleryNext.Visible = canPage
   if H.galleryImage.Image ~= image then
+    -- [전환 성능] 빠른 넘김에서 이전 페이드가 새 그림 밝기를 덮지 않도록 재사용 제어한다.
+    if H.galleryArtTween then H.galleryArtTween:Cancel(); H.galleryArtTween = nil end
     H.galleryImage.Image = image
     if image ~= "" and not game:GetService("GuiService").ReducedMotionEnabled then
       H.galleryImage.ImageTransparency = 1
-      game:GetService("TweenService"):Create(H.galleryImage,
-        TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { ImageTransparency = 0 }):Play()
+      H.galleryArtTween = game:GetService("TweenService"):Create(H.galleryImage,
+        TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { ImageTransparency = 0 })
+      H.galleryArtTween:Play()
     else
       H.galleryImage.ImageTransparency = 0
     end
@@ -12106,6 +12112,12 @@ function RENDERERS.diplomacy()
 		return
 	end
 	local STATUS = { war = "⚔ 전쟁", hostile = "적대", neutral = "중립", friend = "우호", ally = "동맹", own = "우리" }
+	-- [외교 승인 원화] 국가와 직접 관련 있는 기존 사건·상인 카드만 사용한다. 신규 에셋 없음.
+	local nationArt = {
+		england = "event_royal_charter", netherlands = "event_anglo_dutch_war",
+		china = "event_canton_system", japan = "event_merchant_naha",
+		swahili = "event_zanzibar", malabar = "event_merchant_coromandel",
+	}
 	-- 1) 한눈에: 우리 나라 · 이 항구 나라 · 전쟁 수
 	H.statStrip({
 		{ "우리 나라", dp.power.name, tone = "key" },
@@ -12138,7 +12150,7 @@ function RENDERERS.diplomacy()
 				choose.ZIndex = row.ZIndex + 3
 				choose.Parent = row
 				choose.Activated:Connect(function()
-					H.gallerySelection = { tab = "diplomacy", name = nationName, search = nationName }
+					H.gallerySelection = { tab = "diplomacy", name = nationName, search = nationName, art = nationArt[n.id] }
 					H.renderFacilityGallery()
 				end)
 				return row
