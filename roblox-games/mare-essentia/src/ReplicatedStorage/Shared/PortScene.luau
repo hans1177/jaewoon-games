@@ -2736,7 +2736,7 @@ end
 -- 발전도 랜드마크 자리(양쪽 큰길 뒤). 집은 이 자리를 피해 짓는다.
 -- 주요 항구의 상징 건축물: 광장 맞은편(개요 카메라에 보이는 자리)에 그 도시를 알아볼 수 있는 실루엣을 세운다.
 -- 등록된 실제 CC0 모델만 조합한다 (직접 만든 도형 없음). 좌표는 앵커(-30, 0, -66) 기준.
-local SIG_ANCHOR = Vector3.new(-62, 0, 0) -- [모든 항구 새 랜드마크 구획]
+local SIG_ANCHOR = Vector3.new(-42, 0, 0) -- [모든 항구 새 랜드마크 구획]
 -- [유럽 항구] 실제 Ports.country를 사용한다. 저장된 국가·항구·발전도 값은 변경하지 않는다.
 -- lot/gap/density는 배경 구획과 집의 모양에만 적용한다. 경제·시설 해금에는 관여하지 않는다.
 local COUNTRY_PLAN = {
@@ -3084,9 +3084,10 @@ local function placeSignature(folder, info)
 	-- [모든 항구 랜드마크 재배치] 실제 승인 모델과 부속 경관을 각기 다른 내륙 지구로 옮긴다.
 	local civicRng = seeded(info.portId .. ":civic-quarter-reposition-v2")
 	local civicOffset = civicRng:NextInteger(-10, 9)
-	local civicSide = if civicRng:NextInteger(0, 1) == 0 then -1 else 1
+	local civicSide = if (PortData.Ports[info.portId] or {}).shipyard then 1
+		elseif civicRng:NextInteger(0, 1) == 0 then -1 else 1
 	local civicDepth = civicRng:NextInteger(-6, 6)
-	local signatureCenter = SIG_ANCHOR + Vector3.new(civicOffset, 0, civicSide * (117 + civicDepth))
+	local signatureCenter = SIG_ANCHOR + Vector3.new(civicOffset, 0, civicSide * (103 + civicDepth))
 	local list = SIG[info.portId]
 	local port = PortData.Ports[info.portId]
 	local nation = port and port.country or ""
@@ -6442,7 +6443,8 @@ function PortScene.build(info, onFacility)
 		-- [전체 항구 시민 광장 재배치] 등록된 랜드마크 구역과 반대편으로 이동한다.
 		local civicRng = seeded(info.portId .. ":civic-quarter-reposition-v2")
 		local civicOffset = civicRng:NextInteger(-10, 9)
-		local landmarkSide = if civicRng:NextInteger(0, 1) == 0 then -1 else 1
+		local landmarkSide = if (PortData.Ports[info.portId] or {}).shipyard then 1
+			elseif civicRng:NextInteger(0, 1) == 0 then -1 else 1
 		local civicDepth = civicRng:NextInteger(-6, 6)
 		local plazaAt = Vector3.new(-140 + civicOffset * 0.45, 0, -landmarkSide * (113 + civicDepth))
 		-- [문화권 고증] 유럽 노점을 부산·캘리컷 장시로, 유럽식 분수를 오스만 세정시설로 쓰지 않는다.
