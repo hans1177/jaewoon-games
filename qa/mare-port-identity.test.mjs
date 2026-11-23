@@ -166,10 +166,11 @@ test('13개 촬영 확인 항구에 등록된 실물 특산품 3D를 표시하�
   assert.match(scene, /for _, id in \(if port then port\.produces else \{\}\) do/);
 });
 
-test('개별 지시서에 등록된 17개 항구의 5단계 실제 외관이 일치한다', () => {
+test('개별 지시서 25개 항구의 5단계 실제 외관이 일치한다', () => {
   for (const port of ['london', 'amsterdam', 'rouen', 'lisbon', 'istanbul',
     'zanzibar', 'calicut', 'nagasaki', 'veracruz', 'busan', 'canton',
-    'sydney', 'cartagena_indias', 'copenhagen', 'gothenburg', 'venice', 'seville']) {
+    'sydney', 'cartagena_indias', 'copenhagen', 'gothenburg', 'venice', 'seville',
+    'stockholm', 'bergen', 'hamburg', 'porto', 'edinburgh', 'valletta', 'genoa', 'havana']) {
     const instructions = fs.readFileSync(root + 'docs/ports/' + port + '.md', 'utf8');
     const entry = id.split('\n\t' + port + ' = { landmark = ')[1]
       ?.split(/\n\t[a-z_]+ = \{/)[0] ?? '';
@@ -197,4 +198,18 @@ test('열대 해안 검수 항구는 기존 등록 바위 모델의 해안 유�
   const assets = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/AssetIds.luau', 'utf8');
   assert.ok(assets.includes('["Naval/rocks-a"]'), '기존 해안 메쉬 등록');
   assert.match(scene, /elseif form == "bay" and i ~= 2 then/);
+});
+
+test('북유럽·한자·이베리아·이탈리아·카리브 8항구는 실제 원본 등록키를 유지한다', () => {
+  const newPorts = ['stockholm', 'bergen', 'hamburg', 'porto',
+    'edinburgh', 'valletta', 'genoa', 'havana'];
+  for (const port of newPorts) {
+    assert.ok(ports.includes('id = "' + port + '"'), port + ' 기존 항구');
+    const data = id.split('\n\t' + port + ' = { landmark = ')[1]?.split(/\n\t[a-z_]+ = \{/)[0];
+    assert.ok(data, port + ' 지시서 기반 시각 정체성');
+    // 등록 여부와 관계없이 실제 해당 항구의 전용 랜드마크 ID여야 한다.
+    assert.ok(data.includes('id = "lm_' + port + '_'), port + ' 고유 랜드마크 정체성');
+  }
+  assert.match(scene, /if identity then folder:SetAttribute\("CityPortMissingLandmark", landmarkAsset\) end/);
+  assert.match(scene, /if AssetIds\["Town\/" \.\. landmarkAsset\] then/);
 });

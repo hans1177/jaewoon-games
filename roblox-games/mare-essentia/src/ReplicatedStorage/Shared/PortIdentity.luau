@@ -101,6 +101,47 @@ local P: { [string]: Identity } = {
 		roof = "flat", wall = "stucco", balcony = "iron", layout = "grid", plaza = "parade",
 		street = { "sand", "dirt", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "monsoon_mud",
 		signature = { "광석 선적 부두", "성벽 세관", "대성당" }, facade = { 233, 215, 187 }, roofTint = { 180, 99, 73 } },
+	-- [항구별 지시서] 스웨덴 스톡홀름: 붉은 목조 가옥·자갈길·선창. 고유 목조 첨탑은 원본 등록 전까지 누락으로 둔다.
+	stockholm = { landmark = { id = "lm_stockholm_stave_tower", name = "목조 교회와 구리 첨탑", kind = "spire", fallback = "church" },
+		roof = "gable", wall = "wood", balcony = nil, layout = "organic", plaza = "quay",
+		street = { "dirt", "gravel", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "snowmelt", weatherGround = "snow",
+		signature = { "철광석 선창", "목조 상관", "금속 공방" }, facade = { 174, 79, 66 }, roofTint = { 84, 81, 74 } },
+	-- [항구별 지시서] 노르웨이 베르겐: 목조 어시장·염장 항만. 브뤼겐 전용 교회 원본은 미등록.
+	bergen = { landmark = { id = "lm_bergen_stave_church", name = "목조 교회와 첨탑", kind = "spire", fallback = "church" },
+		roof = "gable", wall = "wood", balcony = nil, layout = "organic", plaza = "quay",
+		street = { "dirt", "gravel", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "snowmelt", weatherGround = "snow",
+		signature = { "생선 건조장", "염장 창고", "어시장" }, facade = { 185, 91, 60 }, roofTint = { 87, 82, 69 } },
+	-- [항구별 지시서] 함부르크: 붉은 벽돌 상관·직물 시장·운하 도시. 쌍탑 성문 원본은 미등록.
+	hamburg = { landmark = { id = "lm_hamburg_city_gate", name = "고딕 벽돌 쌍탑 성문", kind = "city_gate", fallback = "gate" },
+		roof = "gable", wall = "brick", balcony = nil, layout = "canal", plaza = "market",
+		street = { "dirt", "cobble", "cobble", "cobble", "paved" }, lamp = "oil_lantern", ground = "mud", weatherGround = "puddles",
+		signature = { "직물 회관", "적벽돌 상관", "무역 창고" }, facade = { 152, 76, 64 }, roofTint = { 84, 70, 66 } },
+	-- [항구별 지시서] 포르투: 언덕길·흰 회벽·포도주 선창. 전용 성당 종탑은 미등록.
+	porto = { landmark = { id = "lm_porto_cathedral_tower", name = "성당 종탑과 구시가 요새", kind = "campanile", fallback = "tower" },
+		roof = "hip", wall = "stucco", balcony = "iron", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "포도주 저장고", "올리브 압착소", "포구 시장" }, facade = { 225, 201, 165 }, roofTint = { 167, 99, 69 } },
+	-- [항구별 지시서] 에든버러: 언덕 구시가·석판으로 성장하는 대로. 시계 교회 전용 원본은 미등록.
+	edinburgh = { landmark = { id = "lm_edinburgh_clock_church", name = "고딕 교구 교회 시계탑", kind = "clock_tower", fallback = "church" },
+		roof = "gable", wall = "brick", balcony = nil, layout = "terrace", plaza = "market",
+		street = { "dirt", "gravel", "cobble", "cobble", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "snow",
+		signature = { "석탄 선창", "양모 작업장", "아마 직물 창고" }, facade = { 164, 132, 118 }, roofTint = { 80, 84, 88 } },
+	-- [항구별 지시서] 발레타: 석판 도로·황토 회벽·지중해 어시장. 전용 종탑 원본은 미등록.
+	valletta = { landmark = { id = "lm_valletta_campanile", name = "돔 성당 옆 벽돌 종탑", kind = "campanile", fallback = "tower" },
+		roof = "hip", wall = "stucco", balcony = "loggia", layout = "grid", plaza = "fountain",
+		street = { "dirt", "flagstone", "flagstone", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "sand", weatherGround = "dust",
+		signature = { "어시장", "생선 염장소", "선창 창고" }, facade = { 215, 180, 141 }, roofTint = { 157, 100, 68 } },
+	-- [항구별 지시서] 제노바: 계단식 항구·비단 상점·지중해 회벽. 전용 종탑 원본은 미등록.
+	genoa = { landmark = { id = "lm_genoa_campanile", name = "돔 성당 곁 벽돌 종탑", kind = "campanile", fallback = "tower" },
+		roof = "hip", wall = "stucco", balcony = "loggia", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "flagstone", "flagstone", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "puddles",
+		signature = { "비단 직물 시장", "올리브 압착소", "산호 상관" }, facade = { 221, 176, 146 }, roofTint = { 169, 96, 68 } },
+	-- [항구별 지시서] 하바나: 파스텔 목조 가옥·열대 선창·식민지 광장. 전용 요새 원본은 미등록.
+	havana = { landmark = { id = "lm_havana_signal_fort", name = "해안 석조 요새와 신호탑", kind = "fort", fallback = "fort" },
+		roof = "hip", wall = "wood", balcony = "wood_lattice", layout = "grid", plaza = "parade",
+		street = { "sand", "dirt", "gravel", "brick", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "monsoon_mud",
+		signature = { "설탕 저장고", "럼주 증류소", "마호가니 선창" }, facade = { 218, 184, 153 }, roofTint = { 157, 103, 77 } },
+
 }
 
 local M = {}
