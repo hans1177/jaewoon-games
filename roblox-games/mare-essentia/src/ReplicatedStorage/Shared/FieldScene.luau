@@ -370,9 +370,9 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 						d.Color = d.Color:Lerp(tint, if faded then 0.82 else 0)
 					end
 					if not sa then
-						-- 원래 Leather/Concrete 재질과 색상 있는 털·피부는 강제로 덮지 않는다.
 						d.Material = if faded and (d.Material == Enum.Material.SmoothPlastic or d.Material == Enum.Material.Plastic)
 							and (asset == "sheep" or asset == "llama") then Enum.Material.Fabric else d.Material
+						-- 원래 Leather/Concrete 재질과 색상 있는 털·피부는 강제로 덮지 않는다.
 						if d.Material == Enum.Material.Leather or d.Material == Enum.Material.Concrete then
 							d.Reflectance = math.min(d.Reflectance, 0.02)
 						end
