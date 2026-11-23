@@ -1618,7 +1618,7 @@ local function strip(folder, style, cx, cz, sx, sz)
 		elseif not wet and identity.weatherGround == "dust" and (condition == "clear" or condition == "sunny") then
 			p.Color = p.Color:Lerp(Color3.fromRGB(194, 154, 107), 0.17)
 		end
-		if identity.weatherGround == "snow" and folder:GetAttribute("PortWinterCoat") == true then
+		if identity.weatherGround == "snow" and folder:GetAttribute("PortSeasonWinterGround") == true then
 			p.Color = p.Color:Lerp(Color3.fromRGB(218, 227, 232), 0.38)
 		end
 	end
@@ -4258,9 +4258,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					if lvl >= 3 and farmsBuilt >= 5 then
 						local europeanFarm = key == "britain" or key == "france" or key == "north"
 							or key == "nordic" or key == "hanse" or key == "brick"
-						local workshop = if europeanFarm and (table.find(made, "timber") or table.find(made, "mahogany")) then "village-sawmill"
-							elseif europeanFarm and (table.find(made, "iron") or table.find(made, "coal")) then "village-blacksmith"
-							elseif europeanFarm and ruralProduct == "pasture" then "village-stable"
+						-- 산림 제재·철 대장간·곡물 제분처럼 실제 용도가 일치할 때만 사용한다.
+						-- 목장용 축사나 탄광 건물로 유럽식 말 마구간·대장간을 위장하지 않는다.
+						local workshop = if europeanFarm and table.find(made, "timber") then "village-sawmill"
+							elseif europeanFarm and table.find(made, "iron") then "village-blacksmith"
 							elseif europeanFarm and ruralProduct == "grain" then "village-mill" else nil
 						if workshop and AssetIds["Town/" .. workshop] then
 							local building = put("Town", workshop, 22, cx + 62, cz, true, face)
@@ -5815,6 +5816,11 @@ function PortScene.build(info, onFacility)
 		folder:SetAttribute("PortIdentityLamp", identity.lamp)
 		folder:SetAttribute("PortIdentityGround", identity.ground)
 		folder:SetAttribute("PortIdentityWeather", identity.weatherGround)
+		-- 위도 제한 없는 지면 계절: 부산도 겨울 눈길을 볼 수 있도록 복식과 독립해 계산.
+		local seasonLatitude = (PortData.Ports[info.portId] or {}).lat or 0
+		folder:SetAttribute("PortSeasonWinterGround",
+			identity.weatherGround == "snow"
+				and Voyage.season(tonumber(info.day) or 0, seasonLatitude) == 1)
 	end
 	-- [원본 발전도 6단계 연결] Village.portDev(1~6)는 서버 계산 그대로 받는다. 평균값(1~5)이 최고인데
 	-- 원본도 6이면 표시 단계 6으로 구별한다. 저장값·발전 계산·기존 1~5 배열 접근은 바뀌지 않는다.
@@ -5908,6 +5914,14 @@ function PortScene.build(info, onFacility)
 			CFrame.new(rural.groundCenterX, 0.02, 0),
 			style.ground:Lerp(C(112, 143, 83), 0.55), Enum.Material.Grass)
 		farmGround.Name = "RuralGround"
+		-- [쌀 재배 항구] 정확한 벼 3D가 없더라도 농촌 지면은 논의 진흙·젖은 토양으로 구분한다.
+		local localGoods = (PortData.Ports[info.portId] or {}).produces or {}
+		if identity and table.find(localGoods, "rice") then
+			farmGround.Material = Enum.Material.Mud
+			farmGround.Color = Color3.fromRGB(103, 123, 91)
+			farmGround.Reflectance = 0.025
+			farmGround:SetAttribute("CityRuralPaddyGround", true)
+		end
 		farmGround.CanCollide = true
 		farmGround.CanQuery = true
 	end
@@ -6121,10 +6135,12 @@ function PortScene.build(info, onFacility)
 	-- 중앙 광장은 자유 보행 공간, 부두형·연병장형은 장애물 없는 개방 광장으로 유지한다.
 	do
 		local plazaKind = if identity then identity.plaza else "fountain"
+		-- [문화권 고증] 유럽 노점을 부산·캘리컷 장시로, 유럽식 분수를 오스만 세정시설로 쓰지 않는다.
+		local europeanMarket = not identity or info.portId == "london" or info.portId == "rouen"
 		local asset = if sceneLevel < 2 then nil
-			elseif plazaKind == "market" then (if sceneLevel == 2 then "village-well-cc0" else "village-market-stand-1")
+			elseif plazaKind == "market" and europeanMarket then
+				(if sceneLevel == 2 then "village-well-cc0" else "village-market-stand-1")
 			elseif plazaKind == "fountain" then (if sceneLevel >= 4 then "fountain-round" else "village-well-cc0")
-			elseif plazaKind == "temple_court" then (if sceneLevel >= 4 then "fountain-square" else "village-well-cc0")
 			else nil
 		folder:SetAttribute("CityPortPlazaType", plazaKind)
 		folder:SetAttribute("CityPortPlazaLocation", Vector3.new(-106, 0, 122))
