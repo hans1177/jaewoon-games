@@ -627,7 +627,7 @@ H.facilityIconAtlas = AssetIds["CardArt/ui_facility_icons"]
 H.facilityIconCells = {
 	trade = 0, market = 0, tavern = 1, board = 1, route = 2, map = 2, harbor = 2, yard = 3,
 	battle = 4, codex = 5, encyclopedia = 5, status = 6, journal = 7,
-	deck = 8, gwent = 8, view = 9, gear = 10, help = 11, close = 15,
+	deck = 8, gwent = 8, view = 9, gear = 10, help = 11, diplomacy = 7, close = 15,
 }
 local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, portraitOffset)
 	local cell = H.facilityIconAtlas and H.facilityIconCells[asset]
@@ -2643,13 +2643,6 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		icon.AnchorPoint = Vector2.new(0.5, 0)
 		icon.Position = UDim2.new(0.5, 0, 0, artTop)
 		icon.ZIndex = 2
-	elseif key == "diplomacy" then
-		-- [외교 아이콘] 알현 메뉴와 같은 기존 깃발 모델(Castle/flag-banner-short)을 도크 시설 아이콘으로 쓴다.
-		local flag = modelIcon(button, "Castle", "flag-banner-short", nil, artSize, label)
-		flag.Name = "MenuArt"
-		flag.AnchorPoint = Vector2.new(0.5, 0)
-		flag.Position = UDim2.new(0.5, 0, 0, artTop)
-		flag.ZIndex = 2
 	elseif specialGlyph then
 		-- [시설·시스템 통일] 투명 황동 아이콘: 주점 잔/카드/기록장/설정/도움말.
 		local symbol = modelIcon(button, "Glyph", specialGlyph, nil, artSize, label)
@@ -2795,13 +2788,15 @@ dock.ScrollBarThickness = 3
 dock.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 99)
 dock.ScrollingDirection = Enum.ScrollingDirection.Y
 dock.Parent = hudTop
--- [시설 도크 정본] 폭에 따라 줄바꿈되는 격자 대신 기존 메뉴의 한 줄 가로 목록.
-local dockGrid = Instance.new("UIListLayout")
+-- [12개 도크] 시설 8 + 도구 4 = 위 6개·아래 6개. 배경 없는 기존 아이콘을 2열 격자로 정렬한다.
+local dockGrid = Instance.new("UIGridLayout")
 dockGrid.FillDirection = Enum.FillDirection.Horizontal
-dockGrid.Wraps = false
-dockGrid.Padding = UDim.new(0, 4)
+dockGrid.FillDirectionMaxCells = 6
 dockGrid.SortOrder = Enum.SortOrder.LayoutOrder
-dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Left
+dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+dockGrid.VerticalAlignment = Enum.VerticalAlignment.Center
+dockGrid.CellPadding = UDim2.fromOffset(6, 6)
+dockGrid.CellSize = UDim2.fromOffset(58, 76)
 dockGrid.Parent = dock
 local dockLimit = Instance.new("UISizeConstraint")
 dockLimit.MaxSize = Vector2.new(620, 200)
@@ -2820,46 +2815,27 @@ for i, d in H.DOCK do
 	b.LayoutOrder = i
 	H.dockButtons[d[1]] = b
 	-- [시설 알림] 고정된 메뉴 아이콘에만 가볍게 표시한다. 인스턴스는 한 번만 만든다.
-	local notice = Instance.new("TextLabel")
+	-- [상태 파티클] 저가·긴급 등의 문자 배지 대신 투명 반짝임만 유지한다.
+	local notice = Instance.new("ImageLabel")
 	notice.Name = "FacilityNotice"
 	notice.AnchorPoint = Vector2.new(1, 0)
-	notice.Position = UDim2.new(1, -1, 0, 1)
-	notice.Size = UDim2.fromOffset(40, 19)
-	notice.BackgroundColor3 = Color3.fromRGB(176, 91, 36)
-	notice.TextColor3 = Color3.fromRGB(255, 248, 228)
-	notice.TextSize = 12
-	notice.Font = Enum.Font.GothamBold
+	notice.Position = UDim2.new(1, -1, 0, 0)
+	notice.Size = UDim2.fromOffset(22, 22)
+	notice.Image = "rbxasset://textures/particles/sparkles_main.dds"
+	notice.BackgroundTransparency = 1
+	notice.BorderSizePixel = 0
+	notice.ImageColor3 = Color3.fromRGB(255, 204, 96)
 	notice.ZIndex = 7
 	notice.Visible = false
 	notice.Parent = b
-	corner(notice, 7)
-	local noticeBorder = Instance.new("UIStroke")
-	noticeBorder.Color = Color3.fromRGB(255, 243, 190)
-	noticeBorder.Thickness = 1
-	noticeBorder.Transparency = 0.2
-	noticeBorder.Parent = notice
 	H.dockNotices[d[1]] = notice
 	b.Activated:Connect(function()
 		openTab(d[1])
 	end)
 end
 
--- [지시등 요약] 시설 알림을 한 줄로 노출. 배경 없이 텍스트·그림자만 표시한다.
-H.dockStatus = Instance.new("TextLabel")
-H.dockStatus.Name = "DockStatus"
-H.dockStatus.BackgroundTransparency = 1
-H.dockStatus.TextColor3 = Color3.fromRGB(255, 241, 193)
-H.dockStatus.TextStrokeColor3 = Color3.fromRGB(34, 24, 17)
-H.dockStatus.TextStrokeTransparency = 0.18
-H.dockStatus.TextSize = 13
-H.dockStatus.Font = Enum.Font.GothamBold
-H.dockStatus.TextXAlignment = Enum.TextXAlignment.Left
-H.dockStatus.TextTruncate = Enum.TextTruncate.AtEnd
-H.dockStatus.Visible = false
-H.dockStatus.ZIndex = 8
-H.dockStatus.Parent = hudTop
-
--- [도구 목차] 기존 저널·걷기·내 카드·설정·도움말 5개를 같은 간격으로 정렬한다.
+-- [도구 목차] 설정·걷기·저널·내 카드 4개는 시설 8개와 동일한 6×2 도크에 배치한다.
+-- 도움말은 기존 설정 > 게임 방법에서 열 수 있으므로 중복 HUD 버튼만 숨긴다.
 local render
 local openOptions
 local SYS_Y = 170
@@ -2870,6 +2846,7 @@ do
 	local help = H.hudShortcut(hudTop, "HelpButton", "help", "도움말", true)
 	help.AnchorPoint = Vector2.new(1, 0)
 	help.Position = UDim2.new(1, -8, 0, SYS_Y)
+	help.Visible = false -- [12개] 별도 HUD 아이콘만 숨김. 설정 > 게임 방법은 그대로 유지.
 	help.Activated:Connect(function() openOptions(true) end)
 	local walk = H.hudShortcut(hudTop, "ViewToggle", "view", "걷기", true)
 	walk.AnchorPoint = Vector2.new(1, 0)
@@ -3416,31 +3393,51 @@ function H.updateHud(p, ship)
 			elseif (ship.supplies or 0) <= 5 then "보급" else nil,
 		board = if readyDelivery then "납품" else nil,
 	}
+	-- [색상별 신호] 실제 상태가 변할 때만 갱신한다. 파티클은 기존 Roblox 투명 스파클 텍스처 재사용.
+	H.dockSignalTweens = H.dockSignalTweens or {}
 	for id, notice in H.dockNotices do
 		local alert = alerts[id]
-		local changed = alert ~= nil and notice.Text ~= alert
-		notice.Text = alert or ""
+		local previous = notice:GetAttribute("SignalKind")
+		local changed = (alert or "") ~= (previous or "")
+		local tint = if alert == "긴급" then Color3.fromRGB(255, 87, 72)
+			elseif alert == "수리" or alert == "보급" then Color3.fromRGB(255, 176, 78)
+			elseif alert == "납품" then Color3.fromRGB(83, 255, 191)
+			else Color3.fromRGB(255, 235, 107)
+		notice.ImageColor3 = tint
 		notice.Visible = alert ~= nil
-		notice.BackgroundColor3 = if id == "yard" then Color3.fromRGB(190, 70, 54)
-			elseif id == "board" then Color3.fromRGB(44, 144, 122) else Color3.fromRGB(188, 119, 39)
-		-- [신호 파티클] 새로운 위험·거래·의뢰 알림 발생 시 3개만 한 번 표시. 반복 루프 없음.
+		if changed then
+			notice:SetAttribute("SignalKind", alert or "")
+			local oldTween = H.dockSignalTweens[id]
+			if oldTween then oldTween:Cancel(); H.dockSignalTweens[id] = nil end
+			notice.ImageTransparency = 0.05
+			if alert and not game:GetService("GuiService").ReducedMotionEnabled then
+				local tween = game:GetService("TweenService"):Create(notice,
+					TweenInfo.new(0.9, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+					{ ImageTransparency = 0.68 })
+				H.dockSignalTweens[id] = tween
+				tween:Play()
+			end
+		end
+		-- [짧은 파티클] 알림 발생·상태 변경 시에만 3개 1회 발생. 버튼 위에 글씨 배지 없음.
 		local button = H.dockButtons[id]
-		if changed and hudTopGui.Enabled and button and not game:GetService("GuiService").ReducedMotionEnabled then
+		if changed and alert and button and hudTopGui.Enabled
+			and not game:GetService("GuiService").ReducedMotionEnabled then
 			for i = 1, 3 do
-				local spark = Instance.new("Frame")
+				local spark = Instance.new("ImageLabel")
 				spark.Name = "SignalSpark"
-				spark.Size = UDim2.fromOffset(5, 5)
-				spark.Position = UDim2.fromOffset(25 + (i - 2) * 8, 17)
-				spark.BackgroundColor3 = Color3.fromRGB(255, 245, 193)
+				spark.Image = "rbxasset://textures/particles/sparkles_main.dds"
+				spark.ImageColor3 = tint
+				spark.BackgroundTransparency = 1
 				spark.BorderSizePixel = 0
+				spark.Size = UDim2.fromOffset(13, 13)
+				spark.AnchorPoint = Vector2.new(0.5, 0.5)
+				spark.Position = UDim2.new(0.5, (i - 2) * 8, 0, 18)
 				spark.ZIndex = 9
-				corner(spark, 3)
 				spark.Parent = button
-				local tween = game:GetService("TweenService"):Create(spark, TweenInfo.new(0.42, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-					Position = UDim2.fromOffset(25 + (i - 2) * 18, if i == 2 then -8 else 2),
-					Size = UDim2.fromOffset(2, 2),
-					BackgroundTransparency = 1,
-				})
+				local tween = game:GetService("TweenService"):Create(spark,
+					TweenInfo.new(0.46, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+					{ Position = UDim2.new(0.5, (i - 2) * 21, 0, -5 - (i % 2) * 7),
+						Size = UDim2.fromOffset(2, 2), ImageTransparency = 1 })
 				tween.Completed:Connect(function() spark:Destroy() end)
 				tween:Play()
 			end
@@ -3468,21 +3465,7 @@ function H.updateHud(p, ship)
 		local pulse = H.dockMotion["Menu_" .. destination]
 		if pulse and not game:GetService("GuiService").ReducedMotionEnabled then pulse:Play() end
 	end
-	-- [상태 길잡이] 화면 밖 도크 아이콘의 지시등도 한 줄에서 확인할 수 있다.
-	local names = { trade = "교역소", yard = "조선소", board = "주점" }
-	local signals = {}
-	for _, spec in H.DOCK do
-		if alerts[spec[1]] then
-			table.insert(signals, names[spec[1]] .. " " .. alerts[spec[1]])
-		end
-	end
-	if cue and destination then
-		table.insert(signals, "추천: " .. cue)
-	end
-	local wasVisible = H.dockStatus.Visible
-	H.dockStatus.Text = table.concat(signals, " · ")
-	H.dockStatus.Visible = #signals > 0
-	if wasVisible ~= H.dockStatus.Visible and H.layoutDock then H.layoutDock() end
+	-- [글씨 알림 제거] 저가·긴급·수리·보급·납품·추천 상태는 해당 아이콘의 색광·파티클만으로 표시한다.
 end
 
 -- 화면 중앙 상단 동료 말풍선: 게임을 시작하거나 새 항구에 닿으면 동료가 인사하고 앞으로 할 일을 조언한다.
@@ -3504,49 +3487,57 @@ do
 	local function layoutBubble()
 		local width = math.max(320, hud.AbsoluteSize.X)
 		local compact = width < 610
-		-- [모바일 8개 시설] 가로 한 줄을 유지하고 화면보다 넓을 때만 스크롤한다.
-		local CW, CH, GAP = 58, 76, 6
-		local count = #H.DOCK -- 시설 8곳(외교 포함): 모바일은 가로 스크롤
-		local dockW = count * CW + math.max(0, count - 1) * GAP
-		dockGrid.Padding = UDim.new(0, GAP)
-		for _, dockButton in H.dockButtons do
-			dockButton.Size = UDim2.fromOffset(CW, CH)
-		end
-		dock.AutomaticCanvasSize = Enum.AutomaticSize.None
-		dock.ScrollingDirection = Enum.ScrollingDirection.X
-		dock.CanvasSize = UDim2.fromOffset(dockW, CH)
-		dock.AnchorPoint = if compact then Vector2.zero else Vector2.new(1, 0)
-		dock.Position = if compact then UDim2.fromOffset(8, 6) else UDim2.new(1, -8, 0, 6)
-		dock.Size = UDim2.fromOffset(if compact then math.min(dockW, width - 16) else dockW, CH)
-		-- [도구 한 줄] 저널·설정·도움말을 시설 아래에 분리해 터치 충돌을 방지한다.
-		local toolsY = 6 + CH + GAP
-		local toolCW, toolGap = if compact then 52 else CW, if compact then 4 else GAP
-		local sysOrder = { "HelpButton", "OptionsButton", "DeckButton", "JournalButton", "ViewToggle" }
+		-- [12개 고정 배열] 8개 시설 + 저널·내 카드·설정·걷기 4개 = 위 6 / 아래 6.
+		local GAP = if width < 420 then 4 else 6
+		local CW = math.min(58, math.floor((width - 16 - GAP * 5) / 6))
+		local CH = if CW < 54 then 70 else 76
+		local dockW = CW * 6 + GAP * 5
+		local dockH = CH * 2 + GAP
+		dockGrid.CellPadding = UDim2.fromOffset(GAP, GAP)
+		dockGrid.CellSize = UDim2.fromOffset(CW, CH)
+		local sysOrder = { "JournalButton", "DeckButton", "OptionsButton", "ViewToggle" }
 		for i, name in sysOrder do
-			local b = hudTop:FindFirstChild(name)
+			local b = dock:FindFirstChild(name) or hudTop:FindFirstChild(name)
 			if b then
-				b.Size = UDim2.fromOffset(toolCW, CH)
-				b.AnchorPoint = if compact then Vector2.zero else Vector2.new(1, 0)
-				b.Position = if compact then UDim2.fromOffset(8 + (i - 1) * (toolCW + toolGap), toolsY)
-					else UDim2.new(1, -8 - (i - 1) * (toolCW + toolGap), 0, toolsY)
+				if b.Parent ~= dock then b.Parent = dock end
+				b.LayoutOrder = #H.DOCK + i
 			end
 		end
-		-- [지시등] 시설·도구 밑에 배경 없는 상태 문장을 고정한다.
-		H.dockStatus.AnchorPoint = if compact then Vector2.zero else Vector2.new(1, 0)
-		H.dockStatus.Position = if compact then UDim2.fromOffset(8, toolsY + CH + 2)
-			else UDim2.new(1, -8, 0, toolsY + CH + 2)
-		H.dockStatus.Size = UDim2.fromOffset(if compact then width - 16 else math.min(dockW, 510), 22)
-		local statusGap = if H.dockStatus.Visible and compact then 24 else 0
-		-- [작은 폰] 메뉴·선장 카드·조언을 세로로 나눠 눌림 영역이 겹치지 않게 한다.
-		card.Position = UDim2.fromOffset(8, if compact then toolsY + CH + 6 + statusGap else 8)
+		for _, item in dock:GetChildren() do
+			if item:IsA("TextButton") then
+				item.AnchorPoint = Vector2.zero
+				item.Size = UDim2.fromOffset(CW, CH)
+				local art = item:FindFirstChild("MenuArt")
+				local artSize = math.min(46, CW - 6, CH - 26)
+				if art and art:IsA("GuiObject") then
+					art.Size = UDim2.fromOffset(artSize, artSize)
+					art.Position = UDim2.new(0.5, 0, 0, 3)
+				end
+				local caption = item:FindFirstChild("MenuName")
+				if caption and caption:IsA("TextLabel") then
+					caption.Position = UDim2.fromOffset(0, CH - 23)
+					caption.Size = UDim2.new(1, 0, 0, 19)
+					caption.TextSize = if CW < 52 then 11 else 13
+				end
+			end
+		end
+		dock.AutomaticCanvasSize = Enum.AutomaticSize.None
+		dock.ScrollingEnabled = false
+		dock.CanvasSize = UDim2.fromOffset(dockW, dockH)
+		dock.ScrollBarThickness = 0
+		dock.AnchorPoint = if compact then Vector2.zero else Vector2.new(1, 0)
+		dock.Position = if compact then UDim2.fromOffset(8, 6) else UDim2.new(1, -8, 0, 6)
+		dock.Size = UDim2.fromOffset(dockW, dockH)
+		-- [작은 폰] 선장 상태 카드와 조언은 두 줄 메뉴 아래에 배치한다.
+		card.Position = UDim2.fromOffset(8, if compact then dockH + 12 else 8)
 		card.Size = UDim2.fromOffset(if compact then math.min(252, width - 16) else 262, 114)
 		local left = if width < 1050 then 8 else 282
 		local right = if width < 1050 then 8 else 304
 		local bubbleWidth = math.clamp(width - left - right, 1, 760)
 		bubble.AnchorPoint = Vector2.zero
 		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2),
-			if compact then toolsY + CH + 128 + statusGap elseif width < 1050 then 174 else 76)
-		H.goalBanner.Position = UDim2.new(0.5, 0, 0, if compact then 254 + statusGap elseif width < 790 then 120 else 8)
+			if compact then dockH + 134 elseif width < 1050 then dockH + 18 else 76)
+		H.goalBanner.Position = UDim2.new(0.5, 0, 0, if compact then dockH + 250 elseif width < 790 then dockH + 20 else 8)
 		H.goalBanner.Size = UDim2.fromOffset(if compact then math.max(170, width - 16)
 			elseif width < 790 then math.min(530, width - 24)
 			else math.clamp(width - 590, 204, 480), 54)
