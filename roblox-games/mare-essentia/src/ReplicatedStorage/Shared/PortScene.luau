@@ -2233,12 +2233,15 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 						(if rear then (if left then math.pi * 1.5 else math.pi * 0.5)
 						else (if left then 0 else math.pi))
 						else (if rear then (if left then math.pi else 0) else (if left then 0 else math.pi))
+					-- [중복 관절 제거] 한 다리의 무릎·발목은 서로 다른 보행 다리로 집계하지 않는다.
+					local legGroup = if kind == "leg" then (if rear then "rear" else "front")
+						.. (if left then "_left" else "_right") else nil
 					local targetPart = if node:IsA("Motor6D") then node.Part1
 						elseif node:IsA("AnimationConstraint") then node.Attachment1 and node.Attachment1.Parent else nil
 					if node:IsA("Bone") and #animalJoints < 14 then
 						-- 스킨 메시는 원본 Bone.Transform으로만 변형한다.
 						table.insert(animalJoints, { joint = node, base = node.Transform,
-							kind = kind, side = side, phase = phaseOffset })
+							kind = kind, side = side, phase = phaseOffset, group = legGroup })
 					elseif targetPart and targetPart:IsA("BasePart") then
 						if targetPart.Anchored then
 							-- [외부 FBX 실제 표시] 가져온 동물은 모든 파츠가 고정된다.
@@ -2247,20 +2250,20 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 							if not drivenParts[targetPart] and #animalParts < 12
 								and math.max(targetPart.Size.X, targetPart.Size.Y, targetPart.Size.Z) < bodyExtent * 0.77 then
 								table.insert(animalParts, { part = targetPart, base = basePivot:ToObjectSpace(targetPart.CFrame),
-									kind = kind, side = side, phase = phaseOffset,
+									kind = kind, side = side, phase = phaseOffset, group = legGroup,
 									hinge = math.min(targetPart.Size.Y * 0.34, 0.65) })
 								drivenParts[targetPart] = true
 							end
 						elseif #animalJoints < 14 then
 							table.insert(animalJoints, { joint = node, base = node.Transform,
-								kind = kind, side = side, phase = phaseOffset })
+								kind = kind, side = side, phase = phaseOffset, group = legGroup })
 						end
 					elseif node:IsA("BasePart") and not occupiedParts[node] and not drivenParts[node]
 						and #animalParts < 12
 						and math.max(node.Size.X, node.Size.Y, node.Size.Z) < bodyExtent * 0.77 then
 						-- 한 덩어리 전신 메시를 다리나 고개로 오인해 회전시키지 않는다.
 						table.insert(animalParts, { part = node, base = basePivot:ToObjectSpace(node.CFrame),
-							kind = kind, side = side, phase = phaseOffset,
+							kind = kind, side = side, phase = phaseOffset, group = legGroup,
 							hinge = math.min(node.Size.Y * 0.34, 0.65) })
 						drivenParts[node] = true
 					end
@@ -2272,13 +2275,19 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				cow = 3.8, horse = 4.3, donkey = 3.2, llama = 3.4, elephant = 4.8 }
 			m:SetAttribute("AnimalRigParts", #animalParts)
 			m:SetAttribute("AnimalRigJoints", #animalJoints)
-			-- [동물 실제 걷기] 목·꼬리만 있는 리그는 걷는 사지로 오판하지 않는다.
-			local legCount = 0
+			-- [보행 오판 방지] 무릎·발목이 많은 한쪽 다리만으로 걷기 리그를 판정하지 않는다.
+			local legGroups, legCount = {}, 0
 			for _, limb in animalJoints do
-				if limb.kind == "leg" then legCount += 1 end
+				if limb.group and not legGroups[limb.group] then
+					legGroups[limb.group] = true
+					legCount += 1
+				end
 			end
 			for _, limb in animalParts do
-				if limb.kind == "leg" then legCount += 1 end
+				if limb.group and not legGroups[limb.group] then
+					legGroups[limb.group] = true
+					legCount += 1
+				end
 			end
 			local canWalk = legCount >= 2
 			m:SetAttribute("AnimalMotionRig", if canWalk and #animalJoints > 0 then "JOINTED_WALK"
