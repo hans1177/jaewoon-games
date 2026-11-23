@@ -1,0 +1,64 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'NEWGAME ok='..tostring(a and a.ok)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local n=0 for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then for _,x in ipairs(g:GetDescendants()) do if x:IsA('TextLabel') and string.find(x.Text,'길드 서기') then g:Destroy() n+=1 break end end end end return 'killed '..n"
+ },
+ {
+  "type": "wait",
+  "ms": 800
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:trade') return 'dev'"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal out={}\nlocal b=pg:FindFirstChild('Menu_diplomacy',true)\nif not b then return 'NO_MENU_DIPLOMACY' end\nlocal c=b.AbsolutePosition+b.AbsoluteSize/2\ntable.insert(out,'dip pos='..tostring(b.AbsolutePosition)..' size='..tostring(b.AbsoluteSize)..' vis='..tostring(b.Visible))\nlocal y=pg:FindFirstChild('Menu_yard',true)\nif y then table.insert(out,'yard pos='..tostring(y.AbsolutePosition)..' size='..tostring(y.AbsoluteSize)) end\nlocal dock=b.Parent\ntable.insert(out,'dock abs='..tostring(dock.AbsolutePosition)..' size='..tostring(dock.AbsoluteSize)..' canvas='..tostring(dock.CanvasSize)..' cp='..tostring(dock.CanvasPosition))\nlocal hits=pg:GetGuiObjectsAtPosition(c.X,c.Y)\nfor i,h in ipairs(hits) do if i<=8 then table.insert(out,i..':'..h:GetFullName():sub(-70)..' active='..tostring(h.Active)) end end\nreturn table.concat(out,' | ')"
+ },
+ {
+  "type": "capture",
+  "name": "dip_before"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal b=pg:FindFirstChild('Menu_diplomacy',true)\nlocal c=b.AbsolutePosition+b.AbsoluteSize/2\nlocal gs=game:GetService('GuiService'):GetGuiInset()\nlocal vim=game:GetService('VirtualInputManager')\nvim:SendMouseButtonEvent(c.X,c.Y,0,true,game,0) task.wait(0.05) vim:SendMouseButtonEvent(c.X,c.Y,0,false,game,0)\ntask.wait(1.5)\nlocal hdr='' for _,x in ipairs(pg:GetDescendants()) do if x:IsA('TextLabel') and x.Visible and (string.find(x.Text,'외교',1,true) or string.find(x.Text,'조선',1,true)) and x.AbsoluteSize.Y>20 then hdr=hdr..'['..x.Name..'='..x.Text:sub(1,30)..']' end end\nreturn 'inset='..tostring(gs)..' after click: '..hdr:sub(1,600)"
+ },
+ {
+  "type": "capture",
+  "name": "dip_after"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:diplomacy') return 'dev'"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "dip_devcall"
+ }
+]
