@@ -2470,7 +2470,38 @@ function H.layoutBook()
   -- 본문은 전체 폭을 쓰고, 높이가 모자라면 원화를 숨겨 조작을 우선한다.
   local bodyH = height - bodyTop
   local showArt = gallery and bodyH >= (if wide then 300 else 340)
-  H.facilityGallery.Visible = showArt
+  -- [낮은 가로 화면] 배너 대신 오른쪽 포스터(흐린 배경 + 원화 카드 + 제목)로 바꿔 본문 높이를 지킨다.
+  local poster = gallery and not showArt and wide and bodyH >= 200
+  H.facilityGallery.Visible = showArt or poster
+  local dockH = if H.menuActionDock.Visible then 80 else 8
+  if poster then
+    local posterW = math.clamp(math.floor(width * 0.24), 200, 300)
+    local posterH = math.max(120, bodyH - 8)
+    H.facilityGallery.Position = UDim2.new(1, -posterW - 8, 0, bodyTop)
+    H.facilityGallery.Size = UDim2.fromOffset(posterW, posterH)
+    local cardH = math.max(60, math.min(posterH - 74, math.floor((posterW - 24) * 10 / 7)))
+    local cardW = math.floor(cardH * 7 / 10)
+    H.galleryCard.Position = UDim2.fromOffset(math.floor((posterW - cardW) / 2), 10)
+    H.galleryCard.Size = UDim2.fromOffset(cardW, cardH)
+    H.galleryTitle.TextWrapped = false
+    H.galleryTitle.TextXAlignment = Enum.TextXAlignment.Center
+    H.galleryTitle.TextSize = 20
+    H.galleryTitle.Position = UDim2.fromOffset(8, cardH + 16)
+    H.galleryTitle.Size = UDim2.new(1, -16, 0, 26)
+    H.galleryCaption.TextWrapped = true
+    H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Center
+    H.galleryCaption.Position = UDim2.fromOffset(8, cardH + 42)
+    H.galleryCaption.Size = UDim2.new(1, -16, 0, 26)
+    local midY = 10 + math.floor(cardH / 2) - 20
+    H.galleryPrev.Position = UDim2.fromOffset(math.floor((posterW - cardW) / 2) - 2, midY)
+    H.galleryNext.Position = UDim2.fromOffset(math.floor((posterW + cardW) / 2) - 38, midY)
+    content.Position = UDim2.fromOffset(8, bodyTop)
+    content.Size = UDim2.new(1, -posterW - 24, 1, -bodyTop - dockH)
+    H.menuActionDock.Position = UDim2.new(0, 8, 1, -76)
+    H.menuActionDock.Size = UDim2.new(1, -posterW - 24, 0, 68)
+    return
+  end
+  -- [반응형 배너] 같은 원화를 흐리게 깐 배경 위에 7:10 원화 카드(자르지 않음)와 제목을 놓는다.
   local artH = if showArt then math.clamp(math.floor(bodyH * (if wide then 0.32 else 0.26)), 112, if wide then 230 else 176) else 0
   H.facilityGallery.Position = UDim2.fromOffset(8, bodyTop)
   H.facilityGallery.Size = UDim2.new(1, -16, 0, artH)
@@ -2493,7 +2524,7 @@ function H.layoutBook()
   H.galleryNext.Position = UDim2.new(1, -50, 1, -48)
   local contentY = bodyTop + (if showArt then artH + 8 else 0)
   content.Position = UDim2.fromOffset(8, contentY)
-  content.Size = UDim2.new(1, -16, 1, -contentY - (if H.menuActionDock.Visible then 80 else 8))
+  content.Size = UDim2.new(1, -16, 1, -contentY - dockH)
   H.menuActionDock.Position = UDim2.new(0, 8, 1, -76)
   H.menuActionDock.Size = UDim2.new(1, -16, 0, 68)
 end
