@@ -216,6 +216,109 @@ local P: { [string]: Identity } = {
 		signature = { "어시장", "포도주 선창", "양모 창고" }, facade = { 229, 220, 197 }, roofTint = { 99, 123, 146 },
 		reflow = { lane = 12, plaza = 13, side = -1, landmarkX = -4, landmarkZ = -7, district = -7, facility = 2 } },
 
+	-- [항구별 재배치 34~50] alexandria: 기존 승인 모델과 지시서 기반 공간 배치.
+	alexandria = { landmark = { id = "lm_alexandria_mosque", name = "항만 대모스크의 돔과 첨탑", kind = "mosque", fallback = "none" },
+		roof = "dome", wall = "stone", balcony = "mashrabiya", layout = "terrace", plaza = "temple_court",
+		street = { "dirt", "gravel", "cobble", "flagstone", "flagstone" }, lamp = "mosque_lamp", ground = "red_earth", weatherGround = "dust",
+		signature = { "직물 염색 공방", "향신료 상관", "면직물 시장" }, facade = { 211, 188, 156 }, roofTint = { 154, 109, 86 },
+		reflow = { lane = -12, plaza = 7, side = 1, landmarkX = -8, landmarkZ = 5, district = -11, facility = 2 } },
+	-- [항구별 재배치 34~50] algiers: 기존 승인 모델과 지시서 기반 공간 배치.
+	algiers = { landmark = { id = "lm_algiers_mosque", name = "카스바 언덕 모스크 돔", kind = "mosque", fallback = "none" },
+		roof = "dome", wall = "stone", balcony = "mashrabiya", layout = "organic", plaza = "temple_court",
+		street = { "dirt", "gravel", "cobble", "flagstone", "flagstone" }, lamp = "mosque_lamp", ground = "sand", weatherGround = "dust",
+		signature = { "올리브 압착소", "산호 교역소", "양모 창고" }, facade = { 226, 209, 181 }, roofTint = { 149, 110, 90 },
+		reflow = { lane = 5, plaza = -14, side = -1, landmarkX = 6, landmarkZ = -5, district = 4, facility = 3 } },
+	-- [항구별 재배치 34~50] antwerp: 기존 승인 모델과 지시서 기반 공간 배치.
+	antwerp = { landmark = { id = "lm_antwerp_belfry", name = "직물 회관의 벽돌 종탑", kind = "belfry", fallback = "none" },
+		roof = "gable", wall = "brick", balcony = "iron", layout = "canal", plaza = "quay",
+		street = { "plank", "brick", "brick", "brick", "paved" }, lamp = "oil_lantern", ground = "mud", weatherGround = "puddles",
+		signature = { "직물 회관", "유리 공방", "운하 창고" }, facade = { 174, 81, 68 }, roofTint = { 93, 71, 65 },
+		reflow = { lane = 11, plaza = -13, side = 1, landmarkX = 7, landmarkZ = 8, district = -6, facility = 4 } },
+	-- [항구별 재배치 34~50] barcelona: 기존 승인 모델과 지시서 기반 공간 배치.
+	barcelona = { landmark = { id = "lm_barcelona_campanile", name = "대성당의 종탑과 성곽", kind = "campanile", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "iron", layout = "terrace", plaza = "fountain",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "dust",
+		signature = { "올리브 압착소", "양모 시장", "포도주 선창" }, facade = { 234, 216, 188 }, roofTint = { 176, 100, 72 },
+		reflow = { lane = -9, plaza = 12, side = -1, landmarkX = -5, landmarkZ = 7, district = 7, facility = 5 } },
+	-- [항구별 재배치 34~50] beirut: 기존 승인 모델과 지시서 기반 공간 배치.
+	beirut = { landmark = { id = "lm_beirut_mosque", name = "산비탈의 돔과 가는 첨탑", kind = "mosque", fallback = "none" },
+		roof = "dome", wall = "stone", balcony = "mashrabiya", layout = "organic", plaza = "temple_court",
+		street = { "dirt", "gravel", "cobble", "flagstone", "flagstone" }, lamp = "mosque_lamp", ground = "red_earth", weatherGround = "dust",
+		signature = { "비단 직물 공방", "면화 창고", "향신료 시장" }, facade = { 212, 194, 167 }, roofTint = { 142, 109, 85 },
+		reflow = { lane = 4, plaza = 15, side = 1, landmarkX = 3, landmarkZ = -8, district = -8, facility = 6 } },
+	-- [항구별 재배치 34~50] boston: 기존 승인 모델과 지시서 기반 공간 배치.
+	boston = { landmark = { id = "lm_boston_fort", name = "석조 항만 요새 감시탑", kind = "fort", fallback = "none" },
+		roof = "hip", wall = "stone", balcony = nil, layout = "grid", plaza = "parade",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "생선 염장소", "목재 선창", "고래 기름 창고" }, facade = { 177, 169, 157 }, roofTint = { 88, 93, 105 },
+		reflow = { lane = -10, plaza = -12, side = 1, landmarkX = -7, landmarkZ = -7, district = 6, facility = 1 } },
+	-- [항구별 재배치 34~50] buenos_aires: 기존 승인 모델과 지시서 기반 공간 배치.
+	buenos_aires = { landmark = { id = "lm_buenos_aires_cathedral", name = "쌍탑 식민지 대성당", kind = "cathedral", fallback = "none" },
+		roof = "flat", wall = "stucco", balcony = "iron", layout = "grid", plaza = "parade",
+		street = { "sand", "dirt", "gravel", "cobble", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "dust",
+		signature = { "은 선적 부두", "가죽 상관", "양모 시장" }, facade = { 226, 203, 176 }, roofTint = { 175, 101, 78 },
+		reflow = { lane = 12, plaza = 4, side = -1, landmarkX = 8, landmarkZ = 6, district = -3, facility = 2 } },
+	-- [항구별 재배치 34~50] cadiz: 기존 승인 모델과 지시서 기반 공간 배치.
+	cadiz = { landmark = { id = "lm_cadiz_campanile", name = "해안 대성당 종탑", kind = "campanile", fallback = "none" },
+		roof = "hip", wall = "stucco", balcony = "iron", layout = "grid", plaza = "fountain",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "sand", weatherGround = "dust",
+		signature = { "소금 저장고", "향신료 선창", "포도주 상관" }, facade = { 242, 225, 196 }, roofTint = { 172, 113, 77 },
+		reflow = { lane = -6, plaza = -9, side = 1, landmarkX = -5, landmarkZ = -5, district = 10, facility = 3 } },
+	-- [항구별 재배치 34~50] colombo: 기존 승인 모델과 지시서 기반 공간 배치.
+	colombo = { landmark = { id = "lm_colombo_gopuram", name = "층층 지붕 사원 문루", kind = "gopuram", fallback = "none" },
+		roof = "eave", wall = "plaster", balcony = "wood_lattice", layout = "terrace", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "monsoon_mud",
+		signature = { "계피 창고", "보석 감정소", "진주 시장" }, facade = { 225, 205, 164 }, roofTint = { 136, 91, 66 },
+		reflow = { lane = 8, plaza = 11, side = -1, landmarkX = 4, landmarkZ = 7, district = -10, facility = 4 } },
+	-- [항구별 재배치 34~50] dakar: 기존 승인 모델과 지시서 기반 공간 배치.
+	dakar = { landmark = { id = "lm_dakar_mosque", name = "진흙벽 모스크와 목조 들보", kind = "mosque", fallback = "none" },
+		roof = "thatch", wall = "adobe", balcony = nil, layout = "organic", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "torch", ground = "sand", weatherGround = "monsoon_mud",
+		signature = { "생선 건조장", "아라비아고무 창고", "상아 상관" }, facade = { 172, 130, 92 }, roofTint = { 113, 92, 67 },
+		reflow = { lane = -3, plaza = -15, side = -1, landmarkX = -2, landmarkZ = -6, district = -12, facility = 5 } },
+	-- [항구별 재배치 34~50] dublin: 기존 승인 모델과 지시서 기반 공간 배치.
+	dublin = { landmark = { id = "lm_dublin_clock_tower", name = "시계가 달린 교구 교회 첨탑", kind = "clock_tower", fallback = "none" },
+		roof = "gable", wall = "brick", balcony = nil, layout = "organic", plaza = "market",
+		street = { "dirt", "gravel", "cobble", "cobble", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "양모 직물 공방", "맥주 양조장", "상인 시장" }, facade = { 151, 110, 91 }, roofTint = { 79, 90, 95 },
+		reflow = { lane = 7, plaza = -6, side = 1, landmarkX = 6, landmarkZ = 6, district = 2, facility = 6 } },
+	-- [항구별 재배치 34~50] edo: 기존 승인 모델과 지시서 기반 공간 배치.
+	edo = { landmark = { id = "lm_edo_castle", name = "석단 위 에도 성 천수각", kind = "castle", fallback = "none" },
+		roof = "eave", wall = "wood", balcony = "wood_lattice", layout = "terrace", plaza = "quay",
+		street = { "dirt", "gravel", "gravel", "flagstone", "flagstone" }, lamp = "stone_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "쌀 도매 시장", "칠기 공방", "비단 창고" }, facade = { 155, 130, 105 }, roofTint = { 73, 76, 82 },
+		reflow = { lane = -12, plaza = 14, side = 1, landmarkX = -6, landmarkZ = 8, district = 11, facility = 1 } },
+	-- [항구별 재배치 34~50] incheon: 기존 승인 모델과 지시서 기반 공간 배치.
+	incheon = { landmark = { id = "lm_incheon_gate", name = "석축 위 조선 진성 문루", kind = "gate", fallback = "none" },
+		roof = "eave", wall = "plaster", balcony = nil, layout = "organic", plaza = "market",
+		street = { "dirt", "dirt", "gravel", "flagstone", "flagstone" }, lamp = "paper_lantern", ground = "grass", weatherGround = "snow",
+		signature = { "인삼 시장", "쌀 창고", "비단 공방" }, facade = { 224, 213, 186 }, roofTint = { 75, 85, 92 },
+		reflow = { lane = 3, plaza = -13, side = -1, landmarkX = 5, landmarkZ = -7, district = -4, facility = 2 } },
+	-- [항구별 재배치 34~50] jeddah: 기존 승인 모델과 지시서 기반 공간 배치.
+	jeddah = { landmark = { id = "lm_jeddah_mosque", name = "마당과 사각 첨탑을 둔 모스크", kind = "mosque", fallback = "none" },
+		roof = "flat", wall = "adobe", balcony = "mashrabiya", layout = "grid", plaza = "market",
+		street = { "sand", "dirt", "gravel", "flagstone", "flagstone" }, lamp = "mosque_lamp", ground = "sand", weatherGround = "dust",
+		signature = { "커피 볶음 공방", "유향 창고", "진주 상관" }, facade = { 216, 190, 151 }, roofTint = { 157, 127, 94 },
+		reflow = { lane = -7, plaza = 5, side = 1, landmarkX = -3, landmarkZ = 6, district = 12, facility = 3 } },
+	-- [항구별 재배치 34~50] kilwa: 기존 승인 모델과 지시서 기반 공간 배치.
+	kilwa = { landmark = { id = "lm_kilwa_mosque", name = "산호석 모스크와 조각문", kind = "mosque", fallback = "none" },
+		roof = "flat", wall = "coral", balcony = "wood_lattice", layout = "organic", plaza = "quay",
+		street = { "sand", "sand", "gravel", "flagstone", "flagstone" }, lamp = "oil_lantern", ground = "sand", weatherGround = "monsoon_mud",
+		signature = { "금 계량소", "상아 선창", "흑단 목재 창고" }, facade = { 228, 215, 180 }, roofTint = { 157, 131, 103 },
+		reflow = { lane = 10, plaza = -11, side = -1, landmarkX = 8, landmarkZ = -8, district = 9, facility = 4 } },
+	-- [항구별 재배치 34~50] malacca: 기존 승인 모델과 지시서 기반 공간 배치.
+	malacca = { landmark = { id = "lm_malacca_gopuram", name = "계단식 지붕의 사원 문루", kind = "gopuram", fallback = "none" },
+		roof = "eave", wall = "plaster", balcony = "wood_lattice", layout = "canal", plaza = "market",
+		street = { "red_earth", "red_earth", "gravel", "flagstone", "paved" }, lamp = "oil_lantern", ground = "red_earth", weatherGround = "monsoon_mud",
+		signature = { "후추 창고", "정향 선별장", "육두구 시장" }, facade = { 193, 170, 130 }, roofTint = { 122, 83, 69 },
+		reflow = { lane = -4, plaza = 13, side = 1, landmarkX = -7, landmarkZ = 4, district = 3, facility = 5 } },
+	-- [항구별 재배치 34~50] new_york: 기존 승인 모델과 지시서 기반 공간 배치.
+	new_york = { landmark = { id = "lm_new_york_fort", name = "석조 항만 요새와 첨탑", kind = "fort", fallback = "none" },
+		roof = "hip", wall = "stone", balcony = "iron", layout = "grid", plaza = "parade",
+		street = { "dirt", "gravel", "cobble", "flagstone", "paved" }, lamp = "oil_lantern", ground = "grass", weatherGround = "puddles",
+		signature = { "모피 상관", "목재 선창", "고래 기름 창고" }, facade = { 191, 181, 164 }, roofTint = { 84, 93, 100 },
+		reflow = { lane = 6, plaza = -8, side = -1, landmarkX = 2, landmarkZ = -5, district = -2, facility = 6 } },
+
 }
 
 local M = {}
@@ -256,7 +359,7 @@ function M.get(portId: string): Identity?
 	return P[portId]
 end
 
--- [전체 항구 고유 외형] 항구별 지시서가 등록된 33개 항구는 지정 색을 그대로 쓰고,
+-- [전체 항구 고유 외형] 항구별 지시서가 등록된 50개 항구는 지정 색을 그대로 쓰고,
 -- 나머지 항구는 기존 문화권의 벽·지붕·도로 팔레트에서 항구 ID별 고정 변형을 만든다.
 -- 어떤 모델도 새로 생성·선택하지 않으며 항구 데이터·저장·경제는 변경하지 않는다.
 -- 같은 항구는 방문할 때마다 항상 같은 색이며 서로 다른 문화권의 재료색을 섞지 않는다.
