@@ -248,6 +248,9 @@ test('전 항구 주요 시설·광장·주택·시장·농업·랜드마크가 
   assert.match(scene, /fillRow\(side \* \(laneZ \+ laneWidth \/ 2 \+ 6 \+ S \/ 2\), t, layoutPlan\.homeStartX/);
   assert.match(scene, /for _, site in layoutPlan\.facilities do/);
   assert.match(scene, /local townLeft = if isRoyalCity then -635 else math\.min\(-475, X_END - 32\)/);
+  assert.match(scene, /math\.max\(300, outerEdgeZ \+ 52, layoutPlan\.farmZ \+ 52\)/);
+  assert.match(scene, /royalX = -425 \+ planRng:NextInteger\(-22, 22\)/);
+  assert.match(scene, /local px = layoutPlan\.royalX/);
   assert.match(scene, /densify\(folder, info, style, rng, walkers,[^\n]+ onFacility, layoutPlan\)/);
   assert.match(scene, /placeLandmarks\(folder, info, style, rng, onFacility, walkers, layoutPlan\)/);
   assert.match(scene, /placeSignature\(folder, info, layoutPlan\)/);
