@@ -1,0 +1,42 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'NEWGAME ok='..tostring(a and a.ok)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local n=0 for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then for _,x in ipairs(g:GetDescendants()) do if x:IsA('TextLabel') and string.find(x.Text,'길드 서기') then g:Destroy() n+=1 break end end end end return 'killed '..n"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local out={} local n=0\nfor _,m in ipairs(workspace:GetDescendants()) do\n if m:IsA('Model') and m.Name=='Villager' and n<4 then n+=1\n  local parts={}\n  for _,p in ipairs(m:GetDescendants()) do\n   if p:IsA('BasePart') and p.Transparency<0.99 then\n    local c=p.Color local tex=''\n    if p:IsA('MeshPart') then tex=' tex='..tostring(p.TextureID):sub(-12) end\n    local dec=p:FindFirstChildOfClass('Decal')\n    if dec then tex=tex..' decal='..tostring(dec.Texture):sub(-12)..' '..dec.Face.Name end\n    local dark=(c.R+c.G+c.B)<0.25\n    table.insert(parts,string.format('%s%s[%d,%d,%d]%s %s sz=%.1f,%.1f,%.1f',dark and '!!' or '',p.Name,c.R*255,c.G*255,c.B*255,tex,p.Material.Name,p.Size.X,p.Size.Y,p.Size.Z))\n   end\n  end\n  table.insert(out,'#'..n..' attrs='..tostring(m:GetAttribute('Outfit') or m:GetAttribute('Job') or '')..' :: '..table.concat(parts,' ; '))\n end\nend\nreturn 'villagers='..n..'\\n'..table.concat(out,'\\n'):sub(1,9000)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local m for _,x in ipairs(workspace:GetDescendants()) do if x:IsA('Model') and x.Name=='Villager' and x.PrimaryPart then m=x break end end\nif not m then return 'no villager' end\nlocal cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable\nlocal p=m:GetPivot().Position cam.CFrame=CFrame.lookAt(p+m:GetPivot().LookVector*6+Vector3.new(0,1.5,0),p+Vector3.new(0,1,0)) return 'cam on '..m:GetFullName()"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "v_closeup"
+ }
+]
