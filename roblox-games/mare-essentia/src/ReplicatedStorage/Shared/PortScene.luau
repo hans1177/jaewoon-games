@@ -4198,34 +4198,45 @@ local function densify(folder, info, style, rng, walkers, made, onFacility)
 					end
 				end
 			else -- farm
-				-- 지역에 맞는 작물: 동아시아는 벼·양배추·가지, 더운 지방은 옥수수·호박·멜론, 그 밖은 밀·양배추·당근
-				local crops
-				if key == "japan" or key == "china" or key == "korea" or key == "seasia" then
-					crops = { { "Terrain", "crops-wheatstageb", 5 }, { "Cargo", "cabbage", 2.8 }, { "Cargo", "eggplant", 2.6 } }
-				elseif hotKey then
-					crops = { { "Cargo", "corn", 3.2 }, { "Cargo", "pumpkin", 2.8 }, { "Terrain", "crop-melon", 5 } }
-				else
-					crops = { { "Terrain", "crops-wheatstagea", 5 }, { "Cargo", "cabbage", 2.8 }, { "Cargo", "carrot", 2.8 } }
-				end
+				-- [항구별 자원 농촌] 실제 생산품에 맞는 식재 모델만 배치. 논·차밭·후추밭에 밀/옥수수 대용 금지.
+				local ruralProduct = if table.find(made, "rice") then "rice"
+					elseif table.find(made, "maize") then "maize"
+					elseif table.find(made, "grain") or table.find(made, "wheat") then "grain"
+					elseif table.find(made, "wool") or table.find(made, "cheese") then "pasture"
+					elseif table.find(made, "tea") or table.find(made, "pepper") or table.find(made, "spice") then "special_crop"
+					else "other"
+				local farmAsset = if ruralProduct == "grain" then (if lvl >= 3 then "crops-wheatstageb" else "crops-wheatstagea")
+					elseif ruralProduct == "maize" then "crops-cornstagec" else nil
+				folder:SetAttribute("CityPortRuralProduct", ruralProduct)
+				folder:SetAttribute("CityPortRuralCropAsset", farmAsset or "MISSING_EXACT_3D_CROP")
 				-- [농업 지구] 실제 경작 농장 수량·도시 발전도에 비례한 경작 줄만 표현한다.
 				-- 과거 고정 119개 작물+19개 울타리를 줄이고 농지 내부의 보행 여백을 확보한다.
 				local farmsBuilt = if districtBuildings then math.max(0, math.floor(tonumber(districtBuildings.farm) or 0)) else lvl * 7
-				local cropRows = if farmsBuilt <= 0 then 0 else math.min(3, lvl, math.max(1, math.floor(math.sqrt(farmsBuilt) / 2)))
-				local cropColumns = if districtTouch then math.min(5, 2 + lvl) else math.min(7, 2 + lvl)
+				local cropRows = if farmsBuilt <= 0 or not farmAsset then 0 else math.min(2, lvl, math.max(1, math.floor(math.sqrt(farmsBuilt) / 2)))
+				local cropColumns = if districtTouch then math.min(3, lvl + 1) else math.min(5, lvl + 1)
 				for row = -cropRows, cropRows do
 					if cropRows > 0 then
-						local cr = crops[(row + 3) % #crops + 1]
 						for k = -cropColumns, cropColumns, 2 do
-							put(cr[1], cr[2], cr[3], cx + k * 7, cz + row * 8, false)
+							put("Terrain", farmAsset, 5, cx + k * 7, cz + row * 8, false)
 						end
 					end
 				end
 				if farmsBuilt > 0 then
-					for k = -8, 8, 2 do
-						put("Town", "fence", 5, cx + k * 6, cz + (if cz > 0 then 29 else -29), false)
+					-- [정돈된 농촌] 긴 울타리 9개를 3개로 줄이고 실제 생산품에 맞는 승인된 작업장 1개만.
+					for k = -2, 2, 2 do
+						put("Town", "fence", 5, cx + k * 12, cz + (if cz > 0 then 29 else -29), false)
 					end
 					if lvl >= 3 and farmsBuilt >= 5 then
-						put("Town", if key == "iberia" or key == "north" or key == "med" then "windmill" else "watermill", 30, cx + 62, cz, true, face)
+						local europeanFarm = key == "britain" or key == "france" or key == "north"
+							or key == "nordic" or key == "hanse" or key == "brick"
+						local workshop = if europeanFarm and (table.find(made, "timber") or table.find(made, "mahogany")) then "village-sawmill"
+							elseif europeanFarm and (table.find(made, "iron") or table.find(made, "coal")) then "village-blacksmith"
+							elseif europeanFarm and ruralProduct == "pasture" then "village-stable"
+							elseif europeanFarm and ruralProduct == "grain" then "village-mill" else nil
+						if workshop and AssetIds["Town/" .. workshop] then
+							local building = put("Town", workshop, 22, cx + 62, cz, true, face)
+							if building then building:SetAttribute("CityPortRuralWorkshop", workshop) end
+						end
 					end
 				end
 				folder:SetAttribute("CityFarmRows", if cropRows > 0 then cropRows * 2 + 1 else 0)
