@@ -2319,7 +2319,7 @@ test('모든 항구 시장·종교·농장에 경계 검사와 안전 재배치 
  assert.equal(ids.length,181,'등록된 181개 항구 모두 적용');
  assert.equal(new Set(ids).size,181,'항구 중복 없음');
  for(const token of [
-  'seeded(info.portId .. ":district-safe-layout")',
+  'seeded(info.portId .. ":district-collision-reposition-v2")',
   'local districtKinds = { "religious", "market", "farm" }',
   'for candidateIndex, at in candidates do',
   'if clear and isRoyalCity',
@@ -2329,25 +2329,28 @@ test('모든 항구 시장·종교·농장에 경계 검사와 안전 재배치 
   'for _, other in districts do',
   'hx + other.hx + 6','hz + other.hz + 6',
   'math.abs(z) + hz <= 440',
-  'CityDistrictLayoutMode", "PORT_SEEDED_COLLISION_CHECK"',
+  'CityDistrictLayoutMode", "WHOLE_PORT_REPOSITION_COLLISION_CHECK"',
   'CityDistrictPlaced", #districts',
   'CityDistrictMoved", districtMoved',
   'CityDistrictRejectedCandidates", districtRejected',
   'd.hx + halfX','d.hz + halfZ',
   'CityBuildingMode", "AUTO_VISUAL_READ_ONLY"'
  ])assert.ok(scene.includes(token),'항구별 구역 안전 검사 누락: '+token);
- // 후보 좌표가 허용 최대 지터로 흔들려도 주요 랜드마크·왕궁·도시 경계를 침범하지 않아야 한다.
+ // [전 항구 신배치] 실제 대체 후보의 최대 시드 편차 양 끝을 검증한다.
+ // 원본 LM_SITES·왕궁·도시 경계와 모델 예약 반경의 겹침을 금지한다.
  const marks=[[-112,166],[-112,-166],[-160,166],[-160,-166],[-208,181],[-208,-181],[-263,181],[-263,-181]];
  for(const id of ids){
   for(const side of [-1,1]){
    for(const kind of ['religious','market','farm']){
     const hx=kind==='farm'?82:41,hz=kind==='farm'?51:43;
-    const x=kind==='farm'?-115:-141;
-    const z=side*(kind==='farm'?385:266);
-    assert.ok(Math.abs(z)+hz<=440,id+' 외곽 경계');
-    assert.ok(x-hx>-235,id+' 왕궁 서쪽 구역');
-    for(const [lx,lz] of marks){
-     assert.ok(Math.abs(x-lx)>=hx+35||Math.abs(z-lz)>=hz+35,id+' 랜드마크 경계');
+    for(const edge of [-1,1]){
+     const x=kind==='farm'?-117+edge*17*0.22:-150+edge*17*0.3;
+     const z=side*(kind==='farm'?376+edge*7:283+edge*11);
+     assert.ok(Math.abs(z)+hz<=440,id+' 신농촌·시장 외곽 경계');
+     assert.ok(x-hx>-215,id+' 왕궁 구역과 안전 분리');
+     for(const [lx,lz] of marks){
+      assert.ok(Math.abs(x-lx)>=hx+35||Math.abs(z-lz)>=hz+35,id+' 랜드마크 경계');
+     }
     }
    }
   }
