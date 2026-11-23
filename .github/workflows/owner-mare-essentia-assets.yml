@@ -90,7 +90,7 @@ jobs:
         run: |
           set -euo pipefail
           root='roblox-games/mare-essentia/assets/cardart/src'
-          for id in eu_01 eu_02 eu_03 eu_21 eu_22 eu_23; do
+          for id in eu_01 eu_02 eu_03 eu_21 eu_22 eu_23 af_19; do
             stage="$root/.transfer/$id"
             [[ -d "$stage" ]] || continue
             mapfile -t parts < <(find "$stage" -maxdepth 1 -type f -name 'part*.b64' | sort)
