@@ -4420,7 +4420,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				-- [시장] 실제 상업 시설이 없는 항구에 가짜 10개 가판대를 배치하지 않는다.
 				local marketBuilt = if districtBuildings then math.max(0, math.floor(tonumber(districtBuildings.market) or 0)) else lvl * 2
 				local warehouseBuilt = if districtBuildings then math.max(0, math.floor(tonumber(districtBuildings.warehouse) or 0)) else lvl
-local stalls = math.min(if districtTouch then 4 else 6, lvl + 1,
+				local stalls = math.min(if districtTouch then 4 else 6, lvl + 1,
 					if marketBuilt > 0 then 1 + math.floor(math.sqrt(marketBuilt)) else 0)
 				-- [런던 지시서] 기존 날짜의 7일 주기 장날, 실제 시장 건물·재고 수치는 그대로 둔다.
 				local londonMarketDay = info.portId == "london" and type(info.day) == "number"
