@@ -352237,11 +352237,175 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_54ef5bd6e540476cacbb2edc",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15122",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "6725ff0590fae0984ea5a0358d86510f126218e8",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15122,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-london-asset-qa-1124",
+        "baseSha": "6725ff0590fae0984ea5a0358d86510f126218e8",
+        "headSha": "2da7031a2bbd3751890dfaae4084001bad7fce8e",
+        "mergeCommitSha": "d14b591a75e1c58eb50c9904a01171970e14d048",
+        "mergedAt": "2026-11-24T11:36:18Z",
+        "authorLogin": "hans1177",
+        "titleHash": "79d3432d49d48e3bed20f41318df66434d43737a86aa571976b67977d67257e4",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-london-asset-qa-1124",
+        "candidateSha": "2da7031a2bbd3751890dfaae4084001bad7fce8e"
+      },
+      "changeStats": {
+        "changedFileCount": 30,
+        "codingRelevantFileCount": 20,
+        "addedLineCount": 6305,
+        "deletedLineCount": 5879,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-dolphin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-dolphin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-humpback-whale.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-humpback-whale.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-narwhal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-narwhal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/scan-nautilus.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/scan-nautilus.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/scan-seahorse.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/scan-seahorse.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_opera.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_opera.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_tannery.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_tannery.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_bld_opera.glb",
+          "roblox-games/mare-essentia/assets/town/london_bld_opera.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_2.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "tools/devloop/register_asset.py",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-dolphin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-humpback-whale.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-narwhal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/scan-nautilus.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/scan-seahorse.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_opera.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_tannery.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_bld_opera.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_2.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "tools/devloop/register_asset.py",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15122",
+        "merge-commit:d14b591a75e1c58eb50c9904a01171970e14d048",
+        "base-main:6725ff0590fae0984ea5a0358d86510f126218e8"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2789
+    "total": 2790
   }
 }
