@@ -46,6 +46,80 @@ fi
 echo "== 에셋 등록 검사 =="
 python3 "$ROOT/tools/devloop/asset_check.py" "$ROOT"
 
+# [런던 등록 회귀] 실제 기존 등록기 실행으로 정상 모델, 손상 증빙, 중복을 검사한다.
+echo "== 런던 GLB 등록 검사 회귀 =="
+python3 - "$ROOT/../../tools/devloop/register_asset.py" <<'PY'
+import hashlib, json, pathlib, struct, subprocess, sys, tempfile
+registrar = pathlib.Path(sys.argv[1]).resolve()
+with tempfile.TemporaryDirectory() as tmp:
+    base = pathlib.Path(tmp)
+    root = base / "game"
+    inbox = root / "assets/inbox/Town"
+    town = root / "assets/town"
+    inbox.mkdir(parents=True)
+    town.mkdir()
+    policy = base / "company-learning"
+    policy.mkdir()
+    (policy / "platform-release-roadmap.json").write_text(json.dumps({
+        "livingMotionVisualQualityContract": {"assetAdaptation": {"contentSafety": {"blockedAssets": []}}}
+    }))
+    original = town / "original.glb"
+    original.write_bytes(b"original-source-fixture")
+    source = str(original)
+    digest = lambda b: hashlib.sha256(b).hexdigest()
+    blob = lambda b: hashlib.sha1(("blob %d\0" % len(b)).encode() + b).hexdigest()
+    (root / "assets-registered.json").write_text(json.dumps({"assets": {
+        "Town/original": {"source": source, "license": "CC0-1.0", "usePermissionGranted": True}
+    }}))
+    (root / "assets/SOURCES.md").touch()
+    model = inbox / "london_test.glb"
+    proof = model.with_suffix(".glb.license.json")
+    def make_model(count=3):
+        document = {"nodes": [{"mesh": 0}], "meshes": [{"primitives": [{"indices": 0}]}],
+                    "accessors": [{"count": count}]}
+        chunk = json.dumps(document).encode()
+        chunk += b" " * (-len(chunk) % 4)
+        binary = struct.pack("<II", 4, 0x004e4942) + b"\0" * 4
+        return struct.pack("<4sIIII", b"glTF", 2, 20 + len(chunk) + len(binary), len(chunk), 0x4e4f534a) + chunk + binary
+    data = make_model()
+    model.write_bytes(data)
+    meta = {"license": "CC0-1.0", "author": "fixture", "source": "https://example.com/source",
+            "sha256": digest(data), "bytes": len(data), "triangles": 1, "derived": True,
+            "modification": "fixture", "originalFiles": [{"repositoryPath": source,
+            "license": "CC0-1.0", "originalUrl": "https://example.com/source",
+            "sha256": digest(original.read_bytes()), "gitBlobSha1": blob(original.read_bytes())}]}
+    def run(expected, marker=None, dry=True):
+        args = [sys.executable, "-O", str(registrar), str(root), "--kind=Town", "--prefix=london_"]
+        if dry: args.append("--dry-run")
+        result = subprocess.run(args, cwd=base, capture_output=True, text=True)
+        if result.returncode != expected or (marker and marker not in result.stdout):
+            raise SystemExit("MARE_LONDON_REGISTRATION_REGRESSION: " + result.stdout + result.stderr)
+        if dry and not model.exists():
+            raise SystemExit("MARE_LONDON_DRY_RUN_MUTATED_SOURCE")
+    proof.write_text(json.dumps(meta))
+    run(0)
+    proof.write_text(json.dumps(dict(meta, triangles=2)))
+    run(1, "ASSET_TRIANGLE_COUNT_MISMATCH")
+    proof.write_text("{")
+    run(1, "라이선스 증빙 읽기 실패")
+    bad = make_model(4)
+    model.write_bytes(bad)
+    proof.write_text(json.dumps(dict(meta, sha256=digest(bad), bytes=len(bad))))
+    run(1, "ASSET_TRIANGLE_LAYOUT_INVALID")
+    model.write_bytes(data)
+    proof.write_text(json.dumps(dict(meta, sha256="0" * 64)))
+    run(1, "ASSET_BINARY_HASH_OR_SIZE_MISMATCH")
+    proof.write_text(json.dumps(meta))
+    duplicate = town / "duplicate.glb"
+    duplicate.write_bytes(data)
+    run(1, "중복")
+    duplicate.unlink()
+    run(0, dry=False)
+    if model.exists() or proof.exists() or (town / model.name).read_bytes() != data or not (town / proof.name).exists():
+        raise SystemExit("MARE_LONDON_VALIDATED_SOURCE_NOT_STAGED")
+print("MARE_LONDON_REGISTRATION_REGRESSION=PASS")
+PY
+
 # [전투 화면 회귀] Roblox 전용 3D 장면은 엔진 실행 대신 원본 Luau 문법을 컴파일 검증한다.
 # 원래 클라이언트 검사·병합 충돌 검사 유지, 새 우회 실행기 없이 기존 테스트에서 직접 확인.
 COMPILE="${LUAU_DIR:+$LUAU_DIR/}luau-compile"
