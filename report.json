@@ -3,345 +3,56 @@
  "log": [
   {
    "step": 1,
-   "capture": "c00_start",
-   "files": 1
-  },
-  {
-   "step": 2,
    "ctx": "Client",
-   "out": "QAAutoIntro on\ntext"
+   "out": "LAB ok R15NPC\ntext"
   },
   {
    "step": 3,
-   "ctx": "Client",
-   "out": "INTRO_CENTER_QA_MONITOR_READY\ntext"
+   "capture": "poselab_stage",
+   "files": 1
   },
   {
    "step": 4,
    "ctx": "Client",
-   "out": "MARE_TITLE_READY:TitleBackdrop:프랑스\ntext"
+   "out": "PROBE fwd=-5.684341886080802e-14, -1.4210854715202004e-14, -1 anchored=true\nPROBE LeftHip +0.6 -> LeftFoot fwd=1.09 up=0.34\nPROBE LeftKnee +0.6 -> LeftFoot fwd=0.60 up=0.18\nPROBE LeftKnee -0.6 -> LeftFoot fwd=-0.60 up=0.18\nPROBE LeftShoulder -1.0 -> LeftHand fwd=-1.37 up=0.75\nPROBE LeftShoulder +1.0 -> LeftHand fwd=1.37 up=0.75\nPROBE LeftElbow -0.8 -> LeftHand fwd=-0.64 up=0.27\nPROBE LeftElbow +0.8 -> LeftHand fwd=0.64 up=0.27\nPROBE Waist +0.4 -> Head fwd=-0.85 up=-0.17\nPROBE Root +0.3 -> Head fwd=-0.76 up=-0.11\nPROBE joints \ntext"
   },
   {
-   "step": 6,
-   "click": "title01",
-   "at": "922,84",
-   "out": "922,84 CLICK=프랑스\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 922,
-      "y": 84
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 8,
-   "capture": "t01",
-   "files": 1
-  },
-  {
-   "step": 9,
-   "ctx": "Client",
-   "out": "SCROLLED 상인 집안\ntext"
-  },
-  {
-   "step": 11,
-   "click": "title02",
-   "at": "585,132",
-   "out": "585,132 CLICK=상인 집안\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 585,
-      "y": 132
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 13,
-   "capture": "t02",
-   "files": 1
-  },
-  {
-   "step": 14,
-   "ctx": "Client",
-   "out": "SCROLLED ⚓ 출항하기\ntext"
-  },
-  {
-   "step": 16,
-   "click": "title03",
-   "at": "730,206",
-   "out": "730,206 CLICK=⚓ 출항하기\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 730,
-      "y": 206
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
-  },
-  {
-   "step": 18,
-   "capture": "intro_center_early",
-   "files": 1
-  },
-  {
-   "step": 20,
-   "capture": "intro_center_next",
-   "files": 1
-  },
-  {
-   "step": 22,
-   "capture": "intro_center_late",
-   "files": 1
-  },
-  {
-   "step": 24,
-   "capture": "t03",
-   "files": 1
-  },
-  {
-   "step": 25,
-   "ctx": "Client",
-   "out": "INTRO_OK\ntext"
-  },
-  {
-   "step": 26,
-   "ctx": "Client",
-   "out": "INTRO_CENTER_SIZE_UNIFIED_PASS stages=3 |길드 서기|대상 상인 카심|떠돌이 화가\ntext"
-  },
-  {
-   "step": 28,
-   "capture": "intro_done",
-   "files": 1
-  },
-  {
-   "step": 29,
-   "ctx": "Client",
-   "out": "INTRO_RUNTIME_STATE_PASS_NO_DECK_POPUP\ntext"
-  },
-  {
-   "step": 30,
-   "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 선장 | 선장실 | 999997749 | 돈 999,997,749 · 짐 19/19 | 현황 | 동료 관리 | 초상화가 완성되었다 | 현재 상태 | 선체 100/100 | 동료 1명\ntext"
-  },
-  {
-   "step": 31,
-   "ctx": "Client",
-   "out": "tab harbor\ntext"
-  },
-  {
-   "step": 33,
-   "ctx": "Client",
-   "out": "FACILITY_TAB_RUNTIME_PASS:harbor\ntext"
-  },
-  {
-   "step": 34,
-   "capture": "tab_harbor",
+   "step": 5,
+   "capture": "poselab_probe",
    "files": 1
   }
  ],
- "errors": [
-  "step35:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:16: TAB_ATLAS_IMAGE:harbor | text"
- ],
+ "errors": [],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28003
+   "elapsedMs": 30007
   },
   {
    "step": 1,
-   "type": "capture",
-   "elapsedMs": 1214
-  },
-  {
-   "step": 2,
-   "type": "luau",
-   "elapsedMs": 202
-  },
-  {
-   "step": 3,
-   "type": "luau",
-   "elapsedMs": 198
-  },
-  {
-   "step": 4,
    "type": "luau",
    "elapsedMs": 185
   },
   {
+   "step": 2,
+   "type": "wait",
+   "elapsedMs": 1506
+  },
+  {
+   "step": 3,
+   "type": "capture",
+   "elapsedMs": 795
+  },
+  {
+   "step": 4,
+   "type": "luau",
+   "elapsedMs": 3778
+  },
+  {
    "step": 5,
-   "type": "wait",
-   "elapsedMs": 413
-  },
-  {
-   "step": 6,
-   "type": "click_from_luau",
-   "elapsedMs": 937
-  },
-  {
-   "step": 7,
-   "type": "wait",
-   "elapsedMs": 2009
-  },
-  {
-   "step": 8,
    "type": "capture",
-   "elapsedMs": 1181
-  },
-  {
-   "step": 9,
-   "type": "luau",
-   "elapsedMs": 192
-  },
-  {
-   "step": 10,
-   "type": "wait",
-   "elapsedMs": 404
-  },
-  {
-   "step": 11,
-   "type": "click_from_luau",
-   "elapsedMs": 945
-  },
-  {
-   "step": 12,
-   "type": "wait",
-   "elapsedMs": 2008
-  },
-  {
-   "step": 13,
-   "type": "capture",
-   "elapsedMs": 749
-  },
-  {
-   "step": 14,
-   "type": "luau",
-   "elapsedMs": 176
-  },
-  {
-   "step": 15,
-   "type": "wait",
-   "elapsedMs": 408
-  },
-  {
-   "step": 16,
-   "type": "click_from_luau",
-   "elapsedMs": 843
-  },
-  {
-   "step": 17,
-   "type": "wait",
-   "elapsedMs": 1711
-  },
-  {
-   "step": 18,
-   "type": "capture",
-   "elapsedMs": 956
-  },
-  {
-   "step": 19,
-   "type": "wait",
-   "elapsedMs": 1803
-  },
-  {
-   "step": 20,
-   "type": "capture",
-   "elapsedMs": 2701
-  },
-  {
-   "step": 21,
-   "type": "wait",
-   "elapsedMs": 1809
-  },
-  {
-   "step": 22,
-   "type": "capture",
-   "elapsedMs": 3749
-  },
-  {
-   "step": 23,
-   "type": "wait",
-   "elapsedMs": 3702
-  },
-  {
-   "step": 24,
-   "type": "capture",
-   "elapsedMs": 2942
-  },
-  {
-   "step": 25,
-   "type": "luau",
-   "elapsedMs": 3163
-  },
-  {
-   "step": 26,
-   "type": "luau",
-   "elapsedMs": 300
-  },
-  {
-   "step": 27,
-   "type": "wait",
-   "elapsedMs": 2501
-  },
-  {
-   "step": 28,
-   "type": "capture",
-   "elapsedMs": 1756
-  },
-  {
-   "step": 29,
-   "type": "luau",
-   "elapsedMs": 1652
-  },
-  {
-   "step": 30,
-   "type": "luau",
-   "elapsedMs": 359
-  },
-  {
-   "step": 31,
-   "type": "luau",
-   "elapsedMs": 347
-  },
-  {
-   "step": 32,
-   "type": "wait",
-   "elapsedMs": 2501
-  },
-  {
-   "step": 33,
-   "type": "luau",
-   "elapsedMs": 181
-  },
-  {
-   "step": 34,
-   "type": "capture",
-   "elapsedMs": 1453
-  },
-  {
-   "step": 35,
-   "type": "luau",
-   "elapsedMs": 1152
+   "elapsedMs": 736
   }
  ],
  "consoleCapture": {
@@ -351,229 +62,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 1000,
-  "completedSteps": 36,
-  "plannedClicks": 12,
-  "successfulClicks": 3,
+  "plannedSteps": 6,
+  "completedSteps": 6,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 70,
-  "capturedFrames": 9,
-  "abortedEarly": true
- },
- "visualSamples": [
-  {
-   "name": "c00_start",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 251322,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": false,
-    "brightness": 1,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "t01",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 250759,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "프랑스"
-  },
-  {
-   "name": "t02",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 195284,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "상인 집안"
-  },
-  {
-   "name": "intro_center_early",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 145261,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기",
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": false,
-    "brightness": 1,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "intro_center_next",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 157744,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기",
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": true,
-    "brightness": 2.014932632446289,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "intro_center_late",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 109333,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기",
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": true,
-    "brightness": 2.01853346824646,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "t03",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 125067,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기",
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": true,
-    "brightness": 2.02291202545166,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "intro_done",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 140725,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기",
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": true,
-    "brightness": 2.0281124114990234,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "tab_harbor",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 166218,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기"
-  }
- ],
- "abortDiagnostics": {
-  "step": 35,
-  "type": "luau",
-  "elapsedMs": 378,
-  "context": "Client",
-  "lastScreenshot": "tab_harbor",
-  "lastClick": "title03",
-  "probes": {
-   "Client": {
-    "reachable": true,
-    "output": "STUDIO_CONTEXT_CLIENT\ntext"
-   },
-   "Server": {
-    "reachable": true,
-    "output": "STUDIO_CONTEXT_SERVER\ntext"
-   }
-  }
- },
- "visualEvidence": {
-  "framesChecked": 9,
-  "framesWithInvalidSize": 0,
-  "voyageSceneObserved": false,
-  "departureObserved": false,
-  "voyageDiagnostics": [],
-  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
+  "plannedFrames": 2,
+  "capturedFrames": 2,
+  "abortedEarly": false
  }
 }

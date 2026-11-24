@@ -1,0 +1,110 @@
+{
+  "runId": "45397132335",
+  "kind": "studio",
+  "sourceRevision": "f13dd4d169a744f193598d20f3d076ff1977bf72",
+  "result": "PASS",
+  "failureStage": null,
+  "failureSignature": null,
+  "summary": {
+    "plannedSteps": 6,
+    "completedSteps": 6,
+    "plannedClicks": 0,
+    "successfulClicks": 0,
+    "skippedOptionalClicks": 0,
+    "plannedFrames": 2,
+    "capturedFrames": 2,
+    "abortedEarly": false
+  },
+  "errors": [],
+  "audits": {
+    "models": "NOT_RUN",
+    "registered": "NOT_RUN",
+    "features": "NOT_RUN",
+    "registry": "NOT_RUN"
+  },
+  "steps": [
+    {
+      "step": 0,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 1,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 2,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 3,
+      "type": "capture",
+      "name": "poselab_stage",
+      "status": "PASS",
+      "screenshots": [
+        "poselab_stage-0.jpg"
+      ]
+    },
+    {
+      "step": 4,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 5,
+      "type": "capture",
+      "name": "poselab_probe",
+      "status": "PASS",
+      "screenshots": [
+        "poselab_probe-0.jpg"
+      ]
+    }
+  ],
+  "screenshotComparison": [
+    {
+      "name": "poselab_probe-0.jpg",
+      "sha256": "9ce148d9853d2005602e7cb81bf8d07d9c62e3acdff9de0e3a89067bec754fa3",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45397132335/poselab_probe-0.jpg"
+    },
+    {
+      "name": "poselab_stage-0.jpg",
+      "sha256": "681c0cbac622165bb4c2f927cb8b39ad68aa662767dfec96e2073728b5611f84",
+      "comparison": "NO_BASELINE",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45397132335/poselab_stage-0.jpg"
+    }
+  ],
+  "screenshotFrameAudit": {
+    "checked": 2,
+    "invalid": 0,
+    "images": [
+      {
+        "name": "poselab_probe-0.jpg",
+        "bytes": 70743,
+        "width": 1311,
+        "height": 475,
+        "status": "PASS"
+      },
+      {
+        "name": "poselab_stage-0.jpg",
+        "bytes": 72180,
+        "width": 1311,
+        "height": 475,
+        "status": "PASS"
+      }
+    ],
+    "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
+  },
+  "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
+  "previousRunId": "45383288779"
+}
