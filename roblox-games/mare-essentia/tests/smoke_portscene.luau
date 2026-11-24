@@ -73,6 +73,7 @@ for _, entry in {
 end
 -- [경제-도시-목장] 초안 PR의 실제 공사·지형, 신규 대형 목장·오리, 왕궁 도시를 함께 빌드한다.
 local visualScenarios = {
+	{ id = "london", level = 5, farm = 18, workshop = 8, school = 16, palace = true },
 	{ id = "venice", level = 3, farm = 18, workshop = 8, school = 2 },
 	{ id = "lisbon", level = 5, farm = 40, workshop = 22, school = 7, palace = true },
 	{ id = "amsterdam", level = 4, farm = 27, workshop = 12, school = 4 },
@@ -88,7 +89,10 @@ for _, scenario in visualScenarios do
 	local sim = {
 		stage = scenario.level, year = 1700, pop = 9500, residents = 44, prosperity = 116, mood = "steady",
 		jobs = { farmer = 2300, fisher = 300, craftsman = 2600, merchant = 800, sailor = 800, guard = 500, official = 700, clergy = 100, laborer = 600 },
-		technology = { rows = {} },
+		technology = { rows = if scenario.id == "london" then {
+			{ id = "guild_accounting", status = "adopted" },
+			{ id = "crop_rotation", status = "adopted" },
+		} else {} },
 		-- [실제 원료 연결] 승인된 유리 원료의 3단계 브랜드 공방 외형을 함께 검사한다.
 		industries = if scenario.id == "venice" then {
 			{ id = "venice_glass", name = "베네치아 유리공방", source = "glass", processed = "유리 제품", stage = 3,
@@ -135,6 +139,14 @@ for _, must in {
 end
 -- [CC0 배경 회귀] AssetIds에 등록된 모델만 항구 문화권별로 요청되어야 한다.
 local Registered = require("./AssetIds")
+-- [런던 전용 건물] 등록된 실물의 장면 요청을 확인한다(실제 렌더·충돌 검수는 별도).
+for _, id in { "Town/london_bld_library", "Town/london_bld_theater",
+	"Town/london_bld_exchange", "Town/london_bld_botanic" } do
+	if Registered[id] and not State.used[id] then
+		fails += 1
+		print("런던 전용 건물 요청 누락: " .. id)
+	end
+end
 for _, id in { "Naval/rocks-sand-a", "Naval/rocks-sand-b", "Naval/rocks-sand-c",
 	"Naval/rocks-a", "Naval/rocks-b", "Naval/patch-sand-foliage", "Castle/ground-hills",
 	"Terrain/Grass_Small", "Terrain/Bush_Small", "Terrain/Rock_2" } do
