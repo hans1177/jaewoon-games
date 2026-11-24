@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -1957,7 +1957,7 @@
     },
     {
       "id": "marketing-ant-simulator-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": null,
       "taskType": null,
@@ -2003,12 +2003,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:45301359309:1",
+      "reservedAt": "2026-11-24T01:08:44.611Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -3348,7 +3348,8 @@
         "system-ai-handoff-to-reservation:system-ai:44961661115:1",
         "actions-run:44961661115",
         "system-ai-handoff-to-reservation:system-ai:45179284554:1",
-        "actions-run:45179284554"
+        "actions-run:45179284554",
+        "system-ai-handoff-to-reservation:system-ai:45301359309:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1446,
@@ -3363,7 +3364,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-11-23T13:23:56.245Z"
+      "updatedAt": "2026-11-24T01:08:44.611Z"
     },
     {
       "id": "marketing-amusement-tycoon-pre-release-v1",
@@ -116939,7 +116940,7 @@
     },
     {
       "id": "marketing-cozy-island-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -116982,12 +116983,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:45301359309:1",
+      "reservedAt": "2026-11-24T01:08:44.611Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -123329,7 +123330,8 @@
         "system-ai-impact-score:2002",
         "system-ai-blocked-task-count:45",
         "system-ai-handoff-to-reservation:system-ai:45179284554:1",
-        "actions-run:45179284554"
+        "actions-run:45179284554",
+        "system-ai-handoff-to-reservation:system-ai:45301359309:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2002,
@@ -123344,7 +123346,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-23T13:23:56.245Z"
+      "updatedAt": "2026-11-24T01:08:44.611Z"
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
@@ -248470,6 +248472,7 @@
       "department": "planning-growth-marketing",
       "taskType": "marketing",
       "gameId": "rpg-adventure",
+      "jointDecisionRequired": true,
       "goal": "Create the current non-financial growth/marketing execution package for rpg-adventure (rpg-adventure). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
       "responsibleFiles": [
         "company-learning/marketing/rpg-adventure/latest.json"
@@ -248489,7 +248492,21 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/rpg-adventure/latest.json --game-id=rpg-adventure"
       ],
       "dependencies": [],
+      "relatedTaskIds": [],
+      "blockedTaskIds": [],
       "retries": 4,
+      "recurrenceCount": 0,
+      "failureStage": null,
+      "failureSignature": null,
+      "failureClass": null,
+      "handoffCount": 0,
+      "previousReservationId": null,
+      "blastRadius": null,
+      "knownGoodRevision": null,
+      "repairRisk": 1,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
       "reservationId": null,
       "reservedAt": null,
@@ -248935,7 +248952,8 @@
         "marketing-cycle-reopened"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
+      "impactScore": 0,
+      "impactComponents": null,
       "createdAt": "2026-11-22T15:26:05.928Z",
       "updatedAt": "2026-11-24T01:01:12.457Z"
     },
@@ -259146,6 +259164,5 @@
       "createdAt": "2026-11-24T00:05:53.875Z",
       "updatedAt": "2026-11-24T00:05:53.875Z"
     }
-  ],
-  "updatedAt": "2026-11-24T01:01:12.457Z"
+  ]
 }
