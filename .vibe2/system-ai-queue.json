@@ -157508,7 +157508,7 @@
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -157550,12 +157550,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:45383593452:1",
+      "reservedAt": "2026-11-24T11:30:45.067Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -157719,14 +157719,17 @@
         "failed-strategy-fingerprint:df8baf255c01c6ea25ab7ad330323b8b59584e3d98154515cedfd4b1775bf7ee",
         "model-output-sha256:121ebce6898473e1bf264de994dc775aa4fd23df63d8e4d3b9dfeebfa3b5eac4",
         "system-ai-handoff-to-reservation:system-ai:44893935963:1",
-        "actions-run:44893935963"
+        "actions-run:44893935963",
+        "system-ai-impact-score:1862",
+        "system-ai-blocked-task-count:40",
+        "system-ai-handoff-to-reservation:system-ai:45383593452:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 402,
+      "impactScore": 1862,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 2,
-        "recurrenceCount": 2,
+        "blockedTaskCount": 40,
+        "recurrenceCount": 40,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -157734,7 +157737,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-21T10:31:27.680Z"
+      "updatedAt": "2026-11-24T11:30:45.067Z"
     },
     {
       "id": "marketing-seed-roblox-survival-horror-es-doors-pre-release-v1",
