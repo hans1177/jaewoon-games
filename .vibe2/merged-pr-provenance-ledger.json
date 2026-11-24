@@ -351376,11 +351376,142 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_4276e10cdf9ea5f30bfd8be8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15120",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "9360715976264b8fa17a4e631da6fe45ca5c168e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15120,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-opera-source-register-1124",
+        "baseSha": "9360715976264b8fa17a4e631da6fe45ca5c168e",
+        "headSha": "e64a81a963b0a76247eb01a48b0530a507d12160",
+        "mergeCommitSha": "a40308c6c99be2e88e93ce63c483d427f05e1ef5",
+        "mergedAt": "2026-11-24T11:27:39Z",
+        "authorLogin": "hans1177",
+        "titleHash": "291adf16c25415ec957ff23be7b5b4e2045c539d76b3eedb5f832ab4b5efa059",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-opera-source-register-1124",
+        "candidateSha": "e64a81a963b0a76247eb01a48b0530a507d12160"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 5924,
+        "deletedLineCount": 5792,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-dolphin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-dolphin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-humpback-whale.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-humpback-whale.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-narwhal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-narwhal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_opera.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_opera.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_opera.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_opera.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-dolphin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-humpback-whale.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-narwhal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_opera.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_opera.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15120",
+        "merge-commit:a40308c6c99be2e88e93ce63c483d427f05e1ef5",
+        "base-main:9360715976264b8fa17a4e631da6fe45ca5c168e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2784
+    "total": 2785
   }
 }
