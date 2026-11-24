@@ -1247,6 +1247,7 @@ if (!creatorId) {
 
 // kind(MareAssets 하위 폴더) / 모델 이름 / 원본 파일. OBJ는 Open Cloud가 받지 않아 제외한다.
 const plan = [];
+const planFailures = [];
 // [모델 원화 제작 분리·자동 인입] 생성 모델의 단일 완성 PNG만 바이브의 실제 시각 검수 뒤 기존 승인 통로로 승격한다.
 // SVG·파츠·시트·미리보기로 등록하지 않으며 검수 증빙/원본 해시가 다르면 업로드 전에 중단한다.
 const cardApprovalDocument = JSON.parse(await fs.readFile(ROOT + '/assets/APPROVED_IMAGES.json', 'utf8'));
@@ -1553,6 +1554,8 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     const externalR15Item = kind === 'People' && /^cc0_[a-z0-9_]+\.glb$/.test(sourceFileName);
     // [항구 전용 CC0 원본] 기존 업로더에서 도시별 실물 모델의 출처·해시·권한을 검수한다.
     const portOriginalModel = kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
+    const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
+    try {
     if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
@@ -1574,7 +1577,6 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
         throw new Error('R15_CHARACTER_PBR_PROOF_REQUIRED:' + f);
       if (originalOutfit && (!sourceLicense || sourceLicense.uvVersion !== 1 || !sourceLicense.originalGeometrySha256))
         throw new Error('R15_OUTFIT_UV_AND_SOURCE_PROOF_REQUIRED:' + f);
-      const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
       if (sourceLicense && (!['PROJECT_ORIGINAL_ART', 'CC0-1.0', 'CC-BY-4.0'].includes(sourceLicense.license)
         || !sourceLicense.author || !(derivedVegetation ? sourceLicense.sha256 : sourceLicense.sourceSha256) || !sourceLicense.source))
         throw new Error('ORIGINAL_MODEL_SOURCE_METADATA_INVALID:' + f);
@@ -1583,11 +1585,30 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
         if (!sourceLicense || sourceLicense.license !== 'CC0-1.0' || sourceLicense.derived !== true
           || !sourceLicense.originalFiles?.length || !sourceLicense.modification
           || crypto.createHash('sha256').update(model).digest('hex') !== sourceLicense.sha256
-          || model.length !== sourceLicense.bytes || sourceLicense.triangles > 1000)
+          || model.length !== sourceLicense.bytes || !Number.isSafeInteger(sourceLicense.triangles)
+          || sourceLicense.triangles <= 0)
           throw new Error('MARE_VEGETATION_DERIVATION_PROOF_INVALID:' + f);
+        // 내부 1,000개 상한만 제거한다. 실제 GLB 형상, 원본 증빙 및 공식 API 제한은 유지한다.
+        if (model.length < 20 || model.toString('ascii', 0, 4) !== 'glTF'
+          || model.readUInt32LE(4) !== 2 || model.readUInt32LE(8) !== model.length
+          || model.readUInt32LE(16) !== 0x4e4f534a || 20 + model.readUInt32LE(12) >= model.length)
+          throw new Error('MARE_VEGETATION_GLB_INVALID:' + f);
+        const gltf = JSON.parse(model.subarray(20, 20 + model.readUInt32LE(12)).toString('utf8'));
+        let actualTriangles = 0;
+        for (const node of gltf.nodes) if (node.mesh !== undefined) {
+          for (const primitive of gltf.meshes[node.mesh].primitives) {
+            const count = gltf.accessors[primitive.indices].count;
+            if ((primitive.mode ?? 4) !== 4 || !Number.isSafeInteger(count) || count <= 0 || count % 3)
+              throw new Error('MARE_VEGETATION_TRIANGLE_LAYOUT_INVALID:' + f);
+            actualTriangles += count / 3;
+          }
+        }
+        if (actualTriangles !== sourceLicense.triangles)
+          throw new Error('MARE_VEGETATION_TRIANGLE_COUNT_MISMATCH:' + f);
         for (const original of sourceLicense.originalFiles) {
           const bytes = await fs.readFile(original.repositoryPath);
-          if (crypto.createHash('sha256').update(bytes).digest('hex') !== original.sha256)
+          if (blockedPaths.has(original.repositoryPath) || blockedHashes.has(original.sha256)
+            || crypto.createHash('sha256').update(bytes).digest('hex') !== original.sha256)
             throw new Error('MARE_VEGETATION_ORIGINAL_CHANGED:' + f);
         }
       }
@@ -1636,6 +1657,14 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
           || !gltf.meshes?.length || gltf.skins?.length) throw new Error('R15_EXTERNAL_CC0_GEOMETRY_CHANGED:' + f);
       }
     }
+    } catch (error) {
+      // 개별 식생의 로컬 증빙 실패만 격리한다. 다른 자산·계정·보안 실패 경로는 변경하지 않는다.
+      if (!derivedVegetation) throw error;
+      const failure = kind + '/' + name + ': ' + String(error.message).slice(0, 200);
+      planFailures.push(failure);
+      console.error('MARE_VEGETATION_PLAN_REJECTED', failure);
+      continue;
+    }
     plan.push({kind, name, file: path.join(ROOT, 'assets', dir, f), ext, compressed: compressedGlb, sourceLicense,
       // [실제 Studio 검증] Goods/Menu/Portraits 모두 ImageLabel에서 사용한다. Decal 번호는 Client에서 로딩되지 않았다.
       // 실패 원본을 재업로드하지 않고 승인된 기존 PNG/JPG로 Image 자산을 발급한다.
@@ -1667,7 +1696,7 @@ for (const item of plan) {
     delete registry.assets[item.kind + '/' + item.name];
   }
 }
-const failures = [];
+const failures = [...planFailures];
 const pendingPermissions = [];
 let accountBlocked = false;
 if (studioRegrantPath) {
@@ -1984,8 +2013,22 @@ if (failures.length && previousTypeAssets.size) {
 }
 if (failures.length === 0) registry.updatedAt = new Date().toISOString();
 registry.license = Object.values(registry.assets).every(a => a.license === 'CC0-1.0') ? 'CC0-1.0' : 'SEE_INDIVIDUAL_ASSET_LICENSES';
+// 권한 대기 중인 신규 식생은 원격 번호를 보존하되 아직 남아 있는 inbox 원본을 가리킨다.
+// 다음 실행에서 동일 번호의 권한만 재확인하며 중복 업로드하지 않는다.
+for (const item of plan) {
+  const id = item.kind + '/' + item.name;
+  const row = registry.assets[id];
+  if (!id.startsWith('Terrain/veg_') || !row?.assetId || row.usePermissionGranted === true) continue;
+  const inbox = path.join(ROOT, 'assets', 'inbox', 'Terrain', path.basename(item.file));
+  try {
+    execFileSync('git', ['ls-files', '--error-unmatch', inbox], {stdio: 'ignore'});
+    row.source = inbox;
+  } catch {} // 이미 정식 경로에 존재하는 식생의 기존 원본 경로는 그대로 유지한다.
+}
 await fs.writeFile(JSON_OUT, JSON.stringify(registry, null, 2) + '\n');
-const lines = Object.entries(registry.assets).sort().map(([k, v]) => `\t["${k}"] = ${v.assetId},`);
+const lines = Object.entries(registry.assets).filter(([k, v]) =>
+  !k.startsWith('Terrain/veg_') || v.usePermissionGranted === true
+).sort().map(([k, v]) => `\t["${k}"] = ${v.assetId},`);
 await fs.writeFile(LUAU_OUT, '-- 자동 생성: tools/mare-essentia-upload-assets.mjs (직접 고치지 말 것)\nreturn {\n' + lines.join('\n') + (lines.length ? '\n' : '') + '}\n');
 console.log('REGISTERED_COUNT=' + Object.keys(registry.assets).length + ' FAILED_COUNT=' + failures.length);
 if (!Object.keys(registry.assets).length || failures.length) {
