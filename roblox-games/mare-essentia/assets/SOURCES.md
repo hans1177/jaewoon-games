@@ -2307,3 +2307,4 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `town/` | london_guild_2.glb | Kenney; Quaternius · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
 | `town/` | london_guild_1.glb | Kenney and approved CC0 source authors · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
 | `town/` | london_guild_3.glb | Kenney and approved CC0 source authors · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_guild_row.glb | Kenney and approved CC0 source authors · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
