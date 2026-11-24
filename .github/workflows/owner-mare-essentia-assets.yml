@@ -250,6 +250,10 @@ jobs:
           set -euo pipefail
           python3 tools/devloop/register_asset.py roblox-games/mare-essentia --kind=Town --prefix=london_ --dry-run
           python3 tools/devloop/register_asset.py roblox-games/mare-essentia --kind=Town --prefix=london_
+          if compgen -G 'roblox-games/mare-essentia/assets/inbox/Terrain/veg_*.glb' >/dev/null; then
+            python3 tools/devloop/register_asset.py roblox-games/mare-essentia --kind=Terrain --prefix=veg_ --dry-run
+            python3 tools/devloop/register_asset.py roblox-games/mare-essentia --kind=Terrain --prefix=veg_
+          fi
 
       - name: Upload licensed models and menu icons to Roblox and write AssetIds
         id: asset_registration
@@ -407,19 +411,23 @@ jobs:
           import hashlib, json, pathlib, subprocess
           root = pathlib.Path('roblox-games/mare-essentia')
           registry = json.loads((root/'assets-registered.json').read_text())['assets']
-          for path in sorted((root/'assets/town').glob('london_*.glb')):
-              inbox = root/'assets/inbox/Town'/path.name
+          for kind, prefix in (('Town', 'london_'), ('Terrain', 'veg_')):
+            for path in sorted((root/'assets'/kind.lower()).glob(prefix+'*.glb')):
+              inbox = root/'assets/inbox'/kind/path.name
               if inbox.exists() or subprocess.run(['git','ls-files','--error-unmatch',str(inbox)],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode:
                   continue
-              row = registry.get('Town/'+path.stem, {})
+              row = registry.get(kind+'/'+path.stem, {})
               proof = json.loads(path.with_suffix('.glb.license.json').read_text())
               if not (row.get('assetType') == 'Model' and row.get('usePermissionGranted') is True and str(row.get('assetId','')).isdigit() and int(row['assetId']) > 0 and row.get('source') == str(path) and hashlib.sha256(path.read_bytes()).hexdigest() == proof['sha256']):
                   raise SystemExit('MARE_LONDON_REGISTRATION_PENDING:'+path.stem)
               print('MARE_LONDON_REGISTERED_SOURCE_VERIFIED',path.stem,row['assetId'])
           PY
             while IFS= read -r src; do
-              [[ "$src" == */assets/inbox/Town/london_*.glb ]] || continue
-              dest="roblox-games/mare-essentia/assets/town/${src##*/}"
+              case "$src" in
+                */assets/inbox/Town/london_*.glb) dest="roblox-games/mare-essentia/assets/town/${src##*/}" ;;
+                */assets/inbox/Terrain/veg_*.glb) dest="roblox-games/mare-essentia/assets/terrain/${src##*/}" ;;
+                *) continue ;;
+              esac
               [[ -f "$dest" && -f "$dest.license.json" ]] || exit 1
               london_files+=("$dest" "$dest.license.json")
             done < <(git diff --name-only --diff-filter=D)
@@ -484,7 +492,11 @@ jobs:
           done
           # [등록 완료 정리] 원본·라이선스·등록 ID 반영 후에만 동일 inbox 파일을 제거한다.
           for f in "${london_files[@]}"; do
-            src="roblox-games/mare-essentia/assets/inbox/Town/${f##*/}"
+            if [[ "$f" == */assets/terrain/veg_* ]]; then
+              src="roblox-games/mare-essentia/assets/inbox/Terrain/${f##*/}"
+            else
+              src="roblox-games/mare-essentia/assets/inbox/Town/${f##*/}"
+            fi
             original="$(git rev-parse "HEAD:$src")"
             current="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${src}?ref=main" --jq .sha)"
             saved="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=main" --jq .sha)"
