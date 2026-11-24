@@ -3934,7 +3934,7 @@ test('대항해시대 생물군계 절벽·하층 식생 및 해상 연안 깊�
   assert.match(field,/terrain:FillBall\(center, radius, mat\)/);
   assert.match(field,/groundRay\.FilterDescendantsInstances = \{ workspace\.Terrain, ground \}/);
   assert.match(field,/AssetIds\["Terrain\/tree-pinetalla-detailed"\]/);
-  assert.match(field,/local depthLandforms = if questTerrain/);
+  assert.match(field,/local depthLandforms = if folder:GetAttribute\("FieldSiteComposition"\) == "shallow-reef-shore"[\s\S]*?\} elseif questTerrain == "glacier" then \{/);
   assert.match(naval,/NavalCoastFoamSources/);
   assert.match(naval,/NavalDepthCoastCount/);
   assert.match(naval,/NavalDepthCliff/);
@@ -3977,7 +3977,7 @@ test('대항해시대 3차 원근·계절 숲·선박 항적 CC0 자산 실물 �
   const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
   assert.match(field,/FieldElevatedTerraceCount/);
   assert.match(field,/FieldNearDepthBandCount/);
-  assert.match(field,/local nearBands = if questTerrain == "archive" then \{[\s\S]*?\} elseif tropical and \(questTerrain == "coast" or questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "plains" or questTerrain == "lake"\) then \{/,'기관 정원 우선·열대 지형 전용 근경');
+  assert.match(field,/local nearBands = if folder:GetAttribute\("FieldSiteComposition"\) == "shallow-reef-shore"[\s\S]*?\} elseif questTerrain == "archive" then \{[\s\S]*?\} elseif tropical and \(questTerrain == "coast" or questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "plains" or questTerrain == "lake"\) then \{/,'기관 정원 우선·열대 지형 전용 근경');
   assert.match(field,/groundRay\.FilterDescendantsInstances = \{ workspace\.Terrain, ground \}/);
   assert.match(field,/AssetIds\["Terrain\/tree-detailed-fall"\]/);
   assert.match(field,/AssetIds\["Terrain\/tree-palmdetailedtall"\]/);
@@ -4026,7 +4026,7 @@ test('대항해시대 4차 하천·절벽·수관 CC0 등록 및 지형 시차 �
   assert.match(field,/AssetIds\["Terrain\/ground-riverside"\]/);
   assert.match(field,/AssetIds\["Terrain\/plant-bushsmall"\]/);
   assert.match(field,/AssetIds\["Terrain\/grass-leafslarge"\]/);
-  assert.match(field,/local depthLandforms = if questTerrain == "glacier" then/);
+  assert.match(field,/local depthLandforms = if folder:GetAttribute\("FieldSiteComposition"\) == "shallow-reef-shore"[\s\S]*?\} elseif questTerrain == "glacier" then \{/);
   assert.match(field,/FieldNearDepthBandCount/);
   assert.match(field,/local detailCount = math\.max\(24, math\.floor\(24 \* math\.sqrt\(AREA\)\)\)/);
   assert.match(naval,/NavalDepthShoreBreakCount/);
@@ -4181,7 +4181,12 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   const siteProfile=field.slice(field.indexOf('local exact = {'),field.indexOf('local selected = exact'));
   const sitesSource=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sites.luau');
   const profiles=[...siteProfile.matchAll(/([a-z_0-9]+) = "([a-z]+)"/g)];
-  assert.ok(profiles.length>=559,'실제 탐험지별 지형 지정');
+  const sourceIds=[...sitesSource.matchAll(/\{\s*id = "([^"]+)", name = "([^"]+)", portId = "([^"]+)"/g)].map(row=>row[1]);
+  assert.equal(sourceIds.length,592,'원본 탐험지 총수');
+  assert.equal(new Set(sourceIds).size,sourceIds.length,'원본 탐험지 중복 금지');
+  assert.deepEqual(profiles.map(row=>row[1]).sort(),sourceIds.sort(),'전체 탐험지 ID 정확히 일치');
+  const validThemes=new Set(["archive","coast","swamp","ruins","fort","highland","mine","volcanic","plains","lake","forest","jungle","desert","farm","glacier"]);
+  for(const [,id,theme] of profiles) assert.ok(validThemes.has(theme),'지원하지 않는 지형 '+id);
   assert.equal(new Set(profiles.map(row=>row[1])).size,profiles.length,'탐험지 ID 중복 금지');
   for(const [,id] of profiles) assert.ok(sitesSource.includes('id = "'+id+'"'),'존재하지 않는 지점 '+id);
   for(const [id,theme] of Object.entries({london_chalk:'coast',bergen_cliffs:'coast',amsterdam_canals:'lake',carrara_quarry:'mine',vesuvius_slopes:'volcanic',edo_fuji:'highland',royal_archive:'archive',genoa_olive:'farm'})){
@@ -4201,6 +4206,9 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   }
   for(const composition of ["shipyard-workspace","study-work-court","medical-garden","observation-court","artisan-court","records-court"]){
     assert.ok(field.includes('FieldSiteComposition", "'+composition+'"'),'학문 장소 구성 누락 '+composition);
+  }
+  for(const [id,theme] of Object.entries({"survey_00":"coast","survey_01":"coast","survey_02":"coast","survey_03":"lake","survey_04":"coast","survey_05":"swamp","survey_06":"coast","survey_07":"lake","survey_08":"archive","survey_09":"coast","survey_10":"coast","survey_11":"highland","survey_12":"archive","survey_13":"jungle","survey_14":"coast","survey_15":"lake","survey_16":"coast","survey_17":"coast","survey_18":"coast","survey_19":"archive","survey_20":"coast","survey_21":"fort","survey_22":"forest","survey_23":"volcanic","survey_24":"archive","survey_25":"mine","survey_26":"archive","survey_27":"swamp","survey_28":"mine","survey_29":"ruins","survey_30":"coast","survey_31":"coast","survey_32":"coast"})){
+    assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'일반 조사 지형 불일치 '+id);
   }
   assert.match(field,/FieldSiteTerrainSource/,'지점 ID 사용 여부 진단');
   for(const [id,theme] of Object.entries({marseille_salt:'swamp',valencia_albufera:'swamp',valletta_bastions:'fort',athens_acropolis:'ruins',istanbul_bazaar:'archive',las_palmas_volcano:'volcanic',helsinki_gulf:'glacier',cyprus_copper:'mine'})){
