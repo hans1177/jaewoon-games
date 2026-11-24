@@ -88,9 +88,10 @@ with tempfile.TemporaryDirectory() as tmp:
             "modification": "fixture", "originalFiles": [{"repositoryPath": source,
             "license": "CC0-1.0", "originalUrl": "https://example.com/source",
             "sha256": digest(original.read_bytes()), "gitBlobSha1": blob(original.read_bytes())}]}
-    def run(expected, marker=None, dry=True):
+    def run(expected, marker=None, dry=True, partial=False):
         args = [sys.executable, "-O", str(registrar), str(root), "--kind=Town", "--prefix=london_"]
         if dry: args.append("--dry-run")
+        if partial: args.append("--allow-partial")
         result = subprocess.run(args, cwd=base, capture_output=True, text=True)
         if result.returncode != expected or (marker and marker not in result.stdout):
             raise SystemExit("MARE_LONDON_REGISTRATION_REGRESSION: " + result.stdout + result.stderr)
@@ -114,7 +115,20 @@ with tempfile.TemporaryDirectory() as tmp:
     duplicate.write_bytes(data)
     run(1, "중복")
     duplicate.unlink()
-    run(0, dry=False)
+    # 한 건이 실패해도 합격 원본만 이동하고 거부 원본·증빙은 그대로 둔다.
+    rejected = inbox / "london_rejected.glb"
+    rejected_data = make_model(6)
+    rejected.write_bytes(rejected_data)
+    rejected_proof = rejected.with_suffix(".glb.license.json")
+    rejected_meta = dict(meta, sha256=digest(rejected_data), bytes=len(rejected_data), triangles=3)
+    rejected_proof.write_text(json.dumps(rejected_meta))
+    run(1, "ASSET_TRIANGLE_COUNT_MISMATCH", dry=False)
+    if not model.exists(): raise SystemExit("MARE_LONDON_STRICT_GATE_MUTATED_SOURCE")
+    run(0, "MARE_LONDON_STAGING_PARTIAL: ready=1 rejected=1", dry=False, partial=True)
+    if rejected.read_bytes() != rejected_data or json.loads(rejected_proof.read_text()) != rejected_meta or (town / rejected.name).exists():
+        raise SystemExit("MARE_LONDON_REJECTED_SOURCE_NOT_PRESERVED")
+    if (root / "assets/SOURCES.md").read_text():
+        raise SystemExit("MARE_LONDON_UNREGISTERED_SOURCE_LEDGER_WRITE")
     if model.exists() or proof.exists() or (town / model.name).read_bytes() != data or not (town / proof.name).exists():
         raise SystemExit("MARE_LONDON_VALIDATED_SOURCE_NOT_STAGED")
 print("MARE_LONDON_REGISTRATION_REGRESSION=PASS")
