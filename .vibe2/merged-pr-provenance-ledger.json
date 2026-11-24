@@ -334499,11 +334499,149 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0d4e6b1eec22a33b90ffcf74",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14859",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "f7083121d09fe5a588240c6a0523506ea7925782",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14859,
+        "baseBranch": "main",
+        "headBranch": "owner-mare-vegetation-20261124",
+        "baseSha": "f7083121d09fe5a588240c6a0523506ea7925782",
+        "headSha": "22c31abe474ccbc5292381340b5ae7556c1e4f68",
+        "mergeCommitSha": "d45fef32fe3692269ffd09a921d0e81e7589a795",
+        "mergedAt": "2026-11-24T00:58:00Z",
+        "authorLogin": "hans1177",
+        "titleHash": "996ec874f8c3a05c4366ae1f0dc8ada4a5a379542755a84850e24de473b3cd31",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner-mare-vegetation-20261124",
+        "candidateSha": "22c31abe474ccbc5292381340b5ae7556c1e4f68"
+      },
+      "changeStats": {
+        "changedFileCount": 15,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 222,
+        "deletedLineCount": 16,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_coastal_grass.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_coastal_grass.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_cold_scrub.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_cold_scrub.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_dry_scrub.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_dry_scrub.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_meadow_tufts.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_meadow_tufts.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_tropical_understory.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_tropical_understory.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_woodland_understory.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_woodland_understory.glb.license.json",
+          "tools/devloop/register_asset.py",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_coastal_grass.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_cold_scrub.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_dry_scrub.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_meadow_tufts.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_tropical_understory.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_woodland_understory.glb.license.json",
+          "tools/devloop/register_asset.py",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14859",
+        "merge-commit:d45fef32fe3692269ffd09a921d0e81e7589a795",
+        "base-main:f7083121d09fe5a588240c6a0523506ea7925782"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2676
+    "total": 2677
   }
 }
