@@ -1553,7 +1553,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     const externalR15Item = kind === 'People' && /^cc0_[a-z0-9_]+\.glb$/.test(sourceFileName);
     // [항구 전용 CC0 원본] 기존 업로더에서 도시별 실물 모델의 출처·해시·권한을 검수한다.
     const portOriginalModel = kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
-    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || (kind === 'Terrain' && f.startsWith('kenney_'))) {
+    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
       // [검증 대기 원본 보호] 3D 도시 파생 모델은 CC0 원본 기록만 있고 검수·등록이
@@ -1574,9 +1574,23 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
         throw new Error('R15_CHARACTER_PBR_PROOF_REQUIRED:' + f);
       if (originalOutfit && (!sourceLicense || sourceLicense.uvVersion !== 1 || !sourceLicense.originalGeometrySha256))
         throw new Error('R15_OUTFIT_UV_AND_SOURCE_PROOF_REQUIRED:' + f);
+      const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
       if (sourceLicense && (!['PROJECT_ORIGINAL_ART', 'CC0-1.0', 'CC-BY-4.0'].includes(sourceLicense.license)
-        || !sourceLicense.author || !sourceLicense.sourceSha256 || !sourceLicense.source))
+        || !sourceLicense.author || !(derivedVegetation ? sourceLicense.sha256 : sourceLicense.sourceSha256) || !sourceLicense.source))
         throw new Error('ORIGINAL_MODEL_SOURCE_METADATA_INVALID:' + f);
+      if (derivedVegetation) {
+        const model = await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName));
+        if (!sourceLicense || sourceLicense.license !== 'CC0-1.0' || sourceLicense.derived !== true
+          || !sourceLicense.originalFiles?.length || !sourceLicense.modification
+          || crypto.createHash('sha256').update(model).digest('hex') !== sourceLicense.sha256
+          || model.length !== sourceLicense.bytes || sourceLicense.triangles > 1000)
+          throw new Error('MARE_VEGETATION_DERIVATION_PROOF_INVALID:' + f);
+        for (const original of sourceLicense.originalFiles) {
+          const bytes = await fs.readFile(original.repositoryPath);
+          if (crypto.createHash('sha256').update(bytes).digest('hex') !== original.sha256)
+            throw new Error('MARE_VEGETATION_ORIGINAL_CHANGED:' + f);
+        }
+      }
       if (portOriginalModel) {
         if (!sourceLicense || sourceLicense.license !== 'CC0-1.0'
           || sourceLicense.commercialUseAllowed !== true || !sourceLicense.sourcePage
@@ -1626,7 +1640,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       // [실제 Studio 검증] Goods/Menu/Portraits 모두 ImageLabel에서 사용한다. Decal 번호는 Client에서 로딩되지 않았다.
       // 실패 원본을 재업로드하지 않고 승인된 기존 PNG/JPG로 Image 자산을 발급한다.
       assetType: image ? 'Image' : 'Model',
-      license: (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || portOriginalModel || (kind === 'Terrain' && f.startsWith('kenney_'))) && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
+      license: (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || portOriginalModel || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && ['parchment_grain.png', 'leather_grain.png', 'naval_skill.png', 'naval_fire.png', 'naval_speed.png', 'field_attack.png', 'field_dodge.png', 'field_weapon.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && f.startsWith('vfx_') ? 'CC0-1.0'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
