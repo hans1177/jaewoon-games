@@ -40,6 +40,20 @@ async function prepareLicensedOriginals() {
     {name:'flintlock-musket', author:'Pixor',
       source:'https://pixor.art/library/files/musket/pixor-library-musket.glb',
       page:'https://pixor.art/library/weapons/musket/', minBytes:6000, minTriangles:200},
+    // [런던 건축 원본] 식물원 온실과 거래소 시계탑의 무료 제작자 원본만 확보한다.
+    // 공식 GLB·Blender 제작 설명 및 공개 삼각형 수를 대조하며 완성 건물로 승격하지 않는다.
+    {name:'greenhouse-source', assetPath:'assets/town/greenhouse-source.glb', author:'Frakassets (Pixor)',
+      source:'https://pixor.art/library/files/greenhouse/pixor-library-greenhouse.glb',
+      page:'https://pixor.art/library/farm/greenhouse/',
+      sourceBlend:'https://pixor.art/library/files/greenhouse/pixor-library-greenhouse.blend',
+      sourceModelingMethod:'Blender glass shell and placed frame bars; published editable named parts and materials',
+      townOriginal:true, minBytes:40000, maxBytes:65000, minTriangles:752, maxTriangles:752, originalModel:'Greenhouse'},
+    {name:'clock-tower-source', assetPath:'assets/town/clock-tower-source.glb', author:'Frakassets (Pixor)',
+      source:'https://pixor.art/library/files/clock-tower/pixor-library-clock-tower.glb',
+      page:'https://pixor.art/library/village/clock-tower/',
+      sourceBlend:'https://pixor.art/library/files/clock-tower/pixor-library-clock-tower.blend',
+      sourceModelingMethod:'Blender rotated wall details, lathed spire and clock rims; published editable named parts and materials',
+      townOriginal:true, minBytes:75000, maxBytes:120000, minTriangles:1668, maxTriangles:1668, originalModel:'Clock tower'},
     // [발견물 조류 1차] 원작자의 수작업 CC0 모델, 고정 리비전과 개별 Git blob 검증.
     {name:'discovery_seagull', assetPath:'assets/animals/discovery_seagull.glb', author:'Scott Petrovic (Mesh2Motion)',
       source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/seagull.glb',
@@ -798,17 +812,20 @@ async function prepareLicensedOriginals() {
       throw new Error((license === 'CC0-1.0' ? 'MARE_CC0_WRONG_MODEL_GEOMETRY:' : 'MARE_LICENSED_WRONG_MODEL_GEOMETRY:') + name + ':' + tris);
     if (!evidence) {
       const hash = crypto.createHash('sha256').update(bytes).digest('hex');
-      if (item.discoveryBird && (blockedHashes.has(hash) || blockedPaths.has(target)))
+      if ((item.discoveryBird || item.townOriginal) && (blockedHashes.has(hash) || blockedPaths.has(target)))
         throw new Error('MARE_DISCOVERY_SOURCE_BLOCKED:' + name);
-      // 발견물은 원본을 기존 Animals inbox에 넣고 정식 등록기로 이동한다.
-      const writeTarget = item.discoveryBird ? path.join(ROOT,'assets/inbox/Animals',name+'.glb') : target;
-      if (item.discoveryBird) await fs.mkdir(path.dirname(writeTarget), {recursive:true});
+      // [원본 인입] 발견물과 건축 원본은 기존 종류별 inbox와 정식 등록기로 이동한다.
+      const stageKind = item.discoveryBird ? 'Animals' : item.townOriginal ? 'Town' : null;
+      const writeTarget = stageKind ? path.join(ROOT,'assets/inbox',stageKind,name+'.glb') : target;
+      if (stageKind) await fs.mkdir(path.dirname(writeTarget), {recursive:true});
       await fs.writeFile(writeTarget, bytes);
       await fs.writeFile(writeTarget+'.license.json', JSON.stringify({license, author:item.author, source,
         sourcePage, sourceSha256:hash, originalSha256, pinnedBlobSha:item.pinnedBlobSha || null,
+        sourceBlend:item.sourceBlend || undefined, sourceModelingMethod:item.sourceModelingMethod || undefined,
+        sha256:item.townOriginal ? hash : undefined, bytes:item.townOriginal ? bytes.length : undefined,
+        commercialUseAllowed:item.townOriginal || item.discoveryBird ? true : undefined,
         attribution:item.attribution || null,
         discoveryCardId:item.discoveryBird || undefined,
-        commercialUseAllowed:item.discoveryBird ? true : undefined,
         originalModelHandcrafted:item.discoveryBird ? true : undefined,
         sourceAsset:item.sourceAsset||null, originalMeshCount:item.originalMeshCount||null,
         derivedTriangleCount:item.derivedTriangleCount||null,
@@ -820,9 +837,9 @@ async function prepareLicensedOriginals() {
         modification:item.modification || (item.removePodium ? 'Exhibition podium scene nodes removed; artist ship geometry unchanged.' : 'Unmodified source'),
         triangles:tris, originalModel:item.originalModel || name,
         actualRobloxRuntimeVerified:false, visualQualityApproved:false,robloxPublishedVerified:false}, null, 2) + '\n');
-      if (item.discoveryBird) {
-        execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind=Animals','--prefix='+name,'--dry-run'],{stdio:'inherit',timeout:30000});
-        execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind=Animals','--prefix='+name],{stdio:'inherit',timeout:30000});
+      if (stageKind) {
+        execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind='+stageKind,'--prefix='+name,'--dry-run'],{stdio:'inherit',timeout:30000});
+        execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind='+stageKind,'--prefix='+name],{stdio:'inherit',timeout:30000});
         if (crypto.createHash('sha256').update(await fs.readFile(target)).digest('hex') !== hash)
           throw new Error('MARE_DISCOVERY_REGISTERED_SOURCE_MISMATCH:' + name);
       }
@@ -1596,10 +1613,11 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     const externalR15Item = kind === 'People' && /^cc0_[a-z0-9_]+\.glb$/.test(sourceFileName);
     // [항구 전용 CC0 원본] 기존 업로더에서 도시별 실물 모델의 출처·해시·권한을 검수한다.
     const portOriginalModel = kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
+    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb'].includes(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
     const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle)\.glb$/.test(sourceFileName);
     try {
-    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || discoveryBird || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) {
+    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || townOriginal || discoveryBird || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
       // [검증 대기 원본 보호] 3D 도시 파생 모델은 CC0 원본 기록만 있고 검수·등록이
@@ -1623,6 +1641,15 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       if (sourceLicense && (!['PROJECT_ORIGINAL_ART', 'CC0-1.0', 'CC-BY-4.0'].includes(sourceLicense.license)
         || !sourceLicense.author || !(derivedVegetation ? sourceLicense.sha256 : sourceLicense.sourceSha256) || !sourceLicense.source))
         throw new Error('ORIGINAL_MODEL_SOURCE_METADATA_INVALID:' + f);
+      if (townOriginal) {
+        const original = await fs.readFile(path.join(ROOT,'assets',dir,sourceFileName));
+        const digest = crypto.createHash('sha256').update(original).digest('hex');
+        if (!sourceLicense || sourceLicense.license !== 'CC0-1.0' || sourceLicense.sourceSha256 !== digest
+          || sourceLicense.originalSha256 !== digest || sourceLicense.sha256 !== digest
+          || sourceLicense.bytes !== original.length || sourceLicense.commercialUseAllowed !== true
+          || !sourceLicense.sourceBlend || !sourceLicense.sourceModelingMethod || blockedHashes.has(digest))
+          throw new Error('MARE_TOWN_ORIGINAL_PROOF_REQUIRED:' + f);
+      }
       if (discoveryBird) {
         const original = await fs.readFile(path.join(ROOT,'assets',dir,sourceFileName));
         const digest = crypto.createHash('sha256').update(original).digest('hex');
@@ -1722,7 +1749,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       // [실제 Studio 검증] Goods/Menu/Portraits 모두 ImageLabel에서 사용한다. Decal 번호는 Client에서 로딩되지 않았다.
       // 실패 원본을 재업로드하지 않고 승인된 기존 PNG/JPG로 Image 자산을 발급한다.
       assetType: image ? 'Image' : 'Model',
-      license: (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || portOriginalModel || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
+      license: (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || portOriginalModel || townOriginal || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && ['parchment_grain.png', 'leather_grain.png', 'naval_skill.png', 'naval_fire.png', 'naval_speed.png', 'field_attack.png', 'field_dodge.png', 'field_weapon.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && f.startsWith('vfx_') ? 'CC0-1.0'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
