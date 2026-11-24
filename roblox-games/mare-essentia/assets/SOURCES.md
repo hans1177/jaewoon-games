@@ -2225,3 +2225,52 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 |---|---|---|---|
 | `inbox/Town/` | london_bank_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
 | `inbox/Town/` | london_bank_3.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bank_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bank_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bank_3.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_arsenal.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `town/` | london_bld_customs.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_granary.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_hospital.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_library.glb | Kenney; Quaternius · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_ropewalk.glb | Kenney; Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `town/` | london_bld_school.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_suburb.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_theater.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_town_hall.glb | Kenney; Quaternius · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_warehouse.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_scholar_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_scholar_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_tavern_3.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_yard_3.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `animals/` | discovery_seagull.glb | Scott Petrovic (Mesh2Motion) · CC0-1.0 | https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/seagull.glb |
+| `animals/` | discovery_bald_eagle.glb | Scott Petrovic (Mesh2Motion) · CC0-1.0 | https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/eagle.glb |
+| `terrain/` | veg_alpine_conifer.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_alpine_cushion.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_alpine_grass.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_autumn_grove.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_bamboo_tall.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_coastal_grass.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_cold_scrub.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_conifer_grove.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_desert_cactus_patch.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_dry_canopy.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_dry_scrub.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_farm_carrot.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_farm_maize.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_farm_pumpkin.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_farm_wheat.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_forest_edge.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_garden_hedge.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_meadow_tufts.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_northern_grove.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_orchard_apple.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_palm_grove.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_rock_crevice_plants.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_rock_moss_mat.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_tropical_understory.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_wall_hanging_moss.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_wetland_grass.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_wildflower_purple.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_wildflower_yellow.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_woodland_understory.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
