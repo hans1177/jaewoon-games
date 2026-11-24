@@ -342681,11 +342681,140 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_91d55d0dc4803b80bd9bdfba",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15011",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "6507eb50e265cd2a557fee33a1763b295b51f331",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15011,
+        "baseBranch": "main",
+        "headBranch": "mare-piranha-tiger-original-members-20261124",
+        "baseSha": "6507eb50e265cd2a557fee33a1763b295b51f331",
+        "headSha": "a8efd6f2bc99fde2da15527943c35fcde2a7db3d",
+        "mergeCommitSha": "1de8072bf444a142c74c88d92fd693ab254b1bdc",
+        "mergedAt": "2026-11-24T08:08:22Z",
+        "authorLogin": "hans1177",
+        "titleHash": "892e35dad487c5e44aa2d7e45f9d0c4667914b85fbf9040349151e630d281e00",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-piranha-tiger-original-members-20261124",
+        "candidateSha": "a8efd6f2bc99fde2da15527943c35fcde2a7db3d"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 644,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/cdgramos-tiger.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/cdgramos-tiger.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-Preview.png",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-Preview.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-pirahna_texture.png",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-pirahna_texture.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-piranha_mesh.mtl",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-piranha_mesh.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-piranha_mesh.obj",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-piranha_mesh.obj.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/cdgramos-tiger.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-Preview.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-pirahna_texture.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-piranha_mesh.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-piranha_mesh.obj.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15011",
+        "merge-commit:1de8072bf444a142c74c88d92fd693ab254b1bdc",
+        "base-main:6507eb50e265cd2a557fee33a1763b295b51f331"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2736
+    "total": 2737
   }
 }
