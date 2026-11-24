@@ -9,7 +9,9 @@ root = args[0] if args else "roblox-games/mare-essentia"
 kind_filter = next((x.split("=", 1)[1] for x in sys.argv[1:] if x.startswith("--kind=")), None)
 prefix_filter = next((x.split("=", 1)[1] for x in sys.argv[1:] if x.startswith("--prefix=")), None)
 scoped_london = kind_filter == "Town" and prefix_filter == "london_"
-if scoped_london:
+scoped_vegetation = kind_filter == "Terrain" and prefix_filter == "veg_"
+scoped_derived = scoped_london or scoped_vegetation
+if scoped_derived:
     with open(os.path.join(root, "assets-registered.json"), encoding="utf-8") as f:
         registered = json.load(f)["assets"]
     approved_sources = {v["source"] for v in registered.values() if v.get("license") == "CC0-1.0" and v.get("usePermissionGranted") is True and v.get("source")}
@@ -21,7 +23,7 @@ try:
     for row in rm["livingMotionVisualQualityContract"]["assetAdaptation"]["contentSafety"]["blockedAssets"]:
         blocked |= set(row.get("sha256") or [])
 except Exception:
-    if scoped_london:
+    if scoped_derived:
         raise
 def sha(p): return hashlib.sha256(open(p, "rb").read()).hexdigest()
 known = {}
@@ -48,7 +50,7 @@ for kind in sorted(d for d in os.listdir(inbox) if os.path.isdir(os.path.join(in
         h = sha(p)
         if not why and h in blocked: why = "차단된 해시"
         if not why and h in known: why = f"중복(이미 {known[h]})"
-        if not why and scoped_london:
+        if not why and scoped_derived:
             # [런던 원본] 승인 원본과 바이너리 해시, GLB 구조를 실제 대조한다.
             try:
                 assert fn.endswith(".glb") and m.get("license") == "CC0-1.0" and m.get("derived") is True
@@ -63,16 +65,26 @@ for kind in sorted(d for d in os.listdir(inbox) if os.path.isdir(os.path.join(in
                     with open(source, "rb") as f: data = f.read()
                     assert hashlib.sha256(data).hexdigest() == original["sha256"] and original["sha256"] not in blocked
                     assert hashlib.sha1(("blob %d\0" % len(data)).encode() + data).hexdigest() == original["gitBlobSha1"]
-                assert not os.path.exists(os.path.join(root, "assets", "town", fn))
+                assert not os.path.exists(os.path.join(root, "assets", kind.lower(), fn))
+                if scoped_vegetation:
+                    assert 0 < m.get("triangles", 0) <= 1000
+                    with open(p, "rb") as f: data = f.read()
+                    size, tag = struct.unpack_from("<II", data, 12)
+                    assert tag == 0x4e4f534a and 20 + size < len(data)
+                    glb = json.loads(data[20:20+size])
+                    actual_triangles = sum(glb["accessors"][pr["indices"]]["count"] // 3
+                        for node in glb["nodes"] if "mesh" in node
+                        for pr in glb["meshes"][node["mesh"]]["primitives"])
+                    assert actual_triangles == m["triangles"]
             except (AssertionError, KeyError, OSError, TypeError, ValueError):
                 why = "런던 승인 원본·GLB·해시 검증 실패"
         if why:
             bad.append((p, why)); continue
         dest_dir = os.path.join(root, "assets", kind.lower() if os.path.isdir(os.path.join(root, "assets", kind.lower())) else kind)
         done.append((p, os.path.join(dest_dir, fn), m, h))
-        if scoped_london: known[h] = p
+        if scoped_derived: known[h] = p
 for p, why in bad: print(f"거부: {p} — {why}")
-if scoped_london and bad:
+if scoped_derived and bad:
     sys.exit(1)
 for src, dst, m, h in done:
     print(("[시험] " if dry else "") + f"등록: {src} → {dst}  ({m['license']}, {h[:10]})")
