@@ -338289,11 +338289,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_aed2cb41b6b7e09ceb146f4e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14936",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "38b6f4a4f80f46849389cabc000226e266fa9f00",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14936,
+        "baseBranch": "main",
+        "headBranch": "mare-bird-original-inbox-1124",
+        "baseSha": "38b6f4a4f80f46849389cabc000226e266fa9f00",
+        "headSha": "c2a8315ae5a704ff46fd034c7d1ae158d6e9a392",
+        "mergeCommitSha": "f5c04300b752215aed7cf80df0264ba0df654df1",
+        "mergedAt": "2026-11-24T03:11:17Z",
+        "authorLogin": "hans1177",
+        "titleHash": "1d72a94bfb6adfbe7266dca07c8b58d01498011f7d66bc684e81f1a6c8a9db46",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-bird-original-inbox-1124",
+        "candidateSha": "c2a8315ae5a704ff46fd034c7d1ae158d6e9a392"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 58,
+        "deletedLineCount": 5,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_bald_eagle.glb",
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_bald_eagle.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_seagull.glb",
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_seagull.glb.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_bald_eagle.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_seagull.glb.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14936",
+        "merge-commit:f5c04300b752215aed7cf80df0264ba0df654df1",
+        "base-main:38b6f4a4f80f46849389cabc000226e266fa9f00"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2706
+    "total": 2707
   }
 }
