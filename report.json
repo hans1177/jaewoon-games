@@ -1,170 +1,40 @@
 {
- "sourceRevision": "44dc5a4df7d0ed4842423c04331460af084d1cc0",
+ "sourceRevision": "478fa86259a17b4af3e6a90e50b8f1ea92c9dc22",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
+   "out": "started\ntext"
   },
   {
-   "step": 3,
+   "step": 2,
    "ctx": "Client",
-   "out": "INTRO name=true comp=true\ntext"
+   "out": "mobs=23 FieldEnemy@2991.9169921875, 3.187709093093872, 125.05812072753906;FieldEnemy@3026.460205078125, 3.1949639320373535, 135.97613525390625;FieldEnemy@2982.91015625, 3.214297294616699, 116.98019409179688;FieldEnemy@2899.24658203125, 9.127866744995117, -93.6639633178711;FieldEnemy@3120.358154296875, 3.9951610565185547, -91.5443344116211;FieldEnemy@2922.595458984375, 5.12762451171875, -83.47900390625;FieldEnemy@3118.013427734375, 5.374061584472656, -105.72590637207031;FieldEnemy@2870.314453125, 3.19539475440979, 35.229774475097656;FieldEnemy@3099.39013671875, 8.322077751159668, 45.78125;FieldEnemy@2912.62353515625, 3.589121103286743, -84.46024322509766;FieldEnemy@3120.22265625, 3.2133710384368896, -98.94854736328125;FieldEnemy@2915.54248046875, 3.208806276321411, -87.50984954833984;FieldEnemy@3107.758056640625, 6.396044731140137, -104.40177154541016;FieldEnemy@2880.33740234375, 3.1883533000946045, 26.610782623291016;FieldEnemy@3097.75341796875, 6.083461284637451, 53.6409912109375;FieldEnemy@2897.736328125, 9.700002670288086, -95.66654968261719;FieldEnemy@3107.953857421875, 7.932307243347168, -100.84931182861328;FieldEnemy@2920.53857421875, 4.1638689041137695, -96.71162414550781;FieldEnemy@3117.456298828125, 3.8987882137298584, -101.5819320678711;FieldEnemy@2886.111572265625, 3.2078864574432373, 28.91627311706543;FieldEnemy@3109.946044921875, 3.1875574588775635, 50.40739440917969;FieldEnemy@2905.427490234375, 8.493768692016602, -92.8258056640625;FieldEnemy@3111.62060546875, 8.69035816192627, -94.75132751464844\ntext"
+  },
+  {
+   "step": 4,
+   "capture": "f0_environment",
+   "files": 1
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "killed=false\ntext"
+   "out": "bound\ntext"
   },
   {
-   "step": 6,
-   "ctx": "Client",
-   "out": "DEV Tab trade\ntext"
+   "step": 7,
+   "capture": "f1_start",
+   "files": 1
   },
   {
    "step": 8,
-   "capture": "f_trade",
-   "files": 1
-  },
-  {
-   "step": 9,
    "ctx": "Client",
-   "out": "CHK deck view=1048x380 texts=284 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
+   "out": "err=true table: 0x6250447783bb4879 done=nil humanoids=33 models=891 parts=1393 lowPolyModels=6 lowPolyMeshes=0/1299 cam=3007.822998046875, 7.687708854675293, 143.14112854003906 hrp=2992.7158203125, 2.9925317764282227, 160.11038208007812 shelves=0 ridges=4 near3D=5 placed3D=13 near=42 mid=227 far=10 port=reef quest=coast studioFPS=7 hiddenSceneryFPS=7 restoredFPS=7 sceneryFPSDelta=0 visualParts=547 enemyHiddenFPS=7 enemyVisualDelta=0 enemyVisualParts=795 sceneryOnly=true lodAssetSource=registered\ntext"
   },
   {
    "step": 10,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:trade true nil\ntext"
-  },
-  {
-   "step": 11,
-   "ctx": "Client",
-   "out": "killed=true\ntext"
-  },
-  {
-   "step": 12,
-   "ctx": "Client",
-   "out": "DEV Tab route\ntext"
-  },
-  {
-   "step": 14,
-   "capture": "f_route",
+   "capture": "f2_later",
    "files": 1
-  },
-  {
-   "step": 15,
-   "ctx": "Client",
-   "out": "CHK deck view=1048x380 texts=585 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 16,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:route true nil\ntext"
-  },
-  {
-   "step": 17,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 18,
-   "ctx": "Client",
-   "out": "DEV Tab yard\ntext"
-  },
-  {
-   "step": 20,
-   "capture": "f_yard",
-   "files": 1
-  },
-  {
-   "step": 21,
-   "ctx": "Client",
-   "out": "CHK deck view=1048x380 texts=187 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 22,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:yard true nil\ntext"
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 24,
-   "ctx": "Client",
-   "out": "DEV Tab quest\ntext"
-  },
-  {
-   "step": 26,
-   "capture": "f_quest",
-   "files": 1
-  },
-  {
-   "step": 27,
-   "ctx": "Client",
-   "out": "CHK deck view=1048x380 texts=236 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 28,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:quest true nil\ntext"
-  },
-  {
-   "step": 29,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 30,
-   "ctx": "Client",
-   "out": "DEV Tab codex\ntext"
-  },
-  {
-   "step": 32,
-   "capture": "f_codex",
-   "files": 1
-  },
-  {
-   "step": 33,
-   "ctx": "Client",
-   "out": "CHK deck view=1048x380 texts=841 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 34,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:codex true nil\ntext"
-  },
-  {
-   "step": 35,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 36,
-   "ctx": "Client",
-   "out": "DEV Tab status\ntext"
-  },
-  {
-   "step": 38,
-   "capture": "f_status",
-   "files": 1
-  },
-  {
-   "step": 39,
-   "ctx": "Client",
-   "out": "CHK deck view=1048x380 texts=194 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 40,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:status true nil\ntext"
-  },
-  {
-   "step": 41,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
   }
  ],
  "errors": [],
@@ -172,212 +42,57 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 35003
+   "elapsedMs": 30003
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 2498
+   "elapsedMs": 1727
   },
   {
    "step": 2,
-   "type": "wait",
-   "elapsedMs": 4009
+   "type": "luau",
+   "elapsedMs": 729
   },
   {
    "step": 3,
-   "type": "luau",
-   "elapsedMs": 2532
+   "type": "wait",
+   "elapsedMs": 11009
   },
   {
    "step": 4,
-   "type": "wait",
-   "elapsedMs": 2009
+   "type": "capture",
+   "elapsedMs": 936
   },
   {
    "step": 5,
    "type": "luau",
-   "elapsedMs": 382
+   "elapsedMs": 220
   },
   {
    "step": 6,
-   "type": "luau",
-   "elapsedMs": 392
+   "type": "wait",
+   "elapsedMs": 9006
   },
   {
    "step": 7,
-   "type": "wait",
-   "elapsedMs": 3004
+   "type": "capture",
+   "elapsedMs": 857
   },
   {
    "step": 8,
-   "type": "capture",
-   "elapsedMs": 1468
+   "type": "luau",
+   "elapsedMs": 18361
   },
   {
    "step": 9,
-   "type": "luau",
-   "elapsedMs": 320
+   "type": "wait",
+   "elapsedMs": 6014
   },
   {
    "step": 10,
-   "type": "luau",
-   "elapsedMs": 318
-  },
-  {
-   "step": 11,
-   "type": "luau",
-   "elapsedMs": 330
-  },
-  {
-   "step": 12,
-   "type": "luau",
-   "elapsedMs": 799
-  },
-  {
-   "step": 13,
-   "type": "wait",
-   "elapsedMs": 3005
-  },
-  {
-   "step": 14,
    "type": "capture",
-   "elapsedMs": 1025
-  },
-  {
-   "step": 15,
-   "type": "luau",
-   "elapsedMs": 329
-  },
-  {
-   "step": 16,
-   "type": "luau",
-   "elapsedMs": 310
-  },
-  {
-   "step": 17,
-   "type": "luau",
-   "elapsedMs": 549
-  },
-  {
-   "step": 18,
-   "type": "luau",
-   "elapsedMs": 454
-  },
-  {
-   "step": 19,
-   "type": "wait",
-   "elapsedMs": 3007
-  },
-  {
-   "step": 20,
-   "type": "capture",
-   "elapsedMs": 1021
-  },
-  {
-   "step": 21,
-   "type": "luau",
-   "elapsedMs": 317
-  },
-  {
-   "step": 22,
-   "type": "luau",
-   "elapsedMs": 334
-  },
-  {
-   "step": 23,
-   "type": "luau",
-   "elapsedMs": 300
-  },
-  {
-   "step": 24,
-   "type": "luau",
-   "elapsedMs": 317
-  },
-  {
-   "step": 25,
-   "type": "wait",
-   "elapsedMs": 3004
-  },
-  {
-   "step": 26,
-   "type": "capture",
-   "elapsedMs": 1083
-  },
-  {
-   "step": 27,
-   "type": "luau",
-   "elapsedMs": 327
-  },
-  {
-   "step": 28,
-   "type": "luau",
-   "elapsedMs": 303
-  },
-  {
-   "step": 29,
-   "type": "luau",
-   "elapsedMs": 316
-  },
-  {
-   "step": 30,
-   "type": "luau",
-   "elapsedMs": 317
-  },
-  {
-   "step": 31,
-   "type": "wait",
-   "elapsedMs": 3000
-  },
-  {
-   "step": 32,
-   "type": "capture",
-   "elapsedMs": 1100
-  },
-  {
-   "step": 33,
-   "type": "luau",
-   "elapsedMs": 352
-  },
-  {
-   "step": 34,
-   "type": "luau",
-   "elapsedMs": 315
-  },
-  {
-   "step": 35,
-   "type": "luau",
-   "elapsedMs": 552
-  },
-  {
-   "step": 36,
-   "type": "luau",
-   "elapsedMs": 319
-  },
-  {
-   "step": 37,
-   "type": "wait",
-   "elapsedMs": 3005
-  },
-  {
-   "step": 38,
-   "type": "capture",
-   "elapsedMs": 1116
-  },
-  {
-   "step": 39,
-   "type": "luau",
-   "elapsedMs": 312
-  },
-  {
-   "step": 40,
-   "type": "luau",
-   "elapsedMs": 330
-  },
-  {
-   "step": 41,
-   "type": "luau",
-   "elapsedMs": 322
+   "elapsedMs": 634
   }
  ],
  "consoleCapture": {
@@ -387,13 +102,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 42,
-  "completedSteps": 42,
+  "plannedSteps": 11,
+  "completedSteps": 11,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 6,
-  "capturedFrames": 6,
+  "plannedFrames": 3,
+  "capturedFrames": 3,
   "abortedEarly": false
  }
 }
