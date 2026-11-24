@@ -2319,3 +2319,4 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `terrain/` | veg_snow_bush_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
 | `terrain/` | veg_snow_pine_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
 | `town/` | observatory-dome-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/dome/dome.glb |
+| `town/` | london_trade_3.glb | Approved CC0 source authors · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
