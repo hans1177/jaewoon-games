@@ -1613,6 +1613,11 @@ async function prepareDonkeyRig() {
 }
 if (!studioRegrantPath) await prepareDonkeyRig();
 if (!studioRegrantPath) await prepareCharacterFinishes(ROOT);
+// 런던 가공 모델은 이미 등록되고 사용권이 확인된 CC0 원본만 참조한다.
+const approvedDerivedPortSources = new Map(Object.values(JSON.parse(await fs.readFile(JSON_OUT,'utf8')).assets || {})
+  .filter(row => row.license === 'CC0-1.0' && row.usePermissionGranted === true
+    && /^[1-9][0-9]*$/.test(String(row.assetId)) && !blockedIds.has(String(row.assetId)) && row.source)
+  .map(row => [row.source,row]));
 if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['animals', 'Animals'], ['monsters', 'Monsters'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits'], ['cardart', 'CardArt'], ['materials', 'Materials']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     // [원본 리그] 메시 없는 관절계층 GLB는 제작용 원본이다. 단독 Roblox 3D 모델로 등록하지 않는다.
@@ -1635,6 +1640,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     if (image ? !['.png', '.jpg', '.jpeg'].includes(ext) : ext !== '.glb' && ext !== '.fbx') continue;
     // [원본 증빙] Cargo와 Naval 모델은 파일별 라이선스·해시 증빙을 등록 파이프라인에서 확인한다.
     let sourceLicense = null;
+    let londonDerivedPort = false;
     // [원본 UV 개선] 복식 9종은 반드시 실제 원본 해시·형상 보존 증빙을 보유한다.
     const originalOutfit = kind === 'People' && /^outfit_(?:vest|coat|guard|apron|sash|belt|cuff|boot|stole)\.glb$/.test(sourceFileName);
     const characterFinish = kind === 'People' && /^(?:outfit_|hair_|acc_)[a-z0-9_]+\.glb$/.test(sourceFileName);
@@ -1653,7 +1659,8 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       // [검증 대기 원본 보호] 3D 도시 파생 모델은 CC0 원본 기록만 있고 검수·등록이
       // 완료되지 않았으면 실제 카드 이미지 등록을 막거나 미승인 모델을 승격하지 않는다.
       // 정식 등록 가능한 모델은 아래 기존 해시·권리·원본 검사에 그대로 진입한다.
-      if (portOriginalModel && sourceLicense?.derived === true
+      londonDerivedPort = portOriginalModel && /^london_/.test(f) && sourceLicense?.derived === true;
+      if (portOriginalModel && !londonDerivedPort && sourceLicense?.derived === true
         && sourceLicense.productionVerified === false
         && /^PENDING_/.test(String(sourceLicense.registration || ''))) {
         console.log('SKIP_PENDING_UNVERIFIED_PORT_MODEL', f);
@@ -1669,7 +1676,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       if (originalOutfit && (!sourceLicense || sourceLicense.uvVersion !== 1 || !sourceLicense.originalGeometrySha256))
         throw new Error('R15_OUTFIT_UV_AND_SOURCE_PROOF_REQUIRED:' + f);
       if (sourceLicense && (!['PROJECT_ORIGINAL_ART', 'CC0-1.0', 'CC-BY-4.0'].includes(sourceLicense.license)
-        || !sourceLicense.author || !(derivedVegetation ? sourceLicense.sha256 : sourceLicense.sourceSha256) || !sourceLicense.source))
+        || !sourceLicense.author || !((derivedVegetation || londonDerivedPort) ? sourceLicense.sha256 : sourceLicense.sourceSha256) || !sourceLicense.source))
         throw new Error('ORIGINAL_MODEL_SOURCE_METADATA_INVALID:' + f);
       if (townOriginal) {
         const original = await fs.readFile(path.join(ROOT,'assets',dir,sourceFileName));
@@ -1722,7 +1729,53 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
             throw new Error('MARE_VEGETATION_ORIGINAL_CHANGED:' + f);
         }
       }
-      if (portOriginalModel) {
+      if (londonDerivedPort) {
+        const model = await fs.readFile(path.join(ROOT,'assets',dir,sourceFileName));
+        const digest = crypto.createHash('sha256').update(model).digest('hex');
+        if (sourceLicense.license !== 'CC0-1.0' || !sourceLicense.originalFiles?.length
+          || !sourceLicense.modification || sourceLicense.sha256 !== digest
+          || sourceLicense.bytes !== model.length || blockedHashes.has(digest)
+          || sourceLicense.registrationStatus === 'BLOCKED' || sourceLicense.nativeVisualQa === 'FAILED'
+          || sourceLicense.sourceLicense !== 'https://creativecommons.org/publicdomain/zero/1.0/'
+          || !Number.isSafeInteger(sourceLicense.triangles) || sourceLicense.triangles <= 0
+          || model.length < 20 || model.toString('ascii',0,4) !== 'glTF'
+          || model.readUInt32LE(4) !== 2 || model.readUInt32LE(8) !== model.length
+          || model.readUInt32LE(16) !== 0x4e4f534a || 20 + model.readUInt32LE(12) >= model.length)
+          throw new Error('MARE_LONDON_DERIVED_PROOF_INVALID:' + f);
+        const gltf = JSON.parse(model.subarray(20,20+model.readUInt32LE(12)).toString('utf8'));
+        const seen = new Set();
+        let tris = 0;
+        function visit(index) {
+          if (seen.has(index) || !gltf.nodes?.[index]) throw new Error('MARE_LONDON_DERIVED_NODE_INVALID:' + f);
+          seen.add(index);
+          const node = gltf.nodes[index];
+          if (node.mesh !== undefined) for (const primitive of gltf.meshes[node.mesh].primitives) {
+            const count = gltf.accessors?.[primitive.indices ?? primitive.attributes?.POSITION]?.count;
+            if ((primitive.mode ?? 4) !== 4 || !Number.isSafeInteger(count) || count <= 0 || count % 3)
+              throw new Error('MARE_LONDON_DERIVED_TRIANGLE_INVALID:' + f);
+            tris += count/3;
+          }
+          for (const child of node.children || []) visit(child);
+        }
+        for (const index of gltf.scenes[gltf.scene ?? 0].nodes) visit(index);
+        if (seen.size !== gltf.nodes.length || tris !== sourceLicense.triangles)
+          throw new Error('MARE_LONDON_DERIVED_STRUCTURE_MISMATCH:' + f);
+        for (const original of sourceLicense.originalFiles) {
+          const source = original.repositoryPath || (original.localPath ? path.posix.join(ROOT,original.localPath) : '');
+          const registeredSource = approvedDerivedPortSources.get(source);
+          if (!registeredSource || original.license !== 'CC0-1.0'
+            || !String(original.originalUrl || '').startsWith('https://')
+            || blockedPaths.has(source) || blockedHashes.has(original.sha256))
+            throw new Error('MARE_LONDON_DERIVED_ORIGINAL_UNAPPROVED:' + source);
+          const bytes = await fs.readFile(source);
+          const sourceDigest = crypto.createHash('sha256').update(bytes).digest('hex');
+          const blob = crypto.createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+          if (sourceDigest !== original.sha256 || blob !== original.gitBlobSha1
+            || (registeredSource.sourceSha256 && registeredSource.sourceSha256 !== sourceDigest))
+            throw new Error('MARE_LONDON_DERIVED_ORIGINAL_CHANGED:' + source);
+        }
+        console.log('MARE_LONDON_DERIVED_SOURCE_VERIFIED',f,digest,tris);
+      } else if (portOriginalModel) {
         if (!sourceLicense || sourceLicense.license !== 'CC0-1.0'
           || sourceLicense.commercialUseAllowed !== true || !sourceLicense.sourcePage
           || !sourceLicense.sourceGitBlobSha1 || !sourceLicense.sourceSizeBytes
@@ -1775,7 +1828,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       console.error('MARE_VEGETATION_PLAN_REJECTED', failure);
       continue;
     }
-    plan.push({kind, name, file: path.join(ROOT, 'assets', dir, f), ext, compressed: compressedGlb, sourceLicense,
+    plan.push({kind, name, file: path.join(ROOT, 'assets', dir, f), ext, compressed: compressedGlb, sourceLicense, londonDerivedPort,
       // [실제 Studio 검증] Goods/Menu/Portraits 모두 ImageLabel에서 사용한다. Decal 번호는 Client에서 로딩되지 않았다.
       // 실패 원본을 재업로드하지 않고 승인된 기존 PNG/JPG로 Image 자산을 발급한다.
       assetType: image ? 'Image' : 'Model',
@@ -1852,7 +1905,7 @@ for (const item of plan) {
   const storedBytes = await fs.readFile(item.file);
   const originalBytes = item.compressed ? gunzipSync(storedBytes) : storedBytes;
   const sourceSha256 = crypto.createHash('sha256').update(originalBytes).digest('hex');
-  if (item.sourceLicense && (item.kind === 'Terrain' && item.name.startsWith('veg_') ? item.sourceLicense.sha256 : item.sourceLicense.sourceSha256) !== sourceSha256) {
+  if (item.sourceLicense && ((item.londonDerivedPort || (item.kind === 'Terrain' && item.name.startsWith('veg_'))) ? item.sourceLicense.sha256 : item.sourceLicense.sourceSha256) !== sourceSha256) {
     failures.push(id + ': ORIGINAL_MODEL_SHA256_MISMATCH');
     console.error('ORIGINAL_MODEL_SHA256_MISMATCH', id);
     continue;
