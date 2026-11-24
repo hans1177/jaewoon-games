@@ -44,9 +44,29 @@
       "sha256": "fe0a9301d73ef81c5834376636822b1a0802a935c02e31e9751beb748177fd3a",
       "gitBlobSha1": "9279512118b469e19a310cdd7f55e869235903a1",
       "registeredAssetId": "92399449110327"
+    },
+    {
+      "name": "town/chimney-base.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/chimney-base.glb",
+      "originalUrl": "https://kenney.nl/assets/fantasy-town-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "f4e8babd642d32e4dea26eb7763719caae5913014ab5586ab0a2e82edafaf023",
+      "gitBlobSha1": "f8c9b7e18cf0670092fe81dfb32898cdcef22b02",
+      "registeredAssetId": "107195315884209"
+    },
+    {
+      "name": "town/chimney-top.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/chimney-top.glb",
+      "originalUrl": "https://kenney.nl/assets/fantasy-town-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "201acdebca8bcc3dc2ff32a3e07b7738d45993776306b495a887e22dcb34a2db",
+      "gitBlobSha1": "a885ae025ef2c786a3eaf99f75cf435e1fcf6d8e",
+      "registeredAssetId": "120602074971507"
     }
   ],
-  "modification": "Four two-storey university wings with quadrangle and open gate, original meshes and materials preserved. Incomplete draft, observatory dome, chimneys and visual/collision review pending.",
+  "modification": "Four two-storey university wings with quadrangle, open gate and eight original two-part chimney stacks. Original materials retained. Observatory dome and final material/visual/collision review pending.",
   "placements": [
     {
       "source": "wall-window-shutters",
@@ -2847,11 +2867,331 @@
         4.5557288290024704,
         4.109422719503881
       ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_-6_8",
+      "translation": [
+        -6.40494673328,
+        7.25,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_6_8",
+      "translation": [
+        5.59505326672,
+        7.25,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_-6_-8",
+      "translation": [
+        -6.40494673328,
+        7.25,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_6_-8",
+      "translation": [
+        5.59505326672,
+        7.25,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_-7.8_-3",
+      "translation": [
+        -8.20494673328,
+        7.25,
+        -3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_-7.8_3",
+      "translation": [
+        -8.20494673328,
+        7.25,
+        3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_7.8_-3",
+      "translation": [
+        7.39505326672,
+        7.25,
+        -3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_7.8_3",
+      "translation": [
+        7.39505326672,
+        7.25,
+        3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_-6_8",
+      "translation": [
+        -6.72894858266,
+        9.05,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_6_8",
+      "translation": [
+        5.27105141734,
+        9.05,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_-6_-8",
+      "translation": [
+        -6.72894858266,
+        9.05,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_6_-8",
+      "translation": [
+        5.27105141734,
+        9.05,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_-7.8_-3",
+      "translation": [
+        -8.52894858266,
+        9.05,
+        -3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_-7.8_3",
+      "translation": [
+        -8.52894858266,
+        9.05,
+        3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_7.8_-3",
+      "translation": [
+        7.07105141734,
+        9.05,
+        -3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_7.8_3",
+      "translation": [
+        7.07105141734,
+        9.05,
+        3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
     }
   ],
-  "sha256": "177d29aff478d3574c1115ea68fdb717b9b7f89ec0459b9c4b49ec38e109fd40",
-  "bytes": 141284,
-  "triangles": 35696,
+  "sha256": "67802c7a444d8c25f7b93834958f4a3239acacf0c844b24eedd4556cd695f8c2",
+  "bytes": 180972,
+  "triangles": 36944,
   "sourceRevision": "5037bfc2b8feadd0ad493e67aae0006c6ab0c8e9",
   "productionVerified": false,
   "registration": "HOLD_INCOMPLETE_OBSERVATORY_DOME_UNREGISTERED",
