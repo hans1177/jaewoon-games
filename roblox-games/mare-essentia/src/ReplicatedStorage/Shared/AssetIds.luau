@@ -1495,6 +1495,7 @@ return {
 	["Town/london_bld_fort_wall"] = 102213307320953,
 	["Town/london_bld_garden"] = 117762323825810,
 	["Town/london_bld_granary"] = 98675443318882,
+	["Town/london_bld_guild_row"] = 78577358757836,
 	["Town/london_bld_hospital"] = 71619963140661,
 	["Town/london_bld_house_row"] = 83115469166461,
 	["Town/london_bld_hut"] = 140111113375178,
