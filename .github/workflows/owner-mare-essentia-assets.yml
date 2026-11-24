@@ -406,11 +406,18 @@ jobs:
           fi
           # [런던 원본 승격] 신규 파일은 실제 등록번호·사용권이 확인된 것만 기존 API 반영 목록에 추가한다.
           london_files=()
+          verified_vegetation="$RUNNER_TEMP/mare-vegetation-verified"
+          pending_vegetation="$RUNNER_TEMP/mare-vegetation-pending"
+          : > "$verified_vegetation"
+          : > "$pending_vegetation"
           if [[ "${{ steps.london_source.outcome }}" == "success" ]]; then
-            python3 - <<'PY'
-          import hashlib, json, pathlib, subprocess
+            MARE_ASSET_REGISTRATION_OUTCOME="${{ steps.asset_registration.outcome }}" python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
           root = pathlib.Path('roblox-games/mare-essentia')
           registry = json.loads((root/'assets-registered.json').read_text())['assets']
+          verified_vegetation = pathlib.Path(os.environ['RUNNER_TEMP'])/'mare-vegetation-verified'
+          pending_vegetation = pathlib.Path(os.environ['RUNNER_TEMP'])/'mare-vegetation-pending'
+          vegetation_sources = []
           for kind, prefix in (('Town', 'london_'), ('Terrain', 'veg_')):
             for path in sorted((root/'assets'/kind.lower()).glob(prefix+'*.glb')):
               inbox = root/'assets/inbox'/kind/path.name
@@ -418,14 +425,33 @@ jobs:
                   continue
               row = registry.get(kind+'/'+path.stem, {})
               proof = json.loads(path.with_suffix('.glb.license.json').read_text())
-              if not (row.get('assetType') == 'Model' and row.get('usePermissionGranted') is True and str(row.get('assetId','')).isdigit() and int(row['assetId']) > 0 and row.get('source') == str(path) and hashlib.sha256(path.read_bytes()).hexdigest() == proof['sha256']):
+              verified = (row.get('assetType') == 'Model' and row.get('usePermissionGranted') is True and str(row.get('assetId','')).isdigit() and int(row['assetId']) > 0 and row.get('source') == str(path) and hashlib.sha256(path.read_bytes()).hexdigest() == proof['sha256'])
+              if kind == 'Terrain':
+                  if not verified or row.get('sourceSha256') != proof['sha256']:
+                      # 확인된 사용권·번호·해시가 없으면 inbox 원본을 삭제하거나 승격하지 않는다.
+                      print('MARE_VEGETATION_REGISTRATION_PENDING',path.stem)
+                      with pending_vegetation.open('a') as pending: pending.write(str(path)+'\n')
+                      continue
+                  with verified_vegetation.open('a') as confirmed: confirmed.write(str(path)+'\n')
+                  vegetation_sources.append(f"| `terrain/` | {path.name} | {proof['author']} · {proof['license']} | {proof['source']} |")
+              elif not verified:
                   raise SystemExit('MARE_LONDON_REGISTRATION_PENDING:'+path.stem)
               print('MARE_LONDON_REGISTERED_SOURCE_VERIFIED',path.stem,row['assetId'])
+          if vegetation_sources:
+              sources = root/'assets/SOURCES.md'
+              # 다른 자산 등록이 실패했다면 기존 장부에 확인된 식생만 반영한다.
+              content = sources.read_text(encoding='utf-8') if os.environ['MARE_ASSET_REGISTRATION_OUTCOME'] == 'success' else subprocess.check_output(['git','show','HEAD:'+str(sources)],text=True)
+              for line in vegetation_sources:
+                  if line not in content.splitlines(): content = content.rstrip()+'\n'+line+'\n'
+              sources.write_text(content,encoding='utf-8')
           PY
             while IFS= read -r src; do
               case "$src" in
                 */assets/inbox/Town/london_*.glb) dest="roblox-games/mare-essentia/assets/town/${src##*/}" ;;
-                */assets/inbox/Terrain/veg_*.glb) dest="roblox-games/mare-essentia/assets/terrain/${src##*/}" ;;
+                */assets/inbox/Terrain/veg_*.glb)
+                  dest="roblox-games/mare-essentia/assets/terrain/${src##*/}"
+                  grep -Fxq "$dest" "$verified_vegetation" || continue
+                  ;;
                 *) continue ;;
               esac
               [[ -f "$dest" && -f "$dest.license.json" ]] || exit 1
@@ -455,9 +481,11 @@ jobs:
               continue
             fi
             # [지상전 3D 실물] 등록·권한 확정 전에는 외부 GLB·권리 증빙·SOURCES 장부를 반영하지 않는다.
-            if [[ ( "$f" == roblox-games/mare-essentia/assets/terrain/kenney_*.glb* || "$f" == roblox-games/mare-essentia/assets/SOURCES.md ) && "${{ steps.asset_registration.outcome }}" != "success" ]]; then
-              echo "SKIP_UNVERIFIED_KENNEY_NATURE $f"
-              continue
+            if [[ "${{ steps.asset_registration.outcome }}" != "success" ]]; then
+              if [[ "$f" == roblox-games/mare-essentia/assets/terrain/kenney_*.glb* || ( "$f" == roblox-games/mare-essentia/assets/SOURCES.md && ! -s "$verified_vegetation" ) ]]; then
+                echo "SKIP_UNVERIFIED_KENNEY_NATURE $f"
+                continue
+              fi
             fi
             # [V5 원본 파일 승격] 등록번호와 Universe 사용 권한을 검증하기 전에는 GitHub 원본도 승격하지 않는다.
             if [[ "$f" == roblox-games/mare-essentia/assets/naval/*-v5*.glb* && ( "${{ steps.ship_v5.outcome }}" != "success" || "${{ steps.asset_registration.outcome }}" != "success" ) ]]; then
@@ -503,6 +531,11 @@ jobs:
             [[ "$current" == "$original" && "$saved" == "$(git hash-object "$f")" ]] || exit 1
             gh api -X DELETE "repos/${GITHUB_REPOSITORY}/contents/${src}" -f message="Mare Essentia: remove registered London inbox copy" -f sha="$current" -f branch=main --silent
           done
+          # 정상 식생은 위에서 저장했다. 미등록 식생은 그대로 남기고 전체 완료로 표시하지 않는다.
+          if [[ "${{ steps.london_source.outcome }}" == "success" ]] && { [[ -s "$pending_vegetation" ]] || compgen -G 'roblox-games/mare-essentia/assets/inbox/Terrain/veg_*.glb' >/dev/null; }; then
+            echo "::error::MARE_VEGETATION_REGISTRATION_PARTIAL"
+            exit 1
+          fi
 
       - name: Publish the place with the new asset IDs
         if: ${{ inputs.publish_after_register == true && inputs.studio_regrant != true && success() }}
