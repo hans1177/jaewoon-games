@@ -337649,11 +337649,150 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b7dc3875154143433be756f7",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14908",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b1a8fa4f2c64267a5837af52d944d1ad57ad33ff",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14908,
+        "baseBranch": "main",
+        "headBranch": "mare-london-hospital-615c52c",
+        "baseSha": "b1a8fa4f2c64267a5837af52d944d1ad57ad33ff",
+        "headSha": "f48033ec8b5eca436ae3ffa202af1ce06ec95130",
+        "mergeCommitSha": "a8e0d420ef8dff687968c1728447975da8b92408",
+        "mergedAt": "2026-11-24T02:42:31Z",
+        "authorLogin": "hans1177",
+        "titleHash": "64a539fe6caa8537e7624c823cc19311999ca5fb73a78994f8ef314cbbeed419",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-london-hospital-615c52c",
+        "candidateSha": "f48033ec8b5eca436ae3ffa202af1ce06ec95130"
+      },
+      "changeStats": {
+        "changedFileCount": 15,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 5293,
+        "deletedLineCount": 57,
+        "changedFiles": [
+          "AGENTS.md",
+          "qa/mare-discovery-forms.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_hospital.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_hospital.glb.license.json",
+          "roblox-games/mare-essentia/docs/READ_FIRST.md",
+          "roblox-games/mare-essentia/docs/discoveries/MISSING.md",
+          "roblox-games/mare-essentia/docs/discoveries/README.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DiscoveryForms.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DiscoveryStage.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-discovery-forms.json"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-discovery-forms.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_hospital.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DiscoveryForms.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DiscoveryStage.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-discovery-forms.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14908",
+        "merge-commit:a8e0d420ef8dff687968c1728447975da8b92408",
+        "base-main:b1a8fa4f2c64267a5837af52d944d1ad57ad33ff"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2701
+    "total": 2702
   }
 }
