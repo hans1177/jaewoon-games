@@ -9,6 +9,17 @@ return function(D, S)
 	-- 발견·방문·연구처럼 플레이어 상태만으로 진행도가 정해지는 퀘스트는 수락하지 않아도 자동으로 보고된다.
 	local AUTO_KINDS = { discover_card = true, discover = true, field = true, visit = true, research = true, understand = true, understand_card = true, present = true, expo = true, joint = true, port_tech = true, landmark = true, launch = true, era = true, stock = true, dividend = true, history = true, people = true, people_talk = true, order_patrol = true, war_clear = true, duel_leader = true }
 
+	-- [연출씬] 장면 분위기·길이·목적지 정보(클라이언트 연출 전용, 저장 안 함)
+	local MOOD = { win = "war", war_clear = "war", duel_leader = "war", order_patrol = "war",
+		research = "scholar", understand = "scholar", understand_card = "scholar", field = "scholar", present = "scholar", expo = "scholar", discover_card = "scholar",
+		deliver = "commerce", stock = "commerce", dividend = "commerce", joint = "commerce" }
+	local function sceneMeta(scene, quest)
+		scene.portId = quest.portId
+		scene.mood = MOOD[quest.kind] or "voyage"
+		scene.long = quest.after ~= nil or quest.routeId ~= nil or quest.strand == "main" or quest.strand == "history" or (quest.difficulty or 0) >= 4
+		return scene
+	end
+
 	local function isAuto(quest)
 		return AUTO_KINDS[quest.kind] == true
 	end
@@ -212,7 +223,7 @@ return function(D, S)
 		if quest.id ~= "q_first_discovery" and (not AUTO_KINDS[quest.kind]
 			or (state._autoEventPort ~= state.portId and not (state.history and state.history.pending))) then
 			state._scenes = state._scenes or {}
-			table.insert(state._scenes, { kind = "end", name = quest.name, text = ending })
+			table.insert(state._scenes, sceneMeta({ kind = "end", name = quest.name, text = ending }, quest))
 			if AUTO_KINDS[quest.kind] then state._autoEventPort = state.portId end
 		end
 		if quest.rewardCareer then
@@ -290,7 +301,7 @@ return function(D, S)
 		state.quests.active[pick.id] = { delivered = 0, baseWins = state.stats.battlesWon }
 		local hook = storyOf(pick)
 		state._scenes = state._scenes or {}
-		table.insert(state._scenes, { kind = "start", name = pick.name, text = hook, summary = pick.summary })
+		table.insert(state._scenes, sceneMeta({ kind = "start", name = pick.name, text = hook, summary = pick.summary }, pick))
 		table.insert(msgs, string.format("%s — 일지에 새 이야기가 적혔다: 「%s」\n%s\n(%s)", how, pick.name, hook, pick.summary))
 		return pick
 	end
@@ -324,10 +335,10 @@ return function(D, S)
 				state._scenes = state._scenes or {}
 				local source = quest.leadSource or "현지 제보"
 				local detail = quest.story or quest.summary
-				table.insert(state._scenes, {
+				table.insert(state._scenes, sceneMeta({
 					kind = "start", name = quest.name .. " · " .. source,
 					text = source .. ": " .. detail, summary = quest.summary,
-				})
+				}, quest))
 				table.insert(msgs, string.format("%s에서 %s 단서를 확인했다: %s", D.Ports.Ports[state.portId].name, source, quest.name))
 				state._autoEventPort = state.portId
 				return
