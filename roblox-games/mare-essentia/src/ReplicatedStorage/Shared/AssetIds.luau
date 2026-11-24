@@ -1448,6 +1448,7 @@ return {
 	["Town/london_tavern_1"] = 105398512266281,
 	["Town/london_tavern_2"] = 133265815778453,
 	["Town/london_trade_1"] = 70855575740504,
+	["Town/london_trade_2"] = 115190185676292,
 	["Town/london_yard_1"] = 121235867322483,
 	["Town/nassau_house_1"] = 138627237339251,
 	["Town/overhang"] = 94904352766680,
