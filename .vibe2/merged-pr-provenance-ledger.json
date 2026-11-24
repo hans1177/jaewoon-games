@@ -347233,11 +347233,164 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_22b2e4ad9cf58be3b7dcf7d5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15059",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "4d5b2e57c5ada446c4a6c9c3479864824dc73bfa",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15059,
+        "baseBranch": "main",
+        "headBranch": "mare-gobkit-hippo-platypus-1124",
+        "baseSha": "4d5b2e57c5ada446c4a6c9c3479864824dc73bfa",
+        "headSha": "531467cbf092b86f460a614ee608b83cbd3ed547",
+        "mergeCommitSha": "9c8cc41a24beaad8c8eb7136b4b2d7897a06722d",
+        "mergedAt": "2026-11-24T09:56:48Z",
+        "authorLogin": "hans1177",
+        "titleHash": "16f9fabc78eb8d9c414111f7ffd21b7e06772e0bbaee159725588ba2b554e369",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-gobkit-hippo-platypus-1124",
+        "candidateSha": "531467cbf092b86f460a614ee608b83cbd3ed547"
+      },
+      "changeStats": {
+        "changedFileCount": 24,
+        "codingRelevantFileCount": 15,
+        "addedLineCount": 273,
+        "deletedLineCount": 34,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-hippo.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-hippo.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-platypus.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-platypus.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-dolphin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-manta-ray.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_double_source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_double_source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_single_source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_single_source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/observatory-dome-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/observatory-dome-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_trade_3.glb",
+          "roblox-games/mare-essentia/assets/town/london_trade_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/observatory-dome-source.glb",
+          "roblox-games/mare-essentia/assets/town/observatory-dome-source.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-hippo.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-platypus.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-dolphin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-manta-ray.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_double_source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_single_source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/observatory-dome-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_trade_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/observatory-dome-source.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15059",
+        "merge-commit:9c8cc41a24beaad8c8eb7136b4b2d7897a06722d",
+        "base-main:4d5b2e57c5ada446c4a6c9c3479864824dc73bfa"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2761
+    "total": 2762
   }
 }
