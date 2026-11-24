@@ -5342,7 +5342,7 @@ function H.historyCinematic(parent, ev)
 	stage.Position = UDim2.fromScale(0.97, 0.06)
 	stage.Size = UDim2.fromScale(0.44, 0.78)
 	stage.BackgroundColor3 = Color3.fromRGB(27, 40, 52)
-	stage.BackgroundTransparency = 0.12
+	stage.BackgroundTransparency = 1 -- 모델이 안 보일 때 빈 어두운 칸이 남지 않게
 	stage.Ambient = Color3.fromRGB(169, 153, 147)
 	stage.LightColor = Color3.fromRGB(255, 222, 161)
 	stage.LightDirection = Vector3.new(-0.65, -0.75, -0.46).Unit
@@ -5499,6 +5499,271 @@ function H.historyCinematic(parent, ev)
 	end
 end
 
+-- [퀘스트 연출씬 · 2026-11-24 오너] 일러스트 없이 실제 3D 세계를 카메라가 천천히 훑는다.
+--  · 목적지 항로: 해도 창에 현재 항구→목적지 점선과 배 표시가 따라간다.
+--  · 분위기: 전쟁(흔들림·붉은 그늘·전쟁 효과음) / 학문(촛불 그늘·책장) / 교역(동전·항구) / 항해(바람·갈매기).
+--  · 길이: 일반 의뢰는 짧게(3.5초), 연계·서막·역사·고난도는 길게(8초). 이미 본 장면은 짧게.
+--  · 수락 도장: 선택을 마치면 밀랍 봉인이 찍히고 저널 아이콘으로 날아간다.
+--  · 건너뛰기: H.sceneSkip 으로 카메라를 끝 위치로 보낸다.
+-- 서버 선택/보상/저장에는 개입하지 않는 순수 클라이언트 연출이다.
+function H.questCinematic(parent, ev, overlay)
+	local TS = game:GetService("TweenService")
+	local lessMotion = game:GetService("GuiService").ReducedMotionEnabled
+	local seen = H.seenScenes and H.seenScenes[tostring(ev.id)] == true
+	local long = ev.long == true and not seen
+	local duration = if lessMotion then 0.01 elseif long then 8 else 3.5
+	local mood = tostring(ev.mood or "voyage")
+	local gold = Color3.fromRGB(248, 199, 113)
+	local root = Instance.new("Frame")
+	root.Name = "QuestLiveScene"
+	root.Size = UDim2.fromScale(1, 1)
+	root.BackgroundTransparency = 1
+	root.Parent = parent
+
+	-- 1) 실제 세계 카메라 무빙 (끝나면 원래 카메라로 되돌린다)
+	local cam = workspace.CurrentCamera
+	local oldType, oldCF, oldFov = cam.CameraType, cam.CFrame, cam.FieldOfView
+	local focus = oldCF.Position + oldCF.LookVector * 42
+	local startOffset = oldCF.Position - focus
+	local alpha = Instance.new("NumberValue")
+	local shake = mood == "war" and not lessMotion
+	local bound = true
+	cam.CameraType = Enum.CameraType.Scriptable
+	local function place(t)
+		local angle = math.rad(if long then 50 else 26) * t
+		local off = CFrame.Angles(0, angle, 0):VectorToWorldSpace(startOffset) * (1 - 0.25 * t) + Vector3.new(0, 7 * t, 0)
+		local cf = CFrame.lookAt(focus + off, focus)
+		if shake then
+			local k = 0.12 + 0.18 * math.abs(math.sin(os.clock() * 7))
+			cf = cf * CFrame.new(math.noise(os.clock() * 9, 1) * k, math.noise(os.clock() * 9, 2) * k, 0)
+		end
+		cam.CFrame = cf
+		cam.FieldOfView = oldFov - 6 * t
+	end
+	-- 다른 카메라 코드보다 뒤에 돌도록 마지막 순서로 묶는다.
+	game:GetService("RunService"):BindToRenderStep("QuestLiveSceneCamera", Enum.RenderPriority.Last.Value, function()
+		if root.Parent then place(alpha.Value) end
+	end)
+	local camTween = TS:Create(alpha, TweenInfo.new(duration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Value = 1 })
+	camTween:Play()
+	-- 장면 동안 다른 화면(메뉴·HUD)을 숨겨 3D 세계만 보이게 한다.
+	local hidden = {}
+	local myGui = overlay:FindFirstAncestorOfClass("ScreenGui")
+	for _, g in player:WaitForChild("PlayerGui"):GetChildren() do
+		if g:IsA("ScreenGui") and g ~= myGui and g.Enabled then
+			g.Enabled = false
+			table.insert(hidden, g)
+		end
+	end
+	local function restore()
+		for _, g in hidden do if g.Parent then g.Enabled = true end end
+		table.clear(hidden)
+		if not bound then return end
+		bound = false
+		pcall(function() game:GetService("RunService"):UnbindFromRenderStep("QuestLiveSceneCamera") end)
+		camTween:Cancel()
+		cam.CameraType = oldType
+		cam.CFrame = oldCF
+		cam.FieldOfView = oldFov
+	end
+	overlay.Destroying:Connect(restore)
+	root.Destroying:Connect(restore)
+	H.sceneSkip = function()
+		camTween:Cancel()
+		alpha.Value = 1
+	end
+
+	-- 영화 띠(위)와 아래 대화창 쪽으로 부드럽게 어두워지는 그늘
+	local bar = Instance.new("Frame")
+	bar.Name = "CinemaBar"
+	bar.Size = UDim2.new(1, 0, 0, 10)
+	bar.BackgroundColor3 = Color3.new(0, 0, 0)
+	bar.BorderSizePixel = 0
+	bar.Parent = root
+	TS:Create(bar, TweenInfo.new(0.5), { Size = UDim2.new(1, 0, 0.09, 0) }):Play()
+	local fade = Instance.new("Frame")
+	fade.Name = "SceneBottomFade"
+	fade.AnchorPoint = Vector2.new(0, 1)
+	fade.Position = UDim2.fromScale(0, 1)
+	fade.Size = UDim2.fromScale(1, 0.35)
+	fade.BackgroundColor3 = Color3.fromRGB(24, 28, 38)
+	fade.BorderSizePixel = 0
+	fade.Parent = root
+	local fg = Instance.new("UIGradient")
+	fg.Rotation = 90
+	fg.Transparency = NumberSequence.new(1, 0)
+	fg.Parent = fade
+
+	-- 2) 분위기 효과
+	local moodTint = if mood == "war" then Color3.fromRGB(120, 24, 16)
+		elseif mood == "scholar" then Color3.fromRGB(150, 96, 30)
+		elseif mood == "commerce" then Color3.fromRGB(150, 120, 40)
+		else Color3.fromRGB(30, 70, 110)
+	local vignette = Instance.new("Frame")
+	vignette.Name = "SceneMoodVignette"
+	vignette.Size = UDim2.fromScale(1, 1)
+	vignette.BackgroundColor3 = moodTint
+	vignette.BackgroundTransparency = 1
+	vignette.BorderSizePixel = 0
+	vignette.Parent = root
+	local vg = Instance.new("UIGradient")
+	vg.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(0.3, 1), NumberSequenceKeypoint.new(0.7, 1), NumberSequenceKeypoint.new(1, 0.2) })
+	vg.Parent = vignette
+	TS:Create(vignette, TweenInfo.new(0.8), { BackgroundTransparency = if mood == "voyage" then 0.75 else 0.55 }):Play()
+	if mood == "scholar" and not lessMotion then
+		-- 촛불처럼 은은하게 흔들리는 그늘
+		TS:Create(vignette, TweenInfo.new(0.9, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { BackgroundTransparency = 0.68 }):Play()
+	end
+	if mood == "war" then
+		Sfx.play("sfx_event_war", 0.32, 1, "sfx_cannon")
+		task.delay(0.9, function() if root.Parent then Sfx.play("sfx_naval_cannon", 0.18, 0.9, "sfx_cannon") end end)
+	elseif mood == "scholar" then
+		Sfx.play("sfx_book_turn", 0.28)
+		task.delay(0.8, function() if root.Parent then Sfx.play("sfx_story_library", 0.2, 1, "sfx_book_turn") end end)
+	elseif mood == "commerce" then
+		Sfx.play("sfx_coin_pouch", 0.3, 1, "sfx_coin")
+		task.delay(0.7, function() if root.Parent then Sfx.play("sfx_event_trade", 0.22, 1, "sfx_bell") end end)
+	else
+		Sfx.play("sfx_wind", 0.22)
+		task.delay(0.6, function() if root.Parent then Sfx.play("sfx_gull", 0.2) end end)
+	end
+
+	-- 3) 목적지 항로 해도 창
+	local origin = PortData.Ports[view and view.player and view.player.portId or "london"] or PortData.Ports.london
+	local dest = ev.portId and PortData.Ports[ev.portId]
+	if dest and dest ~= origin then
+		local chart = Instance.new("Frame")
+		chart.Name = "QuestRouteChart"
+		chart.AnchorPoint = Vector2.new(0, 1)
+		chart.Position = UDim2.new(0, 16, 1, -10)
+		chart.Size = UDim2.new(0.30, 0, 0.58, 0)
+		chart.BackgroundColor3 = Color3.fromRGB(40, 48, 52)
+		chart.BorderSizePixel = 0
+		chart.ClipsDescendants = true
+		chart.Parent = root
+		corner(chart, 8)
+		local edge = Instance.new("UIStroke")
+		edge.Color = gold
+		edge.Thickness = 1.5
+		edge.Parent = chart
+		local mapId = AssetIds["CardArt/event_chart_world"]
+		if mapId then
+			local img = Instance.new("ImageLabel")
+			img.BackgroundTransparency = 1
+			img.Size = UDim2.fromScale(1, 1)
+			img.ScaleType = Enum.ScaleType.Crop
+			img.Image = "rbxassetid://" .. tostring(mapId)
+			img.ImageTransparency = 0.15
+			img.Parent = chart
+		end
+		local function at(port)
+			return Vector2.new(math.clamp((port.lon + 180) / 360, 0.04, 0.96), math.clamp((90 - port.lat) / 180, 0.06, 0.94))
+		end
+		local a, b = at(origin), at(dest)
+		local dots = 12
+		local points = {}
+		for i = 0, dots do
+			local t = i / dots
+			table.insert(points, a:Lerp(b, t) + Vector2.new(0, -0.12 * math.sin(math.pi * t)))
+		end
+		for i, pt in points do
+			local d = Instance.new("Frame")
+			d.Name = "QuestRouteDot"
+			d.AnchorPoint = Vector2.new(0.5, 0.5)
+			d.Position = UDim2.fromScale(pt.X, pt.Y)
+			d.Size = UDim2.fromOffset(4, 4)
+			d.BackgroundColor3 = gold
+			d.BackgroundTransparency = if lessMotion then 0.1 else 1
+			d.BorderSizePixel = 0
+			d.Parent = chart
+			corner(d, 10)
+			if not lessMotion then
+				task.delay(0.3 + i * (duration * 0.5 / dots), function()
+					if d.Parent then TS:Create(d, TweenInfo.new(0.18), { BackgroundTransparency = 0.1 }):Play() end
+				end)
+			end
+		end
+		local ship = Instance.new("TextLabel")
+		ship.Name = "QuestRouteShip"
+		ship.AnchorPoint = Vector2.new(0.5, 0.5)
+		ship.Position = UDim2.fromScale(a.X, a.Y)
+		ship.Size = UDim2.fromOffset(22, 22)
+		ship.BackgroundTransparency = 1
+		ship.Text = "⛵"
+		ship.TextSize = 18
+		ship.TextColor3 = Color3.new(1, 1, 1)
+		ship.ZIndex = 3
+		ship.Parent = chart
+		if not lessMotion then
+			task.spawn(function()
+				for i, pt in points do
+					if not ship.Parent then return end
+					TS:Create(ship, TweenInfo.new(duration * 0.5 / dots, Enum.EasingStyle.Linear), { Position = UDim2.fromScale(pt.X, pt.Y) }):Play()
+					task.wait(duration * 0.5 / dots)
+					if i == #points then break end
+				end
+			end)
+		else
+			ship.Position = UDim2.fromScale(b.X, b.Y)
+		end
+		local label = Instance.new("TextLabel")
+		label.Name = "QuestRouteLabel"
+		label.AnchorPoint = Vector2.new(0, 1)
+		label.Position = UDim2.new(0, 6, 1, -4)
+		label.Size = UDim2.new(1, -12, 0, 22)
+		label.BackgroundColor3 = Color3.fromRGB(20, 16, 12)
+		label.BackgroundTransparency = 0.25
+		label.Text = string.format("%s → %s", origin.name, dest.name)
+		label.Font = Enum.Font.GothamBold
+		label.TextSize = 14
+		label.TextColor3 = Color3.fromRGB(255, 236, 190)
+		label.ZIndex = 4
+		label.Parent = chart
+		corner(label, 5)
+		Sfx.play("sfx_chart_unfold", 0.22, 1.04, "sfx_book_turn")
+	end
+
+	-- 4) 수락 도장: 선택을 마치면 봉인이 찍히고 저널로 날아간다
+	return function()
+		if not root.Parent then return end
+		local sheet = AssetIds["CardArt/ui_reserve_icons"]
+		Sfx.play("sfx_contract_stamp", 0.34, 1, "sfx_quest_accept")
+		if not sheet then return end
+		local seal = Instance.new("ImageLabel")
+		seal.Name = "QuestAcceptSeal"
+		seal.AnchorPoint = Vector2.new(0.5, 0.5)
+		seal.Position = UDim2.fromScale(0.5, 0.5)
+		seal.Size = UDim2.fromOffset(300, 300)
+		seal.BackgroundTransparency = 1
+		seal.Image = "rbxassetid://" .. tostring(sheet)
+		seal.ImageRectOffset = Vector2.new(0, 2 * 184) -- 두루마리·밀랍 봉인 칸
+		seal.ImageRectSize = Vector2.new(192, 184)
+		seal.ScaleType = Enum.ScaleType.Fit
+		seal.ImageTransparency = 0.2
+		seal.ZIndex = 20
+		seal.Parent = root
+		if lessMotion then
+			seal.Size = UDim2.fromOffset(120, 120)
+			task.delay(0.6, function() if seal.Parent then seal:Destroy() end end)
+			return
+		end
+		TS:Create(seal, TweenInfo.new(0.22, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(130, 130), ImageTransparency = 0 }):Play()
+		task.delay(0.75, function()
+			if not seal.Parent then return end
+			-- 저널 아이콘 위치로 날아간다(없으면 위로 사라진다)
+			local target = UDim2.fromScale(0.95, -0.2)
+			local journal = hudTop and hudTop:FindFirstChild("JournalButton")
+			if journal and journal.AbsoluteSize.X > 0 then
+				local p0 = root.AbsolutePosition
+				local center = journal.AbsolutePosition + journal.AbsoluteSize / 2
+				target = UDim2.fromOffset(center.X - p0.X, center.Y - p0.Y)
+			end
+			TS:Create(seal, TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { Position = target, Size = UDim2.fromOffset(28, 28), ImageTransparency = 0.4 }):Play()
+			task.delay(0.6, function() if seal.Parent then seal:Destroy() end end)
+		end)
+	end
+end
+
 function playStory(ev)
 	local overlay = Instance.new("Frame")
 	overlay.Name = "StoryScene"
@@ -5520,8 +5785,14 @@ function playStory(ev)
 	end)
 	local picture = mkBox(overlay, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.56), Color3.new(0, 0, 0))
 	picture.ClipsDescendants = true
-	-- [이벤트 연출 정본] 그림 한 장을 고정하지 않고 세계 지도와 3D 무대가 책에서 펼쳐진다.
-	local recordHistory = H.historyCinematic(picture, ev)
+	-- [연출씬 · 2026-11-24 오너] 퀘스트 장면은 일러스트 없이 실제 3D 세계를 카메라가 훑고,
+	-- 목적지 항로·분위기 효과·수락 도장으로 연출한다. 그 밖의 사건은 기존 해도 연출.
+	local liveScene = string.sub(tostring(ev.id or ""), 1, 6) == "quest_" and H.questCinematic ~= nil
+	if liveScene then
+		overlay.BackgroundTransparency = 1
+		picture.BackgroundTransparency = 1
+	end
+	local recordHistory = if liveScene then H.questCinematic(picture, ev, overlay) else H.historyCinematic(picture, ev)
 
 	-- [초상 원본 화질] 256폭 지역 아틀라스를 330px로 확장하지 않고 원본 이하로 표시한다.
 	local storyViewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
@@ -5659,6 +5930,16 @@ function playStory(ev)
 		mkRound(npc, UDim2.fromOffset(45, 34), UDim2.fromOffset(40, 40), Color3.fromRGB(232, 196, 160), 0, Vector2.new(0.5, 0.5))
 	end
 
+	if liveScene then
+		-- 초상은 오른쪽 아래로 비켜 실제 장면이 가운데 보이게 한다.
+		for _, c in picture:GetChildren() do
+			if c.Name == "NpcPortrait" or c:IsA("ViewportFrame") then
+				c.AnchorPoint = Vector2.new(1, 1)
+				c.Position = UDim2.new(1, -18, 1, 0)
+				c.Size = UDim2.new(0, math.floor(portraitWidth * 0.8), 0.86, 0)
+			end
+		end
+	end
 	local chapter = Instance.new("TextLabel")
 	chapter.BackgroundTransparency = 1
 	chapter.Position = UDim2.fromOffset(0, 14)
@@ -5796,6 +6077,35 @@ function playStory(ev)
 		end
 		advancing = false
 	end)
+	-- [건너뛰기] 연출·대사를 건너뛰고 바로 선택지로. 한 번 본 장면은 다음부터 짧게 나온다.
+	do
+		local skip = Instance.new("TextButton")
+		skip.Name = "StorySkip"
+		skip.AnchorPoint = Vector2.new(1, 0)
+		skip.Position = UDim2.new(1, -12, 0, 12)
+		skip.Size = UDim2.fromOffset(112, 36)
+		skip.BackgroundColor3 = Color3.fromRGB(24, 20, 16)
+		skip.BackgroundTransparency = 0.25
+		skip.Text = "건너뛰기 ▶▶"
+		skip.Font = Enum.Font.GothamBold
+		skip.TextSize = 16
+		skip.TextColor3 = Color3.fromRGB(246, 222, 170)
+		skip.ZIndex = 70
+		skip.Parent = overlay
+		corner(skip, 8)
+		skip.Activated:Connect(function()
+			skip:Destroy()
+			if H.sceneSkip then pcall(H.sceneSkip) end
+			if next.Parent then
+				idx = #ev.lines
+				advancing = true
+				showChoices()
+				advancing = false
+			end
+		end)
+		H.seenScenes = H.seenScenes or {}
+		H.seenScenes[tostring(ev.id)] = true
+	end
 	task.spawn(function()
 		typeLine(ev.lines[1])
 	end)
@@ -10334,6 +10644,8 @@ do
 						id = "quest_" .. tostring(sc.name), title = tostring(sc.name),
 						chapter = if isChron then string.format("%d년 · 역사의 현장", sc.year or 0) elseif isStart then "새 이야기" else "이야기의 끝",
 						npc = if isChron then tostring(sc.npc or "학자") elseif isStart then "의뢰인" else "일지", art = if isChron then tostring(sc.art or "library") else "tavern",
+						-- [연출씬] 목적지 항로·분위기·길이·수락 도장
+						portId = sc.portId, mood = sc.mood, long = sc.long == true, questKind = sc.kind,
 						lines = if isChron then sc.lines else sentences(tostring(sc.text or "")),
 						choices = { { text = if isChron then "기록을 마친다" elseif isStart then "알겠다, 맡아 보자" else "마음에 새긴다", index = 1 } },
 						submit = function()
@@ -16065,7 +16377,7 @@ task.spawn(function()
 			-- 개발 캡처용: 퀘스트 수주 장면(연출씬)을 그대로 재생해 촬영한다(서버 변경 없음)
 			workspace:SetAttribute("DevCall", nil)
 			if H.playQuestScenes then
-				H.playQuestScenes({ { kind = "start", name = "연출 점검 의뢰", text = "항구에 낯선 배가 들어왔다. 선장은 비밀 지도를 들고 있다고 한다. 그를 찾아 이야기를 들어 보자.", summary = "연출 점검" } })
+				H.playQuestScenes({ { kind = "start", name = "연출 점검 의뢰", text = "항구에 낯선 배가 들어왔다. 선장은 비밀 지도를 들고 있다고 한다. 그를 찾아 이야기를 들어 보자.", summary = "연출 점검", portId = "lisbon", mood = "war", long = true } })
 			end
 		end
 		if workspace:GetAttribute("DevCall") == "Hall" then
