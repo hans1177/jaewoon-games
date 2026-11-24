@@ -80,6 +80,14 @@ async function prepareLicensedOriginals() {
       pinnedBlobSha:'a4be7364e5074f13b779950e5e854531a6650091',
       sourceModelingMethod:'The Base Mesh artist-authored dome base mesh, converted to glTF by M3-org; pinned binary, basic UVs and original geometry retained',
       townOriginal:true, minBytes:7964, maxBytes:7964, minTriangles:240, maxTriangles:240, originalModel:'Dome'},
+    {name:'opera-curtain-double-source', assetPath:'assets/town/opera-curtain-double-source.glb', author:'Quaternius',
+      source:'https://raw.githubusercontent.com/trebeljahr/quaternius-showcase/0128ca510d653bb04d6d1e4885bd8890b5050b4f/public/glb/house_interior_pack/Curtains_Double.glb', page:'https://quaternius.com/packs/ultimatehomeinterior.html',
+      pinnedBlobSha:'79b0746d5c6ddfdce86dcdcca25fe71b388d091c', sourceModelingMethod:'Quaternius 2020 artist-authored Ultimate House Interior Pack curtain mesh; pinned GLB conversion preserves original geometry.',
+      townOriginal:true, minBytes:13312, maxBytes:13312, minTriangles:320, maxTriangles:320, originalModel:'Curtains_Double'},
+    {name:'opera-curtain-single-source', assetPath:'assets/town/opera-curtain-single-source.glb', author:'Quaternius',
+      source:'https://raw.githubusercontent.com/trebeljahr/quaternius-showcase/0128ca510d653bb04d6d1e4885bd8890b5050b4f/public/glb/house_interior_pack/Curtains_Single.glb', page:'https://quaternius.com/packs/ultimatehomeinterior.html',
+      pinnedBlobSha:'032c5b30abebe90f5f643270f6d0ee98c1921a5f', sourceModelingMethod:'Quaternius 2020 artist-authored Ultimate House Interior Pack curtain mesh; pinned GLB conversion preserves original geometry.',
+      townOriginal:true, minBytes:9952, maxBytes:9952, minTriangles:208, maxTriangles:208, originalModel:'Curtains_Single'},
     // [발견물 조류 1차] 원작자의 수작업 CC0 모델, 고정 리비전과 개별 Git blob 검증.
     {name:'discovery_seagull', assetPath:'assets/animals/discovery_seagull.glb', author:'Scott Petrovic (Mesh2Motion)',
       source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/seagull.glb',
@@ -1664,7 +1672,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     const externalR15Item = kind === 'People' && /^cc0_[a-z0-9_]+\.glb$/.test(sourceFileName);
     // [항구 전용 CC0 원본] 기존 업로더에서 도시별 실물 모델의 출처·해시·권한을 검수한다.
     const portOriginalModel = kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
-    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb'].includes(sourceFileName);
+    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb','opera-curtain-double-source.glb','opera-curtain-single-source.glb'].includes(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
     const harborAnimalOriginal = kind === 'Animals' && sourceFileName === 'pigeon.glb';
     const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle|panda|whale)\.glb$/.test(sourceFileName);
