@@ -347086,11 +347086,158 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_ef9108dff410dcfad349df29",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15057",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "61c7fa954af7fea77bb344742458ff9fbb27e714",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15057,
+        "baseBranch": "main",
+        "headBranch": "mare-fish-source-review-1124",
+        "baseSha": "61c7fa954af7fea77bb344742458ff9fbb27e714",
+        "headSha": "add51911fc23e869785183433be57ecc878a91b6",
+        "mergeCommitSha": "a303429673a94f4a13a54c1db1f0ba58d41dd430",
+        "mergedAt": "2026-11-24T09:56:44Z",
+        "authorLogin": "hans1177",
+        "titleHash": "aff3bcdbe1e340ab02a0b7146cb5babc69338da2bba3a2430f48d5b694653ba4",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-fish-source-review-1124",
+        "candidateSha": "add51911fc23e869785183433be57ecc878a91b6"
+      },
+      "changeStats": {
+        "changedFileCount": 20,
+        "codingRelevantFileCount": 13,
+        "addedLineCount": 217,
+        "deletedLineCount": 34,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-dolphin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-manta-ray.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_double_source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_double_source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_single_source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_single_source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/observatory-dome-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/observatory-dome-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_trade_3.glb",
+          "roblox-games/mare-essentia/assets/town/london_trade_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/observatory-dome-source.glb",
+          "roblox-games/mare-essentia/assets/town/observatory-dome-source.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-dolphin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-manta-ray.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_double_source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_single_source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/observatory-dome-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_trade_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/observatory-dome-source.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15057",
+        "merge-commit:a303429673a94f4a13a54c1db1f0ba58d41dd430",
+        "base-main:61c7fa954af7fea77bb344742458ff9fbb27e714"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2760
+    "total": 2761
   }
 }
