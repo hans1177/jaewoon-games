@@ -344430,11 +344430,145 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_3b4309734573c2e6a7ad4f2d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15039",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "1f4abf7bc0c41941fe11165711e4cf3f1ff4deca",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15039,
+        "baseBranch": "main",
+        "headBranch": "asset/london-workshop-row",
+        "baseSha": "1f4abf7bc0c41941fe11165711e4cf3f1ff4deca",
+        "headSha": "933026908a6aa0b8fee9e66ad11fdc74ec339d0a",
+        "mergeCommitSha": "6658c858aa3bd7399bf9615d5861632203bb8cea",
+        "mergedAt": "2026-11-24T09:06:21Z",
+        "authorLogin": "hans1177",
+        "titleHash": "f9f637d4fefa9a7739b439e4f2fcbcf6dae40088585d7252c79c919dccf1bbf1",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "asset/london-workshop-row",
+        "candidateSha": "933026908a6aa0b8fee9e66ad11fdc74ec339d0a"
+      },
+      "changeStats": {
+        "changedFileCount": 13,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 219,
+        "deletedLineCount": 1,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_guild_row.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_guild_row.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_guild_1.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_guild_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_guild_3.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_guild_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_bld_infirmary.glb",
+          "roblox-games/mare-essentia/assets/town/london_bld_infirmary.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_guild_2.glb",
+          "roblox-games/mare-essentia/assets/town/london_guild_2.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_guild_row.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_guild_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_guild_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_bld_infirmary.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_guild_2.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15039",
+        "merge-commit:6658c858aa3bd7399bf9615d5861632203bb8cea",
+        "base-main:1f4abf7bc0c41941fe11165711e4cf3f1ff4deca"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2747
+    "total": 2748
   }
 }
