@@ -122,11 +122,28 @@ async function prepareLicensedOriginals() {
     }
     let originalSha256 = evidence?.originalSha256 || null;
     if (!bytes) {
-      const response = await fetch(source, {signal: AbortSignal.timeout(item.removePodium ? 150000 : 60000)});
-      if (!response.ok) throw new Error('MARE_LICENSED_SOURCE_HTTP_' + response.status + ':' + name);
-      if (Number(response.headers.get('content-length') || 0) > (item.maxBytes || 5000000))
-        throw new Error('MARE_LICENSED_SOURCE_TOO_LARGE:' + name);
-      bytes = Buffer.from(await response.arrayBuffer());
+      // [발견물 원본] 이미 확보한 inbox 바이너리를 우선 사용하고 동일한 원본 검증을 거친다.
+      if (item.discoveryBird) {
+        const staged = path.join(ROOT,'assets/inbox/Animals',name+'.glb');
+        try { bytes = await fs.readFile(staged); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+        if (bytes) {
+          const stagedProof = JSON.parse(await fs.readFile(staged+'.license.json','utf8'));
+          const digest = crypto.createHash('sha256').update(bytes).digest('hex');
+          if (stagedProof.license !== license || stagedProof.author !== item.author
+            || stagedProof.source !== source || stagedProof.sourcePage !== sourcePage
+            || stagedProof.pinnedBlobSha !== item.pinnedBlobSha || stagedProof.discoveryCardId !== item.discoveryBird
+            || stagedProof.sourceSha256 !== digest || stagedProof.originalSha256 !== digest
+            || stagedProof.commercialUseAllowed !== true || stagedProof.originalModelHandcrafted !== true)
+            throw new Error('MARE_DISCOVERY_INBOX_PROOF_MISMATCH:'+name);
+        }
+      }
+      if (!bytes) {
+        const response = await fetch(source, {signal: AbortSignal.timeout(item.removePodium ? 150000 : 60000)});
+        if (!response.ok) throw new Error('MARE_LICENSED_SOURCE_HTTP_' + response.status + ':' + name);
+        if (Number(response.headers.get('content-length') || 0) > (item.maxBytes || 5000000))
+          throw new Error('MARE_LICENSED_SOURCE_TOO_LARGE:' + name);
+        bytes = Buffer.from(await response.arrayBuffer());
+      }
       if (item.pinnedBlobSha) {
         const blobSha = crypto.createHash('sha1').update(Buffer.from('blob ' + bytes.length + '\0')).update(bytes).digest('hex');
         if (blobSha !== item.pinnedBlobSha) throw new Error('MARE_LICENSED_SOURCE_BLOB_MISMATCH:' + name);
