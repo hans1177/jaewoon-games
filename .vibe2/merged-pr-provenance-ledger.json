@@ -344299,11 +344299,142 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_c97efaa576828bb533754161",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15035",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "1f4abf7bc0c41941fe11165711e4cf3f1ff4deca",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15035,
+        "baseBranch": "main",
+        "headBranch": "asset/london-guild-stages-1-3",
+        "baseSha": "1f4abf7bc0c41941fe11165711e4cf3f1ff4deca",
+        "headSha": "9708203efa0603a892a3fe5b89f4ccb67b941ab3",
+        "mergeCommitSha": "033c8bfed722b290cffef2ad74d8e10d1413de87",
+        "mergedAt": "2026-11-24T09:06:05Z",
+        "authorLogin": "hans1177",
+        "titleHash": "18605ecf8913a4aa5933f1a6765db8b6ab1cbaf4e0fd1bf4807cafa1f0a716fc",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "asset/london-guild-stages-1-3",
+        "candidateSha": "9708203efa0603a892a3fe5b89f4ccb67b941ab3"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 161,
+        "deletedLineCount": 1,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_guild_1.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_guild_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_guild_3.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_guild_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_bld_infirmary.glb",
+          "roblox-games/mare-essentia/assets/town/london_bld_infirmary.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_guild_2.glb",
+          "roblox-games/mare-essentia/assets/town/london_guild_2.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_guild_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_guild_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_bld_infirmary.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_guild_2.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15035",
+        "merge-commit:033c8bfed722b290cffef2ad74d8e10d1413de87",
+        "base-main:1f4abf7bc0c41941fe11165711e4cf3f1ff4deca"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2746
+    "total": 2747
   }
 }
