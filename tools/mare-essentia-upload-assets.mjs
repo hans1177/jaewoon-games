@@ -40,6 +40,17 @@ async function prepareLicensedOriginals() {
     {name:'flintlock-musket', author:'Pixor',
       source:'https://pixor.art/library/files/musket/pixor-library-musket.glb',
       page:'https://pixor.art/library/weapons/musket/', minBytes:6000, minTriangles:200},
+    // [발견물 조류 1차] 원작자의 수작업 CC0 모델, 고정 리비전과 개별 Git blob 검증.
+    {name:'discovery_seagull', assetPath:'assets/animals/discovery_seagull.glb', author:'Scott Petrovic (Mesh2Motion)',
+      source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/seagull.glb',
+      page:'https://github.com/Mesh2Motion/mesh2motion-app/blob/017169ae6f7574d8fa75d893c38c2776386ca40b/LICENSE-CC0.MD', pinnedBlobSha:'c237e114369484eb09caa398dc0b0214f61b14bf',
+      minBytes:131500, maxBytes:131500, minTriangles:1000, maxTriangles:3000,
+      discoveryBird:'zoo_gull', originalModel:'Seagull'},
+    {name:'discovery_bald_eagle', assetPath:'assets/animals/discovery_bald_eagle.glb', author:'Scott Petrovic (Mesh2Motion)',
+      source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/eagle.glb',
+      page:'https://github.com/Mesh2Motion/mesh2motion-app/blob/017169ae6f7574d8fa75d893c38c2776386ca40b/LICENSE-CC0.MD', pinnedBlobSha:'a783a6ab3ccc5dd3cf67582b517965b9b77d6df8',
+      minBytes:168848, maxBytes:168848, minTriangles:1000, maxTriangles:3000,
+      discoveryBird:'am_bald_eagle', originalModel:'Bald Eagle'},
     // [어항 생활 소품] 실제 GLB/Blender 원본을 공개한 Pixor CC0 어망 2종. 현대 장비는 제외.
     {name:'fishing-net', assetPath:'assets/naval/fishing-net.glb', author:'Pixor',
       source:'https://pixor.art/library/files/fishing-net/pixor-library-fishing-net.glb',
@@ -770,10 +781,18 @@ async function prepareLicensedOriginals() {
       throw new Error((license === 'CC0-1.0' ? 'MARE_CC0_WRONG_MODEL_GEOMETRY:' : 'MARE_LICENSED_WRONG_MODEL_GEOMETRY:') + name + ':' + tris);
     if (!evidence) {
       const hash = crypto.createHash('sha256').update(bytes).digest('hex');
-      await fs.writeFile(target, bytes);
-      await fs.writeFile(proof, JSON.stringify({license, author:item.author, source,
+      if (item.discoveryBird && (blockedHashes.has(hash) || blockedPaths.has(target)))
+        throw new Error('MARE_DISCOVERY_SOURCE_BLOCKED:' + name);
+      // 발견물은 원본을 기존 Animals inbox에 넣고 정식 등록기로 이동한다.
+      const writeTarget = item.discoveryBird ? path.join(ROOT,'assets/inbox/Animals',name+'.glb') : target;
+      if (item.discoveryBird) await fs.mkdir(path.dirname(writeTarget), {recursive:true});
+      await fs.writeFile(writeTarget, bytes);
+      await fs.writeFile(writeTarget+'.license.json', JSON.stringify({license, author:item.author, source,
         sourcePage, sourceSha256:hash, originalSha256, pinnedBlobSha:item.pinnedBlobSha || null,
         attribution:item.attribution || null,
+        discoveryCardId:item.discoveryBird || undefined,
+        commercialUseAllowed:item.discoveryBird ? true : undefined,
+        originalModelHandcrafted:item.discoveryBird ? true : undefined,
         sourceAsset:item.sourceAsset||null, originalMeshCount:item.originalMeshCount||null,
         derivedTriangleCount:item.derivedTriangleCount||null,
         authenticOriginalBinaryVerified:(item.rebuildNau||item.rebuildCoastalShip)?true:undefined,
@@ -784,6 +803,12 @@ async function prepareLicensedOriginals() {
         modification:item.modification || (item.removePodium ? 'Exhibition podium scene nodes removed; artist ship geometry unchanged.' : 'Unmodified source'),
         triangles:tris, originalModel:item.originalModel || name,
         actualRobloxRuntimeVerified:false, visualQualityApproved:false,robloxPublishedVerified:false}, null, 2) + '\n');
+      if (item.discoveryBird) {
+        execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind=Animals','--prefix='+name,'--dry-run'],{stdio:'inherit',timeout:30000});
+        execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind=Animals','--prefix='+name],{stdio:'inherit',timeout:30000});
+        if (crypto.createHash('sha256').update(await fs.readFile(target)).digest('hex') !== hash)
+          throw new Error('MARE_DISCOVERY_REGISTERED_SOURCE_MISMATCH:' + name);
+      }
       console.log('MARE_LICENSED_MODEL_PREPARED', name, hash, tris);
     } else console.log('MARE_LICENSED_MODEL_SOURCE_VERIFIED', name, tris);
   }
@@ -1555,8 +1580,9 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     // [항구 전용 CC0 원본] 기존 업로더에서 도시별 실물 모델의 출처·해시·권한을 검수한다.
     const portOriginalModel = kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
+    const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle)\.glb$/.test(sourceFileName);
     try {
-    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) {
+    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || discoveryBird || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
       // [검증 대기 원본 보호] 3D 도시 파생 모델은 CC0 원본 기록만 있고 검수·등록이
@@ -1580,6 +1606,16 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       if (sourceLicense && (!['PROJECT_ORIGINAL_ART', 'CC0-1.0', 'CC-BY-4.0'].includes(sourceLicense.license)
         || !sourceLicense.author || !(derivedVegetation ? sourceLicense.sha256 : sourceLicense.sourceSha256) || !sourceLicense.source))
         throw new Error('ORIGINAL_MODEL_SOURCE_METADATA_INVALID:' + f);
+      if (discoveryBird) {
+        const original = await fs.readFile(path.join(ROOT,'assets',dir,sourceFileName));
+        const digest = crypto.createHash('sha256').update(original).digest('hex');
+        const blob = crypto.createHash('sha1').update('blob '+original.length+'\0').update(original).digest('hex');
+        if (!sourceLicense || sourceLicense.license !== 'CC0-1.0' || sourceLicense.commercialUseAllowed !== true
+          || sourceLicense.originalModelHandcrafted !== true || !sourceLicense.discoveryCardId
+          || sourceLicense.sourceSha256 !== digest || sourceLicense.pinnedBlobSha !== blob
+          || sourceLicense.originalSha256 !== digest || blockedHashes.has(digest))
+          throw new Error('MARE_DISCOVERY_SOURCE_PROOF_REQUIRED:' + f);
+      }
       if (derivedVegetation) {
         const model = await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName));
         if (!sourceLicense || sourceLicense.license !== 'CC0-1.0' || sourceLicense.derived !== true
