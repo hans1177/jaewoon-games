@@ -22,16 +22,17 @@
 
 ## 카드배틀·지식카드 원화 작업 필독 (mare-essentia)
 
-**이 저장소에서 `mare-essentia` 카드배틀 신규 원화 제작·변경·승인·Roblox 자산등록·후속 “계속” 작업을 수행하는 모든 GPT/Claude/코딩 에이전트는 작업 전에 다음 두 문서를 필수로 읽고, 최신 `main`과 대조해야 한다.** 중앙정책 4종 선로드가 먼저이며 충돌 시 중앙정책이 우선한다.
+**이 저장소에서 `mare-essentia` 카드배틀 신규 원화 제작·변경·승인·Roblox 자산등록·후속 “계속” 작업을 수행하는 모든 GPT/Claude/코딩 에이전트는 작업 전에 다음 문서를 모두 필수로 읽고, 최신 `main`과 대조해야 한다.** 중앙정책 4종 선로드가 먼저이며 충돌 시 중앙정책이 우선한다.
 
 1. `roblox-games/mare-essentia/docs/CARD_ART_PROMPTS.md` — 대륙 전투카드·지식카드·지도자 화풍과 규격.
 2. `roblox-games/mare-essentia/docs/CARD_BATTLE_HANDOFF.md` — **2026-11-22 오너 지시, 동적인 회화 원화 품질, 이전 실제 등록·미등록 이력(항상 최신 main 재조회), 검수·승인·GitHub/Roblox 기존 등록 경로, 실패 사례, 후속 우선순위.**
+3. `roblox-games/mare-essentia/docs/ASSET_MANAGEMENT.md` — **256색(팔레트·감색) 원화·UI 자산 등록 절대 금지**, 등록 경로·규격·관리 체크리스트.
 
 대륙 전투카드는 **사진·도감풍 정지 장면이 아니라 역동적인 세로 7:10 컬러 회화 원화**다. PNG 없는 승인·이미지 생성 대시보드의 가짜 번호·검증되지 않은 Studio/게시 결과는 등록 증거로 인정하지 않는다. 새로운 워크플로·유료 API 없이 기존 canonical 등록기를 사용하고, 게임 규칙·저장 구조를 보존한다. 문서를 읽지 못한 작업자는 읽었다고 주장하거나 등록 완료를 보고하지 않는다. (2D 원화 절차이며 3D 모델 금지 규칙을 우회하는 예외가 아니다.)
 
 ## 비주얼·마을·전투·배·주민 작업 필독 (mare-essentia)
 
-**모든 외부 AI·바이브코딩 도구 포함: 먼저 `roblox-games/mare-essentia/docs/READ_FIRST.md`(전체 지시서 목록·HUD 효과 규칙)를 읽는다.**
+**모든 외부 AI·바이브코딩 도구 포함: 먼저 `roblox-games/mare-essentia/docs/READ_FIRST.md`(전체 지시서 목록·HUD 효과 규칙)를 읽는다. 거기 적힌 지시서는 모두 필독이다. 원화·UI 자산은 256색 등록 절대 금지(`docs/ASSET_MANAGEMENT.md`).**
 
 **`mare-essentia`의 마을·건물·항구 배치, 해전·지상전 배경, 배, 주민(NPC) 외형·모션, 카드배틀, 아이콘·HUD, 원화를 만들거나 바꾸는 모든 GPT/Claude/코딩 에이전트는 작업 전에 아래를 반드시 읽는다.** 읽지 않았으면 읽었다고 주장하지 않는다. 중앙정책·위 전역 금지 규칙이 우선한다.
 
