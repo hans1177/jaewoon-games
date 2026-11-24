@@ -1331,6 +1331,8 @@ return function(D, S)
 			local crisis = if S.Econ and S.Econ.crisis then S.Econ.crisis(state, state.portId) else nil
 			D.PortBuildings.Projects.update(state, state.portId, crisis)
 			view.buildProjects = D.PortBuildings.Projects.active(state, state.portId)
+			-- [교역 재미] 상회 등급·축제 예고·라이벌 상단·희귀 화물
+			view.tradeFun = if D.TradeFun then D.TradeFun.view(state, D.Ports, D.Regions) else nil
 			view.buildCelebrate = D.PortBuildings.Projects.recentDone(state, state.portId)
 			view.cardbook = { faction = faction, leader = spec.leader, bonus = spec.bonus, knowledgeCount = select(2, D.CardBook.knowledgeBonus(state.discovered, D.Cards.ById)), owned = S.Cardbook.get(state).owned, tier = spec.tier, deck = S.Cardbook.get(state).deck, ids = spec.ids, slots = S.Cardbook.get(state).slots, pick = S.Cardbook.get(state).pick and S.Cardbook.get(state).pick.ids, practiceIds = S.Cardbook.practiceBook(state).ids, practiceDone = S.Cardbook.get(state).practiceDone == true, day = math.floor(os.time() / 86400), duelSeed = S.Cardbook.get(state).duelSeed, duelFoe = (S.Cardbook.get(state) :: any).duelFoe, duelLeft = math.max(0, 3 - (if S.Cardbook.get(state).duelDay == math.floor(os.time() / 86400) then (S.Cardbook.get(state).duelWins or 0) else 0)) }
 			if S.Battle and S.Battle.deckCache then

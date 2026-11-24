@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """에셋 inbox 등록: <게임>/assets/inbox/<종류>/<파일> + <파일>.license.json 을 검사해 assets/<종류>/ 로 옮기고 SOURCES.md 에 기록한다.
 사용: register_asset.py <게임폴더(roblox-games/mare-essentia)> [--dry-run] [--kind=Town --prefix=london_]
-차단: 라이선스 누락·허용 목록 밖, 출처 URL 없음, 이미 차단된 해시(company-learning/platform-release-roadmap.json), 중복 해시."""
+차단: 라이선스 누락·허용 목록 밖, 출처 URL 없음, 이미 차단된 해시(company-learning/platform-release-roadmap.json), 중복 해시,
+      256색(팔레트·저색상) 이미지 — 2026-11-24 오너 지시로 절대 등록 금지(asset_color_check.py)."""
 import json, os, sys, shutil, hashlib, glob, struct
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
 dry = "--dry-run" in sys.argv
@@ -50,6 +51,11 @@ for kind in sorted(d for d in os.listdir(inbox) if os.path.isdir(os.path.join(in
         h = sha(p)
         if not why and h in blocked: why = "차단된 해시"
         if not why and h in known: why = f"중복(이미 {known[h]})"
+        if not why and fn.lower().endswith((".png", ".jpg", ".jpeg")):
+            # [256색 금지] 팔레트·감색 그림은 카드 원화·UI 모두 등록 거부
+            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            from asset_color_check import color_problem
+            why = color_problem(p)
         if not why and scoped_derived:
             # [런던 원본] 승인 원본과 바이너리 해시, GLB 구조를 실제 대조한다.
             try:

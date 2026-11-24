@@ -1,6 +1,7 @@
 # mare-essentia — 모든 작업자 필독 (READ FIRST)
 
 **ChatGPT·Claude·Codex·Copilot·Cursor·Gemini·바이브코딩 도구 등 누구든 `mare-essentia`를 만지기 전에 이 파일과 아래 해당 지시서를 반드시 읽고 그대로 따른다.**
+**아래 표의 모든 지시서는 필독이다.** 1절은 무엇을 하든 전부 읽고, 2절은 하는 작업에 해당하는 파일을 전부 읽는다.
 읽지 않았으면 읽었다고 말하지 않는다. 지시서와 다르게 만들면 되돌린다. 저장소 루트 `AGENTS.md`(전역 금지 규칙·중앙정책)가 항상 우선한다.
 
 ## 1. 무엇을 하든 공통
@@ -9,6 +10,7 @@
 | `docs/RULES.md` | 에셋 출처, 원본 가공 허용, 오너 제작 원화, 코드 한도(Game.client 최상위 local 추가 금지) |
 | `docs/CODE_MAP.md` | 코드 위치 지도 |
 | `docs/DESIGN.md` | 게임 전체 설계 |
+| `docs/ASSET_MANAGEMENT.md` | **자산 등록·관리. 256색(팔레트·감색) 원화·UI 등록 절대 금지**, 규격·체크리스트 |
 
 ## 2. 작업 종류별 필독
 | 작업 | 반드시 읽을 것 |
@@ -18,7 +20,8 @@
 | 배 디자인·질감·등급 기능 | `docs/ships/README.md` + `docs/ships/grades.md` + `docs/ships/<배>.md` |
 | 주민(NPC) 헤어·복장·악세·재질·모션 | `docs/residents/README.md` + `docs/residents/jobs.md` + `docs/residents/<문화권>.md` |
 | 카드배틀 시스템·화면·이펙트·카드 문구·진영 | `docs/card_battle/README.md`(0절 카드 분류 규칙) + 같은 폴더 전부 |
-| 카드·지식카드·지도자 원화 | `docs/CARD_ART_PROMPTS.md` + `docs/CARD_BATTLE_HANDOFF.md` |
+| 카드·지식카드·지도자 원화 | `docs/CARD_ART_PROMPTS.md` + `docs/CARD_BATTLE_HANDOFF.md` + `docs/ASSET_MANAGEMENT.md` |
+| 원화·UI·아이콘 자산 제작·등록·교체 | `docs/ASSET_MANAGEMENT.md` + `docs/assets/legacy_256color.txt`(교체 대상) |
 | 스토리·연계 퀘스트 | `docs/STORY_QUEST_SYSTEM.md` |
 | HUD·아이콘·버튼 효과 | 아래 3절 |
 

@@ -132,6 +132,13 @@ echo "== 최상위 local 한도(레지스터 200) =="
 if command -v "$COMPILE" >/dev/null 2>&1 || [ -x "$COMPILE" ]; then
   LUAU_COMPILE="$(command -v "$COMPILE" || echo "$COMPILE")" python3 "$ROOT/tools/luau_local_budget.py" check "$ROOT/src/StarterPlayer/Game.client.luau" --min 3
 fi
+echo "== 256색 자산 금지 =="
+# 2026-11-24 오너 지시: 256색(팔레트·감색) 원화·UI 자산 등록 금지. 옛 자산은 docs/assets/legacy_256color.txt 교체 대상.
+if python3 -c "import PIL" >/dev/null 2>&1; then
+  python3 "$ROOT/../../tools/devloop/asset_color_check.py" "$ROOT"
+else
+  echo "PIL 없음: 256색 검사 건너뜀"
+fi
 echo "== 타입 검사 =="
 "$ANALYZE" "$TMP"/Shared/*.luau "$TMP"/Services/*.luau "$TMP/logic.test.luau" "$TMP/knowledge_battle.test.luau" "$TMP/action_combat.test.luau" "$TMP/economy.test.luau" "$TMP/jobskills.test.luau" "$TMP/weapons.test.luau"
 echo "OK"

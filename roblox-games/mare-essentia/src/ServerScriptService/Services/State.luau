@@ -665,6 +665,11 @@ return function(D)
 			s.stats.explored = math.floor(num(saved.stats.explored, 0, 0, 1e9))
 			-- [이야기 퀘스트 시스템] 함대전 완수·지도자 대결·선택 분기 기록 복원
 			D.Quests.Kit.sanitizeStats(saved.stats, s.stats, num)
+			-- [교역 재미] 상회 등급·최초 수입·희귀 화물 기록 복원
+			if D.TradeFun then
+				local tf: any = D.TradeFun.sanitize(saved.stats.tradeFun)
+				if tf then (s.stats :: any).tradeFun = tf end
+			end
 			local projects: any = D.PortBuildings.Projects.sanitize(saved.stats.buildProjects)
 			if projects then
 				(s.stats :: any).buildProjects = projects
