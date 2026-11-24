@@ -335587,11 +335587,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_ea57217cf33b49b4d4c7f81f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14877",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "07419e0147d932c7129d995bc31aec73b9ddfa93",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14877,
+        "baseBranch": "main",
+        "headBranch": "owner-mare-vegetation-8-20261124",
+        "baseSha": "07419e0147d932c7129d995bc31aec73b9ddfa93",
+        "headSha": "750e7670b0bdeed782cbd1942979cd406839a688",
+        "mergeCommitSha": "4bc345cc898f102ea87a45fd592968abf43a2222",
+        "mergedAt": "2026-11-24T01:32:56Z",
+        "authorLogin": "hans1177",
+        "titleHash": "91a0e77d5b52e8f4126296d13af0279e56a8f571ff65107355caa6e6413877db",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner-mare-vegetation-8-20261124",
+        "candidateSha": "750e7670b0bdeed782cbd1942979cd406839a688"
+      },
+      "changeStats": {
+        "changedFileCount": 12,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 126,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_berry_bush_1.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_berry_bush_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_berry_bush_2.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_berry_bush_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_birch_autumn.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_birch_autumn.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_birch_bare.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_birch_bare.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_birch_green.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_birch_green.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_birch_snow.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_birch_snow.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_berry_bush_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_berry_bush_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_birch_autumn.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_birch_bare.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_birch_green.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_birch_snow.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14877",
+        "merge-commit:4bc345cc898f102ea87a45fd592968abf43a2222",
+        "base-main:07419e0147d932c7129d995bc31aec73b9ddfa93"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2684
+    "total": 2685
   }
 }
