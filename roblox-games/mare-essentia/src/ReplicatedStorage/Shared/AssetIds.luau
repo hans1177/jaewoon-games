@@ -1547,6 +1547,7 @@ return {
 	["Town/london_yard_2"] = 80867791534896,
 	["Town/london_yard_3"] = 91231507386872,
 	["Town/nassau_house_1"] = 138627237339251,
+	["Town/observatory-dome-source"] = 95801711528954,
 	["Town/overhang"] = 94904352766680,
 	["Town/pillar-stone"] = 132917137281795,
 	["Town/quaternius_banner"] = 139847404159571,
