@@ -337159,11 +337159,147 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_362a3c3e3c9af75ada21f2f1",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14899",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "478fa86259a17b4af3e6a90e50b8f1ea92c9dc22",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14899,
+        "baseBranch": "main",
+        "headBranch": "feat/mare-discovery-forms",
+        "baseSha": "478fa86259a17b4af3e6a90e50b8f1ea92c9dc22",
+        "headSha": "a75254200895d47c0097323cd5eb3f9bbf5a086e",
+        "mergeCommitSha": "dceafe81700afa87bfc78f1d27e2d89374ec6f80",
+        "mergedAt": "2026-11-24T02:33:43Z",
+        "authorLogin": "hans1177",
+        "titleHash": "ebb5b7cd073d14f54d4525cc5f711ddb73bcf1e5c8f1806f526ce1ff5a38f404",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/mare-discovery-forms",
+        "candidateSha": "a75254200895d47c0097323cd5eb3f9bbf5a086e"
+      },
+      "changeStats": {
+        "changedFileCount": 13,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 1395,
+        "deletedLineCount": 51,
+        "changedFiles": [
+          "AGENTS.md",
+          "qa/mare-discovery-forms.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/docs/READ_FIRST.md",
+          "roblox-games/mare-essentia/docs/discoveries/MISSING.md",
+          "roblox-games/mare-essentia/docs/discoveries/README.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DiscoveryForms.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DiscoveryStage.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-discovery-forms.json"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-discovery-forms.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DiscoveryForms.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DiscoveryStage.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-discovery-forms.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14899",
+        "merge-commit:dceafe81700afa87bfc78f1d27e2d89374ec6f80",
+        "base-main:478fa86259a17b4af3e6a90e50b8f1ea92c9dc22"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2697
+    "total": 2698
   }
 }
