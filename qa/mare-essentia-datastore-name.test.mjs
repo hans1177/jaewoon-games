@@ -4181,12 +4181,16 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   const siteProfile=field.slice(field.indexOf('local exact = {'),field.indexOf('local selected = exact'));
   const sitesSource=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sites.luau');
   const profiles=[...siteProfile.matchAll(/([a-z_0-9]+) = "([a-z]+)"/g)];
-  assert.ok(profiles.length>=301,'실제 탐험지별 지형 지정');
+  assert.ok(profiles.length>=346,'실제 탐험지별 지형 지정');
   assert.equal(new Set(profiles.map(row=>row[1])).size,profiles.length,'탐험지 ID 중복 금지');
   for(const [,id] of profiles) assert.ok(sitesSource.includes('id = "'+id+'"'),'존재하지 않는 지점 '+id);
   for(const [id,theme] of Object.entries({london_chalk:'coast',bergen_cliffs:'coast',amsterdam_canals:'lake',carrara_quarry:'mine',vesuvius_slopes:'volcanic',edo_fuji:'highland',royal_archive:'archive',genoa_olive:'farm'})){
     assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'지점 지형 불일치 '+id);
   }
+  for(const [id,theme] of Object.entries({"halifax_citadel":"fort","louisbourg_fort":"fort","stjohns_banks":"coast","quebec_wilds":"forest","survey_am_d":"plains","boston_church":"archive","boston_whalers":"coast","newyork_harbor":"lake","niagara_trip":"lake","philadelphia_hall":"archive","charleston_rice":"farm","survey_am_b":"farm","neworleans_delta":"swamp","nassau_pirates":"coast","veracruz_road":"highland","survey_am_c":"mine","veracruz_battlefield":"plains","campeche_maya":"ruins","kingston_royal":"fort","hurricane_sea":"coast","survey_am_a":"coast","sanjuan_morro":"fort","bridgetown_sugar":"farm","trinidad_pitch":"lake","laguaira_coast":"coast","cartagena_walls":"fort","portobelo_fair":"archive","paramaribo_jungle":"jungle","belem_amazon":"swamp","recife_reef":"coast","salvador_church":"archive","rio_sugarloaf":"highland","rio_gold":"mine","montevideo_plata":"lake","horn_trip":"coast","buenosaires_pampas":"plains","andes_route":"highland","potosi_trip":"mine","auto_mystery_mys_sargasso":"archive","auto_lostland_el_dorado":"archive","santodomingo_amber":"mine","auto_mystery_mys_bermuda":"archive","auto_lostland_cibola":"archive","havana_fort":"fort","havana_orchard":"farm"})){
+    assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'미주 지점 지형 불일치 '+id);
+  }
+  assert.match(field,/FieldSiteComposition", "colonial-fort-ground"/,'미주 역사 요새의 중세 성 대체 금지');
   assert.match(field,/FieldSiteTerrainSource/,'지점 ID 사용 여부 진단');
   for(const [id,theme] of Object.entries({marseille_salt:'swamp',valencia_albufera:'swamp',valletta_bastions:'fort',athens_acropolis:'ruins',istanbul_bazaar:'archive',las_palmas_volcano:'volcanic',helsinki_gulf:'glacier',cyprus_copper:'mine'})){
     assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'지중해·발트해 지점 분류 불일치 '+id);
