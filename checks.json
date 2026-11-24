@@ -1,21 +1,23 @@
 {
-  "runId": "45310209992",
+  "runId": "45310392957",
   "kind": "studio",
-  "sourceRevision": "6e282668548ea83aaf1ac4ece5e33e1295a64343",
-  "result": "PASS",
-  "failureStage": null,
-  "failureSignature": null,
+  "sourceRevision": "1c3a2228a3467f17dab3dfd09e5301c7cb087994",
+  "result": "FAIL",
+  "failureStage": "STUDIO_EXECUTION",
+  "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
   "summary": {
-    "plannedSteps": 13,
-    "completedSteps": 13,
+    "plannedSteps": 11,
+    "completedSteps": 9,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 2,
+    "plannedFrames": 3,
     "capturedFrames": 2,
-    "abortedEarly": false
+    "abortedEarly": true
   },
-  "errors": [],
+  "errors": [
+    "step8:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.Assis [중간 생략] :101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:28: FIELD_LOW_POLY_VARIANT_MISSING | text"
+  ],
   "audits": {
     "models": "NOT_RUN",
     "registered": "NOT_RUN",
@@ -25,14 +27,14 @@
   "steps": [
     {
       "step": 0,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 1,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -53,10 +55,12 @@
     },
     {
       "step": 4,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "f0_environment",
       "status": "PASS",
-      "screenshots": []
+      "screenshots": [
+        "f0_environment-0.jpg"
+      ]
     },
     {
       "step": 5,
@@ -75,62 +79,46 @@
     {
       "step": 7,
       "type": "capture",
-      "name": "df_far",
+      "name": "f1_start",
       "status": "PASS",
       "screenshots": [
-        "df_far-0.jpg"
+        "f1_start-0.jpg"
       ]
     },
     {
       "step": 8,
       "type": "luau",
       "name": "",
-      "status": "PASS",
+      "status": "FAIL",
       "screenshots": []
     },
     {
       "step": 9,
-      "type": "luau",
+      "type": "wait",
       "name": "",
-      "status": "PASS",
+      "status": "NOT_RUN",
       "screenshots": []
     },
     {
       "step": 10,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 11,
       "type": "capture",
-      "name": "df_near",
-      "status": "PASS",
-      "screenshots": [
-        "df_near-0.jpg"
-      ]
-    },
-    {
-      "step": 12,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
+      "name": "f2_later",
+      "status": "NOT_RUN",
       "screenshots": []
     }
   ],
   "screenshotComparison": [
     {
-      "name": "df_far-0.jpg",
-      "sha256": "bbabb3a64aba48ca8cc264b924f965043b344434800430ebf75d75c7dcc2eec4",
+      "name": "f0_environment-0.jpg",
+      "sha256": "87de9c8b6d07d4b21565af26df3edb74687e85b5cef13019f806a1bf053d8ca2",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45310209992/df_far-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45310392957/f0_environment-0.jpg"
     },
     {
-      "name": "df_near-0.jpg",
-      "sha256": "958519c9b2b06d4deb30ea124e44bf9147e63ba4dc49a61f26a13b4e1283540c",
+      "name": "f1_start-0.jpg",
+      "sha256": "a81b3b3beb0c1b8047d54ebad7113d1c5db0588224672be71ec9703e378a902f",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45310209992/df_near-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45310392957/f1_start-0.jpg"
     }
   ],
   "screenshotFrameAudit": {
@@ -138,15 +126,15 @@
     "invalid": 0,
     "images": [
       {
-        "name": "df_far-0.jpg",
-        "bytes": 215655,
+        "name": "f0_environment-0.jpg",
+        "bytes": 179386,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "df_near-0.jpg",
-        "bytes": 265908,
+        "name": "f1_start-0.jpg",
+        "bytes": 181278,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -155,5 +143,5 @@
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "45309244503"
+  "previousRunId": "45310209992"
 }
