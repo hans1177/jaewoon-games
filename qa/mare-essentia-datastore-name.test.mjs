@@ -2745,9 +2745,9 @@ test('성체 말과 주요 가축의 크기·품종색은 항구와 탐험이 �
  assert.match(field,/local PortBuildings = require\(script\.Parent:WaitForChild\("PortBuildings"\)\)/);
  assert.match(field,/local sizes = PortBuildings\.AnimalVisual/);
  assert.match(field,/placeModel\(folder, "Animals", species, pos, visual\.size, false, Color3\.fromRGB\(table\.unpack\(visual\.coats\[coatIndex\]\)\)\)/);
- assert.match(field,/Color3\.fromRGB\(table\.unpack\(coats\[1\]\)\)/);
+ assert.match(read('ReplicatedStorage/Shared/DiscoveryStage.luau'),/Color3\.fromRGB\(table\.unpack\(coats\[1\]\)\)/,'탐험 동물 품종색(발견물 연출)');
  assert.match(field,/if not textured and not detail then/);
- assert.match(field,/placed:SetAttribute\("ObservedSpecies", targetCard\.id\)/);
+ assert.match(read('ReplicatedStorage/Shared/DiscoveryStage.luau'),/m:SetAttribute\("ObservedSpecies", card\.id\)/,'관찰 동물 표시(발견물 연출)');
  assert.match(scene,/for k = 1, grazeCount do/);
  assert.match(scene,/for i = 1, lay\.pens do/);
  assert.match(scene,/horse:SetAttribute\("ShowcaseOnly", true\)/);
