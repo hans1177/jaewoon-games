@@ -23,6 +23,7 @@
 | 카드·지식카드·지도자 원화 | `docs/CARD_ART_PROMPTS.md` + `docs/CARD_BATTLE_HANDOFF.md` + `docs/ASSET_MANAGEMENT.md` |
 | 원화·UI·아이콘 자산 제작·등록·교체 | `docs/ASSET_MANAGEMENT.md` + `docs/assets/legacy_256color.txt`(교체 대상) |
 | 스토리·연계 퀘스트 | `docs/STORY_QUEST_SYSTEM.md` |
+| 지상 탐험 발견물(식물·동물·광물·유물·유적) 외형·모델 | `docs/discoveries/README.md` + `docs/discoveries/MISSING.md` |
 | HUD·아이콘·버튼 효과 | 아래 3절 |
 
 ## 3. HUD·아이콘·버튼 효과 규칙 (2026-11-24 오너 지시)

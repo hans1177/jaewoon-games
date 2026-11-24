@@ -5310,6 +5310,25 @@ testCardsAndArt()
 
 -- [교역 재미] 신상품·축제·라이벌·상회 등급·희귀 화물
 local function testTradeFun()
+
+-- [발견물 외형] 백과 실물 카드는 모두 대표 모양을 갖는다
+local function testDiscoveryForms()
+	local check: any = check
+	local DFm: any = require("./Shared/DiscoveryForms")
+	local KC: any = require("./Shared/KnowledgeCards")
+	local none, total = {}, 0
+	for _, c in KC.Cards do
+		if c.field == "Botany" or c.field == "Zoology" or c.field == "Mineral" or c.field == "Relic" or c.field == "Site" then
+			total += 1
+			if not DFm.form(c) then table.insert(none, c.id) end
+		end
+	end
+	check("발견물: 실물 카드 전부 대표 모양 있음", #none == 0 and total > 400, table.concat(none, ","))
+	check("발견물: 코끼리는 실물 모델", DFm.form(KC.ById.zoo_elephant).models[1][2] == "elephant")
+	check("발견물: 다른 종 대체 금지(들소≠소)", KC.ById.am_bison == nil or DFm.form(KC.ById.am_bison).missing == true)
+	check("발견물: 힌트 문구", type(DFm.hint(KC.ById.zoo_elephant)) == "string")
+end
+testDiscoveryForms()
 	local S: any = Registry.S
 	local D: any = D
 	local check: any = check

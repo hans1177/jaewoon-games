@@ -9895,6 +9895,13 @@ function H.showCardDetail(card)
 		end
 	else
 		mkLabel(body, "발견하면 이 항목의 삽화와 해설을 읽을 수 있어요.", 13, brown, false, 5)
+		-- [실루엣 힌트] 지상 탐험에서 어디서·어떻게 찾는지(대표 모양 매핑표)
+		local okDF, DFm = pcall(function() return require(Shared:WaitForChild("DiscoveryForms")) end)
+		local hintText = okDF and DFm and DFm.hint(card)
+		if hintText then
+			local hl = mkLabel(body, "실루엣 힌트 · " .. hintText, 13, brown, true, 6)
+			hl.Name = "CodexDiscoveryHint"
+		end
 	end
 
 	local replayScene = require(Shared:WaitForChild("WonderScenes")).Scenes[card.id]

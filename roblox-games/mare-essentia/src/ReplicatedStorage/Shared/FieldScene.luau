@@ -21,6 +21,11 @@ local Ports = require(script.Parent:WaitForChild("Ports"))
 local Cultures = require(script.Parent:WaitForChild("PortCultures"))
 -- [동물 실물 규격] 기존 항구/목장의 Animals 시각 정본만 재사용한다.
 local PortBuildings = require(script.Parent:WaitForChild("PortBuildings"))
+-- [발견물 외형] 백과 실물 대표 모양 연출. 못 읽어도 기존 발견 흐름은 그대로 돈다.
+local okStage, DiscoveryStage = pcall(function()
+	return require(script.Parent:WaitForChild("DiscoveryStage", 5))
+end)
+if not okStage then DiscoveryStage = nil end
 -- 마력숲과 같은 공용 전투 이펙트(타격·치명타·회피·공격 예고). 못 읽어도 기존 입자 효과로 돌아간다.
 local okVfx, CommonVFX = pcall(function()
 	return require(script.Parent:WaitForChild("CommonVFX", 5))
@@ -2828,7 +2833,8 @@ function FieldScene.start(opts)
 		local special = i == 1 and targetCard ~= nil
 		local anchor = part(folder, Vector3.new(3, 3, 3), CFrame.new(pos + Vector3.new(0, 1.5, 0)), Color3.fromRGB(255, 214, 120), Enum.Material.Neon, Enum.PartType.Ball)
 		-- [발견 표시] 조사 판정 크기는 유지하고 네모난 발광 상자만 구형으로 바꾼다.
-		anchor.Transparency = if special then 1 else 0.35
+		-- [발견물 외형] 금빛 공 표식(기본 도형) 대신 보이지 않는 기준점만 두고, 실물·소품 모델로 보여 준다.
+		anchor.Transparency = 1
 		anchor.CanCollide = false
 		anchor.CanQuery = false
 		anchor.Name = "Discovery" .. i
@@ -2836,39 +2842,7 @@ function FieldScene.start(opts)
 			anchor:SetAttribute("ObservationCardId", targetCard.id)
 			-- [승인된 동물 실물] 기존 Animals 폴더의 실제 종이 맞을 때만 3D 메시를 사용한다.
 			-- 없는 종을 다른 동물 메시로 위장하지 않고 종 이름과 승인된 도감 원화를 보여 준다.
-			local animalModels = {
-				zoo_elephant = { "elephant", PortBuildings.AnimalVisual.elephant.size },
-				zoo_indian_elephant = { "elephant", PortBuildings.AnimalVisual.elephant.size },
-				am_llama = { "llama", PortBuildings.AnimalVisual.llama.size },
-			}
-			local animal = if isWildlife then animalModels[targetCard.id] else nil
-			if animal and AssetIds["Animals/" .. animal[1]] then
-				local coats = PortBuildings.AnimalVisual[animal[1]].coats
-				local placed = placeModel(folder, "Animals", animal[1], pos, animal[2], false, Color3.fromRGB(table.unpack(coats[1])))
-				if placed then
-					placed.Name = "FieldWildlife"
-					placed:SetAttribute("ObservedSpecies", targetCard.id)
-				else
-					-- [지연 로드] 기존 AssetLoader로 로드가 끝난 동일 종의 승인 모델만 배치한다.
-					local assets = ReplicatedStorage:FindFirstChild("MareAssets")
-					local group = assets and assets:FindFirstChild("Animals")
-					if group then
-						table.insert(conns, group.ChildAdded:Connect(function(asset)
-							if asset.Name ~= animal[1] or finished or not anchor.Parent then return end
-							task.defer(function()
-								if finished or not anchor.Parent then return end
-								local coats = PortBuildings.AnimalVisual[animal[1]].coats
-								local readyModel = placeModel(folder, "Animals", animal[1], pos, animal[2], false, Color3.fromRGB(table.unpack(coats[1])))
-								if readyModel then
-									readyModel.Name = "FieldWildlife"
-									readyModel:SetAttribute("ObservedSpecies", targetCard.id)
-								end
-							end)
-						end))
-					end
-				end
-			end
-			-- [원본 도감] 등록된 카드 원화만 노출한다. 없는 카드에는 확인 불가능한 동물 이미지를 만들지 않는다.
+			-- [발견물 외형] 실물 모델 배치는 아래 DiscoveryStage(매핑표)가 맡는다.
 			local board = Instance.new("BillboardGui")
 			board.Name = "FieldObservation"
 			board.Adornee = anchor
@@ -2893,7 +2867,12 @@ function FieldScene.start(opts)
 			tag.Size = UDim2.fromOffset(154, 28)
 			tag.TextWrapped = true
 		else
-			placeModel(folder, "Naval", "chest", pos, 3.2, false)
+			-- [일반 발견물] 등록 소품 중 하나(상자·항아리·지도·기록장·잔해)로 보여 준다.
+			local props = { { "Naval", "chest", 3.2 }, { "Relics", "pot", 2 }, { "Relics", "map-rolled", 1.8 }, { "Relics", "journal-closed", 1.6 }, { "Terrain", "debris", 3 } }
+			local pick = props[(i - 1) % #props + 1]
+			if not placeModel(folder, pick[1], pick[2], pos, pick[3], false) then
+				placeModel(folder, "Naval", "chest", pos, 3.2, false)
+			end
 		end
 		local light = Instance.new("PointLight")
 		light.Color = Color3.fromRGB(255, 214, 120)
@@ -2909,6 +2888,11 @@ function FieldScene.start(opts)
 		pp.RequiresLineOfSight = false
 		pp.Enabled = not (special and rareTrace)
 		pp.Parent = anchor
+		-- [발견물 외형] 대표 모양 실물·실루엣·조건·동물 반응·조사 방법
+		local stage = if special and DiscoveryStage then DiscoveryStage.setup({
+			folder = folder, pos = pos, anchor = anchor, prompt = pp, card = targetCard,
+			placeModel = placeModel, say = say, season = season, isFinished = function() return finished end,
+		}) else nil
 		if special and rareTrace then
 			-- [희귀 조사 퀘스트] 같은 탐험 안에서 단서 2개를 찾아야 본 관찰이 열린다.
 			-- 이 단계는 기존 발견물 수·소모 일수·보상 확률·저장 키를 바꾸지 않는다.
@@ -2918,8 +2902,13 @@ function FieldScene.start(opts)
 				local clue = part(folder, Vector3.new(2.2, 0.35, 2.2), CFrame.new(cluePos + Vector3.new(0, 0.25, 0)),
 					Color3.fromRGB(164, 138, 79), Enum.Material.Slate)
 				clue.Name = "FieldEvidence" .. clueIndex
-				clue.Shape = Enum.PartType.Ball -- [희귀 흔적] 원본 크기를 유지한 둥근 납작돌
+				clue.Transparency = 1 -- [발견물 외형] 기본 도형 대신 등록 돌 모델을 흔적으로 보여 준다
 				clue.CanCollide = false
+				local clueModel = placeModel(folder, "Terrain", "kenney_stone_smallFlatA", cluePos, 2.4, false)
+				if clueModel then
+					clueModel.Name = "FieldEvidenceStone" .. clueIndex
+					clue.Destroying:Connect(function() if clueModel.Parent then clueModel:Destroy() end end)
+				end
 				local cluePrompt = Instance.new("ProximityPrompt")
 				cluePrompt.ActionText = if isWildlife then "동물 흔적 조사" else "현장 단서 조사"
 				cluePrompt.ObjectText = targetCard.name
@@ -2948,6 +2937,7 @@ function FieldScene.start(opts)
 			if special then
 				observedCardId = targetCard.id
 				questHint.Text = "현장 기록 완료: " .. targetCard.name
+				if stage then pcall(stage.onObserved) end
 			end
 			found += 1
 			anchor:Destroy()
@@ -3241,6 +3231,7 @@ function FieldScene.start(opts)
 			elseif season == "봄" then { "맑음", "흐림", "비", "옅은 안개", "비" }
 			else { "맑음", "흐림", "비", "옅은 안개", "소나기" }
 		local weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)]
+		folder:SetAttribute("FieldWeather", weather) -- [발견물 조건] 비 온 뒤에만 보이는 실물
 		local clockStart = os.clock()
 		local weatherNext = clockStart + climateRng:NextNumber(55, 90)
 		local flashUntil, flashNext = 0, clockStart + 16
@@ -3324,6 +3315,7 @@ function FieldScene.start(opts)
 				local old = weather
 				weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)]
 				if weather == old then weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)] end
+				folder:SetAttribute("FieldWeather", weather)
 				weatherNext = now + climateRng:NextNumber(65, 115)
 				folder:SetAttribute("FieldWeather", weather)
 				if weather ~= old then say("탐험 날씨 변화: " .. weather) end
