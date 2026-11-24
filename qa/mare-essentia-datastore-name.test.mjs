@@ -4181,7 +4181,7 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   const siteProfile=field.slice(field.indexOf('local exact = {'),field.indexOf('local selected = exact'));
   const sitesSource=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sites.luau');
   const profiles=[...siteProfile.matchAll(/([a-z_0-9]+) = "([a-z]+)"/g)];
-  assert.ok(profiles.length>=207,'실제 탐험지별 지형 지정');
+  assert.ok(profiles.length>=301,'실제 탐험지별 지형 지정');
   assert.equal(new Set(profiles.map(row=>row[1])).size,profiles.length,'탐험지 ID 중복 금지');
   for(const [,id] of profiles) assert.ok(sitesSource.includes('id = "'+id+'"'),'존재하지 않는 지점 '+id);
   for(const [id,theme] of Object.entries({london_chalk:'coast',bergen_cliffs:'coast',amsterdam_canals:'lake',carrara_quarry:'mine',vesuvius_slopes:'volcanic',edo_fuji:'highland',royal_archive:'archive',genoa_olive:'farm'})){
@@ -4193,6 +4193,15 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   }
   assert.match(field,/FieldSiteComposition", "salt-work-waterway"/,'염전 수로 배치');
   assert.match(field,/FieldSiteComposition", "market-street"/,'시장 거리 실물 배치');
+  for(const [id,theme] of Object.entries({bissau_mangrove:'swamp',calcutta_delta:'swamp',mombasa_reef:'coast',basra_canals:'lake',brunei_water:'lake',ningbo_temple:'ruins',osaka_castle:'fort',silver_mine:'mine',borneo_rainforest:'jungle',ternate_volcano:'volcanic'})){
+    assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'아프리카·아시아 지형 불일치 '+id);
+  }
+  for(const composition of ['delta-waterway','shallow-reef-shore','east-asian-temple-court','japanese-stone-fort']){
+    assert.ok(field.includes('FieldSiteComposition", "'+composition+'"'),'지역별 실물 배치 누락 '+composition);
+  }
+  assert.match(field,/local depthLandforms = if folder:GetAttribute\("FieldSiteComposition"\) == "shallow-reef-shore"/,'얕은 해안의 중경 암벽 제거');
+  assert.match(field,/local nearBands = if folder:GetAttribute\("FieldSiteComposition"\) == "shallow-reef-shore"/,'얕은 해안의 근경 암벽 제거');
+  assert.match(field,/FieldSiteSpecialOriginalMissing/,'미확보 역사·자연 원본 명시');
   for(const [id,theme] of Object.entries({bergen_fjord:'coast',amsterdam_flats:'coast',stockholm_runes:'ruins',rotterdam_dike:'lake',bergen_ice_edge:'glacier',edinburgh_colliery:'mine',edinburgh_castle_rock:'fort',dublin_cranberry:'swamp'})){
     assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'북해·발트 지점 지형 불일치 '+id);
   }
