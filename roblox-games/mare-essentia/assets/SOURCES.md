@@ -2166,3 +2166,12 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 |---|---|---|---|
 | `inbox/Town/` | london_bld_ropewalk.glb | Kenney; Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
 | `inbox/Town/` | london_bld_suburb.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+
+
+## 2026-11-24 런던 조선소 3단계 원본 가공
+
+승인된 Kenney CC0 원본 6종의 메시·UV·재질 보존 및 반복 메시 공유. 중앙 수리 선대·양측 부두·창고·도르래 작업대 구성. 정식 등록 및 Studio 실물 검증 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_yard_3.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
