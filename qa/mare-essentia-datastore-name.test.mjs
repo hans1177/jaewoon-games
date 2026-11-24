@@ -4166,13 +4166,19 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/local detailCount = math\.max\(24, math\.floor\(24 \* math\.sqrt\(AREA\)\)\)/,'기기별 고정 모델 상한 제거');
   // [지상전 모델 수 상한 해제] 승인 모델만 쓰고 거리별 장면을 전체 배치한다.
   assert.match(field,/local AREA = \(SIZE \/ 200\) \^ 2/,'맵 면적별 밀도 제한 해제');
-  assert.match(field,/if index % 3 == 1 then/,'수목 근경 배치');
-  assert.match(field,/elseif index % 3 == 2 then/,'수목 중경 배치');
-  assert.match(field,/if index % 4 == 1 then/,'암석 근경 배치');
-  assert.match(field,/elseif index % 4 == 2 then/,'암석 중경 배치');
-  assert.ok(field.includes('half * visualLayoutRng:NextNumber(0.19, 0.31)'),'근경 수목 시야');
-  assert.ok(field.includes('half * visualLayoutRng:NextNumber(0.23, 0.33)'),'근경 암석 시야');
-  assert.ok(field.includes('local lateral = if band == 0 then 0.25 elseif band == 1 then 0.43 else 0.65'),'전면 재배치: 근경 식생과 중경 군집이 중앙 통로를 침범하지 않음');
+  // 기존 반복 행 대신 실제 군락 책임 함수와 중앙 통로 경계를 검사한다.
+  const layoutStart=field.indexOf('local function sceneryPosition(');
+  const layoutEnd=field.indexOf('local pending = {}',layoutStart);
+  assert.ok(layoutStart>0 && layoutEnd>layoutStart,'군락 배치 책임 함수 누락');
+  const layout=field.slice(layoutStart,layoutEnd);
+  assert.match(layout,/local group = math\.floor\(\(index - 1\) \/ groupSize\)/,'군락별 중심');
+  assert.match(layout,/local near = lane < nearLanes/,'근경 군락 분리');
+  assert.match(layout,/local depth = if near then half - 34/,'진입점 가까운 실제 깊이');
+  assert.match(layout,/local corridor = math\.max\(24, half \*/,'중앙 통로 최소 폭');
+  assert.match(layout,/math\.clamp\(lateral \+ math\.cos\(angle\) \* radius \+ biasX, corridor, edge\)/,'군락 중앙 통로·외곽 제한');
+  assert.match(layout,/math\.clamp\(depth \+ math\.sin\(angle\) \* radius \+ biasZ, -half \* 0\.86, half - 26\)/,'스폰과 전장 경계 보존');
+  assert.match(field,/sceneryPosition\(index, visualTreeCount, 5, 11, 0,/,'수목 5개 군락');
+  assert.match(field,/sceneryPosition\(index, visualRockCount, 4, 7, 1,/,'암석 4개 군락');
   assert.match(field,/distance >= 400 then "far" elseif distance >= 120 then "mid" else "near"/,'진입 위치 기준 실제 거리 분류');
   assert.match(field,/local signature = opts\.portScenery/,'항구별 기존 대표 경관 정본');
   assert.match(field,/FieldPortLandmarkOriginalMissing/,'실제 역사 원본 누락을 별도로 기록');
@@ -4180,9 +4186,9 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/terrain:FillBlock\(waterCF, waterSize, Enum\.Material\.Water\)/,'해안 실제 외곽 물');
   assert.match(field,/terrain:FillBlock\(waterCF, waterSize, Enum\.Material\.Air\)/,'퇴장시 해안 물 정리');
   assert.ok(!field.includes('else 0.34 end)'), 'Luau if 조건식에 잘못된 end 금지');
-  assert.match(field,/local band = math\.floor\(\(index - 1\) \/ 4\) % 3/,'식생 근경·중경·원경 순환 배치');
-  assert.match(field,/local depthRow = math\.floor\(\(index - 1\) \/ 12\) % 5/,'과밀 대신 깊이방향 분산');
-  assert.match(field,/local pz = half \* \(0\.78 - band \* 0\.43 - depthRow \* 0\.11\)/,'식생 구획별 앞뒤 거리 확장');
+  assert.match(field,/sceneryPosition\(index, detailCount, 6, 4\.8, 2,/,'하층 식생 6개 군락');
+  assert.match(layout,/lane \* 0\.61803398875/,'반복 행 대신 깊이별 군락 위상');
+  assert.match(layout,/local angle = slot \* math\.pi \* 2 \/ groupSize/,'군락 내부 분산');
   assert.match(field,/local visualLayoutRng = Random\.new\(/,'전경 난수는 전투 시드에서 분리');
   assert.match(field,/local visualTreeCount = treeCount/,'수목 모바일 제한 해제');
   assert.match(field,/local visualRockCount = rockCount/,'암석 모바일 제한 해제');
@@ -4207,7 +4213,11 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/if solid ~= true then d\.CanQuery = false end/,'비충돌 장식만 물리 쿼리에서 제외');
   // [저폴리 자산 권한 보호] RenderFidelity 쓰기는 클라이언트 진입 실패 원인이라 제거됨: 쓰기 금지로 고정.
   assert.doesNotMatch(field,/d\.RenderFidelity\s*=/,'RenderFidelity 쓰기 금지(권한 오류)');
-  assert.match(field,/if index % 3 == 0 and not arid then/,'원경 식생만 승인 간결 모델로 선택');
+  assert.match(field,/if distance >= 400 and not arid then/,'실제 400스터드 밖 수목만 승인 간결 모델로 선택');
+  assert.match(field,/if distance >= 400 and AssetIds\["Terrain\/kenney_rock_smallFlatA"\]/,'실거리 원경 암석');
+  assert.match(field,/entry\.band, entry\.horizon, entry\.horizonNature = "far", true, true/,'실제 원경 자연층은 전투 대상 아님');
+  assert.match(field,/if entry\.horizonNature then[\s\S]*?else[\s\S]*?FieldHorizonPlaced/,'자연층은 항구 실물 등록 수치와 분리');
+  assert.match(field,/horizonZ \+ 12 \+ index \* 4/,'전장 바깥 자연층 실제 좌표');
   assert.ok(field.includes('AssetIds["Terrain/" .. simpler]'),'지역에 맞는 기등록 자연 메시만 선택');
   assert.ok(field.includes('AssetIds["Terrain/kenney_rock_smallFlatA"]'),'원경 암석의 기등록 간결 메시만 선택');
   assert.match(field,/m:SetAttribute\("FieldSceneryLowPolyVariant", true\)/,'실제 배치된 원경 경량 모델 기록');
