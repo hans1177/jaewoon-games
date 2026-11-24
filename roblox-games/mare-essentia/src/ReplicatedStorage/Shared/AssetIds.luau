@@ -1498,6 +1498,7 @@ return {
 	["Town/london_bld_hospital"] = 71619963140661,
 	["Town/london_bld_house_row"] = 83115469166461,
 	["Town/london_bld_hut"] = 140111113375178,
+	["Town/london_bld_infirmary"] = 92733855666750,
 	["Town/london_bld_library"] = 112954368819840,
 	["Town/london_bld_lighthouse"] = 128058394059585,
 	["Town/london_bld_market_stalls"] = 93096102858792,
