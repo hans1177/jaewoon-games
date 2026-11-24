@@ -12,6 +12,8 @@ prefix_filter = next((x.split("=", 1)[1] for x in sys.argv[1:] if x.startswith("
 scoped_london = kind_filter == "Town" and prefix_filter == "london_"
 scoped_vegetation = kind_filter == "Terrain" and prefix_filter == "veg_"
 scoped_derived = scoped_london or scoped_vegetation
+# 정식 등록 워크플로만 개별 합격분을 먼저 처리한다. 수동 시험은 계속 엄격 실패한다.
+partial = scoped_vegetation or (scoped_london and not dry and "--allow-partial" in sys.argv)
 if scoped_derived:
     with open(os.path.join(root, "assets-registered.json"), encoding="utf-8") as f:
         registered = json.load(f)["assets"]
@@ -124,20 +126,20 @@ for kind in sorted(d for d in os.listdir(inbox) if os.path.isdir(os.path.join(in
         done.append((p, os.path.join(dest_dir, fn), m, h))
         if scoped_derived: known[h] = p
 for p, why in bad: print(f"거부: {p} — {why}")
-if scoped_derived and bad and not scoped_vegetation:
+if scoped_derived and bad and not partial:
     sys.exit(1)
-if scoped_vegetation and bad:
-    print(f"MARE_VEGETATION_STAGING_PARTIAL: ready={len(done)} rejected={len(bad)}")
+if partial and bad:
+    scope = "LONDON" if scoped_london else "VEGETATION"
+    print(f"MARE_{scope}_STAGING_PARTIAL: ready={len(done)} rejected={len(bad)}")
 for src, dst, m, h in done:
     print(("[시험] " if dry else "") + f"등록: {src} → {dst}  ({m['license']}, {h[:10]})")
     if dry: continue
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     shutil.move(src, dst); shutil.move(src + ".license.json", dst + ".license.json")
-    # 식생 출처 장부는 실제 자산 번호와 사용권 확인 후 기존 승격 단계에서 기록한다.
-    if not scoped_vegetation:
+    # 건축·식생 출처 장부는 실제 번호·사용권 확인 후 기존 승격 단계에서 기록한다.
+    if not scoped_derived:
         with open(os.path.join(root, "assets", "SOURCES.md"), "a", encoding="utf-8") as s:
             s.write(f"| `{os.path.basename(os.path.dirname(dst))}/` | {os.path.basename(dst)} | {m.get('author','')} · {m['license']} | {m.get('source','')} |\n")
 print(f"등록 {len(done)}건, 거부 {len(bad)}건" + (" (시험 실행)" if dry else "") + ("" if dry or not done else " → 다음: owner-mare-essentia-assets 워크플로로 업로드"))
-# 식생만 개별 거부를 기록하고 적격 자산의 공식 등록을 계속한다.
-# 전체 미등록 여부는 기존 최종 승격 단계에서 실패로 기록한다.
-sys.exit(1 if bad and not scoped_vegetation else 0)
+# 개별 거부분은 inbox에 남고 기존 최종 승격 단계에서 미등록 실패로 기록한다.
+sys.exit(1 if bad and not partial else 0)
