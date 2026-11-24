@@ -4178,6 +4178,18 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(layout,/math\.clamp\(lateral \+ math\.cos\(angle\) \* radius \+ biasX, corridor, edge\)/,'군락 중앙 통로·외곽 제한');
   assert.match(layout,/math\.clamp\(depth \+ math\.sin\(angle\) \* radius \+ biasZ, -half \* 0\.86, half - 26\)/,'스폰과 전장 경계 보존');
   assert.match(field,/sceneryPosition\(index, visualTreeCount, 5, 11, 0,/,'수목 5개 군락');
+  const siteProfile=field.slice(field.indexOf('local exact = {'),field.indexOf('local selected = exact'));
+  const sitesSource=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sites.luau');
+  const profiles=[...siteProfile.matchAll(/([a-z_0-9]+) = "([a-z]+)"/g)];
+  assert.ok(profiles.length>=60,'실제 탐험지별 지형 지정');
+  for(const [,id] of profiles) assert.ok(sitesSource.includes('id = "'+id+'"'),'존재하지 않는 지점 '+id);
+  for(const [id,theme] of Object.entries({london_chalk:'coast',bergen_cliffs:'coast',amsterdam_canals:'lake',carrara_quarry:'mine',vesuvius_slopes:'volcanic',edo_fuji:'highland',royal_archive:'archive',genoa_olive:'farm'})){
+    assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'지점 지형 불일치 '+id);
+  }
+  assert.match(field,/FieldSiteTerrainSource/,'지점 ID 사용 여부 진단');
+  assert.match(field,/Enum\.Material\.Limestone/,'백악 및 대리석 바닥');
+  assert.match(field,/FieldCropOriginalMissing/,'원본 없는 작물 표시 금지');
+  assert.match(field,/not nautical or questTerrain == "coast" or questTerrain == "lake" or questTerrain == "swamp"/,'내륙 카누 배치 금지');
   assert.match(field,/sceneryPosition\(index, visualRockCount, 4, 7, 1,/,'암석 4개 군락');
   assert.match(field,/distance >= 400 then "far" elseif distance >= 120 then "mid" else "near"/,'진입 위치 기준 실제 거리 분류');
   assert.match(field,/local signature = opts\.portScenery/,'항구별 기존 대표 경관 정본');
