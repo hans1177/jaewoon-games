@@ -1166,11 +1166,11 @@ test('탐험 지역 기후·사계절 배경과 바람 입자 디테일',()=>{
     assert.ok(field.includes('questTerrain == "'+pair[0]+'"'),'지형 인식 누락 '+pair[0]);
     assert.ok(field.includes('biome.mat = '+pair[1]),'지면 재질 미설정 '+pair[0]);
   }
-  assert.ok(field.includes('string.find(questName, "해적 소굴", 1, true) then "coast"'),'해적 은신처 해안 지형');
+  assert.match(field,/string\.find\(questName, "해적 소굴", 1, true\)[\s\S]{0,260}then "coast"/,'해적 은신처 해안 지형');
   assert.ok(field.includes('mat ~= Enum.Material.Snow and mat ~= Enum.Material.Ground'),'복셀 언덕의 눈·흙 재질 보존');
   assert.match(field,/elseif questTerrain == "coast" then[\s\S]*?if winterScene then\s+biome\.mat = Enum\.Material\.Snow/,'북방 해안의 겨울 눈 보존');
   assert.match(field,/local weatherOptions = if snowy then/);
-  assert.match(field,/drift\.Rate = \(if visualMobile then 3 else 8\)/);
+  assert.match(field,/drift\.Rate = \(if visualMobile then 4 else 8\)/);
   assert.match(field,/timeLabel\.Text = string\.format\("%s %s %02d:%02d/);
   assert.match(field,/placeModel\(folder, entry\[1\], entry\[2\], pos, entry\[3\], entry\[6\], entry\.tint, entry\.band\)/);
   for (const name of [
@@ -3977,7 +3977,7 @@ test('대항해시대 3차 원근·계절 숲·선박 항적 CC0 자산 실물 �
   const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
   assert.match(field,/FieldElevatedTerraceCount/);
   assert.match(field,/FieldNearDepthBandCount/);
-  assert.match(field,/local nearBands = if tropical then/);
+  assert.match(field,/local nearBands = if questTerrain == "archive" then/);
   assert.match(field,/groundRay\.FilterDescendantsInstances = \{ workspace\.Terrain, ground \}/);
   assert.match(field,/AssetIds\["Terrain\/tree-detailed-fall"\]/);
   assert.match(field,/AssetIds\["Terrain\/tree-palmdetailedtall"\]/);
@@ -4182,7 +4182,7 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.ok(!field.includes('else 0.34 end)'), 'Luau if 조건식에 잘못된 end 금지');
   assert.match(field,/local band = math\.floor\(\(index - 1\) \/ 4\) % 3/,'식생 근경·중경·원경 순환 배치');
   assert.match(field,/local depthRow = math\.floor\(\(index - 1\) \/ 12\) % 5/,'과밀 대신 깊이방향 분산');
-  assert.match(field,/local pz = half \* \(0\.81 - band \* 0\.28 - depthRow \* 0\.10\)/,'식생 구획별 앞뒤 거리');
+  assert.match(field,/local pz = half \* \(0\.78 - band \* 0\.43 - depthRow \* 0\.11\)/,'식생 구획별 앞뒤 거리');
   assert.match(field,/local visualLayoutRng = Random\.new\(/,'전경 난수는 전투 시드에서 분리');
   assert.match(field,/local visualTreeCount = treeCount/,'수목 모바일 제한 해제');
   assert.match(field,/local visualRockCount = rockCount/,'암석 모바일 제한 해제');
