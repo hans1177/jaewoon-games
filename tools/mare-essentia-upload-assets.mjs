@@ -73,6 +73,13 @@ async function prepareLicensedOriginals() {
       pinnedBlobSha:'70d3fcecd64c597fa23c4704535c52a73158a320',
       sourceModelingMethod:'Original 2018-2023 Polygonal Mind project mesh; creator-published Blender FBX-to-GLB conversion and manual material cleanup',
       townOriginal:true, minBytes:4682620, maxBytes:4682620, minTriangles:1, maxTriangles:30000, originalModel:'Stage Curtain Invite'},
+    // [런던 천문대 원본] The Base Mesh의 CC0 돔 메시를 고정 원본과 대조한다.
+    {name:'observatory-dome-source', assetPath:'assets/town/observatory-dome-source.glb', author:'Tim Steer / The Base Mesh; glTF conversion M3-org',
+      source:'https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/dome/dome.glb',
+      page:'https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/LICENSE',
+      pinnedBlobSha:'a4be7364e5074f13b779950e5e854531a6650091',
+      sourceModelingMethod:'The Base Mesh artist-authored dome base mesh, converted to glTF by M3-org; pinned binary, basic UVs and original geometry retained',
+      townOriginal:true, minBytes:7964, maxBytes:7964, minTriangles:240, maxTriangles:240, originalModel:'Dome'},
     // [발견물 조류 1차] 원작자의 수작업 CC0 모델, 고정 리비전과 개별 Git blob 검증.
     {name:'discovery_seagull', assetPath:'assets/animals/discovery_seagull.glb', author:'Scott Petrovic (Mesh2Motion)',
       source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/seagull.glb',
@@ -166,6 +173,20 @@ async function prepareLicensedOriginals() {
     }
     let originalSha256 = evidence?.originalSha256 || null;
     if (!bytes) {
+      // [고정 건축 원본] 이미 확보한 파일은 고정 Git blob 및 기존 출처 증빙과 일치할 때만 재사용한다.
+      if (item.townOriginal && item.pinnedBlobSha) {
+        const staged = path.join(ROOT,'assets/inbox/Town',name+'.glb');
+        try { bytes = await fs.readFile(staged); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+        if (bytes) {
+          const stagedProof = JSON.parse(await fs.readFile(staged+'.license.json','utf8'));
+          const digest = crypto.createHash('sha256').update(bytes).digest('hex');
+          if (stagedProof.license !== license || stagedProof.author !== item.author
+            || stagedProof.pinnedBlobSha !== item.pinnedBlobSha
+            || stagedProof.sourceSha256 !== digest || stagedProof.sha256 !== digest
+            || stagedProof.bytes !== bytes.length || stagedProof.commercialUseAllowed !== true)
+            throw new Error('MARE_TOWN_INBOX_PROOF_MISMATCH:'+name);
+        }
+      }
       // [발견물 원본] 이미 확보한 inbox 바이너리를 우선 사용하고 동일한 원본 검증을 거친다.
       if (item.discoveryBird) {
         const staged = path.join(ROOT,'assets/inbox/Animals',name+'.glb');
@@ -1643,7 +1664,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     const externalR15Item = kind === 'People' && /^cc0_[a-z0-9_]+\.glb$/.test(sourceFileName);
     // [항구 전용 CC0 원본] 기존 업로더에서 도시별 실물 모델의 출처·해시·권한을 검수한다.
     const portOriginalModel = kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
-    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb'].includes(sourceFileName);
+    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb'].includes(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
     const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle|panda|whale)\.glb$/.test(sourceFileName);
     try {
