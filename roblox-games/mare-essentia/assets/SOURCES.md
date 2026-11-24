@@ -2142,3 +2142,5 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 |---|---|---|---|
 | `inbox/Town/` | london_yard_2.glb | Kenney; Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
 | `inbox/Town/` | london_battle_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_battle_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_yard_2.glb | Kenney; Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
