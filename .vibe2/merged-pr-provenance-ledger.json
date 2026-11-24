@@ -341518,11 +341518,145 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_4b07048b43e0de2929a66d20",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14995",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "c3db595658e0ef43aec69e14b1684e392a1d9188",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14995,
+        "baseBranch": "main",
+        "headBranch": "asset/london-clock-greenhouse",
+        "baseSha": "c3db595658e0ef43aec69e14b1684e392a1d9188",
+        "headSha": "8ec0bedf1bc5dcddd69ea416bbb1d2dfc9466342",
+        "mergeCommitSha": "89d115e3c525e898b007212124ac2eede3de0b43",
+        "mergedAt": "2026-11-24T06:21:51Z",
+        "authorLogin": "hans1177",
+        "titleHash": "5f9c403d269532fce3de17db78584da3cf995680ff14a6d9a15e9c4a861581b7",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "asset/london-clock-greenhouse",
+        "candidateSha": "8ec0bedf1bc5dcddd69ea416bbb1d2dfc9466342"
+      },
+      "changeStats": {
+        "changedFileCount": 12,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 159,
+        "deletedLineCount": 12,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/croc2-source.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/croc2-source.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/duion2-wolf.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/duion2-wolf.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-cobra.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-cobra.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/pixispider.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/pixispider.blend.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/croc2-source.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/duion2-wolf.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-cobra.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/pixispider.blend.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14995",
+        "merge-commit:89d115e3c525e898b007212124ac2eede3de0b43",
+        "base-main:c3db595658e0ef43aec69e14b1684e392a1d9188"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2729
+    "total": 2730
   }
 }
