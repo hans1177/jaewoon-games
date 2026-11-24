@@ -2281,3 +2281,4 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `town/` | stage-curtain-source.glb | Polygonal Mind (ToxSam GLB conversion) · CC0-1.0 | https://raw.githubusercontent.com/ToxSam/cc0-models-Polygonal-Mind/56db2d4088512531a070d0bf3eb9d284d077528d/projects/avatar-show/Stage_Curtain_Invite.glb |
 | `animals/` | discovery_panda.glb | Scott Petrovic (Mesh2Motion) · CC0-1.0 | https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/fox/variations/panda.glb |
 | `animals/` | discovery_whale.glb | Scott Petrovic (Mesh2Motion) · CC0-1.0 | https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/shark/variations/whale.glb |
+| `town/` | london_bld_bakery.glb | Kenney; Frakassets (Pixor); Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
