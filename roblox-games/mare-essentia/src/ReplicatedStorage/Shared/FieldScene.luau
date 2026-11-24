@@ -989,8 +989,11 @@ function FieldScene.start(opts)
 				elseif questTerrain == "mine" or questTerrain == "glacier" then 0.32
 				elseif questTerrain == "farm" or questTerrain == "swamp" or questTerrain == "archive" then 0.72 else 0.48
 			local center = ORIGIN + Vector3.new(math.cos(ang) * dist, -radius * rise, math.sin(ang) * dist)
-			terrain:FillBall(center, radius, mat)
-			table.insert(hills, { center, radius })
+			-- 해안의 바다 쪽 능선은 열어 수평선이 보이도록 한다. 기존 이동 경계는 유지.
+			if questTerrain ~= "coast" or math.cos(ang) < 0.55 then
+				terrain:FillBall(center, radius, mat)
+				table.insert(hills, { center, radius })
+			end
 		end
 		-- [전장 내부] 양쪽 숲·협곡에 교차 구릉. 중앙 폭과 입구는 항상 평탄하게 남긴다.
 		local insideCount = if questTerrain == "farm" or questTerrain == "ruins" or questTerrain == "archive" then (if visualMobile then 4 else 6)
@@ -1594,6 +1597,30 @@ function FieldScene.start(opts)
 		glacier = { 5, 6, 8 }, volcanic = { 5, 7, 8 },
 	}
 	local featureList = landforms[questTerrain] or landforms.plains
+	-- 그리스 신전·이집트 기둥·유럽 풍차를 모든 문화권의 유적/농경지에 반복하지 않는다.
+	-- 해당 문화권 전용 원본이 없는 자리는 승인된 자연물·무명의 발굴 흔적만 배치한다.
+	do
+		local port = opts.portId and Ports.Ports[opts.portId]
+		if questTerrain == "ruins" and region ~= "italy" and region ~= "med" then
+			local neutral = { [1] = "debris", [2] = "rock-talld", [3] = "rock-largec", [4] = "cliff-rock",
+				[5] = "ground-pathrocks", [6] = "rock-largea", [7] = "debris", [8] = "rock-largec",
+				[9] = "ground-pathrocks", [10] = "rock-talld" }
+			for index, asset in neutral do
+				local entry = featureList[index]
+				if entry then
+					entry[1], entry[2] = "Terrain", asset
+					entry[3] = math.min(entry[3], if index == 4 or index == 8 then 19 else 10)
+				end
+			end
+		elseif questTerrain == "desert" and (not port or port.country ~= "egypt") then
+			for index, asset in { [3] = "cliff-rock", [4] = "rock-talld", [5] = "rock-largea" } do
+				local entry = featureList[index]
+				entry[1], entry[2], entry[3] = "Terrain", asset, math.min(entry[3], 17)
+			end
+		elseif questTerrain == "farm" and (tropical or arid or region == "japan" or region == "korea" or region == "china") then
+			featureList[1][1], featureList[1][2], featureList[1][3] = "Terrain", "village-fence", 18
+		end
+	end
 	for index, entry in featureList do
 		entry.landmark = true
 		entry.survey = table.find(surveyIndices[questTerrain] or surveyIndices.plains, index) ~= nil
@@ -1829,6 +1856,7 @@ function FieldScene.start(opts)
 				local depthX = spec[3] * half * mirror
 				local depthZ = spec[4] * half
 				if index <= 2 then
+					-- 해안 바위/산악 대형 모델도 중앙 길 안으로 들어오지 않게 한다.
 					depthX = (if depthX < 0 then -1 else 1) * half * (if index == 1 then 0.42 else 0.60)
 					depthZ = half * (if index == 1 then 0.52 else -0.05)
 				end
@@ -1896,6 +1924,11 @@ function FieldScene.start(opts)
 	-- 전용 역사 원본이 등록되지 않았으면 원본으로 사칭하지 않는다. 기존 승인 경관만 표시.
 	if questTerrain ~= "mine" then
 		local signature = opts.portScenery
+		-- 모듈 직접 호출(Studio 등)도 동일한 마을 표만 참조한다. 게임 진입 경로의 전달값 우선.
+		if not signature and opts.portId then
+			local ok, portScene = pcall(function() return require(script.Parent:WaitForChild("PortScene")) end)
+			if ok and portScene.Signatures then signature = portScene.Signatures[opts.portId] end
+		end
 		local original = (opts.portId or "") .. "_landmark_full"
 		local horizonZ = -math.max(400, half + 150)
 		local groups, groupCount = {}, 0
@@ -1932,6 +1965,7 @@ function FieldScene.start(opts)
 				end
 			end
 			folder:SetAttribute("FieldHorizonPlannedGroups", groupCount)
+			if groupCount == 0 then folder:SetAttribute("FieldHorizonSource", "port-signature-no-land-model") end
 		else
 			folder:SetAttribute("FieldHorizonSource", "port-signature-unavailable")
 		end
