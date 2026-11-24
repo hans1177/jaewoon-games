@@ -352401,11 +352401,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_78737c13edd68b4fc1a00d87",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15127",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "074c466cd8fe91252a819d2ebc97036f202aad6d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15127,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-london-remaining-proof-1124",
+        "baseSha": "074c466cd8fe91252a819d2ebc97036f202aad6d",
+        "headSha": "2558fd1f81c605e0f7cc5ff04f230096c572dc78",
+        "mergeCommitSha": "9630198ba42afb7f13b720b4b25dad2c202320a2",
+        "mergedAt": "2026-11-24T15:21:49Z",
+        "authorLogin": "hans1177",
+        "titleHash": "b994ed3b61f475ea14d9fca153a671735f3871282b034f38d45208d1ae848ec9",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-london-remaining-proof-1124",
+        "candidateSha": "2558fd1f81c605e0f7cc5ff04f230096c572dc78"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 245,
+        "deletedLineCount": 71,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/town/london_house_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_landmark_base.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_landmark_full.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_street_lamp.glb.license.json",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "tools/devloop/register_asset.py",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/town/london_house_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_landmark_base.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_landmark_full.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_street_lamp.glb.license.json",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "tools/devloop/register_asset.py",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15127",
+        "merge-commit:9630198ba42afb7f13b720b4b25dad2c202320a2",
+        "base-main:074c466cd8fe91252a819d2ebc97036f202aad6d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2790
+    "total": 2791
   }
 }
