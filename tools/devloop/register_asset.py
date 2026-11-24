@@ -48,9 +48,9 @@ for kind in sorted(d for d in os.listdir(inbox) if os.path.isdir(os.path.join(in
                 with open(meta_p, encoding="utf-8") as meta_file:
                     m = json.load(meta_file)
                 if not isinstance(m, dict): raise ValueError("invalid metadata")
-            except (ValueError, OSError):
-                if not scoped_vegetation: raise
-                why = "식생 라이선스 증빙 읽기 실패"
+            except (ValueError, OSError) as exc:
+                if not scoped_derived: raise
+                why = f"라이선스 증빙 읽기 실패: {type(exc).__name__}"
             if not why:
                 if m.get("license") not in OK: why = f"허용되지 않은 라이선스: {m.get('license')}"
                 elif not str(m.get("source", "")).startswith("http") and m.get("license") != "PROJECT_ORIGINAL_ART": why = "출처 URL 없음"
@@ -64,48 +64,60 @@ for kind in sorted(d for d in os.listdir(inbox) if os.path.isdir(os.path.join(in
             from asset_color_check import color_problem
             why = color_problem(p)
         if not why and scoped_derived:
-            # [런던 원본] 승인 원본과 바이너리 해시, GLB 구조를 실제 대조한다.
+            # [건축·식생 원본] 증빙·해시·GLB 실측을 대조하고 정확한 실패 단계를 기록한다.
             try:
-                assert fn.endswith(".glb") and m.get("license") == "CC0-1.0"
-                assert m.get("sha256") == h and m.get("bytes") == os.path.getsize(p)
-                with open(p, "rb") as f: header = f.read(12)
-                assert len(header) == 12 and struct.unpack("<4sII", header) == (b"glTF", 2, m["bytes"])
+                if not fn.endswith(".glb") or m.get("license") != "CC0-1.0":
+                    raise ValueError("ASSET_GLB_CC0_REQUIRED")
+                if m.get("sha256") != h or m.get("bytes") != os.path.getsize(p):
+                    raise ValueError("ASSET_BINARY_HASH_OR_SIZE_MISMATCH")
+                with open(p, "rb") as f: data = f.read()
+                if len(data) < 20 or struct.unpack_from("<4sII", data) != (b"glTF", 2, m["bytes"]):
+                    raise ValueError("ASSET_GLB_HEADER_INVALID")
                 if scoped_vegetation and m.get("derived") is False:
                     # 무변형 원본은 고정 미러의 원본 blob 및 라이선스 증빙으로 검증한다.
-                    assert m.get("commercialUseAllowed") is True and m.get("sourceLicense") == "https://creativecommons.org/publicdomain/zero/1.0/"
+                    if m.get("commercialUseAllowed") is not True or m.get("sourceLicense") != "https://creativecommons.org/publicdomain/zero/1.0/":
+                        raise ValueError("ASSET_CC0_EVIDENCE_INVALID")
                     pinned = re.fullmatch(r"(https://github\.com/[^/]+/[^/]+/blob/[0-9a-f]{40})/.+\.glb", m.get("downloadSource", ""))
-                    assert pinned and str(m.get("mirrorLicenseEvidence", "")).startswith(pinned.group(1) + "/")
-                    assert str(m.get("source", "")).startswith("https://")
-                    with open(p, "rb") as f: data = f.read()
-                    assert hashlib.sha1(("blob %d\0" % len(data)).encode() + data).hexdigest() == m.get("sourceGitBlobSha1")
+                    if not pinned or not str(m.get("mirrorLicenseEvidence", "")).startswith(pinned.group(1) + "/") or not str(m.get("source", "")).startswith("https://"):
+                        raise ValueError("ASSET_PINNED_SOURCE_INVALID")
+                    if hashlib.sha1(("blob %d\0" % len(data)).encode() + data).hexdigest() != m.get("sourceGitBlobSha1"):
+                        raise ValueError("ASSET_SOURCE_BLOB_MISMATCH")
                 else:
-                    assert m.get("derived") is True and m.get("originalFiles") and m.get("modification")
+                    if m.get("derived") is not True or not m.get("originalFiles") or not m.get("modification"):
+                        raise ValueError("ASSET_DERIVATION_EVIDENCE_MISSING")
                     for original in m["originalFiles"]:
                         source = original["repositoryPath"]
-                        assert source in approved_sources and original.get("license") == "CC0-1.0"
-                        assert str(original.get("originalUrl", "")).startswith("https://")
-                        with open(source, "rb") as f: data = f.read()
-                        assert hashlib.sha256(data).hexdigest() == original["sha256"] and original["sha256"] not in blocked
-                        assert hashlib.sha1(("blob %d\0" % len(data)).encode() + data).hexdigest() == original["gitBlobSha1"]
-                assert not os.path.exists(os.path.join(root, "assets", kind.lower(), fn))
-                if scoped_vegetation:
-                    # 식생의 내부 일률 상한은 해제하되 실제 GLB 삼각형 수와 증빙 일치는 유지한다.
-                    assert type(m.get("triangles")) is int and m["triangles"] > 0
-                    with open(p, "rb") as f: data = f.read()
-                    size, tag = struct.unpack_from("<II", data, 12)
-                    assert tag == 0x4e4f534a and 20 + size < len(data)
-                    glb = json.loads(data[20:20+size])
-                    actual_triangles = 0
-                    for node in glb["nodes"]:
-                        if "mesh" not in node: continue
-                        for pr in glb["meshes"][node["mesh"]]["primitives"]:
-                            assert pr.get("mode", 4) == 4
-                            count = glb["accessors"][pr["indices"]]["count"]
-                            assert type(count) is int and count > 0 and count % 3 == 0
-                            actual_triangles += count // 3
-                    assert actual_triangles == m["triangles"]
-            except (AssertionError, KeyError, OSError, TypeError, ValueError, IndexError, struct.error):
-                why = "식생 승인 원본·GLB·해시 검증 실패" if scoped_vegetation else "런던 승인 원본·GLB·해시 검증 실패"
+                        if source not in approved_sources or original.get("license") != "CC0-1.0":
+                            raise ValueError("ASSET_ORIGINAL_RIGHTS_UNVERIFIED:" + source)
+                        if not str(original.get("originalUrl", "")).startswith("https://"):
+                            raise ValueError("ASSET_ORIGINAL_URL_INVALID:" + source)
+                        with open(source, "rb") as f: original_data = f.read()
+                        if hashlib.sha256(original_data).hexdigest() != original["sha256"] or original["sha256"] in blocked:
+                            raise ValueError("ASSET_ORIGINAL_HASH_INVALID:" + source)
+                        if hashlib.sha1(("blob %d\0" % len(original_data)).encode() + original_data).hexdigest() != original["gitBlobSha1"]:
+                            raise ValueError("ASSET_ORIGINAL_BLOB_MISMATCH:" + source)
+                if os.path.exists(os.path.join(root, "assets", kind.lower(), fn)):
+                    raise ValueError("ASSET_DESTINATION_EXISTS")
+                # 건축과 식생 모두 동일한 실제 GLB 삼각형 수와 증빙 일치를 요구한다.
+                # 내부 일률 상한은 두지 않으며 Roblox 런타임 품질 승인과는 구분한다.
+                if type(m.get("triangles")) is not int or m["triangles"] <= 0:
+                    raise ValueError("ASSET_TRIANGLE_EVIDENCE_INVALID")
+                size, tag = struct.unpack_from("<II", data, 12)
+                if tag != 0x4e4f534a or 20 + size >= len(data):
+                    raise ValueError("ASSET_GLB_JSON_CHUNK_INVALID")
+                glb = json.loads(data[20:20+size])
+                actual_triangles = 0
+                for node in glb["nodes"]:
+                    if "mesh" not in node: continue
+                    for pr in glb["meshes"][node["mesh"]]["primitives"]:
+                        count = glb["accessors"][pr["indices"]]["count"]
+                        if pr.get("mode", 4) != 4 or type(count) is not int or count <= 0 or count % 3:
+                            raise ValueError("ASSET_TRIANGLE_LAYOUT_INVALID")
+                        actual_triangles += count // 3
+                if actual_triangles != m["triangles"]:
+                    raise ValueError(f"ASSET_TRIANGLE_COUNT_MISMATCH:expected={m['triangles']}:actual={actual_triangles}")
+            except (KeyError, OSError, TypeError, ValueError, IndexError, struct.error) as exc:
+                why = f"승인 원본·GLB·해시 검증 실패: {type(exc).__name__}: {exc}"
         if why:
             bad.append((p, why)); continue
         dest_dir = os.path.join(root, "assets", kind.lower() if os.path.isdir(os.path.join(root, "assets", kind.lower())) else kind)
