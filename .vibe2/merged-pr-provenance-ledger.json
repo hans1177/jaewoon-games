@@ -338536,11 +338536,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_eb4aeef17f323d037dc8834f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14937",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "38b6f4a4f80f46849389cabc000226e266fa9f00",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14937,
+        "baseBranch": "main",
+        "headBranch": "mare-observatory-dome-source-a4be736",
+        "baseSha": "38b6f4a4f80f46849389cabc000226e266fa9f00",
+        "headSha": "107109fab11f98cf68fb425420cd77de30f89ba7",
+        "mergeCommitSha": "5037bfc2b8feadd0ad493e67aae0006c6ab0c8e9",
+        "mergedAt": "2026-11-24T03:28:10Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e9817c86c269e9c39ed3b268b8f03f62164e3083be92b3d4342031fa7923467e",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-observatory-dome-source-a4be736",
+        "candidateSha": "107109fab11f98cf68fb425420cd77de30f89ba7"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 1960,
+        "deletedLineCount": 5,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_bald_eagle.glb",
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_bald_eagle.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_seagull.glb",
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_seagull.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_arsenal.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_arsenal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/observatory-dome-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/observatory-dome-source.glb.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_bald_eagle.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_seagull.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_arsenal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/observatory-dome-source.glb.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14937",
+        "merge-commit:5037bfc2b8feadd0ad493e67aae0006c6ab0c8e9",
+        "base-main:38b6f4a4f80f46849389cabc000226e266fa9f00"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2708
+    "total": 2709
   }
 }
