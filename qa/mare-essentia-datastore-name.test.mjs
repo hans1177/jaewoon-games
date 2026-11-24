@@ -198,7 +198,7 @@ test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본
   assert.match(layout,/content\.Position = UDim2\.fromOffset\(8, bodyTop\)/);
   assert.match(layout,/content\.Size = UDim2\.new\(1, -16, 1, -bodyTop - 8\)/);
   assert.match(layout,/H\.facilityGallery\.Position = UDim2\.fromOffset\(8, bodyTop\)/);
-  assert.match(layout,/content\.Position = UDim2\.fromOffset\(artW \+ 16, bodyTop\)/);
+  assert.match(layout,/content\.Position = UDim2\.fromOffset\(8, contentY\)/,'원화 배너 아래 본문 전체 폭');
   assert.doesNotMatch(layout,/local navW\s*=/);
   assert.match(tabs,/mkButton\(H\.tabStrip, TAB_NAME\[id\]/);
   assert.equal(capture.length,1000);
@@ -3506,7 +3506,10 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
   assert.match(source,/H\.galleryReadingCard = if current\.found/,'백과 현재 페이지 원화 동기화');
   assert.match(source,/AssetIds\["CardArt\/event_chart_" \.\. H\.selectedChart\]/,'지도 선택과 원화 연동');
   assert.match(source,/if chartName and not selection then matched = nil end/,'선택한 항구가 없으면 해역 지도를 우선');
-  assert.match(source,/H\.galleryPrev\.Position = UDim2\.fromOffset\(cardW \+ 18, artH - 48\)/,'모바일 원화 넘김 좌표');
+  assert.match(source,/H\.galleryPrev\.Position = UDim2\.new\(1, -96, 1, -48\)/,'배너 원화 넘김 좌표');
+  assert.match(source,/H\.FACILITY_GALLERY_POOL = \{/,'메뉴별 승인 원화 자동 순환 묶음');
+  assert.match(source,/H\.galleryIndex = math\.random\(1, #matches\)/,'메뉴 열 때 랜덤 시작');
+  assert.match(source,/FacilityArtBackdrop/,'반응형 배너 배경');
   assert.match(source,/local inYardHall = H\.yardHallActive/,'선박 클릭 시 상세장부 소속 보존');
   assert.match(source,/if inYardHall and tradeHallRefresh then tradeHallRefresh\(\) else render\(\) end/,
     '조선소 중앙 선박 원화 즉시 갱신');
@@ -3517,7 +3520,7 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
   assert.match(source,/if bookCard then bookCard\.id else "search:" \.\. shipName/,'해당 선박 기록이 없으면 선박명 검색');
   assert.match(source,/string\.sub\(target, 1, 7\) == "search:"/,'서재 검색과 정확한 백과 장 분기');
   assert.match(source,/H\.codexSearchTerm = string\.sub\(target, 8\)/,'기존 지식 검색 기능 재사용');
-  assert.match(source,/if wide and gallery and height - bodyTop >= 210 then/,'낮은 가로 화면의 원화 잘림 방지');
+  assert.match(source,/local showArt = gallery and bodyH >= \(if wide then 300 else 340\)/,'낮은 화면은 원화보다 본문 우선');
   // [선택 대상과 원화] 실제 항로/국가/항구를 눌러도 기존 출항·외교·저장 흐름은 분리한다.
   assert.match(source,/H\.gallerySelection = nil -- \[시설 변경\]/,'시설 변경 시 이전 선택 정리');
   assert.match(source,/H\.gallerySearchTerm or/,'백과 링크에 선택 대상 검색어 전달');
