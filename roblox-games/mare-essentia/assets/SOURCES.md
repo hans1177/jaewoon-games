@@ -2274,3 +2274,5 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `terrain/` | veg_wildflower_purple.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
 | `terrain/` | veg_wildflower_yellow.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
 | `terrain/` | veg_woodland_understory.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `town/` | greenhouse-source.glb | Frakassets (Pixor) · CC0-1.0 | https://pixor.art/library/files/greenhouse/pixor-library-greenhouse.glb |
+| `town/` | clock-tower-source.glb | Frakassets (Pixor) · CC0-1.0 | https://pixor.art/library/files/clock-tower/pixor-library-clock-tower.glb |
