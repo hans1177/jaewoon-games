@@ -64,9 +64,29 @@
       "sha256": "201acdebca8bcc3dc2ff32a3e07b7738d45993776306b495a887e22dcb34a2db",
       "gitBlobSha1": "a885ae025ef2c786a3eaf99f75cf435e1fcf6d8e",
       "registeredAssetId": "120602074971507"
+    },
+    {
+      "name": "observatory-dome-source.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/observatory-dome-source.glb",
+      "originalUrl": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/LICENSE",
+      "author": "Tim Steer / The Base Mesh; glTF conversion M3-org",
+      "license": "CC0-1.0",
+      "sha256": "549f4d814e9de41896583bd62496a138845ed58dc4c31aa6f8b4d5c1a99792ec",
+      "gitBlobSha1": "a4be7364e5074f13b779950e5e854531a6650091",
+      "registeredAssetId": "95801711528954",
+      "translation": [
+        0,
+        7.3,
+        8
+      ],
+      "scale": [
+        8.8,
+        8.8,
+        8.8
+      ]
     }
   ],
-  "modification": "Four two-storey university wings with quadrangle, open gate and eight original two-part chimney stacks. Original materials retained. Observatory dome and final material/visual/collision review pending.",
+  "modification": "Four two-storey university wings, quadrangle, open gate, eight two-part chimneys; registered original observatory dome on north central roof, existing mesh/material buffers preserved. Roof interface, appearance, historical PBR, collision and native visual review remain pending.",
   "placements": [
     {
       "source": "wall-window-shutters",
@@ -3189,11 +3209,11 @@
       ]
     }
   ],
-  "sha256": "67802c7a444d8c25f7b93834958f4a3239acacf0c844b24eedd4556cd695f8c2",
-  "bytes": 180972,
-  "triangles": 36944,
-  "sourceRevision": "5037bfc2b8feadd0ad493e67aae0006c6ab0c8e9",
+  "sha256": "8f498b65be21e3005204e2cc27d9d71664605e840643d0cd0b4f49f6ca5a3c1e",
+  "bytes": 188444,
+  "triangles": 37184,
+  "sourceRevision": "4e04d184534fc59aa475ecdfd4f2d4cbdad7aad7",
   "productionVerified": false,
-  "registration": "HOLD_INCOMPLETE_OBSERVATORY_DOME_UNREGISTERED",
-  "validation": "SOURCE_SHA256_AND_GLB_STRUCTURE_VERIFIED"
+  "registration": "HOLD_OBSERVATORY_ROOF_INTERFACE_AND_VISUAL_QA",
+  "validation": "ORIGINAL_SHA256_GIT_BLOB_AND_RIGHTS_SCENE_TREE_BUFFER_RANGES_VERIFIED"
 }
