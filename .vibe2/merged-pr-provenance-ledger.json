@@ -338411,11 +338411,136 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0aedc9b3a1eb3d0fd908834c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14933",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "38b6f4a4f80f46849389cabc000226e266fa9f00",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14933,
+        "baseBranch": "main",
+        "headBranch": "mare-london-arsenal-c161ddc",
+        "baseSha": "38b6f4a4f80f46849389cabc000226e266fa9f00",
+        "headSha": "5214793b9fdd269b436daee890082f09f748cf7e",
+        "mergeCommitSha": "4b6025041971c199cf31967abe207314cd08a317",
+        "mergedAt": "2026-11-24T03:26:41Z",
+        "authorLogin": "hans1177",
+        "titleHash": "24632fe072fe0f12cf9ad665f1ddf1cddcb30d5e37a6ba35a200fd6008fe0887",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-london-arsenal-c161ddc",
+        "candidateSha": "5214793b9fdd269b436daee890082f09f748cf7e"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 1941,
+        "deletedLineCount": 5,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_bald_eagle.glb",
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_bald_eagle.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_seagull.glb",
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_seagull.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_arsenal.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_arsenal.glb.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_bald_eagle.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Animals/discovery_seagull.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_arsenal.glb.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14933",
+        "merge-commit:4b6025041971c199cf31967abe207314cd08a317",
+        "base-main:38b6f4a4f80f46849389cabc000226e266fa9f00"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2707
+    "total": 2708
   }
 }
