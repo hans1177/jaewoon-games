@@ -66,13 +66,21 @@
       "registeredAssetId": "92124326683823"
     }
   ],
-  "modification": "London tin streaming workshop candidate: original timber house, two sluice boxes composed from original planks, raised sideboards and riffles, four support frames, two receiving crates, eight original silver ingots adapted to tin and three wash buckets. No water simulation or final historical finish claimed. Original meshes, UVs and node transforms preserved. Native visual, collision, slope and water interface review pending.",
-  "sha256": "c6215d3b2cfd906e01f33eb764536709cb4d1481229bb264cbc557fb6244ef04",
-  "bytes": 535852,
-  "triangles": 8170,
-  "sceneTriangles": 8170,
-  "sourceRevision": "8eb79f8fdc5f21a4ea88a2358b5d1adb2796ad72",
+  "modification": "London tin streaming workshop candidate: original timber house, two sluice boxes composed from original planks, raised sideboards and riffles, four support frames, two receiving crates, eight original silver ingots adapted to tin and three wash buckets. No water simulation or final historical finish claimed. Original meshes, UVs and node transforms preserved. Native visual, collision, slope and water interface review pending. Two sluice assemblies inclined 8 percent toward the existing receiving boxes at negative Z; four support heights adjusted, two shallow water surface meshes derived from the original registered plank geometry with translucent material. Original BIN, indices, UV and normals retained. Static water only; appearance, fit and collision still need native QA.",
+  "sha256": "d61fd44fad46e9ea079a72e89902b0b62426f439bada6ddfaa1a130bbc585620",
+  "bytes": 537924,
+  "triangles": 8226,
+  "sceneTriangles": 8226,
+  "sourceRevision": "05eb647e22f05e2c48dc927bb652e55d44a171a1",
   "productionVerified": false,
-  "registration": "HOLD_SLUICE_WATER_INTERFACE_AND_NATIVE_VISUAL_QA",
-  "validation": "SOURCE_GIT_BLOB_SHA256_RIGHTS_AND_GLB_SCENE_BUFFER_STRUCTURE_VERIFIED"
+  "registration": "HOLD_NATIVE_VISUAL_AND_COLLISION_QA",
+  "validation": "SOURCE_SHA256_GIT_BLOB_REGISTERED_RIGHTS_GLB_SCENE_TRIANGLES_AND_SLUICE_SLOPE_VERIFIED",
+  "previousAssemblySha256": "c6215d3b2cfd906e01f33eb764536709cb4d1481229bb264cbc557fb6244ef04",
+  "sluiceGeometry": {
+    "slope": 0.08,
+    "receivingEnd": "negative Z",
+    "waterSurfaces": 2,
+    "sourceBinSha256": "943d39a258c76ef755c981363b0489d820e905920dd458fe9e65d733e2e52673",
+    "nativeWaterSimulation": false
+  }
 }
