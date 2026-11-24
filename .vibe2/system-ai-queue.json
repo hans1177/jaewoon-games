@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
+  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -248465,12 +248465,11 @@
     },
     {
       "id": "marketing-rpg-adventure-pre-release-v1",
-      "status": "failed",
-      "priority": "critical",
+      "status": "queued",
+      "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
       "gameId": "rpg-adventure",
-      "jointDecisionRequired": true,
       "goal": "Create the current non-financial growth/marketing execution package for rpg-adventure (rpg-adventure). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
       "responsibleFiles": [
         "company-learning/marketing/rpg-adventure/latest.json"
@@ -248490,30 +248489,14 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/rpg-adventure/latest.json --game-id=rpg-adventure"
       ],
       "dependencies": [],
-      "relatedTaskIds": [
-        "marketing-rpg-adventure-pre-release-v1"
-      ],
-      "blockedTaskIds": [],
       "retries": 4,
-      "recurrenceCount": 1,
-      "failureStage": "system-ai-implementation-failed",
-      "failureSignature": "system-ai-implementation-failed",
-      "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
-      "handoffCount": 6,
-      "previousReservationId": "system-ai:45234892895:1",
-      "blastRadius": "single-task",
-      "knownGoodRevision": null,
-      "repairRisk": 1,
-      "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-11-23T16:00:20.299Z",
-      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
       "reservationId": null,
       "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "lastOutcome": null,
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -248948,22 +248931,13 @@
         "system-ai-applied-answer-sha256:2c765aa194b735f2786cbfd356ad22b1aaf766ddf3aa898c8850e9890af242bd",
         "repair-strategy-fingerprint:91b57e8b79ca203c600349e6edb0398cbf1f27da2e51f5a5c1364d42e49034ef",
         "failed-strategy-fingerprint:91b57e8b79ca203c600349e6edb0398cbf1f27da2e51f5a5c1364d42e49034ef",
-        "model-output-sha256:734b697eeb3e6d53f0c93cd53b8b6fe755f24031d57d3aa1dbb795935f7bb78a"
+        "model-output-sha256:734b697eeb3e6d53f0c93cd53b8b6fe755f24031d57d3aa1dbb795935f7bb78a",
+        "marketing-cycle-reopened"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 2145,
-      "impactComponents": {
-        "severity": 4,
-        "blockedTaskCount": 46,
-        "recurrenceCount": 45,
-        "dependencyCentrality": 1,
-        "criticalPathDepth": 0,
-        "transitiveBlockedTaskCount": 0,
-        "ageHours": 32.78,
-        "repairRisk": 1
-      },
+      "jointDecisionRequired": true,
       "createdAt": "2026-11-22T15:26:05.928Z",
-      "updatedAt": "2026-11-24T00:22:47.694Z"
+      "updatedAt": "2026-11-24T01:01:12.457Z"
     },
     {
       "id": "recovery-recovery-a04337cc3eb4766b9b8d",
@@ -259172,5 +259146,6 @@
       "createdAt": "2026-11-24T00:05:53.875Z",
       "updatedAt": "2026-11-24T00:05:53.875Z"
     }
-  ]
+  ],
+  "updatedAt": "2026-11-24T01:01:12.457Z"
 }
