@@ -5546,7 +5546,18 @@ function H.questCinematic(parent, ev, overlay)
 	end)
 	local camTween = TS:Create(alpha, TweenInfo.new(duration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Value = 1 })
 	camTween:Play()
+	-- 장면 동안 다른 화면(메뉴·HUD)을 숨겨 3D 세계만 보이게 한다.
+	local hidden = {}
+	local myGui = overlay:FindFirstAncestorOfClass("ScreenGui")
+	for _, g in player:WaitForChild("PlayerGui"):GetChildren() do
+		if g:IsA("ScreenGui") and g ~= myGui and g.Enabled then
+			g.Enabled = false
+			table.insert(hidden, g)
+		end
+	end
 	local function restore()
+		for _, g in hidden do if g.Parent then g.Enabled = true end end
+		table.clear(hidden)
 		if not bound then return end
 		bound = false
 		pcall(function() game:GetService("RunService"):UnbindFromRenderStep("QuestLiveSceneCamera") end)
