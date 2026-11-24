@@ -2300,3 +2300,6 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `terrain/` | veg_river_willow_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
 | `terrain/` | veg_river_willow_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
 | `terrain/` | veg_water_lily.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `town/` | london_bld_botanic.glb | Kenney; Frakassets (Pixor) · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `town/` | london_bld_exchange.glb | Kenney; Frakassets (Pixor) · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_garden.glb | Kenney; Quaternius; Frakassets (Pixor) · CC0-1.0 | https://kenney.nl/assets/nature-kit |
