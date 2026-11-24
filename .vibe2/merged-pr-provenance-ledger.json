@@ -340957,11 +340957,149 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_d24ca7a8d39dc5e6512d93fd",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14977",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "1b28d5040789c8ffd3e07f2c805ca0eea15570a5",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14977,
+        "baseBranch": "main",
+        "headBranch": "mare-rat-butterfly-source-20261124",
+        "baseSha": "1b28d5040789c8ffd3e07f2c805ca0eea15570a5",
+        "headSha": "70c648b730427781f6a6839d8441d693aff0fe87",
+        "mergeCommitSha": "bf612adeeff38cf18352a3b0d08cf9f691479d07",
+        "mergedAt": "2026-11-24T05:47:17Z",
+        "authorLogin": "hans1177",
+        "titleHash": "277454c2e375878f9911cdbe1251a4f6c6eb4ae55355b9d2b7a464556dfae8a2",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-rat-butterfly-source-20261124",
+        "candidateSha": "70c648b730427781f6a6839d8441d693aff0fe87"
+      },
+      "changeStats": {
+        "changedFileCount": 16,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 272,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/cdmir-butterfly.zip",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/cdmir-butterfly.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/croc2-source.zip",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/croc2-source.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/duion2-wolf.zip",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/duion2-wolf.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/lemur-mirror.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/lemur-mirror.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-cobra.zip",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-cobra.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/overaction-armadillo.zip",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/overaction-armadillo.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/overaction-rat.zip",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/overaction-rat.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-eagle.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-eagle.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/cdmir-butterfly.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/croc2-source.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/duion2-wolf.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/lemur-mirror.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-cobra.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/overaction-armadillo.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/overaction-rat.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-eagle.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14977",
+        "merge-commit:bf612adeeff38cf18352a3b0d08cf9f691479d07",
+        "base-main:1b28d5040789c8ffd3e07f2c805ca0eea15570a5"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2725
+    "total": 2726
   }
 }
