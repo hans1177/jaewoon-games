@@ -718,18 +718,33 @@ function FieldScene.start(opts)
 			or string.find(questName, "빙설", 1, true) then "glacier"
 		elseif string.find(questName, "늪", 1, true) or string.find(questName, "습지", 1, true)
 			or string.find(questName, "맹그로브", 1, true) then "swamp"
-		elseif string.find(questName, "정글", 1, true) or string.find(questName, "밀림", 1, true) then "jungle"
-		elseif string.find(questName, "광산", 1, true) or string.find(questName, "탄광", 1, true) or string.find(questName, "채석", 1, true) then "mine"
+		elseif string.find(questName, "정글", 1, true) or string.find(questName, "밀림", 1, true)
+			or string.find(questName, "우림", 1, true) then "jungle"
+		elseif string.find(questName, "기록", 1, true) or string.find(questName, "보관소", 1, true)
+			or string.find(questName, "도서관", 1, true) or string.find(questName, "천문대", 1, true)
+			or string.find(questName, "진열실", 1, true) or string.find(questName, "약방", 1, true)
+			or string.find(questName, "학회", 1, true) or string.find(questName, "관측", 1, true)
+			or string.find(questName, "대학", 1, true) or string.find(questName, "수도원", 1, true)
+			or string.find(questName, "실험실", 1, true) or string.find(questName, "자료실", 1, true)
+			or string.find(questName, "학자와의 대화", 1, true) or string.find(questName, "병원", 1, true)
+			or string.find(questName, "식물원", 1, true) then "archive"
+		elseif string.find(questName, "광산", 1, true) or string.find(questName, "탄광", 1, true) or string.find(questName, "채석", 1, true) or string.find(questName, "폐광", 1, true) then "mine"
 		elseif string.find(questName, "폭포", 1, true) or string.find(questName, "계곡", 1, true)
 			or string.find(questName, "절벽", 1, true) or string.find(questName, "고지", 1, true)
-			or string.find(questName, "산맥", 1, true) then "highland"
+			or string.find(questName, "산맥", 1, true) or string.find(questName, "봉우리", 1, true)
+			or string.find(questName, "고개", 1, true) or string.find(questName, "바위산", 1, true)
+			or string.find(questName, "후지 산", 1, true) then "highland"
 		elseif string.find(questName, "유적", 1, true) or string.find(questName, "신전", 1, true)
 			or string.find(questName, "열석", 1, true) or string.find(questName, "봉분", 1, true)
-			or string.find(questName, "석상", 1, true) then "ruins"
+			or string.find(questName, "석상", 1, true) or string.find(questName, "발굴지", 1, true)
+			or string.find(questName, "폐허", 1, true) or string.find(questName, "피라미드", 1, true)
+			or string.find(questName, "사원", 1, true) then "ruins"
 		elseif string.find(questName, "성채", 1, true) or string.find(questName, "요새", 1, true)
-			or string.find(questName, "성벽", 1, true) then "fort"
+			or string.find(questName, "성벽", 1, true) or string.find(questName, "방벽", 1, true)
+			or string.find(questName, "성 해자", 1, true) then "fort"
 		elseif string.find(questName, "농장", 1, true) or string.find(questName, "과수원", 1, true)
-			or string.find(questName, "들판", 1, true) then "farm"
+			or string.find(questName, "감자밭", 1, true) or string.find(questName, "아마 밭", 1, true)
+			or string.find(questName, "올리브 밭", 1, true) then "farm"
 		elseif string.find(questName, "호수", 1, true) or string.find(questName, "강", 1, true)
 			or string.find(questName, "습지", 1, true) then "lake"
 		elseif string.find(questName, "사막", 1, true) or string.find(questName, "모래", 1, true)
@@ -738,7 +753,11 @@ function FieldScene.start(opts)
 			or string.find(questName, "숲", 1, true) then "forest"
 		elseif string.find(questName, "해변", 1, true) or string.find(questName, "난파", 1, true)
 			or string.find(questName, "항만", 1, true) or string.find(questName, "포구", 1, true)
-			or string.find(questName, "해적 소굴", 1, true) then "coast"
+			or string.find(questName, "해적 소굴", 1, true) or string.find(questName, "해안", 1, true)
+			or string.find(questName, "해협", 1, true) or string.find(questName, "갯벌", 1, true)
+			or string.find(questName, "석호", 1, true) or string.find(questName, "등대", 1, true) then "coast"
+		elseif string.find(questName, "평원", 1, true) or string.find(questName, "들판", 1, true)
+			or string.find(questName, "초원", 1, true) then "plains"
 		elseif biome.kind == "forest" then "forest"
 		elseif biome.kind == "coast" then "coast"
 		elseif biome.kind == "mine" then "mine"
@@ -746,6 +765,13 @@ function FieldScene.start(opts)
 		elseif biome.encounter == "ruins" then "ruins"
 		elseif biome.encounter == "highland" then "highland"
 		else "plains"
+	-- [지점 ID] 기존 자동 학문 탐험도 기관 정원으로 연결한다. 적·보상·위험도용 바이옴은 바꾸지 않는다.
+	do
+		local discipline = string.match(opts.siteId or "", "^auto_([%a]+)_")
+		if discipline and table.find({ "chemistry", "physics", "philosophy", "medicine", "astronomy", "navigation", "language", "weather" }, discipline) then
+			questTerrain = "archive"
+		end
+	end
 	-- [특수 기후의 실제 바닥 재질] 색 보정만이 아니라 눈·진흙·화산암 지형을 구분한다.
 	if questTerrain == "glacier" then
 		winterScene = true
@@ -792,6 +818,12 @@ function FieldScene.start(opts)
 	elseif questTerrain == "mine" then
 		biome.mat = Enum.Material.Slate
 		biome.ground = biome.ground:Lerp(Color3.fromRGB(107, 103, 98), 0.7)
+	elseif questTerrain == "archive" then
+		-- 기관의 마당과 정원: 눈 계절은 유지하고 기존 지역 흙빛을 낮은 채도의 석재와 섞는다.
+		if not winterScene then
+			biome.mat = Enum.Material.Ground
+			biome.ground = biome.ground:Lerp(Color3.fromRGB(154, 139, 111), 0.38)
+		end
 	elseif questTerrain == "ruins" or questTerrain == "fort" then
 		-- [고대 유적·요새] 기존 건물/길목은 그대로 두고 주변 흙과 석질을 드러낸다.
 		if not winterScene then
@@ -810,6 +842,10 @@ function FieldScene.start(opts)
 			elseif portNature == "mangrove" or portNature == "jungle_coast" then Color3.fromRGB(69, 128, 75)
 			else nil
 		if portColor then biome.ground = biome.ground:Lerp(portColor, 0.17) end
+	end
+	-- 열린 지역의 먼 항구는 맑을 때 실제로 보이도록 한다. 광산·습지·빙설의 짙은 기후는 유지.
+	if questTerrain == "archive" or questTerrain == "plains" or questTerrain == "coast" or questTerrain == "farm" then
+		biome.fogEnd = math.max(biome.fogEnd, 820)
 	end
 	folder:SetAttribute("FieldQuestTerrainTheme", questTerrain)
 	folder:SetAttribute("FieldSeasonLabel", seasonName)
@@ -837,6 +873,22 @@ function FieldScene.start(opts)
 			haze = oldAtmosphere.Haze, glare = oldAtmosphere.Glare,
 		} else nil
 		lightSave.FieldAtmosphere = fieldAtmosphere
+		-- 기존 항구 구름을 재사용하고 퇴장 시 정확히 복원한다. 새 날씨 갱신 루프 없음.
+		local oldClouds = workspace.Terrain:FindFirstChildOfClass("Clouds")
+		local clouds = oldClouds or Instance.new("Clouds")
+		local cloudLook = if oldClouds then { cover = oldClouds.Cover, density = oldClouds.Density, color = oldClouds.Color } else nil
+		lightSave.FieldClouds = clouds
+		clouds.Name = if oldClouds then oldClouds.Name else "MareFieldClouds"
+		clouds.Cover = if arid then 0.12 elseif tropical then 0.46 elseif northern then 0.42 else 0.25
+		clouds.Density = if arid then 0.20 else 0.42
+		clouds.Color = biome.fog:Lerp(Color3.fromRGB(240, 244, 248), 0.70)
+		if not oldClouds then clouds.Parent = workspace.Terrain end
+		folder.Destroying:Connect(function()
+			if not clouds.Parent then return end
+			if cloudLook then
+				clouds.Cover, clouds.Density, clouds.Color = cloudLook.cover, cloudLook.density, cloudLook.color
+			else clouds:Destroy() end
+		end)
 		fieldAtmosphere.Color = biome.fog:Lerp(Color3.fromRGB(215, 229, 239), 0.19)
 		fieldAtmosphere.Decay = biome.fog:Lerp(
 			if arid then Color3.fromRGB(184, 159, 132) else Color3.fromRGB(103, 143, 179), 0.43)
@@ -871,7 +923,7 @@ function FieldScene.start(opts)
 			grade:Destroy()
 		end)
 		pcall(function()
-			L.ShadowSoftness = 0.31
+			L.ShadowSoftness = if arid then 0.21 elseif tropical or northern then 0.39 else 0.30
 			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = biome.fog, math.min(120, biome.fogEnd * 0.35), biome.fogEnd, biome.clock
 			L.Brightness = 2.1
 			L.Ambient = biome.fog:Lerp(Color3.fromRGB(132, 139, 153), 0.65)
@@ -915,6 +967,13 @@ function FieldScene.start(opts)
 		elseif mat ~= Enum.Material.Sand and mat ~= Enum.Material.Slate and mat ~= Enum.Material.Mud
 			and mat ~= Enum.Material.Snow and mat ~= Enum.Material.Ground then mat = Enum.Material.Grass end
 		local hills = {}
+		-- [실제 수평선] 해안 외곽만 네이티브 Terrain 물을 사용. 기존 이동 경계 안은 변경하지 않는다.
+		local waterCF, waterSize
+		if questTerrain == "coast" then
+			waterCF = CFrame.new(ORIGIN + Vector3.new(half + 96, -7, -half * 0.12))
+			waterSize = Vector3.new(176, 12, SIZE + 100)
+			terrain:FillBlock(waterCF, waterSize, Enum.Material.Water)
+		end
 		local hillRng = Random.new((opts.seed or 7) * 13 + 5)
 		local hillCount = if visualMobile then 16 else 28
 		for i = 0, hillCount - 1 do
@@ -922,19 +981,22 @@ function FieldScene.start(opts)
 			local radius = if questTerrain == "highland" or questTerrain == "volcanic" then hillRng:NextNumber(40, 60)
 				elseif questTerrain == "mine" or questTerrain == "glacier" then hillRng:NextNumber(32, 48)
 				elseif questTerrain == "forest" or questTerrain == "jungle" then hillRng:NextNumber(27, 41)
-				elseif questTerrain == "farm" or questTerrain == "swamp" then hillRng:NextNumber(13, 24)
+				elseif questTerrain == "farm" or questTerrain == "swamp" or questTerrain == "archive" then hillRng:NextNumber(13, 24)
 				elseif questTerrain == "coast" or questTerrain == "lake" then hillRng:NextNumber(15, 27)
 				else hillRng:NextNumber(20, 35)
 			local dist = half + radius + hillRng:NextNumber(8, 23)
 			local rise = if questTerrain == "highland" or questTerrain == "volcanic" then 0.27
 				elseif questTerrain == "mine" or questTerrain == "glacier" then 0.32
-				elseif questTerrain == "farm" or questTerrain == "swamp" then 0.64 else 0.48
+				elseif questTerrain == "farm" or questTerrain == "swamp" or questTerrain == "archive" then 0.72 else 0.48
 			local center = ORIGIN + Vector3.new(math.cos(ang) * dist, -radius * rise, math.sin(ang) * dist)
-			terrain:FillBall(center, radius, mat)
-			table.insert(hills, { center, radius })
+			-- 해안의 바다 쪽 능선은 열어 수평선이 보이도록 한다. 기존 이동 경계는 유지.
+			if questTerrain ~= "coast" or math.cos(ang) < 0.55 then
+				terrain:FillBall(center, radius, mat)
+				table.insert(hills, { center, radius })
+			end
 		end
 		-- [전장 내부] 양쪽 숲·협곡에 교차 구릉. 중앙 폭과 입구는 항상 평탄하게 남긴다.
-		local insideCount = if questTerrain == "farm" or questTerrain == "ruins" then (if visualMobile then 4 else 6)
+		local insideCount = if questTerrain == "farm" or questTerrain == "ruins" or questTerrain == "archive" then (if visualMobile then 4 else 6)
 			elseif visualMobile then 7 else 11
 		for i = 1, insideCount do
 			local side = if i % 2 == 0 then -1 else 1
@@ -1001,15 +1063,13 @@ function FieldScene.start(opts)
 		-- [전투장 밖 원경] 기존 외곽 능선은 유지하고 400스터드 이상 먼 지평선에
 		-- 항구 문화권 실물의 접지용 자연 지형만 둔다. 광산은 닫힌 경관을 유지한다.
 		if questTerrain ~= "mine" then
-			for index = 1, (if visualMobile then 1 else 2) do
-				local x = if visualMobile then 0 else (if index == 1 then -1 else 1) * math.max(70, half * 0.44)
-				local r = if visualMobile then 58 else 70
-				local center = ORIGIN + Vector3.new(x, -r * 0.72, -math.max(400, half + 130))
-				terrain:FillBall(center, r, mat)
-				table.insert(hills, { center, r })
-			end
+			local r = if visualMobile then 94 else 112
+			local center = ORIGIN + Vector3.new(0, -r * 0.86, -math.max(400, half + 150))
+			terrain:FillBall(center, r, mat)
+			table.insert(hills, { center, r })
 		end
 		folder.Destroying:Connect(function()
+			if waterCF and waterSize then terrain:FillBlock(waterCF, waterSize, Enum.Material.Air) end
 			for _, h in hills do
 				terrain:FillBall(h[1], h[2] + 2, Enum.Material.Air)
 			end
@@ -1110,6 +1170,11 @@ function FieldScene.start(opts)
 		if math.abs(pos.Y - ORIGIN.Y) < 0.5 then
 			local hit = workspace:Raycast(Vector3.new(pos.X, ORIGIN.Y + 100, pos.Z), Vector3.new(0, -140, 0), groundRay)
 			if hit then pos = Vector3.new(pos.X, hit.Position.Y, pos.Z) end
+		end
+		-- [실거리 분류] 진입 위치 기준 120/400 스터드. 임의 인덱스로 먼 모델을 표시하지 않는다.
+		if entry.band or entry.landmark or entry.depth then
+			local distance = (Vector3.new(pos.X, spawn.Y, pos.Z) - spawn).Magnitude
+			entry.band = if entry.horizon or distance >= 400 then "far" elseif distance >= 120 then "mid" else "near"
 		end
 		local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6], entry.tint, entry.band)
 		if not m then return nil end
@@ -1313,12 +1378,12 @@ function FieldScene.start(opts)
 		-- 스폰과 중앙 전투 통로는 비우고 시야 양옆에 다층 숲을 만든다.
 		if index % 3 == 1 then
 			local lane = math.floor((index - 1) / 3) % 9
-			pos = ORIGIN + Vector3.new((if index % 2 == 0 then -1 else 1) * half * visualLayoutRng:NextNumber(0.19, 0.31), 0,
-				half * (0.78 - lane * 0.095) + visualLayoutRng:NextNumber(-8, 8))
+			pos = ORIGIN + Vector3.new((if index % 2 == 0 then -1 else 1) * (half * visualLayoutRng:NextNumber(0.19, 0.31) + 18), 0,
+				half * (0.72 - lane * 0.105) + visualLayoutRng:NextNumber(-8, 8))
 		elseif index % 3 == 2 then
 			local lane = math.floor((index - 2) / 3) % 7
-			pos = ORIGIN + Vector3.new((if index % 2 == 0 then -1 else 1) * half * visualLayoutRng:NextNumber(0.38, 0.54), 0,
-				half * (0.38 - lane * 0.14) + visualLayoutRng:NextNumber(-10, 10))
+			pos = ORIGIN + Vector3.new((if index % 2 == 0 then -1 else 1) * half * visualLayoutRng:NextNumber(0.48, 0.66), 0,
+				half * (0.26 - lane * 0.16) + visualLayoutRng:NextNumber(-10, 10))
 		end
 		local h = rng:NextNumber(9, 15)
 		local name = treeNames[rng:NextInteger(1, #treeNames)]
@@ -1395,11 +1460,11 @@ function FieldScene.start(opts)
 		-- 근경도 전투 중심축에서 떨어진 바깥쪽에 두어 원래 충돌·전투 경로를 보존한다.
 		if index % 4 == 1 then
 			local lane = math.floor((index - 1) / 4) % 7
-			pos = ORIGIN + Vector3.new(side * half * visualLayoutRng:NextNumber(0.23, 0.33), 0,
-				half * (0.74 - lane * 0.12) + visualLayoutRng:NextNumber(-6, 6))
+			pos = ORIGIN + Vector3.new(side * (half * visualLayoutRng:NextNumber(0.23, 0.33) + 10), 0,
+				half * (0.66 - lane * 0.12) + visualLayoutRng:NextNumber(-6, 6))
 		elseif index % 4 == 2 then
-			pos = ORIGIN + Vector3.new(side * half * visualLayoutRng:NextNumber(0.38, 0.50), 0,
-				half * visualLayoutRng:NextNumber(-0.44, 0.24))
+			pos = ORIGIN + Vector3.new(side * half * visualLayoutRng:NextNumber(0.48, 0.62), 0,
+				half * visualLayoutRng:NextNumber(-0.60, 0.14))
 		end
 		local rock = rockNames[rng:NextInteger(1, #rockNames)]
 		local lowPolyVariant = false
@@ -1508,11 +1573,18 @@ function FieldScene.start(opts)
 			{"Terrain","debris",16,0.68,-0.27,false,0}, {"Terrain","cliff-rock",26,-0.70,-0.18,true,20},
 			{"Terrain","campfire-stones",7,0.54,-0.56,false,0}, {"Terrain","Rock_2",11,-0.61,-0.61,true,0},
 		},
+		archive = {
+			{"Terrain","platform-stone",24,-0.57,-0.53,false,0}, {"Terrain","ground-pathstraight",18,-0.55,-0.30,false,0},
+			{"Terrain","village-fence",14,-0.73,-0.63,false,90}, {"Terrain","village-fence",14,0.73,-0.63,false,90},
+			{"Town","cart",7,-0.48,-0.32,false,15}, {"Town","bench_A",5,0.48,-0.26,false,180},
+			{"Terrain","forest-bush-detailed",7,0.58,-0.44,false,0}, {"Terrain","forest-flower-purple",4,-0.48,-0.13,false,0},
+			{"Terrain","ground-pathcorner",10,0.62,-0.36,false,90},
+		},
 		plains = {
-			{"Terrain","ground-pathstraight",24,-0.45,-0.60,false,0}, {"Terrain","mystic-stone-arch",19,0.69,-0.80,true,0},
-			{"Terrain","altar-stone",11,0.69,-0.53,true,0}, {"Terrain","campfire-stones",5,-0.62,-0.76,false,0},
+			{"Terrain","ground-pathstraight",24,-0.45,-0.60,false,0}, {"Terrain","village-fence",17,0.72,-0.70,false,90},
+			{"Terrain","forest-bush-detailed",9,0.69,-0.53,false,0}, {"Terrain","campfire-stones",5,-0.62,-0.64,false,0},
 			{"Terrain","coast-grass-patch",7,-0.64,-0.34,false,0}, {"Terrain","forest-flower-yellow",5,0.57,-0.25,false,0},
-			{"Terrain","ruins-pillar-decorated",13,0.78,-0.42,true,0},
+			{"Terrain","rock-largea",13,0.78,-0.42,true,0},
 		},
 	}
 
@@ -1521,13 +1593,43 @@ function FieldScene.start(opts)
 		coast = { 7, 8, 9 }, forest = { 4, 8, 9 }, highland = { 8, 9, 10 },
 		mine = { 7, 9, 10 }, ruins = { 5, 7, 9 }, fort = { 7, 8 },
 		desert = { 5, 6, 9 }, farm = { 2, 3, 7 }, lake = { 3, 7, 8 },
-		plains = { 4, 6, 5 }, jungle = { 5, 8, 9 }, swamp = { 3, 6, 8 },
+		plains = { 4, 6, 5 }, archive = { 5, 6, 8 }, jungle = { 5, 8, 9 }, swamp = { 3, 6, 8 },
 		glacier = { 5, 6, 8 }, volcanic = { 5, 7, 8 },
 	}
 	local featureList = landforms[questTerrain] or landforms.plains
+	-- 그리스 신전·이집트 기둥·유럽 풍차를 모든 문화권의 유적/농경지에 반복하지 않는다.
+	-- 해당 문화권 전용 원본이 없는 자리는 승인된 자연물·무명의 발굴 흔적만 배치한다.
+	do
+		local port = opts.portId and Ports.Ports[opts.portId]
+		if questTerrain == "ruins" and region ~= "italy" and region ~= "med" then
+			local neutral = { [1] = "debris", [2] = "rock-talld", [3] = "rock-largec", [4] = "cliff-rock",
+				[5] = "ground-pathrocks", [6] = "rock-largea", [7] = "debris", [8] = "rock-largec",
+				[9] = "ground-pathrocks", [10] = "rock-talld" }
+			for index, asset in neutral do
+				local entry = featureList[index]
+				if entry then
+					entry[1], entry[2] = "Terrain", asset
+					entry[3] = math.min(entry[3], if index == 4 or index == 8 then 19 else 10)
+				end
+			end
+		elseif questTerrain == "desert" and (not port or port.country ~= "egypt") then
+			for index, asset in { [3] = "cliff-rock", [4] = "rock-talld", [5] = "rock-largea" } do
+				local entry = featureList[index]
+				entry[1], entry[2], entry[3] = "Terrain", asset, math.min(entry[3], 17)
+			end
+		elseif questTerrain == "farm" and (tropical or arid or region == "japan" or region == "korea" or region == "china") then
+			featureList[1][1], featureList[1][2], featureList[1][3] = "Terrain", "village-fence", 18
+		end
+	end
 	for index, entry in featureList do
 		entry.landmark = true
 		entry.survey = table.find(surveyIndices[questTerrain] or surveyIndices.plains, index) ~= nil
+		-- 지형의 대표 구조물은 중경 묶음에 두고 조사 대상은 접근 가능한 기존 전장 안쪽에 유지한다.
+		if not entry.survey then
+			local sign = if entry[4] < 0 then -1 else 1
+			entry[4] = sign * math.clamp(math.abs(entry[4]) + 0.06, 0.52, 0.90)
+			entry[5] = math.clamp(entry[5] - 0.08, -0.90, 0.15)
+		end
 		stageFeature(entry)
 	end
 	-- [전장 지형지물] 발헤임의 생물군계 구분·엘든 링의 먼 유적 윤곽·고스트 오브 쓰시마의 식생층 원리만 참고한다.
@@ -1543,6 +1645,13 @@ function FieldScene.start(opts)
 		{ "rock-largec", 16, 0.73, -0.78, 0 },
 		{ "ground-pathrocks", 10, -0.52, -0.39, -17 },
 		{ "cliff-blockslope-rock", 24, -0.92, -0.45, 23 }
+	} elseif questTerrain == "archive" then {
+		{ "platform-stone", 20, -0.76, -0.64, 0 },
+		{ "village-fence", 19, 0.77, -0.52, 90 },
+		{ "village-fence", 19, -0.79, -0.35, 90 },
+		{ "ground-pathcorner", 12, 0.62, -0.42, 90 },
+		{ "forest-bush-detailed", 8, -0.62, -0.30, 12 },
+		{ "forest-flower-yellow", 5, 0.58, -0.25, 0 },
 	} elseif questTerrain == "volcanic" then {
 		-- [화산 전장] 신규 절벽 측벽은 등록 시에만 기존 원경 암벽 대신 사용한다.
 		{ AssetIds["Terrain/cliff-blockslopewalls-rock"] and "cliff-blockslopewalls-rock" or "cliff-large-rock", 43, -0.84, -0.70, 14 },
@@ -1665,7 +1774,12 @@ function FieldScene.start(opts)
 	-- [가까운 시야층] 원신식 원근 구도의 원리만 참고한다. 전경의 낮은 수풀, 중경의
 	-- 강가 돌무더기, 원경의 절벽선을 서로 다른 거리에 배치한다. 중앙 전투 길을 가리지 않는다.
 	do
-		local nearBands = if tropical then {
+		local nearBands = if questTerrain == "archive" then {
+			{ "forest-flower-purple", 5, -0.48, 0.28, 0 },
+			{ "ground-pathcorner", 13, 0.54, 0.03, 90 },
+			{ "plant-bushdetailed", 8, -0.58, 0.05, 10 },
+			{ "platform-stone", 19, 0.72, -0.55, 0 },
+		} elseif tropical and (questTerrain == "coast" or questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "plains" or questTerrain == "lake") then {
 			-- [바이옴 전경] 해안/밀림의 실물 모래 해변/대나무 군집으로 시야층을 구분한다.
 			if questTerrain == "jungle" then { "east-bamboo-grove", 19, -0.73, 0.10, 11 }
 				else { "tree-palmbend", 24, -0.66, 0.18, 12 },
@@ -1742,8 +1856,9 @@ function FieldScene.start(opts)
 				local depthX = spec[3] * half * mirror
 				local depthZ = spec[4] * half
 				if index <= 2 then
-					depthX = (if depthX < 0 then -1 else 1) * half * (if index == 1 then 0.32 else 0.44)
-					depthZ = half * (if index == 1 then 0.48 else 0.27)
+					-- 해안 바위/산악 대형 모델도 중앙 길 안으로 들어오지 않게 한다.
+					depthX = (if depthX < 0 then -1 else 1) * half * (if index == 1 then 0.42 else 0.60)
+					depthZ = half * (if index == 1 then 0.52 else -0.05)
 				end
 				entry.position = ORIGIN + Vector3.new(depthX, 0, depthZ)
 				entry.depth = true
@@ -1804,19 +1919,55 @@ function FieldScene.start(opts)
 			entry.landmark = true
 			stageFeature(entry)
 		end
-		-- [지역 지평선] 근·중경의 기존 전투/조사 실물은 그대로 유지한다.
-		-- 이미 해당 문화권에 승인된 대표 실물만 한두 개 재사용하며 새 모델·대체 랜드마크를 만들지 않는다.
-		if questTerrain ~= "mine" then
-			folder:SetAttribute("FieldHorizonPlaced", 0)
-			for index = 1, math.min(#regionalFeatures, if visualMobile then 1 else 2) do
-				local feature = regionalFeatures[index]
-				local x = if visualMobile then 0 else (if index == 1 then -1 else 1) * math.max(70, half * 0.44)
-				local entry = { feature[1], feature[2], feature[3], nil, nil, false }
-				entry.position = ORIGIN + Vector3.new(x, 0, -math.max(400, half + 130))
-				entry.band = "far"
-				entry.horizon = true
-				stageFeature(entry)
+	end
+	-- [항구별 실제 원경] 마을의 181개 항구 경관 정본을 그대로 사용한다.
+	-- 전용 역사 원본이 등록되지 않았으면 원본으로 사칭하지 않는다. 기존 승인 경관만 표시.
+	if questTerrain ~= "mine" then
+		local signature = opts.portScenery
+		-- 모듈 직접 호출(Studio 등)도 동일한 마을 표만 참조한다. 게임 진입 경로의 전달값 우선.
+		if not signature and opts.portId then
+			local ok, portScene = pcall(function() return require(script.Parent:WaitForChild("PortScene")) end)
+			if ok and portScene.Signatures then signature = portScene.Signatures[opts.portId] end
+		end
+		local original = (opts.portId or "") .. "_landmark_full"
+		local horizonZ = -math.max(400, half + 150)
+		local groups, groupCount = {}, 0
+		folder:SetAttribute("FieldHorizonPlaced", 0)
+		folder:SetAttribute("FieldPortLandmarkOriginalMissing", not AssetIds["Town/" .. original])
+		if AssetIds["Town/" .. original] then
+			local entry = { "Town", original, 40, nil, nil, false }
+			entry.position = ORIGIN + Vector3.new(0, 0, horizonZ)
+			entry.band, entry.horizon = "far", true
+			stageFeature(entry)
+			folder:SetAttribute("FieldHorizonSource", "registered-port-original")
+		elseif type(signature) == "table" then
+			folder:SetAttribute("FieldHorizonSource", "existing-port-signature")
+			for _, e in signature do
+				-- 선박과 적재물은 언덕 위에 올리지 않는다. 원본의 탑/지붕 층은 같은 그룹으로 유지한다.
+				if not e.waterfront and e.kind ~= "Cargo" and not string.find(e.asset, "boat-", 1, true)
+					and not string.find(e.asset, "dock", 1, true) and AssetIds[e.kind .. "/" .. e.asset] then
+					local key = tostring(e.dx) .. ":" .. tostring(e.dz)
+					if groups[key] == nil and groupCount < (if visualMobile then 3 else 6) then
+						local x = e.dx * 1.15
+						local z = horizonZ + e.dz * 0.9
+						local groundHit = workspace:Raycast(ORIGIN + Vector3.new(x, 100, z), Vector3.new(0, -140, 0), groundRay)
+						if groundHit then
+							groups[key] = Vector3.new(ORIGIN.X + x, groundHit.Position.Y, ORIGIN.Z + z)
+							groupCount += 1
+						end
+					end
+					if groups[key] then
+						local entry = { e.kind, e.asset, e.size * 1.15, nil, nil, false }
+						entry.position = groups[key] + Vector3.new(0, e.y * 1.15, 0)
+						entry.band, entry.horizon, entry.tint = "far", true, e.tint
+						stageFeature(entry)
+					end
+				end
 			end
+			folder:SetAttribute("FieldHorizonPlannedGroups", groupCount)
+			if groupCount == 0 then folder:SetAttribute("FieldHorizonSource", "port-signature-no-land-model") end
+		else
+			folder:SetAttribute("FieldHorizonSource", "port-signature-unavailable")
 		end
 	end
 	folder:SetAttribute("FieldTerrainFeatureCount", built)
@@ -1826,20 +1977,18 @@ function FieldScene.start(opts)
 		-- [문화권 군집] 나무·기둥·천막·카누를 길 한가운데 흩뿌리지 않고 각 문화권의 외곽 마을/해안대로 묶는다.
 		-- [수량 고정 제한 해제] 문화권 소품은 바이옴 수량과 맵 면적에 비례해 확장한다.
 		for index = 1, math.max(1, math.floor(pr[3] * math.sqrt(AREA))) do
-			local side = if (groupIndex + index) % 2 == 0 then -1 else 1
-			local x = side * half * rng:NextNumber(0.54, 0.85)
-			local z = rng:NextNumber(-half * 0.78, half * 0.40)
-			-- 기존 RNG 호출을 유지하고 배경용 독립 시드로 첫 두 소품만 가까운 군집으로 이동한다.
-			if index == 1 then
-				x = side * half * visualLayoutRng:NextNumber(0.34, 0.45)
-				z = half * 0.51 + visualLayoutRng:NextNumber(-9, 9)
-			elseif index == 2 then
-				x = side * half * visualLayoutRng:NextNumber(0.45, 0.57)
-				z = half * 0.18 + visualLayoutRng:NextNumber(-11, 11)
-			end
+			local cluster = math.floor((index - 1) / 5)
+			local slot = (index - 1) % 5
+			local side = if (groupIndex + cluster) % 2 == 0 then -1 else 1
+			local jitterX = rng:NextNumber(0.54, 0.85)
+			local jitterZ = rng:NextNumber(-half * 0.78, half * 0.40)
+			local spacing = math.max(5, pr[4] * 0.55)
+			local x = side * math.clamp(half * (0.58 + (cluster % 2) * 0.13) + (slot % 2) * spacing + jitterX, half * 0.54, half * 0.9)
+			local z = math.clamp(half * (0.24 - ((cluster + groupIndex) % 4) * 0.30)
+				+ math.floor(slot / 2) * spacing + jitterZ * 0.035, -half * 0.86, half * 0.50)
 			local entry = { pr[1], pr[2], pr[4], nil, nil, pr[1] == "Terrain" and pr[2] == "cliff-rock" }
 			entry.position = ORIGIN + Vector3.new(x, 0, z)
-			entry.band = if index == 1 then "near" elseif index == 2 then "mid" else "far"
+			entry.band = "mid"
 			stageFeature(entry)
 		end
 	end
@@ -1848,6 +1997,7 @@ function FieldScene.start(opts)
 	-- [지역 원근·계절 디테일] 큰 랜드마크 앞에 잎·풀·자갈·화단 군집을 층으로 배치해 평면감을 줄인다.
 	-- 지역마다 실제 승인된 기존 Terrain 모델만 사용한다. 새 물체 합성이나 지형 장벽은 만들지 않는다.
 	local detailAssets = if questTerrain == "jungle" then { "forest-bush-detailed", "east-bamboo-grove", "tropical-palm-short" }
+		elseif questTerrain == "archive" then { "forest-flower-purple", "forest-flower-yellow", "plant-bushdetailed", "ground-pathrocks" }
 		elseif questTerrain == "swamp" then { "forest-bush-detailed", "river-stone-bank", "ground-riverbend" }
 		elseif questTerrain == "glacier" then { "north-pine-fall", "Rock_2", "river-stone-bank" }
 		elseif questTerrain == "volcanic" then { "debris", "Rock_2", "cliff-rock" }
@@ -1860,7 +2010,7 @@ function FieldScene.start(opts)
 		elseif questTerrain == "desert" then { "arid-cactus-short", "coast-grass-patch", "Grass_Small" }
 		elseif questTerrain == "forest" then { "forest-bush-detailed", "forest-flower-purple", "Grass_Small" }
 		else { "Grass_Small", "forest-flower-yellow", "river-stone-bank" }
-	if tropical and questTerrain ~= "swamp" and questTerrain ~= "volcanic" then detailAssets = { "forest-bush-detailed", "Grass_Small", "east-bamboo-grove" }
+	if tropical and (questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "plains") then detailAssets = { "forest-bush-detailed", "Grass_Small", "east-bamboo-grove" }
 	elseif winterScene then detailAssets = { "north-pine-fall", "river-stone-bank", "Rock_2" }
 	elseif season == "가을" and (questTerrain == "forest" or questTerrain == "plains") then
 		detailAssets = { "forest-bush-detailed", "forest-flower-yellow", "coast-grass-patch" }
@@ -1936,9 +2086,9 @@ function FieldScene.start(opts)
 		local band = math.floor((index - 1) / 4) % 3
 		local depthRow = math.floor((index - 1) / 12) % 5
 		local side = if index % 2 == 0 then -1 else 1
-		local lateral = if band == 0 then 0.16 elseif band == 1 then 0.25 else 0.34
+		local lateral = if band == 0 then 0.25 elseif band == 1 then 0.43 else 0.65
 		local px = side * half * (lateral + rng:NextNumber(0, 0.13))
-		local pz = half * (0.81 - band * 0.28 - depthRow * 0.10) + rng:NextNumber(-7, 7)
+		local pz = half * (0.78 - band * 0.43 - depthRow * 0.11) + rng:NextNumber(-7, 7)
 		local asset = detailAssets[((index - 1) % #detailAssets) + 1]
 		local entry = { "Terrain", asset, if asset == "north-pine-fall" then 8.5
 			elseif asset == "east-bamboo-grove" then 7 elseif asset == "log-stack" then 4.5
@@ -3134,6 +3284,14 @@ function FieldScene.start(opts)
 			lighting.Brightness = (0.52 + 1.58 * sun) * (if weather == "소나기" then 0.78 else 1)
 			lighting.FogEnd = math.max(105, biome.fogEnd * damp)
 			lighting.FogStart = math.min(120, lighting.FogEnd * 0.35)
+			if lightSave.FieldClouds and lightSave.FieldClouds.Parent then
+				local cover = if weather == "소나기" then 0.84 elseif weather == "비" or weather == "눈" then 0.72
+					elseif weather == "흐림" then 0.60 elseif weather == "옅은 안개" then 0.44
+					elseif arid then 0.10 elseif tropical then 0.32 elseif northern then 0.28 else 0.18
+				lightSave.FieldClouds.Cover = cover
+				lightSave.FieldClouds.Density = if weather == "소나기" then 0.78 elseif weather == "비" or weather == "눈" then 0.62 else 0.36
+				lightSave.FieldClouds.Color = biome.fog:Lerp(Color3.fromRGB(235, 241, 248), if sun < 0.3 then 0.35 else 0.76)
+			end
 			lighting.FogColor = biome.fog:Lerp(Color3.fromRGB(60, 78, 111), (1 - sun) * 0.55)
 			-- [기존 날씨 틱 통합] 새 갱신 루프 없이 새벽·밤·비·해무의 대기 밀도만 조정한다.
 			local depthAtmosphere = lightSave.FieldAtmosphere
@@ -3159,14 +3317,14 @@ function FieldScene.start(opts)
 				elseif sun < 0.20 then Color3.fromRGB(131, 145, 180)
 				elseif phase == "새벽" or phase == "황혼" then Color3.fromRGB(255, 182, 131)
 				else lightSave.ColorShiftTop
-			precip.Rate = if weather == "눈" then (if visualMobile then 17 else 31)
+			precip.Rate = if weather == "눈" then (if visualMobile then 15.5 else 31)
 				elseif weather == "비" or weather == "소나기" then (if visualMobile then 45 else 90) else 0
 			if weather == "소나기" then precip.Rate *= 1.45 end
 			-- 바람은 지역 특성과 기상에 따라 방향·강도가 달라지되 이동/전투 판정에는 영향이 없다.
 			local gust = math.sin(now * 0.15 + month) * 2.0
 			local windStrength = if weather == "소나기" then 2.2 elseif weather == "눈" then 1.7 else 1
 			drift.Acceleration = Vector3.new((5.5 + gust) * windStrength, if driftType == "낙엽" then -3.0 else 0.8, 1.9 * windStrength)
-			drift.Rate = (if visualMobile then 3 else 8) * (if weather == "소나기" then 0.45 else 1)
+			drift.Rate = (if visualMobile then 4 else 8) * (if weather == "소나기" then 0.45 else 1)
 				* (if driftType == "화산재" or driftType == "모래바람" then 1.5
 					elseif driftType == "수면 안개" and phase == "밤" then 1.35 else 1)
 			timeLabel.Text = string.format("%s %s %02d:%02d · %s", seasonName, phase, math.floor(clock), math.floor((clock % 1) * 60), weather)

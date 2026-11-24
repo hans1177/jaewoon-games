@@ -3109,6 +3109,8 @@ do
 	SIG.vancouver = cat(one("Town", "house", 24, -11, 0), one("Terrain", "tree-pinedefaulta", 18, 17, 10), one("Naval", "tower-watch", 26, -23, 12))
 end
 
+-- [지상전 공유] 실제 항구 경관 정본. 복제 테이블이나 신규 모델 없이 읽기 전용으로 참조한다.
+PortScene.Signatures = SIG
 ReplicatedStorage:SetAttribute("MarePortSceneStage", "defining-build")
 local function placeSignature(folder, info)
 	-- [모든 항구 랜드마크 재배치] 실제 승인 모델과 부속 경관을 각기 다른 내륙 지구로 옮긴다.
@@ -8100,7 +8102,7 @@ function PortScene.build(info, onFacility)
 		if now < updateAt then return end
 		updateAt = now + 0.10
 		-- [원경 구름 움직임] 기존 구름 덮임만 2.5초마다 미세 변화시킨다.
-		if portClouds and portClouds.Parent and now >= cloudUpdateAt then
+		if portClouds and portClouds.Parent and now >= cloudUpdateAt and not workspace:FindFirstChild("FieldScene") then
 			cloudUpdateAt = now + 2.5
 			portClouds.Cover = (if UserInputService.TouchEnabled then 0.16 else 0.26) + math.sin(now / 48) * 0.025
 		end

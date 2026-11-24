@@ -4172,7 +4172,13 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   assert.match(field,/elseif index % 4 == 2 then/,'암석 중경 배치');
   assert.ok(field.includes('half * visualLayoutRng:NextNumber(0.19, 0.31)'),'근경 수목 시야');
   assert.ok(field.includes('half * visualLayoutRng:NextNumber(0.23, 0.33)'),'근경 암석 시야');
-  assert.ok(field.includes('local lateral = if band == 0 then 0.16 elseif band == 1 then 0.25 else 0.34'),'근경 식생층');
+  assert.ok(field.includes('local lateral = if band == 0 then 0.25 elseif band == 1 then 0.43 else 0.65'),'전면 재배치: 근경 식생과 중경 군집이 중앙 통로를 침범하지 않음');
+  assert.match(field,/distance >= 400 then "far" elseif distance >= 120 then "mid" else "near"/,'진입 위치 기준 실제 거리 분류');
+  assert.match(field,/local signature = opts\.portScenery/,'항구별 기존 대표 경관 정본');
+  assert.match(field,/FieldPortLandmarkOriginalMissing/,'실제 역사 원본 누락을 별도로 기록');
+  assert.match(field,/archive = \{/,'기관 정원 실물 배치');
+  assert.match(field,/terrain:FillBlock\(waterCF, waterSize, Enum\.Material\.Water\)/,'해안 실제 외곽 물');
+  assert.match(field,/terrain:FillBlock\(waterCF, waterSize, Enum\.Material\.Air\)/,'퇴장시 해안 물 정리');
   assert.ok(!field.includes('else 0.34 end)'), 'Luau if 조건식에 잘못된 end 금지');
   assert.match(field,/local band = math\.floor\(\(index - 1\) \/ 4\) % 3/,'식생 근경·중경·원경 순환 배치');
   assert.match(field,/local depthRow = math\.floor\(\(index - 1\) \/ 12\) % 5/,'과밀 대신 깊이방향 분산');
