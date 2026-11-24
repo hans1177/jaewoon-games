@@ -333415,11 +333415,132 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_7adaab17f5bb372d4ca4bcc0",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14835",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "db3e0a8da322492722dc83e51bc9eb8491e96f35",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14835,
+        "baseBranch": "main",
+        "headBranch": "owner/mare-london-assets-20261124-g2",
+        "baseSha": "db3e0a8da322492722dc83e51bc9eb8491e96f35",
+        "headSha": "cc15f10568039c697c93531d9e03c31d75f088d1",
+        "mergeCommitSha": "d7b4a97561730700ca415cf51afef5c7340da594",
+        "mergedAt": "2026-11-24T00:17:43Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e2099bba8bcad83598285c054cbd07b706161b16e3fdc9abc2e282b1cda57cdc",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/mare-london-assets-20261124-g2",
+        "candidateSha": "cc15f10568039c697c93531d9e03c31d75f088d1"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 2,
+        "addedLineCount": 359,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_ropewalk.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_ropewalk.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_suburb.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_suburb.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_ropewalk.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_suburb.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14835",
+        "merge-commit:d7b4a97561730700ca415cf51afef5c7340da594",
+        "base-main:db3e0a8da322492722dc83e51bc9eb8491e96f35"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2667
+    "total": 2668
   }
 }
