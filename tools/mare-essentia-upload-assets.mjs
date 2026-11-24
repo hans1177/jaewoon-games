@@ -1645,9 +1645,10 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     const portOriginalModel = kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
     const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb'].includes(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
+    const harborAnimalOriginal = kind === 'Animals' && sourceFileName === 'pigeon.glb';
     const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle|panda|whale)\.glb$/.test(sourceFileName);
     try {
-    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || townOriginal || discoveryBird || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) {
+    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || townOriginal || discoveryBird || harborAnimalOriginal || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
       // [검증 대기 원본 보호] 3D 도시 파생 모델은 CC0 원본 기록만 있고 검수·등록이
@@ -1679,6 +1680,34 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
           || sourceLicense.bytes !== original.length || sourceLicense.commercialUseAllowed !== true
           || (!sourceLicense.sourceBlend && !sourceLicense.pinnedBlobSha) || !sourceLicense.sourceModelingMethod || blockedHashes.has(digest))
           throw new Error('MARE_TOWN_ORIGINAL_PROOF_REQUIRED:' + f);
+      }
+      if (harborAnimalOriginal) {
+        // [항구 생활 동물] 비둘기 원본은 등록만 수행하고 발견물 카드와 게임 배치는 변경하지 않는다.
+        const original = await fs.readFile(path.join(ROOT,'assets',dir,sourceFileName));
+        const digest = crypto.createHash('sha256').update(original).digest('hex');
+        const blob = crypto.createHash('sha1').update('blob '+original.length+'\0').update(original).digest('hex');
+        if (!sourceLicense || sourceLicense.license !== 'CC0-1.0' || sourceLicense.author !== 'Quaternius'
+          || sourceLicense.source !== 'https://poly.pizza/m/9NGlBTpDEr'
+          || sourceLicense.commercialUseAllowed !== true || sourceLicense.pinnedBlobSha !== 'c16d3edc52707aea8feb7493a84fd7809dad3884'
+          || blob !== sourceLicense.pinnedBlobSha || digest !== sourceLicense.sourceSha256
+          || digest !== sourceLicense.originalSha256 || digest !== sourceLicense.sha256
+          || blockedHashes.has(digest) || original.length !== 110548 || sourceLicense.bytes !== original.length
+          || original.toString('ascii',0,4) !== 'glTF' || original.readUInt32LE(4) !== 2
+          || original.readUInt32LE(8) !== original.length || original.readUInt32LE(16) !== 0x4e4f534a
+          || 20 + original.readUInt32LE(12) >= original.length)
+          throw new Error('MARE_HARBOR_ANIMAL_ORIGINAL_PROOF_INVALID:'+f);
+        const gltf = JSON.parse(original.subarray(20,20+original.readUInt32LE(12)).toString('utf8'));
+        let triangles = 0;
+        for (const node of gltf.nodes) if (node.mesh !== undefined) {
+          for (const primitive of gltf.meshes[node.mesh].primitives) {
+            const count = gltf.accessors[primitive.indices].count;
+            if ((primitive.mode ?? 4) !== 4 || !Number.isSafeInteger(count) || count <= 0 || count % 3)
+              throw new Error('MARE_HARBOR_ANIMAL_TRIANGLE_LAYOUT_INVALID:'+f);
+            triangles += count / 3;
+          }
+        }
+        if (triangles !== 2184 || triangles !== sourceLicense.triangles)
+          throw new Error('MARE_HARBOR_ANIMAL_TRIANGLE_COUNT_MISMATCH:'+f);
       }
       if (discoveryBird) {
         const original = await fs.readFile(path.join(ROOT,'assets',dir,sourceFileName));
