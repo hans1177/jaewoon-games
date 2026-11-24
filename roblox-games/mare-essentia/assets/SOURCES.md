@@ -2144,3 +2144,13 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `inbox/Town/` | london_battle_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
 | `town/` | london_battle_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
 | `town/` | london_yard_2.glb | Kenney; Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+
+
+## 2026-11-24 런던 항만청·전투 본부 3단계 가공
+
+승인 CC0 원본 메시·UV·재질 보존. 동일 메시 재사용으로 파일 중복 감소. 정식 등록 및 Studio 실물 검증 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_battle_3.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `inbox/Town/` | london_harbor_3.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
