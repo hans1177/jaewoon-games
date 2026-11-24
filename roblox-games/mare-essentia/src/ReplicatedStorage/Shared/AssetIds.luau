@@ -1515,6 +1515,7 @@ return {
 	["Town/london_bld_lighthouse"] = 128058394059585,
 	["Town/london_bld_market_stalls"] = 93096102858792,
 	["Town/london_bld_mill"] = 90935562064232,
+	["Town/london_bld_opera"] = 72447081716533,
 	["Town/london_bld_ropewalk"] = 76941899291463,
 	["Town/london_bld_school"] = 128103758113668,
 	["Town/london_bld_smithy"] = 91912042400409,
