@@ -338781,11 +338781,150 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_6f71c859a27f92196e5b942a",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14946",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "5037bfc2b8feadd0ad493e67aae0006c6ab0c8e9",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14946,
+        "baseBranch": "main",
+        "headBranch": "mare-marine-originals-20261124",
+        "baseSha": "5037bfc2b8feadd0ad493e67aae0006c6ab0c8e9",
+        "headSha": "6a758acf92fd49320161df7b5509a3e587548514",
+        "mergeCommitSha": "304adafcb0dfcbb819e22f39b71129b1626d6547",
+        "mergedAt": "2026-11-24T03:59:02Z",
+        "authorLogin": "hans1177",
+        "titleHash": "c068f7bd7cc6ff5913b15bbc54ce7f0963f105ff8677a5e5329c1a8492ac836a",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-marine-originals-20261124",
+        "candidateSha": "6a758acf92fd49320161df7b5509a3e587548514"
+      },
+      "changeStats": {
+        "changedFileCount": 17,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 3349,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-animated-fish-license.txt",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-dolphin.fbx",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-dolphin.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish1.fbx",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish1.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish2.fbx",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish2.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish3.fbx",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish3.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-manta-ray.fbx",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-manta-ray.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-shark.fbx",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-shark.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-whale.fbx",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-whale.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-dolphin.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish1.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish2.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish3.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-manta-ray.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-shark.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-whale.fbx.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14946",
+        "merge-commit:304adafcb0dfcbb819e22f39b71129b1626d6547",
+        "base-main:5037bfc2b8feadd0ad493e67aae0006c6ab0c8e9"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2710
+    "total": 2711
   }
 }
