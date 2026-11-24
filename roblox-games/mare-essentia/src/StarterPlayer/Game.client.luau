@@ -5530,8 +5530,8 @@ function H.questCinematic(parent, ev, overlay)
 	local bound = true
 	cam.CameraType = Enum.CameraType.Scriptable
 	local function place(t)
-		local angle = math.rad(if long then 34 else 18) * t
-		local off = CFrame.Angles(0, angle, 0):VectorToWorldSpace(startOffset) * (1 - 0.18 * t) + Vector3.new(0, 5 * t, 0)
+		local angle = math.rad(if long then 50 else 26) * t
+		local off = CFrame.Angles(0, angle, 0):VectorToWorldSpace(startOffset) * (1 - 0.25 * t) + Vector3.new(0, 7 * t, 0)
 		local cf = CFrame.lookAt(focus + off, focus)
 		if shake then
 			local k = 0.12 + 0.18 * math.abs(math.sin(os.clock() * 7))
