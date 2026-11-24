@@ -2308,3 +2308,13 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `town/` | london_guild_1.glb | Kenney and approved CC0 source authors · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
 | `town/` | london_guild_3.glb | Kenney and approved CC0 source authors · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
 | `town/` | london_bld_guild_row.glb | Kenney and approved CC0 source authors · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `terrain/` | veg_bare_willow_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_beet_mature.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatecrops.html |
+| `terrain/` | veg_flowering_cactus_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_lettuce_mature.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatecrops.html |
+| `terrain/` | veg_meadow_flowers.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_orange_tree.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatecrops.html |
+| `terrain/` | veg_rice_mature.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatecrops.html |
+| `terrain/` | veg_short_grass.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_snow_bush_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_snow_pine_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
