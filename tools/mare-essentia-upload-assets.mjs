@@ -1316,11 +1316,15 @@ if (!studioRegrantPath) await prepareOriginalBlueprintShips();
 const rawCookie = String(process.env.ROBLOX_ROBLOSECURITY || process.env.ROBLOX_SECURITY_COOKIE || '').trim();
 const cookie = rawCookie.includes('.ROBLOSECURITY=') ? rawCookie : (rawCookie ? '.ROBLOSECURITY=' + rawCookie + ';' : '');
 let csrf = '';
+// [병렬 등록] API 제한 시 모든 작업이 같은 재개 시각을 공유한다.
+let rateLimitUntil = 0;
 // 요청 제한은 실패로 확정하기 전에 기존 엔드포인트에서 지수 백오프로 재시도한다.
 async function request(url, options = {}) {
   const authenticated = Boolean(cookie) && url.startsWith('https://apis.roblox.com/');
   if (authenticated && url.startsWith('https://apis.roblox.com/assets/v1/')) url = url.replace('/assets/v1/', '/assets/user-auth/v1/');
   for (let attempt = 0; attempt < 4; attempt++) {
+    while (Date.now() < rateLimitUntil) await new Promise(resolve => setTimeout(resolve, Math.max(0, rateLimitUntil - Date.now())));
+    if (accountBlocked && options.method === 'POST') throw new Error('REGISTRATION_BLOCKED_ACCOUNT_MODERATED');
     const headers = {...(options.headers ?? {})};
     if (authenticated) { headers.cookie = cookie; if (csrf) headers['x-csrf-token'] = csrf; }
     else headers['x-api-key'] = key;
@@ -1329,15 +1333,24 @@ async function request(url, options = {}) {
       csrf = result.headers.get('x-csrf-token');
       result = await fetch(url, {...options, headers: {...headers, 'x-csrf-token': csrf}, signal: AbortSignal.timeout(90000)});
     }
-    if (result.status === 429 && attempt < 3) {
+    if (result.status === 429) {
       const retryAfter = Number(result.headers.get('retry-after'));
       const delay = Number.isFinite(retryAfter) && retryAfter > 0 ? Math.min(60000, retryAfter * 1000) : 6000 * 2 ** attempt;
+      // 마지막 재시도도 다른 작업의 공유 대기 시각에 반영한다.
+      rateLimitUntil = Math.max(rateLimitUntil, Date.now() + delay);
       console.log('ROBLOX_RATE_LIMIT_BACKOFF', attempt + 1, delay);
-      await new Promise(resolve => setTimeout(resolve, delay));
-      continue;
+      if (attempt < 3) {
+        await result.body?.cancel();
+        continue;
+      }
     }
     const data = await result.json().catch(() => ({}));
-    if (!result.ok) throw new Error('ROBLOX_ASSET_API_' + result.status + ': ' + JSON.stringify(data).slice(0, 300));
+    if (!result.ok) {
+      const detail = JSON.stringify(data);
+      // 호출자까지 예외가 전달되기 전에도 다른 작업의 신규 POST를 차단한다.
+      if (/User is moderated|REGISTRATION_BLOCKED_ACCOUNT_MODERATED/i.test(detail)) accountBlocked = true;
+      throw new Error('ROBLOX_ASSET_API_' + result.status + ': ' + detail.slice(0, 300));
+    }
     return data;
   }
   throw new Error('ROBLOX_RATE_LIMIT_EXHAUSTED');
@@ -1918,241 +1931,274 @@ if (studioRegrantPath) {
   }
   console.log('MARE_STUDIO_REGRANT_VALIDATED_TARGET_COUNT=' + pendingPermissions.length);
 }
+// [병렬 등록] 동일 키의 여러 파일은 기존 순서대로 한 작업에서 처리한다.
+// 서로 다른 키만 최대 4건 동시 업로드하며, 쿠키 인증의 CSRF 공유는 기존 순차 유지.
+const uploadGroups = new Map();
 for (const item of plan) {
   const id = item.kind + '/' + item.name;
-  const storedBytes = await fs.readFile(item.file);
-  const originalBytes = item.compressed ? gunzipSync(storedBytes) : storedBytes;
-  const sourceSha256 = crypto.createHash('sha256').update(originalBytes).digest('hex');
-  if (item.sourceLicense && (item.kind === 'Terrain' && item.name.startsWith('veg_') ? item.sourceLicense.sha256 : item.sourceLicense.sourceSha256) !== sourceSha256) {
-    failures.push(id + ': ORIGINAL_MODEL_SHA256_MISMATCH');
-    console.error('ORIGINAL_MODEL_SHA256_MISMATCH', id);
-    continue;
-  }
-  if (blockedHashes.has(sourceSha256)) {
-    delete registry.assets[id];
-    previousTypeAssets.delete(id); // 차단 원본은 이전 등록 ID로 되돌리지 않는다.
-    console.log('REMOVED_IMAGE_SOURCE_EXCLUDED', id);
-    continue;
-  }
-  // [교역품 자동 연습→수정] 승인 SHA가 달라졌을 때만 기존 Image 업로드를 갱신한다.
-  // 미승인 변경은 현재 ID를 유지하되 업로드·게임 갱신을 차단한다.
-  if (item.kind === 'Goods' && item.assetType === 'Image') {
-    if (approvedImages[id] !== sourceSha256) {
-      console.log('GOODS_IMAGE_CHANGE_NOT_APPROVED', id);
-      if (registry.assets[id]?.assetId) failures.push(id + ': GOODS_APPROVAL_HASH_MISMATCH');
-      continue;
-    }
-    const old = registry.assets[id];
-    if (old?.assetId && old.sourceSha256 && old.sourceSha256 !== sourceSha256) {
-      previousTypeAssets.set(id, {...old});
-      delete registry.assets[id];
-      console.log('GOODS_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
-    }
-  }
-  // [카드 원화 해시] 카드 ID는 그대로 유지하며, 승인받은 지역 원화만 교체한다. 미승인 이미지는 기존 등록 ID를 보존한다.
-  const regionalCardArt = item.kind === 'CardArt' && /^(?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[1-4][0-9])$/.test(item.name);
-  if (regionalCardArt) {
-    // [새 원화와 교체 원화] 생성 모델 원본 + 바이브 시각 품질·권리 검수 증빙이 없으면 등록을 거부한다.
-    // 이미 등록된 20장과 기존 저장 키는 바꾸지 않는다.
-    const previous = registry.assets[id];
-    if ((!previous?.assetId || !previous.sourceSha256 || previous.sourceSha256 !== sourceSha256)
-      && modelOriginals[id]?.sourceSha256 !== sourceSha256) {
-      failures.push(id + ': MODEL_ORIGINAL_REVIEW_REQUIRED');
-      console.log('MODEL_ORIGINAL_REVIEW_REQUIRED', id);
-      continue;
-    }
-    if (approvedImages[id] !== sourceSha256) {
-      console.log('REGIONAL_CARD_ART_NOT_APPROVED', id);
-      if (registry.assets[id]?.assetId) failures.push(id + ': REGIONAL_CARD_ART_APPROVAL_HASH_MISMATCH');
-      continue;
-    }
-    const old = registry.assets[id];
-    if (old?.assetId && old.sourceSha256 && old.sourceSha256 !== sourceSha256) {
-      previousTypeAssets.set(id, {...old});
-      delete registry.assets[id];
-      console.log('REGIONAL_CARD_ART_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
-    }
-  }
-  // [중립 카드 원화] 승인된 원화 변경은 새 이미지 권한이 확인된 뒤에만 등록 번호를 교체한다.
-  if (item.kind === 'CardArt' && /^lo_\d{2}$/.test(item.name)) {
-    const old = registry.assets[id];
-    if (old?.assetId && old.sourceSha256 && old.sourceSha256 !== sourceSha256) {
-      if (approvedImages[id] !== sourceSha256) {
-        failures.push(id + ': NEUTRAL_CARD_ART_APPROVAL_HASH_MISMATCH');
-        continue;
-      }
-      previousTypeAssets.set(id, {...old});
-      delete registry.assets[id];
-      console.log('NEUTRAL_CARD_ART_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
-    }
-  }
-  // [선박 원본 교체] 증빙된 모델의 바이너리가 바뀌면 기존 등록번호를 새 모델에 재사용하지 않는다.
-  // 새 모델 등록과 Universe 사용 권한이 함께 확인되지 않으면 기존 번호로 복구한다.
-  if (item.assetType === 'Model' && item.sourceLicense) {
-    const old = registry.assets[id];
-    const outfitUvUpgrade = item.kind === 'People' && /^outfit_(?:vest|coat|guard|apron|sash|belt|cuff|boot|stole)$/.test(item.name);
-    const characterPbrUpgrade = item.kind === 'People' && /^(?:hair_|acc_)[a-z0-9_]+$/.test(item.name);
-    // 옛 복식 ID는 해시가 없으므로 새 UV 원본에 재사용하지 않는다.
-    // 신규 ID/Universe 권한 실패 시 기존 등록번호로 원자적 롤백한다.
-    if (old?.assetId && old.sourceSha256 !== sourceSha256
-      && (outfitUvUpgrade || characterPbrUpgrade || Boolean(old.sourceSha256))) {
-      previousTypeAssets.set(id, {...old});
-      delete registry.assets[id];
-      console.log('ORIGINAL_MODEL_SOURCE_CHANGED_REUPLOAD', id);
-    }
-  }
-  // [바이브 자체 검수 관문] 새 이미지는 바이브가 직접 보고 확인해 APPROVED_IMAGES.json에 (이름+해시)로 올린 것만 업로드한다. 오너 승인 대기 없음(contentSafety.autonomousVibeReview).
-  if (item.assetType !== 'Model' && !registry.assets[id]?.assetId) {
-    const hash = crypto.createHash('sha256').update(originalBytes).digest('hex');
-    if (approvedImages[id] !== hash) {
-      if (previousTypeAssets.has(id)) failures.push(id + ': IMAGE_REPLACEMENT_APPROVAL_MISSING');
-      console.log('SKIP_IMAGE_NOT_HUMAN_APPROVED', id);
-      continue;
-    }
-  }
-  if (registry.assets[id]?.assetId) {
-    // 이미 발급된 ID는 다시 업로드하지 않고 실제 파일 형식/경로만 갱신한다.
-    registry.assets[id].source = item.file;
-    // 구형 등록표는 로컬 승인 원본 해시를 기준으로 다음 이미지 변경을 탐지한다.
-    // 이 값만으로 Roblox 원격 바이너리 동일성/Studio 표시를 주장하지 않는다.
-    if ((item.kind === 'Goods' && item.assetType === 'Image') || item.kind === 'Materials' || regionalCardArt
-      || (item.kind === 'CardArt' && approvedImages[id] === sourceSha256))
-      registry.assets[id].sourceSha256 = sourceSha256;
-    if (registry.assets[id].usePermissionGranted !== true) pendingPermissions.push({id, assetId: registry.assets[id].assetId});
-    console.log('SKIP_ALREADY_REGISTERED', id);
-    continue;
-  }
+  if (!uploadGroups.has(id)) uploadGroups.set(id, []);
+  uploadGroups.get(id).push(item);
+}
+const uploadQueue = [...uploadGroups.values()];
+const uploadParallelism = cookie ? 1 : Math.min(4, uploadQueue.length);
+let nextUploadGroup = 0;
+let uploadWorkerError = null;
+console.log('MARE_ASSET_UPLOAD_PARALLELISM=' + uploadParallelism, 'GROUPS=' + uploadQueue.length);
+await Promise.all(Array.from({length: uploadParallelism}, async () => {
   try {
-    let binary = originalBytes;
-    if (binary.length > 20 * 1024 * 1024) throw new Error('FILE_TOO_LARGE');
-    let uploadExt = item.ext;
-    // UniGLTF 1.27 모델은 Roblox GLB 해석기에서 실패한다. 원본 메시/재질/좌표는 보존한 채
-    // 표준 glTF 2.0 인라인 데이터로 전송하고 호환되지 않는 인덱스 표현만 정규화한다.
-    if (item.ext === '.glb' && binary.subarray(0, 4).toString('ascii') === 'glTF') {
-      const jsonSize = binary.readUInt32LE(12);
-      const binHeaderOffset = 20 + jsonSize;
-      if (binary.readUInt32LE(16) !== 0x4e4f534a || binHeaderOffset + 8 > binary.length) throw new Error('INVALID_GLB_JSON_CHUNK');
-      const gltf = JSON.parse(binary.subarray(20, binHeaderOffset).toString('utf8'));
-      if (String(gltf.asset?.generator || '').startsWith('UniGLTF-')) {
-        const binLength = binary.readUInt32LE(binHeaderOffset);
-        if (binary.readUInt32LE(binHeaderOffset + 4) !== 0x004e4942 || binHeaderOffset + 8 + binLength > binary.length)
-          throw new Error('INVALID_GLB_BINARY_CHUNK');
-        let data = Buffer.from(binary.subarray(binHeaderOffset + 8, binHeaderOffset + 8 + binLength));
-        if (!Array.isArray(gltf.buffers) || gltf.buffers.length !== 1) throw new Error('INVALID_GLB_BUFFER_COUNT');
-        gltf.extensionsUsed = (gltf.extensionsUsed || []).filter(name => name !== 'KHR_materials_unlit');
-        if (gltf.extensionsRequired) gltf.extensionsRequired = gltf.extensionsRequired.filter(name => name !== 'KHR_materials_unlit');
-        if (!gltf.extensionsUsed.length) delete gltf.extensionsUsed;
-        if (gltf.extensionsRequired && !gltf.extensionsRequired.length) delete gltf.extensionsRequired;
-        // scene.nodes는 부모가 없는 루트여야 한다. 원본의 화면 밖 tmpParent 연결만 분리한다.
-        // 장면에서 보이는 노드·좌표·메시·재질·스킨 인덱스는 바꾸지 않는다.
-        const sceneRoots = new Set((gltf.scenes || []).flatMap(scene => scene.nodes || []));
-        const visible = new Set();
-        const visit = [...sceneRoots];
-        while (visit.length) {
-          const index = visit.pop();
-          if (visible.has(index)) continue;
-          if (!Number.isInteger(index) || !gltf.nodes?.[index]) throw new Error('INVALID_SCENE_NODE');
-          visible.add(index);
-          for (const child of gltf.nodes[index].children || []) visit.push(child);
+    while (!accountBlocked && !uploadWorkerError && nextUploadGroup < uploadQueue.length) {
+      const group = uploadQueue[nextUploadGroup++];
+      for (const item of group) {
+        if (accountBlocked || uploadWorkerError) break;
+        const id = item.kind + '/' + item.name;
+        const storedBytes = await fs.readFile(item.file);
+        const originalBytes = item.compressed ? gunzipSync(storedBytes) : storedBytes;
+        const sourceSha256 = crypto.createHash('sha256').update(originalBytes).digest('hex');
+        if (item.sourceLicense && (item.kind === 'Terrain' && item.name.startsWith('veg_') ? item.sourceLicense.sha256 : item.sourceLicense.sourceSha256) !== sourceSha256) {
+          failures.push(id + ': ORIGINAL_MODEL_SHA256_MISMATCH');
+          console.error('ORIGINAL_MODEL_SHA256_MISMATCH', id);
+          continue;
         }
-        for (let index = 0; index < (gltf.nodes || []).length; index++) {
-          const parent = gltf.nodes[index];
-          if (!(parent.children || []).some(child => sceneRoots.has(child))) continue;
-          if (visible.has(index)) throw new Error('SCENE_ROOT_HAS_VISIBLE_PARENT');
-          parent.children = parent.children.filter(child => !sceneRoots.has(child));
-          if (!parent.children.length) delete parent.children;
+        if (blockedHashes.has(sourceSha256)) {
+          delete registry.assets[id];
+          previousTypeAssets.delete(id); // 차단 원본은 이전 등록 ID로 되돌리지 않는다.
+          console.log('REMOVED_IMAGE_SOURCE_EXCLUDED', id);
+          continue;
         }
-        for (const material of gltf.materials || []) {
-          if (material.extensions?.KHR_materials_unlit) delete material.extensions.KHR_materials_unlit;
-          if (material.extensions && !Object.keys(material.extensions).length) delete material.extensions;
-          if (material.pbrMetallicRoughness) {
-            material.pbrMetallicRoughness.metallicFactor = 0;
-            material.pbrMetallicRoughness.roughnessFactor = 1;
+        // [교역품 자동 연습→수정] 승인 SHA가 달라졌을 때만 기존 Image 업로드를 갱신한다.
+        // 미승인 변경은 현재 ID를 유지하되 업로드·게임 갱신을 차단한다.
+        if (item.kind === 'Goods' && item.assetType === 'Image') {
+          if (approvedImages[id] !== sourceSha256) {
+            console.log('GOODS_IMAGE_CHANGE_NOT_APPROVED', id);
+            if (registry.assets[id]?.assetId) failures.push(id + ': GOODS_APPROVAL_HASH_MISMATCH');
+            continue;
+          }
+          const old = registry.assets[id];
+          if (old?.assetId && old.sourceSha256 && old.sourceSha256 !== sourceSha256) {
+            previousTypeAssets.set(id, {...old});
+            delete registry.assets[id];
+            console.log('GOODS_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
           }
         }
-        const indices = new Set();
-        for (const mesh of gltf.meshes || []) for (const primitive of mesh.primitives || []) {
-          if (Number.isInteger(primitive.indices)) indices.add(primitive.indices);
+        // [카드 원화 해시] 카드 ID는 그대로 유지하며, 승인받은 지역 원화만 교체한다. 미승인 이미지는 기존 등록 ID를 보존한다.
+        const regionalCardArt = item.kind === 'CardArt' && /^(?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[1-4][0-9])$/.test(item.name);
+        if (regionalCardArt) {
+          // [새 원화와 교체 원화] 생성 모델 원본 + 바이브 시각 품질·권리 검수 증빙이 없으면 등록을 거부한다.
+          // 이미 등록된 20장과 기존 저장 키는 바꾸지 않는다.
+          const previous = registry.assets[id];
+          if ((!previous?.assetId || !previous.sourceSha256 || previous.sourceSha256 !== sourceSha256)
+            && modelOriginals[id]?.sourceSha256 !== sourceSha256) {
+            failures.push(id + ': MODEL_ORIGINAL_REVIEW_REQUIRED');
+            console.log('MODEL_ORIGINAL_REVIEW_REQUIRED', id);
+            continue;
+          }
+          if (approvedImages[id] !== sourceSha256) {
+            console.log('REGIONAL_CARD_ART_NOT_APPROVED', id);
+            if (registry.assets[id]?.assetId) failures.push(id + ': REGIONAL_CARD_ART_APPROVAL_HASH_MISMATCH');
+            continue;
+          }
+          const old = registry.assets[id];
+          if (old?.assetId && old.sourceSha256 && old.sourceSha256 !== sourceSha256) {
+            previousTypeAssets.set(id, {...old});
+            delete registry.assets[id];
+            console.log('REGIONAL_CARD_ART_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
+          }
         }
-        for (const index of indices) {
-          const accessor = gltf.accessors[index];
-          if (!accessor || accessor.componentType !== 5125 || accessor.type !== 'SCALAR') continue;
-          const view = gltf.bufferViews[accessor.bufferView];
-          if (!view || view.buffer !== 0 || view.byteStride) throw new Error('UNSUPPORTED_INDEX_LAYOUT');
-          const from = (view.byteOffset || 0) + (accessor.byteOffset || 0);
-          if (from + accessor.count * 4 > data.length) throw new Error('INVALID_INDEX_RANGE');
-          let max = 0;
-          for (let i = 0; i < accessor.count; i++) max = Math.max(max, data.readUInt32LE(from + i * 4));
-          if (max > 65535) continue;
-          const shortIndices = Buffer.alloc(accessor.count * 2);
-          for (let i = 0; i < accessor.count; i++) shortIndices.writeUInt16LE(data.readUInt32LE(from + i * 4), i * 2);
-          const alignedSize = Math.ceil(data.length / 4) * 4;
-          if (alignedSize !== data.length) data = Buffer.concat([data, Buffer.alloc(alignedSize - data.length)]);
-          const targetView = gltf.bufferViews.length;
-          gltf.bufferViews.push({buffer: 0, byteOffset: data.length, byteLength: shortIndices.length, target: 34963});
-          data = Buffer.concat([data, shortIndices]);
-          accessor.bufferView = targetView;
-          accessor.byteOffset = 0;
-          accessor.componentType = 5123;
+        // [중립 카드 원화] 승인된 원화 변경은 새 이미지 권한이 확인된 뒤에만 등록 번호를 교체한다.
+        if (item.kind === 'CardArt' && /^lo_\d{2}$/.test(item.name)) {
+          const old = registry.assets[id];
+          if (old?.assetId && old.sourceSha256 && old.sourceSha256 !== sourceSha256) {
+            if (approvedImages[id] !== sourceSha256) {
+              failures.push(id + ': NEUTRAL_CARD_ART_APPROVAL_HASH_MISMATCH');
+              continue;
+            }
+            previousTypeAssets.set(id, {...old});
+            delete registry.assets[id];
+            console.log('NEUTRAL_CARD_ART_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
+          }
         }
-        gltf.buffers[0].byteLength = data.length;
-        gltf.buffers[0].uri = 'data:application/octet-stream;base64,' + data.toString('base64');
-        binary = Buffer.from(JSON.stringify(gltf), 'utf8');
-        uploadExt = '.gltf';
-        console.log('NORMALIZED_STANDARD_GLTF', id, binary.length);
+        // [선박 원본 교체] 증빙된 모델의 바이너리가 바뀌면 기존 등록번호를 새 모델에 재사용하지 않는다.
+        // 새 모델 등록과 Universe 사용 권한이 함께 확인되지 않으면 기존 번호로 복구한다.
+        if (item.assetType === 'Model' && item.sourceLicense) {
+          const old = registry.assets[id];
+          const outfitUvUpgrade = item.kind === 'People' && /^outfit_(?:vest|coat|guard|apron|sash|belt|cuff|boot|stole)$/.test(item.name);
+          const characterPbrUpgrade = item.kind === 'People' && /^(?:hair_|acc_)[a-z0-9_]+$/.test(item.name);
+          // 옛 복식 ID는 해시가 없으므로 새 UV 원본에 재사용하지 않는다.
+          // 신규 ID/Universe 권한 실패 시 기존 등록번호로 원자적 롤백한다.
+          if (old?.assetId && old.sourceSha256 !== sourceSha256
+            && (outfitUvUpgrade || characterPbrUpgrade || Boolean(old.sourceSha256))) {
+            previousTypeAssets.set(id, {...old});
+            delete registry.assets[id];
+            console.log('ORIGINAL_MODEL_SOURCE_CHANGED_REUPLOAD', id);
+          }
+        }
+        // [바이브 자체 검수 관문] 새 이미지는 바이브가 직접 보고 확인해 APPROVED_IMAGES.json에 (이름+해시)로 올린 것만 업로드한다. 오너 승인 대기 없음(contentSafety.autonomousVibeReview).
+        if (item.assetType !== 'Model' && !registry.assets[id]?.assetId) {
+          const hash = crypto.createHash('sha256').update(originalBytes).digest('hex');
+          if (approvedImages[id] !== hash) {
+            if (previousTypeAssets.has(id)) failures.push(id + ': IMAGE_REPLACEMENT_APPROVAL_MISSING');
+            console.log('SKIP_IMAGE_NOT_HUMAN_APPROVED', id);
+            continue;
+          }
+        }
+        if (registry.assets[id]?.assetId) {
+          // 이미 발급된 ID는 다시 업로드하지 않고 실제 파일 형식/경로만 갱신한다.
+          registry.assets[id].source = item.file;
+          // 구형 등록표는 로컬 승인 원본 해시를 기준으로 다음 이미지 변경을 탐지한다.
+          // 이 값만으로 Roblox 원격 바이너리 동일성/Studio 표시를 주장하지 않는다.
+          if ((item.kind === 'Goods' && item.assetType === 'Image') || item.kind === 'Materials' || regionalCardArt
+            || (item.kind === 'CardArt' && approvedImages[id] === sourceSha256))
+            registry.assets[id].sourceSha256 = sourceSha256;
+          if (registry.assets[id].usePermissionGranted !== true) pendingPermissions.push({id, assetId: registry.assets[id].assetId});
+          console.log('SKIP_ALREADY_REGISTERED', id);
+          continue;
+        }
+        try {
+          let binary = originalBytes;
+          if (binary.length > 20 * 1024 * 1024) throw new Error('FILE_TOO_LARGE');
+          let uploadExt = item.ext;
+          // UniGLTF 1.27 모델은 Roblox GLB 해석기에서 실패한다. 원본 메시/재질/좌표는 보존한 채
+          // 표준 glTF 2.0 인라인 데이터로 전송하고 호환되지 않는 인덱스 표현만 정규화한다.
+          if (item.ext === '.glb' && binary.subarray(0, 4).toString('ascii') === 'glTF') {
+            const jsonSize = binary.readUInt32LE(12);
+            const binHeaderOffset = 20 + jsonSize;
+            if (binary.readUInt32LE(16) !== 0x4e4f534a || binHeaderOffset + 8 > binary.length) throw new Error('INVALID_GLB_JSON_CHUNK');
+            const gltf = JSON.parse(binary.subarray(20, binHeaderOffset).toString('utf8'));
+            if (String(gltf.asset?.generator || '').startsWith('UniGLTF-')) {
+              const binLength = binary.readUInt32LE(binHeaderOffset);
+              if (binary.readUInt32LE(binHeaderOffset + 4) !== 0x004e4942 || binHeaderOffset + 8 + binLength > binary.length)
+                throw new Error('INVALID_GLB_BINARY_CHUNK');
+              let data = Buffer.from(binary.subarray(binHeaderOffset + 8, binHeaderOffset + 8 + binLength));
+              if (!Array.isArray(gltf.buffers) || gltf.buffers.length !== 1) throw new Error('INVALID_GLB_BUFFER_COUNT');
+              gltf.extensionsUsed = (gltf.extensionsUsed || []).filter(name => name !== 'KHR_materials_unlit');
+              if (gltf.extensionsRequired) gltf.extensionsRequired = gltf.extensionsRequired.filter(name => name !== 'KHR_materials_unlit');
+              if (!gltf.extensionsUsed.length) delete gltf.extensionsUsed;
+              if (gltf.extensionsRequired && !gltf.extensionsRequired.length) delete gltf.extensionsRequired;
+              // scene.nodes는 부모가 없는 루트여야 한다. 원본의 화면 밖 tmpParent 연결만 분리한다.
+              // 장면에서 보이는 노드·좌표·메시·재질·스킨 인덱스는 바꾸지 않는다.
+              const sceneRoots = new Set((gltf.scenes || []).flatMap(scene => scene.nodes || []));
+              const visible = new Set();
+              const visit = [...sceneRoots];
+              while (visit.length) {
+                const index = visit.pop();
+                if (visible.has(index)) continue;
+                if (!Number.isInteger(index) || !gltf.nodes?.[index]) throw new Error('INVALID_SCENE_NODE');
+                visible.add(index);
+                for (const child of gltf.nodes[index].children || []) visit.push(child);
+              }
+              for (let index = 0; index < (gltf.nodes || []).length; index++) {
+                const parent = gltf.nodes[index];
+                if (!(parent.children || []).some(child => sceneRoots.has(child))) continue;
+                if (visible.has(index)) throw new Error('SCENE_ROOT_HAS_VISIBLE_PARENT');
+                parent.children = parent.children.filter(child => !sceneRoots.has(child));
+                if (!parent.children.length) delete parent.children;
+              }
+              for (const material of gltf.materials || []) {
+                if (material.extensions?.KHR_materials_unlit) delete material.extensions.KHR_materials_unlit;
+                if (material.extensions && !Object.keys(material.extensions).length) delete material.extensions;
+                if (material.pbrMetallicRoughness) {
+                  material.pbrMetallicRoughness.metallicFactor = 0;
+                  material.pbrMetallicRoughness.roughnessFactor = 1;
+                }
+              }
+              const indices = new Set();
+              for (const mesh of gltf.meshes || []) for (const primitive of mesh.primitives || []) {
+                if (Number.isInteger(primitive.indices)) indices.add(primitive.indices);
+              }
+              for (const index of indices) {
+                const accessor = gltf.accessors[index];
+                if (!accessor || accessor.componentType !== 5125 || accessor.type !== 'SCALAR') continue;
+                const view = gltf.bufferViews[accessor.bufferView];
+                if (!view || view.buffer !== 0 || view.byteStride) throw new Error('UNSUPPORTED_INDEX_LAYOUT');
+                const from = (view.byteOffset || 0) + (accessor.byteOffset || 0);
+                if (from + accessor.count * 4 > data.length) throw new Error('INVALID_INDEX_RANGE');
+                let max = 0;
+                for (let i = 0; i < accessor.count; i++) max = Math.max(max, data.readUInt32LE(from + i * 4));
+                if (max > 65535) continue;
+                const shortIndices = Buffer.alloc(accessor.count * 2);
+                for (let i = 0; i < accessor.count; i++) shortIndices.writeUInt16LE(data.readUInt32LE(from + i * 4), i * 2);
+                const alignedSize = Math.ceil(data.length / 4) * 4;
+                if (alignedSize !== data.length) data = Buffer.concat([data, Buffer.alloc(alignedSize - data.length)]);
+                const targetView = gltf.bufferViews.length;
+                gltf.bufferViews.push({buffer: 0, byteOffset: data.length, byteLength: shortIndices.length, target: 34963});
+                data = Buffer.concat([data, shortIndices]);
+                accessor.bufferView = targetView;
+                accessor.byteOffset = 0;
+                accessor.componentType = 5123;
+              }
+              gltf.buffers[0].byteLength = data.length;
+              gltf.buffers[0].uri = 'data:application/octet-stream;base64,' + data.toString('base64');
+              binary = Buffer.from(JSON.stringify(gltf), 'utf8');
+              uploadExt = '.gltf';
+              console.log('NORMALIZED_STANDARD_GLTF', id, binary.length);
+            }
+          }
+          const form = new FormData();
+          form.set('request', JSON.stringify({
+            assetType: item.assetType, displayName: ('MareEssentia ' + id).slice(0, 48),
+            description: item.assetType !== 'Model'
+              ? item.kind === 'Portraits' && item.name === 'heroes' ? 'Nine historical/fictional protagonist portraits: original game art plus public-domain archival images; sources in assets/SOURCES.md'
+                : item.kind === 'Materials' ? 'Original CC0 PBR material map from Poly Haven or ambientCG; exact creator, source page and SHA-256 in assets/materials/*.license.json'
+                : item.kind === 'CardArt' ? 'Original illustrated discovery art for Mare Essentia; subject sources and atlas coordinates in assets/SOURCES.md and assets/cardart/world-catalog.json'
+                : item.kind === 'Portraits' && item.name.startsWith('scholar_') ? 'Public-domain historical portrait from Wikimedia Commons (license verified by fetch_commons.py); see assets/portraits/portraits-report.json'
+                : item.kind === 'Portraits' ? 'Original NPC dialogue portrait for Mare Essentia at owner request; see assets/SOURCES.md'
+                : item.kind === 'Menu' && ['naval_skill', 'naval_fire', 'naval_speed'].includes(item.name) ? 'Original transparent nautical combat control art for Mare Essentia; generated in ChatGPT, source and SHA-256 in assets/SOURCES.md'
+                : item.kind === 'Menu' && ['field_attack', 'field_dodge', 'field_weapon'].includes(item.name) ? 'Original transparent ground combat circular control art for Mare Essentia; approved SHA-256 and source in assets/SOURCES.md' 
+                : item.kind === 'Menu' && item.license === 'PROJECT_ORIGINAL_ART' ? 'Original aged parchment and embossed leather texture rendered for Mare Essentia book UI; approved hash in assets/APPROVED_IMAGES.json'
+                : item.kind === 'Goods' && CHATGPT_ORIGINAL_GOODS.includes(item.name + '.png') ? 'Original ChatGPT 2.5D transparent commodity illustration for Mare Essentia; approved source hash in assets/APPROVED_IMAGES.json and provenance in assets/SOURCES.md'
+                : item.license === 'PROJECT_ORIGINAL_ART' ? 'Original vector commodity art made for Mare Essentia at owner request; see assets/SOURCES.md'
+                : item.kind === 'Goods' && ['rice', 'indigo'].includes(item.name) ? 'OpenFarm Open Crop Icons CC0 source illustrations; see assets/SOURCES.md'
+                : item.kind === 'Menu' && item.name.startsWith('vfx_') ? 'CC0 particle sprite (OpenGameArt Particle Pack, 80 sprites); same source as company common VFX; see assets/SOURCES.md'
+                : item.license === 'CC0-1.0' ? 'Tiny Speck Glitch / CC0, vector conversion by Bart; see assets/SOURCES.md'
+                : 'Icons by Lorc, Delapouite, Lord Berandas, Skoll / game-icons.net / CC BY 3.0. Color edit and PNG export for Mare Essentia; see assets/SOURCES.md'
+              : item.assetType === 'Model' && item.license === 'PROJECT_ORIGINAL_ART'
+              ? 'Original 3D model for Mare Essentia; source, license, and SHA-256 in assets/' + item.kind.toLowerCase() + '/' + item.name + item.ext + '.license.json'
+              : 'CC0 model for Mare Essentia (' + item.kind + '); see assets/SOURCES.md',
+            creationContext: {creator: {userId: Number(creatorId)}},
+          }));
+          form.set('fileContent', new Blob([binary], {type: uploadExt === '.png' ? 'image/png' : ['.jpg', '.jpeg'].includes(uploadExt) ? 'image/jpeg' : uploadExt === '.gltf' ? 'model/gltf+json' : uploadExt === '.glb' ? 'model/gltf-binary' : 'model/fbx'}), item.name + uploadExt);
+          if (accountBlocked) break;
+          const initial = await request('https://apis.roblox.com/assets/v1/assets', {method: 'POST', body: form});
+          if (!/^operations\/[A-Za-z0-9_\-/]+$/.test(String(initial.path))) throw new Error('NO_UPLOAD_OPERATION');
+          let assetId = null;
+          for (let n = 0; n < 40 && !assetId; n++) {
+            await new Promise(r => setTimeout(r, 2000));
+            const op = await request('https://apis.roblox.com/assets/v1/' + initial.path);
+            if (op.error) throw new Error('UPLOAD_FAILED: ' + JSON.stringify(op.error).slice(0, 200));
+            if (op.done) assetId = String(op.response?.assetId || op.response?.asset?.assetId || '');
+          }
+          if (!/^[1-9][0-9]*$/.test(assetId || '')) throw new Error('NO_ASSET_ID');
+          // 신규 자산도 기존 목록과 함께 일괄 권한 부여한다. 자산별 개별 PATCH 300회 호출 금지.
+          registry.assets[id] = {assetId, source: item.file, license: item.license, assetType: item.assetType, usePermissionGranted: false,
+            ...((item.kind === 'Goods' && item.assetType === 'Image') || regionalCardArt
+              || (item.kind === 'CardArt' && approvedImages[id] === sourceSha256) || item.sourceLicense ? {sourceSha256} : {})};
+          pendingPermissions.push({id, assetId});
+
+          console.log('UPLOADED', id, assetId);
+        } catch (e) {
+          failures.push(id + ': ' + String(e.message).slice(0, 200));
+          console.log('FAILED', id, String(e.message).slice(0, 200));
+          if (/User is moderated|REGISTRATION_BLOCKED_ACCOUNT_MODERATED/i.test(String(e.message))) {
+            accountBlocked = true;
+            console.error('REGISTRATION_BLOCKED_ACCOUNT_MODERATED: remaining uploads and permission writes stopped');
+            break;
+          }
+        }
+
       }
     }
-    const form = new FormData();
-    form.set('request', JSON.stringify({
-      assetType: item.assetType, displayName: ('MareEssentia ' + id).slice(0, 48),
-      description: item.assetType !== 'Model'
-        ? item.kind === 'Portraits' && item.name === 'heroes' ? 'Nine historical/fictional protagonist portraits: original game art plus public-domain archival images; sources in assets/SOURCES.md'
-          : item.kind === 'Materials' ? 'Original CC0 PBR material map from Poly Haven or ambientCG; exact creator, source page and SHA-256 in assets/materials/*.license.json'
-          : item.kind === 'CardArt' ? 'Original illustrated discovery art for Mare Essentia; subject sources and atlas coordinates in assets/SOURCES.md and assets/cardart/world-catalog.json'
-          : item.kind === 'Portraits' && item.name.startsWith('scholar_') ? 'Public-domain historical portrait from Wikimedia Commons (license verified by fetch_commons.py); see assets/portraits/portraits-report.json'
-          : item.kind === 'Portraits' ? 'Original NPC dialogue portrait for Mare Essentia at owner request; see assets/SOURCES.md'
-          : item.kind === 'Menu' && ['naval_skill', 'naval_fire', 'naval_speed'].includes(item.name) ? 'Original transparent nautical combat control art for Mare Essentia; generated in ChatGPT, source and SHA-256 in assets/SOURCES.md'
-          : item.kind === 'Menu' && ['field_attack', 'field_dodge', 'field_weapon'].includes(item.name) ? 'Original transparent ground combat circular control art for Mare Essentia; approved SHA-256 and source in assets/SOURCES.md' 
-          : item.kind === 'Menu' && item.license === 'PROJECT_ORIGINAL_ART' ? 'Original aged parchment and embossed leather texture rendered for Mare Essentia book UI; approved hash in assets/APPROVED_IMAGES.json'
-          : item.kind === 'Goods' && CHATGPT_ORIGINAL_GOODS.includes(item.name + '.png') ? 'Original ChatGPT 2.5D transparent commodity illustration for Mare Essentia; approved source hash in assets/APPROVED_IMAGES.json and provenance in assets/SOURCES.md'
-          : item.license === 'PROJECT_ORIGINAL_ART' ? 'Original vector commodity art made for Mare Essentia at owner request; see assets/SOURCES.md'
-          : item.kind === 'Goods' && ['rice', 'indigo'].includes(item.name) ? 'OpenFarm Open Crop Icons CC0 source illustrations; see assets/SOURCES.md'
-          : item.kind === 'Menu' && item.name.startsWith('vfx_') ? 'CC0 particle sprite (OpenGameArt Particle Pack, 80 sprites); same source as company common VFX; see assets/SOURCES.md'
-          : item.license === 'CC0-1.0' ? 'Tiny Speck Glitch / CC0, vector conversion by Bart; see assets/SOURCES.md'
-          : 'Icons by Lorc, Delapouite, Lord Berandas, Skoll / game-icons.net / CC BY 3.0. Color edit and PNG export for Mare Essentia; see assets/SOURCES.md'
-        : item.assetType === 'Model' && item.license === 'PROJECT_ORIGINAL_ART'
-        ? 'Original 3D model for Mare Essentia; source, license, and SHA-256 in assets/' + item.kind.toLowerCase() + '/' + item.name + item.ext + '.license.json'
-        : 'CC0 model for Mare Essentia (' + item.kind + '); see assets/SOURCES.md',
-      creationContext: {creator: {userId: Number(creatorId)}},
-    }));
-    form.set('fileContent', new Blob([binary], {type: uploadExt === '.png' ? 'image/png' : ['.jpg', '.jpeg'].includes(uploadExt) ? 'image/jpeg' : uploadExt === '.gltf' ? 'model/gltf+json' : uploadExt === '.glb' ? 'model/gltf-binary' : 'model/fbx'}), item.name + uploadExt);
-    const initial = await request('https://apis.roblox.com/assets/v1/assets', {method: 'POST', body: form});
-    if (!/^operations\/[A-Za-z0-9_\-/]+$/.test(String(initial.path))) throw new Error('NO_UPLOAD_OPERATION');
-    let assetId = null;
-    for (let n = 0; n < 40 && !assetId; n++) {
-      await new Promise(r => setTimeout(r, 2000));
-      const op = await request('https://apis.roblox.com/assets/v1/' + initial.path);
-      if (op.error) throw new Error('UPLOAD_FAILED: ' + JSON.stringify(op.error).slice(0, 200));
-      if (op.done) assetId = String(op.response?.assetId || op.response?.asset?.assetId || '');
-    }
-    if (!/^[1-9][0-9]*$/.test(assetId || '')) throw new Error('NO_ASSET_ID');
-    // 신규 자산도 기존 목록과 함께 일괄 권한 부여한다. 자산별 개별 PATCH 300회 호출 금지.
-    registry.assets[id] = {assetId, source: item.file, license: item.license, assetType: item.assetType, usePermissionGranted: false,
-      ...((item.kind === 'Goods' && item.assetType === 'Image') || regionalCardArt
-        || (item.kind === 'CardArt' && approvedImages[id] === sourceSha256) || item.sourceLicense ? {sourceSha256} : {})};
-    pendingPermissions.push({id, assetId});
-
-    console.log('UPLOADED', id, assetId);
-  } catch (e) {
-    failures.push(id + ': ' + String(e.message).slice(0, 200));
-    console.log('FAILED', id, String(e.message).slice(0, 200));
-    if (/User is moderated/i.test(String(e.message))) {
-      accountBlocked = true;
-      console.error('REGISTRATION_BLOCKED_ACCOUNT_MODERATED: remaining uploads and permission writes stopped');
-      break;
-    }
+  } catch (error) {
+    uploadWorkerError ??= error;
   }
+}));
+if (uploadWorkerError) throw uploadWorkerError;
+// 동일 키의 재등장이나 교체 시 최종 등록번호만 한 번 권한 부여한다.
+const uniquePermissions = new Map();
+for (const item of pendingPermissions) {
+  if (registry.assets[item.id]?.assetId === item.assetId) uniquePermissions.set(item.id, item);
 }
+pendingPermissions.splice(0, pendingPermissions.length, ...uniquePermissions.values());
+// 모든 업로드 작업 종료 후 기존 권한 일괄 부여 및 단일 등록표 저장을 수행한다.
 // 사용 권한: 공식 BatchGrantPermissionsRequest/Response로 25개씩 부여하고 실제 성공 목록만 기록한다.
 // HTTP 200이라도 일부 assetId가 오류면 그 항목은 승인되지 않은 것으로 유지한다.
 for (let offset = 0; !accountBlocked && offset < pendingPermissions.length; offset += 25) {
