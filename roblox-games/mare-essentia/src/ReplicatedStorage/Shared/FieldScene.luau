@@ -903,6 +903,90 @@ function FieldScene.start(opts)
 			dublin_cranberry = "swamp",
 			bergen_ice_edge = "glacier",
 			hamburg_hops_farm = "farm",
+			marseille_calanques = "coast",
+			gibraltar_strait = "coast",
+			gibraltar_cave = "coast",
+			la_rochelle_towers = "coast",
+			porto_ribeira = "coast",
+			cadiz_bay = "coast",
+			cadiz_treasure_fleet = "coast",
+			istanbul_bosphorus = "coast",
+			tangier_strait = "coast",
+			riga_gulf = "coast",
+			helsinki_archipelago = "coast",
+			koenigsberg_amber = "coast",
+			tangier_pillars = "coast",
+			azores_calm = "coast",
+			ragusa_coast = "coast",
+			tripoli_dig = "coast",
+			toulon_arsenal = "coast",
+			aegean_isles = "coast",
+			trieste_karst = "coast",
+			messina_strait = "coast",
+			coral_banks = "coast",
+			livorno_lab = "archive",
+			naples_coins = "archive",
+			seville_cathedral = "archive",
+			lisbon_navigators = "archive",
+			rouen_cathedral = "archive",
+			antwerp_cathedral = "archive",
+			barcelona_gothic = "archive",
+			barcelona_market = "archive",
+			algiers_kasbah = "archive",
+			palermo_cathedral = "archive",
+			istanbul_bazaar = "archive",
+			riga_old_town = "archive",
+			istanbul_hagia = "archive",
+			riga_guild_hall = "archive",
+			palma_cathedral = "archive",
+			smyrna_bazaar = "archive",
+			casablanca_medina = "archive",
+			marseille_salt = "swamp",
+			la_rochelle_salt = "swamp",
+			valencia_albufera = "swamp",
+			cagliari_salt = "swamp",
+			damietta_nile = "swamp",
+			gibraltar_rock = "highland",
+			barcelona_montjuic = "highland",
+			safi_potters = "highland",
+			tripoli_oasis = "desert",
+			algiers_oasis = "desert",
+			valletta_bastions = "fort",
+			ragusa_walls = "fort",
+			tallinn_walls = "fort",
+			visby_ruins = "fort",
+			seville_alhambra = "fort",
+			petersburg_fortress = "fort",
+			valletta_walls2 = "fort",
+			thessaloniki_walls = "fort",
+			acre_crusader = "fort",
+			malaga_alcazaba = "fort",
+			corfu_fortress = "fort",
+			tunis_carthage = "ruins",
+			athens_acropolis = "ruins",
+			alexandria_pharos = "ruins",
+			athens_parthenon = "ruins",
+			alex_pharos2 = "ruins",
+			tunis_ruins2 = "ruins",
+			syracuse_theatre = "ruins",
+			ancona_arch = "ruins",
+			split_palace = "ruins",
+			crete_knossos = "ruins",
+			rhodes_colossus = "ruins",
+			benghazi_ruins = "ruins",
+			bone_ruins = "ruins",
+			petersburg_neva = "lake",
+			azores_crater = "lake",
+			petersburg_forest = "forest",
+			las_palmas_dragon = "forest",
+			tallinn_forest = "forest",
+			corsica_maquis = "forest",
+			beirut_cedars = "forest",
+			las_palmas_volcano = "volcanic",
+			valencia_orchard = "farm",
+			helsinki_gulf = "glacier",
+			cyprus_copper = "mine",
+			cartagena_mines = "mine",
 		}
 		local selected = exact[opts.siteId or ""]
 		if selected then questTerrain = selected end
@@ -1810,14 +1894,29 @@ function FieldScene.start(opts)
 				end
 				featureList[10][2] = "stone-bricks-stack-small"
 			end
+		elseif questTerrain == "swamp" and table.find({ "marseille_salt", "la_rochelle_salt", "cagliari_salt" }, opts.siteId or "") then
+			-- [염전] 낮은 제방과 수로, 소금 운반 도구를 같은 구획에 배치한다.
+			-- 실제 염전 원본은 아직 미등록이므로 기존 수로 원본만 사용한다.
+			featureList[1] = { "Terrain", "ground-riverstraight", 24, -0.68, -0.75, false, 0 }
+			featureList[2] = { "Terrain", "ground-riverstraight", 24, -0.60, -0.46, false, 0 }
+			featureList[3] = { "Terrain", "ground-riverbendbank", 13, -0.58, -0.28, true, 0 }
+			featureList[4] = { "Town", "cart", 6, -0.77, -0.62, true, 0 }
+			featureList[5] = { "Terrain", "river-stone-bank", 11, 0.59, -0.72, false, 0 }
+			featureList[6] = { "Cargo", "barrel", 3, 0.76, -0.43, true, 0 }
+			featureList[7] = { "Terrain", "village-fence", 14, 0.80, -0.78, true, 0 }
+			featureList[8] = { "Terrain", "ground-riverrocks", 8, -0.71, -0.12, false, 0 }
+			featureList[9] = { "Terrain", "coast-grass-patch", 4, 0.58, -0.15, false, 0 }
+			folder:SetAttribute("FieldSiteComposition", "salt-work-waterway")
 		elseif questTerrain == "coast" then
 			-- [해안 세부 구성] 갯벌·암벽·어항을 같은 부두 복제본으로 표시하지 않는다.
 			local siteId = opts.siteId or ""
 			local tidal = table.find({ "dunkirk_flats", "amsterdam_flats", "copenhagen_eider_isle" }, siteId) ~= nil
 			local fjord = table.find({ "bergen_fjord", "oslo_fjord", "bergen_cliffs", "stockholm_skerries" }, siteId) ~= nil
-			local cliffs = fjord or table.find({ "london_chalk", "giants_causeway", "rouen_coast", "edinburgh_coast", "gothenburg_eider", "gdansk_amber_beach" }, siteId) ~= nil
+			local cliffs = fjord or table.find({ "london_chalk", "giants_causeway", "rouen_coast", "edinburgh_coast", "gothenburg_eider", "gdansk_amber_beach", "marseille_calanques", "gibraltar_cliff",
+				"gibraltar_cave", "trieste_karst" }, siteId) ~= nil
 			local wharf = table.find({ "bergen_wharf", "bergen_whale_station", "amsterdam_herring_quay", "amsterdam_fog",
-				"gdansk_harbor", "hull_whalers", "glasgow_clyde", "bordeaux_quay" }, siteId) ~= nil
+				"gdansk_harbor", "hull_whalers", "glasgow_clyde", "bordeaux_quay", "porto_ribeira",
+				"cadiz_treasure_fleet", "toulon_arsenal", "la_rochelle_towers" }, siteId) ~= nil
 			if tidal then
 				featureList[1] = { "Terrain", "platform-beach", 19, -0.66, -0.74, true, 0 }
 				featureList[2] = { "Terrain", "river-stone-bank", 9, -0.76, -0.53, true, 90 }
@@ -1857,6 +1956,16 @@ function FieldScene.start(opts)
 			featureList[3][2], featureList[4][2] = "ground-riverbend", "ground-riverstraight"
 			featureList[9] = { "Terrain", "village-fence", 12, 0.77, -0.68, true, 0 }
 			folder:SetAttribute("FieldSiteComposition", "lowland-waterway")
+		elseif questTerrain == "archive" and table.find({ "istanbul_bazaar", "smyrna_bazaar", "barcelona_market",
+			"barcelona_gothic", "algiers_kasbah", "riga_old_town", "casablanca_medina" }, opts.siteId or "") then
+			-- [시장과 구시가] 기관 정원 대신 석재 길과 실제 시장 가판대, 운반 상자를 배치한다.
+			featureList[1] = { "Terrain", "platform-stone", 24, -0.57, -0.53, false, 0 }
+			featureList[2] = { "Terrain", "ground-pathstraight", 18, -0.55, -0.30, false, 0 }
+			featureList[3] = { "Town", "stall-red", 8, -0.73, -0.63, false, 90 }
+			featureList[4] = { "Town", "stall-green", 8, 0.73, -0.63, false, 90 }
+			featureList[7] = { "Cargo", "barrel", 3, 0.58, -0.44, false, 0 }
+			featureList[9] = { "Town", "lantern", 3, 0.62, -0.36, false, 90 }
+			folder:SetAttribute("FieldSiteComposition", "market-street")
 		elseif questTerrain == "archive" then
 			-- 기관 정원: 석재 마당·경계·벤치·수레. 전용 건물을 사칭하지 않는다.
 			featureList[3][1], featureList[3][2] = "Town", "fence_straight_long"
