@@ -1692,12 +1692,25 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       }
       if (derivedVegetation) {
         const model = await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName));
-        if (!sourceLicense || sourceLicense.license !== 'CC0-1.0' || sourceLicense.derived !== true
-          || !sourceLicense.originalFiles?.length || !sourceLicense.modification
+        if (!sourceLicense || sourceLicense.license !== 'CC0-1.0'
           || crypto.createHash('sha256').update(model).digest('hex') !== sourceLicense.sha256
+          || blockedHashes.has(sourceLicense.sha256)
           || model.length !== sourceLicense.bytes || !Number.isSafeInteger(sourceLicense.triangles)
           || sourceLicense.triangles <= 0)
+          throw new Error('MARE_VEGETATION_PROOF_INVALID:' + f);
+        if (sourceLicense.derived === false) {
+          // 무변형 원본은 고정 미러 원본 blob과 라이선스 증빙으로 검증한다.
+          const pinned = /^(https:\/\/github\.com\/[^/]+\/[^/]+\/blob\/[0-9a-f]{40})\/.+\.glb$/.exec(sourceLicense.downloadSource || '');
+          const blob = crypto.createHash('sha1').update('blob ' + model.length + '\0').update(model).digest('hex');
+          if (!pinned || !String(sourceLicense.mirrorLicenseEvidence || '').startsWith(pinned[1] + '/')
+            || sourceLicense.commercialUseAllowed !== true
+            || sourceLicense.sourceLicense !== 'https://creativecommons.org/publicdomain/zero/1.0/'
+            || !String(sourceLicense.source || '').startsWith('https://')
+            || sourceLicense.sourceGitBlobSha1 !== blob)
+            throw new Error('MARE_VEGETATION_UNCHANGED_SOURCE_PROOF_INVALID:' + f);
+        } else if (sourceLicense.derived !== true || !sourceLicense.originalFiles?.length || !sourceLicense.modification) {
           throw new Error('MARE_VEGETATION_DERIVATION_PROOF_INVALID:' + f);
+        }
         // 내부 1,000개 상한만 제거한다. 실제 GLB 형상, 원본 증빙 및 공식 API 제한은 유지한다.
         if (model.length < 20 || model.toString('ascii', 0, 4) !== 'glTF'
           || model.readUInt32LE(4) !== 2 || model.readUInt32LE(8) !== model.length
@@ -1715,7 +1728,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
         }
         if (actualTriangles !== sourceLicense.triangles)
           throw new Error('MARE_VEGETATION_TRIANGLE_COUNT_MISMATCH:' + f);
-        for (const original of sourceLicense.originalFiles) {
+        if (sourceLicense.derived === true) for (const original of sourceLicense.originalFiles) {
           const bytes = await fs.readFile(original.repositoryPath);
           if (blockedPaths.has(original.repositoryPath) || blockedHashes.has(original.sha256)
             || crypto.createHash('sha256').update(bytes).digest('hex') !== original.sha256)
