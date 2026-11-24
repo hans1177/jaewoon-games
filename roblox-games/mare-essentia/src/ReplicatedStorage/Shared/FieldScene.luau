@@ -1356,6 +1356,40 @@ function FieldScene.start(opts)
 			auto_language_genoa_low = "archive",
 			auto_language_seville_low = "archive",
 			auto_language_venice_mid = "archive",
+			-- 일반 조사: 혼합 발견물은 현재 항구의 실제 환경과 조사 장소를 우선한다.
+			survey_00 = "coast",
+			survey_01 = "coast",
+			survey_02 = "coast",
+			survey_03 = "lake",
+			survey_04 = "coast",
+			survey_05 = "swamp",
+			survey_06 = "coast",
+			survey_07 = "lake",
+			survey_08 = "archive",
+			survey_09 = "coast",
+			survey_10 = "coast",
+			survey_11 = "highland",
+			survey_12 = "archive",
+			survey_13 = "jungle",
+			survey_14 = "coast",
+			survey_15 = "lake",
+			survey_16 = "coast",
+			survey_17 = "coast",
+			survey_18 = "coast",
+			survey_19 = "archive",
+			survey_20 = "coast",
+			survey_21 = "fort",
+			survey_22 = "forest",
+			survey_23 = "volcanic",
+			survey_24 = "archive",
+			survey_25 = "mine",
+			survey_26 = "archive",
+			survey_27 = "swamp",
+			survey_28 = "mine",
+			survey_29 = "ruins",
+			survey_30 = "coast",
+			survey_31 = "coast",
+			survey_32 = "coast",
 		}
 		local selected = exact[opts.siteId or ""]
 		if selected then questTerrain = selected end
@@ -2239,6 +2273,10 @@ function FieldScene.start(opts)
 		glacier = { 5, 6, 8 }, volcanic = { 5, 7, 8 },
 	}
 	local featureList = landforms[questTerrain] or landforms.plains
+	-- 일반 혼합 조사에는 지역 밖 발견물의 건축물·동식물을 대표 경관으로 사칭하지 않는다.
+	if table.find({ "survey_01", "survey_08", "survey_12", "survey_13", "survey_14", "survey_15", "survey_18", "survey_19", "survey_21", "survey_24", "survey_27", "survey_29", "survey_30" }, opts.siteId or "") then
+		folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+	end
 	if folder:GetAttribute("FieldPacificSurvey") then
 		-- 유칼립투스·카우리·맹그로브·산호 및 문화권 전용 원본은 실제 등록 전까지 미확보로 기록한다.
 		folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
@@ -2297,7 +2335,7 @@ function FieldScene.start(opts)
 			featureList[8] = { "Terrain", "ground-riverrocks", 8, -0.71, -0.12, false, 0 }
 			featureList[9] = { "Terrain", "coast-grass-patch", 4, 0.58, -0.15, false, 0 }
 			folder:SetAttribute("FieldSiteComposition", "salt-work-waterway")
-		elseif questTerrain == "swamp" and table.find({ "bissau_mangrove", "calabar_delta", "calcutta_delta", "basra_marsh", "neworleans_delta", "belem_amazon", "pac_survey_03" }, opts.siteId or "") then
+		elseif questTerrain == "swamp" and table.find({ "bissau_mangrove", "calabar_delta", "calcutta_delta", "basra_marsh", "neworleans_delta", "belem_amazon", "pac_survey_03", "survey_05", "survey_27" }, opts.siteId or "") then
 			-- [삼각주·맹그로브 수변] 물길과 둑, 낮은 식생을 분리한다. 미등록 맹그로브 뿌리나 갈대 원본을 사칭하지 않는다.
 			featureList[1] = { "Terrain", "ground-riverbend", 23, -0.68, -0.75, false, 0 }
 			featureList[2] = { "Terrain", "ground-riverstraight", 21, -0.60, -0.46, false, 70 }
@@ -2314,15 +2352,15 @@ function FieldScene.start(opts)
 			-- [해안 세부 구성] 갯벌·암벽·어항을 같은 부두 복제본으로 표시하지 않는다.
 			local siteId = opts.siteId or ""
 			local tidal = table.find({ "dunkirk_flats", "amsterdam_flats", "copenhagen_eider_isle", "incheon_flats", "auto_geography_hamburg_low", "auto_geography_london_low" }, siteId) ~= nil
-			local fjord = table.find({ "bergen_fjord", "oslo_fjord", "bergen_cliffs", "stockholm_skerries", "pac_survey_16", "pac_survey_17", "pac_survey_19", "auto_geography_bergen_low" }, siteId) ~= nil
+			local fjord = table.find({ "bergen_fjord", "oslo_fjord", "bergen_cliffs", "stockholm_skerries", "pac_survey_16", "pac_survey_17", "pac_survey_19", "auto_geography_bergen_low", "survey_02", "survey_32" }, siteId) ~= nil
 			local cliffs = fjord or table.find({ "london_chalk", "giants_causeway", "rouen_coast", "edinburgh_coast", "gothenburg_eider", "gdansk_amber_beach", "marseille_calanques", "gibraltar_cliff",
-				"gibraltar_cave", "trieste_karst", "pac_survey_15", "pac_survey_18" }, siteId) ~= nil
+				"gibraltar_cave", "trieste_karst", "pac_survey_15", "pac_survey_18", "survey_04", "survey_06", "survey_16" }, siteId) ~= nil
 			local wharf = table.find({ "bergen_wharf", "bergen_whale_station", "amsterdam_herring_quay", "amsterdam_fog",
 				"gdansk_harbor", "hull_whalers", "glasgow_clyde", "bordeaux_quay", "porto_ribeira",
 				"cadiz_treasure_fleet", "toulon_arsenal", "la_rochelle_towers", "jeddah_pilgrim",
 				"cochin_nets", "manila_galleon", "amoy_harbor", "nagasaki_dejima", "stjohns_banks", "boston_whalers", "auto_site_bergen_low", "auto_architecture_venice_low" }, siteId) ~= nil
-			local shipyard = string.match(siteId, "^auto_shipbuilding_") ~= nil
-			local reef = table.find({ "mombasa_reef", "jeddah_reef", "maldives_atoll", "coral_banks", "recife_reef", "survey_am_a", "pac_survey_07", "pac_survey_09" }, siteId) ~= nil
+			local shipyard = string.match(siteId, "^auto_shipbuilding_") ~= nil or siteId == "survey_30"
+			local reef = table.find({ "mombasa_reef", "jeddah_reef", "maldives_atoll", "coral_banks", "recife_reef", "survey_am_a", "pac_survey_07", "pac_survey_09", "survey_14", "survey_18" }, siteId) ~= nil
 			if reef then
 				-- [산호 해안] 원본 산호가 없으므로 얕은 해안과 낮은 암반만 구성한다.
 				featureList[1] = { "Terrain", "platform-beach", 25, -0.66, -0.74, true, 0 }
@@ -2333,7 +2371,7 @@ function FieldScene.start(opts)
 				featureList[9] = { "Terrain", "ground-riverrocks", 7, -0.58, -0.42, true, 0 }
 				folder:SetAttribute("FieldSiteComposition", "shallow-reef-shore")
 				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
-			elseif table.find({ "pac_survey_02", "pac_survey_13", "pac_survey_20" }, siteId) then
+			elseif table.find({ "pac_survey_02", "pac_survey_13", "pac_survey_20", "survey_01", "survey_10", "survey_20", "survey_31" }, siteId) then
 				-- 호주 서안·페루 연안: 부두와 거대 암벽 대신 모래·낮은 돌 해안.
 				featureList[1] = { "Terrain", "platform-beach", 25, -0.66, -0.74, false, 0 }
 				featureList[2] = { "Terrain", "river-stone-bank", 7, -0.76, -0.53, false, 90 }
@@ -2379,7 +2417,7 @@ function FieldScene.start(opts)
 			end
 		elseif questTerrain == "ruins" and opts.siteId == "campeche_maya" then
 			folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
-		elseif questTerrain == "ruins" and opts.siteId == "ningbo_temple" then
+		elseif questTerrain == "ruins" and (opts.siteId == "ningbo_temple" or opts.siteId == "survey_29") then
 			-- [동아시아 사찰 터] 실제 등록된 동아시아 석재 기단·계단·종을 배치한다.
 			-- 미등록 사찰 본전은 만들지 않고 조사 동선은 기존 자리에 유지한다.
 			featureList[1] = { "Town", "eastasia-base", 19, -0.71, -0.75, true, 0 }
@@ -2426,7 +2464,7 @@ function FieldScene.start(opts)
 			featureList[5][2], featureList[7][2], featureList[9][2] = "ground-pathrocks", "rock-largea", "ground-pathrocks"
 			folder:SetAttribute("FieldSiteComposition", "megalithic-stone")
 		elseif questTerrain == "lake" and table.find({ "amsterdam_canals", "amsterdam_polder", "rotterdam_dike", "hamburg_estuary",
-			"saint_louis_river", "basra_canals", "cochin_backwaters", "tianjin_canal", "batavia_canal", "brunei_water", "newyork_harbor", "montevideo_plata", "trinidad_pitch", "auto_architecture_amsterdam_low", "auto_architecture_hamburg_low" }, opts.siteId or "") then
+			"saint_louis_river", "basra_canals", "cochin_backwaters", "tianjin_canal", "batavia_canal", "brunei_water", "newyork_harbor", "montevideo_plata", "trinidad_pitch", "auto_architecture_amsterdam_low", "auto_architecture_hamburg_low", "survey_03", "survey_07", "survey_15" }, opts.siteId or "") then
 			-- 평탄한 제방·운하의 접지 모델을 연속 배치하며 폭포·산악 실루엣을 제거한다.
 			featureList[1] = { "Terrain", "ground-riverbendbank", 18, -0.82, -0.78, true, 0 }
 			featureList[2] = { "Terrain", "ground-riverside", 17, -0.73, -0.72, false, 0 }
@@ -2435,7 +2473,7 @@ function FieldScene.start(opts)
 			folder:SetAttribute("FieldSiteComposition", "lowland-waterway")
 		elseif questTerrain == "archive" and (string.match(opts.siteId or "", "^auto_goods_") or table.find({ "istanbul_bazaar", "smyrna_bazaar", "barcelona_market",
 			"barcelona_gothic", "algiers_kasbah", "riga_old_town", "casablanca_medina",
-			"surat_bazaar", "osaka_market", "jade_market", "hoi_an_lanterns", "zanzibar_stone", "portobelo_fair" }, opts.siteId or "")) then
+			"surat_bazaar", "osaka_market", "jade_market", "hoi_an_lanterns", "zanzibar_stone", "portobelo_fair", "survey_12", "survey_24" }, opts.siteId or "")) then
 			-- [시장과 구시가] 기관 정원 대신 석재 길과 실제 시장 가판대, 운반 상자를 배치한다.
 			featureList[1] = { "Terrain", "platform-stone", 24, -0.57, -0.53, false, 0 }
 			featureList[2] = { "Terrain", "ground-pathstraight", 18, -0.55, -0.30, false, 0 }
