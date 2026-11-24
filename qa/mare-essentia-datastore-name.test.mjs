@@ -4181,13 +4181,18 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   const siteProfile=field.slice(field.indexOf('local exact = {'),field.indexOf('local selected = exact'));
   const sitesSource=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sites.luau');
   const profiles=[...siteProfile.matchAll(/([a-z_0-9]+) = "([a-z]+)"/g)];
-  assert.ok(profiles.length>=123,'실제 탐험지별 지형 지정');
+  assert.ok(profiles.length>=207,'실제 탐험지별 지형 지정');
   assert.equal(new Set(profiles.map(row=>row[1])).size,profiles.length,'탐험지 ID 중복 금지');
   for(const [,id] of profiles) assert.ok(sitesSource.includes('id = "'+id+'"'),'존재하지 않는 지점 '+id);
   for(const [id,theme] of Object.entries({london_chalk:'coast',bergen_cliffs:'coast',amsterdam_canals:'lake',carrara_quarry:'mine',vesuvius_slopes:'volcanic',edo_fuji:'highland',royal_archive:'archive',genoa_olive:'farm'})){
     assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'지점 지형 불일치 '+id);
   }
   assert.match(field,/FieldSiteTerrainSource/,'지점 ID 사용 여부 진단');
+  for(const [id,theme] of Object.entries({marseille_salt:'swamp',valencia_albufera:'swamp',valletta_bastions:'fort',athens_acropolis:'ruins',istanbul_bazaar:'archive',las_palmas_volcano:'volcanic',helsinki_gulf:'glacier',cyprus_copper:'mine'})){
+    assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'지중해·발트해 지점 분류 불일치 '+id);
+  }
+  assert.match(field,/FieldSiteComposition", "salt-work-waterway"/,'염전 수로 배치');
+  assert.match(field,/FieldSiteComposition", "market-street"/,'시장 거리 실물 배치');
   for(const [id,theme] of Object.entries({bergen_fjord:'coast',amsterdam_flats:'coast',stockholm_runes:'ruins',rotterdam_dike:'lake',bergen_ice_edge:'glacier',edinburgh_colliery:'mine',edinburgh_castle_rock:'fort',dublin_cranberry:'swamp'})){
     assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'북해·발트 지점 지형 불일치 '+id);
   }
