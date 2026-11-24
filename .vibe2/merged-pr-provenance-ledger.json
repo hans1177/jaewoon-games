@@ -341373,11 +341373,156 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_442afbc790c6ca148b1c0975",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14985",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "4abcb2e6a1b86c90784a0d21700d955b3752b14d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14985,
+        "baseBranch": "main",
+        "headBranch": "mare-cobra-wolf-croc-extract-20261124",
+        "baseSha": "4abcb2e6a1b86c90784a0d21700d955b3752b14d",
+        "headSha": "ab07903e8f1ebead2353a887a2dc75a50bff2620",
+        "mergeCommitSha": "9856fcfea484874932026b8b5309800073603436",
+        "mergedAt": "2026-11-24T06:20:41Z",
+        "authorLogin": "hans1177",
+        "titleHash": "81988f2cc66d8224538ba6bb1e0a62b1f1e89e5360c866ae4103141f49d260f0",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-cobra-wolf-croc-extract-20261124",
+        "candidateSha": "ab07903e8f1ebead2353a887a2dc75a50bff2620"
+      },
+      "changeStats": {
+        "changedFileCount": 20,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 97,
+        "deletedLineCount": 1190,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/croc2-source.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/croc2-source.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/duion2-wolf.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/duion2-wolf.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-cobra.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-cobra.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/pixispider.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/pixispider.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_warehouse.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_warehouse.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_scholar_1.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_scholar_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_scholar_2.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_scholar_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_tavern_3.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_tavern_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_yard_3.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_yard_3.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/croc2-source.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/duion2-wolf.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-cobra.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/pixispider.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_warehouse.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_scholar_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_scholar_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_tavern_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_yard_3.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14985",
+        "merge-commit:9856fcfea484874932026b8b5309800073603436",
+        "base-main:4abcb2e6a1b86c90784a0d21700d955b3752b14d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2728
+    "total": 2729
   }
 }
