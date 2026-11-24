@@ -1325,16 +1325,24 @@ async function request(url, options = {}) {
       csrf = result.headers.get('x-csrf-token');
       result = await fetch(url, {...options, headers: {...headers, 'x-csrf-token': csrf}, signal: AbortSignal.timeout(90000)});
     }
-    if (result.status === 429 && attempt < 3) {
+    if (result.status === 429) {
       const retryAfter = Number(result.headers.get('retry-after'));
       const delay = Number.isFinite(retryAfter) && retryAfter > 0 ? Math.min(60000, retryAfter * 1000) : 6000 * 2 ** attempt;
+      // 마지막 재시도도 다른 작업의 공유 대기 시각에 반영한다.
       rateLimitUntil = Math.max(rateLimitUntil, Date.now() + delay);
       console.log('ROBLOX_RATE_LIMIT_BACKOFF', attempt + 1, delay);
-      await result.body?.cancel();
-      continue;
+      if (attempt < 3) {
+        await result.body?.cancel();
+        continue;
+      }
     }
     const data = await result.json().catch(() => ({}));
-    if (!result.ok) throw new Error('ROBLOX_ASSET_API_' + result.status + ': ' + JSON.stringify(data).slice(0, 300));
+    if (!result.ok) {
+      const detail = JSON.stringify(data);
+      // 호출자까지 예외가 전달되기 전에도 다른 작업의 신규 POST를 차단한다.
+      if (/User is moderated|REGISTRATION_BLOCKED_ACCOUNT_MODERATED/i.test(detail)) accountBlocked = true;
+      throw new Error('ROBLOX_ASSET_API_' + result.status + ': ' + detail.slice(0, 300));
+    }
     return data;
   }
   throw new Error('ROBLOX_RATE_LIMIT_EXHAUSTED');

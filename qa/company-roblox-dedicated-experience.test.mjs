@@ -2223,3 +2223,38 @@ test('Mare trade asset uploader bounds parallel requests, dedupes keys and stops
     assert.equal(active,0);
   }
 });
+
+
+test('Mare final rate limit blocks other uploads and moderation stops new posts', async () => {
+  const source = fs.readFileSync('tools/mare-essentia-upload-assets.mjs', 'utf8');
+  const start = source.indexOf('async function request(url, options = {})');
+  const end = source.indexOf('let creatorId =', start);
+  assert.ok(start >= 0 && end > start);
+  let now = 0, count = 0, canceled = 0;
+  const calls = [];
+  const api = runInNewContext(
+    'let rateLimitUntil=0, accountBlocked=false; const cookie="", key="mock"; let csrf="";'+source.slice(start,end)+';({request, blocked:()=>accountBlocked})',
+    {
+      Date:{now:()=>now}, AbortSignal, console:{log(){}},
+      setTimeout:(fn,delay)=>{now+=delay; queueMicrotask(fn);},
+      fetch:async()=>{
+        calls.push(now);
+        const status = ++count <= 4 ? 429 : count === 5 ? 200 : 403;
+        return {status,ok:status===200,headers:{get:()=> '2'},
+          body:{cancel:async()=>{canceled++;}},
+          json:async()=>status===403?{message:'User is moderated'}:{},
+        };
+      },
+    }
+  );
+  const url='https://apis.roblox.com/assets/v1/assets';
+  await assert.rejects(api.request(url,{method:'POST'}), /ROBLOX_ASSET_API_429/);
+  assert.deepEqual(calls,[0,2000,4000,6000]);
+  assert.equal(canceled,3);
+  await api.request(url,{method:'POST'});
+  assert.equal(calls[4],8000,'next worker respects the final 429');
+  await assert.rejects(api.request(url,{method:'POST'}), /User is moderated/);
+  assert.equal(api.blocked(),true);
+  await assert.rejects(api.request(url,{method:'POST'}), /REGISTRATION_BLOCKED_ACCOUNT_MODERATED/);
+  assert.equal(count,6,'no new network POST after moderation');
+});
