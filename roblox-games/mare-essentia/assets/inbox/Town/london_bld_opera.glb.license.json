@@ -5785,7 +5785,19 @@
   "bytes": 332084,
   "triangles": 49118,
   "productionVerified": false,
-  "registration": "HOLD_NATIVE_VISUAL_AND_COLLISION_QA",
-  "validation": "SOURCE_SHA256_GIT_BLOB_REGISTERED_RIGHTS_AND_GLB_SCENE_TRIANGLES_VERIFIED",
-  "previousAssemblySha256": "8b2f85f8e5c701b213c3feca393be9f82bc752a1073d1957b3bb9c9a78f0485b"
+  "registration": "PENDING_EXISTING_CANONICAL_REGISTER_AND_ASSET_WORKFLOW",
+  "validation": "SOURCE_SHA256_AND_GLTF_STRUCTURE_SCENE_TRIANGLES_VERIFIED__SOURCE_VISUAL_CONTENT_REVIEWED__STUDIO_VISUAL_AND_COLLISION_PENDING",
+  "previousAssemblySha256": "8b2f85f8e5c701b213c3feca393be9f82bc752a1073d1957b3bb9c9a78f0485b",
+  "sourceVisualContentReview": {
+    "sourceRevision": "9360715976264b8fa17a4e631da6fe45ca5c168e",
+    "sourceSha256": "154f6759087d6b6bb8fbf4e00fe9f05379bb4dc2642e9abda40eef7b558f5cac",
+    "method": "Exact GLB exterior and roof-hidden interior software geometry renders plus inspection of all eleven embedded color-map images; curtains and building structure visible; no prohibited visual content observed. Flat preview does not validate textured Roblox appearance.",
+    "reviewScope": "SOURCE_REGISTRATION_ONLY",
+    "nativeVisualQa": "PENDING",
+    "nativeCollisionQa": "PENDING",
+    "gameBindingApproved": false
+  },
+  "actualRobloxRuntimeVerified": false,
+  "visualQualityApproved": false,
+  "robloxPublishedVerified": false
 }
