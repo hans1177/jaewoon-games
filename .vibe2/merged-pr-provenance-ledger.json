@@ -340422,11 +340422,162 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_5bf4b5700afea818fe270416",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14967",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "3f770005581084625f2faee93977f94bac1b2f2c",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14967,
+        "baseBranch": "main",
+        "headBranch": "mare-tiger-source-20261124",
+        "baseSha": "3f770005581084625f2faee93977f94bac1b2f2c",
+        "headSha": "130cf4830a48fd12e6e1599a5b578c8d5a7b91ce",
+        "mergeCommitSha": "23b78b11558bb87edb7eb81d5df51b928b7a5ed0",
+        "mergedAt": "2026-11-24T05:04:15Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e7ee254ffb875e02848edfbd44aaa22005e95ae3095388395875e31545762b76",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-tiger-source-20261124",
+        "candidateSha": "130cf4830a48fd12e6e1599a5b578c8d5a7b91ce"
+      },
+      "changeStats": {
+        "changedFileCount": 25,
+        "codingRelevantFileCount": 12,
+        "addedLineCount": 1559,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/cdgramos-tiger.zip",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/cdgramos-tiger.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-piranha.zip",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-piranha.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-koala/LICENSE",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-koala/Textures/colormap.png",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-koala/Textures/colormap.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-koala/animal-koala.mtl",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-koala/animal-koala.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-koala/animal-koala.obj",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-koala/animal-koala.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/methodical-penguin.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/methodical-penguin.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-hippo.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-hippo.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-oryx.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-oryx.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/polar-bear.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/polar-bear.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-dolphin.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-dolphin.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-manta-ray.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-manta-ray.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-whale.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-whale.blend.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/cdgramos-tiger.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/jameswhite-piranha.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-koala/Textures/colormap.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-koala/animal-koala.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-koala/animal-koala.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/methodical-penguin.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-hippo.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-oryx.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/polar-bear.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-dolphin.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-manta-ray.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-whale.blend.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14967",
+        "merge-commit:23b78b11558bb87edb7eb81d5df51b928b7a5ed0",
+        "base-main:3f770005581084625f2faee93977f94bac1b2f2c"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2721
+    "total": 2722
   }
 }
