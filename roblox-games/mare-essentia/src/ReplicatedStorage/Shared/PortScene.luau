@@ -5987,8 +5987,22 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers, lan
 			local face = if z > 0 then 0 else math.pi
 			local front = if z > 0 then -1 else 1
 			local tint = Color3.fromRGB(226, 218, 200)
-			local body
-			if lm.id == "theater" then
+			-- [런던 등록 실물] 기존 연도·기술·발전도 해금 및 예약 필지를 유지한다.
+			local londonLandmark = if info.portId ~= "london" then nil
+				elseif lm.id == "theater" and lvl >= 4 then "london_bld_theater"
+				elseif lm.id == "exchange" and lvl >= 5 then "london_bld_exchange"
+				elseif lm.id == "botanic" and lvl >= 5 then "london_bld_botanic" else nil
+			local body = if londonLandmark and AssetIds["Town/" .. londonLandmark] then
+				put("Town", londonLandmark, 28, x, z, lm.id ~= "botanic", face) else nil
+			if body then
+				body:SetAttribute("PortOriginalLandmark", londonLandmark)
+				body:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+			else
+				londonLandmark = nil
+			end
+			if body then
+				-- 전용 실물에 포함된 건물·조경을 다시 조립하지 않는다.
+			elseif lm.id == "theater" then
 				body = put("Terrain", "greek-amphitheater", 30, x, z, true, face)
 			elseif lm.id == "exchange" then
 				body = house(folder, Vector3.new(x, 0, z), 26, 18, 3, style, rng, Color3.fromRGB(214, 206, 186))
@@ -6066,7 +6080,10 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers, lan
 			elseif lm.id == "observatory" then
 				npc(8, front * 12, toward, "look", "stay", "Mage")
 			elseif lm.id == "theater" then
-				for k = -1, 1 do npc(k * 6, front * -4, face, "sit", "stay", "Rogue") end
+				for k = -1, 1 do
+					if londonLandmark then npc(k * 6, front * 18, toward, "talk", "stay", "Rogue")
+					else npc(k * 6, front * -4, face, "sit", "stay", "Rogue") end
+				end
 			elseif lm.id == "zoo" then
 				npc(0, front * 22, -math.pi / 2, "sweep", "path", "Barbarian", 16, "talk")
 				npc(6, front * 24, toward, "look", "stay", "Rogue")
@@ -6129,7 +6146,7 @@ local function placeLandmarks(folder, info, style, rng, onFacility, walkers, lan
 			local adorn = body
 			if typeof(body) == "Instance" and not body:IsA("BasePart") then adorn = body:FindFirstChildWhichIsA("BasePart", true) end
 			if adorn then
-				sign(folder, adorn, lm.name, nil, 18)
+				sign(folder, adorn, if londonLandmark and lm.id == "theater" then "극장" else lm.name, nil, 18)
 			end
 			-- [준공·랜드마크 운영] 실제 해금·건축 완료된 시설에서 주민들이 순찰·안내·점검한다.
 			if body and landmarkStaff < staffCap then
@@ -6727,14 +6744,21 @@ function PortScene.build(info, onFacility)
 					else nil) else nil
 			local londonFacility = if londonKind then "london_" .. londonKind .. "_"
 				.. tostring(if facilityTier >= 5 then 3 elseif facilityTier >= 3 then 2 else 1) else nil
+			if info.portId == "london" and f.tab == "codex" and facilityTier >= 4 then
+				londonFacility = "london_bld_library"
+			end
 			if londonFacility and not AssetIds["Town/" .. londonFacility] then londonFacility = nil end
 			local signatureAsset = if localArchitecture then nil
 				elseif f.name == "학자의 서재" then "quaternius_large_square_tower"
 				elseif f.name == "도서관 (도감)" then "temple-stone"
 				else nil
-			if londonFacility then signatureAsset = londonFacility end
-			local signature = signatureAsset and importedModel(folder, "Town", signatureAsset, f.pos,
-				math.max(f.w, f.d) * grow * HOUSE_SCALE * (1 + math.max(0, facilityTier - 2) * 0.055), true, tone)
+			local signatureSize = math.max(f.w, f.d) * grow * HOUSE_SCALE * (1 + math.max(0, facilityTier - 2) * 0.055)
+			local signature = if londonFacility then
+				importedModel(folder, "Town", londonFacility, f.pos, signatureSize, true) else nil
+			if not signature then
+				londonFacility = nil
+				signature = signatureAsset and importedModel(folder, "Town", signatureAsset, f.pos, signatureSize, true, tone)
+			end
 			if signature then
 				signature.Name = if londonFacility then "LondonFacility_" .. f.tab
 					elseif f.name == "학자의 서재" then "ScholarStudyTower" else "HarborLibraryHall"
