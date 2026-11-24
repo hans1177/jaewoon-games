@@ -3710,17 +3710,26 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						local face = if z > 0 then -1 else 1
 						local wallName = if key == "japan" or key == "china" or key == "seasia" or key == "malabar"
 							or key == "pacific" or key == "swahili" or key == "wafrica" then "kenney_wood_wall_01" else "kenney_grey_wall_01"
-						-- [런던 공방 전용 실물] 1번째 대장간, 2번째 목공소.
-						-- 실제 등록 번호가 없는 동안에는 기존 개방형 공방을 유지한다.
-						local londonWorkshop = if info.portId == "london" and c[1] == "workshop"
-							then (if n % 2 == 0 then "london_bld_carpenter" else "london_bld_smithy") else nil
-						if londonWorkshop and not AssetIds["Town/" .. londonWorkshop] then londonWorkshop = nil end
-						local ground = importedModel(folder, "Town", londonWorkshop or "floor_base", at,
-							21, londonWorkshop ~= nil, c[6])
+						-- [런던 지시서] 2단계 곡물창고·공방, 3단계 학당·대형창고, 4단계 시청·공방거리.
+						-- 일반 시설의 실제 건설 수량, 기존 필지·모바일 상한을 유지하고 특산품 전용 필지는 건드리지 않는다.
+						local londonCivic = if info.portId ~= "london" then nil
+							elseif c[1] == "workshop" then
+								(if not c[7] and lvl >= 4 and n >= 3 then "london_bld_guild_row"
+								elseif n % 2 == 0 then "london_bld_carpenter" else "london_bld_smithy")
+							elseif not c[7] and c[1] == "warehouse" then
+								(if lvl >= 3 then "london_bld_warehouse" else "london_bld_granary")
+							elseif not c[7] and c[1] == "school" and lvl >= 3 then "london_bld_school"
+							elseif not c[7] and c[1] == "hall" and lvl >= 4 then "london_bld_town_hall" else nil
+						local ground = if londonCivic and AssetIds["Town/" .. londonCivic] then
+							importedModel(folder, "Town", londonCivic, at, 21, true) else nil
+						if not ground then
+							londonCivic = nil
+							ground = importedModel(folder, "Town", "floor_base", at, 21, false, c[6])
+						end
 						if ground then
 							ground.Name = "EconomySite_" .. c[1]
 							ground:SetAttribute("IndustryGood", c[7] or "")
-							if londonWorkshop then ground:SetAttribute("PortOriginalIndustry", londonWorkshop) end
+							if londonCivic then ground:SetAttribute("PortOriginalIndustry", londonCivic) end
 							ground:SetAttribute("PortId", info.portId)
 							ground:SetAttribute("DevelopmentTier", lvl)
 							-- [경제↔건축] 현재 시설 숫자만 읽어 준공 및 증축 가능 등급을 표시한다. 건설비·저장값 변경 없음.
@@ -3736,7 +3745,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							table.insert(placedLots, { X = x, Z = z, H = 18 })
 							-- 한쪽이 실제로 열린 3면 작업장: 승인된 벽·지붕을 사용해 안에 들어갈 수 있다.
 							local back = nil
-							if not londonWorkshop then
+							if not londonCivic then
 								back = importedModel(folder, "Town", wallName, at + Vector3.new(0, 0, -face * 8), 19, true, c[6])
 								for _, dx in { -9, 9 } do
 									local sideAt = at + Vector3.new(dx, 0, 0)
@@ -3752,7 +3761,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 								or ground:FindFirstChildWhichIsA("BasePart", true)
 							if anchor then sign(folder, anchor, c[2], C(151, 110, 51), 10) end
 							-- [내부 설비] 업종에 맞는 실제 실내가구·장비·원료를 기존 개방형 실내에 놓는다.
-							if not londonWorkshop then
+							if not londonCivic then
 								local fixture = importedModel(folder, c[4], c[5], at + Vector3.new(-4, 0, -face * 2), 4.5, false)
 								if fixture then fixture.Name = "FacilityEquipment_" .. c[1] end
 								importedModel(folder, "Interior", if c[1] == "warehouse" or c[1] == "hall" or c[1] == "school"
@@ -3778,7 +3787,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 											and good ~= "tobacco" and good ~= "opium" then
 											local mesh = GOOD_MESH[good]
 											if mesh and AssetIds[mesh[1] .. "/" .. mesh[2]] then
-												local goodsAt = at + Vector3.new(-5 + displayed * 5, 0, face * 3)
+												local goodsAt = at + Vector3.new(-5 + displayed * 5, 0, face * (if londonCivic then 12 else 3))
 												local cargo = importedModel(folder, mesh[1], mesh[2], goodsAt, goodSize(good, 2.3), false, mesh[3])
 												if cargo then
 													displayed += 1
@@ -3823,7 +3832,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 					if newGrade then stageDecoration(prop, at + Vector3.new(13, 0, face * 11), delay) end
 								end
 							end
-							prompt(folder, at + Vector3.new(0, 3, face * 7), c[2], "시설 이용", c[8], onFacility)
+							prompt(folder, at + Vector3.new(0, 3, face * (if londonCivic then 12 else 7)), c[2], "시설 이용", c[8], onFacility)
 						end
 					end
 				end
@@ -6962,7 +6971,22 @@ function PortScene.build(info, onFacility)
 			part(folder, Vector3.new(0.8, 8, 0.8), CFrame.new(14 + i * 3, 4.5, -48) * CFrame.Angles(math.rad(90), 0, 0) * CFrame.Angles(0, 0, 0), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
 		end
 		part(folder, Vector3.new(22, 1, 1), CFrame.new(23, 1.6, -48), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
-		local shed = house(folder, Vector3.new(-4, 0, -88), 14 * 1.2, 12 * 1.2, 2, style, rng, Color3.fromRGB(150, 118, 84))
+		-- [런던 조선소] 지시서의 1·3·5단계 등록 모델을 기존 육상 작업장 필지에서 사용한다.
+		-- 해안 선대, 수리/출입 프롬프트, 자재 저장량 연동은 그대로 유지한다.
+		local yardAt = Vector3.new(-4, 0, -88)
+		local yardAsset = if info.portId == "london" then
+			"london_yard_" .. tostring(if sceneLevel >= 5 then 3 elseif sceneLevel >= 3 then 2 else 1) else nil
+		local yardModel = if yardAsset and AssetIds["Town/" .. yardAsset] then
+			importedModel(folder, "Town", yardAsset, yardAt, 21, true) else nil
+		if yardModel then
+			yardModel.Name = "LondonShipyard"
+			yardModel:SetAttribute("PortOriginalFacility", yardAsset)
+			yardModel:SetAttribute("FacilityVisualTier", sceneLevel)
+			yardModel:SetAttribute("BuildAuthority", "VISUAL_ONLY")
+			rotateAround(yardModel, yardAt, math.pi)
+		end
+		local shed = (yardModel and yardModel:FindFirstChildWhichIsA("BasePart", true))
+			or house(folder, yardAt, 14 * 1.2, 12 * 1.2, 2, style, rng, Color3.fromRGB(150, 118, 84))
 		sign(folder, shed, "조선소", Color3.fromRGB(90, 60, 30), 12)
 		prompt(folder, Vector3.new(8, 3, -79), "조선소", "들어가기", "yard", onFacility)
 		-- 수출·수리 수요가 증가하면 기존 자산으로 조선소 뒤편 목재와 작업 창고를 늘린다.
