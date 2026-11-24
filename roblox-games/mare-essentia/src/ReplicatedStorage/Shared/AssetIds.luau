@@ -1513,6 +1513,7 @@ return {
 	["Town/london_bld_warehouse"] = 119427955089967,
 	["Town/london_bld_watchtower"] = 75171445354756,
 	["Town/london_bld_well"] = 71415337223365,
+	["Town/london_guild_2"] = 79296905677185,
 	["Town/london_harbor_1"] = 70918483742064,
 	["Town/london_harbor_2"] = 99578335921430,
 	["Town/london_harbor_3"] = 117113228599561,
