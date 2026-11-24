@@ -54,6 +54,25 @@ async function prepareLicensedOriginals() {
       sourceBlend:'https://pixor.art/library/files/clock-tower/pixor-library-clock-tower.blend',
       sourceModelingMethod:'Blender rotated wall details, lathed spire and clock rims; published editable named parts and materials',
       townOriginal:true, minBytes:75000, maxBytes:120000, minTriangles:1668, maxTriangles:1668, originalModel:'Clock tower'},
+    // [런던 농업·식량·공연 원본] 제작자 공개 파일의 형상과 출처를 유지한다.
+    {name:'scarecrow-source', assetPath:'assets/town/scarecrow-source.glb', author:'Frakassets (Pixor)',
+      source:'https://pixor.art/library/files/scarecrow/pixor-library-scarecrow.glb',
+      page:'https://pixor.art/ko/library/seasonal/scarecrow/',
+      sourceBlend:'https://pixor.art/library/files/scarecrow/pixor-library-scarecrow.blend',
+      sourceModelingMethod:'Blender lathed sack head and hat, grooved cone straw tufts, pivot animation',
+      townOriginal:true, minBytes:30000, maxBytes:45000, minTriangles:714, maxTriangles:714, originalModel:'Scarecrow'},
+    {name:'bread-oven-source', assetPath:'assets/town/bread-oven-source.glb', author:'Frakassets (Pixor)',
+      source:'https://pixor.art/library/files/oven-bread/pixor-library-oven-bread.glb',
+      page:'https://pixor.art/ko/library/kitchen/oven-bread/',
+      sourceBlend:'https://pixor.art/library/files/oven-bread/pixor-library-oven-bread.blend',
+      sourceModelingMethod:'Blender lathed dome, arched mouth from outline and shape-key flame',
+      townOriginal:true, minBytes:40000, maxBytes:65000, minTriangles:532, maxTriangles:532, originalModel:'Bread oven'},
+    {name:'stage-curtain-source', assetPath:'assets/town/stage-curtain-source.glb', author:'Polygonal Mind (ToxSam GLB conversion)',
+      source:'https://raw.githubusercontent.com/ToxSam/cc0-models-Polygonal-Mind/56db2d4088512531a070d0bf3eb9d284d077528d/projects/avatar-show/Stage_Curtain_Invite.glb',
+      page:'https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/56db2d4088512531a070d0bf3eb9d284d077528d/License.md',
+      pinnedBlobSha:'70d3fcecd64c597fa23c4704535c52a73158a320',
+      sourceModelingMethod:'Original 2018-2023 Polygonal Mind project mesh; creator-published Blender FBX-to-GLB conversion and manual material cleanup',
+      townOriginal:true, minBytes:4682620, maxBytes:4682620, minTriangles:1, maxTriangles:30000, originalModel:'Stage Curtain Invite'},
     // [발견물 조류 1차] 원작자의 수작업 CC0 모델, 고정 리비전과 개별 Git blob 검증.
     {name:'discovery_seagull', assetPath:'assets/animals/discovery_seagull.glb', author:'Scott Petrovic (Mesh2Motion)',
       source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/seagull.glb',
@@ -1613,7 +1632,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     const externalR15Item = kind === 'People' && /^cc0_[a-z0-9_]+\.glb$/.test(sourceFileName);
     // [항구 전용 CC0 원본] 기존 업로더에서 도시별 실물 모델의 출처·해시·권한을 검수한다.
     const portOriginalModel = kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
-    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb'].includes(sourceFileName);
+    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb'].includes(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
     const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle)\.glb$/.test(sourceFileName);
     try {
@@ -1647,7 +1666,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
         if (!sourceLicense || sourceLicense.license !== 'CC0-1.0' || sourceLicense.sourceSha256 !== digest
           || sourceLicense.originalSha256 !== digest || sourceLicense.sha256 !== digest
           || sourceLicense.bytes !== original.length || sourceLicense.commercialUseAllowed !== true
-          || !sourceLicense.sourceBlend || !sourceLicense.sourceModelingMethod || blockedHashes.has(digest))
+          || (!sourceLicense.sourceBlend && !sourceLicense.pinnedBlobSha) || !sourceLicense.sourceModelingMethod || blockedHashes.has(digest))
           throw new Error('MARE_TOWN_ORIGINAL_PROOF_REQUIRED:' + f);
       }
       if (discoveryBird) {
