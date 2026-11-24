@@ -3934,7 +3934,7 @@ test('대항해시대 생물군계 절벽·하층 식생 및 해상 연안 깊�
   assert.match(field,/terrain:FillBall\(center, radius, mat\)/);
   assert.match(field,/groundRay\.FilterDescendantsInstances = \{ workspace\.Terrain, ground \}/);
   assert.match(field,/AssetIds\["Terrain\/tree-pinetalla-detailed"\]/);
-  assert.match(field,/local depthLandforms = if questTerrain/);
+  assert.match(field,/local depthLandforms = if folder:GetAttribute\("FieldSiteComposition"\) == "shallow-reef-shore"[\s\S]*?\} elseif questTerrain == "glacier" then \{/);
   assert.match(naval,/NavalCoastFoamSources/);
   assert.match(naval,/NavalDepthCoastCount/);
   assert.match(naval,/NavalDepthCliff/);
@@ -3977,7 +3977,7 @@ test('대항해시대 3차 원근·계절 숲·선박 항적 CC0 자산 실물 �
   const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
   assert.match(field,/FieldElevatedTerraceCount/);
   assert.match(field,/FieldNearDepthBandCount/);
-  assert.match(field,/local nearBands = if questTerrain == "archive" then \{[\s\S]*?\} elseif tropical and \(questTerrain == "coast" or questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "plains" or questTerrain == "lake"\) then \{/,'기관 정원 우선·열대 지형 전용 근경');
+  assert.match(field,/local nearBands = if folder:GetAttribute\("FieldSiteComposition"\) == "shallow-reef-shore"[\s\S]*?\} elseif questTerrain == "archive" then \{[\s\S]*?\} elseif tropical and \(questTerrain == "coast" or questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "plains" or questTerrain == "lake"\) then \{/,'기관 정원 우선·열대 지형 전용 근경');
   assert.match(field,/groundRay\.FilterDescendantsInstances = \{ workspace\.Terrain, ground \}/);
   assert.match(field,/AssetIds\["Terrain\/tree-detailed-fall"\]/);
   assert.match(field,/AssetIds\["Terrain\/tree-palmdetailedtall"\]/);
@@ -4026,7 +4026,7 @@ test('대항해시대 4차 하천·절벽·수관 CC0 등록 및 지형 시차 �
   assert.match(field,/AssetIds\["Terrain\/ground-riverside"\]/);
   assert.match(field,/AssetIds\["Terrain\/plant-bushsmall"\]/);
   assert.match(field,/AssetIds\["Terrain\/grass-leafslarge"\]/);
-  assert.match(field,/local depthLandforms = if questTerrain == "glacier" then/);
+  assert.match(field,/local depthLandforms = if folder:GetAttribute\("FieldSiteComposition"\) == "shallow-reef-shore"[\s\S]*?\} elseif questTerrain == "glacier" then \{/);
   assert.match(field,/FieldNearDepthBandCount/);
   assert.match(field,/local detailCount = math\.max\(24, math\.floor\(24 \* math\.sqrt\(AREA\)\)\)/);
   assert.match(naval,/NavalDepthShoreBreakCount/);
