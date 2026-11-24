@@ -839,6 +839,70 @@ function FieldScene.start(opts)
 			mocha_coffee = "farm",
 			zanzibar_spice = "farm",
 			sao_tome_cocoa = "farm",
+			-- 북해·발트해 지점별 지시서: 항만, 갯벌, 피오르, 거석 유적, 학술지.
+			antwerp_cabinet = "archive",
+			antwerp_apothecary = "archive",
+			venice_arsenal = "archive",
+			edinburgh_hospital = "archive",
+			amsterdam_garden = "archive",
+			rouen_powder = "archive",
+			lisbon_apothecary = "archive",
+			hamburg_docks = "archive",
+			bergen_arctic_log = "archive",
+			london_pewter_shop = "archive",
+			london_tower_armory = "archive",
+			hamburg_hansa_hall = "archive",
+			hamburg_speicher = "archive",
+			lubeck_hansa_hall = "archive",
+			rouen_coast = "coast",
+			copenhagen_shore = "coast",
+			edinburgh_coast = "coast",
+			edinburgh_legend = "coast",
+			amsterdam_fog = "coast",
+			lisbon_legend = "coast",
+			bergen_maelstrom = "coast",
+			bergen_whale_station = "coast",
+			amsterdam_dogger = "coast",
+			rouen_mont_saint_michel = "coast",
+			copenhagen_eider_isle = "coast",
+			dunkirk_flats = "coast",
+			amsterdam_herring_quay = "coast",
+			gdansk_harbor = "coast",
+			stockholm_skerries = "coast",
+			copenhagen_sound = "coast",
+			bordeaux_quay = "coast",
+			bergen_wharf = "coast",
+			bergen_fjord = "coast",
+			gdansk_amber_beach = "coast",
+			amsterdam_flats = "coast",
+			gothenburg_eider = "coast",
+			plymouth_sound = "coast",
+			hull_whalers = "coast",
+			glasgow_clyde = "coast",
+			lubeck_baltic_coast = "coast",
+			oslo_fjord = "coast",
+			gothenburg_forest = "forest",
+			copenhagen_birch = "forest",
+			runestone_field = "ruins",
+			boyne_valley = "ruins",
+			orkney_village = "ruins",
+			orkney_brodgar = "ruins",
+			uppsala_mounds = "ruins",
+			dublin_stones = "ruins",
+			stockholm_runes = "ruins",
+			oslo_viking_ships = "ruins",
+			london_tower = "fort",
+			edinburgh_castle_rock = "fort",
+			edinburgh_highlands = "highland",
+			edinburgh_heather = "highland",
+			glasgow_highlands = "highland",
+			edinburgh_colliery = "mine",
+			hamburg_estuary = "lake",
+			gothenburg_beaver_lake = "lake",
+			rotterdam_dike = "lake",
+			dublin_cranberry = "swamp",
+			bergen_ice_edge = "glacier",
+			hamburg_hops_farm = "farm",
 		}
 		local selected = exact[opts.siteId or ""]
 		if selected then questTerrain = selected end
@@ -1746,9 +1810,53 @@ function FieldScene.start(opts)
 				end
 				featureList[10][2] = "stone-bricks-stack-small"
 			end
-		elseif questTerrain == "coast" and opts.siteId == "london_chalk" then
-			featureList[4][2], featureList[5][2] = "cliff-large-stone", "cliff-cornerlarge-stone"
-			featureList[4][3], featureList[5][3] = 39, 32
+		elseif questTerrain == "coast" then
+			-- [해안 세부 구성] 갯벌·암벽·어항을 같은 부두 복제본으로 표시하지 않는다.
+			local siteId = opts.siteId or ""
+			local tidal = table.find({ "dunkirk_flats", "amsterdam_flats", "copenhagen_eider_isle" }, siteId) ~= nil
+			local fjord = table.find({ "bergen_fjord", "oslo_fjord", "bergen_cliffs", "stockholm_skerries" }, siteId) ~= nil
+			local cliffs = fjord or table.find({ "london_chalk", "giants_causeway", "rouen_coast", "edinburgh_coast", "gothenburg_eider", "gdansk_amber_beach" }, siteId) ~= nil
+			local wharf = table.find({ "bergen_wharf", "bergen_whale_station", "amsterdam_herring_quay", "amsterdam_fog",
+				"gdansk_harbor", "hull_whalers", "glasgow_clyde", "bordeaux_quay" }, siteId) ~= nil
+			if tidal then
+				featureList[1] = { "Terrain", "platform-beach", 19, -0.66, -0.74, true, 0 }
+				featureList[2] = { "Terrain", "river-stone-bank", 9, -0.76, -0.53, true, 90 }
+				featureList[4] = { "Terrain", "kenney_rock_smallFlatA", 4, 0.79, -0.70, true, 0 }
+				featureList[5] = { "Terrain", "kenney_stone_smallFlatA", 3, 0.83, -0.34, true, 25 }
+				featureList[9] = { "Terrain", "ground-riverrocks", 8, -0.58, -0.42, true, 0 }
+				folder:SetAttribute("FieldSiteComposition", "tidal-flat")
+			elseif cliffs then
+				featureList[1] = { "Terrain", "cliff-blockslope-rock", 28, -0.76, -0.74, true, 15 }
+				featureList[2] = { "Terrain", "rock-largec", 12, -0.76, -0.53, true, 90 }
+				featureList[4][2], featureList[5][2] = if siteId == "london_chalk" then "cliff-large-stone" else "cliff-large-rock",
+					if siteId == "london_chalk" then "cliff-cornerlarge-stone" else "cliff-cornerlarge-rock"
+				featureList[4][3], featureList[5][3] = if fjord then 43 else 39, if fjord then 36 else 32
+				featureList[9] = { "Terrain", "rock-largea", 7, -0.58, -0.42, true, 0 }
+				folder:SetAttribute("FieldSiteComposition", if fjord then "fjord" else "rocky-shore")
+			elseif wharf then
+				featureList[4] = { "Naval", "structure-platform-dock-small", 19, 0.79, -0.70, true, 90 }
+				featureList[5] = { "Town", "cart", 5, 0.83, -0.34, true, 25 }
+				featureList[6] = { "Cargo", "wood-log-stack", 5, 0.68, -0.85, true, 0 }
+				featureList[7] = { "Cargo", "food-barrel-fish", 3, 0.70, -0.58, true, 0 }
+				featureList[10] = { "Town", "lantern", 3, -0.44, -0.71, false, 0 }
+				folder:SetAttribute("FieldSiteComposition", "working-wharf")
+			end
+		elseif questTerrain == "ruins" and table.find({ "runestone_field", "stockholm_runes", "boyne_valley", "orkney_brodgar",
+			"uppsala_mounds", "dublin_stones", "brittany_stones", "orkney_village" }, opts.siteId or "") then
+			-- 거석과 봉분의 일반적인 석재 윤곽만 표현한다. 실제 룬 문자·유적 원본으로 사칭하지 않는다.
+			for _, index in { 1, 2, 3, 4, 6, 8, 10 } do
+				local entry = featureList[index]
+				entry[1], entry[2], entry[3] = "Terrain", if index % 2 == 0 then "rock-tallc" else "rock-talld", if index % 2 == 0 then 8 else 11
+			end
+			featureList[5][2], featureList[7][2], featureList[9][2] = "ground-pathrocks", "rock-largea", "ground-pathrocks"
+			folder:SetAttribute("FieldSiteComposition", "megalithic-stone")
+		elseif questTerrain == "lake" and table.find({ "amsterdam_canals", "amsterdam_polder", "rotterdam_dike", "hamburg_estuary" }, opts.siteId or "") then
+			-- 평탄한 제방·운하의 접지 모델을 연속 배치하며 폭포·산악 실루엣을 제거한다.
+			featureList[1] = { "Terrain", "ground-riverbendbank", 18, -0.82, -0.78, true, 0 }
+			featureList[2] = { "Terrain", "ground-riverside", 17, -0.73, -0.72, false, 0 }
+			featureList[3][2], featureList[4][2] = "ground-riverbend", "ground-riverstraight"
+			featureList[9] = { "Terrain", "village-fence", 12, 0.77, -0.68, true, 0 }
+			folder:SetAttribute("FieldSiteComposition", "lowland-waterway")
 		elseif questTerrain == "archive" then
 			-- 기관 정원: 석재 마당·경계·벤치·수레. 전용 건물을 사칭하지 않는다.
 			featureList[3][1], featureList[3][2] = "Town", "fence_straight_long"
