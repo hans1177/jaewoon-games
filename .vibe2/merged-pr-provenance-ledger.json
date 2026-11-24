@@ -348757,11 +348757,154 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0b4d712529843637ca94419e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15075",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "84bca511f954c5b8c61383a09730a7fdac00fab4",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15075,
+        "baseBranch": "main",
+        "headBranch": "asset/london-tin-workshop",
+        "baseSha": "84bca511f954c5b8c61383a09730a7fdac00fab4",
+        "headSha": "04f442b13d7f70bc7ef0787e45a4b0dba06092cd",
+        "mergeCommitSha": "3e53e1c73bae2719e190948eb319fa6952fa39d7",
+        "mergedAt": "2026-11-24T10:19:33Z",
+        "authorLogin": "hans1177",
+        "titleHash": "fcc60fe8e87c3421ff666ea65727160f624d63242a39f9dd13f0f2ebb939aa91",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "asset/london-tin-workshop",
+        "candidateSha": "04f442b13d7f70bc7ef0787e45a4b0dba06092cd"
+      },
+      "changeStats": {
+        "changedFileCount": 18,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 383,
+        "deletedLineCount": 5,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-double-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-double-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-single-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-single-source.glb.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-double-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-single-source.glb.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15075",
+        "merge-commit:3e53e1c73bae2719e190948eb319fa6952fa39d7",
+        "base-main:84bca511f954c5b8c61383a09730a7fdac00fab4"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2769
+    "total": 2770
   }
 }
