@@ -2322,3 +2322,4 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `town/` | london_trade_3.glb | Approved CC0 source authors · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
 | `town/` | opera-curtain-double-source.glb | Quaternius · CC0-1.0 | https://raw.githubusercontent.com/trebeljahr/quaternius-showcase/0128ca510d653bb04d6d1e4885bd8890b5050b4f/public/glb/house_interior_pack/Curtains_Double.glb |
 | `town/` | opera-curtain-single-source.glb | Quaternius · CC0-1.0 | https://raw.githubusercontent.com/trebeljahr/quaternius-showcase/0128ca510d653bb04d6d1e4885bd8890b5050b4f/public/glb/house_interior_pack/Curtains_Single.glb |
+| `town/` | london_bld_opera.glb | Kenney; Quaternius · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
