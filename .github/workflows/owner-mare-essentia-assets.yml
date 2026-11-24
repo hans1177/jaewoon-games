@@ -249,7 +249,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 tools/devloop/register_asset.py roblox-games/mare-essentia --kind=Town --prefix=london_
+          python3 tools/devloop/register_asset.py roblox-games/mare-essentia --kind=Town --prefix=london_ --allow-partial
           if compgen -G 'roblox-games/mare-essentia/assets/inbox/Terrain/veg_*.glb' >/dev/null; then
             python3 tools/devloop/register_asset.py roblox-games/mare-essentia --kind=Terrain --prefix=veg_
           fi
@@ -405,6 +405,10 @@ jobs:
           fi
           # [런던 원본 승격] 신규 파일은 실제 등록번호·사용권이 확인된 것만 기존 API 반영 목록에 추가한다.
           london_files=()
+          verified_london="$RUNNER_TEMP/mare-london-verified"
+          pending_london="$RUNNER_TEMP/mare-london-pending"
+          : > "$verified_london"
+          : > "$pending_london"
           verified_vegetation="$RUNNER_TEMP/mare-vegetation-verified"
           pending_vegetation="$RUNNER_TEMP/mare-vegetation-pending"
           : > "$verified_vegetation"
@@ -416,7 +420,9 @@ jobs:
           registry = json.loads((root/'assets-registered.json').read_text())['assets']
           verified_vegetation = pathlib.Path(os.environ['RUNNER_TEMP'])/'mare-vegetation-verified'
           pending_vegetation = pathlib.Path(os.environ['RUNNER_TEMP'])/'mare-vegetation-pending'
-          vegetation_sources = []
+          verified_london = pathlib.Path(os.environ['RUNNER_TEMP'])/'mare-london-verified'
+          pending_london = pathlib.Path(os.environ['RUNNER_TEMP'])/'mare-london-pending'
+          verified_sources = []
           for kind, prefix in (('Town', 'london_'), ('Town', 'observatory-dome-source'), ('Town', 'opera-curtain-'), ('Terrain', 'veg_')):
             for path in sorted((root/'assets'/kind.lower()).glob(prefix+'*.glb')):
               inbox = root/'assets/inbox'/kind/path.name
@@ -432,21 +438,32 @@ jobs:
                       with pending_vegetation.open('a') as pending: pending.write(str(path)+'\n')
                       continue
                   with verified_vegetation.open('a') as confirmed: confirmed.write(str(path)+'\n')
-                  vegetation_sources.append(f"| `terrain/` | {path.name} | {proof['author']} · {proof['license']} | {proof['source']} |")
+                  verified_sources.append(f"| `terrain/` | {path.name} | {proof['author']} · {proof['license']} | {proof['source']} |")
+              elif prefix == 'london_':
+                  if not verified or row.get('sourceSha256') != proof['sha256']:
+                      print('MARE_LONDON_REGISTRATION_PENDING',path.stem)
+                      with pending_london.open('a') as pending: pending.write(str(path)+'\n')
+                      continue
+                  with verified_london.open('a') as confirmed: confirmed.write(str(path)+'\n')
+                  verified_sources.append(f"| `town/` | {path.name} | {proof['author']} · {proof['license']} | {proof['source']} |")
               elif not verified:
                   raise SystemExit('MARE_LONDON_REGISTRATION_PENDING:'+path.stem)
               print('MARE_LONDON_REGISTERED_SOURCE_VERIFIED',path.stem,row['assetId'])
-          if vegetation_sources:
+          if verified_sources:
               sources = root/'assets/SOURCES.md'
-              # 다른 자산 등록이 실패했다면 기존 장부에 확인된 식생만 반영한다.
+              # 다른 자산 등록 실패 시 기존 장부에 번호·사용권·해시 확인분만 반영한다.
               content = sources.read_text(encoding='utf-8') if os.environ['MARE_ASSET_REGISTRATION_OUTCOME'] == 'success' else subprocess.check_output(['git','show','HEAD:'+str(sources)],text=True)
-              for line in vegetation_sources:
+              for line in verified_sources:
                   if line not in content.splitlines(): content = content.rstrip()+'\n'+line+'\n'
               sources.write_text(content,encoding='utf-8')
           PY
             while IFS= read -r src; do
               case "$src" in
-                */assets/inbox/Town/london_*.glb|*/assets/inbox/Town/observatory-dome-source.glb|*/assets/inbox/Town/opera-curtain-*-source.glb) dest="roblox-games/mare-essentia/assets/town/${src##*/}" ;;
+                */assets/inbox/Town/london_*.glb)
+                  dest="roblox-games/mare-essentia/assets/town/${src##*/}"
+                  grep -Fxq "$dest" "$verified_london" || continue
+                  ;;
+                */assets/inbox/Town/observatory-dome-source.glb|*/assets/inbox/Town/opera-curtain-*-source.glb) dest="roblox-games/mare-essentia/assets/town/${src##*/}" ;;
                 */assets/inbox/Terrain/veg_*.glb)
                   dest="roblox-games/mare-essentia/assets/terrain/${src##*/}"
                   grep -Fxq "$dest" "$verified_vegetation" || continue
@@ -481,7 +498,7 @@ jobs:
             fi
             # [지상전 3D 실물] 등록·권한 확정 전에는 외부 GLB·권리 증빙·SOURCES 장부를 반영하지 않는다.
             if [[ "${{ steps.asset_registration.outcome }}" != "success" ]]; then
-              if [[ "$f" == roblox-games/mare-essentia/assets/terrain/kenney_*.glb* || ( "$f" == roblox-games/mare-essentia/assets/SOURCES.md && ! -s "$verified_vegetation" ) ]]; then
+              if [[ "$f" == roblox-games/mare-essentia/assets/terrain/kenney_*.glb* || ( "$f" == roblox-games/mare-essentia/assets/SOURCES.md && ! -s "$verified_vegetation" && ! -s "$verified_london" ) ]]; then
                 echo "SKIP_UNVERIFIED_KENNEY_NATURE $f"
                 continue
               fi
@@ -579,7 +596,11 @@ jobs:
             [[ "$current" == "$original" && "$saved" == "$(git hash-object "$f")" ]] || exit 1
             gh api -X DELETE "repos/${GITHUB_REPOSITORY}/contents/${src}" -f message="Mare Essentia: remove registered London inbox copy" -f sha="$current" -f branch=main --silent
           done
-          # 정상 식생은 위에서 저장했다. 미등록 식생은 그대로 남기고 전체 완료로 표시하지 않는다.
+          # 정상 건축·식생은 위에서 저장했다. 미등록 원본은 보존하고 전체 완료로 표시하지 않는다.
+          if [[ "${{ steps.london_source.outcome }}" == "success" ]] && { [[ -s "$pending_london" ]] || compgen -G 'roblox-games/mare-essentia/assets/inbox/Town/london_*.glb' >/dev/null; }; then
+            echo "::error::MARE_LONDON_REGISTRATION_PARTIAL"
+            exit 1
+          fi
           if [[ "${{ steps.london_source.outcome }}" == "success" ]] && { [[ -s "$pending_vegetation" ]] || compgen -G 'roblox-games/mare-essentia/assets/inbox/Terrain/veg_*.glb' >/dev/null; }; then
             echo "::error::MARE_VEGETATION_REGISTRATION_PARTIAL"
             exit 1

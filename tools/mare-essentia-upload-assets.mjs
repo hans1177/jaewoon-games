@@ -1671,7 +1671,22 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     // Quaternius CC0 원본 바이너리/해시/모바일 삼각형 수를 검증하지 못하면 업로드를 차단한다.
     const externalR15Item = kind === 'People' && /^cc0_[a-z0-9_]+\.glb$/.test(sourceFileName);
     // [항구 전용 CC0 원본] 기존 업로더에서 도시별 실물 모델의 출처·해시·권한을 검수한다.
-    const portOriginalModel = kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
+    // 신규 런던 원본만 inbox에서 이동한 실제 파일인지 확인한다. 이전 정식 등록 ID는 변경하지 않는다.
+    let stagedLondon = false;
+    if (kind === 'Town' && /^london_.*\.glb$/.test(sourceFileName)) {
+      const inbox = path.join(ROOT, 'assets', 'inbox', 'Town', sourceFileName);
+      try {
+        execFileSync('git', ['ls-files', '--error-unmatch', inbox], {stdio:'ignore'});
+        // 거부되어 inbox에 남은 동일 이름 원본은 기존 정식 파일과 구분한다.
+        stagedLondon = await fs.access(inbox).then(() => false, error => {
+          if (error.code !== 'ENOENT') throw error;
+          return true;
+        });
+      } catch (error) {
+        if (typeof error.status !== 'number') throw error;
+      }
+    }
+    const portOriginalModel = !stagedLondon && kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
     const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb','opera-curtain-double-source.glb','opera-curtain-single-source.glb'].includes(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
     const harborAnimalOriginal = kind === 'Animals' && sourceFileName === 'pigeon.glb';
@@ -1838,19 +1853,29 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
           || !gltf.meshes?.length || gltf.skins?.length) throw new Error('R15_EXTERNAL_CC0_GEOMETRY_CHANGED:' + f);
       }
     }
+    if (stagedLondon) {
+      // 기존 등록기가 승격한 원본의 해시를 실제 업로드 직전에도 대조한다.
+      sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8'));
+      const bytes = await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName));
+      const digest = crypto.createHash('sha256').update(bytes).digest('hex');
+      if (sourceLicense.license !== 'CC0-1.0' || sourceLicense.derived !== true
+        || !sourceLicense.author || !sourceLicense.originalFiles?.length || !sourceLicense.modification
+        || sourceLicense.sha256 !== digest || sourceLicense.bytes !== bytes.length || blockedHashes.has(digest))
+        throw new Error('MARE_LONDON_STAGED_SOURCE_INVALID:' + f);
+    }
     } catch (error) {
-      // 개별 식생의 로컬 증빙 실패만 격리한다. 다른 자산·계정·보안 실패 경로는 변경하지 않는다.
-      if (!derivedVegetation) throw error;
+      // 개별 건축·식생의 로컬 증빙 실패만 격리한다. 다른 자산·계정·보안 실패 경로는 변경하지 않는다.
+      if (!derivedVegetation && !stagedLondon) throw error;
       const failure = kind + '/' + name + ': ' + String(error.message).slice(0, 200);
       planFailures.push(failure);
-      console.error('MARE_VEGETATION_PLAN_REJECTED', failure);
+      console.error(stagedLondon ? 'MARE_LONDON_PLAN_REJECTED' : 'MARE_VEGETATION_PLAN_REJECTED', failure);
       continue;
     }
-    plan.push({kind, name, file: path.join(ROOT, 'assets', dir, f), ext, compressed: compressedGlb, sourceLicense,
+    plan.push({kind, name, file: path.join(ROOT, 'assets', dir, f), ext, compressed: compressedGlb, sourceLicense, stagedLondon,
       // [실제 Studio 검증] Goods/Menu/Portraits 모두 ImageLabel에서 사용한다. Decal 번호는 Client에서 로딩되지 않았다.
       // 실패 원본을 재업로드하지 않고 승인된 기존 PNG/JPG로 Image 자산을 발급한다.
       assetType: image ? 'Image' : 'Model',
-      license: (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || portOriginalModel || townOriginal || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
+      license: (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || portOriginalModel || townOriginal || stagedLondon || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) && sourceLicense ? sourceLicense.license : kind === 'CardArt' ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && ['parchment_grain.png', 'leather_grain.png', 'naval_skill.png', 'naval_fire.png', 'naval_speed.png', 'field_attack.png', 'field_dodge.png', 'field_weapon.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Menu' && f.startsWith('vfx_') ? 'CC0-1.0'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
@@ -1923,7 +1948,7 @@ for (const item of plan) {
   const storedBytes = await fs.readFile(item.file);
   const originalBytes = item.compressed ? gunzipSync(storedBytes) : storedBytes;
   const sourceSha256 = crypto.createHash('sha256').update(originalBytes).digest('hex');
-  if (item.sourceLicense && (item.kind === 'Terrain' && item.name.startsWith('veg_') ? item.sourceLicense.sha256 : item.sourceLicense.sourceSha256) !== sourceSha256) {
+  if (item.sourceLicense && ((item.stagedLondon || (item.kind === 'Terrain' && item.name.startsWith('veg_'))) ? item.sourceLicense.sha256 : item.sourceLicense.sourceSha256) !== sourceSha256) {
     failures.push(id + ': ORIGINAL_MODEL_SHA256_MISMATCH');
     console.error('ORIGINAL_MODEL_SHA256_MISMATCH', id);
     continue;
@@ -1988,6 +2013,12 @@ for (const item of plan) {
   }
   // [선박 원본 교체] 증빙된 모델의 바이너리가 바뀌면 기존 등록번호를 새 모델에 재사용하지 않는다.
   // 새 모델 등록과 Universe 사용 권한이 함께 확인되지 않으면 기존 번호로 복구한다.
+  if (item.stagedLondon && registry.assets[id]?.assetId && registry.assets[id].sourceSha256 !== sourceSha256) {
+    // 발급된 번호는 다른 원본의 해시로 재사용하지 않는다.
+    failures.push(id + ': MARE_LONDON_EXISTING_ID_SOURCE_MISMATCH');
+    console.error('MARE_LONDON_EXISTING_ID_SOURCE_MISMATCH', id);
+    continue;
+  }
   if (item.assetType === 'Model' && item.sourceLicense) {
     const old = registry.assets[id];
     const outfitUvUpgrade = item.kind === 'People' && /^outfit_(?:vest|coat|guard|apron|sash|belt|cuff|boot|stole)$/.test(item.name);
@@ -2194,13 +2225,13 @@ if (failures.length && previousTypeAssets.size) {
 }
 if (failures.length === 0) registry.updatedAt = new Date().toISOString();
 registry.license = Object.values(registry.assets).every(a => a.license === 'CC0-1.0') ? 'CC0-1.0' : 'SEE_INDIVIDUAL_ASSET_LICENSES';
-// 권한 대기 중인 신규 식생은 원격 번호를 보존하되 아직 남아 있는 inbox 원본을 가리킨다.
+// 권한 대기 중인 신규 건축·식생은 원격 번호를 보존하되 아직 남아 있는 inbox 원본을 가리킨다.
 // 다음 실행에서 동일 번호의 권한만 재확인하며 중복 업로드하지 않는다.
 for (const item of plan) {
   const id = item.kind + '/' + item.name;
   const row = registry.assets[id];
-  if (!id.startsWith('Terrain/veg_') || !row?.assetId || row.usePermissionGranted === true) continue;
-  const inbox = path.join(ROOT, 'assets', 'inbox', 'Terrain', path.basename(item.file));
+  if (!(id.startsWith('Terrain/veg_') || item.stagedLondon) || !row?.assetId || row.usePermissionGranted === true) continue;
+  const inbox = path.join(ROOT, 'assets', 'inbox', item.kind, path.basename(item.file));
   try {
     execFileSync('git', ['ls-files', '--error-unmatch', inbox], {stdio: 'ignore'});
     row.source = inbox;
@@ -2208,7 +2239,7 @@ for (const item of plan) {
 }
 await fs.writeFile(JSON_OUT, JSON.stringify(registry, null, 2) + '\n');
 const lines = Object.entries(registry.assets).filter(([k, v]) =>
-  !k.startsWith('Terrain/veg_') || v.usePermissionGranted === true
+  !(k.startsWith('Terrain/veg_') || k.startsWith('Town/london_')) || v.usePermissionGranted === true
 ).sort().map(([k, v]) => `\t["${k}"] = ${v.assetId},`);
 await fs.writeFile(LUAU_OUT, '-- 자동 생성: tools/mare-essentia-upload-assets.mjs (직접 고치지 말 것)\nreturn {\n' + lines.join('\n') + (lines.length ? '\n' : '') + '}\n');
 console.log('REGISTERED_COUNT=' + Object.keys(registry.assets).length + ' FAILED_COUNT=' + failures.length);
