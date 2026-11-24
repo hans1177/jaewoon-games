@@ -195,12 +195,12 @@
       }
     }
   ],
-  "modification": "New residential suburb block with four varied period townhouses, broad central lane and planted garden areas. Preserve original buildings and foliage geometry.",
-  "sha256": "d38cb463d402560110d1212a3b1b75d47d158ef8cd782c65199d1f26e52b1b88",
-  "bytes": 510624,
+  "modification": "New residential suburb block with four varied period townhouses, broad central lane and planted garden areas. Preserve original buildings and foliage geometry. Removed four unreachable temporary parents that gave foliage nodes multiple parents; all reachable mesh data, materials, and transforms preserved.",
+  "sha256": "81d3619e48956a672e8910066c335ce02d78dfbbd6ab592ce11d17c52ee13df1",
+  "bytes": 510240,
   "triangles": 8280,
   "sceneTriangles": 16054,
-  "validation": "GLB_STRUCTURE_AND_TRIANGLE_COUNT_VERIFIED__STUDIO_VISUAL_AND_ROLE_REVIEW_PENDING",
+  "validation": "GLB_STRUCTURE_AND_TRIANGLE_COUNT_VERIFIED__SINGLE_PARENT_TREE_VERIFIED__STUDIO_VISUAL_AND_ROLE_REVIEW_PENDING",
   "productionVerified": false,
   "registration": "PENDING_EXISTING_CANONICAL_REGISTER_AND_ASSET_WORKFLOW"
 }
