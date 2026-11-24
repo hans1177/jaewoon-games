@@ -4181,7 +4181,7 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   const siteProfile=field.slice(field.indexOf('local exact = {'),field.indexOf('local selected = exact'));
   const sitesSource=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sites.luau');
   const profiles=[...siteProfile.matchAll(/([a-z_0-9]+) = "([a-z]+)"/g)];
-  assert.ok(profiles.length>=346,'실제 탐험지별 지형 지정');
+  assert.ok(profiles.length>=367,'실제 탐험지별 지형 지정');
   assert.equal(new Set(profiles.map(row=>row[1])).size,profiles.length,'탐험지 ID 중복 금지');
   for(const [,id] of profiles) assert.ok(sitesSource.includes('id = "'+id+'"'),'존재하지 않는 지점 '+id);
   for(const [id,theme] of Object.entries({london_chalk:'coast',bergen_cliffs:'coast',amsterdam_canals:'lake',carrara_quarry:'mine',vesuvius_slopes:'volcanic',edo_fuji:'highland',royal_archive:'archive',genoa_olive:'farm'})){
@@ -4191,6 +4191,11 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
     assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'미주 지점 지형 불일치 '+id);
   }
   assert.match(field,/FieldSiteComposition", "colonial-fort-ground"/,'미주 역사 요새의 중세 성 대체 금지');
+  for(const [id,theme] of Object.entries({"pac_survey_00":"forest","pac_survey_01":"forest","pac_survey_02":"coast","pac_survey_03":"swamp","pac_survey_04":"forest","pac_survey_05":"jungle","pac_survey_06":"jungle","pac_survey_07":"coast","pac_survey_08":"volcanic","pac_survey_09":"coast","pac_survey_10":"archive","pac_survey_11":"archive","pac_survey_12":"archive","pac_survey_13":"coast","pac_survey_14":"archive","pac_survey_15":"coast","pac_survey_16":"coast","pac_survey_17":"coast","pac_survey_18":"coast","pac_survey_19":"coast","pac_survey_20":"coast"})){
+    assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'태평양 지점 지형 불일치 '+id);
+  }
+  assert.match(field,/FieldSiteComposition", "low-sandy-shore"/,'낮은 모래 해안');
+  assert.match(field,/regionalFeatures = PORT_NATURE_MODELS\[portNature or ""\]/,'태평양 탐사에서 외국 랜드마크 제거');
   assert.match(field,/FieldSiteTerrainSource/,'지점 ID 사용 여부 진단');
   for(const [id,theme] of Object.entries({marseille_salt:'swamp',valencia_albufera:'swamp',valletta_bastions:'fort',athens_acropolis:'ruins',istanbul_bazaar:'archive',las_palmas_volcano:'volcanic',helsinki_gulf:'glacier',cyprus_copper:'mine'})){
     assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'지중해·발트해 지점 분류 불일치 '+id);
