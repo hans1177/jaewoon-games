@@ -130,6 +130,9 @@ function Stage.setup(args)
 		end
 	end
 
+	local observed = false
+	local revealed = false
+	local flees = 0
 	local available = conditionMet(form.condition, folder)
 	if form.missing or not available then
 		placeTrace()
@@ -139,10 +142,35 @@ function Stage.setup(args)
 	end
 	if available then placeForm() end
 	silhouette(#models > 0)
+	-- 모델이 아직 내려받는 중이면(지연 로딩) 흔적을 먼저 보여 주고, 도착하면 실물로 바꾼다.
+	if available and #models == 0 and not form.missing then
+		placeTrace()
+		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
+		local wanted = {}
+		for _, m in form.models do wanted[m[1]] = true end
+		for groupName in wanted do
+			local group = lib and lib:FindFirstChild(groupName)
+			if group then
+				local conn
+				conn = group.ChildAdded:Connect(function()
+					if #models > 0 or args.isFinished() or not anchor.Parent then
+						if conn then conn:Disconnect() end
+						return
+					end
+					task.defer(function()
+						if #models > 0 or args.isFinished() then return end
+						placeForm()
+						if #models > 0 then
+							clearTrace()
+							silhouette(not revealed)
+							if conn then conn:Disconnect() end
+						end
+					end)
+				end)
+			end
+		end
+	end
 
-	local observed = false
-	local revealed = false
-	local flees = 0
 	task.spawn(function()
 		while not observed and anchor.Parent and not args.isFinished() do
 			task.wait(0.25)
