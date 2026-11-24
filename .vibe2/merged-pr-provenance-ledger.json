@@ -336452,11 +336452,128 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_1978daa7946c4f2d331b2b9e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14898",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "1c3a2228a3467f17dab3dfd09e5301c7cb087994",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14898,
+        "baseBranch": "main",
+        "headBranch": "mare-london-town-hall-63baf9f",
+        "baseSha": "1c3a2228a3467f17dab3dfd09e5301c7cb087994",
+        "headSha": "63baf9fcaa7b249a25acbbcbb2ac2fbfd8603a94",
+        "mergeCommitSha": "11339234b32f06ab863ee99ab89c4bf6adb2de24",
+        "mergedAt": "2026-11-24T02:12:21Z",
+        "authorLogin": "hans1177",
+        "titleHash": "efbcf1b84c8048c393b24d3ee3eca613efcd813c3f5095329cb0583f52717f00",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-london-town-hall-63baf9f",
+        "candidateSha": "63baf9fcaa7b249a25acbbcbb2ac2fbfd8603a94"
+      },
+      "changeStats": {
+        "changedFileCount": 2,
+        "codingRelevantFileCount": 1,
+        "addedLineCount": 143,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_town_hall.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_town_hall.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Town/london_bld_town_hall.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14898",
+        "merge-commit:11339234b32f06ab863ee99ab89c4bf6adb2de24",
+        "base-main:1c3a2228a3467f17dab3dfd09e5301c7cb087994"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2691
+    "total": 2692
   }
 }
