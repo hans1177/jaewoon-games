@@ -872,7 +872,7 @@ function FieldScene.start(opts)
 		end)
 		pcall(function()
 			L.ShadowSoftness = 0.31
-			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = biome.fog, 40, biome.fogEnd, biome.clock
+			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = biome.fog, math.min(120, biome.fogEnd * 0.35), biome.fogEnd, biome.clock
 			L.Brightness = 2.1
 			L.Ambient = biome.fog:Lerp(Color3.fromRGB(132, 139, 153), 0.65)
 			L.OutdoorAmbient = biome.fog:Lerp(Color3.fromRGB(153, 160, 168), 0.55)
@@ -998,6 +998,17 @@ function FieldScene.start(opts)
 			table.insert(hills, { center, r })
 		end
 		folder:SetAttribute("FieldBackdropCrestCount", backdropCount)
+		-- [전투장 밖 원경] 기존 외곽 능선은 유지하고 400스터드 이상 먼 지평선에
+		-- 항구 문화권 실물의 접지용 자연 지형만 둔다. 광산은 닫힌 경관을 유지한다.
+		if questTerrain ~= "mine" then
+			for index = 1, (if visualMobile then 1 else 2) do
+				local x = if visualMobile then 0 else (if index == 1 then -1 else 1) * math.max(70, half * 0.44)
+				local r = if visualMobile then 58 else 70
+				local center = ORIGIN + Vector3.new(x, -r * 0.72, -math.max(400, half + 130))
+				terrain:FillBall(center, r, mat)
+				table.insert(hills, { center, r })
+			end
+		end
 		folder.Destroying:Connect(function()
 			for _, h in hills do
 				terrain:FillBall(h[1], h[2] + 2, Enum.Material.Air)
@@ -1148,12 +1159,18 @@ function FieldScene.start(opts)
 			m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, math.rad(entry[7]), 0) * CFrame.new(-pos) * m:GetPivot())
 		end
 		-- 모든 승인된 필드 장식은 무기로 타격 가능. 큰 랜드마크는 시각 반응만 하고 영구 파괴하지 않는다.
-		local center, extent = m:GetBoundingBox()
-		m:SetAttribute("FieldCombatObject", true)
-		m:SetAttribute("FieldObjectHits", 0)
-		table.insert(fieldObjects, { model = m, pos = center.Position,
-			radius = math.clamp(math.max(extent.X, extent.Z) * 0.24, 1.4, 7.5),
-			origin = m:GetPivot(), lastHit = -100 })
+		if entry.horizon then
+			-- 전장 밖 배경은 조사·타격 대상이 아니다. 실제 로드 성공 후에만 계수한다.
+			m:SetAttribute("FieldHorizon", true)
+			folder:SetAttribute("FieldHorizonPlaced", (folder:GetAttribute("FieldHorizonPlaced") or 0) + 1)
+		else
+			local center, extent = m:GetBoundingBox()
+			m:SetAttribute("FieldCombatObject", true)
+			m:SetAttribute("FieldObjectHits", 0)
+			table.insert(fieldObjects, { model = m, pos = center.Position,
+				radius = math.clamp(math.max(extent.X, extent.Z) * 0.24, 1.4, 7.5),
+				origin = m:GetPivot(), lastHit = -100 })
+		end
 		-- 대표 건축물은 지연 로드돼도 지명 표지판을 놓친 채 끝나지 않게 한다.
 		if entry.title and not folder:GetAttribute("FieldNamedLandmarkTitle") then
 			local adorn = m:FindFirstChildWhichIsA("BasePart", true)
@@ -1786,6 +1803,20 @@ function FieldScene.start(opts)
 			entry.band = if index == 3 then "near" elseif index <= 2 then "mid" else "far"
 			entry.landmark = true
 			stageFeature(entry)
+		end
+		-- [지역 지평선] 근·중경의 기존 전투/조사 실물은 그대로 유지한다.
+		-- 이미 해당 문화권에 승인된 대표 실물만 한두 개 재사용하며 새 모델·대체 랜드마크를 만들지 않는다.
+		if questTerrain ~= "mine" then
+			folder:SetAttribute("FieldHorizonPlaced", 0)
+			for index = 1, math.min(#regionalFeatures, if visualMobile then 1 else 2) do
+				local feature = regionalFeatures[index]
+				local x = if visualMobile then 0 else (if index == 1 then -1 else 1) * math.max(70, half * 0.44)
+				local entry = { feature[1], feature[2], feature[3], nil, nil, false }
+				entry.position = ORIGIN + Vector3.new(x, 0, -math.max(400, half + 130))
+				entry.band = "far"
+				entry.horizon = true
+				stageFeature(entry)
+			end
 		end
 	end
 	folder:SetAttribute("FieldTerrainFeatureCount", built)
@@ -3102,6 +3133,7 @@ function FieldScene.start(opts)
 			lighting.ClockTime = clock
 			lighting.Brightness = (0.52 + 1.58 * sun) * (if weather == "소나기" then 0.78 else 1)
 			lighting.FogEnd = math.max(105, biome.fogEnd * damp)
+			lighting.FogStart = math.min(120, lighting.FogEnd * 0.35)
 			lighting.FogColor = biome.fog:Lerp(Color3.fromRGB(60, 78, 111), (1 - sun) * 0.55)
 			-- [기존 날씨 틱 통합] 새 갱신 루프 없이 새벽·밤·비·해무의 대기 밀도만 조정한다.
 			local depthAtmosphere = lightSave.FieldAtmosphere
