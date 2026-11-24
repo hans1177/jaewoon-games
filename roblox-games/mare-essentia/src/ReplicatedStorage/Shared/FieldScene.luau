@@ -987,6 +987,100 @@ function FieldScene.start(opts)
 			helsinki_gulf = "glacier",
 			cyprus_copper = "mine",
 			cartagena_mines = "mine",
+			agadir_argan = "forest",
+			ouidah_forest = "forest",
+			colombo_cinnamon = "forest",
+			praia_cliffs = "volcanic",
+			aden_crater = "volcanic",
+			ternate_volcano = "volcanic",
+			saint_louis_river = "lake",
+			basra_canals = "lake",
+			cochin_backwaters = "lake",
+			tianjin_canal = "lake",
+			batavia_canal = "lake",
+			brunei_water = "lake",
+			goree_island = "coast",
+			dakar_cape = "coast",
+			lagos_lagoon = "coast",
+			sao_tome_coast = "coast",
+			luanda_coast = "coast",
+			helena_mid = "coast",
+			cape_good_hope = "coast",
+			mombasa_reef = "coast",
+			mogadishu_coast = "coast",
+			aden_straits = "coast",
+			jeddah_pilgrim = "coast",
+			jeddah_reef = "coast",
+			muscat_pearl = "coast",
+			bandar_hormuz = "coast",
+			calicut_vasco = "coast",
+			cochin_nets = "coast",
+			maldives_atoll = "coast",
+			madras_coast = "coast",
+			malacca_spice = "coast",
+			louis_dodo = "coast",
+			indian_chinese_ship = "coast",
+			manila_galleon = "coast",
+			amoy_harbor = "coast",
+			shanghai_estuary = "coast",
+			nagasaki_dejima = "coast",
+			nagasaki_kuroshio = "coast",
+			hakodate_bay = "coast",
+			incheon_flats = "coast",
+			singapore_strait = "coast",
+			makassar_pearl = "coast",
+			komodo_island = "coast",
+			typhoon_sea = "coast",
+			bissau_mangrove = "swamp",
+			calabar_delta = "swamp",
+			basra_marsh = "swamp",
+			calcutta_delta = "swamp",
+			freetown_peninsula = "highland",
+			goa_ghats = "highland",
+			elmina_castle = "fort",
+			cape_coast_castle = "fort",
+			mozambique_island = "fort",
+			mombasa_fort = "fort",
+			muscat_forts = "fort",
+			diu_fortress = "fort",
+			malacca_fort = "fort",
+			manila_walls = "fort",
+			osaka_castle = "fort",
+			tainan_fort = "fort",
+			elmina_goldfields = "mine",
+			mozambique_gold = "mine",
+			colombo_gems = "mine",
+			silver_mine = "mine",
+			kilwa_ruins = "ruins",
+			muscat_persepolis = "ruins",
+			madras_temple = "ruins",
+			macau_ruins = "ruins",
+			ningbo_temple = "ruins",
+			bangkok_temples = "ruins",
+			rangoon_shwedagon = "ruins",
+			java_borobudur = "ruins",
+			zanzibar_stone = "archive",
+			surat_bazaar = "archive",
+			goa_church = "archive",
+			calcutta_silk = "archive",
+			canton_factories = "archive",
+			shanghai_silk = "archive",
+			osaka_market = "archive",
+			busan_waegwan = "archive",
+			hoi_an_lanterns = "archive",
+			jade_market = "archive",
+			nagasaki_armory = "archive",
+			istanbul_arsenal = "archive",
+			mombasa_fort_records = "archive",
+			sao_tome_peak = "jungle",
+			angkor_jungle = "jungle",
+			borneo_rainforest = "jungle",
+			benguela_desert = "desert",
+			ambon_spice = "farm",
+			banda_nutmeg = "farm",
+			lagos_benin_road = "plains",
+			surat_agra = "plains",
+			beijing_road = "plains",
 		}
 		local selected = exact[opts.siteId or ""]
 		if selected then questTerrain = selected end
@@ -1907,17 +2001,42 @@ function FieldScene.start(opts)
 			featureList[8] = { "Terrain", "ground-riverrocks", 8, -0.71, -0.12, false, 0 }
 			featureList[9] = { "Terrain", "coast-grass-patch", 4, 0.58, -0.15, false, 0 }
 			folder:SetAttribute("FieldSiteComposition", "salt-work-waterway")
+		elseif questTerrain == "swamp" and table.find({ "bissau_mangrove", "calabar_delta", "calcutta_delta", "basra_marsh" }, opts.siteId or "") then
+			-- [삼각주·맹그로브 수변] 물길과 둑, 낮은 식생을 분리한다. 미등록 맹그로브 뿌리나 갈대 원본을 사칭하지 않는다.
+			featureList[1] = { "Terrain", "ground-riverbend", 23, -0.68, -0.75, false, 0 }
+			featureList[2] = { "Terrain", "ground-riverstraight", 21, -0.60, -0.46, false, 70 }
+			featureList[3] = { "Terrain", "bridge-wood", 15, -0.58, -0.28, true, 90 }
+			featureList[4] = { "Terrain", "ground-riverbendbank", 15, -0.77, -0.62, false, 0 }
+			featureList[5] = { "Terrain", "plant-bushlarge", 7, 0.59, -0.72, false, 0 }
+			featureList[6] = { "Terrain", "river-stone-bank", 10, 0.76, -0.43, false, 0 }
+			featureList[7] = { "Terrain", "tropical-palm-tall", 17, 0.80, -0.78, true, 0 }
+			featureList[8] = { "Terrain", "canoe", 9, -0.71, -0.12, false, 0 }
+			featureList[9] = { "Terrain", "grass-leafslarge", 4, 0.58, -0.15, false, 0 }
+			folder:SetAttribute("FieldSiteComposition", "delta-waterway")
+			folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
 		elseif questTerrain == "coast" then
 			-- [해안 세부 구성] 갯벌·암벽·어항을 같은 부두 복제본으로 표시하지 않는다.
 			local siteId = opts.siteId or ""
-			local tidal = table.find({ "dunkirk_flats", "amsterdam_flats", "copenhagen_eider_isle" }, siteId) ~= nil
+			local tidal = table.find({ "dunkirk_flats", "amsterdam_flats", "copenhagen_eider_isle", "incheon_flats" }, siteId) ~= nil
 			local fjord = table.find({ "bergen_fjord", "oslo_fjord", "bergen_cliffs", "stockholm_skerries" }, siteId) ~= nil
 			local cliffs = fjord or table.find({ "london_chalk", "giants_causeway", "rouen_coast", "edinburgh_coast", "gothenburg_eider", "gdansk_amber_beach", "marseille_calanques", "gibraltar_cliff",
 				"gibraltar_cave", "trieste_karst" }, siteId) ~= nil
 			local wharf = table.find({ "bergen_wharf", "bergen_whale_station", "amsterdam_herring_quay", "amsterdam_fog",
 				"gdansk_harbor", "hull_whalers", "glasgow_clyde", "bordeaux_quay", "porto_ribeira",
-				"cadiz_treasure_fleet", "toulon_arsenal", "la_rochelle_towers" }, siteId) ~= nil
-			if tidal then
+				"cadiz_treasure_fleet", "toulon_arsenal", "la_rochelle_towers", "jeddah_pilgrim",
+				"cochin_nets", "manila_galleon", "amoy_harbor", "nagasaki_dejima" }, siteId) ~= nil
+			local reef = table.find({ "mombasa_reef", "jeddah_reef", "maldives_atoll", "coral_banks" }, siteId) ~= nil
+			if reef then
+				-- [산호 해안] 원본 산호가 없으므로 얕은 해안과 낮은 암반만 구성한다.
+				featureList[1] = { "Terrain", "platform-beach", 25, -0.66, -0.74, true, 0 }
+				featureList[2] = { "Terrain", "kenney_rock_smallFlatA", 5, -0.76, -0.53, true, 90 }
+				featureList[4] = { "Naval", "rocks-sand-a", 5, 0.79, -0.70, true, 0 }
+				featureList[5] = { "Naval", "rocks-sand-b", 4, 0.83, -0.34, true, 25 }
+				featureList[6] = { "Terrain", "tropical-palm-short", 10, 0.68, -0.85, false, 0 }
+				featureList[9] = { "Terrain", "ground-riverrocks", 7, -0.58, -0.42, true, 0 }
+				folder:SetAttribute("FieldSiteComposition", "shallow-reef-shore")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			elseif tidal then
 				featureList[1] = { "Terrain", "platform-beach", 19, -0.66, -0.74, true, 0 }
 				featureList[2] = { "Terrain", "river-stone-bank", 9, -0.76, -0.53, true, 90 }
 				featureList[4] = { "Terrain", "kenney_rock_smallFlatA", 4, 0.79, -0.70, true, 0 }
@@ -1940,6 +2059,31 @@ function FieldScene.start(opts)
 				featureList[10] = { "Town", "lantern", 3, -0.44, -0.71, false, 0 }
 				folder:SetAttribute("FieldSiteComposition", "working-wharf")
 			end
+		elseif questTerrain == "ruins" and opts.siteId == "ningbo_temple" then
+			-- [동아시아 사찰 터] 실제 등록된 동아시아 석재 기단·계단·종을 배치한다.
+			-- 미등록 사찰 본전은 만들지 않고 조사 동선은 기존 자리에 유지한다.
+			featureList[1] = { "Town", "eastasia-base", 19, -0.71, -0.75, true, 0 }
+			featureList[2] = { "Town", "eastasia-column-base", 7, -0.57, -0.70, true, 0 }
+			featureList[3] = { "Town", "eastasia-bell", 11, 0.68, -0.72, true, 0 }
+			featureList[4] = { "Town", "eastasia-stairs", 12, 0.77, -0.56, true, 35 }
+			featureList[5] = { "Terrain", "ground-pathrocks", 8, -0.44, -0.47, true, 0 }
+			featureList[7] = { "Terrain", "east-bamboo-grove", 9, 0.68, -0.33, true, 0 }
+			featureList[9] = { "Terrain", "altar-stone", 6, -0.64, -0.46, true, 0 }
+			folder:SetAttribute("FieldSiteComposition", "east-asian-temple-court")
+			folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+		elseif questTerrain == "fort" and (opts.siteId == "osaka_castle" or opts.siteId == "edo_castle") then
+			-- [일본 성터] 서양 성채 모델을 일본 천수각으로 표시하지 않는다.
+			-- 기등록 석재 기단과 절개면, 계단만 사용한다.
+			featureList[1] = { "Town", "eastasia-stairs", 15, -0.52, -0.74, true, 0 }
+			featureList[2] = { "Terrain", "cliff-blockslopewalls-rock", 23, -0.79, -0.74, true, 0 }
+			featureList[3] = { "Terrain", "cliff-large-stone", 20, -0.79, -0.49, true, 0 }
+			featureList[4] = { "Town", "eastasia-base", 19, -0.73, -0.88, true, 0 }
+			featureList[5] = { "Terrain", "cliff-cornerlarge-stone", 28, 0.75, -0.71, true, 0 }
+			featureList[6] = { "Terrain", "cliff-blockslopewalls-rock", 20, 0.67, -0.42, true, 0 }
+			featureList[7] = { "Terrain", "ground-pathrocks", 9, 0.62, -0.86, false, 0 }
+			featureList[8] = { "Terrain", "bridge-wood", 16, 0.54, -0.61, true, 0 }
+			folder:SetAttribute("FieldSiteComposition", "japanese-stone-fort")
+			folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
 		elseif questTerrain == "ruins" and table.find({ "runestone_field", "stockholm_runes", "boyne_valley", "orkney_brodgar",
 			"uppsala_mounds", "dublin_stones", "brittany_stones", "orkney_village" }, opts.siteId or "") then
 			-- 거석과 봉분의 일반적인 석재 윤곽만 표현한다. 실제 룬 문자·유적 원본으로 사칭하지 않는다.
@@ -1949,7 +2093,8 @@ function FieldScene.start(opts)
 			end
 			featureList[5][2], featureList[7][2], featureList[9][2] = "ground-pathrocks", "rock-largea", "ground-pathrocks"
 			folder:SetAttribute("FieldSiteComposition", "megalithic-stone")
-		elseif questTerrain == "lake" and table.find({ "amsterdam_canals", "amsterdam_polder", "rotterdam_dike", "hamburg_estuary" }, opts.siteId or "") then
+		elseif questTerrain == "lake" and table.find({ "amsterdam_canals", "amsterdam_polder", "rotterdam_dike", "hamburg_estuary",
+			"saint_louis_river", "basra_canals", "cochin_backwaters", "tianjin_canal", "batavia_canal", "brunei_water" }, opts.siteId or "") then
 			-- 평탄한 제방·운하의 접지 모델을 연속 배치하며 폭포·산악 실루엣을 제거한다.
 			featureList[1] = { "Terrain", "ground-riverbendbank", 18, -0.82, -0.78, true, 0 }
 			featureList[2] = { "Terrain", "ground-riverside", 17, -0.73, -0.72, false, 0 }
@@ -1957,7 +2102,8 @@ function FieldScene.start(opts)
 			featureList[9] = { "Terrain", "village-fence", 12, 0.77, -0.68, true, 0 }
 			folder:SetAttribute("FieldSiteComposition", "lowland-waterway")
 		elseif questTerrain == "archive" and table.find({ "istanbul_bazaar", "smyrna_bazaar", "barcelona_market",
-			"barcelona_gothic", "algiers_kasbah", "riga_old_town", "casablanca_medina" }, opts.siteId or "") then
+			"barcelona_gothic", "algiers_kasbah", "riga_old_town", "casablanca_medina",
+			"surat_bazaar", "osaka_market", "jade_market", "hoi_an_lanterns", "zanzibar_stone" }, opts.siteId or "") then
 			-- [시장과 구시가] 기관 정원 대신 석재 길과 실제 시장 가판대, 운반 상자를 배치한다.
 			featureList[1] = { "Terrain", "platform-stone", 24, -0.57, -0.53, false, 0 }
 			featureList[2] = { "Terrain", "ground-pathstraight", 18, -0.55, -0.30, false, 0 }
