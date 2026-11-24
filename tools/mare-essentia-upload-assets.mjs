@@ -45,12 +45,23 @@ async function prepareLicensedOriginals() {
       source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/seagull.glb',
       page:'https://github.com/Mesh2Motion/mesh2motion-app/blob/017169ae6f7574d8fa75d893c38c2776386ca40b/LICENSE-CC0.MD', pinnedBlobSha:'c237e114369484eb09caa398dc0b0214f61b14bf',
       minBytes:131500, maxBytes:131500, minTriangles:1000, maxTriangles:3000,
-      discoveryBird:'zoo_gull', originalModel:'Seagull'},
+      discoveryAnimal:'zoo_gull', originalModel:'Seagull'},
     {name:'discovery_bald_eagle', assetPath:'assets/animals/discovery_bald_eagle.glb', author:'Scott Petrovic (Mesh2Motion)',
       source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/eagle.glb',
       page:'https://github.com/Mesh2Motion/mesh2motion-app/blob/017169ae6f7574d8fa75d893c38c2776386ca40b/LICENSE-CC0.MD', pinnedBlobSha:'a783a6ab3ccc5dd3cf67582b517965b9b77d6df8',
       minBytes:168848, maxBytes:168848, minTriangles:1000, maxTriangles:3000,
-      discoveryBird:'am_bald_eagle', originalModel:'Bald Eagle'},
+      discoveryAnimal:'am_bald_eagle', originalModel:'Bald Eagle'},
+    // [발견물 수작업 CC0 원본] 제작자 명시·공식 미리보기·고정 바이너리 일치 확인.
+    {name:'discovery_panda', assetPath:'assets/animals/discovery_panda.glb', author:'Scott Petrovic (Mesh2Motion)',
+      source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/fox/variations/panda.glb',
+      page:'https://github.com/Mesh2Motion/mesh2motion-app/blob/017169ae6f7574d8fa75d893c38c2776386ca40b/LICENSE-CC0.MD', pinnedBlobSha:'23ed198d9334b7a1d17f5523d2cac023e8e33b7e',
+      minBytes:142532, maxBytes:142532, minTriangles:1564, maxTriangles:1564,
+      discoveryAnimal:'zoo_giant_panda', originalModel:'Panda'},
+    {name:'discovery_whale', assetPath:'assets/animals/discovery_whale.glb', author:'Scott Petrovic (Mesh2Motion)',
+      source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/shark/variations/whale.glb',
+      page:'https://github.com/Mesh2Motion/mesh2motion-app/blob/017169ae6f7574d8fa75d893c38c2776386ca40b/LICENSE-CC0.MD', pinnedBlobSha:'5b950f8efea19f41523604327b87de5de683c4c5',
+      minBytes:71860, maxBytes:71860, minTriangles:1222, maxTriangles:1222,
+      discoveryAnimal:'zoo_whale', originalModel:'Whale'},
     // [어항 생활 소품] 실제 GLB/Blender 원본을 공개한 Pixor CC0 어망 2종. 현대 장비는 제외.
     {name:'fishing-net', assetPath:'assets/naval/fishing-net.glb', author:'Pixor',
       source:'https://pixor.art/library/files/fishing-net/pixor-library-fishing-net.glb',
@@ -123,7 +134,7 @@ async function prepareLicensedOriginals() {
     let originalSha256 = evidence?.originalSha256 || null;
     if (!bytes) {
       // [발견물 원본] 이미 확보한 inbox 바이너리를 우선 사용하고 동일한 원본 검증을 거친다.
-      if (item.discoveryBird) {
+      if (item.discoveryAnimal) {
         const staged = path.join(ROOT,'assets/inbox/Animals',name+'.glb');
         try { bytes = await fs.readFile(staged); } catch (e) { if (e.code !== 'ENOENT') throw e; }
         if (bytes) {
@@ -131,7 +142,7 @@ async function prepareLicensedOriginals() {
           const digest = crypto.createHash('sha256').update(bytes).digest('hex');
           if (stagedProof.license !== license || stagedProof.author !== item.author
             || stagedProof.source !== source || stagedProof.sourcePage !== sourcePage
-            || stagedProof.pinnedBlobSha !== item.pinnedBlobSha || stagedProof.discoveryCardId !== item.discoveryBird
+            || stagedProof.pinnedBlobSha !== item.pinnedBlobSha || stagedProof.discoveryCardId !== item.discoveryAnimal
             || stagedProof.sourceSha256 !== digest || stagedProof.originalSha256 !== digest
             || stagedProof.commercialUseAllowed !== true || stagedProof.originalModelHandcrafted !== true)
             throw new Error('MARE_DISCOVERY_INBOX_PROOF_MISMATCH:'+name);
@@ -798,18 +809,18 @@ async function prepareLicensedOriginals() {
       throw new Error((license === 'CC0-1.0' ? 'MARE_CC0_WRONG_MODEL_GEOMETRY:' : 'MARE_LICENSED_WRONG_MODEL_GEOMETRY:') + name + ':' + tris);
     if (!evidence) {
       const hash = crypto.createHash('sha256').update(bytes).digest('hex');
-      if (item.discoveryBird && (blockedHashes.has(hash) || blockedPaths.has(target)))
+      if (item.discoveryAnimal && (blockedHashes.has(hash) || blockedPaths.has(target)))
         throw new Error('MARE_DISCOVERY_SOURCE_BLOCKED:' + name);
       // 발견물은 원본을 기존 Animals inbox에 넣고 정식 등록기로 이동한다.
-      const writeTarget = item.discoveryBird ? path.join(ROOT,'assets/inbox/Animals',name+'.glb') : target;
-      if (item.discoveryBird) await fs.mkdir(path.dirname(writeTarget), {recursive:true});
+      const writeTarget = item.discoveryAnimal ? path.join(ROOT,'assets/inbox/Animals',name+'.glb') : target;
+      if (item.discoveryAnimal) await fs.mkdir(path.dirname(writeTarget), {recursive:true});
       await fs.writeFile(writeTarget, bytes);
       await fs.writeFile(writeTarget+'.license.json', JSON.stringify({license, author:item.author, source,
         sourcePage, sourceSha256:hash, originalSha256, pinnedBlobSha:item.pinnedBlobSha || null,
         attribution:item.attribution || null,
-        discoveryCardId:item.discoveryBird || undefined,
-        commercialUseAllowed:item.discoveryBird ? true : undefined,
-        originalModelHandcrafted:item.discoveryBird ? true : undefined,
+        discoveryCardId:item.discoveryAnimal || undefined,
+        commercialUseAllowed:item.discoveryAnimal ? true : undefined,
+        originalModelHandcrafted:item.discoveryAnimal ? true : undefined,
         sourceAsset:item.sourceAsset||null, originalMeshCount:item.originalMeshCount||null,
         derivedTriangleCount:item.derivedTriangleCount||null,
         authenticOriginalBinaryVerified:(item.rebuildNau||item.rebuildCoastalShip)?true:undefined,
@@ -820,7 +831,7 @@ async function prepareLicensedOriginals() {
         modification:item.modification || (item.removePodium ? 'Exhibition podium scene nodes removed; artist ship geometry unchanged.' : 'Unmodified source'),
         triangles:tris, originalModel:item.originalModel || name,
         actualRobloxRuntimeVerified:false, visualQualityApproved:false,robloxPublishedVerified:false}, null, 2) + '\n');
-      if (item.discoveryBird) {
+      if (item.discoveryAnimal) {
         execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind=Animals','--prefix='+name,'--dry-run'],{stdio:'inherit',timeout:30000});
         execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind=Animals','--prefix='+name],{stdio:'inherit',timeout:30000});
         if (crypto.createHash('sha256').update(await fs.readFile(target)).digest('hex') !== hash)
@@ -1597,9 +1608,9 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     // [항구 전용 CC0 원본] 기존 업로더에서 도시별 실물 모델의 출처·해시·권한을 검수한다.
     const portOriginalModel = kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
-    const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle)\.glb$/.test(sourceFileName);
+    const discoveryAnimal = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle|panda|whale)\.glb$/.test(sourceFileName);
     try {
-    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || discoveryBird || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) {
+    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || discoveryAnimal || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
       // [검증 대기 원본 보호] 3D 도시 파생 모델은 CC0 원본 기록만 있고 검수·등록이
@@ -1623,7 +1634,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       if (sourceLicense && (!['PROJECT_ORIGINAL_ART', 'CC0-1.0', 'CC-BY-4.0'].includes(sourceLicense.license)
         || !sourceLicense.author || !(derivedVegetation ? sourceLicense.sha256 : sourceLicense.sourceSha256) || !sourceLicense.source))
         throw new Error('ORIGINAL_MODEL_SOURCE_METADATA_INVALID:' + f);
-      if (discoveryBird) {
+      if (discoveryAnimal) {
         const original = await fs.readFile(path.join(ROOT,'assets',dir,sourceFileName));
         const digest = crypto.createHash('sha256').update(original).digest('hex');
         const blob = crypto.createHash('sha1').update('blob '+original.length+'\0').update(original).digest('hex');
