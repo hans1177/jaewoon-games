@@ -637,7 +637,7 @@ test('1단 검병·궁수 편성은 유지하면서 승인된 R15 체형 3종 �
   const grunt=field.match(/\t\tgrunt = \{([\s\S]*?)\n\t\t\},/);
   assert.ok(grunt,'실제 검병 복식 정의 누락');
   const profiles=[...grunt[1].matchAll(/\{ ".*?", "(.*?)", Color3/g)].map(x=>x[1]);
-  assert.ok(profiles.length>=207,'실제 탐험지별 지형 지정');
+  assert.ok(profiles.length>=5,'기존 검병 5종 복식 보존');
   const expect=[
     ['Barbarian','heavy'],
     ['Knight','athletic'],
@@ -4181,7 +4181,7 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   const siteProfile=field.slice(field.indexOf('local exact = {'),field.indexOf('local selected = exact'));
   const sitesSource=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sites.luau');
   const profiles=[...siteProfile.matchAll(/([a-z_0-9]+) = "([a-z]+)"/g)];
-  assert.ok(profiles.length>=123,'실제 탐험지별 지형 지정');
+  assert.ok(profiles.length>=207,'실제 탐험지별 지형 지정');
   assert.equal(new Set(profiles.map(row=>row[1])).size,profiles.length,'탐험지 ID 중복 금지');
   for(const [,id] of profiles) assert.ok(sitesSource.includes('id = "'+id+'"'),'존재하지 않는 지점 '+id);
   for(const [id,theme] of Object.entries({london_chalk:'coast',bergen_cliffs:'coast',amsterdam_canals:'lake',carrara_quarry:'mine',vesuvius_slopes:'volcanic',edo_fuji:'highland',royal_archive:'archive',genoa_olive:'farm'})){
