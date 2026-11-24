@@ -2215,3 +2215,13 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 |---|---|---|---|
 | `inbox/Town/` | london_bld_customs.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
 | `inbox/Town/` | london_bank_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+
+
+## 2026-11-24 런던 은행 2·3단계 원본 가공
+
+승인 CC0 원본 주택·정자·석벽·철문·보물상자·거래대의 메시·UV·재질 보존. 반복 메시 공유. Studio 외관·역할 확인 및 정식 등록 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_bank_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_bank_3.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
