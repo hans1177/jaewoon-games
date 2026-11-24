@@ -84,6 +84,17 @@ async function prepareLicensedOriginals() {
       page:'https://github.com/Mesh2Motion/mesh2motion-app/blob/017169ae6f7574d8fa75d893c38c2776386ca40b/LICENSE-CC0.MD', pinnedBlobSha:'a783a6ab3ccc5dd3cf67582b517965b9b77d6df8',
       minBytes:168848, maxBytes:168848, minTriangles:1000, maxTriangles:3000,
       discoveryBird:'am_bald_eagle', originalModel:'Bald Eagle'},
+    // [발견물 수작업 CC0 원본] 제작자 명시·공식 미리보기·고정 바이너리 일치 확인.
+    {name:'discovery_panda', assetPath:'assets/animals/discovery_panda.glb', author:'Scott Petrovic (Mesh2Motion)',
+      source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/fox/variations/panda.glb',
+      page:'https://github.com/Mesh2Motion/mesh2motion-app/blob/017169ae6f7574d8fa75d893c38c2776386ca40b/LICENSE-CC0.MD', pinnedBlobSha:'23ed198d9334b7a1d17f5523d2cac023e8e33b7e',
+      minBytes:142532, maxBytes:142532, minTriangles:1564, maxTriangles:1564,
+      discoveryBird:'zoo_giant_panda', originalModel:'Panda'},
+    {name:'discovery_whale', assetPath:'assets/animals/discovery_whale.glb', author:'Scott Petrovic (Mesh2Motion)',
+      source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/shark/variations/whale.glb',
+      page:'https://github.com/Mesh2Motion/mesh2motion-app/blob/017169ae6f7574d8fa75d893c38c2776386ca40b/LICENSE-CC0.MD', pinnedBlobSha:'5b950f8efea19f41523604327b87de5de683c4c5',
+      minBytes:71860, maxBytes:71860, minTriangles:1222, maxTriangles:1222,
+      discoveryBird:'zoo_whale', originalModel:'Whale'},
     // [어항 생활 소품] 실제 GLB/Blender 원본을 공개한 Pixor CC0 어망 2종. 현대 장비는 제외.
     {name:'fishing-net', assetPath:'assets/naval/fishing-net.glb', author:'Pixor',
       source:'https://pixor.art/library/files/fishing-net/pixor-library-fishing-net.glb',
@@ -1634,7 +1645,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     const portOriginalModel = kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
     const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb'].includes(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
-    const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle)\.glb$/.test(sourceFileName);
+    const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle|panda|whale)\.glb$/.test(sourceFileName);
     try {
     if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || townOriginal || discoveryBird || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
