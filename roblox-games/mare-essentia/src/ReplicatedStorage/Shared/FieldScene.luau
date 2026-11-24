@@ -673,6 +673,10 @@ function FieldScene.start(opts)
 		folder:SetAttribute("FieldVisualSeed", portVisualSeed)
 	end
 	local month = os.date("!*t").month
+	do
+		local port = opts.portId and Ports.Ports[opts.portId]
+		if port and port.lat < -10 then month = (month + 5) % 12 + 1 end
+	end
 	local season = if month >= 3 and month <= 5 then "봄" elseif month >= 6 and month <= 8 then "여름"
 		elseif month >= 9 and month <= 11 then "가을" else "겨울"
 	local region = biome.region or ""
@@ -680,7 +684,7 @@ function FieldScene.start(opts)
 	local tropical = region == "seasia" or region == "tropic" or region == "malabar"
 		or region == "pacific" or region == "creole"
 	local arid = not tropical and (region == "desert" or region == "ottoman" or region == "med"
-		or region == "wafrica" or region == "swahili" or biome.mat == Enum.Material.Sand)
+		or region == "wafrica" or region == "swahili") -- 해변의 모래는 건조 기후의 근거가 아니다.
 	local climateZone = if northern then "북방" elseif tropical then "열대"
 		elseif arid then "건조" else "온대"
 	local monsoon = tropical and month >= 5 and month <= 10
@@ -772,6 +776,74 @@ function FieldScene.start(opts)
 			questTerrain = "archive"
 		end
 	end
+	-- [지점별 실제 지형] 기존 탐험 지점 ID의 지리·용도를 이름 추정보다 우선한다.
+	do
+		local exact = {
+			london_fields = "plains",
+			salisbury_plain = "plains",
+			london_chalk = "coast",
+			bergen_cliffs = "coast",
+			gibraltar_cliff = "coast",
+			giants_causeway = "coast",
+			visby_cliffs = "coast",
+			oran_cliffs = "coast",
+			viking_harbor = "coast",
+			bergen_whale = "coast",
+			bergen_kelp_coast = "coast",
+			venice_lagoon = "coast",
+			stockholm_woods = "forest",
+			antwerp_willow_river = "lake",
+			seville_groves = "lake",
+			amsterdam_canals = "lake",
+			amsterdam_polder = "lake",
+			stockholm_mine = "mine",
+			falun_mine = "mine",
+			carrara_quarry = "mine",
+			marble_quarry = "mine",
+			london_tin = "mine",
+			plymouth_tin = "mine",
+			vesuvius_slopes = "volcanic",
+			palermo_etna = "volcanic",
+			palermo_etna2 = "volcanic",
+			edo_fuji = "highland",
+			cape_table_mountain = "highland",
+			pompeii_ruins = "ruins",
+			pont_du_gard = "ruins",
+			alexandria_library = "ruins",
+			brittany_stones = "ruins",
+			edo_castle = "fort",
+			quebec_citadel = "fort",
+			hadrian_hills = "fort",
+			antwerp_monastery_herbs = "archive",
+			amsterdam_gardens = "archive",
+			genoa_gardens = "archive",
+			hamburg_lab = "archive",
+			genoa_instruments = "archive",
+			royal_archive = "archive",
+			london_lab = "archive",
+			london_hospital = "archive",
+			copenhagen_observatory = "archive",
+			amsterdam_telescope = "archive",
+			provence_fields = "farm",
+			genoa_olive = "farm",
+			dublin_potatoes = "farm",
+			antwerp_flax_fields = "farm",
+			antwerp_flax = "farm",
+			norman_orchards = "farm",
+			porto_douro = "farm",
+			funchal_vineyards = "farm",
+			funchal_grapes = "farm",
+			saffron_fields = "farm",
+			canton_tea = "farm",
+			calicut_pepper = "farm",
+			mocha_coffee = "farm",
+			zanzibar_spice = "farm",
+			sao_tome_cocoa = "farm",
+		}
+		local selected = exact[opts.siteId or ""]
+		if selected then questTerrain = selected end
+		folder:SetAttribute("FieldSiteTerrainSource", if selected then "site-id" else "site-name")
+	end
 	-- [특수 기후의 실제 바닥 재질] 색 보정만이 아니라 눈·진흙·화산암 지형을 구분한다.
 	if questTerrain == "glacier" then
 		winterScene = true
@@ -842,6 +914,13 @@ function FieldScene.start(opts)
 			elseif portNature == "mangrove" or portNature == "jungle_coast" then Color3.fromRGB(69, 128, 75)
 			else nil
 		if portColor then biome.ground = biome.ground:Lerp(portColor, 0.17) end
+	end
+	-- [지점 지질] 도버 백악·카라라 대리석·팔룬 광산의 구별된 지표.
+	if opts.siteId == "london_chalk" or opts.siteId == "carrara_quarry" or opts.siteId == "marble_quarry" then
+		biome.mat = Enum.Material.Limestone
+		biome.ground = Color3.fromRGB(205, 203, 189)
+	elseif opts.siteId == "falun_mine" then
+		biome.ground = Color3.fromRGB(123, 87, 67)
 	end
 	-- 열린 지역의 먼 항구는 맑을 때 실제로 보이도록 한다. 광산·습지·빙설의 짙은 기후는 유지.
 	if questTerrain == "archive" or questTerrain == "plains" or questTerrain == "coast" or questTerrain == "farm" then
@@ -1657,6 +1736,37 @@ function FieldScene.start(opts)
 		elseif questTerrain == "farm" and (tropical or arid or region == "japan" or region == "korea" or region == "china") then
 			featureList[1][1], featureList[1][2], featureList[1][3] = "Terrain", "village-fence", 18
 		end
+		-- [장소별 근·중경 구성] 승인 실물만 기존 슬롯에 배치한다. 조사 슬롯/충돌은 보존한다.
+		if questTerrain == "mine" then
+			featureList[8][1], featureList[8][2], featureList[8][3] = "Town", "lantern", 2.5
+			featureList[10][1], featureList[10][2], featureList[10][3] = "Cargo", "resource-stone", 6
+			if opts.siteId == "carrara_quarry" or opts.siteId == "marble_quarry" then
+				for _, index in { 1, 2, 3, 4, 5, 6 } do
+					featureList[index][2] = if index == 6 then "cliff-cornerlarge-stone" else "cliff-large-stone"
+				end
+				featureList[10][2] = "stone-bricks-stack-small"
+			end
+		elseif questTerrain == "coast" and opts.siteId == "london_chalk" then
+			featureList[4][2], featureList[5][2] = "cliff-large-stone", "cliff-cornerlarge-stone"
+			featureList[4][3], featureList[5][3] = 39, 32
+		elseif questTerrain == "archive" then
+			-- 기관 정원: 석재 마당·경계·벤치·수레. 전용 건물을 사칭하지 않는다.
+			featureList[3][1], featureList[3][2] = "Town", "fence_straight_long"
+			featureList[4][1], featureList[4][2] = "Town", "fence_straight_long"
+			featureList[9][1], featureList[9][2] = "Town", "bench_B"
+		elseif questTerrain == "farm" then
+			-- 실제 작물이 없는 농경지에 밀·옥수수·당근을 임의로 표시하지 않는다.
+			local crop = if string.find(questName, "밀", 1, true) then "crops-wheatstageb"
+				elseif string.find(questName, "옥수수", 1, true) then "crops-cornstagec"
+				elseif string.find(questName, "당근", 1, true) then "crop-carrot"
+				elseif string.find(questName, "호박", 1, true) then "crop-pumpkin" else nil
+			for _, index in { 3, 4, 5, 6, 7, 8, 9 } do
+				local entry = featureList[index]
+				if crop then entry[2] = crop
+				else entry[2], entry[3] = "ground-pathrocks", 8 end
+			end
+			folder:SetAttribute("FieldCropOriginalMissing", crop == nil)
+		end
 	end
 	for index, entry in featureList do
 		entry.landmark = true
@@ -1848,7 +1958,7 @@ function FieldScene.start(opts)
 			{ "rock-talld", 12, 0.74, -0.12, 20 }, { "ground-pathrocks", 8, -0.69, -0.39, 14 },
 		} elseif questTerrain == "farm" then {
 			-- [농경지 전경] 밀밭과 지면 길을 서로 다른 깊이에 둔다.
-			{ "crops-wheatstageb", 13, -0.77, 0.12, 11 }, { "ground-pathstraight", 16, 0.78, -0.23, -12 },
+			{ "village-fence", 13, -0.77, 0.12, 11 }, { "ground-pathstraight", 16, 0.78, -0.23, -12 },
 			{ "log-stack", 7, -0.67, -0.36, 14 }, { "plant-bushdetailed", 7, 0.68, -0.41, 12 },
 		} elseif questTerrain == "swamp" then {
 			-- [습지 전경] 실제 하천 둑과 식생을 구분해 평면감을 줄인다.
@@ -2051,7 +2161,19 @@ function FieldScene.start(opts)
 			local entry = { pr[1], pr[2], pr[4], nil, nil, pr[1] == "Terrain" and pr[2] == "cliff-rock" }
 			entry.position = ORIGIN + Vector3.new(x, 0, z)
 			entry.band = "mid"
-			stageFeature(entry)
+			-- 문화권 소품의 무조건 반복을 제거한다. 난수 소비는 기존대로 유지.
+			local asset = pr[2]
+			local nautical = asset == "canoe" or asset == "river-stone-bank"
+			local monument = asset:find("column", 1, true) or asset:find("ruins", 1, true) or asset:find("obelisk", 1, true)
+			local haunted = asset:find("haunted-", 1, true) ~= nil
+			if not asset:find("crop", 1, true)
+				and (not nautical or questTerrain == "coast" or questTerrain == "lake" or questTerrain == "swamp")
+				and (not monument or questTerrain == "ruins")
+				and (not haunted or questTerrain == "ruins")
+				and (asset ~= "windmill" or questTerrain == "farm" or questTerrain == "plains")
+				and (not asset:find("cactus", 1, true) or questTerrain == "desert") then
+				stageFeature(entry)
+			end
 		end
 	end
 
@@ -2067,7 +2189,7 @@ function FieldScene.start(opts)
 		elseif questTerrain == "mine" then { "debris", "Rock_2", "log-stack" }
 		elseif questTerrain == "ruins" or questTerrain == "fort" then { "forest-bush-detailed", "river-stone-bank", "forest-flower-purple" }
 		elseif questTerrain == "highland" then { "river-stone-bank", "Rock_2", "north-pine-fall" }
-		elseif questTerrain == "farm" then { "crops-wheatstageb", "forest-flower-yellow", "Grass_Small" }
+		elseif questTerrain == "farm" then { "ground-pathrocks", "Grass_Small", "plant-bushsmall" }
 		elseif questTerrain == "lake" then { "river-stone-bank", "forest-bush-detailed", "forest-flower-purple" }
 		elseif questTerrain == "desert" then { "arid-cactus-short", "coast-grass-patch", "Grass_Small" }
 		elseif questTerrain == "forest" then { "forest-bush-detailed", "forest-flower-purple", "Grass_Small" }
@@ -2201,7 +2323,7 @@ function FieldScene.start(opts)
 			elseif string.find(questName, "호박", 1, true) then { "crop-pumpkin", "veg_farm_pumpkin" }
 			elseif string.find(questName, "올리브", 1, true) or string.find(questName, "감자", 1, true)
 				or string.find(questName, "아마", 1, true) then {}
-			else { "crop-carrot", "crop-melon", "crop-turnip", "crops-cornstagec", "crops-wheatstagea" }
+			else {}
 		local available = {}
 		for _, crop in farmModels do
 			if AssetIds["Terrain/" .. crop] then table.insert(available, crop) end
