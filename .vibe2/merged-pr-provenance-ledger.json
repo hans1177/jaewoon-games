@@ -349050,11 +349050,151 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_2a4744cc82477320c9443aa8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15078",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "089fc8ce7fc0e8ca238806f70e7585aacf93d58f",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15078,
+        "baseBranch": "main",
+        "headBranch": "asset/london-wool-workshop",
+        "baseSha": "089fc8ce7fc0e8ca238806f70e7585aacf93d58f",
+        "headSha": "ab80ed026e455bd174f23d36ec935a869b8c2867",
+        "mergeCommitSha": "cb489e5b281c1966222160744d21e45dadae97c4",
+        "mergedAt": "2026-11-24T10:29:49Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e846b43082b17db0e694192b697d59acf2913160d9df38e471c49ec1b4491c1d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "asset/london-wool-workshop",
+        "candidateSha": "ab80ed026e455bd174f23d36ec935a869b8c2867"
+      },
+      "changeStats": {
+        "changedFileCount": 17,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 424,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-blue-tang.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-blue-tang.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-coral-grouper.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-coral-grouper.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-moorish-idol.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-moorish-idol.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-blue-tang.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-coral-grouper.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-moorish-idol.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15078",
+        "merge-commit:cb489e5b281c1966222160744d21e45dadae97c4",
+        "base-main:089fc8ce7fc0e8ca238806f70e7585aacf93d58f"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2771
+    "total": 2772
   }
 }
