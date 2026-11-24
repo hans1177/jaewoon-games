@@ -349520,11 +349520,170 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_ee40d640ef6c7f964a473de5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15096",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "cb489e5b281c1966222160744d21e45dadae97c4",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15096,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-opera-curtain-duplicate-hold",
+        "baseSha": "cb489e5b281c1966222160744d21e45dadae97c4",
+        "headSha": "a0b511a4ed7e3bb34057d017c0b03ea599787000",
+        "mergeCommitSha": "47046e1b75c6ec0ecc404d04cfd93106261a3cdf",
+        "mergedAt": "2026-11-24T10:43:31Z",
+        "authorLogin": "hans1177",
+        "titleHash": "0ed3842b13ab07bfe14a2103926f0b1017aa135ccb9ed473f5643574c61b9b90",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-opera-curtain-duplicate-hold",
+        "candidateSha": "a0b511a4ed7e3bb34057d017c0b03ea599787000"
+      },
+      "changeStats": {
+        "changedFileCount": 30,
+        "codingRelevantFileCount": 15,
+        "addedLineCount": 4188,
+        "deletedLineCount": 40,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/License.txt",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/License.txt.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/Textures/colormap.png",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/Textures/colormap.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-crab.mtl",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-crab.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-crab.obj",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-crab.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-parrot.mtl",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-parrot.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-parrot.obj",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-parrot.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-penguin.mtl",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-penguin.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-penguin.obj",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-penguin.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-camel.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-camel.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-emu.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-emu.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-kangaroo.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-kangaroo.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-sea-lion.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-sea-lion.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-sea-turtle.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-sea-turtle.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_double_source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_double_source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_single_source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_single_source.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/License.txt.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/Textures/colormap.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-crab.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-crab.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-parrot.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-parrot.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-penguin.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-penguin.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-camel.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-emu.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-kangaroo.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-sea-lion.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/poly-google-sea-turtle.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_double_source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/opera_curtain_single_source.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15096",
+        "merge-commit:47046e1b75c6ec0ecc404d04cfd93106261a3cdf",
+        "base-main:cb489e5b281c1966222160744d21e45dadae97c4"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2774
+    "total": 2775
   }
 }
