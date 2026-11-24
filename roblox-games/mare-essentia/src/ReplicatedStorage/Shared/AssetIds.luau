@@ -1467,6 +1467,7 @@ return {
 	["Town/london_battle_2"] = 125779149225196,
 	["Town/london_battle_3"] = 134699532204094,
 	["Town/london_bld_arsenal"] = 111598617813152,
+	["Town/london_bld_bakery"] = 91636391200309,
 	["Town/london_bld_carpenter"] = 139844108327104,
 	["Town/london_bld_chapel"] = 107939638963577,
 	["Town/london_bld_customs"] = 130236529842203,
