@@ -1,18 +1,18 @@
 {
-  "runId": "45292910630",
+  "runId": "45302854296",
   "kind": "studio",
-  "sourceRevision": "c69474114c7991784a5443583c2103ade80cda23",
+  "sourceRevision": "6651eb34ba9ba403df0385acc4c4b67bc5b0f15a",
   "result": "PASS",
   "failureStage": null,
   "failureSignature": null,
   "summary": {
-    "plannedSteps": 21,
-    "completedSteps": 21,
+    "plannedSteps": 17,
+    "completedSteps": 17,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 5,
-    "capturedFrames": 5,
+    "plannedFrames": 4,
+    "capturedFrames": 4,
     "abortedEarly": false
   },
   "errors": [],
@@ -82,172 +82,129 @@
     {
       "step": 8,
       "type": "capture",
-      "name": "menu_harbor",
+      "name": "live_1",
       "status": "PASS",
       "screenshots": [
-        "menu_harbor-0.jpg"
+        "live_1-0.jpg"
       ]
     },
     {
       "step": 9,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 10,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 11,
       "type": "capture",
-      "name": "menu_quest",
+      "name": "live_2",
       "status": "PASS",
       "screenshots": [
-        "menu_quest-0.jpg"
+        "live_2-0.jpg"
       ]
     },
     {
-      "step": 12,
-      "type": "luau",
+      "step": 11,
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
+      "step": 12,
+      "type": "capture",
+      "name": "live_3",
+      "status": "PASS",
+      "screenshots": [
+        "live_3-0.jpg"
+      ]
+    },
+    {
       "step": 13,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 14,
-      "type": "capture",
-      "name": "menu_diplomacy",
+      "type": "luau",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "menu_diplomacy-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 15,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 16,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 17,
       "type": "capture",
-      "name": "menu_explore",
+      "name": "live_after",
       "status": "PASS",
       "screenshots": [
-        "menu_explore-0.jpg"
+        "live_after-0.jpg"
       ]
-    },
-    {
-      "step": 18,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 19,
-      "type": "capture",
-      "name": "menu_explore_auto",
-      "status": "PASS",
-      "screenshots": [
-        "menu_explore_auto-0.jpg"
-      ]
-    },
-    {
-      "step": 20,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
     }
   ],
   "screenshotComparison": [
     {
-      "name": "menu_diplomacy-0.jpg",
-      "sha256": "217d583bdb888081fdc7bd80235d428b98e593434ed09815ad752884182a9ca9",
+      "name": "live_1-0.jpg",
+      "sha256": "67783afde20cc7e3e54309d486d120744a57b355e9c177a8a046d2c5ec7d8d86",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45292910630/menu_diplomacy-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45302854296/live_1-0.jpg"
     },
     {
-      "name": "menu_explore-0.jpg",
-      "sha256": "bca3e8dc9f259d59d851f8f69f73c1fc659f5f9b7e9f24beea245c77fdaca3d9",
+      "name": "live_2-0.jpg",
+      "sha256": "574889826d4f05836bc377926babe0ca5e0022805bde55a5501eaab9bbf29c01",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45292910630/menu_explore-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45302854296/live_2-0.jpg"
     },
     {
-      "name": "menu_explore_auto-0.jpg",
-      "sha256": "2697a6f0073e47f755282f49d1ebfd0a8f8a577542126e748a837110feb3def2",
+      "name": "live_3-0.jpg",
+      "sha256": "60c98d8cf6e4a30f3e4cb756e70b5edece67dd1bd48a7c277ce49656bc4cf2be",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45292910630/menu_explore_auto-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45302854296/live_3-0.jpg"
     },
     {
-      "name": "menu_harbor-0.jpg",
-      "sha256": "2a83def13105a5ef3ae730111e874cf0e8717edf5ab5ea6aa8049732a33284c9",
+      "name": "live_after-0.jpg",
+      "sha256": "7bddf798ead439cda6f9e2140c199bf0469ab2e9c190c10e3bd51348ee3e691c",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45292910630/menu_harbor-0.jpg"
-    },
-    {
-      "name": "menu_quest-0.jpg",
-      "sha256": "13d2e5adf2a5ea1dcdb4b1632d48f6c3756666a5e19503fba25a913d1a96016a",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45292910630/menu_quest-0.jpg"
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45302854296/live_after-0.jpg"
     }
   ],
   "screenshotFrameAudit": {
-    "checked": 5,
+    "checked": 4,
     "invalid": 0,
     "images": [
       {
-        "name": "menu_diplomacy-0.jpg",
-        "bytes": 156036,
+        "name": "live_1-0.jpg",
+        "bytes": 141007,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "menu_explore-0.jpg",
-        "bytes": 157532,
+        "name": "live_2-0.jpg",
+        "bytes": 151295,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "menu_explore_auto-0.jpg",
-        "bytes": 156721,
+        "name": "live_3-0.jpg",
+        "bytes": 151897,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "menu_harbor-0.jpg",
-        "bytes": 104203,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "menu_quest-0.jpg",
-        "bytes": 162653,
+        "name": "live_after-0.jpg",
+        "bytes": 251347,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -256,5 +213,5 @@
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "45292863214"
+  "previousRunId": "45301540734"
 }
