@@ -1163,6 +1163,199 @@ function FieldScene.start(opts)
 			pac_survey_18 = "coast",
 			pac_survey_19 = "coast",
 			pac_survey_20 = "coast",
+			-- 학문·유물·전설: 발견 대상과 실제 조사 장소를 대조한 개별 지형.
+			auto_relic_london_low = "archive",
+			auto_relic_amsterdam_low = "archive",
+			auto_relic_lisbon_low = "archive",
+			auto_zoology_bergen_low = "coast",
+			auto_zoology_hamburg_low = "coast",
+			auto_zoology_marseille_low = "coast",
+			auto_zoology_gdansk_low = "swamp",
+			auto_physics_genoa_low = "archive",
+			auto_physics_amsterdam_low = "archive",
+			auto_physics_venice_low = "archive",
+			auto_physics_london_mid = "archive",
+			auto_site_naples_mid = "ruins",
+			auto_site_naples_high = "ruins",
+			auto_site_lisbon_low = "fort",
+			auto_site_stockholm_mid = "fort",
+			auto_site_copenhagen_mid = "fort",
+			auto_site_bergen_low = "coast",
+			auto_site_marseille_mid = "ruins",
+			auto_site_london_low = "ruins",
+			auto_geography_london_low = "coast",
+			auto_geography_bergen_low = "coast",
+			auto_geography_stockholm_low = "coast",
+			auto_geography_genoa_low = "coast",
+			auto_geography_hamburg_low = "coast",
+			auto_geography_lisbon_low = "coast",
+			auto_astronomy_copenhagen_low = "archive",
+			auto_astronomy_gothenburg_low = "archive",
+			auto_astronomy_edinburgh_low = "archive",
+			auto_astronomy_gdansk_mid = "archive",
+			auto_astronomy_bergen_low = "archive",
+			auto_astronomy_amsterdam_low = "archive",
+			auto_astronomy_london_mid = "archive",
+			auto_mineral_edinburgh_low = "highland",
+			auto_mineral_dublin_low = "mine",
+			auto_mineral_bergen_low = "highland",
+			auto_mineral_london_low = "mine",
+			auto_mineral_genoa_mid = "mine",
+			auto_mineral_naples_low = "volcanic",
+			auto_mineral_livorno_mid = "mine",
+			auto_myth_bergen_high = "archive",
+			auto_myth_edinburgh_low = "coast",
+			auto_myth_copenhagen_mid = "coast",
+			auto_myth_genoa_mid = "coast",
+			auto_myth_naples_high = "archive",
+			auto_myth_rouen_mid = "coast",
+			auto_myth_london_mid = "coast",
+			auto_myth_dublin_high = "archive",
+			auto_mystery_mys_green_children = "plains",
+			auto_mystery_mys_stone_circle = "ruins",
+			auto_mystery_mys_roanoke = "archive",
+			auto_mystery_mys_voynich = "archive",
+			auto_mystery_mys_oak_island = "archive",
+			auto_mystery_mys_piri_reis = "archive",
+			auto_mystery_mys_gevaudan = "archive",
+			auto_mystery_mys_greenland_norse = "archive",
+			auto_mystery_mys_rongorongo = "archive",
+			auto_mystery_mys_mary_celeste = "archive",
+			auto_mystery_mys_franklin = "archive",
+			auto_mystery_mys_antikythera = "archive",
+			auto_mystery_mys_flannan = "archive",
+			auto_mystery_lost_terra_incognita = "archive",
+			auto_mystery_lost_edge_dragons = "archive",
+			auto_mystery_lost_thule = "archive",
+			auto_mystery_lost_antillia = "archive",
+			auto_lostland_hy_brasil = "archive",
+			auto_lostland_blessed_isles = "archive",
+			auto_lostland_terra_australis = "archive",
+			auto_lostland_lemuria = "archive",
+			auto_lostland_prester_john = "archive",
+			auto_lostland_hyperborea = "archive",
+			auto_lostland_astheria_shore = "coast",
+			auto_lostland_astheria_ruins = "ruins",
+			auto_lostland_astheria_heart = "archive",
+			auto_myth_gdansk_low = "coast",
+			auto_chemistry_rouen_low = "archive",
+			auto_chemistry_bordeaux_low = "archive",
+			auto_chemistry_london_low = "archive",
+			auto_chemistry_antwerp_low = "archive",
+			auto_chemistry_amsterdam_low = "archive",
+			auto_chemistry_hamburg_low = "archive",
+			auto_chemistry_venice_low = "archive",
+			auto_chemistry_marseille_low = "archive",
+			auto_chemistry_london_mid = "archive",
+			auto_chemistry_seville_mid = "archive",
+			auto_chemistry_dublin_low = "archive",
+			auto_philosophy_amsterdam_low = "archive",
+			auto_philosophy_london_mid = "archive",
+			auto_philosophy_edinburgh_low = "archive",
+			auto_philosophy_naples_low = "archive",
+			auto_philosophy_rouen_low = "archive",
+			auto_philosophy_bordeaux_low = "archive",
+			auto_philosophy_antwerp_low = "archive",
+			auto_philosophy_hamburg_mid = "archive",
+			auto_philosophy_hamburg_high = "archive",
+			auto_philosophy_edinburgh_high = "archive",
+			auto_medicine_marseille_low = "archive",
+			auto_medicine_rouen_low = "archive",
+			auto_medicine_venice_low = "archive",
+			auto_medicine_london_mid = "archive",
+			auto_medicine_antwerp_low = "archive",
+			auto_medicine_edinburgh_low = "archive",
+			auto_medicine_lisbon_low = "archive",
+			auto_medicine_amsterdam_low = "archive",
+			auto_medicine_genoa_low = "archive",
+			auto_medicine_gothenburg_low = "archive",
+			auto_navigation_genoa_low = "archive",
+			auto_navigation_venice_mid = "archive",
+			auto_navigation_lisbon_low = "archive",
+			auto_navigation_london_low = "archive",
+			auto_navigation_amsterdam_low = "archive",
+			auto_navigation_seville_low = "archive",
+			auto_navigation_edinburgh_mid = "archive",
+			auto_navigation_london_high = "archive",
+			auto_navigation_antwerp_mid = "archive",
+			auto_navigation_gothenburg_low = "archive",
+			auto_navigation_hamburg_low = "archive",
+			auto_navigation_bergen_mid = "archive",
+			auto_weather_london_low = "archive",
+			auto_weather_dublin_low = "archive",
+			auto_weather_edinburgh_low = "archive",
+			auto_weather_marseille_low = "archive",
+			auto_weather_bordeaux_low = "archive",
+			auto_weather_naples_mid = "archive",
+			auto_weather_seville_high = "archive",
+			auto_weather_lisbon_low = "archive",
+			auto_weather_hamburg_low = "archive",
+			auto_weather_gothenburg_low = "archive",
+			auto_weather_gdansk_mid = "archive",
+			auto_weather_stockholm_low = "archive",
+			auto_weather_london_high = "archive",
+			auto_architecture_rouen_low = "archive",
+			auto_architecture_antwerp_low = "archive",
+			auto_architecture_amsterdam_low = "lake",
+			auto_architecture_gdansk_low = "archive",
+			auto_architecture_antwerp_mid = "fort",
+			auto_architecture_naples_low = "archive",
+			auto_architecture_rouen_mid = "archive",
+			auto_architecture_bergen_mid = "archive",
+			auto_architecture_edinburgh_low = "fort",
+			auto_architecture_venice_low = "coast",
+			auto_architecture_hamburg_low = "lake",
+			auto_architecture_livorno_high = "archive",
+			auto_art_antwerp_low = "archive",
+			auto_art_amsterdam_low = "archive",
+			auto_art_hamburg_low = "archive",
+			auto_art_venice_mid = "archive",
+			auto_art_gdansk_low = "archive",
+			auto_art_london_low = "archive",
+			auto_art_amsterdam_mid = "archive",
+			auto_art_rouen_low = "archive",
+			auto_art_gdansk_mid = "archive",
+			auto_art_venice_high = "archive",
+			auto_goods_lisbon_low = "archive",
+			auto_goods_amsterdam_low = "archive",
+			auto_goods_seville_low = "archive",
+			auto_goods_amsterdam_mid = "archive",
+			auto_goods_venice_low = "archive",
+			auto_goods_seville_mid = "archive",
+			auto_goods_genoa_low = "archive",
+			auto_goods_bordeaux_low = "archive",
+			auto_goods_hamburg_low = "archive",
+			auto_goods_gothenburg_low = "archive",
+			auto_goods_gdansk_low = "archive",
+			auto_goods_bergen_low = "archive",
+			auto_goods_marseille_low = "archive",
+			auto_shipbuilding_amsterdam_low = "coast",
+			auto_shipbuilding_gothenburg_low = "coast",
+			auto_shipbuilding_stockholm_low = "coast",
+			auto_shipbuilding_genoa_low = "coast",
+			auto_shipbuilding_bergen_low = "coast",
+			auto_shipbuilding_antwerp_low = "coast",
+			auto_shipbuilding_rouen_low = "coast",
+			auto_shipbuilding_copenhagen_low = "coast",
+			auto_shipbuilding_london_mid = "coast",
+			auto_shipbuilding_bergen_mid = "coast",
+			auto_shipbuilding_seville_low = "coast",
+			auto_shipbuilding_venice_mid = "coast",
+			auto_shipbuilding_hamburg_high = "archive",
+			auto_language_gothenburg_low = "archive",
+			auto_language_rouen_low = "archive",
+			auto_language_hamburg_low = "archive",
+			auto_language_marseille_mid = "archive",
+			auto_language_london_low = "archive",
+			auto_language_antwerp_mid = "archive",
+			auto_language_dublin_low = "archive",
+			auto_language_bergen_low = "archive",
+			auto_language_copenhagen_low = "archive",
+			auto_language_livorno_high = "archive",
+			auto_language_dublin_mid = "archive",
+			auto_language_genoa_low = "archive",
+			auto_language_seville_low = "archive",
+			auto_language_venice_mid = "archive",
 		}
 		local selected = exact[opts.siteId or ""]
 		if selected then questTerrain = selected end
@@ -2120,14 +2313,15 @@ function FieldScene.start(opts)
 		elseif questTerrain == "coast" then
 			-- [해안 세부 구성] 갯벌·암벽·어항을 같은 부두 복제본으로 표시하지 않는다.
 			local siteId = opts.siteId or ""
-			local tidal = table.find({ "dunkirk_flats", "amsterdam_flats", "copenhagen_eider_isle", "incheon_flats" }, siteId) ~= nil
-			local fjord = table.find({ "bergen_fjord", "oslo_fjord", "bergen_cliffs", "stockholm_skerries", "pac_survey_16", "pac_survey_17", "pac_survey_19" }, siteId) ~= nil
+			local tidal = table.find({ "dunkirk_flats", "amsterdam_flats", "copenhagen_eider_isle", "incheon_flats", "auto_geography_hamburg_low", "auto_geography_london_low" }, siteId) ~= nil
+			local fjord = table.find({ "bergen_fjord", "oslo_fjord", "bergen_cliffs", "stockholm_skerries", "pac_survey_16", "pac_survey_17", "pac_survey_19", "auto_geography_bergen_low" }, siteId) ~= nil
 			local cliffs = fjord or table.find({ "london_chalk", "giants_causeway", "rouen_coast", "edinburgh_coast", "gothenburg_eider", "gdansk_amber_beach", "marseille_calanques", "gibraltar_cliff",
 				"gibraltar_cave", "trieste_karst", "pac_survey_15", "pac_survey_18" }, siteId) ~= nil
 			local wharf = table.find({ "bergen_wharf", "bergen_whale_station", "amsterdam_herring_quay", "amsterdam_fog",
 				"gdansk_harbor", "hull_whalers", "glasgow_clyde", "bordeaux_quay", "porto_ribeira",
 				"cadiz_treasure_fleet", "toulon_arsenal", "la_rochelle_towers", "jeddah_pilgrim",
-				"cochin_nets", "manila_galleon", "amoy_harbor", "nagasaki_dejima", "stjohns_banks", "boston_whalers" }, siteId) ~= nil
+				"cochin_nets", "manila_galleon", "amoy_harbor", "nagasaki_dejima", "stjohns_banks", "boston_whalers", "auto_site_bergen_low", "auto_architecture_venice_low" }, siteId) ~= nil
+			local shipyard = string.match(siteId, "^auto_shipbuilding_") ~= nil
 			local reef = table.find({ "mombasa_reef", "jeddah_reef", "maldives_atoll", "coral_banks", "recife_reef", "survey_am_a", "pac_survey_07", "pac_survey_09" }, siteId) ~= nil
 			if reef then
 				-- [산호 해안] 원본 산호가 없으므로 얕은 해안과 낮은 암반만 구성한다.
@@ -2165,6 +2359,16 @@ function FieldScene.start(opts)
 				featureList[4][3], featureList[5][3] = if fjord then 43 else 39, if fjord then 36 else 32
 				featureList[9] = { "Terrain", "rock-largea", 7, -0.58, -0.42, true, 0 }
 				folder:SetAttribute("FieldSiteComposition", if fjord then "fjord" else "rocky-shore")
+			elseif shipyard then
+				-- 조선소는 기존 등록 부두·가공 목재·닻으로 작업 구획을 구성한다.
+				featureList[1] = { "Naval", "structure-platform-dock-small", 24, -0.66, -0.74, true, 0 }
+				featureList[4] = { "Cargo", "wood-planks-stack-small", 7, 0.79, -0.70, false, 0 }
+				featureList[5] = { "Cargo", "wood-log-stack", 7, 0.83, -0.34, false, 25 }
+				featureList[6] = { "Naval", "anchor", 5, 0.68, -0.85, false, 0 }
+				featureList[7] = { "Cargo", "resource-planks", 5, 0.70, -0.58, false, 0 }
+				featureList[10] = { "Town", "lantern", 3, -0.44, -0.71, false, 0 }
+				folder:SetAttribute("FieldSiteComposition", "shipyard-workspace")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
 			elseif wharf then
 				featureList[4] = { "Naval", "structure-platform-dock-small", 19, 0.79, -0.70, true, 90 }
 				featureList[5] = { "Town", "cart", 5, 0.83, -0.34, true, 25 }
@@ -2213,7 +2417,7 @@ function FieldScene.start(opts)
 			folder:SetAttribute("FieldSiteComposition", "japanese-stone-fort")
 			folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
 		elseif questTerrain == "ruins" and table.find({ "runestone_field", "stockholm_runes", "boyne_valley", "orkney_brodgar",
-			"uppsala_mounds", "dublin_stones", "brittany_stones", "orkney_village" }, opts.siteId or "") then
+			"uppsala_mounds", "dublin_stones", "brittany_stones", "orkney_village", "auto_mystery_mys_stone_circle" }, opts.siteId or "") then
 			-- 거석과 봉분의 일반적인 석재 윤곽만 표현한다. 실제 룬 문자·유적 원본으로 사칭하지 않는다.
 			for _, index in { 1, 2, 3, 4, 6, 8, 10 } do
 				local entry = featureList[index]
@@ -2222,16 +2426,16 @@ function FieldScene.start(opts)
 			featureList[5][2], featureList[7][2], featureList[9][2] = "ground-pathrocks", "rock-largea", "ground-pathrocks"
 			folder:SetAttribute("FieldSiteComposition", "megalithic-stone")
 		elseif questTerrain == "lake" and table.find({ "amsterdam_canals", "amsterdam_polder", "rotterdam_dike", "hamburg_estuary",
-			"saint_louis_river", "basra_canals", "cochin_backwaters", "tianjin_canal", "batavia_canal", "brunei_water", "newyork_harbor", "montevideo_plata", "trinidad_pitch" }, opts.siteId or "") then
+			"saint_louis_river", "basra_canals", "cochin_backwaters", "tianjin_canal", "batavia_canal", "brunei_water", "newyork_harbor", "montevideo_plata", "trinidad_pitch", "auto_architecture_amsterdam_low", "auto_architecture_hamburg_low" }, opts.siteId or "") then
 			-- 평탄한 제방·운하의 접지 모델을 연속 배치하며 폭포·산악 실루엣을 제거한다.
 			featureList[1] = { "Terrain", "ground-riverbendbank", 18, -0.82, -0.78, true, 0 }
 			featureList[2] = { "Terrain", "ground-riverside", 17, -0.73, -0.72, false, 0 }
 			featureList[3][2], featureList[4][2] = "ground-riverbend", "ground-riverstraight"
 			featureList[9] = { "Terrain", "village-fence", 12, 0.77, -0.68, true, 0 }
 			folder:SetAttribute("FieldSiteComposition", "lowland-waterway")
-		elseif questTerrain == "archive" and table.find({ "istanbul_bazaar", "smyrna_bazaar", "barcelona_market",
+		elseif questTerrain == "archive" and (string.match(opts.siteId or "", "^auto_goods_") or table.find({ "istanbul_bazaar", "smyrna_bazaar", "barcelona_market",
 			"barcelona_gothic", "algiers_kasbah", "riga_old_town", "casablanca_medina",
-			"surat_bazaar", "osaka_market", "jade_market", "hoi_an_lanterns", "zanzibar_stone", "portobelo_fair" }, opts.siteId or "") then
+			"surat_bazaar", "osaka_market", "jade_market", "hoi_an_lanterns", "zanzibar_stone", "portobelo_fair" }, opts.siteId or "")) then
 			-- [시장과 구시가] 기관 정원 대신 석재 길과 실제 시장 가판대, 운반 상자를 배치한다.
 			featureList[1] = { "Terrain", "platform-stone", 24, -0.57, -0.53, false, 0 }
 			featureList[2] = { "Terrain", "ground-pathstraight", 18, -0.55, -0.30, false, 0 }
@@ -2248,6 +2452,35 @@ function FieldScene.start(opts)
 			featureList[3][1], featureList[3][2] = "Town", "fence_straight_long"
 			featureList[4][1], featureList[4][2] = "Town", "fence_straight_long"
 			featureList[9][1], featureList[9][2] = "Town", "bench_B"
+			-- 학문별 기관 바깥 조사 공간: 승인된 소품만 이용하며 실제 연구기구·건물로 사칭하지 않는다.
+			local discipline = string.match(opts.siteId or "", "^auto_([%a]+)_")
+			if discipline == "chemistry" or discipline == "physics" then
+				featureList[5] = { "Town", "stall-bench", 5, -0.48, -0.32, false, 15 }
+				featureList[6] = { "Naval", "crate-bottles", 3, 0.48, -0.26, false, 180 }
+				featureList[8] = { "Town", "lantern", 2.5, -0.48, -0.13, false, 0 }
+				folder:SetAttribute("FieldSiteComposition", "study-work-court")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			elseif discipline == "medicine" then
+				featureList[5] = { "Town", "bench_A", 5, -0.48, -0.32, false, 15 }
+				featureList[7] = { "Terrain", "plant-bushsmall", 3, 0.58, -0.44, false, 0 }
+				featureList[8] = { "Terrain", "forest-flower-purple", 3, -0.48, -0.13, false, 0 }
+				folder:SetAttribute("FieldSiteComposition", "medical-garden")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			elseif discipline == "astronomy" then
+				featureList[3] = { "Terrain", "ground-pathrocks", 9, -0.73, -0.63, false, 90 }
+				featureList[4] = { "Terrain", "ground-pathrocks", 9, 0.73, -0.63, false, 90 }
+				featureList[5] = { "Town", "bench_A", 5, -0.48, -0.32, false, 15 }
+				folder:SetAttribute("FieldSiteComposition", "observation-court")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			elseif discipline == "art" then
+				featureList[5] = { "Town", "stall-bench", 6, -0.48, -0.32, false, 15 }
+				featureList[7] = { "Cargo", "wood-planks-stack-small", 4, 0.58, -0.44, false, 0 }
+				folder:SetAttribute("FieldSiteComposition", "artisan-court")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			elseif discipline then
+				folder:SetAttribute("FieldSiteComposition", "records-court")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			end
 		elseif questTerrain == "farm" then
 			-- 실제 작물이 없는 농경지에 밀·옥수수·당근을 임의로 표시하지 않는다.
 			local crop = if string.find(questName, "밀", 1, true) then "crops-wheatstageb"
