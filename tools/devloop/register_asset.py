@@ -3,7 +3,7 @@
 사용: register_asset.py <게임폴더(roblox-games/mare-essentia)> [--dry-run] [--kind=Town --prefix=london_]
 차단: 라이선스 누락·허용 목록 밖, 출처 URL 없음, 이미 차단된 해시(company-learning/platform-release-roadmap.json), 중복 해시,
       256색(팔레트·저색상) 이미지 — 2026-11-24 오너 지시로 절대 등록 금지(asset_color_check.py)."""
-import json, os, sys, shutil, hashlib, glob, struct
+import json, os, sys, shutil, hashlib, glob, struct, re
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
 dry = "--dry-run" in sys.argv
 root = args[0] if args else "roblox-games/mare-essentia"
@@ -66,18 +66,27 @@ for kind in sorted(d for d in os.listdir(inbox) if os.path.isdir(os.path.join(in
         if not why and scoped_derived:
             # [런던 원본] 승인 원본과 바이너리 해시, GLB 구조를 실제 대조한다.
             try:
-                assert fn.endswith(".glb") and m.get("license") == "CC0-1.0" and m.get("derived") is True
+                assert fn.endswith(".glb") and m.get("license") == "CC0-1.0"
                 assert m.get("sha256") == h and m.get("bytes") == os.path.getsize(p)
-                assert m.get("originalFiles") and m.get("modification")
                 with open(p, "rb") as f: header = f.read(12)
                 assert len(header) == 12 and struct.unpack("<4sII", header) == (b"glTF", 2, m["bytes"])
-                for original in m["originalFiles"]:
-                    source = original["repositoryPath"]
-                    assert source in approved_sources and original.get("license") == "CC0-1.0"
-                    assert str(original.get("originalUrl", "")).startswith("https://")
-                    with open(source, "rb") as f: data = f.read()
-                    assert hashlib.sha256(data).hexdigest() == original["sha256"] and original["sha256"] not in blocked
-                    assert hashlib.sha1(("blob %d\0" % len(data)).encode() + data).hexdigest() == original["gitBlobSha1"]
+                if scoped_vegetation and m.get("derived") is False:
+                    # 무변형 원본은 고정 미러의 원본 blob 및 라이선스 증빙으로 검증한다.
+                    assert m.get("commercialUseAllowed") is True and m.get("sourceLicense") == "https://creativecommons.org/publicdomain/zero/1.0/"
+                    pinned = re.fullmatch(r"(https://github\.com/[^/]+/[^/]+/blob/[0-9a-f]{40})/.+\.glb", m.get("downloadSource", ""))
+                    assert pinned and str(m.get("mirrorLicenseEvidence", "")).startswith(pinned.group(1) + "/")
+                    assert str(m.get("source", "")).startswith("https://")
+                    with open(p, "rb") as f: data = f.read()
+                    assert hashlib.sha1(("blob %d\0" % len(data)).encode() + data).hexdigest() == m.get("sourceGitBlobSha1")
+                else:
+                    assert m.get("derived") is True and m.get("originalFiles") and m.get("modification")
+                    for original in m["originalFiles"]:
+                        source = original["repositoryPath"]
+                        assert source in approved_sources and original.get("license") == "CC0-1.0"
+                        assert str(original.get("originalUrl", "")).startswith("https://")
+                        with open(source, "rb") as f: data = f.read()
+                        assert hashlib.sha256(data).hexdigest() == original["sha256"] and original["sha256"] not in blocked
+                        assert hashlib.sha1(("blob %d\0" % len(data)).encode() + data).hexdigest() == original["gitBlobSha1"]
                 assert not os.path.exists(os.path.join(root, "assets", kind.lower(), fn))
                 if scoped_vegetation:
                     # 식생의 내부 일률 상한은 해제하되 실제 GLB 삼각형 수와 증빙 일치는 유지한다.
