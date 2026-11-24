@@ -141,7 +141,8 @@ end
 local Registered = require("./AssetIds")
 -- [런던 전용 건물] 등록된 실물의 장면 요청을 확인한다(실제 렌더·충돌 검수는 별도).
 for _, id in { "Town/london_bld_library", "Town/london_bld_theater",
-	"Town/london_bld_exchange", "Town/london_bld_botanic" } do
+	"Town/london_bld_exchange", "Town/london_bld_botanic",
+	"Town/london_yard_1", "Town/london_yard_2", "Town/london_yard_3" } do
 	if Registered[id] and not State.used[id] then
 		fails += 1
 		print("런던 전용 건물 요청 누락: " .. id)
