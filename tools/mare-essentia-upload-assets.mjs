@@ -1713,7 +1713,7 @@ for (const item of plan) {
   const storedBytes = await fs.readFile(item.file);
   const originalBytes = item.compressed ? gunzipSync(storedBytes) : storedBytes;
   const sourceSha256 = crypto.createHash('sha256').update(originalBytes).digest('hex');
-  if (item.sourceLicense && item.sourceLicense.sourceSha256 !== sourceSha256) {
+  if (item.sourceLicense && (item.kind === 'Terrain' && item.name.startsWith('veg_') ? item.sourceLicense.sha256 : item.sourceLicense.sourceSha256) !== sourceSha256) {
     failures.push(id + ': ORIGINAL_MODEL_SHA256_MISMATCH');
     console.error('ORIGINAL_MODEL_SHA256_MISMATCH', id);
     continue;
