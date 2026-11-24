@@ -2303,3 +2303,4 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `town/` | london_bld_botanic.glb | Kenney; Frakassets (Pixor) · CC0-1.0 | https://kenney.nl/assets/nature-kit |
 | `town/` | london_bld_exchange.glb | Kenney; Frakassets (Pixor) · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
 | `town/` | london_bld_garden.glb | Kenney; Quaternius; Frakassets (Pixor) · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `town/` | london_bld_infirmary.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
