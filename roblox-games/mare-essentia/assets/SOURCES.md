@@ -2185,3 +2185,13 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 |---|---|---|---|
 | `inbox/Town/` | london_scholar_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
 | `inbox/Town/` | london_scholar_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+
+
+## 2026-11-24 런던 곡물 창고·대형 창고 원본 가공
+
+승인 CC0 원본 주택·석주·계단·화물상자·목조 하역대·도르래·수레의 메시·UV·재질 보존. 반복 메시 공유. Studio 외관·역할 확인 및 정식 등록 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_bld_granary.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_bld_warehouse.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
