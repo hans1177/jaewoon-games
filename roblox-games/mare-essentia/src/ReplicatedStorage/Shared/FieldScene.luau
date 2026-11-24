@@ -1263,7 +1263,11 @@ function FieldScene.start(opts)
 		if entry.horizon then
 			-- 전장 밖 배경은 조사·타격 대상이 아니다. 실제 로드 성공 후에만 계수한다.
 			m:SetAttribute("FieldHorizon", true)
-			folder:SetAttribute("FieldHorizonPlaced", (folder:GetAttribute("FieldHorizonPlaced") or 0) + 1)
+			if entry.horizonNature then
+				m:SetAttribute("FieldHorizonNature", true)
+			else
+				folder:SetAttribute("FieldHorizonPlaced", (folder:GetAttribute("FieldHorizonPlaced") or 0) + 1)
+			end
 		else
 			local center, extent = m:GetBoundingBox()
 			m:SetAttribute("FieldCombatObject", true)
@@ -2001,6 +2005,31 @@ function FieldScene.start(opts)
 			if groupCount == 0 then folder:SetAttribute("FieldHorizonSource", "port-signature-no-land-model") end
 		else
 			folder:SetAttribute("FieldHorizonSource", "port-signature-unavailable")
+		end
+		-- [실제 원경 자연층] 좁은 전장에서도 400스터드 밖의 등록된 간결 실물을 산선에 놓는다.
+		-- 항구 실루엣의 성공 수치와 분리하고, 충돌·조사·전투 대상에는 포함하지 않는다.
+		do
+			local asset = if questTerrain == "coast" or questTerrain == "desert" or questTerrain == "volcanic"
+				or questTerrain == "glacier" or arid then "kenney_rock_smallFlatA"
+				elseif winterScene or northern then "tree-pinedefaulta"
+				elseif tropical then "kenney_tree_palmShort" else "kenney_tree_defaultDark"
+			if AssetIds["Terrain/" .. asset] then
+				for _, side in { -1, 1 } do
+					for index = 1, (if visualMobile then 2 else 3) do
+						local x = side * (28 + index * 9)
+						local z = horizonZ + 12 + index * 4
+						local hit = workspace:Raycast(ORIGIN + Vector3.new(x, 100, z), Vector3.new(0, -140, 0), groundRay)
+						if hit then
+							local entry = { "Terrain", asset, 10 + index * 2, nil, nil, false }
+							entry.position = hit.Position
+							entry.band, entry.horizon, entry.horizonNature = "far", true, true
+							entry.lowPolyVariant = true
+							entry[7] = side * index * 29
+							stageFeature(entry)
+						end
+					end
+				end
+			end
 		end
 	end
 	folder:SetAttribute("FieldTerrainFeatureCount", built)
