@@ -60,6 +60,7 @@ local D = {
 	WonderScenes = require(Shared:WaitForChild("WonderScenes")),
 	WorldEvents = require(Shared:WaitForChild("WorldEvents")),
 	PortBuildings = require(Shared:WaitForChild("PortBuildings")),
+	TradeFun = require(Shared:WaitForChild("TradeFun")),
 	Economy = require(Shared:WaitForChild("Economy")),
 }
 

@@ -51,6 +51,8 @@ local D = {
 	PortBuildings = require("./Shared/PortBuildings"),
 	Economy = require("./Shared/Economy"),
 }
+-- [교역 재미] 타입 검사기 한도 때문에 D 표 밖에서 붙인다.
+;(D :: any).TradeFun = require("./Shared/TradeFun")
 local Registry = require("./Services/Registry")(D)
 local S, handlers = Registry.S, Registry.handlers
 
@@ -5305,6 +5307,53 @@ do -- 전투 보상 지역 카드: 6개 해역 모두 후보 카드가 있고 �
 end
 end
 testCardsAndArt()
+
+-- [교역 재미] 신상품·축제·라이벌·상회 등급·희귀 화물
+local function testTradeFun()
+	local S: any = Registry.S
+	local D: any = D
+	local check: any = check
+	local act: any = act
+	local TF: any = D.TradeFun
+	local st: any = newState("england")
+	st.portId = "london"
+	check("교역재미: 등급 처음은 행상", TF.rank(st).name == "행상" and TF.tariffMult(st) == 1)
+	TF.get(st).profit = 30000
+	check("교역재미: 이익 누적 등급", TF.rank(st).name == "상회" and math.abs(TF.tariffMult(st) - 0.8) < 1e-9)
+	local f = TF.festival(D.Ports, "lisbon", 10)
+	check("교역재미: 축제 계산", f ~= nil and f.endDay - f.startDay == TF.FESTIVAL_DAYS - 1 and table.find(D.Ports.Ports.lisbon.demands, f.goodId) ~= nil)
+	local rv = TF.rival(D.Ports, D.Regions, "europe", 20)
+	check("교역재미: 라이벌 같은 해역", rv ~= nil and D.Regions.of(D.Ports.Ports[rv.portId]).id == "europe")
+	-- 최초 수입 보너스는 한 번만
+	local info = TF.sellBonus(st, D.Ports, D.Regions, "london", "spice", 5, 1000)
+	check("교역재미: 최초 수입 +25%", info.first == true and info.bonus >= 250)
+	TF.commitSell(st, info, 100, "spice", 5)
+	local again = TF.sellBonus(st, D.Ports, D.Regions, "london", "spice", 5, 1000)
+	check("교역재미: 다음엔 열풍만", again.first == false and #again.lines >= 1)
+	-- 희귀 화물: 어느 항구·날짜엔가 뜨고, 사면 화물에 실린다
+	local lotPort, lotDay
+	for _, id in { "london", "lisbon", "amsterdam", "seville", "venice", "genoa", "marseille", "hamburg" } do
+		for day = 0, 240, 12 do
+			if D.Ports.Ports[id] and TF.rareLot(D.Ports, D.Regions, id, day) then lotPort, lotDay = id, day; break end
+		end
+		if lotPort then break end
+	end
+	check("교역재미: 희귀 화물 등장", lotPort ~= nil)
+	if lotPort then
+		local s2: any = newState("england")
+		s2.portId, s2.day, s2.coins = lotPort, lotDay, 1e7
+		local lot = TF.rareLot(D.Ports, D.Regions, lotPort, lotDay)
+		local ok = act(s2, "BuyRareLot", {})
+		check("교역재미: 희귀 화물 구매", ok == true and (s2.cargo[lot.goodId] or 0) >= lot.qty)
+		check("교역재미: 같은 화물 두 번 못 삼", act(s2, "BuyRareLot", {}) == false)
+		local bonus = TF.sellBonus(s2, D.Ports, D.Regions, lot.targets[1], lot.goodId, 2, 400)
+		check("교역재미: 지정 항구 희귀 배수", bonus.rareUnits == 2 and bonus.bonus >= 400)
+		local back = S.State.sanitize(S.State.serialize(s2))
+		check("교역재미: 저장/불러오기", back.stats.tradeFun ~= nil and back.stats.tradeFun.rare[lot.goodId] ~= nil)
+		check("교역재미: 화면 요약", S.View.build(s2, ctx).tradeFun ~= nil)
+	end
+end
+testTradeFun()
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then

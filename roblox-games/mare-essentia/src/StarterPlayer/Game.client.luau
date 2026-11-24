@@ -5213,79 +5213,8 @@ function H.historyCinematic(parent, ev)
 	root.ClipsDescendants = true
 	root.Parent = parent
 
-	-- [30프레임 사건 원화 · 메인] 기존 자산등록기가 검증한 6×5 PNG 그림판만 재생한다.
-	-- 등록 전에는 아래 기존 해도/승인 모델 연출을 유지한다. 별도의 조형물·저장·보상 로직 없음.
-	local imageOpen = AssetIds["CardArt/history_open"]
-	local imageMap = AssetIds["CardArt/history_map"]
-	local imageRecord = AssetIds["CardArt/history_record"]
-	if imageOpen and imageMap and imageRecord then
-		local sheets = {
-			{ imageId = imageOpen, width = 252, height = 200 },
-			{ imageId = imageMap, width = 250, height = 200 },
-			{ imageId = imageRecord, width = 222, height = 225 },
-		}
-		local backdrop = Instance.new("ImageLabel")
-		backdrop.Name = "HistoricalIllustratedFrames"
-		backdrop.BackgroundTransparency = 1
-		backdrop.Size = UDim2.fromScale(1, 1)
-		backdrop.Image = "rbxassetid://" .. tostring(AssetIds["CardArt/event_chart_world"] or imageOpen)
-		backdrop.ScaleType = Enum.ScaleType.Crop
-		backdrop.Parent = root
-		local chapter = 0
-		local archived = false
-		local loaded = false
-		local function playFrames(stageIndex)
-			if not root.Parent or chapter ~= stageIndex then return end
-			local sheet = sheets[stageIndex]
-			backdrop.Image = "rbxassetid://" .. tostring(sheet.imageId)
-			backdrop.ImageRectSize = Vector2.new(sheet.width, sheet.height)
-			for frameIndex = 0, 29 do
-				if not root.Parent or chapter ~= stageIndex then return end
-				backdrop.ImageRectOffset = Vector2.new(
-					(frameIndex % 6) * sheet.width,
-					math.floor(frameIndex / 6) * sheet.height)
-				if not lessMotion then task.wait(1 / 30) else return end
-			end
-		end
-		-- [원화 로딩] Roblox 체험에 사용권이 있는 등록 이미지 3종만 불러온다.
-		task.spawn(function()
-			local addresses = {}
-			for _, sheet in sheets do table.insert(addresses, "rbxassetid://" .. tostring(sheet.imageId)) end
-			local good = true
-			local ok = pcall(function()
-				game:GetService("ContentProvider"):PreloadAsync(addresses, function(_, status)
-					if status ~= Enum.AssetFetchStatus.Success then good = false end
-				end)
-			end)
-			if not ok or not good or not root.Parent then return end
-			loaded = true
-			if archived then return end
-			chapter = 1
-			Sfx.play("sfx_book_turn", 0.25)
-			playFrames(1)
-			if not root.Parent or archived then return end
-			chapter = 2
-			Sfx.play("sfx_chart_unfold", 0.31, 1.04, "sfx_book_turn")
-			playFrames(2)
-			-- 사건 내용과 선택지를 읽는 동안 3D 사건이 펼쳐진 장면을 고정한다.
-			if chapter == 2 and not archived and root.Parent then
-				backdrop.ImageRectOffset = Vector2.new(5 * sheets[2].width, 2 * sheets[2].height)
-			end
-		end)
-		return function()
-			if archived or not root.Parent then return end
-			archived = true
-			chapter = 3
-			Sfx.play("sfx_contract_stamp", 0.28, 1.03, "sfx_book_turn")
-			if loaded then
-				task.spawn(function()
-					playFrames(3)
-					if root.Parent then Sfx.play("sfx_quest_book_close", 0.23, 1.03, "sfx_book_turn") end
-				end)
-			end
-		end
-	end
-
+	-- [일러스트 프레임 제거 · 2026-11-24 오너] 30프레임 원화판(history_open/map/record)은 256색·저해상도이고
+	-- 로딩에 실패하면 정지 그림만 남아 아래 3D 연출이 막혔다. 퀘스트·사건 모두 아래 해도·3D 연출만 쓴다.
 	-- [세계지도] 기존 승인된 세계 해도와 좌표·항로·사건 위치 표시.
 	local map = Instance.new("Frame")
 	map.Name = "HistoryWorldChart"
@@ -6042,6 +5971,71 @@ function RENDERERS.harbor()
 		{ "항구 수요", tostring(#(h.demands or {})) .. "종", tone = "key" },
 		{ "항구 발전", tostring(h.level) .. "단계", tone = "key" },
 	})
+	-- [교역 재미] 상회 등급·축제 예고·라이벌 상단·희귀 화물·신상품 열풍
+	local tf = view.tradeFun
+	if tf then
+		add(function() return mkHeader(content, "교역 소식") end)
+		add(function()
+			local rk = tf.rank
+			local sub = if rk.nextName then string.format("누적 이익 %s / 다음 %s %s · 판매 +%d%% · 관세 -%d%%", tostring(rk.profit), rk.nextName, tostring(rk.nextNeed), rk.level, rk.level * 10)
+				else string.format("누적 이익 %s · 최고 등급 · 판매 +%d%% · 관세 -%d%%", tostring(rk.profit), rk.level, rk.level * 10)
+			local row = mkRow(content, "상회 등급 · " .. rk.name, sub, {}, 64)
+			row.Name = "TradeFunRank"
+			return row
+		end)
+		if tf.lot then
+			add(function()
+				local lot = tf.lot
+				local sub = string.format("%d개 · 개당 %d코인 (총 %d) · %d일 남음\n%s 중 한 곳에 팔면 2.2배, 다른 곳은 손해",
+					lot.qty, lot.unitPrice, lot.total, lot.untilIn, table.concat(lot.targets, "·"))
+				local buttons = {}
+				if not lot.bought then
+					table.insert(buttons, { text = "통째로 사기", color = COLORS.gold, onClick = function() call("BuyRareLot", {}) end })
+				end
+				local row = mkRow(content, (if lot.bought then "희귀 화물 (구매함) · " else "희귀 화물 입고! · ") .. lot.good, sub, buttons, 82)
+				row.Name = "TradeFunRareLot"
+				return row
+			end)
+		end
+		for _, r in tf.rare or {} do
+			add(function()
+				return mkRow(content, "싣고 있는 희귀 화물 · " .. r.good .. " " .. r.qty .. "개",
+					string.format("%s에 팔면 2.2배 · %d일 남음", table.concat(r.targets, "·"), r.left), {}, 60)
+			end)
+		end
+		if #(tf.festivals or {}) > 0 then
+			add(function()
+				local lines = {}
+				for _, f in tf.festivals do
+					table.insert(lines, if f.active then string.format("● %s 축제 중 (%d일 남음) · %s 수요 +60%%", f.port, f.endIn + 1, f.good)
+						else string.format("○ %s 축제 %d일 뒤 · %s 수요 +60%%", f.port, f.inDays, f.good))
+				end
+				local row = mkRow(content, "항구 축제 예고", table.concat(lines, "\n"), {}, 28 + 20 * #lines)
+				row.Name = "TradeFunFestivals"
+				return row
+			end)
+		end
+		if tf.rival then
+			add(function()
+				local rv = tf.rival
+				local sub = if rv.arrived then string.format("%s의 %s 시장을 휩쓸었다 · %d일간 -15%%", rv.port, rv.good, math.max(0, rv.endIn) + 1)
+					else string.format("%d일 뒤 %s에 %s를 풀 예정 · 먼저 팔면 +15%%", rv.inDays, rv.port, rv.good)
+				local row = mkRow(content, "라이벌 상단 · " .. rv.name, sub, {}, 64)
+				row.Name = "TradeFunRival"
+				return row
+			end)
+		end
+		if #(tf.crazes or {}) > 0 then
+			add(function()
+				local names = {}
+				for _, c in tf.crazes do table.insert(names, string.format("%s(%d일)", c.good, c.left)) end
+				return mkRow(content, "신상품 열풍 · 이 항구", table.concat(names, ", ") .. " · 판매 +12%", {}, 60)
+			end)
+		end
+		add(function()
+			return mkLabel(content, "팁: 이 항구 특산이 아닌 상품을 처음 팔면 '최초 수입' +25%, 이후 5일 열풍 +12%.", 14, COLORS.text, true)
+		end)
+	end
 	add(function() return mkHeader(content, view.player.portName .. " · " .. h.name .. " (" .. h.level .. "단계)") end)
 	add(function()
 		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 16, COLORS.text, true)
@@ -16066,6 +16060,13 @@ task.spawn(function()
 				return call("PlayStory", { eventId = view.story[1].id, choice = 1 })
 			end)
 			workspace:SetAttribute("DevResult", tostring(ok) .. " " .. tostring(if type(err) == "table" then err.message else err))
+		end
+		if workspace:GetAttribute("DevCall") == "QuestScene" then
+			-- 개발 캡처용: 퀘스트 수주 장면(연출씬)을 그대로 재생해 촬영한다(서버 변경 없음)
+			workspace:SetAttribute("DevCall", nil)
+			if H.playQuestScenes then
+				H.playQuestScenes({ { kind = "start", name = "연출 점검 의뢰", text = "항구에 낯선 배가 들어왔다. 선장은 비밀 지도를 들고 있다고 한다. 그를 찾아 이야기를 들어 보자.", summary = "연출 점검" } })
+			end
 		end
 		if workspace:GetAttribute("DevCall") == "Hall" then
 			workspace:SetAttribute("DevCall", nil)
