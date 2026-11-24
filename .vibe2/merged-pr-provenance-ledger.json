@@ -348900,11 +348900,161 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_a0dd54656cc0532655c6ee7c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15077",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b90772a7a85eff017ad8baabc633e6adb338e8fb",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15077,
+        "baseBranch": "main",
+        "headBranch": "mare-reef-fish-candidates-1124",
+        "baseSha": "b90772a7a85eff017ad8baabc633e6adb338e8fb",
+        "headSha": "a7c3f0fe6ebc48c47bcc738c630fdb5ce728f28f",
+        "mergeCommitSha": "cdbaa6291b44b5e10f756f62770d0582585a4c1d",
+        "mergedAt": "2026-11-24T10:28:43Z",
+        "authorLogin": "hans1177",
+        "titleHash": "8a3e19acbf4db2df7581251334fc8c90fd958927ac55961140d2d7034cde40bd",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-reef-fish-candidates-1124",
+        "candidateSha": "a7c3f0fe6ebc48c47bcc738c630fdb5ce728f28f"
+      },
+      "changeStats": {
+        "changedFileCount": 23,
+        "codingRelevantFileCount": 13,
+        "addedLineCount": 454,
+        "deletedLineCount": 4,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-blue-tang.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-blue-tang.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-coral-grouper.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-coral-grouper.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-moorish-idol.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-moorish-idol.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-double-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-double-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-single-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-single-source.glb.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-blue-tang.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-coral-grouper.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-moorish-idol.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-double-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-single-source.glb.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15077",
+        "merge-commit:cdbaa6291b44b5e10f756f62770d0582585a4c1d",
+        "base-main:b90772a7a85eff017ad8baabc633e6adb338e8fb"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2770
+    "total": 2771
   }
 }
