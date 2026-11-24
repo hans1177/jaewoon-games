@@ -2282,3 +2282,21 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `animals/` | discovery_panda.glb | Scott Petrovic (Mesh2Motion) · CC0-1.0 | https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/fox/variations/panda.glb |
 | `animals/` | discovery_whale.glb | Scott Petrovic (Mesh2Motion) · CC0-1.0 | https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/shark/variations/whale.glb |
 | `town/` | london_bld_bakery.glb | Kenney; Frakassets (Pixor); Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `terrain/` | veg_berry_bush_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_berry_bush_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_birch_autumn.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_birch_bare.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_birch_green.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_birch_snow.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_coconut_palm_3.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_coconut_palm_4.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_fern.glb | Quaternius · CC0-1.0 | https://poly.pizza/m/jqcanvH7D6 |
+| `terrain/` | veg_flowering_cactus.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_mossy_stump.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_nature_plant_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_nature_plant_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_nature_plant_3.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_nature_plant_4.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_river_willow_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_river_willow_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_water_lily.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
