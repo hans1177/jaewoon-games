@@ -74,9 +74,29 @@
       "sha256": "0e0a25632937e21c5dbc22db967e824ecb38925d176e495cf25f2ae436c26089",
       "gitBlobSha1": "e64b88eee8eb69023b77b7f2b7eca3083e84431b",
       "registeredAssetId": "83230748928214"
+    },
+    {
+      "name": "town/chimney-base.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/chimney-base.glb",
+      "originalUrl": "https://kenney.nl/assets/fantasy-town-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "f4e8babd642d32e4dea26eb7763719caae5913014ab5586ab0a2e82edafaf023",
+      "gitBlobSha1": "f8c9b7e18cf0670092fe81dfb32898cdcef22b02",
+      "registeredAssetId": "107195315884209"
+    },
+    {
+      "name": "town/chimney-top.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/chimney-top.glb",
+      "originalUrl": "https://kenney.nl/assets/fantasy-town-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "201acdebca8bcc3dc2ff32a3e07b7738d45993776306b495a887e22dcb34a2db",
+      "gitBlobSha1": "a885ae025ef2c786a3eaf99f75cf435e1fcf6d8e",
+      "registeredAssetId": "120602074971507"
     }
   ],
-  "modification": "Two-storey rear exchange hall with two colonnaded galleries enclosing an open trading court. Dedicated clock tower and chimneys pending; native visual and collision QA pending.",
+  "modification": "Two-storey rear exchange hall with colonnaded side galleries, open trading court, and two original two-part chimney stacks. Dedicated clock tower and native historical material/visual/collision QA pending.",
   "placements": [
     {
       "source": "wall-detail-cross",
@@ -1937,11 +1957,91 @@
         3,
         2.8
       ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_-6.9",
+      "translation": [
+        -7.30494673328,
+        8.3,
+        7
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_6.9",
+      "translation": [
+        6.49505326672,
+        8.3,
+        7
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_-6.9",
+      "translation": [
+        -7.6289485826600005,
+        10.1,
+        7
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_6.9",
+      "translation": [
+        6.17105141734,
+        10.1,
+        7
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
     }
   ],
-  "sha256": "61a553edd1e8555b67d1e5ad4ec0b2c77ed485f2cd254dfce9e98542d99bdc7e",
-  "bytes": 191724,
-  "triangles": 16224,
+  "sha256": "26d250bf66f88b20dbf1153c4c6989465d7e67f367bdeaa3673e0c5a900d3e15",
+  "bytes": 230160,
+  "triangles": 16536,
   "sourceRevision": "5037bfc2b8feadd0ad493e67aae0006c6ab0c8e9",
   "productionVerified": false,
   "registration": "HOLD_CLOCK_TOWER_SOURCE_UNREGISTERED",

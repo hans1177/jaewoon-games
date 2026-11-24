@@ -94,9 +94,19 @@
       "sha256": "f2dc452b8fa98e68e3f892526b7d3f5e8d27d6acf4dd3c6f4b3795d64b879cce",
       "gitBlobSha1": "f1a564f450742b04b4316d711e9183fbbf0d8281",
       "registeredAssetId": "108269121278017"
+    },
+    {
+      "name": "town/kenney_plate_pavement_01.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/kenney_plate_pavement_01.glb",
+      "originalUrl": "https://opengameart.org/content/medieval-town-base-3d-assets",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "cb721f0126180464552a532133826efe86477095eb88b1ef93bbf0f04c07b731",
+      "gitBlobSha1": "14777da785227f7187b5f50a4cd53fbccbc746d7",
+      "registeredAssetId": "112376136332346"
     }
   ],
-  "modification": "Enclosed garden with four planting sections, authentic CC0 trees and shrubs, stone posts, railings and entrance lodge. Glasshouse not substituted; original greenhouse and final material/visual/collision QA pending.",
+  "modification": "Enclosed garden with four planting sections, authentic CC0 trees and shrubs, stone posts, railings and entrance lodge. Glasshouse not substituted; original greenhouse and final material/visual/collision QA pending. Added 13 original stone pavement modules forming a cross-shaped pedestrian route; greenhouse remains pending.",
   "placements": [
     {
       "source": "balcony-wall-fence",
@@ -1977,11 +1987,271 @@
         2.7,
         3
       ]
+    },
+    {
+      "source": "kenney_plate_pavement_01",
+      "label": "central_walk_0",
+      "translation": [
+        -1,
+        0,
+        -7.5
+      ],
+      "scale": [
+        0.6666666666666666,
+        0.5,
+        1
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "kenney_plate_pavement_01",
+      "label": "central_walk_1",
+      "translation": [
+        -1,
+        0,
+        -4.5
+      ],
+      "scale": [
+        0.6666666666666666,
+        0.5,
+        1
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "kenney_plate_pavement_01",
+      "label": "central_walk_2",
+      "translation": [
+        -1,
+        0,
+        -1.5
+      ],
+      "scale": [
+        0.6666666666666666,
+        0.5,
+        1
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "kenney_plate_pavement_01",
+      "label": "central_walk_3",
+      "translation": [
+        -1,
+        0,
+        1.5
+      ],
+      "scale": [
+        0.6666666666666666,
+        0.5,
+        1
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "kenney_plate_pavement_01",
+      "label": "central_walk_4",
+      "translation": [
+        -1,
+        0,
+        4.5
+      ],
+      "scale": [
+        0.6666666666666666,
+        0.5,
+        1
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "kenney_plate_pavement_01",
+      "label": "central_walk_5",
+      "translation": [
+        -1,
+        0,
+        7.5
+      ],
+      "scale": [
+        0.6666666666666666,
+        0.5,
+        1
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "kenney_plate_pavement_01",
+      "label": "central_walk_6",
+      "translation": [
+        -1,
+        0,
+        10.5
+      ],
+      "scale": [
+        0.6666666666666666,
+        0.5,
+        1
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "kenney_plate_pavement_01",
+      "label": "cross_walk_-1_0",
+      "translation": [
+        -4,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        0.5,
+        0.6666666666666666
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "kenney_plate_pavement_01",
+      "label": "cross_walk_-1_1",
+      "translation": [
+        -7,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        0.5,
+        0.6666666666666666
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "kenney_plate_pavement_01",
+      "label": "cross_walk_-1_2",
+      "translation": [
+        -10,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        0.5,
+        0.6666666666666666
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "kenney_plate_pavement_01",
+      "label": "cross_walk_1_0",
+      "translation": [
+        1,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        0.5,
+        0.6666666666666666
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "kenney_plate_pavement_01",
+      "label": "cross_walk_1_1",
+      "translation": [
+        4,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        0.5,
+        0.6666666666666666
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "kenney_plate_pavement_01",
+      "label": "cross_walk_1_2",
+      "translation": [
+        7,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        0.5,
+        0.6666666666666666
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
     }
   ],
-  "sha256": "4b75d78f8f310c65a024e4693fca15e1edcdb8909b3978c270834cca108d2428",
-  "bytes": 194840,
-  "triangles": 9450,
+  "sha256": "92603e784de1c55aa82d22a1a904bc37955cb52815fd55c31288139d2a8716df",
+  "bytes": 199248,
+  "triangles": 9606,
   "sourceRevision": "5037bfc2b8feadd0ad493e67aae0006c6ab0c8e9",
   "productionVerified": false,
   "registration": "HOLD_GREENHOUSE_SOURCE_UNREGISTERED",
