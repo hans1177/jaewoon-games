@@ -2175,3 +2175,13 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
 |---|---|---|---|
 | `inbox/Town/` | london_yard_3.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+
+
+## 2026-11-24 런던 학자의 서재 1·2단계 원본 가공
+
+승인된 CC0 원본 주택·정자·책장·책상·책의 메시·UV·재질 보존 및 반복 메시 공유. 정식 등록과 Studio 실물 검증 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_scholar_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_scholar_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
