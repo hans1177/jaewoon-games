@@ -351251,11 +351251,136 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_a2e5634e16517bba9f29c2e8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15115",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "c3c4cfde6d675fe87505e9140b124490ef765b85",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15115,
+        "baseBranch": "main",
+        "headBranch": "mare-nolanfa-marine-1124",
+        "baseSha": "c3c4cfde6d675fe87505e9140b124490ef765b85",
+        "headSha": "e5aefb90b362d3db9a84156186da8089224db5d2",
+        "mergeCommitSha": "adb5f4952604be1d8485c8c59995945ff03c8fa0",
+        "mergedAt": "2026-11-24T11:26:23Z",
+        "authorLogin": "hans1177",
+        "titleHash": "a684689ec33b0b1d6f2caa968e90429b6f869995fa9613e7179cc559f4cd94cb",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-nolanfa-marine-1124",
+        "candidateSha": "e5aefb90b362d3db9a84156186da8089224db5d2"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 121,
+        "deletedLineCount": 1,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-dolphin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-dolphin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-humpback-whale.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-humpback-whale.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-narwhal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-narwhal.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-dolphin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-humpback-whale.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/nolanfa-narwhal.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15115",
+        "merge-commit:adb5f4952604be1d8485c8c59995945ff03c8fa0",
+        "base-main:c3c4cfde6d675fe87505e9140b124490ef765b85"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2783
+    "total": 2784
   }
 }
