@@ -349190,11 +349190,170 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_eca4631b534c9ea70249deff",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15081",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "972fd1cc2f556b7ba87ecc97fa8ac7a33474b6b6",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15081,
+        "baseBranch": "main",
+        "headBranch": "mare-kenney-three-animals-1124",
+        "baseSha": "972fd1cc2f556b7ba87ecc97fa8ac7a33474b6b6",
+        "headSha": "d303cff42371d6d8de15270a79313847a828c635",
+        "mergeCommitSha": "17d827501d5b2c771423aa799e0404fafd833fb2",
+        "mergedAt": "2026-11-24T10:35:41Z",
+        "authorLogin": "hans1177",
+        "titleHash": "2dfbc73a5c55b83f42fe40e7ea3597dbf804e480657603c0808bc9e96ae371b0",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-kenney-three-animals-1124",
+        "candidateSha": "d303cff42371d6d8de15270a79313847a828c635"
+      },
+      "changeStats": {
+        "changedFileCount": 30,
+        "codingRelevantFileCount": 15,
+        "addedLineCount": 4427,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/License.txt",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/License.txt.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/Textures/colormap.png",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/Textures/colormap.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-crab.mtl",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-crab.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-crab.obj",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-crab.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-parrot.mtl",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-parrot.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-parrot.obj",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-parrot.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-penguin.mtl",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-penguin.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-penguin.obj",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-penguin.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-blue-tang.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-blue-tang.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-coral-grouper.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-coral-grouper.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-moorish-idol.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-moorish-idol.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/License.txt.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/Textures/colormap.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-crab.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-crab.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-parrot.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-parrot.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-penguin.mtl.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/kenney-cube-pets/animal-penguin.obj.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-blue-tang.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-coral-grouper.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-moorish-idol.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15081",
+        "merge-commit:17d827501d5b2c771423aa799e0404fafd833fb2",
+        "base-main:972fd1cc2f556b7ba87ecc97fa8ac7a33474b6b6"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2772
+    "total": 2773
   }
 }
