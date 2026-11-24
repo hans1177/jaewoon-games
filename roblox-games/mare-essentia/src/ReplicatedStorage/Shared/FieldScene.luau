@@ -2147,7 +2147,22 @@ function FieldScene.start(opts)
 	-- [원근 입체감] Kenney CC0 실물 절벽 면/상단/경사와 숲 하층을 지형 높이 위에 층으로 배치한다.
 	-- 동선과 퀘스트 조사 대상은 그대로 유지하며 시각 모델 충돌은 만들지 않는다.
 	do -- [Luau 지역변수 상한] 추가 실물 깊이 배치표는 기존 구획과 지역변수 생명주기를 분리한다.
-	local depthLandforms = if questTerrain == "glacier" then {
+	local depthLandforms = if folder:GetAttribute("FieldSiteComposition") == "shallow-reef-shore"
+		or folder:GetAttribute("FieldSiteComposition") == "tidal-flat" then {
+		{ "platform-beach", 25, -0.87, -0.82, -18 },
+		{ "kenney_rock_smallFlatA", 5, 0.87, -0.60, 20 },
+		{ "ground-riverrocks", 9, -0.83, -0.31, 32 },
+		{ "coast-grass-patch", 4, 0.76, -0.27, -10 },
+		{ "river-stone-bank", 8, -0.57, -0.49, 40 },
+	} elseif folder:GetAttribute("FieldSiteComposition") == "lowland-waterway"
+		or folder:GetAttribute("FieldSiteComposition") == "delta-waterway"
+		or folder:GetAttribute("FieldSiteComposition") == "salt-work-waterway" then {
+		{ "ground-riverstraight", 22, -0.84, -0.71, 24 },
+		{ "ground-riverbendbank", 15, 0.77, -0.49, -12 },
+		{ "ground-rivertile", 19, 0.89, -0.83, 15 },
+		{ "river-stone-bank", 10, -0.70, -0.37, 8 },
+		{ "grass-leafslarge", 4, 0.64, -0.34, 18 },
+	} elseif questTerrain == "glacier" then {
 		{ AssetIds["Terrain/cliff-cornerinnertop-stone"] and "cliff-cornerinnertop-stone" or "cliff-large-stone", 45, -0.85, -0.66, 14 },
 		{ "cliff-cornerlarge-stone", 32, 0.82, -0.43, 28 },
 		{ "cliff-blockdiagonal-rock", 31, 0.91, -0.84, -9 },
@@ -2214,8 +2229,8 @@ function FieldScene.start(opts)
 		{ "cliff-cornerlarge-rock", 28, -0.90, -0.81, 15 },
 	} elseif questTerrain == "ruins" then {
 		-- [유적 3D 층] 아치·부서진 기둥과 암벽을 다른 원근에 분리한다.
-		{ "ruins-wall-arched", 28, -0.84, -0.75, 15 },
-		{ "ruins-pillar-decorated", 19, 0.81, -0.56, -21 },
+		{ if region == "italy" or region == "med" then "ruins-wall-arched" else "cliff-large-stone", 28, -0.84, -0.75, 15 },
+		{ if region == "italy" or region == "med" then "ruins-pillar-decorated" else "rock-tallc", 19, 0.81, -0.56, -21 },
 		{ "cliff-cornerinnertop-rock", 29, 0.89, -0.83, 24 },
 		{ "rock-largea", 13, -0.74, -0.34, 12 },
 		{ "ground-pathrocks", 9, 0.61, -0.41, 18 },
@@ -2231,7 +2246,7 @@ function FieldScene.start(opts)
 	} elseif questTerrain == "farm" then {
 		-- [농경지 3D 층] 신규 흙길 굽이를 기존 자갈길 자리에서만 선택한다.
 		{ AssetIds["Terrain/ground-pathcorner"] and "ground-pathcorner" or "ground-pathstraight", 23, -0.81, -0.71, 14 },
-		{ "crops-wheatstageb", 13, 0.75, -0.52, -17 },
+		{ "village-fence", 13, 0.75, -0.52, -17 },
 		{ "cliff-blockslope-rock", 24, 0.89, -0.87, 12 },
 		{ "log-stack", 8, -0.67, -0.35, 10 },
 		{ "plant-bushdetailed", 7, 0.66, -0.32, 11 },
@@ -2284,7 +2299,18 @@ function FieldScene.start(opts)
 	-- [가까운 시야층] 원신식 원근 구도의 원리만 참고한다. 전경의 낮은 수풀, 중경의
 	-- 강가 돌무더기, 원경의 절벽선을 서로 다른 거리에 배치한다. 중앙 전투 길을 가리지 않는다.
 	do
-		local nearBands = if questTerrain == "archive" then {
+		local nearBands = if folder:GetAttribute("FieldSiteComposition") == "shallow-reef-shore"
+			or folder:GetAttribute("FieldSiteComposition") == "tidal-flat" then {
+			{ "coast-grass-patch", 4, -0.66, 0.18, 12 },
+			{ "kenney_rock_smallFlatA", 5, 0.72, -0.17, 8 },
+			{ "platform-beach", 19, -0.84, -0.81, -18 },
+		} elseif folder:GetAttribute("FieldSiteComposition") == "lowland-waterway"
+			or folder:GetAttribute("FieldSiteComposition") == "delta-waterway"
+			or folder:GetAttribute("FieldSiteComposition") == "salt-work-waterway" then {
+			{ "ground-riverbendbank", 12, -0.66, 0.18, 12 },
+			{ "grass-leafslarge", 4, 0.72, -0.17, 8 },
+			{ "river-stone-bank", 9, -0.74, -0.40, -16 },
+		} elseif questTerrain == "archive" then {
 			{ "forest-flower-purple", 5, -0.48, 0.28, 0 },
 			{ "ground-pathcorner", 13, 0.54, 0.03, 90 },
 			{ "plant-bushdetailed", 8, -0.58, 0.05, 10 },
@@ -2313,8 +2339,8 @@ function FieldScene.start(opts)
 			{ "rock-talld", 13, 0.76, -0.13, 7 }, { "cliff-blockdiagonal-rock", 28, -0.90, -0.58, 12 },
 		} elseif questTerrain == "ruins" then {
 			-- [유적 전경] 기존 조사·전투 위치 바깥에 실물 건축 파편을 한 층 더 배치한다.
-			{ "ruins-pillar-decorated", 21, -0.86, 0.12, 16 }, { "rock-largea", 12, 0.78, -0.17, 7 },
-			{ "ruins-wall-arched", 23, -0.87, -0.61, 12 }, { "ground-pathrocks", 8, 0.65, -0.38, 16 },
+			{ if region == "italy" or region == "med" then "ruins-pillar-decorated" else "rock-tallc", 21, -0.86, 0.12, 16 }, { "rock-largea", 12, 0.78, -0.17, 7 },
+			{ if region == "italy" or region == "med" then "ruins-wall-arched" else "cliff-large-stone", 23, -0.87, -0.61, 12 }, { "ground-pathrocks", 8, 0.65, -0.38, 16 },
 		} elseif questTerrain == "desert" then {
 			-- [사막 전경] 승인 바위와 모래 언덕의 거리 차이를 노출한다.
 			{ "rock-largea", 15, -0.81, 0.13, -13 }, { "mystic-sand-dune", 27, 0.85, -0.46, 18 },
