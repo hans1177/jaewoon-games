@@ -1157,6 +1157,42 @@ function FieldScene.start(opts)
 	-- [전경 배치 난수 분리] 시야 구성 때문에 기존 rng 시퀀스가 달라져
 	-- 퀘스트 카드·적 위치·공격 패턴에 영향을 주지 않도록 승인 실물의 재배치만 별도 추첨한다.
 	local visualLayoutRng = Random.new((portVisualSeed + math.floor(tonumber(opts.seed) or 7) * 97) % 2147483647)
+	-- [지상탐험 배치 정본] 진입 시야와 중경의 3~6개 실물 군락. 중앙 통로·스폰은 유지한다.
+	-- 전체 수량은 기존 면적 계산을 따르고, 반복 행의 좌표 중복을 없애기 위해 군락마다 다른 중심을 사용한다.
+	local function sceneryPosition(index, total, groupSize, spacing, offset, biasX, biasZ)
+		local group = math.floor((index - 1) / groupSize)
+		local slot = (index - 1) % groupSize
+		local groups = math.max(1, math.ceil(total / groupSize))
+		local side = (if (group + offset) % 2 == 0 then -1 else 1) * mirror
+		local lane = math.floor(group / 2)
+		local lanes = math.max(1, math.ceil(groups / 2))
+		local nearLanes = math.max(1, math.floor(lanes * 0.16))
+		local near = lane < nearLanes
+		local progress = if near then (lane + 0.5) / nearLanes
+			else (lane - nearLanes + 0.5) / math.max(1, lanes - nearLanes)
+		local phase = (lane * 0.61803398875 + (portVisualSeed % 997) / 997 + offset * 0.173) % 1
+		local corridor = math.max(24, half * (if questTerrain == "forest" or questTerrain == "jungle" then 0.20 else 0.28))
+		local edge = half * 0.89
+		local nearEdge = math.min(edge, 64)
+		local lateral = if near then corridor + math.max(0, nearEdge - corridor) * (0.20 + phase * 0.65)
+			else half * (0.46 + 0.34 * phase)
+		local depth = if near then half - 34 - progress * math.min(57, half * 0.38)
+			else half * (0.30 - progress * 1.12)
+		-- 농지·기관은 구획 외곽에, 산악·광산은 측면 능선에, 숲은 굽은 통로 양옆에 집중한다.
+		if not near then
+			if questTerrain == "farm" or questTerrain == "archive" then lateral = math.max(lateral, half * 0.66)
+			elseif questTerrain == "highland" or questTerrain == "mine" or questTerrain == "glacier" then
+				lateral = math.max(lateral, half * 0.62)
+			elseif questTerrain == "forest" or questTerrain == "jungle" then
+				lateral += math.sin(depth / math.max(half, 1) * 5) * half * 0.07
+			end
+		end
+		local angle = slot * math.pi * 2 / groupSize + phase * math.pi * 2
+		local radius = if slot == 0 then 0 else spacing * (0.85 + 0.25 * (slot % 2))
+		local x = math.clamp(lateral + math.cos(angle) * radius + biasX, corridor, edge)
+		local z = math.clamp(depth + math.sin(angle) * radius + biasZ, -half * 0.86, half - 26)
+		return ORIGIN + Vector3.new(side * x, 0, z)
+	end
 
 	-- [실물 배경 통합 배치] 나무·바위·문화권 소품·퀘스트 건축물 모두 기존 승인된 원본으로만 생성한다.
 	-- AssetLoader가 뒤늦게 등록한 모델도 같은 좌표에 한 번만 배치한다. 새 파츠 대체는 하지 않는다.
@@ -1357,51 +1393,56 @@ function FieldScene.start(opts)
 	-- [지형 모델 수 해제] 기기별 개수 제한 없이 현재 바이옴과 맵 면적이 정한 수목을 배치한다.
 	local visualTreeCount = treeCount
 	for index = 1, visualTreeCount do
-		local pos = ORIGIN + scatter(14)
-		-- 산길·유적은 바깥 능선으로, 숲은 양옆의 구불구불한 수목 통로로 배치한다.
+		local sample = scatter(14)
+		-- 기존 전투 RNG 소비 순서를 유지한다. 이 값은 군락의 작은 편차로만 사용한다.
+		local a, b
 		if questTerrain == "forest" then
-			local side = if index % 2 == 0 then -1 else 1
-			local z = rng:NextNumber(-half * 0.88, half * 0.61)
-			local curve = math.sin(z / math.max(half, 1) * 6) * half * 0.07
-			pos = ORIGIN + Vector3.new(side * (half * rng:NextNumber(0.27, 0.78) + curve), 0, z)
+			b = rng:NextNumber(-half * 0.88, half * 0.61)
+			a = rng:NextNumber(0.27, 0.78)
 		elseif questTerrain == "highland" or questTerrain == "mine" or questTerrain == "ruins" then
-			local side = if index % 2 == 0 then -1 else 1
-			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.62, 0.89), 0,
-				rng:NextNumber(-half * 0.83, half * 0.53))
+			a = rng:NextNumber(0.62, 0.89)
+			b = rng:NextNumber(-half * 0.83, half * 0.53)
 		else
-			-- 농경지·호숫가·해안·평원의 중앙 이동 동선을 비우고 외곽에 수목대를 만든다.
-			local side = if index % 2 == 0 then -1 else 1
-			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.52, 0.88), 0,
-				rng:NextNumber(-half * 0.81, half * 0.50))
+			a = rng:NextNumber(0.52, 0.88)
+			b = rng:NextNumber(-half * 0.81, half * 0.50)
 		end
-		-- [근경·중경·원경] 승인 나무 총량은 그대로 두고 3개 구획으로 나눈다.
-		-- 스폰과 중앙 전투 통로는 비우고 시야 양옆에 다층 숲을 만든다.
-		if index % 3 == 1 then
-			local lane = math.floor((index - 1) / 3) % 9
-			pos = ORIGIN + Vector3.new((if index % 2 == 0 then -1 else 1) * (half * visualLayoutRng:NextNumber(0.19, 0.31) + 18), 0,
-				half * (0.72 - lane * 0.105) + visualLayoutRng:NextNumber(-8, 8))
-		elseif index % 3 == 2 then
-			local lane = math.floor((index - 2) / 3) % 7
-			pos = ORIGIN + Vector3.new((if index % 2 == 0 then -1 else 1) * half * visualLayoutRng:NextNumber(0.48, 0.66), 0,
-				half * (0.26 - lane * 0.16) + visualLayoutRng:NextNumber(-10, 10))
-		end
+		local pos = sceneryPosition(index, visualTreeCount, 5, 11, 0,
+			(a - 0.55) * 7 + sample.X / half * 1.5, b / half * 3 + sample.Z / half)
 		local h = rng:NextNumber(9, 15)
 		local name = treeNames[rng:NextInteger(1, #treeNames)]
 		-- [저폴리 원경] 신규 생성물 없이 같은 식생권의 기등록 Kenney 간결 실물을 선택한다.
 		-- 근·중경의 수종 다양성·고품질 메시·지면 충돌과 총 배치 수는 그대로 둔다.
 		local lowPolyVariant = false
-		if index % 3 == 0 and not arid then
+		local distance = (Vector3.new(pos.X, spawn.Y, pos.Z) - spawn).Magnitude
+		if distance >= 400 and not arid then
 			local simpler = if winterScene or northern then "tree-pinedefaulta"
 				elseif tropical then "kenney_tree_palmShort" else "kenney_tree_defaultDark"
 			if AssetIds["Terrain/" .. simpler] then
 				name, lowPolyVariant = simpler, true
 			end
 		end
+		-- 실제 등록된 계절·수종 원본만 군락에 합류한다. 미등록 식생은 기존 수종을 보존한다.
+		do
+			local candidates = if winterScene then { "veg_birch_snow", "veg_alpine_conifer" }
+				elseif questTerrain == "highland" then { "veg_alpine_conifer", "veg_conifer_grove" }
+				elseif tropical then { "veg_coconut_palm_3", "veg_coconut_palm_4", "veg_palm_grove" }
+				elseif questTerrain == "lake" or questTerrain == "swamp" then { "veg_river_willow_1", "veg_river_willow_2" }
+				elseif region == "korea" or region == "japan" or region == "china" then { "veg_bamboo_tall", "veg_conifer_grove" }
+				elseif arid then { "veg_dry_canopy" }
+				elseif season == "가을" then { "veg_birch_autumn", "veg_autumn_grove" }
+				elseif northern then { "veg_birch_green", "veg_northern_grove", "veg_conifer_grove" }
+				else { "veg_birch_green", "veg_forest_edge" }
+			if not lowPolyVariant and index % 5 <= 2 then
+				local candidate = candidates[(index + portVisualSeed) % #candidates + 1]
+				if AssetIds["Terrain/" .. candidate] then name = candidate end
+			end
+		end
 		local kind = if AssetIds["Terrain/" .. name] then "Terrain" else "Town"
 		local entry = { kind, name, h, nil, nil, false }
 		entry.lowPolyVariant = lowPolyVariant
 		entry.position = pos
-		entry.band = if index % 3 == 1 then "near" elseif index % 3 == 2 then "mid" else "far"
+		entry.band = if distance < 120 then "near" elseif distance < 400 then "mid" else "far"
+		entry[7] = visualLayoutRng:NextNumber(-180, 180)
 		-- 상록수는 북방 겨울에도 녹음을 유지하고, 낙엽수만 황금·적갈색 또는 서리색을 입힌다.
 		entry.tint = if name == "tree-pinedefaulta" or name == "tree-pinedefaultb" or name == "tree-pinetalla-detailed"
 			or name == "tree-pinetallb-detailed" or name == "tree-pinetallc-detailed" or name == "north-pine-fall"
@@ -1445,37 +1486,29 @@ function FieldScene.start(opts)
 	local rockCount = math.floor(biome.rocks * 1.6 * AREA)
 	local visualRockCount = rockCount
 	for index = 1, visualRockCount do
-		local pos = ORIGIN + scatter(10)
-		local side = if index % 2 == 0 then 1 else -1
+		local sample = scatter(10)
+		local a, b
 		if questTerrain == "highland" or questTerrain == "mine" or questTerrain == "coast" then
-			-- 협곡 양벽·해안 암초는 외곽에 모아 벽면처럼 연결한다.
-			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.65, 0.90), 0,
-				rng:NextNumber(-half * 0.86, half * 0.44))
+			a = rng:NextNumber(0.65, 0.90)
+			b = rng:NextNumber(-half * 0.86, half * 0.44)
 		else
-			-- 일반 지형의 바위도 조사·전투·시작 통로와 충돌하지 않게 양쪽 가장자리에 둔다.
-			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.55, 0.90), 0,
-				rng:NextNumber(-half * 0.84, half * 0.48))
+			a = rng:NextNumber(0.55, 0.90)
+			b = rng:NextNumber(-half * 0.84, half * 0.48)
 		end
-		-- [전투로 측면 암석층] 기존 승인 암석 수만 재배치하고 근접 자갈→중경 바위→먼 암벽으로 연결한다.
-		-- 근경도 전투 중심축에서 떨어진 바깥쪽에 두어 원래 충돌·전투 경로를 보존한다.
-		if index % 4 == 1 then
-			local lane = math.floor((index - 1) / 4) % 7
-			pos = ORIGIN + Vector3.new(side * (half * visualLayoutRng:NextNumber(0.23, 0.33) + 10), 0,
-				half * (0.66 - lane * 0.12) + visualLayoutRng:NextNumber(-6, 6))
-		elseif index % 4 == 2 then
-			pos = ORIGIN + Vector3.new(side * half * visualLayoutRng:NextNumber(0.48, 0.62), 0,
-				half * visualLayoutRng:NextNumber(-0.60, 0.14))
-		end
+		local pos = sceneryPosition(index, visualRockCount, 4, 7, 1,
+			(a - 0.55) * 6 + sample.X / half, b / half * 4 + sample.Z / half)
+		local distance = (Vector3.new(pos.X, spawn.Y, pos.Z) - spawn).Magnitude
 		local rock = rockNames[rng:NextInteger(1, #rockNames)]
 		local lowPolyVariant = false
 		-- [저폴리 원경] 근경 암석과 실제 충돌을 유지하며 원경만 승인된 단순 바위 메시 사용.
-		if index % 4 >= 3 and AssetIds["Terrain/kenney_rock_smallFlatA"] then
+		if distance >= 400 and AssetIds["Terrain/kenney_rock_smallFlatA"] then
 			rock, lowPolyVariant = { "Terrain", "kenney_rock_smallFlatA" }, true
 		end
 		local entry = { rock[1], rock[2], rng:NextNumber(2.5, 6), nil, nil, true }
 		entry.lowPolyVariant = lowPolyVariant
 		entry.position = pos
-		entry.band = if index % 4 == 1 then "near" elseif index % 4 == 2 then "mid" else "far"
+		entry.band = if distance < 120 then "near" elseif distance < 400 then "mid" else "far"
+		entry[7] = visualLayoutRng:NextNumber(-180, 180)
 		stageFeature(entry)
 	end
 
@@ -1930,7 +1963,7 @@ function FieldScene.start(opts)
 			if ok and portScene.Signatures then signature = portScene.Signatures[opts.portId] end
 		end
 		local original = (opts.portId or "") .. "_landmark_full"
-		local horizonZ = -math.max(400, half + 150)
+		local horizonZ = -math.max(400, half + 150) -- 실제 400스터드 밖의 항구 실루엣
 		local groups, groupCount = {}, 0
 		folder:SetAttribute("FieldHorizonPlaced", 0)
 		folder:SetAttribute("FieldPortLandmarkOriginalMissing", not AssetIds["Town/" .. original])
@@ -2081,14 +2114,12 @@ function FieldScene.start(opts)
 	-- [자연층 자유 배치] 기존 승인 식생은 맵 넓이에 따라 배치하고 모바일/PC 고정 10/24개 제한을 없앤다.
 	local detailCount = math.max(24, math.floor(24 * math.sqrt(AREA)))
 	for index = 1, detailCount do
-		-- [근·중·원경 균형] 3개 띠를 반복해 모델 수가 늘어도 어느 한쪽에 몰리지 않게 한다.
-		-- 각 띠 안에서는 길이방향으로 다섯 줄을 순환하며 기존 전투 중앙 통로를 비운다.
-		local band = math.floor((index - 1) / 4) % 3
-		local depthRow = math.floor((index - 1) / 12) % 5
-		local side = if index % 2 == 0 then -1 else 1
-		local lateral = if band == 0 then 0.25 elseif band == 1 then 0.43 else 0.65
-		local px = side * half * (lateral + rng:NextNumber(0, 0.13))
-		local pz = half * (0.78 - band * 0.43 - depthRow * 0.11) + rng:NextNumber(-7, 7)
+		-- [근·중경 하층] 6개 단위 군락으로 풀·돌·관목의 위치를 분리한다.
+		local lateralJitter = rng:NextNumber(0, 0.13)
+		local depthJitter = rng:NextNumber(-7, 7)
+		local pos = sceneryPosition(index, detailCount, 6, 4.8, 2,
+			(lateralJitter - 0.065) * 14, depthJitter * 0.4)
+		local distance = (Vector3.new(pos.X, spawn.Y, pos.Z) - spawn).Magnitude
 		local asset = detailAssets[((index - 1) % #detailAssets) + 1]
 		local entry = { "Terrain", asset, if asset == "north-pine-fall" then 8.5
 			elseif asset == "east-bamboo-grove" then 7 elseif asset == "log-stack" then 4.5
@@ -2107,21 +2138,58 @@ function FieldScene.start(opts)
 			elseif asset == "kenney_log_stackLarge" then 4.8
 			elseif asset == "kenney_plant_bushTriangle" or asset == "kenney_grass_leafs" then 4.4
 			else rng:NextNumber(2.2, 5.2), nil, nil, false }
-		entry.position = ORIGIN + Vector3.new(px, 0, math.clamp(pz, -half * 0.74, half * 0.83))
-		entry.band = if band == 0 then "near" elseif band == 1 then "mid" else "far"
+		-- 지형별 정확한 식생 후보만 등록 확인 후 기존 하층 슬롯에 연결한다.
+		do
+			local candidates = if winterScene then { {"veg_cold_scrub", 3}, {"veg_rock_moss_mat", 3} }
+				elseif questTerrain == "highland" then { {"veg_alpine_cushion", 2}, {"veg_alpine_grass", 3}, {"veg_rock_crevice_plants", 3} }
+				elseif questTerrain == "desert" or arid then { {"veg_desert_cactus_patch", 4}, {"veg_dry_scrub", 3}, {"veg_flowering_cactus", 3} }
+				elseif questTerrain == "swamp" or questTerrain == "lake" then { {"veg_wetland_grass", 4}, {"veg_water_lily", 2} }
+				elseif questTerrain == "coast" then { {"veg_coastal_grass", 4}, {"veg_rock_crevice_plants", 2} }
+				elseif questTerrain == "archive" then { {"veg_garden_hedge", 5}, {"veg_wildflower_purple", 2}, {"veg_wildflower_yellow", 2} }
+				elseif questTerrain == "ruins" or questTerrain == "fort" then { {"veg_wall_hanging_moss", 3}, {"veg_rock_moss_mat", 3} }
+				elseif tropical then { {"veg_tropical_understory", 4}, {"veg_fern", 3} }
+				elseif questTerrain == "forest" then { {"veg_woodland_understory", 4}, {"veg_fern", 3}, {"veg_mossy_stump", 4}, {"veg_berry_bush_1", 3}, {"veg_berry_bush_2", 3} }
+				else { {"veg_meadow_tufts", 4}, {"veg_wildflower_yellow", 2}, {"veg_wildflower_purple", 2} }
+			local choice = candidates[(index + portVisualSeed) % #candidates + 1]
+			-- 수생식물·벽걸이 이끼는 실제 수면·벽면의 접지 검증 전까지 육지 슬롯에 올리지 않는다.
+			if index % 2 == 0 and choice[1] ~= "veg_water_lily" and choice[1] ~= "veg_wall_hanging_moss"
+				and AssetIds["Terrain/" .. choice[1]] then entry[2], entry[3] = choice[1], choice[2] end
+		end
+		entry.position = pos
+		entry.band = if distance < 120 then "near" elseif distance < 400 then "mid" else "far"
+		entry[7] = visualLayoutRng:NextNumber(-180, 180)
 		stageFeature(entry)
 	end
 
 	-- 생산지·탐험 지역에 신규 CC0 자연 자산을 배치한다.
 	-- 실제 모델이 등록되지 않았으면 배치를 생략하고 임시 원형/상자 대체물을 만들지 않는다.
-	if string.find(opts.name or "", "농장", 1, true) or string.find(opts.name or "", "과수원", 1, true)
-		or string.find(opts.name or "", "들판", 1, true) then
-		local farmModels = { "crop-carrot", "crop-melon", "crop-turnip", "crops-cornstagec", "crops-wheatstagea" }
-		for index, crop in farmModels do
-			local entry = { "Terrain", crop, 3.8, nil, nil, false }
-			entry.position = ORIGIN + Vector3.new(-half * 0.48 + (index - 1) % 3 * 7, 0,
-				-half * 0.30 + math.floor((index - 1) / 3) * 9)
-			stageFeature(entry)
+	if questTerrain == "farm" then
+		local orchard = string.find(questName, "과수원", 1, true) ~= nil
+		local farmModels = if orchard then { "veg_orchard_apple" }
+			elseif string.find(questName, "밀", 1, true) then { "crops-wheatstagea", "crops-wheatstageb", "veg_farm_wheat" }
+			elseif string.find(questName, "옥수수", 1, true) then { "crops-cornstagec", "veg_farm_maize" }
+			elseif string.find(questName, "당근", 1, true) then { "crop-carrot", "veg_farm_carrot" }
+			elseif string.find(questName, "호박", 1, true) then { "crop-pumpkin", "veg_farm_pumpkin" }
+			elseif string.find(questName, "올리브", 1, true) or string.find(questName, "감자", 1, true)
+				or string.find(questName, "아마", 1, true) then {}
+			else { "crop-carrot", "crop-melon", "crop-turnip", "crops-cornstagec", "crops-wheatstagea" }
+		local available = {}
+		for _, crop in farmModels do
+			if AssetIds["Terrain/" .. crop] then table.insert(available, crop) end
+		end
+		if #available > 0 then
+			-- 밭과 과수원은 중경의 한쪽 구획으로 모으고 진입·조사 중심축은 비운다.
+			for row = 0, 2 do
+				for column = 0, 4 do
+					local crop = available[(row + column) % #available + 1]
+					local entry = { "Terrain", crop, if orchard then 10 else 3.8, nil, nil, false }
+					local spacing = if orchard then 11 else 5
+					entry.position = ORIGIN + Vector3.new(-mirror * (half * 0.53 + row * spacing), 0,
+						-half * 0.36 + column * spacing)
+					entry.band = "mid"
+					stageFeature(entry)
+				end
+			end
 		end
 	end
 	if string.find(opts.name or "", "숲", 1, true) or string.find(opts.name or "", "고지", 1, true) then
