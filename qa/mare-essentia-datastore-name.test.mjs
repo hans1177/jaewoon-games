@@ -637,7 +637,7 @@ test('1단 검병·궁수 편성은 유지하면서 승인된 R15 체형 3종 �
   const grunt=field.match(/\t\tgrunt = \{([\s\S]*?)\n\t\t\},/);
   assert.ok(grunt,'실제 검병 복식 정의 누락');
   const profiles=[...grunt[1].matchAll(/\{ ".*?", "(.*?)", Color3/g)].map(x=>x[1]);
-  assert.ok(profiles.length>=5,'기존 검병 5종 복식 보존');
+  assert.ok(profiles.length>=207,'실제 탐험지별 지형 지정');
   const expect=[
     ['Barbarian','heavy'],
     ['Knight','athletic'],
@@ -4188,6 +4188,11 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
     assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'지점 지형 불일치 '+id);
   }
   assert.match(field,/FieldSiteTerrainSource/,'지점 ID 사용 여부 진단');
+  for(const [id,theme] of Object.entries({marseille_salt:'swamp',valencia_albufera:'swamp',valletta_bastions:'fort',athens_acropolis:'ruins',istanbul_bazaar:'archive',las_palmas_volcano:'volcanic',helsinki_gulf:'glacier',cyprus_copper:'mine'})){
+    assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'지중해·발트해 지점 분류 불일치 '+id);
+  }
+  assert.match(field,/FieldSiteComposition", "salt-work-waterway"/,'염전 수로 배치');
+  assert.match(field,/FieldSiteComposition", "market-street"/,'시장 거리 실물 배치');
   for(const [id,theme] of Object.entries({bergen_fjord:'coast',amsterdam_flats:'coast',stockholm_runes:'ruins',rotterdam_dike:'lake',bergen_ice_edge:'glacier',edinburgh_colliery:'mine',edinburgh_castle_rock:'fort',dublin_cranberry:'swamp'})){
     assert.ok(siteProfile.includes(id+' = "'+theme+'"'),'북해·발트 지점 지형 불일치 '+id);
   }
