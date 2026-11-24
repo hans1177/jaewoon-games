@@ -123370,7 +123370,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -123404,7 +123404,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 40,
-      "previousReservationId": "system-ai:45314447467:1",
+      "previousReservationId": "system-ai:45315807727:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -123412,12 +123412,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:45315807727:1",
-      "reservedAt": "2026-11-24T03:04:52.476Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -127225,7 +127225,13 @@
         "system-ai-handoff-from-reservation:system-ai:45307298853:1",
         "system-ai-handoff-to-reservation:system-ai:45314447467:1",
         "actions-run:45314447467",
-        "system-ai-handoff-to-reservation:system-ai:45315807727:1"
+        "system-ai-handoff-to-reservation:system-ai:45315807727:1",
+        "actions-run:45315807727",
+        "external-ai-raw-output-sha256:44ed4a32bd3ddd9099ae47320874c92870c9f3da6dc28b3b50ad695897f1fe3f",
+        "system-ai-applied-answer-sha256:df9ba284d40e05908a011eddaa0f943f1768866c96ea58d3abcb4e8d04be4a40",
+        "repair-strategy-fingerprint:bbdf73f848e2e9e98c2646680800056dac729f9e41d29670db56a155ea119c23",
+        "failed-strategy-fingerprint:bbdf73f848e2e9e98c2646680800056dac729f9e41d29670db56a155ea119c23",
+        "model-output-sha256:44ed4a32bd3ddd9099ae47320874c92870c9f3da6dc28b3b50ad695897f1fe3f"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1974,
@@ -127240,7 +127246,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-24T03:04:52.476Z"
+      "updatedAt": "2026-11-24T03:12:49.263Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
