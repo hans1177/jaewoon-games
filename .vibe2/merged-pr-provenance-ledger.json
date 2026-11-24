@@ -334901,11 +334901,145 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_6c700e3f55f00ad34a0ca0e4",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14865",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "8ce728d453bb65144c7eee9234fe20597a662c5c",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14865,
+        "baseBranch": "main",
+        "headBranch": "owner-mare-vegetation-4-20261124",
+        "baseSha": "8ce728d453bb65144c7eee9234fe20597a662c5c",
+        "headSha": "aa22c827530e9683052fbc8265bb1f17d4d6656d",
+        "mergeCommitSha": "cb1272b6e4e3d2dab152a645d396f9599acdfeba",
+        "mergedAt": "2026-11-24T01:09:45Z",
+        "authorLogin": "hans1177",
+        "titleHash": "560041a415f9b0bae6babb87bba40928b53199272c01073db813a0d5e954966a",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner-mare-vegetation-4-20261124",
+        "candidateSha": "aa22c827530e9683052fbc8265bb1f17d4d6656d"
+      },
+      "changeStats": {
+        "changedFileCount": 13,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 172,
+        "deletedLineCount": 4,
+        "changedFiles": [
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_alpine_conifer.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_alpine_conifer.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_alpine_cushion.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_alpine_cushion.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_alpine_grass.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_alpine_grass.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_bamboo_tall.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_bamboo_tall.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_rock_moss_mat.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_rock_moss_mat.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_wall_hanging_moss.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_wall_hanging_moss.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_alpine_conifer.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_alpine_cushion.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_alpine_grass.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_bamboo_tall.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_rock_moss_mat.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_wall_hanging_moss.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14865",
+        "merge-commit:cb1272b6e4e3d2dab152a645d396f9599acdfeba",
+        "base-main:8ce728d453bb65144c7eee9234fe20597a662c5c"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2679
+    "total": 2680
   }
 }
