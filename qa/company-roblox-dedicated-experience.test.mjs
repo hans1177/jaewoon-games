@@ -2175,3 +2175,51 @@ test('Mare first card has no forced wonder and spontaneous port events are limit
   assert.match(story,/function handlers\.PlayStory\(state, p\)/,'player-initiated story stays intact');
   assert.match(quest,/local function offer\(state, msgs, how, personId\)/,'player initiated quests preserved');
 });
+
+test('Mare trade asset uploader bounds parallel requests, dedupes keys and stops on moderation', async () => {
+  const source = fs.readFileSync('tools/mare-essentia-upload-assets.mjs', 'utf8');
+  const start = source.indexOf('const uploadGroups = new Map();');
+  const end = source.indexOf('// 사용 권한: 공식 BatchGrantPermissionsRequest', start);
+  assert.ok(start >= 0 && end > start);
+  const loop = source.slice(start, end);
+  for (const moderated of [false, true]) {
+    const plan = ['a','a','b','c','d','e','f','g'].map(name => ({kind:'Town',name,file:name,ext:'.glb',assetType:'Model',license:'CC0-1.0'}));
+    const registry = {assets:{}}, failures = [], pendingPermissions = [], posts = [];
+    let active = 0, peak = 0, nextId = 100;
+    const request = async (url, options) => {
+      if (options?.method === 'POST') {
+        const id = JSON.parse(options.body.get('request')).displayName;
+        posts.push(id);
+        active++; peak = Math.max(peak,active);
+        if (moderated && id.endsWith('/a')) {
+          active--;
+          throw Error('User is moderated');
+        }
+        return {path:'operations/' + (++nextId)};
+      }
+      active--;
+      return {done:true,response:{assetId:url.split('/').at(-1)}};
+    };
+    const result = await runInNewContext('(async()=>{let accountBlocked=false;'+loop+';return accountBlocked})()', {
+      plan,registry,failures,pendingPermissions,request,fs:{readFile:async()=>Buffer.from('model')},
+      crypto:{createHash},Buffer,Blob,FormData,Set,Map,console:{log(){},error(){}},
+      setTimeout:(fn)=>queueMicrotask(fn),cookie:'',creatorId:'1',blockedHashes:new Set(),previousTypeAssets:new Map(),
+      approvedImages:{},modelOriginals:{},
+    });
+    assert.ok(peak <= 4);
+    assert.equal(new Set(posts).size,posts.length);
+    if (moderated) {
+      assert.equal(result,true);
+      assert.ok(posts.length <= 4);
+      assert.ok(failures.length >= 1);
+    } else {
+      assert.equal(result,false);
+      assert.equal(peak,4);
+      assert.equal(posts.length,7);
+      assert.equal(pendingPermissions.length,7);
+      assert.equal(Object.keys(registry.assets).length,7);
+      assert.equal(failures.length,0);
+    }
+    assert.equal(active,0);
+  }
+});
