@@ -1692,12 +1692,26 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       }
       if (derivedVegetation) {
         const model = await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName));
-        if (!sourceLicense || sourceLicense.license !== 'CC0-1.0' || sourceLicense.derived !== true
-          || !sourceLicense.originalFiles?.length || !sourceLicense.modification
-          || crypto.createHash('sha256').update(model).digest('hex') !== sourceLicense.sha256
+        const modelHash = crypto.createHash('sha256').update(model).digest('hex');
+        if (!sourceLicense || sourceLicense.license !== 'CC0-1.0'
+          || modelHash !== sourceLicense.sha256 || blockedHashes.has(modelHash)
           || model.length !== sourceLicense.bytes || !Number.isSafeInteger(sourceLicense.triangles)
           || sourceLicense.triangles <= 0)
+          throw new Error('MARE_VEGETATION_SOURCE_PROOF_INVALID:' + f);
+        // [식생 원본] 고정된 CC0 출처와 실제 Git 바이너리 해시를 재검증한다.
+        // 가공품의 승인 원본 확인은 그대로 유지한다.
+        if (sourceLicense.derived === false) {
+          const blob = crypto.createHash('sha1').update('blob ' + model.length + '\0').update(model).digest('hex');
+          const pinned = /^https:\/\/github\.com\/[^/]+\/[^/]+\/blob\/[a-f0-9]{40}\/.+$/;
+          if (sourceLicense.commercialUseAllowed !== true || !sourceLicense.originalModel
+            || sourceLicense.sourceLicense !== 'https://creativecommons.org/publicdomain/zero/1.0/'
+            || !String(sourceLicense.source || '').startsWith('https://')
+            || !pinned.test(sourceLicense.downloadSource || '') || !pinned.test(sourceLicense.mirrorLicenseEvidence || '')
+            || sourceLicense.sourceGitBlobSha1 !== blob)
+            throw new Error('MARE_VEGETATION_ORIGINAL_PROOF_INVALID:' + f);
+        } else if (sourceLicense.derived !== true || !sourceLicense.originalFiles?.length || !sourceLicense.modification) {
           throw new Error('MARE_VEGETATION_DERIVATION_PROOF_INVALID:' + f);
+        }
         // 내부 1,000개 상한만 제거한다. 실제 GLB 형상, 원본 증빙 및 공식 API 제한은 유지한다.
         if (model.length < 20 || model.toString('ascii', 0, 4) !== 'glTF'
           || model.readUInt32LE(4) !== 2 || model.readUInt32LE(8) !== model.length
@@ -1715,7 +1729,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
         }
         if (actualTriangles !== sourceLicense.triangles)
           throw new Error('MARE_VEGETATION_TRIANGLE_COUNT_MISMATCH:' + f);
-        for (const original of sourceLicense.originalFiles) {
+        for (const original of sourceLicense.derived === true ? sourceLicense.originalFiles : []) {
           const bytes = await fs.readFile(original.repositoryPath);
           if (blockedPaths.has(original.repositoryPath) || blockedHashes.has(original.sha256)
             || crypto.createHash('sha256').update(bytes).digest('hex') !== original.sha256)
