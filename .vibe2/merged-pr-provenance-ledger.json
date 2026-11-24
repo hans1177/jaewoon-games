@@ -340693,11 +340693,137 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0ef764a0b052cb4c7d552923",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14974",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "23b78b11558bb87edb7eb81d5df51b928b7a5ed0",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14974,
+        "baseBranch": "main",
+        "headBranch": "mare-cobra-armadillo-source-20261124",
+        "baseSha": "23b78b11558bb87edb7eb81d5df51b928b7a5ed0",
+        "headSha": "dbb579224365a749ddb61344d243224e26c79337",
+        "mergeCommitSha": "b5a141af1febed8bc25424d100685d52f966fbc4",
+        "mergedAt": "2026-11-24T05:32:35Z",
+        "authorLogin": "hans1177",
+        "titleHash": "48e1c28b5f0b6d8151059bfa7f64afa3426b095ff044b8f27406275defe2fedf",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-cobra-armadillo-source-20261124",
+        "candidateSha": "dbb579224365a749ddb61344d243224e26c79337"
+      },
+      "changeStats": {
+        "changedFileCount": 8,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 121,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-cobra.zip",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-cobra.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-gorilla.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-gorilla.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-white-rhino.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-white-rhino.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/overaction-armadillo.zip",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/overaction-armadillo.zip.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-cobra.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-gorilla.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/micket-white-rhino.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/overaction-armadillo.zip.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14974",
+        "merge-commit:b5a141af1febed8bc25424d100685d52f966fbc4",
+        "base-main:23b78b11558bb87edb7eb81d5df51b928b7a5ed0"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2723
+    "total": 2724
   }
 }
