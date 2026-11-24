@@ -2131,3 +2131,4 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 
 
 | `inbox/Town/` | london_trade_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_trade_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
