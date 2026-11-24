@@ -458,7 +458,7 @@ jobs:
               london_files+=("$dest" "$dest.license.json")
             done < <(git diff --name-only --diff-filter=D)
           fi
-          for f in "${london_files[@]}" roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb.license.json roblox-games/mare-essentia/assets/naval/fishing-net.glb roblox-games/mare-essentia/assets/naval/fishing-net.glb.license.json roblox-games/mare-essentia/assets/naval/net-floats.glb roblox-games/mare-essentia/assets/naval/net-floats.glb.license.json roblox-games/mare-essentia/assets/naval/galleon-heritage.glb roblox-games/mare-essentia/assets/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png roblox-games/mare-essentia/assets/terrain/kenney_*.glb* roblox-games/mare-essentia/assets/SOURCES.md roblox-games/mare-essentia/assets/naval/*-v5*.glb* roblox-games/mare-essentia/assets/cargo/{amber,ambergris,camphor,coal,guano,gum_arabic,jade,nitrate}.glb* roblox-games/mare-essentia/assets/people/{outfit_*,hair_*,acc_*}.glb* roblox-games/mare-essentia/assets/animals/discovery_{seagull,bald_eagle}.glb*; do
+          for f in "${london_files[@]}" roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb.license.json roblox-games/mare-essentia/assets/naval/fishing-net.glb roblox-games/mare-essentia/assets/naval/fishing-net.glb.license.json roblox-games/mare-essentia/assets/naval/net-floats.glb roblox-games/mare-essentia/assets/naval/net-floats.glb.license.json roblox-games/mare-essentia/assets/naval/galleon-heritage.glb roblox-games/mare-essentia/assets/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png roblox-games/mare-essentia/assets/terrain/kenney_*.glb* roblox-games/mare-essentia/assets/SOURCES.md roblox-games/mare-essentia/assets/naval/*-v5*.glb* roblox-games/mare-essentia/assets/cargo/{amber,ambergris,camphor,coal,guano,gum_arabic,jade,nitrate}.glb* roblox-games/mare-essentia/assets/people/{outfit_*,hair_*,acc_*}.glb* roblox-games/mare-essentia/assets/animals/discovery_{seagull,bald_eagle}.glb* roblox-games/mare-essentia/assets/town/{observatory-dome,clock-tower,greenhouse}-source.glb*; do
             if [[ ( "$f" == roblox-games/mare-essentia/assets/naval/nau-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/nau-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/rowboat-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/kotia-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/mtepe-custom.glb* ) && ( "${{ steps.asset_registration.outcome }}" != "success" || "${{ steps.nau_check.outcome }}" != "success" ) ]]; then
               echo "SKIP_UNVERIFIED_EXTERNAL_CC0_HULL $f"
               continue
@@ -515,6 +515,32 @@ jobs:
               raise SystemExit('MARE_DISCOVERY_ORIGINAL_REGISTRATION_UNVERIFIED:'+path.stem)
           print('MARE_DISCOVERY_ORIGINAL_REGISTERED',path.stem,digest,row['assetId'])
           PYBIRD
+            fi
+            # [런던 건축 원본] 실제 등록·사용권·원본 해시 일치 후에만 승격한다.
+            if [[ "$f" == */assets/town/observatory-dome-source.glb* || "$f" == */assets/town/clock-tower-source.glb* || "$f" == */assets/town/greenhouse-source.glb* ]]; then
+              if [[ "${{ steps.asset_registration.outcome }}" != "success" ]]; then
+                echo "SKIP_UNVERIFIED_TOWN_ORIGINAL $f"
+                continue
+              fi
+              python3 - "$f" <<'PYTOWN'
+          import hashlib,json,pathlib,sys
+          root=pathlib.Path('roblox-games/mare-essentia')
+          path=pathlib.Path(sys.argv[1].removesuffix('.license.json'))
+          if not path.exists(): sys.exit(0)
+          proof=json.loads(path.with_suffix('.glb.license.json').read_text())
+          row=json.loads((root/'assets-registered.json').read_text())['assets'].get('Town/'+path.stem,{})
+          data=path.read_bytes()
+          digest=hashlib.sha256(data).hexdigest()
+          blob=hashlib.sha1(('blob %d\0'%len(data)).encode()+data).hexdigest()
+          if not (proof['sourceSha256']==proof['originalSha256']==digest==row.get('sourceSha256')
+                  and proof['sourceGitBlobSha1']==blob and proof['sourceSizeBytes']==len(data)
+                  and proof['license']=='CC0-1.0' and proof['derived'] is False
+                  and proof['commercialUseAllowed'] is True and row.get('source')==str(path)
+                  and row.get('assetType')=='Model' and row.get('usePermissionGranted') is True
+                  and str(row.get('assetId','')).isdigit() and int(row['assetId'])>0):
+              raise SystemExit('MARE_TOWN_ORIGINAL_REGISTRATION_UNVERIFIED:'+path.stem)
+          print('MARE_TOWN_ORIGINAL_REGISTERED',path.stem,digest,row['assetId'])
+          PYTOWN
             fi
             if [ ! -e "$f" ]; then echo "SKIP_MISSING $f"; continue; fi
             if git ls-files --error-unmatch "$f" >/dev/null 2>&1 && git diff --quiet -- "$f"; then echo "SKIP_UNCHANGED $f"; continue; fi
