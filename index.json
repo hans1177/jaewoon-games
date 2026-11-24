@@ -2,16 +2,16 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "45300119209",
+    "runId": "45300361067",
     "kind": "studio",
-    "at": "2026-11-24T00:52:01.374Z",
-    "sourceRevision": "f5beba5b60247389a6f7d43121d393e95a9585a2",
+    "at": "2026-11-24T00:54:21.423Z",
+    "sourceRevision": "236c9dd20b772b9e7b6b671528efd17c3d2d6a9e",
     "result": "PASS",
     "frames": 3,
     "changedFrames": 0,
     "summary": {
-      "plannedSteps": 11,
-      "completedSteps": 11,
+      "plannedSteps": 16,
+      "completedSteps": 16,
       "plannedClicks": 0,
       "successfulClicks": 0,
       "skippedOptionalClicks": 0,
@@ -19,10 +19,30 @@
       "capturedFrames": 3,
       "abortedEarly": false
     },
-    "path": "runs/45300119209"
+    "path": "runs/45300361067"
   },
   "lastDeepAt": "2026-11-24T00:46:35.103Z",
   "runs": [
+    {
+      "runId": "45300361067",
+      "kind": "studio",
+      "at": "2026-11-24T00:54:21.423Z",
+      "sourceRevision": "236c9dd20b772b9e7b6b671528efd17c3d2d6a9e",
+      "result": "PASS",
+      "frames": 3,
+      "changedFrames": 0,
+      "summary": {
+        "plannedSteps": 16,
+        "completedSteps": 16,
+        "plannedClicks": 0,
+        "successfulClicks": 0,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 3,
+        "capturedFrames": 3,
+        "abortedEarly": false
+      },
+      "path": "runs/45300361067"
+    },
     {
       "runId": "45300119209",
       "kind": "studio",
@@ -202,26 +222,6 @@
         "abortedEarly": false
       },
       "path": "runs/45292863214"
-    },
-    {
-      "runId": "45292023164",
-      "kind": "studio",
-      "at": "2026-11-23T23:54:06.090Z",
-      "sourceRevision": "a5597f113aeab231b10317173fcc4e638b8fac4a",
-      "result": "PASS",
-      "frames": 5,
-      "changedFrames": 5,
-      "summary": {
-        "plannedSteps": 21,
-        "completedSteps": 21,
-        "plannedClicks": 0,
-        "successfulClicks": 0,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 5,
-        "capturedFrames": 5,
-        "abortedEarly": false
-      },
-      "path": "runs/45292023164"
     }
   ]
 }

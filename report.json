@@ -1,40 +1,50 @@
 {
- "sourceRevision": "f5beba5b60247389a6f7d43121d393e95a9585a2",
+ "sourceRevision": "236c9dd20b772b9e7b6b671528efd17c3d2d6a9e",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "started\ntext"
+   "out": "NEWGAME ok=true\ntext"
   },
   {
-   "step": 2,
+   "step": 3,
    "ctx": "Client",
-   "out": "mobs=19 FieldEnemy@3017.068359375, 3.1883091926574707, 127.46873474121094;FieldEnemy@3007.599853515625, 3.1948800086975098, 112.47818756103516;FieldEnemy@3013.201416015625, 3.2133140563964844, 117.97738647460938;FieldEnemy@2917.80078125, 5.825930595397949, -118.8811264038086;FieldEnemy@3119.496337890625, 4.464938640594482, -93.16536712646484;FieldEnemy@2928.071533203125, 3.1947197914123535, -98.50750732421875;FieldEnemy@3124.68505859375, 4.280287742614746, -83.92937469482422;FieldEnemy@2897.87158203125, 10.737056732177734, 15.684049606323242;FieldEnemy@3111.97119140625, 3.187947988510132, 36.09495162963867;FieldEnemy@2923.71533203125, 3.1885249614715576, -123.02703857421875;FieldEnemy@3108.281982421875, 5.7935028076171875, -104.94823455810547;FieldEnemy@2927.892333984375, 3.208728075027466, -110.67425537109375;FieldEnemy@3128.436279296875, 5.531379699707031, -79.4449462890625;FieldEnemy@2890.760009765625, 10.25069522857666, 15.894493103027344;FieldEnemy@3109.75927734375, 3.2135801315307617, 33.653053283691406;FieldEnemy@2916.503662109375, 5.403919219970703, -120.91761779785156;FieldEnemy@3114.5712890625, 7.701643943786621, -92.38919067382812;FieldEnemy@2919.63916015625, 6.9736480712890625, -111.38654327392578;FieldEnemy@3128.5224609375, 3.214113712310791, -86.41353607177734\ntext"
-  },
-  {
-   "step": 4,
-   "capture": "f0_environment",
-   "files": 1
+   "out": "INTRO name=true comp=true\ntext"
   },
   {
    "step": 5,
    "ctx": "Client",
-   "out": "bound\ntext"
+   "out": "killed=false\ntext"
   },
   {
-   "step": 7,
-   "capture": "f1_start",
-   "files": 1
+   "step": 6,
+   "ctx": "Client",
+   "out": "qs\ntext"
   },
   {
    "step": 8,
-   "ctx": "Client",
-   "out": "err=true table: 0x6d4e14c373805357 done=nil humanoids=33 models=868 parts=1375 lowPolyModels=56 lowPolyMeshes=0/1280 cam=2997.352783203125, 7.688309192657471, 136.42030334472656 hrp=3001.2353515625, 2.9980251789093018, 157.1561279296875 shelves=0 ridges=4 near3D=5 placed3D=13 near=78 mid=75 far=108 port=reef quest=coast studioFPS=6 hiddenSceneryFPS=6 restoredFPS=7 sceneryFPSDelta=0 visualParts=528 enemyHiddenFPS=7 enemyVisualDelta=0 enemyVisualParts=795 sceneryOnly=true lodAssetSource=registered\ntext"
+   "capture": "qscene_1",
+   "files": 1
   },
   {
    "step": 10,
-   "capture": "f2_later",
+   "capture": "qscene_2",
    "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "STAGE=true worldParts=8 lib=true naval=true ship=true class=Model shipParts=6 size=461.472015, 165.983994\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "qscene_3",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "STORY=true FRAMES=false CHART=true VIEWPORTS=1\ntext"
   }
  ],
  "errors": [],
@@ -42,57 +52,82 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 30004
+   "elapsedMs": 35008
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 1348
+   "elapsedMs": 2610
   },
   {
    "step": 2,
-   "type": "luau",
-   "elapsedMs": 709
+   "type": "wait",
+   "elapsedMs": 4000
   },
   {
    "step": 3,
-   "type": "wait",
-   "elapsedMs": 11008
+   "type": "luau",
+   "elapsedMs": 3040
   },
   {
    "step": 4,
-   "type": "capture",
-   "elapsedMs": 997
+   "type": "wait",
+   "elapsedMs": 2011
   },
   {
    "step": 5,
    "type": "luau",
-   "elapsedMs": 198
+   "elapsedMs": 592
   },
   {
    "step": 6,
-   "type": "wait",
-   "elapsedMs": 9008
+   "type": "luau",
+   "elapsedMs": 1051
   },
   {
    "step": 7,
-   "type": "capture",
-   "elapsedMs": 967
+   "type": "wait",
+   "elapsedMs": 1509
   },
   {
    "step": 8,
-   "type": "luau",
-   "elapsedMs": 19403
+   "type": "capture",
+   "elapsedMs": 1542
   },
   {
    "step": 9,
    "type": "wait",
-   "elapsedMs": 6002
+   "elapsedMs": 1513
   },
   {
    "step": 10,
    "type": "capture",
-   "elapsedMs": 874
+   "elapsedMs": 1827
+  },
+  {
+   "step": 11,
+   "type": "luau",
+   "elapsedMs": 374
+  },
+  {
+   "step": 12,
+   "type": "wait",
+   "elapsedMs": 2505
+  },
+  {
+   "step": 13,
+   "type": "capture",
+   "elapsedMs": 1422
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 364
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 3509
   }
  ],
  "consoleCapture": {
@@ -102,8 +137,8 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 11,
-  "completedSteps": 11,
+  "plannedSteps": 16,
+  "completedSteps": 16,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
