@@ -203,6 +203,9 @@ local PORT_NATURE = {
 	new_orleans="delta", new_york="river", havana="reef", san_juan="reef",
 	san_francisco="cliff_coast", rio="mountain_coast", valparaiso="cliff_coast",
 	sydney="woodland", auckland="volcanic", guam="reef", honolulu="volcanic", suva="reef",
+	hobart="mountain_coast", perth="coast", darwin="mangrove", port_moresby="jungle_coast",
+	tahiti="reef", acapulco="mountain_coast", panama="jungle_coast", guayaquil="delta",
+	callao="arid_coast", sitka="northern_coast", vancouver="fjord",
 }
 -- 문화권의 대표 랜드마크 앞에 들어가는 3번째 실물만 항구 지리와 탐험지로 교체한다.
 -- 없는 자산을 그리지 않고 기존 FieldScene.stageFeature 등록 검사 경로를 통과한다.
@@ -688,8 +691,14 @@ function FieldScene.start(opts)
 	local northern = region == "nordic" or region == "hanse" or region == "britain" or region == "stone"
 	local tropical = region == "seasia" or region == "tropic" or region == "malabar"
 		or region == "pacific" or region == "creole"
+	-- 태평양 전역을 열대로 취급하지 않는다. 실제 조사 항구의 계절·수목만 보정한다.
+	if string.match(opts.siteId or "", "^pac_survey_%d%d$") then
+		tropical = table.find({ "darwin", "port_moresby", "suva", "tahiti", "honolulu", "guam", "acapulco", "panama", "guayaquil" }, opts.portId or "") ~= nil
+		northern = table.find({ "sitka", "vancouver" }, opts.portId or "") ~= nil
+	end
 	local arid = not tropical and (region == "desert" or region == "ottoman" or region == "med"
 		or region == "wafrica" or region == "swahili") -- 해변의 모래는 건조 기후의 근거가 아니다.
+	if string.match(opts.siteId or "", "^pac_survey_%d%d$") then arid = opts.portId == "callao" end
 	local climateZone = if northern then "북방" elseif tropical then "열대"
 		elseif arid then "건조" else "온대"
 	local monsoon = tropical and month >= 5 and month <= 10
@@ -1132,9 +1141,32 @@ function FieldScene.start(opts)
 			auto_lostland_cibola = "archive",
 			havana_fort = "fort",
 			havana_orchard = "farm",
+			-- 태평양 탐사: 항구의 실제 자연환경과 외지 유물·해도 조사 장소를 구분한다.
+			pac_survey_00 = "forest",
+			pac_survey_01 = "forest",
+			pac_survey_02 = "coast",
+			pac_survey_03 = "swamp",
+			pac_survey_04 = "forest",
+			pac_survey_05 = "jungle",
+			pac_survey_06 = "jungle",
+			pac_survey_07 = "coast",
+			pac_survey_08 = "volcanic",
+			pac_survey_09 = "coast",
+			pac_survey_10 = "archive",
+			pac_survey_11 = "archive",
+			pac_survey_12 = "archive",
+			pac_survey_13 = "coast",
+			pac_survey_14 = "archive",
+			pac_survey_15 = "coast",
+			pac_survey_16 = "coast",
+			pac_survey_17 = "coast",
+			pac_survey_18 = "coast",
+			pac_survey_19 = "coast",
+			pac_survey_20 = "coast",
 		}
 		local selected = exact[opts.siteId or ""]
 		if selected then questTerrain = selected end
+		folder:SetAttribute("FieldPacificSurvey", string.match(opts.siteId or "", "^pac_survey_%d%d$") ~= nil)
 		folder:SetAttribute("FieldSiteTerrainSource", if selected then "site-id" else "site-name")
 	end
 	-- [특수 기후의 실제 바닥 재질] 색 보정만이 아니라 눈·진흙·화산암 지형을 구분한다.
@@ -1214,6 +1246,14 @@ function FieldScene.start(opts)
 		biome.ground = Color3.fromRGB(205, 203, 189)
 	elseif opts.siteId == "falun_mine" then
 		biome.ground = Color3.fromRGB(123, 87, 67)
+	elseif folder:GetAttribute("FieldPacificSurvey") then
+		if questTerrain == "forest" then
+			biome.mat = Enum.Material.Grass
+			biome.ground = Color3.fromRGB(88, 115, 75)
+		elseif opts.siteId == "pac_survey_13" then
+			biome.mat = Enum.Material.Sand
+			biome.ground = Color3.fromRGB(186, 162, 125)
+		end
 	end
 	-- 열린 지역의 먼 항구는 맑을 때 실제로 보이도록 한다. 광산·습지·빙설의 짙은 기후는 유지.
 	if questTerrain == "archive" or questTerrain == "plains" or questTerrain == "coast" or questTerrain == "farm" then
@@ -2006,6 +2046,17 @@ function FieldScene.start(opts)
 		glacier = { 5, 6, 8 }, volcanic = { 5, 7, 8 },
 	}
 	local featureList = landforms[questTerrain] or landforms.plains
+	if folder:GetAttribute("FieldPacificSurvey") then
+		-- 유칼립투스·카우리·맹그로브·산호 및 문화권 전용 원본은 실제 등록 전까지 미확보로 기록한다.
+		folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+		if questTerrain == "jungle" then
+			featureList[5][2], featureList[6][2] = "plant-bushlarge", "forest-bush-detailed"
+		elseif questTerrain == "forest" then
+			-- 외국 수종을 대표종으로 사칭하지 않고 중립 하층과 숲길을 사용한다.
+			featureList[5][2], featureList[6][2] = "tree-detailed", "tree-detailed-dark"
+			featureList[7][2], featureList[8][2] = "tree-tall", "tree-detailed"
+		end
+	end
 	-- 그리스 신전·이집트 기둥·유럽 풍차를 모든 문화권의 유적/농경지에 반복하지 않는다.
 	-- 해당 문화권 전용 원본이 없는 자리는 승인된 자연물·무명의 발굴 흔적만 배치한다.
 	do
@@ -2053,7 +2104,7 @@ function FieldScene.start(opts)
 			featureList[8] = { "Terrain", "ground-riverrocks", 8, -0.71, -0.12, false, 0 }
 			featureList[9] = { "Terrain", "coast-grass-patch", 4, 0.58, -0.15, false, 0 }
 			folder:SetAttribute("FieldSiteComposition", "salt-work-waterway")
-		elseif questTerrain == "swamp" and table.find({ "bissau_mangrove", "calabar_delta", "calcutta_delta", "basra_marsh", "neworleans_delta", "belem_amazon" }, opts.siteId or "") then
+		elseif questTerrain == "swamp" and table.find({ "bissau_mangrove", "calabar_delta", "calcutta_delta", "basra_marsh", "neworleans_delta", "belem_amazon", "pac_survey_03" }, opts.siteId or "") then
 			-- [삼각주·맹그로브 수변] 물길과 둑, 낮은 식생을 분리한다. 미등록 맹그로브 뿌리나 갈대 원본을 사칭하지 않는다.
 			featureList[1] = { "Terrain", "ground-riverbend", 23, -0.68, -0.75, false, 0 }
 			featureList[2] = { "Terrain", "ground-riverstraight", 21, -0.60, -0.46, false, 70 }
@@ -2070,14 +2121,14 @@ function FieldScene.start(opts)
 			-- [해안 세부 구성] 갯벌·암벽·어항을 같은 부두 복제본으로 표시하지 않는다.
 			local siteId = opts.siteId or ""
 			local tidal = table.find({ "dunkirk_flats", "amsterdam_flats", "copenhagen_eider_isle", "incheon_flats" }, siteId) ~= nil
-			local fjord = table.find({ "bergen_fjord", "oslo_fjord", "bergen_cliffs", "stockholm_skerries" }, siteId) ~= nil
+			local fjord = table.find({ "bergen_fjord", "oslo_fjord", "bergen_cliffs", "stockholm_skerries", "pac_survey_16", "pac_survey_17", "pac_survey_19" }, siteId) ~= nil
 			local cliffs = fjord or table.find({ "london_chalk", "giants_causeway", "rouen_coast", "edinburgh_coast", "gothenburg_eider", "gdansk_amber_beach", "marseille_calanques", "gibraltar_cliff",
-				"gibraltar_cave", "trieste_karst" }, siteId) ~= nil
+				"gibraltar_cave", "trieste_karst", "pac_survey_15", "pac_survey_18" }, siteId) ~= nil
 			local wharf = table.find({ "bergen_wharf", "bergen_whale_station", "amsterdam_herring_quay", "amsterdam_fog",
 				"gdansk_harbor", "hull_whalers", "glasgow_clyde", "bordeaux_quay", "porto_ribeira",
 				"cadiz_treasure_fleet", "toulon_arsenal", "la_rochelle_towers", "jeddah_pilgrim",
 				"cochin_nets", "manila_galleon", "amoy_harbor", "nagasaki_dejima", "stjohns_banks", "boston_whalers" }, siteId) ~= nil
-			local reef = table.find({ "mombasa_reef", "jeddah_reef", "maldives_atoll", "coral_banks", "recife_reef", "survey_am_a" }, siteId) ~= nil
+			local reef = table.find({ "mombasa_reef", "jeddah_reef", "maldives_atoll", "coral_banks", "recife_reef", "survey_am_a", "pac_survey_07", "pac_survey_09" }, siteId) ~= nil
 			if reef then
 				-- [산호 해안] 원본 산호가 없으므로 얕은 해안과 낮은 암반만 구성한다.
 				featureList[1] = { "Terrain", "platform-beach", 25, -0.66, -0.74, true, 0 }
@@ -2088,6 +2139,17 @@ function FieldScene.start(opts)
 				featureList[9] = { "Terrain", "ground-riverrocks", 7, -0.58, -0.42, true, 0 }
 				folder:SetAttribute("FieldSiteComposition", "shallow-reef-shore")
 				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			elseif table.find({ "pac_survey_02", "pac_survey_13", "pac_survey_20" }, siteId) then
+				-- 호주 서안·페루 연안: 부두와 거대 암벽 대신 모래·낮은 돌 해안.
+				featureList[1] = { "Terrain", "platform-beach", 25, -0.66, -0.74, false, 0 }
+				featureList[2] = { "Terrain", "river-stone-bank", 7, -0.76, -0.53, false, 90 }
+				featureList[3] = { "Terrain", "ground-pathrocks", 8, -0.61, -0.87, false, 22 }
+				featureList[4] = { "Terrain", "kenney_rock_smallFlatA", 5, 0.79, -0.70, false, 0 }
+				featureList[5] = { "Terrain", "kenney_stone_smallFlatA", 4, 0.83, -0.34, false, 25 }
+				featureList[6] = { "Terrain", "coast-grass-patch", 5, 0.68, -0.85, false, 0 }
+				featureList[7] = { "Naval", "rocks-sand-b", 5, 0.70, -0.58, false, 0 }
+				featureList[9] = { "Terrain", "ground-riverrocks", 7, -0.58, -0.42, false, 0 }
+				folder:SetAttribute("FieldSiteComposition", "low-sandy-shore")
 			elseif tidal then
 				featureList[1] = { "Terrain", "platform-beach", 19, -0.66, -0.74, true, 0 }
 				featureList[2] = { "Terrain", "river-stone-bank", 9, -0.76, -0.53, true, 90 }
@@ -2217,7 +2279,8 @@ function FieldScene.start(opts)
 	-- 동선과 퀘스트 조사 대상은 그대로 유지하며 시각 모델 충돌은 만들지 않는다.
 	do -- [Luau 지역변수 상한] 추가 실물 깊이 배치표는 기존 구획과 지역변수 생명주기를 분리한다.
 	local depthLandforms = if folder:GetAttribute("FieldSiteComposition") == "shallow-reef-shore"
-		or folder:GetAttribute("FieldSiteComposition") == "tidal-flat" then {
+		or folder:GetAttribute("FieldSiteComposition") == "tidal-flat"
+		or folder:GetAttribute("FieldSiteComposition") == "low-sandy-shore" then {
 		{ "platform-beach", 25, -0.87, -0.82, -18 },
 		{ "kenney_rock_smallFlatA", 5, 0.87, -0.60, 20 },
 		{ "ground-riverrocks", 9, -0.83, -0.31, 32 },
@@ -2369,7 +2432,8 @@ function FieldScene.start(opts)
 	-- 강가 돌무더기, 원경의 절벽선을 서로 다른 거리에 배치한다. 중앙 전투 길을 가리지 않는다.
 	do
 		local nearBands = if folder:GetAttribute("FieldSiteComposition") == "shallow-reef-shore"
-			or folder:GetAttribute("FieldSiteComposition") == "tidal-flat" then {
+			or folder:GetAttribute("FieldSiteComposition") == "tidal-flat"
+			or folder:GetAttribute("FieldSiteComposition") == "low-sandy-shore" then {
 			{ "coast-grass-patch", 4, -0.66, 0.18, 12 },
 			{ "kenney_rock_smallFlatA", 5, 0.72, -0.17, 8 },
 			{ "platform-beach", 19, -0.84, -0.81, -18 },
@@ -2501,6 +2565,10 @@ function FieldScene.start(opts)
 		wafrica = { {"Terrain","tent-detailedopen",18,-0.72,-0.68}, {"Terrain","tropical-palm-tall",23,0.71,-0.75}, {"Terrain","canoe",14,0.66,-0.39} },
 	}
 	local regionalFeatures = regionalSilhouettes[region]
+	if folder:GetAttribute("FieldPacificSurvey") then
+		-- 문화권의 서양 성·풍차·이국 신전 대신 항구별 자연물 정본만 사용한다.
+		regionalFeatures = PORT_NATURE_MODELS[portNature or ""]
+	end
 	if regionalFeatures then
 		for index, feature in regionalFeatures do
 			-- [대륙 → 항구 → 탐험지] 승인된 전체 지역 모델 사용. 세 번째 모델은 항구/유적 지형으로 선택.
@@ -2545,7 +2613,7 @@ function FieldScene.start(opts)
 			entry.band, entry.horizon = "far", true
 			stageFeature(entry)
 			folder:SetAttribute("FieldHorizonSource", "registered-port-original")
-		elseif type(signature) == "table" then
+		elseif type(signature) == "table" and not folder:GetAttribute("FieldPacificSurvey") then
 			folder:SetAttribute("FieldHorizonSource", "existing-port-signature")
 			for _, e in signature do
 				-- 선박과 적재물은 언덕 위에 올리지 않는다. 원본의 탑/지붕 층은 같은 그룹으로 유지한다.
@@ -2625,6 +2693,7 @@ function FieldScene.start(opts)
 			local monument = asset:find("column", 1, true) or asset:find("ruins", 1, true) or asset:find("obelisk", 1, true)
 			local haunted = asset:find("haunted-", 1, true) ~= nil
 			if not asset:find("crop", 1, true)
+				and (not folder:GetAttribute("FieldPacificSurvey") or (pr[1] == "Terrain" and (asset == "coast-grass-patch" or asset == "river-stone-bank" or (tropical and asset:find("palm", 1, true)))))
 				and (not nautical or questTerrain == "coast" or questTerrain == "lake" or questTerrain == "swamp")
 				and (not monument or questTerrain == "ruins")
 				and (not haunted or questTerrain == "ruins")
