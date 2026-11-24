@@ -76,7 +76,7 @@
       "registeredAssetId": "95801711528954",
       "translation": [
         0,
-        7.3,
+        8.55,
         8
       ],
       "scale": [
@@ -86,7 +86,7 @@
       ]
     }
   ],
-  "modification": "Four two-storey university wings, quadrangle, open gate, eight two-part chimneys; registered original observatory dome on north central roof, existing mesh/material buffers preserved. Roof interface, appearance, historical PBR, collision and native visual review remain pending.",
+  "modification": "Four two-storey university wings, quadrangle, open gate, eight two-part chimneys; registered original observatory dome on north central roof, existing mesh/material buffers preserved. Roof interface, appearance, historical PBR, collision and native visual review remain pending. Added a square masonry plinth and cornice from the already registered chimney base/top original meshes; elevated dome base from 7.3 to 8.55 studs, above measured roof ridge 8.000. Original BIN payload unchanged. Roof/plinth overlap is intentional; native appearance and collision QA remain pending.",
   "placements": [
     {
       "source": "wall-window-shutters",
@@ -3207,13 +3207,64 @@
         0.85,
         1.68
       ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "observatory_masonry_plinth",
+      "translation": [
+        -3.2389468133896657,
+        5.4,
+        8
+      ],
+      "scale": [
+        12.797522452299294,
+        2.8,
+        8.461538771905854
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "observatory_cornice",
+      "translation": [
+        -6.258480563468929,
+        8.2,
+        8
+      ],
+      "scale": [
+        18.459097843987205,
+        0.5599999999999999,
+        13.676470444379795
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
     }
   ],
-  "sha256": "8f498b65be21e3005204e2cc27d9d71664605e840643d0cd0b4f49f6ca5a3c1e",
-  "bytes": 188444,
-  "triangles": 37184,
-  "sourceRevision": "4e04d184534fc59aa475ecdfd4f2d4cbdad7aad7",
+  "sha256": "ebb56a8c08174a3d8a8518667b38d02e143036f1a43f24d833c65055994ce6d8",
+  "bytes": 188820,
+  "triangles": 37340,
+  "sourceRevision": "187b8b73b87414c95be280cd76c8794597665ee3",
   "productionVerified": false,
-  "registration": "HOLD_OBSERVATORY_ROOF_INTERFACE_AND_VISUAL_QA",
-  "validation": "ORIGINAL_SHA256_GIT_BLOB_AND_RIGHTS_SCENE_TREE_BUFFER_RANGES_VERIFIED"
+  "registration": "HOLD_NATIVE_VISUAL_AND_COLLISION_QA",
+  "validation": "SOURCE_SHA256_GIT_BLOB_REGISTERED_RIGHTS_GLB_SCENE_TRIANGLES_AND_ROOF_RIDGE_HEIGHT_VERIFIED",
+  "previousAssemblySha256": "8f498b65be21e3005204e2cc27d9d71664605e840643d0cd0b4f49f6ca5a3c1e",
+  "roofInterfaceGeometry": {
+    "roofRidgeY": 8.000003002348757,
+    "plinthBaseY": 5.4,
+    "plinthTopY": 8.2,
+    "corniceTopY": 8.55,
+    "domeBaseY": 8.55,
+    "oldDomeBaseY": 7.3,
+    "domeDiameter": 4.4,
+    "originalBinSha256": "adaf19bb2c10753fd1a531318f7e0d81ee7f6ed6a6a3c20fd85bb02a8bb2fa41"
+  }
 }
