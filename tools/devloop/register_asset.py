@@ -44,10 +44,17 @@ for kind in sorted(d for d in os.listdir(inbox) if os.path.isdir(os.path.join(in
         why = None
         if not os.path.exists(meta_p): why = "license.json 없음"
         else:
-            m = json.load(open(meta_p, encoding="utf-8"))
-            if m.get("license") not in OK: why = f"허용되지 않은 라이선스: {m.get('license')}"
-            elif not str(m.get("source", "")).startswith("http") and m.get("license") != "PROJECT_ORIGINAL_ART": why = "출처 URL 없음"
-            elif not m.get("author"): why = "제작자(author) 없음"
+            try:
+                with open(meta_p, encoding="utf-8") as meta_file:
+                    m = json.load(meta_file)
+                if not isinstance(m, dict): raise ValueError("invalid metadata")
+            except (ValueError, OSError):
+                if not scoped_vegetation: raise
+                why = "식생 라이선스 증빙 읽기 실패"
+            if not why:
+                if m.get("license") not in OK: why = f"허용되지 않은 라이선스: {m.get('license')}"
+                elif not str(m.get("source", "")).startswith("http") and m.get("license") != "PROJECT_ORIGINAL_ART": why = "출처 URL 없음"
+                elif not m.get("author"): why = "제작자(author) 없음"
         h = sha(p)
         if not why and h in blocked: why = "차단된 해시"
         if not why and h in known: why = f"중복(이미 {known[h]})"
@@ -73,31 +80,43 @@ for kind in sorted(d for d in os.listdir(inbox) if os.path.isdir(os.path.join(in
                     assert hashlib.sha1(("blob %d\0" % len(data)).encode() + data).hexdigest() == original["gitBlobSha1"]
                 assert not os.path.exists(os.path.join(root, "assets", kind.lower(), fn))
                 if scoped_vegetation:
-                    assert 0 < m.get("triangles", 0) <= 1000
+                    # 식생의 내부 일률 상한은 해제하되 실제 GLB 삼각형 수와 증빙 일치는 유지한다.
+                    assert type(m.get("triangles")) is int and m["triangles"] > 0
                     with open(p, "rb") as f: data = f.read()
                     size, tag = struct.unpack_from("<II", data, 12)
                     assert tag == 0x4e4f534a and 20 + size < len(data)
                     glb = json.loads(data[20:20+size])
-                    actual_triangles = sum(glb["accessors"][pr["indices"]]["count"] // 3
-                        for node in glb["nodes"] if "mesh" in node
-                        for pr in glb["meshes"][node["mesh"]]["primitives"])
+                    actual_triangles = 0
+                    for node in glb["nodes"]:
+                        if "mesh" not in node: continue
+                        for pr in glb["meshes"][node["mesh"]]["primitives"]:
+                            assert pr.get("mode", 4) == 4
+                            count = glb["accessors"][pr["indices"]]["count"]
+                            assert type(count) is int and count > 0 and count % 3 == 0
+                            actual_triangles += count // 3
                     assert actual_triangles == m["triangles"]
-            except (AssertionError, KeyError, OSError, TypeError, ValueError):
-                why = "런던 승인 원본·GLB·해시 검증 실패"
+            except (AssertionError, KeyError, OSError, TypeError, ValueError, IndexError, struct.error):
+                why = "식생 승인 원본·GLB·해시 검증 실패" if scoped_vegetation else "런던 승인 원본·GLB·해시 검증 실패"
         if why:
             bad.append((p, why)); continue
         dest_dir = os.path.join(root, "assets", kind.lower() if os.path.isdir(os.path.join(root, "assets", kind.lower())) else kind)
         done.append((p, os.path.join(dest_dir, fn), m, h))
         if scoped_derived: known[h] = p
 for p, why in bad: print(f"거부: {p} — {why}")
-if scoped_derived and bad:
+if scoped_derived and bad and not scoped_vegetation:
     sys.exit(1)
+if scoped_vegetation and bad:
+    print(f"MARE_VEGETATION_STAGING_PARTIAL: ready={len(done)} rejected={len(bad)}")
 for src, dst, m, h in done:
     print(("[시험] " if dry else "") + f"등록: {src} → {dst}  ({m['license']}, {h[:10]})")
     if dry: continue
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     shutil.move(src, dst); shutil.move(src + ".license.json", dst + ".license.json")
-    with open(os.path.join(root, "assets", "SOURCES.md"), "a", encoding="utf-8") as s:
-        s.write(f"| `{os.path.basename(os.path.dirname(dst))}/` | {os.path.basename(dst)} | {m.get('author','')} · {m['license']} | {m.get('source','')} |\n")
+    # 식생 출처 장부는 실제 자산 번호와 사용권 확인 후 기존 승격 단계에서 기록한다.
+    if not scoped_vegetation:
+        with open(os.path.join(root, "assets", "SOURCES.md"), "a", encoding="utf-8") as s:
+            s.write(f"| `{os.path.basename(os.path.dirname(dst))}/` | {os.path.basename(dst)} | {m.get('author','')} · {m['license']} | {m.get('source','')} |\n")
 print(f"등록 {len(done)}건, 거부 {len(bad)}건" + (" (시험 실행)" if dry else "") + ("" if dry or not done else " → 다음: owner-mare-essentia-assets 워크플로로 업로드"))
-sys.exit(1 if bad else 0)
+# 식생만 개별 거부를 기록하고 적격 자산의 공식 등록을 계속한다.
+# 전체 미등록 여부는 기존 최종 승격 단계에서 실패로 기록한다.
+sys.exit(1 if bad and not scoped_vegetation else 0)
