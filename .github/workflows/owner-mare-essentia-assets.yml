@@ -12,6 +12,7 @@ on:
       - 'roblox-games/mare-essentia/assets/**'
       - 'roblox-games/mare-essentia/assets-wanted.seed.json'
       - 'tools/devloop/assets_wanted.py'
+      - 'tools/devloop/register_asset.py'
       - 'qa/company-roblox-dedicated-experience.test.mjs'
       - 'tools/mare-essentia-upload-assets.mjs'
       - 'tools/mare-essentia-character-finish.mjs'
@@ -241,17 +242,15 @@ jobs:
           node roblox-games/mare-essentia/tools/make_cargo.mjs --check
           node roblox-games/mare-essentia/tools/make_cargo.mjs --registered-upgrade
 
-      # [런던 원본] 기존 inbox 등록기로만 승인된 파생 GLB를 정식 등록 대상에 편입한다.
+      # [런던 원본] 기존 inbox 등록기가 검사 후 승격하므로 동일 시험 검사를 반복하지 않는다.
       - name: Validate and stage London source models through canonical asset register
         id: london_source
         if: ${{ github.event_name != 'schedule' && inputs.studio_regrant != true }}
         shell: bash
         run: |
           set -euo pipefail
-          python3 tools/devloop/register_asset.py roblox-games/mare-essentia --kind=Town --prefix=london_ --dry-run
           python3 tools/devloop/register_asset.py roblox-games/mare-essentia --kind=Town --prefix=london_
           if compgen -G 'roblox-games/mare-essentia/assets/inbox/Terrain/veg_*.glb' >/dev/null; then
-            python3 tools/devloop/register_asset.py roblox-games/mare-essentia --kind=Terrain --prefix=veg_ --dry-run
             python3 tools/devloop/register_asset.py roblox-games/mare-essentia --kind=Terrain --prefix=veg_
           fi
 
