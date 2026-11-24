@@ -335962,11 +335962,148 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_62fa4496bac056e31ac34289",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-14881",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "3030595fe3f3100d468a39a213e772940f4037f0",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 14881,
+        "baseBranch": "main",
+        "headBranch": "feat/mare-quest-cinematic2",
+        "baseSha": "3030595fe3f3100d468a39a213e772940f4037f0",
+        "headSha": "1514a5e4e6c1577f26f88b9ff796340bb4dcfbef",
+        "mergeCommitSha": "bf62bfc3c1e432fc02d651b9b32ad9412538856d",
+        "mergedAt": "2026-11-24T01:52:32Z",
+        "authorLogin": "hans1177",
+        "titleHash": "bbdbf70359402b248b9cd6588f7d5f8342cab7a2ef51b0ecbea63064bd539a96",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/mare-quest-cinematic2",
+        "candidateSha": "1514a5e4e6c1577f26f88b9ff796340bb4dcfbef"
+      },
+      "changeStats": {
+        "changedFileCount": 14,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 445,
+        "deletedLineCount": 8,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_coconut_palm_3.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_coconut_palm_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_coconut_palm_4.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_coconut_palm_4.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_fern.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_fern.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_flowering_cactus.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_flowering_cactus.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_mossy_stump.glb",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_mossy_stump.glb.license.json",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Quest.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-questscene-live.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_coconut_palm_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_coconut_palm_4.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_fern.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_flowering_cactus.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Terrain/veg_mossy_stump.glb.license.json",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Quest.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-questscene-live.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:14881",
+        "merge-commit:bf62bfc3c1e432fc02d651b9b32ad9412538856d",
+        "base-main:3030595fe3f3100d468a39a213e772940f4037f0"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2687
+    "total": 2688
   }
 }
