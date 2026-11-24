@@ -2,6 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import os from 'node:os';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 
 // [윈도우 러너 이식성] 체크아웃 줄바꿈(CRLF)과 무관하게 동일한 원문 내용을 검사한다.
 const readText=(file)=>fs.readFileSync(file,'utf8').replace(/\r\n/g,'\n');
@@ -4346,4 +4349,33 @@ test('13 representative port Studio captures fail closed on build and retain bot
   assert.match(workflow,/\*\) scope=FULL ;;\s*esac/,'기존 복합 변경 시 전체 회귀 폴백 유지');
   const core=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
   assert.equal(core.length,1000,'기존 실제 플레이 검증 1,000단계는 별도로 유지');
+});
+
+
+// [식생 원본] 실제 보관 GLB로 원본 허용 및 잘못된 출처 해시 거부를 검사한다.
+test('Mare vegetation registration distinguishes original and derived CC0 proofs',()=>{
+  const base='roblox-games/mare-essentia';
+  const name='veg_fern.glb';
+  const actual=[base+'/assets/inbox/Terrain/'+name,base+'/assets/terrain/'+name].find(p=>fs.existsSync(p));
+  assert.ok(actual,'canonical fern source is retained');
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'mare-veg-proof-'));
+  try {
+    const inbox=path.join(temp,'assets','inbox','Terrain');
+    fs.mkdirSync(inbox,{recursive:true});
+    fs.copyFileSync(base+'/assets-registered.json',path.join(temp,'assets-registered.json'));
+    fs.copyFileSync(actual,path.join(inbox,name));
+    const proof=JSON.parse(fs.readFileSync(actual+'.license.json','utf8'));
+    assert.equal(proof.derived,false);
+    const meta=path.join(inbox,name+'.license.json');
+    fs.writeFileSync(meta,JSON.stringify(proof));
+    const run=()=>execFileSync('python3',['tools/devloop/register_asset.py',temp,'--kind=Terrain','--prefix=veg_','--dry-run'],{encoding:'utf8'});
+    assert.match(run(),/등록 1건, 거부 0건/);
+    fs.writeFileSync(meta,JSON.stringify({...proof,sourceGitBlobSha1:'0'.repeat(40)}));
+    assert.match(run(),/등록 0건, 거부 1건/);
+    fs.writeFileSync(meta,JSON.stringify({...proof,derived:true}));
+    assert.match(run(),/등록 0건, 거부 1건/);
+    const upload=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+    assert.match(upload,/MARE_VEGETATION_ORIGINAL_PROOF_INVALID/);
+    assert.match(upload,/MARE_VEGETATION_DERIVATION_PROOF_INVALID/);
+  } finally {fs.rmSync(temp,{recursive:true,force:true});}
 });
