@@ -348599,11 +348599,169 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_a5ea5c7ea0f48ba84b0be7c4",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15074",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "8eb79f8fdc5f21a4ea88a2358b5d1adb2796ad72",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15074,
+        "baseBranch": "main",
+        "headBranch": "asset/london-coal-workshop",
+        "baseSha": "8eb79f8fdc5f21a4ea88a2358b5d1adb2796ad72",
+        "headSha": "1cbde4bc51e159868fff0a9405368f7490c508ff",
+        "mergeCommitSha": "a15b641dafc55f2933e68f3e5cfd79c3e837a037",
+        "mergedAt": "2026-11-24T10:17:27Z",
+        "authorLogin": "hans1177",
+        "titleHash": "52940344103f26bf1a67c4a201d41f62aecc605a8599c4ed354f19e78d4d615b",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "asset/london-coal-workshop",
+        "candidateSha": "1cbde4bc51e159868fff0a9405368f7490c508ff"
+      },
+      "changeStats": {
+        "changedFileCount": 28,
+        "codingRelevantFileCount": 16,
+        "addedLineCount": 453,
+        "deletedLineCount": 5,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-animated-fish-archive-license.txt",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-animated-fish-archive-license.txt.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-animated-fish-original.zip",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-animated-fish-original.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish1.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish1.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish2.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish2.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish3.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish3.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-shark.blend",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-shark.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-double-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-double-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-single-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-single-source.glb.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-animated-fish-archive-license.txt.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-animated-fish-original.zip.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish1.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish2.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-fish3.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/quaternius-shark.blend.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-double-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/opera-curtain-single-source.glb.license.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15074",
+        "merge-commit:a15b641dafc55f2933e68f3e5cfd79c3e837a037",
+        "base-main:8eb79f8fdc5f21a4ea88a2358b5d1adb2796ad72"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2768
+    "total": 2769
   }
 }
