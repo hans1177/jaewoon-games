@@ -20,5 +20,26 @@
   "registration": "PENDING_SOURCE_AND_VISUAL_REVIEW",
   "actualRobloxRuntimeVerified": false,
   "visualQualityApproved": false,
-  "robloxPublishedVerified": false
+  "robloxPublishedVerified": false,
+  "sourceReview": {
+    "creatorLicensePage": "https://quaternius.com/packs/animatedfish.html",
+    "creatorNoGenerativeAiEvidence": "https://quaternius.itch.io/lowpoly-animated-fish",
+    "creatorPackRelease": "2018-04",
+    "reviewedGitBlob": "769fdd01c861f171a7c634e082a437b5f0c61fd8",
+    "observedTriangles": 440,
+    "observedSkinCount": 1,
+    "observedAnimationNames": [
+      "Armature|Swim"
+    ],
+    "visualMethod": "Actual stored GLB mesh positions and triangle indices rasterized in two orthographic views; bind mesh only, not animated or Roblox runtime.",
+    "observedSilhouette": "돌고래형 주둥이·등지느러미·가슴지느러미·수평 꼬리",
+    "candidateDiscoveryCardId": "zoo_dolphin",
+    "officialGlbBinaryIndependentlyCompared": false,
+    "registrationReadiness": "HOLD_SOURCE_LINEAGE_AND_MOTION_QUALITY",
+    "qualityIssues": [
+      "Below discovery guide 1000-3000 polygon target",
+      "Only one swimming clip; standard motion and rig verification pending"
+    ],
+    "actualRobloxRuntimeVerified": false
+  }
 }
