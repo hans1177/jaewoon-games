@@ -2175,3 +2175,21 @@ test('Mare first card has no forced wonder and spontaneous port events are limit
   assert.match(story,/function handlers\.PlayStory\(state, p\)/,'player-initiated story stays intact');
   assert.match(quest,/local function offer\(state, msgs, how, personId\)/,'player initiated quests preserved');
 });
+
+test('Mare London architecture originals reuse licensed source and verified Town promotion',()=>{
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  for(const [name,count] of [['observatory-dome-source',240],['clock-tower-source',1668],['greenhouse-source',752]]){
+    const start=uploader.indexOf("name:'"+name+"'");
+    assert.ok(start>=0);
+    const entry=uploader.slice(start,uploader.indexOf('},',start));
+    assert.ok(entry.includes('minTriangles:'+count+', maxTriangles:'+count));
+    assert.ok(entry.includes('townOriginal:true'));
+  }
+  assert.ok(uploader.includes("MARE_TOWN_ORIGINAL_BLOCKED_OR_CHANGED"));
+  assert.ok(uploader.includes("MARE_TOWN_INBOX_PROOF_MISMATCH"));
+  assert.ok(uploader.includes("'--kind=Town','--prefix='+name,'--dry-run'"));
+  assert.ok(workflow.includes("MARE_TOWN_ORIGINAL_REGISTRATION_UNVERIFIED"));
+  assert.ok(workflow.includes("proof['sourceSha256']==proof['originalSha256']==digest==row.get('sourceSha256')"));
+  assert.ok(workflow.includes("row.get('usePermissionGranted') is True"));
+});

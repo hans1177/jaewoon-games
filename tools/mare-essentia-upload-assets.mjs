@@ -51,6 +51,20 @@ async function prepareLicensedOriginals() {
       page:'https://github.com/Mesh2Motion/mesh2motion-app/blob/017169ae6f7574d8fa75d893c38c2776386ca40b/LICENSE-CC0.MD', pinnedBlobSha:'a783a6ab3ccc5dd3cf67582b517965b9b77d6df8',
       minBytes:168848, maxBytes:168848, minTriangles:1000, maxTriangles:3000,
       discoveryBird:'am_bald_eagle', originalModel:'Bald Eagle'},
+    // [런던 건축 원본] 기존 외부 CC0 수급 및 Town 등록 경로. 완성 건물로 매핑하지 않는다.
+    {name:'observatory-dome-source', assetPath:'assets/town/observatory-dome-source.glb', author:'Tim Steer / The Base Mesh; glTF conversion M3-org',
+      source:'https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/dome/dome.glb',
+      page:'https://www.thebasemesh.com/', pinnedBlobSha:'a4be7364e5074f13b779950e5e854531a6650091',
+      pinnedSha256:'549f4d814e9de41896583bd62496a138845ed58dc4c31aa6f8b4d5c1a99792ec',
+      minBytes:7964, maxBytes:7964, minTriangles:240, maxTriangles:240, townOriginal:true, originalModel:'Dome'},
+    {name:'clock-tower-source', assetPath:'assets/town/clock-tower-source.glb', author:'Pixor',
+      source:'https://pixor.art/library/files/clock-tower/pixor-library-clock-tower.glb',
+      page:'https://pixor.art/ko/library/village/clock-tower/', minBytes:60000, maxBytes:150000,
+      minTriangles:1668, maxTriangles:1668, townOriginal:true, originalModel:'Clock tower'},
+    {name:'greenhouse-source', assetPath:'assets/town/greenhouse-source.glb', author:'Pixor',
+      source:'https://pixor.art/library/files/greenhouse/pixor-library-greenhouse.glb',
+      page:'https://pixor.art/library/farm/greenhouse/', minBytes:30000, maxBytes:100000,
+      minTriangles:752, maxTriangles:752, townOriginal:true, originalModel:'Greenhouse'},
     // [어항 생활 소품] 실제 GLB/Blender 원본을 공개한 Pixor CC0 어망 2종. 현대 장비는 제외.
     {name:'fishing-net', assetPath:'assets/naval/fishing-net.glb', author:'Pixor',
       source:'https://pixor.art/library/files/fishing-net/pixor-library-fishing-net.glb',
@@ -135,6 +149,18 @@ async function prepareLicensedOriginals() {
             || stagedProof.sourceSha256 !== digest || stagedProof.originalSha256 !== digest
             || stagedProof.commercialUseAllowed !== true || stagedProof.originalModelHandcrafted !== true)
             throw new Error('MARE_DISCOVERY_INBOX_PROOF_MISMATCH:'+name);
+        }
+      }
+      // 이미 확보한 돔 원본은 고정 blob 및 SHA256 검증 후 재사용한다.
+      if (!bytes && item.townOriginal && item.pinnedBlobSha) {
+        const staged = path.join(ROOT,'assets/inbox/Town',name+'.glb');
+        try { bytes = await fs.readFile(staged); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+        if (bytes) {
+          const stagedProof = JSON.parse(await fs.readFile(staged+'.license.json','utf8'));
+          if (stagedProof.license !== license || stagedProof.author !== item.author
+            || stagedProof.pinnedBlobSha !== item.pinnedBlobSha || stagedProof.sourceSha256 !== item.pinnedSha256
+            || stagedProof.commercialUseAllowed !== true || stagedProof.derived !== false)
+            throw new Error('MARE_TOWN_INBOX_PROOF_MISMATCH:'+name);
         }
       }
       if (!bytes) {
@@ -794,6 +820,17 @@ async function prepareLicensedOriginals() {
       if (!a || !Number.isInteger(a.count)) throw new Error('MARE_LICENSED_INVALID_ACCESSOR:' + name);
       return sum + Math.floor(a.count / 3);
     }, 0);
+    if (item.townOriginal) {
+      const digest = crypto.createHash('sha256').update(bytes).digest('hex');
+      const blob = crypto.createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+      if (blockedHashes.has(digest) || blockedPaths.has(target) || blockedPaths.has(path.join(ROOT,'assets/inbox/Town',name+'.glb'))
+        || (item.pinnedSha256 && digest !== item.pinnedSha256)
+        || (item.pinnedBlobSha && blob !== item.pinnedBlobSha))
+        throw new Error('MARE_TOWN_ORIGINAL_BLOCKED_OR_CHANGED:'+name);
+      if (evidence && (evidence.sourceGitBlobSha1 !== blob || evidence.sourceSizeBytes !== bytes.length
+        || evidence.originalSha256 !== digest || evidence.commercialUseAllowed !== true || evidence.derived !== false))
+        throw new Error('MARE_TOWN_ORIGINAL_EVIDENCE_MISMATCH:'+name);
+    }
     if (tris < item.minTriangles || tris > (item.maxTriangles || 30000))
       throw new Error((license === 'CC0-1.0' ? 'MARE_CC0_WRONG_MODEL_GEOMETRY:' : 'MARE_LICENSED_WRONG_MODEL_GEOMETRY:') + name + ':' + tris);
     if (!evidence) {
@@ -801,14 +838,18 @@ async function prepareLicensedOriginals() {
       if (item.discoveryBird && (blockedHashes.has(hash) || blockedPaths.has(target)))
         throw new Error('MARE_DISCOVERY_SOURCE_BLOCKED:' + name);
       // 발견물은 원본을 기존 Animals inbox에 넣고 정식 등록기로 이동한다.
-      const writeTarget = item.discoveryBird ? path.join(ROOT,'assets/inbox/Animals',name+'.glb') : target;
-      if (item.discoveryBird) await fs.mkdir(path.dirname(writeTarget), {recursive:true});
+      const writeTarget = item.discoveryBird ? path.join(ROOT,'assets/inbox/Animals',name+'.glb')
+        : item.townOriginal ? path.join(ROOT,'assets/inbox/Town',name+'.glb') : target;
+      if (item.discoveryBird || item.townOriginal) await fs.mkdir(path.dirname(writeTarget), {recursive:true});
       await fs.writeFile(writeTarget, bytes);
       await fs.writeFile(writeTarget+'.license.json', JSON.stringify({license, author:item.author, source,
         sourcePage, sourceSha256:hash, originalSha256, pinnedBlobSha:item.pinnedBlobSha || null,
         attribution:item.attribution || null,
         discoveryCardId:item.discoveryBird || undefined,
-        commercialUseAllowed:item.discoveryBird ? true : undefined,
+        commercialUseAllowed:item.discoveryBird || item.townOriginal ? true : undefined,
+        derived:item.townOriginal ? false : undefined,
+        sourceGitBlobSha1:item.townOriginal ? crypto.createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex') : undefined,
+        sourceSizeBytes:item.townOriginal ? bytes.length : undefined,
         originalModelHandcrafted:item.discoveryBird ? true : undefined,
         sourceAsset:item.sourceAsset||null, originalMeshCount:item.originalMeshCount||null,
         derivedTriangleCount:item.derivedTriangleCount||null,
@@ -825,6 +866,12 @@ async function prepareLicensedOriginals() {
         execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind=Animals','--prefix='+name],{stdio:'inherit',timeout:30000});
         if (crypto.createHash('sha256').update(await fs.readFile(target)).digest('hex') !== hash)
           throw new Error('MARE_DISCOVERY_REGISTERED_SOURCE_MISMATCH:' + name);
+      }
+      if (item.townOriginal) {
+        execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind=Town','--prefix='+name,'--dry-run'],{stdio:'inherit',timeout:30000});
+        execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind=Town','--prefix='+name],{stdio:'inherit',timeout:30000});
+        if (crypto.createHash('sha256').update(await fs.readFile(target)).digest('hex') !== hash)
+          throw new Error('MARE_TOWN_REGISTERED_SOURCE_MISMATCH:' + name);
       }
       console.log('MARE_LICENSED_MODEL_PREPARED', name, hash, tris);
     } else console.log('MARE_LICENSED_MODEL_SOURCE_VERIFIED', name, tris);
@@ -1595,7 +1642,8 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     // Quaternius CC0 원본 바이너리/해시/모바일 삼각형 수를 검증하지 못하면 업로드를 차단한다.
     const externalR15Item = kind === 'People' && /^cc0_[a-z0-9_]+\.glb$/.test(sourceFileName);
     // [항구 전용 CC0 원본] 기존 업로더에서 도시별 실물 모델의 출처·해시·권한을 검수한다.
-    const portOriginalModel = kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
+    const portOriginalModel = kind === 'Town' && (/^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName)
+      || /^(?:observatory-dome|clock-tower|greenhouse)-source\.glb$/.test(sourceFileName));
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
     const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle)\.glb$/.test(sourceFileName);
     try {
