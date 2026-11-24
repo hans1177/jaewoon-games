@@ -1674,10 +1674,17 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     // 신규 런던 원본만 inbox에서 이동한 실제 파일인지 확인한다. 이전 정식 등록 ID는 변경하지 않는다.
     let stagedLondon = false;
     if (kind === 'Town' && /^london_.*\.glb$/.test(sourceFileName)) {
+      const inbox = path.join(ROOT, 'assets', 'inbox', 'Town', sourceFileName);
       try {
-        execFileSync('git', ['ls-files', '--error-unmatch', path.join(ROOT, 'assets', 'inbox', 'Town', sourceFileName)], {stdio:'ignore'});
-        stagedLondon = true;
-      } catch {}
+        execFileSync('git', ['ls-files', '--error-unmatch', inbox], {stdio:'ignore'});
+        // 거부되어 inbox에 남은 동일 이름 원본은 기존 정식 파일과 구분한다.
+        stagedLondon = await fs.access(inbox).then(() => false, error => {
+          if (error.code !== 'ENOENT') throw error;
+          return true;
+        });
+      } catch (error) {
+        if (typeof error.status !== 'number') throw error;
+      }
     }
     const portOriginalModel = !stagedLondon && kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
     const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb','opera-curtain-double-source.glb','opera-curtain-single-source.glb'].includes(sourceFileName);
