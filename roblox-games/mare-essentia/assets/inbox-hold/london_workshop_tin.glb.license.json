@@ -64,18 +64,28 @@
       "sha256": "2d1c4e6a40008f2b27541619319d2732a863afabc528691e3668de861a624bea",
       "gitBlobSha1": "c9d63f7b93fe152b7779a429796035bff33e2a25",
       "registeredAssetId": "92124326683823"
+    },
+    {
+      "name": "cliff-waterfall-rock.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/terrain/cliff-waterfall-rock.glb",
+      "originalUrl": "https://kenney.nl/assets/nature-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "08063b24498cae385c204e9038a72f0dd438fdfa29ecf106a0df5e656b7edff6",
+      "gitBlobSha1": "96d680e199facf3b31f83a77e4b39576c3bc7e9e",
+      "registeredAssetId": "83165283625358"
     }
   ],
-  "modification": "London tin streaming workshop candidate: original timber house, two sluice boxes composed from original planks, raised sideboards and riffles, four support frames, two receiving crates, eight original silver ingots adapted to tin and three wash buckets. No water simulation or final historical finish claimed. Original meshes, UVs and node transforms preserved. Native visual, collision, slope and water interface review pending. Corrected both sluice assemblies to a 10% descending grade toward the existing receiving boxes, lowered riffles 0.04 studs to contact base, closed left sideboard gap 0.06 studs, adjusted existing timber support heights. Original BIN chunk, materials, UVs, all mesh buffers, building and other props unchanged. No water mesh or simulation, native collision or visual approval claimed.",
-  "sha256": "a07dab421351eac44ac76f522f7b32ef372952ea7c69ff6b175562540005bf0d",
-  "bytes": 537164,
-  "triangles": 8170,
-  "sceneTriangles": 8170,
-  "sourceRevision": "8eb79f8fdc5f21a4ea88a2358b5d1adb2796ad72",
+  "modification": "London tin streaming workshop candidate: original timber house, two sluice boxes composed from original planks, raised sideboards and riffles, four support frames, two receiving crates, eight original silver ingots adapted to tin and three wash buckets. No water simulation or final historical finish claimed. Original meshes, UVs and node transforms preserved. Native visual, collision, slope and water interface review pending. Corrected both sluice assemblies to a 10% descending grade toward the existing receiving boxes, lowered riffles 0.04 studs to contact base, closed left sideboard gap 0.06 studs, adjusted existing timber support heights. Original BIN chunk, materials, UVs, all mesh buffers, building and other props unchanged. No water mesh or simulation, native collision or visual approval claimed. Added two shallow sloped water surfaces using only the original waterfall water primitive, original geometry/UVs unchanged. New water material is nonmetallic, roughness 0.3; all previous materials and BIN bytes preserved. Static surface only; flow, native collision and visual QA pending.",
+  "sha256": "cbe2b8d2d8038b6749359c5d09b7da6e9cc8c1de2ef5658e4a4147f71913e8a2",
+  "bytes": 541128,
+  "triangles": 8178,
+  "sceneTriangles": 8178,
+  "sourceRevision": "18accc1a5261180b4aec691a0f92fd7ad913fa9f",
   "productionVerified": false,
   "registration": "HOLD_SLUICE_WATER_INTERFACE_AND_NATIVE_VISUAL_QA",
-  "validation": "SOURCE_GIT_BLOB_SHA256_RIGHTS_GLB_SCENE_BUFFER_STRUCTURE_AND_SLUICE_TRANSFORM_GEOMETRY_VERIFIED",
-  "previousAssemblySha256": "c6215d3b2cfd906e01f33eb764536709cb4d1481229bb264cbc557fb6244ef04",
+  "validation": "ORIGINAL_SOURCE_HASH_GIT_BLOB_WATER_PRIMITIVE_AND_PRESERVED_BIN_PREFIX_VERIFIED",
+  "previousAssemblySha256": "a07dab421351eac44ac76f522f7b32ef372952ea7c69ff6b175562540005bf0d",
   "sluiceGeometry": {
     "slopeGrade": 0.1,
     "angleDegrees": 5.710593137499643,
@@ -83,7 +93,20 @@
     "riffleLowering": 0.04,
     "leftBoardShift": 0.06,
     "changedNodes": 26,
-    "unchangedBinaryChunkSha256": "930098cf2601a691eeba78b7d0dd72216c924c84a6c05fec5b0f7a1d1e3643f7",
-    "waterInterfacePending": true
+    "unchangedBinaryChunkSha256": "943d39a258c76ef755c981363b0489d820e905920dd458fe9e65d733e2e52673",
+    "waterInterfacePending": true,
+    "previousRecordedBinaryChunkSha256": "930098cf2601a691eeba78b7d0dd72216c924c84a6c05fec5b0f7a1d1e3643f7"
+  },
+  "waterSurfaceGeometry": {
+    "sourcePrimitiveTriangles": 4,
+    "instances": 2,
+    "width": 1.7,
+    "length": 7.1,
+    "slopeGrade": 0.1,
+    "centerHeight": 1.755,
+    "waterFlowVerified": false,
+    "nativeCollisionVerified": false,
+    "originalBinPrefixSha256": "943d39a258c76ef755c981363b0489d820e905920dd458fe9e65d733e2e52673",
+    "sourceWaterSha256": "08063b24498cae385c204e9038a72f0dd438fdfa29ecf106a0df5e656b7edff6"
   }
 }
