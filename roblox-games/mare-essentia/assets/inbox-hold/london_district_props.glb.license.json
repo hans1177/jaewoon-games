@@ -367,9 +367,9 @@
       }
     }
   ],
-  "modification": "Twelve named groups; original binary buffers and local source transforms preserved. Uniform scale, ground alignment, nonoverlapping display layout and selected historical tints. No PBR maps, visual or runtime verification. Chicken coop mirror publisher binary equivalence pending; laundry static; firewood single source model; pot empty. Added box-projected UVs with seam-only vertex splitting to ten missing primitives; original triangle positions, normals, buffers, and nodes preserved. Nonmetal matte roughness factors adjusted; texture maps and visual approval still pending.",
-  "sha256": "364f8e3b6105ac95755d8dcc1a9f0c55e0fd873ed99bcd4e539b6ee0454c17d4",
-  "bytes": 805864,
+  "modification": "Twelve named groups; original binary buffers and local source transforms preserved. Uniform scale, ground alignment, nonoverlapping display layout and selected historical tints. No PBR maps, visual or runtime verification. Chicken coop mirror publisher binary equivalence pending; laundry static; firewood single source model; pot empty. Added box-projected UVs with seam-only vertex splitting to ten missing primitives; original triangle positions, normals, buffers, and nodes preserved. Nonmetal matte roughness factors adjusted; texture maps and visual approval still pending. Embedded original CC0 weathered wood color, OpenGL normal and roughness JPEGs for eight explicit timber materials; existing geometry, UVs, tints and original buffers retained. Stone textures, visual and runtime approval pending.",
+  "sha256": "e7048d551c462bcd406b105042359f49dc72a07d63acdbda2e261a7608a2faad",
+  "bytes": 1491200,
   "triangles": 24343,
   "groupCount": 12,
   "missingUVPrimitives": 0,
@@ -388,7 +388,7 @@
   "intendedLondonTargets": [
     "london_district_props"
   ],
-  "validation": "SOURCE_BUFFER_TRIANGLE_POSITION_NORMAL_UV_INDEX_BOUNDS_CHECKED",
+  "validation": "SOURCE_GEOMETRY_AND_EMBEDDED_WOOD_TEXTURE_HASH_CHECKED_VISUAL_RUNTIME_PENDING",
   "registration": "HOLD_DERIVED_CANDIDATE_NOT_APPROVED_FOR_UPLOAD",
   "productionVerified": false,
   "visualQualityApproved": false,
@@ -399,7 +399,7 @@
     15216,
     15217
   ],
-  "previousDerivedSha256": "e954057cd7a64c6aa0785275cf0539056bcbd127601e0bba5a03cd5e60de2439",
+  "previousDerivedSha256": "364f8e3b6105ac95755d8dcc1a9f0c55e0fd873ed99bcd4e539b6ee0454c17d4",
   "uvRepair": {
     "primitives": [
       {
@@ -667,5 +667,79 @@
         "roughness": 0.83
       }
     }
-  ]
+  ],
+  "textureApplication": {
+    "wood": {
+      "materials": [
+        {
+          "index": 0,
+          "name": "wood-stake historical tint"
+        },
+        {
+          "index": 2,
+          "name": "clothes-peg historical tint"
+        },
+        {
+          "index": 14,
+          "name": "Wood"
+        },
+        {
+          "index": 19,
+          "name": "signpost historical tint"
+        },
+        {
+          "index": 20,
+          "name": "Wood"
+        },
+        {
+          "index": 23,
+          "name": "DarkWood"
+        },
+        {
+          "index": 25,
+          "name": "barrel historical tint"
+        },
+        {
+          "index": 27,
+          "name": "notice board historical tint"
+        }
+      ],
+      "maps": [
+        {
+          "path": "roblox-games/mare-essentia/assets/materials/mat_wood_planks_worn_bc.jpg",
+          "sha256": "94833feda44e025a9139f7b5723ea84e4f0258d3b54939a79e1013c133085e29",
+          "gitBlobSha1": "7100e67bbb3b0a5290a3338b92386ced7d652457",
+          "resolution": "1024x1024",
+          "source": "https://polyhaven.com/a/weathered_brown_planks"
+        },
+        {
+          "path": "roblox-games/mare-essentia/assets/materials/mat_wood_planks_worn_n.jpg",
+          "sha256": "8d38f02f121c0e58eaedc19cd668faea21381ae3ff4d5332cd90de75e6683393",
+          "gitBlobSha1": "02352fbd1ad1c6c205f11ba49e59e722656ab65d",
+          "resolution": "1024x1024",
+          "source": "https://polyhaven.com/a/weathered_brown_planks"
+        },
+        {
+          "path": "roblox-games/mare-essentia/assets/materials/mat_wood_planks_worn_r.jpg",
+          "sha256": "b80c45969d8299ca5f21de969f0269138a5e3e78e51fc911af809683d99c5bc9",
+          "gitBlobSha1": "6e070f53a7dd8c233a10846feceba0e44370a224",
+          "resolution": "1024x1024",
+          "source": "https://polyhaven.com/a/weathered_brown_planks"
+        }
+      ],
+      "geometryPreserved": true,
+      "roughnessChannel": "G",
+      "metallicFactor": 0,
+      "visualQa": "PENDING",
+      "runtimeQa": "PENDING"
+    },
+    "stone": {
+      "status": "PENDING"
+    },
+    "centralContext": {
+      "main": "c328efa7ec428d7208cc38ef390054836a2b801d",
+      "policyVersion": 611,
+      "validation": "READ_ONLY_CANONICAL_VALIDATOR_FUNCTION_PASS"
+    }
+  }
 }
